@@ -37,7 +37,7 @@ void TestProgressBar()
     std::cout.flush();
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
-  std::cout << std::endl;
+  std::cout << "\n";
 }
 
 //! [example-system-progress-bar]
@@ -51,7 +51,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

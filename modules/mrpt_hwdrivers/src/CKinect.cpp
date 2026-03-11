@@ -28,7 +28,7 @@ using namespace std;
 IMPLEMENTS_GENERIC_SENSOR(CKinect, mrpt::hwdrivers)
 
 // Whether to profile memory allocations:
-//#define KINECT_PROFILE_MEM_ALLOC
+// #define KINECT_PROFILE_MEM_ALLOC
 
 #if MRPT_HAS_KINECT_FREENECT
 #if defined(__APPLE__) && MRPT_HAS_KINECT_FREENECT_SYSTEM
@@ -507,8 +507,8 @@ void CKinect::getNextObservation(
     {
       // Approx: 0.5ms delay between depth frame (first) and RGB frame
       // (second).
-      // cout << "m_tim_latest_rgb: " << m_tim_latest_rgb << "
-      // m_tim_latest_depth: "<< m_tim_latest_depth <<endl;
+      // std::cout << "m_tim_latest_rgb: " << m_tim_latest_rgb << "
+      // m_tim_latest_depth: "<< m_tim_latest_depth <<"\n";
       there_is_obs = true;
       break;
     }
@@ -531,8 +531,10 @@ void CKinect::getNextObservation(
     there_is_obs = true;
   }
 
-  if (!there_is_obs) return;
-
+  if (!there_is_obs)
+  {
+    return;
+  }
   // We DO have a fresh new observation:
 
   // Quick save the observation to the user's object:

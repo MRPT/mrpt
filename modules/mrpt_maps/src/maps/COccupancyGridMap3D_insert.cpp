@@ -153,8 +153,10 @@ void COccupancyGridMap3D::insertRay(
   int trg_cz = m_grid.z2idx(end.z);
 
   // Skip if totally out of bounds:
-  if (m_grid.isOutOfBounds(cx, cy, cz)) return;
-
+  if (m_grid.isOutOfBounds(cx, cy, cz))
+  {
+    return;
+  }
   // The occupied cell at the end:
   updateCell_fast_occupied(
       trg_cx, trg_cy, trg_cz, logodd_observation_occupied, logodd_thres_occupied);
@@ -210,8 +212,10 @@ void COccupancyGridMap3D::internal_insertObservationPointCloud(
 {
   MRPT_START
 
-  if (!o.pointcloud) return;
-
+  if (!o.pointcloud)
+  {
+    return;
+  }
   const auto sensorPose3D = robotPose + o.sensorPose;
 
   const auto sensorPt = mrpt::math::TPoint3D(sensorPose3D.asTPose());

@@ -65,8 +65,10 @@ void CTaoboticsIMU::doProcess()
     initialize();
   }
 
-  if (m_state == ssError) return;
-
+  if (m_state == ssError)
+  {
+    return;
+  }
   // try to read and parse a frame from the serial port:
   std::vector<uint8_t> buf(m_rx_buffer.available());
 

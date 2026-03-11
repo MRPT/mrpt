@@ -13,6 +13,8 @@
 */
 
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/TPoint2D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/topography.h>
 
@@ -299,53 +301,54 @@ void exampleResults()
 
 void displayResults(const CVectorDouble& thisResults, const unsigned int& example, const bool color)
 {
-  cout << "Example " << example << ". Results" << setprecision(16) << endl;
-  cout << "------------------------------------------------------------------"
-          "----------"
-       << endl;
-  cout << "N\t"
-       << "X\t\t\t"
-       << "Y\t\t\t"
-       << "Z" << endl;
-  cout << "------------------------------------------------------------------"
-          "----------"
-       << endl;
+  std::cout << "Example " << example << ". Results" << setprecision(16) << "\n";
+  std::cout << "------------------------------------------------------------------"
+               "----------"
+            << "\n";
+  std::cout << "N\t"
+            << "X\t\t\t"
+            << "Y\t\t\t"
+            << "Z"
+            << "\n";
+  std::cout << "------------------------------------------------------------------"
+               "----------"
+            << "\n";
 
   if (color)
   {
     const size_t N = thisResults.size() / 3;
     for (unsigned int i = 0; i < N; ++i)
     {
-      cout << names[i] << "\t";
+      std::cout << names[i] << "\t";
       if (fabs(thisResults[3 * i + 0] - results[example - 1](i, 0)) < TH)
         consoleColorAndStyle(ConsoleForegroundColor::GREEN);
       else
         consoleColorAndStyle(ConsoleForegroundColor::RED);
-      cout << thisResults[3 * i + 0] << "\t";
+      std::cout << thisResults[3 * i + 0] << "\t";
 
       if (fabs(thisResults[3 * i + 1] - results[example - 1](i, 1)) < TH)
         consoleColorAndStyle(ConsoleForegroundColor::GREEN);
       else
         consoleColorAndStyle(ConsoleForegroundColor::RED);
-      cout << thisResults[3 * i + 1] << "\t";
+      std::cout << thisResults[3 * i + 1] << "\t";
 
       if (fabs(thisResults[3 * i + 2] - results[example - 1](i, 2)) < TH)
         consoleColorAndStyle(ConsoleForegroundColor::GREEN);
       else
         consoleColorAndStyle(ConsoleForegroundColor::RED);
-      cout << thisResults[3 * i + 2] << endl;
+      std::cout << thisResults[3 * i + 2] << "\n";
 
       consoleColorAndStyle(ConsoleForegroundColor::DEFAULT);
     }
-    cout << endl;
+    std::cout << "\n";
   }
   else
   {
     const size_t N = thisResults.size() / 3;
     for (unsigned int i = 0; i < N; ++i)
-      cout << names[i] << "\t" << thisResults[3 * i + 0] << "\t" << thisResults[3 * i + 1] << "\t"
-           << thisResults[3 * i + 2] << endl;
-    cout << endl;
+      std::cout << names[i] << "\t" << thisResults[3 * i + 0] << "\t" << thisResults[3 * i + 1]
+                << "\t" << thisResults[3 * i + 2] << "\n";
+    std::cout << "\n";
   }
 }
 
@@ -364,34 +367,45 @@ void TestCoordinatesConversions()
   TEllipsoid ellip = TEllipsoid::Ellipsoid_WGS84();
 
   // Dump to console of input values
-  cout << "INPUT DATA: " << endl << "----------------------------------" << endl;
-  cout << "UTM Coordinates: " << endl;
-  cout << "X = " << setprecision(15) << UTMCoords.x << endl;
-  cout << "Y = " << UTMCoords.y << endl;
-  cout << "Z = " << UTMCoords.z << endl;
-  cout << "Time zone: " << huso << endl;
-  cout << "Hemisphery: " << hem << endl;
-  cout << "Ellipsoid: " << ellip.name << endl;
-  cout << "----------------------------------" << endl << endl;
+  std::cout << "INPUT DATA: " << endl
+            << "----------------------------------"
+            << "\n";
+  std::cout << "UTM Coordinates: "
+            << "\n";
+  std::cout << "X = " << setprecision(15) << UTMCoords.x << "\n";
+  std::cout << "Y = " << UTMCoords.y << "\n";
+  std::cout << "Z = " << UTMCoords.z << "\n";
+  std::cout << "Time zone: " << huso << "\n";
+  std::cout << "Hemisphery: " << hem << "\n";
+  std::cout << "Ellipsoid: " << ellip.name << "\n";
+  std::cout << "----------------------------------" << endl << "\n";
 
   // UTM to Geodetic ...
   UTMToGeodetic(UTMCoords, huso, hem, GeodeticCoords, ellip);
-  cout << "UTM to Geodetic" << endl;
-  cout << "Geodetic Coordinates:" << endl;
-  cout << "Lon = " << TCoords(GeodeticCoords.lon) << " [" << GeodeticCoords.lon << "]" << endl;
-  cout << "Lat = " << TCoords(GeodeticCoords.lat) << " [" << GeodeticCoords.lon << "]" << endl;
-  cout << "H = " << GeodeticCoords.height << endl;
-  cout << "----------------------------------" << endl;
+  std::cout << "UTM to Geodetic"
+            << "\n";
+  std::cout << "Geodetic Coordinates:"
+            << "\n";
+  std::cout << "Lon = " << TCoords(GeodeticCoords.lon) << " [" << GeodeticCoords.lon << "]"
+            << "\n";
+  std::cout << "Lat = " << TCoords(GeodeticCoords.lat) << " [" << GeodeticCoords.lon << "]"
+            << "\n";
+  std::cout << "H = " << GeodeticCoords.height << "\n";
+  std::cout << "----------------------------------"
+            << "\n";
 
   // Geodetic to Geocentric ...
   TGeocentricCoords GeocentricCoords;
   geodeticToGeocentric(GeodeticCoords, GeocentricCoords, ellip);
-  cout << "Geodetic to Geocentric" << endl;
-  cout << "Geocentric Coordinates:" << endl;
-  cout << "X = " << GeocentricCoords.x << endl;
-  cout << "Y = " << GeocentricCoords.y << endl;
-  cout << "Z = " << GeocentricCoords.z << endl;
-  cout << "----------------------------------" << endl;
+  std::cout << "Geodetic to Geocentric"
+            << "\n";
+  std::cout << "Geocentric Coordinates:"
+            << "\n";
+  std::cout << "X = " << GeocentricCoords.x << "\n";
+  std::cout << "Y = " << GeocentricCoords.y << "\n";
+  std::cout << "Z = " << GeocentricCoords.z << "\n";
+  std::cout << "----------------------------------"
+            << "\n";
 
   // 7 parameter transformation (X,Y,Z) -> (X',Y',Z')
   // TDatum7Params datum( dx, dy, dz, rx(sec), ry(sec), rz(sec), ds(ppm) );
@@ -401,23 +415,31 @@ void TestCoordinatesConversions()
   // transform7params(
   // TGeocentricCoords(5029475.945,-328201.0396,3896351.728), datum,
   // GeocentricCoords2 );
-  cout << "transform7params" << endl;
-  cout << "Transformed Geocentric Coordinates:" << endl;
-  cout << "X = " << GeocentricCoords2.x << endl;
-  cout << "Y = " << GeocentricCoords2.y << endl;
-  cout << "Z = " << GeocentricCoords2.z << endl;
-  cout << "----------------------------------" << endl;
+  std::cout << "transform7params"
+            << "\n";
+  std::cout << "Transformed Geocentric Coordinates:"
+            << "\n";
+  std::cout << "X = " << GeocentricCoords2.x << "\n";
+  std::cout << "Y = " << GeocentricCoords2.y << "\n";
+  std::cout << "Z = " << GeocentricCoords2.z << "\n";
+  std::cout << "----------------------------------"
+            << "\n";
 
   // ... and back to Geodetic
   TGeodeticCoords GeodeticCoords2;
   ellip = TEllipsoid::Ellipsoid_Hough_1960();
   geocentricToGeodetic(GeocentricCoords2, GeodeticCoords2, ellip);
-  cout << "Geocentric to Geodetic" << endl;
-  cout << "Geodetic Coordinates:" << endl;
-  cout << "Lon = " << TCoords(GeodeticCoords2.lon) << " [" << GeodeticCoords2.lon << "]" << endl;
-  cout << "Lat = " << TCoords(GeodeticCoords2.lat) << " [" << GeodeticCoords2.lat << "]" << endl;
-  cout << "H = " << GeodeticCoords2.height << endl;
-  cout << "----------------------------------" << endl;
+  std::cout << "Geocentric to Geodetic"
+            << "\n";
+  std::cout << "Geodetic Coordinates:"
+            << "\n";
+  std::cout << "Lon = " << TCoords(GeodeticCoords2.lon) << " [" << GeodeticCoords2.lon << "]"
+            << "\n";
+  std::cout << "Lat = " << TCoords(GeodeticCoords2.lat) << " [" << GeodeticCoords2.lat << "]"
+            << "\n";
+  std::cout << "H = " << GeodeticCoords2.height << "\n";
+  std::cout << "----------------------------------"
+            << "\n";
 
   // ... and back to UTM
   TUTMCoords UTMCoords2;
@@ -428,13 +450,16 @@ void TestCoordinatesConversions()
   geodeticToUTM(
       TGeodeticCoords(37.89604181, -3.72987289, 542.8624741), UTMCoords2, time_zone2,
       latitude_band2, TEllipsoid(6378270, 6356794.343, "USER"));
-  cout << "Geodetic to UTM" << endl;
-  cout << "UTM Coordinates:" << endl;
-  cout << "X = " << UTMCoords2.x << endl;
-  cout << "Y = " << UTMCoords2.y << endl;
-  cout << "Z = " << UTMCoords2.z << endl;
-  cout << "Time zone: " << time_zone2 << endl;
-  cout << "----------------------------------" << endl;
+  std::cout << "Geodetic to UTM"
+            << "\n";
+  std::cout << "UTM Coordinates:"
+            << "\n";
+  std::cout << "X = " << UTMCoords2.x << "\n";
+  std::cout << "Y = " << UTMCoords2.y << "\n";
+  std::cout << "Z = " << UTMCoords2.z << "\n";
+  std::cout << "Time zone: " << time_zone2 << "\n";
+  std::cout << "----------------------------------"
+            << "\n";
 
   // 10 parameter transformation (X,Y,Z) -> (X',Y',Z')
 
@@ -1512,9 +1537,11 @@ int main(int argc, char** argv)
     exampleResults();
     TestCoordinatesConversions();
     consoleColorAndStyle(ConsoleForegroundColor::BLUE);
-    cout << "**************************************" << endl;
-    cout << "\tTOPCON with th = " << TH << endl;
-    cout << "**************************************" << endl;
+    std::cout << "**************************************"
+              << "\n";
+    std::cout << "\tTOPCON with th = " << TH << "\n";
+    std::cout << "**************************************"
+              << "\n";
     consoleColorAndStyle(ConsoleForegroundColor::DEFAULT);
     Examples_01();
     Examples_02();
@@ -1525,11 +1552,14 @@ int main(int argc, char** argv)
     Examples_07();
     Examples_08();
     consoleColorAndStyle(ConsoleForegroundColor::BLUE);
-    cout << "**************************************" << endl;
-    cout << "\tLEICA with th = " << TH << endl;
-    cout << "**************************************" << endl;
+    std::cout << "**************************************"
+              << "\n";
+    std::cout << "\tLEICA with th = " << TH << "\n";
+    std::cout << "**************************************"
+              << "\n";
     consoleColorAndStyle(ConsoleForegroundColor::DEFAULT);
-    cout << "Example 09 missing in pdf" << endl;
+    std::cout << "Example 09 missing in pdf"
+              << "\n";
     Examples_10();
     Examples_11();
     Examples_12();
@@ -1539,7 +1569,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

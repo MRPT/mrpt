@@ -79,11 +79,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
 
       if (s.empty())
       {
-        cout << "(The rawlog has no comments)" << endl;
+        std::cout << "(The rawlog has no comments)"
+                  << "\n";
       }
       else
       {
-        cout << s;
+        std::cout << s;
       }
     }
 
@@ -182,14 +183,14 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
 
     pts.loadFromRangeScan(*obs, std::nullopt);
 
-    cout << "2D coordinates of valid points (wrt to "
-            "robot/vehicle frame, "
-         << pts.size() << " points)\n";
-    cout << "pts=[";
+    std::cout << "2D coordinates of valid points (wrt to "
+                 "robot/vehicle frame, "
+              << pts.size() << " points)\n";
+    std::cout << "pts=[";
     const auto& xs = pts.getPointsBufferRef_x();
     const auto& ys = pts.getPointsBufferRef_y();
-    for (size_t i = 0; i < xs.size(); i++) cout << format("%7.04f %7.04f;", xs[i], ys[i]);
-    cout << "]\n\n";
+    for (size_t i = 0; i < xs.size(); i++) std::cout << format("%7.04f %7.04f;", xs[i], ys[i]);
+    std::cout << "]\n\n";
 
     // The plot:
     obs->load();

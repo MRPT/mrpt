@@ -50,7 +50,10 @@ struct CLogOddsGridMap3D : public detail::logoddscell_traits<TCELL>
    */
   void updateCell_fast_occupied(cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
   {
-    if (theCell == nullptr) return;
+    if (theCell == nullptr)
+    {
+      return;
+    }
     if (*theCell > thres)
       *theCell -= logodd_obs;
     else
@@ -88,7 +91,10 @@ struct CLogOddsGridMap3D : public detail::logoddscell_traits<TCELL>
    */
   void updateCell_fast_free(cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
   {
-    if (theCell == nullptr) return;
+    if (theCell == nullptr)
+    {
+      return;
+    }
     if (*theCell < thres)
       *theCell += logodd_obs;
     else

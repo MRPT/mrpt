@@ -13,7 +13,7 @@
 */
 
 // Force size_x being a multiple of 16 cells
-//#define		ROWSIZE_MULTIPLE_16
+// #define		ROWSIZE_MULTIPLE_16
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -424,8 +424,10 @@ void COccupancyGridMap2D::fill(float default_value)
 void COccupancyGridMap2D::updateCell(int x, int y, float v)
 {
   // Tip: if x<0, (unsigned)(x) will also be >>> size_x ;-)
-  if (static_cast<unsigned int>(x) >= m_size_x || static_cast<unsigned int>(y) >= m_size_y) return;
-
+  if (static_cast<unsigned int>(x) >= m_size_x || static_cast<unsigned int>(y) >= m_size_y)
+  {
+    return;
+  }
   // Get the current contents of the cell:
   cellType& theCell = m_map[x + y * m_size_x];
 
@@ -873,8 +875,10 @@ void COccupancyGridMap2D::nn_radius_search(
   out_dists_sqr.clear();
   resultIndicesOrIDs.clear();
 
-  if (search_radius_sqr == 0) return;
-
+  if (search_radius_sqr == 0)
+  {
+    return;
+  }
   int cx_query = x2idx(query.x), cy_query = y2idx(query.y);
 
   const cellType thresholdCellValue = p2l(0.5f);
@@ -902,8 +906,10 @@ void COccupancyGridMap2D::nn_radius_search(
     auto lambdaAddCell = [&](int cx, int cy)
     {
       int distSqr = mrpt::square(cx - cx_query) + mrpt::square(cy - cy_query);
-      if (distSqr > maxSearchRadiusSqrInCells) return;
-
+      if (distSqr > maxSearchRadiusSqrInCells)
+      {
+        return;
+      }
       out_dists_sqr.push_back(distSqr * resolutionSqr);
       results.push_back({idx2x(cx), idx2y(cy)});
       resultIndicesOrIDs.push_back(cx + cy * m_size_x);

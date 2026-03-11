@@ -57,7 +57,10 @@ void CAngularObservationMesh::updateMeshImpl() const
     meshUpToDate = true;
     return;
   }
-  if (pitchBounds.size() != numRows && pitchBounds.size() != 2) return;
+  if (pitchBounds.size() != numRows && pitchBounds.size() != 2)
+  {
+    return;
+  }
   size_t numCols = scanSet[0].getScanSize();
   actualMesh.setSize(numRows, numCols);
   validityMatrix.setSize(numRows, numCols);

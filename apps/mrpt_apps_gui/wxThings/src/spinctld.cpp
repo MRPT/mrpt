@@ -399,8 +399,10 @@ void wxSpinCtrlDbl::OnChar(wxKeyEvent &event)
 
 void wxSpinCtrlDbl::SetValue(double value)
 {
-  if (!m_textCtrl || !InRange(value)) return;
-
+  if (!m_textCtrl || !InRange(value))
+  {
+    return;
+  }
   if (m_snap_ticks && (m_increment != 0))
   {
     double snap_value = (value - m_default_value) / m_increment;
@@ -427,8 +429,10 @@ void wxSpinCtrlDbl::SetValue(double value)
 
 void wxSpinCtrlDbl::SetValue(const wxString &text, bool force)
 {
-  if (!m_textCtrl) return;
-
+  if (!m_textCtrl)
+  {
+    return;
+  }
   double value;
   if (text.ToDouble(&value))
     SetValue(value);
@@ -575,8 +579,10 @@ void wxSpinCtrlDbl::OnKillFocus(wxFocusEvent &event)
 
 void wxSpinCtrlDbl::SyncSpinToText(bool send_event, bool force_valid)
 {
-  if (!m_textCtrl) return;
-
+  if (!m_textCtrl)
+  {
+    return;
+  }
   double txt_value;
   if (m_textCtrl->GetValue().ToDouble(&txt_value))
   {

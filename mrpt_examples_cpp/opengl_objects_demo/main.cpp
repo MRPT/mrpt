@@ -1126,7 +1126,7 @@ void TestOpenGLObjects()
   win.unlockAccess3DScene();
   win.repaint();
 
-  cout << "Close the window to end.\n";
+  std::cout << "Close the window to end.\n";
 
   mrpt::viz::TFontParams fp;
   fp.vfont_scale = 14;  // pixels
@@ -1186,7 +1186,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

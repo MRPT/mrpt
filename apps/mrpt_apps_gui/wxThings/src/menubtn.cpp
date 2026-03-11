@@ -209,10 +209,14 @@ void wxMenuButton::OnButton(wxCommandEvent &event)
     {
       wxNotifyEvent mevent(wxEVT_MENUBUTTON_OPEN, GetId());
       mevent.SetEventObject(this);
-      if (GetEventHandler()->ProcessEvent(mevent) && !mevent.IsAllowed()) return;
-
-      if (!m_menu) return;
-
+      if (GetEventHandler()->ProcessEvent(mevent) && !mevent.IsAllowed())
+      {
+        return;
+      }
+      if (!m_menu)
+      {
+        return;
+      }
       PopupMenu(m_menu, wxPoint(0, GetSize().y));
 
       m_labelButton->Refresh(false);
@@ -221,8 +225,10 @@ void wxMenuButton::OnButton(wxCommandEvent &event)
   }
   else if (win_id == m_labelButton->GetId())
   {
-    if (!m_menu) return;
-
+    if (!m_menu)
+    {
+      return;
+    }
     const wxMenuItemList &items = m_menu->GetMenuItems();
     int first_radio_id = -1;
     int checked_id = -1;

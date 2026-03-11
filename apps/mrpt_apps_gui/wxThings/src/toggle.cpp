@@ -135,8 +135,10 @@ void wxCustomButton::SetLabel(const wxString& label)
 
 void wxCustomButton::OnMouseEvents(wxMouseEvent& event)
 {
-  if (m_button_style & wxCUSTBUT_NOTOGGLE) return;
-
+  if (m_button_style & wxCUSTBUT_NOTOGGLE)
+  {
+    return;
+  }
   if (event.LeftDown() || event.RightDown())
   {
     if (!HasCapture()) CaptureMouse();  // keep depressed until up

@@ -175,7 +175,7 @@ void display()
       scene1, basePose, aom,
       CAngularObservationMesh::TDoubleRange::CreateFromAmount(-M_PI / 2, 0, HOW_MANY_PITCHS),
       CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_YAWS));
-  cout << "Elapsed time: " << t.Tac() << " seconds.\n";
+  std::cout << "Elapsed time: " << t.Tac() << " seconds.\n";
   aom->setColor(0, 1, 0);
   aom->setWireframe(true);
   // Comment to stop showing traced rays and scan range guidelines.
@@ -228,13 +228,13 @@ int main()
   }
   catch (const exception& e)
   {
-    cout << "Error: " << e.what() << '.' << endl;
+    std::cout << "Error: " << e.what() << '.' << "\n";
     mrpt::system::pause();
     return -1;
   }
   catch (...)
   {
-    cout << "Unknown Error.\n";
+    std::cout << "Unknown Error.\n";
     return -1;
   }
 }

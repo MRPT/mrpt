@@ -54,7 +54,7 @@ using namespace std;
 #define NUM_PARTICLES 2000
 
 // Uncomment to save text files with grount truth vs. estimated states
-//#define SAVE_GT_LOGS
+// #define SAVE_GT_LOGS
 
 // ------------------------------------------------------
 //		Implementation of the system models as a EKF
@@ -322,10 +322,10 @@ void TestBayesianTracking()
     EKF.getState(EKF_xkk, EKF_pkk);
 
     printf("Real: x:%.03f  y=%.03f heading=%.03f v=%.03f w=%.03f\n", x, y, phi, v, w);
-    cout << "EKF: " << EKF_xkk.transpose() << endl;
+    std::cout << "EKF: " << EKF_xkk.transpose() << "\n";
 
     // Show PF state:
-    cout << "Particle filter ESS: " << particles.ESS() << endl;
+    std::cout << "Particle filter ESS: " << particles.ESS() << "\n";
 
     // Draw EKF state:
     CRangeBearing::KFMatrix COVXY(2, 2);
@@ -406,7 +406,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

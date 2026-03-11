@@ -272,8 +272,10 @@ void CHeightGridMap2D::saveMetricMapRepresentationToFile(const std::string& filN
 
 void CHeightGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
-  if (!genericMapParams.enableSaveAs3DObject) return;
-
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   if (HEIGHTGRIDMAP_EXPORT3D_AS_MESH_value)
   {
     viz::CMesh::Ptr mesh = std::make_shared<viz::CMesh>();

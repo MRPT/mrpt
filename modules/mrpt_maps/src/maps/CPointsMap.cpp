@@ -276,8 +276,10 @@ void CPointsMap::determineMatching2D(
   tempCorrs.reserve(nLocalPoints);
 
   // Nothing to do if we have an empty map!
-  if (!nGlobalPoints || !nLocalPoints) return;
-
+  if (!nGlobalPoints || !nLocalPoints)
+  {
+    return;
+  }
   const double sin_phi = sin(otherMapPose.phi);
   const double cos_phi = cos(otherMapPose.phi);
 
@@ -693,8 +695,10 @@ void CPointsMap::TRenderOptions::loadFromConfigFile(
 void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
-  if (!genericMapParams.enableSaveAs3DObject) return;
-
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   if (renderOptions.colormap == mrpt::img::cmNONE)
   {
     // Single color:
@@ -905,8 +909,10 @@ void CPointsMap::determineMatching3D(
   tempCorrs.reserve(nLocalPoints);
 
   // Empty maps?  Nothing to do
-  if (!nGlobalPoints || !nLocalPoints) return;
-
+  if (!nGlobalPoints || !nLocalPoints)
+  {
+    return;
+  }
   // Try to do matching only if the bounding boxes have some overlap:
   // Transform all local points:
   vector<float> x_locals(nLocalPoints), y_locals(nLocalPoints), z_locals(nLocalPoints);
@@ -1096,8 +1102,10 @@ void CPointsMap::compute3DDistanceToMesh(
 
   // Solo hacer matching si existe alguna posibilidad de que
   //  los dos mapas se toquen:
-  if (!bbLocal.intersection(bbGlobal).has_value()) return;
-
+  if (!bbLocal.intersection(bbGlobal).has_value())
+  {
+    return;
+  }
   std::vector<std::vector<size_t>> vIdx;
 
   // Loop for each point in local map:

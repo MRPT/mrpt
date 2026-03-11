@@ -268,11 +268,16 @@ void RawlogGrabberApp::run()
 void RawlogGrabberApp::dump_verbose_info(const mrpt::serialization::CSerializable::Ptr& o) const
 {
   // Show GPS mode:
-  if (getMinLoggingLevel() != mrpt::system::LVL_DEBUG) return;
-
+  if (getMinLoggingLevel() != mrpt::system::LVL_DEBUG)
+  {
+    return;
+  }
   static auto last_t = mrpt::Clock::now();
   const auto t_now = mrpt::Clock::now();
-  if (mrpt::system::timeDifference(last_t, t_now) < 1.0) return;
+  if (mrpt::system::timeDifference(last_t, t_now) < 1.0)
+  {
+    return;
+  }
   last_t = t_now;
 
   if (auto gps = std::dynamic_pointer_cast<mrpt::obs::CObservationGPS>(o); gps)
@@ -287,8 +292,10 @@ void RawlogGrabberApp::dump_verbose_info(const mrpt::serialization::CSerializabl
 
 void RawlogGrabberApp::dump_verbose_info(const mrpt::obs::CSensoryFrame& sf) const
 {
-  if (getMinLoggingLevel() != mrpt::system::LVL_DEBUG) return;
-
+  if (getMinLoggingLevel() != mrpt::system::LVL_DEBUG)
+  {
+    return;
+  }
   // Show GPS mode:
   mrpt::obs::CObservationGPS::Ptr gps;
   std::size_t idx = 0;

@@ -909,8 +909,10 @@ Exit:
 
 void ply_get_info(PlyFile* ply, float* version, int* file_type)
 {
-  if (ply == nullptr) return;
-
+  if (ply == nullptr)
+  {
+    return;
+  }
   *version = ply->version;
   *file_type = ply->file_type;
 }

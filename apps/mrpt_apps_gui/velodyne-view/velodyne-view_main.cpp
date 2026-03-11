@@ -102,11 +102,11 @@ void thread_grabbing(TThreadParam& p)
     }
 
     // Open:
-    cout << "Calling CVelodyneScanner::initialize()...";
+    std::cout << "Calling CVelodyneScanner::initialize()...";
     velodyne.initialize();
-    cout << "OK\n";
+    std::cout << "OK\n";
 
-    cout << "Waiting for first data packets (Press CTRL+C to abort)...\n";
+    std::cout << "Waiting for first data packets (Press CTRL+C to abort)...\n";
 
     CTicTac tictac;
     int nScans = 0;
@@ -157,7 +157,7 @@ void thread_grabbing(TThreadParam& p)
   }
   catch (const std::exception& e)
   {
-    cout << "Exception in Velodyne thread: " << mrpt::exception_to_str(e) << endl;
+    std::cout << "Exception in Velodyne thread: " << mrpt::exception_to_str(e) << "\n";
     p.quit = true;
   }
 }
@@ -198,7 +198,7 @@ int VelodyneView(
 
   // Wait until data stream starts so we can say for sure the sensor has been
   // initialized OK:
-  cout << "Waiting for sensor initialization...\n";
+  std::cout << "Waiting for sensor initialization...\n";
   do
   {
     CObservation::Ptr possiblyNewObs = std::atomic_load(&thrPar.new_obs);
@@ -372,10 +372,10 @@ int VelodyneView(
     std::this_thread::sleep_for(50ms);
   }
 
-  cout << "Waiting for grabbing thread to exit...\n";
+  std::cout << "Waiting for grabbing thread to exit...\n";
   thrPar.quit = true;
   if (thHandle.joinable()) thHandle.join();
-  cout << "Bye!\n";
+  std::cout << "Bye!\n";
   return 0;
 }
 

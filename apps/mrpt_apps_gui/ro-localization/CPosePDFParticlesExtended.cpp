@@ -124,8 +124,10 @@ void CPosePDFParticlesExtended::getMean(CPose2D& est) const
   double W_phi_R = 0, W_phi_L = 0;
   double phi_R = 0, phi_L = 0;
 
-  if (!n) return;
-
+  if (!n)
+  {
+    return;
+  }
   // First: XY
   // -----------------------------------
   for (i = 0; i < n; i++)
@@ -853,8 +855,10 @@ void CPosePDFParticlesExtended::saveParzenPDFToTextFile(
     float stdPhi) const
 {
   FILE* f = os::fopen(fileName, "wt");
-  if (!f) return;
-
+  if (!f)
+  {
+    return;
+  }
   for (float y = y_min; y < y_max; y += stepSizeXY)
   {
     for (float x = x_min; x < x_max; x += stepSizeXY)

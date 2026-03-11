@@ -29,7 +29,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT exception caught: " << e.what() << std::endl;
+    std::cerr << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

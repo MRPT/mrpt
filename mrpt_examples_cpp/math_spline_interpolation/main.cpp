@@ -110,7 +110,8 @@ void TestSplineInterpolation()
   }
 
   mrpt::system::os::fclose(f);
-  cout << "Done" << endl;
+  std::cout << "Done"
+            << "\n";
 
 #if MRPT_HAS_WXWIDGETS
   CDisplayWindowPlots figure("Interpolation results");
@@ -168,7 +169,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

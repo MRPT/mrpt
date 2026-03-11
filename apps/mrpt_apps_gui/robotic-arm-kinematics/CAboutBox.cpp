@@ -172,18 +172,18 @@ void CAboutBox::OnInit([[maybe_unused]] wxInitDialogEvent& event)
   {
     CMyRedirector myRedirector(lbInfo);
 
-    cout << "  Robotic Arm Kinematics GUI\n";
-    cout << "--------------------------------\n";
-    cout << "Jose Luis Blanco\n";
-    cout << "\n";
-    cout << "For bug reports or to collaborate:\n";
-    cout << "    https://www.mrpt.org/    \n\n";
+    std::cout << "  Robotic Arm Kinematics GUI\n";
+    std::cout << "--------------------------------\n";
+    std::cout << "Jose Luis Blanco\n";
+    std::cout << "\n";
+    std::cout << "For bug reports or to collaborate:\n";
+    std::cout << "    https://www.mrpt.org/    \n\n";
 
-    cout << "MRPT version:           " << MRPT_getVersion() << endl;
-    cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << endl;
-    cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "."
-         << EIGEN_MINOR_VERSION << endl;
-    cout << "wxWidgets version:      " << std::string(wxVer.mb_str()) << endl;
+    std::cout << "MRPT version:           " << MRPT_getVersion() << "\n";
+    std::cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << "\n";
+    std::cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION
+              << "." << EIGEN_MINOR_VERSION << "\n";
+    std::cout << "wxWidgets version:      " << std::string(wxVer.mb_str()) << "\n";
   }
 
   lbProgName->SetLabel(wxT("Robotic Arm Kinematics GUI"));

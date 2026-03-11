@@ -42,17 +42,17 @@ void TestWatch()
 
     for (it = lstChanges.begin(); it != lstChanges.end(); it++)
     {
-      cout << "changed: '" << it->path << "' ";
-      if (it->isDir) cout << "isDir ";
-      if (it->eventModified) cout << "modified ";
-      if (it->eventCloseWrite) cout << "close_write ";
-      if (it->eventDeleted) cout << "deleted ";
-      if (it->eventMovedTo) cout << "moved_to ";
-      if (it->eventMovedFrom) cout << "moved_from ";
-      if (it->eventCreated) cout << "created ";
-      if (it->eventAccessed) cout << "accessed";
+      std::cout << "changed: '" << it->path << "' ";
+      if (it->isDir) std::cout << "isDir ";
+      if (it->eventModified) std::cout << "modified ";
+      if (it->eventCloseWrite) std::cout << "close_write ";
+      if (it->eventDeleted) std::cout << "deleted ";
+      if (it->eventMovedTo) std::cout << "moved_to ";
+      if (it->eventMovedFrom) std::cout << "moved_from ";
+      if (it->eventCreated) std::cout << "created ";
+      if (it->eventAccessed) std::cout << "accessed";
 
-      cout << endl;
+      std::cout << "\n";
     }
 
     std::this_thread::sleep_for(100ms);
@@ -68,7 +68,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

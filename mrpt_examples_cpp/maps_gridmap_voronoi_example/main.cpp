@@ -39,24 +39,24 @@ void TestVoronoi()
 {
   if (!mrpt::system::fileExists(sample_simplemap_file))
   {
-    cerr << "Error: file doesn't exist: " << sample_simplemap_file << endl;
+    cerr << "Error: file doesn't exist: " << sample_simplemap_file << "\n";
     return;
   }
 
   // Load simplemap:
-  cout << "Loading simplemap: " << sample_simplemap_file << endl;
+  std::cout << "Loading simplemap: " << sample_simplemap_file << "\n";
 
   CSimpleMap simplemap;
   simplemap.loadFromFile(sample_simplemap_file);
 
   // Load a grid map:
-  cout << "Building gridmap...\n";
+  std::cout << "Building gridmap...\n";
 
   COccupancyGridMap2D gridmap(-5, 5, -5, 5, 0.10f);
   gridmap.loadFromSimpleMap(simplemap);
 
   // Build voronoi:
-  cout << "Building Voronoi diagram...\n";
+  std::cout << "Building Voronoi diagram...\n";
 
   gridmap.buildVoronoiDiagram(0.5f, 0.3f);
 
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

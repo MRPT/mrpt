@@ -236,8 +236,10 @@ void CObservationPointCloud::load_impl() const
               << reinterpret_cast<const void*>(this) << "\n";
 
   // Already loaded?
-  if (!isExternallyStored() || (isExternallyStored() && pointcloud)) return;
-
+  if (!isExternallyStored() || (isExternallyStored() && pointcloud))
+  {
+    return;
+  }
   const auto abs_filename = mrpt::io::lazy_load_absolute_path(m_external_file);
   ASSERT_FILE_EXISTS_(abs_filename);
 
@@ -320,8 +322,10 @@ void CObservationPointCloud::unload() const
     std::cout << "[CObservationPointCloud::unload()] Called on this="
               << reinterpret_cast<const void*>(this) << "\n";
 
-  if (!isExternallyStored() || !pointcloud) return;
-
+  if (!isExternallyStored() || !pointcloud)
+  {
+    return;
+  }
   // Free memory, saving to the file if it doesn't exist:
   const auto abs_filename = mrpt::io::lazy_load_absolute_path(m_external_file);
 

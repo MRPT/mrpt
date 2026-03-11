@@ -365,8 +365,10 @@ void CParameterizedTrajectoryGenerator::updateNavDynamicState(
 void CParameterizedTrajectoryGenerator::initialize(
     const std::string& cacheFilename, const bool verbose)
 {
-  if (m_is_initialized) return;
-
+  if (m_is_initialized)
+  {
+    return;
+  }
   const std::string sCache = !cacheFilename.empty()
                                  ? cacheFilename
                                  : std::string("cache_") +
@@ -378,7 +380,10 @@ void CParameterizedTrajectoryGenerator::initialize(
 }
 void CParameterizedTrajectoryGenerator::deinitialize()
 {
-  if (!m_is_initialized) return;
+  if (!m_is_initialized)
+  {
+    return;
+  }
   this->internal_deinitialize();
   m_is_initialized = false;
 }

@@ -609,9 +609,9 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
   m_canvas->SetMinSize(wxSize(200, 200));
   flexGL->Add(m_canvas, 1, wxEXPAND, 0);
 
-  m_canvas->setCameraPointing(0.0f, 0.0f, 0.0f);
-  m_canvas->setElevationDegrees(60.0f);
-  m_canvas->setZoomDistance(25.0f);
+  m_canvas->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+  m_canvas->orbitCameraController().setElevationDegrees(60.0f);
+  m_canvas->orbitCameraController().setZoomDistance(25.0f);
 
   // Populate scene:
   auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
@@ -622,14 +622,14 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 
   // paths:
   gl_path_GT = mrpt::viz::CPointCloud::Create();
-  gl_path_GT->setColor(0, 0, 0, 0.7);
+  gl_path_GT->setColor(0, 0, 0, 0.7f);
   gl_path_GT->setLocation(0, 0, 0.01);
   gl_path_GT->setPointSize(3);
 
   openGLSceneRef->insert(gl_path_GT);
 
   gl_path_ODO = mrpt::viz::CPointCloud::Create();
-  gl_path_ODO->setColor(0, 1, 0, 0.7);
+  gl_path_ODO->setColor(0, 1, 0, 0.7f);
   gl_path_ODO->setLocation(0, 0, 0.01);
   gl_path_ODO->setPointSize(2);
 
@@ -674,8 +674,10 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 {
   static CTicTac tictac;
 
-  if (we_are_closing) return;
-
+  if (we_are_closing)
+  {
+    return;
+  }
   double At = tictac.Tac();
   tictac.Tic();
 
@@ -710,10 +712,16 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
       }
 
       if (btns.size() >= 2 && btns[1])
-        m_canvas->setZoomDistance(m_canvas->getZoomDistance() * 0.99f);
+      {
+        m_canvas->orbitCameraController().setZoomDistance(
+            m_canvas->orbitCameraController().getZoomDistance() * 0.99f);
+      }
 
       if (btns.size() >= 3 && btns[2])
-        m_canvas->setZoomDistance(m_canvas->getZoomDistance() * 1.01f);
+      {
+        m_canvas->orbitCameraController().setZoomDistance(
+            m_canvas->orbitCameraController().getZoomDistance() * 1.01f);
+      }
 
       the_robot.movementCommand(v, w);
     }
@@ -954,7 +962,8 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
           20, 45, string("Twist local: ") + vel_local.asString(), 1);
     }
 
-    m_canvas->setCameraPointing(p.x, p.y, m_canvas->getCameraPointingZ());
+    m_canvas->orbitCameraController().setCameraPointing(
+        p.x, p.y, m_canvas->orbitCameraController().getCameraPointingZ());
     m_canvas->Refresh();
 
     // Prepare next interval
@@ -1032,8 +1041,10 @@ void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
           "(*.*)|*.*"),
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (dlg.ShowModal() != wxID_OK) return;
-
+  if (dlg.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   const wxString sFil = dlg.GetPath();
   const std::string fil = std::string(sFil.mb_str());
 
@@ -1130,7 +1141,10 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
     wxFileDialog dialog(
         this, _("Existing GT file..."), _("."), _("GT.txt"),
         wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     gt_file = string(dialog.GetPath().mb_str());
   }
 
@@ -1140,7 +1154,10 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
         this, _("Corresponding rawlog..."), mrpt::system::extractFileDirectory(gt_file).c_str(),
         _("simul.rawlog"), wxT("Rawlog files (*.rawlog)|*.rawlog|All files (*.*)|*.*"),
         wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     raw_file = string(dialog.GetPath().mb_str());
   }
 
@@ -1153,7 +1170,7 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
   CRawlog rawlog;
   rawlog.loadFromRawLogFile(raw_file);
 
-  // cout << "rawlog entries: " << rawlog.size() << endl;
+  // std::cout << "rawlog entries: " << rawlog.size() << "\n";
 
   // Assert sizes:
   ASSERT_(rawlog.size() > 0);
@@ -1168,7 +1185,10 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
         this, _("New rawlog to create..."), mrpt::system::extractFileDirectory(gt_file).c_str(),
         _("simul_new.rawlog"), wxT("Rawlog files (*.rawlog)|*.rawlog|All files (*.*)|*.*"),
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     out_raw_file = string(dialog.GetPath().mb_str());
     out_GT_file = out_raw_file + string(".GT.txt");
   }

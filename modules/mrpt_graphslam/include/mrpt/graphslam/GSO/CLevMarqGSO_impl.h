@@ -251,7 +251,7 @@ void CLevMarqGSO<GRAPH_T>::fitGraphInView()
   }
   this->m_win->setCameraAzimuthDeg(60);
   this->m_win->setCameraElevationDeg(75);
-  this->m_win->setCameraProjective(true);
+  this->m_win->setProjectiveModel(true);
 
   MRPT_END
 }

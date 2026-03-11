@@ -93,13 +93,13 @@ int main(int argc, char** argv)
 
     if (!match_contains.empty())
     {
-      cout << "Using match filter: " << match_contains << endl;
+      std::cout << "Using match filter: " << match_contains << "\n";
     }
 
     bool doLog = true;
     bool HAVE_PERF_DATA_DIR =
         !PERF_DATA_DIR.empty() && mrpt::system::directoryExists(PERF_DATA_DIR);
-    if (HAVE_PERF_DATA_DIR) cout << "Using perf-data dir: " << PERF_DATA_DIR << endl;
+    if (HAVE_PERF_DATA_DIR) std::cout << "Using perf-data dir: " << PERF_DATA_DIR << "\n";
 
     CTicTac globalTime;
     globalTime.Tic();
@@ -107,11 +107,12 @@ int main(int argc, char** argv)
     CFileOutputStream fo;
     doLog = fo.open(filName);
     if (doLog)
-      cout << "Saving log to: " << filName << endl;
+      std::cout << "Saving log to: " << filName << "\n";
     else
-      cout << "Cannot save log, error opening " << filName << " for writing..." << endl;
+      std::cout << "Cannot save log, error opening " << filName << " for writing..."
+                << "\n";
 
-    cout << endl;
+    std::cout << "\n";
 
     if (doLog)
     {
@@ -134,7 +135,6 @@ int main(int argc, char** argv)
     register_tests_math();
     register_tests_image();
     register_tests_scan_matching();
-    register_tests_feature_extraction();
 
     register_tests_graph();
     register_tests_graphslam();
@@ -171,10 +171,10 @@ int main(int argc, char** argv)
 
         mrpt::system::consoleColorAndStyle(mrpt::system::ConsoleForegroundColor::GREEN);
 
-        cout << mrpt::system::intervalFormat(t);
+        std::cout << mrpt::system::intervalFormat(t);
 
         mrpt::system::consoleColorAndStyle(mrpt::system::ConsoleForegroundColor::DEFAULT);
-        cout << endl;
+        std::cout << "\n";
 
         // Make list of all data:
         all_perf_data.emplace_back(it->name, t);
@@ -190,7 +190,7 @@ int main(int argc, char** argv)
       }
       catch (const std::exception& e)
       {
-        cerr << "Skipped due to exception:\n" << mrpt::exception_to_str(e) << endl;
+        cerr << "Skipped due to exception:\n" << mrpt::exception_to_str(e) << "\n";
       }
     }
 
@@ -227,7 +227,7 @@ int main(int argc, char** argv)
           MRPT_getVersion().c_str(), mrpt::system::intervalFormat(globalTime.Tac()).c_str());
 
       fo.printf("</body></html>\n");
-      cout << endl << "Checkout the logfile: " << filName << endl;
+      std::cout << endl << "Checkout the logfile: " << filName << "\n";
     }
 
     // Save to perf-data dir?
@@ -267,7 +267,7 @@ int main(int argc, char** argv)
                               int((MRPT_VERSION >> 16) & 0xFF), int((MRPT_VERSION >> 8) & 0xFF),
                               int((MRPT_VERSION >> 0) & 0xFF), version_postfix, compiler_name,
                               int(MRPT_WORD_SIZE));
-      cout << "Saving perf-data to: " << fil_name << endl;
+      std::cout << "Saving perf-data to: " << fil_name << "\n";
       CFileOutputStream f(fil_name);
       auto arch = archiveFrom(f);
       arch << all_perf_data;

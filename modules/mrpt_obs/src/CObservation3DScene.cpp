@@ -58,11 +58,15 @@ void CObservation3DScene::getDescriptionAsText(std::ostream& o) const
 
 void CObservation3DScene::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
-  if (!scene) return;
-
+  if (!scene)
+  {
+    return;
+  }
   auto mainView = scene->getViewport();
-  if (!mainView) return;
-
+  if (!mainView)
+  {
+    return;
+  }
   for (const auto& obj : *mainView)
   {
     if (!obj) continue;

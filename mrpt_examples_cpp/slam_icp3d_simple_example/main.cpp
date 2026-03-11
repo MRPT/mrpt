@@ -102,7 +102,8 @@ void test_icp3D()
   auto aom1 = CAngularObservationMesh::Create();
   auto aom2 = CAngularObservationMesh::Create();
 
-  cout << "Performing ray-tracing..." << endl;
+  std::cout << "Performing ray-tracing..."
+            << "\n";
   CAngularObservationMesh::trace2DSetOfRays(
       scene1, viewpoint1, aom1,
       CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_PITCHS),
@@ -111,7 +112,8 @@ void test_icp3D()
       scene1, viewpoint2, aom2,
       CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_PITCHS),
       CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_YAWS));
-  cout << "Ray-tracing done" << endl;
+  std::cout << "Ray-tracing done"
+            << "\n";
 
   // Put the viewpoints origins:
   {
@@ -157,9 +159,9 @@ void test_icp3D()
 
   std::vector<double> xs, ys, zs;
   M1.getAllPoints(xs, ys, ys);
-  cout << "Size of  xs in M1: " << xs.size() << endl;
+  std::cout << "Size of  xs in M1: " << xs.size() << "\n";
   M2.getAllPoints(xs, ys, ys);
-  cout << "Size of  xs in M2: " << xs.size() << endl;
+  std::cout << "Size of  xs in M2: " << xs.size() << "\n";
 
   CPose3DPDF::Ptr pdf = icp.Align3D(
       &M2_noisy,  // Map to align
@@ -169,11 +171,13 @@ void test_icp3D()
 
   CPose3D mean = pdf->getMeanVal();
 
-  cout << "ICP run took " << icp_info.executionTime << " secs." << endl;
-  cout << "Goodness: " << 100 * icp_info.goodness << "% , # of iterations= " << icp_info.nIterations
-       << " Quality: " << icp_info.quality << endl;
-  cout << "ICP output: mean= " << mean << endl;
-  cout << "Real displacement: " << SCAN2_POSE_ERROR << endl;
+  std::cout << "ICP run took " << icp_info.executionTime << " secs."
+            << "\n";
+  std::cout << "Goodness: " << 100 * icp_info.goodness
+            << "% , # of iterations= " << icp_info.nIterations << " Quality: " << icp_info.quality
+            << "\n";
+  std::cout << "ICP output: mean= " << mean << "\n";
+  std::cout << "Real displacement: " << SCAN2_POSE_ERROR << "\n";
 
   // Aligned maps:
   M2_noisy.changeCoordinatesReference(CPose3D() - mean);
@@ -215,7 +219,8 @@ void test_icp3D()
   window3.setCameraAzimuthDeg(90);
   window3.setCameraZoom(15);
 
-  cout << "Press any key to exit..." << endl;
+  std::cout << "Press any key to exit..."
+            << "\n";
   window.waitForKey();
 }
 
@@ -228,7 +233,7 @@ int main()
   }
   catch (exception& e)
   {
-    cout << "Error: " << e.what() << '.' << endl;
+    std::cout << "Error: " << e.what() << '.' << "\n";
     return -1;
   }
 }

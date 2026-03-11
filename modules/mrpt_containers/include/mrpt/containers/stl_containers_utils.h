@@ -108,7 +108,7 @@ void printSTLContainerOfContainers(const T& t)
   int i = 0;
   for (typename T::const_iterator it = t.begin(); it != t.end(); ++i, ++it)
   {
-    cout << "List " << i + 1 << "/" << t.size() << endl << "\t";
+    std::cout << "List " << i + 1 << "/" << t.size() << endl << "\t";
     printSTLContainer(*it);
   }
 }

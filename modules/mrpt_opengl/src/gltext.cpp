@@ -77,8 +77,10 @@ struct Font
       const mrpt::math::TPoint2Df& cursor) const
   {
     const Char* ch = findChar(c);
-    if (!ch || !ch->numTriangles) return;
-    // triangles
+    if (!ch || !ch->numTriangles)
+    {
+      return;
+    }  // triangles
     const Point* vs = vertices + ch->vertexOffset;
     for (int i = 0; i < ch->numTriangles / 3; i++)
     {
@@ -102,8 +104,10 @@ struct Font
       const mrpt::math::TPoint2Df& cursor) const
   {
     const Char* ch = findChar(c);
-    if (!ch || !ch->numOutlines) return;
-    // lines
+    if (!ch || !ch->numOutlines)
+    {
+      return;
+    }  // lines
     const Point* vs = vertices + ch->vertexOffset;
     for (int i = 0; i < ch->numOutlines / 2; i++)
     {

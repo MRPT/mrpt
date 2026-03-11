@@ -149,10 +149,10 @@ void TestRANSAC()
       3,  // Minimum set of points
       best_inliers, best_model);
 
-  cout << "Computation time: " << tictac.Tac() * 1000.0 << " ms\n";
+  std::cout << "Computation time: " << tictac.Tac() * 1000.0 << " ms\n";
 
-  cout << "RANSAC finished: Best model: " << best_model.coefs[0] << " " << best_model.coefs[1]
-       << " " << best_model.coefs[2] << " " << best_model.coefs[3] << endl;
+  std::cout << "RANSAC finished: Best model: " << best_model.coefs[0] << " " << best_model.coefs[1]
+            << " " << best_model.coefs[2] << " " << best_model.coefs[3] << "\n";
 
   // Show GUI
   // --------------------------
@@ -199,7 +199,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

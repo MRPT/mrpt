@@ -54,8 +54,8 @@ void Test_SoG_Merge()
   m.mean = CPose2D(2, 0, 20.0_deg);
   pdf.push_back(m);
 
-  cout << "Initial PDF: mean: " << pdf.getMeanVal() << endl;
-  cout << pdf.getCovariance() << endl << endl;
+  std::cout << "Initial PDF: mean: " << pdf.getMeanVal() << "\n";
+  std::cout << pdf.getCovariance() << endl << "\n";
 
 #if MRPT_HAS_WXWIDGETS
   CDisplayWindow3D win_before("Before merge");
@@ -82,12 +82,12 @@ void Test_SoG_Merge()
 #endif
   }
 
-  cout << "Merging...";
+  std::cout << "Merging...";
   pdf.mergeModes(0.9, true);
-  cout << " # modes after: " << pdf.size() << endl;
+  std::cout << " # modes after: " << pdf.size() << "\n";
 
-  cout << "Final PDF: mean: " << pdf.getMeanVal() << endl;
-  cout << pdf.getCovariance() << endl << endl;
+  std::cout << "Final PDF: mean: " << pdf.getMeanVal() << "\n";
+  std::cout << pdf.getCovariance() << endl << "\n";
 
   {
     Scene scene;
@@ -110,7 +110,8 @@ void Test_SoG_Merge()
   }
 
 #if MRPT_HAS_WXWIDGETS
-  cout << "Push any key to exit..." << endl;
+  std::cout << "Push any key to exit..."
+            << "\n";
   mrpt::system::os::getch();
 #endif
 }
@@ -128,7 +129,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

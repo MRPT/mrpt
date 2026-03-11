@@ -403,8 +403,10 @@ void wxGenericPen::SetDashes(int number_of_dashes, const wxDash *dash)
     M_GPENDATA->m_dash_count = 0;
   }
 
-  if (!dash) return;
-
+  if (!dash)
+  {
+    return;
+  }
   M_GPENDATA->m_dash_count = number_of_dashes;
   M_GPENDATA->m_dash = (wxDash *)malloc(number_of_dashes * sizeof(wxDash));
   memcpy(M_GPENDATA->m_dash, dash, number_of_dashes * sizeof(wxDash));

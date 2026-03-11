@@ -85,7 +85,8 @@ void TestLaser2Imgs()
 
     // Load action/observation pair from the rawlog:
     // --------------------------------------------------
-    cout << "Reading act/oct pair from rawlog..." << endl;
+    std::cout << "Reading act/oct pair from rawlog..."
+              << "\n";
     auto arch = mrpt::serialization::archiveFrom(rawlogFile);
     if (!CRawlog::readActionObservationPair(arch, action, observations, rawlogEntry))
       break;  // file EOF
@@ -195,7 +196,7 @@ int main(int argc, char** argv)
   }
   catch (exception& e)
   {
-    cerr << "EXCEPTION: " << e.what() << endl;
+    cerr << "EXCEPTION: " << e.what() << "\n";
     return -1;
   }
   catch (...)

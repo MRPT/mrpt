@@ -142,8 +142,10 @@ bool CVoxelMap::internal_insertObservation_Pts(
           const int dist = mrpt::max3(
               std::abs(c.x - idxCurObs.x), std::abs(c.y - idxCurObs.y),
               std::abs(c.z - idxCurObs.z));
-          if (dist < distInGrid) return;
-
+          if (dist < distInGrid)
+          {
+            return;
+          }
           // delete:
           // Bonxai doesn't seem to have an erase()...
           v.occupancyRef() = {};  // reset to "unseen voxel"
@@ -215,7 +217,10 @@ double CVoxelMap::internal_computeObservationLikelihood(
   {
     double probOcc = 0;
     const bool voxelExists = getPointOccupancy(x, y, z, probOcc);
-    if (!voxelExists) return;
+    if (!voxelExists)
+    {
+      return;
+    }
     log_lik += probOcc;
   };
 

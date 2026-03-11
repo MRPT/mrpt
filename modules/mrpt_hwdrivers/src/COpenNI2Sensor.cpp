@@ -182,7 +182,7 @@ void COpenNI2Sensor::doProcess()
 void COpenNI2Sensor::loadConfig_sensorSpecific(
     const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
 {
-  cout << "COpenNI2Sensor::loadConfig_sensorSpecific...\n";
+  std::cout << "COpenNI2Sensor::loadConfig_sensorSpecific...\n";
 
   m_sensorPoseOnRobot.setFromValues(
       configSource.read_float(iniSection, "pose_x", 0),
@@ -230,7 +230,7 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 
   // Id:
   m_user_device_number = configSource.read_int(iniSection, "device_number", m_user_device_number);
-  // cout << "LOAD m_user_device_number " << m_user_device_number << "\n";
+  // std::cout << "LOAD m_user_device_number " << m_user_device_number << "\n";
   m_serial_number = configSource.read_int(iniSection, "serial_number", m_serial_number);
 
   m_grab_image = configSource.read_bool(iniSection, "grab_image", m_grab_image);

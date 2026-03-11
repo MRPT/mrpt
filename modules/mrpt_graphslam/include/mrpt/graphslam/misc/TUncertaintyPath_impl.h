@@ -112,7 +112,7 @@ TUncertaintyPath<GRAPH_T>& TUncertaintyPath<GRAPH_T>::operator+=(const self_t& o
       "nodes");
 
   //////// TODO Remove these - >>>>>>>>>>>>>>>>>>>>>
-  // cout << string(20, '-') << "Aggregating 2 paths.."
+  // std::cout << string(20, '-') << "Aggregating 2 paths.."
   //<< string(20, '-') << "\n";
   // this->dumpToConsole(); other.dumpToConsole();
   ////// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
@@ -125,9 +125,9 @@ TUncertaintyPath<GRAPH_T>& TUncertaintyPath<GRAPH_T>::operator+=(const self_t& o
       this->nodes_traversed.end(), other.nodes_traversed.begin() + 1, other.nodes_traversed.end());
 
   ////// TODO Remove these - >>>>>>>>>>>>>>>>>>>>>
-  // cout << std::string(10, '%') << endl << "AFTER Aggregation..." << "\n";
+  // std::cout << std::string(10, '%') << endl << "AFTER Aggregation..." << "\n";
   // this->dumpToConsole();
-  // cout << string(50, '-') << "\n";
+  // std::cout << string(50, '-') << "\n";
   // mrpt::system::pause();
   ////// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
 

@@ -43,7 +43,8 @@ int main(int argc, char** argv)
   // Load configuration:
   if (mrpt::system::fileExists("./CONFIG_MOXmodel.ini"))
   {
-    cout << "Using configuration from './CONFIG_MOXmodel.ini'" << endl;
+    std::cout << "Using configuration from './CONFIG_MOXmodel.ini'"
+              << "\n";
     CConfigFile conf("./CONFIG_MOXmodel.ini");
 
     rawlog_file = conf.read_string("", "rawlog_file", "", true);
@@ -70,16 +71,17 @@ int main(int argc, char** argv)
   }
   else
   {
-    cout << "Configuration file (ini) cannot be found\n" << endl;
+    std::cout << "Configuration file (ini) cannot be found\n"
+              << "\n";
     // If you are in VisualStudio, assure that the working directory in the
     // project properties is correctly set
     return -1;
   }
 
   // Open Rawlogs
-  cout << "Processing Rawlog " << rawlog_file << endl;
-  cout << "Obtaining MOXmodel from " << sensorLabel << "(" << enoseID << ") - sensor " << sensorType
-       << endl;
+  std::cout << "Processing Rawlog " << rawlog_file << "\n";
+  std::cout << "Obtaining MOXmodel from " << sensorLabel << "(" << enoseID << ") - sensor "
+            << sensorType << "\n";
   CCompressedInputStream file_input;
   CCompressedOutputStream file_output;
 
@@ -87,7 +89,8 @@ int main(int argc, char** argv)
   file_output.open("MOX_model_output.rawlog");
 
   if (!file_input.fileOpenCorrectly() || !file_output.fileOpenCorrectly())
-    cout << "Error opening rawlog file" << endl;
+    std::cout << "Error opening rawlog file"
+              << "\n";
 
   // Process rawlog
   bool read = true;
@@ -142,9 +145,9 @@ int main(int argc, char** argv)
               else  // Sensor especified not found, compute
               // default mean value
               {
-                cout << "sensorType not found. Computing the "
-                        "mean value"
-                     << endl;
+                std::cout << "sensorType not found. Computing the "
+                             "mean value"
+                          << "\n";
                 raw_reading = math::mean(obs->m_readings[enoseID].readingsVoltage);
               }
             }
@@ -187,7 +190,7 @@ int main(int argc, char** argv)
     }
     catch (exception& e)
     {
-      cout << "Exception: " << e.what() << endl;
+      std::cout << "Exception: " << e.what() << "\n";
       file_input.close();
       file_output.close();
       read = false;

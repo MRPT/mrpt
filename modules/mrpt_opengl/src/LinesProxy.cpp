@@ -29,8 +29,10 @@ void LinesProxy::compile(const CVisualObject* sourceObj)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
-
+  if (!sourceObj)
+  {
+    return;
+  }
   // Extract line rendering parameters
   extractLineParams(sourceObj);
 
@@ -110,8 +112,10 @@ void LinesProxy::extractLineParams(const CVisualObject* sourceObj)
 void LinesProxy::uploadLineUniforms(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!rc.shader) return;
-
+  if (!rc.shader)
+  {
+    return;
+  }
   // Line width might also be a uniform in some shader implementations
   if (rc.shader->hasUniform("lineWidth"))
   {

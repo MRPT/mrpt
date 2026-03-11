@@ -556,8 +556,10 @@ void CFormChangeSensorPositions::OnbtnPickInputClick(wxCommandEvent& event)
         "(*.*)|*.*") /* wildcard */,
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   // Save the path
   WX_START_TRY
   iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));
@@ -580,8 +582,10 @@ void CFormChangeSensorPositions::OnbtnPickOutClick(wxCommandEvent& event)
         "(*.*)|*.*") /* wildcard */,
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   // Save the path
   WX_START_TRY
   iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));

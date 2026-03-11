@@ -241,8 +241,8 @@ void CImageGrabber_FlyCapture2::open(
 #if MRPT_HAS_FLYCAPTURE2
   FlyCapture2::Error fe;
 
-  cout << "[CImageGrabber_FlyCapture2::open] FlyCapture2 version: "
-       << CImageGrabber_FlyCapture2::getFC2version() << "\n";
+  std::cout << "[CImageGrabber_FlyCapture2::open] FlyCapture2 version: "
+            << CImageGrabber_FlyCapture2::getFC2version() << "\n";
 
   this->close();
   this->m_options = options;
@@ -277,7 +277,7 @@ void CImageGrabber_FlyCapture2::open(
   m_camera = new FlyCapture2::Camera();
   m_camera_info = new FlyCapture2::CameraInfo();
 
-  cout << mrpt::format(
+  std::cout << mrpt::format(
       "[CImageGrabber_FlyCapture2::open] Opening camera with GUID= "
       "%08X-%08X-%08X-%08X...\n",
       guid.value[0], guid.value[1], guid.value[2], guid.value[3]);
@@ -288,7 +288,7 @@ void CImageGrabber_FlyCapture2::open(
 
   const FlyCapture2::CameraInfo* ci = FC2_CAM_INFO;
 
-  cout << mrpt::format(
+  std::cout << mrpt::format(
       "[CImageGrabber_FlyCapture2::open] Camera connected ok:\n"
       " Serial number - %u\n"
       " Camera model - %s\n"
@@ -379,7 +379,7 @@ void CImageGrabber_FlyCapture2::open(
     FlyCapture2::FrameRate curVidRate;
     fe = FC2_CAM->GetVideoModeAndFrameRate(&curVidMode, &curVidRate);
     if (fe == PGRERROR_OK)
-      cout << mrpt::format(
+      std::cout << mrpt::format(
           "[CImageGrabber_FlyCapture2::open] Current camera mode is %s, "
           "current rate is %s.\n",
           fc2_defnum2str<FlyCapture2::VideoMode>(curVidMode),

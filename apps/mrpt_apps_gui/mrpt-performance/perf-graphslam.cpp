@@ -34,7 +34,7 @@ double graphslam_levmarq_solve(int nVertices, int N)
   GRAPH_TYPE graph;
   GraphSlamLevMarqTest<GRAPH_TYPE>::create_ring_path(graph, nVertices);
 
-  // cout << graph.nodeCount() << " nodes, " << graph.edgeCount() << "
+  // std::cout << graph.nodeCount() << " nodes, " << graph.edgeCount() << "
   // edges\n";
 
   mrpt::containers::yaml params;

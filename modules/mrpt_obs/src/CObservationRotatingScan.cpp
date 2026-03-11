@@ -459,8 +459,10 @@ bool RotScan::fromGeneric(const mrpt::obs::CObservation& o)
 void RotScan::load_impl() const
 {
   // Already loaded?
-  if (!isExternallyStored() || (isExternallyStored() && !rangeImage.empty())) return;
-
+  if (!isExternallyStored() || (isExternallyStored() && !rangeImage.empty()))
+  {
+    return;
+  }
   const auto abs_filename = mrpt::io::lazy_load_absolute_path(m_external_file);
   ASSERT_FILE_EXISTS_(abs_filename);
 
@@ -488,8 +490,10 @@ void RotScan::load_impl() const
 void RotScan::unload() const
 {
   MRPT_START
-  if (!isExternallyStored() || organizedPoints.empty()) return;
-
+  if (!isExternallyStored() || organizedPoints.empty())
+  {
+    return;
+  }
   // Free memory, saving to the file if it doesn't exist:
   const auto abs_filename = mrpt::io::lazy_load_absolute_path(m_external_file);
 

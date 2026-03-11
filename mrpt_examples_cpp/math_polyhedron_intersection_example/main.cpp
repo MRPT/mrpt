@@ -219,12 +219,12 @@ int main()
   }
   catch (exception& e)
   {
-    cout << "Error: " << e.what() << '.' << endl;
+    std::cout << "Error: " << e.what() << '.' << "\n";
     return -1;
   }
   catch (...)
   {
-    cout << "Unknown Error.\n";
+    std::cout << "Unknown Error.\n";
     return -1;
   }
 }

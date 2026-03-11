@@ -50,31 +50,32 @@ void TestGeometry3D()
 
   // TEST 1. Relative position L' of the landmark wrt the camera
   // --------------------------------------------------------------
-  cout << "L: " << L << endl;
-  cout << "R: " << R << endl;
-  cout << "C: " << C << endl;
-  cout << "R+C:" << (R + C) << endl;
-  // cout << (R+C).getHomogeneousMatrix();
+  std::cout << "L: " << L << "\n";
+  std::cout << "R: " << R << "\n";
+  std::cout << "C: " << C << "\n";
+  std::cout << "R+C:" << (R + C) << "\n";
+  // std::cout << (R+C).getHomogeneousMatrix();
 
   CPoint3D L2;
   CTicTac tictac;
   tictac.Tic();
   size_t i, N = 10000;
   for (i = 0; i < N; i++) L2 = L - (R + C);
-  cout << "Computation in: " << 1e6 * tictac.Tac() / ((double)N) << " us" << endl;
+  std::cout << "Computation in: " << 1e6 * tictac.Tac() / ((double)N) << " us"
+            << "\n";
 
-  cout << "L': " << L2 << endl;
+  std::cout << "L': " << L2 << "\n";
 
   // TEST 2. Reconstruct the landmark position:
   // --------------------------------------------------------------
   CPoint3D L3 = R + C + L2;
-  cout << "R(+)C(+)L' = " << L3 << endl;
-  cout << "Should be equal to L = " << L << endl;
+  std::cout << "R(+)C(+)L' = " << L3 << "\n";
+  std::cout << "Should be equal to L = " << L << "\n";
 
   // TEST 3. Distance from the camera to the landmark
   // --------------------------------------------------------------
-  cout << "|(R(+)C)-L|= " << (R + C).distanceTo(L) << endl;
-  cout << "|L-(R(+)C)|= " << (R + C).distanceTo(L) << endl;
+  std::cout << "|(R(+)C)-L|= " << (R + C).distanceTo(L) << "\n";
+  std::cout << "|L-(R(+)C)|= " << (R + C).distanceTo(L) << "\n";
 }
 
 // ------------------------------------------------------
@@ -90,7 +91,7 @@ int main()
   }
   catch (exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

@@ -52,12 +52,12 @@ void TestVoxelMap()
     pt = mrpt::math::TPoint3D(1, 1, 1);
     is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
     std::cout << "pt: " << pt << " is mapped?: " << (is_mapped ? "YES" : "NO")
-              << " occupancy: " << occup << std::endl;
+              << " occupancy: " << occup << "\n";
 
     pt = mrpt::math::TPoint3D(-1, -1, 1);
     is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
     std::cout << "pt: " << pt << " is mapped?: " << (is_mapped ? "YES" : "NO")
-              << " occupancy: " << occup << std::endl;
+              << " occupancy: " << occup << "\n";
   }
 
   // Insert 2D scan:
@@ -99,7 +99,8 @@ void TestVoxelMap()
     win.unlockAccess3DScene();
   }
 
-  std::cout << "Close the window to exit" << std::endl;
+  std::cout << "Close the window to exit"
+            << "\n";
 
   bool update_msg = true;
 
@@ -165,7 +166,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cout << "Exception: " << e.what() << std::endl;
+    std::cout << "Exception: " << e.what() << "\n";
     return -1;
   }
 }

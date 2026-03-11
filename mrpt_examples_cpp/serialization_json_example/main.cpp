@@ -46,7 +46,7 @@ void WriteAndReadExample()
   ss << arch;
 
   // also, print to cout for illustration purposes:
-  std::cout << arch << std::endl;
+  std::cout << arch << "\n";
 
   // --------------------
   // JSON Deserialization
@@ -66,7 +66,7 @@ void WriteAndReadExample()
   mrpt::poses::CPose2D p2;
   arch2["pose"].readTo(p2);
 
-  std::cout << "read pose:" << p2.asString() << std::endl;
+  std::cout << "read pose:" << p2.asString() << "\n";
 }
 //! [example]
 
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)
@@ -108,7 +108,7 @@ void test()
 
 	std::stringstream ss;
 	ss << val;
-	std::cout << val << std::endl;
+	std::cout << val << "\n";
 }
 
 //! [example_raw]

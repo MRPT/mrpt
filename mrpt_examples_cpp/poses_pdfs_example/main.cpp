@@ -75,8 +75,9 @@ void TestPosePDFOperations()
   p.bayesianFusion(p1, p2);
   p.saveToTextFile("BayesFusion.txt");
 
-  cout << "Bayesian fusing of p1 & p2: " << endl;
-  cout << " MEAN: " << p.mean << " COV:" << endl << p.cov << endl;
+  std::cout << "Bayesian fusing of p1 & p2: "
+            << "\n";
+  std::cout << " MEAN: " << p.mean << " COV:" << endl << p.cov << "\n";
 }
 
 // ------------------------------------------------------
@@ -95,9 +96,9 @@ void TestPoseComposition()
 
   C = A - B;
 
-  cout << "A:\n" << A << endl;
-  cout << "B:\n" << B << endl;
-  cout << "C:\n" << C << endl;
+  std::cout << "A:\n" << A << "\n";
+  std::cout << "B:\n" << B << "\n";
+  std::cout << "C:\n" << C << "\n";
 
   // ---------------------------------------------------------------
   CPose2D p(0.5f, 0.2f, DEG2RAD(10.0f));
@@ -112,24 +113,24 @@ void TestPoseComposition()
   CPose2D x(1, 0, (float)0.0_deg);
   CPose2D y(1, 0, (float)45.0_deg);
 
-  cout << "a= " << a << endl;
-  cout << "b= " << b << endl;
+  std::cout << "a= " << a << "\n";
+  std::cout << "b= " << b << "\n";
 
   // ------------------------------------------
   tictac.Tic();
   D = a + b;
   printf("%f us\t", tictac.Tac() * 1e6);
-  cout << "a+b= " << D << endl;
+  std::cout << "a+b= " << D << "\n";
   // ------------------------------------------
   tictac.Tic();
   D = b - a;
   printf("%f us\t", tictac.Tac() * 1e6);
-  cout << "b-a= " << D << endl;
+  std::cout << "b-a= " << D << "\n";
   // ------------------------------------------
   tictac.Tic();
   D = a + (b - a);
   printf("%f us\t", tictac.Tac() * 1e6);
-  cout << "a + (b-a)= " << D << endl;
+  std::cout << "a + (b-a)= " << D << "\n";
   // ------------------------------------------
 
   /**
@@ -140,19 +141,19 @@ void TestPoseComposition()
    * https://reference.mrpt.org/stable/_c_poses2_d_sequence_8h_source.html
    */
   seq.appendPose(y);
-  cout << "last= " << seq.absolutePoseAfterAll() << endl;
+  std::cout << "last= " << seq.absolutePoseAfterAll() << "\n";
   seq.appendPose(y);
-  cout << "last= " << seq.absolutePoseAfterAll() << endl;
+  std::cout << "last= " << seq.absolutePoseAfterAll() << "\n";
   seq.appendPose(x);
-  cout << "last= " << seq.absolutePoseAfterAll() << endl;
+  std::cout << "last= " << seq.absolutePoseAfterAll() << "\n";
 
   // play the poses from the beginning using the getPose method
   seq.getPose(0, D);
-  cout << "Pose[0] in seq.= " << D << endl;
+  std::cout << "Pose[0] in seq.= " << D << "\n";
   seq.getPose(1, D);
-  cout << "Pose[1] in seq.= " << D << endl;
+  std::cout << "Pose[1] in seq.= " << D << "\n";
   seq.getPose(2, D);
-  cout << "Pose[2] in seq.= " << D << endl;
+  std::cout << "Pose[2] in seq.= " << D << "\n";
 }
 
 // ------------------------------------------------------
@@ -169,7 +170,7 @@ int main()
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
 }

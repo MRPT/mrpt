@@ -50,16 +50,16 @@ class Pose3DPDFGaussTests : public ::testing::Test
       double x, double y, double z, double yaw, double pitch, double roll, double std_scale)
   {
     CPose3DPDFGaussian p6pdf = generateRandomPose3DPDF(x, y, z, yaw, pitch, roll, std_scale);
-    // cout << "p6pdf: " << p6pdf << "\n";
+    // std::cout << "p6pdf: " << p6pdf << "\n";
     CPose3DQuatPDFGaussian p7pdf = CPose3DQuatPDFGaussian(p6pdf);
-    // cout << "p7pdf: " << p7pdf << "\n";
+    // std::cout << "p7pdf: " << p7pdf << "\n";
     CPose3DPDFGaussian p6pdf_recov = CPose3DPDFGaussian(p7pdf);
-    // cout << "p6pdf_recov: " << p6pdf_recov  << "\n";
+    // std::cout << "p6pdf_recov: " << p6pdf_recov  << "\n";
 
     const double val_mean_error =
         (p6pdf_recov.mean.asVectorVal() - p6pdf.mean.asVectorVal()).sum_abs();
     const double cov_mean_error = (p6pdf_recov.cov - p6pdf.cov).sum_abs();
-    // cout << "cov err: " << cov_mean_error << " " << "val_mean_error: " <<
+    // std::cout << "cov err: " << cov_mean_error << " " << "val_mean_error: " <<
     // val_mean_error << "\n";
     EXPECT_TRUE(val_mean_error < 1e-8);
     EXPECT_TRUE(cov_mean_error < 1e-8);

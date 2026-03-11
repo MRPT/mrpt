@@ -284,7 +284,10 @@ void CHeightGridMap2D_MRF::TInsertionOptions::loadFromConfigFile(
 void CHeightGridMap2D_MRF::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
-  if (!genericMapParams.enableSaveAs3DObject) return;
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   CRandomFieldGridMap2D::getVisualizationInto(o);
   MRPT_END
 }
@@ -296,7 +299,10 @@ void CHeightGridMap2D_MRF::getAs3DObject(
     viz::CSetOfObjects& meanObj, viz::CSetOfObjects& varObj) const
 {
   MRPT_START
-  if (!genericMapParams.enableSaveAs3DObject) return;
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   CRandomFieldGridMap2D::getAs3DObject(meanObj, varObj);
   MRPT_END
 }

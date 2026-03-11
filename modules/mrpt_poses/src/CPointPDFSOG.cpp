@@ -396,8 +396,10 @@ void CPointPDFSOG::normalizeWeights()
 {
   MRPT_START
 
-  if (!m_modes.size()) return;
-
+  if (!m_modes.size())
+  {
+    return;
+  }
   CListGaussianModes::iterator it;
   double maxW = m_modes[0].log_w;
   for (it = m_modes.begin(); it != m_modes.end(); ++it) maxW = max(maxW, it->log_w);

@@ -789,8 +789,10 @@ void wxMatrix2D::Normalize(double sum)
 
   double current_sum = 0.0;
   for (i = 0; i < size; ++i) current_sum += data[i];
-  if (current_sum == 0.0) return;
-
+  if (current_sum == 0.0)
+  {
+    return;
+  }
   current_sum /= sum;
   for (i = 0; i < size; ++i) data[i] /= current_sum;
 }

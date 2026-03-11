@@ -32,7 +32,8 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 {
   try
   {
-    std::cout << "[thread_reader ID:" << std::this_thread::get_id() << "] Started." << std::endl;
+    std::cout << "[thread_reader ID:" << std::this_thread::get_id() << "] Started."
+              << "\n";
 
     // Simple read commands:
     size_t len = 0;
@@ -40,14 +41,14 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
     read_pipe.Read(&len, sizeof(len));
     read_pipe.Read(buf, len);
     buf[len] = 0;
-    cout << "RX: " << buf << endl;
+    std::cout << "RX: " << buf << "\n";
 
     // Read MRPT object from a pipe:
     // *Note*: If the object class is known in advance, one can avoid smart
     // pointers with ReadObject(&existingObj)
     auto arch = archiveFrom(read_pipe);
 #if !defined(HAS_BROKEN_CLANG_STD_VISIT)
-    auto doprint = [](auto& pose) { cout << "RX pose: " << pose << endl; };
+    auto doprint = [](auto& pose) { std::cout << "RX pose: " << pose << "\n"; };
     auto var = arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
     std::visit(doprint, var);
     var = arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
@@ -61,7 +62,7 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
   }
   catch (const std::exception& e)
   {
-    cerr << e.what() << endl;
+    cerr << e.what() << "\n";
   }
 }
 
@@ -69,7 +70,8 @@ void thread_writer(CPipeWriteEndPoint& write_pipe)
 {
   try
   {
-    std::cout << "[thread_writer ID:" << std::this_thread::get_id() << "] Started." << std::endl;
+    std::cout << "[thread_writer ID:" << std::this_thread::get_id() << "] Started."
+              << "\n";
 
     // Simple write commands:
     const char* str = "Hello world!";
@@ -92,7 +94,7 @@ void thread_writer(CPipeWriteEndPoint& write_pipe)
   }
   catch (const std::exception& e)
   {
-    cerr << e.what() << endl;
+    cerr << e.what() << "\n";
   }
 }
 
@@ -134,7 +136,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

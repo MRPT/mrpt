@@ -1832,7 +1832,7 @@ void slamdemoFrame::executeOneStep()
     catch (...)
     {
     }
-    cerr << endl << mrpt::exception_to_str(e) << endl;
+    cerr << endl << mrpt::exception_to_str(e) << "\n";
     wxMessageBox(mrpt::exception_to_str(e), _("Exception"));
   }
 }
@@ -1844,8 +1844,10 @@ void slamdemoFrame::OntimSimulTrigger(wxTimerEvent& event)
 {
   static CTicTac tictac;
 
-  if (!ToolBar1->GetToolState(ID_BTNRUN)) return;
-
+  if (!ToolBar1->GetToolState(ID_BTNRUN))
+  {
+    return;
+  }
   // Simulate one step:
   tictac.Tic();
 
@@ -2004,7 +2006,10 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
         _("Text files (*.txt)|*.txt|All files (*.*)|*.*") /* wildcard */,
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     string filName(dialog.GetPath().mb_str());
 
     Xkk.saveToTextFile(filName);
@@ -2016,7 +2021,10 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
         _("Text files (*.txt)|*.txt|All files (*.*)|*.*") /* wildcard */,
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     string filName(dialog.GetPath().mb_str());
 
     Pkk.saveToTextFile(filName);
@@ -2032,7 +2040,10 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
           "(*.*)|*.*") /* wildcard */,
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     string filName(dialog.GetPath().mb_str());
 
     // Save as 3D objects:
@@ -2068,7 +2079,10 @@ void slamdemoFrame::OnmnuSaveLastDASelected(wxCommandEvent& event)
         _("Text files (*.txt)|*.txt|All files (*.*)|*.*") /* wildcard */,
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     string filName(dialog.GetPath().mb_str());
 
     mrpt::io::vectorToTextFile(da.predictions_IDs, filName);
@@ -2080,7 +2094,10 @@ void slamdemoFrame::OnmnuSaveLastDASelected(wxCommandEvent& event)
         _("Text files (*.txt)|*.txt|All files (*.*)|*.*") /* wildcard */,
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     string filName(dialog.GetPath().mb_str());
 
     da.Y_pred_means.saveToTextFile(filName);
@@ -2092,7 +2109,10 @@ void slamdemoFrame::OnmnuSaveLastDASelected(wxCommandEvent& event)
         _("Text files (*.txt)|*.txt|All files (*.*)|*.*") /* wildcard */,
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     string filName(dialog.GetPath().mb_str());
 
     da.Y_pred_covs.saveToTextFile(filName);
@@ -2114,7 +2134,10 @@ void slamdemoFrame::OnmnuItemSaveRawlogSelected(wxCommandEvent& event)
         _("Rawlogs (*.rawlog)|*.rawlog|All files (*.*)|*.*") /* wildcard */,
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     const string filName(dialog.GetPath().mb_str());
 
     if (!m_rawlog_out_file.open(filName))

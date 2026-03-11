@@ -94,20 +94,20 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
         obsGas = dynamic_cast<CObservationGasSensors*>(o.get());
         if (obsGas->m_readings.size() < 1)
         {
-          cout << "Empty Gas Sensor"
-               << "\n";
+          std::cout << "Empty Gas Sensor"
+                    << "\n";
           obsGas = nullptr;
           return true;  // Nothing to do...
         }
 
         if (obsGas->m_readings[0].readingsVoltage.size() < 1)
         {
-          cout << "Empty Gas Obs"
-               << "\n";
+          std::cout << "Empty Gas Obs"
+                    << "\n";
           obsGas = nullptr;
           return true;  // Nothing to do...
         }
-        // cout << "new observations has: "<<
+        // std::cout << "new observations has: "<<
         // obsGas->m_readings[0].readingsVoltage.size() << " elements."
         // << "\n";
         gasConcentration = obsGas->m_readings[0].readingsVoltage[0];

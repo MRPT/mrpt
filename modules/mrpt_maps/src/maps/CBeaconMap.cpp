@@ -1027,8 +1027,10 @@ void CBeaconMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
 
-  if (!genericMapParams.enableSaveAs3DObject) return;
-
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   // ------------------------------------------------
   //  Add the XYZ corner for the current area:
   // ------------------------------------------------

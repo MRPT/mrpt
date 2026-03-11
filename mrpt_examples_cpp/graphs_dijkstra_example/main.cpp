@@ -115,8 +115,9 @@ void TestDijkstra()
 
   CMyDijkstra myDijkstra(graph_links, SOURCE_NODE, &myDijkstraWeight, {}, maxTopoDistance);
 
-  cout << "Dijkstra took " << tictac.Tac() * 1e3 << " ms for " << graph_links.edges.size()
-       << " edges." << endl;
+  std::cout << "Dijkstra took " << tictac.Tac() * 1e3 << " ms for " << graph_links.edges.size()
+            << " edges."
+            << "\n";
 
   // Demo of getting the tree representation of
   //  the graph & visit its nodes:
@@ -124,22 +125,22 @@ void TestDijkstra()
   const CMyDijkstra::tree_graph_t graphAsTree = myDijkstra.getTreeGraph();
 
   // Text representation of the tree:
-  cout << "TREE:\n" << graphAsTree.getAsTextDescription() << endl;
+  std::cout << "TREE:\n" << graphAsTree.getAsTextDescription() << "\n";
 
   auto lmb = [&]([[maybe_unused]] const TNodeID parent,
                  const CMyDijkstra::tree_graph_t::TEdgeInfo& edge_to_child,
                  const size_t depth_level)
   {
-    cout << string(depth_level * 3, ' ');
-    cout << edge_to_child.id << endl;
+    std::cout << string(depth_level * 3, ' ');
+    std::cout << edge_to_child.id << "\n";
   };
 
-  cout << "Depth-first traverse of graph:\n";
-  cout << SOURCE_NODE << endl;
+  std::cout << "Depth-first traverse of graph:\n";
+  std::cout << SOURCE_NODE << "\n";
   graphAsTree.visitDepthFirst(SOURCE_NODE, lmb);
 
-  cout << endl << "Breadth-first traverse of graph:\n";
-  cout << SOURCE_NODE << endl;
+  std::cout << endl << "Breadth-first traverse of graph:\n";
+  std::cout << SOURCE_NODE << "\n";
   graphAsTree.visitBreadthFirst(SOURCE_NODE, lmb);
 
   // ----------------------------
@@ -157,13 +158,14 @@ void TestDijkstra()
     const auto dist = myDijkstra.getNodeDistanceToRoot(i);
     if (!dist.has_value())
     {
-      cout << "to " << i << "-> no path found.\n";
+      std::cout << "to " << i << "-> no path found.\n";
       continue;
     }
 
     const CMyDijkstra::edge_list_t path = myDijkstra.getShortestPathTo(i);
 
-    cout << "to " << i << " -> #steps= " << path.size() << " distance=" << dist.value() << endl;
+    std::cout << "to " << i << " -> #steps= " << path.size() << " distance=" << dist.value()
+              << "\n";
 
     win.setWindowTitle(format(
         "Dijkstra path %u->%u", static_cast<unsigned int>(SOURCE_NODE),
@@ -205,8 +207,8 @@ void TestDijkstra()
     win.plot(xs, ys, ".b7");
     win.axis_fit(true);
 
-    cout << "Press any key to show next shortest path, close window to "
-            "end...\n";
+    std::cout << "Press any key to show next shortest path, close window to "
+                 "end...\n";
     win.waitForKey();
   }
 
@@ -222,7 +224,7 @@ int main()
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

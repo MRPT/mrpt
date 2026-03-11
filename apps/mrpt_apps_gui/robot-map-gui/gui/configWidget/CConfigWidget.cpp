@@ -57,7 +57,10 @@ void CConfigWidget::openConfig()
       {
         QString configName =
             QFileDialog::getOpenFileName(this, tr("Open Config File"), "", tr("Files (*.ini)"));
-        if (configName.isEmpty()) return;
+        if (configName.isEmpty())
+        {
+          return;
+        }
         QFile file(configName);
         if (!file.open(QIODevice::ReadOnly)) throw "";
 
@@ -70,8 +73,10 @@ void CConfigWidget::saveConfig()
 {
   QString configName =
       QFileDialog::getSaveFileName(this, QObject::tr("Save Config File"), "", "Files (*.ini)");
-  if (configName.isEmpty()) return;
-
+  if (configName.isEmpty())
+  {
+    return;
+  }
   QFile file(configName);
   if (!file.open(QIODevice::WriteOnly))
   {
@@ -105,8 +110,10 @@ void CConfigWidget::addMap()
 void CConfigWidget::removeMap()
 {
   int currentRow = m_ui->m_config->currentRow();
-  if (currentRow <= 0) return;
-
+  if (currentRow <= 0)
+  {
+    return;
+  }
   QWidget* w = m_ui->stackedWidget->widget(currentRow);
   ASSERT_(w);
 
@@ -132,8 +139,10 @@ void CConfigWidget::removeMap()
 
 void CConfigWidget::currentConfigChanged(QListWidgetItem* current, QListWidgetItem* /*previous*/)
 {
-  if (!current) return;
-
+  if (!current)
+  {
+    return;
+  }
   m_ui->stackedWidget->setCurrentIndex(m_ui->m_config->currentRow());
 }
 

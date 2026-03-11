@@ -10,7 +10,7 @@
 
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/poses/CPoseInterpolatorBase.h>
-//#include <mrpt/math/eigen_extensions.h>
+// #include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/slerp.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
@@ -442,8 +442,10 @@ TInterpolatorMethod CPoseInterpolatorBase<DIM>::getInterpolationMethod() const
 template <size_t DIM>
 void CPoseInterpolatorBase<DIM>::filter(unsigned int component, unsigned int samples)
 {
-  if (m_path.empty()) return;
-
+  if (m_path.empty())
+  {
+    return;
+  }
   TPath aux;
 
   int ant, post;
@@ -498,7 +500,7 @@ void CPoseInterpolatorBase<DIM>::filter(unsigned int component, unsigned int sam
           particles.m_particles[i].d.roll = it2->second[5];
           break;
       }  // end switch
-    }    // end for it2
+    }  // end for it2
 
     mrpt::poses::CPose3D auxPose;
     particles.getMean(auxPose);

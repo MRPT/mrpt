@@ -59,7 +59,10 @@ CNTRIPClient::~CNTRIPClient()
 void CNTRIPClient::close()
 {
   m_upload_data.clear();
-  if (!m_thread_do_process) return;
+  if (!m_thread_do_process)
+  {
+    return;
+  }
   m_thread_do_process = false;
   m_sem_sock_closed.get_future().wait_for(500ms);
 }
@@ -169,7 +172,7 @@ void CNTRIPClient::private_ntrip_thread()
           // connection:
           stream_data.clear();
 
-          cout << format(
+          std::cout << format(
               "[CNTRIPClient] Trying to connect to %s:%i\n", m_args.server.c_str(), m_args.port);
 
           my_sock.connect(m_args.server, m_args.port);
@@ -204,7 +207,7 @@ void CNTRIPClient::private_ntrip_thread()
 
           // End:
           req += "\r\n";
-          // cout << req;
+          // std::cout << req;
 
           // Send:
           my_sock.sendString(req);
@@ -220,7 +223,7 @@ void CNTRIPClient::private_ntrip_thread()
         }
         catch (std::exception&)
         {
-          // cout << e.what() << "\n";
+          // std::cout << e.what() << "\n";
           connect_res = connError;
         }
 
@@ -384,8 +387,10 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 /** Enqueues a string to be sent back to the NTRIP server (e.g. GGA frames) */
 void CNTRIPClient::sendBackToServer(const std::string& data)
 {
-  if (data.empty()) return;
-
+  if (data.empty())
+  {
+    return;
+  }
   std::vector<uint8_t> d(data.size());
   std::memcpy(&d[0], &data[0], data.size());
   m_upload_data.appendData(d);

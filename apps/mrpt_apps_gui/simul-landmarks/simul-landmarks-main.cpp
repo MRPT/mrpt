@@ -209,14 +209,15 @@ int main(int argc, char** argv)
             getRandomGenerator().drawUniform(min_z, max_z));
 
         // Add:
-        LM.features.push_back(mrpt::vision::CFeature());
         LM.ID = uniqueIds++;
 
         landmarkMap.landmarks.push_back(LM);
       }
 
       if (nLandmarks)
-        cout << nLandmarks << " generated for the 'randomset' " << randomSetCount << endl;
+      {
+        std::cout << nLandmarks << " generated for the 'randomset' " << randomSetCount << "\n";
+      }
 
     } while (nLandmarks);
 
@@ -250,7 +251,7 @@ int main(int argc, char** argv)
 
     for (size_t i = 0; i < nSteps; i++, timeStamp += timeStep)
     {
-      cout << "Generating step " << i << "...\n";
+      std::cout << "Generating step " << i << "...\n";
       CSensoryFrame SF;
       CActionCollection acts;
 
@@ -316,7 +317,7 @@ int main(int argc, char** argv)
       GT_path.setSize(i + 1, 6);
       for (size_t k = 0; k < 6; k++) GT_path(i, k) = realPose[k];
 
-      cout << obs->sensedData.size() << " landmarks in sight";
+      std::cout << obs->sensedData.size() << " landmarks in sight";
 
       if (obs->sensedData.empty()) nWarningsNoSight++;
 
@@ -378,7 +379,7 @@ int main(int argc, char** argv)
       // Next pose:
       realPose = realPose + incPose3D;
 
-      cout << endl;
+      std::cout << "\n";
     }
 
     // Save the ground truth for the robot poses as well:
@@ -386,11 +387,12 @@ int main(int argc, char** argv)
         format("%s/%s_ground_truth_robot_path.txt", outDir.c_str(), outFile.c_str()),
         MATRIX_FORMAT_FIXED, true, "% Columns are: x(m) y(m) z(m) yaw(rad) pitch(rad) roll(rad)\n");
 
-    cout << "Data saved to directory: " << outDir << endl;
+    std::cout << "Data saved to directory: " << outDir << "\n";
 
     if (nWarningsNoSight)
-      cout << "WARNING: " << nWarningsNoSight
-           << " observations contained zero landmarks in the sensor range." << endl;
+      std::cout << "WARNING: " << nWarningsNoSight
+                << " observations contained zero landmarks in the sensor range."
+                << "\n";
 
     // Optionally, display in 3D:
     if (show_in_3d && GT_path.rows() > 1)
@@ -443,7 +445,8 @@ int main(int argc, char** argv)
       win.unlockAccess3DScene();
       win.forceRepaint();
 
-      cout << "Press any key or close the 3D window to exit." << endl;
+      std::cout << "Press any key or close the 3D window to exit."
+                << "\n";
       win.waitForKey();
 
 #endif  // MRPT_HAS_OPENGL_GLUT  && MRPT_HAS_WXWIDGETS

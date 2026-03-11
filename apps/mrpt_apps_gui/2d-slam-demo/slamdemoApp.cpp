@@ -83,7 +83,7 @@ bool slamdemoApp::doCommandLineProcess()
     app.add_flag("-r,--norun", norun, "Just load the config file, don't run it.");
 
     // Parse arguments:
-    CLI11_PARSE(app, argc, argv);
+    CLI11_PARSE(app, argc, static_cast<char**>(argv));
 
     if (cfgFil.empty())
     {
@@ -93,33 +93,31 @@ bool slamdemoApp::doCommandLineProcess()
 
     if (!mrpt::system::fileExists(cfgFil))
     {
-      cerr << "The indicated config file does not exist: " << cfgFil << endl;
+      cerr << "The indicated config file does not exist: " << cfgFil << "\n";
 #ifdef MRPT_OS_WINDOWS
       wxMessageBox(wxT("The indicated config file does not exist"), _("2d-slam-demo"));
 #endif
       return false;
     }
-    else
+
+    m_option_norun = norun;
+
+    if (!nogui)
     {
-      m_option_norun = norun;
+      win->Show();
+      SetTopWindow(win);
+    }
 
-      if (!nogui)
-      {
-        win->Show();
-        SetTopWindow(win);
-      }
-
-      try
-      {
-        DoBatchExperiments(cfgFil);
-      }
-      catch (const std::exception& e)
-      {
-        cerr << mrpt::exception_to_str(e) << endl;
+    try
+    {
+      DoBatchExperiments(cfgFil);
+    }
+    catch (const std::exception& e)
+    {
+      cerr << mrpt::exception_to_str(e) << "\n";
 #ifdef MRPT_OS_WINDOWS
-        wxMessageBox(mrpt::exception_to_str(e), _("2d-slam-demo"));
+      wxMessageBox(mrpt::exception_to_str(e), _("2d-slam-demo"));
 #endif
-      }
     }
 
     // return false to exit the program now and NOT proceed with the GUI.
@@ -128,7 +126,7 @@ bool slamdemoApp::doCommandLineProcess()
   }
   catch (const std::exception& e)
   {
-    cerr << "Error parsing command line: " << mrpt::exception_to_str(e) << endl;
+    cerr << "Error parsing command line: " << mrpt::exception_to_str(e) << "\n";
 #ifdef MRPT_OS_WINDOWS
     wxMessageBox(
         wxString("Error parsing command line: ") + mrpt::exception_to_str(e), _("2d-slam-demo"));

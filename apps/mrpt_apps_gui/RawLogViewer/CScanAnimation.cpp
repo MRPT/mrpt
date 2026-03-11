@@ -311,7 +311,7 @@ bool CScanAnimation::rebuild_view(bool forceRefreshView)
 
   if (forceRefreshView)
   {
-    m_plot3D->setCameraProjective(!cbViewOrtho->IsChecked());
+    m_plot3D->orbitCameraController().setProjectiveModel(!cbViewOrtho->IsChecked());
     m_plot3D->Refresh();
   }
 
@@ -714,8 +714,10 @@ void CScanAnimation::OnbtnSave3DScene(wxCommandEvent&)
       mrpt::format("view_%06i.3Dscene", static_cast<int>(slPos->GetValue())),
       "3Dscene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
   openGLSceneRef->saveToFile(dialog.GetPath().ToStdString());
 

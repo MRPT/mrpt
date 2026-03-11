@@ -85,7 +85,7 @@ void TestSkyBox()
     for (const auto& p : faceImages)
     {
       const auto fil = mrpt::format(textureFilePattern, p.second);
-      std::cout << "Loading face texture: " << fil << std::endl;
+      std::cout << "Loading face texture: " << fil << "\n";
 
       sb->assignImage(p.first, mrpt::img::CImage::LoadFromFile(fil));
     }
@@ -148,7 +148,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

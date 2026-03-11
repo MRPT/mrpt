@@ -432,9 +432,11 @@ std::string CPose2D::asString() const
 
 void CPose2D::update_cached_cos_sin() const
 {
-  if (m_cossin_uptodate) return;
-#ifdef HAVE_SINCOS
-  ::sincos(m_phi, &m_sinphi, &m_cosphi);
+  if (m_cossin_uptodate)
+  {
+    return;
+  }
+#ifdef HAVE_SINCOS ::sincos(m_phi, &m_sinphi, &m_cosphi);
 #else
   m_cosphi = ::cos(m_phi);
   m_sinphi = ::sin(m_phi);

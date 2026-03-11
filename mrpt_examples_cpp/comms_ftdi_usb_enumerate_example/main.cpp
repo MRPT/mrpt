@@ -43,10 +43,10 @@ void Test_EnumerateDevices()
 
     nConectedDevices = (unsigned long)lstDevs.size();
 
-    cout << "There are " << nConectedDevices << " USB devices - "
-         << mrpt::system::dateTimeToString(mrpt::Clock::now()) << endl;
+    std::cout << "There are " << nConectedDevices << " USB devices - "
+              << mrpt::system::dateTimeToString(mrpt::Clock::now()) << "\n";
 
-    for (size_t i = 0; i < nConectedDevices; i++) cout << lstDevs[i] << endl;
+    for (size_t i = 0; i < nConectedDevices; i++) std::cout << lstDevs[i] << "\n";
 
     printf("\nPRESS ANY KEY TO END THE PROGRAM...\n\n");
     cout.flush();
@@ -63,7 +63,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

@@ -49,12 +49,14 @@ void setupDirContents()
 
   if (!directoryExists(dir_name))
   {
-    cout << "Creating directory... " << endl;
+    std::cout << "Creating directory... "
+              << "\n";
     createDirectory(dir_name);
     f.open(dir_name + "/" + file_name, OpenMode::TRUNCATE);
     if (f.fileOpenCorrectly())
     {  // checking for errors...
-      cout << "file was opened correctly" << endl;
+      std::cout << "file was opened correctly"
+                << "\n";
       // CSerializable form (binary)
       f.printf("some random text ...\n");
       f.printf("some more random text.\n");
@@ -63,14 +65,17 @@ void setupDirContents()
     }
     else
     {
-      cout << "file was NOT opened successfully" << endl;
+      std::cout << "file was NOT opened successfully"
+                << "\n";
       return;
     }
   }
   else
   {
-    cout << "directory " << dir_name << " exists. " << endl;
-    cout << "removing directory altogether... " << endl;
+    std::cout << "directory " << dir_name << " exists. "
+              << "\n";
+    std::cout << "removing directory altogether... "
+              << "\n";
     deleteFilesInDirectory(
         dir_name,
         /* deleteDirectoryAsWell = */ true);
@@ -99,8 +104,10 @@ void renameDirContents()
 
   if (!directoryExists(dir_name))
   {
-    cout << "directory " << dir_name << " doesn't exist. " << endl;
-    cout << "Creating it.. " << endl;
+    std::cout << "directory " << dir_name << " doesn't exist. "
+              << "\n";
+    std::cout << "Creating it.. "
+              << "\n";
     success = createDirectory(dir_name);
     if (!success)
     {
@@ -129,12 +136,13 @@ void renameDirContents()
   }
 
   // finally rename the directory itself
-  cout << "Renaming directory " << dir_name << " to: " << dir_name << string_to_add << endl;
+  std::cout << "Renaming directory " << dir_name << " to: " << dir_name << string_to_add << "\n";
   string* err_msg = nullptr;  // flag for catching the error msg if any..
   success = renameFile(dir_name, dir_name + string_to_add, err_msg);
   if (success)
   {
-    cout << "Directory renaming was successful!" << endl;
+    std::cout << "Directory renaming was successful!"
+              << "\n";
   }
   else
   {
@@ -149,22 +157,27 @@ int main()
 {
   try
   {
-    cout << "Running setupDirContents fun..." << endl;
-    cout << "------------------------------" << endl;
+    std::cout << "Running setupDirContents fun..."
+              << "\n";
+    std::cout << "------------------------------"
+              << "\n";
     setupDirContents();
-    cout << "Press a key to continue..." << endl;
+    std::cout << "Press a key to continue..."
+              << "\n";
     // char c=
     getchar();
 
-    cout << "Running RenameDirContents fun..." << endl;
-    cout << "------------------------------" << endl;
+    std::cout << "Running RenameDirContents fun..."
+              << "\n";
+    std::cout << "------------------------------"
+              << "\n";
     renameDirContents();
 
     return 0;
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

@@ -703,43 +703,38 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
   gl_TPSpace_TP_obstacles->insert(gl_tp_obstacles);
 
   // Set camera:
-  m_plot->setCameraPointing(0.0f, 0.0f, 0.0f);
-  m_plot->setZoomDistance(10.0f);
-  m_plot->setElevationDegrees(90.0f);
-  m_plot->setAzimuthDegrees(-90.0f);
-  m_plot->setCameraProjective(false);
+  m_plot->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+  m_plot->orbitCameraController().setZoomDistance(10.0f);
+  m_plot->orbitCameraController().setElevationDegrees(90.0f);
+  m_plot->orbitCameraController().setAzimuthDegrees(-90.0f);
+  m_plot->orbitCameraController().setProjectiveModel(false);
 
-#if 0
-	// Fixed camera:
-	gl_view_TPSpace_cam = mrpt::viz::CCamera::Create();
-	gl_view_TPSpace->insert ( gl_view_TPSpace_cam );
-	gl_view_TPSpace_cam->setAzimuthDegrees( -90 );
-	gl_view_TPSpace_cam->setElevationDegrees(90);
-	gl_view_TPSpace_cam->setProjectiveModel( false );
-	gl_view_TPSpace_cam->setZoomDistance(2.1f);
-#else
   // User can rotate view:
-  m_plotTPSpace->setCameraPointing(0.0f, 0.0f, 0.0f);
-  m_plotTPSpace->setZoomDistance(2.1f);
-  m_plotTPSpace->setElevationDegrees(90.0f);
-  m_plotTPSpace->setAzimuthDegrees(-90.0f);
-  m_plotTPSpace->setCameraProjective(false);
-#endif
+  m_plotTPSpace->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+  m_plotTPSpace->orbitCameraController().setZoomDistance(2.1f);
+  m_plotTPSpace->orbitCameraController().setElevationDegrees(90.0f);
+  m_plotTPSpace->orbitCameraController().setAzimuthDegrees(-90.0f);
+  m_plotTPSpace->orbitCameraController().setProjectiveModel(false);
 
   // Populate list of existing PTGs:
   {
     // mrpt::nav::registerAllNavigationClasses();
     const std::vector<const mrpt::rtti::TRuntimeClassId*>& lstClasses =
         mrpt::rtti::getAllRegisteredClasses();
-    for (auto lstClasse : lstClasses)
+    for (const auto* classId : lstClasses)
     {
-      if (!lstClasse->derivedFrom("mrpt::nav::CParameterizedTrajectoryGenerator") ||
-          !mrpt::system::os::_strcmpi(
-              lstClasse->className, "mrpt::nav::CParameterizedTrajectoryGenerator"))
+      if (!classId->derivedFrom("mrpt::nav::CParameterizedTrajectoryGenerator") ||
+          0 == mrpt::system::os::_strcmpi(
+                   classId->className, "mrpt::nav::CParameterizedTrajectoryGenerator"))
+      {
         continue;
-      cbPTGClass->AppendString(lstClasse->className);
+      }
+      cbPTGClass->AppendString(classId->className);
     }
-    if (cbPTGClass->GetCount() > 0) cbPTGClass->SetSelection(0);
+    if (cbPTGClass->GetCount() > 0)
+    {
+      cbPTGClass->SetSelection(0);
+    }
   }
   {
     wxCommandEvent e;
@@ -777,8 +772,10 @@ void ptgConfiguratorframe::OnQuit(wxCommandEvent&) { Close(); }
 void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 {
   WX_START_TRY;
-  if (!ptg) return;
-
+  if (!ptg)
+  {
+    return;
+  }
   ptg->deinitialize();
 
   const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
@@ -813,8 +810,10 @@ void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
   WX_START_TRY;
 
   const int sel = cbPTGClass->GetSelection();
-  if (sel < 0) return;
-
+  if (sel < 0)
+  {
+    return;
+  }
   const std::string sSelPTG = std::string(cbPTGClass->GetString(sel).mb_str());
 
   ptg.reset();
@@ -1161,8 +1160,10 @@ void ptgConfiguratorframe::loadPlugin()
       this, _("Open library"), wxT(""), wxT(""),
       wxT("so files (*.so)|*.so|so files (*.so.*)|*.so.*|*.dll"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (openFileDialog.ShowModal() == wxID_CANCEL) return;
-
+  if (openFileDialog.ShowModal() == wxID_CANCEL)
+  {
+    return;
+  }
   const std::string sLib = std::string(openFileDialog.GetPath().mb_str());
   mrpt::system::loadPluginModule(sLib);
 
@@ -1191,8 +1192,10 @@ void ptgConfiguratorframe::OnedPTGIndexChange(wxSpinEvent& event) { dumpPTGcfgTo
 
 void ptgConfiguratorframe::dumpPTGcfgToTextBox()
 {
-  if (!ptg) return;
-
+  if (!ptg)
+  {
+    return;
+  }
   // Wrapper to transparently add prefixes to all config keys:
   const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
   const std::string sSection = m_cfgFileSection;
@@ -1226,7 +1229,10 @@ void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
 
   // Intersection of 3D ray with ground plane ====================
   auto ray_opt = m_plot->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
-  if (!ray_opt) return;
+  if (!ray_opt)
+  {
+    return;
+  }
   TLine3D ray = *ray_opt;
   // Create a 3D plane, e.g. Z=0
   const TPlane ground_plane(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0), TPoint3D(0, 1, 0));
@@ -1342,14 +1348,18 @@ void ptgConfiguratorframe::OnExportSelectedPath(wxCommandEvent&)
 {
   WX_START_TRY
 
-  if (!ptg) return;
-
+  if (!ptg)
+  {
+    return;
+  }
   wxFileDialog openFileDialog(
       this, _("Save selected path to .m"), wxT(""), wxT(""), wxT("m files (*.m)|*.m"),
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-  if (openFileDialog.ShowModal() == wxID_CANCEL) return;
-
+  if (openFileDialog.ShowModal() == wxID_CANCEL)
+  {
+    return;
+  }
   const std::string sFil = openFileDialog.GetPath().ToStdString();
 
   std::ofstream f(sFil.c_str());

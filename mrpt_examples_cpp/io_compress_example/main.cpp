@@ -33,7 +33,8 @@ int main(int argc, char** argv)
   {
     if (argc < 2)
     {
-      cerr << "Usage: test-compress <input_file> [compression level 1-9]" << endl;
+      cerr << "Usage: test-compress <input_file> [compression level 1-9]"
+           << "\n";
       return -1;
     }
 
@@ -41,7 +42,7 @@ int main(int argc, char** argv)
 
     if (!mrpt::io::loadBinaryFile(buf, argv[1]))
     {
-      cerr << "Error loading file: " << argv[1] << endl;
+      cerr << "Error loading file: " << argv[1] << "\n";
       return -1;
     }
 
@@ -57,21 +58,21 @@ int main(int argc, char** argv)
 
     if (!mrpt::io::zip::compress_gz_file(gzfile, buf, compress_level))
     {
-      cerr << "Error writing compressing file: " << gzfile << endl;
+      cerr << "Error writing compressing file: " << gzfile << "\n";
       return -1;
     }
 
     double t = tictac.Tac();
-    cout << format(
-                "Compressed %s (compress level=%i) in %.04f seconds.", gzfile.c_str(),
-                compress_level, t)
-         << endl;
+    std::cout << format(
+                     "Compressed %s (compress level=%i) in %.04f seconds.", gzfile.c_str(),
+                     compress_level, t)
+              << "\n";
 
     return 0;
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

@@ -20,7 +20,7 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace std;
 
-//#define DO_CAPTURE		1
+// #define DO_CAPTURE		1
 #define DO_CAPTURE 0
 
 // ------------------------------------------------------
@@ -30,21 +30,24 @@ void TestEnumerate_1394()
 {
   CImageGrabber_dc1394::TCameraInfoList lstCams;
 
-  cout << "Enumerating cameras..." << endl;
+  std::cout << "Enumerating cameras..."
+            << "\n";
 
   CImageGrabber_dc1394::enumerateCameras(lstCams);
 
-  cout << "Found " << lstCams.size() << " cameras." << endl;
+  std::cout << "Found " << lstCams.size() << " cameras."
+            << "\n";
 
   for (CImageGrabber_dc1394::TCameraInfoList::const_iterator it = lstCams.begin();
        it != lstCams.end(); it++)
   {
-    cout << "======= CAMERA =========" << endl;
-    cout << "   GUID : " << it->guid << endl;
-    cout << "   Unit : " << it->unit << endl;
-    cout << "  Vendor: " << it->vendor << endl;
-    cout << "  Model : " << it->model << endl;
-    cout << endl;
+    std::cout << "======= CAMERA ========="
+              << "\n";
+    std::cout << "   GUID : " << it->guid << "\n";
+    std::cout << "   Unit : " << it->unit << "\n";
+    std::cout << "  Vendor: " << it->vendor << "\n";
+    std::cout << "  Model : " << it->model << "\n";
+    std::cout << "\n";
   }
 }
 
@@ -58,7 +61,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

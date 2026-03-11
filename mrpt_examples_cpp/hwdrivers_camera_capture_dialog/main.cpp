@@ -38,13 +38,14 @@ void TestCameraCaptureAsk()
 
   if (!cam)
   {
-    cerr << "The user didn't pick any camera. Exiting." << endl;
+    cerr << "The user didn't pick any camera. Exiting."
+         << "\n";
     return;
   }
 
   CDisplayWindow win("Live video");
 
-  cout << "Press 's' to save frames.\nClose the window to exit.\n";
+  std::cout << "Press 's' to save frames.\nClose the window to exit.\n";
 
   double counter = 0;
   mrpt::system::CTicTac tictac;
@@ -79,7 +80,8 @@ void TestCameraCaptureAsk()
     if (++counter == 10)
     {
       double t = tictac.Tac();
-      cout << "Frame Rate: " << counter / t << " fps" << endl;
+      std::cout << "Frame Rate: " << counter / t << " fps"
+                << "\n";
       counter = 0;
     }
 
@@ -94,7 +96,7 @@ void TestCameraCaptureAsk()
         {
           static int cnt = 0;
           const std::string sFile = mrpt::format("frame%05i.png", cnt++);
-          cout << "Saving frame to: " << sFile << endl;
+          std::cout << "Saving frame to: " << sFile << "\n";
           bool savedOk = img->saveToFile(sFile);
           ASSERT_(savedOk);
         }
@@ -107,7 +109,8 @@ void TestCameraCaptureAsk()
     std::this_thread::sleep_for(2ms);
   }
 
-  cout << "Closing..." << endl;
+  std::cout << "Closing..."
+            << "\n";
 }
 
 // ------------------------------------------------------
@@ -123,7 +126,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

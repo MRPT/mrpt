@@ -223,14 +223,18 @@ static void AppDepthCamDemo()
                       {     "*",                  "Any file"}
               },
                   false);
-              if (loadFile.empty()) return;
-
+              if (loadFile.empty())
+              {
+                return;
+              }
               // Enable MRPT to find externalized rawlogs:
               mrpt::io::setLazyLoadPathBase(mrpt::obs::CRawlog::detectImagesDirectory(loadFile));
 
               mrpt::obs::CRawlog rawlog;
-              if (!rawlog.loadFromRawLogFile(loadFile)) return;
-
+              if (!rawlog.loadFromRawLogFile(loadFile))
+              {
+                return;
+              }
               ASSERT_(!rawlog.empty());
 
               mrpt::obs::CObservation3DRangeScan::Ptr obs;
@@ -263,7 +267,7 @@ static void AppDepthCamDemo()
             }
             catch (const std::exception& e)
             {
-              std::cerr << e.what() << std::endl;
+              std::cerr << e.what() << "\n";
               // auto dlg =
               new nanogui::MessageDialog(
                   app.win->screen(), nanogui::MessageDialog::Type::Warning, "Exception", e.what());
@@ -274,7 +278,10 @@ static void AppDepthCamDemo()
       ->setCallback(
           []()
           {
-            if (!app.obs) return;
+            if (!app.obs)
+            {
+              return;
+            }
             app.obs->cameraParams = app.originalCalib;
             app.obs->sensorPose = app.originalSensorPose;
             app.obs_params_to_gui();
@@ -403,7 +410,7 @@ static void AppDepthCamDemo()
 
     winMenu
         ->add<nanogui::CheckBox>(
-            "Ortho. view", [&](bool b) { app.win->camera().setCameraProjective(!b); })
+            "Ortho. view", [&](bool b) { app.win->camera().setProjectiveModel(!b); })
         ->setChecked(false);
   }
 
@@ -477,7 +484,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

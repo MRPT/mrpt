@@ -58,7 +58,7 @@ associated to the optimal registration. An example of typical usage is
       initialGuess // Starting estimate
       );
     CPose2D icpEstimateMean = pdf->getMeanVal();
-    cout << icpEstimateMean << endl;
+    std::cout << icpEstimateMean << "\n";
 
 The different ICP algorithms implemented in the MRPT C++ library
 (**explained below**) are:

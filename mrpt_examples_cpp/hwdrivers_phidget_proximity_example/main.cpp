@@ -51,9 +51,9 @@ int main(int argc, char** argv)
       ik.getObservation(obs);
       for (size_t i = 0; i < obs.sensedData.size(); i++)
       {
-        cout << obs.sensedData[i].sensedDistance << "\t";
+        std::cout << obs.sensedData[i].sensedDistance << "\t";
       }
-      cout << endl;
+      std::cout << "\n";
       std::this_thread::sleep_for(10ms);
     } while (!mrpt::system::os::kbhit());
 

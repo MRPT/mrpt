@@ -677,7 +677,10 @@ void CDisplayWindowPlots::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS
   const auto* win = (const CWindowDialogPlots*)m_hwnd.get();
-  if (!win) return;
+  if (!win)
+  {
+    return;
+  }
   win->m_plot->SetCursor(*(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR));
 #endif
 }
@@ -771,8 +774,10 @@ void CDisplayWindowPlots::setWindowTitle([[maybe_unused]] const std::string& str
 void CDisplayWindowPlots::enableMousePanZoom([[maybe_unused]] bool enabled)
 {
 #if MRPT_HAS_WXWIDGETS
-  if (!isOpen()) return;
-
+  if (!isOpen())
+  {
+    return;
+  }
   // Send a request to destroy this object:
   auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
   REQ->sourcePlots = this;

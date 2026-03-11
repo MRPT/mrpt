@@ -212,9 +212,9 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
           }
           else
           {
-            cout << "Sensor especified not found, compute default "
-                    "mean value"
-                 << "\n";
+            std::cout << "Sensor especified not found, compute default "
+                         "mean value"
+                      << "\n";
             sensorReading = d2f(math::mean(it->readingsVoltage));
           }
         }
@@ -476,7 +476,10 @@ void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 void CGasConcentrationGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
-  if (!genericMapParams.enableSaveAs3DObject) return;
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   CRandomFieldGridMap2D::getVisualizationInto(o);
   MRPT_END
 }
@@ -488,7 +491,10 @@ void CGasConcentrationGridMap2D::getAs3DObject(
     viz::CSetOfObjects& meanObj, viz::CSetOfObjects& varObj) const
 {
   MRPT_START
-  if (!genericMapParams.enableSaveAs3DObject) return;
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   CRandomFieldGridMap2D::getAs3DObject(meanObj, varObj);
   MRPT_END
 }
@@ -514,8 +520,8 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr
   ASSERT_(wind_map_size == windGrid_module.getSizeX() * windGrid_module.getSizeY());
   if (m_map.size() != wind_map_size)
   {
-    cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND MAP "
-         << "\n";
+    std::cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND MAP "
+              << "\n";
     // mrpt::system::pause();
   }
 
@@ -587,9 +593,9 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 
   // Get time since last simulation
   double At = mrpt::system::timeDifference(timeLastSimulated, mrpt::Clock::now());
-  cout << endl
-       << " - At since last simulation = " << At << "seconds"
-       << "\n";
+  std::cout << endl
+            << " - At since last simulation = " << At << "seconds"
+            << "\n";
   // update time of last updated.
   timeLastSimulated = mrpt::Clock::now();
 
@@ -614,8 +620,8 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
     ASSERT_(wind_map_size == windGrid_module.getSizeX() * windGrid_module.getSizeY());
     if (N != wind_map_size)
     {
-      cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND INFORMATION "
-           << "\n";
+      std::cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND INFORMATION "
+                << "\n";
       // mrpt::system::pause();
     }
 
@@ -665,14 +671,14 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
       }  // end-for ci
     }    // end-for cell i
 
-    cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl << "\n";
+    std::cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl << "\n";
   }
   catch (const std::exception& e)
   {
-    cout << " #########  EXCEPTION computing Transition Matrix (A) "
-            "##########\n: "
-         << e.what() << "\n";
-    cout << "on cell i= " << i << "  c=" << c << endl << "\n";
+    std::cout << " #########  EXCEPTION computing Transition Matrix (A) "
+                 "##########\n: "
+              << e.what() << "\n";
+    std::cout << "on cell i= " << i << "  c=" << c << endl << "\n";
     return false;
   }
 
@@ -742,8 +748,8 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
     m_hasToRecoverMeanAndCov = true;
     recoverMeanAndCov();
 
-    cout << " - Mean&Var updated in " << tictac.Tac() << "s"
-         << "\n";
+    std::cout << " - Mean&Var updated in " << tictac.Tac() << "s"
+              << "\n";
 
     // Free Memory
     free(row_sum);
@@ -752,12 +758,12 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
   }
   catch (const std::exception& e)
   {
-    cout << " #########  EXCEPTION Updating Covariances ##########\n: " << e.what() << "\n";
-    cout << "on row i= " << i << "  column c=" << c << endl << "\n";
+    std::cout << " #########  EXCEPTION Updating Covariances ##########\n: " << e.what() << "\n";
+    std::cout << "on row i= " << i << "  column c=" << c << endl << "\n";
     return false;
   }
 
-  // cout << " Increasing general STD..." << "\n";
+  // std::cout << " Increasing general STD..." << "\n";
   increaseUncertainty(STD_increase_value);
 
   return true;
@@ -792,12 +798,12 @@ that models the propagation of the gas comming from cell_i.
 */
 
 {
-  cout << endl
-       << "---------------------------------"
-       << "\n";
-  cout << " BUILDING GAUSSIAN WIND WEIGHTS "
-       << "\n";
-  cout << "---------------------------------" << endl << "\n";
+  std::cout << endl
+            << "---------------------------------"
+            << "\n";
+  std::cout << " BUILDING GAUSSIAN WIND WEIGHTS "
+            << "\n";
+  std::cout << "---------------------------------" << endl << "\n";
 
   //-----------------------------
   //          PARAMS
@@ -830,20 +836,20 @@ that models the propagation of the gas comming from cell_i.
   //    Check if file exists
   //-----------------------------
 
-  cout << "Looking for file: " << filename.c_str() << "\n";
+  std::cout << "Looking for file: " << filename.c_str() << "\n";
 
   if (mrpt::system::fileExists(filename.c_str()))
   {
     // file exists. Load lookUptable from file
-    cout << "LookUp table found for this configuration. Loading..."
-         << "\n";
+    std::cout << "LookUp table found for this configuration. Loading..."
+              << "\n";
     return load_Gaussian_Wind_Grid_From_File();
   }
   else
   {
     // file does not exists. Generate LookUp table.
-    cout << "LookUp table NOT found. Generating table..."
-         << "\n";
+    std::cout << "LookUp table NOT found. Generating table..."
+              << "\n";
 
     bool debug = true;
     FILE* debug_file;
@@ -1082,7 +1088,7 @@ that models the propagation of the gas comming from cell_i.
 bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 {
   // Save LUT to file
-  cout << "Saving to File ....";
+  std::cout << "Saving to File ....";
 
   CCompressedOutputStream fo(format(
       "Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz", LUT.resolution, LUT.std_phi,
@@ -1090,8 +1096,8 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
   if (!fo.fileOpenCorrectly())
   {
     return false;
-    cout << "WARNING: Gaussian_Wind_Weights file NOT SAVED"
-         << "\n";
+    std::cout << "WARNING: Gaussian_Wind_Weights file NOT SAVED"
+              << "\n";
   }
   auto f = mrpt::serialization::archiveFrom(fo);
 
@@ -1127,18 +1133,18 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
         }
       }
     }
-    cout << "DONE"
-         << "\n";
+    std::cout << "DONE"
+              << "\n";
     return true;
   }
   catch (const std::exception& e)
   {
-    cout << endl
-         << "------------------------------------------------------------"
-         << "\n";
-    cout << "EXCEPTION WHILE SAVING LUT TO FILE"
-         << "\n";
-    cout << "Exception = " << e.what() << "\n";
+    std::cout << endl
+              << "------------------------------------------------------------"
+              << "\n";
+    std::cout << "EXCEPTION WHILE SAVING LUT TO FILE"
+              << "\n";
+    std::cout << "Exception = " << e.what() << "\n";
     return false;
   }
 }
@@ -1146,7 +1152,7 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
 {
   // LOAD LUT from file
-  cout << "Loading from File ....";
+  std::cout << "Loading from File ....";
 
   try
   {
@@ -1155,8 +1161,8 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
         LUT.std_r));
     if (!fi.fileOpenCorrectly())
     {
-      cout << "WARNING WHILE READING FROM: Gaussian_Wind_Weights"
-           << "\n";
+      std::cout << "WARNING WHILE READING FROM: Gaussian_Wind_Weights"
+                << "\n";
       return false;
     }
     auto f = mrpt::serialization::archiveFrom(fi);
@@ -1219,18 +1225,18 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
         }
       }
     }
-    cout << "DONE"
-         << "\n";
+    std::cout << "DONE"
+              << "\n";
     return true;
   }
   catch (const std::exception& e)
   {
-    cout << endl
-         << "------------------------------------------------------------"
-         << "\n";
-    cout << "EXCEPTION WHILE LOADING LUT FROM FILE"
-         << "\n";
-    cout << "Exception = " << e.what() << "\n";
+    std::cout << endl
+              << "------------------------------------------------------------"
+              << "\n";
+    std::cout << "EXCEPTION WHILE LOADING LUT FROM FILE"
+              << "\n";
+    std::cout << "Exception = " << e.what() << "\n";
     return false;
   }
 }

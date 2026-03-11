@@ -95,7 +95,7 @@ void TestOctreeRenderHugePointCloud()
 
   const double L = 1e3;
 
-  cout << "Building point cloud...";
+  std::cout << "Building point cloud...";
   cout.flush();
 
   for (int XX = -10; XX <= 10; XX++)
@@ -124,7 +124,7 @@ void TestOctreeRenderHugePointCloud()
     }
   }
 
-  cout << "Done.\n";
+  std::cout << "Done.\n";
   cout.flush();
 
   printf("Point count: %e\n", (double)gl_pointcloud->size());
@@ -146,7 +146,7 @@ void TestOctreeRenderHugePointCloud()
   win.unlockAccess3DScene();
   win.repaint();
 
-  cout << "Close the window or press any key to end.\n";
+  std::cout << "Close the window or press any key to end.\n";
   bool end = false;
   while (win.isOpen() && !end)
   {
@@ -198,7 +198,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

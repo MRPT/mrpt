@@ -320,7 +320,10 @@ template <class CONTAINER>
 void adjustRange(
     CONTAINER& m, const typename CONTAINER::Scalar minVal, const typename CONTAINER::Scalar maxVal)
 {
-  if (size_t(m.size()) == 0) return;
+  if (size_t(m.size()) == 0)
+  {
+    return;
+  }
   typename CONTAINER::Scalar curMin, curMax;
   minimum_maximum(m, curMin, curMax);
   const typename CONTAINER::Scalar curRan = curMax - curMin;

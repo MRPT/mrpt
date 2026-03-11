@@ -69,7 +69,7 @@ int main(int argc, char** argv)
     }
 
     // Open:
-    // cout << "Calling COpenNI2Sensor::initialize()...";
+    // std::cout << "Calling COpenNI2Sensor::initialize()...";
     rgbd_sensor.initialize();
 
     if (rgbd_sensor.getNumDevices() == 0)
@@ -77,8 +77,9 @@ int main(int argc, char** argv)
       return 0;
     }
 
-    cout << "OK " << rgbd_sensor.getNumDevices() << " available devices." << endl;
-    cout << "\nUse device " << sensor_id_or_serial << endl << endl;
+    std::cout << "OK " << rgbd_sensor.getNumDevices() << " available devices."
+              << "\n";
+    std::cout << "\nUse device " << sensor_id_or_serial << endl << "\n";
 
     bool showImages = false;
     if (showImages)
@@ -94,13 +95,13 @@ int main(int argc, char** argv)
 
       while (!system::os::kbhit())
       {
-        cout << "Get a new frame\n";
+        std::cout << "Get a new frame\n";
         rgbd_sensor.getNextObservation(newObs, bObs, bError);
 
         double fps = ++nFrames / tictac.Tac();
         //      newObs->intensityImage.textOut(5,5,format("%.02f
         //      fps",fps),TColor(0x80,0x80,0x80) );
-        cout << "FPS: " << fps << endl;
+        std::cout << "FPS: " << fps << "\n";
 
         if (nFrames > 100)
         {
@@ -160,7 +161,7 @@ int main(int argc, char** argv)
 
       while (!win3D.keyHit())  // Push any key to exit // win3D.isOpen()
       {
-        //    cout << "Get new observation\n";
+        //    std::cout << "Get new observation\n";
         CObservation3DRangeScan::Ptr newObs = CObservation3DRangeScan::Create();
         rgbd_sensor.getNextObservation(*newObs, bObs, bError);
 
@@ -225,13 +226,13 @@ int main(int argc, char** argv)
       }
     }
 
-    cout << "\nClosing RGBD sensor...\n";
+    std::cout << "\nClosing RGBD sensor...\n";
 
     return 0;
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

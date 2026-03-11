@@ -117,36 +117,39 @@ DECLARE_OP_FUNCTION(op_info)
 
   // Dump statistics:
   // ---------------------------------
-  cout << "Time to parse file (sec)          : " << proc.m_timToParse << "\n";
-  cout << "Physical file size                : "
-       << mrpt::system::unitsFormat(static_cast<double>(proc.m_physicalFileSize)) << "B\n";
-  cout << "Uncompressed file size            : "
-       << mrpt::system::unitsFormat(static_cast<double>(in_rawlog.getUncompressedSize())) << "B\n";
-  cout << "Compression ratio                 : "
-       << format("%.02f%%\n", 100.0 * in_rawlog.getCompressionRatio());
-  cout << "Overall number of objects         : " << (proc.m_rawlogEntry + 1) << "\n";
-  cout << "Actions/SensoryFrame format       : " << (proc.has_actSF_format ? "Yes" : "No") << "\n";
-  cout << "Observations format               : " << (proc.has_obs_format ? "Yes" : "No") << "\n";
+  std::cout << "Time to parse file (sec)          : " << proc.m_timToParse << "\n";
+  std::cout << "Physical file size                : "
+            << mrpt::system::unitsFormat(static_cast<double>(proc.m_physicalFileSize)) << "B\n";
+  std::cout << "Uncompressed file size            : "
+            << mrpt::system::unitsFormat(static_cast<double>(in_rawlog.getUncompressedSize()))
+            << "B\n";
+  std::cout << "Compression ratio                 : "
+            << format("%.02f%%\n", 100.0 * in_rawlog.getCompressionRatio());
+  std::cout << "Overall number of objects         : " << (proc.m_rawlogEntry + 1) << "\n";
+  std::cout << "Actions/SensoryFrame format       : " << (proc.has_actSF_format ? "Yes" : "No")
+            << "\n";
+  std::cout << "Observations format               : " << (proc.has_obs_format ? "Yes" : "No")
+            << "\n";
 
-  cout << "Earliest timestamp                : " << mrpt::format("%.06f", proc.firstTimestamp)
-       << " (" << mrpt::system::dateTimeToString(mrpt::Clock::fromDouble(proc.firstTimestamp))
-       << " UTC)\n";
+  std::cout << "Earliest timestamp                : " << mrpt::format("%.06f", proc.firstTimestamp)
+            << " (" << mrpt::system::dateTimeToString(mrpt::Clock::fromDouble(proc.firstTimestamp))
+            << " UTC)\n";
 
-  cout << "Latest timestamp                  : " << mrpt::format("%.06f", proc.lastTimestamp)
-       << " (" << mrpt::system::dateTimeToString(mrpt::Clock::fromDouble(proc.lastTimestamp))
-       << " UTC)\n";
+  std::cout << "Latest timestamp                  : " << mrpt::format("%.06f", proc.lastTimestamp)
+            << " (" << mrpt::system::dateTimeToString(mrpt::Clock::fromDouble(proc.lastTimestamp))
+            << " UTC)\n";
 
-  cout << "Duration                          : "
-       << mrpt::system::intervalFormat(proc.lastTimestamp - proc.firstTimestamp) << "\n";
+  std::cout << "Duration                          : "
+            << mrpt::system::intervalFormat(proc.lastTimestamp - proc.firstTimestamp) << "\n";
 
   // By sensor labels:
-  cout << "All sensor labels                 : ";
+  std::cout << "All sensor labels                 : ";
   for (auto it = proc.infoPerSensorLabel.begin(); it != proc.infoPerSensorLabel.end(); ++it)
   {
-    if (it != proc.infoPerSensorLabel.begin()) cout << ", ";
-    cout << it->first;
+    if (it != proc.infoPerSensorLabel.begin()) std::cout << ", ";
+    std::cout << it->first;
   }
-  cout << "\n";
+  std::cout << "\n";
 
   for (auto& [label, ips] : proc.infoPerSensorLabel)
   {
@@ -158,9 +161,9 @@ DECLARE_OP_FUNCTION(op_info)
       dur = mrpt::system::timeDifference(tf, tl);
       Hz = double(ips.occurrences > 1 ? ips.occurrences - 1 : 1) / dur;
     }
-    cout << "Sensor (Label/Occurs/Rate/Durat.) : "
-         << format(
-                "%15s /%7u /%7.03f /%6.03f  (%s)\n", label.c_str(), (unsigned)ips.occurrences, Hz,
-                dur, ips.className.c_str());
+    std::cout << "Sensor (Label/Occurs/Rate/Durat.) : "
+              << format(
+                     "%15s /%7u /%7.03f /%6.03f  (%s)\n", label.c_str(), (unsigned)ips.occurrences,
+                     Hz, dur, ips.className.c_str());
   }
 }

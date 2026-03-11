@@ -72,8 +72,10 @@ void CViewerContainer::showRangeScan(CNode* node)
 
 void CViewerContainer::forEachGl(const std::function<void(CGlWidget*)>& func)
 {
-  if (containsHelpInfo()) return;
-
+  if (containsHelpInfo())
+  {
+    return;
+  }
   for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
   {
     CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
@@ -89,8 +91,10 @@ void CViewerContainer::showRobotDirection(const mrpt::poses::CPose3D& pose)
 
 void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
 {
-  if (containsHelpInfo()) return;
-
+  if (containsHelpInfo())
+  {
+    return;
+  }
   for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
   {
     auto sTypeIter = m_tabsInfo.find(i);
@@ -183,14 +187,16 @@ void CViewerContainer::changedSelected(const std::vector<CRobotPose::Ptr>& robot
 
 void CViewerContainer::updatePanelInfo(int index)
 {
-  if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
-
+  if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0)
+  {
+    return;
+  }
   CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(index));
   ASSERT_(gl);
 
   changeZoomInfo(gl->getZoom());
-  changeAzimuthDeg(gl->getAzimuthDegrees());
-  changeElevationDeg(gl->getElevationDegrees());
+  changeAzimuthDeg(gl->orbitCameraController().getAzimuthDegrees());
+  changeElevationDeg(gl->orbitCameraController().getElevationDegrees());
 }
 
 void CViewerContainer::changeZoomInfo(float zoom)
@@ -222,8 +228,10 @@ void CViewerContainer::changeElevationDeg(float deg)
 
 void CViewerContainer::zoomChanged(double d)
 {
-  if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
-
+  if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0)
+  {
+    return;
+  }
   float zoomFloat = d;
   int zoomInt = zoomFloat;
   m_ui->m_zoomSlider->setValue(zoomInt);
@@ -234,8 +242,10 @@ void CViewerContainer::zoomChanged(double d)
 
 void CViewerContainer::zoomChanged(int d)
 {
-  if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
-
+  if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0)
+  {
+    return;
+  }
   double zoomD = d;
   float zoomFloat = zoomD;
   m_ui->m_zoom->setValue(zoomD);
@@ -253,10 +263,12 @@ void CViewerContainer::updateMouseInfo(double x, double y)
 void CViewerContainer::updateAzimuthDegrees(double deg)
 {
   CGlWidget* gl = getCurrentTabWidget();
-  if (!gl) return;
-
+  if (!gl)
+  {
+    return;
+  }
   gl->blockSignals(true);
-  gl->setAzimuthDegrees(deg);
+  gl->orbitCameraController().setAzimuthDegrees(deg);
   gl->blockSignals(false);
   gl->update();
 }
@@ -264,10 +276,12 @@ void CViewerContainer::updateAzimuthDegrees(double deg)
 void CViewerContainer::updateElevationDegrees(double deg)
 {
   CGlWidget* gl = getCurrentTabWidget();
-  if (!gl) return;
-
+  if (!gl)
+  {
+    return;
+  }
   gl->blockSignals(true);
-  gl->setElevationDegrees(deg);
+  gl->orbitCameraController().setElevationDegrees(deg);
   gl->blockSignals(false);
   gl->update();
 }

@@ -35,7 +35,7 @@ using namespace std;
 
 void TestCapture_FlyCapture2()
 {
-  cout << " FlyCapture2 version: " << CImageGrabber_FlyCapture2::getFC2version() << std::endl;
+  std::cout << " FlyCapture2 version: " << CImageGrabber_FlyCapture2::getFC2version() << "\n";
 
   // Create camera object:
   CImageGrabber_FlyCapture2 capture;
@@ -50,7 +50,8 @@ void TestCapture_FlyCapture2()
   capture.open(cam_options);
 
   CTicTac tictac;
-  cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
+  std::cout << "Press any key to stop capture to 'capture.rawlog'..."
+            << "\n";
 
   CCompressedOutputStream fil("./capture.rawlog");
 
@@ -77,11 +78,12 @@ void TestCapture_FlyCapture2()
 
     if (!capture.getObservation(*obs))
     {
-      cerr << "Error retrieving images!" << endl;
+      cerr << "Error retrieving images!"
+           << "\n";
       break;
     }
 
-    cout << ".";
+    std::cout << ".";
     cout.flush();
     if (win.isOpen()) win.showImage(obs->image);
 
@@ -98,7 +100,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

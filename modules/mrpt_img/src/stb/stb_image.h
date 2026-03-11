@@ -6661,8 +6661,10 @@ static void stbi__out_gif_code(stbi__gif *g, stbi__uint16 code)
    if (g->codes[code].prefix >= 0)
       stbi__out_gif_code(g, g->codes[code].prefix);
 
-   if (g->cur_y >= g->max_y) return;
-
+   if (g->cur_y >= g->max_y) 
+{
+  return;
+}
    idx = g->cur_x + g->cur_y;
    p = &g->out[idx];
    g->history[idx / 4] = 1;

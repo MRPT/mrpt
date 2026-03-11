@@ -1439,8 +1439,10 @@ void CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string& filName) cons
 
 void CRandomFieldGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
-  if (!genericMapParams.enableSaveAs3DObject) return;
-
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   // Returns only the mean map
   mrpt::viz::CSetOfObjects other_obj;
   getAs3DObject(o, other_obj);
@@ -1449,8 +1451,10 @@ void CRandomFieldGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) co
 void CRandomFieldGridMap2D::getAs3DObject(
     mrpt::viz::CSetOfObjects& meanObj, mrpt::viz::CSetOfObjects& varObj) const
 {
-  if (!genericMapParams.enableSaveAs3DObject) return;
-
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   recoverMeanAndCov();  // Only works for KF2 method
 
   mrpt::viz::TTriangle triag;
@@ -2186,7 +2190,10 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
   ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::recoverMeanAndCov() const
 {
-  if (!m_hasToRecoverMeanAndCov || (m_mapType != mrKalmanApproximate)) return;
+  if (!m_hasToRecoverMeanAndCov || (m_mapType != mrKalmanApproximate))
+  {
+    return;
+  }
   m_hasToRecoverMeanAndCov = false;
 
   // Just recover the std of each cell:
@@ -2409,13 +2416,13 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
   if ((seed_cxo < cxo_min) || (seed_cxo >= cxo_max) || (seed_cyo < cyo_min) ||
       (seed_cyo >= cyo_max))
   {
-    // cout << "Seed out of bounds (false)" << "\n";
+    // std::cout << "Seed out of bounds (false)" << "\n";
     return false;
   }
   if ((objective_cxo < cxo_min) || (objective_cxo >= cxo_max) || (objective_cyo < cyo_min) ||
       (objective_cyo >= cyo_max))
   {
-    // cout << "Objective out of bounds (false)" << "\n";
+    // std::cout << "Objective out of bounds (false)" << "\n";
     return false;
   }
 
@@ -2423,13 +2430,13 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
   if ((m_Ocgridmap->getCell(seed_cxo, seed_cyo) < 0.5) !=
       (m_Ocgridmap->getCell(objective_cxo, objective_cyo) < 0.5))
   {
-    // cout << "Seed and objective have diff occupation (false)" << "\n";
+    // std::cout << "Seed and objective have diff occupation (false)" << "\n";
     return false;
   }
 
   // Create Matrix for region growing (row,col)
   mrpt::math::CMatrixUInt matExp(cxo_max - cxo_min + 1, cyo_max - cyo_min + 1);
-  // cout << "Matrix creted with dimension:" << matExp.rows() << " x "
+  // std::cout << "Matrix creted with dimension:" << matExp.rows() << " x "
   // << matExp.cols() << "\n";
   // CMatrixF matExp(cxo_max-cxo_min+1, cyo_max-cyo_min+1);
   matExp.fill(0);
@@ -2470,7 +2477,7 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
                     if ((row + j + cxo_min == objective_cxo) &&
                         (col + i + cyo_min == objective_cyo))
                     {
-                      // cout << "Connection Success
+                      // std::cout << "Connection Success
                       // (true)" << "\n";
                       return true;  // Objective connected
                     }
@@ -2486,7 +2493,7 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
     }
   }
   // if not connection to he objective is found, then return false
-  // cout << "Connection not found (false)" << "\n";
+  // std::cout << "Connection not found (false)" << "\n";
   return false;
 }
 

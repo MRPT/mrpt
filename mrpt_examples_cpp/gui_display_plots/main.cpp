@@ -27,7 +27,7 @@ using namespace std;
 
 void myOnMenu(int menuID, float x, float y, void* param)
 {
-  cout << "Menu: " << menuID << endl << " x=" << x << " y=" << y << endl;
+  std::cout << "Menu: " << menuID << endl << " x=" << x << " y=" << y << "\n";
 }
 
 // ------------------------------------------------------
@@ -76,7 +76,8 @@ void TestDisplayPlots()
 
   win2.setPos(450, 10);
 
-  cout << "Press any key to exit..." << endl;
+  std::cout << "Press any key to exit..."
+            << "\n";
   // win.waitForKey();
 
   float t = 0;
@@ -105,7 +106,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

@@ -42,25 +42,25 @@ void TestQuaternions()
 
   const CPose3D p3 = p1 + p2;
 
-  cout << "q1 = " << q1 << endl;
-  cout << "q1 as CPose3D = " << CPose3D(q1, 0, 0, 0) << endl;
-  cout << endl;
-  cout << "q2 = " << q2 << endl;
-  cout << "q2 as CPose3D = " << CPose3D(q2, 0, 0, 0) << endl;
-  cout << endl;
-  cout << "q3 = q1 * q2 = " << q3 << endl;
-  cout << "q3 as CPose3D = " << CPose3D(q3, 0, 0, 0) << endl;
+  std::cout << "q1 = " << q1 << "\n";
+  std::cout << "q1 as CPose3D = " << CPose3D(q1, 0, 0, 0) << "\n";
+  std::cout << "\n";
+  std::cout << "q2 = " << q2 << "\n";
+  std::cout << "q2 as CPose3D = " << CPose3D(q2, 0, 0, 0) << "\n";
+  std::cout << "\n";
+  std::cout << "q3 = q1 * q2 = " << q3 << "\n";
+  std::cout << "q3 as CPose3D = " << CPose3D(q3, 0, 0, 0) << "\n";
 
-  cout << endl << "Should be equal to p3 = p1 (+) p2 = " << p3 << endl;
+  std::cout << endl << "Should be equal to p3 = p1 (+) p2 = " << p3 << "\n";
 }
 
 void TestQuaternionsIterators()
 {
   CPose3DQuat q(1.0, 2.0, 3.0, CQuaternionDouble());
 
-  cout << "Dump with iterators: ";
-  for (CPose3DQuat::iterator it = q.begin(); it != q.end(); ++it) cout << *it << " ";
-  cout << endl;
+  std::cout << "Dump with iterators: ";
+  for (CPose3DQuat::iterator it = q.begin(); it != q.end(); ++it) std::cout << *it << " ";
+  std::cout << "\n";
 }
 
 int main(int argc, char** argv)
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

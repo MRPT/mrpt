@@ -24,20 +24,20 @@ void Test_StaticString()
   using namespace mrpt::typemeta;
 
   constexpr string_literal<3> s = "foo";
-  cout << "string_literal<3>=" << s << endl;
+  std::cout << "string_literal<3>=" << s << "\n";
 
   constexpr auto a = literal("foo");
   constexpr auto b = literal("bar");
   // In GCC7 this can be "constexpr", but it fails in MSVC 2017 (!)
   auto ab = a + b;
-  cout << "a=" << a << endl;
-  cout << "b=" << b << endl;
-  cout << "a+b=" << ab << endl;
+  std::cout << "a=" << a << "\n";
+  std::cout << "b=" << b << "\n";
+  std::cout << "a+b=" << ab << "\n";
 
   static_assert(ab.size() == 6, "***");
-  cout << "(a+b).size()=" << ab.size() << endl;
-  cout << "(a+b)[0]=" << ab[0] << endl;
-  cout << "(a+b)[5]=" << ab[5] << endl;
+  std::cout << "(a+b).size()=" << ab.size() << "\n";
+  std::cout << "(a+b)[0]=" << ab[0] << "\n";
+  std::cout << "(a+b)[5]=" << ab[5] << "\n";
 }
 //! [example sstring]
 
@@ -53,8 +53,8 @@ void Test_StaticNum2Str()
 
   constexpr auto n42 = num_to_string<42>::value;
   constexpr auto n9999 = num_to_string<9999>::value;
-  cout << "42 as string=" << n42 << endl;
-  cout << "9999 as string=" << n9999 << endl;
+  std::cout << "42 as string=" << n42 << "\n";
+  std::cout << "9999 as string=" << n9999 << "\n";
 }
 //! [example num2str]
 
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << e.what() << std::endl;
+    std::cerr << "MRPT error: " << e.what() << "\n";
     return -1;
   }
 }

@@ -133,7 +133,10 @@ void CRawlogTreeView::reloadFromRawlog()
 
   auto lambdaCheckTimestamp = [this](const mrpt::Clock::time_point& t)
   {
-    if (t == INVALID_TIMESTAMP) return;
+    if (t == INVALID_TIMESTAMP)
+    {
+      return;
+    }
     m_rawlog_last = t;
     if (m_rawlog_start == INVALID_TIMESTAMP) m_rawlog_start = t;
   };
@@ -199,7 +202,10 @@ void CRawlogTreeView::reloadFromRawlog()
    ------------------------------------------------------------ */
 void CRawlogTreeView::OnDraw(wxDC& dc)
 {
-  if (RAWLOG_UNDERGOING_CHANGES) return;
+  if (RAWLOG_UNDERGOING_CHANGES)
+  {
+    return;
+  }
   try
   {
     OnDrawImpl(dc);
@@ -376,8 +382,10 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
   }  // end for i
 
   // If thumb tracking, show time as text too:
-  if (!m_is_thumb_tracking || !firstTim) return;
-
+  if (!m_is_thumb_tracking || !firstTim)
+  {
+    return;
+  }
   using namespace std::string_literals;
 
   const auto t_this_d = mrpt::Clock::toDouble(*firstTim);
@@ -463,8 +471,10 @@ void CRawlogTreeView::OnRightDown(wxMouseEvent& event)
 {
   OnLeftDown(event);
 
-  if (m_selectedItem < 0) return;
-
+  if (m_selectedItem < 0)
+  {
+    return;
+  }
   this->PopupMenu(&m_contextMenu);
 }
 
@@ -598,8 +608,10 @@ void CRawlogTreeView::onScrollThumbRelease(wxScrollWinEvent& ev)
 
 void CRawlogTreeView::onMnuExportToOtherFile(wxCommandEvent&)
 {
-  if (m_selectedItem < 0) return;
-
+  if (m_selectedItem < 0)
+  {
+    return;
+  }
   const auto& obj = m_tree_nodes[m_selectedItem].data;
 
   const wxString wildcard =
@@ -611,8 +623,10 @@ void CRawlogTreeView::onMnuExportToOtherFile(wxCommandEvent&)
   wxFileDialog dialog(
       this, "Save file...", defaultDir, {}, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   mrpt::io::CCompressedOutputStream fs(dialog.GetPath().ToStdString());
   auto a = mrpt::serialization::archiveFrom(fs);
 
@@ -623,9 +637,14 @@ void CRawlogTreeView::onMnuExportToOtherFile(wxCommandEvent&)
 
 void CRawlogTreeView::onMnuAppendSaveFile(wxCommandEvent&)
 {
-  if (m_selectedItem < 0) return;
-  if (m_last_exported_rawlog_file.empty()) return;
-
+  if (m_selectedItem < 0)
+  {
+    return;
+  }
+  if (m_last_exported_rawlog_file.empty())
+  {
+    return;
+  }
   const auto& obj = m_tree_nodes[m_selectedItem].data;
 
   // open GZ file for append:

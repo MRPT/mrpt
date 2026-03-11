@@ -66,15 +66,14 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent) :
     m_miniMapViewport->setViewportPosition(0.01, 0.01, m_minimapPercentSize, m_minimapPercentSize);
     m_miniMapViewport->setTransparent(false);
 
-    setAzimuthDegrees(-90.0f);
-    setElevationDegrees(90.0f);
+    cameraController().setAzimuthDegrees(-90.0f);
+    cameraController().setElevationDegrees(90.0f);
 
     CCamera& camMiniMap = m_miniMapViewport->getCamera();
-    updateCameraParams(camMiniMap);
+    cameraController().applyTo(camMiniMap);
     camMiniMap.setOrthogonal();
   }
 
-  updateCamerasParams();
   m_groundPlane->setColor(0.4f, 0.4f, 0.4f);
   setVisibleGrid(true);
   setFocusPolicy(Qt::StrongFocus);
@@ -124,20 +123,26 @@ void CGlWidget::fillMap(const CSetOfObjects::Ptr& renderizableMap)
     float yDist = yMax - yMin;
 
     CCamera& camMiniMap = m_miniMapViewport->getCamera();
-    updateCameraParams(camMiniMap);
+    cameraController().applyTo(camMiniMap);
     camMiniMap.setZoomDistance(std::max(xDist, yDist));
-    updateCamerasParams();
   }
 
   if (m_isShowObs)
+  {
     setSelectedObservation(m_isShowObs);
+  }
   else
+  {
     update();
+  }
 }
 
 void CGlWidget::setSelected(const math::TPose3D& pose)
 {
-  if (!m_map) return;
+  if (!m_map)
+  {
+    return;
+  }
 
   removeRobotDirection();
 
@@ -152,8 +157,10 @@ void CGlWidget::setSelected(const math::TPose3D& pose)
 void CGlWidget::setSelectedObservation(bool is)
 {
   m_isShowObs = is;
-  if (!m_doc || !m_map) return;
-
+  if (!m_doc || !m_map)
+  {
+    return;
+  }
   if (is)
     m_map->insert(m_visiblePoints);
 
@@ -168,7 +175,10 @@ void CGlWidget::setSelectedObservation(bool is)
 
 void CGlWidget::setLaserScan(CPlanarLaserScan::Ptr laserScan)
 {
-  if (m_currentLaserScan) m_map->removeObject(m_currentLaserScan);
+  if (m_currentLaserScan)
+  {
+    m_map->removeObject(m_currentLaserScan);
+  }
 
   m_currentLaserScan = laserScan;
   m_map->insert(m_currentLaserScan);
@@ -180,7 +190,10 @@ void CGlWidget::setDocument(CDocument* doc)
 {
   m_doc = doc;
 
-  if (m_isShowObs) m_map->removeObject(m_visiblePoints);
+  if (m_isShowObs)
+  {
+    m_map->removeObject(m_visiblePoints);
+  }
 
   deselectAll();
   m_visiblePoints->clear();
@@ -220,47 +233,26 @@ void CGlWidget::updateObservations()
   double maxDist = maximumSizeObservation(QPoint(0, 0));
   ASSERT_(maxDist != -1.0);
 
-  for (auto& it : selectedPoints) selectPoint(it->getId());
+  for (auto& it : selectedPoints)
+  {
+    selectPoint(it->getId());
+  }
 
   emit selectedChanged(m_selectedPoints);
 
-  if (isShowObs) setSelectedObservation(isShowObs);
+  if (isShowObs)
+  {
+    setSelectedObservation(isShowObs);
+  }
 }
 
 void CGlWidget::setZoom(float zoom)
 {
-  CamaraParams params = cameraParams();
-  params.cameraZoomDistance = zoom;
-  setCameraParams(params);
-  updateCamerasParams();
-
+  cameraController().setZoomDistance(zoom);
   update();
 }
 
-float CGlWidget::getZoom() const { return getZoomDistance(); }
-void CGlWidget::setCameraParams(const gui::CGlCanvasBase::CamaraParams& params)
-{
-  CGlCanvasBase::CamaraParams cam = cameraParams();
-  if (cam.cameraAzimuthDeg != params.cameraAzimuthDeg) emit azimuthChanged(params.cameraAzimuthDeg);
-
-  if (cam.cameraElevationDeg != params.cameraElevationDeg)
-    emit elevationChanged(params.cameraElevationDeg);
-
-  CQtGlCanvasBase::setCameraParams(params);
-}
-void CGlWidget::setAzimuthDegrees(float ang)
-{
-  CQtGlCanvasBase::setAzimuthDegrees(ang);
-  emit azimuthChanged(ang);
-  updateCamerasParams();
-}
-
-void CGlWidget::setElevationDegrees(float ang)
-{
-  CQtGlCanvasBase::setElevationDegrees(ang);
-  emit elevationChanged(ang);
-  updateCamerasParams();
-}
+float CGlWidget::getZoom() const { return cameraController().getZoomDistance(); }
 
 void CGlWidget::setBackgroundColor(float r, float g, float b, float a)
 {
@@ -278,9 +270,13 @@ void CGlWidget::setGridColor(double r, double g, double b, double a)
 void CGlWidget::setVisibleGrid(bool is)
 {
   if (is)
+  {
     insertToMap(m_groundPlane);
+  }
   else
+  {
     removeFromMap(m_groundPlane);
+  }
 }
 
 bool CGlWidget::setBot(int value)
@@ -293,7 +289,10 @@ bool CGlWidget::setBot(int value)
   math::TPose3D pose;
 
   m_map->removeObject(m_currentObs);
-  if (m_showRobot) pose = m_currentObs->getPose();
+  if (m_showRobot)
+  {
+    pose = m_currentObs->getPose();
+  }
 
   switch (value)
   {
@@ -378,7 +377,10 @@ void CGlWidget::updateSelectionWithoutSignals(const std::vector<size_t>& idx)
   blockSignals(true);
   deselectAll();
 
-  for (auto& id : idx) selectPoint(id);
+  for (const auto& id : idx)
+  {
+    selectPoint(id);
+  }
 
   blockSignals(false);
 }
@@ -394,23 +396,6 @@ void CGlWidget::resizeGL(int width, int height)
     m_miniMapSize = std::min(win_dims[2], win_dims[3]) * m_minimapPercentSize;
   }
   updateMinimapPos();
-}
-
-void CGlWidget::updateCamerasParams()
-{
-  float zoom = getCameraZoomDistance();
-  CQtGlCanvasBase::updateCamerasParams();
-
-  if (m_is2D)
-  {
-    CCamera& camMiniMap = m_miniMapViewport->getCamera();
-    float zoomMiniMap = camMiniMap.getZoomDistance();
-    updateCameraParams(camMiniMap);
-    camMiniMap.setProjectiveModel(false);
-    camMiniMap.setZoomDistance(zoomMiniMap);
-  }
-
-  if (zoom != getZoomDistance()) emit zoomChanged(getZoomDistance());
 }
 
 void CGlWidget::insertToMap(const CVisualObject::Ptr& newObject)
@@ -471,8 +456,10 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 {
   CQtGlCanvasBase::mousePressEvent(event);
 
-  if (!m_isShowObs) return;
-
+  if (!m_isShowObs)
+  {
+    return;
+  }
   m_moveSelected = false;
 
   QPoint pos = event->pos();
@@ -516,9 +503,12 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
       }
     }
 
-    if (needUnpressMouse) unpressMouseButtons();
+    // if (needUnpressMouse) unpressMouseButtons();
 
-    if (needUpdateScene) update();
+    if (needUpdateScene)
+    {
+      update();
+    }
   }
 }
 
@@ -675,7 +665,10 @@ CRobotPose::Ptr CGlWidget::removePoseFromPointsCloud(CSetOfObjects::Ptr points, 
 
 void CGlWidget::removeRobotDirection()
 {
-  if (!m_map.get()) return;
+  if (!m_map.get())
+  {
+    return;
+  }
   m_map->removeObject(m_currentObs);
 
   if (m_currentLaserScan) m_map->removeObject(m_currentLaserScan);
@@ -685,8 +678,10 @@ void CGlWidget::removeRobotDirection()
 
 void CGlWidget::updateMinimapPos()
 {
-  if (!m_is2D) return;
-
+  if (!m_is2D)
+  {
+    return;
+  }
   GLint win_dims[4];
   glGetIntegerv(GL_VIEWPORT, win_dims);
 

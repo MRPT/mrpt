@@ -238,7 +238,7 @@ void mrpt::slam::path_from_rtk_gps(
 
     D_cov_1 = D_cov.inverse_LLt();
 
-    // cout << D_cov.inMatlabFormat() << "\n";
+    // std::cout << D_cov.inMatlabFormat() << "\n";
 
     D_mean[0] = square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[1])]);
     D_mean[1] = square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[2])]);
@@ -306,7 +306,7 @@ void mrpt::slam::path_from_rtk_gps(
               // << " " <<
               // mrpt::system::timeLocalToString(GPS_a1->timestamp)
               // << " " << *l;
-              // cout << "\n";
+              // std::cout << "\n";
 
               new_gps->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees =
                   0.5 * (GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees +
@@ -412,7 +412,7 @@ void mrpt::slam::path_from_rtk_gps(
           double mahaD = mrpt::math::mahalanobisDistance(iGPSdist2, D_mean, D_cov_1);
           outInfoTemp.mahalabis_quality_measure[i->first] = mahaD;
 
-          // cout << "x: " << iGPSdist2 << " MU: " <<  D_mean << " ->
+          // std::cout << "x: " << iGPSdist2 << " MU: " <<  D_mean << " ->
           // " << mahaD  << "\n";
         }  // end consistency
 
@@ -425,7 +425,7 @@ void mrpt::slam::path_from_rtk_gps(
         // "other" -> GPS local coordinates on the vehicle
         mrpt::tfest::se3_l2(corrs, optimal_pose, optimal_scale,
                             true);  // Force scale=1
-        // cout << "optimal pose: " << optimal_pose << " " <<
+        // std::cout << "optimal pose: " << optimal_pose << " " <<
         // optimal_scale << "\n";
         MRPT_CHECK_NORMAL_NUMBER(optimal_pose.x());
         MRPT_CHECK_NORMAL_NUMBER(optimal_pose.y());

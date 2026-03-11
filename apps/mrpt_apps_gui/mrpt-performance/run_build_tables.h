@@ -72,8 +72,8 @@ int run_build_tables()
     arch >> dat.all_perf_data;
     lstConfigurations.push_back(dat);
 
-    cout << " Read: " << setw(30) << config_name << " with " << dat.all_perf_data.size()
-         << " entries.\n";
+    std::cout << " Read: " << setw(30) << config_name << " with " << dat.all_perf_data.size()
+              << " entries.\n";
   }
 
   std::sort(lstConfigurations.begin(), lstConfigurations.end(), func_comp_entries);
@@ -86,7 +86,7 @@ int run_build_tables()
   const string out_fil_index = PERF_DATA_DIR + string(
                                                    "/perf-html/"
                                                    "index.html");
-  cout << "Generating: " << out_fil_index << "...\n";
+  std::cout << "Generating: " << out_fil_index << "...\n";
   fo.open(out_fil_index);
   fo.printf(
       "<html><head><title>mrpt-performance results - Index</title>\n"
@@ -188,7 +188,7 @@ int run_build_tables()
   {
     const string out_fil =
         PERF_DATA_DIR + format("/perf-html/results_%s.html", P.config_name.c_str());
-    cout << "Generating: " << out_fil << "...\n";
+    std::cout << "Generating: " << out_fil << "...\n";
     CFileOutputStream f(out_fil);
 
     f.printf(
@@ -241,7 +241,7 @@ int run_build_tables()
                                                  "/perf-html/comparison_%s_vs_%s.html",
                                                  P1.config_name.c_str(), P2.config_name.c_str());
 
-      cout << "Generating: " << out_fil << "...\n";
+      std::cout << "Generating: " << out_fil << "...\n";
 
       // Make sure P1 is the "more modern" version:
       //			if ( P1.config_name < P2.config_name )

@@ -54,11 +54,11 @@ void Test_EnumType()
   using namespace std;
   using namespace mrpt::typemeta;
 
-  cout << "White => " << (int)TEnumType<TestColors>::name2value("White") << endl;
-  cout << "Black => " << (int)TEnumType<TestColors>::name2value("Black") << endl;
-  cout << "Gray  => " << (int)TEnumType<TestColors>::name2value("Gray") << endl;
+  std::cout << "White => " << (int)TEnumType<TestColors>::name2value("White") << "\n";
+  std::cout << "Black => " << (int)TEnumType<TestColors>::name2value("Black") << "\n";
+  std::cout << "Gray  => " << (int)TEnumType<TestColors>::name2value("Gray") << "\n";
 
-  cout << "7    <= " << TEnumType<TestColors>::value2name(TestColors(7)) << endl;
+  std::cout << "7    <= " << TEnumType<TestColors>::value2name(TestColors(7)) << "\n";
 }
 //! [example]
 
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << e.what() << std::endl;
+    std::cerr << "MRPT error: " << e.what() << "\n";
     return -1;
   }
 }

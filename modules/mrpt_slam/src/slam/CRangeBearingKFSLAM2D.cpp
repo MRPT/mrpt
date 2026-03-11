@@ -949,8 +949,10 @@ void CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile(
     const string& styleRobot) const
 {
   FILE* f = os::fopen(fil.c_str(), "wt");
-  if (!f) return;
-
+  if (!f)
+  {
+    return;
+  }
   CMatrixDouble cov(2, 2);
   CVectorDouble mean(2);
 

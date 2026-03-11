@@ -24,7 +24,7 @@
 #include <iostream>
 #include <thread>
 
-//#define HAS_SYSTEM_OCTOMAP
+// #define HAS_SYSTEM_OCTOMAP
 
 #ifdef HAS_SYSTEM_OCTOMAP
 #include <octomap/OcTree.h>
@@ -62,13 +62,13 @@ void TestOctoMap()
 
     pt = mrpt::math::TPoint3D(1, 1, 1);
     is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
-    cout << "pt: " << pt << " is mapped?: " << (is_mapped ? "YES" : "NO") << " occupancy: " << occup
-         << endl;
+    std::cout << "pt: " << pt << " is mapped?: " << (is_mapped ? "YES" : "NO")
+              << " occupancy: " << occup << "\n";
 
     pt = mrpt::math::TPoint3D(-1, -1, 1);
     is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
-    cout << "pt: " << pt << " is mapped?: " << (is_mapped ? "YES" : "NO") << " occupancy: " << occup
-         << endl;
+    std::cout << "pt: " << pt << " is mapped?: " << (is_mapped ? "YES" : "NO")
+              << " occupancy: " << occup << "\n";
   }
 
   // Insert 2D scan:
@@ -110,12 +110,13 @@ void TestOctoMap()
     for (auto it = om.begin_leafs(); it != om.end_leafs(); ++it)
     {
       const octomap::point3d pt = it.getCoordinate();
-      cout << "pt: " << pt << " -> occupancy = " << it->getOccupancy() << endl;
+      std::cout << "pt: " << pt << " -> occupancy = " << it->getOccupancy() << "\n";
     }
   }
 #endif
 
-  cout << "Close the window to exit" << endl;
+  std::cout << "Close the window to exit"
+            << "\n";
 
   bool update_msg = true;
 
@@ -177,7 +178,7 @@ int main(int argc, char** argv)
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

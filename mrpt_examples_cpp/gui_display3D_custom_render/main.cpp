@@ -101,15 +101,18 @@ void TestDisplay3D()
   win.addTextMessage(0.01, 0.85, "This is a 2D message", 0 /*id */);
 
   win.setCameraElevationDeg(25.0f);
-  // win.setCameraProjective(false);
+  // win.setProjectiveModel(false);
 
   win.addTextMessage(0.7, 0.9, "Press 'h' for help", 1 /*id*/);
 
-  cout << endl;
-  cout << "Control with mouse or keyboard. Valid keys:" << endl;
-  cout << "  ESC                        -> Exit" << endl;
-  cout << "  Left/right cursor arrow    -> Camera azimuth" << endl;
-  cout << endl;
+  std::cout << "\n";
+  std::cout << "Control with mouse or keyboard. Valid keys:"
+            << "\n";
+  std::cout << "  ESC                        -> Exit"
+            << "\n";
+  std::cout << "  Left/right cursor arrow    -> Camera azimuth"
+            << "\n";
+  std::cout << "\n";
 
   bool end = false;
 
@@ -177,7 +180,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

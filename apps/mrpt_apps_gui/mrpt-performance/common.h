@@ -43,7 +43,6 @@ void register_tests_random();
 void register_tests_math();
 void register_tests_image();
 void register_tests_scan_matching();
-void register_tests_feature_extraction();
 
 void register_tests_graph();
 void register_tests_graphslam();
@@ -60,7 +59,7 @@ using TestFunctor = std::function<double(int, int)>;  // return run-time in secs
 struct TestData
 {
   TestData(const char* nam, TestFunctor f, int a1 = 0, int a2 = 0) :
-      name(nam), func(f), arg1(a1), arg2(a2)
+      name(nam), func(std::move(f)), arg1(a1), arg2(a2)
   {
   }
 

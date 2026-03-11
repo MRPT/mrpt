@@ -59,8 +59,10 @@ void CPose3DPDFParticles::getMean(CPose3D& p) const
   MRPT_START
   // Default to (0,..,0)
   p = CPose3D();
-  if (m_particles.empty()) return;
-
+  if (m_particles.empty())
+  {
+    return;
+  }
   // Calc average on SE(3)
   mrpt::poses::SE_average<3> se_averager;
   for (const auto& part : m_particles)

@@ -63,7 +63,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cout << "MRPT exception caught: " << e.what() << std::endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

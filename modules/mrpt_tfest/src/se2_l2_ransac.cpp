@@ -30,7 +30,7 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
-//#define AVOID_MULTIPLE_CORRESPONDENCES
+// #define AVOID_MULTIPLE_CORRESPONDENCES
 
 namespace
 {
@@ -90,7 +90,7 @@ bool tfest::se2_l2_robust(
     const TSE2RobustParams& params,
     TSE2RobustResult& results)
 {
-  //#define DO_PROFILING
+  // #define DO_PROFILING
 
 #ifdef DO_PROFILING
   CTimeLogger timlog;
@@ -552,8 +552,9 @@ bool tfest::se2_l2_robust(
 
         if (params.verbose)
         {
-          cout << "[tfest::RANSAC] Iter #" << iter_idx << ":est. # iters=" << results.ransac_iters
-               << " pNoOutliers=" << pNoOutliers << " #inliers: " << numInliers << "\n";
+          std::cout << "[tfest::RANSAC] Iter #" << iter_idx
+                    << ":est. # iters=" << results.ransac_iters << " pNoOutliers=" << pNoOutliers
+                    << " #inliers: " << numInliers << "\n";
         }
       }
     }
@@ -563,8 +564,8 @@ bool tfest::se2_l2_robust(
     {
       if (params.verbose)
       {
-        cout << "[tfest::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size()
-             << " inliers, RMSE=" << this_subset_RMSE << "\n";
+        std::cout << "[tfest::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size()
+                  << " inliers, RMSE=" << this_subset_RMSE << "\n";
       }
 
       results.largestSubSet = subSet;
@@ -584,7 +585,7 @@ bool tfest::se2_l2_robust(
 
   if (params.verbose)
   {
-    cout << "[tfest::RANSAC] Finished after " << iter_idx << " iterations.\n";
+    std::cout << "[tfest::RANSAC] Finished after " << iter_idx << " iterations.\n";
   }
 
   // Set the weights of the particles to sum the unity:

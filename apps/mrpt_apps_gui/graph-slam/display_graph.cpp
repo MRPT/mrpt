@@ -221,7 +221,7 @@ void display_graph(const GRAPHTYPE& g)
 
   win.addTextMessage(0.8, 0.94, "Press 'h' for help");
 
-  cout << "Close the window to exit.\n";
+  std::cout << "Close the window to exit.\n";
   while (win.isOpen())
   {
     if (win_feedback.request_to_refresh_3D_view)

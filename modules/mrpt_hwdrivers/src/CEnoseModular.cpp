@@ -127,8 +127,8 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
     if (!comms)
     {
-      cout << "ERORR: Problem connecting to Device."
-           << "\n";
+      std::cout << "ERORR: Problem connecting to Device."
+                << "\n";
       return false;
     }
 
@@ -156,8 +156,8 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
     if (time_out)
     {
-      cout << "[CEnoseModular - getObservation] measurement Timed-Out"
-           << "\n";
+      std::cout << "[CEnoseModular - getObservation] measurement Timed-Out"
+                << "\n";
       return false;
     }
 
@@ -216,8 +216,8 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
     }
     else
     {
-      cout << "Message was empty"
-           << "\n";
+      std::cout << "Message was empty"
+                << "\n";
       return false;
     }
   }
@@ -255,8 +255,8 @@ void CEnoseModular::doProcess()
   else
   {
     m_state = ssError;
-    cout << "No observation received from the USB board!"
-         << "\n";
+    std::cout << "No observation received from the USB board!"
+              << "\n";
     // THROW_EXCEPTION("No observation received from the USB board!");
   }
 }
@@ -266,8 +266,10 @@ void CEnoseModular::doProcess()
 -------------------------------------------------------------*/
 void CEnoseModular::purgeBuffers()
 {
-  if (!checkConnectionAndConnect()) return;
-
+  if (!checkConnectionAndConnect())
+  {
+    return;
+  }
   if (m_stream_FTDI)
   {  // FTDI pipe
     m_stream_FTDI->Purge();

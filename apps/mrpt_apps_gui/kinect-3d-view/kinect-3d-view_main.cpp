@@ -75,16 +75,16 @@ void thread_grabbing(TThreadParam& p)
     const std::string cfgFile = "kinect_calib.cfg";
     if (mrpt::system::fileExists(cfgFile))
     {
-      cout << "Loading calibration from: " << cfgFile << endl;
+      std::cout << "Loading calibration from: " << cfgFile << "\n";
       kinect.loadConfig(mrpt::config::CConfigFile(cfgFile), "KINECT");
     }
     else
       cerr << "Warning: Calibration file [" << cfgFile << "] not found -> Using default params.\n";
 
     // Open:
-    cout << "Calling CKinect::initialize()...";
+    std::cout << "Calling CKinect::initialize()...";
     kinect.initialize();
-    cout << "OK\n";
+    std::cout << "OK\n";
 
     mrpt::system::CTicTac tictac;
     int nImgs = 0;
@@ -147,7 +147,7 @@ void thread_grabbing(TThreadParam& p)
   }
   catch (const std::exception& e)
   {
-    cout << "Exception in Kinect thread: " << mrpt::exception_to_str(e) << endl;
+    std::cout << "Exception in Kinect thread: " << mrpt::exception_to_str(e) << "\n";
     p.quit = true;
   }
 }
@@ -164,7 +164,7 @@ void Test_Kinect()
 
   // Wait until data stream starts so we can say for sure the sensor has been
   // initialized OK:
-  cout << "Waiting for sensor initialization...\n";
+  std::cout << "Waiting for sensor initialization...\n";
   do
   {
     CObservation3DRangeScan::Ptr possiblyNewObs = std::atomic_load(&thrPar.new_obs);
@@ -175,8 +175,10 @@ void Test_Kinect()
   } while (!thrPar.quit);
 
   // Check error condition:
-  if (thrPar.quit) return;
-
+  if (thrPar.quit)
+  {
+    return;
+  }
   // Create window and prepare OpenGL object in the scene:
   // --------------------------------------------------------
   mrpt::gui::CDisplayWindow3D win3D("Kinect 3D view", 800, 600);
@@ -374,10 +376,10 @@ void Test_Kinect()
     std::this_thread::sleep_for(1ms);
   }
 
-  cout << "Waiting for grabbing thread to exit...\n";
+  std::cout << "Waiting for grabbing thread to exit...\n";
   thrPar.quit = true;
   if (thHandle.joinable()) thHandle.join();
-  cout << "Bye!\n";
+  std::cout << "Bye!\n";
 }
 
 int main()

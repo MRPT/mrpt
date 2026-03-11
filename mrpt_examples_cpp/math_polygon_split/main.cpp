@@ -64,7 +64,7 @@ void display()
     plotName[7]++;
     it->getPlotData(x, y);
     win2.plot(x, y, "r-3", plotName);
-    if (!it->isConvex()) cout << "FAIL.\n";
+    if (!it->isConvex()) std::cout << "FAIL.\n";
   }
   win2.axis_fit();
   while (!mrpt::system::os::kbhit() && win1.isOpen() && win2.isOpen())

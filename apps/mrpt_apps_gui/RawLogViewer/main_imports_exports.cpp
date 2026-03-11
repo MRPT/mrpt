@@ -90,8 +90,10 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
   wxFileDialog dialog(
       this, caption, defaultDir, defaultFilename, wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   // Save the path
   WX_START_TRY
   iniFile->write(iniFileSect, "LastDir", string(dialog.GetDirectory().mb_str()));
@@ -252,7 +254,10 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
   wxDirDialog dirDialog(
       this, _("Choose the directory that contains the images"), _("."), 0, wxDefaultPosition);
 
-  if (dirDialog.ShowModal() != wxID_OK) return;
+  if (dirDialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   string inDir(dirDialog.GetPath().mb_str());
 
   // Explore ir:
@@ -530,8 +535,10 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
   wxFileDialog dialog(
       this, caption, defaultDir, defaultFilename, wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   // Save the path
   WX_START_TRY
   iniFile->write(iniFileSect, "LastDir", string(dialog.GetDirectory().mb_str()));
@@ -666,8 +673,10 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
     wxFileDialog dialog2(
         this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog2.ShowModal() != wxID_OK) return;
-
+    if (dialog2.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     target_filename = string(dialog2.GetPath().mbc_str());
   }
 
@@ -731,8 +740,10 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
   wxFileDialog dialog(
       this, caption, defaultDir, defaultFilename, wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   // Save the path
   WX_START_TRY
   iniFile->write(iniFileSect, "LastDir", string(dialog.GetDirectory().mb_str()));
@@ -903,8 +914,10 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
     wxFileDialog dialog2(
         this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog2.ShowModal() != wxID_OK) return;
-
+    if (dialog2.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     target_filename = string(dialog2.GetPath().mbc_str());
   }
 
@@ -919,8 +932,10 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
         this, _("Choose the directory containing the image files from the log"),
         (iniFile->read_string(iniFileSect, "LastDir", ".").c_str()), 0, wxDefaultPosition);
 
-    if (dirDialog.ShowModal() != wxID_OK) return;
-
+    if (dirDialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     dir_for_images = string(dirDialog.GetPath().mb_str());
   }
   else
@@ -1092,7 +1107,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
             obs->image.setExternalStorage(it->second.imgFile);
           }
           else
-            cerr << "Image file does not exist: " << img_file << endl;
+            cerr << "Image file does not exist: " << img_file << "\n";
         }
         break;
       };
@@ -1512,8 +1527,10 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
   wxString defaultFilename = _("*.circles");
   wxFileDialog dialog(
       this, caption, defaultDir, defaultFilename, wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-  if (dialog.ShowModal() != wxID_OK) return;
-  // Save the path
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }  // Save the path
   WX_START_TRY
   iniFile->write(iniFileSect, "LastDir", string(dialog.GetDirectory().mb_str()));
   WX_END_TRY
@@ -1803,25 +1820,25 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
   // Extra info, to the console:
   if (stats_stdRanges.size() != 0)
   {
-    cout << "[ImportBremenDLRLog] Stats for: " << import_filename << endl;
+    std::cout << "[ImportBremenDLRLog] Stats for: " << import_filename << "\n";
 
     double stdRange_mean, stdRange_std;
     double stdYaw_mean, stdYaw_std;
     mrpt::math::meanAndStd(stats_stdRanges, stdRange_mean, stdRange_std);
     mrpt::math::meanAndStd(stats_stdYaw, stdYaw_mean, stdYaw_std);
-    cout << "[ImportBremenDLRLog] Computed stdRange (m): mean= " << stdRange_mean
-         << " std= " << stdRange_std << endl;
-    cout << "[ImportBremenDLRLog] Computed stdYaw (deg): mean= " << RAD2DEG(stdYaw_mean)
-         << " std= " << RAD2DEG(stdYaw_std) << endl;
+    std::cout << "[ImportBremenDLRLog] Computed stdRange (m): mean= " << stdRange_mean
+              << " std= " << stdRange_std << "\n";
+    std::cout << "[ImportBremenDLRLog] Computed stdYaw (deg): mean= " << RAD2DEG(stdYaw_mean)
+              << " std= " << RAD2DEG(stdYaw_std) << "\n";
 
     double stdX_mean, stdX_std;
     double stdY_mean, stdY_std;
     mrpt::math::meanAndStd(stats_stdXs, stdX_mean, stdX_std);
     mrpt::math::meanAndStd(stats_stdYs, stdY_mean, stdY_std);
-    cout << "[ImportBremenDLRLog] Computed stdX (m): mean= " << stdX_mean << " std= " << stdX_std
-         << endl;
-    cout << "[ImportBremenDLRLog] Computed stdY (m): mean= " << stdY_mean << " std= " << stdY_std
-         << endl;
+    std::cout << "[ImportBremenDLRLog] Computed stdX (m): mean= " << stdX_mean
+              << " std= " << stdX_std << "\n";
+    std::cout << "[ImportBremenDLRLog] Computed stdY (m): mean= " << stdY_mean
+              << " std= " << stdY_std << "\n";
   }
 
   WX_END_TRY

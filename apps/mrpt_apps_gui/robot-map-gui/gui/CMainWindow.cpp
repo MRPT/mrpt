@@ -117,8 +117,10 @@ CMainWindow::~CMainWindow()
 
 void CMainWindow::loadMap(const QString& fileName)
 {
-  if (fileName.size() == 0) return;
-
+  if (fileName.size() == 0)
+  {
+    return;
+  }
   createNewDocument();
 
   {
@@ -168,31 +170,41 @@ void CMainWindow::openMap()
 
 void CMainWindow::saveMap()
 {
-  if (!m_document) return;
-
+  if (!m_document)
+  {
+    return;
+  }
   m_document->saveSimpleMap();
   updateSaveButtonState();
 }
 
 void CMainWindow::saveAsText()
 {
-  if (!m_document) return;
-
+  if (!m_document)
+  {
+    return;
+  }
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as txt"), "", tr("Files (*.txt)"));
 
-  if (fileName.size() == 0) return;
-
+  if (fileName.size() == 0)
+  {
+    return;
+  }
   m_document->saveAsText(fileName.toStdString());
 }
 
 void CMainWindow::saveAsPNG()
 {
-  if (!m_document) return;
-
+  if (!m_document)
+  {
+    return;
+  }
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as txt"), "", tr("Files (*.png)"));
 
-  if (fileName.size() == 0) return;
-
+  if (fileName.size() == 0)
+  {
+    return;
+  }
   m_document->saveAsPng(fileName.toStdString());
 }
 
@@ -260,7 +272,10 @@ void CMainWindow::itemClicked(const QModelIndex& index)
 
 void CMainWindow::updateConfig()
 {
-  if (!m_document) return;
+  if (!m_document)
+  {
+    return;
+  }
   mrpt::maps::TSetOfMetricMapInitializers mapCfg = m_ui->m_configWidget->config();
   m_document->setListOfMaps(mapCfg);
   updateRenderMapFromConfig();
@@ -268,8 +283,10 @@ void CMainWindow::updateConfig()
 
 void CMainWindow::openConfig(const std::string& str)
 {
-  if (!m_document) return;
-
+  if (!m_document)
+  {
+    return;
+  }
   m_document->setConfig(str);
 
   auto config = m_document->config();
@@ -279,8 +296,10 @@ void CMainWindow::openConfig(const std::string& str)
 
 void CMainWindow::applyConfigurationForCurrentMaps()
 {
-  if (!m_document) return;
-
+  if (!m_document)
+  {
+    return;
+  }
   mrpt::maps::TSetOfMetricMapInitializers mapCfg = m_ui->m_configWidget->config();
   m_document->setListOfMaps(mapCfg);
 
@@ -310,8 +329,10 @@ void CMainWindow::selectedChanged(const std::vector<size_t>& idx)
 void CMainWindow::addRobotPosesFromMap(
     std::vector<size_t> idx, mrpt::maps::CSimpleMap::KeyframeList posesObsPairs)
 {
-  if (!m_document || idx.empty()) return;
-
+  if (!m_document || idx.empty())
+  {
+    return;
+  }
   m_document->insert(idx, posesObsPairs);
   updateSaveButtonState();
   applyMapsChanges();
@@ -319,8 +340,10 @@ void CMainWindow::addRobotPosesFromMap(
 
 void CMainWindow::deleteRobotPosesFromMap(const std::vector<size_t>& idx)
 {
-  if (!m_document || idx.empty()) return;
-
+  if (!m_document || idx.empty())
+  {
+    return;
+  }
   m_document->remove(idx);
   updateSaveButtonState();
   applyMapsChanges();
@@ -328,8 +351,10 @@ void CMainWindow::deleteRobotPosesFromMap(const std::vector<size_t>& idx)
 
 void CMainWindow::moveRobotPosesOnMap(const std::vector<size_t>& idx, const QPointF& dist)
 {
-  if (!m_document || idx.empty()) return;
-
+  if (!m_document || idx.empty())
+  {
+    return;
+  }
   mrpt::maps::CSimpleMap::KeyframeList posesObsPairs = m_document->get(idx);
   for (auto& poseSf : posesObsPairs)
   {
@@ -346,22 +371,30 @@ void CMainWindow::moveRobotPosesOnMap(const std::vector<size_t>& idx, const QPoi
 
 void CMainWindow::undo()
 {
-  if (!CUndoManager::instance().hasUndo()) return;
+  if (!CUndoManager::instance().hasUndo())
+  {
+    return;
+  }
   UserAction action = CUndoManager::instance().undoAction();
   action();
 }
 
 void CMainWindow::redo()
 {
-  if (!CUndoManager::instance().hasRedo()) return;
+  if (!CUndoManager::instance().hasRedo())
+  {
+    return;
+  }
   UserAction action = CUndoManager::instance().redoAction();
   action();
 }
 
 void CMainWindow::deleteRobotPoses(const std::vector<size_t>& idx)
 {
-  if (!m_document || idx.empty()) return;
-
+  if (!m_document || idx.empty())
+  {
+    return;
+  }
   mrpt::maps::CSimpleMap::KeyframeList posesObsPairs = m_document->getReverse(idx);
 
   auto reverseInd = m_document->remove(idx);
@@ -379,8 +412,10 @@ void CMainWindow::deleteRobotPoses(const std::vector<size_t>& idx)
 
 void CMainWindow::moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist)
 {
-  if (!m_document || idx.empty()) return;
-
+  if (!m_document || idx.empty())
+  {
+    return;
+  }
   moveRobotPosesOnMap(idx, dist);
   auto redo = [idx, dist, this]() { this->moveRobotPosesOnMap(idx, dist); };
   auto undo = [idx, dist, this]()
@@ -399,13 +434,17 @@ void CMainWindow::openRecent()
 
 void CMainWindow::saveMetricMapRepresentation()
 {
-  if (!m_document) return;
-
+  if (!m_document)
+  {
+    return;
+  }
   QString fileName =
       QFileDialog::getSaveFileName(this, tr("Save as representation"), "", tr("Files (*)"));
 
-  if (fileName.size() == 0) return;
-
+  if (fileName.size() == 0)
+  {
+    return;
+  }
   QAction* action = qobject_cast<QAction*>(sender());
   m_document->saveMetricMapRepresentationToFile(
       fileName.toStdString(), action->text().toStdString());
@@ -413,13 +452,17 @@ void CMainWindow::saveMetricMapRepresentation()
 
 void CMainWindow::saveMetricmapInBinaryFormat()
 {
-  if (!m_document) return;
-
+  if (!m_document)
+  {
+    return;
+  }
   QString fileName =
       QFileDialog::getSaveFileName(this, tr("Save in binary format"), "", tr("Files (*)"));
 
-  if (fileName.size() == 0) return;
-
+  if (fileName.size() == 0)
+  {
+    return;
+  }
   QAction* action = qobject_cast<QAction*>(sender());
 
   m_document->saveMetricmapInBinaryFormat(fileName.toStdString(), action->text().toStdString());
@@ -427,8 +470,10 @@ void CMainWindow::saveMetricmapInBinaryFormat()
 
 void CMainWindow::updateDirection(size_t index, double yaw, double pitch, double roll)
 {
-  if (!m_document) return;
-
+  if (!m_document)
+  {
+    return;
+  }
   auto posesObsPair = m_document->get(index);
 
   auto posePDF = posesObsPair.pose;
@@ -458,8 +503,10 @@ void CMainWindow::hidePoseDirection() { m_ui->m_dockWidgetDirection->setVisible(
 
 void CMainWindow::updateRenderMapFromConfig()
 {
-  if (!m_document) return;
-
+  if (!m_document)
+  {
+    return;
+  }
   auto renderizableMaps = m_document->renderizableMaps();
   m_ui->m_viewer->updateConfigChanges(
       renderizableMaps, m_document, m_ui->m_actionShowAllObs->isChecked());

@@ -52,7 +52,7 @@ int main()
 			// Example for mrpt_recv_from_zmq_into():
 			mrpt::poses::CPose3D pose;
 			mrpt_recv_from_zmq_into(sub_sock, pose);
-			std::cout << "pose: "<< pose << std::endl;
+			std::cout << "pose: "<< pose << "\n";
 #endif
     }
 
@@ -62,7 +62,7 @@ int main()
   }
   catch (std::exception& e)
   {
-    std::cerr << "**Exception**: " << e.what() << std::endl;
+    std::cerr << "**Exception**: " << e.what() << "\n";
     return -1;
   }
 }

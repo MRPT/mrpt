@@ -27,8 +27,10 @@ void PointsProxy::compile(const CVisualObject* sourceObj)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
-
+  if (!sourceObj)
+  {
+    return;
+  }
   // Extract point rendering parameters
   extractPointParams(sourceObj);
 
@@ -44,8 +46,10 @@ void PointsProxy::updateBuffers(const CVisualObject* sourceObj)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
-
+  if (!sourceObj)
+  {
+    return;
+  }
   // Update cached parameters
   extractPointParams(sourceObj);
 
@@ -61,8 +65,10 @@ void PointsProxy::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (m_pointCount == 0) return;
-
+  if (m_pointCount == 0)
+  {
+    return;
+  }
   // Upload point-specific uniforms
   uploadPointUniforms(rc);
 
@@ -76,8 +82,10 @@ void PointsProxy::render(const RenderContext& rc) const
 void PointsProxy::extractPointParams(const CVisualObject* sourceObj)
 {
   const auto* pointsObj = dynamic_cast<const VisualObjectParams_Points*>(sourceObj);
-  if (!pointsObj) return;
-
+  if (!pointsObj)
+  {
+    return;
+  }
   m_params.pointSize = pointsObj->getPointSize();
   m_params.variablePointSize = pointsObj->isEnabledVariablePointSize();
   m_params.variablePointSize_K = pointsObj->getVariablePointSize_k();
@@ -87,8 +95,10 @@ void PointsProxy::extractPointParams(const CVisualObject* sourceObj)
 void PointsProxy::uploadPointUniforms(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!rc.shader) return;
-
+  if (!rc.shader)
+  {
+    return;
+  }
   // Point size uniform
   if (rc.shader->hasUniform("vertexPointSize"))
   {

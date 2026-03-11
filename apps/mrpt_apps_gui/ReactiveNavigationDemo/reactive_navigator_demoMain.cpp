@@ -923,11 +923,11 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent, wxW
   gl_robot->insert(gl_robot_ptg_prediction);
 
   // Set camera:
-  m_plot3D->setCameraPointing(0.0f, 0.0f, 0.0f);
-  m_plot3D->setZoomDistance(40.0f);
-  m_plot3D->setElevationDegrees(70.0f);
-  m_plot3D->setAzimuthDegrees(-100.0f);
-  m_plot3D->setCameraProjective(true);
+  m_plot3D->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+  m_plot3D->orbitCameraController().setZoomDistance(40.0f);
+  m_plot3D->orbitCameraController().setElevationDegrees(70.0f);
+  m_plot3D->orbitCameraController().setAzimuthDegrees(-100.0f);
+  m_plot3D->orbitCameraController().setProjectiveModel(true);
 
   // Init simulator & its adaptor to the navigator
   {
@@ -974,11 +974,11 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent, wxW
   openGLSceneRef->insert(gl_nd_gaps);
 
   // Set camera:
-  m_plotLocalView->setCameraPointing(0.0f, 0.0f, 0.0f);
-  m_plotLocalView->setZoomDistance(2.2f);
-  m_plotLocalView->setElevationDegrees(90.0f);
-  m_plotLocalView->setAzimuthDegrees(-90.0f);
-  m_plotLocalView->setCameraProjective(true);
+  m_plotLocalView->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+  m_plotLocalView->orbitCameraController().setZoomDistance(2.2f);
+  m_plotLocalView->orbitCameraController().setElevationDegrees(90.0f);
+  m_plotLocalView->orbitCameraController().setAzimuthDegrees(-90.0f);
+  m_plotLocalView->orbitCameraController().setProjectiveModel(true);
 
   // Update positions of stuff:
   this->updateViewsDynamicObjects();
@@ -1521,7 +1521,10 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
   // Intersection of 3D ray with ground plane ====================
   const auto rayOpt =
       m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
-  if (!rayOpt) return;
+  if (!rayOpt)
+  {
+    return;
+  }
   TLine3D ray = *rayOpt;
   // Create a 3D plane, e.g. Z=0
   const TPlane ground_plane(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0), TPoint3D(0, 1, 0));
@@ -1750,8 +1753,10 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick(wxCommandEvent& event)
           "|*.png;*.jpg;*.gif;*.gridmap;*.gridmap.gz|All files (*.*)|*.*"),
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (dlg.ShowModal() != wxID_OK) return;
-
+  if (dlg.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   const wxString sFil = dlg.GetPath();
   const std::string fil = std::string(sFil.mb_str());
 
@@ -1886,7 +1891,10 @@ void reactive_navigator_demoframe::OnbtnEmptyMapClick(wxCommandEvent& event)
   double res = 0.25;
   wxString s;
   s = wxGetTextFromUser(_("Width (x) [meters]:"), _("New map"), _("40.0"), this);
-  if (s.IsEmpty()) return;
+  if (s.IsEmpty())
+  {
+    return;
+  }
   if (!s.ToCDouble(&lx))
   {
     wxMessageBox(_("Invalid number"));
@@ -1894,7 +1902,10 @@ void reactive_navigator_demoframe::OnbtnEmptyMapClick(wxCommandEvent& event)
   }
 
   s = wxGetTextFromUser(_("Height (y) [meters]:"), _("New map"), _("30.0"), this);
-  if (s.IsEmpty()) return;
+  if (s.IsEmpty())
+  {
+    return;
+  }
   if (!s.ToCDouble(&ly))
   {
     wxMessageBox(_("Invalid number"));
@@ -1902,7 +1913,10 @@ void reactive_navigator_demoframe::OnbtnEmptyMapClick(wxCommandEvent& event)
   }
 
   s = wxGetTextFromUser(_("Grid resolution [meters]:"), _("New map"), _("0.25"), this);
-  if (s.IsEmpty()) return;
+  if (s.IsEmpty())
+  {
+    return;
+  }
   if (!s.ToCDouble(&res))
   {
     wxMessageBox(_("Invalid number"));
@@ -1928,8 +1942,10 @@ void reactive_navigator_demoframe::OnbtnSaveMapClick(wxCommandEvent& event)
           "(*.*)|*.*"),
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-  if (dlg.ShowModal() != wxID_OK) return;
-
+  if (dlg.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   CCompressedOutputStream f(std::string(dlg.GetPath().mb_str()));
   archiveFrom(f) << m_gridMap;
 

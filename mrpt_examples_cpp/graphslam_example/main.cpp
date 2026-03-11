@@ -120,8 +120,8 @@ struct ExampleDemoGraphSLAM
   {
     log_sq_err_evolution.push_back(std::log(cur_sq_error));
     if ((iter % 100) == 0)
-      cout << "Progress: " << iter << " / " << max_iter << ", total sq err = " << cur_sq_error
-           << endl;
+      std::cout << "Progress: " << iter << " / " << max_iter << ", total sq err = " << cur_sq_error
+                << "\n";
   }
 
   // ------------------------------------------------------
@@ -210,8 +210,8 @@ struct ExampleDemoGraphSLAM
     // This is the ground truth graph (make a copy for later use):
     const my_graph_t graph_GT = graph;
 
-    cout << "graph nodes: " << graph_GT.nodeCount() << endl;
-    cout << "graph edges: " << graph_GT.edgeCount() << endl;
+    std::cout << "graph nodes: " << graph_GT.nodeCount() << "\n";
+    std::cout << "graph edges: " << graph_GT.edgeCount() << "\n";
 
     // Add noise to edges & nodes:
     for (typename my_graph_t::edges_map_t::iterator itEdge = graph.edges.begin();
@@ -263,11 +263,12 @@ struct ExampleDemoGraphSLAM
     graphslam::TResultInfoSpaLevMarq levmarq_info;
     log_sq_err_evolution.clear();
 
-    cout << "Global graph RMS error / edge = "
-         << std::sqrt(graph.getGlobalSquareError(false) / graph.edgeCount()) << endl;
-    cout << "Global graph RMS error / edge = "
-         << std::sqrt(graph.getGlobalSquareError(true) / graph.edgeCount())
-         << " (ignoring information matrices)." << endl;
+    std::cout << "Global graph RMS error / edge = "
+              << std::sqrt(graph.getGlobalSquareError(false) / graph.edgeCount()) << "\n";
+    std::cout << "Global graph RMS error / edge = "
+              << std::sqrt(graph.getGlobalSquareError(true) / graph.edgeCount())
+              << " (ignoring information matrices)."
+              << "\n";
 
     // Do the optimization
     graphslam::optimize_graph_spa_levmarq(
@@ -276,11 +277,12 @@ struct ExampleDemoGraphSLAM
         // node.
         params, &my_levmarq_feedback<my_graph_t>);
 
-    cout << "Global graph RMS error / edge = "
-         << std::sqrt(graph.getGlobalSquareError(false) / graph.edgeCount()) << endl;
-    cout << "Global graph RMS error / edge = "
-         << std::sqrt(graph.getGlobalSquareError(true) / graph.edgeCount())
-         << " (ignoring information matrices)." << endl;
+    std::cout << "Global graph RMS error / edge = "
+              << std::sqrt(graph.getGlobalSquareError(false) / graph.edgeCount()) << "\n";
+    std::cout << "Global graph RMS error / edge = "
+              << std::sqrt(graph.getGlobalSquareError(true) / graph.edgeCount())
+              << " (ignoring information matrices)."
+              << "\n";
 
     // ----------------------------
     //  Display results:
@@ -346,7 +348,7 @@ struct ExampleDemoGraphSLAM
     win_err.axis_fit();
 
     // wait end:
-    cout << "Close any window to end...\n";
+    std::cout << "Close any window to end...\n";
     while (win.isOpen() && win_err.isOpen() && !mrpt::system::os::kbhit())
     {
       std::this_thread::sleep_for(10ms);
@@ -360,13 +362,13 @@ int main()
   {
     // typedef CNetworkOfPoses<CPose2D,map_traits_map_as_vector> my_graph_t;
 
-    cout << "Select the type of graph to optimize:\n"
-            "1.  CNetworkOfPoses2D \n"
-            "2.  CNetworkOfPoses2DInf \n"
-            "3.  CNetworkOfPoses3D \n"
-            "4.  CNetworkOfPoses3DInf \n";
+    std::cout << "Select the type of graph to optimize:\n"
+                 "1.  CNetworkOfPoses2D \n"
+                 "2.  CNetworkOfPoses2DInf \n"
+                 "3.  CNetworkOfPoses3D \n"
+                 "4.  CNetworkOfPoses3DInf \n";
 
-    cout << ">> ";
+    std::cout << ">> ";
 
     int i = 0;
     {
@@ -377,7 +379,7 @@ int main()
     }
 
     bool add_extra_tightening_edge;
-    cout << "Add an extra, incompatible tightening edge? [y/N] ";
+    std::cout << "Add an extra, incompatible tightening edge? [y/N] ";
     {
       string l;
       std::getline(cin, l);
@@ -418,7 +420,7 @@ int main()
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

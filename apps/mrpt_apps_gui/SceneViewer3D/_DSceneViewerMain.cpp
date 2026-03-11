@@ -236,8 +236,10 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 
   string str = format(
       "Center=(%.02f,%.02f,%.02f) Zoom:%.02f AZ=%.02f deg EL:%.02f deg ROLL:%.02f",
-      getCameraPointingX(), getCameraPointingY(), getCameraPointingZ(), getZoomDistance(),
-      getAzimuthDegrees(), getElevationDegrees(), getRollDegrees());
+      orbitCameraController().getCameraPointingX(), orbitCameraController().getCameraPointingY(),
+      orbitCameraController().getCameraPointingZ(), orbitCameraController().getZoomDistance(),
+      orbitCameraController().getAzimuthDegrees(), orbitCameraController().getElevationDegrees(),
+      orbitCameraController().getRollDegrees());
   theWindow->StatusBar1->SetStatusText(str.c_str(), 1);
 
   str = format("%.02f FPS", meanEstimatedFPS);
@@ -759,10 +761,10 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
     openGLSceneRef->insert(obj);
   }
 
-  m_canvas->setCameraPointing(0.0f, 0.0f, 0.0f);
-  m_canvas->setZoomDistance(20.0f);
-  m_canvas->setElevationDegrees(45.0f);
-  m_canvas->setAzimuthDegrees(45.0f);
+  m_canvas->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+  m_canvas->orbitCameraController().setZoomDistance(20.0f);
+  m_canvas->orbitCameraController().setElevationDegrees(45.0f);
+  m_canvas->orbitCameraController().setAzimuthDegrees(45.0f);
 
   openGLSceneRef->insert(stock_objects::CornerXYZ());
 
@@ -805,7 +807,8 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
 
     CCompressedInputStream f(fil);
 
-    const auto oldCanvasCamera = m_canvas->cameraParams();
+    mrpt::viz::CCamera oldCanvasCamera;
+    m_canvas->orbitCameraController().applyTo(oldCanvasCamera);
 
     static mrpt::system::CTicTac tictac;
     auto& openGLSceneRef = m_canvas->getOpenGLSceneRef();
@@ -843,7 +846,7 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
       bool camIsCCameraObj = cam ? true : false;
       if (!camIsCCameraObj) cam = CCamera::Create(view->getCamera());
 
-      m_canvas->setCameraPointing(
+      m_canvas->orbitCameraController().setCameraPointing(
           cam->getPointingAtX(), cam->getPointingAtY(), cam->getPointingAtZ());
 
       // If it's not loaded thru arrow keys or a timed sequence, take
@@ -852,18 +855,21 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
       {
         if (!freeCameraAlwaysNoAzimuth)
         {
-          m_canvas->setZoomDistance(cam->getZoomDistance());
-          m_canvas->setElevationDegrees(cam->getElevationDegrees());
+          m_canvas->orbitCameraController().setZoomDistance(cam->getZoomDistance());
+          m_canvas->orbitCameraController().setElevationDegrees(cam->getElevationDegrees());
         }
-        m_canvas->setAzimuthDegrees(cam->getAzimuthDegrees());
+        m_canvas->orbitCameraController().setAzimuthDegrees(cam->getAzimuthDegrees());
       }
 
       // Remove the camera from the object:
-      if (camIsCCameraObj) openGLSceneRef->removeObject(cam);
+      if (camIsCCameraObj)
+      {
+        openGLSceneRef->removeObject(cam);
+      }
     }
     else
     {
-      m_canvas->setCameraParams(oldCanvasCamera);
+      m_canvas->orbitCameraController().setFrom(oldCanvasCamera);
     }
 
     loadedFileName = fil;
@@ -903,8 +909,10 @@ void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
 {
   timLoadFileCmdLine.Stop();  // One shot only.
   // Open file if passed by the command line:
-  if (global_fileToOpen.empty()) return;
-
+  if (global_fileToOpen.empty())
+  {
+    return;
+  }
   if (mrpt::system::strCmpI(
           "3Dscene", mrpt::system::extractFileExtension(global_fileToOpen, true /*ignore .gz*/)))
   {
@@ -1049,7 +1057,7 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
 void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
 {
   bool ortho = btnOrtho->GetValue();
-  m_canvas->setCameraProjective(!ortho);
+  m_canvas->orbitCameraController().setProjectiveModel(!ortho);
 
   m_canvas->Refresh(false);
 }
@@ -1064,11 +1072,15 @@ void _DSceneViewerFrame::applyShadowsOptions()
 {
   bool shadowsEnabled = btnShadows->GetValue();
   auto scene = m_canvas->getOpenGLSceneRef();
-  if (!scene) return;
-
+  if (!scene)
+  {
+    return;
+  }
   auto vw = scene->getViewport();
-  if (!vw) return;
-
+  if (!vw)
+  {
+    return;
+  }
   vw->enableShadowCasting(shadowsEnabled);
 }
 
@@ -1095,8 +1107,10 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
     wxFileDialog dialog(
         this, caption, defaultDir, defaultFilename, wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     wxString fileName = dialog.GetPath();
     std::string fil = string(fileName.mb_str());
 
@@ -1135,8 +1149,10 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
     wxFileDialog dialog(
         this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     wxString fileName = dialog.GetPath();
 
     CCompressedOutputStream fo(string(fileName.mb_str()));
@@ -1204,7 +1220,9 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
         }
 
         if (valid)
-          m_canvas->setCameraPointing(p.x(), p.y(), p.z());
+        {
+          m_canvas->orbitCameraController().setCameraPointing(p.translation());
+        }
         else
         {
           // end of path:
@@ -1219,10 +1237,15 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
         // ===============================
         double step = atof(iniFile->read_string("Spherical travelling", "Step", "5").c_str());
 
-        if ((m_canvas->getAzimuthDegrees() + step) < maxv)
-          m_canvas->setAzimuthDegrees(m_canvas->getAzimuthDegrees() + step / 10.0);
+        if ((m_canvas->orbitCameraController().getAzimuthDegrees() + step) < maxv)
+        {
+          m_canvas->orbitCameraController().setAzimuthDegrees(
+              m_canvas->orbitCameraController().getAzimuthDegrees() + step / 10.0);
+        }
         else
+        {
           m_tTravelling.Stop();
+        }
       }
 
       Refresh(false);
@@ -1255,9 +1278,11 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
       Viewport::Ptr view = openGLSceneRef->getViewport("main");
 
       if (!view)
+      {
         THROW_EXCEPTION(
             "Fatal error: there is no 'main' viewport in the 3D "
             "scene!");
+      }
 
       double target_x = atof(iniFile->read_string("Spherical travelling", "X", "0").c_str());
       double target_y = atof(iniFile->read_string("Spherical travelling", "Y", "0").c_str());
@@ -1275,10 +1300,10 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
       double max_value =
           atof(iniFile->read_string("Spherical travelling", "Max value", "90").c_str());
 
-      m_canvas->setCameraPointing(target_x, target_y, target_z);
-      m_canvas->setZoomDistance(zoom);
-      m_canvas->setElevationDegrees(elevation);
-      m_canvas->setAzimuthDegrees(azimuth - min_value);
+      m_canvas->orbitCameraController().setCameraPointing(target_x, target_y, target_z);
+      m_canvas->orbitCameraController().setZoomDistance(zoom);
+      m_canvas->orbitCameraController().setElevationDegrees(elevation);
+      m_canvas->orbitCameraController().setAzimuthDegrees(azimuth - min_value);
 
       maxv = azimuth + max_value;
 
@@ -1354,8 +1379,10 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
   wxFileDialog dialog(
       this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   bool savedOk = frame.saveToFile(std::string(dialog.GetPath().mb_str()));
   ASSERT_(savedOk);
 }
@@ -1418,7 +1445,7 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent&)
     ss << "Number of objects: " << sceneStats.nObjects << endl
        << format("Overall points (in point clouds): %e", double(sceneStats.nPoints)) << endl
        << "Total octree nodes   (in point clouds): " << sceneStats.nOctreeTotal << endl
-       << "Visible octree nodes (in point clouds): " << sceneStats.nOctreeVisible << endl;
+       << "Visible octree nodes (in point clouds): " << sceneStats.nOctreeVisible << "\n";
 
     wxMessageBox(ss.str().c_str(), _("Scene statistics"));
   }
@@ -1447,14 +1474,18 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
         _("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
         wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     const std::string fil = string(dialog.GetPath().mb_str());
     saveLastUsedDirectoryToCfgFile(fil);
 
     CDlgPLYOptions dlgPLY(this);
-    if (dlgPLY.ShowModal() != wxID_OK) return;
-
+    if (dlgPLY.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     mrpt::viz::CPointCloud::Ptr gl_points;
     mrpt::viz::CPointCloudColoured::Ptr gl_points_col;
     mrpt::viz::PLY_Importer* ply_obj = nullptr;
@@ -1527,17 +1558,29 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
       ptCloudPose.pitch = DEG2RAD(ptCloudPose.pitch);
       ptCloudPose.roll = DEG2RAD(ptCloudPose.roll);
 
-      if (gl_points) gl_points->setPose(CPose3D(ptCloudPose));
-      if (gl_points_col) gl_points_col->setPose(CPose3D(ptCloudPose));
+      if (gl_points)
+      {
+        gl_points->setPose(CPose3D(ptCloudPose));
+      }
+      if (gl_points_col)
+      {
+        gl_points_col->setPose(CPose3D(ptCloudPose));
+      }
 
       // Insert point cloud into scene:
-      if (gl_points) openGLSceneRef->insert(gl_points);
-      if (gl_points_col) openGLSceneRef->insert(gl_points_col);
+      if (gl_points)
+      {
+        openGLSceneRef->insert(gl_points);
+      }
+      if (gl_points_col)
+      {
+        openGLSceneRef->insert(gl_points_col);
+      }
 
-      m_canvas->setCameraPointing(0.0f, 0.0f, 0.0f);
-      m_canvas->setZoomDistance(4.0f);
-      m_canvas->setAzimuthDegrees(45.0f);
-      m_canvas->setElevationDegrees(30.0f);
+      m_canvas->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+      m_canvas->orbitCameraController().setZoomDistance(4.0f);
+      m_canvas->orbitCameraController().setAzimuthDegrees(45.0f);
+      m_canvas->orbitCameraController().setElevationDegrees(30.0f);
 
       loadedFileName = std::string("Imported_") + fil + std::string(".3Dscene");
       updateTitle();
@@ -1602,8 +1645,10 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
         _("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     const std::string fil = string(dialog.GetPath().mb_str());
     saveLastUsedDirectoryToCfgFile(fil);
 
@@ -1811,8 +1856,10 @@ void _DSceneViewerFrame::OnmnuImportImageView(wxCommandEvent&)
           "*.jpg, *.bmp)|*.png;*.jpg;*.jpeg;*.bmp|All files (*.*)|*.*"),
         wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     const std::string fil = string(dialog.GetPath().mb_str());
     saveLastUsedDirectoryToCfgFile(fil);
 

@@ -58,21 +58,21 @@ void CNTRIPEmitter::doProcess()
       if (At > 5.0)
       {
         const double estim_rate_Bps = m_rate_count / At;
-        cout << format(
+        std::cout << format(
             "[NTRIP %s] Rate: %.02f B/s\n",
             mrpt::system::timeLocalToString(mrpt::Clock::now()).c_str(), estim_rate_Bps);
         m_rate_timer.Tic();
         m_rate_count = 0;
       }
 
-      cout << format(
+      std::cout << format(
           "[NTRIP %s] RX (%u bytes)\n", mrpt::system::timeLocalToString(mrpt::Clock::now()).c_str(),
           (unsigned int)buf.size());
     }
     if (m_out_COM.isOpen())
     {
       // Send through the serial port:
-      cout << format(
+      std::cout << format(
           "[NTRIP %s] RX: %u bytes\n", mrpt::system::timeLocalToString(mrpt::Clock::now()).c_str(),
           (unsigned)buf.size());
       m_out_COM.Write(&buf[0], buf.size());
@@ -93,7 +93,7 @@ void CNTRIPEmitter::doProcess()
     {
       rxbuf[nReadActual] = 0;
       if (m_verbose)
-        cout << format(
+        std::cout << format(
             "[NTRIP %s] TX (%u bytes)\n",
             mrpt::system::timeLocalToString(mrpt::Clock::now()).c_str(), (unsigned int)nReadActual);
     }
@@ -111,12 +111,12 @@ void CNTRIPEmitter::initialize()
 
   if (!m_com_port.empty())
   {
-    cout << format("[NTRIP] Opening %s...\n", m_com_port.c_str());
+    std::cout << format("[NTRIP] Opening %s...\n", m_com_port.c_str());
     m_out_COM.open(m_com_port);
     m_out_COM.setConfig(m_com_bauds);
     m_out_COM.setTimeouts(0, 0, 10, 0, 1);
     m_out_COM.purgeBuffers();
-    cout << format("[NTRIP] Open %s Ok.\n", m_com_port.c_str());
+    std::cout << format("[NTRIP] Open %s Ok.\n", m_com_port.c_str());
   }
 
   if (m_raw_output_file_stream.is_open())

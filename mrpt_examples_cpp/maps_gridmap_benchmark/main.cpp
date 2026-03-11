@@ -68,7 +68,7 @@ void BenchmarkGridmaps()
   {
     N = 10000000;
 
-    cout << "Running test #1: getCell... ";
+    std::cout << "Running test #1: getCell... ";
     cout.flush();
 
     // COccupancyGridMap2D::cellType	cell;
@@ -80,8 +80,8 @@ void BenchmarkGridmaps()
       p += gridMap->getCell(0, 0);
     }
     double T = tictac.Tac();
-    cout << "-> " << 1e9 * T / N << " ns/iter. p=" << p
-         << endl;  // the "p" is to avoid optimizing out the entire loop!
+    std::cout << "-> " << 1e9 * T / N << " ns/iter. p=" << p
+              << "\n";  // the "p" is to avoid optimizing out the entire loop!
   }
 
   // test 2: setcell
@@ -90,7 +90,7 @@ void BenchmarkGridmaps()
   {
     N = 10000000;
 
-    cout << "Running test #2: setCell... ";
+    std::cout << "Running test #2: setCell... ";
     cout.flush();
 
     float p = 0.8f;
@@ -101,8 +101,8 @@ void BenchmarkGridmaps()
       gridMap->setCell(0, 0, p);
     }
     double T = tictac.Tac();
-    cout << "-> " << 1e9 * T / N << " ns/iter."
-         << endl;  // the "p" is to avoid optimizing out the entire loop!
+    std::cout << "-> " << 1e9 * T / N << " ns/iter."
+              << "\n";  // the "p" is to avoid optimizing out the entire loop!
   }
 
   // test 3: updateCell
@@ -111,7 +111,7 @@ void BenchmarkGridmaps()
   {
     N = 1000000;
 
-    cout << "Running test #3: updateCell... ";
+    std::cout << "Running test #3: updateCell... ";
     cout.flush();
 
     float p = 0.57f;
@@ -122,8 +122,8 @@ void BenchmarkGridmaps()
       gridMap->updateCell(0, 0, p);
     }
     double T = tictac.Tac();
-    cout << "-> " << 1e9 * T / N << " ns/iter."
-         << endl;  // the "p" is to avoid optimizing out the entire loop!
+    std::cout << "-> " << 1e9 * T / N << " ns/iter."
+              << "\n";  // the "p" is to avoid optimizing out the entire loop!
   }
 
   // test 4: updateCell_fast
@@ -132,7 +132,7 @@ void BenchmarkGridmaps()
   {
     N = 10000000;
 
-    cout << "Running test #4: updateCell_fast... ";
+    std::cout << "Running test #4: updateCell_fast... ";
     cout.flush();
 
     float p = 0.57f;
@@ -151,8 +151,8 @@ void BenchmarkGridmaps()
           2, 2, logodd_obs, logodd_thres_occupied, theMapArray, theMapSize_x);
     }
     double T = tictac.Tac();
-    cout << "-> " << 1e9 * T / N << " ns/iter."
-         << endl;  // the "p" is to avoid optimizing out the entire loop!
+    std::cout << "-> " << 1e9 * T / N << " ns/iter."
+              << "\n";  // the "p" is to avoid optimizing out the entire loop!
   }
 
 #if 0
@@ -175,7 +175,7 @@ void BenchmarkGridmaps()
   {
     gridMap->insertionOptions.wideningBeamsWithDistance = false;
     N = 3000;
-    cout << "Running test #5: Laser insert. w/o widen... ";
+    std::cout << "Running test #5: Laser insert. w/o widen... ";
     cout.flush();
     tictac.Tic();
     for (i = 0; i < N; i++)
@@ -192,7 +192,7 @@ void BenchmarkGridmaps()
       gridMap->insertObservation(scan1, pose3D);
     }
     double T = tictac.Tac();
-    cout << "-> " << 1000 * T / N << " ms/iter, scans/sec:" << N / T << endl;
+    std::cout << "-> " << 1000 * T / N << " ms/iter, scans/sec:" << N / T << "\n";
 
     CPose3D pose3D;
     gridMap->clear();
@@ -206,7 +206,7 @@ void BenchmarkGridmaps()
   {
     gridMap->insertionOptions.wideningBeamsWithDistance = true;
     N = 3000;
-    cout << "Running test #6: Laser insert. widen... ";
+    std::cout << "Running test #6: Laser insert. widen... ";
     cout.flush();
     tictac.Tic();
     for (i = 0; i < N; i++)
@@ -222,7 +222,7 @@ void BenchmarkGridmaps()
       gridMap->insertObservation(scan1, pose3D);
     }
     double T = tictac.Tac();
-    cout << "-> " << 1000 * T / N << " ms/iter, scans/sec:" << N / T << endl;
+    std::cout << "-> " << 1000 * T / N << " ms/iter, scans/sec:" << N / T << "\n";
 
     CPose3D pose3D;
     gridMap->clear();
@@ -235,7 +235,7 @@ void BenchmarkGridmaps()
   if (true)
   {
     N = 400;
-    cout << "Running test #7: Grid resize... ";
+    std::cout << "Running test #7: Grid resize... ";
     cout.flush();
     tictac.Tic();
     for (i = 0; i < N; i++)
@@ -244,7 +244,8 @@ void BenchmarkGridmaps()
       gridMap->resizeGrid(-30, 30, -40, 40);
     }
     double T = tictac.Tac();
-    cout << "-> " << 1000 * T / N << " ms/iter" << endl;
+    std::cout << "-> " << 1000 * T / N << " ms/iter"
+              << "\n";
   }
 
   // test 8: Likelihood computation
@@ -257,7 +258,7 @@ void BenchmarkGridmaps()
     CPose3D pose3D(0, 0, 0);
     gridMap->insertObservation(scan1, pose3D);
 
-    cout << "Running test #8: Likelihood... ";
+    std::cout << "Running test #8: Likelihood... ";
     cout.flush();
     double R = 0;
     tictac.Tic();
@@ -269,7 +270,8 @@ void BenchmarkGridmaps()
       R += gridMap->computeObservationLikelihood(scan1, pose);
     }
     double T = tictac.Tac();
-    cout << "-> " << 1000 * T / N << " ms/iter" << endl;
+    std::cout << "-> " << 1000 * T / N << " ms/iter"
+              << "\n";
   }
 }
 
@@ -285,7 +287,7 @@ int main(int argc, char** argv)
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

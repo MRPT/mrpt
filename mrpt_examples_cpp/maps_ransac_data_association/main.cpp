@@ -108,7 +108,7 @@ void TestRANSAC()
 #endif
 
   const size_t nMapPts = the_map.size();
-  cout << "Loaded/generated map with " << nMapPts << " landmarks.\n";
+  std::cout << "Loaded/generated map with " << nMapPts << " landmarks.\n";
 
   const size_t nObs = NUM_OBSERVATIONS_TO_SIMUL;
 
@@ -226,7 +226,7 @@ void TestRANSAC()
         all_correspondences.push_back(match);
       }
     }
-    cout << "Generated " << all_correspondences.size() << " potential pairings.\n";
+    std::cout << "Generated " << all_correspondences.size() << " potential pairings.\n";
 
     // ----------------------------------------------------
     //  Run RANSAC-based D-A
@@ -262,13 +262,14 @@ void TestRANSAC()
     TMatchingPairList& out_best_pairings = results.largestSubSet;
 
     const double tim = timer.Tac();
-    cout << "RANSAC time: " << mrpt::system::formatTimeInterval(tim) << endl;
+    std::cout << "RANSAC time: " << mrpt::system::formatTimeInterval(tim) << "\n";
 
-    cout << "# of SOG modes: " << best_poses.size() << endl;
-    cout << "Best match has " << out_best_pairings.size() << " features:\n";
+    std::cout << "# of SOG modes: " << best_poses.size() << "\n";
+    std::cout << "Best match has " << out_best_pairings.size() << " features:\n";
     for (size_t i = 0; i < out_best_pairings.size(); i++)
-      cout << out_best_pairings[i].globalIdx << " <-> " << out_best_pairings[i].localIdx << endl;
-    cout << endl;
+      std::cout << out_best_pairings[i].globalIdx << " <-> " << out_best_pairings[i].localIdx
+                << "\n";
+    std::cout << "\n";
 
     // Generate "association vector":
     vector<int> obs2map_pairings(nObs, -1);
@@ -277,9 +278,9 @@ void TestRANSAC()
           out_best_pairings[i].globalIdx == ((unsigned int)-1) ? -1
                                                                : out_best_pairings[i].globalIdx;
 
-    cout << "1\n";
-    for (size_t i = 0; i < nObs; i++) cout << obs2map_pairings[i] << " ";
-    cout << endl;
+    std::cout << "1\n";
+    for (size_t i = 0; i < nObs; i++) std::cout << obs2map_pairings[i] << " ";
+    std::cout << "\n";
 
     gl_result->clear();
 
@@ -290,8 +291,8 @@ void TestRANSAC()
     // Normalized covariance: scale!
     solution_pose.cov *= square(normalizationStd);
 
-    cout << "Solution pose: " << solution_pose.mean << endl;
-    cout << "Ground truth pose: " << GT_pose << endl;
+    std::cout << "Solution pose: " << solution_pose.mean << "\n";
+    std::cout << "Ground truth pose: " << GT_pose << "\n";
 
     {
       // mrpt::viz::Scene::Ptr &scene =
@@ -356,7 +357,7 @@ void TestRANSAC()
       win.unlockAccess3DScene();
       win.repaint();
 
-      cout << "nPairings: " << nPairs << " RMSE = " << (nPairs ? sqerr / nPairs : 0.0) << endl;
+      std::cout << "nPairings: " << nPairs << " RMSE = " << (nPairs ? sqerr / nPairs : 0.0) << "\n";
 
       win.waitForKey();
     }
@@ -376,7 +377,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

@@ -71,7 +71,7 @@ void init_fonts_list()
   {                                                                                    \
     list_registered_fonts[#ARR].resize(sizeof(mrpt_font_##ARR));                       \
     memcpy(&list_registered_fonts[#ARR][0], mrpt_font_##ARR, sizeof(mrpt_font_##ARR)); \
-    cout << #ARR << " -> " << sizeof(mrpt_font_##ARR) << "\n";                         \
+    std::cout << #ARR << " -> " << sizeof(mrpt_font_##ARR) << "\n";                    \
     CCompressedOutputStream f(string("mrpt_font_") + string(#ARR) + string(".gz"));    \
     f.WriteBuffer(mrpt_font_##ARR, sizeof(mrpt_font_##ARR));                           \
     /*mrpt::compress::zip::compress( list_registered_fonts[#ARR], f ); */              \

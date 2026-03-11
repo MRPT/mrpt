@@ -557,7 +557,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent, wxWin
     gl_view->insert(mrpt::viz::stock_objects::CornerXYZ());
   }
 
-  m_plot3D->setZoomDistance(3.0f);
+  m_plot3D->orbitCameraController().setZoomDistance(3.0f);
 
   m_plot3D->Refresh();
 
@@ -870,8 +870,10 @@ void robotic_arm_kinematicsFrame::OnLoadBinary(wxCommandEvent& event)
           "(*.*)|*.*"),
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (dlg.ShowModal() != wxID_OK) return;
-
+  if (dlg.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   const wxString sFil = dlg.GetPath();
   const std::string fil = std::string(sFil.mb_str());
 
@@ -899,8 +901,10 @@ void robotic_arm_kinematicsFrame::OnSaveBinary(wxCommandEvent& event)
           "(*.*)|*.*"),
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-  if (dlg.ShowModal() != wxID_OK) return;
-
+  if (dlg.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   const wxString sFil = dlg.GetPath();
   const std::string fil = std::string(sFil.mb_str());
 

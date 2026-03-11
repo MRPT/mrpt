@@ -77,7 +77,7 @@ void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
       viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3.0);
 
       const size_t N = td.new_cloud->size();
-      std::cout << "Showing new point cloud of size=" << N << std::endl;
+      std::cout << "Showing new point cloud of size=" << N << "\n";
 
       static bool first = true;
       if (N && first)
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
       return 1;
     }
 
-    std::cout << "Opening: " << argv[1] << std::endl;
+    std::cout << "Opening: " << argv[1] << "\n";
     mrpt::io::CCompressedInputStream fil(argv[1]);
     bool rawlog_eof = false;
 
@@ -192,7 +192,7 @@ int main(int argc, char** argv)
   }
   catch (std::exception& e)
   {
-    std::cerr << e.what() << std::endl;
+    std::cerr << e.what() << "\n";
     return 1;
   }
 }

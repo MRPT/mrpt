@@ -43,14 +43,18 @@ void CDocument::saveMetricMapRepresentationToFile(
     const std::string& fileName, const std::string& mapName) const
 {
   TypeOfConfig type = nameToType(mapName);
-  if (type == TypeOfConfig::None) return;
-
+  if (type == TypeOfConfig::None)
+  {
+    return;
+  }
   std::string number = mapName.substr(typeToName(type).size());
   int index = std::atoi(number.c_str());
 
   auto iter = m_typeConfigs.find(type);
-  if (iter == m_typeConfigs.end() || iter->second.empty()) return;
-
+  if (iter == m_typeConfigs.end() || iter->second.empty())
+  {
+    return;
+  }
   auto mapIter = iter->second.begin() + index;
   (*mapIter)->saveMetricMapRepresentationToFile(fileName);
 }
@@ -59,14 +63,18 @@ void CDocument::saveMetricmapInBinaryFormat(
     const std::string& fileName, const std::string& mapName) const
 {
   TypeOfConfig type = nameToType(mapName);
-  if (type == TypeOfConfig::None) return;
-
+  if (type == TypeOfConfig::None)
+  {
+    return;
+  }
   std::string number = mapName.substr(typeToName(type).size());
   int index = std::atoi(number.c_str());
 
   auto iter = m_typeConfigs.find(type);
-  if (iter == m_typeConfigs.end() || iter->second.empty()) return;
-
+  if (iter == m_typeConfigs.end() || iter->second.empty())
+  {
+    return;
+  }
   auto mapIter = iter->second.begin() + index;
 
   mrpt::io::CCompressedOutputStream fil(fileName);

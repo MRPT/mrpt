@@ -57,7 +57,7 @@ void thread_publisher()
   }
   catch (const std::exception& e)
   {
-    cerr << e.what() << endl;
+    cerr << e.what() << "\n";
   }
   catch (...)
   {
@@ -68,14 +68,14 @@ void thread_publisher()
 void onNewMsg(const mrpt::math::TPose3D& p)
 {
 #ifdef NODELETS_TEST_VERBOSE
-  std::cout << "sub2: rx TPose3D" << p.asString() << std::endl;
+  std::cout << "sub2: rx TPose3D" << p.asString() << "\n";
 #endif
 }
 
 void onNewMsg2(int idx, const mrpt::math::TPose3D& p)
 {
 #ifdef NODELETS_TEST_VERBOSE
-  std::cout << "onNewMsg2: idx=" << idx << " rx TPose3D" << p.asString() << std::endl;
+  std::cout << "onNewMsg2: idx=" << idx << " rx TPose3D" << p.asString() << "\n";
 #endif
 }
 
@@ -100,8 +100,7 @@ void thread_subscriber()
                                    [](const mrpt::math::TPose3D& p_rx) -> void
                                    {
 #ifdef NODELETS_TEST_VERBOSE
-                                     std::cout << "sub1: rx TPose3D" << p_rx.asString()
-                                               << std::endl;
+                                     std::cout << "sub1: rx TPose3D" << p_rx.asString() << "\n";
 #endif
                                      nodelets_test_passed_ok = (p_rx == p_tx);
                                    });
@@ -130,11 +129,12 @@ void thread_subscriber()
   }
   catch (const std::exception& e)
   {
-    cerr << e.what() << endl;
+    cerr << e.what() << "\n";
   }
   catch (...)
   {
-    cerr << "[thread_subscriber] Runtime error!" << endl;
+    cerr << "[thread_subscriber] Runtime error!"
+         << "\n";
   }
 }
 

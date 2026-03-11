@@ -60,7 +60,7 @@ bool CRaePID::tryToOpenTheCOM()
 {
   if (COM.isOpen()) return true;  // Already open
 
-  if (m_verbose) cout << "[CRaePID] Opening " << com_port << " @ " << com_bauds << "\n";
+  if (m_verbose) std::cout << "[CRaePID] Opening " << com_port << " @ " << com_bauds << "\n";
 
   try
   {
@@ -120,7 +120,7 @@ void CRaePID::doProcess()
     power_reading = COM.ReadString(500, &time_out);
     if (time_out)
     {
-      // cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " -
+      // std::cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " -
       // measurement Timed-Out" << "\n";
       std::this_thread::sleep_for(10ms);
     }
@@ -128,7 +128,7 @@ void CRaePID::doProcess()
       have_reading = true;
   }
 
-  // cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement
+  // std::cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement
   // -> " << power_reading << "\n";
 
   // Convert the text to a number (ppm)
@@ -151,8 +151,8 @@ void CRaePID::doProcess()
 std::string CRaePID::getFirmware()
 {
   // Send the command
-  cout << "Firmware version: "
-       << "\n";
+  std::cout << "Firmware version: "
+            << "\n";
   COM.purgeBuffers();
   size_t B_written = COM.Write("F", 1);
   if (!B_written) return std::string("COMMS.ERROR");

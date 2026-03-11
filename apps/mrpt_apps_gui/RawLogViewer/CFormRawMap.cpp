@@ -416,9 +416,9 @@ void loadMapInto3DScene(Scene& scene)
         auto i1 = rtk_path_info.best_gps_path.lower_bound(last_t.value());
         auto i2 = rtk_path_info.best_gps_path.upper_bound(this_t);
 
-        // cout << mrpt::system::timeLocalToString(last_t) << " -> " <<
+        // std::cout << mrpt::system::timeLocalToString(last_t) << " -> " <<
         // mrpt::system::timeLocalToString(this_t) << " D: " <<
-        // std::distance(i1,i2) << endl;
+        // std::distance(i1,i2) << "\n";
 
         if (i1 != rtk_path_info.best_gps_path.end())
         {
@@ -449,9 +449,9 @@ void loadMapInto3DScene(Scene& scene)
       auto i1 = rtk_path_info.best_gps_path.lower_bound(last_t.value());
       auto i2 = rtk_path_info.best_gps_path.upper_bound(this_t);
 
-      // cout << mrpt::system::timeLocalToString(last_t) << " -> " <<
+      // std::cout << mrpt::system::timeLocalToString(last_t) << " -> " <<
       // mrpt::system::timeLocalToString(this_t) << " D: " <<
-      // std::distance(i1,i2) << endl;
+      // std::distance(i1,i2) << "\n";
 
       if (i1 != rtk_path_info.best_gps_path.end())
       {
@@ -765,8 +765,10 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
       _("How many random samples of the path to generate?\n"), _("Generation of random paths"),
       100 /*Default*/, 1 /*Min*/, 10000 /*Max*/);
 
-  if (nPaths < 0) return;
-
+  if (nPaths < 0)
+  {
+    return;
+  }
   size_t first = edFirst->GetValue();
   size_t last = edLast->GetValue();
   size_t decimate = edDec->GetValue();
@@ -1106,11 +1108,13 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
         this, wxT("Save path as txt file..."), defaultDir, wxT("GT_path_vehicle.txt"),
         wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     wxBusyCursor waitCursor;
 
-    cout << robot_path.size() << endl;
+    std::cout << robot_path.size() << "\n";
 
     std::ofstream f(string(dialog.GetPath().mb_str()));
     for (const auto& rp : robot_path)
@@ -1153,8 +1157,10 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
         wxT("Binary gz-compressed files (*.bin.gz)|*.bin.gz|All files "
             "(*.*)|*.*"),
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     wxBusyCursor waitCursor;
     CCompressedOutputStream f(string(dialog.GetPath().mb_str()));
     archiveFrom(f) << robot_path;
@@ -1169,8 +1175,10 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
         wxT("GT_path_vehicle_interp.txt"), wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*"),
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     wxBusyCursor waitCursor;
     using namespace std::chrono_literals;
     const auto interval = 10ms;
@@ -1187,8 +1195,10 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
         this, wxT("Save path confidence measure..."), defaultDir,
         wxT("GT_path_vehicle_confidence.txt"), wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*"),
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     wxBusyCursor waitCursor;
     std::ofstream f(string(dialog.GetPath().mb_str()));
 
@@ -1202,8 +1212,10 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
   {
     std::vector<std::string> the_labels = theMainWindow->AskForObservationByLabelMultiple(
         "Choose additional sensors to export GT path:");
-    if (the_labels.size() == 0) return;
-
+    if (the_labels.size() == 0)
+    {
+      return;
+    }
     // Standard matrix used for all the sensors on the vehicle:
     CMatrixDouble COV_sensor_local;
     COV_sensor_local.setZero(6, 6);

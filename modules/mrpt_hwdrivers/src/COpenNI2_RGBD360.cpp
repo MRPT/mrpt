@@ -60,11 +60,11 @@ void COpenNI2_RGBD360::initialize()
 
   if (getNumDevices() < NUM_SENSORS)
   {
-    cout << "Num required sensors " << NUM_SENSORS << "\n";
-    cout << "Not enough devices connected -> EXIT\n";
+    std::cout << "Num required sensors " << NUM_SENSORS << "\n";
+    std::cout << "Not enough devices connected -> EXIT\n";
     return;
   }
-  cout << "COpenNI2_RGBD360 initializes correctly.\n";
+  std::cout << "COpenNI2_RGBD360 initializes correctly.\n";
 
   for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS; sensor_id++) open(sensor_id);
 #else
@@ -79,7 +79,7 @@ void COpenNI2_RGBD360::initialize()
 void COpenNI2_RGBD360::doProcess()
 {
 #if MRPT_HAS_OPENNI2
-  cout << "COpenNI2_RGBD360::doProcess...\n";
+  std::cout << "COpenNI2_RGBD360::doProcess...\n";
 
   bool thereIs, hwError;
 
@@ -120,7 +120,7 @@ void COpenNI2_RGBD360::doProcess()
 void COpenNI2_RGBD360::loadConfig_sensorSpecific(
     const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
 {
-  cout << "COpenNI2_RGBD360::loadConfig_sensorSpecific...\n";
+  std::cout << "COpenNI2_RGBD360::loadConfig_sensorSpecific...\n";
 
   m_sensorPoseOnRobot.setFromValues(
       configSource.read_float(iniSection, "pose_x", 0),

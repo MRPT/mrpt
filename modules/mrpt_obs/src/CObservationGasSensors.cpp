@@ -189,7 +189,7 @@ bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(
   }
   catch (...)
   {
-    cout << "Error when decimating \n";
+    std::cout << "Error when decimating \n";
     mrpt::system::pause();
     return false;
   }
@@ -231,7 +231,7 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(
   }
   catch (...)
   {
-    cout << "Error when filtering noise from readings \n";
+    std::cout << "Error when filtering noise from readings \n";
     mrpt::system::pause();
   }
 }
@@ -263,8 +263,8 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
         else
           // ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));
           if (fabs(incT - fixed_incT) > (double)(0.05))
-            cout << "IncT is not constant by HW."
-                 << "\n";
+            std::cout << "IncT is not constant by HW."
+                      << "\n";
       }
       else
       {
@@ -335,7 +335,7 @@ void CObservationGasSensors::CMOSmodel::save_log_map(
     *m_debug_dump << "\n";
   }
   else
-    cout << "Unable to open file";
+    std::cout << "Unable to open file";
 }
 
 void CObservationGasSensors::getDescriptionAsText(std::ostream& o) const

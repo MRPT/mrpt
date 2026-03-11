@@ -38,11 +38,12 @@ void Test_GPS()
   CGPSInterface gps;
 
   string serName;
-  cout << "GPS test application." << endl << endl;
+  std::cout << "GPS test application." << endl << "\n";
 
   if (mrpt::system::fileExists("./CONFIG_gps.ini"))
   {
-    cout << "Using configuration from './CONFIG_gps.ini'" << endl;
+    std::cout << "Using configuration from './CONFIG_gps.ini'"
+              << "\n";
     CConfigFile iniFile("./CONFIG_gps.ini");
     gps.loadConfig(iniFile, "GPS");
   }
@@ -50,13 +51,13 @@ void Test_GPS()
   {
     if (SERIAL_NAME.empty())
     {
-      cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
-              "ttyACM0): ";
+      std::cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
+                   "ttyACM0): ";
       getline(cin, serName);
     }
     else
     {
-      cout << "Using serial port: " << SERIAL_NAME << endl;
+      std::cout << "Using serial port: " << SERIAL_NAME << "\n";
       serName = SERIAL_NAME;
     }
 
@@ -65,8 +66,10 @@ void Test_GPS()
   }
 
   FILE* f = os::fopen("gps_log.txt", "wt");
-  if (!f) return;
-
+  if (!f)
+  {
+    return;
+  }
   while (!mrpt::system::os::kbhit())
   {
     gps.doProcess();
@@ -103,7 +106,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

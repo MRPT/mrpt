@@ -65,8 +65,10 @@ void CSickLaserUSB::doProcessSimple(
   m_state = ssWorking;
 
   // Wait for a scan:
-  if (!waitContinuousSampleFrame(ranges, LMS_stat, board_timestamp, is_mm_mode)) return;
-
+  if (!waitContinuousSampleFrame(ranges, LMS_stat, board_timestamp, is_mm_mode))
+  {
+    return;
+  }
   // Yes, we have a new scan:
 
   // -----------------------------------------------

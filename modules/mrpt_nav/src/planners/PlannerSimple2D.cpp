@@ -274,8 +274,10 @@ void PlannerSimple2D::computePath(
   } while (!notFound && searching);
 
   // Path not found:
-  if (notFound) return;
-
+  if (notFound)
+  {
+    return;
+  }
   // Rebuild the optimal path from the two-waves convergence cell
   // ----------------------------------------------------------------
 

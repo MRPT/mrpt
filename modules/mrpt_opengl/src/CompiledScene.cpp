@@ -839,8 +839,10 @@ void CompiledScene::updateDirtyObjects(CompilationStats& stats)
 {
   MRPT_START
 
-  if (!m_sourceScene) return;
-
+  if (!m_sourceScene)
+  {
+    return;
+  }
   // Clear occurrence counter for this update pass
   m_updateOccurrenceCounter.clear();
 
@@ -905,8 +907,10 @@ void CompiledScene::updateDirtyObjectRecursive(
     bool parentVisible,
     CompilationStats& stats)
 {
-  if (!obj) return;
-
+  if (!obj)
+  {
+    return;
+  }
   std::weak_ptr<mrpt::viz::CVisualObject> weakObj = obj;
   const uint64_t currentVersion = obj->dataVersion();
   auto versionIt = m_objectVersions.find(weakObj);

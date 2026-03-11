@@ -884,7 +884,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
               GTpt = std::make_shared<CDisk>();
               GTpt = std::make_shared<CDisk>();
               GTpt->setName("GT");
-              GTpt->setColor(0, 0, 0, 0.9);
+              GTpt->setColor(0, 0, 0, 0.9f);
 
               mrpt::ptr_cast<CDisk>::from(GTpt)->setDiskRadius(0.04f);
               scene.insert(GTpt);

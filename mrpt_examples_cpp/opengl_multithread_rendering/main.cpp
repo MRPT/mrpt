@@ -25,7 +25,7 @@
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/Scene.h>
 
-//#define USE_NANOGUI_WINDOW
+// #define USE_NANOGUI_WINDOW
 
 #ifdef USE_NANOGUI_WINDOW
 #include <mrpt/gui/CDisplayWindowGUI.h>
@@ -157,7 +157,7 @@ static void renderer_thread_impl(const std::string name, const int period_ms, co
 		camera.toYAMLMap(d);
 		std::cout << "Thread: " << name << "\nCamera:\n"
 				  << d << "\n"
-				  << std::endl;
+				  << "\n";
 #endif
   }
 
@@ -183,7 +183,8 @@ static void renderer_thread_impl(const std::string name, const int period_ms, co
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(period_ms));
   }
-  std::cout << "\nRendering thread '" << name << "' ends." << std::endl;
+  std::cout << "\nRendering thread '" << name << "' ends."
+            << "\n";
 }
 
 static void renderer_thread(const std::string name, const int period_ms, const int numImgs)
@@ -194,7 +195,7 @@ static void renderer_thread(const std::string name, const int period_ms, const i
   }
   catch (const std::exception& e)
   {
-    std::cerr << "Thread '" << name << "' exception: " << e.what() << std::endl;
+    std::cerr << "Thread '" << name << "' exception: " << e.what() << "\n";
   }
 }
 
@@ -236,7 +237,8 @@ static void viz_thread()
     std::cout << "Showing images from working threads... " << t << "/" << MAX_TIME << "  \r";
   };
 
-  std::cout << "\nVisualization thread ends." << std::endl;
+  std::cout << "\nVisualization thread ends."
+            << "\n";
 }
 #elif MRPT_HAS_NANOGUI
 // nanogui frontend
@@ -279,8 +281,10 @@ static void viz_thread()
             auto lck = mrpt::lockHelper(renderOutputs_mtx);
             std::swap(done, renderOutputs);
           }
-          if (done.empty()) return;
-
+          if (done.empty())
+          {
+            return;
+          }
           for (auto& r : done)
           {
             auto& sw = subWindows[r.threadName];
@@ -314,11 +318,12 @@ static void viz_thread()
     nanogui::mainloop();
     nanogui::shutdown();
 
-    std::cout << "\nVisualization thread ends." << std::endl;
+    std::cout << "\nVisualization thread ends."
+              << "\n";
   }
   catch (const std::exception& e)
   {
-    std::cerr << "[viz_thread] Error:\n" << e.what() << std::endl;
+    std::cerr << "[viz_thread] Error:\n" << e.what() << "\n";
   }
 }
 #endif
@@ -373,7 +378,7 @@ int main(int argc, char* argv[])
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

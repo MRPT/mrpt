@@ -278,8 +278,10 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 {
   float min_x = 1e6, max_x = -1e6, min_y = 1e6, max_y = -1e6;
 
-  if (averageMapIsUpdated) return;
-
+  if (averageMapIsUpdated)
+  {
+    return;
+  }
   // ---------------------------------------------------------
   //					GRID
   // ---------------------------------------------------------
@@ -554,8 +556,10 @@ void CMultiMetricMapPDF::updateSensoryFrameSequence()
 void CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile(const std::string& fil)
 {
   FILE* f = os::fopen(fil.c_str(), "wt");
-  if (!f) return;
-
+  if (!f)
+  {
+    return;
+  }
   for (auto& m_particle : m_particles)
   {
     for (size_t i = 0; i < m_particle.d->robotPath.size(); i++)
