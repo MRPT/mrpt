@@ -118,6 +118,7 @@ class COrbitCameraController
 
   /** Clamp zoom to [minZoom, maxZoom] (default: [0.01, 3200]). */
   void setZoomLimits(float minZoom, float maxZoom);
+  [[nodiscard]] std::pair<float, float> getZoomLimits() { return {m_minZoom, m_maxZoom}; }
 
   // ----------------------------------------------------------------
   // Camera interaction sensitivities

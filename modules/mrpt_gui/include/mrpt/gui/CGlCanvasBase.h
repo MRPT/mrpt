@@ -40,14 +40,6 @@ class CGlCanvasBase
   CGlCanvasBase(CGlCanvasBase&&) noexcept = default;
   CGlCanvasBase& operator=(CGlCanvasBase&&) noexcept = default;
 
-  /** Sets the minimum of the zoom
-   * See also setMaximumZoom(float) */
-  void setMinimumZoom(float zoom);
-
-  /** Sets the maximum of the zoom
-   * See also setMinimumZoom(float) */
-  void setMaximumZoom(float zoom);
-
   /** Saves the click position of the mouse
    * See also setMouseClicked(bool) */
   void setMousePos(int x, int y);
@@ -84,8 +76,6 @@ class CGlCanvasBase
     x = m_mouseLastX;
     y = m_mouseLastY;
   }
-
-  virtual void onCameraChanged(const mrpt::viz::COrbitCameraController&) {}
 
   /**  At constructor an empty scene is created. The object is freed at GL
   canvas destructor.

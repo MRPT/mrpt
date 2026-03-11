@@ -716,7 +716,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id) : maxv(0
 #if wxCHECK_VERSION(2, 9, 0)
   m_canvas->SetMinClientSize(wxSize(100, 100));
 #endif
-  m_canvas->setMinimumZoom(0.1);
+  m_canvas->orbitCameraController().setZoomLimits(0.1f, 32000.0f);
   FlexGridSizer1->Add(m_canvas, 1, wxEXPAND, 0);
 
   // Load an empty scene:
