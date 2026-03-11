@@ -22,18 +22,21 @@ set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in mrpt::img::CCanvas
 
 # define lib:
 set(LIB_SOURCES
+  src/camera_geometry.cpp
   src/CCanvas.cpp
-  src/CImage.cpp
   src/CImage_impl.cpp
   src/CImage_impl.h
   src/CImage_loadXPM.cpp
+  src/CImage.cpp
   src/CImage.SSE2.cpp
   src/CImage.SSEx.h
   src/CImage.SSSE3.cpp
+  src/CImagePyramid.cpp
   src/CMappedImage.cpp
-  src/CVideoFileWriter.cpp
-  src/camera_geometry.cpp
   src/color_maps.cpp
+  src/CStereoRectifyMap.cpp
+  src/CUndistortMap.cpp
+  src/CVideoFileWriter.cpp
   src/registerAllClasses.cpp
   src/TCamera.cpp
   src/TColor.cpp
@@ -48,12 +51,15 @@ set(LIB_SOURCES
 )
 
 set(LIB_PUBLIC_HEADERS
+  include/mrpt/img/camera_geometry.h
   include/mrpt/img/CCanvas.h
   include/mrpt/img/CImage.h
+  include/mrpt/img/CImagePyramid.h
   include/mrpt/img/CMappedImage.h
-  include/mrpt/img/CVideoFileWriter.h
   include/mrpt/img/color_maps.h
-  include/mrpt/img/camera_geometry.h
+  include/mrpt/img/CStereoRectifyMap.h
+  include/mrpt/img/CUndistortMap.h
+  include/mrpt/img/CVideoFileWriter.h
   include/mrpt/img/DistortionModel.h
   include/mrpt/img/registerAllClasses.h
   include/mrpt/img/TCamera.h
