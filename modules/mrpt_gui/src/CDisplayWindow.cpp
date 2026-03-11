@@ -385,57 +385,6 @@ void CDisplayWindow::showImage([[maybe_unused]] const CImage& img)
 }
 
 /*---------------------------------------------------------------
-          showImageAndPoints
- ---------------------------------------------------------------*/
-void CDisplayWindow::showImageAndPoints(
-    const CImage& img,
-    const CVectorFloat& x_,
-    const CVectorFloat& y_,
-    const TColor& color,
-    bool showNumbers)
-{
-  std::vector<float> x(x_.size());
-  std::vector<float> y(y_.size());
-  for (size_t i = 0; i < x.size(); i++)
-  {
-    x[i] = x_[i];
-  }
-  for (size_t i = 0; i < y.size(); i++)
-  {
-    y[i] = y_[i];
-  }
-  showImageAndPoints(img, x, y, color, showNumbers);
-}
-
-void CDisplayWindow::showImageAndPoints(
-    [[maybe_unused]] const CImage& img,
-    [[maybe_unused]] const std::vector<float>& x,
-    [[maybe_unused]] const std::vector<float>& y,
-    [[maybe_unused]] const TColor& color,
-    [[maybe_unused]] bool showNumbers)
-{
-#if MRPT_HAS_WXWIDGETS
-  MRPT_START
-  ASSERT_(x.size() == y.size());
-
-  CImage imgColor = img.colorImage();  // Create a colorimage
-  for (size_t i = 0; i < x.size(); i++)
-  {
-    imgColor.drawMark({round(x[i]), round(y[i])}, color, '+');
-
-    if (showNumbers)
-    {
-      char buf[15];
-      mrpt::system::os::sprintf(buf, 15, "%d", int(i));
-      imgColor.textOut({round(x[i]) - 10, round(y[i])}, buf, color);
-    }
-  }  // end-for
-  showImage(imgColor);
-  MRPT_END
-#endif
-}
-
-/*---------------------------------------------------------------
           plot
  ---------------------------------------------------------------*/
 void CDisplayWindow::plot(const CVectorFloat& x, const CVectorFloat& y)
