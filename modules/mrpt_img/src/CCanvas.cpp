@@ -307,7 +307,7 @@ void CCanvas::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
 
 void CCanvas::drawMark(
     const TPixelCoord& pt,
-    const mrpt::img::TColor color,
+    const mrpt::img::TColor& color,
     char type,  // NOLINT
     int32_t size,
     int32_t width)

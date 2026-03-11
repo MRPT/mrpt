@@ -203,7 +203,7 @@ class CCanvas
    */
   void drawMark(
       const TPixelCoord& pt,
-      const mrpt::img::TColor color,
+      const mrpt::img::TColor& color,
       char type,
       int32_t size = 5,
       int32_t width = 1);
@@ -236,74 +236,13 @@ class CCanvas
    */
   void ellipseGaussian(
       const mrpt::math::CMatrixFixed<double, 2, 2>& cov2D,
-      const double mean_x,
-      const double mean_y,
+      double mean_x,
+      double mean_y,
       double confIntervalStds = 2,
       const mrpt::img::TColor& color = mrpt::img::TColor(255, 255, 255),
       int32_t width = 1,
       int nEllipsePoints = 20);
 
-  /** Draws a set of marks onto the image, given a generic container of
-   * entities having just "x" and "y" fields.
-   *  The class of FEATURELIST can be, for example,
-   * std::vector<mrpt::math::TPoint2D>, std::vector<TPixelCoordsf>
-   * \sa drawFeatures
-   */
-  template <class FEATURELIST>
-  void drawFeaturesSimple(
-      const FEATURELIST& list, const TColor& color = TColor::red(), const int cross_size = 5)
-  {
-    for (size_t i = 0; i < list.size(); ++i)
-    {
-      const int x = round(list.getFeatureX(i));
-      const int y = round(list.getFeatureY(i));
-      drawMark({x, y}, color, '+', cross_size);
-    }
-  }
-
-  /** Draws a set of marks (or scaled circles for features with scale) onto
-   * the image, given a generic container of features.
-   *  The class of FEATURELIST can be:
-   *    - mrpt::vision::CFeatureList
-   *    - mrpt::vision::TKeyPointList
-   *
-   * \sa drawFeaturesSimple
-   */
-  template <class FEATURELIST>
-  void drawFeatures(
-      const FEATURELIST& list,
-      const TColor& color = TColor::red(),
-      const bool showIDs = false,
-      const bool showResponse = false,
-      const bool showScale = false,
-      const char marker = '+')
-  {
-    for (size_t i = 0; i < list.size(); ++i)
-    {
-      const int x = round(list.getFeatureX(i));
-      const int y = round(list.getFeatureY(i));
-      drawMark({x, y}, color, marker);
-      if (showIDs)
-      {
-        this->textOut(
-            {x, y}, format("%u", static_cast<unsigned int>(list.getFeatureID(i))), TColor::red());
-      }
-      if (showResponse)
-      {
-        this->textOut(
-            {x, y + 10}, format("R:%u", static_cast<unsigned int>(list.getFeatureResponse(i))),
-            TColor::red());
-      }
-      if (!list.isPointFeature(i))
-      {
-        this->drawCircle({x, y}, list.getScale(i), TColor::red());
-      }
-      else if (showScale)
-      {
-        this->textOut({x, y + 20}, format("S:%.01f", list.getScale(i)), TColor::red());
-      }
-    }
-  }
 };  // End of class
 
 }  // namespace mrpt::img

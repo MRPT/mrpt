@@ -35,7 +35,7 @@ class CMyGLCanvas_DisplayWindow3D;
  *
  *  Images can be grabbed automatically to disk for easy creation of videos.
  *  See CDisplayWindow3D::grabImagesStart  (and for creating videos,
- * mrpt::vision::CVideoFileWriter).
+ * mrpt::img::CVideoFileWriter).
  *
  *  A short-cut for displaying 2D images (using the OpenGL rendering hardware)
  * is available
