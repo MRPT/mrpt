@@ -38,9 +38,10 @@ void TestHist()
   hist.add(7);
   hist.add(45);
 
-  cout << "Histogram test:" << endl;
-  cout << "Should be 1: " << hist.getBinCount(0) << endl;     // Result: "1"
-  cout << "Should be 0.33: " << hist.getBinRatio(0) << endl;  // Result: "0.33"
+  std::cout << "Histogram test:"
+            << "\n";
+  std::cout << "Should be 1: " << hist.getBinCount(0) << "\n";     // Result: "1"
+  std::cout << "Should be 0.33: " << hist.getBinRatio(0) << "\n";  // Result: "0.33"
 }
 
 // ------------------------------------------------------
@@ -133,8 +134,8 @@ void TestRandomGenerators()
 		CVectorDouble m;
 		CMatrixDouble c;
 		mrpt::math::meanAndCov(v1,m,c);
-		cout << "Mean: " << m << endl;
-		cout << "Std: " << endl << c << endl;
+		cout << "Mean: " << m << "\n";
+		cout << "Std: " << endl << c << "\n";
 #endif
 
     // pass to (x,y) vectors:
@@ -169,7 +170,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

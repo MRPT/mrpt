@@ -40,17 +40,17 @@ void TestPLS()
 {
   CSickLaserSerial laser;
 
-  cout << "SICK LMS thru serial port test application." << endl << endl;
+  std::cout << "SICK LMS thru serial port test application." << endl << "\n";
 
   if (SERIAL_NAME.empty())
   {
-    cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
-            "ttyACM0): ";
+    std::cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
+                 "ttyACM0): ";
     getline(cin, SERIAL_NAME);
   }
   else
   {
-    cout << "Using serial port: " << SERIAL_NAME << endl;
+    std::cout << "Using serial port: " << SERIAL_NAME << "\n";
   }
 
   laser.setSerialPort(SERIAL_NAME);
@@ -70,9 +70,11 @@ void TestPLS()
   // Load config:
   // laser.loadConfig( CConfigFile( "./LASER_SCAN_TEST.ini") ,"PLS#1" );
 
-  cout << "Trying to initialize the laser..." << endl;
+  std::cout << "Trying to initialize the laser..."
+            << "\n";
   laser.initialize();  // This will raise an exception on error
-  cout << "Initialized OK!" << endl;
+  std::cout << "Initialized OK!"
+            << "\n";
 
   while (!mrpt::system::os::kbhit())
   {
@@ -85,7 +87,7 @@ void TestPLS()
     }
     catch (const std::exception& e)
     {
-      cerr << e.what() << endl;
+      cerr << e.what() << "\n";
       hardError = true;
     }
 
@@ -132,7 +134,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

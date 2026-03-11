@@ -1380,8 +1380,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id) :
   }
 
   // 3D view: default view, with +X pointing to the right:
-  m_gl3DRangeScan->setAzimuthDegrees(-80.0f);
-  m_gl3DRangeScan->setElevationDegrees(30.0f);
+  m_gl3DRangeScan->orbitCameraController().setAzimuthDegrees(-80.0f);
+  m_gl3DRangeScan->orbitCameraController().setElevationDegrees(30.0f);
 
   // Image directory selector on the toolbar:
   // --------------------------------------------
@@ -2378,8 +2378,10 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
       (iniFile->read_string(iniFileSect, "LastDir", ".").c_str()), wxDD_DEFAULT_STYLE,
       wxDefaultPosition, this);
 
-  if (target_dir_wx.empty()) return;
-
+  if (target_dir_wx.empty())
+  {
+    return;
+  }
   const string target_dir = string(target_dir_wx.mb_str());
 
   const string fil_odo =
@@ -2646,8 +2648,10 @@ void xRawLogViewerFrame::OnShowICP(wxCommandEvent&)
 void xRawLogViewerFrame::OnLoadAPartOnly(wxCommandEvent&)
 {
   string fil;
-  if (!AskForOpenRawlog(fil)) return;
-
+  if (!AskForOpenRawlog(fil))
+  {
+    return;
+  }
   // Query the first and last entries to load:
   wxString strFirst = wxGetTextFromUser(
       _("Enter the first entry index to load:"), _("Load a part of rawlog:"), _("0"));
@@ -2666,8 +2670,10 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent&)
   WX_START_TRY
 
   string str;
-  if (!AskForOpenRawlog(str)) return;
-
+  if (!AskForOpenRawlog(str))
+  {
+    return;
+  }
   wxBusyCursor waitCursor;
   CCompressedInputStream fil(str);
   auto filSize = (unsigned int)fil.getTotalBytesCount();
@@ -2739,19 +2745,26 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
   WX_START_TRY
 
   string str;
-  if (!AskForOpenRawlog(str)) return;
-
+  if (!AskForOpenRawlog(str))
+  {
+    return;
+  }
   // ask for the output directory:
   wxDirDialog dirDialog(
       this, _("Choose the output directory for the images"), _("."), 0, wxDefaultPosition);
 
-  if (dirDialog.ShowModal() != wxID_OK) return;
+  if (dirDialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   string outDir(dirDialog.GetPath().mb_str());
 
   // Let the user choose the image format:
   string imgFileExtension = AskForImageFileFormat();
-  if (imgFileExtension.empty()) return;
-
+  if (imgFileExtension.empty())
+  {
+    return;
+  }
   wxBusyCursor waitCursor;
   CCompressedInputStream fil(str);
   auto filSize = (unsigned int)fil.getTotalBytesCount();
@@ -3268,8 +3281,10 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent&)
   long end_filt;
   strEnd.ToLong(&end_filt);
 
-  if (end_filt < 0) return;
-
+  if (end_filt < 0)
+  {
+    return;
+  }
   wxString strIndex = wxGetTextFromUser(
       _("Index of the range within the observation (-1:None)"),
       _("Remove range-only measurements."), _("0"));
@@ -3917,14 +3932,20 @@ void xRawLogViewerFrame::OnMenuRenameBySFIndex(wxCommandEvent&)
 
   wxTextEntryDialog dlg1(this, "Enter SF 0-based index:", "Rename by SF index", "0");
   dlg1.SetTextValidator(wxFILTER_DIGITS);
-  if (dlg1.ShowModal() != wxID_OK) return;
-
+  if (dlg1.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   wxTextEntryDialog dlg2(this, "Enter new sensor label:", "Rename by SF index", "NEW_NAME");
-  if (dlg2.ShowModal() != wxID_OK) return;
-
+  if (dlg2.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   unsigned long obsIdx = 0;
-  if (!dlg1.GetValue().ToULong(&obsIdx)) return;
-
+  if (!dlg1.GetValue().ToULong(&obsIdx))
+  {
+    return;
+  }
   const auto newName = dlg2.GetValue().ToStdString();
 
   for (const auto& e : rawlog)
@@ -4351,12 +4372,16 @@ void xRawLogViewerFrame::OnMenuRenameSensor(wxCommandEvent&)
 
   wxString new_label =
       wxGetTextFromUser(_("Enter the new sensor label"), _("New label:"), the_label.c_str(), this);
-  if (new_label.IsEmpty()) return;
-
+  if (new_label.IsEmpty())
+  {
+    return;
+  }
   const string the_new_label = string(new_label.mb_str());
 
-  if (the_new_label == the_label) return;
-
+  if (the_new_label == the_label)
+  {
+    return;
+  }
   size_t i, n = rawlog.size();
   unsigned int nChanges = 0;
 
@@ -4646,8 +4671,10 @@ void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent&)
   WX_START_TRY
 
   std::string lab = AskForObservationByLabel("Select the laser sensor");
-  if (lab.empty()) return;
-
+  if (lab.empty())
+  {
+    return;
+  }
   wxString strMaxR = wxGetTextFromUser(
       _("Enter the new maximum range (in meters):"), _("Maximum range:"), _("81.0"));
   double maxR;
@@ -5229,8 +5256,10 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
   WX_START_TRY
 
   std::string senLabel = AskForObservationByLabel("Select the camera:");
-  if (senLabel.empty()) return;
-
+  if (senLabel.empty())
+  {
+    return;
+  }
   wxString caption = wxT("Save AVI video...");
   wxString wildcard = wxT("AVI files (*.avi)|*.avi|All files (*.*)|*.*");
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
@@ -5238,8 +5267,10 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
   wxFileDialog dialog(
       this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   const string outAviFilename = string(dialog.GetPath().mb_str());
 
   float FPS = 20.0;  // For the AVI
@@ -5579,17 +5610,23 @@ void xRawLogViewerFrame::OnMenuRenameSingleObs(wxCommandEvent&)
 {
   WX_START_TRY
 
-  if (!curSelectedObject) return;
-
-  if (!curSelectedObject->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation))) return;
-
+  if (!curSelectedObject)
+  {
+    return;
+  }
+  if (!curSelectedObject->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+  {
+    return;
+  }
   CObservation::Ptr obj = std::dynamic_pointer_cast<CObservation>(curSelectedObject);
 
   const wxString new_label = wxGetTextFromUser(
       _("Enter the new sensor label for selected object"), _("New label:"),
       obj->sensorLabel.c_str(), this);
-  if (new_label.IsEmpty()) return;
-
+  if (new_label.IsEmpty())
+  {
+    return;
+  }
   const string the_new_label = string(new_label.mb_str());
 
   obj->sensorLabel = the_new_label;

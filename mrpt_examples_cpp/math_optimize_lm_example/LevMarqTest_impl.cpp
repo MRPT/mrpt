@@ -75,14 +75,16 @@ void TestLevMarq()
 
 #ifdef LEVMARQ_EXAMPLE_VERBOSE
   const auto T = tictac.Tac() / N;
-  cout << "Iterations: " << info.iterations_executed << endl;
-  cout << "Final sqr error: " << info.final_sqr_err << endl;
+  std::cout << "Iterations: " << info.iterations_executed << "\n";
+  std::cout << "Final sqr error: " << info.final_sqr_err << "\n";
 
-  cout << endl << "Final optimized position: " << optimal_x << endl;
+  std::cout << endl << "Final optimized position: " << optimal_x << "\n";
 
-  cout << "Time: " << T * 1e6 << " us" << endl;
+  std::cout << "Time: " << T * 1e6 << " us"
+            << "\n";
 
   info.path.saveToTextFile("lm-path.txt");
-  cout << "Path saved to 'lm-path.txt'" << endl;
+  std::cout << "Path saved to 'lm-path.txt'"
+            << "\n";
 #endif
 }

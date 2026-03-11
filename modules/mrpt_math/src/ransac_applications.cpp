@@ -113,8 +113,10 @@ void mrpt::math::ransac_detect_3D_planes(
 
   out_detected_planes.clear();
 
-  if (x.empty()) return;
-
+  if (x.empty())
+  {
+    return;
+  }
   // The running lists of remaining points after each plane, as a matrix:
   CMatrixDynamic<NUMTYPE> remainingPoints(3, x.size());
   remainingPoints.setRow(0, x);
@@ -271,8 +273,10 @@ void mrpt::math::ransac_detect_2D_lines(
   ASSERT_(x.size() == y.size());
   out_detected_lines.clear();
 
-  if (x.empty()) return;
-
+  if (x.empty())
+  {
+    return;
+  }
   // The running lists of remaining points after each plane, as a matrix:
   CMatrixDynamic<NUMTYPE> remainingPoints(2, x.size());
   remainingPoints.setRow(0, x);

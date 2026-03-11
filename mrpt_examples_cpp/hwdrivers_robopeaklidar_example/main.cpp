@@ -47,7 +47,7 @@ void Test_RPLIDAR()
   }
   else
   {
-    std::cout << "Using serial port: " << SERIAL_NAME << endl;
+    std::cout << "Using serial port: " << SERIAL_NAME << "\n";
     serName = SERIAL_NAME;
   }
 
@@ -64,7 +64,8 @@ void Test_RPLIDAR()
     return;
   }
 
-  cout << "Press any key to stop capturing..." << endl;
+  std::cout << "Press any key to stop capturing..."
+            << "\n";
 
   CTicTac tictac;
   tictac.Tic();
@@ -108,7 +109,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

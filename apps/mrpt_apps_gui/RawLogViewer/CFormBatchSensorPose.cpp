@@ -143,8 +143,10 @@ void CFormBatchSensorPose::OnbtnOpenClick(wxCommandEvent& event)
         "(*.*)|*.*") /* wildcard */,
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (dialog.ShowModal() != wxID_OK) return;
-
+  if (dialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   // Save the path
   WX_START_TRY
   iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));

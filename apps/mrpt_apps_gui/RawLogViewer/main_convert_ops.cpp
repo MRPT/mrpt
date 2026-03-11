@@ -317,8 +317,10 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
   WX_START_TRY
 
   string filToOpen;
-  if (!AskForOpenRawlog(filToOpen)) return;
-
+  if (!AskForOpenRawlog(filToOpen))
+  {
+    return;
+  }
   wxString strDecimation = wxGetTextFromUser(
       _("The number of observations will be decimated (only 1 out of M will "
         "be kept). Enter the decimation ratio M:"),
@@ -488,12 +490,16 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
   wxMessageBox(_("Select the rawlog file with embedded images."));
 
   string str;
-  if (!AskForOpenRawlog(str)) return;
-
+  if (!AskForOpenRawlog(str))
+  {
+    return;
+  }
   wxMessageBox(_("Select the target file where to save the new rawlog."));
   string filToSave;
-  if (!AskForSaveRawlog(filToSave)) return;
-
+  if (!AskForSaveRawlog(filToSave))
+  {
+    return;
+  }
   // Create the default "/Images" directory.
   string outDir = extractFileDirectory(filToSave) + string("/") + extractFileName(filToSave) +
                   string("_Images");
@@ -520,8 +526,10 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 
   // Let the user choose the image format:
   string imgFileExtension = AskForImageFileFormat();
-  if (imgFileExtension.empty()) return;
-
+  if (imgFileExtension.empty())
+  {
+    return;
+  }
   wxBusyCursor waitCursor;
   CCompressedInputStream fil(str);
   auto filSize = (unsigned int)fil.getTotalBytesCount();
@@ -643,12 +651,16 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
   wxMessageBox(_("Select the rawlog file to convert..."));
 
   string str;
-  if (!AskForOpenRawlog(str)) return;
-
+  if (!AskForOpenRawlog(str))
+  {
+    return;
+  }
   wxMessageBox(_("Select the target file where to save the new rawlog."));
   string filToSave;
-  if (!AskForSaveRawlog(filToSave)) return;
-
+  if (!AskForSaveRawlog(filToSave))
+  {
+    return;
+  }
   wxBusyCursor waitCursor;
   CCompressedInputStream fil(str);
   auto filSize = (unsigned int)fil.getTotalBytesCount();
@@ -846,15 +858,19 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
         "be shifted a given number of seconds. Press OK to continue."));
 
   std::vector<std::string> the_labels = AskForObservationByLabelMultiple("Choose the sensor(s):");
-  if (the_labels.empty()) return;
-
+  if (the_labels.empty())
+  {
+    return;
+  }
   wxString s = wxGetTextFromUser(
       _("Enter the number of seconds to shift (can have fractions, be "
         "positive or negative)"),
       _("Timestamp shift"), _("0.0"), this);
 
-  if (s.IsEmpty()) return;
-
+  if (s.IsEmpty())
+  {
+    return;
+  }
   double delta_time_secs;
   if (!s.ToCDouble(&delta_time_secs))
   {

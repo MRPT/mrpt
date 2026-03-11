@@ -38,32 +38,32 @@ class MyObserver : public mrpt::system::CObserver
   void OnEvent(const mrptEvent& e) override
   {
     if (e.isOfType<mrptEventOnDestroy>())
-      cout << "[MyObserver] Event received: mrptEventOnDestroy\n";
+      std::cout << "[MyObserver] Event received: mrptEventOnDestroy\n";
     else if (e.isOfType<mrptEventWindowResize>())
     {
       const mrptEventWindowResize& ee = static_cast<const mrptEventWindowResize&>(e);
-      cout << "[MyObserver] Resize event received from: " << ee.source_object
-           << ", new size: " << ee.new_width << " x " << ee.new_height << "\n";
+      std::cout << "[MyObserver] Resize event received from: " << ee.source_object
+                << ", new size: " << ee.new_width << " x " << ee.new_height << "\n";
     }
     else if (e.isOfType<mrptEventWindowChar>())
     {
       const mrptEventWindowChar& ee = static_cast<const mrptEventWindowChar&>(e);
-      cout << "[MyObserver] Char event received from: " << ee.source_object
-           << ". Char code: " << ee.char_code << " modif: " << ee.key_modifiers << "\n";
+      std::cout << "[MyObserver] Char event received from: " << ee.source_object
+                << ". Char code: " << ee.char_code << " modif: " << ee.key_modifiers << "\n";
     }
     else if (e.isOfType<mrptEventWindowClosed>())
     {
       const mrptEventWindowClosed& ee = static_cast<const mrptEventWindowClosed&>(e);
-      cout << "[MyObserver] Window closed event received from: " << ee.source_object << "\n";
+      std::cout << "[MyObserver] Window closed event received from: " << ee.source_object << "\n";
     }
     else if (e.isOfType<mrptEventMouseDown>())
     {
       const mrptEventMouseDown& ee = static_cast<const mrptEventMouseDown&>(e);
-      cout << "[MyObserver] Mouse down event received from: " << ee.source_object
-           << "pt: " << ee.coords.x << "," << ee.coords.y << "\n";
+      std::cout << "[MyObserver] Mouse down event received from: " << ee.source_object
+                << "pt: " << ee.coords.x << "," << ee.coords.y << "\n";
     }
     else
-      cout << "[MyObserver] Event received: Another mrptEvent \n";
+      std::cout << "[MyObserver] Event received: Another mrptEvent \n";
   }
 };
 
@@ -104,8 +104,8 @@ void TestGuiWindowsEvents()
   observer.observeBegin(winPlot);
 
   // Wait until end:
-  cout << "Waiting for window events...\n";
-  cout << "** Close any window to end the program **\n";
+  std::cout << "Waiting for window events...\n";
+  std::cout << "** Close any window to end the program **\n";
 
   while (win2D.isOpen() && win3D.isOpen() && winPlot.isOpen())
   {
@@ -125,7 +125,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

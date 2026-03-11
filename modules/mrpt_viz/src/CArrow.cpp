@@ -117,8 +117,10 @@ void CArrow::updateBuffers() const
   const P3f p0(m_x0, m_y0, m_z0), p1(m_x1, m_y1, m_z1);
   auto p = p1 - p0;
   const float P10_norm = p.norm();
-  if (P10_norm < 1e-6f) return;
-
+  if (P10_norm < 1e-6f)
+  {
+    return;
+  }
   // Unit vector:
   p *= (1.0f / P10_norm);
 

@@ -71,7 +71,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("setCameraAzimuthDeg", &mrpt::gui::CDisplayWindow3D::setCameraAzimuthDeg)
       .def("setCameraPointingToPoint", &mrpt::gui::CDisplayWindow3D::setCameraPointingToPoint)
       .def("setCameraZoom", &mrpt::gui::CDisplayWindow3D::setCameraZoom)
-      .def("setCameraProjective", &mrpt::gui::CDisplayWindow3D::setCameraProjective)
+      .def("setProjectiveModel", &mrpt::gui::CDisplayWindow3D::setProjectiveModel)
       .def("getCameraElevationDeg", &mrpt::gui::CDisplayWindow3D::getCameraElevationDeg)
       .def("getCameraAzimuthDeg", &mrpt::gui::CDisplayWindow3D::getCameraAzimuthDeg)
       .def(

@@ -194,8 +194,10 @@ void FrameBuffer::RAII_Impl::destroy()
 {
   auto& _ = m_state.get();
 
-  if (!_.m_created) return;
-
+  if (!_.m_created)
+  {
+    return;
+  }
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   unbind();
 

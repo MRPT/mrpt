@@ -128,7 +128,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
   if (options.mode7 >= 0)
   {
     m_desired_mode = DC1394_VIDEO_MODE_FORMAT7_MIN + options.mode7;
-    if (verbose) cout << "[CImageGrabber_dc1394] Mode is mode7: " << options.mode7 << "\n";
+    if (verbose) std::cout << "[CImageGrabber_dc1394] Mode is mode7: " << options.mode7 << "\n";
   }
   else
   {
@@ -167,8 +167,8 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
   }
   // Display all supported modes and chosen:
   if (verbose)
-    cout << "------ Supported video modes ------"
-         << "\n";
+    std::cout << "------ Supported video modes ------"
+              << "\n";
   bool valid_video_mode = false;
   for (uint32_t i = 0; i < modes.num; i++)
   {
@@ -281,10 +281,10 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
     if (verbose)
     {
       if (modes.modes[i] == m_desired_mode)
-        cout << mode << " (*)"
-             << "\n";
+        std::cout << mode << " (*)"
+                  << "\n";
       else
-        cout << mode << "\n";
+        std::cout << mode << "\n";
     }
   }
   if (!valid_video_mode)
@@ -382,15 +382,15 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
     return;
   }
 
-  cout << "------ Other options ------"
-       << "\n";
+  std::cout << "------ Other options ------"
+            << "\n";
   uint32_t iso_chan;
   if ((err = dc1394_video_get_iso_channel(THE_CAMERA, &iso_chan)) == DC1394_SUCCESS)
-    if (verbose) cout << "ISO Channel: " << iso_chan << "\n";
+    if (verbose) std::cout << "ISO Channel: " << iso_chan << "\n";
 
   dc1394speed_t iso_speed;
   if ((err = dc1394_video_get_iso_speed(THE_CAMERA, &iso_speed)) == DC1394_SUCCESS)
-    if (verbose) cout << "ISO Speed: " << iso_speed << "\n";
+    if (verbose) std::cout << "ISO Speed: " << iso_speed << "\n";
 
 // set trigger options:
 #define SET_TRIGGER(opt, OPT, TYPE)                                            \

@@ -98,14 +98,15 @@ void slamdemoApp::DoBatchExperiments(const std::string& cfgFil)
     mT /= N;
   }
 
-  cout << "FP: " << totalFP << " FN: " << totalFN << " JCBB iters: " << totalJCBBiters
-       << " Run iters: " << N << endl;
-  cout << "Mean err_xy: " << err_xy << " mean tim: " << mT << endl;
+  std::cout << "FP: " << totalFP << " FN: " << totalFN << " JCBB iters: " << totalJCBBiters
+            << " Run iters: " << N << "\n";
+  std::cout << "Mean err_xy: " << err_xy << " mean tim: " << mT << "\n";
 
   ofstream f("slam_out.txt", ios::out | ios::app);
 
   f << mT << " " << err_xy << " " << err_phi << " " << err_D2 << " " << totalJCBBiters << " "
-    << totalFP << " " << totalFN << " " << endl;
+    << totalFP << " " << totalFN << " "
+    << "\n";
 
   win->updateAllGraphs();
 }

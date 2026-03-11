@@ -395,7 +395,7 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
   double T = tictac.Tac() / N;
   dummy_do_nothing_with_string(mrpt::format("%f", x));
   CPose3DQuatPDFGaussian q(a);
-  // cout << q.cov << endl;
+  // std::cout << q.cov << "\n";
   return T;
 }
 
@@ -429,7 +429,7 @@ double poses_test_convert_quat_ypr_pdf(int a1, int a2)
   double T = tictac.Tac() / N;
   dummy_do_nothing_with_string(mrpt::format("%f", x));
   CPose3DPDFGaussian q(b);
-  // cout << q.cov << endl;
+  // std::cout << q.cov << "\n";
   return T;
 }
 

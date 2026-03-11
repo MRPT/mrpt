@@ -205,13 +205,13 @@ int main(int argc, char** argv)
       {
         VERBOSE_COUT << "Operation to perform: "
                         "view"
-                     << endl;
+                     << "\n";
         op_view(input_file, is3d, verbose, output_file, view, max_iters, initial_lambda, no_span);
       }
     }
     else
     {
-      VERBOSE_COUT << "Operation to perform: " << selected_op << endl;
+      VERBOSE_COUT << "Operation to perform: " << selected_op << "\n";
 
       // ------------------------------------
       //  EXECUTE THE REQUESTED OPERATION
@@ -270,9 +270,9 @@ IMPLEMENT_OP_FUNCTION(op_info)
   g.getAllNodes(lstNodeIDs);
 
   // Show graph stats:
-  cout << "Edge count                         : " << g.edgeCount() << endl;
-  cout << "Nodes count (in VERTEX2/3 entries) : " << g.nodes.size() << endl;
-  cout << "Nodes count (in edge entries)      : " << lstNodeIDs.size() << endl;
+  std::cout << "Edge count                         : " << g.edgeCount() << "\n";
+  std::cout << "Nodes count (in VERTEX2/3 entries) : " << g.nodes.size() << "\n";
+  std::cout << "Nodes count (in edge entries)      : " << lstNodeIDs.size() << "\n";
 }
 
 // -----------------------------------------------------------------------------------
@@ -300,7 +300,7 @@ IMPLEMENT_OP_FUNCTION(op_dijkstra)
 
   ASSERT_(!lstNodeIDs.empty());
   const TNodeID id_root = *lstNodeIDs.begin();
-  VERBOSE_COUT << "Using root node ID=" << id_root << endl;
+  VERBOSE_COUT << "Using root node ID=" << id_root << "\n";
 
   g.root = id_root;
 
@@ -310,11 +310,11 @@ IMPLEMENT_OP_FUNCTION(op_dijkstra)
 
   g.dijkstra_nodes_estimate();
 
-  VERBOSE_COUT << "Took: " << mrpt::system::formatTimeInterval(tictac.Tac()) << endl;
+  VERBOSE_COUT << "Took: " << mrpt::system::formatTimeInterval(tictac.Tac()) << "\n";
 
   if (save_to_file)
   {
-    VERBOSE_COUT << "Saving resulting graph to: " << output_file << endl;
+    VERBOSE_COUT << "Saving resulting graph to: " << output_file << "\n";
     g.saveToTextFile(output_file);
   }
   if (display_3D)
@@ -350,7 +350,7 @@ IMPLEMENT_OP_FUNCTION(op_levmarq)
 
   ASSERT_(!lstNodeIDs.empty());
   const TNodeID id_root = *lstNodeIDs.begin();
-  VERBOSE_COUT << "Using root node ID=" << id_root << endl;
+  VERBOSE_COUT << "Using root node ID=" << id_root << "\n";
 
   g.root = id_root;
 
@@ -364,7 +364,7 @@ IMPLEMENT_OP_FUNCTION(op_levmarq)
 
     g.dijkstra_nodes_estimate();
 
-    VERBOSE_COUT << "Took: " << mrpt::system::formatTimeInterval(tictac.Tac()) << endl;
+    VERBOSE_COUT << "Took: " << mrpt::system::formatTimeInterval(tictac.Tac()) << "\n";
   }
 
   // Executes the optimization:
@@ -382,7 +382,7 @@ IMPLEMENT_OP_FUNCTION(op_levmarq)
   // Output:
   if (save_to_file)
   {
-    VERBOSE_COUT << "Saving resulting graph to: " << output_file << endl;
+    VERBOSE_COUT << "Saving resulting graph to: " << output_file << "\n";
     g.saveToTextFile(output_file);
   }
   if (display_3D)

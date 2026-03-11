@@ -1085,8 +1085,10 @@ void CHokuyoURG::initialize()
 
 void CHokuyoURG::purgeBuffers()
 {
-  if (!ensureStreamIsOpen()) return;
-
+  if (!ensureStreamIsOpen())
+  {
+    return;
+  }
   if (m_ip_dir.empty())
   {
     auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());

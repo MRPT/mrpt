@@ -275,9 +275,9 @@ TEST(MonteCarlo2D, RunSampleDataset)
       if (pass1 && pass2) return;  // OK!
 
       // else: give it another try...
-      cout << "\n*Warning: Test failed. Will give it another chance, "
-              "since "
-              "after all it's nondeterministic!\n";
+      std::cout << "\n*Warning: Test failed. Will give it another chance, "
+                   "since "
+                   "after all it's nondeterministic!\n";
     }
 
     FAIL() << "Failed to converge after 3 opportunities!!"

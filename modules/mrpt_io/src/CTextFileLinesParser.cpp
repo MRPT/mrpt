@@ -47,7 +47,10 @@ void CTextFileLinesParser::open(const std::string& fil)
 
 void CTextFileLinesParser::close()
 {
-  if (!m_in) return;
+  if (!m_in)
+  {
+    return;
+  }
   m_my_in.reset();
   m_in = nullptr;
 }

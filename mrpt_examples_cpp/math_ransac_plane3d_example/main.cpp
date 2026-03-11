@@ -147,12 +147,13 @@ void TestRANSAC()
         best_inliers, best_model);
   }
 
-  cout << "Computation time: " << tictac.Tac() * 1000.0 / TIMES << " ms" << endl;
+  std::cout << "Computation time: " << tictac.Tac() * 1000.0 / TIMES << " ms"
+            << "\n";
 
   ASSERT_(best_model.rows() == 1 && best_model.cols() == 4);
 
-  cout << "RANSAC finished: Best model: " << best_model << endl;
-  //	cout << "Best inliers: " << best_inliers << endl;
+  std::cout << "RANSAC finished: Best model: " << best_model << "\n";
+  //	cout << "Best inliers: " << best_inliers << "\n";
 
   TPlane plane(best_model(0, 0), best_model(0, 1), best_model(0, 2), best_model(0, 3));
 
@@ -209,7 +210,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

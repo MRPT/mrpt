@@ -42,11 +42,6 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
   void setZoom(float zoom);
   float getZoom() const;
 
-  void setCameraParams(const CamaraParams& params) override;
-
-  void setAzimuthDegrees(float ang) override;
-  void setElevationDegrees(float ang) override;
-
   void setBackgroundColor(float r, float g, float b, float a);
   void setGridColor(double r, double g, double b, double a);
 
@@ -75,7 +70,6 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 
  protected:
   void resizeGL(int width, int height) override;
-  void updateCamerasParams() override;
   void insertToMap(const mrpt::viz::CVisualObject::Ptr& newObject) override;
   void removeFromMap(const mrpt::viz::CVisualObject::Ptr& newObject) override;
   void mouseMoveEvent(QMouseEvent* event) override;

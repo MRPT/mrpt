@@ -420,8 +420,8 @@ void CSerialPort::setConfig(
     // custom divisor
 
     if (actual_rate != baudRate)
-      cout << "[CSerialPort::setConfig] Setting custom baud rate to " << actual_rate
-           << ", the closer I can make to " << baudRate << "\n";
+      std::cout << "[CSerialPort::setConfig] Setting custom baud rate to " << actual_rate
+                << ", the closer I can make to " << baudRate << "\n";
 #else
     THROW_EXCEPTION("Custom serial port baud rates require linux/serial.h");
 #endif
@@ -712,7 +712,7 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
     if (nRead > 0) leftTime = max(leftTime, m_interBytesTimeout_ms);
   }
 
-  //    cout << "READ DONE: "<< alreadyRead << "\n";
+  //    std::cout << "READ DONE: "<< alreadyRead << "\n";
   return alreadyRead;
 #endif
   MRPT_END
@@ -841,7 +841,7 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
     num_of_bytes_written = write(
         hCOM, reinterpret_cast<const char*>(Buffer) + total_bytes_written,
         Count - total_bytes_written);
-    // cout << "wr: " << num_of_bytes_written << " tot: " <<
+    // std::cout << "wr: " << num_of_bytes_written << " tot: " <<
     // total_bytes_written << " of " << Count << " err: " << errno << "\n";
     if (num_of_bytes_written > 0) total_bytes_written += num_of_bytes_written;
 

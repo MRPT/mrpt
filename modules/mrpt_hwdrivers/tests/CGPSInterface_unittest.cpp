@@ -37,7 +37,10 @@ TEST(CGPSInterface, parse_NMEA_GGA)
 
     const gnss::Message_NMEA_GGA* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_GGA>();
     EXPECT_TRUE(msg != nullptr);
-    if (!msg) return;
+    if (!msg)
+    {
+      return;
+    }
     EXPECT_NEAR(msg->fields.latitude_degrees, 36 + 49.76162994 / 60.0, 1e-10);
     EXPECT_NEAR(msg->fields.longitude_degrees, -(002 + 24.53709052 / 60.0), 1e-10);
     EXPECT_NEAR(msg->fields.altitude_meters, 9.3, 1e-10);
@@ -61,7 +64,10 @@ TEST(CGPSInterface, parse_NMEA_RMC)
   const gnss::Message_NMEA_RMC* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_RMC>();
 
   EXPECT_TRUE(msg != nullptr);
-  if (!msg) return;
+  if (!msg)
+  {
+    return;
+  }
   EXPECT_NEAR(msg->fields.latitude_degrees, 37 + 23.2475 / 60.0, 1e-10);
   EXPECT_NEAR(msg->fields.longitude_degrees, -(121 + 58.3416 / 60.0), 1e-10);
 }
@@ -76,7 +82,10 @@ TEST(CGPSInterface, parse_NMEA_GLL)
   const gnss::Message_NMEA_GLL* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_GLL>();
 
   EXPECT_TRUE(msg != nullptr);
-  if (!msg) return;
+  if (!msg)
+  {
+    return;
+  }
   EXPECT_NEAR(msg->fields.latitude_degrees, 37 + 23.2475 / 60.0, 1e-10);
   EXPECT_NEAR(msg->fields.longitude_degrees, -(121 + 58.3416 / 60.0), 1e-10);
 }
@@ -91,7 +100,10 @@ TEST(CGPSInterface, parse_NMEA_VTG)
   const gnss::Message_NMEA_VTG* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_VTG>();
 
   EXPECT_TRUE(msg != nullptr);
-  if (!msg) return;
+  if (!msg)
+  {
+    return;
+  }
   EXPECT_NEAR(msg->fields.true_track, 54.7, 1e-6);
   EXPECT_NEAR(msg->fields.magnetic_track, 34.4, 1e-6);
   EXPECT_NEAR(msg->fields.ground_speed_knots, 5.5, 1e-6);
@@ -108,7 +120,10 @@ TEST(CGPSInterface, parse_NMEA_ZDA)
   const gnss::Message_NMEA_ZDA* msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_ZDA>();
 
   EXPECT_TRUE(msg != nullptr);
-  if (!msg) return;
+  if (!msg)
+  {
+    return;
+  }
   EXPECT_TRUE(msg->fields.date_day == 14);
   EXPECT_TRUE(msg->fields.date_month == 10);
   EXPECT_TRUE(msg->fields.date_year == 2003);
@@ -143,7 +158,10 @@ TEST(CGPSInterface, parse_NMEA_ZDA_stream)
   const gnss::Message_NMEA_ZDA* msg = obsGPS->getMsgByClassPtr<gnss::Message_NMEA_ZDA>();
 
   EXPECT_TRUE(msg != nullptr);
-  if (!msg) return;
+  if (!msg)
+  {
+    return;
+  }
   EXPECT_TRUE(msg->fields.date_day == 14);
   EXPECT_TRUE(msg->fields.date_month == 10);
   EXPECT_TRUE(msg->fields.date_year == 2003);
@@ -207,8 +225,10 @@ TEST(CGPSInterface, parse_NOVATEL6_stream)
   const auto obss = gps.getObservations();
 
   EXPECT_EQ(obss.size(), 4U);
-  if (obss.empty()) return;
-
+  if (obss.empty())
+  {
+    return;
+  }
   auto itObs = obss.begin();
   auto obsGPS1 = mrpt::ptr_cast<CObservationGPS>::from(itObs->second);
   ++itObs;
@@ -219,12 +239,18 @@ TEST(CGPSInterface, parse_NOVATEL6_stream)
 
   const auto* msg1 = obsGPS1->getMsgByClassPtr<gnss::Message_NV_OEM6_BESTPOS>();
   EXPECT_TRUE(msg1 != nullptr);
-  if (!msg1) return;
+  if (!msg1)
+  {
+    return;
+  }
   EXPECT_TRUE(msg1->fields.num_sats_tracked == 15);
 
   const auto* msg2 = obsGPS2->getMsgByClassPtr<gnss::Message_NV_OEM6_INSPVAS>();
   EXPECT_TRUE(msg2 != nullptr);
-  if (!msg2) return;
+  if (!msg2)
+  {
+    return;
+  }
   EXPECT_NEAR(msg2->fields.roll, 4.10511, 1e-4);
 }
 
@@ -315,8 +341,10 @@ TEST(CGPSInterface, parse_NMEA_stream)
   const auto obss = gps.getObservations();
 
   EXPECT_EQ(obss.size(), 3U);
-  if (obss.empty()) return;
-
+  if (obss.empty())
+  {
+    return;
+  }
   auto itObs = obss.begin();
   auto obsGPS1 = mrpt::ptr_cast<CObservationGPS>::from(itObs->second);
   ++itObs;
@@ -330,13 +358,19 @@ TEST(CGPSInterface, parse_NMEA_stream)
 
   const auto* msgRMC = obsGPS1->getMsgByClassPtr<gnss::Message_NMEA_RMC>();
   EXPECT_TRUE(msgRMC != nullptr);
-  if (!msgRMC) return;
+  if (!msgRMC)
+  {
+    return;
+  }
   EXPECT_NEAR(msgRMC->fields.longitude_degrees, -2.407810500, 0.0001);
   EXPECT_NEAR(msgRMC->fields.latitude_degrees, 36.829821500, 0.0001);
 
   const auto* msgGSA1 = obsGPS2->getMsgByClassPtr<gnss::Message_NMEA_GSA>();
   EXPECT_TRUE(msgGSA1 != nullptr);
-  if (!msgGSA1) return;
+  if (!msgGSA1)
+  {
+    return;
+  }
   EXPECT_EQ(msgGSA1->fields.PRNs[0][0], '1');
   EXPECT_EQ(msgGSA1->fields.PRNs[0][1], '5');
   EXPECT_NEAR(msgGSA1->fields.HDOP, 2.31, 0.1);

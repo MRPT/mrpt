@@ -584,7 +584,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
   {
     CConfigFileMemory refCfg(string(edOptRefPnt->GetValue().mb_str()));
     refMapPt.insertionOptions.loadFromConfigFile(refCfg, "InsertionOptions");
-    cout << "REFERENCE MAP FOR THE ICP:" << endl;
+    std::cout << "REFERENCE MAP FOR THE ICP:"
+              << "\n";
     refMapPt.insertionOptions.dumpToConsole();
     refMapPt.renderOptions.color = mrpt::img::TColorf(.0f, .0f, 1.0f);
     refMapPt.renderOptions.point_size = 3.0;
@@ -596,7 +597,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
     refMapGrid.setSize(-10, 10, -10, 10, gridRes);
     refMapGrid.insertionOptions.loadFromConfigFile(refCfg, "InsertionOptions");
 
-    cout << "REFERENCE MAP FOR THE ICP:" << endl;
+    std::cout << "REFERENCE MAP FOR THE ICP:"
+              << "\n";
     refMapGrid.insertionOptions.dumpToConsole();
   }
 
@@ -610,7 +612,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
     newMapPt.renderOptions.color = mrpt::img::TColorf(1.0f, .0f, .0f);
     newMapPt.renderOptions.point_size = 2.0;
 
-    cout << "NEW MAP (TO ALIGN) FOR THE ICP:" << endl;
+    std::cout << "NEW MAP (TO ALIGN) FOR THE ICP:"
+              << "\n";
     newMapPt.insertionOptions.dumpToConsole();
   }
 
@@ -641,9 +644,12 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
     wxBusyCursor waitCursor;
     CMyButtonsDisabler buttonsDisabler(this);
 
-    cout << "===========" << endl;
-    cout << "  ICP RUN:" << endl;
-    cout << "===========" << endl;
+    std::cout << "==========="
+              << "\n";
+    std::cout << "  ICP RUN:"
+              << "\n";
+    std::cout << "==========="
+              << "\n";
 
     pbSteps->SetRange(maxSteps);
 
@@ -671,12 +677,12 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
       // Show text log:
       if (isAnimation)
       {
-        cout << format("EXECUTING %i steps:\n---------------------------\n", curStep);
+        std::cout << format("EXECUTING %i steps:\n---------------------------\n", curStep);
       }
-      cout << format("Time:%fms\n", icpInfo.executionTime * 1e3f);
-      cout << format("Iterations executed: %i\n", icpInfo.nIterations);
-      cout << format("Goodness: %.02f%%\n", 100 * icpInfo.goodness);
-      cout << format("Quality: %.04f\n", icpInfo.quality);
+      std::cout << format("Time:%fms\n", icpInfo.executionTime * 1e3f);
+      std::cout << format("Iterations executed: %i\n", icpInfo.nIterations);
+      std::cout << format("Goodness: %.02f%%\n", 100 * icpInfo.goodness);
+      std::cout << format("Quality: %.04f\n", icpInfo.quality);
 
       // Already converged?
       if (isAnimation && static_cast<int>(icpInfo.nIterations) < (static_cast<int>(curStep) - 3))
@@ -685,25 +691,28 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
         pbSteps->SetValue(maxSteps);
       }
 
-      cout << format(
+      std::cout << format(
           "Estimated pose:\n Mean=(%f,%f,%fdeg)\n", estMean.x(), estMean.y(),
           RAD2DEG(estMean.phi()));
-      cout << " Covariance:\n";
-      cout << estCov << endl;
+      std::cout << " Covariance:\n";
+      std::cout << estCov << "\n";
 
-      cout << " std(x)   = " << sqrt(estCov(0, 0)) << " m. " << endl;
-      cout << " std(y)   = " << sqrt(estCov(1, 1)) << " m. " << endl;
-      cout << " std(phi) = " << RAD2DEG(sqrt(estCov(2, 2))) << " deg. " << endl;
+      std::cout << " std(x)   = " << sqrt(estCov(0, 0)) << " m. "
+                << "\n";
+      std::cout << " std(y)   = " << sqrt(estCov(1, 1)) << " m. "
+                << "\n";
+      std::cout << " std(phi) = " << RAD2DEG(sqrt(estCov(2, 2))) << " deg. "
+                << "\n";
 
-      cout << format("Output PDF class is: %s\n", poseEst->GetRuntimeClass()->className);
+      std::cout << format("Output PDF class is: %s\n", poseEst->GetRuntimeClass()->className);
       if (const auto SOG = std::dynamic_pointer_cast<CPosePDFSOG>(poseEst); SOG)
       {
         const size_t n = SOG->size();
-        cout << format("# of gaussians in SOG: %i\n", (int)n);
+        std::cout << format("# of gaussians in SOG: %i\n", (int)n);
         for (size_t i = 0; i < n; i++)
         {
-          cout << format("SOG[%02i]:w=%e mean=", (int)i, SOG->get(i).log_w) << SOG->get(i).mean
-               << endl;
+          std::cout << format("SOG[%02i]:w=%e mean=", (int)i, SOG->get(i).log_w) << SOG->get(i).mean
+                    << "\n";
         }
       }
 

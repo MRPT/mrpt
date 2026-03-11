@@ -250,7 +250,7 @@ int main(int argc, char** argv)
       printf("\n");
     }
 
-    cout << "Data saved to directory: " << outDir << endl;
+    std::cout << "Data saved to directory: " << outDir << "\n";
   }
   catch (const std::exception& e)
   {

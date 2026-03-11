@@ -34,8 +34,10 @@ void CObservationTree::changeSelected(const std::vector<size_t>& idx)
 
 void CObservationTree::expandAll()
 {
-  if (!m_model) return;
-
+  if (!m_model)
+  {
+    return;
+  }
   QModelIndexList indexes = m_model->match(
       m_model->index(0, 0, QModelIndex()), Qt::DisplayRole, "*", -1,
       Qt::MatchWildcard | Qt::MatchRecursive);
@@ -44,8 +46,10 @@ void CObservationTree::expandAll()
 
 void CObservationTree::collapseAll()
 {
-  if (!m_model) return;
-
+  if (!m_model)
+  {
+    return;
+  }
   QModelIndexList indexes = m_model->match(
       m_model->index(0, 0, QModelIndex()), Qt::DisplayRole, "*", -1,
       Qt::MatchWildcard | Qt::MatchRecursive);

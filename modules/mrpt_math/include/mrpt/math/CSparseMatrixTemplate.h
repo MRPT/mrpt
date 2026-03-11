@@ -282,7 +282,10 @@ class CSparseMatrixTemplate
   {
     // if (mRows<0||mColumns<0) throw std::logic_error("Invalid range"); //
     // This case never happens!
-    if (mRows == nRows && mColumns == nCols) return;
+    if (mRows == nRows && mColumns == nCols)
+    {
+      return;
+    }
     mRows = nRows;
     mColumns = nCols;
     std::vector<std::pair<size_t, size_t>> toErase;

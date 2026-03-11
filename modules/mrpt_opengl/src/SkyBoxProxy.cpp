@@ -101,9 +101,14 @@ void SkyBoxProxy::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!m_textureLoaded || !m_cubeTexture) return;
-  if (!rc.shader || !rc.state) return;
-
+  if (!m_textureLoaded || !m_cubeTexture)
+  {
+    return;
+  }
+  if (!rc.shader || !rc.state)
+  {
+    return;
+  }
   // Upload v_matrix_no_translation (view rotation only, no translation,
   // so the skybox appears stationary as the camera orbits).
   if (rc.shader->hasUniform("v_matrix_no_translation"))
@@ -163,17 +168,24 @@ void SkyBoxProxy::uploadCubeVertices()
 void SkyBoxProxy::updateCubeTexture(const CVisualObject* sourceObj)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!sourceObj) return;
-
+  if (!sourceObj)
+  {
+    return;
+  }
   const auto* skybox = dynamic_cast<const mrpt::viz::CSkyBox*>(sourceObj);
-  if (!skybox) return;
-
+  if (!skybox)
+  {
+    return;
+  }
   const auto& imgs = skybox->getTextureImages();
 
   // All 6 faces must be assigned before uploading
   for (const auto& img : imgs)
   {
-    if (img.isEmpty()) return;
+    if (img.isEmpty())
+    {
+      return;
+    }
   }
 
   if (!m_cubeTexture)

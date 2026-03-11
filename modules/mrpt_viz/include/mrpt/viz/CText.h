@@ -41,7 +41,10 @@ class CText : public CVisualObject
   /** Sets the text to display */
   void setString(const std::string& s)
   {
-    if (m_str == s) return;
+    if (m_str == s)
+    {
+      return;
+    }
     m_str = s;
     CVisualObject::notifyChange();
   }
@@ -51,7 +54,10 @@ class CText : public CVisualObject
   /** Sets the font among "sans", "serif", "mono". */
   void setFont(const std::string& s, int height)
   {
-    if (m_fontName == s && m_fontHeight == height) return;
+    if (m_fontName == s && m_fontHeight == height)
+    {
+      return;
+    }
     m_fontName = s;
     m_fontHeight = height;
     CVisualObject::notifyChange();

@@ -32,7 +32,7 @@ void TestIMU()
 
   if (!serialPort.empty())
   {
-    std::cout << "Using serial port: " << serialPort << std::endl;
+    std::cout << "Using serial port: " << serialPort << "\n";
     imu.setSerialPort(serialPort);
   }
   // otherwise, use default port.
@@ -40,7 +40,8 @@ void TestIMU()
   // Load config from INI file:
   // imu.loadConfig( CConfigFile( "./config.ini") ,"IMU");
 
-  std::cout << "Trying to initialize the sensor..." << std::endl;
+  std::cout << "Trying to initialize the sensor..."
+            << "\n";
   imu.initialize();  // This will raise an exception on error
 
   mrpt::gui::CDisplayWindow3D win("IMU", 1024, 800);
@@ -108,7 +109,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "Error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "Error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

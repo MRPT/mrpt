@@ -28,8 +28,10 @@ void TrianglesProxy::compile(const CVisualObject* sourceObj)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
-
+  if (!sourceObj)
+  {
+    return;
+  }
   // Extract triangle rendering parameters
   extractTriangleParams(sourceObj);
 
@@ -45,8 +47,10 @@ void TrianglesProxy::updateBuffers(const CVisualObject* sourceObj)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
-
+  if (!sourceObj)
+  {
+    return;
+  }
   // Update cached parameters
   extractTriangleParams(sourceObj);
 
@@ -62,8 +66,10 @@ void TrianglesProxy::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (m_triangleCount == 0) return;
-
+  if (m_triangleCount == 0)
+  {
+    return;
+  }
   // Setup face culling
   setupFaceCulling();
 
@@ -108,8 +114,10 @@ void TrianglesProxy::extractTriangleParams(const CVisualObject* sourceObj)
 void TrianglesProxy::uploadTriangleUniforms(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!rc.shader) return;
-
+  if (!rc.shader)
+  {
+    return;
+  }
   // Material specular intensity (shininess)
   if (rc.shader->hasUniform("materialSpecular"))
   {

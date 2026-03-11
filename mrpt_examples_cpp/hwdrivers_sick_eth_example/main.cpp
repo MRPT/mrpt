@@ -35,7 +35,8 @@ int main(int argc, char* argv[])
 {
   if (argc < 3)
   {
-    cout << "Usage : " << argv[0] << " <IP> <port> " << endl;
+    std::cout << "Usage : " << argv[0] << " <IP> <port> "
+              << "\n";
     return 0;
   }
 

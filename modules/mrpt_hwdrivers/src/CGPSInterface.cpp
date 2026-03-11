@@ -214,7 +214,8 @@ bool CGPSInterface::tryToOpenTheCOM()
       std::lock_guard<std::mutex> lock(*m_data_stream_cs);
       if (serial->isOpen()) return true;  // Already open
 
-      if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << "\n";
+      if (m_verbose)
+        std::cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << "\n";
     }
     try
     {
@@ -344,8 +345,8 @@ void CGPSInterface::doProcess()
     if (m_last_timestamp == INVALID_TIMESTAMP)
     {
       if (m_verbose)
-        cout << "[CGPSInterface] Initial timestamp: "
-             << mrpt::system::timeToString(m_parsed_messages->timestamp) << "\n";
+        std::cout << "[CGPSInterface] Initial timestamp: "
+                  << mrpt::system::timeToString(m_parsed_messages->timestamp) << "\n";
       // Check if the initial timestamp seems to be OK (not a spurio one)
       TTimeStamp tmNow = mrpt::Clock::now();
       const double tdif = mrpt::system::timeDifference(m_parsed_messages->timestamp, tmNow);
@@ -354,9 +355,9 @@ void CGPSInterface::doProcess()
       else
       {
         if (m_verbose)
-          cout << "[CGPSInterface] Warning: The initial timestamp "
-                  "seems to be wrong! : "
-               << tdif << "\n";
+          std::cout << "[CGPSInterface] Warning: The initial timestamp "
+                       "seems to be wrong! : "
+                    << tdif << "\n";
       }
     }  // end-if
     else
@@ -370,17 +371,17 @@ void CGPSInterface::doProcess()
       // remove spurious
       {
         if (m_verbose)
-          cout << "[CGPSInterface ] Bad timestamp difference"
-               << "\n";
+          std::cout << "[CGPSInterface ] Bad timestamp difference"
+                    << "\n";
         return;
       }
 
       if (time_diff - m_topcon_data_period > 0.25 * m_topcon_data_period)
       {
         if (m_verbose)
-          cout << "[CGPSInterface] WARNING: According to the "
-                  "timestamps, we probably skipped one frame!"
-               << "\n";
+          std::cout << "[CGPSInterface] WARNING: According to the "
+                       "timestamps, we probably skipped one frame!"
+                    << "\n";
       }
 
       // a. These GPS data have both synched RMC and GGA data
@@ -486,11 +487,16 @@ void CGPSInterface::parseBuffer()
 ----------------------------------------------------- */
 void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 {
-  if (!str) return;
+  if (!str)
+  {
+    return;
+  }
   const size_t len = strlen(str);
   auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream.get());
-  if (!stream_serial) return;
-
+  if (!stream_serial)
+  {
+    return;
+  }
   size_t written;
 
   {
@@ -503,8 +509,10 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
   if (written != len) throw std::runtime_error(format("Error sending command: '%s'", str).c_str());
   std::this_thread::sleep_for(5ms);
 
-  if (!waitForAnswer) return;
-
+  if (!waitForAnswer)
+  {
+    return;
+  }
   std::this_thread::sleep_for(200ms);
   char buf[200];
   buf[0] = '\0';
@@ -544,7 +552,7 @@ bool CGPSInterface::OnConnectionShutdown()
   // Send commands:
   for (const auto& m_shutdown_cmd : m_shutdown_cmds)
   {
-    if (m_verbose) cout << "[CGPSInterface] TX shutdown command: `" << m_shutdown_cmd << "`\n";
+    if (m_verbose) std::cout << "[CGPSInterface] TX shutdown command: `" << m_shutdown_cmd << "`\n";
 
     std::string sTx = m_shutdown_cmd;
     if (m_custom_cmds_append_CRLF) sTx += std::string("\r\n");
@@ -592,7 +600,7 @@ bool CGPSInterface::OnConnectionEstablished()
   // Send commands:
   for (const auto& m_setup_cmd : m_setup_cmds)
   {
-    if (m_verbose) cout << "[CGPSInterface] TX setup command: `" << m_setup_cmd << "`\n";
+    if (m_verbose) std::cout << "[CGPSInterface] TX setup command: `" << m_setup_cmd << "`\n";
 
     std::string sTx = m_setup_cmd;
     if (m_custom_cmds_append_CRLF) sTx += std::string("\r\n");
@@ -661,7 +669,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
     // as normal
 
     ASSERT_(!m_JAVAD_rtk_format.empty());
-    cout << "Formato de correcciones para GR3: " << m_JAVAD_rtk_format << "\n";
+    std::cout << "Formato de correcciones para GR3: " << m_JAVAD_rtk_format << "\n";
     if (m_JAVAD_rtk_format == "cmr")
     {
       JAVAD_sendMessage(format(
@@ -694,9 +702,9 @@ bool CGPSInterface::setJAVAD_AIM_mode()
     }
     else
     {
-      cout << "Unknown RTK corrections format. Only supported: CMR, RTCM "
-              "or RTCM3"
-           << "\n";
+      std::cout << "Unknown RTK corrections format. Only supported: CMR, RTCM "
+                   "or RTCM3"
+                << "\n";
       return false;
     }
     JAVAD_sendMessage("%%set,/par/cur/term/imode,jps\r\n");  // sets current
@@ -736,8 +744,8 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 
   // Configure RTK mode and source:
   if (m_verbose)
-    cout << "[CGPSInterface] Configure RTK options"
-         << "\n";
+    std::cout << "[CGPSInterface] Configure RTK options"
+              << "\n";
 
   if (!m_JAVAD_rtk_src_port.empty())
   {
@@ -793,11 +801,11 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 
   if (m_topcon_useAIMMode)
   {
-    if (m_verbose) cout << "[CGPSInterface] Using Advanced Input Mode";
+    if (m_verbose) std::cout << "[CGPSInterface] Using Advanced Input Mode";
     m_topcon_AIMConfigured = setJAVAD_AIM_mode();
     if (m_verbose)
-      cout << "... done"
-           << "\n";
+      std::cout << "... done"
+                << "\n";
   }
   JAVAD_sendMessage(format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_topcon_data_period).c_str());
   JAVAD_sendMessage(
@@ -806,16 +814,16 @@ bool CGPSInterface::legacy_topcon_setup_commands()
   if (m_topcon_useAIMMode)
   {
     if (m_verbose)
-      cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon "
-              "commands sent successfully with AIM."
-           << "\n";
+      std::cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon "
+                   "commands sent successfully with AIM."
+                << "\n";
   }
   else
   {
     if (m_verbose)
-      cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon "
-              "commands sent successfully."
-           << "\n";
+      std::cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon "
+                   "commands sent successfully."
+                << "\n";
   }
 
   return true;

@@ -69,9 +69,9 @@ void TestFonts()
   win1.setPos(10, 10);
   win1.showImage(img);
 
-  cout << "Push a key in the console or in the window to continue...";
+  std::cout << "Push a key in the console or in the window to continue...";
   win1.waitForKey();
-  cout << "Done\n";
+  std::cout << "Done\n";
 }
 }  // namespace
 

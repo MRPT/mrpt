@@ -390,7 +390,7 @@ void AppRotationConverter()
         ->setChecked(true);
     winMenu
         ->add<nanogui::CheckBox>(
-            "Ortho. view", [&](bool b) { app.win->camera().setCameraProjective(!b); })
+            "Ortho. view", [&](bool b) { app.win->camera().setProjectiveModel(!b); })
         ->setChecked(false);
 
     winMenu->add<nanogui::Label>("Units:");

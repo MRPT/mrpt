@@ -27,7 +27,11 @@ class Foo : public mrpt::rtti::CObject
   Foo() {}
   DEFINE_MRPT_OBJECT(Foo, MyNS)
 
-  void printName() { std::cout << "printName: Foo" << std::endl; }
+  void printName()
+  {
+    std::cout << "printName: Foo"
+              << "\n";
+  }
 };
 
 class BarBase : public mrpt::rtti::CObject
@@ -36,7 +40,11 @@ class BarBase : public mrpt::rtti::CObject
   BarBase() {}
   DEFINE_VIRTUAL_MRPT_OBJECT(BarBase, MyNS)
 
-  virtual void printName() { std::cout << "printName: BarBase" << std::endl; }
+  virtual void printName()
+  {
+    std::cout << "printName: BarBase"
+              << "\n";
+  }
 };
 
 class Bar : public BarBase
@@ -45,8 +53,16 @@ class Bar : public BarBase
   Bar() {}
   DEFINE_MRPT_OBJECT(Bar, MyNS)
 
-  void printName() override { std::cout << "class: Bar" << std::endl; }
-  void specificBarMethod() { std::cout << "specificBarMethod: reached." << std::endl; }
+  void printName() override
+  {
+    std::cout << "class: Bar"
+              << "\n";
+  }
+  void specificBarMethod()
+  {
+    std::cout << "specificBarMethod: reached."
+              << "\n";
+  }
 };
 }  // namespace MyNS
 
@@ -61,7 +77,7 @@ void Test_UserTypes()
 {
   using namespace MyNS;
   const auto id_foo = CLASS_ID(Foo);
-  std::cout << "RTTI Foo (static): " << id_foo->className << std::endl;
+  std::cout << "RTTI Foo (static): " << id_foo->className << "\n";
 
   // Pointers:
   Bar::Ptr pBar = std::make_shared<Bar>();
@@ -106,7 +122,7 @@ void Test_UserTypesFactory()
     for (const auto& cl : allClasses)
     {
       std::cout << "Known class: " << cl->className << ", children of "
-                << (cl->getBaseClass ? cl->getBaseClass()->className : "(none)") << std::endl;
+                << (cl->getBaseClass ? cl->getBaseClass()->className : "(none)") << "\n";
     }
   }
 
@@ -133,7 +149,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

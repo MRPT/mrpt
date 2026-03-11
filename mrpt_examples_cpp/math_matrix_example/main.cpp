@@ -73,8 +73,8 @@ void TestInitMatrix()
     CFileOutputStream("mat.bin") << B;
     CMatrixD  A;
     CFileInputStream("mat.bin") >> A;
-    cout << "B:" << endl << B;
-    cout << "A:" << endl << A;
+    std::cout << "B:" << endl << B;
+    std::cout << "A:" << endl << A;
   */
 }
 

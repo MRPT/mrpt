@@ -187,19 +187,19 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
   {
     CMyRedirector myRedirector(lbInfo);
 
-    cout << " SceneViewer3D\n";
-    cout << "--------------------------------\n";
-    cout << "Jose Luis Blanco\n";
-    cout << "For bug reports or to collaborate: "
-            "<joseluisblancoc@gmail.com>\n";
-    cout << "http://www.isa.uma.es/jlblanco\n\n";
+    std::cout << " SceneViewer3D\n";
+    std::cout << "--------------------------------\n";
+    std::cout << "Jose Luis Blanco\n";
+    std::cout << "For bug reports or to collaborate: "
+                 "<joseluisblancoc@gmail.com>\n";
+    std::cout << "http://www.isa.uma.es/jlblanco\n\n";
 
-    cout << "MRPT version:           " << MRPT_getVersion() << endl;
-    cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << endl;
-    cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "."
-         << EIGEN_MINOR_VERSION << endl;
-    cout << "wxWidgets version:      " << std::string(wxVer.mb_str()) << endl;
-    cout << "wxMathPlot version:     0.03\n";
+    std::cout << "MRPT version:           " << MRPT_getVersion() << "\n";
+    std::cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << "\n";
+    std::cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION
+              << "." << EIGEN_MINOR_VERSION << "\n";
+    std::cout << "wxWidgets version:      " << std::string(wxVer.mb_str()) << "\n";
+    std::cout << "wxMathPlot version:     0.03\n";
   }
 
   lbProgName->SetLabel(_("SceneViewer3D"));

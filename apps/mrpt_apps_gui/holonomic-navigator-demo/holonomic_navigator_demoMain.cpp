@@ -468,11 +468,11 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
   openGLSceneRef->insert(mrpt::viz::stock_objects::CornerXYZ(1));
 
   // Set camera:
-  m_plot3D->setCameraPointing(0.0f, 0.0f, 0.0f);
-  m_plot3D->setZoomDistance(40.0f);
-  m_plot3D->setElevationDegrees(70.0f);
-  m_plot3D->setAzimuthDegrees(-100.0f);
-  m_plot3D->setCameraProjective(true);
+  m_plot3D->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+  m_plot3D->orbitCameraController().setZoomDistance(40.0f);
+  m_plot3D->orbitCameraController().setElevationDegrees(70.0f);
+  m_plot3D->orbitCameraController().setAzimuthDegrees(-100.0f);
+  m_plot3D->orbitCameraController().setProjectiveModel(true);
 
   // 2D view ==============
   auto openGLScanRef = m_plotScan->getOpenGLSceneRef();
@@ -508,11 +508,11 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
   openGLScanRef->insert(gl_nd_gaps);
 
   // Set camera:
-  m_plotScan->setCameraPointing(0.0f, 0.0f, 0.0f);
-  m_plotScan->setZoomDistance(2.2f);
-  m_plotScan->setElevationDegrees(90.0f);
-  m_plotScan->setAzimuthDegrees(-90.0f);
-  m_plotScan->setCameraProjective(false);
+  m_plotScan->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+  m_plotScan->orbitCameraController().setZoomDistance(2.2f);
+  m_plotScan->orbitCameraController().setElevationDegrees(90.0f);
+  m_plotScan->orbitCameraController().setAzimuthDegrees(-90.0f);
+  m_plotScan->orbitCameraController().setProjectiveModel(false);
 
   // Update positions of stuff:
   this->updateViewsDynamicObjects();
@@ -803,7 +803,10 @@ void holonomic_navigator_demoFrame::Onplot3DMouseMove(wxMouseEvent& event)
   TLine3D ray;
   {
     auto optRay = m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord({X, Y});
-    if (!optRay) return;
+    if (!optRay)
+    {
+      return;
+    }
     ray = *optRay;
   }
   // Create a 3D plane, e.g. Z=0
@@ -929,8 +932,10 @@ void holonomic_navigator_demoFrame::OnbtnLoadMapClick(wxCommandEvent& event)
           "(*.*)|*.*"),
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-  if (dlg.ShowModal() != wxID_OK) return;
-
+  if (dlg.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   const wxString sFil = dlg.GetPath();
   const std::string fil = std::string(sFil.mb_str());
 

@@ -48,8 +48,10 @@ template <typename T>
 void TMatchingPairListTempl<T>::saveAsMATLABScript(const std::string& filName) const
 {
   FILE* f = os::fopen(filName.c_str(), "wt");
-  if (!f) return;
-
+  if (!f)
+  {
+    return;
+  }
   fprintf(f, "%% ----------------------------------------------------\n");
   fprintf(f, "%%  File generated automatically by the MRPT method:   \n");
   fprintf(f, "%%   saveAsMATLABScript                                \n");

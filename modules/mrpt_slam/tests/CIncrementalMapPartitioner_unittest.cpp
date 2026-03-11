@@ -41,8 +41,10 @@ TEST(CIncrementalMapPartitioner, test_dataset)
   imp.updatePartitions(parts);
 
   EXPECT_EQ(parts.size(), 2UL);
-  if (parts.size() != 2UL) return;
-
+  if (parts.size() != 2UL)
+  {
+    return;
+  }
   const std::vector<uint32_t> expected_p0 = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
                                              13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
                                              26, 27, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72,

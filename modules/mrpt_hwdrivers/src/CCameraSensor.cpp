@@ -74,8 +74,8 @@ CCameraSensor::CCameraSensor() :
    ----------------------------------------------------- */
 void CCameraSensor::initialize()
 {
-  cout << "[CCameraSensor::initialize] Opening camera..."
-       << "\n";
+  std::cout << "[CCameraSensor::initialize] Opening camera..."
+            << "\n";
   close();
 
   // Select type of device
@@ -95,7 +95,7 @@ void CCameraSensor::initialize()
       m_state = CGenericSensor::ssError;
       throw;
     }
-    cout << format(
+    std::cout << format(
         "[CCameraSensor::initialize] opencv camera, index: %i type: "
         "%i...\n",
         int(m_cv_camera_index), (int)ct);
@@ -112,7 +112,7 @@ void CCameraSensor::initialize()
   else if (m_grabber_type == "dc1394")
   {
     // m_cap_dc1394
-    cout << format(
+    std::cout << format(
         "[CCameraSensor::initialize] dc1394 camera, GUID: 0x%lX  "
         "UNIT:%d...\n",
         long(m_dc1394_camera_guid), m_dc1394_camera_unit);
@@ -129,7 +129,7 @@ void CCameraSensor::initialize()
   }
   else if (m_grabber_type == "bumblebee_dc1394")
   {
-    cout << format(
+    std::cout << format(
         "[CCameraSensor::initialize] bumblebee_libdc1394 camera: "
         "GUID:0x%08X Index:%i FPS:%f...\n",
         (unsigned int)(m_bumblebee_dc1394_camera_guid), m_bumblebee_dc1394_camera_unit,
@@ -141,7 +141,7 @@ void CCameraSensor::initialize()
   else if (m_grabber_type == "ffmpeg")
   {
     // m_cap_ffmpeg
-    cout << format("[CCameraSensor::initialize] FFmpeg stream: %s...\n", m_ffmpeg_url.c_str());
+    std::cout << format("[CCameraSensor::initialize] FFmpeg stream: %s...\n", m_ffmpeg_url.c_str());
     m_cap_ffmpeg = std::make_unique<CFFMPEG_InputStream>();
 
     if (!m_cap_ffmpeg->openURL(m_ffmpeg_url, m_capture_grayscale))
@@ -152,7 +152,7 @@ void CCameraSensor::initialize()
   }
   else if (m_grabber_type == "kinect")
   {
-    cout << "[CCameraSensor::initialize] Kinect camera...\n";
+    std::cout << "[CCameraSensor::initialize] Kinect camera...\n";
     m_cap_kinect = std::make_unique<CKinect>();
     m_cap_kinect->enableGrab3DPoints(m_kinect_save_3d);
     m_cap_kinect->enableGrabDepth(m_kinect_save_range_img);
@@ -176,7 +176,7 @@ void CCameraSensor::initialize()
   }
   else if (m_grabber_type == "openni2")
   {
-    cout << "[CCameraSensor::initialize] OpenNI2 sensor...\n";
+    std::cout << "[CCameraSensor::initialize] OpenNI2 sensor...\n";
     m_cap_openni2 = std::make_unique<COpenNI2Sensor>();
     m_cap_openni2->enableGrab3DPoints(m_kinect_save_3d);  // It uses the
     // same options as
@@ -202,13 +202,14 @@ void CCameraSensor::initialize()
   else if (m_grabber_type == "image_dir")
   {
     // m_cap_image_dir
-    cout << format("[CCameraSensor::initialize] Image dir: %s...\n", m_img_dir_url.c_str());
+    std::cout << format("[CCameraSensor::initialize] Image dir: %s...\n", m_img_dir_url.c_str());
     m_cap_image_dir = std::make_unique<std::string>();
   }
   else if (m_grabber_type == "rawlog")
   {
     // m_cap_rawlog
-    cout << format("[CCameraSensor::initialize] Rawlog stream: %s...\n", m_rawlog_file.c_str());
+    std::cout << format(
+        "[CCameraSensor::initialize] Rawlog stream: %s...\n", m_rawlog_file.c_str());
     m_cap_rawlog = std::make_unique<CCompressedInputStream>();
 
     if (!m_cap_rawlog->open(m_rawlog_file))
@@ -222,7 +223,7 @@ void CCameraSensor::initialize()
   }
   else if (m_grabber_type == "flycap")
   {
-    cout << "[CCameraSensor::initialize] PGR FlyCapture2 camera...\n";
+    std::cout << "[CCameraSensor::initialize] PGR FlyCapture2 camera...\n";
     try
     {
       // Open camera and start capture:
@@ -236,19 +237,19 @@ void CCameraSensor::initialize()
   }
   else if (m_grabber_type == "flycap_stereo")
   {
-    cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera...\n";
+    std::cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera...\n";
     try
     {
       // Open camera and start capture:
       m_cap_flycap_stereo_l = std::make_unique<CImageGrabber_FlyCapture2>();
       m_cap_flycap_stereo_r = std::make_unique<CImageGrabber_FlyCapture2>();
 
-      cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo "
-              "camera: Opening LEFT camera...\n";
+      std::cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo "
+                   "camera: Opening LEFT camera...\n";
       m_cap_flycap_stereo_l->open(m_flycap_stereo_options[0], false /* don't start grabbing */);
 
-      cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo "
-              "camera: Opening RIGHT camera...\n";
+      std::cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo "
+                   "camera: Opening RIGHT camera...\n";
       m_cap_flycap_stereo_r->open(m_flycap_stereo_options[1], false /* don't start grabbing */);
 
       // Now, start grabbing "simultaneously":
@@ -272,7 +273,7 @@ void CCameraSensor::initialize()
   }
   else if (m_grabber_type == "myntd")
   {
-    cout << "[CCameraSensor::initialize] MYNTEYE-D camera ...\n";
+    std::cout << "[CCameraSensor::initialize] MYNTEYE-D camera ...\n";
 
     // Open it:
     try
@@ -289,8 +290,8 @@ void CCameraSensor::initialize()
     THROW_EXCEPTION_FMT("Unknown 'grabber_type' found: %s", m_grabber_type.c_str());
 
   // Change state:
-  cout << "[CCameraSensor::initialize] Done!"
-       << "\n";
+  std::cout << "[CCameraSensor::initialize] Done!"
+            << "\n";
   m_state = CGenericSensor::ssWorking;
 
   // Launch independent thread?
@@ -865,9 +866,9 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
       const double At = mrpt::system::timeDifference(obsL.timestamp, obsR.timestamp);
       if (std::abs(At) > 0.1)
       {
-        cout << "[CCamera, flycap_stereo] Warning: Too large delay "
-                "between left & right images: "
-             << At << " sec.\n";
+        std::cout << "[CCamera, flycap_stereo] Warning: Too large delay "
+                     "between left & right images: "
+                  << At << " sec.\n";
       }
 
       // It seems that the timestamp is not always filled in from FlyCap
@@ -1005,7 +1006,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
                                 format(
                                     "_D_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
-        // cout << "[CCameraSensor] Saving " << filName << "\n";
+        // std::cout << "[CCameraSensor] Saving " << filName << "\n";
         if (!stObs->imageLeft.saveToFile(
                 m_path_for_external_images + string("/") + filNameL,
                 m_external_images_jpeg_quality))
@@ -1061,7 +1062,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
                          format(
                              "_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
                              m_external_images_format.c_str());
-        // cout << "[CCameraSensor] Saving " << filName << "\n";
+        // std::cout << "[CCameraSensor] Saving " << filName << "\n";
         if (!obs->image.saveToFile(
                 m_path_for_external_images + string("/") + filName, m_external_images_jpeg_quality))
         {

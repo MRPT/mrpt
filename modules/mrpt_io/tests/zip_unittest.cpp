@@ -45,7 +45,7 @@ TEST(Compress, DataBlockGZ)
     GTEST_FAIL() << "Error in decompress_gz_data_block\n";
 
   //	cout << "Decompressed data: " << recovered_data.size() << " bytes." <<
-  // endl;
+  // "\n";
 
   EXPECT_EQ(in_data.size(), recovered_data.size());
   if (in_data.size() == recovered_data.size())

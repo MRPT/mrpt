@@ -145,8 +145,10 @@ void COccupancyGridMap2D::getAsImageFiltered(CImage& img, bool verticalFlip, boo
 
 void COccupancyGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
-  if (!genericMapParams.enableSaveAs3DObject) return;
-
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   MRPT_START
 
   auto outObj = mrpt::viz::CTexturedPlane::Create();

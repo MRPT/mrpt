@@ -85,7 +85,7 @@ void TestSLERP()
   // IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
   win.unlockAccess3DScene();
 
-  cout << "\n Close the window to exit.\n";
+  std::cout << "\n Close the window to exit.\n";
 
   mrpt::system::CTicTac tic;
   static const double MOVE_PERIOD = 1.0;
@@ -134,7 +134,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

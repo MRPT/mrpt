@@ -76,12 +76,13 @@ void Test_SUT()
         dumm,  // fixed parameter: not used in this example
         y_mean, y_cov);
 
-  cout << "SUT: Time (ms): " << 1e3 * tictac.Tac() / N << endl;
+  std::cout << "SUT: Time (ms): " << 1e3 * tictac.Tac() / N << "\n";
 
   // Print:
-  cout << " ======= Scaled Unscented Transform ======== " << endl;
-  cout << "y_mean: " << y_mean << endl;
-  cout << "y_cov: " << endl << y_cov << endl << endl;
+  std::cout << " ======= Scaled Unscented Transform ======== "
+            << "\n";
+  std::cout << "y_mean: " << y_mean << "\n";
+  std::cout << "y_cov: " << endl << y_cov << endl << "\n";
 
   // 3D view:
   mrpt::viz::Scene::Ptr scene = mrpt::viz::Scene::Create();
@@ -111,7 +112,7 @@ void Test_SUT()
         &MC_samples  // we want the samples.
     );
 
-  cout << "MC: Time (ms): " << 1e3 * tictac.Tac() / N << endl;
+  std::cout << "MC: Time (ms): " << 1e3 * tictac.Tac() / N << "\n";
 
   CVectorDouble MC_y[3];
 
@@ -127,9 +128,10 @@ void Test_SUT()
   }
 
   // Print:
-  cout << " ======= Montecarlo Transform ======== " << endl;
-  cout << "y_mean: " << y_mean << endl;
-  cout << "y_cov: " << endl << y_cov << endl;
+  std::cout << " ======= Montecarlo Transform ======== "
+            << "\n";
+  std::cout << "y_mean: " << y_mean << "\n";
+  std::cout << "y_cov: " << endl << y_cov << "\n";
 
   // Do Linear for comparison:
   N = 100;
@@ -144,12 +146,13 @@ void Test_SUT()
         dumm,  // fixed parameter: not used in this example
         y_mean, y_cov, x_incrs);
 
-  cout << "LIN: Time (ms): " << 1e3 * tictac.Tac() / N << endl;
+  std::cout << "LIN: Time (ms): " << 1e3 * tictac.Tac() / N << "\n";
 
   // Print:
-  cout << " ======= Linear Transform ======== " << endl;
-  cout << "y_mean: " << y_mean << endl;
-  cout << "y_cov: " << endl << y_cov << endl;
+  std::cout << " ======= Linear Transform ======== "
+            << "\n";
+  std::cout << "y_mean: " << y_mean << "\n";
+  std::cout << "y_cov: " << endl << y_cov << "\n";
 
   {
     auto el = viz::CEllipsoid3D::Create();
@@ -185,7 +188,9 @@ void Test_SUT()
 
   win.forceRepaint();
 
-  cout << endl << "Press any key to exit" << endl;
+  std::cout << endl
+            << "Press any key to exit"
+            << "\n";
   win.waitForKey();
 }
 
@@ -198,7 +203,7 @@ static void aux_posequat2poseypr(
   const CPose3DQuat p(x[0], x[1], x[2], mrpt::math::CQuaternionDouble(x[3], x[4], x[5], x[6]));
   const CPose3D p2 = CPose3D(p);
   for (int i = 0; i < 6; i++) y[i] = p2[i];
-  // cout << "p2: " << y[3] << endl;
+  // std::cout << "p2: " << y[3] << "\n";
 }
 
 void TestCalibrate_pose2quat()
@@ -216,7 +221,7 @@ void TestCalibrate_pose2quat()
 
   o.cov(0, 1) = o.cov(1, 0) = 0.007;
 
-  cout << "p1quat: " << endl << o << endl;
+  std::cout << "p1quat: " << endl << o << "\n";
 
   // Use UT transformation:
   //   f: R^7 => R^6
@@ -233,7 +238,7 @@ void TestCalibrate_pose2quat()
       x_mean, o.cov, aux_posequat2poseypr,
       dummy,  // fixed parameter: not used in this example
       MC_y_mean, MC_y_cov, 500);
-  cout << "MC: " << endl << MC_y_mean << endl << endl << MC_y_cov << endl << endl;
+  std::cout << "MC: " << endl << MC_y_mean << endl << endl << MC_y_cov << endl << "\n";
 
   // SUT:
 
@@ -249,7 +254,7 @@ void TestCalibrate_pose2quat()
       2.0    // beta
   );
 
-  cout << "SUT: " << endl << y_mean << endl << endl << p_ypr.cov << endl << endl;
+  std::cout << "SUT: " << endl << y_mean << endl << endl << p_ypr.cov << endl << "\n";
 }
 
 // ------------------------------------------------------
@@ -267,7 +272,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

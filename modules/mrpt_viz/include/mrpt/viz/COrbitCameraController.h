@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/viz/CCamera.h>
 
 #include <cstdint>
@@ -90,6 +91,9 @@ class COrbitCameraController
   // ----------------------------------------------------------------
 
   void setCameraPointing(float x, float y, float z);
+  void setCameraPointing(const mrpt::math::TPoint3Df& pt) { setCameraPointing(pt.x, pt.y, pt.z); }
+  void setCameraPointing(const mrpt::math::TPoint3D& pt) { setCameraPointing(pt.cast<float>()); }
+
   [[nodiscard]] float getCameraPointingX() const { return m_params.pointingX; }
   [[nodiscard]] float getCameraPointingY() const { return m_params.pointingY; }
   [[nodiscard]] float getCameraPointingZ() const { return m_params.pointingZ; }

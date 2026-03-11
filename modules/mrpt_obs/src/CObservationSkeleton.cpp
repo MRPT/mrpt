@@ -105,9 +105,9 @@ void CObservationSkeleton::getDescriptionAsText(std::ostream& o) const
     << "Joint Positions (x, y, z) [mm] -- confidence"
     << "\n";
 
-#define PRINT_JOINT(_J)                                                                   \
-  cout << "\t" << #_J << ":\t(" << this->_J.x << ", " << this->_J.y << ", " << this->_J.z \
-       << ") -- " << this->_J.conf << "\n";
+#define PRINT_JOINT(_J)                                                                        \
+  std::cout << "\t" << #_J << ":\t(" << this->_J.x << ", " << this->_J.y << ", " << this->_J.z \
+            << ") -- " << this->_J.conf << "\n";
 
   PRINT_JOINT(head)
   PRINT_JOINT(neck)

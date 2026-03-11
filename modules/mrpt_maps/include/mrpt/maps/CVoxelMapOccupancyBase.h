@@ -196,7 +196,10 @@ class CVoxelMapOccupancyBase :
   void updateCell_fast_occupied(
       voxel_node_t* theCell, const occupancy_t logodd_obs, const occupancy_t thres)
   {
-    if (theCell == nullptr) return;
+    if (theCell == nullptr)
+    {
+      return;
+    }
     occupancy_t& occ = theCell->occupancyRef();
     if (occ > thres)
       occ -= logodd_obs;
@@ -231,7 +234,10 @@ class CVoxelMapOccupancyBase :
   void updateCell_fast_free(
       voxel_node_t* theCell, const occupancy_t logodd_obs, const occupancy_t thres)
   {
-    if (theCell == nullptr) return;
+    if (theCell == nullptr)
+    {
+      return;
+    }
     occupancy_t& occ = theCell->occupancyRef();
     if (occ < thres)
       occ += logodd_obs;

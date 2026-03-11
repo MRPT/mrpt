@@ -70,7 +70,10 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath([[maybe_unused]] wxCommandEvent& even
   {
     wxString s =
         wxGetTextFromUser(_("Reference Latitude (degrees):"), _("GPS reference"), _("0.0"), this);
-    if (s.IsEmpty()) return;
+    if (s.IsEmpty())
+    {
+      return;
+    }
     if (!s.ToCDouble(&ref.lat.decimal_value))
     {
       wxMessageBox(_("Invalid number"));
@@ -78,7 +81,10 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath([[maybe_unused]] wxCommandEvent& even
     }
 
     s = wxGetTextFromUser(_("Reference Longitude (degrees):"), _("GPS reference"), _("0.0"), this);
-    if (s.IsEmpty()) return;
+    if (s.IsEmpty())
+    {
+      return;
+    }
     if (!s.ToCDouble(&ref.lon.decimal_value))
     {
       wxMessageBox(_("Invalid number"));
@@ -86,7 +92,10 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath([[maybe_unused]] wxCommandEvent& even
     }
 
     s = wxGetTextFromUser(_("Reference Height (meters):"), _("GPS reference"), _("0.0"), this);
-    if (s.IsEmpty()) return;
+    if (s.IsEmpty())
+    {
+      return;
+    }
     if (!s.ToCDouble(&ref.height))
     {
       wxMessageBox(_("Invalid number"));
@@ -217,8 +226,10 @@ void fixGPStimestamp(
     CVectorDouble& time_changes,
     std::map<std::string, double>& DeltaTimes)
 {
-  if (!obs->has_GGA_datum() && !obs->has_RMC_datum()) return;
-
+  if (!obs->has_GGA_datum() && !obs->has_RMC_datum())
+  {
+    return;
+  }
   gnss::UTC_time theTime;
   bool hasTime = false;
 
@@ -386,12 +397,17 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
     lstLabels.Add(i->first.c_str());
 
   wxString ret = wxGetSingleChoice(_("Choose the first GPS:"), _("Sensor Labels"), lstLabels, this);
-  if (ret.IsEmpty()) return;
-
+  if (ret.IsEmpty())
+  {
+    return;
+  }
   string gps1 = string(ret.mb_str());
 
   ret = wxGetSingleChoice(_("Choose the second GPS:"), _("Sensor Labels"), lstLabels, this);
-  if (ret.IsEmpty()) return;
+  if (ret.IsEmpty())
+  {
+    return;
+  }
   string gps2 = string(ret.mb_str());
 
   size_t i, n = rawlog.size();
@@ -658,7 +674,10 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
     {
       wxString s =
           wxGetTextFromUser(_("Reference Latitude (degrees):"), _("GPS reference"), _("0.0"), this);
-      if (s.IsEmpty()) return;
+      if (s.IsEmpty())
+      {
+        return;
+      }
       if (!s.ToCDouble(&refCoords.lat.decimal_value))
       {
         wxMessageBox(_("Invalid number"));
@@ -667,7 +686,10 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
       s = wxGetTextFromUser(
           _("Reference Longitude (degrees):"), _("GPS reference"), _("0.0"), this);
-      if (s.IsEmpty()) return;
+      if (s.IsEmpty())
+      {
+        return;
+      }
       if (!s.ToCDouble(&refCoords.lon.decimal_value))
       {
         wxMessageBox(_("Invalid number"));
@@ -675,7 +697,10 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
       }
 
       s = wxGetTextFromUser(_("Reference Height (meters):"), _("GPS reference"), _("0.0"), this);
-      if (s.IsEmpty()) return;
+      if (s.IsEmpty())
+      {
+        return;
+      }
       if (!s.ToCDouble(&refCoords.height))
       {
         wxMessageBox(_("Invalid number"));
@@ -986,7 +1011,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
         ++a;
       }
     }
-    cout << "# of gps entries with all the GPSs:" << lstXYZallGPS.size() << endl;
+    std::cout << "# of gps entries with all the GPSs:" << lstXYZallGPS.size() << "\n";
 
     CMatrixDouble MAT(lstXYZallGPS.size(), 1 + 3 * lstAllGPSlabels.size());
     int nLabels = 0;

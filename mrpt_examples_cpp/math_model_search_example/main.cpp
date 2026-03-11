@@ -114,7 +114,8 @@ void TestRANSAC()
     Fit3DPlane fit(data);
     found = search.geneticSingleModel(fit, 3, DIST_THRESHOLD, 10, 100, best_model, best_inliers);
   }
-  cout << "Computation time (genetic): " << tictac.Tac() * 1000.0 / TIMES << " ms" << endl;
+  std::cout << "Computation time (genetic): " << tictac.Tac() * 1000.0 / TIMES << " ms"
+            << "\n";
 
   for (size_t iters = 0; iters < TIMES; iters++)
   {
@@ -122,12 +123,15 @@ void TestRANSAC()
     Fit3DPlane fit(data);
     found = search.ransacSingleModel(fit, 3, DIST_THRESHOLD, best_model, best_inliers);
   }
-  cout << "Computation time (ransac): " << tictac.Tac() * 1000.0 / TIMES << " ms" << endl;
+  std::cout << "Computation time (ransac): " << tictac.Tac() * 1000.0 / TIMES << " ms"
+            << "\n";
 
-  if (!found) return;
-
-  //	cout << "RANSAC finished: Best model: " << best_model << endl;
-  //	cout << "Best inliers: " << best_inliers << endl;
+  if (!found)
+  {
+    return;
+  }
+  //	cout << "RANSAC finished: Best model: " << best_model << "\n";
+  //	cout << "Best inliers: " << best_inliers << "\n";
 
   // Show GUI
   // --------------------------
@@ -172,7 +176,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

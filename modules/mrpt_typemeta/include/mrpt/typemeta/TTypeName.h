@@ -32,7 +32,7 @@ namespace typemeta
  * specializations for the plain data types (bool, double, uint8_t, etc...)
  *   For example:
  *  \code
- *     cout << TTypeName<double>::get() << "\n";  // "double"
+ *     std::cout << TTypeName<double>::get() << "\n";  // "double"
  *   	cout << TTypeName<CPose2D>::get() << "\n"; // "CPose2D"
  *  \endcode
  *
@@ -41,7 +41,7 @@ namespace typemeta
  *  \code
  *     class MyClass { ... };
  *     DECLARE_CUSTOM_TTYPENAME(MyClass)
- *     cout << TTypeName<MyClass>::get() << "\n";  // "MyClass"
+ *     std::cout << TTypeName<MyClass>::get() << "\n";  // "MyClass"
  *  \endcode
  * or alternatively, to avoid adding out-of-class macros:
  *  \code
@@ -50,7 +50,7 @@ namespace typemeta
  *        DECLARE_TTYPENAME_CLASSNAME(MyNS::MyClass)
  *      };
  *     }
- *     cout << TTypeName<MyNS::MyClass>::get() << "\n"; // "MyNS::MyClass"
+ *     std::cout << TTypeName<MyNS::MyClass>::get() << "\n"; // "MyNS::MyClass"
  *  \endcode
  *  The following types are NOT ALLOWED since they have platform-dependant
  * sizes:

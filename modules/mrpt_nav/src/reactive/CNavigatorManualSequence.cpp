@@ -79,8 +79,10 @@ void CNavigatorManualSequence::initialize()
 /** Overriden in this class to ignore the cancel/pause/... commands */
 void CNavigatorManualSequence::navigationStep()
 {
-  if (programmed_orders.empty()) return;
-
+  if (programmed_orders.empty())
+  {
+    return;
+  }
   const double t = m_robot.getNavigationTime();
 
   if (t >= programmed_orders.begin()->first)

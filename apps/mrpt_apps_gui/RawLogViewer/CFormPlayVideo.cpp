@@ -571,8 +571,10 @@ void CFormPlayVideo::OnbtnCloseClick(wxCommandEvent& event)
 
 void CFormPlayVideo::drawHorzRules(mrpt::img::CImage& img)
 {
-  if (!cbDrawStereoRules->IsChecked()) return;
-
+  if (!cbDrawStereoRules->IsChecked())
+  {
+    return;
+  }
   img.forceLoad();
   const size_t Ay = edHorzRuleSpace->GetValue();
   const size_t h = img.getHeight();
@@ -967,8 +969,10 @@ void CFormPlayVideo::saveCamImage(int n)
 {
   WX_START_TRY
 
-  if (n < 0 || n >= (int)displayedImgs.size() || !displayedImgs[n]) return;
-
+  if (n < 0 || n >= (int)displayedImgs.size() || !displayedImgs[n])
+  {
+    return;
+  }
   wxString caption = wxT("Save image...");
   wxString wildcard =
       wxT("Image files (*.png,*.jpg,*.bmp)|*.jpg;*.bmp;*.png|All files "
@@ -983,8 +987,10 @@ void CFormPlayVideo::saveCamImage(int n)
     wxFileDialog dialog(
         this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     string fil = string(dialog.GetPath().mb_str());
 
     bool savedOk = o->image.saveToFile(fil);
@@ -1013,8 +1019,10 @@ void CFormPlayVideo::saveCamImage(int n)
     wxFileDialog dialog(
         this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-    if (dialog.ShowModal() != wxID_OK) return;
-
+    if (dialog.ShowModal() != wxID_OK)
+    {
+      return;
+    }
     string fil = string(dialog.GetPath().mb_str());
 
     CImage& im = (n == 2 ? o->imageDisparity : (n == 1 ? o->imageRight : o->imageLeft));

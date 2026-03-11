@@ -50,7 +50,7 @@ using namespace std;
 
 // Declarations:
 #define VERBOSE_COUT \
-  if (verbose) cout << "[carmen2simplemap] "
+  if (verbose) std::cout << "[carmen2simplemap] "
 
 // -----------------------------------------------
 //				MAIN
@@ -98,7 +98,7 @@ int main(int argc, char** argv)
           "override)",
           output_file.c_str()));
 
-    VERBOSE_COUT << "Input log        : " << input_log << endl;
+    VERBOSE_COUT << "Input log        : " << input_log << "\n";
     VERBOSE_COUT << "Output map file  : " << output_file
                  << " (Compression level: " << compress_level << ")\n";
 
@@ -170,14 +170,14 @@ int main(int argc, char** argv)
         const double progress_ratio = double(curPos) / double(totalInFileSize);
         static const int nBlocksTotal = 50;
         const int nBlocks = progress_ratio * nBlocksTotal;
-        cout << "\rProgress: [" << string(nBlocks, '#') << string(nBlocksTotal - nBlocks, ' ')
-             << format(
-                    "] %6.02f%% (%u frames)", progress_ratio * 100,
-                    static_cast<unsigned int>(theSimpleMap.size()));
+        std::cout << "\rProgress: [" << string(nBlocks, '#') << string(nBlocksTotal - nBlocks, ' ')
+                  << format(
+                         "] %6.02f%% (%u frames)", progress_ratio * 100,
+                         static_cast<unsigned int>(theSimpleMap.size()));
         cout.flush();
       }
     };
-    cout << "\n";
+    std::cout << "\n";
 
     // Save final map object:
     {
@@ -185,10 +185,10 @@ int main(int argc, char** argv)
       if (!out_map.open(output_file, {mrpt::io::CompressionType::Zstd, compress_level}))
         throw runtime_error(format("Error opening for write: '%s'", output_file.c_str()));
 
-      cout << "Dumping simplemap object to file...";
+      std::cout << "Dumping simplemap object to file...";
       cout.flush();
       mrpt::serialization::archiveFrom(out_map) << theSimpleMap;
-      cout << "Done\n";
+      std::cout << "Done\n";
       cout.flush();
     }
 

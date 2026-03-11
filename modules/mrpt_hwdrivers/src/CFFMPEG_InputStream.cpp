@@ -275,8 +275,10 @@ bool CFFMPEG_InputStream::openURL(
 void CFFMPEG_InputStream::close()
 {
 #if MRPT_HAS_FFMPEG
-  if (!this->isOpen()) return;
-
+  if (!this->isOpen())
+  {
+    return;
+  }
   TFFMPEGContext* ctx = &m_impl->m_state;
 
   // Close the codec

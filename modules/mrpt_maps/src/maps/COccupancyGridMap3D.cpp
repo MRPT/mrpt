@@ -159,8 +159,10 @@ void COccupancyGridMap3D::fill(float default_value)
 
 void COccupancyGridMap3D::updateCell(int x, int y, int z, float v)
 {
-  if (m_grid.isOutOfBounds(x, y, z)) return;
-
+  if (m_grid.isOutOfBounds(x, y, z))
+  {
+    return;
+  }
   // Get the current contents of the cell:
   auto* cp = m_grid.cellByIndex(x, y, z);
   ASSERT_(cp != nullptr);
@@ -621,8 +623,10 @@ void COccupancyGridMap3D::nn_radius_search(
   out_dists_sqr.clear();
   resultIndicesOrIDs.clear();
 
-  if (search_radius_sqr == 0) return;
-
+  if (search_radius_sqr == 0)
+  {
+    return;
+  }
   int cx_query = m_grid.x2idx(query.x), cy_query = m_grid.y2idx(query.y),
       cz_query = m_grid.z2idx(query.z);
 
@@ -668,8 +672,10 @@ void COccupancyGridMap3D::nn_radius_search(
     {
       int distSqr =
           mrpt::square(cx - cx_query) + mrpt::square(cy - cy_query) + mrpt::square(cz - cz_query);
-      if (distSqr > maxSearchRadiusSqrInCells) return;
-
+      if (distSqr > maxSearchRadiusSqrInCells)
+      {
+        return;
+      }
       out_dists_sqr.push_back(distSqr * resolutionSqr);
       results.emplace_back(m_grid.idx2x(cx), m_grid.idx2y(cy), m_grid.idx2z(cz));
       resultIndicesOrIDs.push_back(m_grid.cellAbsIndexFromCXCYCZ(cx, cy, cz));

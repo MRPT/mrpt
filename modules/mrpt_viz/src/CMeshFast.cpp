@@ -157,8 +157,10 @@ void CMeshFast::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version
 
 void CMeshFast::updateColorsMatrix() const
 {
-  if (!m_modified_Z && !m_modified_Image) return;
-
+  if (!m_modified_Z && !m_modified_Image)
+  {
+    return;
+  }
   CVisualObject::notifyChange();
 
   if (m_isImage)

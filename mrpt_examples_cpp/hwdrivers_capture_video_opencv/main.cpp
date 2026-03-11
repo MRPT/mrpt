@@ -57,7 +57,8 @@ void TestCapture_OpenCV()
 
   CTicTac tictac;
 
-  cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
+  std::cout << "Press any key to stop capture to 'capture.rawlog'..."
+            << "\n";
 
   CCompressedOutputStream fil("./capture.rawlog");
 
@@ -84,13 +85,14 @@ void TestCapture_OpenCV()
     // loop.
     if (!capture->getObservation(*obs))
     {
-      cerr << "Error retrieving images!" << endl;
+      cerr << "Error retrieving images!"
+           << "\n";
       break;
     }
 
     archiveFrom(fil) << obs;
 
-    cout << ".";
+    std::cout << ".";
     cout.flush();
     if (win.isOpen()) win.showImage(obs->image);
   }
@@ -122,7 +124,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

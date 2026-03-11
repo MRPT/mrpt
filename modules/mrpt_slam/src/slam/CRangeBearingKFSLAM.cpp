@@ -1057,8 +1057,10 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
 
   // All the computation is made based on "m_lastPartitionSet"
 
-  if (!options.doPartitioningExperiment) return;
-
+  if (!options.doPartitioningExperiment)
+  {
+    return;
+  }
   const size_t nLMs = this->getNumberOfLandmarksInTheMap();
   for (size_t i = 0; i < nLMs; i++)
   {
@@ -1166,8 +1168,10 @@ void CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile(
     const string& styleRobot) const
 {
   FILE* f = os::fopen(fil.c_str(), "wt");
-  if (!f) return;
-
+  if (!f)
+  {
+    return;
+  }
   CMatrixDouble cov(2, 2);
   CVectorDouble mean(2);
 

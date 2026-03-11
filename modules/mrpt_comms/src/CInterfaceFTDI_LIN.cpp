@@ -260,7 +260,7 @@ void CInterfaceFTDI::recursive_fill_list_devices(
       else
       {
         manufacturer[strLen] = '\0';
-        // cout << "Manuf: " << manufacturer << "\n";
+        // std::cout << "Manuf: " << manufacturer << "\n";
         newEntry.ftdi_manufacturer = manufacturer;
       }
     }

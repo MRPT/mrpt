@@ -39,7 +39,7 @@ Number of steps "d" for each PTG path "k":
 */
 
 // Uncomment only for benchmarking during development
-//#define DO_PERFORMANCE_BENCHMARK
+// #define DO_PERFORMANCE_BENCHMARK
 
 #ifdef DO_PERFORMANCE_BENCHMARK
 mrpt::system::CTimeLogger tl_holo("CPTG_Holo_Blend");
@@ -716,8 +716,10 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(
   }
 
   // Valid solution?
-  if (sol_t < 0) return;
-  // Compute the transversed distance:
+  if (sol_t < 0)
+  {
+    return;
+  }  // Compute the transversed distance:
   double dist;
 
   if (sol_t < T_ramp)

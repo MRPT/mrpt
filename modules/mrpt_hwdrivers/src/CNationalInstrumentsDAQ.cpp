@@ -590,8 +590,8 @@ void CNationalInstrumentsDAQ::stop()
     m_running_task.must_close = true;
   }
   if (m_verbose)
-    cout << "[CNationalInstrumentsDAQ::stop] Waiting for grabbing threads "
-            "to end...\n";
+    std::cout << "[CNationalInstrumentsDAQ::stop] Waiting for grabbing threads "
+                 "to end...\n";
   for (auto& m_running_task : m_running_tasks)
   {
     // For some reason, join doesn't work...
@@ -601,7 +601,7 @@ void CNationalInstrumentsDAQ::stop()
     // std::this_thread::sleep_for(1ms); }
     // it->hThread.clear();
   }
-  if (m_verbose) cout << "[CNationalInstrumentsDAQ::stop] All threads ended.\n";
+  if (m_verbose) std::cout << "[CNationalInstrumentsDAQ::stop] All threads ended.\n";
 
 // Stop all NI tasks:
 #if MRPT_HAS_SOME_NIDAQMX
@@ -699,9 +699,9 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
   {
     TaskHandle& taskHandle = *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
     if (m_verbose)
-      cout << "[CNationalInstrumentsDAQ::grabbing_thread] Starting "
-              "thread for task "
-           << ipt.taskHandle << "\n";
+      std::cout << "[CNationalInstrumentsDAQ::grabbing_thread] Starting "
+                   "thread for task "
+                << ipt.taskHandle << "\n";
 
     MRPT_TODO("Add write timeout")
     // ipt.write_pipe->timeout_read_between_us
@@ -751,8 +751,8 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
           obs.AIN_double = dBuf;
           there_are_data = true;
           if (m_verbose)
-            cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan
-                 << " analog samples read.\n";
+            std::cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan
+                      << " analog samples read.\n";
         }
       }  // end AI
       if (ipt.task.has_di)
@@ -774,8 +774,8 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
           obs.DIN = u8Buf;
           there_are_data = true;
           if (m_verbose)
-            cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan
-                 << " digital samples read.\n";
+            std::cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan
+                      << " digital samples read.\n";
         }
       }  // end DI
       if (ipt.task.has_ci_ang_encoder || ipt.task.has_ci_lin_encoder)
@@ -804,10 +804,10 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
             {
               static int decim = 0;
               if (!decim)
-                cout << "[CNationalInstrumentsDAQ::grabbing_"
-                        "thread] "
-                     << pointsReadPerChan << " counter samples read ([0]=" << obs.CNTRIN_double[0]
-                     << ").\n";
+                std::cout << "[CNationalInstrumentsDAQ::grabbing_"
+                             "thread] "
+                          << pointsReadPerChan
+                          << " counter samples read ([0]=" << obs.CNTRIN_double[0] << ").\n";
               if (++decim > 100) decim = 0;
             }
           }

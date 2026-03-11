@@ -147,16 +147,24 @@ class FileLineDesc
 
 void FileLineDesc::findAddressInSection(bfd* abfd, asection* section) noexcept
 {
-  if (mFound) return;
-
-  if ((mrpt_debug_bfd_section_flags(abfd, section) & SEC_ALLOC) == 0) return;
-
+  if (mFound)
+  {
+    return;
+  }
+  if ((mrpt_debug_bfd_section_flags(abfd, section) & SEC_ALLOC) == 0)
+  {
+    return;
+  }
   bfd_vma vma = mrpt_debug_bfd_section_vma(abfd, section);
-  if (mPc < vma) return;
-
+  if (mPc < vma)
+  {
+    return;
+  }
   bfd_size_type size = mrpt_debug_bfd_section_size(abfd, section);
-  if (mPc >= (vma + size)) return;
-
+  if (mPc >= (vma + size))
+  {
+    return;
+  }
   mFound = bfd_find_nearest_line(
       abfd, section, mSyms, (mPc - vma), (const char**)&mFilename, (const char**)&mFunctionname,
       &mLine);

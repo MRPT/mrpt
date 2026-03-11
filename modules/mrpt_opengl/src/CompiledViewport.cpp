@@ -817,7 +817,10 @@ void CompiledViewport::renderImageView(ShaderProgramManager& shaderManager)
 
   // Render the textured quad
   auto shaderProg = shaderManager.getProgram(DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT);
-  if (!shaderProg) return;
+  if (!shaderProg)
+  {
+    return;
+  }
   shaderProg->use();
 
   // Upload the PMV matrix (identity for image view, possibly with aspect-ratio scale)
@@ -1031,11 +1034,15 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (m_borderWidth == 0) return;
-
+  if (m_borderWidth == 0)
+  {
+    return;
+  }
   auto shader = shaderManager.getProgram(DefaultShaderID::WIREFRAME);
-  if (!shader) return;
-
+  if (!shader)
+  {
+    return;
+  }
   shader->use();
 
   // Build an orthographic projection: (0,0) bottom-left to (w,h) top-right
@@ -1126,16 +1133,22 @@ void CompiledViewport::renderTextOverlays(ShaderProgramManager& shaderManager)
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!m_sourceVizViewport) return;
-
+  if (!m_sourceVizViewport)
+  {
+    return;
+  }
   const auto& textMsgs = m_sourceVizViewport->getTextMessages();
   std::shared_lock<std::shared_mutex> lckRead(textMsgs.mtx.data);
 
-  if (textMsgs.messages.empty()) return;
-
+  if (textMsgs.messages.empty())
+  {
+    return;
+  }
   auto shader = shaderManager.getProgram(DefaultShaderID::TRIANGLES_NO_LIGHT);
-  if (!shader) return;
-
+  if (!shader)
+  {
+    return;
+  }
   shader->use();
 
   // Orthographic projection: (0,0) bottom-left to (w,h) top-right.
@@ -1162,8 +1175,10 @@ void CompiledViewport::renderTextOverlays(ShaderProgramManager& shaderManager)
   // Helper lambda: generate triangles for a text string, upload to GPU, draw
   auto drawTextBatch = [&](const std::vector<mrpt::viz::TTriangle>& tris)
   {
-    if (tris.empty()) return;
-
+    if (tris.empty())
+    {
+      return;
+    }
     const size_t vertexCount = tris.size() * 3;
     std::vector<mrpt::math::TPoint3Df> vertices;
     std::vector<mrpt::img::TColor> colors;

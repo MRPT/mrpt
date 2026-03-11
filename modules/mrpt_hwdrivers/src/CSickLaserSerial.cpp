@@ -293,7 +293,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
   {
     if (lengthField > 800)
     {
-      cout << "#";
+      std::cout << "#";
       nFrameBytes = 0;  // No es cabecera de trama correcta
       buf[2] = buf[3] = 0;
     }
@@ -336,7 +336,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
       nFrameBytes = 0;  // No es cabecera de trama correcta
       buf[2] = buf[3] = 0;
       // cerr << "."; //"[CSickLaserSerial] Skipping non-header..." <<
-      // endl;
+      // "\n";
     }
   }
 
@@ -812,9 +812,9 @@ bool CSickLaserSerial::SendCommandToSICK(const uint8_t* cmd, const uint16_t cmd_
   {
     if (toWrite != COM->Write(cmd_full, toWrite))
     {
-      cout << "[CSickLaserSerial::SendCommandToSICK] Error writing data "
-              "to serial port."
-           << "\n";
+      std::cout << "[CSickLaserSerial::SendCommandToSICK] Error writing data "
+                   "to serial port."
+                << "\n";
       return false;
     }
     std::this_thread::sleep_for(15ms);

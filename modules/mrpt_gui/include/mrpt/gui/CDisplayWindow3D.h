@@ -223,7 +223,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
   /** Changes the camera parameters programmatically */
   void setCameraZoom(float zoom);
   /** Sets the camera as projective, or orthogonal. */
-  void setCameraProjective(bool isProjective);
+  void setProjectiveModel(bool isProjective);
   /** Get camera parameters programmatically */
   float getCameraElevationDeg() const;
   /** Get camera parameters programmatically */
@@ -316,9 +316,15 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
       size_t unique_index = 0,
       const mrpt::viz::TFontParams& fontParams = mrpt::viz::TFontParams())
   {
-    if (!m_3Dscene) return;
+    if (!m_3Dscene)
+    {
+      return;
+    }
     auto gl_view = m_3Dscene->getViewport();
-    if (!gl_view) return;
+    if (!gl_view)
+    {
+      return;
+    }
     gl_view->addTextMessage(x_frac, y_frac, text, unique_index, fontParams);
   }
 
@@ -329,9 +335,15 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
    */
   void clearTextMessages()
   {
-    if (!m_3Dscene) return;
+    if (!m_3Dscene)
+    {
+      return;
+    }
     auto gl_view = m_3Dscene->getViewport();
-    if (!gl_view) return;
+    if (!gl_view)
+    {
+      return;
+    }
     gl_view->clearTextMessages();
   }
 

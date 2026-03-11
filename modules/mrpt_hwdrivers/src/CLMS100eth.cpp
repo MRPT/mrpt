@@ -247,7 +247,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 
   while (next && scanCount == 0)
   {
-    // cout << "Interpreting : " << next << "\n";
+    // std::cout << "Interpreting : " << next << "\n";
     switch (++idx)
     {
       case 1:
@@ -332,8 +332,8 @@ void CLMS100Eth::doProcessSimple(
   sendCommand(msg);
   char buffIn[16 * 1024];
   // size_t read = m_client.readAsync(buffIn, sizeof(buffIn), 100, 100);
-  // cout << "read :" << read << "\n";
-  // while(m_client.readAsync(buffIn, sizeof(buffIn), 100, 100)) cout << "Lit
+  // std::cout << "read :" << read << "\n";
+  // while(m_client.readAsync(buffIn, sizeof(buffIn), 100, 100)) std::cout << "Lit
   // dans le vent" << "\n";
 
   m_client.readAsync(buffIn, sizeof(buffIn), 40, 40);

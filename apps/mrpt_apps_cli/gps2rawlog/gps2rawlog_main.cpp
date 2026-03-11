@@ -70,20 +70,20 @@ int main(int argc, char** argv)
 
     // Open input rawlog:
     auto fil_input = std::make_shared<CCompressedInputStream>();
-    cout << "Opening for reading: '" << input_file << "'...\n";
+    std::cout << "Opening for reading: '" << input_file << "'...\n";
     fil_input->open(input_file);
-    cout << "Open OK.\n";
+    std::cout << "Open OK.\n";
 
     // Open output:
     if (mrpt::system::fileExists(output_rawlog_file) && !overwrite)
     {
-      cout << "Output file already exists: `" << output_rawlog_file
-           << "`, aborting. Use `-w` flag to overwrite.\n";
+      std::cout << "Output file already exists: `" << output_rawlog_file
+                << "`, aborting. Use `-w` flag to overwrite.\n";
       return 1;
     }
 
     CCompressedOutputStream fil_out;
-    cout << "Opening for writing: '" << output_rawlog_file << "'...\n";
+    std::cout << "Opening for writing: '" << output_rawlog_file << "'...\n";
     if (!fil_out.open(output_rawlog_file)) throw std::runtime_error("Error writing file!");
 
     // GPS object:

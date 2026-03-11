@@ -30,8 +30,10 @@ void RenderableProxy::uploadMatrix(
     const RenderContext& rc, const char* uniformName, const CMatrixFloat44& matrix)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!rc.shader) return;
-
+  if (!rc.shader)
+  {
+    return;
+  }
   const int loc = rc.shader->uniformId(uniformName);
   if (loc >= 0)
   {
@@ -45,8 +47,10 @@ void RenderableProxy::uploadVector3(
     const RenderContext& rc, const char* uniformName, const TVector3Df& v)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!rc.shader) return;
-
+  if (!rc.shader)
+  {
+    return;
+  }
   const int loc = rc.shader->uniformId(uniformName);
   if (loc >= 0)
   {
@@ -59,8 +63,10 @@ void RenderableProxy::uploadColor(
     const RenderContext& rc, const char* uniformName, const TColorf& color)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!rc.shader) return;
-
+  if (!rc.shader)
+  {
+    return;
+  }
   const int loc = rc.shader->uniformId(uniformName);
   if (loc >= 0)
   {
@@ -73,8 +79,10 @@ void RenderableProxy::uploadColor(
 void RenderableProxy::uploadFloat(const RenderContext& rc, const char* uniformName, float value)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!rc.shader) return;
-
+  if (!rc.shader)
+  {
+    return;
+  }
   const int loc = rc.shader->uniformId(uniformName);
   if (loc >= 0)
   {
@@ -86,8 +94,10 @@ void RenderableProxy::uploadFloat(const RenderContext& rc, const char* uniformNa
 void RenderableProxy::uploadInt(const RenderContext& rc, const char* uniformName, int value)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!rc.shader) return;
-
+  if (!rc.shader)
+  {
+    return;
+  }
   const int loc = rc.shader->uniformId(uniformName);
   if (loc >= 0)
   {
@@ -105,12 +115,16 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (!sourceObj) return;
-
+  if (!sourceObj)
+  {
+    return;
+  }
   // Try to cast to VisualObjectParams_Points
   const auto* pointsObj = dynamic_cast<const mrpt::viz::VisualObjectParams_Points*>(sourceObj);
-  if (!pointsObj) return;
-
+  if (!pointsObj)
+  {
+    return;
+  }
   // Lock the source object's buffer data
   std::shared_lock<std::shared_mutex> lck(pointsObj->shaderPointsBuffersMutex().data);
 
@@ -118,8 +132,10 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   const auto& colors = pointsObj->shaderPointsVertexColorBuffer();
 
   m_pointCount = vertices.size();
-  if (m_pointCount == 0) return;
-
+  if (m_pointCount == 0)
+  {
+    return;
+  }
   // Create VAO
   m_vao.createOnce();
   m_vao.bind();
@@ -174,9 +190,14 @@ void PointsProxyBase::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (m_pointCount == 0) return;
-  if (!m_vao.isCreated()) return;
-
+  if (m_pointCount == 0)
+  {
+    return;
+  }
+  if (!m_vao.isCreated())
+  {
+    return;
+  }
   m_vao.bind();
 
   glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(m_pointCount));
@@ -286,9 +307,14 @@ void LinesProxyBase::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   MRPT_START
 
-  if (m_vertexCount == 0) return;
-  if (!m_vao.isCreated()) return;
-
+  if (m_vertexCount == 0)
+  {
+    return;
+  }
+  if (!m_vao.isCreated())
+  {
+    return;
+  }
   // Note: glLineWidth >1.0 is unsupported on most modern GL implementations.
   // Thick lines require a geometry shader approach (future enhancement).
   // For now, always use 1.0 to avoid GL_INVALID_VALUE.

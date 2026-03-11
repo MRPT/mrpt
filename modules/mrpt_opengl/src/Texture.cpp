@@ -41,7 +41,10 @@ void Texture::unloadTexture()
   m_tex.run_on_all(
       [](std::optional<texture_name_unit_t>& tnu)
       {
-        if (!tnu) return;
+        if (!tnu)
+        {
+          return;
+        }
         releaseTextureName(tnu.value().name);
         tnu.reset();
       });

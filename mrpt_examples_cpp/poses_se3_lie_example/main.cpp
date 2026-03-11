@@ -30,9 +30,9 @@ void TestSE3()
   const CPose3D p1(1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg);
   const CPose3D p2(1, 2, 3, 20.0_deg, 0.0_deg, 0.0_deg);
 
-  cout << "p0: " << p0 << " SE(3)::log => " << Lie::SE<3>::log(p0) << endl;
-  cout << "p1: " << p1 << " SE(3)::log => " << Lie::SE<3>::log(p1) << endl;
-  cout << "p2: " << p2 << " SE(3)::log => " << Lie::SE<3>::log(p2) << endl;
+  std::cout << "p0: " << p0 << " SE(3)::log => " << Lie::SE<3>::log(p0) << "\n";
+  std::cout << "p1: " << p1 << " SE(3)::log => " << Lie::SE<3>::log(p1) << "\n";
+  std::cout << "p2: " << p2 << " SE(3)::log => " << Lie::SE<3>::log(p2) << "\n";
 }
 
 int main()
@@ -44,7 +44,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cout << "Exception:" << mrpt::exception_to_str(e) << std::endl;
+    std::cout << "Exception:" << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

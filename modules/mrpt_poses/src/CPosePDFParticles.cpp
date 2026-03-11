@@ -385,7 +385,10 @@ void CPosePDFParticles::saveParzenPDFToTextFile(
   buf += "\n";
 
   std::ofstream f(fileName);
-  if (!f.is_open()) return;
+  if (!f.is_open())
+  {
+    return;
+  }
   f << buf;
 }
 

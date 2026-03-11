@@ -45,13 +45,14 @@ void TestNTRIP()
 
   if (!ret)
   {
-    cout << "Error: " << errMsg << endl;
+    std::cout << "Error: " << errMsg << "\n";
     return;
   }
 
   if (lst.empty())
   {
-    cout << "Zero streams listed in caster...?" << endl;
+    std::cout << "Zero streams listed in caster...?"
+              << "\n";
     return;
   }
 
@@ -60,9 +61,9 @@ void TestNTRIP()
   for (CNTRIPClient::TListMountPoints::const_iterator it = lst.begin(); it != lst.end(); it++)
   {
     const CNTRIPClient::TMountPoint& m = *it;
-    cout << "MOUNT: " << m.mountpoint_name << "  | COUNTRY: " << m.country_code
-         << "  | NMEA?: " << m.needs_nmea << "  | FORMAT: " << m.format << " (" << m.id << ") "
-         << m.extra_info << endl;
+    std::cout << "MOUNT: " << m.mountpoint_name << "  | COUNTRY: " << m.country_code
+              << "  | NMEA?: " << m.needs_nmea << "  | FORMAT: " << m.format << " (" << m.id << ") "
+              << m.extra_info << "\n";
   }
 
   // Now connect to a random server:
@@ -73,16 +74,16 @@ void TestNTRIP()
   CNTRIPClient::TListMountPoints::iterator it = lst.begin();
   // std::advance(it,8);
 
-  cout << "Connecting to: " << it->mountpoint_name << " - " << it->id << endl;
+  std::cout << "Connecting to: " << it->mountpoint_name << " - " << it->id << "\n";
   params.mountpoint = it->mountpoint_name;
   params.server = server;
   params.port = server_port;
 
-  cout << "Using user: " << ntrip_user << endl;
-  cout << "Using pass: " << ntrip_pass << endl;
-  cout << "(You can change them with env variables NTRIP_USER and "
-          "NTRIP_PASS"
-       << endl;
+  std::cout << "Using user: " << ntrip_user << "\n";
+  std::cout << "Using pass: " << ntrip_pass << "\n";
+  std::cout << "(You can change them with env variables NTRIP_USER and "
+               "NTRIP_PASS"
+            << "\n";
 
   params.user = ntrip_user;
   params.password = ntrip_pass;
@@ -91,17 +92,19 @@ void TestNTRIP()
 
   if (!ntrip.open(params, msgerr))
   {
-    cout << "ERROR: " << msgerr << endl;
+    std::cout << "ERROR: " << msgerr << "\n";
   }
   else
   {
-    cout << "Reading stream... press any key to finish." << endl;
+    std::cout << "Reading stream... press any key to finish."
+              << "\n";
 
     std::vector<uint8_t> dat;
     while (!mrpt::system::os::kbhit())
     {
       ntrip.stream_data.readAndClear(dat);
-      cout << "Read " << dat.size() << " bytes." << endl;
+      std::cout << "Read " << dat.size() << " bytes."
+                << "\n";
       std::this_thread::sleep_for(1000ms);
     }
   }
@@ -128,17 +131,19 @@ void TestNTRIP2()
 
   if (!ntrip.open(params, msgerr))
   {
-    cout << "ERROR: " << msgerr << endl;
+    std::cout << "ERROR: " << msgerr << "\n";
   }
   else
   {
-    cout << "Reading stream... press any key to finish." << endl;
+    std::cout << "Reading stream... press any key to finish."
+              << "\n";
 
     std::vector<uint8_t> dat;
     while (!mrpt::system::os::kbhit())
     {
       ntrip.stream_data.readAndClear(dat);
-      cout << "Read " << dat.size() << " bytes." << endl;
+      std::cout << "Read " << dat.size() << " bytes."
+                << "\n";
       std::this_thread::sleep_for(1000ms);
     }
   }
@@ -155,7 +160,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

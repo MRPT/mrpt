@@ -45,24 +45,24 @@ void Test_TypeName()
 
   // Evaluation of type names as constexpr strings:
   constexpr auto s1 = TTypeName<int32_t>::get();
-  cout << s1 << endl;
+  std::cout << s1 << "\n";
 
-  cout << TTypeName<set<vector<double>>>::get() << endl;
+  std::cout << TTypeName<set<vector<double>>>::get() << "\n";
 
   // Evaluation of user-defined types:
-  cout << TTypeName<MyFooClass>::get() << endl;
-  cout << TTypeName<MyFooClass::Ptr>::get() << endl;
-  cout << TTypeName<MyNS::MyBarClass>::get() << endl;
-  cout << TTypeName<MyNS::MyBarClass2>::get() << endl;
+  std::cout << TTypeName<MyFooClass>::get() << "\n";
+  std::cout << TTypeName<MyFooClass::Ptr>::get() << "\n";
+  std::cout << TTypeName<MyNS::MyBarClass>::get() << "\n";
+  std::cout << TTypeName<MyNS::MyBarClass2>::get() << "\n";
 
   // STL typenames as strings:
-  cout << TTypeName<double>::get() << endl;
-  cout << TTypeName<vector<double>>::get() << endl;
-  cout << TTypeName<array<int32_t, 5>>::get() << endl;
-  cout << TTypeName<set<double>>::get() << endl;
-  cout << TTypeName<pair<int32_t, pair<int32_t, int32_t>>>::get() << endl;
-  cout << TTypeName<map<double, set<int32_t>>>::get() << endl;
-  cout << TTypeName<set<multimap<double, pair<MyFooClass, MyNS::MyBarClass2>>>>::get() << endl;
+  std::cout << TTypeName<double>::get() << "\n";
+  std::cout << TTypeName<vector<double>>::get() << "\n";
+  std::cout << TTypeName<array<int32_t, 5>>::get() << "\n";
+  std::cout << TTypeName<set<double>>::get() << "\n";
+  std::cout << TTypeName<pair<int32_t, pair<int32_t, int32_t>>>::get() << "\n";
+  std::cout << TTypeName<map<double, set<int32_t>>>::get() << "\n";
+  std::cout << TTypeName<set<multimap<double, pair<MyFooClass, MyNS::MyBarClass2>>>>::get() << "\n";
 }
 //! [example typename]
 
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << e.what() << std::endl;
+    std::cerr << "MRPT error: " << e.what() << "\n";
     return -1;
   }
 }

@@ -331,7 +331,10 @@ void CWirelessPowerGridMap2D::TInsertionOptions::loadFromConfigFile(
 void CWirelessPowerGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
-  if (!genericMapParams.enableSaveAs3DObject) return;
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   CRandomFieldGridMap2D::getVisualizationInto(o);
   MRPT_END
 }

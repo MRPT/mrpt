@@ -74,15 +74,16 @@ void Test()
 
   if (fileExists("./MAP-PARTITION_CONFIG.ini"))
   {
-    cout << "Loading params from 'MAP-PARTITION_CONFIG.ini'" << endl;
+    std::cout << "Loading params from 'MAP-PARTITION_CONFIG.ini'"
+              << "\n";
     CConfigFile cfg("./MAP-PARTITION_CONFIG.ini");
     imp.options.loadFromConfigFile(cfg, "PARAMS");
   }
   else
   {
-    cout << "Warning: 'MAP-PARTITION_CONFIG.ini' not found. Using default "
-            "parameters"
-         << endl;
+    std::cout << "Warning: 'MAP-PARTITION_CONFIG.ini' not found. Using default "
+                 "parameters"
+              << "\n";
   }
 
   if (THRESHOLD_NCUT >= 0) imp.options.partitionThreshold = THRESHOLD_NCUT;
@@ -209,18 +210,19 @@ void Test()
     win2.showImage(img2);
     win.setPos(20, 20);
     win2.setPos((int)(40 + A.cols()), 20);
-    cout << "Press any key to continue..." << endl;
+    std::cout << "Press any key to continue..."
+              << "\n";
     win2.waitForKey();
   }
 
   // The matlab script below will need "globalmap_grid.png":
   {
     COccupancyGridMap2D gridmap(-10, 10, -10, 10, 0.05f);
-    cout << "Building global gridmap needed by MATLAB script...";
+    std::cout << "Building global gridmap needed by MATLAB script...";
     cout.flush();
     gridmap.loadFromSimpleMap(in_map);
     gridmap.saveMetricMapRepresentationToFile("MAP-PARTITION_RESULTS/globalmap_grid");
-    cout << "Done.\n";
+    std::cout << "Done.\n";
   }
 
   // ------------------------------------------------------------------

@@ -72,7 +72,7 @@ void thread_server()
   }
   catch (const std::exception& e)
   {
-    cerr << e.what() << endl;
+    cerr << e.what() << "\n";
   }
   catch (...)
   {
@@ -100,9 +100,9 @@ void thread_client()
 #ifdef SOCKET_TEST_VERBOSE
     printf("[Client] Connected. Waiting for a message...\n");
 #endif
-    // cout << "pending: " << sock.getReadPendingBytes() << endl;
+    // std::cout << "pending: " << sock.getReadPendingBytes() << "\n";
     // std::this_thread::sleep_for(500ms);
-    // cout << "pending: " << sock.getReadPendingBytes() << endl;
+    // std::cout << "pending: " << sock.getReadPendingBytes() << "\n";
 
     CMessage msg;
     bool ok = sock.receiveMessage(msg, 10000, 10000);
@@ -137,11 +137,12 @@ void thread_client()
   }
   catch (const std::exception& e)
   {
-    cerr << e.what() << endl;
+    cerr << e.what() << "\n";
   }
   catch (...)
   {
-    cerr << "[thread_client] Runtime error!" << endl;
+    cerr << "[thread_client] Runtime error!"
+         << "\n";
   }
 }
 

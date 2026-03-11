@@ -60,8 +60,14 @@ class MyXSensCallback : public XsCallback
   {
     using namespace mrpt::obs;
 
-    if (!me) return;
-    if (!ptrpacket) return;
+    if (!me)
+    {
+      return;
+    }
+    if (!ptrpacket)
+    {
+      return;
+    }
     const XsDataPacket& packet = *ptrpacket;
 
     // Data properly collected: extract data fields
@@ -352,7 +358,7 @@ void CIMUXSens_MT4::initialize()
 
     if (m_portname.empty())
     {
-      if (m_verbose) cout << "[CIMUXSens_MT4] Scanning for USB devices...\n";
+      if (m_verbose) std::cout << "[CIMUXSens_MT4] Scanning for USB devices...\n";
 
       XsPortInfoArray portInfoArray = XsScanner::scanPorts();
 
@@ -373,13 +379,13 @@ void CIMUXSens_MT4::initialize()
             static_cast<unsigned int>(portInfoArray.size()));
 
       if (m_verbose)
-        cout << "[CIMUXSens_MT4] Found " << portInfoArray.size()
-             << " devices. Opening the first one.\n";
+        std::cout << "[CIMUXSens_MT4] Found " << portInfoArray.size()
+                  << " devices. Opening the first one.\n";
     }
     else
     {
-      cout << "[CIMUXSens_MT4] Using user-supplied portname '" << m_portname << "' at "
-           << m_port_bauds << " baudrate.\n";
+      std::cout << "[CIMUXSens_MT4] Using user-supplied portname '" << m_portname << "' at "
+                << m_port_bauds << " baudrate.\n";
 
       mtPort = XsPortInfo(m_portname, XsBaud_numericToRate(m_port_bauds));
     }
@@ -414,8 +420,8 @@ void CIMUXSens_MT4::initialize()
 
     // Put the device in configuration mode
     if (m_verbose)
-      cout << "[CIMUXSens_MT4] Putting device into configuration "
-              "mode...\n";
+      std::cout << "[CIMUXSens_MT4] Putting device into configuration "
+                   "mode...\n";
 
     if (!m_impl->m_device->gotoConfig()) THROW_EXCEPTION("Could not go to config");
 
@@ -448,8 +454,8 @@ void CIMUXSens_MT4::initialize()
 
     // Put the device in measurement mode
     if (m_verbose)
-      cout << "[CIMUXSens_MT4] Putting device into measurement mode..."
-           << "\n";
+      std::cout << "[CIMUXSens_MT4] Putting device into measurement mode..."
+                << "\n";
 
     if (!m_impl->m_device->gotoMeasurement())
       THROW_EXCEPTION("Could not put device into measurement mode");

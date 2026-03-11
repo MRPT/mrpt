@@ -49,8 +49,10 @@ void CGyroKVHDSP3000::doProcess()
     initialize();
   }
 
-  if (m_state == ssError) return;
-
+  if (m_state == ssError)
+  {
+    return;
+  }
   string msg;
   CObservationIMU::Ptr observationGyro = std::make_shared<CObservationIMU>();
   observationGyro->timestamp = mrpt::Clock::now();
@@ -62,8 +64,14 @@ void CGyroKVHDSP3000::doProcess()
   string delimiter(" ");
   vector<string> words;
   mrpt::system::tokenize(msg, delimiter, words);
-  if (words.size() < 2) return;
-  if (words[1].c_str()[0] == '0') return;
+  if (words.size() < 2)
+  {
+    return;
+  }
+  if (words[1].c_str()[0] == '0')
+  {
+    return;
+  }
   double mesure = atof(words[0].c_str());
   switch (m_mode)
   {
@@ -99,7 +107,7 @@ void CGyroKVHDSP3000::initialize()
   */
   m_serialPort = std::make_unique<CSerialPort>(m_com_port);
   if (!(m_serialPort->isOpen())) THROW_EXCEPTION("can't open serial port");
-  cout << "m_COMbaud " << m_COMbauds << "\n";
+  std::cout << "m_COMbaud " << m_COMbauds << "\n";
   m_serialPort->setConfig(m_COMbauds);
 
   changeMode(m_mode);
@@ -121,24 +129,24 @@ void CGyroKVHDSP3000::loadConfig_sensorSpecific(
       DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0, false)),
       DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0, false)));
   string operatingMode = configSource.read_string(iniSection, "operatingMode", "rate", false);
-  cout << "Operating mode : " << operatingMode << "\n";
+  std::cout << "Operating mode : " << operatingMode << "\n";
   if (operatingMode == "incremental")
   {
     m_mode = INCREMENTAL_ANGLE;
-    cout << "Incremental mode"
-         << "\n";
+    std::cout << "Incremental mode"
+              << "\n";
   }
   else if (operatingMode == "integral")
   {
     m_mode = INTEGRATED_ANGLE;
-    cout << "Integrated mode"
-         << "\n";
+    std::cout << "Integrated mode"
+              << "\n";
   }
   else
   {
     m_mode = RATE;
-    cout << "Rate mode"
-         << "\n";
+    std::cout << "Rate mode"
+              << "\n";
   }
   m_com_port = configSource.read_string(iniSection, "COM_port_LIN", m_com_port, false);
 }

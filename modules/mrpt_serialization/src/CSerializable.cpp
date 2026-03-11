@@ -33,7 +33,10 @@ void mrpt::serialization::OctetVectorToObject(
 {
   obj.reset();
 
-  if (in_data.empty()) return;
+  if (in_data.empty())
+  {
+    return;
+  }
   auto arch = archiveFrom(in_data);
   obj = arch.ReadObject();
 }

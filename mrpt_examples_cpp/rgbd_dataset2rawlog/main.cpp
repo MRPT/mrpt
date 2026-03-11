@@ -119,8 +119,8 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
       }
     }
   }
-  cout << "Parsed: " << list_depth.size() << " / " << list_rgb.size() << " / " << list_acc.size()
-       << " depth/rgb/acc entries.\n";
+  std::cout << "Parsed: " << list_depth.size() << " / " << list_rgb.size() << " / "
+            << list_acc.size() << " depth/rgb/acc entries.\n";
 
   const bool only_ir = list_depth.size() > 10 && list_rgb.empty();
   const bool only_rgb = list_depth.empty() && list_rgb.size() > 10;
@@ -128,12 +128,12 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
   // Create output directory for images ------------------------------
   const string out_img_dir = out_name + string("_Images");
 
-  cout << "Creating images directory: " << out_img_dir << endl;
+  std::cout << "Creating images directory: " << out_img_dir << "\n";
   mrpt::system::createDirectory(out_img_dir);
 
   // Create rawlog file ----------------------------------------------
   const string out_rawlog_fil = out_name + string(".rawlog");
-  cout << "Creating rawlog: " << out_rawlog_fil << endl;
+  std::cout << "Creating rawlog: " << out_rawlog_fil << "\n";
   mrpt::io::CCompressedOutputStream f_out(out_rawlog_fil);
 
   // Fill out the common field to all entries:
@@ -171,7 +171,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
     for (map<double, string>::const_iterator it_list_rgb = list_rgb.begin();
          it_list_rgb != list_rgb.end(); ++it_list_rgb)
     {
-      cout << "Processing image " << counter << "\r";
+      std::cout << "Processing image " << counter << "\r";
       cout.flush();
       counter++;
 
@@ -183,9 +183,9 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
       const double At = std::abs(it_list_rgb->first - it_list_depth->first);
       if (At > (1. / KINECT_FPS) * .5)
       {
-        cout << "\nWarning: Discarding observation for too separated "
-                "RGB/D timestamps: "
-             << At * 1e3 << " ms\n";
+        std::cout << "\nWarning: Discarding observation for too separated "
+                     "RGB/D timestamps: "
+                  << At * 1e3 << " ms\n";
       }
       else
       {
@@ -249,7 +249,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
     for (map<double, string>::const_iterator it_list_depth = list_depth.begin();
          it_list_depth != list_depth.end(); ++it_list_depth)
     {
-      cout << "Processing image " << counter << "\r";
+      std::cout << "Processing image " << counter << "\r";
       cout.flush();
       counter++;
 
@@ -286,7 +286,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
     for (map<double, string>::const_iterator it_list_rgb = list_rgb.begin();
          it_list_rgb != list_rgb.end(); ++it_list_rgb)
     {
-      cout << "Processing image " << counter << "\r";
+      std::cout << "Processing image " << counter << "\r";
       cout.flush();
       counter++;
 
@@ -308,7 +308,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
     }
   }
 
-  cout << "\nAll done!\n";
+  std::cout << "\nAll done!\n";
 }
 
 // ------------------------------------------------------
@@ -330,7 +330,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

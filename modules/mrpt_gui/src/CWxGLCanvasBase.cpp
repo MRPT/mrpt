@@ -247,7 +247,7 @@ void CWxGLCanvasBase::Render()
 
   if (!m_gl_context)
   { /*cerr << "[CWxGLCanvasBase::Render] No GL Context!" <<
-     endl;*/
+     "\n";*/
     return;
   }
 
@@ -285,7 +285,7 @@ void CWxGLCanvasBase::OnSize(wxSizeEvent& event)
   {
     if (!m_gl_context)
     { /*cerr << "[CWxGLCanvasBase::Render] No GL Context!" <<
-       endl;*/
+       "\n";*/
       return;
     }
     {
@@ -308,7 +308,7 @@ void CWxGLCanvasBase::InitGL()
 
   if (!m_gl_context)
   { /*cerr << "[CWxGLCanvasBase::Render] No GL Context!" <<
-     endl;*/
+     "\n";*/
     return;
   }
 

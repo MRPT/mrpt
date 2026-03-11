@@ -65,7 +65,8 @@ void TestGridMap3D()
     win.unlockAccess3DScene();
   }
 
-  std::cout << "Close the window to exit" << std::endl;
+  std::cout << "Close the window to exit"
+            << "\n";
 
   bool update_msg = true;
 
@@ -132,7 +133,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

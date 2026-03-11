@@ -45,7 +45,7 @@ DECLARE_OP_FUNCTION(op_remove_label)
       ASSERT_(!m_filter_labels.empty());
       if (verbose)
         for (const auto& m_filter_label : m_filter_labels)
-          cout << "Removing label: '" << m_filter_label << "'\n";
+          std::cout << "Removing label: '" << m_filter_label << "'\n";
     }
 
     /** To be implemented by users: return false means the observation is */
@@ -102,7 +102,7 @@ DECLARE_OP_FUNCTION(op_keep_label)
       ASSERT_(!m_filter_labels.empty());
       if (verbose)
         for (const auto& m_filter_label : m_filter_labels)
-          cout << "Keeping label: '" << m_filter_label << "'\n";
+          std::cout << "Keeping label: '" << m_filter_label << "'\n";
     }
 
     /** To be implemented by users: return false means the observation is */

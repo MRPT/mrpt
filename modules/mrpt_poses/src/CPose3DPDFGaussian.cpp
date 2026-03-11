@@ -88,7 +88,7 @@ CPose3DPDFGaussian::CPose3DPDFGaussian(const CPosePDFGaussian& o) :
   ---------------------------------------------------------------*/
 CPose3DPDFGaussian::CPose3DPDFGaussian(const CPose3D& init_Mean) : mean(init_Mean), cov() {}
 
-//#define DO_TEST_JACOB
+// #define DO_TEST_JACOB
 
 #ifdef DO_TEST_JACOB
 void ffff(const CVectorDouble& x, const CQuaternionDouble& Q, CVectorDouble& OUT)
@@ -147,13 +147,13 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
       Ax.assign(1e-7);
       CMatrixDouble H;
       jacobians::jacob_numeric_estimate(x, ffff, Ax, o.mean.quat(), H);
-      cout << "num:" << endl << H << endl << "\n";
+      std::cout << "num:" << endl << H << endl << "\n";
       CMatrixDouble J;
       double a, b, c;
       o.mean.quat().rpy_and_jacobian(a, b, c, &J);
       CMatrixDouble NJ;
       o.mean.quat().normalizationJacobian(NJ);
-      cout << "lin:" << endl << J * NJ << endl << "\n";
+      std::cout << "lin:" << endl << J * NJ << endl << "\n";
     }
 #endif
 

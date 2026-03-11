@@ -440,7 +440,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
       global_pose_t curr_node(nodes.at(node_IDs_it));
       sub_graph->nodes.insert(make_pair(node_IDs_it, curr_node));
     }
-    // cout << "Extracting subgraph for nodeIDs: " <<
+    // std::cout << "Extracting subgraph for nodeIDs: " <<
     // getSTLContainerAsString(node_IDs_real) << "\n";
 
     // set the root of the extracted graph
@@ -488,12 +488,12 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
             // add with previous node
             TNodeID next_to_root = (--root_it)->first;
             self_t::addVirtualEdge(sub_graph, next_to_root, sub_graph->root);
-            // cout << "next_to_root = " << next_to_root;
+            // std::cout << "next_to_root = " << next_to_root;
           }
           else
           {
             TNodeID next_to_root = (++root_it)->first;
-            // cout << "next_to_root = " << next_to_root;
+            // std::cout << "next_to_root = " << next_to_root;
             self_t::addVirtualEdge(sub_graph, sub_graph->root, next_to_root);
           }
         }
@@ -518,7 +518,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
 
           set<TNodeID> unconnected_nodeIDs;
           ex.getUnconnectedNodeIDs(&unconnected_nodeIDs);
-          // cout << "Unconnected nodeIDs: " <<
+          // std::cout << "Unconnected nodeIDs: " <<
           // mrpt::math::getSTLContainerAsString(unconnected_nodeIDs)
           // << "\n";
           // mainland: set of nodes that the root nodeID is in
@@ -531,9 +531,9 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
           // set::begin() is the element with the lowest value
           const TNodeID& island_highest = *unconnected_nodeIDs.rbegin();
           const TNodeID& island_lowest = *unconnected_nodeIDs.begin();
-          // cout << "island_highest: " << island_highest << "\n";
-          // cout << "island_lowest: " << island_lowest << "\n";
-          // cout << "root: " << sub_graph->root << "\n";
+          // std::cout << "island_highest: " << island_highest << "\n";
+          // std::cout << "island_lowest: " << island_lowest << "\n";
+          // std::cout << "root: " << sub_graph->root << "\n";
 
           // find out which nodes are in the same partition with the
           // root
@@ -609,10 +609,10 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
             }
             vec_of_islands.push_back(curr_island);
 
-            // cout << "last_island: " <<
+            // std::cout << "last_island: " <<
             // getSTLContainerAsString(vec_of_islands.back()) <<
-            // endl;
-            // cout << "mainland: " <<
+            // "\n";
+            // std::cout << "mainland: " <<
             // getSTLContainerAsString(mainland) << "\n";
             this->connectGraphPartitions(sub_graph, vec_of_islands.back(), mainland);
           }

@@ -104,36 +104,41 @@ void TestICP()
       info.executionTime * 1000, info.nIterations, info.executionTime * 1000.0f / info.nIterations,
       info.goodness * 100);
 
-  cout << "Mean of estimation: " << pdf->getMeanVal() << endl << endl;
+  std::cout << "Mean of estimation: " << pdf->getMeanVal() << endl << "\n";
 
   CPosePDFGaussian gPdf;
   gPdf.copyFrom(*pdf);
 
-  cout << "Covariance of estimation: " << endl << gPdf.cov << endl;
+  std::cout << "Covariance of estimation: " << endl << gPdf.cov << "\n";
 
-  cout << " std(x): " << sqrt(gPdf.cov(0, 0)) << endl;
-  cout << " std(y): " << sqrt(gPdf.cov(1, 1)) << endl;
-  cout << " std(phi): " << RAD2DEG(sqrt(gPdf.cov(2, 2))) << " (deg)" << endl;
+  std::cout << " std(x): " << sqrt(gPdf.cov(0, 0)) << "\n";
+  std::cout << " std(y): " << sqrt(gPdf.cov(1, 1)) << "\n";
+  std::cout << " std(phi): " << RAD2DEG(sqrt(gPdf.cov(2, 2))) << " (deg)"
+            << "\n";
 
-  // cout << "Covariance of estimation (MATLAB format): " << endl <<
-  // gPdf.cov.inMatlabFormat()  << endl;
+  // std::cout << "Covariance of estimation (MATLAB format): " << endl <<
+  // gPdf.cov.inMatlabFormat()  << "\n";
 
   /**
    * Save the results for potential postprocessing (in txt and in matlab
    * format)
    */
-  cout << "-> Saving reference map as scan1.txt" << endl;
+  std::cout << "-> Saving reference map as scan1.txt"
+            << "\n";
   m1.save2D_to_text_file("scan1.txt");
 
-  cout << "-> Saving map to align as scan2.txt" << endl;
+  std::cout << "-> Saving map to align as scan2.txt"
+            << "\n";
   m2.save2D_to_text_file("scan2.txt");
 
-  cout << "-> Saving transformed map to align as scan2_trans.txt" << endl;
+  std::cout << "-> Saving transformed map to align as scan2_trans.txt"
+            << "\n";
   CSimplePointsMap m2_trans = m2;
   m2_trans.changeCoordinatesReference(gPdf.mean);
   m2_trans.save2D_to_text_file("scan2_trans.txt");
 
-  cout << "-> Saving MATLAB script for drawing 2D ellipsoid as view_ellip.m" << endl;
+  std::cout << "-> Saving MATLAB script for drawing 2D ellipsoid as view_ellip.m"
+            << "\n";
   CMatrixFloat COV22 = CMatrixFloat(CMatrixDouble(gPdf.cov));
   COV22.setSize(2, 2);
   CVectorFloat MEAN2D(2);
@@ -170,7 +175,8 @@ void TestICP()
     win.axis(-1, 10, -6, 6);
     win.axis_equal();
 
-    cout << "Close the window to exit" << endl;
+    std::cout << "Close the window to exit"
+              << "\n";
     win.waitForKey();
   }
 #endif
@@ -192,7 +198,7 @@ int main(int argc, char** argv)
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

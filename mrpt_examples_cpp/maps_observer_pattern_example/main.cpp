@@ -39,13 +39,13 @@ class MyObserver : public mrpt::system::CObserver
   void OnEvent(const mrptEvent& e) override
   {
     if (e.isOfType<mrptEventMetricMapClear>())
-      cout << "[MyObserver] Event received: mrptEventMetricMapClear\n";
+      std::cout << "[MyObserver] Event received: mrptEventMetricMapClear\n";
     else if (e.isOfType<mrptEventMetricMapInsert>())
-      cout << "[MyObserver] Event received: mrptEventMetricMapInsert\n";
+      std::cout << "[MyObserver] Event received: mrptEventMetricMapInsert\n";
     else if (e.isOfType<mrptEventOnDestroy>())
-      cout << "[MyObserver] Event received: mrptEventOnDestroy\n";
+      std::cout << "[MyObserver] Event received: mrptEventOnDestroy\n";
     else
-      cout << "[MyObserver] Event received: Generic mrptEvent \n";
+      std::cout << "[MyObserver] Event received: Generic mrptEvent \n";
   }
 };
 
@@ -85,7 +85,7 @@ int main()
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

@@ -47,8 +47,10 @@ void Buffer::RAII_Impl::create()
 
 void Buffer::RAII_Impl::destroy()
 {
-  if (!created) return;
-
+  if (!created)
+  {
+    return;
+  }
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   static const bool showErrs = (::getenv("MRPT_REVEAL_OPENGL_BUFFER_LEAKS") != nullptr);
 
@@ -91,9 +93,14 @@ void Buffer::RAII_Impl::bind()
 void Buffer::RAII_Impl::unbind()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!created) return;
-  if (created_from != std::this_thread::get_id()) return;
-
+  if (!created)
+  {
+    return;
+  }
+  if (created_from != std::this_thread::get_id())
+  {
+    return;
+  }
   glBindBuffer(static_cast<GLenum>(type), 0);
 #endif
 }

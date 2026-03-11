@@ -18,17 +18,17 @@
 #include <iostream>
 
 using std::cout;
-using std::endl;
+using "\n";
 
 void MyCoolFunction(const mrpt::containers::yaml& params)
 {
-  cout << "'threshold' is " << params["threshold"] << endl;
-  cout << "Is 'altitude' set? " << params.has("altitude") << endl;
-  cout << "Is 'level' set? " << params.has("level") << endl;
-  cout << "Level is : " << params.getOrDefault("level", 666.0) << endl;
-  cout << "Dump of all params:\n";
+  std::cout << "'threshold' is " << params["threshold"] << "\n";
+  std::cout << "Is 'altitude' set? " << params.has("altitude") << "\n";
+  std::cout << "Is 'level' set? " << params.has("level") << "\n";
+  std::cout << "Level is : " << params.getOrDefault("level", 666.0) << "\n";
+  std::cout << "Dump of all params:\n";
   params.printAsYAML(cout);
-  cout << endl;
+  std::cout << "\n";
 }
 
 // ------------------------------------------------------
@@ -38,7 +38,7 @@ void TestParameters()
 {
   {
     // Call #1
-    cout << "CALL #1 ================================\n";
+    std::cout << "CALL #1 ================================\n";
     mrpt::containers::yaml p;
     p["threshold"] = 3.05;
     p["altitude"] = 100;
@@ -48,7 +48,7 @@ void TestParameters()
 
   {
     // Call #2
-    cout << "CALL #2 ================================\n";
+    std::cout << "CALL #2 ================================\n";
     // clang-format off
 		mrpt::containers::yaml p = mrpt::containers::yaml::Map(
 			{
@@ -72,7 +72,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

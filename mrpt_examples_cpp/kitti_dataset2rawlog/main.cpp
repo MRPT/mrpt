@@ -118,17 +118,17 @@ void stereo2rawlog(
   const double baseline = -P2_roi(0, 3) / P2_roi(0, 0);
   const mrpt::poses::CPose3DQuat l2r_pose(baseline, 0.0, 0.0, mrpt::math::CQuaternionDouble());
 
-  cout << "baseline: " << baseline << endl;
+  std::cout << "baseline: " << baseline << "\n";
 
   // Create rawlog file ----------------------------------------------
   const string out_rawlog_fil = out_name + string(".rawlog");
   const string out_imgs_dir = out_name + string("_Images");
-  cout << "Creating rawlog: " << out_rawlog_fil << endl;
+  std::cout << "Creating rawlog: " << out_rawlog_fil << "\n";
   mrpt::io::CCompressedOutputStream f_out(out_rawlog_fil);
 
   if (is_kitti_dataset)
   {
-    cout << "Creating imgs dir: " << out_imgs_dir << endl;
+    std::cout << "Creating imgs dir: " << out_imgs_dir << "\n";
     mrpt::system::createDirectory(out_imgs_dir);
   }
 
@@ -171,7 +171,7 @@ void stereo2rawlog(
 
     if (!mrpt::system::fileExists(sImg_L) || !mrpt::system::fileExists(sImg_R))
     {
-      cout << "Couldn't detect image pair " << sImg_L << " | " << sImg_R << "  -> ending.\n";
+      std::cout << "Couldn't detect image pair " << sImg_L << " | " << sImg_R << "  -> ending.\n";
       break;
     }
 
@@ -197,20 +197,20 @@ void stereo2rawlog(
     {
       if (!mrpt::system::copyFile(sImg_L, sTrgImg_L))
       {
-        cerr << "Error copying file: " << sImg_L << " => " << sTrgImg_L << endl;
+        cerr << "Error copying file: " << sImg_L << " => " << sTrgImg_L << "\n";
         return;
       }
       if (!mrpt::system::copyFile(sImg_R, sTrgImg_R))
       {
-        cerr << "Error copying file: " << sImg_R << " => " << sTrgImg_R << endl;
+        cerr << "Error copying file: " << sImg_R << " => " << sTrgImg_R << "\n";
         return;
       }
     }
 
-    // cout << "Writing entry #" << i << endl;
+    // std::cout << "Writing entry #" << i << "\n";
   }
 
-  cout << "\nAll done!\n";
+  std::cout << "\nAll done!\n";
 }
 
 // ------------------------------------------------------
@@ -247,7 +247,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

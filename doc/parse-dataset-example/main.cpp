@@ -21,14 +21,14 @@
 #include <mrpt/system/os.h>
 
 // Sensor observations classes
-//#include <mrpt/obs.h>     // Include *all* classes
+// #include <mrpt/obs.h>     // Include *all* classes
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
 // Point clouds, etc.
-//#include <mrpt/maps.h>
+// #include <mrpt/maps.h>
 
 #include <mrpt/gui/CDisplayWindow3D.h>  // GPS coordinates processing
 #include <mrpt/topography.h>            // GPS coordinates processing
@@ -60,8 +60,8 @@ int main(int argc, char **argv)
         (argc == 3) ? mrpt::system::time_tToTimestamp(atof(argv[2])) : TTimeStamp(0);
 
     if (argc == 3)
-      cout << "Using starting timestamp = " << mrpt::system::dateTimeLocalToString(start_timestamp)
-           << endl;
+      std::cout << "Using starting timestamp = "
+                << mrpt::system::dateTimeLocalToString(start_timestamp) << "\n";
 
     // External images: autodetect the directory for images
     CImage::setImagesPathBase(CRawlog::detectImagesDirectory(rawlog_file));
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     CSensoryFrame::Ptr SF;
     CObservation::Ptr obs;
 
-    cout << "Parsing rawlog...\n";
+    std::cout << "Parsing rawlog...\n";
 
     bool waiting_to_first = false;
     topography::TGeodeticCoords coords_ref;  // GPS reference point (=first GPS reading)
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
       if (waiting_to_first)
       {
         waiting_to_first = false;
-        cout << "Reached desired starting point...\n";
+        std::cout << "Reached desired starting point...\n";
       }
 
       // Process GPS entries:
@@ -110,8 +110,8 @@ int main(int argc, char **argv)
             TPoint3D P;
             topography::geodeticToENU_WGS84(coord, P, coords_ref);
 
-            cout << "GPS: ENU coords=" << P << " lat: " << coord.lat.getAsString()
-                 << " lon: " << coord.lon.getAsString() << endl;
+            std::cout << "GPS: ENU coords=" << P << " lat: " << coord.lat.getAsString()
+                      << " lon: " << coord.lon.getAsString() << "\n";
           }
         }
       }
@@ -136,19 +136,19 @@ int main(int argc, char **argv)
       else if (IS_CLASS(obs, CObservationIMU))
       {
         CObservationIMU::Ptr o = CObservationIMU::Ptr(obs);
-        // cout << "IMU: yaw vel.=" << o->rawMeasurements[IMU_YAW_VEL] <<" rad/s" << endl;
+        // std::cout << "IMU: yaw vel.=" << o->rawMeasurements[IMU_YAW_VEL] <<" rad/s" << "\n";
       }
 
     };  // end while
 
-    cout << "\nAll done, close the window to quit.\n";
+    std::cout << "\nAll done, close the window to quit.\n";
     win.waitForKey();
 
     return 0;
   }
   catch (exception &e)
   {
-    cerr << "Exception: " << e.what() << endl;
+    cerr << "Exception: " << e.what() << "\n";
     return -1;
   }
   catch (...)

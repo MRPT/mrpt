@@ -90,8 +90,10 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>, public ::testing::T
     EXPECT_EQ(g1.nodes.size(), g2.nodes.size());
     EXPECT_EQ(g1.root, g2.root);
 
-    if (g1.edges.size() != g2.edges.size() || g1.nodes.size() != g2.nodes.size()) return;
-
+    if (g1.edges.size() != g2.edges.size() || g1.nodes.size() != g2.nodes.size())
+    {
+      return;
+    }
     // Check that the edge values are OK:
     {
       typename my_graph_t::const_iterator it1, it2;

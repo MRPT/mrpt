@@ -49,29 +49,30 @@ void Test_HOKUYO()
 
   unsigned int port;
 
-  cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
+  std::cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
   getline(cin, type);
 
   while ((mrpt::system::lowerCase(type) != "usb") && (mrpt::system::lowerCase(type) != "ethernet"))
   {
-    cout << "Incorrect type" << endl;
-    cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
+    std::cout << "Incorrect type"
+              << "\n";
+    std::cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
     getline(cin, type);
   }
 
-  cout << endl << endl << "HOKUYO laser range finder test application." << endl << endl;
+  std::cout << endl << endl << "HOKUYO laser range finder test application." << endl << "\n";
 
   if (mrpt::system::lowerCase(type) == "usb")
   {
     if (SERIAL_NAME.empty())
     {
-      cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
-              "ttyACM0): ";
+      std::cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
+                   "ttyACM0): ";
       getline(cin, serName);
     }
     else
     {
-      cout << "Using serial port: " << SERIAL_NAME << endl;
+      std::cout << "Using serial port: " << SERIAL_NAME << "\n";
       serName = SERIAL_NAME;
     }
 
@@ -80,17 +81,17 @@ void Test_HOKUYO()
   }
   else
   {
-    cout << "Enter the ip direction: ";
+    std::cout << "Enter the ip direction: ";
     getline(cin, ip);
 
-    cout << "Enter the port number: ";
+    std::cout << "Enter the port number: ";
     cin >> port;
 
     // Set the laser serial port:
     laser.setIPandPort(ip, port);
   }
   string intensity;
-  cout << endl << endl << "Enable intensity [y/n]:";
+  std::cout << endl << endl << "Enable intensity [y/n]:";
   getline(cin, intensity);
   laser.setIntensityMode(mrpt::system::lowerCase(intensity) == "y");
 
@@ -109,7 +110,8 @@ void Test_HOKUYO()
   CDisplayWindowPlots win("Laser scans");
 #endif
 
-  cout << "Press any key to stop capturing..." << endl;
+  std::cout << "Press any key to stop capturing..."
+            << "\n";
 
   CTicTac tictac;
   tictac.Tic();
@@ -175,7 +177,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

@@ -469,8 +469,10 @@ void CPosePDFSOG::normalizeWeights()
 {
   MRPT_START
 
-  if (!m_modes.size()) return;
-
+  if (!m_modes.size())
+  {
+    return;
+  }
   double maxW = m_modes[0].log_w;
   for (auto& m : m_modes) maxW = max(maxW, m.log_w);
 
@@ -577,13 +579,13 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
                      Wj * log(m_modes[j].cov.det());
         if (verbose)
         {
-          cout << "try merge[" << i << ", " << j << "] -> Bij: " << Bij << "\n";
-          // cout << "AUX: " << endl << AUX;
-          // cout << "Wi: " << Wi << " Wj:" << Wj << " Wij_: " << Wij_
+          std::cout << "try merge[" << i << ", " << j << "] -> Bij: " << Bij << "\n";
+          // std::cout << "AUX: " << endl << AUX;
+          // std::cout << "Wi: " << Wi << " Wj:" << Wj << " Wij_: " << Wij_
           // << "\n";
-          cout << "Pij: " << Pij << endl
-               << " Pi: " << m_modes[i].cov << endl
-               << " Pj: " << m_modes[j].cov << "\n";
+          std::cout << "Pij: " << Pij << endl
+                    << " Pi: " << m_modes[i].cov << endl
+                    << " Pj: " << m_modes[j].cov << "\n";
         }
 
         if (Bij < min_Bij)
@@ -595,13 +597,14 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
       }
 
     // Is a good move to merge (i,j)??
-    if (verbose) cout << "merge[" << i << ", " << best_j << "] Tempting merge: KLd = " << min_Bij;
+    if (verbose)
+      std::cout << "merge[" << i << ", " << best_j << "] Tempting merge: KLd = " << min_Bij;
 
     if (min_Bij < max_KLd)
     {
       if (verbose)
-        cout << " Accepted."
-             << "\n";
+        std::cout << " Accepted."
+                  << "\n";
 
       // Do the merge (i,j):
       TGaussianMode Mij;
@@ -631,8 +634,8 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
     else
     {
       if (verbose)
-        cout << " Nope."
-             << "\n";
+        std::cout << " Nope."
+                  << "\n";
 
       i++;
     }

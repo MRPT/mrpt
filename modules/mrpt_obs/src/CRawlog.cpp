@@ -283,7 +283,10 @@ bool CRawlog::saveToRawLogFile(
 
 void CRawlog::swap(CRawlog& obj)
 {
-  if (this == &obj) return;
+  if (this == &obj)
+  {
+    return;
+  }
   m_seqOfActObs.swap(obj.m_seqOfActObs);
   std::swap(m_commentTexts, obj.m_commentTexts);
 }
@@ -426,8 +429,10 @@ void CRawlog::findObservationsByClassInRange(
 
   out_found.clear();
 
-  if (m_seqOfActObs.empty()) return;
-
+  if (m_seqOfActObs.empty())
+  {
+    return;
+  }
   // Find the first appearance of time_start:
   // ---------------------------------------------------
   auto first = m_seqOfActObs.begin();

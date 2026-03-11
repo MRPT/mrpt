@@ -397,8 +397,10 @@ void CDisplayWindowGUI::createSubWindowsControlUI()
   constexpr int DEFAULT_WIDTH = 120, DEFAULT_HEIGHT = 40;
   constexpr int HIDEN_WIDTH = 35, HIDEN_HEIGHT = 35;
 
-  if (m_subWindows.ui) return;
-
+  if (m_subWindows.ui)
+  {
+    return;
+  }
   auto& w = m_subWindows.ui;
   w = new nanogui::Window(this, "");
 
@@ -487,7 +489,10 @@ void CDisplayWindowGUI::createSubWindowsControlUI()
 
 void CDisplayWindowGUI::SubWindows::minimize(int index)
 {
-  if (index < 0 || index > static_cast<int>(windows.size())) return;
+  if (index < 0 || index > static_cast<int>(windows.size()))
+  {
+    return;
+  }
   auto w = windows.at(index);
 
   w->setVisible(false);
@@ -496,7 +501,10 @@ void CDisplayWindowGUI::SubWindows::minimize(int index)
 
 void CDisplayWindowGUI::SubWindows::restore(int index)
 {
-  if (index < 0 || index > static_cast<int>(windows.size())) return;
+  if (index < 0 || index > static_cast<int>(windows.size()))
+  {
+    return;
+  }
   auto w = windows.at(index);
 
   w->setVisible(true);

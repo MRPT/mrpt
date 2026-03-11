@@ -19,7 +19,7 @@ template <class CONTAINER>
 void printMap(const CONTAINER& m)
 {
   for (const auto& e : m) std::cout << e.first << "=" << e.second << ", ";
-  std::cout << std::endl;
+  std::cout << "\n";
 }
 
 //! [example]
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

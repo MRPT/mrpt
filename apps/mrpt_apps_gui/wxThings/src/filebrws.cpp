@@ -1091,8 +1091,10 @@ void GtkToolbarResizeWindow(wxWindow *win, const wxSize &size)
 
 void wxFileBrowser::DoSize()
 {
-  if (!m_splitterWin) return;
-
+  if (!m_splitterWin)
+  {
+    return;
+  }
   wxSize clientSize(GetClientSize());
   int h = 0;
 
@@ -1443,8 +1445,10 @@ void CheckMenuItem(wxMenu *menu, wxWindowID menu_id, bool value)
 
 void wxFileBrowser::UpdateMenu(wxMenu *menu)
 {
-  if (!menu) return;
-
+  if (!menu)
+  {
+    return;
+  }
   CheckMenuItem(menu, FBStyleToMenuID(m_browser_style), true);
 
   // Update options menu ---------------------------
@@ -1504,8 +1508,10 @@ void wxFileBrowser::UpdateMenu(wxMenu *menu)
 }
 void wxFileBrowser::UpdateToolBar(wxToolBar *toolBar)
 {
-  if (!toolBar) return;
-
+  if (!toolBar)
+  {
+    return;
+  }
   toolBar->EnableTool(ID_wxFILEBROWSER_GO_BACK, CanGoPathHistoryBackward());
   toolBar->EnableTool(ID_wxFILEBROWSER_GO_FORWARD, CanGoPathHistoryForward());
   toolBar->EnableTool(ID_wxFILEBROWSER_GO_UP, CanGoUpDir());
@@ -1678,8 +1684,10 @@ bool wxFileBrowser::GoPathHistoryBackward()
 
 void wxFileBrowser::AddPathHistory(const wxString &path)
 {
-  if (!wxDirExists(path) || (path == m_pathHistory[m_path_history_index])) return;
-
+  if (!wxDirExists(path) || (path == m_pathHistory[m_path_history_index]))
+  {
+    return;
+  }
   int count = m_pathHistory.GetCount();
   if (count == 0)
   {
@@ -1723,8 +1731,10 @@ void wxFileBrowser::OnTreeItemActivation(wxTreeEvent &event)
   }
 
   wxString path;
-  if (!GetPathFromFilePath(m_dirCtrl->GetPath(), path)) return;
-
+  if (!GetPathFromFilePath(m_dirCtrl->GetPath(), path))
+  {
+    return;
+  }
   wxFileBrowserEvent fbEvent(wxEVT_FILEBROWSER_FILE_ACTIVATED, this, GetId());
 
   m_path = path;
@@ -1748,8 +1758,10 @@ void wxFileBrowser::OnTreeRightClick(wxTreeEvent &event)
 void wxFileBrowser::OnListItemActivated(wxListEvent &event)
 {
   wxString filename = event.GetLabel();
-  if (filename.IsEmpty()) return;
-
+  if (filename.IsEmpty())
+  {
+    return;
+  }
   wxFileData *fd = (wxFileData *)event.GetData();
   wxCHECK_RET(fd, wxT("Invalid filedata"));
   wxString filePath = fd->GetFilePath();
@@ -2068,8 +2080,10 @@ void wxFileBrowser::OnTreeMenu(wxCommandEvent &event)
     {
       wxFileName fileName(m_dirCtrl->GetPath());
       wxFileData fd(CreateFileData(fileName));
-      // if (!fd) return;
-
+      // if (!fd)
+      {
+        return;
+      }
       ShowPropertiesDialog(fd);
       break;
     }
@@ -2113,8 +2127,10 @@ void wxFileBrowser::OnListMenu(wxCommandEvent &event)
     case wxID_OPEN:
     {
       wxFileData *fd = GetFocusedListItem();
-      if (!fd) return;
-
+      if (!fd)
+      {
+        return;
+      }
       OpenFilePath(fd->GetFilePath());
       break;
     }
@@ -2150,8 +2166,10 @@ void wxFileBrowser::OnListMenu(wxCommandEvent &event)
     case ID_wxFILEBROWSER_LIST_MENU_OPEN_WITH:
     {
       wxFileData *fd = GetFocusedListItem();
-      if (!fd) return;
-
+      if (!fd)
+      {
+        return;
+      }
       wxString cmd = GetOpenWithFileCmd(fd);
 
       if (!cmd.IsEmpty())
@@ -2167,8 +2185,10 @@ void wxFileBrowser::OnListMenu(wxCommandEvent &event)
     case ID_wxFILEBROWSER_LIST_MENU_VIEW_FILE:
     {
       wxFileData *fd = GetFocusedListItem();
-      if (!fd) return;
-
+      if (!fd)
+      {
+        return;
+      }
       wxLogNull logNull;
       wxImage image(fd->GetFilePath());
       if (image.Ok())
@@ -2239,8 +2259,10 @@ void wxFileBrowser::OnListMenu(wxCommandEvent &event)
     case ID_wxFILEBROWSER_LIST_MENU_PROPERITES:
     {
       wxFileData *fd = GetFocusedListItem();
-      if (!fd) return;
-
+      if (!fd)
+      {
+        return;
+      }
       ShowPropertiesDialog(*fd);
       break;
     }
@@ -2302,8 +2324,10 @@ void wxFileBrowser::OnViewButtons(wxCommandEvent &event)
 void wxFileBrowser::OnPathCombo(wxCommandEvent &event)
 {
   // gtk sends events for just dropping the box
-  if (m_pathComboSelection == event.GetSelection()) return;
-
+  if (m_pathComboSelection == event.GetSelection())
+  {
+    return;
+  }
   m_pathComboSelection = event.GetSelection();
 
   // be overly cautious, GTK combo sends events and in some cases leads to a loop
@@ -2493,8 +2517,10 @@ void wxFileBrowser::OnFilterCombo(wxCommandEvent &event)
 {
   int sel = event.GetSelection();
   // gtk combo sends events when the combo is opened... ignore them
-  if ((sel < 0) || (sel == m_filterComboSelection)) return;
-
+  if ((sel < 0) || (sel == m_filterComboSelection))
+  {
+    return;
+  }
   m_filterComboSelection = sel;
 
   wxString filter = event.GetString();

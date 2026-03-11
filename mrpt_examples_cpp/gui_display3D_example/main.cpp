@@ -147,19 +147,19 @@ void TestDisplay3D()
   win.addTextMessage(0.01, 0.85, "This is a 2D message", 0 /*id*/, fp);
 
   win.setCameraElevationDeg(25.0f);
-  // win.setCameraProjective(false);
+  // win.setProjectiveModel(false);
 
-  cout << "\n";
-  cout << "Control with mouse or keyboard. Valid keys:"
-       << "\n";
-  cout << "  ESC                        -> Exit"
-       << "\n";
-  cout << "  Left/right cursor arrow    -> Camera azimuth"
-       << "\n";
-  cout << "  P                          -> Enable / disable 'place object' "
-          "mode"
-       << "\n";
-  cout << "\n";
+  std::cout << "\n";
+  std::cout << "Control with mouse or keyboard. Valid keys:"
+            << "\n";
+  std::cout << "  ESC                        -> Exit"
+            << "\n";
+  std::cout << "  Left/right cursor arrow    -> Camera azimuth"
+            << "\n";
+  std::cout << "  P                          -> Enable / disable 'place object' "
+               "mode"
+            << "\n";
+  std::cout << "\n";
 
   bool end = false;
   bool placeMode = false;

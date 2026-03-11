@@ -272,7 +272,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   topography_gps_coords_example
   topography_coordinate_conversion_example
 )
-set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_topography)
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_topography mrpt::mrpt_poses)
 set(EXAMPLES_NEEDING_DATA_DIR topography_coordinate_conversion_example)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 

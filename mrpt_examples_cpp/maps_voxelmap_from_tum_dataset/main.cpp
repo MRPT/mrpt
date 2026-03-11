@@ -44,19 +44,23 @@ void TestVoxelMapFromTUM(
   // To find out external image files:
   mrpt::io::setLazyLoadPathBase(mrpt::obs::CRawlog::detectImagesDirectory(datasetRawlogFile));
 
-  std::cout << "Loading dataset: " << datasetRawlogFile << "..." << std::endl;
+  std::cout << "Loading dataset: " << datasetRawlogFile << "..."
+            << "\n";
 
   mrpt::obs::CRawlog dataset;
   dataset.loadFromRawLogFile(datasetRawlogFile);
 
-  std::cout << "Done! " << dataset.size() << " entries." << std::endl;
+  std::cout << "Done! " << dataset.size() << " entries."
+            << "\n";
 
-  std::cout << "Loading GT path from: " << groundTruthFile << "..." << std::endl;
+  std::cout << "Loading GT path from: " << groundTruthFile << "..."
+            << "\n";
 
   mrpt::math::CMatrixDouble gtData;
   gtData.loadFromTextFile(groundTruthFile);
 
-  std::cout << "Done! " << gtData.rows() << " rows." << std::endl;
+  std::cout << "Done! " << gtData.rows() << " rows."
+            << "\n";
 
   // # timestamp tx ty tz qx qy qz qw
   mrpt::poses::CPose3DInterpolator gt;
@@ -126,7 +130,8 @@ void TestVoxelMapFromTUM(
     win.unlockAccess3DScene();
   }
 
-  std::cout << "Close the window to exit" << std::endl;
+  std::cout << "Close the window to exit"
+            << "\n";
 
   size_t rawlogIndex = 0;
   bool paused = false;
@@ -252,7 +257,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cout << "Exception: " << e.what() << std::endl;
+    std::cout << "Exception: " << e.what() << "\n";
     return -1;
   }
 }

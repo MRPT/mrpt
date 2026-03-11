@@ -46,7 +46,7 @@ using namespace std;
 
 // Declarations:
 #define VERBOSE_COUT \
-  if (verbose) cout << "[carmen2rawlog] "
+  if (verbose) std::cout << "[carmen2rawlog] "
 
 // -----------------------------------------------
 //				MAIN
@@ -173,18 +173,18 @@ int main(int argc, char** argv)
         const double progress_ratio = double(curPos) / double(totalInFileSize);
         static const int nBlocksTotal = 50;
         const int nBlocks = progress_ratio * nBlocksTotal;
-        cout << "\rProgress: [" << string(nBlocks, '#') << string(nBlocksTotal - nBlocks, ' ')
-             << format("] %6.02f%% (%u objects)", progress_ratio * 100, nSavedObs);
+        std::cout << "\rProgress: [" << string(nBlocks, '#') << string(nBlocksTotal - nBlocks, ' ')
+                  << format("] %6.02f%% (%u objects)", progress_ratio * 100, nSavedObs);
         cout.flush();
       }
     };
-    cout << "\n";
+    std::cout << "\n";
 
     // If we had ground-truth robot poses, save to file:
     if (!groundTruthPoses.empty())
     {
       const string gt_filename = mrpt::system::fileNameChangeExtension(output_rawlog, "gt.txt");
-      cout << "Note: Saving ground truth pose information to '" << gt_filename << "'\n";
+      std::cout << "Note: Saving ground truth pose information to '" << gt_filename << "'\n";
 
       std::ofstream gt_file;
       gt_file.open(gt_filename.c_str());

@@ -162,7 +162,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
   {
     CMyRedirector myRedirector(lbInfo);
     wxString wxVer(wxVERSION_STRING);
-    cout << information("wxWidgets", std::string(wxVer.mb_str()));
+    std::cout << information("wxWidgets", std::string(wxVer.mb_str()));
   }
 
   lbProgName->SetLabel(m_appName.c_str());

@@ -290,8 +290,10 @@ void wxBmpComboBox::OnSize(wxSizeEvent &event)
 {
   event.Skip();
 
-  if (!m_labelWin || !m_dropdownButton) return;
-
+  if (!m_labelWin || !m_dropdownButton)
+  {
+    return;
+  }
   wxSize size = GetClientSize();
   // wxPrintf(wxT("ComboOnSize %d %d\n"), size.x, size.y);
   int width = size.x - ((wxWindow *)m_dropdownButton)->GetSize().x;
@@ -375,8 +377,10 @@ void wxBmpComboBox::Thaw()
 
 void wxBmpComboBox::CalcLayout()
 {
-  if (m_frozen) return;
-
+  if (m_frozen)
+  {
+    return;
+  }
   int height = 0, width = 0;
   m_itemSize = m_labelSize = m_bitmapSize = wxSize(0, 0);
   int count = GetCount();
@@ -531,8 +535,10 @@ void wxBmpComboBox::SetSelection(int n, bool send_event)
 void wxBmpComboBox::SetNextSelection(bool foward, bool send_event)
 {
   const int count = GetCount();
-  if (count == 0) return;
-
+  if (count == 0)
+  {
+    return;
+  }
   int sel = m_selection;
 
   if (foward)

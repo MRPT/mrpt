@@ -58,12 +58,14 @@ int main(int argc, char** argv)
     // Process arguments:
     if ((argc != 4 && argc != 6) || (argc == 6 && 0 != mrpt::system::os::_strcmp(argv[4], "-s")))
     {
-      cout << "Use: observations2map <config_file.ini> "
-              "<observations.simplemap> <outputmap_prefix> [-s "
-              "INI_FILE_SECTION_NAME] "
-           << endl;
-      cout << "  Default: INI_FILE_SECTION_NAME = MappingApplication" << endl;
-      cout << "Push any key to exit..." << endl;
+      std::cout << "Use: observations2map <config_file.ini> "
+                   "<observations.simplemap> <outputmap_prefix> [-s "
+                   "INI_FILE_SECTION_NAME] "
+                << "\n";
+      std::cout << "  Default: INI_FILE_SECTION_NAME = MappingApplication"
+                << "\n";
+      std::cout << "Push any key to exit..."
+                << "\n";
       return 1;
     }
 
@@ -77,11 +79,12 @@ int main(int argc, char** argv)
     }
 
     // Load simplemap:
-    cout << "Loading simplemap...";
+    std::cout << "Loading simplemap...";
     mrpt::maps::CSimpleMap simplemap;
     mrpt::io::CCompressedInputStream f(inputFile.c_str());
     mrpt::serialization::archiveFrom(f) >> simplemap;
-    cout << "done: " << simplemap.size() << " observations." << endl;
+    std::cout << "done: " << simplemap.size() << " observations."
+              << "\n";
 
     // Create metric maps:
     CConfigFile cfg(configFile);
@@ -95,12 +98,13 @@ int main(int argc, char** argv)
     metricMap.setListOfMaps(mapCfg);
 
     // Build metric maps:
-    cout << "Building metric maps..."
-         << "\n";
+    std::cout << "Building metric maps..."
+              << "\n";
 
     metricMap.loadFromSimpleMap(simplemap);
 
-    cout << "done." << endl;
+    std::cout << "done."
+              << "\n";
 
     // Save metric maps:
     // ---------------------------
@@ -123,7 +127,8 @@ int main(int argc, char** argv)
       CCompressedOutputStream fo(str);
       mrpt::serialization::archiveFrom(fo) << m;
 
-      cout << "Done." << endl;
+      std::cout << "Done."
+                << "\n";
     }
 
     return 0;

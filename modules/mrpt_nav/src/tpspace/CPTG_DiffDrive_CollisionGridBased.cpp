@@ -297,8 +297,10 @@ void CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::updateCellInfo(
     const unsigned int icx, const unsigned int icy, const uint16_t k, const float dist)
 {
   TCollisionCell* cell = cellByIndex(icx, icy);
-  if (!cell) return;
-
+  if (!cell)
+  {
+    return;
+  }
   // For such a small number of elements, brute-force search is not such a bad
   // idea:
   auto itK = cell->end();
@@ -684,10 +686,10 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
   MRPT_START
 
   if (verbose)
-    cout << endl
-         << "[CPTG_DiffDrive_CollisionGridBased::initialize] Starting... "
-            "*** THIS MAY TAKE A WHILE, BUT MUST BE COMPUTED ONLY ONCE!! **"
-         << "\n";
+    std::cout << endl
+              << "[CPTG_DiffDrive_CollisionGridBased::initialize] Starting... "
+                 "*** THIS MAY TAKE A WHILE, BUT MUST BE COMPUTED ONLY ONCE!! **"
+              << "\n";
 
   // Sanity checks:
   ASSERTMSG_(!m_robotShape.empty(), "Robot shape was not defined");
@@ -700,7 +702,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
   mrpt::system::CTicTac tictac;
   tictac.Tic();
 
-  if (verbose) cout << "Initializing PTG '" << cacheFilename << "'...";
+  if (verbose) std::cout << "Initializing PTG '" << cacheFilename << "'...";
 
   // Simulate paths:
   const float min_dist = 0.015f;
@@ -726,8 +728,8 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
   if (loadColGridsFromFile(cacheFilename, m_robotShape))
   {
     if (verbose)
-      cout << "loaded from file OK"
-           << "\n";
+      std::cout << "loaded from file OK"
+                << "\n";
   }
   else
   {
@@ -805,12 +807,12 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 
       if (verbose)
       {
-        cout << k << "/" << Ki << ",";
+        std::cout << k << "/" << Ki << ",";
         cout.flush();
       }
     }  // k
 
-    if (verbose) cout << format("Done! [%.03f sec]", tictac.Tac()) << "\n";
+    if (verbose) std::cout << format("Done! [%.03f sec]", tictac.Tac()) << "\n";
 
     // save it to the cache file for the next run:
     saveColGridsToFile(cacheFilename, m_robotShape);

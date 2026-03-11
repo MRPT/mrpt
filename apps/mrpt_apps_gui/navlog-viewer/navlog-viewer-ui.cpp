@@ -351,8 +351,10 @@ void NavlogViewerApp::OnbtnLoadClick()
   },
       false /*load*/);
 
-  if (fileName.empty()) return;
-
+  if (fileName.empty())
+  {
+    return;
+  }
   loadLogfile(fileName);
 
   NANOGUI_END_TRY(*m_win)
@@ -475,7 +477,7 @@ void NavlogViewerApp::OnMainIdleLoop()
       mainCam.setElevationDegrees(90);
       mainCam.setAzimuthDegrees(-90);
     }
-    mainCam.setCameraProjective(!m_cbOrtho2DView->checked());
+    mainCam.setProjectiveModel(!m_cbOrtho2DView->checked());
   }
 
   // Copy camera orientation from the main window into the small XYZ view:
@@ -564,8 +566,10 @@ void NavlogViewerApp::updateVisualization()
   updateManualPickControls();
 
   const int log_idx = mrpt::round(slidLog->value());
-  if (log_idx >= int(m_logdata.size())) return;
-  // In the future, we could handle more log classes. For now, only
+  if (log_idx >= int(m_logdata.size()))
+  {
+    return;
+  }  // In the future, we could handle more log classes. For now, only
   // "CLogFileRecord::Ptr":
   auto logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[log_idx]);
   const CLogFileRecord& log = *logptr;
@@ -1246,7 +1250,7 @@ void NavlogViewerApp::updateVisualization()
       cam.setAzimuthDegrees(-90.0f);
       cam.setElevationDegrees(90.0f);
       cam.setZoomDistance(4.6f);
-      cam.setCameraProjective(false);
+      cam.setProjectiveModel(false);
 
       {
         auto gl_obj = mrpt::viz::CDisk::Create();
@@ -1493,8 +1497,10 @@ void NavlogViewerApp::OnmnuMatlabPlotsSelected()
   },
       true /*save*/);
 
-  if (fileName.empty()) return;
-
+  if (fileName.empty())
+  {
+    return;
+  }
   ofstream f(fileName);
   if (!f.is_open()) throw runtime_error("Error writing to file!");
 
@@ -1632,8 +1638,10 @@ void NavlogViewerApp::OnmnuSeePTGParamsSelected()
   },
       true /*save*/);
 
-  if (fileName.empty()) return;
-
+  if (fileName.empty())
+  {
+    return;
+  }
   std::ofstream f(fileName);
   f << sCfgText;
 
@@ -1649,8 +1657,10 @@ void NavlogViewerApp::OnmnuGenerateOdometryVsLocalizationReport()
           {"txt", "Save localization vs odometry report"}
   },
       true /*save*/);
-  if (fileName.empty()) return;
-
+  if (fileName.empty())
+  {
+    return;
+  }
   std::ofstream f(fileName);
   ASSERT_(f.is_open());
 
@@ -1700,8 +1710,10 @@ void NavlogViewerApp::OnmnuSaveScoreMatrixSelected()
           {"txt", "Save score matrices"}
   },
       true /*save*/);
-  if (fileName.empty()) return;
-
+  if (fileName.empty())
+  {
+    return;
+  }
   const size_t N = m_logdata.size();
   for (size_t i = 0; i < N; i++)
   {
@@ -1731,7 +1743,10 @@ void NavlogViewerApp::OnmnuSaveCurrentObstacles()
   NANOGUI_START_TRY
 
   const int log_idx = mrpt::round(slidLog->value());
-  if (log_idx >= int(m_logdata.size())) return;
+  if (log_idx >= int(m_logdata.size()))
+  {
+    return;
+  }
   auto logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[log_idx]);
   const CLogFileRecord& log = *logptr;
 
@@ -1740,8 +1755,10 @@ void NavlogViewerApp::OnmnuSaveCurrentObstacles()
           {"txt", "Obstacles ASCII plain text file"}
   },
       true /*save*/);
-  if (fileName.empty()) return;
-
+  if (fileName.empty())
+  {
+    return;
+  }
   log.WS_Obstacles_original.save2D_to_text_file(fileName);
 
   NANOGUI_END_TRY(*m_win)
@@ -1750,13 +1767,18 @@ void NavlogViewerApp::OnmnuSaveCurrentObstacles()
 void NavlogViewerApp::OntimMouseXY()
 {
   // Mouse position at Z=0
-  if (!m_win) return;
-
+  if (!m_win)
+  {
+    return;
+  }
   const auto mousexY = m_win->mousePos();
 
   auto mouse_ray_opt = m_win->background_scene->getViewport("main")->get3DRayForPixelCoord(
       {mousexY.x(), mousexY.y()});
-  if (!mouse_ray_opt) return;
+  if (!mouse_ray_opt)
+  {
+    return;
+  }
   mrpt::math::TLine3D mouse_ray = *mouse_ray_opt;
 
   int lineY = 0, unique_id = 0;
@@ -1780,7 +1802,10 @@ void NavlogViewerApp::OnmnuExportSelected(std::string filename)
   NANOGUI_START_TRY;
 
   const int log_idx = mrpt::round(slidLog->value());
-  if (log_idx >= int(m_logdata.size())) return;
+  if (log_idx >= int(m_logdata.size()))
+  {
+    return;
+  }
   auto logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[log_idx]);
   const CLogFileRecord& log = *logptr;
 
@@ -1790,8 +1815,10 @@ void NavlogViewerApp::OnmnuExportSelected(std::string filename)
             {"navlog", "MRPT navlog file"}
     },
         true /*save*/);
-  if (filename.empty()) return;
-
+  if (filename.empty())
+  {
+    return;
+  }
   mrpt::io::CCompressedOutputStream f(filename);
   ASSERT_(f.is_open());
   auto a = mrpt::serialization::archiveFrom(f);
@@ -1814,8 +1841,10 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
   },
       true /*save*/);
 
-  if (fileName.empty()) return;
-
+  if (fileName.empty())
+  {
+    return;
+  }
   ofstream f(fileName);
   if (!f.is_open()) throw runtime_error("Error writing to file!");
 
@@ -2155,8 +2184,10 @@ void NavlogViewerApp::updateManualPickControls()
   m_btnManualPickAppendYaml->setEnabled(manualPickEnabled);
 
   const int log_idx = mrpt::round(slidLog->value());
-  if (log_idx >= int(m_logdata.size())) return;
-
+  if (log_idx >= int(m_logdata.size()))
+  {
+    return;
+  }
   auto logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[log_idx]);
   const CLogFileRecord& log = *logptr;
 

@@ -312,7 +312,7 @@ C3DWindowDialog::C3DWindowDialog(
   // Increment number of windows:
   // int winCount =
   WxSubsystem::CWXMainFrame::notifyWindowCreation();
-// cout << "[C3DWindowDialog] Notifying new window: " << winCount << "\n";
+// std::cout << "[C3DWindowDialog] Notifying new window: " << winCount << "\n";
 #else
   THROW_EXCEPTION("MRPT was compiled without OpenGL support");
 #endif
@@ -577,9 +577,9 @@ void CDisplayWindow3D::setCameraZoom([[maybe_unused]] float zoom)
 }
 
 /*---------------------------------------------------------------
-          setCameraProjective
+          setProjectiveModel
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::setCameraProjective([[maybe_unused]] bool isProjective)
+void CDisplayWindow3D::setProjectiveModel([[maybe_unused]] bool isProjective)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
@@ -908,7 +908,10 @@ void CDisplayWindow3D::sendFunctionWithShaderManager(
       {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
         auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
-        if (!win || !win->m_canvas) return;
+        if (!win || !win->m_canvas)
+        {
+          return;
+        }
         auto* mgr = win->m_canvas->getShaderManager();
         if (mgr) f(*mgr);
 #endif

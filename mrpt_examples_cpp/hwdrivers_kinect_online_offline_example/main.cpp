@@ -92,7 +92,7 @@ struct TThreadParam
 //  Uncoment to force the simulated sensor to run at this given rate.
 //  If commented out, the simulated sensor will reproduce the real rate
 //  as indicated by timestamps in the dataset.
-//#define FAKE_KINECT_FPS_RATE  10   // In Hz
+// #define FAKE_KINECT_FPS_RATE  10   // In Hz
 
 // ----------------------------------------------------
 // The online/offline grabbing thread
@@ -123,9 +123,9 @@ void thread_grabbing(TThreadParam& p)
       kinect->enableGrab3DPoints(p.generate_3D_pointcloud_in_this_thread);
 
       // Open:
-      cout << "Calling CKinect::initialize()...";
+      std::cout << "Calling CKinect::initialize()...";
       kinect->initialize();
-      cout << "OK\n";
+      std::cout << "OK\n";
     }
     else
     {
@@ -198,8 +198,8 @@ void thread_grabbing(TThreadParam& p)
           const double At_actual = mrpt::system::timeDifference(my_last_read_obs_tim, now_tim);
 
           const double need_to_wait_ms = 1000. * (At_dataset - At_actual);
-          // cout << "[Kinect grab thread] Need to wait (ms): " <<
-          // need_to_wait_ms << endl;
+          // std::cout << "[Kinect grab thread] Need to wait (ms): " <<
+          // need_to_wait_ms << "\n";
           if (need_to_wait_ms > 0)
             std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(need_to_wait_ms));
         }
@@ -223,7 +223,7 @@ void thread_grabbing(TThreadParam& p)
   }
   catch (const std::exception& e)
   {
-    cout << "Exception in Kinect thread: " << e.what() << endl;
+    std::cout << "Exception in Kinect thread: " << e.what() << "\n";
     p.quit = true;
   }
 }
@@ -245,7 +245,7 @@ void Test_KinectOnlineOffline(bool is_online, const string& rawlog_file = string
 
   // Wait until data stream starts so we can say for sure the sensor has been
   // initialized OK:
-  cout << "Waiting for sensor initialization...\n";
+  std::cout << "Waiting for sensor initialization...\n";
   do
   {
     CObservation3DRangeScan::Ptr newObs = std::atomic_load(&thrPar.new_obs);
@@ -256,8 +256,11 @@ void Test_KinectOnlineOffline(bool is_online, const string& rawlog_file = string
   } while (!thrPar.quit);
 
   // Check error condition:
-  if (thrPar.quit) return;
-  cout << "OK! Sensor started to emit observations.\n";
+  if (thrPar.quit)
+  {
+    return;
+  }
+  std::cout << "OK! Sensor started to emit observations.\n";
 
   // Create window and prepare OpenGL object in the scene:
   // --------------------------------------------------------
@@ -448,10 +451,10 @@ void Test_KinectOnlineOffline(bool is_online, const string& rawlog_file = string
     std::this_thread::sleep_for(1ms);
   }
 
-  cout << "Waiting for grabbing thread to exit...\n";
+  std::cout << "Waiting for grabbing thread to exit...\n";
   thrPar.quit = true;
   thHandle.join();
-  cout << "Bye!\n";
+  std::cout << "Bye!\n";
 }
 
 int main(int argc, char** argv)
@@ -470,13 +473,14 @@ int main(int argc, char** argv)
     if (argc == 1)
     {
       // Online
-      cout << "Using online operation" << endl;
+      std::cout << "Using online operation"
+                << "\n";
       Test_KinectOnlineOffline(true);
     }
     else
     {
       // Offline:
-      cout << "Using offline operation with: " << argv[1] << endl;
+      std::cout << "Using offline operation with: " << argv[1] << "\n";
       Test_KinectOnlineOffline(false, string(argv[1]));
     }
 
@@ -485,7 +489,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
   catch (...)

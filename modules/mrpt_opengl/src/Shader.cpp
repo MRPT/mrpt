@@ -98,8 +98,10 @@ Shader::Shader(Shader&& o)
 
 void Shader::clear()
 {
-  if (!m_data || !m_data->shader) return;
-
+  if (!m_data || !m_data->shader)
+  {
+    return;
+  }
   // If we are in the same thread that created us, ok, clean up.
   // Otherwise, postpone it for later on:
   if (m_data->creationThread == std::this_thread::get_id())
@@ -123,8 +125,10 @@ void Shader::clear()
 
 void Shader::Data::destroy()
 {
-  if (!shader) return;
-
+  if (!shader)
+  {
+    return;
+  }
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
   // See clear() comments
   ASSERT_(creationThread == std::this_thread::get_id());
@@ -195,8 +199,10 @@ Program::~Program() { clear(); }
 
 void Program::clear()
 {
-  if (!m_data || !m_data->program) return;
-
+  if (!m_data || !m_data->program)
+  {
+    return;
+  }
   // If we are in the same thread that created us, ok, clean up.
   // Otherwise, postpone it for later on:
   if (m_data->linkedThread == std::this_thread::get_id())
@@ -219,7 +225,11 @@ void Program::clear()
 
 void Program::Data::destroy()
 {
-  if (!program) return;
+  if (!program)
+  {
+    return;
+  }
+
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
   // See clear() comments
@@ -396,8 +406,10 @@ void Program::setInt(const char* uniformName, int value) const
 void Program::setFloat(const char* uniformName, float value, bool failIfNotExists) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!failIfNotExists && !hasUniform(uniformName)) return;
-
+  if (!failIfNotExists && !hasUniform(uniformName))
+  {
+    return;
+  }
   glUniform1f(uniformId(uniformName), value);
 #endif
 }

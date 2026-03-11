@@ -130,55 +130,55 @@ void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
   if (display)
   {  // width = 80;
     cout.fill(' ');
-    cout << "+-------------------------------------------------------------"
-            "-----------------+"
-         << "\n";
+    std::cout << "+-------------------------------------------------------------"
+                 "-----------------+"
+              << "\n";
     cout.width(79);
-    cout << "|  Phidget interfaceKit board number : " << m_serialNumber;
-    cout << "|"
-         << "\n";
-    cout << "| Process rate : " << m_process_rate;
-    cout << "|"
-         << "\n";
-    cout << "+---------+---------------------+-----------------------------"
-            "-----------------+"
-         << "\n";
-    cout << "|    #    + Sensor type         | Sensor 3D pose              "
-            "                 |"
-         << "\n";
-    cout << "+---------+---------------------+-----------------------------"
-            "-----------------+"
-         << "\n";
+    std::cout << "|  Phidget interfaceKit board number : " << m_serialNumber;
+    std::cout << "|"
+              << "\n";
+    std::cout << "| Process rate : " << m_process_rate;
+    std::cout << "|"
+              << "\n";
+    std::cout << "+---------+---------------------+-----------------------------"
+                 "-----------------+"
+              << "\n";
+    std::cout << "|    #    + Sensor type         | Sensor 3D pose              "
+                 "                 |"
+              << "\n";
+    std::cout << "+---------+---------------------+-----------------------------"
+                 "-----------------+"
+              << "\n";
     for (int i = 0; i < 8; i++)
     {
-      cout << "|";
+      std::cout << "|";
       cout.width(9);
-      cout << i + 1;
-      cout << " |";
+      std::cout << i + 1;
+      std::cout << " |";
       cout.width(19);
       switch (m_sensorType[i])
       {
         case EZ1:
-          cout << "EZ1 |";
+          std::cout << "EZ1 |";
           break;
         case SHARP_30cm:
-          cout << "SHARP_30cm |";
+          std::cout << "SHARP_30cm |";
           break;
         case SHARP_80cm:
-          cout << "SHARP_80cm |";
+          std::cout << "SHARP_80cm |";
           break;
         case UNPLUGGED:
-          cout << "UNPLUGGED |";
+          std::cout << "UNPLUGGED |";
           break;
       }
       cout.width(43);
-      cout << m_sensorPoses[i];
-      cout << "|"
-           << "\n";
+      std::cout << m_sensorPoses[i];
+      std::cout << "|"
+                << "\n";
     }
-    cout << "+-------------------------------------------------------------"
-            "-----------------+"
-         << "\n";
+    std::cout << "+-------------------------------------------------------------"
+                 "-----------------+"
+              << "\n";
   }
 #endif
 }

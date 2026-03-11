@@ -43,7 +43,7 @@ void TestImageConversion()
   tictac.Tic();
   if (!img.loadFromFile(myDataDir + string("frame_color.jpg")))
   {
-    cerr << "Cannot load " << myDataDir + string("frame_color.jpg") << endl;
+    cerr << "Cannot load " << myDataDir + string("frame_color.jpg") << "\n";
     return;
   }
   printf("Image loaded in %.03fms\n", 1000 * tictac.Tac());
@@ -55,9 +55,10 @@ void TestImageConversion()
 
     win1.showImage(img);
 
-    cout << "Push a key in the console or in the window to continue...";
+    std::cout << "Push a key in the console or in the window to continue...";
     win1.waitForKey();
-    cout << "Done" << endl;
+    std::cout << "Done"
+              << "\n";
 
     timlog.enter("grayscale1");
     img = img.grayscale();
@@ -67,9 +68,10 @@ void TestImageConversion()
     win2.showImage(img);
     win1.setPos(300, 10);
 
-    cout << "Push a key in the console or in the window to continue...";
+    std::cout << "Push a key in the console or in the window to continue...";
     win2.waitForKey();
-    cout << "Done" << endl;
+    std::cout << "Done"
+              << "\n";
 
     mrpt::system::pause();
     return;
@@ -117,7 +119,8 @@ void TestImageConversion()
   win4.showImage(imgSmallRGB);
   win4.setPos(300, 400);
 
-  cout << "Press any key on 'win4' to exit" << endl;
+  std::cout << "Press any key on 'win4' to exit"
+            << "\n";
   win4.waitForKey();
 
   tictac.Tic();
@@ -143,7 +146,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

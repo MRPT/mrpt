@@ -49,13 +49,13 @@ void TestRRT1()
 
   ASSERT_FILE_EXISTS_(mySimpleMap);
 
-  cout << "Loading map...";
+  std::cout << "Loading map...";
   {
     mrpt::io::CCompressedInputStream f(mySimpleMap);
     auto arch = mrpt::serialization::archiveFrom(f);
     arch >> simplemap;
   }
-  cout << "Done! Number of sensory frames: " << simplemap.size() << endl;
+  std::cout << "Done! Number of sensory frames: " << simplemap.size() << "\n";
 
   // Set planner params:
   // ------------------------------
@@ -119,9 +119,10 @@ void TestRRT1()
     // Do path planning:
     planner.solve(planner_input, planner_result);
 
-    cout << "Found goal_distance: " << planner_result.goal_distance << endl;
-    cout << "Found path_cost: " << planner_result.path_cost << endl;
-    cout << "Acceptable goal nodes: " << planner_result.acceptable_goal_node_ids.size() << endl;
+    std::cout << "Found goal_distance: " << planner_result.goal_distance << "\n";
+    std::cout << "Found path_cost: " << planner_result.path_cost << "\n";
+    std::cout << "Acceptable goal nodes: " << planner_result.acceptable_goal_node_ids.size()
+              << "\n";
 
 #if MRPT_HAS_WXWIDGETS
     // Show result in a GUI:
@@ -150,7 +151,7 @@ int main(int argc, char** argv)
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

@@ -14,7 +14,6 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/vision/CFeatureExtraction.h>
 
 #include <cstdint>
 

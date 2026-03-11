@@ -230,7 +230,10 @@ void CPose3DPDFSOG::enforceCovSymmetry()
 void CPose3DPDFSOG::normalizeWeights()
 {
   MRPT_START
-  if (m_modes.empty()) return;
+  if (m_modes.empty())
+  {
+    return;
+  }
   double maxW = m_modes[0].log_w;
   for (auto& m : m_modes) maxW = max(maxW, m.log_w);
   for (auto& m : m_modes) m.log_w -= maxW;
@@ -287,8 +290,10 @@ void CPose3DPDFSOG::appendFrom(const CPose3DPDFSOG& o)
   MRPT_START
 
   ASSERT_(&o != this);  // Don't be bad...
-  if (o.m_modes.empty()) return;
-
+  if (o.m_modes.empty())
+  {
+    return;
+  }
   // Make copies:
   for (const auto& m_mode : o.m_modes) m_modes.push_back(m_mode);
 

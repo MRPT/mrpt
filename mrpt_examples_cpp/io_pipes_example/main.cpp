@@ -28,7 +28,8 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 {
   try
   {
-    std::cout << "[thread_reader ID:" << std::this_thread::get_id() << "] Started." << std::endl;
+    std::cout << "[thread_reader ID:" << std::this_thread::get_id() << "] Started."
+              << "\n";
 
     // Simple read commands:
     size_t len = 0;
@@ -37,7 +38,7 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
     read_pipe.Read(buf, len);
     buf[len] = 0;
 
-    cout << "RX: " << buf << endl;
+    std::cout << "RX: " << buf << "\n";
 
     // Read MRPT object from a pipe:
     // *Note*: If the object class is known in advance, one can avoid smart
@@ -47,14 +48,14 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
     if (IS_CLASS(*obj, CPose3D))
     {
       CPose3D::Ptr ptrPose = std::dynamic_pointer_cast<CPose3D>(obj);
-      cout << "RX pose: " << *ptrPose << endl;
+      std::cout << "RX pose: " << *ptrPose << "\n";
     }
 
     printf("[thread_reader] Finished.\n");
   }
   catch (const std::exception& e)
   {
-    cerr << e.what() << endl;
+    cerr << e.what() << "\n";
   }
 }
 
@@ -62,7 +63,8 @@ void thread_writer(CPipeWriteEndPoint& write_pipe)
 {
   try
   {
-    std::cout << "[thread_writer ID:" << std::this_thread::get_id() << "] Started." << std::endl;
+    std::cout << "[thread_writer ID:" << std::this_thread::get_id() << "] Started."
+              << "\n";
 
     // Simple write commands:
     const char* str = "Hello world!";
@@ -79,7 +81,7 @@ void thread_writer(CPipeWriteEndPoint& write_pipe)
   }
   catch (const std::exception& e)
   {
-    cerr << e.what() << endl;
+    cerr << e.what() << "\n";
   }
 }
 
@@ -116,7 +118,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

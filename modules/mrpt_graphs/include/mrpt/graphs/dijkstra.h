@@ -397,8 +397,10 @@ class CDijkstra
   void getShortestPathTo(TNodeID const target_node_ID, edge_list_t& out_path) const
   {
     out_path.clear();
-    if (target_node_ID == m_source_node_ID) return;
-
+    if (target_node_ID == m_source_node_ID)
+    {
+      return;
+    }
     TNodeID nod = target_node_ID;
     do
     {

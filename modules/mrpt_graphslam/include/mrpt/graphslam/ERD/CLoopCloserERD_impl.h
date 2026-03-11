@@ -500,8 +500,10 @@ void CLoopCloserERD<GRAPH_T>::evaluatePartitionsForLC(const partitions_t& partit
   using namespace std;
   this->m_time_logger.enter("LoopClosureEvaluation");
 
-  if (partitions.size() == 0) return;
-
+  if (partitions.size() == 0)
+  {
+    return;
+  }
   const static std::string header_sep(80, '#');
 
   MRPT_LOG_DEBUG_FMT("Evaluating partitions for loop closures...\n%s\n", header_sep.c_str());
@@ -565,9 +567,11 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
   // compute dominant eigenvector
   CVectorDouble u;
   bool valid_lambda_ratio = this->computeDominantEigenVector(consist_matrix, &u, false);
-  if (!valid_lambda_ratio) return;
-
-  // cout << "Dominant eigenvector: " << u.transpose() << "\n";
+  if (!valid_lambda_ratio)
+  {
+    return;
+  }
+  // std::cout << "Dominant eigenvector: " << u.transpose() << "\n";
 
   // discretize the indicator vector - maximize the dot product of
   // w_unit .* u
@@ -598,7 +602,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
     ss << "\n";
     // MRPT_LOG_DEBUG_STREAM(ss.str());
   }
-  cout << "Outcome of discretization: " << w.transpose() << "\n";
+  std::cout << "Outcome of discretization: " << w.transpose() << "\n";
   // mrpt::system::pause();
 
   // Current hypothesis is to be registered.
@@ -1137,9 +1141,9 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
   double exponent = -mrpt::math::multiply_HtCH_scalar(T, cov_mat);
   double consistency_elem = exp(exponent);
 
-  // cout << "T = " << endl << T << "\n";
-  // cout << "exponent = " << exponent << "\n";
-  // cout << "consistency_elem = " << consistency_elem << "\n";
+  // std::cout << "T = " << endl << T << "\n";
+  // std::cout << "exponent = " << exponent << "\n";
+  // std::cout << "consistency_elem = " << consistency_elem << "\n";
   // mrpt::system::pause();
 
   return consistency_elem;
@@ -1190,7 +1194,7 @@ mrpt::graphs::detail::THypothesis<GRAPH_T>* CLoopCloserERD<GRAPH_T>::findHypotBy
   {
     if ((*v_cit)->hasEnds(from, to))
     {
-      // cout << "findHypotByEnds: Found hypot " << from
+      // std::cout << "findHypotByEnds: Found hypot " << from
       //<< " => " << to << " : " << (*v_cit)->getAsString() << "\n";
       return *v_cit;
     }
@@ -1300,13 +1304,13 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 
   //// TODO Remove these - >>>>>>>>>>>>>>>>>>>>
   //// printing the pool for verification
-  // cout << "Pool of Paths: " << "\n";
+  // std::cout << "Pool of Paths: " << "\n";
   // for (typename std::set<path_t*>::const_iterator it =
   // pool_of_paths.begin();
   // it != pool_of_paths.end(); ++it) {
   // printSTLContainer((*it)->nodes_traversed);
   //}
-  // cout << "------ Done with the starting node ... ------" << "\n";
+  // std::cout << "------ Done with the starting node ... ------" << "\n";
   // int iters = 0;
   //// TODO Remove these - <<<<<<<<<<<<<<<<<<<<< vvvUNCOMMENT BELOW AS WELLvvv
 
@@ -1339,23 +1343,23 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 
     //// TODO Remove these - >>>>>>>>>>>>>>>>>>>> ^^^UNCOMMENT ABOVE AS
     /// WELL^^^
-    // cout << iters << " " << std::string(40, '>') << "\n";
-    // cout << "current path Destination: " << dest << "\n";
+    // std::cout << iters << " " << std::string(40, '>') << "\n";
+    // std::cout << "current path Destination: " << dest << "\n";
     //// printing the pool for verification
-    // cout << "Pool of Paths: " << "\n";
+    // std::cout << "Pool of Paths: " << "\n";
     // for (typename std::set<path_t*>::const_iterator
     // it = pool_of_paths.begin();
     // it != pool_of_paths.end(); ++it) {
     // printSTLContainer((*it)->nodes_traversed);
     //}
-    // cout << "Nodes visited: " << "\n";
+    // std::cout << "Nodes visited: " << "\n";
     // std::vector<int> tmp_vec;
     // for (int i = 0; i != visited_nodes.size(); ++i) {
     // tmp_vec.push_back(i);
     //}
-    // printSTLContainer(tmp_vec); cout << "\n"; // indices of numbers
+    // printSTLContainer(tmp_vec); std::cout << "\n"; // indices of numbers
     // printSTLContainer(visited_nodes);         // actual flags
-    // cout << std::string(40, '<') << " " << iters++ << "\n";
+    // std::cout << std::string(40, '<') << " " << iters++ << "\n";
     // mrpt::system::pause();
     //// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
 
@@ -1450,7 +1454,7 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
           from, to));
   ASSERTDEB_(path_between_nodes);
 
-  // cout << "getMinUncertaintyPath: " << from << " => " << to << "\n";
+  // std::cout << "getMinUncertaintyPath: " << from << " => " << to << "\n";
 
   // don't add to the path_between_nodes, just fill it in afterwards
   path_between_nodes->clear();
@@ -1461,11 +1465,11 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
   // forward edges from -> to
   std::pair<edges_citerator, edges_citerator> fwd_edges_pair = this->m_graph->getEdges(from, to);
 
-  // cout << "Forward edges: " << "\n";
+  // std::cout << "Forward edges: " << "\n";
   // for (edges_citerator e_it = fwd_edges_pair.first; e_it !=
   // fwd_edges_pair.second;
   //++e_it) {
-  // cout << e_it->second << "\n";
+  // std::cout << e_it->second << "\n";
   //}
 
   for (auto edges_it = fwd_edges_pair.first; edges_it != fwd_edges_pair.second; ++edges_it)
@@ -1499,11 +1503,11 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
   // backwards edges to -> from
   std::pair<edges_citerator, edges_citerator> bwd_edges_pair = this->m_graph->getEdges(to, from);
 
-  // cout << "Backwards edges: " << "\n";
+  // std::cout << "Backwards edges: " << "\n";
   // for (edges_citerator e_it = bwd_edges_pair.first; e_it !=
   // bwd_edges_pair.second;
   //++e_it) {
-  // cout << e_it->second << "\n";
+  // std::cout << e_it->second << "\n";
   //}
 
   for (auto edges_it = bwd_edges_pair.first; edges_it != bwd_edges_pair.second; ++edges_it)
@@ -1545,12 +1549,12 @@ TUncertaintyPath<GRAPH_T>* CLoopCloserERD<GRAPH_T>::popMinUncertaintyPath(
   MRPT_START
   using namespace std;
 
-  // cout << "Determinants: ";
+  // std::cout << "Determinants: ";
   path_t* optimal_path = nullptr;
   double curr_determinant = 0;
   for (auto it = pool_of_paths->begin(); it != pool_of_paths->end(); ++it)
   {
-    // cout << (*it)->getDeterminant() << ", ";
+    // std::cout << (*it)->getDeterminant() << ", ";
 
     // keep the largest determinant - we are in INFORMATION form.
     if (curr_determinant < (*it)->getDeterminant())
@@ -1600,7 +1604,7 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
   double threshold = m_laser_params.mahal_distance_ICP_odom_win.getMedian() * 4;
   bool accept_edge = (threshold >= mahal_distance && !mahal_distance_null) ? true : false;
 
-  // cout << "Suggested Edge: " << rel_edge.getMeanVal() << "|\tInitial
+  // std::cout << "Suggested Edge: " << rel_edge.getMeanVal() << "|\tInitial
   // Estim.: " << initial_estim
   //<< "|\tMahalanobis Dist: " << mahal_distance << "|\tThresh.: " <<
   // threshold
@@ -2152,8 +2156,10 @@ void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization()
   // get the optimal path to the current node
   mrpt::graphs::TNodeID curr_node = this->m_graph->nodeCount() - 1;
   path_t* path = queryOptimalPath(curr_node);
-  if (!path) return;
-
+  if (!path)
+  {
+    return;
+  }
   CMatrixDouble33 mat;
   path->curr_pose_pdf.getCovariance(mat);
   pose_t curr_position = this->m_graph->nodes.at(curr_node);
@@ -2228,17 +2234,17 @@ void CLoopCloserERD<GRAPH_T>::printParams() const
   MRPT_START
   using namespace std;
 
-  cout << "------------------[Pair-wise Consistency of ICP Edges - "
-          "Registration Procedure Summary]------------------"
-       << "\n";
+  std::cout << "------------------[Pair-wise Consistency of ICP Edges - "
+               "Registration Procedure Summary]------------------"
+            << "\n";
 
   parent_t::printParams();
   m_partitioner.options.dumpToConsole();
   m_laser_params.dumpToConsole();
   m_lc_params.dumpToConsole();
 
-  cout << "Scan-matching ICP Constraint factor: " << m_consec_icp_constraint_factor << "\n";
-  cout << "Loop-closure ICP Constraint factor:  " << m_lc_icp_constraint_factor << "\n";
+  std::cout << "Scan-matching ICP Constraint factor: " << m_consec_icp_constraint_factor << "\n";
+  std::cout << "Loop-closure ICP Constraint factor:  " << m_lc_icp_constraint_factor << "\n";
 
   MRPT_LOG_DEBUG_STREAM("Printed the relevant parameters");
   MRPT_END

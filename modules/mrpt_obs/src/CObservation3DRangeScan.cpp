@@ -203,7 +203,7 @@ bool CObservation3DRangeScan::EXTERNALS_AS_TEXT() { return EXTERNALS_AS_TEXT_val
 #define COBS3DRANGE_USE_MEMPOOL
 
 // Do performance time logging?
-//#define  PROJ3D_PERFLOG
+// #define  PROJ3D_PERFLOG
 
 // Data types for memory pooling CObservation3DRangeScan:
 #ifdef COBS3DRANGE_USE_MEMPOOL
@@ -252,12 +252,16 @@ namespace
 {
 void mempool_donate_xyz_buffers(CObservation3DRangeScan& obs)
 {
-  if (obs.points3D_x.empty()) return;
-  // Before dying, donate my memory to the pool for the joy of future
+  if (obs.points3D_x.empty())
+  {
+    return;
+  }  // Before dying, donate my memory to the pool for the joy of future
   // class-brothers...
   TMyPointsMemPool* pool = TMyPointsMemPool::getInstance();
-  if (!pool) return;
-
+  if (!pool)
+  {
+    return;
+  }
   CObservation3DRangeScan_Points_MemPoolParams mem_params;
   mem_params.WH = obs.points3D_x.capacity();
   if (obs.points3D_y.capacity() != mem_params.WH) obs.points3D_y.resize(mem_params.WH);
@@ -278,13 +282,17 @@ void mempool_donate_xyz_buffers(CObservation3DRangeScan& obs)
 
 void mempool_donate_range_matrix(CObservation3DRangeScan& obs)
 {
-  if (obs.rangeImage.cols() == 0 || obs.rangeImage.rows() == 0) return;
-
+  if (obs.rangeImage.cols() == 0 || obs.rangeImage.rows() == 0)
+  {
+    return;
+  }
   // Before dying, donate my memory to the pool for the joy of future
   // class-brothers...
   TMyRangesMemPool* pool = TMyRangesMemPool::getInstance();
-  if (!pool) return;
-
+  if (!pool)
+  {
+    return;
+  }
   CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
   mem_params.H = obs.rangeImage.rows();
   mem_params.W = obs.rangeImage.cols();

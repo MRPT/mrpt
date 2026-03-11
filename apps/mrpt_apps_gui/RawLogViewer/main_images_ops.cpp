@@ -47,13 +47,18 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
   wxDirDialog dirDialog(
       this, _("Choose the output directory for the images"), _("."), 0, wxDefaultPosition);
 
-  if (dirDialog.ShowModal() != wxID_OK) return;
+  if (dirDialog.ShowModal() != wxID_OK)
+  {
+    return;
+  }
   string outDir(dirDialog.GetPath().mb_str());
 
   // Let the user choose the image format:
   string imgFileExtension = AskForImageFileFormat();
-  if (imgFileExtension.empty()) return;
-
+  if (imgFileExtension.empty())
+  {
+    return;
+  }
   wxBusyCursor waitCursor;
   unsigned int nEntries = (int)rawlog.size();
 
@@ -178,11 +183,15 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
   WX_START_TRY
 
   string lb_left = AskForObservationByLabel("Select the LEFT camera");
-  if (lb_left.empty()) return;
-
+  if (lb_left.empty())
+  {
+    return;
+  }
   string lb_right = AskForObservationByLabel("Select the RIGHT camera");
-  if (lb_right.empty()) return;
-
+  if (lb_right.empty())
+  {
+    return;
+  }
   wxString sNewLabel = wxGetTextFromUser(
       _("New stereo observation label:"), _("Stereo observations"), _("STEREO_CAM"), this);
   string lb_stereo = string(sNewLabel.mb_str());
@@ -281,13 +290,17 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
   images"),
              _("."), 0, wxDefaultPosition );
 
-  if (dirDialog.ShowModal()!=wxID_OK) return;
-  string outDir( dirDialog.GetPath().mb_str() );
+  if (dirDialog.ShowModal()!=wxID_OK)
+{
+  return;
+}  string outDir( dirDialog.GetPath().mb_str() );
 
   // Let the user choose the image format:
   string imgFileExtension = AskForImageFileFormat();
-  if (imgFileExtension.empty()) return;
-  */
+  if (imgFileExtension.empty())
+{
+  return;
+}  */
   wxBusyCursor waitCursor;
   unsigned int nEntries = (int)rawlog.size();
 
@@ -417,8 +430,10 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 
 void renameExternalImageFile(CObservationImage::Ptr o)
 {
-  if (!o->image.isExternallyStored()) return;
-
+  if (!o->image.isExternallyStored())
+  {
+    return;
+  }
   string img_file;
   o->image.getExternalStorageFileAbsolutePath(img_file);
 

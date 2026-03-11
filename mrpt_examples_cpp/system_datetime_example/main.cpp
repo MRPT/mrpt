@@ -33,7 +33,7 @@ void TestTimes()
   for (size_t i = 0; i < 20; i++)
   {
     t = mrpt::Clock::now();
-    std::cout << mrpt::system::dateTimeToString(t) << std::endl;
+    std::cout << mrpt::system::dateTimeToString(t) << "\n";
   }
 }
 
@@ -50,7 +50,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

@@ -79,8 +79,10 @@ static bool tester_result_ok = true;
 static auto tester_for_localization_demo = [](mrpt::apps::MonteCarloLocalization_Base& o)
 {
   EXPECT_EQ(o.out_estimated_path.size(), 37U);
-  if (o.out_estimated_path.empty()) return;
-
+  if (o.out_estimated_path.empty())
+  {
+    return;
+  }
   const mrpt::math::TPose3D p = o.out_estimated_path.rbegin()->second;
   const auto p_gt = mrpt::math::TPose3D::FromString("[15.89 -10.0 0.000000 4.8 0.000000 0.000000]");
 

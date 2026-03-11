@@ -71,17 +71,18 @@ void TestPathPlanning()
   CPose2D origin(20, -110, 0);
   CPose2D target(90, 40, 0);
 
-  cout << "Origin: " << origin << endl;
-  cout << "Target: " << target << endl;
+  std::cout << "Origin: " << origin << "\n";
+  std::cout << "Target: " << target << "\n";
 
-  cout << "Searching path...";
+  std::cout << "Searching path...";
   cout.flush();
   tictac.Tic();
 
   pathPlanning.computePath(gridmap, origin, target, thePath, notFound);
 
   double t = tictac.Tac();
-  cout << "Done in " << t * 1000 << " ms" << endl;
+  std::cout << "Done in " << t * 1000 << " ms"
+            << "\n";
 
   printf("Path found: %s\n", notFound ? "NO" : "YES");
   printf("Path has %u steps\n", (unsigned)thePath.size());
@@ -109,7 +110,7 @@ void TestPathPlanning()
       TColor(0x50, 0x50, 0x50), 'x', 10);
 
   const std::string dest = "path_planning.png";
-  cout << "Saving output to: " << dest << endl;
+  std::cout << "Saving output to: " << dest << "\n";
   bool savedOk = img.saveToFile(dest);
   ASSERT_(savedOk);
   printf("Done\n");
@@ -132,7 +133,7 @@ int main(int argc, char** argv)
   }
   catch (exception& e)
   {
-    cout << "MRPT exception caught: " << e.what() << endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
   catch (...)

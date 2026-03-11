@@ -213,8 +213,10 @@ void CObservation2DRangeScan::setScanHasIntensity(bool setHasIntensityFlag)
  ---------------------------------------------------------------*/
 void CObservation2DRangeScan::filterByExclusionAreas(const TListExclusionAreasWithRanges& areas)
 {
-  if (areas.empty()) return;
-
+  if (areas.empty())
+  {
+    return;
+  }
   MRPT_START
 
   float Ang, dA;
@@ -222,8 +224,10 @@ void CObservation2DRangeScan::filterByExclusionAreas(const TListExclusionAreasWi
 
   ASSERT_EQUAL_(m_scan.size(), m_validRange.size());
 
-  if (!sizeRangeScan) return;
-
+  if (!sizeRangeScan)
+  {
+    return;
+  }
   if (rightToLeft)
   {
     Ang = -0.5f * aperture;
@@ -299,8 +303,10 @@ float CObservation2DRangeScan::getScanRelativeTimestamp(size_t idx) const
  ---------------------------------------------------------------*/
 void CObservation2DRangeScan::filterByExclusionAreas(const std::vector<mrpt::math::CPolygon>& areas)
 {
-  if (areas.empty()) return;
-
+  if (areas.empty())
+  {
+    return;
+  }
   TListExclusionAreasWithRanges lst;
   for (const auto& area : areas)
   {
@@ -320,8 +326,10 @@ void CObservation2DRangeScan::filterByExclusionAreas(const std::vector<mrpt::mat
 void CObservation2DRangeScan::filterByExclusionAngles(
     const std::vector<std::pair<double, double>>& angles)
 {
-  if (angles.empty()) return;
-
+  if (angles.empty())
+  {
+    return;
+  }
   MRPT_START
 
   double Ang, dA;
@@ -329,8 +337,10 @@ void CObservation2DRangeScan::filterByExclusionAngles(
 
   ASSERT_EQUAL_(m_scan.size(), m_validRange.size());
 
-  if (!sizeRangeScan) return;
-
+  if (!sizeRangeScan)
+  {
+    return;
+  }
   if (rightToLeft)
   {
     Ang = -0.5 * aperture;

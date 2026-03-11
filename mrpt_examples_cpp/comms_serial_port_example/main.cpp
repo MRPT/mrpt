@@ -28,47 +28,52 @@ int main()
 
     string serName;
 
-    cout << "Serial port test application: Use it with a loopback serial "
-            "port (pins 2-3 connected)"
-         << endl;
+    std::cout << "Serial port test application: Use it with a loopback serial "
+                 "port (pins 2-3 connected)"
+              << "\n";
 
-    cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0): ";
+    std::cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0): ";
     getline(cin, serName);
 
-    cout << endl;
-    cout << "Opening serial port...";
+    std::cout << "\n";
+    std::cout << "Opening serial port...";
     serPort = std::make_unique<CSerialPort>(serName);
-    cout << "OK" << endl;
+    std::cout << "OK"
+              << "\n";
 
-    cout << "Setting timeouts...";
+    std::cout << "Setting timeouts...";
     serPort->setTimeouts(100, 1, 100, 1, 100);
-    cout << "OK" << endl;
+    std::cout << "OK"
+              << "\n";
 
-    cout << "Setting baud rate...";
+    std::cout << "Setting baud rate...";
     serPort->setConfig(500000);
-    cout << "OK" << endl;
+    std::cout << "OK"
+              << "\n";
 
     for (int i = 0; i < 10; i++)
     {
       // Test write:
-      cout << "Writing test data...";
+      std::cout << "Writing test data...";
       const char buf1[] = "Hello world!";
       size_t written = serPort->Write(buf1, sizeof(buf1));
-      cout << written << " bytes written." << endl;
+      std::cout << written << " bytes written."
+                << "\n";
 
       // Read:
-      cout << "Reading data...";
+      std::cout << "Reading data...";
       char buf2[100];
       size_t nRead = serPort->Read(buf2, sizeof(buf2));
-      cout << nRead << " bytes read: '";
+      std::cout << nRead << " bytes read: '";
 
       buf2[nRead] = 0;
-      cout << buf2 << "'" << endl;
+      std::cout << buf2 << "'"
+                << "\n";
     }
   }
   catch (const std::exception& e)
   {
-    cerr << e.what() << endl;
+    cerr << e.what() << "\n";
     return -1;
   }
 

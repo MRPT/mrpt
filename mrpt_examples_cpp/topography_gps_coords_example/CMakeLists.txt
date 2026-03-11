@@ -11,11 +11,12 @@ find_package(mrpt_common REQUIRED)
 
 # Dependencies
 find_package(mrpt_topography REQUIRED)
+find_package(mrpt_poses REQUIRED)
 
 
 # Define the executable target:
 mrpt_add_executable(
   TARGET topography_gps_coords_example
   SOURCES main.cpp
-  LINK_LIBRARIES mrpt::mrpt_topography 
+  LINK_LIBRARIES mrpt::mrpt_topography mrpt::mrpt_poses
 )

@@ -27,17 +27,17 @@ CMyGLCanvas::CMyGLCanvas(
     const wxString& name) :
     CWxGLCanvasBase(parent, id, pos, size, style, name)
 {
-  setCameraPointing(0.0f, 0.0f, 0.0f);
-  setZoomDistance(20.0f);
-  setElevationDegrees(45.0f);
-  setAzimuthDegrees(135.0f);
-  setCameraProjective(true);
+  m_cameraCtrl.setCameraPointing(0.0f, 0.0f, 0.0f);
+  m_cameraCtrl.setZoomDistance(20.0f);
+  m_cameraCtrl.setElevationDegrees(45.0f);
+  m_cameraCtrl.setAzimuthDegrees(135.0f);
+  m_cameraCtrl.setProjectiveModel(true);
 }
 
 CMyGLCanvas::~CMyGLCanvas() = default;
-void CMyGLCanvas::OnRenderError(const wxString& str) {}
+void CMyGLCanvas::OnRenderError(const wxString& /*errMsg*/) {}
 void CMyGLCanvas::OnPreRender() {}
-void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc) {}
+void CMyGLCanvas::OnPostRenderSwapBuffers(double /*At*/, wxPaintDC& /*dc*/) {}
 void CMyGLCanvas::OnPostRender()
 {
   // Show credits on the screen? renderTextBitmap(20, 20, "" );

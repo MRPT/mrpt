@@ -269,7 +269,7 @@ void TestParticlesLocalization()
       window.setCameraAzimuthDeg(-90);
       window.setCameraPointingToPoint(6.0, 3.0, 0);
 
-      window.setCameraProjective(false);
+      window.setProjectiveModel(false);
 
       if (SAVE_3D_TO_VIDEO)
       {
@@ -354,7 +354,7 @@ void TestParticlesLocalization()
       {
         // Load pose change from the rawlog:
         // ----------------------------------------
-        cout << endl << "RAWLOG_ENTRY: " << rawlogEntry << endl << endl;
+        std::cout << endl << "RAWLOG_ENTRY: " << rawlogEntry << endl << "\n";
 
         if (!rawlog.getActionObservationPair(action, observations, rawlogEntry))
           break;  // end of rawlog.
@@ -714,7 +714,7 @@ void TestParticlesLocalization()
 
             sphere->setLocation(GT_Pose.x(), GT_Pose.y(), 0.05);
 
-            cout << "GT robot pose: " << GT_Pose << endl;
+            std::cout << "GT robot pose: " << GT_Pose << "\n";
           }
 
 #ifdef SHOW_REAL_TIME_3D
@@ -900,7 +900,7 @@ int main(int argc, char** argv)
   }
   catch (exception& e)
   {
-    cout << "Caught MRPT exception:\n" << mrpt::exception_to_str(e) << endl;
+    std::cout << "Caught MRPT exception:\n" << mrpt::exception_to_str(e) << "\n";
     // pause();
     return 1;
   }

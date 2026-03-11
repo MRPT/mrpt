@@ -71,9 +71,9 @@ void thread_grabbing(TThreadParam& p)
     cam.loadConfig(cfg, "CONFIG");
 
     // Open:
-    cout << "Calling initialize()...";
+    std::cout << "Calling initialize()...";
     cam.initialize();
-    cout << "OK\n";
+    std::cout << "OK\n";
 
     CTicTac tictac;
     int nImgs = 0;
@@ -109,7 +109,7 @@ void thread_grabbing(TThreadParam& p)
   }
   catch (const std::exception& e)
   {
-    cout << "Exception in Kinect thread: " << mrpt::exception_to_str(e) << endl;
+    std::cout << "Exception in Kinect thread: " << mrpt::exception_to_str(e) << "\n";
     p.quit = true;
   }
 }
@@ -126,7 +126,7 @@ void Test_3DCamICP()
 
   // Wait until data stream starts so we can say for sure the sensor has been
   // initialized OK:
-  cout << "Waiting for sensor initialization...\n";
+  std::cout << "Waiting for sensor initialization...\n";
   do
   {
     CObservation3DRangeScan::Ptr possiblyNewObs = std::atomic_load(&thrPar.new_obs);
@@ -137,7 +137,10 @@ void Test_3DCamICP()
   } while (!thrPar.quit);
 
   // Check error condition:
-  if (thrPar.quit) return;
+  if (thrPar.quit)
+  {
+    return;
+  }
 
   // Create window and prepare OpenGL object in the scene:
   // --------------------------------------------------------
@@ -148,7 +151,7 @@ void Test_3DCamICP()
   win.camera().setAzimuthDegrees(140.0f);
   win.camera().setElevationDegrees(20.0f);
   win.camera().setZoomDistance(8.0f);
-  win.camera().setCameraFOV(50.0f);
+  win.camera().setFOVdeg(50.0f);
   win.camera().setCameraPointing(2.5, 0, 0);
 
   // Aux structure to share UI data between threads.
@@ -315,7 +318,7 @@ void Test_3DCamICP()
             // key-frame is the current pose!
             currentCamPose_wrt_last = CPose3D();
 
-            cout << "Adding new key-frame: pose=" << new_keyframe_global << endl;
+            std::cout << "Adding new key-frame: pose=" << new_keyframe_global << "\n";
 
             // Update global map: append another map at a given
             // position:
@@ -330,8 +333,8 @@ void Test_3DCamICP()
           else
           {
             currentCamPose_wrt_last = relativePose;
-            // cout << "cur pose: " << currentCamPose_wrt_last
-            // << endl;
+            // std::cout << "cur pose: " << currentCamPose_wrt_last
+            // << "\n";
           }
         }
       }
@@ -373,7 +376,7 @@ void Test_3DCamICP()
       if (gl_keyframes_must_refresh)
       {
         gl_keyframes_must_refresh = false;
-        // cout << "Updating gl_keyframes with " <<
+        // std::cout << "Updating gl_keyframes with " <<
         // camera_key_frames_path.size() << " frames.\n";
 
         win.background_scene_mtx.lock();
@@ -543,11 +546,11 @@ void Test_3DCamICP()
 
   nanogui::shutdown();
 
-  cout << "Waiting for grabbing thread to exit...\n";
+  std::cout << "Waiting for grabbing thread to exit...\n";
   thrPar.quit = true;
   thHandle.join();
   thWorker.join();
-  cout << "Bye!\n";
+  std::cout << "Bye!\n";
 }
 
 #endif  // MRPT_HAS_NANOGUI
@@ -567,7 +570,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << std::endl;
+    std::cout << "EXCEPCION: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

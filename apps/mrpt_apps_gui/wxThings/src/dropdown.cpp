@@ -121,8 +121,10 @@ void DropDownPopup::PopPopupHandler(wxWindow *child)
 
 void DropDownPopup::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
-  if (!IsShown()) return;
-
+  if (!IsShown())
+  {
+    return;
+  }
   m_mouse = ScreenToClient(wxGetMousePosition());
 
   wxWindow *child = GetChild();
@@ -287,8 +289,10 @@ void DropDownBase::OnSize(wxSizeEvent &event)
 {
   event.Skip();
   /*
-      if (!m_dropdownButton) return;
-
+      if (!m_dropdownButton)
+{
+  return;
+}
     wxSize size = GetClientSize();
       wxPrintf(wxT("DropDownBase %d %d\n"), size.x, size.y);
 

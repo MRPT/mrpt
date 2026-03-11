@@ -42,7 +42,7 @@ const auto WX_SUBSYSTEM_VERBOSE = mrpt::get_env<bool>("MRPT_WX_SUBSYSTEM_VERBOSE
 //  ** (MRPT:11711): CRITICAL **: giop_thread_request_push: assertion `tdata !=
 //  NULL' failed
 // ------------------------------------------------------------------------
-//#define WXSHUTDOWN_DO_IT_CLEAN
+// #define WXSHUTDOWN_DO_IT_CLEAN
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -205,7 +205,7 @@ WxSubsystem::CWXMainFrame::~CWXMainFrame()
 {
   if (WX_SUBSYSTEM_VERBOSE)
   {
-    cout << "[CWXMainFrame] Destructor.\n";
+    std::cout << "[CWXMainFrame] Destructor.\n";
   }
   delete m_theTimer;
   m_theTimer = nullptr;
@@ -248,8 +248,8 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 
       if (WX_SUBSYSTEM_VERBOSE)
       {
-        cout << "[CWXMainFrame::notifyWindowDestruction] numWindows=0. "
-                "me->Close() called.\n";
+        std::cout << "[CWXMainFrame::notifyWindowDestruction] numWindows=0. "
+                     "me->Close() called.\n";
       }
     }
   }
@@ -281,8 +281,8 @@ void WxSubsystem::PushPendingWxRequest(std::unique_ptr<TRequestToWxMainThread>&&
   {
     if (WX_SUBSYSTEM_VERBOSE)
     {
-      cout << "[WxSubsystem::PushPendingWxRequest] IGNORING request since "
-              "app seems already closed.\n";
+      std::cout << "[WxSubsystem::PushPendingWxRequest] IGNORING request since "
+                   "app seems already closed.\n";
     }
     return;
   }
@@ -302,7 +302,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& /*event*/)
   {
     if (WX_SUBSYSTEM_VERBOSE)
     {
-      cout << "[OnTimerProcessRequests] Entering\n";
+      std::cout << "[OnTimerProcessRequests] Entering\n";
     }
 
     std::unique_ptr<TRequestToWxMainThread> msg;
@@ -310,8 +310,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& /*event*/)
     {
       if (WX_SUBSYSTEM_VERBOSE)
       {
-        cout << "[OnTimerProcessRequests] Processing request " << static_cast<int>(msg->OPCODE)
-             << "\n";
+        std::cout << "[OnTimerProcessRequests] Processing request " << static_cast<int>(msg->OPCODE)
+                  << "\n";
       }
 
       switch (msg->OPCODE)
@@ -773,7 +773,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& /*event*/)
         {
           if (WX_SUBSYSTEM_VERBOSE)
           {
-            cout << "[WxSubsystem::SHUTDOWN] Initiating shutdown\n";
+            std::cout << "[WxSubsystem::SHUTDOWN] Initiating shutdown\n";
           }
           app_closed = true;
           if (WxSubsystem::CWXMainFrame::oneInstance != nullptr)
@@ -787,7 +787,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& /*event*/)
           }
           if (WX_SUBSYSTEM_VERBOSE)
           {
-            cout << "[WxSubsystem::SHUTDOWN] Done\n";
+            std::cout << "[WxSubsystem::SHUTDOWN] Done\n";
           }
         }
         break;
@@ -890,7 +890,7 @@ int CDisplayWindow_WXAPP::OnExit()
 {
   if (WX_SUBSYSTEM_VERBOSE)
   {
-    cout << "[wxApp::OnExit] wxApplication OnExit called.\n";
+    std::cout << "[wxApp::OnExit] wxApplication OnExit called.\n";
   }
 
   std::lock_guard<std::mutex> lock(WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId);
@@ -909,7 +909,7 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
 
   if (WX_SUBSYSTEM_VERBOSE)
   {
-    cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Quick sleep and return.\n";
+    std::cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Quick sleep and return.\n";
   }
   std::this_thread::sleep_for(100ms);
 
@@ -926,8 +926,8 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
   {
     if (WXSUBSYSTEM_VERBOSE)
     {
-      cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for "
-              "WxWidgets thread to shut down...\n";
+      std::cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for "
+                   "WxWidgets thread to shut down...\n";
     }
 
     const int maxTimeout =
@@ -1003,7 +1003,7 @@ void wxMainThread()
 
   if (WX_SUBSYSTEM_VERBOSE)
   {
-    cout << "[wxMainThread] Starting...\n";
+    std::cout << "[wxMainThread] Starting...\n";
   }
 
   wxAppConsole* app_gui = wxApp::GetInstance();
@@ -1012,7 +1012,7 @@ void wxMainThread()
     // Console application: spin up our own wx app instance.
     if (WX_SUBSYSTEM_VERBOSE)
     {
-      cout << "[wxMainThread] Running as console app\n";
+      std::cout << "[wxMainThread] Running as console app\n";
     }
 
     wxApp::SetInitializerFunction(static_cast<wxAppInitializerFunction>(mrpt_wxCreateApp));
@@ -1020,7 +1020,7 @@ void wxMainThread()
 
     if (WX_SUBSYSTEM_VERBOSE)
     {
-      cout << "[wxMainThread] Finished\n";
+      std::cout << "[wxMainThread] Finished\n";
     }
 
     WxSubsystem::GetWxMainThreadInstance().m_done.set_value();
@@ -1030,7 +1030,7 @@ void wxMainThread()
     // GUI application: a wxApp already exists; just create our hidden frame.
     if (WX_SUBSYSTEM_VERBOSE)
     {
-      cout << "[wxMainThread] Running inside an existing wxApp\n";
+      std::cout << "[wxMainThread] Running inside an existing wxApp\n";
     }
 
     wxWindow* topWin = dynamic_cast<wxApp*>(app_gui)->GetTopWindow();
@@ -1040,7 +1040,7 @@ void wxMainThread()
 
     if (WX_SUBSYSTEM_VERBOSE)
     {
-      cout << "[wxMainThread] Signaling semaphore.\n";
+      std::cout << "[wxMainThread] Signaling semaphore.\n";
     }
 
     WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();

@@ -44,7 +44,7 @@ void TextureSizes_test()
 
   if (!imgCol_N.loadFromFile(myTestFile))
   {
-    cerr << "Cannot load " << myTestFile << endl;
+    cerr << "Cannot load " << myTestFile << "\n";
     return;
   }
 
@@ -64,8 +64,9 @@ void TextureSizes_test()
   CImage transpMask_2N;
   transpMask_N.scaleImage(transpMask_2N, 512, 512);
 
-  cout << "Loaded image size: " << imgCol_N.getWidth() << "x" << imgCol_N.getHeight() << endl;
-  cout << "2^N image size   : " << imgCol_2N.getWidth() << "x" << imgCol_2N.getHeight() << endl;
+  std::cout << "Loaded image size: " << imgCol_N.getWidth() << "x" << imgCol_N.getHeight() << "\n";
+  std::cout << "2^N image size   : " << imgCol_2N.getWidth() << "x" << imgCol_2N.getHeight()
+            << "\n";
 
   CDisplayWindow3D win("Test of MRPT's OpenGL textures", 640, 480);
 
@@ -186,7 +187,7 @@ void TextureSizes_test()
   win.unlockAccess3DScene();
   win.repaint();
 
-  cout << "Close the window to end.\n";
+  std::cout << "Close the window to end.\n";
   while (win.isOpen())
   {
     win.addTextMessage(5, 5, format("%.02fFPS", win.getRenderingFPS()));
@@ -208,7 +209,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

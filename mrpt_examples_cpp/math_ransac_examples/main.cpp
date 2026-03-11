@@ -88,9 +88,12 @@ void TestRANSACPlanes()
   ransac_detect_3D_planes(xs, ys, zs, detectedPlanes, DIST_THRESHOLD, 40);
 
   // Display output:
-  cout << "RANSAC method: ransac_detect_3D_planes" << endl;
-  cout << " Computation time: " << tictac.Tac() * 1000.0 << " ms" << endl;
-  cout << " " << detectedPlanes.size() << " planes detected." << endl;
+  std::cout << "RANSAC method: ransac_detect_3D_planes"
+            << "\n";
+  std::cout << " Computation time: " << tictac.Tac() * 1000.0 << " ms"
+            << "\n";
+  std::cout << " " << detectedPlanes.size() << " planes detected."
+            << "\n";
 
   // Show GUI
   // --------------------------
@@ -192,9 +195,12 @@ void TestRANSACLines()
   ransac_detect_2D_lines(xs, ys, detectedLines, DIST_THRESHOLD, 20);
 
   // Display output:
-  cout << "RANSAC method: ransac_detect_2D_lines" << endl;
-  cout << " Computation time: " << tictac.Tac() * 1000.0 << " ms" << endl;
-  cout << " " << detectedLines.size() << " lines detected." << endl;
+  std::cout << "RANSAC method: ransac_detect_2D_lines"
+            << "\n";
+  std::cout << " Computation time: " << tictac.Tac() * 1000.0 << " ms"
+            << "\n";
+  std::cout << " " << detectedLines.size() << " lines detected."
+            << "\n";
 
   // Show GUI
   // --------------------------
@@ -228,7 +234,7 @@ int main()
   try
   {
     TestRANSACPlanes();
-    cout << endl << "Now running detection of lines..." << endl << endl;
+    std::cout << endl << "Now running detection of lines..." << endl << "\n";
     TestRANSACLines();
 
     win.reset();
@@ -237,7 +243,7 @@ int main()
   }
   catch (const std::exception& e)
   {
-    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
     return -1;
   }
 }

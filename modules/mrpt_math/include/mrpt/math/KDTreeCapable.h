@@ -893,8 +893,10 @@ class KDTreeCapable
   /// asking the child class for the data points.
   void rebuild_kdTree_2D() const
   {
-    if (m_kdtree_is_uptodate) return;
-
+    if (m_kdtree_is_uptodate)
+    {
+      return;
+    }
     std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
 
@@ -927,7 +929,10 @@ class KDTreeCapable
   /// asking the child class for the data points.
   void rebuild_kdTree_3D() const
   {
-    if (m_kdtree_is_uptodate) return;
+    if (m_kdtree_is_uptodate)
+    {
+      return;
+    }
     std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
 

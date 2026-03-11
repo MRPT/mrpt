@@ -41,7 +41,10 @@ void VertexArrayObject::RAII_Impl::create()
 
 void VertexArrayObject::RAII_Impl::destroy()
 {
-  if (!m_state.get().created) return;
+  if (!m_state.get().created)
+  {
+    return;
+  }
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
   release();
@@ -62,7 +65,10 @@ void VertexArrayObject::RAII_Impl::bind() const
 void VertexArrayObject::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  if (!m_state.get().created) return;
+  if (!m_state.get().created)
+  {
+    return;
+  }
   glBindVertexArray(0);
 #endif
 }

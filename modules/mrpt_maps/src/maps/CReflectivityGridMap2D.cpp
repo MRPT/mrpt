@@ -334,8 +334,10 @@ void CReflectivityGridMap2D::getAsImage(CImage& img, bool verticalFlip, bool for
 
 void CReflectivityGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
-  if (!genericMapParams.enableSaveAs3DObject) return;
-
+  if (!genericMapParams.enableSaveAs3DObject)
+  {
+    return;
+  }
   MRPT_START
 
   viz::CTexturedPlane::Ptr outObj = std::make_shared<viz::CTexturedPlane>();

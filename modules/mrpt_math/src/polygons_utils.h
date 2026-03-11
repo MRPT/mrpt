@@ -38,7 +38,10 @@ template <class T>
 void removeUnusedVertices(T& poly)
 {
   size_t N = poly.size();
-  if (N < 3) return;
+  if (N < 3)
+  {
+    return;
+  }
   std::vector<size_t> unused;
   if (std::abs(
           mrpt::math::distance(poly[N - 1], poly[0]) + mrpt::math::distance(poly[0], poly[1]) -
@@ -68,7 +71,10 @@ template <class T>
 void removeRepVertices(T& poly)
 {
   size_t N = poly.size();
-  if (N < 3) return;
+  if (N < 3)
+  {
+    return;
+  }
   std::vector<size_t> rep;
   for (size_t i = 0; i < N - 1; i++)
     if (mrpt::math::distance(poly[i], poly[i + 1]) < getEpsilon()) rep.push_back(i);

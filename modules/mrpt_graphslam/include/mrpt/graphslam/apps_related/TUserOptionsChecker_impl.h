@@ -116,48 +116,48 @@ void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(std::string reg_type 
 
   if (system::strCmpI(reg_type, "node") || system::strCmpI(reg_type, "edge"))
   {
-    cout << endl
-         << "Available " << system::upperCase(reg_type) << " Registration Deciders: "
-         << "\n";
-    cout << sep_header << "\n";
+    std::cout << endl
+              << "Available " << system::upperCase(reg_type) << " Registration Deciders: "
+              << "\n";
+    std::cout << sep_header << "\n";
 
     for (auto dec_it = regs_descriptions.begin(); dec_it != regs_descriptions.end(); ++dec_it)
     {
       TRegistrationDeciderProps* dec = *dec_it;
       if (system::strCmpI(dec->type, reg_type))
       {
-        cout << dec->name << "\n";
-        cout << sep_subheader << "\n";
-        cout << "\t- "
-             << "Description: " << dec->description << "\n";
-        cout << "\t- "
-             << "Rawlog Format: " << dec->rawlog_format << "\n";
-        cout << "\t- "
-             << "Observations that can be used: "
-             << "\n";
-        cout << "\t- "
-             << "Multi-robot SLAM capable decider: " << (dec->is_mr_slam_class ? "TRUE" : "FALSE")
-             << "\n";
-        cout << "\t- "
-             << "SLAM Type: "
-             << "\n";
+        std::cout << dec->name << "\n";
+        std::cout << sep_subheader << "\n";
+        std::cout << "\t- "
+                  << "Description: " << dec->description << "\n";
+        std::cout << "\t- "
+                  << "Rawlog Format: " << dec->rawlog_format << "\n";
+        std::cout << "\t- "
+                  << "Observations that can be used: "
+                  << "\n";
+        std::cout << "\t- "
+                  << "Multi-robot SLAM capable decider: "
+                  << (dec->is_mr_slam_class ? "TRUE" : "FALSE") << "\n";
+        std::cout << "\t- "
+                  << "SLAM Type: "
+                  << "\n";
         if (dec->is_slam_2d)
         {
-          cout << "\t\t+ "
-               << "2D"
-               << "\n";
+          std::cout << "\t\t+ "
+                    << "2D"
+                    << "\n";
         }
         if (dec->is_slam_3d)
         {
-          cout << "\t\t+ "
-               << "3D"
-               << "\n";
+          std::cout << "\t\t+ "
+                    << "3D"
+                    << "\n";
         }
-        cout << "\n";
+        std::cout << "\n";
         for (auto obs_it = dec->observations_used.begin(); obs_it != dec->observations_used.end();
              ++obs_it)
         {
-          cout << "\t\t+ " << *obs_it << "\n";
+          std::cout << "\t\t+ " << *obs_it << "\n";
         }
       }
     }
@@ -178,36 +178,37 @@ void TUserOptionsChecker<GRAPH_t>::dumpOptimizersToConsole() const
 
   using namespace std;
 
-  cout << endl
-       << "Available GraphSlam Optimizer classes: "
-       << "\n";
-  cout << sep_header << "\n";
+  std::cout << endl
+            << "Available GraphSlam Optimizer classes: "
+            << "\n";
+  std::cout << sep_header << "\n";
 
   for (auto opt_it = optimizers_descriptions.begin(); opt_it != optimizers_descriptions.end();
        ++opt_it)
   {
     TOptimizerProps* opt = *opt_it;
-    cout << opt->name << "\n";
-    cout << sep_subheader << "\n";
-    cout << "\t- "
-         << "Description: " << opt->description << "\n";
+    std::cout << opt->name << "\n";
+    std::cout << sep_subheader << "\n";
+    std::cout << "\t- "
+              << "Description: " << opt->description << "\n";
 
-    cout << "\t- "
-         << "Multi-robot SLAM capable optimizer: " << (opt->is_mr_slam_class ? "TRUE" : "FALSE");
-    cout << "\t- "
-         << "SLAM Type: "
-         << "\n";
+    std::cout << "\t- "
+              << "Multi-robot SLAM capable optimizer: "
+              << (opt->is_mr_slam_class ? "TRUE" : "FALSE");
+    std::cout << "\t- "
+              << "SLAM Type: "
+              << "\n";
     if (opt->is_slam_2d)
     {
-      cout << "\t\t+ "
-           << "2D"
-           << "\n";
+      std::cout << "\t\t+ "
+                << "2D"
+                << "\n";
     }
     if (opt->is_slam_3d)
     {
-      cout << "\t\t+ "
-           << "3D"
-           << "\n";
+      std::cout << "\t\t+ "
+                << "3D"
+                << "\n";
     }
   }
   MRPT_END

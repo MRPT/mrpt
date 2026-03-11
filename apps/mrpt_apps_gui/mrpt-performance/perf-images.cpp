@@ -15,11 +15,11 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/core/cpu.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/CImagePyramid.h>
+#include <mrpt/img/CStereoRectifyMap.h>
 #include <mrpt/img/TStereoCamera.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/vision/CImagePyramid.h>
-#include <mrpt/vision/CStereoRectifyMap.h>
 
 #include "common.h"
 

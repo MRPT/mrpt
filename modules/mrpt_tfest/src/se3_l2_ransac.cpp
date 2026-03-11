@@ -174,7 +174,7 @@ bool tfest::se3_l2_robust(
       }
       else
       {
-        // cout << " It " << iterations << " - RANSAC Outlier Detected:
+        // std::cout << " It " << iterations << " - RANSAC Outlier Detected:
         // " << k << "\n";
       }
     }  // end 'inner' for
