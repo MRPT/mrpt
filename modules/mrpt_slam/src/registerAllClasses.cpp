@@ -18,7 +18,6 @@
 #include <mrpt/slam/registerAllClasses.h>
 // deps:
 #include <mrpt/maps/registerAllClasses.h>
-#include <mrpt/vision/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_slam)
 {

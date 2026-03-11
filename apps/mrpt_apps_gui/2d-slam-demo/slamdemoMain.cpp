@@ -30,6 +30,7 @@
 #include <wx/intl.h>
 #include <wx/string.h>
 //*)
+#include <mrpt/core/round.h>
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
