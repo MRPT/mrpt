@@ -31,6 +31,7 @@ set(LIB_SOURCES
   src/CImage.SSEx.h
   src/CImage.SSSE3.cpp
   src/CMappedImage.cpp
+  src/CVideoFileWriter.cpp
   src/camera_geometry.cpp
   src/color_maps.cpp
   src/registerAllClasses.cpp
@@ -50,6 +51,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/img/CCanvas.h
   include/mrpt/img/CImage.h
   include/mrpt/img/CMappedImage.h
+  include/mrpt/img/CVideoFileWriter.h
   include/mrpt/img/color_maps.h
   include/mrpt/img/camera_geometry.h
   include/mrpt/img/DistortionModel.h

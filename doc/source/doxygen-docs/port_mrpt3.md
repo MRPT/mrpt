@@ -238,8 +238,9 @@ The following APIs have been removed in MRPT 3.0 with no direct replacement:
 
 ---
 
-## 10. Moved functions
+## 10. Moved classes/functions
 
+- `mrpt::vision::CVideoFileWriter.h` becomes `mrpt::img::CVideoFileWriter.h`. It no longer supports MP4, only simpler AVI formats, but it is selfcontained without external libraries.
 - `mrpt::hwdrivers::prepareVideoSourceFromUserSelection()` becomes `mrpt::apps::prepareVideoSourceFromUserSelection()` (header: `<mrpt/apps_gui/CameraSelectionGUI.h>`).
 
 When using this function, add `mrpt_libapps_gui` to your CMake dependencies.
