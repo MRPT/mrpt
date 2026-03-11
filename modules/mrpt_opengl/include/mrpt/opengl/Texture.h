@@ -81,6 +81,12 @@ class Texture
 
     /** How to repeat texture coordinate "T" */
     Wrapping wrappingModeT = Wrapping::Repeat;
+
+    /** If true (default), the texture is treated as sRGB color and
+     * auto-decoded to linear space by the GPU. Set to false for
+     * data textures like normal maps.
+     */
+    bool isColorData = true;
   };
 
   /** This is how an 2D texture image is loaded into this object, and a

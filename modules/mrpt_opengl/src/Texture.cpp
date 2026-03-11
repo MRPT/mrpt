@@ -441,7 +441,10 @@ void Texture::internalAssignImage_2D(
 
   // GL_LUMINANCE and GL_LUMINANCE_ALPHA were removed in OpenGL 3.1
   // Convert grayscale images into color:
-  if (!rgb.isColor()) rgb = rgb.colorImage();
+  if (!rgb.isColor())
+  {
+    rgb = rgb.colorImage();
+  }
 
   // ----------------------------------------------
   // Color texture WITH alpha channel
@@ -490,9 +493,13 @@ void Texture::internalAssignImage_2D(
     // Send image data to OpenGL:
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
+
+    /* sRGB internal: GPU decodes at sampling */
+    const GLint internalFormat = o.isColorData ? GL_SRGB8_ALPHA8 : GL_RGBA8;
+
     glTexImage2D(
-        GL_TEXTURE_2D, 0 /*level*/, GL_SRGB8_ALPHA8 /* sRGB internal: GPU decodes at sampling */,
-        width, height, 0 /*border*/, img_format, img_type, dataAligned);
+        GL_TEXTURE_2D, 0 /*level*/, internalFormat, width, height, 0 /*border*/, img_format,
+        img_type, dataAligned);
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
     CHECK_OPENGL_ERROR_IN_DEBUG();
@@ -530,11 +537,17 @@ void Texture::internalAssignImage_2D(
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(rgb.getRowStride() / nBytesPerPixel));
     CHECK_OPENGL_ERROR_IN_DEBUG();
+
+    /* sRGB internal: GPU decodes at sampling */
+    const GLint internalFormat = o.isColorData
+                                     ? (nBytesPerPixel == 3 ? GL_SRGB8 : GL_SRGB8_ALPHA8)  // NOLINT
+                                     : (nBytesPerPixel == 3 ? GL_RGB8 : GL_RGBA8);
+
     glTexImage2D(
-        GL_TEXTURE_2D, 0 /*level*/,
-        nBytesPerPixel == 3 ? GL_SRGB8 : GL_SRGB8_ALPHA8 /* sRGB: GPU decodes at sampling */, width,
-        height, 0 /*border*/, img_format, img_type, rgb.ptrLine<uint8_t>(0));
+        GL_TEXTURE_2D, 0 /*level*/, internalFormat, width, height, 0 /*border*/, img_format,
+        img_type, rgb.ptrLine<uint8_t>(0));
     CHECK_OPENGL_ERROR_IN_DEBUG();
+
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
     CHECK_OPENGL_ERROR_IN_DEBUG();
   }  // End of color texture WITHOUT trans.

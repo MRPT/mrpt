@@ -56,8 +56,6 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent) :
     m_lastPos(0, 0)
 {
   // setClearColors(1.0, 1.0, 1.0);
-  setMinimumZoom(1.0f);
-  setMaximumZoom(3200.0f);
 
   if (m_is2D)
   {
