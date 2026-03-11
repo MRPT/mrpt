@@ -107,7 +107,10 @@ struct TPoint3D_ :
   [[nodiscard]] static TPoint3D_<T> FromVector(const Vector& v)
   {
     TPoint3D o;
-    for (int i = 0; i < 3; i++) o[i] = v.at(i);
+    for (int i = 0; i < 3; i++)
+    {
+      o[i] = v.at(i);
+    }
     return o;
   }
 
@@ -224,19 +227,31 @@ struct TPoint3D_ :
     TPoint3D_data<T>::z -= p.z;
     return *this;
   }
-  /**
-   * Points addition.
-   */
+  /** Points addition. */
   [[nodiscard]] constexpr TPoint3D_<T> operator+(const TPoint3D_<T>& p) const
   {
     return {TPoint3D_data<T>::x + p.x, TPoint3D_data<T>::y + p.y, TPoint3D_data<T>::z + p.z};
   }
-  /**
-   * Points substraction.
-   */
+
+  /** Points substraction. */
   [[nodiscard]] constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p) const
   {
     return {TPoint3D_data<T>::x - p.x, TPoint3D_data<T>::y - p.y, TPoint3D_data<T>::z - p.z};
+  }
+
+  /** Scalar product s=dot(this,p) */
+  [[nodiscard]] constexpr T dot(const TPoint3D_<T>& p) const
+  {
+    return TPoint3D_data<T>::x * p.x + TPoint3D_data<T>::y * p.y + TPoint3D_data<T>::z * p.z;
+  }
+
+  /** Cross product res = cross(this, p) */
+  [[nodiscard]] constexpr TPoint3D_<T> cross(const TPoint3D_<T>& p) const
+  {
+    return {
+        TPoint3D_data<T>::y * p.z - TPoint3D_data<T>::z * p.y,
+        TPoint3D_data<T>::z * p.x - TPoint3D_data<T>::x * p.z,
+        TPoint3D_data<T>::x * p.y - TPoint3D_data<T>::y * p.x};
   }
 
   [[nodiscard]] constexpr TPoint3D_<T> operator*(T d) const
@@ -298,9 +313,11 @@ using TVector3Df = TPoint3Df;
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZIu8
 {
+  TPointXYZIu8() = default;
+
   mrpt::math::TPoint3D pt;
   uint8_t intensity{0};
-  TPointXYZIu8() : pt() {}
+
   constexpr TPointXYZIu8(double x, double y, double z, uint8_t intensity_val) :
       pt(x, y, z), intensity(intensity_val)
   {
@@ -332,9 +349,11 @@ struct TPointXYZfIu8
 /** XYZ point (float) + RGB(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZfRGBu8
 {
+  TPointXYZfRGBu8() = default;
+
   mrpt::math::TPoint3Df pt;
   uint8_t r{0xff}, g{0xff}, b{0xff};
-  TPointXYZfRGBu8() : pt() {}
+
   constexpr TPointXYZfRGBu8(
       float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val) :
       pt(x, y, z), r(R_val), g(G_val), b(B_val)
@@ -350,9 +369,11 @@ mrpt::serialization::CArchive& operator<<(
 /** XYZ point (float) + RGBA(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZfRGBAu8
 {
+  TPointXYZfRGBAu8() = default;
+
   mrpt::math::TPoint3Df pt;
   uint8_t r{0xff}, g{0xff}, b{0xff}, a{0xff};
-  TPointXYZfRGBAu8() : pt() {}
+
   constexpr TPointXYZfRGBAu8(
       float x,
       float y,
