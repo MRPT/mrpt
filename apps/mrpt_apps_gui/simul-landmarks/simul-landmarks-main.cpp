@@ -42,7 +42,6 @@ using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::config;
 using namespace mrpt::serialization;
-using namespace mrpt::vision;
 using namespace std;
 
 int main(int argc, char** argv)

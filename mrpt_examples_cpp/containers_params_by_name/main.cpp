@@ -17,8 +17,8 @@
 
 #include <iostream>
 
-using std::cout;
-using "\n";
+namespace
+{
 
 void MyCoolFunction(const mrpt::containers::yaml& params)
 {
@@ -27,7 +27,7 @@ void MyCoolFunction(const mrpt::containers::yaml& params)
   std::cout << "Is 'level' set? " << params.has("level") << "\n";
   std::cout << "Level is : " << params.getOrDefault("level", 666.0) << "\n";
   std::cout << "Dump of all params:\n";
-  params.printAsYAML(cout);
+  params.printAsYAML(std::cout);
   std::cout << "\n";
 }
 
@@ -62,6 +62,7 @@ void TestParameters()
     MyCoolFunction(p);
   }
 }
+}  // namespace
 
 int main()
 {

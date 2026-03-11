@@ -19,6 +19,7 @@
 #include <mrpt/math/math_frwds.h>  // CMatrixFixed
 
 #include <cmath>  // sqrt
+#include <tuple>
 #include <type_traits>
 
 namespace mrpt::math
@@ -143,6 +144,26 @@ struct TPoint3D_ :
       default:
         throw std::out_of_range("index out of range");
     }
+  }
+
+  /**  Method so std::tuple, std::tie() works with TPoint3D */
+  template <size_t I>
+  const T& get() const
+  {
+    if constexpr (I == 0)
+    {
+      return TPoint3D_data<T>::x;
+    }
+    if constexpr (I == 1)
+    {
+      return TPoint3D_data<T>::y;
+    }
+    return TPoint3D_data<T>::z;
+  }
+
+  [[nodiscard]] constexpr auto as_tuple() const
+  {
+    return std::tie(TPoint3D_data<T>::x, TPoint3D_data<T>::y, TPoint3D_data<T>::z);
   }
   /**
    * Point-to-point distance.
@@ -442,6 +463,21 @@ constexpr bool operator!=(const TPoint3D_<T>& p1, const TPoint3D_<T>& p2)
 /** @} */
 
 }  // namespace mrpt::math
+
+// Specializations so std::tuple, std::tie() works with TPoint3D
+namespace std
+{
+template <typename T>
+struct tuple_size<mrpt::math::TPoint3D_<T>> : integral_constant<size_t, 3>
+{
+};
+
+template <size_t I, typename T>
+struct tuple_element<I, mrpt::math::TPoint3D_<T>>
+{
+  using type = T;
+};
+}  // namespace std
 
 namespace mrpt::typemeta
 {

@@ -995,7 +995,7 @@ void CPointsMap::determineMatching3D(
       }
 
     }  // End of test_match
-  }    // For each local point
+  }  // For each local point
 
   // Additional consistency filter: "onlyKeepTheClosest" up to now
   //  led to just one correspondence for each "local map" point, but
@@ -1165,7 +1165,7 @@ void CPointsMap::compute3DDistanceToMesh(
         vIdx.push_back(outIdx);
       }
     }  // End of test_match
-  }    // For each local point
+  }  // For each local point
 
   // Additional consistency filter: "onlyKeepTheClosest" up to now
   //  led to just one correspondence for each "local map" point, but
@@ -1452,14 +1452,20 @@ void CPointsMap::PLY_export_get_vertex(
           insertAnotherMap
  ---------------------------------------------------------------*/
 void CPointsMap::insertAnotherMap(
-    const CPointsMap* otherMap, const CPose3D& otherPose, const bool filterOutPointsAtZero)
+    const CPointsMap* otherMap,
+    const CPose3D& otherPose,
+    const bool filterOutPointsAtZero,
+    const bool autoRegisterAllSourceFields)
 {
   ASSERT_(otherMap);
   const size_t N_this = size();
   const size_t N_other = otherMap->size();
 
   // Set the new size:
-  this->registerPointFieldsFrom(*otherMap);
+  if (autoRegisterAllSourceFields)
+  {
+    this->registerPointFieldsFrom(*otherMap);
+  }
   this->reserve(N_this + N_other);
 
   // Optimization: detect the case of no transformation needed and avoid the
@@ -1479,7 +1485,10 @@ void CPointsMap::insertAnotherMap(
       continue;  // Skip
     }
     // filter NANs:
-    if (pt.x != pt.x) continue;
+    if (pt.x != pt.x)  // NOLINT(misc-redundant-expression)
+    {
+      continue;
+    }
 
     // Add to this map:
     this->insertPointFrom(srcIdx, ctx);
@@ -1488,11 +1497,8 @@ void CPointsMap::insertAnotherMap(
     if (!identity_tf)
     {
       // Translation:
-      mrpt::math::TPoint3D g;
-      otherPose.composePoint(pt.x, pt.y, pt.z, g.x, g.y, g.z);
-      m_x.back() = static_cast<float>(g.x);
-      m_y.back() = static_cast<float>(g.y);
-      m_z.back() = static_cast<float>(g.z);
+      std::tie(m_x.back(), m_y.back(), m_z.back()) =
+          otherPose.composePoint(pt).cast<float>().as_tuple();
     }
   }
 }
