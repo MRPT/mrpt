@@ -18,6 +18,7 @@
 #include <mrpt/core/config.h>  // MRPT_OS_*()
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/about_box.h>
+#include <mrpt/img/CVideoFileWriter.h>
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CGenericPointsMap.h>
@@ -46,7 +47,6 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/memory.h>
-#include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/viz/CSimpleLine.h>
 #include <mrpt/viz/CText3D.h>
 #include <wx/busyinfo.h>
@@ -119,7 +119,6 @@ using namespace mrpt::img;
 using namespace mrpt::poses;
 using namespace mrpt::serialization;
 using namespace mrpt::rtti;
-using namespace mrpt::vision;
 using namespace mrpt::io;
 using namespace std;
 
@@ -5291,7 +5290,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
   //  possible <channel_desc>: left, right, disparity (more in the
   //  future?)
   std::vector<std::string> outVideosIdx;
-  mrpt::vision::CVideoFileWriter outVideos[20];
+  mrpt::img::CVideoFileWriter outVideos[20];
 
   int nFrames = 0;
   string errorMsg;
@@ -5381,7 +5380,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
         }
 
         // The video writter for this channel:
-        mrpt::vision::CVideoFileWriter& vid = outVideos[idx];
+        auto& vid = outVideos[idx];
 
         if (!vid.isOpen())  // Open file upon first usage:
         {
@@ -5389,15 +5388,10 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
                                  mrpt::system::extractFileName(outAviFilename) + string("_") +
                                  d.channel_desc + string(".avi");
 
-          if (!vid.open(
-                  filname, FPS, TImageSize(d.img->getWidth(), d.img->getHeight()),
-#ifdef MRPT_OS_WINDOWS
-                  ""
-#else
-                  "XVID"
-#endif
-                  ))
+          if (!vid.open(filname, FPS, TImageSize(d.img->getWidth(), d.img->getHeight())))
+          {
             throw std::runtime_error("Error creating the AVI video file...");
+          }
         }
         // and save video frame:
         CImage imgAux;
