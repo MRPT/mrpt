@@ -355,13 +355,18 @@ class CPointsMap :
    * \param filterOutPointsAtZero If true, points at (0,0,0) (in the frame of
    * reference of `otherMap`) will be assumed to be invalid and will not be
    * copied.
+   * \param autoRegisterAllSourceFields If true (default) all source map fields will be registered
+   * and copied. If false, only those fields already existing in the target (this) map will be
+   * copied.
+   *
    *
    * \sa fuseWith, addFrom
    */
   void insertAnotherMap(
       const CPointsMap* otherMap,
       const mrpt::poses::CPose3D& otherPose,
-      const bool filterOutPointsAtZero = false);
+      const bool filterOutPointsAtZero = false,
+      bool autoRegisterAllSourceFields = true);
 
   /** Inserts another map into this one. \sa insertAnotherMap() */
   void operator+=(const CPointsMap& anotherMap)

@@ -1,8 +1,9 @@
 \page changelog Change Log
 
 # Version 2.15.11: UNRELEASED
-(none)
-
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CPointsMap::insertAnotherMap() now has an optional argument autoRegisterAllSourceFields (default=true, backwards compatible).
 
 # Version 2.15.10: Release Feb 14th, 2026
 - Changes in libraries:
