@@ -67,11 +67,10 @@ target_compile_definitions(imgui_lib PUBLIC
 # ---------------------------------------------------------------
 # Demo executable
 # ---------------------------------------------------------------
-add_executable(${PROJECT_NAME}
-    ${PROJECT_NAME}.cpp
-)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${PROJECT_NAME}.cpp
+  LINK_LIBRARIES
     mrpt::mrpt_opengl
     mrpt::mrpt_imgui
     #glfw        # transitive from imgui_lib
