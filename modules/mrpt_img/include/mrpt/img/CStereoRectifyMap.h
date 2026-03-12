@@ -15,7 +15,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
-#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/math/CQuaternion.h>
 
 namespace mrpt::img
 {
@@ -87,7 +87,7 @@ class CStereoRectifyMap
    *  Can be used within loops to determine the first usage of the object and
    * when it needs to be initialized.
    */
-  bool isSet() const { return !m_dat_mapx_left.empty(); }
+  [[nodiscard]] bool isSet() const { return !m_dat_mapx_left.empty(); }
 
   /** Prepares the mapping from the intrinsic, distortion and relative pose
    * parameters of a stereo camera.
@@ -101,7 +101,7 @@ class CStereoRectifyMap
 
   /** Returns the camera parameters which were used to generate the distortion
    * map, as passed by the user to \a setFromCamParams */
-  const mrpt::img::TStereoCamera& getCameraParams() const { return m_camera_params; }
+  [[nodiscard]] const mrpt::img::TStereoCamera& getCameraParams() const { return m_camera_params; }
 
   /** After computing the rectification maps, this method retrieves the
    * calibration parameters of the rectified images
@@ -109,12 +109,13 @@ class CStereoRectifyMap
    * \exception std::exception If the rectification maps have not been
    * computed.
    */
-  const mrpt::img::TStereoCamera& getRectifiedImageParams() const;
+  [[nodiscard]] const mrpt::img::TStereoCamera& getRectifiedImageParams() const;
 
   /** Just like \a getRectifiedImageParams() but for the left camera only */
-  const mrpt::img::TCamera& getRectifiedLeftImageParams() const;
+  [[nodiscard]] const mrpt::img::TCamera& getRectifiedLeftImageParams() const;
+
   /** Just like \a getRectifiedImageParams() but for the right camera only */
-  const mrpt::img::TCamera& getRectifiedRightImageParams() const;
+  [[nodiscard]] const mrpt::img::TCamera& getRectifiedRightImageParams() const;
 
   /** Sets the \a alpha parameter which controls the zoom in/out of the
    * rectified images, such that:
@@ -130,7 +131,7 @@ class CStereoRectifyMap
   void setAlpha(double alpha);
 
   /** Return the \a alpha parameter \sa setAlpha */
-  double getAlpha() const { return m_alpha; }
+  [[nodiscard]] double getAlpha() const { return m_alpha; }
 
   /** If enabled, the computed maps will rectify images to a size different
    * than their original size.
@@ -142,11 +143,11 @@ class CStereoRectifyMap
 
   /** Returns whether resizing is enabled (default=false) \sa
    * enableResizeOutput */
-  bool isEnabledResizeOutput() const { return m_resize_output; }
+  [[nodiscard]] bool isEnabledResizeOutput() const { return m_resize_output; }
 
   /** Only when \a isEnabledResizeOutput() returns true, this gets the target
    * size  \sa enableResizeOutput */
-  inline mrpt::img::TImageSize getResizeOutputSize() const { return m_resize_output_value; }
+  [[nodiscard]] mrpt::img::TImageSize getResizeOutputSize() const { return m_resize_output_value; }
 
   /** Change remap interpolation method (default=Lineal). This parameter can
    * be safely changed at any instant without consequences. */
@@ -157,7 +158,10 @@ class CStereoRectifyMap
 
   /** Get the currently selected interpolation method \sa
    * setInterpolationMethod */
-  mrpt::img::TInterpolationMethod getInterpolationMethod() const { return m_interpolation_method; }
+  [[nodiscard]] mrpt::img::TInterpolationMethod getInterpolationMethod() const
+  {
+    return m_interpolation_method;
+  }
 
   /** If enabled (default=false), the principal points in both output images
    * will coincide.
@@ -167,14 +171,19 @@ class CStereoRectifyMap
   void enableBothCentersCoincide(bool enable = true);
 
   /** \sa enableBothCentersCoincide */
-  bool isEnabledBothCentersCoincide() const { return m_enable_both_centers_coincide; }
+  [[nodiscard]] bool isEnabledBothCentersCoincide() const { return m_enable_both_centers_coincide; }
 
   /** After computing the rectification maps, get the rotation applied to the
    * left/right camera so their virtual image plane is the same after
    * rectification */
-  const mrpt::poses::CPose3DQuat& getLeftCameraRot() const { return m_rot_left; }
+  [[nodiscard]] const mrpt::math::CQuaternionDouble& getLeftCameraRot() const { return m_rot_left; }
+
   /** See \a getLeftCameraRot()  */
-  const mrpt::poses::CPose3DQuat& getRightCameraRot() const { return m_rot_right; }
+  [[nodiscard]] const mrpt::math::CQuaternionDouble& getRightCameraRot() const
+  {
+    return m_rot_right;
+  }
+
   /** Direct input access to rectify maps */
   void setRectifyMaps(
       const std::vector<int16_t>& left_x,
@@ -233,7 +242,8 @@ class CStereoRectifyMap
 
   /** The rotation applied to the left/right camera so their virtual image
    * plane is the same after rectification. */
-  mrpt::poses::CPose3DQuat m_rot_left, m_rot_right;
+  mrpt::math::CQuaternionDouble m_rot_left;
+  mrpt::math::CQuaternionDouble m_rot_right;
 
   void internal_invalidate();
 

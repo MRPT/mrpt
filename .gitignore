@@ -50,3 +50,4 @@ doc/venv
 .pc
 .cache
 my_config.ini
+*.ini

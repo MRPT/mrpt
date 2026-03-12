@@ -17,7 +17,6 @@
 #include <Eigen/Dense>
 
 using namespace mrpt;
-using namespace mrpt::poses;
 using namespace mrpt::img;
 using namespace mrpt::math;
 
