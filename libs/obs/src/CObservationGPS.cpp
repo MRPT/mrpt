@@ -24,12 +24,14 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation, mrpt::obs)
 
-uint8_t CObservationGPS::serializeGetVersion() const { return 12; }
+uint8_t CObservationGPS::serializeGetVersion() const { return 13; }
 void CObservationGPS::serializeTo(mrpt::serialization::CArchive& out) const
 {
   out << timestamp << originalReceivedTimestamp << sensorLabel << sensorPose;
-  out << has_satellite_timestamp;  // v11
-  out << covariance_enu;           // v12
+  out << has_satellite_timestamp;                   // v11
+  out << covariance_enu;                            // v12
+  out << static_cast<uint8_t>(fix_type);            // v13
+  out << static_cast<uint16_t>(gnss_service_mask);  // v13
 
   const uint32_t nMsgs = messages.size();
   out << nMsgs;
@@ -45,14 +47,29 @@ void CObservationGPS::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
     case 10:
     case 11:
     case 12:
+    case 13:
     {
       in >> timestamp >> originalReceivedTimestamp >> sensorLabel >> sensorPose;
       if (version >= 11)
+      {
         in >> has_satellite_timestamp;  // v11
+      }
       else
+      {
         has_satellite_timestamp = (this->timestamp != this->originalReceivedTimestamp);
+      }
 
-      if (version >= 12) in >> covariance_enu;
+      if (version >= 12)
+      {
+        in >> covariance_enu;
+      }
+
+      if (version >= 13)
+      {
+        fix_type = static_cast<GnssFixType>(in.ReadAs<uint8_t>());
+        gnss_service_mask = static_cast<GnssService>(in.ReadAs<uint16_t>());
+      }
+      // else: fix_type stays UNKNOWN, gnss_service_mask stays 0, as defaults
 
       uint32_t nMsgs;
       in >> nMsgs;
@@ -241,6 +258,37 @@ void CObservationGPS::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
 
 void CObservationGPS::dumpToStream(std::ostream& out) const
 {
+  // Fix type
+  {
+    static const char* fix_type_names[] = {"UNKNOWN", "NO_FIX",         "AUTONOMOUS", "SBAS",
+                                           "GBAS",    "DGPS",           "RTK_FLOAT",  "RTK_FIXED",
+                                           "PPP",     "DEAD_RECKONING", "SIMULATION"};
+    const auto idx = static_cast<unsigned>(fix_type);
+    out << "Fix type  : " << (idx < std::size(fix_type_names) ? fix_type_names[idx] : "?") << "\n";
+  }
+
+  if (gnss_service_mask != GnssService::NONE)
+  {
+    out << "GNSS mask : ";
+    if (hasService(gnss_service_mask, GnssService::GPS))
+    {
+      out << "GPS ";
+    }
+    if (hasService(gnss_service_mask, GnssService::GLONASS))
+    {
+      out << "GLONASS ";
+    }
+    if (hasService(gnss_service_mask, GnssService::BEIDOU))
+    {
+      out << "BeiDou ";
+    }
+    if (hasService(gnss_service_mask, GnssService::GALILEO))
+    {
+      out << "Galileo ";
+    }
+    out << "\n";
+  }
+
   if (covariance_enu)
   {
     out << "ENU covariance:\n" << *covariance_enu << "\n";

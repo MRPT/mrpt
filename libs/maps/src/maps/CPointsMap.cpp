@@ -1470,14 +1470,21 @@ void CPointsMap::PLY_export_get_vertex(
           insertAnotherMap
  ---------------------------------------------------------------*/
 void CPointsMap::insertAnotherMap(
-    const CPointsMap* otherMap, const CPose3D& otherPose, const bool filterOutPointsAtZero)
+    const CPointsMap* otherMap,
+    const CPose3D& otherPose,
+    bool filterOutPointsAtZero,
+    bool autoRegisterAllSourceFields)
 {
   ASSERT_(otherMap);
   const size_t N_this = size();
   const size_t N_other = otherMap->size();
 
   // Set the new size:
-  this->registerPointFieldsFrom(*otherMap);
+  if (autoRegisterAllSourceFields)
+  {
+    this->registerPointFieldsFrom(*otherMap);
+  }
+
   this->reserve(N_this + N_other);
 
   // Optimization: detect the case of no transformation needed and avoid the

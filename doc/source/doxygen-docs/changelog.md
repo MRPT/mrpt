@@ -1,5 +1,14 @@
 \page changelog Change Log
 
+# Version 2.15.11: Release Mar 12th, 2026
+- Changes in libraries:
+  - \ref mrpt_gui_grp
+    - Dear ImGui basic integration with the new class mrpt::imgui::CImGuiSceneView
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CPointsMap::insertAnotherMap() now has an optional argument autoRegisterAllSourceFields (default=true, backwards compatible).
+  - \ref mrpt_obs_grp
+    - mrpt::obs::CObservationGPS: add gnss_source and fix_type
+
 # Version 2.15.10: Release Feb 14th, 2026
 - Changes in libraries:
   - \ref mrpt_containers_grp

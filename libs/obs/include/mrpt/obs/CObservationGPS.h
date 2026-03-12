@@ -21,6 +21,62 @@
 
 namespace mrpt::obs
 {
+/** Detailed fix classification, going beyond the coarse NMEA fix_quality.
+ *  Populated by bridge code or drivers when the original source has
+ *  this information (e.g. ROS NavSatStatus, Novatel logs, u-blox UBX).
+ *  Default is UNKNOWN, meaning consumers should fall back to fix_quality.
+ *
+ *  \note Backwards-compatible: old code that never sets this field sees
+ *        UNKNOWN and keeps reading fix_quality as before.
+ * \sa CObservationGPS
+ * \ingroup mrpt_obs_grp
+ */
+enum class GnssFixType : uint8_t
+{
+  UNKNOWN = 0,  ///< Not set / legacy data
+  NO_FIX = 1,
+  AUTONOMOUS = 2,  ///< Standard GPS/GNSS, no augmentation
+  SBAS = 3,        ///< Satellite-Based Augmentation (WAAS/EGNOS/MSAS…)
+  GBAS = 4,        ///< Ground-Based Augmentation (local DGNSS base)
+  DGPS = 5,        ///< Generic differential (source unspecified)
+  RTK_FLOAT = 6,
+  RTK_FIXED = 7,
+  PPP = 8,  ///< Precise Point Positioning
+  DEAD_RECKONING = 9,
+  SIMULATION = 10,
+};
+
+/** Bitmask flags for gnss_service_mask.
+ *  Matches sensor_msgs/NavSatStatus SERVICE_* bits for ROS compatibility.
+ *  Combine with bitwise OR: e.g. GnssService::GPS | GnssService::GLONASS
+ * \sa CObservationGPS
+ * \ingroup mrpt_obs_grp
+ */
+enum class GnssService : uint16_t
+{
+  NONE = 0x0000,
+  GPS = 0x0001,      ///< USA GPS / QZSS (compatible signal)
+  GLONASS = 0x0002,  ///< Russian GLONASS
+  BEIDOU = 0x0004,   ///< Chinese BeiDou (also COMPASS)
+  GALILEO = 0x0008,  ///< European Galileo
+};
+
+/** Bitwise OR for combining GnssService flags */
+constexpr GnssService operator|(GnssService a, GnssService b) noexcept
+{
+  return static_cast<GnssService>(static_cast<uint16_t>(a) | static_cast<uint16_t>(b));
+}
+/** Bitwise AND for testing GnssService flags */
+constexpr GnssService operator&(GnssService a, GnssService b) noexcept
+{
+  return static_cast<GnssService>(static_cast<uint16_t>(a) & static_cast<uint16_t>(b));
+}
+/** True if any flag in `b` is set in `a` */
+constexpr bool hasService(GnssService a, GnssService b) noexcept
+{
+  return (a & b) != GnssService::NONE;
+}
+
 /** This class <b>stores messages</b> from GNSS or GNSS+IMU devices, from
  * consumer-grade inexpensive GPS receivers to Novatel/Topcon/... advanced RTK
  * solutions.
@@ -47,6 +103,10 @@ namespace mrpt::obs
  *  - CObservationGPS::setMsg()
  *  - CObservationGPS::hasMsgType()
  *  - CObservationGPS::hasMsgClass()
+ *
+ * There is also a CObservationGPS::fix_type field with information about the
+ * source of corrections (SBAS, GBAS, standalone,...) and CObservationGPS::gnss_service_mask
+ * to identify the satellite network used in the solution.
  *
  * Example access to GPS datum:
  * \code
@@ -97,6 +157,15 @@ class CObservationGPS : public CObservation
   /** If present, it defines the ENU position uncertainty.
    */
   std::optional<mrpt::math::CMatrixDouble33> covariance_enu;
+
+  /** Richer fix type. Complements (not replaces) fix_quality in GGA.
+   *  Set to UNKNOWN if the originating driver/bridge does not populate it. */
+  GnssFixType fix_type = GnssFixType::UNKNOWN;
+
+  /** Bitmask of active GNSS constellations. Zero means unknown.
+   *  Example: GnssService::GPS | GnssService::GALILEO */
+  GnssService gnss_service_mask = GnssService::NONE;
+
   /** @} */
 
   /** @name Main API to access to the data fields
@@ -207,6 +276,49 @@ class CObservationGPS : public CObservation
   void getDescriptionAsText(std::ostream& o) const override;  // See base class docs
 
   mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const override;  // See base class docs
+
+  /** Returns a best-effort GnssFixType inferred from GGA fix_quality alone.
+   *  Use fix_type directly when available; this is the fallback for
+   *  legacy observations where fix_type == UNKNOWN. */
+  static GnssFixType inferFixTypeFromGgaQuality(uint8_t fix_quality)
+  {
+    switch (fix_quality)
+    {
+      case 0:
+        return GnssFixType::NO_FIX;
+      case 1:
+        return GnssFixType::AUTONOMOUS;
+      case 2:
+        return GnssFixType::DGPS;  // ambiguous: could be SBAS or GBAS
+      case 3:
+        return GnssFixType::AUTONOMOUS;  // PPS
+      case 4:
+        return GnssFixType::RTK_FIXED;
+      case 5:
+        return GnssFixType::RTK_FLOAT;
+      case 6:
+        return GnssFixType::DEAD_RECKONING;
+      case 8:
+        return GnssFixType::SIMULATION;
+      default:
+        return GnssFixType::UNKNOWN;
+    }
+  }
+
+  /** Returns fix_type if set, otherwise infers it from GGA fix_quality. */
+  GnssFixType getBestFixType() const
+  {
+    if (fix_type != GnssFixType::UNKNOWN)
+    {
+      return fix_type;
+    }
+    if (const auto* gga = getMsgByClassPtr<gnss::Message_NMEA_GGA>())
+    {
+      return inferFixTypeFromGgaQuality(gga->fields.fix_quality);
+    }
+    return GnssFixType::UNKNOWN;
+  }
+
   /** @} */
 
   /** true if the corresponding field exists in \a messages. */
@@ -235,3 +347,25 @@ class CObservationGPS : public CObservation
 };  // End of class def.
 
 }  // namespace mrpt::obs
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::obs::GnssService)
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssService, NONE);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssService, GPS);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssService, GLONASS);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssService, BEIDOU);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssService, GALILEO);
+MRPT_ENUM_TYPE_END()
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::obs::GnssFixType)
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, UNKNOWN);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, NO_FIX);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, AUTONOMOUS);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, SBAS);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, GBAS);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, DGPS);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, RTK_FLOAT);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, RTK_FIXED);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, PPP);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, DEAD_RECKONING);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::GnssFixType, SIMULATION);
+MRPT_ENUM_TYPE_END()
