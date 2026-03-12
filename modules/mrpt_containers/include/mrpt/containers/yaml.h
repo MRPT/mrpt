@@ -274,7 +274,10 @@ class yaml
 
   yaml(node_t s) : root_(std::move(s)) {}
 
-  static node_t Sequence(std::initializer_list<sequence_t::value_type> init) { return {init}; }
+  static node_t Sequence(std::initializer_list<sequence_t::value_type> init)
+  {
+    return node_t(init);  // NOLINT
+  }
   static node_t Sequence()
   {
     node_t n;
@@ -282,7 +285,10 @@ class yaml
     return n;
   }
 
-  static node_t Map(std::initializer_list<map_t::value_type> init) { return node_t(init); }
+  static node_t Map(std::initializer_list<map_t::value_type> init)
+  {
+    return node_t(init);  // NOLINT
+  }
   static node_t Map()
   {
     node_t n;
