@@ -1152,7 +1152,9 @@ void TestOpenGLObjects()
 
     glLightArrow->setPose(lightDir);
 
-    lights.direction = lightDir.getRotationMatrix().extractColumn<mrpt::math::TVector3Df>(0);
+    if (!lights.lights.empty())
+      lights.lights[0].direction =
+          lightDir.getRotationMatrix().extractColumn<mrpt::math::TVector3Df>(0);
 
     if (win.keyHit())
     {

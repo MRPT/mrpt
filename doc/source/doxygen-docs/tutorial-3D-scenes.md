@@ -515,7 +515,7 @@ Suggested implementation order to maximize visual improvement per commit:
 3. ~~Emissive term (Tier 1.4)~~ **DONE** - one uniform, one add
 4. Multiple lights (Tier 1.1) - DONE
 5. Hemisphere ambient (Tier 2.8) - DONE
-6. Fog (Tier 2.7) - simple, useful for large scenes
+6. Fog (Tier 2.7) - DONE
 7. Normal mapping (Tier 2.5) - biggest visual quality jump, needs tangent attributes
 8. SSAO (Tier 3.9) - optional quality mode
 

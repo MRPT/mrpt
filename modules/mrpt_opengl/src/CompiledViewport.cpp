@@ -541,6 +541,14 @@ bool CompiledViewport::updateIfNeeded()
     hashCombine(m_lightParams.ambientGroundColor.R);
     hashCombine(m_lightParams.ambientGroundColor.G);
     hashCombine(m_lightParams.ambientGroundColor.B);
+    hashCombine(m_lightParams.fog_enabled ? 1.0f : 0.0f);
+    hashCombine(m_lightParams.fog_color.R);
+    hashCombine(m_lightParams.fog_color.G);
+    hashCombine(m_lightParams.fog_color.B);
+    hashCombine(m_lightParams.fog_near);
+    hashCombine(m_lightParams.fog_far);
+    hashCombine(static_cast<float>(m_lightParams.fog_mode));
+    hashCombine(m_lightParams.fog_density);
     currentLight.paramsHash = h;
   }
 

@@ -57,10 +57,10 @@ void TLight::readFromStream(mrpt::serialization::CArchive& in)
 
 void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
 {
-  const uint8_t version = 6;
+  const uint8_t version = 7;
   out << version;
 
-  // v5: multi-light format, v6: + hemisphere ambient
+  // v5: multi-light format, v6: + hemisphere ambient, v7: + fog
   out << ambient;
   out << shadow_bias << shadow_bias_cam2frag << shadow_bias_normal;
   out << eyeDistance2lightShadowExtension << minimum_shadow_map_extension_ratio;
@@ -69,6 +69,8 @@ void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
   for (const auto& l : lights) l.writeToStream(out);
   // v6:
   out << ambientSkyColor << ambientGroundColor;
+  // v7: fog
+  out << fog_enabled << fog_color << fog_near << fog_far << fog_mode << fog_density;
 }
 
 void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
@@ -115,6 +117,7 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
     break;
     case 5:
     case 6:
+    case 7:
     {
       in >> ambient;
       in >> shadow_bias >> shadow_bias_cam2frag >> shadow_bias_normal;
@@ -130,6 +133,12 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
       {
         ambientSkyColor = {1.0f, 1.0f, 1.0f};
         ambientGroundColor = {1.0f, 1.0f, 1.0f};
+      }
+      if (version >= 7)
+        in >> fog_enabled >> fog_color >> fog_near >> fog_far >> fog_mode >> fog_density;
+      else
+      {
+        fog_enabled = false;
       }
     }
     break;

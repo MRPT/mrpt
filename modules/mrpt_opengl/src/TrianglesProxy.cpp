@@ -224,6 +224,21 @@ void TrianglesProxy::uploadTriangleUniforms(const RenderContext& rc) const
     }
   }
 
+  // Fog parameters
+  if (rc.lights && rc.shader->hasUniform("fog_enabled"))
+  {
+    uploadInt(rc, "fog_enabled", rc.lights->fog_enabled ? 1 : 0);
+    if (rc.lights->fog_enabled)
+    {
+      const auto& fc = rc.lights->fog_color;
+      uploadVector3(rc, "fog_color", mrpt::math::TVector3Df(fc.R, fc.G, fc.B));
+      uploadFloat(rc, "fog_near", rc.lights->fog_near);
+      uploadFloat(rc, "fog_far", rc.lights->fog_far);
+      uploadInt(rc, "fog_mode", static_cast<int>(rc.lights->fog_mode));
+      uploadFloat(rc, "fog_density", rc.lights->fog_density);
+    }
+  }
+
   // Shadow parameters (if in shadow pass)
   if (rc.isShadowMapPass && rc.lights)
   {
