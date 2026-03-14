@@ -27,6 +27,13 @@ uniform lowp float materialSpecular;
 uniform highp float materialSpecularExponent;
 uniform lowp vec3 materialEmissive;
 
+uniform bool fog_enabled;
+uniform lowp vec3 fog_color;
+uniform highp float fog_near;
+uniform highp float fog_far;
+uniform int fog_mode;
+uniform highp float fog_density;
+
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
 in lowp vec4 frag_vertexColor;
@@ -40,7 +47,8 @@ void main()
 
     // Hemisphere ambient
     mediump vec3 ambientColor = mix(ambient_ground_color, ambient_sky_color, 0.5 + 0.5 * normal.z);
-    mediump vec3 totalLight = light_ambient * ambientColor;
+    mediump vec3 totalDiffuse = light_ambient * ambientColor;
+    mediump vec3 totalSpecular = vec3(0.0);
 
     for (int i = 0; i < num_lights; i++)
     {
@@ -64,19 +72,32 @@ void main()
         }
 
         highp float diff = max(dot(normal, lightDir), 0.0);
-        highp float diffuse_factor = diff * light_diffuse[i];
+        totalDiffuse += attenuation * diff * light_diffuse[i] * light_color[i];
 
         highp vec3 halfVector = normalize(viewDirection + lightDir);
         highp float specAmount = pow(max(dot(normal, halfVector), 0.0), materialSpecularExponent);
         mediump float specular_factor = (diff > 0.0) ? specAmount * materialSpecular * light_specular[i] : 0.0;
-
-        totalLight += attenuation * (diffuse_factor + specular_factor) * light_color[i];
+        totalSpecular += attenuation * specular_factor * light_color[i];
     }
 
     // material texture color modulated by vertex color:
     lowp vec4 texCol = texture(textureSampler, frag_UV) * frag_vertexColor;
 
-    color = vec4(materialEmissive + texCol.rgb * totalLight, texCol.a);
+    mediump vec3 litColor = materialEmissive + texCol.rgb * totalDiffuse + totalSpecular;
+
+    if (fog_enabled) {
+        highp float dist = length(cam_position - frag_position);
+        mediump float fogFactor;
+        if (fog_mode == 1)
+            fogFactor = exp(-fog_density * dist);
+        else if (fog_mode == 2)
+            fogFactor = exp(-fog_density * fog_density * dist * dist);
+        else
+            fogFactor = clamp((fog_far - dist) / (fog_far - fog_near), 0.0, 1.0);
+        litColor = mix(fog_color, litColor, fogFactor);
+    }
+
+    color = vec4(litColor, texCol.a);
 }
 
 )XXX"

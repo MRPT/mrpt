@@ -28,7 +28,8 @@ void main()
 
     // Hemisphere ambient
     mediump vec3 ambientColor = mix(ambient_ground_color, ambient_sky_color, 0.5 + 0.5 * normal.z);
-    mediump vec3 totalLight = light_ambient * ambientColor;
+    mediump vec3 totalDiffuse = light_ambient * ambientColor;
+    mediump vec3 totalSpecular = vec3(0.0);
 
     for (int i = 0; i < num_lights; i++)
     {
@@ -52,7 +53,6 @@ void main()
         }
 
         highp float diff = max(dot(normal, lightDir), 0.0);
-        highp float diffuse_factor = diff * light_diffuse[i];
 
         highp vec3 halfVector = normalize(viewDirection + lightDir);
         highp float specAmount = pow(max(dot(normal, halfVector), 0.0), materialSpecularExponent);
@@ -65,9 +65,24 @@ void main()
             shadowFactor = 1.0 - shadow;
         }
 
-        totalLight += attenuation * shadowFactor * (diffuse_factor + specular_factor) * light_color[i];
+        totalDiffuse += attenuation * shadowFactor * diff * light_diffuse[i] * light_color[i];
+        totalSpecular += attenuation * shadowFactor * specular_factor * light_color[i];
     }
 
-    color = vec4(materialEmissive + frag_materialColor.rgb * totalLight, frag_materialColor.a);
+    mediump vec3 litColor = materialEmissive + frag_materialColor.rgb * totalDiffuse + totalSpecular;
+
+    if (fog_enabled) {
+        highp float dist = cam2fragDist;
+        mediump float fogFactor;
+        if (fog_mode == 1)
+            fogFactor = exp(-fog_density * dist);
+        else if (fog_mode == 2)
+            fogFactor = exp(-fog_density * fog_density * dist * dist);
+        else
+            fogFactor = clamp((fog_far - dist) / (fog_far - fog_near), 0.0, 1.0);
+        litColor = mix(fog_color, litColor, fogFactor);
+    }
+
+    color = vec4(litColor, frag_materialColor.a);
 }
 )XXX"

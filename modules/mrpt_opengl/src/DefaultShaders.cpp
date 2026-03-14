@@ -79,12 +79,15 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       fragment_shader =
 #include "../shaders/triangles-light.f.glsl"
           ;
-      uniforms = {"p_matrix",       "v_matrix",          "m_matrix",
-                  "num_lights",     "light_type",        "light_color",
-                  "light_diffuse",  "light_specular",    "light_direction",
-                  "light_position", "light_attenuation", "light_spot_cutoff",
-                  "light_ambient",  "ambient_sky_color", "ambient_ground_color",
-                  "cam_position",   "materialSpecular",  "materialEmissive"};
+      uniforms = {"p_matrix",         "v_matrix",          "m_matrix",
+                  "num_lights",       "light_type",        "light_color",
+                  "light_diffuse",    "light_specular",    "light_direction",
+                  "light_position",   "light_attenuation", "light_spot_cutoff",
+                  "light_ambient",    "ambient_sky_color", "ambient_ground_color",
+                  "cam_position",     "materialSpecular",  "materialSpecularExponent",
+                  "materialEmissive", "fog_enabled",       "fog_color",
+                  "fog_near",         "fog_far",           "fog_mode",
+                  "fog_density"};
       attribs = {"position", "vertexColor", "vertexNormal"};
       break;
 
@@ -106,13 +109,33 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       fragment_shader =
 #include "../shaders/textured-triangles-light.f.glsl"
           ;
-      uniforms = {"p_matrix",        "v_matrix",          "m_matrix",
-                  "num_lights",      "light_type",        "light_color",
-                  "light_diffuse",   "light_specular",    "light_direction",
-                  "light_position",  "light_attenuation", "light_spot_cutoff",
-                  "light_ambient",   "ambient_sky_color", "ambient_ground_color",
-                  "cam_position",    "textureSampler",    "materialSpecular",
-                  "materialEmissive"};
+      uniforms = {
+          "p_matrix",
+          "v_matrix",
+          "m_matrix",
+          "num_lights",
+          "light_type",
+          "light_color",
+          "light_diffuse",
+          "light_specular",
+          "light_direction",
+          "light_position",
+          "light_attenuation",
+          "light_spot_cutoff",
+          "light_ambient",
+          "ambient_sky_color",
+          "ambient_ground_color",
+          "cam_position",
+          "textureSampler",
+          "materialSpecular",
+          "materialSpecularExponent",
+          "materialEmissive",
+          "fog_enabled",
+          "fog_color",
+          "fog_near",
+          "fog_far",
+          "fog_mode",
+          "fog_density"};
       attribs = {"position", "vertexColor", "vertexUV", "vertexNormal"};
       break;
 
@@ -185,7 +208,14 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "shadow_bias_normal",
           "cam_position",
           "materialSpecular",
-          "materialEmissive"};
+          "materialSpecularExponent",
+          "materialEmissive",
+          "fog_enabled",
+          "fog_color",
+          "fog_near",
+          "fog_far",
+          "fog_mode",
+          "fog_density"};
       attribs = {"position", "vertexColor", "vertexNormal"};
       break;
 
@@ -234,8 +264,15 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "shadow_bias_normal",
           "cam_position",
           "materialSpecular",
+          "materialSpecularExponent",
           "materialEmissive",
-          "textureSampler"};
+          "textureSampler",
+          "fog_enabled",
+          "fog_color",
+          "fog_near",
+          "fog_far",
+          "fog_mode",
+          "fog_density"};
       attribs = {"position", "vertexNormal", "vertexUV"};
       break;
 

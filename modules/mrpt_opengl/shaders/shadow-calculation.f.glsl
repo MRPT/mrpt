@@ -21,6 +21,13 @@ uniform mediump float light_ambient;
 uniform lowp vec3 ambient_sky_color;
 uniform lowp vec3 ambient_ground_color;
 
+uniform bool fog_enabled;
+uniform lowp vec3 fog_color;
+uniform highp float fog_near;
+uniform highp float fog_far;
+uniform int fog_mode;
+uniform highp float fog_density;
+
 uniform highp sampler2D shadowMap;
 
 uniform highp float shadow_bias, shadow_bias_cam2frag, shadow_bias_normal;

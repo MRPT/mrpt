@@ -192,6 +192,30 @@ struct TLightParameters
    * GPU sRGB pipeline. */
   bool gamma_correction = true;
 
+  /** @name Distance fog
+   *  Simple linear or exponential fog based on camera-to-fragment distance.
+   *  @{ */
+
+  /** Enable distance fog (default: disabled). */
+  bool fog_enabled = false;
+
+  /** Fog blend color (typically matches background). */
+  mrpt::img::TColorf fog_color{0.7f, 0.7f, 0.7f};
+
+  /** Distance at which fog begins (linear mode). */
+  float fog_near = 20.0f;
+
+  /** Distance at which fog fully obscures geometry (linear mode). */
+  float fog_far = 100.0f;
+
+  /** Fog mode: 0=linear, 1=exponential, 2=exponential-squared. */
+  uint8_t fog_mode = 0;
+
+  /** Density for exponential fog modes. */
+  float fog_density = 0.015f;
+
+  /** @} */
+
   /** Returns the direction of the first directional light, or a fallback
    *  if none exists. Used for shadow mapping. */
   [[nodiscard]] mrpt::math::TVector3Df primaryDirectionalDirection() const

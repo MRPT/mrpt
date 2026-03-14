@@ -131,10 +131,12 @@ void TestDisplay3D()
 
   {
     auto obj = mrpt::viz::CSphere::Create();
-    obj->setColor(0, 1, 0);
+    obj->setColor_u8(0, 180, 0);  // slightly darker green for visible highlights
     obj->setRadius(0.5);
     obj->setLocation(0, 0, 0);
     obj->setName("USER_MOUSE_PICK");
+    obj->materialShininess(0.5f);           // specular reflection intensity
+    obj->materialSpecularExponent(128.0f);  // tight highlight → metallic look
     theScene->insert(obj);
   }
 
@@ -157,6 +159,19 @@ void TestDisplay3D()
     auto& lp = theScene->getViewport("main")->lightParameters();
     lp.ambientSkyColor = mrpt::img::TColorf(0.7f, 0.8f, 1.0f);
     lp.ambientGroundColor = mrpt::img::TColorf(0.4f, 0.35f, 0.3f);
+
+    const mrpt::img::TColorf fogCol(0.5f, 0.5f, 0.5f);
+    if (0)
+    {
+      // Distance fog (linear mode)
+      lp.fog_enabled = true;
+      lp.fog_color = fogCol;
+      lp.fog_near = 15.0f;
+      lp.fog_far = 50.0f;
+    }
+
+    // Match background to fog color for seamless blending at distance
+    theScene->getViewport("main")->setCustomBackgroundColor(fogCol);
   }
 
   // Add a point light co-located with the emissive sphere
