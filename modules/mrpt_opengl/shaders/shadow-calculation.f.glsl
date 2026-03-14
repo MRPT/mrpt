@@ -18,6 +18,8 @@ uniform highp vec3 light_attenuation[MAX_LIGHTS]; // (constant, linear, quadrati
 uniform mediump vec2 light_spot_cutoff[MAX_LIGHTS]; // (cos_inner, cos_outer)
 
 uniform mediump float light_ambient;
+uniform lowp vec3 ambient_sky_color;
+uniform lowp vec3 ambient_ground_color;
 
 uniform highp sampler2D shadowMap;
 

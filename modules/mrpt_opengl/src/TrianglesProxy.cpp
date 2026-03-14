@@ -168,6 +168,16 @@ void TrianglesProxy::uploadTriangleUniforms(const RenderContext& rc) const
     {
       uploadFloat(rc, "light_ambient", rc.lights->ambient);
     }
+    if (rc.shader->hasUniform("ambient_sky_color"))
+    {
+      const auto& c = rc.lights->ambientSkyColor;
+      uploadVector3(rc, "ambient_sky_color", mrpt::math::TVector3Df(c.R, c.G, c.B));
+    }
+    if (rc.shader->hasUniform("ambient_ground_color"))
+    {
+      const auto& c = rc.lights->ambientGroundColor;
+      uploadVector3(rc, "ambient_ground_color", mrpt::math::TVector3Df(c.R, c.G, c.B));
+    }
 
     // Build arrays and upload via raw GL calls
     if (numLights > 0 && rc.shader->hasUniform("light_type"))

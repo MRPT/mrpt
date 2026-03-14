@@ -161,9 +161,16 @@ struct TLightParameters
   /** The individual light sources (up to MAX_LIGHTS). */
   std::vector<TLight> lights;
 
-  /** Global ambient intensity [0,1]. Applied uniformly regardless of
-   *  light sources. */
+  /** Global ambient intensity [0,1]. Used as a fallback when hemisphere
+   *  ambient is not enabled (i.e. sky==ground==white). */
   float ambient = 0.2f;
+
+  /** Hemisphere ambient: sky (up-facing) color. Default white, which
+   *  together with ambientGroundColor=white falls back to flat ambient. */
+  mrpt::img::TColorf ambientSkyColor{1.0f, 1.0f, 1.0f};
+
+  /** Hemisphere ambient: ground (down-facing) color. */
+  mrpt::img::TColorf ambientGroundColor{1.0f, 1.0f, 1.0f};
 
   /** Shadow tuning parameters ("anti shadow acne").
    *  Applied to the primary directional light only. */

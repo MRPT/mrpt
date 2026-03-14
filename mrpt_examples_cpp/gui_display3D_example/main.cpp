@@ -152,6 +152,13 @@ void TestDisplay3D()
     theScene->insert(obj);
   }
 
+  // Configure hemisphere ambient lighting (blueish sky, brownish ground)
+  {
+    auto& lp = theScene->getViewport("main")->lightParameters();
+    lp.ambientSkyColor = mrpt::img::TColorf(0.7f, 0.8f, 1.0f);
+    lp.ambientGroundColor = mrpt::img::TColorf(0.4f, 0.35f, 0.3f);
+  }
+
   // Add a point light co-located with the emissive sphere
   {
     auto& lp = theScene->getViewport("main")->lightParameters();

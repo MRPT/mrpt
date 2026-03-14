@@ -535,6 +535,12 @@ bool CompiledViewport::updateIfNeeded()
       hashCombine(l.attenuation_linear);
       hashCombine(l.attenuation_quadratic);
     }
+    hashCombine(m_lightParams.ambientSkyColor.R);
+    hashCombine(m_lightParams.ambientSkyColor.G);
+    hashCombine(m_lightParams.ambientSkyColor.B);
+    hashCombine(m_lightParams.ambientGroundColor.R);
+    hashCombine(m_lightParams.ambientGroundColor.G);
+    hashCombine(m_lightParams.ambientGroundColor.B);
     currentLight.paramsHash = h;
   }
 

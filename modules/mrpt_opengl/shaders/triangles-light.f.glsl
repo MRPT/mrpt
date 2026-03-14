@@ -18,6 +18,8 @@ uniform highp vec3 light_attenuation[MAX_LIGHTS]; // (constant, linear, quadrati
 uniform mediump vec2 light_spot_cutoff[MAX_LIGHTS]; // (cos_inner, cos_outer)
 
 uniform mediump float light_ambient;
+uniform lowp vec3 ambient_sky_color;
+uniform lowp vec3 ambient_ground_color;
 
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;
@@ -34,7 +36,9 @@ void main()
     highp vec3 normal = normalize(frag_normal);
     highp vec3 viewDirection = normalize(cam_position - frag_position);
 
-    mediump vec3 totalLight = vec3(light_ambient);
+    // Hemisphere ambient: blend sky/ground color based on world-space normal.z
+    mediump vec3 ambientColor = mix(ambient_ground_color, ambient_sky_color, 0.5 + 0.5 * normal.z);
+    mediump vec3 totalLight = light_ambient * ambientColor;
 
     for (int i = 0; i < num_lights; i++)
     {
