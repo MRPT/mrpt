@@ -100,7 +100,7 @@ class CVisualObject : public mrpt::serialization::CSerializable
 
     /** Specular exponent for Blinn-Phong lighting (higher = sharper highlight).
      *  Typical values: 8 (rough), 32 (default, plastic), 128 (metal/mirror). */
-    float materialSpecularExponent = 32.0f;
+    float materialSpecularExponent = 16.0f;
 
     /** SE(3) pose wrt the parent coordinate reference. This class
      * automatically holds the cached 3x3 rotation matrix for quick load
