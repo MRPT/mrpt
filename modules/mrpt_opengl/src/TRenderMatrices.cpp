@@ -182,8 +182,10 @@ void TRenderMatrices::computeLightProjectionMatrix(
 
   // "up" vector from elevation:
 
+  const auto dir = lp.primaryDirectionalDirection();
+
   float azim = 0, elevation = 0;
-  azimuthElevationFromDirection(lp.direction, elevation, azim);
+  azimuthElevationFromDirection(dir, elevation, azim);
 
   const auto lightUp = mrpt::math::TVector3Df(
       -cos(azim) * sin(elevation),  // x
@@ -191,7 +193,7 @@ void TRenderMatrices::computeLightProjectionMatrix(
       cos(elevation)                // z
   );
 
-  light_v = LookAt(pointing - lp.direction * zmax * 0.5, pointing, lightUp);
+  light_v = LookAt(pointing - dir * zmax * 0.5, pointing, lightUp);
 
   light_pv.asEigen() = light_p.asEigen() * light_v.asEigen();
 

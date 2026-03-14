@@ -108,7 +108,7 @@ void TestDisplay3D()
     obj->setWireframe(false);
     obj->setColor(1, 0, 0);
     obj->setLineWidth(3.0);
-    obj->setPose(TPose3D(10, 0, 0, 0.2, 0.3, 0.1));
+    obj->setPose(TPose3D(4, 2, 0, 0.2, 0.3, 0.1));
     theScene->insert(obj);
   }
 
@@ -139,15 +139,31 @@ void TestDisplay3D()
   }
 
   // Emissive material example: a glowing yellow sphere that emits light
-  // regardless of scene lighting (like an indicator light or display)
+  // regardless of scene lighting (like an indicator light or display).
+  // Associated with a point light so it actually illuminates nearby objects.
   {
     auto obj = mrpt::viz::CSphere::Create();
     obj->setColor(1, 1, 0);
-    obj->setRadius(0.4f);
-    obj->setLocation(3, 3, 1);
+    obj->setRadius(0.15f);
+    obj->setLocation(3, 0, 1.5);
     obj->materialEmissive(mrpt::img::TColorf(1.0f, 0.9f, 0.0f));
+    obj->castShadows(false);  // don't block directional light shadows
     obj->setName("emissive_sphere");
     theScene->insert(obj);
+  }
+
+  // Add a point light co-located with the emissive sphere
+  {
+    auto& lp = theScene->getViewport("main")->lightParameters();
+    lp.lights.push_back(mrpt::viz::TLight::PointLight(
+        {3.0f, 0.0f, 1.5f},                    // position (same as sphere)
+        mrpt::img::TColorf(1.0f, 0.9f, 0.0f),  // warm yellow color
+        0.8f,                                  // diffuse
+        0.5f,                                  // specular
+        1.0f,                                  // attenuation constant
+        0.09f,                                 // attenuation linear
+        0.032f                                 // attenuation quadratic
+        ));
   }
 
   // IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
@@ -199,6 +215,23 @@ void TestDisplay3D()
     auto obj2 = scene->getByName("ball_2");
     obj2->setLocation(
         R2 * cos(W2 * t) * sin(Q2 * t), R2 * sin(W2 * t), R2 * cos(W2 * t) * cos(Q2 * t));
+
+    // Move emissive sphere slowly in a circle and update its point light
+    {
+      const double Re = 3.0, We = 0.3;
+      const float ex = static_cast<float>(Re * cos(We * t));
+      const float ey = static_cast<float>(Re * sin(We * t));
+      const float ez = 1.5f;
+      auto emSphere = scene->getByName("emissive_sphere");
+      emSphere->setLocation(ex, ey, ez);
+
+      // Update the point light position (light index 1, after the default directional)
+      auto& lp = scene->getViewport("main")->lightParameters();
+      if (lp.lights.size() > 1)
+      {
+        lp.lights[1].position = {ex, ey, ez};
+      }
+    }
 
     mrpt::viz::TFontParams fp2;
     fp2.color = TColorf(.8f, .8f, .8f);

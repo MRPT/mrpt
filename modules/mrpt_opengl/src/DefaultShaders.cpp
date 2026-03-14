@@ -79,9 +79,10 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       fragment_shader =
 #include "../shaders/triangles-light.f.glsl"
           ;
-      uniforms = {"p_matrix",      "v_matrix",         "m_matrix",        "light_diffuse",
-                  "light_ambient", "light_specular",   "light_color",     "light_direction",
-                  "cam_position",  "materialSpecular", "materialEmissive"};
+      uniforms = {"p_matrix",        "v_matrix",       "m_matrix",          "num_lights",
+                  "light_type",      "light_color",    "light_diffuse",     "light_specular",
+                  "light_direction", "light_position", "light_attenuation", "light_spot_cutoff",
+                  "light_ambient",   "cam_position",   "materialSpecular",  "materialEmissive"};
       attribs = {"position", "vertexColor", "vertexNormal"};
       break;
 
@@ -103,9 +104,11 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       fragment_shader =
 #include "../shaders/textured-triangles-light.f.glsl"
           ;
-      uniforms = {"p_matrix",        "v_matrix",       "m_matrix",         "light_diffuse",
-                  "light_ambient",   "light_specular", "light_color",      "cam_position",
-                  "light_direction", "textureSampler", "materialSpecular", "materialEmissive"};
+      uniforms = {"p_matrix",        "v_matrix",       "m_matrix",          "num_lights",
+                  "light_type",      "light_color",    "light_diffuse",     "light_specular",
+                  "light_direction", "light_position", "light_attenuation", "light_spot_cutoff",
+                  "light_ambient",   "cam_position",   "textureSampler",    "materialSpecular",
+                  "materialEmissive"};
       attribs = {"position", "vertexColor", "vertexUV", "vertexNormal"};
       break;
 
@@ -161,14 +164,19 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "m_matrix",
           "light_pv_matrix",
           "shadowMap",
+          "num_lights",
+          "light_type",
+          "light_color",
           "light_diffuse",
-          "light_ambient",
           "light_specular",
           "light_direction",
+          "light_position",
+          "light_attenuation",
+          "light_spot_cutoff",
+          "light_ambient",
           "shadow_bias",
           "shadow_bias_cam2frag",
           "shadow_bias_normal",
-          "light_color",
           "cam_position",
           "materialSpecular",
           "materialEmissive"};
@@ -203,14 +211,19 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "m_matrix",
           "light_pv_matrix",
           "shadowMap",
+          "num_lights",
+          "light_type",
+          "light_color",
           "light_diffuse",
-          "light_ambient",
           "light_specular",
           "light_direction",
+          "light_position",
+          "light_attenuation",
+          "light_spot_cutoff",
+          "light_ambient",
           "shadow_bias",
           "shadow_bias_cam2frag",
           "shadow_bias_normal",
-          "light_color",
           "cam_position",
           "materialSpecular",
           "materialEmissive",

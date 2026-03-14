@@ -513,7 +513,7 @@ Suggested implementation order to maximize visual improvement per commit:
 1. ~~Gamma correction (Tier 1.3)~~ **DONE** - easiest, fixes all existing scenes
 2. ~~Blinn-Phong + configurable exponent (Tier 1.2)~~ **DONE** - trivial shader change
 3. ~~Emissive term (Tier 1.4)~~ **DONE** - one uniform, one add
-4. Multiple lights (Tier 1.1) - biggest feature, moderate effort
+4. Multiple lights (Tier 1.1) - DONE
 5. Hemisphere ambient (Tier 2.8) - one mix, huge outdoor improvement
 6. Fog (Tier 2.7) - simple, useful for large scenes
 7. Normal mapping (Tier 2.5) - biggest visual quality jump, needs tangent attributes
