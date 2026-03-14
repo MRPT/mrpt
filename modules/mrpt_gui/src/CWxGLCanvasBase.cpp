@@ -142,12 +142,12 @@ uint8_t wxButtonUp(const wxMouseEvent& e)
 
 void CWxGLCanvasBase::OnMouseDown(wxMouseEvent& event)
 {
-  m_cameraCtrl.onMouseButton(event.GetX(), event.GetY(), wxButtonDown(event), true);
+  orbitCameraController().onMouseButton(event.GetX(), event.GetY(), wxButtonDown(event), true);
 }
 
 void CWxGLCanvasBase::OnMouseUp(wxMouseEvent& event)
 {
-  m_cameraCtrl.onMouseButton(event.GetX(), event.GetY(), wxButtonUp(event), false);
+  orbitCameraController().onMouseButton(event.GetX(), event.GetY(), wxButtonUp(event), false);
 }
 
 void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
@@ -168,7 +168,7 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 
   if (buttons != 0)
   {
-    m_cameraCtrl.onMouseMove(event.GetX(), event.GetY(), buttons, wxModsToMrpt(event));
+    orbitCameraController().onMouseMove(event.GetX(), event.GetY(), buttons, wxModsToMrpt(event));
     Refresh(false);
     Update();
   }
@@ -181,7 +181,7 @@ void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
   // Normalise to ±1 units like the other backends.
   const float delta =
       static_cast<float>(event.GetWheelRotation()) / static_cast<float>(event.GetWheelDelta());
-  m_cameraCtrl.onScroll(delta, wxModsToMrpt(event));
+  orbitCameraController().onScroll(delta, wxModsToMrpt(event));
   Refresh(false);
   Update();
   this->SetFocus();

@@ -21,10 +21,12 @@ mrpt_add_executable(
     ptgConfiguratorApp.h
     ptgConfiguratorMain.cpp
     ptgConfiguratorMain.h
-    MyGLCanvas.cpp
-    MyGLCanvas.h
+    ../wx-common/MyGLCanvas.cpp
+    ../wx-common/MyGLCanvas.h
   LINK_LIBRARIES
     mrpt::mrpt_gui
     mrpt::mrpt_nav
     wxWidgets::wxWidgets
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE ../wx-common/)

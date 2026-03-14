@@ -30,13 +30,14 @@ mrpt_add_executable(
     PanelDOF.h
     CAboutBox.cpp
     CAboutBox.h
-    MyGLCanvas.cpp
-    MyGLCanvas.h
+    ../wx-common/MyGLCanvas.cpp
+    ../wx-common/MyGLCanvas.h
   LINK_LIBRARIES
     mrpt::mrpt_kinematics
     mrpt::mrpt_gui
     ${wxWidgets_LIBRARIES}
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE ../wx-common/)
 
 #AppStartMenuLink(${PROJECT_NAME} "GUI for Denavit-Hartenberg parameters robot arm design")   # Add link to the Start menu (in Windows Installable packages)

@@ -199,7 +199,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     obs2Dscan_to_viz(obs, p, *glPts);
 
 // Update 3D view ==========
-#if RAWLOGVIEWER_HAS_3D
+#if APP_HAS_3D
     auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
     openGLSceneRef->getViewport()->clear();
     openGLSceneRef->getViewport()->insert(glPts);
@@ -398,7 +398,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     }
 
 // Update 3D view ==========
-#if RAWLOGVIEWER_HAS_3D
+#if APP_HAS_3D
     auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
     openGLSceneRef->getViewport()->clear();
     openGLSceneRef->getViewport()->insert(glPts);
@@ -427,7 +427,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     obsVelodyne_to_viz(obs, p, *glPts);
 
 // Update 3D view ==========
-#if RAWLOGVIEWER_HAS_3D
+#if APP_HAS_3D
     auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
     openGLSceneRef->getViewport()->clear();
     openGLSceneRef->getViewport()->insert(glPts);
@@ -457,7 +457,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     obsPointCloud_to_viz(obs, p, *glPts);
 
 // Update 3D view ==========
-#if RAWLOGVIEWER_HAS_3D
+#if APP_HAS_3D
     auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
     openGLSceneRef->getViewport()->clear();
     openGLSceneRef->getViewport()->insert(glPts);
@@ -479,7 +479,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     bmp3Dobs_int->setViewportVisibility(false);
 
 // Update 3D view ==========
-#if RAWLOGVIEWER_HAS_3D
+#if APP_HAS_3D
     auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
 
     openGLSceneRef->getViewport()->clear();
