@@ -57,16 +57,18 @@ void TLight::readFromStream(mrpt::serialization::CArchive& in)
 
 void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
 {
-  const uint8_t version = 5;
+  const uint8_t version = 6;
   out << version;
 
-  // v5: multi-light format
+  // v5: multi-light format, v6: + hemisphere ambient
   out << ambient;
   out << shadow_bias << shadow_bias_cam2frag << shadow_bias_normal;
   out << eyeDistance2lightShadowExtension << minimum_shadow_map_extension_ratio;
   out << gamma_correction;
   out << static_cast<uint8_t>(lights.size());
   for (const auto& l : lights) l.writeToStream(out);
+  // v6:
+  out << ambientSkyColor << ambientGroundColor;
 }
 
 void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
@@ -112,6 +114,7 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
     }
     break;
     case 5:
+    case 6:
     {
       in >> ambient;
       in >> shadow_bias >> shadow_bias_cam2frag >> shadow_bias_normal;
@@ -121,6 +124,13 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
       in >> numLights;
       lights.resize(numLights);
       for (auto& l : lights) l.readFromStream(in);
+      if (version >= 6)
+        in >> ambientSkyColor >> ambientGroundColor;
+      else
+      {
+        ambientSkyColor = {1.0f, 1.0f, 1.0f};
+        ambientGroundColor = {1.0f, 1.0f, 1.0f};
+      }
     }
     break;
     default:

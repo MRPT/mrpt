@@ -28,7 +28,9 @@ void main()
     mediump float cam2fragDist = length(cam2frag);
     highp vec3 viewDirection = normalize(cam2frag);
 
-    mediump vec3 totalLight = vec3(light_ambient);
+    // Hemisphere ambient
+    mediump vec3 ambientColor = mix(ambient_ground_color, ambient_sky_color, 0.5 + 0.5 * normal.z);
+    mediump vec3 totalLight = light_ambient * ambientColor;
 
     for (int i = 0; i < num_lights; i++)
     {
