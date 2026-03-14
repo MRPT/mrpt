@@ -58,8 +58,8 @@ namespace mrpt::viz
  *   - mrpt::viz::mrptEventGLPreRender
  *   - mrpt::viz::mrptEventGLPostRender
  *
- * Two directional light sources at infinity are created by default, with
- *directions (-1,-1,-1) and (1,2,1), respectively.
+ * One directional light source is created by default. Multiple lights
+ * (directional, point, spot) are supported via lightParameters().lights.
  *
  * Lighting parameters are accessible via lightParameters().
  *

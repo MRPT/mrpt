@@ -25,6 +25,8 @@
 
 #include <Eigen/Dense>
 #include <algorithm>
+#include <cstring>
+#include <functional>
 #include <iostream>
 
 #include "gltext.h"
@@ -459,7 +461,8 @@ bool CompiledViewport::CameraState::operator!=(const CameraState& other) const
 
 bool CompiledViewport::LightState::operator!=(const LightState& other) const
 {
-  return direction != other.direction || ambient != other.ambient || diffuse != other.diffuse;
+  return ambient != other.ambient || numLights != other.numLights ||
+         primaryDirection != other.primaryDirection || paramsHash != other.paramsHash;
 }
 
 bool CompiledViewport::updateIfNeeded()
@@ -497,14 +500,51 @@ bool CompiledViewport::updateIfNeeded()
     }
   }
 
-  // Check lighting changes
+  // Check lighting changes (detect anything that needs a repaint or
+  // shadow matrix recomputation)
   LightState currentLight;
-  currentLight.direction = m_lightParams.direction;
-  currentLight.ambient = {m_lightParams.ambient, m_lightParams.ambient, m_lightParams.ambient};
-  currentLight.diffuse = {m_lightParams.diffuse, m_lightParams.diffuse, m_lightParams.diffuse};
+  currentLight.ambient = m_lightParams.ambient;
+  currentLight.numLights = m_lightParams.lights.size();
+  currentLight.primaryDirection = m_lightParams.primaryDirectionalDirection();
+
+  // Coarse hash over all light fields to detect position/color/etc changes
+  {
+    std::size_t h = 0;
+    auto hashCombine = [&](float v)
+    {
+      // Simple float hash via bit reinterpretation
+      uint32_t bits;
+      std::memcpy(&bits, &v, sizeof(bits));
+      h ^= std::hash<uint32_t>{}(bits) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    };
+    for (const auto& l : m_lightParams.lights)
+    {
+      hashCombine(static_cast<float>(l.type));
+      hashCombine(l.color.R);
+      hashCombine(l.color.G);
+      hashCombine(l.color.B);
+      hashCombine(l.diffuse);
+      hashCombine(l.specular);
+      hashCombine(l.direction.x);
+      hashCombine(l.direction.y);
+      hashCombine(l.direction.z);
+      hashCombine(l.position.x);
+      hashCombine(l.position.y);
+      hashCombine(l.position.z);
+      hashCombine(l.attenuation_constant);
+      hashCombine(l.attenuation_linear);
+      hashCombine(l.attenuation_quadratic);
+    }
+    currentLight.paramsHash = h;
+  }
 
   if (currentLight != m_lastLightState)
   {
+    // If primary directional direction changed, shadow matrices need recomputation
+    if (currentLight.primaryDirection != m_lastLightState.primaryDirection)
+    {
+      m_matricesNeedUpdate = true;
+    }
     m_lastLightState = currentLight;
     anyUpdates = true;
 

@@ -1,13 +1,23 @@
 R"XXX(#version 300 es
 
-// FRAGMENT SHADER: Default shader for MRPT CRenderizable objects
-// Jose Luis Blanco Claraco (C) 2019-2023
+// FRAGMENT SHADER: Default shader for MRPT CRenderizable objects (textured)
+// Jose Luis Blanco Claraco (C) 2019-2026
 // Part of the MRPT project
 
-uniform lowp vec3 light_color;
-uniform mediump float light_ambient, light_diffuse, light_specular;
-uniform highp vec3 light_direction;
+// Multi-light support (up to 8 lights)
+#define MAX_LIGHTS 8
 
+uniform int num_lights;
+uniform int light_type[MAX_LIGHTS];       // 0=directional, 1=point, 2=spot
+uniform lowp vec3 light_color[MAX_LIGHTS];
+uniform mediump float light_diffuse[MAX_LIGHTS];
+uniform mediump float light_specular[MAX_LIGHTS];
+uniform highp vec3 light_direction[MAX_LIGHTS];
+uniform highp vec3 light_position[MAX_LIGHTS];
+uniform highp vec3 light_attenuation[MAX_LIGHTS]; // (constant, linear, quadratic)
+uniform mediump vec2 light_spot_cutoff[MAX_LIGHTS]; // (cos_inner, cos_outer)
+
+uniform mediump float light_ambient;
 
 uniform lowp sampler2D textureSampler;
 uniform highp vec3 cam_position;
@@ -23,23 +33,46 @@ out lowp vec4 color;
 
 void main()
 {
-    // diffuse lighting
     highp vec3 normal = normalize(frag_normal);
-    highp float diff = max(dot(normal, -light_direction), 0.0);
-    highp float diffuse_factor = diff * light_diffuse;
-
-    // specular lighting (Blinn-Phong: half-vector)
     highp vec3 viewDirection = normalize(cam_position - frag_position);
-    highp vec3 halfVector = normalize(viewDirection - light_direction);
-    highp float specAmount = pow(max(dot(normal, halfVector), 0.0f), materialSpecularExponent);
-    // No specular on surfaces facing away from the light:
-    mediump float specular_factor = (diff > 0.0f) ? specAmount * materialSpecular * light_specular : 0.0f;
+
+    mediump vec3 totalLight = vec3(light_ambient);
+
+    for (int i = 0; i < num_lights; i++)
+    {
+        highp vec3 lightDir;
+        mediump float attenuation = 1.0;
+
+        if (light_type[i] == 0) {
+            lightDir = -light_direction[i];
+        } else {
+            highp vec3 toLight = light_position[i] - frag_position;
+            highp float dist = length(toLight);
+            lightDir = toLight / dist;
+            attenuation = 1.0 / (light_attenuation[i].x + light_attenuation[i].y * dist + light_attenuation[i].z * dist * dist);
+
+            if (light_type[i] == 2) {
+                mediump float theta = dot(lightDir, -light_direction[i]);
+                mediump float epsilon = light_spot_cutoff[i].x - light_spot_cutoff[i].y;
+                mediump float spotIntensity = clamp((theta - light_spot_cutoff[i].y) / epsilon, 0.0, 1.0);
+                attenuation *= spotIntensity;
+            }
+        }
+
+        highp float diff = max(dot(normal, lightDir), 0.0);
+        highp float diffuse_factor = diff * light_diffuse[i];
+
+        highp vec3 halfVector = normalize(viewDirection + lightDir);
+        highp float specAmount = pow(max(dot(normal, halfVector), 0.0), materialSpecularExponent);
+        mediump float specular_factor = (diff > 0.0) ? specAmount * materialSpecular * light_specular[i] : 0.0;
+
+        totalLight += attenuation * (diffuse_factor + specular_factor) * light_color[i];
+    }
 
     // material texture color modulated by vertex color:
     lowp vec4 texCol = texture(textureSampler, frag_UV) * frag_vertexColor;
-    mediump vec3 finalLight = (light_ambient + (diffuse_factor+specular_factor))*light_color;
 
-    color = vec4(materialEmissive + texCol.rgb * finalLight, texCol.a);
+    color = vec4(materialEmissive + texCol.rgb * totalLight, texCol.a);
 }
 
 )XXX"

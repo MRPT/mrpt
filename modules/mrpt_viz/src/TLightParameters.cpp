@@ -19,15 +19,54 @@ using namespace mrpt;
 using namespace mrpt::viz;
 using namespace std;
 
+// ===== TLight serialization =====
+
+void TLight::writeToStream(mrpt::serialization::CArchive& out) const
+{
+  const uint8_t version = 0;
+  out << version;
+  out << static_cast<uint8_t>(type);
+  out << color << diffuse << specular << direction << position;
+  out << attenuation_constant << attenuation_linear << attenuation_quadratic;
+  out << spot_inner_cutoff_deg << spot_outer_cutoff_deg;
+}
+
+void TLight::readFromStream(mrpt::serialization::CArchive& in)
+{
+  uint8_t version;
+  in >> version;
+
+  switch (version)
+  {
+    case 0:
+    {
+      uint8_t t;
+      in >> t;
+      type = static_cast<TLightType>(t);
+      in >> color >> diffuse >> specular >> direction >> position;
+      in >> attenuation_constant >> attenuation_linear >> attenuation_quadratic;
+      in >> spot_inner_cutoff_deg >> spot_outer_cutoff_deg;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+}
+
+// ===== TLightParameters serialization =====
+
 void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
 {
-  const uint8_t version = 4;
+  const uint8_t version = 5;
   out << version;
 
-  out << diffuse << ambient << specular << direction << color;
-  out << shadow_bias << shadow_bias_cam2frag << shadow_bias_normal;               // v2
-  out << eyeDistance2lightShadowExtension << minimum_shadow_map_extension_ratio;  // v3
-  out << gamma_correction;                                                        // v4
+  // v5: multi-light format
+  out << ambient;
+  out << shadow_bias << shadow_bias_cam2frag << shadow_bias_normal;
+  out << eyeDistance2lightShadowExtension << minimum_shadow_map_extension_ratio;
+  out << gamma_correction;
+  out << static_cast<uint8_t>(lights.size());
+  for (const auto& l : lights) l.writeToStream(out);
 }
 
 void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
@@ -39,18 +78,25 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
   {
     case 0:
     {
+      // Legacy v0: diffuse/ambient/specular were TColorf, direction was TVector3Df
       mrpt::img::TColorf diffuseCol, ambientCol, specularCol;
-      in >> diffuseCol >> ambientCol >> specularCol >> direction;
+      mrpt::math::TVector3Df dir;
+      in >> diffuseCol >> ambientCol >> specularCol >> dir;
       ambient = ambientCol.R;
-      specular = specularCol.R;
-      diffuse = 1.0f;
-      color = diffuseCol;
+      lights.clear();
+      auto l = TLight::Directional(dir, diffuseCol, 1.0f, specularCol.R);
+      lights.push_back(l);
     }
     break;
     case 1:
     case 2:
     case 3:
     case 4:
+    {
+      // Legacy single-light format
+      float diffuse, specular;
+      mrpt::math::TVector3Df direction;
+      mrpt::img::TColorf color;
       in >> diffuse >> ambient >> specular >> direction >> color;
       if (version >= 2) in >> shadow_bias >> shadow_bias_cam2frag >> shadow_bias_normal;
       if (version >= 3)
@@ -58,8 +104,25 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
       if (version >= 4)
         in >> gamma_correction;
       else
-        gamma_correction = true;  // default for older files
-      break;
+        gamma_correction = true;
+
+      lights.clear();
+      auto l = TLight::Directional(direction, color, diffuse, specular);
+      lights.push_back(l);
+    }
+    break;
+    case 5:
+    {
+      in >> ambient;
+      in >> shadow_bias >> shadow_bias_cam2frag >> shadow_bias_normal;
+      in >> eyeDistance2lightShadowExtension >> minimum_shadow_map_extension_ratio;
+      in >> gamma_correction;
+      uint8_t numLights;
+      in >> numLights;
+      lights.resize(numLights);
+      for (auto& l : lights) l.readFromStream(in);
+    }
+    break;
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };

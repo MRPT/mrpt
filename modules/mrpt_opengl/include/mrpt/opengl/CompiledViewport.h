@@ -416,12 +416,18 @@ class CompiledViewport
   /** Lighting parameters */
   mrpt::viz::TLightParameters m_lightParams;
 
-  /** Cached lighting state (for detecting changes) */
+  /** Cached lighting state (for detecting changes that affect rendering).
+   * Light uniforms are uploaded every frame from m_lightParams, so this
+   * only needs to detect changes that require matrix recomputation
+   * (shadow map P/V depends on primary directional direction) or
+   * that should trigger a repaint. */
   struct LightState
   {
-    mrpt::math::TVector3Df direction;
-    mrpt::img::TColorf ambient;
-    mrpt::img::TColorf diffuse;
+    float ambient = 0;
+    size_t numLights = 0;
+    mrpt::math::TVector3Df primaryDirection{0, 0, -1};
+    /** Coarse hash of all light parameters to detect any change */
+    size_t paramsHash = 0;
 
     bool operator!=(const LightState& other) const;
   };

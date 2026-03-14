@@ -238,7 +238,44 @@ The following APIs have been removed in MRPT 3.0 with no direct replacement:
 
 ---
 
-## 10. Moved classes/functions
+## 10. `TLightParameters` multi-light API
+
+`TLightParameters` no longer stores a single directional light via flat fields
+(`direction`, `diffuse`, `specular`, `color`). Instead it holds a `std::vector<TLight> lights`
+supporting up to 8 simultaneous lights of three types: `TLightType::Directional`,
+`TLightType::Point`, and `TLightType::Spot`.
+
+**Before (MRPT 2.x):**
+```cpp
+auto& lp = viewport->lightParameters();
+lp.direction = {-0.4f, -0.4f, -0.8f};
+lp.diffuse   = 0.8f;
+lp.specular  = 0.95f;
+lp.color     = {1.0f, 1.0f, 1.0f};
+```
+
+**After (MRPT 3.0):**
+```cpp
+auto& lp = viewport->lightParameters();
+// Access the default directional light:
+lp.lights[0].direction = {-0.4f, -0.4f, -0.8f};
+lp.lights[0].diffuse   = 0.8f;
+lp.lights[0].specular  = 0.95f;
+lp.lights[0].color     = {1.0f, 1.0f, 1.0f};
+
+// Add a point light:
+lp.lights.push_back(mrpt::viz::TLight::PointLight(
+    {5.0f, 0.0f, 3.0f},  // position
+    {1.0f, 0.9f, 0.8f}   // color
+));
+```
+
+The global `ambient` field remains on `TLightParameters`. Shadow mapping
+continues to apply only to the first directional light.
+
+---
+
+## 11. Moved classes/functions
 
 - `mrpt::vision::CVideoFileWriter.h` becomes `mrpt::img::CVideoFileWriter.h`. It no longer supports MP4, only simpler AVI formats, but it is selfcontained without external libraries.
 - `mrpt::hwdrivers::prepareVideoSourceFromUserSelection()` becomes `mrpt::apps::prepareVideoSourceFromUserSelection()` (header: `<mrpt/apps_gui/CameraSelectionGUI.h>`).
@@ -247,7 +284,7 @@ When using this function, add `mrpt_libapps_gui` to your CMake dependencies.
 
 ---
 
-## 11. Step-by-step migration checklist
+## 12. Step-by-step migration checklist
 
 1. **CMakeLists.txt**: Replace `mrpt-foo` → `mrpt_foo` in `find_package` calls,
    and `mrpt::foo` → `mrpt::mrpt_foo` in `target_link_libraries`.
