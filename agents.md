@@ -148,3 +148,9 @@ For public member variables, use `.def_readwrite("name", &T::name)` or `.def_rea
 **Not yet implemented:** `obs`, `maps`, `gui`, `opengl`, `slam`, `nav`, `io`, `graphs`, `graphslam`, `kinematics`, `topography`, `bayes`, `random`, `hwdrivers`, `comms`, `vision`, `imgui`, `typemeta`.
 
 See `python/pybind11_plan_v3.md` for a detailed plan on extending wrappers to all modules.
+
+
+## 6. Instructions for AI agents
+
+- Do not use the compound command "cd foo && git ...", instead, use "git -C foo ...".
+
