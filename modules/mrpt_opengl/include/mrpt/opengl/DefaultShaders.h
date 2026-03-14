@@ -59,4 +59,7 @@ static constexpr int MATERIAL_DIFFUSE_TEXTURE_UNIT = 0;
 // Use GL_TEXTURE1 for shadow map:
 static constexpr int SHADOW_MAP_TEXTURE_UNIT = 1;
 
+// Use GL_TEXTURE2 for normal map:
+static constexpr int NORMAL_MAP_TEXTURE_UNIT = 2;
+
 }  // namespace mrpt::opengl

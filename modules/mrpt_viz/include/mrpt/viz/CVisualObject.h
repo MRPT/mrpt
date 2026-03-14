@@ -672,6 +672,18 @@ class VisualObjectParams_TexturedTriangles : public virtual CVisualObject
 
   [[nodiscard]] bool textureImageHasBeenAssigned() const { return m_textureImageAssigned; }
 
+  /** Assigns a normal map image for tangent-space normal mapping.
+   * The image should encode normals in tangent space as RGB where
+   * (128,128,255) represents the unperturbed surface normal.
+   * \note Images are copied, the original ones can be deleted. */
+  void assignNormalMap(const mrpt::img::CImage& img);
+
+  /** Similar to assignNormalMap, but with move semantics. */
+  void assignNormalMap(mrpt::img::CImage&& img);
+
+  [[nodiscard]] const mrpt::img::CImage& getNormalMapImage() const { return m_normalMapImage; }
+  [[nodiscard]] bool normalMapHasBeenAssigned() const { return m_normalMapAssigned; }
+
   /** Enable linear interpolation of textures (default=false, use nearest
    * pixel) */
   void enableTextureLinearInterpolation(bool enable) { m_textureInterpolate = enable; }
@@ -712,6 +724,9 @@ class VisualObjectParams_TexturedTriangles : public virtual CVisualObject
   mutable bool m_enableTransparency{false};
   bool m_textureInterpolate = false;
   bool m_textureUseMipMaps = true;
+
+  bool m_normalMapAssigned = false;
+  mutable mrpt::img::CImage m_normalMapImage;
 };
 
 class VisualObjectParams_Lines : public virtual CVisualObject

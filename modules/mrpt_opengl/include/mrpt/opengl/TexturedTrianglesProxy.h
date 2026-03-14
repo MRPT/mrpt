@@ -83,6 +83,7 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
     bool textureInterpolate = false;
     bool textureMipMaps = true;
     bool hasTransparency = false;
+    bool hasNormalMap = false;
   };
 
   /** Cached parameters from last compile/update */
@@ -91,9 +92,16 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
   /** Owned texture object (created from source image) */
   std::unique_ptr<Texture> m_ownedTexture;
 
+  /** Owned normal map texture object */
+  std::unique_ptr<Texture> m_ownedNormalMapTexture;
+
   /** Default 1x1 white GL texture ID (raw GL, bypasses MRPT tracking).
    *  Used when no texture is assigned so vertex color passes through. */
   mutable unsigned int m_defaultWhiteGLTexId = 0;
+
+  /** Default 1x1 flat-blue normal map GL texture ID (raw GL).
+   *  Encodes the identity normal (0,0,1) in tangent space. */
+  mutable unsigned int m_defaultFlatNormalMapGLTexId = 0;
 
   /** Helper: Extract texture rendering parameters from source object */
   void extractTextureParams(const mrpt::viz::CVisualObject* sourceObj);
@@ -103,6 +111,9 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
 
   /** Helper: Create or update texture from source image */
   void updateTexture(const mrpt::viz::VisualObjectParams_TexturedTriangles* texTriObj);
+
+  /** Helper: Create or update normal map texture from source image */
+  void updateNormalMapTexture(const mrpt::viz::VisualObjectParams_TexturedTriangles* texTriObj);
 
   /** Helper: Setup texture state for rendering */
   void bindTexture() const;

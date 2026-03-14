@@ -47,9 +47,16 @@ void TexturedTrianglesProxy::compile(const CVisualObject* sourceObj)
 
   // Create/update texture from source image
   const auto* texTriObj = dynamic_cast<const VisualObjectParams_TexturedTriangles*>(sourceObj);
-  if (texTriObj && texTriObj->textureImageHasBeenAssigned())
+  if (texTriObj)
   {
-    updateTexture(texTriObj);
+    if (texTriObj->textureImageHasBeenAssigned())
+    {
+      updateTexture(texTriObj);
+    }
+    if (texTriObj->normalMapHasBeenAssigned())
+    {
+      updateNormalMapTexture(texTriObj);
+    }
   }
 
   MRPT_END
@@ -74,9 +81,16 @@ void TexturedTrianglesProxy::updateBuffers(const CVisualObject* sourceObj)
 
   // Update texture if image changed
   const auto* texTriObj = dynamic_cast<const VisualObjectParams_TexturedTriangles*>(sourceObj);
-  if (texTriObj && texTriObj->textureImageHasBeenAssigned())
+  if (texTriObj)
   {
-    updateTexture(texTriObj);
+    if (texTriObj->textureImageHasBeenAssigned())
+    {
+      updateTexture(texTriObj);
+    }
+    if (texTriObj->normalMapHasBeenAssigned())
+    {
+      updateNormalMapTexture(texTriObj);
+    }
   }
 
   MRPT_END
@@ -168,6 +182,8 @@ void TexturedTrianglesProxy::extractTextureParams(const CVisualObject* sourceObj
     // Check if alpha image is assigned
     const auto& alphaImg = texTriObj->getTextureAlphaImage();
     m_params.hasTransparency = !alphaImg.isEmpty();
+
+    m_params.hasNormalMap = texTriObj->normalMapHasBeenAssigned();
   }
 }
 
@@ -183,6 +199,12 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
   if (rc.shader->hasUniform("textureSampler"))
   {
     uploadInt(rc, "textureSampler", MATERIAL_DIFFUSE_TEXTURE_UNIT);
+  }
+
+  // Normal map sampler uniform (bind to texture unit 2)
+  if (rc.shader->hasUniform("normalMapSampler"))
+  {
+    uploadInt(rc, "normalMapSampler", NORMAL_MAP_TEXTURE_UNIT);
   }
 
   // Material specular intensity
@@ -340,9 +362,45 @@ void TexturedTrianglesProxy::updateTexture(const VisualObjectParams_TexturedTria
 #endif
 }
 
+void TexturedTrianglesProxy::updateNormalMapTexture(
+    const VisualObjectParams_TexturedTriangles* texTriObj)
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  if (!texTriObj || !texTriObj->normalMapHasBeenAssigned())
+  {
+    return;
+  }
+
+  const auto& normalMapImage = texTriObj->getNormalMapImage();
+  if (normalMapImage.isEmpty())
+  {
+    return;
+  }
+
+  if (!m_ownedNormalMapTexture)
+  {
+    m_ownedNormalMapTexture = std::make_unique<Texture>();
+  }
+
+  Texture::Options options;
+  options.generateMipMaps = m_params.textureMipMaps;
+  options.magnifyLinearFilter = true;  // always interpolate normal maps
+  options.enableTransparency = false;
+  options.isColorData = false;  // normal maps are linear data, not sRGB
+
+  if (m_ownedNormalMapTexture->initialized())
+  {
+    m_ownedNormalMapTexture->unloadTexture();
+  }
+
+  m_ownedNormalMapTexture->assignImage2D(normalMapImage, options, NORMAL_MAP_TEXTURE_UNIT);
+#endif
+}
+
 void TexturedTrianglesProxy::bindTexture() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  // Bind diffuse texture (unit 0)
   glActiveTexture(GL_TEXTURE0 + MATERIAL_DIFFUSE_TEXTURE_UNIT);
   if (m_ownedTexture)
   {
@@ -352,7 +410,6 @@ void TexturedTrianglesProxy::bindTexture() const
   {
     // No texture assigned: create a 1x1 white texture so vertex color passes
     // through (texColor=white, final=white*vertexColor=vertexColor)
-    // Create a 1x1 white GL texture bypassing MRPT tracking to avoid ID conflicts
     if (m_defaultWhiteGLTexId == 0)
     {
       glGenTextures(1, &m_defaultWhiteGLTexId);
@@ -364,12 +421,37 @@ void TexturedTrianglesProxy::bindTexture() const
     }
     glBindTexture(GL_TEXTURE_2D, m_defaultWhiteGLTexId);
   }
+
+  // Bind normal map (unit 2)
+  glActiveTexture(GL_TEXTURE0 + NORMAL_MAP_TEXTURE_UNIT);
+  if (m_ownedNormalMapTexture)
+  {
+    m_ownedNormalMapTexture->bindAsTexture2D();
+  }
+  else
+  {
+    // No normal map: create a 1x1 flat-blue texture encoding identity normal
+    // (0.5, 0.5, 1.0) in tangent space → (0, 0, 1) after decode
+    if (m_defaultFlatNormalMapGLTexId == 0)
+    {
+      glGenTextures(1, &m_defaultFlatNormalMapGLTexId);
+      glBindTexture(GL_TEXTURE_2D, m_defaultFlatNormalMapGLTexId);
+      const uint8_t flatNormal[3] = {128, 128, 255};
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, flatNormal);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
+    glBindTexture(GL_TEXTURE_2D, m_defaultFlatNormalMapGLTexId);
+  }
 #endif
 }
 
 void TexturedTrianglesProxy::unbindTexture() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  glActiveTexture(GL_TEXTURE0 + NORMAL_MAP_TEXTURE_UNIT);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
   glActiveTexture(GL_TEXTURE0 + MATERIAL_DIFFUSE_TEXTURE_UNIT);
   glBindTexture(GL_TEXTURE_2D, 0);
 #endif

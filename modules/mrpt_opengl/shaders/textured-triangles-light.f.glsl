@@ -22,6 +22,7 @@ uniform lowp vec3 ambient_sky_color;
 uniform lowp vec3 ambient_ground_color;
 
 uniform lowp sampler2D textureSampler;
+uniform lowp sampler2D normalMapSampler;
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;
 uniform highp float materialSpecularExponent;
@@ -37,12 +38,25 @@ uniform highp float fog_density;
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
 in lowp vec4 frag_vertexColor;
+in highp vec3 frag_tangent;
 
 out lowp vec4 color;
 
 void main()
 {
-    highp vec3 normal = normalize(frag_normal);
+    highp vec3 N = normalize(frag_normal);
+
+    // Normal mapping via TBN matrix
+    highp vec3 T = normalize(frag_tangent);
+    // Re-orthogonalize T with respect to N (Gram-Schmidt)
+    T = normalize(T - dot(T, N) * N);
+    highp vec3 B = cross(N, T);
+    highp mat3 TBN = mat3(T, B, N);
+
+    // Sample normal map: decode from [0,1] to [-1,1]
+    highp vec3 tangentNormal = texture(normalMapSampler, frag_UV).rgb * 2.0 - 1.0;
+    highp vec3 normal = normalize(TBN * tangentNormal);
+
     highp vec3 viewDirection = normalize(cam_position - frag_position);
 
     // Hemisphere ambient

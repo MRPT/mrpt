@@ -33,7 +33,7 @@ into GPU-side proxies that own the actual OpenGL buffers (VBOs, VAOs, textures).
 ```
 mrpt::viz::CVisualObject(base: pose, color, name, visibility, dirty flag)
  ├── VisualObjectParams_Triangles  (mixin: triangle buffer, lighting, cull face)
- ├── VisualObjectParams_TexturedTriangles (mixin: textured triangle buffer + texture image)
+ ├── VisualObjectParams_TexturedTriangles (mixin: textured triangle buffer + texture image + normal map)
  ├── VisualObjectParams_Lines (mixin: line buffer, line width, anti-aliasing)
  └── VisualObjectParams_Points(mixin: point buffer, point size)
 ```
@@ -156,8 +156,12 @@ live in `modules/mrpt_opengl/shaders/`):
   Phong-like directional lighting. Accepts ambient, diffuse, and specular
   light parameters from TLightParameters.
 - **TEXTURED_TRIANGLES_LIGHT** (ID 11): Same as TRIANGLES_LIGHT but
-  samples a diffuse texture map. Used by CSetOfTexturedTriangles, CMesh
-  with textures, CAssimpModel textured meshes, etc.
+  samples a diffuse texture map and supports normal mapping via a
+  tangent-space normal map (texture unit 2). The vertex shader passes
+  per-vertex tangent vectors (attribute location 4) to the fragment
+  shader, which builds a TBN matrix and perturbs the surface normal
+  before lighting. Used by CSetOfTexturedTriangles, CMesh with textures,
+  CAssimpModel textured meshes, etc.
 - **TRIANGLES_NO_LIGHT** (ID 12): Renders unlit, non-textured triangles
   (flat color from vertex attributes). Used when lighting is disabled.
 - **TEXTURED_TRIANGLES_NO_LIGHT** (ID 13): Unlit textured triangles.
@@ -169,7 +173,7 @@ live in `modules/mrpt_opengl/shaders/`):
   whether each fragment is in shadow. Includes PCF soft-shadow filtering
   (see below).
 - **TEXTURED_TRIANGLES_SHADOW_2ND** (ID 23): Same as TRIANGLES_SHADOW_2ND
-  but with diffuse texture sampling.
+  but with diffuse texture sampling and normal mapping support.
 - **DEBUG_TEXTURE_TO_SCREEN** (ID 30): Debug helper that renders a texture
   as a full-screen quad (useful for visualizing the shadow map).
 
@@ -253,6 +257,73 @@ and re-uploads geometry buffers for all of the object's proxies.
 Frustum culling is performed in the render queue builder: each proxy's
 bounding box is tested against the view frustum using a conservative
 8-corner intersection test, and invisible proxies are skipped.
+
+## 2.9 Normal mapping
+
+Normal mapping adds per-texel surface detail (brick walls, terrain,
+metal panels) without extra geometry, by perturbing the surface normal
+in the fragment shader using a tangent-space normal map.
+
+### Assigning a normal map
+
+Any object that inherits from `VisualObjectParams_TexturedTriangles`
+(CSetOfTexturedTriangles, CMesh, CAssimpModel textured meshes, etc.) can
+have a normal map:
+
+```cpp
+auto mesh = mrpt::viz::CSetOfTexturedTriangles::Create();
+mesh->assignImage(diffuseImg);
+mesh->assignNormalMap(normalMapImg);
+```
+
+`CAssimpModel` loads normal maps automatically from model materials
+(`aiTextureType_NORMALS` / `aiTextureType_HEIGHT`), so `.obj`, `.gltf`,
+`.fbx` and other formats with embedded or referenced normal maps work
+out of the box.
+
+### How it works
+
+**Vertex format**: `TTriangle::Vertex` stores a per-vertex `tangent`
+vector alongside the existing `normal` and `uv` fields. Assimp provides
+tangents via `aiProcess_CalcTangentSpace`; when tangents are missing
+(e.g. procedurally generated geometry), the proxy compilation step
+computes them from UV-coordinate deltas as a fallback.
+
+**GPU pipeline**: The vertex shader transforms the tangent vector to
+world space (attribute location 4) and passes it to the fragment shader.
+The fragment shader:
+
+1. Re-orthogonalizes T with respect to N via Gram-Schmidt.
+2. Computes the bitangent as B = cross(N, T).
+3. Builds the TBN matrix = mat3(T, B, N).
+4. Samples the normal map (texture unit 2, uniform `normalMapSampler`),
+   decodes from [0,1] to [-1,1], and transforms the tangent-space normal
+   to world space: `normal = normalize(TBN * tangentNormal)`.
+5. Uses this perturbed normal for all lighting calculations (diffuse,
+   specular, hemisphere ambient, shadow bias).
+
+**Default texture**: When no normal map is assigned, a 1x1 flat-blue
+texture (RGB = 128,128,255) is bound, encoding the identity
+tangent-space normal (0,0,1). After the TBN transform this reproduces
+the original geometric normal exactly — zero branching in the shader,
+identical cost to the pre-normal-mapping path.
+
+**sRGB handling**: Normal maps are uploaded with `isColorData = false`
+(`GL_RGB8` instead of `GL_SRGB8`) so the GPU does not apply the
+sRGB-to-linear decode that would distort the encoded normal directions.
+
+### Texture units
+
+| Unit | Constant | Purpose |
+|------|----------|---------|
+| 0 | `MATERIAL_DIFFUSE_TEXTURE_UNIT` | Diffuse (color) map |
+| 1 | `SHADOW_MAP_TEXTURE_UNIT` | Shadow depth map |
+| 2 | `NORMAL_MAP_TEXTURE_UNIT` | Tangent-space normal map |
+
+### Performance
+
+One extra texture sample plus one 3x3 matrix-vector multiply per
+fragment. Runs on any GPU supporting OpenGL ES 3.0 / OpenGL 3.3.
 
 # 3. Relevant C++ classes
 
@@ -377,6 +448,15 @@ minimized and restored, etc. see:
   framebuffer attachment also uses `GL_SRGB8` so off-screen output is
   equally correct.
 
+- **Normal mapping**: Tangent-space normal maps can be assigned to any
+  textured object via `assignNormalMap(CImage)`. The textured lighting
+  shaders build a per-fragment TBN matrix from the interpolated vertex
+  normal and tangent, sample the normal map (texture unit 2), and use
+  the perturbed normal for all lighting calculations. When no normal map
+  is assigned a 1x1 flat-blue default texture preserves the original
+  geometric normal at zero extra cost. CAssimpModel loads normal maps
+  from model materials automatically. See section 2.9 for details.
+
 # 9. TO-DO list
 
 Proposed improvements:
@@ -430,21 +510,35 @@ Implemented:
 - One extra `vec3` uniform (`materialEmissive`), one extra add in the shader.
 - Serialization version bumped to 4 with backwards compatibility.
 
-Tier 2 - Moderate effort, significant quality improvement  
+Tier 2 - Moderate effort, significant quality improvement
 
-5. Normal mapping
-  
-Normal maps add dramatic surface detail (brick walls, terrain, metal panels) without extra geometry. This is the single biggest visual quality improvement per GPU cycle.   
-  
-Proposal:
-- Add texture unit 2 for normal maps.  
-- Add assignNormalMap(CImage) to objects that support textures (CSetOfTexturedTriangles, CMesh, CAssimpModel).
-- Compute tangent/bitangent per-vertex during mesh loading (Assimp already provides these via aiProcess_CalcTangentSpace).
-- Add tangent attribute (location 4) to the vertex format. 
-- In the fragment shader: sample the normal map, transform from tangent space to world space, use the perturbed normal for lighting.   
-- When no normal map is assigned, the shader samples a 1x1 flat-blue texture (0.5, 0.5, 1.0) which produces the identity normal - zero branching. 
+5. ~~Normal mapping~~ **DONE**
 
-GPU cost: one extra texture sample + one matrix multiply per fragment. Runs fine on any GPU from 2012 onwards.
+~~Normal maps add dramatic surface detail (brick walls, terrain, metal panels) without extra geometry. This is the single biggest visual quality improvement per GPU cycle.~~
+
+Implemented:
+- Added texture unit 2 (`NORMAL_MAP_TEXTURE_UNIT`) for normal maps.
+- Added `assignNormalMap(CImage)` to `VisualObjectParams_TexturedTriangles` (applies
+  to CSetOfTexturedTriangles, CMesh, CAssimpModel, etc.).
+- Tangent vectors are computed per-vertex: Assimp provides them via
+  `aiProcess_CalcTangentSpace`; for other objects, tangents are computed from
+  UV deltas as a fallback in the proxy compilation step.
+- Added `tangent` field to `TTriangle::Vertex` and tangent buffer at vertex
+  attribute location 4.
+- All four textured lighting shaders (textured-triangles-light and
+  textured-triangles-shadow-2nd, vertex + fragment) build a TBN matrix in the
+  fragment shader from the interpolated normal and tangent, sample the normal
+  map, and transform the perturbed normal to world space for lighting.
+- When no normal map is assigned, a 1x1 flat-blue default texture (128,128,255)
+  is bound, producing the identity tangent-space normal (0,0,1) — zero
+  branching, identical to pre-normal-mapping rendering.
+- CAssimpModel automatically loads normal map textures from Assimp materials
+  (`aiTextureType_NORMALS` and `aiTextureType_HEIGHT`).
+- Normal map textures are uploaded as linear data (`isColorData = false`) to
+  bypass sRGB decoding.
+- Serialization version bumped to 4 with backwards compatibility.
+
+GPU cost: one extra texture sample + one 3×3 matrix multiply per fragment.
 
 6. Specular/gloss map support 
 
@@ -516,6 +610,6 @@ Suggested implementation order to maximize visual improvement per commit:
 4. Multiple lights (Tier 1.1) - DONE
 5. Hemisphere ambient (Tier 2.8) - DONE
 6. Fog (Tier 2.7) - DONE
-7. Normal mapping (Tier 2.5) - biggest visual quality jump, needs tangent attributes
+7. Normal mapping (Tier 2.5) - DONE
 8. SSAO (Tier 3.9) - optional quality mode
 
