@@ -11,6 +11,7 @@ uniform highp vec3 light_direction;
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;
 uniform highp float materialSpecularExponent;
+uniform lowp vec3 materialEmissive;
 
 in highp vec3 frag_position, frag_normal;
 in lowp vec4 frag_materialColor;
@@ -33,6 +34,6 @@ void main()
 
     mediump vec3 finalLight = (light_ambient + (diffuse_factor+specular_factor))*light_color;
 
-    color = vec4(frag_materialColor.rgb * finalLight, frag_materialColor.a);
+    color = vec4(materialEmissive + frag_materialColor.rgb * finalLight, frag_materialColor.a);
 }
 )XXX"

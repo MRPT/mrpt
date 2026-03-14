@@ -102,6 +102,11 @@ class CVisualObject : public mrpt::serialization::CSerializable
      *  Typical values: 8 (rough), 32 (default, plastic), 128 (metal/mirror). */
     float materialSpecularExponent = 16.0f;
 
+    /** Emissive color: light emitted by the object regardless of scene
+     *  lighting. Default is black (no emission). Useful for displays,
+     *  indicator lights, laser beams, etc. */
+    mrpt::img::TColorf materialEmissive{0, 0, 0, 0};
+
     /** SE(3) pose wrt the parent coordinate reference. This class
      * automatically holds the cached 3x3 rotation matrix for quick load
      * into opengl stack. */
@@ -307,6 +312,27 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.materialSpecularExponent = exponent;
+    notifyChange();
+  }
+
+  /** Emissive color: light emitted by the object regardless of scene
+   *  lighting. Default is black (no emission). Useful for displays,
+   *  indicator lights, laser beams, warning signs, etc.
+   *  The emissive term is added to the final lighting equation as:
+   *  finalColor = emissive + (ambient + diffuse + specular) * materialColor
+   */
+  [[nodiscard]] mrpt::img::TColorf materialEmissive() const
+  {
+    std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+    return m_state.materialEmissive;
+  }
+
+  /** \overload */
+  void materialEmissive(const mrpt::img::TColorf& color)
+  {
+    std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+    m_state.materialEmissive = color;
+    lckWrite.unlock();
     notifyChange();
   }
 

@@ -13,6 +13,7 @@ uniform lowp sampler2D textureSampler;
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;
 uniform highp float materialSpecularExponent;
+uniform lowp vec3 materialEmissive;
 
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
@@ -38,7 +39,7 @@ void main()
     lowp vec4 texCol = texture(textureSampler, frag_UV) * frag_vertexColor;
     mediump vec3 finalLight = (light_ambient + (diffuse_factor+specular_factor))*light_color;
 
-    color = vec4(texCol.rgb * finalLight, texCol.a);
+    color = vec4(materialEmissive + texCol.rgb * finalLight, texCol.a);
 }
 
 )XXX"
