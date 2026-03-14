@@ -43,8 +43,9 @@ struct TTriangle
   struct Vertex
   {
     mrpt::math::TPointXYZfRGBAu8 xyzrgba;
-    mrpt::math::TVector3Df normal;  //!< Must not be normalized
-    mrpt::math::TVector2Df uv;      //!< texture coordinates (0,0)-(1,1)
+    mrpt::math::TVector3Df normal;   //!< Must not be normalized
+    mrpt::math::TVector2Df uv;       //!< texture coordinates (0,0)-(1,1)
+    mrpt::math::TVector3Df tangent;  //!< Tangent vector for normal mapping (0,0,0 if unset)
 
     void setColor(const mrpt::img::TColor& c)
     {
@@ -141,6 +142,12 @@ struct TTriangle
    * class should use custom, more accurate normals to enable soft lighting.
    */
   void computeNormals();
+
+  /** Compute tangent vectors from UV coordinates and vertex positions.
+   *  Used for normal mapping when tangents are not provided by the mesh loader.
+   *  All three vertices get the same tangent (flat tangent per triangle).
+   */
+  void computeTangents();
 
   // These methods are explicitly instantiated for T=float and double.
   void readFrom(mrpt::serialization::CArchive& i);

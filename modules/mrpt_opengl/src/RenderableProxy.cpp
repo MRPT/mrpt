@@ -18,6 +18,8 @@
 #include <mrpt/opengl/Texture.h>
 #include <mrpt/opengl/opengl_api.h>
 
+#include <cmath>
+
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::img;
@@ -598,19 +600,57 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
   std::vector<TVector3Df> normals;
   std::vector<TColor> colors;
   std::vector<mrpt::math::TPoint2Df> texCoords;
+  std::vector<TVector3Df> tangents;
 
   vertices.reserve(vertexCount);
   normals.reserve(vertexCount);
   colors.reserve(vertexCount);
   texCoords.reserve(vertexCount);
+  tangents.reserve(vertexCount);
 
   for (const auto& tri : triangles)
   {
+    // Check if we need to compute tangents from UV (fallback for zero tangents)
+    TVector3Df triTangent = tri.vertices[0].tangent;
+    const bool tangentIsZero = (triTangent.x == 0 && triTangent.y == 0 && triTangent.z == 0);
+
+    if (tangentIsZero)
+    {
+      // Compute tangent from edge vectors and UV deltas
+      const auto& p0 = tri.vertices[0].xyzrgba.pt;
+      const auto& p1 = tri.vertices[1].xyzrgba.pt;
+      const auto& p2 = tri.vertices[2].xyzrgba.pt;
+      const float e1x = p1.x - p0.x, e1y = p1.y - p0.y, e1z = p1.z - p0.z;
+      const float e2x = p2.x - p0.x, e2y = p2.y - p0.y, e2z = p2.z - p0.z;
+      const float du1 = tri.vertices[1].uv.x - tri.vertices[0].uv.x;
+      const float dv1 = tri.vertices[1].uv.y - tri.vertices[0].uv.y;
+      const float du2 = tri.vertices[2].uv.x - tri.vertices[0].uv.x;
+      const float dv2 = tri.vertices[2].uv.y - tri.vertices[0].uv.y;
+      const float det = du1 * dv2 - du2 * dv1;
+      if (std::abs(det) > 1e-12f)
+      {
+        const float r = 1.0f / det;
+        triTangent = {
+            r * (dv2 * e1x - dv1 * e2x), r * (dv2 * e1y - dv1 * e2y), r * (dv2 * e1z - dv1 * e2z)};
+      }
+      else
+      {
+        triTangent = {1.0f, 0.0f, 0.0f};  // degenerate UV: arbitrary tangent
+      }
+    }
+
     for (int i = 0; i < 3; ++i)
     {
       vertices.push_back(tri.vertices[i].xyzrgba.pt);
       normals.push_back(tri.vertices[i].normal);
       texCoords.emplace_back(tri.vertices[i].uv.x, tri.vertices[i].uv.y);
+
+      // Use per-vertex tangent if available, else the computed per-triangle tangent
+      const auto& vt = tri.vertices[i].tangent;
+      if (vt.x != 0 || vt.y != 0 || vt.z != 0)
+        tangents.push_back(vt);
+      else
+        tangents.push_back(triTangent);
 
       // rgba.r/g/b/a are uint8_t (TPointXYZfRGBAu8), use directly:
       const auto& rgba = tri.vertices[i].xyzrgba;
@@ -650,6 +690,13 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
       texCoords.data(), static_cast<int>(sizeof(mrpt::math::TPoint2Df) * vertexCount));
   glEnableVertexAttribArray(3);
   glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(mrpt::math::TPoint2Df), nullptr);
+
+  // Attribute 4: tangent (vec3) for normal mapping
+  m_tangentBuffer.createOnce();
+  m_tangentBuffer.bind();
+  m_tangentBuffer.allocate(tangents.data(), static_cast<int>(sizeof(TVector3Df) * vertexCount));
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(TVector3Df), nullptr);
 
   // Unbind
   glBindVertexArray(0);

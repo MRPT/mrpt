@@ -202,6 +202,7 @@ void CAssimpModel::loadScene(const std::string& file_name, int flags)
   assimpFlags |= aiProcess_Triangulate;
   assimpFlags |= aiProcess_GenSmoothNormals;
   assimpFlags |= aiProcess_JoinIdenticalVertices;
+  assimpFlags |= aiProcess_CalcTangentSpace;
 
   // Load the scene
   m_assimpScene->scene = m_assimpScene->importer.ReadFile(file_name, assimpFlags);
@@ -445,6 +446,45 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
     materialColor = getColor_u8();
   }
 
+  // Check for normal map texture
+  std::string normalMapPath;
+  if (!ignoreTextures && material)
+  {
+    aiString aiNormPath;
+    // Try HEIGHT first (bump map), then NORMALS
+    if (material->GetTexture(aiTextureType_NORMALS, 0, &aiNormPath) == AI_SUCCESS ||
+        material->GetTexture(aiTextureType_HEIGHT, 0, &aiNormPath) == AI_SUCCESS)
+    {
+      std::string normFile = aiNormPath.C_Str();
+      if (!normFile.empty() && normFile[0] == '*')
+      {
+        normalMapPath = "*embedded_" + normFile.substr(1);
+      }
+      else
+      {
+        if (mrpt::system::fileExists(normFile))
+        {
+          normalMapPath = normFile;
+        }
+        else
+        {
+          normalMapPath = m_modelDirectory + "/" + normFile;
+          if (!mrpt::system::fileExists(normalMapPath))
+          {
+            std::string baseName = mrpt::system::extractFileName(normFile);
+            std::string ext = mrpt::system::extractFileExtension(normFile);
+            if (!ext.empty()) baseName += "." + ext;
+            normalMapPath = m_modelDirectory + "/" + baseName;
+            if (!mrpt::system::fileExists(normalMapPath))
+            {
+              normalMapPath.clear();
+            }
+          }
+        }
+      }
+    }
+  }
+
   // Determine target: textured or non-textured
   const bool hasTexture = !texturePath.empty();
 
@@ -452,6 +492,16 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
   if (hasTexture)
   {
     texturedMesh = getOrCreateTexturedMesh(texturePath);
+
+    // Assign normal map if found and not yet assigned
+    if (!normalMapPath.empty() && texturedMesh && !texturedMesh->normalMapHasBeenAssigned())
+    {
+      const LoadedTexture* normTex = loadTexture(normalMapPath);
+      if (normTex != nullptr)
+      {
+        texturedMesh->assignNormalMap(normTex->rgb);
+      }
+    }
   }
 
   // Process faces (triangles)
@@ -526,6 +576,17 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
       {
         tri.vertices[v].uv.x = 0.0f;
         tri.vertices[v].uv.y = 0.0f;
+      }
+
+      // Tangent (for normal mapping)
+      if (mesh->HasTangentsAndBitangents())
+      {
+        const aiVector3D& tan = mesh->mTangents[idx];
+        // Transform tangent (rotation only, same as normals)
+        const TPoint3D worldTan = transform.rotateVector(TPoint3D(tan.x, tan.y, tan.z));
+        tri.vertices[v].tangent = TVector3Df(
+            static_cast<float>(worldTan.x), static_cast<float>(worldTan.y),
+            static_cast<float>(worldTan.z));
       }
     }
 

@@ -480,6 +480,9 @@ class TexturedTrianglesProxyBase : public TrianglesProxyBase
   /** Texture coordinate buffer (UV coordinates) */
   Buffer m_texCoordBuffer{Buffer::Type::Vertex};
 
+  /** Tangent vector buffer (for normal mapping TBN matrix) */
+  Buffer m_tangentBuffer{Buffer::Type::Vertex};
+
   /** Texture object (owned externally, managed by TextureCache) */
   class Texture* m_texture = nullptr;
 
