@@ -15,6 +15,7 @@ uniform mediump float light_ambient, light_diffuse, light_specular;
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;  //  [0,1]
 uniform highp float materialSpecularExponent;
+uniform lowp vec3 materialEmissive;
 
 uniform lowp sampler2D textureSampler;
 
@@ -46,6 +47,6 @@ void main()
     // material texture color:
     lowp vec4 texCol = texture(textureSampler,frag_UV);
     
-    color = vec4(texCol.rgb * finalLight, texCol.a);
+    color = vec4(materialEmissive + texCol.rgb * finalLight, texCol.a);
 }
 )XXX"

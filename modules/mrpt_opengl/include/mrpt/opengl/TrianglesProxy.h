@@ -83,6 +83,7 @@ class TrianglesProxy : public TrianglesProxyBase
     mrpt::viz::TCullFace cullFace = mrpt::viz::TCullFace::NONE;
     float materialShininess = 0.2f;
     float materialSpecularExponent = 16.0f;
+    mrpt::img::TColorf materialEmissive{0, 0, 0, 0};
   };
 
   /** Cached parameters from last compile/update */

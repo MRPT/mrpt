@@ -150,6 +150,7 @@ void TexturedTrianglesProxy::extractTextureParams(const CVisualObject* sourceObj
   // Get material params from base object
   m_params.materialShininess = sourceObj->materialShininess();
   m_params.materialSpecularExponent = sourceObj->materialSpecularExponent();
+  m_params.materialEmissive = sourceObj->materialEmissive();
 
   // Get textured triangle-specific params
   const auto* texTriObj = dynamic_cast<const VisualObjectParams_TexturedTriangles*>(sourceObj);
@@ -190,6 +191,15 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
   if (rc.shader->hasUniform("materialSpecularExponent"))
   {
     uploadFloat(rc, "materialSpecularExponent", m_params.materialSpecularExponent);
+  }
+
+  // Emissive color
+  if (rc.shader->hasUniform("materialEmissive"))
+  {
+    uploadVector3(
+        rc, "materialEmissive",
+        mrpt::math::TVector3Df(
+            m_params.materialEmissive.R, m_params.materialEmissive.G, m_params.materialEmissive.B));
   }
 
   // Light parameters (if lighting enabled)

@@ -46,7 +46,7 @@ void CVisualObject::writeToStreamRender(mrpt::serialization::CArchive& out) cons
   // ...
 
   // can't be >31 (but it would be mad getting to that situation!)
-  const uint8_t serialization_version = 3;
+  const uint8_t serialization_version = 4;
 
   const bool all_scales_equal = (_.scale_x == _.scale_y && _.scale_z == _.scale_x);
   const bool all_scales_unity = (all_scales_equal && _.scale_x == 1.0f);
@@ -93,6 +93,8 @@ void CVisualObject::writeToStreamRender(mrpt::serialization::CArchive& out) cons
   out << _.representativePoint;                 // v1
   out << _.materialShininess << _.castShadows;  // v2
   out << _.materialSpecularExponent;            // v3
+  out << _.materialEmissive.R << _.materialEmissive.G  // v4
+      << _.materialEmissive.B;
 }
 
 void CVisualObject::readFromStreamRender(mrpt::serialization::CArchive& in)
@@ -132,6 +134,7 @@ void CVisualObject::readFromStreamRender(mrpt::serialization::CArchive& in)
       case 1:
       case 2:
       case 3:
+      case 4:
       {
         // "m_name"
         uint16_t nameLen = 0;
@@ -196,6 +199,15 @@ void CVisualObject::readFromStreamRender(mrpt::serialization::CArchive& in)
         else
         {
           _.materialSpecularExponent = 32.0f;
+        }
+
+        if (serialization_version >= 4)
+        {
+          in >> _.materialEmissive.R >> _.materialEmissive.G >> _.materialEmissive.B;
+        }
+        else
+        {
+          _.materialEmissive = mrpt::img::TColorf(0, 0, 0, 0);
         }
       }
       break;

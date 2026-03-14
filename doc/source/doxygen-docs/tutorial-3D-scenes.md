@@ -418,14 +418,17 @@ Implemented via the GPU sRGB pipeline (zero shader cost):
 
 GPU cost: literally zero (hardware LUT on both ends).
 
-4. Emissive term 
+4. ~~Emissive term~~ **DONE**
 
-Some objects (displays, indicator lights, laser beams, warning signs) should glow regardless of lighting. Currently there's no way to do this. 
+~~Some objects (displays, indicator lights, laser beams, warning signs) should glow regardless of lighting. Currently there's no way to do this.~~
 
-Proposal:
-- Add materialEmissive (TColorf, default black) to CVisualObject.
-- Add it to the lighting equation as: finalColor = emissive + (ambient + diffuse + specular) * materialColor.
-- One extra uniform, one extra add in the shader.
+Implemented:
+- Added `CVisualObject::materialEmissive(TColorf)` (default black = no emission).
+- The emissive term is added to the final lighting equation in all four lit
+  fragment shaders (triangles-light, textured-triangles-light, and both
+  shadow 2nd-pass variants) as: `finalColor = emissive + materialColor * lighting`.
+- One extra `vec3` uniform (`materialEmissive`), one extra add in the shader.
+- Serialization version bumped to 4 with backwards compatibility.
 
 Tier 2 - Moderate effort, significant quality improvement  
 
@@ -509,7 +512,7 @@ Suggested implementation order to maximize visual improvement per commit:
 
 1. ~~Gamma correction (Tier 1.3)~~ **DONE** - easiest, fixes all existing scenes
 2. ~~Blinn-Phong + configurable exponent (Tier 1.2)~~ **DONE** - trivial shader change
-3. Emissive term (Tier 1.4) - one uniform, one add
+3. ~~Emissive term (Tier 1.4)~~ **DONE** - one uniform, one add
 4. Multiple lights (Tier 1.1) - biggest feature, moderate effort
 5. Hemisphere ambient (Tier 2.8) - one mix, huge outdoor improvement
 6. Fog (Tier 2.7) - simple, useful for large scenes

@@ -138,6 +138,18 @@ void TestDisplay3D()
     theScene->insert(obj);
   }
 
+  // Emissive material example: a glowing yellow sphere that emits light
+  // regardless of scene lighting (like an indicator light or display)
+  {
+    auto obj = mrpt::viz::CSphere::Create();
+    obj->setColor(1, 1, 0);
+    obj->setRadius(0.4f);
+    obj->setLocation(3, 3, 1);
+    obj->materialEmissive(mrpt::img::TColorf(1.0f, 0.9f, 0.0f));
+    obj->setName("emissive_sphere");
+    theScene->insert(obj);
+  }
+
   // IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
   win.unlockAccess3DScene();
 

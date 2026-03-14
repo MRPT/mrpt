@@ -15,6 +15,7 @@ uniform mediump float light_ambient, light_diffuse, light_specular;
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;  //  [0,1]
 uniform highp float materialSpecularExponent;
+uniform lowp vec3 materialEmissive;
 
 // JLBC: Was "struct" Frag .... but that requires #version 320 es. Let's keep it minimum.
 in highp vec3 frag_position, frag_normal;
@@ -41,6 +42,6 @@ void main()
     mediump float shadow = ShadowCalculation(frag_posLightSpace, normal, cam2fragDist);
     mediump vec3 finalLight = (light_ambient + (1.0-shadow)*(diffuse_factor+specular_factor))*light_color;
 
-    color = vec4(frag_materialColor.rgb * finalLight, frag_materialColor.a);
+    color = vec4(materialEmissive + frag_materialColor.rgb * finalLight, frag_materialColor.a);
 }
 )XXX"

@@ -101,6 +101,7 @@ void TrianglesProxy::extractTriangleParams(const CVisualObject* sourceObj)
   // Get material params from base object
   m_params.materialShininess = sourceObj->materialShininess();
   m_params.materialSpecularExponent = sourceObj->materialSpecularExponent();
+  m_params.materialEmissive = sourceObj->materialEmissive();
 
   // Get triangle-specific params
   const auto* triObj = dynamic_cast<const VisualObjectParams_Triangles*>(sourceObj);
@@ -128,6 +129,15 @@ void TrianglesProxy::uploadTriangleUniforms(const RenderContext& rc) const
   if (rc.shader->hasUniform("materialSpecularExponent"))
   {
     uploadFloat(rc, "materialSpecularExponent", m_params.materialSpecularExponent);
+  }
+
+  // Emissive color
+  if (rc.shader->hasUniform("materialEmissive"))
+  {
+    uploadVector3(
+        rc, "materialEmissive",
+        mrpt::math::TVector3Df(
+            m_params.materialEmissive.R, m_params.materialEmissive.G, m_params.materialEmissive.B));
   }
 
   // Camera position (needed for specular lighting)
