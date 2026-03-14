@@ -183,12 +183,18 @@ void CArrow::updateBuffers() const
     for (unsigned int i = 0; i < m_slices; i++)
     {
       const auto ip = (i + 1) % m_slices;
+      // Apex normal: average of the two base edge normals (cone surface direction)
+      const float mx = cc[i].x + cc[ip].x;
+      const float my = cc[i].y + cc[ip].y;
+      const float mn = std::sqrt(mx * mx + my * my);
+      const auto apexN =
+          mn > 1e-6f ? V3f(cosht * mx / mn, cosht * my / mn, sinht) : V3f(0, 0, 1);
       tris.emplace_back(
           T.composePoint(P3f(r1 * cc[i].x, r1 * cc[i].y, h0)),
           T.composePoint(P3f(r1 * cc[ip].x, r1 * cc[ip].y, h0)), T.composePoint(P3f(.0f, .0f, h1)),
           T.rotateVector(V3f(cosht * cc[i].x, cosht * cc[i].y, sinht)),
           T.rotateVector(V3f(cosht * cc[ip].x, cosht * cc[ip].y, sinht)),
-          T.rotateVector(V3f(0, 0, 1)));
+          T.rotateVector(apexN));
     }
   }
 

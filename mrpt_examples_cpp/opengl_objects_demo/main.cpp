@@ -708,6 +708,7 @@ void TestOpenGLObjects()
   }
   off_x += STEP_X;
 
+#if 0
   // CColorMap
   {
     {
@@ -1093,6 +1094,7 @@ void TestOpenGLObjects()
     obj->cullFaces(TCullFace::BACK);  // avoid z-fighting
     theScene->insert(obj);
   }
+#endif
 
   // Arrow to show the light direction:
   auto glLightArrow =
