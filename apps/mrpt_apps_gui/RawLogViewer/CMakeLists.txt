@@ -38,8 +38,8 @@ mrpt_add_executable(
     xRawLogViewerApp.h
     xRawLogViewerMain.cpp
     xRawLogViewerMain.h
-    MyGLCanvas.cpp
-    MyGLCanvas.h
+    ../wx-common/MyGLCanvas.cpp
+    ../wx-common/MyGLCanvas.h
     CFormChangeSensorPositions.cpp
     CFormChangeSensorPositions.h
     main_gps_ops.cpp
@@ -63,5 +63,5 @@ mrpt_add_executable(
     wxWidgets::wxWidgets
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE ../wxThings/)
+target_include_directories(${PROJECT_NAME} PRIVATE ../wxThings/ ../wx-common/)
 

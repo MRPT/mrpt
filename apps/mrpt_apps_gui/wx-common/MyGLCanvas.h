@@ -20,7 +20,7 @@
 
 using namespace mrpt::gui;
 
-// Allow RawlogViewer to build without 3D:
+// Allow apps to build without 3D:
 #define APP_HAS_3D (wxUSE_GLCANVAS && MRPT_HAS_OPENGL_GLUT)
 
 #if APP_HAS_3D

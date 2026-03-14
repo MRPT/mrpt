@@ -153,29 +153,15 @@ void COrbitCameraController::applyOrbit(int dx, int dy)
 void COrbitCameraController::applyPan(int dx, int dy)
 {
   const float azRad = m_params.azimuthDeg * static_cast<float>(M_PI) / 180.0f;
-  const float elRad = m_params.elevationDeg * static_cast<float>(M_PI) / 180.0f;
-
   const float scale = m_params.zoomDistance * panSensitivity;
-  const float sinAz = std::sin(azRad);
-  const float cosAz = std::cos(azRad);
-  const float sinEl = std::sin(elRad);
-  const float cosEl = std::cos(elRad);
 
-  // Camera right vector (world XY)
-  const float rx = cosAz;
-  const float ry = sinAz;
+  // Pan in the world XY plane, rotated by azimuth (matching legacy behaviour).
+  // Ax/Ay follow the old convention: Ay = -dx, Ax = -dy.
+  const float Ay = -static_cast<float>(dx);
+  const float Ax = -static_cast<float>(dy);
 
-  // Camera up vector (projected onto world)
-  const float ux = -sinAz * sinEl;
-  const float uy = cosAz * sinEl;
-  const float uz = cosEl;
-
-  const float panX = -static_cast<float>(dx) * scale;
-  const float panY = static_cast<float>(dy) * scale;
-
-  m_params.pointingX += rx * panX + ux * panY;
-  m_params.pointingY += ry * panX + uy * panY;
-  m_params.pointingZ += uz * panY;
+  m_params.pointingX += scale * (Ax * std::cos(azRad) - Ay * std::sin(azRad));
+  m_params.pointingY += scale * (Ax * std::sin(azRad) + Ay * std::cos(azRad));
 }
 
 void COrbitCameraController::applyRotate(int dx, int /*dy*/)

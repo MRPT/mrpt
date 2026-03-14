@@ -28,8 +28,8 @@ mrpt_add_executable(
     reactive_navigator_demoMain.cpp
     reactive_navigator_demoMain.h
     DEFAULT_GRIDMAP_DATA.h
-    MyGLCanvas.cpp
-    MyGLCanvas.h
+    ../wx-common/MyGLCanvas.cpp
+    ../wx-common/MyGLCanvas.h
     ../wxThings/src/toggle.cpp
   LINK_LIBRARIES
     mrpt::mrpt_gui
@@ -38,7 +38,7 @@ mrpt_add_executable(
     ${wxWidgets_LIBRARIES}
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE ../wxThings)
+target_include_directories(${PROJECT_NAME} PRIVATE ../wxThings ../wx-common/)
 
 #AppStartMenuLink(${PROJECT_NAME} "Reactive navigation demo")   # Add link to the Start menu (in Windows Installable packages)
 

@@ -27,11 +27,11 @@ CMyGLCanvas::CMyGLCanvas(
     const wxString& name) :
     CWxGLCanvasBase(parent, id, pos, size, style, name)
 {
-  m_cameraCtrl.setCameraPointing(0.0f, 0.0f, 0.0f);
-  m_cameraCtrl.setZoomDistance(20.0f);
-  m_cameraCtrl.setElevationDegrees(45.0f);
-  m_cameraCtrl.setAzimuthDegrees(135.0f);
-  m_cameraCtrl.setProjectiveModel(true);
+  orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
+  orbitCameraController().setZoomDistance(20.0f);
+  orbitCameraController().setElevationDegrees(45.0f);
+  orbitCameraController().setAzimuthDegrees(135.0f);
+  orbitCameraController().setProjectiveModel(true);
 }
 
 CMyGLCanvas::~CMyGLCanvas() = default;

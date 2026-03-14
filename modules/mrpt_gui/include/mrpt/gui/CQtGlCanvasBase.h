@@ -46,10 +46,13 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
   /** Direct access to the orbit camera controller.
    *  Use this to read or write azimuth, elevation, zoom, pointing-at, etc.
    */
-  [[nodiscard]] mrpt::viz::COrbitCameraController& cameraController() { return m_cameraCtrl; }
+  [[nodiscard]] mrpt::viz::COrbitCameraController& cameraController()
+  {
+    return orbitCameraController();
+  }
   [[nodiscard]] const mrpt::viz::COrbitCameraController& cameraController() const
   {
-    return m_cameraCtrl;
+    return orbitCameraController();
   }
 
  protected:
@@ -68,7 +71,6 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 
  private:
   mrpt::viz::Viewport::Ptr m_mainViewport;
-  mrpt::viz::COrbitCameraController m_cameraCtrl;
 
 };  // end of class
 

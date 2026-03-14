@@ -110,8 +110,6 @@ class CWxGLCanvasBase : public CGlCanvasBase, public wxGLCanvas
   static std::unique_ptr<wxGLContext> m_gl_context;
   static std::recursive_mutex m_gl_context_mtx;
 
-  mrpt::viz::COrbitCameraController m_cameraCtrl;
-
   std::atomic_bool m_init = false;
 
   long m_Key = 0;

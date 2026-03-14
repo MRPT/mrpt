@@ -125,7 +125,7 @@ class COrbitCameraController
   // ----------------------------------------------------------------
 
   float orbitSensitivity = 0.25f;  ///< deg/pixel
-  float panSensitivity = 0.01f;    ///< world-units * zoom factor per pixel
+  float panSensitivity = 0.001f;   ///< world-units * zoom factor per pixel
   float zoomSensitivity = 0.15f;   ///< fractional distance change per scroll unit
   float rollSensitivity = 0.15f;   ///< deg/pixel
 

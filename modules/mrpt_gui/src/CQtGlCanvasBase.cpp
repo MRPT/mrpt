@@ -115,7 +115,7 @@ void CQtGlCanvasBase::paintGL()
   if (m_mainViewport)
   {
     mrpt::viz::CCamera& cam = m_mainViewport->getCamera();
-    m_cameraCtrl.applyTo(cam);
+    orbitCameraController().applyTo(cam);
   }
 #endif
   renderCanvas();
@@ -138,7 +138,10 @@ void CQtGlCanvasBase::resizeGL(int width, int height)
 // -----------------------------------------------------------------------
 viz::Viewport::Ptr CQtGlCanvasBase::mainViewport() const { return m_mainViewport; }
 
-float CQtGlCanvasBase::getCameraZoomDistance() const { return m_cameraCtrl.getZoomDistance(); }
+float CQtGlCanvasBase::getCameraZoomDistance() const
+{
+  return orbitCameraController().getZoomDistance();
+}
 
 void CQtGlCanvasBase::insertToMap(const viz::CVisualObject::Ptr& newObject)
 {
@@ -157,7 +160,7 @@ void CQtGlCanvasBase::removeFromMap(const viz::CVisualObject::Ptr& newObject)
 // -----------------------------------------------------------------------
 void CQtGlCanvasBase::mousePressEvent(QMouseEvent* event)
 {
-  m_cameraCtrl.onMouseButton(
+  orbitCameraController().onMouseButton(
       event->pos().x(), event->pos().y(), qtSingleButtonToMrpt(event->button()),
       /*down=*/true);
 
@@ -166,7 +169,7 @@ void CQtGlCanvasBase::mousePressEvent(QMouseEvent* event)
 
 void CQtGlCanvasBase::mouseReleaseEvent(QMouseEvent* event)
 {
-  m_cameraCtrl.onMouseButton(
+  orbitCameraController().onMouseButton(
       event->pos().x(), event->pos().y(), qtSingleButtonToMrpt(event->button()),
       /*down=*/false);
 
@@ -179,7 +182,7 @@ void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent* event)
 
   if (buttons != 0)
   {
-    m_cameraCtrl.onMouseMove(
+    orbitCameraController().onMouseMove(
         event->pos().x(), event->pos().y(), buttons, qtModsToMrpt(event->modifiers()));
     update();
   }
@@ -192,7 +195,7 @@ void CQtGlCanvasBase::wheelEvent(QWheelEvent* event)
   // Qt gives angleDelta in eighths of a degree; 120 eighths == 1 standard
   // scroll notch. Normalise to ±1 so all backends use the same scale.
   const float delta = static_cast<float>(event->angleDelta().y()) / 120.0f;
-  m_cameraCtrl.onScroll(delta, qtModsToMrpt(event->modifiers()));
+  orbitCameraController().onScroll(delta, qtModsToMrpt(event->modifiers()));
   update();
   QOpenGLWidget::wheelEvent(event);
 }
