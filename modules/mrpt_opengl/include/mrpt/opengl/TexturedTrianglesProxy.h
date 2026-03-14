@@ -78,7 +78,7 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
     bool lightEnabled = true;
     mrpt::viz::TCullFace cullFace = mrpt::viz::TCullFace::NONE;
     float materialShininess = 0.2f;
-    float materialSpecularExponent = 32.0f;
+    float materialSpecularExponent = 16.0f;
     bool textureInterpolate = false;
     bool textureMipMaps = true;
     bool hasTransparency = false;
