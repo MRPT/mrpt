@@ -11,11 +11,12 @@ find_package(mrpt_common REQUIRED)
 
 # Dependencies
 find_package(mrpt_graphslam REQUIRED)
+find_package(mrpt_gui REQUIRED)
 
 
 # Define the executable target:
 mrpt_add_executable(
   TARGET graphslam_example
   SOURCES main.cpp
-  LINK_LIBRARIES mrpt::mrpt_graphslam 
+  LINK_LIBRARIES mrpt::mrpt_graphslam mrpt::mrpt_gui 
 )

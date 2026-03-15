@@ -12,7 +12,7 @@ find_package(mrpt_common REQUIRED)
 # Dependencies
 find_package(mrpt_hwdrivers REQUIRED)
 find_package(mrpt_gui REQUIRED)
-find_package(mrpt_viz REQUIRED)
+find_package(mrpt_opengl REQUIRED)
 find_package(mrpt_maps REQUIRED)
 
 
@@ -20,5 +20,5 @@ find_package(mrpt_maps REQUIRED)
 mrpt_add_executable(
   TARGET hwdrivers_openni2_driver_demo
   SOURCES main.cpp
-  LINK_LIBRARIES mrpt::mrpt_hwdrivers mrpt::mrpt_gui mrpt::mrpt_viz mrpt::mrpt_maps 
+  LINK_LIBRARIES mrpt::mrpt_hwdrivers mrpt::mrpt_gui mrpt::mrpt_opengl mrpt::mrpt_maps 
 )

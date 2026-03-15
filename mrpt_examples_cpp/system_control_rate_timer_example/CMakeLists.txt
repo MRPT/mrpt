@@ -20,5 +20,5 @@ find_package(CLI11 REQUIRED)
 mrpt_add_executable(
   TARGET system_control_rate_timer_example
   SOURCES main.cpp
-  LINK_LIBRARIES mrpt::mrpt_system mrpt::mrpt_math mrpt::mrpt_gui CLI11::CLI11
+  LINK_LIBRARIES mrpt::mrpt_system mrpt::mrpt_math mrpt::mrpt_gui CLI11::CLI11 
 )
