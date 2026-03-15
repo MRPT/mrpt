@@ -98,7 +98,6 @@ Python examples are `here <python_examples.html>`_.
   page_obs_mox_model_rawlog.rst
   page_opengl_custom_shaders_demo.rst
   page_opengl_objects_demo.rst
-  page_opengl_octree_render_huge_pointcloud.rst
   page_opengl_offscreen_render_example.rst
   page_opengl_ray_trace_example.rst
   page_opengl_texture_sizes_test.rst

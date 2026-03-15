@@ -126,7 +126,6 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   # Plus: a couple of other opengl_* samples listed below since they need mrpt::mrpt_maps also
   opengl_offscreen_render_example
   opengl_multithread_rendering
-  opengl_octree_render_huge_pointcloud
   opengl_texture_sizes_test
   opengl_skybox_example
   opengl_normal_maps
@@ -219,7 +218,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   opengl_video_demo
   opengl_video_viewport_demo
   )
-set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_gui mrpt::mrpt_hwdrivers)
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_gui mrpt::mrpt_hwdrivers mrpt::mrpt_libapps_gui)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: mrpt::mrpt_gui, mrpt::mrpt_maps ===
@@ -318,7 +317,6 @@ GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: gui & hwdrivers ===
 set(LIST_EXAMPLES_IN_THIS_DIR
-  hwdrivers_camera_capture_dialog
   hwdrivers_capture_video_opencv
   hwdrivers_capture_video_dc1394
   hwdrivers_capture_video_ffmpeg
@@ -333,6 +331,13 @@ set(LIST_EXAMPLES_IN_THIS_DIR
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_hwdrivers mrpt::mrpt_gui)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+# === Depending on: mrpt_libapps_gui & hwdrivers ===
+set(LIST_EXAMPLES_IN_THIS_DIR
+  hwdrivers_camera_capture_dialog
+  )
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_hwdrivers mrpt::mrpt_libapps_gui)
+GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
 # === Depending on: maps & hwdrivers ===
 set(LIST_EXAMPLES_IN_THIS_DIR
   hwdrivers_sick_serial_example
@@ -342,7 +347,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   hwdrivers_kinect_to_2d_scan_example
   hwdrivers_taobotics_imu
   )
-set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_hwdrivers mrpt::mrpt_maps)
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_hwdrivers mrpt::mrpt_maps mrpt::mrpt_gui)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: slam & hwdrivers ===
@@ -350,7 +355,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   hwdrivers_kinect_online_offline_example
   hwdrivers_mynteye_icp
 )
-  set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_slam mrpt::mrpt_hwdrivers)
+  set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_slam mrpt::mrpt_hwdrivers mrpt::mrpt_gui)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === OPENNI2 examples ===
