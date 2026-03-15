@@ -156,7 +156,6 @@ struct TLightParameters
     // Default: one directional light matching the legacy default
     lights.push_back(TLight::Directional({-0.40825f, -0.40825f, -0.81650f}));
   }
-  ~TLightParameters() = default;
 
   /** The individual light sources (up to MAX_LIGHTS). */
   std::vector<TLight> lights;
