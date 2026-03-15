@@ -11,6 +11,7 @@ find_package(mrpt_common REQUIRED)
 
 # Dependencies
 find_package(mrpt_topography REQUIRED)
+find_package(mrpt_poses REQUIRED)
 
 # After find_package(mrpt_data), the following variable is defined:
 #   mrpt_data_DATA_DIR  - Absolute path to the installed data root directory
@@ -23,5 +24,5 @@ add_compile_definitions(MRPT_EXAMPLE_DATA_DIR="")
 mrpt_add_executable(
   TARGET topography_coordinate_conversion_example
   SOURCES main.cpp
-  LINK_LIBRARIES mrpt::mrpt_topography 
+  LINK_LIBRARIES mrpt::mrpt_topography mrpt::mrpt_poses 
 )

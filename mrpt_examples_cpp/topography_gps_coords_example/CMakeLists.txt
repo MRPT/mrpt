@@ -18,5 +18,5 @@ find_package(mrpt_poses REQUIRED)
 mrpt_add_executable(
   TARGET topography_gps_coords_example
   SOURCES main.cpp
-  LINK_LIBRARIES mrpt::mrpt_topography mrpt::mrpt_poses
+  LINK_LIBRARIES mrpt::mrpt_topography mrpt::mrpt_poses 
 )

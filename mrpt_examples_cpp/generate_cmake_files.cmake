@@ -129,6 +129,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   opengl_octree_render_huge_pointcloud
   opengl_texture_sizes_test
   opengl_skybox_example
+  opengl_normal_maps
   )
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_system mrpt::mrpt_math mrpt::mrpt_gui)
 set(EXAMPLES_NEEDING_DATA_DIR opengl_texture_sizes_test)
@@ -136,7 +137,6 @@ GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: mrpt::mrpt_math mrpt::mrpt_random mrpt::mrpt_gui ===
 set(LIST_EXAMPLES_IN_THIS_DIR
-  math_csparse_example
   math_matrix_example
   math_optimize_lm_example
   math_slerp_example
@@ -313,7 +313,7 @@ GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 set(LIST_EXAMPLES_IN_THIS_DIR
   graphslam_example
   )
-set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_graphslam mrpt::gui)
+set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_graphslam mrpt::mrpt_gui)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 # === Depending on: gui & hwdrivers ===

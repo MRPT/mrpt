@@ -17,5 +17,5 @@ find_package(mrpt_gui REQUIRED)
 mrpt_add_executable(
   TARGET opengl_custom_shaders_demo
   SOURCES main.cpp
-  LINK_LIBRARIES mrpt::mrpt_gui
+  LINK_LIBRARIES mrpt::mrpt_gui 
 )
