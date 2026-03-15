@@ -446,6 +446,36 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
     materialColor = getColor_u8();
   }
 
+  // Get material shininess (specular exponent) from Assimp
+  float matSpecularExponent = 16.0f;  // CVisualObject default
+  float matShininess = 0.2f;          // CVisualObject default
+  mrpt::img::TColorf matEmissive{0, 0, 0, 0};
+
+  if (material)
+  {
+    // Specular exponent (Blinn-Phong shininess)
+    float aiShininess = 0.0f;
+    if (AI_SUCCESS == aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &aiShininess) &&
+        aiShininess > 0.0f)
+    {
+      matSpecularExponent = aiShininess;
+    }
+
+    // Specular color → extract intensity as the average of RGB
+    aiColor4D specColor;
+    if (AI_SUCCESS == aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specColor))
+    {
+      matShininess = (specColor.r + specColor.g + specColor.b) / 3.0f;
+    }
+
+    // Emissive color
+    aiColor4D emissiveColor;
+    if (AI_SUCCESS == aiGetMaterialColor(material, AI_MATKEY_COLOR_EMISSIVE, &emissiveColor))
+    {
+      matEmissive = mrpt::img::TColorf(emissiveColor.r, emissiveColor.g, emissiveColor.b, 0.0f);
+    }
+  }
+
   // Check for normal map texture
   std::string normalMapPath;
   if (!ignoreTextures && material)
@@ -604,6 +634,27 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
     else if (m_nonTexturedMesh)
     {
       m_nonTexturedMesh->insertTriangle(tri);
+    }
+  }
+
+  // Apply material properties to the target child object
+  if (material)
+  {
+    CVisualObject* target = nullptr;
+    if (hasTexture && texturedMesh)
+    {
+      target = texturedMesh.get();
+    }
+    else if (m_nonTexturedMesh)
+    {
+      target = m_nonTexturedMesh.get();
+    }
+
+    if (target)
+    {
+      target->materialSpecularExponent(matSpecularExponent);
+      target->materialShininess(matShininess);
+      target->materialEmissive(matEmissive);
     }
   }
 
