@@ -109,11 +109,22 @@ Each frame, before rendering:
 ### Phase 3: Rendering (`CompiledViewport::render()`)
 For each viewport:
 1. Compute pixel viewport from normalized coordinates.
-2. Update projection/view matrices from camera.
-3. Optionally render shadow map (1st pass into depth FBO).
-4. Build a `RenderQueue`: group proxies by shader ID, with depth sorting.
-5. Process the queue: for each shader, bind it once, then render all objects
-   using that shader (uploading per-object model matrix uniforms).
+2. Update projection/view matrices from camera. If shadows are enabled,
+   also compute the light projection-view matrix (`light_pv`).
+3. Optionally render shadow map (1st pass into depth FBO): `buildRenderQueue()`
+   overrides all triangle proxy shaders to `TRIANGLES_SHADOW_1ST`, which only
+   writes depth from the light's perspective. The `light_pv_matrix` uniform
+   is uploaded to the shader so vertices are transformed into light clip space.
+4. Build a `RenderQueue` for the normal scene pass: group proxies by shader ID,
+   with depth sorting. When shadows are enabled, `buildRenderQueue()` replaces
+   lit shaders with their shadow 2nd-pass variants (`TRIANGLES_LIGHT` →
+   `TRIANGLES_SHADOW_2ND`, `TEXTURED_TRIANGLES_LIGHT` →
+   `TEXTURED_TRIANGLES_SHADOW_2ND`).
+5. Process the queue: for each shader, bind it once, upload per-shader
+   uniforms (`p_matrix`, `v_matrix`, `light_pv_matrix`), bind the shadow
+   depth texture to `SHADOW_MAP_TEXTURE_UNIT` for 2nd-pass shadow shaders,
+   then render all objects using that shader (uploading per-object model
+   matrix uniforms and lighting/material parameters).
 
 ### Dirty flag mechanism
 - User modifies a viz object (e.g., `box.setBoxCorners(...)`)
@@ -196,10 +207,10 @@ standard two-pass algorithm with Percentage-Closer Filtering (PCF).
 
 ### Enabling shadows
 
-Shadows are controlled per-viewport via TLightParameters, which is a member
-of mrpt::viz::Viewport. To enable shadows, set
-`viewport->lightParameters().shadow_map_enabled = true;` and configure the
-light direction via `viewport->lightParameters().direction`.
+Shadows are controlled per-viewport via mrpt::viz::Viewport. To enable
+shadows, call `viewport->enableShadowCasting(true)` and optionally configure
+the shadow map resolution. The light direction used for shadows is taken from
+the first directional light in `viewport->lightParameters().lights`.
 
 ### How it works
 
@@ -235,12 +246,16 @@ Three bias parameters prevent shadow acne (self-shadowing artifacts):
 
 ### Light configuration
 
-Shadow-related fields in mrpt::viz::TLightParameters:
-- `direction`: Direction vector of the directional light.
-- `shadow_map_enabled`: Enable/disable shadow mapping.
-- `eyeDistance2lightShadowExtension`: Controls the light frustum size
-  relative to the eye-to-origin distance.
-- `minimum_shadow_map_extension_ratio`: Ensures a minimum frustum coverage.
+Shadow-related API:
+- `Viewport::enableShadowCasting(bool, sizeX, sizeY)`: Enable/disable
+  shadow mapping and optionally set the shadow map resolution.
+- `TLightParameters::primaryDirectionalDirection()`: Returns the direction
+  of the first directional light in the `lights` array (used for the shadow
+  map light-view matrix).
+- `TLightParameters::eyeDistance2lightShadowExtension`: Controls the light
+  frustum size relative to the eye-to-origin distance.
+- `TLightParameters::minimum_shadow_map_extension_ratio`: Ensures a minimum
+  frustum coverage.
 
 ## 2.8 Proxy system details
 

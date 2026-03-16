@@ -984,7 +984,28 @@ void CompiledViewport::buildRenderQueue(
     // TODO: Implement frustum culling using proxy->getBoundingBox()
     // For now, render everything
 
-    const auto shaderIDs = proxy->requiredShaders();
+    auto shaderIDs = proxy->requiredShaders();
+
+    if (isShadowMapPass)
+    {
+      // Shadow 1st pass: only render depth using the shadow depth shader.
+      // Skip non-triangle proxies (points, lines don't cast shadows).
+      shaderIDs.clear();
+      shaderIDs.push_back(DefaultShaderID::TRIANGLES_SHADOW_1ST);
+    }
+    else if (m_shadowsEnabled)
+    {
+      // Normal rendering with shadows enabled: replace lit shaders with
+      // their shadow 2nd-pass variants
+      for (auto& sid : shaderIDs)
+      {
+        if (sid == DefaultShaderID::TRIANGLES_LIGHT)
+          sid = DefaultShaderID::TRIANGLES_SHADOW_2ND;
+        else if (sid == DefaultShaderID::TEXTURED_TRIANGLES_LIGHT)
+          sid = DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
+      }
+    }
+
     for (auto shaderID : shaderIDs)
     {
       // Create per-object render state with the object's model matrix
@@ -1049,6 +1070,31 @@ void CompiledViewport::processRenderQueue(
       glUniformMatrix4fv(shader->uniformId("v_matrix"), 1, IS_TRANSPOSED, matrices.v_matrix.data());
     }
 
+    // Upload light_pv_matrix for shadow shaders (per-shader, not per-object)
+    const bool has_light_pv = shader->hasUniform("light_pv_matrix");
+    if (has_light_pv)
+    {
+      glUniformMatrix4fv(
+          shader->uniformId("light_pv_matrix"), 1, IS_TRANSPOSED, matrices.light_pv.data());
+    }
+
+    // Determine if this is a shadow-related shader
+    const bool isShadow2ndPass =
+        shaderID == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
+        shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
+    const bool isShadow1stPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_1ST;
+
+    // Bind shadow depth texture for 2nd pass shaders
+    if (isShadow2ndPass && m_shadowMapFBO)
+    {
+      glActiveTexture(GL_TEXTURE0 + SHADOW_MAP_TEXTURE_UNIT);
+      glBindTexture(GL_TEXTURE_2D, m_shadowMapFBO->depthMapTextureId());
+      if (shader->hasUniform("shadowMap"))
+      {
+        glUniform1i(shader->uniformId("shadowMap"), SHADOW_MAP_TEXTURE_UNIT);
+      }
+    }
+
     // Render all proxies using this shader
     for (const auto& [depth, element] : proxyMap)
     {
@@ -1076,6 +1122,7 @@ void CompiledViewport::processRenderQueue(
       rc.shader_id = shaderID;
       rc.state = &objState;
       rc.lights = &m_lightParams;
+      rc.isShadowMapPass = isShadow1stPass || isShadow2ndPass;
 
       element.proxy->render(rc);
     }
