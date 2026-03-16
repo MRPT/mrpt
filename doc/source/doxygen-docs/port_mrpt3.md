@@ -317,3 +317,159 @@ When using this function, add `mrpt_libapps_gui` to your CMake dependencies.
 
 10. **Build and iterate**: Use `colcon build --packages-up-to mrpt_<module>`
     to build incrementally and fix remaining issues.
+
+---
+
+## 13. Known pending work / TO-DO list for MRPT 3.0
+
+This section tracks items that are present in the codebase as stubs, throw
+run-time `THROW_EXCEPTION("TODO")`, carry `MRPT_TODO` or `// TODO` markers, or
+are otherwise visibly incomplete after the 2.x → 3.0 porting effort.
+
+### 13.1 `mrpt_viz` — Missing rendering implementations
+
+Several scene-graph classes were ported (serialization, bounding box, setters)
+but **never received an `updateBuffers()` override**, which means they compile
+but produce **invisible objects** at run-time.  The new rendering pipeline
+(mrpt_opengl proxy objects) requires each concrete `CVisualObject` subclass
+to override `CVisualObject::updateBuffers()` to fill the CPU-side
+`VisualObjectParams_*` buffers that are subsequently uploaded to the GPU.
+
+| Class | Issue |
+|-------|-------|
+| `mrpt::viz::CColorBar` | No `updateBuffers()` — colorbar never drawn |
+| `mrpt::viz::CGridPlaneXZ` | No `updateBuffers()` — compare with the implemented `CGridPlaneXY` |
+| `mrpt::viz::CVectorField2D` | No `updateBuffers()` — vector arrows never drawn |
+| `mrpt::viz::CVectorField3D` | No `updateBuffers()` — vector arrows never drawn |
+| `mrpt::viz::CMesh3D` | No `updateBuffers()` — mesh vertices loaded but never uploaded |
+| `mrpt::viz::COctoMapVoxels` | No `updateBuffers()` — voxel/grid data never uploaded |
+| `mrpt::viz::CText` | `computeTextExtension()` body wrapped in `#if 0` and throws `THROW_EXCEPTION("TODO")` with `MRPT_TODO("Refactor!")` — needs reimplementation with the nanogui/gltext backend |
+| `mrpt::viz::CText3D` | Similar to `CText` — 3-D text rendering missing |
+| `mrpt::viz::CFrustum` | `traceRay()` throws `THROW_EXCEPTION("TO DO")` |
+| `mrpt::viz::CSetOfTexturedTriangles` | `traceRay()` throws `std::runtime_error("TODO: TraceRay not implemented")` |
+
+Additional partial issues in `mrpt_viz`:
+
+- **`CPolyhedron`**: `// TODO: check special case in which ratio=0`
+  (`CPolyhedron.cpp:781`); volume computation for some shapes is a
+  stub (`// TODO. Calculate as set of pyramids…`, line 1103).  The header also
+  has two `\todo` Doxygen notes about resulting heights being larger than
+  specified.
+- **`CAssimpModel`**: Compressed embedded textures are silently skipped
+  (`"Compressed embedded textures not yet supported"`, `CAssimpModel.cpp:715`).
+  Transparent/textured meshes lack proper spatial subdivision for correct
+  transparency sorting (`// TODO: Implement spatial subdivision…`, line 861;
+  current code is a `// For now, this is a no-op placeholder`).
+- **`CPointCloud` / `CPointCloudColoured`**: Efficiency notes
+  (`// JL: TODO note: Well, this can be clearly done much more efficiently`)
+  for the inner rendering loops (lines 214, 231 and 87, 102 respectively).
+
+### 13.2 `mrpt_opengl` — Rendering pipeline gaps
+
+- **Frustum culling not implemented**: `CompiledViewport.cpp:984` has a
+  `// TODO: Implement frustum culling using proxy->getBoundingBox()` comment;
+  every object is currently rendered unconditionally.
+- **16-bit depth texture**: `Texture.cpp:334` throws
+  `THROW_EXCEPTION("todo: textures with D16U depth")`.
+- **Shadow rendering**: The latest commit (`afc33a207`) marks shadow rendering
+  as an "attempt at fix"; the shadow map pipeline (directional light pass) may
+  still have correctness issues worth re-verifying.
+
+### 13.3 `mrpt_img` — Image processing stubs (post-OpenCV removal)
+
+Several methods that previously delegated to OpenCV were re-declared but not
+reimplemented with the STB/custom backend:
+
+| Method | Status |
+|--------|--------|
+| `CImage::normalize()` | Throws `"normalize() not yet implemented with STB library"` |
+| `CImage::undistort()` | Body wrapped in `#if 0`; throws `THROW_EXCEPTION("TODO!")` |
+| `CImage::filterMedian()` | Body wrapped in `#if 0`; throws `THROW_EXCEPTION("TODO!")` |
+| `CImage::filterGaussian()` | Body wrapped in `#if 0`; throws `THROW_EXCEPTION("TODO!")` |
+| `CImage::rotateImage()` | Throws `"rotateImage() not yet implemented with STB library"` |
+| `CImage::drawChessboardCorners()` | Throws `THROW_EXCEPTION("TODO!")` |
+| `CImage::drawImage()` (cross-channel) | `// TODO: Handle channel conversion` followed by `THROW_EXCEPTION("Case not implemented")` |
+
+### 13.4 `mrpt_poses` — Unimplemented PDF operations
+
+Many probability distribution classes have methods that were declared but never
+implemented, throwing `THROW_EXCEPTION("TODO!!!")` or
+`THROW_EXCEPTION("Not implemented yet!")` at run-time:
+
+- **`CPosePDFGrid`**: `normalizeWeights()`, `getMostLikelyCPose()`,
+  `getCovarianceAndMean()`, `drawSingleSample()`,
+  `bayesianFusion()`, `inverse()` — all throw.
+- **`CPose3DPDFGrid`**: `getMostLikelyCPose()`, `getCovarianceAndMean()`,
+  `drawSingleSample()`, `bayesianFusion()`, `inverse()` and others — all throw.
+- **`CPose3DPDFParticles`**: `getCovarianceAndMean()` (`"TO DO!!"`),
+  `bayesianFusion()`, `evaluateNormalizedPDF()`,
+  `evaluatePDF()`, `changeCoordinatesReference()` — all throw.
+- **`CPose3DPDFSOG`**: `bayesianFusion()` (`"TODO!!!"`),
+  `evaluateNormalizedPDF()`, `drawSingleSample()` — all throw.
+- **`CPose3DPDFGaussian`**: `bayesianFusion()`, `inverse()`,
+  `drawSingleSample()` — all throw `"TO DO!!!"`.
+- **`CPose3DPDFGaussianInf`**: `bayesianFusion()`, `inverse()`,
+  `drawSingleSample()` — all throw `"TO DO!!!"`.
+- **`CPointPDFGaussian::drawSingleSample()`** — throws `"TODO!!!"`.
+- **`CPoint2DPDFGaussian::drawSingleSample()`** — throws `"TODO!!!"`.
+- **`CPointPDFParticles`**: `evaluateNormalizedPDF()`, `drawSingleSample()` — throw.
+- **`CPosePDFParticles::evaluateNormalizedPDF()`** — throws `"Not implemented yet!"`.
+- **`CPoseRandomSampler`**: sampling for non-Gaussian 2-D and 3-D PDFs throws
+  `THROW_EXCEPTION("TODO")` (lines 260, 308 of `CPoseRandomSampler.cpp`).
+
+### 13.5 `mrpt_slam` — Incomplete algorithms
+
+- **`CICP` (3-D mode)**: Only `icpClassic` is implemented for 3-D ICP;
+  other variants throw `THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D")`.
+- **`path_from_rtk_gps`**: GPS path reconstruction is hardcoded for exactly
+  3 receivers (`// TODO: Generalize equations for # of GPS > 3`, lines 175, 213).
+- **`data_association`**: Joint compatibility branch-and-bound has a
+  `// TODO: Optimized version!!` note (line 583).
+- **`CRejectionSamplingRangeOnlyLocalization`**: Two open notes about
+  sensor-height handling and sigma being taken from a fixed field rather than
+  the observation's `stdError`.
+
+### 13.6 `mrpt_nav` — Planner optimisation
+
+- **`PlannerRRT_SE2_TPS::getNearestNode()`**: Marked with
+  `MRPT_TODO("Optimize getNearestNode() with KD-tree!")` — currently does a
+  linear scan over all nodes.
+- **`CParameterizedTrajectoryGenerator`**: One obstacle post-processing enum
+  value is not handled and throws.
+
+### 13.7 `mrpt_maps` — Miscellaneous
+
+- **`CAngularObservationMesh`**: Line 134 carries `// TODO: redo` with no
+  further explanation — the rendering/update path likely needs review.
+- **`CObservationRotatingScan`**: `// TODO: populate organizedPoints?`
+  (line 362) — the organized point-cloud representation is never filled.
+- **`COccupancyGridMap2D` (multi-pose insertion)**: `FIXME: doesn't support
+  many different poses in one measurement` in `COccupancyGridMap2D_insert.cpp`.
+- **`CGasConcentrationGridMap2D` / `CWirelessPowerGridMap2D`**: Serialization
+  loops carry `// TODO: Do this endianness safe!!` notes.
+
+### 13.8 `mrpt_math`
+
+- **`KDTreeCapable` unit test**: The only test in
+  `KDTreeCapable_unittest.cpp` consists of a single `MRPT_TODO("Write me!")`
+  call — there are no actual test cases.
+
+### 13.9 `mrpt_graphs`
+
+- **`ScalarFactorGraph`**: `// MRPT_TODO("Use compressed access instead of
+  coeff() below")` — sparse-matrix access uses the slow `coeff()` path.
+
+### 13.10 Python bindings (`pybind11`)
+
+Several modules listed in `agents.md` are documented as "not yet implemented":
+
+- `mrpt_nav` (Phase 1.6): `CReactiveNavigationSystem`, waypoints API —
+  complex due to virtual callbacks.
+- `mrpt_bayes` (Phase 2.2): template-heavy Kalman/particle filter classes.
+- `mrpt_topography` (Phase 2.5): free functions for geographic conversions.
+- `mrpt_vision` (Phase 2.6): feature detection/matching (module being
+  deprecated; target package is `mola_vision`).
+- `mrpt_hwdrivers`, `mrpt_comms`, `mrpt_graphslam`, `mrpt_libapps_cli`
+  (Phases 2.7–2.10): low-priority.
+- Python examples (`mrpt_examples_py`): incomplete — examples are needed
+  for each newly wrapped module.
