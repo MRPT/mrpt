@@ -708,7 +708,6 @@ void TestOpenGLObjects()
   }
   off_x += STEP_X;
 
-#if 0
   // CColorMap
   {
     {
@@ -1094,8 +1093,6 @@ void TestOpenGLObjects()
     obj->cullFaces(TCullFace::BACK);  // avoid z-fighting
     theScene->insert(obj);
   }
-#endif
-
   // Arrow to show the light direction:
   auto glLightArrow =
       viz::CArrow::Create(mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(1, 0, 0));
@@ -1139,7 +1136,10 @@ void TestOpenGLObjects()
 
   mrpt::viz::TLightParameters& lights = viewport->lightParameters();
 
-  lights.ambient = 0.2;
+  lights.ambient = 0.2f;
+
+  // Enable shadows by default for testing:
+  viewport->enableShadowCasting(true);
 
   while (win.isOpen())
   {
