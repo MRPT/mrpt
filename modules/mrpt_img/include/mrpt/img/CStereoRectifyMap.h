@@ -184,20 +184,22 @@ class CStereoRectifyMap
     return m_rot_right;
   }
 
-  /** Direct input access to rectify maps */
+  /** Direct input access to rectify maps.
+   * Each map stores float source pixel coordinates, one per output pixel.
+   */
   void setRectifyMaps(
-      const std::vector<int16_t>& left_x,
-      const std::vector<uint16_t>& left_y,
-      const std::vector<int16_t>& right_x,
-      const std::vector<uint16_t>& right_y);
+      const std::vector<float>& left_x,
+      const std::vector<float>& left_y,
+      const std::vector<float>& right_x,
+      const std::vector<float>& right_y);
 
   /** Direct input access to rectify maps. This method swaps the vectors so
    * the inputs are no longer available.*/
   void setRectifyMapsFast(
-      std::vector<int16_t>& left_x,
-      std::vector<uint16_t>& left_y,
-      std::vector<int16_t>& right_x,
-      std::vector<uint16_t>& right_y);
+      std::vector<float>& left_x,
+      std::vector<float>& left_y,
+      std::vector<float>& right_x,
+      std::vector<float>& right_y);
 
   /** @} */
 
@@ -232,8 +234,8 @@ class CStereoRectifyMap
   mrpt::img::TImageSize m_resize_output_value{0, 0};
   mrpt::img::TInterpolationMethod m_interpolation_method{mrpt::img::IMG_INTERP_LINEAR};
 
-  std::vector<int16_t> m_dat_mapx_left, m_dat_mapx_right;
-  std::vector<uint16_t> m_dat_mapy_left, m_dat_mapy_right;
+  std::vector<float> m_dat_mapx_left, m_dat_mapx_right;
+  std::vector<float> m_dat_mapy_left, m_dat_mapy_right;
 
   /** A copy of the data provided by the user */
   mrpt::img::TStereoCamera m_camera_params;
