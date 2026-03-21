@@ -383,7 +383,7 @@ reimplemented with the STB/custom backend:
 | Method | Status |
 |--------|--------|
 | `CImage::normalize()` | Throws `"normalize() not yet implemented with STB library"` |
-| `CImage::undistort()` | Body wrapped in `#if 0`; throws `THROW_EXCEPTION("TODO!")` |
+| `CImage::undistort()` | **Implemented** — uses `CUndistortMap` internally; supports all distortion models |
 | `CImage::filterMedian()` | Body wrapped in `#if 0`; throws `THROW_EXCEPTION("TODO!")` |
 | `CImage::filterGaussian()` | Body wrapped in `#if 0`; throws `THROW_EXCEPTION("TODO!")` |
 | `CImage::rotateImage()` | Throws `"rotateImage() not yet implemented with STB library"` |
@@ -459,9 +459,24 @@ implemented, throwing `THROW_EXCEPTION("TODO!!!")` or
 - **`ScalarFactorGraph`**: `// MRPT_TODO("Use compressed access instead of
   coeff() below")` — sparse-matrix access uses the slow `coeff()` path.
 
-### 13.10 Python bindings (`pybind11`)
+### 13.10 Documentation pages needing v3 updates
 
-Several modules listed in `agents.md` are documented as "not yet implemented":
+Several Doxygen documentation pages still reference MRPT 2.x APIs or are
+minimal stubs:
+
+| Page | Issue |
+|------|-------|
+| `lib_mrpt_slam.md` | References `mrpt-slam` (hyphen) in text; could expand on available algorithms |
+| `lib_mrpt_nav.md` | Stub — minimal description of reactive navigation |
+| `lib_mrpt_hwdrivers.md` | Stub — no list of supported sensor classes |
+| `lib_mrpt_core.md` | Stub — needs description of core utilities |
+| `lib_mrpt_poses.md` | Stub — needs overview of pose PDF classes |
+| `lib_mrpt_obs.md` | Needs review for v3 API changes |
+| `lib_mrpt_math.md` | Needs review — should document Eigen integration |
+
+### 13.11 Python bindings (`pybind11`)
+
+Several modules are documented as "not yet implemented":
 
 - `mrpt_nav` (Phase 1.6): `CReactiveNavigationSystem`, waypoints API —
   complex due to virtual callbacks.

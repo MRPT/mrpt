@@ -25,15 +25,24 @@ Also, most GUI apps will not be built if wxWidgets is not found.
 
 ### `opengl`
 
-This optional library is required to render 3D graphics. It is fundamentally
-used by the classes in mrpt::opengl.
+This optional library is required to render 3D graphics. It is used by the
+rendering backend in mrpt::opengl and displayed via mrpt::gui windows.
 
-Note however that nothing prevents you from creating objects in mrpt::opengl,
-manipulating them, building 3D scenes, saving them to disk, etc. even
-without OpenGL support.
+Note however that nothing prevents you from creating scene-graph objects in
+mrpt::viz, manipulating them, building 3D scenes, saving them to disk, etc.
+even without OpenGL support.
 An exception will be raised only if you try to **render** them in
 a mrpt::gui::CDisplayWindow3D or by any other means.
 
+## 2b. Removed dependencies (MRPT 3.0)
+
+### `OpenCV`
+
+MRPT 3.0 **no longer depends on OpenCV** for building or running. All image
+I/O and processing in mrpt::img::CImage is handled natively (STB for codecs,
+custom kernels for filtering, optional SIMD optimizations). Image
+undistortion (mrpt::img::CUndistortMap, mrpt::img::CStereoRectifyMap) and
+camera geometry are implemented from scratch using Eigen.
 
 ## 3. Optional
 
