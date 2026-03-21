@@ -436,7 +436,8 @@ void CPose2D::update_cached_cos_sin() const
   {
     return;
   }
-#ifdef HAVE_SINCOS ::sincos(m_phi, &m_sinphi, &m_cosphi);
+#ifdef HAVE_SINCOS
+  ::sincos(m_phi, &m_sinphi, &m_cosphi);
 #else
   m_cosphi = ::cos(m_phi);
   m_sinphi = ::sin(m_phi);
