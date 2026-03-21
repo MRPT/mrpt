@@ -409,6 +409,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 
 TEST_F(Pose3DQuatPDFGaussTests, ToYPRGaussPDFAndBack)
 {
+  const bool sut_orig = mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION();
   for (int USE_SUT = 0; USE_SUT <= 1; USE_SUT++)
   {
     mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(USE_SUT != 0);
@@ -419,6 +420,7 @@ TEST_F(Pose3DQuatPDFGaussTests, ToYPRGaussPDFAndBack)
     test_toFromYPRGauss(20.0_deg, 89.999_deg, 0.0_deg, true /*gimbal*/);
     test_toFromYPRGauss(20.0_deg, -89.999_deg, 0.0_deg, true /*gimbal*/);
   }
+  mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(sut_orig);
 }
 
 TEST_F(Pose3DQuatPDFGaussTests, CompositionJacobian)

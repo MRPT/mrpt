@@ -291,6 +291,10 @@ yaml& yaml::operator=(const yaml& v)
 
 yaml yaml::operator[](const std::string& s)
 {
+  if (isConstProxy_)
+  {
+    return const_cast<const yaml*>(this)->operator[](s);
+  }
   node_t* n = dereferenceProxy();
   // Init as map on first use:
   if (n->isNullNode())
@@ -318,6 +322,10 @@ yaml yaml::operator[](const std::string& key) const
 
 yaml yaml::operator()(int index)
 {
+  if (isConstProxy_)
+  {
+    return const_cast<const yaml*>(this)->operator()(index);
+  }
   node_t* n = dereferenceProxy();
   ASSERTMSG_(!n->isNullNode(), "write operator() not applicable to empty nodes or sequences.");
 

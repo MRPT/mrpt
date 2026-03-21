@@ -350,11 +350,7 @@ to override `CVisualObject::updateBuffers()` to fill the CPU-side
 
 Additional partial issues in `mrpt_viz`:
 
-- **`CPolyhedron`**: `// TODO: check special case in which ratio=0`
-  (`CPolyhedron.cpp:781`); volume computation for some shapes is a
-  stub (`// TODO. Calculate as set of pyramids…`, line 1103).  The header also
-  has two `\todo` Doxygen notes about resulting heights being larger than
-  specified.
+- **`CPolyhedron`**: The code has some TO-DOs inherited from 2.x. Won't implement for 3.0.0.
 - **`CAssimpModel`**: Compressed embedded textures are silently skipped
   (`"Compressed embedded textures not yet supported"`, `CAssimpModel.cpp:715`).
   Transparent/textured meshes lack proper spatial subdivision for correct
