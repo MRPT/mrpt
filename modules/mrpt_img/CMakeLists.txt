@@ -45,6 +45,8 @@ set(LIB_SOURCES
   src/TStereoCamera.cpp
   # tests ----
   tests/CImage_unittest.cpp
+  tests/CImagePyramid_unittest.cpp
+  tests/CUndistortMap_unittest.cpp
   tests/color_maps_unittest.cpp
   tests/TCamera_unittest.cpp
   tests/camera_geometry_unittest.cpp
@@ -54,6 +56,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/img/camera_geometry.h
   include/mrpt/img/CCanvas.h
   include/mrpt/img/CImage.h
+  include/mrpt/img/CImage_Eigen.h
   include/mrpt/img/CImagePyramid.h
   include/mrpt/img/CMappedImage.h
   include/mrpt/img/color_maps.h

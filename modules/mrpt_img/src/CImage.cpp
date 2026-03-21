@@ -16,6 +16,7 @@
 #include <mrpt/core/get_env.h>
 #include <mrpt/core/round.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/CUndistortMap.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
@@ -1513,30 +1514,13 @@ void CImage::swapRB()
   }
 }
 
-void CImage::undistort(
-    [[maybe_unused]] CImage& out_img, [[maybe_unused]] const mrpt::img::TCamera& cameraParams) const
+void CImage::undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) const
 {
   makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  THROW_EXCEPTION("TODO!");
-#if 0
 
-  ASSERTMSG_(out_img.m_impl->img.data != m_impl->img.data, "In-place undistort() not supported");
-
-  auto& srcImg = const_cast<cv::Mat&>(m_state->img);
-  // This will avoid re-alloc if size already matches.
-  out_img.resize(srcImg.cols, srcImg.rows, channels());
-
-  const auto& intrMat = cameraParams.intrinsicParams;
-  const auto& dist = cameraParams.dist;
-
-  cv::Mat distM(1, dist.size(), CV_64F, const_cast<double*>(&dist[0]));
-  cv::Mat inMat(3, 3, CV_64F);
-
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++) inMat.at<double>(i, j) = intrMat(i, j);
-
-  cv::undistort(srcImg, out_img.m_impl->img, inMat, distM);
-#endif
+  CUndistortMap map;
+  map.setFromCamParams(cameraParams);
+  map.undistort(*this, out_img);
 }
 
 void CImage::filterMedian([[maybe_unused]] CImage& out_img, [[maybe_unused]] int W) const

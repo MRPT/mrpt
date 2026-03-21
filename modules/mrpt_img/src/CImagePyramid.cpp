@@ -17,6 +17,8 @@
 using namespace mrpt;
 using namespace mrpt::img;
 
+namespace
+{
 // Template that generalizes the two user entry-points below:
 template <bool FASTLOAD>
 bool buildPyramid_templ(
@@ -28,7 +30,6 @@ bool buildPyramid_templ(
 {
   ASSERT_GT_(nOctaves, 0);
 
-  // TImageSize  img_size = img.getSize();
   obj.images.resize(nOctaves);
 
   // First octave: Just copy the image:
@@ -62,6 +63,7 @@ bool buildPyramid_templ(
   }
   return all_used_sse2;
 }
+}  // namespace
 
 bool CImagePyramid::buildPyramid(
     const mrpt::img::CImage& img,

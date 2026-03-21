@@ -72,18 +72,18 @@ class CUndistortMap
 
   /** Returns the camera parameters which were used to generate the distortion
    * map, as passed by the user to \a setFromCamParams */
-  inline const mrpt::img::TCamera& getCameraParams() const { return m_camera_params; }
+  const mrpt::img::TCamera& getCameraParams() const { return m_camera_params; }
 
   /** Returns true if \a setFromCamParams() has been already called, false
    * otherwise.
    *  Can be used within loops to determine the first usage of the object and
    * when it needs to be initialized.
    */
-  inline bool isSet() const { return !m_dat_mapx.empty(); }
+  bool isSet() const { return !m_dat_mapx.empty(); }
 
  private:
-  std::vector<int16_t> m_dat_mapx;
-  std::vector<uint16_t> m_dat_mapy;
+  std::vector<float> m_dat_mapx;
+  std::vector<float> m_dat_mapy;
 
   /** A copy of the data provided by the user */
   mrpt::img::TCamera m_camera_params;

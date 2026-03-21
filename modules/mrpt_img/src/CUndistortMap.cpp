@@ -13,89 +13,98 @@
 */
 
 #include <mrpt/img/CUndistortMap.h>
+#include <mrpt/img/camera_geometry.h>
+
+#include "remap_bilinear.h"
 
 using namespace mrpt;
 using namespace mrpt::img;
 
-/** Prepares the mapping from the distortion parameters of a camera.
- * Must be called before invoking \a undistort().
- */
 void CUndistortMap::setFromCamParams(const mrpt::img::TCamera& campar)
 {
   MRPT_START
-#if MRPT_HAS_OPENCV
+
   m_camera_params = campar;
 
-  // Convert to opencv's format:
-  double aux1[3][3], aux2[1][5];
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++) aux1[i][j] = campar.intrinsicParams(i, j);
-  for (int i = 0; i < 5; i++) aux2[0][i] = campar.dist[i];
+  const uint32_t ncols = campar.ncols;
+  const uint32_t nrows = campar.nrows;
 
-  const cv::Mat inMat(3, 3, CV_64F, aux1);
-  const cv::Mat distM(1, 5, CV_64F, aux2);
+  m_dat_mapx.resize(static_cast<size_t>(nrows) * ncols);
+  m_dat_mapy.resize(static_cast<size_t>(nrows) * ncols);
 
-  m_dat_mapx.resize(2 * campar.nrows * campar.ncols);
-  m_dat_mapy.resize(campar.nrows * campar.ncols);
+  const double fx = campar.fx();
+  const double fy = campar.fy();
+  const double cx = campar.cx();
+  const double cy = campar.cy();
+  const double inv_fx = 1.0 / fx;
+  const double inv_fy = 1.0 / fy;
 
-  cv::Mat mapx(campar.nrows, campar.ncols, CV_16SC2, &m_dat_mapx[0]);
-  cv::Mat mapy(campar.nrows, campar.ncols, CV_16UC1, &m_dat_mapy[0]);
+  // For each output (undistorted) pixel, compute the corresponding
+  // source (distorted) pixel using the forward distortion model.
+  for (uint32_t v = 0; v < nrows; ++v)
+  {
+    const size_t row_off = static_cast<size_t>(v) * ncols;
+    for (uint32_t u = 0; u < ncols; ++u)
+    {
+      // Normalize output pixel to camera coordinates
+      const double xn = (static_cast<double>(u) - cx) * inv_fx;
+      const double yn = (static_cast<double>(v) - cy) * inv_fy;
 
-  cv::initUndistortRectifyMap(inMat, distM, cv::Mat(), inMat, mapx.size(), mapx.type(), mapx, mapy);
-#else
-  THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!");
-#endif
+      double xd = xn;
+      double yd = yn;
+
+      // Apply forward distortion to get the source (distorted) normalized coords
+      switch (campar.distortion)
+      {
+        case DistortionModel::none:
+          break;
+        case DistortionModel::plumb_bob:
+          camera_geometry::distortion::apply_plumb_bob(xn, yn, campar.dist, xd, yd);
+          break;
+        case DistortionModel::kannala_brandt:
+          camera_geometry::distortion::apply_kannala_brandt(xn, yn, campar.dist, xd, yd);
+          break;
+        default:
+          THROW_EXCEPTION_FMT(
+              "Unknown distortion model: %d", static_cast<int>(campar.distortion));
+      }
+
+      // Convert back to pixel coordinates in the distorted (source) image
+      m_dat_mapx[row_off + u] = static_cast<float>(xd * fx + cx);
+      m_dat_mapy[row_off + u] = static_cast<float>(yd * fy + cy);
+    }
+  }
+
   MRPT_END
 }
 
-/** Undistort the input image and saves the result in-place- \a
- * setFromCamParams() must have been set prior to calling this.
- */
 void CUndistortMap::undistort(const mrpt::img::CImage& in_img, mrpt::img::CImage& out_img) const
 {
   MRPT_START
   if (m_dat_mapx.empty())
+  {
     THROW_EXCEPTION("Error: setFromCamParams() must be called prior to undistort().");
+  }
 
-#if MRPT_HAS_OPENCV
-  using namespace cv;
-  Mat mapx(
-      m_camera_params.nrows, m_camera_params.ncols, CV_16SC2, const_cast<int16_t*>(&m_dat_mapx[0]));
-  Mat mapy(
-      m_camera_params.nrows, m_camera_params.ncols, CV_16UC1,
-      const_cast<uint16_t*>(&m_dat_mapy[0]));
+  detail::remap_bilinear(
+      in_img, out_img, m_dat_mapx.data(), m_dat_mapy.data(),
+      static_cast<int>(m_camera_params.ncols), static_cast<int>(m_camera_params.nrows));
 
-  out_img.resize(in_img.getWidth(), in_img.getHeight(), in_img.getChannelCount());
-
-  cv::remap(
-      in_img.asCvMat<Mat>(SHALLOW_COPY), out_img.asCvMat<Mat>(SHALLOW_COPY), mapx, mapy,
-      INTER_LINEAR);
-#endif
   MRPT_END
 }
 
-/** Undistort the input image and saves the result in-place- \a
- * setFromCamParams() must have been set prior to calling this.
- */
 void CUndistortMap::undistort(mrpt::img::CImage& in_out_img) const
 {
   MRPT_START
   if (m_dat_mapx.empty())
+  {
     THROW_EXCEPTION("Error: setFromCamParams() must be called prior to undistort().");
+  }
 
-#if MRPT_HAS_OPENCV
-  cv::Mat mapx(
-      m_camera_params.nrows, m_camera_params.ncols, CV_16SC2, const_cast<int16_t*>(&m_dat_mapx[0]));
-  cv::Mat mapy(
-      m_camera_params.nrows, m_camera_params.ncols, CV_16UC1,
-      const_cast<uint16_t*>(&m_dat_mapy[0]));
+  CImage tmp = in_out_img.makeDeepCopy();
+  detail::remap_bilinear(
+      tmp, in_out_img, m_dat_mapx.data(), m_dat_mapy.data(),
+      static_cast<int>(m_camera_params.ncols), static_cast<int>(m_camera_params.nrows));
 
-  cv::Mat in = in_out_img.asCvMat<cv::Mat>(SHALLOW_COPY);
-  cv::Mat out(in.size(), in.type());
-
-  cv::remap(in, out, mapx, mapy, cv::INTER_LINEAR);
-
-  in_out_img = CImage(out, SHALLOW_COPY);
-#endif
   MRPT_END
 }

@@ -76,7 +76,7 @@ void TStereoCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ver
     {
       if (version == 0)
       {
-        uint8_t _model;
+        uint8_t _model = 0;
         in >> _model;  // unused now
       }
       if (version == 1)
