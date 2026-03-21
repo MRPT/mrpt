@@ -86,6 +86,7 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/system/string_utils.h>
 #include <mrpt/viz/CAngularObservationMesh.h>  // It's in lib mrpt-maps
 #include <mrpt/viz/CAssimpModel.h>
+#include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPlanarLaserScan.h>  // It's in lib mrpt-maps
 #include <mrpt/viz/CPointCloud.h>
@@ -755,10 +756,18 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
   loadedFileName = "no-name.3Dscene";
   updateTitle();
 
+  // Grid lines over the ground plane
   {
-    mrpt::viz::CGridPlaneXY::Ptr obj = mrpt::viz::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
-    obj->setColor(0.3f, 0.3f, 0.3f);
+    CGridPlaneXY::Ptr obj = CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+    obj->setColor(0.4f, 0.4f, 0.4f);
     openGLSceneRef->insert(obj);
+  }
+
+  // Solid ground slab so that shadows are visible on it
+  {
+    auto ground = CBox::Create(TPoint3D(-20, -20, -0.05), TPoint3D(20, 20, 0.0));
+    ground->setColor(0.6f, 0.6f, 0.6f);
+    openGLSceneRef->insert(ground);
   }
 
   m_canvas->orbitCameraController().setCameraPointing(0.0f, 0.0f, 0.0f);
@@ -767,6 +776,18 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
   m_canvas->orbitCameraController().setAzimuthDegrees(45.0f);
 
   openGLSceneRef->insert(stock_objects::CornerXYZ());
+
+  // A box slightly offset from the XYZ corner, resembling a Blender default scene
+  {
+    auto box = CBox::Create(TPoint3D(-0.5, -0.5, 0.0), TPoint3D(0.5, 0.5, 1.0));
+    box->setPose(CPose3D::FromTranslation(2.0, 2.0, 0.0));
+    box->setColor(0.8f, 0.5f, 0.2f);
+    openGLSceneRef->insert(box);
+  }
+
+  // Enable shadows by default
+  btnShadows->SetValue(true);
+  applyShadowsOptions();
 
   // Add a clone viewport:
   Viewport::Ptr vi = openGLSceneRef->createViewport("clone");
