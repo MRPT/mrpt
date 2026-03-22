@@ -67,6 +67,11 @@ using namespace std::string_literals;
 // ------------------------------------------------------
 //				TestOpenGLObjects
 // ------------------------------------------------------
+// Workaround for GCC optimizer bug: this function is very large and
+// gcc -O2 generates misaligned SSE movaps instructions, causing SIGSEGV.
+#if defined(__GNUC__) && !defined(__clang__)
+__attribute__((optimize("O1")))
+#endif
 void TestOpenGLObjects()
 {
   CDisplayWindow3D win("Demo of MRPT's OpenGL objects", 640, 480);

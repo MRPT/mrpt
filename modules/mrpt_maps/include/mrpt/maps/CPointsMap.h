@@ -117,7 +117,7 @@ class CPointsMap :
 
  public:
   /** Ctor */
-  CPointsMap() = default;
+  CPointsMap();
   ~CPointsMap() = default;
 
   CPointsMap& operator=(const CPointsMap& o)

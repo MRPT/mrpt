@@ -226,6 +226,86 @@ void CMesh3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
   CVisualObject::notifyChange();
 }
 
+void CMesh3D::updateBuffers() const
+{
+  using P3f = mrpt::math::TPoint3Df;
+  using V3f = mrpt::math::TVector3Df;
+
+  const size_t nFaces = m_face_verts.size();
+
+  // Triangles buffer (faces)
+  if (m_showFaces)
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+    auto& tris = VisualObjectParams_Triangles::m_triangles;
+    tris.clear();
+
+    const auto fc = face_color.asTColor();
+
+    for (size_t f = 0; f < nFaces; f++)
+    {
+      const auto& vi = m_face_verts[f];
+      const P3f& v0 = m_vertices[vi[0]];
+      const P3f& v1 = m_vertices[vi[1]];
+      const P3f& v2 = m_vertices[vi[2]];
+
+      V3f normal(0, 0, 1);
+      if (m_computeNormals && f < m_normals.size())
+      {
+        normal = m_normals[f];
+      }
+
+      TTriangle t(v0, v1, v2, normal, normal, normal);
+      t.setColor(fc);
+      tris.push_back(t);
+
+      if (m_is_quad[f])
+      {
+        const P3f& v3 = m_vertices[vi[3]];
+        TTriangle t2(v0, v2, v3, normal, normal, normal);
+        t2.setColor(fc);
+        tris.push_back(t2);
+      }
+    }
+  }
+  else
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+    VisualObjectParams_Triangles::m_triangles.clear();
+  }
+
+  // Lines buffer (edges)
+  if (m_showEdges)
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
+    auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+    vbd.clear();
+    cbd.clear();
+
+    const auto ec = edge_color.asTColor();
+
+    for (size_t f = 0; f < nFaces; f++)
+    {
+      const auto& vi = m_face_verts[f];
+      const int nv = m_is_quad[f] ? 4 : 3;
+      for (int i = 0; i < nv; i++)
+      {
+        const int j = (i + 1) % nv;
+        vbd.emplace_back(m_vertices[vi[i]]);
+        vbd.emplace_back(m_vertices[vi[j]]);
+      }
+    }
+    cbd.assign(vbd.size(), ec);
+  }
+  else
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
+    VisualObjectParams_Lines::m_vertex_buffer_data.clear();
+    VisualObjectParams_Lines::m_color_buffer_data.clear();
+  }
+}
+
 auto CMesh3D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return trianglesBoundingBox();
