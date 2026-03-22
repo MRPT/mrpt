@@ -71,7 +71,12 @@ void COrbitCameraController::onMouseMove(int x, int y, uint8_t buttons, uint8_t 
   // was missed (e.g. the click landed on an overlay widget and the cursor then
   // moved back onto the canvas while still held). Reset the last-position
   // anchor so the first delta after the glitch is zero rather than huge.
-  mouseGlitchFilter(x, y, m_lastX, m_lastY);
+  // Only apply when m_buttonDown is false: if we already registered the
+  // button-down, m_lastX/Y is valid and large deltas are legitimate fast moves.
+  if (!m_buttonDown)
+  {
+    mouseGlitchFilter(x, y, m_lastX, m_lastY);
+  }
 
   const int dx = x - m_lastX;
   const int dy = y - m_lastY;
