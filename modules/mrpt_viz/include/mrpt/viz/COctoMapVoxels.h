@@ -318,6 +318,7 @@ class COctoMapVoxels :
 
   void sort_voxels_by_z();
 
+  void updateBuffers() const override;
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
   /** Sets the contents of the object from a mrpt::maps::COctoMap object.

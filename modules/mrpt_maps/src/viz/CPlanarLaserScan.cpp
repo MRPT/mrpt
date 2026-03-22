@@ -20,6 +20,8 @@ using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CPlanarLaserScan, CVisualObject, mrpt::viz)
 
+CPlanarLaserScan::CPlanarLaserScan() = default;
+
 void CPlanarLaserScan::clear()
 {
   CVisualObject::notifyChange();

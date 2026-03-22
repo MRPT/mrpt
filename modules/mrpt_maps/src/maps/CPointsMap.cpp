@@ -52,6 +52,8 @@ using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 
+CPointsMap::CPointsMap() = default;
+
 bool CPointsMap::save2D_to_text_file(const string& file) const
 {
   FILE* f = os::fopen(file.c_str(), "wt");

@@ -338,11 +338,11 @@ to override `CVisualObject::updateBuffers()` to fill the CPU-side
 | Class | Issue |
 |-------|-------|
 | `mrpt::viz::CColorBar` | No `updateBuffers()` — colorbar never drawn |
-| `mrpt::viz::CGridPlaneXZ` | No `updateBuffers()` — compare with the implemented `CGridPlaneXY` |
-| `mrpt::viz::CVectorField2D` | No `updateBuffers()` — vector arrows never drawn |
-| `mrpt::viz::CVectorField3D` | No `updateBuffers()` — vector arrows never drawn |
-| `mrpt::viz::CMesh3D` | No `updateBuffers()` — mesh vertices loaded but never uploaded |
-| `mrpt::viz::COctoMapVoxels` | No `updateBuffers()` — voxel/grid data never uploaded |
+| `mrpt::viz::CGridPlaneXZ` | ~~No `updateBuffers()`~~ **DONE** |
+| `mrpt::viz::CVectorField2D` | ~~No `updateBuffers()`~~ **DONE** (lines + arrowhead triangles + points) |
+| `mrpt::viz::CVectorField3D` | ~~No `updateBuffers()`~~ **DONE** (lines + points, with optional module-based colormap) |
+| `mrpt::viz::CMesh3D` | ~~No `updateBuffers()`~~ **DONE** (triangles for faces, lines for edges) |
+| `mrpt::viz::COctoMapVoxels` | ~~No `updateBuffers()`~~ **DONE** (triangles for solid voxels, lines for grid, points mode) |
 | `mrpt::viz::CText` | `computeTextExtension()` body wrapped in `#if 0` and throws `THROW_EXCEPTION("TODO")` with `MRPT_TODO("Refactor!")` — needs reimplementation with the nanogui/gltext backend |
 | `mrpt::viz::CText3D` | Similar to `CText` — 3-D text rendering missing |
 | `mrpt::viz::CFrustum` | `traceRay()` throws `THROW_EXCEPTION("TO DO")` |

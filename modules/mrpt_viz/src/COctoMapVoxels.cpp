@@ -137,6 +137,143 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
   CVisualObject::notifyChange();
 }
 
+// Cube vertex layout (same as mrpt2):
+//        v6----- v5
+// +Z    /|      /|
+// A    v1------v0|
+// |    | |     | |
+// |    | |v7---|-|v4   / -X
+// |    |/      |/     /
+// |    v2------v3    L +X
+// ----------------------> +Y
+
+static const uint8_t kGridLineIndices[] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
+                                           6, 7, 7, 4, 0, 5, 1, 6, 2, 7, 3, 4};
+
+static const uint8_t kCubeIndices[2 * 6 * 3] = {0, 1, 2, 0, 2, 3, 3, 4, 0, 4, 5, 0,
+                                                0, 5, 6, 6, 1, 0, 1, 6, 7, 7, 2, 1,
+                                                7, 3, 4, 2, 3, 7, 4, 7, 6, 5, 6, 4};
+
+static const mrpt::math::TVector3Df kNormalsCube[6 * 2] = {
+    { 1,  0,  0},
+    { 1,  0,  0}, // front
+    { 0,  1,  0},
+    { 0,  1,  0}, // right
+    { 0,  0,  1},
+    { 0,  0,  1}, // top
+    { 0, -1,  0},
+    { 0, -1,  0}, // left
+    { 0,  0, -1},
+    { 0,  0, -1}, // bottom
+    {-1,  0,  0},
+    {-1,  0,  0}, // back
+};
+
+void COctoMapVoxels::updateBuffers() const
+{
+  using P3f = mrpt::math::TPoint3Df;
+  using V3f = mrpt::math::TVector3Df;
+
+  // Grid wireframe lines
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
+    auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+    vbd.clear();
+    cbd.clear();
+
+    if (m_show_grids)
+    {
+      for (const auto& c : m_grid_cubes)
+      {
+        const P3f vs[8] = {
+            {c.max.x, c.max.y, c.max.z},
+            {c.max.x, c.min.y, c.max.z},
+            {c.max.x, c.min.y, c.min.z},
+            {c.max.x, c.max.y, c.min.z},
+            {c.min.x, c.max.y, c.min.z},
+            {c.min.x, c.max.y, c.max.z},
+            {c.min.x, c.min.y, c.max.z},
+            {c.min.x, c.min.y, c.min.z}
+        };
+        for (size_t k = 0; k < sizeof(kGridLineIndices); k += 2)
+        {
+          vbd.emplace_back(vs[kGridLineIndices[k]]);
+          vbd.emplace_back(vs[kGridLineIndices[k + 1]]);
+        }
+      }
+      cbd.assign(vbd.size(), m_grid_color);
+    }
+  }
+
+  // Voxel triangles (solid cubes)
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+    auto& tris = VisualObjectParams_Triangles::m_triangles;
+    tris.clear();
+
+    if (!m_showVoxelsAsPoints)
+    {
+      for (const auto& voxel_set : m_voxel_sets)
+      {
+        if (!voxel_set.visible)
+        {
+          continue;
+        }
+        for (const auto& vx : voxel_set.voxels)
+        {
+          const float L = vx.side_length * 0.5f;
+          const P3f& c = vx.coords;
+          const P3f vs[8] = {
+              {c.x + L, c.y + L, c.z + L},
+              {c.x + L, c.y - L, c.z + L},
+              {c.x + L, c.y - L, c.z - L},
+              {c.x + L, c.y + L, c.z - L},
+              {c.x - L, c.y + L, c.z - L},
+              {c.x - L, c.y + L, c.z + L},
+              {c.x - L, c.y - L, c.z + L},
+              {c.x - L, c.y - L, c.z - L}
+          };
+
+          for (size_t k = 0; k < sizeof(kCubeIndices) / sizeof(kCubeIndices[0]); k += 3)
+          {
+            const V3f& n = kNormalsCube[k / 3];
+            TTriangle tri(
+                vs[kCubeIndices[k]], vs[kCubeIndices[k + 1]], vs[kCubeIndices[k + 2]], n, n, n);
+            tri.setColor(vx.color);
+            tris.emplace_back(std::move(tri));
+          }
+        }
+      }
+    }
+  }
+
+  // Voxel points
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Points::m_pointsMtx.data);
+    auto& vbd = VisualObjectParams_Points::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Points::m_color_buffer_data;
+    vbd.clear();
+    cbd.clear();
+
+    if (m_showVoxelsAsPoints)
+    {
+      for (const auto& voxel_set : m_voxel_sets)
+      {
+        if (!voxel_set.visible)
+        {
+          continue;
+        }
+        for (const auto& vx : voxel_set.voxels)
+        {
+          vbd.emplace_back(vx.coords);
+          cbd.emplace_back(vx.color);
+        }
+      }
+    }
+  }
+}
+
 auto COctoMapVoxels::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return mrpt::math::TBoundingBoxf::FromUnsortedPoints(m_bb_min, m_bb_max);

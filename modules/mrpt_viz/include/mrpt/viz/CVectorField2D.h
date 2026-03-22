@@ -181,6 +181,7 @@ class CVectorField2D :
    */
   size_t rows() const { return xcomp.rows(); }
 
+  void updateBuffers() const override;
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
   /** Constructor */

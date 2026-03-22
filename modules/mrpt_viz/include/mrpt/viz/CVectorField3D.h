@@ -266,6 +266,7 @@ class CVectorField3D :
   /** Returns the total count of columns used to represent the vector field. */
   [[nodiscard]] size_t rows() const { return x_vf.rows(); }
 
+  void updateBuffers() const override;
   [[nodiscard]] mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
   void enableColorFromModule(bool enable = true)

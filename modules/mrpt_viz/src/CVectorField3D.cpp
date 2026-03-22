@@ -88,6 +88,72 @@ void CVectorField3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
   CVisualObject::notifyChange();
 }
 
+void CVectorField3D::updateBuffers() const
+{
+  const int rows = static_cast<int>(x_vf.rows());
+  const int cols = static_cast<int>(x_vf.cols());
+
+  // Lines buffer: arrows from each point along the field vector
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
+    auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+    vbd.clear();
+    cbd.clear();
+
+    for (int r = 0; r < rows; r++)
+    {
+      for (int c = 0; c < cols; c++)
+      {
+        const float px = x_p(r, c), py = y_p(r, c), pz = z_p(r, c);
+        vbd.emplace_back(px, py, pz);
+        vbd.emplace_back(px + x_vf(r, c), py + y_vf(r, c), pz + z_vf(r, c));
+
+        mrpt::img::TColor col;
+        if (m_colorFromModule)
+        {
+          const float module = std::sqrt(
+              x_vf(r, c) * x_vf(r, c) + y_vf(r, c) * y_vf(r, c) + z_vf(r, c) * z_vf(r, c));
+          const float t = std::min(module / m_maxspeed, 1.0f);
+          col.R =
+              static_cast<uint8_t>(m_still_color.R + t * (m_maxspeed_color.R - m_still_color.R));
+          col.G =
+              static_cast<uint8_t>(m_still_color.G + t * (m_maxspeed_color.G - m_still_color.G));
+          col.B =
+              static_cast<uint8_t>(m_still_color.B + t * (m_maxspeed_color.B - m_still_color.B));
+          col.A =
+              static_cast<uint8_t>(m_still_color.A + t * (m_maxspeed_color.A - m_still_color.A));
+        }
+        else
+        {
+          col = m_field_color;
+        }
+        cbd.emplace_back(col);
+        cbd.emplace_back(col);
+      }
+    }
+  }
+
+  // Points buffer: dot at each sample position
+  if (m_showPoints)
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Points::m_pointsMtx.data);
+    auto& vbd = VisualObjectParams_Points::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Points::m_color_buffer_data;
+    vbd.clear();
+    cbd.clear();
+
+    for (int r = 0; r < rows; r++)
+    {
+      for (int c = 0; c < cols; c++)
+      {
+        vbd.emplace_back(x_p(r, c), y_p(r, c), z_p(r, c));
+        cbd.emplace_back(m_point_color);
+      }
+    }
+  }
+}
+
 auto CVectorField3D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return verticesBoundingBox();

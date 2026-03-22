@@ -61,7 +61,7 @@ class CPlanarLaserScan :
   DEFINE_SERIALIZABLE(CPlanarLaserScan, mrpt::viz)
 
  public:
-  CPlanarLaserScan() = default;
+  CPlanarLaserScan();
   ~CPlanarLaserScan() override = default;
 
   /** Clear the scan */

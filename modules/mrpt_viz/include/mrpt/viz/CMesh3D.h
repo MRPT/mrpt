@@ -110,6 +110,7 @@ class CMesh3D :
     vert_color = mrpt::img::TColorf(r, g, b, a);
   }
 
+  void updateBuffers() const override;
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
  protected:

@@ -89,6 +89,86 @@ void CVectorField2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
   CVisualObject::notifyChange();
 }
 
+void CVectorField2D::updateBuffers() const
+{
+  const int rows = static_cast<int>(xcomp.rows());
+  const int cols = static_cast<int>(xcomp.cols());
+
+  const float dx = (cols > 1) ? (xMax - xMin) / (cols - 1) : 0.0f;
+  const float dy = (rows > 1) ? (yMax - yMin) / (rows - 1) : 0.0f;
+
+  // Lines buffer: stem of each vector arrow
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
+    auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+    vbd.clear();
+    cbd.clear();
+    vbd.reserve(static_cast<size_t>(rows * cols) * 2);
+
+    for (int c = 0; c < cols; c++)
+    {
+      for (int r = 0; r < rows; r++)
+      {
+        const float px = xMin + c * dx;
+        const float py = yMin + r * dy;
+        vbd.emplace_back(px, py, 0.0f);
+        vbd.emplace_back(px + xcomp(r, c), py + ycomp(r, c), 0.0f);
+      }
+    }
+    cbd.assign(vbd.size(), m_field_color);
+  }
+
+  // Triangles buffer: arrowhead at the tip of each vector
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+    auto& tris = VisualObjectParams_Triangles::m_triangles;
+    tris.clear();
+    tris.reserve(static_cast<size_t>(rows * cols));
+
+    using P3f = mrpt::math::TPoint3Df;
+    for (int c = 0; c < cols; c++)
+    {
+      for (int r = 0; r < rows; r++)
+      {
+        const float vx = xcomp(r, c), vy = ycomp(r, c);
+        const float tri_side = 0.25f * std::sqrt(vx * vx + vy * vy);
+        const float ang = std::atan2(vy, vx) - 1.5708f;
+        const float tip_x = xMin + c * dx + vx;
+        const float tip_y = yMin + r * dy + vy;
+        TTriangle t(
+            P3f(-std::sin(ang) * 0.866f * tri_side + tip_x,
+                std::cos(ang) * 0.866f * tri_side + tip_y, 0.0f),
+            P3f(std::cos(ang) * 0.5f * tri_side + tip_x, std::sin(ang) * 0.5f * tri_side + tip_y,
+                0.0f),
+            P3f(-std::cos(ang) * 0.5f * tri_side + tip_x, -std::sin(ang) * 0.5f * tri_side + tip_y,
+                0.0f));
+        t.setColor(m_field_color);
+        tris.emplace_back(std::move(t));
+      }
+    }
+  }
+
+  // Points buffer: dot at each grid position
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Points::m_pointsMtx.data);
+    auto& vbd = VisualObjectParams_Points::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Points::m_color_buffer_data;
+    vbd.clear();
+    cbd.clear();
+    vbd.reserve(static_cast<size_t>(rows * cols));
+
+    for (int c = 0; c < cols; c++)
+    {
+      for (int r = 0; r < rows; r++)
+      {
+        vbd.emplace_back(xMin + c * dx, yMin + r * dy, 0.0f);
+      }
+    }
+    cbd.assign(vbd.size(), m_point_color);
+  }
+}
+
 auto CVectorField2D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return verticesBoundingBox();
