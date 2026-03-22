@@ -328,55 +328,53 @@ are otherwise visibly incomplete after the 2.x → 3.0 porting effort.
 
 ### 13.2 `mrpt_opengl` — Rendering pipeline gaps
 
-- **Frustum culling not implemented**: `CompiledViewport.cpp:984` has a
-  `// TODO: Implement frustum culling using proxy->getBoundingBox()` comment;
-  every object is currently rendered unconditionally.
-- **16-bit depth texture**: `Texture.cpp:334` throws
-  `THROW_EXCEPTION("todo: textures with D16U depth")`.
-- **Shadow rendering**: The latest commit (`afc33a207`) marks shadow rendering
-  as an "attempt at fix"; the shadow map pipeline (directional light pass) may
-  still have correctness issues worth re-verifying.
+- ~~**Frustum culling not implemented**~~ — **DONE**: Frustum culling is now
+  implemented in `CompiledViewport::buildRenderQueue()` using the existing
+  `depthAndVisibleInView()` infrastructure. Objects outside the view frustum
+  are skipped, and proper depth sorting is used for the render queue.
+- ~~**16-bit depth texture**~~ — **DONE**: `Texture.cpp` now handles
+  `PixelDepth::D16U` by converting 16-bit images to 8-bit (keeping the
+  high byte) before uploading to OpenGL.
 
 ### 13.4 `mrpt_poses` — Unimplemented PDF operations
 
-Many probability distribution classes have methods that were declared but never
-implemented, throwing `THROW_EXCEPTION("TODO!!!")` or
-`THROW_EXCEPTION("Not implemented yet!")` at run-time:
+Some probability distribution classes still have methods that throw at run-time.
+The following have been **implemented**:
 
-- **`CPosePDFGrid`**: `normalizeWeights()`, `getMostLikelyCPose()`,
-  `getCovarianceAndMean()`, `drawSingleSample()`,
-  `bayesianFusion()`, `inverse()` — all throw.
-- **`CPose3DPDFGrid`**: `getMostLikelyCPose()`, `getCovarianceAndMean()`,
-  `drawSingleSample()`, `bayesianFusion()`, `inverse()` and others — all throw.
-- **`CPose3DPDFParticles`**: `getCovarianceAndMean()` (`"TO DO!!"`),
-  `bayesianFusion()`, `evaluateNormalizedPDF()`,
-  `evaluatePDF()`, `changeCoordinatesReference()` — all throw.
-- **`CPose3DPDFSOG`**: `bayesianFusion()` (`"TODO!!!"`),
-  `evaluateNormalizedPDF()`, `drawSingleSample()` — all throw.
-- **`CPose3DPDFGaussian`**: `bayesianFusion()`, `inverse()`,
-  `drawSingleSample()` — all throw `"TO DO!!!"`.
-- **`CPose3DPDFGaussianInf`**: `bayesianFusion()`, `inverse()`,
-  `drawSingleSample()` — all throw `"TO DO!!!"`.
-- **`CPointPDFGaussian::drawSingleSample()`** — throws `"TODO!!!"`.
-- **`CPoint2DPDFGaussian::drawSingleSample()`** — throws `"TODO!!!"`.
-- **`CPointPDFParticles`**: `evaluateNormalizedPDF()`, `drawSingleSample()` — throw.
-- **`CPosePDFParticles::evaluateNormalizedPDF()`** — throws `"Not implemented yet!"`.
-- **`CPoseRandomSampler`**: sampling for non-Gaussian 2-D and 3-D PDFs throws
-  `THROW_EXCEPTION("TODO")` (lines 260, 308 of `CPoseRandomSampler.cpp`).
+- **`CPose3DPDFGaussian`**: `bayesianFusion()`, `evaluatePDF()`,
+  `evaluateNormalizedPDF()`.
+- **`CPose3DPDFGaussianInf`**: `bayesianFusion()`, `evaluatePDF()`,
+  `evaluateNormalizedPDF()`.
+- **`CPointPDFGaussian`**: `bayesianFusion()`.
+- **`CPoint2DPDFGaussian`**: `bayesianFusion()`.
+- **`CPose3DPDFSOG`**: `bayesianFusion()`, `drawSingleSample()`,
+  `drawManySamples()`.
+- **`CPosePDFSOG`**: `drawSingleSample()`, `drawManySamples()`.
+- **`CPose3DPDFParticles`**: `drawSingleSample()`, `drawManySamples()`,
+  `operator+=()`, `append()`, `copyFrom(CPose3DPDFGaussian)`.
+- **`CPointPDFParticles`**: `drawSingleSample()`.
+- **`CPosePDFGrid`**: `drawSingleSample()`, `drawManySamples()`.
+- **`CPose3DPDFGrid`**: `drawSingleSample()`, `drawManySamples()`.
+- **`CPoseRandomSampler`**: SOG sampling for both 2-D and 3-D PDFs.
+
+**Still unimplemented** (throwing at run-time):
+
+- **`CPosePDFGrid`**: `copyFrom()`, `changeCoordinatesReference()`,
+  `bayesianFusion()`, `inverse()`.
+- **`CPose3DPDFGrid`**: `saveToTextFile()`, `changeCoordinatesReference()`,
+  `bayesianFusion()`, `inverse()`.
+- **`CPose3DPDFParticles`**: `bayesianFusion()`.
+- **`CPosePDFParticles`**: `bayesianFusion()`, `evaluateNormalizedPDF()`.
+- **`CPointPDFParticles`**: `bayesianFusion()`.
 
 ### 13.5 `mrpt_slam` — Incomplete algorithms
 
 - **`CICP` (3-D mode)**: Only `icpClassic` is implemented for 3-D ICP; Action: mention in docs 
   that users should use the independent project mp2p_icp instead.
-- **`data_association`**: Joint compatibility branch-and-bound has a
-  `// TODO: Optimized version!!` note (line 583).
 
 ### 13.6 `mrpt_nav` — Planner optimisation
 
 - Re-read the entire library, look for potential conceptual / implementation subtle bugs, and improve in general all classes documentation.
-- **`PlannerRRT_SE2_TPS::getNearestNode()`**: Marked with
-  `MRPT_TODO("Optimize getNearestNode() with KD-tree!")` — currently does a
-  linear scan over all nodes.
 - **`CParameterizedTrajectoryGenerator`**: One obstacle post-processing enum
   value is not handled and throws.
 

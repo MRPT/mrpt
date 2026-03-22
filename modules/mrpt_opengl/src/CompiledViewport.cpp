@@ -981,8 +981,20 @@ void CompiledViewport::buildRenderQueue(
       continue;
     }
 
-    // TODO: Implement frustum culling using proxy->getBoundingBox()
-    // For now, render everything
+    // Frustum culling and depth computation
+    mrpt::math::CMatrixDouble44 modelMat;
+    modelMat.asEigen() = proxy->m_modelMatrix.asEigen().template cast<double>();
+    const mrpt::poses::CPose3D objPose(modelMat);
+
+    const bool skipCull = isShadowMapPass || !proxy->cullEligible();
+    const auto [objDepth, visible, fullyVisible] =
+        depthAndVisibleInView(proxy.get(), matrices, objPose, skipCull);
+
+    if (!visible)
+    {
+      stats.numProxiesCulled++;
+      continue;
+    }
 
     auto shaderIDs = proxy->requiredShaders();
 
@@ -1018,8 +1030,8 @@ void CompiledViewport::buildRenderQueue(
       objMatrices.pmv_matrix.asEigen() =
           objMatrices.p_matrix.asEigen() * objMatrices.mv_matrix.asEigen();
 
-      // Use depth of 0 for now (proper depth sorting would go here)
-      queue[shaderID].emplace(0.0f, RenderQueueElement{proxy.get(), objMatrices});
+      queue[shaderID].emplace(
+          static_cast<float>(objDepth), RenderQueueElement{proxy.get(), objMatrices});
     }
 
     stats.numProxiesRendered++;

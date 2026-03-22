@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
@@ -236,10 +237,23 @@ void CPose3DPDFGaussianInf::drawManySamples(size_t N, vector<CVectorDouble>& out
 /*---------------------------------------------------------------
           bayesianFusion
  ---------------------------------------------------------------*/
-void CPose3DPDFGaussianInf::bayesianFusion(
-    [[maybe_unused]] const CPose3DPDF& p1_, [[maybe_unused]] const CPose3DPDF& p2_)
+void CPose3DPDFGaussianInf::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF& p2_)
 {
-  THROW_EXCEPTION("TO DO!!!");
+  MRPT_START
+
+  // Convert to covariance form, fuse, convert back
+  CPose3DPDFGaussian a(UNINITIALIZED_POSE);
+  CPose3DPDFGaussian b(UNINITIALIZED_POSE);
+  a.copyFrom(p1_);
+  b.copyFrom(p2_);
+
+  CPose3DPDFGaussian result;
+  result.bayesianFusion(a, b);
+
+  this->mean = result.mean;
+  this->cov_inv = result.cov.inverse_LLt();
+
+  MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -314,17 +328,49 @@ void CPose3DPDFGaussianInf::operator-=(const CPose3DPDFGaussianInf& Ap)
 /*---------------------------------------------------------------
             evaluatePDF
  ---------------------------------------------------------------*/
-double CPose3DPDFGaussianInf::evaluatePDF([[maybe_unused]] const CPose3D& x) const
+double CPose3DPDFGaussianInf::evaluatePDF(const CPose3D& x) const
 {
-  THROW_EXCEPTION("TO DO!!!");
+  CMatrixDouble61 X;
+  X(0, 0) = x.x();
+  X(1, 0) = x.y();
+  X(2, 0) = x.z();
+  X(3, 0) = x.yaw();
+  X(4, 0) = x.pitch();
+  X(5, 0) = x.roll();
+
+  CMatrixDouble61 MU;
+  MU(0, 0) = mean.x();
+  MU(1, 0) = mean.y();
+  MU(2, 0) = mean.z();
+  MU(3, 0) = mean.yaw();
+  MU(4, 0) = mean.pitch();
+  MU(5, 0) = mean.roll();
+
+  return math::normalPDFInf(X, MU, this->cov_inv);
 }
 
 /*---------------------------------------------------------------
             evaluateNormalizedPDF
  ---------------------------------------------------------------*/
-double CPose3DPDFGaussianInf::evaluateNormalizedPDF([[maybe_unused]] const CPose3D& x) const
+double CPose3DPDFGaussianInf::evaluateNormalizedPDF(const CPose3D& x) const
 {
-  THROW_EXCEPTION("TO DO!!!");
+  CMatrixDouble61 X;
+  X(0, 0) = x.x();
+  X(1, 0) = x.y();
+  X(2, 0) = x.z();
+  X(3, 0) = x.yaw();
+  X(4, 0) = x.pitch();
+  X(5, 0) = x.roll();
+
+  CMatrixDouble61 MU;
+  MU(0, 0) = mean.x();
+  MU(1, 0) = mean.y();
+  MU(2, 0) = mean.z();
+  MU(3, 0) = mean.yaw();
+  MU(4, 0) = mean.pitch();
+  MU(5, 0) = mean.roll();
+
+  return math::normalPDFInf(X, MU, this->cov_inv) / math::normalPDFInf(MU, MU, this->cov_inv);
 }
 
 /*---------------------------------------------------------------

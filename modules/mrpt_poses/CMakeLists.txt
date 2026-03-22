@@ -78,6 +78,7 @@ set(LIB_SOURCES
   tests/CPose3DPDFGaussian_unittest.cpp
   tests/matrix_serialization_unittest.cpp
   tests/Lie_unittest.cpp
+  tests/PosePDF_implementations_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

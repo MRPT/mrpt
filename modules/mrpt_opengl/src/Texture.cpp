@@ -331,12 +331,23 @@ void Texture::internalAssignImage_2D(
 
     case mrpt::img::PixelDepth::D16U:
     {
-      THROW_EXCEPTION("todo: textures with D16U depth");
-#if 0
-      double ratio = 65536.0;
-      rgb.resize(in_rgb->getWidth(), in_rgb->getHeight(), mrpt::img::CH_RGB);
-      cv::convertScaleAbs(in_rgb->asCvMatRef(), rgb.asCvMatRef(), 255.0 / ratio);
-#endif
+      // Convert 16-bit to 8-bit by scaling (keeping the high byte)
+      const auto nCh = in_rgb->isColor() ? mrpt::img::CH_RGB : mrpt::img::CH_GRAY;
+      const int32_t w = in_rgb->getWidth();
+      const int32_t h = in_rgb->getHeight();
+      const int chCount = static_cast<int>(nCh);
+
+      rgb.resize(w, h, nCh, mrpt::img::PixelDepth::D8U);
+
+      for (int32_t y = 0; y < h; y++)
+      {
+        const auto* src = in_rgb->ptrLine<uint16_t>(y);
+        auto* dst = rgb.ptrLine<uint8_t>(y);
+        for (int32_t x = 0; x < w * chCount; x++)
+        {
+          dst[x] = static_cast<uint8_t>(src[x] >> 8);
+        }
+      }
     }
     break;
 

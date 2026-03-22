@@ -13,8 +13,10 @@
 */
 
 #include <mrpt/math/matrix_serialization.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
@@ -23,6 +25,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace std;
 
@@ -197,12 +200,33 @@ void CPose3DPDFSOG::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF& p2_)
 {
   MRPT_START
 
-  // p1: CPose3DPDFSOG, p2: CPosePDFGaussian:
-
   ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG));
   ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG));
 
-  THROW_EXCEPTION("TODO!!!");
+  const auto* p1 = dynamic_cast<const CPose3DPDFSOG*>(&p1_);
+  const auto* p2 = dynamic_cast<const CPose3DPDFSOG*>(&p2_);
+
+  // Result = pairwise Bayesian fusion of all mode combinations
+  this->m_modes.clear();
+
+  for (const auto& m1 : p1->m_modes)
+  {
+    for (const auto& m2 : p2->m_modes)
+    {
+      TGaussianMode newMode;
+
+      // Fuse the two Gaussians
+      CPose3DPDFGaussian fusedGauss;
+      fusedGauss.bayesianFusion(m1.val, m2.val);
+
+      newMode.val = fusedGauss;
+      newMode.log_w = m1.log_w + m2.log_w;
+
+      this->m_modes.push_back(newMode);
+    }
+  }
+
+  normalizeWeights();
 
   MRPT_END
 }
@@ -243,18 +267,53 @@ void CPose3DPDFSOG::normalizeWeights()
 /*---------------------------------------------------------------
             drawSingleSample
  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::drawSingleSample([[maybe_unused]] CPose3D& outPart) const
+void CPose3DPDFSOG::drawSingleSample(CPose3D& outPart) const
 {
-  THROW_EXCEPTION("TO DO!");
+  MRPT_START
+  ASSERT_(!m_modes.empty());
+
+  // Select a mode weighted by exp(log_w)
+  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
+  double cum = 0;
+
+  // Compute total weight
+  double maxW = m_modes[0].log_w;
+  for (const auto& m : m_modes) maxW = std::max(maxW, m.log_w);
+  double sumW = 0;
+  for (const auto& m : m_modes) sumW += exp(m.log_w - maxW);
+
+  const CPose3DPDFGaussian* selected = &m_modes.rbegin()->val;
+  for (const auto& m : m_modes)
+  {
+    cum += exp(m.log_w - maxW) / sumW;
+    if (uni <= cum)
+    {
+      selected = &m.val;
+      break;
+    }
+  }
+
+  // Draw from the selected Gaussian mode
+  selected->drawSingleSample(outPart);
+
+  MRPT_END
 }
 
-/*---------------------------------------------------------------
-            drawManySamples
- ---------------------------------------------------------------*/
-void CPose3DPDFSOG::drawManySamples(
-    [[maybe_unused]] size_t N, [[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
+void CPose3DPDFSOG::drawManySamples(size_t N, std::vector<CVectorDouble>& outSamples) const
 {
-  THROW_EXCEPTION("TO DO!");
+  outSamples.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    CPose3D pose;
+    drawSingleSample(pose);
+    outSamples[i].resize(6);
+    outSamples[i][0] = pose.x();
+    outSamples[i][1] = pose.y();
+    outSamples[i][2] = pose.z();
+    outSamples[i][3] = pose.yaw();
+    outSamples[i][4] = pose.pitch();
+    outSamples[i][5] = pose.roll();
+  }
 }
 
 /*---------------------------------------------------------------

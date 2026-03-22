@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/wrap2pi.h>
@@ -353,42 +354,42 @@ void CPose3DPDFGaussian::drawManySamples(size_t N, vector<CVectorDouble>& outSam
 /*---------------------------------------------------------------
           bayesianFusion
  ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::bayesianFusion(
-    [[maybe_unused]] const CPose3DPDF& p1_, [[maybe_unused]] const CPose3DPDF& p2_)
+void CPose3DPDFGaussian::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF& p2_)
 {
   MRPT_START
 
-  THROW_EXCEPTION("TO DO!!!");
+  ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussian));
+  ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussian));
 
-  /*	ASSERT_( p1_.GetRuntimeClass() == CLASS_ID( CPose3DPDFGaussian )  );
-    ASSERT_( p2_.GetRuntimeClass() == CLASS_ID( CPose3DPDFGaussian )  );
+  const auto* p1 = dynamic_cast<const CPose3DPDFGaussian*>(&p1_);
+  const auto* p2 = dynamic_cast<const CPose3DPDFGaussian*>(&p2_);
 
-    CPose3DPDFGaussian	*p1 = (CPose3DPDFGaussian*) &p1_;
-    CPose3DPDFGaussian	*p2 = (CPose3DPDFGaussian*) &p2_;
+  const CMatrixDouble66 C1_inv = p1->cov.inverse_LLt();
+  const CMatrixDouble66 C2_inv = p2->cov.inverse_LLt();
 
+  CMatrixDouble61 x1, x2;
+  x1(0, 0) = p1->mean.x();
+  x1(1, 0) = p1->mean.y();
+  x1(2, 0) = p1->mean.z();
+  x1(3, 0) = p1->mean.yaw();
+  x1(4, 0) = p1->mean.pitch();
+  x1(5, 0) = p1->mean.roll();
 
-    CMatrixD	x1(3,1),x2(3,1),x(3,1);
-    CMatrixD	C1( p1->cov );
-    CMatrixD	C2( p2->cov );
-    CMatrixD	C1_inv = C1.inverse_LLt();
-    CMatrixD	C2_inv = C2.inverse_LLt();
-    CMatrixD	C;
+  x2(0, 0) = p2->mean.x();
+  x2(1, 0) = p2->mean.y();
+  x2(2, 0) = p2->mean.z();
+  x2(3, 0) = p2->mean.yaw();
+  x2(4, 0) = p2->mean.pitch();
+  x2(5, 0) = p2->mean.roll();
 
-    x1(0,0) = p1->mean.x; x1(1,0) = p1->mean.y; x1(2,0) = p1->mean.phi;
-    x2(0,0) = p2->mean.x; x2(1,0) = p2->mean.y; x2(2,0) = p2->mean.phi;
+  CMatrixDouble66 auxC = C1_inv + C2_inv;
+  this->cov = auxC.inverse_LLt();
+  this->enforceCovSymmetry();
 
-    C = !(C1_inv + C2_inv);
+  auto x = CMatrixDouble61(this->cov.asEigen() * (C1_inv * x1 + C2_inv * x2));
 
-    this->cov = C;
-    this->enforceCovSymmetry();
+  this->mean.setFromValues(x(0, 0), x(1, 0), x(2, 0), x(3, 0), x(4, 0), x(5, 0));
 
-    x = C * ( C1_inv*x1 + C2_inv*x2 );
-
-    this->mean.x = x(0,0);
-    this->mean.y = x(1,0);
-    this->mean.phi = x(2,0);
-    this->mean.normalizePhi();
-  */
   MRPT_END
 }
 
@@ -491,43 +492,49 @@ void CPose3DPDFGaussian::operator-=(const CPose3DPDFGaussian& Ap)
 /*---------------------------------------------------------------
             evaluatePDF
  ---------------------------------------------------------------*/
-double CPose3DPDFGaussian::evaluatePDF([[maybe_unused]] const CPose3D& x) const
+double CPose3DPDFGaussian::evaluatePDF(const CPose3D& x) const
 {
-  THROW_EXCEPTION("TO DO!!!");
+  CMatrixDouble61 X;
+  X(0, 0) = x.x();
+  X(1, 0) = x.y();
+  X(2, 0) = x.z();
+  X(3, 0) = x.yaw();
+  X(4, 0) = x.pitch();
+  X(5, 0) = x.roll();
 
-  /*	CMatrixD	X(6,1);
-    X(0,0) = x.x;
-    X(1,0) = x.y;
-    X(2,0) = x.z;
+  CMatrixDouble61 MU;
+  MU(0, 0) = mean.x();
+  MU(1, 0) = mean.y();
+  MU(2, 0) = mean.z();
+  MU(3, 0) = mean.yaw();
+  MU(4, 0) = mean.pitch();
+  MU(5, 0) = mean.roll();
 
-    CMatrixD	MU(6,1);
-    MU(0,0) = mean.x;
-    MU(1,0) = mean.y;
-    MU(2,0) = mean.z;
-
-    return math::normalPDF( X, MU, this->cov );
-  */
+  return math::normalPDF(X, MU, this->cov);
 }
 
 /*---------------------------------------------------------------
             evaluateNormalizedPDF
  ---------------------------------------------------------------*/
-double CPose3DPDFGaussian::evaluateNormalizedPDF([[maybe_unused]] const CPose3D& x) const
+double CPose3DPDFGaussian::evaluateNormalizedPDF(const CPose3D& x) const
 {
-  THROW_EXCEPTION("TO DO!!!");
-  /*	CMatrixD	X(3,1);
-    X(0,0) = x.x;
-    X(1,0) = x.y;
-    X(2,0) = x.phi;
+  CMatrixDouble61 X;
+  X(0, 0) = x.x();
+  X(1, 0) = x.y();
+  X(2, 0) = x.z();
+  X(3, 0) = x.yaw();
+  X(4, 0) = x.pitch();
+  X(5, 0) = x.roll();
 
-    CMatrixD	MU(3,1);
-    MU(0,0) = mean.x;
-    MU(1,0) = mean.y;
-    MU(2,0) = mean.phi;
+  CMatrixDouble61 MU;
+  MU(0, 0) = mean.x();
+  MU(1, 0) = mean.y();
+  MU(2, 0) = mean.z();
+  MU(3, 0) = mean.yaw();
+  MU(4, 0) = mean.pitch();
+  MU(5, 0) = mean.roll();
 
-    return math::normalPDF( X, MU, this->cov ) / math::normalPDF( MU, MU,
-   this->cov );
-  */
+  return math::normalPDF(X, MU, this->cov) / math::normalPDF(MU, MU, this->cov);
 }
 
 void CPose3DPDFGaussian::enforceCovSymmetry()

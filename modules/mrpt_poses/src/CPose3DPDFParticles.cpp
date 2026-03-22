@@ -27,6 +27,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::random;
 
 IMPLEMENTS_SERIALIZABLE(CPose3DPDFParticles, CPose3DPDF, mrpt::poses)
 
@@ -49,7 +50,20 @@ void CPose3DPDFParticles::copyFrom(const CPose3DPDF& o)
   }
   else if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussian))
   {
-    THROW_EXCEPTION("TO DO!!");
+    const auto& pdf = dynamic_cast<const CPose3DPDFGaussian&>(o);
+    const size_t N = m_particles.empty() ? 1000 : m_particles.size();
+    m_particles.resize(N);
+
+    std::vector<CVectorDouble> samples;
+    pdf.drawManySamples(N, samples);
+
+    const double uniformWeight = -std::log(static_cast<double>(N));
+    for (size_t i = 0; i < N; i++)
+    {
+      m_particles[i].log_w = uniformWeight;
+      m_particles[i].d = TPose3D(
+          samples[i][0], samples[i][1], samples[i][2], samples[i][3], samples[i][4], samples[i][5]);
+    }
   }
   MRPT_END
 }
@@ -242,25 +256,48 @@ void CPose3DPDFParticles::changeCoordinatesReference(const CPose3D& newReference
   for (auto& p : m_particles) p.d = (newReferenceBase + CPose3D(p.d)).asTPose();
 }
 
-void CPose3DPDFParticles::drawSingleSample([[maybe_unused]] CPose3D& outPart) const
+void CPose3DPDFParticles::drawSingleSample(CPose3D& outPart) const
 {
-  THROW_EXCEPTION("TO DO!");
+  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
+  double cum = 0;
+  for (const auto& p : m_particles)
+  {
+    cum += exp(p.log_w);
+    if (uni <= cum)
+    {
+      outPart = CPose3D(p.d);
+      return;
+    }
+  }
+  // Fallback:
+  outPart = CPose3D(m_particles.rbegin()->d);
 }
 
-void CPose3DPDFParticles::drawManySamples(
-    [[maybe_unused]] size_t N, [[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
+void CPose3DPDFParticles::drawManySamples(size_t N, std::vector<CVectorDouble>& outSamples) const
 {
-  THROW_EXCEPTION("TO DO!");
+  outSamples.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    CPose3D pose;
+    drawSingleSample(pose);
+    outSamples[i].resize(6);
+    outSamples[i][0] = pose.x();
+    outSamples[i][1] = pose.y();
+    outSamples[i][2] = pose.z();
+    outSamples[i][3] = pose.yaw();
+    outSamples[i][4] = pose.pitch();
+    outSamples[i][5] = pose.roll();
+  }
 }
 
-void CPose3DPDFParticles::operator+=([[maybe_unused]] const CPose3D& Ap)
+void CPose3DPDFParticles::operator+=(const CPose3D& Ap)
 {
-  THROW_EXCEPTION("TO DO!");
+  for (auto& p : m_particles) p.d = (CPose3D(p.d) + Ap).asTPose();
 }
 
-void CPose3DPDFParticles::append([[maybe_unused]] CPose3DPDFParticles& o)
+void CPose3DPDFParticles::append(CPose3DPDFParticles& o)
 {
-  THROW_EXCEPTION("TO DO!");
+  m_particles.insert(m_particles.end(), o.m_particles.begin(), o.m_particles.end());
 }
 
 void CPose3DPDFParticles::inverse(CPose3DPDF& o) const

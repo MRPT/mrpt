@@ -254,10 +254,9 @@ void CPoseRandomSampler::do_sample_2D(CPose2D& p) const
   }
   else if (IS_CLASS(*m_pdf2D, CPosePDFSOG))
   {
-    // -------------------------------------
-    //      			SOG
-    // -------------------------------------
-    THROW_EXCEPTION("TODO");
+    // SOG: delegate to the PDF's own drawSingleSample
+    const auto& pdf = dynamic_cast<const CPosePDFSOG&>(*m_pdf2D);
+    pdf.drawSingleSample(p);
   }
   else if (IS_CLASS(*m_pdf2D, CPosePDFParticles))
   {
@@ -302,10 +301,9 @@ void CPoseRandomSampler::do_sample_3D(CPose3D& p) const
   }
   else if (IS_CLASS(*m_pdf3D, CPose3DPDFSOG))
   {
-    // -------------------------------------
-    //      			SOG
-    // -------------------------------------
-    THROW_EXCEPTION("TODO");
+    // SOG: delegate to the PDF's own drawSingleSample
+    const auto& pdf = dynamic_cast<const CPose3DPDFSOG&>(*m_pdf3D);
+    pdf.drawSingleSample(p);
   }
   else if (IS_CLASS(*m_pdf3D, CPose3DPDFParticles))
   {

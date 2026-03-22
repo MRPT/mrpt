@@ -27,6 +27,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::random;
 using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPosePDFGrid, CPosePDF, mrpt::poses)
@@ -200,18 +201,50 @@ void CPosePDFGrid::inverse([[maybe_unused]] CPosePDF& o) const
 /*---------------------------------------------------------------
           drawSingleSample
  ---------------------------------------------------------------*/
-void CPosePDFGrid::drawSingleSample([[maybe_unused]] CPose2D& outPart) const
+void CPosePDFGrid::drawSingleSample(CPose2D& outPart) const
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  MRPT_START
+
+  // Compute CDF and sample
+  double SUM = 0;
+  for (const auto& v : m_data) SUM += v;
+  ASSERT_(SUM > 0);
+
+  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999) * SUM;
+  double cum = 0;
+  for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
+  {
+    for (size_t y = 0; y < m_sizeY; y++)
+    {
+      for (size_t x = 0; x < m_sizeX; x++)
+      {
+        cum += *getByIndex(x, y, phiInd);
+        if (uni <= cum)
+        {
+          outPart = CPose2D(idx2x(x), idx2y(y), idx2phi(phiInd));
+          return;
+        }
+      }
+    }
+  }
+  // Fallback
+  outPart = CPose2D(0, 0, 0);
+
+  MRPT_END
 }
 
-/*---------------------------------------------------------------
-          drawSingleSample
- ---------------------------------------------------------------*/
-void CPosePDFGrid::drawManySamples(
-    [[maybe_unused]] size_t N, [[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
+void CPosePDFGrid::drawManySamples(size_t N, std::vector<CVectorDouble>& outSamples) const
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  outSamples.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    CPose2D pose;
+    drawSingleSample(pose);
+    outSamples[i].resize(3);
+    outSamples[i][0] = pose.x();
+    outSamples[i][1] = pose.y();
+    outSamples[i][2] = pose.phi();
+  }
 }
 
 /*---------------------------------------------------------------
