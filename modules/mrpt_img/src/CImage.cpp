@@ -1014,8 +1014,35 @@ void CImage::drawImage(const TPixelCoord& pt, const mrpt::img::CImage& img)
       }
       else
       {
-        // TODO: Handle channel conversion
-        THROW_EXCEPTION("Case not implemented");
+        // Channel conversion: grayscale <-> RGB/RGBA
+        const int src_ch = static_cast<int>(img.m_state->channels);
+        const int dst_ch = static_cast<int>(m_state->channels);
+
+        if (src_ch == 1 && dst_ch >= 3)
+        {
+          // Grayscale src -> RGB/RGBA dst: replicate gray to R,G,B
+          const uint8_t gray = *img.ptr<uint8_t>(x, y, 0);
+          *ptr<uint8_t>(dst_col, dst_row, 0) = gray;
+          *ptr<uint8_t>(dst_col, dst_row, 1) = gray;
+          *ptr<uint8_t>(dst_col, dst_row, 2) = gray;
+          if (dst_ch == 4)
+          {
+            *ptr<uint8_t>(dst_col, dst_row, 3) = 255;
+          }
+        }
+        else if (src_ch >= 3 && dst_ch == 1)
+        {
+          // RGB/RGBA src -> grayscale dst: luminance
+          const uint8_t r = *img.ptr<uint8_t>(x, y, 0);
+          const uint8_t g = *img.ptr<uint8_t>(x, y, 1);
+          const uint8_t b = *img.ptr<uint8_t>(x, y, 2);
+          *ptr<uint8_t>(dst_col, dst_row, 0) =
+              static_cast<uint8_t>(0.299f * r + 0.587f * g + 0.114f * b);
+        }
+        else
+        {
+          THROW_EXCEPTION_FMT("drawImage: unsupported channel conversion %d -> %d", src_ch, dst_ch);
+        }
       }
     }
   }
@@ -1047,8 +1074,30 @@ void CImage::extract_patch(
 
 void CImage::normalize()
 {
-  // TODO: Implement normalization
-  THROW_EXCEPTION("normalize() not yet implemented with STB library");
+  makeSureImageIsLoaded();
+  ASSERT_(m_state->depth == PixelDepth::D8U);
+
+  const int w = m_state->width, h = m_state->height;
+  const int ch = static_cast<int>(m_state->channels);
+  uint8_t* data = m_state->image_data;
+  const int total = w * h * ch;
+
+  uint8_t mn = 255, mx = 0;
+  for (int i = 0; i < total; i++)
+  {
+    mn = std::min(mn, data[i]);
+    mx = std::max(mx, data[i]);
+  }
+  if (mx == mn)
+  {
+    return;
+  }  // uniform image, nothing to do
+
+  const float scale = 255.0f / (mx - mn);
+  for (int i = 0; i < total; i++)
+  {
+    data[i] = static_cast<uint8_t>((data[i] - mn) * scale + 0.5f);
+  }
 }
 
 void CImage::getAsMatrix(
@@ -1523,51 +1572,195 @@ void CImage::undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) 
   map.undistort(*this, out_img);
 }
 
-void CImage::filterMedian([[maybe_unused]] CImage& out_img, [[maybe_unused]] int W) const
+void CImage::filterMedian(CImage& out_img, int W) const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
+  ASSERT_(m_state->depth == PixelDepth::D8U);
+  ASSERT_(W >= 1 && (W % 2) == 1);  // W must be odd
 
-  THROW_EXCEPTION("TODO!");
-#if 0
-  auto srcImg = const_cast<cv::Mat&>(m_state->img);
-  if (this == &out_img)
-    srcImg = srcImg.clone();
-  else
-    out_img.resize(srcImg.cols, srcImg.rows, channels());
+  const int w = m_state->width, h = m_state->height;
+  const int ch = static_cast<int>(m_state->channels);
+  const int half = W / 2;
 
-  cv::medianBlur(srcImg, out_img.m_impl->img, W);
-#endif
+  // Prepare output (handle in-place by using a temporary)
+  CImage tmp;
+  CImage* dst = (&out_img == this) ? &tmp : &out_img;
+  dst->resize(w, h, m_state->channels, m_state->depth);
+
+  std::vector<uint8_t> window;
+  window.reserve(static_cast<size_t>(W * W));
+
+  for (int y = 0; y < h; y++)
+  {
+    for (int x = 0; x < w; x++)
+    {
+      for (int c = 0; c < ch; c++)
+      {
+        window.clear();
+        for (int ky = -half; ky <= half; ky++)
+        {
+          const int sy = std::clamp(y + ky, 0, h - 1);
+          for (int kx = -half; kx <= half; kx++)
+          {
+            const int sx = std::clamp(x + kx, 0, w - 1);
+            window.push_back(*ptr<uint8_t>(sx, sy, c));
+          }
+        }
+        std::nth_element(window.begin(), window.begin() + window.size() / 2, window.end());
+        *dst->ptr<uint8_t>(x, y, c) = window[window.size() / 2];
+      }
+    }
+  }
+
+  if (&out_img == this)
+  {
+    out_img = std::move(tmp);
+  }
 }
 
-void CImage::filterGaussian(
-    [[maybe_unused]] CImage& out_img,
-    [[maybe_unused]] int W,
-    [[maybe_unused]] int H,
-    [[maybe_unused]] double sigma) const
+void CImage::filterGaussian(CImage& out_img, int W, int H, double sigma) const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
-  THROW_EXCEPTION("TODO!");
-#if 0
-  auto srcImg = const_cast<cv::Mat&>(m_state->img);
-  if (this == &out_img)
-    srcImg = srcImg.clone();
-  else
-    out_img.resize(srcImg.cols, srcImg.rows, channels());
+  makeSureImageIsLoaded();
+  ASSERT_(m_state->depth == PixelDepth::D8U);
+  ASSERT_(W >= 1 && (W % 2) == 1 && H >= 1 && (H % 2) == 1);
 
-  cv::GaussianBlur(srcImg, out_img.m_impl->img, cv::Size(W, H), sigma);
-#endif
+  const int w = m_state->width, h = m_state->height;
+  const int ch = static_cast<int>(m_state->channels);
+  const int halfW = W / 2, halfH = H / 2;
+
+  // Build 2D Gaussian kernel (separable: kx * ky)
+  const double sig2 = (sigma > 0) ? sigma : 0.3 * ((W - 1) * 0.5 - 1) + 0.8;
+  const double inv2sig2 = 1.0 / (2.0 * sig2 * sig2);
+
+  std::vector<double> kx(W), ky(H);
+  double sumx = 0, sumy = 0;
+  for (int i = 0; i < W; i++)
+  {
+    kx[i] = std::exp(-(i - halfW) * (i - halfW) * inv2sig2);
+    sumx += kx[i];
+  }
+  for (int i = 0; i < H; i++)
+  {
+    ky[i] = std::exp(-(i - halfH) * (i - halfH) * inv2sig2);
+    sumy += ky[i];
+  }
+  for (auto& v : kx)
+  {
+    v /= sumx;
+  }
+  for (auto& v : ky)
+  {
+    v /= sumy;
+  }
+
+  // Handle in-place
+  CImage tmp;
+  CImage* dst = (&out_img == this) ? &tmp : &out_img;
+  dst->resize(w, h, m_state->channels, m_state->depth);
+
+  // Horizontal pass into a float buffer
+  std::vector<float> hbuf(static_cast<size_t>(w) * h * ch, 0.0f);
+  for (int y = 0; y < h; y++)
+  {
+    for (int x = 0; x < w; x++)
+    {
+      for (int c = 0; c < ch; c++)
+      {
+        double acc = 0;
+        for (int kx2 = -halfW; kx2 <= halfW; kx2++)
+        {
+          const int sx = std::clamp(x + kx2, 0, w - 1);
+          acc += *ptr<uint8_t>(sx, y, c) * kx[kx2 + halfW];
+        }
+        hbuf[(y * w + x) * ch + c] = static_cast<float>(acc);
+      }
+    }
+  }
+
+  // Vertical pass into dst
+  for (int y = 0; y < h; y++)
+  {
+    for (int x = 0; x < w; x++)
+    {
+      for (int c = 0; c < ch; c++)
+      {
+        double acc = 0;
+        for (int ky2 = -halfH; ky2 <= halfH; ky2++)
+        {
+          const int sy = std::clamp(y + ky2, 0, h - 1);
+          acc += hbuf[(sy * w + x) * ch + c] * ky[ky2 + halfH];
+        }
+        *dst->ptr<uint8_t>(x, y, c) = static_cast<uint8_t>(std::clamp(acc, 0.0, 255.0));
+      }
+    }
+  }
+
+  if (&out_img == this)
+  {
+    out_img = std::move(tmp);
+  }
 }
 
-void CImage::rotateImage(
-    [[maybe_unused]] CImage& out_img,
-    [[maybe_unused]] double ang,
-    [[maybe_unused]] const TPixelCoord& center,
-    [[maybe_unused]] double scale) const
+void CImage::rotateImage(CImage& out_img, double ang, const TPixelCoord& center, double scale) const
 {
-  makeSureImageIsLoaded();  // For delayed loaded images stored externally
+  makeSureImageIsLoaded();
+  ASSERT_(m_state->depth == PixelDepth::D8U);
 
-  THROW_EXCEPTION("rotateImage() not yet implemented with STB library");
-#if 0
+  const int w = m_state->width, h = m_state->height;
+  const int ch = static_cast<int>(m_state->channels);
+
+  CImage tmp;
+  CImage* dst = (&out_img == this) ? &tmp : &out_img;
+  dst->resize(w, h, m_state->channels, m_state->depth);
+
+  const double cosA = std::cos(ang) / scale;
+  const double sinA = std::sin(ang) / scale;
+  const double cx = center.x, cy = center.y;
+
+  // Inverse mapping: for each dst pixel, find source pixel
+  for (int dy = 0; dy < h; dy++)
+  {
+    for (int dx = 0; dx < w; dx++)
+    {
+      const double dx0 = dx - cx, dy0 = dy - cy;
+      // Inverse rotation
+      const double sx = cosA * dx0 + sinA * dy0 + cx;
+      const double sy = -sinA * dx0 + cosA * dy0 + cy;
+
+      const int sx0 = static_cast<int>(std::floor(sx));
+      const int sy0 = static_cast<int>(std::floor(sy));
+
+      // Bilinear interpolation
+      if (sx0 < 0 || sy0 < 0 || sx0 + 1 >= w || sy0 + 1 >= h)
+      {
+        // Border: fill with zero
+        for (int c = 0; c < ch; c++)
+        {
+          *dst->ptr<uint8_t>(dx, dy, c) = 0;
+        }
+        continue;
+      }
+
+      const double fx = sx - sx0, fy = sy - sy0;
+      for (int c = 0; c < ch; c++)
+      {
+        const double v00 = *ptr<uint8_t>(sx0, sy0, c);
+        const double v10 = *ptr<uint8_t>(sx0 + 1, sy0, c);
+        const double v01 = *ptr<uint8_t>(sx0, sy0 + 1, c);
+        const double v11 = *ptr<uint8_t>(sx0 + 1, sy0 + 1, c);
+        const double val =
+            (1 - fx) * (1 - fy) * v00 + fx * (1 - fy) * v10 + (1 - fx) * fy * v01 + fx * fy * v11;
+        *dst->ptr<uint8_t>(dx, dy, c) = static_cast<uint8_t>(std::clamp(val, 0.0, 255.0));
+      }
+    }
+  }
+
+  if (&out_img == this)
+  {
+    out_img = std::move(tmp);
+  }
+
+#if 0  // Old OpenCV implementation (kept for reference)
 
   auto srcImg = m_state->img;
   // Detect in-place operation and make a deep copy if needed:
@@ -1622,51 +1815,49 @@ bool CImage::drawChessboardCorners(
     return false;
   }
 
-  THROW_EXCEPTION("TODO!");
-#if 0
+  static const mrpt::img::TColor rowColors[8] = {
+      {255,   0,   0},
+      {255, 128,   0},
+      {255, 128,   0},
+      {200, 200,   0},
+      {  0, 255,   0},
+      {  0, 200, 200},
+      {  0,   0, 255},
+      {255,   0, 255},
+  };
 
-  auto& img = m_state->img;
-
-  unsigned int x, y, i;
-  cv::Point prev_pt = cvPoint(0, 0);
-  const int line_max = 8;
-  cv::Scalar line_colors[8];
-
-  line_colors[0] = CV_RGB(255, 0, 0);
-  line_colors[1] = CV_RGB(255, 128, 0);
-  line_colors[2] = CV_RGB(255, 128, 0);
-  line_colors[3] = CV_RGB(200, 200, 0);
-  line_colors[4] = CV_RGB(0, 255, 0);
-  line_colors[5] = CV_RGB(0, 200, 200);
-  line_colors[6] = CV_RGB(0, 0, 255);
-  line_colors[7] = CV_RGB(255, 0, 255);
-
-  CCanvas::selectTextFont("10x20");
-
-  for (y = 0, i = 0; y < check_size_y; y++)
+  unsigned int i = 0;
+  TPixelCoord prev_pt{0, 0};
+  for (unsigned int y = 0; y < check_size_y; y++)
   {
-    const auto color = line_colors[y % line_max];
-    for (x = 0; x < check_size_x; x++, i++)
+    const auto& color = rowColors[y % 8];
+    for (unsigned int x = 0; x < check_size_x; x++, i++)
     {
-      cv::Point pt;
-      pt.x = cvRound(cornerCoords[i].x);
-      pt.y = cvRound(cornerCoords[i].y);
+      const TPixelCoord pt{
+          static_cast<int>(std::round(cornerCoords[i].x)),
+          static_cast<int>(std::round(cornerCoords[i].y))};
 
-      if (i != 0) cv::line(img, prev_pt, pt, color, lines_width);
+      if (i != 0)
+      {
+        line(prev_pt, pt, color, static_cast<int>(lines_width));
+      }
 
-      cv::line(img, cvPoint(pt.x - r, pt.y - r), cvPoint(pt.x + r, pt.y + r), color, lines_width);
-      cv::line(img, cvPoint(pt.x - r, pt.y + r), cvPoint(pt.x + r, pt.y - r), color, lines_width);
+      // Cross lines
+      line(
+          {pt.x - (int)r, pt.y - (int)r}, {pt.x + (int)r, pt.y + (int)r}, color,
+          static_cast<int>(lines_width));
+      line(
+          {pt.x - (int)r, pt.y + (int)r}, {pt.x + (int)r, pt.y - (int)r}, color,
+          static_cast<int>(lines_width));
 
-      if (r > 0) cv::circle(img, pt, r + 1, color);
+      if (r > 0)
+      {
+        drawCircle(pt, static_cast<int>(r + 1), color);
+      }
+
       prev_pt = pt;
-
-      // Text label with the corner index in the first and last
-      // corners:
-      if (i == 0 || i == cornerCoords.size() - 1)
-        CCanvas::textOut(pt.x + 5, pt.y - 5, mrpt::format("%u", i), mrpt::img::TColor::blue());
     }
   }
-#endif
   return true;
 }
 
