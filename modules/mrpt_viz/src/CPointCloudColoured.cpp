@@ -27,6 +27,8 @@ using mrpt::serialization::CArchive;
 
 IMPLEMENTS_SERIALIZABLE(CPointCloudColoured, CVisualObject, mrpt::viz)
 
+CPointCloudColoured::CPointCloudColoured() { castShadows(false); }
+
 uint8_t CPointCloudColoured::serializeGetVersion() const { return 4; }
 void CPointCloudColoured::serializeTo(mrpt::serialization::CArchive& out) const
 {

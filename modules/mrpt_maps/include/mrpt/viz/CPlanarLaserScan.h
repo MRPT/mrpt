@@ -118,6 +118,8 @@ class CPlanarLaserScan :
     m_scan = scan;
   }
 
+  void updateBuffers() const override;
+
   auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
   auto getLocalRepresentativePoint() const -> mrpt::math::TPoint3Df override;
 

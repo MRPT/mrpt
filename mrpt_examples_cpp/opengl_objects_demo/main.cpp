@@ -622,7 +622,7 @@ void TestOpenGLObjects()
     obj->setLocation(off_x, 0, 0);
     theScene->insert(obj);
 
-    obj->setPointSize(1.0);
+    obj->setPointSize(5.0);
 
     for (int i = 0; i < 200; i++)
       obj->push_back(

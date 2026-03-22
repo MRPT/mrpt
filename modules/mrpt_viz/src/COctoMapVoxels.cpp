@@ -24,7 +24,7 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(COctoMapVoxels, CVisualObject, mrpt::viz)
 
 /** Ctor */
-COctoMapVoxels::COctoMapVoxels() : m_grid_color(0xE0, 0xE0, 0xE0, 0x90) {}
+COctoMapVoxels::COctoMapVoxels() : m_grid_color(0xE0, 0xE0, 0xE0, 0x90) { castShadows(false); }
 /** Clears everything */
 void COctoMapVoxels::clear()
 {
