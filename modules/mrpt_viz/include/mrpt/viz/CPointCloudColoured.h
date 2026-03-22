@@ -48,6 +48,8 @@ class CPointCloudColoured :
   mutable size_t m_last_rendered_count{0}, m_last_rendered_count_ongoing{0};
 
  public:
+  CPointCloudColoured();
+
   void markAllPointsAsNew();
 
   auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;

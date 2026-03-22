@@ -27,7 +27,11 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CPointCloud, CVisualObject, mrpt::viz)
 
-CPointCloud::CPointCloud() { markAllPointsAsNew(); }
+CPointCloud::CPointCloud()
+{
+  markAllPointsAsNew();
+  castShadows(false);
+}
 
 void CPointCloud::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
