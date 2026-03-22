@@ -27,6 +27,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::random;
 using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPose3DPDFGrid, CPose3DPDF, mrpt::poses)
@@ -162,15 +163,53 @@ void CPose3DPDFGrid::inverse([[maybe_unused]] CPose3DPDF& o) const
   THROW_EXCEPTION("Not implemented yet!");
 }
 
-void CPose3DPDFGrid::drawSingleSample([[maybe_unused]] CPose3D& outPart) const
+void CPose3DPDFGrid::drawSingleSample(CPose3D& outPart) const
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  MRPT_START
+
+  double SUM = 0;
+  for (const auto& v : m_data) SUM += v;
+  ASSERT_(SUM > 0);
+
+  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999) * SUM;
+  double cum = 0;
+
+  for (uint32_t cR = 0; cR < m_sizeRoll; cR++)
+    for (uint32_t cP = 0; cP < m_sizePitch; cP++)
+      for (uint32_t cY = 0; cY < m_sizeYaw; cY++)
+        for (uint32_t cz = 0; cz < m_sizeZ; cz++)
+          for (uint32_t cy = 0; cy < m_sizeY; cy++)
+            for (uint32_t cx = 0; cx < m_sizeX; cx++)
+            {
+              cum += *getByIndex(cx, cy, cz, cY, cP, cR);
+              if (uni <= cum)
+              {
+                outPart.setFromValues(
+                    idx2x(cx), idx2y(cy), idx2z(cz), idx2yaw(cY), idx2pitch(cP), idx2roll(cR));
+                return;
+              }
+            }
+
+  outPart = CPose3D(0, 0, 0, 0, 0, 0);
+
+  MRPT_END
 }
 
-void CPose3DPDFGrid::drawManySamples(
-    [[maybe_unused]] size_t N, [[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
+void CPose3DPDFGrid::drawManySamples(size_t N, std::vector<CVectorDouble>& outSamples) const
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  outSamples.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    CPose3D pose;
+    drawSingleSample(pose);
+    outSamples[i].resize(6);
+    outSamples[i][0] = pose.x();
+    outSamples[i][1] = pose.y();
+    outSamples[i][2] = pose.z();
+    outSamples[i][3] = pose.yaw();
+    outSamples[i][4] = pose.pitch();
+    outSamples[i][5] = pose.roll();
+  }
 }
 
 void CPose3DPDFGrid::normalize()

@@ -224,11 +224,29 @@ void CPoint2DPDFGaussian::bayesianFusion(
 {
   MRPT_START
 
-  // p1: CPoint2DPDFGaussian, p2: CPosePDFGaussian:
   ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPoint2DPDFGaussian));
   ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPoint2DPDFGaussian));
 
-  THROW_EXCEPTION("TODO!!!");
+  const auto* p1 = dynamic_cast<const CPoint2DPDFGaussian*>(&p1_);
+  const auto* p2 = dynamic_cast<const CPoint2DPDFGaussian*>(&p2_);
+
+  const CMatrixDouble22 C1_inv = p1->cov.inverse_LLt();
+  const CMatrixDouble22 C2_inv = p2->cov.inverse_LLt();
+
+  CMatrixDouble21 x1, x2;
+  x1(0, 0) = p1->mean.x();
+  x1(1, 0) = p1->mean.y();
+
+  x2(0, 0) = p2->mean.x();
+  x2(1, 0) = p2->mean.y();
+
+  CMatrixDouble22 auxC = C1_inv + C2_inv;
+  this->cov = auxC.inverse_LLt();
+
+  auto x = CMatrixDouble21(this->cov.asEigen() * (C1_inv * x1 + C2_inv * x2));
+
+  this->mean.x(x(0, 0));
+  this->mean.y(x(1, 0));
 
   MRPT_END
 }

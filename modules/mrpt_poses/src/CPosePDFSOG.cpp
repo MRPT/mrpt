@@ -20,6 +20,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
@@ -29,6 +30,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace std;
 
@@ -249,22 +251,54 @@ void CPosePDFSOG::rotateAllCovariances(double ang)
 /*---------------------------------------------------------------
           drawSingleSample
  ---------------------------------------------------------------*/
-void CPosePDFSOG::drawSingleSample([[maybe_unused]] CPose2D& outPart) const
+void CPosePDFSOG::drawSingleSample(CPose2D& outPart) const
 {
   MRPT_START
-  THROW_EXCEPTION("Not implemented yet!!");
+  ASSERT_(!m_modes.empty());
+
+  // Select a mode weighted by exp(log_w)
+  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
+  double cum = 0;
+
+  double maxW = m_modes[0].log_w;
+  for (const auto& m : m_modes) maxW = std::max(maxW, m.log_w);
+  double sumW = 0;
+  for (const auto& m : m_modes) sumW += exp(m.log_w - maxW);
+
+  const TGaussianMode* selected = &*m_modes.rbegin();
+  for (const auto& m : m_modes)
+  {
+    cum += exp(m.log_w - maxW) / sumW;
+    if (uni <= cum)
+    {
+      selected = &m;
+      break;
+    }
+  }
+
+  // Draw from selected Gaussian mode
+  CPosePDFGaussian gauss;
+  gauss.mean = selected->mean;
+  gauss.cov = selected->cov;
+  gauss.drawSingleSample(outPart);
+
   MRPT_END
 }
 
-/*---------------------------------------------------------------
-          drawManySamples
- ---------------------------------------------------------------*/
-void CPosePDFSOG::drawManySamples(
-    [[maybe_unused]] size_t N, [[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
+void CPosePDFSOG::drawManySamples(size_t N, std::vector<CVectorDouble>& outSamples) const
 {
   MRPT_START
 
-  THROW_EXCEPTION("Not implemented yet!!");
+  outSamples.resize(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    CPose2D pose;
+    drawSingleSample(pose);
+    outSamples[i].resize(3);
+    outSamples[i][0] = pose.x();
+    outSamples[i][1] = pose.y();
+    outSamples[i][2] = pose.phi();
+  }
 
   MRPT_END
 }

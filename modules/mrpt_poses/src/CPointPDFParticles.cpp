@@ -14,8 +14,10 @@
 
 #include <mrpt/math/ops_containers.h>  // maximum()
 #include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
@@ -24,6 +26,7 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::random;
 using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPointPDFParticles, CPointPDF, mrpt::poses)
@@ -264,9 +267,25 @@ double CPointPDFParticles::computeKurtosis()
 /*---------------------------------------------------------------
           drawSingleSample
   ---------------------------------------------------------------*/
-void CPointPDFParticles::drawSingleSample([[maybe_unused]] CPoint3D& outSample) const
+void CPointPDFParticles::drawSingleSample(CPoint3D& outSample) const
 {
-  THROW_EXCEPTION("TO DO!");
+  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
+  double cum = 0;
+  for (const auto& p : m_particles)
+  {
+    cum += exp(p.log_w);
+    if (uni <= cum)
+    {
+      outSample.x(p.d->x);
+      outSample.y(p.d->y);
+      outSample.z(p.d->z);
+      return;
+    }
+  }
+  const auto& last = m_particles.rbegin()->d;
+  outSample.x(last->x);
+  outSample.y(last->y);
+  outSample.z(last->z);
 }
 
 /*---------------------------------------------------------------
