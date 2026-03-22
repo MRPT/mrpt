@@ -101,6 +101,85 @@ void CColorBar::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version
   CVisualObject::notifyChange();
 }
 
+void CColorBar::updateBuffers() const
+{
+  constexpr unsigned int NUM_DIVISIONS = 64;
+  constexpr unsigned int NUM_LABELS = 4;
+  constexpr unsigned int ONE_LABEL_EACH_NTH = NUM_DIVISIONS / NUM_LABELS;
+
+  const float x0 = 0.0f, x1 = d2f(m_width), x2 = d2f(m_width * 1.3);
+  const float Ay = d2f(m_height) / (NUM_DIVISIONS - 1);
+
+  // Precompute per-division colors
+  std::vector<mrpt::img::TColor> colors(NUM_DIVISIONS);
+  for (unsigned int i = 0; i < NUM_DIVISIONS; i++)
+  {
+    const float col_idx = m_min_col + i * (m_max_col - m_min_col) / (NUM_DIVISIONS - 1);
+    mrpt::img::TColorf colf = mrpt::img::colormap(m_colormap, col_idx);
+    colf.A = 1.0f;
+    colors[i] = colf.asTColor();
+  }
+
+  // Triangles — the colored bar itself
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+    auto& tris = VisualObjectParams_Triangles::m_triangles;
+    tris.clear();
+
+    for (unsigned int i = 0; i < NUM_DIVISIONS - 1; i++)
+    {
+      const float y0 = Ay * i, y1 = Ay * (i + 1);
+      const TPoint3Df pt00(x0, y0, 0), pt10(x1, y0, 0);
+      const TPoint3Df pt01(x0, y1, 0), pt11(x1, y1, 0);
+
+      // Two triangles per quad strip, with per-vertex colors for the gradient
+      TTriangle t;
+
+      t.vertices[0].xyzrgba.pt = pt00;
+      t.vertices[0].setColor(colors[i]);
+      t.vertices[1].xyzrgba.pt = pt10;
+      t.vertices[1].setColor(colors[i]);
+      t.vertices[2].xyzrgba.pt = pt11;
+      t.vertices[2].setColor(colors[i + 1]);
+      t.computeNormals();
+      tris.emplace_back(t);
+
+      t.vertices[0].xyzrgba.pt = pt00;
+      t.vertices[0].setColor(colors[i]);
+      t.vertices[1].xyzrgba.pt = pt11;
+      t.vertices[1].setColor(colors[i + 1]);
+      t.vertices[2].xyzrgba.pt = pt01;
+      t.vertices[2].setColor(colors[i + 1]);
+      t.computeNormals();
+      tris.emplace_back(t);
+    }
+  }
+
+  // Lines — tick marks at label positions
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
+    auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+    vbd.clear();
+    cbd.clear();
+
+    const auto tickColor = mrpt::img::TColor::black();
+
+    for (unsigned int i = 0; i < NUM_DIVISIONS; i++)
+    {
+      const bool draw_label = (i % ONE_LABEL_EACH_NTH) == 0 || i == (NUM_DIVISIONS - 1);
+      if (draw_label)
+      {
+        const float y0 = Ay * i;
+        vbd.emplace_back(x0, y0, 0);
+        vbd.emplace_back(x2, y0, 0);
+        cbd.emplace_back(tickColor);
+        cbd.emplace_back(tickColor);
+      }
+    }
+  }
+}
+
 mrpt::math::TBoundingBoxf CColorBar::internalBoundingBoxLocal() const
 {
   return mrpt::math::TBoundingBoxf::FromUnsortedPoints(

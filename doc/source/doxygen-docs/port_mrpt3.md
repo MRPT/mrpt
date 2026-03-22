@@ -337,7 +337,7 @@ to override `CVisualObject::updateBuffers()` to fill the CPU-side
 
 | Class | Issue |
 |-------|-------|
-| `mrpt::viz::CColorBar` | No `updateBuffers()` — colorbar never drawn |
+| `mrpt::viz::CColorBar` | ~~No `updateBuffers()`~~ **DONE** (triangles for the gradient bar, lines for tick marks) |
 | `mrpt::viz::CGridPlaneXZ` | ~~No `updateBuffers()`~~ **DONE** |
 | `mrpt::viz::CVectorField2D` | ~~No `updateBuffers()`~~ **DONE** (lines + arrowhead triangles + points) |
 | `mrpt::viz::CVectorField3D` | ~~No `updateBuffers()`~~ **DONE** (lines + points, with optional module-based colormap) |
@@ -345,6 +345,7 @@ to override `CVisualObject::updateBuffers()` to fill the CPU-side
 | `mrpt::viz::COctoMapVoxels` | ~~No `updateBuffers()`~~ **DONE** (triangles for solid voxels, lines for grid, points mode) |
 | `mrpt::viz::CText` | `computeTextExtension()` body wrapped in `#if 0` and throws `THROW_EXCEPTION("TODO")` with `MRPT_TODO("Refactor!")` — needs reimplementation with the nanogui/gltext backend |
 | `mrpt::viz::CText3D` | Similar to `CText` — 3-D text rendering missing |
+| `mrpt::viz::CPlanarLaserScan` | ~~No `updateBuffers()`~~ **DONE** (lines for scan outline, triangles for surface, points for endpoints) |
 | `mrpt::viz::CFrustum` | `traceRay()` throws `THROW_EXCEPTION("TO DO")` |
 | `mrpt::viz::CSetOfTexturedTriangles` | `traceRay()` throws `std::runtime_error("TODO: TraceRay not implemented")` |
 
@@ -378,13 +379,13 @@ reimplemented with the STB/custom backend:
 
 | Method | Status |
 |--------|--------|
-| `CImage::normalize()` | Throws `"normalize() not yet implemented with STB library"` |
+| `CImage::normalize()` | ~~Throws~~ **DONE** — finds min/max and rescales all pixels to [0,255] |
 | `CImage::undistort()` | **Implemented** — uses `CUndistortMap` internally; supports all distortion models |
-| `CImage::filterMedian()` | Body wrapped in `#if 0`; throws `THROW_EXCEPTION("TODO!")` |
-| `CImage::filterGaussian()` | Body wrapped in `#if 0`; throws `THROW_EXCEPTION("TODO!")` |
-| `CImage::rotateImage()` | Throws `"rotateImage() not yet implemented with STB library"` |
-| `CImage::drawChessboardCorners()` | Throws `THROW_EXCEPTION("TODO!")` |
-| `CImage::drawImage()` (cross-channel) | `// TODO: Handle channel conversion` followed by `THROW_EXCEPTION("Case not implemented")` |
+| `CImage::filterMedian()` | ~~Body wrapped in `#if 0`~~ **DONE** — manual median filter with border clamping |
+| `CImage::filterGaussian()` | ~~Body wrapped in `#if 0`~~ **DONE** — separable Gaussian kernel with bilinear border clamping |
+| `CImage::rotateImage()` | ~~Throws~~ **DONE** — inverse-mapping bilinear interpolation with zero-border fill |
+| `CImage::drawChessboardCorners()` | ~~Throws~~ **DONE** — draws cross+circle per corner and connecting lines per row using `line()`/`drawCircle()` |
+| `CImage::drawImage()` (cross-channel) | ~~Throws~~ **DONE** — handles grayscale↔RGB/RGBA conversion (luminance formula and gray replication) |
 
 ### 13.4 `mrpt_poses` — Unimplemented PDF operations
 

@@ -29,7 +29,10 @@ namespace mrpt::viz
  * \sa mrpt::viz::Scene, mrpt::viz::CRenderizable, Scene::addColorBar()
  * \ingroup mrpt_viz_grp
  */
-class CColorBar : virtual public CVisualObject, public VisualObjectParams_Triangles
+class CColorBar :
+    virtual public CVisualObject,
+    public VisualObjectParams_Triangles,
+    public VisualObjectParams_Lines
 {
   DEFINE_SERIALIZABLE(CColorBar, mrpt::viz)
 
@@ -49,6 +52,8 @@ class CColorBar : virtual public CVisualObject, public VisualObjectParams_Triang
             const std::string& label_format = std::string("%7.02f"),
             /** Label text font size */
             float label_font_size = .05f);
+
+  void updateBuffers() const override;
 
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
