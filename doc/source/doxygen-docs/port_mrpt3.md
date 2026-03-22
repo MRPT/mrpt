@@ -326,41 +326,6 @@ This section tracks items that are present in the codebase as stubs, throw
 run-time `THROW_EXCEPTION("TODO")`, carry `MRPT_TODO` or `// TODO` markers, or
 are otherwise visibly incomplete after the 2.x → 3.0 porting effort.
 
-### 13.1 `mrpt_viz` — Missing rendering implementations
-
-Several scene-graph classes were ported (serialization, bounding box, setters)
-but **never received an `updateBuffers()` override**, which means they compile
-but produce **invisible objects** at run-time.  The new rendering pipeline
-(mrpt_opengl proxy objects) requires each concrete `CVisualObject` subclass
-to override `CVisualObject::updateBuffers()` to fill the CPU-side
-`VisualObjectParams_*` buffers that are subsequently uploaded to the GPU.
-
-| Class | Issue |
-|-------|-------|
-| `mrpt::viz::CColorBar` | ~~No `updateBuffers()`~~ **DONE** (triangles for the gradient bar, lines for tick marks) |
-| `mrpt::viz::CGridPlaneXZ` | ~~No `updateBuffers()`~~ **DONE** |
-| `mrpt::viz::CVectorField2D` | ~~No `updateBuffers()`~~ **DONE** (lines + arrowhead triangles + points) |
-| `mrpt::viz::CVectorField3D` | ~~No `updateBuffers()`~~ **DONE** (lines + points, with optional module-based colormap) |
-| `mrpt::viz::CMesh3D` | ~~No `updateBuffers()`~~ **DONE** (triangles for faces, lines for edges) |
-| `mrpt::viz::COctoMapVoxels` | ~~No `updateBuffers()`~~ **DONE** (triangles for solid voxels, lines for grid, points mode) |
-| `mrpt::viz::CText` | `computeTextExtension()` body wrapped in `#if 0` and throws `THROW_EXCEPTION("TODO")` with `MRPT_TODO("Refactor!")` — needs reimplementation with the nanogui/gltext backend |
-| `mrpt::viz::CText3D` | Similar to `CText` — 3-D text rendering missing |
-| `mrpt::viz::CPlanarLaserScan` | ~~No `updateBuffers()`~~ **DONE** (lines for scan outline, triangles for surface, points for endpoints) |
-| `mrpt::viz::CFrustum` | `traceRay()` throws `THROW_EXCEPTION("TO DO")` |
-| `mrpt::viz::CSetOfTexturedTriangles` | `traceRay()` throws `std::runtime_error("TODO: TraceRay not implemented")` |
-
-Additional partial issues in `mrpt_viz`:
-
-- **`CPolyhedron`**: The code has some TO-DOs inherited from 2.x. Won't implement for 3.0.0.
-- **`CAssimpModel`**: Compressed embedded textures are silently skipped
-  (`"Compressed embedded textures not yet supported"`, `CAssimpModel.cpp:715`).
-  Transparent/textured meshes lack proper spatial subdivision for correct
-  transparency sorting (`// TODO: Implement spatial subdivision…`, line 861;
-  current code is a `// For now, this is a no-op placeholder`).
-- **`CPointCloud` / `CPointCloudColoured`**: Efficiency notes
-  (`// JL: TODO note: Well, this can be clearly done much more efficiently`)
-  for the inner rendering loops (lines 214, 231 and 87, 102 respectively).
-
 ### 13.2 `mrpt_opengl` — Rendering pipeline gaps
 
 - **Frustum culling not implemented**: `CompiledViewport.cpp:984` has a
@@ -371,21 +336,6 @@ Additional partial issues in `mrpt_viz`:
 - **Shadow rendering**: The latest commit (`afc33a207`) marks shadow rendering
   as an "attempt at fix"; the shadow map pipeline (directional light pass) may
   still have correctness issues worth re-verifying.
-
-### 13.3 `mrpt_img` — Image processing stubs (post-OpenCV removal)
-
-Several methods that previously delegated to OpenCV were re-declared but not
-reimplemented with the STB/custom backend:
-
-| Method | Status |
-|--------|--------|
-| `CImage::normalize()` | ~~Throws~~ **DONE** — finds min/max and rescales all pixels to [0,255] |
-| `CImage::undistort()` | **Implemented** — uses `CUndistortMap` internally; supports all distortion models |
-| `CImage::filterMedian()` | ~~Body wrapped in `#if 0`~~ **DONE** — manual median filter with border clamping |
-| `CImage::filterGaussian()` | ~~Body wrapped in `#if 0`~~ **DONE** — separable Gaussian kernel with bilinear border clamping |
-| `CImage::rotateImage()` | ~~Throws~~ **DONE** — inverse-mapping bilinear interpolation with zero-border fill |
-| `CImage::drawChessboardCorners()` | ~~Throws~~ **DONE** — draws cross+circle per corner and connecting lines per row using `line()`/`drawCircle()` |
-| `CImage::drawImage()` (cross-channel) | ~~Throws~~ **DONE** — handles grayscale↔RGB/RGBA conversion (luminance formula and gray replication) |
 
 ### 13.4 `mrpt_poses` — Unimplemented PDF operations
 
@@ -416,18 +366,14 @@ implemented, throwing `THROW_EXCEPTION("TODO!!!")` or
 
 ### 13.5 `mrpt_slam` — Incomplete algorithms
 
-- **`CICP` (3-D mode)**: Only `icpClassic` is implemented for 3-D ICP;
-  other variants throw `THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D")`.
-- **`path_from_rtk_gps`**: GPS path reconstruction is hardcoded for exactly
-  3 receivers (`// TODO: Generalize equations for # of GPS > 3`, lines 175, 213).
+- **`CICP` (3-D mode)**: Only `icpClassic` is implemented for 3-D ICP; Action: mention in docs 
+  that users should use the independent project mp2p_icp instead.
 - **`data_association`**: Joint compatibility branch-and-bound has a
   `// TODO: Optimized version!!` note (line 583).
-- **`CRejectionSamplingRangeOnlyLocalization`**: Two open notes about
-  sensor-height handling and sigma being taken from a fixed field rather than
-  the observation's `stdError`.
 
 ### 13.6 `mrpt_nav` — Planner optimisation
 
+- Re-read the entire library, look for potential conceptual / implementation subtle bugs, and improve in general all classes documentation.
 - **`PlannerRRT_SE2_TPS::getNearestNode()`**: Marked with
   `MRPT_TODO("Optimize getNearestNode() with KD-tree!")` — currently does a
   linear scan over all nodes.
@@ -436,8 +382,6 @@ implemented, throwing `THROW_EXCEPTION("TODO!!!")` or
 
 ### 13.7 `mrpt_maps` — Miscellaneous
 
-- **`CAngularObservationMesh`**: Line 134 carries `// TODO: redo` with no
-  further explanation — the rendering/update path likely needs review.
 - **`CObservationRotatingScan`**: `// TODO: populate organizedPoints?`
   (line 362) — the organized point-cloud representation is never filled.
 - **`COccupancyGridMap2D` (multi-pose insertion)**: `FIXME: doesn't support
