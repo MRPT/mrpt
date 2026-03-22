@@ -12,16 +12,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(mrpt_imgui  REQUIRED)  # brings in mrpt-viz transitively
 find_package(mrpt_opengl REQUIRED)
 
-# 2) Dear ImGui; fetched via FetchContent for reproducibility.
-#    If you have a system / vcpkg install, replace this block.
-include(FetchContent)
-
-FetchContent_Declare(
-    imgui
-    GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG        docking  # adjust to latest stable
-)
-FetchContent_MakeAvailable(imgui)
+# 2) Dear ImGui — vendored copy (docking branch, commit e05bd9deb, v1.92.7 WIP)
+#    Source files live under imgui/ within this example directory.
+#    License: MIT (see imgui/LICENSE.txt)
 
 # 3) GLFW
 find_package(glfw3 3.3 REQUIRED)
@@ -32,7 +25,7 @@ find_package(OpenGL REQUIRED)
 # ---------------------------------------------------------------
 # Build the Dear ImGui library (core + glfw + opengl3 backends)
 # ---------------------------------------------------------------
-set(IMGUI_SRC_DIR "${imgui_SOURCE_DIR}")
+set(IMGUI_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/imgui")
 
 add_library(imgui_lib STATIC
     ${IMGUI_SRC_DIR}/imgui.cpp
