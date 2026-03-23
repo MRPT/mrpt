@@ -51,3 +51,4 @@ doc/venv
 .cache
 my_config.ini
 *.ini
+cache_*.bin.gz

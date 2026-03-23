@@ -26,7 +26,7 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator, CSerializable
 
 static std::string OUTPUT_DEBUG_PATH_PREFIX = "./reactivenav.logs";
 static mrpt::nav::PTGCollisionBehavior COLLISION_BEHAVIOR =
-    mrpt::nav::PTGCollisionBehavior::COLL_BEH_BACK_AWAY;
+    mrpt::nav::PTGCollisionBehavior::BACK_AWAY;
 
 std::string& CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX()
 {
@@ -403,11 +403,11 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(
   // of the PTG path:
   switch (COLLISION_BEHAVIOR())
   {
-    case PTGCollisionBehavior::COLL_BEH_STOP:
+    case PTGCollisionBehavior::STOP:
       inout_tp_obs = .0;
       break;
 
-    case PTGCollisionBehavior::COLL_BEH_BACK_AWAY:
+    case PTGCollisionBehavior::BACK_AWAY:
     {
       if (new_tp_obs_dist < getMaxRobotRadius())
       {

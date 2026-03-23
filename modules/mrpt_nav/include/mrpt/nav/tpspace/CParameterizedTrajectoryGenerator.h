@@ -48,10 +48,10 @@ namespace nav
 enum class PTGCollisionBehavior
 {
   /** Favor getting back from too-close (almost collision) obstacles. */
-  COLL_BEH_BACK_AWAY = 0,
-  /** Totally dissallow any movement if there is any too-close (almost
-   collision) obstacles. */
-  COLL_BEH_STOP
+  BACK_AWAY = 0,
+  /** Totally disallow any movement if there is any too-close (almost
+   collision) obstacle. */
+  STOP
 };
 
 /** \defgroup nav_tpspace TP-Space and PTG classes
@@ -427,7 +427,7 @@ class CParameterizedTrajectoryGenerator :
 
   /** Defines the behavior when there is an obstacle *inside* the robot shape
    * right at the beginning of a PTG trajectory.
-   * Default value: PTGCollisionBehavior::COLL_BEH_BACK_AWAY
+   * Default value: PTGCollisionBehavior::BACK_AWAY
    */
   static PTGCollisionBehavior& COLLISION_BEHAVIOR();
 

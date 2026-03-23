@@ -26,7 +26,9 @@ class CParameterizedTrajectoryGenerator;
  */
 struct TCandidateMovementPTG
 {
-  /** The associated PTG. nullptr if not applicable / undefined. */
+  /** Non-owning observer pointer to the associated PTG.
+   * nullptr if not applicable / undefined. Lifetime is managed by the
+   * reactive navigation system that owns the PTG collection. */
   CParameterizedTrajectoryGenerator* PTG{nullptr};
   /** TP-Space movement direction. Within [-2*PI,+2*PI] */
   double direction{0};

@@ -75,7 +75,7 @@ void CHolonomicND::navigate(const NavInput& ni, NavOutput& no)
       ni.obstacles, 1.0 /* max obs range*/, gaps, trg, selectedSector, evaluation, situation,
       riskEvaluation, *log);
 
-  if (situation == CHolonomicND::TSituations::SITUATION_NO_WAY_FOUND)
+  if (situation == CHolonomicND::TSituations::NO_WAY_FOUND)
   {
     // No way found!
     no.desiredDirection = 0;
@@ -293,17 +293,31 @@ void CHolonomicND::searchBestGap(
   unsigned int min_risk_eval_sector = 0;
   unsigned int max_risk_eval_sector = obstacles.size() - 1;
   const unsigned int target_sector = direction2sector(atan2(target.y, target.x), obstacles.size());
-  const double target_dist = std::max(0.01, target.norm());
+  // Minimum target distance to avoid division by zero in ratio computations:
+  constexpr double MIN_TARGET_DIST = 0.01;  // [m or normalized units]
+  const double target_dist = std::max(MIN_TARGET_DIST, target.norm());
   // (Risk is evaluated at the end, for all the situations)
 
   // D1 : Straight path?
   // --------------------------------------------------------
-  const int freeSectorsNearTarget = ceil(0.02 * obstacles.size());
+  // Fraction of total obstacle sectors examined each side of the target
+  // direction to verify the direct path is free.
+  constexpr double DIRECT_PATH_SECTOR_FRACTION = 0.02;
+  // Slight extra margin above target distance to accept a sector as free
+  // (5% clearance factor).
+  constexpr double DIRECT_PATH_DIST_MARGIN = 1.05;
+  // Safety cap below maxObsRange so the robot doesn't rely on the last
+  // sample right at the sensor limit (95% of max range).
+  constexpr double DIRECT_PATH_RANGE_FRACTION = 0.95;
+
+  const int freeSectorsNearTarget =
+      static_cast<int>(std::ceil(DIRECT_PATH_SECTOR_FRACTION * obstacles.size()));
   bool theyAreFree = true, caseD1 = false;
   if (target_sector > static_cast<unsigned int>(freeSectorsNearTarget) &&
       target_sector < static_cast<unsigned int>(obstacles.size() - freeSectorsNearTarget))
   {
-    const double min_free_dist = std::min(1.05 * target_dist, 0.95 * maxObsRange);
+    const double min_free_dist =
+        std::min(DIRECT_PATH_DIST_MARGIN * target_dist, DIRECT_PATH_RANGE_FRACTION * maxObsRange);
     for (int j = -freeSectorsNearTarget; theyAreFree && j <= freeSectorsNearTarget; j++)
       if (obstacles[(int(target_sector) + j) % obstacles.size()] < min_free_dist)
         theyAreFree = false;
@@ -317,7 +331,7 @@ void CHolonomicND::searchBestGap(
 
     // In case of several paths, the shortest:
     out_selEvaluation = 1.0 + std::max(0.0, (maxObsRange - target_dist) / maxObsRange);
-    out_situation = CHolonomicND::TSituations::SITUATION_TARGET_DIRECTLY;
+    out_situation = CHolonomicND::TSituations::TARGET_DIRECTLY;
   }
   else
   {
@@ -370,7 +384,7 @@ void CHolonomicND::searchBestGap(
       // ------------------------------------------------------
       out_selDirection = 0;
       out_selEvaluation = 0.0;  // Worst case
-      out_situation = CHolonomicND::TSituations::SITUATION_NO_WAY_FOUND;
+      out_situation = CHolonomicND::TSituations::NO_WAY_FOUND;
     }
     else
     {
@@ -389,13 +403,13 @@ void CHolonomicND::searchBestGap(
       {
         // S3: Narrow gap
         // -------------------------------------------
-        out_situation = CHolonomicND::TSituations::SITUATION_SMALL_GAP;
+        out_situation = CHolonomicND::TSituations::SMALL_GAP;
       }
       else
       {
         // S4: Wide gap
         // -------------------------------------------
-        out_situation = CHolonomicND::TSituations::SITUATION_WIDE_GAP;
+        out_situation = CHolonomicND::TSituations::WIDE_GAP;
       }
 
       // Evaluate the risk only within the gap:

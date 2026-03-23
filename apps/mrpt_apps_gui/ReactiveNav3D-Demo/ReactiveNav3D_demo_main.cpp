@@ -124,7 +124,8 @@ int main(int num_arg, char* argv[])
       ReactInterface.robotSim.simulateOneTimeStep(reactive_period.Tac());
       reactive_period.Tic();
 
-      if ((rn3d.IDLE == rn3d.getCurrentState()) || (rn3d.SUSPENDED == rn3d.getCurrentState()))
+      using TState = mrpt::nav::CAbstractNavigator::TState;
+      if ((rn3d.getCurrentState() == TState::IDLE) || (rn3d.getCurrentState() == TState::SUSPENDED))
       {
         CSimplePointsMap auxpoints;
         mrpt::system::TTimeStamp auxpoints_time;

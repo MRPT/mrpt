@@ -100,18 +100,35 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
     return nav_status;
   }
 
-  /** Gets a write-enabled reference to the list of waypoints, simultaneously
-   * acquiring the critical section mutex.
-   * Caller must call endWaypointsAccess() when done editing the waypoints.
-   */
-  TWaypointStatusSequence& beginWaypointsAccess()
+  /** RAII guard returned by getWaypointsAccessGuard().
+   * Holds the waypoints mutex for the lifetime of this object and exposes
+   * a reference to the mutable waypoint status sequence. */
+  class WaypointsAccessGuard
   {
-    m_nav_waypoints_cs.lock();
-    return m_waypoint_nav_status;
-  }
+   public:
+    WaypointsAccessGuard(std::recursive_mutex& cs, TWaypointStatusSequence& wps)
+        : m_lock(cs), m_waypoints(wps)
+    {
+    }
+    [[nodiscard]] TWaypointStatusSequence& waypoints() { return m_waypoints; }
+    [[nodiscard]] const TWaypointStatusSequence& waypoints() const { return m_waypoints; }
 
-  /** Must be called after beginWaypointsAccess() */
-  void endWaypointsAccess() { m_nav_waypoints_cs.unlock(); }
+   private:
+    std::unique_lock<std::recursive_mutex> m_lock;
+    TWaypointStatusSequence& m_waypoints;
+  };
+
+  /** Returns a RAII guard that holds the waypoints mutex and provides
+   * write access to the waypoint status sequence.
+   * \code
+   *   auto guard = nav.getWaypointsAccessGuard();
+   *   guard.waypoints().waypoints[0].allow_skip = false;
+   * \endcode
+   */
+  [[nodiscard]] WaypointsAccessGuard getWaypointsAccessGuard()
+  {
+    return {m_nav_waypoints_cs, m_waypoint_nav_status};
+  }
 
   /** @}*/
 
