@@ -464,14 +464,17 @@ abstraction.  Each should be broken into named helpers:
 
 #### 13.6.9 Magic numbers → named constants
 
-**[PARTIAL]** Done:
+**[DONE]**
 - `CHolonomicVFF.cpp`: `1e6` → `MAX_FORCE_CAP`, `20.0` → `OBSTACLE_WEIGHT_FACTOR`,
   `6.0` → `OBSTACLE_NEARNESS_THRESHOLD`.
 - `CHolonomicND.cpp`: `0.02` → `DIRECT_PATH_SECTOR_FRACTION`,
   `1.05` → `DIRECT_PATH_DIST_MARGIN`, `0.95` → `DIRECT_PATH_RANGE_FRACTION`,
   `0.01` → `MIN_TARGET_DIST`.
-
-Remaining: `CHolonomicFullEval.cpp` thresholds (0.01, 0.95, 1.02, 1.05, etc.).
+- `CHolonomicFullEval.cpp` (`evalSingleTarget`): `1.02` → `OBSTACLE_PAST_TARGET_MARGIN`,
+  `0.95` → `TARGET_DIST_SAFETY_FRACTION`, `1.05` → `TARGET_CLEARANCE_MARGIN`,
+  `1.01` → `SQRT_DOMAIN_EPS`, `0.1` → `CLEARANCE_WINDOW_HALF_FRACTION`,
+  `0.99` → `FREE_SPACE_THRESHOLD`, `4.0` → `SECTOR_DIST_WEIGHT`,
+  `0.1` → `BLOCKED_DIR_SCORE_PENALTY`.
 
 ---
 
@@ -496,33 +499,25 @@ have **zero dedicated unit tests** and should be prioritised:
 
 #### 13.6.11 Documentation
 
-**[P1]** `lib_mrpt_nav.md` is a 32-line stub.  Expand with:
-
-- A module-architecture diagram (subsystems: holonomic, reactive, planners,
-  tpspace) and their relationships.
-- A "getting started" section explaining which class to instantiate for
-  the most common use-cases (2-D reactive, waypoint following, path
-  planning).
-- Configuration-file schema documentation (`.ini` key names per class).
-- Algorithm summaries for VFF, ND, FullEval, and the PTG families.
-- Cross-references to the ReactiveNavigationDemo example.
+**[DONE]** `lib_mrpt_nav.md` expanded to a full reference including:
+navigator state machine, waypoint sequencing (RAII guard API), TP-Space
+reactive core, holonomic methods table, PTG class table, robot interface
+guide, and path planning overview.
 
 ---
 
 #### 13.6.12 Remaining code-quality items
 
-**[P0]** Quick wins:
+**[DONE]** Quick wins completed:
 
 - `MRPT_TODO("Optimize getNearestNode() with KD-tree!")` in
-  `PlannerRRT_SE2_TPS.cpp:27` — either implement or convert to a tracked
-  issue.
-- `#if 0` dead code in `CHolonomicND.cpp:437–447` — remove.
-- `static size_t SAVE_LOG_SOLVE_COUNT` in `PlannerRRT_SE2_TPS.cpp:72` —
-  global mutable counter used only for debugging; remove or guard.
-- `CLogFileRecord::serializeFrom()` line 349 uses raw `new` for
-  deserialization — replace with `std::make_shared`.
-- C-style casts `(int)K` in `CPTG_DiffDrive_CC.cpp:71` and
-  `CPTG_DiffDrive_CCS.cpp:71` — replace with `static_cast<int>(K)`.
+  `PlannerRRT_SE2_TPS.cpp` — converted to plain `// TODO:` comment.
+- `static size_t SAVE_LOG_SOLVE_COUNT` — kept (used to name debug log
+  files across solve() calls, guarded by `params.save_3d_log_freq > 0`).
+- `CLogFileRecord::serializeFrom()` raw `new` — replaced with
+  `std::make_shared` (three sites).
+- C-style casts `(int)K` — replaced with `static_cast<int>(K)` in
+  `CPTG_DiffDrive_CC.cpp`, `CPTG_DiffDrive_CCS.cpp`, `CPTG_DiffDrive_alpha.cpp`.
 
 ### 13.7 `mrpt_maps` — Miscellaneous
 
