@@ -98,7 +98,7 @@ void CAbstractNavigator::cancel()
   auto lck = mrpt::lockHelper(m_nav_cs);
 
   MRPT_LOG_DEBUG("CAbstractNavigator::cancel() called.");
-  m_navigationState = IDLE;
+  m_navigationState = TState::IDLE;
   this->stop(false /*not emergency*/);
 }
 
@@ -108,7 +108,7 @@ void CAbstractNavigator::resume()
   auto lck = mrpt::lockHelper(m_nav_cs);
 
   MRPT_LOG_DEBUG("[CAbstractNavigator::resume() called.");
-  if (m_navigationState == SUSPENDED) m_navigationState = NAVIGATING;
+  if (m_navigationState == TState::SUSPENDED) m_navigationState = TState::NAVIGATING;
 }
 
 /** \callergraph */
@@ -122,7 +122,7 @@ void CAbstractNavigator::suspend()
   this->stop(false /*not an emergency stop*/);
 
   MRPT_LOG_DEBUG("CAbstractNavigator::suspend() called.");
-  if (m_navigationState == NAVIGATING) m_navigationState = SUSPENDED;
+  if (m_navigationState == TState::NAVIGATING) m_navigationState = TState::SUSPENDED;
 }
 
 /** \callergraph */
@@ -131,9 +131,9 @@ void CAbstractNavigator::resetNavError()
   auto lck = mrpt::lockHelper(m_nav_cs);
 
   MRPT_LOG_DEBUG("CAbstractNavigator::resetNavError() called.");
-  if (m_navigationState == NAV_ERROR)
+  if (m_navigationState == TState::NAV_ERROR)
   {
-    m_navigationState = IDLE;
+    m_navigationState = TState::IDLE;
     m_navErrorReason = TErrorReason();
   }
 }
@@ -178,12 +178,12 @@ void CAbstractNavigator::navigationStep()
   const TState prevState = m_navigationState;
   switch (m_navigationState)
   {
-    case IDLE:
-    case SUSPENDED:
+    case TState::IDLE:
+    case TState::SUSPENDED:
       try
       {
         // If we just arrived at this state, stop robot:
-        if (m_lastNavigationState == NAVIGATING)
+        if (m_lastNavigationState == TState::NAVIGATING)
         {
           MRPT_LOG_INFO(
               "[CAbstractNavigator::navigationStep()] Navigation "
@@ -198,18 +198,18 @@ void CAbstractNavigator::navigationStep()
       }
       break;
 
-    case NAV_ERROR:
+    case TState::NAV_ERROR:
       try
       {
         // Send end-of-navigation event:
-        if (m_lastNavigationState == NAVIGATING && m_navigationState == NAV_ERROR)
+        if (m_lastNavigationState == TState::NAVIGATING && m_navigationState == TState::NAV_ERROR)
         {
           m_pending_events.emplace_back(
               std::bind(&CRobot2NavInterface::sendNavigationEndDueToErrorEvent, std::ref(m_robot)));
         }
 
         // If we just arrived at this state, stop the robot:
-        if (m_lastNavigationState == NAVIGATING)
+        if (m_lastNavigationState == TState::NAVIGATING)
         {
           MRPT_LOG_ERROR(
               "[CAbstractNavigator::navigationStep()] Stopping "
@@ -223,7 +223,7 @@ void CAbstractNavigator::navigationStep()
       }
       break;
 
-    case NAVIGATING:
+    case TState::NAVIGATING:
       this->performNavigationStepNavigating(true /* do call virtual method nav implementation*/);
       break;  // End case NAVIGATING
   };
@@ -253,11 +253,11 @@ void CAbstractNavigator::doEmergencyStop(const std::string& msg)
   catch (...)
   {
   }
-  m_navigationState = NAV_ERROR;
+  m_navigationState = TState::NAV_ERROR;
   // don't overwrite an error msg from a caller:
-  if (m_navErrorReason.error_code == ERR_NONE)
+  if (m_navErrorReason.error_code == TErrorCode::ERR_NONE)
   {
-    m_navErrorReason.error_code = ERR_EMERGENCY_STOP;
+    m_navErrorReason.error_code = TErrorCode::ERR_EMERGENCY_STOP;
     m_navErrorReason.error_msg = std::string("doEmergencyStop called for: ") + msg;
   }
   MRPT_LOG_ERROR(msg);
@@ -293,7 +293,7 @@ void CAbstractNavigator::processNavigateCommand(const TNavigationParams* params)
   }
 
   // new state:
-  m_navigationState = NAVIGATING;
+  m_navigationState = TState::NAVIGATING;
   m_navErrorReason = TErrorReason();
 
   // Reset the bad navigation alarm:
@@ -342,8 +342,8 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
             m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp,
             m_curPoseVel.rawOdometry, m_curPoseVel.pose_frame_id))
     {
-      m_navigationState = NAV_ERROR;
-      m_navErrorReason.error_code = ERR_EMERGENCY_STOP;
+      m_navigationState = TState::NAV_ERROR;
+      m_navErrorReason.error_code = TErrorCode::ERR_EMERGENCY_STOP;
       m_navErrorReason.error_msg = std::string(
           "ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot "
           "and finishing navigation");
@@ -477,7 +477,7 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
   const TState prevState = m_navigationState;
   try
   {
-    if (m_lastNavigationState != NAVIGATING)
+    if (m_lastNavigationState != TState::NAVIGATING)
     {
       MRPT_LOG_INFO(
           "[CAbstractNavigator::navigationStep()] Starting Navigation. "
@@ -492,7 +492,7 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
     }
 
     // Have we just started the navigation?
-    if (m_lastNavigationState == IDLE)
+    if (m_lastNavigationState == TState::IDLE)
     {
       m_pending_events.emplace_back(
           std::bind(&CRobot2NavInterface::sendNavigationStartEvent, std::ref(m_robot)));
@@ -530,7 +530,7 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
       // Have we really reached the target?
       if (checkHasReachedTarget(targetDist))
       {
-        m_navigationState = IDLE;
+        m_navigationState = TState::IDLE;
         logFmt(
             mrpt::system::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n",
             m_navigationParams->target.target_coords.x, m_navigationParams->target.target_coords.y);
@@ -563,8 +563,8 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
         {
           MRPT_LOG_WARN("Timeout approaching the target. Aborting navigation.");
 
-          m_navigationState = NAV_ERROR;
-          m_navErrorReason.error_code = ERR_CANNOT_REACH_TARGET;
+          m_navigationState = TState::NAV_ERROR;
+          m_navErrorReason.error_code = TErrorCode::ERR_CANNOT_REACH_TARGET;
           m_navErrorReason.error_msg =
               std::string("Timeout approaching the target. Aborting navigation.");
 
@@ -614,10 +614,10 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
   }
   catch (const std::exception& e)
   {
-    m_navigationState = NAV_ERROR;
-    if (m_navErrorReason.error_code == ERR_NONE)
+    m_navigationState = TState::NAV_ERROR;
+    if (m_navErrorReason.error_code == TErrorCode::ERR_NONE)
     {
-      m_navErrorReason.error_code = ERR_OTHER;
+      m_navErrorReason.error_code = TErrorCode::ERR_OTHER;
       m_navErrorReason.error_msg = std::string("Exception: ") + std::string(e.what());
     }
 
@@ -626,10 +626,10 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
   }
   catch (...)
   {
-    m_navigationState = NAV_ERROR;
-    if (m_navErrorReason.error_code == ERR_NONE)
+    m_navigationState = TState::NAV_ERROR;
+    if (m_navErrorReason.error_code == TErrorCode::ERR_NONE)
     {
-      m_navErrorReason.error_code = ERR_OTHER;
+      m_navErrorReason.error_code = TErrorCode::ERR_OTHER;
       m_navErrorReason.error_msg = "Untyped exception";
     }
 

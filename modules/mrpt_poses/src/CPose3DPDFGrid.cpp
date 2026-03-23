@@ -46,7 +46,36 @@ void CPose3DPDFGrid::copyFrom(const CPose3DPDF& o)
 {
   if (this == &o) return;  // It may be used sometimes
 
-  THROW_EXCEPTION("Not implemented yet!");
+  if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFGrid))
+  {
+    const auto& grid = dynamic_cast<const CPose3DPDFGrid&>(o);
+    setSize(grid.m_bb_min, grid.m_bb_max, grid.m_resolutionXYZ, grid.m_resolutionYPR);
+    m_data = grid.m_data;
+  }
+  else
+  {
+    // Sample-based approximation: draw samples from o and accumulate into this grid's cells.
+    const size_t N = m_size_xyzYPR * 10;
+    std::vector<CVectorDouble> samples;
+    o.drawManySamples(N, samples);
+    std::fill(m_data.begin(), m_data.end(), 0.0);
+    for (const auto& s : samples)
+    {
+      // s = [x, y, z, yaw, pitch, roll]
+      const int cx = mrpt::round((s[0] - m_bb_min.x) / m_resolutionXYZ);
+      const int cy = mrpt::round((s[1] - m_bb_min.y) / m_resolutionXYZ);
+      const int cz = mrpt::round((s[2] - m_bb_min.z) / m_resolutionXYZ);
+      const int cY = mrpt::round((s[3] - m_bb_min.yaw) / m_resolutionYPR);
+      const int cP = mrpt::round((s[4] - m_bb_min.pitch) / m_resolutionYPR);
+      const int cR = mrpt::round((s[5] - m_bb_min.roll) / m_resolutionYPR);
+      if (cx >= 0 && cx < static_cast<int>(m_sizeX) && cy >= 0 && cy < static_cast<int>(m_sizeY) &&
+          cz >= 0 && cz < static_cast<int>(m_sizeZ) && cY >= 0 &&
+          cY < static_cast<int>(m_sizeYaw) && cP >= 0 && cP < static_cast<int>(m_sizePitch) &&
+          cR >= 0 && cR < static_cast<int>(m_sizeRoll))
+        *getByIndex(cx, cy, cz, cY, cP, cR) += 1.0;
+    }
+    normalize();
+  }
 }
 
 void CPose3DPDFGrid::getMean(CPose3D& p) const
@@ -142,25 +171,134 @@ void CPose3DPDFGrid::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
 
 bool CPose3DPDFGrid::saveToTextFile(const std::string& dataFile) const
 {
-  THROW_EXCEPTION("Not implemented yet");
+  std::ofstream f(dataFile);
+  if (!f.is_open()) return false;
 
-  //	return true;  // Done!
+  // Header with grid metadata
+  f << "% CPose3DPDFGrid text dump\n"
+    << "% bb_min: " << m_bb_min.x << " " << m_bb_min.y << " " << m_bb_min.z << " " << m_bb_min.yaw
+    << " " << m_bb_min.pitch << " " << m_bb_min.roll << "\n"
+    << "% bb_max: " << m_bb_max.x << " " << m_bb_max.y << " " << m_bb_max.z << " " << m_bb_max.yaw
+    << " " << m_bb_max.pitch << " " << m_bb_max.roll << "\n"
+    << "% resolution_xyz: " << m_resolutionXYZ << " resolution_ypr: " << m_resolutionYPR << "\n"
+    << "% sizes: " << m_sizeX << " " << m_sizeY << " " << m_sizeZ << " " << m_sizeYaw << " "
+    << m_sizePitch << " " << m_sizeRoll << "\n"
+    << "% columns: cx cy cz cYaw cPitch cRoll probability\n";
+
+  // Sparse dump: only non-zero cells
+  for (uint32_t cR = 0; cR < m_sizeRoll; cR++)
+    for (uint32_t cP = 0; cP < m_sizePitch; cP++)
+      for (uint32_t cY = 0; cY < m_sizeYaw; cY++)
+        for (uint32_t cz = 0; cz < m_sizeZ; cz++)
+          for (uint32_t cy = 0; cy < m_sizeY; cy++)
+            for (uint32_t cx = 0; cx < m_sizeX; cx++)
+            {
+              const double w = *getByIndex(cx, cy, cz, cY, cP, cR);
+              if (w != 0.0)
+                f << cx << " " << cy << " " << cz << " " << cY << " " << cP << " " << cR << " "
+                  << mrpt::format("%.6e\n", w);
+            }
+  return true;
 }
 
-void CPose3DPDFGrid::changeCoordinatesReference([[maybe_unused]] const CPose3D& newReferenceBase)
+void CPose3DPDFGrid::changeCoordinatesReference(const CPose3D& newReferenceBase)
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  auto oldData = m_data;
+  std::fill(m_data.begin(), m_data.end(), 0.0);
+
+  for (uint32_t cR = 0; cR < m_sizeRoll; cR++)
+    for (uint32_t cP = 0; cP < m_sizePitch; cP++)
+      for (uint32_t cY = 0; cY < m_sizeYaw; cY++)
+        for (uint32_t cz = 0; cz < m_sizeZ; cz++)
+          for (uint32_t cy = 0; cy < m_sizeY; cy++)
+            for (uint32_t cx = 0; cx < m_sizeX; cx++)
+            {
+              const double w = oldData[idx2absidx(cx, cy, cz, cY, cP, cR)];
+              if (w == 0.0) continue;
+
+              const CPose3D newPose =
+                  newReferenceBase +
+                  CPose3D(
+                      idx2x(cx), idx2y(cy), idx2z(cz), idx2yaw(cY), idx2pitch(cP), idx2roll(cR));
+
+              const int nx = mrpt::round((newPose.x() - m_bb_min.x) / m_resolutionXYZ);
+              const int ny = mrpt::round((newPose.y() - m_bb_min.y) / m_resolutionXYZ);
+              const int nz = mrpt::round((newPose.z() - m_bb_min.z) / m_resolutionXYZ);
+              const int nY = mrpt::round((newPose.yaw() - m_bb_min.yaw) / m_resolutionYPR);
+              const int nP = mrpt::round((newPose.pitch() - m_bb_min.pitch) / m_resolutionYPR);
+              const int nR = mrpt::round((newPose.roll() - m_bb_min.roll) / m_resolutionYPR);
+
+              if (nx >= 0 && nx < static_cast<int>(m_sizeX) && ny >= 0 &&
+                  ny < static_cast<int>(m_sizeY) && nz >= 0 && nz < static_cast<int>(m_sizeZ) &&
+                  nY >= 0 && nY < static_cast<int>(m_sizeYaw) && nP >= 0 &&
+                  nP < static_cast<int>(m_sizePitch) && nR >= 0 &&
+                  nR < static_cast<int>(m_sizeRoll))
+                *getByIndex(nx, ny, nz, nY, nP, nR) += w;
+            }
+  normalize();
 }
 
-void CPose3DPDFGrid::bayesianFusion(
-    [[maybe_unused]] const CPose3DPDF& p1, [[maybe_unused]] const CPose3DPDF& p2)
+void CPose3DPDFGrid::bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2)
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  // Initialise *this from p1
+  copyFrom(p1);
+
+  // Multiply element-wise by p2
+  if (const auto* p2g = dynamic_cast<const CPose3DPDFGrid*>(&p2))
+  {
+    ASSERT_EQUAL_(p2g->m_sizeX, m_sizeX);
+    ASSERT_EQUAL_(p2g->m_sizeY, m_sizeY);
+    ASSERT_EQUAL_(p2g->m_sizeZ, m_sizeZ);
+    ASSERT_EQUAL_(p2g->m_sizeYaw, m_sizeYaw);
+    ASSERT_EQUAL_(p2g->m_sizePitch, m_sizePitch);
+    ASSERT_EQUAL_(p2g->m_sizeRoll, m_sizeRoll);
+    for (size_t i = 0; i < m_data.size(); i++) m_data[i] *= p2g->m_data[i];
+  }
+  else
+  {
+    THROW_EXCEPTION("bayesianFusion: unsupported combination of PDF types for CPose3DPDFGrid");
+  }
+  normalize();
 }
 
-void CPose3DPDFGrid::inverse([[maybe_unused]] CPose3DPDF& o) const
+void CPose3DPDFGrid::inverse(CPose3DPDF& o) const
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  auto* out = dynamic_cast<CPose3DPDFGrid*>(&o);
+  ASSERT_(out != nullptr);
+
+  out->setSize(m_bb_min, m_bb_max, m_resolutionXYZ, m_resolutionYPR);
+  std::fill(out->m_data.begin(), out->m_data.end(), 0.0);
+
+  const CPose3D zero(0, 0, 0, 0, 0, 0);
+  for (uint32_t cR = 0; cR < m_sizeRoll; cR++)
+    for (uint32_t cP = 0; cP < m_sizePitch; cP++)
+      for (uint32_t cY = 0; cY < m_sizeYaw; cY++)
+        for (uint32_t cz = 0; cz < m_sizeZ; cz++)
+          for (uint32_t cy = 0; cy < m_sizeY; cy++)
+            for (uint32_t cx = 0; cx < m_sizeX; cx++)
+            {
+              const double w = *getByIndex(cx, cy, cz, cY, cP, cR);
+              if (w == 0.0) continue;
+
+              const CPose3D inv = zero - CPose3D(
+                                             idx2x(cx), idx2y(cy), idx2z(cz), idx2yaw(cY),
+                                             idx2pitch(cP), idx2roll(cR));
+
+              const int nx = mrpt::round((inv.x() - m_bb_min.x) / m_resolutionXYZ);
+              const int ny = mrpt::round((inv.y() - m_bb_min.y) / m_resolutionXYZ);
+              const int nz = mrpt::round((inv.z() - m_bb_min.z) / m_resolutionXYZ);
+              const int nY = mrpt::round((inv.yaw() - m_bb_min.yaw) / m_resolutionYPR);
+              const int nP = mrpt::round((inv.pitch() - m_bb_min.pitch) / m_resolutionYPR);
+              const int nR = mrpt::round((inv.roll() - m_bb_min.roll) / m_resolutionYPR);
+
+              if (nx >= 0 && nx < static_cast<int>(m_sizeX) && ny >= 0 &&
+                  ny < static_cast<int>(m_sizeY) && nz >= 0 && nz < static_cast<int>(m_sizeZ) &&
+                  nY >= 0 && nY < static_cast<int>(m_sizeYaw) && nP >= 0 &&
+                  nP < static_cast<int>(m_sizePitch) && nR >= 0 &&
+                  nR < static_cast<int>(m_sizeRoll))
+                *out->getByIndex(nx, ny, nz, nY, nP, nR) += w;
+            }
+  out->normalize();
 }
 
 void CPose3DPDFGrid::drawSingleSample(CPose3D& outPart) const

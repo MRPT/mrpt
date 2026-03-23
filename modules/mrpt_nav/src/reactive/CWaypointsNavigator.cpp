@@ -467,7 +467,7 @@ void CWaypointsNavigator::navigationStep()
 
   mrpt::system::CTimeLoggerEntry tle(m_navProfiler, "CWaypointsNavigator::navigationStep()");
 
-  if (m_navigationState != SUSPENDED)
+  if (m_navigationState != TState::SUSPENDED)
   {
     waypoints_navigationStep();
   }

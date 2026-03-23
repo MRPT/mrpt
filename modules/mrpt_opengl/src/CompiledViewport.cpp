@@ -1091,9 +1091,8 @@ void CompiledViewport::processRenderQueue(
     }
 
     // Determine if this is a shadow-related shader
-    const bool isShadow2ndPass =
-        shaderID == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
-        shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
+    const bool isShadow2ndPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
+                                 shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
     const bool isShadow1stPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_1ST;
 
     // Bind shadow depth texture for 2nd pass shaders

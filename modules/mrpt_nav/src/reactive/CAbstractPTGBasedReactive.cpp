@@ -26,6 +26,7 @@
 #include <mrpt/system/filesystem.h>
 
 #include <limits>
+#include <mutex>
 
 using namespace mrpt;
 using namespace mrpt::io;
@@ -71,9 +72,10 @@ void CAbstractPTGBasedReactive::preDestructor()
 {
   m_closing_navigator = true;
 
-  // Wait to end of navigation (multi-thread...)
-  m_nav_cs.lock();
-  m_nav_cs.unlock();
+  // Wait for any ongoing navigation step to finish (multi-thread):
+  {
+    std::scoped_lock lck(m_nav_cs);
+  }
 
   // Just in case.
   try

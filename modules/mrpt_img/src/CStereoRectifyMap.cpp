@@ -95,8 +95,7 @@ void build_rectify_map(
           camera_geometry::distortion::apply_kannala_brandt(xn, yn, cam.dist, xd, yd);
           break;
         default:
-          THROW_EXCEPTION_FMT(
-              "Unknown distortion model: %d", static_cast<int>(cam.distortion));
+          THROW_EXCEPTION_FMT("Unknown distortion model: %d", static_cast<int>(cam.distortion));
       }
 
       // 4. Project to original pixel coordinates
@@ -334,12 +333,10 @@ void CStereoRectifyMap::rectify(
       &in_left_image != &out_left_image && &in_right_image != &out_right_image,
       "In-place rectify not supported");
 
-  const int ncols_out =
-      m_resize_output ? m_resize_output_value.x
-                      : static_cast<int>(m_camera_params.leftCamera.ncols);
-  const int nrows_out =
-      m_resize_output ? m_resize_output_value.y
-                      : static_cast<int>(m_camera_params.leftCamera.nrows);
+  const int ncols_out = m_resize_output ? m_resize_output_value.x
+                                        : static_cast<int>(m_camera_params.leftCamera.ncols);
+  const int nrows_out = m_resize_output ? m_resize_output_value.y
+                                        : static_cast<int>(m_camera_params.leftCamera.nrows);
 
   detail::remap_bilinear(
       in_left_image, out_left_image, m_dat_mapx_left.data(), m_dat_mapy_left.data(), ncols_out,

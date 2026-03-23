@@ -53,7 +53,32 @@ void CPosePDFGrid::copyFrom(const CPosePDF& o)
 {
   if (this == &o) return;  // It may be used sometimes
 
-  THROW_EXCEPTION("Not implemented yet!");
+  if (o.GetRuntimeClass() == CLASS_ID(CPosePDFGrid))
+  {
+    const auto& grid = dynamic_cast<const CPosePDFGrid&>(o);
+    setSize(
+        grid.m_xMin, grid.m_xMax, grid.m_yMin, grid.m_yMax, grid.m_resolutionXY,
+        grid.m_resolutionPhi, grid.m_phiMin, grid.m_phiMax);
+    m_data = grid.m_data;
+  }
+  else
+  {
+    // Sample-based approximation: draw samples from o and accumulate into this grid's cells.
+    const size_t N = m_data.size() * 10;
+    std::vector<CVectorDouble> samples;
+    o.drawManySamples(N, samples);
+    std::fill(m_data.begin(), m_data.end(), 0.0);
+    for (const auto& s : samples)
+    {
+      const int xi = mrpt::round((s[0] - m_xMin) / m_resolutionXY);
+      const int yi = mrpt::round((s[1] - m_yMin) / m_resolutionXY);
+      const int pi = mrpt::round((s[2] - m_phiMin) / m_resolutionPhi);
+      if (xi >= 0 && xi < static_cast<int>(m_sizeX) && yi >= 0 && yi < static_cast<int>(m_sizeY) &&
+          pi >= 0 && pi < static_cast<int>(m_sizePhi))
+        *getByIndex(xi, yi, pi) += 1.0;
+    }
+    normalize();
+  }
 }
 
 /*---------------------------------------------------------------
@@ -174,28 +199,97 @@ bool CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
 /*---------------------------------------------------------------
             changeCoordinatesReference
   ---------------------------------------------------------------*/
-void CPosePDFGrid::changeCoordinatesReference([[maybe_unused]] const CPose3D& newReferenceBase)
+void CPosePDFGrid::changeCoordinatesReference(const CPose3D& newReferenceBase)
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  const CPose2D newRef2D(newReferenceBase);
+  auto oldData = m_data;
+  std::fill(m_data.begin(), m_data.end(), 0.0);
+  for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
+    for (size_t y = 0; y < m_sizeY; y++)
+      for (size_t x = 0; x < m_sizeX; x++)
+      {
+        const double w = oldData[phiInd * m_sizeXY + y * m_sizeX + x];
+        if (w == 0.0) continue;
+        const CPose2D newPose = newRef2D + CPose2D(idx2x(x), idx2y(y), idx2phi(phiInd));
+        const int xi = mrpt::round((newPose.x() - m_xMin) / m_resolutionXY);
+        const int yi = mrpt::round((newPose.y() - m_yMin) / m_resolutionXY);
+        const int pi = mrpt::round((newPose.phi() - m_phiMin) / m_resolutionPhi);
+        if (xi >= 0 && xi < static_cast<int>(m_sizeX) && yi >= 0 &&
+            yi < static_cast<int>(m_sizeY) && pi >= 0 && pi < static_cast<int>(m_sizePhi))
+          *getByIndex(xi, yi, pi) += w;
+      }
+  normalize();
 }
 
 /*---------------------------------------------------------------
           bayesianFusion
  ---------------------------------------------------------------*/
 void CPosePDFGrid::bayesianFusion(
-    [[maybe_unused]] const CPosePDF& p1,
-    [[maybe_unused]] const CPosePDF& p2,
-    [[maybe_unused]] const double minMahalanobisDistToDrop)
+    const CPosePDF& p1, const CPosePDF& p2, [[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  // Initialise *this from p1
+  copyFrom(p1);
+
+  // Multiply element-wise by p2 evaluated at each grid cell.
+  if (const auto* p2g = dynamic_cast<const CPosePDFGrid*>(&p2))
+  {
+    // Same-type, same dimensions: direct element-wise product.
+    ASSERT_EQUAL_(p2g->m_sizeX, m_sizeX);
+    ASSERT_EQUAL_(p2g->m_sizeY, m_sizeY);
+    ASSERT_EQUAL_(p2g->m_sizePhi, m_sizePhi);
+    for (size_t i = 0; i < m_data.size(); i++) m_data[i] *= p2g->m_data[i];
+  }
+  else if (const auto* p2p = dynamic_cast<const CPosePDFParticles*>(&p2))
+  {
+    // p2 is particle-based: use a Parzen-window estimate at each cell.
+    const auto [cov2, mean2] = p2.getCovarianceAndMean();
+    const double stdXY = std::max(std::sqrt((cov2(0, 0) + cov2(1, 1)) * 0.5), 1e-6);
+    const double stdPhi = std::max(std::sqrt(cov2(2, 2)), 1e-6);
+    for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
+      for (size_t y = 0; y < m_sizeY; y++)
+        for (size_t x = 0; x < m_sizeX; x++)
+        {
+          const double lik =
+              p2p->evaluatePDF_parzen(idx2x(x), idx2y(y), idx2phi(phiInd), stdXY, stdPhi);
+          *getByIndex(x, y, phiInd) *= lik;
+        }
+  }
+  else
+  {
+    THROW_EXCEPTION("bayesianFusion: unsupported combination of PDF types for CPosePDFGrid");
+  }
+  normalize();
 }
 
 /*---------------------------------------------------------------
           inverse
  ---------------------------------------------------------------*/
-void CPosePDFGrid::inverse([[maybe_unused]] CPosePDF& o) const
+void CPosePDFGrid::inverse(CPosePDF& o) const
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  auto* out = dynamic_cast<CPosePDFGrid*>(&o);
+  ASSERT_(out != nullptr);
+
+  // Rebuild the output grid with the same bounds/resolution.
+  out->setSize(m_xMin, m_xMax, m_yMin, m_yMax, m_resolutionXY, m_resolutionPhi, m_phiMin, m_phiMax);
+  std::fill(out->m_data.begin(), out->m_data.end(), 0.0);
+
+  const CPose2D zero(0, 0, 0);
+  for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
+    for (size_t y = 0; y < m_sizeY; y++)
+      for (size_t x = 0; x < m_sizeX; x++)
+      {
+        const double w = *getByIndex(x, y, phiInd);
+        if (w == 0.0) continue;
+        // Inverse of pose p is (0 - p) in SE(2)
+        const CPose2D invPose = zero - CPose2D(idx2x(x), idx2y(y), idx2phi(phiInd));
+        const int xi = mrpt::round((invPose.x() - m_xMin) / m_resolutionXY);
+        const int yi = mrpt::round((invPose.y() - m_yMin) / m_resolutionXY);
+        const int pi = mrpt::round((invPose.phi() - m_phiMin) / m_resolutionPhi);
+        if (xi >= 0 && xi < static_cast<int>(m_sizeX) && yi >= 0 &&
+            yi < static_cast<int>(m_sizeY) && pi >= 0 && pi < static_cast<int>(m_sizePhi))
+          *out->getByIndex(xi, yi, pi) += w;
+      }
+  out->normalize();
 }
 
 /*---------------------------------------------------------------

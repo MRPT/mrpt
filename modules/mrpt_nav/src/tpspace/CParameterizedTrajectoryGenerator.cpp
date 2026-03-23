@@ -25,14 +25,15 @@ using namespace mrpt::nav;
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
 
 static std::string OUTPUT_DEBUG_PATH_PREFIX = "./reactivenav.logs";
-static PTG_collision_behavior_t COLLISION_BEHAVIOR = mrpt::nav::COLL_BEH_BACK_AWAY;
+static mrpt::nav::PTGCollisionBehavior COLLISION_BEHAVIOR =
+    mrpt::nav::PTGCollisionBehavior::COLL_BEH_BACK_AWAY;
 
 std::string& CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX()
 {
   return ::OUTPUT_DEBUG_PATH_PREFIX;
 }
 
-PTG_collision_behavior_t& CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR()
+PTGCollisionBehavior& CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR()
 {
   return ::COLLISION_BEHAVIOR;
 }
@@ -402,11 +403,11 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(
   // of the PTG path:
   switch (COLLISION_BEHAVIOR())
   {
-    case COLL_BEH_STOP:
+    case PTGCollisionBehavior::COLL_BEH_STOP:
       inout_tp_obs = .0;
       break;
 
-    case COLL_BEH_BACK_AWAY:
+    case PTGCollisionBehavior::COLL_BEH_BACK_AWAY:
     {
       if (new_tp_obs_dist < getMaxRobotRadius())
       {
@@ -426,7 +427,8 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(
     break;
 
     default:
-      THROW_EXCEPTION("Obstacle postprocessing enum not implemented!");
+      THROW_EXCEPTION_FMT(
+          "Unknown PTGCollisionBehavior value: %d", static_cast<int>(COLLISION_BEHAVIOR()));
   }
 }
 

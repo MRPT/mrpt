@@ -165,8 +165,36 @@ void CPointPDFParticles::copyFrom(const CPointPDF& o)
 {
   if (this == &o) return;  // It may be used sometimes
 
-  // Convert to samples:
-  THROW_EXCEPTION("NO");
+  if (o.GetRuntimeClass() == CLASS_ID(CPointPDFParticles))
+  {
+    const auto& src = dynamic_cast<const CPointPDFParticles&>(o);
+    setSize(src.m_particles.size());
+    for (size_t i = 0; i < m_particles.size(); i++)
+    {
+      m_particles[i].log_w = src.m_particles[i].log_w;
+      *m_particles[i].d = *src.m_particles[i].d;
+    }
+  }
+  else if (o.GetRuntimeClass() == CLASS_ID(CPointPDFGaussian))
+  {
+    const auto& pdf = dynamic_cast<const CPointPDFGaussian&>(o);
+    const size_t N = m_particles.empty() ? 1000 : m_particles.size();
+    std::vector<CVectorDouble> samples;
+    pdf.drawManySamples(N, samples);
+    setSize(N);
+    const double log_w = -std::log(static_cast<double>(N));
+    for (size_t i = 0; i < N; i++)
+    {
+      m_particles[i].log_w = log_w;
+      m_particles[i].d->x = static_cast<float>(samples[i][0]);
+      m_particles[i].d->y = static_cast<float>(samples[i][1]);
+      m_particles[i].d->z = static_cast<float>(samples[i][2]);
+    }
+  }
+  else
+  {
+    THROW_EXCEPTION("CPointPDFParticles::copyFrom: unsupported source PDF type");
+  }
 }
 
 /*---------------------------------------------------------------
@@ -292,13 +320,51 @@ void CPointPDFParticles::drawSingleSample(CPoint3D& outSample) const
           bayesianFusion
  ---------------------------------------------------------------*/
 void CPointPDFParticles::bayesianFusion(
-    [[maybe_unused]] const CPointPDF& p1_,
-    [[maybe_unused]] const CPointPDF& p2_,
+    const CPointPDF& p1_,
+    const CPointPDF& p2_,
     [[maybe_unused]] const double minMahalanobisDistToDrop)
 {
   MRPT_START
 
-  THROW_EXCEPTION("TODO!!!");
+  // Start with particles from p1
+  copyFrom(p1_);
+
+  const auto [cov2, mean2] = p2_.getCovarianceAndMean();
+  const double h = std::max(std::sqrt((cov2(0, 0) + cov2(1, 1) + cov2(2, 2)) / 3.0), 1e-6);
+
+  if (const auto* p2p = dynamic_cast<const CPointPDFParticles*>(&p2_))
+  {
+    // Parzen-window KDE estimate of p2 at each particle from p1
+    const size_t N2 = p2p->m_particles.size();
+    for (auto& p : m_particles)
+    {
+      double lik = 0;
+      for (const auto& q : p2p->m_particles)
+      {
+        const double dx = p.d->x - q.d->x;
+        const double dy = p.d->y - q.d->y;
+        const double dz = p.d->z - q.d->z;
+        lik += std::exp(q.log_w) * std::exp(-0.5 * (dx * dx + dy * dy + dz * dz) / (h * h));
+      }
+      p.log_w += std::log(std::max(lik / N2, 1e-300));
+    }
+  }
+  else
+  {
+    // Generic: Gaussian approximation of p2
+    const CMatrixDouble33 cov2inv = cov2.inverse_LLt();
+    for (auto& p : m_particles)
+    {
+      const double dx = p.d->x - mean2.x();
+      const double dy = p.d->y - mean2.y();
+      const double dz = p.d->z - mean2.z();
+      const double maha2 = cov2inv(0, 0) * dx * dx + cov2inv(1, 1) * dy * dy +
+                           cov2inv(2, 2) * dz * dz + 2.0 * cov2inv(0, 1) * dx * dy +
+                           2.0 * cov2inv(0, 2) * dx * dz + 2.0 * cov2inv(1, 2) * dy * dz;
+      p.log_w += -0.5 * maha2;
+    }
+  }
+  normalizeWeights();
 
   MRPT_END
 }

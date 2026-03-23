@@ -30,12 +30,7 @@ namespace mrpt::img::detail
  *  8-bit images.
  */
 inline void remap_bilinear(
-    const CImage& in,
-    CImage& out,
-    const float* mapx,
-    const float* mapy,
-    int out_w,
-    int out_h)
+    const CImage& in, CImage& out, const float* mapx, const float* mapy, int out_w, int out_h)
 {
   const int in_w = in.getWidth();
   const int in_h = in.getHeight();
@@ -88,8 +83,7 @@ inline void remap_bilinear(
       for (int c = 0; c < nch; ++c)
       {
         const float val = w00 * p00[c] + w10 * p10[c] + w01 * p01[c] + w11 * p11[c];
-        out_row[u * nch + c] =
-            static_cast<uint8_t>(std::min(255.0f, std::max(0.0f, val + 0.5f)));
+        out_row[u * nch + c] = static_cast<uint8_t>(std::min(255.0f, std::max(0.0f, val + 0.5f)));
       }
     }
   }

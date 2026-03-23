@@ -65,8 +65,7 @@ void CUndistortMap::setFromCamParams(const mrpt::img::TCamera& campar)
           camera_geometry::distortion::apply_kannala_brandt(xn, yn, campar.dist, xd, yd);
           break;
         default:
-          THROW_EXCEPTION_FMT(
-              "Unknown distortion model: %d", static_cast<int>(campar.distortion));
+          THROW_EXCEPTION_FMT("Unknown distortion model: %d", static_cast<int>(campar.distortion));
       }
 
       // Convert back to pixel coordinates in the distorted (source) image

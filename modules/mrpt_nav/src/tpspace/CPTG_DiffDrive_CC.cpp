@@ -12,9 +12,9 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/format.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CC.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::nav;
@@ -67,9 +67,7 @@ void CPTG_DiffDrive_CC::serializeTo(mrpt::serialization::CArchive& out) const
 
 std::string CPTG_DiffDrive_CC::getDescription() const
 {
-  char str[100];
-  os::sprintf(str, 100, "CPTG_DiffDrive_CC,K=%i", (int)K);
-  return std::string(str);
+  return mrpt::format("CPTG_DiffDrive_CC,K=%i", static_cast<int>(K));
 }
 
 void CPTG_DiffDrive_CC::ptgDiffDriveSteeringFunction(

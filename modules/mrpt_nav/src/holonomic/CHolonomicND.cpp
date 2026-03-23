@@ -75,7 +75,7 @@ void CHolonomicND::navigate(const NavInput& ni, NavOutput& no)
       ni.obstacles, 1.0 /* max obs range*/, gaps, trg, selectedSector, evaluation, situation,
       riskEvaluation, *log);
 
-  if (situation == SITUATION_NO_WAY_FOUND)
+  if (situation == CHolonomicND::TSituations::SITUATION_NO_WAY_FOUND)
   {
     // No way found!
     no.desiredDirection = 0;
@@ -317,7 +317,7 @@ void CHolonomicND::searchBestGap(
 
     // In case of several paths, the shortest:
     out_selEvaluation = 1.0 + std::max(0.0, (maxObsRange - target_dist) / maxObsRange);
-    out_situation = SITUATION_TARGET_DIRECTLY;
+    out_situation = CHolonomicND::TSituations::SITUATION_TARGET_DIRECTLY;
   }
   else
   {
@@ -370,7 +370,7 @@ void CHolonomicND::searchBestGap(
       // ------------------------------------------------------
       out_selDirection = 0;
       out_selEvaluation = 0.0;  // Worst case
-      out_situation = SITUATION_NO_WAY_FOUND;
+      out_situation = CHolonomicND::TSituations::SITUATION_NO_WAY_FOUND;
     }
     else
     {
@@ -389,13 +389,13 @@ void CHolonomicND::searchBestGap(
       {
         // S3: Narrow gap
         // -------------------------------------------
-        out_situation = SITUATION_SMALL_GAP;
+        out_situation = CHolonomicND::TSituations::SITUATION_SMALL_GAP;
       }
       else
       {
         // S4: Wide gap
         // -------------------------------------------
-        out_situation = SITUATION_WIDE_GAP;
+        out_situation = CHolonomicND::TSituations::SITUATION_WIDE_GAP;
       }
 
       // Evaluate the risk only within the gap:

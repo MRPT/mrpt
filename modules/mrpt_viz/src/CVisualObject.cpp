@@ -90,9 +90,9 @@ void CVisualObject::writeToStreamRender(mrpt::serialization::CArchive& out) cons
   }
 
   out << _.show_name << _.visible;
-  out << _.representativePoint;                 // v1
-  out << _.materialShininess << _.castShadows;  // v2
-  out << _.materialSpecularExponent;            // v3
+  out << _.representativePoint;                        // v1
+  out << _.materialShininess << _.castShadows;         // v2
+  out << _.materialSpecularExponent;                   // v3
   out << _.materialEmissive.R << _.materialEmissive.G  // v4
       << _.materialEmissive.B;
 }

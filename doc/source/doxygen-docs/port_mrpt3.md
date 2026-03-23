@@ -329,28 +329,246 @@ are otherwise visibly incomplete after the 2.x → 3.0 porting effort.
 
 ### 13.4 `mrpt_poses` — Unimplemented PDF operations
 
-Some probability distribution classes still have methods that throw at run-time.
+All previously-stubbed methods have been implemented:
 
-**Still unimplemented** (throwing at run-time):
-
-- **`CPosePDFGrid`**: `copyFrom()`, `changeCoordinatesReference()`,
-  `bayesianFusion()`, `inverse()`.
-- **`CPose3DPDFGrid`**: `saveToTextFile()`, `changeCoordinatesReference()`,
-  `bayesianFusion()`, `inverse()`.
-- **`CPose3DPDFParticles`**: `bayesianFusion()`.
-- **`CPosePDFParticles`**: `bayesianFusion()`, `evaluateNormalizedPDF()`.
-- **`CPointPDFParticles`**: `bayesianFusion()`.
+- **`CPosePDFGrid`**: `copyFrom()` (same-type copy or sample-based approximation),
+  `changeCoordinatesReference()` (cell remapping with bounds check),
+  `bayesianFusion()` (element-wise product for same-type grids, or Parzen KDE
+  for particle inputs), `inverse()` (cell remapping via SE(2) inverse).
+- **`CPose3DPDFGrid`**: `copyFrom()`, `saveToTextFile()` (sparse text dump with
+  header), `changeCoordinatesReference()`, `bayesianFusion()` (same-size grids),
+  `inverse()`.
+- **`CPose3DPDFParticles`**: `bayesianFusion()` — KDE-based fusion when p2 is
+  particles, Mahalanobis-based when p2 is Gaussian.
+- **`CPosePDFParticles`**: `bayesianFusion()` — Parzen window evaluation via the
+  existing `evaluatePDF_parzen()` helper; Mahalanobis fallback for other types.
+- **`CPointPDFParticles`**: `copyFrom()` (same-type deep copy, or sampling from
+  Gaussian), `bayesianFusion()` — KDE-based particle fusion.
 
 ### 13.5 `mrpt_slam` — Incomplete algorithms
 
-- **`CICP` (3-D mode)**: Only `icpClassic` is implemented for 3-D ICP; Action: mention in docs 
-  that users should use the independent project mp2p_icp instead.
+- **`CICP` (3-D mode)**: Only `icpClassic` is implemented for 3-D point-cloud
+  alignment. The `CICP` class Doxygen header now documents this limitation and
+  directs users to the **mp2p_icp** library
+  (https://github.com/MOLAorg/mp2p_icp) for production-quality 3-D scan
+  matching with richer metrics and robust kernels.
 
-### 13.6 `mrpt_nav` — Planner optimisation
+### 13.6 `mrpt_nav` — Comprehensive modernisation plan
 
-- Re-read the entire library, look for potential conceptual / implementation subtle bugs, and improve in general all classes documentation.
-- **`CParameterizedTrajectoryGenerator`**: One obstacle post-processing enum
-  value is not handled and throws.
+The `mrpt_nav` module is ~20 years old and the largest candidate for
+refactoring in MRPT 3.0.  The plan below is grouped into phases of
+increasing risk/effort.  Each item is prefixed with a priority tag:
+**[P0]** = do first (low risk, high value),
+**[P1]** = next (medium risk),
+**[P2]** = later (significant API change).
+
+---
+
+#### 13.6.1 Enum modernisation
+
+**[P0]** Convert all plain `enum` to `enum class`:
+
+| Current | Proposed |
+|---------|----------|
+| `CAbstractNavigator::TState` (`IDLE`, `NAVIGATING`, …) | `enum class TState` |
+| `CAbstractNavigator::TErrorCode` (`ERR_NONE`, …) | `enum class TErrorCode` |
+| `CHolonomicND::TSituations` (`SITUATION_TARGET_DIRECTLY`, …) | `enum class TSituations` |
+| `PTG_collision_behavior_t` (`COLL_BEH_BACK_AWAY`, …) | `enum class PTGCollisionBehavior` (rename too) |
+
+---
+
+#### 13.6.2 `[[nodiscard]]` annotations
+
+**[P0]** Add `[[nodiscard]]` to every query / getter that returns a
+value callers should not silently discard:
+
+- `CAbstractNavigator`: `getCurrentState()`, `getErrorReason()`
+- `CWaypointsNavigator`: `getWaypointNavStatus()`
+- `CAbstractPTGBasedReactive`: `getPTG_count()`, `getPTG()`,
+  `getLastLogRecord()`, `getTargetApproachSlowDownDistance()`
+- `CParameterizedTrajectoryGenerator`: `getRefDistance()`,
+  `getAlphaValuesCount()`, `getPathStepCount()`, `getPathPose()`,
+  `getPathDist()`, `index2alpha()`, `alpha2index()`, `isInitialized()`
+- All holonomic `TOptions` getters.
+
+---
+
+#### 13.6.3 Naming consistency
+
+**[P0]** Standardise naming across the module:
+
+- **Config structs**: Rename all `TOptions` to `TParams` (or vice-versa)
+  so that every configuration struct in the module uses the same suffix.
+  Holonomic classes use `TOptions`; navigator classes use `TParams`;
+  `CMultiObjectiveMotionOptimizerBase` uses `TParamsBase`.  Pick one.
+- **STEP-numbered methods**: `STEP1_InitPTGs()`, `STEP2_SenseObstacles()`,
+  `STEP3_WSpaceToTPSpace()`, `STEP8_GenerateLogRecord()` should be renamed
+  to descriptive names (e.g. `initPTGs()`, `senseObstacles()`,
+  `workspaceToTPSpace()`, `generateLogRecord()`).
+- **`impl_` prefix**: Some virtual hooks use `impl_` (e.g.
+  `impl_waypoint_is_reachable`), others do not.  Standardise on a single
+  convention (recommend dropping the prefix and relying on `protected` access).
+- **Underscore style in identifiers**: `TP_Obstacles` vs `TPObstacles`,
+  `WS_Obstacles` vs `PWS_Obstacles`.  Pick one convention.
+- **`getDescription()` in PTGs**: The `os::sprintf` calls in
+  `CPTG_DiffDrive_CC`, `CPTG_DiffDrive_CCS`, `CPTG_DiffDrive_CS`,
+  `CPTG_DiffDrive_alpha` should use `mrpt::format()` and their C-style
+  casts `(int)K` should become `static_cast<int>(K)`.
+
+---
+
+#### 13.6.4 Thread-safety fixes
+
+**[P1]** Eliminate bare `lock()`/`unlock()` calls and manual locking APIs:
+
+- `CAbstractPTGBasedReactive::preDestructor()` (line 75–76) does
+  `m_nav_cs.lock(); m_nav_cs.unlock();` outside any RAII guard — an
+  exception between these calls would deadlock.  Replace with
+  `std::scoped_lock lk(m_nav_cs);`.
+- `CWaypointsNavigator::beginWaypointsAccess()` /
+  `endWaypointsAccess()` expose raw `lock()`/`unlock()` to users.
+  Replace with a RAII accessor that returns a guard object holding a
+  reference to the waypoint data:
+  ```cpp
+  [[nodiscard]] auto waypointsAccess() {
+      return mrpt::lockHelper(m_nav_waypoints_cs, m_waypoints);
+  }
+  ```
+- **Global mutable state**: `OUTPUT_DEBUG_PATH_PREFIX` and
+  `COLLISION_BEHAVIOR` in `CParameterizedTrajectoryGenerator.cpp` are
+  `static` globals with no synchronisation.  Guard with
+  `std::mutex` or make them `thread_local`, or move them into a
+  per-instance configuration field.
+
+---
+
+#### 13.6.5 Return-value modernisation (output-reference cleanup)
+
+**[P1]** Replace output-reference parameters with return values or
+structured returns.  Key candidates:
+
+| Method | Current | Proposed |
+|--------|---------|----------|
+| `CRobot2NavInterface::getCurrentPoseAndSpeeds()` | 4 output `&` params | Return `struct PoseAndSpeeds { TPose2D pose; TTwist2D vel; … };` |
+| `CAbstractHolonomicReactiveMethod::navigate()` | `NavOutput&` | Return `NavOutput` by value |
+| `CAbstractPTGBasedReactive::getLastLogRecord()` | `CLogFileRecord&` output | Return `std::optional<CLogFileRecord>` or `CLogFileRecord` |
+| `CMultiObjectiveMotionOptimizerBase::decide()` | `int&` best index | Return `std::optional<size_t>` (nullopt = no good motion) |
+| `CParameterizedTrajectoryGenerator::inverseMap_WS2TP()` | `int& k, double& d` output | Return `std::optional<std::pair<uint16_t,double>>` |
+
+---
+
+#### 13.6.6 Raw-pointer cleanup
+
+**[P1]** Remove remaining raw-pointer ownership/borrowing:
+
+- `CAbstractHolonomicReactiveMethod::m_associatedPTG` — raw `const
+  CParameterizedTrajectoryGenerator*`.  Replace with
+  `std::weak_ptr<const CParameterizedTrajectoryGenerator>` or a
+  non-owning `std::reference_wrapper`.
+- `TCandidateMovementPTG::PTG` — raw pointer, nullable.  Replace with
+  `const CParameterizedTrajectoryGenerator*` documented as non-owning,
+  or better, an index into the PTG vector.
+- `CAbstractPTGBasedReactive::getHoloMethod()` returns a raw pointer;
+  return a reference or `std::optional<std::reference_wrapper<>>`.
+
+---
+
+#### 13.6.7 Decompose `CAbstractPTGBasedReactive`
+
+**[P2]** This 467-line header (11 virtual methods, 6 nested structs,
+private members spanning PTG management, holonomic method management,
+logging, obstacle processing, velocity generation, and profiling) is the
+single largest maintenance burden.  Proposed decomposition:
+
+1. **Extract `PTGSetManager`** — owns the `vector<CParameterizedTrajectoryGenerator::Ptr>`,
+   handles `STEP1_InitPTGs()`, `getPTG()`, `getPTG_count()`,
+   collision-grid builds.
+2. **Extract `NavigationLogger`** — owns the `CLogFileRecord`,
+   `m_critZoneLastLog`, log-file path management, `STEP8_GenerateLogRecord()`.
+3. **Extract `VelocityFilter`** — owns `TSentVelCmd`, the speed-filter
+   tau, and `filterVelocityCommand()`.
+4. Keep the main class as a thin orchestrator that wires the above
+   together via dependency injection (constructor parameters or setters).
+
+---
+
+#### 13.6.8 Refactor long functions
+
+**[P2]** Several functions exceed 200 lines and mix multiple levels of
+abstraction.  Each should be broken into named helpers:
+
+| Function | Lines | Suggested split |
+|----------|-------|-----------------|
+| `PlannerSimple2D::computePath()` | ~465 | Extract `wavePropagation()`, `backtrackPath()` |
+| `PlannerRRT_SE2_TPS::solve()` | ~380 | Extract `sampleFreeSpace()`, `extendTree()`, `optimizePath()` |
+| `CHolonomicFullEval::evalSingleTarget()` | ~290 | Extract `scoreCandidateDirection()`, `applyPenalties()` |
+| `CHolonomicFullEval::navigate()` | ~170 | Extract `findGaps()`, `selectBestDirection()` |
+| `CHolonomicND::gapsEstimator()` | ~150 | Extract gap-merging and gap-filtering helpers |
+| `CLogFileRecord::serializeFrom()` | ~450 | Version-switch per struct field group |
+
+---
+
+#### 13.6.9 Magic numbers → named constants
+
+**[P1]** Replace hard-coded thresholds with named constants or
+configuration-file parameters:
+
+- `CHolonomicFullEval.cpp`: 0.01, 0.95, 1.02, 1.05, `round(nDirs * 0.1)`
+- `CHolonomicND.cpp`: 0.01, 0.05, 0.02, 0.1, 0.5 (ratio thresholds)
+- `CHolonomicVFF.cpp`: `std::min(1e6, …)` sentinel
+- `PlannerSimple2D.cpp`: `CELL_EMPTY = 0x8000000` etc. — already named,
+  but could use documentation comments explaining why those values.
+
+---
+
+#### 13.6.10 Test coverage
+
+**[P1]** Current coverage is approximately 25 %.  The following classes
+have **zero dedicated unit tests** and should be prioritised:
+
+- **Holonomic methods in isolation**: `CHolonomicVFF`, `CHolonomicND`,
+  `CHolonomicFullEval` — currently only tested indirectly inside
+  integration tests.
+- **Waypoint navigation**: `CWaypointsNavigator`, `TWaypoint`,
+  `TWaypointSequence` — substantial state machine, no unit tests.
+- **Manual-sequence navigator**: `CNavigatorManualSequence`.
+- **RRT planners**: `PlannerRRT_SE2_TPS`, `PlannerRRT_common`.
+- **Multi-objective optimiser**: `CMultiObjectiveMotionOptimizerBase`,
+  `CMultiObjMotionOpt_Scalarization`.
+- **Clearance diagram**: `ClearanceDiagram` — data structure used
+  everywhere, zero tests.
+
+---
+
+#### 13.6.11 Documentation
+
+**[P1]** `lib_mrpt_nav.md` is a 32-line stub.  Expand with:
+
+- A module-architecture diagram (subsystems: holonomic, reactive, planners,
+  tpspace) and their relationships.
+- A "getting started" section explaining which class to instantiate for
+  the most common use-cases (2-D reactive, waypoint following, path
+  planning).
+- Configuration-file schema documentation (`.ini` key names per class).
+- Algorithm summaries for VFF, ND, FullEval, and the PTG families.
+- Cross-references to the ReactiveNavigationDemo example.
+
+---
+
+#### 13.6.12 Remaining code-quality items
+
+**[P0]** Quick wins:
+
+- `MRPT_TODO("Optimize getNearestNode() with KD-tree!")` in
+  `PlannerRRT_SE2_TPS.cpp:27` — either implement or convert to a tracked
+  issue.
+- `#if 0` dead code in `CHolonomicND.cpp:437–447` — remove.
+- `static size_t SAVE_LOG_SOLVE_COUNT` in `PlannerRRT_SE2_TPS.cpp:72` —
+  global mutable counter used only for debugging; remove or guard.
+- `CLogFileRecord::serializeFrom()` line 349 uses raw `new` for
+  deserialization — replace with `std::make_shared`.
+- C-style casts `(int)K` in `CPTG_DiffDrive_CC.cpp:71` and
+  `CPTG_DiffDrive_CCS.cpp:71` — replace with `static_cast<int>(K)`.
 
 ### 13.7 `mrpt_maps` — Miscellaneous
 

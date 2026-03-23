@@ -345,11 +345,45 @@ mrpt::math::TPose2D CPosePDFParticles::getMostLikelyParticle() const
 }
 
 void CPosePDFParticles::bayesianFusion(
-    [[maybe_unused]] const CPosePDF& p1,
-    [[maybe_unused]] const CPosePDF& p2,
-    [[maybe_unused]] const double minMahalanobisDistToDrop)
+    const CPosePDF& p1, const CPosePDF& p2, [[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  MRPT_START
+
+  // Start with particles from p1
+  copyFrom(p1);
+
+  // Evaluate p2 at each particle, then multiply weights
+  if (const auto* p2p = dynamic_cast<const CPosePDFParticles*>(&p2))
+  {
+    // Use Parzen-window estimate with bandwidth from p2's covariance
+    const auto [cov2, mean2] = p2.getCovarianceAndMean();
+    const double stdXY = std::max(std::sqrt((cov2(0, 0) + cov2(1, 1)) * 0.5), 1e-6);
+    const double stdPhi = std::max(std::sqrt(cov2(2, 2)), 1e-6);
+    for (auto& p : m_particles)
+    {
+      const double lik = p2p->evaluatePDF_parzen(p.d.x, p.d.y, p.d.phi, stdXY, stdPhi);
+      p.log_w += std::log(std::max(lik, 1e-300));
+    }
+  }
+  else
+  {
+    // Generic: Gaussian approximation of p2
+    const auto [cov2, mean2] = p2.getCovarianceAndMean();
+    const CMatrixDouble33 cov2inv = cov2.inverse_LLt();
+    for (auto& p : m_particles)
+    {
+      const double dx = p.d.x - mean2.x();
+      const double dy = p.d.y - mean2.y();
+      const double dp = math::wrapToPi(p.d.phi - mean2.phi());
+      const double maha2 = cov2inv(0, 0) * dx * dx + cov2inv(1, 1) * dy * dy +
+                           cov2inv(2, 2) * dp * dp + 2.0 * cov2inv(0, 1) * dx * dy +
+                           2.0 * cov2inv(0, 2) * dx * dp + 2.0 * cov2inv(1, 2) * dy * dp;
+      p.log_w += -0.5 * maha2;
+    }
+  }
+  normalizeWeights();
+
+  MRPT_END
 }
 
 double CPosePDFParticles::evaluatePDF_parzen(

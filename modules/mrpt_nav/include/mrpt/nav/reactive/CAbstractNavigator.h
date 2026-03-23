@@ -172,7 +172,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   virtual void resetNavError();
 
   /** The different states for the navigation system. */
-  enum TState
+  enum class TState
   {
     IDLE = 0,
     NAVIGATING,
@@ -181,10 +181,10 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   };
 
   /** Returns the current navigator state. */
-  TState getCurrentState() const { return m_navigationState; }
+  [[nodiscard]] TState getCurrentState() const { return m_navigationState; }
 
   /** Explains the reason for the navigation error. */
-  enum TErrorCode
+  enum class TErrorCode
   {
     ERR_NONE = 0,
     ERR_EMERGENCY_STOP,
@@ -195,7 +195,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   {
     TErrorReason() = default;
 
-    TErrorCode error_code{ERR_NONE};
+    TErrorCode error_code{TErrorCode::ERR_NONE};
     /** Human friendly description of the error */
     std::string error_msg;
   };
@@ -204,7 +204,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
    * Error state is reset every time a new navigation starts with
    * a call to navigate(), or when resetNavError() is called.
    */
-  const TErrorReason& getErrorReason() const { return m_navErrorReason; }
+  [[nodiscard]] const TErrorReason& getErrorReason() const { return m_navErrorReason; }
 
   /** Sets a user-provided frame transformer object; used only if providing
    * targets in a frame ID
@@ -214,7 +214,10 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   void setFrameTF(const std::weak_ptr<mrpt::poses::FrameTransformer<2>>& frame_tf);
 
   /** Get the current frame tf object (defaults to nullptr) \sa setFrameTF */
-  std::weak_ptr<mrpt::poses::FrameTransformer<2>> getFrameTF() const { return m_frame_tf; }
+  [[nodiscard]] std::weak_ptr<mrpt::poses::FrameTransformer<2>> getFrameTF() const
+  {
+    return m_frame_tf;
+  }
 
   /** By default, error exceptions on navigationStep() will dump an error
    * message to the output logger interface. If rethrow is enabled
@@ -222,7 +225,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
    * exceptions will be re-thrown.
    */
   void enableRethrowNavExceptions(const bool enable) { m_rethrow_exceptions = enable; }
-  bool isRethrowNavExceptionsEnabled() const { return m_rethrow_exceptions; }
+  [[nodiscard]] bool isRethrowNavExceptionsEnabled() const { return m_rethrow_exceptions; }
   /** @}*/
 
   struct TAbstractNavigatorParams : public mrpt::config::CLoadableOptions
@@ -248,14 +251,17 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 
   /** Gives access to a const-ref to the internal time logger used to estimate
    * delays \sa getTimeLogger() in derived classes */
-  const mrpt::system::CTimeLogger& getDelaysTimeLogger() const { return m_timlog_delays; }
+  [[nodiscard]] const mrpt::system::CTimeLogger& getDelaysTimeLogger() const
+  {
+    return m_timlog_delays;
+  }
 
   /** Publicly available time profiling object. Default: disabled */
   mrpt::system::CTimeLogger m_navProfiler{false, "mrpt::nav::CAbstractNavigator"};
 
  private:
   /** Last internal state of navigator: */
-  TState m_lastNavigationState{IDLE};
+  TState m_lastNavigationState{TState::IDLE};
   TErrorReason m_navErrorReason;
   /** Will be false until the navigation end is sent, and it is reset with
    * each new command */
@@ -329,7 +335,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
       const mrpt::math::TPose2D& relative_robot_pose) const;
 
   /** Current internal state of navigator: */
-  TState m_navigationState{IDLE};
+  TState m_navigationState{TState::IDLE};
   /** Current navigation parameters */
   std::unique_ptr<TNavigationParams> m_navigationParams;
 
@@ -379,8 +385,8 @@ bool operator==(
 }  // namespace mrpt::nav
 MRPT_ENUM_TYPE_BEGIN(mrpt::nav::CAbstractNavigator::TState)
 using namespace mrpt::nav;
-MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, IDLE);
-MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, NAVIGATING);
-MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, SUSPENDED);
-MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, NAV_ERROR);
+MRPT_FILL_ENUM_MEMBER(CAbstractNavigator::TState, IDLE);
+MRPT_FILL_ENUM_MEMBER(CAbstractNavigator::TState, NAVIGATING);
+MRPT_FILL_ENUM_MEMBER(CAbstractNavigator::TState, SUSPENDED);
+MRPT_FILL_ENUM_MEMBER(CAbstractNavigator::TState, NAV_ERROR);
 MRPT_ENUM_TYPE_END()
