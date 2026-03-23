@@ -118,16 +118,18 @@ class CAbstractHolonomicReactiveMethod : public mrpt::serialization::CSerializab
 
   /** Optionally, sets the associated PTG, just in case a derived class
    * requires this info (not required for methods where the robot kinematics
-   * are totally abstracted) */
+   * are totally abstracted).
+   * \note The pointer is stored as a non-owning observer; the caller retains
+   * ownership and must guarantee the PTG outlives this object. */
   void setAssociatedPTG(mrpt::nav::CParameterizedTrajectoryGenerator* ptg);
-  /** Returns the pointer set by setAssociatedPTG() */
-  mrpt::nav::CParameterizedTrajectoryGenerator* getAssociatedPTG() const;
+  /** Returns the non-owning pointer set by setAssociatedPTG(), or nullptr. */
+  [[nodiscard]] mrpt::nav::CParameterizedTrajectoryGenerator* getAssociatedPTG() const;
 
   void enableApproachTargetSlowDown(bool enable) { m_enableApproachTargetSlowDown = enable; }
 
  protected:
-  /** If applicable, this will contain the argument of the most recent call to
-   * setAssociatedPTG() */
+  /** Non-owning observer pointer to the associated PTG, set via
+   * setAssociatedPTG(). May be nullptr. Lifetime managed by the caller. */
   mrpt::nav::CParameterizedTrajectoryGenerator* m_associatedPTG;
   /** Whether to decrease speed when approaching target */
   bool m_enableApproachTargetSlowDown;

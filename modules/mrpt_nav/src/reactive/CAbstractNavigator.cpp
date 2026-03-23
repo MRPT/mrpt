@@ -255,9 +255,9 @@ void CAbstractNavigator::doEmergencyStop(const std::string& msg)
   }
   m_navigationState = TState::NAV_ERROR;
   // don't overwrite an error msg from a caller:
-  if (m_navErrorReason.error_code == TErrorCode::ERR_NONE)
+  if (m_navErrorReason.error_code == TErrorCode::NONE)
   {
-    m_navErrorReason.error_code = TErrorCode::ERR_EMERGENCY_STOP;
+    m_navErrorReason.error_code = TErrorCode::EMERGENCY_STOP;
     m_navErrorReason.error_msg = std::string("doEmergencyStop called for: ") + msg;
   }
   MRPT_LOG_ERROR(msg);
@@ -343,7 +343,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
             m_curPoseVel.rawOdometry, m_curPoseVel.pose_frame_id))
     {
       m_navigationState = TState::NAV_ERROR;
-      m_navErrorReason.error_code = TErrorCode::ERR_EMERGENCY_STOP;
+      m_navErrorReason.error_code = TErrorCode::EMERGENCY_STOP;
       m_navErrorReason.error_msg = std::string(
           "ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot "
           "and finishing navigation");
@@ -564,7 +564,7 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
           MRPT_LOG_WARN("Timeout approaching the target. Aborting navigation.");
 
           m_navigationState = TState::NAV_ERROR;
-          m_navErrorReason.error_code = TErrorCode::ERR_CANNOT_REACH_TARGET;
+          m_navErrorReason.error_code = TErrorCode::CANNOT_REACH_TARGET;
           m_navErrorReason.error_msg =
               std::string("Timeout approaching the target. Aborting navigation.");
 
@@ -615,9 +615,9 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
   catch (const std::exception& e)
   {
     m_navigationState = TState::NAV_ERROR;
-    if (m_navErrorReason.error_code == TErrorCode::ERR_NONE)
+    if (m_navErrorReason.error_code == TErrorCode::NONE)
     {
-      m_navErrorReason.error_code = TErrorCode::ERR_OTHER;
+      m_navErrorReason.error_code = TErrorCode::OTHER;
       m_navErrorReason.error_msg = std::string("Exception: ") + std::string(e.what());
     }
 
@@ -627,9 +627,9 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
   catch (...)
   {
     m_navigationState = TState::NAV_ERROR;
-    if (m_navErrorReason.error_code == TErrorCode::ERR_NONE)
+    if (m_navErrorReason.error_code == TErrorCode::NONE)
     {
-      m_navErrorReason.error_code = TErrorCode::ERR_OTHER;
+      m_navErrorReason.error_code = TErrorCode::OTHER;
       m_navErrorReason.error_msg = "Untyped exception";
     }
 

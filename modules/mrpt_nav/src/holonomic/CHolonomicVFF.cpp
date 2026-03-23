@@ -51,6 +51,16 @@ void CHolonomicVFF::navigate(const NavInput& ni, NavOutput& no)
   // Create a log record for returning data.
   no.logRecord = std::make_shared<CLogFileRecord_VFF>();
 
+  // Maximum repulsion force magnitude cap (avoids explosion when
+  // obstacle distance → 0, i.e. 1/dist would be infinite).
+  constexpr double MAX_FORCE_CAP = 1e6;
+  // Normalizes the sum of per-sector repulsive forces by the number
+  // of obstacle sectors, giving a density-independent obstacle weight.
+  constexpr double OBSTACLE_WEIGHT_FACTOR = 20.0;
+  // If the total repulsion force norm exceeds this threshold, the robot
+  // is considered "near obstacles" and speed is clamped proportionally.
+  constexpr double OBSTACLE_NEARNESS_THRESHOLD = 6.0;
+
   // Forces vector:
   mrpt::math::TPoint2D resultantForce(0, 0), instantaneousForce(0, 0);
 
@@ -62,8 +72,7 @@ void CHolonomicVFF::navigate(const NavInput& ni, NavOutput& no)
     for (size_t i = 0; i < n; i++, ang += inc_ang)
     {
       // Compute force strength:
-      // const double mod = exp(- obstacles[i] );
-      const double mod = std::min(1e6, 1.0 / ni.obstacles[i]);
+      const double mod = std::min(MAX_FORCE_CAP, 1.0 / ni.obstacles[i]);
 
       // Add repulsive force:
       instantaneousForce.x = -cos(ang) * mod;
@@ -72,10 +81,11 @@ void CHolonomicVFF::navigate(const NavInput& ni, NavOutput& no)
     }
   }
 
-  const double obstcl_weight = 20.0 / ni.obstacles.size();
+  const double obstcl_weight = OBSTACLE_WEIGHT_FACTOR / ni.obstacles.size();
   resultantForce *= obstcl_weight;
 
-  const double obstacleNearnessFactor = std::min(1.0, 6.0 / resultantForce.norm());
+  const double obstacleNearnessFactor =
+      std::min(1.0, OBSTACLE_NEARNESS_THRESHOLD / resultantForce.norm());
 
   // Target:
   ASSERT_(!ni.targets.empty());

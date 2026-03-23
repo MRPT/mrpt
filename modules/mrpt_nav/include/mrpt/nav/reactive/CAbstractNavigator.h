@@ -186,16 +186,16 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   /** Explains the reason for the navigation error. */
   enum class TErrorCode
   {
-    ERR_NONE = 0,
-    ERR_EMERGENCY_STOP,
-    ERR_CANNOT_REACH_TARGET,
-    ERR_OTHER
+    NONE = 0,
+    EMERGENCY_STOP,
+    CANNOT_REACH_TARGET,
+    OTHER
   };
   struct TErrorReason
   {
     TErrorReason() = default;
 
-    TErrorCode error_code{TErrorCode::ERR_NONE};
+    TErrorCode error_code{TErrorCode::NONE};
     /** Human friendly description of the error */
     std::string error_msg;
   };
