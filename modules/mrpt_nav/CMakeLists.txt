@@ -59,6 +59,7 @@ set(LIB_SOURCES
   tests/PlannerSimple2D_unittest.cpp
   tests/PTGs_unittest.cpp
   tests/CLogFileRecord_unittest.cpp
+  tests/holonomic_unittest.cpp
   tests/rnav_unittest.cpp
 )
 

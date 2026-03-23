@@ -480,20 +480,24 @@ abstraction.  Each should be broken into named helpers:
 
 #### 13.6.10 Test coverage
 
-**[P1]** Current coverage is approximately 25 %.  The following classes
-have **zero dedicated unit tests** and should be prioritised:
+**[PARTIAL]** Added `tests/holonomic_unittest.cpp` covering:
 
-- **Holonomic methods in isolation**: `CHolonomicVFF`, `CHolonomicND`,
-  `CHolonomicFullEval` — currently only tested indirectly inside
-  integration tests.
-- **Waypoint navigation**: `CWaypointsNavigator`, `TWaypoint`,
-  `TWaypointSequence` — substantial state machine, no unit tests.
-- **Manual-sequence navigator**: `CNavigatorManualSequence`.
-- **RRT planners**: `PlannerRRT_SE2_TPS`, `PlannerRRT_common`.
-- **Multi-objective optimiser**: `CMultiObjectiveMotionOptimizerBase`,
-  `CMultiObjMotionOpt_Scalarization`.
-- **Clearance diagram**: `ClearanceDiagram` — data structure used
-  everywhere, zero tests.
+- `CHolonomicVFF` in isolation (5 tests: heading accuracy × 3, speed
+  bounds, slow-down near target, behaviour with blocked obstacles).
+- `CHolonomicND` in isolation (4 tests: heading accuracy × 2, speed
+  bounds, detour when target direction blocked).
+- `CHolonomicFullEval` in isolation (5 tests: heading accuracy × 3, speed
+  bounds, repeated calls / hysteresis stability). Also fixed two latent
+  bugs: default `TOptions` had 7 factorWeights for `NUM_FACTORS=8`, and
+  factor[7] (heading) dereferenced `ptg` without a null guard.
+- `ClearanceDiagram` (4 tests: construction, resize, clear, resize-twice).
+
+Still zero dedicated tests for:
+
+- `CWaypointsNavigator` / `TWaypointSequence` state machine.
+- `CNavigatorManualSequence`.
+- `PlannerRRT_SE2_TPS`, `PlannerRRT_common`.
+- `CMultiObjectiveMotionOptimizerBase`, `CMultiObjMotionOpt_Scalarization`.
 
 ---
 
