@@ -276,10 +276,17 @@ void CHolonomicFullEval::evalSingleTarget(
 
     // Factor [7]: Heading mismatch: 1.0=perfect phi aligment, 0.0=180deg error
     // -------------------------------------------------------------------------
-    uint32_t ptgStep = 0;
-    ptg->getPathStepForDist(i, d * ptg->getRefDistance(), ptgStep);
-    const auto ptgPose = ptg->getPathPose(i, ptgStep);
-    scores[7] = 1.0 - std::abs(mrpt::math::angDistance(target.phi, ptgPose.phi) / M_PI);
+    if (ptg != nullptr)
+    {
+      uint32_t ptgStep = 0;
+      ptg->getPathStepForDist(i, d * ptg->getRefDistance(), ptgStep);
+      const auto ptgPose = ptg->getPathPose(i, ptgStep);
+      scores[7] = 1.0 - std::abs(mrpt::math::angDistance(target.phi, ptgPose.phi) / M_PI);
+    }
+    else
+    {
+      scores[7] = 1.0;  // neutral when no PTG heading info available
+    }
 
     // Save stats for debugging:
     for (size_t l = 0; l < NUM_FACTORS; l++) m_dirs_scores(i, l) = scores[l];
@@ -620,9 +627,9 @@ void CLogFileRecord_FullEval::serializeFrom(mrpt::serialization::CArchive& in, u
   ---------------------------------------------------------------*/
 CHolonomicFullEval::TOptions::TOptions() :
     factorWeights{
-        0.1, 0.5, 0.5, 0.01, 1, 1, 1
+        0.1, 0.5, 0.5, 0.01, 1, 1, 1, 0.0
 },
-    factorNormalizeOrNot{0, 0, 0, 0, 1, 0, 0},
+    factorNormalizeOrNot{0, 0, 0, 0, 1, 0, 0, 0},
     PHASE_FACTORS{{1, 2}, {4}, {0, 2}},
     PHASE_THRESHOLDS{0.5, 0.6, 0.7}
 
