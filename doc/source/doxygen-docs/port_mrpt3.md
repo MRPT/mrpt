@@ -338,90 +338,38 @@ increasing risk/effort.  Each item is prefixed with a priority tag:
 
 ---
 
-#### 13.6.1 Enum modernisation
-
-**[DONE]** Converted all plain `enum` to `enum class`, with redundant prefixes removed from values:
-
-| Old | New |
-|-----|-----|
-| `CAbstractNavigator::TState` — `IDLE`, `NAVIGATING`, `SUSPENDED`, `NAV_ERROR` | `enum class TState` — same values (`NAV_ERROR` kept to avoid clash with Windows `ERROR` macro) |
-| `CAbstractNavigator::TErrorCode` — `ERR_NONE`, `ERR_EMERGENCY_STOP`, `ERR_CANNOT_REACH_TARGET`, `ERR_OTHER` | `enum class TErrorCode` — `NONE`, `EMERGENCY_STOP`, `CANNOT_REACH_TARGET`, `OTHER` |
-| `CHolonomicND::TSituations` — `SITUATION_TARGET_DIRECTLY`, `SITUATION_SMALL_GAP`, `SITUATION_WIDE_GAP`, `SITUATION_NO_WAY_FOUND` | `enum class TSituations` — `TARGET_DIRECTLY`, `SMALL_GAP`, `WIDE_GAP`, `NO_WAY_FOUND` |
-| `PTG_collision_behavior_t` — `COLL_BEH_BACK_AWAY`, `COLL_BEH_STOP` | `enum class PTGCollisionBehavior` — `BACK_AWAY`, `STOP` |
-
----
-
-#### 13.6.2 `[[nodiscard]]` annotations
-
-**[DONE]** Added `[[nodiscard]]` to:
-
-- `CAbstractNavigator`: `getCurrentState()`, `getErrorReason()`,
-  `getFrameTF()`, `isRethrowNavExceptionsEnabled()`, `getDelaysTimeLogger()`
-- `CParameterizedTrajectoryGenerator`: `getDescription()`, `supportVelCmdNOP()`,
-  `supportSpeedAtTarget()`, `isInitialized()`, `getAlphaValuesCount()`,
-  `getPathCount()`, `getRefDistance()`, `getScorePriority()`,
-  `getClearanceStepCount()`, `getClearanceDecimatedPaths()`, `getPathStepCount()`,
-  `getPathPose()`, `getPathDist()`, `getPathStepDuration()`, `getMaxLinVel()`,
-  `getMaxAngVel()`, `getMaxRobotRadius()`, `isPointInsideRobotShape()`
-- `CAbstractHolonomicReactiveMethod`: `getAssociatedPTG()`
-- `CWaypointsNavigator`: `getWaypointsAccessGuard()`
+#### 13.6.2 `[[nodiscard]]` annotations (remaining)
 
 Still pending: `CAbstractPTGBasedReactive` getters, holonomic `TOptions` getters.
 
 ---
 
-#### 13.6.3 Naming consistency
+#### 13.6.3 Naming consistency (remaining)
 
-**[PARTIAL]** Done:
-- `CPTG_DiffDrive_CC/CCS/alpha`: replaced `os::sprintf` + `(int)K` casts with
-  `mrpt::format()` + `static_cast<int>(K)`.
-
-Remaining:
-- **Config structs**: Holonomic classes use `TOptions`; navigator classes use `TParams`.
-  Pick one suffix uniformly.
-- **STEP-numbered methods**: `STEP1_InitPTGs()` … `STEP8_GenerateLogRecord()` —
-  rename to descriptive names.
-- **`impl_` prefix**: Standardise virtual hook naming convention.
+- **Config structs**: Holonomic classes use `TOptions`; navigator/optimizer/graphslam
+  classes use `TParams`. Low-value cosmetic change across multiple modules — deferred.
 
 ---
 
-#### 13.6.4 Thread-safety fixes
+#### 13.6.4 Thread-safety fixes (remaining)
 
-**[DONE]**:
-- `CAbstractPTGBasedReactive::preDestructor()`: replaced bare
-  `m_nav_cs.lock(); m_nav_cs.unlock()` with `{ std::scoped_lock lck(m_nav_cs); }`.
-- `CWaypointsNavigator`: replaced `beginWaypointsAccess()` / `endWaypointsAccess()`
-  with `getWaypointsAccessGuard()` returning a `WaypointsAccessGuard` RAII object
-  that holds `std::unique_lock<std::recursive_mutex>` and exposes `waypoints()`.
-
-Remaining: global mutable `OUTPUT_DEBUG_PATH_PREFIX` / `COLLISION_BEHAVIOR` statics
+Global mutable `OUTPUT_DEBUG_PATH_PREFIX` / `COLLISION_BEHAVIOR` statics
 have no synchronisation — consider moving to per-instance fields or guarding with mutex.
 
 ---
 
-#### 13.6.5 Return-value modernisation (output-reference cleanup)
-
-**[TODO — P1]** Key candidates:
+#### 13.6.5 Return-value modernisation (remaining)
 
 | Method | Current | Proposed |
 |--------|---------|----------|
 | `CRobot2NavInterface::getCurrentPoseAndSpeeds()` | 4 output `&` params | Return `struct PoseAndSpeeds { TPose2D pose; TTwist2D vel; … };` |
-| `CAbstractHolonomicReactiveMethod::navigate()` | `NavOutput&` | Return `NavOutput` by value |
-| `CMultiObjectiveMotionOptimizerBase::decide()` | `int&` best index | Return `std::optional<size_t>` (nullopt = no good motion) |
 | `CParameterizedTrajectoryGenerator::inverseMap_WS2TP()` | `int& k, double& d` output | Return `std::optional<std::pair<uint16_t,double>>` |
 
 ---
 
-#### 13.6.6 Raw-pointer cleanup
+#### 13.6.6 Raw-pointer cleanup (remaining)
 
-**[DONE — documented]**: Both `m_associatedPTG` in `CAbstractHolonomicReactiveMethod`
-and `TCandidateMovementPTG::PTG` are non-owning observer raw pointers. Both are now
-documented explicitly as such, with lifetime contract stated. Since `nullptr` is a valid
-state and the PTG lifetime is guaranteed by the owning reactive system, a raw pointer
-is the correct tool; `std::weak_ptr` would require the entire PTG ownership chain to
-be changed to shared ownership.
-
-Remaining: `CAbstractPTGBasedReactive::getHoloMethod()` returns a raw pointer;
+`CAbstractPTGBasedReactive::getHoloMethod()` returns a raw pointer;
 consider returning `CAbstractHolonomicReactiveMethod&` (with assert) for non-nullable
 use sites.
 
@@ -435,10 +383,10 @@ logging, obstacle processing, velocity generation, and profiling) is the
 single largest maintenance burden.  Proposed decomposition:
 
 1. **Extract `PTGSetManager`** — owns the `vector<CParameterizedTrajectoryGenerator::Ptr>`,
-   handles `STEP1_InitPTGs()`, `getPTG()`, `getPTG_count()`,
+   handles `initPTGs()`, `getPTG()`, `getPTG_count()`,
    collision-grid builds.
 2. **Extract `NavigationLogger`** — owns the `CLogFileRecord`,
-   `m_critZoneLastLog`, log-file path management, `STEP8_GenerateLogRecord()`.
+   `m_critZoneLastLog`, log-file path management, `generateLogRecord()`.
 3. **Extract `VelocityFilter`** — owns `TSentVelCmd`, the speed-filter
    tau, and `filterVelocityCommand()`.
 4. Keep the main class as a thin orchestrator that wires the above
@@ -462,37 +410,9 @@ abstraction.  Each should be broken into named helpers:
 
 ---
 
-#### 13.6.9 Magic numbers → named constants
+#### 13.6.10 Test coverage (remaining)
 
-**[DONE]**
-- `CHolonomicVFF.cpp`: `1e6` → `MAX_FORCE_CAP`, `20.0` → `OBSTACLE_WEIGHT_FACTOR`,
-  `6.0` → `OBSTACLE_NEARNESS_THRESHOLD`.
-- `CHolonomicND.cpp`: `0.02` → `DIRECT_PATH_SECTOR_FRACTION`,
-  `1.05` → `DIRECT_PATH_DIST_MARGIN`, `0.95` → `DIRECT_PATH_RANGE_FRACTION`,
-  `0.01` → `MIN_TARGET_DIST`.
-- `CHolonomicFullEval.cpp` (`evalSingleTarget`): `1.02` → `OBSTACLE_PAST_TARGET_MARGIN`,
-  `0.95` → `TARGET_DIST_SAFETY_FRACTION`, `1.05` → `TARGET_CLEARANCE_MARGIN`,
-  `1.01` → `SQRT_DOMAIN_EPS`, `0.1` → `CLEARANCE_WINDOW_HALF_FRACTION`,
-  `0.99` → `FREE_SPACE_THRESHOLD`, `4.0` → `SECTOR_DIST_WEIGHT`,
-  `0.1` → `BLOCKED_DIR_SCORE_PENALTY`.
-
----
-
-#### 13.6.10 Test coverage
-
-**[PARTIAL]** Added `tests/holonomic_unittest.cpp` covering:
-
-- `CHolonomicVFF` in isolation (5 tests: heading accuracy × 3, speed
-  bounds, slow-down near target, behaviour with blocked obstacles).
-- `CHolonomicND` in isolation (4 tests: heading accuracy × 2, speed
-  bounds, detour when target direction blocked).
-- `CHolonomicFullEval` in isolation (5 tests: heading accuracy × 3, speed
-  bounds, repeated calls / hysteresis stability). Also fixed two latent
-  bugs: default `TOptions` had 7 factorWeights for `NUM_FACTORS=8`, and
-  factor[7] (heading) dereferenced `ptg` without a null guard.
-- `ClearanceDiagram` (4 tests: construction, resize, clear, resize-twice).
-
-Still zero dedicated tests for:
+Zero dedicated unit tests for:
 
 - `CWaypointsNavigator` / `TWaypointSequence` state machine.
 - `CNavigatorManualSequence`.
@@ -500,28 +420,6 @@ Still zero dedicated tests for:
 - `CMultiObjectiveMotionOptimizerBase`, `CMultiObjMotionOpt_Scalarization`.
 
 ---
-
-#### 13.6.11 Documentation
-
-**[DONE]** `lib_mrpt_nav.md` expanded to a full reference including:
-navigator state machine, waypoint sequencing (RAII guard API), TP-Space
-reactive core, holonomic methods table, PTG class table, robot interface
-guide, and path planning overview.
-
----
-
-#### 13.6.12 Remaining code-quality items
-
-**[DONE]** Quick wins completed:
-
-- `MRPT_TODO("Optimize getNearestNode() with KD-tree!")` in
-  `PlannerRRT_SE2_TPS.cpp` — converted to plain `// TODO:` comment.
-- `static size_t SAVE_LOG_SOLVE_COUNT` — kept (used to name debug log
-  files across solve() calls, guarded by `params.save_3d_log_freq > 0`).
-- `CLogFileRecord::serializeFrom()` raw `new` — replaced with
-  `std::make_shared` (three sites).
-- C-style casts `(int)K` — replaced with `static_cast<int>(K)` in
-  `CPTG_DiffDrive_CC.cpp`, `CPTG_DiffDrive_CCS.cpp`, `CPTG_DiffDrive_alpha.cpp`.
 
 ### 13.7 `mrpt_maps` — Miscellaneous
 

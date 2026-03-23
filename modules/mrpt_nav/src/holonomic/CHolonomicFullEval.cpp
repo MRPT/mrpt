@@ -392,8 +392,9 @@ void CHolonomicFullEval::evalSingleTarget(
   }
 }
 
-void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
+CHolonomicFullEval::NavOutput CHolonomicFullEval::navigate(const NavInput& ni)
 {
+  NavOutput no;
   using mrpt::square;
 
   ASSERT_(ni.clearance != nullptr);
@@ -562,6 +563,8 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
       log->dirs_scores = m_dirs_scores;
     }
   }
+
+  return no;
 }
 
 unsigned int CHolonomicFullEval::direction2sector(const double a, const unsigned int N)

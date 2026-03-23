@@ -26,7 +26,7 @@ CMultiObjectiveMotionOptimizerBase::CMultiObjectiveMotionOptimizerBase(TParamsBa
 {
 }
 
-int CMultiObjectiveMotionOptimizerBase::decide(
+std::optional<size_t> CMultiObjectiveMotionOptimizerBase::decide(
     const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo& extra_info)
 {
   auto& score_values = extra_info.score_values;

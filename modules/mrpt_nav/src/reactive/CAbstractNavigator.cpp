@@ -337,10 +337,8 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 
   {
     mrpt::system::CTimeLoggerEntry tle(m_navProfiler, "getCurrentPoseAndSpeeds()");
-    m_curPoseVel.pose_frame_id = std::string("map");  // default
-    if (!m_robot.getCurrentPoseAndSpeeds(
-            m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp,
-            m_curPoseVel.rawOdometry, m_curPoseVel.pose_frame_id))
+    const auto poseAndSpeeds = m_robot.getCurrentPoseAndSpeeds();
+    if (!poseAndSpeeds)
     {
       m_navigationState = TState::NAV_ERROR;
       m_navErrorReason.error_code = TErrorCode::EMERGENCY_STOP;
@@ -361,6 +359,11 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
           "ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot "
           "and finishing navigation");
     }
+    m_curPoseVel.pose = poseAndSpeeds->pose;
+    m_curPoseVel.velGlobal = poseAndSpeeds->velGlobal;
+    m_curPoseVel.timestamp = poseAndSpeeds->timestamp;
+    m_curPoseVel.rawOdometry = poseAndSpeeds->odometry;
+    m_curPoseVel.pose_frame_id = poseAndSpeeds->frame_id;
   }
   m_curPoseVel.velLocal = m_curPoseVel.velGlobal;
   m_curPoseVel.velLocal.rotate(-m_curPoseVel.pose.phi);

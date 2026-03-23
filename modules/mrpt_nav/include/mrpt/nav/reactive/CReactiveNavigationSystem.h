@@ -119,7 +119,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 
   // Steps for the reactive navigation sytem.
   // ----------------------------------------------------------------------------
-  void STEP1_InitPTGs() override;
+  void initPTGs() override;
 
   // See docs in parent class
   bool implementSenseObstacles(mrpt::system::TTimeStamp& obs_timestamp) override;
@@ -142,7 +142,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
   /** Obstacle points, before filtering (if filtering is enabled). */
   mrpt::maps::CSimplePointsMap m_WS_Obstacles_original;
   // See docs in parent class
-  void STEP3_WSpaceToTPSpace(
+  void transformToTPSpace(
       size_t ptg_idx,
       std::vector<double>& out_TPObstacles,
       mrpt::nav::ClearanceDiagram& out_clearance,

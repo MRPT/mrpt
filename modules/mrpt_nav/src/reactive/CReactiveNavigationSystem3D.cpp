@@ -128,13 +128,13 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::config::CConfigFile
 }
 
 /** \callergraph */
-void CReactiveNavigationSystem3D::STEP1_InitPTGs()
+void CReactiveNavigationSystem3D::initPTGs()
 {
   if (m_PTGsMustBeReInitialized)
   {
     m_PTGsMustBeReInitialized = false;
 
-    mrpt::system::CTimeLoggerEntry tle(m_timelogger, "STEP1_InitPTGs");
+    mrpt::system::CTimeLoggerEntry tle(m_timelogger, "initPTGs");
 
     for (unsigned int j = 0; j < m_ptgmultilevel.size(); j++)
     {
@@ -182,7 +182,7 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
   // height sections of the robot.
   //-------------------------------------------------------------------
 
-  m_timelogger.enter("navigationStep.STEP2_LoadAndSortObstacle");
+  m_timelogger.enter("navigationStep.loadAndSortObstacles");
 
   {
     CTimeLoggerEntry tle(m_timlog_delays, "senseObstacles()");
@@ -230,14 +230,14 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
     }
   }
 
-  m_timelogger.leave("navigationStep.STEP2_LoadAndSortObstacle");
+  m_timelogger.leave("navigationStep.loadAndSortObstacles");
 
   return true;
 }
 
 /** Transform the obstacle into TP-Obstacles in TP-Spaces
  * \callergraph */
-void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
+void CReactiveNavigationSystem3D::transformToTPSpace(
     const size_t ptg_idx,
     std::vector<double>& out_TPObstacles,
     mrpt::nav::ClearanceDiagram& out_clearance,
@@ -279,7 +279,7 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord& 
 {
   out_log.WS_Obstacles.clear();
   // Include the points of all levels (this could be improved depending on
-  // STEP2)
+  // senseObstacles())
   for (auto& m_WS_Obstacles_inlevel : m_WS_Obstacles_inlevels)
     out_log.WS_Obstacles.insertAnotherMap(&m_WS_Obstacles_inlevel, CPose3D(0, 0, 0));
 

@@ -47,13 +47,13 @@ void CMultiObjMotionOpt_Scalarization::saveConfigFile(mrpt::config::CConfigFileB
   parameters.saveToConfigFile(c, "CMultiObjMotionOpt_Scalarization");
 }
 
-int CMultiObjMotionOpt_Scalarization::impl_decide(
+std::optional<size_t> CMultiObjMotionOpt_Scalarization::impl_decide(
     const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo& extra_info)
 {
   std::vector<double>& final_evaluation = extra_info.final_evaluation;
   final_evaluation.clear();
 
-  if (extra_info.score_values.empty()) return -1;  // No valid candidate
+  if (extra_info.score_values.empty()) return std::nullopt;  // No valid candidate
 
   // compile expression upon first use:
   if (m_expr_scalar_vars.empty())
@@ -85,7 +85,7 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(
   // Evaluate the formula for all candidates:
   const size_t N = extra_info.score_values.size();
   final_evaluation.assign(N, .0);
-  int best_idx = -1;
+  std::optional<size_t> best_idx;
   double best_val = .0;
   for (size_t i = 0; i < N; i++)
   {
@@ -107,7 +107,7 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(
     const double val = m_expr_scalar_formula.eval();
     extra_info.final_evaluation[i] = val;
 
-    if (val > 0 && (best_idx == -1 || val > best_val))
+    if (val > 0 && (!best_idx || val > best_val))
     {
       best_idx = i;
       best_val = val;

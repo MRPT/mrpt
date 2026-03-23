@@ -21,6 +21,9 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/datetime.h>
 
+#include <optional>
+#include <string>
+
 namespace mrpt::nav
 {
 /** The pure virtual interface between a real or simulated robot and any
@@ -51,32 +54,33 @@ class CRobot2NavInterface : public mrpt::system::COutputLogger
   CRobot2NavInterface();
   ~CRobot2NavInterface() override;
 
+  /** Return value for getCurrentPoseAndSpeeds() */
+  struct CurrentPoseAndSpeeds
+  {
+    /** The latest robot pose (from mapping/localization), in world
+     * coordinates. (x,y: meters, phi: radians) */
+    mrpt::math::TPose2D pose;
+    /** The latest robot velocity vector, in world coordinates.
+     * (vx,vy: m/s, omega: rad/s) */
+    mrpt::math::TTwist2D velGlobal;
+    /** Timestamp for pose and velocity values. */
+    mrpt::system::TTimeStamp timestamp{INVALID_TIMESTAMP};
+    /** Raw odometry pose; may drift long-term but is locally smooth.
+     * (x,y: meters, phi: radians) */
+    mrpt::math::TPose2D odometry;
+    /** Coordinate frame ID for `pose`. Default: "map". */
+    std::string frame_id = "map";
+  };
+
   /** Get the current pose and velocity of the robot. The implementation
    * should not take too much time to return,
    *   so if it might take more than ~10ms to ask the robot for the
    * instantaneous data, it may be good enough to
    *   return the latest values from a cache which is updated in a parallel
    * thread.
-   * \return false on any error retrieving these values from the robot.
+   * \return The current pose and speeds, or std::nullopt on error.
    * \callergraph */
-  virtual bool getCurrentPoseAndSpeeds(
-      /** (output) The latest robot pose (typically from a
-       mapping/localization module), in world coordinates. (x,y: meters,
-       phi: radians) */
-      mrpt::math::TPose2D& curPose,
-      /** (output) The latest robot velocity vector, in world coordinates.
-       (vx,vy: m/s, omega: rad/s) */
-      mrpt::math::TTwist2D& curVelGlobal,
-      /** (output) The timestamp for the read pose and velocity values. Use
-       mrpt::Clock::now() unless you have something more accurate. */
-      mrpt::system::TTimeStamp& timestamp,
-      /** (output) The latest robot raw odometry pose; may have long-time
-       drift should be more locally consistent than curPose (x,y: meters,
-       phi: radians) */
-      mrpt::math::TPose2D& curOdometry,
-      /** (output) ID of the coordinate frame for curPose. Default is not
-       modified is "map". [Only for future support to submapping,etc.] */
-      std::string& frame_id) = 0;
+  [[nodiscard]] virtual std::optional<CurrentPoseAndSpeeds> getCurrentPoseAndSpeeds() = 0;
 
   /** Sends a velocity command to the robot.
    * The number components in each command depends on children classes of

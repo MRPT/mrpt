@@ -125,13 +125,13 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::config::CConfigFileBa
 }
 
 /** \callergraph */
-void CReactiveNavigationSystem::STEP1_InitPTGs()
+void CReactiveNavigationSystem::initPTGs()
 {
   if (m_PTGsMustBeReInitialized)
   {
     m_PTGsMustBeReInitialized = false;
 
-    mrpt::system::CTimeLoggerEntry tle(m_timelogger, "STEP1_InitPTGs");
+    mrpt::system::CTimeLoggerEntry tle(m_timelogger, "initPTGs");
 
     for (unsigned int i = 0; i < PTGs.size(); i++)
     {
@@ -139,7 +139,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 
       logFmt(
           mrpt::system::LVL_INFO,
-          "[CReactiveNavigationSystem::STEP1_InitPTGs] Initializing "
+          "[CReactiveNavigationSystem::initPTGs] Initializing "
           "PTG#%u (`%s`)...",
           i, PTGs[i]->getDescription().c_str());
 
@@ -174,7 +174,7 @@ bool CReactiveNavigationSystem::implementSenseObstacles(
   {
     bool ret;  // Return true on success
     {
-      CTimeLoggerEntry tle1(m_timelogger, "navigationStep.STEP2_Sense");
+      CTimeLoggerEntry tle1(m_timelogger, "navigationStep.senseObstacles");
       CTimeLoggerEntry tle2(m_timlog_delays, "senseObstacles()");
       ret = m_robot.senseObstacles(m_WS_Obstacles, obstacles_timestamp);
     }
@@ -190,22 +190,22 @@ bool CReactiveNavigationSystem::implementSenseObstacles(
 
     return ret;
     // Note: Clip obstacles by "z" axis coordinates is more efficiently done
-    // in STEP3_WSpaceToTPSpace()
+    // in transformToTPSpace()
   }
   catch (const std::exception& e)
   {
-    MRPT_LOG_ERROR_STREAM("[CReactiveNavigationSystem::STEP2_Sense] Exception:" << e.what());
+    MRPT_LOG_ERROR_STREAM("[CReactiveNavigationSystem::senseObstacles] Exception:" << e.what());
     return false;
   }
   catch (...)
   {
-    MRPT_LOG_ERROR_STREAM("[CReactiveNavigationSystem::STEP2_Sense] Unexpected exception!");
+    MRPT_LOG_ERROR_STREAM("[CReactiveNavigationSystem::senseObstacles] Unexpected exception!");
     return false;
   }
 }
 
 /** \callergraph */
-void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(
+void CReactiveNavigationSystem::transformToTPSpace(
     size_t ptg_idx,
     std::vector<double>& out_TPObstacles,
     mrpt::nav::ClearanceDiagram& out_clearance,
@@ -213,7 +213,7 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(
     const bool eval_clearance)
 {
   mrpt::system::CTimeLoggerEntry tle(
-      m_navProfiler, "CReactiveNavigationSystem::STEP3_WSpaceToTPSpace()");
+      m_navProfiler, "CReactiveNavigationSystem::transformToTPSpace()");
 
   ASSERT_LT_(ptg_idx, this->getPTG_count());
   CParameterizedTrajectoryGenerator* ptg = this->getPTG(ptg_idx);

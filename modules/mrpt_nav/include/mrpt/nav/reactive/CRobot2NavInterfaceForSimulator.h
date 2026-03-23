@@ -40,18 +40,14 @@ class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
   {
   }
 
-  bool getCurrentPoseAndSpeeds(
-      mrpt::math::TPose2D& curPose,
-      mrpt::math::TTwist2D& curVel,
-      mrpt::system::TTimeStamp& timestamp,
-      mrpt::math::TPose2D& curOdometry,
-      std::string& frame_id) override
+  std::optional<CurrentPoseAndSpeeds> getCurrentPoseAndSpeeds() override
   {
-    curPose = m_simul.getCurrentGTPose();
-    curVel = m_simul.getCurrentGTVel();
-    timestamp = mrpt::Clock::now();
-    curOdometry = m_simul.getCurrentOdometricPose();
-    return true;  // ok
+    return CurrentPoseAndSpeeds{
+        .pose = m_simul.getCurrentGTPose(),
+        .velGlobal = m_simul.getCurrentGTVel(),
+        .timestamp = mrpt::Clock::now(),
+        .odometry = m_simul.getCurrentOdometricPose(),
+    };
   }
 
   bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd& vel_cmd) override
@@ -69,14 +65,12 @@ class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 
   mrpt::kinematics::CVehicleVelCmd::Ptr getEmergencyStopCmd() override
   {
-    return mrpt::kinematics::CVehicleVelCmd::Ptr(
-        new mrpt::kinematics::CVehicleVelCmd_Holo(0.0, 0.0, 0.1, 0.0));
+    return std::make_shared<mrpt::kinematics::CVehicleVelCmd_Holo>(0.0, 0.0, 0.1, 0.0);
   }
 
   mrpt::kinematics::CVehicleVelCmd::Ptr getStopCmd() override
   {
-    return mrpt::kinematics::CVehicleVelCmd::Ptr(
-        new mrpt::kinematics::CVehicleVelCmd_Holo(0.0, 0.0, 1.0, 0.0));
+    return std::make_shared<mrpt::kinematics::CVehicleVelCmd_Holo>(0.0, 0.0, 1.0, 0.0);
   }
 
   mrpt::kinematics::CVehicleVelCmd::Ptr getAlignCmd(const double relative_heading_radians) override
@@ -117,18 +111,14 @@ class CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface
   {
   }
 
-  bool getCurrentPoseAndSpeeds(
-      mrpt::math::TPose2D& curPose,
-      mrpt::math::TTwist2D& curVel,
-      mrpt::system::TTimeStamp& timestamp,
-      mrpt::math::TPose2D& curOdometry,
-      std::string& frame_id) override
+  std::optional<CurrentPoseAndSpeeds> getCurrentPoseAndSpeeds() override
   {
-    curPose = m_simul.getCurrentGTPose();
-    curVel = m_simul.getCurrentGTVel();
-    timestamp = mrpt::Clock::now();
-    curOdometry = m_simul.getCurrentOdometricPose();
-    return true;  // ok
+    return CurrentPoseAndSpeeds{
+        .pose = m_simul.getCurrentGTPose(),
+        .velGlobal = m_simul.getCurrentGTVel(),
+        .timestamp = mrpt::Clock::now(),
+        .odometry = m_simul.getCurrentOdometricPose(),
+    };
   }
 
   bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd& vel_cmd) override
