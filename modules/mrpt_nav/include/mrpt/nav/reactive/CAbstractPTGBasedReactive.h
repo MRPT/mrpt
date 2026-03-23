@@ -134,7 +134,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
   /** Must be called for loading collision grids, or the first navigation
    * command may last a long time to be executed.
-   * Internally, it just calls STEP1_CollisionGridsBuilder().
+   * Internally, it just calls initPTGs().
    */
   void initialize() override;
 
@@ -312,18 +312,18 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
   // Steps for the reactive navigation sytem.
   // ----------------------------------------------------------------------------
-  virtual void STEP1_InitPTGs() = 0;
+  virtual void initPTGs() = 0;
 
   /** Return false on any fatal error */
   virtual bool implementSenseObstacles(mrpt::system::TTimeStamp& obs_timestamp) = 0;
-  bool STEP2_SenseObstacles();
+  bool senseObstacles();
 
   /** Builds TP-Obstacles from Workspace obstacles for the given PTG.
    * "out_TPObstacles" is already initialized to the proper length and
    * maximum collision-free distance for each "k" trajectory index.
    * Distances are in "pseudo-meters". They will be normalized automatically
    * to [0,1] upon return. */
-  virtual void STEP3_WSpaceToTPSpace(
+  virtual void transformToTPSpace(
       const size_t ptg_idx,
       std::vector<double>& out_TPObstacles,
       mrpt::nav::ClearanceDiagram& out_clearance,
@@ -370,7 +370,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
   /** Return the [0,1] velocity scale of raw PTG cmd_vel */
   virtual double generate_vel_cmd(
       const TCandidateMovementPTG& in_movement, mrpt::kinematics::CVehicleVelCmd::Ptr& new_vel_cmd);
-  void STEP8_GenerateLogRecord(
+  void generateLogRecord(
       CLogFileRecord& newLogRec,
       const std::vector<mrpt::math::TPose2D>& relTargets,
       int nSelectedPTG,

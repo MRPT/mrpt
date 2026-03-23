@@ -48,8 +48,9 @@ void CHolonomicND::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 /*---------------------------------------------------------------
             Navigate
   ---------------------------------------------------------------*/
-void CHolonomicND::navigate(const NavInput& ni, NavOutput& no)
+CHolonomicND::NavOutput CHolonomicND::navigate(const NavInput& ni)
 {
+  NavOutput no;
   const auto ptg = getAssociatedPTG();
   const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
 
@@ -120,6 +121,8 @@ void CHolonomicND::navigate(const NavInput& ni, NavOutput& no)
     log->situation = situation;
     log->riskEvaluation = riskEvaluation;
   }
+
+  return no;
 }
 
 /*---------------------------------------------------------------

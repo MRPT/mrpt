@@ -93,11 +93,8 @@ void run_rnav_test_impl(
       obstacles.clear();
       timestamp = mrpt::Clock::now();
 
-      mrpt::math::TPose2D curPose, odomPose;
-      std::string pose_frame_id;
-      mrpt::math::TTwist2D curVel;
-      mrpt::system::TTimeStamp pose_tim;
-      getCurrentPoseAndSpeeds(curPose, curVel, pose_tim, odomPose, pose_frame_id);
+      const auto ps = getCurrentPoseAndSpeeds();
+      const auto curPose = ps ? ps->pose : mrpt::math::TPose2D();
 
       mrpt::obs::CObservation2DRangeScan scan;
       scan.aperture = mrpt::DEG2RAD(270.0);

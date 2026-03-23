@@ -141,24 +141,17 @@ class CParameterizedTrajectoryGenerator :
    * \param[out] out_d Trajectory distance, normalized such that D_max
    * becomes 1.
    *
-   * \return true if the distance between (x,y) and the actual trajectory
-   * point is below the given tolerance (in meters).
+   * \return If the point (x,y) maps to a trajectory within tolerance,
+   * returns the (k, normalized_d) pair; otherwise std::nullopt.
    */
-  virtual bool inverseMap_WS2TP(
-      double x,
-      double y,
-      int& out_k,
-      double& out_normalized_d,
-      double tolerance_dist = 0.10) const = 0;
+  [[nodiscard]] virtual std::optional<std::pair<int, double>> inverseMap_WS2TP(
+      double x, double y, double tolerance_dist = 0.10) const = 0;
 
-  /** Returns the same than inverseMap_WS2TP() but without any additional
-   * cost. The default implementation
-   * just calls inverseMap_WS2TP() and discards (k,d). */
+  /** Returns true if (x,y) is within the PTG domain. The default
+   * implementation just calls inverseMap_WS2TP(). */
   virtual bool PTG_IsIntoDomain(double x, double y) const
   {
-    int k;
-    double d;
-    return inverseMap_WS2TP(x, y, k, d);
+    return inverseMap_WS2TP(x, y).has_value();
   }
 
   /** Returns true if a given TP-Space point maps to a unique point in

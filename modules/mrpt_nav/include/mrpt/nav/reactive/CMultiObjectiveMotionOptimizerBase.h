@@ -19,6 +19,8 @@
 #include <mrpt/nav/reactive/TCandidateMovementPTG.h>
 #include <mrpt/rtti/CObject.h>
 
+#include <optional>
+
 namespace mrpt::nav
 {
 /** Virtual base class for multi-objective motion choosers, as used for reactive
@@ -50,9 +52,10 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 
   /** The main entry point for the class: returns the 0-based index of the
    * best of the N motion candidates in `movs`.
-   * If no valid one is found, `-1` will be returned.
+   * If no valid one is found, `std::nullopt` will be returned.
    */
-  int decide(const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo& extra_info);
+  [[nodiscard]] std::optional<size_t> decide(
+      const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo& extra_info);
 
   virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c) = 0;
   virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const = 0;
@@ -97,7 +100,7 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 
  private:
   // This virtual method is called by decide().
-  virtual int impl_decide(
+  virtual std::optional<size_t> impl_decide(
       const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo& extra_info) = 0;
 
   TParamsBase& m_params_base;

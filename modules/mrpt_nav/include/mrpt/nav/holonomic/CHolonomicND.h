@@ -64,7 +64,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
   CHolonomicND(const mrpt::config::CConfigFileBase* INI_FILE = nullptr);
 
   // See base class docs
-  void navigate(const NavInput& ni, NavOutput& no) override;
+  [[nodiscard]] NavOutput navigate(const NavInput& ni) override;
 
   /** The structure used to store a detected gap in obstacles. */
   struct TGap

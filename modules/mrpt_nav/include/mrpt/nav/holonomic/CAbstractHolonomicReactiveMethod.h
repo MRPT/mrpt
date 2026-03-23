@@ -87,7 +87,7 @@ class CAbstractHolonomicReactiveMethod : public mrpt::serialization::CSerializab
 
   /** Invokes the holonomic navigation algorithm itself. See the description
    * of the input/output structures for details on each parameter. */
-  virtual void navigate(const NavInput& ni, NavOutput& no) = 0;
+  [[nodiscard]] virtual NavOutput navigate(const NavInput& ni) = 0;
 
   /** ctor */
   CAbstractHolonomicReactiveMethod(const std::string& defaultCfgSectionName);

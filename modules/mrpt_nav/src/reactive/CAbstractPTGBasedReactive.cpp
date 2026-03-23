@@ -111,7 +111,7 @@ void CAbstractPTGBasedReactive::initialize()
   m_multiobjopt->clear();
 
   // Compute collision grids:
-  STEP1_InitPTGs();
+  initPTGs();
 }
 
 /*---------------------------------------------------------------
@@ -298,19 +298,19 @@ void CAbstractPTGBasedReactive::performNavigationStep()
     // skipping dynamic obstacles.
     ASSERT_(nTargets >= 1);
 
-    STEP1_InitPTGs();  // Will only recompute if
+    initPTGs();  // Will only recompute if
     // "m_PTGsMustBeReInitialized==true"
 
-    // STEP2: Load the obstacles and sort them in height bands.
+    // Load the obstacles and sort them in height bands.
     // -----------------------------------------------------------------------------
     bool sense_ok;
     {
       mrpt::system::CTimeLoggerEntry tle2(
           m_navProfiler,
-          "CAbstractPTGBasedReactive::performNavigationStep().STEP2_"
-          "SenseObstacles()");
+          "CAbstractPTGBasedReactive::performNavigationStep()."
+          "senseObstacles()");
 
-      sense_ok = STEP2_SenseObstacles();
+      sense_ok = senseObstacles();
     }
 
     if (!sense_ok)
@@ -321,7 +321,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
       if (fill_log_record)
       {
         CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
-        STEP8_GenerateLogRecord(
+        generateLogRecord(
             newLogRec, std::vector<mrpt::math::TPose2D>() /*no targets*/,
             -1,  // best_ptg_idx,
             m_robot.getEmergencyStopCmd(), nPTGs,
@@ -666,7 +666,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
     // --------------------------------------------------------------
     CMultiObjectiveMotionOptimizerBase::TResultInfo mo_info;
     ASSERT_(m_multiobjopt);
-    int best_ptg_idx = m_multiobjopt->decide(candidate_movs, mo_info);
+    const auto best_ptg_idx = m_multiobjopt->decide(candidate_movs, mo_info);
 
     if (fill_log_record)
     {
@@ -686,14 +686,17 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
     // Pick best movement (or null if none is good)
     const TCandidateMovementPTG* selectedHolonomicMovement = nullptr;
-    if (best_ptg_idx >= 0)
+    if (best_ptg_idx.has_value())
     {
-      selectedHolonomicMovement = &candidate_movs[best_ptg_idx];
+      selectedHolonomicMovement = &candidate_movs[*best_ptg_idx];
     }
 
     // If the selected PTG is (N+1), it means the NOP cmd. vel is selected
     // as the best alternative, i.e. do NOT send any new motion command.
-    const bool best_is_NOP_cmdvel = (best_ptg_idx == int(nPTGs));
+    const bool best_is_NOP_cmdvel = (best_ptg_idx.has_value() && *best_ptg_idx == nPTGs);
+
+    // Convert to int for downstream code that still uses int indexing
+    const int nSelectedPTG = best_ptg_idx.has_value() ? static_cast<int>(*best_ptg_idx) : -1;
 
     // ---------------------------------------------------------------------
     //				SEND MOVEMENT COMMAND TO THE ROBOT
@@ -710,8 +713,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
             "finishing navigation\n");
         if (fill_log_record)
         {
-          STEP8_GenerateLogRecord(
-              newLogRec, relTargets, best_ptg_idx, m_robot.getEmergencyStopCmd(), nPTGs,
+          generateLogRecord(
+              newLogRec, relTargets, nSelectedPTG, m_robot.getEmergencyStopCmd(), nPTGs,
               best_is_NOP_cmdvel, rel_cur_pose_wrt_last_vel_cmd_NOP,
               rel_pose_PTG_origin_wrt_sense_NOP,
               0,  // executionTimeValue,
@@ -730,7 +733,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
         getPTG(i)->updateNavDynamicState(ptg_dynState);
       }
 
-      // STEP7: Get the non-holonomic movement command.
+      // Get the non-holonomic movement command.
       // ---------------------------------------------------------------------
       double cmd_vel_speed_ratio = 1.0;
       if (selectedHolonomicMovement)
@@ -767,8 +770,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
             if (fill_log_record)
             {
               new_vel_cmd = m_robot.getEmergencyStopCmd();
-              STEP8_GenerateLogRecord(
-                  newLogRec, relTargets, best_ptg_idx, new_vel_cmd, nPTGs, best_is_NOP_cmdvel,
+              generateLogRecord(
+                  newLogRec, relTargets, nSelectedPTG, new_vel_cmd, nPTGs, best_is_NOP_cmdvel,
                   rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
                   0,  // executionTimeValue,
                   0,  // tim_changeSpeed,
@@ -779,7 +782,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
         }
         // Save last sent cmd:
         m_lastSentVelCmd.speed_scale = cmd_vel_speed_ratio;
-        m_lastSentVelCmd.ptg_index = best_ptg_idx;
+        m_lastSentVelCmd.ptg_index = nSelectedPTG;
         m_lastSentVelCmd.ptg_alpha_index =
             selectedHolonomicMovement
                 ? selectedHolonomicMovement->PTG->alpha2index(selectedHolonomicMovement->direction)
@@ -788,8 +791,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
             selectedHolonomicMovement->props.at("holo_stage_eval");
 
         m_lastSentVelCmd.colfreedist_move_k =
-            best_ptg_idx >= 0
-                ? m_infoPerPTG[best_ptg_idx].TP_Obstacles[m_lastSentVelCmd.ptg_alpha_index]
+            nSelectedPTG >= 0
+                ? m_infoPerPTG[nSelectedPTG].TP_Obstacles[m_lastSentVelCmd.ptg_alpha_index]
                 : .0;
         m_lastSentVelCmd.was_slowdown = (selectedHolonomicMovement->props.at("is_slowdown") != 0.0);
 
@@ -842,12 +845,12 @@ void CAbstractPTGBasedReactive::performNavigationStep()
           new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
           selectedHolonomicMovement ? selectedHolonomicMovement->speed : .0,
           1000.0 * meanExecutionPeriod.getLastOutput(), 1000.0 * meanExecutionTime.getLastOutput(),
-          1000.0 * meanTotalExecutionTime.getLastOutput(), best_ptg_idx));
+          1000.0 * meanTotalExecutionTime.getLastOutput(), nSelectedPTG));
     }
     if (fill_log_record)
     {
-      STEP8_GenerateLogRecord(
-          newLogRec, relTargets, best_ptg_idx, new_vel_cmd, nPTGs, best_is_NOP_cmdvel,
+      generateLogRecord(
+          newLogRec, relTargets, nSelectedPTG, new_vel_cmd, nPTGs, best_is_NOP_cmdvel,
           rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP, executionTimeValue,
           tim_changeSpeed, tim_start_iteration);
     }
@@ -869,7 +872,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 }
 
 /** \callergraph */
-void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
+void CAbstractPTGBasedReactive::generateLogRecord(
     CLogFileRecord& newLogRec,
     const std::vector<TPose2D>& relTargets,
     int nSelectedPTG,
@@ -883,10 +886,10 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
     const mrpt::system::TTimeStamp& tim_start_iteration)
 {
   // ---------------------------------------
-  // STEP8: Generate log record
+  // Generate log record
   // ---------------------------------------
   mrpt::system::CTimeLoggerEntry tle(
-      m_navProfiler, "CAbstractPTGBasedReactive::STEP8_GenerateLogRecord()");
+      m_navProfiler, "CAbstractPTGBasedReactive::generateLogRecord()");
 
   m_timelogger.enter("navigationStep.populate_log_info");
 
@@ -1394,7 +1397,7 @@ bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPo
 }
 
 /** \callergraph */
-bool CAbstractPTGBasedReactive::STEP2_SenseObstacles()
+bool CAbstractPTGBasedReactive::senseObstacles()
 {
   return implementSenseObstacles(m_WS_Obstacles_timestamp);
 }
@@ -1481,7 +1484,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
   }
   else
   {
-    //  STEP3(b): Build TP-Obstacles
+    //  Build TP-Obstacles
     // -----------------------------------------------------------------------------
     {
       tictac.Tic();
@@ -1495,7 +1498,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
       }
 
       // Implementation-dependent conversion:
-      STEP3_WSpaceToTPSpace(
+      transformToTPSpace(
           indexPTG, ipf.TP_Obstacles, ipf.clearance,
           mrpt::math::TPose2D(0, 0, 0) - rel_pose_PTG_origin_wrt_sense,
           params_abstract_ptg_navigator.evaluate_clearance);
@@ -1512,10 +1515,10 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
       timeForTPObsTransformation = tictac.Tac();
       if (m_timelogger.isEnabled())
         m_timelogger.registerUserMeasure(
-            "navigationStep.STEP3_WSpaceToTPSpace", timeForTPObsTransformation);
+            "navigationStep.transformToTPSpace", timeForTPObsTransformation);
     }
 
-    //  STEP4: Holonomic navigation method
+    //  Holonomic navigation method
     // -----------------------------------------------------------------------------
     if (!this_is_PTG_continuation)
     {
@@ -1535,9 +1538,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
       for (const auto& t : ipf.targets)  //
         ni.targets.push_back(t.TP_Target);
 
-      CAbstractHolonomicReactiveMethod::NavOutput no;
-
-      holoMethod.navigate(ni, no);
+      const auto no = holoMethod.navigate(ni);
 
       // Extract resuls:
       cm.direction = no.desiredDirection;
@@ -1579,8 +1580,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
       timeForHolonomicMethod = tictac.Tac();
       if (m_timelogger.isEnabled())
-        m_timelogger.registerUserMeasure(
-            "navigationStep.STEP4_HolonomicMethod", timeForHolonomicMethod);
+        m_timelogger.registerUserMeasure("navigationStep.holonomicMethod", timeForHolonomicMethod);
     }
     else
     {
@@ -1590,7 +1590,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
       cm.speed = 1.0;  // Not used.
     }
 
-    // STEP5: Evaluate each movement to assign them a "evaluation" value.
+    // Evaluate each movement to assign them a "evaluation" value.
     // ---------------------------------------------------------------------
     {
       CTimeLoggerEntry tle2(m_timelogger, "navigationStep.calc_move_candidate_scores");

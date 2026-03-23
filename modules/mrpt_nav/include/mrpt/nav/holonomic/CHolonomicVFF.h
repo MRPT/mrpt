@@ -59,7 +59,7 @@ class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
   CHolonomicVFF(const mrpt::config::CConfigFileBase* INI_FILE = nullptr);
 
   // See base class docs
-  void navigate(const NavInput& ni, NavOutput& no) override;
+  [[nodiscard]] NavOutput navigate(const NavInput& ni) override;
 
   void initialize(const mrpt::config::CConfigFileBase& INI_FILE) override;  // See base class docs
   void saveConfigFile(mrpt::config::CConfigFileBase& c) const override;     // See base class docs

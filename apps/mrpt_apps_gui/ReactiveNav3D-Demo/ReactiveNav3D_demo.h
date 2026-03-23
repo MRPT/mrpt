@@ -473,18 +473,14 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
   gui::CDisplayWindow3D window;
   Scene::Ptr scene;
 
-  bool getCurrentPoseAndSpeeds(
-      mrpt::math::TPose2D& curPose,
-      mrpt::math::TTwist2D& curVel,
-      mrpt::system::TTimeStamp& timestamp,
-      mrpt::math::TPose2D& odomPose,
-      std::string& pose_frame_id) override
+  std::optional<CurrentPoseAndSpeeds> getCurrentPoseAndSpeeds() override
   {
-    curPose = robotSim.getCurrentGTPose();
-    curVel = robotSim.getCurrentGTVel();
-    timestamp = mrpt::Clock::now();
-    odomPose = robotSim.getCurrentOdometricPose();
-    return true;
+    return CurrentPoseAndSpeeds{
+        .pose = robotSim.getCurrentGTPose(),
+        .velGlobal = robotSim.getCurrentGTVel(),
+        .timestamp = mrpt::Clock::now(),
+        .odometry = robotSim.getCurrentOdometricPose(),
+    };
   }
 
   bool senseObstacles(

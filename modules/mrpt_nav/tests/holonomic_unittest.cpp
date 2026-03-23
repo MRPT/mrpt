@@ -65,8 +65,7 @@ TEST_F(HolonomicVFFTest, navigate_toward_target_ahead)
 {
   constexpr double target_angle = 0.0;  // directly forward
   auto ni = makeNavInput(100, target_angle);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  vff.navigate(ni, no);
+  const auto no = vff.navigate(ni);
 
   EXPECT_GT(no.desiredSpeed, 0.0);
   EXPECT_LT(no.desiredSpeed, 1.01);
@@ -77,8 +76,7 @@ TEST_F(HolonomicVFFTest, navigate_toward_target_left)
 {
   constexpr double target_angle = M_PI / 2.0;  // 90 deg left
   auto ni = makeNavInput(100, target_angle);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  vff.navigate(ni, no);
+  const auto no = vff.navigate(ni);
 
   EXPECT_GT(no.desiredSpeed, 0.0);
   EXPECT_LT(std::abs(wrapAngle(no.desiredDirection - target_angle)), 0.3 /*rad*/);
@@ -88,8 +86,7 @@ TEST_F(HolonomicVFFTest, navigate_toward_target_right)
 {
   constexpr double target_angle = -M_PI / 4.0;  // 45 deg right
   auto ni = makeNavInput(100, target_angle);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  vff.navigate(ni, no);
+  const auto no = vff.navigate(ni);
 
   EXPECT_GT(no.desiredSpeed, 0.0);
   EXPECT_LT(std::abs(wrapAngle(no.desiredDirection - target_angle)), 0.3 /*rad*/);
@@ -98,8 +95,7 @@ TEST_F(HolonomicVFFTest, navigate_toward_target_right)
 TEST_F(HolonomicVFFTest, speed_within_bounds)
 {
   auto ni = makeNavInput(100, 0.0, 0.5);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  vff.navigate(ni, no);
+  const auto no = vff.navigate(ni);
 
   EXPECT_GE(no.desiredSpeed, 0.0);
   EXPECT_LE(no.desiredSpeed, ni.maxRobotSpeed + 1e-6);
@@ -111,9 +107,8 @@ TEST_F(HolonomicVFFTest, slow_down_near_target)
   auto ni_far = makeNavInput(100, 0.0, 0.5);
   auto ni_near = makeNavInput(100, 0.0, 0.01);  // almost at target
 
-  CAbstractHolonomicReactiveMethod::NavOutput no_far, no_near;
-  vff.navigate(ni_far, no_far);
-  vff.navigate(ni_near, no_near);
+  const auto no_far = vff.navigate(ni_far);
+  const auto no_near = vff.navigate(ni_near);
 
   EXPECT_LE(no_near.desiredSpeed, no_far.desiredSpeed + 1e-6);
 }
@@ -128,8 +123,7 @@ TEST_F(HolonomicVFFTest, all_obstacles_present_reduces_speed)
   ni.maxRobotSpeed = 1.0;
   ni.targets.emplace_back(0.3, 0.0, 0.0);  // target ahead
 
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  vff.navigate(ni, no);
+  const auto no = vff.navigate(ni);
   // Should not crash; output is well-defined
   EXPECT_GE(no.desiredSpeed, 0.0);
   EXPECT_LE(no.desiredSpeed, ni.maxRobotSpeed + 1e-6);
@@ -148,8 +142,7 @@ TEST_F(HolonomicNDTest, navigate_toward_target_ahead)
 {
   constexpr double target_angle = 0.0;
   auto ni = makeNavInput(121, target_angle);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  nd.navigate(ni, no);
+  const auto no = nd.navigate(ni);
 
   EXPECT_GT(no.desiredSpeed, 0.0);
   EXPECT_LT(std::abs(wrapAngle(no.desiredDirection - target_angle)), 0.35 /*rad*/);
@@ -159,8 +152,7 @@ TEST_F(HolonomicNDTest, navigate_toward_target_left)
 {
   constexpr double target_angle = M_PI / 2.0;
   auto ni = makeNavInput(121, target_angle);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  nd.navigate(ni, no);
+  const auto no = nd.navigate(ni);
 
   EXPECT_GT(no.desiredSpeed, 0.0);
   EXPECT_LT(std::abs(wrapAngle(no.desiredDirection - target_angle)), 0.35 /*rad*/);
@@ -169,8 +161,7 @@ TEST_F(HolonomicNDTest, navigate_toward_target_left)
 TEST_F(HolonomicNDTest, speed_within_bounds)
 {
   auto ni = makeNavInput(121, 0.0);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  nd.navigate(ni, no);
+  const auto no = nd.navigate(ni);
 
   EXPECT_GE(no.desiredSpeed, 0.0);
   EXPECT_LE(no.desiredSpeed, ni.maxRobotSpeed + 1e-6);
@@ -184,8 +175,7 @@ TEST_F(HolonomicNDTest, blocked_target_direction_detours)
   // Block a swath around angle=0 (indices near 60 out of 121)
   for (int k = 55; k <= 66; k++) ni.obstacles[k] = 0.05;
 
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  nd.navigate(ni, no);
+  const auto no = nd.navigate(ni);
 
   EXPECT_GE(no.desiredSpeed, 0.0);
   EXPECT_LE(no.desiredSpeed, ni.maxRobotSpeed + 1e-6);
@@ -198,6 +188,9 @@ class HolonomicFullEvalTest : public ::testing::Test
 {
  protected:
   mrpt::nav::CHolonomicFullEval fe;
+  mrpt::nav::ClearanceDiagram cd;
+
+  void SetUp() override { cd.resize(121, 121); }
 };
 
 TEST_F(HolonomicFullEvalTest, navigate_toward_target_ahead)
@@ -205,8 +198,8 @@ TEST_F(HolonomicFullEvalTest, navigate_toward_target_ahead)
   // nDirs must be > 3 (asserted inside navigate())
   constexpr double target_angle = 0.0;
   auto ni = makeNavInput(121, target_angle);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  fe.navigate(ni, no);
+  ni.clearance = &cd;
+  const auto no = fe.navigate(ni);
 
   EXPECT_GT(no.desiredSpeed, 0.0);
   EXPECT_LT(std::abs(wrapAngle(no.desiredDirection - target_angle)), 0.35 /*rad*/);
@@ -216,8 +209,8 @@ TEST_F(HolonomicFullEvalTest, navigate_toward_target_left)
 {
   constexpr double target_angle = M_PI / 2.0;
   auto ni = makeNavInput(121, target_angle);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  fe.navigate(ni, no);
+  ni.clearance = &cd;
+  const auto no = fe.navigate(ni);
 
   EXPECT_GT(no.desiredSpeed, 0.0);
   EXPECT_LT(std::abs(wrapAngle(no.desiredDirection - target_angle)), 0.35 /*rad*/);
@@ -227,8 +220,8 @@ TEST_F(HolonomicFullEvalTest, navigate_toward_target_diagonal)
 {
   constexpr double target_angle = M_PI / 4.0;  // 45 deg
   auto ni = makeNavInput(121, target_angle);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  fe.navigate(ni, no);
+  ni.clearance = &cd;
+  const auto no = fe.navigate(ni);
 
   EXPECT_GT(no.desiredSpeed, 0.0);
   EXPECT_LT(std::abs(wrapAngle(no.desiredDirection - target_angle)), 0.35 /*rad*/);
@@ -237,8 +230,8 @@ TEST_F(HolonomicFullEvalTest, navigate_toward_target_diagonal)
 TEST_F(HolonomicFullEvalTest, speed_within_bounds)
 {
   auto ni = makeNavInput(121, 0.0);
-  CAbstractHolonomicReactiveMethod::NavOutput no;
-  fe.navigate(ni, no);
+  ni.clearance = &cd;
+  const auto no = fe.navigate(ni);
 
   EXPECT_GE(no.desiredSpeed, 0.0);
   EXPECT_LE(no.desiredSpeed, ni.maxRobotSpeed + 1e-6);
@@ -252,8 +245,8 @@ TEST_F(HolonomicFullEvalTest, repeated_calls_do_not_crash)
   {
     const double angle = (iter % 2 == 0) ? 0.0 : M_PI / 4.0;
     auto ni = makeNavInput(121, angle);
-    CAbstractHolonomicReactiveMethod::NavOutput no;
-    fe.navigate(ni, no);
+    ni.clearance = &cd;
+    const auto no = fe.navigate(ni);
     EXPECT_GE(no.desiredSpeed, 0.0);
     EXPECT_LE(no.desiredSpeed, ni.maxRobotSpeed + 1e-6);
   }

@@ -61,7 +61,7 @@ class CMultiObjMotionOpt_Scalarization : public mrpt::nav::CMultiObjectiveMotion
   std::map<std::string, double> m_expr_scalar_vars;
 
   // This virtual method is called by decide().
-  int impl_decide(
+  std::optional<size_t> impl_decide(
       const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo& extra_info) override;
 };
 }  // namespace mrpt::nav
