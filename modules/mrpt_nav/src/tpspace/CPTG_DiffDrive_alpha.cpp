@@ -12,10 +12,10 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/format.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::nav;
@@ -50,11 +50,9 @@ void CPTG_DiffDrive_alpha::saveToConfigFile(
 
 std::string CPTG_DiffDrive_alpha::getDescription() const
 {
-  char str[100];
-  os::sprintf(
-      str, 100, "CPTG_DiffDrive_alpha,av=%udeg,aw=%udeg,K=%i", static_cast<int>(RAD2DEG(cte_a0v)),
+  return mrpt::format(
+      "CPTG_DiffDrive_alpha,av=%udeg,aw=%udeg,K=%i", static_cast<int>(RAD2DEG(cte_a0v)),
       static_cast<int>(RAD2DEG(cte_a0w)), static_cast<int>(K));
-  return std::string(str);
 }
 
 void CPTG_DiffDrive_alpha::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

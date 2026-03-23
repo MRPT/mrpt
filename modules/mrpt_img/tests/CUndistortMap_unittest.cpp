@@ -127,8 +127,8 @@ TEST(CUndistortMap, Undistort_identity)
   {
     for (int x = margin; x < in.getWidth() - margin; ++x)
     {
-      if (std::abs(static_cast<int>(in.at<uint8_t>(x, y)) -
-                   static_cast<int>(out.at<uint8_t>(x, y))) > 1)
+      if (std::abs(
+              static_cast<int>(in.at<uint8_t>(x, y)) - static_cast<int>(out.at<uint8_t>(x, y))) > 1)
       {
         mismatches++;
       }

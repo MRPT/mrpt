@@ -22,13 +22,12 @@
  * CUndistortMap_unittest.cpp. If you change them there, update them here too.
  */
 
+#include <cstdlib>
+#include <iostream>
 #include <opencv2/calib3d.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
-
-#include <cstdlib>
-#include <iostream>
 
 int main(int argc, char** argv)
 {
@@ -77,8 +76,7 @@ int main(int argc, char** argv)
   std::cout << "Camera parameters used:\n"
             << "  Image size: " << img.cols << " x " << img.rows << "\n"
             << "  fx=" << fx << " fy=" << fy << " cx=" << cx << " cy=" << cy << "\n"
-            << "  k1=" << k1 << " k2=" << k2 << " p1=" << p1 << " p2=" << p2 << " k3=" << k3
-            << "\n"
+            << "  k1=" << k1 << " k2=" << k2 << " p1=" << p1 << " p2=" << p2 << " k3=" << k3 << "\n"
             << "  distortion model: plumb_bob\n"
             << "Undistorted image written to: " << outFile << "\n";
 

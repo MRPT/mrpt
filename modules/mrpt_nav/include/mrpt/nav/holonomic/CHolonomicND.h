@@ -80,7 +80,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 
   /** The set of possible situations for each trajectory.
    * (mrpt::typemeta::TEnumType works with this enum) */
-  enum TSituations
+  enum class TSituations
   {
     SITUATION_TARGET_DIRECTLY = 1,
     SITUATION_SMALL_GAP,
@@ -188,8 +188,8 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
 }  // namespace mrpt::nav
 MRPT_ENUM_TYPE_BEGIN(mrpt::nav::CHolonomicND::TSituations)
 using namespace mrpt::nav;
-MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_TARGET_DIRECTLY);
-MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_SMALL_GAP);
-MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_WIDE_GAP);
-MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_NO_WAY_FOUND);
+MRPT_FILL_ENUM_MEMBER(CHolonomicND::TSituations, SITUATION_TARGET_DIRECTLY);
+MRPT_FILL_ENUM_MEMBER(CHolonomicND::TSituations, SITUATION_SMALL_GAP);
+MRPT_FILL_ENUM_MEMBER(CHolonomicND::TSituations, SITUATION_WIDE_GAP);
+MRPT_FILL_ENUM_MEMBER(CHolonomicND::TSituations, SITUATION_NO_WAY_FOUND);
 MRPT_ENUM_TYPE_END()

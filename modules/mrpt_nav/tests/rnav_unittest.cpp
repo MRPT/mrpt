@@ -167,8 +167,8 @@ void run_rnav_test_impl(
     // Run nav:
     rnav.navigationStep();
 
-    EXPECT_TRUE(rnav.getCurrentState() != CAbstractNavigator::NAV_ERROR);
-    if (rnav.getCurrentState() == CAbstractNavigator::IDLE) break;
+    EXPECT_TRUE(rnav.getCurrentState() != CAbstractNavigator::TState::NAV_ERROR);
+    if (rnav.getCurrentState() == CAbstractNavigator::TState::IDLE) break;
 
     robot_simul.simulateOneTimeStep(simulTimeStep.count() * 1e-3 /*sec*/);
 
@@ -177,7 +177,7 @@ void run_rnav_test_impl(
   }
 
   EXPECT_LT((TPoint2D(robot_simul.getCurrentGTPose()) - nav_target).norm(), 0.4);
-  EXPECT_TRUE(rnav.getCurrentState() == CAbstractNavigator::IDLE);
+  EXPECT_TRUE(rnav.getCurrentState() == CAbstractNavigator::TState::IDLE);
 
   // do not show timelog table to console
   using mrpt::system::CTimeLogger;

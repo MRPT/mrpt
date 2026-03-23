@@ -22,6 +22,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
+#include <Eigen/Dense>
 #include <ostream>
 
 using namespace mrpt;
@@ -328,10 +329,62 @@ TPose3D CPose3DPDFParticles::getMostLikelyParticle() const
   return ret;
 }
 
-void CPose3DPDFParticles::bayesianFusion(
-    [[maybe_unused]] const CPose3DPDF& p1, [[maybe_unused]] const CPose3DPDF& p2)
+void CPose3DPDFParticles::bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2)
 {
-  THROW_EXCEPTION("Not implemented yet!");
+  MRPT_START
+
+  // Start with particles from p1
+  copyFrom(p1);
+
+  // Compute bandwidth from p2's covariance (Silverman-like rule)
+  const auto [cov2, mean2] = p2.getCovarianceAndMean();
+  const double h_xyz = std::max(std::sqrt((cov2(0, 0) + cov2(1, 1) + cov2(2, 2)) / 3.0), 1e-6);
+  const double h_ang = std::max(std::sqrt((cov2(3, 3) + cov2(4, 4) + cov2(5, 5)) / 3.0), 1e-6);
+
+  if (const auto* p2p = dynamic_cast<const CPose3DPDFParticles*>(&p2))
+  {
+    // Evaluate KDE of p2 at each particle from p1
+    const size_t N2 = p2p->m_particles.size();
+    for (auto& p : m_particles)
+    {
+      double lik = 0;
+      for (const auto& q : p2p->m_particles)
+      {
+        const double dx = p.d.x - q.d.x;
+        const double dy = p.d.y - q.d.y;
+        const double dz = p.d.z - q.d.z;
+        const double dY = wrapToPi(p.d.yaw - q.d.yaw);
+        const double dP = wrapToPi(p.d.pitch - q.d.pitch);
+        const double dR = wrapToPi(p.d.roll - q.d.roll);
+        const double d2 = (dx * dx + dy * dy + dz * dz) / (h_xyz * h_xyz) +
+                          (dY * dY + dP * dP + dR * dR) / (h_ang * h_ang);
+        lik += std::exp(q.log_w) * std::exp(-0.5 * d2);
+      }
+      p.log_w += std::log(std::max(lik / N2, 1e-300));
+    }
+  }
+  else
+  {
+    // Generic: use Gaussian approximation of p2 (Mahalanobis-based likelihood)
+    const CMatrixDouble66 cov2inv = cov2.inverse_LLt();
+    for (auto& p : m_particles)
+    {
+      CVectorFixedDouble<6> diff;
+      diff[0] = p.d.x - mean2.x();
+      diff[1] = p.d.y - mean2.y();
+      diff[2] = p.d.z - mean2.z();
+      diff[3] = wrapToPi(p.d.yaw - mean2.yaw());
+      diff[4] = wrapToPi(p.d.pitch - mean2.pitch());
+      diff[5] = wrapToPi(p.d.roll - mean2.roll());
+      double maha2 = 0;
+      for (int ii = 0; ii < 6; ii++)
+        for (int jj = 0; jj < 6; jj++) maha2 += diff[ii] * cov2inv(ii, jj) * diff[jj];
+      p.log_w += -0.5 * maha2;
+    }
+  }
+  normalizeWeights();
+
+  MRPT_END
 }
 
 void CPose3DPDFParticles::resetDeterministic(const TPose3D& location, size_t particlesCount)

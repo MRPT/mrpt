@@ -63,6 +63,13 @@ enum TICPCovarianceMethod
  *    Journal of Field Robotics, vol. 23, no. 1, pp. 21-34, 2006. (
  * http://babel.isa.uma.es/~jlblanco/papers/martinez2006gil.pdf )
  *
+ * \note **3-D ICP**: Only the `icpClassic` variant is implemented for 3-D
+ *       point-cloud alignment (see Align3DPDF()). For production-quality,
+ *       feature-rich 3-D ICP with support for different point-to-plane and
+ *       point-to-line metrics, robust kernels, and multi-layer maps, use the
+ *       independent **mp2p_icp** library (https://github.com/MOLAorg/mp2p_icp)
+ *       which is the recommended replacement for 3-D scan matching in MRPT 3.
+ *
  * \sa CMetricMapsAlignmentAlgorithm
  * \ingroup mrpt_slam_grp
  */

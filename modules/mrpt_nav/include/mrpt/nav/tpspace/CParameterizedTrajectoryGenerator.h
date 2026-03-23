@@ -45,7 +45,7 @@ namespace nav
  *\ingroup nav_tpspace
  * \sa Used in CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR
  */
-enum PTG_collision_behavior_t
+enum class PTGCollisionBehavior
 {
   /** Favor getting back from too-close (almost collision) obstacles. */
   COLL_BEH_BACK_AWAY = 0,
@@ -117,7 +117,7 @@ class CParameterizedTrajectoryGenerator :
   /** @name Virtual interface of each PTG implementation
    *  @{ */
   /** Gets a short textual description of the PTG and its parameters */
-  virtual std::string getDescription() const = 0;
+  [[nodiscard]] virtual std::string getDescription() const = 0;
 
  protected:
   /** Must be called after setting all PTG parameters and before requesting
@@ -211,12 +211,12 @@ class CParameterizedTrajectoryGenerator :
    * May be actual steps from a numerical integration or an arbitrary small
    * length for analytical PTGs.
    * \sa getAlphaValuesCount() */
-  virtual size_t getPathStepCount(uint16_t k) const = 0;
+  [[nodiscard]] virtual size_t getPathStepCount(uint16_t k) const = 0;
 
   /** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): pose of the vehicle at
    * discrete step `step`.
    * \sa getPathStepCount(), getAlphaValuesCount(), getPathTwist() */
-  virtual mrpt::math::TPose2D getPathPose(uint16_t k, uint32_t step) const = 0;
+  [[nodiscard]] virtual mrpt::math::TPose2D getPathPose(uint16_t k, uint32_t step) const = 0;
 
   /** Gets velocity ("twist") for path `k` ([0,N-1]=>[-pi,pi] in alpha),
    * at vehicle discrete step `step`. The default implementation in this base
@@ -231,16 +231,16 @@ class CParameterizedTrajectoryGenerator :
    * \return Distance in pseudometers (real distance, NOT normalized to [0,1]
    * for [0,refDist])
    * \sa getPathStepCount(), getAlphaValuesCount() */
-  virtual double getPathDist(uint16_t k, uint32_t step) const = 0;
+  [[nodiscard]] virtual double getPathDist(uint16_t k, uint32_t step) const = 0;
 
   /** Returns the duration (in seconds) of each "step"
    * \sa getPathStepCount() */
-  virtual double getPathStepDuration() const = 0;
+  [[nodiscard]] virtual double getPathStepDuration() const = 0;
 
   /** Returns the maximum linear velocity expected from this PTG [m/s] */
-  virtual double getMaxLinVel() const = 0;
+  [[nodiscard]] virtual double getMaxLinVel() const = 0;
   /** Returns the maximum angular velocity expected from this PTG [rad/s] */
-  virtual double getMaxAngVel() const = 0;
+  [[nodiscard]] virtual double getMaxAngVel() const = 0;
 
   /** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): largest step count for
    * which the traversed distance is < `dist`
@@ -287,11 +287,11 @@ class CParameterizedTrajectoryGenerator :
    * robot controller will be able to keep following the last sent trajectory
    * ("NOP" velocity commands).
    * Default implementation returns "false". */
-  virtual bool supportVelCmdNOP() const;
+  [[nodiscard]] virtual bool supportVelCmdNOP() const;
 
   /** Returns true if this PTG takes into account the desired velocity at
    * target. \sa updateNavDynamicState() */
-  virtual bool supportSpeedAtTarget() const { return false; }
+  [[nodiscard]] virtual bool supportSpeedAtTarget() const { return false; }
   /** Only for PTGs supporting supportVelCmdNOP(): this is the maximum time
    * (in seconds) for which the path
    * can be followed without re-issuing a new velcmd. Note that this is only
@@ -320,9 +320,9 @@ class CParameterizedTrajectoryGenerator :
   }
 
   /** Returns an approximation of the robot radius. */
-  virtual double getMaxRobotRadius() const = 0;
+  [[nodiscard]] virtual double getMaxRobotRadius() const = 0;
   /** Returns true if the point lies within the robot shape. */
-  virtual bool isPointInsideRobotShape(const double x, const double y) const = 0;
+  [[nodiscard]] virtual bool isPointInsideRobotShape(const double x, const double y) const = 0;
 
   /** Evals the clearance from an obstacle (ox,oy) in coordinates relative to
    * the robot center. Zero or negative means collision. */
@@ -348,12 +348,12 @@ class CParameterizedTrajectoryGenerator :
   void deinitialize();
   /** Returns true if `initialize()` has been called and there was no errors,
    * so the PTG is ready to be queried for paths, obstacles, etc. */
-  bool isInitialized() const;
+  [[nodiscard]] bool isInitialized() const;
 
   /** Get the number of different, discrete paths in this family */
-  uint16_t getAlphaValuesCount() const { return m_alphaValuesCount; }
+  [[nodiscard]] uint16_t getAlphaValuesCount() const { return m_alphaValuesCount; }
   /** Get the number of different, discrete paths in this family */
-  uint16_t getPathCount() const { return m_alphaValuesCount; }
+  [[nodiscard]] uint16_t getPathCount() const { return m_alphaValuesCount; }
   /** Alpha value for the discrete corresponding value \sa alpha2index */
   double index2alpha(uint16_t k) const;
   static double Index2alpha(uint16_t k, const unsigned int num_paths);
@@ -363,7 +363,7 @@ class CParameterizedTrajectoryGenerator :
   uint16_t alpha2index(double alpha) const;
   static uint16_t Alpha2index(double alpha, const unsigned int num_paths);
 
-  double getRefDistance() const { return refDistance; }
+  [[nodiscard]] double getRefDistance() const { return refDistance; }
   /** Resizes and populates the initial appropriate contents in a vector of
    * tp-obstacles (collision-free ranges, in "pseudometers", un-normalized).
    * \sa updateTPObstacle()  */
@@ -372,12 +372,12 @@ class CParameterizedTrajectoryGenerator :
 
   /** When used in path planning, a multiplying factor (default=1.0) for the
    * scores for this PTG. Assign values <1 to PTGs with low priority. */
-  double getScorePriority() const { return m_score_priority; }
+  [[nodiscard]] double getScorePriority() const { return m_score_priority; }
   void setScorePriorty(double prior) { m_score_priority = prior; }
-  unsigned getClearanceStepCount() const { return m_clearance_num_points; }
+  [[nodiscard]] unsigned getClearanceStepCount() const { return m_clearance_num_points; }
   void setClearanceStepCount(const unsigned res) { m_clearance_num_points = res; }
 
-  unsigned getClearanceDecimatedPaths() const { return m_clearance_decimated_paths; }
+  [[nodiscard]] unsigned getClearanceDecimatedPaths() const { return m_clearance_decimated_paths; }
   void setClearanceDecimatedPaths(const unsigned num) { m_clearance_decimated_paths = num; }
 
   /** Returns the representation of one trajectory of this PTG as a 3D OpenGL
@@ -427,9 +427,9 @@ class CParameterizedTrajectoryGenerator :
 
   /** Defines the behavior when there is an obstacle *inside* the robot shape
    * right at the beginning of a PTG trajectory.
-   * Default value: COLL_BEH_BACK_AWAY
+   * Default value: PTGCollisionBehavior::COLL_BEH_BACK_AWAY
    */
-  static PTG_collision_behavior_t& COLLISION_BEHAVIOR();
+  static PTGCollisionBehavior& COLLISION_BEHAVIOR();
 
   /** Must be called to resize a CD to its correct size, before calling
    * updateClearance() */
