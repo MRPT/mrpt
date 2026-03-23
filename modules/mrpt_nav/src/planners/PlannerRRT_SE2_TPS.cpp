@@ -24,7 +24,7 @@ using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace std;
 
-MRPT_TODO("Optimize getNearestNode() with KD-tree!")
+// TODO: Optimize getNearestNode() with KD-tree (currently O(n) linear scan)
 
 PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS() = default;
 /** Load all params from a config file source */

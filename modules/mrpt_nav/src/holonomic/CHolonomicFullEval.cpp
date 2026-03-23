@@ -73,6 +73,33 @@ void CHolonomicFullEval::evalSingleTarget(
 
   using mrpt::square;
 
+  // Named constants replacing magic numbers in this function:
+
+  // If an obstacle is this much farther than the target in the target sector,
+  // treat the direction as unblocked (obstacle is "behind" the target).
+  constexpr double OBSTACLE_PAST_TARGET_MARGIN = 1.02;
+  // Cap the effective travel distance to this fraction of target distance to
+  // avoid over-penalizing directions that reach the target vicinity.
+  constexpr double TARGET_DIST_SAFETY_FRACTION = 0.95;
+  // When evaluating factor[0] near the target direction, scores are scaled by
+  // this factor to reward having clear space up to 5% beyond the target.
+  constexpr double TARGET_CLEARANCE_MARGIN = 1.05;
+  // Epsilon added to 1.0 under sqrt() to guarantee a non-negative argument
+  // even with floating-point rounding.
+  constexpr double SQRT_DOMAIN_EPS = 1.01;
+  // Half-width of the angular window (as fraction of total directions) used
+  // when computing obstacle clearance for factor[4].
+  constexpr double CLEARANCE_WINDOW_HALF_FRACTION = 0.1;
+  // Distance-to-obstacle threshold below which a sample is counted as "no
+  // real obstacle" for clearance evaluation (fully free space = 1.0 in
+  // normalized units).
+  constexpr double FREE_SPACE_THRESHOLD = 0.99;
+  // Angular-distance weight for sector-distance factor[6]. Controls how
+  // quickly the score drops as the candidate direction moves away from target.
+  constexpr double SECTOR_DIST_WEIGHT = 4.0;
+  // Score multiplier for directions that cannot reach the target (blocked).
+  constexpr double BLOCKED_DIR_SCORE_PENALTY = 0.1;
+
   eo = EvalOutput();
 
   const auto ptg = getAssociatedPTG();
@@ -110,13 +137,13 @@ void CHolonomicFullEval::evalSingleTarget(
     // Too close to obstacles? (unless target is in between obstacles and
     // the robot)
     if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE &&
-        !(i == target_k && ni.obstacles[i] > 1.02 * target_dist))
+        !(i == target_k && ni.obstacles[i] > OBSTACLE_PAST_TARGET_MARGIN * target_dist))
     {
       for (size_t l = 0; l < NUM_FACTORS; l++) m_dirs_scores(i, l) = .0;
       continue;
     }
 
-    const double d = std::min(ni.obstacles[i], 0.95 * target_dist);
+    const double d = std::min(ni.obstacles[i], TARGET_DIST_SAFETY_FRACTION * target_dist);
 
     // The TP-Space representative coordinates for this direction:
     const double x = d * sc_lut.ccos[i];
@@ -125,10 +152,10 @@ void CHolonomicFullEval::evalSingleTarget(
     // Factor [0]: collision-free distance
     // -----------------------------------------------------
     if (mrpt::abs_diff(i, target_k) <= 1 && target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
-        ni.obstacles[i] > 1.05 * target_dist)
+        ni.obstacles[i] > TARGET_CLEARANCE_MARGIN * target_dist)
     {
       // Don't count obstacles ahead of the target.
-      scores[0] = std::max(target_dist, ni.obstacles[i]) / (target_dist * 1.05);
+      scores[0] = std::max(target_dist, ni.obstacles[i]) / (target_dist * TARGET_CLEARANCE_MARGIN);
     }
     else
     {
@@ -166,9 +193,10 @@ void CHolonomicFullEval::evalSingleTarget(
     const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target);
 
     if ((endpt_dist_to_target_norm > target_dist &&
-         endpt_dist_to_target_norm >= 0.95 * target_dist) &&
+         endpt_dist_to_target_norm >= TARGET_DIST_SAFETY_FRACTION * target_dist) &&
         /* the path does not get any closer to trg */
-        min_dist_target_along_path > 1.05 * std::min(target_dist, endpt_dist_to_target_norm))
+        min_dist_target_along_path >
+            TARGET_CLEARANCE_MARGIN * std::min(target_dist, endpt_dist_to_target_norm))
     {
       // path takes us away or way blocked:
       sg.point1.x = x * 0.5;
@@ -182,10 +210,10 @@ void CHolonomicFullEval::evalSingleTarget(
     // (Euclidean)
     // Factor [5]: idem (except: no decimation afterwards)
     // -----------------------------------------------------
-    scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm);
+    scores[2] = std::sqrt(SQRT_DOMAIN_EPS - endpt_dist_to_target_norm);
     scores[5] = scores[2];
-    // the 1.01 instead of 1.0 is to be 100% sure we don't get a domain
-    // error in sqrt()
+    // SQRT_DOMAIN_EPS (slightly > 1.0) ensures we never get a domain
+    // error in sqrt() when endpt_dist_to_target_norm == 1.0
 
     // Factor [3]: Stabilizing factor (hysteresis) to avoid quick switch
     // among very similar paths:
@@ -219,29 +247,31 @@ void CHolonomicFullEval::evalSingleTarget(
       closest_obs = 1.0;
 
       // eval obstacles within a certain region of this "i" direction only
-      const int W = std::max(1, round(nDirs * 0.1));
+      const int W = std::max(1, round(nDirs * CLEARANCE_WINDOW_HALF_FRACTION));
       const int i_min = std::max(0, static_cast<int>(i) - W);
       const int i_max = std::min(static_cast<int>(nDirs) - 1, static_cast<int>(i) + W);
       for (int oi = i_min; oi <= i_max; oi++)
       {
         // "no obstacle" (norm_dist=1.0) doesn't count as a real obs:
-        if (ni.obstacles[oi] >= 0.99) continue;
+        if (ni.obstacles[oi] >= FREE_SPACE_THRESHOLD) continue;
         mrpt::keep_min(closest_obs, sg.distance(obstacles_2d[oi]));
       }
     }
 
     // Factor [6]: Direct distance in "sectors":
     // -------------------------------------------------------------------
-    scores[6] = 1.0 / (1.0 + mrpt::square((4.0 / nDirs) * mrpt::abs_diff(i, target_k)));
+    scores[6] =
+        1.0 / (1.0 + mrpt::square((SECTOR_DIST_WEIGHT / nDirs) * mrpt::abs_diff(i, target_k)));
 
     // If target is not directly reachable for this i-th direction, decimate
     // its scorings:
-    if (target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE && ni.obstacles[i] < 1.01 * target_dist)
+    if (target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
+        ni.obstacles[i] < SQRT_DOMAIN_EPS * target_dist)
     {
       // this direction cannot reach target, so assign a low score:
-      scores[1] *= 0.1;
-      scores[2] *= 0.1;
-      scores[6] *= 0.1;
+      scores[1] *= BLOCKED_DIR_SCORE_PENALTY;
+      scores[2] *= BLOCKED_DIR_SCORE_PENALTY;
+      scores[6] *= BLOCKED_DIR_SCORE_PENALTY;
     }
 
     // Factor [7]: Heading mismatch: 1.0=perfect phi aligment, 0.0=180deg error
