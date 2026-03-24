@@ -176,9 +176,11 @@ void ScalarFactorGraph::updateEstimation(
     // Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
     // (QR factor: Use UT=R)
 
-    MRPT_TODO("Use compressed access instead of coeff() below");
-
     Eigen::SparseMatrix<double> UT = solver.matrixR();
+    UT.makeCompressed();
+    // Row-major view for O(nnz) row traversal instead of O(n) coeff() calls:
+    Eigen::SparseMatrix<double, Eigen::RowMajor> UTrow = UT;
+
     Eigen::SparseMatrix<double> solved_covariance(n, n);
     solved_covariance.reserve(UT.nonZeros());
 
@@ -189,38 +191,32 @@ void ScalarFactorGraph::updateEstimation(
       if (!(l % show_progress_steps))
         MRPT_LOG_DEBUG_FMT("Computing variance %6.02f%%... \r", (100.0 * (n - l - 1)) / n);
 
-      // Computes variances in the inferior submatrix of "l"
-      double subSigmas = 0.0;
-      for (size_t j = l + 1; j < n; j++)
-      {
-        if (UT.coeff(l, j) != 0)
-        {
-          // Compute off-diagonal variances Sigma(j,l) = Sigma(l,j);
+      const double utll = UT.coeff(l, l);
 
-          // SUM 1
-          double sum = 0.0;
-          for (size_t i = l + 1; i <= j; i++)
-          {
-            if (UT.coeff(l, i) != 0)
-            {
-              sum += UT.coeff(l, i) * solved_covariance.coeff(i, j);
-            }
-          }
-          // SUM 2
-          for (size_t i = j + 1; i < n; ++i)
-          {
-            if (UT.coeff(l, i) != 0)
-            {
-              sum += UT.coeff(l, i) * solved_covariance.coeff(j, i);
-            }
-          }
-          // Save off-diagonal variance (only Upper triangular)
-          solved_covariance.insert(l, j) = (-sum / UT.coeff(l, l));
-          subSigmas += UT.coeff(l, j) * solved_covariance.coeff(l, j);
+      // Iterate only over non-zero columns j > l in row l of UT:
+      double subSigmas = 0.0;
+      for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator jt(UTrow, l); jt; ++jt)
+      {
+        const int j = jt.col();
+        if (j <= l) continue;  // upper triangular only
+
+        // Compute off-diagonal variances Sigma(j,l) = Sigma(l,j)
+        // using only non-zero entries in row l of UT (SUM 1 and SUM 2 merged):
+        double sum = 0.0;
+        for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(UTrow, l); it; ++it)
+        {
+          const int i = it.col();
+          if (i <= l) continue;
+          if (i <= j)
+            sum += it.value() * solved_covariance.coeff(i, j);
+          else
+            sum += it.value() * solved_covariance.coeff(j, i);
         }
+        solved_covariance.insert(l, j) = -sum / utll;
+        subSigmas += jt.value() * solved_covariance.coeff(l, j);
       }
 
-      solved_covariance.insert(l, l) = (1 / UT.coeff(l, l)) * (1 / UT.coeff(l, l) - subSigmas);
+      solved_covariance.insert(l, l) = (1.0 / utll) * (1.0 / utll - subSigmas);
     }
 
     MRPT_LOG_DEBUG_FMT("Computing variance %6.02f%%... \r", 100.0);

@@ -359,7 +359,35 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
   const auto microsecs_last_pkt = o.scan_packets.rbegin()->gps_timestamp();
   sweepDuration = 1e-6 * (microsecs_last_pkt - microsecs_1st_pkt) + timeBetweenLastTwoBlocks;
 
-  // TODO: populate organizedPoints?
+  // Populate organizedPoints from rangeImage + Velodyne calibration:
+  organizedPoints.resize(rowCount, columnCount);
+  for (size_t row = 0; row < rowCount; row++)
+  {
+    const auto& calib = o.calibration.laser_corrections[row];
+    const float cos_vert = mrpt::d2f(calib.cosVertCorrection);
+    const float sin_vert = mrpt::d2f(calib.sinVertCorrection);
+    const float horz_offset = mrpt::d2f(calib.horizontalOffsetCorrection);
+    const float vert_offset = mrpt::d2f(calib.verticalOffsetCorrection);
+
+    for (size_t col = 0; col < columnCount; col++)
+    {
+      const uint16_t rng = rangeImage(row, col);
+      if (!rng) continue;
+
+      const float distance_m = rng * mrpt::d2f(rangeResolution);
+      const double az = startAzimuth + (col + 0.5) * azimuthSpan / columnCount -
+                        mrpt::DEG2RAD(calib.azimuthCorrection);
+      const float cos_az = mrpt::d2f(std::cos(az));
+      const float sin_az = mrpt::d2f(std::sin(az));
+
+      const float xy_dist = distance_m * cos_vert + vert_offset * sin_vert;
+      const mrpt::math::TPoint3Df ptLocal(
+          xy_dist * cos_az + horz_offset * sin_az, -(xy_dist * sin_az - horz_offset * cos_az),
+          distance_m * sin_vert + vert_offset);
+
+      organizedPoints(row, col) = sensorPose.composePoint(ptLocal);
+    }
+  }
 
   // Decode model byte:
   switch (model)

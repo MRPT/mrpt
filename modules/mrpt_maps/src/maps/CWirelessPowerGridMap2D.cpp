@@ -179,7 +179,7 @@ double CWirelessPowerGridMap2D::internal_computeObservationLikelihood(
   THROW_EXCEPTION("Not implemented yet!");
 }
 
-uint8_t CWirelessPowerGridMap2D::serializeGetVersion() const { return 5; }
+uint8_t CWirelessPowerGridMap2D::serializeGetVersion() const { return 6; }
 void CWirelessPowerGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
   dyngridcommon_writeToStream(out);
@@ -192,17 +192,12 @@ void CWirelessPowerGridMap2D::serializeTo(mrpt::serialization::CArchive& out) co
   n = static_cast<uint32_t>(m_map.size());
   out << n;
 
-// Save the "m_map": This requires special handling for big endian systems:
-#if MRPT_IS_BIG_ENDIAN
+  // v6+: write all cell fields individually (endianness-safe):
   for (uint32_t i = 0; i < n; i++)
   {
-    out << m_map[i].kf_mean() << m_map[i].dm_mean() << m_map[i].dmv_var_mean;
+    out << m_map[i].param1_ << m_map[i].param2_ << m_map[i].dmv_var_mean << m_map[i].last_updated
+        << m_map[i].updated_std;
   }
-#else
-  // Little endian: just write all at once:
-  out.WriteBuffer(&m_map[0],
-                  sizeof(m_map[0]) * m_map.size());  // TODO: Do this endianness safe!!
-#endif
 
   // Version 1: Save the insertion options:
   out << uint8_t(m_mapType) << m_cov << m_stackedCov;
@@ -236,6 +231,7 @@ void CWirelessPowerGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, u
     case 3:
     case 4:
     case 5:
+    case 6:
     {
       dyngridcommon_readFromStream(in, version < 5);
 
@@ -266,14 +262,18 @@ void CWirelessPowerGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, u
         in >> n;
         m_map.resize(n);
 
-// Read the note in writeToStream()
-#if MRPT_IS_BIG_ENDIAN
-        for (uint32_t i = 0; i < n; i++)
-          in >> m_map[i].kf_mean() >> m_map[i].dm_mean() >> m_map[i].dmv_var_mean;
-#else
-        // Little endian: just read all at once:
-        in.ReadBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
-#endif
+        if (version >= 6)
+        {
+          // v6+: all fields written individually (endianness-safe):
+          for (uint32_t i = 0; i < n; i++)
+            in >> m_map[i].param1_ >> m_map[i].param2_ >> m_map[i].dmv_var_mean >>
+                m_map[i].last_updated >> m_map[i].updated_std;
+        }
+        else
+        {
+          // v2-5: raw binary dump (little-endian only, legacy):
+          in.ReadBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
+        }
       }
 
       // Version 1: Insertion options:

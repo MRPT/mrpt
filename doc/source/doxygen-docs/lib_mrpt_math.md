@@ -30,4 +30,33 @@ Other important elements:
  - \ref ransac_grp
  - \ref stats_grp
 
+## Eigen integration (MRPT 3.x)
+
+MRPT uses Eigen 3 for all matrix/vector types. Key points for MRPT 3 users:
+
+- `mrpt::math::CMatrixDynamic<T>` and `mrpt::math::CMatrixFixed<T,R,C>` wrap
+  Eigen matrices and are fully serializable via `mrpt::serialization::CArchive`.
+- Use `.asEigen()` on any MRPT matrix to get the underlying Eigen expression for
+  use with Eigen algorithms (decompositions, solvers, etc.).
+- `mrpt::math::CVectorDynamic<T>` is a column-vector equivalent.
+- Sparse matrices: use `Eigen::SparseMatrix<double>` directly; MRPT does not
+  wrap sparse types but provides helpers in
+  `mrpt::math::CSparseMatrix` (CXSparse-backed) for serialization.
+- Geometric operations (e.g. point clouds): lightweight structs
+  `mrpt::math::TPoint2Df`, `mrpt::math::TPoint3Df` (float) and their double
+  variants are used for performance; they convert freely to/from Eigen vectors.
+
+## KD-tree nearest-neighbor search
+
+mrpt::math::KDTreeCapable is a CRTP adapter around
+[nanoflann](https://github.com/jlblanco/nanoflann) providing:
+
+- `kdTreeClosestPoint2D()` / `kdTreeClosestPoint3D()` — single NN query.
+- `kdTreeNClosestPoint2D()` / `kdTreeNClosestPoint3D()` — k-NN query.
+- `kdTreeRadiusSearch2D()` / `kdTreeRadiusSearch3D()` — radius search.
+
+Derived classes must implement `kdtree_get_point_count()` and
+`kdtree_get_pt(idx, dim)`. The KD-tree index is built lazily on first query
+and invalidated by calling `kdtree_mark_as_outdated()`.
+
 # Library contents
