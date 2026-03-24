@@ -32,6 +32,8 @@ set(LIB_SOURCES
   # reactive/
   src/reactive/CAbstractNavigator.cpp
   src/reactive/CAbstractPTGBasedReactive.cpp
+  src/reactive/NavigationLogger.cpp
+  src/reactive/VelocityFilter.cpp
   src/reactive/CLogFileRecord.cpp
   src/reactive/CMultiObjectiveMotionOptimizerBase.cpp
   src/reactive/CMultiObjMotionOpt_Scalarization.cpp
@@ -83,6 +85,8 @@ set(LIB_PUBLIC_HEADERS
   # reactive/
   include/mrpt/nav/reactive/CAbstractNavigator.h
   include/mrpt/nav/reactive/CAbstractPTGBasedReactive.h
+  include/mrpt/nav/reactive/NavigationLogger.h
+  include/mrpt/nav/reactive/VelocityFilter.h
   include/mrpt/nav/reactive/CLogFileRecord.h
   include/mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h
   include/mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h

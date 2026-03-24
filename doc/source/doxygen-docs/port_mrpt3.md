@@ -338,45 +338,6 @@ increasing risk/effort.  Each item is prefixed with a priority tag:
 
 ---
 
-#### 13.6.3 Naming consistency (remaining)
-
-- **Config structs**: Holonomic classes use `TOptions`; navigator/optimizer/graphslam
-  classes use `TParams`. Low-value cosmetic change across multiple modules — deferred.
-
----
-
-#### 13.6.7 Decompose `CAbstractPTGBasedReactive`
-
-**[P2]** This 467-line header (11 virtual methods, 6 nested structs,
-private members spanning PTG management, holonomic method management,
-logging, obstacle processing, velocity generation, and profiling) is the
-single largest maintenance burden.  Proposed decomposition:
-
-1. **Extract `PTGSetManager`** — owns the `vector<CParameterizedTrajectoryGenerator::Ptr>`,
-   handles `initPTGs()`, `getPTG()`, `getPTG_count()`,
-   collision-grid builds.
-2. **Extract `NavigationLogger`** — owns the `CLogFileRecord`,
-   `m_critZoneLastLog`, log-file path management, `generateLogRecord()`.
-3. **Extract `VelocityFilter`** — owns `TSentVelCmd`, the speed-filter
-   tau, and `filterVelocityCommand()`.
-4. Keep the main class as a thin orchestrator that wires the above
-   together via dependency injection (constructor parameters or setters).
-
----
-
-#### 13.6.8 Refactor long functions
-
-**[P2]** Several functions exceed 200 lines and mix multiple levels of
-abstraction.  Each should be broken into named helpers:
-
-| Function | Lines | Suggested split |
-|----------|-------|-----------------|
-| `CLogFileRecord::serializeFrom()` | ~450 | Version-switch per struct field group (high backward-compat risk, deferred) |
-
----
-
----
-
 ### 13.7 `mrpt_maps` — Miscellaneous
 
 - **`CObservationRotatingScan`**: `// TODO: populate organizedPoints?`

@@ -61,10 +61,9 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(
     bool enableConsoleOutput,
     bool enableLogFile,
     const std::string& sLogDir) :
-    CWaypointsNavigator(react_iterf_impl),
-    m_enableConsoleOutput(enableConsoleOutput),
-    m_navlogfiles_dir(sLogDir)
+    CWaypointsNavigator(react_iterf_impl), m_enableConsoleOutput(enableConsoleOutput)
 {
+  m_navLogger.setLogFileDirectory(sLogDir);
   this->enableLogFile(enableLogFile);
 }
 
@@ -89,7 +88,7 @@ void CAbstractPTGBasedReactive::preDestructor()
   {
   }
 
-  m_logFile.reset();
+  m_navLogger.close();
 
   // Free holonomic method:
   this->deleteHolonomicObjects();
@@ -114,83 +113,10 @@ void CAbstractPTGBasedReactive::initialize()
   initPTGs();
 }
 
-/*---------------------------------------------------------------
-            enableLogFile
-  ---------------------------------------------------------------*/
 void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 {
   auto lck = mrpt::lockHelper(m_nav_cs);
-
-  try
-  {
-    // Disable:
-    // -------------------------------
-    if (!enable)
-    {
-      if (m_logFile)
-      {
-        MRPT_LOG_DEBUG(
-            "[CAbstractPTGBasedReactive::enableLogFile] Stopping "
-            "logging.");
-        m_logFile.reset();  // Close file:
-      }
-      else
-        return;  // Already disabled.
-    }
-    else
-    {  // Enable
-      // -------------------------------
-      if (m_logFile) return;  // Already enabled:
-
-      // Open file, find the first free file-name.
-      MRPT_LOG_DEBUG_FMT(
-          "[CAbstractPTGBasedReactive::enableLogFile] Creating rnav log "
-          "directory: %s",
-          m_navlogfiles_dir.c_str());
-      mrpt::system::createDirectory(m_navlogfiles_dir);
-      if (!mrpt::system::directoryExists(m_navlogfiles_dir))
-      {
-        THROW_EXCEPTION_FMT(
-            "Could not create directory for navigation logs: `%s`", m_navlogfiles_dir.c_str());
-      }
-
-      std::string filToOpen;
-      for (unsigned int nFile = 0;; nFile++)
-      {
-        filToOpen = mrpt::format("%s/log_%03u.reactivenavlog", m_navlogfiles_dir.c_str(), nFile);
-        if (!system::fileExists(filToOpen)) break;
-      }
-
-      // Open log file:
-      {
-        auto fil = std::make_unique<CCompressedOutputStream>();
-        bool ok = fil->open(filToOpen);
-        if (!ok)
-        {
-          THROW_EXCEPTION_FMT("Error opening log file: `%s`", filToOpen.c_str());
-        }
-        else
-        {
-          m_logFile = std::move(fil);
-        }
-      }
-
-      MRPT_LOG_DEBUG(mrpt::format(
-          "[CAbstractPTGBasedReactive::enableLogFile] Logging to "
-          "file `%s`",
-          filToOpen.c_str()));
-    }
-  }
-  catch (const std::exception& e)
-  {
-    MRPT_LOG_ERROR_FMT("[CAbstractPTGBasedReactive::enableLogFile] Exception: %s", e.what());
-  }
-}
-
-void CAbstractPTGBasedReactive::getLastLogRecord(CLogFileRecord& o)
-{
-  auto lck = mrpt::lockHelper(m_critZoneLastLog);
-  o = lastLogRecord;
+  m_navLogger.enableLogFile(enable, m_navLogger.getLogFileDirectory(), this);
 }
 
 void CAbstractPTGBasedReactive::deleteHolonomicObjects() { m_holonomicMethod.clear(); }
@@ -231,7 +157,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
   const size_t nPTGs = this->getPTG_count();
 
   // Whether to worry about log files:
-  const bool fill_log_record = (m_logFile || m_enableKeepLogRecords);
+  const bool fill_log_record = m_navLogger.shouldFillLogRecord();
   CLogFileRecord newLogRec;
   newLogRec.infoPerPTG.resize(nPTGs + 1); /* +1: [N] is the "NOP cmdvel"
                        option; not to be present in all
@@ -240,9 +166,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
   // At the beginning of each log file, add an introductory block explaining
   // which PTGs are we using:
   {
-    if (m_logFile && m_logFile.get() != m_prev_logfile)  // Only the first time
+    if (m_navLogger.isNewLogFile())  // Only the first time
     {
-      m_prev_logfile = m_logFile.get();
+      m_navLogger.markLogFileIntroduced();
       for (size_t i = 0; i < nPTGs; i++)
       {
         // If we make a direct copy (=) we will store the entire, heavy,
@@ -923,17 +849,8 @@ void CAbstractPTGBasedReactive::generateLogRecord(
 
   m_timelogger.leave("navigationStep.populate_log_info");
 
-  //  Save to log file:
-  // --------------------------------------
-  {
-    mrpt::system::CTimeLoggerEntry tle2(m_timelogger, "navigationStep.write_log_file");
-    if (m_logFile) archiveFrom(*m_logFile) << newLogRec;
-  }
-  // Set as last log record
-  {
-    auto lck = mrpt::lockHelper(m_critZoneLastLog);
-    lastLogRecord = newLogRec;  // COPY
-  }
+  // Save to log file and/or store as last record:
+  m_navLogger.writeLogRecord(newLogRec, m_timelogger);
 }
 
 /** \callergraph */
@@ -1247,21 +1164,23 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
   {
     hysteresis = this_is_PTG_continuation ? 1.0 : 0.;
   }
-  else if (m_last_vel_cmd)
+  else if (m_velFilter.getLastVelCmd())
   {
     mrpt::kinematics::CVehicleVelCmd::Ptr desired_cmd;
     desired_cmd = cm.PTG->directionToMotionCommand(move_k);
-    const mrpt::kinematics::CVehicleVelCmd* ptr1 = m_last_vel_cmd.get();
+    const mrpt::kinematics::CVehicleVelCmd* ptr1 = m_velFilter.getLastVelCmd().get();
     const mrpt::kinematics::CVehicleVelCmd* ptr2 = desired_cmd.get();
     if (typeid(*ptr1) == typeid(*ptr2))
     {
-      ASSERT_EQUAL_(m_last_vel_cmd->getVelCmdLength(), desired_cmd->getVelCmdLength());
+      ASSERT_EQUAL_(m_velFilter.getLastVelCmd()->getVelCmdLength(), desired_cmd->getVelCmdLength());
 
       double simil_score = 0.5;
       for (size_t i = 0; i < desired_cmd->getVelCmdLength(); i++)
       {
         const double scr =
-            exp(-std::abs(desired_cmd->getVelCmdElement(i) - m_last_vel_cmd->getVelCmdElement(i)) /
+            exp(-std::abs(
+                    desired_cmd->getVelCmdElement(i) -
+                    m_velFilter.getLastVelCmd()->getVelCmdElement(i)) /
                 0.20);
         mrpt::keep_min(simil_score, scr);
       }
@@ -1323,51 +1242,10 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 double CAbstractPTGBasedReactive::generate_vel_cmd(
     const TCandidateMovementPTG& in_movement, mrpt::kinematics::CVehicleVelCmd::Ptr& new_vel_cmd)
 {
-  mrpt::system::CTimeLoggerEntry tle(m_timelogger, "generate_vel_cmd");
-  double cmdvel_speed_scale = 1.0;
-  try
-  {
-    if (in_movement.speed == 0)
-    {
-      // The robot will stop:
-      new_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
-      new_vel_cmd->setToStop();
-    }
-    else
-    {
-      const bool is_slowdown = in_movement.props.count("is_slowdown") != 0
-                                   ? in_movement.props.at("is_slowdown") != 0
-                                   : false;
-
-      // Take the normalized movement command:
-      new_vel_cmd = in_movement.PTG->directionToMotionCommand(
-          in_movement.PTG->alpha2index(in_movement.direction));
-
-      // Scale holonomic speeds to real-world one:
-      if (!is_slowdown)
-      {
-        new_vel_cmd->cmdVel_scale(in_movement.speed);
-        cmdvel_speed_scale *= in_movement.speed;
-
-        if (!m_last_vel_cmd)  // first iteration? Use default values:
-          m_last_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
-
-        // Honor user speed limits & "blending":
-        const double beta =
-            meanExecutionPeriod.getLastOutput() /
-            (meanExecutionPeriod.getLastOutput() + params_abstract_ptg_navigator.speedfilter_tau);
-        cmdvel_speed_scale *= new_vel_cmd->cmdVel_limits(
-            *m_last_vel_cmd, beta, params_abstract_ptg_navigator.robot_absolute_speed_limits);
-      }
-    }
-
-    m_last_vel_cmd = new_vel_cmd;  // Save for filtering in next step
-  }
-  catch (const std::exception& e)
-  {
-    MRPT_LOG_ERROR_STREAM("[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: " << e.what());
-  }
-  return cmdvel_speed_scale;
+  return m_velFilter.generateVelCmd(
+      in_movement, new_vel_cmd, params_abstract_ptg_navigator.speedfilter_tau,
+      params_abstract_ptg_navigator.robot_absolute_speed_limits,
+      meanExecutionPeriod.getLastOutput(), m_timelogger);
 }
 
 /** \callergraph */
@@ -1414,6 +1292,7 @@ void CAbstractPTGBasedReactive::onStartNewNavigation()
 {
   m_last_curPoseVelUpdate_robot_time = -1e9;
   m_lastSentVelCmd.reset();
+  m_velFilter.resetLastVelCmd();
 
   CWaypointsNavigator::onStartNewNavigation();  // Call base method we
                                                 // override
@@ -1633,7 +1512,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
   }  // end "valid_TP"
 
   // Logging:
-  const bool fill_log_record = (m_logFile != nullptr || m_enableKeepLogRecords);
+  const bool fill_log_record = m_navLogger.shouldFillLogRecord();
   if (fill_log_record)
   {
     CLogFileRecord::TInfoPerPTG& ipp = newLogRec.infoPerPTG[idx_in_log_infoPerPTGs];
