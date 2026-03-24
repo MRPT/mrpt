@@ -185,12 +185,10 @@ void PlannerRRT_SE2_TPS::solve(
       // ------------------------------------------------------------
       const double D_max = std::min(params.maxLength, m_PTGs[idxPTG]->getRefDistance());
 
-      double d_rand;  // Coordinates in TP-space
-      int k_rand;     // k_rand is the index of target_alpha in PTGs
-      // corresponding to a specific d_rand
-      // bool tp_point_is_exact =
-      m_PTGs[idxPTG]->inverseMap_WS2TP(x_rand_rel.x(), x_rand_rel.y(), k_rand, d_rand);
-      d_rand *= m_PTGs[idxPTG]->getRefDistance();  // distance to target, in "real meters"
+      const auto tp_rand = m_PTGs[idxPTG]->inverseMap_WS2TP(x_rand_rel.x(), x_rand_rel.y());
+      if (!tp_rand) continue;
+      const int k_rand = tp_rand->first;
+      double d_rand = tp_rand->second * m_PTGs[idxPTG]->getRefDistance();  // in "real meters"
 
       float d_free;
       // bool local_obs_ok = false; // Just for 3D log files: indicates

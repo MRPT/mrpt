@@ -1081,9 +1081,17 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
     if (std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.x) > maxD ||
         std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.y) > maxD)
     {
-      is_exact = cm.PTG->inverseMap_WS2TP(
-          rel_cur_pose_wrt_last_vel_cmd_NOP.x, rel_cur_pose_wrt_last_vel_cmd_NOP.y, cur_k,
-          cur_norm_d);
+      if (const auto res = cm.PTG->inverseMap_WS2TP(
+              rel_cur_pose_wrt_last_vel_cmd_NOP.x, rel_cur_pose_wrt_last_vel_cmd_NOP.y))
+      {
+        is_exact = true;
+        cur_k = res->first;
+        cur_norm_d = res->second;
+      }
+      else
+      {
+        is_exact = false;
+      }
     }
     else
     {
@@ -1381,10 +1389,9 @@ bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPo
       continue;  // May be this PTG has not been used so far? (Target out
     // of domain,...)
 
-    int wp_k;
-    double wp_norm_d;
-    bool is_into_domain = ptg->inverseMap_WS2TP(wp.x, wp.y, wp_k, wp_norm_d);
-    if (!is_into_domain) continue;
+    const auto wp_res = ptg->inverseMap_WS2TP(wp.x, wp.y);
+    if (!wp_res) continue;
+    const auto [wp_k, wp_norm_d] = *wp_res;
 
     ASSERT_(wp_k < int(tp_obs.size()));
 
@@ -1462,8 +1469,16 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
     {
       PTGTarget ptg_target;
 
-      ptg_target.valid_TP =
-          ptg->inverseMap_WS2TP(trg.x, trg.y, ptg_target.target_k, ptg_target.target_dist);
+      if (const auto res = ptg->inverseMap_WS2TP(trg.x, trg.y))
+      {
+        ptg_target.valid_TP = true;
+        ptg_target.target_k = res->first;
+        ptg_target.target_dist = res->second;
+      }
+      else
+      {
+        ptg_target.valid_TP = false;
+      }
       if (!ptg_target.valid_TP) continue;
 
       any_TPTarget_is_valid = true;

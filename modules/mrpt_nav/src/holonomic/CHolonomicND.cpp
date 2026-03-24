@@ -128,39 +128,24 @@ CHolonomicND::NavOutput CHolonomicND::navigate(const NavInput& ni)
 /*---------------------------------------------------------------
         Find gaps in the obtacles (Beta version)
   ---------------------------------------------------------------*/
-void CHolonomicND::gapsEstimator(
-    const std::vector<double>& obstacles, const mrpt::math::TPose2D& target, TGapArray& gaps_out)
+// Build the raw list of candidate gaps by sweeping threshold ratios.
+static CHolonomicND::TGapArray buildRawGaps(
+    const std::vector<double>& obstacles,
+    const mrpt::math::TPose2D& target,
+    double overall_max_dist,
+    int GAPS_MIN_WIDTH)
 {
   const size_t n = obstacles.size();
-  ASSERT_(n > 2);
+  constexpr double GAPS_MIN_DEPTH_CONSIDERED = 0.6;
 
-  // ================ Parameters ================
-  const int GAPS_MIN_WIDTH = ceil(n * 0.01);  // was: 3
-  const double GAPS_MIN_DEPTH_CONSIDERED = 0.6;
-  const double GAPS_MAX_RELATIVE_DEPTH = 0.5;
-  // ============================================
-
-  // Find the maximum distances to obstacles:
-  // ----------------------------------------------------------
-  double overall_max_dist = std::numeric_limits<float>::min(),
-         overall_min_dist = std::numeric_limits<float>::max();
-  for (size_t i = 1; i < (n - 1); i++)
-  {
-    mrpt::keep_max(overall_max_dist, obstacles[i]);
-    mrpt::keep_min(overall_min_dist, obstacles[i]);
-  }
-  double max_depth = overall_max_dist - overall_min_dist;
-
-  //  Build list of "GAPS":
-  // --------------------------------------------------------
-  TGapArray gaps_temp;
-  gaps_temp.reserve(150);
+  CHolonomicND::TGapArray gaps;
+  gaps.reserve(150);
 
   for (double threshold_ratio = 0.95; threshold_ratio >= 0.05; threshold_ratio -= 0.05)
   {
     const double dist_threshold =
         threshold_ratio * overall_max_dist +
-        (1.0f - threshold_ratio) * min(target.norm(), GAPS_MIN_DEPTH_CONSIDERED);
+        (1.0 - threshold_ratio) * std::min(target.norm(), GAPS_MIN_DEPTH_CONSIDERED);
 
     bool is_inside = false;
     size_t sec_ini = 0, sec_end = 0;
@@ -168,113 +153,123 @@ void CHolonomicND::gapsEstimator(
 
     for (size_t i = 0; i < n; i++)
     {
-      if (!is_inside && (obstacles[i] >= dist_threshold))  // A gap begins
+      if (!is_inside && obstacles[i] >= dist_threshold)
       {
         sec_ini = i;
         maxDist = obstacles[i];
         is_inside = true;
       }
-      else if (is_inside && (i == (n - 1) || obstacles[i] < dist_threshold))  // A gap ends
+      else if (is_inside && (i == (n - 1) || obstacles[i] < dist_threshold))
       {
-        if (obstacles[i] < dist_threshold)
-          sec_end = i - 1;
-        else
-          sec_end = i;
-
+        sec_end = (obstacles[i] < dist_threshold) ? i - 1 : i;
         is_inside = false;
 
         if ((sec_end - sec_ini) >= static_cast<size_t>(GAPS_MIN_WIDTH))
         {
-          // Add new gap:
-          gaps_temp.resize(gaps_temp.size() + 1);
-          TGap& newGap = *gaps_temp.rbegin();
-
-          newGap.ini = sec_ini;
-          newGap.end = sec_end;
-          newGap.minDistance = min(obstacles[sec_ini], obstacles[sec_end]);
-          newGap.maxDistance = maxDist;
+          gaps.resize(gaps.size() + 1);
+          CHolonomicND::TGap& g = gaps.back();
+          g.ini = sec_ini;
+          g.end = sec_end;
+          g.minDistance = std::min(obstacles[sec_ini], obstacles[sec_end]);
+          g.maxDistance = maxDist;
         }
       }
-
       if (is_inside) maxDist = std::max(maxDist, obstacles[i]);
     }
   }
+  return gaps;
+}
 
-  // Start to filter the gap list
-  //--------------------------------------------------------------
+// Remove redundant/deep/contained gaps from `gaps`, returning a filtered copy.
+static CHolonomicND::TGapArray filterGaps(
+    const CHolonomicND::TGapArray& gaps, double max_depth, double GAPS_MAX_RELATIVE_DEPTH)
+{
+  const size_t N = gaps.size();
+  std::vector<bool> del(N, false);
 
-  const size_t nTempGaps = gaps_temp.size();
-
-  std::vector<bool> delete_gaps;
-  delete_gaps.assign(nTempGaps, false);
-
-  // First, remove redundant gaps
-  for (size_t i = 0; i < nTempGaps; i++)
+  // Remove redundant gaps (same ini or end)
+  for (size_t i = 0; i < N; i++)
   {
-    if (delete_gaps[i] == 1) continue;
-
-    for (size_t j = i + 1; j < nTempGaps; j++)
+    if (del[i]) continue;
+    for (size_t j = i + 1; j < N; j++)
     {
-      if (gaps_temp[i].ini == gaps_temp[j].ini || gaps_temp[i].end == gaps_temp[j].end)
-        delete_gaps[j] = true;
+      if (gaps[i].ini == gaps[j].ini || gaps[i].end == gaps[j].end) del[j] = true;
     }
   }
 
-  // Remove gaps with a big depth
-  for (size_t i = 0; i < nTempGaps; i++)
+  // Remove gaps with excessive depth variation
+  for (size_t i = 0; i < N; i++)
   {
-    if (delete_gaps[i] == 1) continue;
-
-    if ((gaps_temp[i].maxDistance - gaps_temp[i].minDistance) > max_depth * GAPS_MAX_RELATIVE_DEPTH)
-      delete_gaps[i] = true;
+    if (!del[i] &&
+        (gaps[i].maxDistance - gaps[i].minDistance) > max_depth * GAPS_MAX_RELATIVE_DEPTH)
+      del[i] = true;
   }
 
-  // Delete gaps which contain more than one other gaps
-  for (size_t i = 0; i < nTempGaps; i++)
+  // Remove gaps containing more than one sub-gap
+  for (size_t i = 0; i < N; i++)
   {
-    if (delete_gaps[i]) continue;
-
-    unsigned int inner_gap_count = 0;
-
-    for (unsigned int j = 0; j < nTempGaps; j++)
+    if (del[i]) continue;
+    unsigned int inner = 0;
+    for (size_t j = 0; j < N; j++)
     {
-      if (i == j || delete_gaps[j]) continue;
-
-      // j is inside of i?
-      if (gaps_temp[j].ini >= gaps_temp[i].ini && gaps_temp[j].end <= gaps_temp[i].end)
-        if (++inner_gap_count > 1)
+      if (i == j || del[j]) continue;
+      if (gaps[j].ini >= gaps[i].ini && gaps[j].end <= gaps[i].end)
+        if (++inner > 1)
         {
-          delete_gaps[i] = true;
+          del[i] = true;
           break;
         }
     }
   }
 
-  // Delete gaps included in other gaps
-  for (size_t i = 0; i < nTempGaps; i++)
+  // Remove gaps fully contained within another gap
+  for (size_t i = 0; i < N; i++)
   {
-    if (delete_gaps[i]) continue;
-
-    for (unsigned int j = 0; j < nTempGaps; j++)
+    if (del[i]) continue;
+    for (size_t j = 0; j < N; j++)
     {
-      if (i == j || delete_gaps[j]) continue;
-      if (gaps_temp[i].ini <= gaps_temp[j].ini && gaps_temp[i].end >= gaps_temp[j].end)
-        delete_gaps[j] = true;
+      if (i == j || del[j]) continue;
+      if (gaps[i].ini <= gaps[j].ini && gaps[i].end >= gaps[j].end) del[j] = true;
     }
   }
 
-  // Copy as result only those gaps not marked for deletion:
-  // --------------------------------------------------------
-  gaps_out.clear();
-  gaps_out.reserve(nTempGaps / 2);
-  for (size_t i = 0; i < nTempGaps; i++)
+  CHolonomicND::TGapArray result;
+  result.reserve(N / 2 + 1);
+  for (size_t i = 0; i < N; i++)
+    if (!del[i]) result.push_back(gaps[i]);
+  return result;
+}
+
+void CHolonomicND::gapsEstimator(
+    const std::vector<double>& obstacles, const mrpt::math::TPose2D& target, TGapArray& gaps_out)
+{
+  const size_t n = obstacles.size();
+  ASSERT_(n > 2);
+
+  const int GAPS_MIN_WIDTH = static_cast<int>(std::ceil(n * 0.01));
+  constexpr double GAPS_MAX_RELATIVE_DEPTH = 0.5;
+
+  // Find obstacle distance range:
+  double overall_max_dist = std::numeric_limits<float>::min();
+  double overall_min_dist = std::numeric_limits<float>::max();
+  for (size_t i = 1; i < (n - 1); i++)
   {
-    if (delete_gaps[i]) continue;
+    mrpt::keep_max(overall_max_dist, obstacles[i]);
+    mrpt::keep_min(overall_min_dist, obstacles[i]);
+  }
+  const double max_depth = overall_max_dist - overall_min_dist;
 
-    // Compute the representative direction ("sector") for this gap:
-    calcRepresentativeSectorForGap(gaps_temp[i], target, obstacles);
+  // Build and filter gap list:
+  TGapArray gaps_temp = buildRawGaps(obstacles, target, overall_max_dist, GAPS_MIN_WIDTH);
+  TGapArray filtered = filterGaps(gaps_temp, max_depth, GAPS_MAX_RELATIVE_DEPTH);
 
-    gaps_out.push_back(gaps_temp[i]);
+  // Compute representative sector for each surviving gap:
+  gaps_out.clear();
+  gaps_out.reserve(filtered.size());
+  for (auto& g : filtered)
+  {
+    calcRepresentativeSectorForGap(g, target, obstacles);
+    gaps_out.push_back(g);
   }
 }
 

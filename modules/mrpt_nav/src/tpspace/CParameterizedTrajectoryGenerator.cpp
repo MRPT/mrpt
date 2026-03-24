@@ -19,24 +19,51 @@
 #include <mrpt/viz/CSetOfLines.h>
 
 #include <fstream>
+#include <mutex>
 
 using namespace mrpt::nav;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
 
-static std::string OUTPUT_DEBUG_PATH_PREFIX = "./reactivenav.logs";
-static mrpt::nav::PTGCollisionBehavior COLLISION_BEHAVIOR =
+static std::mutex s_global_mutex;
+static std::string s_output_debug_path_prefix = "./reactivenav.logs";
+static mrpt::nav::PTGCollisionBehavior s_collision_behavior =
     mrpt::nav::PTGCollisionBehavior::BACK_AWAY;
 
-std::string& CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX()
+std::string CParameterizedTrajectoryGenerator::getOutputDebugPathPrefix()
 {
-  return ::OUTPUT_DEBUG_PATH_PREFIX;
+  std::lock_guard<std::mutex> lk(s_global_mutex);
+  return s_output_debug_path_prefix;
+}
+void CParameterizedTrajectoryGenerator::setOutputDebugPathPrefix(const std::string& path)
+{
+  std::lock_guard<std::mutex> lk(s_global_mutex);
+  s_output_debug_path_prefix = path;
 }
 
+PTGCollisionBehavior CParameterizedTrajectoryGenerator::getCollisionBehavior()
+{
+  std::lock_guard<std::mutex> lk(s_global_mutex);
+  return s_collision_behavior;
+}
+void CParameterizedTrajectoryGenerator::setCollisionBehavior(PTGCollisionBehavior behavior)
+{
+  std::lock_guard<std::mutex> lk(s_global_mutex);
+  s_collision_behavior = behavior;
+}
+
+// Deprecated wrappers
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+std::string& CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX()
+{
+  return s_output_debug_path_prefix;
+}
 PTGCollisionBehavior& CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR()
 {
-  return ::COLLISION_BEHAVIOR;
+  return s_collision_behavior;
 }
+#pragma GCC diagnostic pop
 
 void CParameterizedTrajectoryGenerator::loadDefaultParams()
 {
@@ -250,7 +277,8 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles(const std::string& ptg_
   using namespace mrpt::system;
   using namespace std;
 
-  const char* sPath = CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX().c_str();
+  const std::string sPathStr = CParameterizedTrajectoryGenerator::getOutputDebugPathPrefix();
+  const char* sPath = sPathStr.c_str();
 
   mrpt::system::createDirectory(sPath);
   mrpt::system::createDirectory(mrpt::format("%s/PTGs", sPath));
@@ -346,18 +374,17 @@ void CParameterizedTrajectoryGenerator::updateNavDynamicState(
     // 2nd) Save the special path for slow-down:
     if (this->supportSpeedAtTarget())
     {
-      int target_k = -1;
-      double target_norm_d;
-      // bool is_exact = // JLB removed this constraint for being too
-      // restrictive.
-      this->inverseMap_WS2TP(
-          m_nav_dyn_state.relTarget.x, m_nav_dyn_state.relTarget.y, target_k, target_norm_d,
-          1.0 /*large tolerance*/);
-      if (target_norm_d > 0.01 && target_norm_d < 0.99 && target_k >= 0 &&
-          target_k < m_alphaValuesCount)
+      // Use large tolerance: accept any approximate mapping.
+      if (const auto res = this->inverseMap_WS2TP(
+              m_nav_dyn_state.relTarget.x, m_nav_dyn_state.relTarget.y, 1.0 /*large tolerance*/))
       {
-        m_nav_dyn_state_target_k = target_k;
-        this->onNewNavDynamicState();  // Recalc
+        const auto [target_k, target_norm_d] = *res;
+        if (target_norm_d > 0.01 && target_norm_d < 0.99 && target_k >= 0 &&
+            target_k < m_alphaValuesCount)
+        {
+          m_nav_dyn_state_target_k = target_k;
+          this->onNewNavDynamicState();  // Recalc
+        }
       }
     }
   }
@@ -401,7 +428,7 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(
 
   // Handle the special case of obstacles *inside* the robot at the begining
   // of the PTG path:
-  switch (COLLISION_BEHAVIOR())
+  switch (getCollisionBehavior())
   {
     case PTGCollisionBehavior::STOP:
       inout_tp_obs = .0;
@@ -428,7 +455,7 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(
 
     default:
       THROW_EXCEPTION_FMT(
-          "Unknown PTGCollisionBehavior value: %d", static_cast<int>(COLLISION_BEHAVIOR()));
+          "Unknown PTGCollisionBehavior value: %d", static_cast<int>(getCollisionBehavior()));
   }
 }
 

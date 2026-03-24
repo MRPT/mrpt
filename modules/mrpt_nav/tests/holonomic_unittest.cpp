@@ -13,8 +13,8 @@
 */
 
 /** Unit tests for holonomic navigation methods (CHolonomicVFF, CHolonomicND,
- *  CHolonomicFullEval) and ClearanceDiagram, exercised in isolation without
- *  a full PTG or reactive navigation system.
+ *  CHolonomicFullEval), ClearanceDiagram, and CMultiObjMotionOpt_Scalarization,
+ *  exercised in isolation without a full PTG or reactive navigation system.
  */
 
 #include <gtest/gtest.h>
@@ -22,6 +22,8 @@
 #include <mrpt/nav/holonomic/CHolonomicND.h>
 #include <mrpt/nav/holonomic/CHolonomicVFF.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
+#include <mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h>
+#include <mrpt/nav/reactive/TCandidateMovementPTG.h>
 
 #include <cmath>
 
@@ -289,4 +291,119 @@ TEST(ClearanceDiagram, resize_twice_updates_counts)
 
   EXPECT_EQ(cd.get_actual_num_paths(), 200u);
   EXPECT_EQ(cd.get_decimated_num_paths(), 20u);
+}
+
+// ============================================================================
+// CMultiObjMotionOpt_Scalarization tests
+// ============================================================================
+
+// Build an optimizer with a trivial single-score formula.
+// Prop variable "qval" → score "s" → scalar = "s".
+// Score names must differ from prop names to avoid registration collision.
+static mrpt::nav::CMultiObjMotionOpt_Scalarization makeSimpleOptimizer(
+    const std::string& scalar_formula = "s")
+{
+  mrpt::nav::CMultiObjMotionOpt_Scalarization opt;
+  opt.parameters.formula_score.clear();
+  opt.parameters.formula_score["s"] = "qval";  // score "s" = prop variable "qval"
+  opt.parameters.scalar_score_formula = scalar_formula;
+  return opt;
+}
+
+// Build a TCandidateMovementPTG with a single "qval" property.
+static mrpt::nav::TCandidateMovementPTG makeCandidate(double quality, double speed = 1.0)
+{
+  mrpt::nav::TCandidateMovementPTG m;
+  m.speed = speed;
+  m.props["qval"] = quality;
+  return m;
+}
+
+TEST(MultiObjOptScalarization, selects_highest_score)
+{
+  auto opt = makeSimpleOptimizer();
+  std::vector<mrpt::nav::TCandidateMovementPTG> movs = {
+      makeCandidate(0.3), makeCandidate(0.9), makeCandidate(0.5)};
+
+  mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo info;
+  const auto best = opt.decide(movs, info);
+
+  ASSERT_TRUE(best.has_value());
+  EXPECT_EQ(*best, 1u);  // index 1 has highest quality
+}
+
+TEST(MultiObjOptScalarization, returns_nullopt_when_all_infeasible)
+{
+  auto opt = makeSimpleOptimizer();
+  // speed <= 0 marks a candidate as infeasible
+  std::vector<mrpt::nav::TCandidateMovementPTG> movs = {
+      makeCandidate(0.9, -1.0), makeCandidate(0.8, 0.0)};
+
+  mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo info;
+  const auto best = opt.decide(movs, info);
+
+  EXPECT_FALSE(best.has_value());
+}
+
+TEST(MultiObjOptScalarization, returns_nullopt_for_empty_input)
+{
+  auto opt = makeSimpleOptimizer();
+  std::vector<mrpt::nav::TCandidateMovementPTG> movs;
+
+  mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo info;
+  const auto best = opt.decide(movs, info);
+
+  EXPECT_FALSE(best.has_value());
+}
+
+TEST(MultiObjOptScalarization, ignores_infeasible_candidates)
+{
+  auto opt = makeSimpleOptimizer();
+  // index 0 is infeasible; index 1 is feasible but lower quality than 0's score
+  std::vector<mrpt::nav::TCandidateMovementPTG> movs = {
+      makeCandidate(0.99, -1.0),  // infeasible
+      makeCandidate(0.5, 1.0),    // feasible
+  };
+
+  mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo info;
+  const auto best = opt.decide(movs, info);
+
+  ASSERT_TRUE(best.has_value());
+  EXPECT_EQ(*best, 1u);  // only feasible candidate
+}
+
+TEST(MultiObjOptScalarization, final_evaluation_has_correct_size)
+{
+  auto opt = makeSimpleOptimizer();
+  std::vector<mrpt::nav::TCandidateMovementPTG> movs = {
+      makeCandidate(0.4), makeCandidate(0.7), makeCandidate(0.2)};
+
+  mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo info;
+  opt.decide(movs, info);
+
+  EXPECT_EQ(info.final_evaluation.size(), movs.size());
+}
+
+TEST(MultiObjOptScalarization, combined_score_formula)
+{
+  // Prop vars "av", "bv"; scores "sa"="av", "sb"="bv"; scalar = sa + sb
+  mrpt::nav::CMultiObjMotionOpt_Scalarization opt;
+  opt.parameters.formula_score.clear();
+  opt.parameters.formula_score["sa"] = "av";
+  opt.parameters.formula_score["sb"] = "bv";
+  opt.parameters.scalar_score_formula = "sa + sb";
+
+  mrpt::nav::TCandidateMovementPTG m0, m1;
+  m0.speed = 1.0;
+  m0.props["av"] = 0.3;
+  m0.props["bv"] = 0.3;  // sum = 0.6
+  m1.speed = 1.0;
+  m1.props["av"] = 0.4;
+  m1.props["bv"] = 0.5;  // sum = 0.9
+
+  mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo info;
+  const auto best = opt.decide({m0, m1}, info);
+
+  ASSERT_TRUE(best.has_value());
+  EXPECT_EQ(*best, 1u);
 }

@@ -338,40 +338,10 @@ increasing risk/effort.  Each item is prefixed with a priority tag:
 
 ---
 
-#### 13.6.2 `[[nodiscard]]` annotations (remaining)
-
-Still pending: `CAbstractPTGBasedReactive` getters, holonomic `TOptions` getters.
-
----
-
 #### 13.6.3 Naming consistency (remaining)
 
 - **Config structs**: Holonomic classes use `TOptions`; navigator/optimizer/graphslam
   classes use `TParams`. Low-value cosmetic change across multiple modules — deferred.
-
----
-
-#### 13.6.4 Thread-safety fixes (remaining)
-
-Global mutable `OUTPUT_DEBUG_PATH_PREFIX` / `COLLISION_BEHAVIOR` statics
-have no synchronisation — consider moving to per-instance fields or guarding with mutex.
-
----
-
-#### 13.6.5 Return-value modernisation (remaining)
-
-| Method | Current | Proposed |
-|--------|---------|----------|
-| `CRobot2NavInterface::getCurrentPoseAndSpeeds()` | 4 output `&` params | Return `struct PoseAndSpeeds { TPose2D pose; TTwist2D vel; … };` |
-| `CParameterizedTrajectoryGenerator::inverseMap_WS2TP()` | `int& k, double& d` output | Return `std::optional<std::pair<uint16_t,double>>` |
-
----
-
-#### 13.6.6 Raw-pointer cleanup (remaining)
-
-`CAbstractPTGBasedReactive::getHoloMethod()` returns a raw pointer;
-consider returning `CAbstractHolonomicReactiveMethod&` (with assert) for non-nullable
-use sites.
 
 ---
 
@@ -414,10 +384,8 @@ abstraction.  Each should be broken into named helpers:
 
 Zero dedicated unit tests for:
 
-- `CWaypointsNavigator` / `TWaypointSequence` state machine.
+- `CWaypointsNavigator` state machine (requires full robot interface mock).
 - `CNavigatorManualSequence`.
-- `PlannerRRT_SE2_TPS`, `PlannerRRT_common`.
-- `CMultiObjectiveMotionOptimizerBase`, `CMultiObjMotionOpt_Scalarization`.
 
 ---
 
