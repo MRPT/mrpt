@@ -18,8 +18,73 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/core/Clock.h>
+#include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
+#include <mrpt/nav/reactive/CNavigatorManualSequence.h>
+#include <mrpt/nav/reactive/CWaypointsNavigator.h>
 #include <mrpt/nav/reactive/TWaypoint.h>
+
+// ============================================================================
+// Minimal robot interface mock for navigator tests
+// ============================================================================
+struct MinimalRobotIF : public mrpt::nav::CRobot2NavInterface
+{
+  mrpt::math::TPose2D pose{0, 0, 0};
+  int changeSpeeds_call_count{0};
+  int stop_call_count{0};
+  double nav_time{0};
+
+  std::optional<CurrentPoseAndSpeeds> getCurrentPoseAndSpeeds() override
+  {
+    return CurrentPoseAndSpeeds{
+        .pose = pose,
+        .velGlobal = mrpt::math::TTwist2D(0, 0, 0),
+        .timestamp = mrpt::Clock::now(),
+        .odometry = pose,
+    };
+  }
+
+  bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd&) override
+  {
+    changeSpeeds_call_count++;
+    return true;
+  }
+  bool stop(bool /*isEmergencyStop*/) override
+  {
+    stop_call_count++;
+    return true;
+  }
+  mrpt::kinematics::CVehicleVelCmd::Ptr getEmergencyStopCmd() override
+  {
+    return std::make_shared<mrpt::kinematics::CVehicleVelCmd_DiffDriven>();
+  }
+  mrpt::kinematics::CVehicleVelCmd::Ptr getStopCmd() override
+  {
+    return std::make_shared<mrpt::kinematics::CVehicleVelCmd_DiffDriven>();
+  }
+  bool senseObstacles(mrpt::maps::CSimplePointsMap& obs, mrpt::system::TTimeStamp& ts) override
+  {
+    obs.clear();
+    ts = mrpt::Clock::now();
+    return true;
+  }
+  double getNavigationTime() override { return nav_time; }
+  void resetNavigationTimer() override { nav_time = 0; }
+};
+
+// Minimal concrete CWaypointsNavigator for testing (always reports reachable)
+struct MinimalWaypointsNav : public mrpt::nav::CWaypointsNavigator
+{
+  using CWaypointsNavigator::CWaypointsNavigator;
+
+  bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D&) const override { return true; }
+  void performNavigationStep() override {}
+  void loadConfigFile(const mrpt::config::CConfigFileBase&) override {}
+  void saveConfigFile(mrpt::config::CConfigFileBase&) const override {}
+  void initialize() override {}
+};
 
 // ============================================================================
 // TWaypoint data structure tests
@@ -211,4 +276,139 @@ TEST(PlannerRRTSE2TPS, result_tree_not_empty_after_solve)
 
   // Tree must have at least the root node
   EXPECT_GT(result.move_tree.getAllNodes().size(), 0u);
+}
+
+// ============================================================================
+// CWaypointsNavigator state machine tests
+// ============================================================================
+
+TEST(CWaypointsNavigator, navigateWaypoints_sets_sequence)
+{
+  MinimalRobotIF robot;
+  MinimalWaypointsNav nav(robot);
+  nav.setMinLoggingLevel(mrpt::system::LVL_ERROR);
+
+  mrpt::nav::TWaypointSequence seq;
+  seq.waypoints.emplace_back(1.0, 0.0, 0.5);
+  seq.waypoints.emplace_back(2.0, 0.0, 0.5);
+  nav.navigateWaypoints(seq);
+
+  const auto status = nav.getWaypointNavStatus();
+  EXPECT_EQ(status.waypoints.size(), 2u);
+  EXPECT_NEAR(status.waypoints[0].target.x, 1.0, 1e-9);
+  EXPECT_NEAR(status.waypoints[1].target.x, 2.0, 1e-9);
+}
+
+TEST(CWaypointsNavigator, cancel_clears_active_navigation)
+{
+  MinimalRobotIF robot;
+  MinimalWaypointsNav nav(robot);
+  nav.setMinLoggingLevel(mrpt::system::LVL_ERROR);
+
+  mrpt::nav::TWaypointSequence seq;
+  seq.waypoints.emplace_back(5.0, 0.0, 0.5);
+  nav.navigateWaypoints(seq);
+  nav.cancel();
+
+  // After cancel the navigator should be IDLE (not NAVIGATING):
+  EXPECT_NE(nav.getCurrentState(), mrpt::nav::CAbstractNavigator::TState::NAVIGATING);
+}
+
+TEST(CWaypointsNavigator, getWaypointsAccessGuard_provides_mutable_access)
+{
+  MinimalRobotIF robot;
+  MinimalWaypointsNav nav(robot);
+  nav.setMinLoggingLevel(mrpt::system::LVL_ERROR);
+
+  mrpt::nav::TWaypointSequence seq;
+  seq.waypoints.emplace_back(1.0, 0.0, 0.5);
+  nav.navigateWaypoints(seq);
+
+  {
+    auto guard = nav.getWaypointsAccessGuard();
+    ASSERT_FALSE(guard.waypoints().waypoints.empty());
+    guard.waypoints().waypoints[0].allow_skip = true;
+  }
+
+  const auto status = nav.getWaypointNavStatus();
+  EXPECT_TRUE(status.waypoints[0].allow_skip);
+}
+
+TEST(CWaypointsNavigator, navigationStep_does_not_crash_without_prior_navigate)
+{
+  MinimalRobotIF robot;
+  MinimalWaypointsNav nav(robot);
+  nav.setMinLoggingLevel(mrpt::system::LVL_ERROR);
+
+  // Should not throw; with no navigate command the state is IDLE.
+  EXPECT_NO_THROW(nav.navigationStep());
+  EXPECT_EQ(nav.getCurrentState(), mrpt::nav::CAbstractNavigator::TState::IDLE);
+}
+
+// ============================================================================
+// CNavigatorManualSequence tests
+// ============================================================================
+
+TEST(CNavigatorManualSequence, executes_programmed_command_at_correct_time)
+{
+  MinimalRobotIF robot;
+  mrpt::nav::CNavigatorManualSequence nav(robot);
+  nav.setMinLoggingLevel(mrpt::system::LVL_ERROR);
+
+  // Program a single DiffDriven command at t=0s:
+  mrpt::nav::CNavigatorManualSequence::TVelCmd krc;
+  auto cmd = std::make_shared<mrpt::kinematics::CVehicleVelCmd_DiffDriven>();
+  cmd->setVelCmdElement(0, 0.5);  // v
+  cmd->setVelCmdElement(1, 0.0);  // w
+  krc.cmd_vel = cmd;
+  nav.programmed_orders[0.0] = krc;
+
+  nav.initialize();
+
+  // t=0: command should fire
+  robot.nav_time = 0.0;
+  EXPECT_EQ(robot.changeSpeeds_call_count, 0);
+  nav.navigationStep();
+  EXPECT_EQ(robot.changeSpeeds_call_count, 1);
+
+  // Order should have been consumed:
+  EXPECT_TRUE(nav.programmed_orders.empty());
+}
+
+TEST(CNavigatorManualSequence, does_not_fire_command_before_scheduled_time)
+{
+  MinimalRobotIF robot;
+  mrpt::nav::CNavigatorManualSequence nav(robot);
+  nav.setMinLoggingLevel(mrpt::system::LVL_ERROR);
+
+  mrpt::nav::CNavigatorManualSequence::TVelCmd krc;
+  auto cmd = std::make_shared<mrpt::kinematics::CVehicleVelCmd_DiffDriven>();
+  cmd->setVelCmdElement(0, 0.3);
+  cmd->setVelCmdElement(1, 0.0);
+  krc.cmd_vel = cmd;
+  nav.programmed_orders[1.0] = krc;  // scheduled at t=1s
+
+  nav.initialize();
+
+  // t=0.5: too early
+  robot.nav_time = 0.5;
+  nav.navigationStep();
+  EXPECT_EQ(robot.changeSpeeds_call_count, 0);
+
+  // t=1.0: fires now
+  robot.nav_time = 1.0;
+  nav.navigationStep();
+  EXPECT_EQ(robot.changeSpeeds_call_count, 1);
+}
+
+TEST(CNavigatorManualSequence, empty_orders_step_is_no_op)
+{
+  MinimalRobotIF robot;
+  mrpt::nav::CNavigatorManualSequence nav(robot);
+  nav.setMinLoggingLevel(mrpt::system::LVL_ERROR);
+
+  // No programmed orders — navigationStep should be safe
+  robot.nav_time = 0.0;
+  EXPECT_NO_THROW(nav.navigationStep());
+  EXPECT_EQ(robot.changeSpeeds_call_count, 0);
 }

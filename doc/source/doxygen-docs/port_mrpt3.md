@@ -371,21 +371,9 @@ abstraction.  Each should be broken into named helpers:
 
 | Function | Lines | Suggested split |
 |----------|-------|-----------------|
-| `PlannerSimple2D::computePath()` | ~465 | Extract `wavePropagation()`, `backtrackPath()` |
-| `PlannerRRT_SE2_TPS::solve()` | ~380 | Extract `sampleFreeSpace()`, `extendTree()`, `optimizePath()` |
-| `CHolonomicFullEval::evalSingleTarget()` | ~290 | Extract `scoreCandidateDirection()`, `applyPenalties()` |
-| `CHolonomicFullEval::navigate()` | ~170 | Extract `findGaps()`, `selectBestDirection()` |
-| `CHolonomicND::gapsEstimator()` | ~150 | Extract gap-merging and gap-filtering helpers |
-| `CLogFileRecord::serializeFrom()` | ~450 | Version-switch per struct field group |
+| `CLogFileRecord::serializeFrom()` | ~450 | Version-switch per struct field group (high backward-compat risk, deferred) |
 
 ---
-
-#### 13.6.10 Test coverage (remaining)
-
-Zero dedicated unit tests for:
-
-- `CWaypointsNavigator` state machine (requires full robot interface mock).
-- `CNavigatorManualSequence`.
 
 ---
 
