@@ -298,8 +298,8 @@ void CPTG_Holo_Blend::serializeTo(mrpt::serialization::CArchive& out) const
   out << expr_V << expr_W << expr_T_ramp;
 }
 
-bool CPTG_Holo_Blend::inverseMap_WS2TP(
-    double x, double y, int& out_k, double& out_d, [[maybe_unused]] double tolerance_dist) const
+std::optional<std::pair<int, double>> CPTG_Holo_Blend::inverseMap_WS2TP(
+    double x, double y, [[maybe_unused]] double tolerance_dist) const
 {
   PERFORMANCE_BENCHMARK;
 
@@ -380,26 +380,23 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(
   if (sol_found && q[0] >= .0)
   {
     const double alpha = atan2(q[2], q[1]);
-    out_k = CParameterizedTrajectoryGenerator::alpha2index(alpha);
+    const int out_k = CParameterizedTrajectoryGenerator::alpha2index(alpha);
 
     const double solved_t = q[0];
     const unsigned int solved_step = solved_t / PATH_TIME_STEP;
-    const double found_dist = this->getPathDist(out_k, solved_step);
+    const double out_d = this->getPathDist(out_k, solved_step) / this->refDistance;
 
-    out_d = found_dist / this->refDistance;
-    return true;
+    return std::make_pair(out_k, out_d);
   }
   else
   {
-    return false;
+    return std::nullopt;
   }
 }
 
 bool CPTG_Holo_Blend::PTG_IsIntoDomain(double x, double y) const
 {
-  int k;
-  double d;
-  return inverseMap_WS2TP(x, y, k, d);
+  return inverseMap_WS2TP(x, y).has_value();
 }
 
 void CPTG_Holo_Blend::internal_deinitialize()

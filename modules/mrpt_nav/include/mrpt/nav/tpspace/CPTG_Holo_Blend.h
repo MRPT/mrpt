@@ -44,8 +44,8 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
   double maxTimeInVelCmdNOP(int path_k) const override;
 
   std::string getDescription() const override;
-  bool inverseMap_WS2TP(
-      double x, double y, int& out_k, double& out_d, double tolerance_dist = 0.10) const override;
+  std::optional<std::pair<int, double>> inverseMap_WS2TP(
+      double x, double y, double tolerance_dist = 0.10) const override;
   bool PTG_IsIntoDomain(double x, double y) const override;
   void onNewNavDynamicState() override;
 

@@ -27,6 +27,8 @@
 #include <mrpt/serialization/CSerializable.h>
 
 #include <cstdint>
+#include <optional>
+#include <utility>
 
 namespace mrpt
 {
@@ -329,9 +331,17 @@ class CParameterizedTrajectoryGenerator :
   void updateNavDynamicState(const TNavDynamicState& newState, const bool force_update = false);
   const TNavDynamicState& getCurrentNavDynamicState() const { return m_nav_dyn_state; }
 
-  /** The path used as default output in, for example, debugDumpInFiles.
-   * (Default="./reactivenav.logs/") */
-  static std::string& OUTPUT_DEBUG_PATH_PREFIX();
+  /** Returns the path used as default output in, for example,
+   * debugDumpInFiles. (Default="./reactivenav.logs/") */
+  [[nodiscard]] static std::string getOutputDebugPathPrefix();
+  /** Sets the path used as default output in, for example, debugDumpInFiles.
+   */
+  static void setOutputDebugPathPrefix(const std::string& path);
+
+  /** @deprecated Use getOutputDebugPathPrefix() / setOutputDebugPathPrefix()
+   */
+  [[deprecated("Use getOutputDebugPathPrefix()/setOutputDebugPathPrefix()")]] static std::string&
+  OUTPUT_DEBUG_PATH_PREFIX();
 
   /** Must be called after setting all PTG parameters and before requesting
    * converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
@@ -418,11 +428,17 @@ class CParameterizedTrajectoryGenerator :
       mrpt::viz::CSetOfLines& gl_shape,
       const mrpt::poses::CPose2D& origin = mrpt::poses::CPose2D()) const = 0;
 
-  /** Defines the behavior when there is an obstacle *inside* the robot shape
-   * right at the beginning of a PTG trajectory.
-   * Default value: PTGCollisionBehavior::BACK_AWAY
-   */
-  static PTGCollisionBehavior& COLLISION_BEHAVIOR();
+  /** Returns the behavior when there is an obstacle inside the robot shape
+   * at the beginning of a PTG trajectory.
+   * Default value: PTGCollisionBehavior::BACK_AWAY */
+  [[nodiscard]] static PTGCollisionBehavior getCollisionBehavior();
+  /** Sets the behavior when there is an obstacle inside the robot shape
+   * at the beginning of a PTG trajectory. */
+  static void setCollisionBehavior(PTGCollisionBehavior behavior);
+
+  /** @deprecated Use getCollisionBehavior() / setCollisionBehavior() */
+  [[deprecated("Use getCollisionBehavior()/setCollisionBehavior()")]] static PTGCollisionBehavior&
+  COLLISION_BEHAVIOR();
 
   /** Must be called to resize a CD to its correct size, before calling
    * updateClearance() */

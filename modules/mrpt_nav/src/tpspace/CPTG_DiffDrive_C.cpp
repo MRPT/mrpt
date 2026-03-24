@@ -87,10 +87,13 @@ bool CPTG_DiffDrive_C::PTG_IsIntoDomain([[maybe_unused]] double x, [[maybe_unuse
   return true;
 }
 
-bool CPTG_DiffDrive_C::inverseMap_WS2TP(
-    double x, double y, int& k_out, double& d_out, [[maybe_unused]] double tolerance_dist) const
+std::optional<std::pair<int, double>> CPTG_DiffDrive_C::inverseMap_WS2TP(
+    double x, double y, [[maybe_unused]] double tolerance_dist) const
 {
   bool is_exact = true;
+  int k_out = 0;
+  double d_out = 0;
+
   if (y != 0)
   {
     double R = (x * x + y * y) / (2 * y);
@@ -151,7 +154,8 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(
   ASSERT_GE_(k_out, 0);
   ASSERT_LT_(k_out, m_alphaValuesCount);
 
-  return is_exact;
+  if (!is_exact) return std::nullopt;
+  return std::make_pair(k_out, d_out);
 }
 
 void CPTG_DiffDrive_C::loadDefaultParams()

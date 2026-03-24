@@ -539,8 +539,8 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile(
   }
 }
 
-bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
-    double x, double y, int& out_k, double& out_d, double tolerance_dist) const
+std::optional<std::pair<int, double>> CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
+    double x, double y, double tolerance_dist) const
 {
   using mrpt::square;
 
@@ -591,7 +591,7 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
   // Try to find a closest point to the paths:
   // ----------------------------------------------
   int selected_k = -1;
-  float selected_d = 0;
+  float selected_d = 0.0f;
   float selected_dist = std::numeric_limits<float>::max();
 
   if (at_least_one)  // Otherwise, don't even lose time checking...
@@ -618,9 +618,8 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 
   if (selected_k != -1)
   {
-    out_k = selected_k;
-    out_d = selected_d / refDistance;
-    return (selected_dist <= square(tolerance_dist));
+    if (selected_dist > square(tolerance_dist)) return std::nullopt;
+    return std::make_pair(selected_k, static_cast<double>(selected_d) / refDistance);
   }
 
   // If not found, compute an extrapolation:
@@ -647,15 +646,11 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 
   selected_d = std::sqrt(selected_d);
 
-  out_k = selected_k;
-  out_d = selected_d / refDistance;
-
   // If the target dist. > refDistance, then it's normal that we had to
-  // extrapolate.
-  // Otherwise, it may actually mean that the target is not reachable by this
-  // set of paths:
+  // extrapolate. Otherwise, the target is not reachable by this PTG.
   const float target_dist = std::sqrt(x * x + y * y);
-  return (target_dist > refDistance);
+  if (target_dist <= refDistance) return std::nullopt;
+  return std::make_pair(selected_k, static_cast<double>(selected_d) / refDistance);
 }
 
 void CPTG_DiffDrive_CollisionGridBased::setRefDistance(const double refDist)

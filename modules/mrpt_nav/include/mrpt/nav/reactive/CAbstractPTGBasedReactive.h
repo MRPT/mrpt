@@ -234,17 +234,18 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
   void enableTimeLog(bool enable = true) { m_timelogger.enable(enable); }
   /** Gives access to a const-ref to the internal time logger \sa
    * enableTimeLog */
-  const mrpt::system::CTimeLogger& getTimeLogger() const { return m_timelogger; }
+  [[nodiscard]] const mrpt::system::CTimeLogger& getTimeLogger() const { return m_timelogger; }
 
   /** Returns the number of different PTGs that have been setup */
-  virtual size_t getPTG_count() const = 0;
+  [[nodiscard]] virtual size_t getPTG_count() const = 0;
   /** Gets the i'th PTG */
-  virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0;
+  [[nodiscard]] virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0;
   /** Gets the i'th PTG */
-  virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const = 0;
+  [[nodiscard]] virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const = 0;
 
   /** Get the current, global (honored for all PTGs) robot speed limits */
-  const mrpt::kinematics::CVehicleVelCmd::TVelCmdParams& getCurrentRobotSpeedLimits() const
+  [[nodiscard]] const mrpt::kinematics::CVehicleVelCmd::TVelCmdParams& getCurrentRobotSpeedLimits()
+      const
   {
     return params_abstract_ptg_navigator.robot_absolute_speed_limits;
   }
@@ -261,13 +262,13 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
   void setTargetApproachSlowDownDistance(const double dist);
   /** Returns this parameter for the first inner holonomic navigator instances
    * [m] (should be the same in all of them?) */
-  double getTargetApproachSlowDownDistance() const;
+  [[nodiscard]] double getTargetApproachSlowDownDistance() const;
 
  protected:
   /** The main method for the navigator */
   void performNavigationStep() override;
 
-  virtual CAbstractHolonomicReactiveMethod* getHoloMethod(int idx);
+  [[nodiscard]] virtual CAbstractHolonomicReactiveMethod* getHoloMethod(int idx);
 
   /** The holonomic navigation algorithm (one object per PTG, so internal
    * states are maintained) */

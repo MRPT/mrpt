@@ -104,11 +104,10 @@ TEST(NavTests, PTGs_tests)
           const double tolerance_dist =
               std::max(0.10, 10.0 * std::sqrt(tx * tx + ty * ty) * M_PI * 2 / ptg->getPathCount());
 
-          int k;
-          double normalized_d;
-          bool valid = ptg->inverseMap_WS2TP(tx, ty, k, normalized_d);
-          if (valid && normalized_d < 1.0)
+          const auto inv = ptg->inverseMap_WS2TP(tx, ty);
+          if (inv && inv->second < 1.0)
           {
+            const auto [k, normalized_d] = *inv;
             any_ok = true;
             // Now, do the inverse operation:
             uint32_t step;

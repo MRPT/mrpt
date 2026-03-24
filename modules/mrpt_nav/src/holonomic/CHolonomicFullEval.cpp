@@ -65,6 +65,55 @@ struct TGap
   }
 };
 
+// Returns the list of gaps found in `overall_scores` and the index of the
+// best (highest max_eval) gap, or npos if no gaps exist.
+static std::pair<std::vector<TGap>, std::size_t> findScoreGaps(
+    const std::vector<double>& overall_scores)
+{
+  const auto nDirs = overall_scores.size();
+  std::vector<TGap> gaps;
+  std::size_t best_gap_idx = std::string::npos;
+
+  bool inside_gap = false;
+  for (unsigned int i = 0; i < nDirs; i++)
+  {
+    const double val = overall_scores[i];
+    if (val < 0.01)
+    {
+      if (inside_gap)
+      {
+        gaps.back().k_to = i - 1;
+        inside_gap = false;
+      }
+    }
+    else
+    {
+      if (!inside_gap)
+      {
+        TGap new_gap;
+        new_gap.k_from = i;
+        gaps.emplace_back(new_gap);
+        inside_gap = true;
+      }
+    }
+
+    if (inside_gap)
+    {
+      auto& active_gap = gaps.back();
+      if (val >= active_gap.max_eval) active_gap.k_best_eval = i;
+      mrpt::keep_max(active_gap.max_eval, val);
+      mrpt::keep_min(active_gap.min_eval, val);
+
+      if (best_gap_idx == std::string::npos || val > gaps[best_gap_idx].max_eval)
+        best_gap_idx = gaps.size() - 1;
+    }
+  }
+
+  if (inside_gap) gaps.back().k_to = static_cast<int>(nDirs) - 1;
+
+  return {gaps, best_gap_idx};
+}
+
 void CHolonomicFullEval::evalSingleTarget(
     unsigned int target_idx, const NavInput& ni, EvalOutput& eo)
 {
@@ -428,69 +477,9 @@ CHolonomicFullEval::NavOutput CHolonomicFullEval::navigate(const NavInput& ni)
   for (unsigned int i = 0; i < nDirs; i++) overall_scores[i] *= (1.0 / numTrgs);
 
   // Search for best direction in the "overall score" vector:
+  // Keep the GAP with the largest maximum value; pick its best-eval direction.
+  const auto [gaps, best_gap_idx] = findScoreGaps(overall_scores);
 
-  // Keep the GAP with the largest maximum value within;
-  // then pick the MIDDLE point as the final selection.
-  std::vector<TGap> gaps;
-  std::size_t best_gap_idx = std::string::npos;
-  {
-    bool inside_gap = false;
-    for (unsigned int i = 0; i < nDirs; i++)
-    {
-      const double val = overall_scores[i];
-      if (val < 0.01)
-      {
-        // This direction didn't pass the cut threshold for the "last
-        // phase":
-        if (inside_gap)
-        {
-          // We just ended a gap:
-          auto& active_gap = *gaps.rbegin();
-          active_gap.k_to = i - 1;
-          inside_gap = false;
-        }
-      }
-      else
-      {
-        // higher or EQUAL to the treshold (equal is important just in
-        // case we have a "flat" diagram...)
-        if (!inside_gap)
-        {
-          // We just started a gap:
-          TGap new_gap;
-          new_gap.k_from = i;
-          gaps.emplace_back(new_gap);
-          inside_gap = true;
-        }
-      }
-
-      if (inside_gap)
-      {
-        auto& active_gap = *gaps.rbegin();
-        if (val >= active_gap.max_eval)
-        {
-          active_gap.k_best_eval = i;
-        }
-        mrpt::keep_max(active_gap.max_eval, val);
-        mrpt::keep_min(active_gap.min_eval, val);
-
-        if (best_gap_idx == std::string::npos || val > gaps[best_gap_idx].max_eval)
-        {
-          best_gap_idx = gaps.size() - 1;
-        }
-      }
-    }  // end for i
-
-    // Handle the case where we end with an open, active gap:
-    if (inside_gap)
-    {
-      auto& active_gap = *gaps.rbegin();
-      active_gap.k_to = nDirs - 1;
-    }
-  }
-
-  // Not heading to target: go thru the "middle" of the gap to maximize
-  // clearance
   int best_dir_k = -1;
   double best_dir_eval = 0;
 

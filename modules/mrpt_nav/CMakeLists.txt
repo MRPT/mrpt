@@ -61,6 +61,7 @@ set(LIB_SOURCES
   tests/CLogFileRecord_unittest.cpp
   tests/holonomic_unittest.cpp
   tests/rnav_unittest.cpp
+  tests/waypoints_and_rrt_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
