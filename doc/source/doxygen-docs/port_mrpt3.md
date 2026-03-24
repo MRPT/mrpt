@@ -327,55 +327,9 @@ run-time `THROW_EXCEPTION("TODO")`, carry `MRPT_TODO` or `// TODO` markers, or
 are otherwise visibly incomplete after the 2.x → 3.0 porting effort.
 
 
-### 13.6 `mrpt_nav` — Comprehensive modernisation plan
-
-The `mrpt_nav` module is ~20 years old and the largest candidate for
-refactoring in MRPT 3.0.  The plan below is grouped into phases of
-increasing risk/effort.  Each item is prefixed with a priority tag:
-**[P0]** = do first (low risk, high value),
-**[P1]** = next (medium risk),
-**[P2]** = later (significant API change).
-
----
-
-### 13.7 `mrpt_maps` — Miscellaneous
-
-- **`CObservationRotatingScan`**: `// TODO: populate organizedPoints?`
-  (line 362) — the organized point-cloud representation is never filled.
-- **`COccupancyGridMap2D` (multi-pose insertion)**: `FIXME: doesn't support
-  many different poses in one measurement` in `COccupancyGridMap2D_insert.cpp`.
-- **`CGasConcentrationGridMap2D` / `CWirelessPowerGridMap2D`**: Serialization
-  loops carry `// TODO: Do this endianness safe!!` notes.
-
-### 13.8 `mrpt_math`
-
-- **`KDTreeCapable` unit test**: The only test in
-  `KDTreeCapable_unittest.cpp` consists of a single `MRPT_TODO("Write me!")`
-  call — there are no actual test cases.
-
-### 13.9 `mrpt_graphs`
-
-- **`ScalarFactorGraph`**: `// MRPT_TODO("Use compressed access instead of
-  coeff() below")` — sparse-matrix access uses the slow `coeff()` path.
-
-### 13.10 Documentation pages needing v3 updates
-
-Several Doxygen documentation pages still reference MRPT 2.x APIs or are
-minimal stubs:
-
-| Page | Issue |
-|------|-------|
-| `lib_mrpt_slam.md` | References `mrpt-slam` (hyphen) in text; could expand on available algorithms |
-| `lib_mrpt_nav.md` | **[DONE]** — expanded with architecture diagram, state machine tables, PTG/holonomic class tables, waypoint API, robot interface guide |
-| `lib_mrpt_hwdrivers.md` | Stub — no list of supported sensor classes |
-| `lib_mrpt_core.md` | Stub — needs description of core utilities |
-| `lib_mrpt_poses.md` | Stub — needs overview of pose PDF classes |
-| `lib_mrpt_obs.md` | Needs review for v3 API changes |
-| `lib_mrpt_math.md` | Needs review — should document Eigen integration |
-
 ### 13.11 Python bindings (`pybind11`)
 
-Several modules are documented as "not yet implemented":
+The following modules remain unwrapped and require significant work:
 
 - `mrpt_nav` (Phase 1.6): `CReactiveNavigationSystem`, waypoints API —
   complex due to virtual callbacks.
