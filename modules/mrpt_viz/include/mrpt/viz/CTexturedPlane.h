@@ -37,6 +37,7 @@ class CTexturedPlane :
  protected:
   float m_xMin = -1.0f, m_xMax = 1.0f;
   float m_yMin = -1.0f, m_yMax = 1.0f;
+  float m_textureRepeatX = 1.0f, m_textureRepeatY = 1.0f;
 
   mutable bool polygonUpToDate{false};
   /** Used for ray-tracing */
@@ -68,6 +69,15 @@ class CTexturedPlane :
     xMax = m_xMax;
     yMin = m_yMin;
     yMax = m_yMax;
+  }
+
+  /** Set the number of times the texture repeats in each direction.
+   * Default is (1,1), i.e. the texture spans the entire plane once. */
+  void setTextureRepeat(float repeatX, float repeatY)
+  {
+    m_textureRepeatX = repeatX;
+    m_textureRepeatY = repeatY;
+    CVisualObject::notifyChange();
   }
 
   void enableLighting(bool enable = true)

@@ -173,11 +173,22 @@ void TestNormalMaps()
     lp.lights.clear();
     mrpt::viz::TLight sunLight;
     sunLight.type = mrpt::viz::TLightType::Directional;
-    sunLight.direction = {-0.5f, -0.3f, -1.0f};
+    sunLight.direction = {-0.8f, -0.3f, -0.3f};
     sunLight.color = mrpt::img::TColorf(1.0f, 0.95f, 0.85f);
     sunLight.diffuse = 0.9f;
     sunLight.specular = 0.4f;
     lp.lights.push_back(sunLight);
+
+    // A warm point light near the ground to emphasize normal map detail
+    lp.lights.push_back(mrpt::viz::TLight::PointLight(
+        {3.0f, 0.0f, 1.5f},                    // position
+        mrpt::img::TColorf(1.0f, 0.8f, 0.5f),  // warm color
+        1.0f,                                  // diffuse
+        0.8f,                                  // specular
+        1.0f,                                  // att_constant
+        0.07f,                                 // att_linear
+        0.017f                                 // att_quadratic
+        ));
   }
 
   // -----------------------------------------------------------------------
@@ -190,6 +201,7 @@ void TestNormalMaps()
 
     ground->assignImage(mrpt::img::CImage::LoadFromFile("asphalt_color.png"));
     ground->assignNormalMap(mrpt::img::CImage::LoadFromFile("asphalt_normal.png"));
+    ground->setTextureRepeat(4.0f, 4.0f);
 
     // Ground lies in XY plane at Z=0 by default — no pose change needed
     theScene->insert(ground);
@@ -206,6 +218,7 @@ void TestNormalMaps()
     wall->enableLighting(true);
 
     wall->assignImage(mrpt::img::CImage::LoadFromFile("brick_color.png"));
+    wall->setTextureRepeat(4.0f, 2.0f);
     // No normal map for this wall
 
     // Rotate 90° around X axis so the plane stands vertically, facing +Y
@@ -232,6 +245,7 @@ void TestNormalMaps()
 
     wall->assignImage(mrpt::img::CImage::LoadFromFile("brick_color.png"));
     wall->assignNormalMap(mrpt::img::CImage::LoadFromFile("brick_normal.png"));
+    wall->setTextureRepeat(4.0f, 2.0f);
 
     mrpt::math::TPose3D pose;
     pose.x = 0;
@@ -277,6 +291,7 @@ void TestNormalMaps()
   std::cout << "  Front wall (y=-8): brick texture WITHOUT normal map\n";
   std::cout << "  Back wall  (y=+8): brick texture WITH normal map\n";
   std::cout << "  Ground           : asphalt WITH normal map\n";
+  std::cout << "  Lights           : directional sun + warm point light\n";
   std::cout << "\nPress ESC or any key to exit.\n";
 
   // -----------------------------------------------------------------------

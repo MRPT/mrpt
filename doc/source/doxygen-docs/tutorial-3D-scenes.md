@@ -478,54 +478,6 @@ Proposed improvements:
 
 Tier 1 - Low effort, high visual impact 
 
-1. Multiple light sources (up to N directional/point lights)  
-
-Currently there's a single TLightParameters per viewport with one direction vector. This is the single biggest limitation for scene realism.
-  
-Proposal:
-- Change Viewport to hold a std::vector<TLightParameters> (max 4-8, configurable).
-- Add a type field to TLightParameters: Directional, Point, Spot.  
-- For point/spot lights, add position, attenuation (constant/linear/quadratic), and for spot: cutoffAngle, outerCutoffAngle.
-- In the lighting shaders, loop over an array of light uniforms. With a small fixed max (4), the loop unrolls and there's zero branching cost. 
-- Shadow mapping would remain single-light (the "sun" / primary directional) to avoid the cost of multiple shadow maps.
-
-GPU cost: negligible for 4 lights (4 dot products per fragment). Even Intel HD 4000 handles this fine.  
-
-2. ~~Configurable specular exponent / Blinn-Phong~~ **DONE**
-
-~~The specular exponent is hardcoded at 16. The existing materialShininess field only scales the specular intensity, not the exponent.~~
-
-Implemented:
-- Added `CVisualObject::materialSpecularExponent(float)` (default 32). The existing `materialShininess` field retains its role as the specular intensity scale [0,1].
-- All four lighting shaders switched from Phong (`reflect()`) to Blinn-Phong (half-vector `normalize(viewDir - lightDir)`): cheaper, better at grazing angles.
-- `materialSpecularExponent` uploaded as a per-object uniform in `TrianglesProxy` and `TexturedTrianglesProxy`.
-- Also fixed a pre-existing bug: `TexturedTrianglesProxy` was checking for uniform `"materialShininess"` while the shader declares `"materialSpecular"`, so specular intensity was silently never uploaded for textured objects.
-
-3. ~~Gamma correction~~ **DONE**
-
-~~All lighting math is currently done in sRGB space, which causes colors to look washed out and lighting falloff to be perceptually wrong. This is the single most common rendering mistake.~~
-
-Implemented via the GPU sRGB pipeline (zero shader cost):
-- All color textures are uploaded with `GL_SRGB8` / `GL_SRGB8_ALPHA8` internal format → GPU auto-decodes sRGB→linear at sampling time.
-- `GL_FRAMEBUFFER_SRGB` is enabled during `CompiledViewport::render()` → GPU auto-encodes linear→sRGB on framebuffer write.
-- `CFBORender`'s color attachment uses `GL_SRGB8` so off-screen rendering also benefits.
-- Controlled by `TLightParameters::gamma_correction` (default: **true**). Set to `false` to restore the legacy linear appearance.
-
-GPU cost: literally zero (hardware LUT on both ends).
-
-4. ~~Emissive term~~ **DONE**
-
-~~Some objects (displays, indicator lights, laser beams, warning signs) should glow regardless of lighting. Currently there's no way to do this.~~
-
-Implemented:
-- Added `CVisualObject::materialEmissive(TColorf)` (default black = no emission).
-- The emissive term is added to the final lighting equation in all four lit
-  fragment shaders (triangles-light, textured-triangles-light, and both
-  shadow 2nd-pass variants) as: `finalColor = emissive + materialColor * lighting`.
-- One extra `vec3` uniform (`materialEmissive`), one extra add in the shader.
-- Serialization version bumped to 4 with backwards compatibility.
-
-Tier 2 - Moderate effort, significant quality improvement
 
 5. ~~Normal mapping~~ **DONE**
 
@@ -619,12 +571,5 @@ GPU cost: 2-3x shadow pass cost (but shadow pass is already cheap). Fragment sha
 
 Suggested implementation order to maximize visual improvement per commit:
 
-1. ~~Gamma correction (Tier 1.3)~~ **DONE** - easiest, fixes all existing scenes
-2. ~~Blinn-Phong + configurable exponent (Tier 1.2)~~ **DONE** - trivial shader change
-3. ~~Emissive term (Tier 1.4)~~ **DONE** - one uniform, one add
-4. Multiple lights (Tier 1.1) - DONE
-5. Hemisphere ambient (Tier 2.8) - DONE
-6. Fog (Tier 2.7) - DONE
-7. Normal mapping (Tier 2.5) - DONE
 8. SSAO (Tier 3.9) - optional quality mode
 
