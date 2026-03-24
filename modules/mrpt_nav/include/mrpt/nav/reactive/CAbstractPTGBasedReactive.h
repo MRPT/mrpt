@@ -21,7 +21,9 @@
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
+#include <mrpt/nav/reactive/NavigationLogger.h>
 #include <mrpt/nav/reactive/TCandidateMovementPTG.h>
+#include <mrpt/nav/reactive/VelocityFilter.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
@@ -152,18 +154,22 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
    * \note Log records are not prepared unless either "enableLogFile" is
    * enabled in the constructor or "enableLogFile()" has been called.
    */
-  void getLastLogRecord(CLogFileRecord& o);
+  void getLastLogRecord(CLogFileRecord& o) { m_navLogger.getLastLogRecord(o); }
 
   /** Enables keeping an internal registry of navigation logs that can be
    * queried with getLastLogRecord() */
-  void enableKeepLogRecords(bool enable = true) { m_enableKeepLogRecords = enable; }
+  void enableKeepLogRecords(bool enable = true) { m_navLogger.enableKeepLogRecords(enable); }
 
   /** Enables/disables saving log files. */
   void enableLogFile(bool enable);
 
   /** Changes the prefix for new log files. */
-  void setLogFileDirectory(const std::string& sDir) { m_navlogfiles_dir = sDir; }
-  std::string getLogFileDirectory() const { return m_navlogfiles_dir; }
+  void setLogFileDirectory(const std::string& sDir) { m_navLogger.setLogFileDirectory(sDir); }
+  [[nodiscard]] std::string getLogFileDirectory() const
+  {
+    return m_navLogger.getLogFileDirectory();
+  }
+
   struct TAbstractPTGNavigatorParams : public mrpt::config::CLoadableOptions
   {
     /** C++ class name of the holonomic navigation method to run in the
@@ -273,18 +279,12 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
   /** The holonomic navigation algorithm (one object per PTG, so internal
    * states are maintained) */
   std::vector<CAbstractHolonomicReactiveMethod::Ptr> m_holonomicMethod;
-  std::unique_ptr<mrpt::io::CStream> m_logFile;
-  /** The current log file stream, or nullptr if not being used */
-  mrpt::io::CStream* m_prev_logfile{nullptr};
-  /** See enableKeepLogRecords */
-  bool m_enableKeepLogRecords{false};
-  /** The last log */
-  CLogFileRecord lastLogRecord;
-  /** Last velocity commands */
-  mrpt::kinematics::CVehicleVelCmd::Ptr m_last_vel_cmd;
 
-  /** Critical zones */
-  std::recursive_mutex m_critZoneLastLog;
+  /** Navigation log file manager */
+  NavigationLogger m_navLogger;
+
+  /** Velocity command filtering and last-sent-command tracking */
+  VelocityFilter m_velFilter;
 
   /** Enables / disables the console debug output. */
   bool m_enableConsoleOutput;
@@ -368,9 +368,11 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
       const mrpt::system::TTimeStamp tim_start_iteration,
       const mrpt::nav::CHolonomicLogFileRecord::Ptr& hlfr);
 
-  /** Return the [0,1] velocity scale of raw PTG cmd_vel */
+  /** Return the [0,1] velocity scale of raw PTG cmd_vel.
+   * Delegates to VelocityFilter. */
   virtual double generate_vel_cmd(
       const TCandidateMovementPTG& in_movement, mrpt::kinematics::CVehicleVelCmd::Ptr& new_vel_cmd);
+
   void generateLogRecord(
       CLogFileRecord& newLogRec,
       const std::vector<mrpt::math::TPose2D>& relTargets,
@@ -432,7 +434,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
     TSentVelCmd() = default;
 
     void reset() { *this = TSentVelCmd(); }
-    bool isValid() const { return this->poseVel.timestamp != INVALID_TIMESTAMP; }
+    [[nodiscard]] bool isValid() const { return this->poseVel.timestamp != INVALID_TIMESTAMP; }
     /** 0-based index of used PTG */
     int ptg_index = -1;
     /** Path index for selected PTG */
@@ -456,9 +458,6 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
  private:
   /** Delete m_holonomicMethod */
   void deleteHolonomicObjects();
-
-  /** Default: "./reactivenav.logs" */
-  std::string m_navlogfiles_dir;
 
   double m_expr_var_k, m_expr_var_k_target, m_expr_var_num_paths;
   /** A copy of last-iteration navparams, used to detect changes */
