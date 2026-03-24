@@ -703,7 +703,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
   ni.maxRobotSpeed = m_simul_options.ROBOT_MAX_SPEED;
   ni.maxObstacleDist = m_simul_options.MAX_SENSOR_RADIUS;
 
-  this->m_holonomicMethod->navigate(ni, no);
+  no = this->m_holonomicMethod->navigate(ni);
 
   mrpt::nav::CHolonomicLogFileRecord::Ptr out_log = no.logRecord;
 

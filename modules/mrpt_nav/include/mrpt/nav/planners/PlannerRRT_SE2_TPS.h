@@ -109,6 +109,27 @@ class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
  protected:
   bool m_initialized{false};
 
+ private:
+  using CandidateMap = std::map<double, TMoveEdgeSE2_TP>;
+
+  /** Insert the lowest-cost candidate edge into the tree and update the best
+   *  solution tracking in `result`.  Returns true if this edge is a new
+   *  best solution to the goal. */
+  bool tryInsertBestCandidate(
+      const CandidateMap& candidates, const TPlannerInput& pi, TPlannerResult& result);
+
+  /** Save a 3-D scene log of the current tree state (respects
+   * params.save_3d_log_freq decimation). */
+  void saveSolveIterationLog(
+      const TPlannerInput& pi,
+      const TPlannerResult& result,
+      const mrpt::poses::CPose2D& x_rand_pose,
+      const std::string& log_msg,
+      size_t& log_decimation_cnt,
+      size_t rrt_iter_counter,
+      size_t solve_count,
+      bool highlight_last_edge = true);
+
 };  // end class PlannerRRT_SE2_TPS
 
 /** @} */

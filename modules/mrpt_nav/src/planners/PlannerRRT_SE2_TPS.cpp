@@ -149,26 +149,14 @@ void PlannerRRT_SE2_TPS::solve(
         // skip
 
         // Before that, save log:
+        ++SAVE_3D_TREE_LOG_DECIMATION_CNT;
         if (params.save_3d_log_freq > 0 &&
-            (++SAVE_3D_TREE_LOG_DECIMATION_CNT >= params.save_3d_log_freq))
+            SAVE_3D_TREE_LOG_DECIMATION_CNT >= params.save_3d_log_freq)
         {
-          SAVE_3D_TREE_LOG_DECIMATION_CNT = 0;  // Reset decimation counter
-          TRenderPlannedPathOptions render_options;
-          render_options.highlight_path_to_node_id = result.best_goal_node_id;
-          render_options.highlight_last_added_edge = false;
-          render_options.x_rand_pose = &x_rand_pose;
-          render_options.log_msg = "SKIP: Can't find any close node";
-          render_options.log_msg_position =
-              mrpt::math::TPoint3D(pi.world_bbox_min.x, pi.world_bbox_min.y, 0);
-          render_options.ground_xy_grid_frequency = 1.0;
-
-          mrpt::viz::Scene scene;
-          renderMoveTree(scene, pi, result, render_options);
-          mrpt::system::createDirectory("./rrt_log_trees");
-          scene.saveToFile(mrpt::format(
-              "./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",
-              static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),
-              static_cast<unsigned int>(rrt_iter_counter)));
+          saveSolveIterationLog(
+              pi, result, x_rand_pose, "SKIP: Can't find any close node",
+              SAVE_3D_TREE_LOG_DECIMATION_CNT, rrt_iter_counter, SAVE_LOG_SOLVE_COUNT,
+              /*highlight_last_edge=*/false);
         }
 
         continue;  // Skip
@@ -341,82 +329,16 @@ void PlannerRRT_SE2_TPS::solve(
     }  // end for idxPTG
 
     // [Algo `tp_space_rrt`: Line 19]: Any solution found?
-    // ------------------------------------------------------------
-    if (!candidate_new_nodes.empty())
-    {
-      const TMoveEdgeSE2_TP& best_edge = candidate_new_nodes.begin()->second;
-      const TNodeSE2_TP new_state_node(best_edge.end_state);
+    is_new_best_solution = tryInsertBestCandidate(candidate_new_nodes, pi, result);
 
-      // Insert into the tree:
-      const mrpt::graphs::TNodeID new_child_id = result.move_tree.getNextFreeNodeID();
-      result.move_tree.insertNodeAndEdge(
-          best_edge.parent_id, new_child_id, new_state_node, best_edge);
-
-      // Distance to goal:
-      const double goal_dist =
-          mrpt::poses::CPose2D(best_edge.end_state).distance2DTo(pi.goal_pose.x, pi.goal_pose.y);
-      const double goal_ang =
-          std::abs(mrpt::math::angDistance(best_edge.end_state.phi, pi.goal_pose.phi));
-
-      const bool is_acceptable_goal = (goal_dist < end_criteria.acceptedDistToTarget) &&
-                                      (goal_ang < end_criteria.acceptedAngToTarget);
-
-      if (is_acceptable_goal) result.acceptable_goal_node_ids.insert(new_child_id);
-
-      // Total path length:
-      double this_path_cost = std::numeric_limits<double>::max();
-      if (is_acceptable_goal)  // Don't waste time computing path length
-      // if it doesn't matter anyway
-      {
-        TMoveTreeSE2_TP::path_t candidate_solution_path;
-        result.move_tree.backtrackPath(new_child_id, candidate_solution_path);
-        this_path_cost = 0;
-        for (auto it = candidate_solution_path.begin(); it != candidate_solution_path.end(); ++it)
-          if (it->edge_to_parent) this_path_cost += it->edge_to_parent->cost;
-      }
-
-      // Check if this should be the new optimal path:
-      if (is_acceptable_goal && this_path_cost < result.path_cost)
-      {
-        result.goal_distance = goal_dist;
-        result.path_cost = this_path_cost;
-
-        result.best_goal_node_id = new_child_id;
-        is_new_best_solution = true;
-      }
-    }  // end if any candidate found
-
-    //  Graphical logging, if enabled:
-    // ------------------------------------------------------
+    // Graphical logging, if enabled:
+    ++SAVE_3D_TREE_LOG_DECIMATION_CNT;
     if (params.save_3d_log_freq > 0 &&
-        (++SAVE_3D_TREE_LOG_DECIMATION_CNT >= params.save_3d_log_freq || is_new_best_solution))
+        (is_new_best_solution || SAVE_3D_TREE_LOG_DECIMATION_CNT >= params.save_3d_log_freq))
     {
-      CTimeLoggerEntry tle(m_timelogger, "PT_RRT::solve.generate_log_files");
-      SAVE_3D_TREE_LOG_DECIMATION_CNT = 0;  // Reset decimation counter
-
-      // Render & save to file:
-      TRenderPlannedPathOptions render_options;
-      render_options.highlight_path_to_node_id = result.best_goal_node_id;
-      render_options.x_rand_pose = &x_rand_pose;
-      // render_options.x_nearest_pose = &x_nearest_pose;
-      // if (local_obs_ok) render_options.local_obs_from_nearest_pose =
-      // &m_local_obs;
-      // render_options.new_state = log_new_state_ptr;
-      render_options.highlight_last_added_edge = true;
-      render_options.ground_xy_grid_frequency = 1.0;
-
-      render_options.log_msg = sLogTxt;
-      render_options.log_msg_position =
-          mrpt::math::TPoint3D(pi.world_bbox_min.x, pi.world_bbox_min.y, 0);
-
-      mrpt::viz::Scene scene;
-      renderMoveTree(scene, pi, result, render_options);
-
-      mrpt::system::createDirectory("./rrt_log_trees");
-      scene.saveToFile(mrpt::format(
-          "./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",
-          static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),
-          static_cast<unsigned int>(rrt_iter_counter)));
+      saveSolveIterationLog(
+          pi, result, x_rand_pose, sLogTxt, SAVE_3D_TREE_LOG_DECIMATION_CNT, rrt_iter_counter,
+          SAVE_LOG_SOLVE_COUNT);
     }
 
   }  // end loop until end conditions
@@ -427,3 +349,74 @@ void PlannerRRT_SE2_TPS::solve(
   result.computation_time = working_time.Tac();
 
 }  // end solve()
+
+bool PlannerRRT_SE2_TPS::tryInsertBestCandidate(
+    const CandidateMap& candidates, const TPlannerInput& pi, TPlannerResult& result)
+{
+  if (candidates.empty()) return false;
+
+  const TMoveEdgeSE2_TP& best_edge = candidates.begin()->second;
+  const TNodeSE2_TP new_state_node(best_edge.end_state);
+
+  const mrpt::graphs::TNodeID new_child_id = result.move_tree.getNextFreeNodeID();
+  result.move_tree.insertNodeAndEdge(best_edge.parent_id, new_child_id, new_state_node, best_edge);
+
+  const double goal_dist =
+      mrpt::poses::CPose2D(best_edge.end_state).distance2DTo(pi.goal_pose.x, pi.goal_pose.y);
+  const double goal_ang =
+      std::abs(mrpt::math::angDistance(best_edge.end_state.phi, pi.goal_pose.phi));
+  const bool is_acceptable_goal = (goal_dist < end_criteria.acceptedDistToTarget) &&
+                                  (goal_ang < end_criteria.acceptedAngToTarget);
+
+  if (is_acceptable_goal) result.acceptable_goal_node_ids.insert(new_child_id);
+
+  double this_path_cost = std::numeric_limits<double>::max();
+  if (is_acceptable_goal)
+  {
+    TMoveTreeSE2_TP::path_t candidate_solution_path;
+    result.move_tree.backtrackPath(new_child_id, candidate_solution_path);
+    this_path_cost = 0;
+    for (const auto& step : candidate_solution_path)
+      if (step.edge_to_parent) this_path_cost += step.edge_to_parent->cost;
+  }
+
+  if (is_acceptable_goal && this_path_cost < result.path_cost)
+  {
+    result.goal_distance = goal_dist;
+    result.path_cost = this_path_cost;
+    result.best_goal_node_id = new_child_id;
+    return true;  // new best solution
+  }
+  return false;
+}
+
+void PlannerRRT_SE2_TPS::saveSolveIterationLog(
+    const TPlannerInput& pi,
+    const TPlannerResult& result,
+    const mrpt::poses::CPose2D& x_rand_pose,
+    const std::string& log_msg,
+    size_t& log_decimation_cnt,
+    size_t rrt_iter_counter,
+    size_t solve_count,
+    bool highlight_last_edge)
+{
+  CTimeLoggerEntry tle(m_timelogger, "PT_RRT::solve.generate_log_files");
+  log_decimation_cnt = 0;  // reset
+
+  TRenderPlannedPathOptions render_options;
+  render_options.highlight_path_to_node_id = result.best_goal_node_id;
+  render_options.highlight_last_added_edge = highlight_last_edge;
+  render_options.x_rand_pose = &x_rand_pose;
+  render_options.log_msg = log_msg;
+  render_options.log_msg_position =
+      mrpt::math::TPoint3D(pi.world_bbox_min.x, pi.world_bbox_min.y, 0);
+  render_options.ground_xy_grid_frequency = 1.0;
+
+  mrpt::viz::Scene scene;
+  renderMoveTree(scene, pi, result, render_options);
+
+  mrpt::system::createDirectory("./rrt_log_trees");
+  scene.saveToFile(mrpt::format(
+      "./rrt_log_trees/rrt_log_%03u_%06u.3Dscene", static_cast<unsigned int>(solve_count),
+      static_cast<unsigned int>(rrt_iter_counter)));
+}

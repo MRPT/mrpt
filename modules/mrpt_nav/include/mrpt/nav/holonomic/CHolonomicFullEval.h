@@ -131,6 +131,21 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
   /** Evals one single target of the potentially many of them in NavInput */
   void evalSingleTarget(unsigned int target_idx, const NavInput& ni, EvalOutput& eo);
 
+  /** Fills m_dirs_scores with the 8 raw factor values for every direction. */
+  void fillFactorScores(
+      size_t nDirs,
+      const NavInput& ni,
+      const mrpt::math::TPose2D& target,
+      unsigned int target_k,
+      double target_dist,
+      const std::vector<mrpt::math::TPoint2D>& obstacles_2d,
+      const mrpt::obs::CSinCosLookUpTableFor2DScans::TSinCosValues& sc_lut,
+      CParameterizedTrajectoryGenerator* ptg);
+
+  /** Runs multi-phase scoring on m_dirs_scores and fills eo.phase_scores. */
+  void computePhaseScores(
+      size_t nDirs, const NavInput& ni, unsigned int target_idx, EvalOutput& eo);
+
   mrpt::obs::CSinCosLookUpTableFor2DScans m_sincos_lut;
 };  // end of CHolonomicFullEval
 

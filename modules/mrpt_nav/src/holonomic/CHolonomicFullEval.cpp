@@ -175,16 +175,40 @@ void CHolonomicFullEval::evalSingleTarget(
     obstacles_2d[i].y = ni.obstacles[i] * sc_lut.csin[i];
   }
 
-  // Sanity checks:
+  fillFactorScores(nDirs, ni, target, target_k, target_dist, obstacles_2d, sc_lut, ptg);
+  computePhaseScores(nDirs, ni, target_idx, eo);
+}
+
+void CHolonomicFullEval::fillFactorScores(
+    size_t nDirs,
+    const NavInput& ni,
+    const mrpt::math::TPose2D& target,
+    unsigned int target_k,
+    double target_dist,
+    const std::vector<mrpt::math::TPoint2D>& obstacles_2d,
+    const mrpt::obs::CSinCosLookUpTableFor2DScans::TSinCosValues& sc_lut,
+    CParameterizedTrajectoryGenerator* ptg)
+{
+  using mrpt::square;
+
+  constexpr double OBSTACLE_PAST_TARGET_MARGIN = 1.02;
+  constexpr double TARGET_DIST_SAFETY_FRACTION = 0.95;
+  constexpr double TARGET_CLEARANCE_MARGIN = 1.05;
+  constexpr double SQRT_DOMAIN_EPS = 1.01;
+  constexpr double CLEARANCE_WINDOW_HALF_FRACTION = 0.1;
+  constexpr double FREE_SPACE_THRESHOLD = 0.99;
+  constexpr double SECTOR_DIST_WEIGHT = 4.0;
+  constexpr double BLOCKED_DIR_SCORE_PENALTY = 0.1;
+
   ASSERT_EQUAL_(options.factorWeights.size(), NUM_FACTORS);
   ASSERT_GT_(nDirs, 3);
 
+  const mrpt::math::TPoint2D target_pt = target.translation();
+
   for (unsigned int i = 0; i < nDirs; i++)
   {
-    std::array<double, NUM_FACTORS> scores;  // scores for each criterion
+    std::array<double, NUM_FACTORS> scores;
 
-    // Too close to obstacles? (unless target is in between obstacles and
-    // the robot)
     if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE &&
         !(i == target_k && ni.obstacles[i] > OBSTACLE_PAST_TARGET_MARGIN * target_dist))
     {
@@ -193,138 +217,90 @@ void CHolonomicFullEval::evalSingleTarget(
     }
 
     const double d = std::min(ni.obstacles[i], TARGET_DIST_SAFETY_FRACTION * target_dist);
-
-    // The TP-Space representative coordinates for this direction:
     const double x = d * sc_lut.ccos[i];
     const double y = d * sc_lut.csin[i];
 
     // Factor [0]: collision-free distance
-    // -----------------------------------------------------
     if (mrpt::abs_diff(i, target_k) <= 1 && target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
         ni.obstacles[i] > TARGET_CLEARANCE_MARGIN * target_dist)
     {
-      // Don't count obstacles ahead of the target.
       scores[0] = std::max(target_dist, ni.obstacles[i]) / (target_dist * TARGET_CLEARANCE_MARGIN);
     }
     else
     {
       scores[0] = std::max(0.0, ni.obstacles[i] - options.TOO_CLOSE_OBSTACLE);
     }
-
-    // Discount "circular loop aparent free distance" here, but don't count
-    // it for clearance, since those are not real obstacle points.
     if (ptg != nullptr)
-    {
-      const double max_real_freespace = ptg->getActualUnloopedPathLength(i);
-      const double max_real_freespace_norm = max_real_freespace / ptg->getRefDistance();
+      mrpt::keep_min(scores[0], ptg->getActualUnloopedPathLength(i) / ptg->getRefDistance());
 
-      mrpt::keep_min(scores[0], max_real_freespace_norm);
-    }
-
-    // Factor [1]: Closest approach to target along straight line
-    // (Euclidean)
-    // -------------------------------------------
+    // Factor [1]: Closest approach to target along straight line (Euclidean)
     mrpt::math::TSegment2D sg;
-    sg.point1.x = 0;
-    sg.point1.y = 0;
-    sg.point2.x = x;
-    sg.point2.y = y;
+    sg.point1 = {0, 0};
+    sg.point2 = {x, y};
 
-    // Range of attainable values: 0=passes thru target. 2=opposite
-    // direction
-    double min_dist_target_along_path = sg.distance(target.translation());
+    double min_dist_target_along_path = sg.distance(target_pt);
 
-    // Idea: if this segment is taking us *away* from target, don't make
-    // the segment to start at (0,0), since all paths "running away"
-    // will then have identical minimum distances to target. Use the
-    // middle of the segment instead:
-    const double endpt_dist_to_target = (target - TPoint2D(x, y)).norm();
+    const double endpt_dist_to_target = (target_pt - mrpt::math::TPoint2D(x, y)).norm();
     const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target);
 
     if ((endpt_dist_to_target_norm > target_dist &&
          endpt_dist_to_target_norm >= TARGET_DIST_SAFETY_FRACTION * target_dist) &&
-        /* the path does not get any closer to trg */
         min_dist_target_along_path >
             TARGET_CLEARANCE_MARGIN * std::min(target_dist, endpt_dist_to_target_norm))
     {
-      // path takes us away or way blocked:
-      sg.point1.x = x * 0.5;
-      sg.point1.y = y * 0.5;
-      min_dist_target_along_path = sg.distance(target.translation());
+      sg.point1 = {x * 0.5, y * 0.5};
+      min_dist_target_along_path = sg.distance(target_pt);
     }
 
     scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path));
 
-    // Factor [2]: Distance of end collision-free point to target
-    // (Euclidean)
-    // Factor [5]: idem (except: no decimation afterwards)
-    // -----------------------------------------------------
+    // Factors [2] & [5]: distance of endpoint to target
     scores[2] = std::sqrt(SQRT_DOMAIN_EPS - endpt_dist_to_target_norm);
     scores[5] = scores[2];
-    // SQRT_DOMAIN_EPS (slightly > 1.0) ensures we never get a domain
-    // error in sqrt() when endpt_dist_to_target_norm == 1.0
 
-    // Factor [3]: Stabilizing factor (hysteresis) to avoid quick switch
-    // among very similar paths:
-    // ------------------------------------------------------------------------------------------
+    // Factor [3]: Hysteresis stabilizer
     if (m_last_selected_sector != std::numeric_limits<unsigned int>::max())
     {
-      // It's fine here to consider that -PI is far from +PI.
       const unsigned int hist_dist = mrpt::abs_diff(m_last_selected_sector, i);
-
-      if (hist_dist >= options.HYSTERESIS_SECTOR_COUNT)
-        scores[3] = square(1.0 - (hist_dist - options.HYSTERESIS_SECTOR_COUNT) / double(nDirs));
-      else
-        scores[3] = 1.0;
+      scores[3] = (hist_dist >= options.HYSTERESIS_SECTOR_COUNT)
+                      ? square(1.0 - (hist_dist - options.HYSTERESIS_SECTOR_COUNT) / double(nDirs))
+                      : 1.0;
     }
     else
     {
       scores[3] = 1.0;
     }
 
-    // Factor [4]: clearance to nearest obstacle along path
-    // Use TP-obstacles instead of real obstacles in Workspace since
-    // it's way faster, despite being an approximation:
-    // -------------------------------------------------------------------
+    // Factor [4]: clearance to nearest obstacle along path segment
     {
-      sg.point1.x = 0;
-      sg.point1.y = 0;
-      sg.point2.x = x;
-      sg.point2.y = y;
-
+      sg.point1 = {0, 0};
+      sg.point2 = {x, y};
       double& closest_obs = scores[4];
       closest_obs = 1.0;
-
-      // eval obstacles within a certain region of this "i" direction only
       const int W = std::max(1, round(nDirs * CLEARANCE_WINDOW_HALF_FRACTION));
       const int i_min = std::max(0, static_cast<int>(i) - W);
       const int i_max = std::min(static_cast<int>(nDirs) - 1, static_cast<int>(i) + W);
       for (int oi = i_min; oi <= i_max; oi++)
       {
-        // "no obstacle" (norm_dist=1.0) doesn't count as a real obs:
         if (ni.obstacles[oi] >= FREE_SPACE_THRESHOLD) continue;
         mrpt::keep_min(closest_obs, sg.distance(obstacles_2d[oi]));
       }
     }
 
-    // Factor [6]: Direct distance in "sectors":
-    // -------------------------------------------------------------------
+    // Factor [6]: sector-distance to target direction
     scores[6] =
         1.0 / (1.0 + mrpt::square((SECTOR_DIST_WEIGHT / nDirs) * mrpt::abs_diff(i, target_k)));
 
-    // If target is not directly reachable for this i-th direction, decimate
-    // its scorings:
+    // Penalize directions that cannot reach the target:
     if (target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
         ni.obstacles[i] < SQRT_DOMAIN_EPS * target_dist)
     {
-      // this direction cannot reach target, so assign a low score:
       scores[1] *= BLOCKED_DIR_SCORE_PENALTY;
       scores[2] *= BLOCKED_DIR_SCORE_PENALTY;
       scores[6] *= BLOCKED_DIR_SCORE_PENALTY;
     }
 
-    // Factor [7]: Heading mismatch: 1.0=perfect phi aligment, 0.0=180deg error
-    // -------------------------------------------------------------------------
+    // Factor [7]: heading alignment with target phi
     if (ptg != nullptr)
     {
       uint32_t ptgStep = 0;
@@ -334,31 +310,29 @@ void CHolonomicFullEval::evalSingleTarget(
     }
     else
     {
-      scores[7] = 1.0;  // neutral when no PTG heading info available
+      scores[7] = 1.0;
     }
 
-    // Save stats for debugging:
     for (size_t l = 0; l < NUM_FACTORS; l++) m_dirs_scores(i, l) = scores[l];
+  }
 
-  }  // end for each direction "i"
-
-  // Normalize factors?
+  // Normalize factors:
   ASSERT_(options.factorNormalizeOrNot.size() == NUM_FACTORS);
   for (size_t l = 0; l < NUM_FACTORS; l++)
   {
     if (!options.factorNormalizeOrNot[l]) continue;
-
     const double mmax = m_dirs_scores.col(l).maxCoeff();
     const double mmin = m_dirs_scores.col(l).minCoeff();
     const double span = mmax - mmin;
     if (span <= .0) continue;
-
     m_dirs_scores.col(l).array() -= mmin;
     m_dirs_scores.col(l).array() /= span;
   }
+}
 
-  // Phase 1: average of PHASE1_FACTORS and thresholding:
-  // ----------------------------------------------------------------------
+void CHolonomicFullEval::computePhaseScores(
+    size_t nDirs, const NavInput& ni, unsigned int target_idx, EvalOutput& eo)
+{
   const unsigned int NUM_PHASES = options.PHASE_FACTORS.size();
   ASSERT_(NUM_PHASES >= 1);
 
@@ -372,8 +346,8 @@ void CHolonomicFullEval::evalSingleTarget(
   }
 
   eo.phase_scores = std::vector<std::vector<double>>(NUM_PHASES, std::vector<double>(nDirs, .0));
-  auto& phase_scores = eo.phase_scores;  // shortcut
-  double last_phase_threshold = -1.0;    // don't threshold for the first phase
+  auto& phase_scores = eo.phase_scores;
+  double last_phase_threshold = -1.0;
 
   for (unsigned int phase_idx = 0; phase_idx < NUM_PHASES; phase_idx++)
   {
@@ -382,46 +356,35 @@ void CHolonomicFullEval::evalSingleTarget(
     for (unsigned int i = 0; i < nDirs; i++)
     {
       double this_dir_eval = 0;
-
-      if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE ||  // Too close to obstacles ?
-          (phase_idx > 0 &&
-           phase_scores[phase_idx - 1][i] < last_phase_threshold)  // thresholding of the
-                                                                   // previous phase
-      )
+      if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE ||
+          (phase_idx > 0 && phase_scores[phase_idx - 1][i] < last_phase_threshold))
       {
         this_dir_eval = .0;
       }
       else
       {
-        // Weighted avrg of factors:
         for (unsigned int l : options.PHASE_FACTORS[phase_idx])
           this_dir_eval +=
               options.factorWeights.at(l) * std::log(std::max(1e-6, m_dirs_scores(i, l)));
-
         this_dir_eval *= weights_sum_phase_inv[phase_idx];
         this_dir_eval = std::exp(this_dir_eval);
       }
       phase_scores[phase_idx][i] = this_dir_eval;
-
-      mrpt::keep_max(phase_max, phase_scores[phase_idx][i]);
-      mrpt::keep_min(phase_min, phase_scores[phase_idx][i]);
-
-    }  // for each direction
+      mrpt::keep_max(phase_max, this_dir_eval);
+      mrpt::keep_min(phase_min, this_dir_eval);
+    }
 
     ASSERT_(options.PHASE_THRESHOLDS.size() == NUM_PHASES);
     ASSERT_(options.PHASE_THRESHOLDS[phase_idx] > .0 && options.PHASE_THRESHOLDS[phase_idx] < 1.0);
-
     last_phase_threshold = options.PHASE_THRESHOLDS[phase_idx] * phase_max +
                            (1.0 - options.PHASE_THRESHOLDS[phase_idx]) * phase_min;
-  }  // end for each phase
+  }
 
-  // Give a chance for a derived class to manipulate the final evaluations:
+  // Allow derived class to adjust final evaluations:
   auto& dirs_eval = phase_scores.back();
-
   postProcessDirectionEvaluations(dirs_eval, ni, target_idx);
 
-  // Recalculate the threshold just in case the postProcess function above
-  // changed things:
+  // Re-threshold after post-processing:
   {
     double phase_min = std::numeric_limits<double>::max(), phase_max = .0;
     for (unsigned int i = 0; i < nDirs; i++)
@@ -432,13 +395,8 @@ void CHolonomicFullEval::evalSingleTarget(
     last_phase_threshold = options.PHASE_THRESHOLDS.back() * phase_max +
                            (1.0 - options.PHASE_THRESHOLDS.back()) * phase_min;
   }
-
-  // Thresholding:
   for (unsigned int i = 0; i < nDirs; i++)
-  {
-    double& val = dirs_eval[i];
-    if (val < last_phase_threshold) val = .0;
-  }
+    if (dirs_eval[i] < last_phase_threshold) dirs_eval[i] = .0;
 }
 
 CHolonomicFullEval::NavOutput CHolonomicFullEval::navigate(const NavInput& ni)
