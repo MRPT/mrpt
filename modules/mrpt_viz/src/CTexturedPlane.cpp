@@ -31,13 +31,14 @@ CTexturedPlane::CTexturedPlane(float x_min, float x_max, float y_min, float y_ma
 
   setPlaneCorners(x_min, x_max, y_min, y_max);
 }
-uint8_t CTexturedPlane::serializeGetVersion() const { return 2; }
+uint8_t CTexturedPlane::serializeGetVersion() const { return 3; }
 void CTexturedPlane::serializeTo(mrpt::serialization::CArchive& out) const
 {
   writeToStreamRender(out);
 
   out << m_xMin << m_xMax;
   out << m_yMin << m_yMax;
+  out << m_textureRepeatX << m_textureRepeatY;  // v3
 
   writeToStreamTexturedObject(out);
 }
@@ -51,10 +52,18 @@ void CTexturedPlane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
       THROW_EXCEPTION("Deserialization of old formats not supported.");
       break;
     case 2:
+    case 3:
     {
       readFromStreamRender(in);
       in >> m_xMin >> m_xMax;
       in >> m_yMin >> m_yMax;
+      if (version >= 3)
+        in >> m_textureRepeatX >> m_textureRepeatY;
+      else
+      {
+        m_textureRepeatX = 1.0f;
+        m_textureRepeatY = 1.0f;
+      }
       readFromStreamTexturedObject(in);
     }
     break;
@@ -86,8 +95,8 @@ void CTexturedPlane::updateBuffers() const
       t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
 
       t.vertices[0].uv = P2f(0, 0);
-      t.vertices[1].uv = P2f(1, 0);
-      t.vertices[2].uv = P2f(1, 1);
+      t.vertices[1].uv = P2f(m_textureRepeatX, 0);
+      t.vertices[2].uv = P2f(m_textureRepeatX, m_textureRepeatY);
 
       for (int i = 0; i < 3; i++)
       {
@@ -107,8 +116,8 @@ void CTexturedPlane::updateBuffers() const
       t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
 
       t.vertices[0].uv = P2f(0, 0);
-      t.vertices[1].uv = P2f(1, 1);
-      t.vertices[2].uv = P2f(0, 1);
+      t.vertices[1].uv = P2f(m_textureRepeatX, m_textureRepeatY);
+      t.vertices[2].uv = P2f(0, m_textureRepeatY);
 
       for (int i = 0; i < 3; i++)
       {
