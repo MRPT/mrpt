@@ -14,10 +14,8 @@ uniform lowp float materialSpecular;  //  [0,1]
 uniform highp float materialSpecularExponent;
 uniform lowp vec3 materialEmissive;
 
-// JLBC: Was "struct" Frag .... but that requires #version 320 es. Let's keep it minimum.
 in highp vec3 frag_position, frag_normal;
 in lowp vec4 frag_materialColor;
-in highp vec4 frag_posLightSpace;
 
 void main()
 {
@@ -61,7 +59,7 @@ void main()
         // Shadow only applies to the primary directional light (index 0)
         mediump float shadowFactor = 1.0;
         if (i == 0 && light_type[i] == 0) {
-            mediump float shadow = ShadowCalculation(frag_posLightSpace, normal, cam2fragDist);
+            mediump float shadow = ShadowCalculation(frag_position, normal, cam2fragDist);
             shadowFactor = 1.0 - shadow;
         }
 

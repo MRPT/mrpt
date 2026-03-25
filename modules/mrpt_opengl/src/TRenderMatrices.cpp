@@ -200,6 +200,138 @@ void TRenderMatrices::computeLightProjectionMatrix(
   // light_pmv is updated in RenderQueue
 }
 
+void TRenderMatrices::computeCascadedLightProjectionMatrices(
+    float zmin, float zmax, const mrpt::viz::TLightParameters& lp)
+{
+  const int N = std::clamp<int>(lp.shadow_cascades, 1, 4);
+  numShadowCascades = N;
+  const float lambda = lp.shadow_cascade_lambda;
+
+  // Ensure zmin > 0 for logarithmic splits
+  const float nearClip = std::max(zmin, 0.01f);
+
+  // Compute PSSM split distances (view-space)
+  std::array<float, 5> splits;  // N+1 boundaries
+  splits[0] = nearClip;
+  for (int i = 1; i <= N; i++)
+  {
+    const float f = static_cast<float>(i) / N;
+    const float cLog = nearClip * std::pow(zmax / nearClip, f);
+    const float cUni = nearClip + (zmax - nearClip) * f;
+    splits[i] = lambda * cLog + (1.0f - lambda) * cUni;
+  }
+  // Record far planes for each cascade (view-space distance)
+  for (int i = 0; i < N; i++) cascade_far_planes[i] = splits[i + 1];
+
+  // Light direction and up vector (shared by all cascades)
+  const auto dir = lp.primaryDirectionalDirection();
+  float azim = 0, elevation = 0;
+  azimuthElevationFromDirection(dir, elevation, azim);
+  const auto lightUp = mrpt::math::TVector3Df(
+      -cos(azim) * sin(elevation), -sin(azim) * sin(elevation), cos(elevation));
+
+  // For each cascade, compute a tight ortho frustum around the view sub-frustum
+  for (int c = 0; c < N; c++)
+  {
+    const float cascNear = splits[c];
+    const float cascFar = splits[c + 1];
+
+    // Compute the 8 corners of the view sub-frustum in world space
+    // We use the inverse of P*V to unproject NDC corners
+    const auto invPV = (p_matrix.asEigen() * v_matrix.asEigen()).inverse();
+
+    // NDC corners: near and far planes at z=-1 and z=+1
+    const float zNDCNear =
+        2.0f * (cascNear - m_last_z_near) / (m_last_z_far - m_last_z_near) - 1.0f;
+    const float zNDCFar = 2.0f * (cascFar - m_last_z_near) / (m_last_z_far - m_last_z_near) - 1.0f;
+
+    // Actually, it's easier to use linearized depth. For a perspective
+    // projection, NDC z = (A*z + B) / z where A and B come from p_matrix.
+    // Let's just compute corners using the actual projection matrix.
+    float zNear_ndc, zFar_ndc;
+    if (is_projective)
+    {
+      // p_matrix(2,2) = -(f+n)/(f-n), p_matrix(2,3) = -2fn/(f-n)
+      const float A = p_matrix(2, 2);
+      const float B = p_matrix(2, 3);
+      // NDC z = (A*z_eye + B) / (-z_eye)  (note: eye-space z is negative)
+      zNear_ndc = (A * (-cascNear) + B) / cascNear;
+      zFar_ndc = (A * (-cascFar) + B) / cascFar;
+    }
+    else
+    {
+      // Ortho: linear mapping
+      zNear_ndc = 2.0f * (cascNear - m_last_z_near) / (m_last_z_far - m_last_z_near) - 1.0f;
+      zFar_ndc = 2.0f * (cascFar - m_last_z_near) / (m_last_z_far - m_last_z_near) - 1.0f;
+    }
+
+    Eigen::Vector4f corners[8];
+    int idx = 0;
+    for (float z : {zNear_ndc, zFar_ndc})
+    {
+      for (float x : {-1.0f, 1.0f})
+      {
+        for (float y : {-1.0f, 1.0f})
+        {
+          Eigen::Vector4f ndc(x, y, z, 1.0f);
+          Eigen::Vector4f world = invPV * ndc;
+          corners[idx++] = world / world.w();
+        }
+      }
+    }
+
+    // Compute light view matrix centered on the sub-frustum
+    Eigen::Vector3f center = Eigen::Vector3f::Zero();
+    for (int i = 0; i < 8; i++) center += corners[i].head<3>();
+    center /= 8.0f;
+
+    // Compute the radius of the sub-frustum bounding sphere to position
+    // the light far enough back to capture all shadow casters.
+    float maxRadius = 0;
+    for (int i = 0; i < 8; i++)
+      maxRadius = std::max(maxRadius, (corners[i].head<3>() - center).norm());
+
+    const float lightBackOffset = maxRadius * 2.0f;
+
+    const auto lightViewMat = LookAt(
+        {center.x() - dir.x * lightBackOffset, center.y() - dir.y * lightBackOffset,
+         center.z() - dir.z * lightBackOffset},
+        {center.x(), center.y(), center.z()}, lightUp);
+
+    // Transform corners to light view space and find AABB
+    float minX = std::numeric_limits<float>::max();
+    float maxX = std::numeric_limits<float>::lowest();
+    float minY = minX, maxY = maxX, minZ = minX, maxZ = maxX;
+    for (int i = 0; i < 8; i++)
+    {
+      Eigen::Vector4f lv = lightViewMat.asEigen() * corners[i];
+      minX = std::min(minX, lv.x());
+      maxX = std::max(maxX, lv.x());
+      minY = std::min(minY, lv.y());
+      maxY = std::max(maxY, lv.y());
+      minZ = std::min(minZ, lv.z());
+      maxZ = std::max(maxZ, lv.z());
+    }
+
+    // Convert from view-space z (negative in front of camera) to positive
+    // near/far distances for OrthoProjectionMatrix, and add padding to
+    // capture shadow casters outside the view sub-frustum.
+    // nearZ = distance from light to closest corner, farZ = to farthest.
+    // Extend far plane generously (shadow casters behind the frustum);
+    // keep near plane tight (ortho depth is linear, so precision is fine).
+    const float extent = -minZ + maxZ;  // = maxZ - minZ but clearer
+    float nearZ = std::max(-maxZ - extent * 0.1f, 0.01f);
+    float farZ = -minZ + extent * 0.5f;
+
+    const auto lightProjMat = OrthoProjectionMatrix(minX, maxX, minY, maxY, nearZ, farZ);
+
+    cascade_light_pv[c].asEigen() = lightProjMat.asEigen() * lightViewMat.asEigen();
+  }
+
+  // Keep legacy light_pv pointing to cascade 0 for compatibility
+  light_pv = cascade_light_pv[0];
+}
+
 // Replacement for deprecated OpenGL gluLookAt():
 mrpt::math::CMatrixFloat44 TRenderMatrices::LookAt(
     const mrpt::math::TVector3D& lookFrom,

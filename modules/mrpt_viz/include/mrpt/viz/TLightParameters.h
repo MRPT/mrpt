@@ -25,6 +25,9 @@ namespace mrpt::viz
 /** Maximum number of simultaneous lights supported by the shader pipeline. */
 static constexpr int MAX_LIGHTS = 8;
 
+/** Maximum number of cascaded shadow map splits. */
+static constexpr int MAX_SHADOW_CASCADES = 4;
+
 /** Light source type.
  * \ingroup mrpt_viz_grp
  */
@@ -186,6 +189,14 @@ struct TLightParameters
   /** Minimum extension (in [0,1] ratio of the light distance) of the shadow
    * map square ortho frustum. */
   float minimum_shadow_map_extension_ratio = 0.03f;
+
+  /** Number of cascaded shadow map splits (1-4). Default 3.
+   *  1 = single shadow map (legacy behavior). */
+  uint8_t shadow_cascades = 3;
+
+  /** PSSM split scheme blend factor [0,1]. 0 = uniform splits,
+   *  1 = logarithmic splits. Default 0.5 (practical split scheme). */
+  float shadow_cascade_lambda = 0.5f;
 
   /** If true (default), enables physically-correct gamma correction via the
    * GPU sRGB pipeline. */

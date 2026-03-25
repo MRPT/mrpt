@@ -6,6 +6,7 @@ R"XXX(#version 300 es
 
 // Multi-light support (up to 8 lights)
 #define MAX_LIGHTS 8
+#define MAX_SHADOW_CASCADES 4
 
 uniform int num_lights;
 uniform int light_type[MAX_LIGHTS];       // 0=directional, 1=point, 2=spot
@@ -28,46 +29,71 @@ uniform highp float fog_far;
 uniform int fog_mode;
 uniform highp float fog_density;
 
-uniform highp sampler2D shadowMap;
+// Cascaded shadow map
+uniform highp sampler2DArray shadowMapArray;
+uniform int num_shadow_cascades;
+uniform highp mat4 cascade_light_pv[MAX_SHADOW_CASCADES];
+uniform highp float cascade_far_planes[MAX_SHADOW_CASCADES];
 
 uniform highp float shadow_bias, shadow_bias_cam2frag, shadow_bias_normal;
 
+// v_matrix is uploaded per-shader in processRenderQueue
+uniform highp mat4 v_matrix;
+
 mediump float ShadowCalculation(
-    highp vec4 fragPosLightSpace,
+    highp vec3 fragWorldPos,
     mediump vec3 normal,
     mediump float cam2fragDist)
 {
-   // perform perspective divide
+    // Compute view-space depth for cascade selection
+    highp float viewDepth = abs((v_matrix * vec4(fragWorldPos, 1.0)).z);
+
+    // Select cascade: find the first cascade whose far plane covers this fragment
+    int cascade = num_shadow_cascades - 1;
+    for (int i = 0; i < MAX_SHADOW_CASCADES; i++) {
+        if (i >= num_shadow_cascades) break;
+        if (viewDepth < cascade_far_planes[i]) {
+            cascade = i;
+            break;
+        }
+    }
+
+    // Transform fragment to the selected cascade's light space
+    highp vec4 fragPosLightSpace = cascade_light_pv[cascade] * vec4(fragWorldPos, 1.0);
+
+    // Perspective divide
     highp vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
-    // transform to [0,1] range
+    // Transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
 
-    if(projCoords.z > 1.0) return 0.0;
+    // No shadow if outside the cascade's shadow map coverage
+    if (projCoords.z > 1.0 ||
+        projCoords.x < 0.0 || projCoords.x > 1.0 ||
+        projCoords.y < 0.0 || projCoords.y > 1.0)
+        return 0.0;
 
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    highp float closestDepth = texture(shadowMap, projCoords.xy).r;
-    // get depth of current fragment from light's perspective
     highp float currentDepth = projCoords.z;
 
-    // check whether current frag pos is in shadow
-    // Shadow bias uses the primary directional light direction (light_direction[0])
-    highp float bias = shadow_bias + shadow_bias_cam2frag*cam2fragDist + shadow_bias_normal*(1.0-max(0.0,dot(normal, light_direction[0])));
-#if 0
-    mediump float shadow = currentDepth-bias > closestDepth  ? 1.0 : 0.0;
-#else
-    mediump float shadow = 0.0f;
-    mediump vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
-    for(int x = -1; x <= 1; ++x)
+    // Shadow bias using the primary directional light direction
+    highp float bias = shadow_bias + shadow_bias_cam2frag * cam2fragDist +
+                       shadow_bias_normal * (1.0 - max(0.0, dot(normal, light_direction[0])));
+
+    // PCF 3x3 sampling from the cascade layer in the texture array
+    mediump float shadow = 0.0;
+    mediump vec2 texelSize = 1.0 / vec2(textureSize(shadowMapArray, 0).xy);
+    for (int x = -1; x <= 1; ++x)
     {
-        for(int y = -1; y <= 1; ++y)
+        for (int y = -1; y <= 1; ++y)
         {
-            highp float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
+            highp float pcfDepth = texture(
+                shadowMapArray,
+                vec3(projCoords.xy + vec2(x, y) * texelSize, float(cascade))
+            ).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
         }
     }
     shadow /= 9.0;
-#endif
     return shadow;
 }
 )XXX"

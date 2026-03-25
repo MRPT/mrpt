@@ -363,13 +363,17 @@ void CompiledViewport::enableShadows(
     m_shadowMapSizeY = shadowMapSizeY;
   }
 
-  if (enabled && !m_shadowMapFBO)
+  if (!enabled)
   {
-    // Shadow FBO will be created on first render
-  }
-  else if (!enabled)
-  {
-    m_shadowMapFBO.reset();
+    for (auto& fbo : m_shadowMapFBOs) fbo.reset();
+    if (m_cascadeDepthArrayTexId != 0)
+    {
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+      glDeleteTextures(1, &m_cascadeDepthArrayTexId);
+#endif
+      m_cascadeDepthArrayTexId = 0;
+      m_cascadeDepthArrayLayers = 0;
+    }
   }
 
   if (VIEWPORT_VERBOSE)
@@ -677,10 +681,10 @@ void CompiledViewport::updateMatrices()
     m_renderMatrices.computeProjectionMatrix(m_clipNear, m_clipFar);
     m_renderMatrices.computeViewMatrix();
   }
-  // Compute light projection matrices for shadows
+  // Compute light projection matrices for shadows (cascaded)
   if (m_shadowsEnabled)
   {
-    m_renderMatrices.computeLightProjectionMatrix(
+    m_renderMatrices.computeCascadedLightProjectionMatrices(
         m_lightShadowClipNear, m_lightShadowClipFar, m_lightParams);
   }
   m_renderMatrices.initialized = true;
@@ -900,20 +904,57 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
 {
   MRPT_START
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-  // Create shadow FBO if needed
-  if (!m_shadowMapFBO)
+  const int numCascades = m_renderMatrices.numShadowCascades;
+
+  // Create/resize the cascade depth texture array
+  if (m_cascadeDepthArrayTexId == 0 || m_cascadeDepthArrayLayers != numCascades)
   {
-    m_shadowMapFBO = std::make_unique<FrameBuffer>();
-    m_shadowMapFBO->createDepthMap(m_shadowMapSizeX, m_shadowMapSizeY);
+    if (m_cascadeDepthArrayTexId != 0) glDeleteTextures(1, &m_cascadeDepthArrayTexId);
+    glGenTextures(1, &m_cascadeDepthArrayTexId);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_cascadeDepthArrayTexId);
+    glTexImage3D(
+        GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, m_shadowMapSizeX, m_shadowMapSizeY,
+        numCascades, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+    m_cascadeDepthArrayLayers = numCascades;
   }
+
+  // Create per-cascade FBOs if needed
+  for (int c = 0; c < numCascades; c++)
+  {
+    if (!m_shadowMapFBOs[c])
+    {
+      m_shadowMapFBOs[c] = std::make_unique<FrameBuffer>();
+      m_shadowMapFBOs[c]->createDepthMap(m_shadowMapSizeX, m_shadowMapSizeY);
+    }
+  }
+
   glEnable(GL_DEPTH_TEST);
   glViewport(0, 0, m_shadowMapSizeX, m_shadowMapSizeY);
 
-  const auto oldFBs = m_shadowMapFBO->bind();
-  glClear(GL_DEPTH_BUFFER_BIT);
-  // Render scene from light's perspective (1st pass)
-  renderNormalScene(shaderManager, true);
-  m_shadowMapFBO->Bind(oldFBs);
+  // Render each cascade
+  for (int c = 0; c < numCascades; c++)
+  {
+    const auto oldFBs = m_shadowMapFBOs[c]->bind();
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    // Set the current cascade's light_pv as the active one for the 1st pass
+    m_renderMatrices.light_pv = m_renderMatrices.cascade_light_pv[c];
+    m_renderMatrices.currentCascadeIndex = c;
+
+    renderNormalScene(shaderManager, true);
+
+    // Copy depth from this FBO into the texture array layer
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_cascadeDepthArrayTexId);
+    glCopyTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, c, 0, 0, m_shadowMapSizeX, m_shadowMapSizeY);
+
+    m_shadowMapFBOs[c]->Bind(oldFBs);
+  }
+
   // Restore viewport
   glViewport(m_pixelX, m_pixelY, m_pixelWidth, m_pixelHeight);
 #endif
@@ -1095,14 +1136,42 @@ void CompiledViewport::processRenderQueue(
                                  shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
     const bool isShadow1stPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_1ST;
 
-    // Bind shadow depth texture for 2nd pass shaders
-    if (isShadow2ndPass && m_shadowMapFBO)
+    // Bind cascaded shadow map texture array for 2nd pass shaders
+    if (isShadow2ndPass && m_cascadeDepthArrayTexId != 0)
     {
       glActiveTexture(GL_TEXTURE0 + SHADOW_MAP_TEXTURE_UNIT);
-      glBindTexture(GL_TEXTURE_2D, m_shadowMapFBO->depthMapTextureId());
-      if (shader->hasUniform("shadowMap"))
+      glBindTexture(GL_TEXTURE_2D_ARRAY, m_cascadeDepthArrayTexId);
+      if (shader->hasUniform("shadowMapArray"))
       {
-        glUniform1i(shader->uniformId("shadowMap"), SHADOW_MAP_TEXTURE_UNIT);
+        glUniform1i(shader->uniformId("shadowMapArray"), SHADOW_MAP_TEXTURE_UNIT);
+      }
+
+      // Upload cascade light_pv matrices
+      if (shader->hasUniform("cascade_light_pv"))
+      {
+        // Upload as array of mat4 (each transposed)
+        const int N = matrices.numShadowCascades;
+        for (int c = 0; c < N; c++)
+        {
+          const std::string uname = "cascade_light_pv[" + std::to_string(c) + "]";
+          if (shader->hasUniform(uname.c_str()))
+          {
+            glUniformMatrix4fv(
+                shader->uniformId(uname.c_str()), 1, IS_TRANSPOSED,
+                matrices.cascade_light_pv[c].data());
+          }
+        }
+      }
+      // Upload cascade far planes and count
+      if (shader->hasUniform("num_shadow_cascades"))
+      {
+        glUniform1i(shader->uniformId("num_shadow_cascades"), matrices.numShadowCascades);
+      }
+      if (shader->hasUniform("cascade_far_planes"))
+      {
+        glUniform1fv(
+            shader->uniformId("cascade_far_planes"), matrices.numShadowCascades,
+            matrices.cascade_far_planes.data());
       }
     }
 

@@ -19,9 +19,7 @@ uniform lowp sampler2D normalMapSampler;
 
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated UV texture coords
-in highp vec4 frag_posLightSpace;
 in highp vec3 frag_tangent;
-
 
 void main()
 {
@@ -75,7 +73,7 @@ void main()
         // Shadow only applies to the primary directional light (index 0)
         mediump float shadowFactor = 1.0;
         if (i == 0 && light_type[i] == 0) {
-            mediump float shadow = ShadowCalculation(frag_posLightSpace, normal, cam2fragDist);
+            mediump float shadow = ShadowCalculation(frag_position, normal, cam2fragDist);
             shadowFactor = 1.0 - shadow;
         }
 
@@ -84,7 +82,7 @@ void main()
     }
 
     // material texture color:
-    lowp vec4 texCol = texture(textureSampler,frag_UV);
+    lowp vec4 texCol = texture(textureSampler, frag_UV);
 
     mediump vec3 litColor = materialEmissive + texCol.rgb * totalDiffuse + totalSpecular;
 

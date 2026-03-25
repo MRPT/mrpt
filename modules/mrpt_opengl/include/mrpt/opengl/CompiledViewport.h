@@ -464,8 +464,13 @@ class CompiledViewport
   unsigned int m_shadowMapSizeX = 2048;
   unsigned int m_shadowMapSizeY = 2048;
 
-  /** Shadow map framebuffer (created on demand) */
-  std::unique_ptr<FrameBuffer> m_shadowMapFBO;
+  /** Shadow map framebuffers (one per cascade, created on demand) */
+  std::array<std::unique_ptr<FrameBuffer>, 4> m_shadowMapFBOs;
+
+  /** GL_TEXTURE_2D_ARRAY holding all cascade depth maps.
+   *  Created/resized on demand in renderShadowMap(). */
+  unsigned int m_cascadeDepthArrayTexId = 0;
+  int m_cascadeDepthArrayLayers = 0;
 
   /** @} */
 
