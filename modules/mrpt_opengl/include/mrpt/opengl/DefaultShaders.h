@@ -43,6 +43,11 @@ struct DefaultShaderID
   static constexpr shader_id_t SKYBOX = 5;  // render *before* potentially transparent triangles
   static constexpr shader_id_t DEBUG_TEXTURE_TO_SCREEN = 30;
   static constexpr shader_id_t NONE = 31;  //!< Skip rendering
+
+  // SSAO post-processing passes:
+  static constexpr shader_id_t SSAO_GEOMETRY = 40;  //!< G-buffer: view-space pos+normal
+  static constexpr shader_id_t SSAO_COMPUTE = 41;   //!< Hemisphere AO computation
+  static constexpr shader_id_t SSAO_BLUR = 42;      //!< Box blur on raw AO result
 };
 
 /** Loads a set of OpenGL Vertex+Fragment shaders from the default library
@@ -61,5 +66,11 @@ static constexpr int SHADOW_MAP_TEXTURE_UNIT = 1;
 
 // Use GL_TEXTURE2 for normal map:
 static constexpr int NORMAL_MAP_TEXTURE_UNIT = 2;
+
+// Use GL_TEXTURE3 for SSAO random noise texture (4x4 rotation vectors):
+static constexpr int SSAO_NOISE_TEXTURE_UNIT = 3;
+
+// Use GL_TEXTURE4 for the blurred SSAO result (sampled by lit shaders):
+static constexpr int SSAO_TEXTURE_UNIT = 4;
 
 }  // namespace mrpt::opengl

@@ -261,6 +261,12 @@ class Viewport :
 
   [[nodiscard]] bool isShadowCastingEnabled() const { return m_shadowsEnabled; }
 
+  /** Enable or disable Screen-Space Ambient Occlusion (SSAO).
+   *  Parameters are tuned via lightParameters().ssao_* fields.
+   *  Default: disabled. */
+  void enableSSAO(bool enabled = true) { m_light.ssao_enabled = enabled; }
+  [[nodiscard]] bool isSSAOEnabled() const { return m_light.ssao_enabled; }
+
   /** @} */  // end of Change or read viewport properties
 
   /** @name Contained objects set/get/search

@@ -87,7 +87,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
                   "cam_position",     "materialSpecular",  "materialSpecularExponent",
                   "materialEmissive", "fog_enabled",       "fog_color",
                   "fog_near",         "fog_far",           "fog_mode",
-                  "fog_density"};
+                  "fog_density",      "ssao_enabled",      "ssaoTexture"};
       attribs = {"position", "vertexColor", "vertexNormal"};
       break;
 
@@ -135,7 +135,9 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "fog_near",
           "fog_far",
           "fog_mode",
-          "fog_density"};
+          "fog_density",
+          "ssao_enabled",
+          "ssaoTexture"};
       attribs = {"position", "vertexColor", "vertexUV", "vertexNormal"};
       break;
 
@@ -221,7 +223,9 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "fog_near",
           "fog_far",
           "fog_mode",
-          "fog_density"};
+          "fog_density",
+          "ssao_enabled",
+          "ssaoTexture"};
       attribs = {"position", "vertexColor", "vertexNormal"};
       break;
 
@@ -285,7 +289,9 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "fog_near",
           "fog_far",
           "fog_mode",
-          "fog_density"};
+          "fog_density",
+          "ssao_enabled",
+          "ssaoTexture"};
       attribs = {"position", "vertexNormal", "vertexUV", "vertexTangent"};
       break;
 
@@ -312,6 +318,43 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           ;
       uniforms = {"textureId"};
       attribs = {"position", "vertexUV"};
+      break;
+
+    // ===========================================
+    // SSAO passes
+    // ===========================================
+    case DefaultShaderID::SSAO_GEOMETRY:
+      vertex_shader =
+#include "../shaders/ssao-geometry.v.glsl"
+          ;
+      fragment_shader =
+#include "../shaders/ssao-geometry.f.glsl"
+          ;
+      uniforms = {"p_matrix", "v_matrix", "m_matrix"};
+      attribs = {"position", "vertexNormal"};
+      break;
+
+    case DefaultShaderID::SSAO_COMPUTE:
+      vertex_shader =
+#include "../shaders/ssao-compute.v.glsl"
+          ;
+      fragment_shader =
+#include "../shaders/ssao-compute.f.glsl"
+          ;
+      uniforms = {"gPosition",   "gNormal",   "noiseTexture", "ssao_samples", "ssao_kernel_size",
+                  "ssao_radius", "ssao_bias", "proj_fx",      "proj_fy",     "noiseScale"};
+      attribs = {};
+      break;
+
+    case DefaultShaderID::SSAO_BLUR:
+      vertex_shader =
+#include "../shaders/ssao-blur.v.glsl"
+          ;
+      fragment_shader =
+#include "../shaders/ssao-blur.f.glsl"
+          ;
+      uniforms = {"ssaoInput"};
+      attribs = {};
       break;
 
     default:

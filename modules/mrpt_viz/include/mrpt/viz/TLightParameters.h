@@ -198,6 +198,28 @@ struct TLightParameters
    *  1 = logarithmic splits. Default 0.5 (practical split scheme). */
   float shadow_cascade_lambda = 0.5f;
 
+  /** @name Screen-Space Ambient Occlusion (SSAO)
+   *  SSAO approximates ambient occlusion from the depth and normal G-buffer
+   *  without ray-tracing. Disabled by default.
+   *  @{ */
+
+  /** Enable SSAO (default: false). */
+  bool ssao_enabled = false;
+
+  /** Hemisphere sampling radius in world units (default: 0.5). */
+  float ssao_radius = 0.5f;
+
+  /** Depth comparison bias to avoid self-occlusion (default: 0.025). */
+  float ssao_bias = 0.025f;
+
+  /** Exponent applied to the AO factor; >1 darkens, <1 lightens (default: 2.0). */
+  float ssao_power = 2.0f;
+
+  /** Number of hemisphere samples: 16, 32, or 64 (default: 32). */
+  uint8_t ssao_kernel_size = 32;
+
+  /** @} */
+
   /** If true (default), enables physically-correct gamma correction via the
    * GPU sRGB pipeline. */
   bool gamma_correction = true;

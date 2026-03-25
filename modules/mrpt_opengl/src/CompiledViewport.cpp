@@ -25,9 +25,11 @@
 
 #include <Eigen/Dense>
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <functional>
 #include <iostream>
+#include <random>
 
 #include "gltext.h"
 
@@ -52,6 +54,7 @@ CompiledViewport::~CompiledViewport()
   if (VIEWPORT_VERBOSE) std::cout << "[CompiledViewport] Destroying: '" << m_name << "'\n";
 
   clearProxies();
+  ssaoDestroy();
 }
 
 void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
@@ -89,6 +92,9 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
 
   // Copy shadow settings
   m_shadowsEnabled = vizVp.isShadowCastingEnabled();
+
+  // Propagate SSAO enable flag
+  m_ssaoEnabled = m_lightParams.ssao_enabled;
 
   // Copy special modes
   if (vizVp.isImageViewMode())
@@ -791,6 +797,14 @@ void CompiledViewport::render(
     {
       renderShadowMap(shaderManager);
     }
+    // SSAO pre-pass (if enabled)
+    if (m_ssaoEnabled)
+    {
+      renderSSAOGeometry(shaderManager);
+      renderSSAOCompute(shaderManager);
+      // Restore viewport after SSAO passes
+      glViewport(m_pixelX, m_pixelY, m_pixelWidth, m_pixelHeight);
+    }
     // Normal scene rendering
     renderNormalScene(shaderManager, false, proxiesToRender);
   }
@@ -904,6 +918,346 @@ void CompiledViewport::renderImageView(ShaderProgramManager& shaderManager)
 #endif
   MRPT_END
 }
+// -----------------------------------------------------------------------
+// SSAO helpers
+// -----------------------------------------------------------------------
+void CompiledViewport::ssaoInit()
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  // --- Hemisphere kernel (tangent space, z-facing hemisphere) ---
+  std::mt19937 rng(42);
+  std::uniform_real_distribution<float> randUnit(0.0f, 1.0f);
+  std::uniform_real_distribution<float> randSigned(-1.0f, 1.0f);
+
+  const int N = 64;
+  m_ssaoKernel.resize(N * 3);
+  for (int i = 0; i < N; i++)
+  {
+    float x = randSigned(rng);
+    float y = randSigned(rng);
+    float z = randUnit(rng);  // hemisphere: z >= 0
+    // Normalize
+    float len = std::sqrt(x * x + y * y + z * z);
+    if (len < 1e-6f)
+    {
+      x = 0;
+      y = 0;
+      z = 1;
+      len = 1;
+    }
+    x /= len;
+    y /= len;
+    z /= len;
+    // Accelerating interpolation: cluster samples closer to the origin
+    float scale = static_cast<float>(i) / N;
+    scale = 0.1f + 0.9f * scale * scale;
+    m_ssaoKernel[i * 3 + 0] = x * scale;
+    m_ssaoKernel[i * 3 + 1] = y * scale;
+    m_ssaoKernel[i * 3 + 2] = z * scale;
+  }
+
+  // --- 4x4 noise texture (random rotation vectors, RG only) ---
+  float noiseData[4 * 4 * 3];
+  for (int i = 0; i < 16; i++)
+  {
+    noiseData[i * 3 + 0] = randSigned(rng);
+    noiseData[i * 3 + 1] = randSigned(rng);
+    noiseData[i * 3 + 2] = 0.0f;
+  }
+
+  if (m_ssaoNoiseTex == 0) glGenTextures(1, &m_ssaoNoiseTex);
+  glBindTexture(GL_TEXTURE_2D, m_ssaoNoiseTex);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, noiseData);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  // --- Dummy VAO for full-screen triangle ---
+  if (m_ssaoDummyVAO == 0) glGenVertexArrays(1, &m_ssaoDummyVAO);
+#endif
+}
+
+void CompiledViewport::ssaoCreateFBOs(int w, int h)
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  ssaoDestroy();  // delete existing resources
+
+  // --- G-buffer FBO ---
+  glGenFramebuffers(1, &m_ssaoGBufferFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_ssaoGBufferFBO);
+
+  // Position texture (RGBA32F — need full precision for view-space positions)
+  glGenTextures(1, &m_ssaoGPositionTex);
+  glBindTexture(GL_TEXTURE_2D, m_ssaoGPositionTex);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glFramebufferTexture2D(
+      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ssaoGPositionTex, 0);
+
+  // Normal texture (RGBA16F)
+  glGenTextures(1, &m_ssaoGNormalTex);
+  glBindTexture(GL_TEXTURE_2D, m_ssaoGNormalTex);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_ssaoGNormalTex, 0);
+
+  // Depth renderbuffer
+  glGenRenderbuffers(1, &m_ssaoGDepthRBO);
+  glBindRenderbuffer(GL_RENDERBUFFER, m_ssaoGDepthRBO);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, w, h);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_ssaoGDepthRBO);
+
+  const GLenum drawBufs[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+  glDrawBuffers(2, drawBufs);
+
+  // --- Raw AO FBO (single channel R16F) ---
+  glGenFramebuffers(1, &m_ssaoRawFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_ssaoRawFBO);
+  glGenTextures(1, &m_ssaoRawTex);
+  glBindTexture(GL_TEXTURE_2D, m_ssaoRawTex);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, w, h, 0, GL_RED, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ssaoRawTex, 0);
+  {
+    const GLenum buf = GL_COLOR_ATTACHMENT0;
+    glDrawBuffers(1, &buf);
+  }
+
+  // --- Blur AO FBO ---
+  glGenFramebuffers(1, &m_ssaoBlurFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_ssaoBlurFBO);
+  glGenTextures(1, &m_ssaoBlurTex);
+  glBindTexture(GL_TEXTURE_2D, m_ssaoBlurTex);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, w, h, 0, GL_RED, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ssaoBlurTex, 0);
+  {
+    const GLenum buf = GL_COLOR_ATTACHMENT0;
+    glDrawBuffers(1, &buf);
+  }
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  m_ssaoLastW = w;
+  m_ssaoLastH = h;
+#endif
+}
+
+void CompiledViewport::ssaoDestroy()
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  auto del_tex = [](unsigned int& t)
+  {
+    if (t)
+    {
+      glDeleteTextures(1, &t);
+      t = 0;
+    }
+  };
+  auto del_fbo = [](unsigned int& f)
+  {
+    if (f)
+    {
+      glDeleteFramebuffers(1, &f);
+      f = 0;
+    }
+  };
+  auto del_rbo = [](unsigned int& r)
+  {
+    if (r)
+    {
+      glDeleteRenderbuffers(1, &r);
+      r = 0;
+    }
+  };
+
+  del_fbo(m_ssaoGBufferFBO);
+  del_tex(m_ssaoGPositionTex);
+  del_tex(m_ssaoGNormalTex);
+  del_rbo(m_ssaoGDepthRBO);
+  del_fbo(m_ssaoRawFBO);
+  del_tex(m_ssaoRawTex);
+  del_fbo(m_ssaoBlurFBO);
+  del_tex(m_ssaoBlurTex);
+  del_tex(m_ssaoNoiseTex);
+  if (m_ssaoDummyVAO)
+  {
+    glDeleteVertexArrays(1, &m_ssaoDummyVAO);
+    m_ssaoDummyVAO = 0;
+  }
+
+  m_ssaoKernel.clear();
+  m_ssaoLastW = 0;
+  m_ssaoLastH = 0;
+#endif
+}
+
+void CompiledViewport::renderSSAOGeometry(ShaderProgramManager& shaderManager)
+{
+  MRPT_START
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  // Lazy init of kernel/noise/VAO (once per context)
+  if (m_ssaoKernel.empty()) ssaoInit();
+
+  // (Re-)create FBOs when size changes
+  if (m_pixelWidth != m_ssaoLastW || m_pixelHeight != m_ssaoLastH)
+    ssaoCreateFBOs(m_pixelWidth, m_pixelHeight);
+
+  const auto oldFBs = FrameBuffer::CurrentBinding();
+  glBindFramebuffer(GL_FRAMEBUFFER, m_ssaoGBufferFBO);
+
+  glViewport(0, 0, m_pixelWidth, m_pixelHeight);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  // Build render queue overriding all triangle shaders with SSAO_GEOMETRY
+  RenderQueue queue;
+  auto matrices = m_renderMatrices;
+  buildRenderQueueSSAOGeom(queue, matrices);
+  processRenderQueue(queue, shaderManager, matrices, m_lastStats);
+
+  FrameBuffer::Bind(oldFBs);
+#endif
+  MRPT_END
+}
+
+void CompiledViewport::renderSSAOCompute(ShaderProgramManager& shaderManager)
+{
+  MRPT_START
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+  const auto oldFBs = FrameBuffer::CurrentBinding();
+
+  // ----- AO compute pass -----
+  glBindFramebuffer(GL_FRAMEBUFFER, m_ssaoRawFBO);
+  glViewport(0, 0, m_pixelWidth, m_pixelHeight);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glDisable(GL_DEPTH_TEST);
+
+  auto computeShader = shaderManager.getProgram(DefaultShaderID::SSAO_COMPUTE);
+  if (computeShader)
+  {
+    computeShader->use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_ssaoGPositionTex);
+    glUniform1i(computeShader->uniformId("gPosition"), 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_ssaoGNormalTex);
+    glUniform1i(computeShader->uniformId("gNormal"), 1);
+
+    glActiveTexture(GL_TEXTURE0 + SSAO_NOISE_TEXTURE_UNIT);
+    glBindTexture(GL_TEXTURE_2D, m_ssaoNoiseTex);
+    glUniform1i(computeShader->uniformId("noiseTexture"), SSAO_NOISE_TEXTURE_UNIT);
+
+    // Kernel samples: upload the entire vec3 array at once using the base
+    // location of "ssao_samples" (which maps to ssao_samples[0]).
+    const int kernelSize = static_cast<int>(m_ssaoKernel.size() / 3);
+    if (computeShader->hasUniform("ssao_samples"))
+    {
+      const int count = std::min(kernelSize, static_cast<int>(m_lightParams.ssao_kernel_size));
+      glUniform3fv(computeShader->uniformId("ssao_samples"), count, m_ssaoKernel.data());
+    }
+
+    if (computeShader->hasUniform("ssao_kernel_size"))
+      glUniform1i(
+          computeShader->uniformId("ssao_kernel_size"),
+          std::min(kernelSize, static_cast<int>(m_lightParams.ssao_kernel_size)));
+
+    if (computeShader->hasUniform("ssao_radius"))
+      glUniform1f(computeShader->uniformId("ssao_radius"), m_lightParams.ssao_radius);
+    if (computeShader->hasUniform("ssao_bias"))
+      glUniform1f(computeShader->uniformId("ssao_bias"), m_lightParams.ssao_bias);
+    // Pass projection focal lengths (diagonal elements of projection matrix)
+    // p_matrix is row-major, so [0][0]=data[0], [1][1]=data[5]
+    if (computeShader->hasUniform("proj_fx"))
+      glUniform1f(computeShader->uniformId("proj_fx"), m_renderMatrices.p_matrix(0, 0));
+    if (computeShader->hasUniform("proj_fy"))
+      glUniform1f(computeShader->uniformId("proj_fy"), m_renderMatrices.p_matrix(1, 1));
+    if (computeShader->hasUniform("noiseScale"))
+      glUniform2f(
+          computeShader->uniformId("noiseScale"), static_cast<float>(m_pixelWidth) / 4.0f,
+          static_cast<float>(m_pixelHeight) / 4.0f);
+
+    glBindVertexArray(m_ssaoDummyVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
+  }
+
+  // ----- Blur pass -----
+  glBindFramebuffer(GL_FRAMEBUFFER, m_ssaoBlurFBO);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  auto blurShader = shaderManager.getProgram(DefaultShaderID::SSAO_BLUR);
+  if (blurShader)
+  {
+    blurShader->use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_ssaoRawTex);
+    glUniform1i(blurShader->uniformId("ssaoInput"), 0);
+
+    glBindVertexArray(m_ssaoDummyVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
+  }
+
+  glEnable(GL_DEPTH_TEST);
+  FrameBuffer::Bind(oldFBs);
+#endif
+  MRPT_END
+}
+
+void CompiledViewport::buildRenderQueueSSAOGeom(RenderQueue& queue, const TRenderMatrices& matrices)
+{
+  MRPT_START
+  for (const auto& proxy : m_proxies)
+  {
+    if (!proxy || !proxy->m_visible) continue;
+
+    // Only render objects that have lit triangle shaders (they have normals)
+    auto shaderIDs = proxy->requiredShaders();
+    bool hasTriangles = false;
+    for (auto sid : shaderIDs)
+    {
+      if (sid == DefaultShaderID::TRIANGLES_LIGHT ||
+          sid == DefaultShaderID::TEXTURED_TRIANGLES_LIGHT ||
+          sid == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
+          sid == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND)
+      {
+        hasTriangles = true;
+        break;
+      }
+    }
+    if (!hasTriangles) continue;
+
+    mrpt::math::CMatrixDouble44 modelMat;
+    modelMat.asEigen() = proxy->m_modelMatrix.asEigen().template cast<double>();
+    const mrpt::poses::CPose3D objPose(modelMat);
+
+    const auto [objDepth, visible, fullyVisible] =
+        depthAndVisibleInView(proxy.get(), matrices, objPose, false);
+    if (!visible) continue;
+
+    auto objMatrices = matrices;
+    objMatrices.m_matrix = proxy->m_modelMatrix;
+    objMatrices.mv_matrix.asEigen() =
+        objMatrices.v_matrix.asEigen() * objMatrices.m_matrix.asEigen();
+    objMatrices.pmv_matrix.asEigen() =
+        objMatrices.p_matrix.asEigen() * objMatrices.mv_matrix.asEigen();
+
+    queue[DefaultShaderID::SSAO_GEOMETRY].emplace(
+        static_cast<float>(objDepth), RenderQueueElement{proxy.get(), objMatrices});
+  }
+  MRPT_END
+}
+
 void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
 {
   MRPT_START
@@ -939,6 +1293,10 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
   glEnable(GL_DEPTH_TEST);
   glViewport(0, 0, m_shadowMapSizeX, m_shadowMapSizeY);
 
+  // Hardware polygon offset to prevent shadow acne (self-shadowing)
+  glEnable(GL_POLYGON_OFFSET_FILL);
+  glPolygonOffset(2.0f, 4.0f);
+
   // Render each cascade directly into the texture array layer
   for (int c = 0; c < numCascades; c++)
   {
@@ -955,6 +1313,8 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
 
     renderNormalScene(shaderManager, true);
   }
+
+  glDisable(GL_POLYGON_OFFSET_FILL);
 
   // Restore previous FBO and viewport
   FrameBuffer::Bind(oldFBs);
@@ -1174,6 +1534,20 @@ void CompiledViewport::processRenderQueue(
         glUniform1fv(
             shader->uniformId("cascade_far_planes"), matrices.numShadowCascades,
             matrices.cascade_far_planes.data());
+      }
+    }
+
+    // Bind SSAO blur texture for lit shaders (all shaders that declare ssao_enabled)
+    if (shader->hasUniform("ssao_enabled"))
+    {
+      const bool ssaoActive = m_ssaoEnabled && m_ssaoBlurTex != 0;
+      glUniform1i(shader->uniformId("ssao_enabled"), ssaoActive ? 1 : 0);
+      if (ssaoActive)
+      {
+        glActiveTexture(GL_TEXTURE0 + SSAO_TEXTURE_UNIT);
+        glBindTexture(GL_TEXTURE_2D, m_ssaoBlurTex);
+        if (shader->hasUniform("ssaoTexture"))
+          glUniform1i(shader->uniformId("ssaoTexture"), SSAO_TEXTURE_UNIT);
       }
     }
 

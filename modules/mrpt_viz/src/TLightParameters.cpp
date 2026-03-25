@@ -57,10 +57,10 @@ void TLight::readFromStream(mrpt::serialization::CArchive& in)
 
 void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
 {
-  const uint8_t version = 8;
+  const uint8_t version = 9;
   out << version;
 
-  // v5: multi-light format, v6: + hemisphere ambient, v7: + fog, v8: + CSM
+  // v5: multi-light format, v6: + hemisphere ambient, v7: + fog, v8: + CSM, v9: + SSAO
   out << ambient;
   out << shadow_bias << shadow_bias_cam2frag << shadow_bias_normal;
   out << eyeDistance2lightShadowExtension << minimum_shadow_map_extension_ratio;
@@ -73,6 +73,8 @@ void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
   out << fog_enabled << fog_color << fog_near << fog_far << fog_mode << fog_density;
   // v8: CSM
   out << shadow_cascades << shadow_cascade_lambda;
+  // v9: SSAO
+  out << ssao_enabled << ssao_radius << ssao_bias << ssao_power << ssao_kernel_size;
 }
 
 void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
@@ -121,6 +123,7 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
     case 6:
     case 7:
     case 8:
+    case 9:
     {
       in >> ambient;
       in >> shadow_bias >> shadow_bias_cam2frag >> shadow_bias_normal;
@@ -140,9 +143,7 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
       if (version >= 7)
         in >> fog_enabled >> fog_color >> fog_near >> fog_far >> fog_mode >> fog_density;
       else
-      {
         fog_enabled = false;
-      }
       if (version >= 8)
         in >> shadow_cascades >> shadow_cascade_lambda;
       else
@@ -150,6 +151,10 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
         shadow_cascades = 3;
         shadow_cascade_lambda = 0.5f;
       }
+      if (version >= 9)
+        in >> ssao_enabled >> ssao_radius >> ssao_bias >> ssao_power >> ssao_kernel_size;
+      else
+        ssao_enabled = false;
     }
     break;
     default:

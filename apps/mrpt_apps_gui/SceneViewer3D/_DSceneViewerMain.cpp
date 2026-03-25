@@ -325,6 +325,7 @@ const wxWindowID _DSceneViewerFrame::ID_STATICLINE2 = wxNewId();
 const wxWindowID _DSceneViewerFrame::ID_BUTTON6 = wxNewId();
 const wxWindowID _DSceneViewerFrame::ID_BUTTON7 = wxNewId();
 const wxWindowID _DSceneViewerFrame::ID_BUTTON_SHADOWS = wxNewId();
+const wxWindowID _DSceneViewerFrame::ID_BUTTON_SSAO = wxNewId();
 const wxWindowID _DSceneViewerFrame::ID_BUTTON8 = wxNewId();
 const wxWindowID _DSceneViewerFrame::ID_BUTTON9 = wxNewId();
 const wxWindowID _DSceneViewerFrame::ID_STATICLINE3 = wxNewId();
@@ -495,6 +496,16 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id) : maxv(0
       wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR));
   btnShadows->SetMargins(wxSize(5, 5));
   FlexGridSizer2->Add(btnShadows, 1, wxEXPAND, 1);
+
+  btnSSAO = new wxCustomButton(
+      this, ID_BUTTON_SSAO, _("  SSAO  "),
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR),
+      wxDefaultPosition, wxDefaultSize, wxCUSTBUT_TOGGLE | wxCUSTBUT_BOTTOM, wxDefaultValidator,
+      _T("ID_BUTTON_SSAO"));
+  btnSSAO->SetBitmapDisabled(
+      wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR));
+  btnSSAO->SetMargins(wxSize(5, 5));
+  FlexGridSizer2->Add(btnSSAO, 1, wxEXPAND, 1);
 
   btnAutoplay = new wxCustomButton(
       this, ID_BUTTON8, _("  Autoplay  "),
@@ -674,6 +685,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id) : maxv(0
   Bind(wxEVT_BUTTON, &svf::OnMenuOptions, this, ID_BUTTON6);
   Bind(wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnbtnOrthoClicked, this, ID_BUTTON7);
   Bind(wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnbtnShadowsClicked, this, ID_BUTTON_SHADOWS);
+  Bind(wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnbtnSSAOClicked, this, ID_BUTTON_SSAO);
   Bind(wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnbtnAutoplayClicked, this, ID_BUTTON8);
   Bind(wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnBtnRecordClicked, this, ID_BUTTON9);
   Bind(wxEVT_BUTTON, &svf::OnAbout, this, ID_BUTTON10);
@@ -1103,6 +1115,28 @@ void _DSceneViewerFrame::applyShadowsOptions()
     return;
   }
   vw->enableShadowCasting(shadowsEnabled);
+}
+
+void _DSceneViewerFrame::OnbtnSSAOClicked(wxCommandEvent& event)
+{
+  applySSAOOptions();
+  m_canvas->Refresh(false);
+}
+
+void _DSceneViewerFrame::applySSAOOptions()
+{
+  bool ssaoEnabled = btnSSAO->GetValue();
+  auto scene = m_canvas->getOpenGLSceneRef();
+  if (!scene)
+  {
+    return;
+  }
+  auto vw = scene->getViewport();
+  if (!vw)
+  {
+    return;
+  }
+  vw->lightParameters().ssao_enabled = ssaoEnabled;
 }
 
 void _DSceneViewerFrame::OnReload(wxCommandEvent& event)

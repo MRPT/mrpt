@@ -337,6 +337,7 @@ class PointsProxyBase : public RenderableProxy
   void render(const RenderContext& rc) const override;
 
   std::vector<shader_id_t> requiredShaders() const override { return {DefaultShaderID::POINTS}; }
+  [[nodiscard]] bool castsShadows() const override { return false; }
 
   mrpt::math::TBoundingBoxf getBoundingBoxLocal() const override;
 
@@ -377,6 +378,7 @@ class LinesProxyBase : public RenderableProxy
   void render(const RenderContext& rc) const override;
 
   std::vector<shader_id_t> requiredShaders() const override { return {DefaultShaderID::WIREFRAME}; }
+  [[nodiscard]] bool castsShadows() const override { return false; }
 
   mrpt::math::TBoundingBoxf getBoundingBoxLocal() const override;
 
