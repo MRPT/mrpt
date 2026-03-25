@@ -63,7 +63,15 @@ struct TRenderMatrices
    */
   mrpt::math::CMatrixFloat44 light_pv, light_p, light_v, light_pmv;
 
+  /** Cascaded shadow map data. cascade_light_pv[i] is the light P*V matrix
+   *  for cascade i. cascade_far_planes[i] is the view-space far distance
+   *  for cascade i. */
+  int numShadowCascades = 1;
+  std::array<mrpt::math::CMatrixFloat44, 4> cascade_light_pv;
+  std::array<float, 4> cascade_far_planes = {0, 0, 0, 0};
+
   bool is1stShadowMapPass = false;
+  int currentCascadeIndex = 0;
 
   void matricesSetIdentity()
   {
@@ -120,8 +128,13 @@ struct TRenderMatrices
    * Replacement for obsolete: gluPerspective() and glOrtho() */
   void computeProjectionMatrix(float zmin, float zmax);
 
-  /** Updates light_pv */
+  /** Updates light_pv (single shadow map, legacy) */
   void computeLightProjectionMatrix(float zmin, float zmax, const mrpt::viz::TLightParameters& lp);
+
+  /** Computes cascaded shadow map light projection matrices using PSSM.
+   *  Populates cascade_light_pv[] and cascade_far_planes[]. */
+  void computeCascadedLightProjectionMatrices(
+      float zmin, float zmax, const mrpt::viz::TLightParameters& lp);
 
   /** Especial case for custom parameters of Orthographic projection.
    *  Equivalent to `p_matrix = ortho(...);`.
