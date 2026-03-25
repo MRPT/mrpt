@@ -82,6 +82,7 @@ class _DSceneViewerFrame : public wxFrame
   void OnBtnRecordClicked(wxCommandEvent& event);
   void OnbtnOrthoClicked(wxCommandEvent& event);
   void OnbtnShadowsClicked(wxCommandEvent& event);
+  void OnbtnSSAOClicked(wxCommandEvent& event);
   void OnReload(wxCommandEvent& event);
   void OnInsert3DS(wxCommandEvent& event);
   void OnMenuSave(wxCommandEvent& event);
@@ -111,6 +112,7 @@ class _DSceneViewerFrame : public wxFrame
   void OntimAutoplay(wxTimerEvent& event);
 
   void applyShadowsOptions();
+  void applySSAOOptions();
 
   //(*Identifiers(_DSceneViewerFrame)
   static const wxWindowID ID_BUTTON1;
@@ -123,6 +125,7 @@ class _DSceneViewerFrame : public wxFrame
   static const wxWindowID ID_BUTTON6;
   static const wxWindowID ID_BUTTON7;
   static const wxWindowID ID_BUTTON_SHADOWS;
+  static const wxWindowID ID_BUTTON_SSAO;
   static const wxWindowID ID_BUTTON8;
   static const wxWindowID ID_BUTTON9;
   static const wxWindowID ID_STATICLINE3;
@@ -197,6 +200,7 @@ class _DSceneViewerFrame : public wxFrame
   wxMenuItem* mnuImportLAS;
   wxCustomButton* btnOrtho;
   wxCustomButton* btnShadows;
+  wxCustomButton* btnSSAO;
   wxStatusBar* StatusBar1;
   wxMenuItem* MenuItem6;
   wxStaticLine* StaticLine3;

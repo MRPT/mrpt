@@ -75,9 +75,10 @@ mediump float ShadowCalculation(
 
     highp float currentDepth = projCoords.z;
 
-    // Shadow bias using the primary directional light direction
+    // Shadow bias: normal-dependent term uses NdotL (dot with direction-toward-light = -light_direction).
+    // At grazing angles NdotL->0 so bias grows to prevent shadow acne on slanted surfaces.
     highp float bias = shadow_bias + shadow_bias_cam2frag * cam2fragDist +
-                       shadow_bias_normal * (1.0 - max(0.0, dot(normal, light_direction[0])));
+                       shadow_bias_normal * (1.0 - max(0.0, dot(normal, -light_direction[0])));
 
     // PCF 3x3 sampling from the cascade layer in the texture array
     mediump float shadow = 0.0;

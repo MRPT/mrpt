@@ -9,6 +9,9 @@ R"XXX(// #version 300 es (already in the included header)
 
 out lowp vec4 color;
 
+uniform bool ssao_enabled;
+uniform mediump sampler2D ssaoTexture;
+
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;  //  [0,1]
 uniform highp float materialSpecularExponent;
@@ -26,7 +29,8 @@ void main()
 
     // Hemisphere ambient
     mediump vec3 ambientColor = mix(ambient_ground_color, ambient_sky_color, 0.5 + 0.5 * normal.z);
-    mediump vec3 totalDiffuse = light_ambient * ambientColor;
+    mediump float ao = ssao_enabled ? texture(ssaoTexture, gl_FragCoord.xy / vec2(textureSize(ssaoTexture, 0))).r : 1.0;
+    mediump vec3 totalDiffuse = ao * light_ambient * ambientColor;
     mediump vec3 totalSpecular = vec3(0.0);
 
     for (int i = 0; i < num_lights; i++)

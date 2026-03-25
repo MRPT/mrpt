@@ -474,6 +474,55 @@ class CompiledViewport
 
   /** @} */
 
+  /** @name SSAO
+   * @{ */
+
+  /** Enabled flag (copied from TLightParameters::ssao_enabled each frame) */
+  bool m_ssaoEnabled = false;
+
+  /** G-buffer FBO with two float color attachments (position, normal) */
+  unsigned int m_ssaoGBufferFBO = 0;
+  unsigned int m_ssaoGPositionTex = 0;  ///< GL_RGB16F view-space position
+  unsigned int m_ssaoGNormalTex = 0;    ///< GL_RGB16F view-space normal
+  unsigned int m_ssaoGDepthRBO = 0;     ///< Depth renderbuffer
+
+  /** AO computation FBO (raw noisy AO, single channel) */
+  unsigned int m_ssaoRawFBO = 0;
+  unsigned int m_ssaoRawTex = 0;  ///< GL_R16F
+
+  /** AO blur FBO (blurred AO) */
+  unsigned int m_ssaoBlurFBO = 0;
+  unsigned int m_ssaoBlurTex = 0;  ///< GL_R16F
+
+  /** 4x4 tiled random rotation noise texture */
+  unsigned int m_ssaoNoiseTex = 0;
+
+  /** Hemisphere sample kernel (up to 64 vec3) */
+  std::vector<float> m_ssaoKernel;  ///< flat: x0,y0,z0, x1,y1,z1, ...
+
+  /** Size at which the SSAO G-buffer was last created */
+  int m_ssaoLastW = 0, m_ssaoLastH = 0;
+
+  /** Dummy VAO for full-screen triangle draws */
+  unsigned int m_ssaoDummyVAO = 0;
+
+  /** Build the SSAO kernel and noise texture (called once) */
+  void ssaoInit();
+
+  /** Create/recreate SSAO FBOs for the current viewport size */
+  void ssaoCreateFBOs(int w, int h);
+
+  /** Destroy all SSAO GPU resources */
+  void ssaoDestroy();
+
+  /** Render SSAO geometry pre-pass into G-buffer */
+  void renderSSAOGeometry(ShaderProgramManager& shaderManager);
+
+  /** Compute raw AO from G-buffer, then blur */
+  void renderSSAOCompute(ShaderProgramManager& shaderManager);
+
+  /** @} */
+
   /** @name Rendering State
    * @{ */
 
@@ -522,6 +571,10 @@ class CompiledViewport
       bool isShadowMapPass,
       ViewportRenderStats& stats,
       const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
+
+  /** Builds render queue for the SSAO geometry pre-pass (triangle proxies only,
+   *  all overridden to the SSAO_GEOMETRY shader). */
+  void buildRenderQueueSSAOGeom(RenderQueue& queue, const TRenderMatrices& matrices);
 
   /** Processes render queue (binds shaders, renders objects) */
   void processRenderQueue(

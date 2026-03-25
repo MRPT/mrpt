@@ -129,6 +129,7 @@ set(LIST_EXAMPLES_IN_THIS_DIR
   opengl_texture_sizes_test
   opengl_skybox_example
   opengl_normal_maps
+  opengl_ssao_demo
   )
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_system mrpt::mrpt_math mrpt::mrpt_gui)
 set(EXAMPLES_NEEDING_DATA_DIR opengl_texture_sizes_test)

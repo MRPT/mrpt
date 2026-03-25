@@ -187,6 +187,15 @@ live in `modules/mrpt_opengl/shaders/`):
   but with diffuse texture sampling and normal mapping support.
 - **DEBUG_TEXTURE_TO_SCREEN** (ID 30): Debug helper that renders a texture
   as a full-screen quad (useful for visualizing the shadow map).
+- **SSAO_GEOMETRY** (ID 40): SSAO geometry pre-pass. Renders view-space
+  position and normal into a two-attachment G-buffer (MRT). Only triangle
+  objects with lit shaders participate.
+- **SSAO_COMPUTE** (ID 41): SSAO hemisphere-sampling compute pass.
+  Full-screen triangle shader that reads the G-buffer and accumulates
+  ambient occlusion using a random hemisphere kernel rotated by a tiling
+  noise texture.
+- **SSAO_BLUR** (ID 42): SSAO blur pass. Simple box-blur of the raw
+  per-pixel AO result to suppress noise before the final composite.
 
 ### Custom shaders
 
@@ -332,13 +341,89 @@ sRGB-to-linear decode that would distort the encoded normal directions.
 | Unit | Constant | Purpose |
 |------|----------|---------|
 | 0 | `MATERIAL_DIFFUSE_TEXTURE_UNIT` | Diffuse (color) map |
-| 1 | `SHADOW_MAP_TEXTURE_UNIT` | Shadow depth map |
+| 1 | `SHADOW_MAP_TEXTURE_UNIT` | Cascaded shadow depth array |
 | 2 | `NORMAL_MAP_TEXTURE_UNIT` | Tangent-space normal map |
+| 3 | `SSAO_NOISE_TEXTURE_UNIT` | SSAO random rotation noise (4×4) |
+| 4 | `SSAO_TEXTURE_UNIT` | Blurred AO result (read by lit shaders) |
 
 ### Performance
 
 One extra texture sample plus one 3x3 matrix-vector multiply per
 fragment. Runs on any GPU supporting OpenGL ES 3.0 / OpenGL 3.3.
+
+## 2.10 Screen-Space Ambient Occlusion (SSAO)
+
+SSAO adds contact shadows in crevices, corners, and concavities, giving
+geometry a grounded appearance without extra geometry or baked light maps.
+It is disabled by default and is applied only to lit triangle shaders.
+
+### Enabling SSAO
+
+SSAO is controlled through `TLightParameters`, which is accessed via
+`viewport->lightParameters()`:
+
+```cpp
+auto vp = scene.getViewport();
+vp->lightParameters().ssao_enabled = true;
+vp->lightParameters().ssao_radius   = 0.5f;   // world-space sampling radius
+vp->lightParameters().ssao_bias     = 0.025f;  // depth bias to avoid self-occlusion
+vp->lightParameters().ssao_power    = 2.0f;    // AO contrast exponent (not used in shader yet)
+vp->lightParameters().ssao_kernel_size = 32;   // number of hemisphere samples [1..64]
+```
+
+### How it works (three-pass algorithm)
+
+**Pass 1 — Geometry pre-pass (G-buffer):**
+All visible lit triangle objects are re-rendered using the `SSAO_GEOMETRY`
+shader into a pair of floating-point textures (MRT):
+- Attachment 0 (`GL_RGB16F`): view-space position (`gPosition`).
+- Attachment 1 (`GL_RGB16F`): view-space normal (`gNormal`).
+
+A shared depth renderbuffer is attached so that only the closest surface
+at each pixel is written.
+
+**Pass 2 — AO compute:**
+A full-screen triangle is drawn using the `SSAO_COMPUTE` shader. For each
+screen pixel it:
+1. Reads the fragment's view-space position and normal from the G-buffer.
+2. Builds a TBN matrix from the normal and a random rotation vector sampled
+   from a tiling 4×4 noise texture (`SSAO_NOISE_TEXTURE_UNIT = 3`).
+3. Generates up to 64 hemisphere samples (configured at startup), transforms
+   each into view space, and projects it onto the screen to look up the
+   stored depth.
+4. A fragment is considered occluded when the stored depth is closer to the
+   camera than the sample point. A `smoothstep` range-check avoids false
+   occlusion from distant geometry.
+5. The average occlusion is inverted (1 − occlusion) to give an AO factor in
+   [0, 1] where 1 = fully lit.
+
+The result is stored in a single-channel `GL_R16F` render target.
+
+**Pass 3 — Blur:**
+A simple box blur (`SSAO_BLUR` shader) smooths the raw noisy AO result into
+the final `m_ssaoBlurTex` texture. Lit shaders read this texture at
+`SSAO_TEXTURE_UNIT = 4` and multiply it into the ambient term:
+
+```glsl
+mediump float ao = ssao_enabled
+    ? texture(ssaoTexture, gl_FragCoord.xy / vec2(textureSize(ssaoTexture, 0))).r
+    : 1.0;
+mediump vec3 totalDiffuse = ao * light_ambient * ambientColor;
+```
+
+All four lit shaders (`TRIANGLES_LIGHT`, `TEXTURED_TRIANGLES_LIGHT`,
+`TRIANGLES_SHADOW_2ND`, `TEXTURED_TRIANGLES_SHADOW_2ND`) include this AO
+sampling.
+
+### Performance notes
+
+SSAO adds three full extra passes per frame:
+- G-buffer pass: re-renders all triangle objects (no lighting math).
+- Compute pass: one full-screen draw with up to 64 texture lookups per pixel.
+- Blur pass: one full-screen box-blur draw.
+
+For performance, reduce `ssao_kernel_size` (default 32; values of 8–16 are
+acceptable for preview quality).
 
 # 3. Relevant C++ classes
 
@@ -539,37 +624,14 @@ Proposal:
 
 Tier 3 - Higher effort, nice-to-have  
 
-9. Screen-Space Ambient Occlusion (SSAO) 
+9. ~~Screen-Space Ambient Occlusion (SSAO)~~ — **implemented** (see section 2.10)
 
-Adds contact shadows in crevices and corners. Very noticeable quality improvement for dense geometry (robot models, indoor scenes).
-  
-Proposal:
-- Render a depth+normal G-buffer (can reuse existing depth output).   
-- Run a full-screen SSAO pass sampling ~16 random hemisphere points.
-- Blur the AO result (separable Gaussian, 2 passes). 
-- Multiply into the ambient term.  
-- Use a 4x4 random rotation texture to reduce sample count while maintaining quality.   
-- Make it optional (off by default) since it costs a full-screen pass.  
-
-GPU cost: moderate (16 texture samples per pixel + 2 blur passes). Should be off by default but available for quality rendering and screenshots.  
-
-10. Cascaded Shadow Maps (CSM)
-
-The current single shadow map has limited resolution over large scenes. CSM splits the view frustum into 2-3 cascades, each with its own shadow map, giving high resolution near the  
-camera and acceptable resolution far away.  
-
-Proposal:   
-- Split the view frustum into 2-3 depth ranges.
-- Render one shadow map per cascade from the light's perspective.
-- In the fragment shader, select the appropriate cascade based on fragment depth.
-- Store cascade matrices in a uniform array; sample the right shadow map layer. 
-
-GPU cost: 2-3x shadow pass cost (but shadow pass is already cheap). Fragment shader adds one comparison to select cascade.
+10. ~~Cascaded Shadow Maps (CSM)~~ — **implemented** (see section 2.7)
 
 
 ---
 
 Suggested implementation order to maximize visual improvement per commit:
 
-8. SSAO (Tier 3.9) - optional quality mode
+8. ~~SSAO (Tier 3.9)~~ — **done**
 
