@@ -106,8 +106,8 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
   class WaypointsAccessGuard
   {
    public:
-    WaypointsAccessGuard(std::recursive_mutex& cs, TWaypointStatusSequence& wps)
-        : m_lock(cs), m_waypoints(wps)
+    WaypointsAccessGuard(std::recursive_mutex& cs, TWaypointStatusSequence& wps) :
+        m_lock(cs), m_waypoints(wps)
     {
     }
     [[nodiscard]] TWaypointStatusSequence& waypoints() { return m_waypoints; }
