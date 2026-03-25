@@ -525,12 +525,7 @@ function(mrpt_add_library)
     # Don't include here the unit testing code:
     remove_matching_files_from_list(".*_unittest.cpp" MRPT_ADD_LIBRARY_SOURCES)
 
-    if(ENABLE_COVERAGE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
-    endif()
-
-    # Library type: 
+    # Library type:
     # - HEADERS_ONLY_LIBRARY: `INTERFACE`
     # - Regular lib: (none: default to SHARED / STATIC)
 
@@ -542,6 +537,11 @@ function(mrpt_add_library)
       )
 
       mrpt_set_target_build_options(${MRPT_ADD_LIBRARY_TARGET} ${MRPT_ADD_LIBRARY_HEADERS_ONLY_LIBRARY})
+
+      if(ENABLE_COVERAGE)
+        target_compile_options(${MRPT_ADD_LIBRARY_TARGET} PRIVATE --coverage)
+        target_link_options(${MRPT_ADD_LIBRARY_TARGET} PRIVATE --coverage)
+      endif()
 
     else()
       # A hdr-only library: needs no real compiling
@@ -649,6 +649,11 @@ function(mrpt_add_test)
       Threads::Threads
       GTest::GTest
     )
+
+    if(ENABLE_COVERAGE)
+      target_compile_options(${MRPT_ADD_TEST_TARGET} PRIVATE --coverage)
+      target_link_options(${MRPT_ADD_TEST_TARGET} PRIVATE --coverage)
+    endif()
 
     # Make common_headers visible:
     target_include_directories(${MRPT_ADD_TEST_TARGET} PRIVATE ${mrpt_common_DIR}/../common_headers/)
