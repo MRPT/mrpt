@@ -365,15 +365,19 @@ void CompiledViewport::enableShadows(
 
   if (!enabled)
   {
-    for (auto& fbo : m_shadowMapFBOs) fbo.reset();
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+    if (m_shadowMapFBO != 0)
+    {
+      glDeleteFramebuffers(1, &m_shadowMapFBO);
+      m_shadowMapFBO = 0;
+    }
     if (m_cascadeDepthArrayTexId != 0)
     {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
       glDeleteTextures(1, &m_cascadeDepthArrayTexId);
-#endif
       m_cascadeDepthArrayTexId = 0;
       m_cascadeDepthArrayLayers = 0;
     }
+#endif
   }
 
   if (VIEWPORT_VERBOSE)
@@ -915,31 +919,34 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
     glTexImage3D(
         GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, m_shadowMapSizeX, m_shadowMapSizeY,
         numCascades, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_NONE);
     m_cascadeDepthArrayLayers = numCascades;
   }
 
-  // Create per-cascade FBOs if needed
-  for (int c = 0; c < numCascades; c++)
+  // Create a single FBO for rendering directly into texture array layers
+  if (m_shadowMapFBO == 0)
   {
-    if (!m_shadowMapFBOs[c])
-    {
-      m_shadowMapFBOs[c] = std::make_unique<FrameBuffer>();
-      m_shadowMapFBOs[c]->createDepthMap(m_shadowMapSizeX, m_shadowMapSizeY);
-    }
+    glGenFramebuffers(1, &m_shadowMapFBO);
   }
+
+  const auto oldFBs = FrameBuffer::CurrentBinding();
+  glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
 
   glEnable(GL_DEPTH_TEST);
   glViewport(0, 0, m_shadowMapSizeX, m_shadowMapSizeY);
 
-  // Render each cascade
+  // Render each cascade directly into the texture array layer
   for (int c = 0; c < numCascades; c++)
   {
-    const auto oldFBs = m_shadowMapFBOs[c]->bind();
+    // Attach texture array layer as FBO depth target
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_cascadeDepthArrayTexId, 0, c);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Set the current cascade's light_pv as the active one for the 1st pass
@@ -947,15 +954,10 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
     m_renderMatrices.currentCascadeIndex = c;
 
     renderNormalScene(shaderManager, true);
-
-    // Copy depth from this FBO into the texture array layer
-    glBindTexture(GL_TEXTURE_2D_ARRAY, m_cascadeDepthArrayTexId);
-    glCopyTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, c, 0, 0, m_shadowMapSizeX, m_shadowMapSizeY);
-
-    m_shadowMapFBOs[c]->Bind(oldFBs);
   }
 
-  // Restore viewport
+  // Restore previous FBO and viewport
+  FrameBuffer::Bind(oldFBs);
   glViewport(m_pixelX, m_pixelY, m_pixelWidth, m_pixelHeight);
 #endif
   MRPT_END
