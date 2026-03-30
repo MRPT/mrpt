@@ -13,7 +13,7 @@ mistune==0.8.4
 packaging==23.1
 pybtex==0.24.0
 pybtex-docutils==1.0.3
-Pygments==2.16.1
+Pygments==2.20.0
 PyYAML==6.0.1
 requests==2.32.4
 six==1.16.0
