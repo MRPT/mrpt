@@ -138,17 +138,17 @@ class [[deprecated("Use mrpt::maps::CGenericPointsMap")]] CPointsMapXYZI : publi
   /** @name String-keyed field access virtual interface implementation
       @{ */
 
-  bool hasPointField(const std::string_view& fieldName) const override;
-  std::vector<std::string_view> getPointFieldNames_float() const override;
+  bool hasPointField(const std::string& fieldName) const override;
+  std::vector<std::string> getPointFieldNames_float() const override;
 
-  float getPointField_float(size_t index, const std::string_view& fieldName) const override;
-  void setPointField_float(size_t index, const std::string_view& fieldName, float value) override;
+  float getPointField_float(size_t index, const std::string& fieldName) const override;
+  void setPointField_float(size_t index, const std::string& fieldName, float value) override;
 
-  void insertPointField_float(const std::string_view& fieldName, float value) override;
-  void reserveField_float(const std::string_view& fieldName, size_t n) override;
-  void resizeField_float(const std::string_view& fieldName, size_t n) override;
+  void insertPointField_float(const std::string& fieldName, float value) override;
+  void reserveField_float(const std::string& fieldName, size_t n) override;
+  void resizeField_float(const std::string& fieldName, size_t n) override;
 
-  auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_float_field(const std::string& fieldName)
       const->const mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
@@ -158,7 +158,7 @@ class [[deprecated("Use mrpt::maps::CGenericPointsMap")]] CPointsMapXYZI : publi
     if (fieldName == POINT_FIELD_INTENSITY) return &m_intensity;
     return nullptr;
   }
-  auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_float_field(const std::string& fieldName)
       ->mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
