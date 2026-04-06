@@ -20,8 +20,9 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/viz/pointcloud_adapters.h>
 
-#include <string_view>
-#include <unordered_map>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace mrpt::maps
 {
@@ -73,36 +74,33 @@ class CGenericPointsMap : public CPointsMap
     @{ */
 
   // see docs in parent class
-  bool registerField_float(const std::string_view& fieldName) override;
-  bool registerField_double(const std::string_view& fieldName) override;
-  bool registerField_uint16(const std::string_view& fieldName) override;
-  bool registerField_uint8(const std::string_view& fieldName) override;
+  bool registerField_float(const std::string& fieldName) override;
+  bool registerField_double(const std::string& fieldName) override;
+  bool registerField_uint16(const std::string& fieldName) override;
+  bool registerField_uint8(const std::string& fieldName) override;
 
   /** Removes a data channel.
    * \return True if the field existed and was removed, false otherwise.
    */
-  bool unregisterField(const std::string_view& fieldName);
+  bool unregisterField(const std::string& fieldName);
 
   /** Returns the map of float fields: map<field_name, vector_of_data> */
-  const std::unordered_map<std::string_view, mrpt::aligned_std_vector<float>>& float_fields() const
+  const std::map<std::string, mrpt::aligned_std_vector<float>>& float_fields() const
   {
     return m_float_fields;
   }
   /** Returns the map of double fields: map<field_name, vector_of_data> */
-  const std::unordered_map<std::string_view, mrpt::aligned_std_vector<double>>& double_fields()
-      const
+  const std::map<std::string, mrpt::aligned_std_vector<double>>& double_fields() const
   {
     return m_double_fields;
   }
   /** Returns the map of uint16_t fields: map<field_name, vector_of_data> */
-  const std::unordered_map<std::string_view, mrpt::aligned_std_vector<uint16_t>>& uint16_fields()
-      const
+  const std::map<std::string, mrpt::aligned_std_vector<uint16_t>>& uint16_fields() const
   {
     return m_uint16_fields;
   }
   /** Returns the map of uint8_t fields: map<field_name, vector_of_data> */
-  const std::unordered_map<std::string_view, mrpt::aligned_std_vector<uint8_t>>& uint8_fields()
-      const
+  const std::map<std::string, mrpt::aligned_std_vector<uint8_t>>& uint8_fields() const
   {
     return m_uint8_fields;
   }
@@ -130,62 +128,61 @@ class CGenericPointsMap : public CPointsMap
 
   /** @name String-keyed field access virtual interface implementation
     @{ */
-  bool hasPointField(const std::string_view& fieldName) const override;
-  std::vector<std::string_view> getPointFieldNames_float() const override;
-  std::vector<std::string_view> getPointFieldNames_double() const override;
-  std::vector<std::string_view> getPointFieldNames_uint16() const override;
-  std::vector<std::string_view> getPointFieldNames_uint8() const override;
+  bool hasPointField(const std::string& fieldName) const override;
+  std::vector<std::string> getPointFieldNames_float() const override;
+  std::vector<std::string> getPointFieldNames_double() const override;
+  std::vector<std::string> getPointFieldNames_uint16() const override;
+  std::vector<std::string> getPointFieldNames_uint8() const override;
 
-  float getPointField_float(size_t index, const std::string_view& fieldName) const override;
-  double getPointField_double(size_t index, const std::string_view& fieldName) const override;
-  uint16_t getPointField_uint16(size_t index, const std::string_view& fieldName) const override;
-  uint8_t getPointField_uint8(size_t index, const std::string_view& fieldName) const override;
+  float getPointField_float(size_t index, const std::string& fieldName) const override;
+  double getPointField_double(size_t index, const std::string& fieldName) const override;
+  uint16_t getPointField_uint16(size_t index, const std::string& fieldName) const override;
+  uint8_t getPointField_uint8(size_t index, const std::string& fieldName) const override;
 
-  void setPointField_float(size_t index, const std::string_view& fieldName, float value) override;
-  void setPointField_double(size_t index, const std::string_view& fieldName, double value) override;
-  void setPointField_uint16(
-      size_t index, const std::string_view& fieldName, uint16_t value) override;
-  void setPointField_uint8(size_t index, const std::string_view& fieldName, uint8_t value) override;
-
-  /** Appends a value to the given field.
-   * The field must be registered.
-   * Asserts that the field vector's size is exactly `this->size() - 1`
-   * (i.e. you just called `insertPointFast()`).
-   */
-  void insertPointField_float(const std::string_view& fieldName, float value) override;
+  void setPointField_float(size_t index, const std::string& fieldName, float value) override;
+  void setPointField_double(size_t index, const std::string& fieldName, double value) override;
+  void setPointField_uint16(size_t index, const std::string& fieldName, uint16_t value) override;
+  void setPointField_uint8(size_t index, const std::string& fieldName, uint8_t value) override;
 
   /** Appends a value to the given field.
    * The field must be registered.
    * Asserts that the field vector's size is exactly `this->size() - 1`
    * (i.e. you just called `insertPointFast()`).
    */
-  void insertPointField_double(const std::string_view& fieldName, double value) override;
+  void insertPointField_float(const std::string& fieldName, float value) override;
 
   /** Appends a value to the given field.
    * The field must be registered.
    * Asserts that the field vector's size is exactly `this->size() - 1`
    * (i.e. you just called `insertPointFast()`).
    */
-  void insertPointField_uint16(const std::string_view& fieldName, uint16_t value) override;
+  void insertPointField_double(const std::string& fieldName, double value) override;
 
   /** Appends a value to the given field.
    * The field must be registered.
    * Asserts that the field vector's size is exactly `this->size() - 1`
    * (i.e. you just called `insertPointFast()`).
    */
-  void insertPointField_uint8(const std::string_view& fieldName, uint8_t value) override;
+  void insertPointField_uint16(const std::string& fieldName, uint16_t value) override;
 
-  void reserveField_float(const std::string_view& fieldName, size_t n) override;
-  void reserveField_double(const std::string_view& fieldName, size_t n) override;
-  void reserveField_uint16(const std::string_view& fieldName, size_t n) override;
-  void reserveField_uint8(const std::string_view& fieldName, size_t n) override;
+  /** Appends a value to the given field.
+   * The field must be registered.
+   * Asserts that the field vector's size is exactly `this->size() - 1`
+   * (i.e. you just called `insertPointFast()`).
+   */
+  void insertPointField_uint8(const std::string& fieldName, uint8_t value) override;
 
-  void resizeField_float(const std::string_view& fieldName, size_t n) override;
-  void resizeField_double(const std::string_view& fieldName, size_t n) override;
-  void resizeField_uint16(const std::string_view& fieldName, size_t n) override;
-  void resizeField_uint8(const std::string_view& fieldName, size_t n) override;
+  void reserveField_float(const std::string& fieldName, size_t n) override;
+  void reserveField_double(const std::string& fieldName, size_t n) override;
+  void reserveField_uint16(const std::string& fieldName, size_t n) override;
+  void reserveField_uint8(const std::string& fieldName, size_t n) override;
 
-  auto getPointsBufferRef_float_field(const std::string_view& fieldName) const
+  void resizeField_float(const std::string& fieldName, size_t n) override;
+  void resizeField_double(const std::string& fieldName, size_t n) override;
+  void resizeField_uint16(const std::string& fieldName, size_t n) override;
+  void resizeField_uint8(const std::string& fieldName, size_t n) override;
+
+  auto getPointsBufferRef_float_field(const std::string& fieldName) const
       -> const mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
@@ -198,7 +195,7 @@ class CGenericPointsMap : public CPointsMap
     }
     return nullptr;
   }
-  auto getPointsBufferRef_double_field(const std::string_view& fieldName) const
+  auto getPointsBufferRef_double_field(const std::string& fieldName) const
       -> const mrpt::aligned_std_vector<double>* override
   {
     if (auto it = m_double_fields.find(fieldName); it != m_double_fields.end())
@@ -207,7 +204,7 @@ class CGenericPointsMap : public CPointsMap
     }
     return nullptr;
   }
-  auto getPointsBufferRef_uint16_field(const std::string_view& fieldName) const
+  auto getPointsBufferRef_uint16_field(const std::string& fieldName) const
       -> const mrpt::aligned_std_vector<uint16_t>* override
   {
     if (auto it = m_uint16_fields.find(fieldName); it != m_uint16_fields.end())
@@ -216,7 +213,7 @@ class CGenericPointsMap : public CPointsMap
     }
     return nullptr;
   }
-  auto getPointsBufferRef_uint8_field(const std::string_view& fieldName) const
+  auto getPointsBufferRef_uint8_field(const std::string& fieldName) const
       -> const mrpt::aligned_std_vector<uint8_t>* override
   {
     if (auto it = m_uint8_fields.find(fieldName); it != m_uint8_fields.end())
@@ -226,7 +223,7 @@ class CGenericPointsMap : public CPointsMap
     return nullptr;
   }
 
-  auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_float_field(const std::string& fieldName)
       -> mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
@@ -239,7 +236,7 @@ class CGenericPointsMap : public CPointsMap
     }
     return nullptr;
   }
-  auto getPointsBufferRef_double_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_double_field(const std::string& fieldName)
       -> mrpt::aligned_std_vector<double>* override
   {
     if (auto it = m_double_fields.find(fieldName); it != m_double_fields.end())
@@ -248,7 +245,7 @@ class CGenericPointsMap : public CPointsMap
     }
     return nullptr;
   }
-  auto getPointsBufferRef_uint16_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_uint16_field(const std::string& fieldName)
       -> mrpt::aligned_std_vector<uint16_t>* override
   {
     if (auto it = m_uint16_fields.find(fieldName); it != m_uint16_fields.end())
@@ -257,7 +254,7 @@ class CGenericPointsMap : public CPointsMap
     }
     return nullptr;
   }
-  auto getPointsBufferRef_uint8_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_uint8_field(const std::string& fieldName)
       -> mrpt::aligned_std_vector<uint8_t>* override
   {
     if (auto it = m_uint8_fields.find(fieldName); it != m_uint8_fields.end())
@@ -270,11 +267,12 @@ class CGenericPointsMap : public CPointsMap
   /** @} */
 
  protected:
-  std::unordered_map<std::string_view, mrpt::aligned_std_vector<float>> m_float_fields;
-  std::unordered_map<std::string_view, mrpt::aligned_std_vector<double>> m_double_fields;
-  std::unordered_map<std::string_view, mrpt::aligned_std_vector<uint16_t>> m_uint16_fields;
-  std::unordered_map<std::string_view, mrpt::aligned_std_vector<uint8_t>> m_uint8_fields;
+  std::map<std::string, mrpt::aligned_std_vector<float>> m_float_fields;
+  std::map<std::string, mrpt::aligned_std_vector<double>> m_double_fields;
+  std::map<std::string, mrpt::aligned_std_vector<uint16_t>> m_uint16_fields;
+  std::map<std::string, mrpt::aligned_std_vector<uint8_t>> m_uint8_fields;
 
+ private:
   /** Clear the map, erasing all the points and all fields */
   void internal_clear() override;
 

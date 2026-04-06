@@ -69,6 +69,7 @@ set(LIB_SOURCES
   tests/COccupancyGridMap3D_unittest.cpp
   tests/COctoMap_unittest.cpp
   tests/CPointCloudFilterByDistance_unittest.cpp
+  tests/CGenericPointsMap_unittest.cpp
   tests/CPointsMap_unittest.cpp
   tests/CRandomFieldGridMap3D_unittest.cpp
   tests/serializations_unittest.cpp
