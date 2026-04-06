@@ -37,6 +37,7 @@ uniform highp float fog_density;
 
 uniform bool ssao_enabled;
 uniform mediump sampler2D ssaoTexture;
+uniform mediump float ssao_power;
 
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
@@ -64,7 +65,7 @@ void main()
 
     // Hemisphere ambient
     mediump vec3 ambientColor = mix(ambient_ground_color, ambient_sky_color, 0.5 + 0.5 * normal.z);
-    mediump float ao = ssao_enabled ? texture(ssaoTexture, gl_FragCoord.xy / vec2(textureSize(ssaoTexture, 0))).r : 1.0;
+    mediump float ao = ssao_enabled ? pow(texture(ssaoTexture, gl_FragCoord.xy / vec2(textureSize(ssaoTexture, 0))).r, ssao_power) : 1.0;
     mediump vec3 totalDiffuse = ao * light_ambient * ambientColor;
     mediump vec3 totalSpecular = vec3(0.0);
 
@@ -90,7 +91,7 @@ void main()
         }
 
         highp float diff = max(dot(normal, lightDir), 0.0);
-        totalDiffuse += attenuation * diff * light_diffuse[i] * light_color[i];
+        totalDiffuse += mix(1.0, ao, 0.5) * attenuation * diff * light_diffuse[i] * light_color[i];
 
         highp vec3 halfVector = normalize(viewDirection + lightDir);
         highp float specAmount = pow(max(dot(normal, halfVector), 0.0), materialSpecularExponent);
