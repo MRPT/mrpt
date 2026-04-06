@@ -1965,10 +1965,10 @@ void CPointsMap::loadFromVelodyneScan(
   }
 }
 
-std::vector<std::string_view> CPointsMap::getPointFieldNames_float_except_xyz() const
+std::vector<std::string> CPointsMap::getPointFieldNames_float_except_xyz() const
 {
   const auto all = getPointFieldNames_float();
-  std::vector<std::string_view> result;
+  std::vector<std::string> result;
   result.reserve(all.size());
 
   for (auto name : all)
@@ -2220,7 +2220,7 @@ std::string listAllFields(const mrpt::maps::CPointsMap& pcd)
 {
   std::string ret;
 
-  auto appendFields = [&ret](const std::vector<std::string_view>& fields)
+  auto appendFields = [&ret](const std::vector<std::string>& fields)
   {
     for (const auto& f : fields)
     {
