@@ -212,8 +212,8 @@ struct TLightParameters
   /** Depth comparison bias to avoid self-occlusion (default: 0.025). */
   float ssao_bias = 0.025f;
 
-  /** Exponent applied to the AO factor; >1 darkens, <1 lightens (default: 2.0). */
-  float ssao_power = 2.0f;
+  /** Exponent applied to the AO factor; >1 darkens, <1 lightens (default: 1.0). */
+  float ssao_power = 1.0f;
 
   /** Number of hemisphere samples: 16, 32, or 64 (default: 32). */
   uint8_t ssao_kernel_size = 32;
