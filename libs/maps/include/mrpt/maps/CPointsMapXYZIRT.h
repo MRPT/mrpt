@@ -189,26 +189,25 @@ class [[deprecated("Use CGenericPointsMap instead")]] CPointsMapXYZIRT : public 
 
   /** @name String-keyed field access virtual interface implementation
       @{ */
-  bool hasPointField(const std::string_view& fieldName) const override;
-  std::vector<std::string_view> getPointFieldNames_float() const override;
-  std::vector<std::string_view> getPointFieldNames_uint16() const override;
+  bool hasPointField(const std::string& fieldName) const override;
+  std::vector<std::string> getPointFieldNames_float() const override;
+  std::vector<std::string> getPointFieldNames_uint16() const override;
 
-  float getPointField_float(size_t index, const std::string_view& fieldName) const override;
-  uint16_t getPointField_uint16(size_t index, const std::string_view& fieldName) const override;
+  float getPointField_float(size_t index, const std::string& fieldName) const override;
+  uint16_t getPointField_uint16(size_t index, const std::string& fieldName) const override;
 
-  void setPointField_float(size_t index, const std::string_view& fieldName, float value) override;
-  void setPointField_uint16(size_t index, const std::string_view& fieldName, uint16_t value)
-      override;
+  void setPointField_float(size_t index, const std::string& fieldName, float value) override;
+  void setPointField_uint16(size_t index, const std::string& fieldName, uint16_t value) override;
 
-  void insertPointField_float(const std::string_view& fieldName, float value) override;
-  void insertPointField_uint16(const std::string_view& fieldName, uint16_t value) override;
+  void insertPointField_float(const std::string& fieldName, float value) override;
+  void insertPointField_uint16(const std::string& fieldName, uint16_t value) override;
 
-  void reserveField_float(const std::string_view& fieldName, size_t n) override;
-  void reserveField_uint16(const std::string_view& fieldName, size_t n) override;
-  void resizeField_float(const std::string_view& fieldName, size_t n) override;
-  void resizeField_uint16(const std::string_view& fieldName, size_t n) override;
+  void reserveField_float(const std::string& fieldName, size_t n) override;
+  void reserveField_uint16(const std::string& fieldName, size_t n) override;
+  void resizeField_float(const std::string& fieldName, size_t n) override;
+  void resizeField_uint16(const std::string& fieldName, size_t n) override;
 
-  auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_float_field(const std::string& fieldName)
       const->const mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
@@ -219,14 +218,14 @@ class [[deprecated("Use CGenericPointsMap instead")]] CPointsMapXYZIRT : public 
     if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
     return nullptr;
   }
-  auto getPointsBufferRef_uint16_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_uint16_field(const std::string& fieldName)
       const->const mrpt::aligned_std_vector<uint16_t>* override
   {
     if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
     return nullptr;
   }
 
-  auto getPointsBufferRef_float_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_float_field(const std::string& fieldName)
       ->mrpt::aligned_std_vector<float>* override
   {
     if (auto* f = CPointsMap::getPointsBufferRef_float_field(fieldName); f)
@@ -237,7 +236,7 @@ class [[deprecated("Use CGenericPointsMap instead")]] CPointsMapXYZIRT : public 
     if (fieldName == POINT_FIELD_TIMESTAMP) return &m_time;
     return nullptr;
   }
-  auto getPointsBufferRef_uint16_field(const std::string_view& fieldName)
+  auto getPointsBufferRef_uint16_field(const std::string& fieldName)
       ->mrpt::aligned_std_vector<uint16_t>* override
   {
     if (fieldName == POINT_FIELD_RING_ID) return &m_ring;
