@@ -342,7 +342,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 #include "../shaders/ssao-compute.f.glsl"
           ;
       uniforms = {"gPosition",   "gNormal",   "noiseTexture", "ssao_samples", "ssao_kernel_size",
-                  "ssao_radius", "ssao_bias", "proj_fx",      "proj_fy",     "noiseScale"};
+                  "ssao_radius", "ssao_bias", "proj_fx",      "proj_fy",      "noiseScale"};
       attribs = {};
       break;
 
