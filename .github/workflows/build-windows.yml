@@ -1,4 +1,3 @@
-# Based on GTSAM file (by @ProfFan)
 name: CI Windows
 
 on: [push, pull_request]
@@ -10,72 +9,65 @@ jobs:
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 1
-      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
-      VERBOSE: 1  # to show all cmake scripts debug info
+      COLCON_HOME: ${{ github.workspace }}/.colcon
 
     strategy:
       fail-fast: false
       matrix:
-        # Github Actions requires a single row to be added to the build matrix.
-        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
-        name: [
-            windows-2019,
-          ]
-
-        build_type: [
-            Release
-          ]
+        name: [windows-latest-msvc]
+        build_type: [Release]
         include:
-          - name: windows-2019
-            os: windows-2019
+          - name: windows-latest-msvc
+            os: windows-latest
             compiler: cl
-            platform: 64
 
     steps:
-      - name: Print env
-        run: |
-          echo github.event.action: ${{ github.event.action }}
-          echo github.event_name: ${{ github.event_name }}
-
-      - name: Install OpenCV
-        run: |
-          choco install --verbose opencv
-
-      - name: Install WxWidgets
-        run: |
-          choco install --verbose wxwidgets
-
-      - name: Install Qt5
-        uses: jurplel/install-qt-action@v4
-
-      # (Jul 2022: Disabled since find_package(Doxygen) in Octomap leads to 
-      #  internal Doxygen.exe errors leading to CI failure)
-      #- name: Install doxygen+graphviz
-      #  run: |
-      #    choco install --verbose doxygen 
-      #    choco install --verbose graphviz
-
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
 
       - name: Git submodule
         run: |
           git submodule sync
           git submodule update --init --recursive
 
-      - name: CMake configure
-        shell: bash
-        run: |
-          cmake -DMRPT_BUILD_TESTING=On \
-                -DMRPT_ALLOW_LGPLV3=ON \
-                -DDISABLE_ASSIMP=On \
-                -S . \
-                -B .
+      - name: Set up MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
 
-      - name: Build
+      - name: Install vcpkg dependencies
         shell: bash
         run: |
-          cmake --build . -j 4 --config ${{ matrix.build_type }} --target all_mrpt_libs
-          cmake --build . -j 4 --config ${{ matrix.build_type }} --target tests_build_all
-          cmake --build . -j 4 --config ${{ matrix.build_type }} --target test_legacy
+          # vcpkg is pre-installed on GitHub-hosted Windows runners
+          vcpkg install eigen3 zlib zstd tinyxml2 --triplet x64-windows
+          echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "VCPKG_TARGET_TRIPLET=x64-windows" >> $GITHUB_ENV
+
+      - name: Install colcon
+        shell: bash
+        run: |
+          pip install colcon-common-extensions
+
+      - name: Colcon Build
+        shell: bash
+        run: |
+          colcon build \
+            --merge-install \
+            --event-handlers console_direct+ \
+            --cmake-args \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DMRPT_BUILD_TESTING=ON \
+              -DDISABLE_WXWIDGETS=ON \
+              -DMRPT_WITH_QT=OFF \
+              -DDISABLE_ASSIMP=ON \
+              "-DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE" \
+              "-DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET_TRIPLET"
+
+      - name: Colcon Test
+        shell: bash
+        run: |
+          colcon test \
+            --merge-install \
+            --event-handlers console_direct+ \
+            --return-code-on-test-failure

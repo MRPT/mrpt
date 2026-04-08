@@ -11,7 +11,7 @@
 # the  **root** of the MRPT repository
 
 DIRS_IN="modules apps mrpt_examples_cpp"
-DIRS_OUT="3rdparty"
+DIRS_OUT="3rdparty imgui"
 LANGS=cpp
 FORMAT_CODE_BIN="scripts/clang_git_format/format_code.py"
 

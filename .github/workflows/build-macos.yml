@@ -1,4 +1,3 @@
-# Based on GTSAM file (by @ProfFan)
 name: CI macOS
 
 on: [push, pull_request]
@@ -10,28 +9,21 @@ jobs:
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 1
-      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
-      VERBOSE: 1  # to show all cmake scripts debug info
+      COLCON_HOME: ${{ github.workspace }}/.colcon
 
     strategy:
       fail-fast: false
       matrix:
-        # Github Actions requires a single row to be added to the build matrix.
-        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
-        name: [
-          macOS-latest,
-        ]
-
-        build_type: [ Release ]
+        name: [macos-latest-clang]
+        build_type: [Release]
         include:
-          - name: macos-latest
+          - name: macos-latest-clang
             os: macos-latest
-            compiler: xcode
+            compiler: clang
 
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
 
       - name: Git submodule
         run: |
@@ -40,29 +32,29 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          brew install cmake ninja
-          brew install nasm
-          brew install eigen
-          brew install opencv
-          brew install suite-sparse
-          brew ls suite-sparse
-          brew install assimp
+          brew install cmake ninja eigen assimp tinyxml2 zstd glfw
           echo "CC=clang" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
 
-      - name: CMake configure
+      - name: Install colcon
         run: |
-          cmake -DMRPT_BUILD_EXAMPLES=On \
-                -DMRPT_BUILD_TESTING=On \
-                -DMRPT_ALLOW_LGPLV3=ON \
-                -DCMAKE_VERBOSE_MAKEFILE=ON \
-                -H. -Bbuild
+          pip3 install colcon-common-extensions
 
-      - name: Unit tests
+      - name: Colcon Build
         run: |
-          make -C build tests_build_all
-          make test_legacy -C build -j1
+          colcon build \
+            --merge-install \
+            --event-handlers console_direct+ \
+            --cmake-args \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DMRPT_BUILD_TESTING=ON \
+              -DDISABLE_WXWIDGETS=ON \
+              -DMRPT_WITH_QT=OFF
 
-      - name: Build all
+      - name: Colcon Test
         run: |
-          make -C build
+          colcon test \
+            --merge-install \
+            --event-handlers console_direct+ \
+            --return-code-on-test-failure
