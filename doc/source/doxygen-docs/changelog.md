@@ -1,5 +1,27 @@
 \page changelog Change Log
 
+# Version 2.15.13: UNRELEASED
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CPointsMap now pads with zeros if trying to insert a source point clouds with less fields than the target.
+
+# Version 2.15.12: Release Apr 6th, 2026
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CPointsMap and derived classes: **API change**. Point cloud file names are no longer `string_view` but `std::string`. This is to prevent memory corruption due to dangling references and harder to maintain string views.
+
+# Version 2.15.11: Release Mar 12th, 2026
+- Changes in libraries:
+  - \ref mrpt_gui_grp
+    - Dear ImGui basic integration with the new class mrpt::imgui::CImGuiSceneView
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CPointsMap::insertAnotherMap() now has an optional argument autoRegisterAllSourceFields (default=true, backwards compatible).
+  - \ref mrpt_obs_grp
+    - mrpt::obs::CObservationGPS: add gnss_source and fix_type
+
+# Version 2.15.10: Release Feb 14th, 2026
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - Hotfix to build against all versions of libfyaml
+
 # Version 2.15.9: Release Feb 13rd, 2026
 - Changes in libraries:
   - \ref mrpt_containers_grp
