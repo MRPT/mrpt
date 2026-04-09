@@ -952,7 +952,8 @@ class CPointsMap :
     const mrpt::aligned_std_vector<float>* ys_src = nullptr;
     const mrpt::aligned_std_vector<float>* zs_src = nullptr;
 
-    // Optional field mappings (only fields present in both maps)
+    // Optional field mappings. src_buf == nullptr means the field is absent in the
+    // source; insertPointFrom() will push a zero default in that case.
     struct FloatFieldMapping
     {
       const mrpt::aligned_std_vector<float>* src_buf = nullptr;
@@ -998,19 +999,22 @@ class CPointsMap :
     // Optional fields
     for (const auto& f : ctx.float_fields)
     {
-      f.dst_buf->push_back((*f.src_buf)[i]);
+      f.dst_buf->push_back(f.src_buf ? (*f.src_buf)[i] : 0.0f);
     }
+
     for (const auto& f : ctx.double_fields)
     {
-      f.dst_buf->push_back((*f.src_buf)[i]);
+      f.dst_buf->push_back(f.src_buf ? (*f.src_buf)[i] : 0.0);
     }
+
     for (const auto& f : ctx.uint16_fields)
     {
-      f.dst_buf->push_back((*f.src_buf)[i]);
+      f.dst_buf->push_back(f.src_buf ? (*f.src_buf)[i] : uint16_t{0});
     }
+
     for (const auto& f : ctx.uint8_fields)
     {
-      f.dst_buf->push_back((*f.src_buf)[i]);
+      f.dst_buf->push_back(f.src_buf ? (*f.src_buf)[i] : uint8_t{0});
     }
 
     mark_as_modified();
