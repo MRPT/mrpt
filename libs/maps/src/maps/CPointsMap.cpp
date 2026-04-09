@@ -2005,70 +2005,53 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
   ctx.ys_src = &source.getPointsBufferRef_y();
   ctx.zs_src = &source.getPointsBufferRef_z();
 
-  // Optional fields: match by name but store direct pointers
-  const auto src_float_names = source.getPointFieldNames_float_except_xyz();
-  const auto dst_float_names = this->getPointFieldNames_float_except_xyz();
+  // For each field registered in *this (destination):
+  //   • if the source also has it → copy (src_buf points to source vector)
+  //   • if the source lacks it   → pad with zero (src_buf = nullptr)
+  // This guarantees every destination field vector stays in sync with m_x/y/z
+  // even when successive point clouds carry different field sets.
 
-  for (const auto& name : dst_float_names)
+  const auto src_float_names = source.getPointFieldNames_float_except_xyz();
+  for (const auto& name : this->getPointFieldNames_float_except_xyz())
   {
-    if (auto it = std::find(src_float_names.begin(), src_float_names.end(), name);
-        it != src_float_names.end())
-    {
-      const auto* srcVector = source.getPointsBufferRef_float_field(name);
-      if (!srcVector || srcVector->empty())
-      {
-        continue;
-      }
-      ctx.float_fields.push_back({srcVector, this->getPointsBufferRef_float_field(name)});
-    }
+    auto* dst_buf = this->getPointsBufferRef_float_field(name);
+    if (!dst_buf) continue;
+
+    const auto* src_buf = source.getPointsBufferRef_float_field(name);
+    // src_buf == nullptr signals "pad with 0" to insertPointFrom()
+    if (src_buf && src_buf->empty()) src_buf = nullptr;
+    ctx.float_fields.push_back({src_buf, dst_buf});
   }
 
   const auto src_double_names = source.getPointFieldNames_double();
-  const auto dst_double_names = this->getPointFieldNames_double();
-  for (const auto& name : dst_double_names)
+  for (const auto& name : this->getPointFieldNames_double())
   {
-    if (auto it = std::find(src_double_names.begin(), src_double_names.end(), name);
-        it != src_double_names.end())
-    {
-      const auto* srcVector = source.getPointsBufferRef_double_field(name);
-      if (!srcVector || srcVector->empty())
-      {
-        continue;
-      }
-      ctx.double_fields.push_back({srcVector, this->getPointsBufferRef_double_field(name)});
-    }
+    auto* dst_buf = this->getPointsBufferRef_double_field(name);
+    if (!dst_buf) continue;
+
+    const auto* src_buf = source.getPointsBufferRef_double_field(name);
+    if (src_buf && src_buf->empty()) src_buf = nullptr;
+    ctx.double_fields.push_back({src_buf, dst_buf});
   }
 
-  const auto src_u16_names = source.getPointFieldNames_uint16();
-  const auto dst_u16_names = this->getPointFieldNames_uint16();
-  for (const auto& name : dst_u16_names)
+  for (const auto& name : this->getPointFieldNames_uint16())
   {
-    if (auto it = std::find(src_u16_names.begin(), src_u16_names.end(), name);
-        it != src_u16_names.end())
-    {
-      const auto* srcVector = source.getPointsBufferRef_uint16_field(name);
-      if (!srcVector || srcVector->empty())
-      {
-        continue;
-      }
-      ctx.uint16_fields.push_back({srcVector, this->getPointsBufferRef_uint16_field(name)});
-    }
+    auto* dst_buf = this->getPointsBufferRef_uint16_field(name);
+    if (!dst_buf) continue;
+
+    const auto* src_buf = source.getPointsBufferRef_uint16_field(name);
+    if (src_buf && src_buf->empty()) src_buf = nullptr;
+    ctx.uint16_fields.push_back({src_buf, dst_buf});
   }
 
-  const auto src_u8_names = source.getPointFieldNames_uint8();
-  const auto dst_u8_names = this->getPointFieldNames_uint8();
-  for (const auto& name : dst_u8_names)
+  for (const auto& name : this->getPointFieldNames_uint8())
   {
-    if (auto it = std::find(src_u8_names.begin(), src_u8_names.end(), name);
-        it != src_u8_names.end())
-    {
-      const auto* srcVector = source.getPointsBufferRef_uint8_field(name);
-      if (!srcVector || srcVector->empty())
-      {
-        continue;
-      }
-      ctx.uint8_fields.push_back({srcVector, this->getPointsBufferRef_uint8_field(name)});
-    }
+    auto* dst_buf = this->getPointsBufferRef_uint8_field(name);
+    if (!dst_buf) continue;
+
+    const auto* src_buf = source.getPointsBufferRef_uint8_field(name);
+    if (src_buf && src_buf->empty()) src_buf = nullptr;
+    ctx.uint8_fields.push_back({src_buf, dst_buf});
   }
 
   return ctx;
