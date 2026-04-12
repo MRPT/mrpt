@@ -143,3 +143,7 @@ endif()
 mrpt_add_python_module(maps
   python_bindings/mrpt_maps_py.cpp
 )
+
+mrpt_add_python_binding_test(maps
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_maps_test.py
+)

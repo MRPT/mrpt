@@ -82,4 +82,8 @@ mrpt_add_python_module(serialization
   python_bindings/${PROJECT_NAME}_py.cpp
 )
 
+mrpt_add_python_binding_test(serialization
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_serialization_test.py
+)
+
 

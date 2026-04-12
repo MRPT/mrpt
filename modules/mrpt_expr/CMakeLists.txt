@@ -71,3 +71,7 @@ mrpt_reduced_debug_symbols(${PROJECT_NAME})
 mrpt_add_python_module(expr
   python_bindings/${PROJECT_NAME}_py.cpp
 )
+
+mrpt_add_python_binding_test(expr
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_expr_test.py
+)

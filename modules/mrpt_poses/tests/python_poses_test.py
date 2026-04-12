@@ -19,8 +19,16 @@ try:
         CPoint2D, CPoint3D,
     )
 except ImportError as e:
-    print(f"SKIP: mrpt.poses not importable ({e})", file=sys.stderr)
-    sys.exit(0)   # soft-skip rather than hard-fail when bindings not installed
+    msg = str(e)
+    # Soft-skip only when the compiled extension simply isn't present
+    # (e.g. bindings disabled at build time).  Any other ImportError —
+    # including circular imports caused by a bad PYTHONPATH setup — is
+    # a real failure and must surface as a test failure.
+    if "_bindings" in msg and "No module named" in msg:
+        print(f"SKIP: mrpt.poses bindings not built ({e})", file=sys.stderr)
+        sys.exit(0)
+    print(f"FAIL: mrpt.poses import error: {e}", file=sys.stderr)
+    sys.exit(1)
 
 import numpy as np
 

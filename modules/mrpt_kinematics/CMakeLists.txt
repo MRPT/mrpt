@@ -52,3 +52,7 @@ mrpt_add_library(
 mrpt_add_python_module(kinematics
   python_bindings/${PROJECT_NAME}_py.cpp
 )
+
+mrpt_add_python_binding_test(kinematics
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_kinematics_test.py
+)

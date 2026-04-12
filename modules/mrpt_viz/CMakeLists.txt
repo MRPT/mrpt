@@ -180,3 +180,7 @@ endif ()
 mrpt_add_python_module(viz
   python_bindings/${PROJECT_NAME}_py.cpp
 )
+
+mrpt_add_python_binding_test(viz
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_viz_test.py
+)
