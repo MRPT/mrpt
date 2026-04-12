@@ -1,91 +1,161 @@
+<div align="center">
 
-<h1 align="center">The MRPT project</h1>
+# Mobile Robot Programming Toolkit
 
-<a href="https://github.com/MRPT/mrpt/actions/workflows/build-linux.yml"><img src="https://github.com/MRPT/mrpt/actions/workflows/build-linux.yml/badge.svg" /></a>
-<a href="https://github.com/MRPT/mrpt/actions/workflows/build-macos.yml"><img src="https://github.com/MRPT/mrpt/actions/workflows/build-macos.yml/badge.svg" /></a>
-<a href="https://github.com/MRPT/mrpt/actions/workflows/build-windows.yml"><img src="https://github.com/MRPT/mrpt/actions/workflows/build-windows.yml/badge.svg" /></a>
-<a href="https://ci.appveyor.com/project/jlblancoc/mrpt" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg/branch/develop?svg=true" /></a> 
-<a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/develop/graph/badge.svg" /></a>
-[![CI Check clang-format](https://github.com/MRPT/mrpt/actions/workflows/check-clang-format.yml/badge.svg)](https://github.com/MRPT/mrpt/actions/workflows/check-clang-format.yml)
+**Two decades of open-source robotics — since 2005**
 
-<a href="https://github.com/MRPT/mrpt/releases" alt="Releases"><img src="https://img.shields.io/github/release/MRPT/mrpt.svg" /></a>
-<a href='https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds'><img src='https://img.shields.io/badge/Windows-Installer-orange?logo=Windows'></a>
-<a href="https://zenodo.org/doi/10.5281/zenodo.10595286"><img src="https://zenodo.org/badge/13708826.svg" alt="DOI"></a>
+[![Linux build](https://github.com/MRPT/mrpt/actions/workflows/build-linux.yml/badge.svg)](https://github.com/MRPT/mrpt/actions/workflows/build-linux.yml)
+[![macOS build](https://github.com/MRPT/mrpt/actions/workflows/build-macos.yml/badge.svg)](https://github.com/MRPT/mrpt/actions/workflows/build-macos.yml)
+[![Windows build](https://github.com/MRPT/mrpt/actions/workflows/build-windows.yml/badge.svg)](https://github.com/MRPT/mrpt/actions/workflows/build-windows.yml)
+[![codecov](https://codecov.io/gh/MRPT/mrpt/branch/develop/graph/badge.svg)](https://codecov.io/gh/MRPT/mrpt)
+[![clang-format](https://github.com/MRPT/mrpt/actions/workflows/check-clang-format.yml/badge.svg)](https://github.com/MRPT/mrpt/actions/workflows/check-clang-format.yml)
 
-## 1. Introduction
-<img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
+[![Latest release](https://img.shields.io/github/release/MRPT/mrpt.svg)](https://github.com/MRPT/mrpt/releases)
+[![Windows installer](https://img.shields.io/badge/Windows-Installer-orange?logo=Windows)](https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds)
+[![DOI](https://zenodo.org/badge/13708826.svg)](https://zenodo.org/doi/10.5281/zenodo.10595286)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://www.mrpt.org/License/)
 
-Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
-in mobile robotics and computer vision. Libraries include [SLAM solutions](https://www.mrpt.org/List_of_SLAM_algorithms), [2D and 3D spatial transformations](https://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](https://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf),
-[probability density functions (pdfs)](https://docs.mrpt.org/reference/latest/class_mrpt_math_CProbabilityDensityFunction.html) over points, landmarks, poses and maps,
-Bayesian inference ([Kalman filters](https://www.mrpt.org/Kalman_Filters), [particle filters](https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/)), [image processing](https://www.mrpt.org/tutorials/programming/images-image-processing-camera-models/), [obstacle avoidance](https://www.mrpt.org/Obstacle_avoidance), [etc](https://docs.mrpt.org/reference/latest/modules.html).
-MRPT also provides GUI apps for [camera calibration](https://docs.mrpt.org/reference/latest/app_camera-calib.html), [dataset inspection](https://docs.mrpt.org/reference/latest/app_RawLogViewer.html),
-and [much more](https://docs.mrpt.org/reference/latest/applications.html).
+[**Documentation**](https://docs.mrpt.org/reference/latest/) · [**Tutorials**](https://docs.mrpt.org/reference/latest/tutorials.html) · [**API Reference**](https://docs.mrpt.org/reference/latest/modules.html) · [**Examples**](https://docs.mrpt.org/reference/latest/examples.html) · [**Applications**](https://docs.mrpt.org/reference/latest/applications.html)
 
-## 2. Resources
-  * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --recursive`
-  * Ask questions at [stackoverflow](https://stackoverflow.com/search?q=mrpt) (use the tag `mrpt`)
-  * [Main project website](https://www.mrpt.org/), including [sources and Windows installer downloads](https://www.mrpt.org/download-mrpt/)
-  * [C++ API reference](https://docs.mrpt.org/reference/)
-  * [ROS packages](https://docs.mrpt.org/reference/latest/wrappers.html#mrpt-ros-packages)
-  * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
-  * Source code for [dozens of examples](https://docs.mrpt.org/reference/latest/examples.html)
-  * Example configuration files for  MRPT applications can be found at:
-     [MRPT/share/mrpt/config_files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files)
-  * Some sample datasets are stored in:
-     [MRPT/share/mrpt/datasets](https://github.com/MRPT/mrpt/tree/master/share/mrpt/datasets).
-    A more complete dataset repository is [available online](https://www.mrpt.org/robotics_datasets).
-  * [How to contribute](https://github.com/MRPT/mrpt/blob/master/.github/CONTRIBUTING.md) with your code for new feaures, bug fixes, etc.
-  * MRPT is used in the [MOLA modular SLAM framework](https://github.com/MOLAorg/mola/).
+</div>
 
-## 3. Install
+---
 
-### 3.1. Ubuntu/Debian
+## What is MRPT?
 
-Install simply with `sudo apt install libmrpt-dev mrpt-apps`, but check first what MRPT version exists in your [Ubuntu](https://packages.ubuntu.com/search?keywords=mrpt&searchon=sourcenames) or [Debian](https://qa.debian.org/madison.php?package=mrpt) ([tracker](https://tracker.debian.org/pkg/mrpt)) distribution.
+MRPT is a well-established C++ framework for mobile robotics, originally developed in 2005 at the University of Málaga
+and actively maintained to this day. Over the years, contributions from the community have evolved it into a robust,
+modular toolkit widely used in both academic research and industry.
 
-If you want a more recent version, check out [this PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for nightly builds from the `develop` branch, or [this one](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-stable) for stable releases.
+**MRPT 3.0** is a major refactoring that modernises the build system (colcon-based modular packages),
+cleans up the public API, and aligns with modern C++17 standards
+while preserving the data structures and algorithms at the core of MRPT.
 
-        sudo add-apt-repository ppa:joseluisblancoc/mrpt   # develop branch
-        #sudo add-apt-repository ppa:joseluisblancoc/mrpt-stable   # master (stable releases) branch
-        sudo apt install libmrpt-dev mrpt-apps
+<img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif" alt="MRPT demo" width="340"/>
 
-Supported distributions:
-  * Ubuntu 18.04 LTS (Bionic), Ubuntu 20.04 LTS (Focal), or newer.
+### Key capabilities
 
-### 3.2. Build from sources
+| Area | What's included |
+|---|---|
+| **SLAM** | MonteCarlo Localization, RBPF, pose-graph optimization |
+| **Geometry** | SE(2)/SE(3) Lie groups, rigid body transforms, point clouds |
+| **Probabilistic** | Kalman filters, particle filters, PDFs over poses & maps |
+| **Maps** | Occupancy grids, point maps, landmark maps, voxel maps |
+| **Sensors** | LiDAR, stereo/RGB-D cameras, IMU, GPS, Velodyne, … |
+| **Visualization** | 3-D scene graph (`mrpt::viz`), GUI windows, plot widgets |
+| **Navigation** | Reactive nav, path planning, PTG-based obstacle avoidance |
+| **Python** | pybind11 bindings for all major modules |
 
-See [build documentation](https://docs.mrpt.org/reference/latest/compiling.html) ([source](doc/source/compiling.rst)).
+---
 
-### 3.3. Windows precompiled versions
+## Getting started
 
-Executables (`.exe`s and `.dll`s) and development libraries (`.h`s and `.lib`s) included:
+### Install (Ubuntu/Debian)
 
-[Nightly built Windows installer](https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds)
-
-### 3.4. As a ROS package
-
-MRPT is also shipped as ROS packages.
-
-For ROS 1:
 ```bash
-# (ROS 1 only!)
-sudo apt install ros-$ROS_DISTRO-mrpt2
+sudo apt install libmrpt-dev mrpt-apps
 ```
 
-For ROS 2, see instructions and available versions: https://github.com/MRPT/mrpt_ros
+Check your distro version at [Ubuntu](https://packages.ubuntu.com/search?keywords=mrpt&searchon=sourcenames) / [Debian](https://qa.debian.org/madison.php?package=mrpt).
+For a more recent build, use the nightly PPA:
 
+```bash
+sudo add-apt-repository ppa:joseluisblancoc/mrpt
+sudo apt install libmrpt-dev mrpt-apps
+```
 
-## 4. License
-MRPT is released under the [new BSD license](http://www.mrpt.org/License/).
+### Build from source
 
+```bash
+git clone https://github.com/MRPT/mrpt.git --recursive
+```
 
-**Contributors**
+See the full [build guide](https://docs.mrpt.org/reference/latest/compiling.html) for colcon, CMake options, and dependency setup.
+
+### Windows
+
+[Nightly Windows installer](https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds) — includes `.exe`, `.dll`, `.h`, and `.lib` files.
+
+### ROS
+
+```bash
+# ROS 1
+sudo apt install ros-$ROS_DISTRO-mrpt2
+
+# ROS 2 — see https://github.com/MRPT/mrpt_ros
+```
+
+---
+
+## Using MRPT 3.0 in your project
+
+```cmake
+cmake_minimum_required(VERSION 3.16)
+project(my_robot_app)
+
+find_package(mrpt_poses REQUIRED)
+find_package(mrpt_maps  REQUIRED)
+
+add_executable(my_app main.cpp)
+target_link_libraries(my_app mrpt::mrpt_poses mrpt::mrpt_maps)
+```
+
+> **Migrating from MRPT 2.x?** See the [porting guide](https://docs.mrpt.org/reference/latest/porting_mrpt3.html)
+> — package names changed from `mrpt-<name>` to `mrpt_<name>` and targets from `mrpt::<name>` to `mrpt::mrpt_<name>`.
+
+---
+
+## Documentation highlights
+
+| Resource | Link |
+|---|---|
+| Full API reference | [docs.mrpt.org/reference/latest/modules.html](https://docs.mrpt.org/reference/latest/modules.html) |
+| Tutorials | [docs.mrpt.org/reference/latest/tutorials.html](https://docs.mrpt.org/reference/latest/tutorials.html) |
+| Code examples | [docs.mrpt.org/reference/latest/examples.html](https://docs.mrpt.org/reference/latest/examples.html) |
+| Python examples | [docs.mrpt.org/reference/latest/python_examples.html](https://docs.mrpt.org/reference/latest/python_examples.html) |
+| GUI applications | [docs.mrpt.org/reference/latest/applications.html](https://docs.mrpt.org/reference/latest/applications.html) |
+| Supported sensors | [docs.mrpt.org/reference/latest/supported-sensors.html](https://docs.mrpt.org/reference/latest/supported-sensors.html) |
+| ROS wrappers | [docs.mrpt.org/reference/latest/wrappers.html](https://docs.mrpt.org/reference/latest/wrappers.html) |
+| Porting from 2.x | [docs.mrpt.org/reference/latest/porting_mrpt3.html](https://docs.mrpt.org/reference/latest/porting_mrpt3.html) |
+| Changelog | [docs.mrpt.org/reference/latest/page_changelog.html](https://docs.mrpt.org/reference/latest/page_changelog.html) |
+| Robotics datasets | [mrpt.org/robotics_datasets](https://www.mrpt.org/robotics_datasets) |
+
+---
+
+## Modules
+
+MRPT 3.0 is organized as independent colcon packages. Each can be built and used standalone:
+
+`mrpt_core` · `mrpt_math` · `mrpt_poses` · `mrpt_obs` · `mrpt_maps` · `mrpt_slam` ·
+`mrpt_viz` · `mrpt_gui` · `mrpt_nav` · `mrpt_bayes` · `mrpt_graphs` · `mrpt_io` ·
+`mrpt_img` · `mrpt_config` · `mrpt_serialization` · `mrpt_random` · `mrpt_system` ·
+`mrpt_tfest` · `mrpt_kinematics` · `mrpt_comms` · `mrpt_hwdrivers` · …
+
+---
+
+## Community & support
+
+- **Questions**: [Stack Overflow `[mrpt]`](https://stackoverflow.com/search?q=mrpt) or [mrpt-users mailing list](https://groups.google.com/forum/#!forum/mrpt-users)
+- **Bugs / features**: [GitHub Issues](https://github.com/MRPT/mrpt/issues)
+- **Contributing**: see [CONTRIBUTING.md](https://github.com/MRPT/mrpt/blob/master/.github/CONTRIBUTING.md)
+- **MOLA SLAM**: MRPT is the core library of the [MOLA modular SLAM framework](https://github.com/MOLAorg/mola/)
+
+---
+
+## License
+
+Released under the [BSD 3-Clause License](https://www.mrpt.org/License/).
+
+---
+
+## Contributors
 
 <a href="https://github.com/MRPT/mrpt/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=MRPT/mrpt" />
+  <img src="https://contrib.rocks/image?repo=MRPT/mrpt" alt="Contributors"/>
 </a>
 
-## 5. Versions in repositories
+---
+
+## Packaging status
 
 ![Repology](https://repology.org/badge/vertical-allrepos/mrpt.svg)
