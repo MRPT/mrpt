@@ -8,6 +8,11 @@ Provides:
   - COccupancyGridMap2D : Probabilistic 2D occupancy grid map
 """
 
+import mrpt.rtti          # noqa: F401
+import mrpt.serialization  # noqa: F401
+import mrpt.poses          # noqa: F401
+import mrpt.obs            # noqa: F401
+
 from mrpt.maps._bindings import (
     CMetricMap,
     CPointsMap,

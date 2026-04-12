@@ -1,6 +1,8 @@
 """
 mrpt-tfest Python API
 """
+import mrpt.math  # noqa: F401  (TPoint2D/TPoint3D used in matching pairs)
+
 from . import _bindings as _b
 
 # Export Classes

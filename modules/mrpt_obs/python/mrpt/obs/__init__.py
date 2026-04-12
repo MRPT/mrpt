@@ -2,6 +2,10 @@
 mrpt.obs — Python bindings for MRPT sensor observations and actions.
 """
 
+import mrpt.rtti          # noqa: F401
+import mrpt.serialization  # noqa: F401
+import mrpt.poses          # noqa: F401 (CPose3D used in sensor poses)
+
 from . import _bindings as _b
 
 # Base classes

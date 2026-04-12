@@ -2,6 +2,15 @@
 mrpt-poses Python API.
 """
 
+# pybind11 uses a process-global type registry: base classes must be
+# registered before derived classes.  CPose2D et al. inherit from
+# CSerializable (mrpt.serialization) which itself relies on CObject
+# (mrpt.rtti).  Import those modules first so their types are known
+# to pybind11 before _bindings registers the poses hierarchy.
+import mrpt.rtti          # noqa: F401  (CObject)
+import mrpt.serialization  # noqa: F401  (CSerializable)
+import mrpt.math           # noqa: F401  (CMatrixFixed used by getRotationMatrix, etc.)
+
 # Import the compiled pybind11 module
 from . import _bindings as _b
 
