@@ -2,7 +2,10 @@
 mrpt-img Python API.
 """
 
-# Import the compiled pybind11 module
+# CImage inherits CSerializable; ensure base types are registered first.
+import mrpt.rtti          # noqa: F401
+import mrpt.serialization  # noqa: F401
+
 import numpy as np
 from . import _bindings as _b
 
@@ -16,7 +19,7 @@ TPixelCoord = _b.TPixelCoord
 # 1. Patch CImage for seamless NumPy/OpenCV integration
 
 
-def _CImage_array(self, dtype=None):
+def _CImage_array(self, dtype=None, **kw):
     return self.as_numpy()
 
 
@@ -25,7 +28,7 @@ CImage.__array__ = _CImage_array
 # 2. Patch TColor for easy tuple/array conversion
 
 
-def _TColor_array(self, dtype=None):
+def _TColor_array(self, dtype=None, **kw):
     return np.array([self.R, self.G, self.B, self.A], dtype=np.uint8)
 
 

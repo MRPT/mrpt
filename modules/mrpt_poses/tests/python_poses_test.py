@@ -81,13 +81,13 @@ check("z",  abs(p3.z - 3.0) < 1e-9)
 p3.z = 99.0
 check("z setter", abs(p3.z - 99.0) < 1e-9)
 
-rot = p3.getRotationMatrix()
+rot = np.array(p3.getRotationMatrix())
 check("rotation matrix shape", rot.shape == (3, 3),
       f"got {rot.shape}")
 
 # identity rotation → diagonal 1
 p_id = CPose3D(0, 0, 0, 0, 0, 0)
-r_id = p_id.getRotationMatrix()
+r_id = np.array(p_id.getRotationMatrix())
 check("identity rotation matrix",
       abs(float(r_id[0, 0]) - 1.0) < 1e-6 and
       abs(float(r_id[1, 1]) - 1.0) < 1e-6 and

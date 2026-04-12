@@ -2,7 +2,9 @@
 mrpt-serialization Python API.
 """
 
-# Import the compiled pybind11 module
+# CSerializable inherits CObject (mrpt.rtti); ensure it is registered first.
+import mrpt.rtti  # noqa: F401
+
 from . import _bindings as _b
 
 # ----- Classes -----

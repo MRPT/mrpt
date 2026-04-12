@@ -64,7 +64,10 @@ void bind_mrpt_fixed_type(py::module& m, const std::string& name)
   py::class_<T, std::shared_ptr<T>>(m, name.c_str())
       .def(py::init<>())
       .def("as_numpy", [](const T& self) { return self.asEigen(); })
-      .def("__array__", [](const T& self) { return self.asEigen(); })
+      .def(
+          "__array__",
+          [](const T& self, py::object /*dtype*/, py::object /*copy*/) { return self.asEigen(); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
       .def("__repr__", [name](const T& self) { return "[" + name + "]\n" + self.asString(); });
 }
 }  // namespace

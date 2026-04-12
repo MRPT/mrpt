@@ -19,6 +19,8 @@ Example::
     print(f"ENU: ({enu.x:.2f}, {enu.y:.2f}) m")
 """
 
+import mrpt.math  # noqa: F401  (TPoint3D returned by coordinate conversion functions)
+
 from mrpt.topography._bindings import (
     ENUToGeocentric,
     TCoords,

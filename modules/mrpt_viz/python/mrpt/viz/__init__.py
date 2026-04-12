@@ -1,3 +1,9 @@
+import mrpt.rtti          # noqa: F401
+import mrpt.serialization  # noqa: F401
+import mrpt.math           # noqa: F401
+import mrpt.img            # noqa: F401  (TColor, TCamera)
+import mrpt.poses          # noqa: F401  (CPose3D for scene object poses)
+
 from . import _bindings as _b
 
 # Core Classes

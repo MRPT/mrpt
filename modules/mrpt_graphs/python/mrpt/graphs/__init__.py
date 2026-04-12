@@ -17,6 +17,10 @@ Example::
     print(g)
 """
 
+import mrpt.rtti          # noqa: F401
+import mrpt.serialization  # noqa: F401
+import mrpt.poses          # noqa: F401  (CPose2D/CPose3D used as edge types)
+
 from mrpt.graphs._bindings import (
     CNetworkOfPoses2D,
     CNetworkOfPoses3D,

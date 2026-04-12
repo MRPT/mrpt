@@ -26,6 +26,8 @@ Example — Serial::
         response = port.read(64)
 """
 
+import mrpt.io  # noqa: F401  (CStream base type)
+
 from . import _bindings as _b
 
 CClientTCPSocket = _b.CClientTCPSocket

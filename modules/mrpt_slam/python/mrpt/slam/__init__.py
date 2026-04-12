@@ -26,6 +26,11 @@ Basic ICP-SLAM usage::
     pose_pdf = builder.getCurrentPoseEstimation()
 """
 
+import mrpt.rtti          # noqa: F401
+import mrpt.serialization  # noqa: F401
+import mrpt.poses          # noqa: F401
+import mrpt.maps           # noqa: F401
+
 from mrpt.slam._bindings import (
     CICP,
     CICPOptions,

@@ -21,6 +21,8 @@ Example — simulate a diff-drive robot::
     print(f"Pose: ({pose.x:.3f}, {pose.y:.3f}, {pose.phi:.3f})")
 """
 
+import mrpt.math  # noqa: F401  (TTwist2D and other math types used in kinematics)
+
 from mrpt.kinematics._bindings import (
     CVehicleSimul_DiffDriven,
     CVehicleSimul_Holo,

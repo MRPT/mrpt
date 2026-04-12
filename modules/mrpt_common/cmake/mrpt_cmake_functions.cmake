@@ -830,18 +830,30 @@ function(mrpt_add_python_binding_test MODULE_NAME)
     return()
   endif()
 
-  # PYTHONPATH: only the staging tree is needed — mrpt_add_python_module()
-  # already copies __init__.py there alongside _bindings.so, so the package
-  # is self-contained and there is no risk of a circular-import from having
-  # two separate trees for the same package.
+  # PYTHONPATH:  The staging tree holds this package's _bindings.so and __init__.py.
+  # Dependency packages (mrpt.rtti, mrpt.serialization, …) are found via
+  # PYTHONPATH set at *test-run time* by colcon's command-prefix hooks, which
+  # source each dependency's pythonpath.sh.  We must *not* override that
+  # PYTHONPATH — only prepend our staging dir.
+  #
+  # We use a small wrapper script so that the staging dir is prepended to
+  # whatever PYTHONPATH exists at test-run time rather than baking a
+  # configure-time snapshot.
   set(_staging "${CMAKE_CURRENT_BINARY_DIR}/python_staging")
+  set(_wrapper "${CMAKE_CURRENT_BINARY_DIR}/_python_test_wrapper.sh")
+  file(WRITE "${_wrapper}"
+    "#!/bin/sh\nexport PYTHONPATH=\"${_staging}:\${PYTHONPATH}\"\nexec \"$@\"\n"
+  )
+  # Make it executable
+  file(CHMOD "${_wrapper}" PERMISSIONS
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ GROUP_EXECUTE
+    WORLD_READ WORLD_EXECUTE
+  )
 
   add_test(
     NAME python_${MODULE_NAME}
-    COMMAND
-      ${CMAKE_COMMAND} -E env
-        "PYTHONPATH=${_staging}:$ENV{PYTHONPATH}"
-      ${Python3_EXECUTABLE} ${_PBT_SCRIPT}
+    COMMAND "${_wrapper}" ${Python3_EXECUTABLE} ${_PBT_SCRIPT}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   )
   set_tests_properties(python_${MODULE_NAME} PROPERTIES
