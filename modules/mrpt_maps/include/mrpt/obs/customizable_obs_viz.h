@@ -56,6 +56,13 @@ struct PointCloudRecoloringParameters
   /// set, it will be dynamically computed from the data.
   std::optional<float> colorMapMaxCoord;
 
+  /// If set, trim this fraction from each tail of the value distribution
+  /// before mapping to colors (e.g. 0.025 = 2.5% outlier rejection).
+  /// Uses an O(n) histogram method: safe for multi-million-point clouds.
+  /// Has no effect when colorMapMinCoord / colorMapMaxCoord are both set,
+  /// since the range is already fully user-defined in that case.
+  std::optional<float> outlierRejectionPercentile;  // e.g. 0.025f
+
   void save_to_ini_file(
       mrpt::config::CConfigFileBase& cfg,
       const std::string& section = "ParametersView3DPoints") const;
