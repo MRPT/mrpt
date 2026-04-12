@@ -34,6 +34,19 @@ Clock = _b.Clock
 # ----- WorkerThreadsPool -----
 WorkerThreadsPool = _b.WorkerThreadsPool
 
+# ----- format -----
+format1d = _b.format1d
+format1s = _b.format1s
+
+# ----- get_env -----
+get_env = _b.get_env
+get_env_int = _b.get_env_int
+get_env_double = _b.get_env_double
+
+# ----- from_string -----
+from_string_int = _b.from_string_int
+from_string_double = _b.from_string_double
+
 # ----- Optional __all__ for `from mrpt.core import *` -----
 __all__ = [
     # abs_diff
@@ -55,4 +68,14 @@ __all__ = [
     "Stringifyable",
     "Clock",
     "WorkerThreadsPool",
+    # format
+    "format1d",
+    "format1s",
+    # get_env
+    "get_env",
+    "get_env_int",
+    "get_env_double",
+    # from_string
+    "from_string_int",
+    "from_string_double",
 ]

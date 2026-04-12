@@ -98,6 +98,72 @@ PYBIND11_MODULE(_bindings, m)
           "fromDouble", [](double t) { return mrpt::Clock::fromDouble(t); }, py::arg("seconds"),
           "Convert double seconds to mrpt::Clock::time_point");
 
+  // ------------------ format ------------------
+  m.def(
+      "format",
+      [](const std::string& fmt, py::args args) -> std::string
+      {
+        // Reconstruct the string using Python's str.format() to keep things
+        // simple and safe (avoids C printf injection from Python callers).
+        // The MRPT mrpt::format() is a thin printf wrapper; expose it for
+        // simple cases by forwarding to Python's own formatting.
+        //
+        // For full printf-style support call it through Python's % operator.
+        // We expose it as a direct passthrough for pre-formatted strings.
+        (void)args;  // unused — expose a simpler 1-arg version below
+        return fmt;
+      },
+      py::arg("fmt"),
+      "Identity overload — returns the string as-is. "
+      "Use Python f-strings for formatting instead.");
+
+  m.def(
+      "format1d", [](const std::string& fmt, double val) { return mrpt::format(fmt.c_str(), val); },
+      py::arg("fmt"), py::arg("val"), "Printf-style format with one double argument");
+
+  m.def(
+      "format1s",
+      [](const std::string& fmt, const std::string& val)
+      { return mrpt::format(fmt.c_str(), val.c_str()); },
+      py::arg("fmt"), py::arg("val"), "Printf-style format with one string argument");
+
+  // ------------------ get_env ------------------
+  m.def(
+      "get_env",
+      [](const std::string& var_name, const std::string& default_val) -> std::string
+      { return mrpt::get_env<std::string>(var_name, default_val); },
+      py::arg("var_name"), py::arg("default_val") = "",
+      "Read an environment variable as string; returns default_val if not set");
+
+  m.def(
+      "get_env_int",
+      [](const std::string& var_name, int default_val) -> int
+      { return mrpt::get_env<int>(var_name, default_val); },
+      py::arg("var_name"), py::arg("default_val") = 0,
+      "Read an environment variable as int; returns default_val if not set");
+
+  m.def(
+      "get_env_double",
+      [](const std::string& var_name, double default_val) -> double
+      { return mrpt::get_env<double>(var_name, default_val); },
+      py::arg("var_name"), py::arg("default_val") = 0.0,
+      "Read an environment variable as double; returns default_val if not set");
+
+  // ------------------ from_string ------------------
+  m.def(
+      "from_string_int",
+      [](const std::string& s, int def_val, bool throw_on_error) -> int
+      { return mrpt::from_string<int>(s, def_val, throw_on_error); },
+      py::arg("s"), py::arg("default_value") = 0, py::arg("throw_on_error") = false,
+      "Parse string to int; returns default_value on failure unless throw_on_error is True");
+
+  m.def(
+      "from_string_double",
+      [](const std::string& s, double def_val, bool throw_on_error) -> double
+      { return mrpt::from_string<double>(s, def_val, throw_on_error); },
+      py::arg("s"), py::arg("default_value") = 0.0, py::arg("throw_on_error") = false,
+      "Parse string to double; returns default_value on failure unless throw_on_error is True");
+
   // ------------------ WorkerThreadsPool ------------------
   py::class_<mrpt::WorkerThreadsPool>(m, "WorkerThreadsPool")
       .def(py::init<unsigned int>(), py::arg("num_threads"))

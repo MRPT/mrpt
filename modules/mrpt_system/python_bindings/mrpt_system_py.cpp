@@ -23,6 +23,8 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/crc.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
 
 namespace py = pybind11;
@@ -166,4 +168,121 @@ PYBIND11_MODULE(_bindings, m)
   m.def(
       "global_profiler_getref", &mrpt::system::global_profiler_getref,
       py::return_value_policy::reference);
+
+  // --- filesystem ---
+  m.def(
+      "fileExists", &mrpt::system::fileExists, py::arg("fileName"),
+      "Returns true if the file exists on disk");
+  m.def(
+      "directoryExists", &mrpt::system::directoryExists, py::arg("dirName"),
+      "Returns true if the directory exists");
+  m.def(
+      "getTempFileName", &mrpt::system::getTempFileName,
+      "Returns the name of a proposed temporary file");
+  m.def("getcwd", &mrpt::system::getcwd, "Returns the current working directory");
+  m.def(
+      "createDirectory", &mrpt::system::createDirectory, py::arg("dirName"),
+      "Creates a directory. Returns true on success");
+  m.def(
+      "deleteFile", &mrpt::system::deleteFile, py::arg("fileName"),
+      "Deletes a file. Returns true on success");
+  m.def(
+      "renameFile",
+      [](const std::string& oldName, const std::string& newName) -> bool
+      { return mrpt::system::renameFile(oldName, newName); },
+      py::arg("oldFileName"), py::arg("newFileName"), "Renames a file. Returns true on success");
+  m.def(
+      "extractFileName", &mrpt::system::extractFileName, py::arg("filePath"),
+      "Extracts just the filename from a full path (no extension, no directory)");
+  m.def(
+      "extractFileExtension", &mrpt::system::extractFileExtension, py::arg("filePath"),
+      py::arg("ignore_gz") = false, "Extracts the file extension (without the dot)");
+  m.def(
+      "extractFileDirectory", &mrpt::system::extractFileDirectory, py::arg("filePath"),
+      "Extracts the directory part of a full file path");
+  m.def(
+      "fileNameChangeExtension", &mrpt::system::fileNameChangeExtension, py::arg("filename"),
+      py::arg("newExtension"), "Returns the filename with the extension changed");
+  m.def(
+      "fileNameStripInvalidChars", &mrpt::system::fileNameStripInvalidChars, py::arg("filename"),
+      py::arg("replace_with") = '_',
+      "Replaces characters not valid for a filename with a replacement char");
+  m.def(
+      "getFileSize", &mrpt::system::getFileSize, py::arg("fileName"),
+      "Returns the size of a file in bytes");
+  m.def(
+      "toAbsolutePath", &mrpt::system::toAbsolutePath, py::arg("path"),
+      py::arg("resolveToCanonical") = false,
+      "Converts a relative path to absolute, optionally resolving symlinks");
+  m.def(
+      "pathJoin", &mrpt::system::pathJoin, py::arg("parts"),
+      "Joins path components, mirroring Python's os.path.join semantics");
+  m.def(
+      "filePathSeparatorsToNative", &mrpt::system::filePathSeparatorsToNative, py::arg("filePath"),
+      "Converts path separators to the native format");
+
+  // --- datetime ---
+  py::class_<mrpt::system::TTimeParts>(
+      m, "TTimeParts", "Broken-down date/time representation (UTC or local)")
+      .def(py::init<>())
+      .def_readwrite("year", &mrpt::system::TTimeParts::year)
+      .def_readwrite("month", &mrpt::system::TTimeParts::month)
+      .def_readwrite("day", &mrpt::system::TTimeParts::day)
+      .def_readwrite("hour", &mrpt::system::TTimeParts::hour)
+      .def_readwrite("minute", &mrpt::system::TTimeParts::minute)
+      .def_readwrite("second", &mrpt::system::TTimeParts::second)
+      .def_readwrite("day_of_week", &mrpt::system::TTimeParts::day_of_week);
+
+  m.def(
+      "buildTimestampFromParts", &mrpt::system::buildTimestampFromParts, py::arg("parts"),
+      "Build a TTimeStamp (UTC) from a TTimeParts struct");
+  m.def(
+      "buildTimestampFromPartsLocalTime", &mrpt::system::buildTimestampFromPartsLocalTime,
+      py::arg("parts"), "Build a TTimeStamp (local time) from a TTimeParts struct");
+
+  m.def(
+      "timestampToParts",
+      [](mrpt::system::TTimeStamp t, bool localTime)
+      {
+        mrpt::system::TTimeParts p;
+        mrpt::system::timestampToParts(t, p, localTime);
+        return p;
+      },
+      py::arg("t"), py::arg("localTime") = false,
+      "Decomposes a TTimeStamp into a TTimeParts struct (UTC by default)");
+
+  m.def(
+      "timeDifference",
+      [](mrpt::system::TTimeStamp t_first, mrpt::system::TTimeStamp t_later)
+      { return mrpt::system::timeDifference(t_first, t_later); },
+      py::arg("t_first"), py::arg("t_later"),
+      "Returns the difference in seconds (t_later - t_first)");
+
+  m.def(
+      "timestampAdd",
+      [](mrpt::system::TTimeStamp t, double seconds)
+      { return mrpt::system::timestampAdd(t, seconds); },
+      py::arg("t"), py::arg("num_seconds"), "Adds a number of seconds to a timestamp");
+
+  m.def(
+      "dateTimeToString", &mrpt::system::dateTimeToString, py::arg("t"),
+      "Converts a timestamp to a human-readable UTC date-time string");
+  m.def(
+      "dateTimeLocalToString", &mrpt::system::dateTimeLocalToString, py::arg("t"),
+      "Converts a timestamp to a human-readable local date-time string");
+  m.def(
+      "dateToString", &mrpt::system::dateToString, py::arg("t"),
+      "Converts a timestamp to a date-only string (UTC)");
+  m.def(
+      "timeToString", &mrpt::system::timeToString, py::arg("t"),
+      "Converts a timestamp to a time-only string (UTC)");
+  m.def(
+      "timeLocalToString", &mrpt::system::timeLocalToString, py::arg("t"),
+      py::arg("secondFractionDigits") = 6, "Converts a timestamp to a local time-only string");
+  m.def(
+      "formatTimeInterval", &mrpt::system::formatTimeInterval, py::arg("timeSeconds"),
+      "Formats a time interval (seconds) as a human-readable string (e.g. '1h 23m 45s')");
+  m.def(
+      "intervalFormat", &mrpt::system::intervalFormat, py::arg("seconds"),
+      "Format a time interval in seconds to a string");
 }

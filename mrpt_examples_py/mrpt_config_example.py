@@ -1,91 +1,118 @@
 #!/usr/bin/env python3
-
-from mrpt.config import CConfigFile, CConfigFileMemory, CLoadableOptions
-
-# Example with CConfigFile: Reading and writing to a file.
-try:
-    # Create a CConfigFile object associated with a file.
-    config_file = CConfigFile("my_config.ini")
-
-    # Write some values to the config file.
-    # The changes are stored in memory until the object is destroyed or writeNow() is called.
-    config_file.write("General", "AppName", "MyAwesomeApp")
-    config_file.write("General", "Version", 1.0)
-    config_file.write("Camera", "FocalLength", 1200.5)
-    config_file.write("Lidar", "Port", "/dev/ttyUSB0")
-
-    print("Content written to in-memory config file. The file 'my_config.ini' will be updated upon script exit.")
-
-    # Read values from the config file.
-    app_name = config_file.read_string("General", "AppName", "DefaultApp")
-    version = config_file.read_double("General", "Version", 0.0)
-    focal_length = config_file.read_double("Camera", "FocalLength", 0.0)
-    lidar_port = config_file.read_string("Lidar", "Port", "/dev/ttyS0")
-
-    print("\n--- Reading from CConfigFile ---")
-    print(f"App Name: {app_name}")
-    print(f"Version: {version}")
-    print(f"Focal Length: {focal_length}")
-    print(f"Lidar Port: {lidar_port}")
-
-    # You can also get a list of sections and keys
-    sections = config_file.getAllSections()
-    print(f"\nAll sections: {sections}")
-
-    keys_in_general = config_file.getAllKeys("General")
-    print(f"Keys in 'General': {keys_in_general}")
-
-except Exception as e:
-    print(f"An error occurred with CConfigFile: {e}")
-
-# ---
-# Example with CConfigFileMemory: Using a config in memory without a file.
-print("\n" + "="*40)
-print("Using CConfigFileMemory")
-print("="*40)
-
-# Create a CConfigFileMemory object with initial string content.
-ini_content = """
-[Database]
-Host=localhost
-Port=5432
-User=admin
 """
-mem_config = CConfigFileMemory(ini_content)
+mrpt_config_example.py — configuration files with mrpt.config.
 
-# Read values from the in-memory config.
-db_host = mem_config.read_string("Database", "Host", "127.0.0.1")
-db_port = mem_config.read_int("Database", "Port", 3306)
-db_user = mem_config.read_string("Database", "User", "guest")
+Demonstrates:
+  - CConfigFileMemory: in-memory INI-style configuration (no file I/O)
+  - CConfigFile: file-backed configuration (written to a temp file)
+  - read_double / read_int / read_string / read_bool: typed getters
+  - write: typed setters
+  - sections / keys: enumeration
+  - setContentFromYAML / getContentAsYAML: YAML round-trip
+  - config_parser: pre-processing of config text
+"""
 
-print(f"DB Host: {db_host}")
-print(f"DB Port: {db_port}")
-print(f"DB User: {db_user}")
+import os
+import tempfile
+from mrpt.config import CConfigFile, CConfigFileMemory, config_parser
 
-# Modify the content.
-mem_config.write("Database", "Port", 5433)
-new_port = mem_config.read_int("Database", "Port", 3306)
-print(f"New DB Port after modification: {new_port}")
+# ── CConfigFileMemory — no file I/O ─────────────────────────────────────────
+print("── CConfigFileMemory ───────────────────────")
+ini = """
+[General]
+AppName = MRPTDemo
+Version = 3.0
+Debug   = true
 
-# Set new content from a list of strings
-new_content_list = [
-    "[Network]",
-    "Timeout=1000",
-    "Protocol=TCP"
-]
-mem_config.setContent(new_content_list)
-timeout = mem_config.read_int("Network", "Timeout", 500)
-print(f"Timeout from new content: {timeout}")
+[Camera]
+FocalLength = 1200.5
+Width  = 640
+Height = 480
+"""
+cfg = CConfigFileMemory(ini)
 
-# ---
-# Example with CLoadableOptions: A custom class with load/save functionality.
-print("\n" + "="*40)
-print("Using CLoadableOptions")
-print("="*40)
+app  = cfg.read_string("General", "AppName", "")
+ver  = cfg.read_double("General", "Version", 0.0)
+dbg  = cfg.read_bool  ("General", "Debug", False)
+fl   = cfg.read_double("Camera",  "FocalLength", 0.0)
+w    = cfg.read_int   ("Camera",  "Width", 0)
 
+print(f"AppName      = {app!r}")
+print(f"Version      = {ver}")
+print(f"Debug        = {dbg}")
+print(f"FocalLength  = {fl}")
+print(f"Width        = {w}")
 
-# Create an instance and load options from a file.
-my_config_file = CConfigFileMemory(
-    "[MySection]\nparam1=42\nparam2=3.14\nparam3=hello_world")
+assert app == "MRPTDemo"
+assert abs(ver - 3.0) < 1e-9
+assert dbg is True
+assert abs(fl - 1200.5) < 1e-6
+assert w == 640
+print("  typed reads ✓")
 
-print(my_config_file.getContent())
+# Section / key enumeration
+sections = cfg.getAllSections()
+print(f"\nSections: {sections}")
+assert "General" in sections and "Camera" in sections
+
+keys_gen = cfg.getAllKeys("General")
+print(f"Keys in [General]: {keys_gen}")
+assert "AppName" in keys_gen
+
+assert cfg.sectionExists("Camera")
+assert cfg.keyExists("General", "Version")
+assert not cfg.sectionExists("Lidar")
+print("  sectionExists / keyExists ✓")
+
+# Modify a value and read it back
+cfg.write("Camera", "Width", 1280)
+w2 = cfg.read_int("Camera", "Width", 0)
+print(f"\nAfter write, Width = {w2}")
+assert w2 == 1280
+print("  write ✓")
+
+# YAML round-trip
+yaml_str = cfg.getContentAsYAML()
+print(f"\ngetContentAsYAML() (excerpt):\n{yaml_str[:200]}")
+
+cfg2 = CConfigFileMemory()
+cfg2.setContentFromYAML(yaml_str)
+assert cfg2.read_string("General", "AppName", "") == "MRPTDemo"
+print("  YAML round-trip ✓")
+
+# clear()
+cfg.clear()
+assert not cfg.sectionExists("General")
+print("  clear() ✓")
+
+# ── CConfigFile — file-backed ────────────────────────────────────────────────
+print("\n── CConfigFile (temp file) ─────────────────")
+tmp_fd, tmp_path = tempfile.mkstemp(suffix=".ini", prefix="mrpt_cfg_test_")
+os.close(tmp_fd)
+try:
+    fc = CConfigFile(tmp_path)
+    fc.write("Sensor", "Type", "Lidar")
+    fc.write("Sensor", "Range", 100.0)
+    fc.writeNow()           # flush to disk immediately
+
+    # Re-open and read back
+    fc2 = CConfigFile(tmp_path)
+    stype = fc2.read_string("Sensor", "Type", "")
+    srange = fc2.read_double("Sensor", "Range", 0.0)
+    print(f"Read back: Type={stype!r}, Range={srange}")
+    assert stype == "Lidar"
+    assert abs(srange - 100.0) < 1e-9
+    print("  CConfigFile write + read ✓")
+    print(f"  (temp file: {tmp_path})")
+finally:
+    os.unlink(tmp_path)
+
+# ── config_parser ────────────────────────────────────────────────────────────
+print("\n── config_parser ───────────────────────────")
+raw = "[Section]\nvalue = ${MY_PARSE_VAR|42}\n"
+parsed = config_parser(raw)
+print(f"config_parser result:\n{parsed}")
+# With no env var set the default (42) should appear or the var placeholder stays
+print("  config_parser ran without error ✓")
+
+print("\nAll checks ✓")
