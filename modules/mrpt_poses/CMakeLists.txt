@@ -161,3 +161,8 @@ mrpt_add_python_module(poses
   python_bindings/${PROJECT_NAME}_py.cpp
 )
 
+# Python binding unit test (runs only when BUILD_TESTING=ON and pybind11 is found)
+mrpt_add_python_binding_test(poses
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_poses_test.py
+)
+

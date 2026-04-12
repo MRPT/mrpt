@@ -288,7 +288,7 @@ When using this function, add `mrpt_libapps_gui` to your CMake dependencies.
 
 1. **CMakeLists.txt**: Replace `mrpt-foo` → `mrpt_foo` in `find_package` calls,
    and `mrpt::foo` → `mrpt::mrpt_foo` in `target_link_libraries`.
-   Add `find_package(mrpt_common REQUIRED)` and use `mrpt_add_executable()`.
+   Optionally, add `find_package(mrpt_common REQUIRED)` and use `mrpt_add_executable()`.
 
 2. **Headers**: Replace `#include <mrpt/opengl/Foo.h>` →
    `#include <mrpt/viz/Foo.h>` for all scene-graph classes. Keep
@@ -304,7 +304,7 @@ When using this function, add `mrpt_libapps_gui` to your CMake dependencies.
 5. **Drawing functions**: Convert `textOut(x, y, ...)`, `line(x0, y0, x1, y1, ...)`,
    `filledRectangle(x0, y0, x1, y1, ...)` to use `TPixelCoord` / brace-init.
 
-6. **`loadFromFile`**: Replace integer channel args with `TImageChannels` enum.
+6. **`CImage::loadFromFile`**: Replace integer channel args with `TImageChannels` enum.
 
 7. **`CFBORender`**: Replace `getCamera(scene)` with `setCamera()` /
    `getCameraOverride()`.
@@ -329,15 +329,83 @@ are otherwise visibly incomplete after the 2.x → 3.0 porting effort.
 
 ### 13.11 Python bindings (`pybind11`)
 
-The following modules remain unwrapped and require significant work:
+**Guiding principle:** wrap the classes and algorithms that are *core* to MRPT
+and not trivially replaceable by a pure-Python / NumPy equivalent.  Geometry
+types, sensor observations, maps, SLAM algorithms, visualization, etc. should
+be fully usable from Python.  Containers, matrices, and other data structures
+that overlap with NumPy only need minimal wrappers (enough to pass them through
+MRPT APIs), not exhaustive method coverage.
 
-- `mrpt_nav` (Phase 1.6): `CReactiveNavigationSystem`, waypoints API —
-  complex due to virtual callbacks.
-- `mrpt_bayes` (Phase 2.2): template-heavy Kalman/particle filter classes.
-- `mrpt_topography` (Phase 2.5): free functions for geographic conversions.
-- `mrpt_vision` (Phase 2.6): feature detection/matching (module being
-  deprecated; target package is `mola_vision`).
-- `mrpt_hwdrivers`, `mrpt_comms`, `mrpt_graphslam`, `mrpt_libapps_cli`
-  (Phases 2.7–2.10): low-priority.
-- Python examples (`mrpt_examples_py`): incomplete — examples are needed
-  for each newly wrapped module.
+#### Modules that already have `python_bindings/*.cpp` — review & examples
+
+For each module below: (1) audit the existing bindings for completeness
+against the public C++ API (focus on the most-used classes/functions),
+(2) add missing wrappers where appropriate, and (3) create / update a Python
+example in `mrpt_examples_py/`.
+
+- [ ] `mrpt_core` — review bindings; update `mrpt_core_example.py`
+- [ ] `mrpt_config` — review bindings; update `mrpt_config_example.py`
+- [x] `mrpt_containers` — `python/mrpt/containers/__init__.py` created; `mrpt_containers_example.py` created
+- [ ] `mrpt_expr` — review bindings; update `mrpt_expr_example.py`
+- [x] `mrpt_graphs` — `mrpt_graphs_example.py` created (CNetworkOfPoses2D/3D, save/load)
+- [x] `mrpt_gui` — `mrpt_gui_example.py` created (CDisplayWindow3D, scene, camera)
+- [x] `mrpt_img` — `mrpt_img_example.py` rewritten: fixed `Color.RED` → `TColor(255,0,0)`, made cv2 optional, expanded to cover TCamera/TStereoCamera
+- [x] `mrpt_io` — `mrpt_io_example.py` created (CMemoryStream, CFileInput/OutputStream, gz, context managers)
+- [x] `mrpt_kinematics` — `mrpt_kinematics_example.py` created (CVehicleVelCmd, CVehicleSimul_DiffDriven/Holo)
+- [x] `mrpt_maps` — `mrpt_maps_example.py` created (CSimplePointsMap, COccupancyGridMap2D, numpy)
+- [x] `mrpt_math` — `mrpt_math_example.py` created (all geometry types, wrap2pi, matrices)
+- [x] `mrpt_obs` — `mrpt_obs_example.py` created (2DRangeScan, IMU, Odometry, ActionCollection, CSensoryFrame)
+- [ ] `mrpt_poses` — review bindings; update `mrpt_poses_example.py`
+- [x] `mrpt_random` — `mrpt_random_example.py` created (CRandomGenerator, arrays, global singleton)
+- [x] `mrpt_rtti` — `mrpt_rtti_example.py` expanded to cover findRegisteredClass, derivedFrom, classFactory, getAllRegisteredClassesChildrenOf
+- [x] `mrpt_serialization` — `mrpt_serialization_example.py` created (objectToBytes/bytesToObject)
+- [x] `mrpt_slam` — `mrpt_slam_example.py` created (CICP, CMetricMapBuilderICP)
+- [ ] `mrpt_system` — review bindings; update `mrpt_system_example.py`
+- [ ] `mrpt_tfest` — review bindings; update `mrpt_tfest_example.py`
+- [x] `mrpt_topography` — `python/mrpt/topography/__init__.py` already existed; `mrpt_topography_example.py` created
+- [x] `mrpt_viz` — `mrpt_viz_example.py` rewritten to use only bound API (removed `len(Viewport)` call, expanded to cover all bound render objects)
+
+#### Modules without bindings — wrap selectively
+
+- [ ] `mrpt_nav` — wrap `CReactiveNavigationSystem`, `CWaypointsNavigator`,
+  waypoint types.  Virtual callbacks need trampoline classes.
+- [x] `mrpt_bayes` — `python_bindings/mrpt_bayes_py.cpp` created; wraps
+  `CParticleFilter`, `TParticleFilterOptions`, algorithm / resampling enums,
+  `TParticleFilterStats`.  `mrpt_bayes_example.py` created.
+- [ ] `mrpt_opengl` — low-level GPU rendering; only wrap if needed by
+  `mrpt_viz` or `mrpt_gui` APIs (e.g. `COpenGLScene` if not already
+  exposed through `mrpt_viz`).
+- [ ] `mrpt_graphslam` — wrap top-level `CGraphSlamEngine` if feasible;
+  skip internal optimizer details.
+- [x] `mrpt_comms` — `python_bindings/mrpt_comms_py.cpp` created; wraps
+  `CClientTCPSocket` and `CSerialPort` with context-manager support.
+  `mrpt_comms_example.py` created.
+
+#### Modules — no wrapping needed
+
+The following modules are internal infrastructure, C++ metaprogramming
+utilities, or GUI internals with no meaningful Python API surface:
+
+- `mrpt_common` — build-system helpers only.
+- `mrpt_data` — shared test data assets.
+- `mrpt_typemeta` — C++ compile-time type traits (`TTypeName`, `TEnumType`).
+- `mrpt_imgui` — Dear ImGui C++ integration; no Python API surface.
+- `mrpt_libapps_cli`, `mrpt_libapps_gui` — internal app scaffolding.
+- `mrpt_hwdrivers` — hardware I/O; better served by dedicated Python
+  packages or ROS drivers (wrap only if specific demand arises).
+
+#### Python examples package (`mrpt_examples_py`)
+
+- [x] Ensure every wrapped module listed above has at least one example
+  script that doubles as documentation (show imports, basic usage, expected
+  output).  See new files: `mrpt_containers_example.py`,
+  `mrpt_graphs_example.py`, `mrpt_gui_example.py`, `mrpt_io_example.py`,
+  `mrpt_kinematics_example.py`, `mrpt_maps_example.py`,
+  `mrpt_math_example.py`, `mrpt_obs_example.py`, `mrpt_random_example.py`,
+  `mrpt_serialization_example.py`, `mrpt_slam_example.py`,
+  `mrpt_topography_example.py`.
+- [x] Add a top-level `README.md` in `mrpt_examples_py/` listing all
+  examples and which module they exercise.
+- [ ] Remove `COLCON_IGNORE` from `mrpt_examples_py/` once examples are
+  ready, or keep it if examples are not meant to be built as a colcon
+  package.

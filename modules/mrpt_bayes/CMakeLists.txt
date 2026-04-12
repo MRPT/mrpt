@@ -47,3 +47,7 @@ mrpt_add_library(
   # Other imported targets:
 )
 
+mrpt_add_python_module(bayes
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+

@@ -146,14 +146,14 @@ Then build and test:
 .. code-block:: bash
 
   cd mrpt
-  colcon build --merge-install
-  colcon test --merge-install
+  colcon build
+  colcon test
 
 You can also build only specific modules, e.g.:
 
 .. code-block:: bash
 
-  colcon build --merge-install --packages-up-to mrpt_obs
+  colcon build --packages-up-to mrpt_obs
 
 Using cmake-gui (advanced)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
