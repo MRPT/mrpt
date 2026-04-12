@@ -23,25 +23,40 @@
 namespace mrpt::poses
 {
 class CPose3D;
-/** A class used to store a 2D pose, including the 2D coordinate point and a
- * heading (phi) angle.
- *  Use this class instead of lightweight mrpt::math::TPose2D when pose/point
- * composition is to be called
- *  multiple times with the same pose, since this class caches calls to
- * expensive trigronometric functions.
+/** SE(2) rigid-body pose with cached trigonometry — the preferred class for repeated composition.
  *
- * For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,
- * or refer to [this documentation page]
- *(http://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/)
+ * Represents an element of SE(2) = SO(2) ⋉ R² as the triplet `(x, y, φ)`:
+ * - `(x, y)` — translation in metres.
+ * - `φ` (phi) — counter-clockwise heading angle in **radians**.
+ *
+ * The equivalent 3x3 homogeneous matrix is:
+ * \verbatim
+ *   T = | cos(phi)  -sin(phi)  x |
+ *       | sin(phi)   cos(phi)  y |
+ *       |    0          0      1 |
+ * \endverbatim
+ *
+ * **Use this class instead of mrpt::math::TPose2D** when pose–point composition (`composePoint`,
+ * `operator+`) is called repeatedly with the same pose. CPose2D caches `cos(φ)` and `sin(φ)`,
+ * recomputing them only when `φ` changes, making repeated transforms significantly cheaper.
+ *
+ * **Operator semantics (SE(2) group):**
+ * - `a + b` (⊕): pose composition — maps the frame of `b` into the frame of `a`.
+ *   In matrix form: `T_a · T_b`.
+ * - `a - b` (⊖): relative pose — the pose of `a` expressed in the frame of `b`.
+ *   In matrix form: `T_b⁻¹ · T_a`. Equivalent to `b.inverse() + a`.
+ * - `operator-` (unary): SE(2) group inverse. **Not** elementwise negation.
+ * - `pose + point`: applies the SE(2) transformation to a point (composePoint).
+ *
+ * **Serializable:** supports `mrpt::serialization::CArchive` and YAML schema serialization.
  *
  *  <div align=center>
  *   <img src="CPose2D.gif">
  *  </div>
  *
- * \note Read also: "A tutorial on SE(3) transformation parameterizations and
- * on-manifold optimization", Jose-Luis Blanco.
- * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
- * \sa CPoseOrPoint,CPoint2D
+ * \note See also: "A tutorial on SE(3) transformation parameterizations and
+ *   on-manifold optimization", J.L. Blanco. \cite blanco_se3_tutorial
+ * \sa mrpt::math::TPose2D, CPoseOrPoint, CPoint2D, CPose3D
  * \ingroup poses_grp
  */
 class CPose2D :
@@ -78,7 +93,8 @@ class CPose2D :
   /** Constructor from a CPoint2D object. */
   explicit CPose2D(const CPoint2D&);
 
-  /** Aproximation!! Avoid its use, since information is lost. */
+  /** Projects a CPose3D into SE(2) by copying (x,y) and mapping yaw→phi; z, pitch and roll are
+   *  discarded. **Information is irreversibly lost** when pitch ≠ 0 or roll ≠ 0. */
   explicit CPose2D(const CPose3D&);
 
   /** Constructor from lightweight object. */
@@ -101,15 +117,15 @@ class CPose2D :
     return m_phi;
   }  //-V659
 
-  /** Get a (cached) value of cos(phi), recomputing it only once when phi
-   * changes. */
+  /** Returns cos(φ), using a cached value that is recomputed only when φ changes.
+   *  This avoids repeated calls to std::cos() in tight composition loops. */
   double phi_cos() const
   {
     update_cached_cos_sin();
     return m_cosphi;
   }
-  /** Get a (cached) value of sin(phi), recomputing it only once when phi
-   * changes. */
+  /** Returns sin(φ), using a cached value that is recomputed only when φ changes.
+   *  This avoids repeated calls to std::sin() in tight composition loops. */
   double phi_sin() const
   {
     update_cached_cos_sin();
@@ -156,63 +172,75 @@ class CPose2D :
     return R;
   }
 
-  /** The operator \f$ a = this \oplus D \f$ is the pose compounding operator.
+  /** SE(2) group composition: `ret = this ⊕ D`.
+   *
+   *  If `this` is the pose of frame A in world W, and `D` is the pose of frame B in frame A,
+   *  then `ret` is the pose of B in W. In matrix form: `T_ret = T_this · T_D`.
    */
   CPose2D operator+(const CPose2D& D) const;
 
-  /** Makes \f$ this = A \oplus B \f$
-   *  \note A or B can be "this" without problems.  */
+  /** In-place SE(2) group composition: computes `this = A ⊕ B` and stores the result in `this`.
+   *  Slightly more efficient than `this = A + B` as it avoids a temporary.
+   *  \note A or B may safely alias `this`. */
   void composeFrom(const CPose2D& A, const CPose2D& B);
 
-  /** The operator \f$ a = this \oplus D \f$ is the pose compounding operator.
-   */
+  /** Lifts this SE(2) pose into SE(3) (z=0, pitch=roll=0), then composes with `D` in SE(3).
+   *  Returns the full SE(3) result. */
   CPose3D operator+(const CPose3D& D) const;
 
-  /** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding
-   * operator.  */
+  /** Applies the SE(2) transformation to a CPoint2D (pose–point composition): `ret = this ⊕ u`. */
   CPoint2D operator+(const CPoint2D& u) const;
 
-  /** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
-   * \f$ with G and L being 2D points and P this 2D pose.  */
+  /** Transforms a 2D point from the local frame of this pose into the global frame.
+   *  Computes: (gx, gy) = R * (lx, ly)^T + t
+   * \param lx,ly  Point coordinates in the **local** frame.
+   * \param[out] gx,gy  Point coordinates in the **global** frame.
+   * \sa inverseComposePoint
+   */
   void composePoint(double lx, double ly, double& gx, double& gy) const;
 
-  /** overload \f$ G = P \oplus L \f$ with G and L being 2D points and P this
-   * 2D pose */
+  /** \overload */
   void composePoint(const mrpt::math::TPoint2D& l, mrpt::math::TPoint2D& g) const;
 
-  /// \overload
+  /** \overload for 3D points; the z coordinate passes through unmodified. */
   mrpt::math::TPoint3D composePoint(const mrpt::math::TPoint3D& l) const;
 
-  /** overload \f$ G = P \oplus L \f$ with G and L being 3D points and P this
-   * 2D pose (the "z" coordinate remains unmodified) */
+  /** \overload for 3D points; the z coordinate passes through unmodified. */
   void composePoint(const mrpt::math::TPoint3D& l, mrpt::math::TPoint3D& g) const;
-  /** overload (the "z" coordinate remains unmodified) */
+  /** \overload for 3D points; the z coordinate passes through unmodified. */
   void composePoint(double lx, double ly, double lz, double& gx, double& gy, double& gz) const;
 
-  /**  Computes the 2D point L such as \f$ L = G \ominus this \f$. \sa
-   * composePoint, composeFrom */
+  /** Transforms a 2D point from the global frame into the local frame of this pose.
+   *  Computes: (lx, ly) = R^T * ((gx, gy)^T - t)
+   * \param gx,gy  Point coordinates in the **global** frame.
+   * \param[out] lx,ly  Point coordinates in the **local** frame.
+   * \sa composePoint
+   */
   void inverseComposePoint(const double gx, const double gy, double& lx, double& ly) const;
   /** \overload */
   void inverseComposePoint(const mrpt::math::TPoint2D& g, mrpt::math::TPoint2D& l) const;
-  /** \overload */
+  /** \overload Returns the local-frame point directly. */
   mrpt::math::TPoint2D inverseComposePoint(const mrpt::math::TPoint2D& g) const;
 
-  /** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding
-   * operator. */
+  /** The operator `u' = this (+) u` is the pose/point compounding operator. */
   CPoint3D operator+(const CPoint3D& u) const;
 
-  /**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient
-   * than "this= A - B;" since it avoids the temporary object.
-   *  \note A or B can be "this" without problems.
+  /** In-place relative pose: computes `this = A ⊖ B = B⁻¹ ⊕ A` and stores the result in `this`.
+   *  Slightly more efficient than `this = A - B` as it avoids a temporary.
+   *  \note A or B may safely alias `this`.
    * \sa composeFrom, composePoint
    */
   void inverseComposeFrom(const CPose2D& A, const CPose2D& B);
 
-  /** Convert this pose into its inverse, saving the result in itself. \sa
-   * operator- */
+  /** Replaces this pose with its SE(2) group inverse in-place.
+   *  After calling this, `original * this = Identity`.
+   *  \note **Not** the same as negating all components individually.
+   * \sa operator-
+   */
   void inverse();
 
-  /** Compute \f$ RET = this \ominus b \f$  */
+  /** SE(2) relative pose: `ret = this ⊖ b = b⁻¹ ⊕ this`.
+   *  Returns the pose of `this` expressed in the frame of `b`. */
   CPose2D operator-(const CPose2D& b) const
   {
     CPose2D ret(UNINITIALIZED_POSE);
@@ -220,8 +248,7 @@ class CPose2D :
     return ret;
   }
 
-  /** The operator \f$ a \ominus b \f$ is the pose inverse compounding
-   * operator. */
+  /** The operator `a (-) b` is the pose inverse compounding operator. */
   CPose3D operator-(const CPose3D& b) const;
 
   /** Scalar sum of components: This is different from poses
@@ -234,7 +261,7 @@ class CPose2D :
    */
   void operator*=(const double s);
 
-  /** Make \f$ this = this \oplus b \f$  */
+  /** Make `this = this (+) b` */
   CPose2D& operator+=(const CPose2D& b);
 
   /** Forces "phi" to be in the range [-pi,pi];
@@ -354,8 +381,8 @@ class CPose2D :
 
 std::ostream& operator<<(std::ostream& o, const CPose2D& p);
 
-/** Unary - operator: return the inverse pose "-p" (Note that is NOT the same
- * than a pose with negative x y phi) \sa CPose2D::inverse() */
+/** Unary ⊖ operator: returns the SE(2) group inverse of `p`.
+ *  \note **Not** the same as negating (x, y, phi) individually. \sa CPose2D::inverse() */
 CPose2D operator-(const CPose2D& p);
 
 /** Compose a 2D point from a new coordinate base given by a 2D pose. */

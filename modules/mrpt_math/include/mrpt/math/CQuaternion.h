@@ -27,9 +27,9 @@ enum TConstructorFlags_Quaternions
   UNINITIALIZED_QUATERNION = 0
 };
 
-/** A quaternion, which can represent a 3D rotation as pair \f$ (r,\mathbf{u})
- *\f$, with a real part "r" and a 3D vector \f$ \mathbf{u} = (x,y,z) \f$, or
- *alternatively, q = r + ix + jy + kz.
+/** A quaternion, which can represent a 3D rotation as pair (r, u)
+ * with a real part "r" and a 3D vector u = (x,y,z), or
+ * alternatively, q = r + ix + jy + kz.
  *
  *  The elements of the quaternion can be accessed by either:
  *		- r()(equivalent to w()), x(), y(), z(), or
@@ -129,19 +129,19 @@ class CQuaternion : public CVectorFixed<T, 4>
   T& y() { return (*this)[2]; }
   T& z() { return (*this)[3]; }
 
-  /**	Set this quaternion to the rotation described by a 3D (Rodrigues)
-   * rotation vector \f$ \mathbf{v} \f$:
-   *   If \f$ \mathbf{v}=0 \f$, then the quaternion is \f$ \mathbf{q} = [1 ~
-   * 0 ~ 0 ~ 0]^\top \f$, otherwise:
-   *    \f[ \mathbf{q} = \left[ \begin{array}{c}
-   *       \cos(\frac{\theta}{2}) \\
-   *       v_x \frac{\sin(\frac{\theta}{2})}{\theta} \\
-   *       v_y \frac{\sin(\frac{\theta}{2})}{\theta} \\
-   *       v_z \frac{\sin(\frac{\theta}{2})}{\theta}
-   *    \end{array} \right] \f]
-   *    where \f$ \theta = |\mathbf{v}| = \sqrt{v_x^2+v_y^2+v_z^2} \f$.
+  /** Set this quaternion to the rotation described by a 3D (Rodrigues) rotation vector v.
+   *
+   *  If v = 0, then q = [1  0  0  0]. Otherwise:
+   * \verbatim
+   *    theta = |v| = sqrt(vx^2 + vy^2 + vz^2)
+   *
+   *    q = [ cos(theta/2)            ]   (qr)
+   *        [ vx * sin(theta/2)/theta ]   (qx)
+   *        [ vy * sin(theta/2)/theta ]   (qy)
+   *        [ vz * sin(theta/2)/theta ]   (qz)
+   * \endverbatim
    *  \sa "Representing Attitude: Euler Angles, Unit Quaternions, and
-   * Rotation Vectors (2006)", James Diebel.
+   *  Rotation Vectors (2006)", James Diebel.
    */
   template <class ARRAYLIKE3>
   void fromRodriguesVector(const ARRAYLIKE3& v)
@@ -334,9 +334,8 @@ class CQuaternion : public CVectorFixed<T, 4>
     J *= n;
   }
 
-  /** Compute the Jacobian of the rotation composition operation \f$ p =
-   * f(\cdot) = q_{this} \times r \f$, that is the 4x4 matrix \f$
-   * \frac{\partial f}{\partial q_{this} }  \f$.
+  /** Compute the Jacobian of the rotation composition operation p = f(.) = q_this x r,
+   *  that is the 4x4 matrix df/dq_this.
    *  The output matrix can be a dynamic or fixed size (4x4) matrix.
    */
   template <class MATRIXLIKE>
@@ -361,18 +360,14 @@ class CQuaternion : public CVectorFixed<T, 4>
     J(3, 3) = r();
   }
 
-  /** Calculate the 3x3 rotation matrix associated to this quaternion: \f[
-   * \mathbf{R} = \left(
-   *    \begin{array}{ccc}
-   *     q_r^2+q_x^2-q_y^2-q_z^2 	&  2(q_x q_y - q_r q_z)	&  	2(q_z
-   * q_x+q_r q_y) \\
-   *     2(q_x q_y+q_r q_z) 		& q_r^2-q_x^2+q_y^2-q_z^2 	& 2(q_y
-   * q_z-q_r q_x) \\
-   *     2(q_z q_x-q_r q_y) & 2(q_y q_z+q_r q_x)  & q_r^2- q_x^2 - q_y^2 +
-   * q_z^2
-   *    \end{array}
-   *  \right)\f]
+  /** Calculate the 3x3 rotation matrix associated to this quaternion.
    *
+   *  Let r=qr, x=qx, y=qy, z=qz. Then:
+   * \verbatim
+   *   R = | r^2+x^2-y^2-z^2   2(xy - rz)        2(zx + ry)       |
+   *       | 2(xy + rz)         r^2-x^2+y^2-z^2   2(yz - rx)       |
+   *       | 2(zx - ry)         2(yz + rx)         r^2-x^2-y^2+z^2 |
+   * \endverbatim
    */
   template <class MATRIXLIKE>
   void rotationMatrix(MATRIXLIKE& M) const

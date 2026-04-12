@@ -43,8 +43,24 @@ struct TPoint3D_data
   T x, y, z;
 };
 
-/** Base template for TPoint3D and TPoint3Df.
- * [1-byte memory packed, no padding]
+/** Base template for TPoint3D (double) and TPoint3Df (float).
+ *
+ * Represents a point (or free vector) in the 3D Euclidean space R^3.
+ * Coordinates are stored as `(x, y, z)` in a 1-byte-packed struct (no padding).
+ *
+ * This is a *lightweight* POD-like type intended for storage, arithmetic, and
+ * interoperability with NumPy / Eigen arrays. It supports:
+ * - Standard vector arithmetic (+, -, scalar *, /).
+ * - Dot product (`dot()`) and cross product (`cross()`).
+ * - Euclidean norm and distance queries.
+ * - std::tuple structured-binding (`auto [x,y,z] = pt;`).
+ *
+ * When applying SE(3) rigid-body transformations, use mrpt::poses::CPose3D::composePoint()
+ * or mrpt::math::TPose3D::composePoint() rather than adding translation manually.
+ *
+ * \note `TVector3D` is a type alias for `TPoint3D` (same storage; use that name when
+ *       the object is a free vector, e.g. a linear velocity or surface normal).
+ * \sa mrpt::poses::CPoint3D, TPose3D, TPoint2D
  * \ingroup geometry_grp
  */
 template <typename T>
@@ -78,17 +94,17 @@ struct TPoint3D_ :
     TPoint3D_data<T>::z = static_cast<T>(m[2]);
   }
 
-  /** Implicit constructor from TPoint2D. Zeroes the z.
+  /** Constructor from TPoint2D; the z coordinate is set to zero.
    * \sa TPoint2D
    */
   explicit TPoint3D_(const TPoint2D_<T>& p);
-  /**
-   * Constructor from TPose2D, losing information. Zeroes the z.
+  /** Constructor from TPose2D; retains (x,y) from the translational part and sets z=0;
+   *  the heading angle phi is discarded.
    * \sa TPose2D
    */
   explicit TPoint3D_(const TPose2D& p);
-  /**
-   * Constructor from TPose3D, losing information.
+  /** Constructor from TPose3D; retains only the translational part (x,y,z);
+   *  all angular coordinates (yaw, pitch, roll) are discarded.
    * \sa TPose3D
    */
   explicit TPoint3D_(const TPose3D& p);
@@ -319,16 +335,20 @@ struct TPoint3D_ :
   }
 };
 
-/** Lightweight 3D point. Allows coordinate access using [] operator.
- * (1-byte memory packed, no padding).
- * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
+/** Lightweight 3D point / free vector in R^3 (double precision).
+ * Coordinate access via `x`, `y`, `z` members or `operator[]` (index 0→x, 1→y, 2→z).
+ * Memory layout: 1-byte packed, no padding — safe for direct memcpy / mmap with point clouds.
+ * \sa mrpt::poses::CPoint3D, TPoint3Df, TVector3D
+ * \ingroup geometry_grp
  */
 using TPoint3D = TPoint3D_<double>;
+/** Single-precision variant of TPoint3D. \ingroup geometry_grp */
 using TPoint3Df = TPoint3D_<float>;
 
-/** Useful type alias for 3-vectors.
- * (1-byte memory packed, no padding) */
+/** Type alias for a 3D free vector (same storage as TPoint3D; use this name when the
+ *  object represents a direction, velocity, or displacement rather than a position). */
 using TVector3D = TPoint3D;
+/** Single-precision variant of TVector3D. */
 using TVector3Df = TPoint3Df;
 
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
