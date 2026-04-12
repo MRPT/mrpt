@@ -45,3 +45,7 @@ mrpt_add_library(
 mrpt_add_python_module(rtti
   python_bindings/${PROJECT_NAME}_py.cpp
 )
+
+mrpt_add_python_binding_test(rtti
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_rtti_test.py
+)

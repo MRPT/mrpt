@@ -61,3 +61,7 @@ mrpt_add_python_module(config
   python_bindings/${PROJECT_NAME}_py.cpp
 )
 
+mrpt_add_python_binding_test(config
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_config_test.py
+)
+

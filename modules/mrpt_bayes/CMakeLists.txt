@@ -51,3 +51,7 @@ mrpt_add_python_module(bayes
   python_bindings/${PROJECT_NAME}_py.cpp
 )
 
+mrpt_add_python_binding_test(bayes
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_bayes_test.py
+)
+

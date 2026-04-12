@@ -60,3 +60,7 @@ mrpt_add_python_module(tfest
   python_bindings/${PROJECT_NAME}_py.cpp
 )
 
+mrpt_add_python_binding_test(tfest
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_tfest_test.py
+)
+

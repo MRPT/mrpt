@@ -788,10 +788,18 @@ function(mrpt_add_python_module MODULE_NAME CPP_SOURCES)
     # Direct the .so into a staging python tree under the build directory so
     # the module is importable from the build tree without a full install.
     # Layout:  <build>/python_staging/mrpt/<name>/_bindings.so
-    #          <src>/python/mrpt/<name>/__init__.py  (symlinked / copied at install)
+    #          <build>/python_staging/mrpt/<name>/__init__.py  (copied at configure time)
+    set(_py_staging_dir "${CMAKE_CURRENT_BINARY_DIR}/python_staging/mrpt/${MODULE_NAME}")
     set_target_properties(_bindings PROPERTIES
-      LIBRARY_OUTPUT_DIRECTORY
-        "${CMAKE_CURRENT_BINARY_DIR}/python_staging/mrpt/${MODULE_NAME}"
+      LIBRARY_OUTPUT_DIRECTORY "${_py_staging_dir}"
+    )
+
+    # Copy __init__.py into the staging tree so the package is self-contained
+    # (avoids circular-import errors when Python finds _bindings.so and
+    # __init__.py in separate directory trees).
+    file(COPY
+      "${CMAKE_CURRENT_SOURCE_DIR}/python/mrpt/${MODULE_NAME}/__init__.py"
+      DESTINATION "${_py_staging_dir}"
     )
 
     install(TARGETS _bindings LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}/mrpt/${MODULE_NAME}/)
@@ -822,18 +830,17 @@ function(mrpt_add_python_binding_test MODULE_NAME)
     return()
   endif()
 
-  # PYTHONPATH needs two entries:
-  #   1. <build>/python_staging  — provides mrpt/<name>/_bindings.so
-  #   2. <src>/python            — provides mrpt/<name>/__init__.py
-  # Together Python sees a complete mrpt.<name> package.
+  # PYTHONPATH: only the staging tree is needed — mrpt_add_python_module()
+  # already copies __init__.py there alongside _bindings.so, so the package
+  # is self-contained and there is no risk of a circular-import from having
+  # two separate trees for the same package.
   set(_staging "${CMAKE_CURRENT_BINARY_DIR}/python_staging")
-  set(_py_src  "${CMAKE_CURRENT_SOURCE_DIR}/python")
 
   add_test(
     NAME python_${MODULE_NAME}
     COMMAND
       ${CMAKE_COMMAND} -E env
-        "PYTHONPATH=${_staging}:${_py_src}:$ENV{PYTHONPATH}"
+        "PYTHONPATH=${_staging}:$ENV{PYTHONPATH}"
       ${Python3_EXECUTABLE} ${_PBT_SCRIPT}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   )

@@ -152,3 +152,7 @@ endif()
 mrpt_add_python_module(io
   python_bindings/mrpt_io_py.cpp
 )
+
+mrpt_add_python_binding_test(io
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_io_test.py
+)

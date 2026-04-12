@@ -44,3 +44,7 @@ mrpt_add_library(
 mrpt_add_python_module(random
   python_bindings/mrpt_random_py.cpp
 )
+
+mrpt_add_python_binding_test(random
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_random_test.py
+)

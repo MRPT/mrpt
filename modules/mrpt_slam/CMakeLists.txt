@@ -90,3 +90,7 @@ endif()
 mrpt_add_python_module(slam
   python_bindings/mrpt_slam_py.cpp
 )
+
+mrpt_add_python_binding_test(slam
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_slam_test.py
+)

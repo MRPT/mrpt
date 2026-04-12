@@ -110,3 +110,7 @@ endif()
 mrpt_add_python_module(system
   python_bindings/${PROJECT_NAME}_py.cpp
 )
+
+mrpt_add_python_binding_test(system
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_system_test.py
+)
