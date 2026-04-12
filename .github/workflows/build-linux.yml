@@ -83,9 +83,12 @@ jobs:
         if: matrix.coverage == 'ON'
         run: |
           # Capture coverage from all sub-folders in build/
-          lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch --ignore-errors negative
+          lcov --capture --directory build --output-file coverage.info \
+            --ignore-errors mismatch,negative,empty,unused
           # Filter out system headers and third-party code
-          lcov --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/3rdparty/*' --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/3rdparty/*' \
+            --output-file coverage.info \
+            --ignore-errors empty,unused
           lcov --list coverage.info
 
       - name: Upload to Codecov
