@@ -343,10 +343,10 @@ against the public C++ API (focus on the most-used classes/functions),
 (2) add missing wrappers where appropriate, and (3) create / update a Python
 example in `mrpt_examples_py/`.
 
-- [ ] `mrpt_core` — review bindings; update `mrpt_core_example.py`
-- [ ] `mrpt_config` — review bindings; update `mrpt_config_example.py`
+- [x] `mrpt_core` — added `get_env`, `from_string`, `format1d/format1s` bindings; `mrpt_core_example.py` updated
+- [x] `mrpt_config` — bindings complete (CConfigFile, CConfigFileMemory, CConfigFileBase, config_parser); example rewritten to avoid side-effect files and add YAML round-trip
 - [x] `mrpt_containers` — `python/mrpt/containers/__init__.py` created; `mrpt_containers_example.py` created
-- [ ] `mrpt_expr` — review bindings; update `mrpt_expr_example.py`
+- [x] `mrpt_expr` — bindings complete (CRuntimeCompiledExpression, compile/eval, register_function 0-3 args); example covers all use cases
 - [x] `mrpt_graphs` — `mrpt_graphs_example.py` created (CNetworkOfPoses2D/3D, save/load)
 - [x] `mrpt_gui` — `mrpt_gui_example.py` created (CDisplayWindow3D, scene, camera)
 - [x] `mrpt_img` — `mrpt_img_example.py` rewritten: fixed `Color.RED` → `TColor(255,0,0)`, made cv2 optional, expanded to cover TCamera/TStereoCamera
@@ -355,13 +355,13 @@ example in `mrpt_examples_py/`.
 - [x] `mrpt_maps` — `mrpt_maps_example.py` created (CSimplePointsMap, COccupancyGridMap2D, numpy)
 - [x] `mrpt_math` — `mrpt_math_example.py` created (all geometry types, wrap2pi, matrices)
 - [x] `mrpt_obs` — `mrpt_obs_example.py` created (2DRangeScan, IMU, Odometry, ActionCollection, CSensoryFrame)
-- [ ] `mrpt_poses` — review bindings; update `mrpt_poses_example.py`
+- [x] `mrpt_poses` — bindings complete (CPose2D/3D, CPoint2D/3D, CPose3DQuat, PDFGaussian, SE_average, interpolators, random sampler); example updated
 - [x] `mrpt_random` — `mrpt_random_example.py` created (CRandomGenerator, arrays, global singleton)
 - [x] `mrpt_rtti` — `mrpt_rtti_example.py` expanded to cover findRegisteredClass, derivedFrom, classFactory, getAllRegisteredClassesChildrenOf
 - [x] `mrpt_serialization` — `mrpt_serialization_example.py` created (objectToBytes/bytesToObject)
 - [x] `mrpt_slam` — `mrpt_slam_example.py` created (CICP, CMetricMapBuilderICP)
-- [ ] `mrpt_system` — review bindings; update `mrpt_system_example.py`
-- [ ] `mrpt_tfest` — review bindings; update `mrpt_tfest_example.py`
+- [x] `mrpt_system` — added filesystem (`fileExists`, `pathJoin`, `extractFileName/Extension/Directory`, `toAbsolutePath`, etc.) and datetime (`TTimeParts`, `dateTimeToString`, `timeDifference`, `timestampAdd`, etc.) bindings; example fully rewritten
+- [x] `mrpt_tfest` — bindings complete (TMatchingPair/List, se2_l2, se3_l2_robust + params/results); example covers RANSAC SE(3) estimation
 - [x] `mrpt_topography` — `python/mrpt/topography/__init__.py` already existed; `mrpt_topography_example.py` created
 - [x] `mrpt_viz` — `mrpt_viz_example.py` rewritten to use only bound API (removed `len(Viewport)` call, expanded to cover all bound render objects)
 
@@ -372,9 +372,7 @@ example in `mrpt_examples_py/`.
 - [x] `mrpt_bayes` — `python_bindings/mrpt_bayes_py.cpp` created; wraps
   `CParticleFilter`, `TParticleFilterOptions`, algorithm / resampling enums,
   `TParticleFilterStats`.  `mrpt_bayes_example.py` created.
-- [ ] `mrpt_opengl` — low-level GPU rendering; only wrap if needed by
-  `mrpt_viz` or `mrpt_gui` APIs (e.g. `COpenGLScene` if not already
-  exposed through `mrpt_viz`).
+- [ ] `mrpt_opengl` — low-level GPU rendering; only do wrap the FBO feature.
 - [ ] `mrpt_graphslam` — wrap top-level `CGraphSlamEngine` if feasible;
   skip internal optimizer details.
 - [x] `mrpt_comms` — `python_bindings/mrpt_comms_py.cpp` created; wraps
@@ -406,6 +404,3 @@ utilities, or GUI internals with no meaningful Python API surface:
   `mrpt_topography_example.py`.
 - [x] Add a top-level `README.md` in `mrpt_examples_py/` listing all
   examples and which module they exercise.
-- [ ] Remove `COLCON_IGNORE` from `mrpt_examples_py/` once examples are
-  ready, or keep it if examples are not meant to be built as a colcon
-  package.
