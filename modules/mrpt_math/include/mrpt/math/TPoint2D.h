@@ -37,7 +37,20 @@ struct TPoint2D_data
   T x, y;
 };
 
-/** Base template for TPoint2D and TPoint2Df
+/** Base template for TPoint2D (double) and TPoint2Df (float).
+ *
+ * Represents a point (or free vector) in the 2D Euclidean space R^2.
+ * Coordinates are stored as `(x, y)`.
+ *
+ * This is a *lightweight* POD-like type intended for storage and arithmetic.
+ * When pose-point composition (i.e. applying an SE(2) rigid transformation to a point)
+ * is needed, use mrpt::poses::CPose2D or mrpt::math::TPose2D instead.
+ *
+ * \note `TVector2D` is a type alias for `TPoint2D` (both represent elements of R^2;
+ *       the alias is provided for semantic clarity when the object is a free vector
+ *       rather than a position).
+ * \sa mrpt::poses::CPoint2D, TPose2D, TPoint3D
+ * \ingroup geometry_grp
  */
 template <typename T>
 struct TPoint2D_ :
@@ -68,17 +81,16 @@ struct TPoint2D_ :
     TPoint2D_data<T>::y = static_cast<T>(m[1]);
   }
 
-  /** Constructor from TPose2D, discarding phi.
+  /** Constructor from TPose2D, retaining only the translational part (x,y); phi is discarded.
    * \sa TPose2D
    */
   explicit TPoint2D_(const TPose2D& p);
-  /**
-   * Constructor from TPoint3D, discarding z.
+  /** Constructor from TPoint3D, retaining only (x,y); z is discarded.
    * \sa TPoint3D
    */
   explicit TPoint2D_(const TPoint3D_<T>& p);
-  /**
-   * Constructor from TPose3D, discarding z and the angular coordinates.
+  /** Constructor from TPose3D, retaining only the translational (x,y) part; z and all
+   * angular coordinates are discarded.
    * \sa TPose3D
    */
   explicit TPoint2D_(const TPose3D& p);
@@ -238,17 +250,19 @@ struct TPoint2D_ :
   }
 };
 
-/**
- * Lightweight 2D point. Allows coordinate access using [] operator.
- * \sa mrpt::poses::CPoint2D
+/** Lightweight 2D point / free vector in R^2 (double precision).
+ * Coordinate access via `x`, `y` members or `operator[]` (index 0→x, 1→y).
+ * \sa mrpt::poses::CPoint2D, TPoint2Df, TVector2D
  * \ingroup geometry_grp
  */
 using TPoint2D = TPoint2D_<double>;
+/** Single-precision variant of TPoint2D. \ingroup geometry_grp */
 using TPoint2Df = TPoint2D_<float>;
 
-/** Useful type alias for double 2-vectors */
+/** Type alias for a 2D free vector (same storage as TPoint2D; use this name when the
+ *  object represents a direction or displacement rather than a position). */
 using TVector2D = TPoint2D;
-/** Useful type alias for float 2-vectors */
+/** Single-precision variant of TVector2D. */
 using TVector2Df = TPoint2Df;
 
 /** Unary minus operator for 2D points/vectors. */

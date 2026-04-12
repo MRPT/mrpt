@@ -22,37 +22,59 @@
 
 namespace mrpt::math
 {
-/**
- * Lightweight 2D pose. Allows coordinate access using [] operator.
- * \sa mrpt::poses::CPose2D
+/** Lightweight 2D rigid-body pose — an element of SE(2).
+ *
+ * Parameterises the group SE(2) = SO(2) ⋉ R² as the triplet `(x, y, φ)`:
+ * - `(x, y)` — translation in metres.
+ * - `φ` (phi) — counter-clockwise rotation angle in **radians**, measured from
+ *   the global X axis.
+ *
+ * The equivalent 3x3 homogeneous matrix is:
+ * \verbatim
+ *   T = | cos(phi)  -sin(phi)  x |
+ *       | sin(phi)   cos(phi)  y |
+ *       |    0          0      1 |
+ * \endverbatim
+ *
+ * **Composition (`operator+`)** implements the SE(2) group product:
+ * `(this ⊕ b)` maps a point expressed in frame `b` into the frame of `this`.
+ *
+ * **Inverse composition (`operator-`)** implements `(this ⊖ b) = b⁻¹ ⊕ this`,
+ * i.e. the pose of `this` expressed in the frame of `b`.
+ *
+ * This is a *lightweight* type without serialization or caching of trig values.
+ * Prefer mrpt::poses::CPose2D when composition is called repeatedly with the same
+ * pose (it caches cos/sin and supports serialization).
+ *
+ * Coordinate access: `operator[]` with index 0→x, 1→y, 2→phi.
+ *
+ * \sa mrpt::poses::CPose2D, TPose3D, TPoint2D
  * \ingroup geometry_grp
  */
 struct TPose2D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose2D>
 {
   static constexpr std::size_t static_size = 3;
 
-  /** X,Y coordinates */
-  double x{.0}, y{.0};
-  /** Orientation (rads) */
+  /** Translation along the global X axis (metres). */
+  double x{.0};
+  /** Translation along the global Y axis (metres). */
+  double y{.0};
+  /** Heading angle phi in **radians**, counter-clockwise from the global X axis.
+   *  Range: any real value; use normalizePhi() to wrap to (-pi, pi]. */
   double phi{.0};
 
   /** Returns the identity transformation */
   static constexpr TPose2D Identity() { return TPose2D(); }
 
-  /** Explicit constructor from TPoint2D. Zeroes the phi coordinate.
-   * \sa TPoint2D
-   */
+  /** Constructor from TPoint2D: copies (x,y), sets phi=0 (pure translation, no rotation). */
   explicit TPose2D(const TPoint2D& p);
 
-  /**
-   * Constructor from TPoint3D, losing information. Zeroes the phi
-   * coordinate.
-   * \sa TPoint3D
-   */
+  /** Constructor from TPoint3D: copies (x,y), sets phi=0; the z coordinate is discarded. */
   explicit TPose2D(const TPoint3D& p);
-  /**
-   * Constructor from TPose3D, losing information. The phi corresponds to the
-   * original pose's yaw.
+
+  /** Constructor from TPose3D: copies (x,y), maps yaw→phi; z, pitch and roll are discarded.
+   *  This is a projection from SE(3) onto SE(2); information is irreversibly lost
+   *  when pitch ≠ 0 or roll ≠ 0.
    * \sa TPose3D
    */
   explicit TPose2D(const TPose3D& p);
@@ -138,23 +160,51 @@ struct TPose2D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
     return s;
   }
 
-  /** Operator "oplus" pose composition: "ret=this \oplus b"  \sa CPose2D */
+  /** SE(2) group composition — "⊕" operator: `ret = this ⊕ b`.
+   *
+   * Computes the pose obtained by first applying transformation `this`, then `b`.
+   * In matrix form: `T_ret = T_this · T_b`.
+   * If `this` is the pose of frame A in the world W, and `b` is the pose of frame B
+   * in frame A, then `ret` is the pose of B in W.
+   * \sa CPose2D, inverseComposeFrom
+   */
   mrpt::math::TPose2D operator+(const mrpt::math::TPose2D& b) const;
-  /** Operator "ominus" pose composition: "ret=this \ominus b"  \sa CPose2D */
+
+  /** SE(2) inverse composition — "⊖" operator: `ret = this ⊖ b = b⁻¹ ⊕ this`.
+   *
+   * Returns the pose of `this` expressed in the reference frame of `b`.
+   * In matrix form: `T_ret = T_b⁻¹ · T_this`.
+   * Useful for computing relative poses: if both `this` and `b` are poses in the
+   * world frame, `ret` is the pose of `this` as seen from `b`.
+   * \sa CPose2D
+   */
   mrpt::math::TPose2D operator-(const mrpt::math::TPose2D& b) const;
 
+  /** Transforms a point from the local frame of this pose into the global (world) frame.
+   *  Equivalent to `g = T_this · [l.x  l.y  1]ᵀ` (homogeneous coords).
+   * \param l Point in the **local** frame.
+   * \return Point in the **global** frame.
+   * \sa inverseComposePoint
+   */
   mrpt::math::TPoint2D composePoint(const TPoint2D l) const;
 
+  /** Alias for composePoint(): `pose + point` applies the SE(2) transformation to the point. */
   mrpt::math::TPoint2D operator+(const mrpt::math::TPoint2D& b) const;
 
+  /** Transforms a point from the global (world) frame into the local frame of this pose.
+   *  Equivalent to `l = T_this⁻¹ · [g.x  g.y  1]ᵀ` (homogeneous coords).
+   * \param g Point in the **global** frame.
+   * \return Point in the **local** frame of this pose.
+   * \sa composePoint
+   */
   mrpt::math::TPoint2D inverseComposePoint(const TPoint2D g) const;
 
   /** Returns the (x,y) translational part of the SE(2) transformation. */
   [[nodiscard]] const mrpt::math::TPoint2D translation() const { return {x, y}; }
 
-  /** Returns the norm of the (x,y) vector (phi is not used) */
+  /** Euclidean norm of the translational part: |(x,y)|. The angle phi is ignored. */
   double norm() const { return mrpt::hypot_fast(x, y); }
-  /** Forces "phi" to be in the range [-pi,pi] */
+  /** Wraps phi to the canonical range (-pi, pi]. */
   void normalizePhi() { phi = mrpt::math::wrapToPi(phi); }
   /** Set the current object value from a string generated by 'asString' (eg:
    * "[0.02 1.04 -45.0]" )

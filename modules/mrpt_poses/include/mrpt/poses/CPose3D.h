@@ -27,56 +27,55 @@ namespace mrpt::poses
 {
 class CPose3DQuat;
 
-/** A SE(3) pose, comprising a 3D translation and a 3D rotation.
+/** SE(3) rigid-body pose with cached rotation matrix — the preferred class for 3D transformations.
  *
- * The transformation is stored in two separate containers:
- * - a 3-array for the translation ∈ R³, and
- * - a 3x3 rotation matrix ∈ SO(3).
+ * Represents an element of SE(3) = SO(3) ⋉ R³. Internally stored as:
+ * - A 3-vector `m_coords = (x, y, z)` — translation in metres.
+ * - A 3×3 rotation matrix `m_ROT ∈ SO(3)` — always kept normalised.
  *
- * This class allows parameterizing 6D poses as a 6-vector
- * `[x y z yaw pitch roll]` (read below for the angles convention).
- * Note however, that the yaw/pitch/roll angles are only computed (on-demand and
- * transparently) when the user requests them. Normally, rotations and
- * transformations are always handled via the 3x3 SO(3) rotation matrix.
+ * The corresponding 4x4 homogeneous matrix is:
+ * \verbatim
+ *   T = | R  t |   where R in SO(3), t = (x,y,z)^T
+ *       | 0  1 |
+ * \endverbatim
  *
- * Yaw/Pitch/Roll angles are defined as successive rotations around *local*
- * (dynamic) axes in the Z/Y/X order:
+ * **Angle parameterisation (intrinsic ZYX / Tait-Bryan):**
+ * Yaw/Pitch/Roll angles (yaw=psi, pitch=theta, roll=phi) are derived on demand from `m_ROT`
+ * via `getYawPitchRoll()`:
+ *
+ *  1. Rotate about the body Z axis by **yaw** (psi).
+ *  2. Rotate about the *new* body Y axis by **pitch** (theta).
+ *  3. Rotate about the *new* body X axis by **roll** (phi).
+ *
+ * So R = Rz(yaw) * Ry(pitch) * Rx(roll). This is equivalent to extrinsic rotations about
+ * the **fixed** axes in the reverse order (X then Y then Z).
+ * The representation is singular (gimbal lock) when pitch = +-pi/2.
+ *
+ * To change pose components, always use setFromValues() — **never** assign to `m_ROT` directly
+ * using yaw/pitch/roll since the cached angles would become stale. The rotation matrix is
+ * always the primary storage; yaw/pitch/roll are recomputed lazily.
+ *
+ * **Operator semantics (SE(3) group):**
+ * - `a + b` (⊕): pose composition — maps the frame of `b` into the frame of `a`.
+ *   In matrix form: `T_a · T_b`.
+ * - `a - b` (⊖): relative pose — pose of `a` as seen from `b`. In matrix form: `T_b⁻¹ · T_a`.
+ * - Unary `operator-`: SE(3) group inverse. **Not** elementwise negation of (x,y,z,yaw,pitch,roll).
+ * - `pose + point`: applies the SE(3) transformation to a 3D point (composePoint).
+ *
+ * **Alternative representations:**
+ * - As a unit quaternion + translation: CPose3DQuat / getAsQuaternion().
+ * - As a Lie algebra twist (se(3) tangent vector): see mrpt::poses::Lie.
+ *
+ * **Serializable:** supports `mrpt::serialization::CArchive` and YAML schema serialization.
  *
  * ![CPose3D](CPose3D.gif)
  *
- * It can be shown that "yaw, pitch, roll" can be also understood as
- * rotations around *global* (static) axes. Both conventions lead to exactly
- * the same SE(3) transformations, although in it is conventional to write
- * the numbers in reverse order.
- * That is, the same SO(3) rotation can be described equivalently with any of
- * these two parameterizations:
- *
- * - In local axes Z/Y/X convention: [yaw pitch roll]   (This is the convention
- * used in mrpt::poses::CPose3D)
- * - In global axes X/Y/Z convention: [roll pitch yaw] (One of the Euler angles
- * conventions)
- *
- * For further descriptions of point & pose classes, see
- * mrpt::poses::CPoseOrPoint or refer
- * to the [2D/3D Geometry tutorial](http://www.mrpt.org/2D_3D_Geometry) online.
- *
- * To change the individual components of the pose, use CPose3D::setFromValues.
- * This class assures that the internal SO(3) rotation matrix is always
- * up-to-date with the "yaw pitch roll" members.
- *
- * Rotations in 3D can be also represented by quaternions. See
- * mrpt::math::CQuaternion, and method CPose3D::getAsQuaternion.
- *
- * This class and CPose3DQuat are very similar, and they can be converted to the
- * each other automatically via transformation constructors.
- *
- * For Lie algebra methods, see mrpt::poses::Lie.
- *
- * \note Read also: "A tutorial on SE(3) transformation parameterizations and
- * on-manifold optimization", in \cite blanco_se3_tutorial
+ * \note See also: "A tutorial on SE(3) transformation parameterizations and
+ *   on-manifold optimization", J.L. Blanco. \cite blanco_se3_tutorial
  *
  * \ingroup poses_grp
- * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
+ * \sa mrpt::math::TPose3D, CPoseOrPoint, CPoint3D, CPose3DQuat, mrpt::math::CQuaternion,
+ * mrpt::poses::Lie
  */
 class CPose3D :
     public CPose<CPose3D, 6>,
@@ -92,8 +91,9 @@ class CPose3D :
   mrpt::math::CVectorFixedDouble<3> m_coords;
 
  protected:
-  /** The 3x3 rotation matrix, access with getRotationMatrix(),
-   * setRotationMatrix() (It's not safe to set this field as public) */
+  /** The SO(3) rotation matrix — primary storage for orientation.
+   *  Access via getRotationMatrix() / setRotationMatrix(); do **not** modify directly,
+   *  as that would leave the cached yaw/pitch/roll angles inconsistent. */
   mrpt::math::CMatrixDouble33 m_ROT;
 
   /** Whether yaw/pitch/roll members are up-to-date since the last rotation
@@ -318,7 +318,11 @@ class CPose3D :
   /** @name Pose-pose and pose-point compositions and operators
     @{ */
 
-  /** The operator \f$ a \oplus b \f$ is the pose compounding operator. */
+  /** SE(3) group composition: `ret = this ⊕ b`.
+   *
+   *  If `this` is the pose of frame A in world W, and `b` is the pose of frame B in A,
+   *  then `ret` is the pose of B in W. In matrix form: `T_this · T_b`.
+   */
   CPose3D operator+(const CPose3D& b) const
   {
     CPose3D ret(UNINITIALIZED_POSE);
@@ -326,31 +330,34 @@ class CPose3D :
     return ret;
   }
 
-  /** The operator \f$ a \oplus b \f$ is the pose compounding operator. */
+  /** Applies the SE(3) transformation to a CPoint3D: `ret = this ⊕ b`. */
   CPoint3D operator+(const CPoint3D& b) const;
 
-  /** The operator \f$ a \oplus b \f$ is the pose compounding operator. */
+  /** Applies the SE(3) transformation to a CPoint2D (z=0): `ret = this ⊕ b`. */
   CPoint3D operator+(const CPoint2D& b) const;
 
-  /** Computes the spherical coordinates of a 3D point as seen from the 6D
-   * pose specified by this object. For the coordinate system see the top of
-   * this page. */
+  /** Computes the spherical (range, yaw, pitch) coordinates of a 3D point expressed
+   *  in the global frame, as observed from the sensor frame defined by this pose.
+   *  The angles follow the same ZY intrinsic convention as CPose3D. */
   void sphericalCoordinates(
       const mrpt::math::TPoint3D& point,
       double& out_range,
       double& out_yaw,
       double& out_pitch) const;
 
-  /** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
-   * \f$ with G and L being 3D points and P this 6D pose.
-   *  If pointers are provided, the corresponding Jacobians are returned.
-   *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D
-   * locally Euclidean vector in the tangent space of SE(3).
-   *  See [this
-   * report](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf)
-   * for mathematical details.
-   *  \param  If set to true, the Jacobian "out_jacobian_df_dpose" uses a
-   * fastest linearized appoximation (valid only for small rotations!).
+  /** Transforms a 3D point from the **local** frame of this pose into the **global** frame.
+   *  Computes: g = R * l + t
+   *
+   *  Optional Jacobians (all w.r.t. the *input* quantities):
+   *  - `out_jacobian_df_dpoint` (3x3): dg/dl = R.
+   *  - `out_jacobian_df_dpose`  (3x6): dg/d(t, yaw, pitch, roll)
+   *    in the yaw/pitch/roll parameterisation. Set `use_small_rot_approx=true` for the first-order
+   *    linearisation (valid only for small rotations).
+   *  - `out_jacobian_df_dse3`   (3x6): dg/dxi
+   *    where xi is the 6D locally-Euclidean tangent-space vector of SE(3) (see \cite
+   * blanco_se3_tutorial).
+   *
+   * \sa inverseComposePoint, composePoint(const TPoint3D&)
    */
   void composePoint(
       double lx,
@@ -364,8 +371,8 @@ class CPose3D :
       mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dse3 = std::nullopt,
       bool use_small_rot_approx = false) const;
 
-  /** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
-   * \f$ with G and L being 3D points and P this 6D pose.
+  /** An alternative, slightly more efficient way of doing `G = P (+) L`
+   * with G and L being 3D points and P this 6D pose.
    * \note local_point is passed by value to allow global and local point to
    * be the same variable
    */
@@ -376,7 +383,7 @@ class CPose3D :
         local_point.x, local_point.y, local_point.z, global_point.x, global_point.y,
         global_point.z);
   }
-  /** \overload Returns global point: "this \oplus l" */
+  /** \overload Returns global point: `this (+) l` */
   mrpt::math::TPoint3D composePoint(const mrpt::math::TPoint3D& l) const
   {
     mrpt::math::TPoint3D g;
@@ -394,8 +401,8 @@ class CPose3D :
         local_point.x, local_point.y, local_point.z, global_point.x, global_point.y, dummy_z);
   }
 
-  /** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
-   * \f$ with G and L being 3D points and P this 6D pose.  */
+  /** An alternative, slightly more efficient way of doing `G = P (+) L`
+   * with G and L being 3D points and P this 6D pose.  */
   void composePoint(double lx, double ly, double lz, float& gx, float& gy, float& gz) const
   {
     double ggx, ggy, ggz;
@@ -411,14 +418,14 @@ class CPose3D :
   /** Inverse of rotateVector(), i.e. using the inverse rotation matrix */
   mrpt::math::TVector3D inverseRotateVector(const mrpt::math::TVector3D& global) const;
 
-  /**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
-   *  If pointers are provided, the corresponding Jacobians are returned.
-   *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D
-   * locally Euclidean vector in the tangent space of SE(3).
-   *  See [this
-   * report](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf)
-   * for mathematical details.
-   * \sa composePoint, composeFrom
+  /** Transforms a 3D point from the **global** frame into the **local** frame of this pose.
+   *  Computes: l = R^T * (g - t)
+   *
+   *  Optional Jacobians follow the same conventions as composePoint():
+   *  - `out_jacobian_df_dpoint` (3x3): dl/dg = R^T.
+   *  - `out_jacobian_df_dpose`  (3×6): w.r.t. yaw/pitch/roll parameterisation.
+   *  - `out_jacobian_df_dse3`   (3×6): w.r.t. SE(3) tangent-space vector ξ (see \cite
+   * blanco_se3_tutorial). \sa composePoint, composeFrom
    */
   void inverseComposePoint(
       const double gx,
@@ -454,28 +461,28 @@ class CPose3D :
     ASSERT_LT_(std::abs(lz), eps);
   }
 
-  /**  Makes "this = A (+) B"; this method is slightly more efficient than
-   * "this= A + B;" since it avoids the temporary object.
-   *  \note A or B can be "this" without problems.
+  /** In-place SE(3) group composition: computes `this = A ⊕ B` (matrix form: `T_A · T_B`).
+   *  Slightly more efficient than `this = A + B` as it avoids a temporary.
+   *  \note A or B may safely alias `this`.
    */
   void composeFrom(const CPose3D& A, const CPose3D& B);
 
-  /** Make \f$ this = this \oplus b \f$  (\a b can be "this" without problems)
-   */
+  /** Compound-assignment composition: `this = this ⊕ b`. `b` may safely alias `this`. */
   CPose3D& operator+=(const CPose3D& b)
   {
     composeFrom(*this, b);
     return *this;
   }
 
-  /**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient
-   * than "this= A - B;" since it avoids the temporary object.
-   *  \note A or B can be "this" without problems.
+  /** In-place relative pose: computes `this = A ⊖ B = B⁻¹ ⊕ A` (matrix form: `T_B⁻¹ · T_A`).
+   *  Slightly more efficient than `this = A - B` as it avoids a temporary.
+   *  \note A or B may safely alias `this`.
    * \sa composeFrom, composePoint
    */
   void inverseComposeFrom(const CPose3D& A, const CPose3D& B);
 
-  /** Compute \f$ RET = this \oplus b \f$  */
+  /** SE(3) relative pose: `ret = this ⊖ b = b⁻¹ ⊕ this`.
+   *  Returns the pose of `this` expressed in the frame of `b`. */
   CPose3D operator-(const CPose3D& b) const
   {
     CPose3D ret(UNINITIALIZED_POSE);
@@ -483,8 +490,11 @@ class CPose3D :
     return ret;
   }
 
-  /** Convert this pose into its inverse, saving the result in itself. \sa
-   * operator- */
+  /** Replaces this pose with its SE(3) group inverse in-place.
+   *  If T = [R|t], then T⁻¹ = [Rᵀ | -Rᵀ·t].
+   *  \note **Not** the same as negating all 6 components individually.
+   * \sa operator-
+   */
   void inverse();
 
   /** makes: this = p (+) this */
@@ -631,20 +641,27 @@ class CPose3D :
   /** Returns a 6x1 vector with [x y z yaw pitch roll]' */
   void asVector(vector_t& v) const;
 
-  /** Returns the quaternion associated to the rotation of this object (NOTE:
-   * XYZ translation is ignored)
-   * \f[ \mathbf{q} = \left( \begin{array}{c} \cos (\phi /2) \cos (\theta /2)
-   * \cos (\psi /2) +  \sin (\phi /2) \sin (\theta /2) \sin (\psi /2) \\ \sin
-   * (\phi /2) \cos (\theta /2) \cos (\psi /2) -  \cos (\phi /2) \sin (\theta
-   * /2) \sin (\psi /2) \\ \cos (\phi /2) \sin (\theta /2) \cos (\psi /2) +
-   * \sin (\phi /2) \cos (\theta /2) \sin (\psi /2) \\ \cos (\phi /2) \cos
-   * (\theta /2) \sin (\psi /2) -  \sin (\phi /2) \sin (\theta /2) \cos (\psi
-   * /2) \\ \end{array}\right) \f]
-   * With : \f$ \phi = roll \f$,  \f$ \theta = pitch \f$ and \f$ \psi = yaw
-   * \f$.
-   * \param out_dq_dr  If provided, the 4x3 Jacobian of the transformation
-   * will be computed and stored here. It's the Jacobian of the transformation
-   * from (yaw pitch roll) to (qr qx qy qz).
+  /** Converts the SO(3) rotation to a unit quaternion q = (qr, qx, qy, qz).
+   *
+   * The translation (x,y,z) is **ignored** — only `m_ROT` is converted.
+   *
+   * The mapping from intrinsic ZYX angles (yaw, pitch, roll) to the
+   * Hamilton unit quaternion (scalar-first) is:
+   * \verbatim
+   *   Let cy=cos(yaw/2), sy=sin(yaw/2)
+   *       cp=cos(pitch/2), sp=sin(pitch/2)
+   *       cr=cos(roll/2),  sr=sin(roll/2)
+   *
+   *   q = [ cr*cp*cy + sr*sp*sy ]   (qr, real/scalar part)
+   *       [ sr*cp*cy - cr*sp*sy ]   (qx)
+   *       [ cr*sp*cy + sr*cp*sy ]   (qy)
+   *       [ cr*cp*sy - sr*sp*cy ]   (qz)
+   * \endverbatim
+   *
+   * \param[out] q The resulting unit quaternion in (qr, qx, qy, qz) / Hamilton / scalar-first
+   * order.
+   * \param[out] out_dq_dr  If provided, the 4x3 Jacobian dq/d(yaw,pitch,roll)
+   *   is computed and stored here.
    */
   void getAsQuaternion(
       mrpt::math::CQuaternionDouble& q,
@@ -769,8 +786,8 @@ class CPose3D :
 
 std::ostream& operator<<(std::ostream& o, const CPose3D& p);
 
-/** Unary - operator: return the inverse pose "-p" (Note that is NOT the same
- * than a pose with negative x y z yaw pitch roll) */
+/** Unary ⊖ operator: returns the SE(3) group inverse of `p`, i.e. T⁻¹ = [Rᵀ | -Rᵀ·t].
+ *  \note **Not** the same as negating (x, y, z, yaw, pitch, roll) individually. */
 CPose3D operator-(const CPose3D& p);
 
 bool operator==(const CPose3D& p1, const CPose3D& p2);
