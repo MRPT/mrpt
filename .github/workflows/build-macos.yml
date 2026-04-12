@@ -43,7 +43,6 @@ jobs:
       - name: Colcon Build
         run: |
           colcon build \
-            --merge-install \
             --event-handlers console_direct+ \
             --cmake-args \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
@@ -55,6 +54,5 @@ jobs:
       - name: Colcon Test
         run: |
           colcon test \
-            --merge-install \
             --event-handlers console_direct+ \
             --return-code-on-test-failure

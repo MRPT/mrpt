@@ -68,3 +68,7 @@ endif()
 if (MINGW)
   target_link_libraries(${PROJECT_NAME} PRIVATE WS2_32)
 endif()
+
+mrpt_add_python_module(comms
+  python_bindings/${PROJECT_NAME}_py.cpp
+)

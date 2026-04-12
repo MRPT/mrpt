@@ -777,15 +777,68 @@ endmacro()
 # Function to generalize Python module creation
 function(mrpt_add_python_module MODULE_NAME CPP_SOURCES)
   set(PYBIND11_FINDPYTHON ON)
-  find_package(Python3 COMPONENTS Interpreter Development)
-  find_package(pybind11)
+  find_package(Python3 QUIET COMPONENTS Interpreter Development)
+  find_package(pybind11 QUIET)
   if (pybind11_FOUND)
     mrpt_ament_cmake_python_get_python_install_dir()
     pybind11_add_module(_bindings MODULE ${CPP_SOURCES})
     target_link_libraries(_bindings PRIVATE ${PROJECT_NAME})
     target_include_directories(_bindings PRIVATE include)
+
+    # Direct the .so into a staging python tree under the build directory so
+    # the module is importable from the build tree without a full install.
+    # Layout:  <build>/python_staging/mrpt/<name>/_bindings.so
+    #          <src>/python/mrpt/<name>/__init__.py  (symlinked / copied at install)
+    set_target_properties(_bindings PROPERTIES
+      LIBRARY_OUTPUT_DIRECTORY
+        "${CMAKE_CURRENT_BINARY_DIR}/python_staging/mrpt/${MODULE_NAME}"
+    )
+
     install(TARGETS _bindings LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}/mrpt/${MODULE_NAME}/)
     # Install the Python package
     install(DIRECTORY python/mrpt DESTINATION ${PYTHON_INSTALL_DIR} FILES_MATCHING PATTERN "*.py")
   endif()
+endfunction()
+
+# Add a CTest test that runs a Python script exercising the bindings for MODULE_NAME.
+# Must be called AFTER mrpt_add_python_module() for the same module.
+# Skipped silently when BUILD_TESTING is OFF, pybind11 is absent, or no Python interpreter.
+#
+# Usage:
+#   mrpt_add_python_binding_test(MODULE_NAME SCRIPT path/to/script.py)
+#
+function(mrpt_add_python_binding_test MODULE_NAME)
+  cmake_parse_arguments(_PBT "" "SCRIPT" "" ${ARGN})
+  if (NOT BUILD_TESTING)
+    return()
+  endif()
+  find_package(Python3 QUIET COMPONENTS Interpreter)
+  find_package(pybind11 QUIET)
+  if (NOT Python3_FOUND OR NOT pybind11_FOUND)
+    return()
+  endif()
+  if (NOT _PBT_SCRIPT)
+    message(WARNING "mrpt_add_python_binding_test: SCRIPT not specified for module ${MODULE_NAME}")
+    return()
+  endif()
+
+  # PYTHONPATH needs two entries:
+  #   1. <build>/python_staging  — provides mrpt/<name>/_bindings.so
+  #   2. <src>/python            — provides mrpt/<name>/__init__.py
+  # Together Python sees a complete mrpt.<name> package.
+  set(_staging "${CMAKE_CURRENT_BINARY_DIR}/python_staging")
+  set(_py_src  "${CMAKE_CURRENT_SOURCE_DIR}/python")
+
+  add_test(
+    NAME python_${MODULE_NAME}
+    COMMAND
+      ${CMAKE_COMMAND} -E env
+        "PYTHONPATH=${_staging}:${_py_src}:$ENV{PYTHONPATH}"
+      ${Python3_EXECUTABLE} ${_PBT_SCRIPT}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+  set_tests_properties(python_${MODULE_NAME} PROPERTIES
+    LABELS   "python_bindings"
+    DEPENDS  "_bindings"
+  )
 endfunction()
