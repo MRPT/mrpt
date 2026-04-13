@@ -46,7 +46,7 @@ jobs:
       - name: Install colcon
         shell: bash
         run: |
-          pip install colcon-common-extensions
+          pip install colcon-common-extensions numpy
 
       - name: Colcon Build
         shell: bash

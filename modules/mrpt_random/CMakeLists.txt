@@ -45,6 +45,6 @@ mrpt_add_python_module(random
   python_bindings/mrpt_random_py.cpp
 )
 
-mrpt_add_python_binding_test(random
+mrpt_add_python_binding_test(random NEEDS_NUMPY
   SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_random_test.py
 )

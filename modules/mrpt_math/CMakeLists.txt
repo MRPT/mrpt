@@ -233,7 +233,7 @@ mrpt_add_python_module(math
   python_bindings/${PROJECT_NAME}_py.cpp
 )
 
-mrpt_add_python_binding_test(math
+mrpt_add_python_binding_test(math NEEDS_NUMPY
   SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_math_test.py
 )
 

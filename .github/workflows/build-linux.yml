@@ -62,7 +62,7 @@ jobs:
 
           # Added: python3-pip and colcon installation via pip
           sudo apt install -y pybind11-dev python3-dev python3-pip
-          pip3 install --break-system-packages colcon-common-extensions colcon-lcov-result
+          pip3 install --break-system-packages colcon-common-extensions colcon-lcov-result numpy
 
       - name: Colcon Build
         run: |
