@@ -3,5 +3,5 @@ coverage:
     - tests/*
     - samples/*
     - apps/*
-    - **/3rdparty
+    - "**/3rdparty"
     - 3rdparty/*
