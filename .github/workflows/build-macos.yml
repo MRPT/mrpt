@@ -32,7 +32,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          brew install cmake ninja eigen assimp tinyxml2 zstd glfw
+          brew install cmake ninja eigen assimp tinyxml2 zstd glfw googletest
           echo "CC=clang" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
 
