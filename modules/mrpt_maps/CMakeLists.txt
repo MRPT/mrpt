@@ -144,6 +144,6 @@ mrpt_add_python_module(maps
   python_bindings/mrpt_maps_py.cpp
 )
 
-mrpt_add_python_binding_test(maps
+mrpt_add_python_binding_test(maps NEEDS_NUMPY
   SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_maps_test.py
 )

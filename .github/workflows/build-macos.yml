@@ -38,7 +38,7 @@ jobs:
 
       - name: Install colcon
         run: |
-          pip3 install colcon-common-extensions
+          pip3 install --break-system-packages colcon-common-extensions numpy
 
       - name: Colcon Build
         run: |

@@ -811,12 +811,13 @@ endfunction()
 # Add a CTest test that runs a Python script exercising the bindings for MODULE_NAME.
 # Must be called AFTER mrpt_add_python_module() for the same module.
 # Skipped silently when BUILD_TESTING is OFF, pybind11 is absent, or no Python interpreter.
+# If NEEDS_NUMPY is set, the test is also skipped when numpy is not installed.
 #
 # Usage:
-#   mrpt_add_python_binding_test(MODULE_NAME SCRIPT path/to/script.py)
+#   mrpt_add_python_binding_test(MODULE_NAME [NEEDS_NUMPY] SCRIPT path/to/script.py)
 #
 function(mrpt_add_python_binding_test MODULE_NAME)
-  cmake_parse_arguments(_PBT "" "SCRIPT" "" ${ARGN})
+  cmake_parse_arguments(_PBT "NEEDS_NUMPY" "SCRIPT" "" ${ARGN})
   if (NOT BUILD_TESTING)
     return()
   endif()
@@ -828,6 +829,26 @@ function(mrpt_add_python_binding_test MODULE_NAME)
   if (NOT _PBT_SCRIPT)
     message(WARNING "mrpt_add_python_binding_test: SCRIPT not specified for module ${MODULE_NAME}")
     return()
+  endif()
+
+  # Check for numpy if the test requires it
+  if (_PBT_NEEDS_NUMPY)
+    if (NOT DEFINED _MRPT_PYTHON_HAS_NUMPY)
+      execute_process(
+        COMMAND ${Python3_EXECUTABLE} -c "import numpy"
+        RESULT_VARIABLE _numpy_result
+        OUTPUT_QUIET ERROR_QUIET
+      )
+      if (_numpy_result EQUAL 0)
+        set(_MRPT_PYTHON_HAS_NUMPY TRUE CACHE INTERNAL "Python numpy available")
+      else()
+        set(_MRPT_PYTHON_HAS_NUMPY FALSE CACHE INTERNAL "Python numpy available")
+        message(STATUS "Python numpy not found — some python binding tests will be skipped.")
+      endif()
+    endif()
+    if (NOT _MRPT_PYTHON_HAS_NUMPY)
+      return()
+    endif()
   endif()
 
   # PYTHONPATH:  The staging tree holds this package's _bindings.so and __init__.py.
