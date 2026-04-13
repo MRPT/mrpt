@@ -263,7 +263,9 @@ TEST(CPosePDFGrid, drawSingleSample)
 {
   CPosePDFGrid grid(-2, 2, -2, 2, 0.5, DEG2RAD(10));
 
-  // Set a single cell to high probability
+  // The constructor fills the grid uniformly; zero it out first, then
+  // set a single cell to high probability:
+  grid.fill(0.0);
   *grid.getByPos(0.0, 0.0, 0.0) = 1.0;
   grid.normalize();
 

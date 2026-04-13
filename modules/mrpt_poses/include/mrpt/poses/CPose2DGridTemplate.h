@@ -45,7 +45,14 @@ class CPose2DGridTemplate
   std::vector<T> m_data;
 
  public:
+  /** Read-only access to the underlying flat data array (size = sizeX * sizeY * sizePhi). */
   const std::vector<T>& data() const { return m_data; }
+
+  /** Read-write access to the underlying flat data array. */
+  std::vector<T>& data() { return m_data; }
+
+  /** Sets all grid cells to the given value. */
+  void fill(const T& val) { std::fill(m_data.begin(), m_data.end(), val); }
 
   /** Returns "indexes" from coordinates:
    */

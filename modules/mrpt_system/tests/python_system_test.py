@@ -49,7 +49,7 @@ check("CRC32 is int", isinstance(crc, int))
 check("CRC32 non-zero", crc != 0)
 
 print("unitsFormat")
-s = unitsFormat(1500.0, "m", False)
+s = unitsFormat(1500.0, 2, False)
 check("unitsFormat returns str", isinstance(s, str) and len(s) > 0, s)
 
 print("fileExists / extractFileName")

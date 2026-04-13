@@ -112,10 +112,13 @@ PYBIND11_MODULE(_bindings, m)
   py::class_<mrpt::slam::CMetricMapBuilder>(m, "CMetricMapBuilder")
       .def(
           "initialize",
+          [](mrpt::slam::CMetricMapBuilder& b) { b.initialize(mrpt::maps::CSimpleMap()); },
+          "Initialize the builder with an empty map.")
+      .def(
+          "initialize",
           [](mrpt::slam::CMetricMapBuilder& b, const mrpt::maps::CSimpleMap& map)
           { b.initialize(map); },
-          "initialMap"_a = mrpt::maps::CSimpleMap(),
-          "Initialize the builder with an optional initial map.")
+          "initialMap"_a, "Initialize the builder with a given initial map.")
       .def("getCurrentPoseEstimation", &mrpt::slam::CMetricMapBuilder::getCurrentPoseEstimation)
       .def(
           "processActionObservation", &mrpt::slam::CMetricMapBuilder::processActionObservation,
@@ -135,9 +138,12 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("ICP_params", &mrpt::slam::CMetricMapBuilderICP::ICP_params)
       .def(
           "initialize",
+          [](mrpt::slam::CMetricMapBuilderICP& b) { b.initialize(mrpt::maps::CSimpleMap()); })
+      .def(
+          "initialize",
           [](mrpt::slam::CMetricMapBuilderICP& b, const mrpt::maps::CSimpleMap& map)
           { b.initialize(map); },
-          "initialMap"_a = mrpt::maps::CSimpleMap())
+          "initialMap"_a)
       .def(
           "processObservation", &mrpt::slam::CMetricMapBuilderICP::processObservation, "obs"_a,
           "Process a single observation (new-style API).")

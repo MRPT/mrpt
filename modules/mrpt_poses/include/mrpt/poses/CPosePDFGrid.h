@@ -19,9 +19,18 @@
 
 namespace mrpt::poses
 {
-/** Declares a class that represents a Probability Distribution
- *    function (PDF) of a 2D pose (x,y,phi).
- *   This class implements that PDF using a 3D grid.
+/** Represents a Probability Distribution Function (PDF) of a 2D pose
+ * (x, y, phi) as a discrete 3D grid over the SE(2) space.
+ *
+ * Each cell in the grid stores a (non-negative) probability value.
+ * The grid spans a rectangular region in (x, y) and a range of heading
+ * angles phi. Cell resolutions are set independently for the spatial and
+ * angular dimensions.
+ *
+ * **Important:** The constructor initializes the grid with a *uniform*
+ * distribution (all cells equal, summing to 1). If you intend to build a
+ * custom distribution, call uniformDistribution() or manually zero out cells
+ * before assigning probabilities, then call normalize().
  *
  * \sa CPose2D, CPosePDF, CPose2DGridTemplate
  * \ingroup poses_pdf_grp
@@ -30,10 +39,21 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 {
   DEFINE_SERIALIZABLE(CPosePDFGrid, mrpt::poses)
 
- protected:
  public:
-  /** Constructor: Initializes a, uniform distribution over the whole given
-   * range.
+  /** Constructor: Initializes a uniform distribution over the given range.
+   *
+   * \param[in] xMin     Minimum x coordinate (meters).
+   * \param[in] xMax     Maximum x coordinate (meters).
+   * \param[in] yMin     Minimum y coordinate (meters).
+   * \param[in] yMax     Maximum y coordinate (meters).
+   * \param[in] resolutionXY  Spatial cell size (meters).
+   * \param[in] resolutionPhi Angular cell size (radians).
+   * \param[in] phiMin   Minimum heading angle (radians, default -π).
+   * \param[in] phiMax   Maximum heading angle (radians, default +π).
+   *
+   * \note After construction all cells have equal probability (uniform).
+   *       Use getByPos() / getByIndex() to modify individual cells, then
+   *       call normalize() before sampling or querying the distribution.
    */
   CPosePDFGrid(
       double xMin = -1.0f,
@@ -45,44 +65,46 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
       double phiMin = -M_PI,
       double phiMax = M_PI);
 
-  /** Destructor */
   ~CPosePDFGrid() override;
 
-  /** Copy operator, translating if necessary (for example, between particles
-   * and gaussian representations) */
+  /** Copy from another PDF, translating representations if needed. */
   void copyFrom(const CPosePDF& o) override;
 
-  /** Normalizes the PDF, such as all cells sum the unity. */
+  /** Normalizes the PDF so that all cells sum to 1. */
   void normalize();
-  /** Assigns the same value to all the cells in the grid, so the sum 1. */
+
+  /** Resets all cells to a uniform distribution (all equal, summing to 1). */
   void uniformDistribution();
 
+  /** Computes the mean pose of the distribution. */
   void getMean(CPose2D& mean_pose) const override;
 
+  /** Returns the covariance matrix and the mean of the distribution. */
   std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
-  /** Save the contents of the 3D grid in one file, as a vertical
-   * concatenation of rectangular matrix for the different "PHI" discrete
-   * levels, and the size in X,Y,and PHI in another file named
-   * "<filename>_dims.txt". \return false on error */
+  /** Save the 3D grid to a text file as vertically concatenated matrices
+   * (one per phi level). A companion file "<filename>_dims.txt" stores the
+   * grid dimensions. \return false on error */
   bool saveToTextFile(const std::string& dataFile) const override;
 
-  /** this = p (+) this. This can be used to convert a PDF from local
-   * coordinates to global, providing the point (newReferenceBase) from which
-   *   "to project" the current pdf. Result PDF substituted the currently
-   * stored one in the object. */
+  /** Applies a coordinate change: this = newReferenceBase (+) this.
+   * Useful for converting from local to global coordinates. */
   void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
-  /** Bayesian fusion of 2 densities (In the grid representation this becomes
-   * a pointwise multiplication) */
+
+  /** Bayesian fusion of two densities via pointwise multiplication.
+   * \param[in] minMahalanobisDistToDrop Unused in the grid representation. */
   void bayesianFusion(
       const CPosePDF& p1, const CPosePDF& p2, const double minMahalanobisDistToDrop = 0) override;
-  /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+
+  /** Returns the inverse PDF: NEW_PDF = (0,0,0) − THIS_PDF. */
   void inverse(CPosePDF& o) const override;
-  /** Draws a single sample from the distribution (WARNING: weights are
-   * assumed to be normalized!) */
+
+  /** Draws a single sample from the distribution.
+   * \note The distribution must be normalized (call normalize() first). */
   void drawSingleSample(CPose2D& outPart) const override;
-  /** Draws a number of samples from the distribution, and saves as a list of
-   * 1x3 vectors, where each row contains a (x,y,phi) datum. */
+
+  /** Draws N samples from the distribution.
+   * Each entry in \a outSamples is a 3-element vector [x, y, phi]. */
   void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
   void printTo(std::ostream& out) const override;

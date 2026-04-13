@@ -97,13 +97,11 @@ PYBIND11_MODULE(_bindings, m)
           [](const mrpt::obs::CObservation2DRangeScan& o)
           {
             const size_t n = o.getScanSize();
-            py::array_t<float> arr(n);
-            auto buf = arr.mutable_unchecked<1>();
-            for (size_t i = 0; i < n; i++)
-            {
-              buf(i) = o.getScanRange(i);
-            }
-            return arr;
+            std::vector<float> v(n);
+            for (size_t i = 0; i < n; i++) v[i] = o.getScanRange(i);
+            return py::array_t<float>(
+                std::vector<py::ssize_t>{py::ssize_t(n)},
+                std::vector<py::ssize_t>{py::ssize_t(sizeof(float))}, v.data());
           },
           "Returns all scan ranges as a 1D float32 numpy array")
       .def(
@@ -111,13 +109,12 @@ PYBIND11_MODULE(_bindings, m)
           [](const mrpt::obs::CObservation2DRangeScan& o)
           {
             const size_t n = o.getScanSize();
-            py::array_t<bool> arr(n);
-            auto buf = arr.mutable_unchecked<1>();
-            for (size_t i = 0; i < n; i++)
-            {
-              buf(i) = o.getScanRangeValidity(i);
-            }
-            return arr;
+            std::vector<uint8_t> tmp(n);
+            for (size_t i = 0; i < n; i++) tmp[i] = o.getScanRangeValidity(i) ? 1 : 0;
+            return py::array_t<bool>(
+                std::vector<py::ssize_t>{py::ssize_t(n)},
+                std::vector<py::ssize_t>{py::ssize_t(sizeof(bool))},
+                reinterpret_cast<const bool*>(tmp.data()));
           },
           "Returns validity flags as a 1D bool numpy array")
       .def(

@@ -28,7 +28,7 @@ print("CMemoryStream")
 ms = CMemoryStream()
 data = b"hello mrpt io"
 ms.write(data)
-ms.seek(0, SeekOrigin.sFromBeginning)
+ms.Seek(0, SeekOrigin.sFromBeginning)
 back = ms.read(len(data))
 check("round-trip", back == data, f"got {back!r}")
 check("getTotalBytesCount", ms.getTotalBytesCount() == len(data))

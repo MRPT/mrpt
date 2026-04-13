@@ -94,8 +94,8 @@ check("identity rotation matrix",
       abs(float(r_id[2, 2]) - 1.0) < 1e-6)
 
 pt = p_id.inverseComposePoint(1.0, 2.0, 3.0)
-check("inverseComposePoint returns 3-tuple", len(pt) == 3, str(pt))
-check("inverseComposePoint at identity", abs(pt[0] - 1.0) < 1e-6)
+check("inverseComposePoint returns TPoint3D", hasattr(pt, 'x') and hasattr(pt, 'y') and hasattr(pt, 'z'), str(type(pt)))
+check("inverseComposePoint at identity", abs(pt.x - 1.0) < 1e-6)
 
 # ---------------------------------------------------------------------------
 # CPoint2D / CPoint3D
