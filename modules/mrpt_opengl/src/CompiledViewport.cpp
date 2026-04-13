@@ -695,7 +695,8 @@ void CompiledViewport::updateMatrices()
   if (m_shadowsEnabled)
   {
     m_renderMatrices.computeCascadedLightProjectionMatrices(
-        m_lightShadowClipNear, m_lightShadowClipFar, m_lightParams);
+        m_lightShadowClipNear, m_lightShadowClipFar, m_lightParams,
+        std::min(m_shadowMapSizeX, m_shadowMapSizeY));
   }
   m_renderMatrices.initialized = true;
   m_matricesNeedUpdate = false;
@@ -1273,11 +1274,12 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
     glTexImage3D(
         GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, m_shadowMapSizeX, m_shadowMapSizeY,
         numCascades, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     m_cascadeDepthArrayLayers = numCascades;
   }
 
