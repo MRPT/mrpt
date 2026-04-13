@@ -23,11 +23,11 @@ def check(name, cond, detail=""):
 
 print("CRuntimeCompiledExpression")
 e = CRuntimeCompiledExpression()
-e.compile("2 + 3 * 4", {}, "test")
+e.compile("2 + 3 * 4")
 check("2+3*4 == 14", abs(e.eval() - 14.0) < 1e-12)
 
 e2 = CRuntimeCompiledExpression()
-e2.compile("x * x", {"x": 5.0}, "test")
+e2.compile("x * x", {"x": 5.0})
 check("x*x at x=5 == 25", abs(e2.eval() - 25.0) < 1e-12)
 
 print(f"\nResults: {PASS} passed, {FAIL} failed")

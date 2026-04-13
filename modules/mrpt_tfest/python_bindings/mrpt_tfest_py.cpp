@@ -55,11 +55,11 @@ PYBIND11_MODULE(_bindings, m)
   // TMatchingPairList (std::vector wrapper)
   py::class_<mrpt::tfest::TMatchingPairList>(m, "TMatchingPairList")
       .def(py::init<>())
-      .def("size", &TMatchingPairList::size)
+      .def("size", [](const TMatchingPairList& l) { return l.size(); })
       .def(
           "push_back",
           [](TMatchingPairList& list, const TMatchingPair& element) { list.push_back(element); })
-      .def("__len__", &TMatchingPairList::size)
+      .def("__len__", [](const TMatchingPairList& l) { return l.size(); })
       .def(
           "__iter__", [](TMatchingPairList& v) { return py::make_iterator(v.begin(), v.end()); },
           py::keep_alive<0, 1>());
@@ -69,8 +69,8 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "push_back", [](TMatchingPairList_d& list, const TMatchingPair_d& element)
           { list.push_back(element); })
-      .def("size", &TMatchingPairList_d::size)
-      .def("__len__", &TMatchingPairList_d::size)
+      .def("size", [](const TMatchingPairList_d& l) { return l.size(); })
+      .def("__len__", [](const TMatchingPairList_d& l) { return l.size(); })
       .def(
           "__iter__", [](TMatchingPairList_d& v) { return py::make_iterator(v.begin(), v.end()); },
           py::keep_alive<0, 1>());

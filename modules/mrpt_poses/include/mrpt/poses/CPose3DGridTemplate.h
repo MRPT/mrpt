@@ -71,7 +71,11 @@ class CPose3DGridTemplate
   std::vector<T> m_data;
 
  public:
+  /** Read-only access to the underlying flat data array. */
   const std::vector<T>& data() const { return m_data; }
+
+  /** Read-write access to the underlying flat data array. */
+  std::vector<T>& data() { return m_data; }
 
   /** Default constructor:
    */

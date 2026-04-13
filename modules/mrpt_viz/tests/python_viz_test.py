@@ -31,33 +31,33 @@ print("Scene / CSetOfObjects")
 scene = Scene()
 check("Scene created", scene is not None)
 
-obj_set = CSetOfObjects.Create()
+obj_set = CSetOfObjects()
 check("CSetOfObjects created", obj_set is not None)
 
 print("Geometry objects")
-box = CBox.Create()
+box = CBox()
 check("CBox created", box is not None)
 
-sphere = CSphere.Create(1.0)
+sphere = CSphere(1.0)
 check("CSphere created", sphere is not None)
 
-axis = CAxis.Create(-5, -5, -5, 5, 5, 5)
+axis = CAxis(-5, -5, -5, 5, 5, 5)
 check("CAxis created", axis is not None)
 
-txt = CText.Create("hello")
+txt = CText("hello")
 check("CText created", txt is not None)
 
-lines = CSetOfLines.Create()
+lines = CSetOfLines()
 lines.appendLine(0, 0, 0, 1, 1, 1)
 check("CSetOfLines appendLine", True)
 
-ellip = CEllipsoid3D.Create()
+ellip = CEllipsoid3D()
 check("CEllipsoid3D created", ellip is not None)
 
 print("CPointCloudColoured")
-pc = CPointCloudColoured.Create()
-pc.insertPoint({"x": 1.0, "y": 2.0, "z": 3.0, "R": 1.0, "G": 0.0, "B": 0.0, "A": 1.0})
-check("insertPoint", pc.size() == 1, f"size={pc.size()}")
+pc = CPointCloudColoured()
+pc.push_back(1.0, 2.0, 3.0, 1.0, 0.0, 0.0, 1.0)
+check("push_back", pc.size() == 1, f"size={pc.size()}")
 
 print("stock_objects")
 corner = stock_objects.CornerXYZ(1.0)

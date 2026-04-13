@@ -25,7 +25,7 @@ print("YAML")
 y = YAML()
 check("default empty", y.empty())
 
-y2 = YAML.FromText("key: 42\n")
+y2 = YAML.from_string("key: 42\n")
 check("parse from text", not y2.empty())
 
 print(f"\nResults: {PASS} passed, {FAIL} failed")
