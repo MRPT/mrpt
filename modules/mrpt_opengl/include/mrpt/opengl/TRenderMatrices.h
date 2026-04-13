@@ -132,9 +132,13 @@ struct TRenderMatrices
   void computeLightProjectionMatrix(float zmin, float zmax, const mrpt::viz::TLightParameters& lp);
 
   /** Computes cascaded shadow map light projection matrices using PSSM.
-   *  Populates cascade_light_pv[] and cascade_far_planes[]. */
+   *  Populates cascade_light_pv[] and cascade_far_planes[].
+   *  \param shadowMapSize Shadow map resolution (width=height) for texel
+   *         snapping to prevent shadow edge swimming.
+   */
   void computeCascadedLightProjectionMatrices(
-      float zmin, float zmax, const mrpt::viz::TLightParameters& lp);
+      float zmin, float zmax, const mrpt::viz::TLightParameters& lp,
+      unsigned int shadowMapSize = 2048);
 
   /** Especial case for custom parameters of Orthographic projection.
    *  Equivalent to `p_matrix = ortho(...);`.

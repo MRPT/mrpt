@@ -29,8 +29,8 @@ uniform highp float fog_far;
 uniform int fog_mode;
 uniform highp float fog_density;
 
-// Cascaded shadow map
-uniform highp sampler2DArray shadowMapArray;
+// Cascaded shadow map (hardware depth comparison + bilinear filtering)
+uniform highp sampler2DArrayShadow shadowMapArray;
 uniform int num_shadow_cascades;
 uniform highp mat4 cascade_light_pv[MAX_SHADOW_CASCADES];
 uniform highp float cascade_far_planes[MAX_SHADOW_CASCADES];
@@ -80,18 +80,21 @@ mediump float ShadowCalculation(
     highp float bias = shadow_bias + shadow_bias_cam2frag * cam2fragDist +
                        shadow_bias_normal * (1.0 - max(0.0, dot(normal, -light_direction[0])));
 
-    // PCF 3x3 sampling from the cascade layer in the texture array
+    // PCF 3x3 with hardware bilinear shadow comparison.
+    // Each texture() call does 2x2 bilinear-filtered depth comparison,
+    // so 3x3 samples effectively cover a 4x4 texel area (36 comparisons)
+    // giving smooth shadow edges without bloating thin shadow casters.
+    highp float refDepth = currentDepth - bias;
     mediump float shadow = 0.0;
     mediump vec2 texelSize = 1.0 / vec2(textureSize(shadowMapArray, 0).xy);
     for (int x = -1; x <= 1; ++x)
     {
         for (int y = -1; y <= 1; ++y)
         {
-            highp float pcfDepth = texture(
+            shadow += 1.0 - texture(
                 shadowMapArray,
-                vec3(projCoords.xy + vec2(x, y) * texelSize, float(cascade))
-            ).r;
-            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+                vec4(projCoords.xy + vec2(x, y) * texelSize, float(cascade), refDepth)
+            );
         }
     }
     shadow /= 9.0;

@@ -201,7 +201,8 @@ void TRenderMatrices::computeLightProjectionMatrix(
 }
 
 void TRenderMatrices::computeCascadedLightProjectionMatrices(
-    float zmin, float zmax, const mrpt::viz::TLightParameters& lp)
+    float zmin, float zmax, const mrpt::viz::TLightParameters& lp,
+    unsigned int shadowMapSize)
 {
   const int N = std::clamp<int>(lp.shadow_cascades, 1, 4);
   numShadowCascades = N;
@@ -313,13 +314,38 @@ void TRenderMatrices::computeCascadedLightProjectionMatrices(
       maxZ = std::max(maxZ, lv.z());
     }
 
+    // Use the bounding sphere radius for X/Y extents. This makes the
+    // ortho frustum size rotationally stable (same regardless of camera
+    // orientation), which is essential for texel snapping to prevent
+    // shadow edge flickering on camera rotation. Z range stays tight (AABB).
+    const Eigen::Vector4f lightCenter =
+        lightViewMat.asEigen() *
+        Eigen::Vector4f(center.x(), center.y(), center.z(), 1.0f);
+    const float frustumSize = maxRadius * 2.0f;
+    minX = lightCenter.x() - maxRadius;
+    maxX = lightCenter.x() + maxRadius;
+    minY = lightCenter.y() - maxRadius;
+    maxY = lightCenter.y() + maxRadius;
+
+    // Texel snapping: snap the ortho frustum origin to the nearest shadow
+    // map texel boundary. This prevents shadow edges from "swimming" as the
+    // camera translates, since the shadow map texel grid stays fixed in
+    // world space. Combined with the stable sphere-based size above, this
+    // eliminates flickering from both translation and rotation.
+    if (shadowMapSize > 0)
+    {
+      const float worldTexelSize =
+          frustumSize / static_cast<float>(shadowMapSize);
+      minX = std::floor(minX / worldTexelSize) * worldTexelSize;
+      maxX = minX + frustumSize;
+      minY = std::floor(minY / worldTexelSize) * worldTexelSize;
+      maxY = minY + frustumSize;
+    }
+
     // Convert from view-space z (negative in front of camera) to positive
     // near/far distances for OrthoProjectionMatrix, and add padding to
     // capture shadow casters outside the view sub-frustum.
-    // nearZ = distance from light to closest corner, farZ = to farthest.
-    // Extend far plane generously (shadow casters behind the frustum);
-    // keep near plane tight (ortho depth is linear, so precision is fine).
-    const float extent = -minZ + maxZ;  // = maxZ - minZ but clearer
+    const float extent = -minZ + maxZ;
     float nearZ = std::max(-maxZ - extent * 0.1f, 0.01f);
     float farZ = -minZ + extent * 0.5f;
 
