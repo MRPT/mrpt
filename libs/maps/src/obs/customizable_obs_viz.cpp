@@ -136,6 +136,64 @@ void printRecolorLengthMismatchError()
                "vector lengths.\n";
 }
 
+/// O(n) approximate percentile via histogram. Returns {lo, hi} trimmed limits.
+/// @param data     pointer to the raw values (float approximation is fine for coloring)
+/// @param n        number of elements
+/// @param lo_frac  lower tail fraction to cut  (e.g. 0.025)
+/// @param hi_frac  upper tail fraction to cut  (e.g. 0.025)
+/// @param rawMin   pre-computed minimum of data
+/// @param rawMax   pre-computed maximum of data
+template <typename T>
+std::pair<float, float> histogramPercentileLimits(
+    const T* data, std::size_t n, float lo_frac, float hi_frac, float rawMin, float rawMax)
+{
+  if (n == 0 || rawMin >= rawMax) return {rawMin, rawMax};
+
+  constexpr int BINS = 512;
+  std::array<uint32_t, BINS> hist{};  // zero-init, stack allocation
+  hist.fill(0);
+
+  const float scale = (BINS - 1) / (rawMax - rawMin);
+
+  for (std::size_t i = 0; i < n; ++i)
+  {
+    const int bin = static_cast<int>((static_cast<float>(data[i]) - rawMin) * scale);
+    // clamp defensively (NaN-safe via the cast, but guard the index)
+    hist[std::clamp(bin, 0, BINS - 1)]++;
+  }
+
+  const auto lo_count = static_cast<uint64_t>(lo_frac * n);
+  const auto hi_count = static_cast<uint64_t>(hi_frac * n);
+
+  float trimmedMin = rawMin, trimmedMax = rawMax;
+
+  // Walk from low end to find lo percentile bin
+  uint64_t acc = 0;
+  for (int b = 0; b < BINS; ++b)
+  {
+    acc += hist[b];
+    if (acc >= lo_count)
+    {
+      trimmedMin = rawMin + (b / scale);
+      break;
+    }
+  }
+
+  // Walk from high end to find hi percentile bin
+  acc = 0;
+  for (int b = BINS - 1; b >= 0; --b)
+  {
+    acc += hist[b];
+    if (acc >= hi_count)
+    {
+      trimmedMax = rawMin + (b / scale);
+      break;
+    }
+  }
+
+  return {trimmedMin, trimmedMax};
+}
+
 }  // namespace
 
 void mrpt::obs::recolorize3Dpc(
@@ -295,8 +353,40 @@ void mrpt::obs::recolorize3Dpc(
   }
   const auto& bb = bbMemory[p.colorizeByField];
 
-  const float colMin = p.invertColorMapping ? bb.second : bb.first;
-  const float colMax = p.invertColorMapping ? bb.first : bb.second;
+  // --- Outlier rejection (histogram percentile, O(n), no allocation) ---
+  auto effectiveLimits = std::make_pair(bb.first, bb.second);
+  if (p.outlierRejectionPercentile.has_value() &&
+      !p.colorMapMinCoord.has_value() &&  // skip if user pinned the range
+      !p.colorMapMaxCoord.has_value())
+  {
+    const float pct = std::clamp(*p.outlierRejectionPercentile, 0.0f, 0.499f);
+    if (pct > 0.0f)
+    {
+      if (fieldData_f)
+      {
+        effectiveLimits = histogramPercentileLimits(
+            fieldData_f->data(), dataPoints, pct, pct, bb.first, bb.second);
+      }
+      else if (fieldData_d)
+      {
+        effectiveLimits = histogramPercentileLimits(
+            fieldData_d->data(), dataPoints, pct, pct, bb.first, bb.second);
+      }
+      else if (fieldData_u16)
+      {
+        effectiveLimits = histogramPercentileLimits(
+            fieldData_u16->data(), dataPoints, pct, pct, bb.first, bb.second);
+      }
+      else if (fieldData_u8)
+      {
+        effectiveLimits = histogramPercentileLimits(
+            fieldData_u8->data(), dataPoints, pct, pct, bb.first, bb.second);
+      }
+    }
+  }
+
+  const float colMin = p.invertColorMapping ? effectiveLimits.second : effectiveLimits.first;
+  const float colMax = p.invertColorMapping ? effectiveLimits.first : effectiveLimits.second;
 
   const float coord_range = colMax - colMin;
   const float coord_range_1 = coord_range != 0.0f ? 1.0f / coord_range : 1.0f;
@@ -327,8 +417,8 @@ void mrpt::obs::recolorize3Dpc(
       return 0.0f;
     }();
 
-    const auto rgb = mrpt::img::TColorf(mrpt::img::colormap(p.colorMap, col_idx));
-    pnts->setPointColor_fast(i, rgb.R, rgb.G, rgb.B);
+    const auto rgb = mrpt::img::colormap(p.colorMap, col_idx);
+    pnts->setPointColor_u8_fast(i, rgb.R, rgb.G, rgb.B);
   }
 }
 
