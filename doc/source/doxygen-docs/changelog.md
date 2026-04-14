@@ -1,9 +1,13 @@
 \page changelog Change Log
 
+# Version 2.15.13: Release Apr 14th, 2026
+  - \ref mrpt_maps_grp
+    - mrpt::maps::CPointsMap now pads with zeros if trying to insert a source point clouds with less fields than the target.
+    - mrpt::obs::recolorize3Dpc(): Add optional outlier removal parameter
+
 # Version 2.15.12: Release Apr 6th, 2026
   - \ref mrpt_maps_grp
     - mrpt::maps::CPointsMap and derived classes: **API change**. Point cloud file names are no longer `string_view` but `std::string`. This is to prevent memory corruption due to dangling references and harder to maintain string views.
-
 
 # Version 2.15.11: Release Mar 12th, 2026
 - Changes in libraries:
