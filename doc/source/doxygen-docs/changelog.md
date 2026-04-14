@@ -1,8 +1,9 @@
 \page changelog Change Log
 
-# Version 2.15.13: UNRELEASED
+# Version 2.15.13: Release Apr 14th, 2026
   - \ref mrpt_maps_grp
     - mrpt::maps::CPointsMap now pads with zeros if trying to insert a source point clouds with less fields than the target.
+    - mrpt::obs::recolorize3Dpc(): Add optional outlier removal parameter
 
 # Version 2.15.12: Release Apr 6th, 2026
   - \ref mrpt_maps_grp
