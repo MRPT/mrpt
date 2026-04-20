@@ -28,25 +28,30 @@ TObject2D TObject3D::generate2DObject() const
 {
   if (isPoint())
   {
-    return {TPoint2D(getAs<TPoint3D>())};
+    return TObject2D::From(TPoint2D(getAs<TPoint3D>()));
   }
-  else if (isSegment())
+
+  if (isSegment())
   {
-    return {TSegment2D(getAs<TSegment3D>())};
+    return TObject2D::From(TSegment2D(getAs<TSegment3D>()));
   }
-  else if (isLine())
+
+  if (isLine())
   {
-    return {TLine2D(getAs<TLine3D>())};
+    return TObject2D::From(TLine2D(getAs<TLine3D>()));
   }
-  else if (isPolygon())
+
+  if (isPolygon())
   {
-    return {TPolygon2D(getAs<TPolygon3D>())};
+    return TObject2D::From(TPolygon2D(getAs<TPolygon3D>()));
   }
-  else if (isPlane())
+
+  if (isPlane())
   {
     THROW_EXCEPTION("Cannot cast down a 3D plane to 2D.");
   }
-  else if (empty())
+
+  if (empty())
   {
     return {};
   }
