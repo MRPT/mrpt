@@ -349,7 +349,7 @@ void ply_describe_element(
   PlyElement* elem = find_element(plyfile, elem_name);
   if (elem == nullptr)
     throw std::runtime_error(
-        format("ply_describe_element: can't find element '%s'", elem_name.c_str()));
+        mrpt::format("ply_describe_element: can't find element '%s'", elem_name.c_str()));
 
   elem->num = nelems;
 
@@ -409,7 +409,7 @@ void ply_element_count(PlyFile* plyfile, const string& elem_name, int nelems)
   elem = find_element(plyfile, elem_name);
   if (elem == nullptr)
     throw std::runtime_error(
-        format("ply_element_count: can't find element '%s'", elem_name.c_str()));
+        mrpt::format("ply_element_count: can't find element '%s'", elem_name.c_str()));
 
   elem->num = nelems;
 }
@@ -441,7 +441,7 @@ void ply_header_complete(PlyFile* plyfile)
       break;
     default:
       throw std::runtime_error(
-          format("ply_header_complete: bad file type = %d", plyfile->file_type));
+          mrpt::format("ply_header_complete: bad file type = %d", plyfile->file_type));
   }
 
   /* write out the comments */
@@ -499,7 +499,7 @@ void ply_put_element_setup(PlyFile* plyfile, const string& elem_name)
   elem = find_element(plyfile, elem_name);
   if (elem == nullptr)
     throw std::runtime_error(
-        format("ply_elements_setup: can't find element '%s'", elem_name.c_str()));
+        mrpt::format("ply_elements_setup: can't find element '%s'", elem_name.c_str()));
 
   plyfile->which_elem = elem;
 }
@@ -1223,7 +1223,7 @@ void write_scalar_type(FILE* fp, PLY_DATA_TYPE code)
   /* make sure this is a valid code */
 
   if (code <= PLY_START_TYPE || code >= PLY_END_TYPE)
-    throw std::runtime_error(format("write_scalar_type: bad data code = %d", code));
+    throw std::runtime_error(mrpt::format("write_scalar_type: bad data code = %d", code));
 
   /* write the code to a file */
 
@@ -1328,7 +1328,7 @@ double get_item_value(char* item, int type)
       double_value = *pdouble;
       return (double_value);
     default:
-      throw std::runtime_error(format("get_item_value: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("get_item_value: bad type = %d", type));
   }
 }
 
@@ -1383,7 +1383,7 @@ void write_binary_item(FILE* fp, int int_val, unsigned int uint_val, double doub
       fwrite(&double_val, 8, 1, fp);
       break;
     default:
-      throw std::runtime_error(format("write_binary_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("write_binary_item: bad type = %d", type));
   }
 }
 
@@ -1417,7 +1417,7 @@ void write_ascii_item(FILE* fp, int int_val, unsigned int uint_val, double doubl
       fprintf(fp, "%g ", double_val);
       break;
     default:
-      throw std::runtime_error(format("write_ascii_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("write_ascii_item: bad type = %d", type));
   }
 }
 
@@ -1480,7 +1480,7 @@ void get_stored_item(void* ptr, int type, int* int_val, unsigned int* uint_val, 
       *uint_val = static_cast<unsigned int>(*double_val);
       break;
     default:
-      throw std::runtime_error(format("get_stored_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("get_stored_item: bad type = %d", type));
   }
 }
 
@@ -1559,7 +1559,7 @@ int get_binary_item(
       *uint_val = static_cast<unsigned int>(*double_val);
       break;
     default:
-      throw std::runtime_error(format("get_binary_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("get_binary_item: bad type = %d", type));
   }
 
 // Added by JL:
@@ -1627,7 +1627,7 @@ void get_ascii_item(
       break;
 
     default:
-      throw std::runtime_error(format("get_ascii_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("get_ascii_item: bad type = %d", type));
   }
 }
 
@@ -1689,7 +1689,7 @@ void store_item(char* item, int type, int int_val, unsigned int uint_val, double
       *pdouble = double_val;
       break;
     default:
-      throw std::runtime_error(format("store_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("store_item: bad type = %d", type));
   }
 }
 

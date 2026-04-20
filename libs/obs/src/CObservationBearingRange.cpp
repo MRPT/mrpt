@@ -182,9 +182,9 @@ void CObservationBearingRange::getDescriptionAsText(std::ostream& o) const
     if (q.landmarkID == INVALID_LANDMARK_ID)
       o << "(NO ID)";
     else
-      o << format("%7u", q.landmarkID);
+      o << mrpt::format("%7u", q.landmarkID);
 
-    o << format(
+    o << mrpt::format(
         "   %10.03f  %10.03f %10.03f        ", q.range, RAD2DEG(mrpt::math::wrapToPi(q.yaw)),
         RAD2DEG(mrpt::math::wrapToPi(q.pitch)));
 
@@ -211,7 +211,7 @@ std::string CObservationBearingRange::exportTxtDataRow() const
     if (i != 0)  // to fit the format for rawlog-edit --export-txt
       o << mrpt::format("%16.6f ", mrpt::Clock::toDouble(timestamp));
 
-    o << format(
+    o << mrpt::format(
         "   %i      %.04f       %.04f       %.04f    %.03f %.03f %.03f "
         "%.03f %.03f %.03f",
         (int)d.landmarkID, d.range, d.yaw, d.pitch, sensorLocationOnRobot.x(),

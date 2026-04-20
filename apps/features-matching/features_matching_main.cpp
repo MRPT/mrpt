@@ -378,7 +378,7 @@ Descriptors:
 
         img2_show_base.textOut(
             feats2[i2].keypoint.pt.x + 10, feats2[i2].keypoint.pt.y - 10,
-            format("#%u, dist=%.02f", i2, distances[i2]), TColor::gray());
+            mrpt::format("#%u, dist=%.02f", i2, distances[i2]), TColor::gray());
 
         xs_best.push_back(i2);
         ys_best.push_back(distances[i2]);

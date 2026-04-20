@@ -257,7 +257,7 @@ MEX_DISPATCH  // Don't forget to add this if MEX_DEFINE() is used.
     // Load common & sensor specific parameters:
     sensor->loadConfig(*params.cfgFile, params.sensor_label);
 
-    cout << format("[thread_%s] Starting...", params.sensor_label.c_str()) << " at "
+    cout << mrpt::format("[thread_%s] Starting...", params.sensor_label.c_str()) << " at "
          << sensor->getProcessRate() << " Hz" << endl;
 
     ASSERTMSG_(sensor->getProcessRate() > 0, "process_rate must be set to a valid value (>0 Hz).");
@@ -298,7 +298,7 @@ MEX_DISPATCH  // Don't forget to add this if MEX_DEFINE() is used.
     }
 
     sensor.reset();
-    cout << format("[thread_%s] Closing...", params.sensor_label.c_str()) << endl;
+    cout << mrpt::format("[thread_%s] Closing...", params.sensor_label.c_str()) << endl;
   }
   catch (const std::exception& e)
   {

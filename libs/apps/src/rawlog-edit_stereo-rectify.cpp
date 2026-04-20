@@ -154,7 +154,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
             rectify_map.rectify(*o);
 
             const string label_time =
-                format("%s_%f", o->sensorLabel.c_str(), mrpt::Clock::toDouble(o->timestamp));
+                mrpt::format("%s_%f", o->sensorLabel.c_str(), mrpt::Clock::toDouble(o->timestamp));
             {
               const string fileName =
                   string("img_") + label_time + string("_left.") + imgFileExtension;

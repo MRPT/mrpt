@@ -40,7 +40,7 @@ int main(int argc, char** argv)
       return -1;
     }
 
-    string gzfile = format("%s.gz", argv[1]);
+    string gzfile = mrpt::format("%s.gz", argv[1]);
     int compress_level = 9;
     if (argc >= 3)
     {
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     }
 
     double t = tictac.Tac();
-    cout << format(
+    cout << mrpt::format(
                 "Compressed %s (compress level=%i) in %.04f seconds.", gzfile.c_str(),
                 compress_level, t)
          << endl;

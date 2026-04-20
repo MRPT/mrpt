@@ -290,7 +290,7 @@ void Test_Kinect()
 
       // Estimated grabbing rate:
       win3D.get3DSceneAndLock();
-      win3D.addTextMessage(-100, -20, format("%.02f Hz", thrPar.Hz), 100);
+      win3D.addTextMessage(-100, -20, mrpt::format("%.02f Hz", thrPar.Hz), 100);
       win3D.unlockAccess3DScene();
 
       // Do we have accelerometer data?
@@ -299,7 +299,7 @@ void Test_Kinect()
         win3D.get3DSceneAndLock();
         win3D.addTextMessage(
             10, 60,
-            format(
+            mrpt::format(
                 "Acc: x=%.02f y=%.02f z=%.02f", last_obs_imu->rawMeasurements[IMU_X_ACC],
                 last_obs_imu->rawMeasurements[IMU_Y_ACC], last_obs_imu->rawMeasurements[IMU_Z_ACC]),
             102);
@@ -363,7 +363,7 @@ void Test_Kinect()
         "orbit 3D,'c':Switch RGB/IR,'9':Save image, 'p': "
         "points/octomap, ESC: quit",
         110);
-    win3D.addTextMessage(10, 35, format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg), 111);
+    win3D.addTextMessage(10, 35, mrpt::format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg), 111);
     win3D.unlockAccess3DScene();
 
     std::this_thread::sleep_for(1ms);

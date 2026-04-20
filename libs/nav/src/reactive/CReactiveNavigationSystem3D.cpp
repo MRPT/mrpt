@@ -85,10 +85,10 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::config::CConfigFile
   m_robotShape.resize(num_levels);
   for (unsigned int i = 1; i <= num_levels; i++)
   {
-    m_robotShape.setHeight(i - 1, c.read_float(s, format("LEVEL%d_HEIGHT", i), 1.0, true));
-    m_robotShape.setRadius(i - 1, c.read_float(s, format("LEVEL%d_RADIUS", i), 0.5, false));
-    c.read_vector(s, format("LEVEL%d_VECTORX", i), vector<float>(0), xaux, false);
-    c.read_vector(s, format("LEVEL%d_VECTORY", i), vector<float>(0), yaux, false);
+    m_robotShape.setHeight(i - 1, c.read_float(s, mrpt::format("LEVEL%d_HEIGHT", i), 1.0, true));
+    m_robotShape.setRadius(i - 1, c.read_float(s, mrpt::format("LEVEL%d_RADIUS", i), 0.5, false));
+    c.read_vector(s, mrpt::format("LEVEL%d_VECTORX", i), vector<float>(0), xaux, false);
+    c.read_vector(s, mrpt::format("LEVEL%d_VECTORY", i), vector<float>(0), yaux, false);
     ASSERT_(xaux.size() == yaux.size());
     for (unsigned int j = 0; j < xaux.size(); j++)
       m_robotShape.polygon(i - 1).AddVertex(xaux[j], yaux[j]);
@@ -109,9 +109,9 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::config::CConfigFile
     for (unsigned int i = 1; i <= m_robotShape.size(); i++)
     {
       MRPT_LOG_INFO_FMT("[loadConfigFile] Generating PTG#%u at level %u...", j, i);
-      const std::string sPTGName = c.read_string(s, format("PTG%d_TYPE", j), "", true);
+      const std::string sPTGName = c.read_string(s, mrpt::format("PTG%d_TYPE", j), "", true);
       auto ptgaux =
-          CParameterizedTrajectoryGenerator::CreatePTG(sPTGName, c, s, format("PTG%d_", j));
+          CParameterizedTrajectoryGenerator::CreatePTG(sPTGName, c, s, mrpt::format("PTG%d_", j));
       m_ptgmultilevel[j - 1].PTGs.push_back(ptgaux);
     }
   }
@@ -157,7 +157,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
         }
 
         m_ptgmultilevel[j].PTGs[i]->initialize(
-            format(
+            mrpt::format(
                 "%s/ReacNavGrid_%03u_L%02u.dat.gz",
                 params_abstract_ptg_navigator.ptg_cache_files_directory.c_str(), i, j),
             m_enableConsoleOutput /*verbose*/

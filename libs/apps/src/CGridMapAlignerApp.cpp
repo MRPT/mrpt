@@ -421,7 +421,7 @@ void CGridMapAlignerApp::run()
         // Save maps:
         grid2->saveAsBitmapFile(format("%s/map2_noise_%f.png", RESULTS_DIR.c_str(), STD_NOISE_XY));
         grid2->saveAsBitmapFileWithLandmarks(
-            format("%s/map2_LM_noise_%f.png", RESULTS_DIR.c_str(), STD_NOISE_XY), &lm2, true);
+            mrpt::format("%s/map2_LM_noise_%f.png", RESULTS_DIR.c_str(), STD_NOISE_XY), &lm2, true);
         CImage img;
         grid2->getAsImageFiltered(img);
         bool savedOk =
@@ -470,7 +470,7 @@ void CGridMapAlignerApp::run()
           CPosePDFParticles::Ptr partsPdf = std::dynamic_pointer_cast<CPosePDFParticles>(parts);
 
           partsPdf->saveToTextFile(
-              format("%s/particles_noise_%.03f.txt", RESULTS_DIR.c_str(), STD_NOISE_XY));
+              mrpt::format("%s/particles_noise_%.03f.txt", RESULTS_DIR.c_str(), STD_NOISE_XY));
 
           MRPT_LOG_INFO_FMT("Goodness: %.03f%%\n", 100 * info.goodness);
           MRPT_LOG_INFO_STREAM(partsPdf->particlesCount() << " particles");
@@ -606,7 +606,7 @@ void CGridMapAlignerApp::run()
           gridLimits(0, 1) = estimateMean.x + 0.10f, gridLimits(0, 2) = estimateMean.y - 0.10f;
           gridLimits(0, 3) = estimateMean.y + 0.10f;
           gridLimits.saveToTextFile(
-              format("%s/SOG_grid_limits_noise_%f.txt", RESULTS_DIR.c_str(), STD_NOISE_XY));
+              mrpt::format("%s/SOG_grid_limits_noise_%f.txt", RESULTS_DIR.c_str(), STD_NOISE_XY));
 
           CMatrixD evalGrid;
           pdf_SOG->evaluatePDFInArea(
@@ -616,7 +616,7 @@ void CGridMapAlignerApp::run()
           );
 
           evalGrid.saveToTextFile(
-              format("%s/SOG_grid_noise_%f.txt", RESULTS_DIR.c_str(), STD_NOISE_XY));
+              mrpt::format("%s/SOG_grid_noise_%f.txt", RESULTS_DIR.c_str(), STD_NOISE_XY));
 #endif
         }  // end if is SOG
 

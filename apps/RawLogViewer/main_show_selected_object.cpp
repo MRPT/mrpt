@@ -183,7 +183,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     cout << "pts=[";
     const auto& xs = pts.getPointsBufferRef_x();
     const auto& ys = pts.getPointsBufferRef_y();
-    for (size_t i = 0; i < xs.size(); i++) cout << format("%7.04f %7.04f;", xs[i], ys[i]);
+    for (size_t i = 0; i < xs.size(); i++) cout << mrpt::format("%7.04f %7.04f;", xs[i], ys[i]);
     cout << "]\n\n";
 
     // The plot:

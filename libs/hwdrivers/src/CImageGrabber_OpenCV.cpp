@@ -66,7 +66,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
   // Open camera:
   if (!m_capture->cap.open(cv_cap_indx))
   {
-    cerr << format("[CImageGrabber_OpenCV] ERROR: Can't open camera '%i'!!\n", cameraIndex);
+    cerr << mrpt::format("[CImageGrabber_OpenCV] ERROR: Can't open camera '%i'!!\n", cameraIndex);
     return;
   }
 

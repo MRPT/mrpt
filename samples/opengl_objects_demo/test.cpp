@@ -1130,7 +1130,7 @@ void TestOpenGLObjects()
     }
 
     win.updateTextMessage(
-        0 /*id*/, format(
+        0 /*id*/, mrpt::format(
                       "Render time=%.03fms | Shadows: %s", 1e3 / win.getRenderingFPS(),
                       viewport->isShadowCastingEnabled() ? "On" : "Off"));
     std::this_thread::sleep_for(2ms);

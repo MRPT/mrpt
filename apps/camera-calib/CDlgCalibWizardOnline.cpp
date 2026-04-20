@@ -332,7 +332,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
     if (!blankTime && m_threadResultsComputed && !m_threadResults.empty())
     {
       // Save image to the list:
-      string newImgName = format("frame_%03u", (unsigned int)m_calibFrames.size());
+      string newImgName = mrpt::format("frame_%03u", (unsigned int)m_calibFrames.size());
       m_calibFrames[newImgName].img_original = m_calibFrames[newImgName].img_checkboard =
           m_calibFrames[newImgName].img_rectified = m_threadImgToProcess->image;
 
@@ -364,7 +364,8 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
     // Progress:
     const auto nFramesToGrab = (unsigned)edNumCapture->GetValue();
     img_to_show.textOut(
-        10, 10, format("%u out of %u grabbed", (unsigned int)m_calibFrames.size(), nFramesToGrab),
+        10, 10,
+        mrpt::format("%u out of %u grabbed", (unsigned int)m_calibFrames.size(), nFramesToGrab),
         TColor::white());
 
     m_realtimeview->AssignImage(img_to_show);

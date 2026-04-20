@@ -295,7 +295,7 @@ int VelodyneView(int argc, char** argv)
       win3D.get3DSceneAndLock();
       win3D.addTextMessage(
           5, 40,
-          format(
+          mrpt::format(
               "POS. frame rx at %s, RMC=%s",
               mrpt::system::dateTimeLocalToString(last_obs_gps->timestamp).c_str(),
               rmc_datum.c_str()),
@@ -315,7 +315,7 @@ int VelodyneView(int argc, char** argv)
         win3D.get3DSceneAndLock();
         win3D.addTextMessage(
             5, 55,
-            format(
+            mrpt::format(
                 "LIDAR scan rx at %s with %u packets",
                 mrpt::system::dateTimeLocalToString(last_obs->timestamp).c_str(),
                 static_cast<unsigned int>(last_obs->scan_packets.size())),
@@ -341,7 +341,7 @@ int VelodyneView(int argc, char** argv)
 
       // Estimated grabbing rate:
       win3D.get3DSceneAndLock();
-      win3D.addTextMessage(-150, -20, format("%.02f Hz", thrPar.Hz), 100);
+      win3D.addTextMessage(-150, -20, mrpt::format("%.02f Hz", thrPar.Hz), 100);
       win3D.unlockAccess3DScene();
       do_view_refresh = true;
     }  // end update visualization:

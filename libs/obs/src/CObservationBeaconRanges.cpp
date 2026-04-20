@@ -134,17 +134,17 @@ void CObservationBeaconRanges::getDescriptionAsText(std::ostream& o) const
 
   o << "Auxiliary estimated pose (if available): " << auxEstimatePose << endl;
 
-  o << format("minSensorDistance=%f m\n", minSensorDistance);
-  o << format("maxSensorDistance=%f m\n", maxSensorDistance);
-  o << format("stdError=%f m\n\n", stdError);
+  o << mrpt::format("minSensorDistance=%f m\n", minSensorDistance);
+  o << mrpt::format("maxSensorDistance=%f m\n", maxSensorDistance);
+  o << mrpt::format("stdError=%f m\n\n", stdError);
 
-  o << format("There are %u range measurements:\n\n", (unsigned)sensedData.size());
+  o << mrpt::format("There are %u range measurements:\n\n", (unsigned)sensedData.size());
 
   o << "  BEACON   RANGE     SENSOR POSITION ON ROBOT \n";
   o << "------------------------------------------------\n";
   for (const auto& d : sensedData)
   {
-    o << format(
+    o << mrpt::format(
         "   %i      %.04f      (%.03f,%.03f,%.03f)\n", (int)d.beaconID, d.sensedDistance,
         d.sensorLocationOnRobot.x(), d.sensorLocationOnRobot.y(), d.sensorLocationOnRobot.z());
   }
@@ -159,7 +159,7 @@ std::string CObservationBeaconRanges::exportTxtDataRow() const
   std::stringstream o;
   for (const auto& d : sensedData)
   {
-    o << format(
+    o << mrpt::format(
         "   %i      %.04f      %.03f %.03f %.03f", (int)d.beaconID, d.sensedDistance,
         d.sensorLocationOnRobot.x(), d.sensorLocationOnRobot.y(), d.sensorLocationOnRobot.z());
   }

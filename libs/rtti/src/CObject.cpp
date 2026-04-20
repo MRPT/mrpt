@@ -55,7 +55,7 @@ bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
   registerAllPendingClasses();
 
   const TRuntimeClassId* pBaseClass = findRegisteredClass(pBaseClass_name);
-  ASSERTMSG_(pBaseClass != nullptr, format("Class %s not registered??", pBaseClass_name));
+  ASSERTMSG_(pBaseClass != nullptr, mrpt::format("Class %s not registered??", pBaseClass_name));
 
   // The same class??
   if (pBaseClass == this) return true;

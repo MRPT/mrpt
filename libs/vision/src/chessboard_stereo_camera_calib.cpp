@@ -25,8 +25,8 @@
 
 #include "chessboard_stereo_camera_calib_internal.h"
 
-//#define USE_NUMERIC_JACOBIANS
-//#define COMPARE_NUMERIC_JACOBIANS
+// #define USE_NUMERIC_JACOBIANS
+// #define COMPARE_NUMERIC_JACOBIANS
 
 #ifdef USE_NUMERIC_JACOBIANS
 #include <mrpt/math/num_jacobian.h>
@@ -123,7 +123,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
           corners_found[lr] = false;
 
         if (p.verbose)
-          cout << format(
+          cout << mrpt::format(
               "%s img #%u: %s\n", lr == 0 ? "LEFT" : "RIGHT", static_cast<unsigned int>(i),
               corners_found[lr] ? "DETECTED" : "NOT DETECTED");
         // User Callback?
