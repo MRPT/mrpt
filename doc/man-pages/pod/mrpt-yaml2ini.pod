@@ -1,14 +1,14 @@
 =head1 NAME
 
-yaml2ini - Converts YAML files into INI-like configuration files.
+mrpt-yaml2ini - Converts YAML files into INI-like configuration files.
 
 =head1 SYNOPSIS
 
-yaml2ini I<in.yml>
+mrpt-yaml2ini I<in.yml>
 
 =head1 DESCRIPTION
 
-B<yaml2ini> is a command-line application which processes a YAML file and prints
+B<mrpt-yaml2ini> is a command-line application which processes a YAML file and prints
 to the console the INI-like configuration file.
 
 =head1 BUGS
@@ -21,7 +21,7 @@ The application list and their documentation: https://docs.mrpt.org/reference/la
 
 =head1 AUTHORS
 
-B<yaml2ini> is part of the Mobile Robot Programming Toolkit (MRPT).
+B<mrpt-yaml2ini> is part of the Mobile Robot Programming Toolkit (MRPT).
 
 This manual page was written by Jose Luis Blanco <jlblanco@ual.es>.
 

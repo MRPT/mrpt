@@ -190,7 +190,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
       if (corners_found && corners_count != CORNERS_COUNT) corners_found = false;
 
-      cout << format(
+      cout << mrpt::format(
           "Img %s: %s\n", mrpt::system::extractFileName(it->first).c_str(),
           corners_found ? "DETECTED" : "NOT DETECTED");
 

@@ -105,7 +105,7 @@ bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img)
 
   if ((size_t)m_img_size.x != img.getWidth() || (size_t)m_img_size.y != img.getHeight())
   {
-    std::cout << format(
+    std::cout << mrpt::format(
                      "[CVideoFileWriter::writeImage] Error: video frame "
                      "size is %ix%i but image is %ux%u",
                      m_img_size.x, m_img_size.y, (unsigned)img.getWidth(),

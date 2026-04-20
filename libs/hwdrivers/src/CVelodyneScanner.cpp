@@ -614,7 +614,7 @@ bool CVelodyneScanner::receivePackets(
     mrpt::system::TTimeParts parts;
     mrpt::system::timestampToParts(mrpt::Clock::now(), parts, true);
     string sFilePostfix = "_";
-    sFilePostfix += format(
+    sFilePostfix += mrpt::format(
         "%04u-%02u-%02u_%02uh%02um%02us", (unsigned int)parts.year, (unsigned int)parts.month,
         (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute,
         (unsigned int)parts.second);

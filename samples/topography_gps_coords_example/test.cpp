@@ -89,7 +89,7 @@ void TestGeoid2Geocentric()
   const double h0 = 515.579;         // 53.200600; // meters
 
   cout << endl;
-  cout << format("Point: lon=%.012f lat=%.012f h=%.04f\n", lon0, lat0, h0);
+  cout << mrpt::format("Point: lon=%.012f lat=%.012f h=%.04f\n", lon0, lat0, h0);
 
   mrpt::math::TPoint3D p;
   mrpt::topography::geodeticToGeocentric_WGS84(

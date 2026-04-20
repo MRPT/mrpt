@@ -121,7 +121,7 @@ DECLARE_OP_FUNCTION(op_info)
   cout << "Uncompressed file size            : "
        << mrpt::system::unitsFormat(static_cast<double>(in_rawlog.getUncompressedSize())) << "B\n";
   cout << "Compression ratio                 : "
-       << format("%.02f%%\n", 100.0 * in_rawlog.getCompressionRatio());
+       << mrpt::format("%.02f%%\n", 100.0 * in_rawlog.getCompressionRatio());
   cout << "Overall number of objects         : " << (proc.m_rawlogEntry + 1) << "\n";
   cout << "Actions/SensoryFrame format       : " << (proc.has_actSF_format ? "Yes" : "No") << "\n";
   cout << "Observations format               : " << (proc.has_obs_format ? "Yes" : "No") << "\n";
@@ -157,7 +157,7 @@ DECLARE_OP_FUNCTION(op_info)
       Hz = double(ips.occurrences > 1 ? ips.occurrences - 1 : 1) / dur;
     }
     cout << "Sensor (Label/Occurs/Rate/Durat.) : "
-         << format(
+         << mrpt::format(
                 "%15s /%7u /%7.03f /%6.03f  (%s)\n", label.c_str(), (unsigned)ips.occurrences, Hz,
                 dur, ips.className.c_str());
   }

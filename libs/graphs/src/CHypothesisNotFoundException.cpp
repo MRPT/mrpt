@@ -27,8 +27,8 @@ HypothesisNotFoundException::HypothesisNotFoundException(
   // http://stackoverflow.com/a/23742555/2843583
   m_msg = std::runtime_error::what();
   m_msg += "- ";
-  m_msg += format("[from] %lu ==> ", static_cast<unsigned long>(m_from)).c_str();
-  m_msg += format("[to] %lu", static_cast<unsigned long>(m_to)).c_str();
+  m_msg += mrpt::format("[from] %lu ==> ", static_cast<unsigned long>(m_from)).c_str();
+  m_msg += mrpt::format("[to] %lu", static_cast<unsigned long>(m_to)).c_str();
 }
 
 HypothesisNotFoundException::HypothesisNotFoundException(size_t id) :
@@ -40,7 +40,7 @@ HypothesisNotFoundException::HypothesisNotFoundException(size_t id) :
   m_id = id;
 
   m_msg = std::runtime_error::what();
-  m_msg += format("- ID:%lu", static_cast<unsigned long>(id)).c_str();
+  m_msg += mrpt::format("- ID:%lu", static_cast<unsigned long>(id)).c_str();
 }
 
 void HypothesisNotFoundException::clear()

@@ -367,8 +367,8 @@ void CSICKTim561Eth::generateCmd(const char* cmd)
     MRPT_LOG_ERROR("Error: command is too long.");
     return;
   }
-  // m_cmd = format("%c%s%c", 0x02, cmd, 0x03);
-  m_cmd = format("%c%s%c%c", 0x02, cmd, 0x03, 0);
+  // m_cmd = mrpt::format("%c%s%c", 0x02, cmd, 0x03);
+  m_cmd = mrpt::format("%c%s%c%c", 0x02, cmd, 0x03, 0);
 }
 
 bool CSICKTim561Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)

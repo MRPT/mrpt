@@ -396,26 +396,30 @@ void TestMatchingComparative()
           ty = pt2.y + 8;
         }
         copyjoinimage.filledRectangle(rx0, ry0, rx1, ry1, TColor(150, 150, 150));
-        copyjoinimage.textOut(tx, ty, format("%d", cnt), TColor::blue());
+        copyjoinimage.textOut(tx, ty, mrpt::format("%d", cnt), TColor::blue());
 
         px = 80 + cnt * 50;
         if (px + fExt.options.patchSize > imW2) continue;
 
         copyInfoImage.update_patch(*it2->patch, px, 30);
 
-        copyInfoImage.textOut(px, imH2 - 70, format("%d", cnt), TColor::blue());
-        copyInfoImage.textOut(px, imH2 - 53, format("%.2f", sad), TColor::blue());
-        copyInfoImage.textOut(px, imH2 - 41, format("%.2f", ncc), TColor::blue());
-        copyInfoImage.textOut(px, imH2 - 29, format("%.2f", siftd), TColor::blue());
-        copyInfoImage.textOut(px, imH2 - 17, format("%.2f", surfd), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 70, mrpt::format("%d", cnt), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 53, mrpt::format("%.2f", sad), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 41, mrpt::format("%.2f", ncc), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 29, mrpt::format("%.2f", siftd), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 17, mrpt::format("%.2f", surfd), TColor::blue());
 
         cnt++;
       }  // end if
     }    // end for it2
-    copyInfoImage.textOut(80 + idxsad * 50, imH2 - 53, format("%.2f", minsad), TColor::green());
-    copyInfoImage.textOut(80 + idxncc * 50, imH2 - 41, format("%.2f", maxncc), TColor::green());
-    copyInfoImage.textOut(80 + idxsiftd * 50, imH2 - 29, format("%.2f", minsiftd), TColor::green());
-    copyInfoImage.textOut(80 + idxsurfd * 50, imH2 - 17, format("%.2f", minsurfd), TColor::green());
+    copyInfoImage.textOut(
+        80 + idxsad * 50, imH2 - 53, mrpt::format("%.2f", minsad), TColor::green());
+    copyInfoImage.textOut(
+        80 + idxncc * 50, imH2 - 41, mrpt::format("%.2f", maxncc), TColor::green());
+    copyInfoImage.textOut(
+        80 + idxsiftd * 50, imH2 - 29, mrpt::format("%.2f", minsiftd), TColor::green());
+    copyInfoImage.textOut(
+        80 + idxsurfd * 50, imH2 - 17, mrpt::format("%.2f", minsurfd), TColor::green());
 
     win.showImage(copyjoinimage);
     win2.showImage(copyInfoImage);

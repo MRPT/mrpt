@@ -409,14 +409,14 @@ void ICP_SLAM_App_Base::run()
   mapBuilder.getCurrentlyBuiltMap(finalMap);
 
   {
-    auto str = format("%s/_finalmap_.simplemap", OUT_DIR);
+    auto str = mrpt::format("%s/_finalmap_.simplemap", OUT_DIR);
     MRPT_LOG_INFO_FMT("Dumping final map in binary format to: %s\n", str.c_str());
     mapBuilder.saveCurrentMapToFile(str);
   }
 
   {
     const CMultiMetricMap& finalPointsMap = mapBuilder.getCurrentlyBuiltMetricMap();
-    auto str = format("%s/_finalmaps_.txt", OUT_DIR);
+    auto str = mrpt::format("%s/_finalmaps_.txt", OUT_DIR);
     MRPT_LOG_INFO_FMT("Dumping final metric maps to %s_XXX\n", str.c_str());
     finalPointsMap.saveMetricMapRepresentationToFile(str);
   }

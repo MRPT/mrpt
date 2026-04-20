@@ -865,7 +865,7 @@ void CDisplayWindowPlots::plotEllipse(
     this->clf();
   }
   std::string holdon_post;
-  if (m_holdon) holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  if (m_holdon) holdon_post = mrpt::format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
@@ -939,7 +939,7 @@ void CDisplayWindowPlots::plotEllipse(
     this->clf();
   }
   std::string holdon_post;
-  if (m_holdon) holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  if (m_holdon) holdon_post = mrpt::format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
@@ -1007,7 +1007,7 @@ void CDisplayWindowPlots::image(
     this->clf();
   }
   std::string holdon_post;
-  if (m_holdon) holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  if (m_holdon) holdon_post = mrpt::format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
@@ -1056,7 +1056,7 @@ void CDisplayWindowPlots::internal_plot(
   if (x.empty()) return;
 
   std::string holdon_post;
-  if (m_holdon) holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+  if (m_holdon) holdon_post = mrpt::format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
   // Send a request to destroy this object:
   auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];

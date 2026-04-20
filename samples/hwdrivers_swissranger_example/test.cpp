@@ -193,7 +193,7 @@ void Test_SwissRanger()
     if (nImgs > 10)
     {
       win3D.get3DSceneAndLock();
-      win3D.addTextMessage(0.01, 0.01, format("%.02f Hz", nImgs / tictac.Tac()), 100);
+      win3D.addTextMessage(0.01, 0.01, mrpt::format("%.02f Hz", nImgs / tictac.Tac()), 100);
       win3D.unlockAccess3DScene();
       nImgs = 0;
       tictac.Tic();
@@ -229,7 +229,7 @@ void Test_SwissRanger()
     win3D.get3DSceneAndLock();
     win3D.addTextMessage(
         0.08, 0.02,
-        format(
+        mrpt::format(
             "Keyboard switches: H (hist.equal: %s) | G (convGray: %s) | D "
             "(denoise: %s) | F (medianFilter: %s)",
             cam.isEnabledImageHistEqualization() ? "ON" : "OFF",

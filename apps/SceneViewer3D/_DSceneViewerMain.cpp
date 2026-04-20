@@ -233,16 +233,16 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 
   meanEstimatedFPS = 0.8 * meanEstimatedFPS + 0.2 * estimatedFPS;
 
-  string str = format(
+  string str = mrpt::format(
       "Center=(%.02f,%.02f,%.02f) Zoom:%.02f AZ=%.02f deg EL:%.02f deg ROLL:%.02f",
       getCameraPointingX(), getCameraPointingY(), getCameraPointingZ(), getZoomDistance(),
       getAzimuthDegrees(), getElevationDegrees(), getRollDegrees());
   theWindow->StatusBar1->SetStatusText(str.c_str(), 1);
 
-  str = format("%.02f FPS", meanEstimatedFPS);
+  str = mrpt::format("%.02f FPS", meanEstimatedFPS);
   theWindow->StatusBar1->SetStatusText(str.c_str(), 2);
 
-  str = format("%u viewports", (unsigned)getOpenGLSceneRef()->viewportsCount());
+  str = mrpt::format("%u viewports", (unsigned)getOpenGLSceneRef()->viewportsCount());
   theWindow->StatusBar1->SetStatusText(str.c_str(), 3);
 }
 
@@ -1483,7 +1483,7 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent&)
 
     std::stringstream ss;
     ss << "Number of objects: " << sceneStats.nObjects << endl
-       << format("Overall points (in point clouds): %e", double(sceneStats.nPoints)) << endl
+       << mrpt::format("Overall points (in point clouds): %e", double(sceneStats.nPoints)) << endl
        << "Total octree nodes   (in point clouds): " << sceneStats.nOctreeTotal << endl
        << "Visible octree nodes (in point clouds): " << sceneStats.nOctreeVisible << endl;
 

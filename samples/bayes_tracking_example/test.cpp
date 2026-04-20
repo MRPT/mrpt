@@ -26,7 +26,7 @@
 #include <thread>
 
 using namespace mrpt::literals;  // _deg
-using namespace mrpt;            // format(), square()
+using namespace mrpt;            // mrpt::format(), square()
 using namespace mrpt::bayes;
 using namespace mrpt::gui;
 using namespace mrpt::math;
@@ -49,7 +49,7 @@ using namespace std;
 #define NUM_PARTICLES 2000
 
 // Uncomment to save text files with grount truth vs. estimated states
-//#define SAVE_GT_LOGS
+// #define SAVE_GT_LOGS
 
 // ------------------------------------------------------
 //		Implementation of the system models as a EKF

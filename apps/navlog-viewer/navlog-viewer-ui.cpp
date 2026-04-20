@@ -384,7 +384,7 @@ void NavlogViewerApp::loadLogfile(const std::string& fileName)
         // auto dlg =
         new nanogui::MessageDialog(
             m_win.get(), nanogui::MessageDialog::Type::Warning, "Error loading navlog file",
-            format("Unexpected class found: %s", obj->GetRuntimeClass()->className));
+            mrpt::format("Unexpected class found: %s", obj->GetRuntimeClass()->className));
         break;
       }
       m_logdata.push_back(obj);
@@ -1228,7 +1228,7 @@ void NavlogViewerApp::updateVisualization()
 
       // win
       viz.glCanvas->scene->getViewport()->addTextMessage(
-          4, 4, format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()), 0 /*id*/,
+          4, 4, mrpt::format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()), 0 /*id*/,
           getFontParams());
 
       scene->insert(mrpt::opengl::CGridPlaneXY::Create(-1.0f, 1.0f, -1.0f, 1.0f, .0f, 1.0f));
@@ -1317,7 +1317,7 @@ void NavlogViewerApp::updateVisualization()
     auto fp = getFontParams();
     fp.color = is_selected_ptg ? TColorf(1.0f, 1.0f, 0.f) : TColorf(1.0f, 1.0f, 1.0f);
     view->addTextMessage(
-        4, 4, format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()), 0 /*id*/, fp);
+        4, 4, mrpt::format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()), 0 /*id*/, fp);
 
     // Chosen direction:
     {
@@ -1386,7 +1386,7 @@ void NavlogViewerApp::updateVisualization()
         fp2.draw_shadow = false;
         view->addTextMessage(
             4, -12,
-            format(
+            mrpt::format(
                 "TP_Target[0]=(%.02f,%.02f) k=%i ang=%.02f deg", pI.TP_Targets[0].x,
                 pI.TP_Targets[0].y, tp_target_k, mrpt::RAD2DEG(ang)),
             1 /*id*/, fp2);
@@ -1527,7 +1527,7 @@ void NavlogViewerApp::OnmnuMatlabPlotsSelected()
     if (m_cbShowDelays->checked())
       observationBasePose = observationBasePose + CPose2D(logptr->relPoseSense);
 
-    f << format(
+    f << mrpt::format(
         "dec=dec+1; if (dec>=dec_shps); drawRobotShape(rs,[%f %f "
         "%f]); "
         "dec=0; end\n",

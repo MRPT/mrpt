@@ -1,6 +1,6 @@
 
-
-project(ini2yaml)
+# Renamed ini2yaml => mrpt-ini2yaml because of https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1133167
+project(mrpt-ini2yaml)
 
 add_executable(${PROJECT_NAME}
 	ini2yaml_main.cpp
