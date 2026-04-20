@@ -730,7 +730,7 @@ bool CFormPlayVideo::showSensoryFrameImpl(
         if (obsImg->timestamp != INVALID_TIMESTAMP)
           t = mrpt::system::timeDifference(rawlog_first_timestamp, obsImg->timestamp);
 
-        string s = format("%s [t=%.03fsec]", obsImg->sensorLabel.c_str(), t);
+        string s = mrpt::format("%s [t=%.03fsec]", obsImg->sensorLabel.c_str(), t);
         theLabel->SetLabel(s.c_str());
       }
 

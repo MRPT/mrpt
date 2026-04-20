@@ -102,17 +102,17 @@ void TestStereoRectify(int argc, char** argv)
   cout << "Close the window to end.\n";
   while (win.isOpen())
   {
-    win.addTextMessage(5, 5, format("%.02fFPS", win.getRenderingFPS()), 0);
+    win.addTextMessage(5, 5, mrpt::format("%.02fFPS", win.getRenderingFPS()), 0);
     win.addTextMessage(
         5, 25,
-        format(
+        mrpt::format(
             "'r': Switch rectify (Now is: %s) | '+'/'-': Modify "
             "alpha (Now is: %.02f)",
             enable_rectify ? "ON" : "OFF", rectifyMap.getAlpha()),
         10);
     win.addTextMessage(
         5, 50,
-        format(
+        mrpt::format(
             "'s': Switch resize output to 320x240 (Now is: %s) | 'c': "
             "Switch no-disparity (Now is: %s) | 'e': Switch epipolar lines",
             rectifyMap.isEnabledResizeOutput() ? "ON" : "OFF",

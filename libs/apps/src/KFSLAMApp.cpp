@@ -413,13 +413,13 @@ void KFSLAMApp::Run_KF_SLAM()
       if (!(step % SAVE_LOG_FREQUENCY))
       {
         const auto p = robotPose.mean.asVectorVal();
-        p.saveToTextFile(OUT_DIR + format("/robot_pose_%05u.txt", (unsigned int)step));
+        p.saveToTextFile(OUT_DIR + mrpt::format("/robot_pose_%05u.txt", (unsigned int)step));
       }
 
       // Save full cov:
       if (!(step % SAVE_LOG_FREQUENCY))
       {
-        fullCov.saveToTextFile(OUT_DIR + format("/full_cov_%05u.txt", (unsigned int)step));
+        fullCov.saveToTextFile(OUT_DIR + mrpt::format("/full_cov_%05u.txt", (unsigned int)step));
       }
 
       // Generate Data Association log?
@@ -450,7 +450,7 @@ void KFSLAMApp::Run_KF_SLAM()
                 assoc_ID_in_SLAM = -1;
             }
 
-            out_da_log << format(
+            out_da_log << mrpt::format(
                 "%35.22f %8i %10i %10f %12f %12f\n", tim, (int)i, assoc_ID_in_SLAM,
                 (double)obsRB->sensedData[i].range, (double)obsRB->sensedData[i].yaw,
                 (double)obsRB->sensedData[i].pitch);
@@ -544,7 +544,7 @@ void KFSLAMApp::Run_KF_SLAM()
             // "%           TIMESTAMP                INDEX_IN_OBS
             // TruePos FalsePos TrueNeg FalseNeg
             // NoGroundTruthSoIDontKnow \n"
-            out_da_performance_log << format(
+            out_da_performance_log << mrpt::format(
                 "%35.22f %13i %8i %8i %8i %8i %8i\n", tim, (int)i, (int)(is_TP ? 1 : 0),
                 (int)(is_FP ? 1 : 0), (int)(is_TN ? 1 : 0), (int)(is_FN ? 1 : 0),
                 (int)(!is_FP && !is_TP && !is_FN && !is_TN ? 1 : 0));
@@ -556,7 +556,7 @@ void KFSLAMApp::Run_KF_SLAM()
       if (SAVE_MAP_REPRESENTATIONS && !(step % SAVE_LOG_FREQUENCY))
       {
         mapping.saveMapAndPath2DRepresentationAsMATLABFile(
-            OUT_DIR + format("/slam_state_%05u.m", (unsigned int)step));
+            OUT_DIR + mrpt::format("/slam_state_%05u.m", (unsigned int)step));
       }
 
       // Save 3D view of the filter state:
@@ -689,14 +689,14 @@ void KFSLAMApp::Run_KF_SLAM()
           // Update text messages:
           win3d->addTextMessage(
               0.02, 0.02,
-              format(
+              mrpt::format(
                   "Step %u - Landmarks in the map: %u", (unsigned int)step,
                   (unsigned int)LMs.size()),
               0);
 
           win3d->addTextMessage(
               0.02, 0.06,
-              format(
+              mrpt::format(
                   is_pose_3d ? "Estimated pose: (x y z qr qx qy qz) = %s"
                              : "Estimated pose: (x y yaw) = %s",
                   robotPose.mean.asString().c_str()),
@@ -710,11 +710,12 @@ void KFSLAMApp::Run_KF_SLAM()
 
           win3d->addTextMessage(
               0.02, 0.10,
-              format("Iteration time: %7ss", mrpt::system::unitsFormat(tim_kf_iter).c_str()), 2);
+              mrpt::format("Iteration time: %7ss", mrpt::system::unitsFormat(tim_kf_iter).c_str()),
+              2);
 
           win3d->addTextMessage(
               0.02, 0.14,
-              format("Execution rate: %7sHz", mrpt::system::unitsFormat(meanHz).c_str()), 3);
+              mrpt::format("Execution rate: %7sHz", mrpt::system::unitsFormat(meanHz).c_str()), 3);
 
           win3d->unlockAccess3DScene();
           win3d->repaint();
@@ -723,7 +724,8 @@ void KFSLAMApp::Run_KF_SLAM()
         if (SAVE_3D_SCENES && !(step % SAVE_LOG_FREQUENCY))
         {
           // Save to file:
-          CCompressedOutputStream f(OUT_DIR + format("/kf_state_%05u.3Dscene", (unsigned int)step));
+          CCompressedOutputStream f(
+              OUT_DIR + mrpt::format("/kf_state_%05u.3Dscene", (unsigned int)step));
           mrpt::serialization::archiveFrom(f) << *scene3D;
         }
       }

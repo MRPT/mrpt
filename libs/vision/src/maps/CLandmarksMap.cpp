@@ -58,11 +58,11 @@ void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(
   for (unsigned int q = 1; q <= nBeacons; q++)
   {
     TPairIdBeacon newPair;
-    newPair.second = source.read_int(sSectCreation, format("beacon_%03u_ID", q), 0);
+    newPair.second = source.read_int(sSectCreation, mrpt::format("beacon_%03u_ID", q), 0);
 
-    newPair.first.x = source.read_float(sSectCreation, format("beacon_%03u_x", q), 0);
-    newPair.first.y = source.read_float(sSectCreation, format("beacon_%03u_y", q), 0);
-    newPair.first.z = source.read_float(sSectCreation, format("beacon_%03u_z", q), 0);
+    newPair.first.x = source.read_float(sSectCreation, mrpt::format("beacon_%03u_x", q), 0);
+    newPair.first.y = source.read_float(sSectCreation, mrpt::format("beacon_%03u_y", q), 0);
+    newPair.first.z = source.read_float(sSectCreation, mrpt::format("beacon_%03u_z", q), 0);
 
     this->initialBeacons.push_back(newPair);
   }

@@ -113,7 +113,7 @@ void CPose2D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
  */
 std::ostream& mrpt::poses::operator<<(std::ostream& o, const CPose2D& p)
 {
-  o << format("(%.03f,%.03f,%.02fdeg)", p.x(), p.y(), RAD2DEG(p.phi()));
+  o << mrpt::format("(%.03f,%.03f,%.02fdeg)", p.x(), p.y(), RAD2DEG(p.phi()));
   return o;
 }
 

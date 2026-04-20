@@ -485,32 +485,32 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
        "base:\n";
   o << sensorPose.getHomogeneousMatrixVal<CMatrixDouble44>() << "\n" << sensorPose << "\n";
 
-  o << format("Samples direction: %s\n", (rightToLeft) ? "Right->Left" : "Left->Right");
+  o << mrpt::format("Samples direction: %s\n", (rightToLeft) ? "Right->Left" : "Left->Right");
   o << "Points in the scan: " << m_scan.size() << "\n";
-  o << format("Estimated sensor 'sigma': %f\n", stdError);
-  o << format("Increment in pitch during the scan: %f deg\n", RAD2DEG(deltaPitch));
-  o << format("Sweep duration: %f s\n", sweepDuration);
+  o << mrpt::format("Estimated sensor 'sigma': %f\n", stdError);
+  o << mrpt::format("Increment in pitch during the scan: %f deg\n", RAD2DEG(deltaPitch));
+  o << mrpt::format("Sweep duration: %f s\n", sweepDuration);
 
   size_t i, inval = 0;
   for (i = 0; i < m_scan.size(); i++)
     if (!m_validRange[i]) inval++;
-  o << format("Invalid points in the scan: %u\n", (unsigned)inval);
+  o << mrpt::format("Invalid points in the scan: %u\n", (unsigned)inval);
 
-  o << format("Sensor maximum range: %.02f m\n", maxRange);
-  o << format("Sensor field-of-view (\"aperture\"): %.01f deg\n", RAD2DEG(aperture));
+  o << mrpt::format("Sensor maximum range: %.02f m\n", maxRange);
+  o << mrpt::format("Sensor field-of-view (\"aperture\"): %.01f deg\n", RAD2DEG(aperture));
 
   o << "Raw scan values: [";
-  for (i = 0; i < m_scan.size(); i++) o << format("%.03f ", m_scan[i]);
+  for (i = 0; i < m_scan.size(); i++) o << mrpt::format("%.03f ", m_scan[i]);
   o << "]\n";
 
   o << "Raw valid-scan values: [";
-  for (i = 0; i < m_validRange.size(); i++) o << format("%u ", m_validRange[i] ? 1 : 0);
+  for (i = 0; i < m_validRange.size(); i++) o << mrpt::format("%u ", m_validRange[i] ? 1 : 0);
   o << "]\n\n";
 
   if (hasIntensity())
   {
     o << "Raw intensity values: [";
-    for (i = 0; i < m_intensity.size(); i++) o << format("%d ", m_intensity[i]);
+    for (i = 0; i < m_intensity.size(); i++) o << mrpt::format("%d ", m_intensity[i]);
     o << "]\n\n";
   }
 }
@@ -599,15 +599,16 @@ std::string CObservation2DRangeScan::exportTxtHeader() const
 std::string CObservation2DRangeScan::exportTxtDataRow() const
 {
   std::stringstream o;
-  for (size_t i = 0; i < m_scan.size(); i++) o << format("%.03f ", m_scan[i]);
+  for (size_t i = 0; i < m_scan.size(); i++) o << mrpt::format("%.03f ", m_scan[i]);
   o << "    ";
 
-  for (size_t i = 0; i < m_validRange.size(); i++) o << format("%u ", m_validRange[i] ? 1 : 0);
+  for (size_t i = 0; i < m_validRange.size(); i++)
+    o << mrpt::format("%u ", m_validRange[i] ? 1 : 0);
   o << "    ";
 
   if (hasIntensity())
   {
-    for (size_t i = 0; i < m_intensity.size(); i++) o << format("%d ", m_intensity[i]);
+    for (size_t i = 0; i < m_intensity.size(); i++) o << mrpt::format("%d ", m_intensity[i]);
   }
   return o.str();
 }
