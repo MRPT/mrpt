@@ -21,7 +21,7 @@ int main(int argc, char** argv)
   try
   {
     // Parse arguments:
-    if (argc != 2) throw std::runtime_error("Usage: yaml2ini <input.yaml>");
+    if (argc != 2) throw std::runtime_error("Usage: mrpt-yaml2ini <input.yaml>");
 
     const std::string ymlFile = std::string(argv[1]);
     ASSERT_FILE_EXISTS_(ymlFile);
