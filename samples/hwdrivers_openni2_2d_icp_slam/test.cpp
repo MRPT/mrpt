@@ -149,7 +149,8 @@ int main(int argc, char** argv)
         // Estimated grabbing rate:
         win3D.addTextMessage(
             -350, -13,
-            format("Timestamp: %s", mrpt::system::dateTimeLocalToString(last_obs_tim).c_str()),
+            mrpt::format(
+                "Timestamp: %s", mrpt::system::dateTimeLocalToString(last_obs_tim).c_str()),
             100);
 
         // Show intensity image:

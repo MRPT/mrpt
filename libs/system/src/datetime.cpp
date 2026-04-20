@@ -222,7 +222,7 @@ string mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp t)
 
   if (!ptm) return std::string("(Malformed timestamp)");
 
-  return format(
+  return mrpt::format(
       "%u/%02u/%02u,%02u:%02u:%02u.%06u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday,
       ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec, secFractions);
 }
@@ -248,7 +248,7 @@ string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 
   if (!ptm) return "(Malformed timestamp)";
 
-  return format(
+  return mrpt::format(
       "%u/%02u/%02u,%02u:%02u:%02u.%06u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday,
       ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec, secFractions);
 }
@@ -299,7 +299,7 @@ string mrpt::system::timeLocalToString(
   const unsigned int user_secondFractionDigits = secondFractionDigits;
   while (secondFractionDigits++ < 6) secFractions = secFractions / 10;
 
-  return format(
+  return mrpt::format(
       "%02u:%02u:%02u.%0*u", ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec,
       user_secondFractionDigits, secFractions);
 }
@@ -318,7 +318,7 @@ string mrpt::system::timeToString(const mrpt::system::TTimeStamp tt)
   tm* ptm = gmtime(&auxTime);
   if (!ptm) return string("(Malformed timestamp)");
 
-  return format(
+  return mrpt::format(
       "%02u:%02u:%02u.%06u", ptm->tm_hour, ptm->tm_min, (unsigned int)ptm->tm_sec, secFractions);
 }
 
@@ -335,7 +335,7 @@ string mrpt::system::dateToString(const mrpt::system::TTimeStamp tt)
   tm* ptm = gmtime(&auxTime);
   if (!ptm) return string("(Malformed timestamp)");
 
-  return format("%u/%02u/%02u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday);
+  return mrpt::format("%u/%02u/%02u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday);
 }
 
 namespace
@@ -347,35 +347,35 @@ std::string implIntervalFormat(const double seconds)
   if (seconds >= 365 * 24 * 3600)
   {
     const int i = static_cast<int>(seconds / (365 * 24 * 3600));
-    return format("%i year%s", i, i > 1 ? "s" : "") + ", "s +
+    return mrpt::format("%i year%s", i, i > 1 ? "s" : "") + ", "s +
            implIntervalFormat(std::fmod(seconds, (365 * 24 * 3600)));
   }
   else if (seconds >= 24 * 3600)
   {
     const int i = static_cast<int>(seconds / (24 * 3600));
-    return format("%i day%s", i, i > 1 ? "s" : "") + ", "s +
+    return mrpt::format("%i day%s", i, i > 1 ? "s" : "") + ", "s +
            implIntervalFormat(std::fmod(seconds, (24 * 3600)));
   }
   else if (seconds >= 3600)
   {
     const int i = static_cast<int>(seconds / 3600);
-    return format("%i hour%s", i, i > 1 ? "s" : "") + ", "s +
+    return mrpt::format("%i hour%s", i, i > 1 ? "s" : "") + ", "s +
            implIntervalFormat(std::fmod(seconds, 3600));
   }
   else if (seconds >= 60)
   {
     const int i = static_cast<int>(seconds / 60);
-    return format("%i minute%s", i, i > 1 ? "s" : "") + ", "s +
+    return mrpt::format("%i minute%s", i, i > 1 ? "s" : "") + ", "s +
            implIntervalFormat(std::fmod(seconds, 60));
   }
   else if (seconds >= 1)
-    return format("%.2f sec", seconds);
+    return mrpt::format("%.2f sec", seconds);
   else if (seconds >= 1e-3)
-    return format("%.2f ms", seconds * 1e3);
+    return mrpt::format("%.2f ms", seconds * 1e3);
   else if (seconds >= 1e-6)
-    return format("%.2f us", seconds * 1e6);
+    return mrpt::format("%.2f us", seconds * 1e6);
   else
-    return format("%.2f ns", seconds * 1e9);
+    return mrpt::format("%.2f ns", seconds * 1e9);
 }
 }  // namespace
 

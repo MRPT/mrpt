@@ -116,9 +116,9 @@ void PlannerTPS_VirtualBase::internal_loadConfig_PTG(
   for (unsigned int n = 0; n < PTG_COUNT; n++)
   {
     // Generate it:
-    const std::string sPTGName = ini.read_string(sSect, format("PTG%u_Type", n), "", true);
-    m_PTGs.push_back(
-        CParameterizedTrajectoryGenerator::CreatePTG(sPTGName, ini, sSect, format("PTG%u_", n)));
+    const std::string sPTGName = ini.read_string(sSect, mrpt::format("PTG%u_Type", n), "", true);
+    m_PTGs.push_back(CParameterizedTrajectoryGenerator::CreatePTG(
+        sPTGName, ini, sSect, mrpt::format("PTG%u_", n)));
   }
 }
 
@@ -203,8 +203,8 @@ void PlannerTPS_VirtualBase::spaceTransformer(
   catch (...)
   {
     cerr << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
-    cerr << format("*in_PTG = %p\n", (void*)in_PTG);
-    if (in_PTG) cerr << format("PTG = %s\n", in_PTG->getDescription().c_str());
+    cerr << mrpt::format("*in_PTG = %p\n", (void*)in_PTG);
+    if (in_PTG) cerr << mrpt::format("PTG = %s\n", in_PTG->getDescription().c_str());
     cerr << endl;
   }
 }
@@ -254,8 +254,8 @@ void PlannerTPS_VirtualBase::spaceTransformerOneDirectionOnly(
   catch (...)
   {
     cerr << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
-    cerr << format("*in_PTG = %p\n", (void*)in_PTG);
-    if (in_PTG) cerr << format("PTG = %s\n", in_PTG->getDescription().c_str());
+    cerr << mrpt::format("*in_PTG = %p\n", (void*)in_PTG);
+    if (in_PTG) cerr << mrpt::format("PTG = %s\n", in_PTG->getDescription().c_str());
     cerr << endl;
   }
 }

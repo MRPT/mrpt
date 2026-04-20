@@ -281,7 +281,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
   }
   if (!valid_video_mode)
   {
-    cerr << format(
+    cerr << mrpt::format(
                 "[CImageGrabber_dc1394] ERROR: Requested mode %ix%i "
                 "color_model:%i is not available for this camera.",
                 options.frame_width, options.frame_height, int(options.color_coding))

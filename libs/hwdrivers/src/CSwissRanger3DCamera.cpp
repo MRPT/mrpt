@@ -206,7 +206,7 @@ bool CSwissRanger3DCamera::getMesaLibVersion([[maybe_unused]] std::string& out_v
   unsigned short version[4];
   if (0 != SR_GetVersion(version)) return false;
 
-  out_version = format("%d.%d.%d.%d", version[3], version[2], version[1], version[0]);
+  out_version = mrpt::format("%d.%d.%d.%d", version[3], version[2], version[1], version[0]);
   return true;
 #else
   return false;
@@ -448,7 +448,7 @@ void CSwissRanger3DCamera::getNextObservation(
           if (!m_path_for_external_images.empty())
           {
             const string filName = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                                   format(
+                                   mrpt::format(
                                        "_INT_%f.%s", (double)mrpt::Clock::toDouble(obs.timestamp),
                                        m_external_images_format.c_str());
             obs.intensityImage.saveToFile(
@@ -481,7 +481,7 @@ void CSwissRanger3DCamera::getNextObservation(
           if (!m_path_for_external_images.empty())
           {
             const string filName = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                                   format(
+                                   mrpt::format(
                                        "_CONF_%f.%s", (double)mrpt::Clock::toDouble(obs.timestamp),
                                        m_external_images_format.c_str());
             obs.confidenceImage.saveToFile(

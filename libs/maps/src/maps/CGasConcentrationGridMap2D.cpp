@@ -789,7 +789,7 @@ that models the propagation of the gas comming from cell_i.
   LUT.std_phi = insertionOptions.std_windNoise_phi;  // Standard Deviation in wind Angle (cte)
   LUT.std_r = insertionOptions.std_windNoise_mod /
               insertionOptions.advectionFreq;  // Standard Deviation in wind module (cte)
-  std::string filename = format(
+  std::string filename = mrpt::format(
       "Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz", LUT.resolution, LUT.std_phi,
       LUT.std_r);
 

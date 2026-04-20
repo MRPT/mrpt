@@ -666,12 +666,12 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
       // Show text log:
       if (isAnimation)
       {
-        cout << format("EXECUTING %i steps:\n---------------------------\n", curStep);
+        cout << mrpt::format("EXECUTING %i steps:\n---------------------------\n", curStep);
       }
-      cout << format("Time:%fms\n", icpInfo.executionTime * 1e3f);
-      cout << format("Iterations executed: %i\n", icpInfo.nIterations);
-      cout << format("Goodness: %.02f%%\n", 100 * icpInfo.goodness);
-      cout << format("Quality: %.04f\n", icpInfo.quality);
+      cout << mrpt::format("Time:%fms\n", icpInfo.executionTime * 1e3f);
+      cout << mrpt::format("Iterations executed: %i\n", icpInfo.nIterations);
+      cout << mrpt::format("Goodness: %.02f%%\n", 100 * icpInfo.goodness);
+      cout << mrpt::format("Quality: %.04f\n", icpInfo.quality);
 
       // Already converged?
       if (isAnimation && static_cast<int>(icpInfo.nIterations) < (static_cast<int>(curStep) - 3))
@@ -680,7 +680,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
         pbSteps->SetValue(maxSteps);
       }
 
-      cout << format(
+      cout << mrpt::format(
           "Estimated pose:\n Mean=(%f,%f,%fdeg)\n", estMean.x(), estMean.y(),
           RAD2DEG(estMean.phi()));
       cout << " Covariance:\n";
@@ -690,15 +690,15 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
       cout << " std(y)   = " << sqrt(estCov(1, 1)) << " m. " << endl;
       cout << " std(phi) = " << RAD2DEG(sqrt(estCov(2, 2))) << " deg. " << endl;
 
-      cout << format("Output PDF class is: %s\n", poseEst->GetRuntimeClass()->className);
+      cout << mrpt::format("Output PDF class is: %s\n", poseEst->GetRuntimeClass()->className);
       if (const auto SOG = std::dynamic_pointer_cast<CPosePDFSOG>(poseEst); SOG)
       {
         const size_t n = SOG->size();
-        cout << format("# of gaussians in SOG: %i\n", (int)n);
+        cout << mrpt::format("# of gaussians in SOG: %i\n", (int)n);
         for (size_t i = 0; i < n; i++)
         {
-          cout << format("SOG[%02i]:w=%e mean=", (int)i, SOG->get(i).log_w) << SOG->get(i).mean
-               << endl;
+          cout << mrpt::format("SOG[%02i]:w=%e mean=", (int)i, SOG->get(i).log_w)
+               << SOG->get(i).mean << endl;
         }
       }
 

@@ -52,7 +52,7 @@ DECLARE_OP_FUNCTION(op_deexternalize)
       using namespace std::string_literals;
 
       const string label_time =
-          format("%s_%f", obs->sensorLabel.c_str(), mrpt::Clock::toDouble(obs->timestamp));
+          mrpt::format("%s_%f", obs->sensorLabel.c_str(), mrpt::Clock::toDouble(obs->timestamp));
       if (IS_CLASS(*obs, CObservationStereoImages))
       {
         auto obsSt = std::dynamic_pointer_cast<CObservationStereoImages>(obs);

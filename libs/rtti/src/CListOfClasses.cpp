@@ -72,7 +72,7 @@ void CListOfClasses::fromString(const std::string& s)
   {
     lin = trim(lin);
     const TRuntimeClassId* id = findRegisteredClass(lin);
-    ASSERTMSG_(id != nullptr, format("Unknown class name: %s", lin.c_str()));
+    ASSERTMSG_(id != nullptr, mrpt::format("Unknown class name: %s", lin.c_str()));
     this->insert(id);
   }
 

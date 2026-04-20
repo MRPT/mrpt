@@ -382,26 +382,30 @@ void TestMatchingComparative()
           ty = pt2.y + 8;
         }
         copyjoinimage.filledRectangle(rx0, ry0, rx1, ry1, TColor(150, 150, 150));
-        copyjoinimage.textOut(tx, ty, format("%d", cnt), TColor::blue());
+        copyjoinimage.textOut(tx, ty, mrpt::format("%d", cnt), TColor::blue());
 
         px = 80 + cnt * 50;
         if (px + fExt.options.patchSize > imW2) continue;
 
         copyInfoImage.update_patch(*it2->patch, px, 30);
 
-        copyInfoImage.textOut(px, imH2 - 70, format("%d", cnt), TColor::blue());
-        copyInfoImage.textOut(px, imH2 - 53, format("%.2f", sad), TColor::blue());
-        copyInfoImage.textOut(px, imH2 - 41, format("%.2f", ncc), TColor::blue());
-        copyInfoImage.textOut(px, imH2 - 29, format("%.2f", siftd), TColor::blue());
-        copyInfoImage.textOut(px, imH2 - 17, format("%.2f", surfd), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 70, mrpt::format("%d", cnt), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 53, mrpt::format("%.2f", sad), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 41, mrpt::format("%.2f", ncc), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 29, mrpt::format("%.2f", siftd), TColor::blue());
+        copyInfoImage.textOut(px, imH2 - 17, mrpt::format("%.2f", surfd), TColor::blue());
 
         cnt++;
       }  // end if
     }    // end for it2
-    copyInfoImage.textOut(80 + idxsad * 50, imH2 - 53, format("%.2f", minsad), TColor::green());
-    copyInfoImage.textOut(80 + idxncc * 50, imH2 - 41, format("%.2f", maxncc), TColor::green());
-    copyInfoImage.textOut(80 + idxsiftd * 50, imH2 - 29, format("%.2f", minsiftd), TColor::green());
-    copyInfoImage.textOut(80 + idxsurfd * 50, imH2 - 17, format("%.2f", minsurfd), TColor::green());
+    copyInfoImage.textOut(
+        80 + idxsad * 50, imH2 - 53, mrpt::format("%.2f", minsad), TColor::green());
+    copyInfoImage.textOut(
+        80 + idxncc * 50, imH2 - 41, mrpt::format("%.2f", maxncc), TColor::green());
+    copyInfoImage.textOut(
+        80 + idxsiftd * 50, imH2 - 29, mrpt::format("%.2f", minsiftd), TColor::green());
+    copyInfoImage.textOut(
+        80 + idxsurfd * 50, imH2 - 17, mrpt::format("%.2f", minsurfd), TColor::green());
 
     win.showImage(copyjoinimage);
     win2.showImage(copyInfoImage);
@@ -444,7 +448,7 @@ void TestExtractFeatures()
   fExt.options.featsType = featHarris;
   fExt.detectFeatures(img, featsHarris);
   cout << "Detected " << featsHarris.size() << " features in ";
-  cout << format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
+  cout << mrpt::format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
   featsHarris.saveToTextFile("f_harris.txt");
   wind1.setWindowTitle("Harris detected features");
   wind1.showImageAndPoints(img, featsHarris);
@@ -457,7 +461,7 @@ void TestExtractFeatures()
   fExt.options.FASTOptions.use_KLT_response = true;
   fExt.detectFeatures(img, featsFAST, 0, 500 /* max num feats */);
   cout << "Detected " << featsFAST.size() << " features in ";
-  cout << format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
+  cout << mrpt::format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
   featsFAST.saveToTextFile("f_fast.txt");
   wind5.setWindowTitle("FAST detected features");
   wind5.showImageAndPoints(img, featsFAST);
@@ -465,7 +469,7 @@ void TestExtractFeatures()
   cout << "Computing SIFT descriptors only ... [f_harris+sift.txt]" << endl;
   tictac.Tic();
   fExt.computeDescriptors(img, featsHarris, descSIFT);
-  cout << format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
+  cout << mrpt::format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
   featsHarris.saveToTextFile("f_harris+sift.txt");
 
   cout << "Extracting KLT features... [f_klt.txt]" << endl;
@@ -475,7 +479,7 @@ void TestExtractFeatures()
   fExt.options.KLTOptions.radius = 5;
   fExt.detectFeatures(img, featsKLT, 0, 10);
   cout << "Detected " << featsKLT.size() << " features in ";
-  cout << format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
+  cout << mrpt::format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
   featsKLT.saveToTextFile("f_klt.txt");
   wind2.setWindowTitle("KLT detected features");
   wind2.showImageAndPoints(img, featsKLT);
@@ -485,7 +489,7 @@ void TestExtractFeatures()
   fExt.options.featsType = featSIFT;
   fExt.detectFeatures(img, featsSIFT_Hess);
   cout << "Detected " << featsSIFT_Hess.size() << " features in ";
-  cout << format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
+  cout << mrpt::format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
   featsSIFT_Hess.saveToTextFile("f_sift_hess.txt");
   wind3.setWindowTitle("SIFT Hess detected features");
   wind3.showImageAndPoints(img, featsSIFT_Hess);
@@ -495,7 +499,7 @@ void TestExtractFeatures()
   fExt.options.featsType = featSURF;
   fExt.detectFeatures(img, featsSURF);
   cout << "Detected " << featsSURF.size() << " features in ";
-  cout << format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
+  cout << mrpt::format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
   featsSURF.saveToTextFile("f_surf.txt");
   wind4.setWindowTitle("SURF detected features");
   wind4.showImageAndPoints(img, featsSURF);
@@ -506,7 +510,7 @@ void TestExtractFeatures()
   fExt.options.SpinImagesOptions.hist_size_distance = 10;
   fExt.options.SpinImagesOptions.hist_size_intensity = 10;
   fExt.computeDescriptors(img, featsHarris, descSpinImages);
-  cout << format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
+  cout << mrpt::format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
   featsHarris.saveToTextFile("f_harris+spinimgs.txt");
 
   mrpt::system::pause();
@@ -538,7 +542,7 @@ void TestExtractFeaturesTile()
 
   tictac.Tic();
   fExt.detectFeatures(img, featsHarris);
-  cout << format("  %.03fms", tictac.Tac() * 1000) << endl;
+  cout << mrpt::format("  %.03fms", tictac.Tac() * 1000) << endl;
 
   cout << "Detected " << featsHarris.size() << " features in " << endl;
   featsHarris.saveToTextFile("f_harris_tiled.txt");
@@ -549,7 +553,7 @@ void TestExtractFeaturesTile()
 
   tictac.Tic();
   fExt.detectFeatures(img, featsHarris);
-  cout << format("  %.03fms", tictac.Tac() * 1000) << endl;
+  cout << mrpt::format("  %.03fms", tictac.Tac() * 1000) << endl;
 
   featsHarris.saveToTextFile("f_harris.txt");
   wind2.setWindowTitle("Harris detected features");

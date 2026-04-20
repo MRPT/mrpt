@@ -68,7 +68,7 @@ void CObservationWirelessPower::setSensorPose(const CPose3D& newSensorPose)
 void CObservationWirelessPower::getDescriptionAsText(std::ostream& o) const
 {
   CObservation::getDescriptionAsText(o);
-  o << format("Measured Power: %.02f/100\n", power);
+  o << mrpt::format("Measured Power: %.02f/100\n", power);
 }
 
 std::string CObservationWirelessPower::exportTxtHeader() const

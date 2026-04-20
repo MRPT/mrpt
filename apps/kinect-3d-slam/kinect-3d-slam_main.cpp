@@ -476,7 +476,8 @@ void Test_Kinect()
       {  // Tracked feats:
         theImg.drawFeatures(trackedFeats, TColor(0, 0, 255), SHOW_FEAT_IDS, SHOW_RESPONSES);
         theImg.textOut(
-            3, 22, format("# feats: %u", (unsigned int)trackedFeats.size()), TColor(200, 20, 20));
+            3, 22, mrpt::format("# feats: %u", (unsigned int)trackedFeats.size()),
+            TColor(200, 20, 20));
       }
 
       // Update visualization ---------------------------------------
@@ -519,7 +520,7 @@ void Test_Kinect()
       }
 
       win3D.get3DSceneAndLock();
-      win3D.addTextMessage(-100, -20, format("%.02f Hz", thrPar.Hz), 100);
+      win3D.addTextMessage(-100, -20, mrpt::format("%.02f Hz", thrPar.Hz), 100);
       win3D.unlockAccess3DScene();
 
       win3D.repaint();

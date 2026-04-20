@@ -137,13 +137,13 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 
   if (!image.isEmpty())
   {
-    o << format(
+    o << mrpt::format(
         " Image size: %ux%u pixels\n", (unsigned int)image.getWidth(),
         (unsigned int)image.getHeight());
 
     o << " Channels order: " << image.getChannelsOrder() << "\n";
 
-    o << format(
+    o << mrpt::format(
         " Rows are stored in top-bottom order: %s\n", image.isOriginTopLeft() ? "YES" : "NO");
   }
 

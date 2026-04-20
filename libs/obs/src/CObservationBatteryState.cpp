@@ -75,18 +75,18 @@ void CObservationBatteryState::getDescriptionAsText(std::ostream& o) const
 {
   CObservation::getDescriptionAsText(o);
 
-  o << format(
+  o << mrpt::format(
       "Measured VoltageMainRobotBattery: %.02fV  isValid= %s \n", voltageMainRobotBattery,
       (voltageMainRobotBatteryIsValid == true) ? "True" : "False");
 
-  o << format(
+  o << mrpt::format(
       "Measured VoltageMainRobotComputer: %.02fV  isValid= %s \n", voltageMainRobotComputer,
       (voltageMainRobotComputerIsValid == true) ? "True" : "False");
 
   o << "VoltageOtherBatteries: \n";
   for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
   {
-    o << format(
+    o << mrpt::format(
         "Index: %d --> %.02fV  isValid= %s \n", int(i), voltageOtherBatteries[i],
         (voltageOtherBatteriesValid[i] == true) ? "True" : "False");
   }
