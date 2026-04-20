@@ -30,21 +30,25 @@ TObject3D TObject2D::generate3DObject() const
 {
   if (isPoint())
   {
-    return {TPoint3D(getAs<TPoint2D>())};
+    return TObject3D::From(TPoint3D(getAs<TPoint2D>()));
   }
-  else if (isSegment())
+
+  if (isSegment())
   {
-    return {TSegment3D(getAs<TSegment2D>())};
+    return TObject3D::From(TSegment3D(getAs<TSegment2D>()));
   }
-  else if (isLine())
+
+  if (isLine())
   {
-    return {TLine3D(getAs<TLine2D>())};
+    return TObject3D::From(TLine3D(getAs<TLine2D>()));
   }
-  else if (isPolygon())
+
+  if (isPolygon())
   {
-    return {TPolygon3D(getAs<TPolygon2D>())};
+    return TObject3D::From(TPolygon3D(getAs<TPolygon2D>()));
   }
-  else if (empty())
+
+  if (empty())
   {
     return {};
   }
