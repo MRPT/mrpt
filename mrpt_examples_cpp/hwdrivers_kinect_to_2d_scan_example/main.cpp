@@ -306,7 +306,7 @@ void Test_Kinect()
       // Some text messages:
       win3D.get3DSceneAndLock();
       // Estimated grabbing rate:
-      win3D.addTextMessage(-100, -20, format("%.02f Hz", thrPar.Hz), 100);
+      win3D.addTextMessage(-100, -20, mrpt::format("%.02f Hz", thrPar.Hz), 100);
 
       win3D.addTextMessage(
           10, 10,
@@ -316,7 +316,7 @@ void Test_Kinect()
 
       win3D.addTextMessage(
           10, 25,
-          format(
+          mrpt::format(
               "Show: 3D=%s 2D=%s Frustum=%s (vert. FOV=%.1fdeg)",
               gl_points->isVisible() ? "YES" : "NO", gl_2d_scan->isVisible() ? "YES" : "NO",
               gl_frustum->isVisible() ? "YES" : "NO", gl_frustum->getVertFOV()),
@@ -329,7 +329,7 @@ void Test_Kinect()
         win3D.get3DSceneAndLock();
         win3D.addTextMessage(
             10, 65,
-            format(
+            mrpt::format(
                 "Acc: x=%.02f y=%.02f z=%.02f", last_obs_imu->rawMeasurements[IMU_X_ACC],
                 last_obs_imu->rawMeasurements[IMU_Y_ACC], last_obs_imu->rawMeasurements[IMU_Z_ACC]),
             102);

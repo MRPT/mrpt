@@ -954,7 +954,7 @@ void robotic_arm_kinematicsFrame::UpdateMatrixView()
 
   const auto M = m_all_poses[sel].getHomogeneousMatrixVal<CMatrixDouble44>();
 
-  const std::string s = format(
+  const std::string s = mrpt::format(
       "%6.03f %6.03f %6.03f %6.03f\n"
       "%6.03f %6.03f %6.03f %6.03f\n"
       "%6.03f %6.03f %6.03f %6.03f\n"

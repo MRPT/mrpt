@@ -569,7 +569,7 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
     case 0:
     {
       cfg->write(sect, "grabber_type", "opencv");
-      cfg->write(sect, "cv_camera_index", format("%i", this->opencvCamIndex->GetValue()));
+      cfg->write(sect, "cv_camera_index", mrpt::format("%i", this->opencvCamIndex->GetValue()));
       cfg->write(
           sect, "cv_camera_type", string(this->cbOpencvCamType->GetStringSelection().mb_str()));
 
@@ -646,7 +646,8 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
       cfg->write(sect, "grabber_type", "bumblebee");
       if (this->rbBumblebeeSel->GetSelection() < 2)
         cfg->write(
-            sect, "bumblebee_mono", format("%i\n", (int)this->rbBumblebeeSel->GetSelection()));
+            sect, "bumblebee_mono",
+            mrpt::format("%i\n", (int)this->rbBumblebeeSel->GetSelection()));
       else
       { /* Use stereo capture */
       }

@@ -225,7 +225,7 @@ void ransac2Dline_distance(
   if (testModels.empty()) return;  // No model, no inliers.
 
   ASSERTMSG_(
-      testModels.size() == 1, format(
+      testModels.size() == 1, mrpt::format(
                                   "Expected testModels.size()=1, but it's = %u",
                                   static_cast<unsigned int>(testModels.size())));
   const CMatrixDynamic<T>& M = testModels[0];

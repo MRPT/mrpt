@@ -110,7 +110,7 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 
   if (!image.isEmpty())
   {
-    o << format(
+    o << mrpt::format(
         " Image size: %ux%u pixels\n", (unsigned int)image.getWidth(),
         (unsigned int)image.getHeight());
 

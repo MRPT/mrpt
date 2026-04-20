@@ -115,7 +115,7 @@ void CObservationIMU::getDescriptionAsText(std::ostream& o) const
 
   o << "Sensor pose on the robot: " << sensorPose << "\n";
 
-  o << format(
+  o << mrpt::format(
       "Orientation (degrees): (yaw,pitch,roll)=(%.06f, %.06f, %.06f)\n\n",
       RAD2DEG(rawMeasurements[IMU_YAW]), RAD2DEG(rawMeasurements[IMU_PITCH]),
       RAD2DEG(rawMeasurements[IMU_ROLL]));
@@ -157,11 +157,11 @@ void CObservationIMU::getDescriptionAsText(std::ostream& o) const
       "m/s^2"   //	IMU_Z_ACC_GLOBAL
   };
 
-#define DUMP_IMU_DATA(x)                                        \
-  o << format("%20s = ", #x);                                   \
-  if (dataIsPresent[x])                                         \
-    o << format("%10f %s\n", rawMeasurements[x], imu_units[x]); \
-  else                                                          \
+#define DUMP_IMU_DATA(x)                                              \
+  o << mrpt::format("%20s = ", #x);                                   \
+  if (dataIsPresent[x])                                               \
+    o << mrpt::format("%10f %s\n", rawMeasurements[x], imu_units[x]); \
+  else                                                                \
     o << "(not present)\n";
 
   DUMP_IMU_DATA(IMU_X_ACC)

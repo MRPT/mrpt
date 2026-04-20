@@ -84,8 +84,8 @@ void TestOpenGLVideo()
   std::cout << "Close any window to end.\n";
   while (win.isOpen() && win2.isOpen())
   {
-    win.addTextMessage(5, 5, format("%.02fFPS", win.getRenderingFPS()));
-    win2.addTextMessage(5, 5, format("%.02fFPS", win2.getRenderingFPS()));
+    win.addTextMessage(5, 5, mrpt::format("%.02fFPS", win.getRenderingFPS()));
+    win2.addTextMessage(5, 5, mrpt::format("%.02fFPS", win2.getRenderingFPS()));
     std::this_thread::sleep_for(1ms);
 
     // Grab new video frame:

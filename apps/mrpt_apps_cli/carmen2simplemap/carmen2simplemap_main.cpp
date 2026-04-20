@@ -171,7 +171,7 @@ int main(int argc, char** argv)
         static const int nBlocksTotal = 50;
         const int nBlocks = progress_ratio * nBlocksTotal;
         std::cout << "\rProgress: [" << string(nBlocks, '#') << string(nBlocksTotal - nBlocks, ' ')
-                  << format(
+                  << mrpt::format(
                          "] %6.02f%% (%u frames)", progress_ratio * 100,
                          static_cast<unsigned int>(theSimpleMap.size()));
         cout.flush();

@@ -328,10 +328,10 @@ void CObservationGasSensors::CMOSmodel::save_log_map(
 
   if (m_debug_dump->is_open())
   {
-    *m_debug_dump << format("%f \t", time);
-    *m_debug_dump << format("%f \t", reading);
-    *m_debug_dump << format("%f \t", estimation);
-    *m_debug_dump << format("%f \t", tau);
+    *m_debug_dump << mrpt::format("%f \t", time);
+    *m_debug_dump << mrpt::format("%f \t", reading);
+    *m_debug_dump << mrpt::format("%f \t", estimation);
+    *m_debug_dump << mrpt::format("%f \t", tau);
     *m_debug_dump << "\n";
   }
   else
@@ -345,7 +345,7 @@ void CObservationGasSensors::getDescriptionAsText(std::ostream& o) const
 
   for (size_t j = 0; j < m_readings.size(); j++)
   {
-    o << format("e-nose #%u:\n", (unsigned)j);
+    o << mrpt::format("e-nose #%u:\n", (unsigned)j);
 
     vector<float>::const_iterator it;
     std::vector<int>::const_iterator itKind;
@@ -354,18 +354,18 @@ void CObservationGasSensors::getDescriptionAsText(std::ostream& o) const
 
     for (it = m_readings[j].readingsVoltage.begin(), itKind = m_readings[j].sensorTypes.begin();
          it != m_readings[j].readingsVoltage.end(); it++, itKind++)
-      o << format("%04X: %.03f ", *itKind, *it);
+      o << mrpt::format("%04X: %.03f ", *itKind, *it);
 
     o << "\n";
 
-    o << format(
+    o << mrpt::format(
         "  Sensor pose on robot: (x,y,z)=(%.02f,%.02f,%.02f)\n",
         m_readings[j].eNosePoseOnTheRobot.x, m_readings[j].eNosePoseOnTheRobot.y,
         m_readings[j].eNosePoseOnTheRobot.z);
 
     o << "Measured temperature: ";
     if (m_readings[j].hasTemperature)
-      o << format("%.03f degC\n", m_readings[j].temperature);
+      o << mrpt::format("%.03f degC\n", m_readings[j].temperature);
     else
       o << "NOT AVAILABLE\n";
   }

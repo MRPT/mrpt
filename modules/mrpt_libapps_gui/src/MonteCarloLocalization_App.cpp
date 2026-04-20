@@ -423,7 +423,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
       // The experiment directory is:
       string sOUT_DIR_PARTS, sOUT_DIR_3D;
-      const auto sOUT_DIR = format(
+      const auto sOUT_DIR = mrpt::format(
           "%s_%03u_%07i", OUT_DIR_PREFIX.c_str(), static_cast<unsigned int>(repetition),
           PARTICLE_COUNT);
       MRPT_LOG_INFO_FMT("Creating directory: %s", sOUT_DIR.c_str());
@@ -433,8 +433,8 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
       if (!SAVE_STATS_ONLY)
       {
-        sOUT_DIR_PARTS = format("%s/particles", sOUT_DIR.c_str());
-        sOUT_DIR_3D = format("%s/3D", sOUT_DIR.c_str());
+        sOUT_DIR_PARTS = mrpt::format("%s/particles", sOUT_DIR.c_str());
+        sOUT_DIR_3D = mrpt::format("%s/3D", sOUT_DIR.c_str());
 
         MRPT_LOG_INFO_FMT("Creating directory: %s", sOUT_DIR_PARTS.c_str());
         deleteFilesInDirectory(sOUT_DIR_PARTS);
@@ -946,13 +946,13 @@ void MonteCarloLocalization_Base::do_pf_localization()
         {
           // Save 3D scene:
           CCompressedOutputStream f(
-              format("%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(), (unsigned)step));
+              mrpt::format("%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(), (unsigned)step));
           archiveFrom(f) << scene;
 
           // Generate text files for matlab:
           // ------------------------------------
           pdf.saveToTextFile(
-              format("%s/particles_%05u.txt", sOUT_DIR_PARTS.c_str(), (unsigned)step));
+              mrpt::format("%s/particles_%05u.txt", sOUT_DIR_PARTS.c_str(), (unsigned)step));
         }
 
       };  // while rawlogEntries
@@ -1061,7 +1061,7 @@ void MonteCarloLocalization_Base::getGroundTruth(
       if (!interp_ok)
       {
         /*
-        cerr << format(
+        cerr << mrpt::format(
           "GT time not found: %f\n",
           mrpt::Clock::toDouble(cur_time));
           */

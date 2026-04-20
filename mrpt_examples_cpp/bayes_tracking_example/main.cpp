@@ -31,7 +31,7 @@
 #include <thread>
 
 using namespace mrpt::literals;  // _deg
-using namespace mrpt;            // format(), square()
+using namespace mrpt;            // mrpt::format(), square()
 using namespace mrpt::bayes;
 using namespace mrpt::gui;
 using namespace mrpt::math;

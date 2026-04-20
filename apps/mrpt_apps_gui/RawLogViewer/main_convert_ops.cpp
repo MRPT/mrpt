@@ -167,7 +167,8 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 
   progDia.Update(progress_N);
 
-  string str = format("%u actions deleted\n%u sensory frames deleted", nActionsDel, nEmptySFDel);
+  string str =
+      mrpt::format("%u actions deleted\n%u sensory frames deleted", nActionsDel, nEmptySFDel);
   ::wxMessageBox(str.c_str());
 
   rebuildTreeView();
@@ -578,7 +579,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 
             // save image to file & convert into external storage:
             string fileName =
-                format("img_stereo_%u_left_%05u.%s", k, imgSaved, imgFileExtension.c_str());
+                mrpt::format("img_stereo_%u_left_%05u.%s", k, imgSaved, imgFileExtension.c_str());
             bool savedOk = obsSt->imageLeft.saveToFile(outDir + fileName);
             ASSERT_(savedOk);
             obsSt->imageLeft.setExternalStorage(fileName);
@@ -586,7 +587,8 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
             imgSaved++;
 
             // save image to file & convert into external storage:
-            fileName = format("img_stereo_%u_right_%05u.%s", k, imgSaved, imgFileExtension.c_str());
+            fileName =
+                mrpt::format("img_stereo_%u_right_%05u.%s", k, imgSaved, imgFileExtension.c_str());
             savedOk = obsSt->imageRight.saveToFile(outDir + fileName);
             ASSERT_(savedOk);
             obsSt->imageRight.setExternalStorage(fileName);
@@ -599,7 +601,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 
             // save image to file & convert into external storage:
             string fileName =
-                format("img_monocular_%u_%05u.%s", k, imgSaved, imgFileExtension.c_str());
+                mrpt::format("img_monocular_%u_%05u.%s", k, imgSaved, imgFileExtension.c_str());
             bool savedOk = obsIm->image.saveToFile(outDir + fileName);
             ASSERT_(savedOk);
             obsIm->image.setExternalStorage(fileName);

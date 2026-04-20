@@ -891,7 +891,7 @@ void CDisplayWindowPlots::plotEllipse(
   std::string holdon_post;
   if (m_holdon)
   {
-    holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+    holdon_post = mrpt::format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
   }
 
   // Send a request to destroy this object:
@@ -971,7 +971,7 @@ void CDisplayWindowPlots::plotEllipse(
   std::string holdon_post;
   if (m_holdon)
   {
-    holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+    holdon_post = mrpt::format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
   }
 
   // Send a request to destroy this object:
@@ -1045,7 +1045,7 @@ void CDisplayWindowPlots::image(
   std::string holdon_post;
   if (m_holdon)
   {
-    holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+    holdon_post = mrpt::format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
   }
 
   // Send a request to destroy this object:
@@ -1103,7 +1103,7 @@ void CDisplayWindowPlots::internal_plot(
   std::string holdon_post;
   if (m_holdon)
   {
-    holdon_post = format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
+    holdon_post = mrpt::format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
   }
 
   // Send a request to destroy this object:

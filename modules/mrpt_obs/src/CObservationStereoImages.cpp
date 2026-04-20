@@ -222,7 +222,7 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 
   if (!imageLeft.isEmpty())
   {
-    o << format(
+    o << mrpt::format(
         " Image size: %ux%u pixels\n", (unsigned int)imageLeft.getWidth(),
         (unsigned int)imageLeft.getHeight());
 

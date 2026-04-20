@@ -469,7 +469,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 
   if (buf[nFrameBytes - 1] != 0x0D)
   {
-    std::cout << format(
+    std::cout << mrpt::format(
                      "[CCANBusReader::waitContinuousSampleFrame] expected 0x0D "
                      "ending flag, 0x%X found instead",
                      buf[nFrameBytes])

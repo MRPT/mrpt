@@ -156,7 +156,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
     exactBisection(Adj, p1, p2, cut_value, false);
 
   if (verbose)
-    std::cout << format(
+    std::cout << mrpt::format(
         "Cut:%u=%u+%u,nCut=%.02f->", static_cast<unsigned int>(nodeCount),
         static_cast<unsigned int>(p1.size()), static_cast<unsigned int>(p2.size()), cut_value);
 

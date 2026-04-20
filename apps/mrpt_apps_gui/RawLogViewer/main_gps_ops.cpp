@@ -615,7 +615,7 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
                                     "Dead reckoning", "Manual input",  "Simulation"};
   for (i = 0; i < 9; i++)
     s = s +
-        format(
+        mrpt::format(
             "Mode %u : %u readings (Mode: '%s')\n", (unsigned)i, histogramGPSModes[i], gpsModes[i]);
 
   wxMessageBox(s.c_str(), _("GPS data summary"), wxOK, this);
@@ -743,7 +743,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
               // sensorlabel??
               {
                 f_this = lstFiles[obs->sensorLabel] = os::fopen(
-                    format(
+                    mrpt::format(
                         "%s_%s.txt", fil.c_str(),
                         fileNameStripInvalidChars(obs->sensorLabel).c_str())
                         .c_str(),
@@ -840,7 +840,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
               if (it == lstFiles.end())  // A new fiile for this
               // sensorlabel??
               {
-                std::string temp = format(
+                std::string temp = mrpt::format(
                     "%s_%s.txt", fil.c_str(), fileNameStripInvalidChars(obs->sensorLabel).c_str());
                 f_this = lstFiles[obs->sensorLabel] = os::fopen(temp.c_str(), "wt");
 
@@ -1042,7 +1042,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
     MAT_REF(0, 1) = refCoords.lat;
     MAT_REF(0, 2) = refCoords.height;
     MAT_REF.saveToTextFile(
-        format("%s_JOINTREF_%s.txt", fil.c_str(), joint_name.c_str()), MATRIX_FORMAT_FIXED);
+        mrpt::format("%s_JOINTREF_%s.txt", fil.c_str(), joint_name.c_str()), MATRIX_FORMAT_FIXED);
 
     wxMessageBox((format("%u entries saved!", (unsigned)M).c_str()), _("Done"), wxOK, this);
   }

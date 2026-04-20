@@ -316,8 +316,9 @@ void Test_KinectOnlineOffline(bool is_online, const string& rawlog_file = string
       // Estimated grabbing rate:
       win3D.addTextMessage(
           -350, -13,
-          format("Timestamp: %s", mrpt::system::dateTimeLocalToString(last_obs_tim).c_str()), 100);
-      win3D.addTextMessage(-100, -30, format("%.02f Hz", thrPar.Hz), 101);
+          mrpt::format("Timestamp: %s", mrpt::system::dateTimeLocalToString(last_obs_tim).c_str()),
+          100);
+      win3D.addTextMessage(-100, -30, mrpt::format("%.02f Hz", thrPar.Hz), 101);
 
       // Show intensity image:
       if (newObs->hasIntensityImage)

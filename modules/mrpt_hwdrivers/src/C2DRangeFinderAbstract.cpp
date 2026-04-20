@@ -133,10 +133,12 @@ void C2DRangeFinderAbstract::loadCommonParams(
   for (;;)
   {
     vector<double> x, y, z_range;
-    configSource.read_vector(iniSection, format("exclusionZone%u_x", N), vector<double>(0), x);
-    configSource.read_vector(iniSection, format("exclusionZone%u_y", N), vector<double>(0), y);
     configSource.read_vector(
-        iniSection, format("exclusionZone%u_z", N++), vector<double>(0), z_range);
+        iniSection, mrpt::format("exclusionZone%u_x", N), vector<double>(0), x);
+    configSource.read_vector(
+        iniSection, mrpt::format("exclusionZone%u_y", N), vector<double>(0), y);
+    configSource.read_vector(
+        iniSection, mrpt::format("exclusionZone%u_z", N++), vector<double>(0), z_range);
 
     if (!x.empty() && !y.empty())
     {
@@ -169,10 +171,10 @@ void C2DRangeFinderAbstract::loadCommonParams(
 
   for (;;)
   {
-    const double ini =
-        DEG2RAD(configSource.read_double(iniSection, format("exclusionAngles%u_ini", N), -1000));
-    const double end =
-        DEG2RAD(configSource.read_double(iniSection, format("exclusionAngles%u_end", N++), -1000));
+    const double ini = DEG2RAD(
+        configSource.read_double(iniSection, mrpt::format("exclusionAngles%u_ini", N), -1000));
+    const double end = DEG2RAD(
+        configSource.read_double(iniSection, mrpt::format("exclusionAngles%u_end", N++), -1000));
 
     if (ini > -M_PI && end > -M_PI)
       m_lstExclusionAngles.emplace_back(ini, end);

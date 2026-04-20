@@ -186,7 +186,7 @@ int main(int argc, char** argv)
     // Process each of the "RANDOMSET_%i" found:
     do
     {
-      string sectName = format("RANDOMSET_%i", ++randomSetCount);
+      string sectName = mrpt::format("RANDOMSET_%i", ++randomSetCount);
 
       nLandmarks = 0;
       MRPT_LOAD_CONFIG_VAR(nLandmarks, uint64_t, ini, sectName);
@@ -383,7 +383,7 @@ int main(int argc, char** argv)
 
     // Save the ground truth for the robot poses as well:
     GT_path.saveToTextFile(
-        format("%s/%s_ground_truth_robot_path.txt", outDir.c_str(), outFile.c_str()),
+        mrpt::format("%s/%s_ground_truth_robot_path.txt", outDir.c_str(), outFile.c_str()),
         MATRIX_FORMAT_FIXED, true, "% Columns are: x(m) y(m) z(m) yaw(rad) pitch(rad) roll(rad)\n");
 
     std::cout << "Data saved to directory: " << outDir << "\n";
