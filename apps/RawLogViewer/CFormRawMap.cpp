@@ -1222,7 +1222,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
          itStr++, itOutFiles++)
     {
       *itOutFiles = mrpt::system::os::fopen(
-          format("%s/GT_path_%s.txt", outputPath.c_str(), itStr->c_str()), "wt");
+          mrpt::format("%s/GT_path_%s.txt", outputPath.c_str(), itStr->c_str()), "wt");
       ASSERT_(*itOutFiles);
     }
 

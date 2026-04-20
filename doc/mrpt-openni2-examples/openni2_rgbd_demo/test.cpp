@@ -169,7 +169,7 @@ int main(int argc, char** argv)
   scene->insert(reference);
 
   window.unlockAccess3DScene();
-  window.addTextMessage(5, 5, format("Push any key to exit"));
+  window.addTextMessage(5, 5, mrpt::format("Push any key to exit"));
   window.repaint();
 
   //							Grab frames continuously and show

@@ -97,7 +97,7 @@ void CCameraSensor::initialize()
       m_state = CGenericSensor::ssError;
       throw;
     }
-    cout << format(
+    cout << mrpt::format(
         "[CCameraSensor::initialize] opencv camera, index: %i type: "
         "%i...\n",
         int(m_cv_camera_index), (int)ct);
@@ -114,7 +114,7 @@ void CCameraSensor::initialize()
   else if (m_grabber_type == "dc1394")
   {
     // m_cap_dc1394
-    cout << format(
+    cout << mrpt::format(
         "[CCameraSensor::initialize] dc1394 camera, GUID: 0x%lX  "
         "UNIT:%d...\n",
         long(m_dc1394_camera_guid), m_dc1394_camera_unit);
@@ -131,7 +131,7 @@ void CCameraSensor::initialize()
   }
   else if (m_grabber_type == "bumblebee_dc1394")
   {
-    cout << format(
+    cout << mrpt::format(
         "[CCameraSensor::initialize] bumblebee_libdc1394 camera: "
         "GUID:0x%08X Index:%i FPS:%f...\n",
         (unsigned int)(m_bumblebee_dc1394_camera_guid), m_bumblebee_dc1394_camera_unit,
@@ -142,14 +142,15 @@ void CCameraSensor::initialize()
   }
   else if (m_grabber_type == "svs")
   {
-    cout << format(
+    cout << mrpt::format(
         "[CCameraSensor::initialize] SVS camera: %u...\n", (unsigned int)(m_svs_camera_index));
     m_cap_svs = std::make_unique<CStereoGrabber_SVS>(m_svs_camera_index, m_svs_options);
   }
   else if (m_grabber_type == "ffmpeg")
   {
     // m_cap_ffmpeg
-    cout << format("[CCameraSensor::initialize] FFmpeg stream: %s...\n", m_ffmpeg_url.c_str());
+    cout << mrpt::format(
+        "[CCameraSensor::initialize] FFmpeg stream: %s...\n", m_ffmpeg_url.c_str());
     m_cap_ffmpeg = std::make_unique<CFFMPEG_InputStream>();
 
     if (!m_cap_ffmpeg->openURL(m_ffmpeg_url, m_capture_grayscale))
@@ -237,13 +238,14 @@ void CCameraSensor::initialize()
   else if (m_grabber_type == "image_dir")
   {
     // m_cap_image_dir
-    cout << format("[CCameraSensor::initialize] Image dir: %s...\n", m_img_dir_url.c_str());
+    cout << mrpt::format("[CCameraSensor::initialize] Image dir: %s...\n", m_img_dir_url.c_str());
     m_cap_image_dir = std::make_unique<std::string>();
   }
   else if (m_grabber_type == "rawlog")
   {
     // m_cap_rawlog
-    cout << format("[CCameraSensor::initialize] Rawlog stream: %s...\n", m_rawlog_file.c_str());
+    cout << mrpt::format(
+        "[CCameraSensor::initialize] Rawlog stream: %s...\n", m_rawlog_file.c_str());
     m_cap_rawlog = std::make_unique<CCompressedInputStream>();
 
     if (!m_cap_rawlog->open(m_rawlog_file))
@@ -803,7 +805,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
       THROW_EXCEPTION("Reached end index.");
     }
 
-    std::string auxL = format("%s/%s", m_img_dir_url.c_str(), m_img_dir_left_format.c_str());
+    std::string auxL = mrpt::format("%s/%s", m_img_dir_url.c_str(), m_img_dir_left_format.c_str());
     if (m_img_dir_is_stereo)
     {
       stObs = std::make_shared<CObservationStereoImages>();
@@ -812,7 +814,8 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
         m_state = CGenericSensor::ssError;
         THROW_EXCEPTION("Error reading images from directory");
       }
-      std::string auxR = format("%s/%s", m_img_dir_url.c_str(), m_img_dir_right_format.c_str());
+      std::string auxR =
+          mrpt::format("%s/%s", m_img_dir_url.c_str(), m_img_dir_right_format.c_str());
       if (!stObs->imageRight.loadFromFile(format(auxR.c_str(), m_img_dir_counter++)))
       {
         m_state = CGenericSensor::ssError;
@@ -1119,15 +1122,15 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
       else
       {
         const string filNameL = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                                format(
+                                mrpt::format(
                                     "_L_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         const string filNameR = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                                format(
+                                mrpt::format(
                                     "_R_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         const string filNameD = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                                format(
+                                mrpt::format(
                                     "_D_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         // cout << "[CCameraSensor] Saving " << filName << endl;
@@ -1183,7 +1186,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
       else
       {
         string filName = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                         format(
+                         mrpt::format(
                              "_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
                              m_external_images_format.c_str());
         // cout << "[CCameraSensor] Saving " << filName << endl;
@@ -1210,14 +1213,16 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
       {
         string caption = string("Preview of ") + m_sensorLabel;
         if (stObs) caption += "-LEFT";
-        if (m_preview_decimation > 1) caption += format(" (decimation: %i)", m_preview_decimation);
+        if (m_preview_decimation > 1)
+          caption += mrpt::format(" (decimation: %i)", m_preview_decimation);
         m_preview_win1 = mrpt::gui::CDisplayWindow::Create(caption);
       }
       if (stObs && !m_preview_win2)
       {
         string caption = string("Preview of ") + m_sensorLabel;
         if (stObs) caption += "-RIGHT";
-        if (m_preview_decimation > 1) caption += format(" (decimation: %i)", m_preview_decimation);
+        if (m_preview_decimation > 1)
+          caption += mrpt::format(" (decimation: %i)", m_preview_decimation);
         m_preview_win2 = mrpt::gui::CDisplayWindow::Create(caption);
       }
       // Monocular image or Left from a stereo pair:
@@ -1502,7 +1507,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
         CObservationImage::Ptr obs = std::dynamic_pointer_cast<CObservationImage>(i->second);
 
         string filName = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                         format(
+                         mrpt::format(
                              "_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
                              m_external_images_format.c_str());
 
@@ -1520,15 +1525,15 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
             std::dynamic_pointer_cast<CObservationStereoImages>(i->second);
 
         const string filNameL = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                                format(
+                                mrpt::format(
                                     "_L_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         const string filNameR = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                                format(
+                                mrpt::format(
                                     "_R_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         const string filNameD = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                                format(
+                                mrpt::format(
                                     "_D_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
 

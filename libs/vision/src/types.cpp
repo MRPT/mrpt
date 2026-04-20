@@ -76,7 +76,7 @@ void TSequenceFeatureObservations::loadFromTextFile(const std::string& filName)
     TPixelCoordf px;
     if (!(s >> camID >> featID >> px.x >> px.y))
       THROW_EXCEPTION(
-          format("%s:%u: Error parsing line: '%s'", filName.c_str(), linNum, lin.c_str()));
+          mrpt::format("%s:%u: Error parsing line: '%s'", filName.c_str(), linNum, lin.c_str()));
 
     BASE::push_back(TFeatureObservation(featID, camID, px));
   }

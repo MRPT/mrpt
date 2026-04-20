@@ -362,7 +362,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
   uint16_t CRC_packet = buf[lengthField - 2] | (buf[lengthField - 1] << 8);
   if (CRC_packet != CRC)
   {
-    cerr << format(
+    cerr << mrpt::format(
                 "[CSickLaserSerial::waitContinuousSampleFrame] bad CRC "
                 "len=%u nptns=%u: %i != %i",
                 unsigned(lengthField), unsigned(n_points), CRC_packet, CRC)

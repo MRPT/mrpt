@@ -258,11 +258,11 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
         size_t j;
         std::set<size_t>::iterator it_j;
-        string fil = format("grid_feats/_FEAT_MATCH_%03i", (int)it.first);
+        string fil = mrpt::format("grid_feats/_FEAT_MATCH_%03i", (int)it.first);
 
         for (j = 0, it_j = it.second.begin(); j < nF; ++j, ++it_j)
         {
-          fil += format("_%u", static_cast<unsigned int>(*it_j));
+          fil += mrpt::format("_%u", static_cast<unsigned int>(*it_j));
 
           CMatrixFloat descriptor2;
           lm2->landmarks.get(*it_j)->features[0].getFirstDescriptorAsMatrix(descriptor2);
@@ -567,7 +567,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
             double best_pair_d2 = std::numeric_limits<double>::max();
             pair<size_t, size_t> best_pair_ij;
 
-            //#define SHOW_CORRS
+            // #define SHOW_CORRS
 
 #ifdef SHOW_CORRS
             CDisplayWindowPlots win("Matches");
@@ -584,7 +584,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 #ifdef SHOW_CORRS
               win.plotEllipse(
                   pdf_M2_j.mean.x(), pdf_M2_j.mean.y(), pdf_M2_j.cov, 2, "b-",
-                  format("M2_%u", (unsigned)j), true);
+                  mrpt::format("M2_%u", (unsigned)j), true);
 #endif
 
               static const unsigned int N_KDTREE_SEARCHED = 3;
@@ -616,7 +616,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 #ifdef SHOW_CORRS
                 win.plotEllipse(
                     pdf_M1_i.mean.x(), pdf_M1_i.mean.y(), pdf_M1_i.cov, 2, "r-",
-                    format("M1_%u", (unsigned)matches_idx[u]), true);
+                    mrpt::format("M1_%u", (unsigned)matches_idx[u]), true);
 #endif
 
 // And now compute the product integral:
@@ -672,8 +672,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
                 used_landmarks2[best_pair_ij.second] = true;
 
                 tentativeSubSet.push_back(mrpt::tfest::TMatchingPair(
-                    best_pair_ij.first, best_pair_ij.second, p1_i_localx, p1_i_localy, 0,  // MAP1
-                    p2_j_localx, p2_j_localy, 0                                            // MAP2
+                    best_pair_ij.first, best_pair_ij.second, p1_i_localx, p1_i_localy,
+                    0,                           // MAP1
+                    p2_j_localx, p2_j_localy, 0  // MAP2
                     ));
 
                 keep_incorporating = true;
@@ -777,7 +778,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
         for (auto s = sog_modes.begin(); s != sog_modes.end(); ++s)
         {
           COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
-              format("__debug_corrsGrid_%05u.png", NN), m1, m2, s->first);
+              mrpt::format("__debug_corrsGrid_%05u.png", NN), m1, m2, s->first);
           ++NN;
         }
       }
@@ -874,7 +875,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 {
   MRPT_START
 
-  //#define	CORRELATION_SHOW_DEBUG
+  // #define	CORRELATION_SHOW_DEBUG
 
   mrpt::system::CTicTac tictac;
   tictac.Tic();

@@ -226,8 +226,8 @@ void RBPF_SLAM_App_Base::run()
   deleteFilesInDirectory(OUT_DIR);
   createDirectory(OUT_DIR);
 
-  string OUT_DIR_MAPS = format("%s/maps", OUT_DIR);
-  string OUT_DIR_3D = format("%s/3D", OUT_DIR);
+  string OUT_DIR_MAPS = mrpt::format("%s/maps", OUT_DIR);
+  string OUT_DIR_3D = mrpt::format("%s/3D", OUT_DIR);
 
   deleteFilesInDirectory(OUT_DIR_MAPS);
   createDirectory(OUT_DIR_MAPS);
@@ -378,7 +378,7 @@ void RBPF_SLAM_App_Base::run()
         //  Most likely maps:
         // ----------------------------------------
         mostLikMap->saveMetricMapRepresentationToFile(
-            format("%s/mapbuilt_%05u_", OUT_DIR_MAPS.c_str(), step));
+            mrpt::format("%s/mapbuilt_%05u_", OUT_DIR_MAPS.c_str(), step));
 
         if (mostLikMap->countMapsByClass<COccupancyGridMap2D>() > 0)
         {

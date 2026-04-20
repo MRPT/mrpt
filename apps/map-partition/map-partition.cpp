@@ -127,7 +127,7 @@ void Test()
   // Save in different maps:
   // ------------------------------------
   FILE* f = os::fopen(
-      format("MAP-PARTITION_RESULTS/out_partitions_%s.txt", extractFileName(MAP_FILE).c_str())
+      mrpt::format("MAP-PARTITION_RESULTS/out_partitions_%s.txt", extractFileName(MAP_FILE).c_str())
           .c_str(),
       "wt");
   for (auto& part : parts)
@@ -151,7 +151,7 @@ void Test()
 
     {
       mrpt::io::CCompressedOutputStream ff(
-          format("MAP-PARTITION_RESULTS/out_part#%03u.simplemap", static_cast<unsigned>(i)));
+          mrpt::format("MAP-PARTITION_RESULTS/out_part#%03u.simplemap", static_cast<unsigned>(i)));
       mrpt::serialization::archiveFrom(ff) << out_map;
     }
   }

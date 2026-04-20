@@ -1368,7 +1368,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id) :
 
   for (int i = m_fileHistory.GetMaxFiles() - 1; i >= 0; i--)
   {
-    string fil = iniFile->read_string("RecentFiles", format("file_%03u", i), "");
+    string fil = iniFile->read_string("RecentFiles", mrpt::format("file_%03u", i), "");
     if (fil.size() && mrpt::system::fileExists(fil)) m_fileHistory.AddFileToHistory(fil.c_str());
   }
 
@@ -1600,7 +1600,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 
   for (size_t i = 0; i < m_fileHistory.GetCount(); i++)
     iniFile->write(
-        "RecentFiles", format("file_%03u", static_cast<unsigned>(i)),
+        "RecentFiles", mrpt::format("file_%03u", static_cast<unsigned>(i)),
         string(m_fileHistory.GetHistoryFile(i).mb_str()));
   WX_END_TRY
 
@@ -3586,7 +3586,7 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent&)
           if (touched)
           {
             if (lstTouched.size() < 1000)
-              lstTouched += format("%u ", countLoop);
+              lstTouched += mrpt::format("%u ", countLoop);
             else
             {
               static bool noMore = false;
@@ -3609,7 +3609,7 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent&)
           if (touched)
           {
             if (lstTouched.size() < 1000)
-              lstTouched += format("%u ", countLoop);
+              lstTouched += mrpt::format("%u ", countLoop);
             else
             {
               static bool noMore = false;
@@ -3638,7 +3638,7 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent&)
   progDia.Update(nEntries);
 
   wxMessageBox(
-      format(
+      mrpt::format(
           "Number of bad segments detected & marked as invalid: %u \n(%u "
           "individual ranges. Rawlog indexes modified:\n%s",
           (unsigned)invalidSegments, (unsigned)invalidRanges, lstTouched.c_str()),
@@ -4774,8 +4774,8 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent&)
       for (;;)
       {
         vector<double> x, y;
-        cfg.read_vector(section, format("exclusionZone%u_x", N), vector<double>(0), x);
-        cfg.read_vector(section, format("exclusionZone%u_y", N++), vector<double>(0), y);
+        cfg.read_vector(section, mrpt::format("exclusionZone%u_x", N), vector<double>(0), x);
+        cfg.read_vector(section, mrpt::format("exclusionZone%u_y", N++), vector<double>(0), y);
 
         if (!x.empty() && !y.empty())
         {
@@ -4941,9 +4941,9 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent&)
       for (;;)
       {
         const double ini =
-            DEG2RAD(cfg.read_double(section, format("exclusionAngles%u_ini", N), -1000));
+            DEG2RAD(cfg.read_double(section, mrpt::format("exclusionAngles%u_ini", N), -1000));
         const double end =
-            DEG2RAD(cfg.read_double(section, format("exclusionAngles%u_end", N++), -1000));
+            DEG2RAD(cfg.read_double(section, mrpt::format("exclusionAngles%u_end", N++), -1000));
 
         if (ini > -M_PI && end > -M_PI)
         {
@@ -5227,7 +5227,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
   wxString caption = wxT("Save AVI video...");
   wxString wildcard = wxT("AVI files (*.avi)|*.avi|All files (*.*)|*.*");
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-  wxString defaultFilename = ((loadedFileName + format("_%s.avi", senLabel.c_str())).c_str());
+  wxString defaultFilename = ((loadedFileName + mrpt::format("_%s.avi", senLabel.c_str())).c_str());
   wxFileDialog dialog(
       this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 

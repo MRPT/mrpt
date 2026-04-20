@@ -185,13 +185,13 @@ void TestDisplay3D()
     win.addTextMessage(
         0.02, 0.02,  // X,Y<=1 means coordinates are factors over the entire
                      // viewport area.
-        format("ball#1 pos: %s ", obj1->getPose().translation().asString().c_str()), 10 /*id*/,
-        fp2);
+        mrpt::format("ball#1 pos: %s ", obj1->getPose().translation().asString().c_str()),
+        10 /*id*/, fp2);
 
     win.addTextMessage(
         5, -15,  // |X|,|Y|>1 means absolute coordinates, negative means
         // from the top instead of the bottom.
-        format("Time: %s", mrpt::system::dateTimeLocalToString(mrpt::Clock::now()).c_str()),
+        mrpt::format("Time: %s", mrpt::system::dateTimeLocalToString(mrpt::Clock::now()).c_str()),
         20 /* id */, fp2);
 
     // Show management of (x,y) mouse coordinates and 3D rays:

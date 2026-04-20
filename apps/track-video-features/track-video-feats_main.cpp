@@ -245,17 +245,17 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
       mrpt::system::CTimeLoggerEntry tle(tracker->getProfiler(), "Display.textOut");
 
       theImg.selectTextFont("6x13B");
-      theImg.textOut(3, 3, format("FPS: %.03f Hz", fps), TColor(200, 200, 0));
+      theImg.textOut(3, 3, mrpt::format("FPS: %.03f Hz", fps), TColor(200, 200, 0));
       theImg.textOut(
           3, 22,
-          format(
+          mrpt::format(
               "# feats: %u - Adaptive threshold: %i", (unsigned int)trackedFeats.size(),
               current_adapt_thres),
           TColor(200, 200, 0));
 
       theImg.textOut(
           3, 41,
-          format(
+          mrpt::format(
               "# raw feats: %u - Removed: %u",
               (unsigned int)tracker->last_execution_extra_info.raw_FAST_feats_detected,
               (unsigned int)tracker->last_execution_extra_info.num_deleted_feats),
