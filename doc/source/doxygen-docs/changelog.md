@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.15.14: UNRELEASE
+- Changes in applications:
+  - Apps renamed ini2yaml ==> mrpt-ini2yaml, yaml2ini ==> mrpt-yaml2ini to address Debian bug [#1133167](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1133167)
+
 # Version 2.15.13: Release Apr 14th, 2026
   - \ref mrpt_maps_grp
     - mrpt::maps::CPointsMap now pads with zeros if trying to insert a source point clouds with less fields than the target.
