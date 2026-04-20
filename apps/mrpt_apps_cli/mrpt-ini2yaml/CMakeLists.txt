@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------------------------
 cmake_minimum_required(VERSION 3.16)
 
-project(ini2yaml)
+project(mrpt-ini2yaml)
 
 # Basic MRPT infrastructure
 find_package(mrpt_common REQUIRED)

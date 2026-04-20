@@ -26,13 +26,19 @@ int main(int argc, char** argv)
   try
   {
     // Parse arguments:
-    if (argc != 2) throw std::runtime_error("Usage: yaml2ini <input.yaml>");
+    if (argc != 2)
+    {
+      throw std::runtime_error("Usage: mrpt-yaml2ini <input.yaml>");
+    }
 
     const std::string ymlFile = std::string(argv[1]);
     ASSERT_FILE_EXISTS_(ymlFile);
 
     std::vector<uint8_t> buf;
-    if (!mrpt::io::loadBinaryFile(buf, ymlFile)) THROW_EXCEPTION("loadBinaryFile() failed (?).");
+    if (!mrpt::io::loadBinaryFile(buf, ymlFile))
+    {
+      THROW_EXCEPTION("loadBinaryFile() failed (?).");
+    }
 
     std::string strYaml;
     strYaml.resize(buf.size());

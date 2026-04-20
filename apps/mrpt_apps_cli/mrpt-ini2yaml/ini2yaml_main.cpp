@@ -25,7 +25,10 @@ int main(int argc, char** argv)
   try
   {
     // Parse arguments:
-    if (argc != 2) throw std::runtime_error("Usage: ini2yaml <input.ini>");
+    if (argc != 2)
+    {
+      throw std::runtime_error("Usage: mrpt-ini2yaml <input.ini>");
+    }
 
     const std::string iniFile = std::string(argv[1]);
     ASSERT_FILE_EXISTS_(iniFile);
