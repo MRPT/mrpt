@@ -151,11 +151,11 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 void TCamera::saveToConfigFile(const std::string& section, mrpt::config::CConfigFileBase& cfg) const
 {
   cfg.write(section, "camera_name", cameraName);
-  cfg.write(section, "resolution", format("[%u %u]", ncols, nrows));
-  cfg.write(section, "cx", format("%.05f", cx()));
-  cfg.write(section, "cy", format("%.05f", cy()));
-  cfg.write(section, "fx", format("%.05f", fx()));
-  cfg.write(section, "fy", format("%.05f", fy()));
+  cfg.write(section, "resolution", mrpt::format("[%u %u]", ncols, nrows));
+  cfg.write(section, "cx", mrpt::format("%.05f", cx()));
+  cfg.write(section, "cy", mrpt::format("%.05f", cy()));
+  cfg.write(section, "fx", mrpt::format("%.05f", fx()));
+  cfg.write(section, "fy", mrpt::format("%.05f", fy()));
 
   cfg.write(section, "distortion_model", distortion);
   cfg.write(section, "dist", getDistortionParamsAsRowVector().inMatlabFormat());

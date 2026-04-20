@@ -232,7 +232,7 @@ void CLMS100Eth::generateCmd(const char* cmd)
     MRPT_LOG_ERROR("Error: command is too long.");
     return;
   }
-  m_cmd = format("%c%s%c", 0x02, cmd, 0x03);
+  m_cmd = mrpt::format("%c%s%c", 0x02, cmd, 0x03);
 }
 
 bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)

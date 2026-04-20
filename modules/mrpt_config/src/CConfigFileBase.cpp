@@ -42,7 +42,7 @@ void CConfigFileBase::write(
 {
   writeString(
       section, name,
-      format(
+      mrpt::format(
           ((std::abs(value) > 1e-4 && std::abs(value) < 1e4) || value == .0) ? "%f" : "%e", value),
       name_padding_width, value_padding_width, comment);
 }
@@ -56,7 +56,7 @@ void CConfigFileBase::write(
 {
   writeString(
       section, name,
-      format(
+      mrpt::format(
           ((std::abs(value) > 1e-4f && std::abs(value) < 1e4f) || value == .0f) ? "%f" : "%e",
           static_cast<double>(value)),
       name_padding_width, value_padding_width, comment);
@@ -117,7 +117,8 @@ double CConfigFileBase::read_double(
     double defaultValue,
     bool failIfNotFound) const
 {
-  return atof(readString(section, name, format("%.16e", defaultValue), failIfNotFound).c_str());
+  return atof(
+      readString(section, name, mrpt::format("%.16e", defaultValue), failIfNotFound).c_str());
 }
 
 /*---------------------------------------------------------------
@@ -130,7 +131,8 @@ float CConfigFileBase::read_float(
     bool failIfNotFound) const
 {
   return static_cast<float>(atof(
-      readString(section, name, format("%.10e", static_cast<double>(defaultValue)), failIfNotFound)
+      readString(
+          section, name, mrpt::format("%.10e", static_cast<double>(defaultValue)), failIfNotFound)
           .c_str()));
 }
 
@@ -143,7 +145,7 @@ int CConfigFileBase::read_int(
     int defaultValue,
     bool failIfNotFound) const
 {
-  return atoi(readString(section, name, format("%i", defaultValue), failIfNotFound).c_str());
+  return atoi(readString(section, name, mrpt::format("%i", defaultValue), failIfNotFound).c_str());
 }
 
 /*---------------------------------------------------------------
@@ -156,7 +158,8 @@ uint64_t CConfigFileBase::read_uint64_t(
     bool failIfNotFound) const
 {
   string s = readString(
-      section, name, format("%lu", static_cast<long unsigned int>(defaultValue)), failIfNotFound);
+      section, name, mrpt::format("%lu", static_cast<long unsigned int>(defaultValue)),
+      failIfNotFound);
   return mrpt::system::os::_strtoull(s.c_str(), nullptr, 0);
 }
 

@@ -124,19 +124,19 @@ CNationalInstrumentsDAQ::CNationalInstrumentsDAQ() :
   targetVariable =                                                                \
       configFileObject.read_##variableType(sectionNameStr, variableName, targetVariable, false);
 
-#define MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(                                                      \
-    variableName, variableType, targetVariable, configFileObject, sectionNameStr)                \
-  {                                                                                              \
-    try                                                                                          \
-    {                                                                                            \
-      targetVariable = configFileObject.read_##variableType(                                     \
-          sectionNameStr, variableName, targetVariable, true);                                   \
-    }                                                                                            \
-    catch (std::exception&)                                                                      \
-    {                                                                                            \
-      THROW_EXCEPTION(                                                                           \
-          format("Value for '%s' not found in config file", std::string(variableName).c_str())); \
-    }                                                                                            \
+#define MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(                                               \
+    variableName, variableType, targetVariable, configFileObject, sectionNameStr)         \
+  {                                                                                       \
+    try                                                                                   \
+    {                                                                                     \
+      targetVariable = configFileObject.read_##variableType(                              \
+          sectionNameStr, variableName, targetVariable, true);                            \
+    }                                                                                     \
+    catch (std::exception&)                                                               \
+    {                                                                                     \
+      THROW_EXCEPTION(mrpt::format(                                                       \
+          "Value for '%s' not found in config file", std::string(variableName).c_str())); \
+    }                                                                                     \
   }
 
 /* -----------------------------------------------------

@@ -1109,7 +1109,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     }
 
     lbGT->SetLabel(
-        format("Ground truth (%u landmarks", (unsigned)m_GT_map.landmarks.size()).c_str());
+        mrpt::format("Ground truth (%u landmarks", (unsigned)m_GT_map.landmarks.size()).c_str());
 
     m_lyGTMap->Clear();
     m_lyGTMap->SetData(xs, ys);
@@ -1127,7 +1127,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
   m_lyObsvisibleRange->setPoints(xs_area, ys_area);
 
   lbObs->SetLabel(
-      format("Observation (%u landmarks", (unsigned)m_lastObservation.sensedData.size()).c_str());
+      mrpt::format("Observation (%u landmarks", (unsigned)m_lastObservation.sensedData.size())
+          .c_str());
 
   for (auto& m_lyObsLM : m_lyObsLMs) plotObs->DelLayer(m_lyObsLM, true);
   m_lyObsLMs.clear();

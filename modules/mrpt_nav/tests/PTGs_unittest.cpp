@@ -40,9 +40,10 @@ TEST(NavTests, PTGs_tests)
   for (unsigned int n = 0; n < PTG_COUNT; n++)
   {
     // Factory:
-    const string sPTGName = cfg.read_string("PTG_UNIT_TESTS", format("PTG%u_Type", n), "", true);
+    const string sPTGName =
+        cfg.read_string("PTG_UNIT_TESTS", mrpt::format("PTG%u_Type", n), "", true);
     PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(
-        sPTGName, cfg, "PTG_UNIT_TESTS", format("PTG%u_", n));
+        sPTGName, cfg, "PTG_UNIT_TESTS", mrpt::format("PTG%u_", n));
     EXPECT_TRUE(PTGs[n] != nullptr) << "Failed creating PTG #" << n << "\n";
 
     try

@@ -137,7 +137,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
             int(i), COLOR_CODES[i], THICKLINEWIDTH);
       }
 
-      const string LineString_START = format(
+      const string LineString_START = mrpt::format(
           "      <LineString>\n"
           "        %s\n"
           "       <coordinates> \n",
@@ -332,7 +332,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
       }
 
       const string jointFilName =
-          format("%s_JOINT%s_%s.txt", m_filPrefix.c_str(), gpsKindLabel, joint_name.c_str());
+          mrpt::format("%s_JOINT%s_%s.txt", m_filPrefix.c_str(), gpsKindLabel, joint_name.c_str());
 
       VERBOSE_COUT << "Writing joint GPS file: " << jointFilName << "\n";
 
@@ -350,7 +350,8 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
       MAT_REF(0, 1) = refCoords.lat;
       MAT_REF(0, 2) = refCoords.height;
       MAT_REF.saveToTextFile(
-          format("%s_JOINTREF%s_%s.txt", m_filPrefix.c_str(), gpsKindLabel, joint_name.c_str()),
+          mrpt::format(
+              "%s_JOINTREF%s_%s.txt", m_filPrefix.c_str(), gpsKindLabel, joint_name.c_str()),
           MATRIX_FORMAT_FIXED, false,
           "% Reference geodetic coordinate for ENU's origin of "
           "coordinates: \n"

@@ -87,7 +87,8 @@ bool CCompressedOutputStream::open(
       const int level = std::min(9, std::max(0, options.level));
 
       m_impl->gz_file = gzopen(
-          fileName.c_str(), format("%cb%i", mode == OpenMode::APPEND ? 'a' : 'w', level).c_str());
+          fileName.c_str(),
+          mrpt::format("%cb%i", mode == OpenMode::APPEND ? 'a' : 'w', level).c_str());
 
       if (m_impl->gz_file == nullptr)
       {

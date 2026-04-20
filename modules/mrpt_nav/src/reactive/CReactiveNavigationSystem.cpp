@@ -114,9 +114,9 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::config::CConfigFileBa
   for (unsigned int n = 0; n < PTG_COUNT; n++)
   {
     // Factory:
-    const std::string sPTGName = c.read_string(sectCfg, format("PTG%u_Type", n), "", true);
-    PTGs[n] =
-        CParameterizedTrajectoryGenerator::CreatePTG(sPTGName, c, sectCfg, format("PTG%u_", n));
+    const std::string sPTGName = c.read_string(sectCfg, mrpt::format("PTG%u_Type", n), "", true);
+    PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(
+        sPTGName, c, sectCfg, mrpt::format("PTG%u_", n));
   }
 
   CAbstractPTGBasedReactive::loadConfigFile(c);  // call parent's overridden method:
@@ -156,7 +156,7 @@ void CReactiveNavigationSystem::initPTGs()
 
       // Init:
       PTGs[i]->initialize(
-          format(
+          mrpt::format(
               "%s/ReacNavGrid_%03u.dat.gz",
               params_abstract_ptg_navigator.ptg_cache_files_directory.c_str(), i),
           m_enableConsoleOutput /*verbose*/

@@ -116,9 +116,9 @@ void CObservationRange::getDescriptionAsText(std::ostream& o) const
   o << "-------------------------------------------------------\n";
   for (const auto& q : sensedData)
   {
-    o << format("     %7u", (unsigned int)q.sensorID);
-    o << format("    %4.03f   ", q.sensedDistance);
-    o << format("    %4.03f   ", q.sensorNoiseStdDeviation);
+    o << mrpt::format("     %7u", (unsigned int)q.sensorID);
+    o << mrpt::format("    %4.03f   ", q.sensedDistance);
+    o << mrpt::format("    %4.03f   ", q.sensorNoiseStdDeviation);
     o << q.sensorPose << "\n";
   }
 }

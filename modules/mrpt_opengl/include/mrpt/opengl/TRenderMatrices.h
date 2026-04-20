@@ -137,7 +137,9 @@ struct TRenderMatrices
    *         snapping to prevent shadow edge swimming.
    */
   void computeCascadedLightProjectionMatrices(
-      float zmin, float zmax, const mrpt::viz::TLightParameters& lp,
+      float zmin,
+      float zmax,
+      const mrpt::viz::TLightParameters& lp,
       unsigned int shadowMapSize = 2048);
 
   /** Especial case for custom parameters of Orthographic projection.

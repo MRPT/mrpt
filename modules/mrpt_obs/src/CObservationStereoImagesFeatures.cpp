@@ -46,7 +46,7 @@ void CObservationStereoImagesFeatures::saveFeaturesToTextFile(const std::string&
 
   vector<TStereoImageFeatures>::iterator it;
   for (it = theFeatures.begin(); it != theFeatures.end(); ++it)
-    file << format(
+    file << mrpt::format(
         "%u %.2f %.2f %.2f %.2f\n", it->ID, it->pixels.first.x, it->pixels.first.y,
         it->pixels.second.x, it->pixels.second.y);
 }
@@ -131,8 +131,9 @@ void CObservationStereoImagesFeatures::getDescriptionAsText(std::ostream& o) con
     << "\n";
 
   o << endl
-    << format(
+    << mrpt::format(
            " Image size: %ux%u pixels\n", (unsigned int)cameraLeft.ncols,
            (unsigned int)cameraLeft.nrows);
-  o << endl << format(" Number of features in images: %u\n", (unsigned int)theFeatures.size());
+  o << endl
+    << mrpt::format(" Number of features in images: %u\n", (unsigned int)theFeatures.size());
 }

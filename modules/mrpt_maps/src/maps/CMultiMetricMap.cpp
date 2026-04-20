@@ -251,7 +251,7 @@ void CMultiMetricMap::saveMetricMapRepresentationToFile(const std::string& filNa
     const mrpt::maps::CMetricMap* m = maps[idx].get();
     ASSERT_(m);
     std::string fil = filNamePrefix;
-    fil += format(
+    fil += mrpt::format(
         "_%s_%02u",
         mrpt::system::fileNameStripInvalidChars(m->GetRuntimeClass()->className).c_str(),
         static_cast<unsigned int>(idx));

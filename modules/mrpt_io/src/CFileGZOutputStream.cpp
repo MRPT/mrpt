@@ -63,7 +63,7 @@ bool CFileGZOutputStream::open(
   // Open gz stream:
   m_f->f = gzopen(
       fileName.c_str(),
-      format("%cb%i", mode == OpenMode::APPEND ? 'a' : 'w', compress_level).c_str());
+      mrpt::format("%cb%i", mode == OpenMode::APPEND ? 'a' : 'w', compress_level).c_str());
   if (m_f->f == nullptr && error_msg) error_msg.value().get() = std::string(strerror(errno));
 
   m_f->filename = fileName;

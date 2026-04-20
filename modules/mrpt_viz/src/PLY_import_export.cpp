@@ -352,7 +352,7 @@ void ply_describe_element(
   PlyElement* elem = find_element(plyfile, elem_name);
   if (elem == nullptr)
     throw std::runtime_error(
-        format("ply_describe_element: can't find element '%s'", elem_name.c_str()));
+        mrpt::format("ply_describe_element: can't find element '%s'", elem_name.c_str()));
 
   elem->num = nelems;
 
@@ -412,7 +412,7 @@ void ply_element_count(PlyFile* plyfile, const string& elem_name, int nelems)
   elem = find_element(plyfile, elem_name);
   if (elem == nullptr)
     throw std::runtime_error(
-        format("ply_element_count: can't find element '%s'", elem_name.c_str()));
+        mrpt::format("ply_element_count: can't find element '%s'", elem_name.c_str()));
 
   elem->num = nelems;
 }
@@ -444,7 +444,7 @@ void ply_header_complete(PlyFile* plyfile)
       break;
     default:
       throw std::runtime_error(
-          format("ply_header_complete: bad file type = %d", plyfile->file_type));
+          mrpt::format("ply_header_complete: bad file type = %d", plyfile->file_type));
   }
 
   /* write out the comments */
@@ -502,7 +502,7 @@ void ply_put_element_setup(PlyFile* plyfile, const string& elem_name)
   elem = find_element(plyfile, elem_name);
   if (elem == nullptr)
     throw std::runtime_error(
-        format("ply_elements_setup: can't find element '%s'", elem_name.c_str()));
+        mrpt::format("ply_elements_setup: can't find element '%s'", elem_name.c_str()));
 
   plyfile->which_elem = elem;
 }

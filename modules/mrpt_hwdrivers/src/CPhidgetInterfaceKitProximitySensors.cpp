@@ -78,7 +78,7 @@ void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 
   for (int i = 1; i <= 8; i++)
   {
-    string sensorNKeyName = format("sensor%d", i);
+    string sensorNKeyName = mrpt::format("sensor%d", i);
     string sensorType = configSource.read_string(iniSection, sensorNKeyName, string("UNPLUGGED"));
     if (sensorType != string("UNPLUGGED"))
     {
@@ -104,18 +104,18 @@ void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
       }
       else
       {
-        string err = format("Type of sensor %d is not supported", i);
+        string err = mrpt::format("Type of sensor %d is not supported", i);
         m_state = CGenericSensor::ssError;
         THROW_EXCEPTION(err);
       }
       m_sensorIsPlugged[i - 1] = true;
       // reading the sensor pose.
-      string sensorNPoseX = format("pose%d_x", i);
-      string sensorNPoseY = format("pose%d_y", i);
-      string sensorNPoseZ = format("pose%d_z", i);
-      string sensorNPoseYaw = format("pose%d_yaw", i);
-      string sensorNPosePitch = format("pose%d_pitch", i);
-      string sensorNPoseRoll = format("pose%d_roll", i);
+      string sensorNPoseX = mrpt::format("pose%d_x", i);
+      string sensorNPoseY = mrpt::format("pose%d_y", i);
+      string sensorNPoseZ = mrpt::format("pose%d_z", i);
+      string sensorNPoseYaw = mrpt::format("pose%d_yaw", i);
+      string sensorNPosePitch = mrpt::format("pose%d_pitch", i);
+      string sensorNPoseRoll = mrpt::format("pose%d_roll", i);
 
       float x = configSource.read_float(iniSection, sensorNPoseX, 0.0);
       float y = configSource.read_float(iniSection, sensorNPoseY, 0.0);
@@ -212,7 +212,7 @@ void CPhidgetInterfaceKitProximitySensors::initialize()
   CPhidgetInterfaceKit_setDataRate(*((CPhidgetInterfaceKitHandle*)(m_carteInterfaceKit)),
   i, miliseconds); if(err > 0)
       {
-        string error = format("Can't set process rate to %d ms on
+        string error = mrpt::format("Can't set process rate to %d ms on
   channel %d of the Phidget IK Board.", miliseconds, i); m_state =
   CGenericSensor::ssError; THROW_EXCEPTION(error);
       }

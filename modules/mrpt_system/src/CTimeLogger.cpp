@@ -232,7 +232,7 @@ void CTimeLogger::saveToCSVFile(const std::string& csv_file) const
   {
     auto lck = mrpt::lockHelper(i.second.mtx);
 
-    s += format(
+    s += mrpt::format(
         "\"%.*s\",%7u,%e,%e,%e,%e,%e", static_cast<int>(i.first.size()), i.first.data(),
         static_cast<unsigned int>(i.second.n_calls), i.second.last_t, i.second.min_t,
         i.second.n_calls ? i.second.mean_t / static_cast<double>(i.second.n_calls) : 0,

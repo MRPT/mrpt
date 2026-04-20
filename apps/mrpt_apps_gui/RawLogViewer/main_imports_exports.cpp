@@ -654,10 +654,10 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 
   // Show summary:
   string summary;
-  summary = format(
+  summary = mrpt::format(
       "%u lines parsed, %u entries recognized\n", (unsigned)nLines, (unsigned)theAlog.size());
-  //	summary += format("%u images\n", (unsigned) nImgs);
-  summary += format("%u laser scans\n", (unsigned)nLasers);
+  //	summary += mrpt::format("%u images\n", (unsigned) nImgs);
+  summary += mrpt::format("%u laser scans\n", (unsigned)nLasers);
   summary += string("The rawlog is being saved to a file now.");
   ::wxMessageBox(summary.c_str());
 
@@ -895,10 +895,10 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 
   // Show summary:
   string summary;
-  summary = format(
+  summary = mrpt::format(
       "%u lines parsed, %u entries recognized\n", (unsigned)nLines, (unsigned)theAlog.size());
-  summary += format("%u images\n", (unsigned)nImgs);
-  summary += format("%u laser scans\n", (unsigned)nLasers);
+  summary += mrpt::format("%u images\n", (unsigned)nImgs);
+  summary += mrpt::format("%u laser scans\n", (unsigned)nLasers);
   summary += string("The rawlog is being saved to a file now.");
   ::wxMessageBox(summary.c_str());
 

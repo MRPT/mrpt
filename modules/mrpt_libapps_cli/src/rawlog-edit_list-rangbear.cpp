@@ -68,7 +68,7 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
         const double tim = mrpt::Clock::toDouble(obsRB->timestamp);
 
         for (size_t i = 0; i < obsRB->sensedData.size(); i++)
-          m_out << format(
+          m_out << mrpt::format(
               "%35.22f %8i %10i %10f %12f %12f\n", tim, static_cast<int>(i),
               static_cast<int>(obsRB->sensedData[i].landmarkID),
               static_cast<double>(obsRB->sensedData[i].range),

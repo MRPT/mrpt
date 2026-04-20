@@ -176,7 +176,7 @@ void Test_SUT()
   for (int i = 0; i < 3; i++)
   {
     winHistos[i] = mrpt::gui::CDisplayWindowPlots::Create(
-        format("MC-based histogram of the %i dim", i), 300, 150);
+        mrpt::format("MC-based histogram of the %i dim", i), 300, 150);
 
     std::vector<double> X;
     std::vector<double> H =

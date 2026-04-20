@@ -440,7 +440,7 @@ void renameExternalImageFile(CObservationImage::Ptr o)
   bool imgFileExistsNow = mrpt::system::fileExists(img_file);
 
   string new_img_file =
-      o->sensorLabel + format(
+      o->sensorLabel + mrpt::format(
                            "_%.06f.%s", (double)mrpt::Clock::toDouble(o->timestamp),
                            mrpt::system::extractFileExtension(img_file).c_str());
   string new_img_fullpath = mrpt::system::extractFileDirectory(img_file) + "/" + new_img_file;
@@ -465,7 +465,7 @@ void renameExternalStereoImageFile(CObservationStereoImages::Ptr o)
     bool imgFileExistsNow = mrpt::system::fileExists(img_file);
 
     string new_img_file =
-        o->sensorLabel + format(
+        o->sensorLabel + mrpt::format(
                              "_L_%.06f.%s", (double)mrpt::Clock::toDouble(o->timestamp),
                              mrpt::system::extractFileExtension(img_file).c_str());
     string new_img_fullpath = mrpt::system::extractFileDirectory(img_file) + "/" + new_img_file;
@@ -488,7 +488,7 @@ void renameExternalStereoImageFile(CObservationStereoImages::Ptr o)
     bool imgFileExistsNow = mrpt::system::fileExists(img_file);
 
     string new_img_file =
-        o->sensorLabel + format(
+        o->sensorLabel + mrpt::format(
                              "_R_%.06f.%s", (double)mrpt::Clock::toDouble(o->timestamp),
                              mrpt::system::extractFileExtension(img_file).c_str());
     string new_img_fullpath = mrpt::system::extractFileDirectory(img_file) + "/" + new_img_file;

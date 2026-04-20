@@ -152,7 +152,7 @@ http_errorcode mrpt::comms::net::http_request(
 
     // Prepare the request string
     // ---------------------------------
-    string req = format(
+    string req = mrpt::format(
         "%s %s HTTP/1.1\r\n"
         "Host: %s\r\n",
         http_method.c_str(), get_object.c_str(), server_addr.c_str());
@@ -358,7 +358,7 @@ http_errorcode mrpt::comms::net::http_request(
     }
     else
     {
-      if (output) output.value().get().errormsg = format("HTTP error %i", http_code);
+      if (output) output.value().get().errormsg = mrpt::format("HTTP error %i", http_code);
       return net::http_errorcode::OtherHTTPError;
     }
   }

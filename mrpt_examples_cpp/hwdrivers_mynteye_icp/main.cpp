@@ -391,7 +391,7 @@ void Test_3DCamICP()
       }
 
       ui_data.strStatuses_mtx.lock();
-      ui_data.strStatuses[3] = format("Frames: %.02f Hz", std::atomic_load(&thrPar.Hz));
+      ui_data.strStatuses[3] = mrpt::format("Frames: %.02f Hz", std::atomic_load(&thrPar.Hz));
       ui_data.strStatuses_mtx.unlock();
 
       step_num++;

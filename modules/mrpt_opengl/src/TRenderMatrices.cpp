@@ -201,8 +201,7 @@ void TRenderMatrices::computeLightProjectionMatrix(
 }
 
 void TRenderMatrices::computeCascadedLightProjectionMatrices(
-    float zmin, float zmax, const mrpt::viz::TLightParameters& lp,
-    unsigned int shadowMapSize)
+    float zmin, float zmax, const mrpt::viz::TLightParameters& lp, unsigned int shadowMapSize)
 {
   const int N = std::clamp<int>(lp.shadow_cascades, 1, 4);
   numShadowCascades = N;
@@ -319,8 +318,7 @@ void TRenderMatrices::computeCascadedLightProjectionMatrices(
     // orientation), which is essential for texel snapping to prevent
     // shadow edge flickering on camera rotation. Z range stays tight (AABB).
     const Eigen::Vector4f lightCenter =
-        lightViewMat.asEigen() *
-        Eigen::Vector4f(center.x(), center.y(), center.z(), 1.0f);
+        lightViewMat.asEigen() * Eigen::Vector4f(center.x(), center.y(), center.z(), 1.0f);
     const float frustumSize = maxRadius * 2.0f;
     minX = lightCenter.x() - maxRadius;
     maxX = lightCenter.x() + maxRadius;
@@ -334,8 +332,7 @@ void TRenderMatrices::computeCascadedLightProjectionMatrices(
     // eliminates flickering from both translation and rotation.
     if (shadowMapSize > 0)
     {
-      const float worldTexelSize =
-          frustumSize / static_cast<float>(shadowMapSize);
+      const float worldTexelSize = frustumSize / static_cast<float>(shadowMapSize);
       minX = std::floor(minX / worldTexelSize) * worldTexelSize;
       maxX = minX + frustumSize;
       minY = std::floor(minY / worldTexelSize) * worldTexelSize;

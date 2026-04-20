@@ -174,7 +174,7 @@ int main(int argc, char** argv)
         static const int nBlocksTotal = 50;
         const int nBlocks = progress_ratio * nBlocksTotal;
         std::cout << "\rProgress: [" << string(nBlocks, '#') << string(nBlocksTotal - nBlocks, ' ')
-                  << format("] %6.02f%% (%u objects)", progress_ratio * 100, nSavedObs);
+                  << mrpt::format("] %6.02f%% (%u objects)", progress_ratio * 100, nSavedObs);
         cout.flush();
       }
     };
@@ -191,7 +191,7 @@ int main(int argc, char** argv)
       if (!gt_file.is_open())
       {
         throw std::runtime_error(
-            format("Couldn't open output file for ground truth: '%s'", gt_filename.c_str()));
+            mrpt::format("Couldn't open output file for ground truth: '%s'", gt_filename.c_str()));
       }
 
       gt_file << "%          Ground truth positioning data \n"
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
 
       for (auto it = groundTruthPoses.begin(); it != groundTruthPoses.end(); ++it)
       {
-        gt_file << format(
+        gt_file << mrpt::format(
             "   %12.06f %9.03f %9.03f %9.04f\n", mrpt::Clock::toDouble(it->first), it->second.x,
             it->second.y, it->second.phi);
       }

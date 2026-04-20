@@ -441,17 +441,17 @@ string math::MATLAB_plotCovariance2D(
   str += string("plot([ ");
   for (size_t i = 0; i < X.size(); i++)
   {
-    str += format("%.4f", X[i]);
+    str += mrpt::format("%.4f", X[i]);
     if (i != (X.size() - 1)) str += ",";
   }
   str += string("],[ ");
   for (size_t i = 0; i < X.size(); i++)
   {
-    str += format("%.4f", Y[i]);
+    str += mrpt::format("%.4f", Y[i]);
     if (i != (Y.size() - 1)) str += ",";
   }
 
-  str += format("],'%s');\n", style.c_str());
+  str += mrpt::format("],'%s');\n", style.c_str());
 
   return str;
   MRPT_END_WITH_CLEAN_UP(std::cerr << "The matrix that led to error was: "

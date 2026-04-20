@@ -297,7 +297,7 @@ void CGPSInterface::doProcess()
       mrpt::system::TTimeParts parts;
       mrpt::system::timestampToParts(mrpt::Clock::now(), parts, true);
       string sFilePostfix = "_";
-      sFilePostfix += format(
+      sFilePostfix += mrpt::format(
           "%04u-%02u-%02u_%02uh%02um%02us", (unsigned int)parts.year, (unsigned int)parts.month,
           (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute,
           (unsigned int)parts.second);
@@ -678,7 +678,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
                             .c_str());  // set corrections type CMR or CMR+
       JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
       JAVAD_sendMessage(
-          format("%%%%set,/par%s/imode,cmr\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
+          mrpt::format("%%%%set,/par%s/imode,cmr\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
     }
     else if (m_JAVAD_rtk_format == "rtcm")
     {
@@ -688,7 +688,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
                             .c_str());  // set corrections type RTCM
       JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
       JAVAD_sendMessage(
-          format("%%%%set,/par%s/imode,rtcm\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
+          mrpt::format("%%%%set,/par%s/imode,rtcm\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
     }
     else if (m_JAVAD_rtk_format == "rtcm3")
     {
@@ -698,7 +698,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
                             .c_str());  // set corrections type RTCM 3.x
       JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
       JAVAD_sendMessage(
-          format("%%%%set,/par%s/imode,rtcm3\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
+          mrpt::format("%%%%set,/par%s/imode,rtcm3\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
     }
     else
     {
@@ -777,13 +777,14 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 
     // Set Differential Correction Source
     JAVAD_sendMessage(
-        format("%%%%set,/par/pos/pd/port,%s\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
+        mrpt::format("%%%%set,/par/pos/pd/port,%s\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
 
     // Set port bauds:
     if (!m_topcon_useAIMMode && m_JAVAD_rtk_src_baud != 0 &&
         !mrpt::system::strCmp(m_JAVAD_rtk_src_port, "/dev/usb/a"))
       JAVAD_sendMessage(
-          format("%%%%set,/par%s/rate,%u\r\n", m_JAVAD_rtk_src_port.c_str(), m_JAVAD_rtk_src_baud)
+          mrpt::format(
+              "%%%%set,/par%s/rate,%u\r\n", m_JAVAD_rtk_src_port.c_str(), m_JAVAD_rtk_src_baud)
               .c_str());
 
     // Set Input Mode: CMR,RTCM,...
@@ -809,7 +810,7 @@ bool CGPSInterface::legacy_topcon_setup_commands()
   }
   JAVAD_sendMessage(format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_topcon_data_period).c_str());
   JAVAD_sendMessage(
-      format("%%%%em,,/msg/nmea/RMC:%.1f\r\n", m_topcon_data_period).c_str());  // FAMD: 10 Hz
+      mrpt::format("%%%%em,,/msg/nmea/RMC:%.1f\r\n", m_topcon_data_period).c_str());  // FAMD: 10 Hz
 
   if (m_topcon_useAIMMode)
   {

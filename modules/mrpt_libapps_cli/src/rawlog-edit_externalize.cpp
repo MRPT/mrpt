@@ -88,7 +88,7 @@ DECLARE_OP_FUNCTION(op_externalize)
     {
       using namespace std::string_literals;
 
-      const string label_time = format(
+      const string label_time = mrpt::format(
           "%s_%.09f", mrpt::system::fileNameStripInvalidChars(obs->sensorLabel).c_str(),
           mrpt::Clock::toDouble(obs->timestamp));
       if (IS_CLASS(*obs, CObservationStereoImages))

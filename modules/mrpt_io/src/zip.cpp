@@ -275,7 +275,7 @@ bool mrpt::io::zip::compress_gz_data_block(
 // Create an anonymous pipe for writing the data to:
 #ifdef _WIN32
   // Windows:
-  pipe_file_name = format("\\\\.\\pipe\\mrpt_compress_gz_data_block_%lf", nPipeName);
+  pipe_file_name = mrpt::format("\\\\.\\pipe\\mrpt_compress_gz_data_block_%lf", nPipeName);
 
   HANDLE hPipe = CreateNamedPipeA(
       pipe_file_name.c_str(), PIPE_ACCESS_DUPLEX | 0x00080000 /* FILE_FLAG_FIRST_PIPE_INSTANCE */,
@@ -285,7 +285,7 @@ bool mrpt::io::zip::compress_gz_data_block(
     THROW_EXCEPTION("Error creating named pipe for gz-file compression");
 #else
   // Unix:
-  pipe_file_name = format("/tmp/mrpt_compress_gz_data_block_%lf", nPipeName);
+  pipe_file_name = mrpt::format("/tmp/mrpt_compress_gz_data_block_%lf", nPipeName);
 #endif
 
   bool retVal = false;
@@ -293,7 +293,7 @@ bool mrpt::io::zip::compress_gz_data_block(
   {
     // Write as gz
     {
-      gzFile f = gzopen(pipe_file_name.c_str(), format("wb%i", compress_level).c_str());
+      gzFile f = gzopen(pipe_file_name.c_str(), mrpt::format("wb%i", compress_level).c_str());
       if (f)
       {
         retVal = static_cast<int>(in_data.size()) ==
