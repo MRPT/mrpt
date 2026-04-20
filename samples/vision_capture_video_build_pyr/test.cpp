@@ -110,7 +110,7 @@ void TestVideoBuildPyr()
   cout << "Close the window to end.\n";
   while (win.isOpen())
   {
-    win.addTextMessage(5, 5, format("%.02fFPS", win.getRenderingFPS()));
+    win.addTextMessage(5, 5, mrpt::format("%.02fFPS", win.getRenderingFPS()));
     std::this_thread::sleep_for(1ms);
 
     // Grab new video frame:
@@ -139,7 +139,8 @@ void TestVideoBuildPyr()
         win.addTextMessage(
             0.51, 25,  // X,Y<=1 means coordinates are factors over the
             // entire viewport area.
-            format("Smooth=%i Grayscale=%i", int(do_smooth ? 1 : 0), int(do_grayscale ? 1 : 0)),
+            mrpt::format(
+                "Smooth=%i Grayscale=%i", int(do_smooth ? 1 : 0), int(do_grayscale ? 1 : 0)),
             11  // An arbitrary ID
         );
 

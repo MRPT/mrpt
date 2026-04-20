@@ -150,7 +150,7 @@ void TestDisplay3D()
     if (img)
     {
       static int i = 0;
-      const string s = format("GRAB_%06i.png", ++i);
+      const string s = mrpt::format("GRAB_%06i.png", ++i);
       bool savedOk = img->saveToFile(s);
       ASSERT_(savedOk);
       printf("Saved frame image to: %s \r", s.c_str());  // "\ r" is to

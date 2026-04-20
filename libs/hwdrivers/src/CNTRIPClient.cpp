@@ -99,10 +99,10 @@ bool CNTRIPClient::open(const NTRIPArgs& params, string& out_errmsg)
     case connOk:
       return true;
     case connError:
-      out_errmsg = format("Error trying to connect to server '%s'", params.server.c_str());
+      out_errmsg = mrpt::format("Error trying to connect to server '%s'", params.server.c_str());
       return false;
     case connUnauthorized:
-      out_errmsg = format("Authentication failed for server '%s'", params.server.c_str());
+      out_errmsg = mrpt::format("Authentication failed for server '%s'", params.server.c_str());
       return false;
 
     default:
@@ -166,7 +166,7 @@ void CNTRIPClient::private_ntrip_thread()
           // connection:
           stream_data.clear();
 
-          cout << format(
+          cout << mrpt::format(
               "[CNTRIPClient] Trying to connect to %s:%i\n", m_args.server.c_str(), m_args.port);
 
           my_sock.connect(m_args.server, m_args.port);
@@ -174,9 +174,9 @@ void CNTRIPClient::private_ntrip_thread()
 
           // Prepare HTTP request:
           // -------------------------------------------
-          string req = format("GET /%s HTTP/1.0\r\n", m_args.mountpoint.c_str());
+          string req = mrpt::format("GET /%s HTTP/1.0\r\n", m_args.mountpoint.c_str());
 
-          if (isalpha(m_args.server[0])) req += format("Host: %s\r\n", m_args.server.c_str());
+          if (isalpha(m_args.server[0])) req += mrpt::format("Host: %s\r\n", m_args.server.c_str());
 
           req += "User-Agent: NTRIP MRPT Library\r\n";
           req += "Accept: */*\r\n";

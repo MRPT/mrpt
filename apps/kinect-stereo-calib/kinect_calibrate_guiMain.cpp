@@ -2400,25 +2400,25 @@ void kinect_calibrate_guiDialog::LiveCalibUpdateToGrid()
     const mrpt::img::TCamera& c =
         (lr == 0 ? m_calib_result.cam_params.leftCamera : m_calib_result.cam_params.rightCamera);
 
-    fillGridLine(r++, sN, "cx", format("%.4f", c.cx()));
-    fillGridLine(r++, sN, "cy", format("%.4f", c.cy()));
-    fillGridLine(r++, sN, "fx", format("%.4f", c.fx()));
-    fillGridLine(r++, sN, "fy", format("%.4f", c.fy()));
-    fillGridLine(r++, sN, "k1", format("%.4e", c.k1()));
-    fillGridLine(r++, sN, "k2", format("%.4e", c.k2()));
-    fillGridLine(r++, sN, "k3", format("%.4e", c.k3()));
-    fillGridLine(r++, sN, "t1", format("%.4e", c.p1()));
-    fillGridLine(r++, sN, "t2", format("%.4e", c.p2()));
+    fillGridLine(r++, sN, "cx", mrpt::format("%.4f", c.cx()));
+    fillGridLine(r++, sN, "cy", mrpt::format("%.4f", c.cy()));
+    fillGridLine(r++, sN, "fx", mrpt::format("%.4f", c.fx()));
+    fillGridLine(r++, sN, "fy", mrpt::format("%.4f", c.fy()));
+    fillGridLine(r++, sN, "k1", mrpt::format("%.4e", c.k1()));
+    fillGridLine(r++, sN, "k2", mrpt::format("%.4e", c.k2()));
+    fillGridLine(r++, sN, "k3", mrpt::format("%.4e", c.k3()));
+    fillGridLine(r++, sN, "t1", mrpt::format("%.4e", c.p1()));
+    fillGridLine(r++, sN, "t2", mrpt::format("%.4e", c.p2()));
   }
 
   // Show the L->R pose (more intuitive to edit by hand):
   const mrpt::poses::CPose3D l2r = -m_calib_result.right2left_camera_pose;
-  fillGridLine(r++, "L2R_pose", "x", format("%.4f", l2r.x()));
-  fillGridLine(r++, "L2R_pose", "y", format("%.4f", l2r.y()));
-  fillGridLine(r++, "L2R_pose", "z", format("%.4f", l2r.z()));
-  fillGridLine(r++, "L2R_pose", "yaw", format("%.4f", l2r.yaw()));
-  fillGridLine(r++, "L2R_pose", "pitch", format("%.4f", l2r.pitch()));
-  fillGridLine(r++, "L2R_pose", "roll", format("%.4f", l2r.roll()));
+  fillGridLine(r++, "L2R_pose", "x", mrpt::format("%.4f", l2r.x()));
+  fillGridLine(r++, "L2R_pose", "y", mrpt::format("%.4f", l2r.y()));
+  fillGridLine(r++, "L2R_pose", "z", mrpt::format("%.4f", l2r.z()));
+  fillGridLine(r++, "L2R_pose", "yaw", mrpt::format("%.4f", l2r.yaw()));
+  fillGridLine(r++, "L2R_pose", "pitch", mrpt::format("%.4f", l2r.pitch()));
+  fillGridLine(r++, "L2R_pose", "roll", mrpt::format("%.4f", l2r.roll()));
 
   m_grid_live_calib->EndBatch();
 }

@@ -1001,7 +1001,7 @@ void CRangeBearingKFSLAM::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj
       for (auto it = belongToPartition.begin(); it != belongToPartition.end(); ++it)
       {
         if (it != belongToPartition.begin()) strParts += string(",");
-        strParts += format("%i", it->first);
+        strParts += mrpt::format("%i", it->first);
       }
 
       ellip->setName(ellip->getName() + strParts + string("]"));

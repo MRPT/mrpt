@@ -179,7 +179,7 @@ void TestParticlesLocalization()
   for (float range_Pc = Pc_range_ini; range_Pc <= Pc_range_end; range_Pc += Pc_range_step)
   {
     // The experiment directory is:
-    OUT_DIR = format("%s_Pc_%.06f", OUT_DIR_PREFIX.c_str(), range_Pc);
+    OUT_DIR = mrpt::format("%s_Pc_%.06f", OUT_DIR_PREFIX.c_str(), range_Pc);
     printf("Creating directory: %s\n", OUT_DIR.c_str());
     mrpt::system::createDirectory(OUT_DIR);
 
@@ -216,7 +216,7 @@ void TestParticlesLocalization()
       pdf.options.metricMap = &metricMap;
 
       // Create Directory
-      OUT_DIR = format(
+      OUT_DIR = mrpt::format(
           "%s_Pc_%.06f/REP_%03u", OUT_DIR_PREFIX.c_str(), range_Pc, (unsigned int)repetition);
       printf("Creating directory: %s\n", OUT_DIR.c_str());
 
@@ -586,7 +586,7 @@ void TestParticlesLocalization()
           {
             for (auto& k : dist->sensedData)
             {
-              string beacon_name = format("ring%u", unsigned(k.beaconID));
+              string beacon_name = mrpt::format("ring%u", unsigned(k.beaconID));
               const mrpt::maps::CLandmark* lm = beacMap->landmarks.getByBeaconID(k.beaconID);
               if (lm)
               {
@@ -823,7 +823,7 @@ void TestParticlesLocalization()
         step++;
       }  // while rawlogEntries
       // aux(0,0)=(float)likelihood_acumulation;
-      // aux.saveToTextFile( format("%s/LIKELIHOOD.txt",OUT_DIR.c_str())
+      // aux.saveToTextFile( mrpt::format("%s/LIKELIHOOD.txt",OUT_DIR.c_str())
       // );
 
       franco_matrix.setSize(step, 3);
@@ -831,14 +831,14 @@ void TestParticlesLocalization()
 
       particle_matrix.setSize(step, particle_matrix.cols());
       particle_matrix.saveToTextFile(
-          format("%s/particle_matrix.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
+          mrpt::format("%s/particle_matrix.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
 
       real_ranges.setSize(step, real_ranges.cols());
       real_ranges.saveToTextFile(format("%s/GT_ranges.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
 
       real_offsets.setSize(real_offsets_rows, real_offsets.cols());
       real_offsets.saveToTextFile(
-          format("%s/GT_offsets.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
+          mrpt::format("%s/GT_offsets.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
 
       // Error stats:
       if (step > 0)
