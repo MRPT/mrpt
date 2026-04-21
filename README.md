@@ -50,6 +50,27 @@ while preserving the data structures and algorithms at the core of MRPT.
 
 ## Getting started
 
+### Install from ROS repositories
+
+```bash
+# ROS 1
+sudo apt install ros-$ROS_DISTRO-mrpt2
+
+# ROS 2
+sudo apt install ros-$ROS_DISTRO-mrpt-*
+```
+
+### ROS2 build status for mrpt3
+
+| ROS 2 Distro | Build Status |
+|---|---|
+| Humble | [![Build Status](https://build.ros2.org/job/Hdev__mrpt3__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Hdev__mrpt3__ubuntu_jammy_amd64/) |
+| Jazzy | [![Build Status](https://build.ros2.org/job/Jdev__mrpt3__ubuntu_noble_amd64/badge/icon)](https://build.ros2.org/job/Jdev__mrpt3__ubuntu_noble_amd64/) |
+| Kilted | [![Build Status](https://build.ros2.org/job/Kdev__mrpt3__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Kdev__mrpt3__ubuntu_jammy_amd64/) |
+| Rolling | [![Build Status](https://build.ros2.org/job/Rdev__mrpt3__ubuntu_noble_amd64/badge/icon)](https://build.ros2.org/job/Rdev__mrpt3__ubuntu_noble_amd64/) |
+
+
+
 ### Install (Ubuntu/Debian)
 
 ```bash
@@ -76,14 +97,6 @@ See the full [build guide](https://docs.mrpt.org/reference/latest/compiling.html
 
 [Nightly Windows installer](https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds) — includes `.exe`, `.dll`, `.h`, and `.lib` files.
 
-### ROS
-
-```bash
-# ROS 1
-sudo apt install ros-$ROS_DISTRO-mrpt2
-
-# ROS 2 — see https://github.com/MRPT/mrpt_ros
-```
 
 ---
 
