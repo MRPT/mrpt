@@ -15,6 +15,9 @@
   <depend>mrpt_maps</depend>
   <depend>mrpt_topography</depend>
 
+  <depend>pybind11-dev</depend>
+
+
   <export>
     <build_type>cmake</build_type>
   </export>

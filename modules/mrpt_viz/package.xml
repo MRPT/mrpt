@@ -20,6 +20,8 @@
   <depend>mrpt_poses</depend>
   <depend>mrpt_img</depend>
 
+  <depend>pybind11-dev</depend>
+
   <build_depend>assimp-dev</build_depend>
 
   <export>

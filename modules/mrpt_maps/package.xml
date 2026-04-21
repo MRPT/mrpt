@@ -15,6 +15,8 @@
   <depend>mrpt_obs</depend>
   <depend>mrpt_graphs</depend>
 
+  <depend>pybind11-dev</depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>
