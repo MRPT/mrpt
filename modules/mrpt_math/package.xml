@@ -23,6 +23,9 @@
 
   <test_depend>mrpt_io</test_depend>
 
+  <depend>pybind11-dev</depend>
+
+
   <export>
     <build_type>cmake</build_type>
   </export>
