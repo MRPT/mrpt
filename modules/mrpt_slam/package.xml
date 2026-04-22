@@ -15,7 +15,8 @@
   <depend>mrpt_maps</depend>
   <depend>mrpt_topography</depend>
 
-  <depend>pybind11-dev</depend>
+  <build_depend>pybind11-dev</build_depend>
+  <build_depend>python3-dev</build_depend>
 
 
   <export>
