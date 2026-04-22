@@ -24,7 +24,8 @@
   <build_depend>libqt5-opengl-dev</build_depend>
   <build_depend>qtbase5-dev</build_depend>
 
-  <depend>pybind11-dev</depend>
+  <build_depend>pybind11-dev</build_depend>
+  <build_depend>python3-dev</build_depend>
 
   <export>
     <build_type>cmake</build_type>
