@@ -15,6 +15,8 @@ project(mrpt_comms LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_io REQUIRED)
 
+find_package(Threads REQUIRED)
+
 if (BUILD_TESTING)
   find_package(mrpt_poses REQUIRED) # for unit tests
 endif()

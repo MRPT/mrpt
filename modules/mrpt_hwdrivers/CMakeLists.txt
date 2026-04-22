@@ -6,6 +6,8 @@ find_package(mrpt_comms REQUIRED)
 find_package(mrpt_maps REQUIRED)
 find_package(mrpt_viz REQUIRED)
 
+find_package(Threads REQUIRED)
+
 # Optional dependency detection scripts:
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_ffmpeg.cmake REQUIRED)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_flycapture2.cmake REQUIRED)

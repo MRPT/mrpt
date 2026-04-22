@@ -17,6 +17,8 @@ find_package(mrpt_core REQUIRED)
 find_package(mrpt_typemeta REQUIRED)
 find_package(mrpt_containers REQUIRED)
 
+find_package(Threads REQUIRED)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(Filesystem REQUIRED)  # Use C++17 filesystem lib
 
@@ -87,13 +89,11 @@ mrpt_add_library(
     mrpt::mrpt_core
     mrpt::mrpt_typemeta
     mrpt::mrpt_containers
-    Threads::Threads
 #  PRIVATE_LINK_LIBRARIES
   CMAKE_DEPENDENCIES
     mrpt_core
     mrpt_typemeta
     mrpt_containers
-    Threads
 )
 
 
