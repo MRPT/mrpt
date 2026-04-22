@@ -87,11 +87,13 @@ mrpt_add_library(
     mrpt::mrpt_core
     mrpt::mrpt_typemeta
     mrpt::mrpt_containers
+    Threads::Threads
 #  PRIVATE_LINK_LIBRARIES
   CMAKE_DEPENDENCIES
     mrpt_core
     mrpt_typemeta
     mrpt_containers
+    Threads
 )
 
 
