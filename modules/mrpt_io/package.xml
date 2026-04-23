@@ -19,9 +19,9 @@
   <depend>mrpt_common</depend>
   <depend>mrpt_system</depend>
 
+  <build_depend>libzstd-dev</build_depend>
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
-
 
   <export>
     <build_type>cmake</build_type>
