@@ -31,7 +31,7 @@ using namespace mrpt::img;
 void RenderableProxy::uploadMatrix(
     const RenderContext& rc, const char* uniformName, const CMatrixFloat44& matrix)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!rc.shader)
   {
     return;
@@ -48,7 +48,7 @@ void RenderableProxy::uploadMatrix(
 void RenderableProxy::uploadVector3(
     const RenderContext& rc, const char* uniformName, const TVector3Df& v)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!rc.shader)
   {
     return;
@@ -64,7 +64,7 @@ void RenderableProxy::uploadVector3(
 void RenderableProxy::uploadColor(
     const RenderContext& rc, const char* uniformName, const TColorf& color)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!rc.shader)
   {
     return;
@@ -80,7 +80,7 @@ void RenderableProxy::uploadColor(
 
 void RenderableProxy::uploadFloat(const RenderContext& rc, const char* uniformName, float value)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!rc.shader)
   {
     return;
@@ -95,7 +95,7 @@ void RenderableProxy::uploadFloat(const RenderContext& rc, const char* uniformNa
 
 void RenderableProxy::uploadInt(const RenderContext& rc, const char* uniformName, int value)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!rc.shader)
   {
     return;
@@ -114,7 +114,7 @@ void RenderableProxy::uploadInt(const RenderContext& rc, const char* uniformName
 
 void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -189,7 +189,7 @@ void PointsProxyBase::updateBuffers(const mrpt::viz::CVisualObject* sourceObj)
 
 void PointsProxyBase::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (m_pointCount == 0)
@@ -227,7 +227,7 @@ TBoundingBoxf PointsProxyBase::getBoundingBoxLocal() const
 // CHANGE TO:
 void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -306,7 +306,7 @@ void LinesProxyBase::updateBuffers(const mrpt::viz::CVisualObject* sourceObj)
 
 void LinesProxyBase::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (m_vertexCount == 0)
@@ -360,7 +360,7 @@ TBoundingBoxf LinesProxyBase::getBoundingBoxLocal() const
 
 void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -469,7 +469,7 @@ void TrianglesProxyBase::updateBuffers(const mrpt::viz::CVisualObject* sourceObj
 
 void TrianglesProxyBase::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (m_triangleCount == 0)
@@ -559,7 +559,7 @@ TBoundingBoxf TrianglesProxyBase::getBoundingBoxLocal() const
 
 void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -718,7 +718,7 @@ void TexturedTrianglesProxyBase::updateBuffers(const mrpt::viz::CVisualObject* s
 
 void TexturedTrianglesProxyBase::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   // Bind texture if available

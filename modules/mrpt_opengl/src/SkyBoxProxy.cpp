@@ -75,7 +75,7 @@ static constexpr float s_skyboxVertices[108] = {
 
 void SkyBoxProxy::compile(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   uploadCubeVertices();
@@ -87,7 +87,7 @@ void SkyBoxProxy::compile(const CVisualObject* sourceObj)
 
 void SkyBoxProxy::updateBuffers(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   updateCubeTexture(sourceObj);
@@ -98,7 +98,7 @@ void SkyBoxProxy::updateBuffers(const CVisualObject* sourceObj)
 
 void SkyBoxProxy::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!m_textureLoaded || !m_cubeTexture)
@@ -146,7 +146,7 @@ void SkyBoxProxy::render(const RenderContext& rc) const
 
 void SkyBoxProxy::uploadCubeVertices()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   m_vao.createOnce();
   m_vao.bind();
 
@@ -167,7 +167,7 @@ void SkyBoxProxy::uploadCubeVertices()
 
 void SkyBoxProxy::updateCubeTexture(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!sourceObj)
   {
     return;

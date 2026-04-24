@@ -14,31 +14,26 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CGlCanvasBase.h>
-#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 #include <mrpt/opengl/opengl_api.h>
 
 #include <cstdlib>
 #include <iostream>
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
 #ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
 #ifdef __APPLE__
-#include <GLUT/glut.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/glut.h>
-#ifdef HAVE_FREEGLUT_EXT_H
-#include <GL/freeglut_ext.h>
 #endif
-#endif
-#endif  // MRPT_HAS_OPENGL_GLUT
+#endif  // MRPT_HAS_OPENGL
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -53,7 +48,7 @@ CGlCanvasBase::~CGlCanvasBase()
 
 void CGlCanvasBase::resizeViewport(int w, int h)  // NOLINT
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
   if (w == -1 || h == -1)
   {
     return;
@@ -70,7 +65,7 @@ void CGlCanvasBase::setOpenGLSceneRef(Scene::Ptr scene) { m_openGLScene = std::m
 
 double CGlCanvasBase::renderCanvas(int width, int height)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
   double At = 0.1;
 
 #ifdef MRPT_OPENGL_PROFILER

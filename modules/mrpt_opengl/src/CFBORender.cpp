@@ -32,7 +32,7 @@
 #include <EGL/eglext.h>
 #endif
 
-#define HAVE_FBO (MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL)
+#define HAVE_FBO (MRPT_HAS_OPENGL && MRPT_HAS_EGL)
 
 using namespace std;
 using namespace mrpt;

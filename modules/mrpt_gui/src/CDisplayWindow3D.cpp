@@ -18,26 +18,21 @@
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/config.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 #include <mrpt/system/CTicTac.h>
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
 #ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
 #ifdef __APPLE__
-#include <GLUT/glut.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/glut.h>
-#ifdef HAVE_FREEGLUT_EXT_H
-#include <GL/freeglut_ext.h>
-#endif
 #endif
 #endif
 
@@ -48,7 +43,7 @@ using namespace mrpt::math;
 using namespace mrpt::img;
 using namespace std;
 
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
 
 #if !wxUSE_GLCANVAS
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
@@ -289,7 +284,7 @@ C3DWindowDialog::C3DWindowDialog(
     wxSize initialSize) :
     m_win3D(win3D), m_mainFrame(parent)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
 
   Create(
       parent, id, caption.c_str(), wxDefaultPosition, initialSize, wxDEFAULT_FRAME_STYLE, _T("id"));
@@ -359,14 +354,14 @@ void C3DWindowDialog::OnMenuAbout(wxCommandEvent&)
 
 void C3DWindowDialog::OnChar(wxKeyEvent& ev)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
   CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(m_win3D, ev);
 #endif
 }
 
 void C3DWindowDialog::OnResize(wxSizeEvent& event)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
   // Send the event:
   if (m_win3D)
   {
@@ -426,7 +421,7 @@ CDisplayWindow3D::~CDisplayWindow3D()
 void CDisplayWindow3D::resize(
     [[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   if (!isOpen())
   {
     cerr << "[CDisplayWindow3D::setPos] Window closed!: " << m_caption << "\n";
@@ -448,7 +443,7 @@ void CDisplayWindow3D::resize(
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   if (!isOpen())
   {
     cerr << "[CDisplayWindow3D::setPos] Window closed!: " << m_caption << "\n";
@@ -470,7 +465,7 @@ void CDisplayWindow3D::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::setWindowTitle([[maybe_unused]] const std::string& str)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   if (!isOpen())
   {
     cerr << "[CDisplayWindow3D::setWindowTitle] Window closed!: " << m_caption << "\n";
@@ -496,7 +491,7 @@ void CDisplayWindow3D::unlockAccess3DScene() { m_csAccess3DScene.unlock(); }
 
 void CDisplayWindow3D::forceRepaint()
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   if (auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get()); win)
   {
     // Send refresh request:
@@ -513,7 +508,7 @@ void CDisplayWindow3D::forceRepaint()
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::setCameraElevationDeg([[maybe_unused]] float deg)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
@@ -524,7 +519,7 @@ void CDisplayWindow3D::setCameraElevationDeg([[maybe_unused]] float deg)
 
 void CDisplayWindow3D::useCameraFromScene([[maybe_unused]] bool useIt)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
@@ -538,7 +533,7 @@ void CDisplayWindow3D::useCameraFromScene([[maybe_unused]] bool useIt)
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::setCameraAzimuthDeg([[maybe_unused]] float deg)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
@@ -553,7 +548,7 @@ void CDisplayWindow3D::setCameraAzimuthDeg([[maybe_unused]] float deg)
 void CDisplayWindow3D::setCameraPointingToPoint(
     [[maybe_unused]] float x, [[maybe_unused]] float y, [[maybe_unused]] float z)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
@@ -567,7 +562,7 @@ void CDisplayWindow3D::setCameraPointingToPoint(
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::setCameraZoom([[maybe_unused]] float zoom)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
@@ -581,7 +576,7 @@ void CDisplayWindow3D::setCameraZoom([[maybe_unused]] float zoom)
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::setProjectiveModel([[maybe_unused]] bool isProjective)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
@@ -621,7 +616,7 @@ void CDisplayWindow3D::setMaxRange(float new_max)
 
 float CDisplayWindow3D::getFOV() const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
@@ -633,7 +628,7 @@ float CDisplayWindow3D::getFOV() const
 
 void CDisplayWindow3D::setFOV(float v)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
@@ -647,7 +642,7 @@ void CDisplayWindow3D::setFOV(float v)
  ---------------------------------------------------------------*/
 float CDisplayWindow3D::getCameraElevationDeg() const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   return win != nullptr ? win->m_canvas->orbitCameraController().getElevationDegrees() : 0;
 #else
@@ -660,7 +655,7 @@ float CDisplayWindow3D::getCameraElevationDeg() const
  ---------------------------------------------------------------*/
 float CDisplayWindow3D::getCameraAzimuthDeg() const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   return win != nullptr ? win->m_canvas->orbitCameraController().getAzimuthDegrees() : 0;
 #else
@@ -674,7 +669,7 @@ float CDisplayWindow3D::getCameraAzimuthDeg() const
 void CDisplayWindow3D::getCameraPointingToPoint(
     [[maybe_unused]] float& x, [[maybe_unused]] float& y, [[maybe_unused]] float& z) const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win != nullptr)
   {
@@ -694,7 +689,7 @@ void CDisplayWindow3D::getCameraPointingToPoint(
  ---------------------------------------------------------------*/
 float CDisplayWindow3D::getCameraZoom() const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   return win != nullptr ? win->m_canvas->orbitCameraController().getZoomDistance() : 0;
 #else
@@ -707,7 +702,7 @@ float CDisplayWindow3D::getCameraZoom() const
  ---------------------------------------------------------------*/
 bool CDisplayWindow3D::isCameraProjective() const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   return win != nullptr ? win->m_canvas->orbitCameraController().isProjectiveModel() : true;
 #else
@@ -720,7 +715,7 @@ bool CDisplayWindow3D::isCameraProjective() const
  ---------------------------------------------------------------*/
 std::optional<mrpt::img::TPixelCoord> CDisplayWindow3D::getLastMousePosition() const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win == nullptr)
   {
@@ -756,7 +751,7 @@ std::optional<mrpt::math::TLine3D> CDisplayWindow3D::getLastMousePositionRay() c
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = (const C3DWindowDialog*)m_hwnd.get();
   if (win == nullptr)
   {
@@ -881,7 +876,7 @@ CDisplayWindow3DLocker::~CDisplayWindow3DLocker() { m_win.unlockAccess3DScene();
 
 void CDisplayWindow3D::sendFunctionToRunOnGUIThread(const std::function<void(void)>& f)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
   if (win == nullptr)
   {
@@ -906,7 +901,7 @@ void CDisplayWindow3D::sendFunctionWithShaderManager(
   sendFunctionToRunOnGUIThread(
       [this, f]()
       {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
         auto* win = static_cast<C3DWindowDialog*>(m_hwnd.get());
         if (!win || !win->m_canvas)
         {
@@ -920,7 +915,7 @@ void CDisplayWindow3D::sendFunctionWithShaderManager(
 
 bool CDisplayWindow3D::is_GL_context_created() const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win == nullptr || win->m_canvas == nullptr)
   {

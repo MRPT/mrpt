@@ -64,7 +64,7 @@ class TextureResourceHandler
   /// Return textureName
   texture_name_t generateTextureID(const uint8_t* rgbDataForAssociation)
   {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
     auto lck = mrpt::lockHelper(m_texturesMtx);
 
     processDestroyQueue();
@@ -93,7 +93,7 @@ class TextureResourceHandler
 
   std::optional<texture_name_t> checkIfTextureAlreadyExists(const mrpt::img::CImage& rgb)
   {
-#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
+#if (MRPT_HAS_OPENGL || MRPT_HAS_EGL)
     auto lck = mrpt::lockHelper(m_texturesMtx);
 
     auto it = m_textureToRGBdata.getInverseMap().find(rgb.ptrLine<uint8_t>(0));
@@ -110,7 +110,7 @@ class TextureResourceHandler
 
   void releaseTextureID(unsigned int texName)
   {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
     MRPT_START
     auto lck = mrpt::lockHelper(m_texturesMtx);
 
@@ -126,7 +126,7 @@ class TextureResourceHandler
  private:
   TextureResourceHandler()
   {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
     if (MRPT_OPENGL_VERBOSE)
       std::cout << "[mrpt TextureResourceHandler] maxTextureUnits:" << m_maxTextureUnits << "\n";
@@ -135,7 +135,7 @@ class TextureResourceHandler
 
   void processDestroyQueue()
   {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
     if (auto itLst = m_destroyQueue.find(std::this_thread::get_id());
         itLst != m_destroyQueue.end() && !itLst->second.empty())
     {
@@ -173,7 +173,7 @@ class TextureResourceHandler
 #endif
   }
 
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   std::mutex m_texturesMtx;
   std::map<GLuint, std::thread::id> m_textureReservedFrom;
   std::map<std::thread::id, std::vector<GLuint>> m_destroyQueue;
@@ -287,7 +287,7 @@ void Texture::internalAssignImage_2D(
     const Options& o,
     int textureUnit)
 {
-#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
+#if (MRPT_HAS_OPENGL || MRPT_HAS_EGL)
   unsigned char* dataAligned = nullptr;
   std::vector<uint8_t> data;
 
@@ -604,7 +604,7 @@ void Texture::internalAssignImage_2D(
 
 void Texture::bindAsTexture2D()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   glActiveTexture(GL_TEXTURE0 + get()->unit);
   glBindTexture(GL_TEXTURE_2D, get()->name);
   CHECK_OPENGL_ERROR_IN_DEBUG();
@@ -613,7 +613,7 @@ void Texture::bindAsTexture2D()
 
 void Texture::bindAsCubeTexture()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   glActiveTexture(GL_TEXTURE0 + get()->unit);
   glBindTexture(GL_TEXTURE_CUBE_MAP, get()->name);
   CHECK_OPENGL_ERROR_IN_DEBUG();
@@ -622,7 +622,7 @@ void Texture::bindAsCubeTexture()
 
 void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int textureUnit)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   // just in case they are lazy-load imgs
   for (const auto& im : imgs)

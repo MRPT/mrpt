@@ -48,7 +48,7 @@ class Text3DProxy : public TrianglesProxyBase
  public:
   void compile(const mrpt::viz::CVisualObject* sourceObj) override
   {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
     MRPT_START
 
     const auto* text3d = dynamic_cast<const mrpt::viz::CText3D*>(sourceObj);
@@ -146,7 +146,7 @@ class Text2DLabelProxy : public TrianglesProxyBase
  public:
   void compile(const mrpt::viz::CVisualObject* sourceObj) override
   {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
     MRPT_START
 
     const auto* textObj = dynamic_cast<const mrpt::viz::CText*>(sourceObj);
@@ -1097,7 +1097,7 @@ void CompiledScene::render(int renderWidth, int renderHeight, int renderOffsetX,
 {
   MRPT_START
 
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!m_isCompiled)
   {
     return;
@@ -1160,7 +1160,7 @@ void CompiledScene::renderViewport(
 {
   MRPT_START
 
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   auto it = m_viewports.find(viewportName);
   if (it == m_viewports.end())
   {

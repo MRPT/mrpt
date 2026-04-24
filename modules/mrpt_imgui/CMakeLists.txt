@@ -8,7 +8,7 @@ find_package(mrpt_opengl REQUIRED)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(PkgConfig QUIET)
-include(./cmake/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
+include(./cmake/script_opengl.cmake REQUIRED)     # Check for OpenGL / EGL / GLES
 
 # define lib:
 set(LIB_SOURCES

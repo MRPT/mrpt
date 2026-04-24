@@ -21,7 +21,7 @@
 using namespace mrpt::gui;
 
 // Allow apps to build without 3D:
-#define APP_HAS_3D (wxUSE_GLCANVAS && MRPT_HAS_OPENGL_GLUT)
+#define APP_HAS_3D (wxUSE_GLCANVAS && MRPT_HAS_OPENGL)
 
 #if APP_HAS_3D
 
