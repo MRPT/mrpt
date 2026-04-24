@@ -21,8 +21,18 @@ if(MRPT_HAS_LIBFYAML)
 	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM)
 		# Internal built-in:
 		include(ExternalProject)
-		
+
 		set(LIBFYAML_DIR ${mrpt_containers_SOURCE_DIR}/3rdparty/libfyaml)
+
+		# Check that the git submodule has been initialized
+		if(NOT EXISTS "${LIBFYAML_DIR}/CMakeLists.txt")
+			message(FATAL_ERROR
+				"The libfyaml git submodule is missing or not initialized.\n"
+				"Please run:\n"
+				"  git submodule update --init --recursive\n"
+				"from the root of the repository and then rebuild."
+			)
+		endif()
 		set(LIBFYAML_BIN ${mrpt_containers_BINARY_DIR}/3rdparty/libfyaml)
 		set(LIBFYAML_INSTALL_DIR ${LIBFYAML_BIN}/install)
 		set(LIBFYAML_INCLUDES ${LIBFYAML_DIR}/include)
