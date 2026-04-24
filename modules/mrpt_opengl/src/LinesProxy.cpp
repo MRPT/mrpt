@@ -26,7 +26,7 @@ using namespace mrpt::viz;
 
 void LinesProxy::compile(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -49,7 +49,7 @@ void LinesProxy::compile(const CVisualObject* sourceObj)
 
 void LinesProxy::updateBuffers(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -69,7 +69,7 @@ void LinesProxy::updateBuffers(const CVisualObject* sourceObj)
 
 void LinesProxy::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (m_vertexCount == 0)
@@ -111,7 +111,7 @@ void LinesProxy::extractLineParams(const CVisualObject* sourceObj)
 
 void LinesProxy::uploadLineUniforms(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!rc.shader)
   {
     return;
@@ -126,7 +126,7 @@ void LinesProxy::uploadLineUniforms(const RenderContext& rc) const
 
 void LinesProxy::setupLineState() const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   // On OpenGL 3.x Core Profile, glLineWidth > 1.0 may generate GL_INVALID_VALUE.
   // Clamp to the driver-supported range.
   GLfloat lineWidthRange[2] = {1.0f, 1.0f};
@@ -149,7 +149,7 @@ void LinesProxy::setupLineState() const
 
 void LinesProxy::restoreLineState() const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   // Restore default line width
   glLineWidth(1.0f);
 

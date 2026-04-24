@@ -13,7 +13,7 @@
 */
 
 #include <mrpt/gui/CQtGlCanvasBase.h>
-#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 
 #if MRPT_HAS_Qt5
 #include <QMouseEvent>
@@ -88,7 +88,7 @@ uint8_t qtButtonsToMrpt(Qt::MouseButtons b)
 // -----------------------------------------------------------------------
 CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent) : QOpenGLWidget(parent)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
   m_mainViewport = getOpenGLSceneRef()->getViewport("main");
   setMouseTracking(true);
 #else
@@ -103,14 +103,14 @@ CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent) : QOpenGLWidget(parent)
 // -----------------------------------------------------------------------
 void CQtGlCanvasBase::initializeGL()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
   QOpenGLWidget::initializeGL();
 #endif
 }
 
 void CQtGlCanvasBase::paintGL()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
   // Sync the orbit controller into the scene camera before every frame.
   if (m_mainViewport)
   {
@@ -123,7 +123,7 @@ void CQtGlCanvasBase::paintGL()
 
 void CQtGlCanvasBase::resizeGL(int width, int height)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
   if (height == 0)
   {
     height = 1;

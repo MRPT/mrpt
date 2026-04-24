@@ -27,7 +27,7 @@ using namespace mrpt::math;
 using namespace std;
 
 // Include libraries in linking:
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 #ifdef _WIN32
 // WINDOWS:
 #if defined(_MSC_VER)
@@ -35,7 +35,7 @@ using namespace std;
 #pragma comment(lib, "GlU32.lib")
 #endif
 #endif  // _WIN32
-#endif  // MRPT_HAS_OPENGL_GLUT
+#endif  // MRPT_HAS_OPENGL
 
 IMPLEMENTS_SERIALIZABLE(Scene, CSerializable, mrpt::viz)
 

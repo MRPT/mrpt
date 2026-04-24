@@ -371,7 +371,7 @@ void CompiledViewport::enableShadows(
 
   if (!enabled)
   {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
     if (m_shadowMapFBO != 0)
     {
       glDeleteFramebuffers(1, &m_shadowMapFBO);
@@ -711,7 +711,7 @@ void CompiledViewport::render(
     const CompiledViewport* sourceViewport)
 {
   MRPT_START
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!m_isVisible)
   {
     return;
@@ -841,7 +841,7 @@ void CompiledViewport::render(
 void CompiledViewport::renderImageView(ShaderProgramManager& shaderManager)
 {
   MRPT_START
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!m_imageViewProxy)
   {
     return;
@@ -924,7 +924,7 @@ void CompiledViewport::renderImageView(ShaderProgramManager& shaderManager)
 // -----------------------------------------------------------------------
 void CompiledViewport::ssaoInit()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   // --- Hemisphere kernel (tangent space, z-facing hemisphere) ---
   std::mt19937 rng(42);
   std::uniform_real_distribution<float> randUnit(0.0f, 1.0f);
@@ -981,7 +981,7 @@ void CompiledViewport::ssaoInit()
 
 void CompiledViewport::ssaoCreateFBOs(int w, int h)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   ssaoDestroy();  // delete existing resources
 
   // --- G-buffer FBO ---
@@ -1054,7 +1054,7 @@ void CompiledViewport::ssaoCreateFBOs(int w, int h)
 
 void CompiledViewport::ssaoDestroy()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   auto del_tex = [](unsigned int& t)
   {
     if (t)
@@ -1104,7 +1104,7 @@ void CompiledViewport::ssaoDestroy()
 void CompiledViewport::renderSSAOGeometry(ShaderProgramManager& shaderManager)
 {
   MRPT_START
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   // Lazy init of kernel/noise/VAO (once per context)
   if (m_ssaoKernel.empty()) ssaoInit();
 
@@ -1133,7 +1133,7 @@ void CompiledViewport::renderSSAOGeometry(ShaderProgramManager& shaderManager)
 void CompiledViewport::renderSSAOCompute(ShaderProgramManager& shaderManager)
 {
   MRPT_START
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   const auto oldFBs = FrameBuffer::CurrentBinding();
 
   // ----- AO compute pass -----
@@ -1262,7 +1262,7 @@ void CompiledViewport::buildRenderQueueSSAOGeom(RenderQueue& queue, const TRende
 void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
 {
   MRPT_START
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   const int numCascades = m_renderMatrices.numShadowCascades;
 
   // Create/resize the cascade depth texture array
@@ -1330,7 +1330,7 @@ void CompiledViewport::renderNormalScene(
     const std::vector<RenderableProxy::Ptr>* proxiesToRender)
 {
   MRPT_START
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   // Setup OpenGL state
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -1450,7 +1450,7 @@ void CompiledViewport::processRenderQueue(
     ViewportRenderStats& stats)
 {
   MRPT_START
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   // Clear any prior GL errors
   while (glGetError() != GL_NO_ERROR)
@@ -1594,7 +1594,7 @@ void CompiledViewport::processRenderQueue(
 void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
 {
   MRPT_START
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (m_borderWidth == 0)
   {
     return;
@@ -1693,7 +1693,7 @@ void CompiledViewport::renderBorder(ShaderProgramManager& shaderManager)
 void CompiledViewport::renderTextOverlays(ShaderProgramManager& shaderManager)
 {
   MRPT_START
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!m_sourceVizViewport)
   {
     return;

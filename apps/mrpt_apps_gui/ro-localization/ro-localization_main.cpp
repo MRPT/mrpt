@@ -68,7 +68,7 @@ using namespace std;
 
 #include "CPosePDFParticlesExtended.h"
 
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_WXWIDGETS
+#if MRPT_HAS_OPENGL && MRPT_HAS_WXWIDGETS
 #define SHOW_REAL_TIME_3D
 #endif
 

@@ -17,28 +17,23 @@
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/config.h>     // MRPT_HAS_WXWIDGETS
-#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 #include <mrpt/system/CTicTac.h>
 
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL
 #ifdef _WIN32
 // Windows:
 #include <windows.h>
 #endif
 
 #ifdef __APPLE__
-#include <GLUT/glut.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/glut.h>
-#ifdef HAVE_FREEGLUT_EXT_H
-#include <GL/freeglut_ext.h>
-#endif
 #endif
 
 #endif
@@ -313,17 +308,6 @@ void CWxGLCanvasBase::InitGL()
   }
 
   SetCurrent(*m_gl_context);
-
-  static bool GLUT_INIT_DONE = false;
-
-  if (!GLUT_INIT_DONE)
-  {
-    GLUT_INIT_DONE = true;
-
-    int argc = 1;
-    char* argv[1] = {nullptr};
-    glutInit(&argc, argv);
-  }
 }
 
 void CWxGLCanvasBase::setCameraPose(const mrpt::poses::CPose3D& camPose)

@@ -31,7 +31,7 @@ using namespace mrpt::viz;
 
 void TexturedTrianglesProxy::compile(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -65,7 +65,7 @@ void TexturedTrianglesProxy::compile(const CVisualObject* sourceObj)
 
 void TexturedTrianglesProxy::updateBuffers(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -99,7 +99,7 @@ void TexturedTrianglesProxy::updateBuffers(const CVisualObject* sourceObj)
 
 void TexturedTrianglesProxy::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (m_triangleCount == 0)
@@ -189,7 +189,7 @@ void TexturedTrianglesProxy::extractTextureParams(const CVisualObject* sourceObj
 
 void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!rc.shader)
   {
     return;
@@ -317,7 +317,7 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
 
 void TexturedTrianglesProxy::updateTexture(const VisualObjectParams_TexturedTriangles* texTriObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!texTriObj)
   {
     return;
@@ -365,7 +365,7 @@ void TexturedTrianglesProxy::updateTexture(const VisualObjectParams_TexturedTria
 void TexturedTrianglesProxy::updateNormalMapTexture(
     const VisualObjectParams_TexturedTriangles* texTriObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!texTriObj || !texTriObj->normalMapHasBeenAssigned())
   {
     return;
@@ -399,7 +399,7 @@ void TexturedTrianglesProxy::updateNormalMapTexture(
 
 void TexturedTrianglesProxy::bindTexture() const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   // Bind diffuse texture (unit 0)
   glActiveTexture(GL_TEXTURE0 + MATERIAL_DIFFUSE_TEXTURE_UNIT);
   if (m_ownedTexture)
@@ -448,7 +448,7 @@ void TexturedTrianglesProxy::bindTexture() const
 
 void TexturedTrianglesProxy::unbindTexture() const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   glActiveTexture(GL_TEXTURE0 + NORMAL_MAP_TEXTURE_UNIT);
   glBindTexture(GL_TEXTURE_2D, 0);
 

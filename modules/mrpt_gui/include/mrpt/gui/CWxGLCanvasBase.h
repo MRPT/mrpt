@@ -16,7 +16,7 @@
 
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/gui/config.h>
-#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 #include <mrpt/viz/COrbitCameraController.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/opengl_fonts.h>
@@ -44,7 +44,7 @@
 #include <wx/string.h>
 #include <wx/textdlg.h>
 
-#if wxUSE_GLCANVAS && MRPT_HAS_OPENGL_GLUT
+#if wxUSE_GLCANVAS && MRPT_HAS_OPENGL
 
 #include <wx/dcclient.h>
 #include <wx/glcanvas.h>

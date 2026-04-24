@@ -167,7 +167,7 @@ class CImGuiSceneView
 // -----------------------------------------------------------------------
 inline void CImGuiSceneView::render()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   // Determine available area
   const ImVec2 avail = ImGui::GetContentRegionAvail();

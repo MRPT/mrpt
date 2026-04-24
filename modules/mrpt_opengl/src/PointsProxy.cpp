@@ -24,7 +24,7 @@ using namespace mrpt::viz;
 
 void PointsProxy::compile(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -43,7 +43,7 @@ void PointsProxy::compile(const CVisualObject* sourceObj)
 
 void PointsProxy::updateBuffers(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -62,7 +62,7 @@ void PointsProxy::updateBuffers(const CVisualObject* sourceObj)
 
 void PointsProxy::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (m_pointCount == 0)
@@ -94,7 +94,7 @@ void PointsProxy::extractPointParams(const CVisualObject* sourceObj)
 
 void PointsProxy::uploadPointUniforms(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!rc.shader)
   {
     return;

@@ -58,7 +58,7 @@ void CImGuiSceneView::ensureFBO(int w, int h)
   m_fboWidth = w;
   m_fboHeight = h;
 
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   // --- Color texture (this is what ImGui::Image will display) ---
   glGenTextures(1, &m_texColor);
@@ -102,7 +102,7 @@ void CImGuiSceneView::ensureFBO(int w, int h)
 
 void CImGuiSceneView::destroyFBO()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   if (m_fbo != 0)
   {

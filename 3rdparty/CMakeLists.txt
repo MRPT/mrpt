@@ -180,54 +180,6 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR AND MRPT_BUILD_rplidar_sdk)
 endif()
 
 # ----------------------------------
-# Built-in version of freeglut?
-# ----------------------------------
-if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM)
-	file(GLOB SRCS
-		freeglut/*.c
-		freeglut/GL/*.h
-	)
-	add_library(mrpt_freeglut STATIC ${SRCS})
-
-	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		target_compile_options(mrpt_freeglut PRIVATE
-			-fPIC
-		)
-	endif()
-	CHECK_INCLUDE_FILE("sys/time.h" HAVE_SYS_TIME_H)
-	CHECK_INCLUDE_FILE("sys/ioctl.h" HAVE_SYS_IOCTL_H)
-	CHECK_INCLUDE_FILE("fcntl.h" HAVE_FCNTL_H)
-	CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
-
-	target_compile_definitions(mrpt_freeglut PUBLIC
-		FREEGLUT_STATIC # or /DFREEGLUT_EXPORTS
-		HAVE_SYS_TIME_H=$<BOOL:${HAVE_SYS_TIME_H}>
-		HAVE_SYS_IOCTL_H=$<BOOL:${HAVE_SYS_IOCTL_H}>
-		HAVE_FCNTL_H=$<BOOL:${HAVE_FCNTL_H}>
-		HAVE_UNISTD_H=$<BOOL:${HAVE_UNISTD_H}>
-		)
-
-	# Embedded version:
-	target_include_directories(mrpt_freeglut SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty/freeglut/
-	)
-	set_target_properties(mrpt_freeglut PROPERTIES FOLDER "3rd party")
-
-	# Depend on X11 lib:
-	if (UNIX)
-		target_link_libraries(mrpt_freeglut PUBLIC
-			X11
-			${OPENGL_glu_LIBRARY}
-		)
-	endif()
-	if (MINGW)
-		target_link_libraries(mrpt_freeglut PRIVATE winmm
-		)
-	endif()
-	unset(SRCS)
-endif()
-
-# ----------------------------------
 # Built-in version of Glew?
 # ----------------------------------
 if(WIN32)

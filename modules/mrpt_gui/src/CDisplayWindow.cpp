@@ -19,7 +19,7 @@
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/config.h>  // MRPT_HAS_WXWIDGETS
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
@@ -332,7 +332,7 @@ CDisplayWindow::~CDisplayWindow() { CBaseGUIWindow::destroyWxWindow(); }
  * (cursorIsCross=true) */
 void CDisplayWindow::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = (const CWindowDialog*)m_hwnd.get();
   if (!win)
   {
@@ -347,7 +347,7 @@ void CDisplayWindow::setCursorCross([[maybe_unused]] bool cursorIsCross)
  ---------------------------------------------------------------*/
 std::optional<mrpt::img::TPixelCoord> CDisplayWindow::getLastMousePosition() const
 {
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
   const auto* win = (const CWindowDialog*)m_hwnd.get();
   if (!win)
   {

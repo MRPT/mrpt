@@ -43,7 +43,7 @@ Minimum compiler requisites:
     .. code-block:: bash
 
        # Build OpenGL graphics, Qt and nanogui GUIs:
-       sudo apt install freeglut3-dev libassimp-dev libglfw3-dev \
+       sudo apt install libassimp-dev libglfw3-dev \
             libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
             libxrandr-dev libxxf86vm-dev
 

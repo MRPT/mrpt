@@ -108,10 +108,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_MALLOC_MALLOC_H 1
 #endif
 
-#ifndef HAVE_FREEGLUT_EXT_H
-#cmakedefine HAVE_FREEGLUT_EXT_H 1
-#endif
-
 /** Standard functions */
 #ifndef HAVE_TIMEGM
 #cmakedefine HAVE_TIMEGM

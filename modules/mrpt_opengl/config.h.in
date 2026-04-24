@@ -12,8 +12,8 @@
 
 // clang-format off
 
-/** Includes OpenGL & GLUT libraries, required for CDisplayWindows3D to work. */
-#define MRPT_HAS_OPENGL_GLUT      ${CMAKE_MRPT_HAS_OPENGL_GLUT}
+/** Whether OpenGL is available (required for CDisplayWindow3D to work). */
+#define MRPT_HAS_OPENGL      ${CMAKE_MRPT_HAS_OPENGL}
 #define MRPT_HAS_EGL ${CMAKE_MRPT_HAS_EGL}
 #define MRPT_HAS_GLES ${CMAKE_MRPT_HAS_GLES}
 

@@ -14,7 +14,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
-#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL_GLUT
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 
 using namespace mrpt::gui;
 
@@ -24,7 +24,7 @@ MRPT2NanoguiGLCanvas::MRPT2NanoguiGLCanvas(nanogui::Widget* parent) : nanogui::G
 
 void MRPT2NanoguiGLCanvas::drawGL()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   std::lock_guard<std::mutex> lck(scene_mtx);
 
   try

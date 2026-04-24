@@ -396,7 +396,7 @@ int main(int argc, char** argv)
     // Optionally, display in 3D:
     if (show_in_3d && GT_path.rows() > 1)
     {
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_WXWIDGETS
+#if MRPT_HAS_OPENGL && MRPT_HAS_WXWIDGETS
       mrpt::gui::CDisplayWindow3D win("Final simulation", 400, 300);
 
       mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
@@ -448,7 +448,7 @@ int main(int argc, char** argv)
                 << "\n";
       win.waitForKey();
 
-#endif  // MRPT_HAS_OPENGL_GLUT  && MRPT_HAS_WXWIDGETS
+#endif  // MRPT_HAS_OPENGL  && MRPT_HAS_WXWIDGETS
     }
   }
   catch (const std::exception& e)

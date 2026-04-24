@@ -11,7 +11,7 @@ include(./cmake/script_qt.cmake REQUIRED)
 include(./cmake/script_wxwidgets.cmake REQUIRED)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(./cmake/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
+include(./cmake/script_opengl.cmake REQUIRED)     # Check for OpenGL / EGL / GLES
 
 if (CMAKE_MRPT_HAS_NANOGUI)
 	set(nanogui_dep mrpt_nanogui)
@@ -107,7 +107,7 @@ if(CMAKE_MRPT_HAS_Qt5)
 endif()
 
 if(MRPT_OPENGL_LIBS)
-  # Link against glut:
+  # Link against OpenGL:
   target_link_libraries(${PROJECT_NAME} PRIVATE ${MRPT_OPENGL_LIBS})
 endif()
 

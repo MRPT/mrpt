@@ -19,7 +19,7 @@
 
 using namespace mrpt::opengl;
 
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 namespace
 {
 bool isExtensionSupported(const std::string& extension)
@@ -44,7 +44,7 @@ bool isExtensionSupported(const std::string& extension)
 
 void FrameBuffer::RAII_Impl::create(unsigned int width, unsigned int height, int nSamples)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   if (!isExtensionSupported("GL_EXT_framebuffer_object"))
     THROW_EXCEPTION(
@@ -135,7 +135,7 @@ void FrameBuffer::RAII_Impl::create(unsigned int width, unsigned int height, int
 
 void FrameBuffer::RAII_Impl::createDepthMap(unsigned int width, unsigned int height)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!isExtensionSupported("GL_EXT_framebuffer_object"))
     THROW_EXCEPTION(
         "Framebuffer Object extension unsupported "
@@ -198,7 +198,7 @@ void FrameBuffer::RAII_Impl::destroy()
   {
     return;
   }
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   unbind();
 
   if (_.m_isDepthMap)
@@ -223,7 +223,7 @@ void FrameBuffer::RAII_Impl::destroy()
 
 FrameBufferBinding FrameBuffer::RAII_Impl::bind()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   const FrameBufferBinding ids = CurrentBinding();
 
   auto& _ = m_state.get();
@@ -244,7 +244,7 @@ FrameBufferBinding FrameBuffer::RAII_Impl::bind()
 
 void FrameBuffer::RAII_Impl::unbind()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   auto& _ = m_state.get();
   if (_.m_Samples > 1) glDisable(GL_MULTISAMPLE);
 
@@ -256,7 +256,7 @@ void FrameBuffer::RAII_Impl::unbind()
 
 void FrameBuffer::blit()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   auto& _ = m_impl.m_state.get();
 
   glBindFramebuffer(GL_READ_FRAMEBUFFER, _.m_Framebuffer);
@@ -273,7 +273,7 @@ void FrameBuffer::blit()
 
 void FrameBuffer::Bind(const FrameBufferBinding& ids)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   glBindFramebuffer(GL_READ_FRAMEBUFFER, ids.readFbId);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ids.drawFbId);
 #endif
@@ -281,14 +281,14 @@ void FrameBuffer::Bind(const FrameBufferBinding& ids)
 
 void FrameBuffer::Unbind()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
 }
 
 FrameBufferBinding FrameBuffer::CurrentBinding()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   GLint drawFboId = 0, readFboId = 0;
   glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
   glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);

@@ -129,7 +129,7 @@ void Shader::Data::destroy()
   {
     return;
   }
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   // See clear() comments
   ASSERT_(creationThread == std::this_thread::get_id());
 
@@ -143,7 +143,7 @@ bool Shader::compile(
     const std::vector<std::string>& shaderCode,
     mrpt::optional_ref<std::string> outErrorMessages)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   clear();
 
   const auto nShaderCodes = shaderCode.size();
@@ -230,7 +230,7 @@ void Program::Data::destroy()
     return;
   }
 
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   // See clear() comments
   ASSERT_(linkedThread == std::this_thread::get_id());
@@ -255,7 +255,7 @@ void Program::Data::destroy()
 bool Program::linkProgram(
     std::vector<Shader>& shaders, mrpt::optional_ref<std::string> outErrorMessages)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   clear();
 
 #if defined(MRPT_OS_LINUX)
@@ -310,7 +310,7 @@ bool Program::linkProgram(
 
 void Program::declareUniform(const std::string& name)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   ASSERT_(!empty());
 
   if (m_data->uniforms.count(name) != 0)
@@ -327,7 +327,7 @@ void Program::declareUniform(const std::string& name)
 }
 void Program::declareAttribute(const std::string& name)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   ASSERT_(!empty());
 
   if (m_data->attribs.count(name) != 0)
@@ -346,7 +346,7 @@ void Program::declareAttribute(const std::string& name)
 
 void Program::dumpProgramDescription(std::ostream& o) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   ASSERT_(!empty());
 
   GLint count;
@@ -384,7 +384,7 @@ void Program::dumpProgramDescription(std::ostream& o) const
 
 void Program::use()
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   // Clear any lingering GL errors before calling glUseProgram
   while (glGetError() != GL_NO_ERROR)
@@ -398,14 +398,14 @@ void Program::use()
 
 void Program::setInt(const char* uniformName, int value) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   glUniform1i(uniformId(uniformName), value);
 #endif
 }
 
 void Program::setFloat(const char* uniformName, float value, bool failIfNotExists) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!failIfNotExists && !hasUniform(uniformName))
   {
     return;
@@ -416,14 +416,14 @@ void Program::setFloat(const char* uniformName, float value, bool failIfNotExist
 
 void Program::setFloat3(const char* uniformName, float v1, float v2, float v3) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   glUniform3f(uniformId(uniformName), v1, v2, v3);
 #endif
 }
 
 void Program::setFloat4(const char* uniformName, float v1, float v2, float v3, float v4) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   glUniform4f(uniformId(uniformName), v1, v2, v3, v4);
 #endif
 }

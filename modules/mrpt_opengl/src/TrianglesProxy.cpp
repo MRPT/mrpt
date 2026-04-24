@@ -29,7 +29,7 @@ using namespace mrpt::viz;
 
 void TrianglesProxy::compile(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -48,7 +48,7 @@ void TrianglesProxy::compile(const CVisualObject* sourceObj)
 
 void TrianglesProxy::updateBuffers(const CVisualObject* sourceObj)
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (!sourceObj)
@@ -67,7 +67,7 @@ void TrianglesProxy::updateBuffers(const CVisualObject* sourceObj)
 
 void TrianglesProxy::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
 
   if (m_triangleCount == 0)
@@ -118,7 +118,7 @@ void TrianglesProxy::extractTriangleParams(const CVisualObject* sourceObj)
 
 void TrianglesProxy::uploadTriangleUniforms(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   if (!rc.shader)
   {
     return;
@@ -260,7 +260,7 @@ void TrianglesProxy::uploadTriangleUniforms(const RenderContext& rc) const
 
 void TrianglesProxy::setupFaceCulling() const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   switch (m_params.cullFace)
   {
     case TCullFace::NONE:
@@ -280,7 +280,7 @@ void TrianglesProxy::setupFaceCulling() const
 
 void TrianglesProxy::restoreFaceCulling() const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   // Restore to default state (culling disabled)
   glDisable(GL_CULL_FACE);
 #endif

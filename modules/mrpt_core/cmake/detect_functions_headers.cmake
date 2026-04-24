@@ -35,17 +35,6 @@ CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 
 check_symbol_exists(localtime_r "time.h" HAVE_LOCALTIME_R)
 
-if(CMAKE_MRPT_HAS_GLUT_SYSTEM)
-	set(HAVE_FREEGLUT_EXT_H 0)
-	find_file(FREEGLUTEXT_HFILE GL/freeglut_ext.h)
-	if(FREEGLUTEXT_HFILE)
-		mark_as_advanced(FREEGLUTEXT_HFILE)
-		set(HAVE_FREEGLUT_EXT_H 1)
-	endif()
-else()
-	set(HAVE_FREEGLUT_EXT_H 1)
-endif()
-
 CHECK_INCLUDE_FILE("winsock2.h" HAVE_WINSOCK2_H)
 
 CHECK_INCLUDE_FILES("windows.h;winusb.h" HAVE_WINUSB_H)

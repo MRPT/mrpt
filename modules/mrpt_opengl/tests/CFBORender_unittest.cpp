@@ -33,7 +33,7 @@
 
 #include <Eigen/Dense>
 
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL
+#if MRPT_HAS_OPENGL && MRPT_HAS_EGL
 #define RUN_OFFSCREEN_RENDER_TESTS
 #endif
 
