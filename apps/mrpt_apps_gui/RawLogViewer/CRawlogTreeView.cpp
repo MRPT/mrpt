@@ -193,8 +193,7 @@ void CRawlogTreeView::reloadFromRawlog()
   }
 
   // Set new size:
-  int ly = m_tree_nodes.size();
-  SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly);
+  SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, static_cast<int>(m_tree_nodes.size()));
 }
 
 /* ------------------------------------------------------------
@@ -456,13 +455,12 @@ int CRawlogTreeView::iconIndexFromClass(const TRuntimeClassId* class_ID)
 void CRawlogTreeView::OnLeftDown(wxMouseEvent& e)
 {
   // The origin of the window:
-  int xc0, y0;
-  GetViewStart(&xc0, &y0);  // Not pixels, but **lines**
+  const auto pt0 = GetViewStart();  // Not pixels, but **lines**
 
   // Determine the clicked row:
-  int nLineThisView = e.GetY() / ROW_HEIGHT;
+  const auto nLineThisView = e.GetY() / ROW_HEIGHT;
 
-  size_t sel_item = y0 + nLineThisView;
+  const auto sel_item = pt0.y + nLineThisView;
 
   SetSelectedItem(sel_item);
 }
