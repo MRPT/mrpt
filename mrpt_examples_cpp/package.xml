@@ -22,6 +22,8 @@
 
   <depend>mrpt_data</depend>
 
+  <build_depend>libglfw3-dev</build_depend>  <!-- For: imgui_mrpt_example -->
+
   <export>
     <build_type>cmake</build_type>
   </export>
