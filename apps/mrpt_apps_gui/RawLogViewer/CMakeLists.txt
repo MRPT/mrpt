@@ -12,7 +12,11 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_slam REQUIRED)
 find_package(mrpt_gui REQUIRED)
 find_package(mrpt_topography REQUIRED)
-find_package(wxWidgets REQUIRED COMPONENTS gl core base adv)
+mrpt_find_wxwidgets()
+if(NOT wxWidgets_FOUND)
+  message(STATUS "wxWidgets not found — skipping ${PROJECT_NAME}")
+  return()
+endif()
 
 # Define the executable target:
 mrpt_add_executable(

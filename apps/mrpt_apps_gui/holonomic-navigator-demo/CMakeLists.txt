@@ -11,7 +11,11 @@ find_package(mrpt_common REQUIRED)
 # Dependencies
 find_package(mrpt_nav REQUIRED)
 find_package(mrpt_gui REQUIRED)
-find_package(wxWidgets REQUIRED COMPONENTS gl core base adv)
+mrpt_find_wxwidgets()
+if(NOT wxWidgets_FOUND)
+  message(STATUS "wxWidgets not found — skipping ${PROJECT_NAME}")
+  return()
+endif()
 find_package(OpenGL REQUIRED)
 
 # Define the executable target:

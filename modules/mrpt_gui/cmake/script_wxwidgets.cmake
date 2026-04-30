@@ -84,6 +84,20 @@ if(wxWidgets_FOUND)
 		INTERFACE_COMPILE_DEFINITIONS "${wxWidgets_DEFINITIONS}"
 		)
 
+	# Also create the wxWidgets::wxWidgets target for compatibility with
+	# apps that use the modern CMake target name (older wxWidgets CMake modules
+	# only define variables, not this imported target).
+	if(NOT TARGET wxWidgets::wxWidgets)
+		add_library(wxWidgets::wxWidgets INTERFACE IMPORTED)
+		set_target_properties(wxWidgets::wxWidgets
+			PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${wxWidgets_INCLUDE_DIRS}"
+			INTERFACE_LINK_LIBRARIES "$<$<CONFIG:Debug>:${wxWidgets_LIBRARIES_DEBUG}>$<$<NOT:$<CONFIG:Debug>>:${wxWidgets_LIBRARIES_RELEASE}>"
+			INTERFACE_COMPILE_OPTIONS "${wxWidgets_CXX_FLAGS}"
+			INTERFACE_COMPILE_DEFINITIONS "${wxWidgets_DEFINITIONS}"
+			)
+	endif()
+
 
 	if($ENV{VERBOSE})
 		message(STATUS "wxWidgets:")
