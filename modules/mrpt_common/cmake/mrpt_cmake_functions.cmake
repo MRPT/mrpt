@@ -718,6 +718,31 @@ endfunction()
 # Calls find_package(package_name QUIET), and if it is not found, prints a
 # descriptive message and call "return()" to exit the current cmake script.
 # -----------------------------------------------------------------------------
+# Helper: find wxWidgets (optional) and ensure the wxWidgets::wxWidgets
+# imported target exists for older CMake/wxWidgets versions that only define
+# the legacy wxWidgets_LIBRARIES variable.
+# Sets wxWidgets_FOUND in the caller's scope.
+# Usage:
+#   mrpt_find_wxwidgets()
+#   if(NOT wxWidgets_FOUND)
+#     message(STATUS "wxWidgets not found, skipping ${PROJECT_NAME}")
+#     return()
+#   endif()
+macro(mrpt_find_wxwidgets)
+  find_package(wxWidgets QUIET COMPONENTS gl core base adv)
+  if(wxWidgets_FOUND)
+    if(NOT TARGET wxWidgets::wxWidgets)
+      add_library(wxWidgets::wxWidgets INTERFACE IMPORTED)
+      set_target_properties(wxWidgets::wxWidgets PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${wxWidgets_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${wxWidgets_LIBRARIES}"
+        INTERFACE_COMPILE_OPTIONS "${wxWidgets_CXX_FLAGS}"
+        INTERFACE_COMPILE_DEFINITIONS "${wxWidgets_DEFINITIONS}"
+      )
+    endif()
+  endif()
+endmacro()
+
 macro(mrpt_find_package_or_return PACKAGE_NAME)
   find_package(${PACKAGE_NAME} QUIET)
   if (NOT ${PACKAGE_NAME}_FOUND)
