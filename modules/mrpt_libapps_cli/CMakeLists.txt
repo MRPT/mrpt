@@ -6,6 +6,7 @@ find_package(mrpt_hwdrivers REQUIRED)
 find_package(mrpt_slam REQUIRED)
 find_package(mrpt_topography REQUIRED)
 find_package(CLI11 REQUIRED)
+find_package(Threads REQUIRED)
 
 # define lib:
 set(LIB_SOURCES
