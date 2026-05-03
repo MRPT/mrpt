@@ -19,8 +19,6 @@ include(GNUInstallDirs) # for install dirs in multilib
 include(CMakePackageConfigHelpers)
 include(CTest)
 
-find_package(GTest QUIET)
-
 # Build static or dynamic libs?
 # ===================================================
 # Default: dynamic libraries (except if building to JavaScript code)
@@ -633,6 +631,9 @@ function(mrpt_add_test)
       return()
     endif()
 
+    find_package(Threads)
+    find_package(GTest QUIET)
+
     add_executable(${MRPT_ADD_TEST_TARGET}
       ${MRPT_ADD_TEST_SOURCES}
       ${mrpt_common_DIR}/../common_sources/mrpt_test_main.cpp
@@ -643,11 +644,18 @@ function(mrpt_add_test)
     mrpt_configure_app(${MRPT_ADD_TEST_TARGET})
 
     # lib Dependencies:
+    set(_test_extra_libs "")
+    if(TARGET Threads::Threads)
+      list(APPEND _test_extra_libs Threads::Threads)
+    endif()
+    if(TARGET GTest::GTest)
+      list(APPEND _test_extra_libs GTest::GTest)
+    endif()
     target_link_libraries(
       ${MRPT_ADD_TEST_TARGET}
+      PRIVATE
       ${MRPT_ADD_TEST_LINK_LIBRARIES}
-      Threads::Threads
-      GTest::GTest
+      ${_test_extra_libs}
     )
 
     if(ENABLE_COVERAGE)
