@@ -93,6 +93,7 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/stock_objects.h>
+#include <sys/stat.h>
 
 // this is to enforce to load the mrpt-maps DLL, then register all OpenGL classes defined there.
 const mrpt::maps::CGenericPointsMap dummy_map;
@@ -372,6 +373,8 @@ const wxWindowID _DSceneViewerFrame::ID_TIMER1 = wxNewId();
 const wxWindowID _DSceneViewerFrame::ID_TRAVELLING_TIMER = wxNewId();
 
 const wxWindowID _DSceneViewerFrame::ID_TIMER_AUTOPLAY = wxNewId();
+
+const wxWindowID _DSceneViewerFrame::ID_TIMER_FILEWATCH = wxNewId();
 
 BEGIN_EVENT_TABLE(_DSceneViewerFrame, wxFrame)
 //(*EventTable(_DSceneViewerFrame)
@@ -723,6 +726,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id) : maxv(0
   Bind(wxEVT_MENU, &svf::OnMenuCameraTrackingArbitrary, this, ID_MENUITEM14);
   Bind(wxEVT_TIMER, &svf::OntimAutoplay, this, ID_TIMER_AUTOPLAY);
   Bind(wxEVT_TIMER, &svf::OnTravellingTrigger, this, ID_TRAVELLING_TIMER);
+  Bind(wxEVT_TIMER, &svf::OntimFileWatch, this, ID_TIMER_FILEWATCH);
 
   // Create the wxCanvas object:
   m_canvas = new CMyGLCanvas(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
@@ -737,6 +741,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id) : maxv(0
   OnNewScene(dummEvent);
 
   m_autoplayTimer = std::make_unique<wxTimer>(this, ID_TIMER_AUTOPLAY);
+
+  m_timerFileWatch = std::make_unique<wxTimer>(this, ID_TIMER_FILEWATCH);
 
   m_tTravelling.SetOwner(this, ID_TRAVELLING_TIMER);
 
@@ -907,6 +913,13 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
 
     loadedFileName = fil;
 
+    // Record mtime and start auto-reload watch timer (1 second interval):
+    {
+      struct stat st;
+      m_loadedFileLastMTime = (::stat(fil.c_str(), &st) == 0) ? st.st_mtime : 0;
+    }
+    if (!m_timerFileWatch->IsRunning()) m_timerFileWatch->Start(1000);
+
     if (showFileNameInViewport)
     {
       openGLSceneRef->getViewport()->addTextMessage(20, 20, extractFileName(loadedFileName));
@@ -993,6 +1006,22 @@ void _DSceneViewerFrame::OntimAutoplay(wxTimerEvent& event)
 
   // Continue?
   if (btnAutoplay->GetValue()) m_autoplayTimer->Start(delayBetweenAutoplay, true);  // One-shot:
+}
+
+void _DSceneViewerFrame::OntimFileWatch(wxTimerEvent&)
+{
+  if (loadedFileName.empty() || !mrpt::system::fileExists(loadedFileName)) return;
+
+  struct stat st;
+  if (::stat(loadedFileName.c_str(), &st) != 0) return;
+
+  if (st.st_mtime == m_loadedFileLastMTime) return;
+
+  m_loadedFileLastMTime = st.st_mtime;
+
+  const auto savedCamera = m_canvas->orbitCameraController();
+  loadFromFile(loadedFileName);
+  m_canvas->orbitCameraController() = savedCamera;
 }
 
 void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
