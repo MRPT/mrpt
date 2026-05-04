@@ -632,7 +632,7 @@ function(mrpt_add_test)
     endif()
 
     find_package(Threads)
-    find_package(GTest QUIET)
+    find_package(GTest REQUIRED)
 
     add_executable(${MRPT_ADD_TEST_TARGET}
       ${MRPT_ADD_TEST_SOURCES}
