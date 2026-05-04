@@ -1,4 +1,4 @@
-# MRPT 3.0 AI Agent Instructions
+# MRPT 3.x AI Agent Instructions
 
 Welcome, AI Agent! This file contains the architectural context and coding guidelines for the Mobile Robot Programming Toolkit (MRPT) 3.0. When generating, refactoring, or reviewing code in this repository, you must strictly adhere to the following rules.
 
