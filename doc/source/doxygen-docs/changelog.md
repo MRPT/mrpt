@@ -1,9 +1,10 @@
 \page changelog Change Log
 
-# Version 2.15.15: UNRELEASED
+# Version 2.15.15: Released May 5th, 2026
+- Changes in apps:
+  - SceneViewer3D: autoreload file if changed externally
   - \ref mrpt_maps_grp
     - mrpt::obs::recolorize3Dpc(): BUGFIX: Wrong colorization for "rgb" uint8 fields.
-
 
 # Version 2.15.14: Released Apr 20th, 2026
 - Changes in applications:
