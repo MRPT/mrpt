@@ -235,8 +235,7 @@ void mrpt::obs::recolorize3Dpc(
 
     for (size_t i = 0; i < pnts->size(); i++)
     {
-      pnts->setPointColor_fast(
-          i, mrpt::f2u8((*data_r)[i]), mrpt::f2u8((*data_g)[i]), mrpt::f2u8((*data_b)[i]));
+      pnts->setPointColor_u8_fast(i, (*data_r)[i], (*data_g)[i], (*data_b)[i]);
     }
 
     return;
