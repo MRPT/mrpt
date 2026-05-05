@@ -27,6 +27,7 @@
 #include <wx/timer.h>
 #include <wx/toolbar.h>
 
+#include <ctime>
 #include <optional>
 
 class CDlgCamTracking;
@@ -104,6 +105,7 @@ class _DSceneViewerFrame : public wxFrame
   void OnmnuImportImageView(wxCommandEvent& event);
 
   void OntimAutoplay(wxTimerEvent& event);
+  void OntimFileWatch(wxTimerEvent& event);
 
   void applyShadowsOptions();
 
@@ -163,6 +165,7 @@ class _DSceneViewerFrame : public wxFrame
 
   static const long ID_TRAVELLING_TIMER;
   static const long ID_TIMER_AUTOPLAY;
+  static const long ID_TIMER_FILEWATCH;
 
   //(*Declarations(_DSceneViewerFrame)
   wxMenuItem* MenuItem8;
@@ -215,6 +218,8 @@ class _DSceneViewerFrame : public wxFrame
 
   CMyGLCanvas* m_canvas;
   std::unique_ptr<wxTimer> m_autoplayTimer;
+  std::unique_ptr<wxTimer> m_timerFileWatch;
+  time_t m_loadedFileLastMTime = 0;
 
   /** The list of currently selected objects */
   std::vector<mrpt::opengl::CRenderizable::Ptr> m_selected_gl_objects;
