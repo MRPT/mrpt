@@ -18,6 +18,7 @@
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
 
+  <test_depend>python3-numpy</test_depend>
 
   <export>
     <build_type>cmake</build_type>
