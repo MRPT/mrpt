@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.15.16: Released May 7th, 2026
+- Hot fix: upgrade vendored octomap version to 1.10.0 to fix cmake errors in Ubuntu 26.04+.
+
 # Version 2.15.15: Released May 5th, 2026
 - Changes in apps:
   - SceneViewer3D: autoreload file if changed externally
