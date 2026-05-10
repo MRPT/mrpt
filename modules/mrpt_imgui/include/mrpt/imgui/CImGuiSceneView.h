@@ -105,13 +105,16 @@ class CImGuiSceneView
   /** @name Appearance
    *  @{ */
 
-  /** Background color (default: dark gray 0.3, 0.3, 0.3) */
+  /** Background color override. If never called, the scene's own viewport
+   *  background (typically a vertical gradient set up by mrpt::viz::Scene)
+   *  is preserved. */
   void setBackgroundColor(float r, float g, float b, float a = 1.0f)
   {
     m_bgColor[0] = r;
     m_bgColor[1] = g;
     m_bgColor[2] = b;
     m_bgColor[3] = a;
+    m_hasCustomBg = true;
   }
 
   /** @} */
@@ -152,6 +155,7 @@ class CImGuiSceneView
 
   // --- Appearance ---
   float m_bgColor[4] = {0.3f, 0.3f, 0.3f, 1.0f};
+  bool m_hasCustomBg = false;
 
   // --- Camera interaction ---
   void handleMouseInteraction(float widgetX, float widgetY);
@@ -193,7 +197,10 @@ inline void CImGuiSceneView::render()
     if (auto vp = m_scene->getViewport("main"); vp)
     {
       vp->getCamera() = m_camera;
-      vp->setCustomBackgroundColor({m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]});
+      if (m_hasCustomBg)
+      {
+        vp->setCustomBackgroundColor({m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]});
+      }
     }
 
     // Compile / incrementally update the scene
@@ -218,7 +225,14 @@ inline void CImGuiSceneView::render()
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
 
-    glClearColor(m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]);
+    if (m_hasCustomBg)
+    {
+      glClearColor(m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]);
+    }
+    else
+    {
+      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_compiledScene->render(w, h, 0, 0);
