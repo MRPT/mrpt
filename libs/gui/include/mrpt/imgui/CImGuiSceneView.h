@@ -97,13 +97,16 @@ class CImGuiSceneView
   /** @name Appearance
    *  @{ */
 
-  /** Background color (default: dark gray 0.3, 0.3, 0.3) */
+  /** Background color override. If never called, the scene's own viewport
+   *  background (typically a vertical gradient set up by mrpt::opengl::Scene)
+   *  is preserved. */
   void setBackgroundColor(float r, float g, float b, float a = 1.0f)
   {
     m_bgColor[0] = r;
     m_bgColor[1] = g;
     m_bgColor[2] = b;
     m_bgColor[3] = a;
+    m_hasCustomBg = true;
   }
 
   /** @} */
@@ -147,6 +150,7 @@ class CImGuiSceneView
 
   // --- Appearance ---
   float m_bgColor[4] = {0.3f, 0.3f, 0.3f, 1.0f};
+  bool m_hasCustomBg = false;
 
   // --- Camera interaction state ---
   float m_orbitSensitivity = 0.3f;
@@ -196,15 +200,26 @@ inline void CImGuiSceneView::render()
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
 
-    // Clear with our background color
-    glClearColor(m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]);
+    // Clear with our background color (or transparent black so the scene's
+    // own gradient/background dominates when the user didn't set one)
+    if (m_hasCustomBg)
+    {
+      glClearColor(m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]);
+    }
+    else
+    {
+      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Apply our camera to the scene's main viewport
     auto vp = m_scene->getViewport("main");
     if (vp)
     {
-      vp->setCustomBackgroundColor({m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]});
+      if (m_hasCustomBg)
+      {
+        vp->setCustomBackgroundColor({m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]});
+      }
 
       // Render each viewport, passing our camera
       vp->render(w, h, 0, 0, &m_camera);
@@ -288,47 +303,42 @@ inline void CImGuiSceneView::handleMouseInteraction(
     m_isOrbiting = false;
   }
 
-  // --- Pan (middle-drag or Shift+left-drag) ---
+  // --- Pan (middle-drag, right-drag, or Shift+left-drag) ---
   const bool shiftHeld = io.KeyShift;
   const bool panWithMiddle = ImGui::IsMouseDragging(ImGuiMouseButton_Middle);
+  const bool panWithRight = ImGui::IsMouseDragging(ImGuiMouseButton_Right);
   const bool panWithShiftLeft = shiftHeld && ImGui::IsMouseDragging(ImGuiMouseButton_Left);
 
-  if (panWithMiddle || panWithShiftLeft)
+  if (panWithMiddle || panWithRight || panWithShiftLeft)
   {
-    const int btn = panWithMiddle ? ImGuiMouseButton_Middle : ImGuiMouseButton_Left;
+    int btn = ImGuiMouseButton_Left;
+    if (panWithMiddle)
+    {
+      btn = ImGuiMouseButton_Middle;
+    }
+    else if (panWithRight)
+    {
+      btn = ImGuiMouseButton_Right;
+    }
     const ImVec2 delta = ImGui::GetMouseDragDelta(btn);
     ImGui::ResetMouseDragDelta(btn);
 
+    // Move the look-at point in the world XY (horizontal) plane, matching
+    // the convention used by mrpt::gui::CGlCanvasBase::updatePan(): mouse
+    // X moves the look-at perpendicular to the camera azimuth, mouse Y
+    // moves it along the azimuth direction. Z is left untouched so the
+    // ground plane stays the ground plane regardless of elevation.
     const float dist = m_camera.getZoomDistance();
     const float azRad = m_camera.getAzimuthDegrees() * static_cast<float>(M_PI) / 180.0f;
+    const float D = dist * m_panSensitivity;
 
-    // Pan in the camera's local right/up directions (projected on XY)
-    const float panScale = dist * m_panSensitivity;
-
-    const float dx = -delta.x * panScale;
-    const float dy = delta.y * panScale;
-
-    const float sinAz = std::sin(azRad);
-    const float cosAz = std::cos(azRad);
-
-    // Right direction in world XY
-    const float rx = cosAz;
-    const float ry = sinAz;
-
-    // Up direction approximation (world Z for small elevations,
-    // or the perpendicular in the orbit plane)
-    const float elRad = m_camera.getElevationDegrees() * static_cast<float>(M_PI) / 180.0f;
-    const float cosEl = std::cos(elRad);
-    const float sinEl = std::sin(elRad);
-
-    // "up" in camera coords projects onto world as:
-    const float ux = -sinAz * sinEl;
-    const float uy = cosAz * sinEl;
-    const float uz = cosEl;
+    const float Ay = -delta.x;
+    const float Ax = -delta.y;
 
     m_camera.setPointingAt(
-        m_camera.getPointingAtX() + rx * dx + ux * dy,
-        m_camera.getPointingAtY() + ry * dx + uy * dy, m_camera.getPointingAtZ() + uz * dy);
+        m_camera.getPointingAtX() + D * (Ax * std::cos(azRad) - Ay * std::sin(azRad)),
+        m_camera.getPointingAtY() + D * (Ax * std::sin(azRad) + Ay * std::cos(azRad)),
+        m_camera.getPointingAtZ());
 
     m_isPanning = true;
   }
