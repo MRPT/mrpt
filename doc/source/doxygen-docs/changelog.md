@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.15.18: Released May 12th, 2026
+- Hot fix: fixes needed to build new octomap targets upstream in ROS build farms.
+
 # Version 2.15.17: Released May 9th, 2026
 - Hot fix: upgrade vendored octomap version to latest devel commit to fix cmake errors in Ubuntu 26.04+.
 
