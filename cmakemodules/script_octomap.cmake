@@ -53,7 +53,7 @@ if (NOT OCTOMAP_FOUND)
 		  BUILD_COMMAND
 			${CMAKE_COMMAND} --build ${MRPT_BINARY_DIR}/EP_octomap-prefix/src/EP_octomap-build --config $<CONFIG>
 			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/EP_octomap-prefix/src/EP_octomap-build/octomap/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
-			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/EP_octomap-prefix/src/EP_octomap-build/octomath/${LIB_PREFIX}octomath$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
+			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/EP_octomap-prefix/src/EP_octomap-build/octomap/${LIB_PREFIX}octomath$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
 		  INSTALL_COMMAND   ""
 		  TEST_COMMAND      ""
 		)
