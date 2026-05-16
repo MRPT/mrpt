@@ -16,6 +16,8 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/topography/conversions.h>
 
+#include <iostream>
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
@@ -60,8 +62,10 @@ void mrpt::topography::geocentricToENU_WGS84(
   TPoint3D P_geocentric_ref;
   geodeticToGeocentric_WGS84(in_coords_origin, P_geocentric_ref);
 
-  const double clat = cos(DEG2RAD(in_coords_origin.lat)), slat = sin(DEG2RAD(in_coords_origin.lat));
-  const double clon = cos(DEG2RAD(in_coords_origin.lon)), slon = sin(DEG2RAD(in_coords_origin.lon));
+  const double clat = cos(DEG2RAD(in_coords_origin.lat));
+  const double slat = sin(DEG2RAD(in_coords_origin.lat));
+  const double clon = cos(DEG2RAD(in_coords_origin.lon));
+  const double slon = sin(DEG2RAD(in_coords_origin.lon));
 
   // Compute the resulting relative coordinates:
   // For using smaller numbers:
@@ -86,8 +90,10 @@ void mrpt::topography::geocentricToENU_WGS84(
   TPoint3D P_geocentric_ref;
   geodeticToGeocentric_WGS84(in_coords_origin, P_geocentric_ref);
 
-  const double clat = cos(DEG2RAD(in_coords_origin.lat)), slat = sin(DEG2RAD(in_coords_origin.lat));
-  const double clon = cos(DEG2RAD(in_coords_origin.lon)), slon = sin(DEG2RAD(in_coords_origin.lon));
+  const double clat = cos(DEG2RAD(in_coords_origin.lat));
+  const double slat = sin(DEG2RAD(in_coords_origin.lat));
+  const double clon = cos(DEG2RAD(in_coords_origin.lon));
+  const double slon = sin(DEG2RAD(in_coords_origin.lon));
 
   const size_t N = in_geocentric_points.size();
   out_ENU_points.resize(N);
@@ -315,63 +321,112 @@ void mrpt::topography::UTMToGeodetic(
       latp + (1 + ep2 * clp2 - 1.5 * ep2 * sin(latp) * cos(latp) * (tau - latp)) * (tau - latp)));
 }
 
+namespace
+{
+char utm_zone_from_latitude(const double la)
+{
+  char letter = 0;
+  if (la < -72)
+  {
+    letter = 'C';
+  }
+  else if (la < -64)
+  {
+    letter = 'D';
+  }
+  else if (la < -56)
+  {
+    letter = 'E';
+  }
+  else if (la < -48)
+  {
+    letter = 'F';
+  }
+  else if (la < -40)
+  {
+    letter = 'G';
+  }
+  else if (la < -32)
+  {
+    letter = 'H';
+  }
+  else if (la < -24)
+  {
+    letter = 'J';
+  }
+  else if (la < -16)
+  {
+    letter = 'K';
+  }
+  else if (la < -8)
+  {
+    letter = 'L';
+  }
+  else if (la < 0)
+  {
+    letter = 'M';
+  }
+  else if (la < 8)
+  {
+    letter = 'N';
+  }
+  else if (la < 16)
+  {
+    letter = 'P';
+  }
+  else if (la < 24)
+  {
+    letter = 'Q';
+  }
+  else if (la < 32)
+  {
+    letter = 'R';
+  }
+  else if (la < 40)
+  {
+    letter = 'S';
+  }
+  else if (la < 48)
+  {
+    letter = 'T';
+  }
+  else if (la < 56)
+  {
+    letter = 'U';
+  }
+  else if (la < 64)
+  {
+    letter = 'V';
+  }
+  else if (la < 72)
+  {
+    letter = 'W';
+  }
+  else
+  {
+    letter = 'X';
+  }
+  return letter;
+}
+}  // namespace
+
 void mrpt::topography::geodeticToUTM(
     const TGeodeticCoords& GeodeticCoords,
     TUTMCoords& UTMCoords,
     int& UTMZone,
     char& UTMLatitudeBand,
-    const TEllipsoid& ellip)
+    const TEllipsoid& ellipsoid)
 {
   const double la = GeodeticCoords.lat;
-  char Letra;
-  if (la < -72)
-    Letra = 'C';
-  else if (la < -64)
-    Letra = 'D';
-  else if (la < -56)
-    Letra = 'E';
-  else if (la < -48)
-    Letra = 'F';
-  else if (la < -40)
-    Letra = 'G';
-  else if (la < -32)
-    Letra = 'H';
-  else if (la < -24)
-    Letra = 'J';
-  else if (la < -16)
-    Letra = 'K';
-  else if (la < -8)
-    Letra = 'L';
-  else if (la < 0)
-    Letra = 'M';
-  else if (la < 8)
-    Letra = 'N';
-  else if (la < 16)
-    Letra = 'P';
-  else if (la < 24)
-    Letra = 'Q';
-  else if (la < 32)
-    Letra = 'R';
-  else if (la < 40)
-    Letra = 'S';
-  else if (la < 48)
-    Letra = 'T';
-  else if (la < 56)
-    Letra = 'U';
-  else if (la < 64)
-    Letra = 'V';
-  else if (la < 72)
-    Letra = 'W';
-  else
-    Letra = 'X';
+  const auto letter = utm_zone_from_latitude(la);
 
   const precnum_t lat = DEG2RAD(GeodeticCoords.lat);
   const precnum_t lon = DEG2RAD(GeodeticCoords.lon);
   const int Huso = mrpt::fix((GeodeticCoords.lon / 6) + 31);
   const precnum_t lon0 = DEG2RAD(Huso * 6 - 183);
 
-  const precnum_t sa = ellip.sa;
-  const precnum_t sb = ellip.sb;
+  const precnum_t sa = ellipsoid.sa;
+  const precnum_t sb = ellipsoid.sb;
   //	const precnum_t e2		= (sa*sa-sb*sb)/(sa*sa);
   const precnum_t ep2 = (sa * sa - sb * sb) / (sb * sb);
   const precnum_t c = sa * sa / sb;
@@ -402,7 +457,7 @@ void mrpt::topography::geodeticToUTM(
   UTMCoords.z = static_cast<double>(GeodeticCoords.height);
 
   UTMZone = Huso;
-  UTMLatitudeBand = Letra;
+  UTMLatitudeBand = letter;
 }
 
 /*---------------------------------------------------------------
@@ -415,14 +470,14 @@ void mrpt::topography::GeodeticToUTM(
     double& yy,
     int& out_UTM_zone,
     char& out_UTM_latitude_band,
-    const TEllipsoid& ellip)
+    const TEllipsoid& ellipsoid)
 {
   // This method is based on public code by Gabriel Ruiz Martinez and Rafael
   // Palacios.
   //  http://www.mathworks.com/matlabcentral/fileexchange/10915
 
-  const double sa = ellip.sa;
-  const double sb = ellip.sb;
+  const double sa = ellipsoid.sa;
+  const double sb = ellipsoid.sb;
   const double e2 = (sqrt((sa * sa) - (sb * sb))) / sb;
 
   const double e2cuadrada = e2 * e2;
@@ -436,48 +491,7 @@ void mrpt::topography::GeodeticToUTM(
   double S = ((Huso * 6) - 183);
   double deltaS = lon - DEG2RAD(S);
 
-  char Letra;
-
-  if (la < -72)
-    Letra = 'C';
-  else if (la < -64)
-    Letra = 'D';
-  else if (la < -56)
-    Letra = 'E';
-  else if (la < -48)
-    Letra = 'F';
-  else if (la < -40)
-    Letra = 'G';
-  else if (la < -32)
-    Letra = 'H';
-  else if (la < -24)
-    Letra = 'J';
-  else if (la < -16)
-    Letra = 'K';
-  else if (la < -8)
-    Letra = 'L';
-  else if (la < 0)
-    Letra = 'M';
-  else if (la < 8)
-    Letra = 'N';
-  else if (la < 16)
-    Letra = 'P';
-  else if (la < 24)
-    Letra = 'Q';
-  else if (la < 32)
-    Letra = 'R';
-  else if (la < 40)
-    Letra = 'S';
-  else if (la < 48)
-    Letra = 'T';
-  else if (la < 56)
-    Letra = 'U';
-  else if (la < 64)
-    Letra = 'V';
-  else if (la < 72)
-    Letra = 'W';
-  else
-    Letra = 'X';
+  const auto letter = utm_zone_from_latitude(la);
 
   const double a = cos(lat) * sin(deltaS);
   const double epsilon = 0.5 * log((1 + a) / (1 - a));
@@ -497,10 +511,13 @@ void mrpt::topography::GeodeticToUTM(
   xx = epsilon * v * (1 + (ta / 3.0)) + 500000;
   yy = nu * v * (1 + ta) + Bm;
 
-  if (yy < 0) yy += 9999999;
+  if (yy < 0)
+  {
+    yy += 9999999;
+  }
 
   out_UTM_zone = Huso;
-  out_UTM_latitude_band = Letra;
+  out_UTM_latitude_band = letter;
 }
 
 /**  7-parameter Bursa-Wolf transformation:
@@ -650,7 +667,9 @@ void mrpt::topography::ENUToGeocentric(
   P_ref[2] = P_geocentric_ref.z;
 
   // Z axis -> In direction out-ward the center of the Earth:
-  CVectorDouble REF_X(3), REF_Y(3), REF_Z(3);
+  CVectorDouble REF_X(3);
+  CVectorDouble REF_Y(3);
+  CVectorDouble REF_Z(3);
   math::normalize(P_ref, REF_Z);
 
   // 1st column: Starting at the reference point, move in the tangent
