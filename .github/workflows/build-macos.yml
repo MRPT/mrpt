@@ -45,11 +45,13 @@ jobs:
           colcon build \
             --event-handlers console_direct+ \
             --cmake-args \
+              -G Ninja \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -DCMAKE_VERBOSE_MAKEFILE=ON \
               -DMRPT_BUILD_TESTING=ON \
               -DDISABLE_WXWIDGETS=ON \
-              -DMRPT_WITH_QT=OFF
+              -DMRPT_WITH_QT=OFF \
+              -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0
 
       - name: Colcon Test
         run: |
