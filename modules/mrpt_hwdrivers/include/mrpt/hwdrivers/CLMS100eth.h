@@ -19,7 +19,22 @@
 
 namespace mrpt::hwdrivers
 {
-/** This "software driver" implements the communication protocol for interfacing
+/** \brief Driver for the SICK LMS100 2-D laser range-finder over Ethernet.
+ *
+ * Connects to the device via TCP/IP and acquires 2-D laser scans as
+ * mrpt::obs::CObservation2DRangeScan observations. The fixed hardware
+ * parameters of the LMS100 are: FOV 270 deg, angular resolution 0.25 deg,
+ * scan frequency 25 Hz, and maximum range 20 m.
+ *
+ * \warning Before using this class the scanner must be pre-configured with
+ * the SICK SOPAS software at least once (to set the frame rate and save to
+ * flash), because this driver does not handle the full SOPAS configuration
+ * protocol.
+ *
+ * \note No external library is required; communication is via a plain TCP
+ * socket through mrpt::comms::CClientTCPSocket.
+ *
+ * This "software driver" implements the communication protocol for interfacing
  *a SICK LMS100 laser scanners through an ethernet controller.
  *   This class does not need to be bind, i.e. you do not need to call
  *C2DRangeFinderAbstract::bindIO.
@@ -78,50 +93,59 @@ class CLMS100Eth : public C2DRangeFinderAbstract
 {
   DEFINE_GENERIC_SENSOR(CLMS100Eth)
  public:
-  /** Constructor.
-   * Note that there is default arguments, here you can customize IP Adress
-   * and TCP Port of your device.
+  /** \brief Constructor.
+   *
+   * \param[in] _ip   IPv4 address of the LMS100 (default "192.168.0.1").
+   * \param[in] _port TCP port on the device (default 2111).
    */
   CLMS100Eth(std::string _ip = std::string("192.168.0.1"), unsigned int _port = 2111);
-  /** Destructor.
-   * Close communcation with the device, and free memory.
-   */
+
+  /** \brief Destructor. Closes the TCP connection and frees resources. */
   ~CLMS100Eth() override;
-  /** This function acquire a laser scan from the device. If an error occurred,
-   * hardwareError will be set to true.
-   * The new laser scan will be stored in the outObservation argument.
+
+  /** \brief Acquires one laser scan from the device.
    *
-   * \exception This method throw exception if the frame received from the
-   * LMS 100 contain the following bad parameters :
-   *  * Status is not OK
-   *  * Data in the scan aren't DIST1 (may be RSSIx or DIST2).
+   * \param[out] outThereIsObservation Set to true when a valid scan is ready.
+   * \param[out] outObservation        Filled with the new scan on success.
+   * \param[out] hardwareError         Set to true on communication failure.
+   * \exception std::exception If the received frame has an unexpected status
+   *            or unsupported data channel (e.g. RSSI instead of DIST1).
    */
   void doProcessSimple(
       bool& outThereIsObservation,
       mrpt::obs::CObservation2DRangeScan& outObservation,
       bool& hardwareError) override;
 
-  /** This method must be called before trying to get a laser scan.
+  /** \brief Opens the TCP connection and starts the measurement stream.
+   *
+   * Must be called before requesting any laser scans.
+   * \return true on success, false on error.
    */
   bool turnOn() override;
-  /** This method could be called manually to stop communication with the
-   * device. Method is also called by destructor.
+
+  /** \brief Stops measurement and closes the TCP connection.
+   *
+   * Also called automatically by the destructor.
+   * \return true on success, false on error.
    */
   bool turnOff() override;
 
-  /** A method to set the sensor pose on the robot.
-   * Equivalent to setting the sensor pose via loading it from a config
-   * file.
+  /** \brief Sets the 3-D pose of the sensor on the robot.
+   *
+   * Equivalent to loading the pose from a configuration file.
+   * \param[in] _pose The sensor pose in robot coordinates.
    */
   void setSensorPose(const mrpt::poses::CPose3D& _pose);
 
-  /** This method should be called periodically. Period depend on the
-   * process_rate in the configuration file.
+  /** \brief Periodic processing step (called at process_rate Hz).
+   *
+   * Internally calls doProcessSimple() and queues the resulting observation.
    */
   void doProcess() override;
 
-  /** Initialize the sensor according to the parameters previously read in the
-   * configuration file.
+  /** \brief Initializes the sensor using parameters loaded from a config file.
+   *
+   * \exception std::exception On failure to connect or configure the device.
    */
   void initialize() override;
 

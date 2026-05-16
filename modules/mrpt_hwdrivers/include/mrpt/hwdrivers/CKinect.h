@@ -37,7 +37,18 @@
 
 namespace mrpt::hwdrivers
 {
-/** A class for grabbing "range images", intensity images (either RGB or IR) and
+/** \brief Captures range images, RGB/IR images, and IMU data from an
+ * Xbox Kinect (original model, v1) sensor via libfreenect.
+ *
+ * Produces observations of type mrpt::obs::CObservation3DRangeScan (depth +
+ * RGB/IR images and optional 3-D point cloud) and, if enabled,
+ * mrpt::obs::CObservationIMU (accelerometer data from the Kinect tilt motor).
+ *
+ * \note Requires libfreenect. On Linux, install the provided udev rules
+ * (MRPT/scripts/51-kinect.rules) to grant non-root access.
+ * \note For Kinect for Windows v2 or ASUS Xtion, use COpenNI2Sensor instead.
+ *
+ * A class for grabbing "range images", intensity images (either RGB or IR) and
  *other information from an Xbox Kinect sensor.
  * To use Kinect for Windows or ASUS/Primesense RGBD cameras, use the class
  *COpenNI2.
@@ -304,21 +315,24 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
    */
   void doProcess() override;
 
-  /** The main data retrieving function, to be called after calling
-   * loadConfig() and initialize().
-   *  \param out_obs The output retrieved observation (only if
-   * there_is_obs=true).
-   *  \param there_is_obs If set to false, there was no new observation.
-   *  \param hardware_error True on hardware/comms error.
+  /** \brief Retrieves the latest depth + RGB/IR observation.
    *
+   * Must be called after loadConfig() and initialize().
+   * \param[out] out_obs       The filled observation (valid only when
+   *             there_is_obs is true).
+   * \param[out] there_is_obs  Set to false if no new data is available yet.
+   * \param[out] hardware_error Set to true on a hardware or communication error.
    * \sa doProcess
    */
   void getNextObservation(
       mrpt::obs::CObservation3DRangeScan& out_obs, bool& there_is_obs, bool& hardware_error);
 
-  /** \overload
-   * \note This method also grabs data from the accelerometers, returning
-   * them in out_obs_imu
+  /** \brief Retrieves depth + RGB/IR observation and accelerometer data.
+   *
+   * \param[out] out_obs       The filled 3-D range scan observation.
+   * \param[out] out_obs_imu   The filled IMU observation (accelerometers).
+   * \param[out] there_is_obs  Set to false if no new data is available yet.
+   * \param[out] hardware_error Set to true on a hardware or communication error.
    */
   void getNextObservation(
       mrpt::obs::CObservation3DRangeScan& out_obs,

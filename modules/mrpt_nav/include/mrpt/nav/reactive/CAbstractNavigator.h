@@ -29,7 +29,17 @@
 
 namespace mrpt::nav
 {
-/** This is the base class for any reactive/planned navigation system. See
+/** \brief Base class for all reactive and planned navigation systems in MRPT.
+ *
+ * Implements the core navigation state machine (IDLE, NAVIGATING, SUSPENDED,
+ * NAV_ERROR) and provides the standard control API. Derived classes implement
+ * the actual motion planning (e.g. CReactiveNavigationSystem for PTG-based
+ * reactive nav, CWaypointsNavigator for waypoint sequences).
+ *
+ * A CRobot2NavInterface-derived object with user callbacks must be supplied at
+ * construction. Then navigationStep() must be called periodically.
+ *
+ * This is the base class for any reactive/planned navigation system. See
  * derived classes.
  *
  * How to use:
@@ -137,19 +147,28 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   /** \name Navigation control API
    * @{ */
 
-  /** Loads all params from a file. To be called before initialize().
-   * Each derived class *MUST* load its own parameters, and then call *ITS
-   * PARENT'S* overridden method to ensure all params are loaded. */
+  /** \brief Loads all navigator parameters from a config file.
+   *
+   * Must be called before initialize(). Derived classes must call the parent
+   * implementation after loading their own parameters.
+   * \param[in] c The configuration source to read from.
+   */
   virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c);
-  /** Saves all current options to a config file.
-   * Each derived class *MUST* save its own parameters, and then call *ITS
-   * PARENT'S* overridden method to ensure all params are saved. */
+
+  /** \brief Saves all current navigator parameters to a config file.
+   *
+   * Derived classes must call the parent implementation after saving their own
+   * parameters.
+   * \param[in] c The configuration file to write to.
+   */
   virtual void saveConfigFile(mrpt::config::CConfigFileBase& c) const;
 
-  /**  Must be called before any other navigation command */
+  /** \brief Initializes the navigator. Must be called before any navigation
+   * command. */
   virtual void initialize() = 0;
-  /** This method must be called periodically in order to effectively run the
-   * navigation */
+
+  /** \brief Runs one navigation cycle. Must be called periodically (e.g. at
+   * 10-20 Hz) to advance navigation logic. */
   virtual void navigationStep();
 
   /** Navigation request to a single target location. It starts a new
@@ -162,13 +181,17 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
    */
   virtual void navigate(const TNavigationParams* params);
 
-  /** Cancel current navegation. */
+  /** \brief Cancels the current navigation and returns to IDLE state. */
   virtual void cancel();
-  /** Continues with suspended navigation. \sa suspend */
+
+  /** \brief Continues a previously suspended navigation. \sa suspend */
   virtual void resume();
-  /** Suspend current navegation. \sa resume */
+
+  /** \brief Suspends the current navigation (robot stops; state=SUSPENDED).
+   * \sa resume */
   virtual void suspend();
-  /** Resets a `NAV_ERROR` state back to `IDLE` */
+
+  /** \brief Resets a NAV_ERROR state back to IDLE so navigation can restart. */
   virtual void resetNavError();
 
   /** The different states for the navigation system. */

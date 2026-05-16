@@ -18,7 +18,15 @@
 
 namespace mrpt::nav
 {
-/** This class extends `CAbstractNavigator` with the capability of following a
+/** \brief Extends CAbstractNavigator with sequential waypoint following.
+ *
+ * Accepts a TWaypointSequence and navigates the robot through each waypoint
+ * in order, optionally skipping waypoints marked with allow_skip=true if the
+ * underlying navigator determines that it is more efficient to do so.
+ * Each time a waypoint is reached or skipped, sendWaypointReachedEvent() is
+ * called; sendNavigationEndEvent() is called only for the final waypoint.
+ *
+ * This class extends `CAbstractNavigator` with the capability of following a
  * list of waypoints. By default, waypoints are followed one by one,
  *  but, if they are tagged with `allow_skip=true` **and** the derived navigator
  * class supports it, the navigator may choose to skip some to
@@ -78,15 +86,19 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
   /** \name Waypoint navigation control API
    * @{ */
 
-  /** Waypoint navigation request. This immediately cancels any other previous
-   * on-going navigation.
-   * \sa CAbstractNavigator::navigate() for single waypoint navigation
-   * requests.
+  /** \brief Starts navigation through a sequence of waypoints.
+   *
+   * Cancels any ongoing navigation immediately. The robot will proceed
+   * through the waypoints in order, possibly skipping some if allowed.
+   * \param[in] nav_request The waypoint sequence to follow.
+   * \sa CAbstractNavigator::navigate() for single-target requests.
    */
   virtual void navigateWaypoints(const TWaypointSequence& nav_request);
 
-  /** Get a copy of the control structure which describes the progress status
-   * of the waypoint navigation. */
+  /** \brief Returns the current waypoint navigation progress status.
+   *
+   * \param[out] out_nav_status Filled with the latest waypoint status.
+   */
   virtual void getWaypointNavStatus(TWaypointStatusSequence& out_nav_status) const;
 
   /** Get a copy of the control structure which describes the progress status

@@ -53,19 +53,21 @@ struct TCaptureCVOptions
   bool ieee1394_grayscale{false};
 };
 
-/** A class for grabbing images from a "OpenCV"-compatible camera, or from an AVI
- * video file.
- *   See the constructor for the options when opening the camera.
+/** \brief Grabs images from any OpenCV-compatible camera or AVI/video file.
  *
- *  Unless input from AVI files is required, it is recommended to use the more
- * generic class
- *   mrpt::hwdrivers::CCameraSensor.
+ * Wraps OpenCV's VideoCapture to provide MRPT observation objects. Supports
+ * USB webcams, Video4Linux (V4L) devices, DirectShow (Windows), IEEE-1394
+ * (dc1394 via OpenCV), and AVI/MPEG video files.
  *
- * \note This class is only available when compiling MRPT with the flag
- * "MRPT_HAS_OPENCV" defined.
+ * Produced observations are of type mrpt::obs::CObservationImage.
+ *
+ * Unless playback from AVI files is required, the more generic class
+ * mrpt::hwdrivers::CCameraSensor is recommended because it transparently
+ * handles many additional backends.
+ *
+ * \note Requires MRPT to be built with OpenCV (MRPT_HAS_OPENCV).
  * \note Some code is based on the class CaptureCamera from the Orocos project.
  * \sa mrpt::hwdrivers::CCameraSensor, CImageGrabber_dc1394
- * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
  * \ingroup mrpt_hwdrivers_grp
  */
 class CImageGrabber_OpenCV
@@ -79,41 +81,42 @@ class CImageGrabber_OpenCV
   mrpt::pimpl<Impl> m_capture;
 
  public:
-  /** Constructor for cameras:
-   * \param cameraIndex Set the camera index, or -1 if it does not matter and
-   * you select AUTODETECT as cameraType.
-   * \param cameraType Can be any value of TCameraType, or
-   * CAMERA_CV_AUTODETECT if there is only one camera.
-   * \param options Capture options, defined in
-   * mrpt::hwdrivers::TCaptureCVOptions. If not provided, all the default
-   * options will be used.
+  /** \brief Opens a live camera.
+   *
+   * \param[in] cameraIndex Device index passed to OpenCV VideoCapture.
+   *            Use -1 when \a cameraType is CAMERA_CV_AUTODETECT.
+   * \param[in] cameraType Camera backend selector (see TCameraType).
+   * \param[in] options Capture options such as resolution and frame rate.
    */
   CImageGrabber_OpenCV(
       int cameraIndex = -1,
       TCameraType cameraType = CAMERA_CV_AUTODETECT,
       const TCaptureCVOptions& options = TCaptureCVOptions());
 
-  /** Constructor for AVI files:
+  /** \brief Opens an AVI or other video file for frame-by-frame playback.
+   *
+   * \param[in] AVI_fileName Path to the video file.
    */
   CImageGrabber_OpenCV(const std::string& AVI_fileName);
 
-  /** Destructor
-   */
+  /** \brief Destructor. Releases the OpenCV capture object. */
   virtual ~CImageGrabber_OpenCV();
 
-  /** Check whether the camera has been open successfully. */
+  /** \brief Returns true if the camera or video file was opened successfully. */
   bool isOpen() const { return m_bInitialized; }
-  /** Grab an image from the opened camera.
-   * \param out_observation The object to be filled with sensed data.
+
+  /** \brief Grabs one frame from the opened camera.
    *
-   * \return false on any error, true if all go fine.
+   * \param[out] out_observation Filled with the captured image and timestamp.
+   * \return false on any error, true on success.
+   * \deprecated Use grabFrame() instead.
    */
-  /** \deprecated Use grabFrame() instead. */
   [[deprecated("Use grabFrame() instead")]]
   bool getObservation(mrpt::obs::CObservationImage& out_observation);
 
-  /** Grab one frame from the opened camera.
-   * \return std::nullopt on any error, or the observation on success.
+  /** \brief Grabs one frame from the opened camera, returning by value.
+   *
+   * \return std::nullopt on any error, or the captured observation on success.
    */
   [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame()
   {
