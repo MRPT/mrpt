@@ -202,11 +202,11 @@ class CPointsMap :
    * The file can be gz compressed (only enabled if the filename ends in ".gz"
    * to prevent spurious false autodetection of gzip files).
    * \return true on success */
-  bool loadFromKittiVelodyneFile(const std::string& filename);
+  [[nodiscard]] bool loadFromKittiVelodyneFile(const std::string& filename);
 
   /** Saves in a binary file compatible with the Kitti dataset, including XYZI fields.
    * \return true on success */
-  bool saveToKittiVelodyneFile(const std::string& filename) const;
+  [[nodiscard]] bool saveToKittiVelodyneFile(const std::string& filename) const;
 
  protected:
   /** Virtual assignment operator, copies as much common data (XYZ, color,...)
@@ -465,13 +465,13 @@ class CPointsMap :
   /**  Save to a text file. Each line will contain "X Y" point coordinates.
    *		Returns false if any error occurred, true elsewere.
    */
-  bool save2D_to_text_file(const std::string& file) const;
+  [[nodiscard]] bool save2D_to_text_file(const std::string& file) const;
   bool save2D_to_text_stream(std::ostream& out) const;
 
   /**  Save to a text file. Each line will contain "X Y Z" point coordinates.
    *     Returns false if any error occurred, true elsewere.
    */
-  bool save3D_to_text_file(const std::string& file) const;
+  [[nodiscard]] bool save3D_to_text_file(const std::string& file) const;
   bool save3D_to_text_stream(std::ostream& out) const;
 
   /** This virtual method saves the map to a file "filNamePrefix"+<
@@ -481,14 +481,14 @@ class CPointsMap :
   void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override
   {
     std::string fil(filNamePrefix + std::string(".txt"));
-    save3D_to_text_file(fil);
+    (void)save3D_to_text_file(fil);
   }
 
   /** Save the point cloud as a PCL PCD file, in either ASCII or binary format
    * \note This method requires user code to include PCL before MRPT headers.
    * \return false on any error */
 #if defined(PCL_LINEAR_VERSION)
-  bool savePCDFile(const std::string& filename, bool save_as_binary) const
+  [[nodiscard]] bool savePCDFile(const std::string& filename, bool save_as_binary) const
   {
     pcl::PointCloud<pcl::PointXYZ> cloud;
     this->getPCLPointCloud(cloud);
@@ -500,7 +500,7 @@ class CPointsMap :
    * \note This method requires user code to include PCL before MRPT headers.
    * \return false on any error */
 #if defined(PCL_LINEAR_VERSION)
-  bool loadPCDFile(const std::string& filename)
+  [[nodiscard]] bool loadPCDFile(const std::string& filename)
   {
     pcl::PointCloud<pcl::PointXYZ> cloud;
     if (0 != pcl::io::loadPCDFile(filename, cloud))
@@ -517,7 +517,7 @@ class CPointsMap :
 
   /** Returns the number of stored points in the map.
    */
-  size_t size() const { return m_x.size(); }
+  size_t size() const noexcept { return m_x.size(); }
   /** Access to a given point from map, as a 2D point. First index is 0.
    * \exception Throws std::exception on index out of bound.
    * \sa setPoint, getPointFast

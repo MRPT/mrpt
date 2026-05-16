@@ -288,7 +288,8 @@ class COctoMapBase : public mrpt::maps::CMetricMap
   /** Get the occupancy probability [0,1] of a point
    * \return false if the point is not mapped, in which case the returned
    * "prob" is undefined. */
-  bool getPointOccupancy(const float x, const float y, const float z, double& prob_occupancy) const;
+  [[nodiscard]] bool getPointOccupancy(
+      const float x, const float y, const float z, double& prob_occupancy) const;
 
   /** Update the octomap with a 2D or 3D scan, given directly as a point cloud
    * and the 3D location of the sensor (the origin of the rays) in this map's
@@ -307,16 +308,16 @@ class COctoMapBase : public mrpt::maps::CMetricMap
    * already
    * occupied in the tree, this coordinate will be returned as a hit.
    *
-   * @param origin starting coordinate of ray
-   * @param direction A vector pointing in the direction of the raycast. Does
+   * \param origin starting coordinate of ray
+   * \param direction A vector pointing in the direction of the raycast. Does
    * not need to be normalized.
-   * @param end returns the center of the cell that was hit by the ray, if
+   * \param end returns the center of the cell that was hit by the ray, if
    * successful
-   * @param ignoreUnknownCells whether unknown cells are ignored. If false
+   * \param ignoreUnknownCells whether unknown cells are ignored. If false
    * (default), the raycast aborts when an unkown cell is hit.
-   * @param maxRange Maximum range after which the raycast is aborted (<= 0:
+   * \param maxRange Maximum range after which the raycast is aborted (<= 0:
    * no limit, default)
-   * @return whether or not an occupied cell was hit
+   * \return whether or not an occupied cell was hit
    */
   bool castRay(
       const mrpt::math::TPoint3D& origin,

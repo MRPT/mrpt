@@ -36,23 +36,23 @@ namespace mrpt::math
 @{ */
 
 /**
- * @brief Computes the squared Mahalanobis distance between vector X and mean MU using covariance
+ * \brief Computes the squared Mahalanobis distance between vector X and mean MU using covariance
  * COV.
  *
  * Mahalanobis distance squared: $d^2 = (X - \mu)^T \Sigma^{-1} (X - \mu)$
  * This function uses the Cholesky decomposition (LLT) of the covariance matrix for stable
  * inversion.
  *
- * @tparam VECTORLIKE1 Type of the input vector X (must support size() and operator[] or be
+ * \tparam VECTORLIKE1 Type of the input vector X (must support size() and operator[] or be
  * Eigen-compatible).
- * @tparam VECTORLIKE2 Type of the mean vector MU (must support size() and operator[] or be
+ * \tparam VECTORLIKE2 Type of the mean vector MU (must support size() and operator[] or be
  * Eigen-compatible).
- * @tparam MAT Type of the covariance matrix COV (must be Eigen-compatible, square, positive
+ * \tparam MAT Type of the covariance matrix COV (must be Eigen-compatible, square, positive
  * semi-definite, and support llt_solve or llt().solve()).
- * @param X Input vector.
- * @param MU Mean vector.
- * @param COV Covariance matrix (\f$ \Sigma \f$).
- * @return The squared Mahalanobis distance (scalar).
+ * \param X Input vector.
+ * \param MU Mean vector.
+ * \param COV Covariance matrix (\f$ \Sigma \f$).
+ * \return The squared Mahalanobis distance (scalar).
  */
 template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
 [[nodiscard]] typename MAT::Scalar mahalanobisDistanceSq(

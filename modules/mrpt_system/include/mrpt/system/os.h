@@ -238,13 +238,13 @@ void consoleColorAndStyle(
     ConsoleTextStyle style = ConsoleTextStyle::REGULAR,
     bool applyToStdErr = false);
 
-/** @brief Execute Generic Shell Command
+/** \brief Execute Generic Shell Command
  *
- * @param[in]   command Command to execute
- * @param[out]  output  Pointer to string containing the shell output
- * @param[in]   mode read/write access
+ * \param[in]   command Command to execute
+ * \param[out]  output  Pointer to string containing the shell output
+ * \param[in]   mode read/write access
  *
- * @return 0 for success, -1 otherwise.
+ * \return 0 for success, -1 otherwise.
  *
  * \note Original code snippet found in http://stackoverflow.com/a/30357710
  */

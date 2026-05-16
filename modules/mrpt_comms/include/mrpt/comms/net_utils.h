@@ -123,15 +123,15 @@ bool DNS_resolve_async(
 /** Returns a description of the last Sockets error */
 std::string getLastSocketErrorStr();
 
-/** @brief Ping an IP address
+/** \brief Ping an IP address
  *
- * @param[in] address Address to ping.
- * @param[in] max_attempts Number of attempts to try and ping.
- * @param[out] output String containing output information
+ * \param[in] address Address to ping.
+ * \param[in] max_attempts Number of attempts to try and ping.
+ * \param[out] output String containing output information
  *
- * @return True if responsive, false otherwise.
+ * \return True if responsive, false otherwise.
  *
- * @note { I am redirecting stderr to stdout, so that the overall process
+ * \note { I am redirecting stderr to stdout, so that the overall process
  * is simplified.  Otherwise see:
  * https://jineshkj.wordpress.com/2006/12/22/how-to-capture-stdin-stdout-and-stderr-of-child-program/
  * }

@@ -39,7 +39,7 @@ class CHeightGridMap2D_Base
 
   /** Computes the minimum and maximum height in the grid.
    * \return False if there is no observed cell yet. */
-  bool getMinMaxHeight(float& z_min, float& z_max) const;
+  [[nodiscard]] bool getMinMaxHeight(float& z_min, float& z_max) const;
 
   /** Extra params for insertIndividualPoint() */
   struct TPointInsertParams
