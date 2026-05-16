@@ -205,7 +205,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
   CPose3D motionModelMeanIncr;  // The mean motion increment:
   CPoseRandomSampler robotActionSampler;
   {
-    CActionRobotMovement2D::Ptr robotMovement2D = actions->getBestMovementEstimation();
+    CActionRobotMovement2D::ConstPtr robotMovement2D = actions->getBestMovementEstimation();
 
     // If there is no 2D action, look for a 3D action:
     if (robotMovement2D)
@@ -215,7 +215,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
     }
     else
     {
-      CActionRobotMovement3D::Ptr robotMovement3D =
+      CActionRobotMovement3D::ConstPtr robotMovement3D =
           actions->getActionByClass<CActionRobotMovement3D>();
       if (robotMovement3D)
       {

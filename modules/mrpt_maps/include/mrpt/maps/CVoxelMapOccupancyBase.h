@@ -170,7 +170,7 @@ class CVoxelMapOccupancyBase :
    *  A voxel is considered occupied if its occupancy is larger than
    * `likelihoodOptions.occupiedThreshold` (Range: [0,1], default: 0.6)
    */
-  mrpt::maps::CSimplePointsMap::Ptr getOccupiedVoxels() const;
+  mrpt::maps::CSimplePointsMap::ConstPtr getOccupiedVoxels() const;
 
   /** This visits all cells to calculate a bounding box, caching the result
    *  so subsequent calls are cheap until the voxelmap is changed in some way.
@@ -715,7 +715,7 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
 }
 
 template <typename voxel_node_t, typename occupancy_t>
-mrpt::maps::CSimplePointsMap::Ptr
+mrpt::maps::CSimplePointsMap::ConstPtr
 CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getOccupiedVoxels() const
 {
   updateCachedProperties();

@@ -93,7 +93,7 @@ class CSetOfObjects : public CVisualObject
   * By default (ith=0), the first observation is returned.
   */
   template <typename T>
-  typename T::Ptr getByClass(size_t ith = 0) const;
+  typename T::ConstPtr getByClass(size_t ith = 0) const;
 
   /** Removes the given object from the scene (it also deletes the object to
    * free its memory).
@@ -166,25 +166,29 @@ CSetOfObjects::Ptr& operator<<(CSetOfObjects::Ptr& o, const std::vector<T>& v)
 // Implementation: (here because it needs the _POST macro defining the
 // Smart::Ptr)
 template <typename T>
-typename T::Ptr CSetOfObjects::getByClass(size_t ith) const
+typename T::ConstPtr CSetOfObjects::getByClass(size_t ith) const
 {
   MRPT_START
   size_t foundCount = 0;
   for (const auto& o : m_objects)
-    if (auto obj = std::dynamic_pointer_cast<T>(o); obj)
+  {
+    if (auto obj = std::dynamic_pointer_cast<const T>(o); obj)
+    {
       if (foundCount++ == ith) return obj;
+    }
+  }
 
   // If not found directly, search recursively:
   for (const auto& o : m_objects)
   {
     if (auto objs = std::dynamic_pointer_cast<CSetOfObjects>(o); objs)
     {
-      typename T::Ptr obj = objs->template getByClass<T>(ith);
+      typename T::ConstPtr obj = objs->template getByClass<T>(ith);
       if (obj) return obj;
     }
   }
 
-  return typename T::Ptr();  // Not found: return empty smart pointer
+  return typename T::ConstPtr();  // Not found: return empty smart pointer
   MRPT_END
 }
 }  // namespace mrpt::viz

@@ -435,7 +435,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 void CMetricMapBuilderICP::processActionObservation(CActionCollection& action, CSensoryFrame& in_SF)
 {
   // 1) process action:
-  CActionRobotMovement2D::Ptr movEstimation = action.getBestMovementEstimation();
+  CActionRobotMovement2D::ConstPtr movEstimation = action.getBestMovementEstimation();
   if (movEstimation)
   {
     m_auxAccumOdometry.composeFrom(m_auxAccumOdometry, movEstimation->poseChange->getMeanVal());

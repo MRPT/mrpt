@@ -112,15 +112,18 @@ class CActionCollection : public mrpt::serialization::CSerializable
   * By default (ith=0), the first one is returned.
   */
   template <typename T>
-  typename T::Ptr getActionByClass(size_t ith = 0) const
+  typename T::ConstPtr getActionByClass(size_t ith = 0) const
   {
     MRPT_START
     size_t foundCount = 0;
     const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
     for (const auto& it : *this)
       if (it->GetRuntimeClass()->derivedFrom(class_ID))
-        if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(it.get_ptr());
-    return typename T::Ptr();  // Not found: return empty smart pointer
+        if (foundCount++ == ith)
+        {
+          return std::dynamic_pointer_cast<const T>(it.get_ptr());
+        }
+    return typename T::ConstPtr();  // Not found: return empty smart pointer
     MRPT_END
   }
 
@@ -139,14 +142,14 @@ class CActionCollection : public mrpt::serialization::CSerializable
    * the determinant of its pose change covariance matrix.
    * \return The estimation, or nullptr if none is available.
    */
-  CActionRobotMovement2D::Ptr getBestMovementEstimation() const;
+  CActionRobotMovement2D::ConstPtr getBestMovementEstimation() const;
 
   /** Returns the pose increment estimator in the collection having the
    * specified type.
    * \return The estimation, or nullptr if none is available.
    */
-  CActionRobotMovement2D::Ptr getMovementEstimationByType(
-      CActionRobotMovement2D::TEstimationMethod method);
+  CActionRobotMovement2D::ConstPtr getMovementEstimationByType(
+      CActionRobotMovement2D::TEstimationMethod method) const;
 
   /** Look for the first 2D or 3D "odometry" found in this collection of
    * actions, and return the "mean" increment of the robot according to it.

@@ -295,7 +295,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
    * pointer will be returned.
    * \sa captureImagesStart, getLastWindowImage
    */
-  mrpt::img::CImage::Ptr getLastWindowImagePtr() const;
+  mrpt::img::CImage::ConstPtr getLastWindowImagePtr() const;
 
   /** Increments by one the image counter and return the next image file name
    * (Users normally don't want to call this method).

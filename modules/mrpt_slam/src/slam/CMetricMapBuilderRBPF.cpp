@@ -108,8 +108,8 @@ void CMetricMapBuilderRBPF::processActionObservation(
 
   // Update the traveled distance estimations:
   {
-    CActionRobotMovement3D::Ptr act3D = action.getActionByClass<CActionRobotMovement3D>();
-    CActionRobotMovement2D::Ptr act2D = action.getActionByClass<CActionRobotMovement2D>();
+    CActionRobotMovement3D::ConstPtr act3D = action.getActionByClass<CActionRobotMovement3D>();
+    CActionRobotMovement2D::ConstPtr act2D = action.getActionByClass<CActionRobotMovement2D>();
     if (act3D)
     {
       MRPT_LOG_DEBUG_STREAM(
@@ -175,7 +175,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
     // ------------------------------------------------
     CActionCollection fakeActs;
     {
-      CActionRobotMovement3D::Ptr act3D = action.getActionByClass<CActionRobotMovement3D>();
+      CActionRobotMovement3D::ConstPtr act3D = action.getActionByClass<CActionRobotMovement3D>();
       if (act3D)
       {
         CActionRobotMovement3D newAct;
@@ -187,7 +187,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
       else
       {
         // It must be 2D odometry:
-        CActionRobotMovement2D::Ptr act2D = action.getActionByClass<CActionRobotMovement2D>();
+        CActionRobotMovement2D::ConstPtr act2D = action.getActionByClass<CActionRobotMovement2D>();
         ASSERT_(act2D);
         CActionRobotMovement2D newAct;
         newAct.computeFromOdometry(

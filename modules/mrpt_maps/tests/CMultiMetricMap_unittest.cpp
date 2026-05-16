@@ -79,7 +79,7 @@ TEST(CMultiMetricMapTests, copyCtorOp)
 {
   using mrpt::maps::CSimplePointsMap;
 
-  const auto m1 = initializer1();
+  auto m1 = initializer1();
   EXPECT_EQ(m1.maps.size(), 2U);
 
   m1.mapByClass<CSimplePointsMap>()->insertPoint(1.0f, 2.0f, 3.0f);
@@ -102,7 +102,7 @@ TEST(CMultiMetricMapTests, moveOp)
 {
   using mrpt::maps::CSimplePointsMap;
 
-  const auto m1 = initializer1();
+  auto m1 = initializer1();
   EXPECT_EQ(m1.maps.size(), 2U);
 
   m1.mapByClass<CSimplePointsMap>()->insertPoint(1.0f, 2.0f, 3.0f);

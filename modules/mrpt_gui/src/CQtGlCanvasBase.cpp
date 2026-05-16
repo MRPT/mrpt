@@ -136,7 +136,7 @@ void CQtGlCanvasBase::resizeGL(int width, int height)
 // -----------------------------------------------------------------------
 // Scene / viewport helpers (unchanged)
 // -----------------------------------------------------------------------
-viz::Viewport::Ptr CQtGlCanvasBase::mainViewport() const { return m_mainViewport; }
+viz::Viewport::ConstPtr CQtGlCanvasBase::mainViewport() const { return m_mainViewport; }
 
 float CQtGlCanvasBase::getCameraZoomDistance() const
 {

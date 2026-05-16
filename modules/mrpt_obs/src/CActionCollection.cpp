@@ -94,9 +94,9 @@ void CActionCollection::insertPtr(const CAction::Ptr& action) { m_actions.emplac
 /*---------------------------------------------------------------
             getBestMovementEstimation
  ---------------------------------------------------------------*/
-CActionRobotMovement2D::Ptr CActionCollection::getBestMovementEstimation() const
+CActionRobotMovement2D::ConstPtr CActionCollection::getBestMovementEstimation() const
 {
-  CActionRobotMovement2D::Ptr bestEst;
+  CActionRobotMovement2D::ConstPtr bestEst;
   double bestDet = 1e3;
 
   // Find the best
@@ -104,8 +104,8 @@ CActionRobotMovement2D::Ptr CActionCollection::getBestMovementEstimation() const
   {
     if (it->GetRuntimeClass()->derivedFrom(CLASS_ID(CActionRobotMovement2D)))
     {
-      CActionRobotMovement2D::Ptr temp =
-          std::dynamic_pointer_cast<CActionRobotMovement2D>(it.get_ptr());
+      CActionRobotMovement2D::ConstPtr temp =
+          std::dynamic_pointer_cast<const CActionRobotMovement2D>(it.get_ptr());
 
       if (temp->estimationMethod == CActionRobotMovement2D::emScan2DMatching)
       {
@@ -143,16 +143,16 @@ void CActionCollection::eraseByIndex(size_t index)
 /*---------------------------------------------------------------
               eraseByIndex
  ---------------------------------------------------------------*/
-CActionRobotMovement2D::Ptr CActionCollection::getMovementEstimationByType(
-    CActionRobotMovement2D::TEstimationMethod method)
+CActionRobotMovement2D::ConstPtr CActionCollection::getMovementEstimationByType(
+    CActionRobotMovement2D::TEstimationMethod method) const
 {
   // Find it:
-  for (auto& it : *this)
+  for (const auto& it : *this)
   {
     if (it->GetRuntimeClass()->derivedFrom(CLASS_ID(CActionRobotMovement2D)))
     {
-      CActionRobotMovement2D::Ptr temp =
-          std::dynamic_pointer_cast<CActionRobotMovement2D>(it.get_ptr());
+      CActionRobotMovement2D::ConstPtr temp =
+          std::dynamic_pointer_cast<const CActionRobotMovement2D>(it.get_ptr());
 
       // Is it of the required type?
       if (temp->estimationMethod == method)
@@ -184,13 +184,13 @@ CActionCollection::iterator CActionCollection::erase(const iterator& it)
  ---------------------------------------------------------------*/
 bool CActionCollection::getFirstMovementEstimationMean(CPose3D& out_pose_increment) const
 {
-  CActionRobotMovement3D::Ptr act3D = getActionByClass<CActionRobotMovement3D>();
+  CActionRobotMovement3D::ConstPtr act3D = getActionByClass<CActionRobotMovement3D>();
   if (act3D)
   {
     out_pose_increment = act3D->poseChange.mean;
     return true;
   }
-  CActionRobotMovement2D::Ptr act2D = getActionByClass<CActionRobotMovement2D>();
+  CActionRobotMovement2D::ConstPtr act2D = getActionByClass<CActionRobotMovement2D>();
   if (act2D)
   {
     out_pose_increment = CPose3D(act2D->poseChange->getMeanVal());
@@ -204,13 +204,13 @@ bool CActionCollection::getFirstMovementEstimationMean(CPose3D& out_pose_increme
  ---------------------------------------------------------------*/
 bool CActionCollection::getFirstMovementEstimation(CPose3DPDFGaussian& out_pose_increment) const
 {
-  CActionRobotMovement3D::Ptr act3D = getActionByClass<CActionRobotMovement3D>();
+  CActionRobotMovement3D::ConstPtr act3D = getActionByClass<CActionRobotMovement3D>();
   if (act3D)
   {
     out_pose_increment = act3D->poseChange;
     return true;
   }
-  CActionRobotMovement2D::Ptr act2D = getActionByClass<CActionRobotMovement2D>();
+  CActionRobotMovement2D::ConstPtr act2D = getActionByClass<CActionRobotMovement2D>();
   if (act2D)
   {
     out_pose_increment.copyFrom(*act2D->poseChange);

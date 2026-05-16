@@ -153,14 +153,42 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
   * By default (ith=0), the first observation is returned.
   */
   template <typename T>
-  typename T::Ptr getObservationByClass(size_t ith = 0) const
+  typename T::ConstPtr getObservationByClass(size_t ith = 0) const
   {
     MRPT_START
     size_t foundCount = 0;
     const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
     for (const auto& it : *this)
+    {
       if (it->GetRuntimeClass()->derivedFrom(class_ID))
-        if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(it);
+      {
+        if (foundCount++ == ith)
+        {
+          return std::dynamic_pointer_cast<const T>(it);
+        }
+      }
+    }
+    return typename T::ConstPtr();  // Not found: return empty smart pointer
+    MRPT_END
+  }
+
+  /// \overload Non-const version returning a mutable Ptr
+  template <typename T>
+  typename T::Ptr getObservationByClass(size_t ith = 0)
+  {
+    MRPT_START
+    size_t foundCount = 0;
+    const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
+    for (const auto& it : *this)
+    {
+      if (it->GetRuntimeClass()->derivedFrom(class_ID))
+      {
+        if (foundCount++ == ith)
+        {
+          return std::dynamic_pointer_cast<T>(it);
+        }
+      }
+    }
     return typename T::Ptr();  // Not found: return empty smart pointer
     MRPT_END
   }
@@ -245,7 +273,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    *  \throw std::exception If out of range.
    * \sa begin, size
    */
-  const CObservation::Ptr& getObservationByIndex(size_t idx) const;
+  CObservation::ConstPtr getObservationByIndex(size_t idx) const;
   /// \overload
   CObservation::Ptr& getObservationByIndex(size_t idx);
 
@@ -257,9 +285,9 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    * \sa begin, size
    */
   template <typename T>
-  T getObservationByIndexAs(size_t idx) const
+  std::shared_ptr<const typename T::element_type> getObservationByIndexAs(size_t idx) const
   {
-    return std::dynamic_pointer_cast<typename T::element_type>(getObservationByIndex(idx));
+    return std::dynamic_pointer_cast<const typename T::element_type>(getObservationByIndex(idx));
   }
 
   /** Returns the i'th observation in the list with the given "sensorLabel"
@@ -267,7 +295,9 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    * \return The observation, or nullptr if not found.
    * \sa begin, size
    */
-  CObservation::Ptr getObservationBySensorLabel(const std::string& label, size_t idx = 0) const;
+  CObservation::ConstPtr getObservationBySensorLabel(const std::string& label, size_t idx = 0) const;
+  /// \overload Non-const version returning a mutable Ptr
+  CObservation::Ptr getObservationBySensorLabel(const std::string& label, size_t idx = 0);
 
   /** Returns the i'th observation in the list with the given "sensorLabel"
    * (0=first), and as a different smart pointer type:
@@ -277,9 +307,10 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    * \sa begin, size
    */
   template <typename T>
-  T getObservationBySensorLabelAs(const std::string& label, size_t idx = 0) const
+  std::shared_ptr<const typename T::element_type> getObservationBySensorLabelAs(
+      const std::string& label, size_t idx = 0) const
   {
-    return std::dynamic_pointer_cast<typename T::element_type>(
+    return std::dynamic_pointer_cast<const typename T::element_type>(
         getObservationBySensorLabel(label, idx));
   }
 
