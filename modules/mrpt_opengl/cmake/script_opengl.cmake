@@ -17,6 +17,8 @@ if(DISABLE_OPENGL)
 	return()
 endif()
 
+include(CheckIncludeFile)
+
 # Start with an empty list
 unset(MRPT_OPENGL_LIBS)
 
