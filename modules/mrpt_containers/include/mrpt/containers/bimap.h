@@ -16,6 +16,7 @@
 #include <mrpt/core/exceptions.h>
 
 #include <map>
+#include <optional>
 
 namespace mrpt::containers
 {
@@ -177,6 +178,32 @@ class bimap
   iterator find_key(const KEY& k) { return m_k2v.find(k); }
   const_iterator_inverse find_value(const VALUE& v) const { return m_v2k.find(v); }
   iterator_inverse find_value(const VALUE& v) { return m_v2k.find(v); }
+
+  /** Returns the value for the given key, or std::nullopt if not present.
+   * \sa direct, hasKey
+   */
+  [[nodiscard]] std::optional<VALUE> find_direct(const KEY& k) const
+  {
+    auto i = m_k2v.find(k);
+    if (i == m_k2v.end())
+    {
+      return std::nullopt;
+    }
+    return i->second;
+  }
+
+  /** Returns the key for the given value, or std::nullopt if not present.
+   * \sa inverse, hasValue
+   */
+  [[nodiscard]] std::optional<KEY> find_inverse(const VALUE& v) const
+  {
+    auto i = m_v2k.find(v);
+    if (i == m_v2k.end())
+    {
+      return std::nullopt;
+    }
+    return i->second;
+  }
 
   /** Removes the bijective application between `KEY<->VALUE` for a given key.
    *  \exception std::exception If the key does not exist.

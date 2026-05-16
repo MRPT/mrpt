@@ -53,14 +53,21 @@ CPose3DQuat::CPose3DQuat(const CMatrixDouble44& M) : m_quat(UNINITIALIZED_QUATER
  * point(translation) or pose (translation+orientation).
  * \sa getInverseHomogeneousMatrix
  */
-void CPose3DQuat::getHomogeneousMatrix(CMatrixDouble44& out_HM) const
+mrpt::math::CMatrixDouble44 CPose3DQuat::getHomogeneousMatrix() const
 {
+  CMatrixDouble44 out_HM;
   m_quat.rotationMatrixNoResize(out_HM);
   out_HM(0, 3) = m_coords[0];
   out_HM(1, 3) = m_coords[1];
   out_HM(2, 3) = m_coords[2];
   out_HM(3, 0) = out_HM(3, 1) = out_HM(3, 2) = 0;
   out_HM(3, 3) = 1;
+  return out_HM;
+}
+
+void CPose3DQuat::getHomogeneousMatrix(CMatrixDouble44& out_HM) const
+{
+  out_HM = getHomogeneousMatrix();
 }
 
 /** Returns a 1x7 vector with [x y z qr qx qy qz] */

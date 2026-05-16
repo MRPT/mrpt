@@ -124,8 +124,13 @@ class CPose3DQuat :
   /** Returns the corresponding 4x4 homogeneous transformation matrix for the
    * point (translation) or pose (translation+orientation).
    * \sa getInverseHomogeneousMatrix
+   * \deprecated Use getHomogeneousMatrix() returning by value instead.
    */
+  [[deprecated("Use getHomogeneousMatrix() returning by value instead.")]]
   void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
+
+  /** Returns the corresponding 4x4 homogeneous transformation matrix. */
+  [[nodiscard]] mrpt::math::CMatrixDouble44 getHomogeneousMatrix() const;
 
   /** Returns a 7x1 vector with [x y z qr qx qy qz]' */
   void asVector(vector_t& v) const;

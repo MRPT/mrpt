@@ -13,6 +13,8 @@
 */
 #pragma once
 
+#include <utility>
+
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/aligned_std_vector.h>
@@ -1286,11 +1288,22 @@ class CPointsMap :
     m_heightfilter_z_max = _z_max;
   }
   /** Get the min/max Z levels for points to be actually inserted in the map
-   * \sa enableFilterByHeight, setHeightFilterLevels */
+   * \sa enableFilterByHeight, setHeightFilterLevels
+   * \deprecated Use getHeightFilterLevels() returning a pair instead.
+   */
+  [[deprecated("Use getHeightFilterLevels() returning a pair instead.")]]
   void getHeightFilterLevels(double& _z_min, double& _z_max) const
   {
     _z_min = m_heightfilter_z_min;
     _z_max = m_heightfilter_z_max;
+  }
+
+  /** Returns the min/max Z filter levels as a pair {z_min, z_max}.
+   * \sa enableFilterByHeight, setHeightFilterLevels
+   */
+  [[nodiscard]] std::pair<double, double> getHeightFilterLevels() const
+  {
+    return {m_heightfilter_z_min, m_heightfilter_z_max};
   }
 
   /** @} */

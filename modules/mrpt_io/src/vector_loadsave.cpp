@@ -45,6 +45,16 @@ bool mrpt::io::loadBinaryFile(std::vector<uint8_t>& out_data, const std::string&
   }
 }
 
+std::optional<std::vector<uint8_t>> mrpt::io::loadBinaryFile(const std::string& fileName)
+{
+  std::vector<uint8_t> out;
+  if (loadBinaryFile(out, fileName))
+  {
+    return out;
+  }
+  return std::nullopt;
+}
+
 bool mrpt::io::vectorToBinaryFile(const std::vector<uint8_t>& vec, const std::string& fileName)
 {
   try
@@ -70,6 +80,16 @@ bool mrpt::io::loadTextFile(std::vector<std::string>& o, const std::string& file
   std::string s;
   while (std::getline(f, s)) o.emplace_back(std::move(s));
   return true;
+}
+
+std::optional<std::vector<std::string>> mrpt::io::loadTextFile(const std::string& fileName)
+{
+  std::vector<std::string> out;
+  if (loadTextFile(out, fileName))
+  {
+    return out;
+  }
+  return std::nullopt;
 }
 
 std::string mrpt::io::file_get_contents(const std::string& fileName)

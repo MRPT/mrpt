@@ -36,8 +36,15 @@ class CPoses3DSequence : public mrpt::serialization::CSerializable
   /** Reads the stored pose at index "ind", where the first one is 0, the last
    * "posesCount() - 1"
    * \exception std::exception On invalid index value
+   * \deprecated Use getPose(unsigned int) returning by value instead.
    */
+  [[deprecated("Use getPose(unsigned int) returning by value instead.")]]
   void getPose(unsigned int ind, CPose3D& outPose);
+
+  /** Returns the stored pose at index "ind".
+   * \exception std::exception On invalid index value
+   */
+  [[nodiscard]] CPose3D getPose(unsigned int ind) const;
 
   /** Changes the stored pose at index "ind", where the first one is 0, the
    * last "posesCount() - 1"

@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/pimpl.h>
 #include <mrpt/core/safe_pointers.h>
@@ -285,11 +287,17 @@ class COctoMapBase : public mrpt::maps::CMetricMap
    */
   virtual void getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const = 0;
 
-  /** Get the occupancy probability [0,1] of a point
+  /** Get the occupancy probability [0,1] of a point.
    * \return false if the point is not mapped, in which case the returned
-   * "prob" is undefined. */
+   * "prob" is undefined.
+   * \deprecated Use getPointOccupancy(float,float,float) returning optional instead.
+   */
   [[nodiscard]] bool getPointOccupancy(
       const float x, const float y, const float z, double& prob_occupancy) const;
+
+  /** Returns the occupancy probability [0,1] at the given point,
+   * or std::nullopt if the point is not mapped. */
+  [[nodiscard]] std::optional<double> getPointOccupancy(float x, float y, float z) const;
 
   /** Update the octomap with a 2D or 3D scan, given directly as a point cloud
    * and the 3D location of the sensor (the origin of the rays) in this map's

@@ -14,6 +14,9 @@
 
 #pragma once
 
+#include <optional>
+#include <utility>
+
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/obs/CObservation.h>
@@ -38,8 +41,13 @@ class CHeightGridMap2D_Base
   bool intersectLine3D(const mrpt::math::TLine3D& r1, mrpt::math::TObject3D& obj) const;
 
   /** Computes the minimum and maximum height in the grid.
-   * \return False if there is no observed cell yet. */
+   * \return False if there is no observed cell yet.
+   * \deprecated Use getMinMaxHeightOpt() returning optional instead.
+   */
   [[nodiscard]] bool getMinMaxHeight(float& z_min, float& z_max) const;
+
+  /** Returns {z_min, z_max} if any cell is observed, or std::nullopt otherwise. */
+  [[nodiscard]] std::optional<std::pair<float, float>> getMinMaxHeightOpt() const;
 
   /** Extra params for insertIndividualPoint() */
   struct TPointInsertParams

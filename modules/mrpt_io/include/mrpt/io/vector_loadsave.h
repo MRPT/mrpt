@@ -14,6 +14,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -34,14 +35,28 @@ bool vectorToBinaryFile(const std::vector<uint8_t>& vec, const std::string& file
 /** Loads a entire file as a vector of bytes.
  * \return Returns false on any error, true on everything OK.
  * \sa vectorToBinaryFile
+ * \deprecated Use loadBinaryFile(const std::string&) returning optional instead.
  */
 [[nodiscard]] bool loadBinaryFile(std::vector<uint8_t>& out_data, const std::string& fileName);
+
+/** Loads an entire file as a vector of bytes.
+ * \return The file contents, or std::nullopt on any error.
+ * \sa vectorToBinaryFile
+ */
+[[nodiscard]] std::optional<std::vector<uint8_t>> loadBinaryFile(const std::string& fileName);
 
 /** Loads a text file as a vector of string lines.
  * \return Returns false on any error, true on everything OK.
  * \sa file_get_contents()
+ * \deprecated Use loadTextFile(const std::string&) returning optional instead.
  */
 [[nodiscard]] bool loadTextFile(std::vector<std::string>& o, const std::string& fileName);
+
+/** Loads a text file as a vector of string lines.
+ * \return The lines, or std::nullopt on any error.
+ * \sa file_get_contents()
+ */
+[[nodiscard]] std::optional<std::vector<std::string>> loadTextFile(const std::string& fileName);
 
 /** Loads an entire text file and return its contents as a single std::string.
  * \exception std::runtime_error On any read error.

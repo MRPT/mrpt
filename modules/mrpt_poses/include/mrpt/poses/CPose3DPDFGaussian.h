@@ -90,6 +90,9 @@ class CPose3DPDFGaussian : public CPose3DPDF
    * \sa getCovariance
    */
   void getMean(CPose3D& mean_pose) const override { mean_pose = mean; }
+
+  /** Returns the mean pose by value (convenience non-virtual overload). */
+  [[nodiscard]] CPose3D meanVal() const { return mean; }
   /** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and
    * the mean, both at once.
    * \sa getMean

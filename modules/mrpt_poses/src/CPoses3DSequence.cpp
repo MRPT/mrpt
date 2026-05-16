@@ -48,11 +48,15 @@ void CPoses3DSequence::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
 Reads the stored pose at index "ind", where the first one is 0, the last
 "posesCount() - 1"
  ---------------------------------------------------------------*/
-void CPoses3DSequence::getPose(unsigned int ind, CPose3D& outPose)
+CPose3D CPoses3DSequence::getPose(unsigned int ind) const
 {
   if (ind >= m_poses.size()) THROW_EXCEPTION("getPose: Index out of range!!");
+  return CPose3D(m_poses[ind]);
+}
 
-  outPose = CPose3D(m_poses[ind]);
+void CPoses3DSequence::getPose(unsigned int ind, CPose3D& outPose)
+{
+  outPose = getPose(ind);
 }
 
 /*---------------------------------------------------------------

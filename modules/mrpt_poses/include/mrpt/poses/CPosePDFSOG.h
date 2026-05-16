@@ -18,6 +18,7 @@
 #include <mrpt/poses/CPosePDF.h>
 
 #include <ostream>
+#include <utility>
 #include <vector>
 
 namespace mrpt::poses
@@ -141,11 +142,28 @@ class CPosePDFSOG : public CPosePDF
 
   void getMean(CPose2D& mean_pose) const override;
 
+  /** Returns the mean pose by value (convenience non-virtual overload). */
+  [[nodiscard]] CPose2D meanVal() const
+  {
+    CPose2D m;
+    getMean(m);
+    return m;
+  }
+
   std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
   /** For the most likely Gaussian mode in the SOG, returns the pose
-   * covariance matrix (3x3 cov matrix) and the mean. \sa getMean */
+   * covariance matrix (3x3 cov matrix) and the mean. \sa getMean
+   * \deprecated Use getMostLikelyCovarianceAndMean() returning a pair instead.
+   */
+  [[deprecated("Use getMostLikelyCovarianceAndMean() returning a pair instead.")]]
   void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const;
+
+  /** Returns the covariance and mean of the most likely Gaussian mode.
+   * \sa getMean
+   */
+  [[nodiscard]] std::pair<mrpt::math::CMatrixDouble33, CPose2D> getMostLikelyCovarianceAndMean()
+      const;
   /** Normalize the weights in m_modes such as the maximum log-weight is 0 */
   void normalizeWeights();
 

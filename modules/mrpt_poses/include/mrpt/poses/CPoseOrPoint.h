@@ -264,7 +264,7 @@ class CPoseOrPoint :
   template <class MATRIX44>
   void getInverseHomogeneousMatrix(MATRIX44& out_HM) const
   {  // Get current HM & inverse in-place:
-    derived().getHomogeneousMatrix(out_HM);
+    out_HM = derived().getHomogeneousMatrix();
     mrpt::math::homogeneousMatrixInverse(out_HM);
   }
 

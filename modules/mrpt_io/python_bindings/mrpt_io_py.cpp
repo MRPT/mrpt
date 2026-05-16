@@ -19,6 +19,7 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/CStream.h>
 #include <mrpt/io/open_flags.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -227,4 +228,23 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "__repr__", [](const mrpt::io::CMemoryStream& s)
           { return "CMemoryStream(" + std::to_string(s.getTotalBytesCount()) + " bytes)"; });
+
+  // -------------------------------------------------------------------------
+  // vector_loadsave free functions
+  // -------------------------------------------------------------------------
+  m.def(
+      "loadBinaryFile",
+      [](const std::string& fileName) { return mrpt::io::loadBinaryFile(fileName); },
+      "fileName"_a,
+      "Load an entire binary file. Returns None (nullopt) on error, or a bytes-like list of uint8.");
+  m.def(
+      "loadTextFile",
+      [](const std::string& fileName) { return mrpt::io::loadTextFile(fileName); },
+      "fileName"_a,
+      "Load a text file as a list of string lines. Returns None (nullopt) on error.");
+  m.def(
+      "file_get_contents",
+      &mrpt::io::file_get_contents,
+      "fileName"_a,
+      "Load an entire text file as a single string. Raises on error.");
 }

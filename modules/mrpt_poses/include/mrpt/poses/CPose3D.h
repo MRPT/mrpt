@@ -13,6 +13,8 @@
 */
 #pragma once
 
+#include <tuple>
+
 #include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/math/CMatrixFixed.h>
@@ -113,7 +115,10 @@ class CPose3D :
     if (!m_ypr_uptodate)
     {
       m_ypr_uptodate = true;
-      getYawPitchRoll(m_yaw, m_pitch, m_roll);
+      auto [y, p, r] = getYawPitchRoll();
+      m_yaw = y;
+      m_pitch = p;
+      m_roll = r;
     }
   }
 
@@ -291,12 +296,22 @@ class CPose3D :
   /** Returns the corresponding 4x4 homogeneous transformation matrix for the
    * point(translation) or pose (translation+orientation).
    * \sa getInverseHomogeneousMatrix, getRotationMatrix
+   * \deprecated Use getHomogeneousMatrix() returning by value instead.
    */
+  [[deprecated("Use getHomogeneousMatrix() returning by value instead.")]]
   void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
 
-  /** Get the 3x3 rotation matrix \sa getHomogeneousMatrix  */
+  /** Returns the corresponding 4x4 homogeneous transformation matrix.
+   * \sa getInverseHomogeneousMatrix, getRotationMatrix
+   */
+  [[nodiscard]] mrpt::math::CMatrixDouble44 getHomogeneousMatrix() const;
+
+  /** Get the 3x3 rotation matrix \sa getHomogeneousMatrix
+   * \deprecated Use getRotationMatrix() returning by value instead.
+   */
+  [[deprecated("Use getRotationMatrix() returning by value instead.")]]
   void getRotationMatrix(mrpt::math::CMatrixDouble33& ROT) const { ROT = m_ROT; }
-  //! \overload
+  //! \overload Returns rotation matrix by const reference (efficient, zero-copy).
   const mrpt::math::CMatrixDouble33& getRotationMatrix() const { return m_ROT; }
 
   /** Sets the 3x3 rotation matrix \sa getRotationMatrix, getHomogeneousMatrix
@@ -617,6 +632,13 @@ class CPose3D :
    * rotation matrix.
    * \sa setFromValues, yaw, pitch, roll
    */
+  /** Returns the three angles (yaw, pitch, roll), in radians, as a tuple.
+   * \sa setFromValues, yaw, pitch, roll
+   */
+  [[nodiscard]] std::tuple<double, double, double> getYawPitchRoll() const;
+
+  /** \deprecated Use getYawPitchRoll() returning a tuple instead. */
+  [[deprecated("Use getYawPitchRoll() returning a tuple instead.")]]
   void getYawPitchRoll(double& yaw, double& pitch, double& roll) const;
 
   /** Get the YAW angle (in radians)  \sa setFromValues */

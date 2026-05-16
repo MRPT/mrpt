@@ -12,6 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <tuple>
+
 #include <mrpt/core/bits_math.h>       // for square
 #include <mrpt/core/config.h>          // for HAVE_SINCOS
 #include <mrpt/math/CMatrixDynamic.h>  // for CMatrixD...
@@ -280,9 +282,21 @@ void CPose3D::operator*=(const double s)
 /*---------------------------------------------------------------
     getYawPitchRoll
 ---------------------------------------------------------------*/
+std::tuple<double, double, double> CPose3D::getYawPitchRoll() const
+{
+  double yaw = 0;
+  double pitch = 0;
+  double roll = 0;
+  TPose3D::SO3_to_yaw_pitch_roll(m_ROT, yaw, pitch, roll);
+  return {yaw, pitch, roll};
+}
+
 void CPose3D::getYawPitchRoll(double& yaw, double& pitch, double& roll) const
 {
-  TPose3D::SO3_to_yaw_pitch_roll(m_ROT, yaw, pitch, roll);
+  auto [y, p, r] = getYawPitchRoll();
+  yaw = y;
+  pitch = p;
+  roll = r;
 }
 
 /*---------------------------------------------------------------
@@ -761,6 +775,12 @@ void CPose3D::fromStringRaw(const std::string& s) { this->fromString("[" + s + "
 
 void CPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const
 {
+  out_HM = getHomogeneousMatrix();
+}
+
+mrpt::math::CMatrixDouble44 CPose3D::getHomogeneousMatrix() const
+{
+  mrpt::math::CMatrixDouble44 out_HM;
   auto M = out_HM.asEigen();
   M.block<3, 3>(0, 0) = m_ROT.asEigen();
   for (int i = 0; i < 3; i++)
@@ -769,4 +789,5 @@ void CPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const
   }
   out_HM(3, 0) = out_HM(3, 1) = out_HM(3, 2) = 0.;
   out_HM(3, 3) = 1.;
+  return out_HM;
 }
