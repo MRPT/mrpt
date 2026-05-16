@@ -737,32 +737,32 @@ class CPolyhedron :
    * \sa truncate,cantellate,augment
    * \throw std::logic_error Can't get the dual to this polyhedron.
    */
-  CPolyhedron::Ptr getDual() const;
+  [[nodiscard]] CPolyhedron::Ptr getDual() const;
   /**
    * Truncates a polyhedron to a given factor.
    * \sa getDual,cantellate,augment
    * \throw std::logic_error Polyhedron truncation results in skew polygons
    * and thus it's impossible to perform.
    */
-  CPolyhedron::Ptr truncate(double factor) const;
+  [[nodiscard]] CPolyhedron::Ptr truncate(double factor) const;
   /**
    * Cantellates a polyhedron to a given factor.
    * \sa getDual,truncate,augment
    */
-  CPolyhedron::Ptr cantellate(double factor) const;
+  [[nodiscard]] CPolyhedron::Ptr cantellate(double factor) const;
   /**
    * Augments a polyhedron to a given height. This operation is roughly dual
    * to the truncation: given a body P, the operation dtdP and aP yield
    * resembling results.
    * \sa getDual,truncate,cantellate
    */
-  CPolyhedron::Ptr augment(double height) const;
+  [[nodiscard]] CPolyhedron::Ptr augment(double height) const;
   /**
    * Augments a polyhedron to a given height. This method only affects to
    * faces with certain number of vertices.
    * \sa augment(double) const
    */
-  CPolyhedron::Ptr augment(double height, size_t numVertices) const;
+  [[nodiscard]] CPolyhedron::Ptr augment(double height, size_t numVertices) const;
   /**
    * Augments a polyhedron, so that the resulting triangles are equilateral.
    * If the argument is true, triangles are "cut" from the polyhedron, instead
@@ -770,7 +770,7 @@ class CPolyhedron :
    * \throw std::logic_error a non-regular face has been found.
    * \sa augment(double) const
    */
-  CPolyhedron::Ptr augment(bool direction = false) const;
+  [[nodiscard]] CPolyhedron::Ptr augment(bool direction = false) const;
   /**
    * Augments a polyhedron, so that the resulting triangles are equilateral;
    * affects only faces with certain number of faces. If the second argument
@@ -778,20 +778,20 @@ class CPolyhedron :
    * \throw std::logic_error a non-regular face has been found.
    * \sa augment(double) const
    */
-  CPolyhedron::Ptr augment(size_t numVertices, bool direction = false) const;
+  [[nodiscard]] CPolyhedron::Ptr augment(size_t numVertices, bool direction = false) const;
   /**
    * Rotates a polyhedron around the Z axis a given amount of radians. In
    *some cases, this operation may be necessary to view the symmetry between
    *related objects.
    *	\sa scale
    */
-  CPolyhedron::Ptr rotate(double angle) const;
+  [[nodiscard]] CPolyhedron::Ptr rotate(double angle) const;
   /**
    * Scales a polyhedron to a given factor.
    * \throw std::logic_error factor is not a strictly positive number.
    * \sa rotate
    */
-  CPolyhedron::Ptr scale(double factor) const;
+  [[nodiscard]] CPolyhedron::Ptr scale(double factor) const;
   /** @}
    */
   /**

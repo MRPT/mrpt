@@ -99,7 +99,7 @@ class CSimpleMap : public mrpt::serialization::CSerializable
    * See [Robotics file formats](robotics_file_formats.html).
    * \sa loadFromFile()
    * \return false on any error. */
-  bool saveToFile(
+  [[nodiscard]] bool saveToFile(
       const std::string& filName,
       const mrpt::io::CompressionOptions& co = {mrpt::io::CompressionType::Zstd}) const;
 
@@ -108,13 +108,13 @@ class CSimpleMap : public mrpt::serialization::CSerializable
    * See [Robotics file formats](robotics_file_formats.html).
    * \sa saveToFile()
    * \return false on any error. */
-  bool loadFromFile(const std::string& filName);
+  [[nodiscard]] bool loadFromFile(const std::string& filName);
 
   /** Returns the number of keyframes in the map */
-  size_t size() const { return m_keyframes.size(); }
+  size_t size() const noexcept { return m_keyframes.size(); }
 
   /** Returns size()!=0 */
-  bool empty() const { return m_keyframes.empty(); }
+  bool empty() const noexcept { return m_keyframes.empty(); }
 
   /// const accessor
   const Keyframe& get(size_t index) const

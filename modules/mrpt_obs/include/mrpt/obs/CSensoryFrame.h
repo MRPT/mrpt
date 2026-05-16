@@ -226,9 +226,9 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    */
   iterator end() { return m_observations.end(); }
   /** Returns the number of observations in the list. */
-  size_t size() const { return m_observations.size(); }
+  size_t size() const noexcept { return m_observations.size(); }
   /** Returns true if there are no observations in the list. */
-  bool empty() const { return m_observations.empty(); }
+  bool empty() const noexcept { return m_observations.empty(); }
   /** Removes the i'th observation in the list (0=first). */
   void eraseByIndex(size_t idx);
 

@@ -51,7 +51,7 @@ namespace mrpt::graphslam
  * constraints (edges) and solve it to find an estimation of the actual robot
  * trajectory.
  *
- * @tparam GRAPH_T Graph Representation type - only CPosePDFGaussianInf has been
+ * \tparam GRAPH_T Graph Representation type - only CPosePDFGaussianInf has been
  * tested at the moment
  *
  * \note The GRAPH_T resource is accessed after having locked the relevant
@@ -196,7 +196,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
   global_pose_t getCurrentRobotPosEstimation() const;
   /***\brief Get the estimated trajectory of the robot given by the running
    * graphSLAM algorithm.
-   * @returns Current list of nodes registered in the graph
+   * \returns Current list of nodes registered in the graph
    */
   virtual typename GRAPH_T::global_poses_t getRobotEstimatedTrajectory() const;
   /**\brief Return the list of nodeIDs which make up robot trajectory

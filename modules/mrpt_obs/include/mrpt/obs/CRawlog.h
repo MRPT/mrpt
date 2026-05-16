@@ -80,7 +80,8 @@ class CRawlog : public mrpt::serialization::CSerializable
   virtual ~CRawlog() override = default;
 
   /** Returns the block of comment text for the rawlog */
-  void getCommentText(std::string& t) const;
+  [[deprecated("Use getCommentText() returning std::string instead")]] void getCommentText(
+      std::string& t) const;
   /** Returns the block of comment text for the rawlog */
   std::string getCommentText() const;
   /** Changes the block of comment text for the rawlog */
@@ -142,7 +143,8 @@ class CRawlog : public mrpt::serialization::CSerializable
    * different from the ones listed in the item above.
    * \returns It returns false upon error reading or accessing the file.
    */
-  bool loadFromRawLogFile(const std::string& fileName, bool non_obs_objects_are_legal = false);
+  [[nodiscard]] bool loadFromRawLogFile(
+      const std::string& fileName, bool non_obs_objects_are_legal = false);
 
   /** Saves the contents to a rawlog-file, compatible with RawlogViewer (As
    * the sequence of internal objects).
@@ -150,7 +152,7 @@ class CRawlog : public mrpt::serialization::CSerializable
    * \returns It returns false if any error is found while writing/creating
    * the target file.
    */
-  bool saveToRawLogFile(
+  [[nodiscard]] bool saveToRawLogFile(
       const std::string& fileName,
       const mrpt::io::CompressionOptions& co = {mrpt::io::CompressionType::Zstd}) const;
 

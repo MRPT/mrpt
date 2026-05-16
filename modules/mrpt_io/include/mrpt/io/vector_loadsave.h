@@ -35,13 +35,13 @@ bool vectorToBinaryFile(const std::vector<uint8_t>& vec, const std::string& file
  * \return Returns false on any error, true on everything OK.
  * \sa vectorToBinaryFile
  */
-bool loadBinaryFile(std::vector<uint8_t>& out_data, const std::string& fileName);
+[[nodiscard]] bool loadBinaryFile(std::vector<uint8_t>& out_data, const std::string& fileName);
 
 /** Loads a text file as a vector of string lines.
  * \return Returns false on any error, true on everything OK.
  * \sa file_get_contents()
  */
-bool loadTextFile(std::vector<std::string>& o, const std::string& fileName);
+[[nodiscard]] bool loadTextFile(std::vector<std::string>& o, const std::string& fileName);
 
 /** Loads an entire text file and return its contents as a single std::string.
  * \exception std::runtime_error On any read error.
@@ -55,32 +55,32 @@ std::string file_get_contents(const std::string& fileName);
  * plain-text file compatible with MATLAB.
  * \return Returns false on any error, true on everything OK.
  */
-bool vectorToTextFile(
+[[nodiscard]] bool vectorToTextFile(
     const std::vector<float>& vec,
     const std::string& fileName,
     bool append = false,
     bool byRows = false);
 //! \overload
-bool vectorToTextFile(
+[[nodiscard]] bool vectorToTextFile(
     const std::vector<double>& vec,
     const std::string& fileName,
     bool append = false,
     bool byRows = false);
 //! \overload
-bool vectorToTextFile(
+[[nodiscard]] bool vectorToTextFile(
     const std::vector<int>& vec,
     const std::string& fileName,
     bool append = false,
     bool byRows = false);
 //! \overload
-bool vectorToTextFile(
+[[nodiscard]] bool vectorToTextFile(
     const std::vector<size_t>& vec,
     const std::string& fileName,
     bool append = false,
     bool byRows = false);
 //! \overload
 template <class EIGEN_MATRIX>
-bool vectorToTextFile(const EIGEN_MATRIX& vec, const std::string& fileName)
+[[nodiscard]] bool vectorToTextFile(const EIGEN_MATRIX& vec, const std::string& fileName)
 {
   try
   {

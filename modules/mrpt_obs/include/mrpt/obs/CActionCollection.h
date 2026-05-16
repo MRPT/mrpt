@@ -152,14 +152,14 @@ class CActionCollection : public mrpt::serialization::CSerializable
    * actions, and return the "mean" increment of the robot according to it.
    * \return true on success,false on no odometry found.
    */
-  bool getFirstMovementEstimationMean(mrpt::poses::CPose3D& out_pose_increment) const;
+  [[nodiscard]] bool getFirstMovementEstimationMean(mrpt::poses::CPose3D& out_pose_increment) const;
 
   /** Look for the first 2D or 3D "odometry" found in this collection of
    * actions, and return the "mean" increment of the robot and its covariance
    * according to it.
    * \return true on success,false on no odometry found.
    */
-  bool getFirstMovementEstimation(mrpt::poses::CPose3DPDFGaussian& out_pose_increment) const;
+  [[nodiscard]] bool getFirstMovementEstimation(mrpt::poses::CPose3DPDFGaussian& out_pose_increment) const;
 
   /** Remove an action from the list by its index.
    * \exception std::exception On index out of bounds.
