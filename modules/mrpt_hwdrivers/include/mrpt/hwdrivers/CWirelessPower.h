@@ -17,6 +17,8 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 
+#include <optional>
+
 namespace mrpt::hwdrivers
 {
 /** This class implements a wireless power probe.
@@ -82,7 +84,19 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
    * \sa mrpt::hwdrivers::CGenericSensor
    */
 
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]]
   bool getObservation(mrpt::obs::CObservationWirelessPower& outObservation);
+
+  /** Gets the power of a given network as a timestamped observation.
+   * \return std::nullopt on any error, or the observation on success.
+   */
+  [[nodiscard]] std::optional<mrpt::obs::CObservationWirelessPower> grabFrame()
+  {
+    mrpt::obs::CObservationWirelessPower obs;
+    if (!getObservation(obs)) { return std::nullopt; }
+    return obs;
+  }
 
   /** Gets a list of the networks available for an interface
    * \exception std::exception In case there is a failure

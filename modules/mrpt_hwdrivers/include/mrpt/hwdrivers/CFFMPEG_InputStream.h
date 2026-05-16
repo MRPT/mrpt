@@ -17,6 +17,8 @@
 #include <mrpt/core/pimpl.h>
 #include <mrpt/img/CImage.h>
 
+#include <optional>
+
 #include <map>
 #include <string>
 
@@ -103,11 +105,24 @@ class CFFMPEG_InputStream
    *  \return false on any error, true on success.
    *  \sa openURL, close, isOpen
    */
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]]
   bool retrieveFrame(mrpt::img::CImage& out_img);
 
   /** \overload also returning the frame PTS (frame presentation timestamp).
    *  Refer to docs for ffmpeg AVFrame::pts
    */
   bool retrieveFrame(mrpt::img::CImage& out_img, int64_t& outPTS);
+
+  /** Get the next frame from the video stream, returning by value.
+   * \return std::nullopt on any error, or the image on success.
+   * \sa openURL, close, isOpen
+   */
+  [[nodiscard]] std::optional<mrpt::img::CImage> grabFrame()
+  {
+    mrpt::img::CImage img;
+    if (!retrieveFrame(img)) { return std::nullopt; }
+    return img;
+  }
 };
 }  // namespace mrpt::hwdrivers

@@ -18,6 +18,7 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 
 #include <list>
+#include <optional>
 
 namespace mrpt::hwdrivers
 {
@@ -179,14 +180,38 @@ class CImageGrabber_dc1394
    * account that this call may block.
    * \return false on any error, true if all go fine.
    */
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]]
   bool getObservation(mrpt::obs::CObservationImage& out_observation);
+
+  /** Grab one frame from the opened camera (monocular).
+   * \return std::nullopt on any error, or the observation on success.
+   */
+  [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame()
+  {
+    mrpt::obs::CObservationImage obs;
+    if (!getObservation(obs)) { return std::nullopt; }
+    return obs;
+  }
 
   /** Grab an image from the opened camera (for stereo cameras).
    * \param out_observation The object to be filled with sensed data.
    *
    * \return false on any error, true if all go fine.
+   * \deprecated Use grabStereoFrame() instead.
    */
+  [[deprecated("Use grabStereoFrame() instead")]]
   bool getObservation(mrpt::obs::CObservationStereoImages& out_observation);
+
+  /** Grab one stereo frame from the opened camera (stereo cameras).
+   * \return std::nullopt on any error, or the observation on success.
+   */
+  [[nodiscard]] std::optional<mrpt::obs::CObservationStereoImages> grabStereoFrame()
+  {
+    mrpt::obs::CObservationStereoImages obs;
+    if (!getObservation(obs)) { return std::nullopt; }
+    return obs;
+  }
 
   /** Changes the boolean level associated to Software Trigger (ON/OFF)
    * Can be used to control camera triggering trough software

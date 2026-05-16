@@ -98,8 +98,18 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
   void getAs3DObject(
       mrpt::viz::CSetOfObjects& meanObj, mrpt::viz::CSetOfObjects& varObj) const override;
 
-  /** Returns the 3D object representing the wind grid information */
+  /** Returns the 3D object representing the wind grid information.
+   * \deprecated Use getWindAs3DObject() returning Ptr instead. */
+  [[deprecated("Use getWindAs3DObject() returning CSetOfObjects::Ptr instead")]]
   void getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr& windObj) const;
+
+  /** Returns the 3D object representing the wind grid information. */
+  [[nodiscard]] mrpt::viz::CSetOfObjects::Ptr getWindAs3DObject() const
+  {
+    mrpt::viz::CSetOfObjects::Ptr obj;
+    getWindAs3DObject(obj);
+    return obj;
+  }
 
   /** Increase the kf_std of all cells from the m_map
    *	This mehod is usually called by the main_map to simulate loss of

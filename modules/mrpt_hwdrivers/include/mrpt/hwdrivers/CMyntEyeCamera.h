@@ -19,6 +19,8 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 
+#include <optional>
+
 namespace mrpt::hwdrivers
 {
 /** Open parameters for CMyntEyeCamera
@@ -53,7 +55,19 @@ class CMyntEyeCamera
    *
    * \return false on any error, true if all go fine.
    */
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]]
   bool getObservation(mrpt::obs::CObservation3DRangeScan& out);
+
+  /** Grab one frame from the opened camera.
+   * \return std::nullopt on any error, or the observation on success.
+   */
+  [[nodiscard]] std::optional<mrpt::obs::CObservation3DRangeScan> grabFrame()
+  {
+    mrpt::obs::CObservation3DRangeScan obs;
+    if (!getObservation(obs)) { return std::nullopt; }
+    return obs;
+  }
 
  protected:
   /** Set to false if we could not initialize the camera.

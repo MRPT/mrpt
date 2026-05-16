@@ -113,20 +113,44 @@ class CPoseRandomSampler
   CPose3D& getSamplingMean3D(CPose3D& out_mean) const;
 
   /** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
-   * \f$. */
+   * \f$. \deprecated Use the return-by-value overload instead. */
+  [[deprecated("Use getOriginalPDFCov2D() returning CMatrixDouble33 instead")]]
   void getOriginalPDFCov2D(mrpt::math::CMatrixDouble33& cov3x3) const;
 
   /** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
-   * \f$. */
+   * \f$. \deprecated Use the return-by-value overload instead. */
+  [[deprecated("Use getOriginalPDFCov2D() returning CMatrixDouble instead")]]
   void getOriginalPDFCov2D(mrpt::math::CMatrixDouble& cov3x3) const;
 
+  /** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
+   * \f$. */
+  [[nodiscard]] mrpt::math::CMatrixDouble33 getOriginalPDFCov2D() const
+  {
+    mrpt::math::CMatrixDouble33 out;
+    getOriginalPDFCov2D(out);
+    return out;
+  }
+
   /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
-   * yaw ~ pitch ~ roll ] \f$. */
+   * yaw ~ pitch ~ roll ] \f$. \deprecated Use the return-by-value overload
+   * instead. */
+  [[deprecated("Use getOriginalPDFCov3D() returning CMatrixDouble66 instead")]]
   void getOriginalPDFCov3D(mrpt::math::CMatrixDouble66& cov6x6) const;
 
   /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
-   * yaw ~ pitch ~ roll ] \f$. */
+   * yaw ~ pitch ~ roll ] \f$. \deprecated Use the return-by-value overload
+   * instead. */
+  [[deprecated("Use getOriginalPDFCov3D() returning CMatrixDouble instead")]]
   void getOriginalPDFCov3D(mrpt::math::CMatrixDouble& cov6x6) const;
+
+  /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
+   * yaw ~ pitch ~ roll ] \f$. */
+  [[nodiscard]] mrpt::math::CMatrixDouble66 getOriginalPDFCov3D() const
+  {
+    mrpt::math::CMatrixDouble66 out;
+    getOriginalPDFCov3D(out);
+    return out;
+  }
 
 };  // End of class def.
 }  // namespace mrpt::poses
