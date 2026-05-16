@@ -363,20 +363,26 @@ void CPose3DPDFSOG::appendFrom(const CPose3DPDFSOG& o)
 /*---------------------------------------------------------------
             getMostLikelyMode
  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::getMostLikelyMode(CPose3DPDFGaussian& outVal) const
+CPose3DPDFGaussian CPose3DPDFSOG::getMostLikelyMode() const
 {
   if (this->empty())
   {
-    outVal = CPose3DPDFGaussian();
+    return CPose3DPDFGaussian();
   }
-  else
+  auto it_best = m_modes.end();
+  for (auto it = m_modes.begin(); it != m_modes.end(); ++it)
   {
-    auto it_best = m_modes.end();
-    for (auto it = m_modes.begin(); it != m_modes.end(); ++it)
-      if (it_best == m_modes.end() || it->log_w > it_best->log_w) it_best = it;
-
-    outVal = it_best->val;
+    if (it_best == m_modes.end() || it->log_w > it_best->log_w)
+    {
+      it_best = it;
+    }
   }
+  return it_best->val;
+}
+
+void CPose3DPDFSOG::getMostLikelyMode(CPose3DPDFGaussian& outVal) const
+{
+  outVal = getMostLikelyMode();
 }
 
 void CPose3DPDFSOG::printTo(std::ostream& out) const

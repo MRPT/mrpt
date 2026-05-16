@@ -87,13 +87,28 @@ class CPose3DPDFSOG : public CPose3DPDF
   const_iterator end() const { return m_modes.end(); }
 
   void getMean(CPose3D& mean_pose) const override;
+
+  /** Returns the mean pose by value (convenience non-virtual overload). */
+  [[nodiscard]] CPose3D meanVal() const
+  {
+    CPose3D m;
+    getMean(m);
+    return m;
+  }
   std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
   /** Normalize the weights in m_modes such as the maximum log-weight is 0. */
   void normalizeWeights();
   /** Return the Gaussian mode with the highest likelihood (or an empty
-   * Gaussian if there are no modes in this SOG) */
+   * Gaussian if there are no modes in this SOG).
+   * \deprecated Use getMostLikelyMode() returning by value instead.
+   */
+  [[deprecated("Use getMostLikelyMode() returning by value instead.")]]
   void getMostLikelyMode(CPose3DPDFGaussian& outVal) const;
+
+  /** Returns the Gaussian mode with the highest likelihood (or an empty
+   * Gaussian if there are no modes in this SOG). */
+  [[nodiscard]] CPose3DPDFGaussian getMostLikelyMode() const;
 
   /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations) */

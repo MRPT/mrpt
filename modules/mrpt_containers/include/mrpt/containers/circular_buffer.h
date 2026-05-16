@@ -107,7 +107,9 @@ class circular_buffer
 
   /** Retrieve an element from the buffer.
    * \exception std::out_of_range If the buffer is empty.
+   * \deprecated Use pop() returning by value instead.
    */
+  [[deprecated("Use pop() returning by value instead.")]]
   void pop(T& out_val)
   {
     if (m_next_read == m_next_write)

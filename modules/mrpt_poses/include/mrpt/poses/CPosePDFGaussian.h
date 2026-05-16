@@ -73,6 +73,9 @@ class CPosePDFGaussian : public CPosePDF
 
   void getMean(CPose2D& mean_pose) const override { mean_pose = mean; }
 
+  /** Returns the mean pose by value (convenience non-virtual overload). */
+  [[nodiscard]] CPose2D meanVal() const { return mean; }
+
   std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override { return {cov, mean}; }
 
   /** Copy operator, translating if necessary (for example, between particles

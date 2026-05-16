@@ -218,3 +218,23 @@ bool CActionCollection::getFirstMovementEstimation(CPose3DPDFGaussian& out_pose_
   }
   return false;
 }
+
+std::optional<CPose3D> CActionCollection::getFirstMovementEstimationMean() const
+{
+  CPose3D out;
+  if (getFirstMovementEstimationMean(out))
+  {
+    return out;
+  }
+  return std::nullopt;
+}
+
+std::optional<CPose3DPDFGaussian> CActionCollection::getFirstMovementEstimation() const
+{
+  CPose3DPDFGaussian out;
+  if (getFirstMovementEstimation(out))
+  {
+    return out;
+  }
+  return std::nullopt;
+}

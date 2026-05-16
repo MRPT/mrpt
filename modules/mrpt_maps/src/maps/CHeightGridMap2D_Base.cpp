@@ -57,6 +57,17 @@ bool CHeightGridMap2D_Base::getMinMaxHeight(float& z_min, float& z_max) const
   return any;
 }
 
+std::optional<std::pair<float, float>> CHeightGridMap2D_Base::getMinMaxHeightOpt() const
+{
+  float z_min = 0;
+  float z_max = 0;
+  if (getMinMaxHeight(z_min, z_max))
+  {
+    return std::make_pair(z_min, z_max);
+  }
+  return std::nullopt;
+}
+
 bool CHeightGridMap2D_Base::intersectLine3D(
     const mrpt::math::TLine3D& ray, mrpt::math::TObject3D& obj) const
 {

@@ -13,6 +13,8 @@
 */
 #pragma once
 
+#include <optional>
+
 #include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -154,15 +156,25 @@ class CActionCollection : public mrpt::serialization::CSerializable
   /** Look for the first 2D or 3D "odometry" found in this collection of
    * actions, and return the "mean" increment of the robot according to it.
    * \return true on success,false on no odometry found.
+   * \deprecated Use getFirstMovementEstimationMean() returning optional instead.
    */
   [[nodiscard]] bool getFirstMovementEstimationMean(mrpt::poses::CPose3D& out_pose_increment) const;
+
+  /** Returns the mean pose increment from the first odometry action found,
+   * or std::nullopt if none exists. */
+  [[nodiscard]] std::optional<mrpt::poses::CPose3D> getFirstMovementEstimationMean() const;
 
   /** Look for the first 2D or 3D "odometry" found in this collection of
    * actions, and return the "mean" increment of the robot and its covariance
    * according to it.
    * \return true on success,false on no odometry found.
+   * \deprecated Use getFirstMovementEstimation() returning optional instead.
    */
   [[nodiscard]] bool getFirstMovementEstimation(mrpt::poses::CPose3DPDFGaussian& out_pose_increment) const;
+
+  /** Returns the pose PDF increment from the first odometry action found,
+   * or std::nullopt if none exists. */
+  [[nodiscard]] std::optional<mrpt::poses::CPose3DPDFGaussian> getFirstMovementEstimation() const;
 
   /** Remove an action from the list by its index.
    * \exception std::exception On index out of bounds.

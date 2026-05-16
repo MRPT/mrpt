@@ -246,8 +246,8 @@ double COctoMapBase<OCTREE, OCTREE_NODE>::internal_computeObservationLikelihood(
 }
 
 template <class OCTREE, class OCTREE_NODE>
-bool COctoMapBase<OCTREE, OCTREE_NODE>::getPointOccupancy(
-    const float x, const float y, const float z, double& prob_occupancy) const
+std::optional<double> COctoMapBase<OCTREE, OCTREE_NODE>::getPointOccupancy(
+    const float x, const float y, const float z) const
 {
   octomap::OcTreeKey key;
   if (m_impl->m_octomap.coordToKeyChecked(octomap::point3d(x, y, z), key))
@@ -255,14 +255,24 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::getPointOccupancy(
     OCTREE_NODE* node = m_impl->m_octomap.search(key, 0 /*depth*/);
     if (!node)
     {
-      return false;
+      return std::nullopt;
     }
+    return node->getOccupancy();
+  }
+  return std::nullopt;
+}
 
-    prob_occupancy = node->getOccupancy();
+template <class OCTREE, class OCTREE_NODE>
+bool COctoMapBase<OCTREE, OCTREE_NODE>::getPointOccupancy(
+    const float x, const float y, const float z, double& prob_occupancy) const
+{
+  auto opt = getPointOccupancy(x, y, z);
+  if (opt)
+  {
+    prob_occupancy = *opt;
     return true;
   }
-  else
-    return false;
+  return false;
 }
 
 template <class OCTREE, class OCTREE_NODE>

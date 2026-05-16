@@ -12,6 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <utility>
+
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
@@ -207,8 +209,7 @@ void CPosePDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase_)
 {
   const CPose2D newReferenceBase = CPose2D(newReferenceBase_);
 
-  CMatrixDouble44 HM;
-  newReferenceBase.getHomogeneousMatrix(HM);
+  CMatrixDouble44 HM = newReferenceBase.getHomogeneousMatrix();
 
   // Clip the 4x4 matrix
   auto M = CMatrixDouble33(HM.block<3, 3>(0, 0));
@@ -683,7 +684,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 /*---------------------------------------------------------------
             getMostLikelyCovarianceAndMean
  ---------------------------------------------------------------*/
-void CPosePDFSOG::getMostLikelyCovarianceAndMean(CMatrixDouble33& cov, CPose2D& mean_point) const
+std::pair<mrpt::math::CMatrixDouble33, CPose2D> CPosePDFSOG::getMostLikelyCovarianceAndMean() const
 {
   auto it_best = end();
   double best_log_w = -std::numeric_limits<double>::max();
@@ -697,6 +698,8 @@ void CPosePDFSOG::getMostLikelyCovarianceAndMean(CMatrixDouble33& cov, CPose2D& 
     }
   }
 
+  mrpt::math::CMatrixDouble33 cov;
+  CPose2D mean_point;
   if (it_best != end())
   {
     mean_point = it_best->mean;
@@ -708,6 +711,14 @@ void CPosePDFSOG::getMostLikelyCovarianceAndMean(CMatrixDouble33& cov, CPose2D& 
     cov.asEigen() *= 1e20;
     mean_point = CPose2D(0, 0, 0);
   }
+  return {cov, mean_point};
+}
+
+void CPosePDFSOG::getMostLikelyCovarianceAndMean(CMatrixDouble33& cov, CPose2D& mean_point) const
+{
+  auto [c, m] = getMostLikelyCovarianceAndMean();
+  cov = c;
+  mean_point = m;
 }
 
 void CPosePDFSOG::printTo(std::ostream& out) const

@@ -152,13 +152,20 @@ void CPose2D::composeFrom(const CPose2D& A, const CPose2D& B)
 /*---------------------------------------------------------------
         getRotationMatrix
  ---------------------------------------------------------------*/
-void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble22& R) const
+mrpt::math::CMatrixDouble22 CPose2D::getRotationMatrix() const
 {
+  mrpt::math::CMatrixDouble22 R;
   update_cached_cos_sin();
   R(0, 0) = m_cosphi;
   R(0, 1) = -m_sinphi;
   R(1, 0) = m_sinphi;
   R(1, 1) = m_cosphi;
+  return R;
+}
+
+void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble22& R) const
+{
+  R = getRotationMatrix();
 }
 
 void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble33& R) const
@@ -307,8 +314,9 @@ void CPose2D::operator*=(const double s)
     transformation matrix for the point(translation),
     or pose (translation+orientation).
 ---------------------------------------------------------------*/
-void CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
+mrpt::math::CMatrixDouble44 CPose2D::getHomogeneousMatrix() const
 {
+  CMatrixDouble44 m;
   m.setIdentity();
   m(0, 3) = m_coords[0];
   m(1, 3) = m_coords[1];
@@ -319,6 +327,12 @@ void CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
   m(0, 1) = -m_sinphi;
   m(1, 0) = m_sinphi;
   m(1, 1) = m_cosphi;
+  return m;
+}
+
+void CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
+{
+  m = getHomogeneousMatrix();
 }
 
 /** Forces "phi" to be in the range [-pi,pi];
