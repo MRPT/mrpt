@@ -43,7 +43,9 @@ using precnum_t = double;
 
 std::ostream& mrpt::topography::operator<<(std::ostream& out, const TCoords& o)
 {
-  return out << o.getAsString();
+  // Use c_str() to avoid instantiating std::operator<<(ostream, string) which
+  // has a versioned ABI symbol (abi:ne190102) absent from older libc++ runtimes.
+  return out << o.getAsString().c_str();
 }
 
 /*---------------------------------------------------------------

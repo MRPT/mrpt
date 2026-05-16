@@ -54,6 +54,7 @@ jobs:
           colcon build \
             --event-handlers console_direct+ \
             --cmake-args \
+              -G Ninja \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -DCMAKE_VERBOSE_MAKEFILE=ON \
               -DMRPT_BUILD_TESTING=ON \
