@@ -1,85 +1,67 @@
 #!/usr/bin/env bash
+# Runs clang-format-14 on all C++ source files in the MRPT codebase.
+# Usage:
+#   scripts/clang_format_codebase.sh          # reformat in-place
+#   scripts/clang_format_codebase.sh --check  # CI dry-run; exits non-zero if any file differs
 
-# Current script runs clang_git_format on multiple files of the MRPT codebase.
-# - If no extra arguments are given it runs on the whole MRPT codebase
-# - If two git commits are given it runs on all the .h .cpp files included in
-# these commits.
-# - If multiple filepaths are given it runs on each one of the files
-# individually
+set -euo pipefail
 
-# Provides a handy wrapper for long clang_git_format commands. Run this from
-# the  **root** of the MRPT repository
+CLANG_FORMAT=${CLANG_FORMAT:-clang-format-14}
 
-DIRS_IN="modules apps mrpt_examples_cpp"
-DIRS_OUT="3rdparty imgui"
-LANGS=cpp
-FORMAT_CODE_BIN="scripts/clang_git_format/format_code.py"
+CHECK_MODE=0
+if [[ "${1:-}" == "--check" ]]; then
+  CHECK_MODE=1
+fi
 
+# Directories to scan (relative to repo root)
+INCLUDE_DIRS=(modules apps mrpt_examples_cpp)
 
-# Functions
-######################
-function commit_exists() {
+# Path fragments to exclude
+EXCLUDE_PATTERNS=(3rdparty imgui)
 
-ret=
-if git cat-file -e $1^{commit} 2>/dev/null; then
-    ret=0
+# Verify we are running from the repo root
+if [[ ! -f version_prefix.txt ]]; then
+  echo "ERROR: Run this script from the MRPT repository root." >&2
+  exit 1
+fi
+
+# Build find arguments for excluded dirs
+PRUNE_ARGS=()
+for pat in "${EXCLUDE_PATTERNS[@]}"; do
+  PRUNE_ARGS+=(-path "*/$pat" -prune -o -path "*/$pat/*" -prune -o)
+done
+
+# Collect files
+mapfile -t FILES < <(
+  find "${INCLUDE_DIRS[@]}" \
+    "${PRUNE_ARGS[@]}" \
+    \( -name "*.h" -o -name "*.cpp" \) -print 2>/dev/null | sort
+)
+
+if [[ ${#FILES[@]} -eq 0 ]]; then
+  echo "No files found — check INCLUDE_DIRS and working directory."
+  exit 1
+fi
+
+echo "Found ${#FILES[@]} file(s) to process."
+
+if [[ $CHECK_MODE -eq 1 ]]; then
+  FAILED=()
+  for f in "${FILES[@]}"; do
+    if ! "$CLANG_FORMAT" --dry-run --Werror "$f" 2>/dev/null; then
+      FAILED+=("$f")
+    fi
+  done
+  if [[ ${#FAILED[@]} -gt 0 ]]; then
+    echo ""
+    echo "clang-format check FAILED for ${#FAILED[@]} file(s):"
+    printf '  %s\n' "${FAILED[@]}"
+    exit 1
+  fi
+  echo "clang-format check passed."
 else
-    ret=1
+  for f in "${FILES[@]}"; do
+    "$CLANG_FORMAT" -i "$f"
+  done
+  echo "Reformatting done."
 fi
-return $ret
-
-}
-
-function show_help() {
-
-printf "Current script runs clang_format on multiple .cpp, .h files of "
-printf "the MRPT codebase according to your ~/.clang_format file. See file "
-printf "docstring for more.\n"
-printf "It should be run from the MRPT root directory.\n"
-
-exit $1
-}
-
-
-function format() {
-
-${FORMAT_CODE_BIN} -f -g . --lang ${LANGS} -o ${DIRS_OUT} -i ${DIRS_IN}
-exit $?
-}
-
-
-######################
-
-# Make sure we are running it from the root
-if [ -f version_prefix.txt ]
-then
-	MRPT_VERSION_STR=`head -n 1 version_prefix.txt`
-else
-  show_help 
-
-	echo "ERROR: Cannot find the file version_prefix.txt!"
-	echo "Change to the root dir and rerun this."
-	echo "Exiting..."
-
-	exit 1
-fi
-
-# find which files to run on
-valid_files=
-if [ "$#" -eq 0 ]; then
-    format
-elif [ "$#" -eq 2 ] &&  $(commit_exists $1) && $(commit_exists $2) ; then
-    valid_files=$(git diff --name-only $1..$2)
-    valid_files=$(echo ${valid_files} | xargs -d' ' -n 1 | grep -ie ".*\.h$\|.*\.cpp$")
-else
-    valid_files="${@:2}"
-fi
-
-
-if [ -n valid_files ]; then
-    printf "Valid files: ${valid_files}\n"
-    $(which clang-format) -i -style=file ${valid_files}
-fi
-
-exit 0
-
