@@ -25,7 +25,18 @@
 
 namespace mrpt::hwdrivers
 {
-/** A class for interfacing an e-NoseModular via a FTDI USB link.
+/** \brief Interfaces the MAPIR e-NoseModular electronic nose via FTDI USB or
+ * a serial port.
+ *
+ * The e-NoseModular board (v1.0, University of Malaga, 2013) hosts a master
+ * MCU and optional slave expansion boards, each carrying chemical gas sensors.
+ * Produced observations are of type mrpt::obs::CObservationGasSensors
+ * containing readings from all connected sensor nodes (master + slaves).
+ *
+ * Connection is possible via an FTDI USB chip (identified by serial number) or
+ * a standard serial port. Configure one approach in the ini file.
+ *
+ * A class for interfacing an e-NoseModular via a FTDI USB link.
  *  Implemented for the Mdular board v1.0 designed by 2013 @ MAPIR (University
  * of Malaga).
  *

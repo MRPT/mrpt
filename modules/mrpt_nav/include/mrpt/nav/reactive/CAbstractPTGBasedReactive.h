@@ -32,7 +32,20 @@
 
 namespace mrpt::nav
 {
-/** Base class for reactive navigator systems based on TP-Space, with an
+/** \brief Abstract base for PTG (Parameterized Trajectory Generator) based
+ * reactive navigation systems.
+ *
+ * Provides the framework for 2-D and 3-D reactive navigation using
+ * Trajectory Parameter Space (TP-Space). Concrete implementations supply PTGs
+ * (via getPTG()/getPTG_count()) and a holonomic motion planner (any class
+ * derived from CAbstractHolonomicReactiveMethod). Multiple PTGs can be used
+ * simultaneously to handle different kinematic constraints.
+ *
+ * Typical use: instantiate CReactiveNavigationSystem (2-D) or
+ * CReactiveNavigationSystem3D (3-D), supply a CRobot2NavInterface callback,
+ * call loadConfigFile(), then call navigationStep() periodically.
+ *
+ * Base class for reactive navigator systems based on TP-Space, with an
  * arbitrary holonomic
  * reactive method running on it and any number of PTGs for transforming the
  * navigation space.

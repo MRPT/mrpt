@@ -20,7 +20,17 @@
 
 namespace mrpt::hwdrivers
 {
-/** A class for interfacing XSens 4th generation Inertial Measuring Units
+/** \brief Interfaces XSens 4th-generation IMUs (MTi 10-series, MTi 100-series)
+ * via the XSens MT SDK.
+ *
+ * Communicates over USB or a serial COM port. Produces observations of type
+ * mrpt::obs::CObservationIMU containing orientation, angular velocity, linear
+ * acceleration, and optionally magnetometer data.
+ *
+ * \note Requires XSens MT SDK (libxsensmt or equivalent). On Linux, the user
+ * must be in the 'dialout' group or install the provided udev rules.
+ *
+ * A class for interfacing XSens 4th generation Inertial Measuring Units
  * (IMUs): MTi 10-series, MTi 100-series.
  *  Usage considerations:
  *    - In Windows, you only need to install XSens drivers.
@@ -61,19 +71,26 @@ class CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 {
   DEFINE_GENERIC_SENSOR(CIMUXSens_MT4)
  public:
+  /** \brief Default constructor. Does not open any device. */
   CIMUXSens_MT4();
+
+  /** \brief Destructor. Closes the device if open. */
   ~CIMUXSens_MT4() override;
 
-  /** This method will be invoked at a minimum rate of "process_rate" (Hz)
-   *  \exception This method must throw an exception with a descriptive
-   * message if some critical error is found.
+  /** \brief Polls the IMU for new data and queues any received observations.
+   *
+   * Called automatically at process_rate Hz by rawlog-grabber.
+   * \exception std::exception On a critical hardware error.
    */
   void doProcess() override;
 
-  /** Turns on the xSens device and configure it for getting orientation data
+  /** \brief Opens the XSens device and configures it for data streaming.
+   *
+   * \exception std::exception If the device cannot be found or initialized.
    */
   void initialize() override;
 
+  /** \brief Closes the connection to the XSens device. */
   void close();
 
  protected:

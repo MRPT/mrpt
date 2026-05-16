@@ -27,23 +27,18 @@
   ---------------------------------------------------------------*/
 namespace mrpt::hwdrivers
 {
-/** A generic class which process a video file or other kind of input stream
- * (http, rtsp) and allows the extraction of images frame by frame.
- *  Video sources can be open with "openURL", which can manage both video files
- * and "rtsp://" sources (IP cameras).
+/** \brief Decodes video files and RTSP/HTTP streams frame by frame using FFmpeg.
  *
- *  Frames are retrieved by calling CFFMPEG_InputStream::retrieveFrame
+ * Opens local video files (AVI, MPEG, ...) and IP camera streams (rtsp://,
+ * http://) via openURL(). Frames are retrieved one by one with grabFrame().
  *
- *   For an example of usage, see the file "samples/grab_camera_ffmpeg"
+ * Typical use inside CCameraSensor via grabber_type=ffmpeg. Can also be used
+ * directly for reading pre-recorded video files.
  *
- * \note This class is an easy to use C++ wrapper for ffmpeg libraries
- * (libavcodec). In Unix systems these libraries must be installed in the system
- * as explained in <a
- * href="http://www.mrpt.org/Building_and_Installing_Instructions" > MRPT's
- * wiki</a>. In Win32, a precompiled version for Visual Studio must be also
- * downloaded as explained in <a
- * href="http://www.mrpt.org/Building_and_Installing_Instructions" >the
- * wiki</a>.
+ * \note Requires FFmpeg libraries (libavcodec, libavformat, libswscale).
+ *       On Linux, install the ffmpeg development packages. On Windows,
+ *       a precompiled set must be provided alongside MRPT.
+ * \sa CFFMPEG_InputStream::openURL, CFFMPEG_InputStream::grabFrame
  * \ingroup mrpt_hwdrivers_grp
  */
 class CFFMPEG_InputStream
@@ -57,25 +52,24 @@ class CFFMPEG_InputStream
   bool m_grab_as_grayscale;
 
  public:
-  /** Default constructor, does not open any video source at startup */
+  /** \brief Default constructor. No video source is open at startup. */
   CFFMPEG_InputStream();
-  /** Destructor */
+
+  /** \brief Destructor. Closes the stream if open. */
   virtual ~CFFMPEG_InputStream();
 
-  /** Open a video file or a video stream (rtsp://)
-   *  This can be used to open local video files (eg. "myVideo.avi",
-   * "c:\a.mpeg") and also IP cameras (e.g `rtsp://a.b.c.d/live.sdp`).
-   *  User/password can be used like `rtsp://USER:PASSWORD@IP/PATH`.
+  /** \brief Opens a video file or a network video stream.
    *
-   * [ffmpeg options](https://www.ffmpeg.org/ffmpeg-protocols.html)
-   * can be added via the \a options argument.
+   * Supports local video files (e.g. "myVideo.avi") and IP camera URLs
+   * (e.g. "rtsp://a.b.c.d/live.sdp"). Credentials can be embedded as
+   * "rtsp://USER:PASSWORD@IP/PATH".
    *
-   * If \a verbose is set to true, more information about the video will be
-   * dumped to cout.
-   *
-   * \sa close, retrieveFrame
-   * \return false on any error (and error info dumped to cerr), true on
-   * success.
+   * \param[in] url            Path to a local file or a network stream URL.
+   * \param[in] grab_as_grayscale If true, frames are converted to grayscale.
+   * \param[in] verbose        If true, stream metadata is printed to cout.
+   * \param[in] options        Extra FFmpeg protocol options (key-value pairs).
+   * \return true on success; false on any error (details printed to cerr).
+   * \sa close, grabFrame
    */
   bool openURL(
       const std::string& url,
@@ -85,37 +79,44 @@ class CFFMPEG_InputStream
           {"rtsp_transport", "tcp"}
   });
 
-  /** Return whether the video source was open correctly */
+  /** \brief Returns true if the video source is currently open. */
   bool isOpen() const;
 
-  /** Close the video stream (this is called automatically at destruction).
+  /** \brief Closes the video stream.
+   *
+   * Called automatically on destruction.
    * \sa openURL
    */
   void close();
 
-  /** Get the frame-per-second (FPS) of the video source, or "-1" if the video
-   * is not open. */
+  /** \brief Returns the nominal frame rate of the open video source.
+   * \return Frames per second, or -1 if the stream is not open.
+   */
   double getVideoFPS() const;
 
-  /** Get the next frame from the video stream.
-   *  Note that for remote streams (IP cameras) this method may block until
-   * enough information is read to generate a new frame.
-   *  Images are returned as 8-bit depth grayscale if "grab_as_grayscale" is
-   * true.
-   *  \return false on any error, true on success.
-   *  \sa openURL, close, isOpen
+  /** \brief Decodes and returns the next video frame.
+   *
+   * For network streams this call may block until enough data is available.
+   * \param[out] out_img The decoded image (8-bit RGB or grayscale).
+   * \return false on any error or end of stream, true on success.
+   * \deprecated Use grabFrame() instead.
+   * \sa openURL, close, isOpen
    */
-  /** \deprecated Use grabFrame() instead. */
   [[deprecated("Use grabFrame() instead")]]
   bool retrieveFrame(mrpt::img::CImage& out_img);
 
-  /** \overload also returning the frame PTS (frame presentation timestamp).
-   *  Refer to docs for ffmpeg AVFrame::pts
+  /** \brief Decodes the next frame and also returns its presentation timestamp.
+   *
+   * \param[out] out_img Decoded image.
+   * \param[out] outPTS  AVFrame::pts value (ffmpeg presentation timestamp).
+   * \return false on any error or end of stream, true on success.
    */
   bool retrieveFrame(mrpt::img::CImage& out_img, int64_t& outPTS);
 
-  /** Get the next frame from the video stream, returning by value.
-   * \return std::nullopt on any error, or the image on success.
+  /** \brief Decodes and returns the next video frame by value.
+   *
+   * \return std::nullopt on any error or end of stream, or the image on
+   * success.
    * \sa openURL, close, isOpen
    */
   [[nodiscard]] std::optional<mrpt::img::CImage> grabFrame()

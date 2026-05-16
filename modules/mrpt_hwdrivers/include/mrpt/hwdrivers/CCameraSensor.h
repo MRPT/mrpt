@@ -35,8 +35,19 @@
 
 namespace mrpt::hwdrivers
 {
-/** The central class for camera grabbers in MRPT, implementing the "generic
- * sensor" interface.
+/** \brief Central hub for camera and video grabbers in MRPT, implementing the
+ * CGenericSensor interface.
+ *
+ * This class provides a uniform interface to a variety of camera backends
+ * (OpenCV, dc1394/FireWire, FFmpeg RTSP, Kinect, OpenNI2, Point Grey
+ * FlyCapture2, MYNT EYE, rawlog replay, and image-directory playback).
+ * Produced observations are of type mrpt::obs::CObservationImage (monocular),
+ * mrpt::obs::CObservationStereoImages (stereo), or
+ * mrpt::obs::CObservation3DRangeScan (depth cameras).
+ *
+ * \note Requires OpenCV. Additional backends need their respective libraries
+ * (libdc1394, libfreenect, FlyCapture2 SDK, MYNT SDK, FFmpeg).
+ *
  *   This class provides the user with a uniform interface to a variety of
  * other classes which manage only one specific camera "driver" (opencv, ffmpeg,
  * PGR FlyCapture,...)
@@ -271,53 +282,72 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 
  public:
   using Ptr = std::shared_ptr<CCameraSensor>;
-  /** Constructor. The camera is not open until "initialize" is called. */
+  /** \brief Constructor. The camera is not open until initialize() is called. */
   CCameraSensor();
 
-  /** Destructor */
+  /** \brief Destructor. Closes the camera if open. */
   ~CCameraSensor() override;
 
-  // See docs in parent class
+  /** \brief Runs one sensor acquisition cycle (called by rawlog-grabber). */
   void doProcess() override;
 
-  /** Retrieves the next frame from the video source, raising an exception on
-   *any error.
-   * Note: The returned observations can be of one of these classes (you can
-   *use IS_CLASS(obs,CObservationXXX) to determine it):
-   *		- mrpt::obs::CObservationImage (For normal cameras or video sources)
-   *		- mrpt::obs::CObservationStereoImages (For stereo cameras)
-   *		- mrpt::obs::CObservation3DRangeScan (For 3D cameras)
+  /** \brief Retrieves the next frame from the video source.
+   *
+   * Raises an exception on any error.
+   * The returned observation type depends on the grabber backend:
+   *  - mrpt::obs::CObservationImage for monocular cameras or video files.
+   *  - mrpt::obs::CObservationStereoImages for stereo cameras.
+   *  - mrpt::obs::CObservation3DRangeScan for 3-D depth cameras.
+   *
+   * \return A shared pointer to the captured observation.
    */
   mrpt::obs::CObservation::Ptr getNextFrame();
+
+  /** \brief Retrieves the next frame(s) from the video source into a vector.
+   *
+   * \param[out] out_obs The vector to which newly captured observations are
+   * appended.
+   */
   void getNextFrame(std::vector<mrpt::serialization::CSerializable::Ptr>& out_obs);
 
-  /** Tries to open the camera, after setting all the parameters with a call
-   * to loadConfig.
-   *  \exception This method must throw an exception with a descriptive
-   * message if some critical error is found.
+  /** \brief Opens the camera using the parameters previously loaded via
+   * loadConfig().
+   *
+   * \exception std::exception If the camera cannot be opened.
    */
   void initialize() override;
 
-  /** Close the camera (if open).
-   *   This method is called automatically on destruction.
+  /** \brief Closes the camera connection.
+   *
+   * Called automatically on destruction.
    */
   void close();
 
-  /** Set Software trigger level value (ON or OFF) for cameras with this
-   * function available.
+  /** \brief Sets the software trigger level (ON or OFF) for cameras that
+   * support software triggering.
+   *
+   * \param[in] level true to assert (ON), false to de-assert (OFF).
    */
   void setSoftwareTriggerLevel(bool level);
 
-  /**  Set the path where to save off-rawlog image files (this class DOES take
-   * into account this path).
-   *  An  empty string (the default value at construction) means to save
-   * images embedded in the rawlog, instead of on separate files.
-   * \exception std::exception If the directory doesn't exists and cannot be
+  /** \brief Sets the directory path for externally saved image files.
+   *
+   * When set to a non-empty string, captured images are stored as files
+   * in that directory and the observation holds only the relative file path.
+   * An empty string (the default) causes images to be embedded directly in
+   * the rawlog.
+   *
+   * \param[in] directory Path to the target directory.
+   * \exception std::exception If the directory does not exist and cannot be
    * created.
    */
   void setPathForExternalImages(const std::string& directory) override;
 
-  /** This must be called before initialize() */
+  /** \brief Enables spawning a dedicated thread for saving images to disk.
+   *
+   * Must be called before initialize().
+   * \param[in] enable true to enable the dedicated save thread (default).
+   */
   void enableLaunchOwnThreadForSavingImages(bool enable = true)
   {
     m_external_images_own_thread = enable;
@@ -327,12 +357,16 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
   using TPreSaveUserHook =
       std::function<void(const mrpt::obs::CObservation::Ptr& obs, void* user_ptr)>;
 
-  /** Provides a "hook" for user-code to be run BEFORE an image is going to be
-   * saved to disk if external storage is enabled (e.g. to rectify images,
-   * preprocess them, etc.)
-   * Notice that this code may be called from detached threads, so it must be
-   * thread safe.
-   * If used, call this before initialize() */
+  /** \brief Registers a callback to be executed just before each image is
+   * saved to disk (when external storage is enabled).
+   *
+   * Useful for image preprocessing such as rectification. The callback may be
+   * invoked from a detached worker thread, so it must be thread-safe.
+   * Must be called before initialize().
+   *
+   * \param[in] user_function The callable to invoke before saving.
+   * \param[in] user_ptr Opaque pointer forwarded to the callback.
+   */
   void addPreSaveHook(TPreSaveUserHook user_function, void* user_ptr)
   {
     m_hook_pre_save = user_function;

@@ -21,9 +21,15 @@
 
 namespace mrpt::hwdrivers
 {
-/** This class implements a wireless power probe.
- *  \sa mrpt::maps::CWirelessPowerGridMap2D,
- * mrpt::obs::CObservationWirelessPower
+/** \brief Measures the received signal strength (RSSI) of a WiFi network.
+ *
+ * Reports the signal level (0-100) of the specified SSID/interface pair as
+ * a mrpt::obs::CObservationWirelessPower observation, suitable for building
+ * wireless power grid maps.
+ *
+ * \note Platform support: Windows (WlanAPI) and Linux (via /proc/net/wireless).
+ * \sa mrpt::maps::CWirelessPowerGridMap2D,
+ *     mrpt::obs::CObservationWirelessPower
  * \ingroup mrpt_hwdrivers_grp
  */
 class CWirelessPower : public mrpt::hwdrivers::CGenericSensor

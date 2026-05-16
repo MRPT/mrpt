@@ -23,12 +23,16 @@
   ---------------------------------------------------------------*/
 namespace mrpt::hwdrivers
 {
-/** Access to joysticks and gamepads (read buttons and position), and request
- * number of joysticks in the system.
+/** \brief Reads axis positions and button states from joysticks and gamepads.
  *
- * \note New in MRPT 2.13.0: the API changed to support an arbitrary number of
- *       input axes.
+ * Supports an arbitrary number of axes and buttons. Enumerates connected
+ * devices via getJoysticksCount() and reads state with getJoystickPosition().
  *
+ * Platform support: Linux (via /dev/input/jsX) and Windows (WinMM joystick
+ * API).
+ *
+ * \note As of MRPT 2.13.0 the API was extended to support an arbitrary number
+ *       of input axes (previously only x, y, z were exposed).
  * \ingroup mrpt_hwdrivers_grp
  */
 class CJoystick
@@ -51,15 +55,15 @@ class CJoystick
 #endif
 
  public:
-  /** Constructor
-   */
+  /** \brief Default constructor. */
   CJoystick();
 
-  /** Destructor
-   */
+  /** \brief Destructor. Closes any open device handle. */
   virtual ~CJoystick();
 
-  /** Returns the number of Joysticks in the computer.
+  /** \brief Returns the number of joystick/gamepad devices currently
+   * connected to the system.
+   * \return Device count (>= 0).
    */
   static int getJoysticksCount();
 
@@ -70,42 +74,28 @@ class CJoystick
     std::vector<int> axes_raw;  ///!< Raw position values
   };
 
-  /** Gets joystick information.
+  /** \brief Reads the current state of a joystick.
    *
-   *   This method will try first to open the joystick, so you can safely call
-   * it while the joystick is plugged and removed arbitrarily.
+   * Attempts to open the device if not already open, so it is safe to call
+   * while joysticks are plugged or unplugged.
    *
-   * \param nJoy The index of the joystick to query: The first one is 0, the
-   * second 1, etc... See CJoystick::getJoysticksCount to discover the number
-   * of joysticks in the system.
-   * \param x The x axis position, range [-1,1]
-   * \param y The y axis position, range [-1,1]
-   * \param z The z axis position, range [-1,1]
-   * \param buttons Each element will hold true if buttons are pressed. The
-   * size of the vector will be set automatically to the number of buttons.
-   * \param raw_x_pos If it is desired the raw integer measurement from
-   * JoyStick, set this pointer to a desired placeholder.
-   * \param raw_y_pos If it is desired the raw integer measurement from
-   * JoyStick, set this pointer to a desired placeholder.
-   * \param raw_z_pos If it is desired the raw integer measurement from
-   * JoyStick, set this pointer to a desired placeholder.
-   *
-   * \return Returns true if successful, false on error, for example, if
-   * joystick is not present.
-   *
+   * \param[in]  nJoy   Zero-based index of the joystick to query.
+   * \param[out] output Filled with normalized axis values [0,1] in
+   *             output.axes, raw axis values in output.axes_raw, and button
+   *             states in output.buttons.
+   * \return true on success; false if the device is absent or an error occurs.
    * \sa setLimits
    */
   bool getJoystickPosition(int nJoy, State& output);
 
-  /** Set the axis limit values, for computing a [-1,1] position index easily
-   * Only required to calibrate analog joystick.
-   * It seems that these values must been calibrated for each joystick
-   * model.
+  /** \brief Sets the raw ADC range for each axis, used to normalize to [-1,1].
    *
-   * Default values:
-   * - Windows: [0, 0xFFFF]
-   * - Linux: [-32767,32767]
+   * Required only when calibrating analog joysticks whose default range
+   * differs from the platform default (Windows: [0, 0xFFFF];
+   * Linux: [-32767, 32767]).
    *
+   * \param[in] minPerAxis Vector of minimum raw values per axis.
+   * \param[in] maxPerAxis Vector of maximum raw values per axis.
    * \sa getJoystickPosition
    */
   void setLimits(const std::vector<int>& minPerAxis, const std::vector<int>& maxPerAxis);

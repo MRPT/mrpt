@@ -26,7 +26,20 @@
 
 namespace mrpt::hwdrivers
 {
-/** A class capable of reading GPS/GNSS/GNSS+IMU receiver data, from a serial
+/** \brief Reads GPS/GNSS receiver data from a serial port or any input stream
+ * and parses it into mrpt::obs::CObservationGPS observations.
+ *
+ * Supports NMEA 0183, Novatel OEM6 binary, and an AUTO-detect mode.
+ * The serial port is opened on the first call to CGenericSensor::initialize();
+ * alternatively, an external stream can be bound via bindStream() to parse
+ * data from a TCP socket, file, or memory buffer.
+ *
+ * Produced observations are of type mrpt::obs::CObservationGPS.
+ *
+ * \note Verbose debug output is enabled by setting the environment variable
+ * MRPT_HWDRIVERS_VERBOSE=1 or by calling CGenericSensor::enableVerbose(true).
+ *
+ * A class capable of reading GPS/GNSS/GNSS+IMU receiver data, from a serial
  * port or from any input stream,
  *  and \b parsing the ASCII/binary stream into indivual messages \b stored in
  * mrpt::obs::CObservationGPS objects.
@@ -165,20 +178,30 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 
   void doProcess() override;  // See docs in parent class
 
-  /** Returns true if communications work, i.e. if some message has been
-   * received. */
+  /** \brief Returns true if the GNSS link is alive, i.e. at least one message
+   * has been received successfully. */
   bool isGPS_connected();
 
   /** \name Set-up and configuration
    * @{ */
-  /** Set the serial port to use (COM1, ttyUSB0, etc). */
+  /** \brief Sets the serial port device name (e.g. "COM1", "ttyUSB0").
+   * \param[in] COM_port The device name of the serial port.
+   */
   void setSerialPortName(const std::string& COM_port);
-  /** Get the serial port to use (COM1, ttyUSB0, etc). */
+
+  /** \brief Returns the currently configured serial port device name.
+   * \return The device name as set by setSerialPortName().
+   */
   std::string getSerialPortName() const;
 
-  /** Select the parser for incoming data, among the options enumerated in \a
-   * CGPSInterface */
+  /** \brief Selects the GNSS message parser to use.
+   * \param[in] parser One of the values in CGPSInterface::PARSERS.
+   */
   void setParser(PARSERS parser);
+
+  /** \brief Returns the currently selected GNSS parser.
+   * \return The active parser identifier.
+   */
   PARSERS getParser() const;
 
   /** This enforces the use of a given user stream, instead of trying to open

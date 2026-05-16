@@ -21,7 +21,19 @@ namespace mrpt::nav
  * \ingroup mrpt_nav_grp
  */
 
-/** See base class CAbstractPTGBasedReactive for a description and instructions
+/** \brief 2-D PTG-based reactive navigation system for robots with a polygonal
+ * or circular footprint.
+ *
+ * Implements CAbstractPTGBasedReactive for flat-terrain mobile robots. The
+ * robot shape is defined either as a polygon (changeRobotShape()) or as a
+ * circle radius (changeRobotCircularShapeRadius()). Obstacles are gathered
+ * from the CRobot2NavInterface callbacks and represented as a 2-D point cloud
+ * in the local robot frame before being projected into TP-Space.
+ *
+ * Configuration is loaded from an INI-like file; a template can be generated
+ * with saveConfigFile() on a default-constructed object.
+ *
+ * See base class CAbstractPTGBasedReactive for a description and instructions
  * of use.
  * This particular implementation assumes a 2D robot shape which can be
  * polygonal or circular (depending on the selected PTGs).
@@ -64,22 +76,33 @@ namespace mrpt::nav
 class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 {
  public:
-  /** See docs in ctor of base class */
+  /** \brief Constructor.
+   *
+   * \param[in] react_iterf_impl   User-supplied robot interface (callbacks).
+   * \param[in] enableConsoleOutput If true, log messages are echoed to stdout.
+   * \param[in] enableLogFile      If true, detailed per-step log files are
+   *            written to \a logFileDirectory.
+   * \param[in] logFileDirectory   Directory for per-step log files.
+   */
   CReactiveNavigationSystem(
       CRobot2NavInterface& react_iterf_impl,
       bool enableConsoleOutput = true,
       bool enableLogFile = false,
       const std::string& logFileDirectory = std::string("./reactivenav.logs"));
 
-  /** Destructor
-   */
+  /** \brief Destructor. */
   ~CReactiveNavigationSystem() override;
 
-  /** Defines the 2D polygonal robot shape, used for some PTGs for collision
-   * checking. */
+  /** \brief Sets the robot footprint as a 2-D polygon, used by PTGs for
+   * collision checking.
+   * \param[in] shape The robot convex hull polygon (local robot frame).
+   */
   void changeRobotShape(const mrpt::math::CPolygon& shape);
-  /** Defines the 2D circular robot shape radius, used for some PTGs for
-   * collision checking. */
+
+  /** \brief Sets the robot footprint as a circle, used by PTGs for collision
+   * checking.
+   * \param[in] R Circle radius in meters.
+   */
   void changeRobotCircularShapeRadius(const double R);
 
   // See base class docs:

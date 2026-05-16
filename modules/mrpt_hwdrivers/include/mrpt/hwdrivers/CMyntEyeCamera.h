@@ -35,32 +35,44 @@ struct TMyntEyeCameraParameters : public mrpt::config::CLoadableOptions
       const mrpt::config::CConfigFileBase& source, const std::string& section) override;
 };
 
-/** Wrapper on MYNT-EYE-D cameras. Requires MYNT-EYE SDK.
+/** \brief Captures stereo depth+RGB data from MYNT EYE-D cameras.
  *
+ * Wraps the MYNT EYE SDK to expose the sensor as a standard MRPT grabber.
+ * Produced observations are of type mrpt::obs::CObservation3DRangeScan
+ * containing the left RGB image and the corresponding depth map.
+ *
+ * \note Requires the MYNT EYE SDK (libmynteye) to be installed.
  * \sa mrpt::hwdrivers::CCameraSensor
- * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
  * \ingroup mrpt_hwdrivers_grp
  */
 class CMyntEyeCamera
 {
  public:
+  /** \brief Opens the MYNT EYE camera with the given parameters.
+   *
+   * \param[in] params Camera open parameters (IR intensity, etc.).
+   */
   CMyntEyeCamera(const TMyntEyeCameraParameters& params);
+
+  /** \brief Destructor. Closes the camera. */
   virtual ~CMyntEyeCamera();
 
-  /** Check whether the camera has been open successfully. */
+  /** \brief Returns true if the camera was opened successfully. */
   bool isOpen() const { return m_bInitialized; }
 
-  /** Grab an image from the opened camera.
-   * \param out_observation The object to be filled with sensed data.
+  /** \brief Grabs one frame from the camera.
    *
-   * \return false on any error, true if all go fine.
+   * \param[out] out Filled with the RGB+depth observation on success.
+   * \return false on any error, true on success.
+   * \deprecated Use grabFrame() instead.
    */
-  /** \deprecated Use grabFrame() instead. */
   [[deprecated("Use grabFrame() instead")]]
   bool getObservation(mrpt::obs::CObservation3DRangeScan& out);
 
-  /** Grab one frame from the opened camera.
-   * \return std::nullopt on any error, or the observation on success.
+  /** \brief Grabs one frame from the camera, returning by value.
+   *
+   * \return std::nullopt if no new data is available or on error, or the
+   * observation on success.
    */
   [[nodiscard]] std::optional<mrpt::obs::CObservation3DRangeScan> grabFrame()
   {

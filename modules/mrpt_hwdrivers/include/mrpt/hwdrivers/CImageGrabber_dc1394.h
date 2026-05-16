@@ -101,31 +101,23 @@ struct TCaptureOptions_dc1394
   int ring_buffer_size{15};
 };
 
-/** A class for grabbing images from a IEEE1394 (Firewire) camera using the
- * libdc1394-2 library.
- *   See the constructor for the options when opening the camera. Notice that
- * you may have
- *    to carefully set the resolution, framerate and color_mode. See the
- * verbose parameter of
- *    the constructor, which can display a list of supported modes in your
- * camera.
+/** \brief Captures images from IEEE 1394 (FireWire) cameras using libdc1394-2.
  *
- *  This class is able to manage any Firewire cameras, including Stereo or
- * multi-cameras in general,
- *    so this can be used to open the Bumblebee camera (not tested yet).
+ * Supports any IEEE 1394 camera (DCAM/IIDC standard), including stereo pairs
+ * such as the Point Grey Bumblebee. Use enumerateCameras() to discover
+ * connected devices and their GUIDs before opening.
  *
- * A static method (CImageGrabber_dc1394::enumerateCameras) is provided to
- * enumerate all existing cameras and their properties. It can be used
- *  to find the GUID of the desired camera, then open it at the constructor.
+ * Produced observations are:
+ *  - mrpt::obs::CObservationImage for monocular cameras (grabFrame()).
+ *  - mrpt::obs::CObservationStereoImages for stereo cameras
+ *    (grabStereoFrame()).
  *
- * \note This class requires MRPT compiled with "libdc1394-2" (Only works under
- * Linux for now) and "opencv".
- * \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and
- * "chmod 666 /dev/raw1394" for allowing any user R/W access to firewire
- * cameras.
- * \note [New in MRPT 1.3.0] Length of ring buffer is now configurable via
- * TCaptureOptions_dc1394::ring_buffer_size
- * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
+ * \note Requires libdc1394-2 and OpenCV. Currently Linux-only.
+ * \note You may need to set permissions: chmod 666 /dev/video1394/ * and
+ *       chmod 666 /dev/raw1394 to allow non-root access to FireWire devices.
+ * \note Ring buffer length is configurable via
+ *       TCaptureOptions_dc1394::ring_buffer_size (new in MRPT 1.3.0).
+ * \sa mrpt::hwdrivers::CCameraSensor
  * \ingroup mrpt_hwdrivers_grp
  */
 class CImageGrabber_dc1394
@@ -166,26 +158,29 @@ class CImageGrabber_dc1394
 
   /** Check whether the camera has been open successfully. */
   bool isOpen() const { return m_bInitialized; }
-  /** Changes the capture properties (brightness, gain, shutter, etc)
-   * The frame size, framerate, and color_coding fields in options are
-   * ignored since they can be only set at construction time.
-   * \return false on error
+  /** \brief Changes live capture properties (brightness, gain, shutter, etc.).
+   *
+   * Frame size, frame rate, and color coding cannot be changed after opening
+   * the camera; those fields in \a options are silently ignored.
+   * \param[in] options The new capture property values to apply.
+   * \return false on any error.
    */
   bool changeCaptureOptions(const TCaptureOptions_dc1394& options);
 
-  /** Grab an image from the opened camera (for monocular cameras).
-   * \param out_observation The object to be filled with sensed data.
-   * \note This may be blocking when using software trigger and no frame is
-   * available yet. Ensure trigger before getObservation() or take into
-   * account that this call may block.
-   * \return false on any error, true if all go fine.
+  /** \brief Grabs one frame from a monocular FireWire camera.
+   *
+   * \param[out] out_observation Filled with the captured image.
+   * \return false on any error, true on success.
+   * \note May block when using software trigger if no frame is pending.
+   * \deprecated Use grabFrame() instead.
    */
-  /** \deprecated Use grabFrame() instead. */
   [[deprecated("Use grabFrame() instead")]]
   bool getObservation(mrpt::obs::CObservationImage& out_observation);
 
-  /** Grab one frame from the opened camera (monocular).
-   * \return std::nullopt on any error, or the observation on success.
+  /** \brief Grabs one frame from a monocular FireWire camera, returning by
+   * value.
+   *
+   * \return std::nullopt on any error, or the captured observation on success.
    */
   [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame()
   {
@@ -194,17 +189,20 @@ class CImageGrabber_dc1394
     return obs;
   }
 
-  /** Grab an image from the opened camera (for stereo cameras).
-   * \param out_observation The object to be filled with sensed data.
+  /** \brief Grabs a stereo frame from a FireWire stereo camera.
    *
-   * \return false on any error, true if all go fine.
+   * \param[out] out_observation Filled with left and right images.
+   * \return false on any error, true on success.
    * \deprecated Use grabStereoFrame() instead.
    */
   [[deprecated("Use grabStereoFrame() instead")]]
   bool getObservation(mrpt::obs::CObservationStereoImages& out_observation);
 
-  /** Grab one stereo frame from the opened camera (stereo cameras).
-   * \return std::nullopt on any error, or the observation on success.
+  /** \brief Grabs a stereo frame from a FireWire stereo camera, returning by
+   * value.
+   *
+   * \return std::nullopt on any error, or the captured stereo observation on
+   * success.
    */
   [[nodiscard]] std::optional<mrpt::obs::CObservationStereoImages> grabStereoFrame()
   {
@@ -213,13 +211,15 @@ class CImageGrabber_dc1394
     return obs;
   }
 
-  /** Changes the boolean level associated to Software Trigger (ON/OFF)
-   * Can be used to control camera triggering trough software
-   * \return false on error
+  /** \brief Sets the software trigger signal level (ON/OFF).
+   *
+   * Allows controlling camera triggering via software rather than hardware.
+   * \param[in] level true to assert (ON), false to de-assert (OFF).
+   * \return false on any error.
    */
   bool setSoftwareTriggerLevel(bool level);
 
-  /** Used in enumerateCameras */
+  /** \brief Information about a single FireWire camera found on the bus. */
   struct TCameraInfo
   {
     uint64_t guid;
@@ -251,9 +251,10 @@ class CImageGrabber_dc1394
 
   using TCameraInfoList = std::list<TCameraInfo>;
 
-  /** Generates a list with the information on all the existing (Firewire)
-   * cameras in the system.
-   * \exception std::runtime_error On any error calling libdc1394.
+  /** \brief Enumerates all FireWire cameras currently visible on the bus.
+   *
+   * \param[out] out_list Populated with one entry per discovered camera.
+   * \exception std::runtime_error On any error from libdc1394.
    */
   static void enumerateCameras(TCameraInfoList& out_list);
 

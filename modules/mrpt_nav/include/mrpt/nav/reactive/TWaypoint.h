@@ -28,7 +28,13 @@
 
 namespace mrpt::nav
 {
-/** A single waypoint within TWaypointSequence. \ingroup nav_reactive */
+/** \brief A single navigation waypoint within a TWaypointSequence.
+ *
+ * At minimum, the fields \a target and \a allowed_distance must be filled.
+ * Optionally, \a target_heading constrains the robot orientation upon arrival,
+ * and \a speed_ratio controls the desired approach speed.
+ *
+ * \ingroup nav_reactive */
 struct TWaypoint
 {
   /** Ctor with default values */
@@ -107,11 +113,11 @@ struct TWaypointsRenderingParams
   bool show_labels{true};
 };
 
-/** The struct for requesting navigation requests for a sequence of waypoints.
- * Used in CWaypointsNavigator::navigateWaypoints().
- * Users can directly fill in the list of waypoints manipulating the public
- * field `waypoints`.
- *  \ingroup nav_reactive */
+/** \brief A sequence of waypoints for CWaypointsNavigator::navigateWaypoints().
+ *
+ * Fill the public \a waypoints vector and pass the struct to navigateWaypoints()
+ * to start a multi-goal navigation mission.
+ * \ingroup nav_reactive */
 struct TWaypointSequence
 {
   std::vector<TWaypoint> waypoints;
@@ -133,7 +139,11 @@ struct TWaypointSequence
   void load(const mrpt::config::CConfigFileBase& c, const std::string& s);
 };
 
-/** A waypoint with an execution status. \ingroup nav_reactive */
+/** \brief A TWaypoint augmented with runtime execution status fields.
+ *
+ * Used inside TWaypointStatusSequence to track which waypoints have been
+ * reached or skipped during an active navigation mission.
+ * \ingroup nav_reactive */
 struct TWaypointStatus : public TWaypoint
 {
   TWaypointStatus() = default;
@@ -165,9 +175,12 @@ struct TWaypointStatus : public TWaypoint
   std::string getAsText() const;
 };
 
-/** The struct for querying the status of waypoints navigation. Used in
- * CWaypointsNavigator::getWaypointNavStatus().
- *  \ingroup nav_reactive */
+/** \brief Status snapshot of an ongoing waypoint navigation mission.
+ *
+ * Returned by CWaypointsNavigator::getWaypointNavStatus(). Contains the
+ * runtime status of each waypoint (reached, skipped, pending) and summary
+ * information such as the index of the currently active goal.
+ * \ingroup nav_reactive */
 struct TWaypointStatusSequence
 {
   TWaypointStatusSequence() = default;

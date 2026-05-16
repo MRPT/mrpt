@@ -19,7 +19,17 @@
 
 namespace mrpt::hwdrivers
 {
-/** This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO
+/** \brief Driver for Hokuyo URG/UTM/UXM/UST 2-D laser range-finders via the
+ * SCIP-2.0 protocol over USB serial or Ethernet.
+ *
+ * Produces observations of type mrpt::obs::CObservation2DRangeScan.
+ * Both USB (serial) and Ethernet connections are supported; set either
+ * COM_port_WIN/COM_port_LIN or IP_DIR + PORT_DIR in the config file.
+ *
+ * \note No external library is required; communication is handled directly via
+ * a serial port or TCP socket.
+ *
+ * This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO
  * URG/UTM/UXM/UST laser scanners (USB or Ethernet).
  *  Refer to the example code
  * [HOKUYO_laser_test](http://www.mrpt.org/tutorials/mrpt-examples/example_hokuyo_urgutm_laser_scanner/)
@@ -197,65 +207,94 @@ class CHokuyoURG : public C2DRangeFinderAbstract
   /** Destructor: turns the laser off */
   ~CHokuyoURG() override;
 
-  /** Specific laser scanner "software drivers" must process here new data
-   * from the I/O stream, and, if a whole scan has arrived, return it.
-   *  This method will be typically called in a different thread than other
-   * methods, and will be called in a timely fashion.
+  /** \brief Reads and decodes incoming SCIP-2.0 data; stores a complete scan
+   * when available.
+   *
+   * Typically called from a dedicated polling thread.
+   *
+   * \param[out] outThereIsObservation Set to true when a full scan is ready.
+   * \param[out] outObservation        Filled with the new scan when
+   *             outThereIsObservation is true.
+   * \param[out] hardwareError         Set to true on communication failure.
    */
   void doProcessSimple(
       bool& outThereIsObservation,
       mrpt::obs::CObservation2DRangeScan& outObservation,
       bool& hardwareError) override;
 
-  /** Enables the scanning mode (which may depend on the specific laser
-   * device); this must be called before asking for observations to assure
-   * that the protocol has been initializated.
-   * \return If everything works "true", or "false" if there is any error.
+  /** \brief Initializes communication and starts the continuous scan mode.
+   *
+   * Must be called before requesting any observations.
+   * \return true on success, false on any error.
    */
   bool turnOn() override;
 
-  /** Disables the scanning mode (this can be used to turn the device in low
-   * energy mode, if available)
-   * \return If everything works "true", or "false" if there is any error.
+  /** \brief Stops the continuous scan mode and puts the device in idle state.
+   *
+   * \return true on success, false on any error.
    */
   bool turnOff() override;
 
-  /** Empties the RX buffers of the serial port */
+  /** \brief Discards any pending bytes in the receive buffer. */
   void purgeBuffers();
 
-  /** If set to non-empty, the serial port will be attempted to be opened
-   * automatically when this class is first used to request data from the
-   * laser.  */
+  /** \brief Configures the serial port device name for USB/serial connection.
+   *
+   * When set, the port is opened automatically on the first data request.
+   * \param[in] port_name Device name, e.g. "ttyUSB0" or "COM3".
+   */
   void setSerialPort(const std::string& port_name) { m_com_port = port_name; }
-  /** Set the ip direction and port to connect using Ethernet communication */
+
+  /** \brief Configures the IP address and TCP port for Ethernet connection.
+   *
+   * \param[in] ip   IPv4 address of the Hokuyo (e.g. "192.168.0.10").
+   * \param[in] port TCP port (default for Hokuyo: 10940).
+   */
   void setIPandPort(const std::string& ip, const unsigned int& port)
   {
     m_ip_dir = ip;
     m_port_dir = port;
   }
 
-  /** Returns the currently set serial port \sa setSerialPort */
+  /** \brief Returns the currently configured serial port name.
+   * \return The device name as set by setSerialPort().
+   */
   const std::string getSerialPort() { return m_com_port; }
-  /** If called (before calling "turnOn"), the field of view of the laser is
-   * reduced to the given range (in radians), discarding the rest of measures.
-   *  Call with "0" to disable this reduction again (the default).
+
+  /** \brief Restricts the angular field of view of the scanner.
+   *
+   * Must be called before turnOn(). Pass 0 to disable FOV restriction.
+   * \param[in] fov Desired half-FOV in radians (full FOV = 2*fov).
    */
   void setReducedFOV(const double fov) { m_reduced_fov = fov; }
-  /** Changes the high sensitivity mode (HS) (default: false)
-   * \return false on any error
+
+  /** \brief Enables or disables High-Sensitivity (HS) mode.
+   *
+   * Not available on all firmware versions.
+   * \param[in] enabled true to enable HS mode.
+   * \return false on any communication error.
    */
   bool setHighSensitivityMode(bool enabled);
 
-  /** If true scans will capture intensity. (default: false)
-   * Should not be called while scanning.
-   * \return false on any error
+  /** \brief Enables or disables intensity (RSSI) capture alongside range.
+   *
+   * Should not be changed while scanning is active.
+   * \param[in] enabled true to request intensity data.
+   * \return false on any communication error.
    */
   bool setIntensityMode(bool enabled);
 
-  /** Set the skip scan count (0 means send all scans).
-   * Must be set before initialize()
+  /** \brief Sets the scan decimation factor.
+   *
+   * A value of 0 means all scans are transmitted; N>0 means only 1 out of
+   * (N+1) scans is sent. Must be set before initialize().
+   * \param[in] skipScanCount Number of scans to skip between deliveries.
    */
   void setScanInterval(unsigned int skipScanCount);
+
+  /** \brief Returns the current scan decimation count.
+   * \return The skip count as set by setScanInterval().
+   */
   unsigned int getScanInterval() const;
 
   void sendCmd(const char* str);

@@ -157,7 +157,37 @@ void addNewLandmarks(
         KFMatrix_OxO& R);
 }  // namespace detail
 
-/** Virtual base for Kalman Filter (EKF,IEKF,UKF) implementations.
+/** \brief Virtual base template for EKF, IEKF, and IKF Kalman filter
+ * implementations using the CRTP-like callback pattern.
+ *
+ * Stores the state mean vector \f$ \hat{x}_{k|k} \f$ (m_xkk) and the full
+ * covariance matrix \f$ P_{k|k} \f$ (m_pkk). Derived classes implement the
+ * pure-virtual "On*" callback methods that describe the specific filtering
+ * problem (motion model, observation model, noise matrices, data association).
+ * The main entry point runOneKalmanIteration() then calls those callbacks in
+ * the correct order to carry out one predict-update cycle.
+ *
+ * Supported filter variants (selected via KF_options.method):
+ *  - kfEKFNaive: Standard Extended Kalman Filter.
+ *  - kfEKFAlaDavison: EKF with efficient feature-by-feature updates (SLAM).
+ *  - kfIKFFull: Iterated EKF (full re-linearization per iteration).
+ *  - kfIKF: Iterated EKF (efficient feature-based variant).
+ *
+ * \tparam VEH_SIZE  Dimension of the vehicle (robot) state sub-vector.
+ * \tparam OBS_SIZE  Dimension of a single observation vector.
+ * \tparam FEAT_SIZE Dimension of each map feature state, or 0 if no map.
+ * \tparam ACT_SIZE  Dimension of the action (control input) vector, or 0.
+ * \tparam KFTYPE    Scalar type for all matrix/vector arithmetic (default: double).
+ *
+ * \note runOneKalmanIteration() is protected; derived classes must expose a
+ * problem-specific public method that calls it.
+ *
+ * For further details and examples see: https://www.mrpt.org/Kalman_Filters
+ *
+ * \sa mrpt::slam::CRangeBearingKFSLAM, mrpt::slam::CRangeBearingKFSLAM2D
+ * \ingroup mrpt_bayes_grp
+ *
+ * Virtual base for Kalman Filter (EKF,IEKF,UKF) implementations.
  *   This base class stores the state vector and covariance matrix of the
  *system. It has virtual methods that must be completed
  *    by derived classes to address a given filtering problem. The main entry
@@ -277,49 +307,58 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
     @{
    */
 
-  /** Must return the action vector u.
-   * \param out_u The action vector which will be passed to OnTransitionModel
+  /** \brief Returns the control action vector \f$ u_k \f$ for the current step.
+   *
+   * Called once per KF iteration before OnTransitionModel().
+   * \param[out] out_u The action vector to be passed to OnTransitionModel().
    */
   virtual void OnGetAction(KFArray_ACT& out_u) const = 0;
 
-  /** Implements the transition model \f$ \hat{x}_{k|k-1} = f(
-   * \hat{x}_{k-1|k-1}, u_k ) \f$
-   * \param in_u The vector returned by OnGetAction.
-   * \param inout_x At input has \f[ \hat{x}_{k-1|k-1} \f] , at output must
-   * have \f$ \hat{x}_{k|k-1} \f$ .
-   * \param out_skip Set this to true if for some reason you want to skip the
-   * prediction step (to do not modify either the vector or the covariance).
-   * Default:false
-   * \note Even if you return "out_skip=true", the value of "inout_x" MUST be
-   * updated as usual (this is to allow numeric approximation of Jacobians).
+  /** \brief Implements the transition (prediction) model
+   * \f$ \hat{x}_{k|k-1} = f( \hat{x}_{k-1|k-1}, u_k ) \f$.
+   *
+   * \param[in]    in_u          The action vector returned by OnGetAction().
+   * \param[inout] inout_x       On input: \f$ \hat{x}_{k-1|k-1} \f$. On
+   *               output: must hold \f$ \hat{x}_{k|k-1} \f$.
+   * \param[out]   out_skipPrediction Set to true to skip updating the state
+   *               vector and covariance for this step. Even when true, the
+   *               output value of \a inout_x must be set correctly because
+   *               it may be used for numeric Jacobian approximation.
    */
   virtual void OnTransitionModel(
       const KFArray_ACT& in_u, KFArray_VEH& inout_x, bool& out_skipPrediction) const = 0;
 
-  /** Implements the transition Jacobian \f$ \frac{\partial f}{\partial x} \f$
-   * \param out_F Must return the Jacobian.
-   *  The returned matrix must be \f$V \times V\f$ with V being either the
-   * size of the whole state vector (for non-SLAM problems) or VEH_SIZE (for
-   * SLAM problems).
+  /** \brief Computes the transition Jacobian
+   * \f$ F = \frac{\partial f}{\partial x} \f$.
+   *
+   * Only called when KF_options.use_analytic_transition_jacobian is true.
+   * \param[out] out_F The \f$ V \times V \f$ Jacobian of the transition
+   *             function with respect to the vehicle state (VEH_SIZE x VEH_SIZE
+   *             for SLAM problems, or full state size for non-SLAM).
+   * \note The default implementation sets m_user_didnt_implement_jacobian=true,
+   *       causing a numeric approximation to be used instead.
    */
   virtual void OnTransitionJacobian([[maybe_unused]] KFMatrix_VxV& out_F) const
   {
     m_user_didnt_implement_jacobian = true;
   }
 
-  /** Only called if using a numeric approximation of the transition Jacobian,
-   * this method must return the increments in each dimension of the vehicle
-   * state vector while estimating the Jacobian.
+  /** \brief Returns the numeric perturbation sizes for transition Jacobian
+   * approximation.
+   *
+   * Called only when use_analytic_transition_jacobian is false.
+   * \param[out] out_increments Per-dimension step sizes (default: 1e-6).
    */
   virtual void OnTransitionJacobianNumericGetIncrements(KFArray_VEH& out_increments) const
   {
     for (size_t i = 0; i < VEH_SIZE; i++) out_increments[i] = 1e-6;
   }
 
-  /** Implements the transition noise covariance \f$ Q_k \f$
-   * \param out_Q Must return the covariance matrix.
-   *  The returned matrix must be of the same size than the jacobian from
-   * OnTransitionJacobian
+  /** \brief Returns the process (transition) noise covariance matrix
+   * \f$ Q_k \f$.
+   *
+   * \param[out] out_Q The \f$ V \times V \f$ process noise covariance. Must
+   *             match the size of the Jacobian returned by OnTransitionJacobian().
    */
   virtual void OnTransitionNoise(KFMatrix_VxV& out_Q) const = 0;
 
@@ -348,12 +387,12 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
     for (size_t i = 0; i < N; i++) out_LM_indices_to_predict[i] = i;
   }
 
-  /** Return the observation NOISE covariance matrix, that is, the model of
-   * the Gaussian additive noise of the sensor.
-   * \param out_R The noise covariance matrix. It might be non diagonal, but
-   * it'll usually be.
-   * \note Upon call, it can be assumed that the previous contents of out_R
-   * are all zeros.
+  /** \brief Returns the observation (sensor) noise covariance matrix
+   * \f$ R \f$.
+   *
+   * \param[out] out_R The \f$ O \times O \f$ sensor noise covariance. On
+   *             entry all elements are guaranteed to be zero; the
+   *             implementation should fill only the non-zero entries.
    */
   virtual void OnGetObservationNoise(KFMatrix_OxO& out_R) const = 0;
 
@@ -391,25 +430,35 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
       const std::vector<size_t>& in_lm_indices_in_S,
       const KFMatrix_OxO& in_R) = 0;
 
-  /** Implements the observation prediction \f$ h_i(x) \f$.
-   * \param idx_landmark_to_predict The indices of the landmarks in the map
-   * whose predictions are expected as output. For non SLAM-like problems,
-   * this input value is undefined and the application should just generate
-   * one observation for the given problem.
-   * \param out_predictions The predicted observations.
+  /** \brief Computes predicted observations \f$ h_i(x) \f$ for selected
+   * landmarks (or the whole state for non-SLAM problems).
+   *
+   * \param[in]  idx_landmarks_to_predict Indices (0-based) of the map
+   *             landmarks whose predictions are requested. For non-SLAM
+   *             problems this parameter is undefined; produce exactly one
+   *             prediction for the whole state.
+   * \param[out] out_predictions One OBS_SIZE-length vector per requested
+   *             landmark, in the same order as \a idx_landmarks_to_predict.
    */
   virtual void OnObservationModel(
       const std::vector<size_t>& idx_landmarks_to_predict,
       vector_KFArray_OBS& out_predictions) const = 0;
 
-  /** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x}
-   * \f$ and (when applicable) \f$ \frac{\partial h_i}{\partial y_i} \f$.
-   * \param idx_landmark_to_predict The index of the landmark in the map
-   * whose prediction is expected as output. For non SLAM-like problems, this
-   * will be zero and the expected output is for the whole state vector.
-   * \param Hx  The output Jacobian \f$ \frac{\partial h_i}{\partial x} \f$.
-   * \param Hy  The output Jacobian \f$ \frac{\partial h_i}{\partial y_i}
-   * \f$.
+  /** \brief Computes observation Jacobians for one landmark.
+   *
+   * Provides \f$ H_x = \frac{\partial h_i}{\partial x_v} \f$ and, for SLAM
+   * problems, \f$ H_y = \frac{\partial h_i}{\partial y_i} \f$.
+   *
+   * Only called when KF_options.use_analytic_observation_jacobian is true.
+   *
+   * \param[in]  idx_landmark_to_predict Index of the landmark whose Jacobians
+   *             are requested. For non-SLAM problems this is always 0.
+   * \param[out] Hx \f$ O \times V \f$ Jacobian of the observation model wrt
+   *             the vehicle state.
+   * \param[out] Hy \f$ O \times F \f$ Jacobian of the observation model wrt
+   *             the landmark state (zero matrix for non-SLAM problems).
+   * \note The default implementation sets m_user_didnt_implement_jacobian=true
+   *       so that a numeric approximation is used instead.
    */
   virtual void OnObservationJacobians(
       [[maybe_unused]] size_t idx_landmark_to_predict,
@@ -419,9 +468,12 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
     m_user_didnt_implement_jacobian = true;
   }
 
-  /** Only called if using a numeric approximation of the observation
-   * Jacobians, this method must return the increments in each dimension of
-   * the vehicle state vector while estimating the Jacobian.
+  /** \brief Returns numeric perturbation sizes for observation Jacobian
+   * approximation.
+   *
+   * Called only when use_analytic_observation_jacobian is false.
+   * \param[out] out_veh_increments  Per-dimension vehicle-state step sizes.
+   * \param[out] out_feat_increments Per-dimension feature-state step sizes.
    */
   virtual void OnObservationJacobiansNumericGetIncrements(
       KFArray_VEH& out_veh_increments, KFArray_FEAT& out_feat_increments) const
@@ -539,17 +591,21 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
     // Do nothing in this base class.
   }
 
-  /** This method is called after the prediction and after the update, to give
-   * the user an opportunity to normalize the state vector (eg, keep angles
-   * within -pi,pi range) if the application requires it.
+  /** \brief Optional post-update state normalization hook.
+   *
+   * Called after each predict-update cycle to allow derived classes to
+   * normalize the state vector (e.g. wrap angles to [-pi, pi]).
+   * The default implementation does nothing.
    */
   virtual void OnNormalizeStateVector()
   {
     // Do nothing in this base class.
   }
 
-  /** This method is called after finishing one KF iteration and before
-   * returning from runOneKalmanIteration().
+  /** \brief Optional post-iteration hook called at the end of
+   * runOneKalmanIteration(), before returning.
+   *
+   * The default implementation does nothing.
    */
   virtual void OnPostIteration()
   {
