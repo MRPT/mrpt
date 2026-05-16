@@ -253,8 +253,9 @@ void CRangeBearingKFSLAM::processActionObservation(
  */
 CPose3DQuat CRangeBearingKFSLAM::getIncrementFromOdometry() const
 {
-  CActionRobotMovement2D::Ptr actMov2D = m_action->getBestMovementEstimation();
-  CActionRobotMovement3D::Ptr actMov3D = m_action->getActionByClass<CActionRobotMovement3D>();
+  CActionRobotMovement2D::ConstPtr actMov2D = m_action->getBestMovementEstimation();
+  CActionRobotMovement3D::ConstPtr actMov3D =
+      m_action->getActionByClass<CActionRobotMovement3D>();
   if (actMov3D && !options.force_ignore_odometry)
   {
     return CPose3DQuat(actMov3D->poseChange.mean);
@@ -355,8 +356,9 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
   MRPT_START
 
   // The uncertainty of the 2D odometry, projected from the current position:
-  CActionRobotMovement2D::Ptr act2D = m_action->getBestMovementEstimation();
-  CActionRobotMovement3D::Ptr act3D = m_action->getActionByClass<CActionRobotMovement3D>();
+  CActionRobotMovement2D::ConstPtr act2D = m_action->getBestMovementEstimation();
+  CActionRobotMovement3D::ConstPtr act3D =
+      m_action->getActionByClass<CActionRobotMovement3D>();
 
   if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 

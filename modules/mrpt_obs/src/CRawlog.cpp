@@ -67,7 +67,7 @@ size_t CRawlog::size() const { return m_seqOfActObs.size(); }
 
 bool CRawlog::empty() const { return m_seqOfActObs.empty(); }
 
-CActionCollection::Ptr CRawlog::getAsAction(size_t index) const
+CActionCollection::ConstPtr CRawlog::getAsAction(size_t index) const
 {
   MRPT_START
 
@@ -82,7 +82,7 @@ CActionCollection::Ptr CRawlog::getAsAction(size_t index) const
   MRPT_END
 }
 
-CObservation::Ptr CRawlog::getAsObservation(size_t index) const
+CObservation::ConstPtr CRawlog::getAsObservation(size_t index) const
 {
   MRPT_START
 
@@ -97,7 +97,7 @@ CObservation::Ptr CRawlog::getAsObservation(size_t index) const
   MRPT_END
 }
 
-CSerializable::Ptr CRawlog::getAsGeneric(size_t index) const
+CSerializable::ConstPtr CRawlog::getAsGeneric(size_t index) const
 {
   MRPT_START
   if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
@@ -125,7 +125,7 @@ CRawlog::TEntryType CRawlog::getType(size_t index) const
   MRPT_END
 }
 
-CSensoryFrame::Ptr CRawlog::getAsObservations(size_t index) const
+CSensoryFrame::ConstPtr CRawlog::getAsObservations(size_t index) const
 {
   MRPT_START
   if (index >= m_seqOfActObs.size()) THROW_EXCEPTION("Index out of bounds");
@@ -293,8 +293,8 @@ void CRawlog::swap(CRawlog& obj)
 
 bool CRawlog::readActionObservationPair(
     CArchive& inStream,
-    CActionCollection::Ptr& action,
-    CSensoryFrame::Ptr& observations,
+    CActionCollection::ConstPtr& action,
+    CSensoryFrame::ConstPtr& observations,
     size_t& rawlogEntry)
 {
   try
@@ -355,9 +355,9 @@ bool CRawlog::readActionObservationPair(
 
 bool CRawlog::getActionObservationPairOrObservation(
     CArchive& inStream,
-    CActionCollection::Ptr& action,
-    CSensoryFrame::Ptr& observations,
-    CObservation::Ptr& observation,
+    CActionCollection::ConstPtr& action,
+    CSensoryFrame::ConstPtr& observations,
+    CObservation::ConstPtr& observation,
     size_t& rawlogEntry)
 {
   try
@@ -499,7 +499,9 @@ void CRawlog::findObservationsByClassInRange(
 }
 
 bool CRawlog::getActionObservationPair(
-    CActionCollection::Ptr& action, CSensoryFrame::Ptr& observations, size_t& rawlogEntry) const
+    CActionCollection::ConstPtr& action,
+    CSensoryFrame::ConstPtr& observations,
+    size_t& rawlogEntry) const
 {
   try
   {

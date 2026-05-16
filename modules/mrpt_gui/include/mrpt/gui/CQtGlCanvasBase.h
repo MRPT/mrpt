@@ -38,7 +38,7 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
   void paintGL() override;
   void resizeGL(int width, int height) override;
 
-  [[nodiscard]] mrpt::viz::Viewport::Ptr mainViewport() const;
+  [[nodiscard]] mrpt::viz::Viewport::ConstPtr mainViewport() const;
 
   /** Returns the current zoom distance from the orbit camera controller. */
   [[nodiscard]] float getCameraZoomDistance() const;

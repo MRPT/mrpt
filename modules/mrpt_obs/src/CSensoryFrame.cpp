@@ -123,7 +123,7 @@ void CSensoryFrame::eraseByIndex(size_t idx)
 /*---------------------------------------------------------------
           getObservationByIndex
   ---------------------------------------------------------------*/
-const CObservation::Ptr& CSensoryFrame::getObservationByIndex(size_t idx) const
+CObservation::ConstPtr CSensoryFrame::getObservationByIndex(size_t idx) const
 {
   MRPT_START
   ASSERT_LT_(idx, size());
@@ -156,15 +156,38 @@ CSensoryFrame::iterator CSensoryFrame::erase(const iterator& it)
 /*---------------------------------------------------------------
           getObservationBySensorLabel
   ---------------------------------------------------------------*/
-CObservation::Ptr CSensoryFrame::getObservationBySensorLabel(
+CObservation::ConstPtr CSensoryFrame::getObservationBySensorLabel(
     const std::string& label, size_t idx) const
 {
   MRPT_START
 
   size_t foundCount = 0;
   for (const auto& it : *this)
+  {
     if (!os::_strcmpi(it->sensorLabel.c_str(), label.c_str()))
+    {
       if (foundCount++ == idx) return it;
+    }
+  }
+
+  return CObservation::ConstPtr();
+
+  MRPT_END
+}
+
+CObservation::Ptr CSensoryFrame::getObservationBySensorLabel(
+    const std::string& label, size_t idx)
+{
+  MRPT_START
+
+  size_t foundCount = 0;
+  for (const auto& it : *this)
+  {
+    if (!os::_strcmpi(it->sensorLabel.c_str(), label.c_str()))
+    {
+      if (foundCount++ == idx) return it;
+    }
+  }
 
   return CObservation::Ptr();
 

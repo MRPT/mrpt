@@ -171,8 +171,9 @@ void CRangeBearingKFSLAM2D::processActionObservation(
 void CRangeBearingKFSLAM2D::OnGetAction(KFArray_ACT& u) const
 {
   // Get odometry estimation:
-  CActionRobotMovement2D::Ptr actMov2D = m_action->getBestMovementEstimation();
-  CActionRobotMovement3D::Ptr actMov3D = m_action->getActionByClass<CActionRobotMovement3D>();
+  CActionRobotMovement2D::ConstPtr actMov2D = m_action->getBestMovementEstimation();
+  CActionRobotMovement3D::ConstPtr actMov3D =
+      m_action->getActionByClass<CActionRobotMovement3D>();
   if (actMov3D)
   {
     u[0] = actMov3D->poseChange.mean.x();
@@ -233,8 +234,9 @@ void CRangeBearingKFSLAM2D::OnTransitionJacobian(KFMatrix_VxV& F) const
   MRPT_START
 
   // The jacobian of the transition function:  dfv_dxv
-  CActionRobotMovement2D::Ptr act2D = m_action->getBestMovementEstimation();
-  CActionRobotMovement3D::Ptr act3D = m_action->getActionByClass<CActionRobotMovement3D>();
+  CActionRobotMovement2D::ConstPtr act2D = m_action->getBestMovementEstimation();
+  CActionRobotMovement3D::ConstPtr act3D =
+      m_action->getActionByClass<CActionRobotMovement3D>();
 
   if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 
@@ -277,8 +279,9 @@ void CRangeBearingKFSLAM2D::OnTransitionNoise(KFMatrix_VxV& Q) const
   MRPT_START
 
   // The uncertainty of the 2D odometry, projected from the current position:
-  CActionRobotMovement2D::Ptr act2D = m_action->getBestMovementEstimation();
-  CActionRobotMovement3D::Ptr act3D = m_action->getActionByClass<CActionRobotMovement3D>();
+  CActionRobotMovement2D::ConstPtr act2D = m_action->getBestMovementEstimation();
+  CActionRobotMovement3D::ConstPtr act3D =
+      m_action->getActionByClass<CActionRobotMovement3D>();
 
   if (act3D && act2D) THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?");
 

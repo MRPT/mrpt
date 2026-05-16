@@ -307,12 +307,12 @@ class Viewport :
   * By default (ith=0), the first observation is returned.
   */
   template <typename T>
-  [[nodiscard]] typename T::Ptr getByClass(size_t ith = 0) const
+  [[nodiscard]] typename T::ConstPtr getByClass(size_t ith = 0) const
   {
     size_t foundCount = 0;
     for (const auto& o : m_objects)
     {
-      if (const auto f = std::dynamic_pointer_cast<T>(o); f)
+      if (const auto f = std::dynamic_pointer_cast<const T>(o); f)
       {
         if (foundCount++ == ith)
         {

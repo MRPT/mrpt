@@ -321,7 +321,14 @@ std::string CMultiMetricMap::asString() const
   return ss.str();
 }
 
-mrpt::maps::CMetricMap::Ptr CMultiMetricMap::mapByIndex(size_t idx) const
+mrpt::maps::CMetricMap::ConstPtr CMultiMetricMap::mapByIndex(size_t idx) const
+{
+  MRPT_START
+  return maps.at(idx);
+  MRPT_END
+}
+
+mrpt::maps::CMetricMap::Ptr CMultiMetricMap::mapByIndex(size_t idx)
 {
   MRPT_START
   return maps.at(idx);

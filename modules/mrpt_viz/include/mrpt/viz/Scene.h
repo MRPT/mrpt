@@ -159,18 +159,18 @@ class Scene : public mrpt::serialization::CSerializable, public std::enable_shar
   * By default (ith=0), the first observation is returned.
   */
   template <typename T>
-  typename T::Ptr getByClass(size_t ith = 0) const
+  typename T::ConstPtr getByClass(size_t ith = 0) const
   {
     MRPT_START
     for (const auto& m_viewport : m_viewports)
     {
-      typename T::Ptr o = m_viewport->getByClass<T>(ith);
+      typename T::ConstPtr o = m_viewport->getByClass<T>(ith);
       if (o)
       {
         return o;
       }
     }
-    return typename T::Ptr();  // Not found: return empty smart pointer
+    return typename T::ConstPtr();  // Not found: return empty smart pointer
     MRPT_END
   }
 

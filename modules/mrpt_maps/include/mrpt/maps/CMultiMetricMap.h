@@ -162,7 +162,9 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
   const_iterator end() const { return maps.end(); }
 
   /** Gets the i-th map \exception std::runtime_error On out-of-bounds */
-  mrpt::maps::CMetricMap::Ptr mapByIndex(size_t idx) const;
+  mrpt::maps::CMetricMap::ConstPtr mapByIndex(size_t idx) const;
+  /// \overload Non-const version returning a mutable Ptr
+  mrpt::maps::CMetricMap::Ptr mapByIndex(size_t idx);
 
   /** Returns the i'th map of a given class (or of a derived
    * class), or empty smart pointer if there is no such map.
@@ -174,13 +176,39 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
    * By default (ith=0), the first match is returned.
    */
   template <typename T>
-  typename T::Ptr mapByClass(size_t ith = 0) const
+  typename T::ConstPtr mapByClass(size_t ith = 0) const
   {
     size_t foundCount = 0;
     const auto* class_ID = &T::GetRuntimeClassIdStatic();
     for (const auto& m : maps)
+    {
       if (m && m->GetRuntimeClass()->derivedFrom(class_ID))
-        if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(m);
+      {
+        if (foundCount++ == ith)
+        {
+          return std::dynamic_pointer_cast<const T>(m);
+        }
+      }
+    }
+    return typename T::ConstPtr();  // Not found: return empty smart pointer
+  }
+
+  /// \overload Non-const version returning a mutable Ptr
+  template <typename T>
+  typename T::Ptr mapByClass(size_t ith = 0)
+  {
+    size_t foundCount = 0;
+    const auto* class_ID = &T::GetRuntimeClassIdStatic();
+    for (auto& m : maps)
+    {
+      if (m && m->GetRuntimeClass()->derivedFrom(class_ID))
+      {
+        if (foundCount++ == ith)
+        {
+          return std::dynamic_pointer_cast<T>(m);
+        }
+      }
+    }
     return typename T::Ptr();  // Not found: return empty smart pointer
   }
 

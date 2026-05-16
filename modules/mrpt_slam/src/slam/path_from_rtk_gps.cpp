@@ -109,7 +109,8 @@ void mrpt::slam::path_from_rtk_gps(
   // ------------------------------------------
 
   // The list with all time ordered gps's in valid RTK mode
-  using TListGPSs = std::map<mrpt::Clock::time_point, std::map<std::string, CObservationGPS::Ptr>>;
+  using TListGPSs =
+      std::map<mrpt::Clock::time_point, std::map<std::string, CObservationGPS::ConstPtr>>;
   TListGPSs list_gps_obs;
 
   map<string, size_t> GPS_RTK_reads;                  // label-># of RTK readings
@@ -124,11 +125,11 @@ void mrpt::slam::path_from_rtk_gps(
 
       case CRawlog::etObservation:
       {
-        CObservation::Ptr o = rawlog.getAsObservation(i);
+        CObservation::ConstPtr o = rawlog.getAsObservation(i);
 
         if (o->GetRuntimeClass() == CLASS_ID(CObservationGPS))
         {
-          CObservationGPS::Ptr obs = std::dynamic_pointer_cast<CObservationGPS>(o);
+          CObservationGPS::ConstPtr obs = std::dynamic_pointer_cast<const CObservationGPS>(o);
 
           if (obs->has_GGA_datum() &&
               obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality == 4)
@@ -269,7 +270,7 @@ void mrpt::slam::path_from_rtk_gps(
       {
         // Now check if we have 3 gps with the same time stamp:
         // const size_t N = i->second.size();
-        std::map<std::string, CObservationGPS::Ptr>& GPS = it->second;
+        std::map<std::string, CObservationGPS::ConstPtr>& GPS = it->second;
 
         // Check if any in "lstGPSLabels" is missing here:
         for (const auto& lstGPSLabel : lstGPSLabels)
@@ -286,7 +287,7 @@ void mrpt::slam::path_from_rtk_gps(
           auto i_a1 = it;
           ++i_a1;
 
-          CObservationGPS::Ptr GPS_b1, GPS_a1;
+          CObservationGPS::ConstPtr GPS_b1, GPS_a1;
 
           if (i_b1->second.find(lstGPSLabel) != i_b1->second.end())
             GPS_b1 = i_b1->second.find(lstGPSLabel)->second;
@@ -338,7 +339,7 @@ void mrpt::slam::path_from_rtk_gps(
       if (i->second.size() >= 3)
       {
         const size_t N = i->second.size();
-        std::map<std::string, CObservationGPS::Ptr>& GPS = i->second;
+        std::map<std::string, CObservationGPS::ConstPtr>& GPS = i->second;
         CVectorDouble X(N), Y(N), Z(N);    // Global XYZ coordinates
         std::map<string, size_t> XYZidxs;  // Sensor label -> indices in X Y Z
 
@@ -354,7 +355,7 @@ void mrpt::slam::path_from_rtk_gps(
         // Compute the XYZ coordinates of all sensors:
         TMatchingPairList corrs;
         unsigned int k;
-        std::map<std::string, CObservationGPS::Ptr>::iterator g_it;
+        std::map<std::string, CObservationGPS::ConstPtr>::iterator g_it;
 
         for (k = 0, g_it = GPS.begin(); g_it != GPS.end(); ++g_it, ++k)
         {

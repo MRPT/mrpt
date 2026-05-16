@@ -816,7 +816,7 @@ bool CDisplayWindow3D::getLastWindowImage(mrpt::img::CImage& out_img) const
 /*---------------------------------------------------------------
           getLastWindowImagePtr
  ---------------------------------------------------------------*/
-CImage::Ptr CDisplayWindow3D::getLastWindowImagePtr() const
+CImage::ConstPtr CDisplayWindow3D::getLastWindowImagePtr() const
 {
   std::lock_guard<std::mutex> lock(m_last_captured_img_cs);
   return m_last_captured_img;
