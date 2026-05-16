@@ -376,7 +376,16 @@ class CAngularObservationMesh :
    * \sa generateSetOfTriangles(std::vector<TPolygon3D>
    * &),mrpt::viz::CSetOfTriangles,mrpt::viz::mrpt::viz::TTriangle
    */
+  /** \deprecated Use generateSetOfTriangles() returning Ptr instead. */
+  [[deprecated("Use generateSetOfTriangles() returning CSetOfTriangles::Ptr instead")]]
   void generateSetOfTriangles(CSetOfTriangles::Ptr& res) const;
+  /** Gets the mesh as a set of triangles, for displaying them. */
+  [[nodiscard]] CSetOfTriangles::Ptr generateSetOfTriangles() const
+  {
+    CSetOfTriangles::Ptr res;
+    generateSetOfTriangles(res);
+    return res;
+  }
   /**
    * Returns the scanned points as a 3D point cloud. The target pointmap must
    * be passed as a pointer to allow the use of any derived class.
@@ -385,14 +394,33 @@ class CAngularObservationMesh :
   /**
    * Gets a set of lines containing the traced rays, for displaying them.
    * \sa getUntracedRays,mrpt::viz::CSetOfLines
+   * \deprecated Use getTracedRays() returning Ptr instead.
    */
+  [[deprecated("Use getTracedRays() returning CSetOfLines::Ptr instead")]]
   void getTracedRays(CSetOfLines::Ptr& res) const;
+  /** Gets a set of lines containing the traced rays, for displaying them. */
+  [[nodiscard]] CSetOfLines::Ptr getTracedRays() const
+  {
+    CSetOfLines::Ptr res;
+    getTracedRays(res);
+    return res;
+  }
   /**
    * Gets a set of lines containing the untraced rays, up to a specified
    * distance, for displaying them.
    * \sa getTracedRays,mrpt::viz::CSetOfLines
+   * \deprecated Use getUntracedRays(double) returning Ptr instead.
    */
+  [[deprecated("Use getUntracedRays(double) returning CSetOfLines::Ptr instead")]]
   void getUntracedRays(CSetOfLines::Ptr& res, double dist) const;
+  /** Gets a set of lines containing the untraced rays, up to a specified
+   * distance, for displaying them. */
+  [[nodiscard]] CSetOfLines::Ptr getUntracedRays(double dist) const
+  {
+    CSetOfLines::Ptr res;
+    getUntracedRays(res, dist);
+    return res;
+  }
   /**
    * Gets the mesh as a set of polygons, to work with them.
    * \sa generateSetOfTriangles(mrpt::viz::CSetOfTriangles &)

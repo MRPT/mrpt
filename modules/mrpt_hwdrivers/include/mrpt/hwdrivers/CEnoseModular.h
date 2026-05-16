@@ -21,6 +21,7 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 
 #include <memory>  // unique_ptr
+#include <optional>
 
 namespace mrpt::hwdrivers
 {
@@ -111,7 +112,19 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
    * "loadConfig" has been called previously.
    * \return true if OK, false if there were any error.
    */
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]]
   bool getObservation(mrpt::obs::CObservationGasSensors& outObservation);
+
+  /** Request the master eNose the latest readings from all the eNoses.
+   * \return std::nullopt on error, or the observation on success.
+   */
+  [[nodiscard]] std::optional<mrpt::obs::CObservationGasSensors> grabFrame()
+  {
+    mrpt::obs::CObservationGasSensors obs;
+    if (!getObservation(obs)) { return std::nullopt; }
+    return obs;
+  }
 
   // See docs in parent class
   void doProcess() override;

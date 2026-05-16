@@ -118,7 +118,20 @@ class CObservation : public mrpt::serialization::CSerializable, public mrpt::Str
    * derived classes for more details or special cases.
    * \sa setSensorPose
    */
+  /** \deprecated Use getSensorPose() returning CPose3D instead. */
+  [[deprecated("Use getSensorPose() returning CPose3D instead")]]
   virtual void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const = 0;
+
+  /** A general method to retrieve the sensor pose on the robot, returning it
+   * by value.
+   * \sa setSensorPose
+   */
+  [[nodiscard]] virtual mrpt::poses::CPose3D getSensorPose() const
+  {
+    mrpt::poses::CPose3D p;
+    getSensorPose(p);
+    return p;
+  }
 
   /** A general method to retrieve the sensor pose on the robot.
    *  Note that most sensors will return a full (6D) CPose3D, but see the

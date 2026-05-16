@@ -19,6 +19,8 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/typemeta/TEnumType.h>
 
+#include <optional>
+
 namespace mrpt::hwdrivers
 {
 /** These capture types are like their OpenCV equivalents. */
@@ -106,7 +108,19 @@ class CImageGrabber_OpenCV
    *
    * \return false on any error, true if all go fine.
    */
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]]
   bool getObservation(mrpt::obs::CObservationImage& out_observation);
+
+  /** Grab one frame from the opened camera.
+   * \return std::nullopt on any error, or the observation on success.
+   */
+  [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame()
+  {
+    mrpt::obs::CObservationImage obs;
+    if (!getObservation(obs)) { return std::nullopt; }
+    return obs;
+  }
 
 };  // End of class
 
