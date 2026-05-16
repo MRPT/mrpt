@@ -94,8 +94,8 @@ void CVectorField2D::updateBuffers() const
   const int rows = static_cast<int>(xcomp.rows());
   const int cols = static_cast<int>(xcomp.cols());
 
-  const float dx = (cols > 1) ? (xMax - xMin) / (cols - 1) : 0.0f;
-  const float dy = (rows > 1) ? (yMax - yMin) / (rows - 1) : 0.0f;
+  const float dx = (cols > 1) ? (xMax - xMin) / static_cast<float>(cols - 1) : 0.0f;
+  const float dy = (rows > 1) ? (yMax - yMin) / static_cast<float>(rows - 1) : 0.0f;
 
   // Lines buffer: stem of each vector arrow
   {
@@ -110,8 +110,8 @@ void CVectorField2D::updateBuffers() const
     {
       for (int r = 0; r < rows; r++)
       {
-        const float px = xMin + c * dx;
-        const float py = yMin + r * dy;
+        const float px = xMin + static_cast<float>(c) * dx;
+        const float py = yMin + static_cast<float>(r) * dy;
         vbd.emplace_back(px, py, 0.0f);
         vbd.emplace_back(px + xcomp(r, c), py + ycomp(r, c), 0.0f);
       }
@@ -134,8 +134,8 @@ void CVectorField2D::updateBuffers() const
         const float vx = xcomp(r, c), vy = ycomp(r, c);
         const float tri_side = 0.25f * std::sqrt(vx * vx + vy * vy);
         const float ang = std::atan2(vy, vx) - 1.5708f;
-        const float tip_x = xMin + c * dx + vx;
-        const float tip_y = yMin + r * dy + vy;
+        const float tip_x = xMin + static_cast<float>(c) * dx + vx;
+        const float tip_y = yMin + static_cast<float>(r) * dy + vy;
         TTriangle t(
             P3f(-std::sin(ang) * 0.866f * tri_side + tip_x,
                 std::cos(ang) * 0.866f * tri_side + tip_y, 0.0f),
@@ -162,7 +162,8 @@ void CVectorField2D::updateBuffers() const
     {
       for (int r = 0; r < rows; r++)
       {
-        vbd.emplace_back(xMin + c * dx, yMin + r * dy, 0.0f);
+        vbd.emplace_back(
+            xMin + static_cast<float>(c) * dx, yMin + static_cast<float>(r) * dy, 0.0f);
       }
     }
     cbd.assign(vbd.size(), m_point_color);
@@ -178,10 +179,10 @@ void CVectorField2D::adjustVectorFieldToGrid()
 {
   ASSERT_(xcomp.size() > 0);
 
-  const float ratio_xp = xcomp.maxCoeff() * (xcomp.cols() - 1) / (xMax - xMin);
-  const float ratio_xn = xcomp.minCoeff() * (xcomp.cols() - 1) / (xMax - xMin);
-  const float ratio_yp = ycomp.maxCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
-  const float ratio_yn = ycomp.minCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
+  const float ratio_xp = xcomp.maxCoeff() * static_cast<float>(xcomp.cols() - 1) / (xMax - xMin);
+  const float ratio_xn = xcomp.minCoeff() * static_cast<float>(xcomp.cols() - 1) / (xMax - xMin);
+  const float ratio_yp = ycomp.maxCoeff() * static_cast<float>(ycomp.rows() - 1) / (yMax - yMin);
+  const float ratio_yn = ycomp.minCoeff() * static_cast<float>(ycomp.rows() - 1) / (yMax - yMin);
   const float norm_factor =
       0.85f / max(max(ratio_xp, std::abs(ratio_xn)), max(ratio_yp, std::abs(ratio_yn)));
 

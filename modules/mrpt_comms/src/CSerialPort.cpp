@@ -411,8 +411,9 @@ void CSerialPort::setConfig(
     if (!serial.custom_divisor) serial.custom_divisor = 1;
     const int actual_rate = serial.baud_base / serial.custom_divisor;
 
-    serial.flags &= ~ASYNC_SPD_MASK;
-    serial.flags |= ASYNC_SPD_CUST;  // We want to use our CUSTOM divisor.
+    serial.flags &= static_cast<int>(~static_cast<unsigned int>(ASYNC_SPD_MASK));
+    serial.flags |= static_cast<int>(
+        static_cast<unsigned int>(ASYNC_SPD_CUST));  // We want to use our CUSTOM divisor.
 
     if (ioctl(hCOM, TIOCSSERIAL, &serial) < 0) THROW_EXCEPTION("error on TIOCSSERIAL ioctl");
 
@@ -445,13 +446,14 @@ void CSerialPort::setConfig(
   if (tcgetattr(hCOM, &port_settings) < 0)
     THROW_EXCEPTION_FMT("Cannot get the current settings: %s", strerror(errno));
 
-  if ((cfsetispeed(&port_settings, BR) < 0) || (cfsetospeed(&port_settings, BR) < 0))
+  if ((cfsetispeed(&port_settings, static_cast<speed_t>(BR)) < 0) ||
+      (cfsetospeed(&port_settings, static_cast<speed_t>(BR)) < 0))
     THROW_EXCEPTION_FMT("Cannot change baudRate in setting structure: %s", strerror(errno));
 
   //
   // Set the character size.
   //
-  port_settings.c_cflag &= ~CSIZE;
+  port_settings.c_cflag &= static_cast<tcflag_t>(~CSIZE);
   switch (bits)
   {
     case 5:
@@ -476,7 +478,7 @@ void CSerialPort::setConfig(
   {
     case 2:
       port_settings.c_cflag |= PARENB;
-      port_settings.c_cflag &= ~PARODD;
+      port_settings.c_cflag &= static_cast<tcflag_t>(~PARODD);
       port_settings.c_iflag |= INPCK;
       break;
     case 1:
@@ -484,7 +486,7 @@ void CSerialPort::setConfig(
       port_settings.c_iflag |= INPCK;
       break;
     case 0:
-      port_settings.c_cflag &= ~(PARENB);
+      port_settings.c_cflag &= static_cast<tcflag_t>(~PARENB);
       port_settings.c_iflag |= IGNPAR;
       break;
     default:
@@ -496,7 +498,7 @@ void CSerialPort::setConfig(
   switch (nStopBits)
   {
     case 1:
-      port_settings.c_cflag &= ~(CSTOPB);
+      port_settings.c_cflag &= static_cast<tcflag_t>(~CSTOPB);
       break;
     case 2:
       port_settings.c_cflag |= CSTOPB;
@@ -517,7 +519,7 @@ void CSerialPort::setConfig(
   else
   {
     // none
-    port_settings.c_cflag &= ~(CRTSCTS);
+    port_settings.c_cflag &= static_cast<tcflag_t>(~CRTSCTS);
   }
 
   /* Write the new settings to the port.
@@ -594,7 +596,7 @@ void CSerialPort::setTimeouts(
   // We set VMIN=0 and VTIME=ReadIntervalTimeout (in thenth of seconds)
   //
   port_settings.c_cc[VMIN] = 0;
-  port_settings.c_cc[VTIME] = max(1, ReadTotalTimeoutConstant / 100);
+  port_settings.c_cc[VTIME] = static_cast<cc_t>(max(1, ReadTotalTimeoutConstant / 100));
 
   /* Write the new settings to the port.
    */
@@ -685,15 +687,17 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
 
     if (waiting_bytes > 0)
     {
-      int nToRead = min(static_cast<size_t>(waiting_bytes), Count - alreadyRead);
+      int nToRead = static_cast<int>(min(static_cast<size_t>(waiting_bytes), Count - alreadyRead));
 
-      if ((nRead = ::read(hCOM, reinterpret_cast<char*>(Buffer) + alreadyRead, nToRead)) < 0)
+      if ((nRead = static_cast<int>(::read(
+               hCOM, reinterpret_cast<char*>(Buffer) + alreadyRead,
+               static_cast<size_t>(nToRead)))) < 0)
       {
         cerr << "[CSerialPort] read() returned " << nRead << ", errno=" << errno << "\n";
       }
       else
       {
-        alreadyRead += nRead;
+        alreadyRead += static_cast<size_t>(nRead);
       }
     }
     else
@@ -784,7 +788,7 @@ std::string CSerialPort::ReadString(
     {
       // Read just 1 byte:
       char buf[1];
-      if ((nRead = ::read(hCOM, buf, 1)) < 0)
+      if ((nRead = static_cast<int>(::read(hCOM, buf, 1))) < 0)
       {
         cerr << "[CSerialPort] Error reading from port..."
              << "\n";
@@ -838,14 +842,14 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
   do
   {
     gettimeofday(&start, nullptr);
-    num_of_bytes_written = write(
+    num_of_bytes_written = static_cast<int>(write(
         hCOM, reinterpret_cast<const char*>(Buffer) + total_bytes_written,
-        Count - total_bytes_written);
+        Count - total_bytes_written));
     // std::cout << "wr: " << num_of_bytes_written << " tot: " <<
     // total_bytes_written << " of " << Count << " err: " << errno << "\n";
-    if (num_of_bytes_written > 0) total_bytes_written += num_of_bytes_written;
+    if (num_of_bytes_written > 0) total_bytes_written += static_cast<size_t>(num_of_bytes_written);
 
-    if (num_of_bytes_written < (int)Count)
+    if (num_of_bytes_written < static_cast<int>(Count))
     {
       // JL: These few lines are from the Player/Stage project:
 

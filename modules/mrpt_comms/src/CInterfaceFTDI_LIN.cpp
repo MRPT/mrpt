@@ -125,9 +125,9 @@ void CInterfaceFTDI::OpenBySerialNumber([[maybe_unused]] const std::string& seri
   int ret = ftdi_usb_open_dev(
       ctx,
 #if MRPT_FTDI_VERSION >= 0x120
-      (struct libusb_device*)myDev
+      static_cast<struct libusb_device*>(myDev)
 #else
-      (struct usb_device*)myDev
+      static_cast<struct usb_device*>(myDev)
 #endif
   );
 
@@ -162,7 +162,7 @@ void CInterfaceFTDI::ListAllDevices([[maybe_unused]] TFTDIDeviceList& outList)
     if (!desc.idVendor) continue;
 
     TFTDIDevice newEntry;
-    newEntry.usb_device_struct = (void*)device;
+    newEntry.usb_device_struct = static_cast<void*>(device);
     newEntry.usb_idProduct = desc.idProduct;
     newEntry.usb_idVendor = desc.idVendor;
     newEntry.usb_serialNumber = desc.iSerialNumber;
@@ -175,21 +175,21 @@ void CInterfaceFTDI::ListAllDevices([[maybe_unused]] TFTDIDeviceList& outList)
     int ret;
     // manufacturer
     ret = libusb_get_string_descriptor_ascii(
-        handle, desc.iManufacturer, (unsigned char*)buf, sizeof(buf) - 1);
+        handle, desc.iManufacturer, reinterpret_cast<unsigned char*>(buf), sizeof(buf) - 1);
     if (ret < 0) continue;
     buf[ret] = '\0';
     newEntry.ftdi_manufacturer = buf;
 
     // description
     ret = libusb_get_string_descriptor_ascii(
-        handle, desc.iProduct, (unsigned char*)buf, sizeof(buf) - 1);
+        handle, desc.iProduct, reinterpret_cast<unsigned char*>(buf), sizeof(buf) - 1);
     if (ret < 0) continue;
     buf[ret] = '\0';
     newEntry.ftdi_description = buf;
 
     // serial
     ret = libusb_get_string_descriptor_ascii(
-        handle, desc.iSerialNumber, (unsigned char*)buf, sizeof(buf) - 1);
+        handle, desc.iSerialNumber, reinterpret_cast<unsigned char*>(buf), sizeof(buf) - 1);
     if (ret < 0) continue;
     buf[ret] = '\0';
     newEntry.ftdi_serial = buf;
@@ -241,7 +241,7 @@ void CInterfaceFTDI::recursive_fill_list_devices(
     TFTDIDevice newEntry;
     newEntry.usb_idProduct = dev->descriptor.idProduct;
     newEntry.usb_idVendor = dev->descriptor.idVendor;
-    newEntry.usb_device_struct = (void*)dev;
+    newEntry.usb_device_struct = static_cast<void*>(dev);
 
     int strLen;
 
@@ -304,7 +304,7 @@ void CInterfaceFTDI::recursive_fill_list_devices(
     // And now its children:
     // -----------------------------------
     for (unsigned char j = 0; j < dev->num_children; j++)
-      recursive_fill_list_devices((void*)dev->children[j], outList);
+      recursive_fill_list_devices(static_cast<void*>(dev->children[j]), outList);
   }
 #endif
 #endif
@@ -322,9 +322,10 @@ void CInterfaceFTDI::ftdi_read(
   MRPT_TRY_START
   auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 
-  int ret = ftdi_read_data(ctx, (unsigned char*)lpvBuffer, dwBuffSize);
+  int ret = ftdi_read_data(
+      ctx, reinterpret_cast<unsigned char*>(lpvBuffer), static_cast<int>(dwBuffSize));
   if (ret >= 0)
-    *lpdwBytesRead = ret;
+    *lpdwBytesRead = static_cast<unsigned long>(ret);
   else
   {
     if (!strcmp("usb bulk read failed", ctx->error_str))
@@ -351,9 +352,11 @@ void CInterfaceFTDI::ftdi_write(
   MRPT_TRY_START
   auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 
-  int ret = ftdi_write_data(ctx, (unsigned char*)lpvBuffer, dwBuffSize);
+  int ret = ftdi_write_data(
+      ctx, reinterpret_cast<unsigned char*>(const_cast<void*>(lpvBuffer)),
+      static_cast<int>(dwBuffSize));
   if (ret >= 0)
-    *lpdwBytes = ret;
+    *lpdwBytes = static_cast<unsigned long>(ret);
   else
     THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 

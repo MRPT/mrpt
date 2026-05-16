@@ -95,7 +95,10 @@ CPose2D CPoses2DSequence::absolutePoseOf(unsigned int n)
   return ret;
 }
 
-CPose2D CPoses2DSequence::absolutePoseAfterAll() { return absolutePoseOf(posesCount()); }
+CPose2D CPoses2DSequence::absolutePoseAfterAll()
+{
+  return absolutePoseOf(static_cast<unsigned int>(posesCount()));
+}
 
 double CPoses2DSequence::computeTraveledDistanceAfter(size_t n)
 {

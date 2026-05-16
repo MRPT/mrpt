@@ -35,10 +35,14 @@ void do_test_geodetic_geocentric(const TGeodeticCoords c1)
 
 TEST(TopographyConversion, GeodeticToGeocentricToGeodetic)
 {
-  do_test_geodetic_geocentric(TGeodeticCoords(TCoords(36, 1, 30), TCoords(3, 2, 40), 20));
-  do_test_geodetic_geocentric(TGeodeticCoords(TCoords(-36, 1, 30), TCoords(3, 2, 40), 20));
-  do_test_geodetic_geocentric(TGeodeticCoords(TCoords(36, 1, 30), TCoords(-3, 2, 40), 20));
-  do_test_geodetic_geocentric(TGeodeticCoords(TCoords(-36, 1, 30), TCoords(-3, 2, 40), 20));
+  do_test_geodetic_geocentric(
+      TGeodeticCoords(TCoords(36, 1, 30).decimal_value, TCoords(3, 2, 40).decimal_value, 20));
+  do_test_geodetic_geocentric(
+      TGeodeticCoords(TCoords(-36, 1, 30).decimal_value, TCoords(3, 2, 40).decimal_value, 20));
+  do_test_geodetic_geocentric(
+      TGeodeticCoords(TCoords(36, 1, 30).decimal_value, TCoords(-3, 2, 40).decimal_value, 20));
+  do_test_geodetic_geocentric(
+      TGeodeticCoords(TCoords(-36, 1, 30).decimal_value, TCoords(-3, 2, 40).decimal_value, 20));
 }
 
 TEST(TopographyConversion, geodeticToENU_WGS84)

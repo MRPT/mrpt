@@ -74,7 +74,7 @@ double CHistogram::getBinRatio(size_t index) const
   if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
 
   if (m_count)
-    return m_bins[index] / static_cast<double>(m_count);
+    return static_cast<double>(m_bins[index]) / static_cast<double>(m_count);
   else
     return 0;
 }
@@ -94,7 +94,7 @@ void CHistogram::getHistogramNormalized(std::vector<double>& x, std::vector<doub
 
   hits.resize(N);
   const double K = m_binSizeInv / static_cast<double>(m_count);
-  for (size_t i = 0; i < N; i++) hits[i] = K * m_bins[i];
+  for (size_t i = 0; i < N; i++) hits[i] = K * static_cast<double>(m_bins[i]);
 }
 
 CHistogram CHistogram::createWithFixedWidth(double min, double max, double binWidth)

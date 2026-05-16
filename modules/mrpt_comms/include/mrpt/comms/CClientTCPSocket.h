@@ -168,21 +168,21 @@ class CClientTCPSocket : public mrpt::io::CStream
   {
     // (1) Send a "magic word":
     const char* magic = "MRPTMessage";
-    uint32_t toWrite = strlen(magic);
-    uint32_t written = writeAsync(magic, toWrite, timeout_ms);
+    uint32_t toWrite = static_cast<uint32_t>(strlen(magic));
+    uint32_t written = static_cast<uint32_t>(writeAsync(magic, toWrite, timeout_ms));
     if (written != toWrite) return false;  // Error!
     // (2) Send the message type:
-    toWrite = sizeof(outMsg.type);
-    written = writeAsync(&outMsg.type, toWrite, timeout_ms);
+    toWrite = static_cast<uint32_t>(sizeof(outMsg.type));
+    written = static_cast<uint32_t>(writeAsync(&outMsg.type, toWrite, timeout_ms));
     if (written != toWrite) return false;  // Error!
     // (3) Send the message's content length:
-    uint32_t contentLen = outMsg.content.size();
-    toWrite = sizeof(contentLen);
-    written = writeAsync(&contentLen, toWrite, timeout_ms);
+    uint32_t contentLen = static_cast<uint32_t>(outMsg.content.size());
+    toWrite = static_cast<uint32_t>(sizeof(contentLen));
+    written = static_cast<uint32_t>(writeAsync(&contentLen, toWrite, timeout_ms));
     if (written != toWrite) return false;  // Error!
     // (4) Send the message's contents:
     toWrite = contentLen;
-    written = writeAsync(&outMsg.content[0], toWrite, timeout_ms);
+    written = static_cast<uint32_t>(writeAsync(&outMsg.content[0], toWrite, timeout_ms));
     if (written != toWrite) return false;  // Error!
     return true;
   }
@@ -206,7 +206,8 @@ class CClientTCPSocket : public mrpt::io::CStream
     // (1) Read the "magic word":
     char magic[20];
     uint32_t toRead = 11;
-    uint32_t actRead = readAsync(magic, toRead, timeoutStart_ms, timeoutBetween_ms);
+    uint32_t actRead = static_cast<uint32_t>(readAsync(
+        magic, toRead, static_cast<int>(timeoutStart_ms), static_cast<int>(timeoutBetween_ms)));
     if (actRead != toRead) return false;  // Error!
     magic[actRead] = 0;                   // Null-term string
     // Check magic:
@@ -215,18 +216,24 @@ class CClientTCPSocket : public mrpt::io::CStream
       return false;
     }
     // (2) Read the message type:
-    toRead = sizeof(inMsg.type);
-    actRead = readAsync(&inMsg.type, toRead, timeoutBetween_ms, timeoutBetween_ms);
+    toRead = static_cast<uint32_t>(sizeof(inMsg.type));
+    actRead = static_cast<uint32_t>(readAsync(
+        &inMsg.type, toRead, static_cast<int>(timeoutBetween_ms),
+        static_cast<int>(timeoutBetween_ms)));
     if (actRead != toRead) return false;  // Error!
     // (3) Read the message's content length:
     uint32_t contentLen;
-    toRead = sizeof(contentLen);
-    actRead = readAsync(&contentLen, toRead, timeoutBetween_ms, timeoutBetween_ms);
+    toRead = static_cast<uint32_t>(sizeof(contentLen));
+    actRead = static_cast<uint32_t>(readAsync(
+        &contentLen, toRead, static_cast<int>(timeoutBetween_ms),
+        static_cast<int>(timeoutBetween_ms)));
     if (actRead != toRead) return false;  // Error!
     inMsg.content.resize(contentLen);
     // (4) Read the message's contents:
     toRead = contentLen;
-    actRead = readAsync(&inMsg.content[0], toRead, timeoutBetween_ms, timeoutBetween_ms);
+    actRead = static_cast<uint32_t>(readAsync(
+        &inMsg.content[0], toRead, static_cast<int>(timeoutBetween_ms),
+        static_cast<int>(timeoutBetween_ms)));
     if (actRead != toRead) return false;  // Error!
     return true;
   }

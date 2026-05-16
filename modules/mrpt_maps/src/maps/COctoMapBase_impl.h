@@ -65,7 +65,9 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::internal_build_PointCloud_for_observatio
     // Sensor_pose = robot_pose (+) sensor_pose_on_robot
     CPose3D sensorPose(UNINITIALIZED_POSE);
     sensorPose.composeFrom(robotPose3D, o.sensorPose);
-    sensorPt = octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
+    sensorPt = octomap::point3d(
+        static_cast<float>(sensorPose.x()), static_cast<float>(sensorPose.y()),
+        static_cast<float>(sensorPose.z()));
 
     const auto* scanPts = o.buildAuxPointsMap<mrpt::maps::CPointsMap>();
     const size_t nPts = scanPts->size();
@@ -84,7 +86,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::internal_build_PointCloud_for_observatio
       robotPose3D.composePoint(pt.x, pt.y, pt.z, gx, gy, gz);
 
       // Add to this map:
-      scan.push_back(gx, gy, gz);
+      scan.push_back(static_cast<float>(gx), static_cast<float>(gy), static_cast<float>(gz));
     }
     return true;
   }
@@ -118,7 +120,9 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::internal_build_PointCloud_for_observatio
     CPose3D sensorPose(UNINITIALIZED_POSE);
     obs.getSensorPose(sensorPose);
     sensorPose.composeFrom(robotPose3D, sensorPose);
-    sensorPt = octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
+    sensorPt = octomap::point3d(
+        static_cast<float>(sensorPose.x()), static_cast<float>(sensorPose.y()),
+        static_cast<float>(sensorPose.z()));
 
     obs.load();  // ensure points are loaded from an external source
 
@@ -153,18 +157,18 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::internal_build_PointCloud_for_observatio
     // For quicker access to values as "float" instead of "doubles":
     mrpt::math::CMatrixDouble44 H;
     robotPose3D.getHomogeneousMatrix(H);
-    const float m00 = H(0, 0);
-    const float m01 = H(0, 1);
-    const float m02 = H(0, 2);
-    const float m03 = H(0, 3);
-    const float m10 = H(1, 0);
-    const float m11 = H(1, 1);
-    const float m12 = H(1, 2);
-    const float m13 = H(1, 3);
-    const float m20 = H(2, 0);
-    const float m21 = H(2, 1);
-    const float m22 = H(2, 2);
-    const float m23 = H(2, 3);
+    const float m00 = static_cast<float>(H(0, 0));
+    const float m01 = static_cast<float>(H(0, 1));
+    const float m02 = static_cast<float>(H(0, 2));
+    const float m03 = static_cast<float>(H(0, 3));
+    const float m10 = static_cast<float>(H(1, 0));
+    const float m11 = static_cast<float>(H(1, 1));
+    const float m12 = static_cast<float>(H(1, 2));
+    const float m13 = static_cast<float>(H(1, 3));
+    const float m20 = static_cast<float>(H(2, 0));
+    const float m21 = static_cast<float>(H(2, 1));
+    const float m22 = static_cast<float>(H(2, 2));
+    const float m23 = static_cast<float>(H(2, 3));
 
     mrpt::math::TPoint3Df pt;
     for (size_t i = 0; i < sizeRangeScan; i++)
@@ -229,7 +233,7 @@ double COctoMapBase<OCTREE, OCTREE_NODE>::internal_computeObservationLikelihood(
   const size_t N = scan.size();
 
   double log_lik = 0;
-  for (size_t i = 0; i < N; i += likelihoodOptions.decimation)
+  for (size_t i = 0; i < N; i += static_cast<size_t>(likelihoodOptions.decimation))
   {
     if (m_impl->m_octomap.coordToKeyChecked(scan.getPoint(i), key))
     {
@@ -293,8 +297,12 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::castRay(
   octomap::point3d _end;
 
   const bool ret = m_impl->m_octomap.castRay(
-      octomap::point3d(origin.x, origin.y, origin.z),
-      octomap::point3d(direction.x, direction.y, direction.z), _end, ignoreUnknownCells, maxRange);
+      octomap::point3d(
+          static_cast<float>(origin.x), static_cast<float>(origin.y), static_cast<float>(origin.z)),
+      octomap::point3d(
+          static_cast<float>(direction.x), static_cast<float>(direction.y),
+          static_cast<float>(direction.z)),
+      _end, ignoreUnknownCells, maxRange);
 
   end.x = _end.x();
   end.y = _end.y();

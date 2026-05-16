@@ -72,10 +72,10 @@ void CParticleFilter::executeOn(
     {
       double weightsMean = 0, var = 0;
       for (size_t i = 0; i < M; i++) weightsMean += exp(obj.getW(i));
-      weightsMean /= M;
+      weightsMean /= static_cast<double>(M);
       for (size_t i = 0; i < M; i++) var += square(exp(obj.getW(i)) - weightsMean);
 
-      var /= (M - 1);
+      var /= static_cast<double>(M - 1);
       stats->weightsVariance_beforeResample = var;
     }
   }
@@ -142,7 +142,8 @@ void CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
 
   MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(adaptiveSampleSize, bool, iniFile, section.c_str());
   MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(BETA, double, iniFile, section.c_str());
-  MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(sampleSize, int, iniFile, section.c_str());
+  sampleSize = static_cast<unsigned int>(
+      iniFile.read_int(section, "sampleSize", static_cast<int>(sampleSize), true));
   MRPT_LOAD_CONFIG_VAR(powFactor, double, iniFile, section.c_str());
   MRPT_LOAD_CONFIG_VAR(max_loglikelihood_dyn_range, double, iniFile, section.c_str());
   ASSERT_(max_loglikelihood_dyn_range >= 0);
@@ -154,12 +155,15 @@ void CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
 
   if (PF_algorithm == pfAuxiliaryPFOptimal)
   {
-    MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(
-        pfAuxFilterOptimal_MaximumSearchSamples, int, iniFile, section.c_str());
+    pfAuxFilterOptimal_MaximumSearchSamples = static_cast<unsigned int>(iniFile.read_int(
+        section, "pfAuxFilterOptimal_MaximumSearchSamples",
+        static_cast<int>(pfAuxFilterOptimal_MaximumSearchSamples), true));
   }
   else
   {
-    MRPT_LOAD_CONFIG_VAR(pfAuxFilterOptimal_MaximumSearchSamples, int, iniFile, section.c_str());
+    pfAuxFilterOptimal_MaximumSearchSamples = static_cast<unsigned int>(iniFile.read_int(
+        section, "pfAuxFilterOptimal_MaximumSearchSamples",
+        static_cast<int>(pfAuxFilterOptimal_MaximumSearchSamples), false));
   }
 
   MRPT_LOAD_CONFIG_VAR(

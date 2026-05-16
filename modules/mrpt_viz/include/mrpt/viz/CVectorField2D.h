@@ -96,10 +96,10 @@ class CVectorField2D :
   void setGridCenterAndCellSize(
       const float center_x, const float center_y, const float cellsize_x, const float cellsize_y)
   {
-    xMin = center_x - 0.5f * cellsize_x * (xcomp.cols() - 1);
-    xMax = center_x + 0.5f * cellsize_x * (xcomp.cols() - 1);
-    yMin = center_y - 0.5f * cellsize_y * (xcomp.rows() - 1);
-    yMax = center_y + 0.5f * cellsize_y * (xcomp.rows() - 1);
+    xMin = center_x - 0.5f * cellsize_x * static_cast<float>(xcomp.cols() - 1);
+    xMax = center_x + 0.5f * cellsize_x * static_cast<float>(xcomp.cols() - 1);
+    yMin = center_y - 0.5f * cellsize_y * static_cast<float>(xcomp.rows() - 1);
+    yMax = center_y + 0.5f * cellsize_y * static_cast<float>(xcomp.rows() - 1);
     CVisualObject::notifyChange();
   }
 

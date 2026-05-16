@@ -104,8 +104,8 @@ void CMesh::updateTriangles() const
     ASSERT_(mask.cols() == cols && mask.rows() == rows);
     useMask = true;
   }
-  const float sCellX = (m_xMax - m_xMin) / (rows - 1);
-  const float sCellY = (m_yMax - m_yMin) / (cols - 1);
+  const float sCellX = (m_xMax - m_xMin) / static_cast<float>(rows - 1);
+  const float sCellY = (m_yMax - m_yMin) / static_cast<float>(cols - 1);
 
   const auto myColor = getColor_u8();
 
@@ -118,8 +118,8 @@ void CMesh::updateTriangles() const
     for (int iY = 0; iY < cols - 1; iY++)
     {
       if (useMask && (!mask(iX, iY) || !mask(iX + 1, iY + 1))) continue;
-      tri.x(0) = m_xMin + iX * sCellX;
-      tri.y(0) = m_yMin + iY * sCellY;
+      tri.x(0) = m_xMin + static_cast<float>(iX) * sCellX;
+      tri.y(0) = m_yMin + static_cast<float>(iY) * sCellY;
       tri.z(0) = Z(iX, iY);
       tri.x(2) = tri.x(0) + sCellX;
       tri.y(2) = tri.y(0) + sCellY;
@@ -292,7 +292,7 @@ void CMesh::updateTriangles() const
     const size_t N = vertex_normal.second;
     if (N > 0)
     {
-      vertex_normal.first *= 1.0 / N;
+      vertex_normal.first *= 1.0 / static_cast<double>(N);
       vertex_normal.first = vertex_normal.first.unitarize();
     }
   }

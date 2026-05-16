@@ -253,14 +253,14 @@ void mrpt::topography::geocentricToGeodetic(
       in_point.z + ep2 * ellipsoid.sb * sin(theta) * sin(theta) * sin(theta),
       p - e2 * ellipsoid.sa * cos(theta) * cos(theta) * cos(theta));
 
-  const double clat = cos(out_coords.lat);
-  const double slat = sin(out_coords.lat);
+  const double clat = cos(out_coords.lat.decimal_value);
+  const double slat = sin(out_coords.lat.decimal_value);
   const double N = sa2 / sqrt(sa2 * clat * clat + sb2 * slat * slat);
 
   out_coords.height = p / clat - N;
 
-  out_coords.lon = RAD2DEG(out_coords.lon);
-  out_coords.lat = RAD2DEG(out_coords.lat);
+  out_coords.lon = RAD2DEG(out_coords.lon.decimal_value);
+  out_coords.lat = RAD2DEG(out_coords.lat.decimal_value);
 }
 
 /*---------------------------------------------------------------

@@ -135,7 +135,6 @@ void PlannerTPS_VirtualBase::transformPointcloudWithSquareClipping(
   const size_t nObs = in_map.size();
   const auto& obs_xs = in_map.getPointsBufferRef_x();
   const auto& obs_ys = in_map.getPointsBufferRef_y();
-  const auto& obs_zs = in_map.getPointsBufferRef_z();
 
   out_map.clear();
   out_map.reserve(nObs);  // Prealloc mem for speed-up

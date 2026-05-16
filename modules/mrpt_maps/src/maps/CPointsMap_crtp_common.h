@@ -51,14 +51,16 @@ struct loadFromRangeImpl
     // std::vector<> memory is not actually deadllocated
     // and can be reused.
 
-    const int sizeRangeScan = rangeScan.getScanSize();
+    const int sizeRangeScan = static_cast<int>(rangeScan.getScanSize());
 
     if (!sizeRangeScan) return;  // Nothing to do.
 
     // For a great gain in efficiency:
     if (obj.m_x.size() + sizeRangeScan > obj.m_x.capacity())
     {
-      obj.reserve((size_t)(obj.m_x.size() * 1.2f) + 3 * sizeRangeScan);
+      obj.reserve(
+          static_cast<size_t>(static_cast<float>(obj.m_x.size()) * 1.2f) +
+          static_cast<size_t>(3 * sizeRangeScan));
     }
 
     // GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
@@ -68,15 +70,15 @@ struct loadFromRangeImpl
     sensorPose3D.getHomogeneousMatrix(lric.HM);
 
     // For quicker access as "float" numbers:
-    float m00 = lric.HM(0, 0);
-    float m01 = lric.HM(0, 1);
-    float m03 = lric.HM(0, 3);
-    float m10 = lric.HM(1, 0);
-    float m11 = lric.HM(1, 1);
-    float m13 = lric.HM(1, 3);
-    float m20 = lric.HM(2, 0);
-    float m21 = lric.HM(2, 1);
-    float m23 = lric.HM(2, 3);
+    float m00 = static_cast<float>(lric.HM(0, 0));
+    float m01 = static_cast<float>(lric.HM(0, 1));
+    float m03 = static_cast<float>(lric.HM(0, 3));
+    float m10 = static_cast<float>(lric.HM(1, 0));
+    float m11 = static_cast<float>(lric.HM(1, 1));
+    float m13 = static_cast<float>(lric.HM(1, 3));
+    float m20 = static_cast<float>(lric.HM(2, 0));
+    float m21 = static_cast<float>(lric.HM(2, 1));
+    float m23 = static_cast<float>(lric.HM(2, 3));
 
     float lx_1, ly_1, lz_1, lx = 0, ly = 0,
                             lz = 0;  // Punto anterior y actual:
@@ -284,9 +286,12 @@ struct loadFromRangeImpl
 
               for (int q = 1; q < nInterpol; q++)
               {
-                float i_x = lx_1 + q * (lx - lx_1) / nInterpol;
-                float i_y = ly_1 + q * (ly - ly_1) / nInterpol;
-                float i_z = lz_1 + q * (lz - lz_1) / nInterpol;
+                float i_x =
+                    lx_1 + static_cast<float>(q) * (lx - lx_1) / static_cast<float>(nInterpol);
+                float i_y =
+                    ly_1 + static_cast<float>(q) * (ly - ly_1) / static_cast<float>(nInterpol);
+                float i_z =
+                    lz_1 + static_cast<float>(q) * (lz - lz_1) / static_cast<float>(nInterpol);
                 if (!obj.m_heightfilter_enabled ||
                     (i_z >= obj.m_heightfilter_z_min && i_z <= obj.m_heightfilter_z_max))
                 {
@@ -300,7 +305,8 @@ struct loadFromRangeImpl
                     // Interpolated timestamp between point i-1 and i
                     const float t_prev = rangeScan.getScanRelativeTimestamp(i - 1);
                     const float t_curr = rangeScan.getScanRelativeTimestamp(i);
-                    const float t_interp = t_prev + q * (t_curr - t_prev) / nInterpol;
+                    const float t_interp = t_prev + static_cast<float>(q) * (t_curr - t_prev) /
+                                                        static_cast<float>(nInterpol);
                     ts->push_back(t_interp);
                   }
 
@@ -405,25 +411,26 @@ struct loadFromRangeImpl
 
     // For a great gain in efficiency:
     if (obj.m_x.size() + sizeRangeScan > obj.m_x.capacity())
-      obj.reserve(size_t(obj.m_x.size() + 1.1 * sizeRangeScan));
+      obj.reserve(
+          size_t(static_cast<double>(obj.m_x.size()) + 1.1 * static_cast<double>(sizeRangeScan)));
 
     // GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
     // --------------------------------------------------------------------------
     mrpt::maps::CPointsMap::TLaserRange3DInsertContext lric(rangeScan);
     sensorPose3D.getHomogeneousMatrix(lric.HM);
     // For quicker access to values as "float" instead of "doubles":
-    float m00 = lric.HM(0, 0);
-    float m01 = lric.HM(0, 1);
-    float m02 = lric.HM(0, 2);
-    float m03 = lric.HM(0, 3);
-    float m10 = lric.HM(1, 0);
-    float m11 = lric.HM(1, 1);
-    float m12 = lric.HM(1, 2);
-    float m13 = lric.HM(1, 3);
-    float m20 = lric.HM(2, 0);
-    float m21 = lric.HM(2, 1);
-    float m22 = lric.HM(2, 2);
-    float m23 = lric.HM(2, 3);
+    float m00 = static_cast<float>(lric.HM(0, 0));
+    float m01 = static_cast<float>(lric.HM(0, 1));
+    float m02 = static_cast<float>(lric.HM(0, 2));
+    float m03 = static_cast<float>(lric.HM(0, 3));
+    float m10 = static_cast<float>(lric.HM(1, 0));
+    float m11 = static_cast<float>(lric.HM(1, 1));
+    float m12 = static_cast<float>(lric.HM(1, 2));
+    float m13 = static_cast<float>(lric.HM(1, 3));
+    float m20 = static_cast<float>(lric.HM(2, 0));
+    float m21 = static_cast<float>(lric.HM(2, 1));
+    float m22 = static_cast<float>(lric.HM(2, 2));
+    float m23 = static_cast<float>(lric.HM(2, 3));
 
     float lx_1, ly_1, lz_1, lx = 0, ly = 0,
                             lz = 0;  // Punto anterior y actual:

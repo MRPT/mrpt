@@ -418,15 +418,19 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
           break;
 
         case COctoMapVoxels::COLOR_FROM_HEIGHT:
-          vx_color = mrpt::img::colormap(gl_obj.colorMap(), (pt.z - bbox.min.z) * bbox_span_z_inv)
-                         .asTColor();
+          vx_color =
+              mrpt::img::colormap(
+                  gl_obj.colorMap(), static_cast<float>((pt.z - bbox.min.z) * bbox_span_z_inv))
+                  .asTColor();
           break;
 
         case COctoMapVoxels::COLOR_FROM_OCCUPANCY:
           coefc = 240 * (1 - occ) + 15;
           vx_color = TColor(
-              coefc * general_color.R, coefc * general_color.G, coefc * general_color.B,
-              255.0 * general_color.A);
+              static_cast<uint8_t>(coefc * general_color.R),
+              static_cast<uint8_t>(coefc * general_color.G),
+              static_cast<uint8_t>(coefc * general_color.B),
+              static_cast<uint8_t>(255.0 * general_color.A));
           break;
 
         case COctoMapVoxels::TRANSPARENCY_FROM_OCCUPANCY:
@@ -435,14 +439,18 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
           {
             coeft = 0;
           }
-          vx_color =
-              TColor(255 * general_color.R, 255 * general_color.G, 255 * general_color.B, coeft);
+          vx_color = TColor(
+              static_cast<uint8_t>(255 * general_color.R),
+              static_cast<uint8_t>(255 * general_color.G),
+              static_cast<uint8_t>(255 * general_color.B), static_cast<uint8_t>(coeft));
           break;
 
         case COctoMapVoxels::TRANS_AND_COLOR_FROM_OCCUPANCY:
           coefc = 240 * (1 - occ) + 15;
-          vx_color =
-              TColor(coefc * general_color.R, coefc * general_color.G, coefc * general_color.B, 50);
+          vx_color = TColor(
+              static_cast<uint8_t>(coefc * general_color.R),
+              static_cast<uint8_t>(coefc * general_color.G),
+              static_cast<uint8_t>(coefc * general_color.B), 50);
           break;
 
         case COctoMapVoxels::MIXED:
@@ -472,8 +480,11 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::getAsOctoMapVoxels(
           (occ > renderingOptions.occupiedThreshold) ? VOXEL_SET_OCCUPIED : VOXEL_SET_FREESPACE;
 
       gl_obj.push_back_Voxel(
-          vx_set, COctoMapVoxels::TVoxel(
-                      mrpt::math::TPoint3Df(pt.x, pt.y, pt.z), grid.resolution, vx_color));
+          vx_set,
+          COctoMapVoxels::TVoxel(
+              mrpt::math::TPoint3Df(
+                  static_cast<float>(pt.x), static_cast<float>(pt.y), static_cast<float>(pt.z)),
+              static_cast<float>(grid.resolution), vx_color));
     }
   };  // end lambda for each voxel
 
@@ -509,16 +520,17 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateVoxel(
   if (occupied)
   {
     const occupancy_t logodd_observation_occupied =
-        std::max<occupancy_t>(1, p2l(insertionOptions.prob_hit));
-    const occupancy_t logodd_thres_occupied = p2l(1.0 - insertionOptions.clamp_max);
+        std::max<occupancy_t>(1, p2l(static_cast<float>(insertionOptions.prob_hit)));
+    const occupancy_t logodd_thres_occupied =
+        p2l(static_cast<float>(1.0 - insertionOptions.clamp_max));
 
     updateCell_fast_occupied(cell, logodd_observation_occupied, logodd_thres_occupied);
   }
   else
   {
     const occupancy_t logodd_observation_free =
-        std::max<occupancy_t>(1, p2l(insertionOptions.prob_miss));
-    const occupancy_t logodd_thres_free = p2l(1.0 - insertionOptions.clamp_min);
+        std::max<occupancy_t>(1, p2l(static_cast<float>(insertionOptions.prob_miss)));
+    const occupancy_t logodd_thres_free = p2l(static_cast<float>(1.0 - insertionOptions.clamp_min));
 
     updateCell_fast_free(cell, logodd_observation_free, logodd_thres_free);
   }
@@ -548,8 +560,9 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
   markAsChanged();
 
   const occupancy_t logodd_observation_occupied =
-      std::max<occupancy_t>(1, p2l(insertionOptions.prob_hit));
-  const occupancy_t logodd_thres_occupied = p2l(1.0 - insertionOptions.clamp_max);
+      std::max<occupancy_t>(1, p2l(static_cast<float>(insertionOptions.prob_hit)));
+  const occupancy_t logodd_thres_occupied =
+      p2l(static_cast<float>(1.0 - insertionOptions.clamp_max));
 
   const auto& xs = pts.getPointsBufferRef_x();
   const auto& ys = pts.getPointsBufferRef_y();
@@ -565,8 +578,8 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
   constexpr unsigned int FRBITS = 9;
 
   const occupancy_t logodd_observation_free =
-      std::max<occupancy_t>(1, p2l(insertionOptions.prob_miss));
-  const occupancy_t logodd_thres_free = p2l(1.0 - insertionOptions.clamp_min);
+      std::max<occupancy_t>(1, p2l(static_cast<float>(insertionOptions.prob_miss)));
+  const occupancy_t logodd_thres_free = p2l(static_cast<float>(1.0 - insertionOptions.clamp_min));
 
   // for each ray:
   for (size_t i = 0; i < xs.size(); i += insertionOptions.decimation)
@@ -592,12 +605,15 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
     if (!nStepsRay) continue;  // May be...
 
     // Integers store "float values * 128"
-    float N_1 = 1.0f / nStepsRay;  // Avoid division twice.
+    float N_1 = 1.0f / static_cast<float>(nStepsRay);  // Avoid division twice.
 
     // Increments at each raytracing step:
-    int frAcx = (Ac.x < 0 ? -1 : +1) * round((Acx_ << FRBITS) * N_1);
-    int frAcy = (Ac.y < 0 ? -1 : +1) * round((Acy_ << FRBITS) * N_1);
-    int frAcz = (Ac.z < 0 ? -1 : +1) * round((Acz_ << FRBITS) * N_1);
+    int frAcx =
+        (Ac.x < 0 ? -1 : +1) * static_cast<int>(round(static_cast<double>(Acx_ << FRBITS) * N_1));
+    int frAcy =
+        (Ac.y < 0 ? -1 : +1) * static_cast<int>(round(static_cast<double>(Acy_ << FRBITS) * N_1));
+    int frAcz =
+        (Ac.z < 0 ? -1 : +1) * static_cast<int>(round(static_cast<double>(Acz_ << FRBITS) * N_1));
 
     int frCX = sensorCoord.x << FRBITS;
     int frCY = sensorCoord.y << FRBITS;
@@ -635,8 +651,9 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsEndPoi
   markAsChanged();
 
   const occupancy_t logodd_observation_occupied =
-      std::max<occupancy_t>(1, p2l(insertionOptions.prob_hit));
-  const occupancy_t logodd_thres_occupied = p2l(1.0 - insertionOptions.clamp_max);
+      std::max<occupancy_t>(1, p2l(static_cast<float>(insertionOptions.prob_hit)));
+  const occupancy_t logodd_thres_occupied =
+      p2l(static_cast<float>(1.0 - insertionOptions.clamp_max));
 
   const auto& xs = pts.getPointsBufferRef_x();
   const auto& ys = pts.getPointsBufferRef_y();

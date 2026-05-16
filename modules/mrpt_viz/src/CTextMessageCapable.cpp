@@ -63,7 +63,7 @@ bool CTextMessageCapable::updateTextMessage(size_t unique_index, const std::stri
 {
   std::unique_lock<std::shared_mutex> lckWrite2DTexts(m_2D_texts.mtx.data);
 
-  auto it = m_2D_texts.messages.find(unique_index);
+  auto it = m_2D_texts.messages.find(static_cast<unsigned int>(unique_index));
   if (it == m_2D_texts.messages.end())
   {
     return false;
@@ -90,5 +90,5 @@ void CTextMessageCapable::addTextMessage(
   d.y = y_frac;
 
   std::unique_lock<std::shared_mutex> lckWrite2DTexts(m_2D_texts.mtx.data);
-  m_2D_texts.messages[unique_index] = std::move(d);
+  m_2D_texts.messages[static_cast<unsigned int>(unique_index)] = std::move(d);
 }

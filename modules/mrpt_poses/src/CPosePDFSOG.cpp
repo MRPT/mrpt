@@ -112,7 +112,7 @@ std::tuple<CMatrixDouble33, CPose2D> CPosePDFSOG::getCovarianceAndMean() const
 uint8_t CPosePDFSOG::serializeGetVersion() const { return 2; }
 void CPosePDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  uint32_t N = m_modes.size();
+  uint32_t N = static_cast<uint32_t>(m_modes.size());
   out << N;
 
   for (const auto& m : m_modes)
@@ -541,10 +541,10 @@ void CPosePDFSOG::evaluatePDFInArea(
 
   for (size_t i = 0; i < Ny; i++)
   {
-    double y = y_min + i * resolutionXY;
+    double y = y_min + static_cast<double>(i) * resolutionXY;
     for (size_t j = 0; j < Nx; j++)
     {
-      double x = x_min + j * resolutionXY;
+      double x = x_min + static_cast<double>(j) * resolutionXY;
       outMatrix(i, j) = evaluatePDF(CPose2D(x, y, phi), sumOverAllPhis);
     }
   }

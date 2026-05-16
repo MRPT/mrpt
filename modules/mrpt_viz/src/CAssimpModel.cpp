@@ -727,8 +727,10 @@ const CAssimpModel::LoadedTexture* CAssimpModel::loadTexture(const std::string& 
         for (unsigned int x = 0; x < aiTex->mWidth; x++)
         {
           const aiTexel& texel = aiTex->pcData[y * aiTex->mWidth + x];
-          tex.rgb.setPixel({x, y}, TColor(texel.r, texel.g, texel.b));
-          tex.alpha->setPixel({x, y}, TColor(texel.a, texel.a, texel.a));
+          tex.rgb.setPixel(
+              {static_cast<int>(x), static_cast<int>(y)}, TColor(texel.r, texel.g, texel.b));
+          tex.alpha->setPixel(
+              {static_cast<int>(x), static_cast<int>(y)}, TColor(texel.a, texel.a, texel.a));
         }
       }
     }

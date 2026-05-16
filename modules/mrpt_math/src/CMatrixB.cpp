@@ -30,7 +30,9 @@ void CMatrixB::serializeTo(mrpt::serialization::CArchive& out) const
   out.WriteAs<uint32_t>(rows());
   out.WriteAs<uint32_t>(cols());
 
-  if (rows() > 0 && cols() > 0) out.WriteBuffer(&(*this)(0, 0), sizeof(bool) * cols() * rows());
+  if (rows() > 0 && cols() > 0)
+    out.WriteBuffer(
+        &(*this)(0, 0), sizeof(bool) * static_cast<size_t>(cols()) * static_cast<size_t>(rows()));
 }
 
 void CMatrixB::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -51,7 +53,10 @@ void CMatrixB::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
       setSize(nRows, nCols);
 
-      if (nRows > 0 && nCols > 0) in.ReadBuffer(&(*this)(0, 0), sizeof(bool) * cols() * rows());
+      if (nRows > 0 && nCols > 0)
+        in.ReadBuffer(
+            &(*this)(0, 0),
+            sizeof(bool) * static_cast<size_t>(cols()) * static_cast<size_t>(rows()));
     }
     break;
     default:

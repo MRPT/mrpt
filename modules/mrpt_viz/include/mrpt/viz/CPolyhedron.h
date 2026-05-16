@@ -651,15 +651,15 @@ class CPolyhedron :
   /**
    * Gets the amount of vertices.
    */
-  uint32_t getNumberOfVertices() const { return m_Vertices.size(); }
+  uint32_t getNumberOfVertices() const { return static_cast<uint32_t>(m_Vertices.size()); }
   /**
    * Gets the amount of edges.
    */
-  uint32_t getNumberOfEdges() const { return m_Edges.size(); }
+  uint32_t getNumberOfEdges() const { return static_cast<uint32_t>(m_Edges.size()); }
   /**
    * Gets the amount of faces.
    */
-  uint32_t getNumberOfFaces() const { return m_Faces.size(); }
+  uint32_t getNumberOfFaces() const { return static_cast<uint32_t>(m_Faces.size()); }
   /**
    * Gets a vector with each edge's length.
    */

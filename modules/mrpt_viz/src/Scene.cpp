@@ -46,7 +46,10 @@ Scene::Scene() { createViewport("main"); }
 /*--------------------------------------------------------------
           Copy constructor
   ---------------------------------------------------------------*/
-Scene::Scene(const Scene& obj) : CSerializable() { (*this) = obj; }
+Scene::Scene(const Scene& obj) : CSerializable(), std::enable_shared_from_this<Scene>()
+{
+  (*this) = obj;
+}
 
 Scene::~Scene() { m_viewports.clear(); }
 

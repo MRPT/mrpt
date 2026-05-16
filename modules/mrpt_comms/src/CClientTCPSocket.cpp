@@ -255,7 +255,8 @@ void CClientTCPSocket::connect(
 #endif
 
   // Try to connect:
-  int r = ::connect(m_hSock, (struct sockaddr*)&otherAddress, sizeof(otherAddress));
+  int r =
+      ::connect(m_hSock, reinterpret_cast<struct sockaddr*>(&otherAddress), sizeof(otherAddress));
 #ifdef _WIN32
   int er = WSAGetLastError();
   if (r < 0 && er != WSAEINPROGRESS && er != WSAEWOULDBLOCK)
@@ -275,7 +276,7 @@ void CClientTCPSocket::connect(
   // Wait for connect:
   std::array<struct epoll_event, 1> events;
 
-  const int epoll_timeout_ms = timeout_ms == 0 ? -1 : timeout_ms;
+  const int epoll_timeout_ms = timeout_ms == 0 ? -1 : static_cast<int>(timeout_ms);
 
   int event_count;
   do
@@ -331,10 +332,10 @@ void CClientTCPSocket::connect(
   int valopt;
 #ifdef _WIN32
   int lon = sizeof(int);
-  getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (char*)(&valopt), &lon);
+  getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&valopt), &lon);
 #else
   socklen_t lon = sizeof(int);
-  getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon);
+  getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, static_cast<void*>(&valopt), &lon);
 #endif
 
 #ifdef _WIN32
@@ -451,12 +452,14 @@ size_t CClientTCPSocket::readAsync(
       remainToRead = Count - alreadyRead;
 
       // Receive bytes:
-      readNow = ::recv(m_hSock, ((char*)Buffer) + alreadyRead, (int)remainToRead, 0);
+      readNow = static_cast<int>(::recv(
+          m_hSock, reinterpret_cast<char*>(Buffer) + alreadyRead, static_cast<size_t>(remainToRead),
+          0));
 
       if (readNow != INVALID_SOCKET)
       {
         // Accumulate the received length:
-        alreadyRead += readNow;
+        alreadyRead += static_cast<size_t>(readNow);
       }
       else
       {
@@ -559,12 +562,14 @@ size_t CClientTCPSocket::writeAsync(const void* Buffer, const size_t Count, cons
       remainToWrite = Count - alreadyWritten;
 
       // Receive bytes:
-      writtenNow = ::send(m_hSock, ((char*)Buffer) + alreadyWritten, (int)remainToWrite, 0);
+      writtenNow = static_cast<int>(::send(
+          m_hSock, reinterpret_cast<const char*>(Buffer) + alreadyWritten,
+          static_cast<size_t>(remainToWrite), 0));
 
       if (writtenNow != INVALID_SOCKET)
       {
         // Accumulate the received length:
-        alreadyWritten += writtenNow;
+        alreadyWritten += static_cast<size_t>(writtenNow);
       }
     }
 
@@ -606,7 +611,9 @@ int CClientTCPSocket::setTCPNoDelay(int newValue)
 {
   int length = sizeof(newValue);
 
-  return setsockopt(m_hSock, IPPROTO_TCP, TCP_NODELAY, (char*)&newValue, length);
+  return setsockopt(
+      m_hSock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&newValue),
+      static_cast<socklen_t>(length));
 }
 
 /*---------------------------------------------------------------
@@ -620,7 +627,7 @@ int CClientTCPSocket::getTCPNoDelay()
 #else
   unsigned int length = sizeof(value);
 #endif
-  int res = getsockopt(m_hSock, IPPROTO_TCP, TCP_NODELAY, (char*)&value, &length);
+  int res = getsockopt(m_hSock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&value), &length);
 
   if (res == -1)
   {
@@ -637,7 +644,8 @@ int CClientTCPSocket::setSOSendBufffer(int newValue)
 {
   const unsigned int length = sizeof(newValue);
 
-  return setsockopt(m_hSock, SOL_SOCKET, SO_SNDBUF, (char*)&newValue, length);
+  return setsockopt(
+      m_hSock, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char*>(&newValue), length);
 }
 
 /*---------------------------------------------------------------
@@ -651,7 +659,7 @@ int CClientTCPSocket::getSOSendBufffer()
 #else
   unsigned int length = sizeof(value);
 #endif
-  getsockopt(m_hSock, SOL_SOCKET, SO_SNDBUF, (char*)&value, &length);
+  getsockopt(m_hSock, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), &length);
 
   return value;
 }

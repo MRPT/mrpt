@@ -179,7 +179,7 @@ class CPose3DGridTemplate
       double resolution_YPR)
   {
     // Checks
-    for (int i = 0; i < 6; i++) ASSERT_GT_(bb_max[i], bb_min[i]);
+    for (size_t i = 0; i < 6; i++) ASSERT_GT_(bb_max[i], bb_min[i]);
     ASSERT_GT_(resolution_XYZ, .0);
     ASSERT_GT_(resolution_YPR, .0);
 
@@ -199,13 +199,15 @@ class CPose3DGridTemplate
     m_min_cidRoll = mrpt::round(bb_min.roll / resolution_YPR);
 
     // Compute new required space:
-    m_sizeX = mrpt::round(bb_max.x / resolution_XYZ) - m_min_cidX + 1;
-    m_sizeY = mrpt::round(bb_max.y / resolution_XYZ) - m_min_cidY + 1;
-    m_sizeZ = mrpt::round(bb_max.z / resolution_XYZ) - m_min_cidZ + 1;
+    m_sizeX = static_cast<uint32_t>(mrpt::round(bb_max.x / resolution_XYZ) - m_min_cidX + 1);
+    m_sizeY = static_cast<uint32_t>(mrpt::round(bb_max.y / resolution_XYZ) - m_min_cidY + 1);
+    m_sizeZ = static_cast<uint32_t>(mrpt::round(bb_max.z / resolution_XYZ) - m_min_cidZ + 1);
 
-    m_sizeYaw = mrpt::round(bb_max.yaw / resolution_YPR) - m_min_cidYaw + 1;
-    m_sizePitch = mrpt::round(bb_max.pitch / resolution_YPR) - m_min_cidPitch + 1;
-    m_sizeRoll = mrpt::round(bb_max.roll / resolution_YPR) - m_min_cidRoll + 1;
+    m_sizeYaw = static_cast<uint32_t>(mrpt::round(bb_max.yaw / resolution_YPR) - m_min_cidYaw + 1);
+    m_sizePitch =
+        static_cast<uint32_t>(mrpt::round(bb_max.pitch / resolution_YPR) - m_min_cidPitch + 1);
+    m_sizeRoll =
+        static_cast<uint32_t>(mrpt::round(bb_max.roll / resolution_YPR) - m_min_cidRoll + 1);
 
     // Products:
     update_cached_size_products();
@@ -244,8 +246,10 @@ class CPose3DGridTemplate
         cz < static_cast<int>(m_sizeZ) && cY < static_cast<int>(m_sizeYaw) &&
         cP < static_cast<int>(m_sizePitch) && cR < static_cast<int>(m_sizeRoll));
     return &m_data
-        [cx + m_sizeX * cy + m_size_xy * cz + m_size_xyz * cY + m_size_xyzY * cP +
-         m_size_xyzYP * cR];
+        [static_cast<unsigned int>(cx) + m_sizeX * static_cast<unsigned int>(cy) +
+         m_size_xy * static_cast<unsigned int>(cz) + m_size_xyz * static_cast<unsigned int>(cY) +
+         m_size_xyzY * static_cast<unsigned int>(cP) +
+         m_size_xyzYP * static_cast<unsigned int>(cR)];
   }
 
   T* getByIndex(int cx, int cy, int cz, int cY, int cP, int cR)

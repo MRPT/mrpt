@@ -193,7 +193,7 @@ class CPointCloud :
   void insertPoint(const mrpt::math::TPoint3D& p)
   {
     // lock already hold by insertPoint() below
-    insertPoint(p.x, p.y, p.z);
+    insertPoint(static_cast<float>(p.x), static_cast<float>(p.y), static_cast<float>(p.z));
   }
 
   /** Read access to each individual point (checks for "i" in the valid

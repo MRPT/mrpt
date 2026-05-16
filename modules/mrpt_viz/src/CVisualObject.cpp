@@ -142,7 +142,7 @@ void CVisualObject::readFromStreamRender(mrpt::serialization::CArchive& in)
         _.name.resize(nameLen);
         if (nameLen)
         {
-          in.ReadBuffer((void*)(&_.name[0]), _.name.size());
+          in.ReadBuffer(reinterpret_cast<void*>(&_.name[0]), _.name.size());
         }
 
         // Color, as u8:

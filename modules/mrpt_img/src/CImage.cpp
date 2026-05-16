@@ -1603,11 +1603,11 @@ void CImage::filterMedian(CImage& out_img, int W) const
           for (int kx = -half; kx <= half; kx++)
           {
             const int sx = std::clamp(x + kx, 0, w - 1);
-            window.push_back(*ptr<uint8_t>(sx, sy, c));
+            window.push_back(*ptr<uint8_t>(sx, sy, static_cast<int8_t>(c)));
           }
         }
         std::nth_element(window.begin(), window.begin() + window.size() / 2, window.end());
-        *dst->ptr<uint8_t>(x, y, c) = window[window.size() / 2];
+        *dst->ptr<uint8_t>(x, y, static_cast<int8_t>(c)) = window[window.size() / 2];
       }
     }
   }
@@ -1670,7 +1670,7 @@ void CImage::filterGaussian(CImage& out_img, int W, int H, double sigma) const
         for (int kx2 = -halfW; kx2 <= halfW; kx2++)
         {
           const int sx = std::clamp(x + kx2, 0, w - 1);
-          acc += *ptr<uint8_t>(sx, y, c) * kx[kx2 + halfW];
+          acc += *ptr<uint8_t>(sx, y, static_cast<int8_t>(c)) * kx[kx2 + halfW];
         }
         hbuf[(y * w + x) * ch + c] = static_cast<float>(acc);
       }
@@ -1690,7 +1690,8 @@ void CImage::filterGaussian(CImage& out_img, int W, int H, double sigma) const
           const int sy = std::clamp(y + ky2, 0, h - 1);
           acc += hbuf[(sy * w + x) * ch + c] * ky[ky2 + halfH];
         }
-        *dst->ptr<uint8_t>(x, y, c) = static_cast<uint8_t>(std::clamp(acc, 0.0, 255.0));
+        *dst->ptr<uint8_t>(x, y, static_cast<int8_t>(c)) =
+            static_cast<uint8_t>(std::clamp(acc, 0.0, 255.0));
       }
     }
   }
@@ -1736,7 +1737,7 @@ void CImage::rotateImage(CImage& out_img, double ang, const TPixelCoord& center,
         // Border: fill with zero
         for (int c = 0; c < ch; c++)
         {
-          *dst->ptr<uint8_t>(dx, dy, c) = 0;
+          *dst->ptr<uint8_t>(dx, dy, static_cast<int8_t>(c)) = 0;
         }
         continue;
       }
@@ -1744,13 +1745,14 @@ void CImage::rotateImage(CImage& out_img, double ang, const TPixelCoord& center,
       const double fx = sx - sx0, fy = sy - sy0;
       for (int c = 0; c < ch; c++)
       {
-        const double v00 = *ptr<uint8_t>(sx0, sy0, c);
-        const double v10 = *ptr<uint8_t>(sx0 + 1, sy0, c);
-        const double v01 = *ptr<uint8_t>(sx0, sy0 + 1, c);
-        const double v11 = *ptr<uint8_t>(sx0 + 1, sy0 + 1, c);
+        const double v00 = *ptr<uint8_t>(sx0, sy0, static_cast<int8_t>(c));
+        const double v10 = *ptr<uint8_t>(sx0 + 1, sy0, static_cast<int8_t>(c));
+        const double v01 = *ptr<uint8_t>(sx0, sy0 + 1, static_cast<int8_t>(c));
+        const double v11 = *ptr<uint8_t>(sx0 + 1, sy0 + 1, static_cast<int8_t>(c));
         const double val =
             (1 - fx) * (1 - fy) * v00 + fx * (1 - fy) * v10 + (1 - fx) * fy * v01 + fx * fy * v11;
-        *dst->ptr<uint8_t>(dx, dy, c) = static_cast<uint8_t>(std::clamp(val, 0.0, 255.0));
+        *dst->ptr<uint8_t>(dx, dy, static_cast<int8_t>(c)) =
+            static_cast<uint8_t>(std::clamp(val, 0.0, 255.0));
       }
     }
   }
@@ -1844,10 +1846,12 @@ bool CImage::drawChessboardCorners(
 
       // Cross lines
       line(
-          {pt.x - (int)r, pt.y - (int)r}, {pt.x + (int)r, pt.y + (int)r}, color,
+          {pt.x - static_cast<int>(r), pt.y - static_cast<int>(r)},
+          {pt.x + static_cast<int>(r), pt.y + static_cast<int>(r)}, color,
           static_cast<int>(lines_width));
       line(
-          {pt.x - (int)r, pt.y + (int)r}, {pt.x + (int)r, pt.y - (int)r}, color,
+          {pt.x - static_cast<int>(r), pt.y + static_cast<int>(r)},
+          {pt.x + static_cast<int>(r), pt.y - static_cast<int>(r)}, color,
           static_cast<int>(lines_width));
 
       if (r > 0)

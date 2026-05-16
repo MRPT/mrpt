@@ -475,12 +475,12 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
 
   std::optional<CurrentPoseAndSpeeds> getCurrentPoseAndSpeeds() override
   {
-    return CurrentPoseAndSpeeds{
-        .pose = robotSim.getCurrentGTPose(),
-        .velGlobal = robotSim.getCurrentGTVel(),
-        .timestamp = mrpt::Clock::now(),
-        .odometry = robotSim.getCurrentOdometricPose(),
-    };
+    CurrentPoseAndSpeeds ret;
+    ret.pose = robotSim.getCurrentGTPose();
+    ret.velGlobal = robotSim.getCurrentGTVel();
+    ret.timestamp = mrpt::Clock::now();
+    ret.odometry = robotSim.getCurrentOdometricPose();
+    return ret;
   }
 
   bool senseObstacles(

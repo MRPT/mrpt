@@ -135,7 +135,7 @@ std::tuple<CMatrixDouble33, CPoint3D> CPointPDFParticles::getCovarianceAndMean()
 uint8_t CPointPDFParticles::serializeGetVersion() const { return 0; }
 void CPointPDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  uint32_t N = size();
+  uint32_t N = static_cast<uint32_t>(size());
   out << N;
 
   for (const auto& m_particle : m_particles)
@@ -261,7 +261,7 @@ double CPointPDFParticles::computeKurtosis()
     m[1] += m_particle.d->y;
     m[2] += m_particle.d->z;
   }
-  m *= 1.0 / m_particles.size();
+  m *= 1.0 / static_cast<double>(m_particles.size());
 
   // variances:
   for (auto& m_particle : m_particles)
@@ -270,7 +270,7 @@ double CPointPDFParticles::computeKurtosis()
     var[1] += square(m_particle.d->y - m[1]);
     var[2] += square(m_particle.d->z - m[2]);
   }
-  var *= 1.0 / m_particles.size();
+  var *= 1.0 / static_cast<double>(m_particles.size());
   var[0] = square(var[0]);
   var[1] = square(var[1]);
   var[2] = square(var[2]);
@@ -282,7 +282,7 @@ double CPointPDFParticles::computeKurtosis()
     mu4[1] += pow(m_particle.d->y - m[1], 4.0);
     mu4[2] += pow(m_particle.d->z - m[2], 4.0);
   }
-  mu4 *= 1.0 / m_particles.size();
+  mu4 *= 1.0 / static_cast<double>(m_particles.size());
 
   // Kurtosis's
   kurts.array() = mu4.array() / var.array();
@@ -346,7 +346,7 @@ void CPointPDFParticles::bayesianFusion(
         const double dz = p.d->z - q.d->z;
         lik += std::exp(q.log_w) * std::exp(-0.5 * (dx * dx + dy * dy + dz * dz) / (h * h));
       }
-      p.log_w += std::log(std::max(lik / N2, 1e-300));
+      p.log_w += std::log(std::max(lik / static_cast<double>(N2), 1e-300));
     }
   }
   else

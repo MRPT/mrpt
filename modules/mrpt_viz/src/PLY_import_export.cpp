@@ -65,6 +65,13 @@ using namespace mrpt::viz;
 using namespace mrpt::math;
 using namespace mrpt::img;
 
+// This file contains ported C code; suppress conversion/cast warnings throughout.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
+
 #define PLY_ASCII     1 /* ascii PLY file */
 #define PLY_BINARY_BE 2 /* binary PLY file, big endian */
 #define PLY_BINARY_LE 3 /* binary PLY file, little endian */
@@ -110,7 +117,7 @@ struct PlyProperty
       PLY_DATA_TYPE External_type,
       PLY_DATA_TYPE Internal_type,
       size_t Offset,
-      bool Is_list = false,
+      [[maybe_unused]] bool Is_list = false,
       PLY_DATA_TYPE Count_external = PLY_INVALID,
       PLY_DATA_TYPE Count_internal = PLY_INVALID,
       size_t Count_offset = 0) :
@@ -529,8 +536,8 @@ void ply_put_element(PlyFile* plyfile, void* elem_ptr)
   char** other_ptr;
 
   PlyElement* elem = plyfile->which_elem;
-  elem_data = (char*)elem_ptr;
-  other_ptr = (char**)(((char*)elem_ptr) + elem->other_offset);
+  elem_data = static_cast<char*>(elem_ptr);
+  other_ptr = reinterpret_cast<char**>(static_cast<char*>(elem_ptr) + elem->other_offset);
 
   /* write out either to an ascii or binary file */
 
@@ -545,19 +552,21 @@ void ply_put_element(PlyFile* plyfile, void* elem_ptr)
       if (elem->store_prop[j] == OTHER_PROP)
         elem_data = *other_ptr;
       else
-        elem_data = (char*)elem_ptr;
+        elem_data = static_cast<char*>(elem_ptr);
       if (prop->is_list)
       {
         item = elem_data + prop->count_offset;
-        get_stored_item((void*)item, prop->count_internal, &int_val, &uint_val, &double_val);
+        get_stored_item(
+            static_cast<void*>(item), prop->count_internal, &int_val, &uint_val, &double_val);
         write_ascii_item(fp, int_val, uint_val, double_val, prop->count_external);
         const size_t list_count = uint_val;
-        item_ptr = (char**)(elem_data + prop->offset);
+        item_ptr = reinterpret_cast<char**>(elem_data + prop->offset);
         item = item_ptr[0];
         item_size = ply_type_size[prop->internal_type];
         for (size_t k = 0; k < list_count; k++)
         {
-          get_stored_item((void*)item, prop->internal_type, &int_val, &uint_val, &double_val);
+          get_stored_item(
+              static_cast<void*>(item), prop->internal_type, &int_val, &uint_val, &double_val);
           write_ascii_item(fp, int_val, uint_val, double_val, prop->external_type);
           item += item_size;
         }
@@ -565,7 +574,8 @@ void ply_put_element(PlyFile* plyfile, void* elem_ptr)
       else
       {
         item = elem_data + prop->offset;
-        get_stored_item((void*)item, prop->internal_type, &int_val, &uint_val, &double_val);
+        get_stored_item(
+            static_cast<void*>(item), prop->internal_type, &int_val, &uint_val, &double_val);
         write_ascii_item(fp, int_val, uint_val, double_val, prop->external_type);
       }
     }
@@ -583,20 +593,22 @@ void ply_put_element(PlyFile* plyfile, void* elem_ptr)
       if (elem->store_prop[j] == OTHER_PROP)
         elem_data = *other_ptr;
       else
-        elem_data = (char*)elem_ptr;
+        elem_data = static_cast<char*>(elem_ptr);
       if (prop->is_list)
       {
         item = elem_data + prop->count_offset;
         item_size = ply_type_size[prop->count_internal];
-        get_stored_item((void*)item, prop->count_internal, &int_val, &uint_val, &double_val);
+        get_stored_item(
+            static_cast<void*>(item), prop->count_internal, &int_val, &uint_val, &double_val);
         write_binary_item(fp, int_val, uint_val, double_val, prop->count_external);
         const size_t list_count = uint_val;
-        item_ptr = (char**)(elem_data + prop->offset);
+        item_ptr = reinterpret_cast<char**>(elem_data + prop->offset);
         item = item_ptr[0];
         item_size = ply_type_size[prop->internal_type];
         for (size_t k = 0; k < list_count; k++)
         {
-          get_stored_item((void*)item, prop->internal_type, &int_val, &uint_val, &double_val);
+          get_stored_item(
+              static_cast<void*>(item), prop->internal_type, &int_val, &uint_val, &double_val);
           write_binary_item(fp, int_val, uint_val, double_val, prop->external_type);
           item += item_size;
         }
@@ -605,7 +617,8 @@ void ply_put_element(PlyFile* plyfile, void* elem_ptr)
       {
         item = elem_data + prop->offset;
         item_size = ply_type_size[prop->internal_type];
-        get_stored_item((void*)item, prop->internal_type, &int_val, &uint_val, &double_val);
+        get_stored_item(
+            static_cast<void*>(item), prop->internal_type, &int_val, &uint_val, &double_val);
         write_binary_item(fp, int_val, uint_val, double_val, prop->external_type);
       }
     }
@@ -786,7 +799,7 @@ vector<PlyProperty> ply_get_element_description(
   if (elem == nullptr) return vector<PlyProperty>();
 
   nelems = elem->num;
-  nprops = elem->props.size();
+  nprops = static_cast<int>(elem->props.size());
 
   /* make a copy of the element's property list */
   return elem->props;
@@ -829,7 +842,7 @@ void ply_get_property(PlyFile* plyfile, const string& elem_name, const PlyProper
   prop_ptr->count_offset = prop->count_offset;
 
   /* specify that the user wants this property */
-  elem->store_prop[index] = STORE_PROP;
+  elem->store_prop[static_cast<size_t>(index)] = STORE_PROP;
 }
 
 /******************************************************************************
@@ -2074,3 +2087,4 @@ bool PLY_Exporter::saveToPlyFile(
     return false;
   }
 }
+#pragma GCC diagnostic pop

@@ -60,7 +60,7 @@ class CPose2DGridTemplate
   {
     int idx = mrpt::round((x - m_xMin) / m_resolutionXY);
     ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizeX));
-    return idx;
+    return static_cast<size_t>(idx);
   }
 
   /** Returns "indexes" from coordinates:
@@ -69,7 +69,7 @@ class CPose2DGridTemplate
   {
     int idx = mrpt::round((y - m_yMin) / m_resolutionXY);
     ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizeY));
-    return idx;
+    return static_cast<size_t>(idx);
   }
 
   /** Returns "indexes" from coordinates:
@@ -78,7 +78,7 @@ class CPose2DGridTemplate
   {
     int idx = mrpt::round((phi - m_phiMin) / m_resolutionPhi);
     ASSERT_(idx >= 0 && idx < static_cast<int>(m_sizePhi));
-    return idx;
+    return static_cast<size_t>(idx);
   }
 
   /** Returns coordinates from "indexes":
@@ -86,7 +86,7 @@ class CPose2DGridTemplate
   double idx2x(size_t x) const
   {
     ASSERT_(x < m_sizeX);
-    return m_xMin + x * m_resolutionXY;
+    return m_xMin + static_cast<double>(x) * m_resolutionXY;
   }
 
   /** Returns coordinates from "indexes":
@@ -94,7 +94,7 @@ class CPose2DGridTemplate
   double idx2y(size_t y) const
   {
     ASSERT_(y < m_sizeY);
-    return m_yMin + y * m_resolutionXY;
+    return m_yMin + static_cast<double>(y) * m_resolutionXY;
   }
 
   /** Returns coordinates from "indexes":
@@ -102,7 +102,7 @@ class CPose2DGridTemplate
   double idx2phi(size_t phi) const
   {
     ASSERT_(phi < m_sizePhi);
-    return m_phiMin + phi * m_resolutionPhi;
+    return m_phiMin + static_cast<double>(phi) * m_resolutionPhi;
   }
 
   /** Default constructor:
@@ -157,9 +157,9 @@ class CPose2DGridTemplate
     m_idxLeftPhi = mrpt::round(phiMin / resolutionPhi);
 
     // Compute new required space:
-    m_sizeX = mrpt::round(xMax / resolutionXY) - m_idxLeftX + 1;
-    m_sizeY = mrpt::round(yMax / resolutionXY) - m_idxLeftY + 1;
-    m_sizePhi = mrpt::round(phiMax / resolutionPhi) - m_idxLeftPhi + 1;
+    m_sizeX = static_cast<size_t>(mrpt::round(xMax / resolutionXY) - m_idxLeftX + 1);
+    m_sizeY = static_cast<size_t>(mrpt::round(yMax / resolutionXY) - m_idxLeftY + 1);
+    m_sizePhi = static_cast<size_t>(mrpt::round(phiMax / resolutionPhi) - m_idxLeftPhi + 1);
     m_sizeXY = m_sizeX * m_sizeY;
 
     // Resize "m_data":

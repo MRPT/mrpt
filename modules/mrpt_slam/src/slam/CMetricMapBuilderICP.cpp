@@ -591,7 +591,7 @@ void CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string& file,
     img.line({x1, imgHeight - 1 - y1}, {x2, imgHeight - 1 - y2}, TColor::black());
   }
 
-  img.saveToFile(file);
+  (void)img.saveToFile(file);
 
   MRPT_END
 }

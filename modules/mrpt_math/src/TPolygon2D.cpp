@@ -115,7 +115,7 @@ void TPolygon2D::generate3DObject(TPolygon3D& p) const { p = TPolygon3D(*this); 
 void TPolygon2D::getCenter(TPoint2D& p) const
 {
   for_each(begin(), end(), FAddPoint<TPoint2D, 2>(p));
-  size_t N = size();
+  const double N = static_cast<double>(size());
   p.x /= N;
   p.y /= N;
 }

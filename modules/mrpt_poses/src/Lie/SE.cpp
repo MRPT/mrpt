@@ -172,7 +172,8 @@ void SE<3>::jacob_dDinvP1invP2_de1e2(
   }
 }
 
-SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(const SE<3>::type& A, const SE<3>::type& B)  // NOLINT
+SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(
+    [[maybe_unused]] const SE<3>::type& A, const SE<3>::type& B)  // NOLINT
 {
   using namespace mrpt::math;
 
@@ -186,7 +187,8 @@ SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(const SE<3>::type& A, const SE<3>::type& B
   return J;
 }
 
-SE<3>::matrix_MxM SE<3>::jacob_dAB_dB(const SE<3>::type& A, const SE<3>::type& B)  // NOLINT
+SE<3>::matrix_MxM SE<3>::jacob_dAB_dB(
+    const SE<3>::type& A, [[maybe_unused]] const SE<3>::type& B)  // NOLINT
 {
   matrix_MxM J = matrix_MxM::Zero();
   // J_wrt_B = kron(eye(3),A_rot);
@@ -243,7 +245,8 @@ SE<2>::matrix_MxM SE<2>::jacob_dAB_dA(const SE<2>::type& A, const SE<2>::type& B
   return J;
 }
 
-SE<2>::matrix_MxM SE<2>::jacob_dAB_dB(const SE<2>::type& A, const SE<2>::type& B)  // NOLINT
+SE<2>::matrix_MxM SE<2>::jacob_dAB_dB(
+    const SE<2>::type& A, [[maybe_unused]] const SE<2>::type& B)  // NOLINT
 {
   matrix_MxM J = matrix_MxM::Identity();
   const auto cphia = A.phi_cos(), sphia = A.phi_sin();

@@ -94,7 +94,7 @@ bool se3_l2_internal(
     ct_this += points_this[i];
   }
 
-  const double F = 1.0 / nMatches;
+  const double F = 1.0 / static_cast<double>(nMatches);
   ct_others *= F;
   ct_this *= F;
 

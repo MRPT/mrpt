@@ -122,33 +122,6 @@ void CHolonomicFullEval::evalSingleTarget(
 
   using mrpt::square;
 
-  // Named constants replacing magic numbers in this function:
-
-  // If an obstacle is this much farther than the target in the target sector,
-  // treat the direction as unblocked (obstacle is "behind" the target).
-  constexpr double OBSTACLE_PAST_TARGET_MARGIN = 1.02;
-  // Cap the effective travel distance to this fraction of target distance to
-  // avoid over-penalizing directions that reach the target vicinity.
-  constexpr double TARGET_DIST_SAFETY_FRACTION = 0.95;
-  // When evaluating factor[0] near the target direction, scores are scaled by
-  // this factor to reward having clear space up to 5% beyond the target.
-  constexpr double TARGET_CLEARANCE_MARGIN = 1.05;
-  // Epsilon added to 1.0 under sqrt() to guarantee a non-negative argument
-  // even with floating-point rounding.
-  constexpr double SQRT_DOMAIN_EPS = 1.01;
-  // Half-width of the angular window (as fraction of total directions) used
-  // when computing obstacle clearance for factor[4].
-  constexpr double CLEARANCE_WINDOW_HALF_FRACTION = 0.1;
-  // Distance-to-obstacle threshold below which a sample is counted as "no
-  // real obstacle" for clearance evaluation (fully free space = 1.0 in
-  // normalized units).
-  constexpr double FREE_SPACE_THRESHOLD = 0.99;
-  // Angular-distance weight for sector-distance factor[6]. Controls how
-  // quickly the score drops as the candidate direction moves away from target.
-  constexpr double SECTOR_DIST_WEIGHT = 4.0;
-  // Score multiplier for directions that cannot reach the target (blocked).
-  constexpr double BLOCKED_DIR_SCORE_PENALTY = 0.1;
-
   eo = EvalOutput();
 
   const auto ptg = getAssociatedPTG();

@@ -64,10 +64,11 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
     logoddsTable_255.resize(traits_t::LOGODDS_LUT_ENTRIES);
     for (int i = traits_t::CELLTYPE_MIN; i <= traits_t::CELLTYPE_MAX; i++)
     {
-      float f = 1.0f / (1.0f + std::exp(-i * LOGODD_K_INV));
-      unsigned int idx = -traits_t::CELLTYPE_MIN + i;
+      float f =
+          1.0f / (1.0f + static_cast<float>(std::exp(-static_cast<double>(i) * LOGODD_K_INV)));
+      unsigned int idx = static_cast<unsigned int>(-traits_t::CELLTYPE_MIN + i);
       logoddsTable[idx] = f;
-      logoddsTable_255[idx] = (uint8_t)(f * 255.0f);
+      logoddsTable_255[idx] = static_cast<uint8_t>(f * 255.0f);
     }
 
     // Build the p2lTable as well:
@@ -77,12 +78,12 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
     {
       const double p = std::min(1.0 - 1e-14, std::max(1e-14, j * K));
       const double logodd = log(p) - log(1 - p);
-      int L = round(logodd * LOGODD_K);
+      int L = static_cast<int>(round(logodd * LOGODD_K));
       if (L > traits_t::CELLTYPE_MAX)
         L = traits_t::CELLTYPE_MAX;
       else if (L < traits_t::CELLTYPE_MIN)
         L = traits_t::CELLTYPE_MIN;
-      p2lTable[j] = L;
+      p2lTable[static_cast<size_t>(j)] = static_cast<cell_t>(L);
     }
   }
 
@@ -95,7 +96,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
       // This is needed since min can be -127 and int8_t can be -128.
       return logoddsTable[0];
     else
-      return logoddsTable[-traits_t::CELLTYPE_MIN + l];
+      return logoddsTable[static_cast<size_t>(-traits_t::CELLTYPE_MIN + l)];
   }
 
   /** Scales an integer representation of the log-odd into a linear scale
@@ -107,7 +108,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
       // This is needed since min can be -127 and int8_t can be -128.
       return logoddsTable_255[0];
     else
-      return logoddsTable_255[-traits_t::CELLTYPE_MIN + l];
+      return logoddsTable_255[static_cast<size_t>(-traits_t::CELLTYPE_MIN + l)];
   }
 
   /** Scales a real valued probability in [0,1] to an integer representation

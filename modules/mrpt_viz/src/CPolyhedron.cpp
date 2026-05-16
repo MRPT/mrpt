@@ -31,6 +31,11 @@ using namespace mrpt::poses;
 using namespace std;
 using mrpt::serialization::CArchive;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+
 IMPLEMENTS_SERIALIZABLE(CPolyhedron, CVisualObject, mrpt::viz)
 
 // Auxiliary data and code
@@ -70,11 +75,11 @@ bool getVerticesAndFaces(
       auto it2 = find(vertices.begin(), vertices.end(), poly[i]);
       if (it2 == vertices.end())
       {
-        f.vertices[i] = vertices.size();
+        f.vertices[i] = static_cast<unsigned int>(vertices.size());
         vertices.push_back(poly[i]);
       }
       else
-        f.vertices[i] = it2 - vertices.begin();
+        f.vertices[i] = static_cast<unsigned int>(it2 - vertices.begin());
     }
     faces.push_back(f);
   }
@@ -278,20 +283,24 @@ void insertCupola(
     vector<CPolyhedron::TPolyhedronFace>& faces)
 {
   size_t edges2 = numBaseEdges >> 1;
-  double minorRadius = baseRadius * sin(M_PI / numBaseEdges) / sin(M_PI / edges2);
+  double minorRadius = baseRadius * sin(M_PI / static_cast<double>(numBaseEdges)) /
+                       sin(M_PI / static_cast<double>(edges2));
   //"Proper base"'s apothem=base radius*cos(2*pi/(2*numBaseEdges))
   //"Small base"'s apothem=small radius*cos(2*pi/2*(numBaseEdges/2))
   // Cupola's height is so that (Da^2+Height^2=Edge length^2, where Da is the
   // difference between both apothems.
   double h = sqrt(
-      square(edgeLength) -
-      square(baseRadius * cos(M_PI / numBaseEdges) - minorRadius * cos(M_PI / edges2)));
+      square(edgeLength) - square(
+                               baseRadius * cos(M_PI / static_cast<double>(numBaseEdges)) -
+                               minorRadius * cos(M_PI / static_cast<double>(edges2))));
   double height = verts[base].z + (isUpwards ? h : -h);
-  angleShift += M_PI / edges2 + (isRotated ? -M_PI / numBaseEdges : M_PI / numBaseEdges);
+  angleShift +=
+      M_PI / static_cast<double>(edges2) + (isRotated ? -M_PI / static_cast<double>(numBaseEdges)
+                                                      : M_PI / static_cast<double>(numBaseEdges));
   size_t minorBase = verts.size();
   for (size_t i = 0; i < edges2; i++)
   {
-    double ang = angleShift + 2 * M_PI * i / edges2;
+    double ang = angleShift + 2 * M_PI * static_cast<double>(i) / static_cast<double>(edges2);
     verts.emplace_back(minorRadius * cos(ang), minorRadius * sin(ang), height);
   }
   CPolyhedron::TPolyhedronFace tri, quad, cBase;
@@ -301,17 +310,17 @@ void insertCupola(
   size_t iq = isRotated ? 1 : 2, it = 0;
   for (size_t i = 0; i < edges2; i++)
   {
-    cBase.vertices[i] = it + minorBase;
+    cBase.vertices[i] = static_cast<unsigned int>(it + minorBase);
     size_t iiq = (iq + 1) % numBaseEdges + base;
     size_t iiiq = (iiq + 1) % numBaseEdges + base;
     size_t iit = (it + 1) % edges2 + minorBase;
-    quad.vertices[0] = it + minorBase;
-    quad.vertices[1] = iit;
-    quad.vertices[2] = iiq;
-    quad.vertices[3] = iq + base;
-    tri.vertices[0] = iit;
-    tri.vertices[1] = iiq;
-    tri.vertices[2] = iiiq;
+    quad.vertices[0] = static_cast<unsigned int>(it + minorBase);
+    quad.vertices[1] = static_cast<unsigned int>(iit);
+    quad.vertices[2] = static_cast<unsigned int>(iiq);
+    quad.vertices[3] = static_cast<unsigned int>(iq + base);
+    tri.vertices[0] = static_cast<unsigned int>(iit);
+    tri.vertices[1] = static_cast<unsigned int>(iiq);
+    tri.vertices[2] = static_cast<unsigned int>(iiiq);
     iq = (iq + 2) % numBaseEdges;
     it = (it + 1) % edges2;
     faces.push_back(tri);
@@ -336,8 +345,8 @@ void insertRotunda(
   if (isRotated) angleShift += M_PI / 5;
   for (size_t i = 0; i < 5; i++)
   {
-    double a = (i + i + 1) * M_PI / 5 + angleShift;
-    double b = (i + i) * M_PI / 5 + angleShift;
+    double a = static_cast<double>(i + i + 1) * M_PI / 5 + angleShift;
+    double b = static_cast<double>(i + i) * M_PI / 5 + angleShift;
     double ca = cos(a), sa = sin(a), cb = cos(b), sb = sin(b);
     p1[i].x = R1 * ca;
     p1[i].y = R1 * sa;
@@ -356,22 +365,22 @@ void insertRotunda(
   for (size_t i = 0; i < 5; i++)
   {
     size_t ii = (i + 1) % 5;
-    f.vertices[0] = newBase + i;
-    f.vertices[1] = newBase + ii;
-    f.vertices[2] = newBase + ii + 5;
+    f.vertices[0] = static_cast<unsigned int>(newBase + i);
+    f.vertices[1] = static_cast<unsigned int>(newBase + ii);
+    f.vertices[2] = static_cast<unsigned int>(newBase + ii + 5);
     faces.push_back(f);
-    f.vertices[0] = newBase + i + 5;
-    f.vertices[1] = ((i + i + baseStart) % 10) + base;
-    f.vertices[2] = ((i + i + 9 + baseStart) % 10) + base;
+    f.vertices[0] = static_cast<unsigned int>(newBase + i + 5);
+    f.vertices[1] = static_cast<unsigned int>(((i + i + baseStart) % 10) + base);
+    f.vertices[2] = static_cast<unsigned int>(((i + i + 9 + baseStart) % 10) + base);
     faces.push_back(f);
-    g.vertices[0] = newBase + (ii % 5) + 5;
-    g.vertices[1] = newBase + i;
-    g.vertices[2] = newBase + i + 5;
-    g.vertices[3] = (i + i + baseStart) % 10 + base;
-    g.vertices[4] = (i + i + baseStart + 1) % 10 + base;
+    g.vertices[0] = static_cast<unsigned int>(newBase + (ii % 5) + 5);
+    g.vertices[1] = static_cast<unsigned int>(newBase + i);
+    g.vertices[2] = static_cast<unsigned int>(newBase + i + 5);
+    g.vertices[3] = static_cast<unsigned int>((i + i + baseStart) % 10 + base);
+    g.vertices[4] = static_cast<unsigned int>((i + i + baseStart + 1) % 10 + base);
     faces.push_back(g);
   }
-  for (size_t i = 0; i < 5; i++) g.vertices[i] = i + newBase;
+  for (size_t i = 0; i < 5; i++) g.vertices[i] = static_cast<unsigned int>(i + newBase);
   faces.push_back(g);
   return;
 }
@@ -566,7 +575,7 @@ void CPolyhedron::TPolyhedronFace::getCenter(const vector<TPoint3D>& vrts, TPoin
     p.y += vrts[vertice].y;
     p.z += vrts[vertice].z;
   }
-  size_t N = vertices.size();
+  double N = static_cast<double>(vertices.size());
   p.x /= N;
   p.y /= N;
   p.z /= N;
@@ -618,7 +627,7 @@ CPolyhedron::Ptr CPolyhedron::CreateCubicPrism(
 
 CPolyhedron::Ptr CPolyhedron::CreatePyramid(const vector<TPoint2D>& baseVertices, double height)
 {
-  uint32_t n = baseVertices.size();
+  uint32_t n = static_cast<uint32_t>(baseVertices.size());
   if (baseVertices.size() < 3) throw std::logic_error("Not enough vertices");
   vector<TPoint3D> verts;
   vector<TPolyhedronFace> faces;
@@ -644,7 +653,7 @@ CPolyhedron::Ptr CPolyhedron::CreatePyramid(const vector<TPoint2D>& baseVertices
 CPolyhedron::Ptr CPolyhedron::CreateDoublePyramid(
     const vector<TPoint2D>& baseVertices, double height1, double height2)
 {
-  uint32_t N = baseVertices.size();
+  uint32_t N = static_cast<uint32_t>(baseVertices.size());
   if (N < 3) throw std::logic_error("Not enough vertices");
   vector<TPoint3D> verts;
   verts.reserve(N + 2);
@@ -2264,3 +2273,4 @@ void CPolyhedron::updateBuffers() const
 
   clearChangedFlag();
 }
+#pragma GCC diagnostic pop

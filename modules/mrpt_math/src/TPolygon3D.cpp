@@ -79,7 +79,7 @@ void TPolygon3D::getBestFittingPlane(TPlane& p) const { getRegressionPlane(*this
 void TPolygon3D::getCenter(TPoint3D& p) const
 {
   std::for_each(begin(), end(), FAddPoint<TPoint3D, 3>(p));
-  size_t N = size();
+  const double N = static_cast<double>(size());
   p.x /= N;
   p.y /= N;
   p.z /= N;
@@ -104,7 +104,7 @@ void TPolygon3D::createRegularPolygon(size_t numEdges, double radius, TPolygon3D
   poly.resize(numEdges);
   for (size_t i = 0; i < numEdges; i++)
   {
-    double angle = i * 2 * M_PI / numEdges;
+    double angle = static_cast<double>(i) * 2.0 * M_PI / static_cast<double>(numEdges);
     poly[i] = TPoint3D(radius * cos(angle), radius * sin(angle), 0);
   }
 }

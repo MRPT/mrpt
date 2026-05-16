@@ -38,12 +38,12 @@ struct MinimalRobotIF : public mrpt::nav::CRobot2NavInterface
 
   std::optional<CurrentPoseAndSpeeds> getCurrentPoseAndSpeeds() override
   {
-    return CurrentPoseAndSpeeds{
-        .pose = pose,
-        .velGlobal = mrpt::math::TTwist2D(0, 0, 0),
-        .timestamp = mrpt::Clock::now(),
-        .odometry = pose,
-    };
+    CurrentPoseAndSpeeds ret;
+    ret.pose = pose;
+    ret.velGlobal = mrpt::math::TTwist2D(0, 0, 0);
+    ret.timestamp = mrpt::Clock::now();
+    ret.odometry = pose;
+    return ret;
   }
 
   bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd&) override

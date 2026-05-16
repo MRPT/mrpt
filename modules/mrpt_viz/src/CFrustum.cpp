@@ -189,10 +189,10 @@ auto CFrustum::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 
 CFrustum::CFrustum(const mrpt::img::TCamera& i, double focalScale) :
     CFrustum(
-        i.fx() * focalScale * 0.1f,
-        i.fx() * focalScale,
-        2 * mrpt::RAD2DEG(std::atan2(i.ncols, 2 * i.fx())),
-        2 * mrpt::RAD2DEG(std::atan2(i.nrows, 2 * i.fy())),
+        static_cast<float>(i.fx() * focalScale * 0.1),
+        static_cast<float>(i.fx() * focalScale),
+        static_cast<float>(2 * mrpt::RAD2DEG(std::atan2(i.ncols, 2 * i.fx()))),
+        static_cast<float>(2 * mrpt::RAD2DEG(std::atan2(i.nrows, 2 * i.fy()))),
         1.0f,
         true,
         false)

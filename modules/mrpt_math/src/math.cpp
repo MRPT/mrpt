@@ -407,7 +407,7 @@ string math::MATLAB_plotCovariance2D(
   const auto cov2x2 = mrpt::math::CMatrixFixed<double, 2, 2>(cov.asEigen());
   const auto N = nEllipsePoints;
   double ang = 0;
-  const double dAng = (M_2PI / (nEllipsePoints - 1));
+  const double dAng = (M_2PI / static_cast<double>(nEllipsePoints - 1));
   std::vector<double> X(N), Y(N), Cos(N), Sin(N);
 
   // Fill the angles:

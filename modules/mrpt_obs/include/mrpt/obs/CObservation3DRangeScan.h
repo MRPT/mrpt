@@ -623,7 +623,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
     m_obj.resizePoints3DVectors(N);
   }
   /** Does nothing as of now */
-  void setDimensions(size_t height, size_t width) {}
+  void setDimensions([[maybe_unused]] size_t height, [[maybe_unused]] size_t width) {}
   /** Get XYZ coordinates of i'th point */
   template <typename T>
   void getPointXYZ(size_t idx, T& x, T& y, T& z) const
@@ -647,7 +647,11 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
     m_obj.points3D_z[idx] = 0;
   }
   /** Set RGBu8 coordinates of i'th point */
-  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  void setPointRGBu8(
+      [[maybe_unused]] size_t idx,
+      [[maybe_unused]] const uint8_t r,
+      [[maybe_unused]] const uint8_t g,
+      [[maybe_unused]] const uint8_t b)
   { /* Nothing */
   }
 

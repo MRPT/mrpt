@@ -211,7 +211,10 @@ struct TPoint2D_ :
    * "[0.02 1.04]" )
    * \sa fromString
    */
-  void asString(std::string& s) const { s = mrpt::format("[%f %f]", this->x, this->y); }
+  void asString(std::string& s) const
+  {
+    s = mrpt::format("[%f %f]", double{this->x}, double{this->y});
+  }
 
   [[nodiscard]] std::string asString() const
   {

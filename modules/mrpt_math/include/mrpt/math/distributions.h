@@ -92,7 +92,7 @@ typename MATRIXLIKE::Scalar normalPDF(const VECTORLIKE& d, const MATRIXLIKE& cov
              mrpt::math::multiply_HtCH_scalar(d, cov.inverse_LLt())) /
          (::pow(
               static_cast<typename MATRIXLIKE::Scalar>(M_2PI),
-              static_cast<typename MATRIXLIKE::Scalar>(0.5 * cov.cols())) *
+              static_cast<typename MATRIXLIKE::Scalar>(0.5 * static_cast<double>(cov.cols()))) *
           std::sqrt(cov.det()));
   MRPT_END
 }

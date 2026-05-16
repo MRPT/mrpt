@@ -54,7 +54,7 @@ void CAtan2LookUpTable::resize(
     for (size_t iy = 0; iy < ny; iy++)
     {
       const double y = idx2y[iy];
-      double* cp = m_grid.cellByIndex(ix, iy);
+      double* cp = m_grid.cellByIndex(static_cast<unsigned>(ix), static_cast<unsigned>(iy));
       if (cp) *cp = ::atan2(y, x);
     }
   }
@@ -90,7 +90,7 @@ void CAtan2LookUpTableMultiRes::resize(
       for (size_t iy = 0; iy < ny; iy++)
       {
         const double y = idx2y[iy];
-        double* cp = dg.cellByIndex(ix, iy);
+        double* cp = dg.cellByIndex(static_cast<unsigned>(ix), static_cast<unsigned>(iy));
         if (cp) *cp = ::atan2(y, x);
       }
     }

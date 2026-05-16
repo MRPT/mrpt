@@ -132,8 +132,9 @@ void meanAndStdColumns(
 {
   const auto N = m.rows(), M = m.cols();
   if (N == 0) throw std::runtime_error("meanAndStdColumns: Empty container.");
-  const double N_inv = 1.0 / N;
-  const double N_ = unbiased_variance ? (N > 1 ? 1.0 / (N - 1) : 1.0) : 1.0 / N;
+  const double N_inv = 1.0 / static_cast<double>(N);
+  const double N_ = unbiased_variance ? (N > 1 ? 1.0 / static_cast<double>(N - 1) : 1.0)
+                                      : 1.0 / static_cast<double>(N);
   outMeanVector.resize(M);
   outStdVector.resize(M);
   for (decltype(m.cols()) i = 0; i < M; i++)

@@ -98,7 +98,10 @@ CPose3D CPoses3DSequence::absolutePoseOf(unsigned int n)
 /*---------------------------------------------------------------
   A shortcut for "absolutePoseOf( posesCount() )".
  ---------------------------------------------------------------*/
-CPose3D CPoses3DSequence::absolutePoseAfterAll() { return absolutePoseOf(posesCount()); }
+CPose3D CPoses3DSequence::absolutePoseAfterAll()
+{
+  return absolutePoseOf(static_cast<unsigned int>(posesCount()));
+}
 
 double CPoses3DSequence::computeTraveledDistanceAfter(size_t n)
 {
