@@ -33,38 +33,6 @@ constexpr double kPi = 3.141592653589793;
 constexpr double kTwoPi = 6.28318530717959;
 
 /**
- * @brief Bit-reversal permutation for FFT
- *
- * Performs in-place bit-reversal of complex array elements.
- * This is required for the Cooley-Tukey FFT algorithm.
- *
- * @param numPoints Number of complex values (array length = 2*numPoints)
- * @param data Complex array [real0, imag0, real1, imag1, ...]
- */
-void bitReversal(size_t numPoints, float data[])
-{
-  size_t j = 1;
-  const size_t n = numPoints << 1;
-
-  for (size_t i = 1; i < n; i += 2)
-  {
-    if (j > i)
-    {
-      std::swap(data[j], data[i]);
-      std::swap(data[j + 1], data[i + 1]);
-    }
-
-    size_t m = numPoints;
-    while (m >= 2 && j > m)
-    {
-      j -= m;
-      m >>= 1;
-    }
-    j += m;
-  }
-}
-
-/**
  * @brief Cooley-Tukey FFT (radix-2 decimation-in-time)
  *
  * Computes FFT or inverse FFT of complex data.
@@ -112,11 +80,11 @@ void four1(float data[], size_t numPoints, int isign)
     {
       for (size_t i = m; i <= n; i += istep)
       {
-        const size_t j = i + mmax;
-        const float tempr = static_cast<float>(wr * data[j] - wi * data[j + 1]);
-        const float tempi = static_cast<float>(wr * data[j + 1] + wi * data[j]);
-        data[j] = data[i] - tempr;
-        data[j + 1] = data[i + 1] - tempi;
+        const size_t jj = i + mmax;
+        const float tempr = static_cast<float>(wr * data[jj] - wi * data[jj + 1]);
+        const float tempi = static_cast<float>(wr * data[jj + 1] + wi * data[jj]);
+        data[jj] = data[i] - tempr;
+        data[jj + 1] = data[i + 1] - tempi;
         data[i] += tempr;
         data[i + 1] += tempi;
       }
@@ -226,7 +194,7 @@ void cftbsub(int n, FftType* a, FftType* w)
     }
     if (m < n)
     {
-      const FftType wk1r = w[2];
+      const FftType wk1r_init = w[2];
       for (int j = m; j <= l + m - 2; j += 2)
       {
         const int j1 = j + l;
@@ -246,12 +214,12 @@ void cftbsub(int n, FftType* a, FftType* w)
         a[j2 + 1] = x0r - x2r;
         FftType x0rTemp = x1r - x3i;
         FftType x0iTemp = x1i + x3r;
-        a[j1] = wk1r * (x0rTemp - x0iTemp);
-        a[j1 + 1] = wk1r * (x0rTemp + x0iTemp);
+        a[j1] = wk1r_init * (x0rTemp - x0iTemp);
+        a[j1 + 1] = wk1r_init * (x0rTemp + x0iTemp);
         x0rTemp = x3i + x1r;
         x0iTemp = x3r - x1i;
-        a[j3] = wk1r * (x0iTemp - x0rTemp);
-        a[j3 + 1] = wk1r * (x0iTemp + x0rTemp);
+        a[j3] = wk1r_init * (x0iTemp - x0rTemp);
+        a[j3 + 1] = wk1r_init * (x0iTemp + x0rTemp);
       }
       int k1 = 1;
       int ks = -1;
@@ -345,7 +313,7 @@ void cftfsub(int n, FftType* a, FftType* w)
     }
     if (m < n)
     {
-      const FftType wk1r = w[2];
+      const FftType wk1r_init = w[2];
       for (int j = m; j <= l + m - 2; j += 2)
       {
         const int j1 = j + l;
@@ -365,12 +333,12 @@ void cftfsub(int n, FftType* a, FftType* w)
         a[j2 + 1] = x2r - x0r;
         FftType x0rTemp = x1r + x3i;
         FftType x0iTemp = x1i - x3r;
-        a[j1] = wk1r * (x0iTemp + x0rTemp);
-        a[j1 + 1] = wk1r * (x0iTemp - x0rTemp);
+        a[j1] = wk1r_init * (x0iTemp + x0rTemp);
+        a[j1 + 1] = wk1r_init * (x0iTemp - x0rTemp);
         x0rTemp = x3i - x1r;
         x0iTemp = x3r + x1i;
-        a[j3] = wk1r * (x0rTemp + x0iTemp);
-        a[j3 + 1] = wk1r * (x0rTemp - x0iTemp);
+        a[j3] = wk1r_init * (x0rTemp + x0iTemp);
+        a[j3 + 1] = wk1r_init * (x0rTemp - x0iTemp);
       }
       int k1 = 1;
       int ks = -1;

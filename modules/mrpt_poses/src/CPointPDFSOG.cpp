@@ -121,7 +121,7 @@ std::tuple<CMatrixDouble33, CPoint3D> CPointPDFSOG::getCovarianceAndMean() const
 uint8_t CPointPDFSOG::serializeGetVersion() const { return 1; }
 void CPointPDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  uint32_t N = m_modes.size();
+  uint32_t N = static_cast<uint32_t>(m_modes.size());
   out << N;
   for (const auto& m : m_modes)
   {
@@ -429,7 +429,7 @@ double CPointPDFSOG::ESS() const
   if (cum == 0)
     return 0;
   else
-    return 1.0 / (m_modes.size() * cum);
+    return 1.0 / (static_cast<double>(m_modes.size()) * cum);
   MRPT_END
 }
 
@@ -458,10 +458,10 @@ void CPointPDFSOG::evaluatePDFInArea(
 
   for (size_t i = 0; i < Ny; i++)
   {
-    const float y = y_min + i * resolutionXY;
+    const float y = y_min + static_cast<float>(i) * resolutionXY;
     for (size_t j = 0; j < Nx; j++)
     {
-      float x = x_min + j * resolutionXY;
+      float x = x_min + static_cast<float>(j) * resolutionXY;
       outMatrix(i, j) = evaluatePDF(CPoint3D(x, y, z), sumOverAllZs);
     }
   }

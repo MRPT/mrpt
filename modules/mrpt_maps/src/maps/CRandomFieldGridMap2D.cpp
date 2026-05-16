@@ -138,8 +138,8 @@ void CRandomFieldGridMap2D::internal_clear()
 
         for (size_t j = i; j < m_cov.cols(); j++)
         {
-          int cx2 = (j % m_size_x);
-          int cy2 = (j / m_size_x);
+          int cx2 = static_cast<int>(j % m_size_x);
+          int cy2 = static_cast<int>(j / m_size_x);
 
           if (i == j)
           {
@@ -1024,9 +1024,9 @@ void CRandomFieldGridMap2D::resize(
       for (size_t i = N - 1; i < N; i--)
       {
         int cx, cy;
-        idx2cxcy(i, cx, cy);
+        idx2cxcy(static_cast<int>(i), cx, cy);
 
-        const int old_idx_of_i = (cx - Acx_left) + (cy - Acy_bottom) * old_sizeX;
+        const int old_idx_of_i = (cx - Acx_left) + (cy - Acy_bottom) * static_cast<int>(old_sizeX);
 
         TRandomFieldCell& cell = m_map[i];
         if (cell.kf_std() < 0)
@@ -1119,7 +1119,7 @@ void CRandomFieldGridMap2D::insertObservation_KF(
   tictac.Tic();
 
   // We need to refer to the old cov: make an efficient copy of it:
-  auto* oldCov = (double*)/*mrpt_alloca*/ malloc(sizeof(double) * N * N);
+  auto* oldCov = static_cast<double*>(/*mrpt_alloca*/ malloc(sizeof(double) * N * N));
   double* oldCov_ptr = oldCov;
   for (i = 0; i < N; i++)
   {
@@ -1187,10 +1187,10 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 
   // Save dimensions of the grid (for any mapping algorithm):
   CMatrixF DIMs(1, 4);
-  DIMs(0, 0) = m_x_min;
-  DIMs(0, 1) = m_x_max;
-  DIMs(0, 2) = m_y_min;
-  DIMs(0, 3) = m_y_max;
+  DIMs(0, 0) = static_cast<float>(m_x_min);
+  DIMs(0, 1) = static_cast<float>(m_x_max);
+  DIMs(0, 2) = static_cast<float>(m_y_min);
+  DIMs(0, 3) = static_cast<float>(m_y_max);
 
   DIMs.saveToTextFile(
       filNamePrefix + std::string("_grid_limits.txt"), MATRIX_FORMAT_FIXED,
@@ -1208,10 +1208,11 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
       for (size_t y = 0; y < m_size_y; y++)
         for (size_t x = 0; x < m_size_x; x++)
         {
-          const TRandomFieldCell* cell = cellByIndex(x, y);
-          all_means(y, x) = computeMeanCellValue_DM_DMV(cell);
-          all_vars(y, x) = computeVarCellValue_DM_DMV(cell);
-          all_confs(y, x) = computeConfidenceCellValue_DM_DMV(cell);
+          const TRandomFieldCell* cell =
+              cellByIndex(static_cast<unsigned>(x), static_cast<unsigned>(y));
+          all_means(y, x) = static_cast<float>(computeMeanCellValue_DM_DMV(cell));
+          all_vars(y, x) = static_cast<float>(computeVarCellValue_DM_DMV(cell));
+          all_confs(y, x) = static_cast<float>(computeConfidenceCellValue_DM_DMV(cell));
         }
 
       all_means.saveToTextFile(filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED);
@@ -1236,8 +1237,10 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
       for (size_t i = 0; i < m_size_y; i++)
         for (size_t j = 0; j < m_size_x; j++)
         {
-          MEAN(i, j) = cellByIndex(j, i)->kf_mean();
-          STDs(i, j) = cellByIndex(j, i)->kf_std();
+          MEAN(i, j) = static_cast<float>(
+              cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->kf_mean());
+          STDs(i, j) = static_cast<float>(
+              cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->kf_std());
         }
 
       MEAN.saveToTextFile(filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED);
@@ -1278,13 +1281,16 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
       {
         for (size_t j = 0; j < m_size_x; ++j, ++idx)
         {
-          MEAN(i, j) = cellByIndex(j, i)->gmrf_mean();
-          STDs(i, j) = cellByIndex(j, i)->gmrf_std();
+          MEAN(i, j) = static_cast<float>(
+              cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_mean());
+          STDs(i, j) = static_cast<float>(
+              cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_std());
 
           XYZ(idx, 0) = idx2x(j);
           XYZ(idx, 1) = idx2y(i);
-          XYZ(idx, 2) = cellByIndex(j, i)->gmrf_mean();
-          XYZ(idx, 3) = cellByIndex(j, i)->gmrf_std();
+          XYZ(idx, 2) =
+              cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_mean();
+          XYZ(idx, 3) = cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_std();
         }
       }
 
@@ -1548,15 +1554,15 @@ void CRandomFieldGridMap2D::getAs3DObject(
           double col_x_1y_1 = c_x_1y_1;
 
           // Triangle #1:
-          triag.x(0) = xs[cx];
-          triag.y(0) = ys[cy];
-          triag.z(0) = c_xy;
-          triag.x(1) = xs[cx];
-          triag.y(1) = ys[cy - 1];
-          triag.z(1) = c_xy_1;
-          triag.x(2) = xs[cx - 1];
-          triag.y(2) = ys[cy - 1];
-          triag.z(2) = c_x_1y_1;
+          triag.x(0) = static_cast<float>(xs[cx]);
+          triag.y(0) = static_cast<float>(ys[cy]);
+          triag.z(0) = static_cast<float>(c_xy);
+          triag.x(1) = static_cast<float>(xs[cx]);
+          triag.y(1) = static_cast<float>(ys[cy - 1]);
+          triag.z(1) = static_cast<float>(c_xy_1);
+          triag.x(2) = static_cast<float>(xs[cx - 1]);
+          triag.y(2) = static_cast<float>(ys[cy - 1]);
+          triag.z(2) = static_cast<float>(c_x_1y_1);
 
           triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
           triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
@@ -1565,15 +1571,15 @@ void CRandomFieldGridMap2D::getAs3DObject(
           obj_m->insertTriangle(triag);
 
           // Triangle #2:
-          triag.x(0) = xs[cx];
-          triag.y(0) = ys[cy];
-          triag.z(0) = c_xy;
-          triag.x(1) = xs[cx - 1];
-          triag.y(1) = ys[cy - 1];
-          triag.z(1) = c_x_1y_1;
-          triag.x(2) = xs[cx - 1];
-          triag.y(2) = ys[cy];
-          triag.z(2) = c_x_1y;
+          triag.x(0) = static_cast<float>(xs[cx]);
+          triag.y(0) = static_cast<float>(ys[cy]);
+          triag.z(0) = static_cast<float>(c_xy);
+          triag.x(1) = static_cast<float>(xs[cx - 1]);
+          triag.y(1) = static_cast<float>(ys[cy - 1]);
+          triag.z(1) = static_cast<float>(c_x_1y_1);
+          triag.x(2) = static_cast<float>(xs[cx - 1]);
+          triag.y(2) = static_cast<float>(ys[cy]);
+          triag.z(2) = static_cast<float>(c_x_1y);
           triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
           triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());
           triag.vertices[2].setColor(colormap(cmJET, col_x_1y).asTColor());
@@ -1708,15 +1714,15 @@ void CRandomFieldGridMap2D::getAs3DObject(
           double col_x_1y_1 = c_x_1y_1;
 
           // Triangle #1:
-          triag.x(0) = xs[cx];
-          triag.y(0) = ys[cy];
-          triag.z(0) = c_xy;
-          triag.x(1) = xs[cx];
-          triag.y(1) = ys[cy - 1];
-          triag.z(1) = c_xy_1;
-          triag.x(2) = xs[cx - 1];
-          triag.y(2) = ys[cy - 1];
-          triag.z(2) = c_x_1y_1;
+          triag.x(0) = static_cast<float>(xs[cx]);
+          triag.y(0) = static_cast<float>(ys[cy]);
+          triag.z(0) = static_cast<float>(c_xy);
+          triag.x(1) = static_cast<float>(xs[cx]);
+          triag.y(1) = static_cast<float>(ys[cy - 1]);
+          triag.z(1) = static_cast<float>(c_xy_1);
+          triag.x(2) = static_cast<float>(xs[cx - 1]);
+          triag.y(2) = static_cast<float>(ys[cy - 1]);
+          triag.z(2) = static_cast<float>(c_x_1y_1);
 
           triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
           triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
@@ -1725,15 +1731,15 @@ void CRandomFieldGridMap2D::getAs3DObject(
           obj_m->insertTriangle(triag);
 
           // Triangle #2:
-          triag.x(0) = xs[cx];
-          triag.y(0) = ys[cy];
-          triag.z(0) = c_xy;
-          triag.x(1) = xs[cx - 1];
-          triag.y(1) = ys[cy - 1];
-          triag.z(1) = c_x_1y_1;
-          triag.x(2) = xs[cx - 1];
-          triag.y(2) = ys[cy];
-          triag.z(2) = c_x_1y;
+          triag.x(0) = static_cast<float>(xs[cx]);
+          triag.y(0) = static_cast<float>(ys[cy]);
+          triag.z(0) = static_cast<float>(c_xy);
+          triag.x(1) = static_cast<float>(xs[cx - 1]);
+          triag.y(1) = static_cast<float>(ys[cy - 1]);
+          triag.z(1) = static_cast<float>(c_x_1y_1);
+          triag.x(2) = static_cast<float>(xs[cx - 1]);
+          triag.y(2) = static_cast<float>(ys[cy]);
+          triag.z(2) = static_cast<float>(c_x_1y);
 
           triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
           triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());

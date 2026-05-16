@@ -53,7 +53,7 @@ bool tfest::se3_l2_robust(
   // Minimum number of points to fit the model
   const size_t n = params.ransac_minSetSize;
   // Minimum number of points to be considered a good set
-  const size_t d = mrpt::round(nCorrs * params.ransac_maxSetSizePct);
+  const size_t d = mrpt::round(static_cast<double>(nCorrs) * params.ransac_maxSetSizePct);
   // Maximum number of iterations
   const size_t maxIters = params.ransac_nmaxSimulations;
 
@@ -72,7 +72,8 @@ bool tfest::se3_l2_robust(
                 << "\n";
 
     // Generate maybe inliers
-    const auto rub = mrpt::math::linspace<uint32_t>(0, nCorrs - 1, nCorrs);
+    const auto rub = mrpt::math::linspace<uint32_t>(
+        0, static_cast<uint32_t>(nCorrs - 1), static_cast<uint32_t>(nCorrs));
     const auto mbSet = getRandomGenerator().permuteVector(rub);
 
     std::vector<uint32_t> cSet;  // consensus set
@@ -94,7 +95,7 @@ bool tfest::se3_l2_robust(
       }
 
       mbInliers.push_back(in_correspondences[idx]);
-      cSet.push_back(idx);
+      cSet.push_back(static_cast<uint32_t>(idx));
     }
 
     // Check minimum number:
@@ -170,7 +171,7 @@ bool tfest::se3_l2_robust(
           scaleDist < params.ransac_threshold_scale)
       {
         // Inlier detected -> add to the inlier list
-        cSet.push_back(idx);
+        cSet.push_back(static_cast<uint32_t>(idx));
       }
       else
       {

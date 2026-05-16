@@ -117,9 +117,13 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
     {
       if constexpr (std::is_trivial_v<T>)
       {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
         std::memcpy(
             &newData[static_cast<size_t>(r * m_Cols)], &m_data[static_cast<size_t>(r * old_cols)],
             sizeof(T) * static_cast<size_t>(nColsToCopy));
+#pragma GCC diagnostic pop
       }
       else
       {
@@ -262,6 +266,9 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
           static_cast<long unsigned>(N));
     }
     Index idx = 0;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
     for (Index i = 0; i < m_Rows; i++)
     {
       for (Index j = 0; j < m_Cols; j++)
@@ -269,6 +276,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
         (*this)(i, j) = static_cast<T>(theArray[idx++]);
       }
     }
+#pragma GCC diagnostic pop
   }
 
   /** Constructor from a given size and a STL container (std::vector,
@@ -371,6 +379,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
           m_Rows, m_Cols, N));
     }
     Index idx = 0;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
     for (Index i = 0; i < m_Rows; i++)
     {
       for (Index j = 0; j < m_Cols; j++)
@@ -378,6 +388,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
         (*this)(i, j) = static_cast<T>(theArray[idx++]);
       }
     }
+#pragma GCC diagnostic pop
     return *this;
   }
 

@@ -42,12 +42,12 @@ class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 
   std::optional<CurrentPoseAndSpeeds> getCurrentPoseAndSpeeds() override
   {
-    return CurrentPoseAndSpeeds{
-        .pose = m_simul.getCurrentGTPose(),
-        .velGlobal = m_simul.getCurrentGTVel(),
-        .timestamp = mrpt::Clock::now(),
-        .odometry = m_simul.getCurrentOdometricPose(),
-    };
+    CurrentPoseAndSpeeds ret;
+    ret.pose = m_simul.getCurrentGTPose();
+    ret.velGlobal = m_simul.getCurrentGTVel();
+    ret.timestamp = mrpt::Clock::now();
+    ret.odometry = m_simul.getCurrentOdometricPose();
+    return ret;
   }
 
   bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd& vel_cmd) override
@@ -113,12 +113,12 @@ class CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface
 
   std::optional<CurrentPoseAndSpeeds> getCurrentPoseAndSpeeds() override
   {
-    return CurrentPoseAndSpeeds{
-        .pose = m_simul.getCurrentGTPose(),
-        .velGlobal = m_simul.getCurrentGTVel(),
-        .timestamp = mrpt::Clock::now(),
-        .odometry = m_simul.getCurrentOdometricPose(),
-    };
+    CurrentPoseAndSpeeds ret;
+    ret.pose = m_simul.getCurrentGTPose();
+    ret.velGlobal = m_simul.getCurrentGTVel();
+    ret.timestamp = mrpt::Clock::now();
+    ret.odometry = m_simul.getCurrentOdometricPose();
+    return ret;
   }
 
   bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd& vel_cmd) override

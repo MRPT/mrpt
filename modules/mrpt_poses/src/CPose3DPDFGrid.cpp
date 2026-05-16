@@ -90,10 +90,14 @@ void CPose3DPDFGrid::getMean(CPose3D& p) const
           for (size_t cy = 0; cy < m_sizeY; cy++)
             for (size_t cx = 0; cx < m_sizeX; cx++)
             {
-              const double w = *getByIndex(cx, cy, cz, cY, cP, cR);
+              const double w = *getByIndex(
+                  static_cast<int>(cx), static_cast<int>(cy), static_cast<int>(cz),
+                  static_cast<int>(cY), static_cast<int>(cP), static_cast<int>(cR));
               se_averager.append(
                   CPose3D(
-                      idx2x(cx), idx2y(cy), idx2z(cz), idx2yaw(cY), idx2pitch(cP), idx2roll(cR)),
+                      idx2x(static_cast<uint32_t>(cx)), idx2y(static_cast<uint32_t>(cy)),
+                      idx2z(static_cast<uint32_t>(cz)), idx2yaw(static_cast<uint32_t>(cY)),
+                      idx2pitch(static_cast<uint32_t>(cP)), idx2roll(static_cast<uint32_t>(cR))),
                   w);
             }
   se_averager.get_average(p);
@@ -112,10 +116,14 @@ std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFGrid::getCovarianceAndMean() cons
           for (size_t cy = 0; cy < m_sizeY; cy++)
             for (size_t cx = 0; cx < m_sizeX; cx++)
             {
-              const double w = *getByIndex(cx, cy, cz, cY, cP, cR);
+              const double w = *getByIndex(
+                  static_cast<int>(cx), static_cast<int>(cy), static_cast<int>(cz),
+                  static_cast<int>(cY), static_cast<int>(cP), static_cast<int>(cR));
               auxParts.m_particles[idx].log_w = std::log(w);
               auxParts.m_particles[idx].d = mrpt::math::TPose3D(
-                  idx2x(cx), idx2y(cy), idx2z(cz), idx2yaw(cY), idx2pitch(cP), idx2roll(cR));
+                  idx2x(static_cast<uint32_t>(cx)), idx2y(static_cast<uint32_t>(cy)),
+                  idx2z(static_cast<uint32_t>(cz)), idx2yaw(static_cast<uint32_t>(cY)),
+                  idx2pitch(static_cast<uint32_t>(cP)), idx2roll(static_cast<uint32_t>(cR)));
 
               ++idx;
             }
@@ -366,7 +374,7 @@ void CPose3DPDFGrid::normalize()
 
 void CPose3DPDFGrid::uniformDistribution()
 {
-  const double val = 1.0 / m_data.size();
+  const double val = 1.0 / static_cast<double>(m_data.size());
 
   for (double& it : m_data) it = val;
 }

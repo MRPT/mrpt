@@ -152,29 +152,34 @@ void CBox::updateTrianglesBuffer() const
     tris.push_back(t);
   };
 
+  const float x0 = static_cast<float>(c0.x), y0 = static_cast<float>(c0.y),
+              z0 = static_cast<float>(c0.z);
+  const float x1 = static_cast<float>(c1.x), y1 = static_cast<float>(c1.y),
+              z1 = static_cast<float>(c1.z);
+
   // Front face (Y = y_min):
-  addTri(P3f(c1.x, c0.y, c0.z), P3f(c1.x, c0.y, c1.z), P3f(c0.x, c0.y, c0.z));
-  addTri(P3f(c0.x, c0.y, c0.z), P3f(c1.x, c0.y, c1.z), P3f(c0.x, c0.y, c1.z));
+  addTri(P3f(x1, y0, z0), P3f(x1, y0, z1), P3f(x0, y0, z0));
+  addTri(P3f(x0, y0, z0), P3f(x1, y0, z1), P3f(x0, y0, z1));
 
   // Back face (Y = y_max):
-  addTri(P3f(c1.x, c1.y, c0.z), P3f(c0.x, c1.y, c0.z), P3f(c1.x, c1.y, c1.z));
-  addTri(P3f(c0.x, c1.y, c0.z), P3f(c0.x, c1.y, c1.z), P3f(c1.x, c1.y, c1.z));
+  addTri(P3f(x1, y1, z0), P3f(x0, y1, z0), P3f(x1, y1, z1));
+  addTri(P3f(x0, y1, z0), P3f(x0, y1, z1), P3f(x1, y1, z1));
 
   // Left face (X = x_min):
-  addTri(P3f(c0.x, c0.y, c0.z), P3f(c0.x, c1.y, c1.z), P3f(c0.x, c1.y, c0.z));
-  addTri(P3f(c0.x, c0.y, c1.z), P3f(c0.x, c1.y, c1.z), P3f(c0.x, c0.y, c0.z));
+  addTri(P3f(x0, y0, z0), P3f(x0, y1, z1), P3f(x0, y1, z0));
+  addTri(P3f(x0, y0, z1), P3f(x0, y1, z1), P3f(x0, y0, z0));
 
   // Right face (X = x_max):
-  addTri(P3f(c1.x, c0.y, c0.z), P3f(c1.x, c1.y, c0.z), P3f(c1.x, c1.y, c1.z));
-  addTri(P3f(c1.x, c0.y, c1.z), P3f(c1.x, c0.y, c0.z), P3f(c1.x, c1.y, c1.z));
+  addTri(P3f(x1, y0, z0), P3f(x1, y1, z0), P3f(x1, y1, z1));
+  addTri(P3f(x1, y0, z1), P3f(x1, y0, z0), P3f(x1, y1, z1));
 
   // Bottom face (Z = z_min):
-  addTri(P3f(c0.x, c0.y, c0.z), P3f(c1.x, c1.y, c0.z), P3f(c1.x, c0.y, c0.z));
-  addTri(P3f(c0.x, c1.y, c0.z), P3f(c1.x, c1.y, c0.z), P3f(c0.x, c0.y, c0.z));
+  addTri(P3f(x0, y0, z0), P3f(x1, y1, z0), P3f(x1, y0, z0));
+  addTri(P3f(x0, y1, z0), P3f(x1, y1, z0), P3f(x0, y0, z0));
 
   // Top face (Z = z_max):
-  addTri(P3f(c0.x, c0.y, c1.z), P3f(c1.x, c0.y, c1.z), P3f(c1.x, c1.y, c1.z));
-  addTri(P3f(c0.x, c1.y, c1.z), P3f(c0.x, c0.y, c1.z), P3f(c1.x, c1.y, c1.z));
+  addTri(P3f(x0, y0, z1), P3f(x1, y0, z1), P3f(x1, y1, z1));
+  addTri(P3f(x0, y1, z1), P3f(x0, y0, z1), P3f(x1, y1, z1));
 }
 
 void CBox::updateLinesBuffer() const

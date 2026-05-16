@@ -222,7 +222,7 @@ void COctoMapVoxels::updateBuffers() const
         }
         for (const auto& vx : voxel_set.voxels)
         {
-          const float L = vx.side_length * 0.5f;
+          const float L = static_cast<float>(vx.side_length) * 0.5f;
           const P3f& c = vx.coords;
           const P3f vs[8] = {
               {c.x + L, c.y + L, c.z + L},

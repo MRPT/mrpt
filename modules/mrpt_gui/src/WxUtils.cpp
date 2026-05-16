@@ -252,13 +252,10 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
   wxFlexGridSizer* FlexGridSizer4;
   wxFlexGridSizer* FlexGridSizer16;
   wxFlexGridSizer* FlexGridSizer10;
-  wxFlexGridSizer* FlexGridSizer3;
   wxFlexGridSizer* FlexGridSizer5;
-  wxFlexGridSizer* FlexGridSizer2;
   wxFlexGridSizer* FlexGridSizer18;
   wxFlexGridSizer* FlexGridSizer13;
   wxFlexGridSizer* FlexGridSizer12;
-  wxStaticBoxSizer* StaticBoxSizer1;
   wxFlexGridSizer* FlexGridSizer1;
   wxFlexGridSizer* FlexGridSizer11;
 

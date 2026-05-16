@@ -30,7 +30,8 @@ void CMatrixD::serializeTo(mrpt::serialization::CArchive& out) const
 
   // Since mrpt-1.9.9, dynamic matrices are stored as a contiguous vector:
   if (rows() > 0 && cols() > 0)
-    out.WriteBufferFixEndianness<value_type>(&(*this)(0, 0), cols() * rows());
+    out.WriteBufferFixEndianness<value_type>(
+        &(*this)(0, 0), static_cast<size_t>(cols()) * static_cast<size_t>(rows()));
 }
 void CMatrixD::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {

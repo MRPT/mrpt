@@ -112,7 +112,9 @@ http_errorcode mrpt::comms::net::http_request(
   try
   {
     // Connect:
-    sock.connect(server_addr, options.port, options.timeout_ms);
+    sock.connect(
+        server_addr, static_cast<unsigned short>(options.port),
+        static_cast<unsigned int>(options.timeout_ms));
   }
   catch (const std::exception& e)
   {
@@ -147,7 +149,7 @@ http_errorcode mrpt::comms::net::http_request(
         headers_to_send.find("Content-Length") == headers_to_send.end())
     {
       headers_to_send["Content-Length"] =
-          mrpt::format("%u", (unsigned int)http_send_content.size());
+          mrpt::format("%u", static_cast<unsigned int>(http_send_content.size()));
     }
 
     // Prepare the request string
@@ -246,21 +248,22 @@ http_errorcode mrpt::comms::net::http_request(
         if (ptr)
         {
           all_headers_read = true;
-          const size_t pos_dblret = ((char*)ptr) - (char*)(&buf[0]);
+          const size_t pos_dblret = static_cast<size_t>(
+              reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(&buf[0]));
 
           // Process the headers:
           // ------------------------------
-          if (!::strncmp("HTTP/", (const char*)&buf[0], 5))
+          if (!::strncmp("HTTP/", reinterpret_cast<const char*>(&buf[0]), 5))
           {
-            http_code = ::atoi((const char*)&buf[9]);
+            http_code = ::atoi(reinterpret_cast<const char*>(&buf[9]));
           }
           else
           {
             // May it be a "SOURCETABLE " answer for NTRIP
             // protocol??
-            if (!::strncmp("SOURCETABLE ", (const char*)&buf[0], 12))
+            if (!::strncmp("SOURCETABLE ", reinterpret_cast<const char*>(&buf[0]), 12))
             {
-              http_code = ::atoi((const char*)&buf[12]);
+              http_code = ::atoi(reinterpret_cast<const char*>(&buf[12]));
             }
             else
             {
@@ -276,7 +279,7 @@ http_errorcode mrpt::comms::net::http_request(
           const char* ptr_len = ::strstr(reinterpret_cast<const char*>(&buf[0]), "Content-Length:");
           if (ptr_len)
           {
-            content_length = ::atol(ptr_len + 15);
+            content_length = static_cast<size_t>(::atol(ptr_len + 15));
             content_length_read = true;
           }
 
@@ -307,7 +310,7 @@ http_errorcode mrpt::comms::net::http_request(
     if (output) output.value().get().out_headers = rx_headers;
 
     // Remove the headers from the content:
-    buf.erase(buf.begin(), buf.begin() + content_offset);
+    buf.erase(buf.begin(), buf.begin() + static_cast<std::ptrdiff_t>(content_offset));
 
     // Process: "Transfer-Encoding: chunked"
     if (0 != rx_headers.count("Transfer-Encoding") &&
@@ -320,16 +323,19 @@ http_errorcode mrpt::comms::net::http_request(
       {
         if (buf[index] == '\r' && buf[index + 1] == '\n')
         {
-          buf.erase(buf.begin() + index, buf.begin() + index + 2);
+          buf.erase(
+              buf.begin() + static_cast<std::ptrdiff_t>(index),
+              buf.begin() + static_cast<std::ptrdiff_t>(index) + 2);
           continue;
         }
 
-        const char* pCRLF = ::strstr((const char*)&buf[index], "\r\n");
+        const char* pCRLF = ::strstr(reinterpret_cast<const char*>(&buf[index]), "\r\n");
         if (!pCRLF) break;
 
-        const size_t len_substr = ((char*)pCRLF) - (char*)(&buf[index]);
+        const size_t len_substr = static_cast<size_t>(
+            reinterpret_cast<const char*>(pCRLF) - reinterpret_cast<const char*>(&buf[index]));
 
-        string sLen((const char*)&buf[index], len_substr);
+        string sLen(reinterpret_cast<const char*>(&buf[index]), len_substr);
         sLen = string("0x") + sLen;
 
         unsigned int lenChunk;
@@ -337,7 +343,9 @@ http_errorcode mrpt::comms::net::http_request(
         if (!fields) break;
 
         // Remove the len of this chunk header from the data:
-        buf.erase(buf.begin() + index, buf.begin() + index + len_substr + 2);
+        buf.erase(
+            buf.begin() + static_cast<std::ptrdiff_t>(index),
+            buf.begin() + static_cast<std::ptrdiff_t>(index + len_substr + 2));
 
         index += lenChunk;
 

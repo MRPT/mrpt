@@ -37,7 +37,7 @@ uint8_t CEllipsoid3D::serializeGetVersion() const { return 1; }
 void CEllipsoid3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
   writeToStreamRender(out);
-  out << m_cov << m_drawSolid3D << m_quantiles << (uint32_t)m_numSegments;
+  out << m_cov << m_drawSolid3D << m_quantiles << static_cast<uint32_t>(m_numSegments);
   VisualObjectParams_Lines::params_serialize(out);  // v1
 }
 
@@ -90,7 +90,8 @@ static bool quickSolveEqn(double a, double b_2, double c, double& t)
 }
 #endif
 
-bool CEllipsoid3D::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
+bool CEllipsoid3D::traceRay(
+    [[maybe_unused]] const mrpt::poses::CPose3D& o, [[maybe_unused]] double& dist) const
 {
 #if 0  // Update, someday...
 	if (m_cov.rows() != 3) { return false; }

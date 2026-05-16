@@ -240,14 +240,7 @@ void TRenderMatrices::computeCascadedLightProjectionMatrices(
     // We use the inverse of P*V to unproject NDC corners
     const auto invPV = (p_matrix.asEigen() * v_matrix.asEigen()).inverse();
 
-    // NDC corners: near and far planes at z=-1 and z=+1
-    const float zNDCNear =
-        2.0f * (cascNear - m_last_z_near) / (m_last_z_far - m_last_z_near) - 1.0f;
-    const float zNDCFar = 2.0f * (cascFar - m_last_z_near) / (m_last_z_far - m_last_z_near) - 1.0f;
-
-    // Actually, it's easier to use linearized depth. For a perspective
-    // projection, NDC z = (A*z + B) / z where A and B come from p_matrix.
-    // Let's just compute corners using the actual projection matrix.
+    // Let's compute corners using the actual projection matrix.
     float zNear_ndc, zFar_ndc;
     if (is_projective)
     {

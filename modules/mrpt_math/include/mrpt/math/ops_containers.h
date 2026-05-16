@@ -517,7 +517,7 @@ VECTOR xcorr(const VECTOR& a, const VECTOR& b, const size_t maxLag, bool normali
 {
   MRPT_START
 
-  const signed int na = a.size(), nb = b.size();
+  const signed int na = static_cast<int>(a.size()), nb = static_cast<int>(b.size());
   ASSERT_(na > 0);
   ASSERT_(nb > 0);
   ASSERTMSG_(

@@ -32,7 +32,7 @@ void CSetOfTexturedTriangles::serializeTo(mrpt::serialization::CArchive& out) co
   writeToStreamRender(out);
   writeToStreamTexturedObject(out);
 
-  n = (uint32_t)m_triangles.size();
+  n = static_cast<uint32_t>(m_triangles.size());
 
   out << n;
 

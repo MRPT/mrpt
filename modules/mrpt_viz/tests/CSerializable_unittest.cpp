@@ -40,7 +40,7 @@ IMPLEMENTS_SERIALIZABLE(Foo, CSerializable, MyNS);
 
 uint8_t MyNS::Foo::serializeGetVersion() const { return 0; }
 void MyNS::Foo::serializeTo(CArchive& out) const { out << value; }
-void MyNS::Foo::serializeFrom(CArchive& in, uint8_t serial_version) { in >> value; }
+void MyNS::Foo::serializeFrom(CArchive& in, uint8_t /*serial_version*/) { in >> value; }
 
 TEST(Serialization, CustomClassSerialize)
 {

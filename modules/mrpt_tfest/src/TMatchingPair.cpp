@@ -39,8 +39,10 @@ void TMatchingPairListTempl<T>::dumpToFile(const std::string& fileName) const
   for (const auto& it : *this)
   {
     f << mrpt::format(
-        "%u %u %f %f %f %f %f %f %f\n", it.globalIdx, it.localIdx, it.global.x, it.global.y,
-        it.global.z, it.local.x, it.local.y, it.local.z, it.errorSquareAfterTransformation);
+        "%u %u %f %f %f %f %f %f %f\n", it.globalIdx, it.localIdx, static_cast<double>(it.global.x),
+        static_cast<double>(it.global.y), static_cast<double>(it.global.z),
+        static_cast<double>(it.local.x), static_cast<double>(it.local.y),
+        static_cast<double>(it.local.z), static_cast<double>(it.errorSquareAfterTransformation));
   }
 }
 
@@ -63,13 +65,17 @@ void TMatchingPairListTempl<T>::saveAsMATLABScript(const std::string& filName) c
   for (const auto& it : *this)
   {
     fprintf(
-        f, "line([%f %f %f],[%f %f %f],'Color',colorLines);\n", it.global.x, it.local.x, it.local.z,
-        it.global.y, it.local.y, it.local.z);
+        f, "line([%f %f %f],[%f %f %f],'Color',colorLines);\n", static_cast<double>(it.global.x),
+        static_cast<double>(it.local.x), static_cast<double>(it.local.z),
+        static_cast<double>(it.global.y), static_cast<double>(it.local.y),
+        static_cast<double>(it.local.z));
     fprintf(
         f,
         "set(plot([%f %f %f],[%f %f "
         "%f],'.'),'Color',colorLines,'MarkerSize',15);\n",
-        it.global.x, it.local.x, it.local.z, it.global.y, it.local.y, it.local.z);
+        static_cast<double>(it.global.x), static_cast<double>(it.local.x),
+        static_cast<double>(it.local.z), static_cast<double>(it.global.y),
+        static_cast<double>(it.local.y), static_cast<double>(it.local.z));
   }
   fprintf(f, "view(3); grid on; xlabel('x'); ylabel('y'); zlabel('z');");
   os::fclose(f);
@@ -153,7 +159,8 @@ void TMatchingPairListTempl<T>::squareErrorVector(const CPose3D& q, vector<T>& o
   for (const auto& c : *this)
   {
     const auto p = q.composePoint(mrpt::math::TPoint3D(c.local));
-    out_sqErrs.push_back(c.global.sqrDistanceTo(mrpt::math::TPoint3D_<T>(p.x, p.y, p.z)));
+    out_sqErrs.push_back(c.global.sqrDistanceTo(
+        mrpt::math::TPoint3D_<T>(static_cast<T>(p.x), static_cast<T>(p.y), static_cast<T>(p.z))));
   }
 }
 

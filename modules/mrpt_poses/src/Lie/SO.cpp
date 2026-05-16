@@ -40,7 +40,7 @@ SO<3>::type SO<3>::exp(const SO<3>::tangent_vector& x)
   MRPT_END
 }
 
-SO<3>::tang2mat_jacob SO<3>::jacob_dexpe_de(const SO<3>::tangent_vector& x)
+SO<3>::tang2mat_jacob SO<3>::jacob_dexpe_de([[maybe_unused]] const SO<3>::tangent_vector& x)
 {
   /*
    0   0   0
@@ -199,7 +199,7 @@ SO<3>::tangent_vector SO<3>::vee_RmRt(const SO<3>::type& R)
 // ====== SO(2) ===========
 SO<2>::type SO<2>::exp(const SO<2>::tangent_vector& x) { return mrpt::math::wrapToPi(x[0]); }
 
-SO<2>::tang2mat_jacob SO<2>::jacob_dexpe_de(const SO<2>::tangent_vector& x)
+SO<2>::tang2mat_jacob SO<2>::jacob_dexpe_de([[maybe_unused]] const SO<2>::tangent_vector& x)
 {
   tang2mat_jacob J;
   J(0, 0) = 1.0;
@@ -213,7 +213,7 @@ SO<2>::tangent_vector SO<2>::log(const SO<2>::type& R)
   return v;
 }
 
-SO<2>::mat2tang_jacob SO<2>::jacob_dlogv_dv(const SO<2>::type& R)
+SO<2>::mat2tang_jacob SO<2>::jacob_dlogv_dv([[maybe_unused]] const SO<2>::type& R)
 {
   mat2tang_jacob J;
   J(0, 0) = 1.0;

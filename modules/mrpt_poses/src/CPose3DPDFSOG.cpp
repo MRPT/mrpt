@@ -104,7 +104,7 @@ std::tuple<mrpt::math::CMatrixDouble66, CPose3D> CPose3DPDFSOG::getCovarianceAnd
 uint8_t CPose3DPDFSOG::serializeGetVersion() const { return 2; }
 void CPose3DPDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  uint32_t N = m_modes.size();
+  uint32_t N = static_cast<uint32_t>(m_modes.size());
   out << N;
   for (const auto& m : m_modes) out << m.log_w << m.val.mean << m.val.cov;
 }

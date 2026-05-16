@@ -81,8 +81,9 @@ const std::vector<mrpt::math::TPoint3D_<T>>& mrpt::math::TOrientedBox_<T>::verti
     {
       for (const int x : {-1, 1})
       {
-        verts.push_back(
-            m_pose.composePoint({x * m_size.x / 2.0, y * m_size.y / 2.0, z * m_size.z / 2.0}));
+        verts.push_back(m_pose.composePoint(
+            {static_cast<float>(x) * m_size.x / 2.0f, static_cast<float>(y) * m_size.y / 2.0f,
+             static_cast<float>(z) * m_size.z / 2.0f}));
       }
     }
   }

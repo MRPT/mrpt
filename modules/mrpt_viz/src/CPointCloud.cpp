@@ -55,7 +55,7 @@ void CPointCloud::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) cons
 }
 void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
-  uint8_t version = 0;
+  int32_t version = 0;
   SCHEMA_DESERIALIZE_DATATYPE_VERSION();
   switch (version)
   {

@@ -360,7 +360,7 @@ void CPose3DPDFParticles::bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF&
                           (dY * dY + dP * dP + dR * dR) / (h_ang * h_ang);
         lik += std::exp(q.log_w) * std::exp(-0.5 * d2);
       }
-      p.log_w += std::log(std::max(lik / N2, 1e-300));
+      p.log_w += std::log(std::max(lik / static_cast<double>(N2), 1e-300));
     }
   }
   else

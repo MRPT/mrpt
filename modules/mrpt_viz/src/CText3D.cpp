@@ -44,7 +44,8 @@ uint8_t CText3D::serializeGetVersion() const { return 0; }
 void CText3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
   writeToStreamRender(out);
-  out << m_str << m_fontName << (uint32_t)m_text_style << m_text_spacing << m_text_kerning;
+  out << m_str << m_fontName << static_cast<uint32_t>(m_text_style) << m_text_spacing
+      << m_text_kerning;
 }
 
 void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -70,7 +71,7 @@ void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 auto CText3D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
   return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
-      {0.f, 0.f, 0.f}, {m_str.size() * getScaleX(), 1.0f * getScaleY(), 0.f});
+      {0.f, 0.f, 0.f}, {static_cast<float>(m_str.size()) * getScaleX(), 1.0f * getScaleY(), 0.f});
 }
 
 void CText3D::toYAMLMap(mrpt::containers::yaml& propertiesMap) const

@@ -379,7 +379,7 @@ TEST(MultiObjOptScalarization, final_evaluation_has_correct_size)
       makeCandidate(0.4), makeCandidate(0.7), makeCandidate(0.2)};
 
   mrpt::nav::CMultiObjectiveMotionOptimizerBase::TResultInfo info;
-  opt.decide(movs, info);
+  (void)opt.decide(movs, info);
 
   EXPECT_EQ(info.final_evaluation.size(), movs.size());
 }

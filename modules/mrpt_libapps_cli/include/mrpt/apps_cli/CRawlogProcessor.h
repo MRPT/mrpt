@@ -95,10 +95,11 @@ class CRawlogProcessor
         if (verbose)
         {
           std::cout << mrpt::format(
-              "Progress: %7u objects --- Pos: %9sB/%c%9sB \r", (unsigned int)(m_rawlogEntry + 1),
-              mrpt::system::unitsFormat(fil_pos).c_str(),
+              "Progress: %7u objects --- Pos: %9sB/%c%9sB \r",
+              static_cast<unsigned int>(m_rawlogEntry + 1),
+              mrpt::system::unitsFormat(static_cast<double>(fil_pos)).c_str(),
               (fil_pos > m_physicalFileSize ? '>' : ' '),
-              mrpt::system::unitsFormat(m_physicalFileSize)
+              mrpt::system::unitsFormat(static_cast<double>(m_physicalFileSize))
                   .c_str());  // \r -> don't go to the next line...
 
           std::cout.flush();
@@ -131,6 +132,8 @@ class CRawlogProcessor
     m_timToParse = m_timParse.Tac();
 
   }  // end doProcessRawlog
+
+  virtual ~CRawlogProcessor() = default;
 
   // The virtual method of the user to be invoked for each read object:
   //  Return false to abort and stop the read loop.

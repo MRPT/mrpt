@@ -47,7 +47,7 @@ void CText::serializeTo(mrpt::serialization::CArchive& out) const
   writeToStreamRender(out);
   out << m_str;
   out << m_fontName;
-  out << (uint32_t)m_fontHeight;
+  out << static_cast<uint32_t>(m_fontHeight);
 }
 
 void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

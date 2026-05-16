@@ -28,7 +28,8 @@ void CPoint<DERIVEDCLASS, DIM>::fromString(const std::string& s)
     THROW_EXCEPTION_FMT("Malformed expression in ::fromString, s=\"%s\"", s.c_str());
   ASSERT_EQUAL_(m.rows(), 1);
   ASSERT_EQUAL_(m.cols(), DERIVEDCLASS::static_size);
-  for (size_t i = 0; i < DERIVEDCLASS::static_size; i++) derived().m_coords[i] = m(0, i);
+  for (size_t i = 0; i < DERIVEDCLASS::static_size; i++)
+    derived().m_coords[static_cast<long int>(i)] = m(0, static_cast<long int>(i));
 }
 
 template <class DERIVEDCLASS, std::size_t DIM>

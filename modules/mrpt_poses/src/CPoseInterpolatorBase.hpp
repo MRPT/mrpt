@@ -473,7 +473,7 @@ void CPoseInterpolatorBase<DIM>::filter(unsigned int component, unsigned int sam
       it3 = m_path.end();
     }
 
-    unsigned int nsamples = distance(it2, it3);
+    unsigned int nsamples = static_cast<unsigned int>(distance(it2, it3));
     CPose3DPDFParticles particles(nsamples);
     for (unsigned int i = 0; it2 != it3; ++it2, ++i)
     {

@@ -82,37 +82,37 @@ void CICP::TConfigParams::loadFromConfigFile(
     const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
 {
   MRPT_LOAD_CONFIG_VAR(maxIterations, int, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(minAbsStep_trans, float, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(minAbsStep_rot, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(minAbsStep_trans, double, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(minAbsStep_rot, double, iniFile, section);
 
   ICP_algorithm = iniFile.read_enum<TICPAlgorithm>(section, "ICP_algorithm", ICP_algorithm);
   ICP_covariance_method = iniFile.read_enum<TICPCovarianceMethod>(
       section, "ICP_covariance_method", ICP_covariance_method);
 
-  MRPT_LOAD_CONFIG_VAR(thresholdDist, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(thresholdDist, double, iniFile, section);
   thresholdAng =
-      DEG2RAD(iniFile.read_float(section.c_str(), "thresholdAng_DEG", RAD2DEG(thresholdAng)));
+      DEG2RAD(iniFile.read_double(section.c_str(), "thresholdAng_DEG", RAD2DEG(thresholdAng)));
 
-  MRPT_LOAD_CONFIG_VAR(ALFA, float, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(smallestThresholdDist, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(ALFA, double, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(smallestThresholdDist, double, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(onlyUniqueRobust, bool, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(doRANSAC, bool, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(covariance_varPoints, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(covariance_varPoints, double, iniFile, section);
 
   MRPT_LOAD_CONFIG_VAR(ransac_minSetSize, int, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(ransac_maxSetSize, int, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(ransac_mahalanobisDistanceThreshold, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(ransac_mahalanobisDistanceThreshold, double, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(ransac_nSimulations, int, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(normalizationStd, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(normalizationStd, double, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(ransac_fuseByCorrsMatch, bool, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(ransac_fuseMaxDiffXY, float, iniFile, section);
-  ransac_fuseMaxDiffPhi = DEG2RAD(iniFile.read_float(
+  MRPT_LOAD_CONFIG_VAR(ransac_fuseMaxDiffXY, double, iniFile, section);
+  ransac_fuseMaxDiffPhi = DEG2RAD(iniFile.read_double(
       section.c_str(), "ransac_fuseMaxDiffPhi_DEG", RAD2DEG(ransac_fuseMaxDiffPhi)));
 
-  MRPT_LOAD_CONFIG_VAR(kernel_rho, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(kernel_rho, double, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(use_kernel, bool, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(Axy_aprox_derivatives, float, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(LM_initial_lambda, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(Axy_aprox_derivatives, double, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(LM_initial_lambda, double, iniFile, section);
 
   MRPT_LOAD_CONFIG_VAR(skip_cov_calculation, bool, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(skip_quality_calculation, bool, iniFile, section);

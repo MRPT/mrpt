@@ -28,7 +28,7 @@ void CSphere::serializeTo(mrpt::serialization::CArchive& out) const
 {
   writeToStreamRender(out);
   out << m_radius;
-  out << (uint32_t)m_nDivs;
+  out << static_cast<uint32_t>(m_nDivs);
 }
 void CSphere::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {

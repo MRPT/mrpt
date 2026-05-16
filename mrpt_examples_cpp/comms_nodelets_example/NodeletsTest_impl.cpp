@@ -65,14 +65,14 @@ void thread_publisher()
   }
 }
 
-void onNewMsg(const mrpt::math::TPose3D& p)
+void onNewMsg([[maybe_unused]] const mrpt::math::TPose3D& p)
 {
 #ifdef NODELETS_TEST_VERBOSE
   std::cout << "sub2: rx TPose3D" << p.asString() << "\n";
 #endif
 }
 
-void onNewMsg2(int idx, const mrpt::math::TPose3D& p)
+void onNewMsg2([[maybe_unused]] int idx, [[maybe_unused]] const mrpt::math::TPose3D& p)
 {
 #ifdef NODELETS_TEST_VERBOSE
   std::cout << "onNewMsg2: idx=" << idx << " rx TPose3D" << p.asString() << "\n";

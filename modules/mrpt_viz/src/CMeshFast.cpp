@@ -43,14 +43,14 @@ void CMeshFast::updatePoints() const
   ASSERT_((xMax > xMin) && (yMax > yMin));
   X.setSize(rows, cols);
   Y.setSize(rows, cols);
-  const float sCellX = (xMax - xMin) / (rows - 1);
-  const float sCellY = (yMax - yMin) / (cols - 1);
+  const float sCellX = (xMax - xMin) / static_cast<float>(rows - 1);
+  const float sCellY = (yMax - yMin) / static_cast<float>(cols - 1);
 
   for (int iX = 0; iX < rows; iX++)
     for (int iY = 0; iY < cols; iY++)
     {
-      X(iX, iY) = xMin + iX * sCellX;
-      Y(iX, iY) = yMin + iY * sCellY;
+      X(iX, iY) = xMin + static_cast<float>(iX) * sCellX;
+      Y(iX, iY) = yMin + static_cast<float>(iY) * sCellY;
     }
 
   pointsUpToDate = true;

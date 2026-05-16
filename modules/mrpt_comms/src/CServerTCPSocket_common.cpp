@@ -64,9 +64,10 @@ void CServerTCPSocket::setupSocket(
 
   desiredIP.sin_family = AF_INET;
   desiredIP.sin_addr.s_addr = inet_addr(IPaddress.c_str());
-  desiredIP.sin_port = htons((unsigned short)listenPort);
+  desiredIP.sin_port = htons(listenPort);
 
-  if (INVALID_SOCKET == ::bind(m_serverSock, (struct sockaddr*)(&desiredIP), sizeof(desiredIP)))
+  if (INVALID_SOCKET ==
+      ::bind(m_serverSock, reinterpret_cast<struct sockaddr*>(&desiredIP), sizeof(desiredIP)))
     THROW_EXCEPTION(getLastErrorStr());
 
   // Put in listen mode:
@@ -146,7 +147,8 @@ std::unique_ptr<CClientTCPSocket> CServerTCPSocket::accept(int timeout_ms)
     sockaddr_in otherPart;
     socklen_t otherPartSize = sizeof(otherPart);
 
-    int aceptdSock = ::accept(m_serverSock, (struct sockaddr*)&otherPart, &otherPartSize);
+    int aceptdSock =
+        ::accept(m_serverSock, reinterpret_cast<struct sockaddr*>(&otherPart), &otherPartSize);
 
     if (aceptdSock == INVALID_SOCKET)
     {

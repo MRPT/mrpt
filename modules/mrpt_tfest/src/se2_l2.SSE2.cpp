@@ -29,7 +29,7 @@ internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
   // SSE vectorized version:
   const size_t N = in_correspondences.size();
   ASSERT_(N >= 2);
-  const float N_inv = 1.0f / N;  // For efficiency, keep this value.
+  const float N_inv = 1.0f / static_cast<float>(N);  // For efficiency, keep this value.
 
   // Ensure correct types:
   static_assert(sizeof(TMatchingPair::global.x) == sizeof(float));
@@ -106,8 +106,8 @@ internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
   float Syx = cross_sums[3];
 
   // Auxiliary variables Ax,Ay:
-  ret.Ax = N * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
-  ret.Ay = SumXa * SumYb + N * (Syx - Sxy) - SumXb * SumYa;
+  ret.Ax = static_cast<float>(N) * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
+  ret.Ay = SumXa * SumYb + static_cast<float>(N) * (Syx - Sxy) - SumXb * SumYa;
 
   return ret;
 }

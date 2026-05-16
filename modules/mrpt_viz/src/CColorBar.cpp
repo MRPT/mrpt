@@ -114,7 +114,8 @@ void CColorBar::updateBuffers() const
   std::vector<mrpt::img::TColor> colors(NUM_DIVISIONS);
   for (unsigned int i = 0; i < NUM_DIVISIONS; i++)
   {
-    const float col_idx = m_min_col + i * (m_max_col - m_min_col) / (NUM_DIVISIONS - 1);
+    const float col_idx = m_min_col + static_cast<float>(i) * (m_max_col - m_min_col) /
+                                          static_cast<float>(NUM_DIVISIONS - 1);
     mrpt::img::TColorf colf = mrpt::img::colormap(m_colormap, col_idx);
     colf.A = 1.0f;
     colors[i] = colf.asTColor();
@@ -128,7 +129,7 @@ void CColorBar::updateBuffers() const
 
     for (unsigned int i = 0; i < NUM_DIVISIONS - 1; i++)
     {
-      const float y0 = Ay * i, y1 = Ay * (i + 1);
+      const float y0 = Ay * static_cast<float>(i), y1 = Ay * static_cast<float>(i + 1);
       const TPoint3Df pt00(x0, y0, 0), pt10(x1, y0, 0);
       const TPoint3Df pt01(x0, y1, 0), pt11(x1, y1, 0);
 
@@ -170,7 +171,7 @@ void CColorBar::updateBuffers() const
       const bool draw_label = (i % ONE_LABEL_EACH_NTH) == 0 || i == (NUM_DIVISIONS - 1);
       if (draw_label)
       {
-        const float y0 = Ay * i;
+        const float y0 = Ay * static_cast<float>(i);
         vbd.emplace_back(x0, y0, 0);
         vbd.emplace_back(x2, y0, 0);
         cbd.emplace_back(tickColor);

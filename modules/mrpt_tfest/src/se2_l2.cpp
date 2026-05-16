@@ -45,7 +45,7 @@ mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
   // SSE vectorized version:
   const size_t N = in_correspondences.size();
   ASSERT_(N >= 2);
-  const float N_inv = 1.0f / N;  // For efficiency, keep this value.
+  const float N_inv = 1.0f / static_cast<float>(N);  // For efficiency, keep this value.
 
   // Non vectorized version:
   float SumXa = 0, SumXb = 0, SumYa = 0, SumYb = 0;
@@ -79,8 +79,8 @@ mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
   ret.mean_y_b = SumYb * N_inv;
 
   // Auxiliary variables Ax,Ay:
-  ret.Ax = N * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
-  ret.Ay = SumXa * SumYb + N * (Syx - Sxy) - SumXb * SumYa;
+  ret.Ax = static_cast<float>(N) * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
+  ret.Ay = SumXa * SumYb + static_cast<float>(N) * (Syx - Sxy) - SumXb * SumYa;
 
   return ret;
 }
@@ -107,7 +107,7 @@ bool tfest::se2_l2(
     return false;
   }
 
-  const float N_inv = 1.0f / N;  // For efficiency, keep this value.
+  const float N_inv = 1.0f / static_cast<float>(N);  // For efficiency, keep this value.
 
   // ----------------------------------------------------------------------
   // Compute the estimated pose. Notation from the paper:
@@ -153,7 +153,7 @@ bool tfest::se2_l2(
     // Compute the normalized covariance matrix:
     // -------------------------------------------
     double var_x_a = 0, var_y_a = 0, var_x_b = 0, var_y_b = 0;
-    const double N_1_inv = 1.0 / (N - 1);
+    const double N_1_inv = 1.0 / static_cast<double>(N - 1);
 
     // 0) Precompute the unbiased variances estimations:
     // ----------------------------------------------------

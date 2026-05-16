@@ -713,7 +713,7 @@ TEST_F(CCompressedStreamsTest, sizeEstimationWithoutStoredSize)
 
       // Late estimate should generally be better (or at least not much worse)
       // Allow some tolerance due to compression variability
-      EXPECT_LE(late_error, early_error * 1.5);
+      EXPECT_LE(late_error, static_cast<double>(early_error) * 1.5);
     }
   }
 

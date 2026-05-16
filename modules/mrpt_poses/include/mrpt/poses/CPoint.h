@@ -58,7 +58,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
   {
     for (size_t i = 0; i < DERIVEDCLASS::static_size; i++)
     {
-      derived().m_coords[i] *= s;
+      derived().m_coords[static_cast<long int>(i)] *= s;
     }
   }
 

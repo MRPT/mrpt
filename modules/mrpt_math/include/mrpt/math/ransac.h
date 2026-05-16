@@ -222,7 +222,7 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
     {
       // Update estimate of N, the number of trials to ensure we pick,
       // with probability p, a data set with no outliers.
-      double fracInliers = nInliers / static_cast<double>(pointCount);
+      double fracInliers = static_cast<double>(nInliers) / static_cast<double>(pointCount);
       double pNoOutliers = 1 - pow(fracInliers, static_cast<double>(minimumSizeSamplesToFit));
 
       pNoOutliers = std::max(
