@@ -30,9 +30,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt install clang-format-14 -yq
-          pip3 install --user -r scripts/clang_git_format/python_reqs.txt
 
       - name: Check code style
         run: |
-          echo "TASK=lint_all" >> $GITHUB_ENV
-          bash scripts/clang_git_format/check_style.sh
+          bash scripts/clang_format_codebase.sh --check
