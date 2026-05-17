@@ -377,8 +377,8 @@ class CAngularObservationMesh :
    * &),mrpt::viz::CSetOfTriangles,mrpt::viz::mrpt::viz::TTriangle
    */
   /** \deprecated Use generateSetOfTriangles() returning Ptr instead. */
-  [[deprecated("Use generateSetOfTriangles() returning CSetOfTriangles::Ptr instead")]]
-  void generateSetOfTriangles(CSetOfTriangles::Ptr& res) const;
+  [[deprecated("Use generateSetOfTriangles() returning CSetOfTriangles::Ptr instead")]] void
+  generateSetOfTriangles(CSetOfTriangles::Ptr& res) const;
   /** Gets the mesh as a set of triangles, for displaying them. */
   [[nodiscard]] CSetOfTriangles::Ptr generateSetOfTriangles() const
   {
@@ -396,8 +396,8 @@ class CAngularObservationMesh :
    * \sa getUntracedRays,mrpt::viz::CSetOfLines
    * \deprecated Use getTracedRays() returning Ptr instead.
    */
-  [[deprecated("Use getTracedRays() returning CSetOfLines::Ptr instead")]]
-  void getTracedRays(CSetOfLines::Ptr& res) const;
+  [[deprecated("Use getTracedRays() returning CSetOfLines::Ptr instead")]] void getTracedRays(
+      CSetOfLines::Ptr& res) const;
   /** Gets a set of lines containing the traced rays, for displaying them. */
   [[nodiscard]] CSetOfLines::Ptr getTracedRays() const
   {
@@ -411,8 +411,8 @@ class CAngularObservationMesh :
    * \sa getTracedRays,mrpt::viz::CSetOfLines
    * \deprecated Use getUntracedRays(double) returning Ptr instead.
    */
-  [[deprecated("Use getUntracedRays(double) returning CSetOfLines::Ptr instead")]]
-  void getUntracedRays(CSetOfLines::Ptr& res, double dist) const;
+  [[deprecated("Use getUntracedRays(double) returning CSetOfLines::Ptr instead")]] void
+  getUntracedRays(CSetOfLines::Ptr& res, double dist) const;
   /** Gets a set of lines containing the untraced rays, up to a specified
    * distance, for displaying them. */
   [[nodiscard]] CSetOfLines::Ptr getUntracedRays(double dist) const

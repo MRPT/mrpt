@@ -14,13 +14,13 @@
 
 #pragma once
 
-#include <optional>
-#include <utility>
-
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
+
+#include <optional>
+#include <utility>
 
 namespace mrpt::maps
 {

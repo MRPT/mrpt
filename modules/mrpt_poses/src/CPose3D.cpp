@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <tuple>
-
 #include <mrpt/core/bits_math.h>       // for square
 #include <mrpt/core/config.h>          // for HAVE_SINCOS
 #include <mrpt/math/CMatrixDynamic.h>  // for CMatrixD...
@@ -42,6 +40,7 @@
 #include <iomanip>  // for setprecision(), etc.
 #include <ostream>  // for operator<<
 #include <string>   // for allocator
+#include <tuple>
 
 using namespace mrpt;
 using namespace mrpt::math;

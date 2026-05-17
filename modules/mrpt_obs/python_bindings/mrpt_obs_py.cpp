@@ -49,8 +49,7 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("timestamp", &mrpt::obs::CObservation::timestamp)
       .def_readwrite("sensorLabel", &mrpt::obs::CObservation::sensorLabel)
       .def(
-          "getSensorPose",
-          [](const mrpt::obs::CObservation& o) { return o.getSensorPose(); },
+          "getSensorPose", [](const mrpt::obs::CObservation& o) { return o.getSensorPose(); },
           "Returns the sensor pose (6D) relative to the robot")
       .def("getTimeStamp", &mrpt::obs::CObservation::getTimeStamp)
       .def("GetRuntimeClass", &mrpt::obs::CObservation::GetRuntimeClass)

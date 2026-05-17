@@ -199,8 +199,8 @@ class CPose3DPDFGaussian : public CPose3DPDF
    * (x,y,yaw) only.
    */
   /** \deprecated Use the return-by-value overload instead. */
-  [[deprecated("Use getCovSubmatrix2D() returning CMatrixDouble instead")]]
-  void getCovSubmatrix2D(mrpt::math::CMatrixDouble& out_cov) const;
+  [[deprecated("Use getCovSubmatrix2D() returning CMatrixDouble instead")]] void getCovSubmatrix2D(
+      mrpt::math::CMatrixDouble& out_cov) const;
 
   /** Returns a 3x3 matrix with submatrix of the covariance for the variables
    * (x,y,yaw) only.

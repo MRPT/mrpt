@@ -40,8 +40,8 @@ class CPoses2DSequence : public mrpt::serialization::CSerializable
    * \exception std::exception On invalid index value
    * \deprecated Use getPose(unsigned int) returning by value instead.
    */
-  [[deprecated("Use getPose(unsigned int) returning by value instead.")]]
-  void getPose(unsigned int ind, CPose2D& outPose);
+  [[deprecated("Use getPose(unsigned int) returning by value instead.")]] void getPose(
+      unsigned int ind, CPose2D& outPose);
 
   /** Returns the stored pose at index "ind".
    * \exception std::exception On invalid index value

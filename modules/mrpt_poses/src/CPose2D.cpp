@@ -163,10 +163,7 @@ mrpt::math::CMatrixDouble22 CPose2D::getRotationMatrix() const
   return R;
 }
 
-void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble22& R) const
-{
-  R = getRotationMatrix();
-}
+void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble22& R) const { R = getRotationMatrix(); }
 
 void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble33& R) const
 {
@@ -330,10 +327,7 @@ mrpt::math::CMatrixDouble44 CPose2D::getHomogeneousMatrix() const
   return m;
 }
 
-void CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
-{
-  m = getHomogeneousMatrix();
-}
+void CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const { m = getHomogeneousMatrix(); }
 
 /** Forces "phi" to be in the range [-pi,pi];
  */

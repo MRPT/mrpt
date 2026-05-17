@@ -158,8 +158,8 @@ class CPose2D :
    * \sa getInverseHomogeneousMatrix
    * \deprecated Use getHomogeneousMatrix() returning by value instead.
    */
-  [[deprecated("Use getHomogeneousMatrix() returning by value instead.")]]
-  void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
+  [[deprecated("Use getHomogeneousMatrix() returning by value instead.")]] void
+  getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
 
   /** Returns the corresponding 4x4 homogeneous transformation matrix. */
   [[nodiscard]] mrpt::math::CMatrixDouble44 getHomogeneousMatrix() const;
@@ -167,13 +167,13 @@ class CPose2D :
   /** Returns the SE(2) 2x2 rotation matrix
    * \deprecated Use getRotationMatrix() returning by value instead.
    */
-  [[deprecated("Use getRotationMatrix() returning by value instead.")]]
-  void getRotationMatrix(mrpt::math::CMatrixDouble22& R) const;
+  [[deprecated("Use getRotationMatrix() returning by value instead.")]] void getRotationMatrix(
+      mrpt::math::CMatrixDouble22& R) const;
   /** Returns the equivalent SE(3) 3x3 rotation matrix, with (2,2)=1.
    * \deprecated Use getRotationMatrix() returning by value instead.
    */
-  [[deprecated("Use getRotationMatrix() returning by value instead.")]]
-  void getRotationMatrix(mrpt::math::CMatrixDouble33& R) const;
+  [[deprecated("Use getRotationMatrix() returning by value instead.")]] void getRotationMatrix(
+      mrpt::math::CMatrixDouble33& R) const;
 
   /** Returns the SE(2) 2x2 rotation matrix by value. */
   [[nodiscard]] mrpt::math::CMatrixDouble22 getRotationMatrix() const;

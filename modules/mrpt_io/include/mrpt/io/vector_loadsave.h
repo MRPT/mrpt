@@ -100,20 +100,24 @@ struct VectorTextFileOptions
     const VectorTextFileOptions& opts = {});
 
 /** \deprecated Use vectorToTextFile(vec, fileName, VectorTextFileOptions) instead. */
-[[deprecated("Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]]
-[[nodiscard]] bool vectorToTextFile(
+[[deprecated(
+    "Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]] [[nodiscard]] bool
+vectorToTextFile(
     const std::vector<float>& vec, const std::string& fileName, bool append, bool byRows = false);
 //! \overload \deprecated
-[[deprecated("Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]]
-[[nodiscard]] bool vectorToTextFile(
+[[deprecated(
+    "Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]] [[nodiscard]] bool
+vectorToTextFile(
     const std::vector<double>& vec, const std::string& fileName, bool append, bool byRows = false);
 //! \overload \deprecated
-[[deprecated("Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]]
-[[nodiscard]] bool vectorToTextFile(
+[[deprecated(
+    "Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]] [[nodiscard]] bool
+vectorToTextFile(
     const std::vector<int>& vec, const std::string& fileName, bool append, bool byRows = false);
 //! \overload \deprecated
-[[deprecated("Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]]
-[[nodiscard]] bool vectorToTextFile(
+[[deprecated(
+    "Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]] [[nodiscard]] bool
+vectorToTextFile(
     const std::vector<size_t>& vec, const std::string& fileName, bool append, bool byRows = false);
 //! \overload
 template <class EIGEN_MATRIX>

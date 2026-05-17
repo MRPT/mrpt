@@ -114,13 +114,13 @@ class CPoseRandomSampler
 
   /** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
    * \f$. \deprecated Use the return-by-value overload instead. */
-  [[deprecated("Use getOriginalPDFCov2D() returning CMatrixDouble33 instead")]]
-  void getOriginalPDFCov2D(mrpt::math::CMatrixDouble33& cov3x3) const;
+  [[deprecated("Use getOriginalPDFCov2D() returning CMatrixDouble33 instead")]] void
+  getOriginalPDFCov2D(mrpt::math::CMatrixDouble33& cov3x3) const;
 
   /** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
    * \f$. \deprecated Use the return-by-value overload instead. */
-  [[deprecated("Use getOriginalPDFCov2D() returning CMatrixDouble instead")]]
-  void getOriginalPDFCov2D(mrpt::math::CMatrixDouble& cov3x3) const;
+  [[deprecated("Use getOriginalPDFCov2D() returning CMatrixDouble instead")]] void
+  getOriginalPDFCov2D(mrpt::math::CMatrixDouble& cov3x3) const;
 
   /** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
    * \f$. */
@@ -134,14 +134,14 @@ class CPoseRandomSampler
   /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
    * yaw ~ pitch ~ roll ] \f$. \deprecated Use the return-by-value overload
    * instead. */
-  [[deprecated("Use getOriginalPDFCov3D() returning CMatrixDouble66 instead")]]
-  void getOriginalPDFCov3D(mrpt::math::CMatrixDouble66& cov6x6) const;
+  [[deprecated("Use getOriginalPDFCov3D() returning CMatrixDouble66 instead")]] void
+  getOriginalPDFCov3D(mrpt::math::CMatrixDouble66& cov6x6) const;
 
   /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
    * yaw ~ pitch ~ roll ] \f$. \deprecated Use the return-by-value overload
    * instead. */
-  [[deprecated("Use getOriginalPDFCov3D() returning CMatrixDouble instead")]]
-  void getOriginalPDFCov3D(mrpt::math::CMatrixDouble& cov6x6) const;
+  [[deprecated("Use getOriginalPDFCov3D() returning CMatrixDouble instead")]] void
+  getOriginalPDFCov3D(mrpt::math::CMatrixDouble& cov6x6) const;
 
   /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
    * yaw ~ pitch ~ roll ] \f$. */

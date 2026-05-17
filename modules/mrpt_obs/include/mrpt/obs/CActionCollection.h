@@ -13,13 +13,13 @@
 */
 #pragma once
 
-#include <optional>
-
 #include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/serialization/CSerializable.h>
+
+#include <optional>
 
 namespace mrpt::obs
 {
@@ -188,7 +188,8 @@ class CActionCollection : public mrpt::serialization::CSerializable
    * \return true on success,false on no odometry found.
    * \deprecated Use getFirstMovementEstimation() returning optional instead.
    */
-  [[nodiscard]] bool getFirstMovementEstimation(mrpt::poses::CPose3DPDFGaussian& out_pose_increment) const;
+  [[nodiscard]] bool getFirstMovementEstimation(
+      mrpt::poses::CPose3DPDFGaussian& out_pose_increment) const;
 
   /** Returns the pose PDF increment from the first odometry action found,
    * or std::nullopt if none exists. */

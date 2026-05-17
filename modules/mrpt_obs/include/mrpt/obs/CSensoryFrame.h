@@ -301,7 +301,8 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    * \return The observation, or nullptr if not found.
    * \sa begin, size
    */
-  CObservation::ConstPtr getObservationBySensorLabel(const std::string& label, size_t idx = 0) const;
+  CObservation::ConstPtr getObservationBySensorLabel(
+      const std::string& label, size_t idx = 0) const;
   /// \overload Non-const version returning a mutable Ptr
   CObservation::Ptr getObservationBySensorLabel(const std::string& label, size_t idx = 0);
 

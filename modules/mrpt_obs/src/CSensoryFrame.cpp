@@ -175,8 +175,7 @@ CObservation::ConstPtr CSensoryFrame::getObservationBySensorLabel(
   MRPT_END
 }
 
-CObservation::Ptr CSensoryFrame::getObservationBySensorLabel(
-    const std::string& label, size_t idx)
+CObservation::Ptr CSensoryFrame::getObservationBySensorLabel(const std::string& label, size_t idx)
 {
   MRPT_START
 

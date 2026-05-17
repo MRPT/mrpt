@@ -13,8 +13,6 @@
 */
 #pragma once
 
-#include <tuple>
-
 #include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/math/CMatrixFixed.h>
@@ -24,6 +22,8 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/poses/CPose.h>
 #include <mrpt/system/string_utils.h>
+
+#include <tuple>
 
 namespace mrpt::poses
 {
@@ -298,8 +298,8 @@ class CPose3D :
    * \sa getInverseHomogeneousMatrix, getRotationMatrix
    * \deprecated Use getHomogeneousMatrix() returning by value instead.
    */
-  [[deprecated("Use getHomogeneousMatrix() returning by value instead.")]]
-  void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
+  [[deprecated("Use getHomogeneousMatrix() returning by value instead.")]] void
+  getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
 
   /** Returns the corresponding 4x4 homogeneous transformation matrix.
    * \sa getInverseHomogeneousMatrix, getRotationMatrix
@@ -309,8 +309,11 @@ class CPose3D :
   /** Get the 3x3 rotation matrix \sa getHomogeneousMatrix
    * \deprecated Use getRotationMatrix() returning by value instead.
    */
-  [[deprecated("Use getRotationMatrix() returning by value instead.")]]
-  void getRotationMatrix(mrpt::math::CMatrixDouble33& ROT) const { ROT = m_ROT; }
+  [[deprecated("Use getRotationMatrix() returning by value instead.")]] void getRotationMatrix(
+      mrpt::math::CMatrixDouble33& ROT) const
+  {
+    ROT = m_ROT;
+  }
   //! \overload Returns rotation matrix by const reference (efficient, zero-copy).
   const mrpt::math::CMatrixDouble33& getRotationMatrix() const { return m_ROT; }
 
@@ -638,8 +641,8 @@ class CPose3D :
   [[nodiscard]] std::tuple<double, double, double> getYawPitchRoll() const;
 
   /** \deprecated Use getYawPitchRoll() returning a tuple instead. */
-  [[deprecated("Use getYawPitchRoll() returning a tuple instead.")]]
-  void getYawPitchRoll(double& yaw, double& pitch, double& roll) const;
+  [[deprecated("Use getYawPitchRoll() returning a tuple instead.")]] void getYawPitchRoll(
+      double& yaw, double& pitch, double& roll) const;
 
   /** Get the YAW angle (in radians)  \sa setFromValues */
   double yaw() const

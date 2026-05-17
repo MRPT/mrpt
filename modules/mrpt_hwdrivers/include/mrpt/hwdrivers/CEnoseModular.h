@@ -124,8 +124,8 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
    * \return true if OK, false if there were any error.
    */
   /** \deprecated Use grabFrame() instead. */
-  [[deprecated("Use grabFrame() instead")]]
-  bool getObservation(mrpt::obs::CObservationGasSensors& outObservation);
+  [[deprecated("Use grabFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationGasSensors& outObservation);
 
   /** Request the master eNose the latest readings from all the eNoses.
    * \return std::nullopt on error, or the observation on success.
@@ -133,7 +133,10 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
   [[nodiscard]] std::optional<mrpt::obs::CObservationGasSensors> grabFrame()
   {
     mrpt::obs::CObservationGasSensors obs;
-    if (!getObservation(obs)) { return std::nullopt; }
+    if (!getObservation(obs))
+    {
+      return std::nullopt;
+    }
     return obs;
   }
 

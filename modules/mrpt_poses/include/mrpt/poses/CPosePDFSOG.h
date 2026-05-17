@@ -156,8 +156,8 @@ class CPosePDFSOG : public CPosePDF
    * covariance matrix (3x3 cov matrix) and the mean. \sa getMean
    * \deprecated Use getMostLikelyCovarianceAndMean() returning a pair instead.
    */
-  [[deprecated("Use getMostLikelyCovarianceAndMean() returning a pair instead.")]]
-  void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const;
+  [[deprecated("Use getMostLikelyCovarianceAndMean() returning a pair instead.")]] void
+  getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const;
 
   /** Returns the covariance and mean of the most likely Gaussian mode.
    * \sa getMean

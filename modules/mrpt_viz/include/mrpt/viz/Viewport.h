@@ -338,8 +338,7 @@ class Viewport :
   template <typename T>
   [[nodiscard]] typename T::Ptr getByClass(size_t ith = 0)
   {
-    return std::const_pointer_cast<T>(
-        static_cast<const Viewport*>(this)->getByClass<T>(ith));
+    return std::const_pointer_cast<T>(static_cast<const Viewport*>(this)->getByClass<T>(ith));
   }
 
   /** Removes the given object from the scene (it also deletes the object to

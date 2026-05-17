@@ -174,8 +174,8 @@ class CImageGrabber_dc1394
    * \note May block when using software trigger if no frame is pending.
    * \deprecated Use grabFrame() instead.
    */
-  [[deprecated("Use grabFrame() instead")]]
-  bool getObservation(mrpt::obs::CObservationImage& out_observation);
+  [[deprecated("Use grabFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationImage& out_observation);
 
   /** \brief Grabs one frame from a monocular FireWire camera, returning by
    * value.
@@ -185,7 +185,10 @@ class CImageGrabber_dc1394
   [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame()
   {
     mrpt::obs::CObservationImage obs;
-    if (!getObservation(obs)) { return std::nullopt; }
+    if (!getObservation(obs))
+    {
+      return std::nullopt;
+    }
     return obs;
   }
 
@@ -195,8 +198,8 @@ class CImageGrabber_dc1394
    * \return false on any error, true on success.
    * \deprecated Use grabStereoFrame() instead.
    */
-  [[deprecated("Use grabStereoFrame() instead")]]
-  bool getObservation(mrpt::obs::CObservationStereoImages& out_observation);
+  [[deprecated("Use grabStereoFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationStereoImages& out_observation);
 
   /** \brief Grabs a stereo frame from a FireWire stereo camera, returning by
    * value.
@@ -207,7 +210,10 @@ class CImageGrabber_dc1394
   [[nodiscard]] std::optional<mrpt::obs::CObservationStereoImages> grabStereoFrame()
   {
     mrpt::obs::CObservationStereoImages obs;
-    if (!getObservation(obs)) { return std::nullopt; }
+    if (!getObservation(obs))
+    {
+      return std::nullopt;
+    }
     return obs;
   }
 

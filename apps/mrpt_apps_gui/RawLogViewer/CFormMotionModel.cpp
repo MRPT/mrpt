@@ -640,7 +640,8 @@ void CFormMotionModel::applyToLoadedRawlog()
         CActionCollection::Ptr acts = rawlog.getAsAction(i);
 
         CActionRobotMovement2D::Ptr firstActionMov =
-            std::const_pointer_cast<CActionRobotMovement2D>(acts->getActionByClass<CActionRobotMovement2D>());
+            std::const_pointer_cast<CActionRobotMovement2D>(
+                acts->getActionByClass<CActionRobotMovement2D>());
 
         if (firstActionMov)
         {
@@ -742,7 +743,8 @@ void CFormMotionModel::applyToRawlogFile()
         CActionCollection::Ptr acts = std::dynamic_pointer_cast<CActionCollection>(newObj);
 
         CActionRobotMovement2D::Ptr firstActionMov =
-            std::const_pointer_cast<CActionRobotMovement2D>(acts->getActionByClass<CActionRobotMovement2D>());
+            std::const_pointer_cast<CActionRobotMovement2D>(
+                acts->getActionByClass<CActionRobotMovement2D>());
         if (firstActionMov)
         {
           if (firstActionMov->estimationMethod == CActionRobotMovement2D::emOdometry)
