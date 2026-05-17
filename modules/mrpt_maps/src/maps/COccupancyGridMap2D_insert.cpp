@@ -109,7 +109,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
       // ---------------------------------------------
       //		Insert the scan as simple rays:
       // ---------------------------------------------
-      int cx, cy, N = o.getScanSize();
+      int cx, cy, N = static_cast<int>(o.getScanSize());
       float A, dAK;
 
       // Parameters values:
@@ -446,7 +446,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
         last_valid_range = maxDistanceInsertion;
 
-        const float dA_2 = 0.5f * o.aperture / N;
+        const float dA_2 = 0.5f * o.aperture / static_cast<float>(N);
         for (idx = 0; idx < nRanges; idx += K, A += dAK)
         {
           float theR;  // The range of this beam
@@ -1319,7 +1319,7 @@ void COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
   MRPT_LOAD_CONFIG_VAR(maxFreenessInvalidRanges, float, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(useMapAltitude, bool, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(considerInvalidRangesAsFreeSpace, bool, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(decimation, int, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR_CAST(decimation, int, uint16_t, iniFile, section);
   MRPT_LOAD_CONFIG_VAR_DEGREESf(horizontalTolerance, iniFile, section);
 
   MRPT_LOAD_CONFIG_VAR(CFD_features_gaussian_size, float, iniFile, section);

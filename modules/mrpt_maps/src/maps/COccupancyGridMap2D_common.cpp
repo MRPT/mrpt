@@ -137,10 +137,10 @@ void COccupancyGridMap2D::setSize(
 
   // Adjust sizes to adapt them to full sized cells according to the
   // resolution:
-  xmin = res * round(xmin / res);
-  ymin = res * round(ymin / res);
-  xmax = res * round(xmax / res);
-  ymax = res * round(ymax / res);
+  xmin = res * static_cast<float>(round(xmin / res));
+  ymin = res * static_cast<float>(round(ymin / res));
+  xmax = res * static_cast<float>(round(xmax / res));
+  ymax = res * static_cast<float>(round(ymax / res));
 
   // Set parameters:
   this->m_resolution = res;
@@ -229,13 +229,13 @@ void COccupancyGridMap2D::resizeGrid(
   // Adjust sizes to adapt them to full sized cells according to the
   // resolution:
   if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) > 0.05f)
-    new_x_min = m_resolution * round(new_x_min / m_resolution);
+    new_x_min = m_resolution * static_cast<float>(round(new_x_min / m_resolution));
   if (fabs(new_y_min / m_resolution - round(new_y_min / m_resolution)) > 0.05f)
-    new_y_min = m_resolution * round(new_y_min / m_resolution);
+    new_y_min = m_resolution * static_cast<float>(round(new_y_min / m_resolution));
   if (fabs(new_x_max / m_resolution - round(new_x_max / m_resolution)) > 0.05f)
-    new_x_max = m_resolution * round(new_x_max / m_resolution);
+    new_x_max = m_resolution * static_cast<float>(round(new_x_max / m_resolution));
   if (fabs(new_y_max / m_resolution - round(new_y_max / m_resolution)) > 0.05f)
-    new_y_max = m_resolution * round(new_y_max / m_resolution);
+    new_y_max = m_resolution * static_cast<float>(round(new_y_max / m_resolution));
 
   // Change size: 4 sides extensions:
   extra_x_izq = round((m_xMin - new_x_min) / m_resolution);
@@ -380,15 +380,15 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 
   // The info: (See ref. paper EMMI in IROS 2006)
   info.I /= MAX_H;
-  info.I += info.effectiveMappedCells;
+  info.I += static_cast<double>(info.effectiveMappedCells);
 
   // Mean values:
   // ------------------------------------------
-  info.effectiveMappedArea = info.effectiveMappedCells * m_resolution * m_resolution;
+  info.effectiveMappedArea = static_cast<double>(info.effectiveMappedCells) * static_cast<double>(m_resolution) * static_cast<double>(m_resolution);
   if (info.effectiveMappedCells)
   {
-    info.mean_H = info.H / info.effectiveMappedCells;
-    info.mean_I = info.I / info.effectiveMappedCells;
+    info.mean_H = info.H / static_cast<double>(info.effectiveMappedCells);
+    info.mean_I = info.I / static_cast<double>(info.effectiveMappedCells);
   }
   else
   {
