@@ -275,7 +275,11 @@ class COccupancyGridMap2D :
       bool additionalMargin = true) noexcept;
 
   /** Returns the area of the gridmap, in square meters */
-  double getArea() const { return m_size_x * m_size_y * mrpt::square(m_resolution); }
+  double getArea() const
+  {
+    return static_cast<double>(m_size_x) * static_cast<double>(m_size_y) *
+           mrpt::square(static_cast<double>(m_resolution));
+  }
 
   /** Returns the horizontal size of grid map in cells count */
   unsigned int getSizeX() const { return m_size_x; }
@@ -299,8 +303,8 @@ class COccupancyGridMap2D :
   int y2idx(double y) const { return static_cast<int>((y - m_yMin) / m_resolution); }
 
   /** Transform a cell index into a coordinate value */
-  float idx2x(size_t cx) const { return m_xMin + (cx + 0.5f) * m_resolution; }
-  float idx2y(size_t cy) const { return m_yMin + (cy + 0.5f) * m_resolution; }
+  float idx2x(size_t cx) const { return m_xMin + (static_cast<float>(cx) + 0.5f) * m_resolution; }
+  float idx2y(size_t cy) const { return m_yMin + (static_cast<float>(cy) + 0.5f) * m_resolution; }
 
   /** Transform a coordinate value into a cell index, using a different "x_min"
    * value */
@@ -759,7 +763,7 @@ class COccupancyGridMap2D :
       size_t N = 361,
       float noiseStd = 0,
       unsigned int decimation = 1,
-      float angleNoiseStd = mrpt::DEG2RAD(.0)) const;
+      float angleNoiseStd = 0.0f) const;
 
   /** Simulates the observations of a sonar rig into the current grid map.
    *   The simulated ranges are stored in a CObservationRange object, which is

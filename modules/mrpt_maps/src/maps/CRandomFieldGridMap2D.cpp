@@ -587,7 +587,7 @@ void CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
       {
         dist = m_resolution *
                sqrt(static_cast<double>(square(Ac_cutoff + 1 - cx) + square(Ac_cutoff + 1 - cy)));
-        *(it++) = std::exp(-square(dist / std));
+        *(it++) = static_cast<float>(std::exp(-square(dist / std)));
       }
     }
 
@@ -629,7 +629,7 @@ void CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
           TInsertionOptionsCommon
  ---------------------------------------------------------------*/
 CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
-    cutoffRadius(sigma * 3.0),
+    cutoffRadius(static_cast<float>(sigma) * 3.0f),
 
     GMRF_simplemap_file(""),
     GMRF_gridmap_image_file(""),
@@ -697,12 +697,12 @@ void CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_loadFromConfigFile
       iniFile.read_float(section.c_str(), "KF_observationModelNoise", KF_observationModelNoise);
   KF_defaultCellMeanValue =
       iniFile.read_float(section.c_str(), "KF_defaultCellMeanValue", KF_defaultCellMeanValue);
-  MRPT_LOAD_CONFIG_VAR(KF_W_size, int, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR_CAST(KF_W_size, int, uint16_t, iniFile, section);
 
-  GMRF_lambdaPrior = iniFile.read_float(section.c_str(), "GMRF_lambdaPrior", GMRF_lambdaPrior);
-  GMRF_lambdaObs = iniFile.read_float(section.c_str(), "GMRF_lambdaObs", GMRF_lambdaObs);
+  GMRF_lambdaPrior = iniFile.read_float(section.c_str(), "GMRF_lambdaPrior", static_cast<float>(GMRF_lambdaPrior));
+  GMRF_lambdaObs = iniFile.read_float(section.c_str(), "GMRF_lambdaObs", static_cast<float>(GMRF_lambdaObs));
   GMRF_lambdaObsLoss =
-      iniFile.read_float(section.c_str(), "GMRF_lambdaObsLoss", GMRF_lambdaObsLoss);
+      iniFile.read_float(section.c_str(), "GMRF_lambdaObsLoss", static_cast<float>(GMRF_lambdaObsLoss));
 
   GMRF_use_occupancy_information =
       iniFile.read_bool(section.c_str(), "GMRF_use_occupancy_information", false, false);
@@ -857,8 +857,8 @@ void CRandomFieldGridMap2D::resize(
             if (C1_isFromOldMap && C2_isFromOldMap)
             {
               // Copy values for the old matrix:
-              unsigned int idx_c1 = ((cx1 - Acx_left) + old_sizeX * (cy1 - Acy_bottom));
-              unsigned int idx_c2 = ((cx2 - Acx_left) + old_sizeX * (cy2 - Acy_bottom));
+              unsigned int idx_c1 = static_cast<unsigned int>((static_cast<size_t>(cx1) - Acx_left) + old_sizeX * (static_cast<size_t>(cy1) - Acy_bottom));
+              unsigned int idx_c2 = static_cast<unsigned int>((static_cast<size_t>(cx2) - Acx_left) + old_sizeX * (static_cast<size_t>(cy2) - Acy_bottom));
 
               MRPT_START
 
@@ -1025,7 +1025,7 @@ void CRandomFieldGridMap2D::resize(
         int cx, cy;
         idx2cxcy(static_cast<int>(i), cx, cy);
 
-        const int old_idx_of_i = (cx - Acx_left) + (cy - Acy_bottom) * static_cast<int>(old_sizeX);
+        const int old_idx_of_i = static_cast<int>((cx - Acx_left) + (cy - Acy_bottom) * old_sizeX);
 
         TRandomFieldCell& cell = m_map[i];
         if (cell.kf_std() < 0)
@@ -1236,9 +1236,9 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
       for (size_t i = 0; i < m_size_y; i++)
         for (size_t j = 0; j < m_size_x; j++)
         {
-          MEAN(i, j) = static_cast<float>(
+          MEAN(static_cast<int>(i), static_cast<int>(j)) = static_cast<float>(
               cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->kf_mean());
-          STDs(i, j) = static_cast<float>(
+          STDs(static_cast<int>(i), static_cast<int>(j)) = static_cast<float>(
               cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->kf_std());
         }
 
@@ -1280,16 +1280,16 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
       {
         for (size_t j = 0; j < m_size_x; ++j, ++idx)
         {
-          MEAN(i, j) = static_cast<float>(
+          MEAN(static_cast<int>(i), static_cast<int>(j)) = static_cast<float>(
               cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_mean());
-          STDs(i, j) = static_cast<float>(
+          STDs(static_cast<int>(i), static_cast<int>(j)) = static_cast<float>(
               cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_std());
 
-          XYZ(idx, 0) = idx2x(j);
-          XYZ(idx, 1) = idx2y(i);
-          XYZ(idx, 2) =
+          XYZ(static_cast<int>(idx), 0) = static_cast<float>(idx2x(static_cast<int>(j)));
+          XYZ(static_cast<int>(idx), 1) = static_cast<float>(idx2y(static_cast<int>(i)));
+          XYZ(static_cast<int>(idx), 2) =
               cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_mean();
-          XYZ(idx, 3) = cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_std();
+          XYZ(static_cast<int>(idx), 3) = cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_std();
         }
       }
 
@@ -1563,9 +1563,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = static_cast<float>(ys[cy - 1]);
           triag.z(2) = static_cast<float>(c_x_1y_1);
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
-          triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1).asTColor());
+          triag.vertices[0].setColor(colormap(cmJET, static_cast<float>(col_xy)).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, static_cast<float>(col_xy_1)).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, static_cast<float>(col_x_1y_1)).asTColor());
 
           obj_m->insertTriangle(triag);
 
@@ -1579,9 +1579,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.x(2) = static_cast<float>(xs[cx - 1]);
           triag.y(2) = static_cast<float>(ys[cy]);
           triag.z(2) = static_cast<float>(c_x_1y);
-          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
-          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y).asTColor());
+          triag.vertices[0].setColor(colormap(cmJET, static_cast<float>(col_xy)).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, static_cast<float>(col_x_1y_1)).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, static_cast<float>(col_x_1y)).asTColor());
           obj_m->insertTriangle(triag);
 
           // VARIANCE values
@@ -1600,36 +1600,36 @@ void CRandomFieldGridMap2D::getAs3DObject(
           // (v_x_1y_1-minVal_v)/AMaxMin_v ) );
 
           // Triangle #1:
-          triag.x(0) = xs[cx];
-          triag.y(0) = ys[cy];
-          triag.z(0) = c_xy + v_xy;
-          triag.x(1) = xs[cx];
-          triag.y(1) = ys[cy - 1];
-          triag.z(1) = c_xy_1 + v_xy_1;
-          triag.x(2) = xs[cx - 1];
-          triag.y(2) = ys[cy - 1];
-          triag.z(2) = c_x_1y_1 + v_x_1y_1;
+          triag.x(0) = static_cast<float>(xs[cx]);
+          triag.y(0) = static_cast<float>(ys[cy]);
+          triag.z(0) = static_cast<float>(c_xy + v_xy);
+          triag.x(1) = static_cast<float>(xs[cx]);
+          triag.y(1) = static_cast<float>(ys[cy - 1]);
+          triag.z(1) = static_cast<float>(c_xy_1 + v_xy_1);
+          triag.x(2) = static_cast<float>(xs[cx - 1]);
+          triag.y(2) = static_cast<float>(ys[cy - 1]);
+          triag.z(2) = static_cast<float>(c_x_1y_1 + v_x_1y_1);
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
-          triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1).asTColor());
+          triag.vertices[0].setColor(colormap(cmJET, static_cast<float>(col_xy)).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, static_cast<float>(col_xy_1)).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, static_cast<float>(col_x_1y_1)).asTColor());
 
           obj_v->insertTriangle(triag);
 
           // Triangle #2:
-          triag.x(0) = xs[cx];
-          triag.y(0) = ys[cy];
-          triag.z(0) = c_xy + v_xy;
-          triag.x(1) = xs[cx - 1];
-          triag.y(1) = ys[cy - 1];
-          triag.z(1) = c_x_1y_1 + v_x_1y_1;
-          triag.x(2) = xs[cx - 1];
-          triag.y(2) = ys[cy];
-          triag.z(2) = c_x_1y + v_x_1y;
+          triag.x(0) = static_cast<float>(xs[cx]);
+          triag.y(0) = static_cast<float>(ys[cy]);
+          triag.z(0) = static_cast<float>(c_xy + v_xy);
+          triag.x(1) = static_cast<float>(xs[cx - 1]);
+          triag.y(1) = static_cast<float>(ys[cy - 1]);
+          triag.z(1) = static_cast<float>(c_x_1y_1 + v_x_1y_1);
+          triag.x(2) = static_cast<float>(xs[cx - 1]);
+          triag.y(2) = static_cast<float>(ys[cy]);
+          triag.z(2) = static_cast<float>(c_x_1y + v_x_1y);
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
-          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y).asTColor());
+          triag.vertices[0].setColor(colormap(cmJET, static_cast<float>(col_xy)).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, static_cast<float>(col_x_1y_1)).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, static_cast<float>(col_x_1y)).asTColor());
 
           obj_v->insertTriangle(triag);
 
@@ -1723,9 +1723,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = static_cast<float>(ys[cy - 1]);
           triag.z(2) = static_cast<float>(c_x_1y_1);
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
-          triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1).asTColor());
+          triag.vertices[0].setColor(colormap(cmJET, static_cast<float>(col_xy)).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, static_cast<float>(col_xy_1)).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, static_cast<float>(col_x_1y_1)).asTColor());
 
           obj_m->insertTriangle(triag);
 
@@ -1740,9 +1740,9 @@ void CRandomFieldGridMap2D::getAs3DObject(
           triag.y(2) = static_cast<float>(ys[cy]);
           triag.z(2) = static_cast<float>(c_x_1y);
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
-          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y).asTColor());
+          triag.vertices[0].setColor(colormap(cmJET, static_cast<float>(col_xy)).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, static_cast<float>(col_x_1y_1)).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, static_cast<float>(col_x_1y)).asTColor());
 
           obj_m->insertTriangle(triag);
 
@@ -1759,36 +1759,36 @@ void CRandomFieldGridMap2D::getAs3DObject(
           col_x_1y_1 = v_x_1y_1;
 
           // Triangle #1:
-          triag.x(0) = xs[cx];
-          triag.y(0) = ys[cy];
-          triag.z(0) = v_xy;
-          triag.x(1) = xs[cx];
-          triag.y(1) = ys[cy - 1];
-          triag.z(1) = v_xy_1;
-          triag.x(2) = xs[cx - 1];
-          triag.y(2) = ys[cy - 1];
-          triag.z(2) = v_x_1y_1;
+          triag.x(0) = static_cast<float>(xs[cx]);
+          triag.y(0) = static_cast<float>(ys[cy]);
+          triag.z(0) = static_cast<float>(v_xy);
+          triag.x(1) = static_cast<float>(xs[cx]);
+          triag.y(1) = static_cast<float>(ys[cy - 1]);
+          triag.z(1) = static_cast<float>(v_xy_1);
+          triag.x(2) = static_cast<float>(xs[cx - 1]);
+          triag.y(2) = static_cast<float>(ys[cy - 1]);
+          triag.z(2) = static_cast<float>(v_x_1y_1);
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
-          triag.vertices[1].setColor(colormap(cmJET, col_xy_1).asTColor());
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y_1).asTColor());
+          triag.vertices[0].setColor(colormap(cmJET, static_cast<float>(col_xy)).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, static_cast<float>(col_xy_1)).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, static_cast<float>(col_x_1y_1)).asTColor());
 
           obj_v->insertTriangle(triag);
 
           // Triangle #2:
-          triag.x(0) = xs[cx];
-          triag.y(0) = ys[cy];
-          triag.z(0) = v_xy;
-          triag.x(1) = xs[cx - 1];
-          triag.y(1) = ys[cy - 1];
-          triag.z(1) = v_x_1y_1;
-          triag.x(2) = xs[cx - 1];
-          triag.y(2) = ys[cy];
-          triag.z(2) = v_x_1y;
+          triag.x(0) = static_cast<float>(xs[cx]);
+          triag.y(0) = static_cast<float>(ys[cy]);
+          triag.z(0) = static_cast<float>(v_xy);
+          triag.x(1) = static_cast<float>(xs[cx - 1]);
+          triag.y(1) = static_cast<float>(ys[cy - 1]);
+          triag.z(1) = static_cast<float>(v_x_1y_1);
+          triag.x(2) = static_cast<float>(xs[cx - 1]);
+          triag.y(2) = static_cast<float>(ys[cy]);
+          triag.z(2) = static_cast<float>(v_x_1y);
 
-          triag.vertices[0].setColor(colormap(cmJET, col_xy).asTColor());
-          triag.vertices[1].setColor(colormap(cmJET, col_x_1y_1).asTColor());
-          triag.vertices[2].setColor(colormap(cmJET, col_x_1y).asTColor());
+          triag.vertices[0].setColor(colormap(cmJET, static_cast<float>(col_xy)).asTColor());
+          triag.vertices[1].setColor(colormap(cmJET, static_cast<float>(col_x_1y_1)).asTColor());
+          triag.vertices[2].setColor(colormap(cmJET, static_cast<float>(col_x_1y)).asTColor());
 
           obj_v->insertTriangle(triag);
 
@@ -2077,21 +2077,21 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
     int limit_cx = Acy < 0 ? Acx1 : -1;
 
     size_t idx = cx_c + Acx0 + m_size_x * (cy_c + Acy);
-    int idx_c_in_idx = -Acy * W21 - Acx0;
+    int idx_c_in_idx = -Acy * static_cast<int>(W21) - Acx0;
 
-    int window_idx = Acx0 + W + (Acy + W) * W21;
+    int window_idx = Acx0 + W + (Acy + W) * static_cast<int>(W21);
 
     for (int Acx = Acx0; Acx <= limit_cx; Acx++)
     {
       ASSERT_(idx_c_in_idx > 0);
-      const double cov_i_c = m_stackedCov(idx, idx_c_in_idx);
+      const double cov_i_c = m_stackedCov(static_cast<int>(idx), idx_c_in_idx);
       // JGmonroy - review m_stackedCov
 
       m_map[idx].kf_mean() += yk * sk_1 * cov_i_c;
 
       // Save window indexes:
       cross_covs_c_i[window_idx] = cov_i_c;
-      window_idxs[window_idx++] = idx;
+      window_idxs[window_idx++] = static_cast<int>(idx);
 
       idx_c_in_idx--;
       idx++;
@@ -2106,11 +2106,11 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
     size_t idx = cx_c + start_cx + m_size_x * (cy_c + Acy);
     int idx_i_in_c;
     if (Acy > 0)
-      idx_i_in_c = (W + 1) + (Acy - 1) * W21 + (start_cx + W);  // Rest of rows
+      idx_i_in_c = (W + 1) + (Acy - 1) * static_cast<int>(W21) + (start_cx + W);  // Rest of rows
     else
       idx_i_in_c = 0;  // First row.
 
-    int window_idx = start_cx + W + (Acy + W) * W21;
+    int window_idx = start_cx + W + (Acy + W) * static_cast<int>(W21);
 
     for (int Acx = start_cx; Acx <= Acx1; Acx++)
     {
@@ -2121,7 +2121,7 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
 
       // Save window indexes:
       cross_covs_c_i[window_idx] = cov_i_c;
-      window_idxs[window_idx++] = idx;
+      window_idxs[window_idx++] = static_cast<int>(idx);
 
       idx_i_in_c++;
       idx++;
@@ -2167,7 +2167,7 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
 
       int idx_j_in_i;
       if (Ay > 0)
-        idx_j_in_i = Ax + W + (Ay - 1) * W21 + W + 1;
+        idx_j_in_i = Ax + W + (Ay - 1) * static_cast<int>(W21) + W + 1;
       else
         idx_j_in_i = Ax;  // First row:
 
@@ -2409,10 +2409,10 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
   // seed_cxo,seed_cyo,objective_cxo,objective_cyo);
 
   // Ensure delimited region is within the Occupancy map
-  cxo_min = max(cxo_min, (size_t)0);
-  cxo_max = min(cxo_max, (size_t)m_Ocgridmap->getSizeX() - 1);
-  cyo_min = max(cyo_min, (size_t)0);
-  cyo_max = min(cyo_max, (size_t)m_Ocgridmap->getSizeY() - 1);
+  cxo_min = max(cxo_min, static_cast<size_t>(0));
+  cxo_max = min(cxo_max, static_cast<size_t>(m_Ocgridmap->getSizeX()) - 1);
+  cyo_min = max(cyo_min, static_cast<size_t>(0));
+  cyo_max = min(cyo_max, static_cast<size_t>(m_Ocgridmap->getSizeY()) - 1);
 
   // printf("Under gridlimits cx=(%i,%i) and cy=(%i,%i) \n",
   // cxo_min,cxo_max,cyo_min,cyo_max);
@@ -2432,8 +2432,8 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
   }
 
   // Check that seed and obj have similar occupancy (0,1)
-  if ((m_Ocgridmap->getCell(seed_cxo, seed_cyo) < 0.5) !=
-      (m_Ocgridmap->getCell(objective_cxo, objective_cyo) < 0.5))
+  if ((m_Ocgridmap->getCell(static_cast<int>(seed_cxo), static_cast<int>(seed_cyo)) < 0.5) !=
+      (m_Ocgridmap->getCell(static_cast<int>(objective_cxo), static_cast<int>(objective_cyo)) < 0.5))
   {
     // std::cout << "Seed and objective have diff occupation (false)" << "\n";
     return false;
@@ -2476,8 +2476,8 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
                 if (!((i == 0 && j == 0) || !(matExp(row + j, col + i) == 0)))
                 {
                   // check if expand
-                  if ((m_Ocgridmap->getCell(row + cxo_min, col + cyo_min) < 0.5) ==
-                      (m_Ocgridmap->getCell(row + j + cxo_min, col + i + cyo_min) < 0.5))
+                  if ((m_Ocgridmap->getCell(static_cast<int>(row) + static_cast<int>(cxo_min), static_cast<int>(col) + static_cast<int>(cyo_min)) < 0.5) ==
+                      (m_Ocgridmap->getCell(static_cast<int>(row) + j + static_cast<int>(cxo_min), static_cast<int>(col) + i + static_cast<int>(cyo_min)) < 0.5))
                   {
                     if ((row + j + cxo_min == objective_cxo) &&
                         (col + i + cyo_min == objective_cyo))
