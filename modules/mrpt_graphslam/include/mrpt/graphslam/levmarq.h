@@ -540,7 +540,10 @@ void optimize_graph_spa_levmarq(
       {
         auto itP = graph.nodes.find(it);
         const typename gst::graph_t::constraint_t::type_value& P = itP->second;
-        for (size_t i = 0; i < DIMS_POSE; i++) x_norm += square(P[i]);
+        for (size_t i = 0; i < DIMS_POSE; i++)
+        {
+          x_norm += square(P[i]);
+        }
       }
       x_norm = std::sqrt(x_norm);
     }
@@ -552,77 +555,83 @@ void optimize_graph_spa_levmarq(
     {
       // The change is too small: we're done here...
       if (verbose)
+      {
         std::cout << "[optimize_graph_spa_levmarq] "
                   << format("End condition #2: %e < %e\n", delta_norm, thres_norm);
+      }
       break;
+    }
+
+    // =====================================================================================
+    // Accept this delta? Try it and look at the increase/decrease of
+    // the error:
+    //  new_x = old_x [+] (-delta)    , with [+] being the "manifold
+    //  exp()+add" operation.
+    // =====================================================================================
+    typename gst::graph_t::global_poses_t old_poses_backup;
+
+    {
+      ASSERTDEB_(delta.size() == int(nodes_to_optimize->size() * DIMS_POSE));
+      const double* delta_ptr = &delta[0];
+      for (unsigned long it : *nodes_to_optimize)
+      {
+        typename gst::Array_O exp_delta;
+        for (size_t i = 0; i < DIMS_POSE; i++)
+        {
+          exp_delta[i] = -*delta_ptr++;
+        }
+        // The "-" above is for the missing "-" dragged from the
+        // Gauss-Newton formula above.
+
+        // new_x_i =  exp_delta_i (+) old_x_i
+        auto it_old_value = graph.nodes.find(it);
+        old_poses_backup[it] = it_old_value->second;  // back up the old pose as a copy
+
+        // Update estimate:
+        it_old_value->second = it_old_value->second + gst::SE_TYPE::exp(exp_delta);
+      }
+    }
+
+    // =============================================================
+    // Compute Jacobians & errors with the new "graph.nodes" info:
+    // =============================================================
+    typename gst::map_pairIDs_pairJacobs_t new_lstJacobians;
+    std::vector<typename gst::Array_O> new_errs;
+
+    profiler.enter("optimize_graph_spa_levmarq.Jacobians&err");
+    double new_total_sqr_err =
+        computeJacobiansAndErrors<GRAPH_T>(graph, lstObservationData, new_lstJacobians, new_errs);
+    profiler.leave("optimize_graph_spa_levmarq.Jacobians&err");
+
+    // Now, to decide whether to accept the change:
+    if (new_total_sqr_err < total_sqr_err)  // rho>0)
+    {
+      // Accept the new point:
+      new_lstJacobians.swap(lstJacobians);
+      new_errs.swap(errs);
+      std::swap(new_total_sqr_err, total_sqr_err);
+
+      // Instruct to recompute H and grad from the new Jacobians.
+      have_to_recompute_H_and_grad = true;
     }
     else
     {
-      // =====================================================================================
-      // Accept this delta? Try it and look at the increase/decrease of
-      // the error:
-      //  new_x = old_x [+] (-delta)    , with [+] being the "manifold
-      //  exp()+add" operation.
-      // =====================================================================================
-      typename gst::graph_t::global_poses_t old_poses_backup;
-
+      // Nope...
+      // We have to revert the "graph.nodes" to "old_poses_backup"
+      for (auto it = old_poses_backup.begin(); it != old_poses_backup.end(); ++it)
       {
-        ASSERTDEB_(delta.size() == int(nodes_to_optimize->size() * DIMS_POSE));
-        const double* delta_ptr = &delta[0];
-        for (unsigned long it : *nodes_to_optimize)
-        {
-          typename gst::Array_O exp_delta;
-          for (size_t i = 0; i < DIMS_POSE; i++) exp_delta[i] = -*delta_ptr++;
-          // The "-" above is for the missing "-" dragged from the
-          // Gauss-Newton formula above.
-
-          // new_x_i =  exp_delta_i (+) old_x_i
-          auto it_old_value = graph.nodes.find(it);
-          old_poses_backup[it] = it_old_value->second;  // back up the old pose as a copy
-
-          // Update estimate:
-          it_old_value->second = it_old_value->second + gst::SE_TYPE::exp(exp_delta);
-        }
+        graph.nodes[it->first] = it->second;
       }
 
-      // =============================================================
-      // Compute Jacobians & errors with the new "graph.nodes" info:
-      // =============================================================
-      typename gst::map_pairIDs_pairJacobs_t new_lstJacobians;
-      std::vector<typename gst::Array_O> new_errs;
-
-      profiler.enter("optimize_graph_spa_levmarq.Jacobians&err");
-      double new_total_sqr_err =
-          computeJacobiansAndErrors<GRAPH_T>(graph, lstObservationData, new_lstJacobians, new_errs);
-      profiler.leave("optimize_graph_spa_levmarq.Jacobians&err");
-
-      // Now, to decide whether to accept the change:
-      if (new_total_sqr_err < total_sqr_err)  // rho>0)
+      if (verbose)
       {
-        // Accept the new point:
-        new_lstJacobians.swap(lstJacobians);
-        new_errs.swap(errs);
-        std::swap(new_total_sqr_err, total_sqr_err);
-
-        // Instruct to recompute H and grad from the new Jacobians.
-        have_to_recompute_H_and_grad = true;
+        std::cout << "[optimize_graph_spa_levmarq] Got larger error=" << new_total_sqr_err
+                  << ", retrying with a larger lambda...\n";
       }
-      else
-      {
-        // Nope...
-        // We have to revert the "graph.nodes" to "old_poses_backup"
-        for (auto it = old_poses_backup.begin(); it != old_poses_backup.end(); ++it)
-          graph.nodes[it->first] = it->second;
-
-        if (verbose)
-          std::cout << "[optimize_graph_spa_levmarq] Got larger error=" << new_total_sqr_err
-                    << ", retrying with a larger lambda...\n";
-        // Change params and try again:
-        lambda *= v;
-        v *= 2;
-      }
-
-    }  // end else end condition #2
+      // Change params and try again:
+      lambda *= v;
+      v *= 2;
+    }
 
   }  // end for each iter
 

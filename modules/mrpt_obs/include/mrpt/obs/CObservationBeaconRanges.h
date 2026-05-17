@@ -67,9 +67,9 @@ class CObservationBeaconRanges : public CObservation
   /** Prints out the contents of the object  */
   void debugPrintOut();
 
-  mrpt::poses::CPose3D getSensorPose() const override;  // See base class docs.
-  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;   // See base class docs.
-  void getDescriptionAsText(std::ostream& o) const override;                // See base class docs
+  mrpt::poses::CPose3D getSensorPose() const override;                     // See base class docs.
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;  // See base class docs.
+  void getDescriptionAsText(std::ostream& o) const override;               // See base class docs
 
   /** Easy look-up into the vector sensedData, returns the range for a given
    * beacon, or 0 if the beacon is not observed */

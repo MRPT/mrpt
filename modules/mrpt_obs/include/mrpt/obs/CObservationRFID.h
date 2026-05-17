@@ -43,11 +43,14 @@ class CObservationRFID : public CObservation
   struct TTagReading
   {
     TTagReading() = default;
+
     /** The power or signal strength as sensed by the RFID receiver (in dBm)
      */
     double power{-1000};
+
     /** EPC code of the observed tag */
     std::string epc;
+
     /** Port of the antenna that did the reading */
     std::string antennaPort;
   };
@@ -55,7 +58,7 @@ class CObservationRFID : public CObservation
   /** The vector of individual tag observations */
   std::vector<TTagReading> tag_readings;
 
-  uint32_t getNtags() const { return tag_readings.size(); }
+  std::size_t getNtags() const { return tag_readings.size(); }
   /** @} */
 
   mrpt::poses::CPose3D getSensorPose() const override;

@@ -361,8 +361,10 @@ void CObservation2DRangeScan::filterByExclusionAngles(
     if (ap_idx_ini < 0) ap_idx_ini = 0;
     if (ap_idx_end < 0) ap_idx_end = 0;
 
-    if (ap_idx_ini > static_cast<int>(sizeRangeScan)) ap_idx_ini = static_cast<int>(sizeRangeScan) - 1;
-    if (ap_idx_end > static_cast<int>(sizeRangeScan)) ap_idx_end = static_cast<int>(sizeRangeScan) - 1;
+    if (ap_idx_ini > static_cast<int>(sizeRangeScan))
+      ap_idx_ini = static_cast<int>(sizeRangeScan) - 1;
+    if (ap_idx_end > static_cast<int>(sizeRangeScan))
+      ap_idx_end = static_cast<int>(sizeRangeScan) - 1;
 
     const size_t idx_ini = ap_idx_ini;
     const size_t idx_end = ap_idx_end;

@@ -23,7 +23,6 @@
 #include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/WorkerThreadsPool.h>
 #include <mrpt/core/abs_diff.h>
-#include <mrpt/core/bit_cast.h>
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/format.h>
 #include <mrpt/core/from_string.h>

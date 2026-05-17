@@ -44,9 +44,9 @@ class CObservationWirelessPower : public CObservation
 
   /** @} */
 
-  mrpt::poses::CPose3D getSensorPose() const override;  // See base class docs
-  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;   // See base class docs
-  void getDescriptionAsText(std::ostream& o) const override;                // See base class docs
+  mrpt::poses::CPose3D getSensorPose() const override;                     // See base class docs
+  void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;  // See base class docs
+  void getDescriptionAsText(std::ostream& o) const override;               // See base class docs
 
   // See base class docs:
   bool exportTxtSupported() const override { return true; }

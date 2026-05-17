@@ -533,8 +533,7 @@ std::optional<mrpt::obs::CObservationImage> CImageGrabber_dc1394::grabFrame()
     dc1394_convert_frames(frame, new_frame);
 
     // Fill the output class:
-    obs.image.loadFromMemoryBuffer(
-        width, height, true, new_frame->image, true /* BGR -> RGB */);
+    obs.image.loadFromMemoryBuffer(width, height, true, new_frame->image, true /* BGR -> RGB */);
 
     // Free temporary frame:
     free(new_frame->image);
@@ -568,7 +567,7 @@ std::optional<mrpt::obs::CObservationImage> CImageGrabber_dc1394::grabFrame()
     }
 
     obs.image.loadFromMemoryBuffer(width, height, true,
-                                               imageBufRGB);  // Left cam.
+                                   imageBufRGB);  // Left cam.
     // obs.image.loadFromMemoryBuffer(width,height,true,
     // imageBufRGB+ width*height*3 ); // Right cam.
 
@@ -658,7 +657,7 @@ std::optional<mrpt::obs::CObservationStereoImages> CImageGrabber_dc1394::grabSte
 
     obs.hasImageRight = true;
     obs.imageLeft.loadFromMemoryBuffer(width, height, true,
-                                                   imageBufRGB);  // Left cam.
+                                       imageBufRGB);  // Left cam.
     obs.imageRight.loadFromMemoryBuffer(
         width, height, true,
         imageBufRGB + width * height * 3);  // Right cam.

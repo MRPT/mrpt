@@ -29,7 +29,7 @@ namespace mrpt::obs
  */
 struct TPixelLabelInfoBase
 {
-  TPixelLabelInfoBase(unsigned int BITFIELD_BYTES_) : BITFIELD_BYTES(BITFIELD_BYTES_) {}
+  TPixelLabelInfoBase(uint8_t BITFIELD_BYTES_) : BITFIELD_BYTES(BITFIELD_BYTES_) {}
   virtual ~TPixelLabelInfoBase();
 
   /** Used in CObservation3DRangeScan::pixelLabels */
@@ -41,11 +41,13 @@ struct TPixelLabelInfoBase
    */
   TMapLabelID2Name pixelLabelNames;
 
-  const std::string& getLabelName(unsigned int label_idx) const
+  const std::string& getLabelName(uint8_t label_idx) const
   {
     auto it = pixelLabelNames.find(label_idx);
     if (it == pixelLabelNames.end())
+    {
       throw std::runtime_error("Error: label index has no defined name");
+    }
     return it->second;
   }
   void setLabelName(unsigned int label_idx, const std::string& name)
@@ -58,7 +60,12 @@ struct TPixelLabelInfoBase
   {
     std::map<uint32_t, std::string>::const_iterator it;
     for (it = pixelLabelNames.begin(); it != pixelLabelNames.end(); it++)
-      if (it->second == name) return it->first;
+    {
+      if (it->second == name)
+      {
+        return it->first;
+      }
+    }
     return -1;
   }
 

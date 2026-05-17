@@ -384,7 +384,8 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 
   // Mean values:
   // ------------------------------------------
-  info.effectiveMappedArea = static_cast<double>(info.effectiveMappedCells) * static_cast<double>(m_resolution) * static_cast<double>(m_resolution);
+  info.effectiveMappedArea = static_cast<double>(info.effectiveMappedCells) *
+                             static_cast<double>(m_resolution) * static_cast<double>(m_resolution);
   if (info.effectiveMappedCells)
   {
     info.mean_H = info.H / static_cast<double>(info.effectiveMappedCells);

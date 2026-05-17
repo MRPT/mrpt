@@ -525,7 +525,8 @@ std::optional<mrpt::obs::CObservationWirelessPower> CWirelessPower::grabFrame()
 void CWirelessPower::doProcess()
 {
   auto grabbed = grabFrame();
-  if (grabbed) appendObservation(std::make_shared<mrpt::obs::CObservationWirelessPower>(std::move(*grabbed)));
+  if (grabbed)
+    appendObservation(std::make_shared<mrpt::obs::CObservationWirelessPower>(std::move(*grabbed)));
 }
 
 void CWirelessPower::loadConfig_sensorSpecific(

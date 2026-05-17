@@ -612,7 +612,10 @@ CMatrixDouble CPose3DPDFGaussian::getCovSubmatrix2D() const
   return out_cov;
 }
 
-void CPose3DPDFGaussian::getCovSubmatrix2D(CMatrixDouble& out_cov) const { out_cov = getCovSubmatrix2D(); }
+void CPose3DPDFGaussian::getCovSubmatrix2D(CMatrixDouble& out_cov) const
+{
+  out_cov = getCovSubmatrix2D();
+}
 
 bool mrpt::poses::operator==(const CPose3DPDFGaussian& p1, const CPose3DPDFGaussian& p2)
 {
