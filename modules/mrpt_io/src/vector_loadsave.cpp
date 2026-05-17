@@ -110,72 +110,96 @@ std::string mrpt::io::file_get_contents(const std::string& fileName)
 }
 
 bool mrpt::io::vectorToTextFile(
-    const vector<float>& vec, const string& fileName, bool append, bool byRows)
+    const vector<float>& vec, const string& fileName, const VectorTextFileOptions& opts)
 {
-  FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
+  FILE* f = os::fopen(fileName.c_str(), opts.append ? "at" : "wt");
   if (!f)
   {
     return false;
   }
 
-  for (float it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", static_cast<double>(it));
+  for (float it : vec) os::fprintf(f, opts.byRows ? "%e " : "%e\n", static_cast<double>(it));
 
-  if (byRows) os::fprintf(f, "\n");
+  if (opts.byRows) os::fprintf(f, "\n");
 
   os::fclose(f);
-  return true;  // All ok.
+  return true;
+}
+
+bool mrpt::io::vectorToTextFile(
+    const vector<float>& vec, const string& fileName, bool append, bool byRows)
+{
+  return vectorToTextFile(vec, fileName, VectorTextFileOptions{append, byRows});
+}
+
+bool mrpt::io::vectorToTextFile(
+    const vector<double>& vec, const string& fileName, const VectorTextFileOptions& opts)
+{
+  FILE* f = os::fopen(fileName.c_str(), opts.append ? "at" : "wt");
+  if (!f)
+  {
+    return false;
+  }
+
+  for (double it : vec) os::fprintf(f, opts.byRows ? "%e " : "%e\n", it);
+
+  if (opts.byRows) os::fprintf(f, "\n");
+
+  os::fclose(f);
+  return true;
 }
 
 bool mrpt::io::vectorToTextFile(
     const vector<double>& vec, const string& fileName, bool append, bool byRows)
 {
-  FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
+  return vectorToTextFile(vec, fileName, VectorTextFileOptions{append, byRows});
+}
+
+bool mrpt::io::vectorToTextFile(
+    const vector<int>& vec, const string& fileName, const VectorTextFileOptions& opts)
+{
+  FILE* f = os::fopen(fileName.c_str(), opts.append ? "at" : "wt");
   if (!f)
   {
     return false;
   }
 
-  for (double it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", it);
+  for (int it : vec) os::fprintf(f, opts.byRows ? "%i " : "%i\n", it);
 
-  if (byRows) os::fprintf(f, "\n");
+  if (opts.byRows) os::fprintf(f, "\n");
 
   os::fclose(f);
-  return true;  // All ok.
+  return true;
 }
 
 bool mrpt::io::vectorToTextFile(
     const vector<int>& vec, const string& fileName, bool append, bool byRows)
 {
-  FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
-  if (!f)
-  {
-    return false;
-  }
-
-  for (int it : vec) os::fprintf(f, byRows ? "%i " : "%i\n", it);
-
-  if (byRows) os::fprintf(f, "\n");
-
-  os::fclose(f);
-  return true;  // All ok.
+  return vectorToTextFile(vec, fileName, VectorTextFileOptions{append, byRows});
 }
 
 bool mrpt::io::vectorToTextFile(
-    const vector<size_t>& vec, const string& fileName, bool append, bool byRows)
+    const vector<size_t>& vec, const string& fileName, const VectorTextFileOptions& opts)
 {
-  FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
+  FILE* f = os::fopen(fileName.c_str(), opts.append ? "at" : "wt");
   if (!f)
   {
     return false;
   }
 
   for (unsigned long it : vec)
-    os::fprintf(f, byRows ? "%u " : "%u\n", static_cast<unsigned int>(it));
+    os::fprintf(f, opts.byRows ? "%u " : "%u\n", static_cast<unsigned int>(it));
 
-  if (byRows) os::fprintf(f, "\n");
+  if (opts.byRows) os::fprintf(f, "\n");
 
   os::fclose(f);
-  return true;  // All ok.
+  return true;
+}
+
+bool mrpt::io::vectorToTextFile(
+    const vector<size_t>& vec, const string& fileName, bool append, bool byRows)
+{
+  return vectorToTextFile(vec, fileName, VectorTextFileOptions{append, byRows});
 }
 
 bool mrpt::io::vectorNumericFromTextFile(

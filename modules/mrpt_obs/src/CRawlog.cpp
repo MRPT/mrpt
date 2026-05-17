@@ -114,13 +114,13 @@ CRawlog::TEntryType CRawlog::getType(size_t index) const
   const CSerializable::Ptr& obj = m_seqOfActObs[index];
 
   if (obj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
-    return etObservation;
+    return TEntryType::etObservation;
   else if (obj->GetRuntimeClass() == CLASS_ID(CActionCollection))
-    return etActionCollection;
+    return TEntryType::etActionCollection;
   else if (obj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
-    return etSensoryFrame;
+    return TEntryType::etSensoryFrame;
   else
-    return etOther;
+    return TEntryType::etOther;
 
   MRPT_END
 }
@@ -505,13 +505,13 @@ bool CRawlog::getActionObservationPair(
 {
   try
   {
-    while (getType(rawlogEntry) != CRawlog::etActionCollection)
+    while (getType(rawlogEntry) != CRawlog::TEntryType::etActionCollection)
     {
       rawlogEntry++;
     }
     action = getAsAction(rawlogEntry++);
 
-    while (getType(rawlogEntry) != CRawlog::etSensoryFrame)
+    while (getType(rawlogEntry) != CRawlog::TEntryType::etSensoryFrame)
     {
       rawlogEntry++;
     }

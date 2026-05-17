@@ -93,7 +93,7 @@ class CRawlog : public mrpt::serialization::CSerializable
   /** The type of each entry in a rawlog.
    * \sa CRawlog::getType
    */
-  enum TEntryType
+  enum class TEntryType
   {
     /** The entry is of type mrpt::obs::CSensoryFrame */
     etSensoryFrame = 0,
@@ -296,11 +296,11 @@ class CRawlog : public mrpt::serialization::CSerializable
     TEntryType getType() const
     {
       if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
-        return etObservation;
+        return TEntryType::etObservation;
       else if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CSensoryFrame)))
-        return etSensoryFrame;
+        return TEntryType::etSensoryFrame;
       else
-        return etActionCollection;
+        return TEntryType::etActionCollection;
     }
 
     static iterator erase(TListObjects& lst, const iterator& it) { return lst.erase(it.m_it); }
@@ -347,11 +347,11 @@ class CRawlog : public mrpt::serialization::CSerializable
     TEntryType getType() const
     {
       if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
-        return etObservation;
+        return TEntryType::etObservation;
       else if ((*m_it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CSensoryFrame)))
-        return etSensoryFrame;
+        return TEntryType::etSensoryFrame;
       else
-        return etActionCollection;
+        return TEntryType::etActionCollection;
     }
   };
 

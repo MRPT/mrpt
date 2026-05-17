@@ -51,7 +51,7 @@ struct MinimalRobotIF : public mrpt::nav::CRobot2NavInterface
     changeSpeeds_call_count++;
     return true;
   }
-  bool stop(bool /*isEmergencyStop*/) override
+  bool stop(mrpt::nav::StopType /*stopType*/) override
   {
     stop_call_count++;
     return true;

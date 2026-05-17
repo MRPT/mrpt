@@ -56,10 +56,11 @@ class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
     return true;  // ok
   }
 
-  bool stop(bool isEmergencyStop) override
+  bool stop(StopType stopType) override
   {
+    const bool isEmergency = (stopType == StopType::Emergency);
     m_simul.sendVelRampCmd(
-        0.0 /*vel*/, 0 /*dir*/, isEmergencyStop ? 0.1 : 1.0 /* ramp_time */, 0.0 /*rot speed */);
+        0.0 /*vel*/, 0 /*dir*/, isEmergency ? 0.1 : 1.0 /* ramp_time */, 0.0 /*rot speed */);
     return true;
   }
 
@@ -127,7 +128,7 @@ class CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface
     return true;  // ok
   }
 
-  bool stop(bool isEmergencyStop) override
+  bool stop(StopType /*stopType*/) override
   {
     mrpt::kinematics::CVehicleVelCmd_DiffDriven cmd;
     cmd.setToStop();

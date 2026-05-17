@@ -634,7 +634,7 @@ void CFormMotionModel::applyToLoadedRawlog()
     for (size_t i = first; i <= last; i++)
     {
       // Check type:
-      if (rawlog.getType(i) == CRawlog::etActionCollection)
+      if (rawlog.getType(i) == CRawlog::TEntryType::etActionCollection)
       {
         // This is an action:
         CActionCollection::Ptr acts = rawlog.getAsAction(i);
@@ -876,7 +876,7 @@ void CFormMotionModel::OnbtnGetFromCurrentClick(wxCommandEvent& event)
   CActionRobotMovement2D::ConstPtr acts;
   for (size_t i = 0; !acts && i < rawlog.size() && i < MAX_READ_FOR_MODEL_SEARCH; i++)
   {
-    if (rawlog.getType(i) == CRawlog::etActionCollection)
+    if (rawlog.getType(i) == CRawlog::TEntryType::etActionCollection)
     {
       CActionCollection::Ptr actss = rawlog.getAsAction(i);
       acts = actss->getBestMovementEstimation();

@@ -159,7 +159,7 @@ void do_simulation()
   {
     rawlog.loadFromRawLogFile(in_rawlog_file);
     ASSERT_(rawlog.size() > 0);
-    ASSERT_(rawlog.getType(0) == CRawlog::etActionCollection);
+    ASSERT_(rawlog.getType(0) == CRawlog::TEntryType::etActionCollection);
     ASSERT_(int(rawlog.size() / 2) == GT.rows());
   }
 
@@ -177,7 +177,7 @@ void do_simulation()
     // Modify old rawlog in-place:
     for (size_t i = 1; i < rawlog.size(); i += 2)
     {
-      ASSERT_(rawlog.getType(i) == CRawlog::etSensoryFrame);
+      ASSERT_(rawlog.getType(i) == CRawlog::TEntryType::etSensoryFrame);
 
       CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
       CPose2D gt_pose(GT(i / 2, 1), GT(i / 2, 2), GT(i / 2, 3));

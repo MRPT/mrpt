@@ -88,7 +88,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
     {
       switch (rawlog.getType(countLoop))
       {
-        case CRawlog::etSensoryFrame:
+        case CRawlog::TEntryType::etSensoryFrame:
         {
           CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
@@ -123,7 +123,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
         }
         break;
 
-        case CRawlog::etObservation:
+        case CRawlog::TEntryType::etObservation:
         {
           CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
@@ -222,7 +222,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 
     switch (rawlog.getType(countLoop))
     {
-      case CRawlog::etSensoryFrame:
+      case CRawlog::TEntryType::etSensoryFrame:
       {
         CSensoryFrame::Ptr sf = rawlog.getAsObservations(countLoop);
 
@@ -258,7 +258,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
       }
       break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         // CObservation::Ptr o = rawlog.getAsObservation(countLoop);
         THROW_EXCEPTION(
@@ -330,7 +330,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
     {
       switch (rawlog.getType(countLoop))
       {
-        case CRawlog::etSensoryFrame:
+        case CRawlog::TEntryType::etSensoryFrame:
         {
           CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
@@ -369,7 +369,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
         }      // end case etSensoryFrame
         break;
 
-        case CRawlog::etObservation:
+        case CRawlog::TEntryType::etObservation:
         {
           CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
@@ -543,7 +543,7 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
     {
       switch (rawlog.getType(countLoop))
       {
-        case CRawlog::etSensoryFrame:
+        case CRawlog::TEntryType::etSensoryFrame:
         {
           CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
@@ -565,7 +565,7 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
         }      // end case etSensoryFrame
         break;
 
-        case CRawlog::etObservation:
+        case CRawlog::TEntryType::etObservation:
         {
           CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 

@@ -82,7 +82,7 @@ void CAbstractPTGBasedReactive::preDestructor()
     // Call base class method, NOT the generic, virtual one,
     // to avoid problems if we are in the dtor, while the vtable
     // is being destroyed.
-    CAbstractNavigator::stop(false /*not emergency*/);
+    CAbstractNavigator::stop(StopType::Normal);
   }
   catch (...)
   {
@@ -674,7 +674,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
         MRPT_LOG_DEBUG(
             "Best velocity command is STOP (no way found), calling "
             "robot.stop()");
-        this->stop(true /* emergency */);  // don't call
+        this->stop(StopType::Emergency);  // don't call
         // doEmergencyStop() here
         // since that will stop
         // navigation completely

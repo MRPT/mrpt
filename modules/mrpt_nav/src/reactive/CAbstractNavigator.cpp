@@ -99,7 +99,7 @@ void CAbstractNavigator::cancel()
 
   MRPT_LOG_DEBUG("CAbstractNavigator::cancel() called.");
   m_navigationState = TState::IDLE;
-  this->stop(false /*not emergency*/);
+  this->stop(StopType::Normal);
 }
 
 /** \callergraph */
@@ -119,7 +119,7 @@ void CAbstractNavigator::suspend()
   // Issue an "stop" if we are moving:
   // Update: do it *always*, even if the current velocity is zero, since
   // we may be in the middle of a multi-part motion command. It's safer.
-  this->stop(false /*not an emergency stop*/);
+  this->stop(StopType::Normal);
 
   MRPT_LOG_DEBUG("CAbstractNavigator::suspend() called.");
   if (m_navigationState == TState::NAVIGATING) m_navigationState = TState::SUSPENDED;
@@ -214,7 +214,7 @@ void CAbstractNavigator::navigationStep()
           MRPT_LOG_ERROR(
               "[CAbstractNavigator::navigationStep()] Stopping "
               "Navigation due to a NAV_ERROR state!");
-          this->stop(false /*not emergency*/);
+          this->stop(StopType::Normal);
           m_robot.stopWatchdog();
         }
       }
@@ -248,7 +248,7 @@ void CAbstractNavigator::doEmergencyStop(const std::string& msg)
 {
   try
   {
-    this->stop(true /* emergency*/);
+    this->stop(StopType::Emergency);
   }
   catch (...)
   {
@@ -347,7 +347,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
           "and finishing navigation");
       try
       {
-        this->stop(true /*emergency*/);
+        this->stop(StopType::Emergency);
       }
       catch (...)
       {
@@ -410,7 +410,7 @@ bool CAbstractNavigator::changeSpeeds(const mrpt::kinematics::CVehicleVelCmd& ve
 /** \callergraph */
 bool CAbstractNavigator::changeSpeedsNOP() { return m_robot.changeSpeedsNOP(); }
 /** \callergraph */
-bool CAbstractNavigator::stop(bool isEmergencyStop) { return m_robot.stop(isEmergencyStop); }
+bool CAbstractNavigator::stop(StopType stopType) { return m_robot.stop(stopType); }
 
 CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams()
 
@@ -540,7 +540,7 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 
         if (!m_navigationParams->target.targetIsIntermediaryWaypoint)
         {
-          this->stop(false /*not emergency*/);
+          this->stop(StopType::Normal);
           if (!m_navigationEndEventSent)
           {
             m_navigationEndEventSent = true;
