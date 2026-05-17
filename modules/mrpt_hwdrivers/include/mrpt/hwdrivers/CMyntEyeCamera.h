@@ -77,7 +77,10 @@ class CMyntEyeCamera
   [[nodiscard]] std::optional<mrpt::obs::CObservation3DRangeScan> grabFrame()
   {
     mrpt::obs::CObservation3DRangeScan obs;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     if (!getObservation(obs))
+#pragma GCC diagnostic pop
     {
       return std::nullopt;
     }

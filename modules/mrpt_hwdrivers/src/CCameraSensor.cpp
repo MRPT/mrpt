@@ -575,25 +575,31 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 
   if (m_cap_cv)
   {
-    obs = std::make_shared<CObservationImage>();
-    if (!m_cap_cv->getObservation(*obs))
+    auto grabbed = m_cap_cv->grabFrame();
+    if (!grabbed)
     {  // Error
       m_state = CGenericSensor::ssError;
       THROW_EXCEPTION("Error grabbing image");
     }
     else
+    {
+      obs = std::make_shared<CObservationImage>(std::move(*grabbed));
       capture_ok = true;
+    }
   }
   else if (m_cap_dc1394)
   {
-    obs = std::make_shared<CObservationImage>();
-    if (!m_cap_dc1394->getObservation(*obs))
+    auto grabbed = m_cap_dc1394->grabFrame();
+    if (!grabbed)
     {  // Error
       m_state = CGenericSensor::ssError;
       THROW_EXCEPTION("Error grabbing image");
     }
     else
+    {
+      obs = std::make_shared<CObservationImage>(std::move(*grabbed));
       capture_ok = true;
+    }
   }
   else if (m_cap_kinect)
   {
@@ -662,8 +668,8 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
   else if (m_cap_ffmpeg)
   {
     static bool anyGood = false;
-    mrpt::img::CImage im;
-    if (!m_cap_ffmpeg->retrieveFrame(im))
+    auto grabbed = m_cap_ffmpeg->grabFrame();
+    if (!grabbed)
     {  // Error
       m_state = CGenericSensor::ssError;
       if (!anyGood)
@@ -682,7 +688,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
     else
     {
       obs = std::make_shared<CObservationImage>();
-      obs->image = std::move(im);
+      obs->image = std::move(*grabbed);
 
       anyGood = true;
       capture_ok = true;
@@ -887,12 +893,11 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
   {
     obs3D = std::make_shared<CObservation3DRangeScan>();
 
-    bool thereIsObs = m_myntd->getObservation(*obs3D);
+    auto grabbed3D = m_myntd->grabFrame();
     static int noObsCnt = 0;
 
-    if (!thereIsObs)
+    if (!grabbed3D)
     {
-      // obs3D.reset();
       if (noObsCnt++ > 100)
       {
         m_state = CGenericSensor::ssError;
@@ -902,6 +907,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
     else
     {
       noObsCnt = 0;
+      *obs3D = std::move(*grabbed3D);
     }
     capture_ok = true;
   }

@@ -1938,8 +1938,7 @@ void CPointsMap::loadFromVelodyneScan(
     sensorGlobalPose = scan.sensorPose;
   }
 
-  mrpt::math::CMatrixDouble44 HM;
-  sensorGlobalPose.getHomogeneousMatrix(HM);
+  const mrpt::math::CMatrixDouble44 HM = sensorGlobalPose.getHomogeneousMatrix();
 
   const double m00 = HM(0, 0), m01 = HM(0, 1), m02 = HM(0, 2), m03 = HM(0, 3);
   const double m10 = HM(1, 0), m11 = HM(1, 1), m12 = HM(1, 2), m13 = HM(1, 3);
@@ -2235,11 +2234,20 @@ std::string CPointsMap::asString() const
 void CPointsMap::setAllPoints(
     const std::vector<float>& X, const std::vector<float>& Y, const std::vector<float>& Z)
 {
-  setAllPointsTemplate(X, Y, Z);
+  const size_t N = X.size();
+  ASSERT_EQUAL_(X.size(), Y.size());
+  ASSERT_EQUAL_(Z.size(), X.size());
+  this->setSize(N);
+  for (size_t i = 0; i < N; i++) this->setPointFast(i, X[i], Y[i], Z[i]);
+  mark_as_modified();
 }
 void CPointsMap::setAllPoints(const std::vector<float>& X, const std::vector<float>& Y)
 {
-  setAllPointsTemplate(X, Y);
+  const size_t N = X.size();
+  ASSERT_EQUAL_(X.size(), Y.size());
+  this->setSize(N);
+  for (size_t i = 0; i < N; i++) this->setPointFast(i, X[i], Y[i], 0.0f);
+  mark_as_modified();
 }
 
 bool CPointsMap::hasColor_u8() const

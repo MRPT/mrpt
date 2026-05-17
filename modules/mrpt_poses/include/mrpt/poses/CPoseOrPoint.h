@@ -252,9 +252,7 @@ class CPoseOrPoint :
   template <class MATRIX44>
   MATRIX44 getHomogeneousMatrixVal() const
   {
-    MATRIX44 m;
-    derived().getHomogeneousMatrix(m);
-    return m;
+    return derived().getHomogeneousMatrix();
   }
 
   /** Returns the corresponding 4x4 inverse homogeneous transformation matrix

@@ -128,10 +128,7 @@ class circular_buffer
    * requested. */
   void pop_many(T* out_array, size_t count)
   {
-    while (count--)
-    {
-      pop(*out_array++);
-    }
+    while (count--) *out_array++ = pop();
   }
 
   /** Peek (see without modifying) what is to be read from the buffer if pop()

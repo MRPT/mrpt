@@ -83,9 +83,9 @@ class SE_traits_tests : public ::testing::Test
     const POSE_TYPE P2 = params.P2 + incr2;
     const POSE_TYPE& Pd = params.D;
 
-    CMatrixDouble44 P1_inv_hm, P2hm, Pd_inv_hm;
+    CMatrixDouble44 P1_inv_hm, Pd_inv_hm;
     P1.getInverseHomogeneousMatrix(P1_inv_hm);
-    P2.getHomogeneousMatrix(P2hm);
+    const CMatrixDouble44 P2hm = P2.getHomogeneousMatrix();
     Pd.getInverseHomogeneousMatrix(Pd_inv_hm);
 
     const CPose3D DinvP1invP2_(

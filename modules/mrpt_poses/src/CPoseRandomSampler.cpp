@@ -326,11 +326,12 @@ bool CPoseRandomSampler::isPrepared() const { return m_pdf2D || m_pdf3D; }
 /*---------------------------------------------------------------
           getOriginalPDFCov2D
   ---------------------------------------------------------------*/
-void CPoseRandomSampler::getOriginalPDFCov2D(CMatrixDouble33& cov3x3) const
+CMatrixDouble33 CPoseRandomSampler::getOriginalPDFCov2D() const
 {
   MRPT_START
   ASSERT_(this->isPrepared());
 
+  CMatrixDouble33 cov3x3;
   if (m_pdf2D)
   {
     m_pdf2D->getCovariance(cov3x3);
@@ -344,17 +345,24 @@ void CPoseRandomSampler::getOriginalPDFCov2D(CMatrixDouble33& cov3x3) const
     cov3x3 = P.cov;
   }
 
+  return cov3x3;
   MRPT_END
+}
+
+void CPoseRandomSampler::getOriginalPDFCov2D(CMatrixDouble33& cov3x3) const
+{
+  cov3x3 = getOriginalPDFCov2D();
 }
 
 /*---------------------------------------------------------------
           getOriginalPDFCov3D
   ---------------------------------------------------------------*/
-void CPoseRandomSampler::getOriginalPDFCov3D(CMatrixDouble66& cov6x6) const
+CMatrixDouble66 CPoseRandomSampler::getOriginalPDFCov3D() const
 {
   MRPT_START
   ASSERT_(this->isPrepared());
 
+  CMatrixDouble66 cov6x6;
   if (m_pdf2D)
   {
     CPose3DPDFGaussian P;
@@ -367,7 +375,13 @@ void CPoseRandomSampler::getOriginalPDFCov3D(CMatrixDouble66& cov6x6) const
     m_pdf3D->getCovariance(cov6x6);
   }
 
+  return cov6x6;
   MRPT_END
+}
+
+void CPoseRandomSampler::getOriginalPDFCov3D(CMatrixDouble66& cov6x6) const
+{
+  cov6x6 = getOriginalPDFCov3D();
 }
 
 /*---------------------------------------------------------------
@@ -406,14 +420,10 @@ CPose3D& CPoseRandomSampler::getSamplingMean3D(CPose3D& out_mean) const
 
 void CPoseRandomSampler::getOriginalPDFCov2D(mrpt::math::CMatrixDouble& cov3x3) const
 {
-  mrpt::math::CMatrixDouble33 M;
-  this->getOriginalPDFCov2D(M);
-  cov3x3 = mrpt::math::CMatrixDouble(M);
+  cov3x3 = mrpt::math::CMatrixDouble(getOriginalPDFCov2D());
 }
 
 void CPoseRandomSampler::getOriginalPDFCov3D(mrpt::math::CMatrixDouble& cov6x6) const
 {
-  mrpt::math::CMatrixDouble66 M;
-  this->getOriginalPDFCov3D(M);
-  cov6x6 = M;
+  cov6x6 = getOriginalPDFCov3D();
 }

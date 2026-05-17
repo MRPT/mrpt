@@ -133,7 +133,10 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
   [[nodiscard]] std::optional<mrpt::obs::CObservationGasSensors> grabFrame()
   {
     mrpt::obs::CObservationGasSensors obs;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     if (!getObservation(obs))
+#pragma GCC diagnostic pop
     {
       return std::nullopt;
     }

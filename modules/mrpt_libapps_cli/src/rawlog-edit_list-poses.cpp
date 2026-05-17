@@ -51,9 +51,7 @@ DECLARE_OP_FUNCTION(op_list_poses)
 
     bool processOneObservation(CObservation::Ptr& obs) override
     {
-      mrpt::poses::CPose3D pose;
-      obs->getSensorPose(pose);
-      m_out << pose.asString() << "\n";
+      m_out << obs->getSensorPose().asString() << "\n";
 
       return true;
     }
