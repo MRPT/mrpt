@@ -133,8 +133,8 @@ void CRandomFieldGridMap2D::internal_clear()
 
       for (size_t i = 0; i < m_cov.rows(); i++)
       {
-        int cx1 = (static_cast<int>(i) % m_size_x);
-        int cy1 = (static_cast<int>(i) / m_size_x);
+        int cx1 = static_cast<int>(i % m_size_x);
+        int cy1 = static_cast<int>(i / m_size_x);
 
         for (size_t j = i; j < m_cov.cols(); j++)
         {
@@ -257,7 +257,7 @@ void CRandomFieldGridMap2D::internal_clear()
           mrpt::serialization::archiveFrom(fi) >> simpleMap;
           ASSERT_(!simpleMap.empty());
           m_Ocgridmap.loadFromSimpleMap(simpleMap);
-          res_coef = this->getResolution() / m_Ocgridmap.getResolution();
+          res_coef = static_cast<float>(this->getResolution() / m_Ocgridmap.getResolution());
         }
         else if (!m_insertOptions_common->GMRF_gridmap_image_file.empty())
         {
@@ -265,11 +265,10 @@ void CRandomFieldGridMap2D::internal_clear()
           const bool grid_loaded_ok = m_Ocgridmap.loadFromBitmapFile(
               this->m_insertOptions_common->GMRF_gridmap_image_file,
               this->m_insertOptions_common->GMRF_gridmap_image_res,
-              TPoint2D(
-                  this->m_insertOptions_common->GMRF_gridmap_image_cx,
-                  this->m_insertOptions_common->GMRF_gridmap_image_cy));
+                  static_cast<double>(this->m_insertOptions_common->GMRF_gridmap_image_cx),
+                  static_cast<double>(this->m_insertOptions_common->GMRF_gridmap_image_cy)));
           ASSERT_(grid_loaded_ok);
-          res_coef = this->getResolution() / this->m_insertOptions_common->GMRF_gridmap_image_res;
+          res_coef = static_cast<float>(this->getResolution() / this->m_insertOptions_common->GMRF_gridmap_image_res);
         }
         else
         {
@@ -359,17 +358,17 @@ void CRandomFieldGridMap2D::internal_clear()
         for (size_t j = 0; j < nodeCount; j++)  // For each cell in the map
         {
           // Get cell_j indx-limits in Occuppancy gridmap
-          cxoj_min = floor(cx * res_coef);
-          cxoj_max = cxoj_min + ceil(res_coef - 1);
-          cyoj_min = floor(cy * res_coef);
-          cyoj_max = cyoj_min + ceil(res_coef - 1);
+          cxoj_min = static_cast<size_t>(floor(static_cast<double>(cx) * static_cast<double>(res_coef)));
+          cxoj_max = cxoj_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) - 1));
+          cyoj_min = static_cast<size_t>(floor(static_cast<double>(cy) * static_cast<double>(res_coef)));
+          cyoj_max = cyoj_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) - 1));
 
-          seed_cxo = cxoj_min + ceil(res_coef / 2 - 1);
-          seed_cyo = cyoj_min + ceil(res_coef / 2 - 1);
+          seed_cxo = cxoj_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) / 2 - 1));
+          seed_cyo = cyoj_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) / 2 - 1));
 
           // If cell occpuped then add fake observation: to allow all
           // cells having a solution
-          if (m_Ocgridmap.getCell(seed_cxo, seed_cyo) < 0.5)
+          if (m_Ocgridmap.getCell(static_cast<int>(seed_cxo), static_cast<int>(seed_cyo)) < 0.5)
           {
             TObservationGMRF new_obs(*this);
             new_obs.node_id = j;
@@ -405,13 +404,13 @@ void CRandomFieldGridMap2D::internal_clear()
               throw std::runtime_error("Shouldn't reach here!");
 
             // Get cell_i indx-limits in Occuppancy gridmap
-            cxoi_min = floor(cxi * res_coef);
-            cxoi_max = cxoi_min + ceil(res_coef - 1);
-            cyoi_min = floor(cyi * res_coef);
-            cyoi_max = cyoi_min + ceil(res_coef - 1);
+            cxoi_min = static_cast<size_t>(floor(static_cast<double>(cxi) * static_cast<double>(res_coef)));
+            cxoi_max = cxoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) - 1));
+            cyoi_min = static_cast<size_t>(floor(static_cast<double>(cyi) * static_cast<double>(res_coef)));
+            cyoi_max = cyoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) - 1));
 
-            objective_cxo = cxoi_min + ceil(res_coef / 2 - 1);
-            objective_cyo = cyoi_min + ceil(res_coef / 2 - 1);
+            objective_cxo = cxoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) / 2 - 1));
+            objective_cyo = cyoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) / 2 - 1));
 
             // Get overall indx of both cells together
             cxo_min = min(cxoj_min, cxoi_min);
