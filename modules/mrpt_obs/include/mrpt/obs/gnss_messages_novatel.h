@@ -206,7 +206,10 @@ const std::string& enum2str(int val);
  * time). \sa mrpt::obs::CObservationGPS  */
 struct Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 {
-  Message_NV_OEM6_GENERIC_FRAME() : gnss_message(static_cast<gnss_message_type_t>(NV_OEM6_GENERIC_FRAME)) {}
+  Message_NV_OEM6_GENERIC_FRAME() :
+      gnss_message(static_cast<gnss_message_type_t>(NV_OEM6_GENERIC_FRAME))
+  {
+  }
   /** Frame header */
   nv_oem6_header_t header;
   std::vector<uint8_t> msg_body;
@@ -463,9 +466,9 @@ struct Message_NV_OEM6_VERSION : public gnss_message
 
   /** Frame header */
   nv_oem6_header_t header;
-  uint32_t num_comps{0};
+  uint32_t num_comps = 0;
   std::vector<TComponentVersion> components;
-  uint32_t crc;
+  uint32_t crc = 0;
 
   void dumpToStream(std::ostream& out) const override;  // See docs in base
   void fixEndianness() override

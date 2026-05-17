@@ -17,7 +17,6 @@
 #include <mrpt/hwdrivers/CTaoboticsIMU.h>
 #include <mrpt/obs/CObservationIMU.h>
 
-#include <chrono>
 #include <iostream>
 #include <thread>
 
@@ -290,7 +289,7 @@ std::vector<mrpt::obs::CObservation::Ptr> CTaoboticsIMU::parser_hfi_a9(
             (frame[11 + 4 * i + 2] << 16) |  //
             (frame[11 + 4 * i + 1] << 8) |   //
             (frame[11 + 4 * i + 0] << 0);
-        data[i] = bit_cast<float>(d);
+        data[i] = mrpt::bit_cast<float>(d);
       }
 
       if (!obs)
@@ -349,7 +348,7 @@ std::vector<mrpt::obs::CObservation::Ptr> CTaoboticsIMU::parser_hfi_a9(
             (frame[11 + 4 * i + 2] << 16) |  //
             (frame[11 + 4 * i + 1] << 8) |   //
             (frame[11 + 4 * i + 0] << 0);
-        data[i] = bit_cast<float>(d);
+        data[i] = mrpt::bit_cast<float>(d);
       }
 
       if (!obs)

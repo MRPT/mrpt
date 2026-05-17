@@ -29,11 +29,12 @@ class circular_buffer
  private:
   std::vector<T> m_data;
   /** not "const" to allow copy/move = ops. */
-  size_t m_size;
-  size_t m_next_read, m_next_write;
+  size_t m_size = 0;
+  size_t m_next_read = 0;
+  size_t m_next_write = 0;
 
  public:
-  circular_buffer(size_t size) : m_data(size), m_size(size), m_next_read(0), m_next_write(0)
+  circular_buffer(size_t size) : m_data(size), m_size(size)
   {
     if (m_size <= 2)
     {
@@ -81,7 +82,7 @@ class circular_buffer
    */
   void push_many(T* array_elements, size_t count)
   {
-    while (count--)
+    while (count-- != 0)
     {
       push(*array_elements++);
     }
@@ -128,7 +129,10 @@ class circular_buffer
    * requested. */
   void pop_many(T* out_array, size_t count)
   {
-    while (count--) *out_array++ = pop();
+    while (count-- != 0)
+    {
+      *out_array++ = pop();
+    }
   }
 
   /** Peek (see without modifying) what is to be read from the buffer if pop()
@@ -162,7 +166,7 @@ class circular_buffer
   void peek_many(T* out_array, size_t count) const
   {
     size_t peek_read = m_next_read;
-    while (count--)
+    while (count-- != 0)
     {
       if (peek_read == m_next_write)
       {
@@ -180,7 +184,7 @@ class circular_buffer
   /** Return the number of elements available for read ("pop") in the buffer
    * (this is NOT the maximum size of the internal buffer)
    * \sa capacity */
-  size_t size() const
+  [[nodiscard]] size_t size() const
   {
     if (m_next_write >= m_next_read)
     {
@@ -192,13 +196,16 @@ class circular_buffer
   /** Return the maximum capacity of the buffer.
    * \sa size
    */
-  size_t capacity() const { return m_size; }
+  [[nodiscard]] size_t capacity() const { return m_size; }
+
   /** The maximum number of elements that can be written ("push") without
    * rising an overflow error.
    */
-  size_t available() const { return (capacity() - size()) - 1; }
+  [[nodiscard]] size_t available() const { return (capacity() - size()) - 1; }
+
   /** Delete all the stored data, if any. */
   void clear() { m_next_write = m_next_read = 0; }
+
 };  // end class circular_buffer
 
 }  // namespace mrpt::containers

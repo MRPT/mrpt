@@ -135,7 +135,8 @@ void ScalarFactorGraph::updateEstimation(
     const double w = std::sqrt(e->getInformation());
     double dr_dxi, dr_dxj;
     e->evalJacobian(dr_dxi, dr_dxj);
-    const int node_id_i = static_cast<int>(e->node_id_i), node_id_j = static_cast<int>(e->node_id_j);
+    const int node_id_i = static_cast<int>(e->node_id_i),
+              node_id_j = static_cast<int>(e->node_id_j);
     A_tri.emplace_back(edge_counter, node_id_i, w * dr_dxi);
     A_tri.emplace_back(edge_counter, node_id_j, w * dr_dxj);
     // gradient:

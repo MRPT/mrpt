@@ -7,6 +7,7 @@
 set -euo pipefail
 
 CLANG_FORMAT=${CLANG_FORMAT:-clang-format-14}
+JOBS=${JOBS:-$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 4)}
 
 CHECK_MODE=0
 if [[ "${1:-}" == "--check" ]]; then
@@ -43,15 +44,37 @@ if [[ ${#FILES[@]} -eq 0 ]]; then
   exit 1
 fi
 
-echo "Found ${#FILES[@]} file(s) to process."
+echo "Found ${#FILES[@]} file(s) to process (using ${JOBS} parallel jobs)."
 
 if [[ $CHECK_MODE -eq 1 ]]; then
-  FAILED=()
-  for f in "${FILES[@]}"; do
+  # Write file list to a temp file for xargs
+  TMPFILE=$(mktemp)
+  trap 'rm -f "$TMPFILE"' EXIT
+  printf '%s\0' "${FILES[@]}" > "$TMPFILE"
+
+  # Run checks in parallel; collect failing files via a temp dir
+  FAILDIR=$(mktemp -d)
+  trap 'rm -rf "$FAILDIR" "$TMPFILE"' EXIT
+
+  check_file() {
+    local f="$1"
     if ! "$CLANG_FORMAT" --dry-run --Werror "$f" 2>/dev/null; then
-      FAILED+=("$f")
+      # Record failure (filename encoded as a file inside FAILDIR)
+      printf '%s\n' "$f" > "$FAILDIR/$(printf '%s' "$f" | md5sum | cut -c1-32)"
     fi
-  done
+  }
+  export -f check_file
+  export CLANG_FORMAT FAILDIR
+
+  xargs -0 -P "$JOBS" -I{} bash -c 'check_file "$@"' _ {} < "$TMPFILE" || true
+
+  FAILED=()
+  if [[ -n "$(ls -A "$FAILDIR")" ]]; then
+    while IFS= read -r line; do
+      FAILED+=("$line")
+    done < <(cat "$FAILDIR"/* | sort)
+  fi
+
   if [[ ${#FAILED[@]} -gt 0 ]]; then
     echo ""
     echo "clang-format check FAILED for ${#FAILED[@]} file(s):"
@@ -60,8 +83,8 @@ if [[ $CHECK_MODE -eq 1 ]]; then
   fi
   echo "clang-format check passed."
 else
-  for f in "${FILES[@]}"; do
-    "$CLANG_FORMAT" -i "$f"
-  done
+  # Reformat in parallel — clang-format -i is safe to run concurrently on distinct files
+  printf '%s\0' "${FILES[@]}" | \
+    xargs -0 -P "$JOBS" -n 1 "$CLANG_FORMAT" -i
   echo "Reformatting done."
 fi

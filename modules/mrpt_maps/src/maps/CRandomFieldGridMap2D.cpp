@@ -263,12 +263,15 @@ void CRandomFieldGridMap2D::internal_clear()
         {
           // Load from image
           const bool grid_loaded_ok = m_Ocgridmap.loadFromBitmapFile(
-              this->m_insertOptions_common->GMRF_gridmap_image_file,
-              this->m_insertOptions_common->GMRF_gridmap_image_res,
-                  static_cast<double>(this->m_insertOptions_common->GMRF_gridmap_image_cx),
-                  static_cast<double>(this->m_insertOptions_common->GMRF_gridmap_image_cy)));
-          ASSERT_(grid_loaded_ok);
-          res_coef = static_cast<float>(this->getResolution() / this->m_insertOptions_common->GMRF_gridmap_image_res);
+              m_insertOptions_common->GMRF_gridmap_image_file,
+              m_insertOptions_common->GMRF_gridmap_image_res,
+              {static_cast<double>(this->m_insertOptions_common->GMRF_gridmap_image_cx),
+               static_cast<double>(this->m_insertOptions_common->GMRF_gridmap_image_cy)});
+
+          ASSERT_(grid_loaded_ok == true);
+
+          res_coef = static_cast<float>(
+              this->getResolution() / this->m_insertOptions_common->GMRF_gridmap_image_res);
         }
         else
         {
@@ -358,9 +361,11 @@ void CRandomFieldGridMap2D::internal_clear()
         for (size_t j = 0; j < nodeCount; j++)  // For each cell in the map
         {
           // Get cell_j indx-limits in Occuppancy gridmap
-          cxoj_min = static_cast<size_t>(floor(static_cast<double>(cx) * static_cast<double>(res_coef)));
+          cxoj_min =
+              static_cast<size_t>(floor(static_cast<double>(cx) * static_cast<double>(res_coef)));
           cxoj_max = cxoj_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) - 1));
-          cyoj_min = static_cast<size_t>(floor(static_cast<double>(cy) * static_cast<double>(res_coef)));
+          cyoj_min =
+              static_cast<size_t>(floor(static_cast<double>(cy) * static_cast<double>(res_coef)));
           cyoj_max = cyoj_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) - 1));
 
           seed_cxo = cxoj_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) / 2 - 1));
@@ -404,13 +409,17 @@ void CRandomFieldGridMap2D::internal_clear()
               throw std::runtime_error("Shouldn't reach here!");
 
             // Get cell_i indx-limits in Occuppancy gridmap
-            cxoi_min = static_cast<size_t>(floor(static_cast<double>(cxi) * static_cast<double>(res_coef)));
+            cxoi_min = static_cast<size_t>(
+                floor(static_cast<double>(cxi) * static_cast<double>(res_coef)));
             cxoi_max = cxoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) - 1));
-            cyoi_min = static_cast<size_t>(floor(static_cast<double>(cyi) * static_cast<double>(res_coef)));
+            cyoi_min = static_cast<size_t>(
+                floor(static_cast<double>(cyi) * static_cast<double>(res_coef)));
             cyoi_max = cyoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) - 1));
 
-            objective_cxo = cxoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) / 2 - 1));
-            objective_cyo = cyoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) / 2 - 1));
+            objective_cxo =
+                cxoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) / 2 - 1));
+            objective_cyo =
+                cyoi_min + static_cast<size_t>(ceil(static_cast<double>(res_coef) / 2 - 1));
 
             // Get overall indx of both cells together
             cxo_min = min(cxoj_min, cxoi_min);
@@ -699,10 +708,12 @@ void CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_loadFromConfigFile
       iniFile.read_float(section.c_str(), "KF_defaultCellMeanValue", KF_defaultCellMeanValue);
   MRPT_LOAD_CONFIG_VAR_CAST(KF_W_size, int, uint16_t, iniFile, section);
 
-  GMRF_lambdaPrior = iniFile.read_float(section.c_str(), "GMRF_lambdaPrior", static_cast<float>(GMRF_lambdaPrior));
-  GMRF_lambdaObs = iniFile.read_float(section.c_str(), "GMRF_lambdaObs", static_cast<float>(GMRF_lambdaObs));
-  GMRF_lambdaObsLoss =
-      iniFile.read_float(section.c_str(), "GMRF_lambdaObsLoss", static_cast<float>(GMRF_lambdaObsLoss));
+  GMRF_lambdaPrior =
+      iniFile.read_float(section.c_str(), "GMRF_lambdaPrior", static_cast<float>(GMRF_lambdaPrior));
+  GMRF_lambdaObs =
+      iniFile.read_float(section.c_str(), "GMRF_lambdaObs", static_cast<float>(GMRF_lambdaObs));
+  GMRF_lambdaObsLoss = iniFile.read_float(
+      section.c_str(), "GMRF_lambdaObsLoss", static_cast<float>(GMRF_lambdaObsLoss));
 
   GMRF_use_occupancy_information =
       iniFile.read_bool(section.c_str(), "GMRF_use_occupancy_information", false, false);
@@ -857,8 +868,12 @@ void CRandomFieldGridMap2D::resize(
             if (C1_isFromOldMap && C2_isFromOldMap)
             {
               // Copy values for the old matrix:
-              unsigned int idx_c1 = static_cast<unsigned int>((static_cast<size_t>(cx1) - Acx_left) + old_sizeX * (static_cast<size_t>(cy1) - Acy_bottom));
-              unsigned int idx_c2 = static_cast<unsigned int>((static_cast<size_t>(cx2) - Acx_left) + old_sizeX * (static_cast<size_t>(cy2) - Acy_bottom));
+              unsigned int idx_c1 = static_cast<unsigned int>(
+                  (static_cast<size_t>(cx1) - Acx_left) +
+                  old_sizeX * (static_cast<size_t>(cy1) - Acy_bottom));
+              unsigned int idx_c2 = static_cast<unsigned int>(
+                  (static_cast<size_t>(cx2) - Acx_left) +
+                  old_sizeX * (static_cast<size_t>(cy2) - Acy_bottom));
 
               MRPT_START
 
@@ -1289,7 +1304,8 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
           XYZ(static_cast<int>(idx), 1) = static_cast<float>(idx2y(static_cast<int>(i)));
           XYZ(static_cast<int>(idx), 2) =
               cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_mean();
-          XYZ(static_cast<int>(idx), 3) = cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_std();
+          XYZ(static_cast<int>(idx), 3) =
+              cellByIndex(static_cast<unsigned>(j), static_cast<unsigned>(i))->gmrf_std();
         }
       }
 
@@ -2433,7 +2449,8 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 
   // Check that seed and obj have similar occupancy (0,1)
   if ((m_Ocgridmap->getCell(static_cast<int>(seed_cxo), static_cast<int>(seed_cyo)) < 0.5) !=
-      (m_Ocgridmap->getCell(static_cast<int>(objective_cxo), static_cast<int>(objective_cyo)) < 0.5))
+      (m_Ocgridmap->getCell(static_cast<int>(objective_cxo), static_cast<int>(objective_cyo)) <
+       0.5))
   {
     // std::cout << "Seed and objective have diff occupation (false)" << "\n";
     return false;
@@ -2476,8 +2493,12 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
                 if (!((i == 0 && j == 0) || !(matExp(row + j, col + i) == 0)))
                 {
                   // check if expand
-                  if ((m_Ocgridmap->getCell(static_cast<int>(row) + static_cast<int>(cxo_min), static_cast<int>(col) + static_cast<int>(cyo_min)) < 0.5) ==
-                      (m_Ocgridmap->getCell(static_cast<int>(row) + j + static_cast<int>(cxo_min), static_cast<int>(col) + i + static_cast<int>(cyo_min)) < 0.5))
+                  if ((m_Ocgridmap->getCell(
+                           static_cast<int>(row) + static_cast<int>(cxo_min),
+                           static_cast<int>(col) + static_cast<int>(cyo_min)) < 0.5) ==
+                      (m_Ocgridmap->getCell(
+                           static_cast<int>(row) + j + static_cast<int>(cxo_min),
+                           static_cast<int>(col) + i + static_cast<int>(cyo_min)) < 0.5))
                   {
                     if ((row + j + cxo_min == objective_cxo) &&
                         (col + i + cyo_min == objective_cyo))

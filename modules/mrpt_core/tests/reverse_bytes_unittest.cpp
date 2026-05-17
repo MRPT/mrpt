@@ -112,7 +112,7 @@ TEST(bits, reverseBytes)
     const uint32_t val_r_ok = UINT32_C(0x803f);
 
     mrpt::reverseBytesInPlace(val);
-    auto val_check = bit_cast<uint32_t>(val);
+    auto val_check = mrpt::bit_cast<uint32_t>(val);
     EXPECT_EQ(val_check, val_r_ok);
   }
   {
@@ -121,7 +121,7 @@ TEST(bits, reverseBytes)
     const uint64_t val_r_ok = UINT32_C(0xf03f);
 
     mrpt::reverseBytesInPlace(val);
-    auto val_check = bit_cast<uint64_t>(val);
+    auto val_check = mrpt::bit_cast<uint64_t>(val);
     EXPECT_EQ(val_check, val_r_ok);
   }
   {
