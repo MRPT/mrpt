@@ -535,8 +535,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
   edSecond->GetValue().ToLong(&newIndx);
 
   // Get the SFs, and check classes:
-  if (rawlog.getType(refIndx) != CRawlog::etObservation &&
-      rawlog.getType(refIndx) != CRawlog::etSensoryFrame)
+  if (rawlog.getType(refIndx) != CRawlog::TEntryType::etObservation &&
+      rawlog.getType(refIndx) != CRawlog::TEntryType::etSensoryFrame)
   {
     wxMessageBox(
         _("The first index is not a sensory frame or an observation!\n "
@@ -544,8 +544,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
         _("Error"), wxOK, this);
     return;
   }
-  if (rawlog.getType(newIndx) != CRawlog::etObservation &&
-      rawlog.getType(newIndx) != CRawlog::etSensoryFrame)
+  if (rawlog.getType(newIndx) != CRawlog::TEntryType::etObservation &&
+      rawlog.getType(newIndx) != CRawlog::TEntryType::etSensoryFrame)
   {
     wxMessageBox(
         _("The second index is not a sensory frame or an observation!\n "

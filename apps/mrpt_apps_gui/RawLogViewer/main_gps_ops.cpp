@@ -119,7 +119,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath([[maybe_unused]] wxCommandEvent& even
 
     switch (rawlog.getType(i))
     {
-      case CRawlog::etSensoryFrame:
+      case CRawlog::TEntryType::etSensoryFrame:
       {
         CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
@@ -131,7 +131,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath([[maybe_unused]] wxCommandEvent& even
       }
       break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         CObservation::Ptr o = rawlog.getAsObservation(i);
 
@@ -326,7 +326,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
         return;
         break;
 
-      case CRawlog::etSensoryFrame:
+      case CRawlog::TEntryType::etSensoryFrame:
       {
         CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
@@ -342,7 +342,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
       }
       break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         CObservation::Ptr o = rawlog.getAsObservation(i);
 
@@ -433,7 +433,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
   {
     switch (rawlog.getType(i))
     {
-      case CRawlog::etSensoryFrame:
+      case CRawlog::TEntryType::etSensoryFrame:
       {
         CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
@@ -469,7 +469,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
       }
       break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         CObservation::Ptr o = rawlog.getAsObservation(i);
 
@@ -578,7 +578,7 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
       default:
         break;
 
-      case CRawlog::etSensoryFrame:
+      case CRawlog::TEntryType::etSensoryFrame:
       {
         CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
         CObservationGPS::Ptr obs = sf->getObservationByClass<CObservationGPS>();
@@ -591,7 +591,7 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
       }
       break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         CObservation::Ptr o = rawlog.getAsObservation(i);
         if (IS_CLASS(*o, CObservationGPS))
@@ -724,7 +724,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
     {
       switch (rawlog.getType(i))
       {
-        case CRawlog::etSensoryFrame:
+        case CRawlog::TEntryType::etSensoryFrame:
         {
           CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
@@ -824,7 +824,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
         }
         break;
 
-        case CRawlog::etObservation:
+        case CRawlog::TEntryType::etObservation:
         {
           CObservation::Ptr o = rawlog.getAsObservation(i);
 

@@ -552,7 +552,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 
     switch (rawlog.getType(i))
     {
-      case CRawlog::etActionCollection:
+      case CRawlog::TEntryType::etActionCollection:
       {
         CActionCollection::Ptr acts = rawlog.getAsAction(i);
         CPose2D poseIncrement;
@@ -584,7 +584,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
         addNewPathEntry = true;
       }
       break;
-      case CRawlog::etSensoryFrame:
+      case CRawlog::TEntryType::etSensoryFrame:
       {
         if (((i >> 1) % decimate) == 0)
         {
@@ -594,7 +594,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
         addNewPathEntry = true;
       }
       break;
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         // Always, process odometry:
         const CObservation* obs = rawlog.getAsObservation(i).get();
@@ -813,7 +813,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
     {
       switch (rawlog.getType(i))
       {
-        case CRawlog::etActionCollection:
+        case CRawlog::TEntryType::etActionCollection:
         {
           CActionCollection::Ptr acts = rawlog.getAsAction(i);
           CPose2D poseIncrement;
@@ -980,7 +980,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
       default:
         break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         CObservation::Ptr o = rawlog.getAsObservation(i);
 
@@ -1254,7 +1254,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
     CRawlog::iterator itRawlog;
     for (itRawlog = rawlog.begin(); itRawlog != rawlog.end(); itRawlog++)
     {
-      if (itRawlog.getType() == mrpt::obs::CRawlog::etObservation)
+      if (itRawlog.getType() == mrpt::obs::CRawlog::TEntryType::etObservation)
       {
         CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>(*itRawlog));
         for (itStr = the_labels.begin(), itOutFiles = outFiles.begin(); itStr != the_labels.end();

@@ -341,7 +341,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
   /** Default: forward call to m_robot.changeSpeedsNOP(). Can be overridden. */
   virtual bool changeSpeedsNOP();
   /** Default: forward call to m_robot.stop(). Can be overridden. */
-  virtual bool stop(bool isEmergencyStop);
+  virtual bool stop(StopType stopType);
 
   /** Default implementation: check if target_dist is below the accepted
    * distance.

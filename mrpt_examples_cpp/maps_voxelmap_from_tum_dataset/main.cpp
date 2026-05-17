@@ -148,7 +148,7 @@ void TestVoxelMapFromTUM(
     {
       mrpt::obs::CObservation3DRangeScan::Ptr obs;
 
-      if (dataset.getType(rawlogIndex) == mrpt::obs::CRawlog::etObservation &&
+      if (dataset.getType(rawlogIndex) == mrpt::obs::CRawlog::TEntryType::etObservation &&
           (obs = std::dynamic_pointer_cast<mrpt::obs::CObservation3DRangeScan>(
                dataset.getAsObservation(rawlogIndex))))
       {

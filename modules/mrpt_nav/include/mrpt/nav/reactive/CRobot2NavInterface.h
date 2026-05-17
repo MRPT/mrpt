@@ -26,6 +26,15 @@
 
 namespace mrpt::nav
 {
+/** Describes the reason for a stop command.
+ * \sa CRobot2NavInterface::stop()
+ * \ingroup nav_reactive
+ */
+enum class StopType
+{
+  Normal,    //!< Target reached or planned stop
+  Emergency  //!< Unexpected error or safety-critical stop
+};
 /** The pure virtual interface between a real or simulated robot and any
  * `CAbstractNavigator`-derived class.
  *
@@ -105,12 +114,18 @@ class CRobot2NavInterface : public mrpt::system::COutputLogger
   virtual bool changeSpeedsNOP();
 
   /** Stop the robot right now.
-   *  \param[in] isEmergencyStop true if stop is due to some unexpected error.
-   * false if "stop" happens as part of a normal operation (e.g. target
-   * reached).
+   *  \param[in] stopType Whether this is a normal stop (e.g. target reached)
+   *             or an emergency stop due to an unexpected error.
    * \return false on any error.
    */
-  virtual bool stop(bool isEmergencyStop = true) = 0;
+  virtual bool stop(StopType stopType = StopType::Emergency) = 0;
+
+  /** \deprecated Use stop(StopType) instead. */
+  [[deprecated("Use stop(StopType) instead")]]
+  bool stop(bool isEmergencyStop)
+  {
+    return stop(isEmergencyStop ? StopType::Emergency : StopType::Normal);
+  }
 
   /** Gets the emergency stop command for the current robot
    * \return the emergency stop command

@@ -932,13 +932,13 @@ void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent&)
 
   if (idx > 0 && idx < (int)rawlog.size())
   {
-    if (rawlog.getType(idx) == CRawlog::etSensoryFrame)
+    if (rawlog.getType(idx) == CRawlog::TEntryType::etSensoryFrame)
     {
       CSensoryFrame::Ptr sf = rawlog.getAsObservations(idx);
       showSensoryFrame(*sf, nImgs, imgTimestamp);
       edIndex->SetValue(idx);
     }
-    else if (rawlog.getType(idx) == CRawlog::etObservation)
+    else if (rawlog.getType(idx) == CRawlog::TEntryType::etObservation)
     {
       CObservation::Ptr o = rawlog.getAsObservation(idx);
 

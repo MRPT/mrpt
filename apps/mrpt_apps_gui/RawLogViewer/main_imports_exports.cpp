@@ -429,7 +429,7 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 
       // EXPORT
       // ---------------------
-      if (rawlog.getType(i) == CRawlog::etActionCollection && lastTime != INVALID_TIMESTAMP)
+      if (rawlog.getType(i) == CRawlog::TEntryType::etActionCollection && lastTime != INVALID_TIMESTAMP)
       {
         CActionCollection::Ptr acts = rawlog.getAsAction(i);
 
@@ -457,7 +457,7 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
               MOOS_odometry.phi());
         }
       }
-      else if (rawlog.getType(i) == CRawlog::etSensoryFrame)
+      else if (rawlog.getType(i) == CRawlog::TEntryType::etSensoryFrame)
       {
         CSensoryFrame::Ptr SF = rawlog.getAsObservations(i);
 
@@ -1205,14 +1205,14 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 
       switch (rawlog.getType(i))
       {
-        case CRawlog::etSensoryFrame:
+        case CRawlog::TEntryType::etSensoryFrame:
         {
           CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
           obs = sf->getObservationByClass<CObservationGasSensors>();
         }
         break;
 
-        case CRawlog::etObservation:
+        case CRawlog::TEntryType::etObservation:
         {
           CObservation::Ptr o = rawlog.getAsObservation(i);  // get the observation
           if (IS_CLASS(*o, CObservationGasSensors))
@@ -1315,14 +1315,14 @@ void xRawLogViewerFrame::OnGenWifiTxt(wxCommandEvent& event)
 
       switch (rawlog.getType(i))
       {
-        case CRawlog::etSensoryFrame:
+        case CRawlog::TEntryType::etSensoryFrame:
         {
           CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
           obs = sf->getObservationByClass<CObservationWirelessPower>();
         }
         break;
 
-        case CRawlog::etObservation:
+        case CRawlog::TEntryType::etObservation:
         {
           CObservation::Ptr o = rawlog.getAsObservation(i);  // get the observation
           if (IS_CLASS(*o, CObservationWirelessPower))
@@ -1426,14 +1426,14 @@ void xRawLogViewerFrame::OnGenRFIDTxt(wxCommandEvent& event)
 
       switch (rawlog.getType(i))
       {
-        case CRawlog::etSensoryFrame:
+        case CRawlog::TEntryType::etSensoryFrame:
         {
           CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
           obs = sf->getObservationByClass<CObservationRFID>();
         }
         break;
 
-        case CRawlog::etObservation:
+        case CRawlog::TEntryType::etObservation:
         {
           CObservation::Ptr o = rawlog.getAsObservation(i);  // get the observation
           if (IS_CLASS(*o, CObservationRFID))
@@ -1882,7 +1882,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
         default:
           break;
 
-        case CRawlog::etSensoryFrame:
+        case CRawlog::TEntryType::etSensoryFrame:
         {
           CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
           size_t k = 0;
@@ -1920,7 +1920,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
         }
         break;
 
-        case CRawlog::etObservation:
+        case CRawlog::TEntryType::etObservation:
         {
           CObservation::Ptr oo = rawlog.getAsObservation(i);
 
@@ -1986,7 +1986,7 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
 
     for (i = 0; i < n; i++)
     {
-      if (rawlog.getType(i) == CRawlog::etSensoryFrame)
+      if (rawlog.getType(i) == CRawlog::TEntryType::etSensoryFrame)
       {
         CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
         CObservationBearingRange::Ptr obs = sf->getObservationByClass<CObservationBearingRange>();
@@ -2000,7 +2000,7 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
           }
         }
       }
-      else if (rawlog.getType(i) == CRawlog::etObservation)
+      else if (rawlog.getType(i) == CRawlog::TEntryType::etObservation)
       {
         CObservation::Ptr o = rawlog.getAsObservation(i);
 

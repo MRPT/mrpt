@@ -66,6 +66,15 @@ bool vectorToBinaryFile(const std::vector<uint8_t>& vec, const std::string& file
  */
 std::string file_get_contents(const std::string& fileName);
 
+/** Options for vectorToTextFile().
+ * \ingroup mrpt_io_grp
+ */
+struct VectorTextFileOptions
+{
+  bool append = false;  //!< Append to existing file instead of overwriting
+  bool byRows = false;  //!< Write one element per row; default is one per column
+};
+
 /** A useful function for debugging, which saves a numeric std::vector as a
  * plain-text file compatible with MATLAB.
  * \return Returns false on any error, true on everything OK.
@@ -73,26 +82,39 @@ std::string file_get_contents(const std::string& fileName);
 [[nodiscard]] bool vectorToTextFile(
     const std::vector<float>& vec,
     const std::string& fileName,
-    bool append = false,
-    bool byRows = false);
+    const VectorTextFileOptions& opts = {});
 //! \overload
 [[nodiscard]] bool vectorToTextFile(
     const std::vector<double>& vec,
     const std::string& fileName,
-    bool append = false,
-    bool byRows = false);
+    const VectorTextFileOptions& opts = {});
 //! \overload
 [[nodiscard]] bool vectorToTextFile(
     const std::vector<int>& vec,
     const std::string& fileName,
-    bool append = false,
-    bool byRows = false);
+    const VectorTextFileOptions& opts = {});
 //! \overload
 [[nodiscard]] bool vectorToTextFile(
     const std::vector<size_t>& vec,
     const std::string& fileName,
-    bool append = false,
-    bool byRows = false);
+    const VectorTextFileOptions& opts = {});
+
+/** \deprecated Use vectorToTextFile(vec, fileName, VectorTextFileOptions) instead. */
+[[deprecated("Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]]
+[[nodiscard]] bool vectorToTextFile(
+    const std::vector<float>& vec, const std::string& fileName, bool append, bool byRows = false);
+//! \overload \deprecated
+[[deprecated("Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]]
+[[nodiscard]] bool vectorToTextFile(
+    const std::vector<double>& vec, const std::string& fileName, bool append, bool byRows = false);
+//! \overload \deprecated
+[[deprecated("Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]]
+[[nodiscard]] bool vectorToTextFile(
+    const std::vector<int>& vec, const std::string& fileName, bool append, bool byRows = false);
+//! \overload \deprecated
+[[deprecated("Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]]
+[[nodiscard]] bool vectorToTextFile(
+    const std::vector<size_t>& vec, const std::string& fileName, bool append, bool byRows = false);
 //! \overload
 template <class EIGEN_MATRIX>
 [[nodiscard]] bool vectorToTextFile(const EIGEN_MATRIX& vec, const std::string& fileName)

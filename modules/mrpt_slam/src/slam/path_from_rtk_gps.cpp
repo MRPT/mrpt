@@ -123,7 +123,7 @@ void mrpt::slam::path_from_rtk_gps(
       default:
         break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         CObservation::ConstPtr o = rawlog.getAsObservation(i);
 

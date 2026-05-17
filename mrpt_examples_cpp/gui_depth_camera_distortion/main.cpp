@@ -240,7 +240,7 @@ static void AppDepthCamDemo()
               mrpt::obs::CObservation3DRangeScan::Ptr obs;
 
               // Obs-only format:
-              if (rawlog.getType(0) == mrpt::obs::CRawlog::etObservation)
+              if (rawlog.getType(0) == mrpt::obs::CRawlog::TEntryType::etObservation)
               {
                 obs = std::dynamic_pointer_cast<mrpt::obs::CObservation3DRangeScan>(
                     rawlog.getAsObservation(0));
@@ -252,7 +252,7 @@ static void AppDepthCamDemo()
               else
               {
                 // SF format:
-                ASSERT_(rawlog.getType(0) == mrpt::obs::CRawlog::etSensoryFrame);
+                ASSERT_(rawlog.getType(0) == mrpt::obs::CRawlog::TEntryType::etSensoryFrame);
 
                 obs = rawlog.getAsObservations(0)
                           ->getObservationByClass<mrpt::obs::CObservation3DRangeScan>();

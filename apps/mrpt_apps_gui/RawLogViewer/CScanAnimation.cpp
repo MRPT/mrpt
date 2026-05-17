@@ -293,14 +293,14 @@ bool CScanAnimation::rebuild_view(bool forceRefreshView)
       m_gl_objects.at(kv.first).obj->setVisibility(kv.second);
     }
 
-    if (rawlog.getType(idx) == CRawlog::etSensoryFrame)
+    if (rawlog.getType(idx) == CRawlog::TEntryType::etSensoryFrame)
     {
       CSensoryFrame::Ptr sf = rawlog.getAsObservations(idx);
 
       bool r = update_opengl_viz(*sf);
       forceRefreshView = forceRefreshView || r;
     }
-    else if (rawlog.getType(idx) == CRawlog::etObservation)
+    else if (rawlog.getType(idx) == CRawlog::TEntryType::etObservation)
     {
       CSensoryFrame sf;
       sf.insert(rawlog.getAsObservation(idx));
@@ -595,7 +595,7 @@ void CScanAnimation::OnbtnPlayClick(wxCommandEvent&)
       int idx = slPos->GetValue();
       if (idx >= ((int)rawlog.size()) - 1) break;  // End!
 
-      if (rawlog.getType(idx) != CRawlog::etActionCollection)
+      if (rawlog.getType(idx) != CRawlog::TEntryType::etActionCollection)
       {
         bool refreshed = rebuild_view(false);
         if (refreshed) ::wxMilliSleep(delay_ms);

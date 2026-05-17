@@ -37,6 +37,16 @@
 
 namespace mrpt::maps
 {
+/** Output format for savePCDFile().
+ * \sa CPointsMap::savePCDFile()
+ * \ingroup mrpt_maps_grp
+ */
+enum class PCDFormat
+{
+  ASCII,   //!< Plain-text PCD file
+  Binary   //!< Binary PCD file
+};
+
 /** \ingroup mrpt_maps_grp */
 // Forward decls. needed to make its static methods friends of CPointsMap
 namespace detail
@@ -490,11 +500,20 @@ class CPointsMap :
    * \note This method requires user code to include PCL before MRPT headers.
    * \return false on any error */
 #if defined(PCL_LINEAR_VERSION)
-  [[nodiscard]] bool savePCDFile(const std::string& filename, bool save_as_binary) const
+  [[nodiscard]] bool savePCDFile(
+      const std::string& filename,
+      PCDFormat format = PCDFormat::Binary) const
   {
     pcl::PointCloud<pcl::PointXYZ> cloud;
     this->getPCLPointCloud(cloud);
-    return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
+    return 0 == pcl::io::savePCDFile(filename, cloud, format == PCDFormat::Binary);
+  }
+
+  /** \deprecated Use savePCDFile(filename, PCDFormat) instead. */
+  [[deprecated("Use savePCDFile(filename, PCDFormat) instead")]]
+  [[nodiscard]] bool savePCDFile(const std::string& filename, bool save_as_binary) const
+  {
+    return savePCDFile(filename, save_as_binary ? PCDFormat::Binary : PCDFormat::ASCII);
   }
 #endif
 

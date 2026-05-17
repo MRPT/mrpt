@@ -267,7 +267,7 @@ void CWaypointsNavigator::internal_select_next_waypoint_default_policy(
                       : "nullptr (operation not supported by this robot)");
 
         // In any case, do a "stop"
-        this->stop(false /*not emergency*/);
+        this->stop(StopType::Normal);
 
         if (align_cmd)
           this->changeSpeeds(*align_cmd);

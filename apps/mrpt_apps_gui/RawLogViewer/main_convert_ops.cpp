@@ -81,7 +81,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 
     bool deleteThis = false;
 
-    if (it.getType() == CRawlog::etActionCollection)
+    if (it.getType() == CRawlog::TEntryType::etActionCollection)
     {
       // Is this a part of multiple actions?
       if (lastAct)
@@ -123,7 +123,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
         lastSF.reset();
       }
     }
-    else if (it.getType() == CRawlog::etSensoryFrame)
+    else if (it.getType() == CRawlog::TEntryType::etSensoryFrame)
     {
       // Is this a part of a series?
       if (lastSF)
@@ -216,7 +216,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
   {
     CSerializable::Ptr obj = rawlog.getAsGeneric(i);
 
-    if (rawlog.getType(i) == CRawlog::etActionCollection)
+    if (rawlog.getType(i) == CRawlog::TEntryType::etActionCollection)
     {
       // Accumulate Actions
       // ----------------------
@@ -253,7 +253,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
         }
       }
     }
-    else if (rawlog.getType(i) == CRawlog::etSensoryFrame)
+    else if (rawlog.getType(i) == CRawlog::TEntryType::etSensoryFrame)
     {
       // Decimate Observations
       // ---------------------------
@@ -809,7 +809,7 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
         return;
         break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         CObservation::Ptr o = rawlog.getAsObservation(i);
 
@@ -889,7 +889,7 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
   {
     switch (rawlog.getType(i))
     {
-      case CRawlog::etSensoryFrame:
+      case CRawlog::TEntryType::etSensoryFrame:
       {
         CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
         CObservation::Ptr o;
@@ -905,7 +905,7 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
       }
       break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         CObservation::Ptr o = rawlog.getAsObservation(i);
 
@@ -987,14 +987,14 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 
     switch (rawlog.getType(countLoop))
     {
-      case CRawlog::etSensoryFrame:
-      case CRawlog::etActionCollection:
+      case CRawlog::TEntryType::etSensoryFrame:
+      case CRawlog::TEntryType::etActionCollection:
       {
         THROW_EXCEPTION("The rawlog already has sensory frames and/or actions!");
       }
       break;
 
-      case CRawlog::etObservation:
+      case CRawlog::TEntryType::etObservation:
       {
         CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
