@@ -297,12 +297,12 @@ void RawlogGrabberApp::dump_verbose_info(const mrpt::obs::CSensoryFrame& sf) con
     return;
   }
   // Show GPS mode:
-  mrpt::obs::CObservationGPS::Ptr gps;
+  mrpt::obs::CObservationGPS::ConstPtr gps;
   std::size_t idx = 0;
   do
   {
     gps = sf.getObservationByClass<mrpt::obs::CObservationGPS>(idx++);
-    if (gps) dump_GPS_mode_info(*gps);
+    if (gps) { dump_GPS_mode_info(*gps); }
   } while (gps);
 
   // Show IMU angles:
@@ -444,7 +444,8 @@ void RawlogGrabberApp::process_observations_for_sf(
       static bool last_odo_first = true;
 
       mrpt::poses::CPose2D odo_incr;
-      int64_t lticks_incr, rticks_incr;
+      int32_t lticks_incr;
+      int32_t rticks_incr;
 
       if (last_odo_first)
       {

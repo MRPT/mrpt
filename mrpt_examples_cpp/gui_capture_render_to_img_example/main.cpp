@@ -154,7 +154,7 @@ void TestDisplay3D()
     std::this_thread::sleep_for(10ms);
 
     // Grab frame:
-    mrpt::img::CImage::Ptr img = win.getLastWindowImagePtr();
+    mrpt::img::CImage::ConstPtr img = win.getLastWindowImagePtr();
     if (img)
     {
       static int i = 0;

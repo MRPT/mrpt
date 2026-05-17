@@ -73,7 +73,7 @@ class CObservationBeaconRanges : public CObservation
 
   /** Easy look-up into the vector sensedData, returns the range for a given
    * beacon, or 0 if the beacon is not observed */
-  float getSensedRangeByBeaconID(int32_t beaconID);
+  float getSensedRangeByBeaconID(int32_t beaconID) const;
 
   // See base class docs:
   bool exportTxtSupported() const override { return true; }

@@ -730,7 +730,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
         // Avrg. error:
         // ----------------------------------------
-        CActionRobotMovement2D::Ptr best_mov_estim = action->getBestMovementEstimation();
+        CActionRobotMovement2D::ConstPtr best_mov_estim = action->getBestMovementEstimation();
         if (best_mov_estim)
         {
           odometryEstimation = odometryEstimation + best_mov_estim->poseChange->getMeanVal();
@@ -794,7 +794,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
           // scan, if
           // several are
           // present.
-          COccupancyGridMap2D::Ptr gridmap = metricMap->mapByClass<COccupancyGridMap2D>();
+          COccupancyGridMap2D::ConstPtr gridmap = metricMap->mapByClass<COccupancyGridMap2D>();
           if (obs_scan && gridmap)  // We have both, go on:
           {
             // Simulate scan + uncertainty:

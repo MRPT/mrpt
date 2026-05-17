@@ -935,7 +935,7 @@ void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent&)
     if (rawlog.getType(idx) == CRawlog::etSensoryFrame)
     {
       CSensoryFrame::Ptr sf = rawlog.getAsObservations(idx);
-      showSensoryFrame(*sf.get(), nImgs, imgTimestamp);
+      showSensoryFrame(*sf, nImgs, imgTimestamp);
       edIndex->SetValue(idx);
     }
     else if (rawlog.getType(idx) == CRawlog::etObservation)

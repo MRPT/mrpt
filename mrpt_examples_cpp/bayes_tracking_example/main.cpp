@@ -605,7 +605,7 @@ void CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
         TRANSITION_MODEL_STD_VXY * getRandomGenerator().drawGaussian1D_normalized();
   }
 
-  CObservationBearingRange::Ptr obs =
+  CObservationBearingRange::ConstPtr obs =
       observation->getObservationByClass<CObservationBearingRange>();
   ASSERT_(obs);
   ASSERT_(obs->sensedData.size() == 1);

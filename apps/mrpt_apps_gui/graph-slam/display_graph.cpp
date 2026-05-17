@@ -70,7 +70,7 @@ void display_graph(const GRAPHTYPE& g)
   //  recomputing it again here:
   win.setCameraElevationDeg(75);
   {
-    CGridPlaneXY::Ptr obj_grid = objGraph->CSetOfObjects::getByClass<CGridPlaneXY>();
+    CGridPlaneXY::ConstPtr obj_grid = objGraph->CSetOfObjects::getByClass<CGridPlaneXY>();
     if (obj_grid)
     {
       float x_min, x_max, y_min, y_max;
