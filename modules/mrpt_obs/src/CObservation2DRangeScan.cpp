@@ -32,7 +32,7 @@ void CObservation2DRangeScan::serializeTo(mrpt::serialization::CArchive& out) co
 {
   // The data
   out << aperture << rightToLeft << maxRange << sensorPose;
-  uint32_t N = m_scan.size();
+  uint32_t N = static_cast<uint32_t>(m_scan.size());
   out << N;
   ASSERT_EQUAL_(m_validRange.size(), m_scan.size());
   if (N)
@@ -66,7 +66,7 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(
   auto itValid = m_validRange.begin();
   for (auto itScan = m_scan.begin(); itScan != m_scan.end(); itScan++, itValid++, k++)
   {
-    const auto ang = std::abs(k * aperture / nPts - aperture * 0.5f);
+    const auto ang = std::abs(k * aperture / static_cast<float>(nPts) - aperture * 0.5f);
     float x = (*itScan) * cos(ang);
 
     if (min_height != 0 || max_height != 0)
@@ -231,12 +231,12 @@ void CObservation2DRangeScan::filterByExclusionAreas(const TListExclusionAreasWi
   if (rightToLeft)
   {
     Ang = -0.5f * aperture;
-    dA = aperture / (sizeRangeScan - 1);
+    dA = aperture / static_cast<float>(sizeRangeScan - 1);
   }
   else
   {
     Ang = +0.5f * aperture;
-    dA = -aperture / (sizeRangeScan - 1);
+    dA = -aperture / static_cast<float>(sizeRangeScan - 1);
   }
 
   // For each exclusion area:
@@ -279,7 +279,7 @@ void CObservation2DRangeScan::filterByExclusionAreas(const TListExclusionAreasWi
 
 float CObservation2DRangeScan::getScanAngle(size_t idx) const
 {
-  float Ang = -0.5f * aperture, dA = aperture / (m_scan.size() - 1);
+  float Ang = -0.5f * aperture, dA = aperture / static_cast<float>(m_scan.size() - 1);
   ASSERT_LT_(idx, m_scan.size());
 
   if (!rightToLeft)
@@ -287,7 +287,7 @@ float CObservation2DRangeScan::getScanAngle(size_t idx) const
     Ang = -Ang;
     dA = -dA;
   }
-  return Ang + dA * idx;
+  return Ang + dA * static_cast<float>(idx);
 }
 
 float CObservation2DRangeScan::getScanRelativeTimestamp(size_t idx) const
@@ -344,12 +344,12 @@ void CObservation2DRangeScan::filterByExclusionAngles(
   if (rightToLeft)
   {
     Ang = -0.5 * aperture;
-    dA = aperture / (sizeRangeScan - 1);
+    dA = aperture / static_cast<float>(sizeRangeScan - 1);
   }
   else
   {
     Ang = +0.5 * aperture;
-    dA = -aperture / (sizeRangeScan - 1);
+    dA = -aperture / static_cast<float>(sizeRangeScan - 1);
   }
 
   // For each forbiden angle range:
@@ -361,8 +361,8 @@ void CObservation2DRangeScan::filterByExclusionAngles(
     if (ap_idx_ini < 0) ap_idx_ini = 0;
     if (ap_idx_end < 0) ap_idx_end = 0;
 
-    if (ap_idx_ini > static_cast<int>(sizeRangeScan)) ap_idx_ini = sizeRangeScan - 1;
-    if (ap_idx_end > static_cast<int>(sizeRangeScan)) ap_idx_end = sizeRangeScan - 1;
+    if (ap_idx_ini > static_cast<int>(sizeRangeScan)) ap_idx_ini = static_cast<int>(sizeRangeScan) - 1;
+    if (ap_idx_end > static_cast<int>(sizeRangeScan)) ap_idx_end = static_cast<int>(sizeRangeScan) - 1;
 
     const size_t idx_ini = ap_idx_ini;
     const size_t idx_end = ap_idx_end;
@@ -448,7 +448,7 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
   size_t i, inval = 0;
   for (i = 0; i < m_scan.size(); i++)
     if (!m_validRange[i]) inval++;
-  o << mrpt::format("Invalid points in the scan: %u\n", (unsigned)inval);
+  o << mrpt::format("Invalid points in the scan: %u\n", static_cast<unsigned>(inval));
 
   o << mrpt::format("Sensor maximum range: %.02f m\n", maxRange);
   o << mrpt::format("Sensor field-of-view (\"aperture\"): %.01f deg\n", RAD2DEG(aperture));

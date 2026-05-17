@@ -29,7 +29,7 @@ struct Message_NMEA_GGA : public gnss_message
   {
     msg_type = NMEA_GGA
   };
-  Message_NMEA_GGA() : gnss_message((gnss_message_type_t)msg_type) {}
+  Message_NMEA_GGA() : gnss_message(static_cast<gnss_message_type_t>(msg_type)) {}
   struct content_t
   {
     /** The GPS sensor measured timestamp (in UTC time) */
@@ -111,7 +111,7 @@ struct Message_NMEA_GLL : public gnss_message
   {
     msg_type = NMEA_GLL
   };
-  Message_NMEA_GLL() : gnss_message((gnss_message_type_t)msg_type) {}
+  Message_NMEA_GLL() : gnss_message(static_cast<gnss_message_type_t>(msg_type)) {}
   struct content_t
   {
     /** The GPS sensor measured timestamp (in UTC time) */
@@ -140,7 +140,7 @@ struct Message_NMEA_RMC : public gnss_message
   {
     msg_type = NMEA_RMC
   };
-  Message_NMEA_RMC() : gnss_message((gnss_message_type_t)msg_type) {}
+  Message_NMEA_RMC() : gnss_message(static_cast<gnss_message_type_t>(msg_type)) {}
   struct content_t
   {
     /** The GPS sensor measured timestamp (in UTC time) */
@@ -184,7 +184,7 @@ struct Message_NMEA_VTG : public gnss_message
   {
     msg_type = NMEA_VTG
   };
-  Message_NMEA_VTG() : gnss_message((gnss_message_type_t)msg_type) {}
+  Message_NMEA_VTG() : gnss_message(static_cast<gnss_message_type_t>(msg_type)) {}
   struct content_t
   {
     /** Degrees */
@@ -208,7 +208,7 @@ struct Message_NMEA_GSA : public gnss_message
   {
     msg_type = NMEA_GSA
   };
-  Message_NMEA_GSA() : gnss_message((gnss_message_type_t)msg_type) {}
+  Message_NMEA_GSA() : gnss_message(static_cast<gnss_message_type_t>(msg_type)) {}
   struct content_t
   {
     char auto_selection_fix = 'M';
@@ -234,7 +234,7 @@ struct Message_NMEA_ZDA : public gnss_message
   {
     msg_type = NMEA_ZDA
   };
-  Message_NMEA_ZDA() : gnss_message((gnss_message_type_t)msg_type) {}
+  Message_NMEA_ZDA() : gnss_message(static_cast<gnss_message_type_t>(msg_type)) {}
   struct content_t
   {
     /** The GPS sensor measured timestamp (in UTC time) */

@@ -26,7 +26,7 @@ void Message_NV_OEM6_GENERIC_FRAME::dumpToStream(std::ostream& out) const
   out << mrpt::format(
       "[Novatel OEM6 GENERIC FRAME]\n"
       " Message ID: %u\n",
-      (unsigned)this->header.msg_id);
+      static_cast<unsigned>(this)->header.msg_id);
 }
 void Message_NV_OEM6_GENERIC_FRAME::internal_writeToStream(mrpt::serialization::CArchive& out) const
 {
@@ -46,7 +46,7 @@ void Message_NV_OEM6_GENERIC_FRAME::internal_readFromStream(mrpt::serialization:
 void Message_NV_OEM6_GENERIC_SHORT_FRAME::dumpToStream(std::ostream& out) const
 {
   out << "[Novatel OEM6 GENERIC SHORT FRAME]\n";
-  out << mrpt::format(" Message ID: %u\n", (unsigned)this->header.msg_id);
+  out << mrpt::format(" Message ID: %u\n", static_cast<unsigned>(this)->header.msg_id);
 }
 void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_writeToStream(
     mrpt::serialization::CArchive& out) const
@@ -168,8 +168,8 @@ const std::string& nv_oem6_ins_status_type::enum2str(int val)
 void generic_dump_BESTPOS(const Message_NV_OEM6_BESTPOS::content_t& fields, std::ostream& out)
 {
   out << mrpt::format(
-      " GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
-      (unsigned)(fields.header.ms_in_week));
+      " GPS week: %u  ms in week: %u\n", static_cast<unsigned>(fields.header.week),
+      static_cast<unsigned>(fields.header.ms_in_week));
   out << mrpt::format(
       " Solution status: `%s`\n", nv_oem6_solution_status::enum2str(fields.solution_stat).c_str());
   out << mrpt::format(
@@ -177,16 +177,16 @@ void generic_dump_BESTPOS(const Message_NV_OEM6_BESTPOS::content_t& fields, std:
   out << mrpt::format(
       " Longitude: %.09f deg (std dev: %.06f m)  Latitude: %.09f deg (std "
       "dev: %.06f m)\n",
-      fields.lon, fields.lon_sigma, fields.lat, fields.lat_sigma);
+      static_cast<double>(fields.lon), static_cast<double>(fields.lon_sigma), static_cast<double>(fields.lat), static_cast<double>(fields.lat_sigma));
   out << mrpt::format(
       " Height (sea level): %.06f m (std dev: %.06f m) Undulation: %.04f m   "
       "(Sum: %.04f m)\n",
-      fields.hgt, fields.hgt_sigma, fields.undulation, fields.hgt + fields.undulation);
-  out << mrpt::format(" Diff age: %.03f  Solution age: %.03f\n", fields.diff_age, fields.sol_age);
+      static_cast<double>(fields.hgt), static_cast<double>(fields.hgt_sigma), static_cast<double>(fields.undulation), static_cast<double>(fields.hgt) + static_cast<double>(fields.undulation));
+  out << mrpt::format(" Diff age: %.03f  Solution age: %.03f\n", static_cast<double>(fields.diff_age), static_cast<double>(fields.sol_age));
   out << mrpt::format(" Base station ID: `%.*s`\n", 4, fields.base_station_id);
   out << mrpt::format(
-      " Num sat tracked: %u  Num sat in solution: %u\n", (unsigned)fields.num_sats_tracked,
-      (unsigned)fields.num_sats_sol);
+      " Num sat tracked: %u  Num sat in solution: %u\n", static_cast<unsigned>(fields.num_sats_tracked),
+      static_cast<unsigned>(fields.num_sats_sol))
 }
 
 void Message_NV_OEM6_BESTPOS::dumpToStream(std::ostream& out) const
@@ -207,11 +207,11 @@ bool Message_NV_OEM6_BESTPOS::getAllFieldValues(std::ostream& o) const
   o << mrpt::format(
       "%u.%08u %u %u %.09f %.09f %.06f %.04f %.06f %.06f %.06f %.03f %.03f "
       "%u %u",
-      (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week),
-      (unsigned)fields.solution_stat, (unsigned)fields.position_type, fields.lon, fields.lat,
-      fields.hgt, fields.undulation, fields.lon_sigma, fields.lat_sigma, fields.hgt_sigma,
-      fields.diff_age, fields.sol_age, (unsigned)fields.num_sats_tracked,
-      (unsigned)fields.num_sats_sol);
+      static_cast<unsigned>(fields.header.week), static_cast<unsigned>(fields.header.ms_in_week),
+      static_cast<unsigned>(fields.solution_stat), static_cast<unsigned>(fields.position_type), static_cast<double>(fields.lon), static_cast<double>(fields.lat),
+      static_cast<double>(fields.hgt), static_cast<double>(fields.undulation), static_cast<double>(fields.lon_sigma), static_cast<double>(fields.lat_sigma), static_cast<double>(fields.hgt_sigma),
+      static_cast<double>(fields.diff_age), static_cast<double>(fields.sol_age), static_cast<unsigned>(fields.num_sats_tracked),
+      static_cast<unsigned>(fields.num_sats_sol))
   return true;
 }
 
@@ -220,8 +220,8 @@ void Message_NV_OEM6_INSPVAS::dumpToStream(std::ostream& out) const
 {
   out << "[Novatel OEM6 INSPVAS]\n";
   out << mrpt::format(
-      " GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
-      (unsigned)(fields.header.ms_in_week));
+      " GPS week: %u  ms in week: %u\n", static_cast<unsigned>(fields.header.week),
+      static_cast<unsigned>(fields.header.ms_in_week));
   out << mrpt::format(
       " INS status: `%s`\n", nv_oem6_ins_status_type::enum2str(fields.ins_status).c_str());
   out << mrpt::format(
@@ -245,8 +245,8 @@ bool Message_NV_OEM6_INSPVAS::getAllFieldValues(std::ostream& o) const
 {
   o << mrpt::format(
       "%u.%08u %u %.09f %.09f %.06f %.05f %.05f %.05f %.05f %.05f %.05f",
-      (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week),
-      (unsigned)fields.ins_status, fields.lon, fields.lat, fields.hgt, fields.vel_north,
+      static_cast<unsigned>(fields.header.week), static_cast<unsigned>(fields.header.ms_in_week),
+      static_cast<unsigned>(fields.ins_status), fields.lon, fields.lat, fields.hgt, fields.vel_north,
       fields.vel_east, fields.vel_up, fields.roll, fields.pitch, fields.azimuth);
   return true;
 }
@@ -256,8 +256,8 @@ void Message_NV_OEM6_INSCOVS::dumpToStream(std::ostream& out) const
 {
   out << "[Novatel OEM6 INSCOVS]\n";
   out << mrpt::format(
-      " GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
-      (unsigned)(fields.header.ms_in_week));
+      " GPS week: %u  ms in week: %u\n", static_cast<unsigned>(fields.header.week),
+      static_cast<unsigned>(fields.header.ms_in_week));
   out << mrpt::format(
       " Position cov: %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f "
       "%9.03f %9.03f\n",
@@ -287,7 +287,7 @@ bool Message_NV_OEM6_INSCOVS::getAllFieldValues(std::ostream& o) const
       "%9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f "
       "%9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f "
       "%9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f ",
-      (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week), fields.pos_cov[0],
+      static_cast<unsigned>(fields.header.week), static_cast<unsigned>(fields.header.ms_in_week), fields.pos_cov[0],
       fields.pos_cov[1], fields.pos_cov[2], fields.pos_cov[3], fields.pos_cov[4], fields.pos_cov[5],
       fields.pos_cov[6], fields.pos_cov[7], fields.pos_cov[8], fields.att_cov[0], fields.att_cov[1],
       fields.att_cov[2], fields.att_cov[3], fields.att_cov[4], fields.att_cov[5], fields.att_cov[6],
@@ -339,8 +339,8 @@ void Message_NV_OEM6_RAWEPHEM::dumpToStream(std::ostream& out) const
 {
   out << "[Novatel OEM6 RAWEPHEM]\n";
   out << mrpt::format(
-      " GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
-      (unsigned)(fields.header.ms_in_week));
+      " GPS week: %u  ms in week: %u\n", static_cast<unsigned>(fields.header.week),
+      static_cast<unsigned>(fields.header.ms_in_week));
 }
 
 // ------------
@@ -353,9 +353,9 @@ void Message_NV_OEM6_VERSION::dumpToStream(std::ostream& out) const
     out << mrpt::format(
         " Component #%u:\n  Model: `%.*s`\n  Serial: `%.*s`\n  SW "
         "version:`%.*s`\n",
-        (unsigned int)i, (int)sizeof(components[i].model), components[i].model,
-        (int)sizeof(components[i].serial), components[i].serial,
-        (int)sizeof(components[i].swversion), components[i].swversion);
+        static_cast<unsigned int>(i), static_cast<int>(sizeof(components)[i].model), components[i].model,
+        static_cast<int>(sizeof(components)[i].serial), components[i].serial,
+        static_cast<int>(sizeof(components)[i].swversion), components[i].swversion);
   }
 }
 
@@ -405,18 +405,18 @@ bool Message_NV_OEM6_RAWIMUS::getAllFieldDescriptions(std::ostream& o) const
 bool Message_NV_OEM6_RAWIMUS::getAllFieldValues(std::ostream& o) const
 {
   o << mrpt::format(
-      "%u.%08u %u %li %li %li %li %li %li", (unsigned)fields.header.week,
-      (unsigned)(fields.header.ms_in_week), (unsigned)fields.imu_status, (long)fields.accel_x,
-      -(long)fields.accel_y_neg, (long)fields.accel_z, (long)fields.gyro_x,
-      -(long)fields.gyro_y_neg, (long)fields.gyro_z);
+      "%u.%08u %u %li %li %li %li %li %li", static_cast<unsigned>(fields.header.week),
+      static_cast<unsigned>(fields.header.ms_in_week), static_cast<unsigned>(fields.imu_status), static_cast<long>(fields.accel_x),
+      -static_cast<long>(fields.accel_y_neg), static_cast<long>(fields.accel_z), static_cast<long>(fields.gyro_x),
+      -static_cast<long>(fields.gyro_y_neg), static_cast<long>(fields.gyro_z))
   return true;
 }
 
 // ------------
 void generic_dump_MARKTIME(const Message_NV_OEM6_MARKTIME::content_t& fields, std::ostream& out)
 {
-  out << mrpt::format(" Clock status: 0x%08lu\n", (long)fields.clock_status);
-  out << mrpt::format(" GPS week: %lu Seconds: %f\n", (long)fields.week, fields.week_seconds);
+  out << mrpt::format(" Clock status: 0x%08lu\n", static_cast<long>(fields.clock_status))
+  out << mrpt::format(" GPS week: %lu Seconds: %f\n", static_cast<long>(fields.week), fields.week_seconds);
   out << mrpt::format(
       " Clock offset: %f  (std dev = %e)\n", fields.clock_offset, fields.clock_offset_std);
   out << mrpt::format(" UTC offset: %f\n", fields.utc_offset);
@@ -437,9 +437,9 @@ void generic_getFieldValues_MARKTIME(
     const Message_NV_OEM6_MARKTIME::content_t& fields, std::ostream& o)
 {
   o << mrpt::format(
-      "%u.%08u %u %lu %f %f", (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week),
-      (unsigned)fields.clock_status, (long unsigned)fields.week, fields.week_seconds,
-      fields.utc_offset);
+      "%u.%08u %u %lu %f %f", static_cast<unsigned>(fields.header.week), static_cast<unsigned>(fields.header.ms_in_week),
+      static_cast<unsigned>(fields.clock_status), static_cast<long unsigned>(fields.week), static_cast<double>(fields.week_seconds),
+      static_cast<double>(fields.utc_offset));
 }
 bool Message_NV_OEM6_MARKTIME::getAllFieldValues(std::ostream& o) const
 {
@@ -477,11 +477,11 @@ void Message_NV_OEM6_IONUTC::dumpToStream(std::ostream& out) const
 {
   out << "[Novatel NV_OEM6_IONUTC]\n";
   out << mrpt::format(
-      " GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week,
-      (unsigned)(fields.header.ms_in_week));
+      " GPS week: %u  ms in week: %u\n", static_cast<unsigned>(fields.header.week),
+      static_cast<unsigned>(fields.header.ms_in_week));
   out << mrpt::format(
-      " UTC ref week: %u  Tot: %u\n", (unsigned)fields.utc_wn, (unsigned)fields.tot);
+      " UTC ref week: %u  Tot: %u\n", static_cast<unsigned>(fields.utc_wn), static_cast<unsigned>(fields.tot))
   out << mrpt::format(
-      " Leap seconds delta_t: %u  future: %u\n", (unsigned)fields.deltat_ls,
-      (unsigned)fields.deltat_lsf);
+      " Leap seconds delta_t: %u  future: %u\n", static_cast<unsigned>(fields.deltat_ls),
+      static_cast<unsigned>(fields.deltat_lsf))
 }
