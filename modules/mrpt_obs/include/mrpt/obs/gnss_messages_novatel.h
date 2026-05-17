@@ -206,7 +206,7 @@ const std::string& enum2str(int val);
  * time). \sa mrpt::obs::CObservationGPS  */
 struct Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 {
-  Message_NV_OEM6_GENERIC_FRAME() : gnss_message((gnss_message_type_t)NV_OEM6_GENERIC_FRAME) {}
+  Message_NV_OEM6_GENERIC_FRAME() : gnss_message(static_cast<gnss_message_type_t>(NV_OEM6_GENERIC_FRAME)) {}
   /** Frame header */
   nv_oem6_header_t header;
   std::vector<uint8_t> msg_body;
@@ -224,7 +224,7 @@ struct Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 struct Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
 {
   Message_NV_OEM6_GENERIC_SHORT_FRAME() :
-      gnss_message((gnss_message_type_t)NV_OEM6_GENERIC_SHORT_FRAME)
+      gnss_message(static_cast<gnss_message_type_t>(NV_OEM6_GENERIC_SHORT_FRAME))
   {
   }
   /** Frame header */
@@ -373,7 +373,7 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 /** Novatel frame: NV_OEM6_RANGECMP. \sa mrpt::obs::CObservationGPS  */
 struct Message_NV_OEM6_RANGECMP : public gnss_message
 {
-  Message_NV_OEM6_RANGECMP() : gnss_message((gnss_message_type_t)NV_OEM6_RANGECMP) {}
+  Message_NV_OEM6_RANGECMP() : gnss_message(static_cast<gnss_message_type_t>(NV_OEM6_RANGECMP)) {}
   struct TCompressedRangeLog
   {
     uint8_t data[24];
