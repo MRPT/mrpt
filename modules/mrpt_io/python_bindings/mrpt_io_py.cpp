@@ -234,17 +234,13 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   m.def(
       "loadBinaryFile",
-      [](const std::string& fileName) { return mrpt::io::loadBinaryFile(fileName); },
-      "fileName"_a,
-      "Load an entire binary file. Returns None (nullopt) on error, or a bytes-like list of uint8.");
+      [](const std::string& fileName) { return mrpt::io::loadBinaryFile(fileName); }, "fileName"_a,
+      "Load an entire binary file. Returns None (nullopt) on error, or a bytes-like list of "
+      "uint8.");
   m.def(
-      "loadTextFile",
-      [](const std::string& fileName) { return mrpt::io::loadTextFile(fileName); },
-      "fileName"_a,
-      "Load a text file as a list of string lines. Returns None (nullopt) on error.");
+      "loadTextFile", [](const std::string& fileName) { return mrpt::io::loadTextFile(fileName); },
+      "fileName"_a, "Load a text file as a list of string lines. Returns None (nullopt) on error.");
   m.def(
-      "file_get_contents",
-      &mrpt::io::file_get_contents,
-      "fileName"_a,
+      "file_get_contents", &mrpt::io::file_get_contents, "fileName"_a,
       "Load an entire text file as a single string. Raises on error.");
 }

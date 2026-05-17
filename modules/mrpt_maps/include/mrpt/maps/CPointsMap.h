@@ -13,8 +13,6 @@
 */
 #pragma once
 
-#include <utility>
-
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/aligned_std_vector.h>
@@ -34,6 +32,7 @@
 #include <mrpt/viz/pointcloud_adapters.h>
 
 #include <iosfwd>
+#include <utility>
 
 namespace mrpt::maps
 {
@@ -43,8 +42,8 @@ namespace mrpt::maps
  */
 enum class PCDFormat
 {
-  ASCII,   //!< Plain-text PCD file
-  Binary   //!< Binary PCD file
+  ASCII,  //!< Plain-text PCD file
+  Binary  //!< Binary PCD file
 };
 
 /** \ingroup mrpt_maps_grp */
@@ -501,8 +500,7 @@ class CPointsMap :
    * \return false on any error */
 #if defined(PCL_LINEAR_VERSION)
   [[nodiscard]] bool savePCDFile(
-      const std::string& filename,
-      PCDFormat format = PCDFormat::Binary) const
+      const std::string& filename, PCDFormat format = PCDFormat::Binary) const
   {
     pcl::PointCloud<pcl::PointXYZ> cloud;
     this->getPCLPointCloud(cloud);
@@ -510,8 +508,8 @@ class CPointsMap :
   }
 
   /** \deprecated Use savePCDFile(filename, PCDFormat) instead. */
-  [[deprecated("Use savePCDFile(filename, PCDFormat) instead")]]
-  [[nodiscard]] bool savePCDFile(const std::string& filename, bool save_as_binary) const
+  [[deprecated("Use savePCDFile(filename, PCDFormat) instead")]] [[nodiscard]] bool savePCDFile(
+      const std::string& filename, bool save_as_binary) const
   {
     return savePCDFile(filename, save_as_binary ? PCDFormat::Binary : PCDFormat::ASCII);
   }
@@ -1310,8 +1308,8 @@ class CPointsMap :
    * \sa enableFilterByHeight, setHeightFilterLevels
    * \deprecated Use getHeightFilterLevels() returning a pair instead.
    */
-  [[deprecated("Use getHeightFilterLevels() returning a pair instead.")]]
-  void getHeightFilterLevels(double& _z_min, double& _z_max) const
+  [[deprecated("Use getHeightFilterLevels() returning a pair instead.")]] void
+  getHeightFilterLevels(double& _z_min, double& _z_max) const
   {
     _z_min = m_heightfilter_z_min;
     _z_max = m_heightfilter_z_max;

@@ -91,8 +91,8 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
    */
 
   /** \deprecated Use grabFrame() instead. */
-  [[deprecated("Use grabFrame() instead")]]
-  bool getObservation(mrpt::obs::CObservationWirelessPower& outObservation);
+  [[deprecated("Use grabFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationWirelessPower& outObservation);
 
   /** Gets the power of a given network as a timestamped observation.
    * \return std::nullopt on any error, or the observation on success.
@@ -100,7 +100,10 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
   [[nodiscard]] std::optional<mrpt::obs::CObservationWirelessPower> grabFrame()
   {
     mrpt::obs::CObservationWirelessPower obs;
-    if (!getObservation(obs)) { return std::nullopt; }
+    if (!getObservation(obs))
+    {
+      return std::nullopt;
+    }
     return obs;
   }
 

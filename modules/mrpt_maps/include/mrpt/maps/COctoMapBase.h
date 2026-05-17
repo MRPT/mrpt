@@ -14,8 +14,6 @@
 
 #pragma once
 
-#include <optional>
-
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/pimpl.h>
 #include <mrpt/core/safe_pointers.h>
@@ -23,6 +21,8 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/viz/COctoMapVoxels.h>
 #include <mrpt/viz/Scene.h>
+
+#include <optional>
 
 namespace mrpt::maps
 {

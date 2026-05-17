@@ -103,8 +103,8 @@ class CPose3DPDFSOG : public CPose3DPDF
    * Gaussian if there are no modes in this SOG).
    * \deprecated Use getMostLikelyMode() returning by value instead.
    */
-  [[deprecated("Use getMostLikelyMode() returning by value instead.")]]
-  void getMostLikelyMode(CPose3DPDFGaussian& outVal) const;
+  [[deprecated("Use getMostLikelyMode() returning by value instead.")]] void getMostLikelyMode(
+      CPose3DPDFGaussian& outVal) const;
 
   /** Returns the Gaussian mode with the highest likelihood (or an empty
    * Gaussian if there are no modes in this SOG). */

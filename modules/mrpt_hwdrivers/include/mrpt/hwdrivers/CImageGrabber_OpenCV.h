@@ -111,8 +111,8 @@ class CImageGrabber_OpenCV
    * \return false on any error, true on success.
    * \deprecated Use grabFrame() instead.
    */
-  [[deprecated("Use grabFrame() instead")]]
-  bool getObservation(mrpt::obs::CObservationImage& out_observation);
+  [[deprecated("Use grabFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationImage& out_observation);
 
   /** \brief Grabs one frame from the opened camera, returning by value.
    *
@@ -121,7 +121,10 @@ class CImageGrabber_OpenCV
   [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame()
   {
     mrpt::obs::CObservationImage obs;
-    if (!getObservation(obs)) { return std::nullopt; }
+    if (!getObservation(obs))
+    {
+      return std::nullopt;
+    }
     return obs;
   }
 

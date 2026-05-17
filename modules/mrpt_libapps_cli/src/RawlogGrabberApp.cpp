@@ -302,7 +302,10 @@ void RawlogGrabberApp::dump_verbose_info(const mrpt::obs::CSensoryFrame& sf) con
   do
   {
     gps = sf.getObservationByClass<mrpt::obs::CObservationGPS>(idx++);
-    if (gps) { dump_GPS_mode_info(*gps); }
+    if (gps)
+    {
+      dump_GPS_mode_info(*gps);
+    }
   } while (gps);
 
   // Show IMU angles:

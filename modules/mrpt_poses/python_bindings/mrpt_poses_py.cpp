@@ -132,16 +132,14 @@ PYBIND11_MODULE(_bindings, m)
       .def("setYawPitchRoll", &mrpt::poses::CPose3D::setYawPitchRoll)
       .def("setFromValues", &mrpt::poses::CPose3D::setFromValues)
       .def(
-          "getRotationMatrix",
-          [](const mrpt::poses::CPose3D &p) { return p.getRotationMatrix(); },
+          "getRotationMatrix", [](const mrpt::poses::CPose3D &p) { return p.getRotationMatrix(); },
           "Returns the 3x3 Rotation Matrix")
       .def(
           "getHomogeneousMatrix",
           [](const mrpt::poses::CPose3D &p) { return p.getHomogeneousMatrix(); },
           "Returns the 4x4 homogeneous transformation matrix")
       .def(
-          "getYawPitchRoll",
-          [](const mrpt::poses::CPose3D &p) { return p.getYawPitchRoll(); },
+          "getYawPitchRoll", [](const mrpt::poses::CPose3D &p) { return p.getYawPitchRoll(); },
           "Returns (yaw, pitch, roll) as a tuple in radians")
       .def(
           "getInverseHomogeneousMatrix", [](const mrpt::poses::CPose3D &p)

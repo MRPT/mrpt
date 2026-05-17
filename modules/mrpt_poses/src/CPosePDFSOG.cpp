@@ -12,8 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <utility>
-
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
@@ -28,6 +26,7 @@
 
 #include <Eigen/Dense>
 #include <iostream>
+#include <utility>
 
 using namespace mrpt;
 using namespace mrpt::poses;

@@ -53,10 +53,7 @@ CPose2D CPoses2DSequence::getPose(unsigned int ind) const
   return poses[ind];
 }
 
-void CPoses2DSequence::getPose(unsigned int ind, CPose2D& outPose)
-{
-  outPose = getPose(ind);
-}
+void CPoses2DSequence::getPose(unsigned int ind, CPose2D& outPose) { outPose = getPose(ind); }
 
 /*---------------------------------------------------------------
 Changes the stored pose at index "ind", where the first one is 0, the last

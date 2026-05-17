@@ -429,7 +429,8 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 
       // EXPORT
       // ---------------------
-      if (rawlog.getType(i) == CRawlog::TEntryType::etActionCollection && lastTime != INVALID_TIMESTAMP)
+      if (rawlog.getType(i) == CRawlog::TEntryType::etActionCollection &&
+          lastTime != INVALID_TIMESTAMP)
       {
         CActionCollection::Ptr acts = rawlog.getAsAction(i);
 

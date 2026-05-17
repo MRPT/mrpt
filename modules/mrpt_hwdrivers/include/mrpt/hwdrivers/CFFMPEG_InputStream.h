@@ -17,9 +17,8 @@
 #include <mrpt/core/pimpl.h>
 #include <mrpt/img/CImage.h>
 
-#include <optional>
-
 #include <map>
+#include <optional>
 #include <string>
 
 /*---------------------------------------------------------------
@@ -102,8 +101,7 @@ class CFFMPEG_InputStream
    * \deprecated Use grabFrame() instead.
    * \sa openURL, close, isOpen
    */
-  [[deprecated("Use grabFrame() instead")]]
-  bool retrieveFrame(mrpt::img::CImage& out_img);
+  [[deprecated("Use grabFrame() instead")]] bool retrieveFrame(mrpt::img::CImage& out_img);
 
   /** \brief Decodes the next frame and also returns its presentation timestamp.
    *
@@ -122,7 +120,10 @@ class CFFMPEG_InputStream
   [[nodiscard]] std::optional<mrpt::img::CImage> grabFrame()
   {
     mrpt::img::CImage img;
-    if (!retrieveFrame(img)) { return std::nullopt; }
+    if (!retrieveFrame(img))
+    {
+      return std::nullopt;
+    }
     return img;
   }
 };

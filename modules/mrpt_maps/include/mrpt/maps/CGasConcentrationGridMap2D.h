@@ -100,8 +100,8 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 
   /** Returns the 3D object representing the wind grid information.
    * \deprecated Use getWindAs3DObject() returning Ptr instead. */
-  [[deprecated("Use getWindAs3DObject() returning CSetOfObjects::Ptr instead")]]
-  void getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr& windObj) const;
+  [[deprecated("Use getWindAs3DObject() returning CSetOfObjects::Ptr instead")]] void
+  getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr& windObj) const;
 
   /** Returns the 3D object representing the wind grid information. */
   [[nodiscard]] mrpt::viz::CSetOfObjects::Ptr getWindAs3DObject() const

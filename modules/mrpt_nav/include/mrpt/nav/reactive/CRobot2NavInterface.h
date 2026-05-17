@@ -121,8 +121,7 @@ class CRobot2NavInterface : public mrpt::system::COutputLogger
   virtual bool stop(StopType stopType = StopType::Emergency) = 0;
 
   /** \deprecated Use stop(StopType) instead. */
-  [[deprecated("Use stop(StopType) instead")]]
-  bool stop(bool isEmergencyStop)
+  [[deprecated("Use stop(StopType) instead")]] bool stop(bool isEmergencyStop)
   {
     return stop(isEmergencyStop ? StopType::Emergency : StopType::Normal);
   }

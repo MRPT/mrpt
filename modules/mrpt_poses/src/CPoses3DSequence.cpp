@@ -54,10 +54,7 @@ CPose3D CPoses3DSequence::getPose(unsigned int ind) const
   return CPose3D(m_poses[ind]);
 }
 
-void CPoses3DSequence::getPose(unsigned int ind, CPose3D& outPose)
-{
-  outPose = getPose(ind);
-}
+void CPoses3DSequence::getPose(unsigned int ind, CPose3D& outPose) { outPose = getPose(ind); }
 
 /*---------------------------------------------------------------
 Changes the stored pose at index "ind", where the first one is 0, the last
