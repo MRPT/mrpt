@@ -183,6 +183,11 @@ class CRawlog : public mrpt::serialization::CSerializable
    * \exception std::exception If index is out of bounds
    */
   CActionCollection::ConstPtr getAsAction(size_t index) const;
+  CActionCollection::Ptr getAsAction(size_t index)
+  {
+    return std::const_pointer_cast<CActionCollection>(
+        static_cast<const CRawlog*>(this)->getAsAction(index));
+  }
 
   /** Returns the i'th element in the sequence, as being an action, where
    * index=0 is the first object.
@@ -191,12 +196,22 @@ class CRawlog : public mrpt::serialization::CSerializable
    * \exception std::exception If index is out of bounds
    */
   CSensoryFrame::ConstPtr getAsObservations(size_t index) const;
+  CSensoryFrame::Ptr getAsObservations(size_t index)
+  {
+    return std::const_pointer_cast<CSensoryFrame>(
+        static_cast<const CRawlog*>(this)->getAsObservations(index));
+  }
 
   /** Returns the i'th element in the sequence, being its class whatever.
    * \sa size, isAction, getAsAction, getAsObservations
    * \exception std::exception If index is out of bounds
    */
   mrpt::serialization::CSerializable::ConstPtr getAsGeneric(size_t index) const;
+  mrpt::serialization::CSerializable::Ptr getAsGeneric(size_t index)
+  {
+    return std::const_pointer_cast<mrpt::serialization::CSerializable>(
+        static_cast<const CRawlog*>(this)->getAsGeneric(index));
+  }
 
   /** Returns the i'th element in the sequence, as being an observation, where
    * index=0 is the first object.
@@ -208,6 +223,11 @@ class CRawlog : public mrpt::serialization::CSerializable
    * \exception std::exception If index is out of bounds
    */
   CObservation::ConstPtr getAsObservation(size_t index) const;
+  CObservation::Ptr getAsObservation(size_t index)
+  {
+    return std::const_pointer_cast<CObservation>(
+        static_cast<const CRawlog*>(this)->getAsObservation(index));
+  }
 
   /** Get the i'th observation as an observation of the given type.
    * \exception std::exception If index is out of bounds, or type not
@@ -371,8 +391,8 @@ class CRawlog : public mrpt::serialization::CSerializable
    */
   static bool readActionObservationPair(
       mrpt::serialization::CArchive& inStream,
-      CActionCollection::ConstPtr& action,
-      CSensoryFrame::ConstPtr& observations,
+      CActionCollection::Ptr& action,
+      CSensoryFrame::Ptr& observations,
       size_t& rawlogEntry);
 
   /** Reads a consecutive pair action/sensory_frame OR an observation,
@@ -393,9 +413,9 @@ class CRawlog : public mrpt::serialization::CSerializable
    */
   static bool getActionObservationPairOrObservation(
       mrpt::serialization::CArchive& inStream,
-      CActionCollection::ConstPtr& action,
-      CSensoryFrame::ConstPtr& observations,
-      CObservation::ConstPtr& observation,
+      CActionCollection::Ptr& action,
+      CSensoryFrame::Ptr& observations,
+      CObservation::Ptr& observation,
       size_t& rawlogEntry);
 
   /** Alternative to getActionObservationPairOrObservation() returning the
@@ -412,9 +432,9 @@ class CRawlog : public mrpt::serialization::CSerializable
   ReadFromArchive(mrpt::serialization::CArchive& inStream, const size_t rawlogEntryIndex)
   {
     size_t retIndex = rawlogEntryIndex;
-    CActionCollection::ConstPtr action;
-    CSensoryFrame::ConstPtr sf;
-    CObservation::ConstPtr obs;
+    CActionCollection::Ptr action;
+    CSensoryFrame::Ptr sf;
+    CObservation::Ptr obs;
     const bool readOk = getActionObservationPairOrObservation(inStream, action, sf, obs, retIndex);
     return {readOk, retIndex, action, sf, obs};
   }

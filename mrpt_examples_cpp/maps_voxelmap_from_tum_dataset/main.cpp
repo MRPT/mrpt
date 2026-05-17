@@ -116,7 +116,8 @@ void TestVoxelMapFromTUM(
 
     // View occupied points:
     {
-      auto mapPts = map.getOccupiedVoxels();
+      auto mapPtsConst = map.getOccupiedVoxels();
+      auto mapPts = std::const_pointer_cast<mrpt::maps::CSimplePointsMap>(mapPtsConst);
       mapPts->renderOptions.point_size = 5.0;
       scene->insert(mapPts->getVisualization());
     }

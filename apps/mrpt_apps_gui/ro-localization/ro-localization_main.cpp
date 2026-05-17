@@ -346,8 +346,8 @@ void TestParticlesLocalization()
       // -----------------------------
       //		Particle filter
       // -----------------------------
-      CActionCollection::Ptr action;
-      CSensoryFrame::Ptr observations;
+      CActionCollection::ConstPtr action;
+      CSensoryFrame::ConstPtr observations;
       CPose2D pdfEstimation;
 
       while (rawlogEntry < (rawlogEntries - 1))
@@ -361,7 +361,7 @@ void TestParticlesLocalization()
 
         //-------------------FRANCO DATA--------------------
         {
-          CObservationBeaconRanges::Ptr beaconPose =
+          CObservationBeaconRanges::ConstPtr beaconPose =
               observations->getObservationByClass<CObservationBeaconRanges>();
           if (beaconPose)
           {
@@ -412,7 +412,7 @@ void TestParticlesLocalization()
 
           // Create real_ranges row:
           // ----------------------------
-          CObservationBeaconRanges::Ptr beaconPose =
+          CObservationBeaconRanges::ConstPtr beaconPose =
               observations->getObservationByClass<CObservationBeaconRanges>();
           if (!sensorPoseOnRobot_valid)
           {

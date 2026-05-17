@@ -304,12 +304,12 @@ void RBPF_SLAM_App_Base::run()
 
     // Update odometry:
     {
-      CActionRobotMovement2D::Ptr act = action->getBestMovementEstimation();
+      CActionRobotMovement2D::ConstPtr act = action->getBestMovementEstimation();
       if (act)
         odoPose = odoPose + CPose3D(act->poseChange->getMeanVal());
       else
       {
-        CActionRobotMovement3D::Ptr act3D = action->getActionByClass<CActionRobotMovement3D>();
+        CActionRobotMovement3D::ConstPtr act3D = action->getActionByClass<CActionRobotMovement3D>();
         if (act3D) odoPose = odoPose + act3D->poseChange.mean;
       }
     }
@@ -350,7 +350,7 @@ void RBPF_SLAM_App_Base::run()
         tictac_JH.Tic();
 
         const CMultiMetricMap* avrMap = mapBuilder->mapPDF.getAveragedMetricMapEstimation();
-        COccupancyGridMap2D::Ptr grid = avrMap->mapByClass<COccupancyGridMap2D>();
+        COccupancyGridMap2D::ConstPtr grid = avrMap->mapByClass<COccupancyGridMap2D>();
         ASSERT_(grid);
         grid->computeEntropy(entropy);
 

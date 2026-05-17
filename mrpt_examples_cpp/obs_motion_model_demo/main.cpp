@@ -55,8 +55,8 @@ void DemoMotionModel(int argc, const char** argv)
 
   size_t position = 0;
 
-  mrpt::obs::CActionCollection::Ptr actions;
-  mrpt::obs::CSensoryFrame::Ptr sf;
+  mrpt::obs::CActionCollection::ConstPtr actions;
+  mrpt::obs::CSensoryFrame::ConstPtr sf;
 
   mrpt::poses::CPose2D deadReckoning;
   mrpt::poses::CPosePDFParticles parts;

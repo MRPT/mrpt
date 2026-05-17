@@ -293,8 +293,8 @@ void CRawlog::swap(CRawlog& obj)
 
 bool CRawlog::readActionObservationPair(
     CArchive& inStream,
-    CActionCollection::ConstPtr& action,
-    CSensoryFrame::ConstPtr& observations,
+    CActionCollection::Ptr& action,
+    CSensoryFrame::Ptr& observations,
     size_t& rawlogEntry)
 {
   try
@@ -355,9 +355,9 @@ bool CRawlog::readActionObservationPair(
 
 bool CRawlog::getActionObservationPairOrObservation(
     CArchive& inStream,
-    CActionCollection::ConstPtr& action,
-    CSensoryFrame::ConstPtr& observations,
-    CObservation::ConstPtr& observation,
+    CActionCollection::Ptr& action,
+    CSensoryFrame::Ptr& observations,
+    CObservation::Ptr& observation,
     size_t& rawlogEntry)
 {
   try

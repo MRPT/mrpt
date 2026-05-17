@@ -123,9 +123,9 @@ void CObservationBeaconRanges::setSensorPose(const CPose3D& newSensorPose)
 /*---------------------------------------------------------------
            getSensedRangeByBeaconID
  ---------------------------------------------------------------*/
-float CObservationBeaconRanges::getSensedRangeByBeaconID(int32_t beaconID)
+float CObservationBeaconRanges::getSensedRangeByBeaconID(int32_t beaconID) const
 {
-  for (auto& i : sensedData)
+  for (const auto& i : sensedData)
     if (i.beaconID == beaconID) return i.sensedDistance;
   return 0;
 }

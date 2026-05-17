@@ -129,6 +129,13 @@ class CActionCollection : public mrpt::serialization::CSerializable
     MRPT_END
   }
 
+  template <typename T>
+  typename T::Ptr getActionByClass(size_t ith = 0)
+  {
+    return std::const_pointer_cast<T>(
+        static_cast<const CActionCollection*>(this)->getActionByClass<T>(ith));
+  }
+
   /** Add a new object to the list, making a deep copy. */
   void insert(const CAction& action);
 
@@ -145,6 +152,11 @@ class CActionCollection : public mrpt::serialization::CSerializable
    * \return The estimation, or nullptr if none is available.
    */
   CActionRobotMovement2D::ConstPtr getBestMovementEstimation() const;
+  CActionRobotMovement2D::Ptr getBestMovementEstimation()
+  {
+    return std::const_pointer_cast<CActionRobotMovement2D>(
+        static_cast<const CActionCollection*>(this)->getBestMovementEstimation());
+  }
 
   /** Returns the pose increment estimator in the collection having the
    * specified type.
@@ -152,6 +164,12 @@ class CActionCollection : public mrpt::serialization::CSerializable
    */
   CActionRobotMovement2D::ConstPtr getMovementEstimationByType(
       CActionRobotMovement2D::TEstimationMethod method) const;
+  CActionRobotMovement2D::Ptr getMovementEstimationByType(
+      CActionRobotMovement2D::TEstimationMethod method)
+  {
+    return std::const_pointer_cast<CActionRobotMovement2D>(
+        static_cast<const CActionCollection*>(this)->getMovementEstimationByType(method));
+  }
 
   /** Look for the first 2D or 3D "odometry" found in this collection of
    * actions, and return the "mean" increment of the robot according to it.

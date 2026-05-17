@@ -640,7 +640,7 @@ void CFormMotionModel::applyToLoadedRawlog()
         CActionCollection::Ptr acts = rawlog.getAsAction(i);
 
         CActionRobotMovement2D::Ptr firstActionMov =
-            acts->getActionByClass<CActionRobotMovement2D>();
+            std::const_pointer_cast<CActionRobotMovement2D>(acts->getActionByClass<CActionRobotMovement2D>());
 
         if (firstActionMov)
         {
@@ -742,7 +742,7 @@ void CFormMotionModel::applyToRawlogFile()
         CActionCollection::Ptr acts = std::dynamic_pointer_cast<CActionCollection>(newObj);
 
         CActionRobotMovement2D::Ptr firstActionMov =
-            acts->getActionByClass<CActionRobotMovement2D>();
+            std::const_pointer_cast<CActionRobotMovement2D>(acts->getActionByClass<CActionRobotMovement2D>());
         if (firstActionMov)
         {
           if (firstActionMov->estimationMethod == CActionRobotMovement2D::emOdometry)
@@ -873,7 +873,7 @@ void CFormMotionModel::OnbtnGetFromCurrentClick(wxCommandEvent& event)
 {
   WX_START_TRY
 
-  CActionRobotMovement2D::Ptr acts;
+  CActionRobotMovement2D::ConstPtr acts;
   for (size_t i = 0; !acts && i < rawlog.size() && i < MAX_READ_FOR_MODEL_SEARCH; i++)
   {
     if (rawlog.getType(i) == CRawlog::etActionCollection)
@@ -1100,7 +1100,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
 
   bool keepLoading = true;
   string errorMsg;
-  CActionRobotMovement2D::Ptr acts;
+  CActionRobotMovement2D::ConstPtr acts;
   int nLoaded = 0;
 
   while (keepLoading)

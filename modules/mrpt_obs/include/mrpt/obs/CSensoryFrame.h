@@ -289,6 +289,12 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
   {
     return std::dynamic_pointer_cast<const typename T::element_type>(getObservationByIndex(idx));
   }
+  /// \overload Non-const version returning a mutable Ptr
+  template <typename T>
+  std::shared_ptr<typename T::element_type> getObservationByIndexAs(size_t idx)
+  {
+    return std::dynamic_pointer_cast<typename T::element_type>(getObservationByIndex(idx));
+  }
 
   /** Returns the i'th observation in the list with the given "sensorLabel"
    * (0=first).
@@ -311,6 +317,14 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
       const std::string& label, size_t idx = 0) const
   {
     return std::dynamic_pointer_cast<const typename T::element_type>(
+        getObservationBySensorLabel(label, idx));
+  }
+  /// \overload Non-const version returning a mutable Ptr
+  template <typename T>
+  std::shared_ptr<typename T::element_type> getObservationBySensorLabelAs(
+      const std::string& label, size_t idx = 0)
+  {
+    return std::dynamic_pointer_cast<typename T::element_type>(
         getObservationBySensorLabel(label, idx));
   }
 

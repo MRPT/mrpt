@@ -173,6 +173,13 @@ class Scene : public mrpt::serialization::CSerializable, public std::enable_shar
     return typename T::ConstPtr();  // Not found: return empty smart pointer
     MRPT_END
   }
+  /// \overload Non-const version returning a mutable Ptr
+  template <typename T>
+  typename T::Ptr getByClass(size_t ith = 0)
+  {
+    return std::const_pointer_cast<T>(
+        static_cast<const Scene*>(this)->getByClass<T>(ith));
+  }
 
   /** Removes the given object from the scene (it also deletes the object to
    * free its memory).

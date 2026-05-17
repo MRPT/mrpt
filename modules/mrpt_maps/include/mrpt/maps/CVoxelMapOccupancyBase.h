@@ -171,6 +171,12 @@ class CVoxelMapOccupancyBase :
    * `likelihoodOptions.occupiedThreshold` (Range: [0,1], default: 0.6)
    */
   mrpt::maps::CSimplePointsMap::ConstPtr getOccupiedVoxels() const;
+  /// \overload Non-const version returning a mutable Ptr
+  mrpt::maps::CSimplePointsMap::Ptr getOccupiedVoxels()
+  {
+    return std::const_pointer_cast<mrpt::maps::CSimplePointsMap>(
+        static_cast<const CVoxelMapOccupancyBase*>(this)->getOccupiedVoxels());
+  }
 
   /** This visits all cells to calculate a bounding box, caching the result
    *  so subsequent calls are cheap until the voxelmap is changed in some way.

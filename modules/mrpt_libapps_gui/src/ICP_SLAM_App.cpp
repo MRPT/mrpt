@@ -219,7 +219,7 @@ void ICP_SLAM_App_Base::run()
     }
     else
     {
-      CActionRobotMovement2D::Ptr act = action->getBestMovementEstimation();
+      CActionRobotMovement2D::ConstPtr act = action->getBestMovementEstimation();
       if (act) odoPose = odoPose + act->poseChange->getMeanVal();
     }
 
