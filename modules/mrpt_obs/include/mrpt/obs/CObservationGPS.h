@@ -270,10 +270,7 @@ class CObservationGPS : public CObservation
   /** Empties this observation, clearing the container \a messages */
   void clear();
 
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-  {
-    out_sensorPose = sensorPose;
-  }  // See base class docs
+  mrpt::poses::CPose3D getSensorPose() const override { return sensorPose; }  // See base class docs
   void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
   {
     sensorPose = newSensorPose;

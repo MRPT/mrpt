@@ -98,20 +98,14 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
   void getAs3DObject(
       mrpt::viz::CSetOfObjects& meanObj, mrpt::viz::CSetOfObjects& varObj) const override;
 
-  /** Returns the 3D object representing the wind grid information.
-   * \deprecated Use getWindAs3DObject() returning Ptr instead. */
-  [[deprecated("Use getWindAs3DObject() returning CSetOfObjects::Ptr instead")]] void
-  getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr& windObj) const;
-
   /** Returns the 3D object representing the wind grid information. */
-  [[nodiscard]] mrpt::viz::CSetOfObjects::Ptr getWindAs3DObject() const
+  [[nodiscard]] mrpt::viz::CSetOfObjects::Ptr getWindAs3DObject() const;
+
+  /** \deprecated Use getWindAs3DObject() returning Ptr instead. */
+  [[deprecated("Use getWindAs3DObject() returning CSetOfObjects::Ptr instead")]] void
+  getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr& windObj) const
   {
-    mrpt::viz::CSetOfObjects::Ptr obj;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    getWindAs3DObject(obj);
-#pragma GCC diagnostic pop
-    return obj;
+    windObj = getWindAs3DObject();
   }
 
   /** Increase the kf_std of all cells from the m_map

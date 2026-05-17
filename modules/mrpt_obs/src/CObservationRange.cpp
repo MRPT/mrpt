@@ -85,12 +85,10 @@ void CObservationRange::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
 /*---------------------------------------------------------------
            getSensorPose
  ---------------------------------------------------------------*/
-void CObservationRange::getSensorPose(CPose3D& out_sensorPose) const
+mrpt::poses::CPose3D CObservationRange::getSensorPose() const
 {
-  if (!sensedData.empty())
-    out_sensorPose = CPose3D(sensedData[0].sensorPose);
-  else
-    out_sensorPose = CPose3D(0, 0, 0);
+  if (!sensedData.empty()) return mrpt::poses::CPose3D(sensedData[0].sensorPose);
+  return mrpt::poses::CPose3D(0, 0, 0);
 }
 
 /*---------------------------------------------------------------

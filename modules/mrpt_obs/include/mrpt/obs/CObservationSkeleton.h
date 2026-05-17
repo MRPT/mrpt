@@ -75,10 +75,7 @@ class CObservationSkeleton : public CObservation
   TSkeletonJoint head, neck, torso, left_shoulder, left_elbow, left_hand, left_hip, left_knee,
       left_foot, right_shoulder, right_elbow, right_hand, right_hip, right_knee, right_foot;
 
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-  {
-    out_sensorPose = sensorPose;
-  }
+  mrpt::poses::CPose3D getSensorPose() const override { return sensorPose; }
   void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
   {
     sensorPose = newSensorPose;

@@ -154,8 +154,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::internal_build_PointCloud_for_observatio
     scan.reserve(sizeRangeScan);
 
     // For quicker access to values as "float" instead of "doubles":
-    mrpt::math::CMatrixDouble44 H;
-    robotPose3D.getHomogeneousMatrix(H);
+    const mrpt::math::CMatrixDouble44 H = robotPose3D.getHomogeneousMatrix();
     const float m00 = static_cast<float>(H(0, 0));
     const float m01 = static_cast<float>(H(0, 1));
     const float m02 = static_cast<float>(H(0, 2));

@@ -102,12 +102,10 @@ void CObservationBeaconRanges::debugPrintOut()
 /*---------------------------------------------------------------
            getSensorPose
  ---------------------------------------------------------------*/
-void CObservationBeaconRanges::getSensorPose(CPose3D& out_sensorPose) const
+mrpt::poses::CPose3D CObservationBeaconRanges::getSensorPose() const
 {
-  if (!sensedData.empty())
-    out_sensorPose = CPose3D(sensedData[0].sensorLocationOnRobot);
-  else
-    out_sensorPose = CPose3D(0, 0, 0);
+  if (!sensedData.empty()) return mrpt::poses::CPose3D(sensedData[0].sensorLocationOnRobot);
+  return mrpt::poses::CPose3D(0, 0, 0);
 }
 
 /*---------------------------------------------------------------

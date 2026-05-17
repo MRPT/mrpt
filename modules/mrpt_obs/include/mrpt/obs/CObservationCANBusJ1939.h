@@ -60,7 +60,7 @@ class CObservationCANBusJ1939 : public CObservation
   std::vector<char> m_raw_frame;
 
   /** Not used */
-  void getSensorPose(mrpt::poses::CPose3D&) const override {}
+  mrpt::poses::CPose3D getSensorPose() const override { return {}; }
   void setSensorPose(const mrpt::poses::CPose3D&) override {}
   // See base class docs
   void getDescriptionAsText(std::ostream& o) const override;

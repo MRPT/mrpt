@@ -15,6 +15,8 @@
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/hwdrivers/config.h>
 
+#include <optional>
+
 // Include the libdc1394-2 headers:
 #if MRPT_HAS_LIBDC1394_2
 #include <dc1394/control.h>
@@ -483,14 +485,11 @@ CImageGrabber_dc1394::~CImageGrabber_dc1394()
 /*-------------------------------------------------------------
           get the image - MONO
  -------------------------------------------------------------*/
-bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_observation)
+std::optional<mrpt::obs::CObservationImage> CImageGrabber_dc1394::grabFrame()
 {
   MRPT_START
-
-  if (!m_bInitialized)
-  {
-    return false;
-  }
+  mrpt::obs::CObservationImage obs;
+  if (!m_bInitialized) return std::nullopt;
 
 #if MRPT_HAS_LIBDC1394_2
   dc1394video_frame_t* frame = nullptr;
@@ -502,7 +501,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
     cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso "
             "transmission."
          << "\n";
-    return false;
+    return std::nullopt;
   }
 
   // get frame from ring buffer:
@@ -513,10 +512,10 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
   {
     cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame"
          << "\n";
-    return false;
+    return std::nullopt;
   }
 
-  out_observation.timestamp = mrpt::Clock::now();
+  obs.timestamp = mrpt::Clock::now();
 
   const unsigned int width = frame->size[0];
   const unsigned int height = frame->size[1];
@@ -534,7 +533,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
     dc1394_convert_frames(frame, new_frame);
 
     // Fill the output class:
-    out_observation.image.loadFromMemoryBuffer(
+    obs.image.loadFromMemoryBuffer(
         width, height, true, new_frame->image, true /* BGR -> RGB */);
 
     // Free temporary frame:
@@ -553,7 +552,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
       cerr << "[CImageGrabber_dc1394] ERROR: Could not deinterlace "
               "stereo images: "
            << err << "\n";
-      return false;
+      return std::nullopt;
     }
 
     if ((err = dc1394_bayer_decoding_8bit(
@@ -565,12 +564,12 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
       cerr << "[CImageGrabber_dc1394] ERROR: Could not apply Bayer "
               "conversion: "
            << err << "\n";
-      return false;
+      return std::nullopt;
     }
 
-    out_observation.image.loadFromMemoryBuffer(width, height, true,
+    obs.image.loadFromMemoryBuffer(width, height, true,
                                                imageBufRGB);  // Left cam.
-    // out_observation.image.loadFromMemoryBuffer(width,height,true,
+    // obs.image.loadFromMemoryBuffer(width,height,true,
     // imageBufRGB+ width*height*3 ); // Right cam.
 
     delete[] imageBuf;
@@ -584,10 +583,10 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
     cerr << "[CImageGrabber_dc1394] ERROR: Could not enqueue the ring "
             "buffer frame"
          << "\n";
-    return false;
+    return std::nullopt;
   }
 
-  return true;
+  return obs;
 #else
   THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
@@ -597,13 +596,14 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationImage& out_obse
 /*-------------------------------------------------------------
           get the image - STEREO
  -------------------------------------------------------------*/
-bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationStereoImages& out_observation)
+std::optional<mrpt::obs::CObservationStereoImages> CImageGrabber_dc1394::grabStereoFrame()
 {
   MRPT_START
+  mrpt::obs::CObservationStereoImages obs;
 
   if (!m_bInitialized)
   {
-    return false;
+    return std::nullopt;
   }
 
 #if MRPT_HAS_LIBDC1394_2
@@ -615,10 +615,10 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationStereoImages& o
   {
     cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame"
          << "\n";
-    return false;
+    return std::nullopt;
   }
 
-  out_observation.timestamp = mrpt::Clock::now();
+  obs.timestamp = mrpt::Clock::now();
 
   const unsigned int width = frame->size[0];
   const unsigned int height = frame->size[1];
@@ -641,7 +641,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationStereoImages& o
       cerr << "[CImageGrabber_dc1394] ERROR: Could not deinterlace "
               "stereo images: "
            << err << "\n";
-      return false;
+      return std::nullopt;
     }
 
     if ((err = dc1394_bayer_decoding_8bit(
@@ -653,13 +653,13 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationStereoImages& o
       cerr << "[CImageGrabber_dc1394] ERROR: Could not apply Bayer "
               "conversion: "
            << err << "\n";
-      return false;
+      return std::nullopt;
     }
 
-    out_observation.hasImageRight = true;
-    out_observation.imageLeft.loadFromMemoryBuffer(width, height, true,
+    obs.hasImageRight = true;
+    obs.imageLeft.loadFromMemoryBuffer(width, height, true,
                                                    imageBufRGB);  // Left cam.
-    out_observation.imageRight.loadFromMemoryBuffer(
+    obs.imageRight.loadFromMemoryBuffer(
         width, height, true,
         imageBufRGB + width * height * 3);  // Right cam.
 
@@ -670,7 +670,7 @@ bool CImageGrabber_dc1394::getObservation(mrpt::obs::CObservationStereoImages& o
   // Now we can return the frame to the ring buffer:
   dc1394_capture_enqueue(THE_CAMERA, frame);
 
-  return true;
+  return obs;
 #else
   THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
@@ -731,7 +731,7 @@ bool CImageGrabber_dc1394::changeCaptureOptions(const TCaptureOptions_dc1394& op
   SET_VALUE(white_balance, WHITE_BALANCE)
 #undef SET_VALUE
 
-  return true;
+  return obs;
 #else
   THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
@@ -758,7 +758,7 @@ bool CImageGrabber_dc1394::setSoftwareTriggerLevel(bool level)
       "[CImageGrabber_dc1394::setSoftwareTriggerLevel] Could not set "
       "software trigger level");
 
-  return true;
+  return obs;
 #else
   THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif

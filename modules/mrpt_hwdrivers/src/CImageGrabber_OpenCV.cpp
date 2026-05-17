@@ -15,6 +15,7 @@
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 
 #include <chrono>
+#include <optional>
 #include <thread>
 
 #ifdef HAVE_OPENCV_VIDEOIO
@@ -199,42 +200,31 @@ CImageGrabber_OpenCV::~CImageGrabber_OpenCV()
 /*-------------------------------------------------------------
           get the image
  -------------------------------------------------------------*/
-bool CImageGrabber_OpenCV::getObservation(mrpt::obs::CObservationImage& out_observation)
+std::optional<mrpt::obs::CObservationImage> CImageGrabber_OpenCV::grabFrame()
 {
   MRPT_START
 
-  if (!m_bInitialized)
-  {
-    return false;
-  }
+  if (!m_bInitialized) return std::nullopt;
 
 #if MRPT_HAS_OPENCV
+  if (!m_capture->cap.grab()) return std::nullopt;
 
-  // Capture the image:
-  if (!m_capture->cap.grab())
-  {
-    return false;
-  }
-
-  // JL: Sometimes there're errors in some frames: try not to return an error
-  // unless it seems
-  //  there's no way:
   for (int nTries = 0; nTries < 10; nTries++)
   {
     cv::Mat capImg;
     if (m_capture->cap.retrieve(capImg))
     {
-      // Fill the output class:
-      out_observation.timestamp = mrpt::Clock::now();
-      out_observation.image = mrpt::img::CImage(capImg, mrpt::img::SHALLOW_COPY);
-      return true;
+      mrpt::obs::CObservationImage obs;
+      obs.timestamp = mrpt::Clock::now();
+      obs.image = mrpt::img::CImage(capImg, mrpt::img::SHALLOW_COPY);
+      return obs;
     }
     cerr << "[CImageGrabber_OpenCV] WARNING: Ignoring error #" << nTries + 1
          << " retrieving frame..."
          << "\n";
     std::this_thread::sleep_for(1ms);
   }
-  return false;
+  return std::nullopt;
 #else
   THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif

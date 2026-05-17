@@ -16,6 +16,7 @@
 #include <mrpt/hwdrivers/CWirelessPower.h>
 
 #include <iostream>
+#include <optional>
 
 #ifdef MRPT_OS_LINUX
 #include <iostream>
@@ -504,29 +505,20 @@ int CWirelessPower::GetPower()
   NOTE: Deprecated, use getObservations. Use this class as
       GenericSensor. See the CGenericSensor documentation
  ---------------------------------------------------------------*/
-bool CWirelessPower::getObservation(mrpt::obs::CObservationWirelessPower& outObservation)
+std::optional<mrpt::obs::CObservationWirelessPower> CWirelessPower::grabFrame()
 {
   try
   {
-    //	outObservation.m_readings.clear();
-    outObservation.power = (float)GetPower();
-
-    outObservation.timestamp = mrpt::Clock::now();
-
-    outObservation.sensorLabel = m_sensorLabel;
-    //	std::cout << "mrpt::hwdrivers::CWirelessPower::getObservation() " <<
-    //"\n\tsensorLabel: " << outObservation.sensorLabel << "\n\ttimestamp: "
-    //<< outObservation.timestamp << "\n\tpower: " << outObservation.power
-    //<< "\n";
-    return true;
+    mrpt::obs::CObservationWirelessPower obs;
+    obs.power = static_cast<float>(GetPower());
+    obs.timestamp = mrpt::Clock::now();
+    obs.sensorLabel = m_sensorLabel;
+    return obs;
   }
-  catch (exception& e)
+  catch (const exception& e)
   {
-    cerr << "[CWirelessPower::getObservation] Returning false due to "
-            "exception: "
-         << "\n";
-    cerr << e.what() << "\n";
-    return false;
+    cerr << "[CWirelessPower::grabFrame] exception: " << e.what() << "\n";
+    return std::nullopt;
   }
 }
 

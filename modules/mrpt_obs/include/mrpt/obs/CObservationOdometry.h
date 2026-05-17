@@ -59,10 +59,7 @@ class CObservationOdometry : public CObservation
   mrpt::math::TTwist2D velocityLocal;
 
   // See base class docs
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-  {
-    out_sensorPose = mrpt::poses::CPose3D(0, 0, 0);
-  }
+  mrpt::poses::CPose3D getSensorPose() const override { return mrpt::poses::CPose3D(0, 0, 0); }
   void setSensorPose(const mrpt::poses::CPose3D&) override {}
   void getDescriptionAsText(std::ostream& o) const override;
 

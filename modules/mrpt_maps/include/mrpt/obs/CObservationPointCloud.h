@@ -67,7 +67,7 @@ class CObservationPointCloud : public CObservation
   mrpt::poses::CPose3D sensorPose;
 
   // See base class docs
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;
+  mrpt::poses::CPose3D getSensorPose() const override;
   void setSensorPose(const mrpt::poses::CPose3D& p) override;
   void getDescriptionAsText(std::ostream& o) const override;
 

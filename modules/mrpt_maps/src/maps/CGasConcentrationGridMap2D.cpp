@@ -502,8 +502,9 @@ void CGasConcentrationGridMap2D::getAs3DObject(
 /*---------------------------------------------------------------
             getWindAs3DObject
 ---------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr& windObj) const
+mrpt::viz::CSetOfObjects::Ptr CGasConcentrationGridMap2D::getWindAs3DObject() const
 {
+  mrpt::viz::CSetOfObjects::Ptr windObj = mrpt::viz::CSetOfObjects::Create();
   // Return an arrow map of the wind state (module(color) and direction).
   float scale = 0.2f;
   size_t arrow_separation = 5;  // distance between arrows, expresed as times the cell resolution
@@ -558,6 +559,7 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(mrpt::viz::CSetOfObjects::Ptr
       windObj->insert(obj);
     }
   }
+  return windObj;
 }
 
 /*---------------------------------------------------------------

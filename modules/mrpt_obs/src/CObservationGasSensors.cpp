@@ -142,12 +142,10 @@ void CObservationGasSensors::serializeFrom(mrpt::serialization::CArchive& in, ui
 /*---------------------------------------------------------------
            getSensorPose
  ---------------------------------------------------------------*/
-void CObservationGasSensors::getSensorPose(CPose3D& out_sensorPose) const
+mrpt::poses::CPose3D CObservationGasSensors::getSensorPose() const
 {
-  if (!m_readings.empty())
-    out_sensorPose = CPose3D(m_readings[0].eNosePoseOnTheRobot);
-  else
-    out_sensorPose = CPose3D(0, 0, 0);
+  if (!m_readings.empty()) return mrpt::poses::CPose3D(m_readings[0].eNosePoseOnTheRobot);
+  return mrpt::poses::CPose3D(0, 0, 0);
 }
 
 void CObservationGasSensors::setSensorPose(const CPose3D& newSensorPose)

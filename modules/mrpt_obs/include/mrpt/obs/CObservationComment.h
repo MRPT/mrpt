@@ -41,7 +41,7 @@ class CObservationComment : public CObservation
   std::string text;
 
   // See base class docs
-  void getSensorPose(mrpt::poses::CPose3D&) const override {}
+  mrpt::poses::CPose3D getSensorPose() const override { return {}; }
   void setSensorPose(const mrpt::poses::CPose3D&) override {}
   void getDescriptionAsText(std::ostream& o) const override;
 

@@ -65,10 +65,7 @@ class CObservationImage : public CObservation
   void getUndistortedImage(mrpt::img::CImage& out_img) const;
 
   // See base class docs
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-  {
-    out_sensorPose = cameraPose;
-  }
+  mrpt::poses::CPose3D getSensorPose() const override { return cameraPose; }
   void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
   {
     cameraPose = newSensorPose;

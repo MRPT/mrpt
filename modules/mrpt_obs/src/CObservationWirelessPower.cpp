@@ -58,10 +58,7 @@ void CObservationWirelessPower::serializeFrom(mrpt::serialization::CArchive& in,
   };
 }
 
-void CObservationWirelessPower::getSensorPose(CPose3D& out_sensorPose) const
-{
-  out_sensorPose = sensorPoseOnRobot;
-}
+mrpt::poses::CPose3D CObservationWirelessPower::getSensorPose() const { return sensorPoseOnRobot; }
 
 void CObservationWirelessPower::setSensorPose(const CPose3D& newSensorPose)
 {

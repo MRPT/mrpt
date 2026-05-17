@@ -116,10 +116,7 @@ class CObservationStereoImages : public mrpt::obs::CObservation
   /** @} */
 
   // See base class docs
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-  {
-    out_sensorPose = mrpt::poses::CPose3D(cameraPose);
-  }
+  mrpt::poses::CPose3D getSensorPose() const override { return mrpt::poses::CPose3D(cameraPose); }
   void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
   {
     cameraPose = mrpt::poses::CPose3DQuat(newSensorPose);

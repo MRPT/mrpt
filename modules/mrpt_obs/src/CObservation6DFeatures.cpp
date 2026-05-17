@@ -72,10 +72,7 @@ void CObservation6DFeatures::serializeFrom(mrpt::serialization::CArchive& in, ui
   };
 }
 
-void CObservation6DFeatures::getSensorPose(CPose3D& out_sensorPose) const
-{
-  out_sensorPose = sensorPose;
-}
+mrpt::poses::CPose3D CObservation6DFeatures::getSensorPose() const { return sensorPose; }
 
 void CObservation6DFeatures::setSensorPose(const CPose3D& newSensorPose)
 {

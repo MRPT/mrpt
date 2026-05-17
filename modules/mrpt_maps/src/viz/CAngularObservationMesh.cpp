@@ -195,10 +195,12 @@ void CAngularObservationMesh::getScanSet(std::vector<CObservation2DRangeScan>& s
   scans = scanSet;
 }
 
-void CAngularObservationMesh::generateSetOfTriangles(CSetOfTriangles::Ptr& res) const
+CSetOfTriangles::Ptr CAngularObservationMesh::generateSetOfTriangles() const
 {
   if (!meshUpToDate) updateMesh();
+  auto res = CSetOfTriangles::Create();
   res->insertTriangles(triangles.begin(), triangles.end());
+  return res;
 }
 
 struct CAngularObservationMesh_fnctr
@@ -253,9 +255,10 @@ void CAngularObservationMesh::TDoubleRange::values(std::vector<double>& vals) co
   vals[am - 1] = finalValue();
 }
 
-void CAngularObservationMesh::getTracedRays(CSetOfLines::Ptr& res) const
+CSetOfLines::Ptr CAngularObservationMesh::getTracedRays() const
 {
   if (!meshUpToDate) updateMesh();
+  auto res = CSetOfLines::Create();
   size_t count = 0;
   for (size_t i = 0; i < validityMatrix.rows(); i++)
     for (size_t j = 0; j < validityMatrix.cols(); j++)
@@ -265,6 +268,7 @@ void CAngularObservationMesh::getTracedRays(CSetOfLines::Ptr& res) const
     for (size_t j = 0; j < actualMesh.cols(); j++)
       if (validityMatrix(i, j))
         res->appendLine((scanSet[i].sensorPose).asTPose(), actualMesh(i, j));
+  return res;
 }
 
 class FAddUntracedLines
@@ -300,9 +304,11 @@ class FAddUntracedLines
     pitchs.pop_back();
   }
 };
-void CAngularObservationMesh::getUntracedRays(CSetOfLines::Ptr& res, double dist) const
+CSetOfLines::Ptr CAngularObservationMesh::getUntracedRays(double dist) const
 {
+  auto res = CSetOfLines::Create();
   for_each(scanSet.begin(), scanSet.end(), FAddUntracedLines(res, {dist, .0, .0}, pitchBounds));
+  return res;
 }
 
 TPolygon3D createFromTriangle(const mrpt::viz::TTriangle& t)
