@@ -478,7 +478,7 @@ class CRandomFieldGridMap2D :
    * variances are up-to-date with all inserted observations. */
   void updateMapEstimation();
 
-  void enableVerbose(bool enable_verbose) { this->setMinLoggingLevel(mrpt::system::LVL_DEBUG); }
+  void enableVerbose([[maybe_unused]] bool enable_verbose) { this->setMinLoggingLevel(mrpt::system::LVL_DEBUG); }
   bool isEnabledVerbose() const { return this->getMinLoggingLevel() == mrpt::system::LVL_DEBUG; }
 
   void enableProfiler(bool enable = true) { this->m_gmrf.enableProfiler(enable); }
