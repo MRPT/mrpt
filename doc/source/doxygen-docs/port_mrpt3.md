@@ -284,7 +284,172 @@ When using this function, add `mrpt_libapps_gui` to your CMake dependencies.
 
 ---
 
-## 12. Step-by-step migration checklist
+## 12. Return-by-value API modernization
+
+### `CObservation::getSensorPose()`
+
+The primary API is now return-by-value:
+
+```cpp
+// MRPT 2.x / deprecated:
+mrpt::poses::CPose3D pose;
+obs->getSensorPose(pose);
+
+// MRPT 3.0:
+mrpt::poses::CPose3D pose = obs->getSensorPose();
+```
+
+All concrete observation classes (`CObservation2DRangeScan`, `CObservation3DRangeScan`, etc.)
+now override `CPose3D getSensorPose() const` instead of `void getSensorPose(CPose3D&) const`.
+The out-param overload is kept as a deprecated non-virtual wrapper for backwards compatibility.
+
+### Pose homogeneous matrix accessors
+
+`getHomogeneousMatrix()` now returns by value on all pose types:
+
+```cpp
+// MRPT 2.x / deprecated:
+mrpt::math::CMatrixDouble44 HM;
+pose.getHomogeneousMatrix(HM);
+
+// MRPT 3.0:
+auto HM = pose.getHomogeneousMatrix();
+```
+
+Same pattern for `CPose3D::getRotationMatrix()`, `CPose2D::getHomogeneousMatrix()`,
+`CPose3DQuat::getHomogeneousMatrix()`.
+
+### `CPoseRandomSampler` covariance accessors
+
+```cpp
+// MRPT 2.x / deprecated:
+mrpt::math::CMatrixDouble33 cov;
+sampler.getOriginalPDFCov2D(cov);
+
+// MRPT 3.0:
+auto cov = sampler.getOriginalPDFCov2D();
+auto cov6 = sampler.getOriginalPDFCov3D();
+```
+
+### `CPose3DPDFGaussian::getCovSubmatrix2D()`
+
+```cpp
+// MRPT 2.x / deprecated:
+mrpt::math::CMatrixDouble out;
+pdfGauss.getCovSubmatrix2D(out);
+
+// MRPT 3.0:
+auto out = pdfGauss.getCovSubmatrix2D();
+```
+
+### `CAngularObservationMesh` accessors
+
+```cpp
+// MRPT 2.x / deprecated:
+mrpt::viz::CSetOfTriangles::Ptr tris;
+mesh.generateSetOfTriangles(tris);
+mrpt::viz::CSetOfLines::Ptr rays;
+mesh.getTracedRays(rays);
+mesh.getUntracedRays(rays, dist);
+
+// MRPT 3.0:
+auto tris = mesh.generateSetOfTriangles();
+auto rays = mesh.getTracedRays();
+auto rays2 = mesh.getUntracedRays(dist);
+```
+
+### `CGasConcentrationGridMap2D::getWindAs3DObject()`
+
+```cpp
+// MRPT 2.x / deprecated:
+mrpt::viz::CSetOfObjects::Ptr obj;
+gasMap.getWindAs3DObject(obj);
+
+// MRPT 3.0:
+auto obj = gasMap.getWindAs3DObject();
+```
+
+### Hardware driver grabbers
+
+`getObservation()` is deprecated in favour of `grabFrame()` which returns `std::optional<T>`:
+
+```cpp
+// MRPT 2.x / deprecated:
+mrpt::obs::CObservationImage obs;
+bool ok = camera.getObservation(obs);
+
+// MRPT 3.0:
+auto obs_opt = camera.grabFrame();
+if (obs_opt) { /* use *obs_opt */ }
+```
+
+Affected classes: `CImageGrabber_OpenCV`, `CImageGrabber_dc1394`, `CMyntEyeCamera`,
+`CFFMPEG_InputStream` (uses `grabFrame()` returning `std::optional<CImage>`),
+`CEnoseModular`, `CWirelessPower`.
+
+### `circular_buffer::pop()`
+
+```cpp
+// MRPT 2.x / deprecated:
+T val;
+buf.pop(val);
+
+// MRPT 3.0:
+T val = buf.pop();
+```
+
+---
+
+## 13. Scoped enum replacements
+
+### `CRobot2NavInterface::stop()` — `StopType` enum
+
+```cpp
+// MRPT 2.x / deprecated:
+iface.stop(true);   // isEmergencyStop=true
+
+// MRPT 3.0:
+iface.stop(mrpt::nav::StopType::Emergency);
+iface.stop(mrpt::nav::StopType::Normal);
+```
+
+### `CPointsMap::savePCDFile()` — `PCDFormat` enum
+
+```cpp
+// MRPT 2.x / deprecated:
+map.savePCDFile("out.pcd", true);   // binary=true
+
+// MRPT 3.0:
+map.savePCDFile("out.pcd", mrpt::maps::PCDFormat::Binary);
+map.savePCDFile("out.pcd", mrpt::maps::PCDFormat::ASCII);
+```
+
+### `vectorToTextFile()` — `VectorTextFileOptions` struct
+
+```cpp
+// MRPT 2.x / deprecated:
+mrpt::math::vectorToTextFile(v, "file.txt", false, true);  // append=false, byRows=true
+
+// MRPT 3.0:
+mrpt::math::VectorTextFileOptions opts;
+opts.append = false;
+opts.byRows = true;
+mrpt::math::vectorToTextFile(v, "file.txt", opts);
+```
+
+### `CRawlog::TEntryType` — scoped enum
+
+```cpp
+// MRPT 2.x:
+if (entry_type == CRawlog::etSensoryFrame) { ... }
+
+// MRPT 3.0:
+if (entry_type == CRawlog::TEntryType::etSensoryFrame) { ... }
+```
+
+---
+
+## 14. Step-by-step migration checklist
 
 1. **CMakeLists.txt**: Replace `mrpt-foo` → `mrpt_foo` in `find_package` calls,
    and `mrpt::foo` → `mrpt::mrpt_foo` in `target_link_libraries`.
