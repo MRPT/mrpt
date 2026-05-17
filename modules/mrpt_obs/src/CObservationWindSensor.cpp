@@ -58,10 +58,7 @@ void CObservationWindSensor::serializeFrom(mrpt::serialization::CArchive& in, ui
   };
 }
 
-void CObservationWindSensor::getSensorPose(CPose3D& out_sensorPose) const
-{
-  out_sensorPose = sensorPoseOnRobot;
-}
+mrpt::poses::CPose3D CObservationWindSensor::getSensorPose() const { return sensorPoseOnRobot; }
 
 void CObservationWindSensor::setSensorPose(const CPose3D& newSensorPose)
 {

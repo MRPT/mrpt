@@ -800,8 +800,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
   else if (IS_CLASS(obs, CObservationRange))
   {
     const auto& o = dynamic_cast<const CObservationRange&>(obs);
-    CPose3D spose;
-    o.getSensorPose(spose);
+    const CPose3D spose = o.getSensorPose();
     CPose3D sensorPose3D = robotPose3D + spose;
     CPose2D laserPose(sensorPose3D);
 

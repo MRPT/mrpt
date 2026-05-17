@@ -83,10 +83,7 @@ class CObservationStereoImagesFeatures : public CObservation
   std::vector<TStereoImageFeatures> theFeatures;
 
   // See base class docs
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-  {
-    out_sensorPose = mrpt::poses::CPose3D(cameraPoseOnRobot);
-  }
+  mrpt::poses::CPose3D getSensorPose() const override { return mrpt::poses::CPose3D(cameraPoseOnRobot); }
   // See base class docs
   void getSensorPose(mrpt::poses::CPose3DQuat& out_sensorPose) const
   {

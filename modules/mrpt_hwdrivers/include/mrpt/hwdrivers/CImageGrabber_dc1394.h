@@ -174,53 +174,36 @@ class CImageGrabber_dc1394
    * \note May block when using software trigger if no frame is pending.
    * \deprecated Use grabFrame() instead.
    */
-  [[deprecated("Use grabFrame() instead")]] bool getObservation(
-      mrpt::obs::CObservationImage& out_observation);
-
-  /** \brief Grabs one frame from a monocular FireWire camera, returning by
-   * value.
+  /** \brief Grabs one frame from a monocular FireWire camera, returning by value.
    *
    * \return std::nullopt on any error, or the captured observation on success.
    */
-  [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame()
+  [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame();
+
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationImage& out_observation)
   {
-    mrpt::obs::CObservationImage obs;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    if (!getObservation(obs))
-#pragma GCC diagnostic pop
-    {
-      return std::nullopt;
-    }
-    return obs;
+    auto r = grabFrame();
+    if (!r) return false;
+    out_observation = std::move(*r);
+    return true;
   }
 
   /** \brief Grabs a stereo frame from a FireWire stereo camera.
    *
-   * \param[out] out_observation Filled with left and right images.
-   * \return false on any error, true on success.
-   * \deprecated Use grabStereoFrame() instead.
+   * \return std::nullopt on any error, or the captured stereo observation on success.
    */
-  [[deprecated("Use grabStereoFrame() instead")]] bool getObservation(
-      mrpt::obs::CObservationStereoImages& out_observation);
+  [[nodiscard]] std::optional<mrpt::obs::CObservationStereoImages> grabStereoFrame();
 
-  /** \brief Grabs a stereo frame from a FireWire stereo camera, returning by
-   * value.
-   *
-   * \return std::nullopt on any error, or the captured stereo observation on
-   * success.
-   */
-  [[nodiscard]] std::optional<mrpt::obs::CObservationStereoImages> grabStereoFrame()
+  /** \deprecated Use grabStereoFrame() instead. */
+  [[deprecated("Use grabStereoFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationStereoImages& out_observation)
   {
-    mrpt::obs::CObservationStereoImages obs;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    if (!getObservation(obs))
-#pragma GCC diagnostic pop
-    {
-      return std::nullopt;
-    }
-    return obs;
+    auto r = grabStereoFrame();
+    if (!r) return false;
+    out_observation = std::move(*r);
+    return true;
   }
 
   /** \brief Sets the software trigger signal level (ON/OFF).

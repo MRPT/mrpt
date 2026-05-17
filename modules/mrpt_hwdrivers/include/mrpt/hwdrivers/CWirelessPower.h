@@ -90,24 +90,19 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
    * \sa mrpt::hwdrivers::CGenericSensor
    */
 
-  /** \deprecated Use grabFrame() instead. */
-  [[deprecated("Use grabFrame() instead")]] bool getObservation(
-      mrpt::obs::CObservationWirelessPower& outObservation);
-
   /** Gets the power of a given network as a timestamped observation.
    * \return std::nullopt on any error, or the observation on success.
    */
-  [[nodiscard]] std::optional<mrpt::obs::CObservationWirelessPower> grabFrame()
+  [[nodiscard]] std::optional<mrpt::obs::CObservationWirelessPower> grabFrame();
+
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationWirelessPower& outObservation)
   {
-    mrpt::obs::CObservationWirelessPower obs;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    if (!getObservation(obs))
-#pragma GCC diagnostic pop
-    {
-      return std::nullopt;
-    }
-    return obs;
+    auto r = grabFrame();
+    if (!r) return false;
+    outObservation = std::move(*r);
+    return true;
   }
 
   /** Gets a list of the networks available for an interface

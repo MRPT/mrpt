@@ -58,7 +58,7 @@ class CObservationRFID : public CObservation
   uint32_t getNtags() const { return tag_readings.size(); }
   /** @} */
 
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;
+  mrpt::poses::CPose3D getSensorPose() const override;
   /** A general method to change the sensor pose on the robot.
    *  It has no effects in this class
    * \sa getSensorPose  */

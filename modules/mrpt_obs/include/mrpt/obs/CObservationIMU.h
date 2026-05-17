@@ -155,10 +155,7 @@ class CObservationIMU : public CObservation
   bool has(TIMUDataIndex idx) const { return dataIsPresent.at(idx); }
 
   // See base class docs
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-  {
-    out_sensorPose = sensorPose;
-  }
+  mrpt::poses::CPose3D getSensorPose() const override { return sensorPose; }
   void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
   {
     sensorPose = newSensorPose;

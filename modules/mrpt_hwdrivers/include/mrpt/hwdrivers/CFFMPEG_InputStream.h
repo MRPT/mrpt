@@ -120,13 +120,8 @@ class CFFMPEG_InputStream
   [[nodiscard]] std::optional<mrpt::img::CImage> grabFrame()
   {
     mrpt::img::CImage img;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    if (!retrieveFrame(img))
-#pragma GCC diagnostic pop
-    {
-      return std::nullopt;
-    }
+    int64_t outPTS = 0;
+    if (!retrieveFrame(img, outPTS)) return std::nullopt;
     return img;
   }
 };

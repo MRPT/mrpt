@@ -91,7 +91,7 @@ class CObservationRawDAQ : public CObservation
   double sample_rate{0};
 
   /** Not used in this class */
-  void getSensorPose(mrpt::poses::CPose3D&) const override {}
+  mrpt::poses::CPose3D getSensorPose() const override { return {}; }
   /** Not used in this class */
   void setSensorPose(const mrpt::poses::CPose3D&) override {}
   // See base class docs

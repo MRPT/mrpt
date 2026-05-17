@@ -47,10 +47,7 @@ void CObservationRobotPose::serializeFrom(mrpt::serialization::CArchive& in, uin
   };
 }
 
-void CObservationRobotPose::getSensorPose(CPose3D& out_sensorPose) const
-{
-  out_sensorPose = sensorPose;
-}
+mrpt::poses::CPose3D CObservationRobotPose::getSensorPose() const { return sensorPose; }
 
 void CObservationRobotPose::setSensorPose(const CPose3D& newSensorPose)
 {

@@ -66,25 +66,21 @@ class CMyntEyeCamera
    * \return false on any error, true on success.
    * \deprecated Use grabFrame() instead.
    */
-  [[deprecated("Use grabFrame() instead")]] bool getObservation(
-      mrpt::obs::CObservation3DRangeScan& out);
-
   /** \brief Grabs one frame from the camera, returning by value.
    *
    * \return std::nullopt if no new data is available or on error, or the
    * observation on success.
    */
-  [[nodiscard]] std::optional<mrpt::obs::CObservation3DRangeScan> grabFrame()
+  [[nodiscard]] std::optional<mrpt::obs::CObservation3DRangeScan> grabFrame();
+
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservation3DRangeScan& out)
   {
-    mrpt::obs::CObservation3DRangeScan obs;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    if (!getObservation(obs))
-#pragma GCC diagnostic pop
-    {
-      return std::nullopt;
-    }
-    return obs;
+    auto r = grabFrame();
+    if (!r) return false;
+    out = std::move(*r);
+    return true;
   }
 
  protected:

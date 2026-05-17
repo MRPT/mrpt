@@ -123,24 +123,19 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
    * "loadConfig" has been called previously.
    * \return true if OK, false if there were any error.
    */
-  /** \deprecated Use grabFrame() instead. */
-  [[deprecated("Use grabFrame() instead")]] bool getObservation(
-      mrpt::obs::CObservationGasSensors& outObservation);
-
   /** Request the master eNose the latest readings from all the eNoses.
    * \return std::nullopt on error, or the observation on success.
    */
-  [[nodiscard]] std::optional<mrpt::obs::CObservationGasSensors> grabFrame()
+  [[nodiscard]] std::optional<mrpt::obs::CObservationGasSensors> grabFrame();
+
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationGasSensors& outObservation)
   {
-    mrpt::obs::CObservationGasSensors obs;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    if (!getObservation(obs))
-#pragma GCC diagnostic pop
-    {
-      return std::nullopt;
-    }
-    return obs;
+    auto r = grabFrame();
+    if (!r) return false;
+    outObservation = std::move(*r);
+    return true;
   }
 
   // See docs in parent class

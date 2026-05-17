@@ -74,10 +74,7 @@ CObservationPointCloud::CObservationPointCloud(const CObservation3DRangeScan& o)
   pointcloud->loadFromRangeScan(o, std::nullopt);
 }
 
-void CObservationPointCloud::getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const
-{
-  out_sensorPose = sensorPose;
-}
+mrpt::poses::CPose3D CObservationPointCloud::getSensorPose() const { return sensorPose; }
 void CObservationPointCloud::setSensorPose(const mrpt::poses::CPose3D& p) { sensorPose = p; }
 void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
 {

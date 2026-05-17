@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <thread>
 
 using namespace mrpt::math;
@@ -118,8 +119,9 @@ CStream* CEnoseModular::checkConnectionAndConnect()
 /*-------------------------------------------------------------
           getObservation
 -------------------------------------------------------------*/
-bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
+std::optional<mrpt::obs::CObservationGasSensors> CEnoseModular::grabFrame()
 {
+  mrpt::obs::CObservationGasSensors obs;
   try
   {
     // Connected?
@@ -129,7 +131,7 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
     {
       std::cout << "ERORR: Problem connecting to Device."
                 << "\n";
-      return false;
+      return std::nullopt;
     }
 
     CObservationGasSensors::TObservationENose newRead;
@@ -158,7 +160,7 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
     {
       std::cout << "[CEnoseModular - getObservation] measurement Timed-Out"
                 << "\n";
-      return false;
+      return std::nullopt;
     }
 
     if (msg.content.size() > 0)
@@ -212,13 +214,14 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
       obs.m_readings.push_back(newRead);
       obs.sensorLabel = m_sensorLabel;
       obs.timestamp = mrpt::Clock::now();
-      return !obs.m_readings.empty();  // Done OK!
+      if (!obs.m_readings.empty()) return obs;
+      return std::nullopt;  // Done OK!
     }
     else
     {
       std::cout << "Message was empty"
                 << "\n";
-      return false;
+      return std::nullopt;
     }
   }
   catch (exception& e)
@@ -227,11 +230,11 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
             "exception: "
          << "\n";
     cerr << e.what() << "\n";
-    return false;
+    return std::nullopt;
   }
   catch (...)
   {
-    return false;
+    return std::nullopt;
   }
 }
 

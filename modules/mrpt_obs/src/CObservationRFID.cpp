@@ -92,10 +92,7 @@ void CObservationRFID::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
   };
 }
 
-void CObservationRFID::getSensorPose(CPose3D& out_sensorPose) const
-{
-  out_sensorPose = sensorPoseOnRobot;
-}
+mrpt::poses::CPose3D CObservationRFID::getSensorPose() const { return sensorPoseOnRobot; }
 
 void CObservationRFID::setSensorPose(const CPose3D& newSensorPose)
 {

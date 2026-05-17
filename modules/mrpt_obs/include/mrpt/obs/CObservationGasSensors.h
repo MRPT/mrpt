@@ -70,7 +70,7 @@ class CObservationGasSensors : public CObservation
   std::vector<TObservationENose> m_readings;
 
   // See base class docs
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;
+  mrpt::poses::CPose3D getSensorPose() const override;
   void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;
   void getDescriptionAsText(std::ostream& o) const override;
 

@@ -100,10 +100,7 @@ class CObservationBearingRange : public CObservation
   void debugPrintOut();
 
   // See base class docs
-  void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
-  {
-    out_sensorPose = sensorLocationOnRobot;
-  }
+  mrpt::poses::CPose3D getSensorPose() const override { return sensorLocationOnRobot; }
   void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
   {
     sensorLocationOnRobot = newSensorPose;

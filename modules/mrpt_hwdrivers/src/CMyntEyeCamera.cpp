@@ -16,6 +16,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <optional>
 #include <thread>
 
 #if MRPT_HAS_MYNTEYE_D
@@ -99,8 +100,9 @@ CMyntEyeCamera::CMyntEyeCamera(const TMyntEyeCameraParameters& p) :
 
 CMyntEyeCamera::~CMyntEyeCamera() {}
 
-bool CMyntEyeCamera::getObservation(mrpt::obs::CObservation3DRangeScan& out)
+std::optional<mrpt::obs::CObservation3DRangeScan> CMyntEyeCamera::grabFrame()
 {
+  mrpt::obs::CObservation3DRangeScan out;
 #if MRPT_HAS_MYNTEYE_D && MRPT_HAS_OPENCV
   ASSERT_(m_bInitialized);
 
@@ -122,12 +124,9 @@ bool CMyntEyeCamera::getObservation(mrpt::obs::CObservation3DRangeScan& out)
     }
   }
 
-  // Empty output obs:
-  out = mrpt::obs::CObservation3DRangeScan();
-
   if (!image_color.img && !image_depth.img)
   {
-    return false;
+    return std::nullopt;
   }
 
   // all is good:
@@ -175,7 +174,7 @@ bool CMyntEyeCamera::getObservation(mrpt::obs::CObservation3DRangeScan& out)
     }
   }
 
-  return true;
+  return out;
 #else
   THROW_EXCEPTION("MRPT was built without MYNTEYE-D SDK or OpenCV");
 #endif

@@ -117,8 +117,8 @@ bool CVoxelMap::internal_insertObservation_Pts(
   }
 
   mrpt::math::TPoint3D sensorPt;
-  mrpt::poses::CPose3D localSensorPose, globalSensorPose;
-  obs.getSensorPose(localSensorPose);
+  const mrpt::poses::CPose3D localSensorPose = obs.getSensorPose();
+  mrpt::poses::CPose3D globalSensorPose;
   if (robotPose)  //
     globalSensorPose = *robotPose + localSensorPose;
   else

@@ -141,8 +141,7 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
 
   const auto maxSqrDist = mrpt::square(insertionOptions.max_range);
   mrpt::math::TPoint3D sensorPt;
-  mrpt::poses::CPose3D localSensorPose;
-  obs.getSensorPose(localSensorPose);
+  const mrpt::poses::CPose3D localSensorPose = obs.getSensorPose();
   if (robotPose)
   {
     // compose:
