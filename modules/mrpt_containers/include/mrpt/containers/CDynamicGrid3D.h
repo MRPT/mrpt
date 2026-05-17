@@ -36,6 +36,8 @@ class CDynamicGrid3D
   using iterator = typename grid_data_t::iterator;
   using const_iterator = typename grid_data_t::const_iterator;
 
+  virtual ~CDynamicGrid3D() = default;
+
   /** Constructor */
   CDynamicGrid3D(
       coord_t x_min = -1.0,

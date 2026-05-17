@@ -117,8 +117,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::internal_build_PointCloud_for_observatio
     // (coordinates are wrt the robot base)
 
     // Sensor_pose = robot_pose (+) sensor_pose_on_robot
-    CPose3D sensorPose(UNINITIALIZED_POSE);
-    obs.getSensorPose(sensorPose);
+    CPose3D sensorPose = obs.getSensorPose();
     sensorPose.composeFrom(robotPose3D, sensorPose);
     sensorPt = octomap::point3d(
         static_cast<float>(sensorPose.x()), static_cast<float>(sensorPose.y()),

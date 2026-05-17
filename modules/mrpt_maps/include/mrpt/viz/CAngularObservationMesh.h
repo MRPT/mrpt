@@ -383,7 +383,10 @@ class CAngularObservationMesh :
   [[nodiscard]] CSetOfTriangles::Ptr generateSetOfTriangles() const
   {
     CSetOfTriangles::Ptr res;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     generateSetOfTriangles(res);
+#pragma GCC diagnostic pop
     return res;
   }
   /**
@@ -402,7 +405,10 @@ class CAngularObservationMesh :
   [[nodiscard]] CSetOfLines::Ptr getTracedRays() const
   {
     CSetOfLines::Ptr res;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     getTracedRays(res);
+#pragma GCC diagnostic pop
     return res;
   }
   /**
@@ -418,7 +424,10 @@ class CAngularObservationMesh :
   [[nodiscard]] CSetOfLines::Ptr getUntracedRays(double dist) const
   {
     CSetOfLines::Ptr res;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     getUntracedRays(res, dist);
+#pragma GCC diagnostic pop
     return res;
   }
   /**

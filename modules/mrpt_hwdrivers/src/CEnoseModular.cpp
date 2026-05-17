@@ -245,19 +245,18 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
  */
 void CEnoseModular::doProcess()
 {
-  CObservationGasSensors::Ptr obs = std::make_shared<CObservationGasSensors>();
+  auto grabbed = grabFrame();
 
-  if (getObservation(*obs))
+  if (grabbed)
   {
     m_state = ssWorking;
-    appendObservation(obs);
+    appendObservation(std::make_shared<CObservationGasSensors>(std::move(*grabbed)));
   }
   else
   {
     m_state = ssError;
     std::cout << "No observation received from the USB board!"
               << "\n";
-    // THROW_EXCEPTION("No observation received from the USB board!");
   }
 }
 

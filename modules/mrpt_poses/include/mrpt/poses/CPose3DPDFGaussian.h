@@ -205,12 +205,7 @@ class CPose3DPDFGaussian : public CPose3DPDF
   /** Returns a 3x3 matrix with submatrix of the covariance for the variables
    * (x,y,yaw) only.
    */
-  [[nodiscard]] mrpt::math::CMatrixDouble getCovSubmatrix2D() const
-  {
-    mrpt::math::CMatrixDouble out;
-    getCovSubmatrix2D(out);
-    return out;
-  }
+  [[nodiscard]] mrpt::math::CMatrixDouble getCovSubmatrix2D() const;
 
 };  // End of class def.
 /** Pose composition for two 3D pose Gaussians  \sa CPose3DPDFGaussian::operator

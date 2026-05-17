@@ -67,7 +67,7 @@ struct loadFromRangeImpl
     //  Specialize a bit the equations since we know that z=0 always for the
     //  scan in local coordinates:
     mrpt::maps::CPointsMap::TLaserRange2DInsertContext lric(rangeScan);
-    sensorPose3D.getHomogeneousMatrix(lric.HM);
+    lric.HM = sensorPose3D.getHomogeneousMatrix();
 
     // For quicker access as "float" numbers:
     float m00 = static_cast<float>(lric.HM(0, 0));
@@ -417,7 +417,7 @@ struct loadFromRangeImpl
     // GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
     // --------------------------------------------------------------------------
     mrpt::maps::CPointsMap::TLaserRange3DInsertContext lric(rangeScan);
-    sensorPose3D.getHomogeneousMatrix(lric.HM);
+    lric.HM = sensorPose3D.getHomogeneousMatrix();
     // For quicker access to values as "float" instead of "doubles":
     float m00 = static_cast<float>(lric.HM(0, 0));
     float m01 = static_cast<float>(lric.HM(0, 1));

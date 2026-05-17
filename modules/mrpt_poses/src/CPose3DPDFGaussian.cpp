@@ -593,8 +593,9 @@ ostream& mrpt::poses::operator<<(ostream& out, const CPose3DPDFGaussian& obj)
 /*---------------------------------------------------------------
             getCovSubmatrix2D
  ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::getCovSubmatrix2D(CMatrixDouble& out_cov) const
+CMatrixDouble CPose3DPDFGaussian::getCovSubmatrix2D() const
 {
+  CMatrixDouble out_cov;
   out_cov.setSize(3, 3);
 
   for (int i = 0; i < 3; i++)
@@ -608,7 +609,10 @@ void CPose3DPDFGaussian::getCovSubmatrix2D(CMatrixDouble& out_cov) const
       out_cov(j, i) = f;
     }
   }
+  return out_cov;
 }
+
+void CPose3DPDFGaussian::getCovSubmatrix2D(CMatrixDouble& out_cov) const { out_cov = getCovSubmatrix2D(); }
 
 bool mrpt::poses::operator==(const CPose3DPDFGaussian& p1, const CPose3DPDFGaussian& p2)
 {

@@ -71,7 +71,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 
   // for (i=0;i<eigenVectors.cols();i++) mean+=eigenVectors(colNo,i);
   for (size_t i = 0; i < nRows; i++) mean += eigenVectors(i, colNo);
-  mean /= nRows;
+  mean /= static_cast<double>(nRows);
 
   out_part1.clear();
   out_part2.clear();
@@ -79,9 +79,9 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
   for (size_t i = 0; i < nRows; i++)
   {
     if (eigenVectors(i, colNo) >= mean)
-      out_part1.push_back(i);
+      out_part1.push_back(static_cast<uint32_t>(i));
     else
-      out_part2.push_back(i);
+      out_part2.push_back(static_cast<uint32_t>(i));
   }
 
   // Special and strange case: Constant eigenvector: Split nodes in two
@@ -92,11 +92,11 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
     out_part1.clear();
     out_part2.clear();
     // Assign 50%-50%:
-    for (size_t i = 0; i < Adj.cols(); i++)
-      if (i <= Adj.cols() / 2)
-        out_part1.push_back(static_cast<int>(i));
+    for (size_t i = 0; i < static_cast<size_t>(Adj.cols()); i++)
+      if (i <= static_cast<size_t>(Adj.cols()) / 2)
+        out_part1.push_back(static_cast<uint32_t>(i));
       else
-        out_part2.push_back(i);
+        out_part2.push_back(static_cast<uint32_t>(i));
   }
 
   // Compute the N-cut value
@@ -169,7 +169,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 
     // No:
     p1.clear();
-    for (i = 0; i < nodeCount; i++) p1.push_back(i);
+    for (i = 0; i < nodeCount; i++) p1.push_back(static_cast<uint32_t>(i));
     out_parts.push_back(p1);
   }
   else
@@ -326,9 +326,9 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
     for (i = 0; i < nodeCount; i++)
     {
       if (partition[i])
-        part2.push_back(i);
+        part2.push_back(static_cast<uint32_t>(i));
       else
-        part1.push_back(i);
+        part1.push_back(static_cast<uint32_t>(i));
     }
 
     // Compute the n-cut:
@@ -365,9 +365,9 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
   for (i = 0; i < nodeCount; i++)
   {
     if (bestPartition[i])
-      out_part2.push_back(i);
+      out_part2.push_back(static_cast<uint32_t>(i));
     else
-      out_part1.push_back(i);
+      out_part1.push_back(static_cast<uint32_t>(i));
   }
 }
 

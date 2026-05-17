@@ -82,10 +82,8 @@ bool CStereoGrabber_Bumblebee_libdc1394::getStereoObservation(
     return false;
   }
 
-  if (!m_firewire_capture->getObservation(out_observation))
-  {
-    return false;
-  }
-
+  auto grabbed = m_firewire_capture->grabStereoFrame();
+  if (!grabbed) return false;
+  out_observation = std::move(*grabbed);
   return true;  // All ok
 }

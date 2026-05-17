@@ -107,7 +107,10 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
   [[nodiscard]] mrpt::viz::CSetOfObjects::Ptr getWindAs3DObject() const
   {
     mrpt::viz::CSetOfObjects::Ptr obj;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     getWindAs3DObject(obj);
+#pragma GCC diagnostic pop
     return obj;
   }
 

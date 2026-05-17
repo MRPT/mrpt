@@ -27,8 +27,7 @@ using cb_t = int;
 TEST(circular_buffer_tests, EmptyPop)
 {
   mrpt::containers::circular_buffer<cb_t> cb(10);
-  cb_t ret;
-  EXPECT_THROW(cb.pop(ret), std::exception);
+  EXPECT_THROW(cb.pop(), std::exception);
 }
 TEST(circular_buffer_tests, EmptyPopAfterPushes)
 {
@@ -40,13 +39,12 @@ TEST(circular_buffer_tests, EmptyPopAfterPushes)
     {
       cb.push(12);
     }
-    cb_t ret;
     for (size_t i = 0; i < nWr; i++)
     {
-      cb.pop(ret);
+      (void)cb.pop();
     }
     // The next one must fail:
-    EXPECT_THROW(cb.pop(ret), std::exception);
+    EXPECT_THROW(cb.pop(), std::exception);
   }
 }
 
@@ -64,16 +62,13 @@ TEST(circular_buffer_tests, RandomWriteAndPeek)
     {
       cb.push(static_cast<cb_t>(i));
     }
-    cb_t ret;
     for (size_t i = 0; i < nWr; i++)
     {
-      ret = cb.peek(i);
-      EXPECT_EQ(ret, cb_t(i));
+      EXPECT_EQ(cb.peek(i), cb_t(i));
     }
     for (size_t i = 0; i < nWr; i++)
     {
-      cb.pop(ret);
-      EXPECT_EQ(ret, cb_t(i));
+      EXPECT_EQ(cb.pop(), cb_t(i));
     }
   }
 }
@@ -89,14 +84,9 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
     const size_t nWr = 1 + generator() % (LEN - 1);
     dum_buf.resize(nWr);
     cb.push_many(&dum_buf[0], nWr);
-    cb_t ret;
     if (iter % 2)
     {
-      for (size_t i = 0; i < nWr; i++)
-      {
-        ret = cb.peek(i);
-      }
-      (void)ret;
+      for (size_t i = 0; i < nWr; i++) (void)cb.peek(i);
     }
     else
     {
@@ -104,11 +94,7 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
     }
     if (iter % 3)
     {
-      for (size_t i = 0; i < nWr; i++)
-      {
-        cb.pop(ret);
-      }
-      (void)ret;
+      for (size_t i = 0; i < nWr; i++) (void)cb.pop();
     }
     else
     {
@@ -129,15 +115,11 @@ TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
     {
       cb.push(static_cast<cb_t>(i));
     }
-    cb_t ret;
     for (unsigned k = 0; k < 5; k++)
     {
-      EXPECT_ANY_THROW(ret = cb.peek(nWr + k););
+      EXPECT_ANY_THROW(cb.peek(nWr + k));
     }
-    for (size_t i = 0; i < nWr; i++)
-    {
-      cb.pop(ret);
-    }
+    for (size_t i = 0; i < nWr; i++) (void)cb.pop();
   }
 }
 

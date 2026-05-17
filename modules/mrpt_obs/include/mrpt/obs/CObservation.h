@@ -126,10 +126,13 @@ class CObservation : public mrpt::serialization::CSerializable, public mrpt::Str
    * by value.
    * \sa setSensorPose
    */
-  [[nodiscard]] virtual mrpt::poses::CPose3D getSensorPose() const
+  [[nodiscard]] mrpt::poses::CPose3D getSensorPose() const
   {
     mrpt::poses::CPose3D p;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     getSensorPose(p);
+#pragma GCC diagnostic pop
     return p;
   }
 

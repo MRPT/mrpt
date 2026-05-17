@@ -27,9 +27,7 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CObservation, CSerializable, mrpt::obs)
 
 void CObservation::getSensorPose(mrpt::math::TPose3D& out_sensorPose) const
 {
-  CPose3D p;
-  getSensorPose(p);
-  out_sensorPose = p.asTPose();
+  out_sensorPose = getSensorPose().asTPose();
 }
 
 void CObservation::setSensorPose(const mrpt::math::TPose3D& newSensorPose)

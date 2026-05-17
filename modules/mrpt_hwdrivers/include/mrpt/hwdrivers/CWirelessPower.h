@@ -100,7 +100,10 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
   [[nodiscard]] std::optional<mrpt::obs::CObservationWirelessPower> grabFrame()
   {
     mrpt::obs::CObservationWirelessPower obs;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     if (!getObservation(obs))
+#pragma GCC diagnostic pop
     {
       return std::nullopt;
     }

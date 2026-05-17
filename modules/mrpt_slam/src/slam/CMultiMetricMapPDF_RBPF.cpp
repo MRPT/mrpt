@@ -509,8 +509,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
           // Uncertainty in z is null:
           // CMatrixF poseCOV =
           // robotMovement->poseChange->getEstimatedCovariance();
-          CMatrixD poseCOV;
-          robotActionSampler.getOriginalPDFCov2D(poseCOV);
+          CMatrixD poseCOV = CMatrixD(robotActionSampler.getOriginalPDFCov2D());
 
           poseCOV.setSize(2, 2);
           poseCOV.setSize(3, 3);

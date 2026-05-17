@@ -121,7 +121,10 @@ class CImageGrabber_OpenCV
   [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame()
   {
     mrpt::obs::CObservationImage obs;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     if (!getObservation(obs))
+#pragma GCC diagnostic pop
     {
       return std::nullopt;
     }

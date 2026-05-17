@@ -124,12 +124,7 @@ class CPoseRandomSampler
 
   /** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
    * \f$. */
-  [[nodiscard]] mrpt::math::CMatrixDouble33 getOriginalPDFCov2D() const
-  {
-    mrpt::math::CMatrixDouble33 out;
-    getOriginalPDFCov2D(out);
-    return out;
-  }
+  [[nodiscard]] mrpt::math::CMatrixDouble33 getOriginalPDFCov2D() const;
 
   /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
    * yaw ~ pitch ~ roll ] \f$. \deprecated Use the return-by-value overload
@@ -145,12 +140,7 @@ class CPoseRandomSampler
 
   /** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
    * yaw ~ pitch ~ roll ] \f$. */
-  [[nodiscard]] mrpt::math::CMatrixDouble66 getOriginalPDFCov3D() const
-  {
-    mrpt::math::CMatrixDouble66 out;
-    getOriginalPDFCov3D(out);
-    return out;
-  }
+  [[nodiscard]] mrpt::math::CMatrixDouble66 getOriginalPDFCov3D() const;
 
 };  // End of class def.
 }  // namespace mrpt::poses

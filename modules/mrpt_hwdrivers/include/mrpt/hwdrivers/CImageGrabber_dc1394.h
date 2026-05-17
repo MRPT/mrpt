@@ -185,7 +185,10 @@ class CImageGrabber_dc1394
   [[nodiscard]] std::optional<mrpt::obs::CObservationImage> grabFrame()
   {
     mrpt::obs::CObservationImage obs;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     if (!getObservation(obs))
+#pragma GCC diagnostic pop
     {
       return std::nullopt;
     }
@@ -210,7 +213,10 @@ class CImageGrabber_dc1394
   [[nodiscard]] std::optional<mrpt::obs::CObservationStereoImages> grabStereoFrame()
   {
     mrpt::obs::CObservationStereoImages obs;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     if (!getObservation(obs))
+#pragma GCC diagnostic pop
     {
       return std::nullopt;
     }

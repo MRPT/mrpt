@@ -203,8 +203,7 @@ bool CVoxelMapRGB::internal_insertObservation(
   if (insertionOptions.remove_voxels_farther_than > 0)
   {
     mrpt::math::TPoint3D sensorPt;
-    mrpt::poses::CPose3D localSensorPose;
-    obs.getSensorPose(localSensorPose);
+    const mrpt::poses::CPose3D localSensorPose = obs.getSensorPose();
     if (robotPose)
     {
       // compose:
@@ -262,8 +261,7 @@ bool CVoxelMapRGB::internal_insertObservation_default(
   }
 
   mrpt::math::TPoint3D sensorPt;
-  mrpt::poses::CPose3D localSensorPose;
-  obs.getSensorPose(localSensorPose);
+  const mrpt::poses::CPose3D localSensorPose = obs.getSensorPose();
   if (robotPose)
   {
     // compose:
