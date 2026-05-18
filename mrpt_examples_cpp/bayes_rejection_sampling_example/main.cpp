@@ -63,7 +63,7 @@ void TestRS()
   tictac.Tic();
   printf("Computing...");
 
-  RS.rejectionSampling(1000, samples);
+  samples = RS.rejectionSampling(1000);
 
   printf("Ok! %fms\n", 1000 * tictac.Tac());
 

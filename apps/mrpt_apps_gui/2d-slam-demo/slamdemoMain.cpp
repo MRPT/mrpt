@@ -1880,7 +1880,7 @@ void slamdemoFrame::OnConfigClicked([[maybe_unused]] wxCommandEvent& event)
   dlg.rbKFnaiv->SetValue(m_SLAM.KF_options.method == kfEKFNaive);
   dlg.rbKFdavison->SetValue(m_SLAM.KF_options.method == kfEKFAlaDavison);
   dlg.rbIKF->SetValue(m_SLAM.KF_options.method == kfIKFFull);
-  dlg.rbIKFdavison->SetValue(m_SLAM.KF_options.method == kfIKF);
+  dlg.rbIKFdavison->SetValue(m_SLAM.KF_options.method == kfEKFAlaDavison);
   dlg.edIKFiters->SetValue(m_SLAM.KF_options.IKF_iterations);
 
   dlg.cbJacobTran->SetValue(!m_SLAM.KF_options.use_analytic_transition_jacobian);
@@ -1939,7 +1939,7 @@ void slamdemoFrame::OnConfigClicked([[maybe_unused]] wxCommandEvent& event)
     if (dlg.rbKFnaiv->GetValue()) m_SLAM.KF_options.method = kfEKFNaive;
     if (dlg.rbKFdavison->GetValue()) m_SLAM.KF_options.method = kfEKFAlaDavison;
     if (dlg.rbIKF->GetValue()) m_SLAM.KF_options.method = kfIKFFull;
-    if (dlg.rbIKFdavison->GetValue()) m_SLAM.KF_options.method = kfIKF;
+    if (dlg.rbIKFdavison->GetValue()) m_SLAM.KF_options.method = kfEKFAlaDavison;
     m_SLAM.KF_options.IKF_iterations = dlg.edIKFiters->GetValue();
 
     m_SLAM.KF_options.use_analytic_transition_jacobian = !dlg.cbJacobTran->GetValue();

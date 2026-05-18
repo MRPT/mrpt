@@ -392,7 +392,7 @@ class CRangeBearingKFSLAM :
   /** Computes A=A-B, which may need to be re-implemented depending on the
    * topology of the individual scalar components (eg, angles).
    */
-  void OnSubstractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override;
+  void OnSubtractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override;
 
   /** Return the observation NOISE covariance matrix, that is, the model of
    * the Gaussian additive noise of the sensor.

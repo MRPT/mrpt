@@ -1033,7 +1033,7 @@ void CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile(
 /** Computes A=A-B, which may need to be re-implemented depending on the
  * topology of the individual scalar components (eg, angles).
  */
-void CRangeBearingKFSLAM2D::OnSubstractObservationVectors(
+void CRangeBearingKFSLAM2D::OnSubtractObservationVectors(
     KFArray_OBS& A, const KFArray_OBS& B) const
 {
   A[0] -= B[0];

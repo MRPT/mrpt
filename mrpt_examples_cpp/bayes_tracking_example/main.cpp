@@ -37,7 +37,8 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::random;
-using namespace std;
+using std::max;
+using std::vector;
 
 #define BEARING_SENSOR_NOISE_STD DEG2RAD(15.0f)
 #define RANGE_SENSOR_NOISE_STD   0.3f
@@ -184,7 +185,7 @@ class CRangeBearing :
   /** Computes A=A-B, which may need to be re-implemented depending on the
    * topology of the individual scalar components (eg, angles).
    */
-  void OnSubstractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override;
+  void OnSubtractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override;
 
   /** @}
    */
@@ -558,7 +559,7 @@ void CRangeBearing::OnObservationJacobians(
 
   Hx.setZero();
   Hx(0, 0) = -y / (square(x) + square(y));
-  Hx(0, 1) = 1 / (x * (1 + square(y / x)));
+  Hx(0, 1) = x / (square(x) + square(y));  // d(atan2(y,x))/dy = x/(x^2+y^2)
 
   Hx(1, 0) = x / sqrt(square(x) + square(y));
   Hx(1, 1) = y / sqrt(square(x) + square(y));
@@ -569,7 +570,7 @@ void CRangeBearing::OnObservationJacobians(
 /** Computes A=A-B, which may need to be re-implemented depending on the
  * topology of the individual scalar components (eg, angles).
  */
-void CRangeBearing::OnSubstractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const
+void CRangeBearing::OnSubtractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const
 {
   A -= B;
   math::wrapToPiInPlace(A[0]);  // The angular component
@@ -636,20 +637,20 @@ void CRangeBearingParticleFilter::initializeParticles(size_t M)
 {
   clearParticles();
   m_particles.resize(M);
-  for (CParticleList::iterator it = m_particles.begin(); it != m_particles.end(); it++)
-    it->d.reset(new CParticleVehicleData());
-
-  for (CParticleList::iterator it = m_particles.begin(); it != m_particles.end(); it++)
+  for (auto& p : m_particles)
   {
-    (*it).d->x = static_cast<float>(
+    p.d.reset(new CParticleVehicleData());
+  }
+
+  for (auto& p : m_particles)
+  {
+    p.d->x = static_cast<float>(
         getRandomGenerator().drawUniform(VEHICLE_INITIAL_X - 2.0f, VEHICLE_INITIAL_X + 2.0f));
-    (*it).d->y = static_cast<float>(
+    p.d->y = static_cast<float>(
         getRandomGenerator().drawUniform(VEHICLE_INITIAL_Y - 2.0f, VEHICLE_INITIAL_Y + 2.0f));
-
-    (*it).d->vx = static_cast<float>(getRandomGenerator().drawGaussian1D(-VEHICLE_INITIAL_V, 0.2f));
-    (*it).d->vy = static_cast<float>(getRandomGenerator().drawGaussian1D(0, 0.2f));
-
-    it->log_w = 0;
+    p.d->vx = static_cast<float>(getRandomGenerator().drawGaussian1D(-VEHICLE_INITIAL_V, 0.2f));
+    p.d->vy = static_cast<float>(getRandomGenerator().drawGaussian1D(0, 0.2f));
+    p.log_w = 0;
   }
 }
 
@@ -658,20 +659,18 @@ void CRangeBearingParticleFilter::initializeParticles(size_t M)
 void CRangeBearingParticleFilter::getMean(float& x, float& y, float& vx, float& vy)
 {
   double sumW = 0;
-  for (CParticleList::iterator it = m_particles.begin(); it != m_particles.end(); it++)
-    sumW += exp(it->log_w);
+  for (const auto& p : m_particles) sumW += std::exp(p.log_w);
 
   ASSERT_(sumW > 0);
 
   x = y = vx = vy = 0;
 
-  for (CParticleList::iterator it = m_particles.begin(); it != m_particles.end(); it++)
+  for (const auto& p : m_particles)
   {
-    const double w = exp(it->log_w) / sumW;
-
-    x += static_cast<float>(w) * (*it).d->x;
-    y += static_cast<float>(w) * (*it).d->y;
-    vx += static_cast<float>(w) * (*it).d->vx;
-    vy += static_cast<float>(w) * (*it).d->vy;
+    const auto w = static_cast<float>(std::exp(p.log_w) / sumW);
+    x += w * p.d->x;
+    y += w * p.d->y;
+    vx += w * p.d->vx;
+    vy += w * p.d->vy;
   }
 }
