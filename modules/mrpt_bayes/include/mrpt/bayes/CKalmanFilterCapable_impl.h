@@ -486,10 +486,14 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
             // re-ordered, subset, version of
             // the prediction m_S:
 
+            // (map_idx, pred_idx) for each update observation — used by sparse P update
+            std::vector<std::pair<size_t, size_t>> upd_obs_info;
+
             if (FEAT_SIZE != 0)
             {  // SLAM problems:
               std::vector<size_t> S_idxs;
               S_idxs.reserve(OBS_SIZE * N_upd);
+              upd_obs_info.reserve(N_upd);
 
               // const size_t row_len = VEH_SIZE + FEAT_SIZE *
               // N_map;
@@ -523,6 +527,8 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
                 m_dh_dx_full_obs.template block<OBS_SIZE, FEAT_SIZE>(
                     S_idxs.size(), VEH_SIZE + assoc_idx_in_map * FEAT_SIZE) =
                     m_Hys[assoc_idx_in_pred].asEigen();
+
+                upd_obs_info.emplace_back(assoc_idx_in_map, assoc_idx_in_pred);
 
                 // S_idxs.size() is used as counter for
                 // "m_dh_dx_full_obs".
@@ -594,53 +600,124 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
             {
               m_timLogger.enter("KF:8.update stage:3.FULLKF:update Pkk");
 
-              // Use the full K matrix to update the covariance:
-              // m_pkk = (I - K*dh_dx ) * m_pkk;
-              // TODO: "Optimize this: sparsity!"
-
-              // K * m_dh_dx_full_obs
-              m_aux_K_dh_dx.matProductOf_AB(m_K, m_dh_dx_full_obs);
-
-              // m_aux_K_dh_dx  <-- I-m_aux_K_dh_dx
-              const size_t stat_len = m_aux_K_dh_dx.cols();
-              for (size_t r = 0; r < stat_len; r++)
+              // Helper lambda: dense covariance update used for both the
+              // non-SLAM path and the optional debug cross-check.
+              // Returns updated P given the current P and K.
+              auto dense_P_update = [&](const KFMatrix& pkk_in) -> KFMatrix
               {
-                for (size_t c = 0; c < stat_len; c++)
+                // Build (I - K*H) using the dense m_dh_dx_full_obs
+                m_aux_K_dh_dx.matProductOf_AB(m_K, m_dh_dx_full_obs);
+                const size_t stat_len = m_aux_K_dh_dx.cols();
+                for (size_t r = 0; r < stat_len; r++)
                 {
-                  if (r == c)
-                    m_aux_K_dh_dx(r, c) = -m_aux_K_dh_dx(r, c) + kftype(1);
-                  else
-                    m_aux_K_dh_dx(r, c) = -m_aux_K_dh_dx(r, c);
+                  for (size_t c = 0; c < stat_len; c++)
+                  {
+                    m_aux_K_dh_dx(r, c) =
+                        (r == c) ? kftype(1) - m_aux_K_dh_dx(r, c) : -m_aux_K_dh_dx(r, c);
+                  }
                 }
-              }
+                KFMatrix out(pkk_in.rows(), pkk_in.cols());
+                if (KF_options.use_joseph_form)
+                {
+                  const auto IKH = m_aux_K_dh_dx.asEigen();
+                  const auto P = pkk_in.asEigen();
+                  out.asEigen() = (IKH * P * IKH.transpose()).eval();
+                  // K*S_observed*K^T (equivalent to K*R_block*K^T but cheaper)
+                  out.asEigen() +=
+                      (m_K.asEigen() * S_observed.asEigen() * m_K.asEigen().transpose()).eval();
+                }
+                else
+                {
+                  out.asEigen() = (m_aux_K_dh_dx.asEigen() * pkk_in.asEigen()).eval();
+                }
+                const auto Peval = out.asEigen().eval();
+                out.asEigen() = 0.5 * (Peval + Peval.transpose());
+                return out;
+              };
 
-              if (KF_options.use_joseph_form)
+              if constexpr (FEAT_SIZE != 0)
               {
-                // Joseph form: P' = (I-KH)*P*(I-KH)^T + K*R*K^T
-                // More numerically stable than the naive P' = (I-KH)*P.
-                // m_aux_K_dh_dx already holds (I - K*H)
-                const auto IKH = m_aux_K_dh_dx.asEigen();
-                const auto P = m_pkk.asEigen();
-                m_pkk.asEigen() = (IKH * P * IKH.transpose()).eval();
-                // Add K*R*K^T with block-diagonal R for all N_upd obs
-                KFMatrix R_block(N_upd * OBS_SIZE, N_upd * OBS_SIZE);
-                R_block.setZero();
-                for (size_t ri = 0; ri < N_upd; ri++)
+                // -------------------------------------------------------
+                // SLAM: sparse P update exploiting the block structure of H.
+                // dP = K * H * P, computed as a sum over observed landmarks:
+                //   dP += K_i * Hx_i * P[0:VEH, :]
+                //       + K_i * Hy_i * P[idx_off:idx_off+FEAT, :]
+                // Complexity: O(N_upd*(VEH+FEAT)*n) vs O(n^3) for dense.
+                // -------------------------------------------------------
+
+                // Optionally save P before modification for the debug cross-check.
+                KFMatrix pkk_before_sparse;
+                if (KF_options.debug_sparse_vs_dense_P_update)
                 {
-                  R_block.asEigen().template block<OBS_SIZE, OBS_SIZE>(
-                      ri * OBS_SIZE, ri * OBS_SIZE) = R.asEigen();
+                  pkk_before_sparse = m_pkk;
                 }
-                m_pkk.asEigen() +=
-                    (m_K.asEigen() * R_block.asEigen() * m_K.asEigen().transpose()).eval();
-                // Symmetrize to suppress floating-point drift:
-                const auto P2 = m_pkk.asEigen().eval();
-                m_pkk.asEigen() = 0.5 * (P2 + P2.transpose());
+
+                const size_t n = m_pkk.cols();
+                KFMatrix dP(n, n);
+                dP.setZero();
+
+                for (size_t i = 0; i < N_upd; i++)
+                {
+                  const size_t map_idx = upd_obs_info[i].first;
+                  const size_t pred_idx = upd_obs_info[i].second;
+                  const size_t idx_off = VEH_SIZE + map_idx * FEAT_SIZE;
+                  const auto K_i =
+                      m_K.asEigen().middleCols(i * OBS_SIZE, OBS_SIZE);  // n x OBS_SIZE
+                  dP.asEigen() += K_i * m_Hxs[pred_idx].asEigen() *
+                                  m_pkk.asEigen().template topRows<VEH_SIZE>();
+                  dP.asEigen() += K_i * m_Hys[pred_idx].asEigen() *
+                                  m_pkk.asEigen().middleRows(idx_off, FEAT_SIZE);
+                }
+
+                if (KF_options.use_joseph_form)
+                {
+                  // Joseph form via sparse dP (algebraically identical to
+                  // (I-KH)*P*(I-KH)^T + K*R*K^T):
+                  //   P' = P - dP - dP^T + K*S_observed*K^T
+                  m_pkk.asEigen() -= (dP.asEigen() + dP.asEigen().transpose()).eval();
+                  m_pkk.asEigen() +=
+                      (m_K.asEigen() * S_observed.asEigen() * m_K.asEigen().transpose()).eval();
+                }
+                else
+                {
+                  m_pkk.asEigen() -= dP.asEigen();
+                }
+                // Symmetrize:
+                {
+                  const auto Peval = m_pkk.asEigen().eval();
+                  m_pkk.asEigen() = 0.5 * (Peval + Peval.transpose());
+                }
+
+                if (KF_options.debug_sparse_vs_dense_P_update)
+                {
+                  const KFMatrix pkk_sparse_result = m_pkk;
+                  // Compute dense result from the same pre-update P:
+                  m_pkk = pkk_before_sparse;
+                  const KFMatrix pkk_dense_result = dense_P_update(m_pkk);
+
+                  const KFTYPE max_diff =
+                      static_cast<KFTYPE>((pkk_sparse_result.asEigen() - pkk_dense_result.asEigen())
+                                              .cwiseAbs()
+                                              .maxCoeff());
+                  if (max_diff > KFTYPE(1e-7))
+                  {
+                    MRPT_LOG_ERROR_FMT(
+                        "[KF] debug_sparse_vs_dense_P_update MISMATCH: "
+                        "max |sparse-dense| = %.3e (threshold 1e-7)",
+                        static_cast<double>(max_diff));
+                    THROW_EXCEPTION(
+                        "Sparse and dense covariance updates disagree. "
+                        "See stderr for details.");
+                  }
+                  // Use the sparse result (verified to match dense):
+                  m_pkk = pkk_sparse_result;
+                }
               }
               else
               {
-                // Classic form: P' = (I-KH)*P — use .eval() to prevent aliasing UB
-                const auto tmp = (m_aux_K_dh_dx.asEigen() * m_pkk.asEigen()).eval();
-                m_pkk.asEigen() = tmp;
+                // Non-SLAM: H has no sparsity (VEH_SIZE x VEH_SIZE system),
+                // use the existing dense code path.
+                m_pkk = dense_P_update(m_pkk);
               }
 
               m_timLogger.leave("KF:8.update stage:3.FULLKF:update Pkk");

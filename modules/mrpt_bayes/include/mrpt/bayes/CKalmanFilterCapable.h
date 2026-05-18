@@ -77,6 +77,7 @@ struct TKF_options : public mrpt::config::CLoadableOptions
     MRPT_LOAD_CONFIG_VAR(debug_verify_analytic_jacobians, bool, iniFile, section);
     MRPT_LOAD_CONFIG_VAR(debug_verify_analytic_jacobians_threshold, double, iniFile, section);
     MRPT_LOAD_CONFIG_VAR(use_joseph_form, bool, iniFile, section);
+    MRPT_LOAD_CONFIG_VAR(debug_sparse_vs_dense_P_update, bool, iniFile, section);
   }
 
   /** This method must display clearly all the contents of the structure in
@@ -126,6 +127,10 @@ struct TKF_options : public mrpt::config::CLoadableOptions
    * cost is one additional matrix product. Set to false for the classic
    * (faster but less numerically stable) update. */
   bool use_joseph_form{true};
+  /** (default=false) When true and FEAT_SIZE>0, run both the sparse and
+   * dense covariance update paths and assert their results agree to within
+   * 1e-7. Useful for validating the sparse path on a new problem. */
+  bool debug_sparse_vs_dense_P_update{false};
 };
 
 /** Auxiliary functions, for internal usage of MRPT classes */
