@@ -67,8 +67,8 @@ using namespace std;
 const int CRawlogTreeView::ROW_HEIGHT = 17;
 const int CRawlogTreeView::TREE_HORZ_STEPS = 20;
 
-const long ID_MNU_EXPORT_ANOTHER_FILE = wxNewId();
-const long ID_MNU_EXPORT_LAST_FILE = wxNewId();
+const wxWindowID ID_MNU_EXPORT_ANOTHER_FILE = wxNewId();
+const wxWindowID ID_MNU_EXPORT_LAST_FILE = wxNewId();
 
 static std::string shortenClassName(const std::string& s)
 {

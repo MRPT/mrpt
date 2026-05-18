@@ -36,16 +36,16 @@ using namespace mrpt::system;
 using namespace std;
 
 //(*IdInit(CAboutBox)
-const long CAboutBox::ID_STATICTEXT1 = wxNewId();
-const long CAboutBox::ID_STATICTEXT2 = wxNewId();
-const long CAboutBox::ID_STATICBITMAP1 = wxNewId();
-const long CAboutBox::ID_STATICLINE1 = wxNewId();
-const long CAboutBox::ID_TEXTCTRL4 = wxNewId();
-const long CAboutBox::ID_TEXTCTRL1 = wxNewId();
-const long CAboutBox::ID_TEXTCTRL2 = wxNewId();
-const long CAboutBox::ID_TEXTCTRL3 = wxNewId();
-const long CAboutBox::ID_NOTEBOOK1 = wxNewId();
-const long CAboutBox::ID_BUTTON1 = wxNewId();
+const wxWindowID CAboutBox::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CAboutBox::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CAboutBox::ID_STATICBITMAP1 = wxNewId();
+const wxWindowID CAboutBox::ID_STATICLINE1 = wxNewId();
+const wxWindowID CAboutBox::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID CAboutBox::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CAboutBox::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID CAboutBox::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID CAboutBox::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID CAboutBox::ID_BUTTON1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CAboutBox, wxDialog)
@@ -208,4 +208,4 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
   FlexGridSizer1->Layout();
 }
 
-void CAboutBox::OnButton1Click(wxCommandEvent& event) { Close(); }
+void CAboutBox::OnButton1Click([[maybe_unused]] wxCommandEvent& event) { Close(); }

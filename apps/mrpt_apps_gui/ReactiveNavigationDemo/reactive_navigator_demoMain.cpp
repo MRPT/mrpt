@@ -90,61 +90,61 @@ using namespace mrpt::poses;
 using namespace std;
 
 //(*IdInit(reactive_navigator_demoframe)
-const long reactive_navigator_demoframe::ID_BUTTON4 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON5 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON7 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON12 = wxNewId();
-const long reactive_navigator_demoframe::ID_STATICTEXT10 = wxNewId();
-const long reactive_navigator_demoframe::ID_STATICTEXT9 = wxNewId();
-const long reactive_navigator_demoframe::ID_STATICTEXT8 = wxNewId();
-const long reactive_navigator_demoframe::ID_TEXTCTRL6 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON6 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON8 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON11 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON1 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON9 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON10 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON2 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON3 = wxNewId();
-const long reactive_navigator_demoframe::ID_RADIOBOX2 = wxNewId();
-const long reactive_navigator_demoframe::ID_CHECKBOX1 = wxNewId();
-const long reactive_navigator_demoframe::ID_CHECKBOX2 = wxNewId();
-const long reactive_navigator_demoframe::ID_CHECKBOX3 = wxNewId();
-const long reactive_navigator_demoframe::ID_CHECKBOX4 = wxNewId();
-const long reactive_navigator_demoframe::ID_CHECKBOX5 = wxNewId();
-const long reactive_navigator_demoframe::ID_RADIOBOX1 = wxNewId();
-const long reactive_navigator_demoframe::ID_BUTTON13 = wxNewId();
-const long reactive_navigator_demoframe::ID_PANEL6 = wxNewId();
-const long reactive_navigator_demoframe::ID_TEXTCTRL1 = wxNewId();
-const long reactive_navigator_demoframe::ID_PANEL2 = wxNewId();
-const long reactive_navigator_demoframe::ID_TEXTCTRL4 = wxNewId();
-const long reactive_navigator_demoframe::ID_PANEL4 = wxNewId();
-const long reactive_navigator_demoframe::ID_TEXTCTRL3 = wxNewId();
-const long reactive_navigator_demoframe::ID_PANEL3 = wxNewId();
-const long reactive_navigator_demoframe::ID_NOTEBOOK1 = wxNewId();
-const long reactive_navigator_demoframe::ID_PANEL1 = wxNewId();
-const long reactive_navigator_demoframe::ID_STATICTEXT3 = wxNewId();
-const long reactive_navigator_demoframe::ID_TEXTCTRL5 = wxNewId();
-const long reactive_navigator_demoframe::ID_PANEL7 = wxNewId();
-const long reactive_navigator_demoframe::ID_STATICTEXT2 = wxNewId();
-const long reactive_navigator_demoframe::ID_STATICTEXT1 = wxNewId();
-const long reactive_navigator_demoframe::ID_XY_GLCANVAS = wxNewId();
-const long reactive_navigator_demoframe::ID_STATICTEXT4 = wxNewId();
-const long reactive_navigator_demoframe::ID_CHOICE1 = wxNewId();
-const long reactive_navigator_demoframe::ID_CUSTOM1 = wxNewId();
-const long reactive_navigator_demoframe::ID_TEXTCTRL2 = wxNewId();
-const long reactive_navigator_demoframe::ID_PANEL8 = wxNewId();
-const long reactive_navigator_demoframe::ID_SPLITTERWINDOW2 = wxNewId();
-const long reactive_navigator_demoframe::ID_PANEL5 = wxNewId();
-const long reactive_navigator_demoframe::ID_SPLITTERWINDOW1 = wxNewId();
-const long reactive_navigator_demoframe::ID_MENUITEM4 = wxNewId();
-const long reactive_navigator_demoframe::idMenuQuit = wxNewId();
-const long reactive_navigator_demoframe::ID_MENUITEM1 = wxNewId();
-const long reactive_navigator_demoframe::ID_MENUITEM2 = wxNewId();
-const long reactive_navigator_demoframe::ID_MENUITEM3 = wxNewId();
-const long reactive_navigator_demoframe::idMenuAbout = wxNewId();
-const long reactive_navigator_demoframe::ID_STATUSBAR1 = wxNewId();
-const long reactive_navigator_demoframe::ID_TIMER1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON4 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON5 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON7 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON12 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_STATICTEXT10 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_STATICTEXT9 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_STATICTEXT8 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_TEXTCTRL6 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON6 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON8 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON11 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON9 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON10 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON2 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON3 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_RADIOBOX2 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_CHECKBOX1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_CHECKBOX2 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_CHECKBOX3 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_CHECKBOX4 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_CHECKBOX5 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_RADIOBOX1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_BUTTON13 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_PANEL6 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_PANEL2 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_PANEL4 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_PANEL3 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_PANEL1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_STATICTEXT3 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_TEXTCTRL5 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_PANEL7 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_STATICTEXT2 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_STATICTEXT1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_XY_GLCANVAS = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_STATICTEXT4 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_CHOICE1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_CUSTOM1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_PANEL8 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_SPLITTERWINDOW2 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_PANEL5 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_SPLITTERWINDOW1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_MENUITEM4 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::idMenuQuit = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_MENUITEM1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_MENUITEM2 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_MENUITEM3 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::idMenuAbout = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_STATUSBAR1 = wxNewId();
+const wxWindowID reactive_navigator_demoframe::ID_TIMER1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(reactive_navigator_demoframe, wxFrame)
@@ -1015,7 +1015,7 @@ void reactive_navigator_demoframe::OnAbout(wxCommandEvent&)
 
 void reactive_navigator_demoframe::updateMap3DView() { m_gridMap.getVisualizationInto(*gl_grid); }
 
-void reactive_navigator_demoframe::OnbtnPlaceRobotClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnPlaceRobotClick([[maybe_unused]] wxCommandEvent& event)
 {
   if (m_cursorPickState != cpsPlaceRobot)
   {
@@ -1032,7 +1032,7 @@ void reactive_navigator_demoframe::OnbtnPlaceRobotClick(wxCommandEvent& event)
   btnPlaceRobot->Refresh();
 }
 
-void reactive_navigator_demoframe::OnbtnPlaceTargetClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnPlaceTargetClick([[maybe_unused]] wxCommandEvent& event)
 {
   if (m_cursorPickState != cpsPickTarget)
   {
@@ -1063,7 +1063,7 @@ void reactive_navigator_demoframe::updateButtonsEnableState(bool is_running)
   pnNavSelButtons->Enable(!is_running);
 }
 
-void reactive_navigator_demoframe::OnbtnStartClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnStartClick([[maybe_unused]] wxCommandEvent& event)
 {
   updateButtonsEnableState(true);
   if (!reinitSimulator())
@@ -1074,7 +1074,7 @@ void reactive_navigator_demoframe::OnbtnStartClick(wxCommandEvent& event)
   m_is_running = true;
 }
 
-void reactive_navigator_demoframe::OnbtnStopClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnStopClick([[maybe_unused]] wxCommandEvent& event)
 {
   updateButtonsEnableState(false);
   m_is_running = false;
@@ -1737,18 +1737,19 @@ void reactive_navigator_demoframe::TOptions::saveToConfigFile(
   MRPT_END
 }
 
-void reactive_navigator_demoframe::OnMenuItemChangeVisibleStuff(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnMenuItemChangeVisibleStuff(
+    [[maybe_unused]] wxCommandEvent& event)
 {
   updateViewsDynamicObjects();
 }
 
-void reactive_navigator_demoframe::OnMenuItemClearRobotPath(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnMenuItemClearRobotPath([[maybe_unused]] wxCommandEvent& event)
 {
   gl_robot_path->clear();
   updateViewsDynamicObjects();
 }
 
-void reactive_navigator_demoframe::OnbtnLoadMapClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnLoadMapClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1818,9 +1819,12 @@ void reactive_navigator_demoframe::OnNotebook1PageChanged(wxNotebookEvent& event
 
 void reactive_navigator_demoframe::OnNotebook1PageChanged1(wxNotebookEvent& event) {}
 
-void reactive_navigator_demoframe::OnedManualKinRampsText(wxCommandEvent& event) {}
+void reactive_navigator_demoframe::OnedManualKinRampsText([[maybe_unused]] wxCommandEvent& event) {}
 
-void reactive_navigator_demoframe::OnbtnQuitClick(wxCommandEvent& event) { Close(); }
+void reactive_navigator_demoframe::OnbtnQuitClick([[maybe_unused]] wxCommandEvent& event)
+{
+  Close();
+}
 
 void create_viz_robot_holo(mrpt::viz::CSetOfObjects& objs)
 {
@@ -1842,7 +1846,7 @@ void create_viz_robot_diff(mrpt::viz::CSetOfObjects& objs)
   objs.insert(mrpt::viz::stock_objects::RobotPioneer());
 }
 
-void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnrbKinTypeSelect([[maybe_unused]] wxCommandEvent& event)
 {
   // We must first detach the simulator from the navigator object before
   // deleting it:
@@ -1888,7 +1892,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
   };
 }
 
-void reactive_navigator_demoframe::OnbtnEmptyMapClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnEmptyMapClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1936,7 +1940,7 @@ void reactive_navigator_demoframe::OnbtnEmptyMapClick(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void reactive_navigator_demoframe::OnbtnSaveMapClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnSaveMapClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1957,7 +1961,7 @@ void reactive_navigator_demoframe::OnbtnSaveMapClick(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void reactive_navigator_demoframe::OnbtnDrawMapObsClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnDrawMapObsClick([[maybe_unused]] wxCommandEvent& event)
 {
   if (m_cursorPickState != cpsDrawObstacles)
   {
@@ -1978,7 +1982,7 @@ void reactive_navigator_demoframe::OnbtnDrawMapObsClick(wxCommandEvent& event)
   m_plot3D->Refresh();
 }
 
-void reactive_navigator_demoframe::OnbtnDrawEmptyClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnDrawEmptyClick([[maybe_unused]] wxCommandEvent& event)
 {
   if (m_cursorPickState != cpsDrawClear)
   {
@@ -1999,7 +2003,7 @@ void reactive_navigator_demoframe::OnbtnDrawEmptyClick(wxCommandEvent& event)
   m_plot3D->Refresh();
 }
 
-void reactive_navigator_demoframe::OnbtnSetWaypointSeqClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnSetWaypointSeqClick([[maybe_unused]] wxCommandEvent& event)
 {
   auto* wp_nav = dynamic_cast<CWaypointsNavigator*>(m_navMethod.get());
   if (!wp_nav)
@@ -2025,7 +2029,8 @@ void reactive_navigator_demoframe::OnbtnSetWaypointSeqClick(wxCommandEvent& even
   m_plot3D->Refresh();
 }
 
-void reactive_navigator_demoframe::OnbtnGenerateTemplateClick(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnbtnGenerateTemplateClick(
+    [[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY;
 

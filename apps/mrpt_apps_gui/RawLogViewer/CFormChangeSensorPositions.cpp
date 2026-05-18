@@ -60,69 +60,69 @@ std::vector<double> camDistortion;
 float camFocalLen;
 
 //(*IdInit(CFormChangeSensorPositions)
-const long CFormChangeSensorPositions::ID_RADIOBUTTON1 = wxNewId();
-const long CFormChangeSensorPositions::ID_RADIOBUTTON2 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT27 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL16 = wxNewId();
-const long CFormChangeSensorPositions::ID_BUTTON9 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT28 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL17 = wxNewId();
-const long CFormChangeSensorPositions::ID_BUTTON11 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICLINE1 = wxNewId();
-const long CFormChangeSensorPositions::ID_RADIOBOX1 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT15 = wxNewId();
-const long CFormChangeSensorPositions::ID_SPINCTRL1 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT30 = wxNewId();
-const long CFormChangeSensorPositions::ID_COMBOBOX1 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT16 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT1 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT2 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT3 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL1 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT4 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT5 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL2 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT6 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT7 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL3 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT8 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT9 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL4 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT10 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT11 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL5 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT12 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT13 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL6 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT14 = wxNewId();
-const long CFormChangeSensorPositions::ID_CHECKBOX1 = wxNewId();
-const long CFormChangeSensorPositions::ID_BUTTON3 = wxNewId();
-const long CFormChangeSensorPositions::ID_BUTTON1 = wxNewId();
-const long CFormChangeSensorPositions::ID_PANEL1 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT17 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT18 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL7 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT19 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL8 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT20 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL9 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT21 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL10 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT23 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL12 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT24 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL13 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT25 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL14 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT26 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL15 = wxNewId();
-const long CFormChangeSensorPositions::ID_STATICTEXT22 = wxNewId();
-const long CFormChangeSensorPositions::ID_TEXTCTRL11 = wxNewId();
-const long CFormChangeSensorPositions::ID_BUTTON4 = wxNewId();
-const long CFormChangeSensorPositions::ID_BUTTON5 = wxNewId();
-const long CFormChangeSensorPositions::ID_PANEL2 = wxNewId();
-const long CFormChangeSensorPositions::ID_NOTEBOOK1 = wxNewId();
-const long CFormChangeSensorPositions::ID_BUTTON2 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_RADIOBUTTON1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_RADIOBUTTON2 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT27 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL16 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_BUTTON9 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT28 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL17 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_BUTTON11 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICLINE1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_RADIOBOX1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT15 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_SPINCTRL1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT30 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_COMBOBOX1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT16 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT3 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT4 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT5 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT6 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT7 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT8 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT9 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT10 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT11 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL5 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT12 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT13 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL6 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT14 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_BUTTON3 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_BUTTON1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_PANEL1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT17 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT18 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL7 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT19 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL8 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT20 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL9 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT21 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL10 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT23 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL12 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT24 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL13 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT25 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL14 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT26 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL15 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_STATICTEXT22 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_TEXTCTRL11 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_BUTTON4 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_BUTTON5 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_PANEL2 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID CFormChangeSensorPositions::ID_BUTTON2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CFormChangeSensorPositions, wxDialog)
@@ -526,9 +526,12 @@ CFormChangeSensorPositions::~CFormChangeSensorPositions()
   //*)
 }
 
-void CFormChangeSensorPositions::OnbtnCancelClick(wxCommandEvent& event) { Close(); }
+void CFormChangeSensorPositions::OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event)
+{
+  Close();
+}
 
-void CFormChangeSensorPositions::OnrbLoadedSelect(wxCommandEvent& event)
+void CFormChangeSensorPositions::OnrbLoadedSelect([[maybe_unused]] wxCommandEvent& event)
 {
   btnPickInput->Disable();
   btnPickOut->Disable();
@@ -536,7 +539,7 @@ void CFormChangeSensorPositions::OnrbLoadedSelect(wxCommandEvent& event)
   txtInputFile->Disable();
 }
 
-void CFormChangeSensorPositions::OnrbFileSelect(wxCommandEvent& event)
+void CFormChangeSensorPositions::OnrbFileSelect([[maybe_unused]] wxCommandEvent& event)
 {
   btnPickInput->Enable();
   btnPickOut->Enable();
@@ -544,7 +547,7 @@ void CFormChangeSensorPositions::OnrbFileSelect(wxCommandEvent& event)
   txtInputFile->Enable();
 }
 
-void CFormChangeSensorPositions::OnbtnPickInputClick(wxCommandEvent& event)
+void CFormChangeSensorPositions::OnbtnPickInputClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -570,7 +573,7 @@ void CFormChangeSensorPositions::OnbtnPickInputClick(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CFormChangeSensorPositions::OnbtnPickOutClick(wxCommandEvent& event)
+void CFormChangeSensorPositions::OnbtnPickOutClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -835,7 +838,7 @@ void exec_setPoseByLabel(
   }
 }
 
-void CFormChangeSensorPositions::OnbtnOKClick(wxCommandEvent& event)
+void CFormChangeSensorPositions::OnbtnOKClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -890,7 +893,7 @@ void exec_getCurrentPoseByLabel(
   }
 }
 
-void CFormChangeSensorPositions::OnbtnGetCurPoseClick1(wxCommandEvent& event)
+void CFormChangeSensorPositions::OnbtnGetCurPoseClick1([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -962,7 +965,7 @@ void exec_getCurrentCamCfgByLabel(
   }
 }
 
-void CFormChangeSensorPositions::OnbtnGetCurCamModelClick(wxCommandEvent& event)
+void CFormChangeSensorPositions::OnbtnGetCurCamModelClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1038,7 +1041,7 @@ void exec_setCurrentCamCfgByLabel(
   }
 }
 
-void CFormChangeSensorPositions::OnbtnApplyCameraParamsClick(wxCommandEvent& event)
+void CFormChangeSensorPositions::OnbtnApplyCameraParamsClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1075,7 +1078,7 @@ void CFormChangeSensorPositions::OnbtnApplyCameraParamsClick(wxCommandEvent& eve
   WX_END_TRY
 }
 
-void CFormChangeSensorPositions::OnrbApplySelect(wxCommandEvent& event)
+void CFormChangeSensorPositions::OnrbApplySelect([[maybe_unused]] wxCommandEvent& event)
 {
   if (rbApply->GetSelection() == 0)
   {

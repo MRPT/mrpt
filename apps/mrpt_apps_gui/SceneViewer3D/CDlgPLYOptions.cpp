@@ -20,21 +20,21 @@
 //*)
 
 //(*IdInit(CDlgPLYOptions)
-const long CDlgPLYOptions::ID_CHECKBOX1 = wxNewId();
-const long CDlgPLYOptions::ID_CHECKBOX2 = wxNewId();
-const long CDlgPLYOptions::ID_STATICTEXT1 = wxNewId();
-const long CDlgPLYOptions::ID_CHOICE1 = wxNewId();
-const long CDlgPLYOptions::ID_STATICTEXT2 = wxNewId();
-const long CDlgPLYOptions::ID_TEXTCTRL1 = wxNewId();
-const long CDlgPLYOptions::ID_STATICTEXT3 = wxNewId();
-const long CDlgPLYOptions::ID_TEXTCTRL2 = wxNewId();
-const long CDlgPLYOptions::ID_STATICTEXT4 = wxNewId();
-const long CDlgPLYOptions::ID_TEXTCTRL3 = wxNewId();
-const long CDlgPLYOptions::ID_RADIOBOX2 = wxNewId();
-const long CDlgPLYOptions::ID_RADIOBOX1 = wxNewId();
-const long CDlgPLYOptions::ID_PANEL1 = wxNewId();
-const long CDlgPLYOptions::ID_BUTTON1 = wxNewId();
-const long CDlgPLYOptions::ID_BUTTON2 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_CHECKBOX2 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_CHOICE1 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_STATICTEXT3 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_STATICTEXT4 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_RADIOBOX2 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_RADIOBOX1 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_PANEL1 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_BUTTON1 = wxNewId();
+const wxWindowID CDlgPLYOptions::ID_BUTTON2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CDlgPLYOptions, wxDialog)
@@ -176,10 +176,13 @@ CDlgPLYOptions::~CDlgPLYOptions()
   //*)
 }
 
-void CDlgPLYOptions::OnbtnCancelClick(wxCommandEvent& event) { EndModal(wxID_CANCEL); }
+void CDlgPLYOptions::OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event)
+{
+  EndModal(wxID_CANCEL);
+}
 
-void CDlgPLYOptions::OnbtnOKClick(wxCommandEvent& event) { EndModal(wxID_OK); }
-void CDlgPLYOptions::OnrbClassSelect(wxCommandEvent& event)
+void CDlgPLYOptions::OnbtnOKClick([[maybe_unused]] wxCommandEvent& event) { EndModal(wxID_OK); }
+void CDlgPLYOptions::OnrbClassSelect([[maybe_unused]] wxCommandEvent& event)
 {
   rbIntFromXYZ->Enable(rbClass->GetSelection() == 0);
 }

@@ -34,38 +34,38 @@
 #include <mrpt/gui/WxUtils.h>
 
 //(*IdInit(CFormPlayVideo)
-const long CFormPlayVideo::ID_RADIOBUTTON1 = wxNewId();
-const long CFormPlayVideo::ID_RADIOBUTTON2 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT22 = wxNewId();
-const long CFormPlayVideo::ID_TEXTCTRL11 = wxNewId();
-const long CFormPlayVideo::ID_BUTTON4 = wxNewId();
-const long CFormPlayVideo::ID_CHECKBOX1 = wxNewId();
-const long CFormPlayVideo::ID_CHECKBOX2 = wxNewId();
-const long CFormPlayVideo::ID_CHECKBOX3 = wxNewId();
-const long CFormPlayVideo::ID_CHECKBOX4 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT8 = wxNewId();
-const long CFormPlayVideo::ID_SPINCTRL2 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT6 = wxNewId();
-const long CFormPlayVideo::ID_COMBOBOX1 = wxNewId();
-const long CFormPlayVideo::ID_BUTTON2 = wxNewId();
-const long CFormPlayVideo::ID_BUTTON3 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT7 = wxNewId();
-const long CFormPlayVideo::ID_TEXTCTRL2 = wxNewId();
-const long CFormPlayVideo::ID_BUTTON5 = wxNewId();
-const long CFormPlayVideo::ID_SLIDER1 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT1 = wxNewId();
-const long CFormPlayVideo::ID_SPINCTRL1 = wxNewId();
-const long CFormPlayVideo::ID_BUTTON1 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT3 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT5 = wxNewId();
-const long CFormPlayVideo::ID_BITMAPBUTTON1 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT4 = wxNewId();
-const long CFormPlayVideo::ID_BITMAPBUTTON2 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT2 = wxNewId();
-const long CFormPlayVideo::ID_BITMAPBUTTON3 = wxNewId();
-const long CFormPlayVideo::ID_PANEL3 = wxNewId();
-const long CFormPlayVideo::ID_PANEL4 = wxNewId();
-const long CFormPlayVideo::ID_PANEL2 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_RADIOBUTTON1 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_RADIOBUTTON2 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_STATICTEXT22 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_TEXTCTRL11 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_BUTTON4 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_CHECKBOX2 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_CHECKBOX3 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_CHECKBOX4 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_STATICTEXT8 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_SPINCTRL2 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_STATICTEXT6 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_COMBOBOX1 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_BUTTON2 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_BUTTON3 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_STATICTEXT7 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_BUTTON5 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_SLIDER1 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_SPINCTRL1 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_BUTTON1 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_STATICTEXT3 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_STATICTEXT5 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_BITMAPBUTTON1 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_STATICTEXT4 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_BITMAPBUTTON2 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_BITMAPBUTTON3 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_PANEL3 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_PANEL4 = wxNewId();
+const wxWindowID CFormPlayVideo::ID_PANEL2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CFormPlayVideo, wxDialog)
@@ -348,7 +348,7 @@ CFormPlayVideo::~CFormPlayVideo()
 }
 
 // Pick a file:
-void CFormPlayVideo::OnbtnPickClick(wxCommandEvent& event)
+void CFormPlayVideo::OnbtnPickClick([[maybe_unused]] wxCommandEvent& event)
 {
   wxString caption = wxT("Choose a file to open");
   wxString wildcard =
@@ -544,7 +544,7 @@ void CFormPlayVideo::OnInit(wxInitDialogEvent& event)
   }  // end there is loaded rawlog
 }
 
-void CFormPlayVideo::OnrbLoadedSelect(wxCommandEvent& event)
+void CFormPlayVideo::OnrbLoadedSelect([[maybe_unused]] wxCommandEvent& event)
 {
   btnPickInput->Disable();
   edFile->Disable();
@@ -555,7 +555,7 @@ void CFormPlayVideo::OnrbLoadedSelect(wxCommandEvent& event)
   edIndex->Enable();
 }
 
-void CFormPlayVideo::OnrbFileSelect(wxCommandEvent& event)
+void CFormPlayVideo::OnrbFileSelect([[maybe_unused]] wxCommandEvent& event)
 {
   btnPickInput->Enable();
   edFile->Enable();
@@ -563,7 +563,7 @@ void CFormPlayVideo::OnrbFileSelect(wxCommandEvent& event)
   edIndex->Disable();
 }
 
-void CFormPlayVideo::OnbtnCloseClick(wxCommandEvent& event)
+void CFormPlayVideo::OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event)
 {
   m_nowPlaying = false;
   Close();

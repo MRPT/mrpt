@@ -273,8 +273,8 @@ BEGIN_EVENT_TABLE(C3DWindowDialog, wxFrame)
 
 END_EVENT_TABLE()
 
-const long C3DWindowDialog::ID_MENUITEM1 = wxNewId();
-const long C3DWindowDialog::ID_MENUITEM2 = wxNewId();
+const wxWindowID C3DWindowDialog::ID_MENUITEM1 = wxNewId();
+const wxWindowID C3DWindowDialog::ID_MENUITEM2 = wxNewId();
 
 C3DWindowDialog::C3DWindowDialog(
     CDisplayWindow3D* win3D,

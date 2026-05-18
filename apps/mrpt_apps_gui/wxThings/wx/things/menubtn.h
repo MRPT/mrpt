@@ -157,7 +157,7 @@ class WXDLLIMPEXP_THINGS wxMenuButton : public wxControl
   void SetToolTip(wxToolTip* tip);
 
  protected:
-  void OnButton(wxCommandEvent& event);
+  void OnButton([[maybe_unused]] wxCommandEvent& event);
 
   virtual void DoSetSize(int x, int y, int width, int height, int sizeFlags = wxSIZE_AUTO);
 
@@ -165,7 +165,7 @@ class WXDLLIMPEXP_THINGS wxMenuButton : public wxControl
 
 // FIXME! - in MSW the radio items don't check themselves
 #ifdef __WXMSW__
-  void OnMenu(wxCommandEvent& event);
+  void OnMenu([[maybe_unused]] wxCommandEvent& event);
 #endif
 
   wxCustomButton* m_labelButton;

@@ -32,22 +32,22 @@ class CAboutBox : public wxDialog
   ~CAboutBox() override;
 
   //(*Identifiers(CAboutBox)
-  static const long ID_STATICTEXT1;
-  static const long ID_STATICTEXT2;
-  static const long ID_STATICBITMAP1;
-  static const long ID_STATICLINE1;
-  static const long ID_TEXTCTRL4;
-  static const long ID_TEXTCTRL1;
-  static const long ID_TEXTCTRL2;
-  static const long ID_TEXTCTRL3;
-  static const long ID_NOTEBOOK1;
-  static const long ID_BUTTON1;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_STATICBITMAP1;
+  static const wxWindowID ID_STATICLINE1;
+  static const wxWindowID ID_TEXTCTRL4;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_NOTEBOOK1;
+  static const wxWindowID ID_BUTTON1;
   //*)
 
  protected:
   //(*Handlers(CAboutBox)
   void OnInit(wxInitDialogEvent& event);
-  void OnButton1Click(wxCommandEvent& event);
+  void OnButton1Click([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   //(*Declarations(CAboutBox)

@@ -73,46 +73,46 @@ class CScanMatching : public wxDialog
 
  protected:
   //(*Identifiers(CScanMatching)
-  static const long ID_STATICTEXT2;
-  static const long ID_BITMAPBUTTON1;
-  static const long ID_STATICTEXT3;
-  static const long ID_TEXTCTRL2;
-  static const long ID_STATICTEXT4;
-  static const long ID_TEXTCTRL3;
-  static const long ID_TEXTCTRL6;
-  static const long ID_STATICTEXT5;
-  static const long ID_RADIOBUTTON1;
-  static const long ID_RADIOBUTTON2;
-  static const long ID_TEXTCTRL4;
-  static const long ID_TEXTCTRL9;
-  static const long ID_NOTEBOOK1;
-  static const long ID_TEXTCTRL7;
-  static const long ID_PANEL1;
-  static const long ID_STATICTEXT6;
-  static const long ID_XY_GLCANVAS;
-  static const long ID_BUTTON1;
-  static const long ID_CHECKBOX1;
-  static const long ID_BUTTON2;
-  static const long ID_STATICTEXT1;
-  static const long ID_GAUGE1;
-  static const long ID_PANEL5;
-  static const long ID_PANEL3;
-  static const long ID_TEXTCTRL1;
-  static const long ID_PANEL4;
-  static const long ID_SPLITTERWINDOW2;
-  static const long ID_PANEL2;
-  static const long ID_SPLITTERWINDOW1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_BITMAPBUTTON1;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_TEXTCTRL6;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_RADIOBUTTON1;
+  static const wxWindowID ID_RADIOBUTTON2;
+  static const wxWindowID ID_TEXTCTRL4;
+  static const wxWindowID ID_TEXTCTRL9;
+  static const wxWindowID ID_NOTEBOOK1;
+  static const wxWindowID ID_TEXTCTRL7;
+  static const wxWindowID ID_PANEL1;
+  static const wxWindowID ID_STATICTEXT6;
+  static const wxWindowID ID_XY_GLCANVAS;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_GAUGE1;
+  static const wxWindowID ID_PANEL5;
+  static const wxWindowID ID_PANEL3;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_PANEL4;
+  static const wxWindowID ID_SPLITTERWINDOW2;
+  static const wxWindowID ID_PANEL2;
+  static const wxWindowID ID_SPLITTERWINDOW1;
   //*)
 
  private:
   //(*Handlers(CScanMatching)
   void OnInit(wxInitDialogEvent& event);
-  void OnbtnICPClick(wxCommandEvent& event);
-  void OncbAnimateClick(wxCommandEvent& event);
-  void OChangeSelectedMapType(wxCommandEvent& event);
+  void OnbtnICPClick([[maybe_unused]] wxCommandEvent& event);
+  void OncbAnimateClick([[maybe_unused]] wxCommandEvent& event);
+  void OChangeSelectedMapType([[maybe_unused]] wxCommandEvent& event);
   void OnNotebook1PageChanging(wxNotebookEvent& event);
-  void OnbtnCloseClick(wxCommandEvent& event);
-  void OnbtnHelpClick(wxCommandEvent& event);
+  void OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnHelpClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   DECLARE_EVENT_TABLE()

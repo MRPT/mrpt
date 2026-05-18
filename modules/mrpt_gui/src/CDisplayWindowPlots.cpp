@@ -39,10 +39,10 @@ BEGIN_EVENT_TABLE(CWindowDialogPlots, wxFrame)
 
 END_EVENT_TABLE()
 
-const long CWindowDialogPlots::ID_PLOT = wxNewId();
-const long CWindowDialogPlots::ID_MENU_PRINT = wxNewId();
-const long ID_MENUITEM1 = wxNewId();
-const long ID_MENUITEM2 = wxNewId();
+const wxWindowID CWindowDialogPlots::ID_PLOT = wxNewId();
+const wxWindowID CWindowDialogPlots::ID_MENU_PRINT = wxNewId();
+const wxWindowID ID_MENUITEM1 = wxNewId();
+const wxWindowID ID_MENUITEM2 = wxNewId();
 
 CWindowDialogPlots::CWindowDialogPlots(
     CDisplayWindowPlots* winPlots,
@@ -234,11 +234,14 @@ void CWindowDialogPlots::OnMouseDown(wxMouseEvent& event)
 }
 
 // Menu: Close
-void CWindowDialogPlots::OnMenuClose(wxCommandEvent& event) { Close(); }
+void CWindowDialogPlots::OnMenuClose([[maybe_unused]] wxCommandEvent& event) { Close(); }
 // Menu: Print
-void CWindowDialogPlots::OnMenuPrint(wxCommandEvent& event) { m_plot->ShowPrintDialog(); }
+void CWindowDialogPlots::OnMenuPrint([[maybe_unused]] wxCommandEvent& event)
+{
+  m_plot->ShowPrintDialog();
+}
 // Menu: About
-void CWindowDialogPlots::OnMenuAbout(wxCommandEvent& event)
+void CWindowDialogPlots::OnMenuAbout([[maybe_unused]] wxCommandEvent& event)
 {
   ::wxMessageBox(
       _("Plot viewer\n Class gui::CDisplayWindowPlots\n MRPT C++ & "

@@ -79,7 +79,7 @@ void goToTheLastToken(char*& str)
   if (str[0] == ' ') str++;
 }
 
-void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
+void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -233,7 +233,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 }
 
 // Import a sequence of images as a new rawlog
-void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
+void xRawLogViewerFrame::OnImportSequenceOfImages([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -371,7 +371,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 }
 
 // Export rawlog as a MOOS' alog file:
-void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuExportALOG([[maybe_unused]] wxCommandEvent& event)
 {
   wxString caption = wxT("Export as ALOG...");
   wxString wildcard = wxT("ALOG files (*.alog)|*.alog|All files (*.*)|*.*");
@@ -525,7 +525,7 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
   }
 }
 
-void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
+void xRawLogViewerFrame::OnImportRTL([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -730,7 +730,7 @@ void parseGeneralVector(const std::string& str, size_t idx, vector<float>& outVe
   } while (idx != str.npos);
 }
 
-void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuImportALOG([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1174,7 +1174,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
+void xRawLogViewerFrame::OnGenGasTxt([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1284,7 +1284,7 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnGenWifiTxt(wxCommandEvent& event)
+void xRawLogViewerFrame::OnGenWifiTxt([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1395,7 +1395,7 @@ void xRawLogViewerFrame::OnGenWifiTxt(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnGenRFIDTxt(wxCommandEvent& event)
+void xRawLogViewerFrame::OnGenRFIDTxt([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1509,7 +1509,7 @@ void xRawLogViewerFrame::OnGenRFIDTxt(wxCommandEvent& event)
 // Datasets and docs from these nice guys:
 //  http://www.informatik.uni-bremen.de/agebv/en/DlrSpatialCognitionDataSet
 // --------------------------------------------------------------------------------
-void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1845,7 +1845,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
+void xRawLogViewerFrame::OnGenerateIMUTextFile([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1965,7 +1965,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
+void xRawLogViewerFrame::OnGenerateTextFileRangeBearing([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 

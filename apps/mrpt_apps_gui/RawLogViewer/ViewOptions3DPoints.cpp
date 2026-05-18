@@ -20,28 +20,28 @@
 //*)
 
 //(*IdInit(ViewOptions3DPoints)
-const long ViewOptions3DPoints::ID_CHECKBOX4 = wxNewId();
-const long ViewOptions3DPoints::ID_STATICTEXT1 = wxNewId();
-const long ViewOptions3DPoints::ID_TEXTCTRL1 = wxNewId();
-const long ViewOptions3DPoints::ID_STATICTEXT2 = wxNewId();
-const long ViewOptions3DPoints::ID_TEXTCTRL2 = wxNewId();
-const long ViewOptions3DPoints::ID_STATICTEXT3 = wxNewId();
-const long ViewOptions3DPoints::ID_TEXTCTRL3 = wxNewId();
-const long ViewOptions3DPoints::ID_BUTTON1 = wxNewId();
-const long ViewOptions3DPoints::ID_CHECKBOX1 = wxNewId();
-const long ViewOptions3DPoints::ID_RADIOBOX1 = wxNewId();
-const long ViewOptions3DPoints::ID_RADIOBOX2 = wxNewId();
-const long ViewOptions3DPoints::ID_CHECKBOX2 = wxNewId();
-const long ViewOptions3DPoints::ID_STATICTEXT4 = wxNewId();
-const long ViewOptions3DPoints::ID_SPINCTRL1 = wxNewId();
-const long ViewOptions3DPoints::ID_CHECKBOX3 = wxNewId();
-const long ViewOptions3DPoints::ID_CHECKBOX5 = wxNewId();
-const long ViewOptions3DPoints::ID_STATICTEXT5 = wxNewId();
-const long ViewOptions3DPoints::ID_TEXTCTRL4 = wxNewId();
-const long ViewOptions3DPoints::ID_CHECKBOX6 = wxNewId();
-const long ViewOptions3DPoints::ID_COLOURPICKERCTRL1 = wxNewId();
-const long ViewOptions3DPoints::ID_CHECKBOX7 = wxNewId();
-const long ViewOptions3DPoints::ID_COLOURPICKERCTRL2 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_CHECKBOX4 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_STATICTEXT1 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_STATICTEXT2 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_STATICTEXT3 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_BUTTON1 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_CHECKBOX1 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_RADIOBOX1 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_RADIOBOX2 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_CHECKBOX2 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_STATICTEXT4 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_SPINCTRL1 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_CHECKBOX3 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_CHECKBOX5 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_STATICTEXT5 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_CHECKBOX6 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_COLOURPICKERCTRL1 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_CHECKBOX7 = wxNewId();
+const wxWindowID ViewOptions3DPoints::ID_COLOURPICKERCTRL2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(ViewOptions3DPoints, wxPanel)

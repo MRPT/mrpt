@@ -368,9 +368,9 @@ class CWindowDialog : public wxFrame
 
  private:
   void OnClose(wxCloseEvent& event);
-  void OnMenuClose(wxCommandEvent& event);
-  void OnMenuAbout(wxCommandEvent& event);
-  void OnMenuSave(wxCommandEvent& event);
+  void OnMenuClose([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuAbout([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuSave([[maybe_unused]] wxCommandEvent& event);
   void OnChar(wxKeyEvent& event);
   void OnKeyDown(wxKeyEvent& event);
   void OnResize(wxSizeEvent& event);
@@ -399,13 +399,13 @@ class C3DWindowDialog : public wxFrame
 
  private:
   void OnClose(wxCloseEvent& event);
-  void OnMenuClose(wxCommandEvent& event);
-  void OnMenuAbout(wxCommandEvent& event);
+  void OnMenuClose([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuAbout([[maybe_unused]] wxCommandEvent& event);
   void OnChar(wxKeyEvent& event);
   void OnResize(wxSizeEvent& event);
 
-  static const long ID_MENUITEM1;
-  static const long ID_MENUITEM2;
+  static const wxWindowID ID_MENUITEM1;
+  static const wxWindowID ID_MENUITEM2;
 
   DECLARE_EVENT_TABLE()
 };
@@ -426,8 +426,8 @@ class CWindowDialogPlots : public wxFrame
   WxSubsystem::CWXMainFrame* m_mainFrame{nullptr};
 
   mpWindow* m_plot{nullptr};
-  static const long ID_PLOT;
-  static const long ID_MENU_PRINT;
+  static const wxWindowID ID_PLOT;
+  static const wxWindowID ID_MENU_PRINT;
   /** True until the first user submenu is inserted (separator not yet added). */
   bool m_firstSubmenu{true};
   /** Maps internal wxIDs to user-defined IDs for submenus. */
@@ -460,9 +460,9 @@ class CWindowDialogPlots : public wxFrame
 
  private:
   void OnClose(wxCloseEvent& event);
-  void OnMenuPrint(wxCommandEvent& event);
-  void OnMenuClose(wxCommandEvent& event);
-  void OnMenuAbout(wxCommandEvent& event);
+  void OnMenuPrint([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuClose([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuAbout([[maybe_unused]] wxCommandEvent& event);
   void OnChar(wxKeyEvent& event);
   void OnResize(wxSizeEvent& event);
   void OnMouseDown(wxMouseEvent& event);

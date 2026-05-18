@@ -55,81 +55,81 @@ using namespace std;
 CActionRobotMovement2D::TMotionModelOptions options;
 
 //(*IdInit(CFormMotionModel)
-const long CFormMotionModel::ID_STATICTEXT1 = wxNewId();
-const long CFormMotionModel::ID_BUTTON1 = wxNewId();
-const long CFormMotionModel::ID_HYPERLINKCTRL1 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT4 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL1 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT2 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT3 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL2 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT5 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT6 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL3 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT7 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT26 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL15 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT27 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT8 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL4 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT9 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT10 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL5 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT11 = wxNewId();
-const long CFormMotionModel::ID_BUTTON10 = wxNewId();
-const long CFormMotionModel::ID_BUTTON2 = wxNewId();
-const long CFormMotionModel::ID_BUTTON8 = wxNewId();
-const long CFormMotionModel::ID_PANEL2 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT12 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL6 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT13 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT14 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL7 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT15 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT16 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL8 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT17 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT18 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL9 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT19 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT20 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL10 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT21 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT29 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL17 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT30 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT31 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL18 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT32 = wxNewId();
-const long CFormMotionModel::ID_BUTTON11 = wxNewId();
-const long CFormMotionModel::ID_BUTTON3 = wxNewId();
-const long CFormMotionModel::ID_BUTTON9 = wxNewId();
-const long CFormMotionModel::ID_PANEL3 = wxNewId();
-const long CFormMotionModel::ID_NOTEBOOK1 = wxNewId();
-const long CFormMotionModel::ID_RADIOBUTTON1 = wxNewId();
-const long CFormMotionModel::ID_BUTTON6 = wxNewId();
-const long CFormMotionModel::ID_CHECKBOX1 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT34 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL19 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT33 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL20 = wxNewId();
-const long CFormMotionModel::ID_RADIOBUTTON2 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT22 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL11 = wxNewId();
-const long CFormMotionModel::ID_BUTTON4 = wxNewId();
-const long CFormMotionModel::ID_BUTTON7 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT23 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL12 = wxNewId();
-const long CFormMotionModel::ID_BUTTON5 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT25 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL13 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL14 = wxNewId();
-const long CFormMotionModel::ID_TEXTCTRL16 = wxNewId();
-const long CFormMotionModel::ID_PANEL1 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT24 = wxNewId();
-const long CFormMotionModel::ID_CUSTOM1 = wxNewId();
-const long CFormMotionModel::ID_STATICTEXT28 = wxNewId();
-const long CFormMotionModel::ID_CUSTOM2 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON1 = wxNewId();
+const wxWindowID CFormMotionModel::ID_HYPERLINKCTRL1 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT4 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT3 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT5 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT6 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT7 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT26 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL15 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT27 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT8 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT9 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT10 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL5 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT11 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON10 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON2 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON8 = wxNewId();
+const wxWindowID CFormMotionModel::ID_PANEL2 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT12 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL6 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT13 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT14 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL7 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT15 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT16 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL8 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT17 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT18 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL9 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT19 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT20 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL10 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT21 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT29 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL17 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT30 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT31 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL18 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT32 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON11 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON3 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON9 = wxNewId();
+const wxWindowID CFormMotionModel::ID_PANEL3 = wxNewId();
+const wxWindowID CFormMotionModel::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID CFormMotionModel::ID_RADIOBUTTON1 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON6 = wxNewId();
+const wxWindowID CFormMotionModel::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT34 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL19 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT33 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL20 = wxNewId();
+const wxWindowID CFormMotionModel::ID_RADIOBUTTON2 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT22 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL11 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON4 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON7 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT23 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL12 = wxNewId();
+const wxWindowID CFormMotionModel::ID_BUTTON5 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT25 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL13 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL14 = wxNewId();
+const wxWindowID CFormMotionModel::ID_TEXTCTRL16 = wxNewId();
+const wxWindowID CFormMotionModel::ID_PANEL1 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT24 = wxNewId();
+const wxWindowID CFormMotionModel::ID_CUSTOM1 = wxNewId();
+const wxWindowID CFormMotionModel::ID_STATICTEXT28 = wxNewId();
+const wxWindowID CFormMotionModel::ID_CUSTOM2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CFormMotionModel, wxDialog)
@@ -582,7 +582,7 @@ CFormMotionModel::~CFormMotionModel()
   //*)
 }
 
-void CFormMotionModel::OnbtnOkClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnOkClick([[maybe_unused]] wxCommandEvent& event)
 {
   // Do nothing
   EndModal(0);
@@ -791,7 +791,7 @@ void CFormMotionModel::applyToRawlogFile()
   WX_END_TRY
 }
 
-void CFormMotionModel::OnbtnGaussOKClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnGaussOKClick([[maybe_unused]] wxCommandEvent& event)
 {
   // Process the data:
   loadFromGaussian();
@@ -804,7 +804,7 @@ void CFormMotionModel::OnbtnGaussOKClick(wxCommandEvent& event)
   //    EndModal(0);
 }
 
-void CFormMotionModel::OnbtnThrunOkClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnThrunOkClick([[maybe_unused]] wxCommandEvent& event)
 {
   // Process the data:
   loadFromThrun();
@@ -841,7 +841,7 @@ void CFormMotionModel::OnInit(wxInitDialogEvent& event)
   }  // end there is loaded rawlog
 }
 
-void CFormMotionModel::OnrbFileSelect(wxCommandEvent& event)
+void CFormMotionModel::OnrbFileSelect([[maybe_unused]] wxCommandEvent& event)
 {
   btnGetFromCurrent->Disable();
 
@@ -856,7 +856,7 @@ void CFormMotionModel::OnrbFileSelect(wxCommandEvent& event)
   edRangeTo->Disable();
 }
 
-void CFormMotionModel::OnrbLoadedSelect(wxCommandEvent& event)
+void CFormMotionModel::OnrbLoadedSelect([[maybe_unused]] wxCommandEvent& event)
 {
   btnGetFromCurrent->Enable();
 
@@ -871,7 +871,7 @@ void CFormMotionModel::OnrbLoadedSelect(wxCommandEvent& event)
   txtInputFile->Disable();
 }
 
-void CFormMotionModel::OnbtnGetFromCurrentClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnGetFromCurrentClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -999,19 +999,19 @@ void CFormMotionModel::drawRandomSamples()
 }
 
 // Simulate Gauss:
-void CFormMotionModel::OnbtnSimulateClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnSimulateClick([[maybe_unused]] wxCommandEvent& event)
 {
   loadFromGaussian();
   drawRandomSamples();
 }
 
-void CFormMotionModel::OnbtnSimulateThrunClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnSimulateThrunClick([[maybe_unused]] wxCommandEvent& event)
 {
   loadFromThrun();
   drawRandomSamples();
 }
 
-void CFormMotionModel::OnbtnResetGaussClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnResetGaussClick([[maybe_unused]] wxCommandEvent& event)
 {
   CActionRobotMovement2D::TMotionModelOptions opt;
   opt.modelSelection = CActionRobotMovement2D::mmGaussian;
@@ -1019,7 +1019,7 @@ void CFormMotionModel::OnbtnResetGaussClick(wxCommandEvent& event)
   showOptionsInDialog();
 }
 
-void CFormMotionModel::OnButton1Click(wxCommandEvent& event)
+void CFormMotionModel::OnButton1Click([[maybe_unused]] wxCommandEvent& event)
 {
   CActionRobotMovement2D::TMotionModelOptions opt;
   opt.modelSelection = CActionRobotMovement2D::mmThrun;
@@ -1027,7 +1027,7 @@ void CFormMotionModel::OnButton1Click(wxCommandEvent& event)
   showOptionsInDialog();
 }
 
-void CFormMotionModel::OnbtnResetThrunClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnResetThrunClick([[maybe_unused]] wxCommandEvent& event)
 {
   CActionRobotMovement2D::TMotionModelOptions opt;
   opt.modelSelection = CActionRobotMovement2D::mmThrun;
@@ -1036,7 +1036,7 @@ void CFormMotionModel::OnbtnResetThrunClick(wxCommandEvent& event)
 }
 
 // Select input file:
-void CFormMotionModel::OnbtnPickInputClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnPickInputClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1063,7 +1063,7 @@ void CFormMotionModel::OnbtnPickInputClick(wxCommandEvent& event)
 }
 
 // Select output file:
-void CFormMotionModel::OnbtnPickOutClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnPickOutClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1090,7 +1090,7 @@ void CFormMotionModel::OnbtnPickOutClick(wxCommandEvent& event)
 }
 
 // Get from file:
-void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
+void CFormMotionModel::OnbtnGetFromFileClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1157,7 +1157,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CFormMotionModel::OncbAllClick(wxCommandEvent& event)
+void CFormMotionModel::OncbAllClick([[maybe_unused]] wxCommandEvent& event)
 {
   edRangeFrom->Enable(!cbAll->GetValue());
   edRangeTo->Enable(!cbAll->GetValue());

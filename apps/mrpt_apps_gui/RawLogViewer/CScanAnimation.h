@@ -65,45 +65,45 @@ class CScanAnimation : public wxDialog
 
  protected:
   //(*Identifiers(CScanAnimation)
-  static const long ID_LIST_OBS_LABELS;
-  static const long ID_RADIOBUTTON2;
-  static const long ID_STATICTEXT4;
-  static const long ID_STATICTEXT22;
-  static const long ID_TEXTCTRL11;
-  static const long ID_BUTTON5;
-  static const long ID_BUTTON1;
-  static const long ID_BUTTON2;
-  static const long ID_SPINCTRL2;
-  static const long ID_CHECKBOX1;
-  static const long ID_BUTTON3;
-  static const long ID_XY_GLCANVAS;
-  static const long ID_SLIDER1;
-  static const long ID_STATICTEXT1;
-  static const long ID_SPINCTRL1;
-  static const long ID_BUTTON4;
-  static const long ID_STATICTEXT2;
-  static const long ID_CHECKBOX2;
-  static const long ID_STATICTEXT3;
-  static const long ID_BUTTON6;
-  static const long ID_BUTTON7;
+  static const wxWindowID ID_LIST_OBS_LABELS;
+  static const wxWindowID ID_RADIOBUTTON2;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_STATICTEXT22;
+  static const wxWindowID ID_TEXTCTRL11;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_SPINCTRL2;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_XY_GLCANVAS;
+  static const wxWindowID ID_SLIDER1;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_SPINCTRL1;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_CHECKBOX2;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_BUTTON6;
+  static const wxWindowID ID_BUTTON7;
   //*)
-  static const long ID_BUTTON_SAVE_SCENE;
+  static const wxWindowID ID_BUTTON_SAVE_SCENE;
 
  private:
   //(*Handlers(CScanAnimation)
-  void OnbtnPlayClick(wxCommandEvent& event);
-  void OnbtnStopClick(wxCommandEvent& event);
-  void OnbtnCloseClick(wxCommandEvent& event);
-  void OnslPosCmdScrollChanged(wxCommandEvent& event);
-  void OnbtnJumpClick(wxCommandEvent& event);
+  void OnbtnPlayClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStopClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event);
+  void OnslPosCmdScrollChanged([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnJumpClick([[maybe_unused]] wxCommandEvent& event);
   void OnslPosCmdScroll(wxScrollEvent& event);
-  void OnbtnPickInputClick(wxCommandEvent& event);
+  void OnbtnPickInputClick([[maybe_unused]] wxCommandEvent& event);
   void OnInit(wxInitDialogEvent& event);
-  void OncbViewOrthoClick(wxCommandEvent& event);
+  void OncbViewOrthoClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
-  void OnbtnVizOptions(wxCommandEvent& event);
-  void OnbtnSave3DScene(wxCommandEvent& event);
+  void OnbtnVizOptions([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSave3DScene([[maybe_unused]] wxCommandEvent& event);
 
   DECLARE_EVENT_TABLE()
 

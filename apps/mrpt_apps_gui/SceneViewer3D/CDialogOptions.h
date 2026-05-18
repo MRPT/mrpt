@@ -104,8 +104,8 @@ class CDialogOptions : public wxDialog
 
  private:
   //(*Handlers(CDialogOptions)
-  void OnbtnOkClick(wxCommandEvent& event);
-  void OnbtnCancelClick(wxCommandEvent& event);
+  void OnbtnOkClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   DECLARE_EVENT_TABLE()

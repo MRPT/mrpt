@@ -51,45 +51,45 @@ using namespace mrpt::io;
 using namespace std;
 
 //(*IdInit(CFormEdit)
-const long CFormEdit::ID_RADIOBUTTON1 = wxNewId();
-const long CFormEdit::ID_RADIOBUTTON2 = wxNewId();
-const long CFormEdit::ID_STATICTEXT22 = wxNewId();
-const long CFormEdit::ID_TEXTCTRL11 = wxNewId();
-const long CFormEdit::ID_BUTTON9 = wxNewId();
-const long CFormEdit::ID_STATICTEXT23 = wxNewId();
-const long CFormEdit::ID_TEXTCTRL12 = wxNewId();
-const long CFormEdit::ID_BUTTON11 = wxNewId();
-const long CFormEdit::ID_STATICTEXT1 = wxNewId();
-const long CFormEdit::ID_SLIDER1 = wxNewId();
-const long CFormEdit::ID_SPINCTRL1 = wxNewId();
-const long CFormEdit::ID_STATICTEXT3 = wxNewId();
-const long CFormEdit::ID_SLIDER2 = wxNewId();
-const long CFormEdit::ID_SPINCTRL2 = wxNewId();
-const long CFormEdit::ID_BUTTON1 = wxNewId();
-const long CFormEdit::ID_BUTTON2 = wxNewId();
-const long CFormEdit::ID_CHECKBOX1 = wxNewId();
-const long CFormEdit::ID_CHECKBOX2 = wxNewId();
-const long CFormEdit::ID_CHECKBOX3 = wxNewId();
-const long CFormEdit::ID_CHECKBOX4 = wxNewId();
-const long CFormEdit::ID_CHECKBOX5 = wxNewId();
-const long CFormEdit::ID_BUTTON4 = wxNewId();
-const long CFormEdit::ID_CHECKBOX6 = wxNewId();
-const long CFormEdit::ID_CHECKBOX7 = wxNewId();
-const long CFormEdit::ID_CHECKBOX8 = wxNewId();
-const long CFormEdit::ID_CHECKBOX9 = wxNewId();
-const long CFormEdit::ID_CHECKBOX10 = wxNewId();
-const long CFormEdit::ID_BUTTON5 = wxNewId();
-const long CFormEdit::ID_CHECKLISTBOX2 = wxNewId();
-const long CFormEdit::ID_BUTTON7 = wxNewId();
-const long CFormEdit::ID_BUTTON8 = wxNewId();
-const long CFormEdit::ID_CHECKLISTBOX1 = wxNewId();
-const long CFormEdit::ID_BUTTON10 = wxNewId();
-const long CFormEdit::ID_BUTTON12 = wxNewId();
-const long CFormEdit::ID_BUTTON13 = wxNewId();
-const long CFormEdit::ID_STATICTEXT2 = wxNewId();
-const long CFormEdit::ID_TEXTCTRL2 = wxNewId();
-const long CFormEdit::ID_BUTTON3 = wxNewId();
-const long CFormEdit::ID_BUTTON6 = wxNewId();
+const wxWindowID CFormEdit::ID_RADIOBUTTON1 = wxNewId();
+const wxWindowID CFormEdit::ID_RADIOBUTTON2 = wxNewId();
+const wxWindowID CFormEdit::ID_STATICTEXT22 = wxNewId();
+const wxWindowID CFormEdit::ID_TEXTCTRL11 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON9 = wxNewId();
+const wxWindowID CFormEdit::ID_STATICTEXT23 = wxNewId();
+const wxWindowID CFormEdit::ID_TEXTCTRL12 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON11 = wxNewId();
+const wxWindowID CFormEdit::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CFormEdit::ID_SLIDER1 = wxNewId();
+const wxWindowID CFormEdit::ID_SPINCTRL1 = wxNewId();
+const wxWindowID CFormEdit::ID_STATICTEXT3 = wxNewId();
+const wxWindowID CFormEdit::ID_SLIDER2 = wxNewId();
+const wxWindowID CFormEdit::ID_SPINCTRL2 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON1 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON2 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX2 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX3 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX4 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX5 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON4 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX6 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX7 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX8 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX9 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKBOX10 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON5 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKLISTBOX2 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON7 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON8 = wxNewId();
+const wxWindowID CFormEdit::ID_CHECKLISTBOX1 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON10 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON12 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON13 = wxNewId();
+const wxWindowID CFormEdit::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CFormEdit::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON3 = wxNewId();
+const wxWindowID CFormEdit::ID_BUTTON6 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CFormEdit, wxDialog)
@@ -420,7 +420,7 @@ void loadSelectionsFromListBox(std::vector<std::string>& v, wxCheckListBox* c)
     if (c->IsChecked(i)) v.emplace_back(c->GetString(i).mb_str());
 }
 
-void CFormEdit::OnbtnCloseClick(wxCommandEvent& event) { Close(); }
+void CFormEdit::OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event) { Close(); }
 void CFormEdit::OnslFirstCmdScrollChanged(wxScrollEvent& event)
 {
   int toVal = slTo->GetValue();
@@ -441,7 +441,7 @@ void CFormEdit::OnslToCmdScrollChanged(wxScrollEvent& event)
   spinLast->SetValue(slTo->GetValue());
 }
 
-void CFormEdit::OnbtnKeepClick(wxCommandEvent& event)
+void CFormEdit::OnbtnKeepClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -463,7 +463,7 @@ void CFormEdit::OnbtnKeepClick(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CFormEdit::OnbtnDeleteClick(wxCommandEvent& event)
+void CFormEdit::OnbtnDeleteClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -506,7 +506,7 @@ void filter_delObsByIndex(
 }
 
 // Delete observations by index in their sensory frame.
-void CFormEdit::OnbtnDelObsIndxClick(wxCommandEvent& event)
+void CFormEdit::OnbtnDelObsIndxClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -568,7 +568,7 @@ void filter_remObsByClass(
 }
 
 // Remove observations by class name:
-void CFormEdit::OnbtnRemoveObsClassClick(wxCommandEvent& event)
+void CFormEdit::OnbtnRemoveObsClassClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -602,7 +602,7 @@ void filter_delActsByIndex(
 }
 
 // Remove actions by index:
-void CFormEdit::OnbtnRemActsIndxClick(wxCommandEvent& event)
+void CFormEdit::OnbtnRemActsIndxClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -656,7 +656,7 @@ void filter_swapColors(
 }
 
 // Swap colors:
-void CFormEdit::OnbtnImgSwapClick(wxCommandEvent& event)
+void CFormEdit::OnbtnImgSwapClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
   executeOperationOnRawlog(filter_swapColors, "Individual images modified:");
@@ -686,7 +686,7 @@ void CFormEdit::OnInit(wxInitDialogEvent& event)
   FlexGridSizer1->Layout();
 }
 
-void CFormEdit::OnrbLoadedSelect(wxCommandEvent& event)
+void CFormEdit::OnrbLoadedSelect([[maybe_unused]] wxCommandEvent& event)
 {
   btnPickInput->Disable();
   btnPickOut->Disable();
@@ -702,7 +702,7 @@ void CFormEdit::OnrbLoadedSelect(wxCommandEvent& event)
   btnDelete->Enable();
 }
 
-void CFormEdit::OnrbFileSelect(wxCommandEvent& event)
+void CFormEdit::OnrbFileSelect([[maybe_unused]] wxCommandEvent& event)
 {
   btnPickInput->Enable();
   btnPickOut->Enable();
@@ -718,7 +718,7 @@ void CFormEdit::OnrbFileSelect(wxCommandEvent& event)
   btnDelete->Disable();
 }
 
-void CFormEdit::OnbtnRemoveAllButByClassClick1(wxCommandEvent& event)
+void CFormEdit::OnbtnRemoveAllButByClassClick1([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -731,7 +731,7 @@ void CFormEdit::OnbtnRemoveAllButByClassClick1(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CFormEdit::OnbtnPickInputClick(wxCommandEvent& event)
+void CFormEdit::OnbtnPickInputClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -757,7 +757,7 @@ void CFormEdit::OnbtnPickInputClick(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CFormEdit::OnbtnPickOutClick(wxCommandEvent& event)
+void CFormEdit::OnbtnPickOutClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1018,7 +1018,7 @@ void filter_NotDelObsByLabel(
   }
 }
 
-void CFormEdit::OnRemoveByLabel(wxCommandEvent& event)
+void CFormEdit::OnRemoveByLabel([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1031,7 +1031,7 @@ void CFormEdit::OnRemoveByLabel(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CFormEdit::OnRemoveButLabel(wxCommandEvent& event)
+void CFormEdit::OnRemoveButLabel([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1078,7 +1078,7 @@ void leave_horizontalScans(
 }
 
 // Leave horizontal scans only:
-void CFormEdit::OnbtnLeaveHorizScansClick(wxCommandEvent& event)
+void CFormEdit::OnbtnLeaveHorizScansClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 

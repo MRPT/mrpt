@@ -24,18 +24,18 @@
 //*)
 
 //(*IdInit(COdometryParams)
-const long COdometryParams::ID_STATICTEXT1 = wxNewId();
-const long COdometryParams::ID_STATICTEXT2 = wxNewId();
-const long COdometryParams::ID_TEXTCTRL1 = wxNewId();
-const long COdometryParams::ID_STATICTEXT3 = wxNewId();
-const long COdometryParams::ID_STATICTEXT4 = wxNewId();
-const long COdometryParams::ID_TEXTCTRL2 = wxNewId();
-const long COdometryParams::ID_STATICTEXT5 = wxNewId();
-const long COdometryParams::ID_STATICTEXT6 = wxNewId();
-const long COdometryParams::ID_TEXTCTRL3 = wxNewId();
-const long COdometryParams::ID_STATICTEXT7 = wxNewId();
-const long COdometryParams::ID_BUTTON1 = wxNewId();
-const long COdometryParams::ID_BUTTON2 = wxNewId();
+const wxWindowID COdometryParams::ID_STATICTEXT1 = wxNewId();
+const wxWindowID COdometryParams::ID_STATICTEXT2 = wxNewId();
+const wxWindowID COdometryParams::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID COdometryParams::ID_STATICTEXT3 = wxNewId();
+const wxWindowID COdometryParams::ID_STATICTEXT4 = wxNewId();
+const wxWindowID COdometryParams::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID COdometryParams::ID_STATICTEXT5 = wxNewId();
+const wxWindowID COdometryParams::ID_STATICTEXT6 = wxNewId();
+const wxWindowID COdometryParams::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID COdometryParams::ID_STATICTEXT7 = wxNewId();
+const wxWindowID COdometryParams::ID_BUTTON1 = wxNewId();
+const wxWindowID COdometryParams::ID_BUTTON2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(COdometryParams, wxDialog)

@@ -41,31 +41,31 @@
 extern xRawLogViewerFrame* theMainWindow;
 
 //(*IdInit(CScanAnimation)
-const long CScanAnimation::ID_LIST_OBS_LABELS = wxNewId();
-const long CScanAnimation::ID_RADIOBUTTON2 = wxNewId();
-const long CScanAnimation::ID_STATICTEXT22 = wxNewId();
-const long CScanAnimation::ID_TEXTCTRL11 = wxNewId();
-const long CScanAnimation::ID_BUTTON5 = wxNewId();
-const long CScanAnimation::ID_BUTTON6 = wxNewId();
-const long CScanAnimation::ID_BUTTON1 = wxNewId();
-const long CScanAnimation::ID_BUTTON2 = wxNewId();
-const long CScanAnimation::ID_STATICTEXT4 = wxNewId();
-const long CScanAnimation::ID_SPINCTRL2 = wxNewId();
-const long CScanAnimation::ID_CHECKBOX1 = wxNewId();
-const long CScanAnimation::ID_BUTTON3 = wxNewId();
-const long CScanAnimation::ID_XY_GLCANVAS = wxNewId();
-const long CScanAnimation::ID_SLIDER1 = wxNewId();
-const long CScanAnimation::ID_STATICTEXT1 = wxNewId();
-const long CScanAnimation::ID_SPINCTRL1 = wxNewId();
-const long CScanAnimation::ID_BUTTON4 = wxNewId();
-const long CScanAnimation::ID_STATICTEXT2 = wxNewId();
-const long CScanAnimation::ID_CHECKBOX2 = wxNewId();
-const long CScanAnimation::ID_STATICTEXT3 = wxNewId();
-const long CScanAnimation::ID_BUTTON7 = wxNewId();
+const wxWindowID CScanAnimation::ID_LIST_OBS_LABELS = wxNewId();
+const wxWindowID CScanAnimation::ID_RADIOBUTTON2 = wxNewId();
+const wxWindowID CScanAnimation::ID_STATICTEXT22 = wxNewId();
+const wxWindowID CScanAnimation::ID_TEXTCTRL11 = wxNewId();
+const wxWindowID CScanAnimation::ID_BUTTON5 = wxNewId();
+const wxWindowID CScanAnimation::ID_BUTTON6 = wxNewId();
+const wxWindowID CScanAnimation::ID_BUTTON1 = wxNewId();
+const wxWindowID CScanAnimation::ID_BUTTON2 = wxNewId();
+const wxWindowID CScanAnimation::ID_STATICTEXT4 = wxNewId();
+const wxWindowID CScanAnimation::ID_SPINCTRL2 = wxNewId();
+const wxWindowID CScanAnimation::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CScanAnimation::ID_BUTTON3 = wxNewId();
+const wxWindowID CScanAnimation::ID_XY_GLCANVAS = wxNewId();
+const wxWindowID CScanAnimation::ID_SLIDER1 = wxNewId();
+const wxWindowID CScanAnimation::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CScanAnimation::ID_SPINCTRL1 = wxNewId();
+const wxWindowID CScanAnimation::ID_BUTTON4 = wxNewId();
+const wxWindowID CScanAnimation::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CScanAnimation::ID_CHECKBOX2 = wxNewId();
+const wxWindowID CScanAnimation::ID_STATICTEXT3 = wxNewId();
+const wxWindowID CScanAnimation::ID_BUTTON7 = wxNewId();
 //*)
-const long CScanAnimation::ID_BUTTON_SAVE_SCENE = wxNewId();
-const long ID_BUTTON_CHECK_ALL = wxNewId();
-const long ID_BUTTON_CHECK_NONE = wxNewId();
+const wxWindowID CScanAnimation::ID_BUTTON_SAVE_SCENE = wxNewId();
+const wxWindowID ID_BUTTON_CHECK_ALL = wxNewId();
+const wxWindowID ID_BUTTON_CHECK_NONE = wxNewId();
 
 BEGIN_EVENT_TABLE(CScanAnimation, wxDialog)
 //(*EventTable(CScanAnimation)

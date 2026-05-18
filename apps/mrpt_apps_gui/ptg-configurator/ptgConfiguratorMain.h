@@ -69,23 +69,23 @@ class ptgConfiguratorframe : public wxFrame
 
  private:
   //(*Handlers(ptgConfiguratorframe)
-  void OnAbout(wxCommandEvent& event);
-  void OnQuit(wxCommandEvent& event);
-  void OnExportSelectedPath(wxCommandEvent& event);
-  void OnbtnReloadParamsClick(wxCommandEvent& event);
-  void OncbPTGClassSelect(wxCommandEvent& event);
+  void OnAbout([[maybe_unused]] wxCommandEvent& event);
+  void OnQuit([[maybe_unused]] wxCommandEvent& event);
+  void OnExportSelectedPath([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnReloadParamsClick([[maybe_unused]] wxCommandEvent& event);
+  void OncbPTGClassSelect([[maybe_unused]] wxCommandEvent& event);
   void OnedPTGIndexChange(wxSpinEvent& event);
-  void OncbDrawShapePathClick(wxCommandEvent& event);
-  void OncbBuildTPObsClick(wxCommandEvent& event);
-  void OnbtnRebuildTPObsClick(wxCommandEvent& event);
-  void OnbtnPlaceObsClick(wxCommandEvent& event);
-  void OnbtnPlaceTargetClick(wxCommandEvent& event);
+  void OncbDrawShapePathClick([[maybe_unused]] wxCommandEvent& event);
+  void OncbBuildTPObsClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnRebuildTPObsClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPlaceObsClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPlaceTargetClick([[maybe_unused]] wxCommandEvent& event);
   void OnslidPathHighlightCmdScroll(wxCommandEvent&);
-  void OncbHighlightOnePathClick(wxCommandEvent& event);
+  void OncbHighlightOnePathClick([[maybe_unused]] wxCommandEvent& event);
   void OnedIndexHighlightPathChange(wxSpinEvent& event);
-  void OnedCfgText(wxCommandEvent& event);
-  void OnButton1Click(wxCommandEvent& event);
-  void OnrbShowTPSelectSelect(wxCommandEvent& event);
+  void OnedCfgText([[maybe_unused]] wxCommandEvent& event);
+  void OnButton1Click([[maybe_unused]] wxCommandEvent& event);
+  void OnrbShowTPSelectSelect([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   //(*Identifiers(ptgConfiguratorframe)

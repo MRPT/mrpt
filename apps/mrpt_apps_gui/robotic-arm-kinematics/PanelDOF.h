@@ -37,9 +37,9 @@ class PanelDOF : public wxPanel
 
  protected:
   //(*Identifiers(PanelDOF)
-  static const long ID_SIMPLEHTMLLISTBOX2;
-  static const long ID_SLIDER1;
-  static const long ID_TEXTCTRL1;
+  static const wxWindowID ID_SIMPLEHTMLLISTBOX2;
+  static const wxWindowID ID_SLIDER1;
+  static const wxWindowID ID_TEXTCTRL1;
   //*)
 
  private:

@@ -278,15 +278,15 @@ void CWindowDialog::OnMouseMove(wxMouseEvent& event)
 }
 
 // Menu: Close
-void CWindowDialog::OnMenuClose(wxCommandEvent& event) { Close(); }
+void CWindowDialog::OnMenuClose([[maybe_unused]] wxCommandEvent& event) { Close(); }
 // Menu: About
-void CWindowDialog::OnMenuAbout(wxCommandEvent& event)
+void CWindowDialog::OnMenuAbout([[maybe_unused]] wxCommandEvent& event)
 {
   ::wxMessageBox(_("Image viewer\n Class gui::CDisplayWindow\n MRPT C++ library"), _("About..."));
 }
 
 // Menu: Save to file
-void CWindowDialog::OnMenuSave(wxCommandEvent& event)
+void CWindowDialog::OnMenuSave([[maybe_unused]] wxCommandEvent& event)
 {
   wxFileDialog dialog(
       this, wxT("Save image as..."), wxT("."), wxT("image.png"),
