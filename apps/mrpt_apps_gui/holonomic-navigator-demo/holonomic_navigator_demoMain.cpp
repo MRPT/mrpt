@@ -915,18 +915,19 @@ void holonomic_navigator_demoFrame::TOptions::saveToConfigFile(
   MRPT_END
 }
 
-void holonomic_navigator_demoFrame::OnMenuItemChangeVisibleStuff(wxCommandEvent& event)
+void holonomic_navigator_demoFrame::OnMenuItemChangeVisibleStuff(
+    [[maybe_unused]] wxCommandEvent& event)
 {
   updateViewsDynamicObjects();
 }
 
-void holonomic_navigator_demoFrame::OnMenuItemClearRobotPath(wxCommandEvent& event)
+void holonomic_navigator_demoFrame::OnMenuItemClearRobotPath([[maybe_unused]] wxCommandEvent& event)
 {
   gl_robot_path->clear();
   updateViewsDynamicObjects();
 }
 
-void holonomic_navigator_demoFrame::OnbtnLoadMapClick(wxCommandEvent& event)
+void holonomic_navigator_demoFrame::OnbtnLoadMapClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 

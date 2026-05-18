@@ -44,54 +44,54 @@ class CFormPlayVideo : public wxDialog
 
   wxComboBox* getImageDirsCombo() { return cbImageDirs; }
   //(*Identifiers(CFormPlayVideo)
-  static const long ID_RADIOBUTTON1;
-  static const long ID_RADIOBUTTON2;
-  static const long ID_STATICTEXT22;
-  static const long ID_TEXTCTRL11;
-  static const long ID_BUTTON4;
-  static const long ID_CHECKBOX1;
-  static const long ID_CHECKBOX2;
-  static const long ID_CHECKBOX3;
-  static const long ID_CHECKBOX4;
-  static const long ID_STATICTEXT8;
-  static const long ID_SPINCTRL2;
-  static const long ID_STATICTEXT6;
-  static const long ID_COMBOBOX1;
-  static const long ID_BUTTON2;
-  static const long ID_BUTTON3;
-  static const long ID_STATICTEXT7;
-  static const long ID_TEXTCTRL2;
-  static const long ID_BUTTON5;
-  static const long ID_SLIDER1;
-  static const long ID_STATICTEXT1;
-  static const long ID_SPINCTRL1;
-  static const long ID_BUTTON1;
-  static const long ID_STATICTEXT3;
-  static const long ID_STATICTEXT5;
-  static const long ID_BITMAPBUTTON1;
-  static const long ID_STATICTEXT4;
-  static const long ID_BITMAPBUTTON2;
-  static const long ID_STATICTEXT2;
-  static const long ID_BITMAPBUTTON3;
-  static const long ID_PANEL3;
-  static const long ID_PANEL4;
-  static const long ID_PANEL2;
+  static const wxWindowID ID_RADIOBUTTON1;
+  static const wxWindowID ID_RADIOBUTTON2;
+  static const wxWindowID ID_STATICTEXT22;
+  static const wxWindowID ID_TEXTCTRL11;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_CHECKBOX2;
+  static const wxWindowID ID_CHECKBOX3;
+  static const wxWindowID ID_CHECKBOX4;
+  static const wxWindowID ID_STATICTEXT8;
+  static const wxWindowID ID_SPINCTRL2;
+  static const wxWindowID ID_STATICTEXT6;
+  static const wxWindowID ID_COMBOBOX1;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_STATICTEXT7;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_SLIDER1;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_SPINCTRL1;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_BITMAPBUTTON1;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_BITMAPBUTTON2;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_BITMAPBUTTON3;
+  static const wxWindowID ID_PANEL3;
+  static const wxWindowID ID_PANEL4;
+  static const wxWindowID ID_PANEL2;
   //*)
 
  protected:
   //(*Handlers(CFormPlayVideo)
-  void OnbtnPickClick(wxCommandEvent& event);
-  void OnbtnStopClick(wxCommandEvent& event);
-  void OnbtnPlayClick(wxCommandEvent& event);
+  void OnbtnPickClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStopClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPlayClick([[maybe_unused]] wxCommandEvent& event);
   void OnInit(wxInitDialogEvent& event);
-  void OnrbLoadedSelect(wxCommandEvent& event);
-  void OnrbFileSelect(wxCommandEvent& event);
-  void OnbtnCloseClick(wxCommandEvent& event);
+  void OnrbLoadedSelect([[maybe_unused]] wxCommandEvent& event);
+  void OnrbFileSelect([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event);
   void OnprogressBarCmdScrollChanged(wxScrollEvent& event);
-  void OnbtnSaveCam1Click(wxCommandEvent& event);
-  void OnbtnSaveCam2Click(wxCommandEvent& event);
-  void OnbtnSaveCam3Click(wxCommandEvent& event);
-  void OncbImageDirsSelect(wxCommandEvent& event);
+  void OnbtnSaveCam1Click([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSaveCam2Click([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSaveCam3Click([[maybe_unused]] wxCommandEvent& event);
+  void OncbImageDirsSelect([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   bool showSensoryFrame(

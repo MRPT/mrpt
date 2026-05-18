@@ -24,8 +24,8 @@
 //*)
 
 //(*IdInit(CLogView)
-const long CLogView::ID_TEXTCTRL1 = wxNewId();
-const long CLogView::ID_BUTTON1 = wxNewId();
+const wxWindowID CLogView::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CLogView::ID_BUTTON1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CLogView, wxDialog)
@@ -73,4 +73,4 @@ CLogView::~CLogView()
   //*)
 }
 
-void CLogView::OnbtnOkClick(wxCommandEvent& event) { Close(); }
+void CLogView::OnbtnOkClick([[maybe_unused]] wxCommandEvent& event) { Close(); }

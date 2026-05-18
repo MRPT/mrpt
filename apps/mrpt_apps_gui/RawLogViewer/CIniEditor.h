@@ -39,15 +39,15 @@ class CIniEditor : public wxDialog
 
  protected:
   //(*Identifiers(CIniEditor)
-  static const long ID_BUTTON1;
-  static const long ID_BUTTON2;
-  static const long ID_TEXTCTRL1;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_TEXTCTRL1;
   //*)
 
  private:
   //(*Handlers(CIniEditor)
-  void OnbtnCancelClick(wxCommandEvent& event);
-  void OnbtnOKClick(wxCommandEvent& event);
+  void OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnOKClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   DECLARE_EVENT_TABLE()

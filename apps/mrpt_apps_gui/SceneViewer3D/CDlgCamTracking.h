@@ -75,13 +75,13 @@ class CDlgCamTracking : public wxDialog
 
  private:
   //(*Handlers(CDlgCamTracking)
-  void OnbtnCloseClick(wxCommandEvent& event);
-  void OnMenuItemDelete(wxCommandEvent& event);
-  void OnbtnSaveClick(wxCommandEvent& event);
-  void OnbtnLoadClick(wxCommandEvent& event);
-  void OnbtnGrabClick(wxCommandEvent& event);
-  void OnbtnStartClick(wxCommandEvent& event);
-  void OnbtnStopClick(wxCommandEvent& event);
+  void OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuItemDelete([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSaveClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnLoadClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnGrabClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStartClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStopClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   DECLARE_EVENT_TABLE()

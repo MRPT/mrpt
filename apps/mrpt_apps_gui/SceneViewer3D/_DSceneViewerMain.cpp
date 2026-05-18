@@ -765,7 +765,7 @@ void _DSceneViewerFrame::OnAbout(wxCommandEvent&)
   mrpt::gui::show_mrpt_about_box_wxWidgets(this, "SceneViewer3D");
 }
 
-void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
+void _DSceneViewerFrame::OnNewScene([[maybe_unused]] wxCommandEvent& event)
 {
   auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
   openGLSceneRef->clear();
@@ -817,7 +817,7 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
   Refresh(false);
 }
 
-void _DSceneViewerFrame::OnOpenFile(wxCommandEvent& event)
+void _DSceneViewerFrame::OnOpenFile([[maybe_unused]] wxCommandEvent& event)
 {
   wxString caption = wxT("Choose a file to open");
   wxString wildcard = wxT("3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
@@ -992,7 +992,7 @@ void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
   applyShadowsOptions();
 }
 
-void _DSceneViewerFrame::OnbtnAutoplayClicked(wxCommandEvent& event)
+void _DSceneViewerFrame::OnbtnAutoplayClicked([[maybe_unused]] wxCommandEvent& event)
 {
   if (btnAutoplay->GetValue()) m_autoplayTimer->Start(5, true);  // One-shot:
 }
@@ -1024,7 +1024,7 @@ void _DSceneViewerFrame::OntimFileWatch(wxTimerEvent&)
   m_canvas->orbitCameraController() = savedCamera;
 }
 
-void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuBackColor([[maybe_unused]] wxCommandEvent& event)
 {
   wxColourData colourData;
   wxColour color;
@@ -1052,7 +1052,7 @@ void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
 }
 
 // See options:
-void _DSceneViewerFrame::OnMenuOptions(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuOptions([[maybe_unused]] wxCommandEvent& event)
 {
   CDialogOptions dial(this);
 
@@ -1074,14 +1074,14 @@ void _DSceneViewerFrame::OnMenuOptions(wxCommandEvent& event)
   }
 }
 
-void _DSceneViewerFrame::OnPrevious(wxCommandEvent& event)
+void _DSceneViewerFrame::OnPrevious([[maybe_unused]] wxCommandEvent& event)
 {
   wxKeyEvent evn;
   evn.m_keyCode = WXK_LEFT;
   m_canvas->OnChar(evn);
 }
 
-void _DSceneViewerFrame::OnNext(wxCommandEvent& event)
+void _DSceneViewerFrame::OnNext([[maybe_unused]] wxCommandEvent& event)
 {
   wxKeyEvent evn;
   evn.m_keyCode = WXK_RIGHT;
@@ -1089,7 +1089,7 @@ void _DSceneViewerFrame::OnNext(wxCommandEvent& event)
 }
 
 void _DSceneViewerFrame::OnClose(wxCloseEvent& event) {}
-void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
+void _DSceneViewerFrame::OnBtnRecordClicked([[maybe_unused]] wxCommandEvent& event)
 {
   if (btnCapture->GetValue())
   {
@@ -1116,7 +1116,7 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
   }
 }
 
-void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
+void _DSceneViewerFrame::OnbtnOrthoClicked([[maybe_unused]] wxCommandEvent& event)
 {
   bool ortho = btnOrtho->GetValue();
   m_canvas->orbitCameraController().setProjectiveModel(!ortho);
@@ -1124,7 +1124,7 @@ void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
   m_canvas->Refresh(false);
 }
 
-void _DSceneViewerFrame::OnbtnShadowsClicked(wxCommandEvent& event)
+void _DSceneViewerFrame::OnbtnShadowsClicked([[maybe_unused]] wxCommandEvent& event)
 {
   applyShadowsOptions();
   m_canvas->Refresh(false);
@@ -1146,7 +1146,7 @@ void _DSceneViewerFrame::applyShadowsOptions()
   vw->enableShadowCasting(shadowsEnabled);
 }
 
-void _DSceneViewerFrame::OnbtnSSAOClicked(wxCommandEvent& event)
+void _DSceneViewerFrame::OnbtnSSAOClicked([[maybe_unused]] wxCommandEvent& event)
 {
   applySSAOOptions();
   m_canvas->Refresh(false);
@@ -1168,12 +1168,12 @@ void _DSceneViewerFrame::applySSAOOptions()
   vw->lightParameters().ssao_enabled = ssaoEnabled;
 }
 
-void _DSceneViewerFrame::OnReload(wxCommandEvent& event)
+void _DSceneViewerFrame::OnReload([[maybe_unused]] wxCommandEvent& event)
 {
   if (fileExists(loadedFileName)) loadFromFile(loadedFileName);
 }
 
-void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
+void _DSceneViewerFrame::OnInsert3DS([[maybe_unused]] wxCommandEvent& event)
 {
   try
   {
@@ -1221,7 +1221,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
   }
 }
 
-void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuSave([[maybe_unused]] wxCommandEvent& event)
 {
   try
   {
@@ -1346,7 +1346,7 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
   }
 }
 
-void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
+void _DSceneViewerFrame::OnStartCameraTravelling([[maybe_unused]] wxCommandEvent& event)
 {
   try
   {
@@ -1409,7 +1409,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 }
 
 void _DSceneViewerFrame::OnClose1(wxCloseEvent& event) {}
-void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuAddSICK([[maybe_unused]] wxCommandEvent& event)
 {
   try
   {
@@ -1428,13 +1428,13 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
   }
 }
 
-void _DSceneViewerFrame::OnMenuDeleteAll(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuDeleteAll([[maybe_unused]] wxCommandEvent& event)
 {
   m_canvas->getOpenGLSceneRef()->clear();
   m_canvas->Refresh();
 }
 
-void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuItem14Selected([[maybe_unused]] wxCommandEvent& event)
 {
   m_canvas->Refresh();
   wxApp::GetInstance()->Yield();
@@ -1471,12 +1471,15 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
   ASSERT_(savedOk);
 }
 
-void _DSceneViewerFrame::OnMenuCameraTrackingArbitrary(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuCameraTrackingArbitrary([[maybe_unused]] wxCommandEvent& event)
 {
   m_dlg_tracking->Show();
 }
 
-void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommandEvent& event) {}
+void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(
+    [[maybe_unused]] wxCommandEvent& event)
+{
+}
 
 void _DSceneViewerFrame::clear_all_octrees_in_scene() {}
 
@@ -1543,12 +1546,14 @@ static const std::string name_octrees_bb_globj = "__SceneViewer3D_gl_octree_bb__
 CSetOfObjects::Ptr aux_gl_octrees_bb;
 
 // Show/hide the octree bounding boxes of the point clouds:
-void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event) {}
+void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected([[maybe_unused]] wxCommandEvent& event)
+{
+}
 
 // ----------------------------------------------------------
 // Import a point cloud from the PLY file format
 // ----------------------------------------------------------
-void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud([[maybe_unused]] wxCommandEvent& event)
 {
   try
   {
@@ -1714,7 +1719,7 @@ struct visitor_export_PLY
 // ----------------------------------------------------------
 // Export point clouds to the PLY file format
 // ----------------------------------------------------------
-void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuItemExportPointsPLY([[maybe_unused]] wxCommandEvent& event)
 {
   try
   {
@@ -1755,7 +1760,7 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 }
 
 // Off-screen high-resolution render to image file:
-void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
+void _DSceneViewerFrame::OnMenuItemHighResRender([[maybe_unused]] wxCommandEvent& event)
 {
   try
   {
@@ -1812,7 +1817,7 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 }
 
 // Select: none
-void _DSceneViewerFrame::OnmnuSelectNoneSelected(wxCommandEvent& event)
+void _DSceneViewerFrame::OnmnuSelectNoneSelected([[maybe_unused]] wxCommandEvent& event)
 {
   m_selected_gl_objects.clear();
 }
@@ -1863,7 +1868,7 @@ class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
 };
 
 // Select: by class
-void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
+void _DSceneViewerFrame::OnmnuSelectByClassSelected([[maybe_unused]] wxCommandEvent& event)
 {
   static bool init_list = true;
   static wxArrayString glClassNames;
@@ -1902,14 +1907,14 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 }
 
 // On selection: delete
-void _DSceneViewerFrame::OnmnuSelectionDeleteSelected(wxCommandEvent& event)
+void _DSceneViewerFrame::OnmnuSelectionDeleteSelected([[maybe_unused]] wxCommandEvent& event)
 {
   for (auto& m_selected_gl_object : m_selected_gl_objects) m_selected_gl_object.reset();
   Refresh(false);
 }
 
 // On selection: re-scale
-void _DSceneViewerFrame::OnmnuSelectionScaleSelected(wxCommandEvent& event)
+void _DSceneViewerFrame::OnmnuSelectionScaleSelected([[maybe_unused]] wxCommandEvent& event)
 {
   wxString ssScale = wxGetTextFromUser(
       _("Multiply scale of selected objects"), _("Scale factor:"), _("1.0"), this);

@@ -280,5 +280,8 @@ CDialogOptions::~CDialogOptions()
   //*)
 }
 
-void CDialogOptions::OnbtnOkClick(wxCommandEvent& event) { EndModal(wxID_OK); }
-void CDialogOptions::OnbtnCancelClick(wxCommandEvent& event) { EndModal(wxID_CANCEL); }
+void CDialogOptions::OnbtnOkClick([[maybe_unused]] wxCommandEvent& event) { EndModal(wxID_OK); }
+void CDialogOptions::OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event)
+{
+  EndModal(wxID_CANCEL);
+}

@@ -22,73 +22,73 @@
 //*)
 
 //(*IdInit(CDlgParams)
-const long CDlgParams::ID_RADIOBUTTON1 = wxNewId();
-const long CDlgParams::ID_RADIOBUTTON2 = wxNewId();
-const long CDlgParams::ID_RADIOBUTTON3 = wxNewId();
-const long CDlgParams::ID_STATICTEXT2 = wxNewId();
-const long CDlgParams::ID_SPINCTRL1 = wxNewId();
-const long CDlgParams::ID_RADIOBUTTON4 = wxNewId();
-const long CDlgParams::ID_STATICTEXT25 = wxNewId();
-const long CDlgParams::ID_CHECKBOX2 = wxNewId();
-const long CDlgParams::ID_CHECKBOX3 = wxNewId();
-const long CDlgParams::ID_STATICTEXT3 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL3 = wxNewId();
-const long CDlgParams::ID_STATICTEXT4 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL4 = wxNewId();
-const long CDlgParams::ID_STATICTEXT5 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL5 = wxNewId();
-const long CDlgParams::ID_STATICTEXT6 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL6 = wxNewId();
-const long CDlgParams::ID_RADIOBOX3 = wxNewId();
-const long CDlgParams::ID_STATICTEXT17 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL13 = wxNewId();
-const long CDlgParams::ID_STATICTEXT24 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL15 = wxNewId();
-const long CDlgParams::ID_RADIOBOX1 = wxNewId();
-const long CDlgParams::ID_RADIOBOX2 = wxNewId();
-const long CDlgParams::ID_PANEL1 = wxNewId();
-const long CDlgParams::ID_RADIOBUTTON5 = wxNewId();
-const long CDlgParams::ID_STATICTEXT9 = wxNewId();
-const long CDlgParams::ID_RADIOBUTTON6 = wxNewId();
-const long CDlgParams::ID_STATICTEXT7 = wxNewId();
-const long CDlgParams::ID_SPINCTRL2 = wxNewId();
-const long CDlgParams::ID_STATICTEXT8 = wxNewId();
-const long CDlgParams::ID_SPINCTRL3 = wxNewId();
-const long CDlgParams::ID_RADIOBUTTON7 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL2 = wxNewId();
-const long CDlgParams::ID_BUTTON3 = wxNewId();
-const long CDlgParams::ID_CHECKBOX1 = wxNewId();
-const long CDlgParams::ID_STATICTEXT11 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL7 = wxNewId();
-const long CDlgParams::ID_STATICTEXT1 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL1 = wxNewId();
-const long CDlgParams::ID_STATICTEXT12 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL8 = wxNewId();
-const long CDlgParams::ID_STATICTEXT23 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL14 = wxNewId();
-const long CDlgParams::ID_STATICTEXT10 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL12 = wxNewId();
-const long CDlgParams::ID_STATICTEXT13 = wxNewId();
-const long CDlgParams::ID_STATICTEXT14 = wxNewId();
-const long CDlgParams::ID_STATICTEXT15 = wxNewId();
-const long CDlgParams::ID_STATICTEXT16 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL9 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL10 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL11 = wxNewId();
-const long CDlgParams::ID_STATICTEXT26 = wxNewId();
-const long CDlgParams::ID_STATICTEXT27 = wxNewId();
-const long CDlgParams::ID_STATICTEXT28 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL16 = wxNewId();
-const long CDlgParams::ID_TEXTCTRL17 = wxNewId();
-const long CDlgParams::ID_STATICTEXT18 = wxNewId();
-const long CDlgParams::ID_SPINCTRL4 = wxNewId();
-const long CDlgParams::ID_STATICTEXT19 = wxNewId();
-const long CDlgParams::ID_STATICTEXT20 = wxNewId();
-const long CDlgParams::ID_SPINCTRL5 = wxNewId();
-const long CDlgParams::ID_STATICTEXT21 = wxNewId();
-const long CDlgParams::ID_STATICTEXT22 = wxNewId();
-const long CDlgParams::ID_BUTTON1 = wxNewId();
-const long CDlgParams::ID_BUTTON2 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBUTTON1 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBUTTON2 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBUTTON3 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CDlgParams::ID_SPINCTRL1 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBUTTON4 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT25 = wxNewId();
+const wxWindowID CDlgParams::ID_CHECKBOX2 = wxNewId();
+const wxWindowID CDlgParams::ID_CHECKBOX3 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT3 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT4 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT5 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL5 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT6 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL6 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBOX3 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT17 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL13 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT24 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL15 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBOX1 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBOX2 = wxNewId();
+const wxWindowID CDlgParams::ID_PANEL1 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBUTTON5 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT9 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBUTTON6 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT7 = wxNewId();
+const wxWindowID CDlgParams::ID_SPINCTRL2 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT8 = wxNewId();
+const wxWindowID CDlgParams::ID_SPINCTRL3 = wxNewId();
+const wxWindowID CDlgParams::ID_RADIOBUTTON7 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID CDlgParams::ID_BUTTON3 = wxNewId();
+const wxWindowID CDlgParams::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT11 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL7 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT12 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL8 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT23 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL14 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT10 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL12 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT13 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT14 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT15 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT16 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL9 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL10 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL11 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT26 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT27 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT28 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL16 = wxNewId();
+const wxWindowID CDlgParams::ID_TEXTCTRL17 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT18 = wxNewId();
+const wxWindowID CDlgParams::ID_SPINCTRL4 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT19 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT20 = wxNewId();
+const wxWindowID CDlgParams::ID_SPINCTRL5 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT21 = wxNewId();
+const wxWindowID CDlgParams::ID_STATICTEXT22 = wxNewId();
+const wxWindowID CDlgParams::ID_BUTTON1 = wxNewId();
+const wxWindowID CDlgParams::ID_BUTTON2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CDlgParams, wxDialog)
@@ -536,13 +536,16 @@ CDlgParams::~CDlgParams()
   //*)
 }
 
-void CDlgParams::OnbtnOkClick(wxCommandEvent& event) { this->EndModal(wxID_OK); }
+void CDlgParams::OnbtnOkClick([[maybe_unused]] wxCommandEvent& event) { this->EndModal(wxID_OK); }
 
-void CDlgParams::OnbtnCancelClick(wxCommandEvent& event) { this->EndModal(wxID_CANCEL); }
+void CDlgParams::OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event)
+{
+  this->EndModal(wxID_CANCEL);
+}
 
-void CDlgParams::OnbtnBrowseClick(wxCommandEvent& event) {}
-void CDlgParams::OnrbIKFdavisonSelect(wxCommandEvent& event) {}
-void CDlgParams::OnUpdateControlsState(wxCommandEvent& event)
+void CDlgParams::OnbtnBrowseClick([[maybe_unused]] wxCommandEvent& event) {}
+void CDlgParams::OnrbIKFdavisonSelect([[maybe_unused]] wxCommandEvent& event) {}
+void CDlgParams::OnUpdateControlsState([[maybe_unused]] wxCommandEvent& event)
 {
   edIKFiters->Enable(rbIKF->GetValue() || rbIKFdavison->GetValue());
 

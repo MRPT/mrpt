@@ -39,18 +39,18 @@ class CFormBatchSensorPose : public wxDialog
 
  protected:
   //(*Identifiers(CFormBatchSensorPose)
-  static const long ID_STATICTEXT1;
-  static const long ID_TEXTCTRL1;
-  static const long ID_BITMAPBUTTON1;
-  static const long ID_BUTTON1;
-  static const long ID_BUTTON2;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_BITMAPBUTTON1;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
   //*)
 
  private:
   //(*Handlers(CFormBatchSensorPose)
-  void OnbtnOpenClick(wxCommandEvent& event);
-  void OnbtnApplyClick(wxCommandEvent& event);
-  void OnbtnCancelClick(wxCommandEvent& event);
+  void OnbtnOpenClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnApplyClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   DECLARE_EVENT_TABLE()

@@ -136,15 +136,15 @@ CDlgCamTracking::~CDlgCamTracking()
   //*)
 }
 
-void CDlgCamTracking::OnbtnCloseClick(wxCommandEvent& event) { Close(); }
-void CDlgCamTracking::OnMenuItemDelete(wxCommandEvent& event) {}
-void CDlgCamTracking::OnbtnSaveClick(wxCommandEvent& event)
+void CDlgCamTracking::OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event) { Close(); }
+void CDlgCamTracking::OnMenuItemDelete([[maybe_unused]] wxCommandEvent& event) {}
+void CDlgCamTracking::OnbtnSaveClick([[maybe_unused]] wxCommandEvent& event)
 {
   this->m_poses.saveToTextFile("a.txt");
 }
 
-void CDlgCamTracking::OnbtnLoadClick(wxCommandEvent& event) {}
-void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
+void CDlgCamTracking::OnbtnLoadClick([[maybe_unused]] wxCommandEvent& event) {}
+void CDlgCamTracking::OnbtnGrabClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -166,7 +166,7 @@ void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CDlgCamTracking::OnbtnStartClick(wxCommandEvent& event)
+void CDlgCamTracking::OnbtnStartClick([[maybe_unused]] wxCommandEvent& event)
 {
   m_poses.setMaxTimeInterpolation(std::chrono::seconds(10000));
   m_poses.setInterpolationMethod(mrpt::poses::imSSLLLL);
@@ -177,7 +177,7 @@ void CDlgCamTracking::OnbtnStartClick(wxCommandEvent& event)
   m_main_win->m_tTravelling.Start(50);
 }
 
-void CDlgCamTracking::OnbtnStopClick(wxCommandEvent& event) {}
+void CDlgCamTracking::OnbtnStopClick([[maybe_unused]] wxCommandEvent& event) {}
 void CDlgCamTracking::UpdateTableFromPoses()
 {
   gridPoses->BeginBatch();

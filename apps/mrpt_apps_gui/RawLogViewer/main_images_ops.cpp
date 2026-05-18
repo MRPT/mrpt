@@ -39,7 +39,7 @@ using namespace mrpt::gui;
 using namespace mrpt::poses;
 using namespace std;
 
-void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
+void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -178,7 +178,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 }
 
 // Convert pairs of mono images to stereo:
-void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuMono2Stereo([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -281,7 +281,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuRectifyImages([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -504,7 +504,7 @@ void renameExternalStereoImageFile(CObservationStereoImages::Ptr o)
   }
 }
 
-void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuRenameImageFiles([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 

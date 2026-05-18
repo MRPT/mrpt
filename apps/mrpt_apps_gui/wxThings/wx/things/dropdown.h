@@ -85,7 +85,7 @@ class WXDLLIMPEXP_THINGS DropDownBase : public wxControl
   bool IsPopupShown();
 
   // implementation
-  void OnDropButton(wxCommandEvent& event);
+  void OnDropButton([[maybe_unused]] wxCommandEvent& event);
   wxCustomButton* GetDropDownButton() { return m_dropdownButton; }
   // Get the popup window, nullptr when not shown
   DropDownPopup* GetPopupWindow() { return m_popupWin; }

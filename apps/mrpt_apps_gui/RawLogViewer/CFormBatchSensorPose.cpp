@@ -40,11 +40,11 @@ using namespace mrpt::math;
 using namespace std;
 
 //(*IdInit(CFormBatchSensorPose)
-const long CFormBatchSensorPose::ID_STATICTEXT1 = wxNewId();
-const long CFormBatchSensorPose::ID_TEXTCTRL1 = wxNewId();
-const long CFormBatchSensorPose::ID_BITMAPBUTTON1 = wxNewId();
-const long CFormBatchSensorPose::ID_BUTTON1 = wxNewId();
-const long CFormBatchSensorPose::ID_BUTTON2 = wxNewId();
+const wxWindowID CFormBatchSensorPose::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CFormBatchSensorPose::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CFormBatchSensorPose::ID_BITMAPBUTTON1 = wxNewId();
+const wxWindowID CFormBatchSensorPose::ID_BUTTON1 = wxNewId();
+const wxWindowID CFormBatchSensorPose::ID_BUTTON2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CFormBatchSensorPose, wxDialog)
@@ -131,7 +131,7 @@ CFormBatchSensorPose::~CFormBatchSensorPose()
   //*)
 }
 
-void CFormBatchSensorPose::OnbtnOpenClick(wxCommandEvent& event)
+void CFormBatchSensorPose::OnbtnOpenClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -157,6 +157,6 @@ void CFormBatchSensorPose::OnbtnOpenClick(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CFormBatchSensorPose::OnbtnApplyClick(wxCommandEvent& event) { EndModal(1); }
+void CFormBatchSensorPose::OnbtnApplyClick([[maybe_unused]] wxCommandEvent& event) { EndModal(1); }
 
-void CFormBatchSensorPose::OnbtnCancelClick(wxCommandEvent& event) { EndModal(0); }
+void CFormBatchSensorPose::OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event) { EndModal(0); }

@@ -49,24 +49,24 @@ class COdometryParams : public wxDialog
 
  protected:
   //(*Identifiers(COdometryParams)
-  static const long ID_STATICTEXT1;
-  static const long ID_STATICTEXT2;
-  static const long ID_TEXTCTRL1;
-  static const long ID_STATICTEXT3;
-  static const long ID_STATICTEXT4;
-  static const long ID_TEXTCTRL2;
-  static const long ID_STATICTEXT5;
-  static const long ID_STATICTEXT6;
-  static const long ID_TEXTCTRL3;
-  static const long ID_STATICTEXT7;
-  static const long ID_BUTTON1;
-  static const long ID_BUTTON2;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_STATICTEXT6;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_STATICTEXT7;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
   //*)
 
  private:
   //(*Handlers(COdometryParams)
-  void OnbtnOkClick(wxCommandEvent& event);
-  void OnbtnCancelClick(wxCommandEvent& event);
+  void OnbtnOkClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   DECLARE_EVENT_TABLE()

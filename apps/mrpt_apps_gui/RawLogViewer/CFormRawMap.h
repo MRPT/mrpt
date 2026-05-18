@@ -38,51 +38,51 @@ class CFormRawMap : public wxDialog
   ~CFormRawMap() override;
 
   //(*Identifiers(CFormRawMap)
-  static const long ID_STATICTEXT7;
-  static const long ID_STATICTEXT6;
-  static const long ID_STATICTEXT5;
-  static const long ID_STATICTEXT1;
-  static const long ID_SLIDER1;
-  static const long ID_SPINCTRL1;
-  static const long ID_STATICTEXT3;
-  static const long ID_SLIDER2;
-  static const long ID_SPINCTRL2;
-  static const long ID_STATICTEXT10;
-  static const long ID_SLIDER3;
-  static const long ID_SPINCTRL3;
-  static const long ID_BUTTON2;
-  static const long ID_BUTTON6;
-  static const long ID_BUTTON5;
-  static const long ID_BUTTON1;
-  static const long ID_BUTTON3;
-  static const long ID_BUTTON7;
-  static const long ID_BUTTON8;
-  static const long ID_BUTTON9;
-  static const long ID_STATICTEXT8;
-  static const long ID_STATICTEXT2;
-  static const long ID_BUTTON4;
-  static const long ID_TEXTCTRL1;
-  static const long ID_PANEL1;
-  static const long ID_CUSTOM2;
-  static const long ID_PANEL3;
+  static const wxWindowID ID_STATICTEXT7;
+  static const wxWindowID ID_STATICTEXT6;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_SLIDER1;
+  static const wxWindowID ID_SPINCTRL1;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_SLIDER2;
+  static const wxWindowID ID_SPINCTRL2;
+  static const wxWindowID ID_STATICTEXT10;
+  static const wxWindowID ID_SLIDER3;
+  static const wxWindowID ID_SPINCTRL3;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_BUTTON6;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_BUTTON7;
+  static const wxWindowID ID_BUTTON8;
+  static const wxWindowID ID_BUTTON9;
+  static const wxWindowID ID_STATICTEXT8;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_PANEL1;
+  static const wxWindowID ID_CUSTOM2;
+  static const wxWindowID ID_PANEL3;
   //*)
 
  public:
   //(*Handlers(CFormRawMap)
   void OnslFromCmdScrollThumbTrack(wxScrollEvent& event);
   void OnslToCmdScrollThumbTrack(wxScrollEvent& event);
-  void OnbtnGenerateClick(wxCommandEvent& event);
-  void OnbtnSaveTxtClick(wxCommandEvent& event);
-  void OnbtnSave3DClick(wxCommandEvent& event);
-  void OnbtnCloseClick(wxCommandEvent& event);
+  void OnbtnGenerateClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSaveTxtClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSave3DClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event);
   void OnslDecimateCmdScrollThumbTrack(wxScrollEvent& event);
   void OnslToCmdScroll(wxScrollEvent& event);
-  void OnbtnGeneratePathsClick(wxCommandEvent& event);
-  void OnGenerateFromRTK(wxCommandEvent& event);
-  void OnbtnSavePathClick(wxCommandEvent& event);
-  void OnbtnSaveObsPathClick(wxCommandEvent& event);
-  void OnbtnView3DClick(wxCommandEvent& event);
-  void OnbtnHelpClick(wxCommandEvent& event);
+  void OnbtnGeneratePathsClick([[maybe_unused]] wxCommandEvent& event);
+  void OnGenerateFromRTK([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSavePathClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSaveObsPathClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnView3DClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnHelpClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   //(*Declarations(CFormRawMap)

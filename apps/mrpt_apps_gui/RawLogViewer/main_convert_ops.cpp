@@ -41,7 +41,7 @@ using namespace mrpt::gui;
 using namespace mrpt::poses;
 using namespace std;
 
-void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuCompactRawlog([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -176,7 +176,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuLossLessDecimate([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -304,7 +304,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenCompactFILE(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenCompactFILE([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -313,7 +313,7 @@ void xRawLogViewerFrame::OnMenCompactFILE(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuLossLessDecFILE([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -484,7 +484,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuConvertExternallyStored([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -646,7 +646,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuConvertObservationOnly([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -781,7 +781,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuResortByTimestamp([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -851,7 +851,7 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -936,7 +936,7 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 }
 
 // Convert from observations only to actions-SF format:
-void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuConvertSF([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 

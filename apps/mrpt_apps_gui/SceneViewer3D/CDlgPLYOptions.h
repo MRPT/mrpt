@@ -53,28 +53,28 @@ class CDlgPLYOptions : public wxDialog
 
  protected:
   //(*Identifiers(CDlgPLYOptions)
-  static const long ID_CHECKBOX1;
-  static const long ID_CHECKBOX2;
-  static const long ID_STATICTEXT1;
-  static const long ID_CHOICE1;
-  static const long ID_STATICTEXT2;
-  static const long ID_TEXTCTRL1;
-  static const long ID_STATICTEXT3;
-  static const long ID_TEXTCTRL2;
-  static const long ID_STATICTEXT4;
-  static const long ID_TEXTCTRL3;
-  static const long ID_RADIOBOX2;
-  static const long ID_RADIOBOX1;
-  static const long ID_PANEL1;
-  static const long ID_BUTTON1;
-  static const long ID_BUTTON2;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_CHECKBOX2;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_CHOICE1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_RADIOBOX2;
+  static const wxWindowID ID_RADIOBOX1;
+  static const wxWindowID ID_PANEL1;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
   //*)
 
  private:
   //(*Handlers(CDlgPLYOptions)
-  void OnbtnCancelClick(wxCommandEvent& event);
-  void OnbtnOKClick(wxCommandEvent& event);
-  void OnrbClassSelect(wxCommandEvent& event);
+  void OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnOKClick([[maybe_unused]] wxCommandEvent& event);
+  void OnrbClassSelect([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   DECLARE_EVENT_TABLE()

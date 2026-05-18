@@ -139,8 +139,8 @@ const wxWindowID ptgConfiguratorframe::idMenuQuit = wxNewId();
 const wxWindowID ptgConfiguratorframe::idMenuAbout = wxNewId();
 const wxWindowID ptgConfiguratorframe::ID_STATUSBAR1 = wxNewId();
 //*)
-const long ID_TEXTCTRL_SEL_TRAJ = wxNewId();
-const long idMenuExportPath = wxNewId();
+const wxWindowID ID_TEXTCTRL_SEL_TRAJ = wxNewId();
+const wxWindowID idMenuExportPath = wxNewId();
 
 BEGIN_EVENT_TABLE(ptgConfiguratorframe, wxFrame)
 //(*EventTable(ptgConfiguratorframe)
@@ -774,7 +774,7 @@ void ptgConfiguratorframe::OnAbout(wxCommandEvent&)
   mrpt::gui::show_mrpt_about_box_wxWidgets(this, "ptg-configurator");
 }
 void ptgConfiguratorframe::OnQuit(wxCommandEvent&) { Close(); }
-void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
+void ptgConfiguratorframe::OnbtnReloadParamsClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY;
   if (!ptg)
@@ -810,7 +810,7 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
   WX_END_TRY;
 }
 
-void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
+void ptgConfiguratorframe::OncbPTGClassSelect([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY;
 
@@ -1220,11 +1220,20 @@ void ptgConfiguratorframe::dumpPTGcfgToTextBox()
   edCfg->SetValue(cfg.getContent().c_str());
 }
 
-void ptgConfiguratorframe::OncbDrawShapePathClick(wxCommandEvent& event) { rebuild3Dview(); }
+void ptgConfiguratorframe::OncbDrawShapePathClick([[maybe_unused]] wxCommandEvent& event)
+{
+  rebuild3Dview();
+}
 
-void ptgConfiguratorframe::OncbBuildTPObsClick(wxCommandEvent& event) { rebuild3Dview(); }
+void ptgConfiguratorframe::OncbBuildTPObsClick([[maybe_unused]] wxCommandEvent& event)
+{
+  rebuild3Dview();
+}
 
-void ptgConfiguratorframe::OnbtnRebuildTPObsClick(wxCommandEvent& event) { rebuild3Dview(); }
+void ptgConfiguratorframe::OnbtnRebuildTPObsClick([[maybe_unused]] wxCommandEvent& event)
+{
+  rebuild3Dview();
+}
 
 void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
 {
@@ -1288,13 +1297,13 @@ void ptgConfiguratorframe::Onplot3DMouseClick(wxMouseEvent& event)
   m_plot->OnMouseDown(event);
 }
 
-void ptgConfiguratorframe::OnbtnPlaceObsClick(wxCommandEvent& event)
+void ptgConfiguratorframe::OnbtnPlaceObsClick([[maybe_unused]] wxCommandEvent& event)
 {
   m_plot->SetCursor(*wxCROSS_CURSOR);
   m_cursorPickState = cpsPickObstacle;
 }
 
-void ptgConfiguratorframe::OnbtnPlaceTargetClick(wxCommandEvent& event)
+void ptgConfiguratorframe::OnbtnPlaceTargetClick([[maybe_unused]] wxCommandEvent& event)
 {
   m_plot->SetCursor(*wxCROSS_CURSOR);
   m_cursorPickState = cpsPickTarget;
@@ -1307,7 +1316,7 @@ void ptgConfiguratorframe::OnslidPathHighlightCmdScroll(wxCommandEvent&)
   OnedIndexHighlightPathChange(dm);
 }
 
-void ptgConfiguratorframe::OncbHighlightOnePathClick(wxCommandEvent& event)
+void ptgConfiguratorframe::OncbHighlightOnePathClick([[maybe_unused]] wxCommandEvent& event)
 {
   // slidPathHighlight->Enable( cbHighlightOnePath->IsChecked() );
   // edIndexHighlightPath->Enable( cbHighlightOnePath->IsChecked() );
@@ -1316,9 +1325,9 @@ void ptgConfiguratorframe::OncbHighlightOnePathClick(wxCommandEvent& event)
 
 void ptgConfiguratorframe::OnedIndexHighlightPathChange(wxSpinEvent& event) { rebuild3Dview(); }
 
-void ptgConfiguratorframe::OnButton1Click(wxCommandEvent& event) { loadPlugin(); }
+void ptgConfiguratorframe::OnButton1Click([[maybe_unused]] wxCommandEvent& event) { loadPlugin(); }
 
-void ptgConfiguratorframe::OnrbShowTPSelectSelect(wxCommandEvent& event)
+void ptgConfiguratorframe::OnrbShowTPSelectSelect([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY;
 

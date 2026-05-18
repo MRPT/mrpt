@@ -23,9 +23,9 @@
 //*)
 
 //(*IdInit(CIniEditor)
-const long CIniEditor::ID_BUTTON1 = wxNewId();
-const long CIniEditor::ID_BUTTON2 = wxNewId();
-const long CIniEditor::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CIniEditor::ID_BUTTON1 = wxNewId();
+const wxWindowID CIniEditor::ID_BUTTON2 = wxNewId();
+const wxWindowID CIniEditor::ID_TEXTCTRL1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CIniEditor, wxDialog)
@@ -82,5 +82,5 @@ CIniEditor::~CIniEditor()
   //*)
 }
 
-void CIniEditor::OnbtnCancelClick(wxCommandEvent& event) { EndModal(0); }
-void CIniEditor::OnbtnOKClick(wxCommandEvent& event) { EndModal(1); }
+void CIniEditor::OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event) { EndModal(0); }
+void CIniEditor::OnbtnOKClick([[maybe_unused]] wxCommandEvent& event) { EndModal(1); }

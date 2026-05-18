@@ -67,33 +67,33 @@ class ViewOptions3DPoints : public wxPanel
 
  protected:
   //(*Identifiers(ViewOptions3DPoints)
-  static const long ID_CHECKBOX4;
-  static const long ID_STATICTEXT1;
-  static const long ID_TEXTCTRL1;
-  static const long ID_STATICTEXT2;
-  static const long ID_TEXTCTRL2;
-  static const long ID_STATICTEXT3;
-  static const long ID_TEXTCTRL3;
-  static const long ID_BUTTON1;
-  static const long ID_CHECKBOX1;
-  static const long ID_RADIOBOX1;
-  static const long ID_RADIOBOX2;
-  static const long ID_CHECKBOX2;
-  static const long ID_STATICTEXT4;
-  static const long ID_SPINCTRL1;
-  static const long ID_CHECKBOX3;
-  static const long ID_STATICTEXT5;
-  static const long ID_TEXTCTRL4;
-  static const long ID_CHECKBOX5;
-  static const long ID_COLOURPICKERCTRL1;
-  static const long ID_CHECKBOX6;
-  static const long ID_CHECKBOX7;
-  static const long ID_COLOURPICKERCTRL2;
+  static const wxWindowID ID_CHECKBOX4;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_RADIOBOX1;
+  static const wxWindowID ID_RADIOBOX2;
+  static const wxWindowID ID_CHECKBOX2;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_SPINCTRL1;
+  static const wxWindowID ID_CHECKBOX3;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_TEXTCTRL4;
+  static const wxWindowID ID_CHECKBOX5;
+  static const wxWindowID ID_COLOURPICKERCTRL1;
+  static const wxWindowID ID_CHECKBOX6;
+  static const wxWindowID ID_CHECKBOX7;
+  static const wxWindowID ID_COLOURPICKERCTRL2;
   //*)
 
  private:
   //(*Handlers(ViewOptions3DPoints)
-  void OnbtnApplyClick(wxCommandEvent& event);
+  void OnbtnApplyClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   DECLARE_EVENT_TABLE()

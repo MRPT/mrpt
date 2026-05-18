@@ -66,51 +66,51 @@ using namespace mrpt::kinematics;
 using namespace std;
 
 //(*IdInit(robotic_arm_kinematicsFrame)
-const long robotic_arm_kinematicsFrame::ID_RADIOBOX2 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICTEXT1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_BUTTON5 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_BUTTON6 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_BUTTON7 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_RADIOBOX1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICLINE4 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX2 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_TEXTCTRL1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICTEXT3 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_BUTTON1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_SLIDER1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICLINE1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX3 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_TEXTCTRL2 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICTEXT5 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_BUTTON2 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_SLIDER2 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICLINE2 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX4 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_TEXTCTRL3 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICTEXT7 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_BUTTON3 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_SLIDER3 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICLINE3 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX5 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_TEXTCTRL4 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICTEXT9 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_BUTTON4 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_SLIDER4 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_PANEL1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_XY_GLCANVAS = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICTEXT10 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_PANEL2 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATICTEXT2 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_LISTBOX1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_TEXTCTRL5 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_PANEL3 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_NOTEBOOK1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_MENUITEM3 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_MENUITEM1 = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_MENUITEM2 = wxNewId();
-const long robotic_arm_kinematicsFrame::idMenuQuit = wxNewId();
-const long robotic_arm_kinematicsFrame::idMenuAbout = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_RADIOBOX2 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICTEXT1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_BUTTON5 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_BUTTON6 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_BUTTON7 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_RADIOBOX1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICLINE4 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX2 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICTEXT3 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_BUTTON1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_SLIDER1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICLINE1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX3 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICTEXT5 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_BUTTON2 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_SLIDER2 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICLINE2 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX4 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICTEXT7 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_BUTTON3 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_SLIDER3 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICLINE3 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX5 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICTEXT9 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_BUTTON4 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_SLIDER4 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_PANEL1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_XY_GLCANVAS = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICTEXT10 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_PANEL2 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_STATICTEXT2 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_LISTBOX1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_TEXTCTRL5 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_PANEL3 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_MENUITEM3 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_MENUITEM1 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::ID_MENUITEM2 = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::idMenuQuit = wxNewId();
+const wxWindowID robotic_arm_kinematicsFrame::idMenuAbout = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(robotic_arm_kinematicsFrame, wxFrame)
@@ -580,8 +580,8 @@ void robotic_arm_kinematicsFrame::Regenerate3DView()
   m_robot.getAs3DObject(m_gl_robot, &m_all_poses);
 }
 
-void robotic_arm_kinematicsFrame::OnQuit(wxCommandEvent& event) { Close(); }
-void robotic_arm_kinematicsFrame::OnAbout(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::OnQuit([[maybe_unused]] wxCommandEvent& event) { Close(); }
+void robotic_arm_kinematicsFrame::OnAbout([[maybe_unused]] wxCommandEvent& event)
 {
   CAboutBox box(this);
   box.ShowModal();
@@ -736,7 +736,7 @@ void robotic_arm_kinematicsFrame::OnListSelectionChange()
   slA->SetValue(1e3 * l.a);
 }
 
-void robotic_arm_kinematicsFrame::OnlistLinksSelect(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::OnlistLinksSelect([[maybe_unused]] wxCommandEvent& event)
 {
   OnListSelectionChange();
 }
@@ -797,7 +797,7 @@ void robotic_arm_kinematicsFrame::OnSliderScroll(wxCommandEvent&)
   m_plot3D->Refresh();
 }
 
-void robotic_arm_kinematicsFrame::OnButtonSaveFromEdit(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::OnButtonSaveFromEdit([[maybe_unused]] wxCommandEvent& event)
 {
   const int sel = listLinks->GetSelection();
   if (sel >= 0 && size_t(sel) < m_robot.size())
@@ -833,7 +833,7 @@ void robotic_arm_kinematicsFrame::OnButtonSaveFromEdit(wxCommandEvent& event)
   }
 }
 
-void robotic_arm_kinematicsFrame::OnbtnClearClick(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::OnbtnClearClick([[maybe_unused]] wxCommandEvent& event)
 {
   m_robot.clear();
 
@@ -846,7 +846,7 @@ void robotic_arm_kinematicsFrame::OnbtnClearClick(wxCommandEvent& event)
   m_plot3D->Refresh();
 }
 
-void robotic_arm_kinematicsFrame::OnbtnAddLinkClick(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::OnbtnAddLinkClick([[maybe_unused]] wxCommandEvent& event)
 {
   m_robot.addLink(0, 0, 0, 0, false);
 
@@ -860,7 +860,7 @@ void robotic_arm_kinematicsFrame::OnbtnAddLinkClick(wxCommandEvent& event)
   m_plot3D->Refresh();
 }
 
-void robotic_arm_kinematicsFrame::OnLoadBinary(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::OnLoadBinary([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -891,7 +891,7 @@ void robotic_arm_kinematicsFrame::OnLoadBinary(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void robotic_arm_kinematicsFrame::OnSaveBinary(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::OnSaveBinary([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -914,12 +914,12 @@ void robotic_arm_kinematicsFrame::OnSaveBinary(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void robotic_arm_kinematicsFrame::OnrbTypeSelect(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::OnrbTypeSelect([[maybe_unused]] wxCommandEvent& event)
 {
   OnButtonSaveFromEdit(event);
 }
 
-void robotic_arm_kinematicsFrame::OnbtnDeleteClick(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::OnbtnDeleteClick([[maybe_unused]] wxCommandEvent& event)
 {
   const int sel = listLinks->GetSelection();
   if (sel < 0 || size_t(sel) >= m_robot.size())
@@ -940,7 +940,10 @@ void robotic_arm_kinematicsFrame::OnbtnDeleteClick(wxCommandEvent& event)
   m_plot3D->Refresh();
 }
 
-void robotic_arm_kinematicsFrame::OnlbXYZsSelect(wxCommandEvent& event) { UpdateMatrixView(); }
+void robotic_arm_kinematicsFrame::OnlbXYZsSelect([[maybe_unused]] wxCommandEvent& event)
+{
+  UpdateMatrixView();
+}
 
 void robotic_arm_kinematicsFrame::UpdateMatrixView()
 {
@@ -966,7 +969,7 @@ void robotic_arm_kinematicsFrame::UpdateMatrixView()
   edMatrix->Thaw();
 }
 
-void robotic_arm_kinematicsFrame::On1stXYZSelect(wxCommandEvent& event)
+void robotic_arm_kinematicsFrame::On1stXYZSelect([[maybe_unused]] wxCommandEvent& event)
 {
   // Save orientation of 1st DOF:
   CPose3D pose0;

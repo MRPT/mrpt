@@ -42,16 +42,16 @@ class gridmapSimulFrame : public wxFrame
 
  private:
   //(*Handlers(gridmapSimulFrame)
-  void OnbtnQuitClick(wxCommandEvent& event);
+  void OnbtnQuitClick([[maybe_unused]] wxCommandEvent& event);
   void OntimRunTrigger(wxTimerEvent& event);
-  void OnbtnStartClick(wxCommandEvent& event);
-  void OnbtnEndClick(wxCommandEvent& event);
-  void OnbtnExploreClick(wxCommandEvent& event);
-  void OnbtnSetLaserClick(wxCommandEvent& event);
-  void OnAbout(wxCommandEvent& event);
-  void OnbtnResimulateClick(wxCommandEvent& event);
+  void OnbtnStartClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnEndClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnExploreClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSetLaserClick([[maybe_unused]] wxCommandEvent& event);
+  void OnAbout([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnResimulateClick([[maybe_unused]] wxCommandEvent& event);
   //*)
-  void OnMenuLoadMap(wxCommandEvent& event);
+  void OnMenuLoadMap([[maybe_unused]] wxCommandEvent& event);
 
   void update_grid_map_3d();
 

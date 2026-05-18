@@ -297,7 +297,7 @@ void fixGPStimestamp(
   time_changes.push_back(DeltaTime);
 }
 
-void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -374,7 +374,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuDistanceBtwGPSs([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -564,7 +564,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
+void xRawLogViewerFrame::OnSummaryGPS([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -623,7 +623,7 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
+void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1079,7 +1079,7 @@ void filter_delGPSNan(
   }
 }
 
-void xRawLogViewerFrame::OnMenuGPSDeleteNaN(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuGPSDeleteNaN([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 

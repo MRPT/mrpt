@@ -94,77 +94,77 @@ wxBitmap MyArtProvider::CreateBitmap(
 }
 
 //(*IdInit(slamdemoFrame)
-const long slamdemoFrame::ID_STATICTEXT1 = wxNewId();
-const long slamdemoFrame::ID_PANEL3 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM1 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT2 = wxNewId();
-const long slamdemoFrame::ID_PANEL4 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM2 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT10 = wxNewId();
-const long slamdemoFrame::ID_PANEL5 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM3 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT3 = wxNewId();
-const long slamdemoFrame::ID_PANEL6 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM4 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT4 = wxNewId();
-const long slamdemoFrame::ID_PANEL7 = wxNewId();
-const long slamdemoFrame::ID_GRID1 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT5 = wxNewId();
-const long slamdemoFrame::ID_PANEL9 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM7 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT6 = wxNewId();
-const long slamdemoFrame::ID_PANEL10 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM8 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT7 = wxNewId();
-const long slamdemoFrame::ID_PANEL11 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM9 = wxNewId();
-const long slamdemoFrame::ID_PANEL1 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT9 = wxNewId();
-const long slamdemoFrame::ID_PANEL8 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM5 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT11 = wxNewId();
-const long slamdemoFrame::ID_PANEL14 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM6 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT12 = wxNewId();
-const long slamdemoFrame::ID_PANEL15 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM11 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT13 = wxNewId();
-const long slamdemoFrame::ID_PANEL16 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM12 = wxNewId();
-const long slamdemoFrame::ID_PANEL2 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT8 = wxNewId();
-const long slamdemoFrame::ID_PANEL13 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM10 = wxNewId();
-const long slamdemoFrame::ID_STATICTEXT14 = wxNewId();
-const long slamdemoFrame::ID_PANEL17 = wxNewId();
-const long slamdemoFrame::ID_CUSTOM13 = wxNewId();
-const long slamdemoFrame::ID_PANEL12 = wxNewId();
-const long slamdemoFrame::ID_NOTEBOOK1 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM1 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM2 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM3 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM6 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM4 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM5 = wxNewId();
-const long slamdemoFrame::idMenuQuit = wxNewId();
-const long slamdemoFrame::ID_MENUITEM8 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM11 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM_SAVE_RAWLOG = wxNewId();
-const long slamdemoFrame::ID_MENUITEM9 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM10 = wxNewId();
-const long slamdemoFrame::ID_MENUITEM7 = wxNewId();
-const long slamdemoFrame::idMenuAbout = wxNewId();
-const long slamdemoFrame::ID_STATUSBAR1 = wxNewId();
-const long slamdemoFrame::ID_TOOLBARITEM1 = wxNewId();
-const long slamdemoFrame::ID_TOOLBARITEM2 = wxNewId();
-const long slamdemoFrame::ID_BTNRUN = wxNewId();
-const long slamdemoFrame::ID_BTNSTOP = wxNewId();
-const long slamdemoFrame::ID_TOOLBARITEM4 = wxNewId();
-const long slamdemoFrame::ID_TOOLBARITEM3 = wxNewId();
-const long slamdemoFrame::ID_TOOLBARITEM6 = wxNewId();
-const long slamdemoFrame::ID_TOOLBARITEM7 = wxNewId();
-const long slamdemoFrame::ID_TOOLBAR1 = wxNewId();
-const long slamdemoFrame::ID_TIMER1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL3 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT2 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL4 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM2 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT10 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL5 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM3 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT3 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL6 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM4 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT4 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL7 = wxNewId();
+const wxWindowID slamdemoFrame::ID_GRID1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT5 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL9 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM7 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT6 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL10 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM8 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT7 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL11 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM9 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT9 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL8 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM5 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT11 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL14 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM6 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT12 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL15 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM11 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT13 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL16 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM12 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL2 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT8 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL13 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM10 = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATICTEXT14 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL17 = wxNewId();
+const wxWindowID slamdemoFrame::ID_CUSTOM13 = wxNewId();
+const wxWindowID slamdemoFrame::ID_PANEL12 = wxNewId();
+const wxWindowID slamdemoFrame::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM2 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM3 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM6 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM4 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM5 = wxNewId();
+const wxWindowID slamdemoFrame::idMenuQuit = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM8 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM11 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM_SAVE_RAWLOG = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM9 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM10 = wxNewId();
+const wxWindowID slamdemoFrame::ID_MENUITEM7 = wxNewId();
+const wxWindowID slamdemoFrame::idMenuAbout = wxNewId();
+const wxWindowID slamdemoFrame::ID_STATUSBAR1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_TOOLBARITEM1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_TOOLBARITEM2 = wxNewId();
+const wxWindowID slamdemoFrame::ID_BTNRUN = wxNewId();
+const wxWindowID slamdemoFrame::ID_BTNSTOP = wxNewId();
+const wxWindowID slamdemoFrame::ID_TOOLBARITEM4 = wxNewId();
+const wxWindowID slamdemoFrame::ID_TOOLBARITEM3 = wxNewId();
+const wxWindowID slamdemoFrame::ID_TOOLBARITEM6 = wxNewId();
+const wxWindowID slamdemoFrame::ID_TOOLBARITEM7 = wxNewId();
+const wxWindowID slamdemoFrame::ID_TOOLBAR1 = wxNewId();
+const wxWindowID slamdemoFrame::ID_TIMER1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(slamdemoFrame, wxFrame)
@@ -849,7 +849,7 @@ slamdemoFrame::~slamdemoFrame()
 /*---------------------------------------------------------------
             Quit
   ---------------------------------------------------------------*/
-void slamdemoFrame::OnQuit(wxCommandEvent& event)
+void slamdemoFrame::OnQuit([[maybe_unused]] wxCommandEvent& event)
 {
   // Stop simulation
   wxCommandEvent dumm;
@@ -873,7 +873,7 @@ void slamdemoFrame::OnAbout(wxCommandEvent&)
 /*---------------------------------------------------------------
             Reset btn
   ---------------------------------------------------------------*/
-void slamdemoFrame::OnbtnResetClicked(wxCommandEvent& event)
+void slamdemoFrame::OnbtnResetClicked([[maybe_unused]] wxCommandEvent& event)
 {
   resetSimulator(options.map_generator);
   updateAllGraphs();
@@ -882,7 +882,7 @@ void slamdemoFrame::OnbtnResetClicked(wxCommandEvent& event)
 /*---------------------------------------------------------------
             1 step btn
   ---------------------------------------------------------------*/
-void slamdemoFrame::OnbtnOneStepClicked(wxCommandEvent& event)
+void slamdemoFrame::OnbtnOneStepClicked([[maybe_unused]] wxCommandEvent& event)
 {
   CTicTac tictac;
   tictac.Tic();
@@ -896,7 +896,7 @@ void slamdemoFrame::OnbtnOneStepClicked(wxCommandEvent& event)
 /*---------------------------------------------------------------
             Run btn
   ---------------------------------------------------------------*/
-void slamdemoFrame::OnbtnRunClicked(wxCommandEvent& event)
+void slamdemoFrame::OnbtnRunClicked([[maybe_unused]] wxCommandEvent& event)
 {
   this->ToolBar1->EnableTool(ID_BTNSTOP, true);
   mnuStop->Enable(true);
@@ -912,7 +912,7 @@ void slamdemoFrame::OnbtnRunClicked(wxCommandEvent& event)
 /*---------------------------------------------------------------
             Stop btn
   ---------------------------------------------------------------*/
-void slamdemoFrame::OnbtnStopClicked(wxCommandEvent& event)
+void slamdemoFrame::OnbtnStopClicked([[maybe_unused]] wxCommandEvent& event)
 {
   this->ToolBar1->EnableTool(ID_BTNSTOP, false);
   mnuStop->Enable(false);
@@ -925,7 +925,7 @@ void slamdemoFrame::OnbtnStopClicked(wxCommandEvent& event)
 /*---------------------------------------------------------------
             batch run btn
   ---------------------------------------------------------------*/
-void slamdemoFrame::OnbtnRunBatchClicked(wxCommandEvent& event)
+void slamdemoFrame::OnbtnRunBatchClicked([[maybe_unused]] wxCommandEvent& event)
 {
   static CTicTac tictac;
 
@@ -1871,7 +1871,7 @@ void slamdemoFrame::OntimSimulTrigger(wxTimerEvent& event)
 /*---------------------------------------------------------------
             OnConfigClicked
   ---------------------------------------------------------------*/
-void slamdemoFrame::OnConfigClicked(wxCommandEvent& event)
+void slamdemoFrame::OnConfigClicked([[maybe_unused]] wxCommandEvent& event)
 {
   CDlgParams dlg(this);
 
@@ -1990,7 +1990,7 @@ void slamdemoFrame::OnConfigClicked(wxCommandEvent& event)
   }
 }
 
-void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
+void slamdemoFrame::OnMenuSaveFilterState([[maybe_unused]] wxCommandEvent& event)
 {
   CPosePDFGaussian estRobotPose;
   vector<TPoint2D> LMs;
@@ -2059,7 +2059,7 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
   }
 }
 
-void slamdemoFrame::OnMenuProfilerViewStats(wxCommandEvent& event)
+void slamdemoFrame::OnMenuProfilerViewStats([[maybe_unused]] wxCommandEvent& event)
 {
   string profStats = m_SLAM.getProfiler().getStatsAsText();
   CLogView dlg(this);
@@ -2067,9 +2067,12 @@ void slamdemoFrame::OnMenuProfilerViewStats(wxCommandEvent& event)
   dlg.ShowModal();
 }
 
-void slamdemoFrame::OnMenuProfilerReset(wxCommandEvent& event) { m_SLAM.getProfiler().clear(); }
+void slamdemoFrame::OnMenuProfilerReset([[maybe_unused]] wxCommandEvent& event)
+{
+  m_SLAM.getProfiler().clear();
+}
 
-void slamdemoFrame::OnmnuSaveLastDASelected(wxCommandEvent& event)
+void slamdemoFrame::OnmnuSaveLastDASelected([[maybe_unused]] wxCommandEvent& event)
 {
   // Data association graphs ------------------------
   const CRangeBearingKFSLAM2D::TDataAssocInfo& da = m_SLAM.getLastDataAssociation();
@@ -2121,7 +2124,7 @@ void slamdemoFrame::OnmnuSaveLastDASelected(wxCommandEvent& event)
   }
 }
 
-void slamdemoFrame::OnmnuItemSaveRawlogSelected(wxCommandEvent& event)
+void slamdemoFrame::OnmnuItemSaveRawlogSelected([[maybe_unused]] wxCommandEvent& event)
 {
   const bool saveMnuChkd = mnuItemSaveRawlog->IsChecked();
 

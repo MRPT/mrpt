@@ -193,51 +193,51 @@ void wxMRPTImageControl::GetBitmap(wxBitmap& bmp)
 //  *********************************************************************
 
 //(*IdInit(CPanelCameraSelection)
-const long CPanelCameraSelection::ID_STATICTEXT1 = wxNewId();
-const long CPanelCameraSelection::ID_SPINCTRL1 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT3 = wxNewId();
-const long CPanelCameraSelection::ID_CHOICE1 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT6 = wxNewId();
-const long CPanelCameraSelection::ID_CHOICE2 = wxNewId();
-const long CPanelCameraSelection::ID_PANEL2 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT7 = wxNewId();
-const long CPanelCameraSelection::ID_TEXTCTRL1 = wxNewId();
-const long CPanelCameraSelection::ID_PANEL3 = wxNewId();
-const long CPanelCameraSelection::ID_TEXTCTRL6 = wxNewId();
-const long CPanelCameraSelection::ID_PANEL4 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT8 = wxNewId();
-const long CPanelCameraSelection::ID_TEXTCTRL2 = wxNewId();
-const long CPanelCameraSelection::ID_BUTTON7 = wxNewId();
-const long CPanelCameraSelection::ID_PANEL5 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT9 = wxNewId();
-const long CPanelCameraSelection::ID_TEXTCTRL3 = wxNewId();
-const long CPanelCameraSelection::ID_BUTTON8 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT5 = wxNewId();
-const long CPanelCameraSelection::ID_TEXTCTRL7 = wxNewId();
-const long CPanelCameraSelection::ID_BUTTON9 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT10 = wxNewId();
-const long CPanelCameraSelection::ID_TEXTCTRL8 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT11 = wxNewId();
-const long CPanelCameraSelection::ID_PANEL6 = wxNewId();
-const long CPanelCameraSelection::ID_RADIOBOX1 = wxNewId();
-const long CPanelCameraSelection::ID_CHECKBOX1 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT2 = wxNewId();
-const long CPanelCameraSelection::ID_PANEL7 = wxNewId();
-const long CPanelCameraSelection::ID_RADIOBOX2 = wxNewId();
-const long CPanelCameraSelection::ID_STATICTEXT4 = wxNewId();
-const long CPanelCameraSelection::ID_TEXTCTRL4 = wxNewId();
-const long CPanelCameraSelection::ID_CHECKBOX3 = wxNewId();
-const long CPanelCameraSelection::ID_CHECKBOX4 = wxNewId();
-const long CPanelCameraSelection::ID_CHECKBOX5 = wxNewId();
-const long CPanelCameraSelection::ID_CHECKBOX6 = wxNewId();
-const long CPanelCameraSelection::ID_PANEL1 = wxNewId();
-const long CPanelCameraSelection::ID_CHECKBOX7 = wxNewId();
-const long CPanelCameraSelection::ID_CHECKBOX8 = wxNewId();
-const long CPanelCameraSelection::ID_CHECKBOX9 = wxNewId();
-const long CPanelCameraSelection::ID_RADIOBOX3 = wxNewId();
-const long CPanelCameraSelection::ID_PANEL8 = wxNewId();
-const long CPanelCameraSelection::ID_NOTEBOOK1 = wxNewId();
-const long CPanelCameraSelection::ID_CHECKBOX2 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT1 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_SPINCTRL1 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT3 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHOICE1 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT6 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHOICE2 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_PANEL2 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT7 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_PANEL3 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_TEXTCTRL6 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_PANEL4 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT8 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_BUTTON7 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_PANEL5 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT9 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_BUTTON8 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT5 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_TEXTCTRL7 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_BUTTON9 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT10 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_TEXTCTRL8 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT11 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_PANEL6 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_RADIOBOX1 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHECKBOX1 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT2 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_PANEL7 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_RADIOBOX2 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_STATICTEXT4 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHECKBOX3 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHECKBOX4 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHECKBOX5 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHECKBOX6 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_PANEL1 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHECKBOX7 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHECKBOX8 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHECKBOX9 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_RADIOBOX3 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_PANEL8 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID CPanelCameraSelection::ID_CHECKBOX2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CPanelCameraSelection, wxPanel)
@@ -503,7 +503,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
   cbOpencvResolution->Append(_("1280x1024"));
 }
 
-void CPanelCameraSelection::OnbtnBrowseVideoClick(wxCommandEvent& event)
+void CPanelCameraSelection::OnbtnBrowseVideoClick([[maybe_unused]] wxCommandEvent& event)
 {
   wxFileDialog dialog(
       this, wxT("Choose a video to open"), wxT("."), wxT(""),
@@ -514,7 +514,7 @@ void CPanelCameraSelection::OnbtnBrowseVideoClick(wxCommandEvent& event)
   if (dialog.ShowModal() == wxID_OK) edVideoFile->SetValue(dialog.GetPath());
 }
 
-void CPanelCameraSelection::OnbtnBrowseRawlogClick(wxCommandEvent& event)
+void CPanelCameraSelection::OnbtnBrowseRawlogClick([[maybe_unused]] wxCommandEvent& event)
 {
   wxFileDialog dialog(
       this, wxT("Choose a rawlog to open"), wxT("."), wxT(""),
@@ -536,7 +536,7 @@ void CPanelCameraSelection::OnbtnBrowseRawlogClick(wxCommandEvent& event)
   }
 }
 
-void CPanelCameraSelection::OnbtnBrowseRawlogDirClick(wxCommandEvent& event)
+void CPanelCameraSelection::OnbtnBrowseRawlogDirClick([[maybe_unused]] wxCommandEvent& event)
 {
   wxDirDialog dialog(
       this, wxT("Choose the rawlog directory with external images"), edRawlogImgDir->GetValue(),

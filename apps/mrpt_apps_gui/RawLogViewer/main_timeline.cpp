@@ -13,7 +13,7 @@
 */
 
 #include <mrpt/containers/find_closest.h>
-//#include <mrpt/system/CTimeLogger.h>
+// #include <mrpt/system/CTimeLogger.h>
 
 #include <wx/tooltip.h>
 
@@ -36,7 +36,7 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 {
   using This = xRawLogViewerFrame;  // shortcut!
 
-  static const long ID_TIMELINE_SCROLL_BAR = wxNewId();
+  static const wxWindowID ID_TIMELINE_SCROLL_BAR = wxNewId();
 
   wxFlexGridSizer* fgzBottomTimeLine;
 
@@ -47,8 +47,8 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
   // bottom-right/main panel 3D view:
   wxPanel* pnTimeLine;
   {
-    static const long ID_PANEL_TIMELINE = wxNewId();
-    static const long ID_TIMELINE_GLCANVAS = wxNewId();
+    static const wxWindowID ID_PANEL_TIMELINE = wxNewId();
+    static const wxWindowID ID_TIMELINE_GLCANVAS = wxNewId();
 
     pnTimeLine = new wxPanel(
         this, ID_PANEL_TIMELINE, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,

@@ -219,59 +219,59 @@ class CPanelCameraSelection : public wxPanel
 
  protected:
   //(*Identifiers(CPanelCameraSelection)
-  static const long ID_STATICTEXT1;
-  static const long ID_SPINCTRL1;
-  static const long ID_STATICTEXT3;
-  static const long ID_CHOICE1;
-  static const long ID_STATICTEXT6;
-  static const long ID_CHOICE2;
-  static const long ID_PANEL2;
-  static const long ID_STATICTEXT7;
-  static const long ID_TEXTCTRL1;
-  static const long ID_PANEL3;
-  static const long ID_TEXTCTRL6;
-  static const long ID_PANEL4;
-  static const long ID_STATICTEXT8;
-  static const long ID_TEXTCTRL2;
-  static const long ID_BUTTON7;
-  static const long ID_PANEL5;
-  static const long ID_STATICTEXT9;
-  static const long ID_TEXTCTRL3;
-  static const long ID_BUTTON8;
-  static const long ID_STATICTEXT5;
-  static const long ID_TEXTCTRL7;
-  static const long ID_BUTTON9;
-  static const long ID_STATICTEXT10;
-  static const long ID_TEXTCTRL8;
-  static const long ID_STATICTEXT11;
-  static const long ID_PANEL6;
-  static const long ID_RADIOBOX1;
-  static const long ID_CHECKBOX1;
-  static const long ID_STATICTEXT2;
-  static const long ID_PANEL7;
-  static const long ID_RADIOBOX2;
-  static const long ID_STATICTEXT4;
-  static const long ID_TEXTCTRL4;
-  static const long ID_CHECKBOX3;
-  static const long ID_CHECKBOX4;
-  static const long ID_CHECKBOX5;
-  static const long ID_CHECKBOX6;
-  static const long ID_PANEL1;
-  static const long ID_CHECKBOX7;
-  static const long ID_CHECKBOX8;
-  static const long ID_CHECKBOX9;
-  static const long ID_RADIOBOX3;
-  static const long ID_PANEL8;
-  static const long ID_NOTEBOOK1;
-  static const long ID_CHECKBOX2;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_SPINCTRL1;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_CHOICE1;
+  static const wxWindowID ID_STATICTEXT6;
+  static const wxWindowID ID_CHOICE2;
+  static const wxWindowID ID_PANEL2;
+  static const wxWindowID ID_STATICTEXT7;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_PANEL3;
+  static const wxWindowID ID_TEXTCTRL6;
+  static const wxWindowID ID_PANEL4;
+  static const wxWindowID ID_STATICTEXT8;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_BUTTON7;
+  static const wxWindowID ID_PANEL5;
+  static const wxWindowID ID_STATICTEXT9;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_BUTTON8;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_TEXTCTRL7;
+  static const wxWindowID ID_BUTTON9;
+  static const wxWindowID ID_STATICTEXT10;
+  static const wxWindowID ID_TEXTCTRL8;
+  static const wxWindowID ID_STATICTEXT11;
+  static const wxWindowID ID_PANEL6;
+  static const wxWindowID ID_RADIOBOX1;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_PANEL7;
+  static const wxWindowID ID_RADIOBOX2;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_TEXTCTRL4;
+  static const wxWindowID ID_CHECKBOX3;
+  static const wxWindowID ID_CHECKBOX4;
+  static const wxWindowID ID_CHECKBOX5;
+  static const wxWindowID ID_CHECKBOX6;
+  static const wxWindowID ID_PANEL1;
+  static const wxWindowID ID_CHECKBOX7;
+  static const wxWindowID ID_CHECKBOX8;
+  static const wxWindowID ID_CHECKBOX9;
+  static const wxWindowID ID_RADIOBOX3;
+  static const wxWindowID ID_PANEL8;
+  static const wxWindowID ID_NOTEBOOK1;
+  static const wxWindowID ID_CHECKBOX2;
   //*)
 
  private:
   //(*Handlers(CPanelCameraSelection)
   //*)
-  void OnbtnBrowseVideoClick(wxCommandEvent& event);
-  void OnbtnBrowseRawlogClick(wxCommandEvent& event);
-  void OnbtnBrowseRawlogDirClick(wxCommandEvent& event);
+  void OnbtnBrowseVideoClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnBrowseRawlogClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnBrowseRawlogDirClick([[maybe_unused]] wxCommandEvent& event);
 
   DECLARE_EVENT_TABLE()
 };

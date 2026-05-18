@@ -23,9 +23,9 @@
 #include "robotic_arm_kinematicsMain.h"
 
 //(*IdInit(PanelDOF)
-const long PanelDOF::ID_SIMPLEHTMLLISTBOX2 = wxNewId();
-const long PanelDOF::ID_SLIDER1 = wxNewId();
-const long PanelDOF::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID PanelDOF::ID_SIMPLEHTMLLISTBOX2 = wxNewId();
+const wxWindowID PanelDOF::ID_SLIDER1 = wxNewId();
+const wxWindowID PanelDOF::ID_TEXTCTRL1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(PanelDOF, wxPanel)

@@ -65,16 +65,16 @@ class holonomic_navigator_demoFrame : public wxFrame
 
  private:
   //(*Handlers(holonomic_navigator_demoFrame)
-  void OnQuit(wxCommandEvent& event);
-  void OnAbout(wxCommandEvent& event);
-  void OnbtnPlaceRobotClick(wxCommandEvent& event);
-  void OnbtnPlaceTargetClick(wxCommandEvent& event);
-  void OnbtnStartClick(wxCommandEvent& event);
-  void OnbtnStopClick(wxCommandEvent& event);
+  void OnQuit([[maybe_unused]] wxCommandEvent& event);
+  void OnAbout([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPlaceRobotClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPlaceTargetClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStartClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStopClick([[maybe_unused]] wxCommandEvent& event);
   void OntimRunSimulTrigger(wxTimerEvent& event);
-  void OnMenuItemChangeVisibleStuff(wxCommandEvent& event);
-  void OnMenuItemClearRobotPath(wxCommandEvent& event);
-  void OnbtnLoadMapClick(wxCommandEvent& event);
+  void OnMenuItemChangeVisibleStuff([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuItemClearRobotPath([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnLoadMapClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   //(*Identifiers(holonomic_navigator_demoFrame)

@@ -39,13 +39,13 @@ class CLogView : public wxDialog
 
  protected:
   //(*Identifiers(CLogView)
-  static const long ID_TEXTCTRL1;
-  static const long ID_BUTTON1;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_BUTTON1;
   //*)
 
  private:
   //(*Handlers(CLogView)
-  void OnbtnOkClick(wxCommandEvent& event);
+  void OnbtnOkClick([[maybe_unused]] wxCommandEvent& event);
   //*)
 
   DECLARE_EVENT_TABLE()
