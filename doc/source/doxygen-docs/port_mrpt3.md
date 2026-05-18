@@ -483,3 +483,54 @@ if (entry_type == CRawlog::TEntryType::etSensoryFrame) { ... }
 10. **Build and iterate**: Use `colcon build --packages-up-to mrpt_<module>`
     to build incrementally and fix remaining issues.
 
+---
+
+## 15. `CParticleFilter` enum class migration
+
+`TParticleFilterAlgorithm` and `TParticleResamplingAlgorithm` are now
+`enum class` with new PascalCase value names. The old names remain as
+`static constexpr` aliases for source compatibility, but prefer the new names:
+
+**Algorithm enum:**
+
+| Old name (still valid) | New name |
+|---|---|
+| `CParticleFilter::pfStandardProposal` | `CParticleFilter::TParticleFilterAlgorithm::StandardProposal` |
+| `CParticleFilter::pfAuxiliaryPFStandard` | `CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFStandard` |
+| `CParticleFilter::pfOptimalProposal` | `CParticleFilter::TParticleFilterAlgorithm::OptimalProposal` |
+| `CParticleFilter::pfAuxiliaryPFOptimal` | `CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFOptimal` |
+
+**Resampling enum:**
+
+| Old name (still valid) | New name |
+|---|---|
+| `CParticleFilter::prMultinomial` | `CParticleFilter::TParticleResamplingAlgorithm::Multinomial` |
+| `CParticleFilter::prResidual` | `CParticleFilter::TParticleResamplingAlgorithm::Residual` |
+| `CParticleFilter::prStratified` | `CParticleFilter::TParticleResamplingAlgorithm::Stratified` |
+| `CParticleFilter::prSystematic` | `CParticleFilter::TParticleResamplingAlgorithm::Systematic` |
+
+---
+
+## 16. `CRejectionSamplingCapable::rejectionSampling` return by value
+
+`rejectionSampling` previously wrote into an output `std::vector<TParticle>&`
+parameter. It now returns the vector:
+
+```cpp
+// MRPT 2.x / deprecated:
+std::vector<TParticle> samples;
+sampler.rejectionSampling(200, samples, 1000);
+
+// MRPT 3.0:
+auto samples = sampler.rejectionSampling(200, 1000);
+```
+
+---
+
+## 17. `CParticleFilterCapable::TParticleProbabilityEvaluator` is now `std::function`
+
+The callback type used in `prepareFastDrawSample` changed from a raw function
+pointer to `std::function`. Existing code that passes a plain function pointer
+or a static member function pointer continues to work unchanged. Lambdas and
+functors can now be passed directly without wrapping.
+

@@ -18,8 +18,9 @@ TParticleResamplingAlgorithm  = _b.TParticleResamplingAlgorithm
 TParticleFilterOptions = _b.TParticleFilterOptions
 TParticleFilterStats   = _b.TParticleFilterStats
 
-# Main class
-CParticleFilter = _b.CParticleFilter
+# Main classes
+CParticleFilter        = _b.CParticleFilter
+CParticleFilterCapable = _b.CParticleFilterCapable
 
 __all__ = [
     "TParticleFilterAlgorithm",
@@ -27,4 +28,5 @@ __all__ = [
     "TParticleFilterOptions",
     "TParticleFilterStats",
     "CParticleFilter",
+    "CParticleFilterCapable",
 ]

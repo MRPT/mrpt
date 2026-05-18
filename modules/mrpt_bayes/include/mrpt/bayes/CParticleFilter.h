@@ -17,6 +17,8 @@
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/typemeta/TEnumType.h>
 
+#include <cstdint>
+
 namespace mrpt
 {
 namespace obs
@@ -58,13 +60,13 @@ class CParticleFilter : public mrpt::system::COutputLogger
  public:
   /** Defines different types of particle filter algorithms.
    *  The defined SIR implementations are:
-   *		- pfStandardProposal: Standard proposal distribution + weights
+   *		- StandardProposal: Standard proposal distribution + weights
    *according to likelihood function.
-   *		- pfAuxiliaryPFStandard: An auxiliary PF using the standard proposal
+   *		- AuxiliaryPFStandard: An auxiliary PF using the standard proposal
    *distribution.
-   *		- pfOptimalProposal: Use the optimal proposal distribution (where
+   *		- OptimalProposal: Use the optimal proposal distribution (where
    *available!, usually this will perform approximations)
-   *		- pfAuxiliaryPFOptimal: Use the optimal proposal and a auxiliary
+   *		- AuxiliaryPFOptimal: Use the optimal proposal and an auxiliary
    *particle filter (see <a
    *href="http://www.mrpt.org/Paper:An_Optimal_Filtering_Algorithm_for_Non-Parametric_Observation_Models_in_Robot_Localization_(ICRA_2008)"
    *>paper</a>).
@@ -72,37 +74,56 @@ class CParticleFilter : public mrpt::system::COutputLogger
    * See the theoretical discussion in <a
    *href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
    */
-  enum TParticleFilterAlgorithm
+  enum class TParticleFilterAlgorithm : uint8_t
   {
-    pfStandardProposal = 0,
-    pfAuxiliaryPFStandard,
-    pfOptimalProposal,
-    pfAuxiliaryPFOptimal
+    StandardProposal = 0,
+    AuxiliaryPFStandard,
+    OptimalProposal,
+    AuxiliaryPFOptimal
   };
+  // Backward-compat aliases:
+  static constexpr TParticleFilterAlgorithm pfStandardProposal =
+      TParticleFilterAlgorithm::StandardProposal;
+  static constexpr TParticleFilterAlgorithm pfAuxiliaryPFStandard =
+      TParticleFilterAlgorithm::AuxiliaryPFStandard;
+  static constexpr TParticleFilterAlgorithm pfOptimalProposal =
+      TParticleFilterAlgorithm::OptimalProposal;
+  static constexpr TParticleFilterAlgorithm pfAuxiliaryPFOptimal =
+      TParticleFilterAlgorithm::AuxiliaryPFOptimal;
 
   /** Defines the different resampling algorithms.
    *  The implemented resampling methods are:
-   *		- prMultinomial (Default): Uses standard select with replacement
-   *(draws
-   *M random uniform numbers)
-   *		- prResidual: The residual or "remainder" method.
-   *		- prStratified: The stratified resampling, where a uniform sample is
-   *drawn for each of M subdivisions of the range (0,1].
-   *		- prSystematic: A single uniform sample is drawn in the range
-   *(0,1/M].
+   *		- Multinomial (Default): Uses standard select with replacement
+   *(draws M random uniform numbers). See Doucet & Johansen 2009.
+   *		- Residual: The residual or "remainder" method. See Liu & Chen 1998.
+   *		- Stratified: A uniform sample is drawn for each of M subdivisions
+   *of the range (0,1]. See Kitagawa 1996.
+   *		- Systematic: A single uniform sample is drawn in the range
+   *(0,1/M]. See Carpenter et al. 1999.
    *
    * See the theoretical discussion in <a
    *href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
    */
-  enum TParticleResamplingAlgorithm
+  enum class TParticleResamplingAlgorithm : uint8_t
   {
-    prMultinomial = 0,
-    prResidual,
-    prStratified,
-    prSystematic
+    Multinomial = 0,
+    Residual,
+    Stratified,
+    Systematic
   };
+  // Backward-compat aliases:
+  static constexpr TParticleResamplingAlgorithm prMultinomial =
+      TParticleResamplingAlgorithm::Multinomial;
+  static constexpr TParticleResamplingAlgorithm prResidual =
+      TParticleResamplingAlgorithm::Residual;
+  static constexpr TParticleResamplingAlgorithm prStratified =
+      TParticleResamplingAlgorithm::Stratified;
+  static constexpr TParticleResamplingAlgorithm prSystematic =
+      TParticleResamplingAlgorithm::Systematic;
 
-  /** The configuration of a particle filter.
+  /** \brief The configuration of a particle filter algorithm and resampling
+   * parameters. Pass this to CParticleFilter::executeOn() or set
+   * CParticleFilter::m_options directly.
    */
   struct TParticleFilterOptions : public mrpt::config::CLoadableOptions
   {
@@ -134,11 +155,11 @@ class CParticleFilter : public mrpt::system::COutputLogger
      * model to affect the variance of the particle weights, eg
      * weight*=likelihood^powFactor (default=1 = no effects). */
     double powFactor{1};
-    /** The PF algorithm to use (default=pfStandardProposal) See
+    /** The PF algorithm to use (default=StandardProposal) See
      * TParticleFilterAlgorithm for the possibilities. */
-    TParticleFilterAlgorithm PF_algorithm{pfStandardProposal};
-    /** The resampling algorithm to use (default=prMultinomial). */
-    TParticleResamplingAlgorithm resamplingMethod{prMultinomial};
+    TParticleFilterAlgorithm PF_algorithm{TParticleFilterAlgorithm::StandardProposal};
+    /** The resampling algorithm to use (default=Multinomial). */
+    TParticleResamplingAlgorithm resamplingMethod{TParticleResamplingAlgorithm::Multinomial};
 
     /** Only for PF_algorithm=pfAuxiliaryPFOptimal: If a given particle has
      * a max_likelihood (from the a-priori estimate) below the maximum from
@@ -168,10 +189,12 @@ class CParticleFilter : public mrpt::system::COutputLogger
     bool pfAuxFilterOptimal_MLE{false};
   };
 
-  /** Statistics for being returned from the "execute" method. */
+  /** \brief Statistics returned from CParticleFilter::executeOn(). */
   struct TParticleFilterStats
   {
+    /** \brief Effective sample size (ESS) computed before the resampling step. */
     double ESS_beforeResample{0};
+    /** \brief Variance of the normalized linear weights before resampling. */
     double weightsVariance_beforeResample{0};
   };
 
@@ -218,15 +241,26 @@ class CParticleFilter : public mrpt::system::COutputLogger
 }  // namespace mrpt
 
 MRPT_ENUM_TYPE_BEGIN(mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm)
-MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, pfStandardProposal);
-MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, pfAuxiliaryPFOptimal);
-MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, pfAuxiliaryPFStandard);
-MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, pfOptimalProposal);
+MRPT_FILL_ENUM_CUSTOM_NAME(
+    mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm::StandardProposal,
+    "pfStandardProposal");
+MRPT_FILL_ENUM_CUSTOM_NAME(
+    mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFStandard,
+    "pfAuxiliaryPFStandard");
+MRPT_FILL_ENUM_CUSTOM_NAME(
+    mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm::OptimalProposal, "pfOptimalProposal");
+MRPT_FILL_ENUM_CUSTOM_NAME(
+    mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFOptimal,
+    "pfAuxiliaryPFOptimal");
 MRPT_ENUM_TYPE_END()
 
 MRPT_ENUM_TYPE_BEGIN(mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm)
-MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, prMultinomial);
-MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, prResidual);
-MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, prStratified);
-MRPT_FILL_ENUM_MEMBER(mrpt::bayes::CParticleFilter, prSystematic);
+MRPT_FILL_ENUM_CUSTOM_NAME(
+    mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm::Multinomial, "prMultinomial");
+MRPT_FILL_ENUM_CUSTOM_NAME(
+    mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm::Residual, "prResidual");
+MRPT_FILL_ENUM_CUSTOM_NAME(
+    mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm::Stratified, "prStratified");
+MRPT_FILL_ENUM_CUSTOM_NAME(
+    mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm::Systematic, "prSystematic");
 MRPT_ENUM_TYPE_END()

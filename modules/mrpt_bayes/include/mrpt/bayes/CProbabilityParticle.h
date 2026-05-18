@@ -15,6 +15,8 @@
 
 #include <mrpt/containers/deepcopy_ptr.h>  // copy_ptr<>
 
+#include <type_traits>
+
 namespace mrpt::bayes
 {
 /** use for CProbabilityParticle
@@ -42,14 +44,15 @@ struct CProbabilityParticle;
 
 struct CProbabilityParticleBase
 {
-  CProbabilityParticleBase(double logw = 0) : log_w(logw) {}
+  CProbabilityParticleBase(double logw = 0.0) : log_w(logw) {}
   /** The (logarithmic) weight value for this particle. */
-  double log_w{.0};
+  double log_w{0.0};
 };
 
 template <class T>
 struct CProbabilityParticle<T, particle_storage_mode::POINTER> : public CProbabilityParticleBase
 {
+  static_assert(!std::is_pointer_v<T>, "CProbabilityParticle: T must not itself be a pointer");
   /** The data associated with this particle. The use of copy_ptr<> allows
    * relying on compiler-generated copy ctor, etc. */
   mrpt::containers::copy_ptr<T> d{};
@@ -58,6 +61,8 @@ struct CProbabilityParticle<T, particle_storage_mode::POINTER> : public CProbabi
 template <class T>
 struct CProbabilityParticle<T, particle_storage_mode::VALUE> : public CProbabilityParticleBase
 {
+  static_assert(
+      std::is_default_constructible_v<T>, "CProbabilityParticle requires default-constructible T");
   CProbabilityParticle() = default;
   CProbabilityParticle(const T& data, const double logw) : CProbabilityParticleBase(logw), d(data)
   {

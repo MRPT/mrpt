@@ -83,8 +83,8 @@ void CParticleFilter::executeOn(
   // 4) Particles resampling stage
   // ---------------------------------------------------
   if (!m_options.adaptiveSampleSize &&
-      (m_options.PF_algorithm == CParticleFilter::pfStandardProposal ||
-       m_options.PF_algorithm == CParticleFilter::pfOptimalProposal))
+      (m_options.PF_algorithm == CParticleFilter::TParticleFilterAlgorithm::StandardProposal ||
+       m_options.PF_algorithm == CParticleFilter::TParticleFilterAlgorithm::OptimalProposal))
   {
     if (obj.ESS() < m_options.BETA)
     {
@@ -153,7 +153,7 @@ void CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
   resamplingMethod = iniFile.read_enum<TParticleResamplingAlgorithm>(
       section, "resamplingMethod", resamplingMethod, true);
 
-  if (PF_algorithm == pfAuxiliaryPFOptimal)
+  if (PF_algorithm == TParticleFilterAlgorithm::AuxiliaryPFOptimal)
   {
     pfAuxFilterOptimal_MaximumSearchSamples = static_cast<unsigned int>(iniFile.read_int(
         section, "pfAuxFilterOptimal_MaximumSearchSamples",
