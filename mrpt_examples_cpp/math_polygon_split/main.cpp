@@ -43,7 +43,7 @@ void display()
   TPolygon2D randomPoly(NUMBER_OF_EDGES);
   for (size_t i = 0; i < NUMBER_OF_EDGES; i++)
   {
-    double ang = 2 * M_PI * i / NUMBER_OF_EDGES;
+    double ang = 2 * M_PI * static_cast<double>(i) / NUMBER_OF_EDGES;
     double radius = randomDouble();
     randomPoly[i].x = radius * cos(ang);
     randomPoly[i].y = radius * sin(ang);
@@ -71,9 +71,9 @@ void display()
     ;
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
-  srand((unsigned int)mrpt::system::extractDayTimeFromTimestamp(mrpt::Clock::now()));
+  srand(static_cast<unsigned int>(mrpt::system::extractDayTimeFromTimestamp(mrpt::Clock::now())));
   display();
   return 0;
 }

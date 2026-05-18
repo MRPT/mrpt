@@ -49,7 +49,9 @@ class MyArtProvider : public wxArtProvider
 
 // CreateBitmap function
 wxBitmap MyArtProvider::CreateBitmap(
-    const wxArtID& id, const wxArtClient& client, const wxSize& size)
+    const wxArtID& id,
+    [[maybe_unused]] const wxArtClient& client,
+    [[maybe_unused]] const wxSize& size)
 {
   if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(main_icon_xpm);
   if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO)) return wxBitmap(mrpt_logo_xpm);
@@ -88,31 +90,31 @@ using namespace mrpt::poses;
 using namespace std;
 
 //(*IdInit(holonomic_navigator_demoFrame)
-const long holonomic_navigator_demoFrame::ID_BUTTON1 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_BUTTON2 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_BUTTON3 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_BUTTON6 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_BUTTON7 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_BUTTON4 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_BUTTON5 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_RADIOBOX1 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_TEXTCTRL1 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_PANEL1 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_PANEL2 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_NOTEBOOK1 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_STATICTEXT2 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_STATICTEXT1 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_XY_GLCANVAS = wxNewId();
-const long holonomic_navigator_demoFrame::ID_CUSTOM1 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_TEXTCTRL2 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_MENUITEM4 = wxNewId();
-const long holonomic_navigator_demoFrame::idMenuQuit = wxNewId();
-const long holonomic_navigator_demoFrame::ID_MENUITEM1 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_MENUITEM2 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_MENUITEM3 = wxNewId();
-const long holonomic_navigator_demoFrame::idMenuAbout = wxNewId();
-const long holonomic_navigator_demoFrame::ID_STATUSBAR1 = wxNewId();
-const long holonomic_navigator_demoFrame::ID_TIMER1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_BUTTON1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_BUTTON2 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_BUTTON3 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_BUTTON6 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_BUTTON7 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_BUTTON4 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_BUTTON5 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_RADIOBOX1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_PANEL1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_PANEL2 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_STATICTEXT2 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_STATICTEXT1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_XY_GLCANVAS = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_CUSTOM1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_MENUITEM4 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::idMenuQuit = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_MENUITEM1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_MENUITEM2 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_MENUITEM3 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::idMenuAbout = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_STATUSBAR1 = wxNewId();
+const wxWindowID holonomic_navigator_demoFrame::ID_TIMER1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(holonomic_navigator_demoFrame, wxFrame)
@@ -552,7 +554,7 @@ void holonomic_navigator_demoFrame::OnAbout(wxCommandEvent&)
 
 void holonomic_navigator_demoFrame::updateMap3DView() { m_gridMap.getVisualizationInto(*gl_grid); }
 
-void holonomic_navigator_demoFrame::OnbtnPlaceRobotClick(wxCommandEvent& event)
+void holonomic_navigator_demoFrame::OnbtnPlaceRobotClick([[maybe_unused]] wxCommandEvent& event)
 {
   if (m_cursorPickState != cpsPlaceRobot)
   {
@@ -569,7 +571,7 @@ void holonomic_navigator_demoFrame::OnbtnPlaceRobotClick(wxCommandEvent& event)
   btnPlaceRobot->Refresh();
 }
 
-void holonomic_navigator_demoFrame::OnbtnPlaceTargetClick(wxCommandEvent& event)
+void holonomic_navigator_demoFrame::OnbtnPlaceTargetClick([[maybe_unused]] wxCommandEvent& event)
 {
   if (m_cursorPickState != cpsPickTarget)
   {
@@ -586,7 +588,7 @@ void holonomic_navigator_demoFrame::OnbtnPlaceTargetClick(wxCommandEvent& event)
   btnPlaceTarget->Refresh();
 }
 
-void holonomic_navigator_demoFrame::OnbtnStartClick(wxCommandEvent& event)
+void holonomic_navigator_demoFrame::OnbtnStartClick([[maybe_unused]] wxCommandEvent& event)
 {
   reinitSimulator();
 
@@ -598,7 +600,7 @@ void holonomic_navigator_demoFrame::OnbtnStartClick(wxCommandEvent& event)
   rbHoloMethod->Enable(false);
 }
 
-void holonomic_navigator_demoFrame::OnbtnStopClick(wxCommandEvent& event)
+void holonomic_navigator_demoFrame::OnbtnStopClick([[maybe_unused]] wxCommandEvent& event)
 {
   btnStart->Enable(true);
   btnStart->Refresh();
@@ -658,7 +660,8 @@ void holonomic_navigator_demoFrame::reinitSimulator()
 
   // Update GUI stuff:
   gl_robot_sensor_range->setDiskRadius(
-      m_simul_options.MAX_SENSOR_RADIUS * 1.01, m_simul_options.MAX_SENSOR_RADIUS * 0.99);
+      static_cast<float>(m_simul_options.MAX_SENSOR_RADIUS * 1.01),
+      static_cast<float>(m_simul_options.MAX_SENSOR_RADIUS * 0.99));
 
   WX_END_TRY
 }
@@ -670,12 +673,12 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 
   simulatedScan.aperture = M_2PIf;
   simulatedScan.rightToLeft = true;
-  simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
+  simulatedScan.maxRange = static_cast<float>(m_simul_options.MAX_SENSOR_RADIUS);
   simulatedScan.sensorPose = CPose3D();
 
   m_gridMap.laserScanSimulator(
-      simulatedScan, mrpt::poses::CPose2D(m_robotPose), 0.5, m_simul_options.SENSOR_NUM_RANGES,
-      m_simul_options.SENSOR_RANGE_NOISE_STD);
+      simulatedScan, mrpt::poses::CPose2D(m_robotPose), 0.5f, m_simul_options.SENSOR_NUM_RANGES,
+      static_cast<float>(m_simul_options.SENSOR_RANGE_NOISE_STD));
 
   gl_scan3D->setScan(simulatedScan);  // Draw real scan in 3D view
 
@@ -746,11 +749,13 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
       const size_t N_STEPS = 20;
       for (size_t j = 0; j < N_STEPS; j++)
       {
-        const double sec = log->gaps_ini[i] + j * (log->gaps_end[i] - log->gaps_ini[i]) /
+        const double sec = log->gaps_ini[i] + static_cast<double>(j) *
+                                                  (log->gaps_end[i] - log->gaps_ini[i]) /
                                                   static_cast<double>(N_STEPS - 1);
-        const double ang = M_PI * (-1 + 2 * sec / ((float)simulatedScan.getScanSize()));
-        const double d = simulatedScan.getScanRange(sec) - 0.05;
-        gl_nd_gaps->appendLineStrip(d * cos(ang), d * sin(ang), 0);
+        const double ang = M_PI * (-1 + 2 * sec / static_cast<double>(simulatedScan.getScanSize()));
+        const double d = simulatedScan.getScanRange(static_cast<size_t>(sec)) - 0.05;
+        gl_nd_gaps->appendLineStrip(
+            static_cast<float>(d * cos(ang)), static_cast<float>(d * sin(ang)), 0.0f);
       }
       gl_nd_gaps->appendLineStrip(0, 0, 0);
     }

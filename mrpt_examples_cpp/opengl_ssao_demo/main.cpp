@@ -78,7 +78,7 @@ void buildScene(mrpt::viz::Scene& scene)
     const float h = 0.5f + 0.4f * static_cast<float>(i);
     auto box = mrpt::viz::CBox::Create(
         mrpt::math::TPoint3D(-0.35, -0.35, 0.0), mrpt::math::TPoint3D(0.35, 0.35, h));
-    box->setColor(0.8f, 0.4f + 0.1f * i, 0.3f);
+    box->setColor(0.8f, 0.4f + 0.1f * static_cast<float>(i), 0.3f);
     box->enableLight(true);
     mrpt::math::TPose3D p;
     p.x = -4.0 + 2.0 * i;
@@ -90,9 +90,9 @@ void buildScene(mrpt::viz::Scene& scene)
   // -- Row of cylinders --
   for (int i = 0; i < 4; i++)
   {
-    const float r = 0.25f + 0.1f * i;
+    const float r = 0.25f + 0.1f * static_cast<float>(i);
     auto cyl = mrpt::viz::CCylinder::Create(r, r, 1.2f, 20);
-    cyl->setColor(0.3f, 0.5f, 0.8f + 0.05f * i);
+    cyl->setColor(0.3f, 0.5f, 0.8f + 0.05f * static_cast<float>(i));
     cyl->enableLight(true);
     mrpt::math::TPose3D p;
     p.x = -3.0 + 2.0 * i;
@@ -155,7 +155,8 @@ void buildScene(mrpt::viz::Scene& scene)
     {
       auto box = mrpt::viz::CBox::Create(
           mrpt::math::TPoint3D(0.0, 0.0, 0.0), mrpt::math::TPoint3D(0.45, 0.45, 0.45));
-      box->setColor(0.65f + 0.1f * ix, 0.65f + 0.1f * iy, 0.65f);
+      box->setColor(
+          0.65f + 0.1f * static_cast<float>(ix), 0.65f + 0.1f * static_cast<float>(iy), 0.65f);
       box->enableLight(true);
       mrpt::math::TPose3D p;
       p.x = 2.5 + 0.48 * ix;

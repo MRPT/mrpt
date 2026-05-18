@@ -32,6 +32,8 @@
 
 constexpr size_t NUM_PARTICLES = 100;
 
+namespace
+{
 void DemoMotionModel(int argc, const char** argv)
 {
   using namespace std::string_literals;
@@ -41,15 +43,25 @@ void DemoMotionModel(int argc, const char** argv)
   // Default dataset, or override with user cli one:
   std::string datasetFile =
       MRPT_EXAMPLES_BASE_DIRECTORY + "../share/mrpt/datasets/intel_2003_partial.rawlog.gz"s;
-  if (argc > 1) datasetFile = argv[1];
+
+  if (argc > 1)
+  {
+    datasetFile = argv[1];
+  }
 
   std::string legendText;
-  if (argc > 2) legendText = argv[2];
+  if (argc > 2)
+  {
+    legendText = argv[2];
+  }
 
   ASSERT_FILE_EXISTS_(datasetFile);
 
   mrpt::obs::CRawlog dataset;
-  dataset.loadFromRawLogFile(datasetFile);
+  if (!dataset.loadFromRawLogFile(datasetFile))
+  {
+    THROW_EXCEPTION_FMT("Failed to load dataset: %s", datasetFile.c_str());
+  }
 
   std::cout << "Read dataset: " << dataset.size() << " entries.\n";
 
@@ -147,10 +159,12 @@ void DemoMotionModel(int argc, const char** argv)
       glLidar->setScan(*obsLidar);
       glLidar->setPose(deadReckoning);
 
-      glOdoTrack->appendLineStrip(deadReckoning.x(), deadReckoning.y(), 0.01);
+      glOdoTrack->appendLineStrip(
+          static_cast<float>(deadReckoning.x()), static_cast<float>(deadReckoning.y()), 0.01f);
 
       auto& glCloseCam = glBottomView->getCamera();
-      glCloseCam.setPointingAt(deadReckoning.x(), deadReckoning.y(), .0);
+      glCloseCam.setPointingAt(
+          static_cast<float>(deadReckoning.x()), static_cast<float>(deadReckoning.y()), 0.0f);
 
       win.unlockAccess3DScene();
       win.forceRepaint();
@@ -171,12 +185,18 @@ void DemoMotionModel(int argc, const char** argv)
         case 'r':
           win.grabImagesStart();
           break;
+        default:
+          break;
       }
     }
 
-    if (paused) position -= 2;
+    if (paused)
+    {
+      position -= 2;
+    }
   }
 }
+}  // namespace
 
 int main(int argc, const char** argv)
 {

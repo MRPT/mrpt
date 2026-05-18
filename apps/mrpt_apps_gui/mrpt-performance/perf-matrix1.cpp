@@ -41,7 +41,7 @@ void register_tests_matrices()
 }
 
 template <typename T>
-double matrix_test_unit_dyn(int a1, int a2)
+double matrix_test_unit_dyn(int a1, [[maybe_unused]] int a2)
 {
   CMatrixDynamic<T> C(a1, a1);
 
@@ -56,7 +56,7 @@ double matrix_test_unit_dyn(int a1, int a2)
 }
 
 template <typename T, size_t DIM>
-double matrix_test_unit_fix(int a1, int a2)
+double matrix_test_unit_fix([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CMatrixFixed<T, DIM, DIM> C;
 
@@ -71,7 +71,7 @@ double matrix_test_unit_fix(int a1, int a2)
 }
 
 template <typename T, size_t DIM1, size_t DIM2, size_t DIM3>
-double matrix_test_mult_dyn(int a1, int a2)
+double matrix_test_mult_dyn([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CMatrixDynamic<T> A(DIM1, DIM2);
   CMatrixDynamic<T> B(DIM2, DIM3);
@@ -90,7 +90,7 @@ double matrix_test_mult_dyn(int a1, int a2)
 }
 
 template <typename T, size_t DIM1, size_t DIM2, size_t DIM3>
-double matrix_test_mult_fix(int a1, int a2)
+double matrix_test_mult_fix([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CMatrixFixed<T, DIM1, DIM2> A;
   CMatrixFixed<T, DIM2, DIM3> B;
@@ -109,7 +109,7 @@ double matrix_test_mult_fix(int a1, int a2)
 }
 
 template <typename T, size_t DIM1>
-double matrix_test_inv_dyn(int a1, int a2)
+double matrix_test_inv_dyn([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CMatrixDynamic<T> A(DIM1, DIM1);
   CMatrixDynamic<T> A2(DIM1, DIM1);
@@ -122,7 +122,7 @@ double matrix_test_inv_dyn(int a1, int a2)
 }
 
 template <typename T, size_t DIM1>
-double matrix_test_inv_fix(int a1, int a2)
+double matrix_test_inv_fix([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CMatrixFixed<T, DIM1, DIM1> A, A2;
   getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
@@ -134,7 +134,7 @@ double matrix_test_inv_fix(int a1, int a2)
 }
 
 template <typename T, size_t DIM1>
-double matrix_test_det_dyn(int a1, int a2)
+double matrix_test_det_dyn([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CMatrixDynamic<T> A(DIM1, DIM1);
   getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
@@ -146,7 +146,7 @@ double matrix_test_det_dyn(int a1, int a2)
 }
 
 template <typename T, size_t DIM1>
-double matrix_test_det_fix(int a1, int a2)
+double matrix_test_det_fix([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CMatrixFixed<T, DIM1, DIM1> A;
   getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
@@ -158,7 +158,7 @@ double matrix_test_det_fix(int a1, int a2)
 }
 
 template <typename MAT, size_t DIM>
-double matrix_test_vector_resize(int VECTOR_LEN, int a2)
+double matrix_test_vector_resize(int VECTOR_LEN, [[maybe_unused]] int a2)
 {
   using vec_t = std::vector<MAT>;
 

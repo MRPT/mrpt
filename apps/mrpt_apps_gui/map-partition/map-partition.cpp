@@ -116,10 +116,12 @@ void Test()
     if (i == n - 1)
     {
       imp.updatePartitions(parts);
-      printf("Map nodes:%u --- %u partitions:\n", (unsigned int)i + 1, (unsigned int)parts.size());
+      printf(
+          "Map nodes:%u --- %u partitions:\n", static_cast<unsigned int>(i) + 1,
+          static_cast<unsigned int>(parts.size()));
       for (size_t j = 0; j < parts.size(); j++)
       {
-        printf("  Part#%u=", (unsigned int)j);
+        printf("  Part#%u=", static_cast<unsigned int>(j));
         for (unsigned int k : parts[j]) printf(" %u", k);
         printf("\n");
       }
@@ -128,7 +130,7 @@ void Test()
     // printf("\n");
   }
 
-  printf("Done! in %.03fms\n", (float)(1000 * tictac.Tac()));
+  printf("Done! in %.03fms\n", static_cast<float>(1000 * tictac.Tac()));
 
   // Save in different maps:
   // ------------------------------------
@@ -185,12 +187,12 @@ void Test()
       maxIdx = max(maxIdx, part[j]);
       rearrIndexes.push_back(part[j]);
     }
-    separations.push_back((unsigned int)rearrIndexes.size());
+    separations.push_back(static_cast<unsigned int>(rearrIndexes.size()));
   }
 
   for (size_t col = 0; col < rearrIndexes.size(); col++)
     for (size_t row = 0; row < rearrIndexes.size(); row++)
-      B(row, col) = A(rearrIndexes[row], rearrIndexes[col]);
+      B(row, col) = static_cast<float>(A(rearrIndexes[row], rearrIndexes[col]));
 
   B.saveToTextFile("MAP-PARTITION_RESULTS/matrix_B.txt", MATRIX_FORMAT_FIXED);
   {
@@ -209,7 +211,7 @@ void Test()
     win.showImage(img);
     win2.showImage(img2);
     win.setPos(20, 20);
-    win2.setPos((int)(40 + A.cols()), 20);
+    win2.setPos(static_cast<int>(40 + A.cols()), 20);
     std::cout << "Press any key to continue..."
               << "\n";
     win2.waitForKey();
@@ -252,7 +254,7 @@ void Test()
 
   for (size_t i = 0; i < parts.size(); i++)
   {
-    fprintf(f, "%% Partition #%03i\n", (unsigned int)i);
+    fprintf(f, "%% Partition #%03i\n", static_cast<unsigned int>(i));
     fprintf(f, "poses=[...\n");
 
     CPose2D meanPose;
@@ -307,9 +309,11 @@ void Test()
   for (size_t i = 0; i < (separations.size() - 1); i++)
   {
     fprintf(
-        f, "plot([%i %i],[%i %i],'k');\n", 0, (unsigned int)N - 1, separations[i], separations[i]);
+        f, "plot([%i %i],[%i %i],'k');\n", 0, static_cast<unsigned int>(N) - 1, separations[i],
+        separations[i]);
     fprintf(
-        f, "plot([%i %i],[%i %i],'k');\n", separations[i], separations[i], 0, (unsigned int)N - 1);
+        f, "plot([%i %i],[%i %i],'k');\n", separations[i], separations[i], 0,
+        static_cast<unsigned int>(N) - 1);
   }
 
   // Add the auxiliary function: drawRobot()

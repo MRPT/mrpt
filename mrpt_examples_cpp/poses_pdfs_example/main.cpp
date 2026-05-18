@@ -106,12 +106,12 @@ void TestPoseComposition()
   // stores a sequence of relative, incremental 2D poses
   CPoses2DSequence seq;
 
-  CPose2D a(1, 2, (float)0.0_deg);
-  CPose2D b(2, 3, (float)45.0_deg);
+  CPose2D a(1, 2, static_cast<float>(0.0_deg));
+  CPose2D b(2, 3, static_cast<float>(45.0_deg));
   CPose2D D;
 
-  CPose2D x(1, 0, (float)0.0_deg);
-  CPose2D y(1, 0, (float)45.0_deg);
+  CPose2D x(1, 0, static_cast<float>(0.0_deg));
+  CPose2D y(1, 0, static_cast<float>(45.0_deg));
 
   std::cout << "a= " << a << "\n";
   std::cout << "b= " << b << "\n";
@@ -148,11 +148,11 @@ void TestPoseComposition()
   std::cout << "last= " << seq.absolutePoseAfterAll() << "\n";
 
   // play the poses from the beginning using the getPose method
-  seq.getPose(0, D);
+  D = seq.getPose(0);
   std::cout << "Pose[0] in seq.= " << D << "\n";
-  seq.getPose(1, D);
+  D = seq.getPose(1);
   std::cout << "Pose[1] in seq.= " << D << "\n";
-  seq.getPose(2, D);
+  D = seq.getPose(2);
   std::cout << "Pose[2] in seq.= " << D << "\n";
 }
 

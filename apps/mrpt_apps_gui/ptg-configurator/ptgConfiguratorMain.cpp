@@ -46,7 +46,9 @@ class MyArtProvider : public wxArtProvider
 
 // CreateBitmap function
 wxBitmap MyArtProvider::CreateBitmap(
-    const wxArtID& id, const wxArtClient& client, const wxSize& size)
+    const wxArtID& id,
+    [[maybe_unused]] const wxArtClient& client,
+    [[maybe_unused]] const wxSize& size)
 {
   if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(main_icon_xpm);
   if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO)) return wxBitmap(mrpt_logo_xpm);
@@ -65,74 +67,77 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 
+namespace
+{
 mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg;
+}
 
 //(*IdInit(ptgConfiguratorframe)
-const long ptgConfiguratorframe::ID_STATICTEXT1 = wxNewId();
-const long ptgConfiguratorframe::ID_CHOICE1 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT5 = wxNewId();
-const long ptgConfiguratorframe::ID_BUTTON1 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT2 = wxNewId();
-const long ptgConfiguratorframe::ID_SPINCTRL1 = wxNewId();
-const long ptgConfiguratorframe::ID_CHECKBOX1 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT4 = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL5 = wxNewId();
-const long ptgConfiguratorframe::ID_BUTTON5 = wxNewId();
-const long ptgConfiguratorframe::ID_CHECKBOX3 = wxNewId();
-const long ptgConfiguratorframe::ID_SLIDER1 = wxNewId();
-const long ptgConfiguratorframe::ID_SPINCTRL2 = wxNewId();
-const long ptgConfiguratorframe::ID_CHECKBOX4 = wxNewId();
-const long ptgConfiguratorframe::ID_CHECKBOX2 = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL3 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT3 = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL4 = wxNewId();
-const long ptgConfiguratorframe::ID_BUTTON3 = wxNewId();
-const long ptgConfiguratorframe::ID_BUTTON2 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT6 = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL6 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT7 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT7b = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL7 = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL7b = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT17 = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL8 = wxNewId();
-const long ptgConfiguratorframe::ID_BUTTON4 = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL1 = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL2 = wxNewId();
-const long ptgConfiguratorframe::ID_PANEL1 = wxNewId();
-const long ptgConfiguratorframe::ID_XY_GLCANVAS = wxNewId();
-const long ptgConfiguratorframe::ID_CHECKBOX5 = wxNewId();
-const long ptgConfiguratorframe::ID_CHECKBOX6 = wxNewId();
-const long ptgConfiguratorframe::ID_CHECKBOX7 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM2 = wxNewId();
-const long ptgConfiguratorframe::ID_PANEL2 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM1 = wxNewId();
-const long ptgConfiguratorframe::ID_PANEL3 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT8 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM3 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT9 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM4 = wxNewId();
-const long ptgConfiguratorframe::ID_PANEL4 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT10 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM5 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT11 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM6 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT12 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM7 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT16 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM11 = wxNewId();
-const long ptgConfiguratorframe::ID_PANEL5 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT13 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM8 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT14 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM9 = wxNewId();
-const long ptgConfiguratorframe::ID_STATICTEXT15 = wxNewId();
-const long ptgConfiguratorframe::ID_CUSTOM10 = wxNewId();
-const long ptgConfiguratorframe::ID_PANEL6 = wxNewId();
-const long ptgConfiguratorframe::ID_NOTEBOOK1 = wxNewId();
-const long ptgConfiguratorframe::idMenuQuit = wxNewId();
-const long ptgConfiguratorframe::idMenuAbout = wxNewId();
-const long ptgConfiguratorframe::ID_STATUSBAR1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CHOICE1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT5 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_BUTTON1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT2 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_SPINCTRL1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CHECKBOX1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT4 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_TEXTCTRL5 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_BUTTON5 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CHECKBOX3 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_SLIDER1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_SPINCTRL2 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CHECKBOX4 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CHECKBOX2 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT3 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_BUTTON3 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_BUTTON2 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT6 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_TEXTCTRL6 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT7 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT7b = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_TEXTCTRL7 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_TEXTCTRL7b = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT17 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_TEXTCTRL8 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_BUTTON4 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_PANEL1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_XY_GLCANVAS = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CHECKBOX5 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CHECKBOX6 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CHECKBOX7 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM2 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_PANEL2 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_PANEL3 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT8 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM3 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT9 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM4 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_PANEL4 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT10 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM5 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT11 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM6 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT12 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM7 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT16 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM11 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_PANEL5 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT13 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM8 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT14 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM9 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATICTEXT15 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_CUSTOM10 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_PANEL6 = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_NOTEBOOK1 = wxNewId();
+const wxWindowID ptgConfiguratorframe::idMenuQuit = wxNewId();
+const wxWindowID ptgConfiguratorframe::idMenuAbout = wxNewId();
+const wxWindowID ptgConfiguratorframe::ID_STATUSBAR1 = wxNewId();
 //*)
 const long ID_TEXTCTRL_SEL_TRAJ = wxNewId();
 const long idMenuExportPath = wxNewId();

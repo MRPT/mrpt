@@ -197,8 +197,12 @@ class COccupancyGridMap3D :
   mrpt::math::TBoundingBoxf boundingBox() const override
   {
     return {
-        mrpt::math::TPoint3Df(m_grid.getXMin(), m_grid.getYMin(), m_grid.getZMin()),
-        mrpt::math::TPoint3Df(m_grid.getXMax(), m_grid.getYMax(), m_grid.getZMax())};
+        mrpt::math::TPoint3Df(
+            static_cast<float>(m_grid.getXMin()), static_cast<float>(m_grid.getYMin()),
+            static_cast<float>(m_grid.getZMin())),
+        mrpt::math::TPoint3Df(
+            static_cast<float>(m_grid.getXMax()), static_cast<float>(m_grid.getYMax()),
+            static_cast<float>(m_grid.getZMax()))};
   }
 
   /** With this struct options are provided to the observation insertion

@@ -234,11 +234,13 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
       // Update the gross estimates of mean/vars for the whole reading
       // history (see IROS2009 paper):
       m_average_normreadings_mean =
-          (sensorReading + m_average_normreadings_count * m_average_normreadings_mean) /
-          (1 + m_average_normreadings_count);
-      m_average_normreadings_var = (square(sensorReading - m_average_normreadings_mean) +
-                                    m_average_normreadings_count * m_average_normreadings_var) /
-                                   (1 + m_average_normreadings_count);
+          (sensorReading +
+           static_cast<double>(m_average_normreadings_count) * m_average_normreadings_mean) /
+          (1 + static_cast<double>(m_average_normreadings_count));
+      m_average_normreadings_var =
+          (square(sensorReading - m_average_normreadings_mean) +
+           static_cast<double>(m_average_normreadings_count) * m_average_normreadings_var) /
+          (1 + static_cast<double>(m_average_normreadings_count));
       m_average_normreadings_count++;
 
       // Finally, do the actual map update with that value:
@@ -436,7 +438,7 @@ void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 
   // Specific data fields for gasGridMaps
   gasSensorLabel = iniFile.read_string(section.c_str(), "gasSensorLabel", "Full_MCEnose", true);
-  enose_id = iniFile.read_int(section.c_str(), "enoseID", enose_id);
+  enose_id = static_cast<uint16_t>(iniFile.read_int(section.c_str(), "enoseID", enose_id));
   // Read sensor type in hexadecimal
   {
     std::string sensorType_str = iniFile.read_string(section.c_str(), "gasSensorType", "-1", true);
@@ -447,11 +449,12 @@ void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
     if (tmpSensorType >= 0)
     {
       // Valid number found:
-      gasSensorType = tmpSensorType;
+      gasSensorType = static_cast<uint16_t>(tmpSensorType);
     }
     else
     {  // fall back to old name, or default to current value:
-      gasSensorType = iniFile.read_int(section.c_str(), "KF_sensorType", gasSensorType, true);
+      gasSensorType = static_cast<uint16_t>(
+          iniFile.read_int(section.c_str(), "KF_sensorType", gasSensorType, true));
     }
   }
   windSensorLabel = iniFile.read_string(section.c_str(), "windSensorLabel", "Full_MCEnose", true);
@@ -517,7 +520,8 @@ mrpt::viz::CSetOfObjects::Ptr CGasConcentrationGridMap2D::getWindAs3DObject() co
   float resol = d2f(getResolution());
 
   // Ensure map dimensions match with wind map
-  unsigned int wind_map_size = windGrid_direction.getSizeX() * windGrid_direction.getSizeY();
+  unsigned int wind_map_size =
+      static_cast<unsigned int>(windGrid_direction.getSizeX() * windGrid_direction.getSizeY());
   ASSERT_(wind_map_size == windGrid_module.getSizeX() * windGrid_module.getSizeY());
   if (m_map.size() != wind_map_size)
   {
@@ -530,12 +534,13 @@ mrpt::viz::CSetOfObjects::Ptr CGasConcentrationGridMap2D::getWindAs3DObject() co
   vector<float> xs, ys;
 
   // xs: array of X-axis values
-  xs.resize(floor((x_max - x_min) / (arrow_separation * resol)));
-  for (cx = 0; cx < xs.size(); cx++) xs[cx] = x_min + arrow_separation * resol * cx;
+  const float farrow = static_cast<float>(arrow_separation);
+  xs.resize(static_cast<size_t>(floor((x_max - x_min) / (farrow * resol))));
+  for (cx = 0; cx < xs.size(); cx++) xs[cx] = x_min + farrow * resol * static_cast<float>(cx);
 
   // ys: array of X-axis values
-  ys.resize(floor((y_max - y_min) / (arrow_separation * resol)));
-  for (cy = 0; cy < ys.size(); cy++) ys[cy] = y_min + arrow_separation * resol * cy;
+  ys.resize(static_cast<size_t>(floor((y_max - y_min) / (farrow * resol))));
+  for (cy = 0; cy < ys.size(); cy++) ys[cy] = y_min + farrow * resol * static_cast<float>(cy);
 
   for (cy = 0; cy < ys.size(); cy++)
   {
@@ -613,12 +618,13 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
   mrpt::math::CMatrixF A(N, N);
   A.fill(0.0);
   // std::vector<double> row_sum(N,0.0);
-  auto* row_sum = (double*)calloc(N, sizeof(double));
+  auto* row_sum = static_cast<double*>(calloc(N, sizeof(double)));
 
   try
   {
     // Ensure map dimensions match with wind map
-    unsigned int wind_map_size = windGrid_direction.getSizeX() * windGrid_direction.getSizeY();
+    unsigned int wind_map_size =
+        static_cast<unsigned int>(windGrid_direction.getSizeX() * windGrid_direction.getSizeY());
     ASSERT_(wind_map_size == windGrid_module.getSizeX() * windGrid_module.getSizeY());
     if (N != wind_map_size)
     {
@@ -633,15 +639,17 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
     for (i = 0; i < N; i++)
     {
       // Cell_i indx and coordinates
-      idx2cxcy(i, cell_i_cx, cell_i_cy);
+      idx2cxcy(static_cast<int>(i), cell_i_cx, cell_i_cy);
 
       // Read dirwind value of cell i
-      mu_phi = *windGrid_direction.cellByIndex(cell_i_cx, cell_i_cy);  //[0,2*pi]
+      mu_phi =
+          static_cast<float>(*windGrid_direction.cellByIndex(cell_i_cx, cell_i_cy));  //[0,2*pi]
       unsigned int phi_indx = round(mu_phi / LUT.phi_inc);
 
       // Read modwind value of cell i
-      mu_modwind = *windGrid_module.cellByIndex(cell_i_cx, cell_i_cy);  //[0,inf)
-      mu_r = mu_modwind * At;
+      mu_modwind =
+          static_cast<float>(*windGrid_module.cellByIndex(cell_i_cx, cell_i_cy));  //[0,inf)
+      mu_r = static_cast<float>(mu_modwind * At);
       if (mu_r > LUT.max_r) mu_r = LUT.max_r;
       unsigned int r_indx = round(mu_r / LUT.r_inc);
 
@@ -661,7 +669,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
         if ((final_cx >= 0) && (final_cx < static_cast<int>(getSizeX())) && (final_cy >= 0) &&
             (final_cy < static_cast<int>(getSizeY())))
         {
-          int final_idx = final_cx + final_cy * getSizeX();
+          int final_idx = final_cx + final_cy * static_cast<int>(getSizeX());
 
           // Add Value to SA Matrix
           if (ci.value != 0.0)
@@ -690,9 +698,9 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
   {
     tictac.Tic();
     // std::vector<double> new_means(N,0.0);
-    auto* new_means = (double*)calloc(N, sizeof(double));
+    auto* new_means = static_cast<double*>(calloc(N, sizeof(double)));
     // std::vector<double> new_variances(N,0.0);
-    auto* new_variances = (double*)calloc(N, sizeof(double));
+    auto* new_variances = static_cast<double*>(calloc(N, sizeof(double)));
 
     for (size_t it_i = 0; it_i < N; it_i++)
     {
@@ -810,8 +818,8 @@ that models the propagation of the gas comming from cell_i.
   //-----------------------------
   //          PARAMS
   //-----------------------------
-  LUT.resolution = getResolution();                  // resolution of the grid-cells (m)
-  LUT.std_phi = insertionOptions.std_windNoise_phi;  // Standard Deviation in wind Angle (cte)
+  LUT.resolution = static_cast<float>(getResolution());  // resolution of the grid-cells (m)
+  LUT.std_phi = insertionOptions.std_windNoise_phi;      // Standard Deviation in wind Angle (cte)
   LUT.std_r = insertionOptions.std_windNoise_mod /
               insertionOptions.advectionFreq;  // Standard Deviation in wind module (cte)
   std::string filename = mrpt::format(
@@ -869,13 +877,13 @@ that models the propagation of the gas comming from cell_i.
     for (size_t phi_indx = 0; phi_indx < LUT.phi_count; phi_indx++)
     {
       // mean of the phi value
-      float phi = phi_indx * LUT.phi_inc;
+      float phi = static_cast<float>(phi_indx) * LUT.phi_inc;
 
       // For the different and possibe wind modules (r)
       for (size_t r_indx = 0; r_indx < LUT.r_count; r_indx++)
       {
         // mean of the radius value
-        float r = r_indx * LUT.r_inc;
+        float r = static_cast<float>(r_indx) * LUT.r_inc;
 
         if (debug)
         {
@@ -885,8 +893,8 @@ that models the propagation of the gas comming from cell_i.
         // Estimates Cell_i_position
         // unsigned int cell_i_cx = 0;
         // unsigned int cell_i_cy = 0;
-        float cell_i_x = LUT.resolution / 2.0;
-        float cell_i_y = LUT.resolution / 2.0;
+        float cell_i_x = LUT.resolution / 2.0f;
+        float cell_i_y = LUT.resolution / 2.0f;
 
         // Estimate target position according to the mean value of wind.
         // float x_final = cell_i_x + r*cos(phi);
@@ -932,11 +940,13 @@ that models the propagation of the gas comming from cell_i.
         int sr = 3;
         for (int sd = (-3); sd <= (3); sd++)
         {
-          vertex_x[indx] = cell_i_x + (r + sr * LUT.std_r) * cos(phi + sd * std_phi_BBox);
+          vertex_x[indx] =
+              cell_i_x + (r + static_cast<float>(sr) * LUT.std_r) * cos(phi + sd * std_phi_BBox);
           if (vertex_x[indx] < minBBox_x) minBBox_x = vertex_x[indx];
           if (vertex_x[indx] > maxBBox_x) maxBBox_x = vertex_x[indx];
 
-          vertex_y[indx] = cell_i_y + (r + sr * LUT.std_r) * sin(phi + sd * std_phi_BBox);
+          vertex_y[indx] =
+              cell_i_y + (r + static_cast<float>(sr) * LUT.std_r) * sin(phi + sd * std_phi_BBox);
           if (vertex_y[indx] < minBBox_y) minBBox_y = vertex_y[indx];
           if (vertex_y[indx] > maxBBox_y) maxBBox_y = vertex_y[indx];
 
@@ -945,11 +955,13 @@ that models the propagation of the gas comming from cell_i.
         sr = -3;
         for (int sd = (3); sd >= (-3); sd--)
         {
-          vertex_x[indx] = cell_i_x + (r + sr * LUT.std_r) * cos(phi + sd * std_phi_BBox);
+          vertex_x[indx] =
+              cell_i_x + (r + static_cast<float>(sr) * LUT.std_r) * cos(phi + sd * std_phi_BBox);
           if (vertex_x[indx] < minBBox_x) minBBox_x = vertex_x[indx];
           if (vertex_x[indx] > maxBBox_x) maxBBox_x = vertex_x[indx];
 
-          vertex_y[indx] = cell_i_y + (r + sr * LUT.std_r) * sin(phi + sd * std_phi_BBox);
+          vertex_y[indx] =
+              cell_i_y + (r + static_cast<float>(sr) * LUT.std_r) * sin(phi + sd * std_phi_BBox);
           if (vertex_y[indx] < minBBox_y) minBBox_y = vertex_y[indx];
           if (vertex_y[indx] > maxBBox_y) maxBBox_y = vertex_y[indx];
 
@@ -1009,29 +1021,36 @@ that models the propagation of the gas comming from cell_i.
             for (int scx = 0; scx < BB_x_subcells; scx++)
             {
               // P-Subcell coordinates (center of the p-subcell)
-              float subcell_a_x = minBBox_x + (scx + 0.5f) * subcell_pres_x;
-              float subcell_a_y = minBBox_y + (scy + 0.5f) * subcell_pres_y;
+              float subcell_a_x =
+                  static_cast<float>(minBBox_x + (static_cast<double>(scx) + 0.5) * subcell_pres_x);
+              float subcell_a_y =
+                  static_cast<float>(minBBox_y + (static_cast<double>(scy) + 0.5) * subcell_pres_y);
 
               // distance and angle between cell_i and subcell_a
-              float r_ia = sqrt(square(subcell_a_x - cell_i_x) + square(subcell_a_y - cell_i_y));
-              float phi_ia = atan2(subcell_a_y - cell_i_y, subcell_a_x - cell_i_x);
+              float r_ia = static_cast<float>(
+                  sqrt(square(subcell_a_x - cell_i_x) + square(subcell_a_y - cell_i_y)));
+              float phi_ia =
+                  static_cast<float>(atan2(subcell_a_y - cell_i_y, subcell_a_x - cell_i_x));
 
               // Volume Approximation of subcell_a (Gaussian
               // Bivariate)
-              float w = (1 / (2 * M_PI * LUT.std_r * LUT.std_phi)) *
-                        exp(-0.5 * (square(r_ia - r) / square(LUT.std_r) +
-                                    square(phi_ia - phi) / square(LUT.std_phi)));
-              w += (1 / (2 * M_PI * LUT.std_r * LUT.std_phi)) *
-                   exp(-0.5 * (square(r_ia - r) / square(LUT.std_r) +
-                               square(phi_ia + 2 * M_PI - phi) / square(LUT.std_phi)));
-              w += (1 / (2 * M_PI * LUT.std_r * LUT.std_phi)) *
-                   exp(-0.5 * (square(r_ia - r) / square(LUT.std_r) +
-                               square(phi_ia - 2 * M_PI - phi) / square(LUT.std_phi)));
+              float w = static_cast<float>(
+                  (1.0 / (2 * M_PI * LUT.std_r * LUT.std_phi)) *
+                  exp(-0.5 * (square(r_ia - r) / square(LUT.std_r) +
+                              square(phi_ia - phi) / square(LUT.std_phi))));
+              w += static_cast<float>(
+                  (1.0 / (2 * M_PI * LUT.std_r * LUT.std_phi)) *
+                  exp(-0.5 * (square(r_ia - r) / square(LUT.std_r) +
+                              square(phi_ia + 2 * M_PI - phi) / square(LUT.std_phi))));
+              w += static_cast<float>(
+                  (1.0 / (2 * M_PI * LUT.std_r * LUT.std_phi)) *
+                  exp(-0.5 * (square(r_ia - r) / square(LUT.std_r) +
+                              square(phi_ia - 2 * M_PI - phi) / square(LUT.std_phi))));
 
               // Since we work with a cell grid, approximate the
               // weight of the gaussian by the volume of the
               // subcell_a
-              if (r_ia != 0.0) w = (w * (subcell_pres_x * subcell_pres_y) / r_ia);
+              if (r_ia != 0.0) w = static_cast<float>(w * (subcell_pres_x * subcell_pres_y) / r_ia);
 
               // Determine cell index of the current subcell
               int cell_cx = static_cast<int>(floor(subcell_a_x / LUT.resolution));

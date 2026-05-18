@@ -72,8 +72,8 @@ static mrpt::viz::Scene::Ptr generate_example_scene()
     auto lck = mrpt::lockHelper(rngMtx);
     for (int i = 0; i < 200; i++)
     {
-      obj->insertPoint(
-          rng.drawUniform(-3.0, 0.0), rng.drawUniform(-3.0, 0.0), rng.drawUniform(-3.0, 0.0));
+      obj->insertPoint(mrpt::math::TPoint3D(
+          rng.drawUniform(-3.0, 0.0), rng.drawUniform(-3.0, 0.0), rng.drawUniform(-3.0, 0.0)));
     }
     obj->setPointSize(3.0f);
     s->insert(obj);
@@ -91,7 +91,8 @@ static mrpt::viz::Scene::Ptr generate_example_scene()
     const int W = 128, H = 128;
     mrpt::math::CMatrixDynamic<float> Z(H, W);
     for (int r = 0; r < H; r++)
-      for (int c = 0; c < W; c++) Z(r, c) = sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r);
+      for (int c = 0; c < W; c++)
+        Z(r, c) = static_cast<float>(sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r));
 
     if (im.loadFromFile(texture_file))
     {
@@ -146,9 +147,9 @@ static void renderer_thread_impl(const std::string name, const int period_ms, co
     camera.setOrthogonal(false);
 
     auto lck = mrpt::lockHelper(rngMtx);
-    camera.setZoomDistance(rng.drawUniform(15.0, 40.0));
-    camera.setElevationDegrees(rng.drawUniform(20.0, 70.0));
-    camera.setAzimuthDegrees(rng.drawUniform(-60.0, 60.0));
+    camera.setZoomDistance(static_cast<float>(rng.drawUniform(15.0, 40.0)));
+    camera.setElevationDegrees(static_cast<float>(rng.drawUniform(20.0, 70.0)));
+    camera.setAzimuthDegrees(static_cast<float>(rng.drawUniform(-60.0, 60.0)));
 
     render.setCamera(camera);
 
@@ -365,7 +366,7 @@ static int TestOffscreenRender()
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
-int main(int argc, char* argv[])
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
   try
   {

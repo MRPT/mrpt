@@ -61,7 +61,7 @@ void TestGeometry3D()
   tictac.Tic();
   size_t i, N = 10000;
   for (i = 0; i < N; i++) L2 = L - (R + C);
-  std::cout << "Computation in: " << 1e6 * tictac.Tac() / ((double)N) << " us"
+  std::cout << "Computation in: " << 1e6 * tictac.Tac() / static_cast<double>(N) << " us"
             << "\n";
 
   std::cout << "L': " << L2 << "\n";

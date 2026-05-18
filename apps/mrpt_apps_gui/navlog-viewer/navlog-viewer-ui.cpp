@@ -57,12 +57,13 @@ static const mrpt::viz::TFontParams& getFontParams()
 
 // Font size & line spaces for GUI-overlayed text lines
 static const float Ay = getFontParams().vfont_scale + 3;
-#define ADD_WIN_TEXTMSG_COL(__MSG, __COL)                   \
-  {                                                         \
-    auto fp = getFontParams();                              \
-    fp.color = __COL;                                       \
-    m_win->background_scene->getViewport()->addTextMessage( \
-        5.0, 5 + (lineY++) * Ay, __MSG, unique_id++, fp);   \
+#define ADD_WIN_TEXTMSG_COL(__MSG, __COL)                                                      \
+  {                                                                                            \
+    auto fp = getFontParams();                                                                 \
+    fp.color = __COL;                                                                          \
+    m_win->background_scene->getViewport()->addTextMessage(                                    \
+        5.0, 5.0 + static_cast<double>(lineY++) * static_cast<double>(Ay), __MSG, unique_id++, \
+        fp);                                                                                   \
   }
 
 #define ADD_WIN_TEXTMSG(__MSG) ADD_WIN_TEXTMSG_COL(__MSG, mrpt::img::TColorf(1, 1, 1))
@@ -647,7 +648,9 @@ void NavlogViewerApp::updateVisualization()
         const float cam_zoom = cam.getZoomDistance();
         if ((mrpt::math::TPoint2D(log.robotPoseLocalization) - mrpt::math::TPoint2D(px, py))
                 .norm() > .3 * cam_zoom)
-          cam.setCameraPointing(log.robotPoseLocalization.x, log.robotPoseLocalization.y, 0.0);
+          cam.setCameraPointing(
+              static_cast<float>(log.robotPoseLocalization.x),
+              static_cast<float>(log.robotPoseLocalization.y), 0.0f);
       }
       else
       {
@@ -826,9 +829,9 @@ void NavlogViewerApp::updateVisualization()
           ptg->updateNavDynamicState(is_NOP_cmd ? ipp.lastDynState : ipp.dynState);
 
           // Draw path:
-          const int selected_k =
-              log.ptg_index_NOP < 0 ? ptg->alpha2index(ipp.desiredDirection) : log.ptg_last_k_NOP;
-          float max_dist = ptg->getRefDistance();
+          const uint16_t selected_k = static_cast<uint16_t>(
+              log.ptg_index_NOP < 0 ? ptg->alpha2index(ipp.desiredDirection) : log.ptg_last_k_NOP);
+          double max_dist = ptg->getRefDistance();
           ptg->add_robotShape_to_setOfLines(*gl_path);
 
           ptg->renderPathAsSimpleLine(selected_k, *gl_path, 0.10, max_dist);
@@ -938,8 +941,8 @@ void NavlogViewerApp::updateVisualization()
           ptg->updateNavDynamicState(this_NOP_cmd ? ipp.lastDynState : ipp.dynState);
 
           // Draw path:
-          const int selected_k = m_manualPickTrajectoryIdx;
-          float max_dist = ptg->getRefDistance();
+          const uint16_t selected_k = static_cast<uint16_t>(m_manualPickTrajectoryIdx);
+          double max_dist = ptg->getRefDistance();
           ptg->add_robotShape_to_setOfLines(*gl_path);
 
           ptg->renderPathAsSimpleLine(selected_k, *gl_path, 0.10, max_dist);
@@ -1034,7 +1037,7 @@ void NavlogViewerApp::updateVisualization()
         gl_trg->setLocation(t0.x, t0.y, tz);
         for (const auto& t : log.WS_targets_relative)
         {
-          gl_trg->insertPoint(t.x - t0.x, t.y - t0.y, tz);
+          gl_trg->insertPoint(static_cast<float>(t.x - t0.x), static_cast<float>(t.y - t0.y), tz);
           auto glCorner = mrpt::viz::stock_objects::CornerXYZ(0.25f);
           glCorner->setPose(t);
           gl_trgCorners->insert(glCorner);
@@ -1065,7 +1068,8 @@ void NavlogViewerApp::updateVisualization()
   }
 
   {
-    const unsigned int nObsOrg = log.WS_Obstacles_original.size(), nObs = log.WS_Obstacles.size();
+    const unsigned int nObsOrg = static_cast<unsigned int>(log.WS_Obstacles_original.size()),
+                       nObs = static_cast<unsigned int>(log.WS_Obstacles.size());
     const unsigned int nObsFiltered = nObsOrg - nObs;
 
     if (nObsFiltered)
@@ -1143,7 +1147,7 @@ void NavlogViewerApp::updateVisualization()
     const CLogFileRecord::TInfoPerPTG& pI = log.infoPerPTG[nPTG];
 
     mrpt::img::TColorf col;
-    if (((int)nPTG) == log.nSelectedPTG)
+    if (static_cast<int>(nPTG) == log.nSelectedPTG)
       col = mrpt::img::TColorf(1, 1, 1);
     else
       col = mrpt::img::TColorf(.8f, .8f, .8f);
@@ -1348,10 +1352,11 @@ void NavlogViewerApp::updateVisualization()
     ys.reserve(nAlphas);
     for (size_t i = 0; i < nAlphas; ++i)
     {
-      const double a = -M_PI + (i + 0.5) * 2 * M_PI / double(nAlphas);
+      const double a =
+          -M_PI + (static_cast<double>(i) + 0.5) * 2 * M_PI / static_cast<double>(nAlphas);
       const double r = pI.TP_Obstacles[i];
-      xs.push_back(r * cos(a));
-      ys.push_back(r * sin(a));
+      xs.push_back(static_cast<float>(r * cos(a)));
+      ys.push_back(static_cast<float>(r * sin(a)));
     }
     {
       auto gl_obj =
@@ -1378,7 +1383,7 @@ void NavlogViewerApp::updateVisualization()
         auto glCorner = mrpt::viz::stock_objects::CornerXYZ(0.15f);
         glCorner->setPose(p);
         gl_obj->insert(glCorner);
-        glTargetPts->insertPoint(p.x, p.y, 0.02);
+        glTargetPts->insertPoint(static_cast<float>(p.x), static_cast<float>(p.y), 0.02f);
       }
 
       if (!pI.TP_Targets.empty())
@@ -1411,7 +1416,9 @@ void NavlogViewerApp::updateVisualization()
       for (const auto& e : pI.evalFactors)
       {
         view->addTextMessage(
-            4, 5 + (ptg_lineY++) * (getFontParams().vfont_scale + 3),
+            4,
+            5.0 + static_cast<double>(ptg_lineY++) *
+                      static_cast<double>(getFontParams().vfont_scale + 3),
             mrpt::format("%20s=%6.03f", e.first.c_str(), e.second), ptg_unique_id++,
             getFontParams());
       }
@@ -1421,7 +1428,8 @@ void NavlogViewerApp::updateVisualization()
     {
       auto gl_obj = std::dynamic_pointer_cast<mrpt::viz::CPointCloud>(scene->getByName("tp_robot"));
       gl_obj->clear();
-      gl_obj->insertPoint(pI.TP_Robot.x, pI.TP_Robot.y, 0);
+      gl_obj->insertPoint(
+          static_cast<float>(pI.TP_Robot.x), static_cast<float>(pI.TP_Robot.y), 0.0f);
     }
 
     // Clearance-diagram:
@@ -1465,7 +1473,8 @@ void NavlogViewerApp::updateVisualization()
           pts.reserve(nAlphas);
           for (size_t i = 0; i < nAlphas; ++i)
           {
-            const double a = -M_PI + (i + 0.5) * 2 * M_PI / double(nAlphas);
+            const double a =
+                -M_PI + (static_cast<double>(i) + 0.5) * 2 * M_PI / static_cast<double>(nAlphas);
             const double r = dir_evals[iScore][i];
             pts.emplace_back(r * cos(a), r * sin(a));
           }
@@ -1473,7 +1482,9 @@ void NavlogViewerApp::updateVisualization()
           mrpt::viz::CSetOfLines::Ptr& gl_obj = iScore == (num_scores - 1) ? gl_obj1 : gl_obj2;
 
           gl_obj->appendLine(pts[0].x, pts[0].y, 0, pts[1].x, pts[1].y, 0);
-          for (size_t i = 2; i < nAlphas; i++) gl_obj->appendLineStrip(pts[i].x, pts[i].y, 0);
+          for (size_t i = 2; i < nAlphas; i++)
+            gl_obj->appendLineStrip(
+                static_cast<float>(pts[i].x), static_cast<float>(pts[i].y), 0.0f);
         }
       }
     }
@@ -1564,8 +1575,8 @@ void NavlogViewerApp::OnmnuMatlabPlotsSelected()
     if (TX.empty() || std::abs((*TX.rbegin()) - trg_glob.x) > 1e-3 ||
         std::abs((*TY.rbegin()) - trg_glob.y) > 1e-3)
     {
-      TX.push_back(trg_glob.x);
-      TY.push_back(trg_glob.y);
+      TX.push_back(static_cast<float>(trg_glob.x));
+      TY.push_back(static_cast<float>(trg_glob.y));
     }
   }
 
@@ -1624,7 +1635,7 @@ void NavlogViewerApp::OnmnuSeePTGParamsSelected()
     mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg = m_logdata_ptg_paths[i];
     if (!ptg) continue;
 
-    const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)i);
+    const std::string sKeyPrefix = mrpt::format("PTG%d_", static_cast<int>(i));
     cfg_pre.setPrefixes("", sKeyPrefix);
 
     ptg->saveToConfigFile(cfg_pre, sSection);
@@ -1729,7 +1740,9 @@ void NavlogViewerApp::OnmnuSaveScoreMatrixSelected()
       if (!dirs_scores || dirs_scores->rows() < 2) continue;
 
       const std::string sFil = mrpt::system::fileNameChangeExtension(
-          fileName, mrpt::format("step%06u_ptg%02u.txt", (unsigned int)i, (unsigned int)iPTG));
+          fileName, mrpt::format(
+                        "step%06u_ptg%02u.txt", static_cast<unsigned int>(i),
+                        static_cast<unsigned int>(iPTG)));
 
       dirs_scores->saveToTextFile(sFil, mrpt::math::MATRIX_FORMAT_FIXED);
     }
@@ -1759,7 +1772,7 @@ void NavlogViewerApp::OnmnuSaveCurrentObstacles()
   {
     return;
   }
-  log.WS_Obstacles_original.save2D_to_text_file(fileName);
+  (void)log.WS_Obstacles_original.save2D_to_text_file(fileName);
 
   NANOGUI_END_TRY(*m_win)
 }
@@ -1952,7 +1965,7 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
       p.resize(MAX_CMDVEL_COMPONENTS);
       p.setZero();
       for (size_t k = 0; k < logptr->cmd_vel->getVelCmdLength(); k++)
-        p[k] = logptr->cmd_vel->getVelCmdElement(k);
+        p[k] = logptr->cmd_vel->getVelCmdElement(static_cast<int>(k));
     }
 
   }  // end for each timestep

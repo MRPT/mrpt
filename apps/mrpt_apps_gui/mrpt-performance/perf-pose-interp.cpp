@@ -29,7 +29,7 @@ using mrpt::DEG2RAD;
 
 // interpolator tests ======================
 template <typename PATH_T, typename pose_t, bool INSERT_AT_END, bool BENCHMARK_INSERT_nQUERY>
-double pose_interp_test(int a1, int a2)
+double pose_interp_test([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 400000;
   mrpt::system::CTicTac tictac;

@@ -97,7 +97,8 @@ void ransac3Dplane_distance(
 /** Return "true" if the selected points are a degenerate (invalid) case.
  */
 bool ransac3Dplane_degenerate(
-    const mrpt::maps::CPointsMap& allData, const std::vector<size_t>& useIndices)
+    [[maybe_unused]] const mrpt::maps::CPointsMap& allData,
+    [[maybe_unused]] const std::vector<size_t>& useIndices)
 {
   return false;
 }
@@ -125,12 +126,14 @@ void TestRANSAC()
     const double xx = rng.drawUniform(-3, 3);
     const double yy = rng.drawUniform(-3, 3);
     const double zz = -(PLANE_EQ[3] + PLANE_EQ[0] * xx + PLANE_EQ[1] * yy) / PLANE_EQ[2];
-    data.insertPointFast(xx, yy, zz);
+    data.insertPointFast(static_cast<float>(xx), static_cast<float>(yy), static_cast<float>(zz));
   }
 
   for (size_t i = 0; i < N_noise; i++)
   {
-    data.insertPointFast(rng.drawUniform(-4, 4), rng.drawUniform(-4, 4), rng.drawUniform(-4, 4));
+    data.insertPointFast(
+        static_cast<float>(rng.drawUniform(-4, 4)), static_cast<float>(rng.drawUniform(-4, 4)),
+        static_cast<float>(rng.drawUniform(-4, 4)));
   }
 
   // Run RANSAC

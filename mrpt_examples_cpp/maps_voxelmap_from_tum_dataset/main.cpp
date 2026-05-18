@@ -48,7 +48,8 @@ void TestVoxelMapFromTUM(
             << "\n";
 
   mrpt::obs::CRawlog dataset;
-  dataset.loadFromRawLogFile(datasetRawlogFile);
+  if (!dataset.loadFromRawLogFile(datasetRawlogFile))
+    THROW_EXCEPTION_FMT("Failed to load rawlog: %s", datasetRawlogFile.c_str());
 
   std::cout << "Done! " << dataset.size() << " entries."
             << "\n";
@@ -91,7 +92,7 @@ void TestVoxelMapFromTUM(
 
   // create GL visual objects:
   auto glCamGroup = mrpt::viz::CSetOfObjects::Create();
-  glCamGroup->insert(mrpt::viz::stock_objects::CornerXYZSimple(0.3));
+  glCamGroup->insert(mrpt::viz::stock_objects::CornerXYZSimple(0.3f));
   auto glObsPts = mrpt::viz::CPointCloudColoured::Create();
   glCamGroup->insert(glObsPts);
   bool glCamFrustrumDone = false;

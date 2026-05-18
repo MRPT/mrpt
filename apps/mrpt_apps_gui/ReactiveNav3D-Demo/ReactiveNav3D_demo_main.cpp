@@ -113,8 +113,9 @@ int main(int num_arg, char* argv[])
         if (moving_target == 1)
         {
           moving_target = false;
-          const CAbstractNavigator::TNavigationParams nav_params =
-              ReactInterface.createNewTarget(last_Target_Pos.x, last_Target_Pos.y, 0.3f, false);
+          const CAbstractNavigator::TNavigationParams nav_params = ReactInterface.createNewTarget(
+              static_cast<float>(last_Target_Pos.x), static_cast<float>(last_Target_Pos.y), 0.3f,
+              false);
           rn3d.navigate(&nav_params);
         }
       }

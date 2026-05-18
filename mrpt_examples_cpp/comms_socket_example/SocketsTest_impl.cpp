@@ -116,7 +116,7 @@ void thread_client()
 #ifdef SOCKET_TEST_VERBOSE
       printf("[Client] Message received OK!:\n");
       printf("  MSG Type: %i\n", msg.type);
-      printf("  MSG Length: %u bytes\n", (unsigned int)msg.content.size());
+      printf("  MSG Length: %zu bytes\n", msg.content.size());
       printf("[Client] Parsing payload...\n");
 #endif
       mrpt::poses::CPose3D p_rx;

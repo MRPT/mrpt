@@ -79,7 +79,7 @@ void TestLaser2Imgs()
   {
     if (os::kbhit())
     {
-      char c = os::getch();
+      char c = static_cast<char>(os::getch());
       if (c == 27) break;
     }
 
@@ -103,11 +103,9 @@ void TestLaser2Imgs()
       if (!Img) continue;
     }
 
-    CPose3D cameraPose;  // Get Camera Pose (B) (CPose3D)
-    CMatrixDouble33 K;   // Get Calibration matrix (K)
-
-    sImgs ? sImgs->getSensorPose(cameraPose) : Img->getSensorPose(cameraPose);
-    K = sImgs ? sImgs->leftCamera.intrinsicParams : Img->cameraParams.intrinsicParams;
+    CPose3D cameraPose = sImgs ? sImgs->getSensorPose() : Img->getSensorPose();
+    CMatrixDouble33 K =
+        sImgs ? sImgs->leftCamera.intrinsicParams : Img->cameraParams.intrinsicParams;
 
     // LASER.............
     // Get CObservationRange2D
@@ -116,8 +114,7 @@ void TestLaser2Imgs()
     if (!laserScan) continue;
 
     // Get Laser Pose (A) (CPose3D)
-    CPose3D laserPose;
-    laserScan->getSensorPose(laserPose);
+    CPose3D laserPose = laserScan->getSensorPose();
 
     if (std::abs(laserPose.yaw()) > 90.0_deg) continue;  // Only front lasers
 
@@ -158,10 +155,11 @@ void TestLaser2Imgs()
 
       if (pCamera.z() > 0)
       {
-        *itImgX = -K(0, 0) * ((pCamera.x()) / (pCamera.z())) + K(0, 2);
-        *itImgY = -K(1, 1) * ((pCamera.y()) / (pCamera.z())) + K(1, 2);
+        *itImgX = static_cast<float>(-K(0, 0) * ((pCamera.x()) / (pCamera.z())) + K(0, 2));
+        *itImgY = static_cast<float>(-K(1, 1) * ((pCamera.y()) / (pCamera.z())) + K(1, 2));
 
-        if (*itImgX > 0 && *itImgX<imgW&& * itImgY> 0 && *itImgY < imgH)
+        if (*itImgX > 0 && *itImgX < static_cast<float>(imgW) && *itImgY > 0 &&
+            *itImgY < static_cast<float>(imgH))
           image.filledRectangle(
               {static_cast<int>(*itImgX - 1), static_cast<int>(*itImgY - 1)},
               {static_cast<int>(*itImgX + 1), static_cast<int>(*itImgY + 1)}, TColor(255, 0, 0));

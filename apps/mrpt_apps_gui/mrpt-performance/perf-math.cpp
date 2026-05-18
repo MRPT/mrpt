@@ -25,7 +25,7 @@ using namespace std;
 // ------------------------------------------------------
 //				Benchmark Misc. Math
 // ------------------------------------------------------
-double math_test_round(int a1, int a2)
+double math_test_round([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 100000000;
   CTicTac tictac;
@@ -42,7 +42,7 @@ double math_test_round(int a1, int a2)
 }
 
 template <typename T, typename FUNC>
-double math_test_FUNC(int a1, int a2, FUNC func)
+double math_test_FUNC([[maybe_unused]] int a1, [[maybe_unused]] int a2, FUNC func)
 {
   const long N = 100000000;
   CTicTac tictac;

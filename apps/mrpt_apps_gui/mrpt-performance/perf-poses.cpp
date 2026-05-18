@@ -35,7 +35,7 @@ using namespace std;
 // ------------------------------------------------------
 
 // 3D ======================
-double poses_test_compose3D(int a1, int a2)
+double poses_test_compose3D([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 100000;
   CTicTac tictac;
@@ -53,7 +53,7 @@ double poses_test_compose3D(int a1, int a2)
   return T;
 }
 
-double poses_test_compose3D2(int a1, int a2)
+double poses_test_compose3D2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 100000;
   CTicTac tictac;
@@ -71,7 +71,7 @@ double poses_test_compose3D2(int a1, int a2)
   return T;
 }
 
-double poses_test_compose3Dpoint(int a1, int a2)
+double poses_test_compose3Dpoint([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -89,7 +89,7 @@ double poses_test_compose3Dpoint(int a1, int a2)
   return T;
 }
 
-double poses_test_compose3Dpoint2(int a1, int a2)
+double poses_test_compose3Dpoint2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -107,7 +107,7 @@ double poses_test_compose3Dpoint2(int a1, int a2)
   return T;
 }
 
-double poses_test_compose3Dpoint3(int a1, int a2)
+double poses_test_compose3Dpoint3([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -129,7 +129,7 @@ double poses_test_compose3Dpoint3(int a1, int a2)
   return T;
 }
 
-double poses_test_invcompose3Dpoint(int a1, int a2)
+double poses_test_invcompose3Dpoint([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -147,7 +147,7 @@ double poses_test_invcompose3Dpoint(int a1, int a2)
   return T;
 }
 
-double poses_test_invcompose3Dpoint2(int a1, int a2)
+double poses_test_invcompose3Dpoint2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -167,7 +167,7 @@ double poses_test_invcompose3Dpoint2(int a1, int a2)
 
 // 2D =============
 
-double poses_test_compose2D(int a1, int a2)
+double poses_test_compose2D([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -185,7 +185,7 @@ double poses_test_compose2D(int a1, int a2)
   return T;
 }
 
-double poses_test_compose2D2(int a1, int a2)
+double poses_test_compose2D2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -203,7 +203,7 @@ double poses_test_compose2D2(int a1, int a2)
   return T;
 }
 
-double poses_test_compose2Dpoint(int a1, int a2)
+double poses_test_compose2Dpoint([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -221,7 +221,7 @@ double poses_test_compose2Dpoint(int a1, int a2)
   return T;
 }
 
-double poses_test_compose2Dpoint2(int a1, int a2)
+double poses_test_compose2Dpoint2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -240,7 +240,7 @@ double poses_test_compose2Dpoint2(int a1, int a2)
 }
 
 // 3D QUAT ======================
-double poses_test_compose3DQuat(int a1, int a2)
+double poses_test_compose3DQuat([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 100000;
   CTicTac tictac;
@@ -257,7 +257,7 @@ double poses_test_compose3DQuat(int a1, int a2)
   dummy_do_nothing_with_string(mrpt::format("%f", p.x()));
   return T;
 }
-double poses_test_compose3DQuat2(int a1, int a2)
+double poses_test_compose3DQuat2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 100000;
   CTicTac tictac;
@@ -274,7 +274,7 @@ double poses_test_compose3DQuat2(int a1, int a2)
   dummy_do_nothing_with_string(mrpt::format("%f", p.x()));
   return T;
 }
-double poses_test_compose3DQuatpoint(int a1, int a2)
+double poses_test_compose3DQuatpoint([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -292,7 +292,7 @@ double poses_test_compose3DQuatpoint(int a1, int a2)
   return T;
 }
 
-double poses_test_compose3DQuatpoint2(int a1, int a2)
+double poses_test_compose3DQuatpoint2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -310,7 +310,7 @@ double poses_test_compose3DQuatpoint2(int a1, int a2)
   return T;
 }
 
-double poses_test_invcompose3DQuatpoint2(int a1, int a2)
+double poses_test_invcompose3DQuatpoint2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 500000;
   CTicTac tictac;
@@ -329,7 +329,7 @@ double poses_test_invcompose3DQuatpoint2(int a1, int a2)
 }
 
 // CONVERSIONS
-double poses_test_convert_ypr_quat(int a1, int a2)
+double poses_test_convert_ypr_quat([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 1000000;
   CTicTac tictac;
@@ -347,7 +347,7 @@ double poses_test_convert_ypr_quat(int a1, int a2)
   return T;
 }
 
-double poses_test_convert_quat_ypr(int a1, int a2)
+double poses_test_convert_quat_ypr([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   const long N = 1000000;
   CTicTac tictac;
@@ -366,7 +366,7 @@ double poses_test_convert_quat_ypr(int a1, int a2)
 }
 
 // CONVERSIONS PDF Gauss
-double poses_test_convert_ypr_quat_pdf(int a1, int a2)
+double poses_test_convert_ypr_quat_pdf(int a1, [[maybe_unused]] int a2)
 {
   if (a1 >= 0) mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(a1 != 0);
   const long N = 10000;
@@ -399,7 +399,7 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
   return T;
 }
 
-double poses_test_convert_quat_ypr_pdf(int a1, int a2)
+double poses_test_convert_quat_ypr_pdf(int a1, [[maybe_unused]] int a2)
 {
   if (a1 >= 0) mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(a1 != 0);
 

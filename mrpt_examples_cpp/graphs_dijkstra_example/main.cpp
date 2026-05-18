@@ -48,9 +48,9 @@ static void addEdge(
 
 // weight is the distance between two nodes.
 double myDijkstraWeight(
-    const CMyDijkstra::graph_t& g,
-    const TNodeID from,
-    const TNodeID to,
+    [[maybe_unused]] const CMyDijkstra::graph_t& g,
+    [[maybe_unused]] const TNodeID from,
+    [[maybe_unused]] const TNodeID to,
     const CMyDijkstra::edge_t& edge)
 {
   //	return 1;					// Topological distance

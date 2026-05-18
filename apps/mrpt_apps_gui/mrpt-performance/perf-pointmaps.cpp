@@ -180,7 +180,7 @@ double pointmap_test_3(int a1, int a2)
   return tictac.Tac() / a2;
 }
 
-double pointmap_test_4(int a1, int a2)
+double pointmap_test_4(int a1, [[maybe_unused]] int a2)
 {
   using namespace mrpt::tfest;
 

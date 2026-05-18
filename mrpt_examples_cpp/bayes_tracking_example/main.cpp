@@ -274,8 +274,8 @@ void TestBayesianTracking()
 
   // Init. simulation:
   // -------------------------
-  float x = VEHICLE_INITIAL_X, y = VEHICLE_INITIAL_Y, phi = -180.0_deg, v = VEHICLE_INITIAL_V,
-        w = VEHICLE_INITIAL_W;
+  float x = VEHICLE_INITIAL_X, y = VEHICLE_INITIAL_Y, phi = static_cast<float>(-180.0_deg),
+        v = VEHICLE_INITIAL_V, w = VEHICLE_INITIAL_W;
   float t = 0;
 
   while (winEKF.isOpen() && winPF.isOpen() && !mrpt::system::os::kbhit())
@@ -290,14 +290,16 @@ void TestBayesianTracking()
 
     // Simulate noisy observation:
     float realBearing = atan2(y, x);
-    float obsBearing =
-        realBearing + BEARING_SENSOR_NOISE_STD * getRandomGenerator().drawGaussian1D_normalized();
+    float obsBearing = realBearing + static_cast<float>(
+                                         BEARING_SENSOR_NOISE_STD *
+                                         getRandomGenerator().drawGaussian1D_normalized());
     printf(
         "Real/Simulated bearing: %.03f / %.03f deg\n", RAD2DEG(realBearing), RAD2DEG(obsBearing));
 
     float realRange = sqrt(square(x) + square(y));
-    float obsRange = max(
-        0.0, realRange + RANGE_SENSOR_NOISE_STD * getRandomGenerator().drawGaussian1D_normalized());
+    float obsRange = static_cast<float>(
+        max(0.0, static_cast<double>(realRange) +
+                     RANGE_SENSOR_NOISE_STD * getRandomGenerator().drawGaussian1D_normalized()));
     printf("Real/Simulated range: %.03f / %.03f \n", realRange, obsRange);
 
     // Process with EKF:
@@ -389,7 +391,7 @@ void TestBayesianTracking()
     winPF.plot(obs_x, obs_y, "r", "plot_obs_ray");
 
     // Delay:
-    std::this_thread::sleep_for(std::chrono::milliseconds((int)(DELTA_TIME * 1000)));
+    std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(DELTA_TIME * 1000)));
     t += DELTA_TIME;
   }
 }
@@ -432,9 +434,9 @@ CRangeBearing::CRangeBearing()
 CRangeBearing::~CRangeBearing() {}
 void CRangeBearing::doProcess(double DeltaTime, double observationRange, double observationBearing)
 {
-  m_deltaTime = (float)DeltaTime;
-  m_obsBearing = (float)observationBearing;
-  m_obsRange = (float)observationRange;
+  m_deltaTime = static_cast<float>(DeltaTime);
+  m_obsBearing = static_cast<float>(observationBearing);
+  m_obsRange = static_cast<float>(observationRange);
 
   runOneKalmanIteration();
 }
@@ -453,7 +455,7 @@ void CRangeBearing::OnGetAction(KFArray_ACT& u) const { u[0] = m_deltaTime; }
  * Default:false
  */
 void CRangeBearing::OnTransitionModel(
-    const KFArray_ACT& in_u, KFArray_VEH& inout_x, bool& out_skipPrediction) const
+    const KFArray_ACT& in_u, KFArray_VEH& inout_x, [[maybe_unused]] bool& out_skipPrediction) const
 {
   // in_u[0] : Delta time
   // in_out_x: [0]:x  [1]:y  [2]:vx  [3]: vy
@@ -501,10 +503,10 @@ void CRangeBearing::OnGetObservationNoise(KFMatrix_OxO& R) const
 void CRangeBearing::OnGetObservationsAndDataAssociation(
     vector_KFArray_OBS& out_z,
     std::vector<int>& out_data_association,
-    const vector_KFArray_OBS& in_all_predictions,
-    const KFMatrix& in_S,
-    const std::vector<size_t>& in_lm_indices_in_S,
-    const KFMatrix_OxO& in_R)
+    [[maybe_unused]] const vector_KFArray_OBS& in_all_predictions,
+    [[maybe_unused]] const KFMatrix& in_S,
+    [[maybe_unused]] const std::vector<size_t>& in_lm_indices_in_S,
+    [[maybe_unused]] const KFMatrix_OxO& in_R)
 {
   out_z.resize(1);
   out_z[0][0] = m_obsBearing;
@@ -521,7 +523,8 @@ void CRangeBearing::OnGetObservationsAndDataAssociation(
  * \param out_predictions The predicted observations.
  */
 void CRangeBearing::OnObservationModel(
-    const std::vector<size_t>& idx_landmarks_to_predict, vector_KFArray_OBS& out_predictions) const
+    [[maybe_unused]] const std::vector<size_t>& idx_landmarks_to_predict,
+    vector_KFArray_OBS& out_predictions) const
 {
   // predicted bearing:
   kftype x = m_xkk[0];
@@ -545,7 +548,9 @@ void CRangeBearing::OnObservationModel(
  * \param Hy  The output Jacobian \f$ \frac{\partial h_i}{\partial y_i} \f$.
  */
 void CRangeBearing::OnObservationJacobians(
-    size_t idx_landmark_to_predict, KFMatrix_OxV& Hx, KFMatrix_OxF& Hy) const
+    [[maybe_unused]] size_t idx_landmark_to_predict,
+    KFMatrix_OxV& Hx,
+    [[maybe_unused]] KFMatrix_OxF& Hy) const
 {
   // predicted bearing:
   kftype x = m_xkk[0];
@@ -583,26 +588,26 @@ void CRangeBearing::OnSubstractObservationVectors(KFArray_OBS& A, const KFArray_
  * \sa options
  */
 void CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
-    const mrpt::obs::CActionCollection* action,
+    [[maybe_unused]] const mrpt::obs::CActionCollection* action,
     const mrpt::obs::CSensoryFrame* observation,
-    const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+    [[maybe_unused]] const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 {
   size_t i, N = m_particles.size();
 
   // Transition model:
   for (i = 0; i < N; i++)
   {
-    m_particles[i].d->x +=
-        DELTA_TIME * m_particles[i].d->vx +
-        TRANSITION_MODEL_STD_XY * getRandomGenerator().drawGaussian1D_normalized();
-    m_particles[i].d->y +=
-        DELTA_TIME * m_particles[i].d->vy +
-        TRANSITION_MODEL_STD_XY * getRandomGenerator().drawGaussian1D_normalized();
+    m_particles[i].d->x += DELTA_TIME * m_particles[i].d->vx +
+                           TRANSITION_MODEL_STD_XY *
+                               static_cast<float>(getRandomGenerator().drawGaussian1D_normalized());
+    m_particles[i].d->y += DELTA_TIME * m_particles[i].d->vy +
+                           TRANSITION_MODEL_STD_XY *
+                               static_cast<float>(getRandomGenerator().drawGaussian1D_normalized());
 
-    m_particles[i].d->vx +=
-        TRANSITION_MODEL_STD_VXY * getRandomGenerator().drawGaussian1D_normalized();
-    m_particles[i].d->vy +=
-        TRANSITION_MODEL_STD_VXY * getRandomGenerator().drawGaussian1D_normalized();
+    m_particles[i].d->vx += TRANSITION_MODEL_STD_VXY *
+                            static_cast<float>(getRandomGenerator().drawGaussian1D_normalized());
+    m_particles[i].d->vy += TRANSITION_MODEL_STD_VXY *
+                            static_cast<float>(getRandomGenerator().drawGaussian1D_normalized());
   }
 
   CObservationBearingRange::ConstPtr obs =
@@ -636,13 +641,13 @@ void CRangeBearingParticleFilter::initializeParticles(size_t M)
 
   for (CParticleList::iterator it = m_particles.begin(); it != m_particles.end(); it++)
   {
-    (*it).d->x =
-        getRandomGenerator().drawUniform(VEHICLE_INITIAL_X - 2.0f, VEHICLE_INITIAL_X + 2.0f);
-    (*it).d->y =
-        getRandomGenerator().drawUniform(VEHICLE_INITIAL_Y - 2.0f, VEHICLE_INITIAL_Y + 2.0f);
+    (*it).d->x = static_cast<float>(
+        getRandomGenerator().drawUniform(VEHICLE_INITIAL_X - 2.0f, VEHICLE_INITIAL_X + 2.0f));
+    (*it).d->y = static_cast<float>(
+        getRandomGenerator().drawUniform(VEHICLE_INITIAL_Y - 2.0f, VEHICLE_INITIAL_Y + 2.0f));
 
-    (*it).d->vx = getRandomGenerator().drawGaussian1D(-VEHICLE_INITIAL_V, 0.2f);
-    (*it).d->vy = getRandomGenerator().drawGaussian1D(0, 0.2f);
+    (*it).d->vx = static_cast<float>(getRandomGenerator().drawGaussian1D(-VEHICLE_INITIAL_V, 0.2f));
+    (*it).d->vy = static_cast<float>(getRandomGenerator().drawGaussian1D(0, 0.2f));
 
     it->log_w = 0;
   }
@@ -664,9 +669,9 @@ void CRangeBearingParticleFilter::getMean(float& x, float& y, float& vx, float& 
   {
     const double w = exp(it->log_w) / sumW;
 
-    x += (float)w * (*it).d->x;
-    y += (float)w * (*it).d->y;
-    vx += (float)w * (*it).d->vx;
-    vy += (float)w * (*it).d->vy;
+    x += static_cast<float>(w) * (*it).d->x;
+    y += static_cast<float>(w) * (*it).d->y;
+    vx += static_cast<float>(w) * (*it).d->vx;
+    vy += static_cast<float>(w) * (*it).d->vy;
   }
 }

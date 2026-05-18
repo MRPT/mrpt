@@ -36,7 +36,10 @@ using namespace std;
 
 // Example non-linear function for SUT
 //   f: R^5   => R^3
-void myFun1(const CVectorFixedDouble<3>& x, const double& user_param, CVectorFixedDouble<3>& y)
+void myFun1(
+    const CVectorFixedDouble<3>& x,
+    [[maybe_unused]] const double& user_param,
+    CVectorFixedDouble<3>& y)
 {
   y[0] = cos(x[0]) * exp(x[1]) + x[0];
   y[1] = x[1] / (1 + square(x[0]));
@@ -76,7 +79,7 @@ void Test_SUT()
         dumm,  // fixed parameter: not used in this example
         y_mean, y_cov);
 
-  std::cout << "SUT: Time (ms): " << 1e3 * tictac.Tac() / N << "\n";
+  std::cout << "SUT: Time (ms): " << 1e3 * tictac.Tac() / static_cast<double>(N) << "\n";
 
   // Print:
   std::cout << " ======= Scaled Unscented Transform ======== "
@@ -112,7 +115,7 @@ void Test_SUT()
         &MC_samples  // we want the samples.
     );
 
-  std::cout << "MC: Time (ms): " << 1e3 * tictac.Tac() / N << "\n";
+  std::cout << "MC: Time (ms): " << 1e3 * tictac.Tac() / static_cast<double>(N) << "\n";
 
   CVectorDouble MC_y[3];
 
@@ -146,7 +149,7 @@ void Test_SUT()
         dumm,  // fixed parameter: not used in this example
         y_mean, y_cov, x_incrs);
 
-  std::cout << "LIN: Time (ms): " << 1e3 * tictac.Tac() / N << "\n";
+  std::cout << "LIN: Time (ms): " << 1e3 * tictac.Tac() / static_cast<double>(N) << "\n";
 
   // Print:
   std::cout << " ======= Linear Transform ======== "
@@ -198,7 +201,7 @@ void Test_SUT()
 // -----------------------------------------------------------
 
 static void aux_posequat2poseypr(
-    const CVectorFixedDouble<7>& x, const double& dummy, CVectorFixedDouble<6>& y)
+    const CVectorFixedDouble<7>& x, [[maybe_unused]] const double& dummy, CVectorFixedDouble<6>& y)
 {
   const CPose3DQuat p(x[0], x[1], x[2], mrpt::math::CQuaternionDouble(x[3], x[4], x[5], x[6]));
   const CPose3D p2 = CPose3D(p);
@@ -260,7 +263,7 @@ void TestCalibrate_pose2quat()
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {

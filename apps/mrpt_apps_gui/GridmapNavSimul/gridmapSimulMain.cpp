@@ -89,7 +89,7 @@ class MyArtProvider : public wxArtProvider
 
 // CreateBitmap function
 wxBitmap MyArtProvider::CreateBitmap(
-    const wxArtID& id, const wxArtClient& client, const wxSize& size)
+    const wxArtID& id, const wxArtClient& client, [[maybe_unused]] const wxSize& size)
 {
   RETURN_BITMAP(wxART_MAKE_ART_ID(IMG_MRPT_LOGO), mrpt_logo_xpm);
   RETURN_BITMAP(wxART_MAKE_ART_ID(MAIN_ICON), app_icon_gridmapsimul_xpm);
@@ -173,65 +173,68 @@ class CMyGLCanvas : public CWxGLCanvasBase
   void OnRenderError(const wxString& str) override;
 };
 
-void CMyGLCanvas::OnRenderError(const wxString& str) {}
+void CMyGLCanvas::OnRenderError([[maybe_unused]] const wxString& str) {}
 void CMyGLCanvas::OnPreRender() {}
-void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc) {}
+void CMyGLCanvas::OnPostRenderSwapBuffers(
+    [[maybe_unused]] double At, [[maybe_unused]] wxPaintDC& dc)
+{
+}
 void CMyGLCanvas::OnPostRender() {}
 
 void CMyGLCanvas::OnCharCustom(wxKeyEvent& event) { last_pressed_key = event.GetKeyCode(); }
 
 //(*IdInit(gridmapSimulFrame)
-const long gridmapSimulFrame::ID_STATICTEXT1 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL1 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT2 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL2 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT3 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL3 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT8 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL5 = wxNewId();
-const long gridmapSimulFrame::ID_BUTTON5 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT16 = wxNewId();
-const long gridmapSimulFrame::ID_SPINCTRL1 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT9 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL6 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT13 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL7 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT10 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL8 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT11 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL9 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT12 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL10 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT14 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL11 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT4 = wxNewId();
-const long gridmapSimulFrame::ID_BUTTON4 = wxNewId();
-const long gridmapSimulFrame::ID_CHECKBOX1 = wxNewId();
-const long gridmapSimulFrame::ID_CHECKBOX_RAWLOG_FORMAT = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT6 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT7 = wxNewId();
-const long gridmapSimulFrame::ID_BUTTON6 = wxNewId();
-const long gridmapSimulFrame::ID_PANEL3 = wxNewId();
-const long gridmapSimulFrame::ID_BUTTON1 = wxNewId();
-const long gridmapSimulFrame::ID_BUTTON2 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT5 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL4 = wxNewId();
-const long gridmapSimulFrame::ID_BUTTON3 = wxNewId();
-const long gridmapSimulFrame::ID_STATICTEXT15 = wxNewId();
-const long gridmapSimulFrame::ID_TEXTCTRL12 = wxNewId();
-const long gridmapSimulFrame::ID_PANEL6 = wxNewId();
-const long gridmapSimulFrame::ID_PANEL4 = wxNewId();
-const long gridmapSimulFrame::ID_PANEL2 = wxNewId();
-const long gridmapSimulFrame::ID_PANEL1 = wxNewId();
-const long gridmapSimulFrame::ID_PANEL5 = wxNewId();
-const long gridmapSimulFrame::ID_SPLITTERWINDOW1 = wxNewId();
-const long gridmapSimulFrame::ID_TIMER1 = wxNewId();
-const long gridmapSimulFrame::ID_MENUITEM1 = wxNewId();
-const long gridmapSimulFrame::ID_MENUITEM_LOADMAP = wxNewId();
-const long gridmapSimulFrame::ID_MENUITEM2 = wxNewId();
-const long gridmapSimulFrame::ID_MENUITEM3 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT1 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL1 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT2 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL2 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT3 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL3 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT8 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL5 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_BUTTON5 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT16 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_SPINCTRL1 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT9 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL6 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT13 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL7 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT10 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL8 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT11 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL9 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT12 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL10 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT14 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL11 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT4 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_BUTTON4 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_CHECKBOX1 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_CHECKBOX_RAWLOG_FORMAT = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT6 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT7 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_BUTTON6 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_PANEL3 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_BUTTON1 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_BUTTON2 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT5 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL4 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_BUTTON3 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_STATICTEXT15 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL12 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_PANEL6 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_PANEL4 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_PANEL2 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_PANEL1 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_PANEL5 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_SPLITTERWINDOW1 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TIMER1 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_MENUITEM1 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_MENUITEM_LOADMAP = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_MENUITEM2 = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_MENUITEM3 = wxNewId();
 //*)
-const long gridmapSimulFrame::ID_TEXTCTRL_INPUT = wxNewId();
+const wxWindowID gridmapSimulFrame::ID_TEXTCTRL_INPUT = wxNewId();
 
 BEGIN_EVENT_TABLE(gridmapSimulFrame, wxFrame)
 //(*EventTable(gridmapSimulFrame)
@@ -244,7 +247,7 @@ END_EVENT_TABLE()
 #define _MYTT(X) _T(X)
 #endif
 
-gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
+gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, [[maybe_unused]] wxWindowID id)
 {
   // Load my custom icons:
   wxArtProvider::Push(new MyArtProvider);
@@ -664,13 +667,13 @@ void gridmapSimulFrame::update_grid_map_3d()
   gl_grid->insert(the_grid.getVisualization());
 }
 
-void gridmapSimulFrame::OnbtnQuitClick(wxCommandEvent& event)
+void gridmapSimulFrame::OnbtnQuitClick([[maybe_unused]] wxCommandEvent& event)
 {
   we_are_closing = true;
   Close();
 }
 
-void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
+void gridmapSimulFrame::OntimRunTrigger([[maybe_unused]] wxTimerEvent& event)
 {
   static CTicTac tictac;
 
@@ -775,15 +778,15 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
     the_scan.sensorLabel = "LASER_SIM";
     the_scan.sensorPose.setFromValues(0.20, 0, 0.10);
     the_scan.maxRange = 80;  // LASER_MAX_RANGE;
-    the_scan.aperture = LASER_APERTURE;
-    the_scan.stdError = LASER_STD_ERROR;
+    the_scan.aperture = static_cast<float>(LASER_APERTURE);
+    the_scan.stdError = static_cast<float>(LASER_STD_ERROR);
 
     static mrpt::system::CTimeLogger timlog;
 
     timlog.enter("laserScanSimulator");
     the_grid.laserScanSimulator(
-        the_scan, mrpt::poses::CPose2D(p), 0.6f, LASER_N_RANGES, LASER_STD_ERROR, 1,
-        LASER_BEARING_STD_ERROR);
+        the_scan, mrpt::poses::CPose2D(p), 0.6f, static_cast<size_t>(LASER_N_RANGES),
+        static_cast<float>(LASER_STD_ERROR), 1, static_cast<float>(LASER_BEARING_STD_ERROR));
     timlog.leave("laserScanSimulator");
 
 #ifdef DO_SCAN_LIKELIHOOD_DEBUG
@@ -946,9 +949,12 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
     // Update robot path GT/odo:
     if (!robot_path_GT.empty())
     {
-      gl_path_GT->insertPoint(robot_path_GT.rbegin()->x(), robot_path_GT.rbegin()->y(), 0);
+      gl_path_GT->insertPoint(
+          static_cast<float>(robot_path_GT.rbegin()->x()),
+          static_cast<float>(robot_path_GT.rbegin()->y()), 0.0f);
       CPose2D this_odo = pose_start + *robot_path_ODO.rbegin();
-      gl_path_ODO->insertPoint(this_odo.x(), this_odo.y(), 0);
+      gl_path_ODO->insertPoint(
+          static_cast<float>(this_odo.x()), static_cast<float>(this_odo.y()), 0.0f);
     }
 
     {
@@ -963,7 +969,8 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
     }
 
     m_canvas->orbitCameraController().setCameraPointing(
-        p.x, p.y, m_canvas->orbitCameraController().getCameraPointingZ());
+        static_cast<float>(p.x), static_cast<float>(p.y),
+        m_canvas->orbitCameraController().getCameraPointingZ());
     m_canvas->Refresh();
 
     // Prepare next interval
@@ -983,7 +990,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
   }
 }
 
-void gridmapSimulFrame::OnbtnStartClick(wxCommandEvent& event)
+void gridmapSimulFrame::OnbtnStartClick([[maybe_unused]] wxCommandEvent& event)
 {
   btnStart->Enable(false);
   btnEnd->Enable(true);
@@ -1024,13 +1031,13 @@ void gridmapSimulFrame::OnbtnStartClick(wxCommandEvent& event)
   decimation = edDecimate->GetValue();
 }
 
-void gridmapSimulFrame::OnbtnEndClick(wxCommandEvent& event)
+void gridmapSimulFrame::OnbtnEndClick([[maybe_unused]] wxCommandEvent& event)
 {
   btnStart->Enable(true);
   btnEnd->Enable(false);
 }
 
-void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
+void gridmapSimulFrame::OnMenuLoadMap([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1084,7 +1091,8 @@ void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
 
       if (sCellSize.ToCDouble(&cell_size) && sCX.ToCDouble(&cx) && sCY.ToCDouble(&cy))
       {
-        if (the_grid.loadFromBitmap(img, cell_size, mrpt::math::TPoint2D(cx, cy)))
+        if (the_grid.loadFromBitmap(
+                img, static_cast<float>(cell_size), mrpt::math::TPoint2D(cx, cy)))
         {
           update_grid_map_3d();
           wxMessageBox(_("OK"), _("Map loaded!"));
@@ -1100,7 +1108,7 @@ void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
   WX_END_TRY
 }
 
-void gridmapSimulFrame::OnbtnExploreClick(wxCommandEvent& event)
+void gridmapSimulFrame::OnbtnExploreClick([[maybe_unused]] wxCommandEvent& event)
 {
   wxFileDialog dialog(
       this, _("Rawlog to create.."), _("."), _("simul.rawlog"),
@@ -1114,7 +1122,7 @@ void gridmapSimulFrame::OnbtnExploreClick(wxCommandEvent& event)
   }
 }
 
-void gridmapSimulFrame::OnbtnSetLaserClick(wxCommandEvent& event)
+void gridmapSimulFrame::OnbtnSetLaserClick([[maybe_unused]] wxCommandEvent& event)
 {
   edSpan->GetValue().ToCDouble(&LASER_APERTURE);
   LASER_APERTURE = DEG2RAD(LASER_APERTURE);
@@ -1127,12 +1135,12 @@ void gridmapSimulFrame::OnbtnSetLaserClick(wxCommandEvent& event)
   LASER_BEARING_STD_ERROR = DEG2RAD(LASER_BEARING_STD_ERROR);
 }
 
-void gridmapSimulFrame::OnAbout(wxCommandEvent& event)
+void gridmapSimulFrame::OnAbout([[maybe_unused]] wxCommandEvent& event)
 {
   mrpt::gui::show_mrpt_about_box_wxWidgets(this, "GripmapNavSimul");
 }
 
-void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
+void gridmapSimulFrame::OnbtnResimulateClick([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
@@ -1168,7 +1176,7 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
 
   // Rawlog:
   CRawlog rawlog;
-  rawlog.loadFromRawLogFile(raw_file);
+  (void)rawlog.loadFromRawLogFile(raw_file);
 
   // std::cout << "rawlog entries: " << rawlog.size() << "\n";
 
@@ -1176,7 +1184,7 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
   ASSERT_(rawlog.size() > 0);
   ASSERT_(GT.cols() >= 4);
   ASSERT_(rawlog.getType(0) == CRawlog::TEntryType::etActionCollection);
-  ASSERT_(rawlog.size() / 2 == (size_t)GT.rows());
+  ASSERT_(rawlog.size() / 2 == static_cast<size_t>(GT.rows()));
 
   // Ask for the output:
   string out_raw_file, out_GT_file;
@@ -1208,7 +1216,8 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
 
     CObservation2DRangeScan::Ptr the_scan = sf->getObservationByClass<CObservation2DRangeScan>();
     the_grid.laserScanSimulator(
-        *the_scan, gt_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR);
+        *the_scan, gt_pose, 0.5f, static_cast<size_t>(LASER_N_RANGES),
+        static_cast<float>(LASER_STD_ERROR), 1, static_cast<float>(LASER_BEARING_STD_ERROR));
   }
 
   // Save the new rawlog:

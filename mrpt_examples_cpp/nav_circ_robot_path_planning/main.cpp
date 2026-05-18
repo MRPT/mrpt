@@ -85,7 +85,7 @@ void TestPathPlanning()
             << "\n";
 
   printf("Path found: %s\n", notFound ? "NO" : "YES");
-  printf("Path has %u steps\n", (unsigned)thePath.size());
+  printf("Path has %zu steps\n", thePath.size());
 
   // Save result:
   CImage img;
@@ -93,7 +93,7 @@ void TestPathPlanning()
 
   // Draw the path:
   // ---------------------
-  int R = round(pathPlanning.robotRadius / gridmap.getResolution());
+  int R = static_cast<int>(std::round(pathPlanning.robotRadius / gridmap.getResolution()));
 
   for (std::deque<TPoint2D>::const_iterator it = thePath.begin(); it != thePath.end(); ++it)
     img.drawCircle(
@@ -124,7 +124,7 @@ void TestPathPlanning()
 #endif
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {

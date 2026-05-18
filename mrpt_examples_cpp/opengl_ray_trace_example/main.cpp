@@ -66,16 +66,11 @@ const size_t HOW_MANY_PITCHS = 75;
 
 const float RANDOM_POSE_DISTANCE = 10;
 
-inline double MYRAND1()
-{
-  //	return static_cast<float>(rand()%prec)/prec;
-  return getRandomGenerator().drawUniform(0, 1);
-}
+inline float MYRAND1() { return static_cast<float>(getRandomGenerator().drawUniform(0, 1)); }
 
-inline double MYRANDG(double scale, double shift = 0)
+inline float MYRANDG(double scale, double shift = 0)
 {
-  //	return shift+(static_cast<float>(rand()%prec)/prec)*scale;
-  return shift + scale * getRandomGenerator().drawUniform(0, 1);
+  return static_cast<float>(shift + scale * getRandomGenerator().drawUniform(0, 1));
 }
 
 CPose3D randomPose()
@@ -179,9 +174,8 @@ void display()
   aom->setColor(0, 1, 0);
   aom->setWireframe(true);
   // Comment to stop showing traced rays and scan range guidelines.
-  CSetOfLines::Ptr traced = CSetOfLines::Create();
+  CSetOfLines::Ptr traced = aom->getTracedRays();
   CSetOfLines::Ptr guides = CSetOfLines::Create();
-  aom->getTracedRays(traced);
   traced->setLineWidth(1.5);
   traced->setColor(1, 0, 0);
   guideLines(basePose, guides, 10);

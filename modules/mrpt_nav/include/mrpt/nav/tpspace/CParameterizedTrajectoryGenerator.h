@@ -378,10 +378,10 @@ class CParameterizedTrajectoryGenerator :
   [[nodiscard]] double getScorePriority() const { return m_score_priority; }
   void setScorePriorty(double prior) { m_score_priority = prior; }
   [[nodiscard]] unsigned getClearanceStepCount() const { return m_clearance_num_points; }
-  void setClearanceStepCount(const unsigned res) { m_clearance_num_points = res; }
+  void setClearanceStepCount(const uint16_t res) { m_clearance_num_points = res; }
 
   [[nodiscard]] unsigned getClearanceDecimatedPaths() const { return m_clearance_decimated_paths; }
-  void setClearanceDecimatedPaths(const unsigned num) { m_clearance_decimated_paths = num; }
+  void setClearanceDecimatedPaths(const uint16_t num) { m_clearance_decimated_paths = num; }
 
   /** Returns the representation of one trajectory of this PTG as a 3D OpenGL
    * object (a simple curved line).

@@ -51,7 +51,7 @@ void TestOpenGLVideo()
 
   // XY Grid
   viz::CGridPlaneXY::Ptr gl_ground = viz::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
-  gl_ground->setColor(0.7, 0.7, 0.7);
+  gl_ground->setColor(0.7f, 0.7f, 0.7f);
 
   // An opengl plane with the video texture
   viz::CTexturedPlane::Ptr gl_plane1 =

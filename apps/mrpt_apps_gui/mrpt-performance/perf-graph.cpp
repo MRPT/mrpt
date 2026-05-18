@@ -47,7 +47,7 @@ double graphs_test_populate(int nEdges, int _N)
       g.insertEdge(j, j + 1, EDGE_TYPE());
     }
   }
-  return tictac.Tac() / N;
+  return tictac.Tac() / static_cast<double>(N);
 }
 
 template <class EDGE_TYPE, class MAPIMPL>
@@ -67,7 +67,7 @@ double graphs_test_populate_at_end(int nEdges, int _N)
       g.edges.insert(g.edges.end(), std::make_pair(std::make_pair(j, j + 1), EDGE_TYPE()));
     }
   }
-  return tictac.Tac() / N;
+  return tictac.Tac() / static_cast<double>(N);
 }
 
 template <class EDGE_TYPE, class MAPS_IMPLEMENTATION>
@@ -81,7 +81,7 @@ double graphs_dijkstra(int nNodes, int _N)
   graph_t gs;
   {
     double edge_node_ratio = 2.0;
-    for (unsigned int i = 0; i < (unsigned int)nNodes; i++)
+    for (unsigned int i = 0; i < static_cast<unsigned int>(nNodes); i++)
     {
       size_t nEdges =
           1 + (mrpt::random::getRandomGenerator().drawUniform32bit() % int(edge_node_ratio - 1));

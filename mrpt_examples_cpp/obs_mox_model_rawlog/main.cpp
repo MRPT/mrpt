@@ -31,7 +31,7 @@ using namespace mrpt::io;
 using namespace mrpt::math;
 using namespace mrpt::serialization;
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   // Variables
   string rawlog_file, sensorLabel;
@@ -119,7 +119,8 @@ int main(int argc, char** argv)
 
             if (sensorType == 0)
             {  // compute the mean
-              raw_reading = math::mean(obs->m_readings[enoseID].readingsVoltage);
+              raw_reading =
+                  static_cast<float>(math::mean(obs->m_readings[enoseID].readingsVoltage));
             }
             else
             {
@@ -129,7 +130,8 @@ int main(int argc, char** argv)
                 // First reading, get the index according to
                 // sensorID
                 for (indexMonitoredSensor = 0;
-                     indexMonitoredSensor < (int)obs->m_readings[enoseID].sensorTypes.size();
+                     indexMonitoredSensor <
+                     static_cast<int>(obs->m_readings[enoseID].sensorTypes.size());
                      indexMonitoredSensor++)
                 {
                   if (obs->m_readings[enoseID].sensorTypes.at(indexMonitoredSensor) ==
@@ -138,7 +140,8 @@ int main(int argc, char** argv)
                 }
               }
 
-              if (indexMonitoredSensor < (int)obs->m_readings[enoseID].sensorTypes.size())
+              if (indexMonitoredSensor <
+                  static_cast<int>(obs->m_readings[enoseID].sensorTypes.size()))
               {
                 raw_reading = obs->m_readings[enoseID].readingsVoltage.at(indexMonitoredSensor);
               }
@@ -148,7 +151,8 @@ int main(int argc, char** argv)
                 std::cout << "sensorType not found. Computing the "
                              "mean value"
                           << "\n";
-                raw_reading = math::mean(obs->m_readings[enoseID].readingsVoltage);
+                raw_reading =
+                    static_cast<float>(math::mean(obs->m_readings[enoseID].readingsVoltage));
               }
             }
 

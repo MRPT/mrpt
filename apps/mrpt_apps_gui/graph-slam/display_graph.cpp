@@ -76,7 +76,9 @@ void display_graph(const GRAPHTYPE& g)
       float x_min, x_max, y_min, y_max;
       obj_grid->getPlaneLimits(x_min, x_max, y_min, y_max);
       const float z_min = obj_grid->getPlaneZcoord();
-      win.setCameraPointingToPoint(0.5 * (x_min + x_max), 0.5 * (y_min + y_max), z_min);
+      win.setCameraPointingToPoint(
+          static_cast<float>(0.5 * (x_min + x_max)), static_cast<float>(0.5 * (y_min + y_max)),
+          z_min);
       win.setCameraZoom(2.0f * std::max(10.0f, std::max(x_max - x_min, y_max - y_min)));
     }
   }

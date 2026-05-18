@@ -83,13 +83,13 @@ void generate_list_of_points(const TPoints& pA, const TPoints& pB, TMatchingPair
   for (unsigned int i = 0; i < 5; ++i)
   {
     pair.globalIdx = pair.localIdx = i;
-    pair.global.x = pA[i][0];
-    pair.global.y = pA[i][1];
-    pair.global.z = pA[i][2];
+    pair.global.x = static_cast<float>(pA[i][0]);
+    pair.global.y = static_cast<float>(pA[i][1]);
+    pair.global.z = static_cast<float>(pA[i][2]);
 
-    pair.local.x = pB[i][0];
-    pair.local.y = pB[i][1];
-    pair.local.z = pB[i][2];
+    pair.local.x = static_cast<float>(pB[i][0]);
+    pair.local.y = static_cast<float>(pB[i][1]);
+    pair.local.z = static_cast<float>(pB[i][2]);
 
     list.push_back(pair);
   }
@@ -117,7 +117,7 @@ void generate_vector_of_points(
 // ------------------------------------------------------
 //				Benchmark: using CPose3DQuat
 // ------------------------------------------------------
-double tfest_test_1(int a1, int a2)
+double tfest_test_1(int a1, [[maybe_unused]] int a2)
 {
   TPoints pA, pB;
   generate_points(pA, pB);
@@ -134,14 +134,14 @@ double tfest_test_1(int a1, int a2)
   tictac.Tic();
   for (size_t i = 0; i < N; i++) mrpt::tfest::se3_l2(list, out, scale);
 
-  const double T = tictac.Tac() / N;
+  const double T = tictac.Tac() / static_cast<double>(N);
   return T;
 }
 
 // ------------------------------------------------------
 //				Benchmark: using vectors
 // ------------------------------------------------------
-double tfest_test_3(int a1, int a2)
+double tfest_test_3(int a1, [[maybe_unused]] int a2)
 {
   TPoints pA, pB;
   generate_points(pA, pB);
@@ -158,7 +158,7 @@ double tfest_test_3(int a1, int a2)
   tictac.Tic();
   for (size_t i = 0; i < N; i++) mrpt::tfest::se3_l2(ptsA, ptsB, out_pose, out_scale);
 
-  const double T = tictac.Tac() / N;
+  const double T = tictac.Tac() / static_cast<double>(N);
   return T;
 }
 
@@ -185,12 +185,12 @@ double tfest_test_4(int nCorrs, int nRepets)
     TMatchingPair& m = in_correspondences[i];
     m.globalIdx = i;
     m.localIdx = i;
-    m.global.x = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
-    m.global.y = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
-    m.global.z = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
-    m.local.x = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
-    m.local.y = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
-    m.local.z = mrpt::random::getRandomGenerator().drawUniform(-10, 10);
+    m.global.x = static_cast<float>(mrpt::random::getRandomGenerator().drawUniform(-10, 10));
+    m.global.y = static_cast<float>(mrpt::random::getRandomGenerator().drawUniform(-10, 10));
+    m.global.z = static_cast<float>(mrpt::random::getRandomGenerator().drawUniform(-10, 10));
+    m.local.x = static_cast<float>(mrpt::random::getRandomGenerator().drawUniform(-10, 10));
+    m.local.y = static_cast<float>(mrpt::random::getRandomGenerator().drawUniform(-10, 10));
+    m.local.z = static_cast<float>(mrpt::random::getRandomGenerator().drawUniform(-10, 10));
   }
 
   const size_t N = nRepets;
@@ -202,7 +202,7 @@ double tfest_test_4(int nCorrs, int nRepets)
     mrpt::tfest::se2_l2(in_correspondences, out_pose);
   }
 
-  const double T = tictac.Tac() / N;
+  const double T = tictac.Tac() / static_cast<double>(N);
 
   if (DISABLE_SIMD) mrpt::cpu::overrideDetectedFeature(mrpt::cpu::feature::SSE2, savedFeatSSE2);
 

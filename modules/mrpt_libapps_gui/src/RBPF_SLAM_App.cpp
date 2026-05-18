@@ -290,7 +290,7 @@ void RBPF_SLAM_App_Base::run()
   {
     if (quits_with_esc_key && os::kbhit())
     {
-      char c = os::getch();
+      char c = static_cast<char>(os::getch());
       if (c == 27) break;
     }
 
@@ -322,13 +322,13 @@ void RBPF_SLAM_App_Base::run()
     // ----------------------------------------
     tictac.Tic();
     mapBuilder->processActionObservation(*action, *observations);
-    t_exec = tictac.Tac();
-    MRPT_LOG_INFO_FMT("Map building executed in %.03fms", 1000.0f * t_exec);
+    t_exec = static_cast<float>(tictac.Tac());
+    MRPT_LOG_INFO_FMT("Map building executed in %.03fms", static_cast<float>(1000.0 * t_exec));
 
     // Info log:
     // -----------
     f_log.printf(
-        "%u %f %i %i\n", static_cast<unsigned int>(step), 1000.0f * t_exec,
+        "%u %f %i %i\n", static_cast<unsigned int>(step), static_cast<float>(1000.0 * t_exec),
         mapBuilder->getCurrentlyBuiltMapSize(),
         mapBuilder->m_statsLastIteration.observationsInserted ? int(1) : int(0));
 
@@ -432,10 +432,12 @@ void RBPF_SLAM_App_Base::run()
           float x0 = 0, y0 = 0, z0 = 0;
           for (auto& k : path)
           {
-            objLines->appendLine(x0, y0, z0 + 0.001, k.x, k.y, k.z + 0.001);
-            x0 = k.x;
-            y0 = k.y;
-            z0 = k.z;
+            objLines->appendLine(
+                x0, y0, z0 + 0.001f, static_cast<float>(k.x), static_cast<float>(k.y),
+                static_cast<float>(k.z) + 0.001f);
+            x0 = static_cast<float>(k.x);
+            y0 = static_cast<float>(k.y);
+            z0 = static_cast<float>(k.z);
           }
         }
         scene->insert(objLines);
@@ -445,7 +447,7 @@ void RBPF_SLAM_App_Base::run()
         float minDistBtwPoses = -1;
         std::deque<TPose3D> dummyPath;
         mapBuilder->mapPDF.getPath(0, dummyPath);
-        for (int k = (int)dummyPath.size() - 1; k >= 0; k--)
+        for (int k = static_cast<int>(dummyPath.size()) - 1; k >= 0; k--)
         {
           CPose3DPDFParticles poseParts;
           mapBuilder->mapPDF.getEstimatedPosePDFAtTime(k, poseParts);
@@ -456,12 +458,14 @@ void RBPF_SLAM_App_Base::run()
           {
             CMatrixDouble33 COV3 = COV.blockCopy<3, 3>(0, 0);
 
-            minDistBtwPoses = 6 * sqrt(COV3(0, 0) + COV3(1, 1));
+            minDistBtwPoses = static_cast<float>(6 * sqrt(COV3(0, 0) + COV3(1, 1)));
 
             if (COV3(2, 2) == 0)
             {
               auto objEllip = viz::CEllipsoid2D::Create();
-              objEllip->setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
+              objEllip->setLocation(
+                  static_cast<float>(meanPose.x()), static_cast<float>(meanPose.y()),
+                  static_cast<float>(meanPose.z() + 0.001));
               objEllip->setCovMatrix(COV3.blockCopy<2, 2>());
               objEllip->setColor(0, 0, 1);
               objEllip->enableDrawSolid3D(false);
@@ -470,7 +474,9 @@ void RBPF_SLAM_App_Base::run()
             else
             {
               auto objEllip = viz::CEllipsoid3D::Create();
-              objEllip->setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
+              objEllip->setLocation(
+                  static_cast<float>(meanPose.x()), static_cast<float>(meanPose.y()),
+                  static_cast<float>(meanPose.z() + 0.001));
               objEllip->setCovMatrix(COV3);
               objEllip->setColor(0, 0, 1);
               objEllip->enableDrawSolid3D(false);
@@ -495,7 +501,7 @@ void RBPF_SLAM_App_Base::run()
         win3D->unlockAccess3DScene();
 
         win3D->forceRepaint();
-        int add_delay = SHOW_PROGRESS_IN_WINDOW_DELAY_MS - t_exec * 1000;
+        int add_delay = SHOW_PROGRESS_IN_WINDOW_DELAY_MS - static_cast<int>(t_exec * 1000);
         if (add_delay > 0) std::this_thread::sleep_for(std::chrono::milliseconds(add_delay));
       }
 
@@ -524,19 +530,22 @@ void RBPF_SLAM_App_Base::run()
         os::fprintf(f, "%u\t%lu\n", step, memUsage);
         os::fclose(f);
       }
-      MRPT_LOG_INFO_FMT("Saving memory usage: %.04f MiB", memUsage / (1024.0 * 1024.0));
+      MRPT_LOG_INFO_FMT(
+          "Saving memory usage: %.04f MiB", static_cast<double>(memUsage) / (1024.0 * 1024.0));
     }
 
     // Save the parts stats:
-    f_partStats.printf("%u %u %f\n", (unsigned int)step, (unsigned int)curPDF.size(), curPDF.ESS());
+    f_partStats.printf(
+        "%u %u %f\n", static_cast<unsigned int>(step), static_cast<unsigned int>(curPDF.size()),
+        curPDF.ESS());
 
     // Save the robot estimated pose for each step:
     CPose3D meanPose;
     mapBuilder->getCurrentPoseEstimation()->getMean(meanPose);
 
     f_path.printf(
-        "%u %f %f %f %f %f %f %f\n", (unsigned int)step, meanPose.x(), meanPose.y(), meanPose.z(),
-        meanPose.yaw(), meanPose.pitch(), meanPose.roll(),
+        "%u %f %f %f %f %f %f %f\n", static_cast<unsigned int>(step), meanPose.x(), meanPose.y(),
+        meanPose.z(), meanPose.yaw(), meanPose.pitch(), meanPose.roll(),
         mrpt::Clock::toDouble(observations_timestamp));
 
     // Also keep the robot path as a vector, for the convenience of the app

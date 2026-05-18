@@ -44,8 +44,8 @@ void slamdemoApp::DoBatchExperiments(const std::string& cfgFil)
 
   win->resetSimulator(win->options.map_generator);
 
-  const size_t nSteps =
-      round(6 * win->options.path_square_len / double(win->options.robot_step_length));
+  const size_t nSteps = static_cast<size_t>(round(
+      6 * win->options.path_square_len / static_cast<double>(win->options.robot_step_length)));
 
   CTicTac tim;
   tim.Tic();
@@ -89,13 +89,14 @@ void slamdemoApp::DoBatchExperiments(const std::string& cfgFil)
 
   if (N)
   {
-    totalFP /= N;
-    totalFN /= N;
-    totalJCBBiters /= N;
-    err_xy /= N;
-    err_phi /= N;
-    err_D2 /= N;
-    mT /= N;
+    const double dN = static_cast<double>(N);
+    totalFP /= dN;
+    totalFN /= dN;
+    totalJCBBiters /= dN;
+    err_xy /= dN;
+    err_phi /= dN;
+    err_D2 /= dN;
+    mT /= dN;
   }
 
   std::cout << "FP: " << totalFP << " FN: " << totalFN << " JCBB iters: " << totalJCBBiters
