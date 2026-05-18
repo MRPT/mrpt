@@ -691,11 +691,16 @@ void CompiledViewport::updateMatrices()
     m_renderMatrices.computeProjectionMatrix(m_clipNear, m_clipFar);
     m_renderMatrices.computeViewMatrix();
   }
-  // Compute light projection matrices for shadows (cascaded)
+  // Compute light projection matrices for shadows (cascaded).
+  // Clamp the shadow far plane to the camera's far clip distance: cascades
+  // sized beyond the visible frustum create enormous frustum bounding spheres
+  // that map hundreds of metres to a single shadow-map texel, producing coarse
+  // (pixelated) shadows even at 4096-px map resolution.
   if (m_shadowsEnabled)
   {
+    const float shadowZmax = std::min(m_lightShadowClipFar, m_clipFar);
     m_renderMatrices.computeCascadedLightProjectionMatrices(
-        m_lightShadowClipNear, m_lightShadowClipFar, m_lightParams,
+        m_lightShadowClipNear, shadowZmax, m_lightParams,
         std::min(m_shadowMapSizeX, m_shadowMapSizeY));
   }
   m_renderMatrices.initialized = true;

@@ -207,6 +207,17 @@ void TRenderMatrices::computeCascadedLightProjectionMatrices(
   numShadowCascades = N;
   const float lambda = lp.shadow_cascade_lambda;
 
+  // Clamp zmax to a scene-scale multiple of the camera's orbit distance.
+  // This is the key to good shadow quality: the cascade frustum sizes are
+  // derived from the sub-frustum bounding sphere, so a zmax of 1000m with a
+  // 5m orbit distance creates cascade 0 spanning 0–167m with texels ~78mm
+  // wide.  Bounding by eyeDistance * multiplier keeps the cascades tight
+  // around the visible part of the scene regardless of clip-far settings.
+  // A multiplier of 4 means shadows reach 4× the orbit distance, enough to
+  // cover the full scene visible at that zoom level.
+  const float eyeBasedMax = static_cast<float>(eyeDistance) * 4.0f;
+  zmax = std::min(zmax, std::max(eyeBasedMax, zmin * 2.0f));
+
   // Ensure zmin > 0 for logarithmic splits
   const float nearClip = std::max(zmin, 0.01f);
 

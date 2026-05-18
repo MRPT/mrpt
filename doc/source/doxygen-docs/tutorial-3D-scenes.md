@@ -258,6 +258,12 @@ Three bias parameters prevent shadow acne (self-shadowing artifacts):
 Shadow-related API:
 - `Viewport::enableShadowCasting(bool, sizeX, sizeY)`: Enable/disable
   shadow mapping and optionally set the shadow map resolution.
+- `Viewport::setLightShadowClipDistances(near, far)`: Sets the depth range
+  used for cascade sizing. The effective far plane is
+  `min(far, camera_clip_far)` so cascades never extend beyond what the
+  camera can see, keeping shadow-map texel density high. The default
+  `far = 1000 m` is intentionally large; the clamp to `camera_clip_far`
+  is the mechanism that keeps shadows sharp.
 - `TLightParameters::primaryDirectionalDirection()`: Returns the direction
   of the first directional light in the `lights` array (used for the shadow
   map light-view matrix).
@@ -265,6 +271,33 @@ Shadow-related API:
   frustum size relative to the eye-to-origin distance.
 - `TLightParameters::minimum_shadow_map_extension_ratio`: Ensures a minimum
   frustum coverage.
+
+### Shadow resolution and cascade sizing
+
+Shadow quality (texel density in world space) is determined by:
+
+    texel_size = cascade_frustum_diameter / shadow_map_size_px
+
+With the default 4096 × 4096 map and 3 cascades, each cascade's frustum
+diameter is derived from the bounding sphere of the 8 camera sub-frustum
+corners. If the cascade depth range is large (e.g. 0–167 m with a 1000 m
+shadow clip), that sphere is enormous and shadows become pixelated.
+
+The renderer automatically clamps the shadow far plane to the camera's
+`clip_far` distance (set via `Viewport::setViewportClipDistances()`), so
+the cascades only span the visible scene depth.
+
+Default cascade parameters (tuned for robot-scale scenes):
+
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `shadow_cascades` | 4 | More cascades → finer near-camera shadows |
+| `shadow_cascade_lambda` | 0.75 | 0=uniform, 1=log; 0.75 concentrates near |
+
+With these defaults and a 50 m camera far plane on a 4096-px shadow map,
+the four cascade texel densities are approximately 1.5 mm, 2.8 mm, 5.8 mm,
+and 21.8 mm — the near cascade (~0–3 m) is more than 2× finer than MRPT
+2.x's single-cascade shadow map.
 
 ## 2.8 Proxy system details
 

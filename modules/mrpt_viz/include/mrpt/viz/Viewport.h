@@ -467,7 +467,8 @@ class Viewport :
   float m_clip_min = 0.01f, m_clip_max = 1000.0f;
 
   /** The near/far plane clip distances for unidirectional light shadow
-   * casting */
+   * casting. The effective shadow far plane used for cascade sizing is
+   * min(m_lightShadowClipMax, camera_clip_far) — see CompiledViewport. */
   float m_lightShadowClipMin = 0.01f, m_lightShadowClipMax = 1000.0f;
 
   mrpt::img::TColorf m_background_color = {0.4f, 0.4f, 0.4f};

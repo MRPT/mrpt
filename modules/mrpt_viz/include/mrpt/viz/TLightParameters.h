@@ -190,13 +190,17 @@ struct TLightParameters
    * map square ortho frustum. */
   float minimum_shadow_map_extension_ratio = 0.03f;
 
-  /** Number of cascaded shadow map splits (1-4). Default 3.
+  /** Number of cascaded shadow map splits (1-4). Default 4.
+   *  More cascades concentrate shadow-map resolution near the camera,
+   *  dramatically improving quality for close-up scenes (1–10 m).
    *  1 = single shadow map (legacy behavior). */
-  uint8_t shadow_cascades = 3;
+  uint8_t shadow_cascades = 4;
 
   /** PSSM split scheme blend factor [0,1]. 0 = uniform splits,
-   *  1 = logarithmic splits. Default 0.5 (practical split scheme). */
-  float shadow_cascade_lambda = 0.5f;
+   *  1 = logarithmic splits. Default 0.75.
+   *  Higher values (toward 1) push more resolution toward the near
+   *  camera range; 0.75 is a good balance for robot-scale scenes. */
+  float shadow_cascade_lambda = 0.75f;
 
   /** @name Screen-Space Ambient Occlusion (SSAO)
    *  SSAO approximates ambient occlusion from the depth and normal G-buffer
