@@ -17,6 +17,7 @@
 #include <mrpt/random.h>
 
 #include <algorithm>
+#include <numeric>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -34,19 +35,17 @@ void CParticleFilterCapable::performResampling(
 {
   MRPT_START
 
-  // Make a vector with the particles' log weights:
   const size_t in_particle_count = particlesCount();
   ASSERT_(in_particle_count > 0);
 
   vector<size_t> indxs;
-  vector<double> log_ws(in_particle_count, 0.0);
-
+  // Build log-weight vector via a single virtual call, then index into it:
+  vector<double> log_ws(in_particle_count);
   for (size_t i = 0; i < in_particle_count; i++)
   {
     log_ws[i] = getW(i);
   }
 
-  // Compute the surviving indexes:
   computeResampling(PF_options.resamplingMethod, log_ws, indxs, out_particle_count);
 
   // Perform the particle replacement:
@@ -100,11 +99,10 @@ void CParticleFilterCapable::computeResampling(
 
   switch (method)
   {
-    case CParticleFilter::prMultinomial:
+    case CParticleFilter::TParticleResamplingAlgorithm::Multinomial:
     {
-      // ==============================================
-      //   Multinomial resampling (select with replacement)
-      // ==============================================
+      // Multinomial resampling. See Doucet & Johansen, "A tutorial on
+      // particle filtering and smoothing," 2009.
       vector<double> Q;
       mrpt::math::cumsum_tmpl<vector<double>, vector<double>>(linW, Q);
       Q[M - 1] = 1.1;  // Ensure last element exceeds 1.0 for comparison
@@ -138,11 +136,10 @@ void CParticleFilterCapable::computeResampling(
     }
     break;
 
-    case CParticleFilter::prResidual:
+    case CParticleFilter::TParticleResamplingAlgorithm::Residual:
     {
-      // ==============================================
-      //   Residual resampling
-      // ==============================================
+      // Residual resampling. See Liu & Chen, "Sequential Monte Carlo
+      // methods for dynamic systems," JASA, 1998.
       // Compute repetition counts for deterministic part
       std::vector<uint32_t> N(M);
       size_t R = 0;  // Total count for deterministic part
@@ -216,11 +213,11 @@ void CParticleFilterCapable::computeResampling(
     }
     break;
 
-    case CParticleFilter::prStratified:
+    case CParticleFilter::TParticleResamplingAlgorithm::Stratified:
     {
-      // ==============================================
-      //   Stratified resampling
-      // ==============================================
+      // Stratified resampling. See Kitagawa, "Monte Carlo filter and
+      // smoother for non-Gaussian nonlinear state space models," J.
+      // Computational and Graphical Statistics, 1996.
       vector<double> Q;
       mrpt::math::cumsum_tmpl<vector<double>, vector<double>>(linW, Q);
       Q[M - 1] = 1.1;
@@ -260,11 +257,11 @@ void CParticleFilterCapable::computeResampling(
     }
     break;
 
-    case CParticleFilter::prSystematic:
+    case CParticleFilter::TParticleResamplingAlgorithm::Systematic:
     {
-      // ==============================================
-      //   Systematic resampling
-      // ==============================================
+      // Systematic resampling. See Carpenter, Clifford & Fearnhead,
+      // "Improved particle filter for nonlinear problems," IEE Proc.
+      // Radar Sonar Navigation, 1999.
       vector<double> Q;
       mrpt::math::cumsum_tmpl<vector<double>, vector<double>>(linW, Q);
       Q[M - 1] = 1.1;
@@ -303,7 +300,8 @@ void CParticleFilterCapable::computeResampling(
     break;
 
     default:
-      THROW_EXCEPTION(format("ERROR: Unknown resampling method selected: %i", method));
+      THROW_EXCEPTION(
+          format("ERROR: Unknown resampling method selected: %i", static_cast<int>(method)));
   }
 
   MRPT_END
@@ -319,19 +317,19 @@ void CParticleFilterCapable::prediction_and_update(
 {
   switch (PF_options.PF_algorithm)
   {
-    case CParticleFilter::pfStandardProposal:
+    case CParticleFilter::TParticleFilterAlgorithm::StandardProposal:
       prediction_and_update_pfStandardProposal(action, observation, PF_options);
       break;
 
-    case CParticleFilter::pfAuxiliaryPFStandard:
+    case CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFStandard:
       prediction_and_update_pfAuxiliaryPFStandard(action, observation, PF_options);
       break;
 
-    case CParticleFilter::pfOptimalProposal:
+    case CParticleFilter::TParticleFilterAlgorithm::OptimalProposal:
       prediction_and_update_pfOptimalProposal(action, observation, PF_options);
       break;
 
-    case CParticleFilter::pfAuxiliaryPFOptimal:
+    case CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFOptimal:
       prediction_and_update_pfAuxiliaryPFOptimal(action, observation, PF_options);
       break;
 
@@ -401,7 +399,7 @@ void CParticleFilterCapable::prepareFastDrawSample(
     // CASE: Dynamic number of particles
     //  -> Use m_fastDrawAuxiliary.CDF, PDF, CDF_indexes
     // --------------------------------------------------------
-    if (PF_options.resamplingMethod != CParticleFilter::prMultinomial)
+    if (PF_options.resamplingMethod != CParticleFilter::TParticleResamplingAlgorithm::Multinomial)
     {
       THROW_EXCEPTION(
           "resamplingMethod must be 'prMultinomial' for a dynamic number of particles!");
@@ -528,7 +526,7 @@ size_t CParticleFilterCapable::fastDrawSample(
     // CASE: Dynamic number of particles
     //  -> Use m_fastDrawAuxiliary.CDF, PDF, CDF_indexes
     // --------------------------------------------------------
-    if (PF_options.resamplingMethod != CParticleFilter::prMultinomial)
+    if (PF_options.resamplingMethod != CParticleFilter::TParticleResamplingAlgorithm::Multinomial)
     {
       THROW_EXCEPTION(
           "resamplingMethod must be 'prMultinomial' for a dynamic number of particles!");
@@ -540,9 +538,9 @@ size_t CParticleFilterCapable::fastDrawSample(
 
     MRPT_START
 
-    // Use the look-up table to find the starting index
-    const size_t j = static_cast<size_t>(
-        floor(draw * (static_cast<double>(PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS) - 0.05)));
+    const size_t j = std::min(
+        static_cast<size_t>(draw * PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS),
+        static_cast<size_t>(PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS - 1u));
 
     CDF = m_fastDrawAuxiliary.CDF[j];
     size_t i = m_fastDrawAuxiliary.CDF_indexes[j];
@@ -596,20 +594,17 @@ void CParticleFilterCapable::log2linearWeights(
     return;
   }
 
-  double sumW = 0.0;
+  std::transform(
+      in_logWeights.begin(), in_logWeights.end(), out_linWeights.begin(),
+      [](double lw) { return std::exp(lw); });
 
-  for (size_t i = 0; i < N; i++)
-  {
-    out_linWeights[i] = exp(in_logWeights[i]);
-    sumW += out_linWeights[i];
-  }
-
+  const double sumW = std::reduce(out_linWeights.begin(), out_linWeights.end());
   ASSERT_(sumW > 0);
 
-  for (size_t i = 0; i < N; i++)
-  {
-    out_linWeights[i] /= sumW;
-  }
+  const double inv = 1.0 / sumW;
+  std::transform(
+      out_linWeights.begin(), out_linWeights.end(), out_linWeights.begin(),
+      [inv](double w) { return w * inv; });
 
   MRPT_END
 }

@@ -15,12 +15,14 @@ project(mrpt_bayes LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_config REQUIRED)
 find_package(mrpt_math REQUIRED)
+find_package(mrpt_random REQUIRED)
 
 
 # define lib:
 set(LIB_SOURCES
   src/CParticleFilter.cpp
   src/CParticleFilterCapable.cpp
+  tests/bayes_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
@@ -40,16 +42,20 @@ mrpt_add_library(
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_config
     mrpt::mrpt_math
+    mrpt::mrpt_random
 #  PRIVATE_LINK_LIBRARIES
   CMAKE_DEPENDENCIES
     mrpt_config
     mrpt_math
-  # Other imported targets:
+    mrpt_random
+  UNITTEST_LINK_LIBRARIES
+    mrpt::mrpt_random
 )
 
 mrpt_add_python_module(bayes
   python_bindings/${PROJECT_NAME}_py.cpp
 )
+
 
 mrpt_add_python_binding_test(bayes
   SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_bayes_test.py

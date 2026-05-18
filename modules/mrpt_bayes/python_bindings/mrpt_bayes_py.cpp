@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/bayes/CParticleFilterCapable.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -28,20 +29,33 @@ PYBIND11_MODULE(_bindings, m)
   // TParticleFilterAlgorithm enum
   // -------------------------------------------------------------------------
   py::enum_<CParticleFilter::TParticleFilterAlgorithm>(m, "TParticleFilterAlgorithm")
-      .value("pfStandardProposal", CParticleFilter::pfStandardProposal)
-      .value("pfAuxiliaryPFStandard", CParticleFilter::pfAuxiliaryPFStandard)
-      .value("pfOptimalProposal", CParticleFilter::pfOptimalProposal)
-      .value("pfAuxiliaryPFOptimal", CParticleFilter::pfAuxiliaryPFOptimal)
+      .value(
+          "StandardProposal", CParticleFilter::TParticleFilterAlgorithm::StandardProposal)
+      .value(
+          "AuxiliaryPFStandard", CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFStandard)
+      .value("OptimalProposal", CParticleFilter::TParticleFilterAlgorithm::OptimalProposal)
+      .value("AuxiliaryPFOptimal", CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFOptimal)
+      // Backward-compat aliases
+      .value("pfStandardProposal", CParticleFilter::TParticleFilterAlgorithm::StandardProposal)
+      .value(
+          "pfAuxiliaryPFStandard", CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFStandard)
+      .value("pfOptimalProposal", CParticleFilter::TParticleFilterAlgorithm::OptimalProposal)
+      .value("pfAuxiliaryPFOptimal", CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFOptimal)
       .export_values();
 
   // -------------------------------------------------------------------------
   // TParticleResamplingAlgorithm enum
   // -------------------------------------------------------------------------
   py::enum_<CParticleFilter::TParticleResamplingAlgorithm>(m, "TParticleResamplingAlgorithm")
-      .value("prMultinomial", CParticleFilter::prMultinomial)
-      .value("prResidual", CParticleFilter::prResidual)
-      .value("prStratified", CParticleFilter::prStratified)
-      .value("prSystematic", CParticleFilter::prSystematic)
+      .value("Multinomial", CParticleFilter::TParticleResamplingAlgorithm::Multinomial)
+      .value("Residual", CParticleFilter::TParticleResamplingAlgorithm::Residual)
+      .value("Stratified", CParticleFilter::TParticleResamplingAlgorithm::Stratified)
+      .value("Systematic", CParticleFilter::TParticleResamplingAlgorithm::Systematic)
+      // Backward-compat aliases
+      .value("prMultinomial", CParticleFilter::TParticleResamplingAlgorithm::Multinomial)
+      .value("prResidual", CParticleFilter::TParticleResamplingAlgorithm::Residual)
+      .value("prStratified", CParticleFilter::TParticleResamplingAlgorithm::Stratified)
+      .value("prSystematic", CParticleFilter::TParticleResamplingAlgorithm::Systematic)
       .export_values();
 
   // -------------------------------------------------------------------------
@@ -102,4 +116,26 @@ PYBIND11_MODULE(_bindings, m)
             return "CParticleFilter(BETA=" + std::to_string(pf.m_options.BETA) +
                    ", sampleSize=" + std::to_string(pf.m_options.sampleSize) + ")";
           });
+
+  // -------------------------------------------------------------------------
+  // CParticleFilterCapable — static utility methods
+  // -------------------------------------------------------------------------
+  py::class_<CParticleFilterCapable>(m, "CParticleFilterCapable")
+      .def_static(
+          "computeResampling",
+          [](CParticleFilter::TParticleResamplingAlgorithm method,
+             const std::vector<double>& log_weights, size_t out_count)
+          {
+            std::vector<size_t> out;
+            CParticleFilterCapable::computeResampling(method, log_weights, out, out_count);
+            return out;
+          },
+          py::arg("method"), py::arg("log_weights"), py::arg("out_particle_count") = 0,
+          "Compute resampling indexes from log-weights.\n"
+          "Returns a list of particle indices after resampling.")
+      .def_static(
+          "logWeightsToLinear",
+          &CParticleFilterCapable::logWeightsToLinear,
+          py::arg("log_weights"),
+          "Convert log-weights to normalized linear weights (sum=1).");
 }

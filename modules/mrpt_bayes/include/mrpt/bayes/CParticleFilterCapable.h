@@ -17,6 +17,7 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <functional>
 #include <limits>
 #include <vector>
 
@@ -40,6 +41,9 @@ class CParticleFilterCapable
   friend class CParticleFilter;
 
  private:
+  /** Number of CDF look-up bins used in fastDrawSample() for the adaptive
+   * (multinomial) draw path. Larger values reduce linear search length at the
+   * cost of memory; 20 is a good trade-off for typical particle counts. */
   static const unsigned PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS;
 
  public:
@@ -53,20 +57,16 @@ class CParticleFilterCapable
    * particle weight.
    * \param index This is the index of the particle its probability is being
    * computed.
-   * \param action The value of this is the parameter passed to
-   * "prepareFastDrawSample"
-   * \param observation The value of this is the parameter passed to
-   * "prepareFastDrawSample"
-   *  The action and the observation are declared as "void*" for a greater
-   * flexibility.
+   * \param action The value passed to "prepareFastDrawSample" (may be nullptr).
+   * \param observation The value passed to "prepareFastDrawSample" (may be nullptr).
    * \sa prepareFastDrawSample
    */
-  using TParticleProbabilityEvaluator = double (*)(
+  using TParticleProbabilityEvaluator = std::function<double(
       const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
       const CParticleFilterCapable* obj,
       size_t index,
       const void* action,
-      const void* observation);
+      const void* observation)>;
 
   /** The default evaluator function, which simply returns the particle
    * weight.
@@ -149,7 +149,8 @@ class CParticleFilterCapable
    *		- You do not need to call "normalizeWeights" before calling this.
    * \sa prepareFastDrawSample
    */
-  size_t fastDrawSample(const bayes::CParticleFilter::TParticleFilterOptions& PF_options) const;
+  [[nodiscard]] size_t fastDrawSample(
+      const bayes::CParticleFilter::TParticleFilterOptions& PF_options) const;
 
   /** Access to i'th particle (logarithm) weight, where first one is index 0.
    */
@@ -228,10 +229,22 @@ class CParticleFilterCapable
 
   /** A static method to compute the linear, normalized (the sum the unity)
    * weights from log-weights.
-   * \sa performResampling
+   * \sa performResampling, logWeightsToLinear
    */
   static void log2linearWeights(
       const std::vector<double>& in_logWeights, std::vector<double>& out_linWeights);
+
+  /** Returns the normalized linear weights from log-weights (return-by-value
+   * convenience wrapper around log2linearWeights).
+   * \sa log2linearWeights
+   */
+  [[nodiscard]] static std::vector<double> logWeightsToLinear(
+      const std::vector<double>& in_logWeights)
+  {
+    std::vector<double> out;
+    log2linearWeights(in_logWeights, out);
+    return out;
+  }
 
  protected:
   /** Performs the particle filter prediction/update stages for the algorithm

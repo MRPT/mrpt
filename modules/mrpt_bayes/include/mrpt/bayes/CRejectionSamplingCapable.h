@@ -17,6 +17,8 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/random.h>
 
+#include <limits>
+
 namespace mrpt
 {
 /// \ingroup mrpt_bayes_grp
@@ -41,67 +43,81 @@ class CRejectionSamplingCapable
    */
   virtual ~CRejectionSamplingCapable() = default;
   /** Generates a set of N independent samples via rejection sampling.
-   * \param desiredSamples The number of desired samples to generate
-   * \param outSamples The output samples.
-   * \param timeoutTrials The maximum number of rejection trials for each
-   * generated sample (i.e. the maximum number of iterations). This can be
-   * used to set a limit to the time complexity of the algorithm for difficult
-   * probability densities.
-   *  All will have equal importance weights (a property of rejection
-   * sampling), although those samples
-   *   generated at timeout will have a different importance weights.
+   * \param desiredSamples The number of desired samples to generate.
+   * \param timeoutTrials The maximum number of rejection trials per sample.
+   *   Samples that exceed the timeout are assigned a weight proportional to
+   *   the best likelihood seen, rather than the uniform weight of accepted
+   *   samples.
+   * \return Vector of \a desiredSamples particles.
    */
-  void rejectionSampling(
-      size_t desiredSamples, std::vector<TParticle>& outSamples, size_t timeoutTrials = 1000)
+  [[nodiscard]] std::vector<TParticle> rejectionSampling(
+      size_t desiredSamples, size_t timeoutTrials = 1000)
   {
     MRPT_START
 
-    TStateSpace x;
-    typename std::vector<TParticle>::iterator it;
+    std::vector<TParticle> outSamples(desiredSamples);
 
-    // Set output size:
-    if (outSamples.size() != desiredSamples)
+    if constexpr (STORAGE == particle_storage_mode::POINTER)
     {
-      // Free old memory:
-      outSamples.clear();
-
-      // Reserve new memory:
-      outSamples.resize(desiredSamples);
-      for (it = outSamples.begin(); it != outSamples.end(); ++it) it->d.reset(new TStateSpace);
+      for (auto& p : outSamples)
+      {
+        p.d.reset(new TStateSpace);
+      }
     }
 
-    // Rejection sampling loop:
-    double acceptanceProb;
-    for (it = outSamples.begin(); it != outSamples.end(); ++it)
+    for (auto& p : outSamples)
     {
       size_t timeoutCount = 0;
-      double bestLik = -1e250;
-      TStateSpace bestVal;
+      double bestLik = std::numeric_limits<double>::lowest();
+      TStateSpace bestVal{};
+      double acceptanceProb = 0.0;
       do
       {
-        RS_drawFromProposal(*it->d);
-        acceptanceProb = RS_observationLikelihood(*it->d);
-        ASSERT_(acceptanceProb >= 0 && acceptanceProb <= 1);
-        if (acceptanceProb > bestLik)
+        if constexpr (STORAGE == particle_storage_mode::POINTER)
         {
-          bestLik = acceptanceProb;
-          bestVal = *it->d;
+          RS_drawFromProposal(*p.d);
+          acceptanceProb = RS_observationLikelihood(*p.d);
+          ASSERT_(acceptanceProb >= 0 && acceptanceProb <= 1);
+          if (acceptanceProb > bestLik)
+          {
+            bestLik = acceptanceProb;
+            bestVal = *p.d;
+          }
         }
-      } while (acceptanceProb < mrpt::random::getRandomGenerator().drawUniform(0.0, 0.999) &&
-               (++timeoutCount) < timeoutTrials);
+        else
+        {
+          RS_drawFromProposal(p.d);
+          acceptanceProb = RS_observationLikelihood(p.d);
+          ASSERT_(acceptanceProb >= 0 && acceptanceProb <= 1);
+          if (acceptanceProb > bestLik)
+          {
+            bestLik = acceptanceProb;
+            bestVal = p.d;
+          }
+        }
+      } while (
+          acceptanceProb < mrpt::random::getRandomGenerator().drawUniform(0.0, 0.999) &&
+          (++timeoutCount) < timeoutTrials);
 
-      // Save weights:
       if (timeoutCount >= timeoutTrials)
       {
-        it->log_w = log(bestLik);
-        *it->d = bestVal;
+        p.log_w = std::max(std::log(bestLik), -50.0);
+        if constexpr (STORAGE == particle_storage_mode::POINTER)
+        {
+          *p.d = bestVal;
+        }
+        else
+        {
+          p.d = bestVal;
+        }
       }
       else
       {
-        it->log_w = 0;  // log(1.0);
+        p.log_w = 0.0;  // log(1.0)
       }
-    }  // end for it
+    }
 
+    return outSamples;
     MRPT_END
   }
 

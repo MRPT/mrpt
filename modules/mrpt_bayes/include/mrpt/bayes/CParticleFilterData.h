@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cmath>
 #include <deque>
+#include <numeric>
 
 namespace mrpt::bayes
 {
@@ -36,10 +37,8 @@ class CParticleFilterCapable;
 template <class Derived, class particle_list_t>
 struct CParticleFilterDataImpl : public CParticleFilterCapable
 {
-  /// CRTP helper method
-  const Derived& derived() const { return *dynamic_cast<const Derived*>(this); }
-  /// CRTP helper method
-  Derived& derived() { return *dynamic_cast<Derived*>(this); }
+  const Derived& derived() const { return static_cast<const Derived&>(*this); }
+  Derived& derived() { return static_cast<Derived&>(*this); }
   double getW(size_t i) const override
   {
     if (i >= derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!", (int)i);
@@ -54,55 +53,66 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 
   size_t particlesCount() const override { return derived().m_particles.size(); }
 
-  double normalizeWeights(double* out_max_log_w = nullptr) override
+  [[nodiscard]] double normalizeWeights(double* out_max_log_w = nullptr) override
   {
     MRPT_START
     if (derived().m_particles.empty())
     {
       return 0;
     }
-    double minW = derived().m_particles[0].log_w;
-    double maxW = minW;
-
-    /* Compute the max/min of weights: */
-    for (auto it = derived().m_particles.begin(); it != derived().m_particles.end(); ++it)
+    const auto [minIt, maxIt] = std::minmax_element(
+        derived().m_particles.begin(), derived().m_particles.end(),
+        [](const auto& a, const auto& b) { return a.log_w < b.log_w; });
+    const double maxW = maxIt->log_w;
+    const double minW = minIt->log_w;
+    for (auto& p : derived().m_particles)
     {
-      maxW = std::max<double>(maxW, it->log_w);
-      minW = std::min<double>(minW, it->log_w);
+      p.log_w -= maxW;
     }
-    /* Normalize: */
-    for (auto it = derived().m_particles.begin(); it != derived().m_particles.end(); ++it)
-      it->log_w -= maxW;
-    if (out_max_log_w) *out_max_log_w = maxW;
-
-    /* Return the max/min ratio: */
+    if (out_max_log_w)
+    {
+      *out_max_log_w = maxW;
+    }
     return std::exp(maxW - minW);
     MRPT_END
   }
 
-  double ESS() const override
+  [[nodiscard]] double ESS() const override
   {
     MRPT_START
-    double cum = 0;
-
-    /* Sum of weights: */
-    double sumLinearWeights = 0;
-    for (auto it = derived().m_particles.begin(); it != derived().m_particles.end(); ++it)
-      sumLinearWeights += std::exp(it->log_w);
-    /* Compute ESS: */
-    for (auto it = derived().m_particles.begin(); it != derived().m_particles.end(); ++it)
-      cum += mrpt::square(std::exp(it->log_w) / sumLinearWeights);
-
-    if (cum == 0)
+    if (derived().m_particles.empty())
+    {
       return 0;
-    else
-      return 1.0 / (derived().m_particles.size() * cum);
+    }
+    // Log-sum-exp trick: shift by max weight to avoid underflow
+    const double maxW = std::max_element(
+                            derived().m_particles.begin(), derived().m_particles.end(),
+                            [](const auto& a, const auto& b) { return a.log_w < b.log_w; })
+                            ->log_w;
+    const double sumLin = std::transform_reduce(
+        derived().m_particles.begin(), derived().m_particles.end(), 0.0, std::plus<>{},
+        [maxW](const auto& p) { return std::exp(p.log_w - maxW); });
+    if (sumLin == 0)
+    {
+      return 0;
+    }
+    const double cum = std::transform_reduce(
+        derived().m_particles.begin(), derived().m_particles.end(), 0.0, std::plus<>{},
+        [maxW, sumLin](const auto& p)
+        { return mrpt::square(std::exp(p.log_w - maxW) / sumLin); });
+    if (cum == 0)
+    {
+      return 0;
+    }
+    return 1.0 / (derived().m_particles.size() * cum);
     MRPT_END
   }
 
   /** Replaces the old particles by copies determined by the indexes in
    * "indx", performing an efficient copy of the necessary particles only and
-   * allowing the number of particles to change.*/
+   * allowing the number of particles to change.
+   * \note The input index vector is sorted internally before processing.
+   */
   void performSubstitution(const std::vector<size_t>& indx) override
   {
     MRPT_START
@@ -201,16 +211,18 @@ class CParticleFilterData
   void writeParticlesToStream(STREAM& out) const
   {
     MRPT_START
-    auto n = static_cast<uint32_t>(m_particles.size());
-    out << n;
-    typename CParticleList::const_iterator it;
-    for (it = m_particles.begin(); it != m_particles.end(); ++it)
+    out << static_cast<uint32_t>(m_particles.size());
+    for (const auto& p : m_particles)
     {
-      out << it->log_w;
+      out << p.log_w;
       if constexpr (STORAGE == particle_storage_mode::POINTER)
-        out << (*it->d);
+      {
+        out << (*p.d);
+      }
       else
-        out << it->d;
+      {
+        out << p.d;
+      }
     }
     MRPT_END
   }
@@ -223,45 +235,45 @@ class CParticleFilterData
   void readParticlesFromStream(STREAM& in)
   {
     MRPT_START
-    clearParticles();  // Erase previous content:
+    clearParticles();
     uint32_t n;
     in >> n;
     m_particles.resize(n);
-    typename CParticleList::iterator it;
-    for (it = m_particles.begin(); it != m_particles.end(); ++it)
+    for (auto& p : m_particles)
     {
-      in >> it->log_w;
+      in >> p.log_w;
       if constexpr (STORAGE == particle_storage_mode::POINTER)
       {
-        it->d.reset(new T());
-        in >> *it->d;
+        p.d.reset(new T());
+        in >> *p.d;
       }
       else
       {
-        in >> it->d;
+        in >> p.d;
       }
     }
     MRPT_END
   }
 
-  /** Returns a vector with the sequence of the logaritmic weights of all the
-   * samples.
-   */
+  /** Fills \a out_logWeights with the logarithmic weights of all particles. */
   void getWeights(std::vector<double>& out_logWeights) const
   {
-    MRPT_START
     out_logWeights.resize(m_particles.size());
-    std::vector<double>::iterator it;
-    typename CParticleList::const_iterator it2;
-    for (it = out_logWeights.begin(), it2 = m_particles.begin(); it2 != m_particles.end();
-         ++it, ++it2)
-      *it = it2->log_w;
-    MRPT_END
+    std::transform(
+        m_particles.begin(), m_particles.end(), out_logWeights.begin(),
+        [](const auto& p) { return p.log_w; });
   }
 
-  /** Returns the particle with the highest weight.
-   */
-  const CParticleData* getMostLikelyParticle() const
+  /** Returns a vector with the logarithmic weights of all particles. */
+  [[nodiscard]] std::vector<double> getWeights() const
+  {
+    std::vector<double> w;
+    getWeights(w);
+    return w;
+  }
+
+  /** Returns the particle with the highest weight. */
+  [[nodiscard]] const CParticleData* getMostLikelyParticle() const
   {
     MRPT_START
     const CParticleData* ret = nullptr;
