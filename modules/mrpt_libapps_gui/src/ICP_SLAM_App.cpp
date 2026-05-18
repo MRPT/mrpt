@@ -182,7 +182,7 @@ void ICP_SLAM_App_Base::run()
 
     if (quits_with_esc_key && os::kbhit())
     {
-      char c = os::getch();
+      char c = static_cast<char>(os::getch());
       if (c == 27) break;
     }
 
@@ -256,12 +256,13 @@ void ICP_SLAM_App_Base::run()
       mapBuilder.processObservation(observation);
     else
       mapBuilder.processActionObservation(*action, *observations);
-    t_exec = tictac.Tac();
-    MRPT_LOG_INFO_FMT("Map building executed in %.03fms", 1000.0f * t_exec);
+    t_exec = static_cast<float>(tictac.Tac());
+    MRPT_LOG_INFO_FMT("Map building executed in %.03fms", static_cast<float>(1000.0 * t_exec));
 
     // Info log:
     // -----------
-    f_log.printf("%f %i\n", 1000.0f * t_exec, mapBuilder.getCurrentlyBuiltMapSize());
+    f_log.printf(
+        "%f %i\n", static_cast<float>(1000.0 * t_exec), mapBuilder.getCurrentlyBuiltMapSize());
 
     const CMultiMetricMap& mostLikMap = mapBuilder.getCurrentlyBuiltMetricMap();
 
@@ -370,7 +371,9 @@ void ICP_SLAM_App_Base::run()
         win3D->unlockAccess3DScene();
 
         // Move camera:
-        win3D->setCameraPointingToPoint(robotPose.x(), robotPose.y(), robotPose.z());
+        win3D->setCameraPointingToPoint(
+            static_cast<float>(robotPose.x()), static_cast<float>(robotPose.y()),
+            static_cast<float>(robotPose.z()));
 
         // Update:
         win3D->forceRepaint();
@@ -390,7 +393,8 @@ void ICP_SLAM_App_Base::run()
         os::fprintf(f, "%u\t%lu\n", step, memUsage);
         os::fclose(f);
       }
-      MRPT_LOG_INFO_FMT("Memory usage:%.04f MiB", memUsage / (1024.0 * 1024.0));
+      MRPT_LOG_INFO_FMT(
+          "Memory usage:%.04f MiB", static_cast<double>(memUsage) / (1024.0 * 1024.0));
     }
 
     // Save the robot estimated pose for each step:
@@ -457,7 +461,8 @@ ICP_SLAM_App_Live::ICP_SLAM_App_Live() { this->setLoggerName("ICP_SLAM_App_Live"
 
 ICP_SLAM_App_Live::~ICP_SLAM_App_Live() = default;
 
-void ICP_SLAM_App_Live::impl_initialize(int argc, const char** argv)
+void ICP_SLAM_App_Live::impl_initialize(
+    [[maybe_unused]] int argc, [[maybe_unused]] const char** argv)
 {
   MRPT_START
 

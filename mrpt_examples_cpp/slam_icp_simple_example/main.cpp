@@ -40,7 +40,7 @@ using namespace mrpt::poses;
 using namespace std;
 
 bool skip_window = false;
-int ICP_method = (int)icpClassic;
+int ICP_method = static_cast<int>(icpClassic);
 
 // ------------------------------------------------------
 //				TestICP
@@ -74,7 +74,7 @@ void TestICP()
   //	select which algorithm version to use
   //	ICP.options.ICP_algorithm = icpLevenbergMarquardt;
   //	ICP.options.ICP_algorithm = icpClassic;
-  ICP.options.ICP_algorithm = (TICPAlgorithm)ICP_method;
+  ICP.options.ICP_algorithm = static_cast<TICPAlgorithm>(ICP_method);
 
   // configuration options for the icp algorithm
   ICP.options.maxIterations = 100;

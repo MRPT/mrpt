@@ -34,7 +34,7 @@ using namespace std;
 // ------------------------------------------------------
 //				Benchmark: A whole ICP-SLAM run
 // ------------------------------------------------------
-double icp_test_1(int a1, int a2)
+double icp_test_1([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   using namespace std::string_literals;
   const std::string rawlog_file =

@@ -127,8 +127,8 @@ struct pf2gauss_t<mrpt::slam::CMonteCarloLocalization2D>
       const mrpt::math::TPose3D& init_max)
   {
     pdf.resetUniformFreeSpace(
-        metricMap.mapByClass<COccupancyGridMap2D>().get(), 0.7f, PARTICLE_COUNT, init_min.x,
-        init_max.x, init_min.y, init_max.y, init_min.yaw, init_max.yaw);
+        metricMap.mapByClass<COccupancyGridMap2D>().get(), 0.7f, static_cast<int>(PARTICLE_COUNT),
+        init_min.x, init_max.x, init_min.y, init_max.y, init_min.yaw, init_max.yaw);
   }
 
   static void resetUniform(
@@ -138,7 +138,8 @@ struct pf2gauss_t<mrpt::slam::CMonteCarloLocalization2D>
       const mrpt::math::TPose3D& init_max)
   {
     pdf.resetUniform(
-        init_min.x, init_max.x, init_min.y, init_max.y, init_min.yaw, init_max.yaw, PARTICLE_COUNT);
+        init_min.x, init_max.x, init_min.y, init_max.y, init_min.yaw, init_max.yaw,
+        static_cast<int>(PARTICLE_COUNT));
   }
 };
 template <>
@@ -163,7 +164,7 @@ struct pf2gauss_t<CMonteCarloLocalization3D>
       const mrpt::math::TPose3D& init_min,
       const mrpt::math::TPose3D& init_max)
   {
-    pdf.resetUniform(init_min, init_max, PARTICLE_COUNT);
+    pdf.resetUniform(init_min, init_max, static_cast<int>(PARTICLE_COUNT));
   }
 };
 
@@ -224,9 +225,9 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
   CActionRobotMovement3D::TMotionModelOptions actOdom3D_params;
   actOdom3D_params.mm6DOFModel.additional_std_XYZ =
-      cfg.read_double("DummyOdometryParams", "additional_std_XYZ", 0.01);
-  actOdom3D_params.mm6DOFModel.additional_std_angle =
-      DEG2RAD(cfg.read_double("DummyOdometryParams", "additional_std_angle", 0.1));
+      static_cast<float>(cfg.read_double("DummyOdometryParams", "additional_std_XYZ", 0.01));
+  actOdom3D_params.mm6DOFModel.additional_std_angle = static_cast<float>(
+      DEG2RAD(cfg.read_double("DummyOdometryParams", "additional_std_angle", 0.1)));
 
   // PF-algorithm Options:
   // ---------------------------
@@ -358,7 +359,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
     grid->computeEntropy(gridInfo);
     MRPT_LOG_INFO_FMT(
         "The gridmap has %.04fm2 observed area, %u observed cells.", gridInfo.effectiveMappedArea,
-        (unsigned)gridInfo.effectiveMappedCells);
+        static_cast<unsigned>(gridInfo.effectiveMappedCells));
   }
   else
   {
@@ -652,7 +653,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
                   el->enableDrawSolid3D(false);
                 }
                 ellip->setName("parts_cov");
-                ellip->setColor(1, 0, 0, 0.6);
+                ellip->setColor(1, 0, 0, 0.6f);
                 scene.insert(ellip);
               }
               else
@@ -670,12 +671,15 @@ void MonteCarloLocalization_Base::do_pf_localization()
               }
               double ellipse_z = mrpt::poses::CPose3D(meanPose).z() + 0.01;
 
-              ellip->setLocation(meanPose.x(), meanPose.y(), ellipse_z);
+              ellip->setLocation(
+                  static_cast<float>(meanPose.x()), static_cast<float>(meanPose.y()),
+                  static_cast<float>(ellipse_z));
             }
 
             Scene::Ptr ptrSceneWin = win3D->get3DSceneAndLock();
 
-            win3D->setCameraPointingToPoint(meanPose.x(), meanPose.y(), 0);
+            win3D->setCameraPointingToPoint(
+                static_cast<float>(meanPose.x()), static_cast<float>(meanPose.y()), 0.0f);
 
             win3D->addTextMessage(
                 10, 10,
@@ -754,7 +758,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
           for (size_t k = 0; k < pdf.size(); k++) sumW += exp(pdf.getW(k));
           for (size_t k = 0; k < pdf.size(); k++)
           {
-            const auto pk = pdf.getParticlePose(k);
+            const auto pk = pdf.getParticlePose(static_cast<int>(k));
             locErr += mrpt::hypot_fast(expectedPose.x() - pk.x, expectedPose.y() - pk.y) *
                       exp(pdf.getW(k)) / sumW;
           }
@@ -862,9 +866,9 @@ void MonteCarloLocalization_Base::do_pf_localization()
         {
           f_cov_est.printf("%e\n", sqrt(cov.det()));
           f_pf_stats.printf(
-              "%u %e %e %f %f\n", (unsigned int)pdf.size(), PF_stats.ESS_beforeResample,
-              PF_stats.weightsVariance_beforeResample, obs_reliability_estim,
-              sqrt(current_pdf_gaussian.cov.det()));
+              "%u %e %e %f %f\n", static_cast<unsigned int>(pdf.size()),
+              PF_stats.ESS_beforeResample, PF_stats.weightsVariance_beforeResample,
+              obs_reliability_estim, sqrt(current_pdf_gaussian.cov.det()));
           f_odo_est.printf(
               "%f %f %f\n", odometryEstimation.x(), odometryEstimation.y(),
               odometryEstimation.phi());
@@ -910,9 +914,9 @@ void MonteCarloLocalization_Base::do_pf_localization()
             {
               scanPts = std::make_shared<CPointCloud>();
               scanPts->setName("scan");
-              scanPts->setColor(1, 0, 0, 0.9);
+              scanPts->setColor(1, 0, 0, 0.9f);
               mrpt::ptr_cast<CPointCloud>::from(scanPts)->enableColorFromZ(false);
-              mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPointSize(4);
+              mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPointSize(4.0f);
               scene.insert(scanPts);
             }
 
@@ -945,14 +949,14 @@ void MonteCarloLocalization_Base::do_pf_localization()
         if (!SAVE_STATS_ONLY && SCENE3D_FREQ != -1 && ((step + 1) % SCENE3D_FREQ) == 0)
         {
           // Save 3D scene:
-          CCompressedOutputStream f(
-              mrpt::format("%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(), (unsigned)step));
+          CCompressedOutputStream f(mrpt::format(
+              "%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(), static_cast<unsigned>(step)));
           archiveFrom(f) << scene;
 
           // Generate text files for matlab:
           // ------------------------------------
-          pdf.saveToTextFile(
-              mrpt::format("%s/particles_%05u.txt", sOUT_DIR_PARTS.c_str(), (unsigned)step));
+          pdf.saveToTextFile(mrpt::format(
+              "%s/particles_%05u.txt", sOUT_DIR_PARTS.c_str(), static_cast<unsigned>(step)));
         }
 
       };  // while rawlogEntries
@@ -970,8 +974,8 @@ void MonteCarloLocalization_Base::do_pf_localization()
     const auto max_num_threads = std::thread::hardware_concurrency();
     size_t runs_per_thread = NUM_REPS;
     if (max_num_threads > 1)
-      runs_per_thread =
-          static_cast<size_t>(std::ceil((NUM_REPS) / static_cast<double>(max_num_threads)));
+      runs_per_thread = static_cast<size_t>(
+          std::ceil(static_cast<double>(NUM_REPS) / static_cast<double>(max_num_threads)));
 
     MRPT_LOG_INFO_STREAM(
         "Running " << NUM_REPS << " repetitions, on max " << max_num_threads
@@ -1015,9 +1019,10 @@ void MonteCarloLocalization_Base::do_pf_localization()
           "\n");
       if (!nConvergenceTests) nConvergenceTests = 1;
       f.printf(
-          "%f %u %f %f %f %f\n", ((double)nConvergenceOK) / nConvergenceTests, PARTICLE_COUNT,
-          repetitionTime / NUM_REPS, covergenceErrorMean, convergenceErrorsMin,
-          convergenceErrorsMax);
+          "%f %u %f %f %f %f\n",
+          static_cast<double>(nConvergenceOK) / static_cast<double>(nConvergenceTests),
+          PARTICLE_COUNT, repetitionTime / static_cast<double>(NUM_REPS), covergenceErrorMean,
+          convergenceErrorsMin, convergenceErrorsMax);
     }
 
     MRPT_LOG_INFO_FMT("Total execution time: %.06f sec", repetitionTime);
@@ -1073,7 +1078,7 @@ void MonteCarloLocalization_Base::getGroundTruth(
       size_t k, N = GT.rows();
       for (k = 0; k < N; k++)
       {
-        if (GT(k, 0) == rawlogEntry) break;
+        if (static_cast<size_t>(GT(k, 0)) == rawlogEntry) break;
       }
 
       if (k < N)
@@ -1086,7 +1091,7 @@ void MonteCarloLocalization_Base::getGroundTruth(
   }
   else if (GT.cols() == 3)
   {
-    if ((int)rawlogEntry < GT.rows())
+    if (static_cast<int>(rawlogEntry) < GT.rows())
     {
       expectedPose.x(GT(rawlogEntry, 0));
       expectedPose.y(GT(rawlogEntry, 1));

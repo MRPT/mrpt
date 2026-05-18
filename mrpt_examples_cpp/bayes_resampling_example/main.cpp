@@ -41,24 +41,24 @@ map<string, CVectorDouble> results;
 
 // vectorToTextFile( out_indxs, #ALGOR, true, true); /* By rows, append */
 
-#define TEST_RESAMPLING(ALGOR)                                                            \
-  mrpt::system::deleteFile(#ALGOR);                                                       \
-  /*printf(#ALGOR);*/                                                                     \
-  /*printf("\n");*/                                                                       \
-  ERR_MEANs.clear();                                                                      \
-  ERR_STDs.clear();                                                                       \
-  for (size_t i = 0; i < N_TESTS; i++)                                                    \
-  {                                                                                       \
-    mrpt::random::getRandomGenerator().drawUniformVector(log_ws, MIN_LOG_WEIG, 0.0);      \
-    CParticleFilterCapable::log2linearWeights(log_ws, lin_ws);                            \
-    CParticleFilterCapable::computeResampling(CParticleFilter::ALGOR, log_ws, out_indxs); \
-    hist_parts = mrpt::math::histogram(out_indxs, 0, M - 1, M, true);                     \
-    vector<double> errs_hist = lin_ws - hist_parts;                                       \
-    ERR_MEANs.push_back(mrpt::math::mean(errs_hist));                                     \
-    ERR_STDs.push_back(mrpt::math::stddev(errs_hist));                                    \
-  }                                                                                       \
-  printf("%s: ERR_MEAN %e\n", #ALGOR, mrpt::math::mean(ERR_MEANs));                       \
-  printf("%s: ERR_STD %f\n", #ALGOR, mrpt::math::mean(ERR_STDs));                         \
+#define TEST_RESAMPLING(ALGOR)                                                               \
+  mrpt::system::deleteFile(#ALGOR);                                                          \
+  /*printf(#ALGOR);*/                                                                        \
+  /*printf("\n");*/                                                                          \
+  ERR_MEANs.clear();                                                                         \
+  ERR_STDs.clear();                                                                          \
+  for (size_t i = 0; i < N_TESTS; i++)                                                       \
+  {                                                                                          \
+    mrpt::random::getRandomGenerator().drawUniformVector(log_ws, MIN_LOG_WEIG, 0.0);         \
+    CParticleFilterCapable::log2linearWeights(log_ws, lin_ws);                               \
+    CParticleFilterCapable::computeResampling(CParticleFilter::ALGOR, log_ws, out_indxs);    \
+    hist_parts = mrpt::math::histogram(out_indxs, 0.0, static_cast<double>(M - 1), M, true); \
+    vector<double> errs_hist = lin_ws - hist_parts;                                          \
+    ERR_MEANs.push_back(mrpt::math::mean(errs_hist));                                        \
+    ERR_STDs.push_back(mrpt::math::stddev(errs_hist));                                       \
+  }                                                                                          \
+  printf("%s: ERR_MEAN %e\n", #ALGOR, mrpt::math::mean(ERR_MEANs));                          \
+  printf("%s: ERR_STD %f\n", #ALGOR, mrpt::math::mean(ERR_STDs));                            \
   results[#ALGOR].push_back(mrpt::math::mean(ERR_STDs));
 
 // ------------------------------------------------------
@@ -106,22 +106,22 @@ void TestBatch()
   // Save results to files:
   CVectorDouble R;
 
-  vectorToTextFile(min_log_ws, "min_log_ws.txt");
+  (void)vectorToTextFile(min_log_ws, "min_log_ws.txt");
 
   R = results["prMultinomial"];
-  vectorToTextFile(R, "prMultinomial.txt");
+  (void)vectorToTextFile(R, "prMultinomial.txt");
   R = results["prResidual"];
-  vectorToTextFile(R, "prResidual.txt");
+  (void)vectorToTextFile(R, "prResidual.txt");
   R = results["prStratified"];
-  vectorToTextFile(R, "prStratified.txt");
+  (void)vectorToTextFile(R, "prStratified.txt");
   R = results["prSystematic"];
-  vectorToTextFile(R, "prSystematic.txt");
+  (void)vectorToTextFile(R, "prSystematic.txt");
 }
 
 // ------------------------------------------------------
 //                        MAIN
 // ------------------------------------------------------
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {

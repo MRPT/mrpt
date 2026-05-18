@@ -393,7 +393,7 @@ void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
   {
     if (pc_dst.HAS_RGBf)
     {
-      float x, y, z, r, g, b, a;
+      float x = 0, y = 0, z = 0, r = 0, g = 0, b = 0, a = 1;
       pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
       pc_dst.setPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
     }

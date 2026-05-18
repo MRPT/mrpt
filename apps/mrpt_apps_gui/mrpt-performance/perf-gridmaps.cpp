@@ -33,7 +33,7 @@ using namespace std;
 // ------------------------------------------------------
 //				BenchmarkGridmaps
 // ------------------------------------------------------
-double grid_test_1(int a1, int a2)
+double grid_test_1([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
 
@@ -50,7 +50,7 @@ double grid_test_1(int a1, int a2)
   return tictac.Tac() / N;
 }
 
-double grid_test_2(int a1, int a2)
+double grid_test_2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
   // test 2: setcell
@@ -67,7 +67,7 @@ double grid_test_2(int a1, int a2)
   return tictac.Tac() / N;
 }
 
-double grid_test_3(int a1, int a2)
+double grid_test_3([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
   const long N = 1000000;
@@ -81,7 +81,7 @@ double grid_test_3(int a1, int a2)
   return tictac.Tac() / N;
 }
 
-double grid_test_4(int a1, int a2)
+double grid_test_4([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   COccupancyGridMap2D gridMap(-20, 20, -20, 20, 0.05f);
 
@@ -105,7 +105,7 @@ double grid_test_4(int a1, int a2)
   return tictac.Tac() / N;
 }
 
-double grid_test_5_6(int a1, int a2)
+double grid_test_5_6(int a1, [[maybe_unused]] int a2)
 {
   getRandomGenerator().randomize(333);
 
@@ -129,7 +129,7 @@ double grid_test_5_6(int a1, int a2)
   return tictac.Tac() / N;
 }
 
-double grid_test_7(int a1, int a2)
+double grid_test_7([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   COccupancyGridMap2D gridmap(-20, 20, -20, 20, 0.05f);
   CTicTac tictac;
@@ -139,7 +139,7 @@ double grid_test_7(int a1, int a2)
   return tictac.Tac();
 }
 
-double grid_test_8(int a1, int a2)
+double grid_test_8([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   getRandomGenerator().randomize(333);
 
@@ -167,7 +167,7 @@ double grid_test_8(int a1, int a2)
   return tictac.Tac() / N;
 }
 
-double grid_test_9(int a1, int a2)
+double grid_test_9([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   // test 9: computeMatchingWith2D
   // ----------------------------------------

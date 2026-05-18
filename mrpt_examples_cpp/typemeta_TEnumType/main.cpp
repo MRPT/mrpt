@@ -54,9 +54,9 @@ void Test_EnumType()
   using namespace std;
   using namespace mrpt::typemeta;
 
-  std::cout << "White => " << (int)TEnumType<TestColors>::name2value("White") << "\n";
-  std::cout << "Black => " << (int)TEnumType<TestColors>::name2value("Black") << "\n";
-  std::cout << "Gray  => " << (int)TEnumType<TestColors>::name2value("Gray") << "\n";
+  std::cout << "White => " << static_cast<int>(TEnumType<TestColors>::name2value("White")) << "\n";
+  std::cout << "Black => " << static_cast<int>(TEnumType<TestColors>::name2value("Black")) << "\n";
+  std::cout << "Gray  => " << static_cast<int>(TEnumType<TestColors>::name2value("Gray")) << "\n";
 
   std::cout << "7    <= " << TEnumType<TestColors>::value2name(TestColors(7)) << "\n";
 }

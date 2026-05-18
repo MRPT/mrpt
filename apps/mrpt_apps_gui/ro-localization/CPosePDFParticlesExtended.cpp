@@ -68,15 +68,15 @@ void CPosePDFParticlesExtended::copyFrom(const CPosePDF& o)
 
   if (o.GetRuntimeClass() == CLASS_ID(CPosePDFParticlesExtended))
   {
-    auto* pdf = (CPosePDFParticlesExtended*)&o;
+    const auto* pdf = static_cast<const CPosePDFParticlesExtended*>(&o);
 
     // Both are particles:
     m_particles = pdf->m_particles;
   }
   else if (o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian))
   {
-    auto* pdf = (CPosePDFGaussian*)&o;
-    int M = (int)m_particles.size();
+    const auto* pdf = static_cast<const CPosePDFGaussian*>(&o);
+    int M = static_cast<int>(m_particles.size());
     std::vector<vector<double>> parts;
     std::vector<vector<double>>::iterator partsIt;
 
@@ -720,7 +720,7 @@ void CPosePDFParticlesExtended::changeCoordinatesReference(const CPose3D& newRef
 
 void CPosePDFParticlesExtended::drawSingleSample(CPose2D& outPart) const
 {
-  float uni = getRandomGenerator().drawUniform(0.0f, 0.9999f);
+  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
   double cum = 0;
   CParticleList::const_iterator it;
 
@@ -779,7 +779,7 @@ void CPosePDFParticlesExtended::operator+=(const CPose2D& Ap)
 void CPosePDFParticlesExtended::inverse(CPosePDF& o) const
 {
   ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFParticlesExtended));
-  auto* out = (CPosePDFParticlesExtended*)&o;
+  auto* out = static_cast<CPosePDFParticlesExtended*>(&o);
 
   out->copyFrom(*this);
   static CPose2D nullPose(0, 0, 0);
@@ -881,7 +881,7 @@ CPosePDFParticlesExtended::TPredictionParams::TPredictionParams()
   KLD_minSampleSize = 250;
   KLD_maxSampleSize = 100000;
   KLD_binSize_XY = 0.2f;
-  KLD_binSize_PHI = 5.0_deg;
+  KLD_binSize_PHI = static_cast<float>(5.0_deg);
   KLD_delta = 0.01f;
   KLD_epsilon = 0.02f;
 
@@ -896,7 +896,7 @@ CPosePDFParticlesExtended::TPredictionParams::TPredictionParams()
         auxiliarComputeObservationLikelihood
  ---------------------------------------------------------------*/
 double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
-    const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
+    [[maybe_unused]] const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
     const CParticleFilterCapable* obj,
     size_t particleIndexForMap,
     const CSensoryFrame* observation,
@@ -924,13 +924,14 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
     // JLBC: 20/ABR/2007 -> UWB offset from extended state vector
     if (obser->GetRuntimeClass() == CLASS_ID(CObservationBeaconRanges))
     {
-      auto* obs = (CObservationBeaconRanges*)obser;
+      auto* obs = const_cast<CObservationBeaconRanges*>(
+          static_cast<const CObservationBeaconRanges*>(obser));
       obserDumm = *obs;
 
       // Introduce bias:
-      ASSERT_((int)obserDumm.sensedData.size() == (int)x->state.size());
+      ASSERT_(static_cast<int>(obserDumm.sensedData.size()) == static_cast<int>(x->state.size()));
       for (size_t k = 0; k < size_t(obserDumm.sensedData.size()); k++)
-        obserDumm.sensedData[k].sensedDistance -= x->state[k];
+        obserDumm.sensedData[k].sensedDistance -= static_cast<float>(x->state[k]);
 
       // Substitute:
       obser = &obserDumm;

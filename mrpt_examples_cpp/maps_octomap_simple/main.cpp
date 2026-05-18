@@ -61,12 +61,14 @@ void TestOctoMap()
     mrpt::math::TPoint3D pt;
 
     pt = mrpt::math::TPoint3D(1, 1, 1);
-    is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
+    is_mapped = map.getPointOccupancy(
+        static_cast<float>(pt.x), static_cast<float>(pt.y), static_cast<float>(pt.z), occup);
     std::cout << "pt: " << pt << " is mapped?: " << (is_mapped ? "YES" : "NO")
               << " occupancy: " << occup << "\n";
 
     pt = mrpt::math::TPoint3D(-1, -1, 1);
-    is_mapped = map.getPointOccupancy(pt.x, pt.y, pt.z, occup);
+    is_mapped = map.getPointOccupancy(
+        static_cast<float>(pt.x), static_cast<float>(pt.y), static_cast<float>(pt.z), occup);
     std::cout << "pt: " << pt << " is mapped?: " << (is_mapped ? "YES" : "NO")
               << " occupancy: " << occup << "\n";
   }
@@ -169,7 +171,7 @@ void TestOctoMap()
   };
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {

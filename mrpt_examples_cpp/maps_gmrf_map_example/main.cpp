@@ -37,18 +37,18 @@ struct MyConnectivityVisitor : public mrpt::maps::CRandomFieldGridMap2D::Connect
    */
   bool getEdgeInformation(
       /** The parent map on which we are running */
-      const CRandomFieldGridMap2D* parent,
+      [[maybe_unused]] const CRandomFieldGridMap2D* parent,
       /** (cx,cy) for node "i" */
       size_t icx,
       size_t icy,
       /** (cx,cy) for node "j" */
-      size_t jcx,
-      size_t jcy,
+      [[maybe_unused]] size_t jcx,
+      [[maybe_unused]] size_t jcy,
       /** Must output here the inverse of the variance of the constraint
        edge. */
       double& out_edge_information) override
   {
-    out_edge_information = 1.0 / (1.0 + icx + icy);
+    out_edge_information = 1.0 / (1.0 + static_cast<double>(icx) + static_cast<double>(icy));
     return true;
   }
 };
@@ -80,7 +80,7 @@ void Example_GMRF()
     const double y = getRandomGenerator().drawUniform(0.1, 0.95 * Y_SIZE);
 
     printf("Observation: (x,y)=(%6.02f,%6.02f,)  => value: %6.03f\n", x, y, value);
-    gl_data->insertPoint(x, y, value);
+    gl_data->insertPoint(mrpt::math::TPoint3D(x, y, value));
 
     gasmap.insertIndividualReading(value, TPoint2D(x, y), false /*dont update map now*/);
   }
@@ -103,7 +103,7 @@ void Example_GMRF()
   win.waitForKey();
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {

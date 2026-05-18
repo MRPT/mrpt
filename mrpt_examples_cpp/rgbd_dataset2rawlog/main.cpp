@@ -219,7 +219,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
         {
           const uint16_t* ptr = depth_img.ptrLine<uint16_t>(row);
           for (unsigned int col = 0; col < w; col++)
-            obs.rangeImage(row, col) = (*ptr++) * (1.f / 5000);
+            obs.rangeImage(row, col) = static_cast<uint16_t>((*ptr++) * (1.f / 5000));
         }
 
         const string sDepthfile = mrpt::format("%.06f_depth.bin", avrg_time);
@@ -271,7 +271,7 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
       {
         const uint16_t* ptr = depth_img.ptrLine<uint16_t>(row);
         for (unsigned int col = 0; col < w; col++)
-          obs.rangeImage(row, col) = (*ptr++) * (1.f / 5000);
+          obs.rangeImage(row, col) = static_cast<uint16_t>((*ptr++) * (1.f / 5000));
       }
 
       const string sDepthfile = mrpt::format("%.06f_depth.bin", avrg_time);

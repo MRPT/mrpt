@@ -74,7 +74,7 @@ void TestLevMarq()
   levmarq_final_error = std::sqrt(info.final_sqr_err);
 
 #ifdef LEVMARQ_EXAMPLE_VERBOSE
-  const auto T = tictac.Tac() / N;
+  const auto T = tictac.Tac() / static_cast<double>(N);
   std::cout << "Iterations: " << info.iterations_executed << "\n";
   std::cout << "Final sqr error: " << info.final_sqr_err << "\n";
 

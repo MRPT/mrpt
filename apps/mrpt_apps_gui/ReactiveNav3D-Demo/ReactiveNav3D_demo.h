@@ -105,12 +105,14 @@ class CRobotKinects
         intersect(ray, ground, pintobj);
         ASSERT_(pintobj.isPoint());
         pintobj.getPoint(pint);
-        x[i] = pint.x;
-        y[i] = pint.y;
-        z[i] = pint.z;
+        x[i] = static_cast<float>(pint.x);
+        y[i] = static_cast<float>(pint.y);
+        z[i] = static_cast<float>(pint.z);
       }
     }
-    m_points.setAllPoints(x, y, z);
+    m_points.resize(x.size());
+    for (unsigned int i = 0; i < static_cast<unsigned int>(x.size()); i++)
+      m_points.setPoint(i, x[i], y[i], z[i]);
   }
 
   void CorrectCeiling(const mrpt::poses::CPose3D& kinectrelpose, float height)
@@ -140,9 +142,9 @@ class CRobotKinects
         intersect(ray, ceiling, pintobj);
         ASSERT_(pintobj.isPoint());
         pintobj.getPoint(pint);
-        x[i] = pint.x;
-        y[i] = pint.y;
-        z[i] = pint.z;
+        x[i] = static_cast<float>(pint.x);
+        y[i] = static_cast<float>(pint.y);
+        z[i] = static_cast<float>(pint.z);
       }
     }
 
@@ -211,9 +213,11 @@ class CRobotKinects
           if (row_points.size() > acc_factor * j)
           {
             row_points.getPoint(acc_factor * j, point.x, point.y, point.z);
-            incrz = kinectrelpose.distance3DTo(point.x, point.y, point.z) *
-                    tan((float(i) / (m_rows - 1) - 0.5) * m_fov_v + m_pitch_angle) *
-                    cos((float(j) / (m_columns - 1) - 0.5) * m_fov_h);
+            incrz = static_cast<float>(
+                kinectrelpose.distance3DTo(point.x, point.y, point.z) *
+                tan((static_cast<float>(i) / static_cast<float>(m_rows - 1) - 0.5) * m_fov_v +
+                    m_pitch_angle) *
+                cos((static_cast<float>(j) / static_cast<float>(m_columns - 1) - 0.5) * m_fov_h));
             point.z = point.z + incrz;
 
             // Points which belong to their height level are
@@ -250,7 +254,7 @@ class CRobotKinects
         }
       }
       row_points.clear();
-      h = h + heights[k];
+      h = h + static_cast<float>(heights[k]);
     }
 
     CorrectFloorPoints(kinectrelpose);
@@ -314,8 +318,8 @@ class CShortTermMemory
       int despy = obsgrids[0].y2idx(robot_ingrid.y + incry) - obsgrids[0].y2idx(robot_ingrid.y);
       // int despxpos = abs(despx);
       // int despypos = abs(despy);
-      float despxmeters = despx * obsgrids[0].getResolution();
-      float despymeters = despy * obsgrids[0].getResolution();
+      float despxmeters = static_cast<float>(despx) * obsgrids[0].getResolution();
+      float despymeters = static_cast<float>(despy) * obsgrids[0].getResolution();
 
       float xcel, ycel;
       vector<float> cells_newval;
@@ -363,9 +367,10 @@ class CShortTermMemory
 
     float angrot = -phi;
     float aux_xpass;
-    float incr_grid_reactive = 0.2 / obsgrids[0].getResolution();  // This number marks distance in
-                                                                   // meters (but it's transformed
-                                                                   // into an index)
+    float incr_grid_reactive =
+        static_cast<float>(0.2 / obsgrids[0].getResolution());  // This number marks distance in
+                                                                // meters (but it's transformed
+                                                                // into an index)
     mrpt::math::TPoint3D paux;
     unsigned int index;
     unsigned int lim_visionxn = obsgrids[0].x2idx(-vision_limit + robot_ingrid.x);
@@ -391,7 +396,8 @@ class CShortTermMemory
         kinects[0].m_points.getPoint(i, paux);
 
         // Points rotation and translation
-        aux_xpass = paux.x * cos(angrot) + paux.y * sin(angrot) + robot_ingrid.x;
+        aux_xpass =
+            static_cast<float>(paux.x * cos(angrot) + paux.y * sin(angrot) + robot_ingrid.x);
         paux.y = -paux.x * sin(angrot) + paux.y * cos(angrot) + robot_ingrid.y;
         paux.x = aux_xpass;
 
@@ -429,10 +435,10 @@ class CShortTermMemory
 
           // Transform the cell with high occupancy likelihood into 3D
           // points
-          if (((i >= lim_visionxn - incr_grid_reactive) &&
-               (i <= lim_visionxp + incr_grid_reactive)) &&
-              ((j >= lim_visionyn - incr_grid_reactive) &&
-               (j <= lim_visionyp + incr_grid_reactive)))
+          if (((static_cast<float>(i) >= static_cast<float>(lim_visionxn) - incr_grid_reactive) &&
+               (static_cast<float>(i) <= static_cast<float>(lim_visionxp) + incr_grid_reactive)) &&
+              ((static_cast<float>(j) >= static_cast<float>(lim_visionyn) - incr_grid_reactive) &&
+               (static_cast<float>(j) <= static_cast<float>(lim_visionyp) + incr_grid_reactive)))
           {
             if (obsgrids[n].getCell(i, j) > occupancy_threshold)
             {
@@ -441,7 +447,9 @@ class CShortTermMemory
               paux.y = -(obsgrids[n].idx2x(i) - robot_ingrid.x) * sin(-angrot) +
                        (obsgrids[n].idx2y(j) - robot_ingrid.y) * cos(-angrot);
               paux.z = level_height + 0.5 * heights[n];
-              grid_points.insertPoint(paux.x, paux.y, paux.z);
+              grid_points.insertPoint(
+                  static_cast<float>(paux.x), static_cast<float>(paux.y),
+                  static_cast<float>(paux.z));
               // Include points in their level for reactive
               // navigation
               // obstacles_inlevels[n].insertPoint(paux.x, paux.y,
@@ -450,7 +458,7 @@ class CShortTermMemory
           }
         }
       }
-      level_height += heights[n];
+      level_height += static_cast<float>(heights[n]);
     }
   }
 };
@@ -517,9 +525,10 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     // Process depth scans in the STM
     if (stm.is_active)
     {
-      float incrx = new_pose[0] - last_pose[0];
-      float incry = new_pose[1] - last_pose[1];
-      stm.updateObsGrids(incrx, incry, float(new_pose.phi()), kinects, robotShape.getHeights());
+      float incrx = static_cast<float>(new_pose[0] - last_pose[0]);
+      float incry = static_cast<float>(new_pose[1] - last_pose[1]);
+      stm.updateObsGrids(
+          incrx, incry, static_cast<float>(new_pose.phi()), kinects, robotShape.getHeights());
       obstacles.insertAnotherMap(&stm.grid_points, CPose3D(0, 0, 0, 0, 0, 0));
     }
 
@@ -683,7 +692,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     {
       auto obj = viz::CDisk::Create(0.4f, 0.3f);
       obj->setLocation(0, 0, 0.02);
-      obj->setColor(0.2, 0.3, 0.9);
+      obj->setColor(0.2f, 0.3f, 0.9f);
       scene->insert(obj);
     }
 
@@ -698,7 +707,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
         }
         else
         {
-          h = robotShape.getHeight(i - 1) + h;
+          h = static_cast<float>(robotShape.getHeight(i - 1)) + h;
         }
 
         robotpose3d.z(h);
@@ -706,7 +715,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
             viz::CPolyhedron::CreateCustomPrism(robotShape.polygon(i), robotShape.getHeight(i));
         obj->setName(format("Level%d", i + 1));
         obj->setPose(robotpose3d);
-        obj->setColor(0.2, 0.5, 0.2, 1);
+        obj->setColor(0.2f, 0.5f, 0.2f, 1.0f);
         // obj->setWireframe(true);
         obj->setLineWidth(2);
         scene->insert(obj);
@@ -753,12 +762,14 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
         obj[i]->setPose(robotpose3d);
         obj[i]->setName(format("Kinect%d", i + 1));
         scene->insert(obj[i]);
-        obj[i]->setColor(0, 0, 1);
+        obj[i]->setColor(0.0f, 0.0f, 1.0f);
         obj[i]->setPointSize(4.0);
         for (unsigned int j = 0; j < kinects[i].m_points.size(); j++)
         {
           kinects[i].m_points.getPoint(j, point);
-          obj[i]->insertPoint(point.x, point.y, point.z);
+          obj[i]->insertPoint(
+              static_cast<float>(point.x), static_cast<float>(point.y),
+              static_cast<float>(point.z));
         }
       }
     }
@@ -811,7 +822,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
         }
         else
         {
-          h = robotShape.getHeight(i - 1) + h;
+          h = static_cast<float>(robotShape.getHeight(i - 1)) + h;
         }
 
         robotpose3d.z(h);
@@ -847,7 +858,9 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
         for (unsigned int j = 0; j < kinects[i].m_points.size(); j++)
         {
           kinects[i].m_points.getPoint(j, point);
-          pc->insertPoint(point.x, point.y, point.z);
+          pc->insertPoint(
+              static_cast<float>(point.x), static_cast<float>(point.y),
+              static_cast<float>(point.z));
         }
       }
     }

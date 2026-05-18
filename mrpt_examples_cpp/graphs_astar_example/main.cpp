@@ -108,14 +108,14 @@ class CAStarExample : public CAStarAlgorithm<CCoinDistribution>
   }
   double getCost(const CCoinDistribution& s) override
   {  // Known cost of the partial solution.
-    return s.coins2 + s.coins7 + s.coins8 + s.coins19;
+    return static_cast<double>(s.coins2 + s.coins7 + s.coins8 + s.coins19);
   }
 };
 
 /**
  * Main function. Just calls the A* algorithm as many times as needed.
  */
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   for (;;)
   {
@@ -151,8 +151,8 @@ int main(int argc, char** argv)
             "\t%u coins of 2 piastres.\n\t%u coins of 7 "
             "piastres.\n\t%u coins of 8 piastres.\n\t%u coins of 19 "
             "piastres.\n\n",
-            (unsigned)solFin.coins2, (unsigned)solFin.coins7, (unsigned)solFin.coins8,
-            (unsigned)solFin.coins19);
+            static_cast<unsigned>(solFin.coins2), static_cast<unsigned>(solFin.coins7),
+            static_cast<unsigned>(solFin.coins8), static_cast<unsigned>(solFin.coins19));
         break;
       case 2:
         printf(
@@ -162,8 +162,8 @@ int main(int argc, char** argv)
             "\t%u coins of 2 piastres.\n\t%u coins of 7 "
             "piastres.\n\t%u coins of 8 piastres.\n\t%u coins of 19 "
             "piastres.\n\n",
-            (unsigned)solFin.coins2, (unsigned)solFin.coins7, (unsigned)solFin.coins8,
-            (unsigned)solFin.coins19);
+            static_cast<unsigned>(solFin.coins2), static_cast<unsigned>(solFin.coins7),
+            static_cast<unsigned>(solFin.coins8), static_cast<unsigned>(solFin.coins19));
         break;
     }
   }

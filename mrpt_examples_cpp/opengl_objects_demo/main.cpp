@@ -468,11 +468,13 @@ void TestOpenGLObjects()
       {
         const unsigned int vert_ind = v + u * (rows + 1);
 
-        vert_coords[3 * vert_ind] =
-            (2.f - 0.01f * u) * (2.f + cos(0.01f * M_PI * v)) * cos(0.01f * M_PI * u);
-        vert_coords[3 * vert_ind + 1] =
-            (2.f - 0.01f * u) * (2.f + cos(0.01f * M_PI * v)) * sin(0.01f * M_PI * u);
-        vert_coords[3 * vert_ind + 2] = 3.f * 0.01f * u + (2.f - 0.01f * u) * sin(0.01f * M_PI * v);
+        const float fu = static_cast<float>(u), fv = static_cast<float>(v);
+        vert_coords[3 * vert_ind] = static_cast<float>(
+            (2.f - 0.01f * fu) * (2.f + cos(0.01f * M_PI * fv)) * cos(0.01f * M_PI * fu));
+        vert_coords[3 * vert_ind + 1] = static_cast<float>(
+            (2.f - 0.01f * fu) * (2.f + cos(0.01f * M_PI * fv)) * sin(0.01f * M_PI * fu));
+        vert_coords[3 * vert_ind + 2] =
+            static_cast<float>(3.f * 0.01f * fu + (2.f - 0.01f * fu) * sin(0.01f * M_PI * fv));
       }
 
     obj->loadMesh(num_verts, num_faces, vert_per_face, face_verts, vert_coords);
@@ -500,7 +502,8 @@ void TestOpenGLObjects()
     mrpt::math::CMatrixDynamic<float> Z(H, W);
 
     for (int r = 0; r < H; r++)
-      for (int c = 0; c < W; c++) Z(r, c) = sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r);
+      for (int c = 0; c < W; c++)
+        Z(r, c) = static_cast<float>(sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r));
 
     const std::string texture_file =
         mrpt::system::getShareMRPTDir() + "datasets/sample-texture-terrain.jpg"s;
@@ -780,14 +783,14 @@ void TestOpenGLObjects()
       for (int i = 0; i < x.rows(); i++)
         for (int j = 0; j < x.cols(); j++)
         {
-          x(i, j) = sin(0.3 * i);
-          y(i, j) = cos(0.3 * i);
+          x(i, j) = static_cast<float>(sin(0.3 * i));
+          y(i, j) = static_cast<float>(cos(0.3 * i));
         }
       obj->setVectorField(x, y);
       obj->setPointColor(1, 0.3f, 0);
       obj->setVectorFieldColor(0, 0, 1);
-      obj->setPointSize(3.0);
-      obj->setLineWidth(2.0);
+      obj->setPointSize(3.0f);
+      obj->setLineWidth(2.0f);
       obj->setGridCenterAndCellSize(0, 0, 1.2f, 1.2f);
       obj->adjustVectorFieldToGrid();
       theScene->insert(obj);
@@ -803,7 +806,7 @@ void TestOpenGLObjects()
   {
     {
       const unsigned int num = 20;
-      const float scale = 0.8 * STEP_X / num;
+      const float scale = static_cast<float>(0.8 * STEP_X) / num;
       auto obj = viz::CVectorField3D::Create();
       obj->setLocation(off_x, -0.5 * scale * num, 0);  //
 
@@ -812,19 +815,19 @@ void TestOpenGLObjects()
       for (int i = 0; i < x.rows(); i++)
         for (int j = 0; j < x.cols(); j++)
         {
-          x(i, j) = (i - 0.5 * num) * scale;
-          y(i, j) = j * scale;
-          z(i, j) = 3 * sin(0.3 * i) * cos(0.3 * j);
-          vx(i, j) = 0.4 * sin(0.3 * i);
-          vy(i, j) = 0.8 * cos(0.3 * i);
-          vz(i, j) = 0.01 * i * j;
+          x(i, j) = static_cast<float>((i - 0.5 * num) * scale);
+          y(i, j) = static_cast<float>(j) * scale;
+          z(i, j) = static_cast<float>(3 * sin(0.3 * i) * cos(0.3 * j));
+          vx(i, j) = static_cast<float>(0.4 * sin(0.3 * i));
+          vy(i, j) = static_cast<float>(0.8 * cos(0.3 * i));
+          vz(i, j) = static_cast<float>(0.01 * i * j);
         }
       obj->setPointCoordinates(x, y, z);
       obj->setVectorField(vx, vy, vz);
       obj->setPointColor(1, 0.3f, 0);
       obj->setVectorFieldColor(0, 0, 1);
-      obj->setPointSize(3.0);
-      obj->setLineWidth(2.0);
+      obj->setPointSize(3.0f);
+      obj->setLineWidth(2.0f);
       obj->enableColorFromModule();
       obj->setMaxSpeedForColor(3.0);
       obj->setMotionFieldColormap(0, 0, 1, 1, 0, 0);
@@ -988,13 +991,17 @@ void TestOpenGLObjects()
     const size_t W = 256, H = 256;
     pic.resize(W, H, mrpt::img::CH_RGB);
     picAlpha.resize(W, H, mrpt::img::CH_GRAY);
-    pic.filledRectangle({0, 0}, {(int)(W - 1), (int)(H - 1)}, mrpt::img::TColor::black());
-    pic.filledRectangle({0, 0}, {(int)(W / 4), (int)(H / 2)}, mrpt::img::TColor::white());
+    pic.filledRectangle(
+        {0, 0}, {static_cast<int>(W - 1), static_cast<int>(H - 1)}, mrpt::img::TColor::black());
+    pic.filledRectangle(
+        {0, 0}, {static_cast<int>(W / 4), static_cast<int>(H / 2)}, mrpt::img::TColor::white());
 
     picAlpha.filledRectangle(
-        {0, 0}, {(int)(W - 1), (int)(H - 1)}, mrpt::img::TColor(0x55, 0x55, 0x55));
+        {0, 0}, {static_cast<int>(W - 1), static_cast<int>(H - 1)},
+        mrpt::img::TColor(0x55, 0x55, 0x55));
     picAlpha.filledRectangle(
-        {0, 0}, {(int)(W / 4), (int)(H / 2)}, mrpt::img::TColor(0xa0, 0xa0, 0xa0));
+        {0, 0}, {static_cast<int>(W / 4), static_cast<int>(H / 2)},
+        mrpt::img::TColor(0xa0, 0xa0, 0xa0));
 
     {
       viz::CTexturedPlane::Ptr obj = viz::CTexturedPlane::Create();

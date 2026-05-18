@@ -46,6 +46,7 @@ template <typename T>
 class CAStarAlgorithm
 {
  public:
+  virtual ~CAStarAlgorithm() = default;
   /**
    * Client code must implement this method.
    * Returns true if the given solution is complete.

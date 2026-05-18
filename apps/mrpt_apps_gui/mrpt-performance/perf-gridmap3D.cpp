@@ -25,7 +25,7 @@
 
 #include "common.h"
 
-double grid3d_test_getcell(int a1, int a2)
+double grid3d_test_getcell([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   mrpt::maps::COccupancyGridMap3D gridMap(
       mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.10f);
@@ -41,7 +41,7 @@ double grid3d_test_getcell(int a1, int a2)
   return tictac.Tac() / N;
 }
 
-double grid3d_test_updateCell(int a1, int a2)
+double grid3d_test_updateCell([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   mrpt::maps::COccupancyGridMap3D gridMap(
       mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.10f);
@@ -57,7 +57,7 @@ double grid3d_test_updateCell(int a1, int a2)
   return tictac.Tac() / N;
 }
 
-double grid3d_test_insert2DScan(int res_cm, int a2)
+double grid3d_test_insert2DScan(int res_cm, [[maybe_unused]] int a2)
 {
   auto& rn = mrpt::random::getRandomGenerator();
   rn.randomize(333);
@@ -67,7 +67,8 @@ double grid3d_test_insert2DScan(int res_cm, int a2)
   mrpt::obs::stock_observations::example2DRangeScan(scan1);
 
   mrpt::maps::COccupancyGridMap3D gridmap(
-      mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.01f * res_cm);
+      mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0),
+      0.01f * static_cast<float>(res_cm));
 
   const long N = 1000;
   CTicTac tictac;
@@ -102,9 +103,10 @@ double grid3d_test_insert3DScan(int res_cm, int decimation)
   mrpt::obs::CObservation3DRangeScan scan;
 
   mrpt::maps::COccupancyGridMap3D gridmap(
-      mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.01f * res_cm);
+      mrpt::math::TPoint3D(-3.0, -5.0, -2.0), mrpt::math::TPoint3D(10.0, 5.0, 2.0),
+      0.01f * static_cast<float>(res_cm));
 
-  gridmap.insertionOptions.decimation_3d_range = decimation;
+  gridmap.insertionOptions.decimation_3d_range = static_cast<uint16_t>(decimation);
 
   const long N = 10;
   CTicTac tictac;
@@ -119,7 +121,7 @@ double grid3d_test_insert3DScan(int res_cm, int decimation)
   return tictac.Tac() / N;
 }
 
-double grid3d_resize(int a1, int a2)
+double grid3d_resize([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   mrpt::maps::COccupancyGridMap3D gridmap(
       mrpt::math::TPoint3D(-20.0, -20.0, -2.0), mrpt::math::TPoint3D(20.0, 20.0, 2.0), 0.20f);

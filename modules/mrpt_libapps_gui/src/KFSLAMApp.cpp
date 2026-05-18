@@ -195,7 +195,7 @@ struct kfslam_traits<CRangeBearingKFSLAM>
         mapping.getLastPartition(partsInObsSpace);
 
         ERRS(i, 0) = K;
-        ERRS(i, 1) = partsInObsSpace.size();
+        ERRS(i, 1) = static_cast<double>(partsInObsSpace.size());
         ERRS(i, 2) = mapping.computeOffDiagonalBlocksApproximationError(landmarksMembership);
       }
 
@@ -211,14 +211,15 @@ struct kfslam_traits<CRangeBearingKFSLAM>
       // Compute the error for each partitioning-threshold
       for (size_t i = 0; i < STEPS; i++)
       {
-        float th = (1.0f * i) / (STEPS - 1.0f);
+        float th = (1.0f * static_cast<float>(i)) / (static_cast<float>(STEPS) - 1.0f);
         ERRS_SWEEP_THRESHOLD[i] = th;
         mapping.mapPartitionOptions()->partitionThreshold = th;
 
         mapping.reconsiderPartitionsNow();
 
         mapping.getLastPartitionLandmarks(landmarksMembership);
-        ERRS_SWEEP[i] = mapping.computeOffDiagonalBlocksApproximationError(landmarksMembership);
+        ERRS_SWEEP[i] = static_cast<float>(
+            mapping.computeOffDiagonalBlocksApproximationError(landmarksMembership));
       }
 
       ERRS_SWEEP.saveToTextFile(OUT_DIR + string("/ERRORS_SWEEP.txt"));
@@ -314,8 +315,9 @@ void KFSLAMApp::Run_KF_SLAM()
     for (int i = 0; i < mGT_DA.rows(); i++)
     {
       std::vector<int>& v = GT_DA[mGT_DA(i, 0)];
-      if (v.size() <= mGT_DA(i, 1)) v.resize(mGT_DA(i, 1) + 1);
-      v[mGT_DA(i, 1)] = mGT_DA(i, 2);
+      if (v.size() <= static_cast<size_t>(mGT_DA(i, 1)))
+        v.resize(static_cast<size_t>(mGT_DA(i, 1)) + 1);
+      v[static_cast<size_t>(mGT_DA(i, 1))] = static_cast<int>(mGT_DA(i, 2));
     }
     MRPT_LOG_INFO_STREAM("Loaded " << GT_DA.size() << " entries from DA ground truth file.");
   }
@@ -381,7 +383,7 @@ void KFSLAMApp::Run_KF_SLAM()
   {
     if (os::kbhit())
     {
-      char pushKey = os::getch();
+      char pushKey = static_cast<char>(os::getch());
       if (27 == pushKey) break;
     }
 
@@ -416,13 +418,15 @@ void KFSLAMApp::Run_KF_SLAM()
       if (!(step % SAVE_LOG_FREQUENCY))
       {
         const auto p = robotPose.mean.asVectorVal();
-        p.saveToTextFile(OUT_DIR + mrpt::format("/robot_pose_%05u.txt", (unsigned int)step));
+        p.saveToTextFile(
+            OUT_DIR + mrpt::format("/robot_pose_%05u.txt", static_cast<unsigned int>(step)));
       }
 
       // Save full cov:
       if (!(step % SAVE_LOG_FREQUENCY))
       {
-        fullCov.saveToTextFile(OUT_DIR + mrpt::format("/full_cov_%05u.txt", (unsigned int)step));
+        fullCov.saveToTextFile(
+            OUT_DIR + mrpt::format("/full_cov_%05u.txt", static_cast<unsigned int>(step)));
       }
 
       // Generate Data Association log?
@@ -442,21 +446,22 @@ void KFSLAMApp::Run_KF_SLAM()
             auto it = da.results.associations.find(i);
             int assoc_ID_in_SLAM;
             if (it != da.results.associations.end())
-              assoc_ID_in_SLAM = it->second;
+              assoc_ID_in_SLAM = static_cast<int>(it->second);
             else
             {
               // It should be a newly created LM:
               auto itNewLM = da.newly_inserted_landmarks.find(i);
               if (itNewLM != da.newly_inserted_landmarks.end())
-                assoc_ID_in_SLAM = itNewLM->second;
+                assoc_ID_in_SLAM = static_cast<int>(itNewLM->second);
               else
                 assoc_ID_in_SLAM = -1;
             }
 
             out_da_log << mrpt::format(
-                "%35.22f %8i %10i %10f %12f %12f\n", tim, (int)i, assoc_ID_in_SLAM,
-                (double)obsRB->sensedData[i].range, (double)obsRB->sensedData[i].yaw,
-                (double)obsRB->sensedData[i].pitch);
+                "%35.22f %8i %10i %10f %12f %12f\n", tim, static_cast<int>(i), assoc_ID_in_SLAM,
+                static_cast<double>(obsRB->sensedData[i].range),
+                static_cast<double>(obsRB->sensedData[i].yaw),
+                static_cast<double>(obsRB->sensedData[i].pitch));
           }
         }
       }
@@ -496,9 +501,10 @@ void KFSLAMApp::Run_KF_SLAM()
                 // DA2GTDA_indices;
                 // // Landmark indices bimapping: SLAM DA <--->
                 // GROUND TRUTH DA
-                if (DA2GTDA_indices.hasKey(it->second))
+                if (DA2GTDA_indices.hasKey(static_cast<int>(it->second)))
                 {
-                  const int slam_asigned_LM_idx = DA2GTDA_indices.direct(it->second);
+                  const int slam_asigned_LM_idx =
+                      DA2GTDA_indices.direct(static_cast<int>(it->second));
                   if (slam_asigned_LM_idx == GT_ASSOC)
                     is_TP = true;
                   else
@@ -519,7 +525,7 @@ void KFSLAMApp::Run_KF_SLAM()
                 auto itNewLM = da.newly_inserted_landmarks.find(i);
                 if (itNewLM != da.newly_inserted_landmarks.end())
                 {
-                  const int new_LM_in_SLAM = itNewLM->second;
+                  const int new_LM_in_SLAM = static_cast<int>(itNewLM->second);
 
                   // Was this really a NEW LM not observed
                   // before?
@@ -548,9 +554,10 @@ void KFSLAMApp::Run_KF_SLAM()
             // TruePos FalsePos TrueNeg FalseNeg
             // NoGroundTruthSoIDontKnow \n"
             out_da_performance_log << mrpt::format(
-                "%35.22f %13i %8i %8i %8i %8i %8i\n", tim, (int)i, (int)(is_TP ? 1 : 0),
-                (int)(is_FP ? 1 : 0), (int)(is_TN ? 1 : 0), (int)(is_FN ? 1 : 0),
-                (int)(!is_FP && !is_TP && !is_FN && !is_TN ? 1 : 0));
+                "%35.22f %13i %8i %8i %8i %8i %8i\n", tim, static_cast<int>(i),
+                static_cast<int>(is_TP ? 1 : 0), static_cast<int>(is_FP ? 1 : 0),
+                static_cast<int>(is_TN ? 1 : 0), static_cast<int>(is_FN ? 1 : 0),
+                static_cast<int>(!is_FP && !is_TP && !is_FN && !is_TN ? 1 : 0));
           }
         }
       }
@@ -559,7 +566,7 @@ void KFSLAMApp::Run_KF_SLAM()
       if (SAVE_MAP_REPRESENTATIONS && !(step % SAVE_LOG_FREQUENCY))
       {
         mapping.saveMapAndPath2DRepresentationAsMATLABFile(
-            OUT_DIR + mrpt::format("/slam_state_%05u.m", (unsigned int)step));
+            OUT_DIR + mrpt::format("/slam_state_%05u.m", static_cast<unsigned int>(step)));
       }
 
       // Save 3D view of the filter state:
@@ -609,7 +616,8 @@ void KFSLAMApp::Run_KF_SLAM()
           if (win3d && CAMERA_3DSCENE_FOLLOWS_ROBOT)
           {
             win3d->setCameraPointingToPoint(
-                robotPoseMean3D.x(), robotPoseMean3D.y(), robotPoseMean3D.z());
+                static_cast<float>(robotPoseMean3D.x()), static_cast<float>(robotPoseMean3D.y()),
+                static_cast<float>(robotPoseMean3D.z()));
           }
         }
 
@@ -618,7 +626,9 @@ void KFSLAMApp::Run_KF_SLAM()
         {
           viz::CSetOfLines::Ptr GT_path = std::make_shared<viz::CSetOfLines>();
           GT_path->setColor(0, 0, 0);
-          size_t N = std::min((int)GT_PATH.rows(), (int)meanPath.size());
+          size_t N = static_cast<size_t>(GT_PATH.rows()) < meanPath.size()
+                         ? static_cast<size_t>(GT_PATH.rows())
+                         : meanPath.size();
 
           if (GT_PATH.cols() == 6)
           {
@@ -692,8 +702,8 @@ void KFSLAMApp::Run_KF_SLAM()
           win3d->addTextMessage(
               0.02, 0.02,
               mrpt::format(
-                  "Step %u - Landmarks in the map: %u", (unsigned int)step,
-                  (unsigned int)LMs.size()),
+                  "Step %u - Landmarks in the map: %u", static_cast<unsigned int>(step),
+                  static_cast<unsigned int>(LMs.size())),
               0);
 
           win3d->addTextMessage(
@@ -727,7 +737,7 @@ void KFSLAMApp::Run_KF_SLAM()
         {
           // Save to file:
           CCompressedOutputStream f(
-              OUT_DIR + mrpt::format("/kf_state_%05u.3Dscene", (unsigned int)step));
+              OUT_DIR + mrpt::format("/kf_state_%05u.3Dscene", static_cast<unsigned int>(step)));
           mrpt::serialization::archiveFrom(f) << *scene3D;
         }
       }
@@ -773,7 +783,7 @@ void KFSLAMApp::Run_KF_SLAM()
         bool found = false;
         for (int r = 0; r < GT.rows(); r++)
         {
-          if (std::abs(LM_IDs[i] - GT(r, 6)) < 1e-9)
+          if (std::abs(static_cast<double>(LM_IDs[static_cast<unsigned int>(i)]) - GT(r, 6)) < 1e-9)
           {
             const CPoint3D gtPt(GT(r, 0), GT(r, 1), GT(r, 2));
             // All these conversions are to make it work with either
@@ -785,7 +795,9 @@ void KFSLAMApp::Run_KF_SLAM()
         }
         if (!found)
         {
-          MRPT_LOG_ERROR_STREAM("Ground truth entry not found for landmark ID:" << LM_IDs[i]);
+          MRPT_LOG_ERROR_STREAM(
+              "Ground truth entry not found for landmark ID:"
+              << LM_IDs[static_cast<unsigned int>(i)]);
         }
       }
 

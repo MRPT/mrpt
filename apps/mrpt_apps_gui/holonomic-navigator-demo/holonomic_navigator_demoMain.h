@@ -78,31 +78,31 @@ class holonomic_navigator_demoFrame : public wxFrame
   //*)
 
   //(*Identifiers(holonomic_navigator_demoFrame)
-  static const long ID_BUTTON1;
-  static const long ID_BUTTON2;
-  static const long ID_BUTTON3;
-  static const long ID_BUTTON6;
-  static const long ID_BUTTON7;
-  static const long ID_BUTTON4;
-  static const long ID_BUTTON5;
-  static const long ID_RADIOBOX1;
-  static const long ID_TEXTCTRL1;
-  static const long ID_PANEL1;
-  static const long ID_PANEL2;
-  static const long ID_NOTEBOOK1;
-  static const long ID_STATICTEXT2;
-  static const long ID_STATICTEXT1;
-  static const long ID_XY_GLCANVAS;
-  static const long ID_CUSTOM1;
-  static const long ID_TEXTCTRL2;
-  static const long ID_MENUITEM4;
-  static const long idMenuQuit;
-  static const long ID_MENUITEM1;
-  static const long ID_MENUITEM2;
-  static const long ID_MENUITEM3;
-  static const long idMenuAbout;
-  static const long ID_STATUSBAR1;
-  static const long ID_TIMER1;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_BUTTON6;
+  static const wxWindowID ID_BUTTON7;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_RADIOBOX1;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_PANEL1;
+  static const wxWindowID ID_PANEL2;
+  static const wxWindowID ID_NOTEBOOK1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_XY_GLCANVAS;
+  static const wxWindowID ID_CUSTOM1;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_MENUITEM4;
+  static const wxWindowID idMenuQuit;
+  static const wxWindowID ID_MENUITEM1;
+  static const wxWindowID ID_MENUITEM2;
+  static const wxWindowID ID_MENUITEM3;
+  static const wxWindowID idMenuAbout;
+  static const wxWindowID ID_STATUSBAR1;
+  static const wxWindowID ID_TIMER1;
   //*)
 
   //(*Declarations(holonomic_navigator_demoFrame)

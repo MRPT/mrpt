@@ -110,7 +110,7 @@ void theMainThing()
 
   tictac.Tic();
 
-  float phi = (float)0.0_deg;
+  float phi = static_cast<float>(0.0_deg);
 
   auto nullPose = CPose3D(0, 0, 0, phi, 0, 0);
 

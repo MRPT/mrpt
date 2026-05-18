@@ -102,8 +102,8 @@ void TestRANSAC()
   for (size_t i = 0; i < NUM_MAP_FEATS; i++)
   {
     the_map.setPoint(
-        i, getRandomGenerator().drawUniform(0, MAP_SIZE_X),
-        getRandomGenerator().drawUniform(0, MAP_SIZE_Y));
+        i, static_cast<float>(getRandomGenerator().drawUniform(0, MAP_SIZE_X)),
+        static_cast<float>(getRandomGenerator().drawUniform(0, MAP_SIZE_Y)));
   }
 #endif
 
@@ -184,7 +184,8 @@ void TestRANSAC()
     const mrpt::poses::CPose2D GT_pose_inv = -GT_pose;
 
     std::vector<nanoflann::ResultItem<size_t, float>> idxs;
-    the_map.kdTreeRadiusSearch2D(GT_pose.x(), GT_pose.y(), 1000, idxs);
+    the_map.kdTreeRadiusSearch2D(
+        static_cast<float>(GT_pose.x()), static_cast<float>(GT_pose.y()), 1000.0f, idxs);
     ASSERT_(idxs.size() >= nObs);
 
     for (size_t i = 0; i < nObs; i++)
@@ -214,13 +215,13 @@ void TestRANSAC()
     {
       TMatchingPair match;
 
-      match.localIdx = j;
-      match.local.x = observations[j].x;
-      match.local.y = observations[j].y;
+      match.localIdx = static_cast<uint32_t>(j);
+      match.local.x = static_cast<float>(observations[j].x);
+      match.local.y = static_cast<float>(observations[j].y);
 
       for (size_t i = 0; i < nMapPts; i++)
       {
-        match.globalIdx = i;
+        match.globalIdx = static_cast<uint32_t>(i);
         the_map.getPoint(i, match.global.x, match.global.y);
 
         all_correspondences.push_back(match);
@@ -239,8 +240,8 @@ void TestRANSAC()
 
     params.ransac_minSetSize = RANSAC_MINIMUM_INLIERS;  // ransac_minSetSize (to add the solution
     // to the SOG)
-    params.ransac_maxSetSize =
-        all_correspondences.size();  // ransac_maxSetSize: Test with all data points
+    params.ransac_maxSetSize = static_cast<unsigned int>(
+        all_correspondences.size());  // ransac_maxSetSize: Test with all data points
     params.ransac_mahalanobisDistanceThreshold = ransac_mahalanobisDistanceThreshold;
     params.ransac_nSimulations = 0;  // 0=auto
     params.ransac_fuseByCorrsMatch = true;
@@ -275,8 +276,9 @@ void TestRANSAC()
     vector<int> obs2map_pairings(nObs, -1);
     for (size_t i = 0; i < out_best_pairings.size(); i++)
       obs2map_pairings[out_best_pairings[i].localIdx] =
-          out_best_pairings[i].globalIdx == ((unsigned int)-1) ? -1
-                                                               : out_best_pairings[i].globalIdx;
+          out_best_pairings[i].globalIdx == static_cast<unsigned int>(-1)
+              ? -1
+              : out_best_pairings[i].globalIdx;
 
     std::cout << "1\n";
     for (size_t i = 0; i < nObs; i++) std::cout << obs2map_pairings[i] << " ";
@@ -307,7 +309,8 @@ void TestRANSAC()
       //
       gl_obs_map->clear();
       for (size_t k = 0; k < nObs; k++)
-        gl_obs_map->insertPoint(observations[k].x, observations[k].y, 0.0);
+        gl_obs_map->insertPoint(
+            static_cast<float>(observations[k].x), static_cast<float>(observations[k].y), 0.0f);
 
       gl_obs->setPose(solution_pose.mean);
 
@@ -351,13 +354,14 @@ void TestRANSAC()
       win.addTextMessage(
           5, 35,
           "RANSAC estimated pose: " + solution_pose.mean.asString() +
-              mrpt::format(" | RMSE=%f", (nPairs ? sqerr / nPairs : 0.0)),
+              mrpt::format(" | RMSE=%f", (nPairs ? sqerr / static_cast<double>(nPairs) : 0.0)),
           2);
 
       win.unlockAccess3DScene();
       win.repaint();
 
-      std::cout << "nPairings: " << nPairs << " RMSE = " << (nPairs ? sqerr / nPairs : 0.0) << "\n";
+      std::cout << "nPairings: " << nPairs
+                << " RMSE = " << (nPairs ? sqerr / static_cast<double>(nPairs) : 0.0) << "\n";
 
       win.waitForKey();
     }

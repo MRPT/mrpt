@@ -60,12 +60,16 @@ double obs3d_test_depth_to_3d(int a, int b)
   mrpt::math::CMatrixF minF, maxF;
   if (b & 0x01)
   {
-    generateRandomMaskImage(minF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
+    generateRandomMaskImage(
+        minF, static_cast<unsigned int>(obs1.rangeImage.rows()),
+        static_cast<unsigned int>(obs1.rangeImage.cols()));
     fp.rangeMask_min = &minF;
   }
   if (b & 0x02)
   {
-    generateRandomMaskImage(maxF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
+    generateRandomMaskImage(
+        maxF, static_cast<unsigned int>(obs1.rangeImage.rows()),
+        static_cast<unsigned int>(obs1.rangeImage.cols()));
     fp.rangeMask_max = &maxF;
   }
 
@@ -101,12 +105,16 @@ double obs3d_test_depth_to_2d_scan(int useMinFilter, int useMaxFilter)
   mrpt::math::CMatrixF minF, maxF;
   if (useMinFilter)
   {
-    generateRandomMaskImage(minF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
+    generateRandomMaskImage(
+        minF, static_cast<unsigned int>(obs1.rangeImage.rows()),
+        static_cast<unsigned int>(obs1.rangeImage.cols()));
     fp.rangeMask_min = &minF;
   }
   if (useMaxFilter)
   {
-    generateRandomMaskImage(maxF, obs1.rangeImage.rows(), obs1.rangeImage.cols());
+    generateRandomMaskImage(
+        maxF, static_cast<unsigned int>(obs1.rangeImage.rows()),
+        static_cast<unsigned int>(obs1.rangeImage.cols()));
     fp.rangeMask_max = &maxF;
   }
 

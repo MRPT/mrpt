@@ -28,7 +28,7 @@ using namespace std;
 
 // Cholesky:
 template <typename T, size_t DIM1>
-double matrix_test_chol_dyn(int a1, int a2)
+double matrix_test_chol_dyn([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   auto A = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDynamic<T>>(DIM1, 0.2);
   CMatrixDynamic<T> chol_U;
@@ -59,11 +59,11 @@ double matrix_test_chol_Nx6x6_dyn(int DIM, int nReps)
   {
     C.chol(chol_U);
   }
-  return tictac.Tac() / N;
+  return tictac.Tac() / static_cast<double>(N);
 }
 
 template <typename T, size_t DIM1>
-double matrix_test_chol_fix(int a1, int a2)
+double matrix_test_chol_fix([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   auto A = getRandomGenerator()
                .drawDefinitePositiveMatrix<
@@ -82,7 +82,7 @@ double matrix_test_chol_fix(int a1, int a2)
 // CSparseMatrix (CXSparse-based) was removed in MRPT 3.x.
 // Sparse Cholesky benchmarks are disabled.
 
-double matrix_test_loadFromArray(int N, int a2)
+double matrix_test_loadFromArray([[maybe_unused]] int N, [[maybe_unused]] int a2)
 {
   alignas(MRPT_MAX_STATIC_ALIGN_BYTES) double nums[4 * 4] = {0, 1, 2,  3,  4,  5,  6,  7,
                                                              8, 9, 10, 11, 12, 13, 14, 15};
@@ -94,7 +94,7 @@ double matrix_test_loadFromArray(int N, int a2)
   return tictac.Tac();
 }
 
-double matrix_test_loadWithEigenMap(int N, int a2)
+double matrix_test_loadWithEigenMap([[maybe_unused]] int N, [[maybe_unused]] int a2)
 {
   alignas(16) double nums[4 * 4] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 

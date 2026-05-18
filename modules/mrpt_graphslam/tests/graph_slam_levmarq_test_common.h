@@ -75,9 +75,9 @@ class GraphSlamLevMarqTest
 
     for (TNodeID j = 0; j < N_VERTEX; j++)
     {
-      static double ang = 2 * M_PI / N_VERTEX;
+      static double ang = 2 * M_PI / static_cast<double>(N_VERTEX);
       const double R = NODES_XY_MAX + 2 * (j % 2 ? 1 : -1);
-      CPose2D p(R * cos(ang * j), R * sin(ang * j), ang);
+      CPose2D p(R * cos(ang * static_cast<double>(j)), R * sin(ang * static_cast<double>(j)), ang);
 
       // Save real pose:
       real_node_poses[j] = p;

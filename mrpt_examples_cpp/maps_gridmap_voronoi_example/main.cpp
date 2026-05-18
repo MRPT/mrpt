@@ -47,7 +47,8 @@ void TestVoronoi()
   std::cout << "Loading simplemap: " << sample_simplemap_file << "\n";
 
   CSimpleMap simplemap;
-  simplemap.loadFromFile(sample_simplemap_file);
+  if (!simplemap.loadFromFile(sample_simplemap_file))
+    THROW_EXCEPTION_FMT("Failed to load simplemap: %s", sample_simplemap_file.c_str());
 
   // Load a grid map:
   std::cout << "Building gridmap...\n";
@@ -79,7 +80,7 @@ void TestVoronoi()
   mrpt::system::pause();
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {

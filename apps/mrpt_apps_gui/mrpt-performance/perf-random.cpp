@@ -27,7 +27,7 @@ using namespace std;
 // ------------------------------------------------------
 //				Benchmark Random Generators
 // ------------------------------------------------------
-double random_test_1(int a1, int a2)
+double random_test_1([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
 
@@ -41,7 +41,7 @@ double random_test_1(int a1, int a2)
   }
   return tictac.Tac() / N;
 }
-double random_test_2(int a1, int a2)
+double random_test_2([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
 
@@ -55,7 +55,7 @@ double random_test_2(int a1, int a2)
   }
   return tictac.Tac() / N;
 }
-double random_test_3(int a1, int a2)
+double random_test_3([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
 
@@ -69,7 +69,7 @@ double random_test_3(int a1, int a2)
   }
   return tictac.Tac() / N;
 }
-double random_test_4(int a1, int a2)
+double random_test_4([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
 
@@ -83,7 +83,7 @@ double random_test_4(int a1, int a2)
   }
   return tictac.Tac() / N;
 }
-double random_test_5(int a1, int a2)
+double random_test_5([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
 
@@ -97,7 +97,7 @@ double random_test_5(int a1, int a2)
   }
   return tictac.Tac() / N;
 }
-double random_test_6(int a1, int a2)
+double random_test_6([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
   double COVs[] = {6.0, -5.0, 2.0, -5.0, 3.0, 1.0, 2.0, 1.0, 7.0};
@@ -115,7 +115,7 @@ double random_test_6(int a1, int a2)
   }
   return tictac.Tac() / N;
 }
-double random_test_7(int a1, int a2)
+double random_test_7([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
   double COVs[] = {6.0, -5.0, 2.0, -5.0, 3.0, 1.0, 2.0, 1.0, 7.0};
@@ -135,7 +135,7 @@ double random_test_7(int a1, int a2)
 }
 
 template <size_t DIM>
-double random_test_8(int a1, int a2)
+double random_test_8([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
 
@@ -159,7 +159,7 @@ double random_test_8(int a1, int a2)
   return tictac.Tac() / (N * NSAMPS);
 }
 
-double random_test_9(int a1, int a2)
+double random_test_9(int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
 
@@ -182,7 +182,7 @@ double random_test_9(int a1, int a2)
   return tictac.Tac() / (N * NSAMPS);
 }
 
-double random_test_10(int a1, int a2)
+double random_test_10(int a1, [[maybe_unused]] int a2)
 {
   CRandomGenerator rg;
 

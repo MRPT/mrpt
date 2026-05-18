@@ -148,7 +148,7 @@ void TestParticlesLocalization()
 
   // Init PSRNG:
   if (random_seed)
-    getRandomGenerator().randomize(random_seed);
+    getRandomGenerator().randomize(static_cast<uint32_t>(random_seed));
   else
     getRandomGenerator().randomize();
 
@@ -161,7 +161,8 @@ void TestParticlesLocalization()
   // --------------------------
   printf("Loading the rawlog file...");
   CRawlog rawlog;
-  rawlog.loadFromRawLogFile(RAWLOG_FILE);
+  if (!rawlog.loadFromRawLogFile(RAWLOG_FILE))
+    THROW_EXCEPTION_FMT("Failed to load rawlog: %s", RAWLOG_FILE.c_str());
 
   rawlogEntries = rawlog.size();
   std::cout << "rawlog Entries: " << rawlogEntries << "\n";
@@ -222,7 +223,8 @@ void TestParticlesLocalization()
 
       // Create Directory
       OUT_DIR = mrpt::format(
-          "%s_Pc_%.06f/REP_%03u", OUT_DIR_PREFIX.c_str(), range_Pc, (unsigned int)repetition);
+          "%s_Pc_%.06f/REP_%03u", OUT_DIR_PREFIX.c_str(), range_Pc,
+          static_cast<unsigned int>(repetition));
       printf("Creating directory: %s\n", OUT_DIR.c_str());
 
       mrpt::system::deleteFilesInDirectory(OUT_DIR);
@@ -250,9 +252,11 @@ void TestParticlesLocalization()
       CVectorFloat state_max(nBeaconsInMap, 0.0f);
 
       pdf.resetUniform(
-          initialPoseExperiment.x() - 0.5, initialPoseExperiment.x() + 0.5,
-          initialPoseExperiment.y() - 0.5, initialPoseExperiment.y() + 0.5, state_min, state_max,
-          -M_PIf, M_PIf, PARTICLE_COUNT);
+          static_cast<float>(initialPoseExperiment.x() - 0.5),
+          static_cast<float>(initialPoseExperiment.x() + 0.5),
+          static_cast<float>(initialPoseExperiment.y() - 0.5),
+          static_cast<float>(initialPoseExperiment.y() + 0.5), state_min, state_max, -M_PIf, M_PIf,
+          PARTICLE_COUNT);
 
       printf("PDF of %u particles initialized in %.03fms\n", PARTICLE_COUNT, 1000 * tictac.Tac());
 
@@ -385,7 +389,7 @@ void TestParticlesLocalization()
         // PARTICLE FILTER:
         // ----------------------------------------
         tictac.Tic();
-        printf("Executing ParticleFilter on %u particles....", (unsigned int)pdf.particlesCount());
+        printf("Executing ParticleFilter on %zu particles....", pdf.particlesCount());
 
         PF.executeOn(
             pdf,
@@ -418,7 +422,7 @@ void TestParticlesLocalization()
           {
             if (beaconPose)
             {
-              beaconPose->getSensorPose(sensorPoseOnRobot);
+              sensorPoseOnRobot = beaconPose->getSensorPose();
               sensorPoseOnRobot_valid = true;
             }
           }
@@ -437,7 +441,7 @@ void TestParticlesLocalization()
               // Real offset:
               if (beaconPose)
               {
-                float R = beaconPose->getSensedRangeByBeaconID(q + 1);
+                float R = beaconPose->getSensedRangeByBeaconID(static_cast<int32_t>(q + 1));
                 if (R > 0)
                 {
                   any_valid = true;
@@ -527,7 +531,9 @@ void TestParticlesLocalization()
           parts->resize(pdf.size());
 
           for (size_t i = 0; i < pdf.size(); i++)
-            parts->setPoint(i, pdf.m_particles[i].d->pose.x(), pdf.m_particles[i].d->pose.y(), 0);
+            parts->setPoint(
+                i, static_cast<float>(pdf.m_particles[i].d->pose.x()),
+                static_cast<float>(pdf.m_particles[i].d->pose.y()), 0.0f);
 
 // The particles' cov:
 #ifdef SHOW_REAL_TIME_3D
@@ -549,7 +555,7 @@ void TestParticlesLocalization()
           viz::CEllipsoid2D::Ptr ellip = std::make_shared<viz::CEllipsoid2D>();
 #endif
 
-          ellip->setColor(1, 0, 0, 0.6);
+          ellip->setColor(1, 0, 0, 0.6f);
           ellip->setLocation(meanPose.x(), meanPose.y(), 0.05);
 
           ellip->setLineWidth(2);

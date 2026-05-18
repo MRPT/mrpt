@@ -32,7 +32,7 @@ void Test_EnumerateDevices()
 {
   CInterfaceFTDI usbDevice;
 
-  unsigned long nConectedDevices;
+  size_t nConectedDevices;
 
   TFTDIDeviceList lstDevs;
 
@@ -41,7 +41,7 @@ void Test_EnumerateDevices()
     // Create list of devices:
     usbDevice.ListAllDevices(lstDevs);
 
-    nConectedDevices = (unsigned long)lstDevs.size();
+    nConectedDevices = lstDevs.size();
 
     std::cout << "There are " << nConectedDevices << " USB devices - "
               << mrpt::system::dateTimeToString(mrpt::Clock::now()) << "\n";

@@ -35,14 +35,14 @@ void TestDirExplorer()
 
   CDirectoryExplorer::explore(path, FILE_ATTRIB_ARCHIVE | FILE_ATTRIB_DIRECTORY, lst);
 
-  printf("Found %i files:\n", (unsigned int)lst.size());
+  printf("Found %zu files:\n", lst.size());
 
   for (CDirectoryExplorer::TFileInfoList::iterator it = lst.begin(); it != lst.end(); ++it)
   {
     printf("name: %s\n", it->name.c_str());
     printf("wholePath: %s\n", it->wholePath.c_str());
     printf("isDir: %c\n", it->isDir ? 'Y' : 'N');
-    printf("size: %lu bytes\n", (unsigned long)it->fileSize);
+    printf("size: %zu bytes\n", static_cast<size_t>(it->fileSize));
     printf("-----------------------\n");
   }
 }

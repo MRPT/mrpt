@@ -45,26 +45,28 @@ using namespace std;
       const std::string& in_file, bool is3D, bool verbose, const std::string& output_file, \
       bool view, int max_iters, double initial_lambda, bool no_span)
 
-#define IMPLEMENT_OP_FUNCTION(_NAME)                                                       \
-  template <class GRAPHTYPE>                                                               \
-  void _NAME##impl(                                                                        \
-      const std::string& in_file, bool is3D, bool verbose, const std::string& output_file, \
-      bool view, int max_iters, double initial_lambda, bool no_span);                      \
-  void _NAME(                                                                              \
-      const std::string& in_file, bool is3D, bool verbose, const std::string& output_file, \
-      bool view, int max_iters, double initial_lambda, bool no_span)                       \
-  {                                                                                        \
-    if (!is3D)                                                                             \
-      _NAME##impl<CNetworkOfPoses2D>(                                                      \
-          in_file, is3D, verbose, output_file, view, max_iters, initial_lambda, no_span);  \
-    else                                                                                   \
-      _NAME##impl<CNetworkOfPoses3D>(                                                      \
-          in_file, is3D, verbose, output_file, view, max_iters, initial_lambda, no_span);  \
-  }                                                                                        \
-  template <class GRAPHTYPE>                                                               \
-  void _NAME##impl(                                                                        \
-      const std::string& in_file, bool is3D, bool verbose, const std::string& output_file, \
-      bool view, int max_iters, double initial_lambda, bool no_span)
+#define IMPLEMENT_OP_FUNCTION(_NAME)                                                         \
+  template <class GRAPHTYPE>                                                                 \
+  void _NAME##impl(                                                                          \
+      const std::string& in_file, bool is3D, bool verbose, const std::string& output_file,   \
+      bool view, int max_iters, double initial_lambda, bool no_span);                        \
+  void _NAME(                                                                                \
+      const std::string& in_file, bool is3D, bool verbose, const std::string& output_file,   \
+      bool view, int max_iters, double initial_lambda, bool no_span)                         \
+  {                                                                                          \
+    if (!is3D)                                                                               \
+      _NAME##impl<CNetworkOfPoses2D>(                                                        \
+          in_file, is3D, verbose, output_file, view, max_iters, initial_lambda, no_span);    \
+    else                                                                                     \
+      _NAME##impl<CNetworkOfPoses3D>(                                                        \
+          in_file, is3D, verbose, output_file, view, max_iters, initial_lambda, no_span);    \
+  }                                                                                          \
+  template <class GRAPHTYPE>                                                                 \
+  void _NAME##impl(                                                                          \
+      const std::string& in_file, [[maybe_unused]] bool is3D, [[maybe_unused]] bool verbose, \
+      [[maybe_unused]] const std::string& output_file, [[maybe_unused]] bool view,           \
+      [[maybe_unused]] int max_iters, [[maybe_unused]] double initial_lambda,                \
+      [[maybe_unused]] bool no_span)
 
 /**
  * http://stackoverflow.com/questions/3982470/what-does-typedef-void-something-mean

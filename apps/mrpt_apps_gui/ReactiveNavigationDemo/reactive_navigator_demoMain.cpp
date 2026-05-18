@@ -1384,12 +1384,12 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
     // Selected PTG path:
     if (lfr.nSelectedPTG <= (int)ptg_nav->getPTG_count())  // the == case is for "NOP motion cmd"
     {
-      const bool is_NOP_op = (lfr.nSelectedPTG == (int)ptg_nav->getPTG_count());
+      const bool is_NOP_op = (lfr.nSelectedPTG == ptg_nav->getPTG_count());
       const int idx_ptg = is_NOP_op ? lfr.ptg_index_NOP : lfr.nSelectedPTG;
 
       mrpt::nav::CParameterizedTrajectoryGenerator* ptg =
           idx_ptg >= 0 ? ptg_nav->getPTG(idx_ptg) : nullptr;
-      if (ptg)
+      if (ptg != nullptr)
       {
         // Draw path:
         const auto& ipp = lfr.infoPerPTG[lfr.nSelectedPTG];
@@ -1420,7 +1420,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
           double min_shape_dists = 1.0;
           for (double d = min_shape_dists; d < max_dist; d += min_shape_dists)
           {
-            uint32_t step;
+            uint32_t step = 0;
             if (!ptg->getPathStepForDist(selected_k, d, step)) continue;
             const auto p = ptg->getPathPose(selected_k, step);
             ptg->add_robotShape_to_setOfLines(*gl_robot_ptg_prediction, mrpt::poses::CPose2D(p));
@@ -1455,10 +1455,15 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
     wp_nav->getWaypointNavStatus(wp_status);
     const std::string sWpLog = wp_status.getAsText();
 
-    if (!wp_status.waypoints.empty())
-      if (!wxFrWpInfo->IsShown()) wxFrWpInfo->Show();
+    if (!wp_status.waypoints.empty() && !wxFrWpInfo->IsShown())
+    {
+      wxFrWpInfo->Show();
+    }
 
-    if (wxFrWpInfo->IsShown()) edWpLog->SetValue(sWpLog.c_str());
+    if (wxFrWpInfo->IsShown())
+    {
+      edWpLog->SetValue(sWpLog.c_str());
+    }
 
     // Plot waypoints being clicked by the user graphically:
     m_waypoints_clicked.getAsOpenglVisualization(*gl_waypoints_clicking);

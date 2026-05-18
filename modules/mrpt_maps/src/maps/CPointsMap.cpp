@@ -296,10 +296,10 @@ void CPointsMap::determineMatching2D(
   Eigen::ArrayXf x_locals(nLocalPoints), y_locals(nLocalPoints);
 
   // load 4 copies of the same value
-  const __m128 cos_4val = _mm_set1_ps(cos_phi);
-  const __m128 sin_4val = _mm_set1_ps(sin_phi);
-  const __m128 x0_4val = _mm_set1_ps(otherMapPose.x);
-  const __m128 y0_4val = _mm_set1_ps(otherMapPose.y);
+  const __m128 cos_4val = _mm_set1_ps(static_cast<float>(cos_phi));
+  const __m128 sin_4val = _mm_set1_ps(static_cast<float>(sin_phi));
+  const __m128 x0_4val = _mm_set1_ps(static_cast<float>(otherMapPose.x));
+  const __m128 y0_4val = _mm_set1_ps(static_cast<float>(otherMapPose.y));
 
   // For the bounding box:
   __m128 x_mins = _mm_set1_ps(std::numeric_limits<float>::max());
@@ -347,8 +347,8 @@ void CPointsMap::determineMatching2D(
   {
     float x = ptr_in_x[k];
     float y = ptr_in_y[k];
-    float out_x = otherMapPose.x + cos_phi * x - sin_phi * y;
-    float out_y = otherMapPose.y + sin_phi * x + cos_phi * y;
+    float out_x = static_cast<float>(otherMapPose.x + cos_phi * x - sin_phi * y);
+    float out_y = static_cast<float>(otherMapPose.y + sin_phi * x + cos_phi * y);
 
     bbLocal.min.x = std::min(bbLocal.min.x, out_x);
     bbLocal.max.x = std::max(bbLocal.max.x, out_x);
@@ -389,14 +389,14 @@ void CPointsMap::determineMatching2D(
 
   // Loop for each point in local map:
   // --------------------------------------------------
-  for (localIdx = params.offset_other_map_points,
+  for (localIdx = static_cast<unsigned int>(params.offset_other_map_points),
       x_other_it = &otherMap->m_x[params.offset_other_map_points],
       y_other_it = &otherMap->m_y[params.offset_other_map_points],
       z_other_it = &otherMap->m_z[params.offset_other_map_points];
        localIdx < nLocalPoints; x_other_it += params.decimation_other_map_points,
       y_other_it += params.decimation_other_map_points,
       z_other_it += params.decimation_other_map_points,
-      localIdx += params.decimation_other_map_points)
+      localIdx += static_cast<unsigned int>(params.decimation_other_map_points))
   {
     // For speed-up:
     x_local = x_locals[localIdx];  // *x_locals_it;
@@ -410,10 +410,10 @@ void CPointsMap::determineMatching2D(
     // In "this" (global/reference) points map.
 
     float tentativ_err_sq;
-    unsigned int tentativ_this_idx = kdTreeClosestPoint2D(
+    unsigned int tentativ_this_idx = static_cast<unsigned int>(kdTreeClosestPoint2D(
         x_local, y_local,  // Look closest to this guy
         tentativ_err_sq    // save here the min. distance squared
-    );
+        ));
 
     // Compute max. allowed distance:
     maxDistForCorrespondenceSquared = square(
@@ -461,7 +461,7 @@ void CPointsMap::determineMatching2D(
         params.onlyKeepTheClosest,
         "ERROR: onlyKeepTheClosest must be also set to true when "
         "onlyUniqueRobust=true.");
-    tempCorrs.filterUniqueRobustPairs(nGlobalPoints, correspondences);
+    tempCorrs.filterUniqueRobustPairs(static_cast<unsigned int>(nGlobalPoints), correspondences);
   }
   else
   {
@@ -471,13 +471,14 @@ void CPointsMap::determineMatching2D(
   // If requested, copy sum of squared distances to output pointer:
   // -------------------------------------------------------------------
   if (_sumSqrCount)
-    extraResults.sumSqrDist = _sumSqrDist / static_cast<double>(_sumSqrCount);
+    extraResults.sumSqrDist = _sumSqrDist / static_cast<float>(_sumSqrCount);
   else
     extraResults.sumSqrDist = 0;
 
   // The ratio of points in the other map with corrs:
   extraResults.correspondencesRatio =
-      params.decimation_other_map_points * nOtherMapPointsWithCorrespondence / d2f(nLocalPoints);
+      static_cast<float>(params.decimation_other_map_points * nOtherMapPointsWithCorrespondence) /
+      static_cast<float>(nLocalPoints);
 
   MRPT_END
 }
@@ -532,7 +533,10 @@ bool CPointsMap::isEmpty() const { return m_x.empty(); }
 /*---------------------------------------------------------------
         TInsertionOptions
  ---------------------------------------------------------------*/
-CPointsMap::TInsertionOptions::TInsertionOptions() : horizontalTolerance(0.05_deg) {}
+CPointsMap::TInsertionOptions::TInsertionOptions() :
+    horizontalTolerance(static_cast<float>(0.05_deg))
+{
+}
 
 // Binary dump to/read from stream - for usage in derived classes' serialization
 void CPointsMap::TInsertionOptions::writeToStream(mrpt::serialization::CArchive& out) const
@@ -664,7 +668,7 @@ void CPointsMap::TInsertionOptions::loadFromConfigFile(
     const mrpt::config::CConfigFileBase& iniFile, const string& section)
 {
   MRPT_LOAD_CONFIG_VAR(minDistBetweenLaserPoints, float, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR_DEGREES(horizontalTolerance, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR_DEGREESf(horizontalTolerance, iniFile, section);
 
   MRPT_LOAD_CONFIG_VAR(addToExistingPointsMap, bool, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(also_interpolate, bool, iniFile, section);
@@ -919,8 +923,9 @@ void CPointsMap::determineMatching3D(
   // Transform all local points:
   vector<float> x_locals(nLocalPoints), y_locals(nLocalPoints), z_locals(nLocalPoints);
 
-  for (unsigned int localIdx = params.offset_other_map_points; localIdx < nLocalPoints;
-       localIdx += params.decimation_other_map_points)
+  for (unsigned int localIdx = static_cast<unsigned int>(params.offset_other_map_points);
+       localIdx < nLocalPoints;
+       localIdx += static_cast<unsigned int>(params.decimation_other_map_points))
   {
     float x_local, y_local, z_local;
     otherMapPose.composePoint(
@@ -944,8 +949,9 @@ void CPointsMap::determineMatching3D(
 
   // Loop for each point in local map:
   // --------------------------------------------------
-  for (unsigned int localIdx = params.offset_other_map_points; localIdx < nLocalPoints;
-       localIdx += params.decimation_other_map_points)
+  for (unsigned int localIdx = static_cast<unsigned int>(params.offset_other_map_points);
+       localIdx < nLocalPoints;
+       localIdx += static_cast<unsigned int>(params.decimation_other_map_points))
   {
     // For speed-up:
     const float x_local = x_locals[localIdx];
@@ -959,10 +965,10 @@ void CPointsMap::determineMatching3D(
       // In "this" (global/reference) points map.
 
       float tentativ_err_sq;
-      const unsigned int tentativ_this_idx = kdTreeClosestPoint3D(
+      const unsigned int tentativ_this_idx = static_cast<unsigned int>(kdTreeClosestPoint3D(
           x_local, y_local, z_local,  // Look closest to this guy
           tentativ_err_sq             // save here the min. distance squared
-      );
+          ));
 
       // Compute max. allowed distance:
       maxDistForCorrespondenceSquared = square(
@@ -1009,7 +1015,7 @@ void CPointsMap::determineMatching3D(
         params.onlyKeepTheClosest,
         "ERROR: onlyKeepTheClosest must be also set to true when "
         "onlyUniqueRobust=true.");
-    tempCorrs.filterUniqueRobustPairs(nGlobalPoints, correspondences);
+    tempCorrs.filterUniqueRobustPairs(static_cast<unsigned int>(nGlobalPoints), correspondences);
   }
   else
   {
@@ -1018,9 +1024,10 @@ void CPointsMap::determineMatching3D(
 
   // If requested, copy sum of squared distances to output pointer:
   // -------------------------------------------------------------------
-  extraResults.sumSqrDist = (_sumSqrCount) ? _sumSqrDist / static_cast<double>(_sumSqrCount) : 0;
+  extraResults.sumSqrDist = (_sumSqrCount) ? _sumSqrDist / static_cast<float>(_sumSqrCount) : 0;
   extraResults.correspondencesRatio =
-      params.decimation_other_map_points * nOtherMapPointsWithCorrespondence / d2f(nLocalPoints);
+      static_cast<float>(params.decimation_other_map_points * nOtherMapPointsWithCorrespondence) /
+      static_cast<float>(nLocalPoints);
 
   MRPT_END
 }
@@ -1135,12 +1142,12 @@ void CPointsMap::compute3DDistanceToMesh(
       );
 
       // get the centroid
-      const float mX = (outX[0] + outX[1] + outX[2]) / 3.0;
-      const float mY = (outY[0] + outY[1] + outY[2]) / 3.0;
-      const float mZ = (outZ[0] + outZ[1] + outZ[2]) / 3.0;
+      const float mX = (outX[0] + outX[1] + outX[2]) / 3.0f;
+      const float mY = (outY[0] + outY[1] + outY[2]) / 3.0f;
+      const float mZ = (outZ[0] + outZ[1] + outZ[2]) / 3.0f;
 
-      const float distanceForThisPoint =
-          fabs(mrpt::math::distance(TPoint3D(x_local, y_local, z_local), TPoint3D(mX, mY, mZ)));
+      const float distanceForThisPoint = static_cast<float>(
+          fabs(mrpt::math::distance(TPoint3D(x_local, y_local, z_local), TPoint3D(mX, mY, mZ))));
 
       // Distance below the threshold??
       if (distanceForThisPoint < maxDistForCorrespondence)
@@ -1148,7 +1155,7 @@ void CPointsMap::compute3DDistanceToMesh(
         // Save all the correspondences:
         TMatchingPair& p = tempCorrs.emplace_back();
 
-        p.globalIdx = nOtherMapPointsWithCorrespondence++;  // insert a
+        p.globalIdx = static_cast<uint32_t>(nOtherMapPointsWithCorrespondence++);  // insert a
         // consecutive index
         // here
         p.global.x = mX;
@@ -1208,7 +1215,8 @@ void CPointsMap::compute3DDistanceToMesh(
   }
 
   // The ratio of points in the other map with corrs:
-  correspondencesRatio = nOtherMapPointsWithCorrespondence / d2f(nLocalPoints);
+  correspondencesRatio =
+      static_cast<float>(nOtherMapPointsWithCorrespondence) / static_cast<float>(nLocalPoints);
 
   MRPT_END
 }
@@ -1224,7 +1232,7 @@ double CPointsMap::internal_computeObservationLikelihoodPointCloud3D(
 
   float closest_x, closest_y, closest_z;
   float closest_err;
-  const float max_sqr_err = square(likelihoodOptions.max_corr_distance);
+  const float max_sqr_err = static_cast<float>(square(likelihoodOptions.max_corr_distance));
   double sumSqrDist = 0;
 
   std::size_t nPtsForAverage = 0;
@@ -1247,7 +1255,7 @@ double CPointsMap::internal_computeObservationLikelihoodPointCloud3D(
 
     sumSqrDist += static_cast<double>(closest_err);
   }
-  if (nPtsForAverage) sumSqrDist /= nPtsForAverage;
+  if (nPtsForAverage) sumSqrDist /= static_cast<double>(nPtsForAverage);
 
   // Log-likelihood:
   return -sumSqrDist / likelihoodOptions.sigma_dist;
@@ -1282,7 +1290,7 @@ double CPointsMap::internal_computeObservationLikelihood(
       double sumSqrDist = 0;
       float closest_x, closest_y;
       float closest_err;
-      const float max_sqr_err = square(likelihoodOptions.max_corr_distance);
+      const float max_sqr_err = static_cast<float>(square(likelihoodOptions.max_corr_distance));
 
       // optimized 2D version ---------------------------
       TPose2D takenFrom2D = CPose2D(takenFrom).asTPose();
@@ -1295,8 +1303,8 @@ double CPointsMap::internal_computeObservationLikelihood(
       {
         // Transform the point from the scan reference to its global
         // 3D position:
-        const float xg = takenFrom2D.x + ccos * xs[i] - csin * ys[i];
-        const float yg = takenFrom2D.y + csin * xs[i] + ccos * ys[i];
+        const float xg = static_cast<float>(takenFrom2D.x + ccos * xs[i] - csin * ys[i]);
+        const float yg = static_cast<float>(takenFrom2D.y + csin * xs[i] + ccos * ys[i]);
 
         kdTreeClosestPoint2D(
             xg, yg,  // Look for the closest to this guy
@@ -1676,7 +1684,8 @@ bool CPointsMap::internal_insertObservation(
           loc.z = sin(a1) * rang;
           sensorPose.composePoint(loc, glob);
 
-          this->insertPointFast(glob.x, glob.y, glob.z);
+          this->insertPointFast(
+              static_cast<float>(glob.x), static_cast<float>(glob.y), static_cast<float>(glob.z));
         }
       }
     }
@@ -1877,11 +1886,13 @@ void CPointsMap::fuseWith(
 
       ASSERT_((w_a + w_b) > 0);
 
-      const float F = 1.0f / (w_a + w_b);
+      const float F = 1.0f / static_cast<float>(w_a + w_b);
 
-      m_x[closestCorr] = F * (w_a * a.x + w_b * b.x);
-      m_y[closestCorr] = F * (w_a * a.y + w_b * b.y);
-      m_z[closestCorr] = F * (w_a * a.z + w_b * b.z);
+      const double dwa = static_cast<double>(w_a);
+      const double dwb = static_cast<double>(w_b);
+      m_x[closestCorr] = static_cast<float>(F * (dwa * a.x + dwb * b.x));
+      m_y[closestCorr] = static_cast<float>(F * (dwa * a.y + dwb * b.y));
+      m_z[closestCorr] = static_cast<float>(F * (dwa * a.z + dwb * b.z));
 
       // Was: this->setPointWeight(closestCorr, w_a + w_b);
 
@@ -1890,7 +1901,8 @@ void CPointsMap::fuseWith(
     }
     else
     {  // New point:	ADDITION
-      this->insertPointFast(a.x, a.y, a.z);
+      this->insertPointFast(
+          static_cast<float>(a.x), static_cast<float>(a.y), static_cast<float>(a.z));
       if (notFusedPoints) (*notFusedPoints).push_back(false);
     }
   }
@@ -1956,7 +1968,8 @@ void CPointsMap::loadFromVelodyneScan(
     const double gy = m10 * lx + m11 * ly + m12 * lz + m13;
     const double gz = m20 * lx + m21 * ly + m22 * lz + m23;
 
-    this->setPointFast(nOldPtsCount + i, gx, gy, gz);
+    this->setPointFast(
+        nOldPtsCount + i, static_cast<float>(gx), static_cast<float>(gy), static_cast<float>(gz));
     if (Is)
     {
       (*Is)[nOldPtsCount + i] = inten;

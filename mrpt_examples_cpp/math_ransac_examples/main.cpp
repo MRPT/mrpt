@@ -61,8 +61,10 @@ void TestRANSACPlanes()
   {
     for (size_t i = 0; i < N_plane; i++)
     {
-      const double xx = getRandomGenerator().drawUniform(-3, 3) + 5 * cos(0.4 * p);
-      const double yy = getRandomGenerator().drawUniform(-3, 3) + 5 * sin(0.4 * p);
+      const double xx =
+          getRandomGenerator().drawUniform(-3, 3) + 5 * cos(0.4 * static_cast<double>(p));
+      const double yy =
+          getRandomGenerator().drawUniform(-3, 3) + 5 * sin(0.4 * static_cast<double>(p));
       const double zz =
           -(PLANE_EQ[p][3] + PLANE_EQ[p][0] * xx + PLANE_EQ[p][1] * yy) / PLANE_EQ[p][2];
       xs.push_back(xx);

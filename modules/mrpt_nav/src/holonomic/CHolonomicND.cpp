@@ -85,8 +85,8 @@ CHolonomicND::NavOutput CHolonomicND::navigate(const NavInput& ni)
   else
   {
     // A valid movement:
-    no.desiredDirection =
-        CParameterizedTrajectoryGenerator::Index2alpha(selectedSector, ni.obstacles.size());
+    no.desiredDirection = CParameterizedTrajectoryGenerator::Index2alpha(
+        static_cast<uint16_t>(selectedSector), static_cast<unsigned int>(ni.obstacles.size()));
 
     // Speed control: Reduction factors
     // ---------------------------------------------
@@ -106,7 +106,7 @@ CHolonomicND::NavOutput CHolonomicND::navigate(const NavInput& ni)
   {
     // gaps:
     {
-      int i, n = gaps.size();
+      int i, n = static_cast<int>(gaps.size());
       log->gaps_ini.resize(n);
       log->gaps_end.resize(n);
       for (i = 0; i < n; i++)
@@ -168,8 +168,8 @@ static CHolonomicND::TGapArray buildRawGaps(
         {
           gaps.resize(gaps.size() + 1);
           CHolonomicND::TGap& g = gaps.back();
-          g.ini = sec_ini;
-          g.end = sec_end;
+          g.ini = static_cast<unsigned int>(sec_ini);
+          g.end = static_cast<unsigned int>(sec_end);
           g.minDistance = std::min(obstacles[sec_ini], obstacles[sec_end]);
           g.maxDistance = maxDist;
         }
@@ -246,7 +246,7 @@ void CHolonomicND::gapsEstimator(
   const size_t n = obstacles.size();
   ASSERT_(n > 2);
 
-  const int GAPS_MIN_WIDTH = static_cast<int>(std::ceil(n * 0.01));
+  const int GAPS_MIN_WIDTH = static_cast<int>(std::ceil(static_cast<double>(n) * 0.01));
   constexpr double GAPS_MAX_RELATIVE_DEPTH = 0.5;
 
   // Find obstacle distance range:
@@ -289,8 +289,9 @@ void CHolonomicND::searchBestGap(
 {
   // For evaluating the "risk":
   unsigned int min_risk_eval_sector = 0;
-  unsigned int max_risk_eval_sector = obstacles.size() - 1;
-  const unsigned int target_sector = direction2sector(atan2(target.y, target.x), obstacles.size());
+  unsigned int max_risk_eval_sector = static_cast<unsigned int>(obstacles.size()) - 1u;
+  const unsigned int target_sector =
+      direction2sector(atan2(target.y, target.x), static_cast<unsigned int>(obstacles.size()));
   // Minimum target distance to avoid division by zero in ratio computations:
   constexpr double MIN_TARGET_DIST = 0.01;  // [m or normalized units]
   const double target_dist = std::max(MIN_TARGET_DIST, target.norm());
@@ -308,8 +309,8 @@ void CHolonomicND::searchBestGap(
   // sample right at the sensor limit (95% of max range).
   constexpr double DIRECT_PATH_RANGE_FRACTION = 0.95;
 
-  const int freeSectorsNearTarget =
-      static_cast<int>(std::ceil(DIRECT_PATH_SECTOR_FRACTION * obstacles.size()));
+  const int freeSectorsNearTarget = static_cast<int>(
+      std::ceil(DIRECT_PATH_SECTOR_FRACTION * static_cast<double>(obstacles.size())));
   bool theyAreFree = true, caseD1 = false;
   if (target_sector > static_cast<unsigned int>(freeSectorsNearTarget) &&
       target_sector < static_cast<unsigned int>(obstacles.size() - freeSectorsNearTarget))
@@ -338,7 +339,9 @@ void CHolonomicND::searchBestGap(
     int selected_gap = -1;
     double selected_gap_eval = -100;
 
-    evaluateGaps(obstacles, maxObsRange, in_gaps, target_sector, target_dist, gaps_evaluation);
+    evaluateGaps(
+        obstacles, maxObsRange, in_gaps, target_sector, static_cast<float>(target_dist),
+        gaps_evaluation);
 
     log.gaps_eval = gaps_evaluation;
 
@@ -389,8 +392,8 @@ void CHolonomicND::searchBestGap(
       // The selected gap:
       const TGap& gap = in_gaps[selected_gap];
 
-      const unsigned int sectors_to_be_wide =
-          round(options.WIDE_GAP_SIZE_PERCENT * obstacles.size());
+      const unsigned int sectors_to_be_wide = static_cast<unsigned int>(
+          std::round(options.WIDE_GAP_SIZE_PERCENT * static_cast<double>(obstacles.size())));
 
       out_selDirection = in_gaps[selected_gap].representative_sector;
       out_selEvaluation = selected_gap_eval;
@@ -418,8 +421,8 @@ void CHolonomicND::searchBestGap(
 
   // Evaluate short-term minimum distance to obstacles, in a small interval
   // around the selected direction:
-  const unsigned int risk_eval_nsectors =
-      round(options.RISK_EVALUATION_SECTORS_PERCENT * obstacles.size());
+  const unsigned int risk_eval_nsectors = static_cast<unsigned int>(
+      std::round(options.RISK_EVALUATION_SECTORS_PERCENT * static_cast<double>(obstacles.size())));
   const unsigned int sec_ini = std::max(
       min_risk_eval_sector,
       risk_eval_nsectors < out_selDirection ? out_selDirection - risk_eval_nsectors : 0);
@@ -439,13 +442,16 @@ void CHolonomicND::calcRepresentativeSectorForGap(
     TGap& gap, const mrpt::math::TPose2D& target, const std::vector<double>& obstacles)
 {
   int sector;
-  const unsigned int sectors_to_be_wide = round(options.WIDE_GAP_SIZE_PERCENT * obstacles.size());
-  const unsigned int target_sector = direction2sector(atan2(target.y, target.x), obstacles.size());
+  const unsigned int sectors_to_be_wide = static_cast<unsigned int>(
+      std::round(options.WIDE_GAP_SIZE_PERCENT * static_cast<double>(obstacles.size())));
+  const unsigned int target_sector =
+      direction2sector(atan2(target.y, target.x), static_cast<unsigned int>(obstacles.size()));
 
   if ((gap.end - gap.ini) < sectors_to_be_wide)  // Select the intermediate sector
   {
 #if 1
-    sector = round(0.5f * gap.ini + 0.5f * gap.end);
+    sector = static_cast<int>(
+        std::round(0.5f * static_cast<float>(gap.ini) + 0.5f * static_cast<float>(gap.end)));
 #else
     float min_dist_obs_near_ini = 1, min_dist_obs_near_end = 1;
     int i;
@@ -464,8 +470,10 @@ void CHolonomicND::calcRepresentativeSectorForGap(
     unsigned int dist_ini = mrpt::abs_diff(target_sector, gap.ini);
     unsigned int dist_end = mrpt::abs_diff(target_sector, gap.end);
 
-    if (dist_ini > 0.5 * obstacles.size()) dist_ini = obstacles.size() - dist_ini;
-    if (dist_end > 0.5 * obstacles.size()) dist_end = obstacles.size() - dist_end;
+    if (dist_ini > static_cast<unsigned int>(obstacles.size()) / 2u)
+      dist_ini = static_cast<unsigned int>(obstacles.size()) - dist_ini;
+    if (dist_end > static_cast<unsigned int>(obstacles.size()) / 2u)
+      dist_end = static_cast<unsigned int>(obstacles.size()) - dist_end;
 
     int dir;
     if (dist_ini < dist_end)
@@ -501,8 +509,8 @@ void CHolonomicND::evaluateGaps(
 {
   out_gaps_evaluation.resize(gaps.size());
 
-  const double targetAng =
-      CParameterizedTrajectoryGenerator::Index2alpha(target_sector, obstacles.size());
+  const double targetAng = CParameterizedTrajectoryGenerator::Index2alpha(
+      static_cast<uint16_t>(target_sector), static_cast<unsigned int>(obstacles.size()));
   const double target_x = target_dist * cos(targetAng);
   const double target_y = target_dist * sin(targetAng);
 
@@ -511,11 +519,15 @@ void CHolonomicND::evaluateGaps(
     // Short cut:
     const TGap* gap = &gaps[i];
 
-    const float d = min3(obstacles[gap->representative_sector], maxObsRange, 0.95 * target_dist);
+    const double d_raw = min3(
+        obstacles[gap->representative_sector], maxObsRange,
+        0.95 * static_cast<double>(target_dist));
+    const float d = static_cast<float>(d_raw);
 
     // The TP-Space representative coordinates for this gap:
     const double phi = CParameterizedTrajectoryGenerator::Index2alpha(
-        gap->representative_sector, obstacles.size());
+        static_cast<uint16_t>(gap->representative_sector),
+        static_cast<unsigned int>(obstacles.size()));
     const double x = d * cos(phi);
     const double y = d * sin(phi);
 
@@ -523,8 +535,9 @@ void CHolonomicND::evaluateGaps(
     // -----------------------------------------------------
     // It computes the average free distance of the gap:
     float meanDist = 0.f;
-    for (unsigned int j = gap->ini; j <= gap->end; j++) meanDist += obstacles[j];
-    meanDist /= (gap->end - gap->ini + 1);
+    for (unsigned int j = gap->ini; j <= gap->end; j++)
+      meanDist += static_cast<float>(obstacles[j]);
+    meanDist /= static_cast<float>(gap->end - gap->ini + 1u);
 
     double factor1;
     if (mrpt::abs_diff(gap->representative_sector, target_sector) <= 1 && target_dist < 1)
@@ -537,9 +550,10 @@ void CHolonomicND::evaluateGaps(
     unsigned int dif = mrpt::abs_diff(target_sector, gap->representative_sector);
 
     // Handle the -PI,PI circular topology:
-    if (dif > 0.5 * obstacles.size()) dif = obstacles.size() - dif;
+    if (dif > obstacles.size() / 2u) dif = static_cast<unsigned int>(obstacles.size()) - dif;
 
-    const double factor2 = exp(-square(dif / (obstacles.size() * 0.25)));
+    const double factor2 =
+        exp(-square(static_cast<double>(dif) / (static_cast<double>(obstacles.size()) * 0.25)));
 
     // Factor #3: Punish paths that take us far away wrt the target:  **** I
     // don't understand it *********
@@ -551,7 +565,8 @@ void CHolonomicND::evaluateGaps(
         closestX, closestY   // Out
     );
 
-    const float factor3 = (maxObsRange - std::min(maxObsRange, dist_eucl)) / maxObsRange;
+    const float factor3 =
+        static_cast<float>((maxObsRange - std::min(maxObsRange, dist_eucl)) / maxObsRange);
 
     // Factor #4: Stabilizing factor (hysteresis) to avoid quick switch
     // among very similar paths:
@@ -562,7 +577,7 @@ void CHolonomicND::evaluateGaps(
     {
       unsigned int dist = mrpt::abs_diff(m_last_selected_sector, gap->representative_sector);
 
-      if (dist > unsigned(0.1 * obstacles.size()))
+      if (dist > static_cast<unsigned>(0.1 * static_cast<double>(obstacles.size())))
         factor_AntiCab = 0.0;
       else
         factor_AntiCab = 1.0;
@@ -621,7 +636,7 @@ void CLogFileRecord_ND::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
 
       in >> selectedSector >> evaluation >> riskEvaluation >> n;
 
-      situation = (CHolonomicND::TSituations)n;
+      situation = static_cast<CHolonomicND::TSituations>(n);
     }
     break;
     case 1:
@@ -629,7 +644,7 @@ void CLogFileRecord_ND::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
       uint32_t n;
       in >> gaps_ini >> gaps_end >> gaps_eval;
       in >> selectedSector >> evaluation >> riskEvaluation >> n;
-      situation = (CHolonomicND::TSituations)n;
+      situation = static_cast<CHolonomicND::TSituations>(n);
     }
     break;
     default:

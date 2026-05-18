@@ -58,7 +58,7 @@ void Test_StaticNum2Str()
 }
 //! [example num2str]
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {

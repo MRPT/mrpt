@@ -39,14 +39,14 @@ const double GRID_B = 1.0;
 
 #define USE_THREADS
 
-inline double MYRAND1(size_t prec = 64)
+inline float MYRAND1(size_t prec = 64)
 {
-  return static_cast<double>(rand() % prec) / static_cast<double>(prec - 1);
+  return static_cast<float>(rand() % prec) / static_cast<float>(prec - 1);
 }
 
 void randomColor(const CVisualObject::Ptr& obj, double alpha)
 {
-  obj->setColor(MYRAND1(), MYRAND1(), MYRAND1(), alpha);
+  obj->setColor(MYRAND1(), MYRAND1(), MYRAND1(), static_cast<float>(alpha));
 }
 
 #ifdef USE_THREADS
@@ -211,7 +211,7 @@ void display()
 
 int main()
 {
-  srand((unsigned int)mrpt::system::extractDayTimeFromTimestamp(mrpt::Clock::now()));
+  srand(static_cast<unsigned int>(mrpt::system::extractDayTimeFromTimestamp(mrpt::Clock::now())));
   try
   {
     display();

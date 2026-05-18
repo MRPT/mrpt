@@ -156,8 +156,8 @@ class CPosePDFParticlesExtended :
       float y_max,
       mrpt::math::CVectorFloat state_min,
       mrpt::math::CVectorFloat state_max,
-      float phi_min = -M_PI,
-      float phi_max = M_PI,
+      float phi_min = -M_PIf,
+      float phi_max = M_PIf,
       int particlesCount = -1);
 
   /** Returns an estimate of the pose, i.e. a "mean value", computed
@@ -285,7 +285,9 @@ class CPosePDFParticlesExtended :
       float stdPhi) const;
 
   void bayesianFusion(
-      mrpt::poses::CPosePDF& p1, mrpt::poses::CPosePDF& p2, double minMahalanobisDistToDrop = 0)
+      [[maybe_unused]] mrpt::poses::CPosePDF& p1,
+      [[maybe_unused]] mrpt::poses::CPosePDF& p2,
+      [[maybe_unused]] double minMahalanobisDistToDrop = 0)
   {
     THROW_EXCEPTION("Not implemented");
   }
