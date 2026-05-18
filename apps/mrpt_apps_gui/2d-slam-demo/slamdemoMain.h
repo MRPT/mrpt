@@ -115,14 +115,14 @@ class slamdemoFrame : public wxFrame
   static const wxWindowID ID_MENUITEM6;
   static const wxWindowID ID_MENUITEM4;
   static const wxWindowID ID_MENUITEM5;
-  static const long idMenuQuit;
+  static const wxWindowID idMenuQuit;
   static const wxWindowID ID_MENUITEM8;
   static const wxWindowID ID_MENUITEM11;
   static const wxWindowID ID_MENUITEM_SAVE_RAWLOG;
   static const wxWindowID ID_MENUITEM9;
   static const wxWindowID ID_MENUITEM10;
   static const wxWindowID ID_MENUITEM7;
-  static const long idMenuAbout;
+  static const wxWindowID idMenuAbout;
   static const wxWindowID ID_STATUSBAR1;
   static const wxWindowID ID_TOOLBARITEM1;
   static const wxWindowID ID_TOOLBARITEM2;

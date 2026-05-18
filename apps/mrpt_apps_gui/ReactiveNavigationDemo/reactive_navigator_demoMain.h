@@ -144,11 +144,11 @@ class reactive_navigator_demoframe : public wxFrame
   static const wxWindowID ID_PANEL5;
   static const wxWindowID ID_SPLITTERWINDOW1;
   static const wxWindowID ID_MENUITEM4;
-  static const long idMenuQuit;
+  static const wxWindowID idMenuQuit;
   static const wxWindowID ID_MENUITEM1;
   static const wxWindowID ID_MENUITEM2;
   static const wxWindowID ID_MENUITEM3;
-  static const long idMenuAbout;
+  static const wxWindowID idMenuAbout;
   static const wxWindowID ID_STATUSBAR1;
   static const wxWindowID ID_TIMER1;
   //*)

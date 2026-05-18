@@ -111,8 +111,8 @@ class robotic_arm_kinematicsFrame : public wxFrame
   static const wxWindowID ID_MENUITEM3;
   static const wxWindowID ID_MENUITEM1;
   static const wxWindowID ID_MENUITEM2;
-  static const long idMenuQuit;
-  static const long idMenuAbout;
+  static const wxWindowID idMenuQuit;
+  static const wxWindowID idMenuAbout;
   //*)
 
   //(*Declarations(robotic_arm_kinematicsFrame)
