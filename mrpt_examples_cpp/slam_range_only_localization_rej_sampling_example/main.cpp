@@ -84,7 +84,7 @@ void TestRS()
 
   printf("Computing...");
   tictac.Tic();
-  RS.rejectionSampling(1000, samples, 1000);
+  samples = RS.rejectionSampling(1000, 1000);
   printf("Ok! %fms\n", 1000 * tictac.Tac());
 
   FILE* f = os::fopen("_out_samples.txt", "wt");

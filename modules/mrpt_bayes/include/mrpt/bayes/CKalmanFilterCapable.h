@@ -15,7 +15,6 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
@@ -38,9 +37,12 @@ namespace mrpt
 {
 namespace bayes
 {
-/** The Kalman Filter algorithm to employ in bayes::CKalmanFilterCapable
- *  For further details on each algorithm see the tutorial:
- * https://www.mrpt.org/Kalman_Filters
+/** The Kalman Filter algorithm to employ in bayes::CKalmanFilterCapable.
+ *  - kfEKFNaive: Standard EKF (batch observation update).
+ *  - kfEKFAlaDavison: EKF processing one observation scalar at a time (SLAM).
+ *  - kfIKFFull: Iterated EKF with full re-linearization.
+ *
+ *  For further details see: https://www.mrpt.org/Kalman_Filters
  * \sa bayes::CKalmanFilterCapable::KF_options
  * \ingroup mrpt_bayes_grp
  */
@@ -48,8 +50,7 @@ enum TKFMethod
 {
   kfEKFNaive = 0,
   kfEKFAlaDavison,
-  kfIKFFull,
-  kfIKF
+  kfIKFFull
 };
 
 // Forward declaration:
@@ -75,6 +76,7 @@ struct TKF_options : public mrpt::config::CLoadableOptions
     MRPT_LOAD_CONFIG_VAR(use_analytic_observation_jacobian, bool, iniFile, section);
     MRPT_LOAD_CONFIG_VAR(debug_verify_analytic_jacobians, bool, iniFile, section);
     MRPT_LOAD_CONFIG_VAR(debug_verify_analytic_jacobians_threshold, double, iniFile, section);
+    MRPT_LOAD_CONFIG_VAR(use_joseph_form, bool, iniFile, section);
   }
 
   /** This method must display clearly all the contents of the structure in
@@ -118,6 +120,12 @@ struct TKF_options : public mrpt::config::CLoadableOptions
   /** (default-1e-2) Sets the threshold for the difference between the
    * analytic and the numerical jacobians */
   double debug_verify_analytic_jacobians_threshold{1e-2};
+  /** (default=true) Use the Joseph-form covariance update
+   * P' = (I-KH)*P*(I-KH)^T + K*R*K^T for kfEKFNaive and kfIKFFull.
+   * Numerically more stable than the standard P' = (I-KH)*P; the extra
+   * cost is one additional matrix product. Set to false for the classic
+   * (faster but less numerically stable) update. */
+  bool use_joseph_form{true};
 };
 
 /** Auxiliary functions, for internal usage of MRPT classes */
@@ -171,7 +179,6 @@ void addNewLandmarks(
  *  - kfEKFNaive: Standard Extended Kalman Filter.
  *  - kfEKFAlaDavison: EKF with efficient feature-by-feature updates (SLAM).
  *  - kfIKFFull: Iterated EKF (full re-linearization per iteration).
- *  - kfIKF: Iterated EKF (efficient feature-based variant).
  *
  * \tparam VEH_SIZE  Dimension of the vehicle (robot) state sub-vector.
  * \tparam OBS_SIZE  Dimension of a single observation vector.
@@ -179,51 +186,22 @@ void addNewLandmarks(
  * \tparam ACT_SIZE  Dimension of the action (control input) vector, or 0.
  * \tparam KFTYPE    Scalar type for all matrix/vector arithmetic (default: double).
  *
+ * The algorithms are generic but biased toward SLAM-like problems; they are
+ * also applicable to non-SLAM estimation tasks.
+ *
  * \note runOneKalmanIteration() is protected; derived classes must expose a
  * problem-specific public method that calls it.
+ *
+ * \par Revision history
+ * - 2007: Antonio J. Ortiz de Galisteo (AJOGD).
+ * - 2008/FEB: All KF classes corrected, reorganized, and rewritten (JLBC).
+ * - 2008/MAR: Implemented IKF (JLBC).
+ * - 2009/DEC: Totally rewritten as a generic template using fixed-size
+ *   matrices where possible (JLBC).
  *
  * For further details and examples see: https://www.mrpt.org/Kalman_Filters
  *
  * \sa mrpt::slam::CRangeBearingKFSLAM, mrpt::slam::CRangeBearingKFSLAM2D
- * \ingroup mrpt_bayes_grp
- *
- * Virtual base for Kalman Filter (EKF,IEKF,UKF) implementations.
- *   This base class stores the state vector and covariance matrix of the
- *system. It has virtual methods that must be completed
- *    by derived classes to address a given filtering problem. The main entry
- *point of the algorithm is CKalmanFilterCapable::runOneKalmanIteration, which
- *    should be called AFTER setting the desired filter options in KF_options,
- *as well as any options in the derived class.
- *   Note that the main entry point is protected, so derived classes must offer
- *another method more specific to a given problem which, internally, calls
- *runOneKalmanIteration.
- *
- *  For further details and examples, check out the tutorial:
- *http://www.mrpt.org/Kalman_Filters
- *
- *  The Kalman filter algorithms are generic, but this implementation is biased
- *to ease the implementation
- *  of SLAM-like problems. However, it can be also applied to many generic
- *problems not related to robotics or SLAM.
- *
- *  The meaning of the template parameters is:
- *	- VEH_SIZE: The dimension of the "vehicle state": either the full state
- *vector or the "vehicle" part if applicable.
- *	- OBS_SIZE: The dimension of each observation (eg, 2 for pixel coordinates,
- *3 for 3D coordinates,etc).
- *	- FEAT_SIZE: The dimension of the features in the system state (the "map"),
- *or 0 if not applicable (the default if not implemented).
- *	- ACT_SIZE: The dimension of each "action" u_k (or 0 if not applicable).
- *	- KFTYPE: The numeric type of the matrices (default: double)
- *
- * Revisions:
- *	- 2007: Antonio J. Ortiz de Galisteo (AJOGD)
- *	- 2008/FEB: All KF classes corrected, reorganized, and rewritten (JLBC).
- *	- 2008/MAR: Implemented IKF (JLBC).
- *	- 2009/DEC: Totally rewritten as a generic template using fixed-size
- *matrices where possible (JLBC).
- *
- *  \sa mrpt::slam::CRangeBearingKFSLAM, mrpt::slam::CRangeBearingKFSLAM2D
  * \ingroup mrpt_bayes_grp
  */
 template <
@@ -239,8 +217,11 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
   static constexpr size_t get_observation_size() { return OBS_SIZE; }
   static constexpr size_t get_feature_size() { return FEAT_SIZE; }
   static constexpr size_t get_action_size() { return ACT_SIZE; }
-  size_t getNumberOfLandmarksInTheMap() const { return detail::getNumberOfLandmarksInMap(*this); }
-  bool isMapEmpty() const { return detail::isMapEmpty(*this); }
+  [[nodiscard]] size_t getNumberOfLandmarksInTheMap() const
+  {
+    return detail::getNumberOfLandmarksInMap(*this);
+  }
+  [[nodiscard]] bool isMapEmpty() const { return detail::isMapEmpty(*this); }
   /** The numeric type used in the Kalman Filter (default=double) */
   using kftype = KFTYPE;
   /** My class, in a shorter name! */
@@ -268,7 +249,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
   using vector_KFArray_OBS = std::vector<KFArray_OBS>;
   using KFArray_FEAT = mrpt::math::CVectorFixed<KFTYPE, FEAT_SIZE>;
 
-  size_t getStateVectorLength() const { return m_xkk.size(); }
+  [[nodiscard]] size_t getStateVectorLength() const { return m_xkk.size(); }
   KFVector& internal_getXkk() { return m_xkk; }
   KFMatrix& internal_getPkk() { return m_pkk; }
   /** Returns the mean of the estimated value of the idx'th landmark (not
@@ -485,7 +466,14 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
   /** Computes A=A-B, which may need to be re-implemented depending on the
    * topology of the individual scalar components (eg, angles).
    */
-  virtual void OnSubstractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const { A -= B; }
+  virtual void OnSubtractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const { A -= B; }
+
+  /** \deprecated Use OnSubtractObservationVectors instead. */
+  [[deprecated("Use OnSubtractObservationVectors")]] virtual void OnSubstractObservationVectors(
+      KFArray_OBS& A, const KFArray_OBS& B) const
+  {
+    OnSubtractObservationVectors(A, B);
+  }
 
  public:
   /** If applicable to the given problem, this method implements the inverse
@@ -622,7 +610,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
   }
   /** Destructor */
   ~CKalmanFilterCapable() override = default;
-  mrpt::system::CTimeLogger& getProfiler() { return m_timLogger; }
+  [[nodiscard]] mrpt::system::CTimeLogger& getProfiler() { return m_timLogger; }
   /** Generic options for the Kalman Filter algorithm itself. */
   TKF_options KF_options;
 
@@ -686,7 +674,6 @@ using namespace mrpt::bayes;
 MRPT_FILL_ENUM(kfEKFNaive);
 MRPT_FILL_ENUM(kfEKFAlaDavison);
 MRPT_FILL_ENUM(kfIKFFull);
-MRPT_FILL_ENUM(kfIKF);
 MRPT_ENUM_TYPE_END()
 
 // Template implementation:

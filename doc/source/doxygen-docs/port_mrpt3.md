@@ -534,3 +534,29 @@ pointer to `std::function`. Existing code that passes a plain function pointer
 or a static member function pointer continues to work unchanged. Lambdas and
 functors can now be passed directly without wrapping.
 
+---
+
+## 18. `CKalmanFilterCapable`: `OnSubstractObservationVectors` renamed
+
+The virtual method `OnSubstractObservationVectors` ("substract" is a misspelling)
+has been renamed to `OnSubtractObservationVectors`. The old name is kept as a
+deprecated trampoline:
+
+```cpp
+// MRPT 2.x (still compiles with a deprecation warning):
+void MyKF::OnSubstractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override { ... }
+
+// MRPT 3.0:
+void MyKF::OnSubtractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override { ... }
+```
+
+---
+
+## 19. `TKF_options::use_joseph_form` (new option)
+
+A new boolean `TKF_options::use_joseph_form` (default `true`) controls whether
+the kfEKFNaive / kfIKFFull covariance update uses the numerically stable
+Joseph form `P' = (I-KH)*P*(I-KH)^T + K*R*K^T` instead of the classic
+`P' = (I-KH)*P`. Set to `false` for slightly faster (but less robust) updates.
+
+

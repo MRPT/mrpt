@@ -531,7 +531,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
 
                 // ytilde_i = Z[i] - m_all_predictions[i]
                 KFArray_OBS ytilde_i = m_Z[i];
-                OnSubstractObservationVectors(
+                OnSubtractObservationVectors(
                     ytilde_i, m_all_predictions[m_predictLMidxs[assoc_idx_in_pred]]);
                 for (size_t k = 0; k < OBS_SIZE; k++) ytilde[ytilde_idx++] = ytilde_i[k];
               }
@@ -546,7 +546,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
               ASSERT_(m_Hxs.size() == 1);
               m_dh_dx_full_obs = m_Hxs[0];  // Was: dh_dx_full
               KFArray_OBS ytilde_i = m_Z[0];
-              OnSubstractObservationVectors(ytilde_i, m_all_predictions[0]);
+              OnSubtractObservationVectors(ytilde_i, m_all_predictions[0]);
               for (size_t k = 0; k < OBS_SIZE; k++) ytilde[ytilde_idx++] = ytilde_i[k];
               // Extract the subset that is involved in this
               // observation:
@@ -614,7 +614,34 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
                 }
               }
 
-              m_pkk = m_aux_K_dh_dx * m_pkk;
+              if (KF_options.use_joseph_form)
+              {
+                // Joseph form: P' = (I-KH)*P*(I-KH)^T + K*R*K^T
+                // More numerically stable than the naive P' = (I-KH)*P.
+                // m_aux_K_dh_dx already holds (I - K*H)
+                const auto IKH = m_aux_K_dh_dx.asEigen();
+                const auto P = m_pkk.asEigen();
+                m_pkk.asEigen() = (IKH * P * IKH.transpose()).eval();
+                // Add K*R*K^T with block-diagonal R for all N_upd obs
+                KFMatrix R_block(N_upd * OBS_SIZE, N_upd * OBS_SIZE);
+                R_block.setZero();
+                for (size_t ri = 0; ri < N_upd; ri++)
+                {
+                  R_block.asEigen().template block<OBS_SIZE, OBS_SIZE>(
+                      ri * OBS_SIZE, ri * OBS_SIZE) = R.asEigen();
+                }
+                m_pkk.asEigen() +=
+                    (m_K.asEigen() * R_block.asEigen() * m_K.asEigen().transpose()).eval();
+                // Symmetrize to suppress floating-point drift:
+                const auto P2 = m_pkk.asEigen().eval();
+                m_pkk.asEigen() = 0.5 * (P2 + P2.transpose());
+              }
+              else
+              {
+                // Classic form: P' = (I-KH)*P — use .eval() to prevent aliasing UB
+                const auto tmp = (m_aux_K_dh_dx.asEigen() * m_pkk.asEigen()).eval();
+                m_pkk.asEigen() = tmp;
+              }
 
               m_timLogger.leave("KF:8.update stage:3.FULLKF:update Pkk");
             }
@@ -661,7 +688,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
 
             // ytilde = observation - prediction
             KFArray_OBS ytilde = m_Z[obsIdx];
-            OnSubstractObservationVectors(ytilde, pred_obs[0]);
+            OnSubtractObservationVectors(ytilde, pred_obs[0]);
 
             // Jacobians:
             // dh_dx: already is (N_pred*OBS_SIZE) x (VEH_SIZE +
@@ -703,90 +730,53 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
               // Sv: Vehicle state size (6)
               //
 
-#if defined(_DEBUG)
+              // Require diagonal R for this scalar update algorithm:
               {
-                // This algorithm is applicable only if the
-                // scalar component of the sensor noise are
-                // INDEPENDENT:
-                for (size_t a = 0; a < OBS_SIZE; a++)
-                  for (size_t b = 0; b < OBS_SIZE; b++)
-                    if (a != b)
-                      if (R(a, b) != 0)
-                        THROW_EXCEPTION(
-                            "This KF algorithm assumes "
-                            "independent noise "
-                            "components in the "
-                            "observation (matrix R). "
-                            "Select another KF "
-                            "algorithm.");
-              }
-#endif
-              // R:
-              KFTYPE Sij = R(j, j);
-
-              // TERM 1:
-              for (size_t k = 0; k < VEH_SIZE; k++)
-              {
-                KFTYPE accum = 0;
-                for (size_t q = 0; q < VEH_SIZE; q++) accum += Hx(j, q) * m_pkk(q, k);
-                Sij += Hx(j, k) * accum;
+                KFMatrix_OxO Rdiag;
+                Rdiag.setZero();
+                for (size_t _d = 0; _d < OBS_SIZE; _d++) Rdiag(_d, _d) = R(_d, _d);
+                ASSERTMSG_(
+                    (R.asEigen() - Rdiag.asEigen()).cwiseAbs().sum() < KFTYPE(1e-12),
+                    "kfEKFAlaDavison requires a diagonal observation noise matrix R. "
+                    "Select another KF algorithm (e.g. kfEKFNaive) for correlated noise.");
               }
 
-              // TERM 2:
-              KFTYPE term2 = 0;
-              for (size_t k = 0; k < VEH_SIZE; k++)
+              // Innovation variance Sij for component j of the observation.
+              // Sij = R(j,j) + Hx_j*Pxx*Hx_j^T + 2*Hx_j*Pxyi^T*Hy_j^T + Hy_j*Pyiyi*Hy_j^T
+              const auto Hx_j = Hx.asEigen().row(j);
+              const auto Hy_j = Hy.asEigen().row(j);
+              const auto Pxx = m_pkk.asEigen().template block<VEH_SIZE, VEH_SIZE>(0, 0);
+              const auto Pxyi =
+                  m_pkk.asEigen().template block<VEH_SIZE, FEAT_SIZE>(0, idx_off);
+              const auto Pyiyi =
+                  m_pkk.asEigen().template block<FEAT_SIZE, FEAT_SIZE>(idx_off, idx_off);
+
+              KFTYPE Sij = R(j, j) +
+                           static_cast<KFTYPE>((Hx_j * Pxx * Hx_j.transpose()).value()) +
+                           static_cast<KFTYPE>(
+                               2.0 * (Hx_j * Pxyi * Hy_j.transpose()).value()) +
+                           static_cast<KFTYPE>((Hy_j * Pyiyi * Hy_j.transpose()).value());
+
+              // Kalman gain vector: Kij = P * h_j^T / Sij
+              // where h_j is the j-th row of the full Jacobian.
+              const size_t N = m_pkk.cols();
+              Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1> h_j =
+                  Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1>::Zero(N);
+              for (size_t q = 0; q < VEH_SIZE; q++) h_j[q] = Hx(j, q);
+              for (size_t q = 0; q < FEAT_SIZE; q++) h_j[idx_off + q] = Hy(j, q);
+
+              Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1> Kij_vec =
+                  (m_pkk.asEigen() * h_j) / Sij;
+
+              // Update state: x' = x + Kij * ytilde(j)
+              m_xkk.asEigen() += Kij_vec * ytilde[j];
+
+              // Update covariance: P' = P - Sij * Kij * Kij^T (rank-1 update)
+              m_pkk.asEigen() -= Sij * (Kij_vec * Kij_vec.transpose());
+              // Symmetrize to suppress floating-point drift:
               {
-                KFTYPE accum = 0;
-                for (size_t q = 0; q < FEAT_SIZE; q++) accum += Hy(j, q) * m_pkk(idx_off + q, k);
-                term2 += Hx(j, k) * accum;
-              }
-              Sij += 2 * term2;
-
-              // TERM 3:
-              for (size_t k = 0; k < FEAT_SIZE; k++)
-              {
-                KFTYPE accum = 0;
-                for (size_t q = 0; q < FEAT_SIZE; q++)
-                  accum += Hy(j, q) * m_pkk(idx_off + q, idx_off + k);
-                Sij += Hy(j, k) * accum;
-              }
-
-              // Compute the Kalman gain "Kij" for this
-              // observation element:
-              // -->  K = m_pkk * (~dh_dx) * m_S.inverse_LLt() );
-              size_t N = m_pkk.cols();
-              vector<KFTYPE> Kij(N);
-
-              for (size_t k = 0; k < N; k++)
-              {
-                KFTYPE K_tmp = 0;
-
-                // dhi_dxv term
-                size_t q;
-                for (q = 0; q < VEH_SIZE; q++) K_tmp += m_pkk(k, q) * Hx(j, q);
-
-                // dhi_dyi term
-                for (q = 0; q < FEAT_SIZE; q++) K_tmp += m_pkk(k, idx_off + q) * Hy(j, q);
-
-                Kij[k] = K_tmp / Sij;
-              }  // end for k
-
-              // Update the state vector m_xkk:
-              //  x' = x + Kij * ytilde(ij)
-              for (size_t k = 0; k < N; k++) m_xkk[k] += Kij[k] * ytilde[j];
-
-              // Update the covariance Pkk:
-              // P' =  P - Kij * Sij * Kij^t
-              {
-                for (size_t k = 0; k < N; k++)
-                {
-                  for (size_t q = k; q < N; q++)  // Half matrix
-                  {
-                    m_pkk(k, q) -= Sij * Kij[k] * Kij[q];
-                    // It is symmetric
-                    m_pkk(q, k) = m_pkk(k, q);
-                  }
-                }
+                const auto P_eval = m_pkk.asEigen().eval();
+                m_pkk.asEigen() = 0.5 * (P_eval + P_eval.transpose());
               }
 
               m_timLogger.leave("KF:8.update stage:2.ScalarAtOnce.update");
@@ -799,12 +789,6 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
       // --------------------------------------------------------------------
       // - IKF method, processing each observation scalar secuentially:
       // --------------------------------------------------------------------
-      case kfIKF:  // TODO !!
-      {
-        THROW_EXCEPTION("IKF scalar by scalar not implemented yet.");
-      }
-      break;
-
       default:
         THROW_EXCEPTION("Invalid value of options.KF_method");
     }  // end switch method
