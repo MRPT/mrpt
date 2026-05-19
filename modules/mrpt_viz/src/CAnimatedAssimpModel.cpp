@@ -1,11 +1,16 @@
-/* +------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          https://www.mrpt.org/                         |
-   |                                                                        |
-   | Copyright (c) 2005-2026, Individual contributors, see AUTHORS file     |
-   | See: https://www.mrpt.org/Authors - All rights reserved.               |
-   | Released under BSD License. See: https://www.mrpt.org/License          |
-   +------------------------------------------------------------------------+ */
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
 
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/CAnimatedAssimpModel.h>
@@ -18,6 +23,7 @@
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <limits>
 
 using namespace mrpt::viz;
 using namespace mrpt::math;
@@ -113,7 +119,8 @@ void CAnimatedAssimpModel::setActiveAnimation(size_t animIndex)
 {
   if (animIndex < animations_.size())
   {
-    activeAnimation_ = animIndex;
+    ASSERT_LT_(animIndex, static_cast<size_t>(std::numeric_limits<uint32_t>::max()));
+    activeAnimation_ = static_cast<uint32_t>(animIndex);
     currentTime_ = 0.0;
   }
 }
@@ -154,7 +161,7 @@ int CAnimatedAssimpModel::getBoneIndex(const std::string& boneName) const
   {
     return -1;
   }
-  return static_cast<int>(it->second);
+  return it->second;
 }
 
 void CAnimatedAssimpModel::setBoneLocalTransform(
@@ -240,11 +247,11 @@ void CAnimatedAssimpModel::extractSkeletonData()
       const std::string boneName(bone->mName.data);
 
       // Get or create bone entry
-      size_t boneIndex;
+      int boneIndex;
       auto it = boneNameToIndex_.find(boneName);
       if (it == boneNameToIndex_.end())
       {
-        boneIndex = bones_.size();
+        boneIndex = static_cast<int>(bones_.size());
         boneNameToIndex_[boneName] = boneIndex;
 
         Bone newBone;
@@ -265,7 +272,7 @@ void CAnimatedAssimpModel::extractSkeletonData()
       {
         const aiVertexWeight& vw = bone->mWeights[w];
         const uint64_t key = vertexKey(m, vw.mVertexId);
-        vertexBoneMap_[key].addBoneWeight(static_cast<int>(boneIndex), vw.mWeight);
+        vertexBoneMap_[key].addBoneWeight(boneIndex, vw.mWeight);
       }
     }
   }
@@ -306,7 +313,7 @@ void CAnimatedAssimpModel::extractSkeletonData()
       auto itB = boneNameToIndex_.find(ba.boneName);
       if (itB != boneNameToIndex_.end())
       {
-        ba.boneIndex = static_cast<int>(itB->second);
+        ba.boneIndex = itB->second;
       }
 
       // Position keys
@@ -349,6 +356,12 @@ void CAnimatedAssimpModel::extractSkeletonData()
     animations_.push_back(std::move(anim));
   }
 
+  // Normalize weights so they sum to 1.0 per vertex
+  for (auto& [key, vbd] : vertexBoneMap_)
+  {
+    vbd.normalize();
+  }
+
   hasSkeleton_ = true;
 
   // --- 4) Capture bind-pose vertex data
@@ -372,12 +385,16 @@ void CAnimatedAssimpModel::buildBoneHierarchy(const aiNode* node, int parentBone
   const std::string nodeName(node->mName.data);
   int thisBoneIdx = parentBoneIdx;
 
-  // If this node corresponds to a bone, set its parent
+  // If this node corresponds to a bone, set its parent and register as child
   auto it = boneNameToIndex_.find(nodeName);
   if (it != boneNameToIndex_.end())
   {
-    thisBoneIdx = static_cast<int>(it->second);
-    bones_[it->second].parentIndex = parentBoneIdx;
+    thisBoneIdx = it->second;
+    bones_[static_cast<size_t>(thisBoneIdx)].parentIndex = parentBoneIdx;
+    if (parentBoneIdx >= 0)
+    {
+      bones_[static_cast<size_t>(parentBoneIdx)].children.push_back(thisBoneIdx);
+    }
   }
 
   // Recurse children
@@ -429,11 +446,9 @@ void CAnimatedAssimpModel::captureBindPose()
 #endif
 }
 
-void CAnimatedAssimpModel::applySkinningToScene() const
+void CAnimatedAssimpModel::applySkinningToScene()
 {
 #if MRPT_HAS_ASSIMP
-  // const_cast is safe: we restore the original data in
-  // restoreBindPoseToScene() immediately after rebuilding geometry.
   auto* scene = const_cast<aiScene*>(static_cast<const aiScene*>(getAssimpScenePtr()));
   if (!scene)
   {
@@ -468,14 +483,15 @@ void CAnimatedAssimpModel::applySkinningToScene() const
         continue;
       }
 
-      const auto skinnedPos = skinVertex(bp.positions[v], vk);
+      const auto& vbd = it->second;
+      const auto skinnedPos = skinVertex(bp.positions[v], vbd);
       mesh->mVertices[v].x = skinnedPos.x;
       mesh->mVertices[v].y = skinnedPos.y;
       mesh->mVertices[v].z = skinnedPos.z;
 
       if (mesh->mNormals)
       {
-        const auto skinnedNrm = skinNormal(bp.normals[v], vk);
+        const auto skinnedNrm = skinNormal(bp.normals[v], vbd);
         mesh->mNormals[v].x = skinnedNrm.x;
         mesh->mNormals[v].y = skinnedNrm.y;
         mesh->mNormals[v].z = skinnedNrm.z;
@@ -485,7 +501,7 @@ void CAnimatedAssimpModel::applySkinningToScene() const
 #endif
 }
 
-void CAnimatedAssimpModel::restoreBindPoseToScene() const
+void CAnimatedAssimpModel::restoreBindPoseToScene()
 {
 #if MRPT_HAS_ASSIMP
   auto* scene = const_cast<aiScene*>(static_cast<const aiScene*>(getAssimpScenePtr()));
@@ -586,11 +602,10 @@ void CAnimatedAssimpModel::updateBoneTransforms()
     }
 
     const auto pos = interpolatePosition(channel, animTime);
-    float qw, qx, qy, qz;
-    interpolateRotation(channel, animTime, qw, qx, qy, qz);
+    const auto rot = interpolateRotation(channel, animTime);
     const auto scl = interpolateScaling(channel, animTime);
 
-    bone.localTransform = buildTransformMatrix(pos, qw, qx, qy, qz, scl);
+    bone.localTransform = buildTransformMatrix(pos, rot.w, rot.x, rot.y, rot.z, scl);
   }
 
   // Compute global transforms recursively from root bones
@@ -626,13 +641,9 @@ void CAnimatedAssimpModel::computeGlobalTransforms(size_t boneIndex)
     bone.globalTransform = bone.localTransform;
   }
 
-  // Recursively update children
-  for (size_t i = 0; i < bones_.size(); ++i)
+  for (int childIdx : bone.children)
   {
-    if (bones_[i].parentIndex == static_cast<int>(boneIndex))
-    {
-      computeGlobalTransforms(i);
-    }
+    computeGlobalTransforms(static_cast<size_t>(childIdx));
   }
 }
 
@@ -692,17 +703,9 @@ CMatrixDouble44 CAnimatedAssimpModel::buildTransformMatrix(
 // Vertex Skinning
 // ============================================================================
 
-TPoint3Df CAnimatedAssimpModel::skinVertex(const TPoint3Df& vertex, uint64_t vkey) const
+TPoint3Df CAnimatedAssimpModel::skinVertex(const TPoint3Df& vertex, const VertexBoneData& vbd) const
 {
-  auto it = vertexBoneMap_.find(vkey);
-  if (it == vertexBoneMap_.end())
-  {
-    return vertex;
-  }
-
-  const auto& vbd = it->second;
   TPoint3Df result(0.f, 0.f, 0.f);
-  float totalWeight = 0.f;
 
   for (int i = 0; i < VertexBoneData::MAX_BONES_PER_VERTEX; ++i)
   {
@@ -725,41 +728,23 @@ TPoint3Df CAnimatedAssimpModel::skinVertex(const TPoint3Df& vertex, uint64_t vke
 
     const auto& M = bones_[boneIdx].finalTransform;
 
-    const float x =
+    result.x +=
+        weight *
         static_cast<float>(M(0, 0) * vertex.x + M(0, 1) * vertex.y + M(0, 2) * vertex.z + M(0, 3));
-    const float y =
+    result.y +=
+        weight *
         static_cast<float>(M(1, 0) * vertex.x + M(1, 1) * vertex.y + M(1, 2) * vertex.z + M(1, 3));
-    const float z =
+    result.z +=
+        weight *
         static_cast<float>(M(2, 0) * vertex.x + M(2, 1) * vertex.y + M(2, 2) * vertex.z + M(2, 3));
-
-    result.x += x * weight;
-    result.y += y * weight;
-    result.z += z * weight;
-    totalWeight += weight;
-  }
-
-  if (totalWeight < 0.999f)
-  {
-    const float rem = 1.0f - totalWeight;
-    result.x += vertex.x * rem;
-    result.y += vertex.y * rem;
-    result.z += vertex.z * rem;
   }
 
   return result;
 }
 
-TPoint3Df CAnimatedAssimpModel::skinNormal(const TPoint3Df& normal, uint64_t vkey) const
+TPoint3Df CAnimatedAssimpModel::skinNormal(const TPoint3Df& normal, const VertexBoneData& vbd) const
 {
-  auto it = vertexBoneMap_.find(vkey);
-  if (it == vertexBoneMap_.end())
-  {
-    return normal;
-  }
-
-  const auto& vbd = it->second;
   TPoint3Df result(0.f, 0.f, 0.f);
-  float totalWeight = 0.f;
 
   for (int i = 0; i < VertexBoneData::MAX_BONES_PER_VERTEX; ++i)
   {
@@ -782,25 +767,12 @@ TPoint3Df CAnimatedAssimpModel::skinNormal(const TPoint3Df& normal, uint64_t vke
 
     const auto& M = bones_[boneIdx].finalTransform;
 
-    const float nx =
-        static_cast<float>(M(0, 0) * normal.x + M(0, 1) * normal.y + M(0, 2) * normal.z);
-    const float ny =
-        static_cast<float>(M(1, 0) * normal.x + M(1, 1) * normal.y + M(1, 2) * normal.z);
-    const float nz =
-        static_cast<float>(M(2, 0) * normal.x + M(2, 1) * normal.y + M(2, 2) * normal.z);
-
-    result.x += nx * weight;
-    result.y += ny * weight;
-    result.z += nz * weight;
-    totalWeight += weight;
-  }
-
-  if (totalWeight < 0.999f)
-  {
-    const float rem = 1.0f - totalWeight;
-    result.x += normal.x * rem;
-    result.y += normal.y * rem;
-    result.z += normal.z * rem;
+    result.x +=
+        weight * static_cast<float>(M(0, 0) * normal.x + M(0, 1) * normal.y + M(0, 2) * normal.z);
+    result.y +=
+        weight * static_cast<float>(M(1, 0) * normal.x + M(1, 1) * normal.y + M(1, 2) * normal.z);
+    result.z +=
+        weight * static_cast<float>(M(2, 0) * normal.x + M(2, 1) * normal.y + M(2, 2) * normal.z);
   }
 
   // Re-normalize
@@ -832,7 +804,7 @@ void CAnimatedAssimpModel::VertexBoneData::addBoneWeight(int boneId, float weigh
     }
   }
 
-  // All slots full -- replace smallest if new weight is larger
+  // All slots full — replace the slot with the smallest weight if the new one is larger
   int minIdx = 0;
   float minWeight = weights[0];
   for (int i = 1; i < MAX_BONES_PER_VERTEX; ++i)
@@ -847,6 +819,28 @@ void CAnimatedAssimpModel::VertexBoneData::addBoneWeight(int boneId, float weigh
   {
     boneIds[minIdx] = boneId;
     weights[minIdx] = weight;
+  }
+}
+
+void CAnimatedAssimpModel::VertexBoneData::normalize()
+{
+  float total = 0.f;
+  for (int i = 0; i < MAX_BONES_PER_VERTEX; ++i)
+  {
+    if (boneIds[i] >= 0)
+    {
+      total += weights[i];
+    }
+  }
+  if (total > 1e-6f)
+  {
+    for (int i = 0; i < MAX_BONES_PER_VERTEX; ++i)
+    {
+      if (boneIds[i] >= 0)
+      {
+        weights[i] /= total;
+      }
+    }
   }
 }
 
@@ -866,7 +860,7 @@ TPoint3Df CAnimatedAssimpModel::interpolatePosition(
     return channel.positionKeys[0].value;
   }
 
-  size_t idx0 = 0;
+  size_t idx0 = channel.positionKeys.size() - 2;
   for (size_t i = 0; i + 1 < channel.positionKeys.size(); ++i)
   {
     if (animTime < channel.positionKeys[i + 1].time)
@@ -874,17 +868,10 @@ TPoint3Df CAnimatedAssimpModel::interpolatePosition(
       idx0 = i;
       break;
     }
-    idx0 = i;
-  }
-
-  const size_t idx1 = idx0 + 1;
-  if (idx1 >= channel.positionKeys.size())
-  {
-    return channel.positionKeys.back().value;
   }
 
   const auto& k0 = channel.positionKeys[idx0];
-  const auto& k1 = channel.positionKeys[idx1];
+  const auto& k1 = channel.positionKeys[idx0 + 1];
 
   const double dt = k1.time - k0.time;
   const float t = (dt > 1e-6) ? static_cast<float>((animTime - k0.time) / dt) : 0.f;
@@ -898,26 +885,19 @@ TPoint3Df CAnimatedAssimpModel::interpolatePosition(
 // Interpolation: Rotation (SLERP)
 // ============================================================================
 
-void CAnimatedAssimpModel::interpolateRotation(
-    const BoneAnimation& channel, double animTime, float& qw, float& qx, float& qy, float& qz) const
+CAnimatedAssimpModel::QuatKey CAnimatedAssimpModel::interpolateRotation(
+    const BoneAnimation& channel, double animTime) const
 {
   if (channel.rotationKeys.empty())
   {
-    qw = 1.f;
-    qx = qy = qz = 0.f;
-    return;
+    return {};  // identity: w=1, x=y=z=0
   }
   if (channel.rotationKeys.size() == 1)
   {
-    const auto& k = channel.rotationKeys[0];
-    qw = k.w;
-    qx = k.x;
-    qy = k.y;
-    qz = k.z;
-    return;
+    return channel.rotationKeys[0];
   }
 
-  size_t idx0 = 0;
+  size_t idx0 = channel.rotationKeys.size() - 2;
   for (size_t i = 0; i + 1 < channel.rotationKeys.size(); ++i)
   {
     if (animTime < channel.rotationKeys[i + 1].time)
@@ -925,22 +905,10 @@ void CAnimatedAssimpModel::interpolateRotation(
       idx0 = i;
       break;
     }
-    idx0 = i;
-  }
-
-  const size_t idx1 = idx0 + 1;
-  if (idx1 >= channel.rotationKeys.size())
-  {
-    const auto& k = channel.rotationKeys.back();
-    qw = k.w;
-    qx = k.x;
-    qy = k.y;
-    qz = k.z;
-    return;
   }
 
   const auto& k0 = channel.rotationKeys[idx0];
-  const auto& k1 = channel.rotationKeys[idx1];
+  const auto& k1 = channel.rotationKeys[idx0 + 1];
 
   const double dt = k1.time - k0.time;
   const float t = (dt > 1e-6) ? static_cast<float>((animTime - k0.time) / dt) : 0.f;
@@ -972,10 +940,7 @@ void CAnimatedAssimpModel::interpolateRotation(
     s1 = std::sin(t * theta) / sinTheta;
   }
 
-  qw = s0 * k0.w + s1 * w1;
-  qx = s0 * k0.x + s1 * x1;
-  qy = s0 * k0.y + s1 * y1;
-  qz = s0 * k0.z + s1 * z1;
+  return {0.0, s0 * k0.w + s1 * w1, s0 * k0.x + s1 * x1, s0 * k0.y + s1 * y1, s0 * k0.z + s1 * z1};
 }
 
 // ============================================================================
@@ -994,7 +959,7 @@ TPoint3Df CAnimatedAssimpModel::interpolateScaling(
     return channel.scalingKeys[0].value;
   }
 
-  size_t idx0 = 0;
+  size_t idx0 = channel.scalingKeys.size() - 2;
   for (size_t i = 0; i + 1 < channel.scalingKeys.size(); ++i)
   {
     if (animTime < channel.scalingKeys[i + 1].time)
@@ -1002,17 +967,10 @@ TPoint3Df CAnimatedAssimpModel::interpolateScaling(
       idx0 = i;
       break;
     }
-    idx0 = i;
-  }
-
-  const size_t idx1 = idx0 + 1;
-  if (idx1 >= channel.scalingKeys.size())
-  {
-    return channel.scalingKeys.back().value;
   }
 
   const auto& k0 = channel.scalingKeys[idx0];
-  const auto& k1 = channel.scalingKeys[idx1];
+  const auto& k1 = channel.scalingKeys[idx0 + 1];
 
   const double dt = k1.time - k0.time;
   const float t = (dt > 1e-6) ? static_cast<float>((animTime - k0.time) / dt) : 0.f;
