@@ -102,8 +102,11 @@ struct TPoint2D_ :
   template <typename Vector>
   [[nodiscard]] static TPoint2D_<T> FromVector(const Vector& v)
   {
-    TPoint2D o;
-    for (int i = 0; i < 2; i++) o[i] = v.at(i);
+    TPoint2D_<T> o;
+    for (int i = 0; i < 2; i++)
+    {
+      o[i] = static_cast<T>(v.at(i));
+    }
     return o;
   }
 

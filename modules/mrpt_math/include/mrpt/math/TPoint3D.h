@@ -123,10 +123,10 @@ struct TPoint3D_ :
   template <typename Vector>
   [[nodiscard]] static TPoint3D_<T> FromVector(const Vector& v)
   {
-    TPoint3D o;
+    TPoint3D_<T> o;
     for (int i = 0; i < 3; i++)
     {
-      o[i] = v.at(i);
+      o[i] = static_cast<T>(v.at(i));
     }
     return o;
   }
