@@ -513,7 +513,7 @@ bool CCANBusReader::setupSerialComms()
   int detected_rate = 0;
   for (size_t reps = 0; !detected_rate && reps < m_nTries_connect; reps++)
   {
-    m_nTries_current = reps;
+    m_nTries_current = static_cast<unsigned int>(reps);
 
     int rates[] = {0, 9600, 38400, 57600, 500000};
 

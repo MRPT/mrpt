@@ -78,7 +78,7 @@ void COccupancyGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
       << insertionOptions.horizontalTolerance;
 
   // Likelihood:
-  out << (int32_t)likelihoodOptions.likelihoodMethod << likelihoodOptions.LF_stdHit
+  out << static_cast<int32_t>(likelihoodOptions.likelihoodMethod) << likelihoodOptions.LF_stdHit
       << likelihoodOptions.LF_zHit << likelihoodOptions.LF_zRandom << likelihoodOptions.LF_maxRange
       << likelihoodOptions.LF_decimation << likelihoodOptions.LF_maxCorrsDistance
       << likelihoodOptions.LF_alternateAverageMethod << likelihoodOptions.MI_exponent
@@ -156,8 +156,8 @@ void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8
         in.ReadBuffer(&auxMap[0], sizeof(auxMap[0]) * auxMap.size());
 
         size_t i, N = m_map.size();
-        auto* ptrTrg = (uint8_t*)&m_map[0];
-        const auto* ptrSrc = (const uint16_t*)&auxMap[0];
+        auto* ptrTrg = reinterpret_cast<uint8_t*>(&m_map[0]);
+        const auto* ptrSrc = reinterpret_cast<const uint16_t*>(&auxMap[0]);
         for (i = 0; i < N; i++) *ptrTrg++ = (*ptrSrc++) >> 8;
 #else
         // We are 16-bit, stream is 8-bit
@@ -166,8 +166,8 @@ void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8
         in.ReadBuffer(&auxMap[0], sizeof(auxMap[0]) * auxMap.size());
 
         size_t i, N = map.size();
-        uint16_t* ptrTrg = (uint16_t*)&map[0];
-        const uint8_t* ptrSrc = (const uint8_t*)&auxMap[0];
+        uint16_t* ptrTrg = reinterpret_cast<uint16_t*>(&map[0]);
+        const uint8_t* ptrSrc = reinterpret_cast<const uint8_t*>(&auxMap[0]);
         for (i = 0; i < N; i++) *ptrTrg++ = (*ptrSrc++) << 8;
 #endif
       }

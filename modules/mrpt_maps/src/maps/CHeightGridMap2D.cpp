@@ -177,7 +177,7 @@ void CHeightGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
     out << it.h << it.w;  // This was removed in version 1: << it->history_Zs;
 
   // Save the insertion options:
-  out << uint8_t(m_mapType);
+  out << static_cast<uint8_t>(m_mapType);
 
   out << insertionOptions.filterByHeight << insertionOptions.z_min << insertionOptions.z_max;
 

@@ -128,7 +128,8 @@ void CHolonomicFullEval::evalSingleTarget(
   const size_t nDirs = ni.obstacles.size();
 
   const double target_dir = ::atan2(target.y, target.x);
-  const unsigned int target_k = CParameterizedTrajectoryGenerator::Alpha2index(target_dir, nDirs);
+  const unsigned int target_k =
+      CParameterizedTrajectoryGenerator::Alpha2index(target_dir, static_cast<unsigned int>(nDirs));
   const double target_dist = target.norm();
 
   m_dirs_scores.resize(nDirs, options.factorWeights.size() + 2);
@@ -204,7 +205,9 @@ void CHolonomicFullEval::fillFactorScores(
       scores[0] = std::max(0.0, ni.obstacles[i] - options.TOO_CLOSE_OBSTACLE);
     }
     if (ptg != nullptr)
-      mrpt::keep_min(scores[0], ptg->getActualUnloopedPathLength(i) / ptg->getRefDistance());
+      mrpt::keep_min(
+          scores[0],
+          ptg->getActualUnloopedPathLength(static_cast<uint16_t>(i)) / ptg->getRefDistance());
 
     // Factor [1]: Closest approach to target along straight line (Euclidean)
     mrpt::math::TSegment2D sg;
@@ -250,7 +253,8 @@ void CHolonomicFullEval::fillFactorScores(
       sg.point2 = {x, y};
       double& closest_obs = scores[4];
       closest_obs = 1.0;
-      const int W = std::max(1, round(nDirs * CLEARANCE_WINDOW_HALF_FRACTION));
+      const int W = std::max(
+          1, static_cast<int>(round(static_cast<double>(nDirs) * CLEARANCE_WINDOW_HALF_FRACTION)));
       const int i_min = std::max(0, static_cast<int>(i) - W);
       const int i_max = std::min(static_cast<int>(nDirs) - 1, static_cast<int>(i) + W);
       for (int oi = i_min; oi <= i_max; oi++)
@@ -261,8 +265,9 @@ void CHolonomicFullEval::fillFactorScores(
     }
 
     // Factor [6]: sector-distance to target direction
-    scores[6] =
-        1.0 / (1.0 + mrpt::square((SECTOR_DIST_WEIGHT / nDirs) * mrpt::abs_diff(i, target_k)));
+    scores[6] = 1.0 / (1.0 + mrpt::square(
+                                 (SECTOR_DIST_WEIGHT / static_cast<double>(nDirs)) *
+                                 mrpt::abs_diff(i, target_k)));
 
     // Penalize directions that cannot reach the target:
     if (target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
@@ -277,8 +282,8 @@ void CHolonomicFullEval::fillFactorScores(
     if (ptg != nullptr)
     {
       uint32_t ptgStep = 0;
-      ptg->getPathStepForDist(i, d * ptg->getRefDistance(), ptgStep);
-      const auto ptgPose = ptg->getPathPose(i, ptgStep);
+      ptg->getPathStepForDist(static_cast<uint16_t>(i), d * ptg->getRefDistance(), ptgStep);
+      const auto ptgPose = ptg->getPathPose(static_cast<uint16_t>(i), ptgStep);
       scores[7] = 1.0 - std::abs(mrpt::math::angDistance(target.phi, ptgPose.phi) / M_PI);
     }
     else
@@ -306,7 +311,7 @@ void CHolonomicFullEval::fillFactorScores(
 void CHolonomicFullEval::computePhaseScores(
     size_t nDirs, const NavInput& ni, unsigned int target_idx, EvalOutput& eo)
 {
-  const unsigned int NUM_PHASES = options.PHASE_FACTORS.size();
+  const unsigned int NUM_PHASES = static_cast<unsigned int>(options.PHASE_FACTORS.size());
   ASSERT_(NUM_PHASES >= 1);
 
   std::vector<double> weights_sum_phase(NUM_PHASES, .0), weights_sum_phase_inv(NUM_PHASES);
@@ -436,7 +441,8 @@ CHolonomicFullEval::NavOutput CHolonomicFullEval::navigate(const NavInput& ni)
     const auto ptg = getAssociatedPTG();
     const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
 
-    no.desiredDirection = CParameterizedTrajectoryGenerator::Index2alpha(best_dir_k, nDirs);
+    no.desiredDirection = CParameterizedTrajectoryGenerator::Index2alpha(
+        best_dir_k, static_cast<unsigned int>(nDirs));
 
     // Speed control: Reduction factors
     // ---------------------------------------------
@@ -725,7 +731,9 @@ void CHolonomicFullEval::serializeFrom(mrpt::serialization::CArchive& in, uint8_
 }
 
 void CHolonomicFullEval::postProcessDirectionEvaluations(
-    std::vector<double>& dir_evals, const NavInput& ni, unsigned int trg_idx)
+    [[maybe_unused]] std::vector<double>& dir_evals,
+    [[maybe_unused]] const NavInput& ni,
+    [[maybe_unused]] unsigned int trg_idx)
 {
   // Default: do nothing
 }

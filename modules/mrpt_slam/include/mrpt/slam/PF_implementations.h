@@ -320,7 +320,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::PF_SLAM_implementation_p
           // options.KLD_minSampleSize )
           {
             // Update the number of m_particles!!
-            Nx = round(epsilon_1 * math::chi2inv(delta_1, K - 1));
+            Nx = static_cast<size_t>(
+                round(epsilon_1 * math::chi2inv(delta_1, static_cast<unsigned int>(K - 1))));
             // printf("k=%u \tn=%u \tNx:%u\n", k,
             // newParticles.size(), Nx);
           }
@@ -780,7 +781,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
     me->logStr(
         mrpt::system::LVL_DEBUG, mrpt::format(
                                      "[FIXED_SAMPLING] done (%u bins in t-1)\n",
-                                     (unsigned int)stateSpaceBinsLastTimestep.size()));
+                                     static_cast<unsigned int>(stateSpaceBinsLastTimestep.size())));
 
     // ------------------------------------------------------------------------------
     // 2.2)    THE MAIN KLD-BASED DRAW SAMPLING LOOP
@@ -795,8 +796,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
     // The desired dynamic number of m_particles (to be modified dynamically
     // below):
     const size_t minNumSamples_KLD = std::max(
-        (size_t)KLD_options.KLD_minSampleSize,
-        (size_t)round(KLD_options.KLD_minSamplesPerBin * stateSpaceBinsLastTimestep.size()));
+        static_cast<size_t>(KLD_options.KLD_minSampleSize),
+        static_cast<size_t>(round(
+            KLD_options.KLD_minSamplesPerBin *
+            static_cast<double>(stateSpaceBinsLastTimestep.size()))));
     size_t Nx = minNumSamples_KLD;
 
     const size_t Np1 = me->m_particles.size();
@@ -920,11 +923,12 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
         stateSpaceBins.insert(p);
 
         // K = K + 1
-        int K = stateSpaceBins.size();
+        int K = static_cast<int>(stateSpaceBins.size());
         if (K > 1)
         {
           // Update the number of m_particles!!
-          Nx = (size_t)(epsilon_1 * math::chi2inv(delta_1, K - 1));
+          Nx = static_cast<size_t>(
+              epsilon_1 * math::chi2inv(delta_1, static_cast<unsigned int>(K - 1)));
           // printf("k=%u \tn=%u \tNx:%u\n", k, newParticles.size(),
           // Nx);
         }
@@ -936,11 +940,11 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
              (permutationPathsAuxVector.size() && !doResample));
 
     me->logStr(
-        mrpt::system::LVL_DEBUG,
-        mrpt::format(
-            "[ADAPTIVE SAMPLE SIZE]  #Bins: %u \t #Particles: %u \t "
-            "Nx=%u\n",
-            static_cast<unsigned>(stateSpaceBins.size()), static_cast<unsigned>(N), (unsigned)Nx));
+        mrpt::system::LVL_DEBUG, mrpt::format(
+                                     "[ADAPTIVE SAMPLE SIZE]  #Bins: %u \t #Particles: %u \t "
+                                     "Nx=%u\n",
+                                     static_cast<unsigned>(stateSpaceBins.size()),
+                                     static_cast<unsigned>(N), static_cast<unsigned>(Nx)));
   }  // end adaptive sample size
 
   // ---------------------------------------------------------------------------------

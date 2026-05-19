@@ -40,8 +40,8 @@ void ClearanceDiagram::renderAs3DObject(
   ASSERT_(max_x > min_x);
   ASSERT_(max_y > min_y);
 
-  mesh.setXBounds(min_x, max_x);
-  mesh.setYBounds(min_y, max_y);
+  mesh.setXBounds(static_cast<float>(min_x), static_cast<float>(max_x));
+  mesh.setYBounds(static_cast<float>(min_y), static_cast<float>(max_y));
   const int nX = static_cast<int>(::ceil((max_x - min_x) / cell_res));
   const int nY = static_cast<int>(::ceil((max_y - min_y) / cell_res));
   const double dx = (max_x - min_x) / nX;
@@ -62,12 +62,12 @@ void ClearanceDiagram::renderAs3DObject(
       if (x != 0 || y != 0)
       {
         const double alpha = ::atan2(y, x);
-        const uint16_t actual_k =
-            CParameterizedTrajectoryGenerator::Alpha2index(alpha, m_actual_num_paths);
+        const uint16_t actual_k = CParameterizedTrajectoryGenerator::Alpha2index(
+            alpha, static_cast<unsigned int>(m_actual_num_paths));
         const double dist = std::hypot(x, y);
         clear_val = this->getClearance(actual_k, dist, integrate_over_path);
       }
-      Z(iX, iY) = clear_val;
+      Z(iX, iY) = static_cast<float>(clear_val);
     }
   }
 
@@ -119,7 +119,7 @@ const ClearanceDiagram::dist2clearance_t& ClearanceDiagram::get_path_clearance(
 size_t mrpt::nav::ClearanceDiagram::real_k_to_decimated_k(size_t k) const
 {
   ASSERT_(m_actual_num_paths > 0 && !m_raw_clearances.empty());
-  const size_t ret = mrpt::round(k * m_k_a2d);
+  const size_t ret = mrpt::round(static_cast<double>(k) * m_k_a2d);
   ASSERT_(ret < m_raw_clearances.size());
   return ret;
 }
@@ -127,7 +127,7 @@ size_t mrpt::nav::ClearanceDiagram::real_k_to_decimated_k(size_t k) const
 size_t mrpt::nav::ClearanceDiagram::decimated_k_to_real_k(size_t k) const
 {
   ASSERT_(m_actual_num_paths > 0 && !m_raw_clearances.empty());
-  const size_t ret = mrpt::round(k * m_k_d2a);
+  const size_t ret = mrpt::round(static_cast<double>(k) * m_k_d2a);
   ASSERT_(ret < m_actual_num_paths);
   return ret;
 }
@@ -193,6 +193,8 @@ void mrpt::nav::ClearanceDiagram::resize(size_t actual_num_paths, size_t decimat
   m_actual_num_paths = actual_num_paths;
   m_raw_clearances.resize(decimated_num_paths);
 
-  m_k_d2a = double(m_actual_num_paths - 1) / (m_raw_clearances.size() - 1);
-  m_k_a2d = double(m_raw_clearances.size() - 1) / (m_actual_num_paths - 1);
+  m_k_d2a = static_cast<double>(m_actual_num_paths - 1) /
+            static_cast<double>(m_raw_clearances.size() - 1);
+  m_k_a2d = static_cast<double>(m_raw_clearances.size() - 1) /
+            static_cast<double>(m_actual_num_paths - 1);
 }

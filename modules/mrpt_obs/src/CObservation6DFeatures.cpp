@@ -35,7 +35,7 @@ void CObservation6DFeatures::serializeTo(mrpt::serialization::CArchive& out) con
 {
   out << minSensorDistance << maxSensorDistance << sensorPose;
 
-  const uint32_t n = sensedFeatures.size();
+  const uint32_t n = static_cast<uint32_t>(sensedFeatures.size());
   out << n;
   for (uint32_t i = 0; i < n; i++)
   {

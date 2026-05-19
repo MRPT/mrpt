@@ -67,7 +67,7 @@ class CMyRedirector : public std::streambuf
   {
     if (bufferSize)
     {
-      m_buf.resize(bufferSize);
+      m_buf.resize(static_cast<std::vector<char>::size_type>(bufferSize));
       setp(m_buf.data(), m_buf.data() + bufferSize);
     }
     else
@@ -148,7 +148,7 @@ class CMyRedirector : public std::streambuf
       if (pbase() == epptr())
       {
         std::string temp;
-        temp += char(c);
+        temp += static_cast<char>(c);
         writeString(temp);
       }
       else
@@ -164,8 +164,8 @@ class CMyRedirector : public std::streambuf
 
     if (pbase() != pptr())
     {
-      int len = int(pptr() - pbase());
-      std::string temp(pbase(), len);
+      int len = static_cast<int>(pptr() - pbase());
+      std::string temp(pbase(), static_cast<std::string::size_type>(len));
       writeString(temp);
       setp(pbase(), epptr());
     }

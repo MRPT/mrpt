@@ -90,8 +90,8 @@ void CGPSInterface::loadConfig_sensorSpecific(
   m_customInit = configSource.read_string(iniSection, "customInit", m_customInit, false);
 
   // new custom cmds:
-  m_custom_cmds_delay =
-      configSource.read_float(iniSection, "custom_cmds_delay", m_custom_cmds_delay);
+  m_custom_cmds_delay = configSource.read_float(
+      iniSection, "custom_cmds_delay", static_cast<float>(m_custom_cmds_delay));
   m_custom_cmds_append_CRLF =
       configSource.read_bool(iniSection, "custom_cmds_append_CRLF", m_custom_cmds_append_CRLF);
   // Load as many strings as found on the way:
@@ -298,9 +298,10 @@ void CGPSInterface::doProcess()
       mrpt::system::timestampToParts(mrpt::Clock::now(), parts, true);
       string sFilePostfix = "_";
       sFilePostfix += mrpt::format(
-          "%04u-%02u-%02u_%02uh%02um%02us", (unsigned int)parts.year, (unsigned int)parts.month,
-          (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute,
-          (unsigned int)parts.second);
+          "%04u-%02u-%02u_%02uh%02um%02us", static_cast<unsigned int>(parts.year),
+          static_cast<unsigned int>(parts.month), static_cast<unsigned int>(parts.day),
+          static_cast<unsigned int>(parts.hour), static_cast<unsigned int>(parts.minute),
+          static_cast<unsigned int>(parts.second));
       const string sFileName = m_raw_dump_file_prefix +
                                mrpt::system::fileNameStripInvalidChars(sFilePostfix) +
                                string(".gps");

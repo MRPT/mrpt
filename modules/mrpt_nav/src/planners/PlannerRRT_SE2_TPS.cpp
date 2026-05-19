@@ -214,7 +214,7 @@ void PlannerRRT_SE2_TPS::solve(
 
       // directions k_rand in TP_obstacles[k_rand] = d_free
       // this is the collision free distance to the TP_target
-      d_free = TP_Obstacles_k_rand;  // TP_Obstacles[k_rand];
+      d_free = static_cast<float>(TP_Obstacles_k_rand);  // TP_Obstacles[k_rand];
 
       // [Algo `tp_space_rrt`: Line 10]: d_new
       // ------------------------------------------------------------
@@ -240,9 +240,10 @@ void PlannerRRT_SE2_TPS::solve(
         // given d_rand and k_rand provides x,y,phi of the point in
         // c-space
         uint32_t nStep;
-        m_PTGs[idxPTG]->getPathStepForDist(k_rand, d_new, nStep);
+        m_PTGs[idxPTG]->getPathStepForDist(static_cast<uint16_t>(k_rand), d_new, nStep);
 
-        mrpt::math::TPose2D rel_pose = m_PTGs[idxPTG]->getPathPose(k_rand, nStep);
+        mrpt::math::TPose2D rel_pose =
+            m_PTGs[idxPTG]->getPathPose(static_cast<uint16_t>(k_rand), nStep);
 
         // wrap to [-pi,pi] to avoid out of bounds errors:
         mrpt::math::wrapToPiInPlace(rel_pose.phi);
@@ -312,7 +313,7 @@ void PlannerRRT_SE2_TPS::solve(
         TMoveEdgeSE2_TP new_edge(x_nearest_id, new_state.asTPose());
 
         new_edge.cost = d_new;
-        new_edge.ptg_index = idxPTG;
+        new_edge.ptg_index = static_cast<int>(idxPTG);
         new_edge.ptg_K = k_rand;
         new_edge.ptg_dist = d_new;
 

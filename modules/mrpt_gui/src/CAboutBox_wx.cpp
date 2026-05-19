@@ -144,7 +144,7 @@ CAboutBox::~CAboutBox()
   //*)
 }
 
-void CAboutBox::OnInit(wxInitDialogEvent& event)
+void CAboutBox::OnInit([[maybe_unused]] wxInitDialogEvent& event)
 {
   // Build strings:
   wxString MRPTver(MRPT_getVersion().c_str(), wxConvLibc);

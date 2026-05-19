@@ -303,7 +303,7 @@ class CObservationVelodyneScan : public CObservation
   struct PointCloudStorageWrapper
   {
     virtual ~PointCloudStorageWrapper() = default;
-    virtual void reserve(std::size_t n) {}
+    virtual void reserve([[maybe_unused]] std::size_t n) {}
     virtual void resizeLaserCount([[maybe_unused]] std::size_t n) {}
 
     /** Process the insertion of a new (x,y,z) point to the cloud, in

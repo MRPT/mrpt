@@ -98,8 +98,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
     }
     const double cum = std::transform_reduce(
         derived().m_particles.begin(), derived().m_particles.end(), 0.0, std::plus<>{},
-        [maxW, sumLin](const auto& p)
-        { return mrpt::square(std::exp(p.log_w - maxW) / sumLin); });
+        [maxW, sumLin](const auto& p) { return mrpt::square(std::exp(p.log_w - maxW) / sumLin); });
     if (cum == 0)
     {
       return 0;

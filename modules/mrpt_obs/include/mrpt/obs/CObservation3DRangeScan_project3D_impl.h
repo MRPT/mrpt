@@ -117,7 +117,8 @@ void range2XYZ_LUT(
   {
     const size_t nPts = pca.size();
     const auto trans = mrpt::math::TPoint3Df(
-        src_obs.sensorPose.x(), src_obs.sensorPose.y(), src_obs.sensorPose.z());
+        static_cast<float>(src_obs.sensorPose.x()), static_cast<float>(src_obs.sensorPose.y()),
+        static_cast<float>(src_obs.sensorPose.z()));
     for (size_t i = 0; i < nPts; i++)
     {
       mrpt::math::TPoint3Df pt;
@@ -166,8 +167,8 @@ void unprojectInto(
   // ------------------------------------------------------------
   // Stage 1/3: Create 3D point cloud local coordinates
   // ------------------------------------------------------------
-  const int W = src_obs.rangeImage.cols();
-  const int H = src_obs.rangeImage.rows();
+  const int W = static_cast<int>(src_obs.rangeImage.cols());
+  const int H = static_cast<int>(src_obs.rangeImage.rows());
   ASSERT_(W != 0 && H != 0);
   const size_t WH = W * H;
 
@@ -398,8 +399,8 @@ void do_project_3d_pointcloud(
           continue;
         }
         pca.setPointXYZ(idx, kx * D, ky * D /*y*/, kz * D /*z*/);
-        idxs_x[idx] = c;
-        idxs_y[idx] = r;
+        idxs_x[idx] = static_cast<uint16_t>(c);
+        idxs_y[idx] = static_cast<uint16_t>(r);
         ++idx;
       }
     }
@@ -437,8 +438,8 @@ void do_project_3d_pointcloud(
         const auto eq_idx = eq_c + eq_r * W;
         const auto kx = kxs[eq_idx], ky = kys[eq_idx], kz = kzs[eq_idx];
         pca.setPointXYZ(idx, kx * min_d /*x*/, ky * min_d /*y*/, kz * min_d /*z*/);
-        idxs_x[idx] = eq_c;
-        idxs_y[idx] = eq_r;
+        idxs_x[idx] = static_cast<uint16_t>(eq_c);
+        idxs_y[idx] = static_cast<uint16_t>(eq_r);
         ++idx;
       }
   }
@@ -551,8 +552,8 @@ void do_project_3d_pointcloud_SSE2(
           if ((valid_range_maski & (1 << (q * 4))) != 0)
           {
             pca.setPointXYZ(idx, xs[q], ys[q], zs[q]);
-            idxs_x[idx] = actual_c;
-            idxs_y[idx] = r;
+            idxs_x[idx] = static_cast<uint16_t>(actual_c);
+            idxs_y[idx] = static_cast<uint16_t>(r);
             ++idx;
           }
           else

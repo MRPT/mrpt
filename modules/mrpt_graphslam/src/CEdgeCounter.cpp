@@ -275,8 +275,8 @@ void CEdgeCounter::setTextMessageParams(
   m_display_total_edges = true;
   m_display_loop_closures = true;
 
-  m_offset_y_total_edges = offset_y_total_edges;
-  m_offset_y_loop_closures = offset_y_loop_closures;
+  m_offset_y_total_edges = static_cast<int>(offset_y_total_edges);
+  m_offset_y_loop_closures = static_cast<int>(offset_y_loop_closures);
 
   m_text_index_total_edges = text_index_total_edges;
   m_text_index_loop_closures = text_index_loop_closures;

@@ -30,7 +30,7 @@ void CVehicleSimul_DiffDriven::internal_clear()
   m_v = m_w = 0;
 }
 
-void CVehicleSimul_DiffDriven::internal_simulControlStep(const double AAt)
+void CVehicleSimul_DiffDriven::internal_simulControlStep([[maybe_unused]] const double AAt)
 {
   // Change velocities:
   // ----------------------------------------------------------------

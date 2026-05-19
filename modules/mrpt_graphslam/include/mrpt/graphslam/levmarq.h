@@ -435,8 +435,8 @@ void optimize_graph_spa_levmarq(
 
     if (verbose)
       std::cout << "[optimize_graph_spa_levmarq] Iter: " << iter
-                << " ,total sqr. err: " << total_sqr_err
-                << ", avrg. err per edge: " << std::sqrt(total_sqr_err / nObservations)
+                << " ,total sqr. err: " << total_sqr_err << ", avrg. err per edge: "
+                << std::sqrt(total_sqr_err / static_cast<double>(nObservations))
                 << " lambda: " << lambda << "\n";
 
     // Feedback to the user:
@@ -542,7 +542,7 @@ void optimize_graph_spa_levmarq(
         const typename gst::graph_t::constraint_t::type_value& P = itP->second;
         for (size_t i = 0; i < DIMS_POSE; i++)
         {
-          x_norm += square(P[i]);
+          x_norm += square(P[static_cast<unsigned int>(i)]);
         }
       }
       x_norm = std::sqrt(x_norm);

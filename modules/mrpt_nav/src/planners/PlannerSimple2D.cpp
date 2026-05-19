@@ -176,7 +176,7 @@ static bool reconstructPath(
 
   // STEP 2: Reverse the backward path
   {
-    const int n = pathcells_x.size();
+    const int n = static_cast<int>(pathcells_x.size());
     for (int i = 0; i < n / 2; i++)
     {
       std::swap(pathcells_x[i], pathcells_x[n - 1 - i]);
@@ -258,7 +258,7 @@ static bool reconstructPath(
 
   // STEP 4: Subsample path cells → 2D world points
   path.clear();
-  const int n = pathcells_x.size();
+  const int n = static_cast<int>(pathcells_x.size());
   double last_xx = origin.x, last_yy = origin.y;
   auto last_cx = theMap.x2idx(origin.x);
   auto last_cy = theMap.y2idx(origin.y);
@@ -426,7 +426,8 @@ void PlannerSimple2D::computePath(
     notFound = !wave1Found && !wave2Found;
 
     const int estimPathLen = std::min(minNeigh + 1, CELL_TARGET - maxNeigh);
-    if (maxSearchPathLength > 0 && estimPathLen * theMap.getResolution() > maxSearchPathLength)
+    if (maxSearchPathLength > 0 &&
+        static_cast<float>(estimPathLen) * theMap.getResolution() > maxSearchPathLength)
     {
       notFound = true;
       break;

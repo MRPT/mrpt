@@ -26,7 +26,7 @@ void CObservationRange::serializeTo(mrpt::serialization::CArchive& out) const
 {
   // The data
   out << minSensorDistance << maxSensorDistance << sensorConeAperture;
-  const uint32_t n = sensedData.size();
+  const uint32_t n = static_cast<uint32_t>(sensedData.size());
   out << n;
   for (uint32_t i = 0; i < n; i++)
     out << sensedData[i].sensorID << CPose3D(sensedData[i].sensorPose)
@@ -58,7 +58,7 @@ void CObservationRange::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
         if (version >= 3)
           in >> sensedData[i].sensorID;
         else
-          sensedData[i].sensorID = i;
+          sensedData[i].sensorID = static_cast<uint16_t>(i);
 
         in >> aux >> sensedData[i].sensedDistance;
         sensedData[i].sensorPose = aux.asTPose();
@@ -114,7 +114,7 @@ void CObservationRange::getDescriptionAsText(std::ostream& o) const
   o << "-------------------------------------------------------\n";
   for (const auto& q : sensedData)
   {
-    o << mrpt::format("     %7u", (unsigned int)q.sensorID);
+    o << mrpt::format("     %7u", static_cast<unsigned int>(q.sensorID));
     o << mrpt::format("    %4.03f   ", q.sensedDistance);
     o << mrpt::format("    %4.03f   ", q.sensorNoiseStdDeviation);
     o << q.sensorPose << "\n";

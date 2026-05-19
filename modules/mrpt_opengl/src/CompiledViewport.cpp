@@ -871,14 +871,14 @@ void CompiledViewport::renderImageView(ShaderProgramManager& shaderManager)
       const size_t img_w = img.getWidth(), img_h = img.getHeight();
       if (img_w > 0 && img_h > 0 && m_pixelWidth > 0 && m_pixelHeight > 0)
       {
-        const double img_ratio = static_cast<double>(img_w) / img_h;
-        const double vw_ratio = static_cast<double>(m_pixelWidth) / m_pixelHeight;
-        const double ratio = vw_ratio / img_ratio;
+        const float img_ratio = static_cast<float>(img_w) / static_cast<float>(img_h);
+        const float vw_ratio = static_cast<float>(m_pixelWidth) / static_cast<float>(m_pixelHeight);
+        const float ratio = vw_ratio / img_ratio;
 
         auto& p = matrices.p_matrix;
-        if (ratio > 1.0)
+        if (ratio > 1.0f)
           p(1, 1) *= ratio;
-        else if (ratio > 0.0)
+        else if (ratio > 0.0f)
           p(0, 0) /= ratio;
 
         // Normalize so neither dimension exceeds 1
@@ -886,7 +886,7 @@ void CompiledViewport::renderImageView(ShaderProgramManager& shaderManager)
         auto& p11 = p(1, 1);
         if (p00 > 0 && p11 > 0)
         {
-          const double s = std::max(p00, p11);
+          const float s = std::max(p00, p11);
           p00 /= s;
           p11 /= s;
         }

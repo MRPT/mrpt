@@ -116,7 +116,7 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
     if (mrpt::system::timeDifference(m_win3D->m_lastFullScreen, mrpt::Clock::now()) > 0.2)
     {
       m_win3D->m_lastFullScreen = mrpt::Clock::now();
-      auto* win = (C3DWindowDialog*)m_win3D->m_hwnd.get();
+      auto* win = static_cast<C3DWindowDialog*>(m_win3D->m_hwnd.get());
       if (win != nullptr)
       {
         win->ShowFullScreen(!win->IsFullScreen());
@@ -752,7 +752,7 @@ std::optional<mrpt::math::TLine3D> CDisplayWindow3D::getLastMousePositionRay() c
 void CDisplayWindow3D::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
-  const auto* win = (const C3DWindowDialog*)m_hwnd.get();
+  const auto* win = static_cast<const C3DWindowDialog*>(m_hwnd.get());
   if (win == nullptr)
   {
     return;

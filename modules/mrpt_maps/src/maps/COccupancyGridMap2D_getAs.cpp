@@ -138,9 +138,9 @@ void COccupancyGridMap2D::getAsImageFiltered(CImage& img, bool verticalFlip, boo
 
   // Do filtering to improve the noisy peaks in grids:
   if (insertionOptions.CFD_features_gaussian_size != 0)
-    img.filterGaussian(img, round(insertionOptions.CFD_features_gaussian_size));
+    img.filterGaussian(img, static_cast<int>(round(insertionOptions.CFD_features_gaussian_size)));
   if (insertionOptions.CFD_features_median_size != 0)
-    img.filterMedian(img, round(insertionOptions.CFD_features_median_size));
+    img.filterMedian(img, static_cast<int>(round(insertionOptions.CFD_features_median_size)));
 }
 
 void COccupancyGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
@@ -172,7 +172,7 @@ void COccupancyGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) cons
       uint8_t cell255 = l2p_255(*srcPtr++);
       *destPtr_color++ = cell255;
 
-      int8_t auxC = (int8_t)((signed short)cell255) - 127;
+      int8_t auxC = static_cast<int8_t>(static_cast<signed short>(cell255) - 127);
       *destPtr_trans++ = auxC > 0 ? (auxC << 1) : ((-auxC) << 1);
     }
   }

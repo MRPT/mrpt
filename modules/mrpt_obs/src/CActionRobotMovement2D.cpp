@@ -696,7 +696,7 @@ void CActionRobotMovement2D::getDescriptionAsText(std::ostream& o) const
   if (poseChange->GetRuntimeClass() == CLASS_ID(CPosePDFParticles))
   {
     CPosePDFParticles::Ptr aux = std::dynamic_pointer_cast<CPosePDFParticles>(poseChange.get_ptr());
-    o << mrpt::format(" (Particle count = %u)\n", (unsigned)aux->m_particles.size());
+    o << mrpt::format(" (Particle count = %u)\n", static_cast<unsigned>(aux->m_particles.size()));
   }
   o << "\n";
 

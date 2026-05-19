@@ -55,7 +55,8 @@ void CEnoseModular::loadConfig_sensorSpecific(
 #else
   m_COM_port = configSource.read_string(iniSection, "COM_port_LIN", m_COM_port);
 #endif
-  m_COM_baud = configSource.read_uint64_t(iniSection, "COM_baudRate", m_COM_baud);
+  m_COM_baud =
+      static_cast<unsigned int>(configSource.read_uint64_t(iniSection, "COM_baudRate", m_COM_baud));
 
   MRPT_END
 }
@@ -187,7 +188,7 @@ std::optional<mrpt::obs::CObservationGasSensors> CEnoseModular::grabFrame()
         newRead.eNosePoseOnTheRobot = TPose3D(0, 0, 0, 0, 0, 0);
 
       // Get Temperature (degrees C)
-      newRead.temperature = msg.content[0] * 1.65214 - 277.74648;
+      newRead.temperature = static_cast<float>(msg.content[0] * 1.65214 - 277.74648);
 
       // process all sensors
       for (size_t idx = 0; idx < numSensors; idx++)

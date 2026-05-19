@@ -171,15 +171,15 @@ void COccupancyGridMap2D::simulateScanRay(
       static_cast<unsigned>(y) >= m_size_y)
   {
     out_valid = false;
-    out_range = max_range_meters;
+    out_range = static_cast<float>(max_range_meters);
   }
   else
   {  // No: The normal case:
-    out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS * ray_len * m_resolution;
+    out_range = static_cast<float>(RAYTRACE_STEP_SIZE_IN_CELL_UNITS * ray_len * m_resolution);
     out_valid = (ray_len < max_ray_len);  // out_range<max_range_meters;
     // Add additive Gaussian noise:
     if (noiseStd > 0 && out_valid)
-      out_range += noiseStd * getRandomGenerator().drawGaussian1D_normalized();
+      out_range += static_cast<float>(noiseStd * getRandomGenerator().drawGaussian1D_normalized());
   }
 }
 

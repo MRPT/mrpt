@@ -37,8 +37,8 @@ TEST(OpenGL, perspectiveMatrix)
   size_t view_w = 640, view_h = 480;
 
   mrpt::opengl::TRenderMatrices rm;
-  rm.viewport_width = view_w;
-  rm.viewport_height = view_h;
+  rm.viewport_width = static_cast<uint32_t>(view_w);
+  rm.viewport_height = static_cast<uint32_t>(view_h);
   rm.FOV = fovy_deg;
   rm.is_projective = true;
 
@@ -134,12 +134,12 @@ TEST(OpenGL, perspectiveMatrixFromPinhole)
   {
     // Project point test:
     mrpt::math::CMatrixFixed<float, 4, 1> pt1;
-    const float fov_x = 2 * atan(c1.ncols / (2 * c1.fx()));
-    const float fov_y = 2 * atan(c1.nrows / (2 * c1.fy()));
+    const float fov_x = static_cast<float>(2 * atan(c1.ncols / (2 * c1.fx())));
+    const float fov_y = static_cast<float>(2 * atan(c1.nrows / (2 * c1.fy())));
 
     const float z = 10.0f;
-    pt1[0] = tan(fov_x / 2) * z;
-    pt1[1] = tan(fov_y / 2) * z;
+    pt1[0] = static_cast<float>(tan(fov_x / 2)) * z;
+    pt1[1] = static_cast<float>(tan(fov_y / 2)) * z;
     pt1[2] = z;
     pt1[3] = 1.0;
     const Eigen::Vector4f pt1h = (rm.p_matrix * pt1);

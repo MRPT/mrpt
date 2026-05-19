@@ -274,8 +274,8 @@ void CRandomFieldGridMap3D::updateMapEstimation()
   mrpt::math::CVectorDouble x_incr, x_var;
   m_gmrf.updateEstimation(x_incr, insertionOptions.GMRF_skip_variance ? nullptr : &x_var);
 
-  ASSERT_(size_t(m_map.size()) == size_t(x_incr.size()));
-  ASSERT_(insertionOptions.GMRF_skip_variance || size_t(m_map.size()) == size_t(x_var.size()));
+  ASSERT_(m_map.size() == x_incr.size());
+  ASSERT_(insertionOptions.GMRF_skip_variance || m_map.size() == x_var.size());
 
   // Update Mean-Variance in the base grid class
   for (size_t j = 0; j < m_map.size(); j++)

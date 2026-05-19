@@ -142,7 +142,7 @@ class TextureResourceHandler
       auto& lst = itLst->second;
 
       // Delete in OpenGL:
-      glDeleteTextures(lst.size(), lst.data());
+      glDeleteTextures(static_cast<GLsizei>(lst.size()), lst.data());
       CHECK_OPENGL_ERROR_IN_DEBUG();
 
       // delete in rgb data container too:
@@ -405,10 +405,12 @@ void Texture::internalAssignImage_2D(
 
   // if wrap is true, the texture wraps over at the edges (repeat)
   //       ... false, the texture ends at the edges (clamp)
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, lmbdWrapMap(o.wrappingModeS));
+  glTexParameterf(
+      GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLfloat>(lmbdWrapMap(o.wrappingModeS)));
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, lmbdWrapMap(o.wrappingModeT));
+  glTexParameterf(
+      GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLfloat>(lmbdWrapMap(o.wrappingModeT)));
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
   // Ensure that the images do not overpass the maximum dimensions allowed
@@ -416,7 +418,8 @@ void Texture::internalAssignImage_2D(
   // ------------------------------------------------------------------------------------
   GLint texSize = 0;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSize);
-  while (rgb.getHeight() > (unsigned int)texSize || rgb.getWidth() > (unsigned int)texSize)
+  while (rgb.getHeight() > static_cast<unsigned int>(texSize) ||
+         rgb.getWidth() > static_cast<unsigned int>(texSize))
   {
     static bool warningEmitted = false;
     if (!warningEmitted)
@@ -620,7 +623,8 @@ void Texture::bindAsCubeTexture()
 #endif
 }
 
-void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int textureUnit)
+void Texture::assignCubeImages(
+    const std::array<mrpt::img::CImage, 6>& imgs, [[maybe_unused]] int textureUnit)
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
@@ -651,8 +655,8 @@ void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int
   {
     GLint maxTexSize;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
-    ASSERT_LE_(imgs[0].getHeight(), (unsigned int)maxTexSize);
-    ASSERT_LE_(imgs[0].getWidth(), (unsigned int)maxTexSize);
+    ASSERT_LE_(imgs[0].getHeight(), static_cast<unsigned int>(maxTexSize));
+    ASSERT_LE_(imgs[0].getWidth(), static_cast<unsigned int>(maxTexSize));
   }
 
   for (int face = 0; face < 6; face++)
@@ -689,7 +693,7 @@ void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs, int
     // Send image data to OpenGL:
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     CHECK_OPENGL_ERROR_IN_DEBUG();
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, rgb.getRowStride() / nBytesPerPixel);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(rgb.getRowStride() / nBytesPerPixel));
     CHECK_OPENGL_ERROR_IN_DEBUG();
     glTexImage2D(
         GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0 /*level*/,

@@ -58,13 +58,13 @@ void CObservationStereoImagesFeatures::serializeTo(mrpt::serialization::CArchive
   out << cameraLeft;
   out << cameraRight;
   out << rightCameraPose << cameraPoseOnRobot;
-  out << (uint32_t)theFeatures.size();  // Write the number of items
+  out << static_cast<uint32_t>(theFeatures.size());  // Write the number of items
   // within the feature list
   for (const auto& theFeature : theFeatures)
   {
     out << theFeature.pixels.first.x << theFeature.pixels.first.y;
     out << theFeature.pixels.second.x << theFeature.pixels.second.y;
-    out << (uint32_t)theFeature.ID;
+    out << static_cast<uint32_t>(theFeature.ID);
   }
   out << sensorLabel << timestamp;
 }
@@ -87,7 +87,7 @@ void CObservationStereoImagesFeatures::serializeFrom(
         in >> theFeature.pixels.first.x >> theFeature.pixels.first.y;
         in >> theFeature.pixels.second.x >> theFeature.pixels.second.y;
         in >> nR;
-        theFeature.ID = (unsigned int)nR;
+        theFeature.ID = static_cast<unsigned int>(nR);
       }
       in >> sensorLabel >> timestamp;
     }
@@ -132,8 +132,9 @@ void CObservationStereoImagesFeatures::getDescriptionAsText(std::ostream& o) con
 
   o << endl
     << mrpt::format(
-           " Image size: %ux%u pixels\n", (unsigned int)cameraLeft.ncols,
-           (unsigned int)cameraLeft.nrows);
+           " Image size: %ux%u pixels\n", static_cast<unsigned int>(cameraLeft.ncols),
+           static_cast<unsigned int>(cameraLeft.nrows));
   o << endl
-    << mrpt::format(" Number of features in images: %u\n", (unsigned int)theFeatures.size());
+    << mrpt::format(
+           " Number of features in images: %u\n", static_cast<unsigned int>(theFeatures.size()));
 }

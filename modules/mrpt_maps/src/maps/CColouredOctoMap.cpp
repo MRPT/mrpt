@@ -163,7 +163,9 @@ bool CColouredOctoMap::internal_insertObservation(
     // Sensor_pose = robot_pose (+) sensor_pose_on_robot
     CPose3D sensorPose(UNINITIALIZED_POSE);
     sensorPose.composeFrom(robotPose3D, o.sensorPose);
-    sensorPt = octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
+    sensorPt = octomap::point3d(
+        static_cast<float>(sensorPose.x()), static_cast<float>(sensorPose.y()),
+        static_cast<float>(sensorPose.z()));
 
     const auto* scanPts = o.buildAuxPointsMap<mrpt::maps::CPointsMap>();
     const size_t nPts = scanPts->size();
@@ -182,7 +184,7 @@ bool CColouredOctoMap::internal_insertObservation(
       robotPose3D.composePoint(pt.x, pt.y, pt.z, gx, gy, gz);
 
       // Add to this map:
-      scan.push_back(gx, gy, gz);
+      scan.push_back(static_cast<float>(gx), static_cast<float>(gy), static_cast<float>(gz));
     }
 
     // Insert rays:
@@ -209,7 +211,9 @@ bool CColouredOctoMap::internal_insertObservation(
     // Sensor_pose = robot_pose (+) sensor_pose_on_robot
     CPose3D sensorPose(UNINITIALIZED_POSE);
     sensorPose.composeFrom(robotPose3D, o.sensorPose);
-    sensorPt = octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
+    sensorPt = octomap::point3d(
+        static_cast<float>(sensorPose.x()), static_cast<float>(sensorPose.y()),
+        static_cast<float>(sensorPose.z()));
 
     const size_t sizeRangeScan = pts->size();
     scan.reserve(sizeRangeScan);
@@ -319,7 +323,8 @@ void CColouredOctoMap::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) con
   const unsigned char max_depth = 0;  // all
   const TColorf general_color = gl_obj.getColor();
   const TColor general_color_u(
-      general_color.R * 255, general_color.G * 255, general_color.B * 255, general_color.A * 255);
+      static_cast<uint8_t>(general_color.R * 255), static_cast<uint8_t>(general_color.G * 255),
+      static_cast<uint8_t>(general_color.B * 255), static_cast<uint8_t>(general_color.A * 255));
 
   gl_obj.clear();
   gl_obj.reserveGridCubes(this->calcNumNodes());

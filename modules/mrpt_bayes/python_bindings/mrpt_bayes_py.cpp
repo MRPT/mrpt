@@ -29,10 +29,8 @@ PYBIND11_MODULE(_bindings, m)
   // TParticleFilterAlgorithm enum
   // -------------------------------------------------------------------------
   py::enum_<CParticleFilter::TParticleFilterAlgorithm>(m, "TParticleFilterAlgorithm")
-      .value(
-          "StandardProposal", CParticleFilter::TParticleFilterAlgorithm::StandardProposal)
-      .value(
-          "AuxiliaryPFStandard", CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFStandard)
+      .value("StandardProposal", CParticleFilter::TParticleFilterAlgorithm::StandardProposal)
+      .value("AuxiliaryPFStandard", CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFStandard)
       .value("OptimalProposal", CParticleFilter::TParticleFilterAlgorithm::OptimalProposal)
       .value("AuxiliaryPFOptimal", CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFOptimal)
       // Backward-compat aliases
@@ -134,8 +132,6 @@ PYBIND11_MODULE(_bindings, m)
           "Compute resampling indexes from log-weights.\n"
           "Returns a list of particle indices after resampling.")
       .def_static(
-          "logWeightsToLinear",
-          &CParticleFilterCapable::logWeightsToLinear,
-          py::arg("log_weights"),
+          "logWeightsToLinear", &CParticleFilterCapable::logWeightsToLinear, py::arg("log_weights"),
           "Convert log-weights to normalized linear weights (sum=1).");
 }

@@ -83,7 +83,8 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
     //  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>
     const std::string sMapName = allMapKind.first;
 
-    unsigned int n = ini.read_uint64_t(sectionName, sMapName + "_count"s, 0);
+    unsigned int n =
+        static_cast<unsigned int>(ini.read_uint64_t(sectionName, sMapName + "_count"s, 0));
     for (unsigned int i = 0; i < n; i++)
     {
       TMetricMapInitializer::Ptr mi = mmr.factoryMapDefinition(sMapName);
@@ -140,7 +141,9 @@ void TSetOfMetricMapInitializers::dumpToTextStream(std::ostream& out) const
   int i = 0;
   for (auto it = begin(); it != end(); ++it, i++)
   {
-    out << mrpt::format("------- Internal map %u out of %u:\n", i + 1, (int)size());
+    out << mrpt::format(
+        "------- Internal map %u out of %u:\n", static_cast<unsigned>(i + 1),
+        static_cast<unsigned>(size()));
     (*it)->dumpToTextStream(out);
   }  // for "it"
   MRPT_END

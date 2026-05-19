@@ -103,7 +103,7 @@ void CBeaconMap::serializeTo(mrpt::serialization::CArchive& out) const
   out << genericMapParams;  // v1
 
   // First, write the number of landmarks:
-  const uint32_t n = m_beacons.size();
+  const uint32_t n = static_cast<uint32_t>(m_beacons.size());
   out << n;
   // Write all landmarks:
   for (const auto& it : *this) out << it;
@@ -221,16 +221,18 @@ double CBeaconMap::internal_computeObservationLikelihood(
             // Compute the Jacobian H and varZ
             CMatrixFixed<double, 1, 3> H;
             float varZ, varR = square(likelihoodOptions.rangeStd);
-            float Ax = beac->m_locationGauss.mean.x() - sensor3D.x();
-            float Ay = beac->m_locationGauss.mean.y() - sensor3D.y();
-            float Az = beac->m_locationGauss.mean.z() - sensor3D.z();
+            float Ax = static_cast<float>(beac->m_locationGauss.mean.x() - sensor3D.x());
+            float Ay = static_cast<float>(beac->m_locationGauss.mean.y() - sensor3D.y());
+            float Az = static_cast<float>(beac->m_locationGauss.mean.z() - sensor3D.z());
             H(0, 0) = Ax;
             H(0, 1) = Ay;
             H(0, 2) = Az;
-            float expectedRange = sensor3D.distanceTo(beac->m_locationGauss.mean);
+            float expectedRange =
+                static_cast<float>(sensor3D.distanceTo(beac->m_locationGauss.mean));
             H.asEigen() *= 1.0 / expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
 
-            varZ = mrpt::math::multiply_HCHt_scalar(H, beac->m_locationGauss.cov);
+            varZ =
+                static_cast<float>(mrpt::math::multiply_HCHt_scalar(H, beac->m_locationGauss.cov));
 
             varZ += varR;
 
@@ -383,7 +385,8 @@ bool CBeaconMap::internal_insertObservation(
 
             newBeac.m_typePDF = CBeacon::pdfMonteCarlo;
 
-            size_t numParts = round(insertionOptions.MC_numSamplesPerMeter * sensedRange);
+            size_t numParts =
+                static_cast<size_t>(round(insertionOptions.MC_numSamplesPerMeter * sensedRange));
             ASSERT_(insertionOptions.minElevation_deg <= insertionOptions.maxElevation_deg);
             double minA = DEG2RAD(insertionOptions.minElevation_deg);
             double maxA = DEG2RAD(insertionOptions.maxElevation_deg);
@@ -544,7 +547,8 @@ bool CBeaconMap::internal_insertObservation(
             case CBeacon::pdfGauss:
             {
               // Compute the mean expected range:
-              float expectedRange = sensorPnt.distanceTo(beac->m_locationGauss.mean);
+              float expectedRange =
+                  static_cast<float>(sensorPnt.distanceTo(beac->m_locationGauss.mean));
               float varR = square(likelihoodOptions.rangeStd);
               // bool	useEKF_or_KF = true;
 
@@ -659,7 +663,7 @@ bool CBeaconMap::internal_insertObservation(
               double D1 = sqrt(curCov(0, 0));
               double D2 = sqrt(curCov(1, 1));
               double D3 = sqrt(curCov(2, 2));
-              float maxDiag = max3(D1, D2, D3);
+              float maxDiag = static_cast<float>(max3(D1, D2, D3));
 
               if (maxDiag < 0.10f)
               {
@@ -814,7 +818,7 @@ void CBeaconMap::computeMatchingWith3DLandmarks(
   }  // end of other it., k
 
   // Compute the corrs ratio:
-  correspondencesRatio = 2.0f * correspondences.size() / d2f(nThis + nOther);
+  correspondencesRatio = 2.0f * static_cast<float>(correspondences.size()) / d2f(nThis + nOther);
 
   MRPT_END
 }
@@ -1129,8 +1133,8 @@ void CBeaconMap::saveToTextFile(const string& fil) const
   {
     const auto [C, p] = m_beacon.getCovarianceAndMean();
 
-    float D3 = C.det();
-    float D2 = C(0, 0) * C(1, 1) - square(C(0, 1));
+    float D3 = static_cast<float>(C.det());
+    float D2 = static_cast<float>(C(0, 0) * C(1, 1) - square(C(0, 1)));
     os::fprintf(
         f, "%i %f %f %f %e %e %e %e %e %e %e %e\n", static_cast<int>(m_beacon.m_ID), p.x(), p.y(),
         p.z(), C(0, 0), C(1, 1), C(2, 2), D2, D3, C(0, 1), C(1, 2), C(1, 2));

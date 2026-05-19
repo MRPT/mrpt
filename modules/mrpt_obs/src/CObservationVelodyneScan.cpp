@@ -122,13 +122,15 @@ namespace
 {
 double HDL32AdjustTimeStamp(int firingblock, int dsr)
 {
-  return (firingblock * HDR32_FIRING_TOFFSET) + (dsr * HDR32_DSR_TOFFSET);
+  return (static_cast<float>(firingblock) * HDR32_FIRING_TOFFSET) +
+         (static_cast<float>(dsr) * HDR32_DSR_TOFFSET);
 }
 /** [us] */
 double VLP16AdjustTimeStamp(int firingblock, int dsr, int firingwithinblock)
 {
-  return (firingblock * VLP16_BLOCK_TDURATION) + (dsr * VLP16_DSR_TOFFSET) +
-         (firingwithinblock * VLP16_FIRING_TOFFSET);
+  return (static_cast<float>(firingblock) * VLP16_BLOCK_TDURATION) +
+         (static_cast<float>(dsr) * VLP16_DSR_TOFFSET) +
+         (static_cast<float>(firingwithinblock) * VLP16_FIRING_TOFFSET);
 }
 
 void velodyne_scan_to_pointcloud(
@@ -172,9 +174,10 @@ void velodyne_scan_to_pointcloud(
       const uint32_t us_pkt0 = scan.scan_packets[0].gps_timestamp();
       const uint32_t us_pkt_this = raw->gps_timestamp();
       // Handle the case of time counter reset by new hour 00:00:00
-      const uint32_t us_ellapsed = (us_pkt_this >= us_pkt0)
-                                       ? (us_pkt_this - us_pkt0)
-                                       : (1000000UL * 3600UL + us_pkt_this - us_pkt0);
+      const uint32_t us_ellapsed =
+          (us_pkt_this >= us_pkt0)
+              ? (us_pkt_this - us_pkt0)
+              : static_cast<uint32_t>(1000000UL * 3600UL + us_pkt_this - us_pkt0);
       pkt_tim = mrpt::system::timestampAdd(scan.timestamp, us_ellapsed * 1e-6);
     }
 
@@ -322,8 +325,9 @@ void velodyne_scan_to_pointcloud(
             median_azimuth_diff *
             ((timestampadjustment - blockdsr0) / (nextblockdsr0 - blockdsr0)));
 
-        const float azimuth_corrected_f = azimuth_raw_f + azimuthadjustment;
-        const int azimuth_corrected = ((int)round(azimuth_corrected_f)) % Velo::ROTATION_MAX_UNITS;
+        const float azimuth_corrected_f = azimuth_raw_f + static_cast<float>(azimuthadjustment);
+        const int azimuth_corrected =
+            static_cast<int>(round(azimuth_corrected_f)) % Velo::ROTATION_MAX_UNITS;
 
         // Filter by azimuth:
         if (!((minAzimuth_int < maxAzimuth_int && azimuth_corrected >= minAzimuth_int &&
@@ -428,7 +432,8 @@ void Velo::generatePointCloud(const TGeneratePointCloudParameters& params)
       if (params_.generatePerPointAzimuth)
       {
         const int azimuth_corrected = round(azimuth) % Velo::ROTATION_MAX_UNITS;
-        me_.point_cloud.azimuth.push_back(azimuth_corrected * ROTATION_RESOLUTION);
+        me_.point_cloud.azimuth.push_back(
+            static_cast<float>(azimuth_corrected) * ROTATION_RESOLUTION);
       }
       me_.point_cloud.laser_id.push_back(laser_id);
       if (params_.generatePointsForLaserID)

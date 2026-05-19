@@ -57,7 +57,7 @@ class CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
 
  private:
   // Not used in this class:
-  void navigate(const TNavigationParams* params) override {}
+  void navigate([[maybe_unused]] const TNavigationParams* params) override {}
   void performNavigationStep() override {}
 };
 }  // namespace mrpt::nav

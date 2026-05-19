@@ -98,7 +98,7 @@ void CCameraSensor::initialize()
     std::cout << mrpt::format(
         "[CCameraSensor::initialize] opencv camera, index: %i type: "
         "%i...\n",
-        int(m_cv_camera_index), (int)ct);
+        int(m_cv_camera_index), static_cast<int>(ct));
     m_cap_cv = std::make_unique<CImageGrabber_OpenCV>(m_cv_camera_index, ct, m_cv_options);
 
     if (!m_cap_cv->isOpen())
@@ -132,7 +132,7 @@ void CCameraSensor::initialize()
     std::cout << mrpt::format(
         "[CCameraSensor::initialize] bumblebee_libdc1394 camera: "
         "GUID:0x%08X Index:%i FPS:%f...\n",
-        (unsigned int)(m_bumblebee_dc1394_camera_guid), m_bumblebee_dc1394_camera_unit,
+        static_cast<unsigned int>(m_bumblebee_dc1394_camera_guid), m_bumblebee_dc1394_camera_unit,
         m_bumblebee_dc1394_framerate);
     m_cap_bumblebee_dc1394 = std::make_unique<CStereoGrabber_Bumblebee_libdc1394>(
         m_bumblebee_dc1394_camera_guid, m_bumblebee_dc1394_camera_unit,
@@ -356,7 +356,7 @@ void CCameraSensor::loadConfig_sensorSpecific(
   //  external image files are not saved just to be discarded later on...
   if (m_grab_decimation > 0)
   {
-    m_camera_grab_decimator = m_grab_decimation;
+    m_camera_grab_decimator = static_cast<int>(m_grab_decimation);
     m_camera_grab_decimator_counter = 0;
     // Reset in parent:
     m_grab_decimation = 0;
@@ -1005,15 +1005,15 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
       {
         const string filNameL = fileNameStripInvalidChars(trim(m_sensorLabel)) +
                                 mrpt::format(
-                                    "_L_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
+                                    "_L_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         const string filNameR = fileNameStripInvalidChars(trim(m_sensorLabel)) +
                                 mrpt::format(
-                                    "_R_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
+                                    "_R_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         const string filNameD = fileNameStripInvalidChars(trim(m_sensorLabel)) +
                                 mrpt::format(
-                                    "_D_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
+                                    "_D_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         // std::cout << "[CCameraSensor] Saving " << filName << "\n";
         if (!stObs->imageLeft.saveToFile(
@@ -1067,10 +1067,10 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
       }
       else
       {
-        string filName = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                         mrpt::format(
-                             "_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
-                             m_external_images_format.c_str());
+        string filName =
+            fileNameStripInvalidChars(trim(m_sensorLabel)) +
+            mrpt::format(
+                "_%f.%s", mrpt::Clock::toDouble(obs->timestamp), m_external_images_format.c_str());
         // std::cout << "[CCameraSensor] Saving " << filName << "\n";
         if (!obs->image.saveToFile(
                 m_path_for_external_images + string("/") + filName, m_external_images_jpeg_quality))
@@ -1165,10 +1165,10 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
       {
         CObservationImage::Ptr obs = std::dynamic_pointer_cast<CObservationImage>(i->second);
 
-        string filName = fileNameStripInvalidChars(trim(m_sensorLabel)) +
-                         mrpt::format(
-                             "_%f.%s", (double)mrpt::Clock::toDouble(obs->timestamp),
-                             m_external_images_format.c_str());
+        string filName =
+            fileNameStripInvalidChars(trim(m_sensorLabel)) +
+            mrpt::format(
+                "_%f.%s", mrpt::Clock::toDouble(obs->timestamp), m_external_images_format.c_str());
 
         if (!obs->image.saveToFile(
                 m_path_for_external_images + string("/") + filName, m_external_images_jpeg_quality))
@@ -1185,15 +1185,15 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 
         const string filNameL = fileNameStripInvalidChars(trim(m_sensorLabel)) +
                                 mrpt::format(
-                                    "_L_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
+                                    "_L_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         const string filNameR = fileNameStripInvalidChars(trim(m_sensorLabel)) +
                                 mrpt::format(
-                                    "_R_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
+                                    "_R_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
         const string filNameD = fileNameStripInvalidChars(trim(m_sensorLabel)) +
                                 mrpt::format(
-                                    "_D_%f.%s", (double)mrpt::Clock::toDouble(stObs->timestamp),
+                                    "_D_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
                                     m_external_images_format.c_str());
 
         if (!stObs->imageLeft.saveToFile(

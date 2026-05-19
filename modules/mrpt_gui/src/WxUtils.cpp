@@ -164,7 +164,7 @@ void wxMRPTImageControl::AssignImage(const mrpt::img::CImage& img)
   m_img = wxImg;
 }
 
-void wxMRPTImageControl::OnPaint(wxPaintEvent& ev)
+void wxMRPTImageControl::OnPaint([[maybe_unused]] wxPaintEvent& ev)
 {
   wxPaintDC dc(this);
 
@@ -644,7 +644,7 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
       if (this->rbBumblebeeSel->GetSelection() < 2)
         cfg->write(
             sect, "bumblebee_mono",
-            mrpt::format("%i\n", (int)this->rbBumblebeeSel->GetSelection()));
+            mrpt::format("%i\n", static_cast<int>(this->rbBumblebeeSel->GetSelection())));
       else
       { /* Use stereo capture */
       }

@@ -214,8 +214,10 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
   mrpt::maps::TMatchingParams matchParams;
   mrpt::maps::TMatchingExtraResults matchExtraResults;
 
-  matchParams.maxDistForCorrespondence = options.thresholdDist;        // Distance threshold.
-  matchParams.maxAngularDistForCorrespondence = options.thresholdAng;  // Angular threshold.
+  matchParams.maxDistForCorrespondence =
+      static_cast<float>(options.thresholdDist);  // Distance threshold.
+  matchParams.maxAngularDistForCorrespondence =
+      static_cast<float>(options.thresholdAng);  // Angular threshold.
   // Option onlyClosestCorrespondences removed in MRPT 2.0.
   matchParams.onlyKeepTheClosest = true;
   matchParams.onlyUniqueRobust = options.onlyUniqueRobust;
@@ -271,9 +273,10 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
               fabs(math::wrapToPi(lastMeanPose.phi() - gaussPdf->mean.phi())) >
                   options.minAbsStep_rot))
         {
-          matchParams.maxDistForCorrespondence *= options.ALFA;
-          matchParams.maxAngularDistForCorrespondence *= options.ALFA;
-          if (matchParams.maxDistForCorrespondence < options.smallestThresholdDist)
+          matchParams.maxDistForCorrespondence *= static_cast<float>(options.ALFA);
+          matchParams.maxAngularDistForCorrespondence *= static_cast<float>(options.ALFA);
+          if (matchParams.maxDistForCorrespondence <
+              static_cast<float>(options.smallestThresholdDist))
             keepApproaching = false;
 
           if (++matchParams.offset_other_map_points >= options.corresponding_points_decimation)
@@ -288,14 +291,15 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
       outInfo.nIterations++;
 
       if (outInfo.nIterations >= options.maxIterations &&
-          matchParams.maxDistForCorrespondence > options.smallestThresholdDist)
+          matchParams.maxDistForCorrespondence > static_cast<float>(options.smallestThresholdDist))
       {
-        matchParams.maxDistForCorrespondence *= options.ALFA;
+        matchParams.maxDistForCorrespondence *= static_cast<float>(options.ALFA);
       }
 
-    } while ((keepApproaching && outInfo.nIterations < options.maxIterations) ||
-             (outInfo.nIterations >= options.maxIterations &&
-              matchParams.maxDistForCorrespondence > options.smallestThresholdDist));
+    } while (
+        (keepApproaching && outInfo.nIterations < options.maxIterations) ||
+        (outInfo.nIterations >= options.maxIterations &&
+         matchParams.maxDistForCorrespondence > static_cast<float>(options.smallestThresholdDist)));
 
     // -------------------------------------------------
     //   Obtain the covariance matrix of the estimation
@@ -328,19 +332,21 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
           double ccos = cos(transf.phi);
           double csin = sin(transf.phi);
 
-          double w1, w2, w3;
+          float w1, w2, w3;
           double q1, q2, q3;
           double A, B;
-          double Axy = 0.01;
+          float Axy = 0.01f;
 
           // Fill out D:
-          double rho2 = square(options.kernel_rho);
+          const float rho2 = static_cast<float>(square(options.kernel_rho));
           mrpt::tfest::TMatchingPairList::iterator it;
           size_t i;
           for (i = 0, it = correspondences.begin(); i < nCorrespondences; ++i, ++it)
           {
-            float other_x_trans = transf.x + ccos * it->local.x - csin * it->local.y;
-            float other_y_trans = transf.y + csin * it->local.x + ccos * it->local.y;
+            float other_x_trans =
+                static_cast<float>(transf.x + ccos * it->local.x - csin * it->local.y);
+            float other_y_trans =
+                static_cast<float>(transf.y + csin * it->local.x + ccos * it->local.y);
 
             // Jacobian: dR2_dx
             // --------------------------------------
@@ -541,8 +547,10 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
   TMatchingParams matchParams;
   TMatchingExtraResults matchExtraResults;
 
-  matchParams.maxDistForCorrespondence = options.thresholdDist;        // Distance threshold
-  matchParams.maxAngularDistForCorrespondence = options.thresholdAng;  // Angular threshold
+  matchParams.maxDistForCorrespondence =
+      static_cast<float>(options.thresholdDist);  // Distance threshold
+  matchParams.maxAngularDistForCorrespondence =
+      static_cast<float>(options.thresholdAng);  // Angular threshold
   matchParams.onlyKeepTheClosest = true;
   matchParams.onlyUniqueRobust = onlyUniqueRobust;
   matchParams.decimation_other_map_points = options.corresponding_points_decimation;
@@ -598,10 +606,11 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
         double ccos = cos(q.phi());
         double csin = sin(q.phi());
 
-        double w1, w2, w3;
+        float w1, w2, w3;
         double q1, q2, q3;
         double A, B;
-        const double Axy = options.Axy_aprox_derivatives;  // For approximating the
+        const float Axy =
+            static_cast<float>(options.Axy_aprox_derivatives);  // For approximating the
         // derivatives
 
         // Compute at once the square errors for each point with the
@@ -612,7 +621,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
         // Compute "dJ_dq"
         // ------------------------------------
-        double rho2 = square(options.kernel_rho);
+        const float rho2 = static_cast<float>(square(options.kernel_rho));
         mrpt::tfest::TMatchingPairList::iterator it;
         std::vector<float>::const_iterator other_x_trans, other_y_trans;
         size_t i;
@@ -627,15 +636,15 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
 #ifndef ICP_DISTANCES_TO_LINE
           w1 = *other_x_trans - Axy;
-          q1 = m1->squareDistanceToClosestCorrespondence(w1, *other_y_trans);
+          q1 = m1->squareDistanceToClosestCorrespondence(static_cast<float>(w1), *other_y_trans);
           q1 = kernel(q1, rho2);
 
           w2 = *other_x_trans;
-          q2 = m1->squareDistanceToClosestCorrespondence(w2, *other_y_trans);
+          q2 = m1->squareDistanceToClosestCorrespondence(static_cast<float>(w2), *other_y_trans);
           q2 = kernel(q2, rho2);
 
           w3 = *other_x_trans + Axy;
-          q3 = m1->squareDistanceToClosestCorrespondence(w3, *other_y_trans);
+          q3 = m1->squareDistanceToClosestCorrespondence(static_cast<float>(w3), *other_y_trans);
           q3 = kernel(q3, rho2);
 #else
           // The distance to the line that interpolates the TWO
@@ -664,7 +673,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
           A = ((q3 - q2) / ((w3 - w2) * (w3 - w1))) - ((q1 - q2) / ((w1 - w2) * (w3 - w1)));
           B = ((q1 - q2) + (A * ((w2 * w2) - (w1 * w1)))) / (w1 - w2);
 
-          dJ_dq(0, i) = (2 * A * *other_x_trans) + B;
+          dJ_dq(0, i) = static_cast<float>((2 * A * *other_x_trans) + B);
 
           // Jacobian: dJ_dy
           // --------------------------------------
@@ -695,12 +704,13 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
           A = ((q3 - q2) / ((w3 - w2) * (w3 - w1))) - ((q1 - q2) / ((w1 - w2) * (w3 - w1)));
           B = ((q1 - q2) + (A * ((w2 * w2) - (w1 * w1)))) / (w1 - w2);
 
-          dJ_dq(1, i) = (2 * A * *other_y_trans) + B;
+          dJ_dq(1, i) = static_cast<float>((2 * A * *other_y_trans) + B);
 
           // Jacobian: dR_dphi
           // --------------------------------------
-          dJ_dq(2, i) = dJ_dq(0, i) * (-csin * it->local.x - ccos * it->local.y) +
-                        dJ_dq(1, i) * (ccos * it->local.x - csin * it->local.y);
+          dJ_dq(2, i) = static_cast<float>(
+              dJ_dq(0, i) * (-csin * it->local.x - ccos * it->local.y) +
+              dJ_dq(1, i) * (ccos * it->local.x - csin * it->local.y));
 
         }  // end for each corresp.
 
@@ -730,7 +740,8 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
           //  x_{k+1} = x_k  - ( H + \lambda diag(H) )^-1 * grad(J)
           //  grad(J) = dJ_dq * e (vector of errors)
           C = H;
-          for (i = 0; i < 3; i++) C(i, i) *= (1 + lambda);  // Levenberg-Maquardt heuristic
+          for (i = 0; i < 3; i++)
+            C(i, i) *= static_cast<float>(1 + lambda);  // Levenberg-Maquardt heuristic
 
           C_inv = C.inverse_LLt();
 
@@ -784,9 +795,10 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
             fabs(lastMeanPose.y() - q.y()) < options.minAbsStep_trans &&
             fabs(math::wrapToPi(lastMeanPose.phi() - q.phi())) < options.minAbsStep_rot)
         {
-          matchParams.maxDistForCorrespondence *= options.ALFA;
-          matchParams.maxAngularDistForCorrespondence *= options.ALFA;
-          if (matchParams.maxDistForCorrespondence < options.smallestThresholdDist)
+          matchParams.maxDistForCorrespondence *= static_cast<float>(options.ALFA);
+          matchParams.maxAngularDistForCorrespondence *= static_cast<float>(options.ALFA);
+          if (matchParams.maxDistForCorrespondence <
+              static_cast<float>(options.smallestThresholdDist))
             keepIteratingICP = false;
 
           if (++matchParams.offset_other_map_points >= options.corresponding_points_decimation)
@@ -799,14 +811,15 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
       outInfo.nIterations++;
 
       if (outInfo.nIterations >= options.maxIterations &&
-          matchParams.maxDistForCorrespondence > options.smallestThresholdDist)
+          matchParams.maxDistForCorrespondence > static_cast<float>(options.smallestThresholdDist))
       {
-        matchParams.maxDistForCorrespondence *= options.ALFA;
+        matchParams.maxDistForCorrespondence *= static_cast<float>(options.ALFA);
       }
 
-    } while ((keepIteratingICP && outInfo.nIterations < options.maxIterations) ||
-             (outInfo.nIterations >= options.maxIterations &&
-              matchParams.maxDistForCorrespondence > options.smallestThresholdDist));
+    } while (
+        (keepIteratingICP && outInfo.nIterations < options.maxIterations) ||
+        (outInfo.nIterations >= options.maxIterations &&
+         matchParams.maxDistForCorrespondence > static_cast<float>(options.smallestThresholdDist)));
 
     outInfo.goodness = matchExtraResults.correspondencesRatio;
 
@@ -879,7 +892,7 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 
   // Assure the class of the maps:
   ASSERT_(mm2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
-  const CPointsMap* m2 = (CPointsMap*)mm2;
+  const CPointsMap* m2 = static_cast<const CPointsMap*>(mm2);
 
   // Asserts:
   // -----------------
@@ -902,8 +915,10 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
   TMatchingParams matchParams;
   TMatchingExtraResults matchExtraResults;
 
-  matchParams.maxDistForCorrespondence = options.thresholdDist;        // Distance threshold
-  matchParams.maxAngularDistForCorrespondence = options.thresholdAng;  // Angular threshold
+  matchParams.maxDistForCorrespondence =
+      static_cast<float>(options.thresholdDist);  // Distance threshold
+  matchParams.maxAngularDistForCorrespondence =
+      static_cast<float>(options.thresholdAng);  // Angular threshold
   matchParams.onlyKeepTheClosest = true;
   matchParams.onlyUniqueRobust = options.onlyUniqueRobust;
   matchParams.decimation_other_map_points = options.corresponding_points_decimation;
@@ -960,9 +975,10 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
               fabs(math::wrapToPi(lastMeanPose.roll() - gaussPdf->mean.roll())) >
                   options.minAbsStep_rot))
         {
-          matchParams.maxDistForCorrespondence *= options.ALFA;
-          matchParams.maxAngularDistForCorrespondence *= options.ALFA;
-          if (matchParams.maxDistForCorrespondence < options.smallestThresholdDist)
+          matchParams.maxDistForCorrespondence *= static_cast<float>(options.ALFA);
+          matchParams.maxAngularDistForCorrespondence *= static_cast<float>(options.ALFA);
+          if (matchParams.maxDistForCorrespondence <
+              static_cast<float>(options.smallestThresholdDist))
             keepApproaching = false;
 
           if (++matchParams.offset_other_map_points >= options.corresponding_points_decimation)
@@ -977,14 +993,15 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
       outInfo.nIterations++;
 
       if (outInfo.nIterations >= options.maxIterations &&
-          matchParams.maxDistForCorrespondence > options.smallestThresholdDist)
+          matchParams.maxDistForCorrespondence > static_cast<float>(options.smallestThresholdDist))
       {
-        matchParams.maxDistForCorrespondence *= options.ALFA;
+        matchParams.maxDistForCorrespondence *= static_cast<float>(options.ALFA);
       }
 
-    } while ((keepApproaching && outInfo.nIterations < options.maxIterations) ||
-             (outInfo.nIterations >= options.maxIterations &&
-              matchParams.maxDistForCorrespondence > options.smallestThresholdDist));
+    } while (
+        (keepApproaching && outInfo.nIterations < options.maxIterations) ||
+        (outInfo.nIterations >= options.maxIterations &&
+         matchParams.maxDistForCorrespondence > static_cast<float>(options.smallestThresholdDist)));
 
     // -------------------------------------------------
     //   Obtain the covariance matrix of the estimation

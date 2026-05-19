@@ -250,7 +250,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
         generateLogRecord(
             newLogRec, std::vector<mrpt::math::TPose2D>() /*no targets*/,
             -1,  // best_ptg_idx,
-            m_robot.getEmergencyStopCmd(), nPTGs,
+            m_robot.getEmergencyStopCmd(), static_cast<int>(nPTGs),
             false,  // best_is_NOP_cmdvel,
             rel_cur_pose_wrt_last_vel_cmd_NOP.asTPose(),
             rel_pose_PTG_origin_wrt_sense_NOP.asTPose(),
@@ -425,7 +425,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
       TInfoPerPTG& ipf = m_infoPerPTG[indexPTG];
 
       // Ensure the method knows about its associated PTG:
-      auto holoMethod = this->getHoloMethod(indexPTG);
+      auto holoMethod = this->getHoloMethod(static_cast<int>(indexPTG));
       ASSERT_(holoMethod);
       holoMethod->setAssociatedPTG(this->getPTG(indexPTG));
 
@@ -640,8 +640,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
         if (fill_log_record)
         {
           generateLogRecord(
-              newLogRec, relTargets, nSelectedPTG, m_robot.getEmergencyStopCmd(), nPTGs,
-              best_is_NOP_cmdvel, rel_cur_pose_wrt_last_vel_cmd_NOP,
+              newLogRec, relTargets, nSelectedPTG, m_robot.getEmergencyStopCmd(),
+              static_cast<int>(nPTGs), best_is_NOP_cmdvel, rel_cur_pose_wrt_last_vel_cmd_NOP,
               rel_pose_PTG_origin_wrt_sense_NOP,
               0,  // executionTimeValue,
               0,  // tim_changeSpeed,

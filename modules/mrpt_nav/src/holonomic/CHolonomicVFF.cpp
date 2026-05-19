@@ -69,7 +69,7 @@ CHolonomicVFF::NavOutput CHolonomicVFF::navigate(const NavInput& ni)
   // Obstacles:
   {
     const size_t n = ni.obstacles.size();
-    const double inc_ang = 2 * M_PI / n;
+    const double inc_ang = 2 * M_PI / static_cast<double>(n);
     double ang = -M_PI + 0.5 * inc_ang;
     for (size_t i = 0; i < n; i++, ang += inc_ang)
     {
@@ -83,7 +83,7 @@ CHolonomicVFF::NavOutput CHolonomicVFF::navigate(const NavInput& ni)
     }
   }
 
-  const double obstcl_weight = OBSTACLE_WEIGHT_FACTOR / ni.obstacles.size();
+  const double obstcl_weight = OBSTACLE_WEIGHT_FACTOR / static_cast<double>(ni.obstacles.size());
   resultantForce *= obstcl_weight;
 
   const double obstacleNearnessFactor =
@@ -134,7 +134,7 @@ void CHolonomicVFF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ver
 }
 
 uint8_t CLogFileRecord_VFF::serializeGetVersion() const { return 0; }
-void CLogFileRecord_VFF::serializeTo(mrpt::serialization::CArchive& out) const {}
+void CLogFileRecord_VFF::serializeTo([[maybe_unused]] mrpt::serialization::CArchive& out) const {}
 
 void CLogFileRecord_VFF::serializeFrom(
     [[maybe_unused]] mrpt::serialization::CArchive& in, uint8_t version)

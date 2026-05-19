@@ -643,7 +643,7 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 }
 
 bool CAbstractNavigator::checkCollisionWithLatestObstacles(
-    const mrpt::math::TPose2D& relative_robot_pose) const
+    [[maybe_unused]] const mrpt::math::TPose2D& relative_robot_pose) const
 {
   // Default impl:
   return false;

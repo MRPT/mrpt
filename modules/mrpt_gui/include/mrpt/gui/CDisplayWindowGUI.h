@@ -271,13 +271,13 @@ class CDisplayWindowGUI : public nanogui::Screen
   size_t getSubwindowCount() const { return m_subWindows.windows.size(); }
 
   /** Minimize a subwindow. \note [New in MRPT 2.3.1] */
-  void subwindowMinimize(size_t index) { m_subWindows.minimize(index); }
+  void subwindowMinimize(size_t index) { m_subWindows.minimize(static_cast<int>(index)); }
 
   /** Restore a minimized subwindow. \note [New in MRPT 2.3.1] */
-  void subwindowRestore(size_t index) { m_subWindows.restore(index); }
+  void subwindowRestore(size_t index) { m_subWindows.restore(static_cast<int>(index)); }
 
   /** Forces focus on a subwindow. \note [New in MRPT 2.3.1] */
-  void subwindowSetFocused(size_t index) { m_subWindows.setFocused(index); }
+  void subwindowSetFocused(size_t index) { m_subWindows.setFocused(static_cast<int>(index)); }
 
   /** @} */
 

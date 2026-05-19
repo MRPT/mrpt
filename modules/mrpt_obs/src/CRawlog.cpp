@@ -78,7 +78,7 @@ CActionCollection::ConstPtr CRawlog::getAsAction(size_t index) const
   if (obj->GetRuntimeClass() == CLASS_ID(CActionCollection))
     return std::dynamic_pointer_cast<CActionCollection>(obj);
   else
-    THROW_EXCEPTION_FMT("Element at index %i is not a CActionCollection", (int)index);
+    THROW_EXCEPTION_FMT("Element at index %i is not a CActionCollection", static_cast<int>(index));
   MRPT_END
 }
 
@@ -93,7 +93,7 @@ CObservation::ConstPtr CRawlog::getAsObservation(size_t index) const
   if (obj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
     return std::dynamic_pointer_cast<CObservation>(obj);
   else
-    THROW_EXCEPTION_FMT("Element at index %i is not a CObservation", (int)index);
+    THROW_EXCEPTION_FMT("Element at index %i is not a CObservation", static_cast<int>(index));
   MRPT_END
 }
 
@@ -135,7 +135,7 @@ CSensoryFrame::ConstPtr CRawlog::getAsObservations(size_t index) const
   if (obj->GetRuntimeClass()->derivedFrom(CLASS_ID(CSensoryFrame)))
     return std::dynamic_pointer_cast<CSensoryFrame>(obj);
   else
-    THROW_EXCEPTION_FMT("Element at index %i is not a CSensoryFrame", (int)index);
+    THROW_EXCEPTION_FMT("Element at index %i is not a CSensoryFrame", static_cast<int>(index));
   MRPT_END
 }
 

@@ -40,14 +40,15 @@ void CObservationBearingRange::serializeTo(mrpt::serialization::CArchive& out) c
   // Detect duplicate landmarks ID, which is an error!
   std::set<int32_t> lstIDs;
 
-  n = sensedData.size();
+  n = static_cast<uint32_t>(sensedData.size());
   out << n;
   for (i = 0; i < n; i++)
   {
     int32_t id = sensedData[i].landmarkID;
     if (id != INVALID_LANDMARK_ID)
     {
-      if (0 != lstIDs.count(id)) THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.", (int)id);
+      if (0 != lstIDs.count(id))
+        THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.", static_cast<int>(id));
       lstIDs.insert(id);
     }
 
@@ -117,7 +118,7 @@ void CObservationBearingRange::serializeFrom(mrpt::serialization::CArchive& in, 
         if (id != INVALID_LANDMARK_ID)
         {
           if (0 != lstIDs.count(id))
-            THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.", (int)id);
+            THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.", static_cast<int>(id));
           lstIDs.insert(id);
         }
       }
@@ -218,7 +219,7 @@ std::string CObservationBearingRange::exportTxtDataRow() const
     o << mrpt::format(
         "   %i      %.04f       %.04f       %.04f    %.03f %.03f %.03f "
         "%.03f %.03f %.03f",
-        (int)d.landmarkID, d.range, d.yaw, d.pitch, sensorLocationOnRobot.x(),
+        static_cast<int>(d.landmarkID), d.range, d.yaw, d.pitch, sensorLocationOnRobot.x(),
         sensorLocationOnRobot.y(), sensorLocationOnRobot.z(), sensorLocationOnRobot.yaw(),
         sensorLocationOnRobot.pitch(), sensorLocationOnRobot.roll());
 

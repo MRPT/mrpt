@@ -115,7 +115,7 @@ class CWindowManager : public mrpt::system::COutputLogger
       const double x,
       const double y,
       const std::string& text,
-      const mrpt::img::TColorf& color = mrpt::img::TColorf(1.0, 1.0, 1.0),
+      [[maybe_unused]] const mrpt::img::TColorf& color = mrpt::img::TColorf(1.0, 1.0, 1.0),
       const size_t unique_index = 0)
   {
     if (!win)

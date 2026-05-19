@@ -119,10 +119,10 @@ bool CFFMPEG_InputStream::isOpen() const
           openURL
    -------------------------------------------------------- */
 bool CFFMPEG_InputStream::openURL(
-    const std::string& url,
-    bool grab_as_grayscale,
-    bool verbose,
-    const std::map<std::string, std::string>& optionsMap)
+    [[maybe_unused]] const std::string& url,
+    [[maybe_unused]] bool grab_as_grayscale,
+    [[maybe_unused]] bool verbose,
+    [[maybe_unused]] const std::map<std::string, std::string>& optionsMap)
 {
 #if MRPT_HAS_FFMPEG
   this->close();  // Close first
@@ -327,7 +327,8 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
   return retrieveFrame(out_img, outPTS);
 }
 
-bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img, int64_t& outPTS)
+bool CFFMPEG_InputStream::retrieveFrame(
+    [[maybe_unused]] mrpt::img::CImage& out_img, [[maybe_unused]] int64_t& outPTS)
 {
 #if MRPT_HAS_FFMPEG
   outPTS = 0;

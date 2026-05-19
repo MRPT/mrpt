@@ -603,9 +603,9 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
     //  during the ray tracing:
     const Bonxai::CoordT Ac = endCoord - sensorCoord;
 
-    uint32_t Acx_ = std::abs(Ac.x);
-    uint32_t Acy_ = std::abs(Ac.y);
-    uint32_t Acz_ = std::abs(Ac.z);
+    uint32_t Acx_ = static_cast<uint32_t>(std::abs(Ac.x));
+    uint32_t Acy_ = static_cast<uint32_t>(std::abs(Ac.y));
+    uint32_t Acz_ = static_cast<uint32_t>(std::abs(Ac.z));
 
     const auto nStepsRay = std::max(Acx_, std::max(Acy_, Acz_));
     if (!nStepsRay) continue;  // May be...
