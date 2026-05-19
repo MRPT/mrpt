@@ -1557,6 +1557,8 @@ void CompiledViewport::processRenderQueue(
           glUniform1i(shader->uniformId("ssaoTexture"), SSAO_TEXTURE_UNIT);
         if (shader->hasUniform("ssao_power"))
           glUniform1f(shader->uniformId("ssao_power"), m_lightParams.ssao_power);
+        if (shader->hasUniform("ssao_ambient_floor"))
+          glUniform1f(shader->uniformId("ssao_ambient_floor"), m_lightParams.ssao_ambient_floor);
       }
     }
 

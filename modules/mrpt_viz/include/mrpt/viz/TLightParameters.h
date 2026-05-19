@@ -219,6 +219,14 @@ struct TLightParameters
   /** Exponent applied to the AO factor; >1 darkens, <1 lightens (default: 1.0). */
   float ssao_power = 1.0f;
 
+  /** Minimum AO ambient multiplier [0,1] (default: 0.3).
+   *  SSAO remaps the AO factor from [0,1] to [ssao_ambient_floor, 1] before
+   *  multiplying the ambient term.  Without a floor, fully-occluded surfaces
+   *  that face away from all lights become pitch-black (ambient × 0 = 0).
+   *  A value of 0.3 means even the most occluded surfaces retain 30% of their
+   *  ambient contribution, keeping them dark but visible. */
+  float ssao_ambient_floor = 0.3f;
+
   /** Number of hemisphere samples: 16, 32, or 64 (default: 32). */
   uint8_t ssao_kernel_size = 32;
 

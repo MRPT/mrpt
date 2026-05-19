@@ -88,7 +88,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
                   "materialEmissive", "fog_enabled",       "fog_color",
                   "fog_near",         "fog_far",           "fog_mode",
                   "fog_density",      "ssao_enabled",      "ssaoTexture",
-                  "ssao_power"};
+                  "ssao_power",       "ssao_ambient_floor"};
       attribs = {"position", "vertexColor", "vertexNormal"};
       break;
 
@@ -139,7 +139,8 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "fog_density",
           "ssao_enabled",
           "ssaoTexture",
-          "ssao_power"};
+          "ssao_power",
+          "ssao_ambient_floor"};
       attribs = {"position", "vertexColor", "vertexUV", "vertexNormal"};
       break;
 
@@ -228,7 +229,8 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "fog_density",
           "ssao_enabled",
           "ssaoTexture",
-          "ssao_power"};
+          "ssao_power",
+          "ssao_ambient_floor"};
       attribs = {"position", "vertexColor", "vertexNormal"};
       break;
 
@@ -295,7 +297,8 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "fog_density",
           "ssao_enabled",
           "ssaoTexture",
-          "ssao_power"};
+          "ssao_power",
+          "ssao_ambient_floor"};
       attribs = {"position", "vertexNormal", "vertexUV", "vertexTangent"};
       break;
 
