@@ -227,7 +227,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("isInfType", &mrpt::poses::CPose3DPDFGaussianInf::isInfType)
       .def(
           "drawSingleSample",
-          [](const mrpt::poses::CPose3DPDFGaussianInf& self)
+          [](const mrpt::poses::CPose3DPDFGaussianInf &self)
           {
             mrpt::poses::CPose3D out;
             self.drawSingleSample(out);

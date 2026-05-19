@@ -89,16 +89,9 @@ PYBIND11_MODULE(_bindings, m)
       .def(py::init(
           [](const EigenRowMatrixXd& src)
           {
-            auto m = std::make_shared<mrpt::math::CMatrixDouble>();
-            m->resize(src.rows(), src.cols());
-            for (int r = 0; r < src.rows(); ++r)
-            {
-              for (int c = 0; c < src.cols(); ++c)
-              {
-                (*m)(r, c) = src(r, c);
-              }
-            }
-            return m;
+            auto mat = std::make_shared<mrpt::math::CMatrixDouble>(src.rows(), src.cols());
+            mat->asEigen() = src.cast<double>();
+            return mat;
           }))
       // Manual conversion: mrpt_obj.as_numpy()
       .def(
@@ -326,13 +319,11 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("roll", &mrpt::math::TPose3D::roll)
       .def("norm", &mrpt::math::TPose3D::norm)
       .def(
-          "composePoint",
-          py::overload_cast<const mrpt::math::TPoint3D&>(
-              &mrpt::math::TPose3D::composePoint, py::const_))
+          "composePoint", py::overload_cast<const mrpt::math::TPoint3D&>(
+                              &mrpt::math::TPose3D::composePoint, py::const_))
       .def(
-          "inverseComposePoint",
-          py::overload_cast<const mrpt::math::TPoint3D&>(
-              &mrpt::math::TPose3D::inverseComposePoint, py::const_))
+          "inverseComposePoint", py::overload_cast<const mrpt::math::TPoint3D&>(
+                                     &mrpt::math::TPose3D::inverseComposePoint, py::const_))
       .def(
           "getRotationMatrix",
           py::overload_cast<>(&mrpt::math::TPose3D::getRotationMatrix, py::const_))
