@@ -204,10 +204,11 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
   // column count:
   const size_t num_lasers = o.calibration.laser_corrections.size();
   ASSERT_GT_(num_lasers, 2);
-  rowCount = num_lasers;
+  rowCount = static_cast<uint16_t>(num_lasers);
 
   // row count:
-  columnCount = Velo::SCANS_PER_BLOCK * o.scan_packets.size() * Velo::BLOCKS_PER_PACKET;
+  columnCount = static_cast<uint16_t>(
+      Velo::SCANS_PER_BLOCK * o.scan_packets.size() * Velo::BLOCKS_PER_PACKET);
 
   const double timeBetweenLastTwoBlocks = 1e-6 * (o.scan_packets.rbegin()->gps_timestamp() -
                                                   (o.scan_packets.rbegin() + 1)->gps_timestamp());
@@ -305,9 +306,9 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
         // In dual return, if the distance is equal in both ranges,
         // ignore one of them:
 
-        const auto distance =
+        const uint16_t distance = static_cast<uint16_t>(
             pkt.blocks[block].laser_returns[k].distance() +
-            static_cast<uint16_t>(calib.distanceCorrection / Velo::DISTANCE_RESOLUTION);
+            static_cast<uint16_t>(calib.distanceCorrection / Velo::DISTANCE_RESOLUTION));
 
         const auto columnIdx = [&]()
         {
@@ -317,8 +318,10 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
             case 32:
             case 64:
             {
-              int c = (dsr + block * Velo::SCANS_PER_BLOCK + pktIdx * Velo::SCANS_PER_PACKET) /
-                      num_lasers;
+              size_t c =
+                  (static_cast<size_t>(dsr) + static_cast<size_t>(block) * Velo::SCANS_PER_BLOCK +
+                   pktIdx * Velo::SCANS_PER_PACKET) /
+                  num_lasers;
               if (pkt.laser_return_mode == Velo::RETMODE_DUAL) c /= 2;
               return c;
             }
@@ -375,8 +378,10 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
       if (!rng) continue;
 
       const float distance_m = rng * mrpt::d2f(rangeResolution);
-      const double az = startAzimuth + (col + 0.5) * azimuthSpan / columnCount -
-                        mrpt::DEG2RAD(calib.azimuthCorrection);
+      const double az =
+          startAzimuth +
+          (static_cast<double>(col) + 0.5) * azimuthSpan / static_cast<double>(columnCount) -
+          mrpt::DEG2RAD(calib.azimuthCorrection);
       const float cos_az = mrpt::d2f(std::cos(az));
       const float sin_az = mrpt::d2f(std::sin(az));
 
@@ -422,7 +427,7 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
 
   // Convert ranges to range images:
   this->rowCount = 1;
-  this->columnCount = o.getScanSize();
+  this->columnCount = static_cast<uint16_t>(o.getScanSize());
 
   this->rangeImage.setZero(rowCount, columnCount);
   this->intensityImage.setZero(rowCount, columnCount);
@@ -433,7 +438,7 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
   this->startAzimuth = o.aperture * (o.rightToLeft ? -0.5 : +0.5);
 
   double a = startAzimuth;
-  const double Aa = azimuthSpan / o.getScanSize();
+  const double Aa = azimuthSpan / static_cast<double>(o.getScanSize());
 
   for (size_t i = 0; i < o.getScanSize(); i++, a += Aa)
   {
@@ -450,11 +455,12 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
 
     range_out = r_discr;
 
-    if (o.hasIntensity()) intensity_out = o.getScanIntensity(i);
+    if (o.hasIntensity()) intensity_out = static_cast<uint8_t>(o.getScanIntensity(i));
 
     if (r > 0)
     {
-      const auto ptLocal = mrpt::math::TPoint3Df(cos(a) * range_out, sin(a) * range_out, 0);
+      const auto ptLocal = mrpt::math::TPoint3Df(
+          static_cast<float>(cos(a)) * range_out, static_cast<float>(sin(a)) * range_out, 0);
 
       organizedPoints(0, i) = sensorPose.composePoint(ptLocal);
     }
@@ -623,8 +629,8 @@ bool RotScan::loadFromTextFile(const std::string& filename)
     const size_t c = static_cast<size_t>(data(i, 6));
 
     organizedPoints(r, c) = {data(i, 0), data(i, 1), data(i, 2)};
-    rangeImage(r, c) = data(i, 3);
-    intensityImage(r, c) = data(i, 4);
+    rangeImage(r, c) = static_cast<uint16_t>(data(i, 3));
+    intensityImage(r, c) = static_cast<uint8_t>(data(i, 4));
   }
 
   return true;

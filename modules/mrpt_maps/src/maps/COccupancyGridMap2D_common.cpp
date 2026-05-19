@@ -150,8 +150,8 @@ void COccupancyGridMap2D::setSize(
   this->m_yMax = ymax;
 
   // Now the number of cells should be integers:
-  m_size_x = round((m_xMax - m_xMin) / m_resolution);
-  m_size_y = round((m_yMax - m_yMin) / m_resolution);
+  m_size_x = static_cast<unsigned int>(round((m_xMax - m_xMin) / m_resolution));
+  m_size_y = static_cast<unsigned int>(round((m_yMax - m_yMin) / m_resolution));
 
 #ifdef ROWSIZE_MULTIPLE_16
   // map rows must be 16 bytes aligned:
@@ -238,11 +238,11 @@ void COccupancyGridMap2D::resizeGrid(
     new_y_max = m_resolution * static_cast<float>(round(new_y_max / m_resolution));
 
   // Change size: 4 sides extensions:
-  extra_x_izq = round((m_xMin - new_x_min) / m_resolution);
-  extra_y_arr = round((m_yMin - new_y_min) / m_resolution);
+  extra_x_izq = static_cast<unsigned int>(round((m_xMin - new_x_min) / m_resolution));
+  extra_y_arr = static_cast<unsigned int>(round((m_yMin - new_y_min) / m_resolution));
 
-  new_size_x = round((new_x_max - new_x_min) / m_resolution);
-  new_size_y = round((new_y_max - new_y_min) / m_resolution);
+  new_size_x = static_cast<unsigned int>(round((new_x_max - new_x_min) / m_resolution));
+  new_size_y = static_cast<unsigned int>(round((new_y_max - new_y_min) / m_resolution));
 
   assert(new_size_x >= m_size_x + extra_x_izq);
 
@@ -471,8 +471,8 @@ void COccupancyGridMap2D::subSample(int downRatio)
 
   m_resolution *= downRatio;
 
-  int newSizeX = round((m_xMax - m_xMin) / m_resolution);
-  int newSizeY = round((m_yMax - m_yMin) / m_resolution);
+  int newSizeX = static_cast<int>(round((m_xMax - m_xMin) / m_resolution));
+  int newSizeY = static_cast<int>(round((m_yMax - m_yMin) / m_resolution));
 
   newMap.resize(newSizeX * newSizeY);
 
@@ -521,15 +521,16 @@ void COccupancyGridMap2D::determineMatching2D(
   const size_t nLocalPoints = otherMap->size();
   std::vector<float> x_locals(nLocalPoints), y_locals(nLocalPoints), z_locals(nLocalPoints);
 
-  const float sin_phi = sin(otherMapPose.phi);
-  const float cos_phi = cos(otherMapPose.phi);
+  const float sin_phi = static_cast<float>(sin(otherMapPose.phi));
+  const float cos_phi = static_cast<float>(cos(otherMapPose.phi));
 
   size_t nOtherMapPointsWithCorrespondence = 0;  // Number of points with one corrs. at least
   size_t nTotalCorrespondences = 0;              // Total number of corrs
   float _sumSqrDist = 0;
 
   // The number of cells to look around each point:
-  const int cellsSearchRange = round(params.maxDistForCorrespondence / m_resolution);
+  const int cellsSearchRange =
+      static_cast<int>(round(params.maxDistForCorrespondence / m_resolution));
 
   // Initially there are no correspondences:
   correspondences.clear();
@@ -554,10 +555,12 @@ void COccupancyGridMap2D::determineMatching2D(
        localIdx += params.decimation_other_map_points)
   {
     // Girar y desplazar cada uno de los puntos del local map:
-    const float xx = x_locals[localIdx] =
-        otherMapPose.x + cos_phi * otherMap_pxs[localIdx] - sin_phi * otherMap_pys[localIdx];
-    const float yy = y_locals[localIdx] =
-        otherMapPose.y + sin_phi * otherMap_pxs[localIdx] + cos_phi * otherMap_pys[localIdx];
+    const float xx = x_locals[localIdx] = static_cast<float>(otherMapPose.x) +
+                                          cos_phi * otherMap_pxs[localIdx] -
+                                          sin_phi * otherMap_pys[localIdx];
+    const float yy = y_locals[localIdx] = static_cast<float>(otherMapPose.y) +
+                                          sin_phi * otherMap_pxs[localIdx] +
+                                          cos_phi * otherMap_pys[localIdx];
     z_locals[localIdx] = /* otherMapPose.z +*/ otherMap_pzs[localIdx];
 
     // mantener el max/min de los puntos:
@@ -683,8 +686,8 @@ void COccupancyGridMap2D::determineMatching2D(
 
   }  // End "for each local point"...
 
-  extraResults.correspondencesRatio =
-      nOtherMapPointsWithCorrespondence / d2f(nLocalPoints / params.decimation_other_map_points);
+  extraResults.correspondencesRatio = static_cast<float>(nOtherMapPointsWithCorrespondence) /
+                                      d2f(nLocalPoints / params.decimation_other_map_points);
   extraResults.sumSqrDist = _sumSqrDist;
 
   MRPT_END
@@ -712,7 +715,7 @@ float COccupancyGridMap2D::computePathCost(float x1, float y1, float x2, float y
   float sumCost = 0;
 
   float dist = sqrt(square(x1 - x2) + square(y1 - y2));
-  int nSteps = round(1.5f * dist / m_resolution);
+  int nSteps = static_cast<int>(round(1.5f * dist / m_resolution));
 
   for (int i = 0; i < nSteps; i++)
   {

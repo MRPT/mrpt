@@ -73,7 +73,7 @@ struct Font
   void fill(
       const char c,
       std::vector<mrpt::viz::TTriangle>& tris,
-      std::vector<mrpt::math::TPoint3Df>& lines,
+      [[maybe_unused]] std::vector<mrpt::math::TPoint3Df>& lines,
       const mrpt::math::TPoint2Df& cursor) const
   {
     const Char* ch = findChar(c);
@@ -99,7 +99,7 @@ struct Font
 
   void outline(
       const char c,
-      std::vector<mrpt::viz::TTriangle>& tris,
+      [[maybe_unused]] std::vector<mrpt::viz::TTriangle>& tris,
       std::vector<mrpt::math::TPoint3Df>& lines,
       const mrpt::math::TPoint2Df& cursor) const
   {
@@ -206,8 +206,8 @@ std::pair<double, double> glDrawText(
     char c = text[i];
     if (c == '\n')
     {
-      cursor.x -= total;
-      cursor.y -= spacing;
+      cursor.x -= static_cast<float>(total);
+      cursor.y -= static_cast<float>(spacing);
 
       max_total = std::max(max_total, total);
       total = 0;
@@ -216,7 +216,7 @@ std::pair<double, double> glDrawText(
     }
     if (c == '\t')
     {
-      const float advance = tab_width - std::fmod(total, tab_width);
+      const float advance = static_cast<float>(tab_width - std::fmod(total, tab_width));
       total += advance;
       cursor.x += advance;
       continue;
@@ -224,7 +224,7 @@ std::pair<double, double> glDrawText(
     const Font::Char* ch = font->findChar(c);
     if (!ch)
     {
-      c = toupper(c);
+      c = static_cast<char>(toupper(c));
       ch = font->findChar(c);
       if (!ch)
       {
@@ -236,7 +236,7 @@ std::pair<double, double> glDrawText(
     (font->*operation)(c, tris, render_lines, cursor);
 
     double w = ch->advance + kerning;
-    cursor.x += w;
+    cursor.x += static_cast<float>(w);
     total += w;
   }
 
@@ -263,7 +263,7 @@ std::pair<double, double> glGetExtends(const std::string& text, double spacing, 
     const Font::Char* ch = font->findChar(c);
     if (!ch)
     {
-      c = toupper(c);
+      c = static_cast<char>(toupper(c));
       ch = font->findChar(c);
       if (!ch)
       {

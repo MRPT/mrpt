@@ -253,8 +253,8 @@ double COccupancyGridMap2D::computeObservationLikelihood_CellsDifference(
     o.insertObservationInto(compareGrid, robotPose);
 
     // Save Cells offset between the two grids:
-    Ax = round((m_xMin - compareGrid.m_xMin) / m_resolution);
-    Ay = round((m_yMin - compareGrid.m_yMin) / m_resolution);
+    Ax = static_cast<int>(round((m_xMin - compareGrid.m_xMin) / m_resolution));
+    Ay = static_cast<int>(round((m_yMin - compareGrid.m_yMin) / m_resolution));
 
     int nCellsCompared = 0;
     float cellsDifference = 0;
@@ -350,7 +350,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
     // The number of simulated rays will be original range scan rays /
     // DOWNRATIO
     int decimation = likelihoodOptions.rayTracing_decimation;
-    int nRays = o.getScanSize();
+    int nRays = static_cast<int>(o.getScanSize());
 
     // Perform simulation using same parameters than real observation:
     simulatedObs.aperture = o.aperture;
@@ -625,12 +625,13 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
         {
           // Initial pointer position
           const cellType* mapPtr = &m_map[xx1 + yy1 * m_size_x];
-          unsigned incrAfterRow = m_size_x - ((xx2 - xx1) + 1);
+          unsigned incrAfterRow = m_size_x - static_cast<unsigned>((xx2 - xx1) + 1);
 
           signed int Ax0 = 10 * (xx1 - cx);
           signed int Ay = 10 * (yy1 - cy);
 
-          unsigned int occupiedMinDistInt = mrpt::round(maxCorrDist_sq * constDist2DiscrUnits);
+          unsigned int occupiedMinDistInt =
+              static_cast<unsigned int>(mrpt::round(maxCorrDist_sq * constDist2DiscrUnits));
 
           for (int yy = yy1; yy <= yy2; yy++)
           {
@@ -653,7 +654,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
             Ay += 10;
           }
 
-          occupiedMinDist = occupiedMinDistInt * constDist2DiscrUnits_INV;
+          occupiedMinDist = static_cast<float>(occupiedMinDistInt * constDist2DiscrUnits_INV);
         }
 
         if (likelihoodOptions.LF_useSquareDist) occupiedMinDist *= occupiedMinDist;

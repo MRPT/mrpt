@@ -95,9 +95,8 @@ class CRejectionSamplingCapable
             bestVal = p.d;
           }
         }
-      } while (
-          acceptanceProb < mrpt::random::getRandomGenerator().drawUniform(0.0, 0.999) &&
-          (++timeoutCount) < timeoutTrials);
+      } while (acceptanceProb < mrpt::random::getRandomGenerator().drawUniform(0.0, 0.999) &&
+               (++timeoutCount) < timeoutTrials);
 
       if (timeoutCount >= timeoutTrials)
       {

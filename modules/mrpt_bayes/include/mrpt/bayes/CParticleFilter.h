@@ -114,8 +114,7 @@ class CParticleFilter : public mrpt::system::COutputLogger
   // Backward-compat aliases:
   static constexpr TParticleResamplingAlgorithm prMultinomial =
       TParticleResamplingAlgorithm::Multinomial;
-  static constexpr TParticleResamplingAlgorithm prResidual =
-      TParticleResamplingAlgorithm::Residual;
+  static constexpr TParticleResamplingAlgorithm prResidual = TParticleResamplingAlgorithm::Residual;
   static constexpr TParticleResamplingAlgorithm prStratified =
       TParticleResamplingAlgorithm::Stratified;
   static constexpr TParticleResamplingAlgorithm prSystematic =
@@ -242,8 +241,7 @@ class CParticleFilter : public mrpt::system::COutputLogger
 
 MRPT_ENUM_TYPE_BEGIN(mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm)
 MRPT_FILL_ENUM_CUSTOM_NAME(
-    mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm::StandardProposal,
-    "pfStandardProposal");
+    mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm::StandardProposal, "pfStandardProposal");
 MRPT_FILL_ENUM_CUSTOM_NAME(
     mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFStandard,
     "pfAuxiliaryPFStandard");

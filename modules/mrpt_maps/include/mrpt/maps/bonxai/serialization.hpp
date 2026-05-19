@@ -145,17 +145,17 @@ inline HeaderInfo GetHeaderInfo(std::string header)
   {
     throw std::runtime_error("Header wasn't recognized");
   }
-  int p1 = header.find(",", 18) + 1;
+  int p1 = static_cast<int>(header.find(",", 18)) + 1;
   auto part_type = header.substr(18, p1 - 18 - 1);
 
-  int p2 = header.find(",", p1 + 1) + 1;
+  int p2 = static_cast<int>(header.find(",", p1 + 1)) + 1;
   auto part_ibits = header.substr(p1, p2 - p1 - 1);
 
-  int p3 = header.find(">", p2) + 1;
+  int p3 = static_cast<int>(header.find(">", p2)) + 1;
   auto part_lbits = header.substr(p2, p3 - p2 - 1);
 
-  int p4 = header.find("(", p3) + 1;
-  int p5 = header.find(")", p4);
+  int p4 = static_cast<int>(header.find("(", p3)) + 1;
+  int p5 = static_cast<int>(header.find(")", p4));
   auto part_res = header.substr(p4, p5 - p4);
 
   HeaderInfo info;

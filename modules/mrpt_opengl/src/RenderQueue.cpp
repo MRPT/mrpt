@@ -34,9 +34,15 @@ static TPoint3Df toEyeSpace(
   const auto& V = state.v_matrix;
 
   // Apply view matrix (V is row-major in MRPT)
-  const float ex = V(0, 0) * worldPt.x + V(0, 1) * worldPt.y + V(0, 2) * worldPt.z + V(0, 3);
-  const float ey = V(1, 0) * worldPt.x + V(1, 1) * worldPt.y + V(1, 2) * worldPt.z + V(1, 3);
-  const float ez = V(2, 0) * worldPt.x + V(2, 1) * worldPt.y + V(2, 2) * worldPt.z + V(2, 3);
+  const float ex = V(0, 0) * static_cast<float>(worldPt.x) +
+                   V(0, 1) * static_cast<float>(worldPt.y) +
+                   V(0, 2) * static_cast<float>(worldPt.z) + V(0, 3);
+  const float ey = V(1, 0) * static_cast<float>(worldPt.x) +
+                   V(1, 1) * static_cast<float>(worldPt.y) +
+                   V(1, 2) * static_cast<float>(worldPt.z) + V(1, 3);
+  const float ez = V(2, 0) * static_cast<float>(worldPt.x) +
+                   V(2, 1) * static_cast<float>(worldPt.y) +
+                   V(2, 2) * static_cast<float>(worldPt.z) + V(2, 3);
 
   return TPoint3Df(ex, ey, ez);
 }

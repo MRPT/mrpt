@@ -159,10 +159,11 @@ bool Shader::compile(
   for (size_t i = 0; i < nShaderCodes; i++)
   {
     sources[i] = shaderCode[i].c_str();
-    lengths[i] = shaderCode[i].size();
+    lengths[i] = static_cast<GLint>(shaderCode[i].size());
   }
 
-  glShaderSource(m_data->shader, nShaderCodes, sources.data(), lengths.data());
+  glShaderSource(
+      m_data->shader, static_cast<GLsizei>(nShaderCodes), sources.data(), lengths.data());
   CHECK_OPENGL_ERROR();
 
   glCompileShader(m_data->shader);
@@ -175,7 +176,7 @@ bool Shader::compile(
     GLint log_length;
     std::string log;
     glGetShaderiv(m_data->shader, GL_INFO_LOG_LENGTH, &log_length);
-    log.resize(log_length);
+    log.resize(static_cast<size_t>(log_length));
     glGetShaderInfoLog(m_data->shader, log_length, NULL, &log[0]);
 
     if (outErrorMessages)
@@ -291,7 +292,7 @@ bool Program::linkProgram(
     GLint log_length;
     std::string log;
     glGetProgramiv(m_data->program, GL_INFO_LOG_LENGTH, &log_length);
-    log.resize(log_length);
+    log.resize(static_cast<size_t>(log_length));
     glGetProgramInfoLog(m_data->program, log_length, NULL, &log[0]);
 
     if (outErrorMessages)
@@ -364,7 +365,8 @@ void Program::dumpProgramDescription(std::ostream& o) const
 
   for (GLint i = 0; i < count; i++)
   {
-    glGetActiveAttrib(m_data->program, (GLuint)i, bufSize, &length, &size, &type, name);
+    glGetActiveAttrib(
+        m_data->program, static_cast<GLuint>(i), bufSize, &length, &size, &type, name);
 
     o << mrpt::format("Attribute #%d Type: %u Name: %s\n", i, type, name);
   }
@@ -375,7 +377,8 @@ void Program::dumpProgramDescription(std::ostream& o) const
 
   for (GLint i = 0; i < count; i++)
   {
-    glGetActiveUniform(m_data->program, (GLuint)i, bufSize, &length, &size, &type, name);
+    glGetActiveUniform(
+        m_data->program, static_cast<GLuint>(i), bufSize, &length, &size, &type, name);
 
     o << mrpt::format("Uniform #%d Type: %u Name: %s\n", i, type, name);
   }

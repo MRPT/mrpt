@@ -203,8 +203,8 @@ bool CGPSInterface::parse_NMEA(
     token = lstTokens[1];
     if (token.size() >= 6)
     {
-      gga.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
-      gga.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
+      gga.fields.UTCTime.hour = static_cast<uint8_t>(10 * (token[0] - '0') + token[1] - '0');
+      gga.fields.UTCTime.minute = static_cast<uint8_t>(10 * (token[2] - '0') + token[3] - '0');
       gga.fields.UTCTime.sec = atof(&(token.c_str()[4]));
     }
     else
@@ -248,17 +248,17 @@ bool CGPSInterface::parse_NMEA(
 
     // fix quality:
     token = lstTokens[6];
-    if (!token.empty()) gga.fields.fix_quality = (unsigned char)atoi(token.c_str());
+    if (!token.empty()) gga.fields.fix_quality = static_cast<unsigned char>(atoi(token.c_str()));
 
     // sats:
     token = lstTokens[7];
-    if (!token.empty()) gga.fields.satellitesUsed = (unsigned char)atoi(token.c_str());
+    if (!token.empty()) gga.fields.satellitesUsed = static_cast<unsigned char>(atoi(token.c_str()));
 
     // HDOP:
     token = lstTokens[8];
     if (!token.empty())
     {
-      gga.fields.HDOP = (float)atof(token.c_str());
+      gga.fields.HDOP = static_cast<float>(atof(token.c_str()));
       gga.fields.thereis_HDOP = true;
     }
 
@@ -310,8 +310,8 @@ bool CGPSInterface::parse_NMEA(
     token = lstTokens[1];
     if (token.size() >= 6)
     {
-      rmc.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
-      rmc.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
+      rmc.fields.UTCTime.hour = static_cast<uint8_t>(10 * (token[0] - '0') + token[1] - '0');
+      rmc.fields.UTCTime.minute = static_cast<uint8_t>(10 * (token[2] - '0') + token[3] - '0');
       rmc.fields.UTCTime.sec = atof(&(token.c_str()[4]));
     }
     else
@@ -372,9 +372,9 @@ bool CGPSInterface::parse_NMEA(
     token = lstTokens[9];
     if (token.size() >= 6)
     {
-      rmc.fields.date_day = 10 * (token[0] - '0') + token[1] - '0';
-      rmc.fields.date_month = 10 * (token[2] - '0') + token[3] - '0';
-      rmc.fields.date_year = atoi(&(token.c_str()[4]));
+      rmc.fields.date_day = static_cast<uint8_t>(10 * (token[0] - '0') + token[1] - '0');
+      rmc.fields.date_month = static_cast<uint8_t>(10 * (token[2] - '0') + token[3] - '0');
+      rmc.fields.date_year = static_cast<uint8_t>(atoi(&(token.c_str()[4])));
     }
     else
       all_fields_ok = false;
@@ -468,8 +468,8 @@ bool CGPSInterface::parse_NMEA(
       token = lstTokens[5];
       if (token.size() >= 6)
       {
-        gll.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
-        gll.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
+        gll.fields.UTCTime.hour = static_cast<uint8_t>(10 * (token[0] - '0') + token[1] - '0');
+        gll.fields.UTCTime.minute = static_cast<uint8_t>(10 * (token[2] - '0') + token[3] - '0');
         gll.fields.UTCTime.sec = atof(&(token.c_str()[4]));
       }
       else
@@ -543,8 +543,8 @@ bool CGPSInterface::parse_NMEA(
     token = lstTokens[1];
     if (token.size() >= 6)
     {
-      zda.fields.UTCTime.hour = 10 * (token[0] - '0') + token[1] - '0';
-      zda.fields.UTCTime.minute = 10 * (token[2] - '0') + token[3] - '0';
+      zda.fields.UTCTime.hour = static_cast<uint8_t>(10 * (token[0] - '0') + token[1] - '0');
+      zda.fields.UTCTime.minute = static_cast<uint8_t>(10 * (token[2] - '0') + token[3] - '0');
       zda.fields.UTCTime.sec = atof(&(token.c_str()[4]));
     }
     else
@@ -552,13 +552,13 @@ bool CGPSInterface::parse_NMEA(
 
     // Day:
     token = lstTokens[2];
-    if (!token.empty()) zda.fields.date_day = atoi(token.c_str());
+    if (!token.empty()) zda.fields.date_day = static_cast<uint8_t>(atoi(token.c_str()));
     // Month:
     token = lstTokens[3];
-    if (!token.empty()) zda.fields.date_month = atoi(token.c_str());
+    if (!token.empty()) zda.fields.date_month = static_cast<uint8_t>(atoi(token.c_str()));
     // Year:
     token = lstTokens[4];
-    if (!token.empty()) zda.fields.date_year = atoi(token.c_str());
+    if (!token.empty()) zda.fields.date_year = static_cast<uint16_t>(atoi(token.c_str()));
 
     if (all_fields_ok)
     {

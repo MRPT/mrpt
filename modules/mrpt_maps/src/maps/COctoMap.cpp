@@ -155,7 +155,8 @@ void COctoMap::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const
   const unsigned char max_depth = 0;  // all
   const TColorf general_color = gl_obj.getColor();
   const TColor general_color_u(
-      general_color.R * 255, general_color.G * 255, general_color.B * 255, general_color.A * 255);
+      static_cast<uint8_t>(general_color.R * 255), static_cast<uint8_t>(general_color.G * 255),
+      static_cast<uint8_t>(general_color.B * 255), static_cast<uint8_t>(general_color.A * 255));
 
   gl_obj.clear();
   gl_obj.reserveGridCubes(this->calcNumNodes());
@@ -198,15 +199,19 @@ void COctoMap::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const
           case COctoMapVoxels::COLOR_FROM_HEIGHT:
             coefc = 255 * inv_dz * (vx_center.z() - zmin);
             vx_color = TColor(
-                coefc * general_color.R, coefc * general_color.G, coefc * general_color.B,
-                255.0 * general_color.A);
+                static_cast<uint8_t>(coefc * general_color.R),
+                static_cast<uint8_t>(coefc * general_color.G),
+                static_cast<uint8_t>(coefc * general_color.B),
+                static_cast<uint8_t>(255.0 * general_color.A));
             break;
 
           case COctoMapVoxels::COLOR_FROM_OCCUPANCY:
             coefc = 240 * (1 - occ) + 15;
             vx_color = TColor(
-                coefc * general_color.R, coefc * general_color.G, coefc * general_color.B,
-                255.0 * general_color.A);
+                static_cast<uint8_t>(coefc * general_color.R),
+                static_cast<uint8_t>(coefc * general_color.G),
+                static_cast<uint8_t>(coefc * general_color.B),
+                static_cast<uint8_t>(255.0 * general_color.A));
             break;
 
           case COctoMapVoxels::TRANSPARENCY_FROM_OCCUPANCY:
@@ -215,14 +220,18 @@ void COctoMap::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const
             {
               coeft = 0;
             }
-            vx_color =
-                TColor(255 * general_color.R, 255 * general_color.G, 255 * general_color.B, coeft);
+            vx_color = TColor(
+                static_cast<uint8_t>(255 * general_color.R),
+                static_cast<uint8_t>(255 * general_color.G),
+                static_cast<uint8_t>(255 * general_color.B), static_cast<uint8_t>(coeft));
             break;
 
           case COctoMapVoxels::TRANS_AND_COLOR_FROM_OCCUPANCY:
             coefc = 240 * (1 - occ) + 15;
             vx_color = TColor(
-                coefc * general_color.R, coefc * general_color.G, coefc * general_color.B, 50);
+                static_cast<uint8_t>(coefc * general_color.R),
+                static_cast<uint8_t>(coefc * general_color.G),
+                static_cast<uint8_t>(coefc * general_color.B), 50);
             break;
 
           case COctoMapVoxels::MIXED:
@@ -233,7 +242,9 @@ void COctoMap::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) const
               coeft = 0;
             }
             vx_color = TColor(
-                coefc * general_color.R, coefc * general_color.G, coefc * general_color.B, coeft);
+                static_cast<uint8_t>(coefc * general_color.R),
+                static_cast<uint8_t>(coefc * general_color.G),
+                static_cast<uint8_t>(coefc * general_color.B), static_cast<uint8_t>(coeft));
             break;
 
           default:

@@ -118,7 +118,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 {
   MRPT_START
 
-  const uint32_t new_id = m_individualMaps.size();
+  const uint32_t new_id = static_cast<uint32_t>(m_individualMaps.size());
   const size_t n = new_id + 1;  // new size
 
   // Create new new metric map:
@@ -215,20 +215,20 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
   if (m_last_last_partition_are_new_ones)
   {
     // Insert into the "new_ones" partition:
-    m_last_partition[m_last_partition.size() - 1].push_back(n - 1);
+    m_last_partition[m_last_partition.size() - 1].push_back(static_cast<uint32_t>(n - 1));
   }
   else
   {
     // Add a new partition:
     std::vector<uint32_t> dummyPart;
-    dummyPart.push_back(n - 1);
+    dummyPart.push_back(static_cast<uint32_t>(n - 1));
     m_last_partition.emplace_back(dummyPart);
 
     // The last one is the new_ones partition:
     m_last_last_partition_are_new_ones = true;
   }
 
-  return n - 1;  // Index of the new node
+  return static_cast<uint32_t>(n - 1);  // Index of the new node
 
   MRPT_END
 }
@@ -240,7 +240,7 @@ void CIncrementalMapPartitioner::updatePartitions(vector<std::vector<uint32_t>>&
   partitions.clear();
   CGraphPartitioner<CMatrixD>::RecursiveSpectralPartition(
       m_A, partitions, options.partitionThreshold, true, true, !options.forceBisectionOnly,
-      options.minimumNumberElementsEachCluster, false /* verbose */
+      static_cast<unsigned int>(options.minimumNumberElementsEachCluster), false /* verbose */
   );
 
   m_last_partition = partitions;
@@ -276,7 +276,7 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
       if (indexesToRemove[j] == i) remov = true;
     }
 
-    if (!remov) indexesToStay.push_back(i);
+    if (!remov) indexesToStay.push_back(static_cast<uint32_t>(i));
   }
 
   ASSERT_(indexesToStay.size() == nNew);
@@ -294,7 +294,7 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
   // --------------------------------------------------
   m_last_partition.resize(1);
   m_last_partition[0].resize(nNew);
-  for (i = 0; i < nNew; i++) m_last_partition[0][i] = i;
+  for (i = 0; i < nNew; i++) m_last_partition[0][i] = static_cast<uint32_t>(i);
 
   m_last_last_partition_are_new_ones = false;
 
@@ -346,7 +346,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
     mrpt::viz::CSetOfObjects::Ptr& objs, const std::map<uint32_t, int64_t>* renameIndexes) const
 {
   objs->clear();
-  ASSERT_((int)m_individualFrames.size() == m_A.cols());
+  ASSERT_(static_cast<int>(m_individualFrames.size()) == m_A.cols());
 
   auto gl_grid = mrpt::viz::CGridPlaneXY::Create();
   objs->insert(gl_grid);
@@ -375,7 +375,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
       i_sph->setName(format("%u", static_cast<unsigned int>(i)));
     else
     {
-      auto itName = renameIndexes->find(i);
+      auto itName = renameIndexes->find(static_cast<uint32_t>(i));
       ASSERT_(itName != renameIndexes->end());
       i_sph->setName(format("%lu", static_cast<unsigned long>(itName->second)));
     }
@@ -395,15 +395,18 @@ void CIncrementalMapPartitioner::getAs3DScene(
       CPose3D j_mean;
       j_pdf->getMean(j_mean);
 
-      float SSO_ij = m_A(i, j);
+      float SSO_ij = static_cast<float>(m_A(i, j));
 
-      if (SSO_ij > 0.01)
+      if (SSO_ij > 0.01f)
       {
         viz::CSimpleLine::Ptr lin = std::make_shared<viz::CSimpleLine>();
-        lin->setLineCoords(i_mean.x(), i_mean.y(), i_mean.z(), j_mean.x(), j_mean.y(), j_mean.z());
+        lin->setLineCoords(
+            static_cast<float>(i_mean.x()), static_cast<float>(i_mean.y()),
+            static_cast<float>(i_mean.z()), static_cast<float>(j_mean.x()),
+            static_cast<float>(j_mean.y()), static_cast<float>(j_mean.z()));
 
-        lin->setColor(SSO_ij, 0, 1 - SSO_ij, SSO_ij * 0.6);
-        lin->setLineWidth(SSO_ij * 10);
+        lin->setColor(SSO_ij, 0, 1.0f - SSO_ij, SSO_ij * 0.6f);
+        lin->setLineWidth(SSO_ij * 10.0f);
 
         objs->insert(lin);
       }

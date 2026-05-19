@@ -190,11 +190,11 @@ void COccupancyGridMap3D::updateCell(int x, int y, int z, float v)
 }
 
 void COccupancyGridMap3D::determineMatching2D(
-    const mrpt::maps::CMetricMap* otherMap2,
-    const mrpt::poses::CPose2D& otherMapPose_,
-    mrpt::tfest::TMatchingPairList& correspondences,
-    const mrpt::maps::TMatchingParams& params,
-    mrpt::maps::TMatchingExtraResults& extraResults) const
+    [[maybe_unused]] const mrpt::maps::CMetricMap* otherMap2,
+    [[maybe_unused]] const mrpt::poses::CPose2D& otherMapPose_,
+    [[maybe_unused]] mrpt::tfest::TMatchingPairList& correspondences,
+    [[maybe_unused]] const mrpt::maps::TMatchingParams& params,
+    [[maybe_unused]] mrpt::maps::TMatchingExtraResults& extraResults) const
 {
   MRPT_START
 
@@ -285,7 +285,7 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) 
                 coeft = 0;
               }
               vx_color = general_color.asTColor();
-              vx_color.A = mrpt::round(coeft);
+              vx_color.A = static_cast<uint8_t>(mrpt::round(coeft));
               break;
 
             case COctoMapVoxels::TRANS_AND_COLOR_FROM_OCCUPANCY:

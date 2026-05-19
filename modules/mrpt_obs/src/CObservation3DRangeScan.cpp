@@ -187,9 +187,9 @@ const CObservation3DRangeScan::unproject_LUT_t& CObservation3DRangeScan::get_unp
     *kys++ = v.y;
     *kzs++ = v.z;
 
-    *kxs_rot++ = v_rot.x;
-    *kys_rot++ = v_rot.y;
-    *kzs_rot++ = v_rot.z;
+    *kxs_rot++ = static_cast<float>(v_rot.x);
+    *kys_rot++ = static_cast<float>(v_rot.y);
+    *kzs_rot++ = static_cast<float>(v_rot.z);
   }
 
   return ret;
@@ -294,8 +294,8 @@ void mempool_donate_range_matrix(CObservation3DRangeScan& obs)
     return;
   }
   CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
-  mem_params.H = obs.rangeImage.rows();
-  mem_params.W = obs.rangeImage.cols();
+  mem_params.H = static_cast<int>(obs.rangeImage.rows());
+  mem_params.W = static_cast<int>(obs.rangeImage.cols());
 
   auto* mem_block = new CObservation3DRangeScan_Ranges_MemPoolData();
   obs.rangeImage.swap(mem_block->rangeImage);
@@ -323,7 +323,7 @@ void CObservation3DRangeScan::serializeTo(mrpt::serialization::CArchive& out) co
     ASSERT_(
         points3D_x.size() == points3D_y.size() && points3D_x.size() == points3D_z.size() &&
         points3D_idxs_x.size() == points3D_x.size() && points3D_idxs_y.size() == points3D_x.size());
-    uint32_t N = points3D_x.size();
+    uint32_t N = static_cast<uint32_t>(points3D_x.size());
     out << N;
     if (N)
     {
@@ -387,7 +387,7 @@ void CObservation3DRangeScan::serializeTo(mrpt::serialization::CArchive& out) co
 
 void CObservation3DRangeScan::internal_setRangeImageFromMatrixF(const mrpt::math::CMatrixF& ri)
 {
-  const uint32_t rows = ri.rows(), cols = ri.cols();
+  const uint32_t rows = static_cast<uint32_t>(ri.rows()), cols = static_cast<uint32_t>(ri.cols());
 
   // Call "rangeImage_setSize()" to exploit the mempool:
   if (rows > 0 && cols > 0)
@@ -582,8 +582,8 @@ void CObservation3DRangeScan::serializeFrom(mrpt::serialization::CArchive& in, u
                      "incorrect camera resolution in TCamera:"
                   << cameraParams.ncols << "x" << cameraParams.nrows << " => " << rangeImage.cols()
                   << "x" << rangeImage.rows() << "\n";
-        cameraParams.ncols = rangeImage.cols();
-        cameraParams.nrows = rangeImage.rows();
+        cameraParams.ncols = static_cast<uint32_t>(rangeImage.cols());
+        cameraParams.nrows = static_cast<uint32_t>(rangeImage.rows());
       }
     }
     break;
@@ -947,8 +947,8 @@ void cost_func(const CVectorDouble& par, const TLevMarData& d, CVectorDouble& er
       }
 
       // In theory, it should be (r,c):
-      err.push_back(c - pixel.x);
-      err.push_back(r - pixel.y);
+      err.push_back(static_cast<float>(c) - pixel.x);
+      err.push_back(static_cast<float>(r) - pixel.y);
     }
   }
 }  // end error_func
@@ -981,12 +981,12 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
   const size_t nC = obs.rangeImage.cols();
 
   TCamera camInit;
-  camInit.ncols = nC;
-  camInit.nrows = nR;
+  camInit.ncols = static_cast<uint32_t>(nC);
+  camInit.nrows = static_cast<uint32_t>(nR);
   camInit.intrinsicParams(0, 0) = 250;
   camInit.intrinsicParams(1, 1) = 250;
-  camInit.intrinsicParams(0, 2) = nC >> 1;
-  camInit.intrinsicParams(1, 2) = nR >> 1;
+  camInit.intrinsicParams(0, 2) = static_cast<double>(nC >> 1);
+  camInit.intrinsicParams(1, 2) = static_cast<double>(nR >> 1);
 
   CVectorDouble initial_x;
   detail::cam2vec(camInit, initial_x);
@@ -1004,10 +1004,11 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
       1000,                                                                  /* max iter */
       1e-3, 1e-9, 1e-9, false);
 
-  const double avr_px_err = sqrt(info.final_sqr_err / double(nC * nR) / square(CALIB_DECIMAT));
+  const double avr_px_err =
+      sqrt(info.final_sqr_err / static_cast<double>(nC * nR) / square(CALIB_DECIMAT));
 
-  out_camParams.ncols = nC;
-  out_camParams.nrows = nR;
+  out_camParams.ncols = static_cast<uint32_t>(nC);
+  out_camParams.nrows = static_cast<uint32_t>(nR);
   out_camParams.focalLengthMeters = camera_offset;
   detail::vec2cam(optimal_x, out_camParams);
 
@@ -1167,7 +1168,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 
   // (Imagine the camera seen from above to understand this geometry)
   const double real_FOV_left = atan2(cx, fx);
-  const double real_FOV_right = atan2(nCols - 1 - cx, fx);
+  const double real_FOV_right = atan2(static_cast<double>(nCols) - 1.0 - cx, fx);
 
   // FOV of the equivalent "fake" "laser scanner":
   const float FOV_equiv = mrpt::d2f(2 * std::max(real_FOV_left, real_FOV_right));
@@ -1176,7 +1177,7 @@ void CObservation3DRangeScan::convertTo2DScan(
   //  since laser scans are assumed to sample space at evenly-spaced angles,
   //  while in images it is like ~tan(angle).
   ASSERT_GT_(sp.oversampling_ratio, (sp.use_origin_sensor_pose ? 0.0 : 1.0));
-  const auto nLaserRays = static_cast<size_t>(nCols * sp.oversampling_ratio);
+  const auto nLaserRays = static_cast<size_t>(static_cast<double>(nCols) * sp.oversampling_ratio);
 
   // Prepare 2D scan data fields:
   out_scan2d.aperture = FOV_equiv;
@@ -1198,7 +1199,7 @@ void CObservation3DRangeScan::convertTo2DScan(
   // Precompute the tangents of the vertical angles of each "ray"
   // for every row in the range image:
   std::vector<float> vert_ang_tan(nRows);
-  for (size_t r = 0; r < nRows; r++) vert_ang_tan[r] = d2f((cy - r) / fy);
+  for (size_t r = 0; r < nRows; r++) vert_ang_tan[r] = d2f((cy - static_cast<double>(r)) / fy);
 
   if (!sp.use_origin_sensor_pose)
   {
@@ -1209,7 +1210,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 
     // Angle "counter" for the fake laser scan direction, and the increment:
     double ang = -FOV_equiv * 0.5;
-    const double A_ang = FOV_equiv / (nLaserRays - 1);
+    const double A_ang = FOV_equiv / static_cast<double>(nLaserRays - 1);
 
     TRangeImageFilter rif(fp);
 
@@ -1266,7 +1267,7 @@ void CObservation3DRangeScan::convertTo2DScan(
     const std::vector<mrpt::math::TPoint3Df>& pts = pc->getArrayPoints();
     const size_t N = pts.size();
 
-    const double A_ang = FOV_equiv / (nLaserRays - 1);
+    const double A_ang = FOV_equiv / static_cast<double>(nLaserRays - 1);
     const double ang0 = -FOV_equiv * 0.5;
 
     for (size_t i = 0; i < N; i++)
@@ -1424,7 +1425,7 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImageAsImage(
   ASSERT_GT_(ri.rows(), 0);
 
   mrpt::img::CImage img;
-  const int cols = ri.cols(), rows = ri.rows();
+  const int cols = static_cast<int>(ri.cols()), rows = static_cast<int>(ri.rows());
 
   const auto col = color.value_or(mrpt::img::TColormap::cmGRAYSCALE);
 

@@ -179,9 +179,9 @@ void COccupancyGridMap3D::insertRay(
   const float N_1 = 1.0f / nStepsRay;
 
   // Increments at each raytracing step:
-  const int frAcx = (Acx < 0 ? -1 : +1) * round((Acx_ << FRBITS) * N_1);
-  const int frAcy = (Acy < 0 ? -1 : +1) * round((Acy_ << FRBITS) * N_1);
-  const int frAcz = (Acz < 0 ? -1 : +1) * round((Acz_ << FRBITS) * N_1);
+  const int frAcx = (Acx < 0 ? -1 : +1) * static_cast<int>(round((Acx_ << FRBITS) * N_1));
+  const int frAcy = (Acy < 0 ? -1 : +1) * static_cast<int>(round((Acy_ << FRBITS) * N_1));
+  const int frAcz = (Acz < 0 ? -1 : +1) * static_cast<int>(round((Acz_ << FRBITS) * N_1));
 
   // fractional integers for the running raytracing point:
   int frCX = cx << FRBITS;

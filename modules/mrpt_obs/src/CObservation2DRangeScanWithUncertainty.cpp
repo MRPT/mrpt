@@ -65,7 +65,7 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(
     double lpi = std::max(params.min_ray_log_lik, log(pi));
     lik_sum += lpi;
   }
-  if (num_valid) lik_sum /= num_valid;
+  if (num_valid) lik_sum /= static_cast<double>(num_valid);
   lik_sum = exp(lik_sum);
 
   return lik_sum;

@@ -43,7 +43,7 @@ CDisplayWindowGUI::CDisplayWindowGUI(
 {
   setIconFromData(
       default_mrpt_glfw_icon, default_mrpt_glfw_icon_width, default_mrpt_glfw_icon_height,
-      default_mrpt_glfw_icon_transparent_color);
+      static_cast<uint8_t>(default_mrpt_glfw_icon_transparent_color));
 }
 
 CDisplayWindowGUI::~CDisplayWindowGUI()
@@ -225,12 +225,12 @@ void CDisplayWindowGUI::setIconFromData(
 
   /*  Call this macro repeatedly.  After each use, the pixel data can be
    * extracted  */
-#define HEADER_PIXEL(data, pixel)                                       \
-  {                                                                     \
-    pixel[0] = (((data[0] - 33) << 2) | ((data[1] - 33) >> 4));         \
-    pixel[1] = ((((data[1] - 33) & 0xF) << 4) | ((data[2] - 33) >> 2)); \
-    pixel[2] = ((((data[2] - 33) & 0x3) << 6) | ((data[3] - 33)));      \
-    data += 4;                                                          \
+#define HEADER_PIXEL(data, pixel)                                                           \
+  {                                                                                         \
+    pixel[0] = static_cast<uint8_t>(((data[0] - 33) << 2) | ((data[1] - 33) >> 4));         \
+    pixel[1] = static_cast<uint8_t>((((data[1] - 33) & 0xF) << 4) | ((data[2] - 33) >> 2)); \
+    pixel[2] = static_cast<uint8_t>((((data[2] - 33) & 0x3) << 6) | ((data[3] - 33)));      \
+    data += 4;                                                                              \
   }
 
   // GLFW image format: RGBA
@@ -366,7 +366,7 @@ nanogui::Window* CDisplayWindowGUI::createManagedSubWindow(const std::string& ti
   createSubWindowsControlUI();
 
   // Create subwindow:
-  const int thisWinIndex = m_subWindows.windows.size();
+  const int thisWinIndex = static_cast<int>(m_subWindows.windows.size());
 
   auto w = new SubWindow(*this, thisWinIndex, this, title);
   m_subWindows.windows.push_back(w);

@@ -32,7 +32,7 @@ void CObservationBeaconRanges::serializeTo(mrpt::serialization::CArchive& out) c
   uint32_t i, n;
   // The data
   out << minSensorDistance << maxSensorDistance << stdError;
-  n = sensedData.size();
+  n = static_cast<uint32_t>(sensedData.size());
   out << n;
   for (i = 0; i < n; i++)
     out << sensedData[i].sensorLocationOnRobot << sensedData[i].sensedDistance
@@ -139,15 +139,17 @@ void CObservationBeaconRanges::getDescriptionAsText(std::ostream& o) const
   o << mrpt::format("maxSensorDistance=%f m\n", maxSensorDistance);
   o << mrpt::format("stdError=%f m\n\n", stdError);
 
-  o << mrpt::format("There are %u range measurements:\n\n", (unsigned)sensedData.size());
+  o << mrpt::format(
+      "There are %u range measurements:\n\n", static_cast<unsigned>(sensedData.size()));
 
   o << "  BEACON   RANGE     SENSOR POSITION ON ROBOT \n";
   o << "------------------------------------------------\n";
   for (const auto& d : sensedData)
   {
     o << mrpt::format(
-        "   %i      %.04f      (%.03f,%.03f,%.03f)\n", (int)d.beaconID, d.sensedDistance,
-        d.sensorLocationOnRobot.x(), d.sensorLocationOnRobot.y(), d.sensorLocationOnRobot.z());
+        "   %i      %.04f      (%.03f,%.03f,%.03f)\n", static_cast<int>(d.beaconID),
+        d.sensedDistance, d.sensorLocationOnRobot.x(), d.sensorLocationOnRobot.y(),
+        d.sensorLocationOnRobot.z());
   }
 }
 
@@ -161,7 +163,7 @@ std::string CObservationBeaconRanges::exportTxtDataRow() const
   for (const auto& d : sensedData)
   {
     o << mrpt::format(
-        "   %i      %.04f      %.03f %.03f %.03f", (int)d.beaconID, d.sensedDistance,
+        "   %i      %.04f      %.03f %.03f %.03f", static_cast<int>(d.beaconID), d.sensedDistance,
         d.sensorLocationOnRobot.x(), d.sensorLocationOnRobot.y(), d.sensorLocationOnRobot.z());
   }
   return o.str();

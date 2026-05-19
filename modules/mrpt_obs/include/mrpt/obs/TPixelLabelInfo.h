@@ -148,12 +148,13 @@ struct TPixelLabelInfo : public TPixelLabelInfoBase
   }
   void getLabels(const int row, const int col, uint8_t& labels) override
   {
-    labels = pixelLabels(row, col);
+    labels = static_cast<uint8_t>(pixelLabels(row, col));
   }
 
   void unsetLabel(const int row, const int col, uint8_t label_idx) override
   {
-    pixelLabels(row, col) &= ~(static_cast<bitmask_t>(1) << label_idx);
+    pixelLabels(row, col) =
+        static_cast<bitmask_t>(pixelLabels(row, col) & ~(static_cast<bitmask_t>(1) << label_idx));
   }
   void unsetAll(const int row, const int col, [[maybe_unused]] uint8_t label_idx) override
   {

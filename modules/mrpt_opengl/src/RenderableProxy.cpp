@@ -145,7 +145,7 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   // Upload vertex positions
   m_vertexBuffer.createOnce();
   m_vertexBuffer.bind();
-  m_vertexBuffer.allocate(vertices.data(), sizeof(TPoint3Df) * m_pointCount);
+  m_vertexBuffer.allocate(vertices.data(), static_cast<int>(sizeof(TPoint3Df) * m_pointCount));
 
   // Attribute 0: position (vec3)
   glEnableVertexAttribArray(0);
@@ -156,7 +156,7 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   {
     m_colorBuffer.createOnce();
     m_colorBuffer.bind();
-    m_colorBuffer.allocate(colors.data(), sizeof(TColor) * m_pointCount);
+    m_colorBuffer.allocate(colors.data(), static_cast<int>(sizeof(TColor) * m_pointCount));
 
     // Attribute 1: color (vec4 as unsigned bytes, normalized)
     glEnableVertexAttribArray(1);
@@ -187,7 +187,7 @@ void PointsProxyBase::updateBuffers(const mrpt::viz::CVisualObject* sourceObj)
   compile(sourceObj);
 }
 
-void PointsProxyBase::render(const RenderContext& rc) const
+void PointsProxyBase::render([[maybe_unused]] const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
@@ -265,7 +265,7 @@ void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   // Upload vertex positions
   m_vertexBuffer.createOnce();
   m_vertexBuffer.bind();
-  m_vertexBuffer.allocate(vertices.data(), sizeof(TPoint3Df) * m_vertexCount);
+  m_vertexBuffer.allocate(vertices.data(), static_cast<int>(sizeof(TPoint3Df) * m_vertexCount));
 
   // Attribute 0: position (vec3)
   glEnableVertexAttribArray(0);
@@ -276,7 +276,7 @@ void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   {
     m_colorBuffer.createOnce();
     m_colorBuffer.bind();
-    m_colorBuffer.allocate(colors.data(), sizeof(TColor) * m_vertexCount);
+    m_colorBuffer.allocate(colors.data(), static_cast<int>(sizeof(TColor) * m_vertexCount));
 
     // Attribute 1: color (vec4 as unsigned bytes, normalized)
     glEnableVertexAttribArray(1);
@@ -304,7 +304,7 @@ void LinesProxyBase::updateBuffers(const mrpt::viz::CVisualObject* sourceObj)
   compile(sourceObj);
 }
 
-void LinesProxyBase::render(const RenderContext& rc) const
+void LinesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
@@ -424,7 +424,7 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   // Upload vertex positions
   m_vertexBuffer.createOnce();
   m_vertexBuffer.bind();
-  m_vertexBuffer.allocate(vertices.data(), sizeof(TPoint3Df) * vertexCount);
+  m_vertexBuffer.allocate(vertices.data(), static_cast<int>(sizeof(TPoint3Df) * vertexCount));
 
   // Attribute 0: position (vec3)
   // Shader attrib order: position(0), vertexColor(1), vertexNormal(2)
@@ -434,7 +434,7 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   // Upload colors
   m_colorBuffer.createOnce();
   m_colorBuffer.bind();
-  m_colorBuffer.allocate(colors.data(), sizeof(TColor) * vertexCount);
+  m_colorBuffer.allocate(colors.data(), static_cast<int>(sizeof(TColor) * vertexCount));
 
   // Attribute 1: vertexColor (vec4 as unsigned bytes, normalized)
   glEnableVertexAttribArray(1);
@@ -443,7 +443,7 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   // Upload normals
   m_normalBuffer.createOnce();
   m_normalBuffer.bind();
-  m_normalBuffer.allocate(normals.data(), sizeof(TVector3Df) * vertexCount);
+  m_normalBuffer.allocate(normals.data(), static_cast<int>(sizeof(TVector3Df) * vertexCount));
 
   // Attribute 2: vertexNormal (vec3)
   glEnableVertexAttribArray(2);
@@ -467,7 +467,7 @@ void TrianglesProxyBase::updateBuffers(const mrpt::viz::CVisualObject* sourceObj
   compile(sourceObj);
 }
 
-void TrianglesProxyBase::render(const RenderContext& rc) const
+void TrianglesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START

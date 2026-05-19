@@ -30,10 +30,11 @@ void Message_TOPCON_PZS::dumpToStream(std::ostream& out) const
       "without NBeam) \n",
       longitude_degrees, latitude_degrees, height_meters, RTK_height_meters);
 
-  out << mrpt::format(" PZL-ID: %i  Angle trans: %.05f deg\n ", (int)nId, angle_transmitter);
+  out << mrpt::format(
+      " PZL-ID: %i  Angle trans: %.05f deg\n ", static_cast<int>(nId), angle_transmitter);
 
-  out << mrpt::format(" Fix: %i  ", (int)Fix);
-  out << mrpt::format(" Error: %i ", (int)error);
+  out << mrpt::format(" Fix: %i  ", static_cast<int>(Fix));
+  out << mrpt::format(" Error: %i ", static_cast<int>(error));
   out << mrpt::format(" Battery levels: TX=%i  RX=%i\n ", TXBattery, RXBattery);
 
   out << mrpt::format(" hasCartesianPosVel= %s", hasCartesianPosVel ? "YES -> " : "NO\n");
@@ -52,7 +53,8 @@ void Message_TOPCON_PZS::dumpToStream(std::ostream& out) const
   if (hasStats)
     out << mrpt::format(
         "GPS sats used: %i  GLONASS sats used: %i  RTK Fix progress:%i%%\n",
-        (int)stats_GPS_sats_used, (int)stats_GLONASS_sats_used, (int)stats_rtk_fix_progress);
+        static_cast<int>(stats_GPS_sats_used), static_cast<int>(stats_GLONASS_sats_used),
+        static_cast<int>(stats_rtk_fix_progress));
 }
 
 void Message_TOPCON_PZS::internal_writeToStream(mrpt::serialization::CArchive& out) const
@@ -83,7 +85,9 @@ void Message_TOPCON_SATS::dumpToStream(std::ostream& out) const
 
   ASSERT_(USIs.size() == AZs.size() && USIs.size() == ELs.size());
   for (size_t i = 0; i < USIs.size(); i++)
-    out << mrpt::format(" %03i   %02i    %03i\n", (int)USIs[i], (int)ELs[i], (int)AZs[i]);
+    out << mrpt::format(
+        " %03i   %02i    %03i\n", static_cast<int>(USIs[i]), static_cast<int>(ELs[i]),
+        static_cast<int>(AZs[i]));
 }
 
 void Message_TOPCON_SATS::internal_writeToStream(mrpt::serialization::CArchive& out) const

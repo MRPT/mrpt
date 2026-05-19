@@ -92,7 +92,7 @@ void CSimplePointsMap::setSize(size_t newLength)
 uint8_t CSimplePointsMap::serializeGetVersion() const { return 10; }
 void CSimplePointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  uint32_t n = m_x.size();
+  uint32_t n = static_cast<uint32_t>(m_x.size());
 
   // First, write the number of points:
   out << n;

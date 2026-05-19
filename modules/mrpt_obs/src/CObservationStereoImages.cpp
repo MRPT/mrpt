@@ -223,8 +223,8 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
   if (!imageLeft.isEmpty())
   {
     o << mrpt::format(
-        " Image size: %ux%u pixels\n", (unsigned int)imageLeft.getWidth(),
-        (unsigned int)imageLeft.getHeight());
+        " Image size: %ux%u pixels\n", static_cast<unsigned int>(imageLeft.getWidth()),
+        static_cast<unsigned int>(imageLeft.getHeight()));
 
     o << " Channels order: " << imageLeft.getChannelsOrder() << "\n";
   }

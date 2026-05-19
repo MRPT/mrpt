@@ -153,7 +153,7 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
   // Filter: find "basis points". If two coincide, leave the one with the
   // shortest clearance.
   std::vector<int> basis1_x, basis1_y, basis2_x, basis2_y;
-  for (unsigned i = 0; i < temp_x.size(); i++)
+  for (size_t i = 0; i < temp_x.size(); i++)
   {
     int basis_x[2];
     int basis_y[2];
@@ -172,11 +172,11 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
   }
 
   // Ver basis que coincidan:
-  for (unsigned i = 0; i < (((temp_x.size())) - 1); i++)
+  for (size_t i = 0; i < (temp_x.size() - 1); i++)
   {
     if (!temp_borrar[i])
     {
-      for (unsigned int j = i + 1; j < temp_x.size(); j++)
+      for (size_t j = i + 1; j < temp_x.size(); j++)
       {
         if (!temp_borrar[j])
         {
@@ -225,7 +225,7 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
   CriticalPointsList.x_basis2.clear();
   CriticalPointsList.y_basis2.clear();
 
-  for (unsigned i = 0; i < temp_x.size(); i++)
+  for (size_t i = 0; i < temp_x.size(); i++)
   {
     if (!temp_borrar[i])
     {
@@ -298,7 +298,8 @@ int COccupancyGridMap2D::computeClearance(
     int indice_absoluto = 0;
     for (int i = 0; i < N_CIRCULOS; i++)
     {
-      int nPasos = round(1 + (M_2PI * i));  // Estimacion de # de entradas (luego seran menos)
+      int nPasos = static_cast<int>(
+          round(1 + (M_2PI * i)));  // Estimacion de # de entradas (luego seran menos)
       float A = 0;
       float AA = (2.0f * M_PIf / nPasos);
       int ult_x = 0, x, ult_y = 0, y;
@@ -308,8 +309,8 @@ int COccupancyGridMap2D::computeClearance(
 
       while (A < 2 * M_PI)
       {
-        x = round(i * cos(A));
-        y = round(i * sin(A));
+        x = static_cast<int>(round(i * cos(A)));
+        y = static_cast<int>(round(i * sin(A)));
 
         if ((x != ult_x || y != ult_y) && !(x == i && y == 0))
         {

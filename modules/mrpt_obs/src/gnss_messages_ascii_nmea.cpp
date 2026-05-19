@@ -51,7 +51,7 @@ void Message_NMEA_GGA::dumpToStream(std::ostream& out) const
 
   out << "  HDOP (Horizontal Dilution of Precision): ";
   if (fields.thereis_HDOP)
-    out << mrpt::format(" %f\n", fields.HDOP);
+    out << mrpt::format(" %f\n", static_cast<double>(fields.HDOP));
   else
     out << " N/A\n";
 }
@@ -68,7 +68,7 @@ bool Message_NMEA_GGA::getAllFieldValues(std::ostream& o) const
       "%.09f %.09f %.04f %.04f %02u %02u %02.03f %2u %u %f", fields.longitude_degrees,
       fields.latitude_degrees, fields.altitude_meters, fields.geoidal_distance, fields.UTCTime.hour,
       fields.UTCTime.minute, fields.UTCTime.sec, fields.satellitesUsed, fields.fix_quality,
-      fields.HDOP);
+      static_cast<double>(fields.HDOP));
   return true;
 }
 
@@ -163,7 +163,7 @@ void Message_NMEA_RMC::dumpToStream(std::ostream& out) const
       fields.UTCTime.sec);
   out << mrpt::format(
       " Date (DD/MM/YY): %02u/%02u/%02u\n ", static_cast<unsigned>(fields.date_day),
-      (unsigned)fields.date_month, static_cast<unsigned>(fields.date_year));
+      static_cast<unsigned>(fields.date_month), static_cast<unsigned>(fields.date_year));
   out << mrpt::format(
       "  Longitude: %.09f deg  Latitude: %.09f deg  Valid?: '%c'\n", fields.longitude_degrees,
       fields.latitude_degrees, fields.validity_char);
@@ -238,8 +238,8 @@ void Message_NMEA_ZDA::dumpToStream(std::ostream& out) const
       " UTC time-stamp: %02u:%02u:%02.03f\n", fields.UTCTime.hour, fields.UTCTime.minute,
       fields.UTCTime.sec);
   out << mrpt::format(
-      " Date (DD/MM/YY): %02u/%02u/%04u\n ", (unsigned)fields.date_day, (unsigned)fields.date_month,
-      (unsigned)fields.date_year);
+      " Date (DD/MM/YY): %02u/%02u/%04u\n ", static_cast<unsigned>(fields.date_day),
+      static_cast<unsigned>(fields.date_month), static_cast<unsigned>(fields.date_year));
 }
 
 bool Message_NMEA_ZDA::getAllFieldDescriptions(std::ostream& o) const

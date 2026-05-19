@@ -104,7 +104,7 @@ void gnss_message::readFromStream(mrpt::serialization::CArchive& in)
 {
   int32_t msg_id;
   in >> msg_id;
-  ASSERT_EQUAL_((int32_t)msg_id, this->message_type);
+  ASSERT_EQUAL_(static_cast<int32_t>(msg_id), this->message_type);
   this->internal_readFromStream(in);
 }
 

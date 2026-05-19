@@ -36,7 +36,7 @@ void CObservationGPS::serializeTo(mrpt::serialization::CArchive& out) const
   out << static_cast<uint8_t>(fix_type);            // v13
   out << static_cast<uint16_t>(gnss_service_mask);  // v13
 
-  const uint32_t nMsgs = messages.size();
+  const uint32_t nMsgs = static_cast<uint32_t>(messages.size());
   out << nMsgs;
   for (const auto& message : messages) message.second->writeToStream(out);
 }
@@ -489,7 +489,7 @@ bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date, mrpt::system::T
     return false;
   }
 
-  a = lround(julian_date);
+  a = static_cast<int>(lround(julian_date));
   b = a + 1537;
   c = static_cast<int>((static_cast<double>(b) - 122.1) / 365.25);
   d = static_cast<int>(365.25 * c);

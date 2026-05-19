@@ -104,7 +104,8 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
         // Pressed letter is stored in lower case form only to make it
         // easier
         // to check afterwards
-        m_key_codes_to_pressed[mrpt::system::lowerCase(std::string(1, ev.char_code))] = true;
+        m_key_codes_to_pressed[mrpt::system::lowerCase(
+            std::string(1, static_cast<char>(ev.char_code)))] = true;
         break;
     }
 

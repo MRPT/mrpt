@@ -123,8 +123,8 @@ void CVehicleVelCmd_Holo::cmdVel_scale(double vel_scale)
 }
 
 double CVehicleVelCmd_Holo::cmdVel_limits(
-    const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd,
-    const double beta,
+    [[maybe_unused]] const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd,
+    [[maybe_unused]] const double beta,
     const TVelCmdParams& params)
 {
   ASSERTMSG_(

@@ -823,15 +823,12 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
               const auto Hx_j = Hx.asEigen().row(j);
               const auto Hy_j = Hy.asEigen().row(j);
               const auto Pxx = m_pkk.asEigen().template block<VEH_SIZE, VEH_SIZE>(0, 0);
-              const auto Pxyi =
-                  m_pkk.asEigen().template block<VEH_SIZE, FEAT_SIZE>(0, idx_off);
+              const auto Pxyi = m_pkk.asEigen().template block<VEH_SIZE, FEAT_SIZE>(0, idx_off);
               const auto Pyiyi =
                   m_pkk.asEigen().template block<FEAT_SIZE, FEAT_SIZE>(idx_off, idx_off);
 
-              KFTYPE Sij = R(j, j) +
-                           static_cast<KFTYPE>((Hx_j * Pxx * Hx_j.transpose()).value()) +
-                           static_cast<KFTYPE>(
-                               2.0 * (Hx_j * Pxyi * Hy_j.transpose()).value()) +
+              KFTYPE Sij = R(j, j) + static_cast<KFTYPE>((Hx_j * Pxx * Hx_j.transpose()).value()) +
+                           static_cast<KFTYPE>(2.0 * (Hx_j * Pxyi * Hy_j.transpose()).value()) +
                            static_cast<KFTYPE>((Hy_j * Pyiyi * Hy_j.transpose()).value());
 
               // Kalman gain vector: Kij = P * h_j^T / Sij
@@ -842,8 +839,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
               for (size_t q = 0; q < VEH_SIZE; q++) h_j[q] = Hx(j, q);
               for (size_t q = 0; q < FEAT_SIZE; q++) h_j[idx_off + q] = Hy(j, q);
 
-              Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1> Kij_vec =
-                  (m_pkk.asEigen() * h_j) / Sij;
+              Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1> Kij_vec = (m_pkk.asEigen() * h_j) / Sij;
 
               // Update state: x' = x + Kij * ytilde(j)
               m_xkk.asEigen() += Kij_vec * ytilde[j];

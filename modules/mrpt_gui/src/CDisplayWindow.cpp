@@ -71,14 +71,14 @@ void CWindowDialog::wxMRPTImageControl::OnMouseClick(wxMouseEvent& ev)
   m_last_mouse_click = ev.GetPosition();
 }
 
-void CWindowDialog::wxMRPTImageControl::OnChar(wxKeyEvent& ev) {}
+void CWindowDialog::wxMRPTImageControl::OnChar([[maybe_unused]] wxKeyEvent& ev) {}
 void CWindowDialog::wxMRPTImageControl::AssignImage(wxBitmap* img)
 {
   std::lock_guard<std::mutex> lock(m_img_cs);
   m_img.reset(img);
 }
 
-void CWindowDialog::wxMRPTImageControl::OnPaint(wxPaintEvent& ev)
+void CWindowDialog::wxMRPTImageControl::OnPaint([[maybe_unused]] wxPaintEvent& ev)
 {
   wxPaintDC dc(this);
 
@@ -333,7 +333,7 @@ CDisplayWindow::~CDisplayWindow() { CBaseGUIWindow::destroyWxWindow(); }
 void CDisplayWindow::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
-  const auto* win = (const CWindowDialog*)m_hwnd.get();
+  const auto* win = static_cast<const CWindowDialog*>(m_hwnd.get());
   if (!win)
   {
     return;
@@ -348,7 +348,7 @@ void CDisplayWindow::setCursorCross([[maybe_unused]] bool cursorIsCross)
 std::optional<mrpt::img::TPixelCoord> CDisplayWindow::getLastMousePosition() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL
-  const auto* win = (const CWindowDialog*)m_hwnd.get();
+  const auto* win = static_cast<const CWindowDialog*>(m_hwnd.get());
   if (!win)
   {
     return std::nullopt;
@@ -465,7 +465,7 @@ void CDisplayWindow::plot(const CVectorFloat& y)
   CVectorFloat::const_iterator ity;
   auto itymx = std::max_element(y.begin(), y.end());
   auto itymn = std::min_element(y.begin(), y.end());
-  float px = y.size() / 520.0f;
+  float px = static_cast<float>(y.size()) / 520.0f;
   float py = (*itymx - *itymn) / 400.0f;
   int tpxA = 0;
   int tpyA = 0;
@@ -474,7 +474,7 @@ void CDisplayWindow::plot(const CVectorFloat& y)
 
   for (k = 0, ity = y.begin(); ity != y.end(); ++k, ++ity)
   {
-    auto tpx = round(k / px + ox);
+    auto tpx = round(static_cast<float>(k) / px + ox);
     auto tpy = round((*ity - *itymn) / py + oy);
     imgColor.drawMark({tpx, tpy}, TColor::red(), 'x');
     if (k > 0)

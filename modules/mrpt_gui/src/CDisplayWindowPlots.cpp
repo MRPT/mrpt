@@ -256,7 +256,8 @@ void CWindowDialogPlots::OnMenuSelected(wxCommandEvent& ev)
   {
     if (m_winPlots && m_winPlots->m_callback)
       m_winPlots->m_callback(
-          it->second, d2f(m_curCursorPos.x), d2f(m_curCursorPos.y), m_winPlots->m_callback_param);
+          static_cast<int>(it->second), d2f(m_curCursorPos.x), d2f(m_curCursorPos.y),
+          m_winPlots->m_callback_param);
   }
 }
 
@@ -432,7 +433,11 @@ void CWindowDialogPlots::plot(
 
   theLayer->SetContinuity(isContinuous);
 
-  wxPen pen(wxColour(lineColor[0], lineColor[1], lineColor[2]), lineWidth, lineStyle);
+  wxPen pen(
+      wxColour(
+          static_cast<unsigned char>(lineColor[0]), static_cast<unsigned char>(lineColor[1]),
+          static_cast<unsigned char>(lineColor[2])),
+      lineWidth, lineStyle);
   theLayer->SetPen(pen);
 
   theLayer->ShowName(false);
@@ -596,7 +601,11 @@ void CWindowDialogPlots::plotEllipse(
 
   theLayer->SetContinuity(isContinuous);
 
-  wxPen pen(wxColour(lineColor[0], lineColor[1], lineColor[2]), lineWidth, lineStyle);
+  wxPen pen(
+      wxColour(
+          static_cast<unsigned char>(lineColor[0]), static_cast<unsigned char>(lineColor[1]),
+          static_cast<unsigned char>(lineColor[2])),
+      lineWidth, lineStyle);
   theLayer->SetPen(pen);
 
   if (updateAtTheEnd) m_plot->Refresh(false);
@@ -679,7 +688,7 @@ CDisplayWindowPlots::~CDisplayWindowPlots() { CBaseGUIWindow::destroyWxWindow();
 void CDisplayWindowPlots::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS
-  const auto* win = (const CWindowDialogPlots*)m_hwnd.get();
+  const auto* win = static_cast<const CWindowDialogPlots*>(m_hwnd.get());
   if (!win)
   {
     return;
@@ -694,7 +703,7 @@ void CDisplayWindowPlots::setCursorCross([[maybe_unused]] bool cursorIsCross)
 std::optional<mrpt::img::TPixelCoord> CDisplayWindowPlots::getLastMousePosition() const
 {
 #if MRPT_HAS_WXWIDGETS
-  const auto* win = (const CWindowDialogPlots*)m_hwnd.get();
+  const auto* win = static_cast<const CWindowDialogPlots*>(m_hwnd.get());
   if (!win)
   {
     return std::nullopt;

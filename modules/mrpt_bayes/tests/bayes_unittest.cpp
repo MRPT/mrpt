@@ -12,13 +12,12 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <gtest/gtest.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/bayes/CRejectionSamplingCapable.h>
 #include <mrpt/random.h>
-
-#include <gtest/gtest.h>
 
 #include <cmath>
 #include <numeric>
@@ -30,11 +29,11 @@ using namespace mrpt::bayes;
 // ---------------------------------------------------------------------------
 
 /** Simple particle filter holding double values. */
-struct SimpleParticlePDF
-    : public CParticleFilterData<double, particle_storage_mode::VALUE>,
-      public CParticleFilterDataImpl<
-          SimpleParticlePDF,
-          CParticleFilterData<double, particle_storage_mode::VALUE>::CParticleList>
+struct SimpleParticlePDF :
+    public CParticleFilterData<double, particle_storage_mode::VALUE>,
+    public CParticleFilterDataImpl<
+        SimpleParticlePDF,
+        CParticleFilterData<double, particle_storage_mode::VALUE>::CParticleList>
 {
 };
 
@@ -54,8 +53,8 @@ TEST(BayesTest, log2linearWeights_sum_to_one)
   EXPECT_NEAR(sum, 1.0, 1e-10);
 
   // Max weight is at index 2 (log_w = -0.5)
-  const size_t maxIdx = static_cast<size_t>(
-      std::max_element(linW.begin(), linW.end()) - linW.begin());
+  const size_t maxIdx =
+      static_cast<size_t>(std::max_element(linW.begin(), linW.end()) - linW.begin());
   EXPECT_EQ(maxIdx, 2u);
 }
 

@@ -658,42 +658,47 @@ template <>
 struct pointmap_traits<CGenericPointsMap>
 {
   inline static void internal_loadFromRangeScan2D_init(
-      CGenericPointsMap& me, CPointsMap::TLaserRange2DInsertContext& lric)
+      [[maybe_unused]] CGenericPointsMap& me,
+      [[maybe_unused]] CPointsMap::TLaserRange2DInsertContext& lric)
   {
   }
   inline static void internal_loadFromRangeScan2D_prepareOneRange(
-      CGenericPointsMap& me,
+      [[maybe_unused]] CGenericPointsMap& me,
       [[maybe_unused]] const float gx,
       [[maybe_unused]] const float gy,
       [[maybe_unused]] const float gz,
-      CPointsMap::TLaserRange2DInsertContext& lric)
+      [[maybe_unused]] CPointsMap::TLaserRange2DInsertContext& lric)
   {
   }
   inline static void internal_loadFromRangeScan2D_postPushBack(
-      CGenericPointsMap& me, CPointsMap::TLaserRange2DInsertContext& lric)
+      [[maybe_unused]] CGenericPointsMap& me,
+      [[maybe_unused]] CPointsMap::TLaserRange2DInsertContext& lric)
   {
     // Nothing
   }
 
   inline static void internal_loadFromRangeScan3D_init(
-      CGenericPointsMap& me, CPointsMap::TLaserRange3DInsertContext& lric)
+      [[maybe_unused]] CGenericPointsMap& me,
+      [[maybe_unused]] CPointsMap::TLaserRange3DInsertContext& lric)
   {
   }
   inline static void internal_loadFromRangeScan3D_prepareOneRange(
-      CGenericPointsMap& me,
+      [[maybe_unused]] CGenericPointsMap& me,
       [[maybe_unused]] const float gx,
       [[maybe_unused]] const float gy,
       [[maybe_unused]] const float gz,
-      CPointsMap::TLaserRange3DInsertContext& lric)
+      [[maybe_unused]] CPointsMap::TLaserRange3DInsertContext& lric)
   {
   }
   inline static void internal_loadFromRangeScan3D_postPushBack(
-      CGenericPointsMap& me, CPointsMap::TLaserRange3DInsertContext& lric)
+      [[maybe_unused]] CGenericPointsMap& me,
+      [[maybe_unused]] CPointsMap::TLaserRange3DInsertContext& lric)
   {
     // Anything to do?
   }
   inline static void internal_loadFromRangeScan3D_postOneRange(
-      CGenericPointsMap& me, CPointsMap::TLaserRange3DInsertContext& lric)
+      [[maybe_unused]] CGenericPointsMap& me,
+      [[maybe_unused]] CPointsMap::TLaserRange3DInsertContext& lric)
   {
   }
 };

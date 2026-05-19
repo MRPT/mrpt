@@ -66,7 +66,8 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(
   auto itValid = m_validRange.begin();
   for (auto itScan = m_scan.begin(); itScan != m_scan.end(); itScan++, itValid++, k++)
   {
-    const auto ang = std::abs(k * aperture / static_cast<float>(nPts) - aperture * 0.5f);
+    const auto ang =
+        std::abs(static_cast<float>(k) * aperture / static_cast<float>(nPts) - aperture * 0.5f);
     float x = (*itScan) * cos(ang);
 
     if (min_height != 0 || max_height != 0)

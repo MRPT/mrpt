@@ -110,7 +110,7 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
   }
 
   // enabledCount = number of lasers in the LIDAR
-  this->laser_corrections.resize(enabledCount);
+  this->laser_corrections.resize(static_cast<size_t>(enabledCount));
 
   auto node_points_ = get_xml_children(node_DB, "points_");
   const tinyxml2::XMLElement* node_points_item = nullptr;
@@ -130,7 +130,7 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
     ASSERT_GE_(id, 0);
     if (id >= enabledCount) continue;  // ignore
 
-    PerLaserCalib& plc = laser_corrections[id];
+    PerLaserCalib& plc = laser_corrections[static_cast<size_t>(id)];
 
     plc.azimuthCorrection = get_xml_children_as_double(node_px, "rotCorrection_");
     plc.verticalCorrection = get_xml_children_as_double(node_px, "vertCorrection_");
@@ -246,7 +246,7 @@ bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
       const auto id = item["laser_id"].as<unsigned int>();
       ASSERT_(id < num_lasers);
 
-      PerLaserCalib& plc = laser_corrections[id];
+      PerLaserCalib& plc = laser_corrections[static_cast<size_t>(id)];
 
       plc.azimuthCorrection = item["rot_correction"].as<double>();
       plc.verticalCorrection = item["vert_correction"].as<double>();

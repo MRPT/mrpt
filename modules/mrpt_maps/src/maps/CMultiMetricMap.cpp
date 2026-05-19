@@ -287,7 +287,7 @@ float CMultiMetricMap::compute3DMatchingRatio(
 
   // Return average:
   const size_t nMapsComputed = maps.size();
-  if (nMapsComputed) accumResult /= nMapsComputed;
+  if (nMapsComputed) accumResult /= static_cast<float>(nMapsComputed);
   return accumResult;
 
   MRPT_END

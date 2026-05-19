@@ -23,7 +23,7 @@ CVehicleSimul_Holo::CVehicleSimul_Holo()
   resetTime();
 }
 
-void CVehicleSimul_Holo::internal_simulControlStep(const double dt)
+void CVehicleSimul_Holo::internal_simulControlStep([[maybe_unused]] const double dt)
 {
   // Control:
   if (m_vel_ramp_cmd.issue_time >= 0 &&

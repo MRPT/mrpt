@@ -34,7 +34,7 @@ CObservationGasSensors::CObservationGasSensors() : m_readings() {}
 uint8_t CObservationGasSensors::serializeGetVersion() const { return 5; }
 void CObservationGasSensors::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  uint32_t i, n = m_readings.size();
+  uint32_t i, n = static_cast<uint32_t>(m_readings.size());
   out << n;
 
   for (i = 0; i < n; i++)
@@ -225,7 +225,8 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(
     float partial_sum = 0;
     for (auto& i : m_antiNoise_window) partial_sum += i.reading;
 
-    m_antiNoise_window.at(winNoise_size / 2).reading_filtered = partial_sum / winNoise_size;
+    m_antiNoise_window.at(winNoise_size / 2).reading_filtered =
+        partial_sum / static_cast<float>(winNoise_size);
   }
   catch (...)
   {
@@ -260,7 +261,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
           fixed_incT = incT;
         else
           // ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));
-          if (fabs(incT - fixed_incT) > (double)(0.05))
+          if (fabs(incT - fixed_incT) > 0.05)
             std::cout << "IncT is not constant by HW."
                       << "\n";
       }
@@ -343,7 +344,7 @@ void CObservationGasSensors::getDescriptionAsText(std::ostream& o) const
 
   for (size_t j = 0; j < m_readings.size(); j++)
   {
-    o << mrpt::format("e-nose #%u:\n", (unsigned)j);
+    o << mrpt::format("e-nose #%u:\n", static_cast<unsigned>(j));
 
     vector<float>::const_iterator it;
     std::vector<int>::const_iterator itKind;

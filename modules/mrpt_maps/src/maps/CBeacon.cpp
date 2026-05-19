@@ -39,8 +39,8 @@ IMPLEMENTS_SERIALIZABLE(CBeacon, CSerializable, mrpt::maps)
 uint8_t CBeacon::serializeGetVersion() const { return 0; }
 void CBeacon::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  uint32_t i = m_ID;
-  uint32_t j = m_typePDF;
+  uint32_t i = static_cast<uint32_t>(m_ID);
+  uint32_t j = static_cast<uint32_t>(m_typePDF);
   out << i << j << m_locationMC << m_locationGauss << m_locationSOG;
 }
 
@@ -475,12 +475,12 @@ void CBeacon::generateRingSOG(
   size_t B = static_cast<size_t>(M_2PIf * R / maxDistBetweenGaussians) + 1;
 
   // Assure minimum B (maximum angular increment):
-  B = max(B, (size_t)30);
+  B = max(B, static_cast<size_t>(30));
 
   // B must be even:
   if (B % 2) B++;
 
-  A_ang = M_2PI / B;  // Angular increments between modes:
+  A_ang = M_2PI / static_cast<double>(B);  // Angular increments between modes:
 
   // The diagonal basic covariance matrix.
   //  (0,0) is the variance in the direction "in->out" of the sphere

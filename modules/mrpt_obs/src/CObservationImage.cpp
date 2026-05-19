@@ -111,8 +111,8 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
   if (!image.isEmpty())
   {
     o << mrpt::format(
-        " Image size: %ux%u pixels\n", (unsigned int)image.getWidth(),
-        (unsigned int)image.getHeight());
+        " Image size: %ux%u pixels\n", static_cast<unsigned int>(image.getWidth()),
+        static_cast<unsigned int>(image.getHeight()));
 
     o << " Channels order: " << image.getChannelsOrder() << "\n";
   }

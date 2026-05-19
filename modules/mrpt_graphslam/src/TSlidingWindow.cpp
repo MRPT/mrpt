@@ -67,7 +67,7 @@ double TSlidingWindow::getMean()
   else
   {
     mean_out = std::accumulate(m_measurements_vec.begin(), m_measurements_vec.end(), 0.0);
-    mean_out /= m_measurements_vec.size();
+    mean_out /= static_cast<double>(m_measurements_vec.size());
 
     m_mean_cached = mean_out;
     m_mean_updated = true;
@@ -96,7 +96,7 @@ double TSlidingWindow::getStdDev()
     {
       sum_of_sq_diffs += std::pow(*it - mean, 2);
     }
-    std_dev_out = sqrt(sum_of_sq_diffs / m_win_size);
+    std_dev_out = sqrt(sum_of_sq_diffs / static_cast<double>(m_win_size));
 
     m_std_dev_cached = std_dev_out;
     m_std_dev_updated = true;
@@ -164,7 +164,8 @@ void TSlidingWindow::resizeWindow(size_t new_size)
     // remove (curr_size - new_size) elements from the beginning of the
     // measurements vector
     m_measurements_vec.erase(
-        m_measurements_vec.begin(), m_measurements_vec.begin() + (curr_size - new_size));
+        m_measurements_vec.begin(),
+        m_measurements_vec.begin() + static_cast<std::ptrdiff_t>(curr_size - new_size));
 
     m_mean_updated = false;
     m_median_updated = false;
@@ -179,7 +180,8 @@ void TSlidingWindow::loadFromConfigFile(
 {
   MRPT_START
 
-  size_t sliding_win_size = source.read_int(section, "sliding_win_size", 10, false);
+  size_t sliding_win_size =
+      static_cast<size_t>(source.read_int(section, "sliding_win_size", 10, false));
   this->resizeWindow(sliding_win_size);
 
   MRPT_END

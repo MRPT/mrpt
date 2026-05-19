@@ -266,7 +266,7 @@ void CWxGLCanvasBase::Render()
 void CWxGLCanvasBase::OnEnterWindow(wxMouseEvent& WXUNUSED(event)) { SetFocus(); }
 
 void CWxGLCanvasBase::OnPaint(wxPaintEvent& WXUNUSED(event)) { Render(); }
-void CWxGLCanvasBase::OnSize(wxSizeEvent& event)
+void CWxGLCanvasBase::OnSize([[maybe_unused]] wxSizeEvent& event)
 {
   if (!m_parent->IsShown())
   {
@@ -310,7 +310,7 @@ void CWxGLCanvasBase::InitGL()
   SetCurrent(*m_gl_context);
 }
 
-void CWxGLCanvasBase::setCameraPose(const mrpt::poses::CPose3D& camPose)
+void CWxGLCanvasBase::setCameraPose([[maybe_unused]] const mrpt::poses::CPose3D& camPose)
 {
   THROW_EXCEPTION("todo");
   // Convert pose to orbit parameters and feed into the controller

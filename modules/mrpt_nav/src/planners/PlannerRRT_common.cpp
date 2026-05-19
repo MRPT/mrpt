@@ -154,7 +154,7 @@ void PlannerTPS_VirtualBase::transformPointcloudWithSquareClipping(
     double ox, oy;
     invPose.composePoint(gx, gy, ox, oy);
 
-    out_map.insertPointFast(ox, oy, 0);
+    out_map.insertPointFast(static_cast<float>(ox), static_cast<float>(oy), 0);
   }
 }
 
@@ -206,7 +206,7 @@ void PlannerTPS_VirtualBase::spaceTransformer(
   catch (...)
   {
     cerr << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
-    cerr << mrpt::format("*in_PTG = %p\n", (void*)in_PTG);
+    cerr << mrpt::format("*in_PTG = %p\n", static_cast<const void*>(in_PTG));
     if (in_PTG) cerr << mrpt::format("PTG = %s\n", in_PTG->getDescription().c_str());
     cerr << "\n";
   }
@@ -232,7 +232,7 @@ void PlannerTPS_VirtualBase::spaceTransformerOneDirectionOnly(
     const size_t nObs = obs_xs.size();
 
     // Init obs ranges:
-    in_PTG->initTPObstacleSingle(tp_space_k_direction, out_TPObstacle_k);
+    in_PTG->initTPObstacleSingle(static_cast<uint16_t>(tp_space_k_direction), out_TPObstacle_k);
 
     for (size_t obs = 0; obs < nObs; obs++)
     {
@@ -243,7 +243,8 @@ void PlannerTPS_VirtualBase::spaceTransformerOneDirectionOnly(
         continue;  // ignore this obstacle: anyway, I don't know how to
       // map it to TP-Obs!
 
-      in_PTG->updateTPObstacleSingle(ox, oy, tp_space_k_direction, out_TPObstacle_k);
+      in_PTG->updateTPObstacleSingle(
+          ox, oy, static_cast<uint16_t>(tp_space_k_direction), out_TPObstacle_k);
     }
 
     // Leave distances in out_TPObstacles un-normalized ([0,1]), so they
@@ -258,7 +259,7 @@ void PlannerTPS_VirtualBase::spaceTransformerOneDirectionOnly(
   catch (...)
   {
     cerr << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
-    cerr << mrpt::format("*in_PTG = %p\n", (void*)in_PTG);
+    cerr << mrpt::format("*in_PTG = %p\n", static_cast<const void*>(in_PTG));
     if (in_PTG) cerr << mrpt::format("PTG = %s\n", in_PTG->getDescription().c_str());
     cerr << "\n";
   }

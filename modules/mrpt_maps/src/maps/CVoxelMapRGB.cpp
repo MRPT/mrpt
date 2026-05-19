@@ -132,8 +132,9 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
   markAsChanged();
 
   const occupancy_value_t logodd_observation_occupied =
-      std::max<occupancy_value_t>(1, p2l(insertionOptions.prob_hit));
-  const occupancy_value_t logodd_thres_occupied = p2l(1.0 - insertionOptions.clamp_max);
+      std::max<occupancy_value_t>(1, p2l(static_cast<float>(insertionOptions.prob_hit)));
+  const occupancy_value_t logodd_thres_occupied =
+      p2l(static_cast<float>(1.0 - insertionOptions.clamp_max));
 
   const auto& xs = colPts.getPointsBufferRef_x();
   const auto& ys = colPts.getPointsBufferRef_y();

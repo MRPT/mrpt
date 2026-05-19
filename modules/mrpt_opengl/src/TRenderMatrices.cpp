@@ -87,11 +87,11 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
     mrpt::math::CMatrixFloat44 persp;
     persp.setZero();
 
-    persp(0, 0) = phm.fx();
-    persp(1, 1) = phm.fy();
+    persp(0, 0) = static_cast<float>(phm.fx());
+    persp(1, 1) = static_cast<float>(phm.fy());
 
-    persp(0, 2) = -phm.cx();
-    persp(1, 2) = -H + phm.cy();
+    persp(0, 2) = static_cast<float>(-phm.cx());
+    persp(1, 2) = -H + static_cast<float>(phm.cy());
     persp(2, 2) = (zfar + znear);
     persp(3, 2) = -1.0f;
     persp(2, 3) = zfar * znear;
@@ -108,10 +108,10 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
     // Was: gluPerspective()
     // Based on GLM's perspective (MIT license).
 
-    const float aspect = viewport_width / (1.0f * viewport_height);
+    const float aspect = static_cast<float>(viewport_width) / static_cast<float>(viewport_height);
     ASSERT_GT_(std::abs(aspect - std::numeric_limits<float>::epsilon()), .0f);
 
-    const float f = 1.0f / std::tan(mrpt::DEG2RAD(FOV) / 2.0f);
+    const float f = static_cast<float>(1.0 / std::tan(mrpt::DEG2RAD(FOV) / 2.0));
     p_matrix.setZero();
 
     p_matrix(0, 0) = f / aspect;
@@ -125,9 +125,9 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
     // Was:
     // glOrtho(-Ax, Ax, -Ay, Ay, -0.5 * m_clip_max, 0.5 * m_clip_max);
 
-    const float ratio = viewport_width / (1.0f * viewport_height);
-    float Ax = eyeDistance * 0.5f;
-    float Ay = eyeDistance * 0.5f;
+    const float ratio = static_cast<float>(viewport_width) / static_cast<float>(viewport_height);
+    float Ax = static_cast<float>(eyeDistance) * 0.5f;
+    float Ay = static_cast<float>(eyeDistance) * 0.5f;
 
     if (ratio > 1)
     {
@@ -153,7 +153,7 @@ void azimuthElevationFromDirection(
     const mrpt::math::TVector3Df& v, float& elevation, float& azimuth)
 {
   // Compute the elevation angle
-  elevation = std::atan2(v.z, sqrt(v.x * v.x + v.y * v.y));
+  elevation = atan2f(v.z, sqrtf(v.x * v.x + v.y * v.y));
 
   // Compute the azimuth angle
   if (v.x == 0 && v.y == 0)
@@ -162,7 +162,7 @@ void azimuthElevationFromDirection(
   }
   else
   {
-    azimuth = std::atan2(v.y, v.x);
+    azimuth = atan2f(v.y, v.x);
   }
 }
 }  // namespace
@@ -173,7 +173,8 @@ void TRenderMatrices::computeLightProjectionMatrix(
   m_last_light_z_near = zmin;
   m_last_light_z_far = zmax;
 
-  float dist = eyeDistance * lp.eyeDistance2lightShadowExtension;
+  float dist =
+      static_cast<float>(eyeDistance) * static_cast<float>(lp.eyeDistance2lightShadowExtension);
 
   // Ensure dist is not too small:
   mrpt::keep_max(dist, zmax * lp.minimum_shadow_map_extension_ratio);
@@ -188,9 +189,9 @@ void TRenderMatrices::computeLightProjectionMatrix(
   azimuthElevationFromDirection(dir, elevation, azim);
 
   const auto lightUp = mrpt::math::TVector3Df(
-      -cos(azim) * sin(elevation),  // x
-      -sin(azim) * sin(elevation),  // y
-      cos(elevation)                // z
+      -cosf(azim) * sinf(elevation),  // x
+      -sinf(azim) * sinf(elevation),  // y
+      cosf(elevation)                 // z
   );
 
   light_v = LookAt(pointing - dir * zmax * 0.5, pointing, lightUp);
@@ -226,8 +227,8 @@ void TRenderMatrices::computeCascadedLightProjectionMatrices(
   splits[0] = nearClip;
   for (int i = 1; i <= N; i++)
   {
-    const float f = static_cast<float>(i) / N;
-    const float cLog = nearClip * std::pow(zmax / nearClip, f);
+    const float f = static_cast<float>(i) / static_cast<float>(N);
+    const float cLog = nearClip * powf(zmax / nearClip, f);
     const float cUni = nearClip + (zmax - nearClip) * f;
     splits[i] = lambda * cLog + (1.0f - lambda) * cUni;
   }
@@ -239,7 +240,7 @@ void TRenderMatrices::computeCascadedLightProjectionMatrices(
   float azim = 0, elevation = 0;
   azimuthElevationFromDirection(dir, elevation, azim);
   const auto lightUp = mrpt::math::TVector3Df(
-      -cos(azim) * sin(elevation), -sin(azim) * sin(elevation), cos(elevation));
+      -cosf(azim) * sinf(elevation), -sinf(azim) * sinf(elevation), cosf(elevation));
 
   // For each cascade, compute a tight ortho frustum around the view sub-frustum
   for (int c = 0; c < N; c++)
@@ -440,8 +441,8 @@ void TRenderMatrices::projectPointPixels(
     float x, float y, float z, float& proj_u_px, float& proj_v_px, float& proj_depth) const
 {
   projectPoint(x, y, z, proj_u_px, proj_v_px, proj_depth);
-  proj_u_px = (proj_u_px + 1.0f) * (viewport_width * 0.5f);
-  proj_v_px = (proj_v_px + 1.0f) * (viewport_height * 0.5f);
+  proj_u_px = (proj_u_px + 1.0f) * (static_cast<float>(viewport_width) * 0.5f);
+  proj_v_px = (proj_v_px + 1.0f) * (static_cast<float>(viewport_height) * 0.5f);
 }
 
 void TRenderMatrices::saveToYaml(mrpt::containers::yaml& c) const

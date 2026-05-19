@@ -367,7 +367,7 @@ Program::Ptr ShaderProgramManager::compileShaderProgram(
     const std::string& vertexSrc,
     const std::string& fragmentSrc,
     const std::string& geometrySrc,
-    const std::string& shaderName,
+    [[maybe_unused]] const std::string& shaderName,
     std::string* outErrorMsg)
 {
   MRPT_START

@@ -28,7 +28,9 @@ std::string mrpt::kinematics::CVehicleVelCmd::asString() const
   s += "(";
   for (size_t i = 0; i < getVelCmdLength(); i++)
   {
-    s += mrpt::format("%s=%.03f ", getVelCmdDescription(i).c_str(), getVelCmdElement(i));
+    s += mrpt::format(
+        "%s=%.03f ", getVelCmdDescription(static_cast<int>(i)).c_str(),
+        getVelCmdElement(static_cast<int>(i)));
   }
   s += ")";
   return s;
@@ -38,7 +40,8 @@ CVehicleVelCmd& CVehicleVelCmd::operator=(const CVehicleVelCmd& other)
 {
   const size_t nThis = this->getVelCmdLength();
   ASSERTMSG_(typeid(*this) == typeid(other), "Trying to copy incompatible classes");
-  for (size_t i = 0; i < nThis; i++) this->setVelCmdElement(i, other.getVelCmdElement(i));
+  for (size_t i = 0; i < nThis; i++)
+    this->setVelCmdElement(static_cast<int>(i), other.getVelCmdElement(static_cast<int>(i)));
   return *this;
 }
 
