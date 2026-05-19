@@ -111,7 +111,7 @@ class CAnimatedAssimpModel : public CAssimpModel
   struct Bone
   {
     std::string name;
-    int parentIndex = -1;  //!< -1 for root bones
+    int parentIndex = -1;       //!< -1 for root bones
     std::vector<int> children;  //!< child bone indices for O(N) traversal
 
     // Bind pose (rest position)
