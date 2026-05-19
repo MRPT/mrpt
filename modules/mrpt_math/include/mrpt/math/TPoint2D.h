@@ -19,6 +19,7 @@
 #include <mrpt/math/math_frwds.h>  // CMatrixFixed
 
 #include <cmath>  // sqrt
+#include <tuple>
 #include <type_traits>
 #include <vector>
 
@@ -240,6 +241,22 @@ struct TPoint2D_ :
     return o;
   }
 
+  /** Method so std::tuple, std::tie() works with TPoint2D */
+  template <size_t I>
+  const T& get() const
+  {
+    if constexpr (I == 0)
+    {
+      return TPoint2D_data<T>::x;
+    }
+    return TPoint2D_data<T>::y;
+  }
+
+  [[nodiscard]] constexpr auto as_tuple() const
+  {
+    return std::tie(TPoint2D_data<T>::x, TPoint2D_data<T>::y);
+  }
+
   /** Squared norm: `|v|^2 = x^2+y^2` */
   [[nodiscard]] T sqrNorm() const { return this->x * this->x + this->y * this->y; }
 
@@ -306,6 +323,21 @@ constexpr bool operator!=(const TPoint2D_<T>& p1, const TPoint2D_<T>& p2)
 /** @} */
 
 }  // namespace mrpt::math
+
+// Specializations so std::tuple, std::tie() works with TPoint2D
+namespace std
+{
+template <typename T>
+struct tuple_size<mrpt::math::TPoint2D_<T>> : integral_constant<size_t, 2>
+{
+};
+
+template <size_t I, typename T>
+struct tuple_element<I, mrpt::math::TPoint2D_<T>>
+{
+  using type = T;
+};
+}  // namespace std
 
 namespace mrpt::typemeta
 {
