@@ -262,7 +262,7 @@ void ICP_SLAM_App_Base::run()
     // Info log:
     // -----------
     f_log.printf(
-        "%f %i\n", static_cast<float>(1000.0 * t_exec), mapBuilder.getCurrentlyBuiltMapSize());
+        "%f %zu\n", static_cast<float>(1000.0 * t_exec), mapBuilder.getCurrentlyBuiltMapSize());
 
     const CMultiMetricMap& mostLikMap = mapBuilder.getCurrentlyBuiltMetricMap();
 

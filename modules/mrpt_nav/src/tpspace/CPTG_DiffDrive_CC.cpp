@@ -84,14 +84,14 @@ void CPTG_DiffDrive_CC::ptgDiffDriveSteeringFunction(
   if (t < u * R / V_MAX)
   {
     // l-
-    v = -V_MAX;
-    w = W_MAX;
+    v = static_cast<float>(-V_MAX);
+    w = static_cast<float>(W_MAX);
   }
   else if (t < (u + M_PI * 0.5f) * R / V_MAX)
   {
     // l+
-    v = V_MAX;
-    w = W_MAX;
+    v = static_cast<float>(V_MAX);
+    w = static_cast<float>(W_MAX);
   }
   else
   {
@@ -102,8 +102,8 @@ void CPTG_DiffDrive_CC::ptgDiffDriveSteeringFunction(
   // Turn in the opposite direction??
   if (alpha < 0) w *= -1;
 
-  v *= K;
-  w *= K;
+  v *= static_cast<float>(K);
+  w *= static_cast<float>(K);
 }
 
 bool CPTG_DiffDrive_CC::PTG_IsIntoDomain(double x, double y) const

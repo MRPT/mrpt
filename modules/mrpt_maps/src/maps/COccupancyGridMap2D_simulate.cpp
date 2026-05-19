@@ -55,7 +55,8 @@ void COccupancyGridMap2D::laserScanSimulator(
   inout_Scan.resizeScan(N);
 
   double A = sensorPose.phi() + (inout_Scan.rightToLeft ? -0.5 : +0.5) * inout_Scan.aperture;
-  const double AA = (inout_Scan.rightToLeft ? 1.0 : -1.0) * (inout_Scan.aperture / (N - 1));
+  const double AA =
+      (inout_Scan.rightToLeft ? 1.0 : -1.0) * (inout_Scan.aperture / static_cast<double>(N - 1));
 
   const float free_thres = 1.0f - threshold;
 
@@ -92,7 +93,7 @@ void COccupancyGridMap2D::sonarSimulator(
     size_t nRays = round(1 + inout_observation.sensorConeAperture / 1.0_deg);
 
     double direction = sensorAbsolutePose.phi() - 0.5 * inout_observation.sensorConeAperture;
-    const double Adir = inout_observation.sensorConeAperture / nRays;
+    const double Adir = inout_observation.sensorConeAperture / static_cast<double>(nRays);
 
     float min_detected_obs = 0;
     for (size_t i = 0; i < nRays; i++, direction += Adir)
@@ -140,8 +141,8 @@ void COccupancyGridMap2D::simulateScanRay(
 
 // Use integers for all ray tracing for efficiency
 #define INTPRECNUMBIT 10
-#define int_x2idx(_X) (_X >> INTPRECNUMBIT)
-#define int_y2idx(_Y) (_Y >> INTPRECNUMBIT)
+#define int_x2idx(_X) (static_cast<int>(_X >> INTPRECNUMBIT))
+#define int_y2idx(_Y) (static_cast<int>(_Y >> INTPRECNUMBIT))
 
   auto rxi = static_cast<int64_t>(((start_x - m_xMin) / m_resolution) * (1L << INTPRECNUMBIT));
   auto ryi = static_cast<int64_t>(((start_y - m_yMin) / m_resolution) * (1L << INTPRECNUMBIT));
@@ -217,8 +218,8 @@ static void func_laserSimul_callback(
 
   double A = sensorPose.phi() +
              (fixed_param.params->rightToLeft ? -0.5 : +0.5) * fixed_param.params->aperture;
-  const double AA =
-      (fixed_param.params->rightToLeft ? 1.0 : -1.0) * (fixed_param.params->aperture / (N - 1));
+  const double AA = (fixed_param.params->rightToLeft ? 1.0 : -1.0) *
+                    (fixed_param.params->aperture / static_cast<double>(N - 1));
 
   const float free_thres = 1.0f - fixed_param.params->threshold;
 

@@ -70,7 +70,7 @@ class ICPTests : public ::testing::Test
     ICP.options.doRANSAC = false;
     // ICP.options.dumpToConsole();
     // -----------------------------------------------------
-    CPose2D initialPose(0.8f, 0.0f, (float)DEG2RAD(0.0f));
+    CPose2D initialPose(0.8f, 0.0f, static_cast<float>(DEG2RAD(0.0f)));
 
     CPosePDF::Ptr pdf = ICP.Align(&m1, &m2, initialPose, info);
 
@@ -89,14 +89,14 @@ class ICPTests : public ::testing::Test
     CDisk::Ptr pln = std::make_shared<CDisk>();
     pln->setDiskRadius(2);
     pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
-    pln->setColor(0.8, 0, 0);
+    pln->setColor(0.8f, 0, 0);
     world->insert(pln);
 
     {
       CDisk::Ptr pln2 = std::make_shared<CDisk>();
       pln2->setDiskRadius(2);
       pln2->setPose(CPose3D(0, 0, 0, 30.0_deg, -20.0_deg, -2.0_deg));
-      pln2->setColor(0.9, 0, 0);
+      pln2->setColor(0.9f, 0, 0);
       world->insert(pln2);
     }
   }

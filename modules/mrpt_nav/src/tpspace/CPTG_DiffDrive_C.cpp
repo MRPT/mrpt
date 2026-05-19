@@ -77,9 +77,9 @@ void CPTG_DiffDrive_C::ptgDiffDriveSteeringFunction(
     [[maybe_unused]] float& w) const
 {
   // (v,w)
-  v = V_MAX * sign(K);
+  v = static_cast<float>(V_MAX * sign(K));
   // Use a linear mapping:  (Old was: w = tan( alpha/2 ) * W_MAX * sign(K))
-  w = (alpha / M_PI) * W_MAX * sign(K);
+  w = static_cast<float>((alpha / M_PI) * W_MAX * sign(K));
 }
 
 bool CPTG_DiffDrive_C::PTG_IsIntoDomain([[maybe_unused]] double x, [[maybe_unused]] double y) const

@@ -48,7 +48,7 @@ void CMultiObjMotionOpt_Scalarization::saveConfigFile(mrpt::config::CConfigFileB
 }
 
 std::optional<size_t> CMultiObjMotionOpt_Scalarization::impl_decide(
-    const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo& extra_info)
+    const std::vector<mrpt::nav::TCandidateMovementPTG>& /*movs*/, TResultInfo& extra_info)
 {
   std::vector<double>& final_evaluation = extra_info.final_evaluation;
   final_evaluation.clear();

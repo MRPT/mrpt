@@ -383,8 +383,9 @@ std::optional<std::pair<int, double>> CPTG_Holo_Blend::inverseMap_WS2TP(
     const int out_k = CParameterizedTrajectoryGenerator::alpha2index(alpha);
 
     const double solved_t = q[0];
-    const unsigned int solved_step = solved_t / PATH_TIME_STEP;
-    const double out_d = this->getPathDist(out_k, solved_step) / this->refDistance;
+    const unsigned int solved_step = static_cast<unsigned int>(solved_t / PATH_TIME_STEP);
+    const double out_d =
+        this->getPathDist(static_cast<uint16_t>(out_k), solved_step) / this->refDistance;
 
     return std::make_pair(out_k, out_d);
   }
@@ -735,7 +736,7 @@ void CPTG_Holo_Blend::updateTPObstacle(
 
   for (unsigned int k = 0; k < m_alphaValuesCount; k++)
   {
-    updateTPObstacleSingle(ox, oy, k, tp_obstacles[k]);
+    updateTPObstacleSingle(ox, oy, static_cast<uint16_t>(k), tp_obstacles[k]);
   }  // end for each "k" alpha
 }
 
@@ -755,10 +756,10 @@ double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
   //	const double dir_local =
   // CParameterizedTrajectoryGenerator::Index2alpha(path_k);
 
-  const size_t nSteps = getPathStepCount(path_k);
+  const size_t nSteps = getPathStepCount(static_cast<uint16_t>(path_k));
   const double max_t =
 		PATH_TIME_STEP *
-		(nSteps *
+		(static_cast<double>(nSteps) *
 		 0.7 /* leave room for obstacle detection ahead when we are far down the predicted PTG path */);
   return max_t;
 }
@@ -808,7 +809,8 @@ double CPTG_Holo_Blend::internal_get_T_ramp(const double dir) const
   return m_expr_T_ramp.eval();
 }
 
-void CPTG_Holo_Blend::internal_initialize(const std::string& cacheFilename, const bool verbose)
+void CPTG_Holo_Blend::internal_initialize(
+    const std::string& /*cacheFilename*/, const bool /*verbose*/)
 {
   // No need to initialize anything, just do some params sanity checks:
   ASSERT_(T_ramp_max > 0);

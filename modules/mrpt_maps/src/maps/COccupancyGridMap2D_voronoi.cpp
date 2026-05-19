@@ -67,7 +67,7 @@ void COccupancyGridMap2D::buildVoronoiDiagram(
     {
       const int Clearance = computeClearance(x, y, basis_x, basis_y, &nBasis);
 
-      if (Clearance > robot_size_units) setVoroniClearance(x, y, Clearance);
+      if (Clearance > robot_size_units) setVoroniClearance(x, y, static_cast<uint16_t>(Clearance));
     }
   }
 
@@ -185,22 +185,22 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
           // i1-j1
           ax = basis1_x[i] - basis1_x[j];
           ay = basis1_y[i] - basis1_y[j];
-          bool i1j1 = (sqrt(1.0f * ax * ax + ay * ay) < filter_dist);
+          bool i1j1 = (sqrt(1.0f * ax * ax + static_cast<float>(ay * ay)) < filter_dist);
 
           // i1-j2
           ax = basis1_x[i] - basis2_x[j];
           ay = basis1_y[i] - basis2_y[j];
-          bool i1j2 = (sqrt(1.0f * ax * ax + ay * ay) < filter_dist);
+          bool i1j2 = (sqrt(1.0f * ax * ax + static_cast<float>(ay * ay)) < filter_dist);
 
           // i2-j1
           ax = basis2_x[i] - basis1_x[j];
           ay = basis2_y[i] - basis1_y[j];
-          bool i2j1 = (sqrt(1.0f * ax * ax + ay * ay) < filter_dist);
+          bool i2j1 = (sqrt(1.0f * ax * ax + static_cast<float>(ay * ay)) < filter_dist);
 
           // i2-j2
           ax = basis2_x[i] - basis2_x[j];
           ay = basis2_y[i] - basis2_y[j];
-          bool i2j2 = (sqrt(1.0f * ax * ax + ay * ay) < filter_dist);
+          bool i2j2 = (sqrt(1.0f * ax * ax + static_cast<float>(ay * ay)) < filter_dist);
 
           // Si coincide, eliminar el de mas "dist."
           if ((i1j1 && i2j2) || (i1j2 && i2j1))
@@ -301,7 +301,7 @@ int COccupancyGridMap2D::computeClearance(
       int nPasos = static_cast<int>(
           round(1 + (M_2PI * i)));  // Estimacion de # de entradas (luego seran menos)
       float A = 0;
-      float AA = (2.0f * M_PIf / nPasos);
+      float AA = (2.0f * M_PIf / static_cast<float>(nPasos));
       int ult_x = 0, x, ult_y = 0, y;
       int nEntradas = 0;
 
@@ -309,8 +309,8 @@ int COccupancyGridMap2D::computeClearance(
 
       while (A < 2 * M_PI)
       {
-        x = static_cast<int>(round(i * cos(A)));
-        y = static_cast<int>(round(i * sin(A)));
+        x = static_cast<int>(round(static_cast<double>(i) * cos(A)));
+        y = static_cast<int>(round(static_cast<double>(i) * sin(A)));
 
         if ((x != ult_x || y != ult_y) && !(x == i && y == 0))
         {
@@ -366,7 +366,7 @@ int COccupancyGridMap2D::computeClearance(
             {
               int ax = basis_x[0] - xx;
               int ay = basis_y[0] - yy;
-              pasa = sqrt(1.0f * ax * ax + ay * ay) > (1.75f * tam_circ);
+              pasa = sqrt(1.0f * ax * ax + static_cast<float>(ay * ay)) > (1.75f * tam_circ);
             }
 
             if (pasa)
@@ -588,7 +588,8 @@ float COccupancyGridMap2D::computeClearance(float x, float y, float maxSearchDis
     for (yy = yy1; yy <= yy2; yy++)
       if (m_map[xx + yy * m_size_x] < thresholdCellValue)
         clearance_sq =
-            min(clearance_sq, square(m_resolution) * (square(xx - cx) + square(yy - cy)));
+            min(clearance_sq,
+                square(m_resolution) * static_cast<float>(square(xx - cx) + square(yy - cy)));
 
   return sqrt(clearance_sq);
 }

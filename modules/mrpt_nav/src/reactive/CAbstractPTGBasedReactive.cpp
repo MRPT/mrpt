@@ -697,8 +697,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
             {
               new_vel_cmd = m_robot.getEmergencyStopCmd();
               generateLogRecord(
-                  newLogRec, relTargets, nSelectedPTG, new_vel_cmd, nPTGs, best_is_NOP_cmdvel,
-                  rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
+                  newLogRec, relTargets, nSelectedPTG, new_vel_cmd, static_cast<int>(nPTGs),
+                  best_is_NOP_cmdvel, rel_cur_pose_wrt_last_vel_cmd_NOP,
+                  rel_pose_PTG_origin_wrt_sense_NOP,
                   0,  // executionTimeValue,
                   0,  // tim_changeSpeed,
                   tim_start_iteration);
@@ -776,9 +777,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
     if (fill_log_record)
     {
       generateLogRecord(
-          newLogRec, relTargets, nSelectedPTG, new_vel_cmd, nPTGs, best_is_NOP_cmdvel,
-          rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP, executionTimeValue,
-          tim_changeSpeed, tim_start_iteration);
+          newLogRec, relTargets, nSelectedPTG, new_vel_cmd, static_cast<int>(nPTGs),
+          best_is_NOP_cmdvel, rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
+          executionTimeValue, tim_changeSpeed, tim_start_iteration);
     }
   }
   catch (const std::exception& e)
@@ -844,8 +845,9 @@ void CAbstractPTGBasedReactive::generateLogRecord(
   // NOP mode  stuff:
   newLogRec.rel_cur_pose_wrt_last_vel_cmd_NOP = rel_cur_pose_wrt_last_vel_cmd_NOP;
   newLogRec.rel_pose_PTG_origin_wrt_sense_NOP = rel_pose_PTG_origin_wrt_sense_NOP;
-  newLogRec.ptg_index_NOP = best_is_NOP_cmdvel ? m_lastSentVelCmd.ptg_index : -1;
-  newLogRec.ptg_last_k_NOP = m_lastSentVelCmd.ptg_alpha_index;
+  newLogRec.ptg_index_NOP =
+      static_cast<int16_t>(best_is_NOP_cmdvel ? m_lastSentVelCmd.ptg_index : -1);
+  newLogRec.ptg_last_k_NOP = static_cast<uint16_t>(m_lastSentVelCmd.ptg_alpha_index);
 
   m_timelogger.leave("navigationStep.populate_log_info");
 
@@ -912,9 +914,9 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
   // Coordinates of the trajectory end for the given PTG and "alpha":
   const double d = std::min(in_TPObstacles[move_k], 0.99 * target_d_norm);
   uint32_t nStep;
-  bool pt_in_range = cm.PTG->getPathStepForDist(move_k, d, nStep);
+  bool pt_in_range = cm.PTG->getPathStepForDist(static_cast<uint16_t>(move_k), d, nStep);
   ASSERT_(pt_in_range);
-  const mrpt::math::TPose2D pose = cm.PTG->getPathPose(move_k, nStep);
+  const mrpt::math::TPose2D pose = cm.PTG->getPathPose(static_cast<uint16_t>(move_k), nStep);
 
   // Make sure that the target slow-down is honored, as seen in real-world
   // Euclidean space
@@ -954,14 +956,15 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
       0;  // current robot path normalized distance over path (0 unless in a
   // NOP cmd)
   cm.props["is_PTG_cont"] = this_is_PTG_continuation ? 1 : 0;
-  cm.props["num_paths"] = in_TPObstacles.size();
+  cm.props["num_paths"] = static_cast<double>(in_TPObstacles.size());
   cm.props["WS_target_x"] = WS_Target.x;
   cm.props["WS_target_y"] = WS_Target.y;
   cm.props["robpose_x"] = pose.x;
   cm.props["robpose_y"] = pose.y;
   cm.props["robpose_phi"] = pose.phi;
-  cm.props["ptg_priority"] = cm.PTG->getScorePriority() *
-                             cm.PTG->evalPathRelativePriority(TP_Target.target_k, target_d_norm);
+  cm.props["ptg_priority"] =
+      cm.PTG->getScorePriority() *
+      cm.PTG->evalPathRelativePriority(static_cast<uint16_t>(TP_Target.target_k), target_d_norm);
   const bool is_slowdown = this_is_PTG_continuation
                                ? m_lastSentVelCmd.was_slowdown
                                : (cm.PTG->supportSpeedAtTarget() && TP_Target.target_k == move_k &&
@@ -1021,9 +1024,10 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
       newLogRec.additional_debug_msgs["PTG_eval.NOP_At"] = mrpt::format("%.06f s", NOP_At);
       cur_k = move_k;
       cur_ptg_step = mrpt::round(NOP_At / cm.PTG->getPathStepDuration());
-      cur_norm_d = cm.PTG->getPathDist(cur_k, cur_ptg_step) / cm.PTG->getRefDistance();
+      cur_norm_d = cm.PTG->getPathDist(static_cast<uint16_t>(cur_k), cur_ptg_step) /
+                   cm.PTG->getRefDistance();
       {
-        const double cur_a = cm.PTG->index2alpha(cur_k);
+        const double cur_a = cm.PTG->index2alpha(static_cast<uint16_t>(cur_k));
         log.TP_Robot.x = cos(cur_a) * cur_norm_d;
         log.TP_Robot.y = sin(cur_a) * cur_norm_d;
         cm.starting_robot_dir = cur_a;
@@ -1044,15 +1048,17 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
     if (!is_time_based)
     {
       bool ok1 = cm.PTG->getPathStepForDist(
-          m_lastSentVelCmd.ptg_alpha_index, cur_norm_d * cm.PTG->getRefDistance(), cur_ptg_step);
+          static_cast<uint16_t>(m_lastSentVelCmd.ptg_alpha_index),
+          cur_norm_d * cm.PTG->getRefDistance(), cur_ptg_step);
       if (ok1)
       {
         // Check bijective:
-        WS_point_is_unique = cm.PTG->isBijectiveAt(cur_k, cur_ptg_step);
-        const uint32_t predicted_step =
+        WS_point_is_unique = cm.PTG->isBijectiveAt(static_cast<uint16_t>(cur_k), cur_ptg_step);
+        const uint32_t predicted_step = static_cast<uint32_t>(
             mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, mrpt::Clock::now()) /
-            cm.PTG->getPathStepDuration();
-        WS_point_is_unique = WS_point_is_unique && cm.PTG->isBijectiveAt(move_k, predicted_step);
+            cm.PTG->getPathStepDuration());
+        WS_point_is_unique = WS_point_is_unique &&
+                             cm.PTG->isBijectiveAt(static_cast<uint16_t>(move_k), predicted_step);
         newLogRec.additional_debug_msgs["PTG_eval.bijective"] = mrpt::format(
             "isBijectiveAt(): k=%i step=%i -> %s", static_cast<int>(cur_k),
             static_cast<int>(cur_ptg_step), WS_point_is_unique ? "yes" : "no");
@@ -1062,18 +1068,18 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
           // Don't trust direction:
           cur_k = move_k;
           cur_ptg_step = predicted_step;
-          cur_norm_d = cm.PTG->getPathDist(cur_k, cur_ptg_step);
+          cur_norm_d = cm.PTG->getPathDist(static_cast<uint16_t>(cur_k), cur_ptg_step);
         }
         {
-          const double cur_a = cm.PTG->index2alpha(cur_k);
+          const double cur_a = cm.PTG->index2alpha(static_cast<uint16_t>(cur_k));
           log.TP_Robot.x = cos(cur_a) * cur_norm_d;
           log.TP_Robot.y = sin(cur_a) * cur_norm_d;
           cm.starting_robot_dir = cur_a;
           cm.starting_robot_dist = cur_norm_d;
         }
 
-        const mrpt::math::TPose2D predicted_rel_pose =
-            cm.PTG->getPathPose(m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step);
+        const mrpt::math::TPose2D predicted_rel_pose = cm.PTG->getPathPose(
+            static_cast<uint16_t>(m_lastSentVelCmd.ptg_alpha_index), cur_ptg_step);
         const auto predicted_pose_global =
             m_lastSentVelCmd.poseVel.rawOdometry + predicted_rel_pose;
         const double predicted2real_dist = mrpt::hypot_fast(
@@ -1137,7 +1143,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
     using map_d2d_t = std::map<double, double>;
     map_d2d_t pathDists;
     const double D = cm.PTG->getRefDistance();
-    const int num_steps = ceil(D * 2.0);
+    const int num_steps = static_cast<int>(ceil(D * 2.0));
     for (int i = 0; i < num_steps; i++)
     {
       pathDists[i / double(num_steps)] =
@@ -1145,7 +1151,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
     }
 
     cm.PTG->evalClearanceSingleObstacle(
-        WS_Target.x, WS_Target.y, move_k, pathDists, false /*treat point as target, not obstacle*/);
+        WS_Target.x, WS_Target.y, static_cast<uint16_t>(move_k), pathDists,
+        false /*treat point as target, not obstacle*/);
 
     const auto it = std::min_element(
         pathDists.begin(), pathDists.end(),
@@ -1167,7 +1174,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
   else if (m_velFilter.getLastVelCmd())
   {
     mrpt::kinematics::CVehicleVelCmd::Ptr desired_cmd;
-    desired_cmd = cm.PTG->directionToMotionCommand(move_k);
+    desired_cmd = cm.PTG->directionToMotionCommand(static_cast<uint16_t>(move_k));
     const mrpt::kinematics::CVehicleVelCmd* ptr1 = m_velFilter.getLastVelCmd().get();
     const mrpt::kinematics::CVehicleVelCmd* ptr2 = desired_cmd.get();
     if (typeid(*ptr1) == typeid(*ptr2))
@@ -1179,8 +1186,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
       {
         const double scr =
             exp(-std::abs(
-                    desired_cmd->getVelCmdElement(i) -
-                    m_velFilter.getLastVelCmd()->getVelCmdElement(i)) /
+                    desired_cmd->getVelCmdElement(static_cast<int>(i)) -
+                    m_velFilter.getLastVelCmd()->getVelCmdElement(static_cast<int>(i))) /
                 0.20);
         mrpt::keep_min(simil_score, scr);
       }
@@ -1192,14 +1199,14 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
   // -----------------------------------------------------
   // clearance indicators that may be useful in deciding the best motion:
   double& clearance = cm.props["clearance"];
-  clearance =
-      in_clearance.getClearance(move_k, target_d_norm * 1.01, false /* spot, dont interpolate */);
-  cm.props["clearance_50p"] =
-      in_clearance.getClearance(move_k, target_d_norm * 0.5, false /* spot, dont interpolate */);
-  cm.props["clearance_path"] =
-      in_clearance.getClearance(move_k, target_d_norm * 0.9, true /* average */);
-  cm.props["clearance_path_50p"] =
-      in_clearance.getClearance(move_k, target_d_norm * 0.5, true /* average */);
+  clearance = in_clearance.getClearance(
+      static_cast<uint16_t>(move_k), target_d_norm * 1.01, false /* spot, dont interpolate */);
+  cm.props["clearance_50p"] = in_clearance.getClearance(
+      static_cast<uint16_t>(move_k), target_d_norm * 0.5, false /* spot, dont interpolate */);
+  cm.props["clearance_path"] = in_clearance.getClearance(
+      static_cast<uint16_t>(move_k), target_d_norm * 0.9, true /* average */);
+  cm.props["clearance_path_50p"] = in_clearance.getClearance(
+      static_cast<uint16_t>(move_k), target_d_norm * 0.5, true /* average */);
 
   // Factor: ETA (Estimated Time of Arrival to target or to closest obstacle,
   // whatever it's first)
@@ -1213,7 +1220,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
     // Calculate their ETA
     uint32_t target_step;
-    bool valid_step = cm.PTG->getPathStepForDist(move_k, path_len_meters, target_step);
+    bool valid_step =
+        cm.PTG->getPathStepForDist(static_cast<uint16_t>(move_k), path_len_meters, target_step);
     if (valid_step)
     {
       eta = cm.PTG->getPathStepDuration() *
@@ -1361,7 +1369,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
       if (!ptg_target.valid_TP) continue;
 
       any_TPTarget_is_valid = true;
-      ptg_target.target_alpha = ptg->index2alpha(ptg_target.target_k);
+      ptg_target.target_alpha = ptg->index2alpha(static_cast<uint16_t>(ptg_target.target_k));
       ptg_target.TP_Target.x = cos(ptg_target.target_alpha) * ptg_target.target_dist;
       ptg_target.TP_Target.y = sin(ptg_target.target_alpha) * ptg_target.target_dist;
       ptg_target.TP_Target.phi = trg.phi;
@@ -1480,7 +1488,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
     {
       // "NOP cmdvel" case: don't need to re-run holo algorithm, just keep
       // the last selection:
-      cm.direction = ptg->index2alpha(m_lastSentVelCmd.ptg_alpha_index);
+      cm.direction = ptg->index2alpha(static_cast<uint16_t>(m_lastSentVelCmd.ptg_alpha_index));
       cm.speed = 1.0;  // Not used.
     }
 
@@ -1492,7 +1500,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
       calc_move_candidate_scores(
           cm, ipf.TP_Obstacles, ipf.clearance, relTargets, ipf.targets,
           newLogRec.infoPerPTG[idx_in_log_infoPerPTGs], newLogRec, this_is_PTG_continuation,
-          rel_cur_pose_wrt_last_vel_cmd_NOP, indexPTG, tim_start_iteration, HLFR);
+          rel_cur_pose_wrt_last_vel_cmd_NOP, static_cast<unsigned int>(indexPTG),
+          tim_start_iteration, HLFR);
 
       // Store NOP related extra vars:
       cm.props["original_col_free_dist"] =

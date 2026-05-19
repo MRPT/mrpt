@@ -67,7 +67,7 @@ struct MapCanComputeLikelihood
   const CObservation* obs;
   bool& can;
 
-  MapCanComputeLikelihood(const CMultiMetricMap& m, const CObservation* _obs, bool& _can) :
+  MapCanComputeLikelihood(const CMultiMetricMap& /*m*/, const CObservation* _obs, bool& _can) :
       obs(_obs), can(_can)
   {
     can = false;

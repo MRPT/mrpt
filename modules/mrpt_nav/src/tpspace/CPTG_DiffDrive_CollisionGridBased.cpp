@@ -143,7 +143,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
     {
       // Simulate / evaluate the trajectory selected by this "alpha":
       // ------------------------------------------------------------
-      const float alpha = index2alpha(k);
+      const float alpha = static_cast<float>(index2alpha(k));
 
       points.clear();
       float t = .0f, dist = .0f, girado = .0f;
@@ -179,22 +179,23 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
         // -------------------------------------------
 
         // Finite difference equation:
-        x += cos(phi) * v * diferencial_t;
-        y += sin(phi) * v * diferencial_t;
+        x += static_cast<float>(cos(phi)) * v * diferencial_t;
+        y += static_cast<float>(sin(phi)) * v * diferencial_t;
         phi += w * diferencial_t;
 
         // Counters:
         girado += w * diferencial_t;
 
-        float v_inTPSpace = sqrt(square(v) + square(w * turningRadiusReference));
+        float v_inTPSpace =
+            static_cast<float>(sqrt(square(v) + square(w * turningRadiusReference)));
 
         dist += v_inTPSpace * diferencial_t;
 
         t += diferencial_t;
 
         // Save sample if we moved far enough:
-        ult_dist1 = sqrt(square(_x - x) + square(_y - y));
-        ult_dist2 = fabs(radio_max_robot * (_phi - phi));
+        ult_dist1 = static_cast<float>(sqrt(square(_x - x) + square(_y - y)));
+        ult_dist2 = static_cast<float>(fabs(radio_max_robot * (_phi - phi)));
         ult_dist = std::max(ult_dist1, ult_dist2);
 
         if (ult_dist > min_dist)
@@ -269,7 +270,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_DiffDrive_CollisionGridBased::directi
     uint16_t k) const
 {
   float v, w;
-  ptgDiffDriveSteeringFunction(index2alpha(k), 0, 0, 0, 0, v, w);
+  ptgDiffDriveSteeringFunction(static_cast<float>(index2alpha(k)), 0, 0, 0, 0, v, w);
 
   auto* cmd = new mrpt::kinematics::CVehicleVelCmd_DiffDriven();
   cmd->lin_vel = v;
@@ -405,11 +406,11 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::saveToFile(
     *f << m_resolution;
 
     // v1 was:  *f << m_map;
-    uint32_t N = m_map.size();
+    uint32_t N = static_cast<uint32_t>(m_map.size());
     *f << N;
     for (uint32_t i = 0; i < N; i++)
     {
-      uint32_t M = m_map[i].size();
+      uint32_t M = static_cast<uint32_t>(m_map[i].size());
       *f << M;
       for (uint32_t k = 0; k < M; k++) *f << m_map[i][k].first << m_map[i][k].second;
     }
@@ -605,7 +606,7 @@ std::optional<std::pair<int, double>> CPTG_DiffDrive_CollisionGridBased::inverse
       for (uint32_t n = n_min; n <= n_max_this; n++)
       {
         const float dist_a_punto =
-            square(m_trajectory[k][n].x - x) + square(m_trajectory[k][n].y - y);
+            static_cast<float>(square(m_trajectory[k][n].x - x) + square(m_trajectory[k][n].y - y));
         if (dist_a_punto < selected_dist)
         {
           selected_dist = dist_a_punto;
@@ -633,8 +634,9 @@ std::optional<std::pair<int, double>> CPTG_DiffDrive_CollisionGridBased::inverse
   for (uint16_t k = 0; k < m_alphaValuesCount; k++)
   {
     const int n = int(m_trajectory[k].size()) - 1;
-    const float dist_a_punto = square(m_trajectory[k][n].dist) + square(m_trajectory[k][n].x - x) +
-                               square(m_trajectory[k][n].y - y);
+    const float dist_a_punto = static_cast<float>(
+        square(m_trajectory[k][n].dist) + square(m_trajectory[k][n].x - x) +
+        square(m_trajectory[k][n].y - y));
 
     if (dist_a_punto < selected_dist)
     {
@@ -648,7 +650,7 @@ std::optional<std::pair<int, double>> CPTG_DiffDrive_CollisionGridBased::inverse
 
   // If the target dist. > refDistance, then it's normal that we had to
   // extrapolate. Otherwise, the target is not reachable by this PTG.
-  const float target_dist = std::sqrt(x * x + y * y);
+  const float target_dist = static_cast<float>(std::sqrt(x * x + y * y));
   if (target_dist <= refDistance) return std::nullopt;
   return std::make_pair(selected_k, static_cast<double>(selected_d) / refDistance);
 }
@@ -702,11 +704,11 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
   // Simulate paths:
   const float min_dist = 0.015f;
   simulateTrajectories(
-      100,                          // max.tim,
-      refDistance,                  // max.dist,
-      10 * refDistance / min_dist,  // max.n,
-      0.0005f,                      // diferencial_t
-      min_dist                      // min_dist
+      100,                                                     // max.tim,
+      static_cast<float>(refDistance),                         // max.dist,
+      static_cast<unsigned int>(10 * refDistance / min_dist),  // max.n,
+      0.0005f,                                                 // diferencial_t
+      min_dist                                                 // min_dist
   );
 
   // Just for debugging, etc.
@@ -745,12 +747,13 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
     // ---------------------------------------
     for (size_t k = 0; k < Ki; k++)
     {
-      const size_t nPoints = getPathStepCount(k);
+      const size_t nPoints = getPathStepCount(static_cast<uint16_t>(k));
       ASSERT_(nPoints > 1);
       for (size_t n = 0; n < (nPoints - 1); n++)
       {
         // Translate and rotate the robot shape at this C-Space pose:
-        const mrpt::math::TPose2D p = getPathPose(k, n);
+        const mrpt::math::TPose2D p =
+            getPathPose(static_cast<uint16_t>(k), static_cast<uint32_t>(n));
 
         mrpt::math::TPoint2D bb_min(
             std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
@@ -789,11 +792,12 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
             if (poly.contains(mrpt::math::TPoint2D(cx, cy)))
             {
               // Collision!! Update cell info:
-              const float d = this->getPathDist(k, n);
-              m_collisionGrid.updateCellInfo(ix, iy, k, d);
-              m_collisionGrid.updateCellInfo(ix - 1, iy, k, d);
-              m_collisionGrid.updateCellInfo(ix, iy - 1, k, d);
-              m_collisionGrid.updateCellInfo(ix - 1, iy - 1, k, d);
+              const float d = static_cast<float>(
+                  this->getPathDist(static_cast<uint16_t>(k), static_cast<uint32_t>(n)));
+              m_collisionGrid.updateCellInfo(ix, iy, static_cast<uint16_t>(k), d);
+              m_collisionGrid.updateCellInfo(ix - 1, iy, static_cast<uint16_t>(k), d);
+              m_collisionGrid.updateCellInfo(ix, iy - 1, static_cast<uint16_t>(k), d);
+              m_collisionGrid.updateCellInfo(ix - 1, iy - 1, static_cast<uint16_t>(k), d);
             }
           }  // for iy
         }    // for ix
@@ -852,12 +856,12 @@ bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(
   {
     if (m_trajectory[k][n + 1].dist >= dist)
     {
-      out_step = n;
+      out_step = static_cast<uint32_t>(n);
       return true;
     }
   }
 
-  out_step = numPoints - 1;
+  out_step = static_cast<uint32_t>(numPoints - 1);
   return false;
 }
 
@@ -865,7 +869,8 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
     double ox, double oy, std::vector<double>& tp_obstacles) const
 {
   ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
-  const TCollisionCell& cell = m_collisionGrid.getTPObstacle(ox, oy);
+  const TCollisionCell& cell =
+      m_collisionGrid.getTPObstacle(static_cast<float>(ox), static_cast<float>(oy));
   // Keep the minimum distance:
   for (const auto& i : cell)
   {
@@ -878,7 +883,8 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacleSingle(
     double ox, double oy, uint16_t k, double& tp_obstacle_k) const
 {
   ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
-  const TCollisionCell& cell = m_collisionGrid.getTPObstacle(ox, oy);
+  const TCollisionCell& cell =
+      m_collisionGrid.getTPObstacle(static_cast<float>(ox), static_cast<float>(oy));
   // Keep the minimum distance:
   for (const auto& i : cell)
     if (i.first == k)

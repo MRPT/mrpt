@@ -76,10 +76,10 @@ TEST(NavTests, PTGs_tests)
         {
           uint32_t step;
 
-          if (ptg->getPathStepForDist(k, dist, step))
+          if (ptg->getPathStepForDist(static_cast<uint16_t>(k), dist, step))
           {
             any_good = true;
-            double d = ptg->getPathDist(k, step);
+            double d = ptg->getPathDist(static_cast<uint16_t>(k), step);
             EXPECT_NEAR(d, dist, 0.05) << "Test: step <-> dist match\n PTG: " << sPTGDesc << endl
                                        << "dist:" << dist << "\n";
             num_tests_run++;
@@ -112,13 +112,14 @@ TEST(NavTests, PTGs_tests)
             any_ok = true;
             // Now, do the inverse operation:
             uint32_t step;
-            bool step_ok = ptg->getPathStepForDist(k, normalized_d * refDist, step);
+            bool step_ok =
+                ptg->getPathStepForDist(static_cast<uint16_t>(k), normalized_d * refDist, step);
             EXPECT_TRUE(step_ok) << "PTG: " << sPTGDesc << endl
                                  << "(tx,ty): " << tx << " " << ty << " k= " << k
                                  << " normalized_d=" << normalized_d << "\n";
             if (step_ok)
             {
-              const mrpt::math::TPose2D pose = ptg->getPathPose(k, step);
+              const mrpt::math::TPose2D pose = ptg->getPathPose(static_cast<uint16_t>(k), step);
               EXPECT_NEAR(pose.x, tx, tolerance_dist)
                   << "Test: inverseMap_WS2TP\n PTG#" << n << ": " << sPTGDesc << endl
                   << "(tx,ty): " << tx << " " << ty << " k= " << k
@@ -166,7 +167,8 @@ TEST(NavTests, PTGs_tests)
       EXPECT_TRUE(any_change_all);
     }
 
-    printf("PTG `%50s` run %6u tests.\n", sPTGDesc.c_str(), (unsigned int)num_tests_run);
+    printf(
+        "PTG `%50s` run %6u tests.\n", sPTGDesc.c_str(), static_cast<unsigned int>(num_tests_run));
 
   }  // for each ptg
 }

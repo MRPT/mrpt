@@ -62,7 +62,7 @@ class CVoxelMapBase : public mrpt::maps::CMetricMap
   virtual ~CVoxelMapBase() override = default;
 
   CVoxelMapBase(const CVoxelMapBase& o) : CVoxelMapBase(o.grid().resolution) { *this = o; }
-  CVoxelMapBase& operator=(const CVoxelMapBase& o)
+  CVoxelMapBase& operator=(const CVoxelMapBase& /*o*/)
   {
     // grid() = o.grid();
     THROW_EXCEPTION("Bonxai voxel grid copy not implemented");

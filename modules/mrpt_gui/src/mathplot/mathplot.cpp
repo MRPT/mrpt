@@ -153,7 +153,7 @@ mpInfoLayer::mpInfoLayer(wxRect rect, const wxBrush* brush) : m_dim(rect)
 }
 
 mpInfoLayer::~mpInfoLayer() = default;
-void mpInfoLayer::UpdateInfo(mpWindow& w, wxEvent& event) {}
+void mpInfoLayer::UpdateInfo(mpWindow& /*w*/, wxEvent& /*event*/) {}
 bool mpInfoLayer::Inside(wxPoint& point) { return m_dim.Contains(point); }
 void mpInfoLayer::Move(wxPoint delta)
 {
@@ -288,7 +288,7 @@ mpInfoLegend::mpInfoLegend() : mpInfoLayer() {}
 mpInfoLegend::mpInfoLegend(wxRect rect, const wxBrush* brush) : mpInfoLayer(rect, brush) {}
 
 mpInfoLegend::~mpInfoLegend() = default;
-void mpInfoLegend::UpdateInfo(mpWindow& w, wxEvent& event) {}
+void mpInfoLegend::UpdateInfo(mpWindow& /*w*/, wxEvent& /*event*/) {}
 void mpInfoLegend::Plot(wxDC& dc, mpWindow& w)
 {
   if (m_visible)
@@ -328,7 +328,7 @@ void mpInfoLegend::Plot(wxDC& dc, mpWindow& w)
     mpLayer* ly = nullptr;
     wxPen lpen;
     wxString label;
-    for (size_t p = 0; p < w.CountAllLayers(); p++)
+    for (int p = 0; p < static_cast<int>(w.CountAllLayers()); p++)
     {
       ly = w.GetLayer(p);
       if ((ly->GetLayerType() == mpLAYER_PLOT) && (ly->IsVisible()))
@@ -352,7 +352,7 @@ void mpInfoLegend::Plot(wxDC& dc, mpWindow& w)
       textY += mpLEGEND_MARGIN;
       m_dim.height = textY;
       dc.DrawRectangle(m_dim.x, m_dim.y, m_dim.width, m_dim.height);
-      for (size_t p2 = 0; p2 < w.CountAllLayers(); p2++)
+      for (int p2 = 0; p2 < static_cast<int>(w.CountAllLayers()); p2++)
       {
         ly = w.GetLayer(p2);
         if ((ly->GetLayerType() == mpLAYER_PLOT) && (ly->IsVisible()))
@@ -634,7 +634,7 @@ void mpFXY::Plot(wxDC& dc, mpWindow& w)
               {
                 x0 = static_cast<int>(
                          (static_cast<float>(minYpx - c0)) / (static_cast<float>(c1 - c0)) *
-                         (x1 - x0)) +
+                         static_cast<float>(x1 - x0)) +
                      x0;
                 c0 = minYpx;
               }
@@ -642,7 +642,7 @@ void mpFXY::Plot(wxDC& dc, mpWindow& w)
               {
                 x0 = static_cast<int>(
                          (static_cast<float>(maxYpx - c0)) / (static_cast<float>(c1 - c0)) *
-                         (x1 - x0)) +
+                         static_cast<float>(x1 - x0)) +
                      x0;
                 // wxLogDebug(wxT("old x0 = %d, new x0 = %d"),
                 // x0, newX0);
@@ -653,7 +653,7 @@ void mpFXY::Plot(wxDC& dc, mpWindow& w)
               {
                 x1 = static_cast<int>(
                          (static_cast<float>(minYpx - c0)) / (static_cast<float>(c1 - c0)) *
-                         (x1 - x0)) +
+                         static_cast<float>(x1 - x0)) +
                      x0;
                 c1 = minYpx;
               }
@@ -661,7 +661,7 @@ void mpFXY::Plot(wxDC& dc, mpWindow& w)
               {
                 x1 = static_cast<int>(
                          (static_cast<float>(maxYpx - c0)) / (static_cast<float>(c1 - c0)) *
-                         (x1 - x0)) +
+                         static_cast<float>(x1 - x0)) +
                      x0;
                 // wxLogDebug(wxT("old x0 = %d, old x1 = %d, new
                 // x1 = %d, c0 = %d, c1 = %d, maxYpx = %d"), x0,
@@ -676,7 +676,7 @@ void mpFXY::Plot(wxDC& dc, mpWindow& w)
               {
                 c0 = static_cast<int>(
                          (static_cast<float>(startPx - x0)) / (static_cast<float>(x1 - x0)) *
-                         (c1 - c0)) +
+                         static_cast<float>(c1 - c0)) +
                      c0;
                 x0 = startPx;
               }
@@ -684,7 +684,7 @@ void mpFXY::Plot(wxDC& dc, mpWindow& w)
               {
                 c1 = static_cast<int>(
                          (static_cast<float>(endPx - x0)) / (static_cast<float>(x1 - x0)) *
-                         (c1 - c0)) +
+                         static_cast<float>(c1 - c0)) +
                      c0;
                 x1 = endPx;
               }
@@ -989,7 +989,7 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
           s.Printf(fmt, n);
         else if (m_labelType == mpX_DATETIME)
         {
-          auto when = (time_t)n;
+          auto when = static_cast<time_t>(n);
           struct tm tm = *localtime(&when);
           s.Printf(
               fmt, static_cast<double>(tm.tm_year + 1900), static_cast<double>(tm.tm_mon + 1),
@@ -998,7 +998,7 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
         }
         else if (m_labelType == mpX_DATE)
         {
-          auto when = (time_t)n;
+          auto when = static_cast<time_t>(n);
           struct tm tm = *localtime(&when);
           s.Printf(
               fmt, static_cast<double>(tm.tm_year + 1900), static_cast<double>(tm.tm_mon + 1),
@@ -1045,7 +1045,7 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
           s.Printf(fmt, n);
         else if (m_labelType == mpX_DATETIME)
         {
-          auto when = (time_t)n;
+          auto when = static_cast<time_t>(n);
           struct tm tm = *localtime(&when);
           s.Printf(
               fmt, static_cast<double>(tm.tm_year + 1900), static_cast<double>(tm.tm_mon + 1),
@@ -1054,7 +1054,7 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
         }
         else if (m_labelType == mpX_DATE)
         {
-          auto when = (time_t)n;
+          auto when = static_cast<time_t>(n);
           struct tm tm = *localtime(&when);
           s.Printf(
               fmt, static_cast<double>(tm.tm_year + 1900), static_cast<double>(tm.tm_mon + 1),
@@ -1488,20 +1488,20 @@ void mpWindow::OnMouseWheel(wxMouseEvent& event)
   {
     // Scroll vertically or horizontally (this is SHIFT is hold down).
     int change = -event.GetWheelRotation();  // Opposite direction (More intuitive)!
-    float changeUnitsX = change / static_cast<float>(m_scaleX);
-    float changeUnitsY = change / static_cast<float>(m_scaleY);
+    float changeUnitsX = static_cast<float>(change) / static_cast<float>(m_scaleX);
+    float changeUnitsY = static_cast<float>(change) / static_cast<float>(m_scaleY);
 
     if (event.m_shiftDown)
     {
-      m_posX += changeUnitsX;
-      m_desiredXmax += changeUnitsX;
-      m_desiredXmin += changeUnitsX;
+      m_posX += static_cast<double>(changeUnitsX);
+      m_desiredXmax += static_cast<double>(changeUnitsX);
+      m_desiredXmin += static_cast<double>(changeUnitsX);
     }
     else
     {
-      m_posY -= changeUnitsY;
-      m_desiredYmax -= changeUnitsY;
-      m_desiredYmax -= changeUnitsY;
+      m_posY -= static_cast<double>(changeUnitsY);
+      m_desiredYmax -= static_cast<double>(changeUnitsY);
+      m_desiredYmax -= static_cast<double>(changeUnitsY);
     }
 
     UpdateAll();
@@ -1525,8 +1525,8 @@ void mpWindow::OnMouseMove(wxMouseEvent& event)
     m_mouseMovedAfterRightClick = TRUE;  // Hides the popup menu after releasing the button!
 
     // The change:
-    int Ax = m_mouseRClick_X - event.GetX();
-    int Ay = m_mouseRClick_Y - event.GetY();
+    int Ax = static_cast<int>(m_mouseRClick_X) - event.GetX();
+    int Ay = static_cast<int>(m_mouseRClick_Y) - event.GetY();
 
     // For the next event, use relative to this coordinates.
     m_mouseRClick_X = event.GetX();
@@ -1572,7 +1572,7 @@ void mpWindow::OnMouseMove(wxMouseEvent& event)
       {
         if ((*li)->IsInfo() && (*li)->IsVisible())
         {
-          auto* tmpLyr = (mpInfoLayer*)(*li);
+          auto* tmpLyr = static_cast<mpInfoLayer*>(*li);
           tmpLyr->UpdateInfo(*this, event);
           // UpdateAll();
           RefreshRect(tmpLyr->GetRectangle());
@@ -1982,7 +1982,7 @@ void mpWindow::OnCenter(wxCommandEvent& WXUNUSED(event))
 
 void mpWindow::OnZoomIn(wxCommandEvent& WXUNUSED(event))
 {
-  ZoomIn(wxPoint(m_mouseRClick_X, m_mouseRClick_Y));
+  ZoomIn(wxPoint(static_cast<int>(m_mouseRClick_X), static_cast<int>(m_mouseRClick_Y)));
 }
 
 void mpWindow::OnZoomOut(wxCommandEvent& WXUNUSED(event)) { ZoomOut(); }
@@ -2311,7 +2311,7 @@ unsigned int mpWindow::CountLayers()
 mpLayer* mpWindow::GetLayer(int position)
 {
   if ((position >= static_cast<int>(m_layers.size())) || position < 0) return nullptr;
-  return m_layers[position];
+  return m_layers[static_cast<size_t>(position)];
 }
 
 mpLayer* mpWindow::GetLayerByName(const wxString& name)
@@ -2376,7 +2376,7 @@ bool mpWindow::SaveScreenshot(const wxString& filename, int type, wxSize imageSi
   }
   // Once drawing is complete, actually save screen shot
   wxImage screenImage = screenBuffer.ConvertToImage();
-  return screenImage.SaveFile(filename, (wxBitmapType)type);
+  return screenImage.SaveFile(filename, static_cast<wxBitmapType>(type));
 }
 
 void mpWindow::SetMargins(int top, int right, int bottom, int left)
@@ -2397,7 +2397,7 @@ mpInfoLayer* mpWindow::IsInsideInfoLayer(wxPoint& point)
 #endif  // MATHPLOT_DO_LOGGING
     if ((*li)->IsInfo())
     {
-      auto* tmpLyr = (mpInfoLayer*)(*li);
+      auto* tmpLyr = static_cast<mpInfoLayer*>(*li);
 #ifdef MATHPLOT_DO_LOGGING
       wxLogMessage(_("mpWindow::IsInsideInfoLayer() layer = %p"), (*li));
 #endif  // MATHPLOT_DO_LOGGING
@@ -2428,7 +2428,7 @@ bool mpWindow::IsLayerVisible(const wxString& name)
 
 void mpWindow::SetLayerVisible(const unsigned int position, bool viewable)
 {
-  mpLayer* lx = GetLayer(position);
+  mpLayer* lx = GetLayer(static_cast<int>(position));
   if (lx)
   {
     lx->SetVisible(viewable);
@@ -2438,7 +2438,7 @@ void mpWindow::SetLayerVisible(const unsigned int position, bool viewable)
 
 bool mpWindow::IsLayerVisible(const unsigned int position)
 {
-  mpLayer* lx = GetLayer(position);
+  mpLayer* lx = GetLayer(static_cast<int>(position));
   return (lx) ? lx->IsVisible() : false;
 }
 
@@ -2569,10 +2569,10 @@ void mpFXYVector::SetData(const std::vector<double>& xs, const std::vector<doubl
         m_maxY = *it;
       }
     }
-    m_minX -= 0.5f;
-    m_minY -= 0.5f;
-    m_maxX += 0.5f;
-    m_maxY += 0.5f;
+    m_minX -= 0.5;
+    m_minY -= 0.5;
+    m_maxX += 0.5;
+    m_maxY += 0.5;
   }
   else
   {
@@ -2606,10 +2606,10 @@ void mpFXYVector::AppendDataPoint(float x, float y)
   }
   else
   {
-    m_minX = std::min(x - fabs(x) * 0.05, m_minX);
-    m_maxX = std::max(x + fabs(x) * 0.05, m_maxX);
-    m_minY = std::min(y - fabs(y) * 0.05, m_minY);
-    m_maxY = std::max(y + fabs(y) * 0.05, m_maxY);
+    m_minX = std::min(static_cast<double>(x) - fabs(static_cast<double>(x)) * 0.05, m_minX);
+    m_maxX = std::max(static_cast<double>(x) + fabs(static_cast<double>(x)) * 0.05, m_maxX);
+    m_minY = std::min(static_cast<double>(y) - fabs(static_cast<double>(y)) * 0.05, m_minY);
+    m_maxY = std::max(static_cast<double>(y) + fabs(static_cast<double>(y)) * 0.05, m_maxY);
   }
 }
 
@@ -2719,7 +2719,7 @@ bool mpPrintout::OnPrintPage(int page)
     mpLayer* layer;
     for (size_t li = 0; li < plotWindow->CountAllLayers(); ++li)
     {
-      layer = plotWindow->GetLayer(li);
+      layer = plotWindow->GetLayer(static_cast<int>(li));
       layer->Plot(*trgDc, *plotWindow);
     };
     // Restore device origin
@@ -2931,8 +2931,8 @@ void mpCovarianceEllipse::RecalculateShape()
     return;
   }
 
-  m_shape_xs.resize(m_segments, 0);
-  m_shape_ys.resize(m_segments, 0);
+  m_shape_xs.resize(static_cast<size_t>(m_segments), 0);
+  m_shape_ys.resize(static_cast<size_t>(m_segments), 0);
 
   // Compute the two eigenvalues of the covariance:
   // -------------------------------------------------
@@ -3021,8 +3021,8 @@ void mpCovarianceEllipse::RecalculateShape()
     double ccos = cos(ang);
     double csin = sin(ang);
 
-    m_shape_xs[i] = m_quantiles * (ccos * M_00 + csin * M_10);
-    m_shape_ys[i] = m_quantiles * (ccos * M_01 + csin * M_11);
+    m_shape_xs[static_cast<size_t>(i)] = m_quantiles * (ccos * M_00 + csin * M_10);
+    m_shape_ys[static_cast<size_t>(i)] = m_quantiles * (ccos * M_01 + csin * M_11);
   }  // end for points on ellipse
 
   ShapeUpdated();

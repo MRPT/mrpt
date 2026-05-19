@@ -328,7 +328,7 @@ void RBPF_SLAM_App_Base::run()
     // Info log:
     // -----------
     f_log.printf(
-        "%u %f %i %i\n", static_cast<unsigned int>(step), static_cast<float>(1000.0 * t_exec),
+        "%u %f %zu %i\n", static_cast<unsigned int>(step), static_cast<float>(1000.0 * t_exec),
         mapBuilder->getCurrentlyBuiltMapSize(),
         mapBuilder->m_statsLastIteration.observationsInserted ? int(1) : int(0));
 

@@ -410,7 +410,8 @@ CHolonomicFullEval::NavOutput CHolonomicFullEval::navigate(const NavInput& ni)
     for (unsigned int i = 0; i < nDirs; i++) overall_scores[i] += e.phase_scores.back()[i];
   }
   // Normalize:
-  for (unsigned int i = 0; i < nDirs; i++) overall_scores[i] *= (1.0 / numTrgs);
+  for (unsigned int i = 0; i < nDirs; i++)
+    overall_scores[i] *= (1.0 / static_cast<double>(numTrgs));
 
   // Search for best direction in the "overall score" vector:
   // Keep the GAP with the largest maximum value; pick its best-eval direction.
@@ -442,7 +443,7 @@ CHolonomicFullEval::NavOutput CHolonomicFullEval::navigate(const NavInput& ni)
     const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
 
     no.desiredDirection = CParameterizedTrajectoryGenerator::Index2alpha(
-        best_dir_k, static_cast<unsigned int>(nDirs));
+        static_cast<uint16_t>(best_dir_k), static_cast<unsigned int>(nDirs));
 
     // Speed control: Reduction factors
     // ---------------------------------------------

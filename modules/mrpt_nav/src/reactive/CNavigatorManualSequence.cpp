@@ -27,7 +27,7 @@ CNavigatorManualSequence::CNavigatorManualSequence(CRobot2NavInterface& robot_in
 
 // Dtor:
 CNavigatorManualSequence::~CNavigatorManualSequence() = default;
-void CNavigatorManualSequence::saveConfigFile(mrpt::config::CConfigFileBase& c) const {}
+void CNavigatorManualSequence::saveConfigFile(mrpt::config::CConfigFileBase& /*c*/) const {}
 
 void CNavigatorManualSequence::loadConfigFile(const mrpt::config::CConfigFileBase& c)
 {
@@ -63,7 +63,8 @@ void CNavigatorManualSequence::loadConfigFile(const mrpt::config::CConfigFileBas
         THROW_EXCEPTION("Expected 2 or 4 velocity components!");
     };
 
-    for (size_t j = 0; j < nComps; j++) krc.cmd_vel->setVelCmdElement(j, atof(toks[j + 1].c_str()));
+    for (size_t j = 0; j < nComps; j++)
+      krc.cmd_vel->setVelCmdElement(static_cast<int>(j), atof(toks[j + 1].c_str()));
 
     // insert:
     programmed_orders[t] = krc;

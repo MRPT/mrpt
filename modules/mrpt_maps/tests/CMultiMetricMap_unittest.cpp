@@ -35,8 +35,8 @@ mrpt::maps::CMultiMetricMap initializer1()
   {
     {
       mrpt::maps::COccupancyGridMap2D::TMapDefinition def;
-      def.resolution = 0.05;
-      def.insertionOpts.maxOccupancyUpdateCertainty = 0.8;
+      def.resolution = 0.05f;
+      def.insertionOpts.maxOccupancyUpdateCertainty = 0.8f;
       def.insertionOpts.maxDistanceInsertion = 30;
       map_inits.push_back(def);
     }

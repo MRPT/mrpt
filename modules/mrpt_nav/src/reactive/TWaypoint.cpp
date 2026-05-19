@@ -202,7 +202,7 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 
 void TWaypointSequence::save(mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
-  const unsigned int N = waypoints.size();
+  const unsigned int N = static_cast<unsigned int>(waypoints.size());
   c.write(s, "waypoint_count", N);
 
   const int NP = 27;  // name padding

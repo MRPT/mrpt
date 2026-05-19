@@ -102,7 +102,7 @@ int main(int argc, char** argv)
     }
 
     mrpt::maps::COccupancyGridMap2D grid;
-    grid.loadFromBitmap(img, res, {px, py});
+    grid.loadFromBitmap(img, static_cast<float>(res), {px, py});
 
     const std::string sOutFile =
         !output_file.empty() ? output_file

@@ -26,7 +26,9 @@ static void test_CGasConcentrationGridMap2D_insertAndRead(
     const double resolution,
     const std::function<double(const mrpt::maps::TRandomFieldCell&)>& cellToValue)
 {
-  mrpt::maps::CGasConcentrationGridMap2D grid(mapType, xMin, xMax, yMin, yMax, resolution);
+  mrpt::maps::CGasConcentrationGridMap2D grid(
+      mapType, static_cast<float>(xMin), static_cast<float>(xMax), static_cast<float>(yMin),
+      static_cast<float>(yMax), static_cast<float>(resolution));
 
   // Inside:
   grid.insertIndividualReading(1.0 * val, {2.0, 3.0}, um, ti, sigma);

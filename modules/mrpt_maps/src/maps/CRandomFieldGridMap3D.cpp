@@ -244,7 +244,8 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
   size_t cx = 0, cy = 0, cz = 0;
   for (size_t j = 0; j < nodeCount; j++)
   {
-    const double x = idx2x(cx), y = idx2y(cy), z = idx2z(cz);
+    const double x = idx2x(static_cast<int>(cx)), y = idx2y(static_cast<int>(cy)),
+                 z = idx2z(static_cast<int>(cz));
     const double mean_val = m_map[j].mean_value;
     const double stddev_val = m_map[j].stddev_value;
 
@@ -300,7 +301,7 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
     const mrpt::math::TPoint3D& point,
     /** [in] Voxel interpolation method: how many voxels will be affected by the
        reading */
-    const TVoxelInterpolationMethod method,
+    const TVoxelInterpolationMethod /*method*/,
     /** [in] Run a global map update after inserting this observatin
        (algorithm-dependant) */
     const bool update_map)

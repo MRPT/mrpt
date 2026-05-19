@@ -41,13 +41,15 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
   Derived& derived() { return static_cast<Derived&>(*this); }
   double getW(size_t i) const override
   {
-    if (i >= derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!", (int)i);
+    if (i >= derived().m_particles.size())
+      THROW_EXCEPTION_FMT("Index %zu is out of range!", static_cast<std::size_t>(i));
     return derived().m_particles[i].log_w;
   }
 
   void setW(size_t i, double w) override
   {
-    if (i >= derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!", (int)i);
+    if (i >= derived().m_particles.size())
+      THROW_EXCEPTION_FMT("Index %zu is out of range!", static_cast<std::size_t>(i));
     derived().m_particles[i].log_w = w;
   }
 
@@ -103,7 +105,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
     {
       return 0;
     }
-    return 1.0 / (derived().m_particles.size() * cum);
+    return 1.0 / (static_cast<double>(derived().m_particles.size()) * cum);
     MRPT_END
   }
 

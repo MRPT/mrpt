@@ -65,7 +65,7 @@ void CIbeoLuxETH::dataCollection()
   unsigned char msg[32];
 
   // Start TCP-connection to laserscanner
-  m_client.connect(m_ip, m_port);
+  m_client.connect(m_ip, static_cast<uint16_t>(m_port));
 
   // Send filter command
   makeCommandHeader(msg);
@@ -166,7 +166,8 @@ void CIbeoLuxETH::dataCollection()
             // std::cerr << "Invalid layer: " << SPlayer << " should
             // be element of [0,3] Scanpoint dropped.\n";
           }
-          if ((SPHangle < -((int)angleTicks) / 2) || (SPHangle > (int)angleTicks / 2))
+          if ((SPHangle < -(static_cast<int>(angleTicks)) / 2) ||
+              (SPHangle > static_cast<int>(angleTicks) / 2))
           {
             dropPacket = true;
             // std::cerr << "Invalid horizontal angle: " <<
@@ -184,16 +185,16 @@ void CIbeoLuxETH::dataCollection()
           {
             // TODO: Process point information correctly
             CPoint3D cartesianPoint = convertToCartesian(
-                convertLayerToRad(SPlayer),  // vertikal coord of scanner
-                convertTicksToHRad(
+                static_cast<double>(convertLayerToRad(SPlayer)),  // vertikal coord of scanner
+                static_cast<double>(convertTicksToHRad(
                     SPHangle,
-                    angleTicks),  // horizontal coord of scanner
-                SPdistance);
+                    angleTicks)),  // horizontal coord of scanner
+                static_cast<double>(SPdistance));
 
             // write scanpoint data to observation object
-            newObs->points3D_x.push_back(cartesianPoint.x());
-            newObs->points3D_y.push_back(cartesianPoint.y());
-            newObs->points3D_z.push_back(cartesianPoint.z());
+            newObs->points3D_x.push_back(static_cast<float>(cartesianPoint.x()));
+            newObs->points3D_y.push_back(static_cast<float>(cartesianPoint.y()));
+            newObs->points3D_z.push_back(static_cast<float>(cartesianPoint.z()));
           }
         }  // for
 
@@ -219,9 +220,9 @@ CPoint3D CIbeoLuxETH::convertToCartesian(float vrad, float hrad, float distance)
   float rho, phi, theta;
 
   // Convert from laserscanner coordinate system to spherical coordinates
-  rho = distance / 100;      // cm to meter
-  phi = -hrad + (M_PI / 2);  // start with 0 pointing straight up
-  theta = vrad + M_PI;       // 0 is straight ahead, going clockwise for 2 Pi
+  rho = static_cast<float>(distance) / 100;      // cm to meter
+  phi = static_cast<float>(-hrad + (M_PI / 2));  // start with 0 pointing straight up
+  theta = static_cast<float>(vrad + M_PI);       // 0 is straight ahead, going clockwise for 2 Pi
 
   x = rho * sin(phi) * cos(theta);
   y = rho * sin(phi) * sin(theta);

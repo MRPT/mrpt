@@ -298,13 +298,16 @@ void CColouredOctoMap::updateVoxelColour(
   switch (m_colour_method)
   {
     case INTEGRATE:
-      m_impl->m_octomap.integrateNodeColor(x, y, z, r, g, b);
+      m_impl->m_octomap.integrateNodeColor(
+          static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), r, g, b);
       break;
     case SET:
-      m_impl->m_octomap.setNodeColor(x, y, z, r, g, b);
+      m_impl->m_octomap.setNodeColor(
+          static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), r, g, b);
       break;
     case AVERAGE:
-      m_impl->m_octomap.averageNodeColor(x, y, z, r, g, b);
+      m_impl->m_octomap.averageNodeColor(
+          static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), r, g, b);
       break;
     default:
       THROW_EXCEPTION("Invalid value found for 'm_colour_method'");

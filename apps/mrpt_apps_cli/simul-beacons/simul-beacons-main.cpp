@@ -147,7 +147,10 @@ int main(int argc, char** argv)
 
       // Add:
       b.m_typePDF = CBeacon::pdfMonteCarlo;
-      b.m_locationMC.setSize(1, TPoint3Df(pt3D.x, pt3D.y, pt3D.z));
+      b.m_locationMC.setSize(
+          1,
+          TPoint3Df(
+              static_cast<float>(pt3D.x), static_cast<float>(pt3D.y), static_cast<float>(pt3D.z)));
       b.m_ID = i;
       beaconMap.push_back(b);
     }
@@ -169,7 +172,7 @@ int main(int argc, char** argv)
     opts.gaussianModel.a3 = 0;
     opts.gaussianModel.a4 = 0;
     opts.gaussianModel.minStdXY = odometryNoiseXY_std;
-    opts.gaussianModel.minStdPHI = DEG2RAD(0.002f);
+    opts.gaussianModel.minStdPHI = static_cast<float>(DEG2RAD(0.002));
 
     os::sprintf(auxStr, sizeof(auxStr), "%s/%s", outDir.c_str(), outFile.c_str());
     CFileOutputStream fil(auxStr);
@@ -190,7 +193,7 @@ int main(int argc, char** argv)
         if (circularPath)
         {
           // Circular path:
-          float Ar = 5.0_deg;
+          float Ar = static_cast<float>(5.0_deg);
           incPose = CPose2D(0.20f * cos(Ar), 0.20f * sin(Ar), Ar);
         }
         else
@@ -219,8 +222,8 @@ int main(int argc, char** argv)
       {
         if (getRandomGenerator().drawUniform(0.0f, 1.0f) < probability_corrupt)
         {
-          q.sensedDistance +=
-              getRandomGenerator().drawUniform(outlier_uniform_min, outlier_uniform_max);
+          q.sensedDistance += static_cast<float>(
+              getRandomGenerator().drawUniform(outlier_uniform_min, outlier_uniform_max));
           if (q.sensedDistance < 0) q.sensedDistance = 0;
         }
       }

@@ -225,6 +225,11 @@ class CConfigFileBase
       const std::string& name,
       uint64_t defaultValue,
       bool failIfNotFound = false) const;
+  uint32_t read_uint32_t(
+      const std::string& section,
+      const std::string& name,
+      uint32_t defaultValue,
+      bool failIfNotFound = false) const;
   std::string read_string(
       const std::string& section,
       const std::string& name,

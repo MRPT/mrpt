@@ -26,8 +26,8 @@ inline void Serialize(std::ostream& out, const VoxelGrid<DataT>& grid);
 struct HeaderInfo
 {
   std::string type_name;
-  int inner_bits = 0;
-  int leaf_bits = 0;
+  uint8_t inner_bits = 0;
+  uint8_t leaf_bits = 0;
   double resolution = 0;
 };
 
@@ -160,8 +160,8 @@ inline HeaderInfo GetHeaderInfo(std::string header)
 
   HeaderInfo info;
   info.type_name = part_type;
-  info.inner_bits = std::stoi(part_ibits);
-  info.leaf_bits = std::stoi(part_lbits);
+  info.inner_bits = static_cast<uint8_t>(std::stoi(part_ibits));
+  info.leaf_bits = static_cast<uint8_t>(std::stoi(part_lbits));
   info.resolution = std::stod(part_res);
 
   return info;

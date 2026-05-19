@@ -33,7 +33,7 @@ TEST(CIncrementalMapPartitioner, test_dataset)
   ASSERT_FILE_EXISTS_(map_file);
 
   mrpt::maps::CSimpleMap in_map, out_map;
-  in_map.loadFromFile(map_file);
+  std::ignore = in_map.loadFromFile(map_file);
 
   for (const auto& [posePDF, sf, twist] : in_map) imp.addMapFrame(*sf, *posePDF);
 

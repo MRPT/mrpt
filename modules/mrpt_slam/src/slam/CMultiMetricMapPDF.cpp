@@ -148,7 +148,7 @@ void CMultiMetricMapPDF::clear(
   SFs = prevMap;  // copy
   SF2robotPath.clear();
   SF2robotPath.reserve(nOldKeyframes);
-  for (size_t i = 0; i < nOldKeyframes; i++) SF2robotPath.push_back(i);
+  for (size_t i = 0; i < nOldKeyframes; i++) SF2robotPath.push_back(static_cast<uint32_t>(i));
 
   averageMapIsUpdated = false;
 }
@@ -360,7 +360,7 @@ void CMultiMetricMapPDF::rebuildAverageMap()
       std::vector<float>::iterator destCell;
 
       // The weight of particle:
-      float w = exp(p.log_w) / sumW;
+      float w = static_cast<float>(exp(p.log_w) / sumW);
 
       ASSERT_(grid->m_map.size() == floatMap.size());
 
@@ -398,10 +398,10 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
   getEstimatedPosePDF(*posePDF);
 
   // Insert it into the SFs and the SF2robotPath list:
-  const uint32_t new_sf_id = SFs.size();
+  const uint32_t new_sf_id = static_cast<uint32_t>(SFs.size());
   SFs.insert(posePDF, CSensoryFrame::Create(sf));
   SF2robotPath.resize(new_sf_id + 1);
-  SF2robotPath[new_sf_id] = m_particles[0].d->robotPath.size() - 1;
+  SF2robotPath[new_sf_id] = static_cast<uint32_t>(m_particles[0].d->robotPath.size() - 1);
 
   bool anymap = false;
   for (size_t i = 0; i < M; i++)
@@ -450,7 +450,7 @@ double CMultiMetricMapPDF::getCurrentEntropyOfPaths()
       // Approximate to gaussian and compute entropy of covariance:
       H_paths += posePDFParts.getCovarianceEntropy();
     }
-    H_paths /= N;
+    H_paths /= static_cast<double>(N);
   }
   return H_paths;
 }

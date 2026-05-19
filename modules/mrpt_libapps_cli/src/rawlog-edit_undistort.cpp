@@ -46,7 +46,7 @@ DECLARE_OP_FUNCTION(op_undistort)
     {
     }
 
-    bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override { return true; }
+    bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& /*obs*/) override { return true; }
 
     bool processOneObservation(CObservation::Ptr& obs) override
     {

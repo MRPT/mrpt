@@ -83,8 +83,8 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(size_t& out_minimum_rx_buf_to_
 
     // Deserialize the message:
     // 1st, test if we have a specific data structure for this msg_id:
-    const bool use_generic_container =
-        !gnss_message::FactoryKnowsMsgType((gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id));
+    const bool use_generic_container = !gnss_message::FactoryKnowsMsgType(
+        static_cast<gnss_message_type_t>(NV_OEM6_MSG2ENUM + hdr.msg_id));
     // ------ Serialization format:
     // const int32_t msg_id = message_type;
     // out << msg_id;
@@ -94,11 +94,12 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(size_t& out_minimum_rx_buf_to_
     // ------
     mrpt::io::CMemoryStream tmpStream;
     auto arch = mrpt::serialization::archiveFrom(tmpStream);
-    const uint32_t msg_id = use_generic_container ? (uint32_t)(NV_OEM6_GENERIC_SHORT_FRAME)
-                                                  : (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;
-    arch << (uint32_t)(msg_id);
+    const uint32_t msg_id = use_generic_container
+                                ? static_cast<uint32_t>(NV_OEM6_GENERIC_SHORT_FRAME)
+                                : static_cast<uint32_t>(hdr.msg_id) + NV_OEM6_MSG2ENUM;
+    arch << static_cast<uint32_t>(msg_id);
     // This len = hdr + hdr.msg_len + 4 (crc);
-    arch << (uint32_t)(expected_total_msg_len);
+    arch << static_cast<uint32_t>(expected_total_msg_len);
     arch.WriteBuffer(&buf[0], buf.size());
 
     tmpStream.Seek(0);
@@ -154,8 +155,8 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(size_t& out_minimum_rx_buf_to_
 
     // Deserialize the message:
     // 1st, test if we have a specific data structure for this msg_id:
-    const bool use_generic_container =
-        !gnss_message::FactoryKnowsMsgType((gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id));
+    const bool use_generic_container = !gnss_message::FactoryKnowsMsgType(
+        static_cast<gnss_message_type_t>(NV_OEM6_MSG2ENUM + hdr.msg_id));
     // ------ Serialization format:
     // const int32_t msg_id = message_type;
     // out << msg_id;
@@ -165,10 +166,12 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(size_t& out_minimum_rx_buf_to_
     // ------
     mrpt::io::CMemoryStream tmpStream;
     auto arch = mrpt::serialization::archiveFrom(tmpStream);
-    const int32_t msg_id = use_generic_container ? (uint32_t)(NV_OEM6_GENERIC_FRAME)
-                                                 : (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;
+    const int32_t msg_id =
+        use_generic_container
+            ? static_cast<int32_t>(NV_OEM6_GENERIC_FRAME)
+            : static_cast<int32_t>(static_cast<uint32_t>(hdr.msg_id) + NV_OEM6_MSG2ENUM);
     arch << msg_id;
-    arch << (uint32_t)(expected_total_msg_len);
+    arch << static_cast<uint32_t>(expected_total_msg_len);
     arch.WriteBuffer(&buf[0], buf.size());
 
     tmpStream.Seek(0);

@@ -120,7 +120,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_Consensus(
     likResult += 1 - getCell_nocheck(cx0, cy0);
     Denom++;
   }
-  if (Denom) likResult /= Denom;
+  if (Denom) likResult /= static_cast<double>(Denom);
   likResult = pow(likResult, static_cast<double>(likelihoodOptions.consensus_pow));
 
   return log(likResult);
@@ -242,7 +242,8 @@ double COccupancyGridMap2D::computeObservationLikelihood_CellsDifference(
 
     // Build a copy of this occupancy grid:
     COccupancyGridMap2D compareGrid(
-        takenFrom.x() - 10, takenFrom.x() + 10, takenFrom.y() - 10, takenFrom.y() + 10,
+        static_cast<float>(takenFrom.x() - 10), static_cast<float>(takenFrom.x() + 10),
+        static_cast<float>(takenFrom.y() - 10), static_cast<float>(takenFrom.y() + 10),
         m_resolution);
     CPose3D robotPose(takenFrom);
     int Ax, Ay;
@@ -279,7 +280,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_CellsDifference(
         }
       }
     }
-    ret = 1 - cellsDifference / (nCellsCompared);
+    ret = 1 - cellsDifference / static_cast<float>(nCellsCompared);
   }
   return log(ret);
 }
@@ -637,7 +638,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
           {
             unsigned int Ay2 = square(static_cast<unsigned int>(Ay));  // Square is faster
             // with unsigned.
-            signed short Ax = Ax0;
+            signed short Ax = static_cast<signed short>(Ax0);
             cellType cell;
 
             for (int xx = xx1; xx <= xx2; xx++)
@@ -762,8 +763,8 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
       for (cy = cy_min; cy <= cy_max; cy++)
       {
         float P_free = getCell(cx, cy);
-        float termDist =
-            exp(Q * (square(idx2x(cx) - pointGlobal.x) + square(idx2y(cy) - pointGlobal.y)));
+        float termDist = static_cast<float>(
+            exp(Q * (square(idx2x(cx) - pointGlobal.x) + square(idx2y(cy) - pointGlobal.y))));
 
         lik += P_free * zRandomTerm + (1 - P_free) * termDist;
       }  // end for cy

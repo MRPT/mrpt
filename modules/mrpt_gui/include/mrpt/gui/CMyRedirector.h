@@ -152,7 +152,7 @@ class CMyRedirector : public std::streambuf
         writeString(temp);
       }
       else
-        sputc(c);
+        sputc(static_cast<char>(c));
     }
 
     return 0;

@@ -431,7 +431,7 @@ void CWaypointsNavigator::internal_send_new_nav_cmd(const int prev_wp_index)
     ti.target_coords.y = wp.target.y;
     ti.target_coords.phi = (wp.target_heading.has_value() ? *wp.target_heading : .0);
     ti.target_frame_id = wp.target_frame_id;
-    ti.targetAllowedDistance = wp.allowed_distance;
+    ti.targetAllowedDistance = static_cast<float>(wp.allowed_distance);
     ti.targetIsRelative = false;
     ti.targetIsIntermediaryWaypoint = !is_final_wp;
     ti.targetDesiredRelSpeed = wp.speed_ratio;

@@ -85,5 +85,5 @@ double mrpt::slam::observationsOverlap(
       N++;
     }
   }
-  return N ? (accum / N) : 0;
+  return N ? (accum / static_cast<double>(N)) : 0;
 }

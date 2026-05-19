@@ -92,7 +92,7 @@ void CPTG_RobotShape_Polygonal::static_add_robotShape_to_setOfLines(
     const mrpt::poses::CPose2D& origin,
     const mrpt::math::CPolygon& robotShape)
 {
-  const int N = robotShape.size();
+  const int N = static_cast<int>(robotShape.size());
   if (N >= 2)
   {
     // Transform coordinates:
@@ -102,11 +102,16 @@ void CPTG_RobotShape_Polygonal::static_add_robotShape_to_setOfLines(
       origin.composePoint(robotShape[i].x, robotShape[i].y, 0, shap_x[i], shap_y[i], shap_z[i]);
     }
 
-    gl_shape.appendLine(shap_x[0], shap_y[0], shap_z[0], shap_x[1], shap_y[1], shap_z[1]);
-    for (int i = 0; i <= shap_x.size(); i++)
+    gl_shape.appendLine(
+        static_cast<float>(shap_x[0]), static_cast<float>(shap_y[0]), static_cast<float>(shap_z[0]),
+        static_cast<float>(shap_x[1]), static_cast<float>(shap_y[1]),
+        static_cast<float>(shap_z[1]));
+    for (int i = 0; i <= static_cast<int>(shap_x.size()); i++)
     {
-      const int idx = i % shap_x.size();
-      gl_shape.appendLineStrip(shap_x[idx], shap_y[idx], shap_z[idx]);
+      const int idx = i % static_cast<int>(shap_x.size());
+      gl_shape.appendLineStrip(
+          static_cast<float>(shap_x[idx]), static_cast<float>(shap_y[idx]),
+          static_cast<float>(shap_z[idx]));
     }
   }
 }

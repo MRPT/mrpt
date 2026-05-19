@@ -346,8 +346,8 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
           "----- \n");
 
       CMatrixDouble MAT_REF(1, 3);
-      MAT_REF(0, 0) = refCoords.lon;
-      MAT_REF(0, 1) = refCoords.lat;
+      MAT_REF(0, 0) = static_cast<double>(refCoords.lon.decimal_value);
+      MAT_REF(0, 1) = static_cast<double>(refCoords.lat.decimal_value);
       MAT_REF(0, 2) = refCoords.height;
       MAT_REF.saveToTextFile(
           mrpt::format(

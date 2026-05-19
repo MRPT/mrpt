@@ -111,7 +111,7 @@ void RawlogGrabberApp::runImpl()
 
   MRPT_LOAD_CONFIG_VAR(rawlog_prefix, string, params, GLOBAL_SECT);
   MRPT_LOAD_CONFIG_VAR(time_between_launches, int, params, GLOBAL_SECT);
-  MRPT_LOAD_CONFIG_VAR(SF_max_time_span, float, params, GLOBAL_SECT);
+  MRPT_LOAD_CONFIG_VAR(SF_max_time_span, double, params, GLOBAL_SECT);
   MRPT_LOAD_CONFIG_VAR(use_sensoryframes, bool, params, GLOBAL_SECT);
   MRPT_LOAD_CONFIG_VAR(GRABBER_PERIOD_MS, int, params, GLOBAL_SECT);
 

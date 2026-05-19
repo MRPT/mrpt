@@ -126,7 +126,8 @@ double joint_pdf_metric(
   // Matching likelihood: The evaluation at 0 of the PDF of the difference
   // between the two Gaussians:
   const T cov_det = COV.det();
-  const double ml = exp(-0.5 * d2) / (std::pow(M_2PI, info.length_O * 0.5) * std::sqrt(cov_det));
+  const double ml = exp(-0.5 * d2) / (std::pow(M_2PI, static_cast<double>(info.length_O) * 0.5) *
+                                      std::sqrt(cov_det));
   return ml;
 }
 
@@ -323,7 +324,7 @@ void mrpt::slam::data_association_full_covariance(
   ASSERT_(Y_predictions_cov.isSquare());
   ASSERT_(chi2quantile > 0 && chi2quantile < 1);
   ASSERT_(metric == metricMaha || metric == metricML);
-  const double chi2thres = mrpt::math::chi2inv(chi2quantile, length_O);
+  const double chi2thres = mrpt::math::chi2inv(chi2quantile, static_cast<unsigned int>(length_O));
 
   // ------------------------------------------------------------
   // Build a KD-tree of the predictions for quick look-up:

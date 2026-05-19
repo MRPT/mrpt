@@ -173,7 +173,7 @@ void COccupancyGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) cons
       *destPtr_color++ = cell255;
 
       int8_t auxC = static_cast<int8_t>(static_cast<signed short>(cell255) - 127);
-      *destPtr_trans++ = auxC > 0 ? (auxC << 1) : ((-auxC) << 1);
+      *destPtr_trans++ = static_cast<uint8_t>(auxC > 0 ? (auxC << 1) : ((-auxC) << 1));
     }
   }
 
@@ -200,22 +200,28 @@ void COccupancyGridMap2D::getAsPointCloud(
       bool is_surrounded = true;
       for (int di = -1; di <= 1 && is_surrounded; di++)
         for (int dj = -1; dj <= 1 && is_surrounded; dj++)
-          if ((di != 0 || dj != 0) && getCell(i + di, j + dj) > occup_threshold)
+          if ((di != 0 || dj != 0) &&
+              getCell(static_cast<int>(i) + di, static_cast<int>(j) + dj) > occup_threshold)
             is_surrounded = false;
 
-      if (getCell(i, j) < occup_threshold && !is_surrounded) pm.insertPoint(idx2x(i), idx2y(j));
+      if (getCell(static_cast<int>(i), static_cast<int>(j)) < occup_threshold && !is_surrounded)
+        pm.insertPoint(idx2x(static_cast<int>(i)), idx2y(static_cast<int>(j)));
     }
   }
 
   // Now, all outermost cells, without the surrounded condition:
   for (size_t i = 0; i < m_size_x; i++)
   {
-    if (getCell(i, 0) < occup_threshold) pm.insertPoint(idx2x(i), idx2y(0));
-    if (getCell(i, m_size_y - 1) < occup_threshold) pm.insertPoint(idx2x(i), idx2y(m_size_y - 1));
+    if (getCell(static_cast<int>(i), 0) < occup_threshold)
+      pm.insertPoint(idx2x(static_cast<int>(i)), idx2y(0));
+    if (getCell(static_cast<int>(i), static_cast<int>(m_size_y - 1)) < occup_threshold)
+      pm.insertPoint(idx2x(static_cast<int>(i)), idx2y(static_cast<int>(m_size_y - 1)));
   }
   for (size_t j = 1; j + 1 < m_size_y; j++)
   {
-    if (getCell(0, j) < occup_threshold) pm.insertPoint(idx2x(0), idx2y(j));
-    if (getCell(m_size_x - 1, j) < occup_threshold) pm.insertPoint(idx2x(m_size_x - 1), idx2y(j));
+    if (getCell(0, static_cast<int>(j)) < occup_threshold)
+      pm.insertPoint(idx2x(0), idx2y(static_cast<int>(j)));
+    if (getCell(static_cast<int>(m_size_x - 1), static_cast<int>(j)) < occup_threshold)
+      pm.insertPoint(idx2x(static_cast<int>(m_size_x - 1)), idx2y(static_cast<int>(j)));
   }
 }

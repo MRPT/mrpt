@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 
       printf(
           "%u bytes parsed, %u new observations identified...\n",
-          (unsigned)fil_input->getPosition(), (unsigned)lst_obs.size());
+          static_cast<unsigned>(fil_input->getPosition()), static_cast<unsigned>(lst_obs.size()));
 
       for (const auto& kv : lst_obs) arch << *kv.second;
     }

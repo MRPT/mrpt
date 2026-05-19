@@ -33,10 +33,11 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
   {
     out << ipp.PTG_desc.c_str();
 
-    uint32_t m = ipp.TP_Obstacles.size();
+    uint32_t m = static_cast<uint32_t>(ipp.TP_Obstacles.size());
     out << m;
     if (m)
-      out.WriteBuffer((const void*)&(*ipp.TP_Obstacles.begin()), m * sizeof(ipp.TP_Obstacles[0]));
+      out.WriteBuffer(
+          static_cast<const void*>(&(*ipp.TP_Obstacles.begin())), m * sizeof(ipp.TP_Obstacles[0]));
 
     out << ipp.TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector. v29: TPose2D
     out << ipp.TP_Robot;    // v17
@@ -81,8 +82,10 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
   if (!robotShape_x.empty())
   {
     const auto n = robotShape_x.size();
-    out.WriteBuffer((const void*)&(*robotShape_x.begin()), n * sizeof(robotShape_x[0]));
-    out.WriteBuffer((const void*)&(*robotShape_y.begin()), n * sizeof(robotShape_y[0]));
+    out.WriteBuffer(
+        static_cast<const void*>(&(*robotShape_x.begin())), n * sizeof(robotShape_x[0]));
+    out.WriteBuffer(
+        static_cast<const void*>(&(*robotShape_y.begin())), n * sizeof(robotShape_y[0]));
   }
 
   // Version 1 ---------
@@ -462,7 +465,7 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
       }
       else
       {
-        nPTGs = infoPerPTG.size();
+        nPTGs = static_cast<uint32_t>(infoPerPTG.size());
       }
 
       if (version > 4)

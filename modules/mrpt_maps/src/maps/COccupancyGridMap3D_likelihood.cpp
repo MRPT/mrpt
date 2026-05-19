@@ -43,7 +43,10 @@ void COccupancyGridMap3D::TInsertionOptions::loadFromConfigFile(
   MRPT_LOAD_CONFIG_VAR(maxDistanceInsertion, float, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(maxOccupancyUpdateCertainty, float, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(maxFreenessUpdateCertainty, float, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(decimation, int, iniFile, section);
+  {
+    int _tmp = iniFile.read_int(section, "decimation", decimation);
+    decimation = static_cast<uint16_t>(_tmp);
+  }
 }
 
 void COccupancyGridMap3D::TInsertionOptions::saveToConfigFile(

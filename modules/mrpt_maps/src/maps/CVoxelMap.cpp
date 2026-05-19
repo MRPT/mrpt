@@ -237,7 +237,7 @@ double CVoxelMap::internal_computeObservationLikelihood(
 
     for (size_t i = 0; i < likelihoodOptions.decimate_up_to; ++i)
     {
-      const auto idx = static_cast<size_t>(i * delta);
+      const auto idx = static_cast<size_t>(static_cast<double>(i) * delta);
       lambdaPointLikelihood(xs[idx], ys[idx], zs[idx]);
     }
   }

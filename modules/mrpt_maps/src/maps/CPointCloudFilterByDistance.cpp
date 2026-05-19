@@ -158,7 +158,7 @@ void CPointCloudFilterByDistance::filter(
     // Remove points:
     if ((params == nullptr || params->do_not_delete == false) && N > 0 &&
         // If we are deleting too many points, it may be that the filter is plainly wrong
-        del_count / double(N) < options.max_deletion_ratio)
+        static_cast<double>(del_count) / static_cast<double>(N) < options.max_deletion_ratio)
     {
       // Apply mask:
       pc->clear();

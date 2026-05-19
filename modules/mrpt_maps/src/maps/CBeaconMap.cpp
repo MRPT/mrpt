@@ -195,7 +195,8 @@ double CBeaconMap::internal_computeObservationLikelihood(
                 itLL = logLiks.begin();
                  it != beac->m_locationMC.m_particles.end(); ++it, ++itLW, ++itLL)
             {
-              float expectedRange = sensor3D.distance3DTo(it->d->x, it->d->y, it->d->z);
+              float expectedRange =
+                  static_cast<float>(sensor3D.distance3DTo(it->d->x, it->d->y, it->d->z));
               // expectedRange +=
               // float(0.1*(1-exp(-0.16*expectedRange)));
 
@@ -220,7 +221,7 @@ double CBeaconMap::internal_computeObservationLikelihood(
           {
             // Compute the Jacobian H and varZ
             CMatrixFixed<double, 1, 3> H;
-            float varZ, varR = square(likelihoodOptions.rangeStd);
+            float varZ, varR = static_cast<float>(square(likelihoodOptions.rangeStd));
             float Ax = static_cast<float>(beac->m_locationGauss.mean.x() - sensor3D.x());
             float Ay = static_cast<float>(beac->m_locationGauss.mean.y() - sensor3D.y());
             float Az = static_cast<float>(beac->m_locationGauss.mean.z() - sensor3D.z());
@@ -385,8 +386,8 @@ bool CBeaconMap::internal_insertObservation(
 
             newBeac.m_typePDF = CBeacon::pdfMonteCarlo;
 
-            size_t numParts =
-                static_cast<size_t>(round(insertionOptions.MC_numSamplesPerMeter * sensedRange));
+            size_t numParts = static_cast<size_t>(
+                round(static_cast<float>(insertionOptions.MC_numSamplesPerMeter) * sensedRange));
             ASSERT_(insertionOptions.minElevation_deg <= insertionOptions.maxElevation_deg);
             double minA = DEG2RAD(insertionOptions.minElevation_deg);
             double maxA = DEG2RAD(insertionOptions.maxElevation_deg);
@@ -397,9 +398,9 @@ bool CBeaconMap::internal_insertObservation(
               double el = getRandomGenerator().drawUniform(minA, maxA);
               double R =
                   getRandomGenerator().drawGaussian1D(sensedRange, likelihoodOptions.rangeStd);
-              m_particle.d->x = sensorPnt.x() + R * cos(th) * cos(el);
-              m_particle.d->y = sensorPnt.y() + R * sin(th) * cos(el);
-              m_particle.d->z = sensorPnt.z() + R * sin(el);
+              m_particle.d->x = static_cast<float>(sensorPnt.x() + R * cos(th) * cos(el));
+              m_particle.d->y = static_cast<float>(sensorPnt.y() + R * sin(th) * cos(el));
+              m_particle.d->z = static_cast<float>(sensorPnt.z() + R * sin(el));
             }  // end for itP
           }
           else
@@ -436,7 +437,8 @@ bool CBeaconMap::internal_insertObservation(
               // --------------------
               for (auto& p : beac->m_locationMC.m_particles)
               {
-                float expectedRange = sensorPnt.distance3DTo(p.d->x, p.d->y, p.d->z);
+                float expectedRange =
+                    static_cast<float>(sensorPnt.distance3DTo(p.d->x, p.d->y, p.d->z));
                 p.log_w +=
                     -0.5 * square((sensedRange - expectedRange) / likelihoodOptions.rangeStd);
                 maxW = max(p.log_w, maxW);
@@ -475,9 +477,13 @@ bool CBeaconMap::internal_insertObservation(
                   for (itSample = beac->m_locationMC.m_particles.begin();
                        itSample != beac->m_locationMC.m_particles.end(); ++itSample)
                   {
-                    itSample->d->x += getRandomGenerator().drawGaussian1D(0, noiseStd);
-                    itSample->d->y += getRandomGenerator().drawGaussian1D(0, noiseStd);
-                    if (!is2D) itSample->d->z += getRandomGenerator().drawGaussian1D(0, noiseStd);
+                    itSample->d->x +=
+                        static_cast<float>(getRandomGenerator().drawGaussian1D(0, noiseStd));
+                    itSample->d->y +=
+                        static_cast<float>(getRandomGenerator().drawGaussian1D(0, noiseStd));
+                    if (!is2D)
+                      itSample->d->z +=
+                          static_cast<float>(getRandomGenerator().drawGaussian1D(0, noiseStd));
                   }
                 }
               }  // end "do resample"
@@ -549,7 +555,7 @@ bool CBeaconMap::internal_insertObservation(
               // Compute the mean expected range:
               float expectedRange =
                   static_cast<float>(sensorPnt.distanceTo(beac->m_locationGauss.mean));
-              float varR = square(likelihoodOptions.rangeStd);
+              float varR = static_cast<float>(square(likelihoodOptions.rangeStd));
               // bool	useEKF_or_KF = true;
 
               // if (useEKF_or_KF)
@@ -597,7 +603,7 @@ bool CBeaconMap::internal_insertObservation(
             case CBeacon::pdfSOG:
             {
               // Compute the mean expected range for this mode:
-              float varR = square(likelihoodOptions.rangeStd);
+              float varR = static_cast<float>(square(likelihoodOptions.rangeStd));
 
               // For each Gaussian mode:
               //  1) Update its weight (using the likelihood of
@@ -799,15 +805,15 @@ void CBeaconMap::computeMatchingWith3DLandmarks(
 
           CPoint3D mean_j = m_beacons[j].getMeanVal();
 
-          match.global.x = mean_j.x();
-          match.global.y = mean_j.y();
-          match.global.z = mean_j.z();
+          match.global.x = static_cast<float>(mean_j.x());
+          match.global.y = static_cast<float>(mean_j.y());
+          match.global.z = static_cast<float>(mean_j.z());
 
           CPoint3D mean_k = anotherMap->m_beacons[k].getMeanVal();
           match.localIdx = k;
-          match.local.x = mean_k.x();
-          match.local.y = mean_k.y();
-          match.local.z = mean_k.z();
+          match.local.x = static_cast<float>(mean_k.x());
+          match.local.y = static_cast<float>(mean_k.y());
+          match.local.z = static_cast<float>(mean_k.z());
 
           correspondences.push_back(match);
         }
@@ -818,7 +824,8 @@ void CBeaconMap::computeMatchingWith3DLandmarks(
   }  // end of other it., k
 
   // Compute the corrs ratio:
-  correspondencesRatio = 2.0f * static_cast<float>(correspondences.size()) / d2f(nThis + nOther);
+  correspondencesRatio =
+      2.0f * static_cast<float>(correspondences.size()) / static_cast<float>(nThis + nOther);
 
   MRPT_END
 }
@@ -878,7 +885,7 @@ void CBeaconMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
 void CBeaconMap::TLikelihoodOptions::loadFromConfigFile(
     const mrpt::config::CConfigFileBase& iniFile, const string& section)
 {
-  rangeStd = iniFile.read_float(section.c_str(), "rangeStd", rangeStd);
+  rangeStd = iniFile.read_float(section.c_str(), "rangeStd", static_cast<float>(rangeStd));
 }
 
 void CBeaconMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
@@ -950,15 +957,16 @@ void CBeaconMap::simulateBeaconReadings(
   {
     it->getMean(beacon3D);
 
-    float range = point3D.distanceTo(beacon3D);
+    float range = static_cast<float>(point3D.distanceTo(beacon3D));
 
     if (range < out_Observations.maxSensorDistance && range > out_Observations.minSensorDistance)
     {
       // Add noise:
-      range += getRandomGenerator().drawGaussian1D(0, out_Observations.stdError);
+      range +=
+          static_cast<float>(getRandomGenerator().drawGaussian1D(0, out_Observations.stdError));
 
       // Fill out:
-      newMeas.beaconID = it->m_ID;
+      newMeas.beaconID = static_cast<int32_t>(it->m_ID);
       newMeas.sensorLocationOnRobot = in_sensorLocationOnRobot;
       newMeas.sensedDistance = range;
 
@@ -1066,7 +1074,7 @@ void CBeaconMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 float CBeaconMap::compute3DMatchingRatio(
     const mrpt::maps::CMetricMap* otherMap2,
     const mrpt::poses::CPose3D& otherMapPose,
-    const TMatchingRatioParams& params) const
+    const TMatchingRatioParams& /*params*/) const
 {
   MRPT_START
 
