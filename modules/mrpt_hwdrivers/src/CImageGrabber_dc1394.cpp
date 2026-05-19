@@ -36,7 +36,10 @@ using namespace mrpt::hwdrivers;
           Constructor
  -------------------------------------------------------------*/
 CImageGrabber_dc1394::CImageGrabber_dc1394(
-    uint64_t cameraGUID, uint16_t cameraUnit, const TCaptureOptions_dc1394& options, bool verbose) :
+    [[maybe_unused]] uint64_t cameraGUID,
+    [[maybe_unused]] uint16_t cameraUnit,
+    [[maybe_unused]] const TCaptureOptions_dc1394& options,
+    [[maybe_unused]] bool verbose) :
     m_options(options)
 {
   MRPT_START
@@ -679,7 +682,8 @@ std::optional<mrpt::obs::CObservationStereoImages> CImageGrabber_dc1394::grabSte
 /*-------------------------------------------------------------
           changeCaptureOptions
  -------------------------------------------------------------*/
-bool CImageGrabber_dc1394::changeCaptureOptions(const TCaptureOptions_dc1394& options)
+bool CImageGrabber_dc1394::changeCaptureOptions(
+    [[maybe_unused]] const TCaptureOptions_dc1394& options)
 {
   MRPT_START
 
@@ -740,7 +744,7 @@ bool CImageGrabber_dc1394::changeCaptureOptions(const TCaptureOptions_dc1394& op
 /*-------------------------------------------------------------
           setSoftwareTriggerLevel
  -------------------------------------------------------------*/
-bool CImageGrabber_dc1394::setSoftwareTriggerLevel(bool level)
+bool CImageGrabber_dc1394::setSoftwareTriggerLevel([[maybe_unused]] bool level)
 {
   MRPT_START
 
@@ -768,7 +772,7 @@ bool CImageGrabber_dc1394::setSoftwareTriggerLevel(bool level)
  * in the system.
  * \exception std::runtime_error On any error calling libdc1394.
  */
-void CImageGrabber_dc1394::enumerateCameras(TCameraInfoList& out_list)
+void CImageGrabber_dc1394::enumerateCameras([[maybe_unused]] TCameraInfoList& out_list)
 {
   MRPT_START
 #if MRPT_HAS_LIBDC1394_2

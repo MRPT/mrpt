@@ -175,7 +175,7 @@ void CNTRIPClient::private_ntrip_thread()
           std::cout << mrpt::format(
               "[CNTRIPClient] Trying to connect to %s:%i\n", m_args.server.c_str(), m_args.port);
 
-          my_sock.connect(m_args.server, m_args.port);
+          my_sock.connect(m_args.server, static_cast<unsigned short>(m_args.port));
           if (m_thread_exit) break;
 
           // Prepare HTTP request:

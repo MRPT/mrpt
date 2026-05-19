@@ -340,7 +340,7 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles(const std::string& ptg_
      << "\n";
 
   vector<size_t> path_length(nPaths);
-  for (size_t k = 0; k < nPaths; k++) path_length[k] = getPathStepCount(k);
+  for (size_t k = 0; k < nPaths; k++) path_length[k] = getPathStepCount(static_cast<uint16_t>(k));
 
   size_t maxPoints = 0;
   for (size_t k = 0; k < nPaths; k++) maxPoints = max(maxPoints, path_length[k]);
@@ -479,7 +479,7 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(Clearanc
   for (unsigned int decim_k = 0; decim_k < m_clearance_decimated_paths; decim_k++)
   {
     const auto real_k = cd.decimated_k_to_real_k(decim_k);
-    const size_t numPathSteps = getPathStepCount(real_k);
+    const size_t numPathSteps = getPathStepCount(static_cast<uint16_t>(real_k));
     const double numStepsPerIncr =
         (static_cast<double>(numPathSteps) - 1.0) / double(m_clearance_num_points);
 
@@ -506,7 +506,8 @@ void CParameterizedTrajectoryGenerator::updateClearance(
   for (uint16_t decim_k = 0; decim_k < cd.get_decimated_num_paths(); decim_k++)
   {
     const auto real_k = cd.decimated_k_to_real_k(decim_k);
-    this->evalClearanceSingleObstacle(ox, oy, real_k, cd.get_path_clearance_decimated(decim_k));
+    this->evalClearanceSingleObstacle(
+        ox, oy, static_cast<uint16_t>(real_k), cd.get_path_clearance_decimated(decim_k));
   }
 }
 

@@ -272,7 +272,8 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
   // Generate pose m_particles:
   for (size_t i = 0; i < M; i++)
   {
-    int idx = static_cast<int>(round(getRandomGenerator().drawUniform(0.0, nFreeCells - 1.001)));
+    int idx = static_cast<int>(
+        round(getRandomGenerator().drawUniform(0.0, static_cast<double>(nFreeCells) - 1.001)));
 
     m_particles[i].d.x = freeCells_x[idx] + getRandomGenerator().drawUniform(-gridRes, gridRes);
     m_particles[i].d.y = freeCells_y[idx] + getRandomGenerator().drawUniform(-gridRes, gridRes);

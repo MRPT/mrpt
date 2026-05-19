@@ -56,9 +56,9 @@ void CRoboPeakLidar::disconnect()
             doProcessSimple
 -------------------------------------------------------------*/
 void CRoboPeakLidar::doProcessSimple(
-    bool& outThereIsObservation,
-    mrpt::obs::CObservation2DRangeScan& outObservation,
-    bool& hardwareError)
+    [[maybe_unused]] bool& outThereIsObservation,
+    [[maybe_unused]] mrpt::obs::CObservation2DRangeScan& outObservation,
+    [[maybe_unused]] bool& hardwareError)
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR
   outThereIsObservation = false;

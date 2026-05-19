@@ -87,7 +87,7 @@ bool CLMS100Eth::checkIsConnected()
   {
     try
     {
-      m_client.connect(m_ip, m_port);
+      m_client.connect(m_ip, static_cast<unsigned short>(m_port));
     }
     catch (const std::exception& e)
     {
@@ -130,7 +130,7 @@ bool CLMS100Eth::turnOn()
         size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);  // 18
 
         msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
         if (!read)
@@ -146,7 +146,7 @@ bool CLMS100Eth::turnOn()
         size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
         msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
         if (!read)
@@ -162,7 +162,7 @@ bool CLMS100Eth::turnOn()
         size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
         msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
         if (!read)
@@ -288,15 +288,15 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
         // factor = strtod(next, nullptr);
         break;
       case 26:
-        scanCount = strtoul(next, nullptr, 16);
-        MRPT_LOG_DEBUG_FMT("Scan Count : %d\n", scanCount);
+        scanCount = static_cast<unsigned int>(strtoul(next, nullptr, 16));
+        MRPT_LOG_DEBUG_FMT("Scan Count : %u\n", scanCount);
         break;
       default:
         break;
     }
     next = strtok(nullptr, " ", &tmp);
   }
-  outObservation.aperture = (float)APPERTURE;
+  outObservation.aperture = static_cast<float>(APPERTURE);
   outObservation.rightToLeft = false;
   outObservation.stdError = 0.012f;
   outObservation.sensorPose = m_sensorPose;
@@ -309,7 +309,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
   unsigned int i;
   for (i = 0; i < scanCount && next; i++, next = strtok(nullptr, " ", &tmp))
   {
-    outObservation.setScanRange(i, double(strtoul(next, nullptr, 16)) / 1000.0);
+    outObservation.setScanRange(i, static_cast<float>(strtoul(next, nullptr, 16)) * 1e-3f);
     outObservation.setScanRangeValidity(
         i, outObservation.getScanRange(i) <= outObservation.maxRange);
   }

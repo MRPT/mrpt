@@ -171,7 +171,8 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
   videomode = cfg.read_string(sect, prefix + string("videomode"), videomode);
   framerate = cfg.read_string(sect, prefix + string("framerate"), framerate);
   grabmode = cfg.read_string(sect, prefix + string("grabmode"), grabmode);
-  numBuffers = cfg.read_uint64_t(sect, prefix + string("numBuffers"), numBuffers);
+  numBuffers =
+      static_cast<unsigned int>(cfg.read_uint64_t(sect, prefix + string("numBuffers"), numBuffers));
   grabTimeout = cfg.read_int(sect, prefix + string("grabTimeout"), grabTimeout);
 
   trigger_enabled = cfg.read_bool(sect, prefix + string("trigger_enabled"), trigger_enabled);
@@ -200,8 +201,10 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
   gain_dB = cfg.read_float(sect, prefix + string("gain_dB"), gain_dB);
 
   stereo_mode = cfg.read_bool(sect, prefix + string("stereo_mode"), stereo_mode);
-  rect_width = cfg.read_uint64_t(sect, prefix + string("rect_width"), rect_width);
-  rect_height = cfg.read_uint64_t(sect, prefix + string("rect_height"), rect_height);
+  rect_width =
+      static_cast<unsigned int>(cfg.read_uint64_t(sect, prefix + string("rect_width"), rect_width));
+  rect_height = static_cast<unsigned int>(
+      cfg.read_uint64_t(sect, prefix + string("rect_height"), rect_height));
 }
 
 // ---------------------------------------------------------------
@@ -236,7 +239,8 @@ CImageGrabber_FlyCapture2::~CImageGrabber_FlyCapture2()
 /** Tries to open the camera with the given options. Raises an exception on
  * error. \sa close() */
 void CImageGrabber_FlyCapture2::open(
-    const TCaptureOptions_FlyCapture2& options, const bool startCapture)
+    [[maybe_unused]] const TCaptureOptions_FlyCapture2& options,
+    [[maybe_unused]] const bool startCapture)
 {
 #if MRPT_HAS_FLYCAPTURE2
   FlyCapture2::Error fe;
@@ -526,7 +530,8 @@ void CImageGrabber_FlyCapture2::startCapture()
 /** Starts a synchronous capture of several cameras, which must have been
  * already opened. */
 void CImageGrabber_FlyCapture2::startSyncCapture(
-    int numCameras, const CImageGrabber_FlyCapture2** cameras_array)
+    [[maybe_unused]] int numCameras,
+    [[maybe_unused]] const CImageGrabber_FlyCapture2** cameras_array)
 {
 #if MRPT_HAS_FLYCAPTURE2
 
@@ -645,7 +650,8 @@ std::string CImageGrabber_FlyCapture2::getFC2version()
 // Grab image from the camera. This method blocks until the next frame is
 // captured.
 // return: false on any error.
-bool CImageGrabber_FlyCapture2::getObservation(mrpt::obs::CObservationImage& out_observation)
+bool CImageGrabber_FlyCapture2::getObservation(
+    [[maybe_unused]] mrpt::obs::CObservationImage& out_observation)
 {
 #if MRPT_HAS_FLYCAPTURE2
   if (!m_camera)
@@ -704,7 +710,8 @@ bool CImageGrabber_FlyCapture2::getObservation(mrpt::obs::CObservationImage& out
 // Grab image from the camera. This method blocks until the next frame is
 // captured.
 // return: false on any error.
-bool CImageGrabber_FlyCapture2::getObservation(mrpt::obs::CObservationStereoImages& out_observation)
+bool CImageGrabber_FlyCapture2::getObservation(
+    [[maybe_unused]] mrpt::obs::CObservationStereoImages& out_observation)
 {
 #if MRPT_HAS_FLYCAPTURE2 && MRPT_HAS_TRICLOPS && MRPT_HAS_OPENCV
   if (!m_camera)

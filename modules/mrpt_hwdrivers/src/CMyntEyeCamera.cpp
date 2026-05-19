@@ -53,7 +53,7 @@ static mrpt::img::TCamera convertIntrinsics(const mynteyed::CameraIntrinsics& i)
 }
 #endif
 
-CMyntEyeCamera::CMyntEyeCamera(const TMyntEyeCameraParameters& p) :
+CMyntEyeCamera::CMyntEyeCamera([[maybe_unused]] const TMyntEyeCameraParameters& p) :
     m_capture(mrpt::make_impl<CMyntEyeCamera::Impl>())
 {
   MRPT_START
@@ -183,5 +183,5 @@ std::optional<mrpt::obs::CObservation3DRangeScan> CMyntEyeCamera::grabFrame()
 void TMyntEyeCameraParameters::loadFromConfigFile(
     const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
-  MRPT_LOAD_CONFIG_VAR_CS(ir_intensity, int);
+  ir_intensity = static_cast<uint8_t>(c.read_int(s, "ir_intensity", ir_intensity));
 }

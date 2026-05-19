@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           # vcpkg is pre-installed on GitHub-hosted Windows runners
-          vcpkg install eigen3 zlib zstd tinyxml2 --triplet x64-windows
+          vcpkg install eigen3 zlib zstd tinyxml2 gtest cli11 pybind11 --triplet x64-windows
           echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           echo "VCPKG_TARGET_TRIPLET=x64-windows" >> $GITHUB_ENV
 

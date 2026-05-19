@@ -72,7 +72,8 @@ bool CServoeNeck::queryFirmwareVersion(std::string& out_firmwareVersion)
 -------------------------------------------------------------*/
 unsigned int CServoeNeck::angle2RegValue(const double angle /* rad */)
 {
-  const uint16_t reg = 1250 + (1000 / M_PI) * (angle - M_PI * 0.5);  // equation: v = s*(a-a0)
+  const uint16_t reg = static_cast<uint16_t>(
+      1250.0 + (1000.0 / M_PI) * (angle - M_PI * 0.5));  // equation: v = s*(a-a0)
   // + v0 where s = 450/pi;
   // a0 = 0 and v0 = 750
   // std::cout << "Reg: " << reg << "\n";
@@ -222,7 +223,7 @@ bool CServoeNeck::getRegisterValue(uint16_t& value, const uint8_t servo)
         return false;
       }
 
-      value = (msgRx.content[0] << 8) + msgRx.content[1];
+      value = static_cast<uint16_t>((msgRx.content[0] << 8) + msgRx.content[1]);
       return true;
     }
     else
@@ -275,7 +276,7 @@ bool CServoeNeck::setAngle(double angle, const uint8_t servo, bool fast)
   if (angle < -m_TruncateFactor * M_PI / 2) angle = -m_TruncateFactor * M_PI / 2;
   if (angle > m_TruncateFactor * M_PI / 2) angle = m_TruncateFactor * M_PI / 2;
 
-  unsigned int reg = angle2RegValue(m_offsets[servo] + angle);
+  unsigned int reg = angle2RegValue(static_cast<double>(m_offsets[servo]) + angle);
 
   return setRegisterValue(reg, servo, fast);
 
@@ -290,9 +291,10 @@ bool CServoeNeck::setAngleAndSpeed(double angle, const uint8_t servo, const uint
   if (angle < -m_TruncateFactor * M_PI / 2) angle = -m_TruncateFactor * M_PI / 2;
   if (angle > m_TruncateFactor * M_PI / 2) angle = m_TruncateFactor * M_PI / 2;
 
-  unsigned int reg = angle2RegValue(m_offsets[servo] + angle);
+  unsigned int reg = angle2RegValue(static_cast<double>(m_offsets[servo]) + angle);
   uint8_t thisSpeed = speed < 15 ? 15 : speed > 250 ? 250 : speed;
-  auto delSpeed = uint16_t(0.25 * 1000000 / (500 + 1000 * (thisSpeed / 180.0f - 0.5)));
+  auto delSpeed = static_cast<uint16_t>(
+      0.25 * 1000000.0 / (500.0 + 1000.0 * (static_cast<double>(thisSpeed) / 180.0 - 0.5)));
   // std::cout << "Speed: " << int(speed) << " -> " << delSpeed << "\n";
   // std::cout << "Angle: " << RAD2DEG( angle ) << " - Reg: " << reg <<
   // "\n";
@@ -316,7 +318,7 @@ bool CServoeNeck::setAngleWithFilter(double angle, const uint8_t servo, bool fas
   for (it = m_PrevAngles.begin(); it != m_PrevAngles.end();
        ++it)  // Sum up all the elements in the deque
     nangle += *it;
-  nangle /= m_PrevAngles.size();  // Mean angle
+  nangle /= static_cast<double>(m_PrevAngles.size());  // Mean angle
 
   return (setAngle(nangle, servo, fast));
 }
@@ -394,8 +396,8 @@ bool CServoeNeck::enableServo(const uint8_t servo)
 -------------------------------------------------------------*/
 bool CServoeNeck::center(const uint8_t servo)
 {
-  unsigned int value = angle2RegValue(m_offsets[servo]);
-  return setRegisterValue(value, servo);
+  unsigned int value = angle2RegValue(static_cast<double>(m_offsets[servo]));
+  return setRegisterValue(static_cast<uint16_t>(value), servo);
 }  // end-Center
 
 /*-------------------------------------------------------------

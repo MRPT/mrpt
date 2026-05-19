@@ -94,7 +94,7 @@ bool CSICKTim561Eth::checkIsConnected()
   {
     try
     {
-      m_client.connect(m_ip, m_port);
+      m_client.connect(m_ip, static_cast<unsigned short>(m_port));
     }
     catch (const std::exception& e)
     {
@@ -116,7 +116,7 @@ bool CSICKTim561Eth::rebootDev()
 
     size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
     msgIn[read - 1] = 0;
-    MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+    MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
     MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
     if (!read)
@@ -133,7 +133,7 @@ bool CSICKTim561Eth::rebootDev()
 
     size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
     msgIn[read - 1] = 0;
-    MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+    MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
     MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
     if (!read)
@@ -188,7 +188,7 @@ bool CSICKTim561Eth::turnOn()
 
         size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
         msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
         if (!read)
@@ -206,7 +206,7 @@ bool CSICKTim561Eth::turnOn()
 
         size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
         msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
         if (!read)
@@ -224,7 +224,7 @@ bool CSICKTim561Eth::turnOn()
 
         size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
         msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
         if (!read)
@@ -242,7 +242,7 @@ bool CSICKTim561Eth::turnOn()
 
         size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
         msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
         if (!read)
@@ -263,7 +263,7 @@ bool CSICKTim561Eth::turnOn()
 
       //   size_t  read = m_client.readAsync(msgIn, 100, 1000, 1000);
       //   msgIn[read - 1] = 0;
-      //   MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+      //   MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
       //   MRPT_LOG_DEBUG_FMT("message : %s\n",
       //   string(&msgIn[1]).c_str());
 
@@ -282,7 +282,7 @@ bool CSICKTim561Eth::turnOn()
 
       //   size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
       //   msgIn[read - 1] = 0;
-      //   MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+      //   MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
       //   MRPT_LOG_DEBUG_FMT("message : %s\n",
       //   string(&msgIn[1]).c_str());
 
@@ -300,7 +300,7 @@ bool CSICKTim561Eth::turnOn()
 
       //   size_t read =m_client.readAsync(msgIn, 100, 1000, 1000);
       //   msgIn[read - 1] = 0;
-      //   MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+      //   MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
       //   MRPT_LOG_DEBUG_FMT("message : %s\n",
       //   string(&msgIn[1]).c_str()); if (!read){
       //     return false;
@@ -315,7 +315,7 @@ bool CSICKTim561Eth::turnOn()
         sendCommand(msg);
         size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
         msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
         if (!read)
         {
@@ -332,7 +332,7 @@ bool CSICKTim561Eth::turnOn()
       //   sendCommand(msg);
       //   size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
       //   msgIn[read - 1] = 0;
-      //   MRPT_LOG_DEBUG_FMT("read : %u\n", (unsigned int)read);
+      //   MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
       //   MRPT_LOG_DEBUG_FMT("message : %s\n",
       //   string(&msgIn[1]).c_str()); if (!read)
       //   {
@@ -424,15 +424,15 @@ bool CSICKTim561Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservat
         MRPT_LOG_DEBUG("Distance : OK\n");
         break;
       case 26:
-        scanCount = strtoul(next, nullptr, 16);
-        MRPT_LOG_DEBUG_FMT("Scan Count : %d\n", scanCount);
+        scanCount = static_cast<unsigned int>(strtoul(next, nullptr, 16));
+        MRPT_LOG_DEBUG_FMT("Scan Count : %u\n", scanCount);
         break;
       default:
         break;
     }
     next = strtok(nullptr, " ", &tmp);
   }
-  outObservation.aperture = (float)APPERTURE;
+  outObservation.aperture = static_cast<float>(APPERTURE);
   outObservation.rightToLeft = false;
   outObservation.stdError = 0.012f;
   outObservation.sensorPose = m_sensorPose;
@@ -445,7 +445,7 @@ bool CSICKTim561Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservat
   unsigned int i;
   for (i = 0; i < scanCount && next; i++, next = strtok(nullptr, " ", &tmp))
   {
-    outObservation.setScanRange(i, double(strtoul(next, nullptr, 16)) / 1000.0);
+    outObservation.setScanRange(i, static_cast<float>(strtoul(next, nullptr, 16)) * 1e-3f);
     outObservation.setScanRangeValidity(
         i, outObservation.getScanRange(i) <= outObservation.maxRange);
   }

@@ -308,7 +308,8 @@ bool CVelodyneScanner::getNextObservation(
 
           mrpt::system::TTimeParts tim_parts;
           mrpt::system::timestampToParts(gps_tim, tim_parts);
-          tim_parts.minute = rx_pkt.gps_timestamp() /*us from top of hour*/ / 60000000ul;
+          tim_parts.minute =
+              static_cast<uint8_t>(rx_pkt.gps_timestamp() /*us from top of hour*/ / 60000000ul);
           tim_parts.second = (rx_pkt.gps_timestamp() /*us from top of hour*/ % 60000000ul) * 1e-6;
 
           const mrpt::system::TTimeStamp data_pkt_tim =
@@ -408,7 +409,8 @@ void CVelodyneScanner::initialize()
     bindAddr.sin_port = htons(VELODYNE_DATA_UDP_PORT);
     bindAddr.sin_addr.s_addr = INADDR_ANY;
 
-    if (int(INVALID_SOCKET) == ::bind(m_hDataSock, (struct sockaddr*)(&bindAddr), sizeof(sockaddr)))
+    if (int(INVALID_SOCKET) ==
+        ::bind(m_hDataSock, reinterpret_cast<sockaddr*>(&bindAddr), sizeof(sockaddr)))
       THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
 #ifdef _WIN32
@@ -432,7 +434,7 @@ void CVelodyneScanner::initialize()
     bindAddr.sin_port = htons(VELODYNE_POSITION_UDP_PORT);
 
     if (int(INVALID_SOCKET) ==
-        ::bind(m_hPositionSock, (struct sockaddr*)(&bindAddr), sizeof(sockaddr)))
+        ::bind(m_hPositionSock, reinterpret_cast<sockaddr*>(&bindAddr), sizeof(sockaddr)))
       THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
 #ifdef _WIN32
@@ -596,15 +598,17 @@ bool CVelodyneScanner::receivePackets(
   if (m_pcap)
   {
     ret = internal_read_PCAP_packet(
-        data_pkt_timestamp, (uint8_t*)&out_data_pkt, pos_pkt_timestamp, (uint8_t*)&out_pos_pkt);
+        data_pkt_timestamp, reinterpret_cast<uint8_t*>(&out_data_pkt), pos_pkt_timestamp,
+        reinterpret_cast<uint8_t*>(&out_pos_pkt));
   }
   else
   {
     data_pkt_timestamp = internal_receive_UDP_packet(
-        m_hDataSock, (uint8_t*)&out_data_pkt, CObservationVelodyneScan::PACKET_SIZE, m_device_ip);
+        m_hDataSock, reinterpret_cast<uint8_t*>(&out_data_pkt),
+        CObservationVelodyneScan::PACKET_SIZE, m_device_ip);
     pos_pkt_timestamp = internal_receive_UDP_packet(
-        m_hPositionSock, (uint8_t*)&out_pos_pkt, CObservationVelodyneScan::POS_PACKET_SIZE,
-        m_device_ip);
+        m_hPositionSock, reinterpret_cast<uint8_t*>(&out_pos_pkt),
+        CObservationVelodyneScan::POS_PACKET_SIZE, m_device_ip);
   }
 
 // Optional PCAP dump:
@@ -659,7 +663,8 @@ bool CVelodyneScanner::receivePackets(
 
       memcpy(&(packetBuffer[0]), LidarPacketHeader, 42);
       memcpy(
-          &(packetBuffer[0]) + 42, (uint8_t*)&out_data_pkt, CObservationVelodyneScan::PACKET_SIZE);
+          &(packetBuffer[0]) + 42, reinterpret_cast<uint8_t*>(&out_data_pkt),
+          CObservationVelodyneScan::PACKET_SIZE);
       pcap_dump((u_char*)this->m_pcap_dumper, &header, &(packetBuffer[0]));
     }
     // Pos pkt:
@@ -671,7 +676,7 @@ bool CVelodyneScanner::receivePackets(
 
       memcpy(&(packetBuffer[0]), PositionPacketHeader, 42);
       memcpy(
-          &(packetBuffer[0]) + 42, (uint8_t*)&out_pos_pkt,
+          &(packetBuffer[0]) + 42, reinterpret_cast<uint8_t*>(&out_pos_pkt),
           CObservationVelodyneScan::POS_PACKET_SIZE);
       pcap_dump((u_char*)this->m_pcap_dumper, &header, &(packetBuffer[0]));
     }
@@ -777,15 +782,15 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 
     // Receive packets that should now be available from the
     // socket using a blocking read.
-    int nbytes = recvfrom(
-        hSocket, (char*)&out_buffer[0], expected_packet_size, 0, (sockaddr*)&sender_address,
-        &sender_address_len);
+    int nbytes = static_cast<int>(recvfrom(
+        hSocket, reinterpret_cast<char*>(&out_buffer[0]), expected_packet_size, 0,
+        reinterpret_cast<sockaddr*>(&sender_address), &sender_address_len));
 
     if (nbytes < 0)
     {
       if (errno != EWOULDBLOCK) THROW_EXCEPTION("recvfrom() failed!?!");
     }
-    else if ((size_t)nbytes == expected_packet_size)
+    else if (static_cast<size_t>(nbytes) == expected_packet_size)
     {
       // read successful,
       // if packet is not from the lidar scanner we selected by IP,
@@ -809,10 +814,10 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 }
 
 bool CVelodyneScanner::internal_read_PCAP_packet(
-    mrpt::system::TTimeStamp& data_pkt_time,
-    uint8_t* out_data_buffer,
-    mrpt::system::TTimeStamp& pos_pkt_time,
-    uint8_t* out_pos_buffer)
+    [[maybe_unused]] mrpt::system::TTimeStamp& data_pkt_time,
+    [[maybe_unused]] uint8_t* out_data_buffer,
+    [[maybe_unused]] mrpt::system::TTimeStamp& pos_pkt_time,
+    [[maybe_unused]] uint8_t* out_pos_buffer)
 {
 #if MRPT_HAS_LIBPCAP
   ASSERT_(m_pcap);

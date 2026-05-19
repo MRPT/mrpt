@@ -132,7 +132,7 @@ void CRaePID::doProcess()
   // -> " << power_reading << "\n";
 
   // Convert the text to a number (ppm)
-  const float readnum = atof(power_reading.c_str());
+  const float readnum = static_cast<float>(atof(power_reading.c_str()));
   const float val_ppm = readnum / 1000;
 
   // Fill the observation
@@ -237,7 +237,7 @@ mrpt::obs::CObservationGasSensors CRaePID::getFullInfo()
 
   for (auto& k : measurements_text)
   {
-    const float readnum = atof(k.c_str());
+    const float readnum = static_cast<float>(atof(k.c_str()));
     const float val_ppm = readnum / 1000.f;
 
     // Fill the observation
@@ -310,6 +310,6 @@ void CRaePID::getLimits(float& min, float& max)
   std::vector<std::string> readings_text(it, endit);
 
   // read min and max
-  max = atof(readings_text[0].c_str());
-  min = atof(readings_text[1].c_str());
+  max = static_cast<float>(atof(readings_text[0].c_str()));
+  min = static_cast<float>(atof(readings_text[1].c_str()));
 }

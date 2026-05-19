@@ -176,7 +176,7 @@ class CAnimatedAssimpModel : public CAssimpModel
   std::map<uint64_t, VertexBoneData> vertexBoneMap_;
 
   std::vector<Animation> animations_;
-  size_t activeAnimation_ = 0;
+  uint32_t activeAnimation_ = 0;
   double currentTime_ = 0.0;
   bool looping_ = true;
   bool hasSkeleton_ = false;

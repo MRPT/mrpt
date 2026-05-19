@@ -143,7 +143,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
     {
       // Simulate / evaluate the trajectory selected by this "alpha":
       // ------------------------------------------------------------
-      const float alpha = static_cast<float>(index2alpha(k));
+      const float alpha = static_cast<float>(index2alpha(static_cast<uint16_t>(k)));
 
       points.clear();
       float t = .0f, dist = .0f, girado = .0f;
@@ -162,8 +162,8 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
         // Max. aceleraciones:
         if (t > 1)
         {
-          float acc_lin = fabs((last_vs[0] - last_vs[1]) / diferencial_t);
-          float acc_ang = fabs((last_ws[0] - last_ws[1]) / diferencial_t);
+          float acc_lin = fabsf((last_vs[0] - last_vs[1]) / diferencial_t);
+          float acc_ang = fabsf((last_ws[0] - last_ws[1]) / diferencial_t);
           mrpt::keep_max(max_acc_lin, acc_lin);
           mrpt::keep_max(max_acc_ang, acc_ang);
         }
@@ -736,8 +736,8 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
     m_collisionGrid.setSize(
         -refDistance, refDistance, -refDistance, refDistance, m_collisionGrid.getResolution());
 
-    const int grid_cx_max = m_collisionGrid.getSizeX() - 1;
-    const int grid_cy_max = m_collisionGrid.getSizeY() - 1;
+    const int grid_cx_max = static_cast<int>(m_collisionGrid.getSizeX()) - 1;
+    const int grid_cy_max = static_cast<int>(m_collisionGrid.getSizeY()) - 1;
     const double half_cell = m_collisionGrid.getResolution() * 0.5;
 
     const size_t nVerts = m_robotShape.size();

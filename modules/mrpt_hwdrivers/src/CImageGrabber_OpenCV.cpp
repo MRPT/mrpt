@@ -38,7 +38,9 @@ struct CImageGrabber_OpenCV::Impl
         Constructor
 -------------------------------------------------------------*/
 CImageGrabber_OpenCV::CImageGrabber_OpenCV(
-    int cameraIndex, TCameraType cameraType, const TCaptureCVOptions& options) :
+    [[maybe_unused]] int cameraIndex,
+    [[maybe_unused]] TCameraType cameraType,
+    [[maybe_unused]] const TCaptureCVOptions& options) :
     m_capture(mrpt::make_impl<CImageGrabber_OpenCV::Impl>())
 {
   MRPT_START
@@ -163,7 +165,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
   MRPT_END
 }
 
-CImageGrabber_OpenCV::CImageGrabber_OpenCV(const std::string& AVI_fileName) :
+CImageGrabber_OpenCV::CImageGrabber_OpenCV([[maybe_unused]] const std::string& AVI_fileName) :
     m_capture(mrpt::make_impl<CImageGrabber_OpenCV::Impl>())
 {
   MRPT_START
