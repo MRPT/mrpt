@@ -77,7 +77,7 @@ void COccupancyGridMap3D::internal_insertObservationScan2D(
 void COccupancyGridMap3D::insertPointCloud(
     const mrpt::math::TPoint3D& sensorPt,
     const mrpt::maps::CPointsMap& pts,
-    const float maxValidRange,
+    const float /*maxValidRange*/,
     const std::optional<poses::CPose3D>& robotPose)
 {
   MRPT_START
@@ -107,7 +107,7 @@ void COccupancyGridMap3D::internal_insertObservationScan3D(
   mrpt::maps::CSimplePointsMap pts;
   mrpt::obs::T3DPointsProjectionParams pp;
   pp.takeIntoAccountSensorPoseOnRobot = false;  // done below
-  pp.decimation = insertionOptions.decimation_3d_range;
+  pp.decimation = static_cast<uint8_t>(insertionOptions.decimation_3d_range);
 
   const_cast<mrpt::obs::CObservation3DRangeScan&>(o).unprojectInto(pts, pp);
 
@@ -122,7 +122,7 @@ void COccupancyGridMap3D::internal_insertObservationScan3D(
 }
 
 void COccupancyGridMap3D::insertRay(
-    const mrpt::math::TPoint3D& sensor, const mrpt::math::TPoint3D& end, bool endIsOccupied)
+    const mrpt::math::TPoint3D& sensor, const mrpt::math::TPoint3D& end, bool /*endIsOccupied*/)
 {
   MRPT_START
 
@@ -176,12 +176,15 @@ void COccupancyGridMap3D::insertRay(
   const int nStepsRay = mrpt::max3(Acx_, Acy_, Acz_);
   if (!nStepsRay) return;  // May be...
 
-  const float N_1 = 1.0f / nStepsRay;
+  const float N_1 = 1.0f / static_cast<float>(nStepsRay);
 
   // Increments at each raytracing step:
-  const int frAcx = (Acx < 0 ? -1 : +1) * static_cast<int>(round((Acx_ << FRBITS) * N_1));
-  const int frAcy = (Acy < 0 ? -1 : +1) * static_cast<int>(round((Acy_ << FRBITS) * N_1));
-  const int frAcz = (Acz < 0 ? -1 : +1) * static_cast<int>(round((Acz_ << FRBITS) * N_1));
+  const int frAcx =
+      (Acx < 0 ? -1 : +1) * static_cast<int>(round(static_cast<float>(Acx_ << FRBITS) * N_1));
+  const int frAcy =
+      (Acy < 0 ? -1 : +1) * static_cast<int>(round(static_cast<float>(Acy_ << FRBITS) * N_1));
+  const int frAcz =
+      (Acz < 0 ? -1 : +1) * static_cast<int>(round(static_cast<float>(Acz_ << FRBITS) * N_1));
 
   // fractional integers for the running raytracing point:
   int frCX = cx << FRBITS;

@@ -157,7 +157,7 @@ void do_simulation()
   CRawlog rawlog;
   if (have_in_rawlog)
   {
-    rawlog.loadFromRawLogFile(in_rawlog_file);
+    [[maybe_unused]] const bool raw_ok = rawlog.loadFromRawLogFile(in_rawlog_file);
     ASSERT_(rawlog.size() > 0);
     ASSERT_(rawlog.getType(0) == CRawlog::TEntryType::etActionCollection);
     ASSERT_(int(rawlog.size() / 2) == GT.rows());
@@ -184,7 +184,8 @@ void do_simulation()
 
       CObservation2DRangeScan::Ptr the_scan = sf->getObservationByClass<CObservation2DRangeScan>();
       the_grid.laserScanSimulator(
-          *the_scan, gt_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR);
+          *the_scan, gt_pose, 0.5f, LASER_N_RANGES, static_cast<float>(LASER_STD_ERROR), 1,
+          static_cast<float>(LASER_BEARING_STD_ERROR));
     }
   }
   else
@@ -235,7 +236,7 @@ void do_simulation()
   }
 
   // Save the new rawlog:
-  rawlog.saveToRawLogFile(out_rawlog_file);
+  [[maybe_unused]] const bool save_ok = rawlog.saveToRawLogFile(out_rawlog_file);
 }
 
 void simulOdometry(

@@ -164,6 +164,20 @@ uint64_t CConfigFileBase::read_uint64_t(
 }
 
 /*---------------------------------------------------------------
+          read_uint32_t
+ ---------------------------------------------------------------*/
+uint32_t CConfigFileBase::read_uint32_t(
+    const std::string& section,
+    const std::string& name,
+    uint32_t defaultValue,
+    bool failIfNotFound) const
+{
+  string s = readString(
+      section, name, mrpt::format("%u", static_cast<unsigned int>(defaultValue)), failIfNotFound);
+  return static_cast<uint32_t>(std::stoul(s, nullptr, 0));
+}
+
+/*---------------------------------------------------------------
           read_bool
  ---------------------------------------------------------------*/
 bool CConfigFileBase::read_bool(

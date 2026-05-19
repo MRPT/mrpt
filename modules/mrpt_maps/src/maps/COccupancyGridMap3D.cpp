@@ -244,14 +244,16 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) 
   for (size_t cz = 0; cz < m_grid.getSizeZ(); cz++)
   {
     // voxel center coordinates:
-    const double z = m_grid.idx2z(cz) + m_grid.getResolutionZ() * 0.5;
+    const double z = m_grid.idx2z(static_cast<int>(cz)) + m_grid.getResolutionZ() * 0.5;
     for (size_t cy = 0; cy < m_grid.getSizeY(); cy++)
     {
-      const double y = m_grid.idx2y(cy) + m_grid.getResolutionXY() * 0.5;
+      const double y = m_grid.idx2y(static_cast<int>(cy)) + m_grid.getResolutionXY() * 0.5;
       for (size_t cx = 0; cx < m_grid.getSizeX(); cx++)
       {
-        const double x = m_grid.idx2x(cx) + m_grid.getResolutionXY() * 0.5;
-        const float occ = 1.0f - this->getCellFreeness(cx, cy, cz);
+        const double x = m_grid.idx2x(static_cast<int>(cx)) + m_grid.getResolutionXY() * 0.5;
+        const float occ = 1.0f - this->getCellFreeness(
+                                     static_cast<unsigned int>(cx), static_cast<unsigned int>(cy),
+                                     static_cast<unsigned int>(cz));
         const bool is_occupied = occ > 0.501f;
         const bool is_free = occ < 0.499f;
         if ((is_occupied && renderingOptions.generateOccupiedVoxels) ||
@@ -468,29 +470,29 @@ void COccupancyGridMap3D::saveMetricMapRepresentationToFile(const std::string& f
 }
 
 bool COccupancyGridMap3D::nn_single_search(
-    const mrpt::math::TPoint2Df& query,
-    mrpt::math::TPoint2Df& result,
-    float& out_dist_sqr,
-    uint64_t& resultIndexOrID) const
+    const mrpt::math::TPoint2Df& /*query*/,
+    mrpt::math::TPoint2Df& /*result*/,
+    float& /*out_dist_sqr*/,
+    uint64_t& /*resultIndexOrID*/) const
 {
   THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
 }
 void COccupancyGridMap3D::nn_multiple_search(
-    const mrpt::math::TPoint2Df& query,
-    const size_t N,
-    std::vector<mrpt::math::TPoint2Df>& results,
-    std::vector<float>& out_dists_sqr,
-    std::vector<uint64_t>& resultIndicesOrIDs) const
+    const mrpt::math::TPoint2Df& /*query*/,
+    const size_t /*N*/,
+    std::vector<mrpt::math::TPoint2Df>& /*results*/,
+    std::vector<float>& /*out_dists_sqr*/,
+    std::vector<uint64_t>& /*resultIndicesOrIDs*/) const
 {
   THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
 }
 void COccupancyGridMap3D::nn_radius_search(
-    const mrpt::math::TPoint2Df& query,
-    const float search_radius_sqr,
-    std::vector<mrpt::math::TPoint2Df>& results,
-    std::vector<float>& out_dists_sqr,
-    std::vector<uint64_t>& resultIndicesOrIDs,
-    size_t maxPoints) const
+    const mrpt::math::TPoint2Df& /*query*/,
+    const float /*search_radius_sqr*/,
+    std::vector<mrpt::math::TPoint2Df>& /*results*/,
+    std::vector<float>& /*out_dists_sqr*/,
+    std::vector<uint64_t>& /*resultIndicesOrIDs*/,
+    size_t /*maxPoints*/) const
 {
   THROW_EXCEPTION("Cannot run a 2D search on a 3D gridmap");
 }
@@ -538,7 +540,7 @@ void COccupancyGridMap3D::nn_multiple_search(
   mrpt::saturate<int>(cz_query, 0, sizeZ - 1);
 
   const voxelType thresholdCellValue = p2l(0.5f);
-  const float resolutionSqr = mrpt::square(m_grid.getResolutionXY());
+  const float resolutionSqr = static_cast<float>(mrpt::square(m_grid.getResolutionXY()));
 
   for (int searchRadiusInCells = 0;
        results.size() < N && searchRadiusInCells < std::max(sizeX, sizeY); searchRadiusInCells++)
@@ -603,9 +605,10 @@ void COccupancyGridMap3D::nn_multiple_search(
       const int cy = it->second[1];
       const int cz = it->second[2];
 
-      out_dists_sqr.push_back(it->first * resolutionSqr);
-      results.push_back(
-          mrpt::math::TPoint3Df(m_grid.idx2x(cx), m_grid.idx2y(cy), m_grid.idx2z(cz)));
+      out_dists_sqr.push_back(static_cast<float>(it->first) * resolutionSqr);
+      results.push_back(mrpt::math::TPoint3Df(
+          static_cast<float>(m_grid.idx2x(cx)), static_cast<float>(m_grid.idx2y(cy)),
+          static_cast<float>(m_grid.idx2z(cz))));
       resultIndicesOrIDs.push_back(m_grid.cellAbsIndexFromCXCYCZ(cx, cy, cz));
     }
   }
@@ -639,7 +642,7 @@ void COccupancyGridMap3D::nn_radius_search(
   mrpt::saturate<int>(cz_query, 0, sizeZ - 1);
 
   const voxelType thresholdCellValue = p2l(0.5f);
-  const float resolutionSqr = mrpt::square(m_grid.getResolutionXY());
+  const float resolutionSqr = static_cast<float>(mrpt::square(m_grid.getResolutionXY()));
   const int maxSearchRadiusInCells =
       static_cast<int>(std::ceil(std::sqrt(search_radius_sqr) / m_grid.getResolutionXY()));
   const int maxSearchRadiusSqrInCells = mrpt::square(maxSearchRadiusInCells);
@@ -676,8 +679,10 @@ void COccupancyGridMap3D::nn_radius_search(
       {
         return;
       }
-      out_dists_sqr.push_back(distSqr * resolutionSqr);
-      results.emplace_back(m_grid.idx2x(cx), m_grid.idx2y(cy), m_grid.idx2z(cz));
+      out_dists_sqr.push_back(static_cast<float>(distSqr) * resolutionSqr);
+      results.emplace_back(
+          static_cast<float>(m_grid.idx2x(cx)), static_cast<float>(m_grid.idx2y(cy)),
+          static_cast<float>(m_grid.idx2z(cz)));
       resultIndicesOrIDs.push_back(m_grid.cellAbsIndexFromCXCYCZ(cx, cy, cz));
     };
 

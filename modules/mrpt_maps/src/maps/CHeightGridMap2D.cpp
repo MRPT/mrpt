@@ -120,7 +120,7 @@ bool CHeightGridMap2D::insertIndividualPoint(
     const double x,
     const double y,
     const double zz,
-    const CHeightGridMap2D_Base::TPointInsertParams& params)
+    const CHeightGridMap2D_Base::TPointInsertParams& /*params*/)
 {
   THeightGridmapCell* cell = cellByPos(x, y);
   if (!cell) return false;  // Out of the map: Ignore if we've not resized before.
@@ -138,9 +138,9 @@ bool CHeightGridMap2D::insertIndividualPoint(
     }
     else
     {
-      float W = cell->w++;  // W = N-1
-      cell->h = (cell->h * W + z) / cell->w;
-      if (W > 0) cell->var = (cell->v - d2f(pow(cell->u, 2)) / cell->w) / W;
+      float W = static_cast<float>(cell->w++);  // W = N-1
+      cell->h = (cell->h * W + z) / static_cast<float>(cell->w);
+      if (W > 0) cell->var = (cell->v - d2f(pow(cell->u, 2)) / static_cast<float>(cell->w)) / W;
     }
   }  // end if really inserted
   return true;
@@ -299,7 +299,8 @@ void CHeightGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
     {
       for (size_t y = 0; y < m_size_y; y++)
       {
-        const THeightGridmapCell* c = cellByIndex(x, y);
+        const THeightGridmapCell* c =
+            cellByIndex(static_cast<unsigned int>(x), static_cast<unsigned int>(y));
         ASSERTDEB_(c);
         Z(x, y) = c->h;
         mask(x, y) = c->w ? 1 : 0;
@@ -328,7 +329,8 @@ void CHeightGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
     for (size_t x = 0; x < m_size_x; x++)
       for (size_t y = 0; y < m_size_y; y++)
       {
-        const THeightGridmapCell* c = cellByIndex(x, y);
+        const THeightGridmapCell* c =
+            cellByIndex(static_cast<unsigned int>(x), static_cast<unsigned int>(y));
         ASSERTDEB_(c);
         if (c->w)
         {
@@ -336,7 +338,9 @@ void CHeightGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
           const auto rgb = colormap(
               insertionOptions.colorMap,  // cmJET, //cmGRAYSCALE,
               col_idx);
-          obj->push_back(idx2x(x), idx2y(y), c->h, rgb.R, rgb.G, rgb.B);
+          obj->push_back(
+              static_cast<float>(idx2x(static_cast<int>(x))),
+              static_cast<float>(idx2y(static_cast<int>(y))), c->h, rgb.R, rgb.G, rgb.B);
         }
       }
 
@@ -368,7 +372,8 @@ size_t CHeightGridMap2D::dem_get_size_x() const { return m_size_x; }
 size_t CHeightGridMap2D::dem_get_size_y() const { return m_size_y; }
 bool CHeightGridMap2D::dem_get_z_by_cell(size_t cx, size_t cy, double& z_out) const
 {
-  const THeightGridmapCell* cell = cellByIndex(cx, cy);
+  const THeightGridmapCell* cell =
+      cellByIndex(static_cast<unsigned int>(cx), static_cast<unsigned int>(cy));
   if (cell && cell->w)
   {
     z_out = cell->h;

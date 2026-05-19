@@ -166,15 +166,15 @@ void CHokuyoURG::doProcessSimple(
   // And the scan ranges:
   outObservation.rightToLeft = true;
 
-  outObservation.aperture = nRanges * 2 * M_PI / m_sensor_info.scans_per_360deg;
+  outObservation.aperture = static_cast<float>(nRanges * 2 * M_PI / m_sensor_info.scans_per_360deg);
 
-  outObservation.maxRange = m_sensor_info.d_max;
+  outObservation.maxRange = static_cast<float>(m_sensor_info.d_max);
   outObservation.stdError = 0.010f;
   outObservation.sensorPose = m_sensorPose;
   outObservation.sensorLabel = m_sensorLabel;
 
   outObservation.resizeScan(nRanges);
-  char* ptr = (char*)&m_rcv_data[4];
+  char* ptr = reinterpret_cast<char*>(&m_rcv_data[4]);
 
   if (m_intensity) outObservation.setScanHasIntensity(true);
 
@@ -186,7 +186,7 @@ void CHokuyoURG::doProcessSimple(
 
     int range_mm = ((b1 << 12) | (b2 << 6) | b3);
 
-    outObservation.setScanRange(i, range_mm * 0.001f);
+    outObservation.setScanRange(i, static_cast<float>(range_mm) * 0.001f);
     outObservation.setScanRangeValidity(
         i, range_mm >= 20 && (outObservation.getScanRange(i) <= outObservation.maxRange));
 
@@ -487,7 +487,7 @@ bool CHokuyoURG::parseResponse(bool additionalWaitForData)
 
     // COMMAND ECHO ---------
     size_t peekIdx = 0;
-    const unsigned int verifLen = m_lastSentMeasCmd.size();
+    const unsigned int verifLen = static_cast<unsigned int>(m_lastSentMeasCmd.size());
 
     if (verifLen)
     {
@@ -616,8 +616,8 @@ bool CHokuyoURG::parseResponse(bool additionalWaitForData)
         if (m_rcv_status0 != '0' && (m_rcv_status0 != '9' && m_rcv_status1 != '9'))
         {
           MRPT_LOG_ERROR_STREAM(
-              "[Hokuyo] Error LIDAR status: " << (int)m_rcv_status0 << " after command: `"
-                                              << m_lastSentMeasCmd << "`");
+              "[Hokuyo] Error LIDAR status: " << static_cast<int>(m_rcv_status0)
+                                              << " after command: `" << m_lastSentMeasCmd << "`");
           return false;
         }
         return true;
@@ -968,7 +968,7 @@ bool CHokuyoURG::ensureStreamIsOpen()
 
         try
         {
-          COM->connect(m_ip_dir, m_port_dir);
+          COM->connect(m_ip_dir, static_cast<uint16_t>(m_port_dir));
           // OK, reconfigure the laser:
           turnOn();
           return true;
@@ -1034,7 +1034,7 @@ bool CHokuyoURG::ensureStreamIsOpen()
 
       MRPT_LOG_INFO_STREAM(
           __CURRENT_FUNCTION_NAME__ << " Connecting to " << m_ip_dir << ":" << m_port_dir);
-      theCOM->connect(m_ip_dir, m_port_dir);
+      theCOM->connect(m_ip_dir, static_cast<uint16_t>(m_port_dir));
 
       if (!theCOM->isConnected())
       {

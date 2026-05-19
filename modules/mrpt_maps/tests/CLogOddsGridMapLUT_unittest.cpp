@@ -27,7 +27,7 @@ void test_monotonic()
   for (int64_t i = i_init; i <= i_end; i++)
   {
     // Ensure LUT is monotonic:
-    const float new_p = lut.l2p(i);
+    const float new_p = lut.l2p(static_cast<cell_t>(i));
     EXPECT_GE(new_p, last_p) << " i=" << i;
     last_p = new_p;
   }

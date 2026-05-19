@@ -117,7 +117,8 @@ size_t CHeightGridMap2D_MRF::dem_get_size_x() const { return m_size_x; }
 size_t CHeightGridMap2D_MRF::dem_get_size_y() const { return m_size_y; }
 bool CHeightGridMap2D_MRF::dem_get_z_by_cell(size_t cx, size_t cy, double& z_out) const
 {
-  const TRandomFieldCell* cell = cellByIndex(cx, cy);
+  const TRandomFieldCell* cell =
+      cellByIndex(static_cast<unsigned int>(cx), static_cast<unsigned int>(cy));
   if (cell && cell->kf_mean())
   {
     z_out = cell->kf_mean();

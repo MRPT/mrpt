@@ -50,7 +50,7 @@ void fillSampleObs(
 
   for (unsigned int r = 10; r < 16; r++)
     for (unsigned int c = 10; c <= r; c++)
-      obs.rangeImage(r, c) = static_cast<uint16_t>(r / obs.rangeUnits);
+      obs.rangeImage(r, c) = static_cast<uint16_t>(static_cast<float>(r) / obs.rangeUnits);
 
   ri_2nd.fill(static_cast<uint16_t>(SECOND_LAYER_CONSTANT_RANGE / obs.rangeUnits));
 
@@ -133,8 +133,8 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMaxAllBetween)
   for (int r = 10; r < 16; r++)
     for (int c = 10; c < 16; c++)
     {
-      fMin(r, c) = r - 0.1f;  // All points actually lie in between
-      fMax(r, c) = r + 0.1f;
+      fMin(r, c) = static_cast<float>(r) - 0.1f;  // All points actually lie in between
+      fMax(r, c) = static_cast<float>(r) + 0.1f;
     }
 
   mrpt::obs::T3DPointsProjectionParams pp;
@@ -162,8 +162,8 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMaxNoneBetween)
   for (int r = 10; r < 16; r++)
     for (int c = 10; c < 16; c++)
     {
-      fMin(r, c) = r + 1.1f;  // No point lies in between
-      fMax(r, c) = r + 1.2f;
+      fMin(r, c) = static_cast<float>(r) + 1.1f;  // No point lies in between
+      fMax(r, c) = static_cast<float>(r) + 1.2f;
     }
 
   mrpt::obs::T3DPointsProjectionParams pp;

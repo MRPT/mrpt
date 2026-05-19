@@ -275,7 +275,10 @@ void CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
     [[maybe_unused]] const mrpt::config::CConfigFileBase& iniFile,
     [[maybe_unused]] const std::string& section)
 {
-  MRPT_LOAD_CONFIG_VAR(channel, int, iniFile, section);
+  {
+    int _tmp = iniFile.read_int(section, "channel", channel);
+    channel = static_cast<int16_t>(_tmp);
+  }
 }
 
 /*---------------------------------------------------------------
@@ -342,7 +345,9 @@ void CReflectivityGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) c
 
   viz::CTexturedPlane::Ptr outObj = std::make_shared<viz::CTexturedPlane>();
 
-  outObj->setPlaneCorners(m_x_min, m_x_max, m_y_min, m_y_max);
+  outObj->setPlaneCorners(
+      static_cast<float>(m_x_min), static_cast<float>(m_x_max), static_cast<float>(m_y_min),
+      static_cast<float>(m_y_max));
 
   // Create the color & transparecy (alpha) images:
   CImage imgColor(int(m_size_x), int(m_size_y), CH_GRAY);
@@ -361,8 +366,8 @@ void CReflectivityGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) c
       uint8_t cell255 = m_logodd_lut.l2p_255(*srcPtr++);
       *destPtr_color++ = cell255;
 
-      int8_t auxC = (int8_t)((signed short)cell255) - 128;
-      *destPtr_trans++ = auxC > 0 ? (auxC << 1) : ((-auxC) << 1);
+      int8_t auxC = static_cast<int8_t>(static_cast<int>(static_cast<signed short>(cell255)) - 128);
+      *destPtr_trans++ = static_cast<uint8_t>(auxC > 0 ? (auxC << 1) : ((-auxC) << 1));
     }
   }
 

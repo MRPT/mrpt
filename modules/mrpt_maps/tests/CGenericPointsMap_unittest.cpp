@@ -45,7 +45,7 @@ static CGenericPointsMap makeTestMap()
     m.setPointField_float(i, "t", float(i) * 0.001f);
     m.setPointField_uint16(i, "ring", static_cast<uint16_t>(i + 1));
     m.setPointField_uint8(i, "color_r", static_cast<uint8_t>(i * 50));
-    m.setPointField_double(i, "gps_time", 1000.0 + i);
+    m.setPointField_double(i, "gps_time", 1000.0 + static_cast<double>(i));
   }
   return m;
 }
@@ -74,7 +74,7 @@ TEST(CGenericPointsMap, FieldKeysValidAfterCreatingThreadExits)
           m->setPointField_float(i, "intensity", float(i) + 0.1f);
           m->setPointField_uint16(i, "ring", uint16_t(i));
           m->setPointField_uint8(i, "label", uint8_t(i + 10));
-          m->setPointField_double(i, "gps_time", 100.0 + i);
+          m->setPointField_double(i, "gps_time", 100.0 + static_cast<double>(i));
         }
         mapPtr = std::move(m);
       });

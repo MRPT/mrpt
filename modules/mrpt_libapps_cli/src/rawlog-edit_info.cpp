@@ -163,7 +163,7 @@ DECLARE_OP_FUNCTION(op_info)
     }
     std::cout << "Sensor (Label/Occurs/Rate/Durat.) : "
               << mrpt::format(
-                     "%15s /%7u /%7.03f /%6.03f  (%s)\n", label.c_str(), (unsigned)ips.occurrences,
-                     Hz, dur, ips.className.c_str());
+                     "%15s /%7u /%7.03f /%6.03f  (%s)\n", label.c_str(),
+                     static_cast<unsigned>(ips.occurrences), Hz, dur, ips.className.c_str());
   }
 }

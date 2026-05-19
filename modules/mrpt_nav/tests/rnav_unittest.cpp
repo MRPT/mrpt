@@ -54,7 +54,8 @@ void run_rnav_test_impl(
   // obstacle:
   mrpt::maps::COccupancyGridMap2D grid;
   grid.setSize(
-      world_topleft.x, world_rightbottom.x, world_rightbottom.y, world_topleft.y,
+      static_cast<float>(world_topleft.x), static_cast<float>(world_rightbottom.x),
+      static_cast<float>(world_rightbottom.y), static_cast<float>(world_topleft.y),
       0.10f /*resolution*/);
   grid.fill(0.9f);
 
@@ -97,7 +98,7 @@ void run_rnav_test_impl(
       const auto curPose = ps ? ps->pose : mrpt::math::TPose2D();
 
       mrpt::obs::CObservation2DRangeScan scan;
-      scan.aperture = mrpt::DEG2RAD(270.0);
+      scan.aperture = static_cast<float>(mrpt::DEG2RAD(270.0));
       scan.maxRange = 20.0;
       scan.sensorPose.z(0.4);  // height of the lidar (important! it must
       // intersect with the robot height)
@@ -167,7 +168,7 @@ void run_rnav_test_impl(
     EXPECT_TRUE(rnav.getCurrentState() != CAbstractNavigator::TState::NAV_ERROR);
     if (rnav.getCurrentState() == CAbstractNavigator::TState::IDLE) break;
 
-    robot_simul.simulateOneTimeStep(simulTimeStep.count() * 1e-3 /*sec*/);
+    robot_simul.simulateOneTimeStep(static_cast<double>(simulTimeStep.count()) * 1e-3 /*sec*/);
 
     // advance simulated time:
     mrpt::Clock::setSimulatedTime(mrpt::Clock::now() + simulTimeStep);

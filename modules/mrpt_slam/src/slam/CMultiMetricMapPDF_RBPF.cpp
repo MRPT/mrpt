@@ -341,8 +341,8 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
       if (i == particleWithHighestW)
       {
-        newInfoIndex = 1 - icpInfo.goodness;  // newStaticPointsRatio;
-                                              // //* icpInfo.goodness;
+        newInfoIndex = static_cast<float>(1 - icpInfo.goodness);  // newStaticPointsRatio;
+                                                                  // //* icpInfo.goodness;
       }
 
       // Set the gaussian pose:
@@ -353,8 +353,8 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
       if (icpInfo.goodness < options.ICPGlobalAlign_MinQuality && SFs.size())
       {
         MRPT_LOG_WARN_FMT(
-            "gridICP[particle %u]: %.02f%% -> Using odometry instead!", (unsigned int)i,
-            100 * icpInfo.goodness);
+            "gridICP[particle %u]: %.02f%% -> Using odometry instead!",
+            static_cast<unsigned int>(i), 100 * icpInfo.goodness);
         icpEstimation.mean = CPose2D(initialPoseEstimation);
       }
 
@@ -402,7 +402,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
       if (!robotActionSampler.isPrepared())
       {
-        firstEstimateRobotHeading = ith_last_pose.yaw();
+        firstEstimateRobotHeading = static_cast<float>(ith_last_pose.yaw());
         // If the map is empty: There is no solution!:
         // THROW_EXCEPTION("There is no odometry & the initial beacon
         // map is empty: RO-SLAM has no solution -> ABORTED!!!");
@@ -502,7 +502,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
           CPose3D auxPose =
               ith_last_pose +
               motionModelMeanIncr;  // CPose3D(robotMovement->poseChange->getEstimatedPose()));
-          firstEstimateRobotHeading = auxPose.yaw();
+          firstEstimateRobotHeading = static_cast<float>(auxPose.yaw());
 
           newMode.val.mean = CPoint3D(auxPose);
 
@@ -623,10 +623,10 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
         //         GRID METHOD
         // =============================
 
-        float grid_min_x = ith_last_pose.x() - 0.5f;
-        float grid_max_x = ith_last_pose.x() + 0.5f;
-        float grid_min_y = ith_last_pose.y() - 0.5f;
-        float grid_max_y = ith_last_pose.y() + 0.5f;
+        float grid_min_x = static_cast<float>(ith_last_pose.x()) - 0.5f;
+        float grid_max_x = static_cast<float>(ith_last_pose.x()) + 0.5f;
+        float grid_min_y = static_cast<float>(ith_last_pose.y()) - 0.5f;
+        float grid_max_y = static_cast<float>(ith_last_pose.y()) + 0.5f;
         float grid_resXY = 0.02f;
 
         bool repeatGridCalculation = false;
@@ -667,7 +667,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
                 / **/
                 for (size_t idxX = 0; idxX < pdfGrid->getSizeX(); idxX++)
                 {
-                  float grid_x = pdfGrid->idx2x(idxX);
+                  float grid_x = static_cast<float>(pdfGrid->idx2x(idxX));
                   for (size_t idxY = 0; idxY < pdfGrid->getSizeY(); idxY++)
                   {
                     double grid_y = pdfGrid->idx2y(idxY);
@@ -729,8 +729,8 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
                 if (c > maxW)
                 {
                   maxW = c;
-                  maxX = pdfGrid->idx2x(idxX);
-                  maxY = pdfGrid->idx2y(idxY);
+                  maxX = static_cast<float>(pdfGrid->idx2x(idxX));
+                  maxY = static_cast<float>(pdfGrid->idx2y(idxY));
                 }
               }
             }

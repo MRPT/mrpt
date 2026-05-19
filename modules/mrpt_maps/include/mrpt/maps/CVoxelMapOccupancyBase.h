@@ -710,7 +710,8 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateCachedProperties()
 
     if (occFreeness < freenessThreshold)
     {
-      m_cachedOccupied->insertPointFast(pt.x, pt.y, pt.z);
+      m_cachedOccupied->insertPointFast(
+          static_cast<float>(pt.x), static_cast<float>(pt.y), static_cast<float>(pt.z));
     }
   };  // end lambda for each voxel
 

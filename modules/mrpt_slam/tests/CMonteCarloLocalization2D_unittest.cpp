@@ -137,7 +137,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
   // --------------------------
   // Load the rawlog:
   // --------------------------
-  rawlog.loadFromRawLogFile(RAWLOG_FILE);
+  std::ignore = rawlog.loadFromRawLogFile(RAWLOG_FILE);
   rawlogEntries = rawlog.size();
 
   for (int PARTICLE_COUNT : particles_count)

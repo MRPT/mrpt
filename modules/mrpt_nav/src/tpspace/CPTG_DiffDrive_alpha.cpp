@@ -90,11 +90,11 @@ void CPTG_DiffDrive_alpha::ptgDiffDriveSteeringFunction(
     float& v,
     float& w) const
 {
-  const float correctedPhi = sign(K) * phi;
+  const float correctedPhi = static_cast<float>(sign(K)) * phi;
   float At_a = mrpt::math::wrapToPi(alpha - correctedPhi);
 
-  v = sign(K) * V_MAX * exp(-square(At_a / cte_a0v));
-  w = sign(K) * W_MAX * (-0.5f + (1 / (1 + exp(-At_a / cte_a0w))));
+  v = static_cast<float>(sign(K) * V_MAX * exp(-square(At_a / cte_a0v)));
+  w = static_cast<float>(sign(K) * W_MAX * (-0.5f + (1 / (1 + exp(-At_a / cte_a0w)))));
 }
 
 void CPTG_DiffDrive_alpha::loadDefaultParams()

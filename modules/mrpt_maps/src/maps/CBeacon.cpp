@@ -512,7 +512,7 @@ void CBeacon::generateRingSOG(
 
   for (idxEl = 0; idxEl <= (1 + B / 2); idxEl++)
   {
-    el = minEl + idxEl * A_ang;
+    el = minEl + static_cast<double>(idxEl) * A_ang;
     if (el > (maxEl + 0.5 * A_ang)) continue;
 
     size_t nThSteps = B;
@@ -524,7 +524,7 @@ void CBeacon::generateRingSOG(
 
     for (idxTh = 0; idxTh < nThSteps; idxTh++)
     {
-      th = idxTh * A_ang;
+      th = static_cast<double>(idxTh) * A_ang;
 
       // Compute the mean of the new Gaussian:
       dir.x((sensorPnt.x() + R * cos(th) * cos(el)));

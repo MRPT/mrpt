@@ -231,13 +231,13 @@ void CRangeBearingKFSLAM::processActionObservation(
 
       for (size_t i = 0; i < m_SFs.size(); i++)
       {
-        tmpCluster.push_back(i);
+        tmpCluster.push_back(static_cast<uint32_t>(i));
         if ((i % N) == 0)
         {
           partitions.push_back(tmpCluster);
           tmpCluster.clear();
-          tmpCluster.push_back(i);  // This observation "i" is shared
-                                    // between both clusters
+          tmpCluster.push_back(static_cast<uint32_t>(i));  // This observation "i" is shared
+                                                           // between both clusters
         }
       }
       m_lastPartitionSet = partitions;
@@ -547,7 +547,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
     const vector_KFArray_OBS& all_predictions,
     const KFMatrix& S,
     const std::vector<size_t>& lm_indices_in_S,
-    const KFMatrix_OxO& R)
+    const KFMatrix_OxO& /*R*/)
 {
   MRPT_START
 
@@ -666,7 +666,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
       // Return pairings to the main KF algorithm:
       for (auto it = m_last_data_association.results.associations.begin();
            it != m_last_data_association.results.associations.end(); ++it)
-        data_association[it->first] = it->second;
+        data_association[it->first] = static_cast<int>(it->second);
     }
   }
   // ---- End of data association ----
@@ -899,12 +899,13 @@ void CRangeBearingKFSLAM::OnNewLandmarkAddedToMap(size_t in_obsIdx, size_t in_id
   if (obs->sensedData[in_obsIdx].landmarkID >= 0)
   {
     // The sensor provides us a LM ID... use it:
-    m_IDs.insert(obs->sensedData[in_obsIdx].landmarkID, in_idxNewFeat);
+    m_IDs.insert(obs->sensedData[in_obsIdx].landmarkID, static_cast<unsigned int>(in_idxNewFeat));
   }
   else
   {
     // Features do not have IDs... use indices:
-    m_IDs.insert(in_idxNewFeat, in_idxNewFeat);
+    m_IDs.insert(
+        static_cast<unsigned int>(in_idxNewFeat), static_cast<unsigned int>(in_idxNewFeat));
   }
 
   MRPT_END
@@ -1030,12 +1031,13 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarksAsIfFixedSubmaps(
 
   for (size_t i = 0; i < m_SFs.size(); i++)
   {
-    tmpCluster.push_back(i);
+    tmpCluster.push_back(static_cast<uint32_t>(i));
     if ((i % K) == 0)
     {
       partitions.push_back(tmpCluster);
       tmpCluster.clear();
-      tmpCluster.push_back(i);  // This observation "i" is shared between both clusters
+      tmpCluster.push_back(
+          static_cast<uint32_t>(i));  // This observation "i" is shared between both clusters
     }
   }
   m_lastPartitionSet = partitions;
@@ -1073,7 +1075,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
       {
         // Check if landmark #i is in the SF of
         // m_lastPartitionSet[p][w]:
-        CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(i);
+        CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(static_cast<unsigned int>(i));
 
         // Look for the lm_ID in the SF:
         const auto& [pose_i, SF_i, twist_t] = SFs->get(m_lastPartitionSet[p][w]);
@@ -1084,7 +1086,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
         {
           if (o.landmarkID == i_th_ID)
           {
-            belongToPartition[p] = true;
+            belongToPartition[static_cast<int>(p)] = true;
             break;
           }
         }  // end for o
@@ -1117,7 +1119,7 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
   H.array().abs();  // Replace by absolute values:
 
   double sumOffBlocks = 0;
-  unsigned int nLMs = landmarksMembership.size();
+  unsigned int nLMs = static_cast<unsigned int>(landmarksMembership.size());
 
   ASSERT_(int(get_vehicle_size() + nLMs * get_feature_size()) == fullCov.cols());
 

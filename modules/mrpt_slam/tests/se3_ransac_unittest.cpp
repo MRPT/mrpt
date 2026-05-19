@@ -68,8 +68,9 @@ bool ransac_data_assoc_run()
   for (size_t i = 0; i < NUM_MAP_FEATS; i++)
   {
     the_map.setPoint(
-        i, getRandomGenerator().drawUniform(0, MAP_SIZE_X),
-        getRandomGenerator().drawUniform(0, MAP_SIZE_Y));
+        static_cast<uint32_t>(i),
+        static_cast<float>(getRandomGenerator().drawUniform(0, MAP_SIZE_X)),
+        static_cast<float>(getRandomGenerator().drawUniform(0, MAP_SIZE_Y)));
   }
   const size_t nMapPts = the_map.size();
   const size_t nObs = NUM_OBSERVATIONS_TO_SIMUL;
@@ -86,7 +87,8 @@ bool ransac_data_assoc_run()
   const mrpt::poses::CPose2D GT_pose_inv = -GT_pose;
 
   std::vector<nanoflann::ResultItem<size_t, float>> idxs;
-  the_map.kdTreeRadiusSearch2D(GT_pose.x(), GT_pose.y(), 1000, idxs);
+  the_map.kdTreeRadiusSearch2D(
+      static_cast<float>(GT_pose.x()), static_cast<float>(GT_pose.y()), 1000, idxs);
   ASSERT_(idxs.size() >= nObs);
 
   for (size_t i = 0; i < nObs; i++)
@@ -113,13 +115,13 @@ bool ransac_data_assoc_run()
   for (size_t j = 0; j < nObs; j++)
   {
     TMatchingPair match;
-    match.localIdx = j;
-    match.local.x = observations[j].x;
-    match.local.y = observations[j].y;
+    match.localIdx = static_cast<uint32_t>(j);
+    match.local.x = static_cast<float>(observations[j].x);
+    match.local.y = static_cast<float>(observations[j].y);
 
     for (size_t i = 0; i < nMapPts; i++)
     {
-      match.globalIdx = i;
+      match.globalIdx = static_cast<uint32_t>(i);
       the_map.getPoint(i, match.global.x, match.global.y);
       all_correspondences.push_back(match);
     }
@@ -134,8 +136,8 @@ bool ransac_data_assoc_run()
   params.ransac_minSetSize = RANSAC_MINIMUM_INLIERS;  // ransac_minSetSize (to
   // add the solution to
   // the SOG)
-  params.ransac_maxSetSize =
-      all_correspondences.size();  // ransac_maxSetSize: Test with all data points
+  params.ransac_maxSetSize = static_cast<unsigned int>(
+      all_correspondences.size());  // ransac_maxSetSize: Test with all data points
   params.ransac_mahalanobisDistanceThreshold = ransac_mahalanobisDistanceThreshold;
   params.ransac_nSimulations = 0;  // 0=auto
   params.ransac_fuseByCorrsMatch = true;

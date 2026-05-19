@@ -59,10 +59,12 @@ void CPTG_RobotShape_Circular::static_add_robotShape_to_setOfLines(
   }
   // Draw a "radius" to identify the "forward" orientation (phi=0)
   gl_shape.appendLine(origin.x(), origin.y(), .0, shap_x[0], shap_y[0], shap_z[0]);
-  for (unsigned int i = 1; i <= shap_x.size(); i++)
+  for (unsigned int i = 1; i <= static_cast<unsigned int>(shap_x.size()); i++)
   {
-    const unsigned int idx = i % shap_x.size();
-    gl_shape.appendLineStrip(shap_x[idx], shap_y[idx], shap_z[idx]);
+    const unsigned int idx = i % static_cast<unsigned int>(shap_x.size());
+    gl_shape.appendLineStrip(
+        static_cast<float>(shap_x[idx]), static_cast<float>(shap_y[idx]),
+        static_cast<float>(shap_z[idx]));
   }
   // Draw a "cross" to identify the robot center
   gl_shape.appendLine(origin.x() - R * 0.02, origin.y(), .0, origin.x() + R * 0.02, origin.y(), .0);

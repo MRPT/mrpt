@@ -75,17 +75,28 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 }
 
 bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const { return false; }
-double CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(int path_k) const { return .0; }
+double CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(int /*path_k*/) const { return .0; }
 
 void CParameterizedTrajectoryGenerator::loadFromConfigFile(
     const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 {
-  MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(num_paths, uint64_t, m_alphaValuesCount, cfg, sSection);
+  {
+    uint64_t _tmp;
+    MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(num_paths, uint64_t, _tmp, cfg, sSection);
+    m_alphaValuesCount = static_cast<uint16_t>(_tmp);
+  }
   MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(refDistance, double, cfg, sSection);
   MRPT_LOAD_HERE_CONFIG_VAR(score_priority, double, m_score_priority, cfg, sSection);
-  MRPT_LOAD_HERE_CONFIG_VAR(clearance_num_points, double, m_clearance_num_points, cfg, sSection);
-  MRPT_LOAD_HERE_CONFIG_VAR(
-      clearance_decimated_paths, double, m_clearance_decimated_paths, cfg, sSection);
+  {
+    double _tmp = m_clearance_num_points;
+    MRPT_LOAD_HERE_CONFIG_VAR(clearance_num_points, double, _tmp, cfg, sSection);
+    m_clearance_num_points = static_cast<uint16_t>(_tmp);
+  }
+  {
+    double _tmp = m_clearance_decimated_paths;
+    MRPT_LOAD_HERE_CONFIG_VAR(clearance_decimated_paths, double, _tmp, cfg, sSection);
+    m_clearance_decimated_paths = static_cast<uint16_t>(_tmp);
+  }
 
   // Ensure a minimum of resolution:
   mrpt::keep_max(
@@ -239,7 +250,8 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
   double last_added_dist = 0.0;
   for (size_t n = 0; n < nPointsInPath; n++)
   {
-    const double d = this->getPathDist(k, n);  // distance thru path "k" until timestep "n"
+    const double d = this->getPathDist(
+        k, static_cast<uint32_t>(n));  // distance thru path "k" until timestep "n"
 
     // Draw the TP only until we reach the target of the "motion" segment:
     if (max_path_distance >= 0.0 && d >= max_path_distance) break;
@@ -248,7 +260,7 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 
     last_added_dist = d;
 
-    const mrpt::math::TPose2D p = this->getPathPose(k, n);
+    const mrpt::math::TPose2D p = this->getPathPose(k, static_cast<uint32_t>(n));
 
     if (first)
     {
@@ -263,7 +275,8 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 void CParameterizedTrajectoryGenerator::initTPObstacles(std::vector<double>& TP_Obstacles) const
 {
   TP_Obstacles.resize(m_alphaValuesCount);
-  for (size_t k = 0; k < m_alphaValuesCount; k++) initTPObstacleSingle(k, TP_Obstacles[k]);
+  for (size_t k = 0; k < m_alphaValuesCount; k++)
+    initTPObstacleSingle(static_cast<uint16_t>(k), TP_Obstacles[k]);
 }
 void CParameterizedTrajectoryGenerator::initTPObstacleSingle(
     [[maybe_unused]] uint16_t k, double& TP_Obstacle_k) const
@@ -337,11 +350,12 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles(const std::string& ptg_
     for (size_t n = 0; n < maxPoints; n++)
     {
       const size_t nn = std::min(n, path_length[k] - 1);
-      const mrpt::math::TPose2D p = this->getPathPose(k, nn);
+      const mrpt::math::TPose2D p =
+          this->getPathPose(static_cast<uint16_t>(k), static_cast<uint32_t>(nn));
       fx << p.x << " ";
       fy << p.y << " ";
       fp << p.phi << " ";
-      fd << this->getPathDist(k, nn) << " ";
+      fd << this->getPathDist(static_cast<uint16_t>(k), static_cast<uint32_t>(nn)) << " ";
     }
     fx << "\n";
     fy << "\n";
@@ -382,7 +396,7 @@ void CParameterizedTrajectoryGenerator::updateNavDynamicState(
         if (target_norm_d > 0.01 && target_norm_d < 0.99 && target_k >= 0 &&
             target_k < m_alphaValuesCount)
         {
-          m_nav_dyn_state_target_k = target_k;
+          m_nav_dyn_state_target_k = static_cast<uint16_t>(target_k);
           this->onNewNavDynamicState();  // Recalc
         }
       }
@@ -466,14 +480,15 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(Clearanc
   {
     const auto real_k = cd.decimated_k_to_real_k(decim_k);
     const size_t numPathSteps = getPathStepCount(real_k);
-    const double numStepsPerIncr = (numPathSteps - 1.0) / double(m_clearance_num_points);
+    const double numStepsPerIncr =
+        (static_cast<double>(numPathSteps) - 1.0) / double(m_clearance_num_points);
 
     auto& cl_path = cd.get_path_clearance_decimated(decim_k);
-    for (double step_pointer_dbl = 0.0; step_pointer_dbl < numPathSteps;
+    for (double step_pointer_dbl = 0.0; step_pointer_dbl < static_cast<double>(numPathSteps);
          step_pointer_dbl += numStepsPerIncr)
     {
-      const size_t step = mrpt::round(step_pointer_dbl);
-      const double dist_over_path = this->getPathDist(real_k, step);
+      const size_t step = static_cast<size_t>(mrpt::round(step_pointer_dbl));
+      const double dist_over_path = this->getPathDist(real_k, static_cast<uint32_t>(step));
       cl_path[dist_over_path] = 1.0;  // create entry in map<>
     }
   }
@@ -496,7 +511,7 @@ void CParameterizedTrajectoryGenerator::updateClearance(
 }
 
 void CParameterizedTrajectoryGenerator::updateClearancePost(
-    ClearanceDiagram& cd, const std::vector<double>& TP_obstacles) const
+    ClearanceDiagram& /*cd*/, const std::vector<double>& /*TP_obstacles*/) const
 {
   // Used only when in approx mode (Removed 30/01/2017)
 }
@@ -522,7 +537,8 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
     return;
   }
 
-  const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size());
+  const double numStepsPerIncr = (static_cast<double>(numPathSteps) - 1.0) /
+                                 static_cast<double>(inout_realdist2clearance.size());
 
   double step_pointer_dbl = 0.0;
   const mrpt::math::TPoint2D og(ox, oy);  // obstacle in "global" frame
@@ -531,7 +547,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
   for (auto& e : inout_realdist2clearance)
   {
     step_pointer_dbl += numStepsPerIncr;
-    const size_t step = mrpt::round(step_pointer_dbl);
+    const size_t step = static_cast<size_t>(mrpt::round(step_pointer_dbl));
     const double dist_over_path = e.first;
     double& inout_clearance = e.second;
 
@@ -544,7 +560,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
       continue;
     }
 
-    const mrpt::math::TPose2D pose = getPathPose(k, step);
+    const mrpt::math::TPose2D pose = getPathPose(k, static_cast<uint32_t>(step));
 
     // obstacle to robot clearance:
     ol = pose.inverseComposePoint(og);

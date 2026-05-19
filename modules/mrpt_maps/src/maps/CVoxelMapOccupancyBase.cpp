@@ -26,7 +26,10 @@ void TVoxelMap_InsertionOptions::loadFromConfigFile(
   MRPT_LOAD_CONFIG_VAR(clamp_min, double, c, s);
   MRPT_LOAD_CONFIG_VAR(clamp_max, double, c, s);
   MRPT_LOAD_CONFIG_VAR(ray_trace_free_space, bool, c, s);
-  MRPT_LOAD_CONFIG_VAR(decimation, uint64_t, c, s);
+  {
+    int _tmp = c.read_int(s, "decimation", static_cast<int>(decimation));
+    decimation = static_cast<uint32_t>(_tmp);
+  }
   MRPT_LOAD_CONFIG_VAR(remove_voxels_farther_than, double, c, s);
 }
 void TVoxelMap_InsertionOptions::saveToConfigFile(

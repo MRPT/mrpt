@@ -251,7 +251,7 @@ void mrpt::slam::path_from_rtk_gps(
   // ------------------------------------------
   // Look for the 2 observations:
   // ------------------------------------------
-  int N_GPSs = list_gps_obs.size();
+  int N_GPSs = static_cast<int>(list_gps_obs.size());
 
   if (N_GPSs)
   {

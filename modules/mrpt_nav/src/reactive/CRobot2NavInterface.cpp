@@ -29,7 +29,7 @@ bool CRobot2NavInterface::changeSpeedsNOP()
 }
 
 mrpt::kinematics::CVehicleVelCmd::Ptr CRobot2NavInterface::getAlignCmd(
-    const double relative_heading_radians)
+    const double /*relative_heading_radians*/)
 {
   return mrpt::kinematics::CVehicleVelCmd::Ptr();
 }
@@ -40,7 +40,7 @@ bool CRobot2NavInterface::startWatchdog(float T_ms)
   MRPT_LOG_INFO_FMT(
       "[startWatchdog] Period=%.03f ms. Doing nothing: not implemented in "
       "user's derived class.",
-      T_ms);
+      static_cast<double>(T_ms));
   return true;
 }
 

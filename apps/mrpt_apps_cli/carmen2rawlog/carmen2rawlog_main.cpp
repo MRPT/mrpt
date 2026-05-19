@@ -172,7 +172,7 @@ int main(int argc, char** argv)
         const std::streampos curPos = input_stream.tellg();
         const double progress_ratio = double(curPos) / double(totalInFileSize);
         static const int nBlocksTotal = 50;
-        const int nBlocks = progress_ratio * nBlocksTotal;
+        const int nBlocks = static_cast<int>(progress_ratio * nBlocksTotal);
         std::cout << "\rProgress: [" << string(nBlocks, '#') << string(nBlocksTotal - nBlocks, ' ')
                   << mrpt::format("] %6.02f%% (%u objects)", progress_ratio * 100, nSavedObs);
         cout.flush();

@@ -109,6 +109,10 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("name"), py::arg("defValue"), py::arg("failIfNotFound") = false,
           "Reads a 64-bit unsigned integer value with an optional default value.")
       .def(
+          "read_uint32_t", &mrpt::config::CConfigFileBase::read_uint32_t, py::arg("section"),
+          py::arg("name"), py::arg("defValue"), py::arg("failIfNotFound") = false,
+          "Reads a 32-bit unsigned integer value with an optional default value.")
+      .def(
           "read_string", &mrpt::config::CConfigFileBase::read_string, py::arg("section"),
           py::arg("name"), py::arg("defValue") = "", py::arg("failIfNotFound") = false,
           "Reads a string value with an optional default value.")

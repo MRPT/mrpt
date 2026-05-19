@@ -233,7 +233,7 @@ double COctoMapBase<OCTREE, OCTREE_NODE>::internal_computeObservationLikelihood(
   double log_lik = 0;
   for (size_t i = 0; i < N; i += static_cast<size_t>(likelihoodOptions.decimation))
   {
-    if (m_impl->m_octomap.coordToKeyChecked(scan.getPoint(i), key))
+    if (m_impl->m_octomap.coordToKeyChecked(scan.getPoint(static_cast<unsigned int>(i)), key))
     {
       OCTREE_NODE* node = m_impl->m_octomap.search(key, 0 /*depth*/);
       if (node) log_lik += std::log(node->getOccupancy());

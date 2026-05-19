@@ -74,15 +74,23 @@ void VisualizationParameters::load_from_ini_file(
   MRPT_LOAD_CONFIG_VAR_CS(showPointsIn2Dscans, bool);
   MRPT_LOAD_CONFIG_VAR_CS(onlyPointsWithColor, bool);
 
-  MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.R, int);
-  MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.G, int);
-  MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.B, int);
-  MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.A, int);
+  surface2DscansColor.R =
+      static_cast<uint8_t>(c.read_int(s, "surface2DscansColor.R", surface2DscansColor.R));
+  surface2DscansColor.G =
+      static_cast<uint8_t>(c.read_int(s, "surface2DscansColor.G", surface2DscansColor.G));
+  surface2DscansColor.B =
+      static_cast<uint8_t>(c.read_int(s, "surface2DscansColor.B", surface2DscansColor.B));
+  surface2DscansColor.A =
+      static_cast<uint8_t>(c.read_int(s, "surface2DscansColor.A", surface2DscansColor.A));
 
-  MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.R, int);
-  MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.G, int);
-  MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.B, int);
-  MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.A, int);
+  points2DscansColor.R =
+      static_cast<uint8_t>(c.read_int(s, "points2DscansColor.R", points2DscansColor.R));
+  points2DscansColor.G =
+      static_cast<uint8_t>(c.read_int(s, "points2DscansColor.G", points2DscansColor.G));
+  points2DscansColor.B =
+      static_cast<uint8_t>(c.read_int(s, "points2DscansColor.B", points2DscansColor.B));
+  points2DscansColor.A =
+      static_cast<uint8_t>(c.read_int(s, "points2DscansColor.A", points2DscansColor.A));
 
   coloring.load_from_ini_file(cfg, section);
 }
@@ -165,8 +173,8 @@ std::pair<float, float> histogramPercentileLimits(
     hist[std::clamp(bin, 0, BINS - 1)]++;
   }
 
-  const auto lo_count = static_cast<uint64_t>(lo_frac * n);
-  const auto hi_count = static_cast<uint64_t>(hi_frac * n);
+  const auto lo_count = static_cast<uint64_t>(lo_frac * static_cast<float>(n));
+  const auto hi_count = static_cast<uint64_t>(hi_frac * static_cast<float>(n));
 
   float trimmedMin = rawMin, trimmedMax = rawMax;
 
@@ -177,7 +185,7 @@ std::pair<float, float> histogramPercentileLimits(
     acc += hist[b];
     if (acc >= lo_count)
     {
-      trimmedMin = rawMin + (b / scale);
+      trimmedMin = rawMin + (static_cast<float>(b) / scale);
       break;
     }
   }
@@ -189,7 +197,7 @@ std::pair<float, float> histogramPercentileLimits(
     acc += hist[b];
     if (acc >= hi_count)
     {
-      trimmedMax = rawMin + (b / scale);
+      trimmedMax = rawMin + (static_cast<float>(b) / scale);
       break;
     }
   }
@@ -420,7 +428,7 @@ void mrpt::obs::recolorize3Dpc(
     }();
 
     const auto rgb = mrpt::img::colormap(p.colorMap, col_idx);
-    pnts->setPointColor_u8_fast(i, rgb.R, rgb.G, rgb.B);
+    pnts->setPointColor_u8_fast(i, mrpt::f2u8(rgb.R), mrpt::f2u8(rgb.G), mrpt::f2u8(rgb.B));
   }
 }
 
@@ -431,9 +439,9 @@ void add_common_to_viz(
 {
   if (p.showAxis)
   {
-    const float L = p.axisLimits;
+    const float L = static_cast<float>(p.axisLimits);
     auto gl_axis = mrpt::viz::CAxis::Create(-L, -L, -L, L, L, L, p.axisTickFrequency, 2, true);
-    gl_axis->setTextScale(p.axisTickTextSize);
+    gl_axis->setTextScale(static_cast<float>(p.axisTickTextSize));
     gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
     out.insert(gl_axis);
 
@@ -451,7 +459,8 @@ void add_common_to_viz(
 
   if (p.drawSensorPose)
   {
-    const auto glCorner = mrpt::viz::stock_objects::CornerXYZSimple(p.sensorPoseScale);
+    const auto glCorner =
+        mrpt::viz::stock_objects::CornerXYZSimple(static_cast<float>(p.sensorPoseScale));
     glCorner->setPose(obs.sensorPose());
     out.insert(glCorner);
   }
@@ -503,7 +512,7 @@ void mrpt::obs::obs3Dscan_to_viz(
 
   // No need to further transform 3D points
   gl_pnts->setPose(mrpt::poses::CPose3D());
-  gl_pnts->setPointSize(p.pointSize);
+  gl_pnts->setPointSize(static_cast<float>(p.pointSize));
 
   out.insert(gl_pnts);
 }
@@ -523,7 +532,7 @@ void mrpt::obs::obsVelodyne_to_viz(
   mrpt::maps::CGenericPointsMap pntsMap;
   pntsMap.loadFromVelodyneScan(*obs);
   pnts->loadFromPointsMap(&pntsMap);
-  pnts->setPointSize(p.pointSize);
+  pnts->setPointSize(static_cast<float>(p.pointSize));
 
   if (!p.colorFromRGBimage)
   {
@@ -546,7 +555,7 @@ void mrpt::obs::obsPointCloud_to_viz(
   if (obs->pointcloud) pnts->loadFromPointsMap(obs->pointcloud.get());
   pnts->setPose(obs->sensorPose);
 
-  pnts->setPointSize(p.pointSize);
+  pnts->setPointSize(static_cast<float>(p.pointSize));
 
   if (!p.colorFromRGBimage)
   {
@@ -572,7 +581,7 @@ void mrpt::obs::obsRotatingScan_to_viz(
   }
   pnts->setPose(obs->sensorPose);
 
-  pnts->setPointSize(p.pointSize);
+  pnts->setPointSize(static_cast<float>(p.pointSize));
 
   if (!p.colorFromRGBimage)
   {
@@ -593,7 +602,7 @@ void mrpt::obs::obs2Dscan_to_viz(
   out.insert(pnts);
 
   pnts->setScan(*obs);
-  pnts->setPointSize(p.pointSize);
+  pnts->setPointSize(static_cast<float>(p.pointSize));
   pnts->enableSurface(p.showSurfaceIn2Dscans);
   pnts->enablePoints(p.showPointsIn2Dscans);
 

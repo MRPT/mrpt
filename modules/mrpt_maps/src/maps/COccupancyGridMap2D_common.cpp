@@ -469,7 +469,7 @@ void COccupancyGridMap2D::subSample(int downRatio)
 
   ASSERT_(downRatio > 0);
 
-  m_resolution *= downRatio;
+  m_resolution *= static_cast<float>(downRatio);
 
   int newSizeX = static_cast<int>(round((m_xMax - m_xMin) / m_resolution));
   int newSizeY = static_cast<int>(round((m_yMax - m_yMin) / m_resolution));
@@ -486,7 +486,7 @@ void COccupancyGridMap2D::subSample(int downRatio)
         for (int yy = 0; yy < downRatio; yy++)
           newCell += getCell(x * downRatio + xx, y * downRatio + yy);
 
-      newCell /= (downRatio * downRatio);
+      newCell /= static_cast<float>(downRatio * downRatio);
 
       newMap[x + y * newSizeX] = p2l(newCell);
     }
@@ -551,7 +551,7 @@ void COccupancyGridMap2D::determineMatching2D(
   const auto& otherMap_pzs = otherMap->getPointsBufferRef_z();
 
   // Translate all local map points:
-  for (unsigned int localIdx = params.offset_other_map_points; localIdx < nLocalPoints;
+  for (size_t localIdx = params.offset_other_map_points; localIdx < nLocalPoints;
        localIdx += params.decimation_other_map_points)
   {
     // Girar y desplazar cada uno de los puntos del local map:
@@ -578,7 +578,7 @@ void COccupancyGridMap2D::determineMatching2D(
   const cellType thresholdCellValue = p2l(0.5f);
 
   // For each point in the other map:
-  for (unsigned int localIdx = params.offset_other_map_points; localIdx < nLocalPoints;
+  for (size_t localIdx = params.offset_other_map_points; localIdx < nLocalPoints;
        localIdx += params.decimation_other_map_points)
   {
     // Starting value:
@@ -618,10 +618,10 @@ void COccupancyGridMap2D::determineMatching2D(
           const float residual_y = idx2y(cy) - y_local;
 
           // Compute max. allowed distance:
-          maxDistForCorrespondenceSquared = square(
+          maxDistForCorrespondenceSquared = static_cast<float>(square(
               params.maxAngularDistForCorrespondence *
                   params.angularDistPivotPoint.distanceTo(TPoint3D(x_local, y_local, 0)) +
-              params.maxDistForCorrespondence);
+              params.maxDistForCorrespondence));
 
           // Square distance to the point:
           const float this_dist = square(residual_x) + square(residual_y);
@@ -686,8 +686,9 @@ void COccupancyGridMap2D::determineMatching2D(
 
   }  // End "for each local point"...
 
-  extraResults.correspondencesRatio = static_cast<float>(nOtherMapPointsWithCorrespondence) /
-                                      d2f(nLocalPoints / params.decimation_other_map_points);
+  extraResults.correspondencesRatio =
+      static_cast<float>(nOtherMapPointsWithCorrespondence) /
+      static_cast<float>(nLocalPoints / params.decimation_other_map_points);
   extraResults.sumSqrDist = _sumSqrDist;
 
   MRPT_END
@@ -719,8 +720,8 @@ float COccupancyGridMap2D::computePathCost(float x1, float y1, float x2, float y
 
   for (int i = 0; i < nSteps; i++)
   {
-    float x = x1 + (x2 - x1) * i / d2f(nSteps);
-    float y = y1 + (y2 - y1) * i / d2f(nSteps);
+    float x = x1 + (x2 - x1) * static_cast<float>(i) / static_cast<float>(nSteps);
+    float y = y1 + (y2 - y1) * static_cast<float>(i) / static_cast<float>(nSteps);
     sumCost += getPos(x, y);
   }
 
@@ -860,7 +861,7 @@ void COccupancyGridMap2D::nn_multiple_search(
     {
       const int cx = it->second.first;
       const int cy = it->second.second;
-      out_dists_sqr.push_back(it->first * resolutionSqr);
+      out_dists_sqr.push_back(static_cast<float>(it->first) * resolutionSqr);
       results.push_back({idx2x(cx), idx2y(cy)});
       resultIndicesOrIDs.push_back(cx + cy * m_size_x);
     }
@@ -914,7 +915,7 @@ void COccupancyGridMap2D::nn_radius_search(
       {
         return;
       }
-      out_dists_sqr.push_back(distSqr * resolutionSqr);
+      out_dists_sqr.push_back(static_cast<float>(distSqr) * resolutionSqr);
       results.push_back({idx2x(cx), idx2y(cy)});
       resultIndicesOrIDs.push_back(cx + cy * m_size_x);
     };

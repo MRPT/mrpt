@@ -81,26 +81,26 @@ void CPTG_DiffDrive_CS::ptgDiffDriveSteeringFunction(
     float& v,
     float& w) const
 {
-  const float T = 0.847f * std::sqrt(std::abs(alpha)) * R / V_MAX;
+  const float T = static_cast<float>(0.847f * std::sqrt(std::abs(alpha)) * R / V_MAX);
 
   if (t < T)
   {
     // l+
-    v = V_MAX;
-    w = W_MAX * min(1.0f, 1.0f - static_cast<float>(exp(-square(alpha))));
+    v = static_cast<float>(V_MAX);
+    w = static_cast<float>(W_MAX) * min(1.0f, 1.0f - static_cast<float>(exp(-square(alpha))));
   }
   else
   {
     // s+:
-    v = V_MAX;
+    v = static_cast<float>(V_MAX);
     w = 0;
   }
 
   // Turn in the opposite direction??
   if (alpha < 0) w *= -1;
 
-  v *= K;
-  w *= K;
+  v *= static_cast<float>(K);
+  w *= static_cast<float>(K);
 }
 
 bool CPTG_DiffDrive_CS::PTG_IsIntoDomain(double x, double y) const

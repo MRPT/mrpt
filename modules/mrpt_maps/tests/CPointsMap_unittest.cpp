@@ -309,7 +309,7 @@ TEST(CGenericPointsMap, CustomFieldsLifecycle)
   for (size_t i = 0; i < N; i++)
   {
     EXPECT_FLOAT_EQ(pts.getPointField_float(i, "pressure"), static_cast<float>(i * 10));
-    EXPECT_DOUBLE_EQ(pts.getPointField_double(i, "timestamp"), static_cast<double>(i * 1000.0));
+    EXPECT_DOUBLE_EQ(pts.getPointField_double(i, "timestamp"), static_cast<double>(i) * 1000.0);
     EXPECT_EQ(pts.getPointField_uint16(i, "class_id"), static_cast<uint16_t>(i + 1));
   }
 

@@ -509,7 +509,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
     const vector_KFArray_OBS& all_predictions,
     const KFMatrix& S,
     const std::vector<size_t>& lm_indices_in_S,
-    const KFMatrix_OxO& R)
+    const KFMatrix_OxO& /*R*/)
 {
   MRPT_START
 
@@ -670,7 +670,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
       // Return pairings to the main KF algorithm:
       for (auto it = m_last_data_association.results.associations.begin();
            it != m_last_data_association.results.associations.end(); ++it)
-        data_association[it->first] = it->second;
+        data_association[it->first] = static_cast<int>(it->second);
     }
   }
   // ---- End of data association ----
@@ -871,12 +871,13 @@ void CRangeBearingKFSLAM2D::OnNewLandmarkAddedToMap(size_t in_obsIdx, size_t in_
   if (obs->sensedData[in_obsIdx].landmarkID >= 0)
   {
     // The sensor provides us a LM ID... use it:
-    m_IDs.insert(obs->sensedData[in_obsIdx].landmarkID, in_idxNewFeat);
+    m_IDs.insert(obs->sensedData[in_obsIdx].landmarkID, static_cast<unsigned int>(in_idxNewFeat));
   }
   else
   {
     // Features do not have IDs... use indices:
-    m_IDs.insert(in_idxNewFeat, in_idxNewFeat);
+    m_IDs.insert(
+        static_cast<unsigned int>(in_idxNewFeat), static_cast<unsigned int>(in_idxNewFeat));
   }
 
   m_last_data_association.newly_inserted_landmarks[in_obsIdx] =

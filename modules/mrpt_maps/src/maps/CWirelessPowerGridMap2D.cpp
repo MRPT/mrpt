@@ -141,7 +141,7 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
     // Compute the 3D sensor pose in world coordinates:
     CPose2D sensorPose = CPose2D(robotPose3D + o.sensorPoseOnRobot);
 
-    sensorReading = o.power;
+    sensorReading = static_cast<float>(o.power);
 
     // Normalization:
     sensorReading = (sensorReading - insertionOptions.R_min) /
@@ -150,11 +150,13 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
     // Update the gross estimates of mean/vars for the whole reading history
     // (see IROS2009 paper):
     m_average_normreadings_mean =
-        (sensorReading + m_average_normreadings_count * m_average_normreadings_mean) /
-        (1 + m_average_normreadings_count);
-    m_average_normreadings_var = (square(sensorReading - m_average_normreadings_mean) +
-                                  m_average_normreadings_count * m_average_normreadings_var) /
-                                 (1 + m_average_normreadings_count);
+        (sensorReading +
+         static_cast<double>(m_average_normreadings_count) * m_average_normreadings_mean) /
+        (1 + static_cast<double>(m_average_normreadings_count));
+    m_average_normreadings_var =
+        (square(sensorReading - m_average_normreadings_mean) +
+         static_cast<double>(m_average_normreadings_count) * m_average_normreadings_var) /
+        (1 + static_cast<double>(m_average_normreadings_count));
     m_average_normreadings_count++;
 
     // Finally, do the actual map update with that value:

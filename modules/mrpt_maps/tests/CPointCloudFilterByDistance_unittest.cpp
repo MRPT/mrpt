@@ -40,14 +40,15 @@ void run_pc_filter_test(
       mrpt::system::timestampAdd(pts1_tim, 0.2 + map2_tim_off);
 
   mrpt::maps::CSimplePointsMap map1, map2;
-  for (const auto& i : pts1) map1.insertPoint(i[0], i[1], i[2]);
+  for (const auto& i : pts1)
+    map1.insertPoint(static_cast<float>(i[0]), static_cast<float>(i[1]), static_cast<float>(i[2]));
   for (size_t i = 0; i < sizeof(pts1) / sizeof(pts1[0]); i++)
   {
     double x, y, z;
     pts2_pose.inverseComposePoint(pts1[i][0], pts1[i][1], pts1[i][2], x, y, z);
     // Introduce optionally, 1 outlier:
     if (i == 1) x += map2_x_off;
-    map2.insertPoint(x, y, z);
+    map2.insertPoint(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
   }
 
   mrpt::maps::CPointCloudFilterByDistance pc_filter;

@@ -53,10 +53,10 @@ void CRejectionSamplingRangeOnlyLocalization::RS_drawFromProposal(CPose2D& outSa
 
   ASSERT_(m_drawIndex < m_dataPerBeacon.size());
 
-  float ang = getRandomGenerator().drawUniform(
-      m_dataPerBeacon[m_drawIndex].minAngle, m_dataPerBeacon[m_drawIndex].maxAngle);
-  float R = getRandomGenerator().drawGaussian1D(
-      m_dataPerBeacon[m_drawIndex].radiusAtRobotPlane, m_sigmaRanges);
+  float ang = static_cast<float>(getRandomGenerator().drawUniform(
+      m_dataPerBeacon[m_drawIndex].minAngle, m_dataPerBeacon[m_drawIndex].maxAngle));
+  float R = static_cast<float>(getRandomGenerator().drawGaussian1D(
+      m_dataPerBeacon[m_drawIndex].radiusAtRobotPlane, m_sigmaRanges));
 
   // This is the point where the SENSOR is:
   outSample.x(m_dataPerBeacon[m_drawIndex].beaconPosition.x + cos(ang) * R);
@@ -154,7 +154,8 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
       data.beaconPosition.y = lm->pose_mean.y;
 
       // First compute squared:
-      data.radiusAtRobotPlane = square(it->sensedDistance) - square(lm->pose_mean.z - robot_z);
+      data.radiusAtRobotPlane =
+          static_cast<float>(square(it->sensedDistance) - square(lm->pose_mean.z - robot_z));
 
       if (data.radiusAtRobotPlane > 0)
       {
@@ -200,7 +201,7 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
     std::vector<bool>* cell;
 
     // The ngular step size:
-    float Aa = 5.0_deg;
+    float Aa = static_cast<float>(5.0_deg);
 
     // Fill the grid:
     for (i = 0; i < m_dataPerBeacon.size(); i++)

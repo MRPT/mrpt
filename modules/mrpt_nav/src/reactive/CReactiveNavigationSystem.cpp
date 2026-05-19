@@ -65,7 +65,7 @@ void CReactiveNavigationSystem::saveConfigFile(mrpt::config::CConfigFileBase& c)
   const std::string s = "CReactiveNavigationSystem";
   params_reactive_nav.saveToConfigFile(c, s);
 
-  unsigned int PTG_COUNT = PTGs.size();
+  unsigned int PTG_COUNT = static_cast<unsigned int>(PTGs.size());
   MRPT_SAVE_CONFIG_VAR_COMMENT(PTG_COUNT, "Number of PTGs");
 }
 
@@ -220,7 +220,7 @@ void CReactiveNavigationSystem::transformToTPSpace(
 
   const mrpt::poses::CPose2D rel_pose_PTG_origin_wrt_sense(rel_pose_PTG_origin_wrt_sense_);
 
-  const float OBS_MAX_XY = params_abstract_ptg_navigator.ref_distance * 1.1f;
+  const float OBS_MAX_XY = static_cast<float>(params_abstract_ptg_navigator.ref_distance) * 1.1f;
 
   // Merge all the (k,d) for which the robot collides with each obstacle
   // point:
@@ -262,8 +262,8 @@ void CReactiveNavigationSystem::loggingGetWSObstaclesAndShape(CLogFileRecord& ou
 
   for (size_t i = 0; i < nVerts; i++)
   {
-    out_log.robotShape_x[i] = m_robotShape.get_vertex_x(i);
-    out_log.robotShape_y[i] = m_robotShape.get_vertex_y(i);
+    out_log.robotShape_x[i] = static_cast<float>(m_robotShape.get_vertex_x(i));
+    out_log.robotShape_y[i] = static_cast<float>(m_robotShape.get_vertex_y(i));
   }
 }
 

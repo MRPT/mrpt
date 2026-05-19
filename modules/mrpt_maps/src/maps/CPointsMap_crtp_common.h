@@ -273,7 +273,7 @@ struct loadFromRangeImpl
             const float d = std::sqrt(d2);
 
             if ((lx != lx_1 || ly != ly_1) && (lx_1 != lx_2 || ly_1 != ly_2))
-              changeInDirection = atan2(ly - ly_1, lx - lx_1) - atan2(ly_1 - ly_2, lx_1 - lx_2);
+              changeInDirection = atan2f(ly - ly_1, lx - lx_1) - atan2f(ly_1 - ly_2, lx_1 - lx_2);
             else
               changeInDirection = 0;
 

@@ -176,11 +176,11 @@ bool CVoxelMapRGB::internal_insertObservation_3DScan(
     mrpt::img::TColorf oldCol(mrpt::img::TColor(cell->color.R, cell->color.G, cell->color.B));
 
     mrpt::img::TColorf newF;
-    const float N_1 = 1.0f / (cell->numColObs + 1);
+    const float N_1 = 1.0f / static_cast<float>(cell->numColObs + 1);
 
-    newF.R = N_1 * (oldCol.R * cell->numColObs + colF.R);
-    newF.G = N_1 * (oldCol.G * cell->numColObs + colF.G);
-    newF.B = N_1 * (oldCol.B * cell->numColObs + colF.B);
+    newF.R = N_1 * (oldCol.R * static_cast<float>(cell->numColObs) + colF.R);
+    newF.G = N_1 * (oldCol.G * static_cast<float>(cell->numColObs) + colF.G);
+    newF.B = N_1 * (oldCol.B * static_cast<float>(cell->numColObs) + colF.B);
 
     cell->numColObs++;
     const auto nCol = newF.asTColor();
@@ -319,7 +319,7 @@ double CVoxelMapRGB::internal_computeObservationLikelihood(
 
     for (size_t i = 0; i < likelihoodOptions.decimate_up_to; ++i)
     {
-      const auto idx = static_cast<size_t>(i * delta);
+      const auto idx = static_cast<size_t>(static_cast<double>(i) * delta);
       lambdaPointLikelihood(xs[idx], ys[idx], zs[idx]);
     }
   }

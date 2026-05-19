@@ -64,10 +64,10 @@ void CReactiveNavigationSystem3D::saveConfigFile(mrpt::config::CConfigFileBase& 
 {
   const std::string s = "CReactiveNavigationSystem3D";
 
-  unsigned int HEIGHT_LEVELS = m_robotShape.size();
+  unsigned int HEIGHT_LEVELS = static_cast<unsigned int>(m_robotShape.size());
   MRPT_SAVE_CONFIG_VAR_COMMENT(HEIGHT_LEVELS, "Number of robot vertical sections");
 
-  unsigned int PTG_COUNT = m_ptgmultilevel.size();
+  unsigned int PTG_COUNT = static_cast<unsigned int>(m_ptgmultilevel.size());
   MRPT_SAVE_CONFIG_VAR_COMMENT(PTG_COUNT, "Number of PTGs");
 }
 
@@ -203,7 +203,7 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
   const auto zs = m_WS_Obstacles_unsorted.getPointsBufferRef_z();
   const size_t nObs = xs.size();
 
-  const float OBS_MAX_XY = params_abstract_ptg_navigator.ref_distance * 1.1f;
+  const float OBS_MAX_XY = static_cast<float>(params_abstract_ptg_navigator.ref_distance) * 1.1f;
 
   for (size_t j = 0; j < nObs; j++)
   {
@@ -215,7 +215,7 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
         break;  // skip this points
       }
 
-      h += m_robotShape.getHeight(idxH);
+      h += static_cast<float>(m_robotShape.getHeight(idxH));
       if (zs[j] < h)
       {
         // Speed-up: If the obstacle is, for sure, out of the collision
@@ -302,13 +302,13 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord& 
       for (unsigned int j = 0; j < m_robotShape.polygon(i).size(); j++)
       {
         paux = m_robotShape.polygon(i)[j];
-        out_log.robotShape_x[cuenta] = paux.x;
-        out_log.robotShape_y[cuenta] = paux.y;
+        out_log.robotShape_x[cuenta] = static_cast<float>(paux.x);
+        out_log.robotShape_y[cuenta] = static_cast<float>(paux.y);
         cuenta++;
       }
       paux = m_robotShape.polygon(i)[0];
-      out_log.robotShape_x[cuenta] = paux.x;
-      out_log.robotShape_y[cuenta] = paux.y;
+      out_log.robotShape_x[cuenta] = static_cast<float>(paux.x);
+      out_log.robotShape_y[cuenta] = static_cast<float>(paux.y);
       cuenta++;
     }
   }

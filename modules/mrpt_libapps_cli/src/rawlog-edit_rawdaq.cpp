@@ -23,50 +23,51 @@ using namespace mrpt::apps;
 using namespace std;
 using namespace mrpt::io;
 
-#define WRITE_AIN_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST)                                       \
-  if (!obs->_VECTOR_NAME.empty())                                                               \
-  {                                                                                             \
-    if (obs->AIN_interleaved)                                                                   \
-    {                                                                                           \
-      for (i = 0, tim = tim0; i < obs->_VECTOR_NAME.size() / obs->AIN_channel_count;            \
-           i++, tim += At)                                                                      \
-      {                                                                                         \
-        ::fprintf(f_this, "%14.4f ", tim);                                                      \
-        for (size_t j = 0; j < obs->AIN_channel_count; j++)                                     \
-        {                                                                                       \
-          ::fprintf(                                                                            \
-              f_this, _FRMT " ", (_TYPECAST)obs->_VECTOR_NAME[i * obs->AIN_channel_count + j]); \
-          m_entriesSaved++;                                                                     \
-        }                                                                                       \
-        ::fprintf(f_this, "\n");                                                                \
-      }                                                                                         \
-    }                                                                                           \
-    else                                                                                        \
-    {                                                                                           \
-      const size_t nSmpls = obs->_VECTOR_NAME.size() / obs->AIN_channel_count;                  \
-      for (i = 0, tim = tim0; i < nSmpls; i++, tim += At)                                       \
-      {                                                                                         \
-        ::fprintf(f_this, "%14.4f ", tim);                                                      \
-        for (size_t j = 0; j < obs->AIN_channel_count; j++)                                     \
-        {                                                                                       \
-          ::fprintf(f_this, _FRMT " ", (_TYPECAST)obs->_VECTOR_NAME[i + j * nSmpls]);           \
-          m_entriesSaved++;                                                                     \
-        }                                                                                       \
-        ::fprintf(f_this, "\n");                                                                \
-      }                                                                                         \
-    }                                                                                           \
+#define WRITE_AIN_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST)                                          \
+  if (!obs->_VECTOR_NAME.empty())                                                                  \
+  {                                                                                                \
+    if (obs->AIN_interleaved)                                                                      \
+    {                                                                                              \
+      for (i = 0, tim = tim0; i < obs->_VECTOR_NAME.size() / obs->AIN_channel_count;               \
+           i++, tim += At)                                                                         \
+      {                                                                                            \
+        ::fprintf(f_this, "%14.4f ", tim);                                                         \
+        for (size_t j = 0; j < obs->AIN_channel_count; j++)                                        \
+        {                                                                                          \
+          ::fprintf(                                                                               \
+              f_this, _FRMT " ",                                                                   \
+              static_cast<_TYPECAST>(obs->_VECTOR_NAME[i * obs->AIN_channel_count + j]));          \
+          m_entriesSaved++;                                                                        \
+        }                                                                                          \
+        ::fprintf(f_this, "\n");                                                                   \
+      }                                                                                            \
+    }                                                                                              \
+    else                                                                                           \
+    {                                                                                              \
+      const size_t nSmpls = obs->_VECTOR_NAME.size() / obs->AIN_channel_count;                     \
+      for (i = 0, tim = tim0; i < nSmpls; i++, tim += At)                                          \
+      {                                                                                            \
+        ::fprintf(f_this, "%14.4f ", tim);                                                         \
+        for (size_t j = 0; j < obs->AIN_channel_count; j++)                                        \
+        {                                                                                          \
+          ::fprintf(f_this, _FRMT " ", static_cast<_TYPECAST>(obs->_VECTOR_NAME[i + j * nSmpls])); \
+          m_entriesSaved++;                                                                        \
+        }                                                                                          \
+        ::fprintf(f_this, "\n");                                                                   \
+      }                                                                                            \
+    }                                                                                              \
   }
 
-#define WRITE_OTHER_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST)               \
-  if (!obs->_VECTOR_NAME.empty())                                         \
-  {                                                                       \
-    for (i = 0, tim = tim0; i < obs->_VECTOR_NAME.size(); i++, tim += At) \
-    {                                                                     \
-      ::fprintf(f_this, "%14.4f ", tim);                                  \
-      ::fprintf(f_this, _FRMT " ", (_TYPECAST)obs->_VECTOR_NAME[i]);      \
-      m_entriesSaved++;                                                   \
-    }                                                                     \
-    ::fprintf(f_this, "\n");                                              \
+#define WRITE_OTHER_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST)                       \
+  if (!obs->_VECTOR_NAME.empty())                                                 \
+  {                                                                               \
+    for (i = 0, tim = tim0; i < obs->_VECTOR_NAME.size(); i++, tim += At)         \
+    {                                                                             \
+      ::fprintf(f_this, "%14.4f ", tim);                                          \
+      ::fprintf(f_this, _FRMT " ", static_cast<_TYPECAST>(obs->_VECTOR_NAME[i])); \
+      m_entriesSaved++;                                                           \
+    }                                                                             \
+    ::fprintf(f_this, "\n");                                                      \
   }
 
 // ======================================================================

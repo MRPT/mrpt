@@ -158,7 +158,7 @@ void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8
         size_t i, N = m_map.size();
         auto* ptrTrg = reinterpret_cast<uint8_t*>(&m_map[0]);
         const auto* ptrSrc = reinterpret_cast<const uint16_t*>(&auxMap[0]);
-        for (i = 0; i < N; i++) *ptrTrg++ = (*ptrSrc++) >> 8;
+        for (i = 0; i < N; i++) *ptrTrg++ = static_cast<uint8_t>((*ptrSrc++) >> 8);
 #else
         // We are 16-bit, stream is 8-bit
         ASSERT_(bitsPerCellStream == 8);
@@ -183,7 +183,7 @@ void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8
           double p = cellTypeUnsigned(*ptr) * (1.0f / 0xFF);
           if (p < 0) p = 0;
           if (p > 1) p = 1;
-          *ptr++ = p2l(p);
+          *ptr++ = p2l(static_cast<float>(p));
         }
       }
 
@@ -278,10 +278,10 @@ bool COccupancyGridMap2D::loadFromBitmap(
     }
 
     // Resize grid:
-    float new_x_max = (imgFl.getWidth() - origin.x) * res;
-    float new_x_min = -origin.x * res;
-    float new_y_max = (imgFl.getHeight() - origin.y) * res;
-    float new_y_min = -origin.y * res;
+    float new_x_max = static_cast<float>((static_cast<double>(imgFl.getWidth()) - origin.x) * res);
+    float new_x_min = static_cast<float>(-origin.x * res);
+    float new_y_max = static_cast<float>((static_cast<double>(imgFl.getHeight()) - origin.y) * res);
+    float new_y_min = static_cast<float>(-origin.y * res);
 
     setSize(new_x_min, new_x_max, new_y_min, new_y_max, res);
   }
@@ -293,7 +293,7 @@ bool COccupancyGridMap2D::loadFromBitmap(
       float f = imgFl.getAsFloat({int(x), int(bmpHeight - 1 - y)});
       f = std::max(0.01f, f);
       f = std::min(0.99f, f);
-      setCell(x, y, f);
+      setCell(static_cast<int>(x), static_cast<int>(y), f);
     }
 
   m_is_empty = false;
@@ -350,7 +350,7 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 
   // Draw the features:
   // ---------------------------------------------
-  n = corrs.size();
+  n = static_cast<unsigned int>(corrs.size());
   TColor lineColor = TColor::black();
   for (i = 0; i < n; i++)
   {
@@ -372,9 +372,9 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
   for (i = 0; i < n; i++)
   {
     lineColor = TColor(
-        static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)),
-        static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)),
-        static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)));
+        static_cast<uint8_t>(getRandomGenerator().drawUniform(0, 255.0f)),
+        static_cast<uint8_t>(getRandomGenerator().drawUniform(0, 255.0f)),
+        static_cast<uint8_t>(getRandomGenerator().drawUniform(0, 255.0f)));
 
     img.line(
         {int(m1->x2idx(corrs[i].global.x)), int(Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y))},
@@ -458,10 +458,12 @@ bool COccupancyGridMap2D::loadFromROSMapServerYAML(const std::string& yamlFilePa
     const size_t w = im.getWidth(), h = im.getHeight();
 
     // Resize grid:
-    float xMax = xMin + w * resolution;
-    float yMax = yMin + h * resolution;
+    float xMax = static_cast<float>(xMin + static_cast<double>(w) * resolution);
+    float yMax = static_cast<float>(yMin + static_cast<double>(h) * resolution);
 
-    setSize(xMin, xMax, yMin, yMax, resolution);
+    setSize(
+        static_cast<float>(xMin), xMax, static_cast<float>(yMin), yMax,
+        static_cast<float>(resolution));
 
     // And load cells content:
     for (size_t y = 0; y < h; y++)
@@ -473,15 +475,15 @@ bool COccupancyGridMap2D::loadFromROSMapServerYAML(const std::string& yamlFilePa
         v = std::min(0.99f, v);
 
         if (isScale)
-          setCell(x, y, v);
+          setCell(static_cast<int>(x), static_cast<int>(y), v);
         else
         {
           if (1 - v > occupied_thresh)
-            setCell(x, y, 0.0f);
+            setCell(static_cast<int>(x), static_cast<int>(y), 0.0f);
           else if (1 - v < free_thresh)
-            setCell(x, y, 1.0f);
+            setCell(static_cast<int>(x), static_cast<int>(y), 1.0f);
           else
-            setCell(x, y, 0.5f);
+            setCell(static_cast<int>(x), static_cast<int>(y), 0.5f);
         }
       }
 
