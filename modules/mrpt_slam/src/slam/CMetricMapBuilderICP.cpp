@@ -550,12 +550,12 @@ const CMultiMetricMap& CMetricMapBuilderICP::getCurrentlyBuiltMetricMap() const
 /*---------------------------------------------------------------
       getCurrentlyBuiltMapSize
   ---------------------------------------------------------------*/
-unsigned int CMetricMapBuilderICP::getCurrentlyBuiltMapSize() { return SF_Poses_seq.size(); }
+size_t CMetricMapBuilderICP::getCurrentlyBuiltMapSize() { return SF_Poses_seq.size(); }
 
 /*---------------------------------------------------------------
         saveCurrentEstimationToImage
   ---------------------------------------------------------------*/
-void CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string& file, bool formatEMF_BMP)
+void CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string& file)
 {
   MRPT_START
 

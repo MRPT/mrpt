@@ -637,15 +637,15 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 #ifndef ICP_DISTANCES_TO_LINE
           w1 = *other_x_trans - Axy;
           q1 = m1->squareDistanceToClosestCorrespondence(static_cast<float>(w1), *other_y_trans);
-          q1 = kernel(q1, rho2);
+          q1 = kernel(static_cast<float>(q1), rho2);
 
           w2 = *other_x_trans;
           q2 = m1->squareDistanceToClosestCorrespondence(static_cast<float>(w2), *other_y_trans);
-          q2 = kernel(q2, rho2);
+          q2 = kernel(static_cast<float>(q2), rho2);
 
           w3 = *other_x_trans + Axy;
           q3 = m1->squareDistanceToClosestCorrespondence(static_cast<float>(w3), *other_y_trans);
-          q3 = kernel(q3, rho2);
+          q3 = kernel(static_cast<float>(q3), rho2);
 #else
           // The distance to the line that interpolates the TWO
           // closest points:

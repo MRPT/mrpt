@@ -69,11 +69,11 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 
   /** Distances (linear and angular) for inserting a new observation into the
    * map. */
-  float insertionLinDistance, insertionAngDistance;
+  double insertionLinDistance, insertionAngDistance;
 
   /** Distances (linear and angular) for updating the robot pose estimate (and
    * particles weighs, if applicable). */
-  float localizeLinDistance, localizeAngDistance;
+  double localizeLinDistance, localizeAngDistance;
 
   /** Traveled distance since last localization update */
   mrpt::poses::CPose3DPDFGaussian odoIncrementSinceLastLocalization;
@@ -94,11 +94,11 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
         const std::string& section) override;                 // See base docs
     void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
-    float insertionLinDistance{1.0f};
-    float insertionAngDistance;
+    double insertionLinDistance{1.0};
+    double insertionAngDistance;
 
-    float localizeLinDistance{0.4f};
-    float localizeAngDistance;
+    double localizeLinDistance{0.4};
+    double localizeAngDistance;
 
     bayes::CParticleFilter::TParticleFilterOptions PF_options;
 
@@ -167,14 +167,13 @@ of type CMetricMapBuilderRBPF  */
   /** Returns just how many sensory-frames are stored in the currently build
    * map.
    */
-  unsigned int getCurrentlyBuiltMapSize() override;
+  [[nodiscard]] size_t getCurrentlyBuiltMapSize() override;
 
   /** A useful method for debugging: the current map (and/or poses) estimation
    * is dumped to an image file.
    * \param file The output file name
-   * \param formatEMF_BMP Output format = true:EMF, false:BMP
    */
-  void saveCurrentEstimationToImage(const std::string& file, bool formatEMF_BMP = true) override;
+  void saveCurrentEstimationToImage(const std::string& file) override;
 
   /** A useful method for debugging: draws the current map and path hypotheses
    * to a CCanvas  */

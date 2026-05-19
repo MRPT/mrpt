@@ -149,14 +149,13 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 
   /** Returns just how many sensory-frames are stored in the currently build
    * map */
-  unsigned int getCurrentlyBuiltMapSize() override;
+  [[nodiscard]] size_t getCurrentlyBuiltMapSize() override;
 
   /** A useful method for debugging: the current map (and/or poses) estimation
    * is dumped to an image file.
    * \param file The output file name
-   * \param formatEMF_BMP Output format = true:EMF, false:BMP
    */
-  void saveCurrentEstimationToImage(const std::string& file, bool formatEMF_BMP = true) override;
+  void saveCurrentEstimationToImage(const std::string& file) override;
 
  private:
   /** The set of observations that leads to current map: */
