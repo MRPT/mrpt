@@ -123,6 +123,14 @@ struct TPose3DQuat : public TPoseOrPoint, public internal::ProvideStaticResize<T
   }
 };
 
+/** Exact equality between two quaternion poses (bitwise, no tolerance). */
+inline bool operator==(const TPose3DQuat& a, const TPose3DQuat& b)
+{
+  return a.x == b.x && a.y == b.y && a.z == b.z &&                      //-V550
+         a.qr == b.qr && a.qx == b.qx && a.qy == b.qy && a.qz == b.qz;  //-V550
+}
+inline bool operator!=(const TPose3DQuat& a, const TPose3DQuat& b) { return !(a == b); }
+
 }  // namespace mrpt::math
 
 namespace mrpt::typemeta
