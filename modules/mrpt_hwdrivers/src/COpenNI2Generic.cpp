@@ -145,7 +145,7 @@ COpenNI2Generic::~COpenNI2Generic()
 int COpenNI2Generic::getNumDevices() const
 {
   std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
-  return vDevices.size();
+  return static_cast<int>(vDevices.size());
 }
 void COpenNI2Generic::setVerbose(bool verbose) { m_verbose = verbose; }
 bool COpenNI2Generic::isVerbose() const { return m_verbose; }

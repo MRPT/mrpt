@@ -148,7 +148,8 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
   // std::vector<TaskDescription>  task_definitions;
   task_definitions.clear();
 
-  const unsigned int nTasks = cfg.read_uint64_t(sect, "num_tasks", 0, true);
+  const unsigned int nTasks =
+      static_cast<unsigned int>(cfg.read_uint64_t(sect, "num_tasks", 0, true));
   if (!nTasks)
   {
     std::cerr << "[CNationalInstrumentsDAQ] Warning: Number of tasks is "

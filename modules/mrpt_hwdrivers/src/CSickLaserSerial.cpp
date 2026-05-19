@@ -119,7 +119,7 @@ void CSickLaserSerial::doProcessSimple(
   // And the scan ranges:
   outObservation.rightToLeft = true;
   outObservation.aperture = M_PIf;
-  outObservation.maxRange = is_mm_mode ? 32.7 : 81.0;
+  outObservation.maxRange = is_mm_mode ? 32.7f : 81.0f;
   outObservation.stdError = 0.003f;
   outObservation.sensorPose = mrpt::poses::CPose3D(m_sensorPose);
 
@@ -372,7 +372,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
 
   // CRC:
   uint16_t CRC = mrpt::system::compute_CRC16(buf, lengthField - 2, CRC16_GEN_POL);
-  uint16_t CRC_packet = buf[lengthField - 2] | (buf[lengthField - 1] << 8);
+  uint16_t CRC_packet = static_cast<uint16_t>(buf[lengthField - 2] | (buf[lengthField - 1] << 8));
   if (CRC_packet != CRC)
   {
     cerr << mrpt::format(
@@ -418,7 +418,7 @@ bool CSickLaserSerial::LMS_setupSerialComms()
   int detected_rate = 0;
   for (size_t reps = 0; !detected_rate && reps < m_nTries_connect; reps++)
   {
-    m_nTries_current = reps;
+    m_nTries_current = static_cast<unsigned int>(reps);
 
     int rates[] = {0, 9600, 38400, 500000};
 
@@ -584,8 +584,8 @@ bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
   tictac.Tic();
   const double maxTime = timeout * 1e-3;
 
-  while (nBytes < 6 ||
-         (nBytes < (6U + m_received_frame_buffer[2] + (uint16_t)(m_received_frame_buffer[3] << 8))))
+  while (nBytes < 6 || (nBytes < (6U + m_received_frame_buffer[2] +
+                                  static_cast<uint16_t>(m_received_frame_buffer[3] << 8))))
   {
     if (COM->Read(&b, 1))
     {
@@ -604,7 +604,8 @@ bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
     if (tictac.Tac() >= maxTime) return false;  // Timeout
   }
 
-  const uint16_t lengthField = m_received_frame_buffer[2] + (m_received_frame_buffer[3] << 8);
+  const uint16_t lengthField =
+      static_cast<uint16_t>(m_received_frame_buffer[2] + (m_received_frame_buffer[3] << 8));
   // Check len:
   if (4U + lengthField + 2U != nBytes)
   {
@@ -618,8 +619,9 @@ bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
   // Check CRC
   uint16_t CRC =
       mrpt::system::compute_CRC16(m_received_frame_buffer, 4 + lengthField, CRC16_GEN_POL);
-  uint16_t CRC_packet = m_received_frame_buffer[4 + lengthField + 0] |
-                        (m_received_frame_buffer[4 + lengthField + 1] << 8);
+  uint16_t CRC_packet = static_cast<uint16_t>(
+      m_received_frame_buffer[4 + lengthField + 0] |
+      (m_received_frame_buffer[4 + lengthField + 1] << 8));
   if (CRC_packet != CRC)
   {
     printf(
@@ -741,9 +743,9 @@ bool CSickLaserSerial::LMS_startContinuousMode()
 
   // Config angle/resolution
   cmd[0] = 0x3B;
-  cmd[1] = m_scans_FOV;
+  cmd[1] = static_cast<uint8_t>(m_scans_FOV);
   cmd[2] = 0x00;
-  cmd[3] = m_scans_res;  // 25,50 or 100 -  1/100th of deg
+  cmd[3] = static_cast<uint8_t>(m_scans_res);  // 25,50 or 100 -  1/100th of deg
   cmd[4] = 0x00;
   uint16_t cmd_len = 5;
   if (!SendCommandToSICK(cmd, cmd_len)) RET_ERROR("Error waiting ack for change angle/resolution");
@@ -794,8 +796,8 @@ bool CSickLaserSerial::SendCommandToSICK(const uint8_t* cmd, const uint16_t cmd_
   memcpy(cmd_full + 4, cmd, cmd_len);
 
   const uint16_t crc = mrpt::system::compute_CRC16(cmd_full, 4 + cmd_len, CRC16_GEN_POL);
-  cmd_full[4 + cmd_len + 0] = crc & 0xFF;
-  cmd_full[4 + cmd_len + 1] = crc >> 8;
+  cmd_full[4 + cmd_len + 0] = static_cast<uint8_t>(crc & 0xFF);
+  cmd_full[4 + cmd_len + 1] = static_cast<uint8_t>(crc >> 8);
 
   const size_t toWrite = 4 + cmd_len + 2;
 

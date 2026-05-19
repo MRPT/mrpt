@@ -297,7 +297,9 @@ class FAddUntracedLines
         lins->appendLine(
             obs.sensorPose.asTPose(),
             (obs.sensorPose +
-             CPose3D(0, 0, 0, obs.rightToLeft ? yaw : -yaw, obs.deltaPitch * i + pitchs.back(), 0) +
+             CPose3D(
+                 0, 0, 0, obs.rightToLeft ? yaw : -yaw,
+                 obs.deltaPitch * static_cast<double>(i) + pitchs.back(), 0) +
              pDist)
                 .asTPoint());
       }

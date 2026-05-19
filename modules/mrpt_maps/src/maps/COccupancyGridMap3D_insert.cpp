@@ -240,12 +240,12 @@ void COccupancyGridMap3D::TLikelihoodOptions::loadFromConfigFile(
   MRPT_LOAD_CONFIG_VAR(LF_stdHit, float, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(LF_zHit, float, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(LF_zRandom, float, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(LF_maxRange, int, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(LF_decimation, int, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(LF_maxCorrsDistance, int, iniFile, section);
-  MRPT_LOAD_CONFIG_VAR(LF_useSquareDist, int, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(LF_maxRange, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(LF_decimation, uint32_t, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(LF_maxCorrsDistance, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(LF_useSquareDist, bool, iniFile, section);
 
-  MRPT_LOAD_CONFIG_VAR(rayTracing_stdHit, int, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(rayTracing_stdHit, float, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(rayTracing_decimation, int, iniFile, section);
 }
 

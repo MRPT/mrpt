@@ -220,8 +220,8 @@ bool CJoystick::getJoystickPosition(int nJoy, State& output)
     const int calib_min = m_minPerAxis.size() > i ? m_minPerAxis[i] : -32767;
     const int calib_max = m_maxPerAxis.size() > i ? m_maxPerAxis[i] : 32767;
 
-    output.axes[i] =
-        -1.0f + 2.0f * (m_joystate_axes[i] - calib_min) / static_cast<float>(calib_max - calib_min);
+    output.axes[i] = -1.0f + 2.0f * static_cast<float>(m_joystate_axes[i] - calib_min) /
+                                 static_cast<float>(calib_max - calib_min);
   }
 
   return true;

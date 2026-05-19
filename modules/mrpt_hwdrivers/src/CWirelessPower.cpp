@@ -446,7 +446,7 @@ int CWirelessPower::GetPower()
   std::vector<std::string> powerReadV;
   size_t readBytes;
 
-  powerReadL = (char*)malloc(256);
+  powerReadL = static_cast<char*>(malloc(256));
   std::stringstream ssidLine;
 
   ssidLine << "ESSID:\"" << m_ssid << "\"";

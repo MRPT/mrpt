@@ -66,7 +66,8 @@ void CKinect::calculate_range2meters()
 
 #else
   for (size_t i = 0; i < KINECT_RANGES_TABLE_LEN; i++)
-    m_range2meters[i] = static_cast<uint16_t>(1e+3f / (i * (-0.0030711016) + 3.3309495161));
+    m_range2meters[i] =
+        static_cast<uint16_t>(1e+3f / (static_cast<double>(i) * (-0.0030711016) + 3.3309495161));
 #endif
 
   // Minimum/Maximum range means error:

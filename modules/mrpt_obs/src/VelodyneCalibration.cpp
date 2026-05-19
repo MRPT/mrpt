@@ -70,7 +70,7 @@ int get_xml_children_as_int(const tinyxml2::XMLNode* e, const char* name)
 #endif
 
 VelodyneCalibration::VelodyneCalibration() : laser_corrections(0) {}
-bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
+bool VelodyneCalibration::internal_loadFromXMLNode([[maybe_unused]] void* node_ptr)
 {
 #if MRPT_HAS_TINYXML2
 
@@ -154,7 +154,7 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
 #endif
 }
 
-bool VelodyneCalibration::loadFromXMLText(const std::string& xml_file_contents)
+bool VelodyneCalibration::loadFromXMLText([[maybe_unused]] const std::string& xml_file_contents)
 {
   try
   {
@@ -190,7 +190,8 @@ bool VelodyneCalibration::loadFromXMLText(const std::string& xml_file_contents)
 /** Loads calibration from file. \return false on any error, true on success */
 // See reference code in:
 // vtkVelodyneHDLReader::vtkInternal::LoadCorrectionsFile()
-bool VelodyneCalibration::loadFromXMLFile(const std::string& velodyne_calibration_xml_fil)
+bool VelodyneCalibration::loadFromXMLFile(
+    [[maybe_unused]] const std::string& velodyne_calibration_xml_fil)
 {
   try
   {
