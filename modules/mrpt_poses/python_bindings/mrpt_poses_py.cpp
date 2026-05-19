@@ -116,9 +116,10 @@ PYBIND11_MODULE(_bindings, m)
           [](mrpt::poses::CPose3D &p, double val) { p.y(val); }, "Y coordinate")
       .def_property(
           "z",
-          [](const mrpt::poses::CPose3D &p)
-          { return p.m_coords[2]; },  // Accessing z via m_coords directly or logic
-          [](mrpt::poses::CPose3D &p, double val) { p.m_coords[2] = val; }, "Z coordinate")
+          [](const mrpt::poses::CPose3D &p) { return p.z(); },
+          [](mrpt::poses::CPose3D &p, double val)
+          { p.setFromValues(p.x(), p.y(), val, p.yaw(), p.pitch(), p.roll()); },
+          "Z coordinate")
       .def_property(
           "yaw", &mrpt::poses::CPose3D::yaw,
           [](mrpt::poses::CPose3D &p, double val) { p.setYawPitchRoll(val, p.pitch(), p.roll()); })
