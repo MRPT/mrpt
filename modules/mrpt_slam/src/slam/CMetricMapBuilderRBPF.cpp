@@ -341,15 +341,15 @@ const CMultiMetricMap& CMetricMapBuilderRBPF::getCurrentlyBuiltMetricMap() const
 /*---------------------------------------------------------------
       getCurrentlyBuiltMapSize
   ---------------------------------------------------------------*/
-unsigned int CMetricMapBuilderRBPF::getCurrentlyBuiltMapSize() { return mapPDF.SFs.size(); }
+size_t CMetricMapBuilderRBPF::getCurrentlyBuiltMapSize() { return mapPDF.SFs.size(); }
 
 void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 {
   using mrpt::round;
 
-  unsigned int i, M = mapPDF.particlesCount();
+  const size_t M = mapPDF.particlesCount();
   std::deque<TPose3D> path;
-  unsigned int imgHeight = 0;
+  size_t imgHeight = 0;
 
   MRPT_START
 
@@ -358,9 +358,9 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
   ASSERT_(curMap->countMapsByClass<COccupancyGridMap2D>() > 0);
 
   // Find which is the most likely path index:
-  unsigned int bestPath = 0;
+  size_t bestPath = 0;
   double bestPathLik = -1;
-  for (i = 0; i < M; i++)
+  for (size_t i = 0; i < M; i++)
   {
     if (mapPDF.getW(i) > bestPathLik)
     {
@@ -399,7 +399,7 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
   // Paths hypothesis:
   // ----------------------------------
   /***/
-  for (i = 0; i <= M; i++)
+  for (size_t i = 0; i <= M; i++)
   {
     if (i != bestPath || i == M)
     {
@@ -439,8 +439,7 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 /*---------------------------------------------------------------
           saveCurrentEstimationToImage
   ---------------------------------------------------------------*/
-void CMetricMapBuilderRBPF::saveCurrentEstimationToImage(
-    const std::string& file, bool formatEMF_BMP)
+void CMetricMapBuilderRBPF::saveCurrentEstimationToImage(const std::string& file)
 {
   MRPT_START
 
@@ -516,11 +515,11 @@ void CMetricMapBuilderRBPF::TConstructionOptions::loadFromConfigFile(
 
   PF_options.loadFromConfigFile(iniFile, section);
 
-  MRPT_LOAD_CONFIG_VAR(insertionLinDistance, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(insertionLinDistance, double, iniFile, section);
   MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(
       insertionAngDistance_deg, double, insertionAngDistance, iniFile, section);
 
-  MRPT_LOAD_CONFIG_VAR(localizeLinDistance, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(localizeLinDistance, double, iniFile, section);
   MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(
       localizeAngDistance_deg, double, localizeAngDistance, iniFile, section);
   verbosity_level =

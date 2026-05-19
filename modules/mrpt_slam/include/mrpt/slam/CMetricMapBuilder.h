@@ -81,7 +81,7 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 
   /** Returns just how many sensory-frames are stored in the currently build
    * map. */
-  virtual unsigned int getCurrentlyBuiltMapSize() = 0;
+  [[nodiscard]] virtual size_t getCurrentlyBuiltMapSize() = 0;
 
   /** Returns the map built so far. NOTE that for efficiency a pointer to the
    * internal object is passed, DO NOT delete nor modify the object in any
@@ -91,9 +91,8 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
   /** A useful method for debugging: the current map (and/or poses) estimation
    * is dumped to an image file.
    * \param file The output file name
-   * \param formatEMF_BMP Output format = true:EMF, false:BMP
    */
-  virtual void saveCurrentEstimationToImage(const std::string& file, bool formatEMF_BMP = true) = 0;
+  virtual void saveCurrentEstimationToImage(const std::string& file) = 0;
 
   /** @} */
   // ---------------------------------------------------------------------

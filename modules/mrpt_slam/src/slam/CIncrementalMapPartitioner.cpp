@@ -70,10 +70,9 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
   MRPT_LOAD_CONFIG_VAR(forceBisectionOnly, bool, source, section);
   MRPT_LOAD_CONFIG_VAR(simil_method, enum, source, section);
   MRPT_LOAD_CONFIG_VAR(minimumNumberElementsEachCluster, uint64_t, source, section);
+  MRPT_LOAD_HERE_CONFIG_VAR("minDistForCorrespondence", float, mrp.maxDistForCorr, source, section);
   MRPT_LOAD_HERE_CONFIG_VAR(
-      "minDistForCorrespondence", double, mrp.maxDistForCorr, source, section);
-  MRPT_LOAD_HERE_CONFIG_VAR(
-      "minMahaDistForCorrespondence", double, mrp.maxMahaDistForCorr, source, section);
+      "minMahaDistForCorrespondence", float, mrp.maxMahaDistForCorr, source, section);
   MRPT_LOAD_CONFIG_VAR(maxKeyFrameDistanceToEval, uint64_t, source, section);
 
   mrpt::config::CConfigFilePrefixer cfp(source, section + std::string("."), "");
@@ -412,7 +411,9 @@ void CIncrementalMapPartitioner::getAs3DScene(
       }
     }
   }
-  gl_grid->setPlaneLimits(bbminx, bbmaxx, bbminy, bbmaxy);
+  gl_grid->setPlaneLimits(
+      static_cast<float>(bbminx), static_cast<float>(bbmaxx), static_cast<float>(bbminy),
+      static_cast<float>(bbmaxy));
   gl_grid->setGridFrequency(5);
 }
 
