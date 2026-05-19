@@ -21,7 +21,7 @@ namespace mrpt::math
  * \sa mrpt::math::TTwist3D, mrpt::math::TPose2D
  * \ingroup geometry_grp
  */
-struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
+struct TTwist2D : public TPoseOrPoint, public internal::ProvideStaticResize<TTwist2D>
 {
   static constexpr std::size_t static_size = 3;
 
