@@ -148,7 +148,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TPoint2D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TPoint2D, std::shared_ptr<mrpt::math::TPoint2D>>(m, "TPoint2D")
+  py::class_<mrpt::math::TPoint2D>(m, "TPoint2D")
       .def(py::init<>())
       .def(py::init<double, double>())
       .def(py::init(
@@ -168,7 +168,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TPoint3D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TPoint3D, std::shared_ptr<mrpt::math::TPoint3D>>(m, "TPoint3D")
+  py::class_<mrpt::math::TPoint3D>(m, "TPoint3D")
       .def(py::init<>())
       .def(py::init<double, double, double>())
       .def(py::init(
@@ -189,7 +189,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TPoint2Df
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TPoint2Df, std::shared_ptr<mrpt::math::TPoint2Df>>(m, "TPoint2Df")
+  py::class_<mrpt::math::TPoint2Df>(m, "TPoint2Df")
       .def(py::init<>())
       .def(py::init<float, float>())
       .def(py::init(
@@ -209,7 +209,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TPoint3Df
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TPoint3Df, std::shared_ptr<mrpt::math::TPoint3Df>>(m, "TPoint3Df")
+  py::class_<mrpt::math::TPoint3Df>(m, "TPoint3Df")
       .def(py::init<>())
       .def(py::init<float, float, float>())
       .def(py::init(
@@ -230,7 +230,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TPose2D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TPose2D, std::shared_ptr<mrpt::math::TPose2D>>(m, "TPose2D")
+  py::class_<mrpt::math::TPose2D>(m, "TPose2D")
       .def(py::init<>())
       .def(py::init<double, double, double>())
       .def(py::init(
@@ -250,7 +250,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TPose3D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TPose3D, std::shared_ptr<mrpt::math::TPose3D>>(m, "TPose3D")
+  py::class_<mrpt::math::TPose3D>(m, "TPose3D")
       .def(py::init<>())
       .def(py::init<double, double, double, double, double, double>())
       .def(py::init(
@@ -277,7 +277,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TSegment2D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TSegment2D, std::shared_ptr<mrpt::math::TSegment2D>>(m, "TSegment2D")
+  py::class_<mrpt::math::TSegment2D>(m, "TSegment2D")
       .def(py::init<>())
       .def(py::init<const mrpt::math::TPoint2D&, const mrpt::math::TPoint2D&>())
       .def_static(
@@ -295,7 +295,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TSegment3D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TSegment3D, std::shared_ptr<mrpt::math::TSegment3D>>(m, "TSegment3D")
+  py::class_<mrpt::math::TSegment3D>(m, "TSegment3D")
       .def(py::init<>())
       .def(py::init<const mrpt::math::TPoint3D&, const mrpt::math::TPoint3D&>())
       .def_readwrite("point1", &mrpt::math::TSegment3D::point1)
@@ -310,7 +310,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TLine2D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TLine2D, std::shared_ptr<mrpt::math::TLine2D>>(m, "TLine2D")
+  py::class_<mrpt::math::TLine2D>(m, "TLine2D")
       .def(py::init<>())
       .def(py::init<const mrpt::math::TPoint2D&, const mrpt::math::TPoint2D&>())
       .def(py::init<double, double, double>(), py::arg("A"), py::arg("B"), py::arg("C"))
@@ -339,7 +339,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TLine3D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TLine3D, std::shared_ptr<mrpt::math::TLine3D>>(m, "TLine3D")
+  py::class_<mrpt::math::TLine3D>(m, "TLine3D")
       .def(py::init<>())
       .def(py::init<const mrpt::math::TPoint3D&, const mrpt::math::TPoint3D&>())
       .def_static(
@@ -359,7 +359,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TPlane
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TPlane, std::shared_ptr<mrpt::math::TPlane>>(m, "TPlane")
+  py::class_<mrpt::math::TPlane>(m, "TPlane")
       .def(py::init<>())
       .def(
           py::init<double, double, double, double>(), py::arg("A"), py::arg("B"), py::arg("C"),
@@ -396,7 +396,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TBoundingBox (double)
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TBoundingBox, std::shared_ptr<mrpt::math::TBoundingBox>>(m, "TBoundingBox")
+  py::class_<mrpt::math::TBoundingBox>(m, "TBoundingBox")
       .def(py::init<const mrpt::math::TPoint3D&, const mrpt::math::TPoint3D&>())
       .def_static("PlusMinusInfinity", &mrpt::math::TBoundingBox::PlusMinusInfinity)
       .def_readwrite("min", &mrpt::math::TBoundingBox::min)
@@ -422,8 +422,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TBoundingBoxf (float)
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TBoundingBoxf, std::shared_ptr<mrpt::math::TBoundingBoxf>>(
-      m, "TBoundingBoxf")
+  py::class_<mrpt::math::TBoundingBoxf>(m, "TBoundingBoxf")
       .def(py::init<const mrpt::math::TPoint3Df&, const mrpt::math::TPoint3Df&>())
       .def_static("PlusMinusInfinity", &mrpt::math::TBoundingBoxf::PlusMinusInfinity)
       .def_readwrite("min", &mrpt::math::TBoundingBoxf::min)
@@ -438,7 +437,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TTwist2D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TTwist2D, std::shared_ptr<mrpt::math::TTwist2D>>(m, "TTwist2D")
+  py::class_<mrpt::math::TTwist2D>(m, "TTwist2D")
       .def(py::init<>())
       .def(py::init<double, double, double>(), py::arg("vx"), py::arg("vy"), py::arg("omega"))
       .def_readwrite("vx", &mrpt::math::TTwist2D::vx)
@@ -453,7 +452,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TTwist3D
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TTwist3D, std::shared_ptr<mrpt::math::TTwist3D>>(m, "TTwist3D")
+  py::class_<mrpt::math::TTwist3D>(m, "TTwist3D")
       .def(py::init<>())
       .def(
           py::init<double, double, double, double, double, double>(), py::arg("vx"), py::arg("vy"),
@@ -473,7 +472,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TPose3DQuat
   // -------------------------------------------------------------------------
-  py::class_<mrpt::math::TPose3DQuat, std::shared_ptr<mrpt::math::TPose3DQuat>>(m, "TPose3DQuat")
+  py::class_<mrpt::math::TPose3DQuat>(m, "TPose3DQuat")
       .def(py::init<>())
       .def(
           py::init<double, double, double, double, double, double, double>(), py::arg("x"),
