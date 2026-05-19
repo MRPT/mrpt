@@ -115,8 +115,7 @@ PYBIND11_MODULE(_bindings, m)
           "y", [](const mrpt::poses::CPose3D &p) { return p.y(); },
           [](mrpt::poses::CPose3D &p, double val) { p.y(val); }, "Y coordinate")
       .def_property(
-          "z",
-          [](const mrpt::poses::CPose3D &p) { return p.z(); },
+          "z", [](const mrpt::poses::CPose3D &p) { return p.z(); },
           [](mrpt::poses::CPose3D &p, double val)
           { p.setFromValues(p.x(), p.y(), val, p.yaw(), p.pitch(), p.roll()); },
           "Z coordinate")
@@ -226,7 +225,15 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("mean", &mrpt::poses::CPose3DPDFGaussianInf::mean)
       .def_readwrite("cov_inv", &mrpt::poses::CPose3DPDFGaussianInf::cov_inv)
       .def("isInfType", &mrpt::poses::CPose3DPDFGaussianInf::isInfType)
-      .def("drawSingleSample", &mrpt::poses::CPose3DPDFGaussianInf::drawSingleSample);
+      .def(
+          "drawSingleSample",
+          [](const mrpt::poses::CPose3DPDFGaussianInf& self)
+          {
+            mrpt::poses::CPose3D out;
+            self.drawSingleSample(out);
+            return out;
+          },
+          "Draws a single sample from the distribution and returns it as a CPose3D.");
 
   // -------------------------------------------------------------------------
   // Averaging SE(2) and SE(3)
