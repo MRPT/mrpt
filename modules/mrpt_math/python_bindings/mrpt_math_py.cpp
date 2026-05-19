@@ -18,6 +18,7 @@
  * ------------------------------------------------------------------------- */
 
 #include <pybind11/eigen.h>
+#include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -158,12 +159,25 @@ PYBIND11_MODULE(_bindings, m)
             {
               throw std::invalid_argument("List must have 2 elements [x, y]");
             }
-            return std::make_shared<mrpt::math::TPoint2D>(v[0], v[1]);
+            return mrpt::math::TPoint2D(v[0], v[1]);
           }))
       .def_readwrite("x", &mrpt::math::TPoint2D::x)
       .def_readwrite("y", &mrpt::math::TPoint2D::y)
+      .def("norm", &mrpt::math::TPoint2D::norm)
+      .def("sqrNorm", &mrpt::math::TPoint2D::sqrNorm)
+      .def("unitarize", &mrpt::math::TPoint2D::unitarize)
       .def("cast_float", [](const mrpt::math::TPoint2D& p) { return p.cast<float>(); })
-      .def("__repr__", [](const mrpt::math::TPoint2D& p) { return p.asString(); });
+      .def(py::self + py::self)
+      .def(py::self - py::self)
+      .def(py::self += py::self)
+      .def(py::self -= py::self)
+      .def(py::self * double())
+      .def(py::self / double())
+      .def(-py::self)
+      .def(py::self == py::self)
+      .def(py::self != py::self)
+      .def("__repr__", [](const mrpt::math::TPoint2D& p) { return p.asString(); })
+      .def("__str__", [](const mrpt::math::TPoint2D& p) { return p.asString(); });
 
   // -------------------------------------------------------------------------
   // TPoint3D
@@ -178,13 +192,28 @@ PYBIND11_MODULE(_bindings, m)
             {
               throw std::invalid_argument("List must have 3 elements [x, y, z]");
             }
-            return std::make_shared<mrpt::math::TPoint3D>(v[0], v[1], v[2]);
+            return mrpt::math::TPoint3D(v[0], v[1], v[2]);
           }))
       .def_readwrite("x", &mrpt::math::TPoint3D::x)
       .def_readwrite("y", &mrpt::math::TPoint3D::y)
       .def_readwrite("z", &mrpt::math::TPoint3D::z)
+      .def("norm", &mrpt::math::TPoint3D::norm)
+      .def("sqrNorm", &mrpt::math::TPoint3D::sqrNorm)
+      .def("unitarize", &mrpt::math::TPoint3D::unitarize)
+      .def("dot", &mrpt::math::TPoint3D::dot)
+      .def("cross", &mrpt::math::TPoint3D::cross)
       .def("cast_float", [](const mrpt::math::TPoint3D& p) { return p.cast<float>(); })
-      .def("__repr__", [](const mrpt::math::TPoint3D& p) { return p.asString(); });
+      .def(py::self + py::self)
+      .def(py::self - py::self)
+      .def(py::self += py::self)
+      .def(py::self -= py::self)
+      .def(py::self * double())
+      .def(py::self / double())
+      .def(-py::self)
+      .def(py::self == py::self)
+      .def(py::self != py::self)
+      .def("__repr__", [](const mrpt::math::TPoint3D& p) { return p.asString(); })
+      .def("__str__", [](const mrpt::math::TPoint3D& p) { return p.asString(); });
 
   // -------------------------------------------------------------------------
   // TPoint2Df
@@ -199,12 +228,20 @@ PYBIND11_MODULE(_bindings, m)
             {
               throw std::invalid_argument("List must have 2 elements [x, y]");
             }
-            return std::make_shared<mrpt::math::TPoint2Df>(v[0], v[1]);
+            return mrpt::math::TPoint2Df(v[0], v[1]);
           }))
       .def_readwrite("x", &mrpt::math::TPoint2Df::x)
       .def_readwrite("y", &mrpt::math::TPoint2Df::y)
+      .def("norm", &mrpt::math::TPoint2Df::norm)
+      .def("sqrNorm", &mrpt::math::TPoint2Df::sqrNorm)
+      .def("unitarize", &mrpt::math::TPoint2Df::unitarize)
       .def("cast_double", [](const mrpt::math::TPoint2Df& p) { return p.cast<double>(); })
-      .def("__repr__", [](const mrpt::math::TPoint2Df& p) { return p.asString(); });
+      .def(py::self + py::self)
+      .def(py::self - py::self)
+      .def(py::self == py::self)
+      .def(py::self != py::self)
+      .def("__repr__", [](const mrpt::math::TPoint2Df& p) { return p.asString(); })
+      .def("__str__", [](const mrpt::math::TPoint2Df& p) { return p.asString(); });
 
   // -------------------------------------------------------------------------
   // TPoint3Df
@@ -219,13 +256,23 @@ PYBIND11_MODULE(_bindings, m)
             {
               throw std::invalid_argument("List must have 3 elements [x, y, z]");
             }
-            return std::make_shared<mrpt::math::TPoint3Df>(v[0], v[1], v[2]);
+            return mrpt::math::TPoint3Df(v[0], v[1], v[2]);
           }))
       .def_readwrite("x", &mrpt::math::TPoint3Df::x)
       .def_readwrite("y", &mrpt::math::TPoint3Df::y)
       .def_readwrite("z", &mrpt::math::TPoint3Df::z)
+      .def("norm", &mrpt::math::TPoint3Df::norm)
+      .def("sqrNorm", &mrpt::math::TPoint3Df::sqrNorm)
+      .def("unitarize", &mrpt::math::TPoint3Df::unitarize)
+      .def("dot", &mrpt::math::TPoint3Df::dot)
+      .def("cross", &mrpt::math::TPoint3Df::cross)
       .def("cast_double", [](const mrpt::math::TPoint3Df& p) { return p.cast<double>(); })
-      .def("__repr__", [](const mrpt::math::TPoint3Df& p) { return p.asString(); });
+      .def(py::self + py::self)
+      .def(py::self - py::self)
+      .def(py::self == py::self)
+      .def(py::self != py::self)
+      .def("__repr__", [](const mrpt::math::TPoint3Df& p) { return p.asString(); })
+      .def("__str__", [](const mrpt::math::TPoint3Df& p) { return p.asString(); });
 
   // -------------------------------------------------------------------------
   // TPose2D
@@ -240,12 +287,21 @@ PYBIND11_MODULE(_bindings, m)
             {
               throw std::invalid_argument("List must have 3 elements [x, y, phi]");
             }
-            return std::make_shared<mrpt::math::TPose2D>(v[0], v[1], v[2]);
+            return mrpt::math::TPose2D(v[0], v[1], v[2]);
           }))
       .def_readwrite("x", &mrpt::math::TPose2D::x)
       .def_readwrite("y", &mrpt::math::TPose2D::y)
       .def_readwrite("phi", &mrpt::math::TPose2D::phi)
-      .def("__repr__", [](const mrpt::math::TPose2D& p) { return p.asString(); });
+      .def("norm", &mrpt::math::TPose2D::norm)
+      .def("normalizePhi", &mrpt::math::TPose2D::normalizePhi)
+      .def("composePoint", &mrpt::math::TPose2D::composePoint)
+      .def("inverseComposePoint", &mrpt::math::TPose2D::inverseComposePoint)
+      .def(py::self + py::self)
+      .def(py::self - py::self)
+      .def(py::self == py::self)
+      .def(py::self != py::self)
+      .def("__repr__", [](const mrpt::math::TPose2D& p) { return p.asString(); })
+      .def("__str__", [](const mrpt::math::TPose2D& p) { return p.asString(); });
 
   // -------------------------------------------------------------------------
   // TPose3D
@@ -260,7 +316,7 @@ PYBIND11_MODULE(_bindings, m)
             {
               throw std::invalid_argument("List must have 6 elements [x, y, z, yaw, pitch, roll]");
             }
-            return std::make_shared<mrpt::math::TPose3D>(v[0], v[1], v[2], v[3], v[4], v[5]);
+            return mrpt::math::TPose3D(v[0], v[1], v[2], v[3], v[4], v[5]);
           }))
       .def_readwrite("x", &mrpt::math::TPose3D::x)
       .def_readwrite("y", &mrpt::math::TPose3D::y)
@@ -268,7 +324,27 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("yaw", &mrpt::math::TPose3D::yaw)
       .def_readwrite("pitch", &mrpt::math::TPose3D::pitch)
       .def_readwrite("roll", &mrpt::math::TPose3D::roll)
-      .def("__repr__", [](const mrpt::math::TPose3D& p) { return p.asString(); });
+      .def("norm", &mrpt::math::TPose3D::norm)
+      .def(
+          "composePoint",
+          py::overload_cast<const mrpt::math::TPoint3D&>(
+              &mrpt::math::TPose3D::composePoint, py::const_))
+      .def(
+          "inverseComposePoint",
+          py::overload_cast<const mrpt::math::TPoint3D&>(
+              &mrpt::math::TPose3D::inverseComposePoint, py::const_))
+      .def(
+          "getRotationMatrix",
+          py::overload_cast<>(&mrpt::math::TPose3D::getRotationMatrix, py::const_))
+      .def(
+          "getHomogeneousMatrix",
+          py::overload_cast<>(&mrpt::math::TPose3D::getHomogeneousMatrix, py::const_))
+      .def(py::self + py::self)
+      .def(py::self == py::self)
+      .def(py::self != py::self)
+      .def("__neg__", [](const mrpt::math::TPose3D& p) { return -p; })
+      .def("__repr__", [](const mrpt::math::TPose3D& p) { return p.asString(); })
+      .def("__str__", [](const mrpt::math::TPose3D& p) { return p.asString(); });
 
   // =========================================================================
   // Geometry primitives (Phase 0.1 extensions)
