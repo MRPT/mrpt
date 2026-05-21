@@ -107,7 +107,7 @@ class MyArtProvider : public wxArtProvider
 
 // CreateBitmap function
 wxBitmap MyArtProvider::CreateBitmap(
-    const wxArtID& id, const wxArtClient& client, const wxSize& size)
+    const wxArtID& id, const wxArtClient& client, [[maybe_unused]] const wxSize& size)
 {
   if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(icono_main_xpm);
   if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO)) return wxBitmap(mrpt_logo_xpm);
@@ -184,7 +184,7 @@ void CMyGLCanvas::OnRenderError(const wxString& str)
 
   if (!logWin)
   {
-    logWin = new wxLogWindow(this, wxT("Log window"), false);
+    logWin = new wxLogWindow(this, "Log window", false);
     logWin->Show();
   }
 
@@ -247,7 +247,7 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
   str = mrpt::format("%.02f FPS", meanEstimatedFPS);
   theWindow->StatusBar1->SetStatusText(str.c_str(), 2);
 
-  str = mrpt::format("%u viewports", static_cast<unsigned>(getOpenGLSceneRef())->viewportsCount());
+  str = mrpt::format("%u viewports", static_cast<unsigned>(getOpenGLSceneRef()->viewportsCount()));
   theWindow->StatusBar1->SetStatusText(str.c_str(), 3);
 }
 
@@ -819,8 +819,8 @@ void _DSceneViewerFrame::OnNewScene([[maybe_unused]] wxCommandEvent& event)
 
 void _DSceneViewerFrame::OnOpenFile([[maybe_unused]] wxCommandEvent& event)
 {
-  wxString caption = wxT("Choose a file to open");
-  wxString wildcard = wxT("3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
+  wxString caption = "Choose a file to open";
+  wxString wildcard = "3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*";
 
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
@@ -832,7 +832,7 @@ void _DSceneViewerFrame::OnOpenFile([[maybe_unused]] wxCommandEvent& event)
   {
     wxString fileName = dialog.GetPath();
 
-    loadFromFile(std::string(fileName.mb_str()));
+    loadFromFile(fileName.ToStdString());
   }
 }
 
@@ -872,7 +872,8 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
     // try to autoguess the clip distances:
     const auto sceneBbox = openGLSceneRef->getBoundingBox();
     const double sceneMaxScale = std::max<double>(1000.0, (sceneBbox.max - sceneBbox.min).norm());
-    openGLSceneRef->getViewport()->setViewportClipDistances(0.1, 5.0 * sceneMaxScale);
+    openGLSceneRef->getViewport()->setViewportClipDistances(
+        0.1f, static_cast<float>(5.0 * sceneMaxScale));
 
     // Change the camera if necessary:
     if (openGLSceneRef->followCamera())
@@ -997,7 +998,7 @@ void _DSceneViewerFrame::OnbtnAutoplayClicked([[maybe_unused]] wxCommandEvent& e
   if (btnAutoplay->GetValue()) m_autoplayTimer->Start(5, true);  // One-shot:
 }
 
-void _DSceneViewerFrame::OntimAutoplay(wxTimerEvent& event)
+void _DSceneViewerFrame::OntimAutoplay([[maybe_unused]] wxTimerEvent& event)
 {
   // Load next file:
   wxKeyEvent dummyEvent;
@@ -1031,7 +1032,10 @@ void _DSceneViewerFrame::OnMenuBackColor([[maybe_unused]] wxCommandEvent& event)
 
   auto bkCol = m_canvas->getOpenGLSceneRef()->getViewport()->getCustomBackgroundColor();
 
-  color.Set((int)(255 * bkCol.R), (int)(255 * bkCol.G), (int)(255 * bkCol.B));
+  color.Set(
+      static_cast<unsigned char>(static_cast<int>(255 * bkCol.R)),
+      static_cast<unsigned char>(static_cast<int>(255 * bkCol.G)),
+      static_cast<unsigned char>(static_cast<int>(255 * bkCol.B)));
 
   colourData.SetColour(color);
   colourData.SetChooseFull(true);
@@ -1088,7 +1092,7 @@ void _DSceneViewerFrame::OnNext([[maybe_unused]] wxCommandEvent& event)
   m_canvas->OnChar(evn);
 }
 
-void _DSceneViewerFrame::OnClose(wxCloseEvent& event) {}
+void _DSceneViewerFrame::OnClose([[maybe_unused]] wxCloseEvent& event) {}
 void _DSceneViewerFrame::OnBtnRecordClicked([[maybe_unused]] wxCommandEvent& event)
 {
   if (btnCapture->GetValue())
@@ -1100,7 +1104,7 @@ void _DSceneViewerFrame::OnBtnRecordClicked([[maybe_unused]] wxCommandEvent& eve
 
     if (dirDialog.ShowModal() == wxID_OK)
     {
-      capturingDir = string(dirDialog.GetPath().mb_str());
+      capturingDir = string(dirDialog.GetPath().ToStdString());
       isCapturing = true;
       captureCount = 0;
       btnCapture->SetValue(true);
@@ -1177,14 +1181,14 @@ void _DSceneViewerFrame::OnInsert3DS([[maybe_unused]] wxCommandEvent& event)
 {
   try
   {
-    wxString caption = wxT("Choose a file to import");
+    wxString caption = "Choose a file to import";
     wxString wildcard =
-        wxT("3D models (All Assimp "
-            "formats)|*.dae;*.blend;*.3ds;*.ase;*.obj;*.ifc;*.xgl;.zgl;*."
-            "ply;*.dxf;.lwo;*.lws;*.lxo;*.stl;*.x;*.ac;*.ms3d;*.cob;.scn;*."
-            "bvh;*.csm;*.xml;*.irrmesh;*.irr;*.mdl;*.md2;*.md3;*.pk3;*.mdc;"
-            "*.md5*;*.smd;.vta;*.m3;*.3d;*.b3d;*.q3d;*.q3s;*.nff;*.nff;*."
-            "off;*.raw;*.ter;*.mdl;*.hmp;*.ndo;|All files (*.*)|*.*");
+        "3D models (All Assimp "
+        "formats)|*.dae;*.blend;*.3ds;*.ase;*.obj;*.ifc;*.xgl;.zgl;*."
+        "ply;*.dxf;.lwo;*.lws;*.lxo;*.stl;*.x;*.ac;*.ms3d;*.cob;.scn;*."
+        "bvh;*.csm;*.xml;*.irrmesh;*.irr;*.mdl;*.md2;*.md3;*.pk3;*.mdc;"
+        "*.md5*;*.smd;.vta;*.m3;*.3d;*.b3d;*.q3d;*.q3s;*.nff;*.nff;*."
+        "off;*.raw;*.ter;*.mdl;*.hmp;*.ndo;|All files (*.*)|*.*";
     wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
     wxString defaultFilename;
 
@@ -1196,7 +1200,7 @@ void _DSceneViewerFrame::OnInsert3DS([[maybe_unused]] wxCommandEvent& event)
       return;
     }
     wxString fileName = dialog.GetPath();
-    std::string fil = string(fileName.mb_str());
+    std::string fil = string(fileName.ToStdString());
 
     saveLastUsedDirectoryToCfgFile(fil);
 
@@ -1225,8 +1229,8 @@ void _DSceneViewerFrame::OnMenuSave([[maybe_unused]] wxCommandEvent& event)
 {
   try
   {
-    wxString caption = wxT("Save scene to file");
-    wxString wildcard = wxT("3Dscene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
+    wxString caption = "Save scene to file";
+    wxString wildcard = "3Dscene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*";
     wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
     wxString defaultFilename;
 
@@ -1239,7 +1243,7 @@ void _DSceneViewerFrame::OnMenuSave([[maybe_unused]] wxCommandEvent& event)
     }
     wxString fileName = dialog.GetPath();
 
-    CCompressedOutputStream fo(string(fileName.mb_str()));
+    CCompressedOutputStream fo(fileName.ToStdString());
     mrpt::serialization::archiveFrom(fo) << *m_canvas->getOpenGLSceneRef();
   }
   catch (const std::exception& e)
@@ -1255,7 +1259,7 @@ void _DSceneViewerFrame::OnMenuSave([[maybe_unused]] wxCommandEvent& event)
   }
 }
 
-void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
+void _DSceneViewerFrame::OnTravellingTrigger([[maybe_unused]] wxTimerEvent& event)
 {
   try
   {
@@ -1323,8 +1327,8 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 
         if ((m_canvas->orbitCameraController().getAzimuthDegrees() + step) < maxv)
         {
-          m_canvas->orbitCameraController().setAzimuthDegrees(
-              m_canvas->orbitCameraController().getAzimuthDegrees() + step / 10.0);
+          m_canvas->orbitCameraController().setAzimuthDegrees(static_cast<float>(
+              m_canvas->orbitCameraController().getAzimuthDegrees() + step / 10.0));
         }
         else
         {
@@ -1384,12 +1388,13 @@ void _DSceneViewerFrame::OnStartCameraTravelling([[maybe_unused]] wxCommandEvent
       double max_value =
           atof(iniFile->read_string("Spherical travelling", "Max value", "90").c_str());
 
-      m_canvas->orbitCameraController().setCameraPointing(target_x, target_y, target_z);
-      m_canvas->orbitCameraController().setZoomDistance(zoom);
-      m_canvas->orbitCameraController().setElevationDegrees(elevation);
-      m_canvas->orbitCameraController().setAzimuthDegrees(azimuth - min_value);
+      m_canvas->orbitCameraController().setCameraPointing(
+          static_cast<float>(target_x), static_cast<float>(target_y), static_cast<float>(target_z));
+      m_canvas->orbitCameraController().setZoomDistance(static_cast<float>(zoom));
+      m_canvas->orbitCameraController().setElevationDegrees(static_cast<float>(elevation));
+      m_canvas->orbitCameraController().setAzimuthDegrees(static_cast<float>(azimuth - min_value));
 
-      maxv = azimuth + max_value;
+      maxv = static_cast<int>(azimuth + max_value);
 
       m_travelling_is_arbitrary = false;  // Circular
       m_tTravelling.Start(100);
@@ -1408,7 +1413,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling([[maybe_unused]] wxCommandEvent
   }
 }
 
-void _DSceneViewerFrame::OnClose1(wxCloseEvent& event) {}
+void _DSceneViewerFrame::OnClose1([[maybe_unused]] wxCloseEvent& event) {}
 void _DSceneViewerFrame::OnMenuAddSICK([[maybe_unused]] wxCommandEvent& event)
 {
   try
@@ -1455,10 +1460,10 @@ void _DSceneViewerFrame::OnMenuItem14Selected([[maybe_unused]] wxCommandEvent& e
   frame.flipVertical();
 
   // Save:
-  wxString caption = wxT("Save snapshot to file");
-  wxString wildcard = wxT("Image files (*.png)|*.png|All files (*.*)|*.*");
+  wxString caption = "Save snapshot to file";
+  wxString wildcard = "Image files (*.png)|*.png|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-  wxString defaultFilename = wxT("snapshot.png");
+  wxString defaultFilename = "snapshot.png";
 
   wxFileDialog dialog(
       this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -1467,7 +1472,7 @@ void _DSceneViewerFrame::OnMenuItem14Selected([[maybe_unused]] wxCommandEvent& e
   {
     return;
   }
-  bool savedOk = frame.saveToFile(std::string(dialog.GetPath().mb_str()));
+  bool savedOk = frame.saveToFile(std::string(dialog.GetPath().ToStdString()));
   ASSERT_(savedOk);
 }
 
@@ -1500,7 +1505,10 @@ struct TSceneStats
 
 TSceneStats sceneStats;
 
-void func_gather_stats(const mrpt::viz::CVisualObject::Ptr& o) { sceneStats.nObjects++; }
+void func_gather_stats([[maybe_unused]] const mrpt::viz::CVisualObject::Ptr& o)
+{
+  sceneStats.nObjects++;
+}
 
 void _DSceneViewerFrame::OnMenuPrintScene(wxCommandEvent&)
 {
@@ -1567,7 +1575,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud([[maybe_unused]] wxComman
     {
       return;
     }
-    const std::string fil = string(dialog.GetPath().mb_str());
+    const std::string fil = string(dialog.GetPath().ToStdString());
     saveLastUsedDirectoryToCfgFile(fil);
 
     CDlgPLYOptions dlgPLY(this);
@@ -1619,8 +1627,8 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud([[maybe_unused]] wxComman
 
       double ptSize;
       dlgPLY.cbPointSize->GetStringSelection().ToCDouble(&ptSize);
-      if (gl_points) gl_points->setPointSize(ptSize);
-      if (gl_points_col) gl_points_col->setPointSize(ptSize);
+      if (gl_points) gl_points->setPointSize(static_cast<float>(ptSize));
+      if (gl_points_col) gl_points_col->setPointSize(static_cast<float>(ptSize));
 
       if (gl_points)
       {
@@ -1738,7 +1746,7 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY([[maybe_unused]] wxCommandEve
     {
       return;
     }
-    const std::string fil = string(dialog.GetPath().mb_str());
+    const std::string fil = string(dialog.GetPath().ToStdString());
     saveLastUsedDirectoryToCfgFile(fil);
 
     // Go thru all point clouds and save them:
@@ -1776,7 +1784,7 @@ void _DSceneViewerFrame::OnMenuItemHighResRender([[maybe_unused]] wxCommandEvent
       return;
     }
 
-    const std::string sTargetFil = string(dialog.GetPath().mb_str());
+    const std::string sTargetFil = string(dialog.GetPath().ToStdString());
     saveLastUsedDirectoryToCfgFile(sTargetFil);
 
     {
@@ -1787,21 +1795,21 @@ void _DSceneViewerFrame::OnMenuItemHighResRender([[maybe_unused]] wxCommandEvent
       // So use wxGetTextFromUser() instead
       wxString ssW =
           wxGetTextFromUser(_("Render image size"), _("Width in pixels:"), _("1024"), this);
-      std::string sW = std::string(ssW.mb_str());
+      std::string sW = std::string(ssW.ToStdString());
       const long width = atoi(sW.c_str());
 
       wxString ssH =
           wxGetTextFromUser(_("Render image size"), _("Height in pixels:"), _("768"), this);
-      std::string sH = std::string(ssH.mb_str());
+      std::string sH = std::string(ssH.ToStdString());
       const long height = atoi(sH.c_str());
 
       mrpt::opengl::CFBORender::Parameters params;
-      params.width = width;
-      params.height = height;
+      params.width = static_cast<unsigned int>(width);
+      params.height = static_cast<unsigned int>(height);
       params.create_EGL_context = false;  // dont, will reuse existing one
 
       mrpt::opengl::CFBORender render(params);
-      CImage frame(width, height, CH_RGB);
+      CImage frame(static_cast<int32_t>(width), static_cast<int32_t>(height), CH_RGB);
 
       // render the scene
       render.render_RGB(*m_canvas->getOpenGLSceneRef(), frame);
@@ -1894,7 +1902,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected([[maybe_unused]] wxCommandEv
   vector<const TRuntimeClassId*> selected_classes;
   for (size_t i = 0; i < selections.Count(); i++)
   {
-    const std::string sName = std::string(glClassNames[selections[i]].mb_str());
+    const std::string sName = std::string(glClassNames[selections[i]].ToStdString());
     selected_classes.push_back(mrpt::rtti::findRegisteredClass(sName));
   }
 
@@ -1920,8 +1928,8 @@ void _DSceneViewerFrame::OnmnuSelectionScaleSelected([[maybe_unused]] wxCommandE
 {
   wxString ssScale = wxGetTextFromUser(
       _("Multiply scale of selected objects"), _("Scale factor:"), _("1.0"), this);
-  std::string sScale = std::string(ssScale.mb_str());
-  const float s = atof(sScale.c_str());
+  std::string sScale = std::string(ssScale.ToStdString());
+  const float s = static_cast<float>(atof(sScale.c_str()));
 
   for (auto& m_selected_gl_object : m_selected_gl_objects)
     if (m_selected_gl_object)
@@ -1951,7 +1959,7 @@ void _DSceneViewerFrame::OnmnuImportImageView(wxCommandEvent&)
     {
       return;
     }
-    const std::string fil = string(dialog.GetPath().mb_str());
+    const std::string fil = string(dialog.GetPath().ToStdString());
     saveLastUsedDirectoryToCfgFile(fil);
 
     mrpt::img::CImage im;

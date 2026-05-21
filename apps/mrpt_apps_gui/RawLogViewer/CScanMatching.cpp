@@ -561,7 +561,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 
   // Load ICP options:
   // ------------------------------------------
-  CConfigFileMemory icpCfg((string(edOptICP->GetValue().mb_str())));
+  CConfigFileMemory icpCfg((edOptICP->GetValue().ToStdString()));
   icp.options.loadFromConfigFile(icpCfg, "ICP");
 
   // EXTRA options:
@@ -582,7 +582,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
   bool useGridMap = rbGrid->GetValue();
   if (!useGridMap)
   {
-    CConfigFileMemory refCfg(string(edOptRefPnt->GetValue().mb_str()));
+    CConfigFileMemory refCfg(edOptRefPnt->GetValue().ToStdString());
     refMapPt.insertionOptions.loadFromConfigFile(refCfg, "InsertionOptions");
     std::cout << "REFERENCE MAP FOR THE ICP:"
               << "\n";
@@ -592,7 +592,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
   }
   else
   {
-    CConfigFileMemory refCfg(string(edOptRefGrid->GetValue().mb_str()));
+    CConfigFileMemory refCfg(edOptRefGrid->GetValue().ToStdString());
     float gridRes = refCfg.read_float("Construction", "resolution", 0.05f);
     refMapGrid.setSize(-10, 10, -10, 10, gridRes);
     refMapGrid.insertionOptions.loadFromConfigFile(refCfg, "InsertionOptions");
@@ -607,7 +607,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
   // Load new map options:
   // ----------------------------
   {
-    CConfigFileMemory refCfg(string(edOptAlignMap->GetValue().mb_str()));
+    CConfigFileMemory refCfg(edOptAlignMap->GetValue().ToStdString());
     newMapPt.insertionOptions.loadFromConfigFile(refCfg, "InsertionOptions");
     newMapPt.renderOptions.color = mrpt::img::TColorf(1.0f, .0f, .0f);
     newMapPt.renderOptions.point_size = 2.0;

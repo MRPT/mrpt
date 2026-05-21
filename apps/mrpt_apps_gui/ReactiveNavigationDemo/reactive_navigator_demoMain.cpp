@@ -55,7 +55,9 @@ class MyArtProvider : public wxArtProvider
 
 // CreateBitmap function
 wxBitmap MyArtProvider::CreateBitmap(
-    const wxArtID& id, const wxArtClient& client, const wxSize& size)
+    const wxArtID& id,
+    [[maybe_unused]] const wxArtClient& client,
+    [[maybe_unused]] const wxSize& size)
 {
   if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(main_icon_xpm);
   if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO)) return wxBitmap(mrpt_logo_xpm);
@@ -152,7 +154,8 @@ BEGIN_EVENT_TABLE(reactive_navigator_demoframe, wxFrame)
 //*)
 END_EVENT_TABLE()
 
-reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent, wxWindowID id) :
+reactive_navigator_demoframe::reactive_navigator_demoframe(
+    wxWindow* parent, [[maybe_unused]] wxWindowID id) :
     m_gridMap(),
     m_targetPoint(.0, .0),
     m_is_running(false),
@@ -769,12 +772,12 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent, wxW
   {
   }
 
-  btnStart->SetToolTip(wxT("Initializes and starts the simulator."));
-  btnPlaceTarget->SetToolTip(wxT("Left-click on the map to place a navigation command."));
-  btnStop->SetToolTip(wxT("Stops the simulation."));
+  btnStart->SetToolTip("Initializes and starts the simulator.");
+  btnPlaceTarget->SetToolTip("Left-click on the map to place a navigation command.");
+  btnStop->SetToolTip("Stops the simulation.");
   btnSetWaypointSeq->SetToolTip(
-      wxT("Left-click on the map to place waypoints, right click to end and "
-          "start navigation."));
+      "Left-click on the map to place waypoints, right click to end and "
+      "start navigation.");
 
   SplitterWindow1->SetSashPosition(200);
   SplitterWindow2->SetSashPosition(90);
@@ -1081,7 +1084,7 @@ void reactive_navigator_demoframe::OnbtnStopClick([[maybe_unused]] wxCommandEven
 }
 
 // Run simulator (when "running"):
-void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
+void reactive_navigator_demoframe::OntimRunSimulTrigger([[maybe_unused]] wxTimerEvent& event)
 {
   try
   {
@@ -1108,7 +1111,7 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
   }
   catch (const std::exception& e)
   {
-    wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
+    wxMessageBox(mrpt::exception_to_str(e), "Exception", wxOK, this);
     // Stop:
     wxCommandEvent ev;
     OnbtnStopClick(ev);
@@ -1124,7 +1127,7 @@ bool reactive_navigator_demoframe::reinitSimulator()
   {
     // Params for simulator-to-nav interface:
     CConfigFileMemory cfg;
-    cfg.setContent(std::string(edParamsReactive->GetValue().mb_str()));
+    cfg.setContent(edParamsReactive->GetValue().ToStdString());
     // m_robotSimul2NavInterface->loadConfigFile(cfg, "GLOBAL_CONFIG");
   }
 
@@ -1142,14 +1145,14 @@ bool reactive_navigator_demoframe::reinitSimulator()
       react->enableKeepLogRecords();
       react->enableLogFile(cbNavLog->IsChecked());
 
-      cfg.setContent(std::string(edParamsReactive->GetValue().mb_str()));
+      cfg.setContent(edParamsReactive->GetValue().ToStdString());
       break;
     }
     case 1:
     {
       m_navMethod =
           std::make_unique<mrpt::nav::CNavigatorManualSequence>(*m_robotSimul2NavInterface);
-      cfg.setContent(std::string(edManualSeqs->GetValue().mb_str()));
+      cfg.setContent(edManualSeqs->GetValue().ToStdString());
       break;
     }
     default:
@@ -1182,13 +1185,14 @@ bool reactive_navigator_demoframe::reinitSimulator()
   // params for simulator itself:
   {
     CConfigFileMemory cfgGeneral;
-    cfgGeneral.setContent(std::string(edParamsGeneral->GetValue().mb_str()));
+    cfgGeneral.setContent(edParamsGeneral->GetValue().ToStdString());
     m_simul_options.loadFromConfigFile(cfgGeneral, "SIMULATOR");
   }
 
   // Update GUI stuff:
   gl_robot_sensor_range->setDiskRadius(
-      m_simul_options.MAX_SENSOR_RADIUS * 1.01, m_simul_options.MAX_SENSOR_RADIUS * 0.99);
+      static_cast<float>(m_simul_options.MAX_SENSOR_RADIUS * 1.01),
+      static_cast<float>(m_simul_options.MAX_SENSOR_RADIUS * 0.99));
   gl_target->setVisibility(false);
   gl_robot_ptg_prediction->clear();
 
@@ -1226,14 +1230,15 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
     // Simulate 360deg range scan:
     CObservation2DRangeScan simulatedScan;
 
-    simulatedScan.aperture = m_simul_options.SENSOR_FOV;
+    simulatedScan.aperture = static_cast<float>(m_simul_options.SENSOR_FOV);
     simulatedScan.rightToLeft = true;
-    simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
+    simulatedScan.maxRange = static_cast<float>(m_simul_options.MAX_SENSOR_RADIUS);
     simulatedScan.sensorPose = CPose3D(0.10, 0, 0, 0, 0, 0);
 
     m_gridMap.laserScanSimulator(
-        simulatedScan, CPose2D(m_robotSimul->getCurrentGTPose()), 0.5,
-        m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD);
+        simulatedScan, CPose2D(m_robotSimul->getCurrentGTPose()), 0.5f,
+        m_simul_options.SENSOR_NUM_RANGES,
+        static_cast<float>(m_simul_options.SENSOR_RANGE_NOISE_STD));
 
     // Build the obstacles points map for the reactive:
     {
@@ -1334,10 +1339,11 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
         {
           const double sec = log->gaps_ini[i] + j * (log->gaps_end[i] - log->gaps_ini[i]) /
                                                     static_cast<double>(N_STEPS - 1);
-          const double ang = M_PI * (-1.0 + 2.0 * sec / nObs);
+          const double ang = M_PI * (-1.0 + 2.0 * sec / static_cast<double>(nObs));
 
-          const double d = lfr.infoPerPTG[sel_PTG].TP_Obstacles[sec] - 0.05;
-          gl_nd_gaps->appendLineStrip(d * cos(ang), d * sin(ang), 0);
+          const double d = lfr.infoPerPTG[sel_PTG].TP_Obstacles[static_cast<long>(sec)] - 0.05;
+          gl_nd_gaps->appendLineStrip(
+              static_cast<float>(d * cos(ang)), static_cast<float>(d * sin(ang)), 0);
         }
         gl_nd_gaps->appendLineStrip(0, 0, 0);
       }
@@ -1350,9 +1356,10 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
       for (size_t i = 0; i <= nObs; i++)
       {
         const double d0 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[i % nObs];
-        const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs) + 0.5) / nObs);
+        const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs) + 0.5) / static_cast<double>(nObs));
         const double d1 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[(i + 1) % nObs];
-        const double a1 = M_PI * (-1.0 + 2.0 * (((i + 1) % nObs) + 0.5) / nObs);
+        const double a1 =
+            M_PI * (-1.0 + 2.0 * (((i + 1) % nObs) + 0.5) / static_cast<double>(nObs));
         gl_tp_obstacles->appendLine(
             d0 * cos(a0), d0 * sin(a0), 0.0, d1 * cos(a1), d1 * sin(a1), 0.0);
       }
@@ -1363,14 +1370,15 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
       const double desiredDirection = lfr.infoPerPTG[sel_PTG].desiredDirection;
       const double d = lfr.infoPerPTG[sel_PTG].desiredSpeed;  /// ROBOT_MAX_SPEED;
       gl_line_direction->setLineCoords(
-          0, 0, 0, cos(desiredDirection) * d, sin(desiredDirection) * d, 0);
+          0, 0, 0, static_cast<float>(cos(desiredDirection) * d),
+          static_cast<float>(sin(desiredDirection) * d), 0);
     }
 
     // TP Target:
     gl_rel_target->clear();
     for (const auto& t : lfr.infoPerPTG[sel_PTG].TP_Targets)
     {
-      gl_rel_target->insertPoint(t.x, t.y, .0);
+      gl_rel_target->insertPoint(static_cast<float>(t.x), static_cast<float>(t.y), .0f);
     }
 
     // TP Robot:
@@ -1383,7 +1391,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
   {
     // Selected PTG path:
     if (lfr.nSelectedPTG <=
-        static_cast<int>(ptg_nav)->getPTG_count())  // the == case is for "NOP motion cmd"
+        static_cast<int>(ptg_nav->getPTG_count()))  // the == case is for "NOP motion cmd"
     {
       const bool is_NOP_op = (lfr.nSelectedPTG == ptg_nav->getPTG_count());
       const int idx_ptg = is_NOP_op ? lfr.ptg_index_NOP : lfr.nSelectedPTG;
@@ -1397,12 +1405,13 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 
         const int selected_k =
             is_NOP_op ? lfr.ptg_last_k_NOP : ptg->alpha2index(ipp.desiredDirection);
-        float max_dist = ptg->getRefDistance();
+        float max_dist = static_cast<float>(ptg->getRefDistance());
         gl_robot_ptg_prediction->clear();
 
         ptg->updateNavDynamicState(is_NOP_op ? ipp.lastDynState : ipp.dynState);
 
-        ptg->renderPathAsSimpleLine(selected_k, *gl_robot_ptg_prediction, 0.10, max_dist);
+        ptg->renderPathAsSimpleLine(
+            static_cast<uint16_t>(selected_k), *gl_robot_ptg_prediction, 0.10f, max_dist);
         gl_robot_ptg_prediction->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00));
 
         // Place it:
@@ -1422,8 +1431,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
           for (double d = min_shape_dists; d < max_dist; d += min_shape_dists)
           {
             uint32_t step = 0;
-            if (!ptg->getPathStepForDist(selected_k, d, step)) continue;
-            const auto p = ptg->getPathPose(selected_k, step);
+            if (!ptg->getPathStepForDist(static_cast<uint16_t>(selected_k), d, step)) continue;
+            const auto p = ptg->getPathPose(static_cast<uint16_t>(selected_k), step);
             ptg->add_robotShape_to_setOfLines(*gl_robot_ptg_prediction, mrpt::poses::CPose2D(p));
           }
         }
@@ -1439,7 +1448,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
     if (!wxFrWpInfo)
     {
       wxFrWpInfo = new wxFrame(
-          this, -1, wxT("Waypoints info"), wxDefaultPosition, wxSize(400, 150),
+          this, -1, "Waypoints info", wxDefaultPosition, wxSize(400, 150),
           wxRESIZE_BORDER | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxCAPTION | wxCLIP_CHILDREN |
               wxSTAY_ON_TOP);
 
@@ -1492,7 +1501,7 @@ void reactive_navigator_demoframe::updateViewsDynamicObjects()
     const double s = 4 * t * (TARGET_BOUNCE_MAX - TARGET_BOUNCE_MIN) * (1 - t) + TARGET_BOUNCE_MIN;
 
     gl_target->setLocation(m_targetPoint.x, m_targetPoint.y, 0);
-    gl_target->setScale(s);
+    gl_target->setScale(static_cast<float>(s));
   }
 
   // Labels:
@@ -1583,7 +1592,7 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
     };
 
     StatusBar1->SetStatusText(
-        wxString::Format(wxT("X=%.03f Y=%.04f Z=0"), m_curCursorPos.x, m_curCursorPos.y), 2);
+        wxString::Format("X=%.03f Y=%.04f Z=0", m_curCursorPos.x, m_curCursorPos.y), 2);
   }
 
   if (!skip_normal_process)
@@ -1757,8 +1766,8 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick([[maybe_unused]] wxCommandE
 
   wxFileDialog dlg(
       this, _("Select grid map to load"), _("."), _("grid.png"),
-      wxT("Image files (*.png,*.jpg,*.gif) or binary gridmap files "
-          "|*.png;*.jpg;*.gif;*.gridmap;*.gridmap.gz|All files (*.*)|*.*"),
+      "Image files (*.png,*.jpg,*.gif) or binary gridmap files "
+      "|*.png;*.jpg;*.gif;*.gridmap;*.gridmap.gz|All files (*.*)|*.*",
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
   if (dlg.ShowModal() != wxID_OK)
@@ -1766,7 +1775,7 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick([[maybe_unused]] wxCommandE
     return;
   }
   const wxString sFil = dlg.GetPath();
-  const std::string fil = std::string(sFil.mb_str());
+  const std::string fil = std::string(sFil.ToStdString());
 
   const std::string fil_ext = mrpt::system::extractFileExtension(fil, true);
 
@@ -1803,7 +1812,9 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick([[maybe_unused]] wxCommandE
 
       if (sCellSize.ToCDouble(&cell_size) && sCX.ToCDouble(&cx) && sCY.ToCDouble(&cy))
       {
-        if (!m_gridMap.loadFromBitmap(img, cell_size, {cx, cy}))
+        if (!m_gridMap.loadFromBitmap(
+                img, static_cast<float>(cell_size),
+                {static_cast<float>(cx), static_cast<float>(cy)}))
           wxMessageBox(_("Error"), _("Can't load the image file into the gridmap..."));
       }
       else
@@ -1817,9 +1828,13 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick([[maybe_unused]] wxCommandE
   WX_END_TRY
 }
 
-void reactive_navigator_demoframe::OnNotebook1PageChanged(wxNotebookEvent& event) {}
+void reactive_navigator_demoframe::OnNotebook1PageChanged([[maybe_unused]] wxNotebookEvent& event)
+{
+}
 
-void reactive_navigator_demoframe::OnNotebook1PageChanged1(wxNotebookEvent& event) {}
+void reactive_navigator_demoframe::OnNotebook1PageChanged1([[maybe_unused]] wxNotebookEvent& event)
+{
+}
 
 void reactive_navigator_demoframe::OnedManualKinRampsText([[maybe_unused]] wxCommandEvent& event) {}
 
@@ -1873,7 +1888,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect([[maybe_unused]] wxCommandE
       create_viz_robot_diff(*std::dynamic_pointer_cast<mrpt::viz::CSetOfObjects>(
           gl_robot->getByName("robot_render")));
       create_viz_robot_diff(*gl_robot_local);
-      gl_robot_local->setScale(1.0 / m_simul_options.MAX_SENSOR_RADIUS);
+      gl_robot_local->setScale(static_cast<float>(1.0 / m_simul_options.MAX_SENSOR_RADIUS));
     }
     break;
     case 1:
@@ -1886,7 +1901,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect([[maybe_unused]] wxCommandE
       create_viz_robot_holo(*std::dynamic_pointer_cast<mrpt::viz::CSetOfObjects>(
           gl_robot->getByName("robot_render")));
       create_viz_robot_holo(*gl_robot_local);
-      gl_robot_local->setScale(1.0 / m_simul_options.MAX_SENSOR_RADIUS);
+      gl_robot_local->setScale(static_cast<float>(1.0 / m_simul_options.MAX_SENSOR_RADIUS));
     }
     break;
     default:
@@ -1934,7 +1949,9 @@ void reactive_navigator_demoframe::OnbtnEmptyMapClick([[maybe_unused]] wxCommand
     return;
   }
 
-  m_gridMap.setSize(-.5 * lx, .5 * lx, -.5 * ly, .5 * ly, res, 0.99f);
+  m_gridMap.setSize(
+      static_cast<float>(-.5 * lx), static_cast<float>(.5 * lx), static_cast<float>(-.5 * ly),
+      static_cast<float>(.5 * ly), static_cast<float>(res), 0.99f);
 
   updateMap3DView();
   m_plot3D->Refresh();
@@ -1948,16 +1965,16 @@ void reactive_navigator_demoframe::OnbtnSaveMapClick([[maybe_unused]] wxCommandE
 
   wxFileDialog dlg(
       this, _("Save gridmap to file"), _("."), _("map.gridmap.gz"),
-      wxT("Binary gridmap files "
-          "(*.gridmap,*.gridmap.gz)|*.gridmap;*.gridmap.gz|All files "
-          "(*.*)|*.*"),
+      "Binary gridmap files "
+      "(*.gridmap,*.gridmap.gz)|*.gridmap;*.gridmap.gz|All files "
+      "(*.*)|*.*",
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
   if (dlg.ShowModal() != wxID_OK)
   {
     return;
   }
-  CCompressedOutputStream f(std::string(dlg.GetPath().mb_str()));
+  CCompressedOutputStream f(dlg.GetPath().ToStdString());
   archiveFrom(f) << m_gridMap;
 
   WX_END_TRY
@@ -2010,7 +2027,7 @@ void reactive_navigator_demoframe::OnbtnSetWaypointSeqClick([[maybe_unused]] wxC
   auto* wp_nav = dynamic_cast<CWaypointsNavigator*>(m_navMethod.get());
   if (!wp_nav)
   {
-    wxMessageBox(wxT("Navigator class does not support waypoints sequences!"));
+    wxMessageBox("Navigator class does not support waypoints sequences!");
     return;
   }
 

@@ -980,7 +980,7 @@ void gridmapSimulFrame::OntimRunTrigger([[maybe_unused]] wxTimerEvent& event)
   {
     wxCommandEvent dum;
     OnbtnEndClick(dum);
-    wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
+    wxMessageBox(mrpt::exception_to_str(e), "Exception", wxOK, this);
   }
   catch (...)
   {
@@ -1043,9 +1043,9 @@ void gridmapSimulFrame::OnMenuLoadMap([[maybe_unused]] wxCommandEvent& event)
 
   wxFileDialog dlg(
       this, _("Select grid map to load"), _("."), _("grid.png"),
-      wxT("Image files (*.png,*.jpg,*.gif)|*.png;*.jpg;*.gif|Binary gridmap "
-          "files (*.gridmap,*.gridmap.gz)|*.gridmap;*.gridmap.gz|All files "
-          "(*.*)|*.*"),
+      "Image files (*.png,*.jpg,*.gif)|*.png;*.jpg;*.gif|Binary gridmap "
+      "files (*.gridmap,*.gridmap.gz)|*.gridmap;*.gridmap.gz|All files "
+      "(*.*)|*.*",
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
   if (dlg.ShowModal() != wxID_OK)
@@ -1053,7 +1053,7 @@ void gridmapSimulFrame::OnMenuLoadMap([[maybe_unused]] wxCommandEvent& event)
     return;
   }
   const wxString sFil = dlg.GetPath();
-  const std::string fil = std::string(sFil.mb_str());
+  const std::string fil = std::string(sFil.ToStdString());
 
   const std::string fil_ext = mrpt::system::extractFileExtension(fil, true);
 
@@ -1112,8 +1112,7 @@ void gridmapSimulFrame::OnbtnExploreClick([[maybe_unused]] wxCommandEvent& event
 {
   wxFileDialog dialog(
       this, _("Rawlog to create.."), _("."), _("simul.rawlog"),
-      wxT("RawLog files (*.rawlog)|*.rawlog|All files (*.*)|*.*"),
-      wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+      "RawLog files (*.rawlog)|*.rawlog|All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
   if (dialog.ShowModal() == wxID_OK)
   {
@@ -1148,25 +1147,25 @@ void gridmapSimulFrame::OnbtnResimulateClick([[maybe_unused]] wxCommandEvent& ev
   {
     wxFileDialog dialog(
         this, _("Existing GT file..."), _("."), _("GT.txt"),
-        wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+        "Text files (*.txt)|*.txt|All files (*.*)|*.*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (dialog.ShowModal() != wxID_OK)
     {
       return;
     }
-    gt_file = string(dialog.GetPath().mb_str());
+    gt_file = string(dialog.GetPath().ToStdString());
   }
 
   string raw_file;
   {
     wxFileDialog dialog(
         this, _("Corresponding rawlog..."), mrpt::system::extractFileDirectory(gt_file).c_str(),
-        _("simul.rawlog"), wxT("Rawlog files (*.rawlog)|*.rawlog|All files (*.*)|*.*"),
+        _("simul.rawlog"), "Rawlog files (*.rawlog)|*.rawlog|All files (*.*)|*.*",
         wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (dialog.ShowModal() != wxID_OK)
     {
       return;
     }
-    raw_file = string(dialog.GetPath().mb_str());
+    raw_file = string(dialog.GetPath().ToStdString());
   }
 
   // GT file rows are:
@@ -1191,13 +1190,13 @@ void gridmapSimulFrame::OnbtnResimulateClick([[maybe_unused]] wxCommandEvent& ev
   {
     wxFileDialog dialog(
         this, _("New rawlog to create..."), mrpt::system::extractFileDirectory(gt_file).c_str(),
-        _("simul_new.rawlog"), wxT("Rawlog files (*.rawlog)|*.rawlog|All files (*.*)|*.*"),
+        _("simul_new.rawlog"), "Rawlog files (*.rawlog)|*.rawlog|All files (*.*)|*.*",
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     if (dialog.ShowModal() != wxID_OK)
     {
       return;
     }
-    out_raw_file = string(dialog.GetPath().mb_str());
+    out_raw_file = string(dialog.GetPath().ToStdString());
     out_GT_file = out_raw_file + string(".GT.txt");
   }
 

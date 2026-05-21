@@ -31,7 +31,7 @@ bool ptgConfiguratorApp::OnInit()
   //  if we want numbers to use "." in all countries. The App::OnInit() is a
   //  perfect place to undo
   //  the default wxWidgets settings. (JL @ Sep-2009)
-  wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
+  wxSetlocale(LC_NUMERIC, wxString("C"));
   static const wxCmdLineEntryDesc cmdLineDesc[] = {
 #ifdef MRPT_OS_LINUX
       {wxCMD_LINE_OPTION,     "l",        "load",                                    "load a library",wxCMD_LINE_VAL_STRING, 0                                                                                                                         },

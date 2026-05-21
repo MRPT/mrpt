@@ -55,7 +55,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog([[maybe_unused]] wxCommandEvent& ev
   int progress_i = progress_N;
 
   wxProgressDialog progDia(
-      wxT("Compacting rawlog"), wxT("Processing..."),
+      "Compacting rawlog", "Processing...",
       progress_N,  // range
       this,        // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -340,7 +340,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE([[maybe_unused]] wxCommandEvent& 
 
   wxString auxStr;
   wxProgressDialog progDia(
-      wxT("Progress"), wxT("Parsing file..."),
+      "Progress", "Parsing file...",
       filSize,  // range
       this,     // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -373,7 +373,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE([[maybe_unused]] wxCommandEvent& 
   {
     if (countLoop++ % 100 == 0)
     {
-      auxStr.sprintf(wxT("Parsing file... %u objects"), entryIndex);
+      auxStr.sprintf("Parsing file... %u objects", entryIndex);
       if (!progDia.Update(static_cast<int>(fil.getPosition()), auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
@@ -537,7 +537,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored([[maybe_unused]] wxComman
 
   wxString auxStr;
   wxProgressDialog progDia(
-      wxT("Progress"), wxT("Parsing file..."),
+      "Progress", "Parsing file...",
       filSize,  // range
       this,     // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -554,7 +554,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored([[maybe_unused]] wxComman
   {
     if (countLoop++ % 5 == 0)
     {
-      auxStr.sprintf(wxT("Parsing file... %u objects"), countLoop);
+      auxStr.sprintf("Parsing file... %u objects", countLoop);
       if (!progDia.Update(static_cast<int>(fil.getPosition()), auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
@@ -669,7 +669,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly([[maybe_unused]] wxCommand
 
   wxString auxStr;
   wxProgressDialog progDia(
-      wxT("Progress"), wxT("Parsing file..."),
+      "Progress", "Parsing file...",
       filSize,  // range
       this,     // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -692,7 +692,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly([[maybe_unused]] wxCommand
   {
     if (countLoop++ % 5 == 0)
     {
-      auxStr.sprintf(wxT("Parsing file... %u objects"), countLoop);
+      auxStr.sprintf("Parsing file... %u objects", countLoop);
       if (!progDia.Update(static_cast<int>(fil.getPosition()), auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
@@ -958,7 +958,7 @@ void xRawLogViewerFrame::OnMenuConvertSF([[maybe_unused]] wxCommandEvent& event)
   auto nEntries = static_cast<unsigned int>(rawlog.size());
 
   wxProgressDialog progDia(
-      wxT("Progress"), wxT("Parsing rawlog..."),
+      "Progress", "Parsing rawlog...",
       nEntries,  // range
       this,      // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -975,8 +975,7 @@ void xRawLogViewerFrame::OnMenuConvertSF([[maybe_unused]] wxCommandEvent& event)
   {
     if (countLoop % 20 == 0)
     {
-      if (!progDia.Update(
-              countLoop, wxString::Format(wxT("Parsing rawlog... %u objects"), countLoop)))
+      if (!progDia.Update(countLoop, wxString::Format("Parsing rawlog... %u objects", countLoop)))
       {
         return;
       }

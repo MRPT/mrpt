@@ -565,7 +565,7 @@ void CFormChangeSensorPositions::OnbtnPickInputClick([[maybe_unused]] wxCommandE
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   txtInputFile->SetValue(dialog.GetPath());
@@ -591,7 +591,7 @@ void CFormChangeSensorPositions::OnbtnPickOutClick([[maybe_unused]] wxCommandEve
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   txtOutputFile->SetValue(dialog.GetPath());
@@ -599,7 +599,7 @@ void CFormChangeSensorPositions::OnbtnPickOutClick([[maybe_unused]] wxCommandEve
   WX_END_TRY
 }
 
-void CFormChangeSensorPositions::OnInit(wxInitDialogEvent& event)
+void CFormChangeSensorPositions::OnInit([[maybe_unused]] wxInitDialogEvent& event)
 {
   Center();
   wxCommandEvent dumm;
@@ -663,11 +663,11 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
     in_fil = new CCompressedInputStream(fileName_IN);
     out_fil = new CCompressedOutputStream(fileName_OUT);
 
-    processMax = static_cast<int>(in_fil)->getTotalBytesCount();
+    processMax = static_cast<int>(in_fil->getTotalBytesCount());
   }
 
   wxProgressDialog progDia(
-      wxT("Modifying rawlog"), wxT("Processing..."),
+      "Modifying rawlog", "Processing...",
       processMax,  // range
       this,        // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -753,8 +753,8 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
     // Step counter & update progress dialog
     if (countLoop++ % 300 == 0)
     {
-      auxStr.sprintf(wxT("Processing... (%u objects processed)"), countLoop);
-      int curProgr = isInMemory ? countLoop : static_cast<int>(in_fil)->getPosition();
+      auxStr.sprintf("Processing... (%u objects processed)", countLoop);
+      int curProgr = isInMemory ? countLoop : static_cast<int>(in_fil->getPosition());
       if (!progDia.Update(curProgr, auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
@@ -787,7 +787,9 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 //    Set the sensor pose
 // ------------------------------------------------------------
 void exec_setPoseByIdx(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
     if (SF->size() > idxToProcess)
@@ -810,7 +812,9 @@ void exec_setPoseByIdx(
 }
 
 void exec_setPoseByLabel(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
   {
@@ -841,12 +845,12 @@ void CFormChangeSensorPositions::OnbtnOKClick([[maybe_unused]] wxCommandEvent& e
   WX_START_TRY
 
   // Set: sensorPoseToSet
-  sensorPoseToSet.x = atof(string(edX->GetValue().mb_str()).c_str());
-  sensorPoseToSet.y = atof(string(edY->GetValue().mb_str()).c_str());
-  sensorPoseToSet.z = atof(string(edZ->GetValue().mb_str()).c_str());
-  sensorPoseToSet.yaw = DEG2RAD(atof(string(edYaw->GetValue().mb_str()).c_str()));
-  sensorPoseToSet.pitch = DEG2RAD(atof(string(edPitch->GetValue().mb_str()).c_str()));
-  sensorPoseToSet.roll = DEG2RAD(atof(string(edRoll->GetValue().mb_str()).c_str()));
+  sensorPoseToSet.x = atof(string(edX->GetValue().ToStdString().c_str()).c_str());
+  sensorPoseToSet.y = atof(string(edY->GetValue().ToStdString().c_str()).c_str());
+  sensorPoseToSet.z = atof(string(edZ->GetValue().ToStdString().c_str()).c_str());
+  sensorPoseToSet.yaw = DEG2RAD(atof(string(edYaw->GetValue().ToStdString().c_str()).c_str()));
+  sensorPoseToSet.pitch = DEG2RAD(atof(string(edPitch->GetValue().ToStdString().c_str()).c_str()));
+  sensorPoseToSet.roll = DEG2RAD(atof(string(edRoll->GetValue().ToStdString().c_str()).c_str()));
 
   changeOnlyXYZ = cbOnlyXYZ->GetValue();
 
@@ -857,7 +861,7 @@ void CFormChangeSensorPositions::OnbtnOKClick([[maybe_unused]] wxCommandEvent& e
   }
   else
   {
-    labelToProcess = string(edLabel->GetValue().mb_str());
+    labelToProcess = string(edLabel->GetValue().ToStdString());
     executeOperationOnRawlog(exec_setPoseByLabel, "Sensor poses changed (by label): ");
   }
 
@@ -868,7 +872,9 @@ void CFormChangeSensorPositions::OnbtnOKClick([[maybe_unused]] wxCommandEvent& e
 //    Get the current sensor pose
 // ------------------------------------------------------------
 void exec_getCurrentPoseByIdx(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    [[maybe_unused]] int& changesCount)
 {
   if (SF)
     if (SF->size() > idxToProcess)
@@ -878,7 +884,9 @@ void exec_getCurrentPoseByIdx(
     }
 }
 void exec_getCurrentPoseByLabel(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    [[maybe_unused]] int& changesCount)
 {
   if (SF && SF->size())
   {
@@ -902,7 +910,7 @@ void CFormChangeSensorPositions::OnbtnGetCurPoseClick1([[maybe_unused]] wxComman
   }
   else
   {
-    labelToProcess = string(edLabel->GetValue().mb_str());
+    labelToProcess = string(edLabel->GetValue().ToStdString());
     executeOperationOnRawlog(exec_getCurrentPoseByLabel, "");
   }
 
@@ -930,7 +938,9 @@ void CFormChangeSensorPositions::OnbtnGetCurPoseClick1([[maybe_unused]] wxComman
 //    Get the current camera model
 // ------------------------------------------------------------
 void exec_getCurrentCamCfgByIdx(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    [[maybe_unused]] int& changesCount)
 {
   if (SF)
     if (SF->size() > idxToProcess)
@@ -940,13 +950,15 @@ void exec_getCurrentCamCfgByIdx(
         auto obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(idxToProcess);
         camDistortion = obsIm->cameraParams.getDistortionParamsAsVector();
         camIntrinsic = obsIm->cameraParams.intrinsicParams;
-        camFocalLen = obsIm->cameraParams.focalLengthMeters;
+        camFocalLen = static_cast<float>(obsIm->cameraParams.focalLengthMeters);
         camReadIsOk = true;
       }
     }
 }
 void exec_getCurrentCamCfgByLabel(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    [[maybe_unused]] int& changesCount)
 {
   if (SF && SF->size())
   {
@@ -957,7 +969,7 @@ void exec_getCurrentCamCfgByLabel(
       auto obsIm = SF->getObservationBySensorLabelAs<CObservationImage::Ptr>(labelToProcess);
       camDistortion = obsIm->cameraParams.getDistortionParamsAsVector();
       camIntrinsic = obsIm->cameraParams.intrinsicParams;
-      camFocalLen = obsIm->cameraParams.focalLengthMeters;
+      camFocalLen = static_cast<float>(obsIm->cameraParams.focalLengthMeters);
       camReadIsOk = true;
     }
   }
@@ -974,7 +986,7 @@ void CFormChangeSensorPositions::OnbtnGetCurCamModelClick([[maybe_unused]] wxCom
   }
   else
   {
-    labelToProcess = string(edLabel->GetValue().mb_str());
+    labelToProcess = string(edLabel->GetValue().ToStdString());
     executeOperationOnRawlog(exec_getCurrentCamCfgByLabel, "");
   }
 
@@ -1007,7 +1019,9 @@ void CFormChangeSensorPositions::OnbtnGetCurCamModelClick([[maybe_unused]] wxCom
 //    Set the camera model
 // ------------------------------------------------------------
 void exec_setCurrentCamCfgByIdx(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
     if (SF->size() > idxToProcess)
@@ -1023,7 +1037,9 @@ void exec_setCurrentCamCfgByIdx(
     }
 }
 void exec_setCurrentCamCfgByLabel(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF && SF->size())
   {
@@ -1049,18 +1065,19 @@ void CFormChangeSensorPositions::OnbtnApplyCameraParamsClick([[maybe_unused]] wx
   camIntrinsic.setSize(3, 3);
   camIntrinsic.setZero();
   camIntrinsic(2, 2) = 1;
-  camIntrinsic(0, 0) = atof(string(edFX->GetValue().mb_str()).c_str());
-  camIntrinsic(1, 1) = atof(string(edFY->GetValue().mb_str()).c_str());
-  camIntrinsic(0, 2) = atof(string(edCX->GetValue().mb_str()).c_str());
-  camIntrinsic(1, 2) = atof(string(edCY->GetValue().mb_str()).c_str());
+  camIntrinsic(0, 0) = atof(string(edFX->GetValue().ToStdString().c_str()).c_str());
+  camIntrinsic(1, 1) = atof(string(edFY->GetValue().ToStdString().c_str()).c_str());
+  camIntrinsic(0, 2) = atof(string(edCX->GetValue().ToStdString().c_str()).c_str());
+  camIntrinsic(1, 2) = atof(string(edCY->GetValue().ToStdString().c_str()).c_str());
 
   camDistortion.resize(4);
-  camDistortion[0] = atof(string(edK1->GetValue().mb_str()).c_str());
-  camDistortion[1] = atof(string(edK2->GetValue().mb_str()).c_str());
-  camDistortion[2] = atof(string(edP1->GetValue().mb_str()).c_str());
-  camDistortion[3] = atof(string(edP2->GetValue().mb_str()).c_str());
+  camDistortion[0] = atof(string(edK1->GetValue().ToStdString().c_str()).c_str());
+  camDistortion[1] = atof(string(edK2->GetValue().ToStdString().c_str()).c_str());
+  camDistortion[2] = atof(string(edP1->GetValue().ToStdString().c_str()).c_str());
+  camDistortion[3] = atof(string(edP2->GetValue().ToStdString().c_str()).c_str());
 
-  camFocalLen = atof(string(edFocalLen->GetValue().mb_str()).c_str());
+  camFocalLen =
+      static_cast<float>(atof(string(edFocalLen->GetValue().ToStdString().c_str()).c_str()));
 
   if (rbApply->GetSelection() == 0)
   {
@@ -1069,7 +1086,7 @@ void CFormChangeSensorPositions::OnbtnApplyCameraParamsClick([[maybe_unused]] wx
   }
   else
   {
-    labelToProcess = string(edLabel->GetValue().mb_str());
+    labelToProcess = string(edLabel->GetValue().ToStdString());
     executeOperationOnRawlog(exec_setCurrentCamCfgByLabel, "CObservationImage objects changed: ");
   }
 

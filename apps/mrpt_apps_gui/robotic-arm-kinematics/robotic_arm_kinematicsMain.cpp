@@ -866,8 +866,8 @@ void robotic_arm_kinematicsFrame::OnLoadBinary([[maybe_unused]] wxCommandEvent& 
 
   wxFileDialog dlg(
       this, _("Select kinematic chain to load"), _("."), _("*.kinbin"),
-      wxT("Kinematic chains binary files (*.kinbin)|*.kinbin|All files "
-          "(*.*)|*.*"),
+      "Kinematic chains binary files (*.kinbin)|*.kinbin|All files "
+      "(*.*)|*.*",
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
   if (dlg.ShowModal() != wxID_OK)
@@ -875,7 +875,7 @@ void robotic_arm_kinematicsFrame::OnLoadBinary([[maybe_unused]] wxCommandEvent& 
     return;
   }
   const wxString sFil = dlg.GetPath();
-  const std::string fil = std::string(sFil.mb_str());
+  const std::string fil = std::string(sFil.ToStdString());
 
   mrpt::io::CCompressedInputStream f(fil);
   mrpt::serialization::archiveFrom(f) >> m_robot;
@@ -897,8 +897,8 @@ void robotic_arm_kinematicsFrame::OnSaveBinary([[maybe_unused]] wxCommandEvent& 
 
   wxFileDialog dlg(
       this, _("Save kinematic chain"), _("."), _("*.kinbin"),
-      wxT("Kinematic chains binary files (*.kinbin)|*.kinbin|All files "
-          "(*.*)|*.*"),
+      "Kinematic chains binary files (*.kinbin)|*.kinbin|All files "
+      "(*.*)|*.*",
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
   if (dlg.ShowModal() != wxID_OK)
@@ -906,7 +906,7 @@ void robotic_arm_kinematicsFrame::OnSaveBinary([[maybe_unused]] wxCommandEvent& 
     return;
   }
   const wxString sFil = dlg.GetPath();
-  const std::string fil = std::string(sFil.mb_str());
+  const std::string fil = std::string(sFil.ToStdString());
 
   mrpt::io::CFileOutputStream f(fil);
   mrpt::serialization::archiveFrom(f) << m_robot;

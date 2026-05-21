@@ -417,11 +417,11 @@ void loadSelectionsFromListBox(std::vector<std::string>& v, wxCheckListBox* c)
 {
   v.clear();
   for (unsigned i = 0; i < c->GetCount(); i++)
-    if (c->IsChecked(i)) v.emplace_back(c->GetString(i).mb_str());
+    if (c->IsChecked(i)) v.emplace_back(c->GetString(i).ToStdString());
 }
 
 void CFormEdit::OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event) { Close(); }
-void CFormEdit::OnslFirstCmdScrollChanged(wxScrollEvent& event)
+void CFormEdit::OnslFirstCmdScrollChanged([[maybe_unused]] wxScrollEvent& event)
 {
   int toVal = slTo->GetValue();
   int curVal = slFrom->GetValue();
@@ -431,7 +431,7 @@ void CFormEdit::OnslFirstCmdScrollChanged(wxScrollEvent& event)
   // lbFirst->SetLabel( wxString::Format(_("%d"),slFrom->GetValue()) );
 }
 
-void CFormEdit::OnslToCmdScrollChanged(wxScrollEvent& event)
+void CFormEdit::OnslToCmdScrollChanged([[maybe_unused]] wxScrollEvent& event)
 {
   int fromVal = spinFirst->GetValue();
   int curVal = slTo->GetValue();
@@ -487,7 +487,9 @@ std::vector<bool> auxMask;
 
 // Delete observations by index in their sensory frame.
 void filter_delObsByIndex(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
   {
@@ -527,7 +529,9 @@ void CFormEdit::OnbtnDelObsIndxClick([[maybe_unused]] wxCommandEvent& event)
 std::vector<std::string> classNameOfObsToRemove;
 
 void filter_delObsByClass(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
   {
@@ -548,7 +552,9 @@ void filter_delObsByClass(
 }
 
 void filter_remObsByClass(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    [[maybe_unused]] int& changesCount)
 {
   if (SF)
   {
@@ -583,7 +589,9 @@ void CFormEdit::OnbtnRemoveObsClassClick([[maybe_unused]] wxCommandEvent& event)
 
 // Delete actions by index.
 void filter_delActsByIndex(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    mrpt::obs::CActionCollection* acts,
+    [[maybe_unused]] mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (acts)
   {
@@ -621,7 +629,9 @@ void CFormEdit::OnbtnRemActsIndxClick([[maybe_unused]] wxCommandEvent& event)
 
 // Swap colors:
 void filter_swapColors(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
   {
@@ -629,7 +639,7 @@ void filter_swapColors(
     {
       if (IS_CLASS(*obs, CObservationImage))
       {
-        auto* o = (CObservationImage*)obs.get();
+        auto* o = dynamic_cast<CObservationImage*>(obs.get());
         if (o->image.isColor())
         {
           o->image.swapRB();
@@ -638,7 +648,7 @@ void filter_swapColors(
       }
       else if (IS_CLASS(*obs, CObservationStereoImages))
       {
-        auto* o = (CObservationStereoImages*)obs.get();
+        auto* o = dynamic_cast<CObservationStereoImages*>(obs.get());
         if (o->imageLeft.isColor())
         {
           o->imageLeft.swapRB();
@@ -663,7 +673,7 @@ void CFormEdit::OnbtnImgSwapClick([[maybe_unused]] wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CFormEdit::OnInit(wxInitDialogEvent& event)
+void CFormEdit::OnInit([[maybe_unused]] wxInitDialogEvent& event)
 {
   Center();
   wxCommandEvent dumm;
@@ -749,7 +759,7 @@ void CFormEdit::OnbtnPickInputClick([[maybe_unused]] wxCommandEvent& event)
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   txtInputFile->SetValue(dialog.GetPath());
@@ -775,7 +785,7 @@ void CFormEdit::OnbtnPickOutClick([[maybe_unused]] wxCommandEvent& event)
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   txtOutputFile->SetValue(dialog.GetPath());
@@ -829,11 +839,11 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
     in_fil = new CCompressedInputStream(fileName_IN);
     out_fil = new CCompressedOutputStream(fileName_OUT);
 
-    processMax = static_cast<unsigned int>(in_fil)->getTotalBytesCount();
+    processMax = static_cast<unsigned int>(in_fil->getTotalBytesCount());
   }
 
   wxProgressDialog progDia(
-      wxT("Modifying rawlog"), wxT("Processing..."),
+      "Modifying rawlog", "Processing...",
       processMax,  // range
       this,        // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -924,7 +934,7 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
 
         // Process & save:
         if (!isInMemory || (countLoop >= first && countLoop <= last))
-          operation((CActionCollection*)acts.get(), nullptr, changes);
+          operation(dynamic_cast<CActionCollection*>(acts.get()), nullptr, changes);
 
         if (!isInMemory) archiveFrom(*out_fil) << *acts;
       }
@@ -947,7 +957,7 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
     // Step counter & update progress dialog
     if (countLoop++ % 20 == 0)
     {
-      auxStr.sprintf(wxT("Processing... (%u objects processed)"), countLoop);
+      auxStr.sprintf("Processing... (%u objects processed)", countLoop);
       int curProgr = isInMemory ? countLoop : in_fil->getPosition();
       if (!progDia.Update(curProgr, auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
@@ -979,7 +989,9 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
 std::vector<std::string> labelOfObsToRemove;
 
 void filter_delObsByLabel(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
   {
@@ -999,7 +1011,9 @@ void filter_delObsByLabel(
 }
 
 void filter_NotDelObsByLabel(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
   {
@@ -1044,12 +1058,14 @@ void CFormEdit::OnRemoveButLabel([[maybe_unused]] wxCommandEvent& event)
   WX_END_TRY
 }
 
-void CFormEdit::OnslFromCmdScroll(wxScrollEvent& event) {}
-void CFormEdit::OnslFromCmdScroll1(wxScrollEvent& event) {}
+void CFormEdit::OnslFromCmdScroll([[maybe_unused]] wxScrollEvent& event) {}
+void CFormEdit::OnslFromCmdScroll1([[maybe_unused]] wxScrollEvent& event) {}
 double minPitchToDeleteLaserScan = 1.2_deg;
 
 void leave_horizontalScans(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
   {
@@ -1082,7 +1098,7 @@ void CFormEdit::OnbtnLeaveHorizScansClick([[maybe_unused]] wxCommandEvent& event
 {
   WX_START_TRY
 
-  minPitchToDeleteLaserScan = atof(string(edMaxPitch->GetValue().mb_str()).c_str());
+  minPitchToDeleteLaserScan = atof(string(edMaxPitch->GetValue().ToStdString().c_str()).c_str());
   executeOperationOnRawlog(leave_horizontalScans, "Laser scans that passed the filter: ");
 
   WX_END_TRY

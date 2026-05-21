@@ -83,8 +83,8 @@ void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
-  wxString caption = wxT("Import a CARMEN log...");
-  wxString wildcard = wxT("CARMEN log files (*.log)|*.log|All files (*.*)|*.*");
+  wxString caption = "Import a CARMEN log...";
+  wxString wildcard = "CARMEN log files (*.log)|*.log|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = _("*.log");
   wxFileDialog dialog(
@@ -96,7 +96,7 @@ void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   wxString fileName = dialog.GetPath();
@@ -258,7 +258,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages([[maybe_unused]] wxCommandEven
   {
     return;
   }
-  string inDir(dirDialog.GetPath().mb_str());
+  string inDir = dirDialog.GetPath().ToStdString();
 
   // Explore ir:
   CDirectoryExplorer::TFileInfoList lstFiles;
@@ -283,7 +283,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages([[maybe_unused]] wxCommandEven
 
   wxString auxStr;
   wxProgressDialog progDia(
-      wxT("Progress"), wxT("Parsing files..."),
+      "Progress", "Parsing files...",
       nEntries,  // range
       this,      // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -300,7 +300,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages([[maybe_unused]] wxCommandEven
   {
     if (countLoop % 5 == 0)
     {
-      auxStr.sprintf(wxT("Parsed %u files"), countLoop);
+      auxStr.sprintf("Parsed %u files", countLoop);
       if (!progDia.Update(countLoop, auxStr)) break;
       wxTheApp->Yield();  // Let the app. process messages
     }
@@ -374,8 +374,8 @@ void xRawLogViewerFrame::OnImportSequenceOfImages([[maybe_unused]] wxCommandEven
 // Export rawlog as a MOOS' alog file:
 void xRawLogViewerFrame::OnMenuExportALOG([[maybe_unused]] wxCommandEvent& event)
 {
-  wxString caption = wxT("Export as ALOG...");
-  wxString wildcard = wxT("ALOG files (*.alog)|*.alog|All files (*.*)|*.*");
+  wxString caption = "Export as ALOG...";
+  wxString wildcard = "ALOG files (*.alog)|*.alog|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = (loadedFileName + string(".alog")).c_str();
   wxFileDialog dialog(
@@ -387,7 +387,7 @@ void xRawLogViewerFrame::OnMenuExportALOG([[maybe_unused]] wxCommandEvent& event
     wxString strRobot = wxGetTextFromUser(
         _("Enter the name of the robot to use in ALOG:"), _("Robot name:"), _("ROBOT"));
 
-    string robot_name = string(strRobot.mb_str());
+    string robot_name = string(strRobot.ToStdString());
 
     wxString fil = dialog.GetPath();
     wxString filePath = dialog.GetDirectory();
@@ -395,10 +395,10 @@ void xRawLogViewerFrame::OnMenuExportALOG([[maybe_unused]] wxCommandEvent& event
     // Save the path
     WX_START_TRY
 
-    iniFile->write(iniFileSect, "LastDir", string(filePath.mb_str()));
+    iniFile->write(iniFileSect, "LastDir", filePath.ToStdString());
 
     // Save the file:
-    string fileName = string(fil.mb_str());
+    string fileName = string(fil.ToStdString());
 
     FILE* f = os::fopen(fileName.c_str(), "wt");
     if (!f) THROW_EXCEPTION("Cannot open output file for write.");
@@ -412,7 +412,7 @@ void xRawLogViewerFrame::OnMenuExportALOG([[maybe_unused]] wxCommandEvent& event
     wxBusyCursor waitCursor;
 
     wxProgressDialog progDia(
-        wxT("Exporting rawlog to ALOG"), wxT("Saving..."),
+        "Exporting rawlog to ALOG", "Saving...",
         n,     // range
         this,  // parent
         wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -530,8 +530,8 @@ void xRawLogViewerFrame::OnImportRTL([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
-  wxString caption = wxT("Import a RTL log file...");
-  wxString wildcard = wxT("RTL files (*.rtl)|*.rtl|All files (*.*)|*.*");
+  wxString caption = "Import a RTL log file...";
+  wxString wildcard = "RTL files (*.rtl)|*.rtl|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = _("*.rtl");
   wxFileDialog dialog(
@@ -543,7 +543,7 @@ void xRawLogViewerFrame::OnImportRTL([[maybe_unused]] wxCommandEvent& event)
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   wxString fileName = dialog.GetPath();
@@ -667,10 +667,10 @@ void xRawLogViewerFrame::OnImportRTL([[maybe_unused]] wxCommandEvent& event)
   // Ask for target file:
   string target_filename;
   {
-    caption = wxT("Save as...");
+    caption = "Save as...";
     wildcard =
-        wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
-            "files (*.*)|*.*");
+        "RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
+        "files (*.*)|*.*";
     defaultDir = (iniFile->read_string(iniFileSect, "LastDir", ".").c_str());
     defaultFilename = _("IMPORTED.rawlog");
     wxFileDialog dialog2(
@@ -736,8 +736,8 @@ void xRawLogViewerFrame::OnMenuImportALOG([[maybe_unused]] wxCommandEvent& event
 {
   WX_START_TRY
 
-  wxString caption = wxT("Import a MOOS alog file...");
-  wxString wildcard = wxT("MOOS alog files (*.alog)|*.alog|All files (*.*)|*.*");
+  wxString caption = "Import a MOOS alog file...";
+  wxString wildcard = "MOOS alog files (*.alog)|*.alog|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = _("*.alog");
   wxFileDialog dialog(
@@ -749,7 +749,7 @@ void xRawLogViewerFrame::OnMenuImportALOG([[maybe_unused]] wxCommandEvent& event
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   wxString fileName = dialog.GetPath();
@@ -909,10 +909,10 @@ void xRawLogViewerFrame::OnMenuImportALOG([[maybe_unused]] wxCommandEvent& event
   // Ask for target file:
   string target_filename;
   {
-    caption = wxT("Save as...");
+    caption = "Save as...";
     wildcard =
-        wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
-            "files (*.*)|*.*");
+        "RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
+        "files (*.*)|*.*";
     defaultDir = (iniFile->read_string(iniFileSect, "LastDir", ".").c_str());
     defaultFilename = _("IMPORTED.rawlog");
     wxFileDialog dialog2(
@@ -940,7 +940,7 @@ void xRawLogViewerFrame::OnMenuImportALOG([[maybe_unused]] wxCommandEvent& event
     {
       return;
     }
-    dir_for_images = string(dirDialog.GetPath().mb_str());
+    dir_for_images = string(dirDialog.GetPath().ToStdString());
   }
   else
   {
@@ -958,7 +958,7 @@ void xRawLogViewerFrame::OnMenuImportALOG([[maybe_unused]] wxCommandEvent& event
 
       if (dirDialog.ShowModal() == wxID_OK)
       {
-        dir_for_images = string(dirDialog.GetPath().mb_str());
+        dir_for_images = string(dirDialog.GetPath().ToStdString());
 
         // Look for image files:
         CDirectoryExplorer::TFileInfoList lstFiles;
@@ -1035,7 +1035,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
   size_t progress_i, progress_N = theAlog.size();
 
   wxProgressDialog progDia(
-      wxT("Importing rawlog"), wxT("Importing..."),
+      "Importing rawlog", "Importing...",
       progress_N,  // range
       this,        // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -1181,8 +1181,8 @@ void xRawLogViewerFrame::OnGenGasTxt([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
-  wxString caption = wxT("Save as...");
-  wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+  wxString caption = "Save as...";
+  wxString wildcard = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = (loadedFileName + string("_gasSensors.txt")).c_str();
   wxFileDialog dialog(
@@ -1291,8 +1291,8 @@ void xRawLogViewerFrame::OnGenWifiTxt([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
-  wxString caption = wxT("Save as...");
-  wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+  wxString caption = "Save as...";
+  wxString wildcard = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = (loadedFileName + string("_wifiSensors.txt")).c_str();
   wxFileDialog dialog(
@@ -1402,8 +1402,8 @@ void xRawLogViewerFrame::OnGenRFIDTxt([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
-  wxString caption = wxT("Save as...");
-  wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+  wxString caption = "Save as...";
+  wxString wildcard = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = (loadedFileName + string("_RFIDSensors.txt")).c_str();
   wxFileDialog dialog(
@@ -1523,10 +1523,10 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog([[maybe_unused]] wxCommand
                      _("Import rawlog"), wxYES_NO, this))
       return;
 
-  wxString caption = wxT("Import a uni-bremen DLR dataset...");
+  wxString caption = "Import a uni-bremen DLR dataset...";
   wxString wildcard =
-      wxT("Uni-bremen DLR circles dataset (*.circles)|*.circles|All files "
-          "(*.*)|*.*");
+      "Uni-bremen DLR circles dataset (*.circles)|*.circles|All files "
+      "(*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = _("*.circles");
   wxFileDialog dialog(
@@ -1536,7 +1536,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog([[maybe_unused]] wxCommand
     return;
   }  // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   // File to import:
@@ -1852,8 +1852,8 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile([[maybe_unused]] wxCommandEvent& 
 {
   WX_START_TRY
 
-  wxString caption = wxT("Save as...");
-  wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+  wxString caption = "Save as...";
+  wxString wildcard = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = (loadedFileName + string("_IMU.txt")).c_str();
   wxFileDialog dialog(
@@ -1972,8 +1972,8 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing([[maybe_unused]] wxComma
 {
   WX_START_TRY
 
-  wxString caption = wxT("Save as...");
-  wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+  wxString caption = "Save as...";
+  wxString wildcard = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = (loadedFileName + string("_RANGE_BEARING.txt")).c_str();
   wxFileDialog dialog(

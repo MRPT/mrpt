@@ -37,7 +37,7 @@ bool slamdemoApp::OnInit()
   //  if we want numbers to use "." in all countries. The App::OnInit() is a
   //  perfect place to undo
   //  the default wxWidgets settings. (JL @ Sep-2009)
-  wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
+  wxSetlocale(LC_NUMERIC, wxString("C"));
 
   wxInitAllImageHandlers();
 
@@ -95,7 +95,7 @@ bool slamdemoApp::doCommandLineProcess()
     {
       cerr << "The indicated config file does not exist: " << cfgFil << "\n";
 #ifdef MRPT_OS_WINDOWS
-      wxMessageBox(wxT("The indicated config file does not exist"), _("2d-slam-demo"));
+      wxMessageBox("The indicated config file does not exist", _("2d-slam-demo"));
 #endif
       return false;
     }

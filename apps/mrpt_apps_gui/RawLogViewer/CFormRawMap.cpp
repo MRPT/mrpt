@@ -511,7 +511,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
   ASSERT_(decimate > 0);
 
   // Create a memory "ini file" with the text in the window:
-  CConfigFileMemory configSrc(std::string(edOpts->GetValue().mb_str()));
+  CConfigFileMemory configSrc(edOpts->GetValue().ToStdString());
 
   TSetOfMetricMapInitializers lstMaps;
   lstMaps.loadFromConfigFile(configSrc, "map");
@@ -526,7 +526,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
   wxBusyCursor waitCursor;
 
   wxProgressDialog progDia(
-      wxT("Creating raw map"), wxT("Working..."),
+      "Creating raw map", "Working...",
       (int)(last - first + 1),  // range
       this,                     // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -689,8 +689,8 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 
 void CFormRawMap::OnbtnSaveTxtClick(wxCommandEvent&)
 {
-  wxString caption = wxT("Save as text file...");
-  wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+  wxString caption = "Save as text file...";
+  wxString wildcard = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
 
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
@@ -703,7 +703,7 @@ void CFormRawMap::OnbtnSaveTxtClick(wxCommandEvent&)
     wxString fileName = dialog.GetPath();
     try
     {
-      theMap.saveMetricMapRepresentationToFile(std::string(fileName.mb_str()));
+      theMap.saveMetricMapRepresentationToFile(fileName.ToStdString());
     }
     catch (const std::exception& e)
     {
@@ -715,8 +715,8 @@ void CFormRawMap::OnbtnSaveTxtClick(wxCommandEvent&)
 // Save as a 3D scene:
 void CFormRawMap::OnbtnSave3DClick(wxCommandEvent&)
 {
-  wxString caption = wxT("Save as 3D scene file...");
-  wxString wildcard = wxT("MRPT 3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
+  wxString caption = "Save as 3D scene file...";
+  wxString wildcard = "MRPT 3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*";
 
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
@@ -730,7 +730,7 @@ void CFormRawMap::OnbtnSave3DClick(wxCommandEvent&)
     {
       wxBusyCursor waitCursor;
 
-      CCompressedOutputStream fil(std::string(dialog.GetPath().mb_str()));
+      CCompressedOutputStream fil(dialog.GetPath().ToStdString());
       Scene scene;
 
       loadMapInto3DScene(scene);
@@ -786,7 +786,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
   size_t nComputationSteps = (last - first + 1) * nPaths;
 
   wxProgressDialog progDia(
-      wxT("Generating paths"), wxT("Working..."),
+      "Generating paths", "Working...",
       static_cast<int>(nComputationSteps),  // range
       this,                                 // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -924,7 +924,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
   ASSERT_(decimate > 0);
 
   // Create a memory "ini file" with the text in the window:
-  CConfigFileMemory configSrc(std::string(edOpts->GetValue().mb_str()));
+  CConfigFileMemory configSrc(edOpts->GetValue().ToStdString());
 
   TSetOfMetricMapInitializers lstMaps;
   lstMaps.loadFromConfigFile(configSrc, "map");
@@ -963,9 +963,8 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
   bool abort = false;
 
   wxProgressDialog progDia2(
-      wxString::Format(
-          wxT("Building map - %u GPS points"), static_cast<unsigned>(robot_path.size())),
-      wxT("Populating the map with observations..."),
+      wxString::Format("Building map - %u GPS points", static_cast<unsigned>(robot_path.size())),
+      "Populating the map with observations...",
       (int)(last - first + 1),  // range
       this,                     // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -1106,8 +1105,8 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   {
     wxFileDialog dialog(
-        this, wxT("Save path as txt file..."), defaultDir, wxT("GT_path_vehicle.txt"),
-        wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+        this, "Save path as txt file...", defaultDir, "GT_path_vehicle.txt",
+        "Text files (*.txt)|*.txt|All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
     if (dialog.ShowModal() != wxID_OK)
     {
@@ -1117,7 +1116,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 
     std::cout << robot_path.size() << "\n";
 
-    std::ofstream f(string(dialog.GetPath().mb_str()));
+    std::ofstream f(dialog.GetPath().ToStdString());
     for (const auto& rp : robot_path)
     {
       const double t = mrpt::Clock::toDouble(rp.first);
@@ -1146,7 +1145,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
             0.0, 1e-4, 0.0, 1e-4);
     }
 
-    outputPath = mrpt::system::extractFileDirectory(string(dialog.GetPath().mb_str()));
+    outputPath = mrpt::system::extractFileDirectory(string(dialog.GetPath().ToStdString()));
   }
 
   // ---------------------------------------------
@@ -1154,16 +1153,16 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
   // ---------------------------------------------
   {
     wxFileDialog dialog(
-        this, wxT("Save path as binary file..."), defaultDir, wxT("GT_path_vehicle.bin.gz"),
-        wxT("Binary gz-compressed files (*.bin.gz)|*.bin.gz|All files "
-            "(*.*)|*.*"),
+        this, "Save path as binary file...", defaultDir, "GT_path_vehicle.bin.gz",
+        "Binary gz-compressed files (*.bin.gz)|*.bin.gz|All files "
+        "(*.*)|*.*",
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     if (dialog.ShowModal() != wxID_OK)
     {
       return;
     }
     wxBusyCursor waitCursor;
-    CCompressedOutputStream f(string(dialog.GetPath().mb_str()));
+    CCompressedOutputStream f(dialog.GetPath().ToStdString());
     archiveFrom(f) << robot_path;
   }
 
@@ -1172,9 +1171,8 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
   // ---------------------------------------------
   {
     wxFileDialog dialog(
-        this, wxT("Save interpolated path as txt file..."), defaultDir,
-        wxT("GT_path_vehicle_interp.txt"), wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*"),
-        wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+        this, "Save interpolated path as txt file...", defaultDir, "GT_path_vehicle_interp.txt",
+        "Text files (*.txt)|*.txt|All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
     if (dialog.ShowModal() != wxID_OK)
     {
@@ -1183,7 +1181,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
     wxBusyCursor waitCursor;
     using namespace std::chrono_literals;
     const auto interval = 10ms;
-    if (!robot_path.saveInterpolatedToTextFile(string(dialog.GetPath().mb_str()), interval))
+    if (!robot_path.saveInterpolatedToTextFile(dialog.GetPath().ToStdString(), interval))
       ::wxMessageBox(_("Error creating file."));
   }
 
@@ -1193,15 +1191,14 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
   if (!rtk_path_info.mahalabis_quality_measure.empty())
   {
     wxFileDialog dialog(
-        this, wxT("Save path confidence measure..."), defaultDir,
-        wxT("GT_path_vehicle_confidence.txt"), wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*"),
-        wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+        this, "Save path confidence measure...", defaultDir, "GT_path_vehicle_confidence.txt",
+        "Text files (*.txt)|*.txt|All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     if (dialog.ShowModal() != wxID_OK)
     {
       return;
     }
     wxBusyCursor waitCursor;
-    std::ofstream f(string(dialog.GetPath().mb_str()));
+    std::ofstream f(dialog.GetPath().ToStdString());
 
     for (const auto& pi : rtk_path_info.mahalabis_quality_measure)
       f << mrpt::format("%.06f %.06e\n", mrpt::Clock::toDouble(pi.first), pi.second);

@@ -401,14 +401,14 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs([[maybe_unused]] wxCommandEvent& 
   {
     return;
   }
-  string gps1 = string(ret.mb_str());
+  string gps1 = string(ret.ToStdString());
 
   ret = wxGetSingleChoice(_("Choose the second GPS:"), _("Sensor Labels"), lstLabels, this);
   if (ret.IsEmpty())
   {
     return;
   }
-  string gps2 = string(ret.mb_str());
+  string gps2 = string(ret.ToStdString());
 
   size_t i, n = rawlog.size();
 
@@ -627,8 +627,8 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
 {
   WX_START_TRY
 
-  wxString caption = wxT("Save as...");
-  wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+  wxString caption = "Save as...";
+  wxString wildcard = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
   wxString defaultFilename = (loadedFileName + string("_GPS.txt")).c_str();
   wxFileDialog dialog(

@@ -44,7 +44,7 @@ bool _DSceneViewerApp::OnInit()
   //  if we want numbers to use "." in all countries. The App::OnInit() is a
   //  perfect place to undo
   //  the default wxWidgets settings. (JL @ Sep-2009)
-  wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
+  wxSetlocale(LC_NUMERIC, wxString("C"));
 
   // Process cmd line arguments:
   static const wxCmdLineEntryDesc cmdLineDesc[] = {
@@ -60,7 +60,7 @@ bool _DSceneViewerApp::OnInit()
   wxString libraryPath;
   if (parser.Found("l", &libraryPath))
   {
-    const std::string sLib = std::string(libraryPath.mb_str());
+    const std::string sLib = std::string(libraryPath.ToStdString());
     std::cout << "Loading plugin libraries: " << sLib << "...\n";
     mrpt::system::loadPluginModules(sLib);
   }
@@ -71,13 +71,13 @@ bool _DSceneViewerApp::OnInit()
     mrpt::img::CImage::setImagesPathBase(imgDir.ToStdString());
   }
 
-  if (parser.GetParamCount() == 1) global_fileToOpen = parser.GetParam().mb_str();
+  if (parser.GetParamCount() == 1) global_fileToOpen = parser.GetParam().ToStdString();
 
   // Create the INI file:
   // wxStandardPaths stdPaths;
   // wxString    dataDir = stdPaths.GetUserDataDir();
   wxString dataDir = wxStandardPaths::Get().GetUserDataDir();
-  std::string dataDirStr(dataDir.mb_str());
+  std::string dataDirStr = dataDir.ToStdString();
   mrpt::system::createDirectory(dataDirStr);  // Create dir!
   std::string iniFileName(dataDirStr + std::string("/config.cfg"));
   iniFile = std::make_unique<CConfigFile>(iniFileName);

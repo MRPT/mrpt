@@ -149,7 +149,7 @@ void CFormBatchSensorPose::OnbtnOpenClick([[maybe_unused]] wxCommandEvent& event
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   edText->LoadFile(dialog.GetPath());
