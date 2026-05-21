@@ -168,7 +168,7 @@ bool wxSpinCtrlDbl::Create(
 #if wxCHECK_VERSION(2, 5, 4)
   wxArrayString list;
 
-  wxString valid_chars(wxT(" 0123456789+-.eE"));
+  wxString valid_chars(" 0123456789+-.eE");
   size_t len = valid_chars.Length();
   for (size_t i = 0; i < len; i++) list.Add(wxString(valid_chars.GetChar(i)));
 
@@ -176,7 +176,7 @@ bool wxSpinCtrlDbl::Create(
 #else
   wxStringList list;
 
-  wxString valid_chars(wxT(" 0123456789+-.eE"));
+  wxString valid_chars(" 0123456789+-.eE");
   size_t len = valid_chars.Length();
   for (size_t i = 0; i < len; i++) list.Add(wxString(valid_chars.GetChar(i)));
 
@@ -232,7 +232,7 @@ wxSpinCtrlDbl::~wxSpinCtrlDbl()
 
 void wxSpinCtrlDbl::DoSetSize(int x, int y, int width, int height, int sizeFlags)
 {
-  // wxPrintf(wxT("DoSetSize %d, %d %d %d %d %d\n"), GetId(), x, y, width, height, sizeFlags);
+  // wxPrintf("DoSetSize %d, %d %d %d %d %d\n", GetId(), x, y, width, height, sizeFlags);
 
   wxSize bestSize(DoGetBestSize());
   if (width < 0) width = bestSize.GetWidth();
@@ -259,7 +259,7 @@ static wxSize s_spinctrl_bestSize(-999, -999);
 
 wxSize wxSpinCtrlDbl::DoGetBestSize() const
 {
-  // wxPrintf(wxT("GetBestSize %d\n"), GetId());
+  // wxPrintf("GetBestSize %d\n", GetId());
   if (s_spinctrl_bestSize.x == -999)
   {
     wxSpinCtrl spin((wxWindow *)this, wxID_ANY);
@@ -279,7 +279,7 @@ void wxSpinCtrlDbl::DoSetToolTip(wxToolTip *tip)
   // is distracting.
   if (tip && m_textCtrl)
   {
-    wxPrintf(wxT("TIP %s\n"), tip->GetTip().c_str());
+    wxPrintf("TIP %s\n", tip->GetTip().c_str());
     m_textCtrl->SetToolTip(tip->GetTip());
   }
 
@@ -327,7 +327,7 @@ void wxSpinCtrlDbl::OnTextEnter(wxCommandEvent &event)
 
 void wxSpinCtrlDbl::OnText(wxCommandEvent &event)
 {
-  // wxPrintf(wxT("Text '%s'\n"), event.GetString()); fflush(stdout);
+  // wxPrintf("Text '%s'\n", event.GetString()); fflush(stdout);
   event.Skip();
 }
 
@@ -445,7 +445,7 @@ void wxSpinCtrlDbl::SetValue(const wxString &text, bool force)
 
 void wxSpinCtrlDbl::SetRange(double min_val, double max_val)
 {
-  // wxCHECK_RET(max_val > min_val, wxT("invalid spinctrl range"));
+  // wxCHECK_RET(max_val > min_val, "invalid spinctrl range");
   m_min = min_val;
   m_max = max_val;
 
@@ -466,7 +466,7 @@ void wxSpinCtrlDbl::SetIncrement(double increment)
 
 void wxSpinCtrlDbl::SetDigits(int digits, formatType fmt)
 {
-  wxCHECK_RET(digits >= -1, wxT("invalid spinctrl format"));
+  wxCHECK_RET(digits >= -1, "invalid spinctrl format");
 
   if ((digits == wxSPINCTRLDBL_AUTODIGITS) && (fmt != lg_fmt))
   {
@@ -474,7 +474,7 @@ void wxSpinCtrlDbl::SetDigits(int digits, formatType fmt)
     int lastplace = -1, extra_digits = 0;
     if (fmt == le_fmt)
     {
-      wxstr.Printf(wxT("%le"), m_increment);
+      wxstr.Printf("%le", m_increment);
       wxstr.LowerCase();
       lastplace = wxstr.Find(wxT('e')) - 2;
       long places;
@@ -482,7 +482,7 @@ void wxSpinCtrlDbl::SetDigits(int digits, formatType fmt)
     }
     else if (fmt == lf_fmt)
     {
-      wxstr.Printf(wxT("%lf"), m_increment);
+      wxstr.Printf("%lf", m_increment);
       lastplace = wxstr.Len() - 1;
     }
 
@@ -498,11 +498,11 @@ void wxSpinCtrlDbl::SetDigits(int digits, formatType fmt)
         switch (fmt)
         {
           case le_fmt:
-            m_textFormat.Printf(wxT("%%.%dle"), m_digits);
+            m_textFormat.Printf("%%.%dle", m_digits);
             break;
           case lf_fmt:
           default:
-            m_textFormat.Printf(wxT("%%.%dlg"), m_digits);
+            m_textFormat.Printf("%%.%dlg", m_digits);
             break;
         }
 
@@ -519,19 +519,19 @@ void wxSpinCtrlDbl::SetDigits(int digits, formatType fmt)
   switch (fmt)
   {
     case le_fmt:
-      m_textFormat.Printf(wxT("%%.%dle"), m_digits);
+      m_textFormat.Printf("%%.%dle", m_digits);
       break;
     case lg_fmt:
     {
       if (m_digits == -1)
-        m_textFormat.Printf(wxT("%%lg"));
+        m_textFormat.Printf("%%lg");
       else
-        m_textFormat.Printf(wxT("%%.%dlg"), m_digits);
+        m_textFormat.Printf("%%.%dlg", m_digits);
       break;
     }
     case lf_fmt:
     default:
-      m_textFormat.Printf(wxT("%%.%dlf"), m_digits);
+      m_textFormat.Printf("%%.%dlf", m_digits);
       break;
   }
 

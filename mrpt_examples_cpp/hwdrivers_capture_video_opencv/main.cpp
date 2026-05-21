@@ -79,7 +79,7 @@ void TestCapture_OpenCV()
       tictac.Tic();
     }
 
-    CObservationImage::Ptr obs = capture->grabFrame();
+    auto obs = capture->grabFrame();
     if (!obs)
     {
       cerr << "Error retrieving images!"
@@ -87,7 +87,7 @@ void TestCapture_OpenCV()
       break;
     }
 
-    archiveFrom(fil) << obs;
+    archiveFrom(fil) << obs.value();
 
     std::cout << ".";
     cout.flush();

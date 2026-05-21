@@ -328,7 +328,7 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
         {
           CObservation::Ptr obs = std::dynamic_pointer_cast<CObservation>(d.data);
 
-          if (!obs->sensorLabel.empty()) s << wxT(" : ") << obs->sensorLabel.c_str();
+          if (!obs->sensorLabel.empty()) s << " : " << obs->sensorLabel.c_str();
         }
       }
     }

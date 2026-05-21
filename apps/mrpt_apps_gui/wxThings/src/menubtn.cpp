@@ -270,8 +270,7 @@ void wxMenuButton::OnButton(wxCommandEvent &event)
 
 int wxMenuButton::GetSelection() const
 {
-  wxCHECK_MSG(
-      m_menu != nullptr, wxNOT_FOUND, wxT("No attached menu in wxMenuButton::GetSelection"));
+  wxCHECK_MSG(m_menu != nullptr, wxNOT_FOUND, "No attached menu in wxMenuButton::GetSelection");
 
   const wxMenuItemList &items = m_menu->GetMenuItems();
 

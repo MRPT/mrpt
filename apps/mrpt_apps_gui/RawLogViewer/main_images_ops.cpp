@@ -51,7 +51,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& even
   {
     return;
   }
-  string outDir(dirDialog.GetPath().mb_str());
+  string outDir = dirDialog.GetPath().ToStdString();
 
   // Let the user choose the image format:
   string imgFileExtension = AskForImageFileFormat();
@@ -64,7 +64,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& even
 
   wxString auxStr;
   wxProgressDialog progDia(
-      wxT("Progress"), wxT("Parsing rawlog..."),
+      "Progress", "Parsing rawlog...",
       nEntries,  // range
       this,      // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -79,7 +79,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& even
   {
     if (countLoop % 5 == 0)
     {
-      auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
+      auxStr.sprintf("Parsing rawlog... %u objects", countLoop);
       if (!progDia.Update(countLoop, auxStr)) break;
       wxTheApp->Yield();  // Let the app. process messages
     }
@@ -194,13 +194,13 @@ void xRawLogViewerFrame::OnMenuMono2Stereo([[maybe_unused]] wxCommandEvent& even
   }
   wxString sNewLabel = wxGetTextFromUser(
       _("New stereo observation label:"), _("Stereo observations"), _("STEREO_CAM"), this);
-  string lb_stereo = string(sNewLabel.mb_str());
+  string lb_stereo = string(sNewLabel.ToStdString());
 
   wxBusyCursor waitCursor;
   auto nEntries = static_cast<unsigned int>(rawlog.size());
 
   wxProgressDialog progDia(
-      wxT("Progress"), wxT("Parsing rawlog..."),
+      "Progress", "Parsing rawlog...",
       nEntries,  // range
       this,      // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -212,8 +212,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo([[maybe_unused]] wxCommandEvent& even
   {
     if (countLoop % 20 == 0)
     {
-      if (!progDia.Update(
-              countLoop, wxString::Format(wxT("Parsing rawlog... %u objects"), countLoop)))
+      if (!progDia.Update(countLoop, wxString::Format("Parsing rawlog... %u objects", countLoop)))
       {
         return;
       }
@@ -293,7 +292,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages([[maybe_unused]] wxCommandEvent& ev
   if (dirDialog.ShowModal()!=wxID_OK)
 {
   return;
-}  string outDir( dirDialog.GetPath().mb_str() );
+}  string outDir = dirDialog.GetPath().ToStdString();
 
   // Let the user choose the image format:
   string imgFileExtension = AskForImageFileFormat();
@@ -306,7 +305,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages([[maybe_unused]] wxCommandEvent& ev
 
   wxString auxStr;
   wxProgressDialog progDia(
-      wxT("Progress"), wxT("Parsing rawlog..."),
+      "Progress", "Parsing rawlog...",
       nEntries,  // range
       this,      // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -321,7 +320,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages([[maybe_unused]] wxCommandEvent& ev
   {
     if (countLoop % 5 == 0)
     {
-      auxStr.sprintf(wxT("Rectifying images... %u images"), countLoop);
+      auxStr.sprintf("Rectifying images... %u images", countLoop);
       if (!progDia.Update(countLoop, auxStr)) break;
       wxTheApp->Yield();  // Let the app. process messages
     }
@@ -521,7 +520,7 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles([[maybe_unused]] wxCommandEvent&
 
   wxString auxStr;
   wxProgressDialog progDia(
-      wxT("Progress"), wxT("Processing rawlog..."),
+      "Progress", "Processing rawlog...",
       nEntries,  // range
       this,      // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -536,7 +535,7 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles([[maybe_unused]] wxCommandEvent&
   {
     if (countLoop % 50 == 0)
     {
-      auxStr.sprintf(wxT("Renaming images... %u images"), countLoop);
+      auxStr.sprintf("Renaming images... %u images", countLoop);
       if (!progDia.Update(countLoop, auxStr)) break;
       wxTheApp->Yield();  // Let the app. process messages
     }

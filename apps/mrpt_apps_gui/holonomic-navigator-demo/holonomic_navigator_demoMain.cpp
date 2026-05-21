@@ -623,7 +623,7 @@ void holonomic_navigator_demoFrame::OntimRunSimulTrigger(wxTimerEvent& event)
   }
   catch (const std::exception& e)
   {
-    wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
+    wxMessageBox(mrpt::exception_to_str(e), "Exception", wxOK, this);
     // Stop:
     wxCommandEvent ev;
     OnbtnStopClick(ev);
@@ -652,7 +652,7 @@ void holonomic_navigator_demoFrame::reinitSimulator()
   // Load params:
   {
     CConfigFileMemory cfg;
-    cfg.setContent(std::string(edHoloParams->GetValue().mb_str()));
+    cfg.setContent(edHoloParams->GetValue().ToStdString());
     m_holonomicMethod->initialize(cfg);
 
     m_simul_options.loadFromConfigFile(cfg, "SIMULATOR");
@@ -838,7 +838,7 @@ void holonomic_navigator_demoFrame::Onplot3DMouseMove(wxMouseEvent& event)
     }
 
     StatusBar1->SetStatusText(
-        wxString::Format(wxT("X=%.03f Y=%.04f Z=0"), m_curCursorPos.x, m_curCursorPos.y), 2);
+        wxString::Format("X=%.03f Y=%.04f Z=0", m_curCursorPos.x, m_curCursorPos.y), 2);
   }
 
   // Do normal process in that class:
@@ -933,9 +933,9 @@ void holonomic_navigator_demoFrame::OnbtnLoadMapClick([[maybe_unused]] wxCommand
 
   wxFileDialog dlg(
       this, _("Select grid map to load"), _("."), _("grid.png"),
-      wxT("Image files (*.png,*.jpg,*.gif)|*.png;*.jpg;*.gif|Binary gridmap "
-          "files (*.gridmap,*.gridmap.gz)|*.gridmap;*.gridmap.gz|All files "
-          "(*.*)|*.*"),
+      "Image files (*.png,*.jpg,*.gif)|*.png;*.jpg;*.gif|Binary gridmap "
+      "files (*.gridmap,*.gridmap.gz)|*.gridmap;*.gridmap.gz|All files "
+      "(*.*)|*.*",
       wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
   if (dlg.ShowModal() != wxID_OK)
@@ -943,7 +943,7 @@ void holonomic_navigator_demoFrame::OnbtnLoadMapClick([[maybe_unused]] wxCommand
     return;
   }
   const wxString sFil = dlg.GetPath();
-  const std::string fil = std::string(sFil.mb_str());
+  const std::string fil = std::string(sFil.ToStdString());
 
   const std::string fil_ext = mrpt::system::extractFileExtension(fil, true);
 

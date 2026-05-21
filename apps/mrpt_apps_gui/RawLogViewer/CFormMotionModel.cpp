@@ -592,25 +592,25 @@ void CFormMotionModel::loadFromGaussian()
 {
   // Gaussian selected:
   options.modelSelection = CActionRobotMovement2D::mmGaussian;
-  options.gaussianModel.a1 = atof(edG_A1->GetValue().mb_str());
-  options.gaussianModel.a2 = atof(edG_A2->GetValue().mb_str()) * 180 / M_PIf;
-  options.gaussianModel.a3 = atof(edG_A3->GetValue().mb_str()) * M_PIf / 180;
-  options.gaussianModel.a4 = atof(edG_A4->GetValue().mb_str());
-  options.gaussianModel.minStdXY = atof(edMinStdXY->GetValue().mb_str());
-  options.gaussianModel.minStdPHI = DEG2RAD(atof(edMinStdPHI->GetValue().mb_str()));
+  options.gaussianModel.a1 = atof(edG_A1->GetValue().ToStdString().c_str());
+  options.gaussianModel.a2 = atof(edG_A2->GetValue().ToStdString().c_str()) * 180 / M_PIf;
+  options.gaussianModel.a3 = atof(edG_A3->GetValue().ToStdString().c_str()) * M_PIf / 180;
+  options.gaussianModel.a4 = atof(edG_A4->GetValue().ToStdString().c_str());
+  options.gaussianModel.minStdXY = atof(edMinStdXY->GetValue().ToStdString().c_str());
+  options.gaussianModel.minStdPHI = DEG2RAD(atof(edMinStdPHI->GetValue().ToStdString().c_str()));
 }
 
 void CFormMotionModel::loadFromThrun()
 {
   // Thrun selected:
   options.modelSelection = CActionRobotMovement2D::mmThrun;
-  options.thrunModel.nParticlesCount = atoi(edNumParts->GetValue().mb_str());
-  options.thrunModel.alfa1_rot_rot = atof(edA1->GetValue().mb_str());
-  options.thrunModel.alfa2_rot_trans = DEG2RAD(atof(edA2->GetValue().mb_str()));
-  options.thrunModel.alfa3_trans_trans = atof(edA3->GetValue().mb_str());
-  options.thrunModel.alfa4_trans_rot = RAD2DEG(atof(edA4->GetValue().mb_str()));
-  options.thrunModel.additional_std_XY = atof(edAddXY->GetValue().mb_str());
-  options.thrunModel.additional_std_phi = DEG2RAD(atof(edAddPhi->GetValue().mb_str()));
+  options.thrunModel.nParticlesCount = atoi(edNumParts->GetValue().ToStdString().c_str());
+  options.thrunModel.alfa1_rot_rot = atof(edA1->GetValue().ToStdString().c_str());
+  options.thrunModel.alfa2_rot_trans = DEG2RAD(atof(edA2->GetValue().ToStdString().c_str()));
+  options.thrunModel.alfa3_trans_trans = atof(edA3->GetValue().ToStdString().c_str());
+  options.thrunModel.alfa4_trans_rot = RAD2DEG(atof(edA4->GetValue().ToStdString().c_str()));
+  options.thrunModel.additional_std_XY = atof(edAddXY->GetValue().ToStdString().c_str());
+  options.thrunModel.additional_std_phi = DEG2RAD(atof(edAddPhi->GetValue().ToStdString().c_str()));
 }
 
 void CFormMotionModel::applyToLoadedRawlog()
@@ -627,8 +627,8 @@ void CFormMotionModel::applyToLoadedRawlog()
 
     if (!cbAll->GetValue())
     {
-      first = atoi(string(edRangeFrom->GetValue().mb_str()).c_str());
-      last = atoi(string(edRangeTo->GetValue().mb_str()).c_str());
+      first = atoi(string(edRangeFrom->GetValue().ToStdString().c_str()).c_str());
+      last = atoi(string(edRangeTo->GetValue().ToStdString().c_str()).c_str());
     }
 
     for (size_t i = first; i <= last; i++)
@@ -693,7 +693,7 @@ void CFormMotionModel::applyToRawlogFile()
   auto filSize = static_cast<unsigned int>(in_fil.getTotalBytesCount());
 
   wxProgressDialog progDia(
-      wxT("Modifying motion model"), wxT("Processing file..."),
+      "Modifying motion model", "Processing file...",
       filSize,  // range
       this,     // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
@@ -714,7 +714,7 @@ void CFormMotionModel::applyToRawlogFile()
   {
     if (countLoop++ % 100 == 0)
     {
-      auxStr.sprintf(wxT("Processing... (%u objects processed)"), rawlog.size());
+      auxStr.sprintf("Processing... (%u objects processed)", rawlog.size());
       if (!progDia.Update(static_cast<int>(in_fil.getPosition()), auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
@@ -970,8 +970,8 @@ void CFormMotionModel::drawRandomSamples()
 
   CActionRobotMovement2D act;
   CPose2D odo(
-      atof(txtAx->GetValue().mb_str()), atof(txtAy->GetValue().mb_str()),
-      DEG2RAD(atof(txtAphi->GetValue().mb_str())));
+      atof(txtAx->GetValue().ToStdString().c_str()), atof(txtAy->GetValue().ToStdString().c_str()),
+      DEG2RAD(atof(txtAphi->GetValue().ToStdString().c_str())));
 
   // Load in the action:
   act.computeFromOdometry(odo, options);
@@ -1054,7 +1054,7 @@ void CFormMotionModel::OnbtnPickInputClick([[maybe_unused]] wxCommandEvent& even
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   txtInputFile->SetValue(dialog.GetPath());
@@ -1081,7 +1081,7 @@ void CFormMotionModel::OnbtnPickOutClick([[maybe_unused]] wxCommandEvent& event)
   }
   // Save the path
   WX_START_TRY
-  iniFile->write(iniFileSect, "LastDir", std::string(dialog.GetDirectory().mb_str()));
+  iniFile->write(iniFileSect, "LastDir", dialog.GetDirectory().ToStdString());
   WX_END_TRY
 
   txtOutputFile->SetValue(dialog.GetPath());

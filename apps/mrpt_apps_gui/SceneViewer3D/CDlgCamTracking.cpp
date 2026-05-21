@@ -195,14 +195,14 @@ void CDlgCamTracking::UpdateTableFromPoses()
     const Clock::time_point t = it->first;
     const auto& p = it->second;
 
-    gridPoses->SetCellValue(i, 0, wxString::Format(wxT("%.02f"), timeDifference(t0, t)));
+    gridPoses->SetCellValue(i, 0, wxString::Format("%.02f", timeDifference(t0, t)));
 
-    gridPoses->SetCellValue(i, 1, wxString::Format(wxT("%f"), p.x));
-    gridPoses->SetCellValue(i, 2, wxString::Format(wxT("%f"), p.y));
-    gridPoses->SetCellValue(i, 3, wxString::Format(wxT("%f"), p.z));
-    gridPoses->SetCellValue(i, 4, wxString::Format(wxT("%f"), RAD2DEG(p.yaw)));
-    gridPoses->SetCellValue(i, 5, wxString::Format(wxT("%f"), RAD2DEG(p.pitch)));
-    gridPoses->SetCellValue(i, 6, wxString::Format(wxT("%f"), RAD2DEG(p.roll)));
+    gridPoses->SetCellValue(i, 1, wxString::Format("%f", p.x));
+    gridPoses->SetCellValue(i, 2, wxString::Format("%f", p.y));
+    gridPoses->SetCellValue(i, 3, wxString::Format("%f", p.z));
+    gridPoses->SetCellValue(i, 4, wxString::Format("%f", RAD2DEG(p.yaw)));
+    gridPoses->SetCellValue(i, 5, wxString::Format("%f", RAD2DEG(p.pitch)));
+    gridPoses->SetCellValue(i, 6, wxString::Format("%f", RAD2DEG(p.roll)));
   }
 
   gridPoses->EndBatch();

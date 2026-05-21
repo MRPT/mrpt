@@ -28,7 +28,7 @@ bool reactive_navigator_demoApp::OnInit()
   //  if we want numbers to use "." in all countries. The App::OnInit() is a
   //  perfect place to undo
   //  the default wxWidgets settings. (JL @ Sep-2009)
-  wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
+  wxSetlocale(LC_NUMERIC, wxString("C"));
 
   //(*AppInitialize
   bool wxsOK = true;

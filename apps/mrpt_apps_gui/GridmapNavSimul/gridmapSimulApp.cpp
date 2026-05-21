@@ -30,11 +30,11 @@ bool gridmapSimulApp::OnInit()
   //  if we want numbers to use "." in all countries. The App::OnInit() is a
   //  perfect place to undo
   //  the default wxWidgets settings. (JL @ Sep-2009)
-  wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
+  wxSetlocale(LC_NUMERIC, wxString("C"));
 
   /*    // Process cmd line arguments (for the case of opening a file):
     if (argc>1)
-      global_fileToOpen = wxString(wxApp::argv[1]).mb_str();
+      global_fileToOpen = wxString(wxApp::argv[1]).ToStdString();
   */
 
   //(*AppInitialize

@@ -96,7 +96,7 @@ extern TTimeStamp rawlog_first_timestamp;
 
 std::vector<CObservation::Ptr> displayedImgs(3);
 
-CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
+CFormPlayVideo::CFormPlayVideo(wxWindow* parent, [[maybe_unused]] wxWindowID id)
 {
   WX_START_TRY
 
@@ -350,10 +350,10 @@ CFormPlayVideo::~CFormPlayVideo()
 // Pick a file:
 void CFormPlayVideo::OnbtnPickClick([[maybe_unused]] wxCommandEvent& event)
 {
-  wxString caption = wxT("Choose a file to open");
+  wxString caption = "Choose a file to open";
   wxString wildcard =
-      wxT("RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
-          "files (*.*)|*.*");
+      "RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
+      "files (*.*)|*.*";
 
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
@@ -369,11 +369,11 @@ void CFormPlayVideo::OnbtnPickClick([[maybe_unused]] wxCommandEvent& event)
     // Save the path
     try
     {
-      iniFile->write(iniFileSect, "LastDir", std::string(filePath.mb_str()));
+      iniFile->write(iniFileSect, "LastDir", filePath.ToStdString());
     }
     catch (const std::exception& e)
     {
-      wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
+      wxMessageBox(mrpt::exception_to_str(e), "Exception", wxOK, this);
     }
 
     // Sets the file:
@@ -406,7 +406,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
     if (rbFile->GetValue())
     {
       // Load from file:
-      fil = new CCompressedInputStream(std::string(edFile->GetValue().mb_str()));
+      fil = new CCompressedInputStream(std::string(edFile->GetValue().ToStdString()));
     }
     else
     {
@@ -423,7 +423,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
     }
 
     progressBar->SetRange(
-        0, fil ? static_cast<int>(fil)->getTotalBytesCount() : static_cast<int>(rawlog.size()));
+        0, fil ? static_cast<int>(fil->getTotalBytesCount()) : static_cast<int>(rawlog.size()));
     progressBar->SetValue(0);
 
     // Repeat until EOF exception or cancel.
@@ -440,7 +440,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
       else
       {
         obj = rawlog.getAsGeneric(count);
-        m_idxInRawlog = count;
+        m_idxInRawlog = static_cast<int>(count);
       }
 
       bool doDelay = false;
@@ -463,7 +463,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
       count++;
       // if ((count) % 10 == 0)
       {
-        progressBar->SetValue(fil ? static_cast<int>(fil)->getPosition() : static_cast<int>(count));
+        progressBar->SetValue(fil ? static_cast<int>(fil->getPosition()) : static_cast<int>(count));
         wxString str;
         if (imgTimestamp != INVALID_TIMESTAMP)
         {
@@ -481,7 +481,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
       }
 
       // if (doDelay || (count % 100)==0)
-      edIndex->SetValue(count);
+      edIndex->SetValue(static_cast<int>(count));
 
       // End?
       if (!fil && count >= rawlog.size()) m_nowPlaying = false;
@@ -513,7 +513,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
           CImage::getImagesPathBase().c_str(), 0, wxDefaultPosition);
       if (dirDialog.ShowModal() == wxID_OK)
       {
-        CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str()));
+        CImage::setImagesPathBase(dirDialog.GetPath().ToStdString());
       }
     }
   }
@@ -526,7 +526,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
   btnStop->Enable(false);
 }
 
-void CFormPlayVideo::OnInit(wxInitDialogEvent& event)
+void CFormPlayVideo::OnInit([[maybe_unused]] wxInitDialogEvent& event)
 {
   wxCommandEvent dumm;
   // Is there any rawlog loaded??
@@ -584,7 +584,8 @@ void CFormPlayVideo::drawHorzRules(mrpt::img::CImage& img)
   for (size_t y = Ay; y < h; y += Ay)
     img.line(
         mrpt::img::TPixelCoord{0, static_cast<int>(y)},
-        mrpt::img::TPixelCoord{(int)(w - 1), static_cast<int>(y)}, mrpt::img::TColor::white());
+        mrpt::img::TPixelCoord{static_cast<int>(w - 1), static_cast<int>(y)},
+        mrpt::img::TColor::white());
 }
 
 bool CFormPlayVideo::showSensoryFrame(
@@ -974,10 +975,10 @@ void CFormPlayVideo::saveCamImage(int n)
   {
     return;
   }
-  wxString caption = wxT("Save image...");
+  wxString caption = "Save image...";
   wxString wildcard =
-      wxT("Image files (*.png,*.jpg,*.bmp)|*.jpg;*.bmp;*.png|All files "
-          "(*.*)|*.*");
+      "Image files (*.png,*.jpg,*.bmp)|*.jpg;*.bmp;*.png|All files "
+      "(*.*)|*.*";
   wxString defaultDir((iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
   if (IS_CLASS(*displayedImgs[n], CObservationImage))
@@ -992,7 +993,7 @@ void CFormPlayVideo::saveCamImage(int n)
     {
       return;
     }
-    string fil = string(dialog.GetPath().mb_str());
+    string fil = string(dialog.GetPath().ToStdString());
 
     bool savedOk = o->image.saveToFile(fil);
     ASSERT_(savedOk);
@@ -1024,7 +1025,7 @@ void CFormPlayVideo::saveCamImage(int n)
     {
       return;
     }
-    string fil = string(dialog.GetPath().mb_str());
+    string fil = string(dialog.GetPath().ToStdString());
 
     CImage& im = (n == 2 ? o->imageDisparity : (n == 1 ? o->imageRight : o->imageLeft));
     bool savedOk = im.saveToFile(fil);
@@ -1041,7 +1042,7 @@ void CFormPlayVideo::OnbtnSaveCam3Click(wxCommandEvent&) { saveCamImage(2); }
 void CFormPlayVideo::OncbImageDirsSelect(wxCommandEvent&)
 {
   wxString dir = cbImageDirs->GetValue();
-  string dirc = string(dir.mb_str());
+  string dirc = string(dir.ToStdString());
 
   if (mrpt::system::fileExists(dirc))
   {

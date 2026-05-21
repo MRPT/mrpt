@@ -11,6 +11,7 @@ Welcome, AI Agent! This file contains the architectural context and coding guide
 MRPT 3.0 abstracts away standard CMake boilerplate using `mrpt_common`. Use standard CMake commands but prefer mrpt_common cmake helpers when possible for consistency.
 
 * **Compiling a module**: Use ``colcon build --packages-up-to mrpt_XXX``, then ``. install/setup.bash`` then you can run the executables or unit tests.
+  There is already a `colcon_defaults.yaml` at the repo root defining symlink install, RelWithDebInfo builds, and `CMAKE_EXPORT_COMPILE_COMMANDS`.
 
 * **Minimum CMake Version:** `cmake_minimum_required(VERSION 3.16)`
 * **Always include the MRPT common scripts:**

@@ -23,11 +23,11 @@
 // use this to check to see if there is any overlap after minimizing
 //#define CHECK_BLOCK_OVERLAP 1
 
-#define PRINT_BLOCK(msg, b)                                                           \
-  {                                                                                   \
-    wxPrintf(                                                                         \
-        wxT("Block '%s' %lg %lg %lg %lg\n"), msg, (double)(b).m_x1, (double)(b).m_y1, \
-        (double)(b).m_x2, (double)(b).m_y2);                                          \
+#define PRINT_BLOCK(msg, b)                                                                        \
+  {                                                                                                \
+    wxPrintf(                                                                                      \
+        "Block '%s' %lg %lg %lg %lg\n", msg, (double)(b).m_x1, (double)(b).m_y1, (double)(b).m_x2, \
+        (double)(b).m_y2);                                                                         \
   }
 
 wxBlockInt const wxEmptyBlockInt(0, 0, -1, -1);
@@ -108,7 +108,7 @@ void wxArrayBlockIntSort(wxArrayBlockInt &blocks, wxBlockSort_Type type)
       blocks.Sort(wxblockint_sort_largest_to_smallest);
       break;
     default:
-      wxFAIL_MSG(wxT("unknown block sort type"));
+      wxFAIL_MSG("unknown block sort type");
   }
 }
 
@@ -187,7 +187,7 @@ void wxArrayBlockDoubleSort(wxArrayBlockDouble &blocks, wxBlockSort_Type type)
       blocks.Sort(wxblockdouble_sort_largest_to_smallest);
       break;
     default:
-      wxFAIL_MSG(wxT("unknown block sort type"));
+      wxFAIL_MSG("unknown block sort type");
   }
 }
 
@@ -531,8 +531,7 @@ bool wxBlockDouble::Delete(
 //=============================================================================
 wxBlockInt wxBlockIntSelection::GetBlock(int index) const
 {
-  wxCHECK_MSG(
-      (index >= 0) && (index < int(m_blocks.GetCount())), wxEmptyBlockInt, wxT("Invalid index"));
+  wxCHECK_MSG((index >= 0) && (index < int(m_blocks.GetCount())), wxEmptyBlockInt, "Invalid index");
   return m_blocks[index];
 }
 
@@ -602,7 +601,7 @@ void wxBlockIntSelection::Sort(wxBlockSort_Type type)
 
 bool wxBlockIntSelection::DeselectBlock(const wxBlockInt &block, bool combineNow)
 {
-  wxCHECK_MSG(!block.IsEmpty(), false, wxT("Invalid block"));
+  wxCHECK_MSG(!block.IsEmpty(), false, "Invalid block");
 
   bool done = false;
 
@@ -630,7 +629,7 @@ bool wxBlockIntSelection::DeselectBlock(const wxBlockInt &block, bool combineNow
 bool wxBlockIntSelection::SelectBlock(
     const wxBlockInt &block, bool combineNow, wxArrayBlockInt *addedBlocks)
 {
-  wxCHECK_MSG(!block.IsEmpty(), false, wxT("Invalid block"));
+  wxCHECK_MSG(!block.IsEmpty(), false, "Invalid block");
 
   // TestBlocks();
 
@@ -748,7 +747,7 @@ bool wxBlockIntSelection::DoDoMinimize(wxArrayBlockInt &blocks)
 wxBlockDouble wxBlockDoubleSelection::GetBlock(int index) const
 {
   wxCHECK_MSG(
-      (index >= 0) && (index < int(m_blocks.GetCount())), wxEmptyBlockDouble, wxT("Invalid index"));
+      (index >= 0) && (index < int(m_blocks.GetCount())), wxEmptyBlockDouble, "Invalid index");
   return m_blocks[index];
 }
 
@@ -820,7 +819,7 @@ void wxBlockDoubleSelection::Sort(wxBlockSort_Type type)
 
 bool wxBlockDoubleSelection::DeselectBlock(const wxBlockDouble &block, bool combineNow)
 {
-  // wxCHECK_MSG(!block.IsEmpty(), false, wxT("Invalid block") );
+  // wxCHECK_MSG(!block.IsEmpty(), false, "Invalid block" );
 
   bool done = false;
 
@@ -848,7 +847,7 @@ bool wxBlockDoubleSelection::DeselectBlock(const wxBlockDouble &block, bool comb
 bool wxBlockDoubleSelection::SelectBlock(const wxBlockDouble &block, bool combineNow)
 {
   // It's valid to select a block with a width and height 0 since that means that point
-  // wxCHECK_MSG(!block.IsEmpty(), false, wxT("Invalid block") );
+  // wxCHECK_MSG(!block.IsEmpty(), false, "Invalid block" );
 
   wxArrayBlockDouble extra;
   extra.Add(block);
@@ -1018,7 +1017,7 @@ void wxBlockIntSelectionIterator::Reset()
 
 bool wxBlockIntSelectionIterator::GetNext(wxBlockInt &block)
 {
-  wxCHECK_MSG(m_type == wxBLOCKINT_SELITER_BLOCK, false, wxT("wrong selection type"));
+  wxCHECK_MSG(m_type == wxBLOCKINT_SELITER_BLOCK, false, "wrong selection type");
   if (m_block_index + 1 < int(m_blocks.GetCount()))
   {
     ++m_block_index;
@@ -1031,7 +1030,7 @@ bool wxBlockIntSelectionIterator::GetNext(wxBlockInt &block)
 
 bool wxBlockIntSelectionIterator::GetNext(wxPoint2DInt &pt)
 {
-  wxCHECK_MSG(m_type == wxBLOCKINT_SELITER_POINT, false, wxT("wrong selection type"));
+  wxCHECK_MSG(m_type == wxBLOCKINT_SELITER_POINT, false, "wrong selection type");
   if ((m_blocks.GetCount() < 1u) || (m_block_index >= int(m_blocks.GetCount()))) return false;
 
   // first time here

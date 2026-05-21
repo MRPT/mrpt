@@ -147,7 +147,7 @@ BEGIN_EVENT_TABLE(ptgConfiguratorframe, wxFrame)
 //*)
 END_EVENT_TABLE()
 
-ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id) :
+ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, [[maybe_unused]] wxWindowID id) :
     m_cursorPickState(cpsNone)
 {
   // Load my custom icons:
@@ -760,8 +760,8 @@ ptgConfiguratorframe::~ptgConfiguratorframe()
 void ptgConfiguratorframe::prepareRobotPathPlot(
     mpWindow* plot, mpFXYVector** graph, const std::string& name)
 {
-  plot->AddLayer(new mpScaleX(wxT("t [s]"), mpALIGN_CENTER, false /*grid*/));
-  plot->AddLayer(new mpScaleY(wxT("y"), mpALIGN_CENTER, false /*grid*/));
+  plot->AddLayer(new mpScaleX("t [s]", mpALIGN_CENTER, false /*grid*/));
+  plot->AddLayer(new mpScaleY("y", mpALIGN_CENTER, false /*grid*/));
 
   *graph = new mpFXYVector(name.c_str());
   (*graph)->SetPen(wxPen(wxColour(0, 0, 255), 5));
@@ -783,14 +783,14 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick([[maybe_unused]] wxCommandEven
   }
   ptg->deinitialize();
 
-  const std::string sKeyPrefix = mrpt::format("PTG%d_", static_cast<int>(edPTGIndex)->GetValue());
+  const std::string sKeyPrefix = mrpt::format("PTG%d_", edPTGIndex->GetValue());
 
   mrpt::config::CConfigFileMemory cfg;
   mrpt::config::CConfigFilePrefixer cfp;
   cfp.bind(cfg);
   cfp.setPrefixes("", sKeyPrefix);
 
-  cfg.setContent(std::string(edCfg->GetValue().mb_str()));
+  cfg.setContent(edCfg->GetValue().ToStdString());
 
   ptg->loadFromConfigFile(cfp, m_cfgFileSection);
 
@@ -819,7 +819,7 @@ void ptgConfiguratorframe::OncbPTGClassSelect([[maybe_unused]] wxCommandEvent& e
   {
     return;
   }
-  const std::string sSelPTG = std::string(cbPTGClass->GetString(sel).mb_str());
+  const std::string sSelPTG = std::string(cbPTGClass->GetString(sel).ToStdString());
 
   ptg.reset();
 
@@ -855,7 +855,9 @@ void ptgConfiguratorframe::rebuild3Dview()
   ASSERT_(refDist > 0);
 
   // Limits:
-  gl_axis_WS->setAxisLimits(-refDist, -refDist, .0f, refDist, refDist, .0f);
+  gl_axis_WS->setAxisLimits(
+      static_cast<float>(-refDist), static_cast<float>(-refDist), .0f, static_cast<float>(refDist),
+      static_cast<float>(refDist), .0f);
 
   double tx = 10.0, ty = .0, tphi_deg = .0;  // Target in WS
   {
@@ -894,13 +896,13 @@ void ptgConfiguratorframe::rebuild3Dview()
       {
         if (cbBuildTPObs->IsChecked())
         {
-          gl_WS_obs->insertPoint(ox, oy, 0);
+          gl_WS_obs->insertPoint(static_cast<float>(ox), static_cast<float>(oy), 0);
           timer.Tic();
           ptg->updateTPObstacle(ox, oy, TP_Obstacles);
           const double t = timer.Tac();
           StatusBar1->SetStatusText(
               wxString::Format(
-                  wxT("TP-Obstacle build time: %ss"), mrpt::system::unitsFormat(t, 2).c_str()),
+                  "TP-Obstacle build time: %ss", mrpt::system::unitsFormat(t, 2).c_str()),
               2);
         }
 
@@ -924,7 +926,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 
         StatusBar1->SetStatusText(
             wxString::Format(
-                wxT("Clearance-diagram time: build=%ss render=%ss"),
+                "Clearance-diagram time: build=%ss render=%ss",
                 mrpt::system::unitsFormat(tim_build_cd, 2).c_str(),
                 mrpt::system::unitsFormat(tim_render_cd, 2).c_str()),
             3);
@@ -933,7 +935,8 @@ void ptgConfiguratorframe::rebuild3Dview()
 
     try
     {
-      const double ptg_alpha = ptg->index2alpha(edIndexHighlightPath->GetValue());
+      const double ptg_alpha =
+          ptg->index2alpha(static_cast<uint16_t>(edIndexHighlightPath->GetValue()));
       StaticText12->SetLabel(wxString::Format(
           _("Selected path trajectory: Phi [deg]. PTG alpha=%.03f "
             "[deg]"),
@@ -962,9 +965,10 @@ void ptgConfiguratorframe::rebuild3Dview()
       double max_dist = TP_Obstacles[k];
 
       {
-        uint32_t maxStepByTime = max_draw_ptg_time / stepTime;
-        mrpt::keep_min<uint32_t>(maxStepByTime, ptg->getPathStepCount(k) - 1);
-        double maxRenderDist = ptg->getPathDist(k, maxStepByTime);
+        uint32_t maxStepByTime = static_cast<uint32_t>(max_draw_ptg_time / stepTime);
+        mrpt::keep_min<uint32_t>(
+            maxStepByTime, ptg->getPathStepCount(static_cast<uint16_t>(k)) - 1);
+        double maxRenderDist = ptg->getPathDist(static_cast<uint16_t>(k), maxStepByTime);
         mrpt::keep_min(max_dist, maxRenderDist);
       }
 
@@ -973,7 +977,7 @@ void ptgConfiguratorframe::rebuild3Dview()
               ? *gl_robot_ptg_prediction_highlight
               : *gl_robot_ptg_prediction;
 
-      ptg->renderPathAsSimpleLine(k, sol, 0.10f, max_dist);
+      ptg->renderPathAsSimpleLine(static_cast<uint16_t>(k), sol, 0.10f, max_dist);
 
       // Overlay a sequence of robot shapes:
       if (cbDrawShapePath->IsChecked())
@@ -989,8 +993,8 @@ void ptgConfiguratorframe::rebuild3Dview()
             done = true;
           }
           uint32_t step;
-          if (!ptg->getPathStepForDist(k, d, step)) continue;
-          const auto p = ptg->getPathPose(k, step);
+          if (!ptg->getPathStepForDist(static_cast<uint16_t>(k), d, step)) continue;
+          const auto p = ptg->getPathPose(static_cast<uint16_t>(k), step);
           ptg->add_robotShape_to_setOfLines(sol, mrpt::poses::CPose2D(p));
         }
       }
@@ -1000,7 +1004,8 @@ void ptgConfiguratorframe::rebuild3Dview()
     std::string strMotionCmd;
     try
     {
-      const auto cmd = ptg->directionToMotionCommand(edIndexHighlightPath->GetValue());
+      const auto cmd =
+          ptg->directionToMotionCommand(static_cast<uint16_t>(edIndexHighlightPath->GetValue()));
       strMotionCmd = cmd->asString();
     }
     catch (const std::exception& e)
@@ -1018,10 +1023,10 @@ void ptgConfiguratorframe::rebuild3Dview()
 
     for (size_t k = 0; k < nPTGPaths; k++)
     {
-      robotHeadAngAll_x[k] = k;
+      robotHeadAngAll_x[k] = static_cast<double>(k);
       bool is_selected_path = (k == size_t(edIndexHighlightPath->GetValue()));
 
-      size_t nSteps = ptg->getPathStepCount(k);
+      size_t nSteps = ptg->getPathStepCount(static_cast<uint16_t>(k));
 
       if (is_selected_path)
       {
@@ -1039,8 +1044,10 @@ void ptgConfiguratorframe::rebuild3Dview()
       double maxRobotHeadErr = .0;
       for (size_t j = 0; j < nSteps; j++)
       {
-        const mrpt::math::TPose2D curPose = ptg->getPathPose(k, j);
-        const mrpt::math::TTwist2D curVel = ptg->getPathTwist(k, j);
+        const mrpt::math::TPose2D curPose =
+            ptg->getPathPose(static_cast<uint16_t>(k), static_cast<uint32_t>(j));
+        const mrpt::math::TTwist2D curVel =
+            ptg->getPathTwist(static_cast<uint16_t>(k), static_cast<uint32_t>(j));
 
         // Head calc:
         const double head2dir =
@@ -1050,12 +1057,12 @@ void ptgConfiguratorframe::rebuild3Dview()
 
         if (is_selected_path)
         {
-          robotHeadAng_x[j] = j * dt;
+          robotHeadAng_x[j] = static_cast<double>(j) * dt;
           robotHeadAng_y[j] = mrpt::RAD2DEG(head2dir);
           robotPath_x[j] = curPose.x;
           robotPath_y[j] = curPose.y;
           robotPath_phi[j] = mrpt::RAD2DEG(curPose.phi);
-          robotPath_dist[j] = ptg->getPathDist(k, j);
+          robotPath_dist[j] = ptg->getPathDist(static_cast<uint16_t>(k), static_cast<uint32_t>(j));
 
           robotPath_vx[j] = curVel.vx;
           robotPath_vy[j] = curVel.vy;
@@ -1087,9 +1094,10 @@ void ptgConfiguratorframe::rebuild3Dview()
       for (size_t i = 0; i <= nObs; i++)
       {
         const double d0 = TP_Obstacles[i % nObs] / refDist;
-        const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs) + 0.5) / nObs);
+        const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs) + 0.5) / static_cast<double>(nObs));
         const double d1 = TP_Obstacles[(i + 1) % nObs] / refDist;
-        const double a1 = M_PI * (-1.0 + 2.0 * (((i + 1) % nObs) + 0.5) / nObs);
+        const double a1 =
+            M_PI * (-1.0 + 2.0 * (((i + 1) % nObs) + 0.5) / static_cast<double>(nObs));
         gl_tp_obstacles->appendLine(
             d0 * cos(a0), d0 * sin(a0), 0.0, d1 * cos(a1), d1 * sin(a1), 0.0);
       }
@@ -1104,7 +1112,7 @@ void ptgConfiguratorframe::rebuild3Dview()
       const bool is_exact = inv.has_value();
       const int k = is_exact ? inv->first : 0;
       const double norm_d = is_exact ? inv->second : 0.0;
-      const double dir = ptg->index2alpha(k);
+      const double dir = ptg->index2alpha(static_cast<uint16_t>(k));
       if (is_exact)
       {
         gl_TP_target->setLocation(cos(dir) * norm_d, sin(dir) * norm_d, .0);
@@ -1116,16 +1124,17 @@ void ptgConfiguratorframe::rebuild3Dview()
       }
       StatusBar1->SetStatusText(
           wxString::Format(
-              wxT("TP-Target: k=%i (alpha=%.03f deg) norm_d=%.03f "
-                  "is_exact:%s"),
+              "TP-Target: k=%i (alpha=%.03f deg) norm_d=%.03f "
+              "is_exact:%s",
               k, dir * 180 / M_PI, norm_d, (is_exact ? "yes" : "NO")),
           1);
 
       // Sanity check: reproject TP_target back to WS:
       uint32_t check_step;
-      if (ptg->getPathStepForDist(k, norm_d * ptg->getRefDistance(), check_step))
+      if (ptg->getPathStepForDist(
+              static_cast<uint16_t>(k), norm_d * ptg->getRefDistance(), check_step))
       {
-        gl_WS_target_reprojected->setPose(ptg->getPathPose(k, check_step));
+        gl_WS_target_reprojected->setPose(ptg->getPathPose(static_cast<uint16_t>(k), check_step));
         gl_WS_target_reprojected->setName("WS-Target-reproj");
       }
       else
@@ -1163,14 +1172,14 @@ void ptgConfiguratorframe::rebuild3Dview()
 void ptgConfiguratorframe::loadPlugin()
 {
   wxFileDialog openFileDialog(
-      this, _("Open library"), wxT(""), wxT(""),
-      wxT("so files (*.so)|*.so|so files (*.so.*)|*.so.*|*.dll"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+      this, _("Open library"), "", "", "so files (*.so)|*.so|so files (*.so.*)|*.so.*|*.dll",
+      wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
   if (openFileDialog.ShowModal() == wxID_CANCEL)
   {
     return;
   }
-  const std::string sLib = std::string(openFileDialog.GetPath().mb_str());
+  const std::string sLib = std::string(openFileDialog.GetPath().ToStdString());
   mrpt::system::loadPluginModule(sLib);
 
   // Populate list of existing PTGs:
@@ -1194,7 +1203,10 @@ void ptgConfiguratorframe::loadPlugin()
   }
 }
 
-void ptgConfiguratorframe::OnedPTGIndexChange(wxSpinEvent& event) { dumpPTGcfgToTextBox(); }
+void ptgConfiguratorframe::OnedPTGIndexChange([[maybe_unused]] wxSpinEvent& event)
+{
+  dumpPTGcfgToTextBox();
+}
 
 void ptgConfiguratorframe::dumpPTGcfgToTextBox()
 {
@@ -1203,7 +1215,7 @@ void ptgConfiguratorframe::dumpPTGcfgToTextBox()
     return;
   }
   // Wrapper to transparently add prefixes to all config keys:
-  const std::string sKeyPrefix = mrpt::format("PTG%d_", static_cast<int>(edPTGIndex)->GetValue());
+  const std::string sKeyPrefix = mrpt::format("PTG%d_", edPTGIndex->GetValue());
   const std::string sSection = m_cfgFileSection;
 
   mrpt::config::CConfigFileMemory cfg;
@@ -1281,7 +1293,7 @@ void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
         break;
     };
     StatusBar1->SetStatusText(
-        wxString::Format(wxT("Cursor: X=%.03f Y=%.04f"), m_curCursorPos.x, m_curCursorPos.y), 0);
+        wxString::Format("Cursor: X=%.03f Y=%.04f", m_curCursorPos.x, m_curCursorPos.y), 0);
   }
 
   // Do normal process in that class:
@@ -1323,7 +1335,10 @@ void ptgConfiguratorframe::OncbHighlightOnePathClick([[maybe_unused]] wxCommandE
   rebuild3Dview();
 }
 
-void ptgConfiguratorframe::OnedIndexHighlightPathChange(wxSpinEvent& event) { rebuild3Dview(); }
+void ptgConfiguratorframe::OnedIndexHighlightPathChange([[maybe_unused]] wxSpinEvent& event)
+{
+  rebuild3Dview();
+}
 
 void ptgConfiguratorframe::OnButton1Click([[maybe_unused]] wxCommandEvent& event) { loadPlugin(); }
 
@@ -1368,7 +1383,7 @@ void ptgConfiguratorframe::OnExportSelectedPath(wxCommandEvent&)
     return;
   }
   wxFileDialog openFileDialog(
-      this, _("Save selected path to .m"), wxT(""), wxT(""), wxT("m files (*.m)|*.m"),
+      this, _("Save selected path to .m"), "", "", "m files (*.m)|*.m",
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
   if (openFileDialog.ShowModal() == wxID_CANCEL)
@@ -1384,11 +1399,12 @@ void ptgConfiguratorframe::OnExportSelectedPath(wxCommandEvent&)
   f << "% File generated automatically by ptg-configurator, MRPT project.\n";
   f << "%\n";
   f << "% For PTG path 0-based index " << edIndexHighlightPath->GetValue() << " out of "
-    << ptg->getPathCount()
-    << " alpha=" << mrpt::RAD2DEG(ptg->index2alpha(edIndexHighlightPath->GetValue())) << " [deg]\n";
+    << ptg->getPathCount() << " alpha="
+    << mrpt::RAD2DEG(ptg->index2alpha(static_cast<uint16_t>(edIndexHighlightPath->GetValue())))
+    << " [deg]\n";
   f << "% PTG details:\n%{\n";
 
-  const std::string sKeyPrefix = mrpt::format("PTG%d_", static_cast<int>(edPTGIndex)->GetValue());
+  const std::string sKeyPrefix = mrpt::format("PTG%d_", edPTGIndex->GetValue());
   const std::string sSection = m_cfgFileSection;
   mrpt::config::CConfigFileMemory cfg;
   mrpt::config::CConfigFilePrefixer cfp;

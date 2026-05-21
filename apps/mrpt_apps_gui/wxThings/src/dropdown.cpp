@@ -131,7 +131,7 @@ void DropDownPopup::OnTimer(wxTimerEvent &WXUNUSED(event))
   if (!child) return;  // nothing to do
 
   wxRect clientRect(GetClientRect());
-  // wxPrintf(wxT("**DropDownPopup::OnTimer mouse %d %d -- %d %d %d\n"), m_mouse.x, m_mouse.y,
+  // wxPrintf("**DropDownPopup::OnTimer mouse %d %d -- %d %d %d\n", m_mouse.x, m_mouse.y,
   // m_popped_handler, m_child, m_handlerPopup); fflush(stdout);
   //  pop the event handler if inside the child window or
   //  restore the event handler if not in the child window
@@ -146,13 +146,13 @@ void DropDownPopup::OnIdle(wxIdleEvent &event)
   if (IsShown())
   {
     m_mouse = ScreenToClient(wxGetMousePosition());
-    wxPrintf(wxT("OnIdle mouse %d %d\n"), m_mouse.x, m_mouse.y);
+    wxPrintf("OnIdle mouse %d %d\n", m_mouse.x, m_mouse.y);
 
     wxWindow *child = GetChild();
     if (!child) return;  // nothing to do
 
     wxRect clientRect(GetClientRect());
-    // wxPrintf(wxT("**DropDownPopup::OnIdle mouse %d %d -- %d %d %d\n"), m_mouse.x, m_mouse.y,
+    // wxPrintf("**DropDownPopup::OnIdle mouse %d %d -- %d %d %d\n", m_mouse.x, m_mouse.y,
     // m_popped_handler, m_child, m_handlerPopup); fflush(stdout);
     //  pop the event handler if inside the child window or
     //  restore the event handler if not in the child window
@@ -220,7 +220,7 @@ void DropDownPopup::Dismiss()
 bool DropDownPopup::ProcessLeftDown(wxMouseEvent &event)
 {
   m_mouse = event.GetPosition();
-  // wxPrintf(wxT("DropDownPopup::ProcessLeftDown %d %d\n"), m_mouse.x, m_mouse.y); fflush(stdout);
+  // wxPrintf("DropDownPopup::ProcessLeftDown %d %d\n", m_mouse.x, m_mouse.y); fflush(stdout);
 
   if (m_popped_handler) return true;  // shouldn't ever get here, but just in case
 
@@ -294,7 +294,7 @@ void DropDownBase::OnSize(wxSizeEvent &event)
   return;
 }
     wxSize size = GetClientSize();
-      wxPrintf(wxT("DropDownBase %d %d\n"), size.x, size.y);
+      wxPrintf("DropDownBase %d %d\n", size.x, size.y);
 
     wxSize dropSize = m_dropdownButton->GetSize();
       m_dropdownButton->SetSize(size.x-dropSize.x, 0, dropSize.x, size.y);
@@ -334,7 +334,7 @@ bool DropDownBase::ShowPopup()
   m_popupWin->SetSize(x, y, width, height);
   if (m_popupWin->GetChild()) m_popupWin->GetChild()->SetSize(width, height);
 
-  // wxPrintf(wxT("ShowPopup %d %d, %d %d -- %d\n"), width, height, m_popupWin->GetSize().x,
+  // wxPrintf("ShowPopup %d %d, %d %d -- %d\n", width, height, m_popupWin->GetSize().x,
   // m_popupWin->GetSize().y, m_popupWin->GetMinHeight());
 
   return DoShowPopup();

@@ -74,7 +74,9 @@ class MyArtProvider : public wxArtProvider
   wxBitmap CreateBitmap(const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
 };
 wxBitmap MyArtProvider::CreateBitmap(
-    const wxArtID& id, const wxArtClient& client, const wxSize& size)
+    const wxArtID& id,
+    [[maybe_unused]] const wxArtClient& client,
+    [[maybe_unused]] const wxSize& size)
 {
   if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(icono_main_xpm);
   if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO)) return wxBitmap(mrpt_logo_xpm);
@@ -172,7 +174,7 @@ BEGIN_EVENT_TABLE(slamdemoFrame, wxFrame)
 //*)
 END_EVENT_TABLE()
 
-slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
+slamdemoFrame::slamdemoFrame(wxWindow* parent, [[maybe_unused]] wxWindowID id)
 {
   // Load my custom icons:
   wxArtProvider::Push(new MyArtProvider);
@@ -933,7 +935,8 @@ void slamdemoFrame::OnbtnRunBatchClicked([[maybe_unused]] wxCommandEvent& event)
   wxTheApp->Yield();  // Let the app. process messages
 
   tictac.Tic();
-  const size_t N = (options.path_square_len / options.robot_step_length) * 4 + 50;
+  const size_t N =
+      static_cast<size_t>(options.path_square_len / options.robot_step_length) * 4 + 50;
   for (size_t i = 0; i < N; i++) executeOneStep();
 
   const double T = tictac.Tac();
@@ -1091,13 +1094,15 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
   for (size_t i = 0; i < AREA_SEGS; i++)
   {
     double a = options.sensor_fov * (-0.5 + double(i) / (AREA_SEGS - 1));
-    xs_area[i] = options.sensorOnTheRobot.x() +
-                 options.sensor_max_range * cos(a + options.sensorOnTheRobot.phi());
-    ys_area[i] = options.sensorOnTheRobot.y() +
-                 options.sensor_max_range * sin(a + options.sensorOnTheRobot.phi());
+    xs_area[i] = static_cast<float>(
+        options.sensorOnTheRobot.x() +
+        options.sensor_max_range * cos(a + options.sensorOnTheRobot.phi()));
+    ys_area[i] = static_cast<float>(
+        options.sensorOnTheRobot.y() +
+        options.sensor_max_range * sin(a + options.sensorOnTheRobot.phi()));
   }
-  xs_area[AREA_SEGS] = options.sensorOnTheRobot.x();
-  ys_area[AREA_SEGS] = options.sensorOnTheRobot.y();
+  xs_area[AREA_SEGS] = static_cast<float>(options.sensorOnTheRobot.x());
+  ys_area[AREA_SEGS] = static_cast<float>(options.sensorOnTheRobot.y());
 
   // GT Map ----------------------
   if (alsoGTMap)
@@ -1105,8 +1110,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     vector<float> xs, ys;
     for (auto& landmark : m_GT_map.landmarks)
     {
-      xs.push_back(landmark.pose_mean.x);
-      ys.push_back(landmark.pose_mean.y);
+      xs.push_back(static_cast<float>(landmark.pose_mean.x));
+      ys.push_back(static_cast<float>(landmark.pose_mean.y));
     }
 
     lbGT->SetLabel(
@@ -1258,10 +1263,12 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     for (size_t i = m_lyERRX_err->GetDataLength(); i < N; i++)
     {
       THistoric& h = m_historicData[i];
-      m_lyERRX_err->AppendDataPoint(i, h.GT_robot_pose.x() - h.estimate_robot_pose.mean.x());
+      m_lyERRX_err->AppendDataPoint(
+          static_cast<float>(i),
+          static_cast<float>(h.GT_robot_pose.x() - h.estimate_robot_pose.mean.x()));
       const double std_x = sqrt(h.estimate_robot_pose.cov(0, 0));
-      m_lyERRX_boundUp->AppendDataPoint(i, 3 * std_x);
-      m_lyERRX_boundDown->AppendDataPoint(i, -3 * std_x);
+      m_lyERRX_boundUp->AppendDataPoint(static_cast<float>(i), static_cast<float>(3 * std_x));
+      m_lyERRX_boundDown->AppendDataPoint(static_cast<float>(i), static_cast<float>(-3 * std_x));
     }
 
     // ERRORS IN Y --------------
@@ -1274,10 +1281,12 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     for (size_t i = m_lyERRY_err->GetDataLength(); i < N; i++)
     {
       THistoric& h = m_historicData[i];
-      m_lyERRY_err->AppendDataPoint(i, h.GT_robot_pose.y() - h.estimate_robot_pose.mean.y());
+      m_lyERRY_err->AppendDataPoint(
+          static_cast<float>(i),
+          static_cast<float>(h.GT_robot_pose.y() - h.estimate_robot_pose.mean.y()));
       const double std_y = sqrt(h.estimate_robot_pose.cov(1, 1));
-      m_lyERRY_boundUp->AppendDataPoint(i, 3 * std_y);
-      m_lyERRY_boundDown->AppendDataPoint(i, -3 * std_y);
+      m_lyERRY_boundUp->AppendDataPoint(static_cast<float>(i), static_cast<float>(3 * std_y));
+      m_lyERRY_boundDown->AppendDataPoint(static_cast<float>(i), static_cast<float>(-3 * std_y));
     }
 
     // ERRORS IN PHI --------------
@@ -1291,24 +1300,26 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     {
       THistoric& h = m_historicData[i];
       m_lyERRPHI_err->AppendDataPoint(
-          i,
-          RAD2DEG(mrpt::math::wrapToPi(h.GT_robot_pose.phi() - h.estimate_robot_pose.mean.phi())));
+          static_cast<float>(i), static_cast<float>(RAD2DEG(mrpt::math::wrapToPi(
+                                     h.GT_robot_pose.phi() - h.estimate_robot_pose.mean.phi()))));
       const double std_p = sqrt(h.estimate_robot_pose.cov(2, 2));
-      m_lyERRPHI_boundUp->AppendDataPoint(i, RAD2DEG(3 * std_p));
-      m_lyERRPHI_boundDown->AppendDataPoint(i, RAD2DEG(-3 * std_p));
+      m_lyERRPHI_boundUp->AppendDataPoint(
+          static_cast<float>(i), static_cast<float>(RAD2DEG(3 * std_p)));
+      m_lyERRPHI_boundDown->AppendDataPoint(
+          static_cast<float>(i), static_cast<float>(RAD2DEG(-3 * std_p)));
     }
 
     plotErrorX->Fit(
-        -0.05 * N, N * 1.05, m_lyERRX_boundDown->GetMinY() * 1.05,
-        m_lyERRX_boundUp->GetMaxY() * 1.05);
+        -0.05 * static_cast<double>(N), static_cast<double>(N) * 1.05,
+        m_lyERRX_boundDown->GetMinY() * 1.05, m_lyERRX_boundUp->GetMaxY() * 1.05);
     plotErrorX->Refresh();
     plotErrorY->Fit(
-        -0.05 * N, N * 1.05, m_lyERRY_boundDown->GetMinY() * 1.05,
-        m_lyERRY_boundUp->GetMaxY() * 1.05);
+        -0.05 * static_cast<double>(N), static_cast<double>(N) * 1.05,
+        m_lyERRY_boundDown->GetMinY() * 1.05, m_lyERRY_boundUp->GetMaxY() * 1.05);
     plotErrorY->Refresh();
     plotErrorPhi->Fit(
-        -0.05 * N, N * 1.05, m_lyERRPHI_boundDown->GetMinY() * 1.05,
-        m_lyERRPHI_boundUp->GetMaxY() * 1.05);
+        -0.05 * static_cast<double>(N), static_cast<double>(N) * 1.05,
+        m_lyERRPHI_boundDown->GetMinY() * 1.05, m_lyERRPHI_boundUp->GetMaxY() * 1.05);
     plotErrorPhi->Refresh();
 
     // Execution times: --------------
@@ -1319,10 +1330,11 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     for (size_t i = m_lyStatTimes->GetDataLength(); i < N; i++)
     {
       THistoric& h = m_historicData[i];
-      m_lyStatTimes->AppendDataPoint(i, 1e3 * h.run_time);
+      m_lyStatTimes->AppendDataPoint(static_cast<float>(i), static_cast<float>(1e3 * h.run_time));
     }
     plotStatTime->Fit(
-        -0.15 * N, N * 1.05, -0.10 * m_lyStatTimes->GetMaxY(), m_lyStatTimes->GetMaxY() * 1.05);
+        -0.15 * static_cast<double>(N), static_cast<double>(N) * 1.05,
+        -0.10 * m_lyStatTimes->GetMaxY(), m_lyStatTimes->GetMaxY() * 1.05);
     plotStatTime->Refresh();
   }
 
@@ -1334,14 +1346,14 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     // Draw sensor ranges in the R-B plane:
     vector<float> xs_area_RG(5);
     vector<float> ys_area_RG(5);
-    xs_area_RG[0] = -RAD2DEG(options.sensor_fov) * 0.5;
+    xs_area_RG[0] = static_cast<float>(-RAD2DEG(options.sensor_fov) * 0.5);
     ys_area_RG[0] = 0;
-    xs_area_RG[1] = RAD2DEG(options.sensor_fov) * 0.5;
+    xs_area_RG[1] = static_cast<float>(RAD2DEG(options.sensor_fov) * 0.5);
     ys_area_RG[1] = 0;
-    xs_area_RG[2] = RAD2DEG(options.sensor_fov) * 0.5;
-    ys_area_RG[2] = options.sensor_max_range;
-    xs_area_RG[3] = -RAD2DEG(options.sensor_fov) * 0.5;
-    ys_area_RG[3] = options.sensor_max_range;
+    xs_area_RG[2] = static_cast<float>(RAD2DEG(options.sensor_fov) * 0.5);
+    ys_area_RG[2] = static_cast<float>(options.sensor_max_range);
+    xs_area_RG[3] = static_cast<float>(-RAD2DEG(options.sensor_fov) * 0.5);
+    ys_area_RG[3] = static_cast<float>(options.sensor_max_range);
     xs_area_RG[4] = xs_area_RG[0];
     ys_area_RG[4] = ys_area_RG[0];
 
@@ -1359,7 +1371,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
       cov->SetPen(wxPen(wxColour(255, 0, 0), 2));
       if (m_lastObservation.sensedData[i].landmarkID != INVALID_LANDMARK_ID)
         cov->SetName(wxString::Format(
-            _("O(%u)"), static_cast<unsigned>(m_lastObservation.sensedData[i]).landmarkID));
+            _("O(%u)"), static_cast<unsigned>(m_lastObservation.sensedData[i].landmarkID)));
       else
         cov->SetName(wxString::Format(_("O%u"), static_cast<unsigned>(i)));
 
@@ -1435,10 +1447,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 
           vector<float> xs(2);
           vector<float> ys(2);
-          xs[0] = RAD2DEG(ha);
-          ys[0] = hr;
-          xs[1] = RAD2DEG(ha_o);
-          ys[1] = hr_o;
+          xs[0] = static_cast<float>(RAD2DEG(ha));
+          ys[0] = static_cast<float>(hr);
+          xs[1] = static_cast<float>(RAD2DEG(ha_o));
+          ys[1] = static_cast<float>(hr_o);
 
           v->SetData(xs, ys);
           v->SetContinuity(true);
@@ -1467,13 +1479,13 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 
     // Rows: predictions; Cols: observations
     if (gridDA->GetNumberCols()) gridDA->DeleteCols(0, gridDA->GetNumberCols());
-    gridDA->AppendCols(m_lastObservation.sensedData.size());
+    gridDA->AppendCols(static_cast<int>(m_lastObservation.sensedData.size()));
 
     for (unsigned int i = 0; i < m_lastObservation.sensedData.size(); i++)
-      gridDA->SetColLabelValue(i, wxString::Format(wxT("O%u"), i));
+      gridDA->SetColLabelValue(i, wxString::Format("O%u", i));
 
     if (gridDA->GetNumberRows()) gridDA->DeleteRows(0, gridDA->GetNumberRows());
-    gridDA->AppendRows(da.predictions_IDs.size());
+    gridDA->AppendRows(static_cast<int>(da.predictions_IDs.size()));
 
     for (unsigned int i = 0; i < da.predictions_IDs.size(); i++)
       gridDA->SetRowLabelValue(
@@ -1486,11 +1498,11 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 
         const double v = da.results.indiv_distances(p, o);
         if (v > 500)
-          gridDA->SetCellValue(p, o, wxT("\u221E"));  // Infinity
+          gridDA->SetCellValue(p, o, "\u221E");  // Infinity
         else if (v < -950)
-          gridDA->SetCellValue(p, o, wxT("-\u221E"));  // -Infinity
+          gridDA->SetCellValue(p, o, "-\u221E");  // -Infinity
         else
-          gridDA->SetCellValue(p, o, wxString::Format(wxT("%.02f"), v));
+          gridDA->SetCellValue(p, o, wxString::Format("%.02f", v));
 
         // Set background if it's a final association:
         if (da.results.associations.find(o) != da.results.associations.end() &&
@@ -1511,43 +1523,48 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     // DA True positives --------------
     if (m_lyDaTP->GetDataLength() >= N) m_lyDaTP->Clear();
     for (size_t i = m_lyDaTP->GetDataLength(); i < N; i++)
-      m_lyDaTP->AppendDataPoint(i, m_historicData[i].da_true_pos);
+      m_lyDaTP->AppendDataPoint(
+          static_cast<float>(i), static_cast<float>(m_historicData[i].da_true_pos));
 
     unsigned int totalTP = 0;
     for (size_t i = 0; i < N; i++) totalTP += m_historicData[i].da_true_pos;
-    lbDaTP->SetLabel(wxString::Format(wxT("True positives: %u"), totalTP));
+    lbDaTP->SetLabel(wxString::Format("True positives: %u", totalTP));
 
     // DA True negatives --------------
     if (m_lyDaTN->GetDataLength() >= N) m_lyDaTN->Clear();
     for (size_t i = m_lyDaTN->GetDataLength(); i < N; i++)
-      m_lyDaTN->AppendDataPoint(i, m_historicData[i].da_true_neg);
+      m_lyDaTN->AppendDataPoint(
+          static_cast<float>(i), static_cast<float>(m_historicData[i].da_true_neg));
 
     unsigned int totalTN = 0;
     for (size_t i = 0; i < N; i++) totalTN += m_historicData[i].da_true_neg;
-    lbDaTN->SetLabel(wxString::Format(wxT("True negatives: %u"), totalTN));
+    lbDaTN->SetLabel(wxString::Format("True negatives: %u", totalTN));
 
     // DA false positives --------------
     if (m_lyDaFP->GetDataLength() >= N) m_lyDaFP->Clear();
     for (size_t i = m_lyDaFP->GetDataLength(); i < N; i++)
-      m_lyDaFP->AppendDataPoint(i, m_historicData[i].da_false_pos);
+      m_lyDaFP->AppendDataPoint(
+          static_cast<float>(i), static_cast<float>(m_historicData[i].da_false_pos));
 
     unsigned int totalFP = 0;
     for (size_t i = 0; i < N; i++) totalFP += m_historicData[i].da_false_pos;
-    StaticText6->SetLabel(wxString::Format(wxT("False positives: %u"), totalFP));
+    StaticText6->SetLabel(wxString::Format("False positives: %u", totalFP));
 
     // DA false negatives --------------
     if (m_lyDaFN->GetDataLength() >= N) m_lyDaFN->Clear();
     for (size_t i = m_lyDaFN->GetDataLength(); i < N; i++)
-      m_lyDaFN->AppendDataPoint(i, m_historicData[i].da_false_neg);
+      m_lyDaFN->AppendDataPoint(
+          static_cast<float>(i), static_cast<float>(m_historicData[i].da_false_neg));
 
     unsigned int totalFN = 0;
     for (size_t i = 0; i < N; i++) totalFN += m_historicData[i].da_false_neg;
-    StaticText7->SetLabel(wxString::Format(wxT("False negatives: %u"), totalFN));
+    StaticText7->SetLabel(wxString::Format("False negatives: %u", totalFN));
 
     // JCBB iterations --------------
     if (m_lyDaJCBB->GetDataLength() >= N) m_lyDaJCBB->Clear();
     for (size_t i = m_lyDaJCBB->GetDataLength(); i < N; i++)
-      m_lyDaJCBB->AppendDataPoint(i, m_historicData[i].jcbb_iters);
+      m_lyDaJCBB->AppendDataPoint(
+          static_cast<float>(i), static_cast<float>(m_historicData[i].jcbb_iters));
 
     plotDaFN->Fit();
     plotDaFN->Refresh();
@@ -1628,7 +1645,9 @@ void slamdemoFrame::TSimulationOptions::saveToConfigFile(
   MRPT_SAVE_CONFIG_VAR(spurious_count_std, f, c)
 }
 
-void slamdemoFrame::TSimulationOptions::dumpToTextStream(std::ostream& out) const {}
+void slamdemoFrame::TSimulationOptions::dumpToTextStream([[maybe_unused]] std::ostream& out) const
+{
+}
 /*---------------------------------------------------------------
             executeOneStep
   ---------------------------------------------------------------*/
@@ -1681,9 +1700,9 @@ void slamdemoFrame::executeOneStep()
       const CPose3D robotPose = CPose3D(this->m_GT_pose);
       const CPose3D sensorOnRobot = CPose3D(options.sensorOnTheRobot);
 
-      m_lastObservation.fieldOfView_yaw = options.sensor_fov;
-      m_lastObservation.maxSensorDistance = options.sensor_max_range;
-      m_lastObservation.minSensorDistance = options.sensor_min_range;
+      m_lastObservation.fieldOfView_yaw = static_cast<float>(options.sensor_fov);
+      m_lastObservation.maxSensorDistance = static_cast<float>(options.sensor_max_range);
+      m_lastObservation.minSensorDistance = static_cast<float>(options.sensor_min_range);
 
       m_GT_map.simulateRangeBearingReadings(
           robotPose, sensorOnRobot, m_lastObservation, options.sensorDistingishesLandmarks,
@@ -1848,7 +1867,7 @@ void slamdemoFrame::executeOneStep()
 /*---------------------------------------------------------------
             OntimSimulTrigger
   ---------------------------------------------------------------*/
-void slamdemoFrame::OntimSimulTrigger(wxTimerEvent& event)
+void slamdemoFrame::OntimSimulTrigger([[maybe_unused]] wxTimerEvent& event)
 {
   static CTicTac tictac;
 
@@ -1930,8 +1949,8 @@ void slamdemoFrame::OnConfigClicked([[maybe_unused]] wxCommandEvent& event)
   dlg.edICMLrefDist->SetValue(
       wxString::Format(_("%.04f"), m_SLAM.options.data_assoc_IC_ml_threshold));
 
-  dlg.edOverOdom->SetValue(options.uncert_overestim_odom * 100);
-  dlg.edOverSensor->SetValue(options.uncert_overestim_sensor * 100);
+  dlg.edOverOdom->SetValue(static_cast<int>(options.uncert_overestim_odom * 100));
+  dlg.edOverSensor->SetValue(static_cast<int>(options.uncert_overestim_sensor * 100));
 
   {
     wxCommandEvent dum;
@@ -1959,37 +1978,41 @@ void slamdemoFrame::OnConfigClicked([[maybe_unused]] wxCommandEvent& event)
     else if (dlg.rbMapRandom->GetValue())
       options.map_generator = "2";
     else
-      options.map_generator = string(dlg.edMapFile->GetValue().mb_str());
+      options.map_generator = string(dlg.edMapFile->GetValue().ToStdString());
 
     options.randomMap_nLMs = dlg.edLMs->GetValue();
     options.random_seed = dlg.edSeed->GetValue();
 
-    options.path_square_len = atof(dlg.edPathLen->GetValue().mb_str());
-    options.robot_step_length = atof(dlg.edPathStepSize->GetValue().mb_str());
-    options.odometry_noise_std_xy = atof(dlg.edOdomStdXY->GetValue().mb_str());
-    options.odometry_noise_std_phi = DEG2RAD(atof(dlg.edStdOdomPhi->GetValue().mb_str()));
+    options.path_square_len = atof(dlg.edPathLen->GetValue().ToStdString().c_str());
+    options.robot_step_length = atof(dlg.edPathStepSize->GetValue().ToStdString().c_str());
+    options.odometry_noise_std_xy = atof(dlg.edOdomStdXY->GetValue().ToStdString().c_str());
+    options.odometry_noise_std_phi =
+        DEG2RAD(atof(dlg.edStdOdomPhi->GetValue().ToStdString().c_str()));
 
     options.sensorDistingishesLandmarks = dlg.cbSensorDistin->GetValue();
 
-    m_SLAM.options.std_sensor_range = atof(dlg.edStdRange->GetValue().mb_str());
-    m_SLAM.options.std_sensor_yaw = DEG2RAD(atof(dlg.edStdAngle->GetValue().mb_str()));
+    m_SLAM.options.std_sensor_range =
+        static_cast<float>(atof(dlg.edStdRange->GetValue().ToStdString().c_str()));
+    m_SLAM.options.std_sensor_yaw =
+        static_cast<float>(DEG2RAD(atof(dlg.edStdAngle->GetValue().ToStdString().c_str())));
 
-    options.spurious_count_mean = atof(dlg.edSpuriousMean->GetValue().mb_str());
-    options.spurious_count_std = atof(dlg.edSpuriousStd->GetValue().mb_str());
+    options.spurious_count_mean = atof(dlg.edSpuriousMean->GetValue().ToStdString().c_str());
+    options.spurious_count_std = atof(dlg.edSpuriousStd->GetValue().ToStdString().c_str());
 
-    options.sensorOnTheRobot.x(atof(dlg.edSenX->GetValue().mb_str()));
-    options.sensorOnTheRobot.y(atof(dlg.edSenY->GetValue().mb_str()));
-    options.sensorOnTheRobot.phi(DEG2RAD(atof(dlg.edSenPhi->GetValue().mb_str())));
+    options.sensorOnTheRobot.x(atof(dlg.edSenX->GetValue().ToStdString().c_str()));
+    options.sensorOnTheRobot.y(atof(dlg.edSenY->GetValue().ToStdString().c_str()));
+    options.sensorOnTheRobot.phi(DEG2RAD(atof(dlg.edSenPhi->GetValue().ToStdString().c_str())));
 
-    options.sensor_max_range = atof(dlg.edMaxR->GetValue().mb_str());
-    options.sensor_min_range = atof(dlg.edMinR->GetValue().mb_str());
-    options.sensor_fov = DEG2RAD(atof(dlg.edFOV->GetValue().mb_str()));
+    options.sensor_max_range = atof(dlg.edMaxR->GetValue().ToStdString().c_str());
+    options.sensor_min_range = atof(dlg.edMinR->GetValue().ToStdString().c_str());
+    options.sensor_fov = DEG2RAD(atof(dlg.edFOV->GetValue().ToStdString().c_str()));
 
-    m_SLAM.options.data_assoc_IC_chi2_thres = atof(dlg.edChi2->GetValue().mb_str());
+    m_SLAM.options.data_assoc_IC_chi2_thres = atof(dlg.edChi2->GetValue().ToStdString().c_str());
     m_SLAM.options.data_assoc_method = TDataAssociationMethod(dlg.rbDAMethod->GetSelection());
     m_SLAM.options.data_assoc_metric = TDataAssociationMetric(dlg.rbDAMetric->GetSelection());
     m_SLAM.options.data_assoc_IC_metric = TDataAssociationMetric(dlg.rbICmetric->GetSelection());
-    m_SLAM.options.data_assoc_IC_ml_threshold = atof(dlg.edICMLrefDist->GetValue().mb_str());
+    m_SLAM.options.data_assoc_IC_ml_threshold =
+        atof(dlg.edICMLrefDist->GetValue().ToStdString().c_str());
 
     options.uncert_overestim_odom = 0.01 * dlg.edOverOdom->GetValue();
     options.uncert_overestim_sensor = 0.01 * dlg.edOverSensor->GetValue();
@@ -2018,7 +2041,7 @@ void slamdemoFrame::OnMenuSaveFilterState([[maybe_unused]] wxCommandEvent& event
     {
       return;
     }
-    string filName(dialog.GetPath().mb_str());
+    string filName = dialog.GetPath().ToStdString();
 
     Xkk.saveToTextFile(filName);
   }
@@ -2033,7 +2056,7 @@ void slamdemoFrame::OnMenuSaveFilterState([[maybe_unused]] wxCommandEvent& event
     {
       return;
     }
-    string filName(dialog.GetPath().mb_str());
+    string filName = dialog.GetPath().ToStdString();
 
     Pkk.saveToTextFile(filName);
   }
@@ -2052,7 +2075,7 @@ void slamdemoFrame::OnMenuSaveFilterState([[maybe_unused]] wxCommandEvent& event
     {
       return;
     }
-    string filName(dialog.GetPath().mb_str());
+    string filName = dialog.GetPath().ToStdString();
 
     // Save as 3D objects:
     auto obj3D = mrpt::viz::CSetOfObjects::Create();
@@ -2094,7 +2117,7 @@ void slamdemoFrame::OnmnuSaveLastDASelected([[maybe_unused]] wxCommandEvent& eve
     {
       return;
     }
-    string filName(dialog.GetPath().mb_str());
+    string filName = dialog.GetPath().ToStdString();
 
     (void)mrpt::io::vectorToTextFile(da.predictions_IDs, filName);
   }
@@ -2109,7 +2132,7 @@ void slamdemoFrame::OnmnuSaveLastDASelected([[maybe_unused]] wxCommandEvent& eve
     {
       return;
     }
-    string filName(dialog.GetPath().mb_str());
+    string filName = dialog.GetPath().ToStdString();
 
     da.Y_pred_means.saveToTextFile(filName);
   }
@@ -2124,7 +2147,7 @@ void slamdemoFrame::OnmnuSaveLastDASelected([[maybe_unused]] wxCommandEvent& eve
     {
       return;
     }
-    string filName(dialog.GetPath().mb_str());
+    string filName = dialog.GetPath().ToStdString();
 
     da.Y_pred_covs.saveToTextFile(filName);
   }
@@ -2149,7 +2172,7 @@ void slamdemoFrame::OnmnuItemSaveRawlogSelected([[maybe_unused]] wxCommandEvent&
     {
       return;
     }
-    const string filName(dialog.GetPath().mb_str());
+    const string filName = dialog.GetPath().ToStdString();
 
     if (!m_rawlog_out_file.open(filName))
     {

@@ -592,12 +592,12 @@ catch (CExceptionExternalImageNotFound& e)
         CImage::getImagesPathBase().c_str(), 0, wxDefaultPosition);
     if (dirDialog.ShowModal() == wxID_OK)
     {
-      CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str()));
+      CImage::setImagesPathBase(dirDialog.GetPath().ToStdString());
     }
   }
 }
 catch (const std::exception& e)
 {
-  wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
+  wxMessageBox(mrpt::exception_to_str(e), "Exception", wxOK, this);
 }
 }
