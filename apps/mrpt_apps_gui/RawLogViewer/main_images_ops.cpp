@@ -60,7 +60,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& even
     return;
   }
   wxBusyCursor waitCursor;
-  unsigned int nEntries = (int)rawlog.size();
+  unsigned int nEntries = static_cast<int>(rawlog.size());
 
   wxString auxStr;
   wxProgressDialog progDia(
@@ -197,7 +197,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo([[maybe_unused]] wxCommandEvent& even
   string lb_stereo = string(sNewLabel.mb_str());
 
   wxBusyCursor waitCursor;
-  auto nEntries = (unsigned int)rawlog.size();
+  auto nEntries = static_cast<unsigned int>(rawlog.size());
 
   wxProgressDialog progDia(
       wxT("Progress"), wxT("Parsing rawlog..."),
@@ -302,7 +302,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages([[maybe_unused]] wxCommandEvent& ev
   return;
 }  */
   wxBusyCursor waitCursor;
-  unsigned int nEntries = (int)rawlog.size();
+  unsigned int nEntries = static_cast<int>(rawlog.size());
 
   wxString auxStr;
   wxProgressDialog progDia(
@@ -441,7 +441,7 @@ void renameExternalImageFile(CObservationImage::Ptr o)
 
   string new_img_file =
       o->sensorLabel + mrpt::format(
-                           "_%.06f.%s", (double)mrpt::Clock::toDouble(o->timestamp),
+                           "_%.06f.%s", static_cast<double>(mrpt::Clock::toDouble(o->timestamp)),
                            mrpt::system::extractFileExtension(img_file).c_str());
   string new_img_fullpath = mrpt::system::extractFileDirectory(img_file) + "/" + new_img_file;
 
@@ -466,7 +466,8 @@ void renameExternalStereoImageFile(CObservationStereoImages::Ptr o)
 
     string new_img_file =
         o->sensorLabel + mrpt::format(
-                             "_L_%.06f.%s", (double)mrpt::Clock::toDouble(o->timestamp),
+                             "_L_%.06f.%s",
+                             static_cast<double>(mrpt::Clock::toDouble(o->timestamp)),
                              mrpt::system::extractFileExtension(img_file).c_str());
     string new_img_fullpath = mrpt::system::extractFileDirectory(img_file) + "/" + new_img_file;
 
@@ -489,7 +490,8 @@ void renameExternalStereoImageFile(CObservationStereoImages::Ptr o)
 
     string new_img_file =
         o->sensorLabel + mrpt::format(
-                             "_R_%.06f.%s", (double)mrpt::Clock::toDouble(o->timestamp),
+                             "_R_%.06f.%s",
+                             static_cast<double>(mrpt::Clock::toDouble(o->timestamp)),
                              mrpt::system::extractFileExtension(img_file).c_str());
     string new_img_fullpath = mrpt::system::extractFileDirectory(img_file) + "/" + new_img_file;
 

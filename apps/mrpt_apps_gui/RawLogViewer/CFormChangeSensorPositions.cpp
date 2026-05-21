@@ -641,7 +641,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
     // APPLY TO rawlog in memory:
     isInMemory = true;
 
-    processMax = (int)rawlog.size();
+    processMax = static_cast<int>(rawlog.size());
   }
   else
   {
@@ -663,7 +663,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
     in_fil = new CCompressedInputStream(fileName_IN);
     out_fil = new CCompressedOutputStream(fileName_OUT);
 
-    processMax = (int)in_fil->getTotalBytesCount();
+    processMax = static_cast<int>(in_fil)->getTotalBytesCount();
   }
 
   wxProgressDialog progDia(
@@ -754,7 +754,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
     if (countLoop++ % 300 == 0)
     {
       auxStr.sprintf(wxT("Processing... (%u objects processed)"), countLoop);
-      int curProgr = isInMemory ? countLoop : (int)in_fil->getPosition();
+      int curProgr = isInMemory ? countLoop : static_cast<int>(in_fil)->getPosition();
       if (!progDia.Update(curProgr, auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
@@ -795,8 +795,7 @@ void exec_setPoseByIdx(
       CObservation::Ptr obs = SF->getObservationByIndex(idxToProcess);
       if (changeOnlyXYZ)
       {
-        CPose3D tmpPose;
-        obs->getSensorPose(tmpPose);
+        CPose3D tmpPose = obs->getSensorPose();
         tmpPose.setFromValues(
             sensorPoseToSet.x, sensorPoseToSet.y, sensorPoseToSet.z, tmpPose.yaw(), tmpPose.pitch(),
             tmpPose.roll());
@@ -821,8 +820,7 @@ void exec_setPoseByLabel(
       {
         if (changeOnlyXYZ)
         {
-          CPose3D tmpPose;
-          obs->getSensorPose(tmpPose);
+          CPose3D tmpPose = obs->getSensorPose();
           tmpPose.setFromValues(
               sensorPoseToSet.x, sensorPoseToSet.y, sensorPoseToSet.z, tmpPose.yaw(),
               tmpPose.pitch(), tmpPose.roll());

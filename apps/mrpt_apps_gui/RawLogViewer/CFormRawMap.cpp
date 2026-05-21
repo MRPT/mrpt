@@ -578,7 +578,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
         }
 
         if (!poseIncrementLoaded && i < last)
-          THROW_EXCEPTION_FMT("ERROR: Odometry not found at step %d!", (int)i);
+          THROW_EXCEPTION_FMT("ERROR: Odometry not found at step %d!", static_cast<int>(i));
 
         curPose = curPose + poseIncrement;
         addNewPathEntry = true;
@@ -787,8 +787,8 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
 
   wxProgressDialog progDia(
       wxT("Generating paths"), wxT("Working..."),
-      (int)nComputationSteps,  // range
-      this,                    // parent
+      static_cast<int>(nComputationSteps),  // range
+      this,                                 // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
           wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
@@ -842,7 +842,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
           }
 
           if (!poseIncrementLoaded)
-            THROW_EXCEPTION_FMT("ERROR: Odometry not found at step %d!", (int)i);
+            THROW_EXCEPTION_FMT("ERROR: Odometry not found at step %d!", static_cast<int>(i));
 
           curPose = curPose + poseIncrement;
           pathX.push_back(curPose.x());
@@ -859,7 +859,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
 
       if ((count++ % 50) == 0)
       {
-        if (!progDia.Update((int)count)) abort = true;
+        if (!progDia.Update(static_cast<int>(count))) abort = true;
         wxTheApp->Yield();
       }
     }  // end for i
@@ -885,7 +885,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
 
   }  // end for path samples
 
-  progDia.Update((int)nComputationSteps);
+  progDia.Update(static_cast<int>(nComputationSteps));
 
   // Add a layer with a covariance with the last pose:
   const auto [COV, meanPose] = pdfParts.getCovarianceAndMean();
@@ -963,7 +963,8 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
   bool abort = false;
 
   wxProgressDialog progDia2(
-      wxString::Format(wxT("Building map - %u GPS points"), (unsigned)robot_path.size()),
+      wxString::Format(
+          wxT("Building map - %u GPS points"), static_cast<unsigned>(robot_path.size())),
       wxT("Populating the map with observations..."),
       (int)(last - first + 1),  // range
       this,                     // parent
@@ -1285,7 +1286,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 
             // add now that of the sensor:
             CPose3DPDFGaussian sensor_on_the_vehicle;
-            obs->getSensorPose(sensor_on_the_vehicle.mean);
+            sensor_on_the_vehicle.mean = obs->getSensorPose();
             sensor_on_the_vehicle.cov = COV_sensor_local;
 
             CPose3DPDFGaussian global_sensor_pose =

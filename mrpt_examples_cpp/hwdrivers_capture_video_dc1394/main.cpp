@@ -82,11 +82,8 @@ void TestCapture_1394()
       tictac.Tic();
     }
 
-    CObservationImage::Ptr obs = CObservationImage::Create();  // Memory will be
-    // freed by
-    // SF destructor in each
-    // loop.
-    if (!capture.getObservation(*obs))
+    CObservationImage::Ptr obs = capture.grabFrame();
+    if (!obs)
     {
       cerr << "Error retrieving images!"
            << "\n";

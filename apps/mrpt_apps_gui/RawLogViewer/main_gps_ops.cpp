@@ -556,7 +556,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs([[maybe_unused]] wxCommandEvent& 
         (format(
              "The distance between GPS sensors is %.04fm, with\n a "
              "sigma=%.04fm, average from %u entries.",
-             d_mean, d_std, (unsigned)dists.size())
+             d_mean, d_std, static_cast<unsigned>(dists.size()))
              .c_str()),
         _("Done"), wxOK, this);
   }
@@ -614,9 +614,9 @@ void xRawLogViewerFrame::OnSummaryGPS([[maybe_unused]] wxCommandEvent& event)
                                     "PPS fix",        "RTK",           "Float RTK",
                                     "Dead reckoning", "Manual input",  "Simulation"};
   for (i = 0; i < 9; i++)
-    s = s +
-        mrpt::format(
-            "Mode %u : %u readings (Mode: '%s')\n", (unsigned)i, histogramGPSModes[i], gpsModes[i]);
+    s = s + mrpt::format(
+                "Mode %u : %u readings (Mode: '%s')\n", static_cast<unsigned>(i),
+                histogramGPSModes[i], gpsModes[i]);
 
   wxMessageBox(s.c_str(), _("GPS data summary"), wxOK, this);
 
@@ -808,7 +808,7 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
                               obs->getMsgByClass<gnss::Message_NMEA_RMC>().fields.direction_degrees)
                         : 0.0,
                     p.x, p.y, p.z,
-                    (int)i,  // rawlog index
+                    static_cast<int>(i),  // rawlog index
                     geo.x, geo.y, geo.z);
                 M++;
 
@@ -964,7 +964,7 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
                               obs->getMsgByClass<gnss::Message_NMEA_RMC>().fields.direction_degrees)
                         : 0.0,
                     p.x, p.y, p.z,
-                    (int)i,  // rawlog index
+                    static_cast<int>(i),  // rawlog index
                     geo.x, geo.y, geo.z, cart_pos.x, cart_pos.y, cart_pos.z, cart_vel.x, cart_vel.y,
                     cart_vel.z, cart_vel_local.x, cart_vel_local.y, cart_vel_local.z,
                     mrpt::Clock::toDouble(
@@ -1044,7 +1044,8 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
     MAT_REF.saveToTextFile(
         mrpt::format("%s_JOINTREF_%s.txt", fil.c_str(), joint_name.c_str()), MATRIX_FORMAT_FIXED);
 
-    wxMessageBox((format("%u entries saved!", (unsigned)M).c_str()), _("Done"), wxOK, this);
+    wxMessageBox(
+        (format("%u entries saved!", static_cast<unsigned>(M)).c_str()), _("Done"), wxOK, this);
   }
 
   WX_END_TRY

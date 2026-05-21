@@ -1308,7 +1308,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
   if (ptg_nav) ptg_nav->getLastLogRecord(lfr);
 
   const int sel_PTG = cbSelPTG->GetSelection();
-  if (sel_PTG >= 0 && sel_PTG < (int)lfr.infoPerPTG.size())
+  if (sel_PTG >= 0 && sel_PTG < static_cast<int>(lfr.infoPerPTG.size()))
   {
     const size_t nObs = lfr.infoPerPTG[sel_PTG].TP_Obstacles.size();
     if (lfr.infoPerPTG.size() > 0 && lfr.infoPerPTG[sel_PTG].HLFR &&
@@ -1382,7 +1382,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
   if (cbShowPredictedPTG->IsChecked() && lfr.infoPerPTG.size() > 0 && ptg_nav)
   {
     // Selected PTG path:
-    if (lfr.nSelectedPTG <= (int)ptg_nav->getPTG_count())  // the == case is for "NOP motion cmd"
+    if (lfr.nSelectedPTG <=
+        static_cast<int>(ptg_nav)->getPTG_count())  // the == case is for "NOP motion cmd"
     {
       const bool is_NOP_op = (lfr.nSelectedPTG == ptg_nav->getPTG_count());
       const int idx_ptg = is_NOP_op ? lfr.ptg_index_NOP : lfr.nSelectedPTG;
@@ -1566,8 +1567,8 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
         {
           const int cx = m_gridMap.x2idx(m_curCursorPos.x);
           const int cy = m_gridMap.y2idx(m_curCursorPos.y);
-          if (cx >= 0 && cy >= 0 && cx < (int)m_gridMap.getSizeX() &&
-              cy < (int)m_gridMap.getSizeY())
+          if (cx >= 0 && cy >= 0 && cx < static_cast<int>(m_gridMap.getSizeX()) &&
+              cy < static_cast<int>(m_gridMap.getSizeY()))
           {
             m_gridMap.setCell(cx, cy, m_cursorPickState == cpsDrawObstacles ? 0.01f : 0.99f);
             updateMap3DView();
@@ -1675,7 +1676,8 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
       {
         const int cx = m_gridMap.x2idx(m_curCursorPos.x);
         const int cy = m_gridMap.y2idx(m_curCursorPos.y);
-        if (cx >= 0 && cy >= 0 && cx < (int)m_gridMap.getSizeX() && cy < (int)m_gridMap.getSizeY())
+        if (cx >= 0 && cy >= 0 && cx < static_cast<int>(m_gridMap.getSizeX()) &&
+            cy < static_cast<int>(m_gridMap.getSizeY()))
         {
           m_gridMap.setCell(cx, cy, m_cursorPickState == cpsDrawObstacles ? 0.01f : 0.99f);
           updateMap3DView();

@@ -16,7 +16,7 @@ set_target_properties(mrptwxthings PROPERTIES FOLDER "3rd party")
 
 target_include_directories(
 	mrptwxthings
-	PUBLIC
+	SYSTEM PUBLIC
 	"${MRPT_SOURCE_DIR}/3rdparty/wxThings/"
 	)
 target_link_libraries(mrptwxthings PRIVATE imp_wxwidgets)

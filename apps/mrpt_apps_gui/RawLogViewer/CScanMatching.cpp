@@ -708,10 +708,10 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
       if (const auto SOG = std::dynamic_pointer_cast<CPosePDFSOG>(poseEst); SOG)
       {
         const size_t n = SOG->size();
-        std::cout << mrpt::format("# of gaussians in SOG: %i\n", (int)n);
+        std::cout << mrpt::format("# of gaussians in SOG: %i\n", static_cast<int>(n));
         for (size_t i = 0; i < n; i++)
         {
-          std::cout << mrpt::format("SOG[%02i]:w=%e mean=", (int)i, SOG->get(i).log_w)
+          std::cout << mrpt::format("SOG[%02i]:w=%e mean=", static_cast<int>(i), SOG->get(i).log_w)
                     << SOG->get(i).mean << "\n";
         }
       }

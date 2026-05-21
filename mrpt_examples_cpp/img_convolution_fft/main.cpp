@@ -44,7 +44,8 @@ void TestImageConvolutionFFT()
     throw std::runtime_error("Cannot load test image!");
 
   printf(
-      "Computing %ux%u image convolution ...", (unsigned)img.getWidth(), (unsigned)img.getHeight());
+      "Computing %ux%u image convolution ...", static_cast<unsigned>(img.getWidth()),
+      static_cast<unsigned>(img.getHeight()));
 
   CMatrixF res_R, res_I;
 

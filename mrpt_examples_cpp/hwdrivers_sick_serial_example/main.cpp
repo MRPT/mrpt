@@ -98,7 +98,7 @@ void TestPLS()
       printf(
           "[TEST] Observation received (%u ranges over %.02fdeg, "
           "mid=%.03f)!!\n",
-          (unsigned int)obs.getScanSize(), RAD2DEG(obs.aperture),
+          static_cast<unsigned int>(obs.getScanSize()), RAD2DEG(obs.aperture),
           obs.getScanRange(obs.getScanSize() / 2));
 
       obs.sensorPose = CPose3D(0, 0, 0);

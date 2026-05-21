@@ -422,7 +422,8 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
       count = edIndex->GetValue();
     }
 
-    progressBar->SetRange(0, fil ? (int)fil->getTotalBytesCount() : (int)rawlog.size());
+    progressBar->SetRange(
+        0, fil ? static_cast<int>(fil)->getTotalBytesCount() : static_cast<int>(rawlog.size()));
     progressBar->SetValue(0);
 
     // Repeat until EOF exception or cancel.
@@ -462,7 +463,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
       count++;
       // if ((count) % 10 == 0)
       {
-        progressBar->SetValue(fil ? (int)fil->getPosition() : (int)count);
+        progressBar->SetValue(fil ? static_cast<int>(fil)->getPosition() : static_cast<int>(count));
         wxString str;
         if (imgTimestamp != INVALID_TIMESTAMP)
         {
@@ -549,8 +550,8 @@ void CFormPlayVideo::OnrbLoadedSelect([[maybe_unused]] wxCommandEvent& event)
   btnPickInput->Disable();
   edFile->Disable();
 
-  progressBar->SetRange(0, (int)rawlog.size());
-  edIndex->SetRange(0, (int)rawlog.size());
+  progressBar->SetRange(0, static_cast<int>(rawlog.size()));
+  edIndex->SetRange(0, static_cast<int>(rawlog.size()));
   progressBar->Enable();
   edIndex->Enable();
 }
@@ -582,8 +583,8 @@ void CFormPlayVideo::drawHorzRules(mrpt::img::CImage& img)
 
   for (size_t y = Ay; y < h; y += Ay)
     img.line(
-        mrpt::img::TPixelCoord{0, (int)y}, mrpt::img::TPixelCoord{(int)(w - 1), (int)y},
-        mrpt::img::TColor::white());
+        mrpt::img::TPixelCoord{0, static_cast<int>(y)},
+        mrpt::img::TPixelCoord{(int)(w - 1), static_cast<int>(y)}, mrpt::img::TColor::white());
 }
 
 bool CFormPlayVideo::showSensoryFrame(
@@ -930,7 +931,7 @@ void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent&)
   mrpt::Clock::time_point imgTimestamp;
   size_t nImgs = 0;
 
-  if (idx > 0 && idx < (int)rawlog.size())
+  if (idx > 0 && idx < static_cast<int>(rawlog.size()))
   {
     if (rawlog.getType(idx) == CRawlog::TEntryType::etSensoryFrame)
     {
@@ -969,7 +970,7 @@ void CFormPlayVideo::saveCamImage(int n)
 {
   WX_START_TRY
 
-  if (n < 0 || n >= (int)displayedImgs.size() || !displayedImgs[n])
+  if (n < 0 || n >= static_cast<int>(displayedImgs.size()) || !displayedImgs[n])
   {
     return;
   }

@@ -690,7 +690,7 @@ void CFormMotionModel::applyToRawlogFile()
   CCompressedInputStream in_fil(fileName_IN);
   CCompressedOutputStream out_fil(fileName_OUT);
 
-  auto filSize = (unsigned int)in_fil.getTotalBytesCount();
+  auto filSize = static_cast<unsigned int>(in_fil.getTotalBytesCount());
 
   wxProgressDialog progDia(
       wxT("Modifying motion model"), wxT("Processing file..."),
@@ -715,7 +715,7 @@ void CFormMotionModel::applyToRawlogFile()
     if (countLoop++ % 100 == 0)
     {
       auxStr.sprintf(wxT("Processing... (%u objects processed)"), rawlog.size());
-      if (!progDia.Update((int)in_fil.getPosition(), auxStr)) keepLoading = false;
+      if (!progDia.Update(static_cast<int>(in_fil.getPosition()), auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
 

@@ -888,8 +888,8 @@ void slamdemoFrame::OnbtnOneStepClicked([[maybe_unused]] wxCommandEvent& event)
   tictac.Tic();
   executeOneStep();
   const double T = tictac.Tac();
-  StatusBar1->SetStatusText(
-      wxString::Format(_("Step %u done in %.03fms"), (unsigned)m_historicData.size(), 1e3 * T));
+  StatusBar1->SetStatusText(wxString::Format(
+      _("Step %u done in %.03fms"), static_cast<unsigned>(m_historicData.size()), 1e3 * T));
   updateAllGraphs();
 }
 
@@ -940,7 +940,8 @@ void slamdemoFrame::OnbtnRunBatchClicked([[maybe_unused]] wxCommandEvent& event)
 
   updateAllGraphs();
 
-  StatusBar1->SetStatusText(wxString::Format(_("%u steps done in %.03f secs"), (unsigned)N, T));
+  StatusBar1->SetStatusText(
+      wxString::Format(_("%u steps done in %.03f secs"), static_cast<unsigned>(N), T));
 }
 
 /*---------------------------------------------------------------
@@ -1109,7 +1110,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     }
 
     lbGT->SetLabel(
-        mrpt::format("Ground truth (%u landmarks", (unsigned)m_GT_map.landmarks.size()).c_str());
+        mrpt::format("Ground truth (%u landmarks", static_cast<unsigned>(m_GT_map.landmarks.size()))
+            .c_str());
 
     m_lyGTMap->Clear();
     m_lyGTMap->SetData(xs, ys);
@@ -1127,7 +1129,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
   m_lyObsvisibleRange->setPoints(xs_area, ys_area);
 
   lbObs->SetLabel(
-      mrpt::format("Observation (%u landmarks", (unsigned)m_lastObservation.sensedData.size())
+      mrpt::format(
+          "Observation (%u landmarks", static_cast<unsigned>(m_lastObservation.sensedData.size()))
           .c_str());
 
   for (auto& m_lyObsLM : m_lyObsLMs) plotObs->DelLayer(m_lyObsLM, true);
@@ -1143,7 +1146,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     mpCovarianceEllipse* cov = new mpCovarianceEllipse();
     cov->SetPen(wxPen(wxColour(255, 0, 0), 2));
     if (i.landmarkID != INVALID_LANDMARK_ID)
-      cov->SetName(wxString::Format(_("#%u"), (unsigned)i.landmarkID));
+      cov->SetName(wxString::Format(_("#%u"), static_cast<unsigned>(i.landmarkID)));
     else
       cov->SetName(_("?"));
 
@@ -1186,7 +1189,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 
     m_SLAM.getCurrentState(estRobotPose, LMs, landmarkIDs, Xkk, Pkk);
 
-    lbMap->SetLabel(wxString::Format(_("Estimated map (%u landmarks)"), (unsigned)LMs.size()));
+    lbMap->SetLabel(
+        wxString::Format(_("Estimated map (%u landmarks)"), static_cast<unsigned>(LMs.size())));
 
     // mean robot pose:
     m_lyMapRobot->SetCoordinateBase(
@@ -1220,9 +1224,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
       cov->SetPen(wxPen(wxColour(0, 0, 255), 2));
 
       if (options.show_map_real_correspondences)
-        cov->SetName(wxString::Format(_("#%u->%u"), (unsigned)i, (unsigned)idx_in_real_map));
+        cov->SetName(wxString::Format(
+            _("#%u->%u"), static_cast<unsigned>(i), static_cast<unsigned>(idx_in_real_map)));
       else
-        cov->SetName(wxString::Format(_("#%u"), (unsigned)i));
+        cov->SetName(wxString::Format(_("#%u"), static_cast<unsigned>(i)));
 
       cov->SetQuantiles(3);
 
@@ -1353,10 +1358,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
       mpCovarianceEllipse* cov = new mpCovarianceEllipse();
       cov->SetPen(wxPen(wxColour(255, 0, 0), 2));
       if (m_lastObservation.sensedData[i].landmarkID != INVALID_LANDMARK_ID)
-        cov->SetName(
-            wxString::Format(_("O(%u)"), (unsigned)m_lastObservation.sensedData[i].landmarkID));
+        cov->SetName(wxString::Format(
+            _("O(%u)"), static_cast<unsigned>(m_lastObservation.sensedData[i]).landmarkID));
       else
-        cov->SetName(wxString::Format(_("O%u"), (unsigned)i));
+        cov->SetName(wxString::Format(_("O%u"), static_cast<unsigned>(i)));
 
       // Compute mean & cov:
       const double hr = m_lastObservation.sensedData[i].range;
@@ -1378,7 +1383,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     {
       mpCovarianceEllipse* cov = new mpCovarianceEllipse();
       cov->SetPen(wxPen(wxColour(0, 0, 255), 2));
-      cov->SetName(wxString::Format(_("P%u"), (unsigned)da.predictions_IDs[i]));
+      cov->SetName(wxString::Format(_("P%u"), static_cast<unsigned>(da.predictions_IDs[i])));
 
       const double hr = da.Y_pred_means(i, 0);
       const double ha = da.Y_pred_means(i, 1);
@@ -1471,7 +1476,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
     gridDA->AppendRows(da.predictions_IDs.size());
 
     for (unsigned int i = 0; i < da.predictions_IDs.size(); i++)
-      gridDA->SetRowLabelValue(i, wxString::Format(_("P%u"), (unsigned)da.predictions_IDs[i]));
+      gridDA->SetRowLabelValue(
+          i, wxString::Format(_("P%u"), static_cast<unsigned>(da.predictions_IDs[i])));
 
     for (unsigned int o = 0; o < m_lastObservation.sensedData.size(); o++)
       for (unsigned int p = 0; p < da.predictions_IDs.size(); p++)
@@ -1859,8 +1865,8 @@ void slamdemoFrame::OntimSimulTrigger(wxTimerEvent& event)
 
   updateAllGraphs();
 
-  StatusBar1->SetStatusText(
-      wxString::Format(_("Step %u done in %.03fms"), (unsigned)m_historicData.size(), 1e3 * T));
+  StatusBar1->SetStatusText(wxString::Format(
+      _("Step %u done in %.03fms"), static_cast<unsigned>(m_historicData.size()), 1e3 * T));
 
   wxTheApp->Yield(true);  // Let the app. process messages
 
@@ -1886,7 +1892,7 @@ void slamdemoFrame::OnConfigClicked([[maybe_unused]] wxCommandEvent& event)
   dlg.cbJacobTran->SetValue(!m_SLAM.KF_options.use_analytic_transition_jacobian);
   dlg.cbJacobObs->SetValue(!m_SLAM.KF_options.use_analytic_observation_jacobian);
 
-  // dlg.rbFusion->SetSelection( (int)m_SLAM.KF_options.fusion_strategy );
+  // dlg.rbFusion->SetSelection( static_cast<int>(m_SLAM.KF_options.fusion_strategy) );
 
   dlg.rbMapCorridor->SetValue(options.map_generator == "1");
   dlg.rbMapRandom->SetValue(options.map_generator == "2");
@@ -2090,7 +2096,7 @@ void slamdemoFrame::OnmnuSaveLastDASelected([[maybe_unused]] wxCommandEvent& eve
     }
     string filName(dialog.GetPath().mb_str());
 
-    mrpt::io::vectorToTextFile(da.predictions_IDs, filName);
+    (void)mrpt::io::vectorToTextFile(da.predictions_IDs, filName);
   }
   {
     wxFileDialog dialog(

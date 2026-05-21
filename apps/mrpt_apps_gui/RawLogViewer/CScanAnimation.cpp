@@ -284,7 +284,7 @@ bool CScanAnimation::rebuild_view(bool forceRefreshView)
 
   int idx = slPos->GetValue();
 
-  if (idx >= 0 && idx < (int)rawlog.size())
+  if (idx >= 0 && idx < static_cast<int>(rawlog.size()))
   {
     // Show/hide:
     for (const auto& kv : m_visibleSensors)
@@ -593,7 +593,7 @@ void CScanAnimation::OnbtnPlayClick(wxCommandEvent&)
     while (!m_stop)
     {
       int idx = slPos->GetValue();
-      if (idx >= ((int)rawlog.size()) - 1) break;  // End!
+      if (idx >= (static_cast<int>(rawlog.size())) - 1) break;  // End!
 
       if (rawlog.getType(idx) != CRawlog::TEntryType::etActionCollection)
       {
@@ -638,10 +638,10 @@ void CScanAnimation::OnInit(wxInitDialogEvent&)
 {
   slPos->SetValue(0);
   slPos->SetMin(0);
-  slPos->SetMax((int)rawlog.size());
+  slPos->SetMax(static_cast<int>(rawlog.size()));
 
   edIndex->SetValue(0);
-  edIndex->SetRange(0, (int)rawlog.size());
+  edIndex->SetRange(0, static_cast<int>(rawlog.size()));
 
   Fit();
 

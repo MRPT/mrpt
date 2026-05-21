@@ -50,7 +50,7 @@ mrpt_add_library(
   # Other imported targets:
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${SIMPLEINI_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SIMPLEINI_INCLUDE_DIRS})
 if (SIMPLEINI_LIBRARY)
   target_link_libraries(${PROJECT_NAME} PRIVATE ${SIMPLEINI_LIBRARY})
 endif()
