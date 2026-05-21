@@ -247,7 +247,7 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
   str = mrpt::format("%.02f FPS", meanEstimatedFPS);
   theWindow->StatusBar1->SetStatusText(str.c_str(), 2);
 
-  str = mrpt::format("%u viewports", (unsigned)getOpenGLSceneRef()->viewportsCount());
+  str = mrpt::format("%u viewports", static_cast<unsigned>(getOpenGLSceneRef())->viewportsCount());
   theWindow->StatusBar1->SetStatusText(str.c_str(), 3);
 }
 
@@ -1829,6 +1829,8 @@ class OpenGlObjectsFilterVirtual
       m_out_list(out_list)
   {
   }
+
+  virtual ~OpenGlObjectsFilterVirtual() = default;
 
   virtual void operator()(const mrpt::viz::CVisualObject::Ptr& obj)
   {

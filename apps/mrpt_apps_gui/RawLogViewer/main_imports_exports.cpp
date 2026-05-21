@@ -121,7 +121,7 @@ void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
   float thisTimestamp;
 
   std::vector<std::string> sl;
-  mrpt::io::loadTextFile(sl, fil);
+  (void)mrpt::io::loadTextFile(sl, fil);
   size_t n = sl.size();
 
   rawlog.clear();
@@ -278,7 +278,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages([[maybe_unused]] wxCommandEven
   const auto At = std::chrono::microseconds(static_cast<uint64_t>((1e6 / FPS)));
 
   wxBusyCursor waitCursor;
-  int nEntries = (int)lstFiles.size();
+  int nEntries = static_cast<int>(lstFiles.size());
   size_t insertCount = 0;
 
   wxString auxStr;
@@ -361,7 +361,8 @@ void xRawLogViewerFrame::OnImportSequenceOfImages([[maybe_unused]] wxCommandEven
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (format("%u images have been imported to rawlog format", (unsigned)insertCount).c_str()),
+      (format("%u images have been imported to rawlog format", static_cast<unsigned>(insertCount))
+           .c_str()),
       _("Done"), wxOK, this);
 
   // Update the views:
@@ -402,7 +403,7 @@ void xRawLogViewerFrame::OnMenuExportALOG([[maybe_unused]] wxCommandEvent& event
     FILE* f = os::fopen(fileName.c_str(), "wt");
     if (!f) THROW_EXCEPTION("Cannot open output file for write.");
 
-    int countLoop = 0, i, n = (int)rawlog.size();
+    int countLoop = 0, i, n = static_cast<int>(rawlog.size());
 
     CPose2D globalOdometry(0, 0, 0);
     TTimeStamp firstTime = INVALID_TIMESTAMP;
@@ -656,9 +657,10 @@ void xRawLogViewerFrame::OnImportRTL([[maybe_unused]] wxCommandEvent& event)
   // Show summary:
   string summary;
   summary = mrpt::format(
-      "%u lines parsed, %u entries recognized\n", (unsigned)nLines, (unsigned)theAlog.size());
+      "%u lines parsed, %u entries recognized\n", static_cast<unsigned>(nLines),
+      static_cast<unsigned>(theAlog.size()));
   //	summary += mrpt::format("%u images\n", (unsigned) nImgs);
-  summary += mrpt::format("%u laser scans\n", (unsigned)nLasers);
+  summary += mrpt::format("%u laser scans\n", static_cast<unsigned>(nLasers));
   summary += string("The rawlog is being saved to a file now.");
   ::wxMessageBox(summary.c_str());
 
@@ -897,9 +899,10 @@ void xRawLogViewerFrame::OnMenuImportALOG([[maybe_unused]] wxCommandEvent& event
   // Show summary:
   string summary;
   summary = mrpt::format(
-      "%u lines parsed, %u entries recognized\n", (unsigned)nLines, (unsigned)theAlog.size());
-  summary += mrpt::format("%u images\n", (unsigned)nImgs);
-  summary += mrpt::format("%u laser scans\n", (unsigned)nLasers);
+      "%u lines parsed, %u entries recognized\n", static_cast<unsigned>(nLines),
+      static_cast<unsigned>(theAlog.size()));
+  summary += mrpt::format("%u images\n", static_cast<unsigned>(nImgs));
+  summary += mrpt::format("%u laser scans\n", static_cast<unsigned>(nLasers));
   summary += string("The rawlog is being saved to a file now.");
   ::wxMessageBox(summary.c_str());
 
@@ -1046,7 +1049,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
   {
     if (progress_i++ % 50 == 0)
     {
-      if (!progDia.Update((int)progress_i)) break;
+      if (!progDia.Update(static_cast<int>(progress_i))) break;
       wxTheApp->Yield();  // Let the app. process messages
     }
 
@@ -1277,7 +1280,7 @@ void xRawLogViewerFrame::OnGenGasTxt([[maybe_unused]] wxCommandEvent& event)
     os::fclose(f);
 
     char auxStr[100];
-    os::sprintf(auxStr, sizeof(auxStr), "%u entries saved!", (unsigned)M);
+    os::sprintf(auxStr, sizeof(auxStr), "%u entries saved!", static_cast<unsigned>(M));
     wxMessageBox(auxStr, _("Done"), wxOK, this);
   }  // end-if
 
@@ -1388,7 +1391,7 @@ void xRawLogViewerFrame::OnGenWifiTxt([[maybe_unused]] wxCommandEvent& event)
     os::fclose(f);
 
     char auxStr[100];
-    os::sprintf(auxStr, sizeof(auxStr), "%u entries saved!", (unsigned)M);
+    os::sprintf(auxStr, sizeof(auxStr), "%u entries saved!", static_cast<unsigned>(M));
     wxMessageBox(auxStr, _("Done"), wxOK, this);
   }  // end-if
 
@@ -1498,7 +1501,7 @@ void xRawLogViewerFrame::OnGenRFIDTxt([[maybe_unused]] wxCommandEvent& event)
     os::fclose(f);
 
     char auxStr[100];
-    os::sprintf(auxStr, sizeof(auxStr), "%u entries saved!", (unsigned)M);
+    os::sprintf(auxStr, sizeof(auxStr), "%u entries saved!", static_cast<unsigned>(M));
     wxMessageBox(auxStr, _("Done"), wxOK, this);
   }  // end-if
 
@@ -1861,7 +1864,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile([[maybe_unused]] wxCommandEvent& 
     wxString fileName = dialog.GetPath();
     string fil(fileName.mbc_str());
 
-    int i, M = 0, n = (int)rawlog.size();
+    int i, M = 0, n = static_cast<int>(rawlog.size());
     FILE* f = os::fopen(fil.c_str(), "wt");
     if (!f) THROW_EXCEPTION("Cannot open output file for write.");
 
@@ -1981,7 +1984,7 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing([[maybe_unused]] wxComma
     wxString fileName = dialog.GetPath();
     string fil(fileName.mbc_str());
 
-    int i, M = 0, n = (int)rawlog.size();
+    int i, M = 0, n = static_cast<int>(rawlog.size());
     FILE* f = os::fopen(fil.c_str(), "wt");
     if (!f) THROW_EXCEPTION("Cannot open output file for write.");
 

@@ -74,8 +74,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
       CMyRedirector myRedirector(memo);
 
       // Show comments of the rawlog:
-      string s;
-      rawlog.getCommentText(s);
+      string s = rawlog.getCommentText();
 
       if (s.empty())
       {

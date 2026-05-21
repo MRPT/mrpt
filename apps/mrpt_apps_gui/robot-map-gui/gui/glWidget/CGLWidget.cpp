@@ -611,7 +611,7 @@ bool CGlWidget::selectPoint(float x, float y, double maxDist)
   int poseIndex = searchPose(x, y, maxDist);
   if (poseIndex != -1)
   {
-    selectPoint((size_t)poseIndex);
+    selectPoint(static_cast<size_t>(poseIndex));
     return true;
   }
   return false;

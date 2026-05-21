@@ -94,7 +94,7 @@ void TestICP()
    * Additional arguments are provided to investigate the performance of the
    * algorithm
    */
-  CPose2D initialPose(0.8f, 0.0f, (float)DEG2RAD(0.0f));
+  CPose2D initialPose(0.8f, 0.0f, static_cast<float>(DEG2RAD(0.0f)));
 
   CPosePDF::Ptr pdf = ICP.Align(&m1, &m2, initialPose, info);
 
@@ -125,17 +125,17 @@ void TestICP()
    */
   std::cout << "-> Saving reference map as scan1.txt"
             << "\n";
-  m1.save2D_to_text_file("scan1.txt");
+  (void)m1.save2D_to_text_file("scan1.txt");
 
   std::cout << "-> Saving map to align as scan2.txt"
             << "\n";
-  m2.save2D_to_text_file("scan2.txt");
+  (void)m2.save2D_to_text_file("scan2.txt");
 
   std::cout << "-> Saving transformed map to align as scan2_trans.txt"
             << "\n";
   CSimplePointsMap m2_trans = m2;
   m2_trans.changeCoordinatesReference(gPdf.mean);
-  m2_trans.save2D_to_text_file("scan2_trans.txt");
+  (void)m2_trans.save2D_to_text_file("scan2_trans.txt");
 
   std::cout << "-> Saving MATLAB script for drawing 2D ellipsoid as view_ellip.m"
             << "\n";

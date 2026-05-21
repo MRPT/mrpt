@@ -783,7 +783,7 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick([[maybe_unused]] wxCommandEven
   }
   ptg->deinitialize();
 
-  const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
+  const std::string sKeyPrefix = mrpt::format("PTG%d_", static_cast<int>(edPTGIndex)->GetValue());
 
   mrpt::config::CConfigFileMemory cfg;
   mrpt::config::CConfigFilePrefixer cfp;
@@ -1203,7 +1203,7 @@ void ptgConfiguratorframe::dumpPTGcfgToTextBox()
     return;
   }
   // Wrapper to transparently add prefixes to all config keys:
-  const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
+  const std::string sKeyPrefix = mrpt::format("PTG%d_", static_cast<int>(edPTGIndex)->GetValue());
   const std::string sSection = m_cfgFileSection;
 
   mrpt::config::CConfigFileMemory cfg;
@@ -1388,7 +1388,7 @@ void ptgConfiguratorframe::OnExportSelectedPath(wxCommandEvent&)
     << " alpha=" << mrpt::RAD2DEG(ptg->index2alpha(edIndexHighlightPath->GetValue())) << " [deg]\n";
   f << "% PTG details:\n%{\n";
 
-  const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
+  const std::string sKeyPrefix = mrpt::format("PTG%d_", static_cast<int>(edPTGIndex)->GetValue());
   const std::string sSection = m_cfgFileSection;
   mrpt::config::CConfigFileMemory cfg;
   mrpt::config::CConfigFilePrefixer cfp;

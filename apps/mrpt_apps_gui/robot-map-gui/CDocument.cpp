@@ -95,7 +95,7 @@ void CDocument::saveAsText(const std::string& fileName) const
     auto ptr = std::dynamic_pointer_cast<CSimplePointsMap>(m);
     if (ptr)
     {
-      ptr->save3D_to_text_file(fileName);
+      (void)ptr->save3D_to_text_file(fileName);
       break;
     }
   }

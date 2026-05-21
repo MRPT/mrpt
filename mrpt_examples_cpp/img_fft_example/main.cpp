@@ -41,7 +41,9 @@ void TestFFT_2D_real()
   A.loadFromTextFile("dft2_test.txt");
   printf("ok\n");
 
-  printf("Computing 2D FFT of %ux%u...", (unsigned int)A.rows(), (unsigned int)A.cols());
+  printf(
+      "Computing 2D FFT of %ux%u...", static_cast<unsigned int>(A.rows()),
+      static_cast<unsigned int>(A.cols()));
   tictac.Tic();
   math::dft2_real(A, RES_R, RES_I);
   printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
@@ -49,7 +51,9 @@ void TestFFT_2D_real()
   RES_R.saveToTextFile("_out_dft2_real.txt");
   RES_I.saveToTextFile("_out_dft2_imag.txt");
 
-  printf("Computing 2D IFFT of %ux%u...", (unsigned int)A.rows(), (unsigned int)A.cols());
+  printf(
+      "Computing 2D IFFT of %ux%u...", static_cast<unsigned int>(A.rows()),
+      static_cast<unsigned int>(A.cols()));
   tictac.Tic();
   math::idft2_real(RES_R, RES_I, B);
   printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
@@ -78,8 +82,8 @@ void TestFFT_2D_complex()
   printf("ok\n");
 
   printf(
-      "Computing 2D complex FFT of %ux%u...", (unsigned int)DATA_R.rows(),
-      (unsigned int)DATA_R.cols());
+      "Computing 2D complex FFT of %ux%u...", static_cast<unsigned int>(DATA_R.rows()),
+      static_cast<unsigned int>(DATA_R.cols()));
   tictac.Tic();
   math::dft2_complex(DATA_R, DATA_I, RES_R, RES_I);
   printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
@@ -88,8 +92,8 @@ void TestFFT_2D_complex()
   RES_I.saveToTextFile("_out_complex_dft2_imag.txt");
 
   printf(
-      "Computing 2D complex IFFT of %ux%u...", (unsigned int)DATA_R.rows(),
-      (unsigned int)DATA_R.cols());
+      "Computing 2D complex IFFT of %ux%u...", static_cast<unsigned int>(DATA_R.rows()),
+      static_cast<unsigned int>(DATA_R.cols()));
   tictac.Tic();
   math::idft2_complex(RES_R, RES_I, B_R, B_I);
   printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);

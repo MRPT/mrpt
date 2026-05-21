@@ -802,7 +802,7 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
     // APPLY TO rawlog in memory:
     isInMemory = true;
 
-    processMax = (unsigned int)rawlog.size();
+    processMax = static_cast<unsigned int>(rawlog.size());
     first = spinFirst->GetValue();
     last = spinLast->GetValue();
 
@@ -829,7 +829,7 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
     in_fil = new CCompressedInputStream(fileName_IN);
     out_fil = new CCompressedOutputStream(fileName_OUT);
 
-    processMax = (unsigned int)in_fil->getTotalBytesCount();
+    processMax = static_cast<unsigned int>(in_fil)->getTotalBytesCount();
   }
 
   wxProgressDialog progDia(

@@ -234,9 +234,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate([[maybe_unused]] wxCommandEvent&
 
           for (auto& it : *accum_sf)
           {
-            CPose3D tmpPose;
-
-            it->getSensorPose(tmpPose);
+            CPose3D tmpPose = it->getSensorPose();
             tmpPose = inv_incrPose3D + tmpPose;
             it->setSensorPose(tmpPose);
           }
@@ -338,7 +336,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE([[maybe_unused]] wxCommandEvent& 
   CCompressedOutputStream f_out(filToSave);
 
   wxBusyCursor waitCursor;
-  auto filSize = (unsigned int)fil.getTotalBytesCount();
+  auto filSize = static_cast<unsigned int>(fil.getTotalBytesCount());
 
   wxString auxStr;
   wxProgressDialog progDia(
@@ -376,7 +374,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE([[maybe_unused]] wxCommandEvent& 
     if (countLoop++ % 100 == 0)
     {
       auxStr.sprintf(wxT("Parsing file... %u objects"), entryIndex);
-      if (!progDia.Update((int)fil.getPosition(), auxStr)) keepLoading = false;
+      if (!progDia.Update(static_cast<int>(fil.getPosition()), auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
 
@@ -533,7 +531,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored([[maybe_unused]] wxComman
   }
   wxBusyCursor waitCursor;
   CCompressedInputStream fil(str);
-  auto filSize = (unsigned int)fil.getTotalBytesCount();
+  auto filSize = static_cast<unsigned int>(fil.getTotalBytesCount());
 
   CCompressedOutputStream f_out(filToSave);
 
@@ -557,7 +555,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored([[maybe_unused]] wxComman
     if (countLoop++ % 5 == 0)
     {
       auxStr.sprintf(wxT("Parsing file... %u objects"), countLoop);
-      if (!progDia.Update((int)fil.getPosition(), auxStr)) keepLoading = false;
+      if (!progDia.Update(static_cast<int>(fil.getPosition()), auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
 
@@ -665,7 +663,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly([[maybe_unused]] wxCommand
   }
   wxBusyCursor waitCursor;
   CCompressedInputStream fil(str);
-  auto filSize = (unsigned int)fil.getTotalBytesCount();
+  auto filSize = static_cast<unsigned int>(fil.getTotalBytesCount());
 
   CCompressedOutputStream f_out(filToSave);
 
@@ -695,7 +693,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly([[maybe_unused]] wxCommand
     if (countLoop++ % 5 == 0)
     {
       auxStr.sprintf(wxT("Parsing file... %u objects"), countLoop);
-      if (!progDia.Update((int)fil.getPosition(), auxStr)) keepLoading = false;
+      if (!progDia.Update(static_cast<int>(fil.getPosition()), auxStr)) keepLoading = false;
       wxTheApp->Yield();  // Let the app. process messages
     }
 
@@ -820,7 +818,7 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp([[maybe_unused]] wxCommandEvent
           wxMessageBox(wxString::Format(
               _("Error: Element %u does not have a valid "
                 "timestamp."),
-              (unsigned int)i));
+              static_cast<unsigned int>(i)));
           return;
         }
 
@@ -957,7 +955,7 @@ void xRawLogViewerFrame::OnMenuConvertSF([[maybe_unused]] wxCommandEvent& event)
   new_rawlog.setCommentText(rawlog.getCommentText());
 
   wxBusyCursor waitCursor;
-  auto nEntries = (unsigned int)rawlog.size();
+  auto nEntries = static_cast<unsigned int>(rawlog.size());
 
   wxProgressDialog progDia(
       wxT("Progress"), wxT("Parsing rawlog..."),

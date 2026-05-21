@@ -489,7 +489,7 @@ void CRawlogTreeView::ConnectSelectedItemChange(const wxRawlogTreeEventFunction&
    ------------------------------------------------------------ */
 void CRawlogTreeView::SetSelectedItem(int sel_item, bool force_refresh)
 {
-  if (sel_item < (int)m_tree_nodes.size())
+  if (sel_item < static_cast<int>(m_tree_nodes.size()))
   {
     if (sel_item != m_selectedItem || force_refresh)
     {
