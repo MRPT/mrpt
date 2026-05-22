@@ -891,8 +891,7 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
 
                   // Local coordinates reference:
                   TPose3D _local_ENU;
-                  mrpt::topography::ENU_axes_from_WGS84(
-                      refCoords.lon, refCoords.lat, refCoords.height, _local_ENU, true);
+                  mrpt::topography::ENU_axes_from_WGS84(refCoords, _local_ENU, true);
                   local_ENU = CPose3D(_local_ENU);
                 }
 

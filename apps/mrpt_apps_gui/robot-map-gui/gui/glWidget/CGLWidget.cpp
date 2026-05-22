@@ -396,7 +396,7 @@ void CGlWidget::resizeGL(int width, int height)
   {
     GLint win_dims[4];
     glGetIntegerv(GL_VIEWPORT, win_dims);
-    m_miniMapSize = static_cast<float>(std::min(win_dims[2], win_dims[3]) * m_minimapPercentSize);
+    m_miniMapSize = static_cast<float>(std::min(win_dims[2], win_dims[3])) * m_minimapPercentSize;
   }
   updateMinimapPos();
 }

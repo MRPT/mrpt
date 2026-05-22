@@ -205,7 +205,7 @@ void Test_Kinect()
     }
     {
       mrpt::viz::CSetOfObjects::Ptr gl_corner = mrpt::viz::stock_objects::CornerXYZ();
-      gl_corner->setScale(0.2);
+      gl_corner->setScale(0.2f);
       scene->insert(gl_corner);
     }
 

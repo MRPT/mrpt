@@ -381,10 +381,10 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 
   // percent of view:
   double pc0 = 0, pc1 = 0;
-  if (const double nItems = m_treeView->getTotalTreeNodes(); nItems > 2)
+  if (const double nItems = static_cast<double>(m_treeView->getTotalTreeNodes()); nItems > 2)
   {
-    pc0 = m_treeView->m_firstVisibleItem / static_cast<double>(nItems - 1);
-    pc1 = m_treeView->m_lastVisibleItem / static_cast<double>(nItems - 1);
+    pc0 = static_cast<double>(m_treeView->m_firstVisibleItem) / (nItems - 1);
+    pc1 = static_cast<double>(m_treeView->m_lastVisibleItem) / (nItems - 1);
   }
 
   // visible page shaded area:

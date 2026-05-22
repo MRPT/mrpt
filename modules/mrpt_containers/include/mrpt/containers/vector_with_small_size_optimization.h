@@ -217,9 +217,29 @@ class vector_with_small_size_optimization
   size_t size() const { return m_size; }
   bool empty() const { return m_size == 0; }
 
-  reference operator[](size_type n) { return m_is_small ? m_a[n] : m_v[n]; }
+  reference operator[](size_type n)
+  {
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+    return m_is_small ? m_a[n] : m_v[n];
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+  }
 
-  const_reference operator[](size_type n) const { return m_is_small ? m_a[n] : m_v[n]; }
+  const_reference operator[](size_type n) const
+  {
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+    return m_is_small ? m_a[n] : m_v[n];
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+  }
 
   /** Like [], but throws an exception if accessing out of bounds.
    * \note (Note in MRPT 2.3.3)

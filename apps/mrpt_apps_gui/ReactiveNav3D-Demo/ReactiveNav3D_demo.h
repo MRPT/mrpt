@@ -356,12 +356,13 @@ class CShortTermMemory
         }
       }
 
-      robot_ingrid.x = sign<float>(robot_ingrid.x + incrx) *
-                       static_cast<float>(remainder(
-                           std::abs(robot_ingrid.x + incrx), obsgrids[0].getResolution()));
-      robot_ingrid.y = sign<float>(robot_ingrid.y + incry) *
-                       static_cast<float>(remainder(
-                           std::abs(robot_ingrid.y + incry), obsgrids[0].getResolution()));
+      {
+        const double dx = robot_ingrid.x + static_cast<double>(incrx);
+        const double dy = robot_ingrid.y + static_cast<double>(incry);
+        const double res = static_cast<double>(obsgrids[0].getResolution());
+        robot_ingrid.x = static_cast<double>(sign(dx)) * std::remainder(std::abs(dx), res);
+        robot_ingrid.y = static_cast<double>(sign(dy)) * std::remainder(std::abs(dy), res);
+      }
     }
 
     // Second, update the likelihood values according to kinect scan
