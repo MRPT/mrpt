@@ -118,7 +118,7 @@ void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
   double maxValidLaserRange;
   strMaxLaserRange.ToCDouble(&maxValidLaserRange);
 
-  float thisTimestamp;
+  double thisTimestamp;
 
   std::vector<std::string> sl;
   (void)mrpt::io::loadTextFile(sl, fil);
@@ -180,7 +180,7 @@ void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
       goToTheLastToken(str);
       thisTimestamp = atof(str);
       // Insert timestamp from Carmen logfile, adds UNIX 1970-01-01 offset
-      obsScan->timestamp = mrpt::Clock::fromDouble(static_cast<double>(thisTimestamp));
+      obsScan->timestamp = mrpt::Clock::fromDouble(thisTimestamp);
 
       // thisOdoReading
       if (isTheFirstOdo)

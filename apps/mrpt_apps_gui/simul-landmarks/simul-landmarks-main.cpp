@@ -314,7 +314,7 @@ int main(int argc, char** argv)
 
       // Keep the GT of the robot pose:
       GT_path.setSize(i + 1, 6);
-      for (size_t k = 0; k < 6; k++) GT_path(i, k) = realPose[k];
+      for (unsigned int k = 0; k < 6; k++) GT_path(i, k) = realPose[k];
 
       std::cout << static_cast<unsigned int>(obs->sensedData.size()) << " landmarks in sight";
 

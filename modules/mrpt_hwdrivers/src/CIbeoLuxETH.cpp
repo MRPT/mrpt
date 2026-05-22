@@ -185,11 +185,11 @@ void CIbeoLuxETH::dataCollection()
           {
             // TODO: Process point information correctly
             CPoint3D cartesianPoint = convertToCartesian(
-                static_cast<double>(convertLayerToRad(SPlayer)),  // vertikal coord of scanner
-                static_cast<double>(convertTicksToHRad(
+                static_cast<float>(convertLayerToRad(SPlayer)),  // vertikal coord of scanner
+                static_cast<float>(convertTicksToHRad(
                     SPHangle,
                     angleTicks)),  // horizontal coord of scanner
-                static_cast<double>(SPdistance));
+                static_cast<float>(SPdistance));
 
             // write scanpoint data to observation object
             newObs->points3D_x.push_back(static_cast<float>(cartesianPoint.x()));

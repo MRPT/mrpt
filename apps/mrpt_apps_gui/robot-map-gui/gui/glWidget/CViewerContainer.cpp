@@ -288,14 +288,14 @@ void CViewerContainer::updateElevationDegrees(double deg)
 
 void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 {
-  float rBack = setting.backgroundColor.red() / 255.0f;
-  float gBack = setting.backgroundColor.green() / 255.0f;
-  float bBack = setting.backgroundColor.blue() / 255.0f;
-  float aBack = setting.backgroundColor.alpha() / 255.0f;
-  float r = setting.gridColor.red() / 255.0f;
-  float g = setting.gridColor.green() / 255.0f;
-  float b = setting.gridColor.blue() / 255.0f;
-  float a = setting.gridColor.alpha() / 255.0f;
+  float rBack = static_cast<float>(setting.backgroundColor.red()) / 255.0f;
+  float gBack = static_cast<float>(setting.backgroundColor.green()) / 255.0f;
+  float bBack = static_cast<float>(setting.backgroundColor.blue()) / 255.0f;
+  float aBack = static_cast<float>(setting.backgroundColor.alpha()) / 255.0f;
+  float r = static_cast<float>(setting.gridColor.red()) / 255.0f;
+  float g = static_cast<float>(setting.gridColor.green()) / 255.0f;
+  float b = static_cast<float>(setting.gridColor.blue()) / 255.0f;
+  float a = static_cast<float>(setting.gridColor.alpha()) / 255.0f;
 
   forEachGl(
       [r, g, b, a, rBack, gBack, bBack, aBack, setting](CGlWidget* gl)
