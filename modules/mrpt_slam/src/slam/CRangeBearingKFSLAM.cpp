@@ -979,7 +979,7 @@ void CRangeBearingKFSLAM::getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) c
         {
           // Check if landmark #i is in the SF of
           // m_lastPartitionSet[p][w]:
-          CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(i);
+          CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(static_cast<unsigned int>(i));
 
           // Look for the lm_ID in the SF:
           const auto& [pose_i, SF_i, twist_t] = SFs->get(m_lastPartitionSet[p][w]);
@@ -991,7 +991,7 @@ void CRangeBearingKFSLAM::getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) c
           {
             if (o.landmarkID == i_th_ID)
             {
-              belongToPartition[p] = true;
+              belongToPartition[static_cast<int>(p)] = true;
               break;
             }
           }  // end for o

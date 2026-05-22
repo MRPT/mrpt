@@ -32,7 +32,7 @@
 
 // CreateBitmap function
 wxBitmap MyArtProvider::CreateBitmap(
-    const wxArtID& id, const wxArtClient& client, const wxSize& size)
+    const wxArtID& id, const wxArtClient& client, [[maybe_unused]] const wxSize& size)
 {
   RETURN_BITMAP(wxART_FOLDER, Folderdownloads_xpm);
   RETURN_BITMAP(wxART_FILE_SAVE_AS, file_save_xpm);

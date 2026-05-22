@@ -12,7 +12,7 @@ if (DISABLE_TINYXML2)
 endif()
 
 set(_use_embeded_default "OFF")
-if (WIN32 OR APPLE)
+if (WIN32)
   set(_use_embeded_default "ON")
 endif()
 
@@ -21,21 +21,40 @@ mark_as_advanced(TINYXML2_USE_EMBEDDED_VERSION)
 
 unset(_use_embeded_default)
 
-if (TINYXML2_USE_EMBEDDED_VERSION)
+# Try the system tinyxml2 first (works on macOS via brew, and Linux via pkg)
+if(NOT TINYXML2_USE_EMBEDDED_VERSION)
+  find_package(tinyxml2 QUIET)
+  if(tinyxml2_FOUND)
+    set(CMAKE_MRPT_HAS_TINYXML2 1)
+    set(CMAKE_MRPT_HAS_TINYXML2_SYSTEM 1)
+    if(NOT TARGET imp_tinyxml2)
+      add_library(imp_tinyxml2 INTERFACE IMPORTED)
+      set_target_properties(imp_tinyxml2
+        PROPERTIES
+        INTERFACE_LINK_LIBRARIES "tinyxml2::tinyxml2"
+      )
+    endif()
+  endif()
+endif()
+
+if (TINYXML2_USE_EMBEDDED_VERSION AND NOT CMAKE_MRPT_HAS_TINYXML2)
   # download on the fly:
   set(TINYXML2_VERSION_TO_DOWNLOAD "7.1.0" CACHE STRING "Download from this GitHub tag")
+  # Use CMAKE_CURRENT_BINARY_DIR so this works in standalone/colcon builds
+  set(_tinyxml2_download_dir "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/tinyxml2")
 
-  if (NOT EXISTS "${MRPT_BINARY_DIR}/3rdparty/tinyxml2/tinyxml2.h")
+  if (NOT EXISTS "${_tinyxml2_download_dir}/tinyxml2.h")
     file(DOWNLOAD
       https://github.com/leethomason/tinyxml2/raw/${TINYXML2_VERSION_TO_DOWNLOAD}/tinyxml2.h
-      "${MRPT_BINARY_DIR}/3rdparty/tinyxml2/tinyxml2.h" SHOW_PROGRESS)
+      "${_tinyxml2_download_dir}/tinyxml2.h" SHOW_PROGRESS)
     file(DOWNLOAD
       https://github.com/leethomason/tinyxml2/raw/${TINYXML2_VERSION_TO_DOWNLOAD}/tinyxml2.cpp
-      "${MRPT_BINARY_DIR}/3rdparty/tinyxml2/tinyxml2.cpp" SHOW_PROGRESS)
+      "${_tinyxml2_download_dir}/tinyxml2.cpp" SHOW_PROGRESS)
   endif()
 
   set(CMAKE_MRPT_HAS_TINYXML2 1)
   set(CMAKE_MRPT_HAS_TINYXML2_SYSTEM 0)
+  unset(_tinyxml2_download_dir)
 endif()
 
 if(UNIX AND NOT CMAKE_MRPT_HAS_TINYXML2)

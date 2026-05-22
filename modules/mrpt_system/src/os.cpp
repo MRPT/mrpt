@@ -205,8 +205,8 @@ int os::sprintf(char* buf, [[maybe_unused]] size_t bufSize, const char* format, 
   // Use a secure version in Visual Studio 2005:
   result = ::vsprintf_s(buf, bufSize, format, ap);
 #else
-  // Use standard version:
-  result = ::vsprintf(buf, format, ap);
+  // Use vsnprintf to avoid deprecation warnings on macOS:
+  result = ::vsnprintf(buf, bufSize, format, ap);
 #endif
 
   va_end(ap);
@@ -223,8 +223,7 @@ int os::vsprintf(
   // Use a secure version in Visual Studio 2005:
   return ::vsprintf_s(buf, bufSize, format, args);
 #else
-  // Use standard version:
-  return ::vsprintf(buf, format, args);
+  return ::vsnprintf(buf, bufSize, format, args);
 #endif
 }
 

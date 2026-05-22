@@ -96,7 +96,11 @@ BEGIN_EVENT_TABLE(CDlgParams, wxDialog)
 //*)
 END_EVENT_TABLE()
 
-CDlgParams::CDlgParams(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size)
+CDlgParams::CDlgParams(
+    wxWindow* parent,
+    [[maybe_unused]] wxWindowID id,
+    [[maybe_unused]] const wxPoint& pos,
+    [[maybe_unused]] const wxSize& size)
 {
   //(*Initialize(CDlgParams)
   wxStaticBoxSizer* StaticBoxSizer2;

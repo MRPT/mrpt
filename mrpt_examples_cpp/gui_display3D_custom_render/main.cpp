@@ -40,7 +40,7 @@ struct TMyExtraRenderingStuff : public mrpt::system::CObserver
   viz::CSphere::Ptr ball_obj;  // The ball moving in the scene
 
   TMyExtraRenderingStuff() {}
-  void OnEvent(const mrptEvent& e) override
+  void OnEvent([[maybe_unused]] const mrptEvent& e) override
   {
     // Pre/post render events were removed in MRPT v3.
     // Custom rendering can be done via other mechanisms.

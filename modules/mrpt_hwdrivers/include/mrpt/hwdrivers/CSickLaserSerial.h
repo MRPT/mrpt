@@ -83,7 +83,7 @@ class CSickLaserSerial : public C2DRangeFinderAbstract
   /** The sensor 6D pose: */
   mrpt::math::TPose3D m_sensorPose;
 
-  static int CRC16_GEN_POL;
+  static uint16_t CRC16_GEN_POL;
 
   /** Tries to open the com port and setup all the LMS protocol. Returns true
    * if OK or already open. */

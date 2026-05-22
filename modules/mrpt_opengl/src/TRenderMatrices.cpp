@@ -432,8 +432,8 @@ void TRenderMatrices::projectPoint(
 {
   const Eigen::Matrix<float, 4, 1, Eigen::ColMajor> proj =
       pmv_matrix.asEigen() * Eigen::Matrix<float, 4, 1, Eigen::ColMajor>(x, y, z, 1);
-  proj_u = proj[3] ? proj[0] / proj[3] : 0;
-  proj_v = proj[3] ? proj[1] / proj[3] : 0;
+  proj_u = proj[3] != 0.0f ? proj[0] / proj[3] : 0;
+  proj_v = proj[3] != 0.0f ? proj[1] / proj[3] : 0;
   proj_z_depth = proj[2];
 }
 

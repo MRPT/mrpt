@@ -33,7 +33,11 @@ BEGIN_EVENT_TABLE(CLogView, wxDialog)
 //*)
 END_EVENT_TABLE()
 
-CLogView::CLogView(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size)
+CLogView::CLogView(
+    wxWindow* parent,
+    wxWindowID id,
+    [[maybe_unused]] const wxPoint& pos,
+    [[maybe_unused]] const wxSize& size)
 {
   //(*Initialize(CLogView)
   wxFlexGridSizer* FlexGridSizer1;

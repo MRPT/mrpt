@@ -245,7 +245,9 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps& config)
         COccupancyConfig* pConfig = new COccupancyConfig();
         addWidget(TypeOfConfig::Occupancy, pConfig);
         pConfig->setCreationOpt(
-            ptr->getXMin(), ptr->getXMax(), ptr->getYMin(), ptr->getYMax(), ptr->getResolution());
+            static_cast<float>(ptr->getXMin()), static_cast<float>(ptr->getXMax()),
+            static_cast<float>(ptr->getYMin()), static_cast<float>(ptr->getYMax()),
+            static_cast<float>(ptr->getResolution()));
         pConfig->setInsertOpt(ptr->insertionOptions);
         pConfig->setLikelihoodOpt(ptr->likelihoodOptions);
         found = true;
@@ -258,7 +260,9 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps& config)
         CGasGridConfig* pConfig = new CGasGridConfig();
         addWidget(TypeOfConfig::GasGrid, pConfig);
         pConfig->setCreationOpt(
-            ptr->getXMin(), ptr->getXMax(), ptr->getYMin(), ptr->getYMax(), ptr->getResolution());
+            static_cast<float>(ptr->getXMin()), static_cast<float>(ptr->getXMax()),
+            static_cast<float>(ptr->getYMin()), static_cast<float>(ptr->getYMax()),
+            static_cast<float>(ptr->getResolution()));
         pConfig->setInsertOpt(ptr->insertionOptions);
         // pConfig->setMapTypeOpt(ptr->mapType);
         found = true;
@@ -301,7 +305,7 @@ int CConfigWidget::addWidget(TypeOfConfig type, CBaseConfig* w)
   int index = 0;
   if (type != TypeOfConfig::General)
   {
-    index = it->second.size();
+    index = static_cast<int>(it->second.size());
     it->second.push_back(w);
   }
 

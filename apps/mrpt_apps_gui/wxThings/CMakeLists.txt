@@ -12,6 +12,12 @@ add_library(mrptwxthings
 	src/toggle.cpp    # fancy button
 	)
 
+# toggle.cpp is 3rd-party code — suppress conversion warnings we can't fix
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  set_source_files_properties(src/toggle.cpp PROPERTIES
+    COMPILE_FLAGS "-Wno-conversion -Wno-float-conversion -Wno-old-style-cast")
+endif()
+
 set_target_properties(mrptwxthings PROPERTIES FOLDER "3rd party")
 
 target_include_directories(

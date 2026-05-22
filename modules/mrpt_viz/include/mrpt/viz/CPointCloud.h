@@ -288,8 +288,6 @@ class CPointCloud :
   void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 
  private:
-  /** Buffer for min/max coords when m_colorFromDepth is true. */
-  mutable float m_min{0}, m_max{0}, m_max_m_min{0}, m_max_m_min_inv{0};
   /** Color linear function slope */
   mutable mrpt::img::TColorf m_col_slop, m_col_slop_inv;
   mutable bool m_minmax_valid{false};

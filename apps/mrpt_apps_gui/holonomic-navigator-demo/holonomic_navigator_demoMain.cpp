@@ -764,7 +764,8 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
   // Movement direction:
   const double d = no.desiredSpeed / m_simul_options.ROBOT_MAX_SPEED;
   gl_line_direction->setLineCoords(
-      0, 0, 0, cos(no.desiredDirection) * d, sin(no.desiredDirection) * d, 0);
+      0, 0, 0, static_cast<float>(cos(no.desiredDirection) * d),
+      static_cast<float>(sin(no.desiredDirection) * d), 0);
 }
 
 void holonomic_navigator_demoFrame::updateViewsDynamicObjects()
@@ -783,7 +784,7 @@ void holonomic_navigator_demoFrame::updateViewsDynamicObjects()
     const double s = 4 * t * (TARGET_BOUNCE_MAX - TARGET_BOUNCE_MIN) * (1 - t) + TARGET_BOUNCE_MIN;
 
     gl_target->setLocation(mrpt::math::TPoint3D(m_targetPose.translation()));
-    gl_target->setScale(s);
+    gl_target->setScale(static_cast<float>(s));
   }
 
   // Labels:
@@ -980,7 +981,7 @@ void holonomic_navigator_demoFrame::OnbtnLoadMapClick([[maybe_unused]] wxCommand
 
       if (sCellSize.ToCDouble(&cell_size) && sCX.ToCDouble(&cx) && sCY.ToCDouble(&cy))
       {
-        if (!m_gridMap.loadFromBitmap(img, cell_size, {cx, cy}))
+        if (!m_gridMap.loadFromBitmap(img, static_cast<float>(cell_size), {cx, cy}))
           wxMessageBox(_("Error"), _("Can't load the image file into the gridmap..."));
       }
       else

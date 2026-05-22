@@ -181,7 +181,7 @@ void Test_Kinect()
   gl_2d_scan->enablePoints(true);
   gl_2d_scan->enableLine(true);
   gl_2d_scan->enableSurface(true);
-  gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3);  // RGBA
+  gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3f);  // RGBA
 
   mrpt::viz::CFrustum::Ptr gl_frustum =
       mrpt::viz::CFrustum::Create(0.2f, 5.0f, 90.0f, 5.0f, 2.0f, true, true);
@@ -200,7 +200,7 @@ void Test_Kinect()
 
     {
       mrpt::viz::CGridPlaneXY::Ptr gl_grid = mrpt::viz::CGridPlaneXY::Create();
-      gl_grid->setColor(0.6, 0.6, 0.6);
+      gl_grid->setColor(0.6f, 0.6f, 0.6f);
       scene->insert(gl_grid);
     }
     {
@@ -210,7 +210,7 @@ void Test_Kinect()
     }
 
     const int VW_WIDTH = 250;  // Size of the viewport into the window, in pixel units.
-    const int VW_HEIGHT = aspect_ratio * VW_WIDTH;
+    const int VW_HEIGHT = static_cast<int>(aspect_ratio * VW_WIDTH);
     const int VW_GAP = 30;
 
     // Create the Opengl objects for the planar images, as textured planes,
@@ -252,7 +252,7 @@ void Test_Kinect()
         static CMatrixFloat range2D;  // Static to save time allocating
         // the matrix in every iteration
         range2D = last_obs->rangeImage;
-        range2D *= (1.0 / last_obs->maxRange);
+        range2D *= static_cast<float>(1.0 / last_obs->maxRange);
 
         img.setFromMatrix(range2D);
 
@@ -352,11 +352,11 @@ void Test_Kinect()
       {
         // Some of the keys are processed in this thread:
         case 'o':
-          win3D.setCameraZoom(win3D.getCameraZoom() * 1.2);
+          win3D.setCameraZoom(win3D.getCameraZoom() * 1.2f);
           win3D.repaint();
           break;
         case 'i':
-          win3D.setCameraZoom(win3D.getCameraZoom() / 1.2);
+          win3D.setCameraZoom(win3D.getCameraZoom() / 1.2f);
           win3D.repaint();
           break;
         case '2':
@@ -391,7 +391,7 @@ void Test_Kinect()
   std::cout << "Bye!\n";
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {

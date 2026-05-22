@@ -79,7 +79,7 @@ void CPTG_DiffDrive_CC::ptgDiffDriveSteeringFunction(
     [[maybe_unused]] float& v,
     [[maybe_unused]] float& w) const
 {
-  float u = fabs(alpha) * 0.5f;  /// 6.0f;
+  float u = static_cast<float>(fabs(alpha)) * 0.5f;  /// 6.0f;
 
   if (t < u * R / V_MAX)
   {

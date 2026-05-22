@@ -171,12 +171,20 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 
     MY_LOAD_HERE_CONFIG_VAR(
         sTask + string(".samplesPerSecond"), double, t.samplesPerSecond, cfg, sect)
-    MY_LOAD_HERE_CONFIG_VAR(
-        sTask + string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg, sect)
+    {
+      double tmp_samplesPerCh = t.samplesPerChannelToRead;
+      MY_LOAD_HERE_CONFIG_VAR(
+          sTask + string(".samplesPerChannelToRead"), double, tmp_samplesPerCh, cfg, sect)
+      t.samplesPerChannelToRead = static_cast<uint32_t>(tmp_samplesPerCh);
+    }
     MY_LOAD_HERE_CONFIG_VAR(
         sTask + string(".sampleClkSource"), string, t.sampleClkSource, cfg, sect)
-    MY_LOAD_HERE_CONFIG_VAR(
-        sTask + string(".bufferSamplesPerChannel"), double, t.bufferSamplesPerChannel, cfg, sect)
+    {
+      double tmp_bufSamplesPerCh = t.bufferSamplesPerChannel;
+      MY_LOAD_HERE_CONFIG_VAR(
+          sTask + string(".bufferSamplesPerChannel"), double, tmp_bufSamplesPerCh, cfg, sect)
+      t.bufferSamplesPerChannel = static_cast<uint32_t>(tmp_bufSamplesPerCh);
+    }
     t.taskLabel = cfg.read_string(sect, sTask + string(".taskLabel"), sTask, false);
 
     for (auto& lstStrChann : lstStrChanns)
@@ -186,9 +194,12 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
         t.has_ai = true;
         MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
             sTask + string(".ai.physicalChannel"), string, t.ai.physicalChannel, cfg, sect)
-        MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
-            sTask + string(".ai.physicalChannelCount"), uint64_t, t.ai.physicalChannelCount, cfg,
-            sect)
+        {
+          uint64_t tmp_ai_chcount = t.ai.physicalChannelCount;
+          MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
+              sTask + string(".ai.physicalChannelCount"), uint64_t, tmp_ai_chcount, cfg, sect)
+          t.ai.physicalChannelCount = static_cast<unsigned int>(tmp_ai_chcount);
+        }
         MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
             sTask + string(".ai.terminalConfig"), string, t.ai.terminalConfig, cfg, sect)
         MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
@@ -201,9 +212,12 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
         t.has_ao = true;
         MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
             sTask + string(".ao.physicalChannel"), string, t.ao.physicalChannel, cfg, sect)
-        MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
-            sTask + string(".ao.physicalChannelCount"), uint64_t, t.ao.physicalChannelCount, cfg,
-            sect)
+        {
+          uint64_t tmp_ao_chcount = t.ao.physicalChannelCount;
+          MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
+              sTask + string(".ao.physicalChannelCount"), uint64_t, tmp_ao_chcount, cfg, sect)
+          t.ao.physicalChannelCount = static_cast<unsigned int>(tmp_ao_chcount);
+        }
         MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
             sTask + string(".ao.minVal"), double, t.ao.minVal, cfg, sect)
         MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(

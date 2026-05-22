@@ -221,7 +221,8 @@ void do_simulation()
       the_scan->aperture = M_PIf;
       the_scan->timestamp = mrpt::Clock::now();
       the_grid.laserScanSimulator(
-          *the_scan, real_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR);
+          *the_scan, real_pose, 0.5f, LASER_N_RANGES, static_cast<float>(LASER_STD_ERROR), 1,
+          static_cast<float>(LASER_BEARING_STD_ERROR));
       sf->insert(the_scan);
       rawlog.insert(sf);
 

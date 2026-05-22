@@ -39,7 +39,7 @@ CObservationsNode::CObservationsNode(
 }
 
 CObservationsNode::~CObservationsNode() = default;
-int CObservationsNode::childCount() const { return m_observations.size(); }
+int CObservationsNode::childCount() const { return static_cast<int>(m_observations.size()); }
 CNode* CObservationsNode::child(int id) { return static_cast<CNode*>(m_observations[id].get()); }
 
 CNode::ObjectType CObservationsNode::type() const { return ObjectType::Observations; }

@@ -25,7 +25,7 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace std;
 
-void myOnMenu(int menuID, float x, float y, void* param)
+void myOnMenu(int menuID, float x, float y, [[maybe_unused]] void* param)
 {
   std::cout << "Menu: " << menuID << endl << " x=" << x << " y=" << y << "\n";
 }

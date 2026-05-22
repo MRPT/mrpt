@@ -372,7 +372,7 @@ void loadMapInto3DScene(Scene& scene)
 
     mrpt::viz::CGridPlaneXY::Ptr gridobj = mrpt::viz::CGridPlaneXY::Create(
         minC.x - 20, maxC.x + 20, minC.y - 20, maxC.y + 20, minC.z - 2, 5);
-    gridobj->setColor(0.3, 0.3, 0.3, 1);
+    gridobj->setColor(0.3f, 0.3f, 0.3f, 1);
     scene.insert(gridobj);
   }
 
@@ -527,8 +527,8 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 
   wxProgressDialog progDia(
       "Creating raw map", "Working...",
-      (int)(last - first + 1),  // range
-      this,                     // parent
+      static_cast<int>(last - first + 1),  // range
+      this,                                // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
           wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
@@ -619,19 +619,19 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 
     if (addNewPathEntry)
     {
-      pathX.push_back(curPose.x());
-      pathY.push_back(curPose.y());
+      pathX.push_back(static_cast<float>(curPose.x()));
+      pathY.push_back(static_cast<float>(curPose.y()));
       if (last_tim) robot_path.insert(last_tim.value(), CPose3D(curPose));
     }
 
     if ((count++ % 50) == 0)
     {
-      if (!progDia.Update((int)(i - first))) abort = true;
+      if (!progDia.Update(static_cast<int>(i - first))) abort = true;
       wxTheApp->Yield();
     }
   }  // end for i
 
-  progDia.Update((int)(last - first + 1));
+  progDia.Update(static_cast<int>(last - first + 1));
 
   // Load into the graphs:
   // ----------------------------------
@@ -845,9 +845,9 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
             THROW_EXCEPTION_FMT("ERROR: Odometry not found at step %d!", static_cast<int>(i));
 
           curPose = curPose + poseIncrement;
-          pathX.push_back(curPose.x());
-          pathY.push_back(curPose.y());
-          pathPhi.push_back(curPose.phi());
+          pathX.push_back(static_cast<float>(curPose.x()));
+          pathY.push_back(static_cast<float>(curPose.y()));
+          pathPhi.push_back(static_cast<float>(curPose.phi()));
         }
         break;
 
@@ -965,8 +965,8 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
   wxProgressDialog progDia2(
       wxString::Format("Building map - %u GPS points", static_cast<unsigned>(robot_path.size())),
       "Populating the map with observations...",
-      (int)(last - first + 1),  // range
-      this,                     // parent
+      static_cast<int>(last - first + 1),  // range
+      this,                                // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
           wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
@@ -1004,12 +1004,12 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
     // Show progress:
     if ((count++ % 100) == 0)
     {
-      if (!progDia2.Update((int)(i - first))) abort = true;
+      if (!progDia2.Update(static_cast<int>(i - first))) abort = true;
       wxTheApp->Yield();
     }
   }  // end for i
 
-  progDia2.Update((int)(last - first + 1));
+  progDia2.Update(static_cast<int>(last - first + 1));
 
   // Load into the graphs:
   // ----------------------------------
@@ -1029,8 +1029,8 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
     last_y = i->second.y;
     last_z = i->second.z;
 
-    pathX.push_back(i->second.x);
-    pathY.push_back(i->second.y);
+    pathX.push_back(static_cast<float>(i->second.x));
+    pathY.push_back(static_cast<float>(i->second.y));
   }
 
   plotMap->DelAllLayers(true, false);

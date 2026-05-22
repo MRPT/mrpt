@@ -300,8 +300,8 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
   outObservation.rightToLeft = false;
   outObservation.stdError = 0.012f;
   outObservation.sensorPose = m_sensorPose;
-  outObservation.beamAperture = m_beamApperture;
-  outObservation.maxRange = m_maxRange;
+  outObservation.beamAperture = static_cast<float>(m_beamApperture);
+  outObservation.maxRange = static_cast<float>(m_maxRange);
   outObservation.timestamp = mrpt::Clock::now();
   outObservation.sensorLabel = m_sensorLabel;
 

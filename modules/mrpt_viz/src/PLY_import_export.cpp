@@ -50,6 +50,15 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+// This file is adapted from RPly (C code). Suppress alignment cast warnings
+// since the binary format guarantees proper alignment at the call sites.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#pragma clang diagnostic ignored "-Wdouble-promotion"
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#endif
+
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/system/string_utils.h>
@@ -2088,3 +2097,6 @@ bool PLY_Exporter::saveToPlyFile(
   }
 }
 #pragma GCC diagnostic pop
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif

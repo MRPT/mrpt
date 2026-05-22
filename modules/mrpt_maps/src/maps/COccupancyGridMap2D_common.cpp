@@ -228,14 +228,14 @@ void COccupancyGridMap2D::resizeGrid(
 
   // Adjust sizes to adapt them to full sized cells according to the
   // resolution:
-  if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) > 0.05f)
-    new_x_min = m_resolution * static_cast<float>(round(new_x_min / m_resolution));
-  if (fabs(new_y_min / m_resolution - round(new_y_min / m_resolution)) > 0.05f)
-    new_y_min = m_resolution * static_cast<float>(round(new_y_min / m_resolution));
-  if (fabs(new_x_max / m_resolution - round(new_x_max / m_resolution)) > 0.05f)
-    new_x_max = m_resolution * static_cast<float>(round(new_x_max / m_resolution));
-  if (fabs(new_y_max / m_resolution - round(new_y_max / m_resolution)) > 0.05f)
-    new_y_max = m_resolution * static_cast<float>(round(new_y_max / m_resolution));
+  if (fabs(new_x_min / m_resolution - std::round(new_x_min / m_resolution)) > 0.05f)
+    new_x_min = m_resolution * std::round(new_x_min / m_resolution);
+  if (fabs(new_y_min / m_resolution - std::round(new_y_min / m_resolution)) > 0.05f)
+    new_y_min = m_resolution * std::round(new_y_min / m_resolution);
+  if (fabs(new_x_max / m_resolution - std::round(new_x_max / m_resolution)) > 0.05f)
+    new_x_max = m_resolution * std::round(new_x_max / m_resolution);
+  if (fabs(new_y_max / m_resolution - std::round(new_y_max / m_resolution)) > 0.05f)
+    new_y_max = m_resolution * std::round(new_y_max / m_resolution);
 
   // Change size: 4 sides extensions:
   extra_x_izq = static_cast<unsigned int>(round((m_xMin - new_x_min) / m_resolution));
@@ -633,11 +633,11 @@ void COccupancyGridMap2D::determineMatching2D(
               // save the correspondence:
               nTotalCorrespondences++;
               TMatchingPair mp;
-              mp.globalIdx = cx + cy * m_size_x;
+              mp.globalIdx = static_cast<uint32_t>(cx + cy * m_size_x);
               mp.global.x = idx2x(cx);
               mp.global.y = idx2y(cy);
               mp.global.z = z_local;
-              mp.localIdx = localIdx;
+              mp.localIdx = static_cast<uint32_t>(localIdx);
               mp.local.x = otherMap_pxs[localIdx];
               mp.local.y = otherMap_pys[localIdx];
               mp.local.z = otherMap_pzs[localIdx];
@@ -650,11 +650,11 @@ void COccupancyGridMap2D::determineMatching2D(
               {
                 min_dist = this_dist;
 
-                closestCorr.globalIdx = cx + cy * m_size_x;
+                closestCorr.globalIdx = static_cast<uint32_t>(cx + cy * m_size_x);
                 closestCorr.global.x = idx2x(cx);
                 closestCorr.global.y = idx2y(cy);
                 closestCorr.global.z = z_local;
-                closestCorr.localIdx = localIdx;
+                closestCorr.localIdx = static_cast<uint32_t>(localIdx);
                 closestCorr.local.x = otherMap_pxs[localIdx];
                 closestCorr.local.y = otherMap_pys[localIdx];
                 closestCorr.local.z = otherMap_pzs[localIdx];

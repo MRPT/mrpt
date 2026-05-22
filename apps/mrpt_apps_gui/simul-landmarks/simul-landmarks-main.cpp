@@ -88,7 +88,7 @@ int main(int argc, char** argv)
     }
 
     // Set default values:
-    unsigned int nLandmarks = 3;
+    uint64_t nLandmarks = 3;
     unsigned int nSteps = 100;
     std::string outFile("out.rawlog");
     std::string outDir("OUT");
@@ -124,7 +124,7 @@ int main(int argc, char** argv)
 
     bool circularPath = true;
     bool random6DPath = false;
-    size_t squarePathLength = 40;
+    int squarePathLength = 40;
 
     // Load params from INI:
     MRPT_LOAD_CONFIG_VAR(outFile, string, ini, "Params");
@@ -275,7 +275,7 @@ int main(int argc, char** argv)
           if (circularPath)
           {
             // Circular path:
-            float Ar = 5.0_deg;
+            float Ar = static_cast<float>(5.0_deg);
             incPose3D = CPose3D(CPose2D(0.20f * cos(Ar), 0.20f * sin(Ar), Ar));
           }
           else
@@ -316,7 +316,7 @@ int main(int argc, char** argv)
       GT_path.setSize(i + 1, 6);
       for (size_t k = 0; k < 6; k++) GT_path(i, k) = realPose[k];
 
-      std::cout << obs->sensedData.size() << " landmarks in sight";
+      std::cout << static_cast<unsigned int>(obs->sensedData.size()) << " landmarks in sight";
 
       if (obs->sensedData.empty()) nWarningsNoSight++;
 

@@ -271,11 +271,11 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
   // Draw only those elements that are visible:
   // -----------------------------------------------
   const int first_tim_y = ROW_HEIGHT + 1;
-  const int last_tim_y = (m_tree_nodes.size() - 1) * ROW_HEIGHT - 1;
+  const int last_tim_y = (static_cast<int>(m_tree_nodes.size()) - 1) * ROW_HEIGHT - 1;
 
   for (size_t i = first_item; i < last_item; i++)
   {
-    int y = i * ROW_HEIGHT;  // y= bottom of that row
+    int y = static_cast<int>(i) * ROW_HEIGHT;  // y= bottom of that row
     TNodeData& d = m_tree_nodes[i];
 
     switch (d.level)
@@ -519,7 +519,7 @@ void CRawlogTreeView::OnMouseWheel(wxMouseEvent& event)
   else
     y++;
 
-  int ly = m_tree_nodes.size();
+  int ly = static_cast<int>(m_tree_nodes.size());
 
   if (y >= 0 && y < ly) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
 }
@@ -529,7 +529,7 @@ void CRawlogTreeView::ScrollToPercent(double pc)
   int x, y;
   GetViewStart(&x, &y);
 
-  int ly = m_tree_nodes.size();
+  int ly = static_cast<int>(m_tree_nodes.size());
 
   y = mrpt::round((ly - 1) * pc);
 
@@ -550,7 +550,7 @@ void CRawlogTreeView::OnKey(wxKeyEvent& event)
   int nLinesPerPage = h / ROW_HEIGHT;
 
   y0 = y;
-  int ly = m_tree_nodes.size();
+  int ly = static_cast<int>(m_tree_nodes.size());
 
   if (event.GetKeyCode() == WXK_UP)
   {

@@ -259,7 +259,7 @@ void Test_3DCamICP()
 
       // Also, unproject all for viz:
       mrpt::obs::T3DPointsProjectionParams pp;
-      pp.decimation = ui_data.icpDecimation;
+      pp.decimation = static_cast<uint8_t>(ui_data.icpDecimation);
 
       cur_obs->unprojectInto(*cur_points, pp);
 
@@ -555,7 +555,7 @@ void Test_3DCamICP()
 
 #endif  // MRPT_HAS_NANOGUI
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {

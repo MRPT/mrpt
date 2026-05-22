@@ -252,7 +252,11 @@ void CGlWidget::setZoom(float zoom)
 
 float CGlWidget::getZoom() const { return cameraController().getZoomDistance(); }
 
-void CGlWidget::setBackgroundColor(float r, float g, float b, float a)
+void CGlWidget::setBackgroundColor(
+    [[maybe_unused]] float r,
+    [[maybe_unused]] float g,
+    [[maybe_unused]] float b,
+    [[maybe_unused]] float a)
 {
   // setClearColors(r, g, b, a);
 
@@ -261,7 +265,8 @@ void CGlWidget::setBackgroundColor(float r, float g, float b, float a)
 
 void CGlWidget::setGridColor(double r, double g, double b, double a)
 {
-  m_groundPlane->setColor(r, g, b, a);
+  m_groundPlane->setColor(
+      static_cast<float>(r), static_cast<float>(g), static_cast<float>(b), static_cast<float>(a));
   update();
 }
 
@@ -391,7 +396,7 @@ void CGlWidget::resizeGL(int width, int height)
   {
     GLint win_dims[4];
     glGetIntegerv(GL_VIEWPORT, win_dims);
-    m_miniMapSize = std::min(win_dims[2], win_dims[3]) * m_minimapPercentSize;
+    m_miniMapSize = static_cast<float>(std::min(win_dims[2], win_dims[3]) * m_minimapPercentSize);
   }
   updateMinimapPos();
 }
@@ -465,7 +470,8 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
   m_lastPos = pos;
   bool isPressCtrl = event->modifiers() == Qt::ControlModifier;
   bool noModifier = event->modifiers() == Qt::NoModifier;
-  QPoint otherPos(pos.x() + m_observationSize, pos.y() + m_observationSize);
+  QPoint otherPos(
+      static_cast<int>(pos.x() + m_observationSize), static_cast<int>(pos.y() + m_observationSize));
 
   auto scenePos = sceneToWorld(pos);
   auto sceneOtherPos = sceneToWorld(otherPos);
@@ -475,7 +481,9 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
     bool needUpdateScene = false;
 
     double maxDist = maximumSizeObservation(pos);
-    int selectedIndex = searchSelectedPose(scenePos.second.x, scenePos.second.y, maxDist);
+    int selectedIndex = searchSelectedPose(
+        static_cast<float>(scenePos.second.x), static_cast<float>(scenePos.second.y),
+        static_cast<float>(maxDist));
 
     if (selectedIndex != -1)
     {
@@ -493,7 +501,9 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 
     if (!needUnpressMouse)
     {
-      needUnpressMouse = selectPoint(scenePos.second.x, scenePos.second.y, maxDist);
+      needUnpressMouse = selectPoint(
+          static_cast<float>(scenePos.second.x), static_cast<float>(scenePos.second.y),
+          static_cast<float>(maxDist));
       if (needUnpressMouse)
       {
         needUpdateScene = needUnpressMouse;
@@ -593,7 +603,8 @@ std::pair<bool, math::TPoint3D> CGlWidget::sceneToWorld(const QPoint& pos) const
 
 double CGlWidget::maximumSizeObservation(const QPoint& pos) const
 {
-  QPoint otherPos(pos.x() + m_observationSize, pos.y() + m_observationSize);
+  QPoint otherPos(
+      static_cast<int>(pos.x() + m_observationSize), static_cast<int>(pos.y() + m_observationSize));
 
   auto scenePos = sceneToWorld(pos);
   auto sceneOtherPos = sceneToWorld(otherPos);
@@ -684,8 +695,8 @@ void CGlWidget::updateMinimapPos()
   glGetIntegerv(GL_VIEWPORT, win_dims);
 
   Viewport::Ptr miniMap = getOpenGLSceneRef()->getViewport("miniMap");
-  float w = m_miniMapSize / win_dims[2];
-  float h = m_miniMapSize / win_dims[3];
+  float w = m_miniMapSize / static_cast<float>(win_dims[2]);
+  float h = m_miniMapSize / static_cast<float>(win_dims[3]);
   miniMap->setViewportPosition(0.01, 0.01, w, h);
 }
 

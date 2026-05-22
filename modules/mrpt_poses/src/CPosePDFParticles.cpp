@@ -312,7 +312,7 @@ void CPosePDFParticles::operator+=(const TPose2D& Ap)
 void CPosePDFParticles::append(CPosePDFParticles& o)
 {
   for (auto& p : o.m_particles) m_particles.emplace_back(p);
-  normalizeWeights();
+  (void)normalizeWeights();
 }
 
 void CPosePDFParticles::inverse(CPosePDF& o) const
@@ -381,7 +381,7 @@ void CPosePDFParticles::bayesianFusion(
       p.log_w += -0.5 * maha2;
     }
   }
-  normalizeWeights();
+  (void)normalizeWeights();
 
   MRPT_END
 }

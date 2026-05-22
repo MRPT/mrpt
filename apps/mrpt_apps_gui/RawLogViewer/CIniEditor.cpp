@@ -33,7 +33,11 @@ BEGIN_EVENT_TABLE(CIniEditor, wxDialog)
 //*)
 END_EVENT_TABLE()
 
-CIniEditor::CIniEditor(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size)
+CIniEditor::CIniEditor(
+    wxWindow* parent,
+    wxWindowID id,
+    [[maybe_unused]] const wxPoint& pos,
+    [[maybe_unused]] const wxSize& size)
 {
   //(*Initialize(CIniEditor)
   wxFlexGridSizer* FlexGridSizer2;
@@ -63,7 +67,7 @@ CIniEditor::CIniEditor(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
       _T("ID_TEXTCTRL1"));
   wxFont edTextFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
   if (!edTextFont.Ok()) edTextFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-  edTextFont.SetPointSize((int)(edTextFont.GetPointSize() * 1.000000));
+  edTextFont.SetPointSize(static_cast<int>(edTextFont.GetPointSize() * 1.000000));
   edText->SetFont(edTextFont);
   FlexGridSizer1->Add(edText, 1, wxEXPAND, 5);
   SetSizer(FlexGridSizer1);

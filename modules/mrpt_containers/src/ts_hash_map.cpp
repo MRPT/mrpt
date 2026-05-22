@@ -39,7 +39,8 @@ void mrpt::containers::reduced_hash(const std::string_view& value, uint16_t& out
 {
   uint64_t hash;
   reduced_hash(value, hash);
-  out_hash = MAKEWORD16B(SELBYTE0(hash) ^ SELBYTE1(hash), SELBYTE2(hash) ^ SELBYTE3(hash));
+  out_hash = static_cast<uint16_t>(
+      MAKEWORD16B(SELBYTE0(hash) ^ SELBYTE1(hash), SELBYTE2(hash) ^ SELBYTE3(hash)));
 }
 
 void mrpt::containers::reduced_hash(const std::string_view& value, uint32_t& out_hash)

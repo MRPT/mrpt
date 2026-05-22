@@ -278,7 +278,7 @@ bool CServoeNeck::setAngle(double angle, const uint8_t servo, bool fast)
 
   unsigned int reg = angle2RegValue(static_cast<double>(m_offsets[servo]) + angle);
 
-  return setRegisterValue(reg, servo, fast);
+  return setRegisterValue(static_cast<uint16_t>(reg), servo, fast);
 
 }  // end-getCurrentAngle
 
@@ -298,7 +298,7 @@ bool CServoeNeck::setAngleAndSpeed(double angle, const uint8_t servo, const uint
   // std::cout << "Speed: " << int(speed) << " -> " << delSpeed << "\n";
   // std::cout << "Angle: " << RAD2DEG( angle ) << " - Reg: " << reg <<
   // "\n";
-  return setRegisterValueAndSpeed(reg, servo, delSpeed);
+  return setRegisterValueAndSpeed(static_cast<uint16_t>(reg), servo, delSpeed);
 
 }  // end-getCurrentAngle
 

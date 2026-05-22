@@ -35,14 +35,19 @@ void CBeaconConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer* optio
   mapDefination->insertionOpts.maxElevation_deg = m_ui->maxElevation_deg->value();
   mapDefination->insertionOpts.minElevation_deg = m_ui->minElevation_deg->value();
   mapDefination->insertionOpts.MC_numSamplesPerMeter = m_ui->MC_numSamplesPerMeter->value();
-  mapDefination->insertionOpts.MC_maxStdToGauss = m_ui->MC_maxStdToGauss->value();
-  mapDefination->insertionOpts.MC_thresholdNegligible = m_ui->MC_thresholdNegligible->value();
+  mapDefination->insertionOpts.MC_maxStdToGauss =
+      static_cast<float>(m_ui->MC_maxStdToGauss->value());
+  mapDefination->insertionOpts.MC_thresholdNegligible =
+      static_cast<float>(m_ui->MC_thresholdNegligible->value());
   mapDefination->insertionOpts.MC_performResampling = m_ui->MC_performResampling->isChecked();
-  mapDefination->insertionOpts.MC_afterResamplingNoise = m_ui->MC_afterResamplingNoise->value();
-  mapDefination->insertionOpts.SOG_thresholdNegligible = m_ui->SOG_thresholdNegligible->value();
+  mapDefination->insertionOpts.MC_afterResamplingNoise =
+      static_cast<float>(m_ui->MC_afterResamplingNoise->value());
+  mapDefination->insertionOpts.SOG_thresholdNegligible =
+      static_cast<float>(m_ui->SOG_thresholdNegligible->value());
   mapDefination->insertionOpts.SOG_maxDistBetweenGaussians =
-      m_ui->SOG_maxDistBetweenGaussians->value();
-  mapDefination->insertionOpts.SOG_separationConstant = m_ui->SOG_separationConstant->value();
+      static_cast<float>(m_ui->SOG_maxDistBetweenGaussians->value());
+  mapDefination->insertionOpts.SOG_separationConstant =
+      static_cast<float>(m_ui->SOG_separationConstant->value());
 
   mapDefination->likelihoodOpts.rangeStd = m_ui->rangeStd->value();
 }

@@ -56,7 +56,7 @@ PYBIND11_MODULE(_bindings, m)
           "drawUniformArray",
           [](mrpt::random::CRandomGenerator& g, size_t n, double lo, double hi)
           {
-            py::array_t<double> arr(static_cast<ssize_t>(n));
+            py::array_t<double> arr(static_cast<py::ssize_t>(n));
             auto buf = arr.mutable_unchecked<1>();
             for (size_t i = 0; i < n; i++)
             {
@@ -69,7 +69,7 @@ PYBIND11_MODULE(_bindings, m)
           "drawGaussianArray",
           [](mrpt::random::CRandomGenerator& g, size_t n, double mean, double std)
           {
-            py::array_t<double> arr(static_cast<ssize_t>(n));
+            py::array_t<double> arr(static_cast<py::ssize_t>(n));
             auto buf = arr.mutable_unchecked<1>();
             for (size_t i = 0; i < n; i++)
             {

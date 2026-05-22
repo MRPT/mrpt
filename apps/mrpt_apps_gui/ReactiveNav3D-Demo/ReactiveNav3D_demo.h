@@ -357,9 +357,11 @@ class CShortTermMemory
       }
 
       robot_ingrid.x = sign<float>(robot_ingrid.x + incrx) *
-                       remainder(abs(robot_ingrid.x + incrx), obsgrids[0].getResolution());
+                       static_cast<float>(remainder(
+                           std::abs(robot_ingrid.x + incrx), obsgrids[0].getResolution()));
       robot_ingrid.y = sign<float>(robot_ingrid.y + incry) *
-                       remainder(abs(robot_ingrid.y + incry), obsgrids[0].getResolution());
+                       static_cast<float>(remainder(
+                           std::abs(robot_ingrid.y + incry), obsgrids[0].getResolution()));
     }
 
     // Second, update the likelihood values according to kinect scan
@@ -426,10 +428,10 @@ class CShortTermMemory
           {
             // The angle between the advance direction of the robot
             // and the cell is calculated
-            angle_cell =
-                atan2(obsgrids[n].idx2y(j) - robot_ingrid.y, obsgrids[n].idx2x(i) - robot_ingrid.x);
+            angle_cell = static_cast<float>(atan2(
+                obsgrids[n].idx2y(j) - robot_ingrid.y, obsgrids[n].idx2x(i) - robot_ingrid.x));
             dif_angle = abs(angle_cell - phi);
-            if (dif_angle > M_PI) dif_angle = dif_angle - 2 * M_PI;
+            if (dif_angle > M_PIf) dif_angle = dif_angle - 2 * M_PIf;
             if (abs(dif_angle) < rango) obsgrids[n].updateCell(i, j, likelihood_decr);
           }
 

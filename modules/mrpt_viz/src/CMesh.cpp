@@ -117,7 +117,7 @@ void CMesh::updateTriangles() const
   for (int iX = 0; iX < rows - 1; iX++)
     for (int iY = 0; iY < cols - 1; iY++)
     {
-      if (useMask && (!mask(iX, iY) || !mask(iX + 1, iY + 1))) continue;
+      if (useMask && (mask(iX, iY) == 0.0f || mask(iX + 1, iY + 1) == 0.0f)) continue;
       tri.x(0) = m_xMin + static_cast<float>(iX) * sCellX;
       tri.y(0) = m_yMin + static_cast<float>(iY) * sCellY;
       tri.z(0) = Z(iX, iY);
@@ -136,7 +136,7 @@ void CMesh::updateTriangles() const
       //   |
       //  [1]--[2]
       // Order: 0,1,2
-      if (!useMask || mask(iX + 1, iY))
+      if (!useMask || mask(iX + 1, iY) != 0.0f)
       {
         tri.x(1) = tri.x(2);
         tri.y(1) = tri.y(0);
@@ -212,7 +212,7 @@ void CMesh::updateTriangles() const
       //       \|
       //       [2->1]
       // Order: 0,2,1
-      if (!useMask || mask(iX, iY + 1))
+      if (!useMask || mask(iX, iY + 1) != 0.0f)
       {
         tri.x(1) = tri.x(2);
         tri.y(1) = tri.y(2);
@@ -461,7 +461,7 @@ void CMesh::updateColorsMatrix() const
       {
         for (size_t r = 0; r < rows; r++)
         {
-          if (!mask(r, c))
+          if (mask(r, c) == 0.0f)
           {
             continue;
           }

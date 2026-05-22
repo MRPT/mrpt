@@ -68,7 +68,7 @@ void slamdemoApp::DoBatchExperiments(const std::string& cfgFil)
   {
     totalFP += win->m_historicData[i].da_false_pos;
     totalFN += win->m_historicData[i].da_false_neg;
-    totalJCBBiters += win->m_historicData[i].jcbb_iters;
+    totalJCBBiters += static_cast<double>(win->m_historicData[i].jcbb_iters);
     err_xy += win->m_historicData[i].GT_robot_pose.distanceTo(
         win->m_historicData[i].estimate_robot_pose.getMeanVal());
 

@@ -186,25 +186,29 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
           ax = basis1_x[i] - basis1_x[j];
           ay = basis1_y[i] - basis1_y[j];
           bool i1j1 =
-              (sqrt(static_cast<float>(ax * ax) + static_cast<float>(ay * ay)) < filter_dist);
+              (std::hypot(static_cast<float>(ax), static_cast<float>(ay)) <
+               static_cast<float>(filter_dist));
 
           // i1-j2
           ax = basis1_x[i] - basis2_x[j];
           ay = basis1_y[i] - basis2_y[j];
           bool i1j2 =
-              (sqrt(static_cast<float>(ax * ax) + static_cast<float>(ay * ay)) < filter_dist);
+              (std::hypot(static_cast<float>(ax), static_cast<float>(ay)) <
+               static_cast<float>(filter_dist));
 
           // i2-j1
           ax = basis2_x[i] - basis1_x[j];
           ay = basis2_y[i] - basis1_y[j];
           bool i2j1 =
-              (sqrt(static_cast<float>(ax * ax) + static_cast<float>(ay * ay)) < filter_dist);
+              (std::hypot(static_cast<float>(ax), static_cast<float>(ay)) <
+               static_cast<float>(filter_dist));
 
           // i2-j2
           ax = basis2_x[i] - basis2_x[j];
           ay = basis2_y[i] - basis2_y[j];
           bool i2j2 =
-              (sqrt(static_cast<float>(ax * ax) + static_cast<float>(ay * ay)) < filter_dist);
+              (std::hypot(static_cast<float>(ax), static_cast<float>(ay)) <
+               static_cast<float>(filter_dist));
 
           // Si coincide, eliminar el de mas "dist."
           if ((i1j1 && i2j2) || (i1j2 && i2j1))
@@ -370,8 +374,8 @@ int COccupancyGridMap2D::computeClearance(
             {
               int ax = basis_x[0] - xx;
               int ay = basis_y[0] - yy;
-              pasa = sqrt(static_cast<float>(ax * ax) + static_cast<float>(ay * ay)) >
-                     (1.75f * tam_circ);
+              pasa = std::hypot(static_cast<float>(ax), static_cast<float>(ay)) >
+                     (1.75f * static_cast<float>(tam_circ));
             }
 
             if (pasa)
