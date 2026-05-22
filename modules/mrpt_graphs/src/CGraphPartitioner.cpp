@@ -267,7 +267,7 @@ num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
   num_t assoc_AV = assoc_AA + cut_AB;
   num_t assoc_BV = assoc_BB + cut_AB;
 
-  if (!cut_AB)
+  if (cut_AB == num_t{0})
     return 0;
   else
     return cut_AB / assoc_AV + cut_AB / assoc_BV;

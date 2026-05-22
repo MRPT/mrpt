@@ -217,7 +217,7 @@ struct TPoint2D_ :
    */
   void asString(std::string& s) const
   {
-    s = mrpt::format("[%f %f]", double{this->x}, double{this->y});
+    s = mrpt::format("[%f %f]", static_cast<double>(this->x), static_cast<double>(this->y));
   }
 
   [[nodiscard]] std::string asString() const

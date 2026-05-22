@@ -21,10 +21,12 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/system/os.h>
 
+#include <cstring>
+
+#if MRPT_HAS_WXWIDGETS
 // The wxMathPlot library:
 #include <mathplot/mathplot.h>
-
-#include <cstring>
+#endif
 
 using namespace mrpt;
 using namespace mrpt::gui;

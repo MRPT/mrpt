@@ -382,7 +382,7 @@ void CPose3DPDFParticles::bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF&
       p.log_w += -0.5 * maha2;
     }
   }
-  normalizeWeights();
+  (void)normalizeWeights();
 
   MRPT_END
 }

@@ -409,7 +409,9 @@ std::string MD5::hexdigest() const
   char buf[33];
   for (int i = 0; i < 16; i++)
   {
-    sprintf(buf + static_cast<ptrdiff_t>(i * 2), "%02x", digest[i]);
+    snprintf(
+        buf + static_cast<ptrdiff_t>(i * 2), sizeof(buf) - static_cast<size_t>(i * 2), "%02x",
+        digest[i]);
   }
   buf[32] = 0;
 

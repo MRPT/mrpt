@@ -215,10 +215,10 @@ void unprojectInto(
       const int imgH = src_obs.intensityImage.getHeight();
       const bool hasColorIntensityImg = src_obs.intensityImage.isColor();
 
-      const float cx = src_obs.cameraParamsIntensity.cx();
-      const float cy = src_obs.cameraParamsIntensity.cy();
-      const float fx = src_obs.cameraParamsIntensity.fx();
-      const float fy = src_obs.cameraParamsIntensity.fy();
+      const float cx = static_cast<float>(src_obs.cameraParamsIntensity.cx());
+      const float cy = static_cast<float>(src_obs.cameraParamsIntensity.cy());
+      const float fx = static_cast<float>(src_obs.cameraParamsIntensity.fx());
+      const float fy = static_cast<float>(src_obs.cameraParamsIntensity.fy());
 
       // Unless we are in a special case (both depth & RGB images
       // coincide)...
@@ -453,18 +453,18 @@ void do_project_3d_pointcloud(
 // Auxiliary functions which implement (un)projection of 3D point clouds:
 template <class POINTMAP>
 void do_project_3d_pointcloud_SSE2(
-    const int H,
-    const int W,
-    const float* kxs,
-    const float* kys,
-    const float* kzs,
-    mrpt::math::CMatrix_u16& rangeImage,
-    const float rangeUnits,
-    mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
-    std::vector<uint16_t>& idxs_x,
-    std::vector<uint16_t>& idxs_y,
-    const mrpt::obs::TRangeImageFilterParams& fp,
-    bool MAKE_ORGANIZED)
+    [[maybe_unused]] const int H,
+    [[maybe_unused]] const int W,
+    [[maybe_unused]] const float* kxs,
+    [[maybe_unused]] const float* kys,
+    [[maybe_unused]] const float* kzs,
+    [[maybe_unused]] mrpt::math::CMatrix_u16& rangeImage,
+    [[maybe_unused]] const float rangeUnits,
+    [[maybe_unused]] mrpt::viz::PointCloudAdapter<POINTMAP>& pca,
+    [[maybe_unused]] std::vector<uint16_t>& idxs_x,
+    [[maybe_unused]] std::vector<uint16_t>& idxs_y,
+    [[maybe_unused]] const mrpt::obs::TRangeImageFilterParams& fp,
+    [[maybe_unused]] bool MAKE_ORGANIZED)
 {
 #if MRPT_HAS_SSE2
   // Preconditions: minRangeMask() has the right size
