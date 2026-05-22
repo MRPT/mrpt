@@ -321,7 +321,7 @@ void CObservationGasSensors::CMOSmodel::save_log_map(
 
   double time = mrpt::Clock::toDouble(timestamp);
   char buffer[50];
-  sprintf(buffer, "./log_MOSmodel_GasDistribution.txt");
+  snprintf(buffer, sizeof(buffer), "./log_MOSmodel_GasDistribution.txt");
 
   if (!m_debug_dump) m_debug_dump = new ofstream(buffer);
 

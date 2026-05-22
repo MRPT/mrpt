@@ -45,7 +45,7 @@ class CPointCloudColoured :
 
   std::vector<mrpt::img::TColor>& m_point_colors = VisualObjectParams_Points::m_color_buffer_data;
 
-  mutable size_t m_last_rendered_count{0}, m_last_rendered_count_ongoing{0};
+  mutable size_t m_last_rendered_count{0};
 
  public:
   CPointCloudColoured();

@@ -634,6 +634,8 @@ void CDisplayWindow3D::setFOV(float v)
   {
     win->m_canvas->orbitCameraController().setFOVdeg(v);
   }
+#else
+  (void)v;
 #endif
 }
 
@@ -890,6 +892,8 @@ void CDisplayWindow3D::sendFunctionToRunOnGUIThread(const std::function<void(voi
   REQ->userFunction = f;
   WxSubsystem::PushPendingWxRequest(std::move(REQ));
 
+#else
+  (void)f;
 #endif
 }
 
@@ -909,6 +913,9 @@ void CDisplayWindow3D::sendFunctionWithShaderManager(
         }
         auto* mgr = win->m_canvas->getShaderManager();
         if (mgr) f(*mgr);
+#else
+        (void)this;
+        (void)f;
 #endif
       });
 }

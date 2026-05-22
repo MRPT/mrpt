@@ -31,6 +31,10 @@ void mrpt::gui::show_mrpt_about_box_wxWidgets(
   CAboutBox dlg(parent, appName, additionalInfo, showStandardInfo);
   dlg.ShowModal();
 #else
+  (void)parent_wx_window;
+  (void)appName;
+  (void)additionalInfo;
+  (void)showStandardInfo;
   THROW_EXCEPTION("MRPT compiled without wxWidgets support");
 #endif
 }

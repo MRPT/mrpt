@@ -364,7 +364,7 @@ void CPointPDFParticles::bayesianFusion(
       p.log_w += -0.5 * maha2;
     }
   }
-  normalizeWeights();
+  (void)normalizeWeights();
 
   MRPT_END
 }

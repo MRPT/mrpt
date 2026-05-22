@@ -115,7 +115,7 @@ bool VelodyneCalibration::internal_loadFromXMLNode([[maybe_unused]] void* node_p
   auto node_points_ = get_xml_children(node_DB, "points_");
   const tinyxml2::XMLElement* node_points_item = nullptr;
 
-  for (int i = 0;; ++i)
+  for (;;)
   {
     if (!node_points_item)
       node_points_item = node_points_->FirstChildElement("item");

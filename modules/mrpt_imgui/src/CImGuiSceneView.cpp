@@ -12,6 +12,9 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
 #include <mrpt/imgui/CImGuiSceneView.h>
 
 #include <cmath>

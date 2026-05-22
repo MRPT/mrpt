@@ -51,7 +51,7 @@ uint16_t mrpt::system::compute_CRC16(const uint8_t* data, size_t len_, const uin
     {
       uCrc16 <<= 1;
     }
-    uCrc16 ^= (abData[0] | (abData[1] << 8));
+    uCrc16 ^= static_cast<uint16_t>(abData[0] | (abData[1] << 8));
   }
   return uCrc16;
 }

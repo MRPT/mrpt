@@ -18,7 +18,14 @@ if(MRPT_HAS_LIBFYAML)
 		endif()
 	endif()
 
-	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM)
+	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM AND WIN32)
+		# libfyaml requires POSIX pthreads and sys/mman.h which are not
+		# available on Windows without extra third-party libraries.
+		message(STATUS "libfyaml: built-in version not supported on Windows; disabling YAML support.")
+		set(CMAKE_MRPT_HAS_LIBFYAML 0)
+	endif()
+
+	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM AND NOT WIN32)
 		# Internal built-in:
 		include(ExternalProject)
 
@@ -59,13 +66,13 @@ if(MRPT_HAS_LIBFYAML)
 		string(STRIP "${LIBFYAML_VERSION}" LIBFYAML_VERSION)
 	endif()
 
-	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM)
+	if (CMAKE_MRPT_HAS_LIBFYAML_SYSTEM)
+		add_library(mrpt_libfyaml ALIAS PkgConfig::LIBFYAML)
+	elseif(CMAKE_MRPT_HAS_LIBFYAML)
 		add_library(mrpt_libfyaml STATIC IMPORTED GLOBAL)
 		add_dependencies(mrpt_libfyaml mrpt_liblibfyaml)
 		set_target_properties(mrpt_libfyaml PROPERTIES IMPORTED_LOCATION ${LIBFYAML_LIB})
 		set_target_properties(mrpt_libfyaml PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${LIBFYAML_INCLUDES})
-	else()
-		add_library(mrpt_libfyaml ALIAS PkgConfig::LIBFYAML)
 	endif()
 
 	if ($ENV{VERBOSE})
