@@ -18,14 +18,7 @@ if(MRPT_HAS_LIBFYAML)
 		endif()
 	endif()
 
-	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM AND WIN32)
-		# libfyaml requires POSIX pthreads and sys/mman.h which are not
-		# available on Windows without extra third-party libraries.
-		message(STATUS "libfyaml: built-in version not supported on Windows; disabling YAML support.")
-		set(CMAKE_MRPT_HAS_LIBFYAML 0)
-	endif()
-
-	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM AND NOT WIN32)
+	if (NOT CMAKE_MRPT_HAS_LIBFYAML_SYSTEM)
 		# Internal built-in:
 		include(ExternalProject)
 
