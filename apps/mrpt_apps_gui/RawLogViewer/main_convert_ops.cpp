@@ -438,9 +438,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE([[maybe_unused]] wxCommandEvent& 
 
             for (auto& it : *accum_sf)
             {
-              CPose3D tmpPose;
-
-              it->getSensorPose(tmpPose);
+              CPose3D tmpPose = it->getSensorPose();
               tmpPose = inv_incrPose3D + tmpPose;
               it->setSensorPose(tmpPose);
             }

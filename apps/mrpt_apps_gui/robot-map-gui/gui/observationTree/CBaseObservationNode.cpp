@@ -15,5 +15,5 @@ CBaseObservationNode::CBaseObservationNode(CNode* parent, const mrpt::poses::CPo
 }
 
 int CBaseObservationNode::childCount() const { return 0; }
-CNode* CBaseObservationNode::child(int id) { return nullptr; }
+CNode* CBaseObservationNode::child([[maybe_unused]] int id) { return nullptr; }
 mrpt::poses::CPose3D CBaseObservationNode::getPose() const { return m_pose; }

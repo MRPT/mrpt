@@ -65,7 +65,9 @@ void rateTest(double rate1, double rate2)
   win.plot(actionRates, "b.2");
   win.plot(controlref, "m-");
 
-  win.axis(-0.15 * N, N, -500, 2.0 * std::max(rate1, rate2));
+  win.axis(
+      static_cast<float>(-0.15 * N), static_cast<float>(N), -500,
+      static_cast<float>(2.0 * std::max(rate1, rate2)));
   win.waitForKey();
 }
 

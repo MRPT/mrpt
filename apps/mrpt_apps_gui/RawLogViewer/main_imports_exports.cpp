@@ -127,8 +127,8 @@ void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
   rawlog.clear();
   wxProgressDialog progDia(
       _("Importing rawlog..."), _("Processing..."),
-      n,     // range
-      this,  // parent
+      static_cast<int>(n),  // range
+      this,                 // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
           wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
@@ -148,7 +148,7 @@ void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
       obsScan = std::make_shared<CObservation2DRangeScan>();
       obsScan->aperture = M_PIf;
       obsScan->rightToLeft = true;
-      obsScan->maxRange = maxValidLaserRange;
+      obsScan->maxRange = static_cast<float>(maxValidLaserRange);
       obsScan->sensorPose = isFrontLaser ? CPose3D(frontLaserPose) : CPose3D(rearLaserPose);
 
       // Load readings from the string:
@@ -161,7 +161,7 @@ void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
       for (int q = 0; q < scanSize; q++)
       {
         const auto r = atof(str);
-        obsScan->setScanRange(q, r);
+        obsScan->setScanRange(q, static_cast<float>(r));
         goToNextToken(str);
         obsScan->setScanRangeValidity(q, r < maxValidLaserRange);
       }
@@ -221,7 +221,7 @@ void xRawLogViewerFrame::OnImportCARMEN([[maybe_unused]] wxCommandEvent& event)
     }
   }
 
-  progDia.Update(n);
+  progDia.Update(static_cast<int>(n));
 
   // Time to erase the progress window.
   wxTheApp->Yield();
@@ -603,7 +603,7 @@ void xRawLogViewerFrame::OnImportRTL([[maybe_unused]] wxCommandEvent& event)
             newRecord.data.resize(6);
             newRecord.data[0] = rawdata[1];
             newRecord.data[1] = rawdata[2];
-            newRecord.data[2] = rawdata[3] - M_PI / 2;
+            newRecord.data[2] = static_cast<float>(rawdata[3] - M_PI / 2);
           }
         }
         else if (strLine[0] == 'L')
@@ -706,7 +706,7 @@ void parseMOOSVector(const std::string& str, size_t idx, vector<float>& outVecto
   idx += 2;  // idx points to the first number
   for (unsigned i = 0; i < N; i++)
   {
-    outVector[i] = atof(str.c_str() + idx);
+    outVector[i] = static_cast<float>(atof(str.c_str() + idx));
 
     if (i < (N - 1))
     {
@@ -724,7 +724,7 @@ void parseGeneralVector(const std::string& str, size_t idx, vector<float>& outVe
 
   do
   {
-    float v = atof(str.c_str() + idx);
+    float v = static_cast<float>(atof(str.c_str() + idx));
     outVector.push_back(v);
 
     idx = str.find(" ", idx + 1);
@@ -873,7 +873,8 @@ void xRawLogViewerFrame::OnMenuImportALOG([[maybe_unused]] wxCommandEvent& event
               if (idx_pan != string::npos)
               {
                 newRecord.data.resize(1);
-                newRecord.data[0] = DEG2RAD(atof(strLine.c_str() + idx_pan + 4));
+                newRecord.data[0] =
+                    static_cast<float>(DEG2RAD(atof(strLine.c_str() + idx_pan + 4)));
 
                 // DO NOT OVERWRITE OTHER RECORDS! SHIFT
                 // TIMESTAMP A LITTLE
@@ -985,7 +986,8 @@ void xRawLogViewerFrame::OnMenuImportALOG([[maybe_unused]] wxCommandEvent& event
             if (idx_pan != string::npos)
             {
               newRecord.data.resize(1);
-              newRecord.data[0] = DEG2RAD(atof(lstFile.name.c_str() + idx_pan + 6));
+              newRecord.data[0] =
+                  static_cast<float>(DEG2RAD(atof(lstFile.name.c_str() + idx_pan + 6)));
 
               // DO NOT OVERWRITE OTHER RECORDS! SHIFT TIMESTAMP A
               // LITTLE
@@ -1036,8 +1038,8 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 
   wxProgressDialog progDia(
       "Importing rawlog", "Importing...",
-      progress_N,  // range
-      this,        // parent
+      static_cast<int>(progress_N),  // range
+      this,                          // parent
       wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME |
           wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
@@ -1172,7 +1174,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
     }
   }  // end for each alog entry
 
-  progDia.Update(progress_N);
+  progDia.Update(static_cast<int>(progress_N));
 
   WX_END_TRY
 }
@@ -1669,7 +1671,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog([[maybe_unused]] wxCommand
         obs->sensor_std_range = 1e-2f;
         obs->sensor_std_pitch = 0;  // Is a 2D sensor
         obs->fieldOfView_pitch = 0;
-        obs->fieldOfView_yaw = 180.0_deg;
+        obs->fieldOfView_yaw = static_cast<float>(180.0_deg);
         obs->validCovariances = true;  // Each observation has its own cov. matrix.
 
         set_of_obs.insert(obs);
@@ -1786,8 +1788,8 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog([[maybe_unused]] wxCommand
         meas.landmarkID = INVALID_LANDMARK_ID;  // Unknown IDs
       }
 
-      meas.range = r;
-      meas.yaw = a;
+      meas.range = static_cast<float>(r);
+      meas.yaw = static_cast<float>(a);
       meas.pitch = 0;
       meas.covariance = C_ypr;
 

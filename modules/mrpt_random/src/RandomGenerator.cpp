@@ -32,7 +32,7 @@ inline uint32_t loBits(const uint32_t u) { return u & 0x7fffffffUL; }
 inline uint32_t mixBits(const uint32_t u, const uint32_t v) { return hiBit(u) | loBits(v); }
 inline uint32_t twist(const uint32_t m, const uint32_t s0, const uint32_t s1)
 {
-  return m ^ (mixBits(s0, s1) >> 1) ^ (-loBit(s1) & 0x9908b0dfUL);
+  return m ^ (mixBits(s0, s1) >> 1) ^ ((~loBit(s1) + 1u) & 0x9908b0dfUL);
 }
 
 #if defined(_MSC_VER)

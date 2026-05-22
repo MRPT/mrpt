@@ -1815,7 +1815,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
     }
   }  // end while keep loading
 
-  timeToLoad = crono_Loading.Tac();
+  timeToLoad = static_cast<float>(crono_Loading.Tac());
   progDia.Update(static_cast<int>(progDialogMax));
 
   //// Update the views:
@@ -1904,7 +1904,7 @@ void xRawLogViewerFrame::rebuildTreeView()
         if (acts->getBestMovementEstimation())
         {
           acts->getBestMovementEstimation()->poseChange->getMean(est);
-          totalDistance += est.norm();
+          totalDistance += static_cast<float>(est.norm());
         }
       }
       break;
@@ -1979,7 +1979,7 @@ void xRawLogViewerFrame::rebuildTreeView()
             CPose2D inc = odoObs->odometry - oldOdo;
             oldOdo = odoObs->odometry;
 
-            totalDistance += inc.norm();
+            totalDistance += static_cast<float>(inc.norm());
           }
         }
 
@@ -5188,7 +5188,7 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent&)
   WX_START_TRY
 
   wxBusyCursor waitCursor;
-  const size_t nEntries = rawlog.size();
+  const int nEntries = static_cast<int>(rawlog.size());
 
   wxString auxStr;
   wxProgressDialog progDia(
@@ -5202,7 +5202,7 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent&)
 
   size_t N = 0;
 
-  for (size_t countLoop = 0; countLoop < nEntries; countLoop++)
+  for (int countLoop = 0; countLoop < nEntries; countLoop++)
   {
     if (countLoop % 50 == 0)
     {

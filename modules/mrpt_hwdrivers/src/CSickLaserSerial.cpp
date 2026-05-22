@@ -40,7 +40,7 @@ using namespace mrpt::math;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 
-int CSickLaserSerial::CRC16_GEN_POL = 0x8005;
+uint16_t CSickLaserSerial::CRC16_GEN_POL = 0x8005;
 
 /*-------------------------------------------------------------
             CSickLaserSerial
@@ -790,8 +790,8 @@ bool CSickLaserSerial::SendCommandToSICK(const uint8_t* cmd, const uint16_t cmd_
   // Create header
   cmd_full[0] = 0x02;  // STX
   cmd_full[1] = 0;     // ADDR
-  cmd_full[2] = cmd_len & 0xFF;
-  cmd_full[3] = cmd_len >> 8;
+  cmd_full[2] = static_cast<uint8_t>(cmd_len & 0xFF);
+  cmd_full[3] = static_cast<uint8_t>(cmd_len >> 8);
 
   memcpy(cmd_full + 4, cmd, cmd_len);
 

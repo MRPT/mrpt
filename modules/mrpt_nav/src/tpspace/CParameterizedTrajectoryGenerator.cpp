@@ -268,7 +268,7 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
       gl_obj.appendLine(0, 0, 0, p.x, p.y, 0);
     }
     else
-      gl_obj.appendLineStrip(p.x, p.y, 0);
+      gl_obj.appendLineStrip(static_cast<float>(p.x), static_cast<float>(p.y), 0);
   }
 }
 
@@ -488,7 +488,8 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(Clearanc
          step_pointer_dbl += numStepsPerIncr)
     {
       const size_t step = static_cast<size_t>(mrpt::round(step_pointer_dbl));
-      const double dist_over_path = this->getPathDist(real_k, static_cast<uint32_t>(step));
+      const double dist_over_path =
+          this->getPathDist(static_cast<uint16_t>(real_k), static_cast<uint32_t>(step));
       cl_path[dist_over_path] = 1.0;  // create entry in map<>
     }
   }

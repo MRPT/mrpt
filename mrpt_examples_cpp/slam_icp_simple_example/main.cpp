@@ -142,8 +142,8 @@ void TestICP()
   CMatrixFloat COV22 = CMatrixFloat(CMatrixDouble(gPdf.cov));
   COV22.setSize(2, 2);
   CVectorFloat MEAN2D(2);
-  MEAN2D[0] = gPdf.mean.x();
-  MEAN2D[1] = gPdf.mean.y();
+  MEAN2D[0] = static_cast<float>(gPdf.mean.x());
+  MEAN2D[1] = static_cast<float>(gPdf.mean.y());
   {
     ofstream f("view_ellip.m");
     f << math::MATLAB_plotCovariance2D(COV22, MEAN2D, 3.0f);

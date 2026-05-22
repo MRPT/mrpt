@@ -24,56 +24,60 @@
 #include <cwchar>
 #include <vector>
 
-#elif defined(MRPT_OS_LINUX)
-#if !MRPT_IN_EMSCRIPTEN
-#include <sys/prctl.h>
-#endif
-
+#elif defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 #if HAVE_PTHREAD_H
 #include <pthread.h>
+#endif
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
+#include <sys/prctl.h>
 #endif
 
 namespace
 {
 void SetThreadName(std::thread& thread, const char* threadName)
 {
-#if !MRPT_IN_EMSCRIPTEN
   auto handle = thread.native_handle();
+#if defined(MRPT_OS_APPLE)
+  // macOS pthread_setname_np only sets the current thread's name
+  (void)handle;
+  pthread_setname_np(threadName);
+#elif !MRPT_IN_EMSCRIPTEN
   pthread_setname_np(handle, threadName);
 #endif
 }
 
 std::string GetThreadName(std::thread& thread)
 {
-#if !MRPT_IN_EMSCRIPTEN
   auto handle = thread.native_handle();
   char buf[1000];
   buf[0] = '\0';
+#if !MRPT_IN_EMSCRIPTEN
   pthread_getname_np(handle, buf, sizeof(buf));
-  return std::string(buf);
 #else
-  return {};
+  (void)handle;
 #endif
+  return std::string(buf);
 }
 
 void SetThreadName(const char* threadName)
 {
-#if !MRPT_IN_EMSCRIPTEN
+#if defined(MRPT_OS_APPLE)
+  pthread_setname_np(threadName);
+#elif !MRPT_IN_EMSCRIPTEN
   prctl(PR_SET_NAME, threadName, 0L, 0L, 0L);
 #endif
 }
 std::string GetThreadName()
 {
-#if !MRPT_IN_EMSCRIPTEN
   char buf[100] = {0};
-  prctl(PR_GET_NAME, buf, 0L, 0L, 0L);
-  return std::string(buf);
-#else
-  return {};
+#if defined(MRPT_OS_APPLE) || !MRPT_IN_EMSCRIPTEN
+  pthread_t self = pthread_self();
+  pthread_getname_np(self, buf, sizeof(buf));
 #endif
+  return std::string(buf);
 }
 }  // namespace
-#endif  // Linux
+#endif  // Linux or Apple
 
 void mrpt::system::thread_name(const std::string& name)
 {
@@ -81,7 +85,7 @@ void mrpt::system::thread_name(const std::string& name)
   wchar_t wName[50];
   std::mbstowcs(wName, name.c_str(), sizeof(wName) / sizeof(wName[0]));
   SetThreadDescription(GetCurrentThread(), wName);
-#elif defined(MRPT_OS_LINUX)
+#elif defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
   SetThreadName(name.c_str());
 #endif
 }
@@ -92,7 +96,7 @@ void mrpt::system::thread_name(const std::string& name, std::thread& theThread)
   wchar_t wName[50];
   std::mbstowcs(wName, name.c_str(), sizeof(wName) / sizeof(wName[0]));
   SetThreadDescription(theThread.native_handle(), wName);
-#elif defined(MRPT_OS_LINUX)
+#elif defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
   SetThreadName(theThread, name.c_str());
 #endif
 }
@@ -122,7 +126,7 @@ std::string mrpt::system::thread_name()
     LocalFree(str);
   }
   return ret;
-#elif defined(MRPT_OS_LINUX)
+#elif defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
   return GetThreadName();
 #else
   return std::string("");
@@ -141,7 +145,7 @@ std::string mrpt::system::thread_name(std::thread& theThread)
     LocalFree(str);
   }
   return ret;
-#elif defined(MRPT_OS_LINUX)
+#elif defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
   return GetThreadName(theThread);
 #else
   return std::string("");

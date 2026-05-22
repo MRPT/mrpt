@@ -46,7 +46,7 @@ void CPolygon::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
     {
       // The number of vertices:
       uint32_t i, n;
-      float f;
+      double f;
 
       // All elemental typed variables:
       in >> n;
@@ -152,8 +152,8 @@ void CPolygon::set_vertices(size_t nVertices, const float* xs, const float* ys)
   TPolygon2D::resize(nVertices);
   for (size_t i = 0; i < nVertices; i++)
   {
-    TPolygon2D::operator[](i).x = xs[i];
-    TPolygon2D::operator[](i).y = ys[i];
+    TPolygon2D::operator[](i).x = static_cast<double>(xs[i]);
+    TPolygon2D::operator[](i).y = static_cast<double>(ys[i]);
   }
 }
 

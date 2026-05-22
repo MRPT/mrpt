@@ -335,11 +335,11 @@ int VelodyneView(
       {
         // Some of the keys are processed in this thread:
         case 'o':
-          win3D.setCameraZoom(win3D.getCameraZoom() * 1.2);
+          win3D.setCameraZoom(win3D.getCameraZoom() * 1.2f);
           win3D.repaint();
           break;
         case 'i':
-          win3D.setCameraZoom(win3D.getCameraZoom() / 1.2);
+          win3D.setCameraZoom(win3D.getCameraZoom() / 1.2f);
           win3D.repaint();
           break;
         case ' ':

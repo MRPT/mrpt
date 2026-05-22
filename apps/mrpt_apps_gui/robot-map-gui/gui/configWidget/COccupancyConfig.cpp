@@ -51,48 +51,54 @@ void COccupancyConfig::updateConfiguration(TMetricMapInitializer* options)
   mapDefination->genericMapParams.enableObservationLikelihood = m_ui->enableObservationLikelihood;
   mapDefination->genericMapParams.enableObservationInsertion = m_ui->enableObservationInsertion;
 
-  mapDefination->min_x = m_ui->min_x->value();
-  mapDefination->max_x = m_ui->max_x->value();
-  mapDefination->min_y = m_ui->min_y->value();
-  mapDefination->max_y = m_ui->max_y->value();
-  mapDefination->resolution = m_ui->resolution->value();
+  mapDefination->min_x = static_cast<float>(m_ui->min_x->value());
+  mapDefination->max_x = static_cast<float>(m_ui->max_x->value());
+  mapDefination->min_y = static_cast<float>(m_ui->min_y->value());
+  mapDefination->max_y = static_cast<float>(m_ui->max_y->value());
+  mapDefination->resolution = static_cast<float>(m_ui->resolution->value());
 
-  mapDefination->insertionOpts.mapAltitude = m_ui->mapAltitude->value();
+  mapDefination->insertionOpts.mapAltitude = static_cast<float>(m_ui->mapAltitude->value());
   mapDefination->insertionOpts.useMapAltitude = m_ui->useMapAltitude->isChecked();
-  mapDefination->insertionOpts.maxDistanceInsertion = m_ui->maxDistanceInsertion->value();
+  mapDefination->insertionOpts.maxDistanceInsertion =
+      static_cast<float>(m_ui->maxDistanceInsertion->value());
   mapDefination->insertionOpts.maxOccupancyUpdateCertainty =
-      m_ui->maxOccupancyUpdateCertainty->value();
+      static_cast<float>(m_ui->maxOccupancyUpdateCertainty->value());
   mapDefination->insertionOpts.considerInvalidRangesAsFreeSpace =
       m_ui->considerInvalidRangesAsFreeSpace->isChecked();
-  mapDefination->insertionOpts.decimation = m_ui->decimation->value();
-  mapDefination->insertionOpts.horizontalTolerance = m_ui->horizontalTolerance->value();
+  mapDefination->insertionOpts.decimation = static_cast<uint16_t>(m_ui->decimation->value());
+  mapDefination->insertionOpts.horizontalTolerance =
+      static_cast<float>(m_ui->horizontalTolerance->value());
   mapDefination->insertionOpts.CFD_features_gaussian_size =
-      m_ui->CFD_features_gaussian_size->value();
-  mapDefination->insertionOpts.CFD_features_median_size = m_ui->CFD_features_median_size->value();
+      static_cast<float>(m_ui->CFD_features_gaussian_size->value());
+  mapDefination->insertionOpts.CFD_features_median_size =
+      static_cast<float>(m_ui->CFD_features_median_size->value());
   mapDefination->insertionOpts.wideningBeamsWithDistance =
       m_ui->wideningBeamsWithDistance->isChecked();
 
   mapDefination->likelihoodOpts.likelihoodMethod =
       static_cast<COccupancyGridMap2D::TLikelihoodMethod>(
           m_ui->likelihoodMethod->currentData().toInt());
-  mapDefination->likelihoodOpts.LF_stdHit = m_ui->LF_stdHit->value();
-  mapDefination->likelihoodOpts.LF_zHit = m_ui->LF_zHit->value();
-  mapDefination->likelihoodOpts.LF_zRandom = m_ui->LF_zRandom->value();
-  mapDefination->likelihoodOpts.LF_maxRange = m_ui->LF_maxRange->value();
+  mapDefination->likelihoodOpts.LF_stdHit = static_cast<float>(m_ui->LF_stdHit->value());
+  mapDefination->likelihoodOpts.LF_zHit = static_cast<float>(m_ui->LF_zHit->value());
+  mapDefination->likelihoodOpts.LF_zRandom = static_cast<float>(m_ui->LF_zRandom->value());
+  mapDefination->likelihoodOpts.LF_maxRange = static_cast<float>(m_ui->LF_maxRange->value());
   mapDefination->likelihoodOpts.LF_decimation = m_ui->LF_decimation->value();
-  mapDefination->likelihoodOpts.LF_maxCorrsDistance = m_ui->LF_maxCorrsDistance->value();
+  mapDefination->likelihoodOpts.LF_maxCorrsDistance =
+      static_cast<float>(m_ui->LF_maxCorrsDistance->value());
   mapDefination->likelihoodOpts.LF_useSquareDist = m_ui->LF_useSquareDist->isChecked();
   mapDefination->likelihoodOpts.LF_alternateAverageMethod =
       m_ui->LF_alternateAverageMethod->isChecked();
-  mapDefination->likelihoodOpts.MI_exponent = m_ui->MI_exponent->value();
+  mapDefination->likelihoodOpts.MI_exponent = static_cast<float>(m_ui->MI_exponent->value());
   mapDefination->likelihoodOpts.MI_skip_rays = m_ui->MI_skip_rays->value();
-  mapDefination->likelihoodOpts.MI_ratio_max_distance = m_ui->MI_ratio_max_distance->value();
+  mapDefination->likelihoodOpts.MI_ratio_max_distance =
+      static_cast<float>(m_ui->MI_ratio_max_distance->value());
   mapDefination->likelihoodOpts.rayTracing_useDistanceFilter =
       m_ui->rayTracing_useDistanceFilter->isChecked();
   mapDefination->likelihoodOpts.rayTracing_decimation = m_ui->rayTracing_decimation->value();
-  mapDefination->likelihoodOpts.rayTracing_stdHit = m_ui->rayTracing_stdHit->value();
+  mapDefination->likelihoodOpts.rayTracing_stdHit =
+      static_cast<float>(m_ui->rayTracing_stdHit->value());
   mapDefination->likelihoodOpts.consensus_takeEachRange = m_ui->consensus_takeEachRange->value();
-  mapDefination->likelihoodOpts.consensus_pow = m_ui->consensus_pow->value();
+  mapDefination->likelihoodOpts.consensus_pow = static_cast<float>(m_ui->consensus_pow->value());
   mapDefination->likelihoodOpts.enableLikelihoodCache = m_ui->enableLikelihoodCache->isChecked();
 }
 

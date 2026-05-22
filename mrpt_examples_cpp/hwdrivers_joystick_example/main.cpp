@@ -51,11 +51,12 @@ void TestJoystick()
       double t = tictac.Tac();
 
       printf("Joystick axes: ");
-      for (unsigned int i = 0; i < js.axes.size(); i++) printf("[%u]=%.03f ", i, js.axes[i]);
+      for (unsigned int i = 0; i < js.axes.size(); i++)
+        printf("[%u]=%.03f ", i, static_cast<double>(js.axes[i]));
 
       for (unsigned b = 0; b < js.buttons.size(); b++)
         printf("B%u:%c ", b, js.buttons[b] ? 'X' : '-');
-      printf(") [Query %uus]  \r", (unsigned)(t * 1e6));
+      printf(") [Query %uus]  \r", static_cast<unsigned>(t * 1e6));
 
       fflush(stdout);
     }

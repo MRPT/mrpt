@@ -44,7 +44,7 @@ BEGIN_EVENT_TABLE(COdometryParams, wxDialog)
 END_EVENT_TABLE()
 
 COdometryParams::COdometryParams(
-    wxWindow* parent, wxWindowID id, const wxPoint&, const wxSize& size)
+    wxWindow* parent, wxWindowID id, const wxPoint&, [[maybe_unused]] const wxSize& size)
 {
   //(*Initialize(COdometryParams)
   wxFlexGridSizer* FlexGridSizer3;

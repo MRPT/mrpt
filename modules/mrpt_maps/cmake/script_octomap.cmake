@@ -71,7 +71,7 @@ endif()
 
 if (CMAKE_MRPT_HAS_OCTOMAP)
 	mark_as_advanced(OCTOMAP_DIR)
-	include_directories("${OCTOMAP_INCLUDE_DIRS}")
+	include_directories(SYSTEM "${OCTOMAP_INCLUDE_DIRS}")
 
 	if ($ENV{VERBOSE})
 		message(STATUS "octomap:")

@@ -80,7 +80,10 @@ BEGIN_EVENT_TABLE(CDialogOptions, wxDialog)
 END_EVENT_TABLE()
 
 CDialogOptions::CDialogOptions(
-    wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size)
+    wxWindow* parent,
+    [[maybe_unused]] wxWindowID id,
+    [[maybe_unused]] const wxPoint& pos,
+    [[maybe_unused]] const wxSize& size)
 {
   //(*Initialize(CDialogOptions)
   wxStaticBoxSizer* StaticBoxSizer2;

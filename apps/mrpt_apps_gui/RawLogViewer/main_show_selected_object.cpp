@@ -302,9 +302,9 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
     // Pass to vectors and draw them:
     for (unsigned int i = 0; i < N; i++)
     {
-      xs[i] = samples[i][0];
-      ys[i] = samples[i][1];
-      ps[i] = RAD2DEG(samples[i][2]);
+      xs[i] = static_cast<float>(samples[i][0]);
+      ys[i] = static_cast<float>(samples[i][1]);
+      ps[i] = static_cast<float>(RAD2DEG(samples[i][2]));
     }
 
     lyAction2D_XY->SetData(xs, ys);
@@ -333,9 +333,9 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
 
       CPoint3D local(R * cos(yaw) * cos(pitch), R * sin(yaw) * cos(pitch), R * sin(pitch));
       CPoint3D relRobot(obs->sensorLocationOnRobot + local);
-      Xs[k] = relRobot.x();
-      Ys[k] = relRobot.y();
-      Zs[k] = relRobot.z();
+      Xs[k] = static_cast<float>(relRobot.x());
+      Ys[k] = static_cast<float>(relRobot.y());
+      Zs[k] = static_cast<float>(relRobot.z());
     }
     lyRangeBearingLandmarks->SetData(Xs, Ys);
     plotRangeBearing->LockAspect();

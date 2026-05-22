@@ -137,7 +137,7 @@ BEGIN_EVENT_TABLE(CFormMotionModel, wxDialog)
 //*)
 END_EVENT_TABLE()
 
-CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
+CFormMotionModel::CFormMotionModel(wxWindow* parent, [[maybe_unused]] wxWindowID id)
 {
   //(*Initialize(CFormMotionModel)
   wxStaticBoxSizer* boxRanges;
@@ -605,12 +605,18 @@ void CFormMotionModel::loadFromThrun()
   // Thrun selected:
   options.modelSelection = CActionRobotMovement2D::mmThrun;
   options.thrunModel.nParticlesCount = atoi(edNumParts->GetValue().ToStdString().c_str());
-  options.thrunModel.alfa1_rot_rot = atof(edA1->GetValue().ToStdString().c_str());
-  options.thrunModel.alfa2_rot_trans = DEG2RAD(atof(edA2->GetValue().ToStdString().c_str()));
-  options.thrunModel.alfa3_trans_trans = atof(edA3->GetValue().ToStdString().c_str());
-  options.thrunModel.alfa4_trans_rot = RAD2DEG(atof(edA4->GetValue().ToStdString().c_str()));
-  options.thrunModel.additional_std_XY = atof(edAddXY->GetValue().ToStdString().c_str());
-  options.thrunModel.additional_std_phi = DEG2RAD(atof(edAddPhi->GetValue().ToStdString().c_str()));
+  options.thrunModel.alfa1_rot_rot =
+      static_cast<float>(atof(edA1->GetValue().ToStdString().c_str()));
+  options.thrunModel.alfa2_rot_trans =
+      static_cast<float>(DEG2RAD(atof(edA2->GetValue().ToStdString().c_str())));
+  options.thrunModel.alfa3_trans_trans =
+      static_cast<float>(atof(edA3->GetValue().ToStdString().c_str()));
+  options.thrunModel.alfa4_trans_rot =
+      static_cast<float>(RAD2DEG(atof(edA4->GetValue().ToStdString().c_str())));
+  options.thrunModel.additional_std_XY =
+      static_cast<float>(atof(edAddXY->GetValue().ToStdString().c_str()));
+  options.thrunModel.additional_std_phi =
+      static_cast<float>(DEG2RAD(atof(edAddPhi->GetValue().ToStdString().c_str())));
 }
 
 void CFormMotionModel::applyToLoadedRawlog()
@@ -817,7 +823,7 @@ void CFormMotionModel::OnbtnThrunOkClick([[maybe_unused]] wxCommandEvent& event)
   //    EndModal(0);
 }
 
-void CFormMotionModel::OnInit(wxInitDialogEvent& event)
+void CFormMotionModel::OnInit([[maybe_unused]] wxInitDialogEvent& event)
 {
   Center();
   wxCommandEvent dumm;
@@ -984,9 +990,9 @@ void CFormMotionModel::drawRandomSamples()
   for (unsigned int i = 0; i < N; i++)
   {
     act.drawSingleSample(tmpPose);
-    xs[i] = tmpPose.x();
-    ys[i] = tmpPose.y();
-    ps[i] = RAD2DEG(tmpPose.phi());
+    xs[i] = static_cast<float>(tmpPose.x());
+    ys[i] = static_cast<float>(tmpPose.y());
+    ps[i] = static_cast<float>(RAD2DEG(tmpPose.phi()));
   }
 
   lyAction2D_XY->SetData(xs, ys);

@@ -725,7 +725,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
                 // float grid_y = pdfGrid->idx2y(idxY);
 
                 // Evaluate obs model:
-                float c = *pdfGrid->getByIndex(idxX, idxY, 0);
+                float c = static_cast<float>(*pdfGrid->getByIndex(idxX, idxY, 0));
                 if (c > maxW)
                 {
                   maxW = c;

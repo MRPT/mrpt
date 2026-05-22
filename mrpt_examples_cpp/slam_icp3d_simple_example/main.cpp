@@ -68,7 +68,7 @@ void generateObjects(CSetOfObjects::Ptr& world)
     CDisk::Ptr pln = CDisk::Create();
     pln->setDiskRadius(2);
     pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
-    pln->setColor(0.8, 0, 0);
+    pln->setColor(0.8f, 0, 0);
     world->insert(pln);
   }
 
@@ -76,7 +76,7 @@ void generateObjects(CSetOfObjects::Ptr& world)
     CDisk::Ptr pln = CDisk::Create();
     pln->setDiskRadius(2);
     pln->setPose(CPose3D(0, 0, 0, 30.0_deg, -20.0_deg, -2.0_deg));
-    pln->setColor(0.9, 0, 0);
+    pln->setColor(0.9f, 0, 0);
     world->insert(pln);
   }
 }
@@ -119,14 +119,14 @@ void test_icp3D()
   {
     CSetOfObjects::Ptr origin1 = stock_objects::CornerXYZ();
     origin1->setPose(viewpoint1);
-    origin1->setScale(0.6);
+    origin1->setScale(0.6f);
     scene1->insert(origin1);
     scene2->insert(origin1);
   }
   {
     CSetOfObjects::Ptr origin2 = stock_objects::CornerXYZ();
     origin2->setPose(viewpoint2);
-    origin2->setScale(0.6);
+    origin2->setScale(0.6f);
     scene1->insert(origin2);
     scene2->insert(origin2);
   }

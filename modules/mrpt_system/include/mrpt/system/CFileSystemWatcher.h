@@ -82,10 +82,13 @@ class CFileSystemWatcher
 #endif
 
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
+#include <mrpt/system/config.h>
+#if MRPT_HAS_INOTIFY
   /** The fd returned by inotify_init. */
   int m_fd;
   /** The fd of the watch. */
   int m_wd;
+#endif
 #endif
 
 };  // End of class def.

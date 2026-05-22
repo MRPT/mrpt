@@ -34,8 +34,9 @@ void CPoseDirection::setDirection(double yaw, double pitch, double roll)
 double CPoseDirection::getYaw() const { return m_ui->yaw->value(); }
 double CPoseDirection::getPitch() const { return m_ui->pitch->value(); }
 double CPoseDirection::getRoll() const { return m_ui->roll->value(); }
-void CPoseDirection::setIndex(size_t index) { m_index = index; }
+void CPoseDirection::setIndex(size_t index) { m_index = static_cast<int>(index); }
 void CPoseDirection::dataChanged()
 {
-  emit updateDirection(m_index, m_ui->yaw->value(), m_ui->pitch->value(), m_ui->roll->value());
+  emit updateDirection(
+      static_cast<size_t>(m_index), m_ui->yaw->value(), m_ui->pitch->value(), m_ui->roll->value());
 }

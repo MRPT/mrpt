@@ -484,7 +484,8 @@ void vectorRandomUni(std::vector<T>& v_out, const T& min = 0, const T& max = 1)
   size_t n = v_out.size();
   for (size_t r = 0; r < n; r++)
   {
-    v_out[r] = static_cast<T>(getRandomGenerator().drawUniform(min, max));
+    v_out[r] = static_cast<T>(
+        getRandomGenerator().drawUniform(static_cast<double>(min), static_cast<double>(max)));
   }
 }
 

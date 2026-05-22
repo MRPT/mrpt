@@ -93,7 +93,8 @@ static void recalcAll()
 
   const auto bbox = app.gl_pts->getBoundingBox();
 
-  app.gl_pts->recolorizeByCoordinate(bbox.min.z, bbox.max.z, 2 /*0,1,2=x,y,z*/);
+  app.gl_pts->recolorizeByCoordinate(
+      static_cast<float>(bbox.min.z), static_cast<float>(bbox.max.z), 2 /*0,1,2=x,y,z*/);
 
   app.gl_pts->setPointSize(2.0f);
 
@@ -131,7 +132,8 @@ void AppData::obs_params_to_gui()
   }
 
   // slider values:
-  for (size_t i = 0; i < edBoxes.size(); i++) sliders[i]->setValue(std::stod(edBoxes[i]->value()));
+  for (size_t i = 0; i < edBoxes.size(); i++)
+    sliders[i]->setValue(static_cast<float>(std::stod(edBoxes[i]->value())));
 
   // Extrinsics ranges:
   for (int i = 0; i < 3; i++) slidersExtrinsics[i]->setRange({-2.0, 2.0});
@@ -147,7 +149,7 @@ void AppData::obs_params_to_gui()
     if (i > 3) val = mrpt::RAD2DEG(val);
 
     edBoxesExtrinsics[i]->setValue(mrpt::format("%.04f", val));
-    slidersExtrinsics[i]->setValue(val);
+    slidersExtrinsics[i]->setValue(static_cast<float>(val));
   }
 }
 
@@ -192,7 +194,7 @@ static void AppDepthCamDemo()
   // Init values:
   app.gl_corner_reference =
       mrpt::viz::CAxis::Create(-5.0f, -5.0f, .0f, 5.0f, 5.0f, 2.0f, 0.2f, 1.0f, true);
-  app.gl_corner_reference->setTextScale(0.04);
+  app.gl_corner_reference->setTextScale(0.04f);
 
   app.gl_pts = mrpt::viz::CPointCloudColoured::Create();
   app.gl_sensorPoseCorner = mrpt::viz::stock_objects::CornerXYZSimple(0.10f);

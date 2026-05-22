@@ -81,7 +81,10 @@ using namespace mrpt::math;
 using namespace std;
 
 CScanAnimation::CScanAnimation(
-    wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size)
+    wxWindow* parent,
+    [[maybe_unused]] wxWindowID id,
+    [[maybe_unused]] const wxPoint& pos,
+    [[maybe_unused]] const wxSize& size)
 {
   //(*Initialize(CScanAnimation)
   wxFlexGridSizer* FlexGridSizer4;
@@ -235,7 +238,8 @@ CScanAnimation::CScanAnimation(
       wxEVT_BUTTON,
       [this](wxCommandEvent&)
       {
-        for (size_t i = 0; i < lstObsLabels->GetCount(); i++) lstObsLabels->Check(i, true);
+        for (size_t i = 0; i < lstObsLabels->GetCount(); i++)
+          lstObsLabels->Check(static_cast<unsigned int>(i), true);
         wxCommandEvent ev;
         OncbViewOrthoClick(ev);
       },
@@ -245,7 +249,8 @@ CScanAnimation::CScanAnimation(
       wxEVT_BUTTON,
       [this](wxCommandEvent&)
       {
-        for (size_t i = 0; i < lstObsLabels->GetCount(); i++) lstObsLabels->Check(i, false);
+        for (size_t i = 0; i < lstObsLabels->GetCount(); i++)
+          lstObsLabels->Check(static_cast<unsigned int>(i), false);
         wxCommandEvent ev;
         OncbViewOrthoClick(ev);
       },
@@ -654,8 +659,8 @@ void CScanAnimation::OncbViewOrthoClick(wxCommandEvent&)
 {
   for (size_t i = 0; i < lstObsLabels->GetCount(); i++)
   {
-    bool visible = lstObsLabels->IsChecked(i);
-    const auto str = lstObsLabels->GetString(i).ToStdString();
+    bool visible = lstObsLabels->IsChecked(static_cast<unsigned int>(i));
+    const auto str = lstObsLabels->GetString(static_cast<unsigned int>(i)).ToStdString();
     m_visibleSensors.at(str) = visible;
   }
 

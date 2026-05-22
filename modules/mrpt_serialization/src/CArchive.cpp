@@ -600,8 +600,8 @@ bool CArchive::receiveMessage(CMessage& msg)
       }
       else if (buf[0] == 0x79)
       {
-        payload_len = MAKEWORD16B(buf[3] /*low*/, buf[2] /*hi*/);  // Length of the content
-        expectedLen = payload_len + 5;
+        payload_len = static_cast<size_t>(MAKEWORD16B(buf[3] /*low*/, buf[2] /*hi*/));  // Length
+        expectedLen = payload_len + 5u;
       }
       nBytesToRx = expectedLen - nBytesInFrame;
     }  // end else

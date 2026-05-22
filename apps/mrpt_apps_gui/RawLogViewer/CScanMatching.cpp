@@ -602,7 +602,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
     refMapGrid.insertionOptions.dumpToConsole();
   }
 
-  CMetricMap* refMap = useGridMap ? (CMetricMap*)&refMapGrid : (CMetricMap*)&refMapPt;
+  CMetricMap* refMap =
+      useGridMap ? static_cast<CMetricMap*>(&refMapGrid) : static_cast<CMetricMap*>(&refMapPt);
 
   // Load new map options:
   // ----------------------------
@@ -663,7 +664,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 
       icp.options.maxIterations = curStep;
 
-      poseEst = icp.Align(refMap, (CMetricMap*)&newMapPt, initialEst, icpInfo);
+      poseEst = icp.Align(refMap, static_cast<CMetricMap*>(&newMapPt), initialEst, icpInfo);
 
       // Show the final graphs:
       // --------------------------------------

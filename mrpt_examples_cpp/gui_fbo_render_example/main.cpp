@@ -102,7 +102,7 @@ void TestDisplay3D()
 
   scene.getViewport()->setCustomBackgroundColor({0.3f, 0.3f, 0.3f, 1.0f});
   const float clipMax = 25.0f;
-  scene.getViewport()->setViewportClipDistances(0.1, clipMax);
+  scene.getViewport()->setViewportClipDistances(0.1f, clipMax);
 
   {
     mrpt::viz::CCamera& camera = renderer.getCameraOverride();

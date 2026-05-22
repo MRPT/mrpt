@@ -108,11 +108,11 @@ class CPose2DGridTemplate
   /** Default constructor:
    */
   CPose2DGridTemplate(
-      double xMin = -1.0f,
-      double xMax = 1.0f,
-      double yMin = -1.0f,
-      double yMax = 1.0f,
-      double resolutionXY = 0.5f,
+      double xMin = -1.0,
+      double xMax = 1.0,
+      double yMin = -1.0,
+      double yMax = 1.0,
+      double resolutionXY = 0.5,
       double resolutionPhi = mrpt::DEG2RAD(180.0),
       double phiMin = -M_PI,
       double phiMax = M_PI) :

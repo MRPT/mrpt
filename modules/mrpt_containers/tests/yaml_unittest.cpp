@@ -175,9 +175,9 @@ MRPT_TEST(yaml, initializerMap)
   EXPECT_EQ(p["book"].as<std::string>(), "silmarillion");
 
   // non existing in const object:
-  EXPECT_THROW(p["foo"], std::exception);
+  EXPECT_THROW((void)p["foo"], std::exception);
   // Access wrong type in const object:
-  EXPECT_THROW(p["K"].asRef<std::string>(), std::exception);
+  EXPECT_THROW((void)p["K"].asRef<std::string>(), std::exception);
 }
 MRPT_TEST_END()
 
@@ -189,7 +189,7 @@ MRPT_TEST(yaml, initializerSequence)
   EXPECT_TRUE(seq1.isSequence());
   EXPECT_FALSE(seq1.isMap());
   EXPECT_THROW(seq1.has("foo"), std::exception);
-  EXPECT_THROW(seq1["K"], std::exception);
+  EXPECT_THROW((void)seq1["K"], std::exception);
 
   EXPECT_TRUE(static_cast<double>(seq1(0)) == 1.0);
   EXPECT_EQ(seq1(0).as<double>(), 1.0);

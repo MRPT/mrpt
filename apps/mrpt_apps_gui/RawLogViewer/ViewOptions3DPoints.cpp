@@ -261,7 +261,7 @@ void ParametersView3DPoints::to_UI(ViewOptions3DPoints& ui) const
 
   ui.RadioBox1->SetSelection(static_cast<int>(coloring.colorMap));
 
-  ui.edPointSize->SetValue(pointSize);
+  ui.edPointSize->SetValue(static_cast<int>(pointSize));
 
   ui.cbShowSensorPose->SetValue(drawSensorPose);
   ui.cbOnlyPointsWithColor->SetValue(onlyPointsWithColor);

@@ -201,7 +201,7 @@ void CViewerContainer::updatePanelInfo(int index)
 
 void CViewerContainer::changeZoomInfo(float zoom)
 {
-  int zoomInt = zoom;
+  int zoomInt = static_cast<int>(zoom);
   m_ui->m_zoomSlider->blockSignals(true);
   m_ui->m_zoomSlider->setValue(zoomInt);
   m_ui->m_zoomSlider->blockSignals(false);
@@ -232,8 +232,8 @@ void CViewerContainer::zoomChanged(double d)
   {
     return;
   }
-  float zoomFloat = d;
-  int zoomInt = zoomFloat;
+  float zoomFloat = static_cast<float>(d);
+  int zoomInt = static_cast<int>(zoomFloat);
   m_ui->m_zoomSlider->setValue(zoomInt);
   CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->currentWidget());
   ASSERT_(gl);
@@ -247,7 +247,7 @@ void CViewerContainer::zoomChanged(int d)
     return;
   }
   double zoomD = d;
-  float zoomFloat = zoomD;
+  float zoomFloat = static_cast<float>(zoomD);
   m_ui->m_zoom->setValue(zoomD);
   CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->currentWidget());
   ASSERT_(gl);
@@ -268,7 +268,7 @@ void CViewerContainer::updateAzimuthDegrees(double deg)
     return;
   }
   gl->blockSignals(true);
-  gl->orbitCameraController().setAzimuthDegrees(deg);
+  gl->orbitCameraController().setAzimuthDegrees(static_cast<float>(deg));
   gl->blockSignals(false);
   gl->update();
 }
@@ -281,21 +281,21 @@ void CViewerContainer::updateElevationDegrees(double deg)
     return;
   }
   gl->blockSignals(true);
-  gl->orbitCameraController().setElevationDegrees(deg);
+  gl->orbitCameraController().setElevationDegrees(static_cast<float>(deg));
   gl->blockSignals(false);
   gl->update();
 }
 
 void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 {
-  float rBack = setting.backgroundColor.red() / 255.0;
-  float gBack = setting.backgroundColor.green() / 255.0;
-  float bBack = setting.backgroundColor.blue() / 255.0;
-  float aBack = setting.backgroundColor.alpha() / 255.0;
-  float r = setting.gridColor.red() / 255.0;
-  float g = setting.gridColor.green() / 255.0;
-  float b = setting.gridColor.blue() / 255.0;
-  float a = setting.gridColor.alpha() / 255.0;
+  float rBack = setting.backgroundColor.red() / 255.0f;
+  float gBack = setting.backgroundColor.green() / 255.0f;
+  float bBack = setting.backgroundColor.blue() / 255.0f;
+  float aBack = setting.backgroundColor.alpha() / 255.0f;
+  float r = setting.gridColor.red() / 255.0f;
+  float g = setting.gridColor.green() / 255.0f;
+  float b = setting.gridColor.blue() / 255.0f;
+  float a = setting.gridColor.alpha() / 255.0f;
 
   forEachGl(
       [r, g, b, a, rBack, gBack, bBack, aBack, setting](CGlWidget* gl)

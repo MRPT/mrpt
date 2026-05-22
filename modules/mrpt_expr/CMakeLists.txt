@@ -56,9 +56,10 @@ if (MRPT_USE_SYSTEM_EXPRTK)
   # Add include path as system path to avoid warnings from exprtk.hpp:
   target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${EXPRTK_INCLUDE_DIR})
 else()
-  # Add include path as system path: src/3rdparty/exprtk:
+  # Add src/ as system path so <3rdparty/exprtk.hpp> resolves as a system header
+  # and the compiler suppresses warnings from within it:
   target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/3rdparty/exprtk
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
   )
 endif()
 

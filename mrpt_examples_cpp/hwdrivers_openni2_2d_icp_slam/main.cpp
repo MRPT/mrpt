@@ -32,7 +32,7 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::img;
 using namespace std;
 
-const float vert_FOV = 4.0_deg;
+const float vert_FOV = static_cast<float>(4.0_deg);
 
 // This demo records from an OpenNI2 device, convert observations to 2D scans
 // and runs 2d-icp-slam with them.
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
     gl_2d_scan->enablePoints(true);
     gl_2d_scan->enableLine(true);
     gl_2d_scan->enableSurface(true);
-    gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3);  // RGBA
+    gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3f);  // RGBA
 
     viz::Viewport::Ptr viewInt;  // Extra viewports for the RGB images.
     {

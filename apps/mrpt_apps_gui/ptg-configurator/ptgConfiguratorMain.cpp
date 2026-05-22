@@ -1094,10 +1094,11 @@ void ptgConfiguratorframe::rebuild3Dview()
       for (size_t i = 0; i <= nObs; i++)
       {
         const double d0 = TP_Obstacles[i % nObs] / refDist;
-        const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs) + 0.5) / static_cast<double>(nObs));
+        const double a0 =
+            M_PI * (-1.0 + 2.0 * (static_cast<double>(i % nObs) + 0.5) / static_cast<double>(nObs));
         const double d1 = TP_Obstacles[(i + 1) % nObs] / refDist;
-        const double a1 =
-            M_PI * (-1.0 + 2.0 * (((i + 1) % nObs) + 0.5) / static_cast<double>(nObs));
+        const double a1 = M_PI * (-1.0 + 2.0 * (static_cast<double>((i + 1) % nObs) + 0.5) /
+                                             static_cast<double>(nObs));
         gl_tp_obstacles->appendLine(
             d0 * cos(a0), d0 * sin(a0), 0.0, d1 * cos(a1), d1 * sin(a1), 0.0);
       }

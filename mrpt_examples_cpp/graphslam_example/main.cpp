@@ -71,8 +71,8 @@ struct EdgeAdders<GRAPH, false>
       TNodeID from,
       TNodeID to,
       const typename GRAPH::global_poses_t& real_poses,
-      GRAPH& graph,
-      const cov_t& COV_MAT)
+      [[maybe_unused]] GRAPH& graph,
+      [[maybe_unused]] const cov_t& COV_MAT)
   {
     /**
      * No covariance argument here (although it is passed in the function
@@ -116,7 +116,10 @@ struct ExampleDemoGraphSLAM
 {
   template <class GRAPH_T>
   static void my_levmarq_feedback(
-      const GRAPH_T& graph, const size_t iter, const size_t max_iter, const double cur_sq_error)
+      [[maybe_unused]] const GRAPH_T& graph,
+      const size_t iter,
+      const size_t max_iter,
+      const double cur_sq_error)
   {
     log_sq_err_evolution.push_back(std::log(cur_sq_error));
     if ((iter % 100) == 0)

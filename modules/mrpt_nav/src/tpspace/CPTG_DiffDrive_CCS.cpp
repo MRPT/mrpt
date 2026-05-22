@@ -79,7 +79,7 @@ void CPTG_DiffDrive_CCS::ptgDiffDriveSteeringFunction(
     float& v,
     float& w) const
 {
-  float u = fabs(alpha) * 0.5f;  // 0.14758362f;  // u = atan(0.5)* alpha /
+  float u = static_cast<float>(fabs(alpha)) * 0.5f;  // 0.14758362f;  // u = atan(0.5)* alpha /
   // PI;
 
   if (t < u * R / V_MAX)

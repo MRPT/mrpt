@@ -93,7 +93,7 @@ bool ModelSearch::ransacSingleModel(
       const double eps = std::numeric_limits<double>::epsilon();
       p = std::max(eps, p);      // Avoid division by -Inf
       p = std::min(1 - eps, p);  // Avoid division by 0.
-      softIterLimit = mrpt::round(log(1 - p) / log(p));
+      softIterLimit = static_cast<size_t>(std::max(0, mrpt::round(log(1 - p) / log(p))));
     }
 
     iter++;
@@ -122,7 +122,7 @@ bool ModelSearch::geneticSingleModel(
 
   size_t sampleCount = p_state.getSampleCount();
   int elderCnt = static_cast<int>(p_populationSize) / 3;
-  int siblingCnt = (p_populationSize - elderCnt) / 2;
+  int siblingCnt = static_cast<int>((p_populationSize - static_cast<size_t>(elderCnt)) / 2);
   int speciesAlive = 0;
 
   storage.resize(p_populationSize);
@@ -175,7 +175,7 @@ bool ModelSearch::geneticSingleModel(
         sampleSet.insert(b->sample.begin(), b->sample.end());
         // mutate - add a random sample that will be selected with some
         // (non-zero) probability
-        sampleSet.insert(rand() % sampleCount);
+        sampleSet.insert(static_cast<size_t>(rand()) % sampleCount);
         pickRandomIndex(sampleSet, p_kernelSize, sibling->sample);
       }
 

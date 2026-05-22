@@ -28,7 +28,7 @@ QItemSelection CObservationTreeModel::changeSelected(const std::vector<size_t>& 
   QItemSelection selection;
   for (auto& idx : indexes)
   {
-    QModelIndex i = index(idx, 0, QModelIndex());
+    QModelIndex i = index(static_cast<int>(idx), 0, QModelIndex());
     if (i != QModelIndex()) selection.select(i, i);
   }
   return selection;

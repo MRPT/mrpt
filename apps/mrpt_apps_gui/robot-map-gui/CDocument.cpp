@@ -147,7 +147,7 @@ std::vector<size_t> CDocument::remove(const std::vector<size_t>& indexes)
     {
       if (*iter > current)
       {
-        int checkedNumb = *iter;
+        int checkedNumb = static_cast<int>(*iter);
         auto pos = idx.erase(iter);
         idx.insert(pos, checkedNumb - 1);
       }
@@ -198,7 +198,8 @@ CSimpleMap::KeyframeList CDocument::get(const std::vector<size_t>& idxs)
 CSimpleMap::KeyframeList CDocument::getReverse(const std::vector<size_t>& idx)
 {
   CSimpleMap::KeyframeList posesObsPairs;
-  for (int i = idx.size() - 1; i >= 0; --i) posesObsPairs.emplace_back(m_simplemap.get(idx[i]));
+  for (int i = static_cast<int>(idx.size()) - 1; i >= 0; --i)
+    posesObsPairs.emplace_back(m_simplemap.get(idx[static_cast<size_t>(i)]));
 
   return posesObsPairs;
 }

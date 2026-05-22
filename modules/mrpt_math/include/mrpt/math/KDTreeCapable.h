@@ -194,8 +194,8 @@ class KDTreeCapable
   {
     float dmy1, dmy2;
     size_t res = kdTreeClosestPoint2D(d2f(p0.x), d2f(p0.y), dmy1, dmy2, outDistSqr);
-    pOut.x = dmy1;
-    pOut.y = dmy2;
+    pOut.x = static_cast<double>(dmy1);
+    pOut.y = static_cast<double>(dmy2);
     return res;
   }
 

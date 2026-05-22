@@ -48,7 +48,10 @@ using namespace mrpt::system;
 using namespace mrpt::math;
 
 CDlgCamTracking::CDlgCamTracking(
-    _DSceneViewerFrame* parent, wxWindowID id, const wxPoint& pos, const wxSize& size) :
+    _DSceneViewerFrame* parent,
+    wxWindowID id,
+    [[maybe_unused]] const wxPoint& pos,
+    [[maybe_unused]] const wxSize& size) :
     m_main_win(parent)
 {
   //(*Initialize(CDlgCamTracking)
@@ -185,7 +188,7 @@ void CDlgCamTracking::UpdateTableFromPoses()
   gridPoses->DeleteRows(0, gridPoses->GetNumberRows());
 
   const size_t N = m_poses.size();
-  gridPoses->InsertRows(0, N);
+  gridPoses->InsertRows(0, static_cast<int>(N));
 
   size_t i = 0;
   auto it = m_poses.begin();
@@ -195,14 +198,15 @@ void CDlgCamTracking::UpdateTableFromPoses()
     const Clock::time_point t = it->first;
     const auto& p = it->second;
 
-    gridPoses->SetCellValue(i, 0, wxString::Format("%.02f", timeDifference(t0, t)));
+    gridPoses->SetCellValue(
+        static_cast<int>(i), 0, wxString::Format("%.02f", timeDifference(t0, t)));
 
-    gridPoses->SetCellValue(i, 1, wxString::Format("%f", p.x));
-    gridPoses->SetCellValue(i, 2, wxString::Format("%f", p.y));
-    gridPoses->SetCellValue(i, 3, wxString::Format("%f", p.z));
-    gridPoses->SetCellValue(i, 4, wxString::Format("%f", RAD2DEG(p.yaw)));
-    gridPoses->SetCellValue(i, 5, wxString::Format("%f", RAD2DEG(p.pitch)));
-    gridPoses->SetCellValue(i, 6, wxString::Format("%f", RAD2DEG(p.roll)));
+    gridPoses->SetCellValue(static_cast<int>(i), 1, wxString::Format("%f", p.x));
+    gridPoses->SetCellValue(static_cast<int>(i), 2, wxString::Format("%f", p.y));
+    gridPoses->SetCellValue(static_cast<int>(i), 3, wxString::Format("%f", p.z));
+    gridPoses->SetCellValue(static_cast<int>(i), 4, wxString::Format("%f", RAD2DEG(p.yaw)));
+    gridPoses->SetCellValue(static_cast<int>(i), 5, wxString::Format("%f", RAD2DEG(p.pitch)));
+    gridPoses->SetCellValue(static_cast<int>(i), 6, wxString::Format("%f", RAD2DEG(p.roll)));
   }
 
   gridPoses->EndBatch();

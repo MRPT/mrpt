@@ -48,7 +48,9 @@ class MyArtProvider : public wxArtProvider
 
 // CreateBitmap function
 wxBitmap MyArtProvider::CreateBitmap(
-    const wxArtID& id, const wxArtClient& client, const wxSize& size)
+    const wxArtID& id,
+    [[maybe_unused]] const wxArtClient& client,
+    [[maybe_unused]] const wxSize& size)
 {
   if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(main_icon_xpm);
   if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO)) return wxBitmap(mrpt_logo_xpm);
@@ -120,7 +122,8 @@ END_EVENT_TABLE()
 
 robotic_arm_kinematicsFrame* the_win = nullptr;
 
-robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent, wxWindowID id)
+robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
+    wxWindow* parent, [[maybe_unused]] wxWindowID id)
 {
   the_win = this;
 
@@ -666,7 +669,7 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
         m_dof_panels[i]->Slider1->SetMin(-2000);
         m_dof_panels[i]->Slider1->SetMax(2000);
 
-        m_dof_panels[i]->Slider1->SetValue(l.d * 1e3);
+        m_dof_panels[i]->Slider1->SetValue(static_cast<int>(l.d * 1e3));
 
         std::string s = mrpt::format("%.02f", l.d * 1e3);
         m_dof_panels[i]->TextCtrl1->SetValue(s.c_str());
@@ -675,7 +678,7 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
       {
         m_dof_panels[i]->Slider1->SetMin(-180);
         m_dof_panels[i]->Slider1->SetMax(180);
-        m_dof_panels[i]->Slider1->SetValue(RAD2DEG(l.theta));
+        m_dof_panels[i]->Slider1->SetValue(static_cast<int>(RAD2DEG(l.theta)));
 
         std::string s = mrpt::format("%.02f", RAD2DEG(l.theta));
         m_dof_panels[i]->TextCtrl1->SetValue(s.c_str());
@@ -730,10 +733,10 @@ void robotic_arm_kinematicsFrame::OnListSelectionChange()
 
   rbType->SetSelection(l.is_prismatic ? 1 : 0);
 
-  slTheta->SetValue(RAD2DEG(l.theta));
-  slAlpha->SetValue(RAD2DEG(l.alpha));
-  slD->SetValue(1e3 * l.d);
-  slA->SetValue(1e3 * l.a);
+  slTheta->SetValue(static_cast<int>(RAD2DEG(l.theta)));
+  slAlpha->SetValue(static_cast<int>(RAD2DEG(l.alpha)));
+  slD->SetValue(static_cast<int>(1e3 * l.d));
+  slA->SetValue(static_cast<int>(1e3 * l.a));
 }
 
 void robotic_arm_kinematicsFrame::OnlistLinksSelect([[maybe_unused]] wxCommandEvent& event)
@@ -853,7 +856,7 @@ void robotic_arm_kinematicsFrame::OnbtnAddLinkClick([[maybe_unused]] wxCommandEv
   this->RegenerateDOFPanels();
   this->UpdateListLinks();
 
-  listLinks->SetSelection(m_robot.size() - 1);
+  listLinks->SetSelection(static_cast<int>(m_robot.size()) - 1);
 
   this->OnListSelectionChange();
   this->Regenerate3DView();
@@ -933,7 +936,7 @@ void robotic_arm_kinematicsFrame::OnbtnDeleteClick([[maybe_unused]] wxCommandEve
   this->RegenerateDOFPanels();
   this->UpdateListLinks();
 
-  listLinks->SetSelection(m_robot.size() - 1);
+  listLinks->SetSelection(static_cast<int>(m_robot.size()) - 1);
 
   this->OnListSelectionChange();
   this->Regenerate3DView();

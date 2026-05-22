@@ -282,22 +282,22 @@ void TestBayesianTracking()
   while (winEKF.isOpen() && winPF.isOpen() && !mrpt::system::os::kbhit())
   {
     // Update vehicle:
-    x += v * DELTA_TIME * (cos(phi) - sin(phi));
-    y += v * DELTA_TIME * (sin(phi) + cos(phi));
+    x += static_cast<float>(v * DELTA_TIME * (cos(phi) - sin(phi)));
+    y += static_cast<float>(v * DELTA_TIME * (sin(phi) + cos(phi)));
     phi += w * DELTA_TIME;
 
-    v += 1.0f * DELTA_TIME * cos(t);
-    w -= 0.1f * DELTA_TIME * sin(t);
+    v += static_cast<float>(1.0f * DELTA_TIME * cos(t));
+    w -= static_cast<float>(0.1f * DELTA_TIME * sin(t));
 
     // Simulate noisy observation:
-    float realBearing = atan2(y, x);
+    float realBearing = static_cast<float>(atan2(y, x));
     float obsBearing = realBearing + static_cast<float>(
                                          BEARING_SENSOR_NOISE_STD *
                                          getRandomGenerator().drawGaussian1D_normalized());
     printf(
         "Real/Simulated bearing: %.03f / %.03f deg\n", RAD2DEG(realBearing), RAD2DEG(obsBearing));
 
-    float realRange = sqrt(square(x) + square(y));
+    float realRange = static_cast<float>(sqrt(square(x) + square(y)));
     float obsRange = static_cast<float>(
         max(0.0, static_cast<double>(realRange) +
                      RANGE_SENSOR_NOISE_STD * getRandomGenerator().drawGaussian1D_normalized()));
@@ -348,10 +348,10 @@ void TestBayesianTracking()
 
     // Draw the velocity vector:
     vector<float> vx(2), vy(2);
-    vx[0] = EKF_xkk[0];
-    vx[1] = vx[0] + EKF_xkk[2] * 1;
-    vy[0] = EKF_xkk[1];
-    vy[1] = vy[0] + EKF_xkk[3] * 1;
+    vx[0] = static_cast<float>(EKF_xkk[0]);
+    vx[1] = vx[0] + static_cast<float>(EKF_xkk[2]);
+    vy[0] = static_cast<float>(EKF_xkk[1]);
+    vy[1] = vy[0] + static_cast<float>(EKF_xkk[3]);
     winEKF.plot(vx, vy, "g-4", "velocityEKF");
 
     // Draw PF state:
@@ -385,8 +385,8 @@ void TestBayesianTracking()
     // Draw noisy observations:
     vector<float> obs_x(2), obs_y(2);
     obs_x[0] = obs_y[0] = 0;
-    obs_x[1] = obsRange * cos(obsBearing);
-    obs_y[1] = obsRange * sin(obsBearing);
+    obs_x[1] = static_cast<float>(obsRange * cos(obsBearing));
+    obs_y[1] = static_cast<float>(obsRange * sin(obsBearing));
 
     winEKF.plot(obs_x, obs_y, "r", "plot_obs_ray");
     winPF.plot(obs_x, obs_y, "r", "plot_obs_ray");
@@ -621,8 +621,9 @@ void CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
   // Update weights
   for (i = 0; i < N; i++)
   {
-    float predicted_range = sqrt(square(m_particles[i].d->x) + square(m_particles[i].d->y));
-    float predicted_bearing = atan2(m_particles[i].d->y, m_particles[i].d->x);
+    float predicted_range =
+        static_cast<float>(sqrt(square(m_particles[i].d->x) + square(m_particles[i].d->y)));
+    float predicted_bearing = static_cast<float>(atan2(m_particles[i].d->y, m_particles[i].d->x));
 
     m_particles[i].log_w +=
         log(math::normalPDF(predicted_range - obsRange, 0, RANGE_SENSOR_NOISE_STD)) +

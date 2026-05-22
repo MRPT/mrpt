@@ -27,10 +27,10 @@ CRootNode::CRootNode(const CSimpleMap& simplemap) : CNode(nullptr)
   }
 }
 
-int CRootNode::childCount() const { return m_posesNode.size(); }
+int CRootNode::childCount() const { return static_cast<int>(m_posesNode.size()); }
 CNode* CRootNode::child(int id)
 {
-  int size = m_posesNode.size();
+  int size = static_cast<int>(m_posesNode.size());
   ASSERT_(id <= size);
   return m_posesNode[id];
 }

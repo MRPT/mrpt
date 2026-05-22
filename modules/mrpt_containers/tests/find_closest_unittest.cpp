@@ -40,7 +40,7 @@ TEST(find_closest, testStdMap)
     EXPECT_EQ(ret.value().second, 'A');
   }
   {
-    auto ret = mrpt::containers::find_closest(data, 1.4f);
+    auto ret = mrpt::containers::find_closest(data, 1.4);
     EXPECT_TRUE(ret.has_value());
     EXPECT_EQ(ret.value().second, 'A');
   }

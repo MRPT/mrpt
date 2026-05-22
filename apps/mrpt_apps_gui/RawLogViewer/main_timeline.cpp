@@ -156,14 +156,15 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
   size_t maxSensorLabelLength = 10;
   for (const auto& e : listOfSensorLabels) mrpt::keep_max(maxSensorLabelLength, e.first.size());
 
-  tl.actualLeftBorderPixels = mrpt::round(maxSensorLabelLength * XTICKS_FONT_WIDTH + 10);
+  tl.actualLeftBorderPixels =
+      mrpt::round(static_cast<double>(maxSensorLabelLength) * XTICKS_FONT_WIDTH + 10);
 
-  const double xLeft = px2x(tl.actualLeftBorderPixels);
+  const double xLeft = px2x(static_cast<int>(tl.actualLeftBorderPixels));
   const double xRight = px2x(clsz.GetWidth() - TL_BORDER);
   const double yLowerBorder = px2y(clsz.GetHeight() - TL_BORDER_BOTTOM);
   const double yTopBorder = px2y(TL_BORDER);
 
-  const double xLeft1 = px2x(tl.actualLeftBorderPixels + 1);
+  const double xLeft1 = px2x(static_cast<int>(tl.actualLeftBorderPixels) + 1);
   const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
   const double yLowerBorder1 = px2y(clsz.GetHeight() - TL_BORDER_BOTTOM - 1);
   const double yTopBorder1 = px2y(TL_BORDER + 1);
@@ -236,9 +237,11 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
     // tick line:
     auto glTick = mrpt::viz::CSimpleLine::Create();
     glTick->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
-    glTick->setLineCoords(      //
-        ptX, yLowerBorder1, 0,  //
-        ptX, yTopBorder1, 0     //
+    glTick->setLineCoords(                     //
+        static_cast<float>(ptX),               //
+        static_cast<float>(yLowerBorder1), 0,  //
+        static_cast<float>(ptX),               //
+        static_cast<float>(yTopBorder1), 0     //
     );
     tl.xTicks->insert(glTick);
   }
@@ -250,8 +253,9 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 
   if (!listOfSensorLabels.empty())
   {
-    const double dy = (yTopBorder2 - yLowerBorder2) /
-                      (listOfSensorLabels.size() > 1 ? listOfSensorLabels.size() : 1.0);
+    const double dy =
+        (yTopBorder2 - yLowerBorder2) /
+        (listOfSensorLabels.size() > 1 ? static_cast<double>(listOfSensorLabels.size()) : 1.0);
     double y0 = yLowerBorder2 + 0.1 * dy;
 
     for (const auto& e : listOfSensorLabels)
@@ -279,7 +283,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
         if (x - lastX < widthOf1Px) continue;  // no worth adding so many points
 
         lastX = x;
-        glDots->insertPoint(x, y0, 0);
+        glDots->insertPoint(static_cast<float>(x), static_cast<float>(y0), 0);
       }
 
       // Keep a map between vertical coords and sensor labels:
@@ -370,7 +374,7 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 
   const double widthOf1Px = px2width(1);
 
-  const double xLeft1 = px2x(m_timeline.actualLeftBorderPixels + 1);
+  const double xLeft1 = px2x(static_cast<int>(m_timeline.actualLeftBorderPixels) + 1);
   const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
   const double yLowerBorder1 = px2y(clsz.GetHeight() - TL_BORDER_BOTTOM - 1);
   const double yTopBorder1 = px2y(TL_BORDER + 1);
@@ -442,7 +446,7 @@ void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(
 
     m_treeView->m_is_thumb_tracking = true;
     m_treeView->ScrollToPercent(
-        treeIndex / static_cast<double>(m_treeView->getTotalTreeNodes() - 1));
+        static_cast<double>(treeIndex) / static_cast<double>(m_treeView->getTotalTreeNodes() - 1));
   }
 }
 
@@ -492,11 +496,12 @@ void xRawLogViewerFrame::OnTimeLineMouseLeftDown(
   {
     auto treeIndex = selPt->second;
 
-    m_treeView->SetSelectedItem(treeIndex);
-    if (!m_treeView->isItemIndexVisible(treeIndex))
+    m_treeView->SetSelectedItem(static_cast<int>(treeIndex));
+    if (!m_treeView->isItemIndexVisible(static_cast<int>(treeIndex)))
     {
       m_treeView->ScrollToPercent(
-          treeIndex / static_cast<double>(m_treeView->getTotalTreeNodes() - 1));
+          static_cast<double>(treeIndex) /
+          static_cast<double>(m_treeView->getTotalTreeNodes() - 1));
     }
   }
 }
@@ -540,7 +545,7 @@ void xRawLogViewerFrame::OnTimeLineMouseWheel(wxMouseEvent& e)
       const auto clsz = mrpt::gui::GetScaledClientSize(m_glTimeLine);
 
       auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
-      const double xLeft1 = px2x(m_timeline.actualLeftBorderPixels + 1);
+      const double xLeft1 = px2x(static_cast<int>(m_timeline.actualLeftBorderPixels) + 1);
       const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
 
       const double c = (xFocus - xLeft1) / (xRight1 - xLeft1);
@@ -653,7 +658,7 @@ std::optional<std::pair<double, size_t>> xRawLogViewerFrame::timeLineMouseXYToTr
   m_timeline.horizontalCursor->setVisibility(false);
   if (trackedSensorLabel.has_value())
   {
-    const double xLeft1 = px2x(tl.actualLeftBorderPixels + 1);
+    const double xLeft1 = px2x(static_cast<int>(tl.actualLeftBorderPixels) + 1);
     const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
 
     auto px2height = [clsz](int v) { return (2.0 / clsz.GetHeight()) * v; };
@@ -690,7 +695,7 @@ std::optional<std::pair<double, size_t>> xRawLogViewerFrame::timeLineMouseXYToTr
     {
       const std::string& clickedSensorLabel = *trackedSensorLabel;
 
-      const int lastIdx = m_treeView->getTotalTreeNodes() - 1;
+      const int lastIdx = static_cast<int>(m_treeView->getTotalTreeNodes()) - 1;
 
       const auto lambdaTest =
           [&treeIndex, this, clickedSensorLabel, lastIdx, &matchedClickSensorLabel](int i)

@@ -78,7 +78,7 @@ void TestIMU()
     const double t1 = mrpt::Clock::nowDouble();
     totalObsCount += lstObs.size();
 
-    double sensorRate = totalObsCount / (t1 - t0);
+    double sensorRate = static_cast<double>(totalObsCount) / (t1 - t0);
 
     // Update 3D view:
     {

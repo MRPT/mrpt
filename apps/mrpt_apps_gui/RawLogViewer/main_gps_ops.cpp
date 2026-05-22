@@ -179,9 +179,9 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath([[maybe_unused]] wxCommandEvent& even
             square(X_ENU.x - *xs.rbegin()) + square(X_ENU.y - *ys.rbegin()) +
             square(X_ENU.z - *zs.rbegin()));
 
-      xs.push_back(X_ENU.x);
-      ys.push_back(X_ENU.y);
-      zs.push_back(X_ENU.z);
+      xs.push_back(static_cast<float>(X_ENU.x));
+      ys.push_back(static_cast<float>(X_ENU.y));
+      zs.push_back(static_cast<float>(X_ENU.z));
 
       M++;
     }
@@ -357,7 +357,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps([[maybe_unused]] wxComman
     }  // end switch type
   }    // end for i
 
-  unsigned int nChanges = time_changes.size();
+  unsigned int nChanges = static_cast<unsigned int>(time_changes.size());
   double average_time_change = 0, std_time_change = 0;
   mrpt::math::meanAndStd(time_changes, average_time_change, std_time_change);
 
@@ -712,7 +712,8 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
       // Local coordinates reference:
       TPose3D _local_ENU;
       mrpt::topography::ENU_axes_from_WGS84(
-          refCoords.lon, refCoords.lat, refCoords.height, _local_ENU, true);
+          refCoords.lon.getDecimalValue(), refCoords.lat.getDecimalValue(), refCoords.height,
+          _local_ENU, true);
       local_ENU = CPose3D(_local_ENU);
     }
 
@@ -1038,8 +1039,8 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
     MAT.saveToTextFile(format("%s_JOINT_%s.txt", fil.c_str(), joint_name.c_str()));
 
     CMatrixDouble MAT_REF(1, 3);
-    MAT_REF(0, 0) = refCoords.lon;
-    MAT_REF(0, 1) = refCoords.lat;
+    MAT_REF(0, 0) = refCoords.lon.getDecimalValue();
+    MAT_REF(0, 1) = refCoords.lat.getDecimalValue();
     MAT_REF(0, 2) = refCoords.height;
     MAT_REF.saveToTextFile(
         mrpt::format("%s_JOINTREF_%s.txt", fil.c_str(), joint_name.c_str()), MATRIX_FORMAT_FIXED);
@@ -1055,7 +1056,9 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
 // Not-A-Number
 //  (useful for some vendor-specific devices...)
 void filter_delGPSNan(
-    mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF, int& changesCount)
+    [[maybe_unused]] mrpt::obs::CActionCollection* acts,
+    mrpt::obs::CSensoryFrame* SF,
+    int& changesCount)
 {
   if (SF)
   {
@@ -1088,8 +1091,8 @@ void xRawLogViewerFrame::OnMenuGPSDeleteNaN([[maybe_unused]] wxCommandEvent& eve
 
   dlgEdit.rbLoaded->SetValue(true);  // Apply to Rawlog in memory.
   dlgEdit.spinFirst->SetValue(0);
-  dlgEdit.spinLast->SetRange(0, rawlog.size() - 1);
-  dlgEdit.spinLast->SetValue(rawlog.size() - 1);
+  dlgEdit.spinLast->SetRange(0, static_cast<int>(rawlog.size()) - 1);
+  dlgEdit.spinLast->SetValue(static_cast<int>(rawlog.size()) - 1);
 
   dlgEdit.executeOperationOnRawlog(filter_delGPSNan, "GPS deleted with NaN values:");
 

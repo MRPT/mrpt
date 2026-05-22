@@ -516,7 +516,7 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles([[maybe_unused]] wxCommandEvent&
     return;
 
   wxBusyCursor waitCursor;
-  unsigned int nEntries = rawlog.size();
+  unsigned int nEntries = static_cast<unsigned int>(rawlog.size());
 
   wxString auxStr;
   wxProgressDialog progDia(
