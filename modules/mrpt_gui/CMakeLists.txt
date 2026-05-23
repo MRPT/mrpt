@@ -39,12 +39,14 @@ set(LIB_SOURCES
   src/CWxGLCanvasBase.cpp
   src/default_mrpt_glfw_icon.cpp
   src/error_box.cpp
-  src/mathplot/mathplot.cpp
   src/MRPT2NanoguiGLCanvas.cpp
   src/registerAllClasses.cpp
   src/WxSubsystem.cpp
   src/WxUtils.cpp
 )
+if(CMAKE_MRPT_HAS_WXWIDGETS)
+  list(APPEND LIB_SOURCES src/mathplot/mathplot.cpp)
+endif()
 set(LIB_PUBLIC_HEADERS
   3rdparty/mathplot/mathplot.h
   include/mrpt/gui.h

@@ -375,7 +375,6 @@ class CompiledViewport
   VertexArrayObject m_borderVAO;
   Buffer m_borderVertexBuffer{Buffer::Type::Vertex};
   Buffer m_borderColorBuffer{Buffer::Type::Vertex};
-  [[maybe_unused]] bool m_borderBuffersCreated = false;
 
   /** Text overlay rendering */
   VertexArrayObject m_textVAO;
