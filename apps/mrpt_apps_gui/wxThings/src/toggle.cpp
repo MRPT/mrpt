@@ -383,8 +383,9 @@ void wxCustomButton::Paint(wxDC& dc)
   if (m_focused)
   {
     backColour.Set(
-        wxMin(backColour.Red() + 20, 255), wxMin(backColour.Green() + 20, 255),
-        wxMin(backColour.Blue() + 20, 255));
+        static_cast<wxColourBase::ChannelType>(wxMin(backColour.Red() + 20, 255)),
+        static_cast<wxColourBase::ChannelType>(wxMin(backColour.Green() + 20, 255)),
+        static_cast<wxColourBase::ChannelType>(wxMin(backColour.Blue() + 20, 255)));
   }
 
   wxBitmap bitmap;
@@ -416,9 +417,9 @@ void wxCustomButton::Paint(wxDC& dc)
   // wxCONTROL_ISDEFAULT
 
   int ren_flags = 0;
-  if (GetValue()) ren_flags |= wxCONTROL_PRESSED;
-  if (m_focused) ren_flags |= wxCONTROL_CURRENT;
-  if (!IsEnabled()) ren_flags |= wxCONTROL_DISABLED;
+  if (GetValue()) ren_flags |= static_cast<int>(wxCONTROL_PRESSED);
+  if (m_focused) ren_flags |= static_cast<int>(wxCONTROL_CURRENT);
+  if (!IsEnabled()) ren_flags |= static_cast<int>(wxCONTROL_DISABLED);
 
   wxRendererNative::Get().DrawPushButton(this, dc, wxRect(0, 0, w, h), ren_flags);
 
@@ -463,7 +464,7 @@ void wxCustomButton::SetBitmapMargin(const wxSize& margin, bool fit)
   if (fit) SetSize(DoGetBestSize());
 }
 
-wxSize wxCustomButton::DoGetBestSize() const { return DoGetBestSize_((wxWindow*)this); }
+wxSize wxCustomButton::DoGetBestSize() const { return DoGetBestSize_(const_cast<wxWindow*>(static_cast<const wxWindow*>(this))); }
 
 wxSize wxCustomButton::DoGetBestSize_(wxWindow* win) const
 {
