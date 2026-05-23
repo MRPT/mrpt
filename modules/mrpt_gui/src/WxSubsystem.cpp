@@ -16,14 +16,16 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/gui/WxSubsystem.h>
-#include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/config.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/thread_name.h>
 
+#if MRPT_HAS_WXWIDGETS
+#include <mrpt/gui/WxSubsystem.h>
+#include <mrpt/gui/WxUtils.h>
 // The wxMathPlot library:
 #include <mathplot/mathplot.h>
+#endif
 
 #include <queue>
 
