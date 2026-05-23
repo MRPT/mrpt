@@ -16,9 +16,9 @@
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
 #include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 
-using namespace mrpt::gui;
-
 #if MRPT_HAS_NANOGUI
+
+using namespace mrpt::gui;
 
 MRPT2NanoguiGLCanvas::MRPT2NanoguiGLCanvas(nanogui::Widget* parent) : nanogui::GLCanvas(parent) {}
 
