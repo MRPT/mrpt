@@ -464,7 +464,10 @@ void wxCustomButton::SetBitmapMargin(const wxSize& margin, bool fit)
   if (fit) SetSize(DoGetBestSize());
 }
 
-wxSize wxCustomButton::DoGetBestSize() const { return DoGetBestSize_(const_cast<wxWindow*>(static_cast<const wxWindow*>(this))); }
+wxSize wxCustomButton::DoGetBestSize() const
+{
+  return DoGetBestSize_(const_cast<wxWindow*>(static_cast<const wxWindow*>(this)));
+}
 
 wxSize wxCustomButton::DoGetBestSize_(wxWindow* win) const
 {
