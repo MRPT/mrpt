@@ -142,7 +142,16 @@ For public member variables, use `.def_readwrite("name", &T::name)` or `.def_rea
 - Add Pythonic conveniences (e.g., `<<` operator for scene building, color constants)
 - Include `__all__` listing all public names
 
-## 6. Instructions for AI agents
+## 6. Porting ROS 2 nodes
+
+For ROS 2 packages that previously depended on `mrpt_ros` (MRPT 2.x wrappers), see the
+porting guide at `doc/source/doxygen-docs/port_mrpt3.md` (section 19) for:
+
+- `package.xml` dependency renaming (`mrpt_lib*` → fine-grained `mrpt_<module>` packages)
+- `CMakeLists.txt` `find_package` and target renaming (`mrpt::<X>` → `mrpt::mrpt_<X>`)
+- Migrating away from the dropped `mrpt_libtclap` / `mrpt-tclap` to CLI11
+
+## 7. Instructions for AI agents
 
 - Do not use the compound command "cd foo && git ...", instead, use "git -C foo ...".
 
