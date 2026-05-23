@@ -121,6 +121,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wstringop-overflow"
+#pragma GCC diagnostic ignored "-Wstringop-overread"
 #endif
         std::memcpy(
             &newData[static_cast<size_t>(r * m_Cols)], &m_data[static_cast<size_t>(r * old_cols)],
@@ -272,6 +273,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wstringop-overflow"
+#pragma GCC diagnostic ignored "-Wstringop-overread"
 #endif
     for (Index i = 0; i < m_Rows; i++)
     {
