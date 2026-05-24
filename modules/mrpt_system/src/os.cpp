@@ -104,13 +104,18 @@ int myKbhit()
   return (ret > 0);
 }
 
+}  // namespace
+#endif  // !_WIN32
+
+namespace
+{
 struct LoadedModuleInfo
 {
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
   void* handle = nullptr;
 #endif
 #ifdef MRPT_OS_WINDOWS
-  HMODULE handle;
+  HMODULE handle = nullptr;
 #endif
 };
 
@@ -156,7 +161,6 @@ struct ModulesRegistry
 };
 
 }  // namespace
-#endif
 
 namespace mrpt::system
 {
