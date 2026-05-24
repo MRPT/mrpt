@@ -101,7 +101,6 @@ class CSchemeArchiveBase
   CSchemeArchiveBase& operator=(const uint64_t val) { return (*pimpl).operator=(val); }
   CSchemeArchiveBase& operator=(const float val) { return (*pimpl).operator=(val); }
   CSchemeArchiveBase& operator=(const double val) { return (*pimpl).operator=(val); }
-  CSchemeArchiveBase& operator=(const std::nullptr_t val) { return (*pimpl).operator=(val); }
   CSchemeArchiveBase& operator=(const std::string val) { return (*pimpl).operator=(val); }
   CSchemeArchiveBase& operator=(bool val) { return (*pimpl).operator=(val); }
   // Type conversion methods
