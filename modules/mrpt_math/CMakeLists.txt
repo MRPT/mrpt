@@ -120,7 +120,6 @@ set(LIB_UNIT_TEST_SOURCES
 )
 
 set(LIB_PUBLIC_HEADERS
-  include/mrpt/3rdparty/CSparse/cs.h
   include/mrpt/math/CAtan2LookUpTable.h
   include/mrpt/math/CBinaryRelation.h
   include/mrpt/math/CHistogram.h
