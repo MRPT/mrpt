@@ -19,6 +19,7 @@
 #include <mrpt/math/TObject2D.h>
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/geometry.h>
 
 #include <algorithm>
@@ -885,4 +886,398 @@ TEST(Geometry, getRegressionPlane)
     mrpt::math::TPlane pl;
     EXPECT_ANY_THROW(mrpt::math::getRegressionPlane(pts, pl));
   }
+}
+
+// =========================================================================
+//  createFromPose* — lines from pose axes
+// =========================================================================
+
+TEST(Geometry, createFromPoseX_3D)
+{
+  // A pose at (1,2,3) with zero rotation: X axis points in world +X direction
+  const mrpt::math::TPose3D pose{1.0, 2.0, 3.0, 0.0, 0.0, 0.0};
+  TLine3D r;
+  mrpt::math::createFromPoseX(pose, r);
+
+  // Base point must be the pose origin
+  EXPECT_NEAR(r.pBase.x, 1.0, 1e-9);
+  EXPECT_NEAR(r.pBase.y, 2.0, 1e-9);
+  EXPECT_NEAR(r.pBase.z, 3.0, 1e-9);
+
+  // Direction must be unit +X
+  EXPECT_NEAR(std::abs(r.director[0]), 1.0, 1e-9);
+  EXPECT_NEAR(r.director[1], 0.0, 1e-9);
+  EXPECT_NEAR(r.director[2], 0.0, 1e-9);
+}
+
+TEST(Geometry, createFromPoseY_3D)
+{
+  const mrpt::math::TPose3D pose{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  TLine3D r;
+  mrpt::math::createFromPoseY(pose, r);
+
+  EXPECT_NEAR(r.director[0], 0.0, 1e-9);
+  EXPECT_NEAR(std::abs(r.director[1]), 1.0, 1e-9);
+  EXPECT_NEAR(r.director[2], 0.0, 1e-9);
+}
+
+TEST(Geometry, createFromPoseZ_3D)
+{
+  const mrpt::math::TPose3D pose{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  TLine3D r;
+  mrpt::math::createFromPoseZ(pose, r);
+
+  EXPECT_NEAR(r.director[0], 0.0, 1e-9);
+  EXPECT_NEAR(r.director[1], 0.0, 1e-9);
+  EXPECT_NEAR(std::abs(r.director[2]), 1.0, 1e-9);
+}
+
+TEST(Geometry, createFromPoseX_2D)
+{
+  // coefs = (cos φ, −sin φ, …): at φ=0 normal is world +X → line is x = 1 (vertical)
+  const mrpt::math::TPose2D pose{1.0, 2.0, 0.0};
+  TLine2D r;
+  mrpt::math::createFromPoseX(pose, r);
+
+  EXPECT_TRUE(r.contains({1.0, 2.0}));
+  EXPECT_TRUE(r.contains({1.0, 5.0}));   // same x, different y
+  EXPECT_FALSE(r.contains({3.0, 2.0}));  // different x
+}
+
+TEST(Geometry, createFromPoseY_2D)
+{
+  // coefs = (sin φ, cos φ, …): at φ=0 normal is world +Y → line is y = 2 (horizontal)
+  const mrpt::math::TPose2D pose{1.0, 2.0, 0.0};
+  TLine2D r;
+  mrpt::math::createFromPoseY(pose, r);
+
+  EXPECT_TRUE(r.contains({1.0, 2.0}));
+  EXPECT_TRUE(r.contains({3.0, 2.0}));   // same y, different x
+  EXPECT_FALSE(r.contains({1.0, 5.0}));  // different y
+}
+
+TEST(Geometry, createFromPoseAndVector_3D)
+{
+  const mrpt::math::TPose3D pose{1.0, 2.0, 3.0, 0.0, 0.0, 0.0};
+  const double v[3] = {0.0, 1.0, 0.0};  // local +Y
+  TLine3D r;
+  mrpt::math::createFromPoseAndVector(pose, v, r);
+
+  EXPECT_NEAR(r.pBase.x, 1.0, 1e-9);
+  EXPECT_NEAR(r.pBase.y, 2.0, 1e-9);
+  EXPECT_NEAR(r.pBase.z, 3.0, 1e-9);
+  // With zero rotation local +Y maps to world +Y
+  EXPECT_NEAR(r.director[0], 0.0, 1e-9);
+  EXPECT_NEAR(std::abs(r.director[1]), 1.0, 1e-9);
+}
+
+TEST(Geometry, createFromPoseAndVector_2D)
+{
+  const mrpt::math::TPose2D pose{1.0, 2.0, 0.0};
+  const double v[2] = {0.0, 1.0};  // local +Y maps to world +Y
+  TLine2D r;
+  mrpt::math::createFromPoseAndVector(pose, v, r);
+
+  // vector (0,1) in local frame at phi=0 → world Y direction → normal is +Y → y=2 (horizontal)
+  EXPECT_TRUE(r.contains({1.0, 2.0}));
+  EXPECT_TRUE(r.contains({4.0, 2.0}));
+}
+
+// =========================================================================
+//  createPlaneFromPose*
+// =========================================================================
+
+TEST(Geometry, createPlaneFromPoseXY)
+{
+  // XY plane of identity pose is the world Z=0 plane
+  const mrpt::math::TPose3D pose{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  TPlane pl;
+  mrpt::math::createPlaneFromPoseXY(pose, pl);
+
+  EXPECT_TRUE(pl.contains({0.0, 0.0, 0.0}));
+  EXPECT_TRUE(pl.contains({1.0, 0.0, 0.0}));
+  EXPECT_TRUE(pl.contains({0.0, 1.0, 0.0}));
+  EXPECT_FALSE(pl.contains({0.0, 0.0, 1.0}));
+}
+
+TEST(Geometry, createPlaneFromPoseXZ)
+{
+  const mrpt::math::TPose3D pose{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  TPlane pl;
+  mrpt::math::createPlaneFromPoseXZ(pose, pl);
+
+  EXPECT_TRUE(pl.contains({0.0, 0.0, 0.0}));
+  EXPECT_TRUE(pl.contains({1.0, 0.0, 0.0}));
+  EXPECT_TRUE(pl.contains({0.0, 0.0, 1.0}));
+  EXPECT_FALSE(pl.contains({0.0, 1.0, 0.0}));
+}
+
+TEST(Geometry, createPlaneFromPoseYZ)
+{
+  const mrpt::math::TPose3D pose{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  TPlane pl;
+  mrpt::math::createPlaneFromPoseYZ(pose, pl);
+
+  EXPECT_TRUE(pl.contains({0.0, 0.0, 0.0}));
+  EXPECT_TRUE(pl.contains({0.0, 1.0, 0.0}));
+  EXPECT_TRUE(pl.contains({0.0, 0.0, 1.0}));
+  EXPECT_FALSE(pl.contains({1.0, 0.0, 0.0}));
+}
+
+// =========================================================================
+//  distance() free functions
+// =========================================================================
+
+TEST(Geometry, distance_point_point)
+{
+  EXPECT_NEAR(mrpt::math::distance(TPoint2D(0, 0), TPoint2D(3, 4)), 5.0, 1e-9);
+  EXPECT_NEAR(mrpt::math::distance(TPoint3D(0, 0, 0), TPoint3D(1, 2, 2)), 3.0, 1e-9);
+}
+
+TEST(Geometry, distance_parallel_lines_2D)
+{
+  // Two parallel horizontal lines y=0 and y=3
+  const TLine2D l1 = TLine2D::FromTwoPoints({0, 0}, {1, 0});
+  const TLine2D l2 = TLine2D::FromTwoPoints({0, 3}, {1, 3});
+  EXPECT_NEAR(mrpt::math::distance(l1, l2), 3.0, 1e-9);
+}
+
+TEST(Geometry, distance_intersecting_lines_2D)
+{
+  // Intersecting lines: distance is 0
+  const TLine2D l1 = TLine2D::FromTwoPoints({0, 0}, {1, 0});
+  const TLine2D l2 = TLine2D::FromTwoPoints({0, 0}, {0, 1});
+  EXPECT_NEAR(mrpt::math::distance(l1, l2), 0.0, 1e-9);
+}
+
+TEST(Geometry, distance_parallel_planes)
+{
+  const TPlane p1 = TPlane::FromPointAndNormal({0, 0, 0}, {0, 0, 1});
+  const TPlane p2 = TPlane::FromPointAndNormal({0, 0, 5}, {0, 0, 1});
+  EXPECT_NEAR(mrpt::math::distance(p1, p2), 5.0, 1e-9);
+}
+
+TEST(Geometry, distance_intersecting_planes)
+{
+  const TPlane p1 = TPlane::FromPointAndNormal({0, 0, 0}, {0, 0, 1});
+  const TPlane p2 = TPlane::FromPointAndNormal({0, 0, 0}, {0, 1, 0});
+  EXPECT_NEAR(mrpt::math::distance(p1, p2), 0.0, 1e-9);
+}
+
+TEST(Geometry, distance_parallel_lines_3D)
+{
+  const auto l1 = TLine3D::FromTwoPoints({0, 0, 0}, {1, 0, 0});
+  const auto l2 = TLine3D::FromTwoPoints({0, 2, 0}, {1, 2, 0});
+  EXPECT_NEAR(mrpt::math::distance(l1, l2), 2.0, 1e-9);
+}
+
+// =========================================================================
+//  areAligned — output-parameter variants
+// =========================================================================
+
+TEST(Geometry, areAligned_2D_with_line_output)
+{
+  const std::vector<mrpt::math::TPoint2D> pts = {
+      {0, 0},
+      {1, 2},
+      {2, 4},
+      {3, 6}
+  };
+  TLine2D line;
+  EXPECT_TRUE(mrpt::math::areAligned(pts, line));
+  // All points must lie on the returned line
+  for (const auto& p : pts) EXPECT_TRUE(line.contains(p));
+}
+
+TEST(Geometry, areAligned_3D_with_line_output)
+{
+  const std::vector<mrpt::math::TPoint3D> pts = {
+      {0, 0, 0},
+      {1, 1, 1},
+      {2, 2, 2},
+      {3, 3, 3}
+  };
+  TLine3D line;
+  EXPECT_TRUE(mrpt::math::areAligned(pts, line));
+  for (const auto& p : pts) EXPECT_TRUE(line.contains(p));
+}
+
+// =========================================================================
+//  intersect — segment/plane, plane/line, line/line (3D)
+// =========================================================================
+
+TEST(Geometry, intersect_segment3D_plane)
+{
+  // Segment from (0,0,-1) to (0,0,+1) crosses Z=0 plane
+  const TSegment3D seg(TPoint3D(0, 0, -1), TPoint3D(0, 0, +1));
+  const TPlane plane = TPlane::FromPointAndNormal({0, 0, 0}, {0, 0, 1});
+
+  TObject3D obj;
+  EXPECT_TRUE(mrpt::math::intersect(seg, plane, obj));
+  EXPECT_TRUE(obj.isPoint());
+
+  TPoint3D pt;
+  obj.getPoint(pt);
+  EXPECT_NEAR(pt.x, 0.0, 1e-9);
+  EXPECT_NEAR(pt.y, 0.0, 1e-9);
+  EXPECT_NEAR(pt.z, 0.0, 1e-9);
+}
+
+TEST(Geometry, intersect_segment3D_plane_no_crossing)
+{
+  // Segment lies entirely above Z=0
+  const TSegment3D seg(TPoint3D(0, 0, 1), TPoint3D(1, 1, 2));
+  const TPlane plane = TPlane::FromPointAndNormal({0, 0, 0}, {0, 0, 1});
+
+  TObject3D obj;
+  EXPECT_FALSE(mrpt::math::intersect(seg, plane, obj));
+}
+
+TEST(Geometry, intersect_plane_line3D)
+{
+  // Line along Z axis crosses Z=0 plane at origin
+  const TLine3D line = TLine3D::FromTwoPoints({0, 0, -1}, {0, 0, 1});
+  const TPlane plane = TPlane::FromPointAndNormal({0, 0, 0}, {0, 0, 1});
+
+  TObject3D obj;
+  EXPECT_TRUE(mrpt::math::intersect(plane, line, obj));
+  EXPECT_TRUE(obj.isPoint());
+
+  TPoint3D pt;
+  obj.getPoint(pt);
+  EXPECT_NEAR(pt.z, 0.0, 1e-9);
+}
+
+TEST(Geometry, intersect_line3D_line3D_crossing)
+{
+  // Two coplanar lines that cross at origin
+  const TLine3D l1 = TLine3D::FromTwoPoints({-1, 0, 0}, {1, 0, 0});
+  const TLine3D l2 = TLine3D::FromTwoPoints({0, -1, 0}, {0, 1, 0});
+
+  TObject3D obj;
+  EXPECT_TRUE(mrpt::math::intersect(l1, l2, obj));
+  EXPECT_TRUE(obj.isPoint());
+
+  TPoint3D pt;
+  obj.getPoint(pt);
+  EXPECT_NEAR(pt.x, 0.0, 1e-9);
+  EXPECT_NEAR(pt.y, 0.0, 1e-9);
+  EXPECT_NEAR(pt.z, 0.0, 1e-9);
+}
+
+TEST(Geometry, intersect_line3D_line3D_skew)
+{
+  // Skew lines (no intersection)
+  const TLine3D l1 = TLine3D::FromTwoPoints({0, 0, 0}, {1, 0, 0});
+  const TLine3D l2 = TLine3D::FromTwoPoints({0, 1, 1}, {1, 1, 1});
+
+  TObject3D obj;
+  EXPECT_FALSE(mrpt::math::intersect(l1, l2, obj));
+}
+
+// =========================================================================
+//  intersect — polygon2D with segment/line
+// =========================================================================
+
+TEST(Geometry, intersect_polygon2D_segment)
+{
+  // Unit square polygon
+  const mrpt::math::TPolygon2D poly = {
+      {0, 0},
+      {1, 0},
+      {1, 1},
+      {0, 1}
+  };
+  // Horizontal segment crossing the square
+  const TSegment2D seg(TPoint2D(-0.5, 0.5), TPoint2D(1.5, 0.5));
+
+  TObject2D obj;
+  EXPECT_TRUE(mrpt::math::intersect(poly, seg, obj));
+}
+
+TEST(Geometry, intersect_polygon2D_line)
+{
+  const mrpt::math::TPolygon2D poly = {
+      {0, 0},
+      {1, 0},
+      {1, 1},
+      {0, 1}
+  };
+  // Line y=0.5 (horizontal, crosses the square)
+  const TLine2D line = TLine2D::FromTwoPoints({-1, 0.5}, {2, 0.5});
+
+  TObject2D obj;
+  EXPECT_TRUE(mrpt::math::intersect(poly, line, obj));
+}
+
+// =========================================================================
+//  project3D — line and plane overloads
+// =========================================================================
+
+TEST(Geometry, project3D_line)
+{
+  // Project the X-axis line through a pose that shifts origin to (0,0,1)
+  const TLine3D line = TLine3D::FromTwoPoints({0, 0, 0}, {1, 0, 0});
+  const mrpt::math::TPose3D pose{0.0, 0.0, 1.0, 0.0, 0.0, 0.0};
+
+  TLine3D newLine;
+  mrpt::math::project3D(line, pose, newLine);
+
+  // Base point must be shifted by (0,0,1)
+  EXPECT_NEAR(newLine.pBase.z, 1.0, 1e-9);
+  // Direction unchanged (zero rotation)
+  EXPECT_NEAR(std::abs(newLine.director[0]), 1.0, 1e-9);
+}
+
+TEST(Geometry, project3D_plane)
+{
+  // Z=0 plane projected through a pose that shifts (0,0,2): gives Z=2 plane
+  const TPlane plane = TPlane::FromPointAndNormal({0, 0, 0}, {0, 0, 1});
+  const mrpt::math::TPose3D pose{0.0, 0.0, 2.0, 0.0, 0.0, 0.0};
+
+  TPlane newPlane;
+  mrpt::math::project3D(plane, pose, newPlane);
+
+  EXPECT_TRUE(newPlane.contains({0, 0, 2}));
+  EXPECT_TRUE(newPlane.contains({1, 0, 2}));
+  EXPECT_FALSE(newPlane.contains({0, 0, 0}));
+}
+
+// =========================================================================
+//  signedArea
+// =========================================================================
+
+TEST(Geometry, signedArea_CCW_positive)
+{
+  // Counter-clockwise unit square → positive signed area = 1
+  const mrpt::math::TPolygon2D poly = {
+      {0, 0},
+      {1, 0},
+      {1, 1},
+      {0, 1}
+  };
+  EXPECT_NEAR(mrpt::math::signedArea(poly), 1.0, 1e-9);
+}
+
+TEST(Geometry, signedArea_CW_negative)
+{
+  // Clockwise winding → negative
+  const mrpt::math::TPolygon2D poly = {
+      {0, 0},
+      {0, 1},
+      {1, 1},
+      {1, 0}
+  };
+  EXPECT_NEAR(mrpt::math::signedArea(poly), -1.0, 1e-9);
+}
+
+TEST(Geometry, signedArea_triangle)
+{
+  // Right triangle with legs 3 and 4: area = 6
+  const mrpt::math::TPolygon2D poly = {
+      {0, 0},
+      {3, 0},
+      {0, 4}
+  };
+  EXPECT_NEAR(std::abs(mrpt::math::signedArea(poly)), 6.0, 1e-9);
 }

@@ -100,6 +100,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/container_ops_unittest.cpp
   tests/distributions_unittest.cpp
   tests/EigenAlignment_unittest.cpp
+  tests/fourier_unittest.cpp
   tests/fresnel_unittest.cpp
   tests/geometry_unittest.cpp
   tests/KDTreeCapable_unittest.cpp
