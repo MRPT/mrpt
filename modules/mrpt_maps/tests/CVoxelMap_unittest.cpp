@@ -93,7 +93,7 @@ TEST(CVoxelMap, GetOccupiedVoxels)
 
   auto pts = m.getOccupiedVoxels();
   ASSERT_NE(pts, nullptr);
-  EXPECT_GE(pts->size(), 1u);
+  EXPECT_EQ(pts->size(), 3u);
 }
 
 // =========================================================================

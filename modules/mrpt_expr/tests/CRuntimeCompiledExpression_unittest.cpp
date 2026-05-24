@@ -21,6 +21,86 @@
 
 template class mrpt::CTraitsTest<mrpt::expr::CRuntimeCompiledExpression>;
 
+// =========================================================================
+//  VerboseTest suite — MUST appear first so SetUpTestSuite fires before any
+//  eval() call constructs the ExprVerbose singleton.
+// =========================================================================
+
+class VerboseTest : public ::testing::Test
+{
+ public:
+  static void SetUpTestSuite()
+  {
+#ifdef _WIN32
+    _putenv_s("MRPT_EXPR_VERBOSE", "1");
+#else
+    ::setenv("MRPT_EXPR_VERBOSE", "1", 1);
+#endif
+  }
+  static void TearDownTestSuite()
+  {
+#ifdef _WIN32
+    _putenv_s("MRPT_EXPR_VERBOSE", "");
+#else
+    ::unsetenv("MRPT_EXPR_VERBOSE");
+#endif
+  }
+};
+
+TEST_F(VerboseTest, VerbosePath)
+{
+  // ExprVerbose singleton is constructed on first eval() call.
+  // SetUpTestSuite has already set MRPT_EXPR_VERBOSE=1 above, so the
+  // singleton will be built with verbose always-enabled.
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["v"] = 7.0;
+  expr.compile("v*2", vars);
+  EXPECT_NEAR(expr.eval(), 14.0, 1e-9);
+}
+
+class VerboseMatchTest : public ::testing::Test
+{
+ public:
+  static void SetUpTestSuite()
+  {
+#ifdef _WIN32
+    _putenv_s("MRPT_EXPR_VERBOSE", "myvar");
+#else
+    ::setenv("MRPT_EXPR_VERBOSE", "myvar", 1);
+#endif
+  }
+  static void TearDownTestSuite()
+  {
+#ifdef _WIN32
+    _putenv_s("MRPT_EXPR_VERBOSE", "");
+#else
+    ::unsetenv("MRPT_EXPR_VERBOSE");
+#endif
+  }
+};
+
+TEST_F(VerboseMatchTest, VerboseMatchPath)
+{
+  // Matching expression — should print verbose info but not crash.
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["myvar"] = 3.0;
+  expr.compile("myvar+1", vars);
+  EXPECT_NEAR(expr.eval(), 4.0, 1e-9);
+
+  // Non-matching expression — ExprVerbose::process returns early.
+  mrpt::expr::CRuntimeCompiledExpression expr2;
+  std::map<std::string, double> vars2;
+  vars2["z"] = 1.0;
+  expr2.compile("z", vars2);
+  EXPECT_NEAR(expr2.eval(), 1.0, 1e-9);
+}
+
+// =========================================================================
+//  Regular tests (ExprVerbose singleton already constructed above)
+// =========================================================================
+
 TEST(RuntimeCompiledExpression, SimpleTest)
 {
   mrpt::expr::CRuntimeCompiledExpression expr;
@@ -107,12 +187,15 @@ TEST(RuntimeCompiledExpression, RegisterSymbolTablePointers)
   ptrs["b"] = &b;
   expr.register_symbol_table(ptrs);
 
-  std::map<std::string, double> vars;
-  vars["a"] = a;
-  vars["b"] = b;
-  expr.compile("a+b", vars);
-
+  // Compile with no extra vars so only the pointer-registered symbol table
+  // is active; the expression holds references to a and b directly.
+  expr.compile("a+b", {});
   EXPECT_NEAR(expr.eval(), 7.0, 1e-9);
+
+  // Verify pointer semantics: mutating the originals is reflected in eval().
+  a = 10.0;
+  b = 20.0;
+  EXPECT_NEAR(expr.eval(), 30.0, 1e-9);
 }
 
 TEST(RuntimeCompiledExpression, MathConstants)
@@ -162,58 +245,4 @@ TEST(RuntimeCompiledExpression, ExprNameInErrorMessage)
     const std::string msg(e.what());
     EXPECT_NE(msg.find("my_formula"), std::string::npos);
   }
-}
-
-TEST(RuntimeCompiledExpression, VerbosePath)
-{
-  // Exercise the ExprVerbose::process() path — set env var so it prints.
-  // We just verify no crash and the result is correct.
-#ifdef _WIN32
-  _putenv_s("MRPT_EXPR_VERBOSE", "1");
-#else
-  ::setenv("MRPT_EXPR_VERBOSE", "1", 1);
-#endif
-
-  // ExprVerbose is a singleton initialized at first use; create a new expr
-  // object so the code path is exercised.
-  mrpt::expr::CRuntimeCompiledExpression expr;
-  std::map<std::string, double> vars;
-  vars["v"] = 7.0;
-  expr.compile("v*2", vars);
-  EXPECT_NEAR(expr.eval(), 14.0, 1e-9);
-
-#ifdef _WIN32
-  _putenv_s("MRPT_EXPR_VERBOSE", "");
-#else
-  ::unsetenv("MRPT_EXPR_VERBOSE");
-#endif
-}
-
-TEST(RuntimeCompiledExpression, VerboseMatchPath)
-{
-  // Exercise the substring-match branch of ExprVerbose.
-#ifdef _WIN32
-  _putenv_s("MRPT_EXPR_VERBOSE", "myvar");
-#else
-  ::setenv("MRPT_EXPR_VERBOSE", "myvar", 1);
-#endif
-
-  mrpt::expr::CRuntimeCompiledExpression expr;
-  std::map<std::string, double> vars;
-  vars["myvar"] = 3.0;
-  expr.compile("myvar+1", vars);
-  EXPECT_NEAR(expr.eval(), 4.0, 1e-9);
-
-  // Also test a non-matching expression (should not print, but not crash)
-  mrpt::expr::CRuntimeCompiledExpression expr2;
-  std::map<std::string, double> vars2;
-  vars2["z"] = 1.0;
-  expr2.compile("z", vars2);
-  EXPECT_NEAR(expr2.eval(), 1.0, 1e-9);
-
-#ifdef _WIN32
-  _putenv_s("MRPT_EXPR_VERBOSE", "");
-#else
-  ::unsetenv("MRPT_EXPR_VERBOSE");
-#endif
 }
