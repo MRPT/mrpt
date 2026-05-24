@@ -16,11 +16,13 @@
 #include <gtest/gtest.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 
+#define _USE_MATH_DEFINES  // To have M_PI
 #include <cmath>
-#include <cstdlib>
 
 template class mrpt::CTraitsTest<mrpt::expr::CRuntimeCompiledExpression>;
 
+namespace
+{
 // =========================================================================
 //  VerboseTest suite — MUST appear first so SetUpTestSuite fires before any
 //  eval() call constructs the ExprVerbose singleton.
@@ -46,6 +48,7 @@ class VerboseTest : public ::testing::Test
 #endif
   }
 };
+}  // namespace
 
 TEST_F(VerboseTest, VerbosePath)
 {
@@ -59,6 +62,8 @@ TEST_F(VerboseTest, VerbosePath)
   EXPECT_NEAR(expr.eval(), 14.0, 1e-9);
 }
 
+namespace
+{
 class VerboseMatchTest : public ::testing::Test
 {
  public:
@@ -79,6 +84,7 @@ class VerboseMatchTest : public ::testing::Test
 #endif
   }
 };
+}  // namespace
 
 TEST_F(VerboseMatchTest, VerboseMatchPath)
 {

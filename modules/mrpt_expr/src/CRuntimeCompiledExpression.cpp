@@ -17,6 +17,7 @@
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 #include <mrpt/system/string_utils.h>
 
+#define _USE_MATH_DEFINES  // To have M_PI on MSVC
 #include <cmath>  // M_PI
 #include <cstdlib>
 #include <iostream>
