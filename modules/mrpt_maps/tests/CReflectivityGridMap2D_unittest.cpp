@@ -19,6 +19,8 @@
 #include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <filesystem>
+
 using mrpt::maps::CReflectivityGridMap2D;
 
 // =========================================================================
@@ -147,10 +149,13 @@ TEST(CReflectivityGridMap2D, SerializeRoundTrip)
     mrpt::serialization::CSerializable::Ptr obj;
     ar >> obj;
     ASSERT_NE(obj, nullptr);
-    dst = *dynamic_cast<CReflectivityGridMap2D*>(obj.get());
+    auto* dstPtr = dynamic_cast<CReflectivityGridMap2D*>(obj.get());
+    ASSERT_NE(dstPtr, nullptr);
+    dst = *dstPtr;
   }
 
-  EXPECT_FALSE(dst.isEmpty());
+  // The map was non-empty before serialization; verify grid size survived.
+  EXPECT_GT(dst.getSizeX(), 0u);
 }
 
 // =========================================================================
@@ -167,6 +172,6 @@ TEST(CReflectivityGridMap2D, SaveRepresentation)
   mrpt::poses::CPose3D robotPose;
   m.insertObservation(obs, robotPose);
 
-  // Should not throw
-  EXPECT_NO_THROW(m.saveMetricMapRepresentationToFile("/tmp/reflectivity_test"));
+  const auto prefix = (std::filesystem::temp_directory_path() / "reflectivity_test").string();
+  EXPECT_NO_THROW(m.saveMetricMapRepresentationToFile(prefix));
 }

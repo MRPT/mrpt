@@ -20,6 +20,8 @@
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <filesystem>
+
 using mrpt::maps::CBeacon;
 using mrpt::maps::CBeaconMap;
 
@@ -152,7 +154,9 @@ TEST(CBeaconMap, SerializeRoundTrip)
     mrpt::serialization::CSerializable::Ptr obj;
     ar >> obj;
     ASSERT_NE(obj, nullptr);
-    dst = *dynamic_cast<CBeaconMap*>(obj.get());
+    auto* ptr = dynamic_cast<CBeaconMap*>(obj.get());
+    ASSERT_NE(ptr, nullptr);
+    dst = *ptr;
   }
 
   EXPECT_EQ(dst.size(), src.size());
@@ -187,7 +191,7 @@ TEST(CBeaconMap, SaveToMATLABScript)
   CBeaconMap m;
   m.push_back(makeGaussianBeacon(1, 1.0, 2.0, 0.0));
 
-  const std::string fname = "/tmp/test_beaconmap.m";
+  const auto fname = (std::filesystem::temp_directory_path() / "test_beaconmap.m").string();
   bool ok = m.saveToMATLABScript3D(fname);
   EXPECT_TRUE(ok);
 }
