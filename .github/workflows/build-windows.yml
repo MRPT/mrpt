@@ -6,19 +6,22 @@ jobs:
   build:
     name: ${{ matrix.name }} ${{ matrix.build_type }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
       COLCON_HOME: ${{ github.workspace }}/.colcon
+      SCCACHE_GHA_ENABLED: "true"
+      VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
     strategy:
       fail-fast: false
       matrix:
-        name: [windows-latest-msvc]
+        name: [windows-2025-msvc]
         build_type: [Release]
         include:
-          - name: windows-latest-msvc
-            os: windows-latest
+          - name: windows-2025-msvc
+            os: windows-2025
             compiler: cl
 
     steps:
@@ -30,6 +33,16 @@ jobs:
           git submodule sync
           git submodule update --init --recursive
 
+      - name: Expose GitHub Actions cache to vcpkg
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
       - name: Set up MSVC developer environment
         uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -38,7 +51,6 @@ jobs:
       - name: Install vcpkg dependencies
         shell: bash
         run: |
-          # vcpkg is pre-installed on GitHub-hosted Windows runners
           vcpkg install eigen3 zlib zstd tinyxml2 gtest cli11 pybind11 --triplet x64-windows
           echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           echo "VCPKG_TARGET_TRIPLET=x64-windows" >> $GITHUB_ENV
@@ -62,7 +74,9 @@ jobs:
               -DMRPT_WITH_QT=OFF \
               -DDISABLE_ASSIMP=ON \
               "-DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE" \
-              "-DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET_TRIPLET"
+              "-DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET_TRIPLET" \
+              -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
 
       - name: Colcon Test
         shell: bash

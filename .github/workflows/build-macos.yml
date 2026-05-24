@@ -6,20 +6,24 @@ jobs:
   build:
     name: ${{ matrix.name }} ${{ matrix.build_type }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
       COLCON_HOME: ${{ github.workspace }}/.colcon
+      SCCACHE_GHA_ENABLED: "true"
 
     strategy:
       fail-fast: false
       matrix:
-        name: [macos-latest-clang]
         build_type: [Release]
         include:
-          - name: macos-latest-clang
-            os: macos-latest
-            compiler: clang
+          - name: macos-15-arm64-clang
+            os: macos-15
+            arch: arm64
+          - name: macos-13-x86_64-clang
+            os: macos-13
+            arch: x86_64
 
     steps:
       - name: Checkout
@@ -30,15 +34,28 @@ jobs:
           git submodule sync
           git submodule update --init --recursive
 
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: Cache Homebrew downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: brew-${{ matrix.os }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
+          restore-keys: brew-${{ matrix.os }}-
+
       - name: Install Dependencies
         run: |
-          brew install cmake ninja eigen assimp tinyxml2 zstd glfw googletest
+          brew install cmake ninja eigen assimp tinyxml2 zstd glfw googletest cli11
           echo "CC=clang" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
 
       - name: Install colcon
         run: |
-          pip3 install --break-system-packages colcon-common-extensions numpy
+          python3 -m venv .ci-venv
+          source .ci-venv/bin/activate
+          pip install colcon-common-extensions numpy
+          echo "${{ github.workspace }}/.ci-venv/bin" >> $GITHUB_PATH
 
       - name: Colcon Build
         run: |
@@ -51,7 +68,9 @@ jobs:
               -DMRPT_BUILD_TESTING=ON \
               -DDISABLE_WXWIDGETS=ON \
               -DMRPT_WITH_QT=OFF \
-              -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0
+              -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+              -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
 
       - name: Colcon Test
         run: |
