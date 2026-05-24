@@ -73,6 +73,9 @@ set(LIB_SOURCES
   tests/CPointsMap_unittest.cpp
   tests/CRandomFieldGridMap3D_unittest.cpp
   tests/serializations_unittest.cpp
+  tests/CBeaconMap_unittest.cpp
+  tests/CVoxelMap_unittest.cpp
+  tests/CReflectivityGridMap2D_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
