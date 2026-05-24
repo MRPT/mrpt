@@ -210,51 +210,6 @@ double getAngle(const TLine2D& r1, const TLine2D& r2);
 /** @}
  */
 
-/** @name Creation of lines from poses.
-  @{
- */
-/**
- * Gets a 3D line corresponding to the X axis in a given pose. An implicit
- * constructor is used if a TPose3D is given.
- * \sa createFromPoseY,createFromPoseZ,createFromPoseAndVector
- */
-void createFromPoseX(const mrpt::math::TPose3D& p, TLine3D& r);
-/**
- * Gets a 3D line corresponding to the Y axis in a given pose. An implicit
- * constructor is used if a TPose3D is given.
- * \sa createFromPoseX,createFromPoseZ,createFromPoseAndVector
- */
-void createFromPoseY(const mrpt::math::TPose3D& p, TLine3D& r);
-/**
- * Gets a 3D line corresponding to the Z axis in a given pose. An implicit
- * constructor is used if a TPose3D is given.
- * \sa createFromPoseX,createFromPoseY,createFromPoseAndVector
- */
-void createFromPoseZ(const mrpt::math::TPose3D& p, TLine3D& r);
-/**
- * Gets a 3D line corresponding to any arbitrary vector, in the base given by
- * the pose. An implicit constructor is used if a TPose3D is given.
- * \sa createFromPoseX,createFromPoseY,createFromPoseZ
- */
-void createFromPoseAndVector(const mrpt::math::TPose3D& p, const double (&vector)[3], TLine3D& r);
-/**
- * Gets a 2D line corresponding to the X axis in a given pose. An implicit
- * constructor is used if a CPose2D is given.
- * \sa createFromPoseY,createFromPoseAndVector
- */
-void createFromPoseX(const TPose2D& p, TLine2D& r);
-/**
- * Gets a 2D line corresponding to the Y axis in a given pose. An implicit
- * constructor is used if a CPose2D is given.
- * \sa createFromPoseX,createFromPoseAndVector
- */
-void createFromPoseY(const TPose2D& p, TLine2D& r);
-/**
- * Gets a 2D line corresponding to any arbitrary vector, in the base given the
- * given pose. An implicit constructor is used if a CPose2D is given.
- * \sa createFromPoseY,createFromPoseAndVector
- */
-void createFromPoseAndVector(const TPose2D& p, const double (&vector)[2], TLine2D& r);
 /** @}
  */
 

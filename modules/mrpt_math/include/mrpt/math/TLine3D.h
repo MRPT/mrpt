@@ -56,6 +56,26 @@ struct TLine3D
    */
   static TLine3D FromTwoPoints(const TPoint3D& p1, const TPoint3D& p2);
 
+  /** Static constructor: line through the pose origin along its local +X axis.
+   * \note [New in MRPT 3.0.0]
+   */
+  static TLine3D FromPoseX(const TPose3D& p);
+
+  /** Static constructor: line through the pose origin along its local +Y axis.
+   * \note [New in MRPT 3.0.0]
+   */
+  static TLine3D FromPoseY(const TPose3D& p);
+
+  /** Static constructor: line through the pose origin along its local +Z axis.
+   * \note [New in MRPT 3.0.0]
+   */
+  static TLine3D FromPoseZ(const TPose3D& p);
+
+  /** Static constructor: line through the pose origin along a given local direction vector.
+   * \note [New in MRPT 3.0.0]
+   */
+  static TLine3D FromPoseDirection(const TPose3D& p, const double (&localVector)[3]);
+
   /** Base point */
   TPoint3D pBase;
   /** Director vector */

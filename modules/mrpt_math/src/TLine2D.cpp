@@ -31,6 +31,32 @@ TLine2D TLine2D::FromCoefficientsABC(double A, double B, double C) { return TLin
 
 TLine2D TLine2D::FromTwoPoints(const TPoint2D& p1, const TPoint2D& p2) { return TLine2D(p1, p2); }
 
+TLine2D TLine2D::FromPoseX(const TPose2D& p)
+{
+  TLine2D r;
+  r.coefs[0] = std::cos(p.phi);
+  r.coefs[1] = -std::sin(p.phi);
+  r.coefs[2] = -r.coefs[0] * p.x - r.coefs[1] * p.y;
+  return r;
+}
+TLine2D TLine2D::FromPoseY(const TPose2D& p)
+{
+  TLine2D r;
+  r.coefs[0] = std::sin(p.phi);
+  r.coefs[1] = std::cos(p.phi);
+  r.coefs[2] = -r.coefs[0] * p.x - r.coefs[1] * p.y;
+  return r;
+}
+TLine2D TLine2D::FromPoseDirection(const TPose2D& p, const double (&localVector)[2])
+{
+  const double c = std::cos(p.phi), s = std::sin(p.phi);
+  TLine2D r;
+  r.coefs[0] = localVector[0] * c + localVector[1] * s;
+  r.coefs[1] = -localVector[0] * s + localVector[1] * c;
+  r.coefs[2] = -r.coefs[0] * p.x - r.coefs[1] * p.y;
+  return r;
+}
+
 double TLine2D::evaluatePoint(const TPoint2D& point) const
 {
   return coefs[0] * point.x + coefs[1] * point.y + coefs[2];

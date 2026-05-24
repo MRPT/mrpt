@@ -889,15 +889,14 @@ TEST(Geometry, getRegressionPlane)
 }
 
 // =========================================================================
-//  createFromPose* — lines from pose axes
+//  TLine3D::FromPoseX/Y/Z / TLine2D::FromPoseX/Y — lines from pose axes
 // =========================================================================
 
-TEST(Geometry, createFromPoseX_3D)
+TEST(Geometry, FromPoseX_3D)
 {
   // A pose at (1,2,3) with zero rotation: X axis points in world +X direction
   const mrpt::math::TPose3D pose{1.0, 2.0, 3.0, 0.0, 0.0, 0.0};
-  TLine3D r;
-  mrpt::math::createFromPoseX(pose, r);
+  const TLine3D r = TLine3D::FromPoseX(pose);
 
   // Base point must be the pose origin
   EXPECT_NEAR(r.pBase.x, 1.0, 1e-9);
@@ -910,58 +909,53 @@ TEST(Geometry, createFromPoseX_3D)
   EXPECT_NEAR(r.director[2], 0.0, 1e-9);
 }
 
-TEST(Geometry, createFromPoseY_3D)
+TEST(Geometry, FromPoseY_3D)
 {
   const mrpt::math::TPose3D pose{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  TLine3D r;
-  mrpt::math::createFromPoseY(pose, r);
+  const TLine3D r = TLine3D::FromPoseY(pose);
 
   EXPECT_NEAR(r.director[0], 0.0, 1e-9);
   EXPECT_NEAR(std::abs(r.director[1]), 1.0, 1e-9);
   EXPECT_NEAR(r.director[2], 0.0, 1e-9);
 }
 
-TEST(Geometry, createFromPoseZ_3D)
+TEST(Geometry, FromPoseZ_3D)
 {
   const mrpt::math::TPose3D pose{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  TLine3D r;
-  mrpt::math::createFromPoseZ(pose, r);
+  const TLine3D r = TLine3D::FromPoseZ(pose);
 
   EXPECT_NEAR(r.director[0], 0.0, 1e-9);
   EXPECT_NEAR(r.director[1], 0.0, 1e-9);
   EXPECT_NEAR(std::abs(r.director[2]), 1.0, 1e-9);
 }
 
-TEST(Geometry, createFromPoseX_2D)
+TEST(Geometry, FromPoseX_2D)
 {
   // coefs = (cos φ, −sin φ, …): at φ=0 normal is world +X → line is x = 1 (vertical)
   const mrpt::math::TPose2D pose{1.0, 2.0, 0.0};
-  TLine2D r;
-  mrpt::math::createFromPoseX(pose, r);
+  const TLine2D r = TLine2D::FromPoseX(pose);
 
   EXPECT_TRUE(r.contains({1.0, 2.0}));
   EXPECT_TRUE(r.contains({1.0, 5.0}));   // same x, different y
   EXPECT_FALSE(r.contains({3.0, 2.0}));  // different x
 }
 
-TEST(Geometry, createFromPoseY_2D)
+TEST(Geometry, FromPoseY_2D)
 {
   // coefs = (sin φ, cos φ, …): at φ=0 normal is world +Y → line is y = 2 (horizontal)
   const mrpt::math::TPose2D pose{1.0, 2.0, 0.0};
-  TLine2D r;
-  mrpt::math::createFromPoseY(pose, r);
+  const TLine2D r = TLine2D::FromPoseY(pose);
 
   EXPECT_TRUE(r.contains({1.0, 2.0}));
   EXPECT_TRUE(r.contains({3.0, 2.0}));   // same y, different x
   EXPECT_FALSE(r.contains({1.0, 5.0}));  // different y
 }
 
-TEST(Geometry, createFromPoseAndVector_3D)
+TEST(Geometry, FromPoseDirection_3D)
 {
   const mrpt::math::TPose3D pose{1.0, 2.0, 3.0, 0.0, 0.0, 0.0};
   const double v[3] = {0.0, 1.0, 0.0};  // local +Y
-  TLine3D r;
-  mrpt::math::createFromPoseAndVector(pose, v, r);
+  const TLine3D r = TLine3D::FromPoseDirection(pose, v);
 
   EXPECT_NEAR(r.pBase.x, 1.0, 1e-9);
   EXPECT_NEAR(r.pBase.y, 2.0, 1e-9);
@@ -971,12 +965,11 @@ TEST(Geometry, createFromPoseAndVector_3D)
   EXPECT_NEAR(std::abs(r.director[1]), 1.0, 1e-9);
 }
 
-TEST(Geometry, createFromPoseAndVector_2D)
+TEST(Geometry, FromPoseDirection_2D)
 {
   const mrpt::math::TPose2D pose{1.0, 2.0, 0.0};
   const double v[2] = {0.0, 1.0};  // local +Y maps to world +Y
-  TLine2D r;
-  mrpt::math::createFromPoseAndVector(pose, v, r);
+  const TLine2D r = TLine2D::FromPoseDirection(pose, v);
 
   // vector (0,1) in local frame at phi=0 → world Y direction → normal is +Y → y=2 (horizontal)
   EXPECT_TRUE(r.contains({1.0, 2.0}));

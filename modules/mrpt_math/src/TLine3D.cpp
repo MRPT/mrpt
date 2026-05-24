@@ -15,6 +15,7 @@
 #include <mrpt/math/TLine2D.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/epsilon.h>
 #include <mrpt/math/geometry.h>           // distance()
 #include <mrpt/math/ops_containers.h>     // squareNorm()
@@ -35,6 +36,49 @@ TLine3D TLine3D::FromPointAndDirector(const TPoint3D& basePoint, const TVector3D
 }
 
 TLine3D TLine3D::FromTwoPoints(const TPoint3D& p1, const TPoint3D& p2) { return TLine3D(p1, p2); }
+
+static void fromPoseAndAxis(const TPose3D& p, TLine3D& r, size_t axis)
+{
+  CMatrixDouble44 m;
+  p.getHomogeneousMatrix(m);
+  for (size_t i = 0; i < 3; i++)
+  {
+    r.pBase[i] = m(i, 3);
+    r.director[i] = m(i, axis);
+  }
+}
+
+TLine3D TLine3D::FromPoseX(const TPose3D& p)
+{
+  TLine3D r;
+  fromPoseAndAxis(p, r, 0);
+  return r;
+}
+TLine3D TLine3D::FromPoseY(const TPose3D& p)
+{
+  TLine3D r;
+  fromPoseAndAxis(p, r, 1);
+  return r;
+}
+TLine3D TLine3D::FromPoseZ(const TPose3D& p)
+{
+  TLine3D r;
+  fromPoseAndAxis(p, r, 2);
+  return r;
+}
+TLine3D TLine3D::FromPoseDirection(const TPose3D& p, const double (&localVector)[3])
+{
+  CMatrixDouble44 m;
+  p.getHomogeneousMatrix(m);
+  TLine3D r;
+  for (size_t i = 0; i < 3; i++)
+  {
+    r.pBase[i] = m(i, 3);
+    r.director[i] = 0;
+    for (size_t j = 0; j < 3; j++) r.director[i] += m(i, j) * localVector[j];
+  }
+  return r;
+}
 
 bool TLine3D::contains(const TPoint3D& point) const
 {

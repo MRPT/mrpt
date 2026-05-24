@@ -721,60 +721,6 @@ double math::getAngle(const TLine2D& r1, const TLine2D& r2)
   return mrpt::math::wrapToPi(ang2 - ang1);
 }
 
-// Auxiliary method
-void createFromPoseAndAxis(const TPose3D& p, TLine3D& r, size_t axis)
-{
-  CMatrixDouble44 m;
-  p.getHomogeneousMatrix(m);
-  for (size_t i = 0; i < 3; i++)
-  {
-    r.pBase[i] = m(i, 3);
-    r.director[i] = m(i, axis);
-  }
-}
-// End of auxiliary method
-
-void math::createFromPoseX(const TPose3D& p, TLine3D& r) { createFromPoseAndAxis(p, r, 0); }
-
-void math::createFromPoseY(const TPose3D& p, TLine3D& r) { createFromPoseAndAxis(p, r, 1); }
-
-void math::createFromPoseZ(const TPose3D& p, TLine3D& r) { createFromPoseAndAxis(p, r, 2); }
-
-void math::createFromPoseAndVector(const TPose3D& p, const double (&vector)[3], TLine3D& r)
-{
-  CMatrixDouble44 m;
-  p.getHomogeneousMatrix(m);
-  for (size_t i = 0; i < 3; i++)
-  {
-    r.pBase[i] = m(i, 3);
-    r.director[i] = 0;
-    for (size_t j = 0; j < 3; j++) r.director[i] += m(i, j) * vector[j];
-  }
-}
-
-void math::createFromPoseX(const TPose2D& p, TLine2D& r)
-{
-  r.coefs[0] = cos(p.phi);
-  r.coefs[1] = -sin(p.phi);
-  r.coefs[2] = -r.coefs[0] * p.x - r.coefs[1] * p.y;
-}
-
-void math::createFromPoseY(const TPose2D& p, TLine2D& r)
-{
-  r.coefs[0] = sin(p.phi);
-  r.coefs[1] = cos(p.phi);
-  r.coefs[2] = -r.coefs[0] * p.x - r.coefs[1] * p.y;
-}
-
-void math::createFromPoseAndVector(const TPose2D& p, const double (&vector)[2], TLine2D& r)
-{
-  double c = cos(p.phi);
-  double s = sin(p.phi);
-  r.coefs[0] = vector[0] * c + vector[1] * s;
-  r.coefs[1] = -vector[0] * s + vector[1] * c;
-  r.coefs[2] = -r.coefs[0] * p.x - r.coefs[1] * p.y;
-}
-
 bool math::conformAPlane(const std::vector<TPoint3D>& points)
 {
   size_t N = points.size();
@@ -2323,8 +2269,7 @@ bool math::traceRay(const vector<TPolygonWithPlane>& vec, const TPose3D& pose, d
 {
   dist = HUGE_VAL;
   double nDist = 0;
-  TLine3D lin;
-  createFromPoseX(pose, lin);
+  TLine3D lin = TLine3D::FromPoseX(pose);
   lin.unitarize();
   bool res = false;
   for (const auto& it : vec)

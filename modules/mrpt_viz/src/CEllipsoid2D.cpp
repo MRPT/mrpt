@@ -94,8 +94,7 @@ bool CEllipsoid2D::traceRay(
 {
 #if 0  // Update, someday...
 	if (m_cov.rows() != 3) { return false; }
-	TLine3D lin, lin2;
-	createFromPoseX((o - getCPose()).asTPose(), lin);
+	TLine3D lin = TLine3D::FromPoseX((o - getCPose()).asTPose()), lin2;
 	lin.unitarize();  // By adding this line, distance from any point of the
 	// line to its base is exactly equal to the "t".
 	for (size_t i = 0; i < 3; i++)

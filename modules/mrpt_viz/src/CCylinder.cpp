@@ -143,8 +143,7 @@ bool solveEqn(double a, double b, double c, double& t)
 
 bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
-  TLine3D lin;
-  mrpt::math::createFromPoseX((o - getCPose()).asTPose(), lin);
+  TLine3D lin = TLine3D::FromPoseX((o - getCPose()).asTPose());
   lin.unitarize();
 
   const float zz = d2f(lin.pBase.z);

@@ -58,6 +58,21 @@ struct TLine2D
    */
   static TLine2D FromTwoPoints(const TPoint2D& p1, const TPoint2D& p2);
 
+  /** Static constructor: line whose normal is the pose local +X axis.
+   * \note [New in MRPT 3.0.0]
+   */
+  static TLine2D FromPoseX(const TPose2D& p);
+
+  /** Static constructor: line whose normal is the pose local +Y axis.
+   * \note [New in MRPT 3.0.0]
+   */
+  static TLine2D FromPoseY(const TPose2D& p);
+
+  /** Static constructor: line through the pose origin along a given local direction vector.
+   * \note [New in MRPT 3.0.0]
+   */
+  static TLine2D FromPoseDirection(const TPose2D& p, const double (&localVector)[2]);
+
   /** Line coefficients, stored as an array: \f$\left[A,B,C\right]\f$ */
   std::array<double, 3> coefs{
       {0, 0, 0}
