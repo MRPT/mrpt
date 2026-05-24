@@ -1,3 +1,4 @@
+/* LCOV_EXCL_FILE -- third-party library, excluded from coverage */
 /*
  ******************************************************************
  *           C++ Mathematical Expression Toolkit Library          *

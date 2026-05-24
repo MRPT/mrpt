@@ -246,3 +246,288 @@ TEST(RuntimeCompiledExpression, ExprNameInErrorMessage)
     EXPECT_NE(msg.find("my_formula"), std::string::npos);
   }
 }
+
+// =========================================================================
+//  Trigonometric functions
+// =========================================================================
+
+TEST(RuntimeCompiledExpression, Trigonometric_sin)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = M_PI / 6.0;
+  expr.compile("sin(x)", vars);
+  EXPECT_NEAR(expr.eval(), 0.5, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, Trigonometric_cos)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = M_PI / 3.0;
+  expr.compile("cos(x)", vars);
+  EXPECT_NEAR(expr.eval(), 0.5, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, Trigonometric_tan)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = M_PI / 4.0;
+  expr.compile("tan(x)", vars);
+  EXPECT_NEAR(expr.eval(), 1.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, Trigonometric_asin)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 0.5;
+  expr.compile("asin(x)", vars);
+  EXPECT_NEAR(expr.eval(), M_PI / 6.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, Trigonometric_acos)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 0.5;
+  expr.compile("acos(x)", vars);
+  EXPECT_NEAR(expr.eval(), M_PI / 3.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, Trigonometric_atan)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 1.0;
+  expr.compile("atan(x)", vars);
+  EXPECT_NEAR(expr.eval(), M_PI / 4.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, Trigonometric_atan2)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["y"] = 1.0;
+  vars["x"] = 1.0;
+  expr.compile("atan2(y,x)", vars);
+  EXPECT_NEAR(expr.eval(), M_PI / 4.0, 1e-9);
+}
+
+// =========================================================================
+//  Math built-ins
+// =========================================================================
+
+TEST(RuntimeCompiledExpression, MathBuiltin_sqrt)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 9.0;
+  expr.compile("sqrt(x)", vars);
+  EXPECT_NEAR(expr.eval(), 3.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, MathBuiltin_abs)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = -7.5;
+  expr.compile("abs(x)", vars);
+  EXPECT_NEAR(expr.eval(), 7.5, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, MathBuiltin_exp_log)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 1.0;
+  expr.compile("exp(x)", vars);
+  EXPECT_NEAR(expr.eval(), std::exp(1.0), 1e-9);
+
+  expr.compile("log(exp(x))", vars);
+  EXPECT_NEAR(expr.eval(), 1.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, MathBuiltin_log2_log10)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 8.0;
+  expr.compile("log2(x)", vars);
+  EXPECT_NEAR(expr.eval(), 3.0, 1e-9);
+
+  vars["x"] = 100.0;
+  expr.compile("log10(x)", vars);
+  EXPECT_NEAR(expr.eval(), 2.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, MathBuiltin_ceil_floor)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 2.3;
+  expr.compile("ceil(x)", vars);
+  EXPECT_NEAR(expr.eval(), 3.0, 1e-9);
+
+  expr.compile("floor(x)", vars);
+  EXPECT_NEAR(expr.eval(), 2.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, MathBuiltin_round)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 2.7;
+  expr.compile("round(x)", vars);
+  EXPECT_NEAR(expr.eval(), 3.0, 1e-9);
+
+  vars["x"] = 2.3;
+  expr.compile("round(x)", vars);
+  EXPECT_NEAR(expr.eval(), 2.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, MathBuiltin_min_max)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["a"] = 3.0;
+  vars["b"] = 7.0;
+  expr.compile("min(a,b)", vars);
+  EXPECT_NEAR(expr.eval(), 3.0, 1e-9);
+
+  expr.compile("max(a,b)", vars);
+  EXPECT_NEAR(expr.eval(), 7.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, MathBuiltin_pow)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 2.0;
+  vars["n"] = 10.0;
+  expr.compile("pow(x,n)", vars);
+  EXPECT_NEAR(expr.eval(), 1024.0, 1e-9);
+}
+
+// =========================================================================
+//  Conditional: if(cond, true_val, false_val)
+// =========================================================================
+
+TEST(RuntimeCompiledExpression, Conditional_if_true_branch)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 5.0;
+  // exprtk if(): if(condition, true_val, false_val)
+  expr.compile("if(x > 3, 1, 0)", vars);
+  EXPECT_NEAR(expr.eval(), 1.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, Conditional_if_false_branch)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 1.0;
+  expr.compile("if(x > 3, 1, 0)", vars);
+  EXPECT_NEAR(expr.eval(), 0.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, Conditional_if_nested)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 5.0;
+  // Clamp to [0, 10]
+  expr.compile("if(x < 0, 0, if(x > 10, 10, x))", vars);
+  EXPECT_NEAR(expr.eval(), 5.0, 1e-9);
+
+  vars["x"] = -2.0;
+  expr.compile("if(x < 0, 0, if(x > 10, 10, x))", vars);
+  EXPECT_NEAR(expr.eval(), 0.0, 1e-9);
+
+  vars["x"] = 15.0;
+  expr.compile("if(x < 0, 0, if(x > 10, 10, x))", vars);
+  EXPECT_NEAR(expr.eval(), 10.0, 1e-9);
+}
+
+// =========================================================================
+//  Logical operators
+// =========================================================================
+
+TEST(RuntimeCompiledExpression, LogicalAnd)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["a"] = 1.0;
+  vars["b"] = 1.0;
+  expr.compile("a and b", vars);
+  EXPECT_NEAR(expr.eval(), 1.0, 1e-9);
+
+  vars["b"] = 0.0;
+  expr.compile("a and b", vars);
+  EXPECT_NEAR(expr.eval(), 0.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, LogicalOr)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["a"] = 0.0;
+  vars["b"] = 1.0;
+  expr.compile("a or b", vars);
+  EXPECT_NEAR(expr.eval(), 1.0, 1e-9);
+
+  vars["a"] = 0.0;
+  vars["b"] = 0.0;
+  expr.compile("a or b", vars);
+  EXPECT_NEAR(expr.eval(), 0.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, LogicalNot)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["a"] = 0.0;
+  expr.compile("not(a)", vars);
+  EXPECT_NEAR(expr.eval(), 1.0, 1e-9);
+
+  vars["a"] = 1.0;
+  expr.compile("not(a)", vars);
+  EXPECT_NEAR(expr.eval(), 0.0, 1e-9);
+}
+
+// =========================================================================
+//  Compound / real-world expressions
+// =========================================================================
+
+TEST(RuntimeCompiledExpression, CompoundSaturation)
+{
+  // Saturate a value to [-1, 1] using nested if()
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["v"] = 3.5;
+  expr.compile("if(v > 1, 1, if(v < -1, -1, v))", vars);
+  EXPECT_NEAR(expr.eval(), 1.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, CompoundTrigExpression)
+{
+  // sin²(x) + cos²(x) == 1
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["x"] = 1.2345;
+  expr.compile("sin(x)^2 + cos(x)^2", vars);
+  EXPECT_NEAR(expr.eval(), 1.0, 1e-9);
+}
+
+TEST(RuntimeCompiledExpression, CompoundMultiVar)
+{
+  // Euclidean distance formula
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars;
+  vars["dx"] = 3.0;
+  vars["dy"] = 4.0;
+  expr.compile("sqrt(dx^2 + dy^2)", vars);
+  EXPECT_NEAR(expr.eval(), 5.0, 1e-9);
+}

@@ -1,3 +1,4 @@
+/* LCOV_EXCL_FILE -- third-party library, excluded from coverage */
 /*
     ====================================================================
     A Smart Pointer to IMPLementation (i.e. Smart PIMPL or just SPIMPL).

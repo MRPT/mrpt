@@ -137,6 +137,11 @@ if(CMAKE_MRPT_HAS_ZLIB)
       set(extra_flags2_ "-include unistd.h")
     endif()
 
+    # Strip gcov instrumentation from bundled zlib sources; coverage of
+    # third-party code is noise, not signal.
+    if(ENABLE_COVERAGE)
+      set(extra_flags2_ "${extra_flags2_} -fno-profile-arcs -fno-test-coverage")
+    endif()
     set_source_files_properties(
       ${io_EXTRA_SRCS}
       PROPERTIES COMPILE_FLAGS "${extra_flags_} ${extra_flags2_}"
