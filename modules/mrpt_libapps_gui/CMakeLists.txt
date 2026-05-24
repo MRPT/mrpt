@@ -19,7 +19,9 @@ set(LIB_SOURCES
   src/KFSLAMApp.cpp
   src/MonteCarloLocalization_App.cpp
   src/RBPF_SLAM_App.cpp
-  # Tests:
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/ICP_SLAM_App_unittest.cpp
   tests/KFSLAMApp_unittest.cpp
   tests/MonteCarloLocalization_App_unittest.cpp
@@ -40,6 +42,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_libapps_cli
     mrpt::mrpt_gui

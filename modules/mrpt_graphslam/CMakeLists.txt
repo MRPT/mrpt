@@ -10,7 +10,9 @@ set(LIB_SOURCES
   src/TSlidingWindow.cpp
   src/CWindowObserver.cpp
   src/CEdgeCounter.cpp
-  # Tests:
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/graph_slam_levmarq_unittest.cpp
 )
 
@@ -64,6 +66,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_slam
     mrpt::mrpt_gui

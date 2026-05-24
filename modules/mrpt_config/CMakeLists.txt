@@ -25,6 +25,9 @@ set(LIB_SOURCES
   src/CLoadableOptions.cpp
   src/CConfigFileMemory.cpp
   src/CConfigFile.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/yaml2config_unittest.cpp
   tests/CConfigFileMemory_unittest.cpp
 )
@@ -42,6 +45,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_expr
 #  PRIVATE_LINK_LIBRARIES

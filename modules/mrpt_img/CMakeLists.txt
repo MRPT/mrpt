@@ -43,7 +43,9 @@ set(LIB_SOURCES
   src/TColorManager.cpp
   src/TPixelCoord.cpp
   src/TStereoCamera.cpp
-  # tests ----
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/CImage_unittest.cpp
   tests/CImagePyramid_unittest.cpp
   tests/CUndistortMap_unittest.cpp
@@ -75,6 +77,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_config
     mrpt::mrpt_io

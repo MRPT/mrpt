@@ -56,7 +56,9 @@ set(LIB_SOURCES
   src/tpspace/CPTG_Holo_Blend.cpp
   src/tpspace/CPTG_RobotShape_Circular.cpp
   src/tpspace/CPTG_RobotShape_Polygonal.cpp
-  # tests
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/nav_plan_geometry_utils_unittest.cpp
   tests/PlannerSimple2D_unittest.cpp
   tests/PTGs_unittest.cpp
@@ -112,6 +114,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_maps
     mrpt::mrpt_kinematics

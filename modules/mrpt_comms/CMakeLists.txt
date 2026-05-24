@@ -35,7 +35,9 @@ set(LIB_SOURCES
   src/CServerTCPSocket.cpp
   src/net_utils.cpp
   src/nodelets.cpp
-  # tests ----
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/nodelets_unittest.cpp
   tests/sockets_unittest.cpp
 )
@@ -54,6 +56,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_io
   CMAKE_DEPENDENCIES

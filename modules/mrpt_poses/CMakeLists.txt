@@ -57,7 +57,9 @@ set(LIB_SOURCES
   src/CPoses3DSequence.cpp
   src/CPosePDFSOG.cpp
   src/CPosePDFGrid.cpp
-  # tests
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/CPosePDFGrid_unittest.cpp
   tests/CQuaternion_unittest.cpp
   tests/CPose3D_unittest.cpp
@@ -140,6 +142,7 @@ endif()
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_bayes
 #  PRIVATE_LINK_LIBRARIES

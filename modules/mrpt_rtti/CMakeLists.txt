@@ -20,6 +20,9 @@ set(LIB_SOURCES
   src/CListOfClasses.cpp
   src/CObject.cpp
   src/internal_class_registry.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/rtti_unittest.cpp
 )
 
@@ -32,6 +35,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_core
     mrpt::mrpt_typemeta

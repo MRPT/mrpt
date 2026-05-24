@@ -17,6 +17,9 @@ find_package(mrpt_system REQUIRED)
 # define lib:
 set(LIB_SOURCES
   src/CRuntimeCompiledExpression.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/CRuntimeCompiledExpression_unittest.cpp
 )
 
@@ -44,6 +47,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_system
 #  PRIVATE_LINK_LIBRARIES

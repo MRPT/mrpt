@@ -15,7 +15,11 @@ project(mrpt_typemeta LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 
 # define lib:
-  set(LIB_SOURCES
+set(LIB_SOURCES
+  # (header-only library, no compiled sources)
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/typename_unittest.cpp
   tests/enumtype_unittest.cpp
   tests/static_string_unittest.cpp
@@ -33,7 +37,8 @@ set(LIB_PUBLIC_HEADERS
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
-  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  SOURCES ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   HEADERS_ONLY_LIBRARY
 #  PUBLIC_LINK_LIBRARIES
 #   xxx

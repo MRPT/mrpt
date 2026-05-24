@@ -47,6 +47,9 @@ set(LIB_SOURCES
   src/datetime.cpp
   src/CObserver.cpp
   src/CDirectoryExplorer.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/CTimeLogger_unittest.cpp
   tests/string_utils_unittest.cpp
   tests/filesystem_unittest.cpp
@@ -85,6 +88,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_core
     mrpt::mrpt_typemeta

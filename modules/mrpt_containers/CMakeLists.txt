@@ -23,6 +23,9 @@ set(LIB_SOURCES
   src/ts_hash_map.cpp
   src/yaml.cpp
   src/CDynamicGrid.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/ts_hash_map_unittest.cpp
   tests/vector_with_small_size_optimization_unittest.cpp
   tests/poly_ptr_unittest.cpp
@@ -68,6 +71,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_core
     mrpt::mrpt_typemeta

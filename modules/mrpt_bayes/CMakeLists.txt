@@ -22,6 +22,9 @@ find_package(mrpt_random REQUIRED)
 set(LIB_SOURCES
   src/CParticleFilter.cpp
   src/CParticleFilterCapable.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/bayes_unittest.cpp
 )
 
@@ -39,6 +42,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_config
     mrpt::mrpt_math

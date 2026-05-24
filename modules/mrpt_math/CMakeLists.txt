@@ -90,6 +90,9 @@ set(LIB_SOURCES
   src/Twist3D.cpp
   src/Z_MatrixBase_instantiate_CMatrixFixed_44_d.cpp
   src/Z_MatrixBase_instantiate_CMatrixFixed_44_f.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/CAtan2LookUpTable_unittest.cpp
   tests/CLevenbergMarquardt_unittest.cpp
   tests/CMatrixDynamic_unittest.cpp
@@ -202,6 +205,7 @@ endif()
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_system
     mrpt::mrpt_serialization

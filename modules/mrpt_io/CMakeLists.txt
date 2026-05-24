@@ -62,9 +62,11 @@ set(LIB_SOURCES
   src/lazy_load_path.cpp
   src/vector_loadsave.cpp
   src/zip.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/CMemoryStream_unittest.cpp
   tests/CTextFileLinesParser_unittest.cpp
-  tests/sample_text_file.txt
   tests/vector_loadsave_unittest.cpp
   tests/zip_unittest.cpp
 )
@@ -100,6 +102,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
     # Add the optional extra sources:
     ${io_EXTRA_SRCS}
   PUBLIC_LINK_LIBRARIES

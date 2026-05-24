@@ -19,7 +19,9 @@ find_package(mrpt_math REQUIRED)
 set(LIB_SOURCES
   src/conversions.cpp
   src/registerAllClasses.cpp
-  # tests ---
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/conversions_unittest.cpp
 )
 
@@ -33,6 +35,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_math
 #  PRIVATE_LINK_LIBRARIES

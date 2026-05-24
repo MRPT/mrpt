@@ -34,7 +34,9 @@ set(LIB_SOURCES
   src/slam/data_association.cpp
   src/slam/observations_overlap.cpp
   src/slam/path_from_rtk_gps.cpp
-  # Tests:
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/CICP_unittest.cpp
   tests/CIncrementalMapPartitioner_unittest.cpp
   tests/CMonteCarloLocalization2D_unittest.cpp
@@ -74,6 +76,7 @@ endif()
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_maps
     mrpt::mrpt_topography

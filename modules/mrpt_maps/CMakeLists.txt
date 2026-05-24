@@ -58,7 +58,9 @@ set(LIB_SOURCES
   # viz:
   src/viz/CAngularObservationMesh.cpp
   src/viz/CPlanarLaserScan.cpp
-  # tests:
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/CGasConcentrationGridMap2D_unittest.cpp
   tests/CHeightGridMap2Ds_unittest.cpp
   tests/CLogOddsGridMapLUT_unittest.cpp
@@ -124,6 +126,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_obs
     mrpt::mrpt_graphs

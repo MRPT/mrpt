@@ -20,6 +20,9 @@ find_package(mrpt_common REQUIRED)
 # define lib:
 set(LIB_SOURCES
   src/RandomGenerator.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/random_unittest.cpp
 )
 
@@ -33,6 +36,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
 #  PUBLIC_LINK_LIBRARIES
 #   xxx
 #  PRIVATE_LINK_LIBRARIES

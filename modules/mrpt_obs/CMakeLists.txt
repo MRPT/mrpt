@@ -73,7 +73,9 @@ set(LIB_SOURCES
   src/TMetricMapTypesRegistry.cpp
   src/TPixelLabelInfo.cpp
   src/VelodyneCalibration.cpp
-  # tests ----
+)
+
+set(LIB_UNIT_TEST_SOURCES
   tests/CObservationIMU_unittest.cpp
   tests/CRawlog_unittest.cpp
   tests/CSerializable_unittest.cpp
@@ -158,6 +160,7 @@ endif()
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_viz
     mrpt::mrpt_tfest
