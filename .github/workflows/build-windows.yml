@@ -84,3 +84,64 @@ jobs:
           colcon test \
             --event-handlers console_direct+ \
             --return-code-on-test-failure
+
+  # ---------------------------------------------------------------------------
+  # Windows installer packaging — RELEASES ONLY (tag pushes).
+  # Replaces the old AppVeyor pipeline (removed). Builds the NSIS installer and
+  # attaches it to the GitHub Release for the pushed tag.
+  #
+  # TODO(installer): this job is a skeleton. Before enabling, the following must
+  # be ported from the removed appveyor.yml to the modular colcon build:
+  #   - TODO: Establish a packaging/CPack target in the 3.x modular layout. The
+  #           old monolithic `cmake --build . --target PACKAGE` no longer exists
+  #           (there is no root CMakeLists.txt). Decide how to aggregate all
+  #           mrpt_* modules into a single NSIS installer under colcon.
+  #   - TODO: Install NSIS on the runner (e.g. `choco install nsis -y`) and copy
+  #           `cmakemodules/registerExtension.nsh` into the NSIS Include dir.
+  #   - TODO: Build the GUI-enabled apps the installer is meant to ship. The CI
+  #           build above disables them (-DDISABLE_WXWIDGETS=ON -DMRPT_WITH_QT=OFF
+  #           -DDISABLE_ASSIMP=ON); a real installer needs wxWidgets/Qt provided
+  #           via vcpkg (eigen3 zlib zstd tinyxml2 gtest cli11 pybind11 + wxwidgets qt5).
+  #   - TODO: Rename the artifact to `mrpt-release-<tag>.exe` (was PKG_NAME logic).
+  #   - TODO: Verify build fits the time budget; AppVeyor disabled several
+  #           BUILD_APP_* targets to stay under its 90-min limit.
+  # ---------------------------------------------------------------------------
+  package:
+    name: Windows installer (release)
+    runs-on: windows-2025
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Git submodule
+        run: |
+          git submodule sync
+          git submodule update --init --recursive
+
+      # TODO(installer): install NSIS + GUI deps, configure & build the installer.
+      # - name: Install NSIS
+      #   run: choco install nsis -y
+      # - name: Build installer
+      #   run: <colcon/cpack packaging command, see TODOs above>
+
+      # TODO(installer): upload the produced installer as a workflow artifact.
+      # - name: Upload installer artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: mrpt-windows-installer
+      #     path: mrpt-release-*.exe
+
+      # TODO(installer): attach the installer to the GitHub Release for this tag.
+      # Replaces AppVeyor's `deploy: provider: GitHub` block (release on tag).
+      # - name: Attach installer to GitHub Release
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     files: mrpt-release-*.exe
+      - name: Packaging not yet implemented
+        run: |
+          echo "Windows installer packaging is not yet implemented (see TODOs)."
+          echo "Skipping for now; tracked as the AppVeyor -> GHA installer migration."
