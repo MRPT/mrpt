@@ -18,16 +18,18 @@ jobs:
       matrix:
         build_type: [Release]
         include:
-          - name: macos-14-arm64-clang
-            os: macos-14
+          - name: macos-15-xcode-16
+            os: macos-15
+            compiler: xcode
+            version: "16"
             arch: arm64
-          - name: macos-13-x86_64-clang
-            os: macos-13
-            arch: x86_64
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Select Xcode ${{ matrix.version }}
+        run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
 
       - name: Git submodule
         run: |
