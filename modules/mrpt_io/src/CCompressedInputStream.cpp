@@ -17,7 +17,9 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/system/filesystem.h>
 
+#include <array>
 #include <cerrno>
+#include <cstdio>  // fread
 #include <cstring>  // strerror
 #include <fstream>
 #include <type_traits>
