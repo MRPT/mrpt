@@ -12,12 +12,13 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#define _USE_MATH_DEFINES  // To have M_PI on MSVC (must precede any <cmath>)
+
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 #include <mrpt/system/string_utils.h>
 
-#define _USE_MATH_DEFINES  // To have M_PI on MSVC
 #include <cmath>  // M_PI
 #include <cstdlib>
 #include <iostream>

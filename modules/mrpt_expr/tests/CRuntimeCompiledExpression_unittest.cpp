@@ -12,11 +12,12 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#define _USE_MATH_DEFINES  // To have M_PI on MSVC (must precede any <cmath>)
+
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 
-#define _USE_MATH_DEFINES  // To have M_PI
 #include <cmath>
 
 template class mrpt::CTraitsTest<mrpt::expr::CRuntimeCompiledExpression>;
