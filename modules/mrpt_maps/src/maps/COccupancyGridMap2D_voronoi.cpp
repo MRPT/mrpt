@@ -55,39 +55,34 @@ void COccupancyGridMap2D::buildVoronoiDiagram(
   m_voronoi_diagram.fill(0);
 
   // freeness threshold
-  voroni_free_threshold = 1.0f - threshold;
-
-  int basis_x[2], basis_y[2];
-  int nBasis;
+  m_voronoiFreeThreshold = 1.0f - threshold;
 
   // Build Voronoi:
   for (int x = x1; x <= x2; x++)
   {
     for (int y = y1; y <= y2; y++)
     {
-      const int Clearance = computeClearance(x, y, basis_x, basis_y, &nBasis);
-
-      if (Clearance > robot_size_units) setVoroniClearance(x, y, static_cast<uint16_t>(Clearance));
+      const ClearanceResult res = computeClearance(x, y);
+      if (res.clearance > robot_size_units)
+        setVoronoiClearance(x, y, static_cast<uint16_t>(res.clearance));
     }
   }
 
-  // Limpiar: Hacer que los trazos sean de grosor 1:
-  //  Si un punto del diagrama esta rodeada de mas de 2
-  //   puntos tb del diagrama, eliminarlo:
+  // Thin the diagram to width 1: remove points surrounded by >3 Voronoi
+  // neighbors.
   int nDiag;
   for (int x = x1; x <= x2; x++)
   {
     for (int y = y1; y <= y2; y++)
     {
-      if (getVoroniClearance(x, y))
+      if (getVoronoiClearance(x, y))
       {
         nDiag = 0;
         for (int xx = x - 1; xx <= (x + 1); xx++)
           for (int yy = y - 1; yy <= (y + 1); yy++)
-            if (getVoroniClearance(xx, yy)) nDiag++;
+            if (getVoronoiClearance(xx, yy)) nDiag++;
 
-        // Eliminar?
-        if (nDiag > 3) setVoroniClearance(x, y, 0);
+        if (nDiag > 3) setVoronoiClearance(x, y, 0);
       }
     }
   }
@@ -120,7 +115,7 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
   {
     for (int y = 1; y < (static_cast<int>(m_size_y) - 1); y++)
     {
-      if (0 != (clear_xy = getVoroniClearance(x, y)))
+      if (0 != (clear_xy = getVoronoiClearance(x, y)))
       {
         // Is this a critical point?
         int nVecinosVoroni = 0;
@@ -129,7 +124,7 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
         for (int xx = x - 2; xx <= (x + 2); xx++)
           for (int yy = y - 2; yy <= (y + 2); yy++)
           {
-            if (0 != (clear = getVoroniClearance(xx, yy)))
+            if (0 != (clear = getVoronoiClearance(xx, yy)))
             {
               nVecinosVoroni++;
               min_clear_near = min(min_clear_near, clear);
@@ -150,24 +145,18 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
     }
   }
 
-  // Filter: find "basis points". If two coincide, leave the one with the
+  // Filter: find "basis points". If two coincide, keep the one with the
   // shortest clearance.
   std::vector<int> basis1_x, basis1_y, basis2_x, basis2_y;
   for (size_t i = 0; i < temp_x.size(); i++)
   {
-    int basis_x[2];
-    int basis_y[2];
-    int nBasis;
-
-    computeClearance(temp_x[i], temp_y[i], basis_x, basis_y, &nBasis);
-
-    if (nBasis == 2)
+    const ClearanceResult res = computeClearance(temp_x[i], temp_y[i]);
+    if (res.nBasis == 2)
     {
-      basis1_x.push_back(basis_x[0]);
-      basis1_y.push_back(basis_y[0]);
-
-      basis2_x.push_back(basis_x[1]);
-      basis2_y.push_back(basis_y[1]);
+      basis1_x.push_back(res.basisX[0]);
+      basis1_y.push_back(res.basisY[0]);
+      basis2_x.push_back(res.basisX[1]);
+      basis2_y.push_back(res.basisY[1]);
     }
   }
 
@@ -223,58 +212,46 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
     }
   }
 
-  // Copy to permanent list:
-  // ----------------------------------------------------------
-  CriticalPointsList.clearance.clear();
-  CriticalPointsList.x.clear();
-  CriticalPointsList.y.clear();
-  CriticalPointsList.x_basis1.clear();
-  CriticalPointsList.y_basis1.clear();
-  CriticalPointsList.x_basis2.clear();
-  CriticalPointsList.y_basis2.clear();
-
+  // Copy to permanent list (AoS):
+  m_criticalPoints.clear();
   for (size_t i = 0; i < temp_x.size(); i++)
   {
     if (!temp_borrar[i])
     {
-      CriticalPointsList.x.push_back(temp_x[i]);
-      CriticalPointsList.y.push_back(temp_y[i]);
-      CriticalPointsList.clearance.push_back(temp_clear[i]);
-
-      // Add to the basis points as well:
+      CriticalPoint cp;
+      cp.x = temp_x[i];
+      cp.y = temp_y[i];
+      cp.clearance = temp_clear[i];
+      m_criticalPoints.push_back(cp);
       setBasisCell(temp_x[i], temp_y[i], 1);
     }
   }
 }
 
 /*---------------------------------------------------------------
-  Calcula la "clearance" de una celda, y devuelve sus
-     dos (primeros) "basis"
-  -Devuelve la "clearance" en unidades de centesimas de "celdas"
-  -basis_x/y deben dar sitio para 2 int's
-
-  - Devuelve no cero solo si la celda pertenece a Voroni
-
-  Si se pone "GetContourPoint"=true, no se devuelven los puntos
-   ocupados como basis, sino los libres mas cercanos (Esto
-   se usa para el calculo de regiones)
-
- Sirve para calcular diagramas de Voronoi y crit. points,etc...
+  Computes the clearance of a cell and its two nearest basis (obstacle) cells.
+  Returns clearance in 1/100 of cell units; zero if cell is occupied or OOB.
+  If getContourPoint is true, returns the nearest FREE cells instead of the
+  occupied ones (used for region computation).
   ---------------------------------------------------------------*/
-int COccupancyGridMap2D::computeClearance(
-    int cx, int cy, int* basis_x, int* basis_y, int* nBasis, bool GetContourPoint) const
+COccupancyGridMap2D::ClearanceResult COccupancyGridMap2D::computeClearance(
+    int cx, int cy, bool GetContourPoint) const
 {
   static const cellType thresholdCellValue = p2l(0.5f);
 
-  // Si la celda esta ocupada, clearance de cero!
+  ClearanceResult result;
+  int* basis_x = result.basisX.data();
+  int* basis_y = result.basisY.data();
+  int& nBasis = result.nBasis;
+
   if (static_cast<unsigned>(cx) >= m_size_x || static_cast<unsigned>(cy) >= m_size_y)
   {
-    return 0;
+    return result;
   }
 
   if (m_map[cx + cy * m_size_x] < thresholdCellValue)
   {
-    return 0;
+    return result;
   }
 
   // Truco para acelerar MUCHO:
@@ -339,26 +316,26 @@ int COccupancyGridMap2D::computeClearance(
 
   // La celda esta libre. Buscar en un circulo creciente hasta dar
   //  dar con el obstaculo mas cercano:
-  *nBasis = 0;
+  nBasis = 0;
   int tam_circ;
 
   int vueltas_extra = 2;
 
-  for (tam_circ = estimated_min_free_circle; tam_circ < N_CIRCULOS && (!(*nBasis) || vueltas_extra);
+  for (tam_circ = estimated_min_free_circle; tam_circ < N_CIRCULOS && (!(nBasis) || vueltas_extra);
        tam_circ++)
   {
     int nEnts = nEntradasCirculo[tam_circ];
     bool dentro_obs = false;
     int idx = circ_PrimeraEntrada[tam_circ];
 
-    for (int j = 0; j < nEnts && (*nBasis) < 2; j++, idx++)
+    for (int j = 0; j < nEnts && (nBasis) < 2; j++, idx++)
     {
       int xx = cx + circs_x[idx];
       int yy = cy + circs_y[idx];
 
       if (xx >= 0 && xx < static_cast<int>(m_size_x) && yy >= 0 && yy < static_cast<int>(m_size_y))
       {
-        // if ( getCell(xx,yy)<=voroni_free_threshold )
+        // if ( getCell(xx,yy)<=m_voronoiFreeThreshold )
         if (m_map[xx + yy * m_size_x] < thresholdCellValue)
         {
           if (!dentro_obs)
@@ -368,7 +345,7 @@ int COccupancyGridMap2D::computeClearance(
             // Esta el 2o punto separado del 1o??
             bool pasa;
 
-            if (!(*nBasis))
+            if (!(nBasis))
               pasa = true;
             else
             {
@@ -380,9 +357,9 @@ int COccupancyGridMap2D::computeClearance(
 
             if (pasa)
             {
-              basis_x[*nBasis] = cx + circs_x[idx];
-              basis_y[*nBasis] = cy + circs_y[idx];
-              (*nBasis)++;
+              basis_x[nBasis] = cx + circs_x[idx];
+              basis_y[nBasis] = cy + circs_y[idx];
+              (nBasis)++;
             }
           }
         }
@@ -392,9 +369,9 @@ int COccupancyGridMap2D::computeClearance(
     }
 
     // Si solo encontramos 1 obstaculo, 1 sola vuelta extra mas:
-    if (*nBasis)
+    if (nBasis)
     {
-      if (*nBasis == 1)
+      if (nBasis == 1)
         vueltas_extra--;
       else
         vueltas_extra = 0;
@@ -404,7 +381,7 @@ int COccupancyGridMap2D::computeClearance(
   // Estimacion para siguiente punto:
   ultimo_free_circle = tam_circ;
 
-  if (*nBasis >= 2)
+  if (nBasis >= 2)
   {
     if (GetContourPoint)
     {
@@ -439,11 +416,11 @@ int COccupancyGridMap2D::computeClearance(
       if (dir != -1)
       {
         vec = GetNeighborhood(
-            basis_x[0] + direccion_vecino_x[dir], basis_y[0] + direccion_vecino_y[dir]);
+            basis_x[0] + m_neighborOffsetsX[dir], basis_y[0] + m_neighborOffsetsY[dir]);
         if (vec != 0x00 && vec != 0xFF)
         {
-          basis_x[0] += direccion_vecino_x[dir];
-          basis_y[0] += direccion_vecino_y[dir];
+          basis_x[0] += m_neighborOffsetsX[dir];
+          basis_y[0] += m_neighborOffsetsY[dir];
         }
       }
 
@@ -475,19 +452,22 @@ int COccupancyGridMap2D::computeClearance(
       if (dir != -1)
       {
         vec = GetNeighborhood(
-            basis_x[1] + direccion_vecino_x[dir], basis_y[1] + direccion_vecino_y[dir]);
+            basis_x[1] + m_neighborOffsetsX[dir], basis_y[1] + m_neighborOffsetsY[dir]);
         if (vec != 0x00 && vec != 0xFF)
         {
-          basis_x[1] += direccion_vecino_x[dir];
-          basis_y[1] += direccion_vecino_y[dir];
+          basis_x[1] += m_neighborOffsetsX[dir];
+          basis_y[1] += m_neighborOffsetsY[dir];
         }
       }
     }
 
-    return tam_circ * 100;
+    result.clearance = tam_circ * 100;
+    return result;
   }
   else
-    return 0;
+  {
+    return result;
+  }
 }
 
 /*---------------------------------------------------------------
@@ -502,14 +482,14 @@ inline unsigned char COccupancyGridMap2D::GetNeighborhood(int cx, int cy) const
 {
   unsigned char res = 0;
 
-  if (getCell(cx - 1, cy - 1) <= voroni_free_threshold) res |= (1 << 0);
-  if (getCell(cx, cy - 1) <= voroni_free_threshold) res |= (1 << 1);
-  if (getCell(cx + 1, cy - 1) <= voroni_free_threshold) res |= (1 << 2);
-  if (getCell(cx - 1, cy) <= voroni_free_threshold) res |= (1 << 3);
-  if (getCell(cx + 1, cy) <= voroni_free_threshold) res |= (1 << 4);
-  if (getCell(cx - 1, cy + 1) <= voroni_free_threshold) res |= (1 << 5);
-  if (getCell(cx, cy + 1) <= voroni_free_threshold) res |= (1 << 6);
-  if (getCell(cx + 1, cy + 1) <= voroni_free_threshold) res |= (1 << 7);
+  if (getCell(cx - 1, cy - 1) <= m_voronoiFreeThreshold) res |= (1 << 0);
+  if (getCell(cx, cy - 1) <= m_voronoiFreeThreshold) res |= (1 << 1);
+  if (getCell(cx + 1, cy - 1) <= m_voronoiFreeThreshold) res |= (1 << 2);
+  if (getCell(cx - 1, cy) <= m_voronoiFreeThreshold) res |= (1 << 3);
+  if (getCell(cx + 1, cy) <= m_voronoiFreeThreshold) res |= (1 << 4);
+  if (getCell(cx - 1, cy + 1) <= m_voronoiFreeThreshold) res |= (1 << 5);
+  if (getCell(cx, cy + 1) <= m_voronoiFreeThreshold) res |= (1 << 6);
+  if (getCell(cx + 1, cy + 1) <= m_voronoiFreeThreshold) res |= (1 << 7);
 
   return res;
 }

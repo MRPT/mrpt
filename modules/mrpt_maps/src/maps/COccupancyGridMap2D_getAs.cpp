@@ -29,9 +29,11 @@ using namespace std;
 /*---------------------------------------------------------------
           getAsImage
   ---------------------------------------------------------------*/
-void COccupancyGridMap2D::getAsImage(
-    CImage& img, bool verticalFlip, bool forceRGB, bool tricolor) const
+void COccupancyGridMap2D::getAsImage(CImage& img, const TGetAsImageParams& params) const
 {
+  const bool verticalFlip = params.verticalFlip;
+  const bool forceRGB = params.forceRGB;
+  const bool tricolor = params.tricolor;
   if (!tricolor)
   {
     if (!forceRGB)
@@ -134,7 +136,10 @@ void COccupancyGridMap2D::getAsImage(
   ---------------------------------------------------------------*/
 void COccupancyGridMap2D::getAsImageFiltered(CImage& img, bool verticalFlip, bool forceRGB) const
 {
-  getAsImage(img, verticalFlip, forceRGB);
+  TGetAsImageParams p;
+  p.verticalFlip = verticalFlip;
+  p.forceRGB = forceRGB;
+  getAsImage(img, p);
 
   // Do filtering to improve the noisy peaks in grids:
   if (insertionOptions.CFD_features_gaussian_size != 0)

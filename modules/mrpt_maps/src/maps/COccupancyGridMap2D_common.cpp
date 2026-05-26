@@ -95,6 +95,28 @@ COccupancyGridMap2D::COccupancyGridMap2D(
     float min_x, float max_x, float min_y, float max_y, float res)
 {
   MRPT_START
+  // Neighbor offsets indexed by direction2idx() (see voronoi code):
+  //   0  1  2
+  //   3  X  4
+  //   5  6  7
+  m_neighborOffsetsX[0] = -1;
+  m_neighborOffsetsX[1] = 0;
+  m_neighborOffsetsX[2] = 1;
+  m_neighborOffsetsX[3] = -1;
+  m_neighborOffsetsX[4] = 1;
+  m_neighborOffsetsX[5] = -1;
+  m_neighborOffsetsX[6] = 0;
+  m_neighborOffsetsX[7] = 1;
+
+  m_neighborOffsetsY[0] = -1;
+  m_neighborOffsetsY[1] = -1;
+  m_neighborOffsetsY[2] = -1;
+  m_neighborOffsetsY[3] = 0;
+  m_neighborOffsetsY[4] = 0;
+  m_neighborOffsetsY[5] = 1;
+  m_neighborOffsetsY[6] = 1;
+  m_neighborOffsetsY[7] = 1;
+
   setSize(min_x, max_x, min_y, max_y, res, 0.5f);
   MRPT_END
 }
@@ -390,12 +412,12 @@ void COccupancyGridMap2D::updateCell(int x, int y, float v)
   cellType& theCell = m_map[x + y * m_size_x];
 
   // Compute the new Bayesian-fused value of the cell:
-  if (updateInfoChangeOnly.enabled)
+  if (m_updateInfoChangeOnly.enabled)
   {
     float old = l2p(theCell);
     float new_v = 1 / (1 + (1 - v) * (1 - old) / (old * v));
-    updateInfoChangeOnly.cellsUpdated++;
-    updateInfoChangeOnly.I_change += 1 - (H(new_v) + H(1 - new_v)) / MAX_H;
+    m_updateInfoChangeOnly.cellsUpdated++;
+    m_updateInfoChangeOnly.I_change += 1 - (H(new_v) + H(1 - new_v)) / MAX_H;
   }
   else
   {

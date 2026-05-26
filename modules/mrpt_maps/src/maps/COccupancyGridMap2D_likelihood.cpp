@@ -169,7 +169,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
   const size_t n = compareMap->size();
 
   // Store the likelihood values in this vector:
-  likelihoodOutputs.OWA_pairList.clear();
+  m_likelihoodOutputs.OWA_pairList.clear();
   for (size_t i = 0; i < n; i++)
   {
     // Get the point and pass it to global coordinates:
@@ -196,24 +196,24 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
     TPairLikelihoodIndex element;
     element.first = lik;
     element.second = pointGlobal;
-    likelihoodOutputs.OWA_pairList.push_back(element);
+    m_likelihoodOutputs.OWA_pairList.push_back(element);
   }  // for each range point
 
   // Sort the list of likelihood values, in descending order:
   // ------------------------------------------------------------
-  std::sort(likelihoodOutputs.OWA_pairList.begin(), likelihoodOutputs.OWA_pairList.end());
+  std::sort(m_likelihoodOutputs.OWA_pairList.begin(), m_likelihoodOutputs.OWA_pairList.end());
 
-  // Cut the vector to the highest "likelihoodOutputs.OWA_length" elements:
+  // Cut the vector to the highest "m_likelihoodOutputs.OWA_length" elements:
   size_t M = likelihoodOptions.OWA_weights.size();
-  ASSERT_(likelihoodOutputs.OWA_pairList.size() >= M);
+  ASSERT_(m_likelihoodOutputs.OWA_pairList.size() >= M);
 
-  likelihoodOutputs.OWA_pairList.resize(M);
-  likelihoodOutputs.OWA_individualLikValues.resize(M);
+  m_likelihoodOutputs.OWA_pairList.resize(M);
+  m_likelihoodOutputs.OWA_individualLikValues.resize(M);
   likResult = 0;
   for (size_t k = 0; k < M; k++)
   {
-    likelihoodOutputs.OWA_individualLikValues[k] = likelihoodOutputs.OWA_pairList[k].first;
-    likResult += likelihoodOptions.OWA_weights[k] * likelihoodOutputs.OWA_individualLikValues[k];
+    m_likelihoodOutputs.OWA_individualLikValues[k] = m_likelihoodOutputs.OWA_pairList[k].first;
+    likResult += likelihoodOptions.OWA_weights[k] * m_likelihoodOutputs.OWA_individualLikValues[k];
   }
 
   return log(likResult);
@@ -297,14 +297,14 @@ double COccupancyGridMap2D::computeObservationLikelihood_MI(
   double res;
 
   // Dont modify the grid, only count the changes in Information
-  updateInfoChangeOnly.enabled = true;
+  m_updateInfoChangeOnly.enabled = true;
   const_cast<COccupancyGridMap2D*>(this)->insertionOptions.maxDistanceInsertion *=
       likelihoodOptions.MI_ratio_max_distance;
 
   // Reset the new information counters:
-  updateInfoChangeOnly.cellsUpdated = 0;
-  updateInfoChangeOnly.I_change = 0;
-  updateInfoChangeOnly.laserRaysSkip = likelihoodOptions.MI_skip_rays;
+  m_updateInfoChangeOnly.cellsUpdated = 0;
+  m_updateInfoChangeOnly.I_change = 0;
+  m_updateInfoChangeOnly.laserRaysSkip = likelihoodOptions.MI_skip_rays;
 
   // Insert the observation (It will not be really inserted, only the
   // information counted)
@@ -312,13 +312,13 @@ double COccupancyGridMap2D::computeObservationLikelihood_MI(
 
   // Compute the change in I aported by the observation:
   double newObservation_mean_I;
-  if (updateInfoChangeOnly.cellsUpdated)
-    newObservation_mean_I = updateInfoChangeOnly.I_change / updateInfoChangeOnly.cellsUpdated;
+  if (m_updateInfoChangeOnly.cellsUpdated)
+    newObservation_mean_I = m_updateInfoChangeOnly.I_change / m_updateInfoChangeOnly.cellsUpdated;
   else
     newObservation_mean_I = 0;
 
   // Let the normal mode enabled, i.e. the grid can be updated
-  updateInfoChangeOnly.enabled = false;
+  m_updateInfoChangeOnly.enabled = false;
   const_cast<COccupancyGridMap2D*>(this)->insertionOptions.maxDistanceInsertion /=
       likelihoodOptions.MI_ratio_max_distance;
 
@@ -429,7 +429,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 
     // Compute the likelihood of the points in this grid map:
     ret = computeLikelihoodField_Thrun(
-        o.buildAuxPointsMap<mrpt::maps::CPointsMap>(&opts), &takenFrom);
+        *o.buildAuxPointsMap<mrpt::maps::CPointsMap>(&opts), takenFrom);
 
   }  // end of observation is a scan range 2D
   else if (IS_CLASS(obs, CObservationRange))
@@ -444,7 +444,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
     pts.insertObservation(o);
 
     // Compute the likelihood of the points in this grid map:
-    ret = computeLikelihoodField_Thrun(&pts, &takenFrom);
+    ret = computeLikelihoodField_Thrun(pts, takenFrom);
   }
 
   return ret;
@@ -479,7 +479,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_II(
     // scan:
 
     // Compute the likelihood of the points in this grid map:
-    ret = computeLikelihoodField_II(o.buildAuxPointsMap<mrpt::maps::CPointsMap>(), &takenFrom);
+    ret = computeLikelihoodField_II(*o.buildAuxPointsMap<mrpt::maps::CPointsMap>(), takenFrom);
 
   }  // end of observation is a scan range 2D
 
@@ -492,12 +492,12 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_II(
           computeLikelihoodField_Thrun
  ---------------------------------------------------------------*/
 double COccupancyGridMap2D::computeLikelihoodField_Thrun(
-    const CPointsMap* pm, const CPose2D* relativePose) const
+    const CPointsMap& pm, const std::optional<CPose2D>& relativePose) const
 {
   MRPT_START
 
   double ret;
-  size_t N = pm->size();
+  size_t N = pm.size();
   int K = static_cast<int>(ceil(
       likelihoodOptions.LF_maxCorrsDistance /*m*/ /
       m_resolution));  // The size of the checking area for matchings:
@@ -574,7 +574,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
     // Get the point and pass it to global coordinates:
     if (relativePose)
     {
-      pm->getPoint(j, pointLocal);
+      pm.getPoint(j, pointLocal);
 // pointGlobal = *relativePose + pointLocal;
 #ifdef HAVE_SINCOS
       ::sincos(relativePose->phi(), &ssin, &ccos);
@@ -587,7 +587,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
     }
     else
     {
-      pm->getPoint(j, pointGlobal);
+      pm.getPoint(j, pointGlobal);
     }
 
     // Point to cell indixes
@@ -691,12 +691,12 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
           computeLikelihoodField_II
  ---------------------------------------------------------------*/
 double COccupancyGridMap2D::computeLikelihoodField_II(
-    const CPointsMap* pm, const CPose2D* relativePose) const
+    const CPointsMap& pm, const std::optional<CPose2D>& relativePose) const
 {
   MRPT_START
 
   double ret;
-  size_t N = pm->size();
+  size_t N = pm.size();
 
   if (!N)
   {
@@ -733,12 +733,12 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
     // ---------------------------------------------
     if (relativePose)
     {
-      pm->getPoint(j, pointLocal);
+      pm.getPoint(j, pointLocal);
       pointGlobal = *relativePose + pointLocal;
     }
     else
     {
-      pm->getPoint(j, pointGlobal);
+      pm.getPoint(j, pointGlobal);
     }
 
     // Point to cell indixes:

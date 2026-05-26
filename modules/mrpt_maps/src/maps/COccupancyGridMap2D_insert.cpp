@@ -119,7 +119,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
       float new_y_max, new_y_min;
       float last_valid_range = maxDistanceInsertion;
 
-      int K = updateInfoChangeOnly.enabled ? updateInfoChangeOnly.laserRaysSkip : decimation;
+      int K = m_updateInfoChangeOnly.enabled ? m_updateInfoChangeOnly.laserRaysSkip : decimation;
       size_t idx, nRanges = o.getScanSize();
       float curRange = 0;
 
@@ -832,7 +832,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
       float new_y_max, new_y_min;
       float last_valid_range = maxDistanceInsertion;
 
-      int K = updateInfoChangeOnly.enabled ? updateInfoChangeOnly.laserRaysSkip : decimation;
+      int K = m_updateInfoChangeOnly.enabled ? m_updateInfoChangeOnly.laserRaysSkip : decimation;
       size_t idx, nRanges = o.sensedData.size();
       float curRange = 0;
 

@@ -31,9 +31,11 @@
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/TEnumType.h>
 
+#include <array>
 #include <atomic>
 #include <cmath>
 #include <mutex>
+#include <optional>
 
 namespace mrpt::maps
 {
@@ -77,9 +79,6 @@ class COccupancyGridMap2D :
   static constexpr cellType OCCGRID_CELLTYPE_MIN = CLogOddsGridMap2D<cellType>::CELLTYPE_MIN;
   static constexpr cellType OCCGRID_CELLTYPE_MAX = CLogOddsGridMap2D<cellType>::CELLTYPE_MAX;
 
-  /** (Default:1.0) Can be set to <1 if a more fine raytracing is needed in
-   * sonarSimulator() and laserScanSimulator(), or >1 to speed it up. */
-  static double RAYTRACE_STEP_SIZE_IN_CELL_UNITS;
 
  protected:
   friend class CMultiMetricMap;
@@ -124,7 +123,7 @@ class COccupancyGridMap2D :
   void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation&) override;
 
   /** The free-cells threshold used to compute the Voronoi diagram. */
-  float voroni_free_threshold{};
+  float m_voronoiFreeThreshold{};
 
   /** Entropy computation internal function: */
   template <typename T>
@@ -202,7 +201,7 @@ class COccupancyGridMap2D :
    */
   const std::vector<cellType>& getRawMap() const { return this->m_map; }
   /** Performs the Bayesian fusion of a new observation of a cell  \sa
-   * updateInfoChangeOnly, updateCell_fast_occupied, updateCell_fast_free */
+   * m_updateInfoChangeOnly, updateCell_fast_occupied, updateCell_fast_free */
   void updateCell(int x, int y, float v);
 
   /** An internal structure for storing data related to counting the new
@@ -224,7 +223,6 @@ class COccupancyGridMap2D :
     int laserRaysSkip{1};
   };
 
-  mutable TUpdateCellsInfoChangeOnly updateInfoChangeOnly;
 
   /** Fills all the cells with a default value. */
   void fill(float default_value = 0.5f);
@@ -510,6 +508,10 @@ class COccupancyGridMap2D :
     /** Enabled: Rays widen with distance to approximate the real behavior
      * of lasers, disabled: insert rays as simple lines (Default=false) */
     bool wideningBeamsWithDistance{false};
+    /** (Default: 0.8) Step size for ray-tracing in sonarSimulator() and
+     * laserScanSimulator(), in cell units. Set <1 for finer tracing or >1 to
+     * speed it up. Not serialized. */
+    double raytraceStepSizeInCellUnits{0.8};
   };
 
   /** With this struct options are provided to the observation insertion
@@ -628,8 +630,14 @@ class COccupancyGridMap2D :
     std::vector<double> OWA_individualLikValues;
   };
 
-  mutable TLikelihoodOutput likelihoodOutputs;
+ protected:
+  /** Auxiliary for MI-based likelihood computation. Internal use only. */
+  mutable TUpdateCellsInfoChangeOnly m_updateInfoChangeOnly;
 
+  /** Output channel for OWA likelihood method. Internal use only. */
+  mutable TLikelihoodOutput m_likelihoodOutputs;
+
+ public:
   /** Performs a downsampling of the gridmap, by a given factor:
    * resolution/=ratio */
   void subSample(int downRatio);
@@ -639,6 +647,17 @@ class COccupancyGridMap2D :
    * as discrete random variables following a Bernoulli distribution:
    * \param info The output information is returned here */
   void computeEntropy(TEntropyInfo& info) const;
+
+  /** Result struct for computeClearance(int,int,bool). */
+  struct ClearanceResult
+  {
+    /** The clearance in 1/100 of cell units (0 if cell is occupied or OOB). */
+    int clearance{0};
+    /** Number of found basis points (0, 1, or 2). */
+    int nBasis{0};
+    /** Coordinates of the (up to 2) basis (closest obstacle) cells. */
+    std::array<int, 2> basisX{}, basisY{};
+  };
 
   /** @name Voronoi methods
     @{ */
@@ -655,9 +674,9 @@ class COccupancyGridMap2D :
   void buildVoronoiDiagram(
       float threshold, float robot_size, int x1 = 0, int x2 = 0, int y1 = 0, int y2 = 0);
 
-  /** Reads a the clearance of a cell (in centimeters), after building the
+  /** Reads the clearance of a cell (in centimeters), after building the
    * Voronoi diagram with \a buildVoronoiDiagram */
-  uint16_t getVoroniClearance(int cx, int cy) const
+  [[nodiscard]] uint16_t getVoronoiClearance(int cx, int cy) const
   {
 #ifdef _DEBUG
     ASSERT_GE_(cx, 0);
@@ -672,7 +691,7 @@ class COccupancyGridMap2D :
  protected:
   /** Used to set the clearance of a cell, while building the Voronoi diagram.
    */
-  void setVoroniClearance(int cx, int cy, uint16_t dist)
+  void setVoronoiClearance(int cx, int cy, uint16_t dist)
   {
     uint16_t* cell = m_voronoi_diagram.cellByIndex(cx, cy);
 #ifdef _DEBUG
@@ -706,23 +725,18 @@ class COccupancyGridMap2D :
 
   /** @} */  // End of Voronoi methods
 
-  /** Compute the clearance of a given cell, and returns its two first
-   *   basis (closest obstacle) points.Used to build Voronoi and critical
-   * points.
-   * \return The clearance of the cell, in 1/100 of "cell".
-   * \param cx The cell index
-   * \param cy The cell index
-   * \param basis_x Target buffer for coordinates of basis, having a size of
-   * two "ints".
-   * \param basis_y Target buffer for coordinates of basis, having a size of
-   * two "ints".
-   * \param nBasis The number of found basis: Can be 0,1 or 2.
-   * \param GetContourPoint If "true" the basis are not returned, but the
-   * closest free cells.Default at false.
-   * \sa Build_VoronoiDiagram
+  /** Compute the clearance of a given cell and return its two nearest basis
+   * (closest obstacle) points. Used to build Voronoi and critical points.
+   * \param cx The cell index (x).
+   * \param cy The cell index (y).
+   * \param getContourPoint If true, the basis points returned are the closest
+   *   free cells instead of the occupied obstacle cells (default: false).
+   * \return ClearanceResult with clearance in 1/100 of cell units and up to 2
+   *   basis cell coordinates. clearance==0 when the cell is occupied or OOB.
+   * \sa buildVoronoiDiagram
    */
-  int computeClearance(
-      int cx, int cy, int* basis_x, int* basis_y, int* nBasis, bool GetContourPoint = false) const;
+  [[nodiscard]] ClearanceResult computeClearance(
+      int cx, int cy, bool getContourPoint = false) const;
 
   /** An alternative method for computing the clearance of a given location
    * (in meters).
@@ -764,7 +778,7 @@ class COccupancyGridMap2D :
    *to the angles at which ranges are measured (in radians).
    *
    * \sa laserScanSimulatorWithUncertainty(), sonarSimulator(),
-   *COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+   *TInsertionOptions::raytraceStepSizeInCellUnits
    */
   void laserScanSimulator(
       mrpt::obs::CObservation2DRangeScan& inout_Scan,
@@ -794,7 +808,7 @@ class COccupancyGridMap2D :
    * to the angles at which ranges are measured (in radians).
    *
    * \sa laserScanSimulator(),
-   * COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+   * TInsertionOptions::raytraceStepSizeInCellUnits
    */
   void sonarSimulator(
       mrpt::obs::CObservationRange& inout_observation,
@@ -805,7 +819,7 @@ class COccupancyGridMap2D :
 
   /** Simulate just one "ray" in the grid map. This method is used internally
    * to sonarSimulator and laserScanSimulator. \sa
-   * COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS */
+   * TInsertionOptions::raytraceStepSizeInCellUnits */
   void simulateScanRay(
       const double x,
       const double y,
@@ -900,7 +914,7 @@ class COccupancyGridMap2D :
    * \param in_params [OUT] Output range + uncertainty.
    *
    * \sa laserScanSimulator(),
-   * COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+   * TInsertionOptions::raytraceStepSizeInCellUnits
    */
   void laserScanSimulatorWithUncertainty(
       const TLaserSimulUncertaintyParams& in_params,
@@ -912,21 +926,23 @@ class COccupancyGridMap2D :
    * map as reference.
    * \param pm The points map
    * \param relativePose The relative pose of the points map in this map's
-   * coordinates, or nullptr for (0,0,0).
+   * coordinates, or std::nullopt for (0,0,0).
    *  See "likelihoodOptions" for configuration parameters.
    */
-  double computeLikelihoodField_Thrun(
-      const CPointsMap* pm, const mrpt::poses::CPose2D* relativePose = nullptr) const;
+  [[nodiscard]] double computeLikelihoodField_Thrun(
+      const CPointsMap& pm,
+      const std::optional<mrpt::poses::CPose2D>& relativePose = std::nullopt) const;
 
   /** Computes the likelihood [0,1] of a set of points, given the current grid
    * map as reference.
    * \param pm The points map
    * \param relativePose The relative pose of the points map in this map's
-   * coordinates, or nullptr for (0,0,0).
+   * coordinates, or std::nullopt for (0,0,0).
    *  See "likelihoodOptions" for configuration parameters.
    */
-  double computeLikelihoodField_II(
-      const CPointsMap* pm, const mrpt::poses::CPose2D* relativePose = nullptr) const;
+  [[nodiscard]] double computeLikelihoodField_II(
+      const CPointsMap& pm,
+      const std::optional<mrpt::poses::CPose2D>& relativePose = std::nullopt) const;
 
   /** Saves the gridmap as a graphical file (BMP,PNG,...).
    * The format will be derived from the file extension (see
@@ -941,8 +957,8 @@ class COccupancyGridMap2D :
    */
   static bool saveAsBitmapTwoMapsWithCorrespondences(
       const std::string& fileName,
-      const COccupancyGridMap2D* m1,
-      const COccupancyGridMap2D* m2,
+      const COccupancyGridMap2D& m1,
+      const COccupancyGridMap2D& m2,
       const mrpt::tfest::TMatchingPairList& corrs);
 
   /** Saves the gridmap as a graphical bitmap file, 8 bit gray scale, 1 pixel
@@ -975,18 +991,29 @@ class COccupancyGridMap2D :
     MRPT_END
   }
 
-  /** Returns the grid as a 8-bit graylevel image, where each pixel is a cell
-   * (output image is RGB only if forceRGB is true)
-   *  If "tricolor" is true, only three gray levels will appear in the image:
-   * gray for unobserved cells, and black/white for occupied/empty cells
-   * respectively.
+  /** Options for getAsImage(). */
+  struct TGetAsImageParams
+  {
+    /** If true, the image is vertically flipped (default: false). */
+    bool verticalFlip{false};
+    /** If true, output image is RGB instead of grayscale (default: false). */
+    bool forceRGB{false};
+    /** If true, only three gray levels: gray=unknown, black=occupied,
+     * white=free (default: false). */
+    bool tricolor{false};
+  };
+
+  /** Returns the grid as a 8-bit graylevel image (RGB if TGetAsImageParams::forceRGB).
+   *  Each pixel is one cell. Use TGetAsImageParams to control output format.
    * \sa getAsImageFiltered
    */
-  void getAsImage(
-      mrpt::img::CImage& img,
-      bool verticalFlip = false,
-      bool forceRGB = false,
-      bool tricolor = false) const;
+  void getAsImage(mrpt::img::CImage& img, const TGetAsImageParams& params) const;
+
+  /** Overload with default parameters (grayscale, no flip, no tricolor). */
+  void getAsImage(mrpt::img::CImage& img) const
+  {
+    getAsImage(img, TGetAsImageParams{});
+  }
 
   /** Returns the grid as a 8-bit graylevel image, where each pixel is a cell
    * (output image is RGB only if forceRGB is true) - This method filters the
@@ -1095,21 +1122,22 @@ class COccupancyGridMap2D :
    * implementing this virtual interface).  */
   void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override;
 
-  /** The structure used to store the set of Voronoi diagram
-   *    critical points.
-   * \sa findCriticalPoints
+  /** One critical point in the Voronoi diagram.
+   * \sa findCriticalPoints, criticalPoints()
    */
-  struct TCriticalPointsList
+  struct CriticalPoint
   {
-    TCriticalPointsList() : x(), y(), clearance(), x_basis1(), y_basis1(), x_basis2(), y_basis2() {}
+    int x{0}, y{0};
+    /** Clearance in 1/100 of cells. */
+    int clearance{0};
+  };
 
-    /** The coordinates of critical point. */
-    std::vector<int> x, y;
-    /** The clearance of critical points, in 1/100 of cells. */
-    std::vector<int> clearance;
-    /** Their two first basis points coordinates. */
-    std::vector<int> x_basis1, y_basis1, x_basis2, y_basis2;
-  } CriticalPointsList;
+  /** Returns the list of Voronoi critical points computed by the last call to
+   * findCriticalPoints(). */
+  [[nodiscard]] const std::vector<CriticalPoint>& criticalPoints() const
+  {
+    return m_criticalPoints;
+  }
 
   /** Returns a short description of the map. */
   std::string asString() const override
@@ -1176,15 +1204,17 @@ class COccupancyGridMap2D :
    */
   unsigned char GetNeighborhood(int cx, int cy) const;
 
-  /** Used to store the 8 possible movements from a cell to the
-   *   sorrounding ones.Filled in the constructor.
+  /** Voronoi critical points computed by findCriticalPoints(). */
+  std::vector<CriticalPoint> m_criticalPoints;
+
+  /** The 8 possible movements from a cell to its neighbors (filled in ctor).
    * \sa direction2idx
    */
-  int direccion_vecino_x[8], direccion_vecino_y[8];
+  int m_neighborOffsetsX[8], m_neighborOffsetsY[8];
 
   /** Returns the index [0,7] of the given movement, or
    *  -1 if invalid one.
-   * \sa direccion_vecino_x,direccion_vecino_y,GetNeighborhood
+   * \sa m_neighborOffsetsX, m_neighborOffsetsY, GetNeighborhood
    */
   int direction2idx(int dx, int dy);
 

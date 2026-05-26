@@ -253,8 +253,8 @@ bool COccupancyGridMap2D::loadFromBitmap(
   ---------------------------------------------------------------*/
 bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
     const std::string& fileName,
-    const COccupancyGridMap2D* m1,
-    const COccupancyGridMap2D* m2,
+    const COccupancyGridMap2D& m1,
+    const COccupancyGridMap2D& m2,
     const TMatchingPairList& corrs)
 {
   MRPT_START
@@ -265,8 +265,8 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 
   // The individual maps:
   // ---------------------------------------------
-  m1->getAsImage(img1, false);
-  m2->getAsImage(img2, false);
+  m1.getAsImage(img1);
+  m2.getAsImage(img2);
   unsigned int lx1 = img1.getWidth();
   unsigned int ly1 = img1.getHeight();
 
@@ -301,14 +301,14 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
   for (i = 0; i < n; i++)
   {
     // In M1:
-    px = m1->x2idx(corrs[i].global.x);
-    py = Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y);
+    px = m1.x2idx(corrs[i].global.x);
+    py = Ay1 + ly1 - 1 - m1.y2idx(corrs[i].global.y);
     img.rectangle({int(px - 10), int(py - 10)}, {int(px + 10), int(py + 10)}, lineColor);
     img.rectangle({int(px - 11), int(py - 11)}, {int(px + 11), int(py + 11)}, lineColor);
 
     // In M2:
-    px = lx1 + 1 + m2->x2idx(corrs[i].local.x);
-    py = Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y);
+    px = lx1 + 1 + m2.x2idx(corrs[i].local.x);
+    py = Ay2 + ly2 - 1 - m2.y2idx(corrs[i].local.y);
     img.rectangle({int(px - 10), int(py - 10)}, {int(px + 10), int(py + 10)}, lineColor);
     img.rectangle({int(px - 11), int(py - 11)}, {int(px + 11), int(py + 11)}, lineColor);
   }
@@ -323,9 +323,9 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
         static_cast<uint8_t>(getRandomGenerator().drawUniform(0, 255.0f)));
 
     img.line(
-        {int(m1->x2idx(corrs[i].global.x)), int(Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y))},
-        {int(lx1 + 1 + m2->x2idx(corrs[i].local.x)),
-         int(Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y))},
+        {int(m1.x2idx(corrs[i].global.x)), int(Ay1 + ly1 - 1 - m1.y2idx(corrs[i].global.y))},
+        {int(lx1 + 1 + m2.x2idx(corrs[i].local.x)),
+         int(Ay2 + ly2 - 1 - m2.y2idx(corrs[i].local.y))},
         lineColor);
   }  // i
 
