@@ -51,7 +51,7 @@ namespace mrpt::maps
  *
  * The algorithm for updating the grid from a laser scanner can optionally take
  *into account the progressive widening of the beams, as
- *   described in [this page](http://www.mrpt.org/Occupancy_Grids)
+ *   described in [this page](https://www.mrpt.org/Occupancy_Grids)
  *
  *   Some implemented methods are:
  *		- Update of individual cells
@@ -570,8 +570,8 @@ class COccupancyGridMap2D :
     /** [LikelihoodField] The max. distance for searching correspondences
      * around each sensed point */
     float LF_maxCorrsDistance{0.3f};
-    /** [LikelihoodField] (Default:false) Use `exp(dist^2/std^2)` instead of
-     * `exp(dist^2/std^2)` */
+    /** [LikelihoodField] (Default:false) Use `exp(-dist^2/std^2)` (squared
+     * distance) instead of `exp(-dist/std)` (linear distance) */
     bool LF_useSquareDist{false};
     /** [LikelihoodField] Set this to "true" ot use an alternative method,
      * where the likelihood of the whole range scan is computed by

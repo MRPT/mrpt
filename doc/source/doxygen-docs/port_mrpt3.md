@@ -667,3 +667,91 @@ Joseph form `P' = (I-KH)*P*(I-KH)^T + K*R*K^T` instead of the classic
 `P' = (I-KH)*P`. Set to `false` for slightly faster (but less robust) updates.
 
 
+
+---
+
+## 21. `COccupancyGridMap2D` API modernization
+
+Several breaking changes were made to `mrpt::maps::COccupancyGridMap2D` for
+MRPT 3.x. Update callers as follows:
+
+### Voronoi spelling fixes
+- `getVoroniClearance()` → `getVoronoiClearance()`
+- `setVoroniClearance()` → `setVoronoiClearance()` (protected)
+- member `voroni_free_threshold` → `m_voronoiFreeThreshold` (protected)
+
+### Cell-size compile-time switch removed
+The `OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS` / `_16BITS` macros and the CMake
+option `MRPT_OCCUPANCY_GRID_CELLSIZE` have been removed. `cellType` is always
+`int8_t`. Old 8-bit and 16-bit serialized streams (v0–v6) remain readable.
+
+### `computeClearance` now returns a struct
+```cpp
+// Before:
+int basis_x[2], basis_y[2], nBasis;
+int clearance = grid.computeClearance(cx, cy, basis_x, basis_y, &nBasis);
+
+// After:
+auto res = grid.computeClearance(cx, cy);
+// res.clearance, res.nBasis, res.basisX[0/1], res.basisY[0/1]
+```
+
+### `computeLikelihoodField_Thrun` / `_II` signatures changed
+```cpp
+// Before:
+double lk = grid.computeLikelihoodField_Thrun(pPointsMap, &pose);
+double lk = grid.computeLikelihoodField_Thrun(pPointsMap, nullptr);
+
+// After:
+double lk = grid.computeLikelihoodField_Thrun(*pPointsMap, pose);
+double lk = grid.computeLikelihoodField_Thrun(*pPointsMap);  // no pose
+```
+
+### `saveAsBitmapTwoMapsWithCorrespondences` takes const references
+```cpp
+// Before:
+COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(file, &m1, &m2, corrs);
+
+// After:
+COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(file, m1, m2, corrs);
+```
+
+### Ray-trace step size moved from global static to per-instance option
+```cpp
+// Before:
+COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS = 0.5;
+
+// After:
+grid.insertionOptions.raytraceStepSizeInCellUnits = 0.5;
+```
+
+### Critical points: struct-of-arrays replaced by array-of-structs
+```cpp
+// Before (public member):
+grid.CriticalPointsList.x[i], .y[i], .clearance[i]
+
+// After (const accessor):
+for (const auto& cp : grid.criticalPoints()) {
+    // cp.x, cp.y, cp.clearance
+}
+```
+
+### `getAsImage` now takes an options struct
+```cpp
+// Before:
+grid.getAsImage(img, /*verticalFlip=*/false, /*forceRGB=*/false, /*tricolor=*/true);
+
+// After:
+COccupancyGridMap2D::TGetAsImageParams p;
+p.tricolor = true;
+grid.getAsImage(img, p);
+
+// Zero-argument form still works:
+grid.getAsImage(img);
+```
+
+### Internal members `updateInfoChangeOnly` and `likelihoodOutputs` privatized
+These were public mutable members used as hidden in/out channels. They have
+been renamed (`m_updateInfoChangeOnly`, `m_likelihoodOutputs`) and moved to
+the `protected` section. External code that directly accessed them must be
+refactored to use `computeObservationLikelihood()` instead.
