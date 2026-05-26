@@ -417,7 +417,9 @@ bool CFFMPEG_InputStream::retrieveFrame(
       if (ctx->pFrameRGB->linesize[0] != ((m_grab_as_grayscale ? 1 : 3) * width))
         THROW_EXCEPTION("FIXME: linesize!=width case not handled yet.");
 
-      out_img.loadFromMemoryBuffer(width, height, !m_grab_as_grayscale, ctx->pFrameRGB->data[0]);
+      out_img.loadFromMemoryBuffer(
+          width, height, m_grab_as_grayscale ? mrpt::img::CH_GRAY : mrpt::img::CH_RGB,
+          ctx->pFrameRGB->data[0]);
 
       // Output frame timestamp:
       outPTS = ctx->pFrame->pts;

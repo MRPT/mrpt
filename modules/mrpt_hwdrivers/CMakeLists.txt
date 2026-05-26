@@ -7,6 +7,7 @@ find_package(mrpt_maps REQUIRED)
 find_package(mrpt_viz REQUIRED)
 
 find_package(Threads REQUIRED)
+find_package(PkgConfig QUIET)
 
 # Optional dependency detection scripts:
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_ffmpeg.cmake REQUIRED)
@@ -145,10 +146,6 @@ mrpt_add_library(
     mrpt_maps
     mrpt_viz
 )
-
-if(NOT BUILD_${PROJECT_NAME})
-	return()
-endif()
 
 # We need pthread's on unices
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)

@@ -41,8 +41,7 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
   using namespace std::string_literals;
 
   const std::string ini_fil =
-      mrpt::UNITTEST_BASEDIR() +
-      "/share/mrpt/config_files/rawlog-grabber/camera_ffmpeg_video_file.ini"s;
+      mrpt::mrpt_data_dir() + "/config_files/rawlog-grabber/camera_ffmpeg_video_file.ini"s;
   EXPECT_TRUE(mrpt::system::fileExists(ini_fil));
 
   const std::string video_fil = mrpt::mrpt_data_dir() + "/datasets/dummy_video.avi"s;
