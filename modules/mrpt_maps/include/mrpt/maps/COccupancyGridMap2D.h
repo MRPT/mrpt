@@ -32,6 +32,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 
 #include <atomic>
+#include <cmath>
 #include <mutex>
 
 namespace mrpt::maps
@@ -295,21 +296,32 @@ class COccupancyGridMap2D :
   float getYMax() const { return m_yMax; }
   /** Returns the resolution of the grid map */
   float getResolution() const { return m_resolution; }
-  /** Transform a coordinate value into a cell index */
-  int x2idx(float x) const { return static_cast<int>((x - m_xMin) / m_resolution); }
-  int y2idx(float y) const { return static_cast<int>((y - m_yMin) / m_resolution); }
+  /** Transform a coordinate value into a cell index.
+   * Uses floor() to correctly handle negative coordinates near zero. */
+  [[nodiscard]] int x2idx(double x) const
+  {
+    return static_cast<int>(std::floor((x - m_xMin) / m_resolution));
+  }
+  [[nodiscard]] int y2idx(double y) const
+  {
+    return static_cast<int>(std::floor((y - m_yMin) / m_resolution));
+  }
 
-  int x2idx(double x) const { return static_cast<int>((x - m_xMin) / m_resolution); }
-  int y2idx(double y) const { return static_cast<int>((y - m_yMin) / m_resolution); }
+  /** Transform a cell index into a coordinate value (center of the cell) */
+  [[nodiscard]] float idx2x(size_t cx) const
+  {
+    return m_xMin + (static_cast<float>(cx) + 0.5f) * m_resolution;
+  }
+  [[nodiscard]] float idx2y(size_t cy) const
+  {
+    return m_yMin + (static_cast<float>(cy) + 0.5f) * m_resolution;
+  }
 
-  /** Transform a cell index into a coordinate value */
-  float idx2x(size_t cx) const { return m_xMin + (static_cast<float>(cx) + 0.5f) * m_resolution; }
-  float idx2y(size_t cy) const { return m_yMin + (static_cast<float>(cy) + 0.5f) * m_resolution; }
-
-  /** Transform a coordinate value into a cell index, using a different "x_min"
-   * value */
-  int x2idx(float x, float xmin) const { return static_cast<int>((x - xmin) / m_resolution); }
-  int y2idx(float y, float ymin) const { return static_cast<int>((y - ymin) / m_resolution); }
+  /** Check whether cell indices are within valid range */
+  [[nodiscard]] bool idxInRange(int cx, int cy) const
+  {
+    return static_cast<unsigned int>(cx) < m_size_x && static_cast<unsigned int>(cy) < m_size_y;
+  }
 
   mrpt::math::TBoundingBoxf boundingBox() const override
   {

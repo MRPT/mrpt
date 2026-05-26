@@ -12,14 +12,13 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-// Force size_x being a multiple of 16 cells
-// #define		ROWSIZE_MULTIPLE_16
-
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
+
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -80,6 +79,8 @@ mrpt::maps::CMetricMap::Ptr COccupancyGridMap2D::internal_CreateFromMapDefinitio
 
 IMPLEMENTS_SERIALIZABLE(COccupancyGridMap2D, CMetricMap, mrpt::maps)
 
+// Defined as a static member for ABI compatibility; the actual table is now
+// built once via a thread-safe local static inside computeEntropy().
 std::vector<float> COccupancyGridMap2D::entropyTable;
 
 static const float MAX_H = 0.69314718055994531f;  // ln(2)
@@ -153,17 +154,6 @@ void COccupancyGridMap2D::setSize(
   m_size_x = static_cast<unsigned int>(round((m_xMax - m_xMin) / m_resolution));
   m_size_y = static_cast<unsigned int>(round((m_yMax - m_yMin) / m_resolution));
 
-#ifdef ROWSIZE_MULTIPLE_16
-  // map rows must be 16 bytes aligned:
-  if (0 != (size_x % 16))
-  {
-    size_x = ((size_x >> 4) + 1) << 4;
-    x_max = x_min + size_x * resolution;
-  }
-  size_x = round((x_max - x_min) / resolution);
-  ASSERT_(0 == (size_x % 16));
-#endif
-
   // Cells memory:
   m_map.resize(m_size_x * m_size_y, p2l(default_value));
 
@@ -189,18 +179,16 @@ void COccupancyGridMap2D::resizeGrid(
 
   if (new_x_min > new_x_max)
   {
-    printf(
-        "[COccupancyGridMap2D::resizeGrid] Warning!! Ignoring call, since: "
-        "x_min=%f  x_max=%f\n",
-        new_x_min, new_x_max);
+    std::cerr << "[COccupancyGridMap2D::resizeGrid] Warning: ignoring call, "
+                 "x_min="
+              << new_x_min << " > x_max=" << new_x_max << "\n";
     return;
   }
   if (new_y_min > new_y_max)
   {
-    printf(
-        "[COccupancyGridMap2D::resizeGrid] Warning!! Ignoring call, since: "
-        "y_min=%f  y_max=%f\n",
-        new_y_min, new_y_max);
+    std::cerr << "[COccupancyGridMap2D::resizeGrid] Warning: ignoring call, "
+                 "y_min="
+              << new_y_min << " > y_max=" << new_y_max << "\n";
     return;
   }
 
@@ -244,37 +232,21 @@ void COccupancyGridMap2D::resizeGrid(
   new_size_x = static_cast<unsigned int>(round((new_x_max - new_x_min) / m_resolution));
   new_size_y = static_cast<unsigned int>(round((new_y_max - new_y_min) / m_resolution));
 
-  assert(new_size_x >= m_size_x + extra_x_izq);
-
-#ifdef ROWSIZE_MULTIPLE_16
-  // map rows must be 16 bytes aligned:
-  size_t old_new_size_x = new_size_x;  // Debug
-  if (0 != (new_size_x % 16))
-  {
-    int size_x_incr = 16 - (new_size_x % 16);
-    // new_x_max = new_x_min + new_size_x * resolution;
-    new_x_max += size_x_incr * resolution;
-  }
-  new_size_x = round((new_x_max - new_x_min) / resolution);
-  assert(0 == (new_size_x % 16));
-#endif
+  ASSERT_GE_(new_size_x, m_size_x + extra_x_izq);
 
   // Reserve new mem block
   new_map.resize(new_size_x * new_size_y, p2l(new_cells_default_value));
 
-  // Copy all the old map rows into the new map:
+  // Copy old map rows into the new map (row by row to handle different widths)
   {
-    cellType* dest_ptr = &new_map[extra_x_izq + extra_y_arr * new_size_x];
-    cellType* src_ptr = &m_map[0];
-    size_t row_size = m_size_x * sizeof(cellType);
+    auto* dest_ptr = new_map.data() + extra_x_izq + extra_y_arr * new_size_x;
+    const auto* src_ptr = m_map.data();
 
     for (size_t y = 0; y < m_size_y; y++)
     {
-#if defined(_DEBUG)
-      assert(dest_ptr + row_size - 1 <= &new_map[new_map.size() - 1]);
-      assert(src_ptr + row_size - 1 <= &m_map[m_map.size() - 1]);
-#endif
-      memcpy(dest_ptr, src_ptr, row_size);
+      ASSERT_(dest_ptr + m_size_x <= new_map.data() + new_map.size());
+      ASSERT_(src_ptr + m_size_x <= m_map.data() + m_map.size());
+      std::copy(src_ptr, src_ptr + m_size_x, dest_ptr);
       dest_ptr += new_size_x;
       src_ptr += m_size_x;
     }
@@ -336,40 +308,29 @@ void COccupancyGridMap2D::freeMap()
  ---------------------------------------------------------------*/
 void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 {
-#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-  size_t N = 256;
-#else
-  size_t N = 65536;
-#endif
+  constexpr size_t N = 256;  // always 8-bit cells
 
-  // Compute the entropy table: The entropy for each possible cell value
-  // ----------------------------------------------------------------------
-  if (entropyTable.size() != N)
+  // Thread-safe one-time initialization of the per-value entropy lookup table
+  static const std::vector<float> localEntropyTable = []()
   {
-    entropyTable.resize(N, 0);
+    std::vector<float> t(N, 0.0f);
     for (size_t i = 0; i < N; i++)
     {
-      const auto p = l2p(static_cast<cellType>(i));
-      auto h = d2f(H(p) + H(1 - p));
-
-      // Cell's probabilities rounding problem fixing:
-      if (i == 0 || i == (N - 1)) h = 0;
-      if (h > (MAX_H - 1e-4)) h = MAX_H;
-
-      entropyTable[i] = h;
+      const auto p = l2p(static_cast<cellType>(static_cast<cellTypeUnsigned>(i)));
+      auto h = d2f(H(p) + H(1.0 - p));
+      if (h > (MAX_H - 1e-4f)) h = MAX_H;
+      t[i] = h;
     }
-  }
+    return t;
+  }();
 
   // Initialize the global results:
-  info.H = info.I = 0;
-  info.effectiveMappedCells = 0;
-
   info.H = info.I = 0;
   info.effectiveMappedCells = 0;
   for (signed char it : m_map)
   {
     auto ctu = static_cast<cellTypeUnsigned>(it);
-    auto h = entropyTable[ctu];
+    auto h = localEntropyTable[ctu];
     info.H += h;
     if (h < (MAX_H - 0.001f))
     {

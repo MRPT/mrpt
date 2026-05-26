@@ -272,7 +272,7 @@ int COccupancyGridMap2D::computeClearance(
     return 0;
   }
 
-  if (m_map[cx + cy * m_size_y] < thresholdCellValue)
+  if (m_map[cx + cy * m_size_x] < thresholdCellValue)
   {
     return 0;
   }
@@ -359,7 +359,7 @@ int COccupancyGridMap2D::computeClearance(
       if (xx >= 0 && xx < static_cast<int>(m_size_x) && yy >= 0 && yy < static_cast<int>(m_size_y))
       {
         // if ( getCell(xx,yy)<=voroni_free_threshold )
-        if (m_map[xx + yy * m_size_y] < thresholdCellValue)
+        if (m_map[xx + yy * m_size_x] < thresholdCellValue)
         {
           if (!dentro_obs)
           {

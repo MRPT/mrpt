@@ -48,28 +48,17 @@ bool COccupancyGridMap2D::saveAsBitmapFile(const std::string& file) const
   MRPT_END
 }
 
-uint8_t COccupancyGridMap2D::serializeGetVersion() const { return 6; }
+uint8_t COccupancyGridMap2D::serializeGetVersion() const { return 7; }
 void COccupancyGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-// Version 3: Change to log-odds. The only change is in the loader, when
-// translating
-//   from older versions.
-
-// Version 2: Save OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS/16BITS
-#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
+  // v7: always 8-bit cells (the 16-bit compile-time switch was removed).
+  // v2+: first byte = bitsPerCell (8 or 16). Always 8 now.
   out << uint8_t(8);
-#else
-  out << uint8_t(16);
-#endif
 
   out << m_size_x << m_size_y << m_xMin << m_xMax << m_yMin << m_yMax << m_resolution;
   ASSERT_(m_size_x * m_size_y == m_map.size());
 
-#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-  out.WriteBuffer(&m_map[0], sizeof(m_map[0]) * m_size_x * m_size_y);
-#else
-  out.WriteBufferFixEndianness(&map[0], size_x * m_size_y);
-#endif
+  out.WriteBuffer(m_map.data(), sizeof(cellType) * m_size_x * m_size_y);
 
   // insertionOptions:
   out << insertionOptions.mapAltitude << insertionOptions.useMapAltitude
@@ -88,13 +77,10 @@ void COccupancyGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
       << likelihoodOptions.consensus_pow << likelihoodOptions.OWA_weights
       << likelihoodOptions.enableLikelihoodCache;
 
-  // Insertion as 3D:
-  out << genericMapParams;  // v6
+  out << genericMapParams;  // v6+
 
-  // Version 4:
   out << insertionOptions.CFD_features_gaussian_size << insertionOptions.CFD_features_median_size;
 
-  // Version: 5;
   out << insertionOptions.wideningBeamsWithDistance;
 }
 
@@ -111,20 +97,15 @@ void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8
     case 4:
     case 5:
     case 6:
+    case 7:
     {
-#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-      const uint8_t MyBitsPerCell = 8;
-#else
-      const uint8_t MyBitsPerCell = 16;
-#endif
-
       uint8_t bitsPerCellStream;
 
-      // Version 2: OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS/16BITS
+      // v2+: bitsPerCell byte (8 or 16). v0/v1: assumed 8-bit.
       if (version >= 2)
         in >> bitsPerCellStream;
       else
-        bitsPerCellStream = MyBitsPerCell;  // Old versinons: hope it's the same...
+        bitsPerCellStream = 8;
 
       uint32_t new_size_x, new_size_y;
       float new_x_min, new_x_max, new_y_min, new_y_max;
@@ -134,74 +115,45 @@ void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8
           new_resolution;
 
       setSize(new_x_min, new_x_max, new_y_min, new_y_max, new_resolution, 0.5);
-
       ASSERT_(m_size_x * m_size_y == m_map.size());
 
-      if (bitsPerCellStream == MyBitsPerCell)
+      if (bitsPerCellStream == 8)
       {
-// Perfect:
-#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-        in.ReadBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
-#else
-        in.ReadBufferFixEndianness(&map[0], map.size());
-#endif
+        in.ReadBuffer(m_map.data(), sizeof(cellType) * m_map.size());
       }
       else
       {
-// We must do a conversion...
-#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-        // We are 8-bit, stream is 16-bit
+        // Historical 16-bit stream: down-convert to 8-bit (>> 8)
         ASSERT_(bitsPerCellStream == 16);
         std::vector<uint16_t> auxMap(m_map.size());
-        in.ReadBuffer(&auxMap[0], sizeof(auxMap[0]) * auxMap.size());
-
-        size_t i, N = m_map.size();
-        auto* ptrTrg = reinterpret_cast<uint8_t*>(&m_map[0]);
-        const auto* ptrSrc = reinterpret_cast<const uint16_t*>(&auxMap[0]);
-        for (i = 0; i < N; i++) *ptrTrg++ = static_cast<uint8_t>((*ptrSrc++) >> 8);
-#else
-        // We are 16-bit, stream is 8-bit
-        ASSERT_(bitsPerCellStream == 8);
-        std::vector<uint8_t> auxMap(map.size());
-        in.ReadBuffer(&auxMap[0], sizeof(auxMap[0]) * auxMap.size());
-
-        size_t i, N = map.size();
-        uint16_t* ptrTrg = reinterpret_cast<uint16_t*>(&map[0]);
-        const uint8_t* ptrSrc = reinterpret_cast<const uint8_t*>(&auxMap[0]);
-        for (i = 0; i < N; i++) *ptrTrg++ = (*ptrSrc++) << 8;
-#endif
+        in.ReadBuffer(auxMap.data(), sizeof(uint16_t) * auxMap.size());
+        for (size_t i = 0, N = m_map.size(); i < N; i++)
+          m_map[i] = static_cast<cellType>(static_cast<uint8_t>(auxMap[i] >> 8));
       }
 
-      // If we are converting an old dump, convert from probabilities to
-      // log-odds:
+      // v0/v1/v2: cells stored as raw probabilities [0,255] → convert to log-odds
       if (version < 3)
       {
-        size_t i, N = m_map.size();
-        cellType* ptr = &m_map[0];
-        for (i = 0; i < N; i++)
+        for (auto& c : m_map)
         {
-          double p = cellTypeUnsigned(*ptr) * (1.0f / 0xFF);
-          if (p < 0) p = 0;
-          if (p > 1) p = 1;
-          *ptr++ = p2l(static_cast<float>(p));
+          double p = cellTypeUnsigned(c) * (1.0 / 0xFF);
+          p = std::clamp(p, 0.0, 1.0);
+          c = p2l(static_cast<float>(p));
         }
       }
 
-      // For the precomputed likelihood trick:
       m_likelihoodCacheOutDated = true;
 
       if (version >= 1)
       {
-        // insertionOptions:
         in >> insertionOptions.mapAltitude >> insertionOptions.useMapAltitude >>
             insertionOptions.maxDistanceInsertion >> insertionOptions.maxOccupancyUpdateCertainty >>
             insertionOptions.considerInvalidRangesAsFreeSpace >> insertionOptions.decimation >>
             insertionOptions.horizontalTolerance;
 
-        // Likelihood:
-        int32_t i;
-        in >> i;
-        likelihoodOptions.likelihoodMethod = static_cast<TLikelihoodMethod>(i);
+        int32_t lm;
+        in >> lm;
+        likelihoodOptions.likelihoodMethod = static_cast<TLikelihoodMethod>(lm);
         in >> likelihoodOptions.LF_stdHit >> likelihoodOptions.LF_zHit >>
             likelihoodOptions.LF_zRandom >> likelihoodOptions.LF_maxRange >>
             likelihoodOptions.LF_decimation >> likelihoodOptions.LF_maxCorrsDistance >>
@@ -212,7 +164,6 @@ void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8
             likelihoodOptions.consensus_takeEachRange >> likelihoodOptions.consensus_pow >>
             likelihoodOptions.OWA_weights >> likelihoodOptions.enableLikelihoodCache;
 
-        // Insertion as 3D:
         if (version >= 6)
           in >> genericMapParams;
         else
@@ -224,15 +175,10 @@ void COccupancyGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, uint8
       }
 
       if (version >= 4)
-      {
         in >> insertionOptions.CFD_features_gaussian_size >>
             insertionOptions.CFD_features_median_size;
-      }
 
-      if (version >= 5)
-      {
-        in >> insertionOptions.wideningBeamsWithDistance;
-      }
+      if (version >= 5) in >> insertionOptions.wideningBeamsWithDistance;
     }
     break;
     default:
