@@ -30,7 +30,7 @@ using namespace std;
 
 // MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
 const string sample_simplemap_file =
-    MRPT_EXAMPLES_BASE_DIRECTORY + string("../share/mrpt/datasets/localization_demo.simplemap.gz");
+    MRPT_DATA_DIR + string("/datasets/localization_demo.simplemap.gz");
 
 // ------------------------------------------------------
 //				TestVoronoi

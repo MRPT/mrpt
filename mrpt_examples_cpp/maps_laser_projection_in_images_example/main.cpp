@@ -47,11 +47,11 @@ using namespace mrpt::poses;
 using namespace mrpt::img;
 using namespace std;
 
-// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
+// MRPT_DATA_DIR provided via compile definition
 
 // Default path, or user path passed thru command line:
 std::string RAWLOG_FILE =
-    MRPT_EXAMPLES_BASE_DIRECTORY "../share/mrpt/datasets/localization_demo.rawlog";
+    MRPT_DATA_DIR "/datasets/localization_demo.rawlog";
 
 // ------------------------------------------------------
 //                  TestGeometry3D

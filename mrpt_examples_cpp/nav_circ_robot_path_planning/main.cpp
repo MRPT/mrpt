@@ -89,7 +89,11 @@ void TestPathPlanning()
 
   // Save result:
   CImage img;
-  gridmap.getAsImage(img, false, true);  // Force a RGB image
+  {
+    mrpt::maps::COccupancyGridMap2D::TGetAsImageParams p;
+    p.forceRGB = true;
+    gridmap.getAsImage(img, p);
+  }
 
   // Draw the path:
   // ---------------------

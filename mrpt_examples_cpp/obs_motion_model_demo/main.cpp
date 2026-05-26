@@ -42,7 +42,7 @@ void DemoMotionModel(int argc, const char** argv)
 
   // Default dataset, or override with user cli one:
   std::string datasetFile =
-      MRPT_EXAMPLES_BASE_DIRECTORY + "../share/mrpt/datasets/intel_2003_partial.rawlog.gz"s;
+      MRPT_DATA_DIR + "/datasets/intel_2003_partial.rawlog.gz"s;
 
   if (argc > 1)
   {

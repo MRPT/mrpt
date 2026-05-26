@@ -17,9 +17,13 @@ cmake_minimum_required(VERSION 3.16)
 project(mrpt_examples_cpp)
 
 find_package(mrpt_common REQUIRED)
+find_package(mrpt_data REQUIRED)
 
 # Provide MRPT_EXAMPLES_BASE_DIRECTORY for examples that need data files
 add_compile_definitions(MRPT_EXAMPLES_BASE_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}/")
+
+# Provide MRPT_DATA_DIR pointing to the mrpt_data package data root
+add_compile_definitions(MRPT_DATA_DIR="${mrpt_data_DATA_DIR}")
 
 # Process all subdirectories containing CMakeLists.txt files
 file(GLOB SUBDIRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*")
