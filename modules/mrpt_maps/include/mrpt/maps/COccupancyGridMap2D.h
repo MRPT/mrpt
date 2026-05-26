@@ -79,7 +79,6 @@ class COccupancyGridMap2D :
   static constexpr cellType OCCGRID_CELLTYPE_MIN = CLogOddsGridMap2D<cellType>::CELLTYPE_MIN;
   static constexpr cellType OCCGRID_CELLTYPE_MAX = CLogOddsGridMap2D<cellType>::CELLTYPE_MAX;
 
-
  protected:
   friend class CMultiMetricMap;
   friend class CMultiMetricMapPDF;
@@ -222,7 +221,6 @@ class COccupancyGridMap2D :
     /** In this mode, some laser rays can be skips to speep-up */
     int laserRaysSkip{1};
   };
-
 
   /** Fills all the cells with a default value. */
   void fill(float default_value = 0.5f);
@@ -1010,10 +1008,7 @@ class COccupancyGridMap2D :
   void getAsImage(mrpt::img::CImage& img, const TGetAsImageParams& params) const;
 
   /** Overload with default parameters (grayscale, no flip, no tricolor). */
-  void getAsImage(mrpt::img::CImage& img) const
-  {
-    getAsImage(img, TGetAsImageParams{});
-  }
+  void getAsImage(mrpt::img::CImage& img) const { getAsImage(img, TGetAsImageParams{}); }
 
   /** Returns the grid as a 8-bit graylevel image, where each pixel is a cell
    * (output image is RGB only if forceRGB is true) - This method filters the

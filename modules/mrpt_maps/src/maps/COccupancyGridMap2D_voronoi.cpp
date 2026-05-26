@@ -69,23 +69,26 @@ void COccupancyGridMap2D::buildVoronoiDiagram(
   }
 
   // Thin the diagram to width 1: remove points surrounded by >3 Voronoi
-  // neighbors.
-  int nDiag;
+  // neighbors. Collect removals first, then apply — modifying in-place during
+  // the scan would cause scan-order-dependent gaps because already-zeroed
+  // cells lower the neighbor count of cells processed later.
+  std::vector<std::pair<int, int>> to_remove;
   for (int x = x1; x <= x2; x++)
   {
     for (int y = y1; y <= y2; y++)
     {
       if (getVoronoiClearance(x, y))
       {
-        nDiag = 0;
+        int nDiag = 0;
         for (int xx = x - 1; xx <= (x + 1); xx++)
           for (int yy = y - 1; yy <= (y + 1); yy++)
             if (getVoronoiClearance(xx, yy)) nDiag++;
 
-        if (nDiag > 3) setVoronoiClearance(x, y, 0);
+        if (nDiag > 3) to_remove.emplace_back(x, y);
       }
     }
   }
+  for (const auto& [rx, ry] : to_remove) setVoronoiClearance(rx, ry, 0);
 }
 
 /*---------------------------------------------------------------
@@ -254,21 +257,12 @@ COccupancyGridMap2D::ClearanceResult COccupancyGridMap2D::computeClearance(
     return result;
   }
 
-  // Truco para acelerar MUCHO:
-  //  Si miramos un punto junto al mirado antes,
-  //   usar sus resultados, xk SEGURO que no hay obstaculos
-  //   mucho antes:
-  static int ultimo_cx = -10, ultimo_cy = -10;
-  int estimated_min_free_circle;
-  static int ultimo_free_circle;
-
-  if (std::abs(ultimo_cx - cx) <= 1 && std::abs(ultimo_cy - cy) <= 1)
-    estimated_min_free_circle = max(1, ultimo_free_circle - 3);
-  else
-    estimated_min_free_circle = 1;
-
-  ultimo_cx = cx;
-  ultimo_cy = cy;
+  // The previous "speed trick" here estimated the starting circle radius from
+  // the last cell's clearance. This is unsafe: when moving toward an obstacle
+  // the inner circles are skipped and the nearest obstacle is never found,
+  // producing wrong clearance values and missing Voronoi cells. Always start
+  // from circle 1 to guarantee correctness.
+  const int estimated_min_free_circle = 1;
 
 // Tabla de circulos:
 #define N_CIRCULOS 100
@@ -378,9 +372,6 @@ COccupancyGridMap2D::ClearanceResult COccupancyGridMap2D::computeClearance(
     }
   }
 
-  // Estimacion para siguiente punto:
-  ultimo_free_circle = tam_circ;
-
   if (nBasis >= 2)
   {
     if (GetContourPoint)
@@ -461,7 +452,9 @@ COccupancyGridMap2D::ClearanceResult COccupancyGridMap2D::computeClearance(
       }
     }
 
-    result.clearance = tam_circ * 100;
+    // tam_circ was incremented one past the last circle actually scanned,
+    // so subtract 1 to get the true clearance radius.
+    result.clearance = (tam_circ - 1) * 100;
     return result;
   }
   else

@@ -41,8 +41,7 @@ void DemoMotionModel(int argc, const char** argv)
   mrpt::random::getRandomGenerator().randomize();
 
   // Default dataset, or override with user cli one:
-  std::string datasetFile =
-      MRPT_DATA_DIR + "/datasets/intel_2003_partial.rawlog.gz"s;
+  std::string datasetFile = MRPT_DATA_DIR + "/datasets/intel_2003_partial.rawlog.gz"s;
 
   if (argc > 1)
   {

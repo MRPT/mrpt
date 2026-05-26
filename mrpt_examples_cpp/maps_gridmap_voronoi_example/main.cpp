@@ -12,11 +12,14 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/Scene.h>
 
 #include <iostream>
 
@@ -35,56 +38,99 @@ const string sample_simplemap_file =
 // ------------------------------------------------------
 //				TestVoronoi
 // ------------------------------------------------------
-void TestVoronoi()
+void TestVoronoi(const std::string& image_file)
 {
-  if (!mrpt::system::fileExists(sample_simplemap_file))
+  COccupancyGridMap2D gridmap;
+
+  if (!image_file.empty())
   {
-    cerr << "Error: file doesn't exist: " << sample_simplemap_file << "\n";
-    return;
+    // Load from image file provided by the user:
+    std::cout << "Loading gridmap from image: " << image_file << "\n";
+    if (!mrpt::system::fileExists(image_file))
+    {
+      cerr << "Error: file doesn't exist: " << image_file << "\n";
+      return;
+    }
+    const float resolution = 0.05f;  // meters/pixel — adjust as needed
+    if (!gridmap.loadFromBitmapFile(image_file, resolution))
+    {
+      cerr << "Error loading gridmap from image file.\n";
+      return;
+    }
+  }
+  else
+  {
+    // Load from default simplemap:
+    if (!mrpt::system::fileExists(sample_simplemap_file))
+    {
+      cerr << "Error: file doesn't exist: " << sample_simplemap_file << "\n";
+      return;
+    }
+    std::cout << "Loading simplemap: " << sample_simplemap_file << "\n";
+
+    CSimpleMap simplemap;
+    if (!simplemap.loadFromFile(sample_simplemap_file))
+      THROW_EXCEPTION_FMT("Failed to load simplemap: %s", sample_simplemap_file.c_str());
+
+    std::cout << "Building gridmap...\n";
+    gridmap = COccupancyGridMap2D(-5, 5, -5, 5, 0.10f);
+    gridmap.loadFromSimpleMap(simplemap);
   }
 
-  // Load simplemap:
-  std::cout << "Loading simplemap: " << sample_simplemap_file << "\n";
-
-  CSimpleMap simplemap;
-  if (!simplemap.loadFromFile(sample_simplemap_file))
-    THROW_EXCEPTION_FMT("Failed to load simplemap: %s", sample_simplemap_file.c_str());
-
-  // Load a grid map:
-  std::cout << "Building gridmap...\n";
-
-  COccupancyGridMap2D gridmap(-5, 5, -5, 5, 0.10f);
-  gridmap.loadFromSimpleMap(simplemap);
-
-  // Build voronoi:
+  // Build Voronoi diagram:
   std::cout << "Building Voronoi diagram...\n";
-
   gridmap.buildVoronoiDiagram(0.5f, 0.3f);
 
-  // Show results:
-  CImage img_grid;
-  gridmap.getAsImage(img_grid);
+  // --- Build 3D scene ---
+  // 1) Gridmap as a flat 3D object:
+  auto gl_grid = mrpt::viz::CSetOfObjects::Create();
+  gridmap.getVisualizationInto(*gl_grid);
 
-  CImage img_voronoi;
-  CMatrixDouble mat_voronoi;
-  gridmap.getVoronoiDiagram().getAsMatrix(mat_voronoi);
-  img_voronoi.setFromMatrix(mat_voronoi, false /* do normalization */);
+  // 2) Voronoi nodes as a thick point cloud at z = 0.01 (slightly above map):
+  auto gl_voronoi = mrpt::viz::CPointCloud::Create();
+  gl_voronoi->setColor(0.0f, 0.8f, 1.0f);  // cyan
+  gl_voronoi->setPointSize(5.0f);
 
-  // Show results:
-  CDisplayWindow win1("Grid map");
-  win1.showImage(img_grid);
+  const auto& vd = gridmap.getVoronoiDiagram();
+  const int cx0 = 0, cy0 = 0;
+  const int cxN = static_cast<int>(vd.getSizeX());
+  const int cyN = static_cast<int>(vd.getSizeY());
 
-  CDisplayWindow win2("Voronoi map");
-  win2.showImage(img_voronoi);
+  for (int cx = cx0; cx < cxN; cx++)
+  {
+    for (int cy = cy0; cy < cyN; cy++)
+    {
+      const uint16_t* cell = vd.cellByIndex(cx, cy);
+      if (cell && *cell > 0)
+      {
+        const float x = gridmap.idx2x(cx);
+        const float y = gridmap.idx2y(cy);
+        gl_voronoi->insertPoint(x, y, 0.01f);
+      }
+    }
+  }
 
-  mrpt::system::pause();
+  // Show in a single 3D window:
+  mrpt::gui::CDisplayWindow3D win("Gridmap + Voronoi diagram", 1024, 768);
+
+  {
+    mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
+    scene->insert(gl_grid);
+    scene->insert(gl_voronoi);
+    win.unlockAccess3DScene();
+  }
+  win.repaint();
+
+  std::cout << "Close the window or press any key to exit.\n";
+  win.waitForKey();
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
   try
   {
-    TestVoronoi();
+    const std::string image_file = (argc >= 2) ? std::string(argv[1]) : std::string{};
+    TestVoronoi(image_file);
     return 0;
   }
   catch (exception& e)

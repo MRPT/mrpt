@@ -30,8 +30,7 @@ using namespace std;
 
 // Load example grid map
 // MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
-string mySimpleMap(
-    MRPT_DATA_DIR + string("/datasets/malaga-cs-fac-building.simplemap.gz"));
+string mySimpleMap(MRPT_DATA_DIR + string("/datasets/malaga-cs-fac-building.simplemap.gz"));
 string myCfgFileName(
     MRPT_DATA_DIR + string("/config_files/navigation-ptgs/ptrrt_config_example1.ini"));
 

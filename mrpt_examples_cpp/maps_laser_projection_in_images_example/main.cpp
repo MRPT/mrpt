@@ -50,8 +50,7 @@ using namespace std;
 // MRPT_DATA_DIR provided via compile definition
 
 // Default path, or user path passed thru command line:
-std::string RAWLOG_FILE =
-    MRPT_DATA_DIR "/datasets/localization_demo.rawlog";
+std::string RAWLOG_FILE = MRPT_DATA_DIR "/datasets/localization_demo.rawlog";
 
 // ------------------------------------------------------
 //                  TestGeometry3D

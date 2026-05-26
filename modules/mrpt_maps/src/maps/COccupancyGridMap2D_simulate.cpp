@@ -29,7 +29,6 @@ using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
 
-
 // See docs in header
 void COccupancyGridMap2D::laserScanSimulator(
     mrpt::obs::CObservation2DRangeScan& inout_Scan,
@@ -146,10 +145,10 @@ void COccupancyGridMap2D::simulateScanRay(
   auto rxi = static_cast<int64_t>(((start_x - m_xMin) / m_resolution) * (1L << INTPRECNUMBIT));
   auto ryi = static_cast<int64_t>(((start_y - m_yMin) / m_resolution) * (1L << INTPRECNUMBIT));
 
-  const auto Arxi =
-      static_cast<int64_t>(insertionOptions.raytraceStepSizeInCellUnits * Arx * (1L << INTPRECNUMBIT));
-  const auto Aryi =
-      static_cast<int64_t>(insertionOptions.raytraceStepSizeInCellUnits * Ary * (1L << INTPRECNUMBIT));
+  const auto Arxi = static_cast<int64_t>(
+      insertionOptions.raytraceStepSizeInCellUnits * Arx * (1L << INTPRECNUMBIT));
+  const auto Aryi = static_cast<int64_t>(
+      insertionOptions.raytraceStepSizeInCellUnits * Ary * (1L << INTPRECNUMBIT));
 
   cellType hitCellOcc_int = 0;  // p2l(0.5f)
   const cellType threshold_free_int = p2l(threshold_free);
@@ -175,7 +174,8 @@ void COccupancyGridMap2D::simulateScanRay(
   }
   else
   {  // No: The normal case:
-    out_range = static_cast<float>(insertionOptions.raytraceStepSizeInCellUnits * ray_len * m_resolution);
+    out_range =
+        static_cast<float>(insertionOptions.raytraceStepSizeInCellUnits * ray_len * m_resolution);
     out_valid = (ray_len < max_ray_len);  // out_range<max_range_meters;
     // Add additive Gaussian noise:
     if (noiseStd > 0 && out_valid)
