@@ -79,10 +79,6 @@ mrpt::maps::CMetricMap::Ptr COccupancyGridMap2D::internal_CreateFromMapDefinitio
 
 IMPLEMENTS_SERIALIZABLE(COccupancyGridMap2D, CMetricMap, mrpt::maps)
 
-// Defined as a static member for ABI compatibility; the actual table is now
-// built once via a thread-safe local static inside computeEntropy().
-std::vector<float> COccupancyGridMap2D::entropyTable;
-
 static const float MAX_H = 0.69314718055994531f;  // ln(2)
 
 // Static lookup tables for log-odds

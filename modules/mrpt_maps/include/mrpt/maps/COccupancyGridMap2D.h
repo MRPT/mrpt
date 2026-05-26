@@ -135,8 +135,6 @@ class COccupancyGridMap2D :
     else
       return -p * std::log(p);
   }
-  /** Internally used to speed-up entropy calculation */
-  static std::vector<float> entropyTable;
 
   /** Change the contents [0,1] of a cell, given its index */
   void setCell_nocheck(int x, int y, float value) { m_map[x + y * m_size_x] = p2l(value); }
