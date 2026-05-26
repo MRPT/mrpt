@@ -36,7 +36,7 @@ macro(GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY)
         string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "find_package(mrpt_data REQUIRED)\n")
         string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "\n")
         string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "# Define C++ macro with the data directory path\n")
-        string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "add_compile_definitions(MRPT_EXAMPLE_DATA_DIR=\"${mrpt_data_DATA_DIR}\")\n")
+        string(APPEND CMAKE_MRPT_EXAMPLE_EXTRA_CODE "add_compile_definitions(MRPT_EXAMPLE_DATA_DIR=\"\${mrpt_data_DATA_DIR}\")\n")
       endif()
     endif()
     

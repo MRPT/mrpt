@@ -18,7 +18,7 @@ find_package(mrpt_maps REQUIRED)
 find_package(mrpt_data REQUIRED)
 
 # Define C++ macro with the data directory path
-add_compile_definitions(MRPT_EXAMPLE_DATA_DIR="")
+add_compile_definitions(MRPT_EXAMPLE_DATA_DIR="${mrpt_data_DATA_DIR}")
 
 # Define the executable target:
 mrpt_add_executable(
