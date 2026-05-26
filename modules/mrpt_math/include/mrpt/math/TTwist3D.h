@@ -21,7 +21,10 @@ namespace mrpt::math
  * \sa mrpt::math::TTwist2D, mrpt::math::TPose3D
  * \ingroup geometry_grp
  */
-struct TTwist3D : public TPoseOrPoint, public internal::ProvideStaticResize<TTwist3D>
+struct TTwist3D :
+    public TPoseOrPoint,
+    public internal::ProvideStaticResize<TTwist3D>,
+    public internal::ProvidesStringConversion<TTwist3D>
 {
   static constexpr std::size_t static_size = 6;
 
@@ -151,12 +154,7 @@ struct TTwist3D : public TPoseOrPoint, public internal::ProvideStaticResize<TTwi
    * \sa fromString
    */
   void asString(std::string& s) const;
-  std::string asString() const
-  {
-    std::string s;
-    asString(s);
-    return s;
-  }
+  using internal::ProvidesStringConversion<TTwist3D>::asString;
 
   /** Transform all 6 components for a change of reference frame from "A" to
    * another frame "B" whose rotation with respect to "A" is given by `rot`.

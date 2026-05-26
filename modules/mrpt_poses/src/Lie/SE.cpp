@@ -90,7 +90,7 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dexpeD_de(const CPose3D& D)
   }
   {
     auto trg_blc = jacob.block<3, 3>(9, 3);
-    mrpt::math::skew_symmetric3_neg(D.m_coords, trg_blc);
+    mrpt::math::skew_symmetric3_neg(D.translationVector(), trg_blc);
   }
   return jacob;
 }
@@ -130,7 +130,7 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D
     mrpt::math::skew_symmetric3_neg(D.getRotationMatrix().blockCopy<3, 1>(0, i), aux);
     jacob.block<3, 3>(3 * i, 3) = Arot.asEigen() * aux;
   }
-  mrpt::math::skew_symmetric3_neg(D.m_coords, aux);
+  mrpt::math::skew_symmetric3_neg(D.translationVector(), aux);
   jacob.block<3, 3>(9, 3) = Arot.asEigen() * aux;
   return jacob;
 }

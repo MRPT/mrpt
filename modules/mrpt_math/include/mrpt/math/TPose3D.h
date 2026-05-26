@@ -58,7 +58,10 @@ namespace mrpt::math
  * \sa mrpt::poses::CPose3D, TPose2D, TPoint3D
  * \ingroup geometry_grp
  */
-struct TPose3D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose3D>
+struct TPose3D :
+    public TPoseOrPoint,
+    public internal::ProvideStaticResize<TPose3D>,
+    public internal::ProvidesStringConversion<TPose3D>
 {
   static constexpr std::size_t static_size = 6;
 
@@ -205,12 +208,7 @@ struct TPose3D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
    * \sa fromString
    */
   void asString(std::string& s) const;
-  std::string asString() const
-  {
-    std::string s;
-    asString(s);
-    return s;
-  }
+  using internal::ProvidesStringConversion<TPose3D>::asString;
 
   /** Converts the SO(3) rotation of this pose to a unit quaternion q = (qr, qx, qy, qz).
    *

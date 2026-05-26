@@ -76,6 +76,18 @@ struct ProvideStaticResize
   /** throws if attempted to resize to incorrect length */
   void resize(std::size_t n) { ASSERT_EQUAL_(n, Derived::static_size); }
 };
+
+/** Provides a returning asString() by delegating to the derived void asString(s) overload. */
+template <typename Derived>
+struct ProvidesStringConversion
+{
+  [[nodiscard]] std::string asString() const
+  {
+    std::string s;
+    static_cast<const Derived*>(this)->asString(s);
+    return s;
+  }
+};
 }  // namespace internal
 
 /** Text streaming function */

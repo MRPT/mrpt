@@ -87,10 +87,21 @@ class CPose3D :
   DEFINE_SERIALIZABLE(CPose3D, mrpt::poses)
   DEFINE_SCHEMA_SERIALIZABLE()
 
- public:
-  /** The translation vector [x,y,z] access directly or with x(), y(), z()
-   * setter/getter methods. */
+ protected:
+  /** The translation vector [x,y,z]. Use x(), y(), z() for public access.
+   *  CRTP base classes (CPoseOrPoint, pose_point_impl) access this via friend. */
   mrpt::math::CVectorFixedDouble<3> m_coords;
+
+  // Grant access to CRTP base-class templates that use derived().m_coords
+  friend class CPoseOrPoint<CPose3D, 6>;
+  friend class mrpt::poses::detail::pose_point_impl<CPose3D, 1>;
+
+ public:
+  /** Read-only access to the raw [x,y,z] translation vector storage. */
+  [[nodiscard]] const mrpt::math::CVectorFixedDouble<3>& translationVector() const
+  {
+    return m_coords;
+  }
 
  protected:
   /** The SO(3) rotation matrix — primary storage for orientation.
@@ -326,10 +337,7 @@ class CPose3D :
   }
 
   /** Returns the (x,y,z) translational part of the SE(3) transformation. */
-  [[nodiscard]] const mrpt::math::TPoint3D translation() const
-  {
-    return {m_coords[0], m_coords[1], m_coords[2]};
-  }
+  [[nodiscard]] const mrpt::math::TPoint3D translation() const { return {x(), y(), z()}; }
 
   /** @} */  // end rot and HM
 

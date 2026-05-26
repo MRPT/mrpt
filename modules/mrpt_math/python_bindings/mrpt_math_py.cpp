@@ -18,6 +18,7 @@
  * ------------------------------------------------------------------------- */
 
 #include <pybind11/eigen.h>
+#include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -169,6 +170,12 @@ PYBIND11_MODULE(_bindings, m)
       .def(-py::self)
       .def(py::self == py::self)
       .def(py::self != py::self)
+      .def(
+          "__array__",
+          [](const mrpt::math::TPoint2D& p, py::object /*dtype*/, py::object /*copy*/)
+          { return py::array_t<double>({2}, {sizeof(double)}, &p.x); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
+      .def("__len__", [](const mrpt::math::TPoint2D&) { return 2; })
       .def("__repr__", [](const mrpt::math::TPoint2D& p) { return p.asString(); })
       .def("__str__", [](const mrpt::math::TPoint2D& p) { return p.asString(); });
 
@@ -205,6 +212,12 @@ PYBIND11_MODULE(_bindings, m)
       .def(-py::self)
       .def(py::self == py::self)
       .def(py::self != py::self)
+      .def(
+          "__array__",
+          [](const mrpt::math::TPoint3D& p, py::object /*dtype*/, py::object /*copy*/)
+          { return py::array_t<double>({3}, {sizeof(double)}, &p.x); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
+      .def("__len__", [](const mrpt::math::TPoint3D&) { return 3; })
       .def("__repr__", [](const mrpt::math::TPoint3D& p) { return p.asString(); })
       .def("__str__", [](const mrpt::math::TPoint3D& p) { return p.asString(); });
 
@@ -233,6 +246,12 @@ PYBIND11_MODULE(_bindings, m)
       .def(py::self - py::self)
       .def(py::self == py::self)
       .def(py::self != py::self)
+      .def(
+          "__array__",
+          [](const mrpt::math::TPoint2Df& p, py::object /*dtype*/, py::object /*copy*/)
+          { return py::array_t<float>({2}, {sizeof(float)}, &p.x); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
+      .def("__len__", [](const mrpt::math::TPoint2Df&) { return 2; })
       .def("__repr__", [](const mrpt::math::TPoint2Df& p) { return p.asString(); })
       .def("__str__", [](const mrpt::math::TPoint2Df& p) { return p.asString(); });
 
@@ -264,6 +283,12 @@ PYBIND11_MODULE(_bindings, m)
       .def(py::self - py::self)
       .def(py::self == py::self)
       .def(py::self != py::self)
+      .def(
+          "__array__",
+          [](const mrpt::math::TPoint3Df& p, py::object /*dtype*/, py::object /*copy*/)
+          { return py::array_t<float>({3}, {sizeof(float)}, &p.x); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
+      .def("__len__", [](const mrpt::math::TPoint3Df&) { return 3; })
       .def("__repr__", [](const mrpt::math::TPoint3Df& p) { return p.asString(); })
       .def("__str__", [](const mrpt::math::TPoint3Df& p) { return p.asString(); });
 
@@ -293,6 +318,12 @@ PYBIND11_MODULE(_bindings, m)
       .def(py::self - py::self)
       .def(py::self == py::self)
       .def(py::self != py::self)
+      .def(
+          "__array__",
+          [](const mrpt::math::TPose2D& p, py::object /*dtype*/, py::object /*copy*/)
+          { return py::array_t<double>({3}, {sizeof(double)}, &p.x); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
+      .def("__len__", [](const mrpt::math::TPose2D&) { return 3; })
       .def("__repr__", [](const mrpt::math::TPose2D& p) { return p.asString(); })
       .def("__str__", [](const mrpt::math::TPose2D& p) { return p.asString(); });
 
@@ -334,6 +365,12 @@ PYBIND11_MODULE(_bindings, m)
       .def(py::self == py::self)
       .def(py::self != py::self)
       .def("__neg__", [](const mrpt::math::TPose3D& p) { return -p; })
+      .def(
+          "__array__",
+          [](const mrpt::math::TPose3D& p, py::object /*dtype*/, py::object /*copy*/)
+          { return py::array_t<double>({6}, {sizeof(double)}, &p.x); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
+      .def("__len__", [](const mrpt::math::TPose3D&) { return 6; })
       .def("__repr__", [](const mrpt::math::TPose3D& p) { return p.asString(); })
       .def("__str__", [](const mrpt::math::TPose3D& p) { return p.asString(); });
 
@@ -513,6 +550,12 @@ PYBIND11_MODULE(_bindings, m)
       .def("rotate", &mrpt::math::TTwist2D::rotate)
       .def("rotated", &mrpt::math::TTwist2D::rotated)
       .def("asString", py::overload_cast<>(&mrpt::math::TTwist2D::asString, py::const_))
+      .def(
+          "__array__",
+          [](const mrpt::math::TTwist2D& t, py::object /*dtype*/, py::object /*copy*/)
+          { return py::array_t<double>({3}, {sizeof(double)}, &t.vx); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
+      .def("__len__", [](const mrpt::math::TTwist2D&) { return 3; })
       .def("__repr__", [](const mrpt::math::TTwist2D& t) { return t.asString(); })
       .def("__str__", [](const mrpt::math::TTwist2D& t) { return t.asString(); });
 
@@ -533,6 +576,12 @@ PYBIND11_MODULE(_bindings, m)
       .def("rotate", &mrpt::math::TTwist3D::rotate)
       .def("rotated", &mrpt::math::TTwist3D::rotated)
       .def("asString", py::overload_cast<>(&mrpt::math::TTwist3D::asString, py::const_))
+      .def(
+          "__array__",
+          [](const mrpt::math::TTwist3D& t, py::object /*dtype*/, py::object /*copy*/)
+          { return py::array_t<double>({6}, {sizeof(double)}, &t.vx); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
+      .def("__len__", [](const mrpt::math::TTwist3D&) { return 6; })
       .def("__repr__", [](const mrpt::math::TTwist3D& t) { return t.asString(); })
       .def("__str__", [](const mrpt::math::TTwist3D& t) { return t.asString(); });
 
@@ -551,6 +600,12 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("qx", &mrpt::math::TPose3DQuat::qx)
       .def_readwrite("qy", &mrpt::math::TPose3DQuat::qy)
       .def_readwrite("qz", &mrpt::math::TPose3DQuat::qz)
+      .def(
+          "__array__",
+          [](const mrpt::math::TPose3DQuat& p, py::object /*dtype*/, py::object /*copy*/)
+          { return py::array_t<double>({7}, {sizeof(double)}, &p.x); },
+          py::arg("dtype") = py::none(), py::arg("copy") = py::none())
+      .def("__len__", [](const mrpt::math::TPose3DQuat&) { return 7; })
       .def("__repr__", [](const mrpt::math::TPose3DQuat& p) { return p.asString(); })
       .def("__str__", [](const mrpt::math::TPose3DQuat& p) { return p.asString(); });
 

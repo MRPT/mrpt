@@ -237,7 +237,7 @@ void unprojectInto(
         mrpt::math::CMatrixFixed<double, 3, 1> t_inv;
         mrpt::math::homogeneousMatrixInverse(
             src_obs.relativePoseIntensityWRTDepth.getRotationMatrix(),
-            src_obs.relativePoseIntensityWRTDepth.m_coords, R_inv, t_inv);
+            src_obs.relativePoseIntensityWRTDepth.translationVector(), R_inv, t_inv);
 
         T_inv(3, 3) = 1;
         T_inv.insertMatrix(0, 0, R_inv.cast_float());

@@ -70,7 +70,11 @@ PYBIND11_MODULE(_bindings, m)
           [](mrpt::poses::CPose2D &p, double val) { p.phi(val); }, "Phi orientation (radians)")
       // Methods
       .def("normalizePhi", &mrpt::poses::CPose2D::normalizePhi, "Forces phi to be in [-pi,pi]")
-      .def("asTPose", &mrpt::poses::CPose2D::asTPose, "Returns lightweight struct")
+      .def("asTPose", &mrpt::poses::CPose2D::asTPose, "Convert to lightweight mrpt.math.TPose2D")
+      .def_static(
+          "fromTPose",
+          [](const mrpt::math::TPose2D &t) { return mrpt::poses::CPose2D(t.x, t.y, t.phi); },
+          "Construct CPose2D from a lightweight mrpt.math.TPose2D")
       .def("norm", &mrpt::poses::CPose2D::norm, "Returns the norm of the (x,y) vector")
       .def("asString", &mrpt::poses::CPose2D::asString, "Returns human-readable string [x y phi]")
       .def("fromString", &mrpt::poses::CPose2D::fromString, "Set value from string")
@@ -149,6 +153,10 @@ PYBIND11_MODULE(_bindings, m)
           "inverse", [](mrpt::poses::CPose3D &p) { p.inverse(); }, "Inverts the pose in place")
       .def("getOppositeScalar", &mrpt::poses::CPose3D::getOppositeScalar)
       .def("asString", &mrpt::poses::CPose3D::asString)
+      .def("asTPose", &mrpt::poses::CPose3D::asTPose, "Convert to lightweight mrpt.math.TPose3D")
+      .def_static(
+          "fromTPose", [](const mrpt::math::TPose3D &t) { return mrpt::poses::CPose3D(t); },
+          "Construct CPose3D from a lightweight mrpt.math.TPose3D")
       .def(
           "composePoint", [](const mrpt::poses::CPose3D &p, const mrpt::math::TPoint3D &pt)
           { return p.composePoint(pt); })
@@ -295,6 +303,11 @@ PYBIND11_MODULE(_bindings, m)
           "y", [](const mrpt::poses::CPoint2D &p) { return p.y(); },
           [](mrpt::poses::CPoint2D &p, double v) { p.y() = v; })
       .def("asString", &mrpt::poses::CPoint2D::asString)
+      .def(
+          "asTPoint", &mrpt::poses::CPoint2D::asTPoint, "Convert to lightweight mrpt.math.TPoint2D")
+      .def_static(
+          "fromTPoint", [](const mrpt::math::TPoint2D &t) { return mrpt::poses::CPoint2D(t); },
+          "Construct CPoint2D from a lightweight mrpt.math.TPoint2D")
       .def("__str__", &mrpt::poses::CPoint2D::asString)
       .def("__repr__", &mrpt::poses::CPoint2D::asString);
 
@@ -316,6 +329,11 @@ PYBIND11_MODULE(_bindings, m)
           "z", [](const mrpt::poses::CPoint3D &p) { return p.z(); },
           [](mrpt::poses::CPoint3D &p, double v) { p.z() = v; })
       .def("asString", &mrpt::poses::CPoint3D::asString)
+      .def(
+          "asTPoint", &mrpt::poses::CPoint3D::asTPoint, "Convert to lightweight mrpt.math.TPoint3D")
+      .def_static(
+          "fromTPoint", [](const mrpt::math::TPoint3D &t) { return mrpt::poses::CPoint3D(t); },
+          "Construct CPoint3D from a lightweight mrpt.math.TPoint3D")
       .def("__str__", &mrpt::poses::CPoint3D::asString)
       .def("__repr__", &mrpt::poses::CPoint3D::asString);
 
@@ -342,6 +360,24 @@ PYBIND11_MODULE(_bindings, m)
           py::return_value_policy::reference_internal)
       .def("norm", &mrpt::poses::CPose3DQuat::norm)
       .def("asString", &mrpt::poses::CPose3DQuat::asString)
+      .def(
+          "asTPose", &mrpt::poses::CPose3DQuat::asTPose,
+          "Convert to lightweight mrpt.math.TPose3DQuat")
+      .def_static(
+          "fromTPose",
+          [](const mrpt::math::TPose3DQuat &t)
+          {
+            mrpt::poses::CPose3DQuat ret;
+            ret.x() = t.x;
+            ret.y() = t.y;
+            ret.z() = t.z;
+            ret.quat().r(t.qr);
+            ret.quat().x(t.qx);
+            ret.quat().y(t.qy);
+            ret.quat().z(t.qz);
+            return ret;
+          },
+          "Construct CPose3DQuat from a lightweight mrpt.math.TPose3DQuat")
       .def("__str__", &mrpt::poses::CPose3DQuat::asString)
       .def("__repr__", &mrpt::poses::CPose3DQuat::asString);
 

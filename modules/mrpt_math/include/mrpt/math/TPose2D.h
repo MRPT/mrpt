@@ -51,7 +51,10 @@ namespace mrpt::math
  * \sa mrpt::poses::CPose2D, TPose3D, TPoint2D
  * \ingroup geometry_grp
  */
-struct TPose2D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose2D>
+struct TPose2D :
+    public TPoseOrPoint,
+    public internal::ProvideStaticResize<TPose2D>,
+    public internal::ProvidesStringConversion<TPose2D>
 {
   static constexpr std::size_t static_size = 3;
 
@@ -153,12 +156,7 @@ struct TPose2D : public TPoseOrPoint, public internal::ProvideStaticResize<TPose
    * \sa fromString
    */
   void asString(std::string& s) const;
-  std::string asString() const
-  {
-    std::string s;
-    asString(s);
-    return s;
-  }
+  using internal::ProvidesStringConversion<TPose2D>::asString;
 
   /** SE(2) group composition — "⊕" operator: `ret = this ⊕ b`.
    *

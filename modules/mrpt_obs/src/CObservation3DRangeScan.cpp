@@ -1119,7 +1119,8 @@ bool CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide() const
   static const double EPSILON = 1e-7;
   static mrpt::poses::CPose3D ref_pose(0, 0, 0, -90.0_deg, 0, -90.0_deg);
 
-  return (relativePoseIntensityWRTDepth.m_coords.array().abs() < EPSILON).all() &&
+  return (relativePoseIntensityWRTDepth.translationVector().asEigen().array().abs() < EPSILON)
+             .all() &&
          ((ref_pose.getRotationMatrix() - relativePoseIntensityWRTDepth.getRotationMatrix())
               .array()
               .abs() < EPSILON)

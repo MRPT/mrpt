@@ -125,7 +125,10 @@ class CCamera : public CVisualObject
   {
     m_pointingX = p.x();
     m_pointingY = p.y();
-    m_pointingZ = p.is3DPoseOrPoint() ? p.m_coords[2] : 0;
+    if constexpr (POSEORPOINT::is_3D_val != 0)
+      m_pointingZ = p.z();
+    else
+      m_pointingZ = 0;
   }
   void setPointingAt(const mrpt::math::TPoint3D& p) { setPointingAt(d2f(p.x), d2f(p.y), d2f(p.z)); }
 
