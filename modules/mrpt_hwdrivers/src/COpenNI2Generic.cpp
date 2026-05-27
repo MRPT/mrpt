@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
+#include <mrpt/hwdrivers/COpenNI2Generic_CDevice.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/system/CTimeLogger.h>
 
@@ -20,18 +21,6 @@
 #include <chrono>
 #include <mutex>
 #include <thread>
-
-#if MRPT_HAS_OPENNI2
-
-// This seems to be assumed by OpenNI.h and undefined for some reason in
-// GCC/Ubuntu
-#if !defined(_WIN32)
-#define linux 1
-#endif
-
-#include <OpenNI.h>
-#include <PS1080.h>
-#endif
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
@@ -49,8 +38,6 @@ bool setONI2StreamMode(
 std::string oni2DevInfoStr(const openni::DeviceInfo& info, int tab = 0);
 bool cmpONI2Device(const openni::DeviceInfo& i1, const openni::DeviceInfo& i2);
 #endif  // MRPT_HAS_OPENNI2
-
-#include <mrpt/hwdrivers/COpenNI2Generic_CDevice.h>
 
 int COpenNI2Generic::getNumInstances()
 {

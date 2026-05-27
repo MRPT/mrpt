@@ -34,6 +34,7 @@ using namespace Fc2Triclops;
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
 
+#if MRPT_HAS_FLYCAPTURE2
 #define CHECK_FC2_ERROR(_err)                                               \
   {                                                                         \
     if (_err != PGRERROR_OK)                                                \
@@ -41,6 +42,12 @@ using namespace Fc2Triclops;
       THROW_EXCEPTION_FMT("FlyCapture2 error:\n%s", _err.GetDescription()); \
     }                                                                       \
   }
+#define FC2_CAM      reinterpret_cast<FlyCapture2::Camera*>(m_camera)
+#define FC2_CAM_INFO reinterpret_cast<FlyCapture2::CameraInfo*>(m_camera_info)
+#define FC2_BUF_IMG  reinterpret_cast<FlyCapture2::Image*>(m_img_buffer)
+#endif  // MRPT_HAS_FLYCAPTURE2
+
+#if MRPT_HAS_TRICLOPS
 #define CHECK_TRICLOPS_ERROR(_err)                                               \
   {                                                                              \
     if (_err != TriclopsErrorOk)                                                 \
@@ -48,10 +55,8 @@ using namespace Fc2Triclops;
       THROW_EXCEPTION_FMT("Triclops Error:\n'%s'", triclopsErrorToString(_err)); \
     }                                                                            \
   }
-#define FC2_CAM      reinterpret_cast<FlyCapture2::Camera*>(m_camera)
-#define FC2_CAM_INFO reinterpret_cast<FlyCapture2::CameraInfo*>(m_camera_info)
-#define FC2_BUF_IMG  reinterpret_cast<FlyCapture2::Image*>(m_img_buffer)
 #define TRI_CONTEXT  reinterpret_cast<TriclopsContext*>(m_triclops)
+#endif  // MRPT_HAS_TRICLOPS
 
 using namespace mrpt::hwdrivers;
 using namespace std;

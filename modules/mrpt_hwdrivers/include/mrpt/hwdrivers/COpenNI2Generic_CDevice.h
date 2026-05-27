@@ -16,6 +16,16 @@
 
 #include <mrpt/hwdrivers/config.h>  //MRPT_HAS_OPENNI2
 
+#if MRPT_HAS_OPENNI2
+// This seems to be assumed by OpenNI.h and undefined for some reason in
+// GCC/Ubuntu
+#if !defined(_WIN32)
+#define linux 1
+#endif
+#include <OpenNI.h>
+#include <PS1080.h>
+#endif
+
 /** @file Include this file only from your user code if you have OPENNI2 */
 
 namespace mrpt::hwdrivers

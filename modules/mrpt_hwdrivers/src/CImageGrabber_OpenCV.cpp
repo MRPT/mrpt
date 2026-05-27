@@ -18,10 +18,14 @@
 #include <optional>
 #include <thread>
 
-#ifdef HAVE_OPENCV_VIDEOIO
+#if MRPT_HAS_OPENCV
 // cv::VideoCapture moved from highgui in opencv2 to videoio in opencv3:
+#ifdef HAVE_OPENCV_VIDEOIO
 #include <opencv2/videoio.hpp>
+#else
+#include <opencv2/highgui/highgui.hpp>
 #endif
+#endif  // MRPT_HAS_OPENCV
 
 using namespace std;
 using namespace mrpt;
