@@ -128,7 +128,7 @@ class COpenNI2Generic::CDevice
 
   void setPixel(const openni::RGB888Pixel& src, mrpt::img::CImage& rgb, int x, int y)
   {
-    rgb.setPixel(x, y, (src.r << 16) + (src.g << 8) + src.b);
+    rgb.setPixel({x, y}, mrpt::img::TColor(src.r, src.g, src.b));
   }
   void setPixel(const openni::DepthPixel& src, mrpt::math::CMatrix_u16& depth_mm, int x, int y)
   {

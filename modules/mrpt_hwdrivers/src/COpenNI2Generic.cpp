@@ -1072,11 +1072,14 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
     {
       m_type = openni::SENSOR_IR;
       m_strName = "openni::SENSOR_IR";  // SEB added
-      if (m_verbose) printf("DBG: changing type to SENSOR_IR (%d)\n", (int)m_type);
+      if (m_verbose)
+      {
+        printf("DBG: changing type to SENSOR_IR (%d)\n", (int)m_type);
+      }
       rc = m_stream.create(m_device, m_type);
     }  // SEB added whole if stmt
-    else
-      return false;
+
+    return false;
   }
   if (m_verbose) printf("returned OK from stream.create()\n");
   openni::VideoMode options = m_stream.getVideoMode();
@@ -1088,15 +1091,24 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
                "Initial resolution (%d, %d) FPS %d Format %d", options.getResolutionX(),
                options.getResolutionY(), options.getFps(), options.getPixelFormat())
         << "\n";
-  if (m_verbose) printf("DBG: calling setONI2StreamMode()\n");
+  if (m_verbose)
+  {
+    printf("DBG: calling setONI2StreamMode()\n");
+  }
   if (setONI2StreamMode(m_stream, w, h, fps, m_format) == false)
   {
     m_log << " Can't find desired mode in the " << getName() << "\n";
     destroy();
     return false;
   }
-  if (m_verbose) printf("DBG: returned OK from setONI2StreamMode()\n");
-  if (m_verbose) printf("DBG: calling stream.getVideoMode()\n");
+  if (m_verbose)
+  {
+    printf("DBG: returned OK from setONI2StreamMode()\n");
+  }
+  if (m_verbose)
+  {
+    printf("DBG: calling stream.getVideoMode()\n");
+  }
   options = m_stream.getVideoMode();
   m_log << " "
         << mrpt::format(

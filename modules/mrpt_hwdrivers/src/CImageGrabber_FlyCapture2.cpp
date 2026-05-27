@@ -55,7 +55,7 @@ using namespace Fc2Triclops;
       THROW_EXCEPTION_FMT("Triclops Error:\n'%s'", triclopsErrorToString(_err)); \
     }                                                                            \
   }
-#define TRI_CONTEXT  reinterpret_cast<TriclopsContext*>(m_triclops)
+#define TRI_CONTEXT reinterpret_cast<TriclopsContext*>(m_triclops)
 #endif  // MRPT_HAS_TRICLOPS
 
 using namespace mrpt::hwdrivers;
