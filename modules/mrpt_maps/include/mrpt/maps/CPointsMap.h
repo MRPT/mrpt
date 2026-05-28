@@ -425,6 +425,15 @@ class CPointsMap :
    */
   virtual bool registerField_uint8([[maybe_unused]] const std::string& fieldName) { return false; }
 
+  /** Registers a new data channel of type `uint32_t`.
+   * If the map is not empty, the new channel is filled with default values (0)
+   * to match the current point count.
+   * \return true if the field could effectively be added to the underlying point map class.
+   * \sa hasPointField(), getPointFieldNames_uint32()
+   * \note (New in MRPT 3.0.0)
+   */
+  virtual bool registerField_uint32([[maybe_unused]] const std::string& fieldName) { return false; }
+
   /** Registers a new data channel of type `double`.
    * If the map is not empty, the new channel is filled with default values (0)
    * to match the current point count.
@@ -623,6 +632,9 @@ class CPointsMap :
   virtual std::vector<std::string> getPointFieldNames_uint16() const { return {}; }
   /** Get list of all uint8_t channel names */
   virtual std::vector<std::string> getPointFieldNames_uint8() const { return {}; }
+  /** Get list of all uint32_t channel names.
+   * \note (New in MRPT 3.0.0) */
+  virtual std::vector<std::string> getPointFieldNames_uint32() const { return {}; }
 
   /** Get list of all float channel names, except x,y,z */
   std::vector<std::string> getPointFieldNames_float_except_xyz() const;
@@ -682,6 +694,17 @@ class CPointsMap :
     return 0;
   }
 
+  /** Read the value of a uint32_t channel for a given point.
+   * Returns 0 if field does not exist.
+   * \exception std::exception on index out of bounds or if field exists but
+   * is not uint32_t.
+   */
+  virtual uint32_t getPointField_uint32(
+      [[maybe_unused]] size_t index, [[maybe_unused]] const std::string& fieldName) const
+  {
+    return 0;
+  }
+
   /** Sets the value of a float channel for a given point.
    * \exception std::exception on index out of bounds or if field does not
    * exist or is not float.
@@ -734,6 +757,17 @@ class CPointsMap :
   {
   }
 
+  /** Sets the value of a uint32_t channel for a given point.
+   * \exception std::exception on index out of bounds or if field does not
+   * exist or is not uint32_t.
+   */
+  virtual void setPointField_uint32(
+      [[maybe_unused]] size_t index,
+      [[maybe_unused]] const std::string& fieldName,
+      [[maybe_unused]] uint32_t value)
+  {
+  }
+
   /** Appends a value to a float channel (for use after insertPointFast()) */
   virtual void insertPointField_float(
       [[maybe_unused]] const std::string& fieldName, [[maybe_unused]] float value)
@@ -754,6 +788,11 @@ class CPointsMap :
       [[maybe_unused]] const std::string& fieldName, [[maybe_unused]] uint8_t value)
   {
   }
+  /** Appends a value to a uint32_t channel (for use after insertPointFast()) */
+  virtual void insertPointField_uint32(
+      [[maybe_unused]] const std::string& fieldName, [[maybe_unused]] uint32_t value)
+  {
+  }
 
   virtual void reserveField_float(
       [[maybe_unused]] const std::string& fieldName, [[maybe_unused]] size_t n)
@@ -771,6 +810,10 @@ class CPointsMap :
       [[maybe_unused]] const std::string& fieldName, [[maybe_unused]] size_t n)
   {
   }
+  virtual void reserveField_uint32(
+      [[maybe_unused]] const std::string& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
 
   virtual void resizeField_float(
       [[maybe_unused]] const std::string& fieldName, [[maybe_unused]] size_t n)
@@ -785,6 +828,10 @@ class CPointsMap :
   {
   }
   virtual void resizeField_uint8(
+      [[maybe_unused]] const std::string& fieldName, [[maybe_unused]] size_t n)
+  {
+  }
+  virtual void resizeField_uint32(
       [[maybe_unused]] const std::string& fieldName, [[maybe_unused]] size_t n)
   {
   }
@@ -821,6 +868,11 @@ class CPointsMap :
   {
     return nullptr;
   }
+  virtual auto getPointsBufferRef_uint32_field([[maybe_unused]] const std::string& fieldName) const
+      -> const mrpt::aligned_std_vector<uint32_t>*
+  {
+    return nullptr;
+  }
 
   virtual auto getPointsBufferRef_float_field(const std::string& fieldName)
       -> mrpt::aligned_std_vector<float>*
@@ -851,6 +903,11 @@ class CPointsMap :
   }
   virtual auto getPointsBufferRef_uint8_field([[maybe_unused]] const std::string& fieldName)
       -> mrpt::aligned_std_vector<uint8_t>*
+  {
+    return nullptr;
+  }
+  virtual auto getPointsBufferRef_uint32_field([[maybe_unused]] const std::string& fieldName)
+      -> mrpt::aligned_std_vector<uint32_t>*
   {
     return nullptr;
   }
@@ -958,6 +1015,14 @@ class CPointsMap :
         allAdded = allAdded && added;
       }
     }
+    for (const auto& f : source.getPointFieldNames_uint32())
+    {
+      if (!this->hasPointField(f))
+      {
+        const bool added = this->registerField_uint32(f);
+        allAdded = allAdded && added;
+      }
+    }
     return allAdded;
   }
 
@@ -1000,6 +1065,13 @@ class CPointsMap :
       mrpt::aligned_std_vector<uint8_t>* dst_buf = nullptr;
     };
     std::vector<UInt8FieldMapping> uint8_fields;
+
+    struct UInt32FieldMapping
+    {
+      const mrpt::aligned_std_vector<uint32_t>* src_buf = nullptr;
+      mrpt::aligned_std_vector<uint32_t>* dst_buf = nullptr;
+    };
+    std::vector<UInt32FieldMapping> uint32_fields;
   };
 
   /** Prepare efficient data structures for repeated insertion from another point map with
@@ -1034,6 +1106,11 @@ class CPointsMap :
     for (const auto& f : ctx.uint8_fields)
     {
       f.dst_buf->push_back(f.src_buf ? (*f.src_buf)[i] : uint8_t{0});
+    }
+
+    for (const auto& f : ctx.uint32_fields)
+    {
+      f.dst_buf->push_back(f.src_buf ? (*f.src_buf)[i] : uint32_t{0});
     }
 
     mark_as_modified();

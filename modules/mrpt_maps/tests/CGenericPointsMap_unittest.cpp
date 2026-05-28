@@ -34,6 +34,7 @@ static CGenericPointsMap makeTestMap()
   m.registerField_float("t");
   m.registerField_uint16("ring");
   m.registerField_uint8("color_r");
+  m.registerField_uint32("rgba");
   m.registerField_double("gps_time");
 
   const size_t N = 5;
@@ -45,6 +46,7 @@ static CGenericPointsMap makeTestMap()
     m.setPointField_float(i, "t", float(i) * 0.001f);
     m.setPointField_uint16(i, "ring", static_cast<uint16_t>(i + 1));
     m.setPointField_uint8(i, "color_r", static_cast<uint8_t>(i * 50));
+    m.setPointField_uint32(i, "rgba", static_cast<uint32_t>(i) * 100000u + 1u);
     m.setPointField_double(i, "gps_time", 1000.0 + static_cast<double>(i));
   }
   return m;
@@ -125,8 +127,10 @@ TEST(CGenericPointsMap, DeserializeOnDifferentThread)
   EXPECT_TRUE(m.hasPointField("t"));
   EXPECT_TRUE(m.hasPointField("ring"));
   EXPECT_TRUE(m.hasPointField("color_r"));
+  EXPECT_TRUE(m.hasPointField("rgba"));
   EXPECT_TRUE(m.hasPointField("gps_time"));
   EXPECT_FLOAT_EQ(m.getPointField_float(2, "intensity"), 2.5f);
+  EXPECT_EQ(m.getPointField_uint32(3, "rgba"), 300001u);
 }
 
 TEST(CGenericPointsMap, CopyAssignAcrossThreads)
@@ -270,6 +274,7 @@ TEST(CGenericPointsMap, RegisterAndAccessAllTypes)
   m.registerField_double("d1");
   m.registerField_uint16("u16");
   m.registerField_uint8("u8");
+  m.registerField_uint32("u32");
 
   m.resize(2);
   m.setPointFast(0, 1.0f, 2.0f, 3.0f);
@@ -277,11 +282,28 @@ TEST(CGenericPointsMap, RegisterAndAccessAllTypes)
   m.setPointField_double(0, "d1", 2.5);
   m.setPointField_uint16(0, "u16", 300);
   m.setPointField_uint8(0, "u8", 42);
+  m.setPointField_uint32(0, "u32", 4000000000u);
 
   EXPECT_FLOAT_EQ(m.getPointField_float(0, "f1"), 1.5f);
   EXPECT_DOUBLE_EQ(m.getPointField_double(0, "d1"), 2.5);
   EXPECT_EQ(m.getPointField_uint16(0, "u16"), 300);
   EXPECT_EQ(m.getPointField_uint8(0, "u8"), 42);
+  EXPECT_EQ(m.getPointField_uint32(0, "u32"), 4000000000u);
+
+  // Field-name enumeration includes the uint32 channel:
+  const auto u32names = m.getPointFieldNames_uint32();
+  EXPECT_EQ(u32names.size(), 1u);
+  EXPECT_EQ(u32names.at(0), "u32");
+
+  // reserve/resize on a registered uint32 field does not throw:
+  EXPECT_NO_THROW(m.reserveField_uint32("u32", 100));
+  EXPECT_NO_THROW(m.resizeField_uint32("u32", 4));
+  EXPECT_ANY_THROW(m.reserveField_uint32("bogus", 100));
+  EXPECT_ANY_THROW(m.resizeField_uint32("bogus", 100));
+
+  // unregister removes the uint32 field:
+  EXPECT_TRUE(m.unregisterField("u32"));
+  EXPECT_FALSE(m.hasPointField("u32"));
 }
 
 TEST(CGenericPointsMap, UnregisterFieldRemovesData)

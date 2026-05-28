@@ -2049,6 +2049,16 @@ CPointsMap::InsertCtx CPointsMap::prepareForInsertPointsFrom(const CPointsMap& s
     ctx.uint8_fields.push_back({src_buf, dst_buf});
   }
 
+  for (const auto& name : this->getPointFieldNames_uint32())
+  {
+    auto* dst_buf = this->getPointsBufferRef_uint32_field(name);
+    if (!dst_buf) continue;
+
+    const auto* src_buf = source.getPointsBufferRef_uint32_field(name);
+    if (src_buf && src_buf->empty()) src_buf = nullptr;
+    ctx.uint32_fields.push_back({src_buf, dst_buf});
+  }
+
   return ctx;
 }
 
@@ -2231,6 +2241,7 @@ std::string listAllFields(const mrpt::maps::CPointsMap& pcd)
   appendFields(pcd.getPointFieldNames_double());
   appendFields(pcd.getPointFieldNames_uint16());
   appendFields(pcd.getPointFieldNames_uint8());
+  appendFields(pcd.getPointFieldNames_uint32());
 
   return ret;
 }

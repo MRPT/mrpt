@@ -169,6 +169,26 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
         }
       }
     }
+
+    for (const auto& field : pointcloud->getPointFieldNames_uint32())
+    {
+      if (const auto* buf = pointcloud->getPointsBufferRef_uint32_field(field); buf)
+      {
+        if (buf->empty())
+        {
+          o << mrpt::format(
+              "%-20.*s (uint32)  (0 entries)\n", static_cast<int>(field.size()), field.data());
+        }
+        else
+        {
+          const auto [itMin, itMax] = minmax_ignore_nan(buf->begin(), buf->end());
+          o << mrpt::format(
+              "%-20.*s (uint32)  range: [%u, %u] (%zu entries)\n", static_cast<int>(field.size()),
+              field.data(), static_cast<unsigned int>(*itMin), static_cast<unsigned int>(*itMax),
+              buf->size());
+        }
+      }
+    }
   }
 
   if (m_externally_stored != ExternalStorageFormat::None)
