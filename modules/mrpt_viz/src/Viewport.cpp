@@ -350,7 +350,7 @@ mrpt::containers::yaml Viewport::asYAML() const
     {
       de["obj_children"] = dynamic_cast<CSetOfObjects*>(obj.get())->asYAML();
     }
-    d.asSequence().at(i) = de;
+    d.asSequence().at(i) = de.node();
   }
   return d;
 }

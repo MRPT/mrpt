@@ -132,7 +132,7 @@ MRPT_TEST(yaml, initializers)
     {
       EXPECT_TRUE(kv.first.as<std::string>() == "K");
       EXPECT_TRUE(kv.second.isScalar());
-      EXPECT_TRUE(std::any_cast<double>(&kv.second.asScalar()) != nullptr);
+      EXPECT_TRUE(std::holds_alternative<double>(kv.second.asScalar()));
       EXPECT_TRUE(kv.second.as<double>() == 1.0);
     }
   }
@@ -381,7 +381,7 @@ MRPT_TEST(yaml, comments)
   EXPECT_NE(&c1.keyNode("L"), &c1["L"].node());
 
   EXPECT_EQ(c1.keyNode("L").as<std::string>(), "L");
-  EXPECT_TRUE(c1.keyNode("L").comments.at(0).has_value());
+  EXPECT_TRUE(c1.keyNode("L").hasComment(mrpt::containers::CommentPosition::TOP));
 
   // Chained vkcp:
   c1 << vkcp("A", 1.0, "Comment for A") << vkcp("B", 4.5, "Comment for B");
@@ -514,7 +514,7 @@ MRPT_TEST(yaml, hexadecimal)
 }
 MRPT_TEST_END()
 
-void foo(mrpt::containers::yaml& p)
+void foo(mrpt::containers::yaml_ref p)
 {
   p["K"] = 2.0;
   p["N"] = 2;
@@ -648,15 +648,8 @@ MRPT_TEST(yaml, fromYAML)
 		p.printAsYAML();
 #endif
 
-    const auto& eb = p["myMap"]["nestedMap"].asMap().find("b")->first;
-    EXPECT_TRUE(eb.hasComment());
-    EXPECT_EQ(eb.comment(), "comment for b");
-
-#if 0
-		const auto& ec = p["myMap"]["nestedMap"].asMap().find("c")->first;
-		EXPECT_TRUE(ec.hasComment());
-		EXPECT_EQ(ec.comment(), "Example of multiline");
-#endif
+    EXPECT_TRUE(p["myMap"]["nestedMap"].keyHasComment("b"));
+    EXPECT_EQ(p["myMap"]["nestedMap"].keyComment("b"), "comment for b");
   }
 
   {
@@ -664,8 +657,8 @@ MRPT_TEST(yaml, fromYAML)
 
     EXPECT_EQ(p["myMap"]["e1"].comment(), "Right comment for e1 value");
     EXPECT_FALSE(p["myMap4"].hasComment());
-    EXPECT_TRUE(p["myMap5"].asMap().find("a4")->second.hasComment());
-    EXPECT_TRUE(p.asMap().find("myMap5")->first.hasComment());
+    EXPECT_TRUE(p["myMap5"]["a4"].hasComment());
+    EXPECT_TRUE(p.keyHasComment("myMap5"));
   }
 }
 MRPT_TEST_END()
@@ -692,7 +685,7 @@ MRPT_TEST(yaml, printInShortFormat)
   {
     std::stringstream ss;
     n2.printAsYAML(ss, eo);
-    EXPECT_EQ(ss.str(), "bar: [1, 2, 3]\nfoo: 1\n");
+    EXPECT_EQ(ss.str(), "foo: 1.0\nbar: [1, 2, 3]\n");  // insertion order
   }
 
   mrpt::containers::yaml n3 = mrpt::containers::yaml::Map();
@@ -702,7 +695,7 @@ MRPT_TEST(yaml, printInShortFormat)
   {
     std::stringstream ss;
     n3.printAsYAML(ss, eo);
-    EXPECT_EQ(ss.str(), "alpha: 1\nbeta:\n  bar: [1, 2, 3]\n  foo: 1\n");
+    EXPECT_EQ(ss.str(), "alpha: 1.0\nbeta:\n  foo: 1.0\n  bar: [1, 2, 3]\n");  // insertion order
   }
 }
 MRPT_TEST_END()

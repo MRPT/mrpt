@@ -755,3 +755,82 @@ These were public mutable members used as hidden in/out channels. They have
 been renamed (`m_updateInfoChangeOnly`, `m_likelihoodOutputs`) and moved to
 the `protected` section. External code that directly accessed them must be
 refactored to use `computeObservationLikelihood()` instead.
+
+---
+
+## 22. `mrpt::containers::yaml` API changes
+
+### `map_t` is now an insertion-order vector of pairs
+
+In MRPT 2.x, `yaml::map_t` was `std::map<std::string, node_t>`, so
+`operator[]`, `at()`, and `count()` worked directly on the raw map.
+
+In MRPT 3.x, `map_t` is `std::vector<std::pair<node_t, node_t>>` to
+preserve insertion order. **Do not call `std::map` methods on the raw
+`map_t` returned by `asMap()`.** Use the `yaml` high-level API instead:
+
+```cpp
+// Before (MRPT 2.x):
+const auto& m = node.asMap();
+if (m.count("key")) { ... }
+auto val = m.at("key").as<double>();
+
+// After (MRPT 3.x):
+if (node.has("key")) { ... }
+auto val = node["key"].as<double>();
+```
+
+If you are iterating a sequence and need subscript access on each element,
+wrap the `node_t` in a temporary `yaml`:
+
+```cpp
+// Before:
+for (auto& it : seq.asSequence()) {
+  auto& m = it.asMap();
+  auto v = m.at("field").as<double>();
+}
+
+// After:
+for (const auto& it : seq.asSequence()) {
+  const mrpt::containers::yaml item(it);
+  auto v = item["field"].as<double>();
+}
+```
+
+### Assigning a `yaml` object into a `sequence_t` slot
+
+`sequence_t` is `std::vector<node_t>`, so you cannot assign a `yaml`
+object directly to a slot. Use `.node()` to extract the underlying
+`node_t`:
+
+```cpp
+// Before:
+seq.asSequence().at(i) = std::move(myYaml);
+
+// After:
+seq.asSequence().at(i) = std::move(myYaml.node());
+```
+
+To append a `yaml` object to a sequence, use `yaml::push_back(const yaml&)`
+on the owning `yaml` object rather than `asSequence().push_back()`:
+
+```cpp
+// Before:
+d.asSequence().push_back(entry);   // ERROR: push_back(yaml) not defined on vector<node_t>
+
+// After:
+d.push_back(entry);                // uses yaml::push_back(const yaml&)
+```
+
+### `yaml_ref` and `yaml_cref` proxy types
+
+`operator[]` on a non-`const yaml` now returns a `yaml_ref` (mutable
+proxy) and on a `const yaml` or from subscripting a `yaml_ref` returns a
+`yaml_cref` (read-only proxy). Both forward `as<T>()`, `has()`, `size()`,
+`isMap()`, `isSequence()`, `isScalar()`, `toMatrix()`, `toStdVector<>()`,
+and `printAsYAML()`. They implicitly convert to `yaml` (deep copy) when
+needed.
+
+The proxy types do **not** expose `internalPushBack` or raw `asMap()`/
+`asSequence()` mutation — call those on the owning `yaml` object or obtain
+a `yaml` copy first.

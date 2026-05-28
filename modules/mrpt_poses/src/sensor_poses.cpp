@@ -32,28 +32,25 @@ mrpt::poses::SensorToPoseMap mrpt::poses::sensor_poses_from_yaml(
     const auto sensorLabel = e.first.as<std::string>();
 
     ASSERT_(e.second.isMap());
-    const auto& em = e.second.asMap();
+    const mrpt::containers::yaml em(e.second);
 
-    ASSERT_(em.count("extrinsics") != 0);
-    ASSERT_(em.count("parent") != 0);
-    const auto& extrs = em.at("extrinsics");
-    const auto parentFrame = em.at("parent").as<std::string>();
+    ASSERT_(em.has("extrinsics"));
+    ASSERT_(em.has("parent"));
+    const auto parentFrame = em["parent"].as<std::string>();
 
+    const mrpt::containers::yaml extrs(em["extrinsics"]);
     ASSERT_(extrs.isMap());
-    const auto& extrm = extrs.asMap();
 
-    ASSERT_(extrm.count("quaternion") != 0);
-    ASSERT_(extrm.count("translation") != 0);
+    ASSERT_(extrs.has("quaternion"));
+    ASSERT_(extrs.has("translation"));
 
-    const std::vector<double> read_quaternion =
-        mrpt::containers::yaml(extrm.at("quaternion")).toStdVector<double>();
+    const std::vector<double> read_quaternion = extrs["quaternion"].toStdVector<double>();
     ASSERT_EQUAL_(read_quaternion.size(), 4);
 
     const mrpt::math::CQuaternionDouble q(
         read_quaternion.at(3), read_quaternion.at(0), read_quaternion.at(1), read_quaternion.at(2));
 
-    const auto t = mrpt::math::TPoint3D::FromVector(
-        mrpt::containers::yaml(extrm.at("translation")).toStdVector<double>());
+    const auto t = mrpt::math::TPoint3D::FromVector(extrs["translation"].toStdVector<double>());
 
     const auto relPose = mrpt::poses::CPose3D::FromQuaternionAndTranslation(q, t);
 
@@ -65,7 +62,7 @@ mrpt::poses::SensorToPoseMap mrpt::poses::sensor_poses_from_yaml(
 
     // Store data in temporary graph structure for spanning tree:
     childrenFrames[parentFrame].insert(sensorLabel);
-    parentToChildrenEdges[{parentFrame, sensorLabel}] = relPose;
+    parentToChildrenEdges[std::make_pair(parentFrame, sensorLabel)] = relPose;
   }
 
   mrpt::poses::SensorToPoseMap s2p;

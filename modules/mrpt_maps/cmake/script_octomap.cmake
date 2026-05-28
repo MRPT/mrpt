@@ -32,11 +32,11 @@ if (NOT OCTOMAP_FOUND)
 		# Include embedded version headers:
 		include(ExternalProject)
 
-		# download from GH:
-		set(OCTOMAP_EP_URL "https://github.com/OctoMap/octomap/archive/v1.9.6.zip")
-
+		# download from GH (pinned to commit 9ebcfdc, master as of 2024-01; v1.9.6 and older fail with CMake >= 3.5):
 		ExternalProject_Add(EP_octomap
-		  URL               "${OCTOMAP_EP_URL}"
+		  GIT_REPOSITORY    "https://github.com/OctoMap/octomap.git"
+		  GIT_TAG           "9ebcfdc5dd6836686134a39de742cc9211dd1ad6"
+		  GIT_SHALLOW       OFF
 		  SOURCE_DIR        "${mrpt_maps_BINARY_DIR}/3rdparty/octomap/"
 		  CMAKE_ARGS
 			-DBUILD_TESTING=OFF

@@ -119,7 +119,7 @@ mrpt::containers::yaml CSetOfObjects::asYAML() const
     {
       de["obj_children"] = dynamic_cast<CSetOfObjects*>(obj.get())->asYAML();
     }
-    d.asSequence().at(i) = std::move(de);
+    d.asSequence().at(i) = std::move(de.node());
   }
   return d;
 }

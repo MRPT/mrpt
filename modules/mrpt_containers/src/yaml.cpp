@@ -18,6 +18,7 @@
 #include <mrpt/core/get_env.h>
 
 #include <algorithm>
+#include <cerrno>
 #include <fstream>
 #include <iostream>
 #include <istream>
@@ -33,7 +34,8 @@ using namespace mrpt::containers;
 bool yaml::node_t::isNullNode() const
 {
   return std::holds_alternative<std::monostate>(d) ||
-         (std::holds_alternative<scalar_t>(d) && !std::get<scalar_t>(d).has_value());
+         (std::holds_alternative<scalar_t>(d) &&
+          std::holds_alternative<std::monostate>(std::get<scalar_t>(d)));
 }
 bool yaml::node_t::isScalar() const { return std::holds_alternative<scalar_t>(d); }
 bool yaml::node_t::isSequence() const { return std::holds_alternative<sequence_t>(d); }
@@ -42,28 +44,34 @@ bool yaml::node_t::isMap() const { return std::holds_alternative<map_t>(d); }
 std::string yaml::node_t::typeName() const
 {
   MRPT_START
-  if (isNullNode())
-  {
-    return "null";
-  }
-  if (isSequence())
-  {
-    return "sequence";
-  }
-  if (isMap())
-  {
-    return "map";
-  }
+  if (isNullNode()) return "null";
+  if (isSequence()) return "sequence";
+  if (isMap()) return "map";
   ASSERT_(isScalar());
   const auto& s = std::get<scalar_t>(d);
-  ASSERT_(s.has_value());
 
-  // Special case: "std::string" is easier to read than
-  // "std::__cxx11::basic_string<char, std::char_traits<char>,
-  // std::allocator<char> >" ;-)
-  const char* typeStr = s.type() == typeid(std::string) ? "std::string" : s.type().name();
+  const std::string typeStr = std::visit(
+      [](const auto& val) -> std::string
+      {
+        using V = std::decay_t<decltype(val)>;
+        if constexpr (std::is_same_v<V, std::monostate>)
+          return "null";
+        else if constexpr (std::is_same_v<V, bool>)
+          return "bool";
+        else if constexpr (std::is_same_v<V, int64_t>)
+          return "int64_t";
+        else if constexpr (std::is_same_v<V, uint64_t>)
+          return "uint64_t";
+        else if constexpr (std::is_same_v<V, double>)
+          return "double";
+        else if constexpr (std::is_same_v<V, std::string>)
+          return "std::string";
+        else
+          return "yaml";
+      },
+      s);
 
-  return mrpt::format("scalar(%s)", mrpt::demangle(typeStr).c_str());
+  return mrpt::format("scalar(%s)", typeStr.c_str());
   MRPT_END
 }
 
@@ -182,52 +190,24 @@ size_t yaml::size() const { return dereferenceProxy()->size(); }
 
 bool yaml::has(const std::string& key) const
 {
-  if (isNullNode())
-  {
-    return false;
-  }
+  if (isNullNode()) return false;
   const map_t& m = this->asMap();
-  return m.end() != m.find(key);
+  return m.end() != std::find_if(
+                        m.begin(), m.end(),
+                        [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
 }
 
 const std::type_info& yaml::scalarType() const
 {
   MRPT_START
-  if (this->isNullNode())
-  {
-    return typeid(void);
-  }
+  if (this->isNullNode()) return typeid(void);
 
   const scalar_t& s = this->asScalar();
-  return s.type();
+  return std::visit([](const auto& val) -> const std::type_info& { return typeid(val); }, s);
   MRPT_END
 }
 
-const yaml::node_t* yaml::dereferenceProxy() const
-{
-  MRPT_START
-  if (isProxy_)
-  {
-    ASSERT_(proxiedNode_ != nullptr);
-    return proxiedNode_;
-  }
-  return &root_;
-  MRPT_END
-}
-yaml::node_t* yaml::dereferenceProxy()
-{
-  MRPT_START
-  if (isProxy_)
-  {
-    ASSERT_(proxiedNode_ != nullptr);
-    if (isConstProxy_)
-      THROW_EXCEPTION_FMT(
-          "Trying to write-access a const-proxy (key name:'%s')", proxiedMapEntryName_.c_str());
-    return const_cast<node_t*>(proxiedNode_);
-  }
-  return &root_;
-  MRPT_END
-}
+// dereferenceProxy() is now inlined in yaml.h — returning &root_ directly.
 
 bool yaml::empty() const
 {
@@ -282,73 +262,97 @@ yaml& yaml::operator=(const std::string& v) { return implOpAssign(v); }
 yaml& yaml::operator=(const yaml& v)
 {
   MRPT_START
-  ASSERTMSG_(!isConstProxy_, "Trying to write into read-only proxy");
-  node_t* n = dereferenceProxy();
-  *n = *v.dereferenceProxy();
+  root_ = v.root_;
   return *this;
   MRPT_END
 }
 
-yaml yaml::operator[](const std::string& s)
+yaml_ref yaml::operator[](const std::string& s)
 {
-  if (isConstProxy_)
-  {
-    return const_cast<const yaml*>(this)->operator[](s);
-  }
   node_t* n = dereferenceProxy();
-  // Init as map on first use:
-  if (n->isNullNode())
-  {
-    n->d.emplace<map_t>();
-  }
-
+  if (n->isNullNode()) n->d.emplace<map_t>();
   if (!n->isMap()) THROW_EXCEPTION("write operator[] not applicable to non-map nodes.");
 
-  return yaml(internal::tag_as_proxy_t(), std::get<map_t>(n->d)[s], s);
+  map_t& m = std::get<map_t>(n->d);
+  auto it = std::find_if(
+      m.begin(), m.end(), [&s](const auto& kv) { return kv.first.internalAsStr() == s; });
+  if (it == m.end())
+  {
+    m.emplace_back(node_t(s), node_t{});
+    return yaml_ref(m.back().second);
+  }
+  return yaml_ref(it->second);
 }
 
-yaml yaml::operator[](const std::string& key) const
+yaml_cref yaml::operator[](const std::string& key) const
 {
   const node_t* n = dereferenceProxy();
   if (n->isNullNode()) THROW_EXCEPTION("read operator[] not applicable to null nodes.");
   if (!n->isMap()) THROW_EXCEPTION("read operator[] only available for map nodes.");
 
   const map_t& m = std::get<map_t>(n->d);
-  auto it = m.find(key);
+  auto it = std::find_if(
+      m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
   if (m.end() == it) THROW_EXCEPTION_FMT("Access non-existing map key `%s`", key.c_str());
 
-  return yaml(internal::tag_as_const_proxy_t(), it->second, key);
+  return yaml_cref(it->second);
 }
 
-yaml yaml::operator()(int index)
+yaml_ref yaml::operator()(int index)
 {
-  if (isConstProxy_)
-  {
-    return const_cast<const yaml*>(this)->operator()(index);
-  }
   node_t* n = dereferenceProxy();
   ASSERTMSG_(!n->isNullNode(), "write operator() not applicable to empty nodes or sequences.");
-
   ASSERTMSG_(n->isSequence(), "write operator() only available for sequence nodes.");
 
   sequence_t& seq = std::get<sequence_t>(n->d);
   if (index < 0 || index >= static_cast<int>(seq.size()))
     THROW_TYPED_EXCEPTION("yaml::operator() out of range", std::out_of_range);
 
-  return yaml(internal::tag_as_proxy_t(), seq.at(static_cast<std::size_t>(index)), "");
+  return yaml_ref(seq.at(static_cast<std::size_t>(index)));
 }
-const yaml yaml::operator()(int index) const
+yaml_cref yaml::operator()(int index) const
 {
   const node_t* n = dereferenceProxy();
   ASSERTMSG_(!n->isNullNode(), "read operator() not applicable to empty nodes or sequences.");
-
   ASSERTMSG_(n->isSequence(), "read operator() only available for sequence nodes.");
 
   const sequence_t& seq = std::get<sequence_t>(n->d);
   if (index < 0 || index >= static_cast<int>(seq.size()))
     THROW_TYPED_EXCEPTION("yaml::operator() out of range", std::out_of_range);
 
-  return yaml(internal::tag_as_const_proxy_t(), seq.at(static_cast<std::size_t>(index)), "");
+  return yaml_cref(seq.at(static_cast<std::size_t>(index)));
+}
+
+yaml_ref yaml::operator[](int index) { return operator()(index); }
+yaml_cref yaml::operator[](int index) const { return operator()(index); }
+
+yaml_ref yaml::operator[](const char* key)
+{
+  ASSERT_(key != nullptr);
+  return operator[](std::string(key));
+}
+yaml_cref yaml::operator[](const char* key) const
+{
+  ASSERT_(key != nullptr);
+  return operator[](std::string(key));
+}
+
+size_t yaml::erase(const std::string& key)
+{
+  map_t& m = asMap();
+  const auto it = std::find_if(
+      m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
+  if (it == m.end()) return 0;
+  m.erase(it);
+  return 1;
+}
+
+bool yaml::erase(int index)
+{
+  sequence_t& seq = asSequence();
+  if (index < 0 || index >= static_cast<int>(seq.size())) return false;
+  seq.erase(seq.begin() + index);
+  return true;
 }
 
 void yaml::printAsYAML() const { printAsYAML(std::cout); }
@@ -381,7 +385,9 @@ void yaml::printDebugStructure(std::ostream& o) const
 
 bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, const InternalPrintState& ps)
 {
-  const auto& cs = p.comments;
+  // Build a comments_t view (all-empty if no meta):
+  static const comments_t emptyComments{};
+  const comments_t& cs = p.meta ? p.meta->comments : emptyComments;
 
   // Handle "top" comments, which is common to all types:
   if (const auto& tc = cs[static_cast<size_t>(CommentPosition::TOP)]; tc.has_value())
@@ -480,17 +486,18 @@ std::string shortenComment(const std::optional<std::string>& c)
 
 void yaml::internalPrintDebugStructure(const node_t& p, std::ostream& o, unsigned int indent)
 {
-  const auto& cs = p.comments;
   const std::string sInd(indent, ' ');
+  const auto* m = p.meta.get();
 
   o << sInd << "- " << p.typeName() << ". Comments:";
-  if (!cs.at(0).has_value() && !cs.at(1).has_value())
+  if (m == nullptr || (!m->comments.at(0).has_value() && !m->comments.at(1).has_value()))
   {
     o << " [none]. ";
   }
   else
   {
-    o << " top='" << shortenComment(cs.at(0)) << "' right:'" << shortenComment(cs.at(1)) << "'. ";
+    o << " top='" << shortenComment(m->comments.at(0)) << "' right:'"
+      << shortenComment(m->comments.at(1)) << "'. ";
   }
 
   o << " (line,col):(" << p.marks.line << "," << p.marks.column << ") ";
@@ -580,19 +587,6 @@ bool yaml::internalPrintAsYAML(
     const InternalPrintState& ps,
     [[maybe_unused]] const comments_t& cs)
 {
-#if 0
-	if (!ps.needsNL)
-	{
-		if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)];
-			rc.has_value())
-		{
-			o << " # " << rc.value() << "\n";
-		}
-		else
-			o << "\n";
-	}
-#endif
-
   // Only print sequence in short format if all entries are scalars:
   bool doUseShortFormat = ps.shortFormat;
   if (doUseShortFormat)
@@ -642,19 +636,6 @@ bool yaml::internalPrintAsYAML(
     const InternalPrintState& ps,
     [[maybe_unused]] const comments_t& cs)
 {
-#if 0
-	if (!ps.first)
-	{
-		if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)];
-			rc.has_value())
-		{
-			o << " # " << rc.value() << "\n";
-		}
-		else
-			o << "\n";
-	}
-#endif
-
   const std::string sInd(ps.indent, ' ');
   for (const auto& kv : m)
   {
@@ -743,100 +724,57 @@ bool yaml::internalPrintStringScalar(
 bool yaml::internalPrintAsYAML(
     const yaml::scalar_t& v, std::ostream& o, const InternalPrintState& ps, const comments_t& cs)
 {
-  if (!v.has_value())
-  {
-    return internalPrintAsYAML(std::monostate(), o, ps, cs);
-  }
+  // Null scalar:
+  if (std::holds_alternative<std::monostate>(v))
+    return internalPrintAsYAML(std::monostate{}, o, ps, cs);
 
-  if (v.type() == typeid(yaml))
-    return internalPrintNodeAsYAML(*std::any_cast<yaml>(v).dereferenceProxy(), o, ps);
+  // Nested yaml document:
+  if (const auto* yp = std::get_if<std::shared_ptr<yaml>>(&v); yp != nullptr)
+    return internalPrintNodeAsYAML(*(*yp)->dereferenceProxy(), o, ps);
 
-  if (ps.needsSpace)
-  {
-    o << " ";
-  }
+  if (ps.needsSpace) o << " ";
 
-  if (v.type() == typeid(bool))
-  {
-    o << (std::any_cast<bool>(v) ? "true" : "false");
-  }
-  else if (v.type() == typeid(uint64_t))
-  {
-    o << std::any_cast<uint64_t>(v);
-  }
-  else if (v.type() == typeid(int64_t))
-  {
-    o << std::any_cast<int64_t>(v);
-  }
-  else if (v.type() == typeid(uint32_t))
-  {
-    o << std::any_cast<uint32_t>(v);
-  }
-  else if (v.type() == typeid(int32_t))
-  {
-    o << std::any_cast<int32_t>(v);
-  }
-  else if (v.type() == typeid(int))
-  {
-    o << std::any_cast<int>(v);
-  }
-  else if (v.type() == typeid(unsigned int))
-  {
-    o << std::any_cast<unsigned int>(v);
-  }
-  else if (v.type() == typeid(const char*))
-  {
-    if (internalPrintStringScalar(std::any_cast<const char*>(v), o, ps, cs))
-    {
-      return true;
-    }
-  }
-  else if (v.type() == typeid(std::string))
-  {
-    if (internalPrintStringScalar(std::any_cast<std::string>(v), o, ps, cs))
-    {
-      return true;
-    }
-  }
-  else if (v.type() == typeid(float))
-  {
-    o << mrpt::format("%.16g", static_cast<double>(std::any_cast<float>(v)));
-  }
-  else if (v.type() == typeid(double))
-  {
-    o << mrpt::format("%.16g", std::any_cast<double>(v));
-  }
-  else if (v.type() == typeid(uint16_t))
-  {
-    o << std::any_cast<uint16_t>(v);
-  }
-  else if (v.type() == typeid(int16_t))
-  {
-    o << std::any_cast<int16_t>(v);
-  }
-  else if (v.type() == typeid(uint8_t))
-  {
-    o << std::any_cast<uint8_t>(v);
-  }
-  else if (v.type() == typeid(int8_t))
-  {
-    o << std::any_cast<int8_t>(v);
-  }
-  else if (v.type() == typeid(char))
-  {
-    o << std::any_cast<char>(v);
-  }
-  else
-  {
-    o << "(unknown type)";
-  }
+  bool stringHandledNL = false;
+  std::visit(
+      [&](const auto& val)
+      {
+        using V = std::decay_t<decltype(val)>;
+        if constexpr (std::is_same_v<V, std::monostate> || std::is_same_v<V, std::shared_ptr<yaml>>)
+        {
+          // handled above
+        }
+        else if constexpr (std::is_same_v<V, bool>)
+        {
+          o << (val ? "true" : "false");
+        }
+        else if constexpr (std::is_same_v<V, int64_t> || std::is_same_v<V, uint64_t>)
+        {
+          o << val;
+        }
+        else if constexpr (std::is_same_v<V, double>)
+        {
+          const std::string s = mrpt::format("%.16g", val);
+          o << s;
+          if (s.find('.') == std::string::npos && s.find('e') == std::string::npos &&
+              s.find('E') == std::string::npos && s.find('n') == std::string::npos &&
+              s.find('i') == std::string::npos && s.find('I') == std::string::npos)
+            o << ".0";
+        }
+        else if constexpr (std::is_same_v<V, std::string>)
+        {
+          stringHandledNL = internalPrintStringScalar(val, o, ps, cs);
+        }
+      },
+      v);
+
+  if (stringHandledNL) return true;
 
   if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)]; rc.has_value())
   {
     internalPrintRightComment(o, rc.value());
-    return true;  // \n already emitted
+    return true;
   }
-  return false;  // \n not emitted
+  return false;
 }
 
 yaml yaml::FromText(const std::string& yamlTextBlock)
@@ -848,21 +786,57 @@ yaml yaml::FromText(const std::string& yamlTextBlock)
   MRPT_END
 }
 
-// TODO: Allow users to add custom filters?
 namespace
 {
 yaml::scalar_t textToScalar(const std::string& s)
 {
   // tag:yaml.org,2002:null
-  // https://yaml.org/spec/1.2/spec.html#id2803362
-  if (s == "~" || s == "null" || s == "Null" || s == "NULL")
+  if (s == "~" || s == "null" || s == "Null" || s == "NULL") return {};
+
+  // tag:yaml.org,2002:bool (YAML 1.1 aliases accepted)
+  if (s == "true" || s == "True" || s == "TRUE" || s == "yes" || s == "Yes" || s == "YES" ||
+      s == "on" || s == "On" || s == "ON")
+    return yaml::scalar_t(true);
+  if (s == "false" || s == "False" || s == "FALSE" || s == "no" || s == "No" || s == "NO" ||
+      s == "off" || s == "Off" || s == "OFF")
+    return yaml::scalar_t(false);
+
+  // tag:yaml.org,2002:int — try signed first, then unsigned for large values
+  // Reject leading zeros (would imply octal in YAML 1.1; YAML 1.2 forbids them)
+  if (!s.empty() && (std::isdigit(static_cast<unsigned char>(s[0])) || s[0] == '-' || s[0] == '+'))
   {
-    return {};
+    const bool hasHexPrefix = (s.size() > 2 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) ||
+                              (s.size() > 3 && (s[0] == '+' || s[0] == '-') && s[1] == '0' &&
+                               (s[2] == 'x' || s[2] == 'X'));
+    const std::size_t signLen = (s[0] == '+' || s[0] == '-') ? 1u : 0u;
+    const bool leadingZeroOctal = !hasHexPrefix && s.size() > signLen + 1 && s[signLen] == '0';
+    if (!leadingZeroOctal)
+    {
+      char* end = nullptr;
+      errno = 0;
+      const long long iv = std::strtoll(s.c_str(), &end, 0);
+      if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
+        return yaml::scalar_t(static_cast<int64_t>(iv));
+
+      // Large positive — try unsigned
+      errno = 0;
+      const unsigned long long uv = std::strtoull(s.c_str(), &end, 0);
+      if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
+        return yaml::scalar_t(static_cast<uint64_t>(uv));
+    }
   }
 
-  // TODO: Try to parse to int or double?
+  // tag:yaml.org,2002:float
+  if (!s.empty())
+  {
+    char* end = nullptr;
+    errno = 0;
+    const double dv = std::strtod(s.c_str(), &end);
+    if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
+      return yaml::scalar_t(dv);
+  }
 
-  return {s};
+  return yaml::scalar_t(s);
 }
 }  // namespace
 
@@ -912,25 +886,16 @@ std::optional<std::string> extractComment(struct fy_token* t, enum fy_comment_pl
 
 void parseTokenCommentsAndMarks(struct fy_token* tk, yaml::node_t& n)
 {
-  if (tk == nullptr)
-  {
-    return;
-  }
+  if (tk == nullptr) return;
 
   if (auto cT = extractComment(tk, fycp_top); cT)
-  {
-    n.comments[static_cast<size_t>(CommentPosition::TOP)] = cT.value();
-  }
+    n.commentSlot(CommentPosition::TOP).emplace(std::move(cT.value()));
 
   if (auto cR = extractComment(tk, fycp_right); cR)
-  {
-    n.comments[static_cast<size_t>(CommentPosition::RIGHT)] = cR.value();
-  }
+    n.commentSlot(CommentPosition::RIGHT).emplace(std::move(cR.value()));
 
   if (auto cB = extractComment(tk, fycp_bottom); cB)
-  {
-    n.comments[static_cast<size_t>(CommentPosition::BOTTOM)] = cB.value();
-  }
+    n.commentSlot(CommentPosition::BOTTOM).emplace(std::move(cB.value()));
 
   if (const struct fy_mark* mrk = fy_token_start_mark(tk); mrk)
   {
@@ -1010,8 +975,9 @@ std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 
         ASSERT_(nKey->isScalar());
 
-        // Move comments from key:
-        yaml::node_t& val = m[*nKey];
+        // Insert key (carrying parse-time comments) and a placeholder value:
+        m.emplace_back(std::move(*nKey), yaml::node_t{});
+        yaml::node_t& val = m.back().second;
 
         // and next event is mapped content:
         auto nVal = recursiveParse(p);
@@ -1195,6 +1161,87 @@ void yaml::loadFromStream(std::istream& i)
   MRPT_END
 }
 
+// ============ class: yaml_ref / yaml_cref =======
+
+namespace
+{
+yaml_ref mapFindOrCreate(yaml::node_t& node, const std::string& key)
+{
+  if (node.isNullNode()) node.d.emplace<yaml::map_t>();
+  ASSERTMSG_(node.isMap(), "operator[] requires a map node");
+  yaml::map_t& m = std::get<yaml::map_t>(node.d);
+  auto it = std::find_if(
+      m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
+  if (it == m.end())
+  {
+    m.emplace_back(yaml::node_t(key), yaml::node_t{});
+    return yaml_ref(m.back().second);
+  }
+  return yaml_ref(it->second);
+}
+
+yaml_cref mapFind(const yaml::node_t& node, const std::string& key)
+{
+  ASSERTMSG_(!node.isNullNode(), "read operator[] not applicable to null nodes.");
+  ASSERTMSG_(node.isMap(), "read operator[] only available for map nodes.");
+  const yaml::map_t& m = std::get<yaml::map_t>(node.d);
+  auto it = std::find_if(
+      m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
+  if (it == m.end()) THROW_EXCEPTION_FMT("Access non-existing map key `%s`", key.c_str());
+  return yaml_cref(it->second);
+}
+
+yaml_ref seqAt(yaml::node_t& node, int index)
+{
+  ASSERTMSG_(node.isSequence(), "write operator[](int) only available for sequence nodes.");
+  yaml::sequence_t& seq = std::get<yaml::sequence_t>(node.d);
+  if (index < 0 || index >= static_cast<int>(seq.size()))
+    THROW_TYPED_EXCEPTION("yaml_ref::operator[](int) out of range", std::out_of_range);
+  return yaml_ref(seq.at(static_cast<std::size_t>(index)));
+}
+
+yaml_cref seqAtConst(const yaml::node_t& node, int index)
+{
+  ASSERTMSG_(node.isSequence(), "read operator[](int) only available for sequence nodes.");
+  const yaml::sequence_t& seq = std::get<yaml::sequence_t>(node.d);
+  if (index < 0 || index >= static_cast<int>(seq.size()))
+    THROW_TYPED_EXCEPTION("yaml_cref::operator[](int) out of range", std::out_of_range);
+  return yaml_cref(seq.at(static_cast<std::size_t>(index)));
+}
+}  // namespace
+
+yaml_ref yaml_ref::operator[](const std::string& key) { return mapFindOrCreate(*node_, key); }
+yaml_ref yaml_ref::operator[](const char* key)
+{
+  ASSERT_(key != nullptr);
+  return mapFindOrCreate(*node_, std::string(key));
+}
+yaml_cref yaml_ref::operator[](const std::string& key) const { return mapFind(*node_, key); }
+yaml_cref yaml_ref::operator[](const char* key) const
+{
+  ASSERT_(key != nullptr);
+  return mapFind(*node_, std::string(key));
+}
+yaml_ref yaml_ref::operator[](int index) { return seqAt(*node_, index); }
+yaml_cref yaml_ref::operator[](int index) const { return seqAtConst(*node_, index); }
+
+yaml_cref yaml_cref::operator[](const std::string& key) const { return mapFind(*node_, key); }
+yaml_cref yaml_cref::operator[](const char* key) const
+{
+  ASSERT_(key != nullptr);
+  return mapFind(*node_, std::string(key));
+}
+yaml_cref yaml_cref::operator[](int index) const { return seqAtConst(*node_, index); }
+
+std::ostream& mrpt::containers::operator<<(std::ostream& o, const yaml_ref& p)
+{
+  return o << static_cast<yaml>(p);
+}
+std::ostream& mrpt::containers::operator<<(std::ostream& o, const yaml_cref& p)
+{
+  return o << static_cast<yaml>(p);
+}
+
 std::ostream& mrpt::containers::operator<<(std::ostream& o, const yaml& p)
 {
   YamlEmitOptions eo;
@@ -1206,44 +1253,29 @@ std::ostream& mrpt::containers::operator<<(std::ostream& o, const yaml& p)
 }
 
 // --- leaf node comments API ---
-bool yaml::hasComment() const
-{
-  const node_t* n = dereferenceProxy();
-  return n->hasComment();
-}
+bool yaml::hasComment() const { return dereferenceProxy()->hasComment(); }
 
-bool yaml::hasComment(CommentPosition pos) const
-{
-  const node_t* n = dereferenceProxy();
-  return n->hasComment(pos);
-}
+bool yaml::hasComment(CommentPosition pos) const { return dereferenceProxy()->hasComment(pos); }
 
-const std::string& yaml::comment() const
-{
-  const node_t* n = dereferenceProxy();
-  return n->comment();
-}
+const std::string& yaml::comment() const { return dereferenceProxy()->comment(); }
 
 const std::string& yaml::comment(CommentPosition pos) const
 {
-  const node_t* n = dereferenceProxy();
-  return n->comment(pos);
+  return dereferenceProxy()->comment(pos);
 }
 
 void yaml::comment(const std::string& c, CommentPosition position)
 {
-  const auto posIndex = static_cast<unsigned int>(position);
-  ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
-
   node_t* n = dereferenceProxy();
-  n->comments[posIndex].emplace(c);
+  n->commentSlot(position).emplace(c);
 }
 
 // --- key node comments API ---
 const yaml::node_t& findKeyNode(const yaml::node_t* me, const std::string& key)
 {
   const auto& m = me->asMap();
-  auto itK = m.find(key);
+  const auto itK = std::find_if(
+      m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
   ASSERTMSG_(
       itK != m.end(),
       mrpt::format("key '%.*s' not present in map", static_cast<int>(key.size()), key.data()));
@@ -1253,62 +1285,35 @@ const yaml::node_t& findKeyNode(const yaml::node_t* me, const std::string& key)
 bool yaml::keyHasComment(const std::string& key) const
 {
   MRPT_START
-  const yaml::node_t& n = findKeyNode(dereferenceProxy(), key);
-
-  for (const auto& c : n.comments)
-  {
-    if (c.has_value())
-    {
-      return true;
-    }
-  }
-  return false;
+  return findKeyNode(dereferenceProxy(), key).hasComment();
   MRPT_END
 }
 
 bool yaml::keyHasComment(const std::string& key, CommentPosition pos) const
 {
   MRPT_START
-  const auto posIndex = static_cast<unsigned int>(pos);
-  ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
-
-  const yaml::node_t& n = findKeyNode(dereferenceProxy(), key);
-  return n.comments[posIndex].has_value();
+  return findKeyNode(dereferenceProxy(), key).hasComment(pos);
   MRPT_END
 }
 
 const std::string& yaml::keyComment(const std::string& key) const
 {
   MRPT_START
-  const yaml::node_t& n = findKeyNode(dereferenceProxy(), key);
-  for (const auto& c : n.comments)
-    if (c.has_value()) return c.value();
-
-  THROW_EXCEPTION("Trying to access comment but this node has none.");
+  return findKeyNode(dereferenceProxy(), key).comment();
   MRPT_END
 }
 
 const std::string& yaml::keyComment(const std::string& key, CommentPosition pos) const
 {
   MRPT_START
-  const auto posIndex = static_cast<unsigned int>(pos);
-  ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
-
-  const yaml::node_t& n = findKeyNode(dereferenceProxy(), key);
-
-  ASSERTMSG_(n.comments[posIndex].has_value(), "Trying to access comment but this node has none.");
-  return n.comments[posIndex].value();
+  return findKeyNode(dereferenceProxy(), key).comment(pos);
   MRPT_END
 }
 
 void yaml::keyComment(const std::string& key, const std::string& c, CommentPosition position)
 {
-  const auto posIndex = static_cast<unsigned int>(position);
-  ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
-
   auto& n = const_cast<node_t&>(findKeyNode(dereferenceProxy(), key));
-
-  n.comments[posIndex].emplace(c);
+  n.commentSlot(position).emplace(c);
 }
 
 const yaml::node_t& yaml::keyNode(const std::string& keyName) const
