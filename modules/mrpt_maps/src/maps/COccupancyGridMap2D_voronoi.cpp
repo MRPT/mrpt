@@ -80,8 +80,8 @@ void COccupancyGridMap2D::buildVoronoiDiagram(
       if (getVoronoiClearance(x, y))
       {
         int nDiag = 0;
-        for (int xx = x - 1; xx <= (x + 1); xx++)
-          for (int yy = y - 1; yy <= (y + 1); yy++)
+        for (int xx = max(0, x - 1); xx <= min(x + 1, static_cast<int>(m_size_x) - 1); xx++)
+          for (int yy = max(0, y - 1); yy <= min(y + 1, static_cast<int>(m_size_y) - 1); yy++)
             if (getVoronoiClearance(xx, yy)) nDiag++;
 
         if (nDiag > 3) to_remove.emplace_back(x, y);
@@ -291,7 +291,7 @@ COccupancyGridMap2D::ClearanceResult COccupancyGridMap2D::computeClearance(
         x = static_cast<int>(round(static_cast<double>(i) * cos(A)));
         y = static_cast<int>(round(static_cast<double>(i) * sin(A)));
 
-        if ((x != ult_x || y != ult_y) && !(x == i && y == 0))
+        if (x != ult_x || y != ult_y)
         {
           circs_x[indice_absoluto] = x;
           circs_y[indice_absoluto++] = y;

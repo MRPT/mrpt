@@ -337,3 +337,35 @@ TEST(COccupancyGridMap2DTests, voronoiDiagramSizing)
   EXPECT_EQ(grid.getVoronoiDiagram().getSizeX(), grid.getSizeX());
   EXPECT_EQ(grid.getVoronoiDiagram().getSizeY(), grid.getSizeY());
 }
+
+TEST(COccupancyGridMap2DTests, voronoiClearanceCorrectness)
+{
+  // Build a square map with walls at x=0 and x=N-1, free in between.
+  // The center column is equidistant from both walls so computeClearance
+  // should find nBasis==2 and clearance ~halfWidth*100.
+  // Use a square map (size_x == size_y) to avoid the known stride bug.
+  const float res = 0.10f;
+  const int N = 21;  // 21x21 cells; walls at x=0 and x=20, center at x=10
+
+  COccupancyGridMap2D grid(0.0f, N * res, 0.0f, N * res, res);
+  ASSERT_EQ(static_cast<int>(grid.getSizeX()), N);
+  ASSERT_EQ(static_cast<int>(grid.getSizeY()), N);
+
+  grid.fill(1.0f);  // all free
+  for (int y = 0; y < N; y++)
+  {
+    grid.setCell(0, y, 0.0f);
+    grid.setCell(N - 1, y, 0.0f);
+  }
+
+  // Center x=10 is 10 cells from each wall → clearance should be ~1000.
+  const int cx = 10, cy = N / 2;
+  auto res_cl = grid.computeClearance(cx, cy);
+  EXPECT_EQ(res_cl.nBasis, 2) << "Center cell should detect 2 basis obstacles";
+  EXPECT_GE(res_cl.clearance, 900) << "Clearance too small for corridor center";
+  EXPECT_LE(res_cl.clearance, 1100) << "Clearance too large for corridor center";
+
+  // Build the full Voronoi and check center column has nonzero clearance
+  grid.buildVoronoiDiagram(0.5f, 0.0f);
+  EXPECT_GT(grid.getVoronoiClearance(cx, cy), 0) << "Center of corridor must be on Voronoi diagram";
+}
