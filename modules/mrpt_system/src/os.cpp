@@ -644,8 +644,13 @@ std::string find_mrpt_shared_dir()
         case 1:
           dir = std::string(MRPT_INSTALL_PREFIX_DIRECTORY) + std::string("/share/mrpt/");
           break;
-#ifdef _WIN32
         case 2:
+          // colcon workspace: mrpt_data installs to a sibling package prefix
+          dir = std::string(MRPT_INSTALL_PREFIX_DIRECTORY) +
+                std::string("/../mrpt_data/share/mrpt_data/");
+          break;
+#ifdef _WIN32
+        case 3:
         {
           char curExe[4096];
           GetModuleFileNameA(nullptr, curExe, sizeof(curExe));
