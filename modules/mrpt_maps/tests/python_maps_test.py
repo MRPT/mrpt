@@ -3,7 +3,7 @@
 import sys
 
 try:
-    from mrpt.maps import CSimplePointsMap, COccupancyGridMap2D
+    from mrpt.maps import CSimplePointsMap, CGenericPointsMap, COccupancyGridMap2D
 except ImportError as e:
     msg = str(e)
     if "_bindings" in msg and "No module named" in msg:
@@ -42,6 +42,17 @@ check("insertPoint", m.size() == 4)
 
 m.clear()
 check("clear", m.size() == 0)
+
+print("CGenericPointsMap")
+gm = CGenericPointsMap()
+check("register uint32 field", gm.registerField_uint32("rgba") is True)
+gm.resize(3)
+gm.setPointField_uint32(1, "rgba", 4000000000)
+check("get uint32 field", gm.getPointField_uint32(1, "rgba") == 4000000000)
+check("uint32 field name listed", "rgba" in gm.getPointFieldNames_uint32())
+check("hasPointField", gm.hasPointField("rgba"))
+check("unregister field", gm.unregisterField("rgba") is True)
+check("field removed", not gm.hasPointField("rgba"))
 
 print("COccupancyGridMap2D")
 grid = COccupancyGridMap2D(-5.0, 5.0, -5.0, 5.0, 0.05)

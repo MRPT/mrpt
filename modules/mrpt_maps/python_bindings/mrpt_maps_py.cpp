@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -124,6 +125,78 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "__repr__", [](const mrpt::maps::CSimplePointsMap& mp)
           { return "CSimplePointsMap(" + std::to_string(mp.size()) + " points)"; });
+
+  // -------------------------------------------------------------------------
+  // CGenericPointsMap — XYZ point cloud + arbitrary string-keyed data channels
+  // -------------------------------------------------------------------------
+  py::class_<
+      mrpt::maps::CGenericPointsMap, mrpt::maps::CPointsMap,
+      std::shared_ptr<mrpt::maps::CGenericPointsMap>>(m, "CGenericPointsMap")
+      .def(py::init<>())
+      // Register custom per-point data channels:
+      .def(
+          "registerField_float", &mrpt::maps::CGenericPointsMap::registerField_float, "fieldName"_a,
+          "Register a new per-point data channel of type float32")
+      .def(
+          "registerField_double", &mrpt::maps::CGenericPointsMap::registerField_double,
+          "fieldName"_a, "Register a new per-point data channel of type float64")
+      .def(
+          "registerField_uint16", &mrpt::maps::CGenericPointsMap::registerField_uint16,
+          "fieldName"_a, "Register a new per-point data channel of type uint16")
+      .def(
+          "registerField_uint8", &mrpt::maps::CGenericPointsMap::registerField_uint8, "fieldName"_a,
+          "Register a new per-point data channel of type uint8")
+      .def(
+          "registerField_uint32", &mrpt::maps::CGenericPointsMap::registerField_uint32,
+          "fieldName"_a, "Register a new per-point data channel of type uint32 (New in MRPT 3.0.0)")
+      .def(
+          "unregisterField", &mrpt::maps::CGenericPointsMap::unregisterField, "fieldName"_a,
+          "Removes a data channel; returns True if it existed")
+      .def("hasPointField", &mrpt::maps::CGenericPointsMap::hasPointField, "fieldName"_a)
+      .def("resize", &mrpt::maps::CGenericPointsMap::resize, "newLength"_a)
+      // Field name enumeration:
+      .def("getPointFieldNames_float", &mrpt::maps::CGenericPointsMap::getPointFieldNames_float)
+      .def("getPointFieldNames_double", &mrpt::maps::CGenericPointsMap::getPointFieldNames_double)
+      .def("getPointFieldNames_uint16", &mrpt::maps::CGenericPointsMap::getPointFieldNames_uint16)
+      .def("getPointFieldNames_uint8", &mrpt::maps::CGenericPointsMap::getPointFieldNames_uint8)
+      .def(
+          "getPointFieldNames_uint32", &mrpt::maps::CGenericPointsMap::getPointFieldNames_uint32,
+          "List all uint32 channel names (New in MRPT 3.0.0)")
+      // Per-point field getters:
+      .def(
+          "getPointField_float", &mrpt::maps::CGenericPointsMap::getPointField_float, "index"_a,
+          "fieldName"_a)
+      .def(
+          "getPointField_double", &mrpt::maps::CGenericPointsMap::getPointField_double, "index"_a,
+          "fieldName"_a)
+      .def(
+          "getPointField_uint16", &mrpt::maps::CGenericPointsMap::getPointField_uint16, "index"_a,
+          "fieldName"_a)
+      .def(
+          "getPointField_uint8", &mrpt::maps::CGenericPointsMap::getPointField_uint8, "index"_a,
+          "fieldName"_a)
+      .def(
+          "getPointField_uint32", &mrpt::maps::CGenericPointsMap::getPointField_uint32, "index"_a,
+          "fieldName"_a, "Read a uint32 channel value (New in MRPT 3.0.0)")
+      // Per-point field setters:
+      .def(
+          "setPointField_float", &mrpt::maps::CGenericPointsMap::setPointField_float, "index"_a,
+          "fieldName"_a, "value"_a)
+      .def(
+          "setPointField_double", &mrpt::maps::CGenericPointsMap::setPointField_double, "index"_a,
+          "fieldName"_a, "value"_a)
+      .def(
+          "setPointField_uint16", &mrpt::maps::CGenericPointsMap::setPointField_uint16, "index"_a,
+          "fieldName"_a, "value"_a)
+      .def(
+          "setPointField_uint8", &mrpt::maps::CGenericPointsMap::setPointField_uint8, "index"_a,
+          "fieldName"_a, "value"_a)
+      .def(
+          "setPointField_uint32", &mrpt::maps::CGenericPointsMap::setPointField_uint32, "index"_a,
+          "fieldName"_a, "value"_a, "Set a uint32 channel value (New in MRPT 3.0.0)")
+      .def(
+          "__repr__", [](const mrpt::maps::CGenericPointsMap& mp)
+          { return "CGenericPointsMap(" + std::to_string(mp.size()) + " points)"; });
 
   // -------------------------------------------------------------------------
   // COccupancyGridMap2D — probabilistic 2D occupancy grid

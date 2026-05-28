@@ -290,6 +290,7 @@ void mrpt::obs::recolorize3Dpc(
   const mrpt::aligned_std_vector<double>* fieldData_d = nullptr;
   const mrpt::aligned_std_vector<uint16_t>* fieldData_u16 = nullptr;
   const mrpt::aligned_std_vector<uint8_t>* fieldData_u8 = nullptr;
+  const mrpt::aligned_std_vector<uint32_t>* fieldData_u32 = nullptr;
 
   if (fieldData_f = originalPts->getPointsBufferRef_float_field(p.colorizeByField); fieldData_f)
   {
@@ -337,8 +338,21 @@ void mrpt::obs::recolorize3Dpc(
       dataLimits.second = static_cast<float>(uMax);
     }
   }
+  else if (fieldData_u32 = originalPts->getPointsBufferRef_uint32_field(p.colorizeByField);
+           fieldData_u32)
+  {
+    dataPoints = fieldData_u32->size();
 
-  if (!fieldData_f && !fieldData_u16 && !fieldData_d && !fieldData_u8)
+    if (dataPoints)
+    {
+      uint32_t uMin = 0, uMax = 0;
+      mrpt::math::minimum_maximum(*fieldData_u32, uMin, uMax);
+      dataLimits.first = static_cast<float>(uMin);
+      dataLimits.second = static_cast<float>(uMax);
+    }
+  }
+
+  if (!fieldData_f && !fieldData_u16 && !fieldData_d && !fieldData_u8 && !fieldData_u32)
   {
     return;
   }
@@ -392,6 +406,11 @@ void mrpt::obs::recolorize3Dpc(
         effectiveLimits = histogramPercentileLimits(
             fieldData_u8->data(), dataPoints, pct, pct, bb.first, bb.second);
       }
+      else if (fieldData_u32)
+      {
+        effectiveLimits = histogramPercentileLimits(
+            fieldData_u32->data(), dataPoints, pct, pct, bb.first, bb.second);
+      }
     }
   }
 
@@ -422,6 +441,11 @@ void mrpt::obs::recolorize3Dpc(
       if (fieldData_u16)
       {
         const float coord = static_cast<float>(fieldData_u16->at(i));
+        return std::clamp((coord - colMin) * coord_range_1, 0.0f, 1.0f);
+      }
+      if (fieldData_u32)
+      {
+        const float coord = static_cast<float>(fieldData_u32->at(i));
         return std::clamp((coord - colMin) * coord_range_1, 0.0f, 1.0f);
       }
       return 0.0f;

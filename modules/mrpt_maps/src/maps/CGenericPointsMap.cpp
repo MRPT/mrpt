@@ -98,6 +98,10 @@ void CGenericPointsMap::reserve(size_t newLength)
   {
     field.second.reserve(newLength);
   }
+  for (auto& field : m_uint32_fields)
+  {
+    field.second.reserve(newLength);
+  }
 }
 
 void CGenericPointsMap::resize(size_t newLength)
@@ -118,6 +122,10 @@ void CGenericPointsMap::resize(size_t newLength)
     field.second.resize(newLength, 0);
   }
   for (auto& field : m_uint8_fields)
+  {
+    field.second.resize(newLength, 0);
+  }
+  for (auto& field : m_uint32_fields)
   {
     field.second.resize(newLength, 0);
   }
@@ -145,10 +153,14 @@ void CGenericPointsMap::setSize(size_t newLength)
   {
     field.second.assign(newLength, 0);
   }
+  for (auto& field : m_uint32_fields)
+  {
+    field.second.assign(newLength, 0);
+  }
   mark_as_modified();
 }
 
-uint8_t CGenericPointsMap::serializeGetVersion() const { return 3; }
+uint8_t CGenericPointsMap::serializeGetVersion() const { return 4; }
 void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
   // XYZ
@@ -209,6 +221,18 @@ void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
     }
   }
 
+  // uint32 fields (v4)
+  out.WriteAs<uint32_t>(m_uint32_fields.size());
+  for (const auto& [name, v] : m_uint32_fields)
+  {
+    out << name;
+    out.WriteAs<uint32_t>(v.size());
+    if (!v.empty())
+    {
+      out.WriteBufferFixEndianness(v.data(), v.size());
+    }
+  }
+
   insertionOptions.writeToStream(out);
   likelihoodOptions.writeToStream(out);
 }
@@ -240,6 +264,7 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
     case 1:
     case 2:
     case 3:
+    case 4:
     {
       mark_as_modified();
 
@@ -310,6 +335,20 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
           lambdaReadVector(itU8->second);
         }
       }
+      // uint32 fields (v4)
+      if (version >= 4)
+      {
+        const auto n = in.ReadAs<uint32_t>();
+        for (uint32_t i = 0; i < n; i++)
+        {
+          std::string name;
+          in >> name;
+          this->registerField_uint32(name);
+          auto itU32 = m_uint32_fields.find(name);
+          ASSERT_(itU32 != m_uint32_fields.end());
+          lambdaReadVector(itU32->second);
+        }
+      }
 
       insertionOptions.readFromStream(in);
       likelihoodOptions.readFromStream(in);
@@ -329,6 +368,7 @@ void CGenericPointsMap::internal_clear()
   m_double_fields.clear();
   m_uint16_fields.clear();
   m_uint8_fields.clear();
+  m_uint32_fields.clear();
   mark_as_modified();
 }
 
@@ -372,6 +412,16 @@ bool CGenericPointsMap::registerField_uint8(const std::string& fieldName)
   return true;
 }
 
+bool CGenericPointsMap::registerField_uint32(const std::string& fieldName)
+{
+  if (hasPointField(fieldName))
+  {
+    THROW_EXCEPTION_FMT("Field '%s' already exists.", fieldName.c_str());
+  }
+  m_uint32_fields[fieldName].resize(size(), 0);
+  return true;
+}
+
 bool CGenericPointsMap::unregisterField(const std::string& fieldName)
 {
   if (m_float_fields.erase(fieldName) > 0)
@@ -390,13 +440,17 @@ bool CGenericPointsMap::unregisterField(const std::string& fieldName)
   {
     return true;
   }
+  if (m_uint32_fields.erase(fieldName) > 0)
+  {
+    return true;
+  }
   return false;
 }
 
 void CGenericPointsMap::getPointAllFieldsFast(size_t index, std::vector<float>& point_data) const
 {
   const size_t nFields = 3 + m_float_fields.size() + m_double_fields.size() +
-                         m_uint16_fields.size() + m_uint8_fields.size();
+                         m_uint16_fields.size() + m_uint8_fields.size() + m_uint32_fields.size();
   point_data.resize(nFields);
   point_data[0] = m_x[index];
   point_data[1] = m_y[index];
@@ -407,12 +461,13 @@ void CGenericPointsMap::getPointAllFieldsFast(size_t index, std::vector<float>& 
   for (const auto& [name, vec] : m_double_fields) point_data[i++] = static_cast<float>(vec[index]);
   for (const auto& [name, vec] : m_uint16_fields) point_data[i++] = static_cast<float>(vec[index]);
   for (const auto& [name, vec] : m_uint8_fields) point_data[i++] = static_cast<float>(vec[index]);
+  for (const auto& [name, vec] : m_uint32_fields) point_data[i++] = static_cast<float>(vec[index]);
 }
 
 void CGenericPointsMap::setPointAllFieldsFast(size_t index, const std::vector<float>& point_data)
 {
   const size_t nFields = 3 + m_float_fields.size() + m_double_fields.size() +
-                         m_uint16_fields.size() + m_uint8_fields.size();
+                         m_uint16_fields.size() + m_uint8_fields.size() + m_uint32_fields.size();
   ASSERT_EQUAL_(point_data.size(), nFields);
   m_x[index] = point_data[0];
   m_y[index] = point_data[1];
@@ -423,6 +478,7 @@ void CGenericPointsMap::setPointAllFieldsFast(size_t index, const std::vector<fl
   for (auto& [name, vec] : m_double_fields) vec[index] = static_cast<double>(point_data[i++]);
   for (auto& [name, vec] : m_uint16_fields) vec[index] = static_cast<uint16_t>(point_data[i++]);
   for (auto& [name, vec] : m_uint8_fields) vec[index] = static_cast<uint8_t>(point_data[i++]);
+  for (auto& [name, vec] : m_uint32_fields) vec[index] = static_cast<uint32_t>(point_data[i++]);
 }
 
 bool CGenericPointsMap::hasPointField(const std::string& fieldName) const
@@ -431,7 +487,8 @@ bool CGenericPointsMap::hasPointField(const std::string& fieldName) const
          m_float_fields.count(fieldName) ||       //
          m_double_fields.count(fieldName) ||      //
          m_uint16_fields.count(fieldName) ||      //
-         m_uint8_fields.count(fieldName);
+         m_uint8_fields.count(fieldName) ||       //
+         m_uint32_fields.count(fieldName);
 }
 
 std::vector<std::string> CGenericPointsMap::getPointFieldNames_float() const
@@ -456,6 +513,12 @@ std::vector<std::string> CGenericPointsMap::getPointFieldNames_uint8() const
 {
   std::vector<std::string> names = CPointsMap::getPointFieldNames_uint8();
   for (const auto& f : m_uint8_fields) names.push_back(f.first);
+  return names;
+}
+std::vector<std::string> CGenericPointsMap::getPointFieldNames_uint32() const
+{
+  std::vector<std::string> names = CPointsMap::getPointFieldNames_uint32();
+  for (const auto& f : m_uint32_fields) names.push_back(f.first);
   return names;
 }
 
@@ -503,6 +566,17 @@ uint8_t CGenericPointsMap::getPointField_uint8(size_t index, const std::string& 
   return it->second[index];
 }
 
+uint32_t CGenericPointsMap::getPointField_uint32(size_t index, const std::string& fieldName) const
+{
+  auto it = m_uint32_fields.find(fieldName);
+  if (it == m_uint32_fields.end())
+  {
+    return 0;
+  }
+  ASSERT_LT_(index, it->second.size());
+  return it->second[index];
+}
+
 void CGenericPointsMap::setPointField_float(size_t index, const std::string& fieldName, float value)
 {
   auto it = m_float_fields.find(fieldName);
@@ -541,6 +615,17 @@ void CGenericPointsMap::setPointField_uint8(
 {
   auto it = m_uint8_fields.find(fieldName);
   if (it == m_uint8_fields.end())
+  {
+    THROW_EXCEPTION_FMT("Field '%s' is not registered.", fieldName.c_str());
+  }
+  ASSERT_LT_(index, it->second.size());
+  it->second[index] = value;
+}
+void CGenericPointsMap::setPointField_uint32(
+    size_t index, const std::string& fieldName, uint32_t value)
+{
+  auto it = m_uint32_fields.find(fieldName);
+  if (it == m_uint32_fields.end())
   {
     THROW_EXCEPTION_FMT("Field '%s' is not registered.", fieldName.c_str());
   }
@@ -600,6 +685,19 @@ void CGenericPointsMap::insertPointField_uint8(const std::string& fieldName, uin
   vec.push_back(value);
 }
 
+void CGenericPointsMap::insertPointField_uint32(const std::string& fieldName, uint32_t value)
+{
+  auto it = m_uint32_fields.find(fieldName);
+  if (it == m_uint32_fields.end())
+  {
+    THROW_EXCEPTION_FMT("Field '%s' is not registered.", fieldName.c_str());
+  }
+  auto& vec = it->second;
+  if (vec.size() < m_x.size() - 1) vec.resize(m_x.size() - 1, 0);  // Pad
+  ASSERT_EQUAL_(vec.size(), m_x.size() - 1);
+  vec.push_back(value);
+}
+
 void CGenericPointsMap::reserveField_float(const std::string& fieldName, size_t n)
 {
   auto it = m_float_fields.find(fieldName);
@@ -622,6 +720,12 @@ void CGenericPointsMap::reserveField_uint8(const std::string& fieldName, size_t 
 {
   auto it = m_uint8_fields.find(fieldName);
   ASSERT_(it != m_uint8_fields.end());
+  it->second.reserve(n);
+}
+void CGenericPointsMap::reserveField_uint32(const std::string& fieldName, size_t n)
+{
+  auto it = m_uint32_fields.find(fieldName);
+  ASSERT_(it != m_uint32_fields.end());
   it->second.reserve(n);
 }
 
@@ -647,6 +751,12 @@ void CGenericPointsMap::resizeField_uint8(const std::string& fieldName, size_t n
 {
   auto it = m_uint8_fields.find(fieldName);
   ASSERT_(it != m_uint8_fields.end());
+  it->second.resize(n, 0);
+}
+void CGenericPointsMap::resizeField_uint32(const std::string& fieldName, size_t n)
+{
+  auto it = m_uint32_fields.find(fieldName);
+  ASSERT_(it != m_uint32_fields.end());
   it->second.resize(n, 0);
 }
 
