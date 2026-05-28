@@ -32,11 +32,10 @@ if (NOT OCTOMAP_FOUND)
 		# Include embedded version headers:
 		include(ExternalProject)
 
-		# download from GH (pinned to commit 9ebcfdc, master as of 2024-01; v1.9.6 and older fail with CMake >= 3.5):
+		# download from GH (pinned to commit 9ebcfdc, master as of 2024-01; v1.9.6 and older fail with CMake >= 3.5)
+		# Use URL/tarball instead of GIT_REPOSITORY to support CMake 3.22 (ROS2 Humble):
 		ExternalProject_Add(EP_octomap
-		  GIT_REPOSITORY    "https://github.com/OctoMap/octomap.git"
-		  GIT_TAG           "9ebcfdc5dd6836686134a39de742cc9211dd1ad6"
-		  GIT_SHALLOW       OFF
+		  URL               "https://github.com/OctoMap/octomap/archive/9ebcfdc5dd6836686134a39de742cc9211dd1ad6.zip"
 		  SOURCE_DIR        "${mrpt_maps_BINARY_DIR}/3rdparty/octomap/"
 		  CMAKE_ARGS
 			-DBUILD_TESTING=OFF
