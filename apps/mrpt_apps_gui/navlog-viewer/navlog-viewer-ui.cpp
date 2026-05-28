@@ -2176,7 +2176,7 @@ void NavlogViewerApp::OnManualPickAppendYaml()
   entry["selected_ptg_index"] = m_manualPickPTGIdx;
   entry["selected_trajectory_index"] = m_manualPickTrajectoryIdx;
 
-  d.asSequence().push_back(entry);
+  d.push_back(entry);
 
   std::ofstream fOut(yamlFileName);
   d.printAsYAML(fOut);

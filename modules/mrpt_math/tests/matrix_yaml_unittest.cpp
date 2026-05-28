@@ -40,9 +40,9 @@ MRPT_TEST(MatrixYaml, FromToEigen)
   EXPECT_EQ(y1["data"].asSequence().size(), 12UL);
 
   const std::string expectedStr = R"(K:
-  cols: 4
-  data: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0]
   rows: 3
+  cols: 4
+  data: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0]
 )";
 
   mrpt::containers::YamlEmitOptions eo;

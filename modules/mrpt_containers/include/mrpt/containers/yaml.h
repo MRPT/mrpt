@@ -22,13 +22,12 @@
 #include <mrpt/core/format.h>
 #include <mrpt/typemeta/TEnumType.h>
 
-#include <any>
 #include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <iosfwd>
 #include <limits>
-#include <map>
+#include <memory>
 #include <optional>
 #include <sstream>
 #include <stdexcept>
@@ -36,6 +35,7 @@
 #include <string_view>
 #include <type_traits>
 #include <typeinfo>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -46,6 +46,10 @@
 
 namespace mrpt::containers
 {
+// Forward declarations for the proxy types:
+class yaml_ref;
+class yaml_cref;
+
 /** Powerful YAML-like container for possibly-nested blocks of parameters or
  *any arbitrary structured data contents, including documentation in the
  *form of comments attached to each node. Supports parsing from YAML or JSON
@@ -86,6 +90,10 @@ namespace mrpt::containers
  *
  * \ingroup mrpt_containers_yaml
  * \note [New in MRPT 2.1.0]
+ * \note **Thread safety:** This class is not thread-safe. Concurrent reads on a
+ *   `yaml` object that is not being mutated are safe; any concurrent access
+ *   where at least one thread writes is undefined behavior. Synchronization is
+ *   the caller's responsibility, same policy as `std::map` and `std::vector`.
  */
 class yaml
 {
@@ -94,10 +102,31 @@ class yaml
    * @{ */
 
   struct node_t;
-  using scalar_t = std::any;
-  using sequence_t = std::vector<node_t>;
-  using map_t = std::map<node_t, node_t>;
 
+  /** Discriminated scalar union. Types are normalized on assignment:
+   * - All signed integer widths → `int64_t`
+   * - All unsigned integer widths → `uint64_t`
+   * - `float` → `double`
+   * - `const char*` → `std::string`
+   * - Nested yaml documents → `std::shared_ptr<yaml>` (avoids recursive type)
+   * - `std::monostate` represents a null scalar */
+  using scalar_t = std::
+      variant<std::monostate, bool, int64_t, uint64_t, double, std::string, std::shared_ptr<yaml>>;
+
+  using sequence_t = std::vector<node_t>;
+  /** Insertion-order map: vector of (key-node, value-node) pairs.
+   * Keys are node_t scalars so they carry parse-time comments; lookup is
+   * O(n) linear search — fast for typical config-file maps (< ~100 keys). */
+  using map_t = std::vector<std::pair<node_t, node_t>>;
+
+  /** Per-node comments (top, right, bottom). Stored behind a unique_ptr so
+   * comment-free nodes (the common case) pay only 8 bytes. */
+  struct NodeMeta
+  {
+    std::array<std::optional<std::string>, static_cast<size_t>(CommentPosition::MAX)> comments;
+  };
+
+  /** Legacy alias kept for backward source compatibility. */
   using comments_t =
       std::array<std::optional<std::string>, static_cast<size_t>(CommentPosition::MAX)>;
 
@@ -117,20 +146,42 @@ class yaml
     /** Node data */
     std::variant<std::monostate, sequence_t, map_t, scalar_t> d;
 
-    /** Optional comment block */
-    comments_t comments;
+    /** Optional comment block. Null when no comments are attached (common case),
+     * saving ~96 bytes per comment-free node. */
+    std::unique_ptr<NodeMeta> meta;
+
+    /** Positioning information about the placement of the element in the
+     * original input file/stream, i.e. line and column number.
+     * Kept inline (not in NodeMeta) so parse-error messages are always available.
+     * \note (New in MRPT 2.5.0)
+     */
+    mark_t marks;
 
     /** Optional flag to print collections in short form (e.g. [A,B] for
      * sequences) \note (New in MRPT 2.1.8) */
     bool printInShortFormat = false;
 
-    /** Positioning information about the placement of the element in the
-     * original input file/stream, i.e. line and column number
-     * \note (New in MRPT 2.5.0)
-     */
-    mark_t marks;
-
     /** @} */
+
+    // unique_ptr<NodeMeta> requires explicit copy operations:
+    node_t() = default;
+    node_t(node_t&&) = default;
+    node_t& operator=(node_t&&) = default;
+    node_t(const node_t& o) : d(o.d), marks(o.marks), printInShortFormat(o.printInShortFormat)
+    {
+      if (o.meta) meta = std::make_unique<NodeMeta>(*o.meta);
+    }
+    node_t& operator=(const node_t& o)
+    {
+      if (this != &o)
+      {
+        d = o.d;
+        marks = o.marks;
+        printInShortFormat = o.printInShortFormat;
+        meta = o.meta ? std::make_unique<NodeMeta>(*o.meta) : nullptr;
+      }
+      return *this;
+    }
 
     template <
         typename T,  //
@@ -140,17 +191,19 @@ class yaml
             !std::is_constructible_v<std::initializer_list<sequence_t::value_type>, T>>>
     node_t(const T& scalar)
     {
-      d.emplace<scalar_t>().emplace<T>(scalar);
+      if constexpr (std::is_same_v<T, bool>)
+        d = scalar_t(scalar);
+      else if constexpr (std::is_integral_v<T> && std::is_signed_v<T>)
+        d = scalar_t(static_cast<int64_t>(scalar));
+      else if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>)
+        d = scalar_t(static_cast<uint64_t>(scalar));
+      else if constexpr (std::is_floating_point_v<T>)
+        d = scalar_t(static_cast<double>(scalar));
+      else
+        d = scalar_t(scalar);  // std::string or shared_ptr<yaml>
     }
-    /** Specialization for literals */
-    node_t(const char* str)
-    {
-      // Storing char* is not safe if it points to temporary
-      // memory or a stack zone (!):
-      d.emplace<scalar_t>().emplace<std::string>(str);
-    }
-
-    node_t() = default;
+    /** Specialization for string literals */
+    node_t(const char* str) { d = scalar_t(std::string(str)); }
 
     node_t(std::initializer_list<map_t::value_type> init) { d.emplace<map_t>(init); }
     node_t(std::initializer_list<sequence_t::value_type> init) { d.emplace<sequence_t>(init); }
@@ -188,57 +241,34 @@ class yaml
      * and there is no obvious conversion.
      */
     template <typename T>
-    [[nodiscard]] T as() const
-    {
-      ASSERTMSG_(
-          std::holds_alternative<scalar_t>(d),
-          mrpt::format(
-              "Trying to use as() on a node of type `%s`, but only "
-              "available for `scalar` nodes.",
-              typeName().c_str()));
-      return internal::implAnyAsGetter<T>(std::get<scalar_t>(d));
-    }
+    [[nodiscard]] T as() const;  // defined after implAnyAsGetter is declared
 
     [[nodiscard]] std::string_view internalAsStr() const
     {
       ASSERT_(isScalar());
-      if (const char* const* s = std::any_cast<const char*>(&asScalar()); s != nullptr)
-      {
-        return {*s};
-      }
-      if (const auto* s = std::any_cast<std::string>(&asScalar()); s != nullptr)
-      {
-        return {*s};
-      }
-      if (const auto* s = std::any_cast<std::string_view>(&asScalar()); s != nullptr)
-      {
-        return {*s};
-      }
+      const auto& s = std::get<scalar_t>(d);
+      if (const auto* str = std::get_if<std::string>(&s); str != nullptr) return {*str};
       THROW_EXCEPTION_FMT(
-          "Used node_t as map key with a type non-convertible to string: '%s'", typeName().c_str());
+          "Used node_t as map key with a non-string scalar: '%s'", typeName().c_str());
     }
 
-    [[nodiscard]] bool hasComment() const
-    {
-      return std::any_of(
-          comments.begin(), comments.end(), [](const auto& c) { return c.has_value(); });
-    }
+    [[nodiscard]] bool hasComment() const { return meta != nullptr; }
     [[nodiscard]] bool hasComment(CommentPosition pos) const
     {
       MRPT_START
       const auto posIndex = static_cast<unsigned int>(pos);
       ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
-      return comments[posIndex].has_value();
+      return meta != nullptr && meta->comments[posIndex].has_value();
       MRPT_END
     }
     [[nodiscard]] const std::string& comment() const
     {
       MRPT_START
-      for (const auto& c : comments)
+      if (meta)
       {
-        if (c.has_value())
+        for (const auto& c : meta->comments)
         {
-          return c.value();
+          if (c.has_value()) return c.value();
         }
       }
       THROW_EXCEPTION("Trying to access comment but this node has none.");
@@ -250,9 +280,17 @@ class yaml
       const auto posIndex = static_cast<unsigned int>(pos);
       ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
       ASSERTMSG_(
-          comments[posIndex].has_value(), "Trying to access comment but this node has none.");
-      return comments[posIndex].value();
+          meta != nullptr && meta->comments[posIndex].has_value(),
+          "Trying to access comment but this node has none.");
+      return meta->comments[posIndex].value();
       MRPT_END
+    }
+
+    /** Ensure meta is allocated and return a mutable reference to the comment slot. */
+    std::optional<std::string>& commentSlot(CommentPosition pos)
+    {
+      if (!meta) meta = std::make_unique<NodeMeta>();
+      return meta->comments[static_cast<size_t>(pos)];
     }
   };
 
@@ -467,24 +505,16 @@ class yaml
   /** @name Read/write to maps (dictionaries)
    * @{ */
 
-  /** Write access for maps */
-  yaml operator[](const std::string& key);
+  /** Write access for maps — returns a mutable reference to the child node */
+  yaml_ref operator[](const std::string& key);
   /// \overload
-  yaml operator[](const char* key)
-  {
-    ASSERT_(key != nullptr);
-    return operator[](std::string(key));
-  }
+  yaml_ref operator[](const char* key);
 
-  /** Read access  for maps
+  /** Read access for maps — returns a const reference to the child node.
    * \throw std::runtime_error if key does not exist. */
-  [[nodiscard]] yaml operator[](const std::string& key) const;
+  [[nodiscard]] yaml_cref operator[](const std::string& key) const;
   /// \overload
-  [[nodiscard]] yaml operator[](const char* key) const
-  {
-    ASSERT_(key != nullptr);
-    return operator[](std::string(key));
-  }
+  [[nodiscard]] yaml_cref operator[](const char* key) const;
 
   /** Scalar read access for maps, with default value if key does not
    * exist.
@@ -506,16 +536,17 @@ class yaml
     }
 
     const auto& m = std::get<map_t>(n->d);
-    auto it = m.find(key);
+    auto it = std::find_if(
+        m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
     if (m.end() == it)
     {
       return defaultValue;
     }
     try
     {
-      return yaml(internal::tag_as_const_proxy_t(), it->second, "").as<T>();
+      return it->second.template as<T>();
     }
-    catch (const std::bad_any_cast& e)
+    catch (const std::exception& e)
     {
       throw std::logic_error(mrpt::format(
           "getOrDefault(): Trying to access key `%s` holding type `%s` as the wrong type: `%s`",
@@ -527,10 +558,25 @@ class yaml
 
   /** Write into an existing index of a sequence.
    * \throw std::out_of_range if index is out of range. */
-  yaml operator()(int index);
+  yaml_ref operator()(int index);
   /** Read from an existing index of a sequence.
    * \throw std::out_of_range if index is out of range. */
-  const yaml operator()(int index) const;
+  yaml_cref operator()(int index) const;
+
+  /** Write into an existing index of a sequence (alias for operator()).
+   * \throw std::out_of_range if index is out of range. */
+  yaml_ref operator[](int index);
+  /** Read from an existing index of a sequence (alias for operator() const).
+   * \throw std::out_of_range if index is out of range. */
+  yaml_cref operator[](int index) const;
+
+  /** Maps only: removes the entry with the given key.
+   * \return Number of entries removed (0 or 1). */
+  size_t erase(const std::string& key);
+
+  /** Sequences only: removes the element at the given index.
+   * \return true if removed, false if index out of range. */
+  bool erase(int index);
 
   /** Append a new value to a sequence.
    * \throw std::exception If this is not a sequence */
@@ -545,39 +591,21 @@ class yaml
   void push_back(const yaml& v)
   {
     sequence_t& seq = asSequence();
-    seq.emplace_back(v.root_);
+    seq.emplace_back(v.node());
   }
 
  private:
   node_t root_;
-  bool isProxy_ = false;
-  bool isConstProxy_ = false;
 
-  // Proxy members:
-  const std::string proxiedMapEntryName_;
-  const node_t* proxiedNode_ = nullptr;
+  /** Returns a pointer to the root node. Will never return nullptr. */
+  [[nodiscard]] const node_t* dereferenceProxy() const { return &root_; }
+  [[nodiscard]] node_t* dereferenceProxy() { return &root_; }
 
-  /** @name Internal proxy
-   * @{ */
-
-  /** Returns the pointer to the referenced node data, if a proxy, or to
-   * the root node otherwise. Will never return nullptr. */
-  [[nodiscard]] const node_t* dereferenceProxy() const;
-  [[nodiscard]] node_t* dereferenceProxy();
-
-  explicit yaml(
-      [[maybe_unused]] internal::tag_as_proxy_t dummyName, node_t& val, std::string name) :
-      isProxy_(true), proxiedMapEntryName_(std::move(name)), proxiedNode_(&val)
+  // Legacy proxy constructor — used internally for YAMLCPP interop only:
+  explicit yaml([[maybe_unused]] internal::tag_as_const_proxy_t, const node_t& val, std::string) :
+      root_(val)
   {
   }
-  explicit yaml(
-      [[maybe_unused]] internal::tag_as_const_proxy_t dummyName,
-      const node_t& val,
-      std::string name) :
-      isProxy_(true), isConstProxy_(true), proxiedMapEntryName_(std::move(name)), proxiedNode_(&val)
-  {
-  }
-  /** @} */
 
  public:
   /** @name Getters / setters
@@ -670,7 +698,7 @@ class yaml
     const auto posIndex = static_cast<unsigned int>(vc.position);
     ASSERT_LT_(posIndex, static_cast<unsigned int>(CommentPosition::MAX));
     auto& n = keyNode(vc.keyname);
-    n.comments[posIndex].emplace(vc.comment);
+    n.commentSlot(vc.position).emplace(vc.comment);
     return *this;
   }
 
@@ -775,8 +803,6 @@ class yaml
  private:
   template <typename T>
   friend T internal::implAsGetter(const yaml& p);
-  template <typename T>
-  friend T internal::implAnyAsGetter(const scalar_t& s);
 
   struct InternalPrintState
   {
@@ -808,19 +834,20 @@ class yaml
   static bool internalPrintStringScalar(
       const std::string& s, std::ostream& o, const InternalPrintState& ps, const comments_t& cs);
 
-  /** Impl of operator=() */
+  /** Impl of operator=() — normalizes integer/float widths before storage */
   template <typename T>
   yaml& implOpAssign(const T& v)
   {
-    ASSERTMSG_(
-        isProxy_,
-        "Trying to write into a non-leaf node, `p[\"name\"]=value;` "
-        "instead");
-    ASSERTMSG_(!isConstProxy_, "Trying to write into read-only proxy");
-    ASSERT_(proxiedNode_ != nullptr);
-
-    scalar_t& s = const_cast<node_t*>(proxiedNode_)->d.emplace<scalar_t>();
-    s.emplace<T>(v);
+    if constexpr (std::is_same_v<T, bool>)
+      root_.d = scalar_t(v);
+    else if constexpr (std::is_integral_v<T> && std::is_signed_v<T>)
+      root_.d = scalar_t(static_cast<int64_t>(v));
+    else if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>)
+      root_.d = scalar_t(static_cast<uint64_t>(v));
+    else if constexpr (std::is_floating_point_v<T>)
+      root_.d = scalar_t(static_cast<double>(v));
+    else
+      root_.d = scalar_t(v);  // std::string, shared_ptr<yaml>
     return *this;
   }
 };
@@ -832,6 +859,410 @@ class yaml
  * \sa yaml::PrintAsYAML
  */
 std::ostream& operator<<(std::ostream& o, const yaml& p);
+
+/** Non-owning mutable reference into a yaml tree node.
+ * Returned by yaml::operator[]. Implicitly converts to yaml (deep copy) for
+ * reading; assignments write through to the referenced node.
+ *
+ * \note Invalidated if the parent yaml container reallocates (e.g. a new
+ *   map key is inserted). Treat it as a temporary handle, not a persistent
+ *   reference.
+ * \note [New in MRPT 3.x]
+ */
+class yaml_ref
+{
+ public:
+  using node_t = yaml::node_t;
+  using scalar_t = yaml::scalar_t;
+  using sequence_t = yaml::sequence_t;
+  using map_t = yaml::map_t;
+
+  yaml_ref() = delete;
+  explicit yaml_ref(node_t& n) : node_(&n) {}
+
+  // ── Implicit conversion to yaml (deep copy) ─────────────────────────────
+  operator yaml() const { return yaml(*node_); }
+
+  // ── Node identity ────────────────────────────────────────────────────────
+  [[nodiscard]] node_t& node() { return *node_; }
+  [[nodiscard]] const node_t& node() const { return *node_; }
+
+  // ── Type queries ─────────────────────────────────────────────────────────
+  [[nodiscard]] bool isNullNode() const { return node_->isNullNode(); }
+  [[nodiscard]] bool isScalar() const { return node_->isScalar(); }
+  [[nodiscard]] bool isMap() const { return node_->isMap(); }
+  [[nodiscard]] bool isSequence() const { return node_->isSequence(); }
+  [[nodiscard]] std::string typeName() const { return node_->typeName(); }
+
+  // ── Scalar read ──────────────────────────────────────────────────────────
+  template <typename T>
+  [[nodiscard]] T as() const
+  {
+    return node_->as<T>();
+  }
+
+  // ── Container queries ────────────────────────────────────────────────────
+  [[nodiscard]] size_t size() const { return node_->size(); }
+  [[nodiscard]] bool empty() const { return yaml(*node_).empty(); }
+  [[nodiscard]] bool has(const std::string& key) const { return yaml(*node_).has(key); }
+  void clear() { *node_ = node_t{}; }
+
+  // ── Container access ─────────────────────────────────────────────────────
+  [[nodiscard]] sequence_t& asSequence() { return node_->asSequence(); }
+  [[nodiscard]] const sequence_t& asSequence() const { return node_->asSequence(); }
+  [[nodiscard]] map_t& asMap() { return node_->asMap(); }
+  [[nodiscard]] const map_t& asMap() const { return node_->asMap(); }
+  [[nodiscard]] map_t asMapRange() const { return node_->asMap(); }
+  [[nodiscard]] scalar_t& asScalar() { return node_->asScalar(); }
+  [[nodiscard]] const scalar_t& asScalar() const { return node_->asScalar(); }
+
+  // ── Key-node comment API (map nodes) ─────────────────────────────────────
+  bool keyHasComment(const std::string& key) const
+  {
+    // direct lookup to avoid dangling refs through temporaries
+    const map_t& m = node_->asMap();
+    auto it = std::find_if(
+        m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
+    ASSERTMSG_(it != m.end(), mrpt::format("key '%s' not found", key.c_str()));
+    return it->first.hasComment();
+  }
+  std::string keyComment(const std::string& key) const
+  {
+    const map_t& m = node_->asMap();
+    auto it = std::find_if(
+        m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
+    ASSERTMSG_(it != m.end(), mrpt::format("key '%s' not found", key.c_str()));
+    return it->first.comment();  // return by value
+  }
+  [[nodiscard]] const node_t& keyNode(const std::string& key) const
+  {
+    const map_t& m = node_->asMap();
+    auto it = std::find_if(
+        m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
+    ASSERTMSG_(it != m.end(), mrpt::format("key '%s' not found", key.c_str()));
+    return it->first;
+  }
+  node_t& keyNode(const std::string& key)
+  {
+    map_t& m = node_->asMap();
+    auto it = std::find_if(
+        m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
+    ASSERTMSG_(it != m.end(), mrpt::format("key '%s' not found", key.c_str()));
+    return const_cast<node_t&>(it->first);
+  }
+
+  // ── erase ─────────────────────────────────────────────────────────────────
+  size_t erase(const std::string& key)
+  {
+    map_t& m = node_->asMap();
+    const auto it = std::find_if(
+        m.begin(), m.end(), [&key](const auto& kv) { return kv.first.internalAsStr() == key; });
+    if (it == m.end()) return 0;
+    m.erase(it);
+    return 1;
+  }
+  bool erase(int index)
+  {
+    sequence_t& seq = node_->asSequence();
+    if (index < 0 || index >= static_cast<int>(seq.size())) return false;
+    seq.erase(seq.begin() + index);
+    return true;
+  }
+
+  // ── Comments ─────────────────────────────────────────────────────────────
+  [[nodiscard]] bool hasComment() const { return node_->hasComment(); }
+  [[nodiscard]] bool hasComment(CommentPosition pos) const { return node_->hasComment(pos); }
+  [[nodiscard]] const std::string& comment() const { return node_->comment(); }
+  [[nodiscard]] const std::string& comment(CommentPosition pos) const
+  {
+    return node_->comment(pos);
+  }
+  void comment(const std::string& c, CommentPosition pos = CommentPosition::RIGHT)
+  {
+    node_->commentSlot(pos).emplace(c);
+  }
+
+  // ── Print ────────────────────────────────────────────────────────────────
+  void printAsYAML(std::ostream& o, const YamlEmitOptions& eo = {}) const
+  {
+    yaml(*node_).printAsYAML(o, eo);
+  }
+  void printAsYAML() const { yaml(*node_).printAsYAML(); }
+
+  // ── Subscript (returns yaml_ref/yaml_cref) ───────────────────────────────
+  yaml_ref operator[](const std::string& key);
+  yaml_ref operator[](const char* key);  // avoid char→int ambiguity
+  [[nodiscard]] yaml_cref operator[](const std::string& key) const;
+  [[nodiscard]] yaml_cref operator[](const char* key) const;
+  yaml_ref operator[](int index);
+  [[nodiscard]] yaml_cref operator[](int index) const;
+
+  // ── Sequence operator() alias ─────────────────────────────────────────────
+  yaml_ref operator()(int index) { return operator[](index); }
+  [[nodiscard]] yaml_cref operator()(int index) const;  // defined after yaml_cref
+
+  // ── scalarType, getOrDefault, asRef ──────────────────────────────────────
+  [[nodiscard]] const std::type_info& scalarType() const
+  {
+    if (node_->isNullNode()) return typeid(void);
+    return std::visit(
+        [](const auto& v) -> const std::type_info& { return typeid(v); }, node_->asScalar());
+  }
+  template <typename T>
+  [[nodiscard]] T getOrDefault(const std::string& key, const T& def) const
+  {
+    return yaml(*node_).template getOrDefault<T>(key, def);
+  }
+  template <typename T>
+  T& asRef()
+  {
+    auto& s = node_->asScalar();
+    if (!std::holds_alternative<T>(s)) s = T{};
+    return std::get<T>(s);
+  }
+
+  // ── Assignment (write-through) ───────────────────────────────────────────
+  yaml_ref& operator=(bool v)
+  {
+    node_->d = scalar_t(v);
+    return *this;
+  }
+  yaml_ref& operator=(float v)
+  {
+    node_->d = scalar_t(static_cast<double>(v));
+    return *this;
+  }
+  yaml_ref& operator=(double v)
+  {
+    node_->d = scalar_t(v);
+    return *this;
+  }
+  yaml_ref& operator=(int8_t v)
+  {
+    node_->d = scalar_t(static_cast<int64_t>(v));
+    return *this;
+  }
+  yaml_ref& operator=(uint8_t v)
+  {
+    node_->d = scalar_t(static_cast<uint64_t>(v));
+    return *this;
+  }
+  yaml_ref& operator=(int16_t v)
+  {
+    node_->d = scalar_t(static_cast<int64_t>(v));
+    return *this;
+  }
+  yaml_ref& operator=(uint16_t v)
+  {
+    node_->d = scalar_t(static_cast<uint64_t>(v));
+    return *this;
+  }
+  yaml_ref& operator=(int32_t v)
+  {
+    node_->d = scalar_t(static_cast<int64_t>(v));
+    return *this;
+  }
+  yaml_ref& operator=(uint32_t v)
+  {
+    node_->d = scalar_t(static_cast<uint64_t>(v));
+    return *this;
+  }
+  yaml_ref& operator=(int64_t v)
+  {
+    node_->d = scalar_t(v);
+    return *this;
+  }
+  yaml_ref& operator=(uint64_t v)
+  {
+    node_->d = scalar_t(v);
+    return *this;
+  }
+  yaml_ref& operator=(const std::string& v)
+  {
+    node_->d = scalar_t(v);
+    return *this;
+  }
+  yaml_ref& operator=(const char* v)
+  {
+    node_->d = scalar_t(std::string(v));
+    return *this;
+  }
+  yaml_ref& operator=(const std::string_view& v)
+  {
+    node_->d = scalar_t(std::string(v));
+    return *this;
+  }
+  yaml_ref& operator=(const yaml& v)
+  {
+    *node_ = v.node();
+    return *this;
+  }
+  yaml_ref& operator=(const yaml_ref& v)
+  {
+    if (node_ != v.node_) *node_ = *v.node_;
+    return *this;
+  }
+  template <
+      typename = std::enable_if<
+          !std::is_same_v<std::size_t, uint64_t> && !std::is_same_v<std::size_t, int64_t> &&
+          !std::is_same_v<std::size_t, uint32_t> && !std::is_same_v<std::size_t, int32_t>>>
+  yaml_ref& operator=(std::size_t v)
+  {
+    return operator=(static_cast<uint64_t>(v));
+  }
+  /** vcp (value-comment) wrapper */
+  template <typename T>
+  yaml_ref& operator=(const ValueCommentPair<T>& vc)
+  {
+    comment(vc.comment, vc.position);
+    operator=(vc.value);
+    return *this;
+  }
+
+  // ── Implicit scalar conversions ──────────────────────────────────────────
+  operator bool() const { return as<bool>(); }
+  operator double() const { return as<double>(); }
+  operator float() const { return as<float>(); }
+  operator int8_t() const { return as<int8_t>(); }
+  operator uint8_t() const { return as<uint8_t>(); }
+  operator int16_t() const { return as<int16_t>(); }
+  operator uint16_t() const { return as<uint16_t>(); }
+  operator int32_t() const { return as<int32_t>(); }
+  operator uint32_t() const { return as<uint32_t>(); }
+  operator int64_t() const { return as<int64_t>(); }
+  operator uint64_t() const { return as<uint64_t>(); }
+  operator std::string() const { return as<std::string>(); }
+
+  // ── Sequence push_back ───────────────────────────────────────────────────
+  void push_back(double v) { node_->asSequence().emplace_back().d = scalar_t(v); }
+  void push_back(const std::string& v) { node_->asSequence().emplace_back().d = scalar_t(v); }
+  void push_back(uint64_t v) { node_->asSequence().emplace_back().d = scalar_t(v); }
+  void push_back(bool v) { node_->asSequence().emplace_back().d = scalar_t(v); }
+  void push_back(const yaml& v) { node_->asSequence().emplace_back(v.node()); }
+
+ private:
+  node_t* node_;
+};
+
+/** Non-owning const reference into a yaml tree node.
+ * Returned by `const yaml::operator[]`. Implicitly converts to yaml (deep copy).
+ * \note [New in MRPT 3.x]
+ */
+class yaml_cref
+{
+ public:
+  using node_t = yaml::node_t;
+  using scalar_t = yaml::scalar_t;
+  using sequence_t = yaml::sequence_t;
+  using map_t = yaml::map_t;
+
+  yaml_cref() = delete;
+  explicit yaml_cref(const node_t& n) : node_(&n) {}
+  yaml_cref(const yaml_ref& r) : node_(&r.node()) {}  // NOLINT(google-explicit-constructor)
+
+  // ── Implicit conversion to yaml (deep copy) ─────────────────────────────
+  operator yaml() const { return yaml(*node_); }
+
+  // ── Node identity ────────────────────────────────────────────────────────
+  [[nodiscard]] const node_t& node() const { return *node_; }
+
+  // ── Type queries ─────────────────────────────────────────────────────────
+  [[nodiscard]] bool isNullNode() const { return node_->isNullNode(); }
+  [[nodiscard]] bool isScalar() const { return node_->isScalar(); }
+  [[nodiscard]] bool isMap() const { return node_->isMap(); }
+  [[nodiscard]] bool isSequence() const { return node_->isSequence(); }
+  [[nodiscard]] std::string typeName() const { return node_->typeName(); }
+
+  // ── Scalar read ──────────────────────────────────────────────────────────
+  template <typename T>
+  [[nodiscard]] T as() const
+  {
+    return node_->as<T>();
+  }
+
+  // ── Container queries ────────────────────────────────────────────────────
+  [[nodiscard]] size_t size() const { return node_->size(); }
+  [[nodiscard]] bool has(const std::string& key) const { return yaml(*node_).has(key); }
+
+  // ── Matrix / vector conversion (delegates to yaml) ──────────────────────
+  template <typename MATRIX>
+  void toMatrix(MATRIX& m) const
+  {
+    yaml(*node_).toMatrix(m);
+  }
+  template <typename Scalar>
+  [[nodiscard]] std::vector<Scalar> toStdVector() const
+  {
+    return yaml(*node_).toStdVector<Scalar>();
+  }
+
+  // ── Container access ─────────────────────────────────────────────────────
+  [[nodiscard]] const sequence_t& asSequence() const { return node_->asSequence(); }
+  [[nodiscard]] const map_t& asMap() const { return node_->asMap(); }
+  [[nodiscard]] map_t asMapRange() const { return node_->asMap(); }
+  [[nodiscard]] const scalar_t& asScalar() const { return node_->asScalar(); }
+
+  // ── Sequence operator() alias ─────────────────────────────────────────────
+  yaml_cref operator()(int index) const { return operator[](index); }
+
+  // ── Comments ─────────────────────────────────────────────────────────────
+  [[nodiscard]] bool hasComment() const { return node_->hasComment(); }
+  [[nodiscard]] bool hasComment(CommentPosition pos) const { return node_->hasComment(pos); }
+  [[nodiscard]] const std::string& comment() const { return node_->comment(); }
+  [[nodiscard]] const std::string& comment(CommentPosition pos) const
+  {
+    return node_->comment(pos);
+  }
+
+  // ── Print ────────────────────────────────────────────────────────────────
+  void printAsYAML(std::ostream& o, const YamlEmitOptions& eo = {}) const
+  {
+    yaml(*node_).printAsYAML(o, eo);
+  }
+
+  // ── Subscript (returns yaml_cref) ────────────────────────────────────────
+  yaml_cref operator[](const std::string& key) const;
+  yaml_cref operator[](const char* key) const;
+  yaml_cref operator[](int index) const;
+
+  // ── scalarType, asRef ────────────────────────────────────────────────────
+  [[nodiscard]] const std::type_info& scalarType() const
+  {
+    if (node_->isNullNode()) return typeid(void);
+    return std::visit(
+        [](const auto& v) -> const std::type_info& { return typeid(v); }, node_->asScalar());
+  }
+  template <typename T>
+  [[nodiscard]] const T& asRef() const
+  {
+    const auto& s = node_->asScalar();
+    if (!std::holds_alternative<T>(s)) THROW_EXCEPTION("asRef<T>(): type mismatch");
+    return std::get<T>(s);
+  }
+
+  // ── Implicit scalar conversions ──────────────────────────────────────────
+  operator bool() const { return as<bool>(); }
+  operator double() const { return as<double>(); }
+  operator float() const { return as<float>(); }
+  operator int8_t() const { return as<int8_t>(); }
+  operator uint8_t() const { return as<uint8_t>(); }
+  operator int16_t() const { return as<int16_t>(); }
+  operator uint16_t() const { return as<uint16_t>(); }
+  operator int32_t() const { return as<int32_t>(); }
+  operator uint32_t() const { return as<uint32_t>(); }
+  operator int64_t() const { return as<int64_t>(); }
+  operator uint64_t() const { return as<uint64_t>(); }
+  operator std::string() const { return as<std::string>(); }
+
+ private:
+  const node_t* node_;
+};
+
+std::ostream& operator<<(std::ostream& o, const yaml_ref& p);
+std::ostream& operator<<(std::ostream& o, const yaml_cref& p);
+
+// Deferred yaml_ref methods that return yaml_cref (yaml_cref must be complete):
+inline yaml_cref yaml_ref::operator()(int index) const { return operator[](index); }
 
 /** Macro to load a variable from a mrpt::containers::yaml (initials MCP)
  * dictionary, throwing an std::invalid_argument exception  if the value is not
@@ -944,48 +1375,24 @@ namespace mrpt::containers
 template <typename T>
 T& yaml::asRef()
 {
-  ASSERTMSG_(
-      isProxy_,
-      "Trying to read from a non-scalar. Use `p[\"name\"].asRef<T>();` "
-      "instead");
-  ASSERTMSG_(!isConstProxy_, "Trying to write into read-only proxy");
   scalar_t& s = this->asScalar();
-
-  try
-  {
-    std::any_cast<T>(s);
-  }
-  catch (const std::bad_any_cast&)
-  {
-    s.emplace<T>();
-  }
-  return *std::any_cast<T>(&s);
+  if (!std::holds_alternative<T>(s)) s = T{};
+  return std::get<T>(s);
 }
 
 template <typename T>
 const T& yaml::asRef() const
 {
-  ASSERTMSG_(
-      isProxy_,
-      "Trying to read from a non-scalar. Use `p[\"name\"].asRef<T>();` "
-      "instead");
-  const auto& expectedType = typeid(T);
   const scalar_t& s = this->asScalar();
-  const auto& storedType = s.type();
-
-  if (storedType != expectedType)
+  if (!std::holds_alternative<T>(s))
   {
     std::stringstream ss;
     yaml::internalPrintAsYAML(s, ss, {}, {});
-
     THROW_EXCEPTION_FMT(
-        "Trying to read parameter `%s` (value='%s') of type `%s` as if it "
-        "was `%s` and no obvious conversion found .",
-        proxiedMapEntryName_.c_str(), ss.str().c_str(), mrpt::demangle(storedType.name()).c_str(),
-        mrpt::demangle(expectedType.name()).c_str());
+        "asRef<T>(): scalar holds value '%s' of a different type than requested.",
+        ss.str().c_str());
   }
-
-  return *std::any_cast<T>(&s);
+  return std::get<T>(s);
 }
 
 template <typename T>
@@ -993,7 +1400,17 @@ void yaml::internalPushBack(const T& v)
 {
   ASSERT_(this->isSequence());
   sequence_t& seq = asSequence();
-  seq.emplace_back().d.emplace<scalar_t>().emplace<T>(v);
+  node_t& n = seq.emplace_back();
+  if constexpr (std::is_same_v<T, bool>)
+    n.d = scalar_t(v);
+  else if constexpr (std::is_integral_v<T> && std::is_signed_v<T>)
+    n.d = scalar_t(static_cast<int64_t>(v));
+  else if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>)
+    n.d = scalar_t(static_cast<uint64_t>(v));
+  else if constexpr (std::is_floating_point_v<T>)
+    n.d = scalar_t(static_cast<double>(v));
+  else
+    n.d = scalar_t(v);
 }
 
 template <typename YAML_NODE>
@@ -1039,7 +1456,7 @@ yaml yaml::FromYAMLCPP(const YAML_NODE& n)
       if (val.IsNull())
       {
         map_t& m = std::get<map_t>(ret.dereferenceProxy()->d);
-        m[key];
+        m.emplace_back(node_t(key), node_t{});
       }
       else if (val.IsScalar())
       {
@@ -1113,7 +1530,7 @@ void yaml::toMatrix(MATRIX& m) const
   ASSERT_EQUAL_(m.rows(), nRows);
 
   for (int r = 0, idx = 0; r < nRows; r++)
-    for (int c = 0; c < nCols; c++, idx++) m(r, c) = data.operator()(idx).as<entry_t>();
+    for (int c = 0; c < nCols; c++, idx++) m(r, c) = data[idx].as<entry_t>();
 }
 
 template <typename Scalar>
@@ -1129,108 +1546,178 @@ std::vector<Scalar> yaml::toStdVector() const
   return ret;
 }
 
-/** Sort operator required for std::map with node_t as key */
-inline bool operator<(const yaml::node_t& lhs, const yaml::node_t& rhs)
-{
-  const auto lStr = lhs.internalAsStr();
-  const auto rStr = rhs.internalAsStr();
-  return lStr < rStr;
-}
+}  // namespace mrpt::containers
 
+// Forward-declare implAnyAsGetter so it can be referenced below:
+namespace mrpt::containers::internal
+{
+template <typename T>
+T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s);
+}  // namespace mrpt::containers::internal
+
+namespace mrpt::containers
+{
+// node_t::as<T>() is defined here (after implAnyAsGetter is declared above):
+template <typename T>
+T yaml::node_t::as() const
+{
+  ASSERTMSG_(
+      std::holds_alternative<scalar_t>(d),
+      mrpt::format(
+          "Trying to use as() on a node of type `%s`, but only "
+          "available for `scalar` nodes.",
+          typeName().c_str()));
+  return internal::implAnyAsGetter<T>(std::get<scalar_t>(d));
+}
 }  // namespace mrpt::containers
 
 namespace mrpt::containers::internal
 {
+/** Helper: convert a scalar_t to its YAML text representation */
+inline std::string scalarToString(const mrpt::containers::yaml::scalar_t& s)
+{
+  return std::visit(
+      [](const auto& val) -> std::string
+      {
+        using V = std::decay_t<decltype(val)>;
+        if constexpr (std::is_same_v<V, std::monostate>)
+          return "~";
+        else if constexpr (std::is_same_v<V, bool>)
+          return val ? "true" : "false";
+        else if constexpr (std::is_same_v<V, int64_t>)
+          return std::to_string(val);
+        else if constexpr (std::is_same_v<V, uint64_t>)
+          return std::to_string(val);
+        else if constexpr (std::is_same_v<V, double>)
+        {
+          std::stringstream ss;
+          ss << mrpt::format("%.16g", val);
+          return ss.str();
+        }
+        else if constexpr (std::is_same_v<V, std::string>)
+          return val;
+        else
+          return "(yaml)";
+      },
+      s);
+}
+
 template <typename T>
 T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 {
-  const auto& expectedType = typeid(T);
-  const auto& storedType = s.type();
+  using yaml = mrpt::containers::yaml;
 
-  // 1) Exact match?
-  if (storedType == expectedType) return std::any_cast<const T&>(s);
+  // Null scalar: can only be converted to bool (false) or checked explicitly
+  if (std::holds_alternative<std::monostate>(s))
+  {
+    if constexpr (std::is_same_v<T, bool>) return false;
+    THROW_EXCEPTION("Trying to read a null (empty) scalar value");
+  }
 
-  // 2) bool:
+  // 1) Exact match (for types that ARE variant alternatives)
+  if constexpr (
+      std::is_same_v<T, bool> || std::is_same_v<T, int64_t> || std::is_same_v<T, uint64_t> ||
+      std::is_same_v<T, double> || std::is_same_v<T, std::string> ||
+      std::is_same_v<T, std::shared_ptr<yaml>>)
+  {
+    if (const auto* p = std::get_if<T>(&s); p != nullptr) return *p;
+  }
+
+  // 2) bool target (not already exact-matched above, so source is numeric or string)
   if constexpr (std::is_same_v<T, bool>)
   {
-    if (storedType == typeid(std::string))
-    {
-      const auto str = implAnyAsGetter<std::string>(s);
-      std::optional<int> intVal;
-
-      char* retStr = nullptr;
-      const long long ret = std::strtoll(str.c_str(), &retStr, 0 /*auto base*/);
-      if (retStr != 0 && retStr != str.c_str()) intVal = ret;
-
-      return str == "y" || str == "Y" || str == "yes" || str == "Yes" || str == "YES" ||
-             str == "true" || str == "True" || str == "TRUE" || str == "on" || str == "ON" ||
-             str == "On" || (intVal.has_value() && intVal.value() != 0);
-    }
+    return std::visit(
+        [](const auto& val) -> bool
+        {
+          using V = std::decay_t<decltype(val)>;
+          if constexpr (std::is_arithmetic_v<V> && !std::is_same_v<V, bool>)
+            return static_cast<bool>(val);
+          else if constexpr (std::is_same_v<V, std::string>)
+          {
+            const auto& str = val;
+            if (str == "y" || str == "Y" || str == "yes" || str == "Yes" || str == "YES" ||
+                str == "true" || str == "True" || str == "TRUE" || str == "on" || str == "ON" ||
+                str == "On")
+              return true;
+            if (str == "n" || str == "N" || str == "no" || str == "No" || str == "NO" ||
+                str == "false" || str == "False" || str == "FALSE" || str == "off" ||
+                str == "Off" || str == "OFF")
+              return false;
+            char* end = nullptr;
+            const long long iv = std::strtoll(str.c_str(), &end, 0);
+            if (end && end != str.c_str() && *end == '\0') return static_cast<bool>(iv != 0);
+            THROW_EXCEPTION_FMT("Cannot convert string '%s' to bool", str.c_str());
+          }
+          THROW_EXCEPTION("Cannot convert this scalar type to bool");
+        },
+        s);
   }
 
-  // 3) Recognize double/float:
+  // 3) Float/double target
   if constexpr (std::is_same_v<T, double> || std::is_same_v<T, float>)
   {
-    if (storedType == typeid(double))
-      return static_cast<T>(implAnyAsGetter<double>(s));
-    else if (storedType == typeid(float))
-      return static_cast<T>(implAnyAsGetter<float>(s));
-
-    std::stringstream ss;
-    yaml::internalPrintAsYAML(s, ss, {}, {});
-    T ret;
-    ss >> ret;
-    if (!ss.fail()) return ret;
+    return std::visit(
+        [](const auto& val) -> T
+        {
+          using V = std::decay_t<decltype(val)>;
+          if constexpr (std::is_arithmetic_v<V> && !std::is_same_v<V, std::monostate>)
+            return static_cast<T>(val);
+          else if constexpr (std::is_same_v<V, std::string>)
+          {
+            char* end = nullptr;
+            const double dv = std::strtod(val.c_str(), &end);
+            if (end && end != val.c_str() && *end == '\0') return static_cast<T>(dv);
+            THROW_EXCEPTION_FMT("Cannot convert string '%s' to float", val.c_str());
+          }
+          THROW_EXCEPTION("Cannot convert this scalar type to float");
+        },
+        s);
   }
 
-  // 4) Integers. Recognize hex or octal prefixes with strtol()
-  if constexpr (std::is_convertible_v<int, T>)
+  // 4) Integer targets (any integral type, signed or unsigned, any width)
+  if constexpr (std::is_integral_v<T> && !std::is_same_v<T, bool>)
   {
-    std::stringstream ss;
-    yaml::internalPrintAsYAML(s, ss, {}, {});
-    const std::string str = ss.str();
-
-    char* retStr = nullptr;
-    const long long ret = std::strtoll(str.c_str(), &retStr, 0 /*auto base*/);
-    if (retStr != 0 && retStr != str.c_str())
-    {
-      const auto minVal = static_cast<long long>(std::numeric_limits<T>::min());
-      auto maxVal = static_cast<long long>(std::numeric_limits<T>::max());
-      // Handle the case of unsigned long long:
-      if (maxVal < 0) maxVal = std::numeric_limits<long long>::max();
-
-      if ((ret == 0 && errno == ERANGE) || ret < minVal || ret > maxVal)
-      {
-        std::stringstream sError;
-        sError << "yaml: Out of range integer: '" << str << "' (Valid range [" << minVal << ","
-               << maxVal << "], parsed=" << ret;
-        if (errno == ERANGE) sError << " errno=ERANGE";
-        sError << "')";
-        THROW_EXCEPTION(sError.str());
-      }
-      return static_cast<T>(ret);
-    }
+    return std::visit(
+        [](const auto& val) -> T
+        {
+          using V = std::decay_t<decltype(val)>;
+          if constexpr (std::is_arithmetic_v<V> && !std::is_same_v<V, std::monostate>)
+          {
+            return static_cast<T>(val);
+          }
+          else if constexpr (std::is_same_v<V, std::string>)
+          {
+            char* end = nullptr;
+            errno = 0;
+            const long long iv = std::strtoll(val.c_str(), &end, 0);
+            if (end != nullptr && end != val.c_str() && errno != ERANGE)
+            {
+              const auto minVal = static_cast<long long>(std::numeric_limits<T>::min());
+              auto maxVal = static_cast<long long>(std::numeric_limits<T>::max());
+              if (maxVal < 0) maxVal = std::numeric_limits<long long>::max();
+              if (iv < minVal || iv > maxVal)
+                THROW_EXCEPTION_FMT(
+                    "yaml: integer '%lld' out of range for type (valid [%lld,%lld])", iv, minVal,
+                    maxVal);
+              return static_cast<T>(iv);
+            }
+            THROW_EXCEPTION_FMT("Cannot convert string '%s' to integer", val.c_str());
+          }
+          THROW_EXCEPTION("Cannot convert this scalar type to integer");
+        },
+        s);
   }
 
-  // 5) Strings:
-  if constexpr (std::is_convertible_v<std::string, T>)
+  // 5) std::string target: serialize via the print path
+  if constexpr (std::is_same_v<T, std::string>)
   {
-    if (expectedType == typeid(std::string))
-    {
-      std::stringstream ss;
-      yaml::internalPrintAsYAML(s, ss, {}, {});
-      return ss.str();
-    }
+    return scalarToString(s);
   }
 
-  // No known way to convert it:
-  std::stringstream ss;
-  yaml::internalPrintAsYAML(s, ss, {}, {});
+  // No known conversion:
   THROW_EXCEPTION_FMT(
-      "Trying to access scalar (value='%s') of type `%s` as if it was `%s` "
-      "and no obvious conversion found .",
-      ss.str().c_str(), mrpt::demangle(storedType.name()).c_str(),
-      mrpt::demangle(expectedType.name()).c_str());
+      "Trying to access scalar (value='%s') as type `%s` — no obvious conversion found.",
+      scalarToString(s).c_str(), mrpt::demangle(typeid(T).name()).c_str());
 }
 
 template <typename T>

@@ -240,9 +240,9 @@ bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
     auto lasers = root["lasers"];
     ASSERT_EQUAL_(lasers.size(), num_lasers);
 
-    for (auto it : lasers.asSequence())
+    for (const auto& it : lasers.asSequence())
     {
-      auto& item = it.asMap();
+      const mrpt::containers::yaml item(it);
 
       const auto id = item["laser_id"].as<unsigned int>();
       ASSERT_(id < num_lasers);
