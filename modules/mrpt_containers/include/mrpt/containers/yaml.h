@@ -878,6 +878,7 @@ class yaml_ref
   using map_t = yaml::map_t;
 
   yaml_ref() = delete;
+  yaml_ref(const yaml_ref&) = default;
   explicit yaml_ref(node_t& n) : node_(&n) {}
 
   // ── Implicit conversion to yaml (deep copy) ─────────────────────────────

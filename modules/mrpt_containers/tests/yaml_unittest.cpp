@@ -253,9 +253,9 @@ MRPT_TEST(yaml, nested)
   EXPECT_TRUE(p["PID"]["Kp"].isScalar());
 
   // empty() not valid for values:
-  EXPECT_THROW(p["PID"]["Ti"].empty(), std::exception);
-  EXPECT_THROW(p["PID"]["Ti"].has("xxx"), std::exception);
-  EXPECT_THROW(p["PID"]["Ti"]["xxx"].scalarType(), std::exception);
+  EXPECT_THROW((void)p["PID"]["Ti"].empty(), std::exception);
+  EXPECT_THROW((void)p["PID"]["Ti"].has("xxx"), std::exception);
+  EXPECT_THROW((void)p["PID"]["Ti"]["xxx"].scalarType(), std::exception);
 
   p["PID"]["Ti"].clear();
   EXPECT_TRUE(p["PID"]["Ti"].isNullNode());
@@ -709,9 +709,9 @@ MRPT_TEST(yaml, outOfRangeIntegers)
   p["N4"] = "65536";
 
   EXPECT_EQ(p["N1"].as<int>(), 1292889);
-  EXPECT_THROW(p["N2"].as<int>(), std::exception);
+  EXPECT_THROW((void)p["N2"].as<int>(), std::exception);
   EXPECT_EQ(p["N3"].as<uint16_t>(), 65535);
-  EXPECT_THROW(p["N4"].as<uint16_t>(), std::exception);
+  EXPECT_THROW((void)p["N4"].as<uint16_t>(), std::exception);
 }
 MRPT_TEST_END()
 
@@ -1002,7 +1002,7 @@ MRPT_TEST(yaml, integerConversions)
     EXPECT_EQ(p["b2"].as<int>(), 12345);
     EXPECT_EQ(p["b3"].as<int>(), 12345);
     EXPECT_EQ(p["b4"].as<int>(), 12345);
-    EXPECT_ANY_THROW(p["b5_bad"].as<int>());
+    EXPECT_ANY_THROW((void)p["b5_bad"].as<int>());
 
     p["c1"] = -12345;
     p["c2"] = "-12345";

@@ -523,8 +523,8 @@ void yaml::internalPrintDebugStructure(const node_t& p, std::ostream& o, unsigne
   if (p.isMap())
   {
     const std::string sInd2(indent, ' ');
-    const auto& m = std::get<map_t>(p.d);
-    for (const auto& kv : m)
+    const auto& mapData = std::get<map_t>(p.d);
+    for (const auto& kv : mapData)
     {
       o << sInd2 << "- Key:\n";
       internalPrintDebugStructure(kv.first, o, indent + 2);
