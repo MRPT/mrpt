@@ -145,7 +145,8 @@ For public member variables, use `.def_readwrite("name", &T::name)` or `.def_rea
 ## 6. Porting ROS 2 nodes
 
 For ROS 2 packages that previously depended on `mrpt_ros` (MRPT 2.x wrappers), see the
-porting guide at `doc/source/doxygen-docs/port_mrpt3.md` (section 19) for:
+"Porting ROS 2 nodes" section of the porting guide at
+`doc/source/doxygen-docs/port_mrpt3.md` for:
 
 - `package.xml` dependency renaming (`mrpt_lib*` → fine-grained `mrpt_<module>` packages)
 - `CMakeLists.txt` `find_package` and target renaming (`mrpt::<X>` → `mrpt::mrpt_<X>`)

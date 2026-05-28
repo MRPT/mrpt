@@ -1,49 +1,103 @@
 \page porting_mrpt3 Porting code from MRPT 2.x to MRPT 3.0
 
-# Porting guide: MRPT 2.x to MRPT 3.0
+# Porting guide: MRPT 2.x → MRPT 3.0
 
-This document describes all breaking changes in MRPT 3.0 and how to migrate
-existing code that was written against MRPT 2.x.
+This guide documents every breaking change in MRPT 3.0 and shows how to migrate
+code written against MRPT 2.x.
 
-## Why MRPT 3.0? — Advantages of the refactoring
+It is organized so that you read it top-to-bottom once, then use it as a
+reference:
 
-- **Modular colcon-based build**: Each MRPT module (`mrpt_core`, `mrpt_math`,
-  `mrpt_poses`, `mrpt_viz`, …) is an independent colcon package with its own
-  `CMakeLists.txt`. No ROS dependency is required — plain colcon is used as the
-  meta-build tool, enabling faster incremental builds and independent
-  versioning.
-- **Clean namespace separation**: The scene-graph / 3-D visualization API now
-  lives in `mrpt::viz`, while `mrpt::opengl` is reserved for low-level GPU
-  rendering internals (shaders, FBOs, textures). This makes the public API
-  surface smaller and easier to learn.
-- **Modern C++ API improvements**: output-reference parameters replaced by
-  `std::optional` returns, raw coordinate pairs replaced by `TPixelCoord`,
-  integer channel arguments replaced by `TImageChannels` enum, and more.
-- **Removed legacy / deprecated code**: octree rendering settings, sparse
-  matrices, old feature matching, `CColouredPointsMap`, and other rarely-used
-  APIs have been removed, reducing maintenance burden and binary size.
+- **[Why MRPT 3.0?](#why)** — rationale for the refactoring.
+- **[Migration checklist](#checklist)** — the fast path; start here.
+- **[Build system](#build)** — CMake packages, targets, and removed headers.
+- **[Namespaces & renames](#namespaces)** — `mrpt::opengl` → `mrpt::viz`.
+- **[Cross-cutting API patterns](#patterns)** — mechanical changes that recur
+  across many classes (return-by-value, `std::optional`, scoped enums,
+  coordinate/option aggregates). **Most edits fall under one of these four.**
+- **[Module-by-module changes](#modules)** — specifics that are not covered by a
+  generic pattern.
+- **[Removed APIs](#removed)** — a single lookup table.
+- **[Porting ROS 2 nodes](#ros)** — for downstream packages that used `mrpt_ros`.
+
+> **Conventions used below.** Code blocks are always labeled `// MRPT 2.x:`
+> (old) and `// MRPT 3.0:` (new). APIs marked *(deprecated)* still compile with
+> a warning; APIs marked *(removed)* do not exist anymore and must be changed.
+
+> **Note for Python users.** Pybind11 binding conventions live in the
+> repository `AGENTS.md`, not here. This guide covers the C++ API only.
 
 ---
 
-## 1. Build system changes
+<a name="why"></a>
+## Why MRPT 3.0? — Advantages of the refactoring
 
-### CMake package names
+- **Modular colcon-based build.** Each MRPT module (`mrpt_core`, `mrpt_math`,
+  `mrpt_poses`, `mrpt_viz`, …) is an independent colcon package with its own
+  `CMakeLists.txt`. No ROS dependency is required — plain colcon is the
+  meta-build tool — enabling faster incremental builds and independent
+  versioning.
+- **Clean namespace separation.** The scene-graph / 3-D visualization API now
+  lives in `mrpt::viz`, while `mrpt::opengl` is reserved for low-level GPU
+  rendering internals (shaders, FBOs, textures). This shrinks the public API
+  surface and makes it easier to learn.
+- **Modern C++ API.** Output-reference parameters replaced by `std::optional`
+  returns or return-by-value, raw coordinate pairs replaced by `TPixelCoord`,
+  integer channel arguments replaced by the `TImageChannels` enum, and scoped
+  `enum class` types throughout.
+- **Less legacy code.** Octree rendering settings, sparse matrices, old feature
+  matching, `CColouredPointsMap`, and other rarely-used APIs were removed,
+  reducing maintenance burden and binary size.
 
-The pattern `mrpt-<name>` is now `mrpt_<name>` (hyphens replaced by underscores):
+---
 
-- `find_package(mrpt-poses)` becomes `find_package(mrpt_poses)`
-- `find_package(mrpt-gui)` becomes `find_package(mrpt_gui)`
-- `find_package(mrpt-slam)` becomes `find_package(mrpt_slam)`
+<a name="checklist"></a>
+## Migration checklist
 
-### CMake target names
+A typical port touches these steps in order. Each links to its detailed
+section.
 
-The pattern `mrpt::<name>` is now `mrpt::mrpt_<name>`:
+1. **CMakeLists.txt** — rename `mrpt-foo` → `mrpt_foo` in `find_package`, and
+   `mrpt::foo` → `mrpt::mrpt_foo` in `target_link_libraries`. Optionally adopt
+   `mrpt_add_executable()`. See [Build system](#build).
+2. **Headers** — replace `#include <mrpt/opengl/Foo.h>` with
+   `#include <mrpt/viz/Foo.h>` for scene-graph classes; keep `mrpt/opengl/`
+   only for the low-level rendering classes. See [Namespaces](#namespaces).
+3. **Namespaces** — replace `mrpt::opengl::` → `mrpt::viz::` and `opengl::` →
+   `viz::` (including `using namespace`). See [Namespaces](#namespaces).
+4. **Class names** — `COpenGLScene` → `Scene`, `COpenGLViewport` → `Viewport`,
+   `CRenderizable` → `CVisualObject`. See [Namespaces](#namespaces).
+5. **Drawing calls** — convert `textOut(x, y, …)`, `line(x0, y0, x1, y1, …)`,
+   `filledRectangle(…)` to `TPixelCoord` / brace-init. See [§4 Coordinate &
+   option aggregates](#aggregates).
+6. **Output-reference calls** — replace `foo(out)` with `out = foo()` for the
+   modernized methods. See [§1 Return-by-value](#by-value).
+7. **`bool`-returning queries** — adopt the `std::optional` versions. See
+   [§2 std::optional](#optional).
+8. **Enum arguments** — replace integer/`bool` flags with the new scoped enums
+   and option structs. See [§3 Scoped enums](#enums).
+9. **Removed APIs** — delete or replace calls listed in [Removed APIs](#removed).
+10. **Build & iterate** — `colcon build --packages-up-to mrpt_<module>`, then
+    fix remaining errors.
 
-- `mrpt::poses` becomes `mrpt::mrpt_poses`
-- `mrpt::gui` becomes `mrpt::mrpt_gui`
-- `mrpt::slam` becomes `mrpt::mrpt_slam`
+---
 
-### Example CMakeLists.txt (MRPT 3.0)
+<a name="build"></a>
+## Build system
+
+### Package and target renaming
+
+The two mechanical rules cover almost all CMake edits:
+
+| MRPT 2.x | MRPT 3.0 |
+|---|---|
+| `find_package(mrpt-<X>)` | `find_package(mrpt_<X>)` |
+| `mrpt::<X>` (target) | `mrpt::mrpt_<X>` |
+
+Examples: `find_package(mrpt-poses)` → `find_package(mrpt_poses)`;
+`mrpt::gui` → `mrpt::mrpt_gui`; `mrpt::slam` → `mrpt::mrpt_slam`.
+
+### Example `CMakeLists.txt`
 
 ```cmake
 cmake_minimum_required(VERSION 3.16)
@@ -60,11 +114,15 @@ mrpt_add_executable(
 )
 ```
 
-### Header for examples base directory
+### Removed headers
 
-MRPT 2.x provided `<mrpt/examples_config.h>` which defined
-`MRPT_EXAMPLES_BASE_DIRECTORY`. In MRPT 3.0 this header no longer exists.
-Instead, define it as a compile definition in your CMakeLists.txt:
+| Removed header | Replacement |
+|---|---|
+| `<mrpt/opengl.h>` (catch-all) | Individual `<mrpt/viz/...>` headers |
+| `<mrpt/examples_config.h>` (`MRPT_EXAMPLES_BASE_DIRECTORY`) | CMake compile definition (below) |
+| `<mrpt/config.h>` | Module-specific config headers (e.g. from `mrpt_opengl`) |
+
+For the examples base directory, define it yourself:
 
 ```cmake
 add_compile_definitions(
@@ -73,45 +131,173 @@ add_compile_definitions(
 
 ---
 
-## 2. Namespace and header renames
+<a name="namespaces"></a>
+## Namespaces, headers & class renames
 
 ### `mrpt::opengl` → `mrpt::viz`
 
 The entire scene-graph API (3-D objects, scenes, viewports, cameras, stock
-objects) has moved from `mrpt::opengl` to `mrpt::viz`.
+objects) moved from `mrpt::opengl` to `mrpt::viz`:
 
-- `#include <mrpt/opengl/CPointCloud.h>` becomes `#include <mrpt/viz/CPointCloud.h>`
-- `#include <mrpt/opengl/Scene.h>` becomes `#include <mrpt/viz/Scene.h>`
-- `#include <mrpt/opengl/stock_objects.h>` becomes `#include <mrpt/viz/stock_objects.h>`
-- `mrpt::opengl::CPointCloud` becomes `mrpt::viz::CPointCloud`
-- `mrpt::opengl::Scene` becomes `mrpt::viz::Scene`
-- `opengl::stock_objects::CornerXYZ()` becomes `viz::stock_objects::CornerXYZ()`
+```cpp
+// MRPT 2.x:
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/Scene.h>
+mrpt::opengl::CPointCloud pc;
+opengl::stock_objects::CornerXYZ();
 
-**What stays in `mrpt::opengl`**: Only low-level GPU rendering internals:
-- `mrpt::opengl::CFBORender` — `#include <mrpt/opengl/CFBORender.h>`
-- `mrpt::opengl::Shader` — `#include <mrpt/opengl/Shader.h>`
-- `mrpt::opengl::Buffer` — `#include <mrpt/opengl/Buffer.h>`
-- `mrpt::opengl::Texture` — `#include <mrpt/opengl/Texture.h>`
-- `mrpt::opengl::DefaultShaders` — `#include <mrpt/opengl/DefaultShaders.h>`
-- `#include <mrpt/opengl/opengl_api.h>`
+// MRPT 3.0:
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/Scene.h>
+mrpt::viz::CPointCloud pc;
+viz::stock_objects::CornerXYZ();
+```
 
-### Catch-all header removed
+### What stays in `mrpt::opengl`
 
-The header `#include <mrpt/opengl.h>` no longer exists. Replace it with
-individual `#include <mrpt/viz/...>` headers for each class you use.
+Only low-level GPU rendering internals:
+
+| Class / header | Header |
+|---|---|
+| `mrpt::opengl::CFBORender` | `<mrpt/opengl/CFBORender.h>` |
+| `mrpt::opengl::Shader` | `<mrpt/opengl/Shader.h>` |
+| `mrpt::opengl::Buffer` | `<mrpt/opengl/Buffer.h>` |
+| `mrpt::opengl::Texture` | `<mrpt/opengl/Texture.h>` |
+| `mrpt::opengl::DefaultShaders` | `<mrpt/opengl/DefaultShaders.h>` |
+| (low-level GL API) | `<mrpt/opengl/opengl_api.h>` |
 
 ### Class renames
 
-- `COpenGLScene` becomes `mrpt::viz::Scene`
-- `COpenGLViewport` becomes `mrpt::viz::Viewport`
-- `CRenderizable` becomes `mrpt::viz::CVisualObject`
+| MRPT 2.x | MRPT 3.0 |
+|---|---|
+| `COpenGLScene` | `mrpt::viz::Scene` |
+| `COpenGLViewport` | `mrpt::viz::Viewport` |
+| `CRenderizable` | `mrpt::viz::CVisualObject` |
 
 ---
 
-## 3. `TPixelCoord` for drawing functions
+<a name="patterns"></a>
+## Cross-cutting API patterns
 
-All `CCanvas` / `CImage` drawing methods that previously took separate
-`int x, int y` parameters now take a single `TPixelCoord{x, y}` struct.
+Four mechanical patterns account for most non-rename edits. Learn each rule
+once, then apply it to every affected API listed.
+
+<a name="by-value"></a>
+### 1. Output-reference parameters → return-by-value
+
+Methods that wrote a result into an output reference now **return it**. The
+out-parameter overloads are kept as *deprecated* wrappers where noted.
+
+**Rule:** `obj.foo(out);` → `auto out = obj.foo();`
+
+```cpp
+// MRPT 2.x (deprecated):
+mrpt::poses::CPose3D pose;
+obs->getSensorPose(pose);
+mrpt::math::CMatrixDouble44 HM;
+pose.getHomogeneousMatrix(HM);
+
+// MRPT 3.0:
+auto pose = obs->getSensorPose();
+auto HM   = pose.getHomogeneousMatrix();
+```
+
+Affected APIs:
+
+| API | MRPT 3.0 form |
+|---|---|
+| `CObservation::getSensorPose(CPose3D&)` | `CPose3D getSensorPose()` — now `virtual`, overridden by all concrete observations |
+| `CPose3D/CPose2D/CPose3DQuat::getHomogeneousMatrix(M)` | returns the matrix |
+| `CPose3D::getRotationMatrix(M)` | returns the matrix |
+| `CPoseRandomSampler::getOriginalPDFCov2D(cov)` | `cov = getOriginalPDFCov2D()` (also `getOriginalPDFCov3D()`) |
+| `CPose3DPDFGaussian::getCovSubmatrix2D(out)` | returns the submatrix |
+| `CAngularObservationMesh::generateSetOfTriangles(tris)` | returns the triangles |
+| `CAngularObservationMesh::getTracedRays(rays)` | returns the rays |
+| `CAngularObservationMesh::getUntracedRays(rays, dist)` | `getUntracedRays(dist)` |
+| `CGasConcentrationGridMap2D::getWindAs3DObject(obj)` | returns the object |
+| `circular_buffer::pop(val)` | `val = pop()` |
+| `CRejectionSamplingCapable::rejectionSampling(N, out, M)` | `out = rejectionSampling(N, M)` |
+
+<a name="optional"></a>
+### 2. `bool` + out-param → `std::optional`
+
+Queries that returned `bool` and wrote to an out-reference now return
+`std::optional<T>`.
+
+**Rule:** `if (obj.foo(out)) {…}` → `if (auto r = obj.foo()) { /* use *r */ }`
+
+```cpp
+// MRPT 2.x:
+mrpt::math::TLine3D ray;
+bool ok = vp->get3DRayForPixelCoord(x, y, ray);
+
+// MRPT 3.0:
+auto ray = vp->get3DRayForPixelCoord({x, y});
+if (ray.has_value()) { /* use *ray */ }
+```
+
+Affected APIs:
+
+- `CDisplayWindow3D` / viewport `get3DRayForPixelCoord(x, y, ray)` →
+  `get3DRayForPixelCoord({x, y})` (note: also adopts `TPixelCoord`, see
+  [§4](#aggregates)).
+- Hardware grabbers: `getObservation(obs)` *(deprecated)* → `grabFrame()`
+  returning `std::optional<T>`. Affects `CImageGrabber_OpenCV`,
+  `CImageGrabber_dc1394`, `CMyntEyeCamera`, `CFFMPEG_InputStream` (→
+  `std::optional<CImage>`), `CEnoseModular`, `CWirelessPower`.
+
+```cpp
+// MRPT 2.x (deprecated):
+mrpt::obs::CObservationImage obs;
+bool ok = camera.getObservation(obs);
+
+// MRPT 3.0:
+auto obs_opt = camera.grabFrame();
+if (obs_opt) { /* use *obs_opt */ }
+```
+
+<a name="enums"></a>
+### 3. Scoped `enum class` replacements
+
+Integer / `bool` flag arguments became scoped enums. Old enumerator names that
+still compile are noted.
+
+```cpp
+// MRPT 2.x:
+iface.stop(true);                       // isEmergencyStop
+map.savePCDFile("out.pcd", true);       // binary
+if (e == CRawlog::etSensoryFrame) {}
+
+// MRPT 3.0:
+iface.stop(mrpt::nav::StopType::Emergency);   // or ::Normal
+map.savePCDFile("out.pcd", mrpt::maps::PCDFormat::Binary);   // or ::ASCII
+if (e == CRawlog::TEntryType::etSensoryFrame) {}
+```
+
+`CParticleFilter` algorithm/resampling enums are now `enum class` with
+PascalCase names; the old `pf*` / `pr*` names remain as `static constexpr`
+aliases but the new names are preferred:
+
+| Old name (still valid) | New name |
+|---|---|
+| `CParticleFilter::pfStandardProposal` | `TParticleFilterAlgorithm::StandardProposal` |
+| `CParticleFilter::pfAuxiliaryPFStandard` | `TParticleFilterAlgorithm::AuxiliaryPFStandard` |
+| `CParticleFilter::pfOptimalProposal` | `TParticleFilterAlgorithm::OptimalProposal` |
+| `CParticleFilter::pfAuxiliaryPFOptimal` | `TParticleFilterAlgorithm::AuxiliaryPFOptimal` |
+| `CParticleFilter::prMultinomial` | `TParticleResamplingAlgorithm::Multinomial` |
+| `CParticleFilter::prResidual` | `TParticleResamplingAlgorithm::Residual` |
+| `CParticleFilter::prStratified` | `TParticleResamplingAlgorithm::Stratified` |
+| `CParticleFilter::prSystematic` | `TParticleResamplingAlgorithm::Systematic` |
+
+(New names are nested under `CParticleFilter::`.)
+
+<a name="aggregates"></a>
+### 4. Coordinate & option aggregates
+
+Multiple scalar arguments were grouped into small structs (brace-init friendly)
+or option structs.
+
+**Pixel coordinates** — `CCanvas` / `CImage` drawing methods take `TPixelCoord`:
 
 ```cpp
 // MRPT 2.x:
@@ -125,70 +311,95 @@ img.line({x0, y0}, {x1, y1}, TColor::red());
 img.filledRectangle({0, 0}, {w, h}, TColor::black());
 ```
 
-This also applies to `CDisplayWindow3D::get3DRayForPixelCoord()`:
+**3-D points** — `CArrow::Create` takes `TPoint3Df` endpoints:
 
 ```cpp
 // MRPT 2.x:
-viewport->get3DRayForPixelCoord(x, y, ray);
-
+auto a = CArrow::Create(x0, y0, z0, x1, y1, z1, headRatio, smallR, largeR);
 // MRPT 3.0:
-auto ray_opt = viewport->get3DRayForPixelCoord({x, y});
-if (ray_opt.has_value()) { auto& ray = ray_opt.value(); ... }
+auto a = CArrow::Create({x0, y0, z0}, {x1, y1, z1}, headRatio, smallR, largeR);
 ```
 
----
-
-## 4. `std::optional` return types
-
-Several methods that previously returned `bool` and wrote to an output
-reference now return `std::optional<T>`:
+**Option structs** — boolean argument lists became named-field structs:
 
 ```cpp
 // MRPT 2.x:
-mrpt::math::TLine3D ray;
-bool ok = vp->get3DRayForPixelCoord(x, y, ray);
-
+mrpt::math::vectorToTextFile(v, "file.txt", false, true);  // append, byRows
 // MRPT 3.0:
-auto ray = vp->get3DRayForPixelCoord({x, y});
-if (ray.has_value()) { /* use *ray */ }
+mrpt::math::VectorTextFileOptions opts;
+opts.append = false;
+opts.byRows = true;
+mrpt::math::vectorToTextFile(v, "file.txt", opts);
 ```
+
+See also `COccupancyGridMap2D::getAsImage` (`TGetAsImageParams`) and
+`computeClearance` (struct return) in [§ mrpt_maps](#maps).
 
 ---
 
-## 5. `CImage::loadFromFile` channel argument
+<a name="modules"></a>
+## Module-by-module changes
 
-The second argument to `CImage::loadFromFile()` changed from `int` to the
-`TImageChannels` enum:
+Changes below are not covered by a generic pattern and need per-API attention.
+
+### mrpt_img
+
+**`CImage::loadFromFile` channel argument** — `int` → `TImageChannels` enum:
 
 ```cpp
 // MRPT 2.x:
 img.loadFromFile("file.png", 0);   // 0 = grayscale
-
 // MRPT 3.0:
 img.loadFromFile("file.png", mrpt::img::CH_GRAY);
 // Other values: CH_RGB, CH_RGBA, CH_AS_IS
 ```
 
----
-
-## 6. `CImage::operator()` removed
-
-The pixel-access `operator()` has been removed. Use `ptr<T>()` instead:
+**`CImage::operator()` removed** — use `ptr<T>()`:
 
 ```cpp
 // MRPT 2.x:
 *img(x, y) = 128;
-
 // MRPT 3.0:
 *img.ptr<uint8_t>(x, y) = 128;
 ```
 
----
+**`CVideoFileWriter` moved** from `mrpt::vision` to `mrpt::img`
+(`<mrpt/img/CVideoFileWriter.h>`). It no longer supports MP4 — only simpler AVI
+formats — but is self-contained without external libraries.
 
-## 7. `CDisplayWindow3D` changes
+### mrpt_viz / mrpt_opengl
 
-The camera-control methods on `CDisplayWindow3D` remain, but the
-`CFBORender::getCamera(scene)` method has been replaced:
+**`TLightParameters` multi-light API** — the single directional light
+(flat `direction`/`diffuse`/`specular`/`color` fields) is replaced by a
+`std::vector<TLight> lights` supporting up to 8 simultaneous lights of type
+`TLightType::Directional`, `Point`, or `Spot`:
+
+```cpp
+// MRPT 2.x:
+auto& lp = viewport->lightParameters();
+lp.direction = {-0.4f, -0.4f, -0.8f};
+lp.diffuse   = 0.8f;
+lp.specular  = 0.95f;
+lp.color     = {1.0f, 1.0f, 1.0f};
+
+// MRPT 3.0:
+auto& lp = viewport->lightParameters();
+lp.lights[0].direction = {-0.4f, -0.4f, -0.8f};   // the default directional light
+lp.lights[0].diffuse   = 0.8f;
+lp.lights[0].specular  = 0.95f;
+lp.lights[0].color     = {1.0f, 1.0f, 1.0f};
+
+// Add a point light:
+lp.lights.push_back(mrpt::viz::TLight::PointLight(
+    {5.0f, 0.0f, 3.0f},   // position
+    {1.0f, 0.9f, 0.8f})); // color
+```
+
+The global `ambient` field stays on `TLightParameters`. Shadow mapping still
+applies only to the first directional light.
+
+**`CFBORender` camera** — `getCamera(scene)` *(removed)* is replaced by
+`setCamera()` / `getCameraOverride()`:
 
 ```cpp
 // MRPT 2.x:
@@ -202,370 +413,225 @@ render.setCamera(cam);
 // To read back: render.getCameraOverride()
 ```
 
----
+`CArrow` constructor changes are under [§4 aggregates](#aggregates).
 
-## 8. `CArrow` constructor
+<a name="maps"></a>
+### mrpt_maps — `COccupancyGridMap2D`
 
-`CArrow` now takes `TPoint3Df` arguments instead of 6 separate floats:
+**Voronoi spelling fixes:**
+- `getVoroniClearance()` → `getVoronoiClearance()`
+- `setVoroniClearance()` → `setVoronoiClearance()` (now `protected`)
+- member `voroni_free_threshold` → `m_voronoiFreeThreshold` (`protected`)
 
-```cpp
-// MRPT 2.x:
-auto arrow = CArrow::Create(x0, y0, z0, x1, y1, z1, headRatio, smallR, largeR);
+**Cell-size compile-time switch removed.** The
+`OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS` / `_16BITS` macros and the CMake option
+`MRPT_OCCUPANCY_GRID_CELLSIZE` are gone; `cellType` is always `int8_t`. Old
+8-bit and 16-bit serialized streams (v0–v6) remain readable.
 
-// MRPT 3.0:
-auto arrow = CArrow::Create({x0, y0, z0}, {x1, y1, z1}, headRatio, smallR, largeR);
-```
-
----
-
-## 9. Removed APIs
-
-The following APIs have been removed in MRPT 3.0 with no direct replacement:
-
-- `mrpt::vision` — Removed (except a few classes moved to mrpt::img, see next point); will move computer vision features to a new package `mola_vision`.
-- `mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL` — Octree rendering settings removed.
-- `mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE` — Octree rendering settings removed.
-- `CPointCloud::octree_get_graphics_boundingboxes()` — Octree API removed.
-- `CPointCloud::getActuallyRendered()` — Octree API removed.
-- `CPointCloud::octree_get_visible_nodes()` — Octree API removed.
-- `CPointCloud::octree_get_node_count()` — Octree API removed.
-- `mrpt::maps::CColouredPointsMap` — Use `CSimplePointsMap` or `CPointsMapXYZI`.
-- `mrpt::math::CSparseMatrix` — Removed; use Eigen sparse matrices.
-- `CLandmarksMap::insertionOptions` / `likelihoodOptions` — Removed.
-- `#include <mrpt/opengl.h>` — Catch-all header removed.
-- `#include <mrpt/examples_config.h>` — Use CMake compile definition instead.
-- `#include <mrpt/config.h>` — Use module-specific config headers (e.g. from mrpt_opengl).
-
----
-
-## 10. `TLightParameters` multi-light API
-
-`TLightParameters` no longer stores a single directional light via flat fields
-(`direction`, `diffuse`, `specular`, `color`). Instead it holds a `std::vector<TLight> lights`
-supporting up to 8 simultaneous lights of three types: `TLightType::Directional`,
-`TLightType::Point`, and `TLightType::Spot`.
-
-**Before (MRPT 2.x):**
-```cpp
-auto& lp = viewport->lightParameters();
-lp.direction = {-0.4f, -0.4f, -0.8f};
-lp.diffuse   = 0.8f;
-lp.specular  = 0.95f;
-lp.color     = {1.0f, 1.0f, 1.0f};
-```
-
-**After (MRPT 3.0):**
-```cpp
-auto& lp = viewport->lightParameters();
-// Access the default directional light:
-lp.lights[0].direction = {-0.4f, -0.4f, -0.8f};
-lp.lights[0].diffuse   = 0.8f;
-lp.lights[0].specular  = 0.95f;
-lp.lights[0].color     = {1.0f, 1.0f, 1.0f};
-
-// Add a point light:
-lp.lights.push_back(mrpt::viz::TLight::PointLight(
-    {5.0f, 0.0f, 3.0f},  // position
-    {1.0f, 0.9f, 0.8f}   // color
-));
-```
-
-The global `ambient` field remains on `TLightParameters`. Shadow mapping
-continues to apply only to the first directional light.
-
----
-
-## 11. Moved classes/functions
-
-- `mrpt::vision::CVideoFileWriter.h` becomes `mrpt::img::CVideoFileWriter.h`. It no longer supports MP4, only simpler AVI formats, but it is selfcontained without external libraries.
-- `mrpt::hwdrivers::prepareVideoSourceFromUserSelection()` becomes `mrpt::apps::prepareVideoSourceFromUserSelection()` (header: `<mrpt/apps_gui/CameraSelectionGUI.h>`).
-
-When using this function, add `mrpt_libapps_gui` to your CMake dependencies.
-
----
-
-## 12. Return-by-value API modernization
-
-### `CObservation::getSensorPose()`
-
-The primary API is now return-by-value:
-
-```cpp
-// MRPT 2.x / deprecated:
-mrpt::poses::CPose3D pose;
-obs->getSensorPose(pose);
-
-// MRPT 3.0:
-mrpt::poses::CPose3D pose = obs->getSensorPose();
-```
-
-All concrete observation classes (`CObservation2DRangeScan`, `CObservation3DRangeScan`, etc.)
-now override `CPose3D getSensorPose() const` instead of `void getSensorPose(CPose3D&) const`.
-The out-param overload is kept as a deprecated non-virtual wrapper for backwards compatibility.
-
-### Pose homogeneous matrix accessors
-
-`getHomogeneousMatrix()` now returns by value on all pose types:
-
-```cpp
-// MRPT 2.x / deprecated:
-mrpt::math::CMatrixDouble44 HM;
-pose.getHomogeneousMatrix(HM);
-
-// MRPT 3.0:
-auto HM = pose.getHomogeneousMatrix();
-```
-
-Same pattern for `CPose3D::getRotationMatrix()`, `CPose2D::getHomogeneousMatrix()`,
-`CPose3DQuat::getHomogeneousMatrix()`.
-
-### `CPoseRandomSampler` covariance accessors
-
-```cpp
-// MRPT 2.x / deprecated:
-mrpt::math::CMatrixDouble33 cov;
-sampler.getOriginalPDFCov2D(cov);
-
-// MRPT 3.0:
-auto cov = sampler.getOriginalPDFCov2D();
-auto cov6 = sampler.getOriginalPDFCov3D();
-```
-
-### `CPose3DPDFGaussian::getCovSubmatrix2D()`
-
-```cpp
-// MRPT 2.x / deprecated:
-mrpt::math::CMatrixDouble out;
-pdfGauss.getCovSubmatrix2D(out);
-
-// MRPT 3.0:
-auto out = pdfGauss.getCovSubmatrix2D();
-```
-
-### `CAngularObservationMesh` accessors
-
-```cpp
-// MRPT 2.x / deprecated:
-mrpt::viz::CSetOfTriangles::Ptr tris;
-mesh.generateSetOfTriangles(tris);
-mrpt::viz::CSetOfLines::Ptr rays;
-mesh.getTracedRays(rays);
-mesh.getUntracedRays(rays, dist);
-
-// MRPT 3.0:
-auto tris = mesh.generateSetOfTriangles();
-auto rays = mesh.getTracedRays();
-auto rays2 = mesh.getUntracedRays(dist);
-```
-
-### `CGasConcentrationGridMap2D::getWindAs3DObject()`
-
-```cpp
-// MRPT 2.x / deprecated:
-mrpt::viz::CSetOfObjects::Ptr obj;
-gasMap.getWindAs3DObject(obj);
-
-// MRPT 3.0:
-auto obj = gasMap.getWindAs3DObject();
-```
-
-### Hardware driver grabbers
-
-`getObservation()` is deprecated in favour of `grabFrame()` which returns `std::optional<T>`:
-
-```cpp
-// MRPT 2.x / deprecated:
-mrpt::obs::CObservationImage obs;
-bool ok = camera.getObservation(obs);
-
-// MRPT 3.0:
-auto obs_opt = camera.grabFrame();
-if (obs_opt) { /* use *obs_opt */ }
-```
-
-Affected classes: `CImageGrabber_OpenCV`, `CImageGrabber_dc1394`, `CMyntEyeCamera`,
-`CFFMPEG_InputStream` (uses `grabFrame()` returning `std::optional<CImage>`),
-`CEnoseModular`, `CWirelessPower`.
-
-### `circular_buffer::pop()`
-
-```cpp
-// MRPT 2.x / deprecated:
-T val;
-buf.pop(val);
-
-// MRPT 3.0:
-T val = buf.pop();
-```
-
----
-
-## 13. Scoped enum replacements
-
-### `CRobot2NavInterface::stop()` — `StopType` enum
-
-```cpp
-// MRPT 2.x / deprecated:
-iface.stop(true);   // isEmergencyStop=true
-
-// MRPT 3.0:
-iface.stop(mrpt::nav::StopType::Emergency);
-iface.stop(mrpt::nav::StopType::Normal);
-```
-
-### `CPointsMap::savePCDFile()` — `PCDFormat` enum
-
-```cpp
-// MRPT 2.x / deprecated:
-map.savePCDFile("out.pcd", true);   // binary=true
-
-// MRPT 3.0:
-map.savePCDFile("out.pcd", mrpt::maps::PCDFormat::Binary);
-map.savePCDFile("out.pcd", mrpt::maps::PCDFormat::ASCII);
-```
-
-### `vectorToTextFile()` — `VectorTextFileOptions` struct
-
-```cpp
-// MRPT 2.x / deprecated:
-mrpt::math::vectorToTextFile(v, "file.txt", false, true);  // append=false, byRows=true
-
-// MRPT 3.0:
-mrpt::math::VectorTextFileOptions opts;
-opts.append = false;
-opts.byRows = true;
-mrpt::math::vectorToTextFile(v, "file.txt", opts);
-```
-
-### `CRawlog::TEntryType` — scoped enum
+**`computeClearance` returns a struct:**
 
 ```cpp
 // MRPT 2.x:
-if (entry_type == CRawlog::etSensoryFrame) { ... }
-
+int basis_x[2], basis_y[2], nBasis;
+int clearance = grid.computeClearance(cx, cy, basis_x, basis_y, &nBasis);
 // MRPT 3.0:
-if (entry_type == CRawlog::TEntryType::etSensoryFrame) { ... }
+auto res = grid.computeClearance(cx, cy);
+// res.clearance, res.nBasis, res.basisX[0/1], res.basisY[0/1]
 ```
 
----
-
-## 14. Step-by-step migration checklist
-
-1. **CMakeLists.txt**: Replace `mrpt-foo` → `mrpt_foo` in `find_package` calls,
-   and `mrpt::foo` → `mrpt::mrpt_foo` in `target_link_libraries`.
-   Optionally, add `find_package(mrpt_common REQUIRED)` and use `mrpt_add_executable()`.
-
-2. **Headers**: Replace `#include <mrpt/opengl/Foo.h>` →
-   `#include <mrpt/viz/Foo.h>` for all scene-graph classes. Keep
-   `mrpt/opengl/` only for `CFBORender`, `Shader`, `Buffer`, `Texture`,
-   `DefaultShaders`, `opengl_api.h`.
-
-3. **Namespaces**: Replace `mrpt::opengl::` → `mrpt::viz::` and
-   `opengl::` → `viz::` (including `using namespace` declarations).
-
-4. **Class names**: `COpenGLScene` → `Scene`, `COpenGLViewport` → `Viewport`,
-   `CRenderizable` → `CVisualObject`.
-
-5. **Drawing functions**: Convert `textOut(x, y, ...)`, `line(x0, y0, x1, y1, ...)`,
-   `filledRectangle(x0, y0, x1, y1, ...)` to use `TPixelCoord` / brace-init.
-
-6. **`CImage::loadFromFile`**: Replace integer channel args with `TImageChannels` enum.
-
-7. **`CFBORender`**: Replace `getCamera(scene)` with `setCamera()` /
-   `getCameraOverride()`.
-
-8. **Remove calls** to deleted `global_settings::OCTREE_*`, octree query
-   methods, `matchFeatures`, and other removed APIs.
-
-9. **`prepareVideoSourceFromUserSelection`**: Move from `mrpt::hwdrivers` to
-   `mrpt::apps`, add `mrpt_libapps_gui` dependency.
-
-10. **Build and iterate**: Use `colcon build --packages-up-to mrpt_<module>`
-    to build incrementally and fix remaining issues.
-
----
-
-## 15. `CParticleFilter` enum class migration
-
-`TParticleFilterAlgorithm` and `TParticleResamplingAlgorithm` are now
-`enum class` with new PascalCase value names. The old names remain as
-`static constexpr` aliases for source compatibility, but prefer the new names:
-
-**Algorithm enum:**
-
-| Old name (still valid) | New name |
-|---|---|
-| `CParticleFilter::pfStandardProposal` | `CParticleFilter::TParticleFilterAlgorithm::StandardProposal` |
-| `CParticleFilter::pfAuxiliaryPFStandard` | `CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFStandard` |
-| `CParticleFilter::pfOptimalProposal` | `CParticleFilter::TParticleFilterAlgorithm::OptimalProposal` |
-| `CParticleFilter::pfAuxiliaryPFOptimal` | `CParticleFilter::TParticleFilterAlgorithm::AuxiliaryPFOptimal` |
-
-**Resampling enum:**
-
-| Old name (still valid) | New name |
-|---|---|
-| `CParticleFilter::prMultinomial` | `CParticleFilter::TParticleResamplingAlgorithm::Multinomial` |
-| `CParticleFilter::prResidual` | `CParticleFilter::TParticleResamplingAlgorithm::Residual` |
-| `CParticleFilter::prStratified` | `CParticleFilter::TParticleResamplingAlgorithm::Stratified` |
-| `CParticleFilter::prSystematic` | `CParticleFilter::TParticleResamplingAlgorithm::Systematic` |
-
----
-
-## 16. `CRejectionSamplingCapable::rejectionSampling` return by value
-
-`rejectionSampling` previously wrote into an output `std::vector<TParticle>&`
-parameter. It now returns the vector:
+**`computeLikelihoodField_Thrun` / `_II` signatures** take a reference and an
+optional pose:
 
 ```cpp
-// MRPT 2.x / deprecated:
-std::vector<TParticle> samples;
-sampler.rejectionSampling(200, samples, 1000);
-
+// MRPT 2.x:
+double lk = grid.computeLikelihoodField_Thrun(pPointsMap, &pose);
+double lk = grid.computeLikelihoodField_Thrun(pPointsMap, nullptr);
 // MRPT 3.0:
-auto samples = sampler.rejectionSampling(200, 1000);
+double lk = grid.computeLikelihoodField_Thrun(*pPointsMap, pose);
+double lk = grid.computeLikelihoodField_Thrun(*pPointsMap);   // no pose
 ```
 
----
-
-## 17. `CParticleFilterCapable::TParticleProbabilityEvaluator` is now `std::function`
-
-The callback type used in `prepareFastDrawSample` changed from a raw function
-pointer to `std::function`. Existing code that passes a plain function pointer
-or a static member function pointer continues to work unchanged. Lambdas and
-functors can now be passed directly without wrapping.
-
----
-
-## 18. `CKalmanFilterCapable`: `OnSubstractObservationVectors` renamed
-
-The virtual method `OnSubstractObservationVectors` ("substract" is a misspelling)
-has been renamed to `OnSubtractObservationVectors`. The old name is kept as a
-deprecated trampoline:
+**`saveAsBitmapTwoMapsWithCorrespondences`** takes const references, not
+pointers:
 
 ```cpp
-// MRPT 2.x (still compiles with a deprecation warning):
-void MyKF::OnSubstractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override { ... }
-
+// MRPT 2.x:
+COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(file, &m1, &m2, corrs);
 // MRPT 3.0:
-void MyKF::OnSubtractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override { ... }
+COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(file, m1, m2, corrs);
 ```
+
+**Ray-trace step size** moved from a global static to a per-instance option:
+
+```cpp
+// MRPT 2.x:
+COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS = 0.5;
+// MRPT 3.0:
+grid.insertionOptions.raytraceStepSizeInCellUnits = 0.5;
+```
+
+**Critical points** — struct-of-arrays → array-of-structs (const accessor):
+
+```cpp
+// MRPT 2.x (public member):
+grid.CriticalPointsList.x[i], .y[i], .clearance[i]
+// MRPT 3.0 (const accessor):
+for (const auto& cp : grid.criticalPoints()) {
+    // cp.x, cp.y, cp.clearance
+}
+```
+
+**`getAsImage`** takes an options struct:
+
+```cpp
+// MRPT 2.x:
+grid.getAsImage(img, /*verticalFlip=*/false, /*forceRGB=*/false, /*tricolor=*/true);
+// MRPT 3.0:
+COccupancyGridMap2D::TGetAsImageParams p;
+p.tricolor = true;
+grid.getAsImage(img, p);
+grid.getAsImage(img);   // zero-argument form still works
+```
+
+**Privatized members.** `updateInfoChangeOnly` and `likelihoodOutputs` (public
+mutable in/out channels in 2.x) are renamed `m_updateInfoChangeOnly` /
+`m_likelihoodOutputs` and moved to `protected`. External code that read them
+must use `computeObservationLikelihood()` instead.
+
+### mrpt_bayes
+
+**`CKalmanFilterCapable::OnSubstractObservationVectors` renamed** (typo fix) to
+`OnSubtractObservationVectors`. The old name is a deprecated trampoline:
+
+```cpp
+// MRPT 2.x (compiles with deprecation warning):
+void MyKF::OnSubstractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override;
+// MRPT 3.0:
+void MyKF::OnSubtractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const override;
+```
+
+**`TKF_options::use_joseph_form` (new option, default `true`)** controls whether
+the `kfEKFNaive` / `kfIKFFull` covariance update uses the numerically stable
+Joseph form `P' = (I-KH)·P·(I-KH)ᵀ + K·R·Kᵀ` instead of the classic
+`P' = (I-KH)·P`. Set to `false` for slightly faster but less robust updates.
+
+**`CParticleFilterCapable::TParticleProbabilityEvaluator` is now
+`std::function`.** Existing plain or static-member function pointers still work
+unchanged; lambdas and functors can now be passed directly without wrapping.
+
+Particle-filter enum migration is under [§3 scoped enums](#enums); rejection
+sampling is under [§1 return-by-value](#by-value).
+
+### mrpt_hwdrivers
+
+**`prepareVideoSourceFromUserSelection`** moved from `mrpt::hwdrivers` to
+`mrpt::apps` (header `<mrpt/apps_gui/CameraSelectionGUI.h>`). Add
+`mrpt_libapps_gui` to your CMake dependencies.
+
+Grabber `grabFrame()` changes are under [§2 std::optional](#optional).
+
+### mrpt_containers — `yaml`
+
+**`map_t` is now an insertion-order vector of pairs.** In 2.x `yaml::map_t` was
+`std::map<std::string, node_t>`; in 3.x it is
+`std::vector<std::pair<node_t, node_t>>`. **Do not call `std::map` methods on the
+raw `map_t` returned by `asMap()`** — use the high-level `yaml` API:
+
+```cpp
+// MRPT 2.x:
+const auto& m = node.asMap();
+if (m.count("key")) { ... }
+auto val = m.at("key").as<double>();
+// MRPT 3.0:
+if (node.has("key")) { ... }
+auto val = node["key"].as<double>();
+```
+
+When iterating a sequence and needing subscript access per element, wrap the
+`node_t` in a temporary `yaml`:
+
+```cpp
+// MRPT 2.x:
+for (auto& it : seq.asSequence()) {
+  auto& m = it.asMap();
+  auto v = m.at("field").as<double>();
+}
+// MRPT 3.0:
+for (const auto& it : seq.asSequence()) {
+  const mrpt::containers::yaml item(it);
+  auto v = item["field"].as<double>();
+}
+```
+
+**Assigning into a `sequence_t` slot.** `sequence_t` is `std::vector<node_t>`,
+so extract the underlying `node_t` with `.node()`:
+
+```cpp
+// MRPT 2.x:
+seq.asSequence().at(i) = std::move(myYaml);
+// MRPT 3.0:
+seq.asSequence().at(i) = std::move(myYaml.node());
+```
+
+To append, use `yaml::push_back(const yaml&)` on the owning `yaml`:
+
+```cpp
+// MRPT 2.x:
+d.asSequence().push_back(entry);   // ERROR: not defined on vector<node_t>
+// MRPT 3.0:
+d.push_back(entry);                // uses yaml::push_back(const yaml&)
+```
+
+**`yaml_ref` / `yaml_cref` proxy types.** `operator[]` on a non-`const yaml`
+returns a mutable `yaml_ref`; on a `const yaml` (or from subscripting a
+`yaml_ref`) it returns a read-only `yaml_cref`. Both forward `as<T>()`,
+`has()`, `size()`, `isMap()`, `isSequence()`, `isScalar()`, `toMatrix()`,
+`toStdVector<>()`, and `printAsYAML()`, and implicitly convert to `yaml` (deep
+copy) when needed. The proxies do **not** expose `internalPushBack` or raw
+`asMap()`/`asSequence()` mutation — call those on the owning `yaml` object or
+obtain a `yaml` copy first.
 
 ---
 
-## 19. Porting ROS 2 nodes from `mrpt_ros` (MRPT 2.x) to native MRPT 3.x
+<a name="removed"></a>
+## Removed APIs
 
-Starting with MRPT 3.0, the upstream [MRPT/mrpt](https://github.com/MRPT/mrpt) repository
-is itself a colcon-friendly multi-package workspace, so the `mrpt_ros` wrapper is no longer
-needed. Downstream ROS 2 packages should depend directly on the native `mrpt_<module>`
-packages shipped by MRPT 3.x.
+No direct replacement unless noted.
 
-> **Note:** The legacy `mrpt_ros` packages remain released on the ROS build farm for
-> already-released ROS distros, but no new features will land there. New downstream
-> releases should target MRPT 3.x directly.
+| Removed API | Notes / replacement |
+|---|---|
+| `mrpt::vision` | Removed (a few classes moved to `mrpt::img`); CV features will move to a new `mola_vision` package |
+| `mrpt::math::CSparseMatrix` | Use Eigen sparse matrices |
+| `mrpt::maps::CColouredPointsMap` | Use `CSimplePointsMap` or `CPointsMapXYZI` |
+| `CLandmarksMap::insertionOptions` / `likelihoodOptions` | Removed |
+| `global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL` | Octree rendering removed |
+| `global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE` | Octree rendering removed |
+| `CPointCloud::octree_get_graphics_boundingboxes()` | Octree API removed |
+| `CPointCloud::getActuallyRendered()` | Octree API removed |
+| `CPointCloud::octree_get_visible_nodes()` | Octree API removed |
+| `CPointCloud::octree_get_node_count()` | Octree API removed |
+| `#include <mrpt/opengl.h>` | Use individual `<mrpt/viz/...>` headers |
+| `#include <mrpt/examples_config.h>` | Use a CMake compile definition |
+| `#include <mrpt/config.h>` | Use module-specific config headers |
 
-### 19.1 `package.xml` — dependency renaming
+---
 
-Replace every `<depend>mrpt_lib*</depend>` with the fine-grained module(s) actually used:
+<a name="ros"></a>
+## Porting ROS 2 nodes from `mrpt_ros` (2.x) to native MRPT 3.x
+
+Starting with MRPT 3.0, the upstream [MRPT/mrpt](https://github.com/MRPT/mrpt)
+repository is itself a colcon-friendly multi-package workspace, so the
+`mrpt_ros` wrapper is no longer needed. Downstream ROS 2 packages should depend
+directly on the native `mrpt_<module>` packages shipped by MRPT 3.x.
+
+> **Note:** Legacy `mrpt_ros` packages remain released on the ROS build farm for
+> already-released ROS distros, but get no new features. New downstream releases
+> should target MRPT 3.x directly.
+
+### `package.xml` — dependency renaming
+
+Replace every `<depend>mrpt_lib*</depend>` with the fine-grained module(s)
+actually used:
 
 | `mrpt_ros` (2.x) | MRPT 3.x native packages |
 |---|---|
@@ -582,7 +648,7 @@ Replace every `<depend>mrpt_lib*</depend>` with the fine-grained module(s) actua
 | `mrpt_libapps`      | `mrpt_libapps_cli`, `mrpt_libapps_gui` |
 | `mrpt_apps`         | `mrpt_apps_cli` / `mrpt_apps_gui` |
 | `mrpt_libtclap`     | **Removed** — migrate to [CLI11](https://github.com/CLIUtils/CLI11) (`cli11-dev` / rosdep key `cli11`), `argparse`, or `cxxopts` |
-| `python_mrpt`       | **Removed** — each module now has its own pybind11 bindings |
+| `python_mrpt`       | **Removed** — each module has its own pybind11 bindings |
 
 Example `package.xml` diff:
 
@@ -600,10 +666,11 @@ Example `package.xml` diff:
  </package>
 ```
 
-### 19.2 `CMakeLists.txt` — `find_package` and target renaming
+### `CMakeLists.txt` — `find_package` and targets
 
-The CMake package names now use underscores and the exported targets are
-`mrpt::mrpt_<module>` (not `mrpt::<module>`):
+Same two mechanical rules as the [Build system](#build) section
+(`find_package(mrpt-<X>)` → `find_package(mrpt_<X>)`; `mrpt::<X>` →
+`mrpt::mrpt_<X>`):
 
 ```diff
 -find_package(mrpt-math   REQUIRED)
@@ -628,209 +695,25 @@ The CMake package names now use underscores and the exported targets are
  )
 ```
 
-The mechanical rules are:
-- `find_package(mrpt-<X>)` → `find_package(mrpt_<X>)`
-- `mrpt::<X>` → `mrpt::mrpt_<X>`
-
-### 19.3 Dropped: `mrpt-tclap` / `mrpt_libtclap`
+### Dropped: `mrpt-tclap` / `mrpt_libtclap`
 
 MRPT 3.x no longer vendors TCLAP. Code using
 `#include <mrpt/3rdparty/tclap/CmdLine.h>` must migrate to an external CLI
 library. The recommended replacement is **CLI11** (single-header, packaged as
-`libcli11-dev` on Ubuntu, rosdep key `cli11`).
-
-Minimal port sketch (TCLAP → CLI11):
+`libcli11-dev` on Ubuntu, rosdep key `cli11`):
 
 ```cpp
-// Before (TCLAP via the removed mrpt_libtclap):
+// MRPT 2.x (TCLAP via the removed mrpt_libtclap):
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 TCLAP::CmdLine cmd("my tool", ' ', "1.0");
 TCLAP::ValueArg<std::string> arg_in("i", "input", "input file", true, "", "file", cmd);
 cmd.parse(argc, argv);
 const std::string in = arg_in.getValue();
 
-// After (CLI11):
+// MRPT 3.0 (CLI11):
 #include <CLI/CLI.hpp>
 CLI::App app{"my tool"};
 std::string in;
 app.add_option("-i,--input", in, "input file")->required();
 CLI11_PARSE(app, argc, argv);
 ```
-
----
-
-## 20. `TKF_options::use_joseph_form` (new option)
-
-A new boolean `TKF_options::use_joseph_form` (default `true`) controls whether
-the kfEKFNaive / kfIKFFull covariance update uses the numerically stable
-Joseph form `P' = (I-KH)*P*(I-KH)^T + K*R*K^T` instead of the classic
-`P' = (I-KH)*P`. Set to `false` for slightly faster (but less robust) updates.
-
-
-
----
-
-## 21. `COccupancyGridMap2D` API modernization
-
-Several breaking changes were made to `mrpt::maps::COccupancyGridMap2D` for
-MRPT 3.x. Update callers as follows:
-
-### Voronoi spelling fixes
-- `getVoroniClearance()` → `getVoronoiClearance()`
-- `setVoroniClearance()` → `setVoronoiClearance()` (protected)
-- member `voroni_free_threshold` → `m_voronoiFreeThreshold` (protected)
-
-### Cell-size compile-time switch removed
-The `OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS` / `_16BITS` macros and the CMake
-option `MRPT_OCCUPANCY_GRID_CELLSIZE` have been removed. `cellType` is always
-`int8_t`. Old 8-bit and 16-bit serialized streams (v0–v6) remain readable.
-
-### `computeClearance` now returns a struct
-```cpp
-// Before:
-int basis_x[2], basis_y[2], nBasis;
-int clearance = grid.computeClearance(cx, cy, basis_x, basis_y, &nBasis);
-
-// After:
-auto res = grid.computeClearance(cx, cy);
-// res.clearance, res.nBasis, res.basisX[0/1], res.basisY[0/1]
-```
-
-### `computeLikelihoodField_Thrun` / `_II` signatures changed
-```cpp
-// Before:
-double lk = grid.computeLikelihoodField_Thrun(pPointsMap, &pose);
-double lk = grid.computeLikelihoodField_Thrun(pPointsMap, nullptr);
-
-// After:
-double lk = grid.computeLikelihoodField_Thrun(*pPointsMap, pose);
-double lk = grid.computeLikelihoodField_Thrun(*pPointsMap);  // no pose
-```
-
-### `saveAsBitmapTwoMapsWithCorrespondences` takes const references
-```cpp
-// Before:
-COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(file, &m1, &m2, corrs);
-
-// After:
-COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(file, m1, m2, corrs);
-```
-
-### Ray-trace step size moved from global static to per-instance option
-```cpp
-// Before:
-COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS = 0.5;
-
-// After:
-grid.insertionOptions.raytraceStepSizeInCellUnits = 0.5;
-```
-
-### Critical points: struct-of-arrays replaced by array-of-structs
-```cpp
-// Before (public member):
-grid.CriticalPointsList.x[i], .y[i], .clearance[i]
-
-// After (const accessor):
-for (const auto& cp : grid.criticalPoints()) {
-    // cp.x, cp.y, cp.clearance
-}
-```
-
-### `getAsImage` now takes an options struct
-```cpp
-// Before:
-grid.getAsImage(img, /*verticalFlip=*/false, /*forceRGB=*/false, /*tricolor=*/true);
-
-// After:
-COccupancyGridMap2D::TGetAsImageParams p;
-p.tricolor = true;
-grid.getAsImage(img, p);
-
-// Zero-argument form still works:
-grid.getAsImage(img);
-```
-
-### Internal members `updateInfoChangeOnly` and `likelihoodOutputs` privatized
-These were public mutable members used as hidden in/out channels. They have
-been renamed (`m_updateInfoChangeOnly`, `m_likelihoodOutputs`) and moved to
-the `protected` section. External code that directly accessed them must be
-refactored to use `computeObservationLikelihood()` instead.
-
----
-
-## 22. `mrpt::containers::yaml` API changes
-
-### `map_t` is now an insertion-order vector of pairs
-
-In MRPT 2.x, `yaml::map_t` was `std::map<std::string, node_t>`, so
-`operator[]`, `at()`, and `count()` worked directly on the raw map.
-
-In MRPT 3.x, `map_t` is `std::vector<std::pair<node_t, node_t>>` to
-preserve insertion order. **Do not call `std::map` methods on the raw
-`map_t` returned by `asMap()`.** Use the `yaml` high-level API instead:
-
-```cpp
-// Before (MRPT 2.x):
-const auto& m = node.asMap();
-if (m.count("key")) { ... }
-auto val = m.at("key").as<double>();
-
-// After (MRPT 3.x):
-if (node.has("key")) { ... }
-auto val = node["key"].as<double>();
-```
-
-If you are iterating a sequence and need subscript access on each element,
-wrap the `node_t` in a temporary `yaml`:
-
-```cpp
-// Before:
-for (auto& it : seq.asSequence()) {
-  auto& m = it.asMap();
-  auto v = m.at("field").as<double>();
-}
-
-// After:
-for (const auto& it : seq.asSequence()) {
-  const mrpt::containers::yaml item(it);
-  auto v = item["field"].as<double>();
-}
-```
-
-### Assigning a `yaml` object into a `sequence_t` slot
-
-`sequence_t` is `std::vector<node_t>`, so you cannot assign a `yaml`
-object directly to a slot. Use `.node()` to extract the underlying
-`node_t`:
-
-```cpp
-// Before:
-seq.asSequence().at(i) = std::move(myYaml);
-
-// After:
-seq.asSequence().at(i) = std::move(myYaml.node());
-```
-
-To append a `yaml` object to a sequence, use `yaml::push_back(const yaml&)`
-on the owning `yaml` object rather than `asSequence().push_back()`:
-
-```cpp
-// Before:
-d.asSequence().push_back(entry);   // ERROR: push_back(yaml) not defined on vector<node_t>
-
-// After:
-d.push_back(entry);                // uses yaml::push_back(const yaml&)
-```
-
-### `yaml_ref` and `yaml_cref` proxy types
-
-`operator[]` on a non-`const yaml` now returns a `yaml_ref` (mutable
-proxy) and on a `const yaml` or from subscripting a `yaml_ref` returns a
-`yaml_cref` (read-only proxy). Both forward `as<T>()`, `has()`, `size()`,
-`isMap()`, `isSequence()`, `isScalar()`, `toMatrix()`, `toStdVector<>()`,
-and `printAsYAML()`. They implicitly convert to `yaml` (deep copy) when
-needed.
-
-The proxy types do **not** expose `internalPushBack` or raw `asMap()`/
-`asSequence()` mutation — call those on the owning `yaml` object or obtain
-a `yaml` copy first.
