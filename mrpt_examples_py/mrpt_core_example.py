@@ -38,8 +38,8 @@ print("  Clock round-trip ✓")
 # ── WorkerThreadsPool ─────────────────────────────────────────────────────────
 print("\n── WorkerThreadsPool ───────────────────────")
 pool = WorkerThreadsPool(4)
-pool.enqueue(lambda: None)   # fire-and-forget task
-print(f"WorkerThreadsPool(4): size={pool.size()}, pendingTasks={pool.pendingTasks()}")
+print(f"WorkerThreadsPool(4): size={pool.size()}")
+del pool  # destructor joins threads; must be explicit before Python exit to avoid segfault
 
 # ── abs_diff ──────────────────────────────────────────────────────────────────
 print("\n── abs_diff ────────────────────────────────")

@@ -84,10 +84,9 @@ def main():
 
         # 4. Use the result with NumPy
         # ---------------------------------------------------------
-        # Convert the rotation part of the result to a numpy matrix
-        # Note: CPose3DQuat can be converted to CPose3D
-        final_pose = mrpt.poses.CPose3D(results.transformation)
-        rot_mat = np.array(final_pose.getRotationMatrix())
+        # results.transformation is already a CPose3D (converted in the binding)
+        final_pose = results.transformation
+        rot_mat = np.array(final_pose.getRotationMatrix().as_numpy())
 
         print("\nRotation Matrix (NumPy):")
         print(rot_mat)

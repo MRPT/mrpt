@@ -24,7 +24,8 @@ PYBIND11_MODULE(_bindings, m)
       m, "CSerializable")
       .def(
           "GetRuntimeClass",
-          [](const mrpt::serialization::CSerializable& self) { return self.GetRuntimeClass(); });
+          [](const mrpt::serialization::CSerializable& self) { return self.GetRuntimeClass(); },
+          py::return_value_policy::reference);
 
   // 2. CArchive
   py::class_<mrpt::serialization::CArchive, std::shared_ptr<mrpt::serialization::CArchive>>(
@@ -50,10 +51,10 @@ PYBIND11_MODULE(_bindings, m)
   // This allows Python users to easily serialize/deserialize to 'bytes'
   m.def(
       "objectToBytes",
-      [](const mrpt::serialization::CSerializable& obj)
+      [](const mrpt::serialization::CSerializable::Ptr& obj)
       {
         std::vector<uint8_t> buf;
-        mrpt::serialization::ObjectToOctetVector(&obj, buf);
+        mrpt::serialization::ObjectToOctetVector(obj.get(), buf);
         return py::bytes(reinterpret_cast<const char*>(buf.data()), buf.size());
       },
       "Converts an MRPT object to a Python bytes object.");
@@ -62,8 +63,8 @@ PYBIND11_MODULE(_bindings, m)
       "bytesToObject",
       [](const py::bytes& b)
       {
-        std::string s = b;
-        std::vector<uint8_t> buf(s.begin(), s.end());
+        const auto sv = static_cast<std::string_view>(b);
+        std::vector<uint8_t> buf(sv.begin(), sv.end());
         mrpt::serialization::CSerializable::Ptr obj;
         mrpt::serialization::OctetVectorToObject(buf, obj);
         return obj;

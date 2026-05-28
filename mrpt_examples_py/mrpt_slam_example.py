@@ -70,6 +70,7 @@ def make_scan(radius=5.0, n_rays=180, noise=0.01):
 builder = CMetricMapBuilderICP()
 builder.ICP_options.insertionLinDistance = 0.3
 builder.ICP_options.insertionAngDistance = math.radians(10)
+builder.useSimplePointsMap()  # configure mapInitializers with a CSimplePointsMap (must be before initialize())
 builder.initialize()
 
 # Feed 5 scans; each call to processObservation builds the map

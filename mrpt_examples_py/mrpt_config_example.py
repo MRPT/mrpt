@@ -109,10 +109,11 @@ finally:
 
 # ── config_parser ────────────────────────────────────────────────────────────
 print("\n── config_parser ───────────────────────────")
-raw = "[Section]\nvalue = ${MY_PARSE_VAR|42}\n"
+# config_parser substitutes ${VAR} with values defined via @define.
+raw = "@define MY_VAR 42\n[Section]\nvalue = ${MY_VAR}\n"
 parsed = config_parser(raw)
 print(f"config_parser result:\n{parsed}")
-# With no env var set the default (42) should appear or the var placeholder stays
+assert "42" in parsed
 print("  config_parser ran without error ✓")
 
 print("\nAll checks ✓")

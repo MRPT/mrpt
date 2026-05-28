@@ -8,6 +8,7 @@ Demonstrates:
   - Uses mrpt.poses.CPose3D as a concrete serialisable object
 """
 
+import mrpt.rtti  # must be imported first to register TRuntimeClassId (used by GetRuntimeClass)
 from mrpt.serialization import objectToBytes, bytesToObject
 from mrpt.poses import CPose3D
 
@@ -32,4 +33,5 @@ print(f"Deserialised: {pose2}")
 cls_name = pose2.GetRuntimeClass().className
 print(f"  Runtime class: {cls_name}")
 assert "CPose3D" in cls_name, f"Expected CPose3D, got {cls_name}"
+print(f"  (full className: {cls_name})")
 print("  Round-trip OK ✓")

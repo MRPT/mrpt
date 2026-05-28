@@ -19,6 +19,8 @@
 
 // mrpt
 #include <mrpt/math/TPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/tfest/se2.h>
 #include <mrpt/tfest/se3.h>
@@ -102,7 +104,13 @@ PYBIND11_MODULE(_bindings, m)
 
   py::class_<TSE3RobustResult>(m, "TSE3RobustResult")
       .def(py::init<>())
-      .def_readwrite("transformation", &TSE3RobustResult::transformation)
+      .def_property(
+          "transformation",
+          [](const TSE3RobustResult& r) -> mrpt::poses::CPose3D
+          { return mrpt::poses::CPose3D(r.transformation); },
+          [](TSE3RobustResult& r, const mrpt::poses::CPose3D& p)
+          { r.transformation = mrpt::poses::CPose3DQuat(p); },
+          "Estimated SE(3) transform as CPose3D (converted from internal CPose3DQuat).")
       .def_readwrite("scale", &TSE3RobustResult::scale)
       .def_readwrite("inliers_idx", &TSE3RobustResult::inliers_idx);
 

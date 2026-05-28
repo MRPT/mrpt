@@ -54,7 +54,8 @@ print(f"  z = {p3d.z:.4f}")
 p3d.z = 5.0
 print(f"  z after set: {p3d.z:.4f}")
 
-rot = p3d.getRotationMatrix()
+import numpy as np
+rot = np.array(p3d.getRotationMatrix().as_numpy())
 print(f"  rotation matrix (3x3 numpy):\n{rot}")
 assert rot.shape == (3, 3)
 

@@ -1,21 +1,33 @@
 #!/usr/bin/env python3
 
-# ---------------------------------------------------------------------
-# Install python3-pymrpt, ros-$ROS_DISTRO-python-mrpt,
-# ros-$ROS_DISTRO-mrpt2, or test with a local build with:
-# export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
-# ---------------------------------------------------------------------
-
-#
 # Usage example:
 #
+# . install/setup.bash
 # ./global_localization.py ../share/mrpt/config_files/pf-localization/localization_demo.ini
 #
-from mrpt.pymrpt import mrpt
+# NOTE: This script requires the following classes that are not yet wrapped:
+#   mrpt.slam.TMonteCarloLocalizationParams  (pybind11_plan_v3.md §1.4)
+#   mrpt.slam.CMonteCarloLocalization2D      (pybind11_plan_v3.md §1.4)
+#   mrpt.maps.TSetOfMetricMapInitializers    (pybind11_plan_v3.md §1.2)
+#   mrpt.maps.CMultiMetricMap                (pybind11_plan_v3.md §1.2)
+#   mrpt.maps.CSimpleMap                     (pybind11_plan_v3.md §1.1)
+#   mrpt.serialization.archiveFrom           (pybind11_plan_v3.md §0.9)
+#   mrpt.obs.CRawlog                         (pybind11_plan_v3.md §1.1)
+#   mrpt.obs.VisualizationParameters         (pybind11_plan_v3.md §1.1)
+#   mrpt.obs.obs_to_viz                      (pybind11_plan_v3.md §1.1)
+#   mrpt.img.TColorf                         (pybind11_plan_v3.md §0.3)
 import os
 import sys
 import argparse
 from time import sleep
+
+from mrpt.config import CConfigFile
+from mrpt.io import CFileGZInputStream
+from mrpt.bayes import CParticleFilter
+from mrpt.maps import CSimplePointsMap, COccupancyGridMap2D
+from mrpt.gui import CDisplayWindow3D
+from mrpt.poses import CPose3D
+from mrpt.viz import CSetOfObjects
 
 
 # args
@@ -36,7 +48,7 @@ if not os.path.exists(config_filename):
     print('Quit.')
     sys.exit(1)
 
-config_file = mrpt.config.CConfigFile(config_filename)
+config_file = CConfigFile(config_filename)
 print('Load config file {}.'.format(config_filename))
 sec_name = 'LocalizationExperiment'
 
@@ -57,7 +69,7 @@ if not os.path.exists(os.path.abspath(rawlog_filename)):
     else:
         rawlog_filename = os.path.abspath(rawlog_filename)
         os.chdir(curr_dir)
-rawlog_file = mrpt.io.CFileGZInputStream(rawlog_filename)
+rawlog_file = CFileGZInputStream(rawlog_filename)
 print('Load rawlog file {}.'.format(rawlog_filename))
 
 # map
@@ -72,40 +84,46 @@ if not os.path.exists(os.path.abspath(map_filename)):
         os.chdir(curr_dir)
 
 # Load parameters:
-# KLD (Adapative sampling)
-pdf_prediction_options = mrpt.slam.TMonteCarloLocalizationParams()
+# KLD (Adaptive sampling)
+# TODO: needs mrpt.slam.TMonteCarloLocalizationParams wrapped (pybind11_plan_v3.md §1.4)
+from mrpt.slam import TMonteCarloLocalizationParams  # noqa: not yet wrapped
+pdf_prediction_options = TMonteCarloLocalizationParams()
 pdf_prediction_options.KLD_params.loadFromConfigFileName(
     config_filename, 'KLD_options')
 pdf_prediction_options.KLD_params.dumpToConsole()
 
 # Particle filtering itself:
-pf_options = mrpt.bayes.CParticleFilter.TParticleFilterOptions()
+pf_options = CParticleFilter.TParticleFilterOptions()
 pf_options.loadFromConfigFileName(config_filename, 'PF_options')
 pf_options.dumpToConsole()
 
 # Metric maps to build:
-map_list = mrpt.maps.TSetOfMetricMapInitializers()
+# TODO: needs mrpt.maps.TSetOfMetricMapInitializers and CMultiMetricMap wrapped (pybind11_plan_v3.md §1.2)
+from mrpt.maps import TSetOfMetricMapInitializers, CMultiMetricMap  # noqa: not yet wrapped
+map_list = TSetOfMetricMapInitializers()
 map_list.loadFromConfigFileName(config_filename, 'MetricMap')
 map_list.dumpToConsole()
 
-# setup
-metric_map = mrpt.maps.CMultiMetricMap()
+metric_map = CMultiMetricMap()
 metric_map.setListOfMaps(map_list)
 
 # load map
-map_file = mrpt.io.CFileGZInputStream(map_filename)
-map_arch = mrpt.serialization.archiveFrom(map_file)
+# TODO: needs mrpt.serialization.archiveFrom and mrpt.maps.CSimpleMap wrapped
+#   (pybind11_plan_v3.md §0.9 and §1.1)
+map_file = CFileGZInputStream(map_filename)
+from mrpt.serialization import archiveFrom  # noqa: not yet wrapped
+map_arch = archiveFrom(map_file)
 
 if (map_filename.endswith('.simplemap')
         or map_filename.endswith('.simplemap.gz')):
-    simple_map = mrpt.maps.CSimpleMap()
+    from mrpt.maps import CSimpleMap  # noqa: not yet wrapped
+    simple_map = CSimpleMap()
     map_arch.ReadObject(simple_map)
     metric_map.loadFromProbabilisticPosesAndObservations(simple_map)
 elif (map_filename.endswith('.gridmap')
         or map_filename.endswith('.gridmap.gz')):
-    occ_map = mrpt.maps.COccupancyGridMap2D()
+    occ_map = COccupancyGridMap2D()
     map_arch.ReadObject(occ_map)
-    # overwrite gridmap
     for i in range(len(metric_map.maps)):
         if metric_map.maps[i].GetRuntimeClass().className == 'COccupancyGridMap2D':
             metric_map.maps[i] = occ_map
@@ -124,10 +142,9 @@ else:
 # gui
 try:
     res = resolution_str.split('x')
-    win3D = mrpt.gui.CDisplayWindow3D(
-        "pf_localization", int(res[0]), int(res[1]))
-except:
-    win3D = mrpt.gui.CDisplayWindow3D("pf_localization", 800, 600)
+    win3D = CDisplayWindow3D("pf_localization", int(res[0]), int(res[1]))
+except Exception:
+    win3D = CDisplayWindow3D("pf_localization", 800, 600)
 
 # initial scene
 map_object = metric_map.getVisualization()
@@ -139,25 +156,27 @@ win3D.unlockAccess3DScene()
 win3D.forceRepaint()
 
 # mcl
-pdf = mrpt.slam.CMonteCarloLocalization2D()
+# TODO: needs mrpt.slam.CMonteCarloLocalization2D wrapped (pybind11_plan_v3.md §1.4)
+from mrpt.slam import CMonteCarloLocalization2D  # noqa: not yet wrapped
+pdf = CMonteCarloLocalization2D()
 pdf.options = pdf_prediction_options
 pdf.options.metricMap = metric_map
 
-pf = mrpt.bayes.CParticleFilter()
+pf = CParticleFilter()
 pf.m_options = pf_options
 
 # initialize pdf
 pdf.resetUniformFreeSpace(metric_map.maps[0], 0.7, 40000)
 
 # Archive for reading from the file:
-rawlogArch = mrpt.serialization.archiveFrom(rawlog_file)
+rawlogArch = archiveFrom(rawlog_file)
 
 # loop
+# TODO: needs mrpt.obs.CRawlog wrapped (pybind11_plan_v3.md §1.1)
+from mrpt.obs import CRawlog  # noqa: not yet wrapped
 entry = 0
 while True:
-    # get action observation pair
-    [readOk, entry, act, sf, obs] = mrpt.obs.CRawlog.ReadFromArchive(
-        rawlogArch, entry)
+    [readOk, entry, act, sf, obs] = CRawlog.ReadFromArchive(rawlogArch, entry)
     if not readOk:
         break
 
@@ -171,26 +190,26 @@ while True:
 
     # get visualization for laser scan (two ways for demonstration purposes)
     if False:
-        # Alternative method 1:
-        # Insert the observations into a point cloud:
-        points_map = mrpt.maps.CSimplePointsMap()
+        # Alternative method 1: insert observations into a point cloud
+        points_map = CSimplePointsMap()
         points_map.insertObs(sf)
-
-        # And get the visualization of the point cloud:
         glObservation = points_map.getVisualization()
     else:
-        # Alternative 2:
-        # Using the generic obs_to_viz() method:
-        vizOpts = mrpt.obs.VisualizationParameters()
+        # Alternative 2: generic obs_to_viz()
+        # TODO: needs mrpt.obs.VisualizationParameters and obs_to_viz wrapped
+        #   (pybind11_plan_v3.md §1.1)
+        from mrpt.obs import VisualizationParameters, obs_to_viz  # noqa: not yet wrapped
+        vizOpts = VisualizationParameters()
         vizOpts.pointSize = 3
         vizOpts.showAxis = False
 
-        glObservation = mrpt.opengl.CSetOfObjects()
+        glObservation = CSetOfObjects()  # mrpt.viz.CSetOfObjects (was mrpt.opengl)
+        obs_to_viz(sf, vizOpts, glObservation)
 
-        mrpt.obs.obs_to_viz(sf, vizOpts, glObservation)
-
-    glObservation.setPose(mrpt.poses.CPose3D(mean))
-    glObservation.setColor(mrpt.img.TColorf(1., 0., 0.))
+    glObservation.setPose(CPose3D(mean))
+    # TODO: needs mrpt.img.TColorf wrapped (pybind11_plan_v3.md §0.3)
+    from mrpt.img import TColorf  # noqa: not yet wrapped
+    glObservation.setColor(TColorf(1., 0., 0.))
 
     # update pf
     stats = pf.executeOn(pdf, act, sf)
@@ -208,7 +227,7 @@ while True:
     if args.delay:
         try:
             sleep(float(args.delay))
-        except:
+        except Exception:
             sleep(0.2)
     else:
         sleep(0.2)

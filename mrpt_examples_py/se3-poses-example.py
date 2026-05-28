@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
 
-# ---------------------------------------------------------------------
-# Install python3-pymrpt, ros-$ROS_DISTRO-python-mrpt,
-# ros-$ROS_DISTRO-mrpt2, or test with a local build with:
-# export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
-# ---------------------------------------------------------------------
 
-from mrpt.pymrpt import mrpt
+from mrpt.poses import CPose3D
 from math import radians
 
-p1 = mrpt.poses.CPose3D.FromXYZYawPitchRoll(
+p1 = CPose3D.FromXYZYawPitchRoll(
     1.0, 2.0, 0, radians(90), radians(0), radians(0))
-p2 = mrpt.poses.CPose3D.FromXYZYawPitchRoll(
+p2 = CPose3D.FromXYZYawPitchRoll(
     3.0, 0.0, 0, radians(0.0), radians(0), radians(0))
 
 p3 = p1 + p2

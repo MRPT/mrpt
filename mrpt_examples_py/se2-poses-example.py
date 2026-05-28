@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 
-# ---------------------------------------------------------------------
-# Install python3-pymrpt, ros-$ROS_DISTRO-python-mrpt,
-# ros-$ROS_DISTRO-mrpt2, or test with a local build with:
-# export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
-# ---------------------------------------------------------------------
 
 from math import radians
-from mrpt.pymrpt.mrpt.poses import CPose2D
+from mrpt.poses import CPose2D
 
 p1 = CPose2D(1.0, 2.0, radians(90.0))
 p2 = CPose2D(3.0, 0.0, radians(0.0))

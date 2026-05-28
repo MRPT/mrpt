@@ -59,7 +59,8 @@ print(f"\nCObservationOdometry: {odo.odometry}")
 # CActionRobotMovement2D + CActionCollection
 # ---------------------------------------------------------------------------
 action = CActionRobotMovement2D()
-action.computeFromOdometry(CPose2D(0.5, 0.0, 0.05), CActionRobotMovement2D.TMotionModelOptions())
+# computeFromOdometry() not yet wrapped (pybind11_plan_v3.md §1.1); set odometry directly:
+action.rawOdometryIncrementReading = CPose2D(0.5, 0.0, 0.05)
 
 col = CActionCollection()
 col.insert(action)

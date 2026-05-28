@@ -176,7 +176,27 @@ PYBIND11_MODULE(_bindings, m)
           [](const TCamera& c) { return std::vector<double>(c.dist.begin(), c.dist.end()); },
           [](TCamera& c, const std::vector<double>& v)
           { std::copy(v.begin(), v.end(), c.dist.begin()); })
-      .def("intrinsicParams", [](const TCamera& c) { return c.intrinsicParams; });
+      .def_property(
+          "fx", [](const TCamera& c) { return c.fx(); }, [](TCamera& c, double v) { c.fx(v); })
+      .def_property(
+          "fy", [](const TCamera& c) { return c.fy(); }, [](TCamera& c, double v) { c.fy(v); })
+      .def_property(
+          "cx", [](const TCamera& c) { return c.cx(); }, [](TCamera& c, double v) { c.cx(v); })
+      .def_property(
+          "cy", [](const TCamera& c) { return c.cy(); }, [](TCamera& c, double v) { c.cy(v); })
+      .def(
+          "intrinsicParams",
+          [](const TCamera& c)
+          {
+            const auto& K = c.intrinsicParams;
+            return std::vector<std::vector<double>>{
+                {K(0, 0), K(0, 1), K(0, 2)},
+                {K(1, 0), K(1, 1), K(1, 2)},
+                {K(2, 0), K(2, 1), K(2, 2)}
+            };
+          },
+          "Return intrinsic matrix as 3x3 list of lists (use np.array() to convert).")
+      .def("__repr__", [](const TCamera& c) { return c.dumpAsText(); });
 
   // 6. TStereoCamera
   py::class_<TStereoCamera, mrpt::serialization::CSerializable, std::shared_ptr<TStereoCamera>>(

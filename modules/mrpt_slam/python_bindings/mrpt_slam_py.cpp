@@ -12,8 +12,10 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -137,6 +139,15 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("ICP_options", &mrpt::slam::CMetricMapBuilderICP::ICP_options)
       .def_readwrite("ICP_params", &mrpt::slam::CMetricMapBuilderICP::ICP_params)
       .def(
+          "useSimplePointsMap",
+          [](mrpt::slam::CMetricMapBuilderICP& b)
+          {
+            const std::string ini = "[Map]\nCSimplePointsMap_count=1\n";
+            mrpt::config::CConfigFileMemory cfg(ini);
+            b.ICP_options.mapInitializers.loadFromConfigFile(cfg, "Map");
+          },
+          "Configure the builder to use a single CSimplePointsMap. Call before initialize().")
+      .def(
           "initialize",
           [](mrpt::slam::CMetricMapBuilderICP& b) { b.initialize(mrpt::maps::CSimpleMap()); })
       .def(
@@ -197,5 +208,15 @@ PYBIND11_MODULE(_bindings, m)
           &mrpt::slam::CMetricMapBuilderICP::TConfigParams::localizationAngDistance)
       .def_readwrite(
           "minICPgoodnessToAccept",
-          &mrpt::slam::CMetricMapBuilderICP::TConfigParams::minICPgoodnessToAccept);
+          &mrpt::slam::CMetricMapBuilderICP::TConfigParams::minICPgoodnessToAccept)
+      .def(
+          "loadFromConfigFile",
+          [](mrpt::slam::CMetricMapBuilderICP::TConfigParams& self, const std::string& iniContent,
+             const std::string& section)
+          {
+            mrpt::config::CConfigFileMemory cfg(iniContent);
+            self.loadFromConfigFile(cfg, section);
+          },
+          "iniContent"_a, "section"_a,
+          "Load options (including mapInitializers) from an INI-format string.");
 }

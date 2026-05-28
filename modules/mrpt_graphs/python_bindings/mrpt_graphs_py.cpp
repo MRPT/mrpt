@@ -47,8 +47,9 @@ void bind_CNetworkOfPoses(py::module& m, const char* className)
           [](G& g, mrpt::graphs::TNodeID id, const CPOSE& pose) { g.nodes[id] = pose; },
           "node_id"_a, "pose"_a, "Set the estimated pose for a node")
       .def(
-          "getNodePose", [](const G& g, mrpt::graphs::TNodeID id) { return g.nodes.at(id); },
-          "node_id"_a, "Get the estimated pose for a node")
+          "getNodePose",
+          [](const G& g, mrpt::graphs::TNodeID id) -> CPOSE { return g.nodes.at(id); }, "node_id"_a,
+          "Get the estimated pose for a node")
       .def(
           "hasNode", [](const G& g, mrpt::graphs::TNodeID id) { return g.nodes.count(id) > 0; },
           "node_id"_a, "True if a node with the given ID exists")

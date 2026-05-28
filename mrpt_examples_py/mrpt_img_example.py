@@ -67,13 +67,14 @@ print(f"\nCImage.from_numpy: {img2.getWidth()}x{img2.getHeight()}")
 # ---------------------------------------------------------------------------
 cam = TCamera()
 cam.ncols, cam.nrows = 640, 480
-cam.fx(525.0)
-cam.fy(525.0)
-cam.cx(319.5)
-cam.cy(239.5)
-cam.distortion = [0.1, -0.05, 0.0, 0.0, 0.0]   # k1 k2 p1 p2 k3
+cam.fx = 525.0
+cam.fy = 525.0
+cam.cx = 319.5
+cam.cy = 239.5
+cam.dist = [0.1, -0.05, 0.0, 0.0, 0.0]   # k1 k2 p1 p2 k3 (use .dist, not .distortion)
 
-K = cam.intrinsicParams   # 3x3 numpy array
+import numpy as np
+K = np.array(cam.intrinsicParams())  # 3x3 numpy array (intrinsicParams returns list-of-lists)
 print(f"\nTCamera intrinsic matrix K:\n{K}")
 assert K.shape == (3, 3)
 assert abs(K[0, 0] - 525.0) < 1e-6

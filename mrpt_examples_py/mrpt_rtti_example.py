@@ -28,12 +28,13 @@ print("  ...")
 # ---------------------------------------------------------------------------
 # findRegisteredClass — look up by name
 # ---------------------------------------------------------------------------
-cls_pose2d = rtti.findRegisteredClass("CPose2D")
+import mrpt.poses  # ensure CPose2D is registered
+cls_pose2d = rtti.findRegisteredClass("mrpt::poses::CPose2D", False)
 if cls_pose2d:
     print(f"\nFound 'CPose2D': className='{cls_pose2d.className}'")
     base = cls_pose2d.getBaseClass()
     print(f"  base class: {base.className if base else '(none)'}")
-    print(f"  derivedFrom('CSerializable'): {cls_pose2d.derivedFrom('CSerializable')}")
+    # Note: derivedFrom(str) requires the base class to be registered by name; use getBaseClass() instead
 else:
     print("\n'CPose2D' not found (poses module may not be loaded)")
 
@@ -49,7 +50,8 @@ else:
 # ---------------------------------------------------------------------------
 # getAllRegisteredClassesChildrenOf — filter by base class
 # ---------------------------------------------------------------------------
-obs_cls = rtti.findRegisteredClass("CObservation")
+import mrpt.obs
+obs_cls = rtti.findRegisteredClass("mrpt::obs::CObservation", False)
 if obs_cls:
     obs_children = rtti.getAllRegisteredClassesChildrenOf(obs_cls)
     print(f"\nClasses derived from CObservation: {len(obs_children)}")

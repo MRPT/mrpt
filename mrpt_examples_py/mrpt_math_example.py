@@ -77,9 +77,11 @@ assert abs(d3 - 5.0) < 1e-6
 # ---------------------------------------------------------------------------
 bb = TBoundingBox(TPoint3D(-1,-1,-1), TPoint3D(1,1,1))
 print(f"\nTBoundingBox: {bb}")
-ctr = bb.center()
-print(f"  center: ({ctr.x},{ctr.y},{ctr.z})")
-assert ctr.x == 0.0 and ctr.y == 0.0
+ctr_x = (bb.min.x + bb.max.x) / 2
+ctr_y = (bb.min.y + bb.max.y) / 2
+ctr_z = (bb.min.z + bb.max.z) / 2
+print(f"  center: ({ctr_x},{ctr_y},{ctr_z})")
+assert ctr_x == 0.0 and ctr_y == 0.0
 
 # ---------------------------------------------------------------------------
 # Twists
@@ -93,12 +95,12 @@ print(f"TTwist3D: {tw3}")
 # CPolygon
 # ---------------------------------------------------------------------------
 poly = CPolygon()
-poly.AddVertex(0, 0)
-poly.AddVertex(1, 0)
-poly.AddVertex(1, 1)
-poly.AddVertex(0, 1)
-print(f"\nCPolygon: {poly.size()} vertices")
-assert poly.size() == 4
+poly.add_vertex(0, 0)
+poly.add_vertex(1, 0)
+poly.add_vertex(1, 1)
+poly.add_vertex(0, 1)
+print(f"\nCPolygon: {len(poly)} vertices")
+assert len(poly) == 4
 
 # ---------------------------------------------------------------------------
 # CHistogram
@@ -107,8 +109,9 @@ hist = CHistogram(0.0, 10.0, 10)   # [0,10], 10 bins
 for v in [1.5, 2.5, 2.5, 7.0]:
     hist.add(v)
 bins, counts = hist.getHistogramNormalized()
-print(f"\nCHistogram ({hist.getBinCount()} bins): {counts}")
-assert hist.getBinCount() == 10
+n_bins = len(counts)  # getBinCount(i) returns count for bin i, not total bins
+print(f"\nCHistogram ({n_bins} bins): {counts}")
+assert n_bins == 10
 
 # ---------------------------------------------------------------------------
 # Angle wrapping
