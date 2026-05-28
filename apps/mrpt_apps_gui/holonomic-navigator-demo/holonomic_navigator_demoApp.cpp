@@ -37,6 +37,10 @@ bool holonomic_navigator_demoApp::OnInit()
   {
     auto* Frame = new holonomic_navigator_demoFrame(nullptr);
     Frame->Show();
+    // Maximize must happen *after* Show(): on wxGTK, maximizing a top-level
+    // window before it is realized leaves it at the (tiny) sizer min size and
+    // triggers a cascade of GTK negative-allocation warnings.
+    Frame->Maximize();
     SetTopWindow(Frame);
   }
   //*)

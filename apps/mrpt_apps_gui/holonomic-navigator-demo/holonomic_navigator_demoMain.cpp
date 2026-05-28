@@ -527,17 +527,20 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent, w
     m_simul_options.saveToConfigFile(cfg, "SIMULATOR");
 
     mrpt::nav::CHolonomicVFF holo_VFF;
-    holo_VFF.options.saveToConfigFile(cfg, "VFF_CONFIG");
+    holo_VFF.options.saveToConfigFile(cfg, holo_VFF.getConfigFileSectionName());
 
     mrpt::nav::CHolonomicND holo_ND;
-    holo_ND.options.saveToConfigFile(cfg, "ND_CONFIG");
+    holo_ND.options.saveToConfigFile(cfg, holo_ND.getConfigFileSectionName());
 
     this->edHoloParams->SetValue(cfg.getContent().c_str());
   }
 
   WX_END_TRY
 
-  this->Maximize();
+  // NOTE: Maximize() is intentionally NOT called here. On wxGTK it must be done
+  // after the frame is shown (see the App's OnInit), otherwise the window is
+  // left at its tiny sizer min size and GTK floods the console with
+  // negative-allocation warnings.
 }
 
 holonomic_navigator_demoFrame::~holonomic_navigator_demoFrame()

@@ -42,7 +42,7 @@ class CLogFileRecord_VFF : public CHolonomicLogFileRecord
  *
  * \code
  * # Section name can be changed via setConfigFileSectionName()
- * [VFF_CONFIG]
+ * [CHolonomicVFF]
  * TARGET_SLOW_APPROACHING_DISTANCE = 0.10  // For stopping gradually
  * TARGET_ATTRACTIVE_FORCE          = 20    // Dimension-less (may have to be
  * tuned depending on the density of obstacle sampling)

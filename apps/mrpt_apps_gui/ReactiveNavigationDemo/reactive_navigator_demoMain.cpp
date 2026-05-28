@@ -435,127 +435,156 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
   FlexGridSizer8->AddGrowableCol(0);
   FlexGridSizer8->AddGrowableRow(0);
   edParamsReactive = new wxTextCtrl(
-      pnParamsReactive, ID_TEXTCTRL4,
-      _("# "
-        "--------------------------------------------------------------------"
-        "----\n# Example configuration file for MRPT Reactive Navigation "
-        "engine.\n# See C++ documentation: "
-        "http://reference.mrpt.org/svn/"
-        "classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n# See ROS "
-        "node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n# "
-        "--------------------------------------------------------------------"
-        "----\n\n[GLOBAL_CONFIG]\n# 0 or `hmVIRTUAL_FORCE_FIELDS`: Virtual "
-        "Force Field\n# 1 or `hmSEARCH_FOR_BEST_GAP`: Nearness Diagram "
-        "(ND)\n# `hmFULL_EVAL`: Evaluation of all possible "
-        "directions\nHOLONOMIC_METHOD = "
-        "hmFULL_EVAL\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100 # "
-        "(seconds)\n\nrobotMax_V_mps = 2.0\t\t# Speed "
-        "limits\nrobotMax_W_degps =120\n\n\n# Parameters for the "
-        "\"FullEval\" Holonomic method\n# "
-        "----------------------------------------------------\n[FULL_EVAL_"
-        "CONFIG]\nfactorWeights=1.0 1.0 1.0 0.01 3.0\n// 0: Clearness in "
-        "direction\n// 1: Closest approach to target along straight line "
-        "(Euclidean)\n// 2: Distance of end collision-free point to target "
-        "(Euclidean)\n// 3: Hysteresis\n// 4: Clearness to nearest obstacle "
-        "along path\n\nTARGET_SLOW_APPROACHING_DISTANCE = 0.70 // Start to "
-        "reduce speed when closer than this to target.\nTOO_CLOSE_OBSTACLE = "
-        "0.05 // Directions with collision-free distances below this "
-        "threshold are not elegible.\nHYSTERESIS_SECTOR_COUNT = 5 // Range "
-        "of \"sectors\" (directions) for hysteresis over successive "
-        "timesteps\n\nPHASE1_FACTORS = 0 1 2 // Indices of the factors above "
-        "to be considered in phase 1\nPHASE2_FACTORS = 1 4 // Indices of the "
-        "factors above to be considered in phase 2\nPHASE1_THRESHOLD = 0.6 "
-        "// Indices of the factors above to be considered in phase "
-        "1\n\n#\tParameters for the \"VFF\" Holonomic method\n# "
-        "----------------------------------------------------\n[VFF_CONFIG]"
-        "\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // For stopping "
-        "gradually\nTARGET_ATTRACTIVE_FORCE = 2.000000e+001 // "
-        "Dimension-less (may have to be tuned depending on the density of "
-        "obstacle sampling)\n\n#\tParameters for the \"Nearness diagram\" "
-        "Holonomic method\n# "
-        "----------------------------------------------------\n[ND_CONFIG]"
-        "\nWIDE_GAP_SIZE_PERCENT = 2.500000e-001 "
-        "\nMAX_SECTOR_DIST_FOR_D2_PERCENT = 2.500000e-001 "
-        "\nRISK_EVALUATION_SECTORS_PERCENT = 1.000000e-001 "
-        "\nRISK_EVALUATION_DISTANCE = 4.000000e-001 // In normalized "
-        "ps-meters [0,1]\nTOO_CLOSE_OBSTACLE = 1.500000e-001 // For stopping "
-        "gradually\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // In normalized "
-        "ps-meters\nfactorWeights = 1.00 0.50 2.00 0.40 // [0]=Free space, "
-        "[1]=Dist. in sectors, [2]=Closer to target (Euclidean), "
-        "[3]=Hysteresis\n\n# "
-        "----------------------------------------------------\n#\tParameters "
-        "for navigation: DIFFERENTIAL DRIVEN Robot\n# "
-        "----------------------------------------------------\n[DIFF_"
-        "ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.5 0.3\n# 1: Free "
-        "space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# "
-        "4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security "
-        "Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0\t# Minimum. distance "
-        "to target for sending the end event. Set to 0 to send it just on "
-        "navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate "
-        "in the \"z\" axis for an obstacle to be taken into "
-        "account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the "
-        "\"z\" axis for an obstacle to be taken into "
-        "account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to "
-        "build PTGs (in meters), i.e. the visibility \"range\" of tentative "
-        "paths\n\n# The constant time of a first-order low-pass filter of "
-        "outgoing speed commands, \n# i.e. can be used to impose a maximum "
-        "acceleration.\nSPEEDFILTER_TAU = 0.5 // seconds\n\n# PTGs: See "
-        "classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( "
-        "http://reference.mrpt.org/svn/"
-        "classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# "
-        "refer to papers for "
-        "details.\n#---------------------------------------------------------"
-        "---------------------\nPTG_COUNT = 3\n\nPTG0_Type = "
-        "CPTG_DiffDrive_C\nPTG0_resolution = 0.05 # Look-up-table cell size "
-        "or resolution (in meters)\nPTG0_refDistance= 10.0 # Maximum "
-        "distance to build PTGs (in meters), i.e. the visibility \"range\" "
-        "of tentative paths\nPTG0_num_paths= 121\nPTG0_v_max_mps = "
-        "1.0\nPTG0_w_max_dps = 60\nPTG0_K = 1.0\nPTG0_score_priority = "
-        "1.0\n\nPTG1_Type = CPTG_DiffDrive_alpha\nPTG1_resolution = 0.05 # "
-        "Look-up-table cell size or resolution (in "
-        "meters)\nPTG1_refDistance= 10.0 # Maximum distance to build PTGs "
-        "(in meters), i.e. the visibility \"range\" of tentative "
-        "paths\nPTG1_num_paths = 121\nPTG1_v_max_mps = 1.0\nPTG1_w_max_dps = "
-        "60\nPTG1_cte_a0v_deg = 57\nPTG1_cte_a0w_deg = "
-        "57\nPTG1_score_priority = 1.0\n\nPTG2_Type = "
-        "CPTG_DiffDrive_C\nPTG2_resolution = 0.05 # Look-up-table cell size "
-        "or resolution (in meters)\nPTG2_refDistance= 10.0 # Maximum "
-        "distance to build PTGs (in meters), i.e. the visibility \"range\" "
-        "of tentative paths\nPTG2_num_paths = 121\nPTG2_v_max_mps = "
-        "1.0\nPTG2_w_max_dps = 60\nPTG2_K = -1.0\nPTG2_score_priority = "
-        "0.5\n\n\n# Default 2D robot shape for collision checks: (ignored in "
-        "ROS, superseded by node parameters)\n# Each PTG will use only one "
-        "of either (a) polygonal 2D shape or, (b) radius of a circular "
-        "shape\nRobotModel_shape2D_xs=-0.2 0.5 0.5 "
-        "-0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 "
-        "-0.3\nRobotModel_circular_shape_radius = 0.5\n\n# "
-        "----------------------------------------------------\n#\tParameters "
-        "for navigation: DIFFERENTIAL DRIVEN Robot\n# "
-        "----------------------------------------------------\n[HOLO_"
-        "ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.2 0.3\n# 1: Free "
-        "space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# "
-        "4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security "
-        "Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. "
-        "distance to target for sending the end event. Set to 0 to send it "
-        "just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum "
-        "coordinate in the \"z\" axis for an obstacle to be taken into "
-        "account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the "
-        "\"z\" axis for an obstacle to be taken into "
-        "account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to "
-        "build PTGs (in meters), i.e. the visibility \"range\" of tentative "
-        "paths\n\n# PTGs: See classes derived from "
-        "mrpt::nav::CParameterizedTrajectoryGenerator ( "
-        "http://reference.mrpt.org/svn/"
-        "classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# "
-        "refer to papers for "
-        "details.\n#---------------------------------------------------------"
-        "---------------------\nPTG_COUNT = 1\n\nPTG0_Type = "
-        "CPTG_Holo_Blend\nPTG0_refDistance= 6.0 # Maximum distance to build "
-        "PTGs (in meters), i.e. the visibility \"range\" of tentative "
-        "paths\nPTG0_num_paths = 100\nPTG0_v_max_mps = 1.5\nPTG0_w_max_dps = "
-        "90\nPTG0_T_ramp_max = 0.8\nPTG0_score_priority = 1.0\n\n# Each PTG "
-        "will use only one of either (a) polygonal 2D shape or, (b) radius "
-        "of a circular shape\nRobotModel_circular_shape_radius = 0.36\n\n"),
+      pnParamsReactive, ID_TEXTCTRL4, _(R"raw(
+# ------------------------------------------------------------------------
+# Example configuration file for MRPT Reactive Navigation engine.
+# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html
+# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d
+# ------------------------------------------------------------------------
+
+[GLOBAL_CONFIG]
+# 0 or `hmVIRTUAL_FORCE_FIELDS`: Virtual Force Field
+# 1 or `hmSEARCH_FOR_BEST_GAP`: Nearness Diagram (ND)
+# `hmFULL_EVAL`: Evaluation of all possible directions
+HOLONOMIC_METHOD = hmFULL_EVAL
+ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100 # (seconds)
+
+robotMax_V_mps = 2.0		# Speed limits
+robotMax_W_degps =120
+
+
+# Parameters for the "FullEval" Holonomic method
+# ----------------------------------------------------
+[CHolonomicFullEval]
+factorWeights=1.0 1.0 1.0 0.01 3.0
+// 0: Clearness in direction
+// 1: Closest approach to target along straight line (Euclidean)
+// 2: Distance of end collision-free point to target (Euclidean)
+// 3: Hysteresis
+// 4: Clearness to nearest obstacle along path
+
+TARGET_SLOW_APPROACHING_DISTANCE = 0.70 // Start to reduce speed when closer than this to target.
+TOO_CLOSE_OBSTACLE = 0.05 // Directions with collision-free distances below this threshold are not elegible.
+HYSTERESIS_SECTOR_COUNT = 5 // Range of "sectors" (directions) for hysteresis over successive timesteps
+
+PHASE1_FACTORS = 0 1 2 // Indices of the factors above to be considered in phase 1
+PHASE2_FACTORS = 1 4 // Indices of the factors above to be considered in phase 2
+PHASE1_THRESHOLD = 0.6 // Indices of the factors above to be considered in phase 1
+
+#	Parameters for the "VFF" Holonomic method
+# ----------------------------------------------------
+[CHolonomicVFF]
+TARGET_SLOW_APPROACHING_DISTANCE = 0.1 // For stopping gradually
+TARGET_ATTRACTIVE_FORCE = 2.000000e+001 // Dimension-less (may have to be tuned depending on the density of obstacle sampling)
+
+#	Parameters for the "Nearness diagram" Holonomic method
+# ----------------------------------------------------
+[CHolonomicND]
+WIDE_GAP_SIZE_PERCENT = 2.500000e-001 
+MAX_SECTOR_DIST_FOR_D2_PERCENT = 2.500000e-001 
+RISK_EVALUATION_SECTORS_PERCENT = 1.000000e-001 
+RISK_EVALUATION_DISTANCE = 4.000000e-001 // In normalized ps-meters [0,1]
+TOO_CLOSE_OBSTACLE = 1.500000e-001 // For stopping gradually
+TARGET_SLOW_APPROACHING_DISTANCE = 0.1 // In normalized ps-meters
+factorWeights = 1.00 0.50 2.00 0.40 // [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis
+
+# ----------------------------------------------------
+#	Parameters for navigation: DIFFERENTIAL DRIVEN Robot
+# ----------------------------------------------------
+[DIFF_ReactiveParams]
+weights=0.5 0.05 0.5 2.0 0.5 0.3
+# 1: Free space
+# 2: Dist. in sectors			
+# 3: Heading toward target
+# 4: Closer to target (euclidean)
+# 5: Hysteresis
+# 6: Security Distance
+
+DIST_TO_TARGET_FOR_SENDING_EVENT=0	# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end
+
+MinObstaclesHeight=0.0 		# Minimum coordinate in the "z" axis for an obstacle to be taken into account.
+MaxObstaclesHeight=1.40 	# Maximum coordinate in the "z" axis for an obstacle to be taken into account.
+
+MAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility "range" of tentative paths
+
+# The constant time of a first-order low-pass filter of outgoing speed commands, 
+# i.e. can be used to impose a maximum acceleration.
+SPEEDFILTER_TAU = 0.5 // seconds
+
+# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.
+#------------------------------------------------------------------------------
+PTG_COUNT = 3
+
+PTG0_Type = CPTG_DiffDrive_C
+PTG0_resolution = 0.05 # Look-up-table cell size or resolution (in meters)
+PTG0_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility "range" of tentative paths
+PTG0_num_paths= 121
+PTG0_v_max_mps = 1.0
+PTG0_w_max_dps = 60
+PTG0_K = 1.0
+PTG0_score_priority = 1.0
+
+PTG1_Type = CPTG_DiffDrive_alpha
+PTG1_resolution = 0.05 # Look-up-table cell size or resolution (in meters)
+PTG1_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility "range" of tentative paths
+PTG1_num_paths = 121
+PTG1_v_max_mps = 1.0
+PTG1_w_max_dps = 60
+PTG1_cte_a0v_deg = 57
+PTG1_cte_a0w_deg = 57
+PTG1_score_priority = 1.0
+
+PTG2_Type = CPTG_DiffDrive_C
+PTG2_resolution = 0.05 # Look-up-table cell size or resolution (in meters)
+PTG2_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility "range" of tentative paths
+PTG2_num_paths = 121
+PTG2_v_max_mps = 1.0
+PTG2_w_max_dps = 60
+PTG2_K = -1.0
+PTG2_score_priority = 0.5
+
+
+# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)
+# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape
+RobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2
+RobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3
+RobotModel_circular_shape_radius = 0.5
+
+# ----------------------------------------------------
+#	Parameters for navigation: DIFFERENTIAL DRIVEN Robot
+# ----------------------------------------------------
+[HOLO_ReactiveParams]
+weights=0.5 0.05 0.5 2.0 0.2 0.3
+# 1: Free space
+# 2: Dist. in sectors			
+# 3: Heading toward target
+# 4: Closer to target (euclidean)
+# 5: Hysteresis
+# 6: Security Distance
+
+DIST_TO_TARGET_FOR_SENDING_EVENT=0.6	# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end
+
+MinObstaclesHeight=0.0 		# Minimum coordinate in the "z" axis for an obstacle to be taken into account.
+MaxObstaclesHeight=1.40 	# Maximum coordinate in the "z" axis for an obstacle to be taken into account.
+
+MAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility "range" of tentative paths
+
+# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.
+#------------------------------------------------------------------------------
+PTG_COUNT = 1
+
+PTG0_Type = CPTG_Holo_Blend
+PTG0_refDistance= 6.0 # Maximum distance to build PTGs (in meters), i.e. the visibility "range" of tentative paths
+PTG0_num_paths = 100
+PTG0_v_max_mps = 1.5
+PTG0_w_max_dps = 90
+PTG0_T_ramp_max = 0.8
+PTG0_score_priority = 1.0
+
+# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape
+RobotModel_circular_shape_radius = 0.36
+
+)raw"),
       wxDefaultPosition, wxSize(226, 111),
       wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB | wxTE_MULTILINE | wxHSCROLL | wxVSCROLL |
           wxALWAYS_SHOW_SB,
@@ -997,7 +1026,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 
   WX_END_TRY
 
-  this->Maximize();
+  // NOTE: Maximize() is intentionally NOT called here. On wxGTK it must be done
+  // after the frame is shown (see the App's OnInit), otherwise the window is
+  // left at its tiny sizer min size and GTK floods the console with
+  // negative-allocation warnings.
 }
 
 reactive_navigator_demoframe::~reactive_navigator_demoframe()

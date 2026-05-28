@@ -39,7 +39,7 @@ class CLogFileRecord_ND;
  *
  * \code
  * # Section name can be changed via setConfigFileSectionName()
- * [ND_CONFIG]
+ * [CHolonomicND]
  * factorWeights=1.0 0.5 2.0 0.4
  * // 1: Free space
  * // 2: Dist. in sectors

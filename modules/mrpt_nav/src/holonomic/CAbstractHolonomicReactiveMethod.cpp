@@ -28,7 +28,7 @@ CAbstractHolonomicReactiveMethod::CAbstractHolonomicReactiveMethod(
 {
 }
 CAbstractHolonomicReactiveMethod::~CAbstractHolonomicReactiveMethod() = default;
-/** Defines the name of the section (Default: "FULL_EVAL_CONFIG") */
+/** Defines the name of the section (Default: class name, e.g. "CHolonomicND") */
 void CAbstractHolonomicReactiveMethod::setConfigFileSectionName(const std::string& sectName)
 {
   m_cfgSectionName = sectName;
