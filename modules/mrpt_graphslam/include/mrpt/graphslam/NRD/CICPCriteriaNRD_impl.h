@@ -172,14 +172,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
   double mahal_distance = rel_edge.mahalanobisDistanceTo(m_latest_odometry_PDF);
   // m_mahal_distance_ICP_odom.addNewMeasurement(mahal_distance);
 
-  // TODO - Find out a proper criterion
-  // How do I filter out the "bad" 2DRangeScans?
-  // double mahal_distance_lim = m_mahal_distance_ICP_odom.getMedian();
-  // double mahal_distance_lim = m_mahal_distance_ICP_odom.getMean();
-  // double mahal_distance_lim =
-  // m_mahal_distance_ICP_odom.getMean() +
-  // m_mahal_distance_ICP_odom.getStdDev();
-  double mahal_distance_lim = 0.18;  // visual introspection
+  double mahal_distance_lim = 0.18;  // empirically tuned threshold
 
   //
   // check whether to use ICP or odometry Edge.

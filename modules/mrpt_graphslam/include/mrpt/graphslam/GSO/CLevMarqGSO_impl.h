@@ -339,7 +339,6 @@ void CLevMarqGSO<GRAPH_T>::updateOptDistanceVisualization()
   MRPT_END
 }
 
-// TODO - implement this
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::toggleOptDistanceVisualization()
 {

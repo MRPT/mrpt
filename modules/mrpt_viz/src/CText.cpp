@@ -25,22 +25,6 @@ IMPLEMENTS_SERIALIZABLE(CText, CVisualObject, mrpt::viz)
 
 CText::~CText() = default;
 
-#if 0
-constexpr double text_spacing = 1.5;
-constexpr double text_kerning = 0.1;
-#endif
-
-std::pair<double, double> CText::computeTextExtension() const
-{
-#if 0
-  mrpt::viz::internal::glSetFont(m_fontName);
-  const auto [textW, textH] = mrpt::viz::internal::glGetExtends(m_str, text_spacing, text_kerning);
-  return {textW, textH};
-#endif
-  THROW_EXCEPTION("TODO");
-  MRPT_TODO("Refactor!");
-}
-
 uint8_t CText::serializeGetVersion() const { return 2; }
 void CText::serializeTo(mrpt::serialization::CArchive& out) const
 {

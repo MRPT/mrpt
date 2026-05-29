@@ -20,7 +20,6 @@
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/viz/CAngularObservationMesh.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
 
 using namespace mrpt;
@@ -51,7 +50,6 @@ template class mrpt::CTraitsTest<CSinCosLookUpTableFor2DScans>;
 template class mrpt::CTraitsTest<CObservationPointCloud>;
 template class mrpt::CTraitsTest<CObservationRotatingScan>;
 // opengl:
-template class mrpt::CTraitsTest<CAngularObservationMesh>;
 template class mrpt::CTraitsTest<CPlanarLaserScan>;
 
 // Create a set of classes, then serialize and deserialize to test possible
@@ -78,7 +76,6 @@ TEST(SerializeTestMaps, WriteReadToMem)
       CLASS_ID(CObservationPointCloud),
       CLASS_ID(CObservationRotatingScan),
       // opengl:
-      CLASS_ID(CAngularObservationMesh),
       CLASS_ID(CPlanarLaserScan),
   };
 

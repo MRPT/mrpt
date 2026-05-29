@@ -49,7 +49,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
   registerClass(CLASS_ID(CVoxelMap));
   registerClass(CLASS_ID(CVoxelMapRGB));
 
-  registerClass(CLASS_ID(CAngularObservationMesh));
   registerClass(CLASS_ID(CPlanarLaserScan));
 
   registerClass(CLASS_ID(CObservationPointCloud));

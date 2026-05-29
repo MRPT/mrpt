@@ -111,25 +111,12 @@ TUncertaintyPath<GRAPH_T>& TUncertaintyPath<GRAPH_T>::operator+=(const self_t& o
       "\"this\" instance doesn't have an initialized list of traversed "
       "nodes");
 
-  //////// TODO Remove these - >>>>>>>>>>>>>>>>>>>>>
-  // std::cout << string(20, '-') << "Aggregating 2 paths.."
-  //<< string(20, '-') << "\n";
-  // this->dumpToConsole(); other.dumpToConsole();
-  ////// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
-
   // aggregate the two gaussian - mean & information matrix
   this->curr_pose_pdf += other.curr_pose_pdf;
 
   // add the traversed nodes
   this->nodes_traversed.insert(
       this->nodes_traversed.end(), other.nodes_traversed.begin() + 1, other.nodes_traversed.end());
-
-  ////// TODO Remove these - >>>>>>>>>>>>>>>>>>>>>
-  // std::cout << std::string(10, '%') << endl << "AFTER Aggregation..." << "\n";
-  // this->dumpToConsole();
-  // std::cout << string(50, '-') << "\n";
-  // mrpt::system::pause();
-  ////// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
 
   determinant_is_updated = false;
   return *this;

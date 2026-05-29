@@ -56,7 +56,6 @@ set(LIB_SOURCES
   src/obs/CObservationPointCloud.cpp
   src/obs/customizable_obs_viz.cpp
   # viz:
-  src/viz/CAngularObservationMesh.cpp
   src/viz/CPlanarLaserScan.cpp
 )
 
@@ -120,7 +119,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/maps/bonxai/serialization.hpp
   include/mrpt/obs/CObservationPointCloud.h
   include/mrpt/obs/customizable_obs_viz.h
-  include/mrpt/viz/CAngularObservationMesh.h
   include/mrpt/viz/CPlanarLaserScan.h
 )
 
