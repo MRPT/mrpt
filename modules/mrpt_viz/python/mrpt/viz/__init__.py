@@ -16,7 +16,7 @@ CPointCloudColoured = _b.CPointCloudColoured
 CAssimpModel = _b.CAssimpModel
 AssimpLoadFlags = _b.AssimpLoadFlags
 
-# Phase 0.4 — New classes
+# Phase 0.4 -- New classes
 CGridPlaneXY = _b.CGridPlaneXY
 CGridPlaneXZ = _b.CGridPlaneXZ
 CAxis = _b.CAxis
@@ -40,6 +40,25 @@ CSetOfTriangles = _b.CSetOfTriangles
 CVectorField2D = _b.CVectorField2D
 CVectorField3D = _b.CVectorField3D
 CMesh = _b.CMesh
+
+# Phase 0.5 -- more viz classes (item #3 continued)
+CColorBar = _b.CColorBar
+CMesh3D = _b.CMesh3D
+CMeshFast = _b.CMeshFast
+CTexturedPlane = _b.CTexturedPlane
+CSetOfTexturedTriangles = _b.CSetOfTexturedTriangles
+CPolyhedron = _b.CPolyhedron
+COrbitCameraController = _b.COrbitCameraController
+COctoMapVoxels = _b.COctoMapVoxels
+OctoMapVisualizationMode = _b.OctoMapVisualizationMode
+CubeTextureFace = _b.CubeTextureFace
+CSkyBox = _b.CSkyBox
+TLightType = _b.TLightType
+TLight = _b.TLight
+CEllipsoidInverseDepth2D = _b.CEllipsoidInverseDepth2D
+CEllipsoidInverseDepth3D = _b.CEllipsoidInverseDepth3D
+CEllipsoidRangeBearing2D = _b.CEllipsoidRangeBearing2D
+CAnimatedAssimpModel = _b.CAnimatedAssimpModel
 
 # stock_objects submodule
 stock_objects = _b.stock_objects
@@ -79,6 +98,16 @@ __all__ = [
     'CDisk', 'CFrustum', 'CSetOfTriangles',
     'CVectorField2D', 'CVectorField3D',
     'CMesh',
+    'CColorBar',
+    'CMesh3D', 'CMeshFast',
+    'CTexturedPlane', 'CSetOfTexturedTriangles',
+    'CPolyhedron',
+    'COrbitCameraController',
+    'COctoMapVoxels', 'OctoMapVisualizationMode',
+    'CubeTextureFace', 'CSkyBox',
+    'TLightType', 'TLight',
+    'CEllipsoidInverseDepth2D', 'CEllipsoidInverseDepth3D', 'CEllipsoidRangeBearing2D',
+    'CAnimatedAssimpModel',
     'stock_objects',
     'create_point_cloud',
 ]

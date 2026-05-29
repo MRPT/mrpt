@@ -21,32 +21,47 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TSegment3D.h>
+#include <mrpt/viz/CAnimatedAssimpModel.h>
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CAssimpModel.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CCamera.h>
+#include <mrpt/viz/CColorBar.h>
 #include <mrpt/viz/CCylinder.h>
 #include <mrpt/viz/CDisk.h>
 #include <mrpt/viz/CEllipsoid2D.h>
 #include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CEllipsoidInverseDepth2D.h>
+#include <mrpt/viz/CEllipsoidInverseDepth3D.h>
+#include <mrpt/viz/CEllipsoidRangeBearing2D.h>
 #include <mrpt/viz/CFrustum.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CGridPlaneXZ.h>
 #include <mrpt/viz/CMesh.h>
+#include <mrpt/viz/CMesh3D.h>
+#include <mrpt/viz/CMeshFast.h>
+#include <mrpt/viz/COctoMapVoxels.h>
+#include <mrpt/viz/COrbitCameraController.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CPolyhedron.h>
 #include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSetOfTexturedTriangles.h>
 #include <mrpt/viz/CSetOfTriangles.h>
 #include <mrpt/viz/CSimpleLine.h>
+#include <mrpt/viz/CSkyBox.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/CText.h>
 #include <mrpt/viz/CText3D.h>
+#include <mrpt/viz/CTexturedPlane.h>
+#include <mrpt/viz/CUBE_TEXTURE_FACE.h>
 #include <mrpt/viz/CVectorField2D.h>
 #include <mrpt/viz/CVectorField3D.h>
 #include <mrpt/viz/CVisualObject.h>
 #include <mrpt/viz/Scene.h>
+#include <mrpt/viz/TLightParameters.h>
 #include <mrpt/viz/TTriangle.h>
 #include <mrpt/viz/Viewport.h>
 #include <mrpt/viz/stock_objects.h>
@@ -443,13 +458,13 @@ PYBIND11_MODULE(_bindings, m)
           "Enable color from Z height using HOT colormap")
       .def(
           "setZ",
-          [](CMesh& self, py::array_t<float> arr)
+          [](CMesh& self, const py::array_t<float>& arr)
           {
             auto buf = arr.request();
-            const int rows = static_cast<int>(buf.shape[0]);
-            const int cols = static_cast<int>(buf.shape[1]);
+            const auto rows = static_cast<int>(buf.shape[0]);
+            const auto cols = static_cast<int>(buf.shape[1]);
             mrpt::math::CMatrixDynamic<float> Z(rows, cols);
-            const float* src = static_cast<const float*>(buf.ptr);
+            const auto* src = static_cast<const float*>(buf.ptr);
             for (int r = 0; r < rows; r++)
             {
               for (int c = 0; c < cols; c++)
@@ -460,6 +475,367 @@ PYBIND11_MODULE(_bindings, m)
             self.setZ(Z);
           },
           py::arg("Z"), "Set height matrix (numpy float32 2D array)");
+
+  // =========================================================================
+  // Phase 0.5 Extensions — additional viz classes (item #3)
+  // =========================================================================
+
+  // CColorBar (TColormap is an int enum in C++)
+  py::class_<CColorBar, CVisualObject, std::shared_ptr<CColorBar>>(m, "CColorBar")
+      .def(
+          py::init(
+              [](int colormap, double width, double height, float min_col, float max_col,
+                 float min_value, float max_value, const std::string& label_format,
+                 float label_font_size)
+              {
+                return std::make_shared<CColorBar>(
+                    static_cast<mrpt::img::TColormap>(colormap), width, height, min_col, max_col,
+                    min_value, max_value, label_format, label_font_size);
+              }),
+          py::arg("colormap") = 0, py::arg("width") = 0.2, py::arg("height") = 1.0,
+          py::arg("min_col") = 0.0f, py::arg("max_col") = 1.0f, py::arg("min_value") = 0.0f,
+          py::arg("max_value") = 1.0f, py::arg("label_format") = std::string("%7.02f"),
+          py::arg("label_font_size") = 0.05f)
+      .def(
+          "setColormap",
+          [](CColorBar& self, int colormap)
+          { self.setColormap(static_cast<mrpt::img::TColormap>(colormap)); },
+          py::arg("colormap"))
+      .def(
+          "setColorAndValueLimits", &CColorBar::setColorAndValueLimits, py::arg("col_min"),
+          py::arg("col_max"), py::arg("value_min"), py::arg("value_max"));
+
+  // CMesh3D
+  py::class_<CMesh3D, CVisualObject, std::shared_ptr<CMesh3D>>(m, "CMesh3D")
+      .def(py::init<>())
+      .def("enableShowEdges", &CMesh3D::enableShowEdges, py::arg("v"))
+      .def("enableShowFaces", &CMesh3D::enableShowFaces, py::arg("v"))
+      .def("enableShowVertices", &CMesh3D::enableShowVertices, py::arg("v"))
+      .def("enableFaceNormals", &CMesh3D::enableFaceNormals, py::arg("v"))
+      .def(
+          "loadMesh",
+          [](CMesh3D& self, const py::array_t<float>& verts, const py::array_t<int>& face_verts,
+             const py::array_t<int>& verts_per_face)
+          {
+            auto v = verts.unchecked<2>();
+            auto fv = face_verts.unchecked<1>();
+            auto vpf = verts_per_face.unchecked<1>();
+            const auto nv = static_cast<unsigned int>(v.shape(0));
+            const auto nf = static_cast<unsigned int>(vpf.shape(0));
+            std::vector<float> vc(static_cast<size_t>(nv) * 3);
+            for (unsigned int i = 0; i < nv; i++)
+            {
+              vc[static_cast<size_t>(i) * 3] = v(i, 0);
+              vc[static_cast<size_t>(i) * 3 + 1] = v(i, 1);
+              vc[static_cast<size_t>(i) * 3 + 2] = v(i, 2);
+            }
+            std::vector<int> vpf_v(nf);
+            std::vector<int> fv_v(fv.shape(0));
+            for (unsigned int i = 0; i < nf; i++)
+            {
+              vpf_v[i] = vpf(i);
+            }
+            for (ssize_t i = 0; i < fv.shape(0); i++)
+            {
+              fv_v[i] = fv(i);
+            }
+            self.loadMesh(nv, nf, vpf_v.data(), fv_v.data(), vc.data());
+          },
+          py::arg("vertices"), py::arg("face_vertices"), py::arg("verts_per_face"),
+          "Load a mesh from numpy arrays: vertices (Nx3 float32), face_vertices (M,) int32, "
+          "verts_per_face (F,) int32");
+
+  // CMeshFast
+  py::class_<CMeshFast, CVisualObject, std::shared_ptr<CMeshFast>>(m, "CMeshFast")
+      .def(
+          py::init<bool, float, float, float, float>(), py::arg("enable_transparency") = false,
+          py::arg("xMin") = -1.0f, py::arg("xMax") = 1.0f, py::arg("yMin") = -1.0f,
+          py::arg("yMax") = 1.0f)
+      .def(
+          "setGridLimits", &CMeshFast::setGridLimits, py::arg("xmin"), py::arg("xmax"),
+          py::arg("ymin"), py::arg("ymax"))
+      .def("enableTransparency", &CMeshFast::enableTransparency, py::arg("v"))
+      .def(
+          "enableColorFromZ",
+          [](CMeshFast& self, bool v, int colormap)
+          { self.enableColorFromZ(v, static_cast<mrpt::img::TColormap>(colormap)); },
+          py::arg("v"), py::arg("colormap") = 4, "Enable color from Z height (colormap int)")
+      .def(
+          "setZ",
+          [](CMeshFast& self, const py::array_t<float>& arr)
+          {
+            auto buf = arr.request();
+            const auto rows = static_cast<int>(buf.shape[0]);
+            const auto cols = static_cast<int>(buf.shape[1]);
+            mrpt::math::CMatrixDynamic<float> Z(rows, cols);
+            const auto* src = static_cast<const float*>(buf.ptr);
+            for (int r = 0; r < rows; r++)
+            {
+              for (int c = 0; c < cols; c++)
+              {
+                Z(r, c) = src[r * cols + c];
+              }
+            }
+            self.setZ(Z);
+          },
+          py::arg("Z"), "Set height matrix (numpy float32 2D array)");
+
+  // CTexturedPlane
+  py::class_<CTexturedPlane, CVisualObject, std::shared_ptr<CTexturedPlane>>(m, "CTexturedPlane")
+      .def(
+          py::init<float, float, float, float>(), py::arg("x_min") = -1.0f, py::arg("x_max") = 1.0f,
+          py::arg("y_min") = -1.0f, py::arg("y_max") = 1.0f)
+      .def(
+          "setPlaneCorners", &CTexturedPlane::setPlaneCorners, py::arg("xMin"), py::arg("xMax"),
+          py::arg("yMin"), py::arg("yMax"))
+      .def(
+          "getPlaneCorners",
+          [](const CTexturedPlane& self)
+          {
+            float xMin = 0.0f;
+            float xMax = 0.0f;
+            float yMin = 0.0f;
+            float yMax = 0.0f;
+            self.getPlaneCorners(xMin, xMax, yMin, yMax);
+            return py::make_tuple(xMin, xMax, yMin, yMax);
+          })
+      .def(
+          "setTextureRepeat", &CTexturedPlane::setTextureRepeat, py::arg("repeatX"),
+          py::arg("repeatY"))
+      .def("enableLighting", &CTexturedPlane::enableLighting, py::arg("enable") = true);
+
+  // CSetOfTexturedTriangles
+  py::class_<CSetOfTexturedTriangles, CVisualObject, std::shared_ptr<CSetOfTexturedTriangles>>(
+      m, "CSetOfTexturedTriangles")
+      .def(py::init([]() { return std::make_shared<CSetOfTexturedTriangles>(); }))
+      .def("clearTriangles", [](CSetOfTexturedTriangles& self) { self.clearTriangles(); })
+      .def(
+          "getTrianglesCount",
+          [](const CSetOfTexturedTriangles& self) { return self.getTrianglesCount(); })
+      .def(
+          "getTriangle",
+          [](const CSetOfTexturedTriangles& self, size_t idx) -> mrpt::viz::TTriangle
+          { return self.getTriangle(idx); },
+          py::arg("idx"))
+      .def(
+          "insertTriangle",
+          [](CSetOfTexturedTriangles& self, const mrpt::viz::TTriangle& t)
+          { self.insertTriangle(t); },
+          py::arg("triangle"));
+
+  // CPolyhedron
+  py::class_<CPolyhedron, CVisualObject, std::shared_ptr<CPolyhedron>>(m, "CPolyhedron")
+      .def_static("CreateTetrahedron", &CPolyhedron::CreateTetrahedron, py::arg("radius"))
+      .def_static("CreateHexahedron", &CPolyhedron::CreateHexahedron, py::arg("radius"))
+      .def_static("CreateOctahedron", &CPolyhedron::CreateOctahedron, py::arg("radius"))
+      .def_static("CreateDodecahedron", &CPolyhedron::CreateDodecahedron, py::arg("radius"))
+      .def_static("CreateIcosahedron", &CPolyhedron::CreateIcosahedron, py::arg("radius"))
+      .def_static(
+          "CreateTruncatedTetrahedron", &CPolyhedron::CreateTruncatedTetrahedron, py::arg("radius"))
+      .def_static(
+          "CreateTruncatedHexahedron", &CPolyhedron::CreateTruncatedHexahedron, py::arg("radius"))
+      .def_static(
+          "CreateTruncatedOctahedron", &CPolyhedron::CreateTruncatedOctahedron, py::arg("radius"))
+      .def_static(
+          "CreateTruncatedIcosahedron", &CPolyhedron::CreateTruncatedIcosahedron, py::arg("radius"))
+      .def_static("CreateCuboctahedron", &CPolyhedron::CreateCuboctahedron, py::arg("radius"))
+      .def_static(
+          "CreateIcosidodecahedron",
+          py::overload_cast<double, bool>(&CPolyhedron::CreateIcosidodecahedron), py::arg("radius"),
+          py::arg("type") = true);
+
+  // COrbitCameraController
+  py::class_<COrbitCameraController>(m, "COrbitCameraController")
+      .def(py::init<>())
+      .def(
+          "setCameraPointing",
+          py::overload_cast<float, float, float>(&COrbitCameraController::setCameraPointing),
+          py::arg("x"), py::arg("y"), py::arg("z"))
+      .def_property(
+          "zoom", [](const COrbitCameraController& c) { return c.getZoomDistance(); },
+          [](COrbitCameraController& c, float d) { c.setZoomDistance(d); })
+      .def_property(
+          "azimuth_deg", [](const COrbitCameraController& c) { return c.getAzimuthDegrees(); },
+          [](COrbitCameraController& c, float d) { c.setAzimuthDegrees(d); })
+      .def_property(
+          "elevation_deg", [](const COrbitCameraController& c) { return c.getElevationDegrees(); },
+          [](COrbitCameraController& c, float d) { c.setElevationDegrees(d); })
+      .def_property(
+          "roll_deg", [](const COrbitCameraController& c) { return c.getRollDegrees(); },
+          [](COrbitCameraController& c, float d) { c.setRollDegrees(d); })
+      .def("setZoomDistance", &COrbitCameraController::setZoomDistance, py::arg("d"))
+      .def("setAzimuthDegrees", &COrbitCameraController::setAzimuthDegrees, py::arg("deg"))
+      .def("setElevationDegrees", &COrbitCameraController::setElevationDegrees, py::arg("deg"))
+      .def("applyTo", &COrbitCameraController::applyTo, py::arg("cam"))
+      .def("setFrom", &COrbitCameraController::setFrom, py::arg("cam"))
+      .def(
+          "onMouseMove", &COrbitCameraController::onMouseMove, py::arg("x"), py::arg("y"),
+          py::arg("buttons"), py::arg("modifiers"))
+      .def(
+          "onMouseButton", &COrbitCameraController::onMouseButton, py::arg("x"), py::arg("y"),
+          py::arg("button"), py::arg("down"))
+      .def("onScroll", &COrbitCameraController::onScroll, py::arg("delta"), py::arg("modifiers"));
+
+  // COctoMapVoxels
+  py::enum_<COctoMapVoxels::visualization_mode_t>(m, "OctoMapVisualizationMode")
+      .value(
+          "FIXED", COctoMapVoxels::visualization_mode_t::FIXED,
+          "All voxels have the same fixed color")
+      .value(
+          "COLOR_FROM_HEIGHT", COctoMapVoxels::visualization_mode_t::COLOR_FROM_HEIGHT,
+          "Color voxels by height")
+      .value(
+          "COLOR_FROM_OCCUPANCY", COctoMapVoxels::visualization_mode_t::COLOR_FROM_OCCUPANCY,
+          "Color by occupancy probability")
+      .value(
+          "TRANSPARENCY_FROM_OCCUPANCY",
+          COctoMapVoxels::visualization_mode_t::TRANSPARENCY_FROM_OCCUPANCY,
+          "Transparency from occupancy")
+      .value(
+          "TRANS_AND_COLOR_FROM_OCCUPANCY",
+          COctoMapVoxels::visualization_mode_t::TRANS_AND_COLOR_FROM_OCCUPANCY,
+          "Both transparency and color from occupancy")
+      .value(
+          "COLOR_FROM_RGB_DATA", COctoMapVoxels::visualization_mode_t::COLOR_FROM_RGB_DATA,
+          "Use per-voxel stored RGB")
+      .export_values();
+
+  py::class_<COctoMapVoxels, CVisualObject, std::shared_ptr<COctoMapVoxels>>(m, "COctoMapVoxels")
+      .def(py::init<>())
+      .def("clear", &COctoMapVoxels::clear)
+      .def("setVisualizationMode", &COctoMapVoxels::setVisualizationMode, py::arg("mode"))
+      .def("enableLights", &COctoMapVoxels::enableLights, py::arg("enable"))
+      .def("enableCubeTransparency", &COctoMapVoxels::enableCubeTransparency, py::arg("enable"))
+      .def("showGridLines", &COctoMapVoxels::showGridLines, py::arg("show"))
+      .def("showVoxels", &COctoMapVoxels::showVoxels, py::arg("voxel_set"), py::arg("show"))
+      .def("showVoxelsAsPoints", &COctoMapVoxels::showVoxelsAsPoints, py::arg("enable"))
+      .def("getVoxelCount", &COctoMapVoxels::getVoxelCount, py::arg("set_index"))
+      .def("getVoxelSetCount", &COctoMapVoxels::getVoxelSetCount)
+      .def("resizeVoxelSets", &COctoMapVoxels::resizeVoxelSets, py::arg("n"))
+      .def("resizeVoxels", &COctoMapVoxels::resizeVoxels, py::arg("set_index"), py::arg("n"))
+      .def(
+          "push_back_Voxel",
+          [](COctoMapVoxels& self, size_t set_idx, float x, float y, float z, float side, uint8_t r,
+             uint8_t g, uint8_t b, uint8_t a)
+          {
+            self.push_back_Voxel(
+                set_idx, COctoMapVoxels::TVoxel(
+                             mrpt::math::TPoint3Df(x, y, z), side, mrpt::img::TColor(r, g, b, a)));
+          },
+          py::arg("set_index"), py::arg("x"), py::arg("y"), py::arg("z"), py::arg("side"),
+          py::arg("r") = 200, py::arg("g") = 200, py::arg("b") = 200, py::arg("a") = 255);
+
+  // CUBE_TEXTURE_FACE enum
+  py::enum_<CUBE_TEXTURE_FACE>(m, "CubeTextureFace")
+      .value("LEFT", CUBE_TEXTURE_FACE::LEFT)
+      .value("RIGHT", CUBE_TEXTURE_FACE::RIGHT)
+      .value("TOP", CUBE_TEXTURE_FACE::TOP)
+      .value("BOTTOM", CUBE_TEXTURE_FACE::BOTTOM)
+      .value("FRONT", CUBE_TEXTURE_FACE::FRONT)
+      .value("BACK", CUBE_TEXTURE_FACE::BACK)
+      .export_values();
+
+  // CSkyBox
+  py::class_<CSkyBox, CVisualObject, std::shared_ptr<CSkyBox>>(m, "CSkyBox")
+      .def(py::init<>())
+      .def(
+          "assignImage",
+          py::overload_cast<const CUBE_TEXTURE_FACE, const mrpt::img::CImage&>(
+              &CSkyBox::assignImage),
+          py::arg("face"), py::arg("img"));
+
+  // TLightType enum
+  py::enum_<TLightType>(m, "TLightType")
+      .value("Directional", TLightType::Directional)
+      .value("Point", TLightType::Point)
+      .value("Spot", TLightType::Spot)
+      .export_values();
+
+  // TLight struct
+  py::class_<TLight>(m, "TLight")
+      .def(py::init<>())
+      .def_readwrite("type", &TLight::type)
+      .def_readwrite("diffuse", &TLight::diffuse)
+      .def_readwrite("specular", &TLight::specular)
+      .def_readwrite("direction", &TLight::direction)
+      .def_readwrite("position", &TLight::position)
+      .def_readwrite("attenuation_constant", &TLight::attenuation_constant)
+      .def_readwrite("attenuation_linear", &TLight::attenuation_linear)
+      .def_readwrite("attenuation_quadratic", &TLight::attenuation_quadratic)
+      .def_readwrite("spot_inner_cutoff_deg", &TLight::spot_inner_cutoff_deg)
+      .def_readwrite("spot_outer_cutoff_deg", &TLight::spot_outer_cutoff_deg)
+      .def_static(
+          "Directional",
+          [](const mrpt::math::TVector3Df& dir, float r, float g, float b, float diffuse,
+             float specular)
+          { return TLight::Directional(dir, mrpt::img::TColorf(r, g, b), diffuse, specular); },
+          py::arg("dir"), py::arg("r") = 1.0f, py::arg("g") = 1.0f, py::arg("b") = 1.0f,
+          py::arg("diffuse") = 0.8f, py::arg("specular") = 0.95f);
+
+  // Generalized ellipsoids: CEllipsoidInverseDepth2D, CEllipsoidInverseDepth3D,
+  // CEllipsoidRangeBearing2D. CGeneralizedEllipsoidTemplate<N> has a protected destructor so
+  // we cannot register the base; bind the concrete classes directly under CVisualObject instead.
+  py::class_<CEllipsoidInverseDepth2D, CVisualObject, std::shared_ptr<CEllipsoidInverseDepth2D>>(
+      m, "CEllipsoidInverseDepth2D")
+      .def(py::init<>())
+      .def("setQuantiles", &CEllipsoidInverseDepth2D::setQuantiles, py::arg("q"))
+      .def("getQuantiles", &CEllipsoidInverseDepth2D::getQuantiles)
+      .def(
+          "setCovMatrix", [](CEllipsoidInverseDepth2D& self, const mrpt::math::CMatrixDouble22& cov)
+          { self.setCovMatrix(cov); })
+      .def(
+          "setUnderflowMaxRange", &CEllipsoidInverseDepth2D::setUnderflowMaxRange,
+          py::arg("maxRange"))
+      .def("getUnderflowMaxRange", &CEllipsoidInverseDepth2D::getUnderflowMaxRange);
+
+  py::class_<CEllipsoidInverseDepth3D, CVisualObject, std::shared_ptr<CEllipsoidInverseDepth3D>>(
+      m, "CEllipsoidInverseDepth3D")
+      .def(py::init<>())
+      .def("setQuantiles", &CEllipsoidInverseDepth3D::setQuantiles, py::arg("q"))
+      .def("getQuantiles", &CEllipsoidInverseDepth3D::getQuantiles)
+      .def(
+          "setCovMatrix", [](CEllipsoidInverseDepth3D& self, const mrpt::math::CMatrixDouble33& cov)
+          { self.setCovMatrix(cov); })
+      .def(
+          "setUnderflowMaxRange", &CEllipsoidInverseDepth3D::setUnderflowMaxRange,
+          py::arg("maxRange"))
+      .def("getUnderflowMaxRange", &CEllipsoidInverseDepth3D::getUnderflowMaxRange);
+
+  py::class_<CEllipsoidRangeBearing2D, CVisualObject, std::shared_ptr<CEllipsoidRangeBearing2D>>(
+      m, "CEllipsoidRangeBearing2D")
+      .def(py::init<>())
+      .def("setQuantiles", &CEllipsoidRangeBearing2D::setQuantiles, py::arg("q"))
+      .def("getQuantiles", &CEllipsoidRangeBearing2D::getQuantiles)
+      .def(
+          "setCovMatrix", [](CEllipsoidRangeBearing2D& self, const mrpt::math::CMatrixDouble22& cov)
+          { self.setCovMatrix(cov); });
+
+  // CAnimatedAssimpModel
+  py::class_<CAnimatedAssimpModel, CAssimpModel, std::shared_ptr<CAnimatedAssimpModel>>(
+      m, "CAnimatedAssimpModel")
+      .def(py::init<>())
+      .def(
+          "loadScene",
+          [](CAnimatedAssimpModel& self, const std::string& fn, int flags)
+          { self.loadScene(fn, flags); },
+          py::arg("file_name"),
+          py::arg("flags") =
+              (CAssimpModel::LoadFlags::RealTimeMaxQuality | CAssimpModel::LoadFlags::FlipUVs |
+               CAssimpModel::LoadFlags::Verbose))
+      .def("setAnimationTime", &CAnimatedAssimpModel::setAnimationTime, py::arg("t_seconds"))
+      .def(
+          "getAnimationDuration", &CAnimatedAssimpModel::getAnimationDuration,
+          py::arg("anim_idx") = 0)
+      .def("getAnimationCount", &CAnimatedAssimpModel::getAnimationCount)
+      .def("getAnimationName", &CAnimatedAssimpModel::getAnimationName, py::arg("anim_idx"))
+      .def(
+          "setActiveAnimation",
+          py::overload_cast<const std::string&>(&CAnimatedAssimpModel::setActiveAnimation),
+          py::arg("anim_name"))
+      .def(
+          "setActiveAnimationByIndex",
+          py::overload_cast<size_t>(&CAnimatedAssimpModel::setActiveAnimation), py::arg("idx"))
+      .def("setLooping", &CAnimatedAssimpModel::setLooping, py::arg("loop"));
 
   auto stock = m.def_submodule("stock_objects", "Pre-built 3D objects");
   stock.def("CornerXYZ", &mrpt::viz::stock_objects::CornerXYZ, py::arg("scale") = 1.0f);
