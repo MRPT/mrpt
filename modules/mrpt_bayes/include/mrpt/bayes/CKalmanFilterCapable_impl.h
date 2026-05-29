@@ -477,8 +477,6 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
             KFVector ytilde(OBS_SIZE * N_upd);
             size_t ytilde_idx = 0;
 
-            // TODO: Use a Matrix view of "dh_dx_full" instead of
-            // creating a copy into "m_dh_dx_full_obs"
             m_dh_dx_full_obs.setZero(
                 N_upd * OBS_SIZE,
                 VEH_SIZE + FEAT_SIZE * N_map);  // Init to zeros.
@@ -510,9 +508,6 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
                     "OnPreComputingPredictions() didn't "
                     "recommend the prediction of a landmark "
                     "which has been actually observed!");
-                // TODO: In these cases, extend the prediction
-                // right now instead of launching an
-                // exception... or is this a bad idea??
 
                 // Build the subset m_dh_dx_full_obs:
                 //										m_dh_dx_full_obs.block(S_idxs.size()
