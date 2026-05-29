@@ -172,24 +172,26 @@ void mrpt::slam::path_from_rtk_gps(
   // -----------------------------------------------------------
   // At this point we already have the sensor positions, thus
   //  we can estimate the covariance matrix D:
-  //
-  // TODO: Generalize equations for # of GPS > 3
   // -----------------------------------------------------------
   map<set<string>, double> Ad_ij;         // InterGPS distances in 2D
   map<set<string>, double> phi_ij;        // Directions on XY of the lines between i-j
-  map<string, size_t> D_cov_indexes;      // Sensor label-> index in the matrix (first=0, ...)
+  map<string, size_t> D_cov_indexes;      // Sensor label-> index in GPS list (0..N-1)
   map<size_t, string> D_cov_rev_indexes;  // Reverse of D_cov_indexes
+
+  // pairList[k] = (label_a, label_b) for the k-th pair (index_a < index_b),
+  // used to index rows/cols of D_cov and D_mean.
+  vector<pair<string, string>> pairList;
 
   CMatrixDouble D_cov;    // square distances cov
   CMatrixDouble D_cov_1;  // square distances cov (inverse)
   CVectorDouble D_mean;   // square distances mean
 
-  if (doConsistencyCheck && GPS_local_coords_on_vehicle.size() == 3)
+  if (doConsistencyCheck && GPS_local_coords_on_vehicle.size() >= 3)
   {
-    unsigned int cnt = 0;
+    // Build GPS label -> sequential index, and all pairwise distances/angles
+    size_t cnt = 0;
     for (auto i = GPS_local_coords_on_vehicle.begin(); i != GPS_local_coords_on_vehicle.end(); ++i)
     {
-      // Index tables:
       D_cov_indexes[i->first] = cnt;
       D_cov_rev_indexes[cnt] = i->first;
       cnt++;
@@ -205,48 +207,81 @@ void mrpt::slam::path_from_rtk_gps(
         }
       }
     }
-    ASSERT_(D_cov_indexes.size() == 3 && D_cov_rev_indexes.size() == 3);
 
-    D_cov.setSize(D_cov_indexes.size(), D_cov_indexes.size());
-    D_mean.resize(D_cov_indexes.size());
+    const size_t N = GPS_local_coords_on_vehicle.size();
+    const size_t numPairs = N * (N - 1) / 2;
 
-    // See paper for the formulas!
-    // TODO: generalize for N>3
+    // Build ordered pair list (index_a < index_b, lexicographic)
+    for (size_t i = 0; i < N; ++i)
+    {
+      for (size_t j = i + 1; j < N; ++j)
+      {
+        pairList.emplace_back(D_cov_rev_indexes[i], D_cov_rev_indexes[j]);
+      }
+    }
 
-    D_cov(0, 0) = 2 * square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[1])]);
-    D_cov(1, 1) = 2 * square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[2])]);
-    D_cov(2, 2) = 2 * square(Ad_ij[make_set(D_cov_rev_indexes[1], D_cov_rev_indexes[2])]);
+    D_cov.setSize(static_cast<int>(numPairs), static_cast<int>(numPairs));
+    D_mean.resize(static_cast<int>(numPairs));
 
-    D_cov(1, 0) = Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[1])] *
-                  Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[2])] *
-                  cos(phi_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[1])] -
-                      phi_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[2])]);
-    D_cov(0, 1) = D_cov(1, 0);
+    // Build D_cov using error-propagation formulas generalised to N GPS:
+    //   - Diagonal: Var(d_ab^2) = 8 * sigma^2 * d_ab^2 / (4*sigma^2) = 2*d_ab^2
+    //   - Off-diagonal (pairs p=(a,b) and q=(c,d)):
+    //       If they share GPS k:
+    //         sign = +1 if k is in the same position (both first or both last)
+    //         sign = -1 if k is in different positions
+    //         value = sign * d_p * d_q * cos(phi_p - phi_q)
+    //       If they share no GPS: 0
+    //   The whole matrix is then scaled by 4*std_0^2.
+    for (int p = 0; p < static_cast<int>(numPairs); ++p)
+    {
+      const auto& la = pairList[p].first;
+      const auto& lb = pairList[p].second;
+      const size_t ia = D_cov_indexes[la];
+      const size_t ib = D_cov_indexes[lb];
+      const double dab = Ad_ij[make_set(la, lb)];
 
-    D_cov(2, 0) = -Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[1])] *
-                  Ad_ij[make_set(D_cov_rev_indexes[1], D_cov_rev_indexes[2])] *
-                  cos(phi_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[1])] -
-                      phi_ij[make_set(D_cov_rev_indexes[1], D_cov_rev_indexes[2])]);
-    D_cov(0, 2) = D_cov(2, 0);
+      D_cov(p, p) = 2.0 * square(dab);
+      D_mean[p] = square(dab);
 
-    D_cov(2, 1) = Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[2])] *
-                  Ad_ij[make_set(D_cov_rev_indexes[1], D_cov_rev_indexes[2])] *
-                  cos(phi_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[2])] -
-                      phi_ij[make_set(D_cov_rev_indexes[1], D_cov_rev_indexes[2])]);
-    D_cov(1, 2) = D_cov(2, 1);
+      for (int q = p + 1; q < static_cast<int>(numPairs); ++q)
+      {
+        const auto& lc = pairList[q].first;
+        const auto& ld = pairList[q].second;
+        const size_t ic = D_cov_indexes[lc];
+        const size_t id = D_cov_indexes[ld];
+        const double dcd = Ad_ij[make_set(lc, ld)];
+        const double phiab = phi_ij[make_set(la, lb)];
+        const double phicd = phi_ij[make_set(lc, ld)];
 
-    D_cov *= 4 * square(std_0);
+        // sign = +1 if shared GPS is in same position in both pairs, -1 otherwise
+        double sign = 0.0;
+        if (ia == ic || ib == id)
+        {
+          sign = +1.0;
+        }
+        else if (ia == id || ib == ic)
+        {
+          sign = -1.0;
+        }
+        else
+        {
+          D_cov(p, q) = D_cov(q, p) = 0.0;
+          continue;
+        }
 
+        D_cov(p, q) = D_cov(q, p) = sign * dab * dcd * cos(phiab - phicd);
+      }
+    }
+
+    D_cov *= 4.0 * square(std_0);
     D_cov_1 = D_cov.inverse_LLt();
 
     // std::cout << D_cov.inMatlabFormat() << "\n";
-
-    D_mean[0] = square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[1])]);
-    D_mean[1] = square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[2])]);
-    D_mean[2] = square(Ad_ij[make_set(D_cov_rev_indexes[1], D_cov_rev_indexes[2])]);
   }
   else
+  {
     doConsistencyCheck = false;
+  }
 
   // ------------------------------------------
   // Look for the 2 observations:
@@ -386,35 +421,22 @@ void mrpt::slam::path_from_rtk_gps(
           Z[k] = P.z;
         }
 
-        if (doConsistencyCheck && GPS.size() == 3)
+        if (doConsistencyCheck && GPS.size() >= 3)
         {
-          // XYZ[k] have the k'd final coordinates of each GPS
-          // GPS[k] are the CObservations:
-
-          // Compute the inter-GPS square distances:
-          CVectorDouble iGPSdist2(3);
-
-          // [0]: sq dist between:
-          // D_cov_rev_indexes[0],D_cov_rev_indexes[1]
-          TPoint3D P0(
-              X[XYZidxs[D_cov_rev_indexes[0]]], Y[XYZidxs[D_cov_rev_indexes[0]]],
-              Z[XYZidxs[D_cov_rev_indexes[0]]]);
-          TPoint3D P1(
-              X[XYZidxs[D_cov_rev_indexes[1]]], Y[XYZidxs[D_cov_rev_indexes[1]]],
-              Z[XYZidxs[D_cov_rev_indexes[1]]]);
-          TPoint3D P2(
-              X[XYZidxs[D_cov_rev_indexes[2]]], Y[XYZidxs[D_cov_rev_indexes[2]]],
-              Z[XYZidxs[D_cov_rev_indexes[2]]]);
-
-          iGPSdist2[0] = P0.sqrDistanceTo(P1);
-          iGPSdist2[1] = P0.sqrDistanceTo(P2);
-          iGPSdist2[2] = P1.sqrDistanceTo(P2);
+          // Compute all pairwise squared distances in the same order as pairList
+          const int numP = static_cast<int>(pairList.size());
+          CVectorDouble iGPSdist2(numP);
+          for (int pidx = 0; pidx < numP; ++pidx)
+          {
+            const auto& la = pairList[pidx].first;
+            const auto& lb = pairList[pidx].second;
+            TPoint3D Pa(X[XYZidxs[la]], Y[XYZidxs[la]], Z[XYZidxs[la]]);
+            TPoint3D Pb(X[XYZidxs[lb]], Y[XYZidxs[lb]], Z[XYZidxs[lb]]);
+            iGPSdist2[pidx] = Pa.sqrDistanceTo(Pb);
+          }
 
           double mahaD = mrpt::math::mahalanobisDistance(iGPSdist2, D_mean, D_cov_1);
           outInfoTemp.mahalabis_quality_measure[i->first] = mahaD;
-
-          // std::cout << "x: " << iGPSdist2 << " MU: " <<  D_mean << " ->
-          // " << mahaD  << "\n";
         }  // end consistency
 
         // Use a 6D matching method to estimate the location of the
