@@ -211,9 +211,6 @@ Affected APIs:
 | `CPose3D::getRotationMatrix(M)` | returns the matrix |
 | `CPoseRandomSampler::getOriginalPDFCov2D(cov)` | `cov = getOriginalPDFCov2D()` (also `getOriginalPDFCov3D()`) |
 | `CPose3DPDFGaussian::getCovSubmatrix2D(out)` | returns the submatrix |
-| `CAngularObservationMesh::generateSetOfTriangles(tris)` | returns the triangles |
-| `CAngularObservationMesh::getTracedRays(rays)` | returns the rays |
-| `CAngularObservationMesh::getUntracedRays(rays, dist)` | `getUntracedRays(dist)` |
 | `CGasConcentrationGridMap2D::getWindAs3DObject(obj)` | returns the object |
 | `circular_buffer::pop(val)` | `val = pop()` |
 | `CRejectionSamplingCapable::rejectionSampling(N, out, M)` | `out = rejectionSampling(N, M)` |

@@ -22,7 +22,6 @@ the base virtual mrpt::maps::CMetricMap. </li>
 <li> This library also adds visualization classes to the namespace mrpt::viz,
 which couldn't be included in mrpt-viz due to their dependence on map classes
 declared here. The classes are:
-mrpt::viz::CAngularObservationMesh,
 mrpt::viz::CPlanarLaserScan </li>
 </ul>
 

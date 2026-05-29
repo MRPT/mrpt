@@ -81,7 +81,6 @@ mrpt::viz::CSetOfObjects::posePDF2opengl():
 - mrpt::viz::CSetOfObjects::posePDF2opengl() for mrpt::poses::CPosePDFParticles: ![pose PDF particles](_static/preview_CPosePDFParticles_as_opengl.png)
 
 Note: The following extra visual classes are provided by other libraries:
-- mrpt::viz::CAngularObservationMesh (in mrpt-maps): ![CAngularObservationMesh](_static/preview_CAngularObservationMesh.png)
 - mrpt::viz::CPlanarLaserScan (in mrpt-maps): ![CPlanarLaserScan](_static/preview_CPlanarLaserScan.png)
 
 ## Multi-light API

@@ -21,8 +21,8 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/random.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/viz/CAngularObservationMesh.h>
 #include <mrpt/viz/CDisk.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CSphere.h>
@@ -41,49 +41,60 @@ using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 
-// Increase this values to get more precision. It will also increase run time.
+// Increase these values to get more precision. It will also increase run time.
 const size_t HOW_MANY_YAWS = 120;
 const size_t HOW_MANY_PITCHS = 120;
 
-// The scans of the 3D object, taken from 2 different places:
-vector<CObservation2DRangeScan> sequence_scans1, sequence_scans2;
-
-// The two origins for the 3D scans
-CPose3D viewpoint1(-0.3, 0.7, 3, 5.0_deg, 80.0_deg, 3.0_deg);
-CPose3D viewpoint2(0.5, -0.2, 2.6, -5.0_deg, 100.0_deg, -7.0_deg);
-
 CPose3D SCAN2_POSE_ERROR(0.15, -0.07, 0.10, -0.03, 0.1, 0.1);
 
-/**
- * Generate 3 objects to work with - 1 sphere, 2 disks
- */
-void generateObjects(CSetOfObjects::Ptr& world)
+// Synthesize a 3D point cloud by sampling two spheres and two disks analytically.
+void generatePointClouds(CSimplePointsMap& M1, CSimplePointsMap& M2)
 {
-  CSphere::Ptr sph = CSphere::Create(0.5);
-  sph->setLocation(0, 0, 0);
-  sph->setColor(1, 0, 0);
-  world->insert(sph);
+  auto& rng = mrpt::random::getRandomGenerator();
+  const size_t N = HOW_MANY_YAWS * HOW_MANY_PITCHS;
 
+  // Sphere at origin, radius 0.5
+  for (size_t i = 0; i < N / 3; i++)
   {
-    CDisk::Ptr pln = CDisk::Create();
-    pln->setDiskRadius(2);
-    pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
-    pln->setColor(0.8f, 0, 0);
-    world->insert(pln);
+    const double theta = rng.drawUniform(0, 2 * M_PI);
+    const double phi = std::acos(rng.drawUniform(-1.0, 1.0));
+    const double r = 0.5;
+    M1.insertPoint(
+        r * std::sin(phi) * std::cos(theta), r * std::sin(phi) * std::sin(theta),
+        r * std::cos(phi));
   }
 
+  // Disk 1: radius 2, pose (0,0,0, 0, 5deg, 5deg)
+  const CPose3D disk1_pose(0, 0, 0, 0, 5.0_deg, 5.0_deg);
+  for (size_t i = 0; i < N / 3; i++)
   {
-    CDisk::Ptr pln = CDisk::Create();
-    pln->setDiskRadius(2);
-    pln->setPose(CPose3D(0, 0, 0, 30.0_deg, -20.0_deg, -2.0_deg));
-    pln->setColor(0.9f, 0, 0);
-    world->insert(pln);
+    const double ang = rng.drawUniform(0, 2 * M_PI);
+    const double r = rng.drawUniform(0.0, 2.0);
+    mrpt::math::TPoint3D local(r * std::cos(ang), r * std::sin(ang), 0);
+    mrpt::math::TPoint3D world;
+    disk1_pose.composePoint(local, world);
+    M1.insertPoint(world.x, world.y, world.z);
   }
+
+  // Disk 2: radius 2, pose (0, 0, 0, 30deg, -20deg, -2deg)
+  const CPose3D disk2_pose(0, 0, 0, 30.0_deg, -20.0_deg, -2.0_deg);
+  for (size_t i = 0; i < N / 3; i++)
+  {
+    const double ang = rng.drawUniform(0, 2 * M_PI);
+    const double r = rng.drawUniform(0.0, 2.0);
+    mrpt::math::TPoint3D local(r * std::cos(ang), r * std::sin(ang), 0);
+    mrpt::math::TPoint3D world;
+    disk2_pose.composePoint(local, world);
+    M1.insertPoint(world.x, world.y, world.z);
+  }
+
+  // M2 is M1 with a known pose error applied
+  M2 = M1;
+  M2.changeCoordinatesReference(SCAN2_POSE_ERROR);
 }
 
 void test_icp3D()
 {
-  // Create the reference objects:
   Scene::Ptr scene1 = Scene::Create();
   Scene::Ptr scene2 = Scene::Create();
   Scene::Ptr scene3 = Scene::Create();
@@ -94,53 +105,31 @@ void test_icp3D()
   scene2->insert(plane1);
   scene3->insert(plane1);
 
-  CSetOfObjects::Ptr world = CSetOfObjects::Create();
-  generateObjects(world);
-  scene1->insert(world);
-
-  // Perform the 3D scans:
-  auto aom1 = CAngularObservationMesh::Create();
-  auto aom2 = CAngularObservationMesh::Create();
-
-  std::cout << "Performing ray-tracing..."
-            << "\n";
-  CAngularObservationMesh::trace2DSetOfRays(
-      scene1, viewpoint1, aom1,
-      CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_PITCHS),
-      CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_YAWS));
-  CAngularObservationMesh::trace2DSetOfRays(
-      scene1, viewpoint2, aom2,
-      CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_PITCHS),
-      CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_YAWS));
-  std::cout << "Ray-tracing done"
-            << "\n";
-
-  // Put the viewpoints origins:
+  // Build reference scene visualization
   {
-    CSetOfObjects::Ptr origin1 = stock_objects::CornerXYZ();
-    origin1->setPose(viewpoint1);
-    origin1->setScale(0.6f);
-    scene1->insert(origin1);
-    scene2->insert(origin1);
-  }
-  {
-    CSetOfObjects::Ptr origin2 = stock_objects::CornerXYZ();
-    origin2->setPose(viewpoint2);
-    origin2->setScale(0.6f);
-    scene1->insert(origin2);
-    scene2->insert(origin2);
+    CSphere::Ptr sph = CSphere::Create(0.5);
+    sph->setLocation(0, 0, 0);
+    sph->setColor(1, 0, 0);
+    scene1->insert(sph);
+
+    CDisk::Ptr pln = CDisk::Create();
+    pln->setDiskRadius(2);
+    pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
+    pln->setColor(0.8f, 0, 0);
+    scene1->insert(pln);
+
+    CDisk::Ptr pln2 = CDisk::Create();
+    pln2->setDiskRadius(2);
+    pln2->setPose(CPose3D(0, 0, 0, 30.0_deg, -20.0_deg, -2.0_deg));
+    pln2->setColor(0.9f, 0, 0);
+    scene1->insert(pln2);
   }
 
-  // Show the scanned points:
-  CSimplePointsMap M1, M2;
-
-  aom1->generatePointCloud(&M1);
-  aom2->generatePointCloud(&M2);
-
-  // Create the wrongly-localized M2:
-  CSimplePointsMap M2_noisy;
-  M2_noisy = M2;
-  M2_noisy.changeCoordinatesReference(SCAN2_POSE_ERROR);
+  // Generate the two 3D point clouds
+  CSimplePointsMap M1, M2_noisy;
+  std::cout << "Generating synthetic point clouds...\n";
+  generatePointClouds(M1, M2_noisy);
+  std::cout << "Done. M1: " << M1.size() << " pts, M2: " << M2_noisy.size() << " pts\n";
 
   M1.renderOptions.color = mrpt::img::TColorf(1, 0, 0);
   M2_noisy.renderOptions.color = mrpt::img::TColorf(0, 0, 1);
@@ -148,20 +137,12 @@ void test_icp3D()
   scene2->insert(M1.getVisualization());
   scene2->insert(M2_noisy.getVisualization());
 
-  // --------------------------------------
-  // Do the ICP-3D
-  // --------------------------------------
+  // ICP-3D
   CICP icp;
   CICP::TReturnInfo icp_info;
 
   icp.options.thresholdDist = 0.40;
   icp.options.thresholdAng = 0;
-
-  std::vector<double> xs, ys, zs;
-  M1.getAllPoints(xs, ys, ys);
-  std::cout << "Size of  xs in M1: " << xs.size() << "\n";
-  M2.getAllPoints(xs, ys, ys);
-  std::cout << "Size of  xs in M2: " << xs.size() << "\n";
 
   CPose3DPDF::Ptr pdf = icp.Align3D(
       &M2_noisy,  // Map to align
@@ -171,21 +152,19 @@ void test_icp3D()
 
   CPose3D mean = pdf->getMeanVal();
 
-  std::cout << "ICP run took " << icp_info.executionTime << " secs."
-            << "\n";
+  std::cout << "ICP run took " << icp_info.executionTime << " secs.\n";
   std::cout << "Goodness: " << 100 * icp_info.goodness
             << "% , # of iterations= " << icp_info.nIterations << " Quality: " << icp_info.quality
             << "\n";
   std::cout << "ICP output: mean= " << mean << "\n";
   std::cout << "Real displacement: " << SCAN2_POSE_ERROR << "\n";
 
-  // Aligned maps:
+  // Aligned maps
   M2_noisy.changeCoordinatesReference(CPose3D() - mean);
 
   scene3->insert(M1.getVisualization());
   scene3->insert(M2_noisy.getVisualization());
 
-  // Show in Windows:
   CDisplayWindow3D window("ICP-3D demo: scene", 500, 500);
   CDisplayWindow3D window2("ICP-3D demo: UNALIGNED scans", 500, 500);
   CDisplayWindow3D window3("ICP-3D demo: ICP-ALIGNED scans", 500, 500);
@@ -219,13 +198,13 @@ void test_icp3D()
   window3.setCameraAzimuthDeg(90);
   window3.setCameraZoom(15);
 
-  std::cout << "Press any key to exit..."
-            << "\n";
+  std::cout << "Press any key to exit...\n";
   window.waitForKey();
 }
 
 int main()
 {
+  mrpt::random::getRandomGenerator().randomize();
   try
   {
     test_icp3D();
