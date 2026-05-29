@@ -218,8 +218,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
       TInterpolationMethod interp = IMG_INTERP_CUBIC) const;
 
   /** Rotates the image by the given angle (in radians) around the given center point, with
-   * an optional scale factor.
-   * \note This method is marked as TODO - not yet implemented with STB.
+   * an optional scale factor. Uses bilinear interpolation; fills out-of-bounds pixels with zero.
    * \sa resize, scaleImage
    */
   void rotateImage(
@@ -284,9 +283,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   void extract_patch(
       CImage& patch, const TPixelCoord& top_left_corner, const TImageSize& patch_size) const;
 
-  /** Optimize the brightness range of an image without using histogram.
-   * Only for one channel images.
-   * \note Marked as TODO - not yet implemented with STB.
+  /** Optimize the brightness range of an image without using histogram (linear stretch to [0,255]).
+   * Works on images of any number of channels.
    */
   void normalize();
 
@@ -299,24 +297,16 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /** Swaps red and blue channels. */
   void swapRB();
 
-  /** Undistort the image according to some camera parameters.
-   * \note Marked as TODO - not yet implemented with STB.
-   */
+  /** Undistort the image according to some camera parameters, using a precomputed remap (CUndistortMap). */
   void undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) const;
 
-  /** Filter the image with a Median filter with a window size WxW.
-   * \note Marked as TODO - not yet implemented with STB.
-   */
+  /** Filter the image with a Median filter with a window size WxW (W must be odd). */
   void filterMedian(CImage& out_img, int W = 3) const;
 
-  /** Filter the image with a Gaussian filter with a window size WxH.
-   * \note Marked as TODO - not yet implemented with STB.
-   */
+  /** Filter the image with a Gaussian filter with a window size WxH (both must be odd). Separable 1D convolution. */
   void filterGaussian(CImage& out_img, int W = 3, int H = 3, double sigma = 1.0) const;
 
-  /** Draw onto this image the detected corners of a chessboard.
-   * \note Marked as TODO - not yet implemented with STB.
-   */
+  /** Draw onto this image the detected corners of a chessboard. */
   bool drawChessboardCorners(
       const std::vector<TPixelCoordf>& cornerCoords,
       unsigned int check_size_x,

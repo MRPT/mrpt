@@ -556,3 +556,113 @@ TEST(CImage, DifferentAccessMethodsGray)
     }
   }
 }
+
+TEST(CImage, NormalizeStretchesRange)
+{
+  using namespace mrpt::img;
+  CImage img(10, 10, CH_GRAY);
+  // Set all pixels to 50 except one at 10 and one at 200
+  for (int y = 0; y < 10; y++)
+  {
+    for (int x = 0; x < 10; x++)
+    {
+      *img.ptr<uint8_t>(x, y) = 50;
+    }
+  }
+  *img.ptr<uint8_t>(0, 0) = 10;
+  *img.ptr<uint8_t>(9, 9) = 200;
+
+  img.normalize();
+
+  EXPECT_EQ(*img.ptr<uint8_t>(0, 0), 0);
+  EXPECT_EQ(*img.ptr<uint8_t>(9, 9), 255);
+}
+
+TEST(CImage, FilterMedianRemovesImpulseNoise)
+{
+  using namespace mrpt::img;
+  // Create a constant gray image with one salt pixel
+  CImage img(10, 10, CH_GRAY);
+  for (int y = 0; y < 10; y++)
+  {
+    for (int x = 0; x < 10; x++)
+    {
+      *img.ptr<uint8_t>(x, y) = 100;
+    }
+  }
+  *img.ptr<uint8_t>(5, 5) = 255;  // impulse noise
+
+  CImage out;
+  img.filterMedian(out, 3);
+
+  // The center pixel should be corrected back to ~100
+  EXPECT_LE(*out.ptr<uint8_t>(5, 5), 110u);
+}
+
+TEST(CImage, FilterGaussianSmoothing)
+{
+  using namespace mrpt::img;
+  // Impulse image: single white pixel in the center of a black image
+  CImage img(11, 11, CH_GRAY);
+  for (int y = 0; y < 11; y++)
+  {
+    for (int x = 0; x < 11; x++)
+    {
+      *img.ptr<uint8_t>(x, y) = 0;
+    }
+  }
+  *img.ptr<uint8_t>(5, 5) = 255;
+
+  CImage out;
+  img.filterGaussian(out, 5, 5, 1.5);
+
+  // After Gaussian filter, the center should still be brightest
+  EXPECT_GT(*out.ptr<uint8_t>(5, 5), *out.ptr<uint8_t>(0, 0));
+  // Neighboring pixels should be non-zero
+  EXPECT_GT(*out.ptr<uint8_t>(4, 5), 0u);
+}
+
+TEST(CImage, RotateImageIdentity)
+{
+  using namespace mrpt::img;
+  CImage img;
+  bool load_ok = img.loadFromFile(tstImgFileColor);
+  EXPECT_TRUE(load_ok);
+  img = img.grayscale();
+
+  const int w = static_cast<int>(img.getWidth());
+  const int h = static_cast<int>(img.getHeight());
+
+  CImage out;
+  // Rotate by 0 radians -> should be identical
+  img.rotateImage(out, 0.0, {w / 2, h / 2}, 1.0);
+
+  EXPECT_EQ(out.getWidth(), img.getWidth());
+  EXPECT_EQ(out.getHeight(), img.getHeight());
+  // Center pixel should be unchanged
+  EXPECT_EQ(*out.ptr<uint8_t>(w / 2, h / 2), *img.ptr<uint8_t>(w / 2, h / 2));
+}
+
+TEST(CImage, DrawChessboardCorners)
+{
+  using namespace mrpt::img;
+  CImage img(200, 200, CH_RGB);
+  img.filledRectangle({0, 0}, {199, 199}, TColor(200, 200, 200));
+
+  // 3x3 grid of corners
+  std::vector<TPixelCoordf> corners;
+  for (int r = 0; r < 3; r++)
+  {
+    for (int c = 0; c < 3; c++)
+    {
+      corners.push_back({static_cast<float>(40 + c * 60), static_cast<float>(40 + r * 60)});
+    }
+  }
+  bool ok = img.drawChessboardCorners(corners, 3, 3, 1, 5);
+  EXPECT_TRUE(ok);
+
+  // Wrong count -> should return false
+  corners.pop_back();
+  bool ok2 = img.drawChessboardCorners(corners, 3, 3, 1, 5);
+  EXPECT_FALSE(ok2);
+}
