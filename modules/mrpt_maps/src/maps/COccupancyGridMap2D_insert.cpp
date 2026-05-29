@@ -847,7 +847,6 @@ bool COccupancyGridMap2D::internal_insertObservation(
       // ---------------------------------
       //  		Widen rays
       // Algorithm in: https://www.mrpt.org/Occupancy_Grids
-      // FIXME: doesn't support many different poses in one measurement
       // ---------------------------------
       A = d2f(laserPose.phi());
       dAK = 0;
