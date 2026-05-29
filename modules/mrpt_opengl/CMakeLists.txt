@@ -92,6 +92,8 @@ mrpt_add_library(
     mrpt_img
 )
 
+mrpt_add_python_module(opengl python_bindings/${PROJECT_NAME}_py.cpp)
+
 if (MRPT_OPENGL_PROFILER)
   target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_OPENGL_PROFILER)
 endif()
