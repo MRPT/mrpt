@@ -29,8 +29,14 @@
 #include <mrpt/viz/CCylinder.h>
 #include <mrpt/viz/CEllipsoid2D.h>
 #include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CDisk.h>
 #include <mrpt/viz/CFrustum.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CMesh.h>
+#include <mrpt/viz/CSetOfTriangles.h>
+#include <mrpt/viz/CVectorField2D.h>
+#include <mrpt/viz/CVectorField3D.h>
+#include <mrpt/viz/TTriangle.h>
 #include <mrpt/viz/CGridPlaneXZ.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CPointCloudColoured.h>
@@ -312,6 +318,150 @@ PYBIND11_MODULE(_bindings, m)
       .def("__len__", [](const CPointCloudColoured& self) { return self.size(); });
 
   // 22. stock_objects submodule
+  // TTriangle
+  py::class_<TTriangle::Vertex>(m, "TTriangleVertex")
+      .def(py::init<>())
+      .def(
+          "setColor", &TTriangle::Vertex::setColor, py::arg("color"),
+          "Set vertex color from TColor");
+
+  py::class_<TTriangle>(m, "TTriangle")
+      .def(py::init<>())
+      .def(
+          py::init<const mrpt::math::TPoint3Df&, const mrpt::math::TPoint3Df&,
+                   const mrpt::math::TPoint3Df&>(),
+          py::arg("p1"), py::arg("p2"), py::arg("p3"))
+      .def("computeNormals", &TTriangle::computeNormals)
+      .def_readwrite("vertices", &TTriangle::vertices);
+
+  // CDisk
+  py::class_<CDisk, CVisualObject, std::shared_ptr<CDisk>>(m, "CDisk")
+      .def(py::init<>())
+      .def(
+          py::init<float, float, uint32_t>(), py::arg("out_radius"), py::arg("in_radius"),
+          py::arg("slices") = 50U)
+      .def(
+          "setDiskRadius", &CDisk::setDiskRadius, py::arg("out_radius"),
+          py::arg("in_radius") = 0.0f)
+      .def_property_readonly("in_radius", &CDisk::getInRadius)
+      .def_property_readonly("out_radius", &CDisk::getOutRadius)
+      .def("setSlicesCount", &CDisk::setSlicesCount, py::arg("N"));
+
+  // CFrustum
+  py::class_<CFrustum, CVisualObject, std::shared_ptr<CFrustum>>(m, "CFrustum")
+      .def(py::init<>())
+      .def(
+          py::init<float, float, float, float, float, bool, bool>(),
+          py::arg("near_distance"), py::arg("far_distance"), py::arg("horz_FOV_degrees"),
+          py::arg("vert_FOV_degrees"), py::arg("lineWidth") = 1.0f,
+          py::arg("draw_lines") = true, py::arg("draw_planes") = false)
+      .def("setNearFarPlanes", &CFrustum::setNearFarPlanes, py::arg("near"), py::arg("far"))
+      .def("setHorzFOV", &CFrustum::setHorzFOV, py::arg("fov_degrees"))
+      .def("setVertFOV", &CFrustum::setVertFOV, py::arg("fov_degrees"))
+      .def_property_readonly("near_plane", &CFrustum::getNearPlaneDistance)
+      .def_property_readonly("far_plane", &CFrustum::getFarPlaneDistance)
+      .def_property_readonly("horz_fov", &CFrustum::getHorzFOV)
+      .def_property_readonly("vert_fov", &CFrustum::getVertFOV)
+      .def("setPlaneColor", &CFrustum::setPlaneColor, py::arg("color"));
+
+  // CSetOfTriangles
+  py::class_<CSetOfTriangles, CVisualObject, std::shared_ptr<CSetOfTriangles>>(
+      m, "CSetOfTriangles")
+      .def(py::init<>())
+      .def("clearTriangles", &CSetOfTriangles::clearTriangles)
+      .def("getTrianglesCount", &CSetOfTriangles::getTrianglesCount)
+      .def(
+          "getTriangle",
+          [](const CSetOfTriangles& self, size_t idx) {
+            TTriangle t;
+            self.getTriangle(idx, t);
+            return t;
+          },
+          py::arg("idx"))
+      .def("insertTriangle", &CSetOfTriangles::insertTriangle, py::arg("triangle"));
+
+  // CVectorField2D
+  py::class_<CVectorField2D, CVisualObject, std::shared_ptr<CVectorField2D>>(m, "CVectorField2D")
+      .def(py::init<>())
+      .def("clear", &CVectorField2D::clear)
+      .def(
+          "setGridLimits", &CVectorField2D::setGridLimits, py::arg("xmin"), py::arg("xmax"),
+          py::arg("ymin"), py::arg("ymax"))
+      .def(
+          "setGridCenterAndCellSize", &CVectorField2D::setGridCenterAndCellSize, py::arg("cx"),
+          py::arg("cy"), py::arg("cell_x"), py::arg("cell_y"))
+      .def(
+          "setPointColor", &CVectorField2D::setPointColor, py::arg("R"), py::arg("G"),
+          py::arg("B"), py::arg("A") = 1.0f)
+      .def(
+          "setVectorFieldColor", &CVectorField2D::setVectorFieldColor, py::arg("R"), py::arg("G"),
+          py::arg("B"), py::arg("A") = 1.0f)
+      .def(
+          "setVectorField",
+          [](CVectorField2D& self, mrpt::math::CMatrixFloat vx, mrpt::math::CMatrixFloat vy) {
+            self.setVectorField(vx, vy);
+          },
+          py::arg("vx"), py::arg("vy"));
+
+  // CVectorField3D
+  py::class_<CVectorField3D, CVisualObject, std::shared_ptr<CVectorField3D>>(m, "CVectorField3D")
+      .def(py::init<>())
+      .def("clear", &CVectorField3D::clear)
+      .def(
+          "setPointColor", &CVectorField3D::setPointColor, py::arg("R"), py::arg("G"),
+          py::arg("B"), py::arg("A") = 1.0f)
+      .def(
+          "setVectorFieldColor", &CVectorField3D::setVectorFieldColor, py::arg("R"), py::arg("G"),
+          py::arg("B"), py::arg("A") = 1.0f)
+      .def("setMaxSpeedForColor", &CVectorField3D::setMaxSpeedForColor, py::arg("s"))
+      .def(
+          "setVectorField",
+          [](CVectorField3D& self, mrpt::math::CMatrixFloat vx, mrpt::math::CMatrixFloat vy,
+             mrpt::math::CMatrixFloat vz) { self.setVectorField(vx, vy, vz); },
+          py::arg("vx"), py::arg("vy"), py::arg("vz"))
+      .def(
+          "setPointCoordinates",
+          [](CVectorField3D& self, mrpt::math::CMatrixFloat px, mrpt::math::CMatrixFloat py2,
+             mrpt::math::CMatrixFloat pz) { self.setPointCoordinates(px, py2, pz); },
+          py::arg("px"), py::arg("py"), py::arg("pz"));
+
+  // CMesh
+  py::class_<CMesh, CVisualObject, std::shared_ptr<CMesh>>(m, "CMesh")
+      .def(
+          py::init<bool, float, float, float, float>(),
+          py::arg("enable_transparency") = false, py::arg("xMin") = -1.0f,
+          py::arg("xMax") = 1.0f, py::arg("yMin") = -1.0f, py::arg("yMax") = 1.0f)
+      .def(
+          "setGridLimits",
+          [](CMesh& self, float x0, float x1, float y0, float y1) {
+            self.setGridLimits(x0, x1, y0, y1);
+          },
+          py::arg("xMin"), py::arg("xMax"), py::arg("yMin"), py::arg("yMax"))
+      .def("enableTransparency", &CMesh::enableTransparency, py::arg("v"))
+      .def("enableWireFrame", &CMesh::enableWireFrame, py::arg("v"))
+      .def(
+          "enableColorFromZ",
+          [](CMesh& self, bool v) { self.enableColorFromZ(v, mrpt::img::cmHOT); }, py::arg("v"),
+          "Enable color from Z height using HOT colormap")
+      .def(
+          "setZ",
+          [](CMesh& self, py::array_t<float> arr) {
+            auto buf = arr.request();
+            const int rows = static_cast<int>(buf.shape[0]);
+            const int cols = static_cast<int>(buf.shape[1]);
+            mrpt::math::CMatrixDynamic<float> Z(rows, cols);
+            const float* src = static_cast<const float*>(buf.ptr);
+            for (int r = 0; r < rows; r++)
+            {
+              for (int c = 0; c < cols; c++)
+              {
+                Z(r, c) = src[r * cols + c];
+              }
+            }
+            self.setZ(Z);
+          },
+          py::arg("Z"), "Set height matrix (numpy float32 2D array)");
+
   auto stock = m.def_submodule("stock_objects", "Pre-built 3D objects");
   stock.def("CornerXYZ", &mrpt::viz::stock_objects::CornerXYZ, py::arg("scale") = 1.0f);
   stock.def(

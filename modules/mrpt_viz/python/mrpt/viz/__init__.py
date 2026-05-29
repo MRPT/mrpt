@@ -31,6 +31,16 @@ CSimpleLine = _b.CSimpleLine
 CEllipsoid2D = _b.CEllipsoid2D
 CEllipsoid3D = _b.CEllipsoid3D
 
+# New geometric primitives (item #3)
+TTriangle = _b.TTriangle
+TTriangleVertex = _b.TTriangleVertex
+CDisk = _b.CDisk
+CFrustum = _b.CFrustum
+CSetOfTriangles = _b.CSetOfTriangles
+CVectorField2D = _b.CVectorField2D
+CVectorField3D = _b.CVectorField3D
+CMesh = _b.CMesh
+
 # stock_objects submodule
 stock_objects = _b.stock_objects
 
@@ -65,6 +75,10 @@ __all__ = [
     'CText', 'CText3D',
     'CSetOfLines', 'CSimpleLine',
     'CEllipsoid2D', 'CEllipsoid3D',
+    'TTriangle', 'TTriangleVertex',
+    'CDisk', 'CFrustum', 'CSetOfTriangles',
+    'CVectorField2D', 'CVectorField3D',
+    'CMesh',
     'stock_objects',
     'create_point_cloud',
 ]
