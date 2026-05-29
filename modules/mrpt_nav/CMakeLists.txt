@@ -124,3 +124,5 @@ mrpt_add_library(
     mrpt_kinematics
     mrpt_viz
 )
+
+mrpt_add_python_module(nav python_bindings/${PROJECT_NAME}_py.cpp)
