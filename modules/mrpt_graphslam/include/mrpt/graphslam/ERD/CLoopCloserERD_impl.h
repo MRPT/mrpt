@@ -1296,7 +1296,6 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
   // just visited the first node
   visited_nodes.at(starting_node) = true;
 
-
   while (true)
   {
     // if there is at least one false, exit loop
@@ -1323,7 +1322,6 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 
     path_t* optimal_path = this->popMinUncertaintyPath(&pool_of_paths);
     TNodeID dest = optimal_path->getDestination();
-
 
     if (!visited_nodes.at(dest))
     {

@@ -9,6 +9,8 @@
    */
 #include "CConfigWidget.h"
 
+#include <mrpt/config/CConfigFileMemory.h>
+
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QListWidget>
@@ -24,7 +26,6 @@
 #include "CSelectType.h"
 #include "mrpt/gui/error_box.h"
 #include "mrpt/io/CFileOutputStream.h"
-#include <mrpt/config/CConfigFileMemory.h>
 #include "ui_CConfigWidget.h"
 
 using namespace mrpt;

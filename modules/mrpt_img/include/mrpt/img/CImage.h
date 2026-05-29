@@ -297,13 +297,15 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /** Swaps red and blue channels. */
   void swapRB();
 
-  /** Undistort the image according to some camera parameters, using a precomputed remap (CUndistortMap). */
+  /** Undistort the image according to some camera parameters, using a precomputed remap
+   * (CUndistortMap). */
   void undistort(CImage& out_img, const mrpt::img::TCamera& cameraParams) const;
 
   /** Filter the image with a Median filter with a window size WxW (W must be odd). */
   void filterMedian(CImage& out_img, int W = 3) const;
 
-  /** Filter the image with a Gaussian filter with a window size WxH (both must be odd). Separable 1D convolution. */
+  /** Filter the image with a Gaussian filter with a window size WxH (both must be odd). Separable
+   * 1D convolution. */
   void filterGaussian(CImage& out_img, int W = 3, int H = 3, double sigma = 1.0) const;
 
   /** Draw onto this image the detected corners of a chessboard. */

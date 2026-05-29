@@ -423,8 +423,8 @@ bool CFFMPEG_InputStream::retrieveFrame(
         for (int row = 0; row < height; row++)
         {
           std::memcpy(
-              packed.data() + row * channels * width,
-              ctx->pFrameRGB->data[0] + row * stride, channels * width);
+              packed.data() + row * channels * width, ctx->pFrameRGB->data[0] + row * stride,
+              channels * width);
         }
         out_img.loadFromMemoryBuffer(
             width, height, m_grab_as_grayscale ? mrpt::img::CH_GRAY : mrpt::img::CH_RGB,
