@@ -12,15 +12,14 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/Scene.h>
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 using namespace mrpt::opengl;
@@ -30,9 +29,7 @@ PYBIND11_MODULE(_bindings, m)
 {
   // CFBORender::Parameters
   py::class_<CFBORender::Parameters>(m, "CFBORenderParameters")
-      .def(
-          py::init<unsigned int, unsigned int>(), py::arg("width") = 800,
-          py::arg("height") = 600)
+      .def(py::init<unsigned int, unsigned int>(), py::arg("width") = 800, py::arg("height") = 600)
       .def_readwrite("width", &CFBORender::Parameters::width)
       .def_readwrite("height", &CFBORender::Parameters::height)
       .def_readwrite("raw_depth", &CFBORender::Parameters::raw_depth)
@@ -44,9 +41,7 @@ PYBIND11_MODULE(_bindings, m)
 
   // CFBORender
   py::class_<CFBORender>(m, "CFBORender")
-      .def(
-          py::init<unsigned int, unsigned int>(), py::arg("width") = 800,
-          py::arg("height") = 600)
+      .def(py::init<unsigned int, unsigned int>(), py::arg("width") = 800, py::arg("height") = 600)
       .def("setCamera", &CFBORender::setCamera, py::arg("camera"))
       .def("clearCameraOverride", &CFBORender::clearCameraOverride)
       .def("hasCameraOverride", &CFBORender::hasCameraOverride)
