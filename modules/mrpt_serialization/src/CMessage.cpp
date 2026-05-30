@@ -35,8 +35,8 @@ void CMessage::serializeObject(const CSerializable* obj)
   const auto& data = auxStream.str();
   content.resize(data.size());
   memcpy(
-      &content[0],  // Dest
-      &data[0],     // Src
+      content.data(),  // Dest
+      data.data(),     // Src
       content.size());
 
   MRPT_END
@@ -52,7 +52,7 @@ void CMessage::deserializeIntoExistingObject(CSerializable* obj)
   auto arch = mrpt::serialization::archiveFrom<std::iostream>(auxStream);
 
   // Copy data into the stream:
-  arch.WriteBuffer(&content[0], content.size());
+  arch.WriteBuffer(content.data(), content.size());
   auxStream.seekg(0);
 
   // Try to parse data into existing object:
@@ -73,14 +73,16 @@ void CMessage::deserializeIntoNewObject(CSerializable::Ptr& obj)
   // Copy data into the stream:
   if (!content.empty())
   {
-    arch.WriteBuffer(&content[0], content.size());
+    arch.WriteBuffer(content.data(), content.size());
     auxStream.seekg(0);
 
     // Try to parse data into a new object:
     obj = arch.ReadObject();
   }
   else
+  {
     obj.reset();
+  }
 
   MRPT_END
 }
@@ -91,7 +93,10 @@ void CMessage::deserializeIntoNewObject(CSerializable::Ptr& obj)
 void CMessage::setContentFromString(const std::string& str)
 {
   content.resize(str.size());
-  if (content.size() > 0) memcpy(&content[0], str.c_str(), str.size());
+  if (content.size() > 0)
+  {
+    memcpy(content.data(), str.c_str(), str.size());
+  }
 }
 
 /*---------------------------------------------------------------
@@ -100,5 +105,8 @@ void CMessage::setContentFromString(const std::string& str)
 void CMessage::getContentAsString(std::string& str)
 {
   str.resize(content.size());
-  if (content.size() > 0) memcpy(&str[0], &content[0], str.size());
+  if (content.size() > 0)
+  {
+    memcpy(str.data(), content.data(), str.size());
+  }
 }

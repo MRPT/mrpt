@@ -18,7 +18,7 @@
 using namespace mrpt::io;
 using namespace std;
 
-CFileOutputStream::CFileOutputStream(const string& fileName, const OpenMode mode) : m_of()
+CFileOutputStream::CFileOutputStream(const string& fileName, const OpenMode mode)
 {
   MRPT_START
 
@@ -30,7 +30,7 @@ CFileOutputStream::CFileOutputStream(const string& fileName, const OpenMode mode
   MRPT_END
 }
 
-CFileOutputStream::CFileOutputStream() : m_of() {}
+CFileOutputStream::CFileOutputStream() {}
 bool CFileOutputStream::open(const string& fileName, const OpenMode mode)
 {
   close();

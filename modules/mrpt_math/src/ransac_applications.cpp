@@ -13,6 +13,10 @@
 */
 
 #include <mrpt/math/ransac_applications.h>
+#ifdef _MSC_VER
+#include "MatrixBase_impl.h"
+#include "MatrixVectorBase_impl.h"
+#endif
 
 using namespace mrpt;
 using namespace mrpt::math;

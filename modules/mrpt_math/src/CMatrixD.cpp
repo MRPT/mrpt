@@ -15,6 +15,9 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
+#ifdef _MSC_VER
+#include "MatrixVectorBase_impl.h"
+#endif
 
 using namespace mrpt;
 using namespace mrpt::math;

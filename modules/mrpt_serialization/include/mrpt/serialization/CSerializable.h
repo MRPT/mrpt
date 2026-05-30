@@ -43,7 +43,7 @@ class CSerializable : public mrpt::rtti::CObject
    * for new classes, and increments each time there is a change in the stored
    * format.
    */
-  virtual uint8_t serializeGetVersion() const = 0;
+  [[nodiscard]] virtual uint8_t serializeGetVersion() const = 0;
   /** Pure virtual method for writing (serializing) to an abstract archive.
    *  Users don't call this method directly. Instead, use `stream << object;`.
    *	\exception std::exception On any I/O error

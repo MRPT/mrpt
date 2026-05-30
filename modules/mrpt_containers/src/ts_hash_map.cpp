@@ -15,6 +15,7 @@
 #include <mrpt/containers/ts_hash_map.h>
 #include <mrpt/core/byte_manip.h>  // MAKEWORD16B(), etc.
 
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <string_view>
@@ -31,13 +32,13 @@ void mrpt::containers::reduced_hash(const std::string_view& value, uint64_t& out
 }
 void mrpt::containers::reduced_hash(const std::string_view& value, uint8_t& out_hash)
 {
-  uint64_t hash;
+  uint64_t hash = 0;
   reduced_hash(value, hash);
   out_hash = ((SELBYTE0(hash) ^ SELBYTE1(hash)) ^ SELBYTE2(hash)) ^ SELBYTE3(hash);
 }
 void mrpt::containers::reduced_hash(const std::string_view& value, uint16_t& out_hash)
 {
-  uint64_t hash;
+  uint64_t hash = 0;
   reduced_hash(value, hash);
   out_hash = static_cast<uint16_t>(
       MAKEWORD16B(SELBYTE0(hash) ^ SELBYTE1(hash), SELBYTE2(hash) ^ SELBYTE3(hash)));
@@ -45,7 +46,7 @@ void mrpt::containers::reduced_hash(const std::string_view& value, uint16_t& out
 
 void mrpt::containers::reduced_hash(const std::string_view& value, uint32_t& out_hash)
 {
-  uint64_t hash;
+  uint64_t hash = 0;
   reduced_hash(value, hash);
   out_hash = static_cast<uint32_t>((hash & 0xffffffff) ^ ((hash >> 32) & 0xffffffff));
 }

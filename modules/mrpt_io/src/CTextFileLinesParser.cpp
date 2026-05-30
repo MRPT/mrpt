@@ -40,7 +40,10 @@ void CTextFileLinesParser::open(const std::string& fil)
   auto ifs = std::make_shared<std::ifstream>();
   ifs->clear();
   ifs->open(fil.c_str());
-  if (!ifs->is_open()) THROW_EXCEPTION_FMT("Error opening file '%s' for reading", fil.c_str());
+  if (!ifs->is_open())
+  {
+    THROW_EXCEPTION_FMT("Error opening file '%s' for reading", fil.c_str());
+  }
   m_my_in = std::shared_ptr<std::istream>(ifs);
   m_in = m_my_in.get();
 }
@@ -82,12 +85,17 @@ bool CTextFileLinesParser::getNextLine(std::istringstream& buf)
     std::getline(*m_in, lin);
     m_curLineNum++;
     lin = mrpt::system::trim(lin);
-    if (lin.empty()) continue;  // Ignore empty lines.
+    if (lin.empty())
+    {
+      continue;  // Ignore empty lines.
+    }
     // Ignore comments lines, starting with "#" or "//".
     if ((m_filter_SH_comments && mrpt::system::strStarts(lin, "#")) ||
         (m_filter_C_comments && mrpt::system::strStarts(lin, "//")) ||
         (m_filter_MATLAB_comments && mrpt::system::strStarts(lin, "%")))
+    {
       continue;
+    }
     // Parse the line as a string stream:
     buf.str(lin);
     buf.clear();

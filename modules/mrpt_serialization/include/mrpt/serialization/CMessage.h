@@ -86,7 +86,7 @@ class CMessage
   void setContentFromStruct(const T& data)
   {
     content.resize(sizeof(data));
-    T* ptr = reinterpret_cast<T*>(&content[0]);
+    T* ptr = reinterpret_cast<T*>(content.data());
     *ptr = data;
   }
 
@@ -100,7 +100,7 @@ class CMessage
   {
     MRPT_START
     ASSERT_(content.size() == sizeof(data));
-    data = *reinterpret_cast<T*>(&content[0]);
+    data = *reinterpret_cast<T*>(content.data());
     MRPT_END
   }
 

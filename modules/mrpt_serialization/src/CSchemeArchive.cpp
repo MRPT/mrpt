@@ -26,7 +26,7 @@ using namespace mrpt::serialization;
 CSchemeArchiveBase mrpt::serialization::archiveJSON()
 {
 #if MRPT_HAS_JSONCPP
-  return mrpt::serialization::CSchemeArchiveBase(std::make_unique<CSchemeArchive<Json::Value>>());
+  return {std::make_unique<CSchemeArchive<Json::Value>>()};
 #else
   THROW_EXCEPTION("archiveJSON() requires building MRPT against jsoncpp");
 #endif

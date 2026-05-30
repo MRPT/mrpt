@@ -53,11 +53,27 @@ inline void remap_bilinear(
       const float sx = mapx[row_off + u];
       const float sy = mapy[row_off + u];
 
-      // Integer and fractional parts
+      // Guard against NaN/Inf and out-of-range values.
+      // Checking bounds on floats BEFORE cast avoids signed-int overflow UB:
+      // on ARM64, static_cast<int>(very_large_float) saturates to INT_MAX,
+      // and INT_MAX+1 wraps to INT_MIN, defeating the post-cast bounds check.
+      const float fw = static_cast<float>(in_w - 1);
+      const float fh = static_cast<float>(in_h - 1);
+      if (!std::isfinite(sx) || !std::isfinite(sy) || sx < 0.0f || sx >= fw || sy < 0.0f ||
+          sy >= fh)
+      {
+        for (int c = 0; c < nch; ++c)
+        {
+          out_row[u * nch + c] = 0;
+        }
+        continue;
+      }
+
+      // Integer and fractional parts (safe: 0 <= sx < in_w-1, so no overflow)
       const int ix = static_cast<int>(std::floor(sx));
       const int iy = static_cast<int>(std::floor(sy));
 
-      // Boundary check: need ix, ix+1 in [0, in_w-1] and iy, iy+1 in [0, in_h-1]
+      // Boundary check (belt-and-suspenders; already guaranteed by float check above)
       if (ix < 0 || ix + 1 >= in_w || iy < 0 || iy + 1 >= in_h)
       {
         // Out of bounds -> black pixel

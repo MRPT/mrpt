@@ -32,7 +32,7 @@ class CTicTac
   void Tic() noexcept;
   /** Stops the stopwatch.  \return Returns the ellapsed time in seconds.
    * \sa Tic() */
-  double Tac() const noexcept;
+  [[nodiscard]] double Tac() const noexcept;
 
  private:
   alignas(16) unsigned long largeInts[4]{0, 0};

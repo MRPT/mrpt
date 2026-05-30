@@ -60,7 +60,10 @@ bool mrpt::io::vectorToBinaryFile(const std::vector<uint8_t>& vec, const std::st
   try
   {
     mrpt::io::CFileOutputStream of(fileName);
-    if (!vec.empty()) of.Write(vec.data(), sizeof(vec[0]) * vec.size());
+    if (!vec.empty())
+    {
+      of.Write(vec.data(), sizeof(vec[0]) * vec.size());
+    }
     return true;
   }
   catch (...)
@@ -78,7 +81,10 @@ bool mrpt::io::loadTextFile(std::vector<std::string>& o, const std::string& file
     return false;
   }
   std::string s;
-  while (std::getline(f, s)) o.emplace_back(std::move(s));
+  while (std::getline(f, s))
+  {
+    o.emplace_back(std::move(s));
+  }
   return true;
 }
 
@@ -99,7 +105,9 @@ std::string mrpt::io::file_get_contents(const std::string& fileName)
   // number of read bytes afterwards:
   std::ifstream t(fileName, ios::binary);
   if (!t.is_open())
+  {
     THROW_EXCEPTION_FMT("file_get_contents(): Error opening for read file `%s`", fileName.c_str());
+  }
 
   t.seekg(0, std::ios::end);
   std::size_t size = static_cast<std::size_t>(t.tellg());
@@ -118,9 +126,15 @@ bool mrpt::io::vectorToTextFile(
     return false;
   }
 
-  for (float it : vec) os::fprintf(f, opts.byRows ? "%e " : "%e\n", static_cast<double>(it));
+  for (float it : vec)
+  {
+    os::fprintf(f, opts.byRows ? "%e " : "%e\n", static_cast<double>(it));
+  }
 
-  if (opts.byRows) os::fprintf(f, "\n");
+  if (opts.byRows)
+  {
+    os::fprintf(f, "\n");
+  }
 
   os::fclose(f);
   return true;
@@ -141,9 +155,15 @@ bool mrpt::io::vectorToTextFile(
     return false;
   }
 
-  for (double it : vec) os::fprintf(f, opts.byRows ? "%e " : "%e\n", it);
+  for (double it : vec)
+  {
+    os::fprintf(f, opts.byRows ? "%e " : "%e\n", it);
+  }
 
-  if (opts.byRows) os::fprintf(f, "\n");
+  if (opts.byRows)
+  {
+    os::fprintf(f, "\n");
+  }
 
   os::fclose(f);
   return true;
@@ -164,9 +184,15 @@ bool mrpt::io::vectorToTextFile(
     return false;
   }
 
-  for (int it : vec) os::fprintf(f, opts.byRows ? "%i " : "%i\n", it);
+  for (int it : vec)
+  {
+    os::fprintf(f, opts.byRows ? "%i " : "%i\n", it);
+  }
 
-  if (opts.byRows) os::fprintf(f, "\n");
+  if (opts.byRows)
+  {
+    os::fprintf(f, "\n");
+  }
 
   os::fclose(f);
   return true;
@@ -188,9 +214,14 @@ bool mrpt::io::vectorToTextFile(
   }
 
   for (unsigned long it : vec)
+  {
     os::fprintf(f, opts.byRows ? "%u " : "%u\n", static_cast<unsigned int>(it));
+  }
 
-  if (opts.byRows) os::fprintf(f, "\n");
+  if (opts.byRows)
+  {
+    os::fprintf(f, "\n");
+  }
 
   os::fclose(f);
   return true;
@@ -216,7 +247,10 @@ bool mrpt::io::vectorNumericFromTextFile(
   while (!feof(f))
   {
     int readed = fscanf(f, byRows ? "%lf" : "%lf\n", &number);
-    if ((!byRows) || (readed == 1)) vec.push_back(number);
+    if ((!byRows) || (readed == 1))
+    {
+      vec.push_back(number);
+    }
   }
 
   return true;

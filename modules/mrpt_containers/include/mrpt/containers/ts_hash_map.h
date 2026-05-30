@@ -40,8 +40,8 @@ struct ts_map_entry
     second = e.second;
     return *this;
   }
-  ts_map_entry(ts_map_entry&& e) { *this = std::move(e); }
-  ts_map_entry& operator=(ts_map_entry&& e)
+  ts_map_entry(ts_map_entry&& e) noexcept { *this = std::move(e); }
+  ts_map_entry& operator=(ts_map_entry&& e) noexcept
   {
     used = e.used;
     first = e.first;
@@ -208,7 +208,7 @@ class ts_hash_map
   ts_hash_map() = default;
 
   ts_hash_map(const ts_hash_map& o) { *this = o; }
-  ts_hash_map(ts_hash_map&& o) { *this = std::move(o); }
+  ts_hash_map(ts_hash_map&& o) noexcept { *this = std::move(o); }
 
   ts_hash_map& operator=(const ts_hash_map& o)
   {
@@ -218,7 +218,7 @@ class ts_hash_map
     m_size = o.m_size;
     return *this;
   }
-  ts_hash_map& operator=(ts_hash_map&& o)
+  ts_hash_map& operator=(ts_hash_map&& o) noexcept
   {
     auto lck1 = mrpt::lockHelper(m_mtx);
     auto lck2 = mrpt::lockHelper(o.m_mtx);
@@ -241,7 +241,7 @@ class ts_hash_map
     }
   }
 
-  bool empty() const
+  [[nodiscard]] bool empty() const
   {
     auto lck = mrpt::lockHelper(m_mtx);
     return m_size == 0;

@@ -47,7 +47,7 @@ class CListOfClasses : public mrpt::Stringifyable
   /** Return a string representation of the list, for example: "CPose2D,
    * CObservation, CPose3D".
    */
-  std::string asString() const override;
+  [[nodiscard]] std::string asString() const override;
 
   /** Builds from a string representation of the list, for example: "CPose2D,
    * CObservation, CPose3D".

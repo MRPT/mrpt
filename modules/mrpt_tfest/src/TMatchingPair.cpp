@@ -85,10 +85,12 @@ template <typename T>
 bool TMatchingPairListTempl<T>::indexOtherMapHasCorrespondence(size_t idx) const
 {
   for (const auto& it : *this)
+  {
     if (it.localIdx == idx)
     {
       return true;
     }
+  }
   return false;
 }
 
@@ -121,10 +123,12 @@ template <typename T>
 bool TMatchingPairListTempl<T>::contains(const TMatchingPairTempl<T>& p) const
 {
   for (const auto& corresp : *this)
+  {
     if (corresp == p)
     {
       return true;
     }
+  }
   return false;
 }
 
@@ -180,7 +184,9 @@ void TMatchingPairListTempl<T>::squareErrorVector(
   const T qy = static_cast<T>(q.y());
 
   typename base_t::const_iterator corresp;
-  typename vector<T>::iterator e_i, xx, yy;
+  typename vector<T>::iterator e_i;
+  typename vector<T>::iterator xx;
+  typename vector<T>::iterator yy;
   for (corresp = base_t::begin(), e_i = out_sqErrs.begin(), xx = xs.begin(), yy = ys.begin();
        corresp != base_t::end(); ++corresp, ++e_i, ++xx, ++yy)
   {
@@ -218,7 +224,9 @@ void TMatchingPairListTempl<T>::filterUniqueRobustPairs(
   for (auto& c : *this)
   {
     if (bestMatchForThisMap[c.globalIdx] == &c)
+    {
       out_filtered_list.push_back(c);  // Add to the output
+    }
   }
 }
 

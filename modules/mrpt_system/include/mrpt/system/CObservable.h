@@ -55,7 +55,7 @@ class CObservable
    * publishing with \a publishEvent to determine if there is no one
    *  subscribed, so it can save the wasted time preparing an event that will
    * be not read. */
-  bool hasSubscribers() const { return !m_subscribers.empty(); }
+  [[nodiscard]] bool hasSubscribers() const { return !m_subscribers.empty(); }
 };  // End of class def.
 
 }  // namespace mrpt::system

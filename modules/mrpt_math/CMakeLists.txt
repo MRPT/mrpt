@@ -156,6 +156,9 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/math/matrix_adaptors.h
   include/mrpt/math/matrix_serialization.h
   include/mrpt/math/matrix_size_t.h
+  include/mrpt/math/impl/CMatrixFixed_impl.h
+  include/mrpt/math/impl/MatrixBase_impl.h
+  include/mrpt/math/impl/MatrixVectorBase_impl.h
   include/mrpt/math/MatrixBase.h
   include/mrpt/math/MatrixBlockSparseCols.h
   include/mrpt/math/MatrixVectorBase.h
@@ -201,6 +204,13 @@ if (BUILD_TESTING)
   find_package(mrpt_io REQUIRED) # for unit tests
 endif()
 
+if (MSVC)
+  # Exclude explicit instantiation files on MSVC: they compile Eigen-heavy
+  # template code that causes >65535 exported symbols (LNK1189) with
+  # CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON. On MSVC, consumers get these
+  # template implementations inline via the public impl/ headers instead.
+  list(FILTER LIB_SOURCES EXCLUDE REGEX ".+_instantiate_.+\\.cpp$")
+endif()
 
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
@@ -223,6 +233,36 @@ mrpt_add_library(
   UNITTEST_LINK_LIBRARIES
     mrpt::mrpt_io
 )
+
+if (MSVC)
+  # On MSVC, public headers conditionally include *_impl.h which need Eigen.
+  # find_path gives a concrete filesystem path (no generator expressions),
+  # so it survives export/install and is visible to downstream consumers
+  # (e.g. mrpt_topography) even if their find_dependency(Eigen3) does not
+  # propagate the include dirs on its own.
+  find_path(_mrptmath_eigen_inc "Eigen/Dense"
+    HINTS
+      "${EIGEN3_INCLUDE_DIR}"
+      "${EIGEN3_INCLUDE_DIRS}"
+      "${Eigen3_INCLUDE_DIRS}"
+      "${Eigen3_INCLUDE_DIR}"
+    PATH_SUFFIXES eigen3 eigen
+    NO_DEFAULT_PATH
+  )
+  if (NOT _mrptmath_eigen_inc)
+    find_path(_mrptmath_eigen_inc "Eigen/Dense" PATH_SUFFIXES eigen3 eigen)
+  endif()
+  if (_mrptmath_eigen_inc)
+    message(STATUS "mrpt_math: Propagating Eigen include to MSVC consumers: ${_mrptmath_eigen_inc}")
+    target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC
+      $<BUILD_INTERFACE:${_mrptmath_eigen_inc}>
+      $<INSTALL_INTERFACE:${_mrptmath_eigen_inc}>
+    )
+  else()
+    message(WARNING "mrpt_math: Could not locate Eigen/Dense for MSVC consumer include propagation")
+  endif()
+  unset(_mrptmath_eigen_inc CACHE)
+endif()
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE
     <vector>

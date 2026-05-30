@@ -355,12 +355,10 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "inverseComposePoint", py::overload_cast<const mrpt::math::TPoint3D&>(
                                      &mrpt::math::TPose3D::inverseComposePoint, py::const_))
-      .def(
-          "getRotationMatrix",
-          py::overload_cast<>(&mrpt::math::TPose3D::getRotationMatrix, py::const_))
+      .def("getRotationMatrix", [](const mrpt::math::TPose3D& p) { return p.getRotationMatrix(); })
       .def(
           "getHomogeneousMatrix",
-          py::overload_cast<>(&mrpt::math::TPose3D::getHomogeneousMatrix, py::const_))
+          [](const mrpt::math::TPose3D& p) { return p.getHomogeneousMatrix(); })
       .def(py::self + py::self)
       .def(py::self == py::self)
       .def(py::self != py::self)
@@ -549,7 +547,7 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("omega", &mrpt::math::TTwist2D::omega)
       .def("rotate", &mrpt::math::TTwist2D::rotate)
       .def("rotated", &mrpt::math::TTwist2D::rotated)
-      .def("asString", py::overload_cast<>(&mrpt::math::TTwist2D::asString, py::const_))
+      .def("asString", [](const mrpt::math::TTwist2D& t) { return t.asString(); })
       .def(
           "__array__",
           [](const mrpt::math::TTwist2D& t, py::object /*dtype*/, py::object /*copy*/)
@@ -575,7 +573,7 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("wz", &mrpt::math::TTwist3D::wz)
       .def("rotate", &mrpt::math::TTwist3D::rotate)
       .def("rotated", &mrpt::math::TTwist3D::rotated)
-      .def("asString", py::overload_cast<>(&mrpt::math::TTwist3D::asString, py::const_))
+      .def("asString", [](const mrpt::math::TTwist3D& t) { return t.asString(); })
       .def(
           "__array__",
           [](const mrpt::math::TTwist3D& t, py::object /*dtype*/, py::object /*copy*/)

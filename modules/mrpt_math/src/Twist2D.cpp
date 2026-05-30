@@ -16,6 +16,9 @@
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TTwist2D.h>
 #include <mrpt/serialization/CArchive.h>
+#ifdef _MSC_VER
+#include "MatrixVectorBase_impl.h"
+#endif
 
 using namespace mrpt::math;
 using mrpt::DEG2RAD;

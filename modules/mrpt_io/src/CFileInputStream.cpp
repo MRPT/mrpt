@@ -22,13 +22,16 @@ static_assert(
     !std::is_copy_constructible_v<CFileInputStream> && !std::is_copy_assignable_v<CFileInputStream>,
     "Copy Check");
 
-CFileInputStream::CFileInputStream(const string& fileName) : m_if()
+CFileInputStream::CFileInputStream(const string& fileName)
 {
   MRPT_START
 
   // Try to open the file:
   // Open for input:
-  if (!open(fileName)) THROW_EXCEPTION_FMT("Error trying to open file: '%s'", fileName.c_str());
+  if (!open(fileName))
+  {
+    THROW_EXCEPTION_FMT("Error trying to open file: '%s'", fileName.c_str());
+  }
 
   MRPT_END
 }
@@ -36,7 +39,7 @@ CFileInputStream::CFileInputStream(const string& fileName) : m_if()
 /*---------------------------------------------------------------
               Constructor
  ---------------------------------------------------------------*/
-CFileInputStream::CFileInputStream() : m_if() {}
+CFileInputStream::CFileInputStream() {}
 /*---------------------------------------------------------------
               open
  ---------------------------------------------------------------*/
@@ -54,7 +57,10 @@ bool CFileInputStream::open(const string& fileName)
  ---------------------------------------------------------------*/
 void CFileInputStream::close()
 {
-  if (m_if.is_open()) m_if.close();
+  if (m_if.is_open())
+  {
+    m_if.close();
+  }
   m_filename.clear();
 }
 
@@ -147,9 +153,10 @@ uint64_t CFileInputStream::getPosition() const
 {
   auto& f = const_cast<std::ifstream&>(m_if);
   if (m_if.is_open())
+  {
     return static_cast<uint64_t>(f.tellg());
-  else
-    return 0;
+  }
+  return 0;
 }
 
 /*---------------------------------------------------------------
@@ -185,7 +192,10 @@ bool CFileInputStream::checkEOF()
 
 void CFileInputStream::clearError()
 {
-  if (m_if.is_open()) m_if.clear();
+  if (m_if.is_open())
+  {
+    m_if.clear();
+  }
 }
 
 std::string CFileInputStream::getStreamDescription() const

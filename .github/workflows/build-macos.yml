@@ -79,3 +79,22 @@ jobs:
           colcon test \
             --event-handlers console_direct+ \
             --return-code-on-test-failure
+
+      - name: Debug failing tests under lldb (on failure)
+        if: failure()
+        run: |
+          source .ci-venv/bin/activate
+          echo "=== lldb backtraces for failing test binaries ==="
+          # Only run lldb on known-failing tests to save time
+          for test_bin in \
+            build/mrpt_img/bin/test_mrpt_img \
+            build/mrpt_math/bin/test_mrpt_math; do
+            [ -x "$test_bin" ] || continue
+            echo ""
+            echo "===== $test_bin ====="
+            lldb \
+              -o "run" \
+              -o "bt all" \
+              -o "quit" \
+              -- "$test_bin" 2>&1 | head -120 || true
+          done

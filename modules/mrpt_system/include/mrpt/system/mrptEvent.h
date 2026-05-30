@@ -44,7 +44,7 @@ class mrptEvent
   virtual ~mrptEvent() = default;
 
   template <class EVENTTYPE>
-  bool isOfType() const
+  [[nodiscard]] bool isOfType() const
   {
     return dynamic_cast<const EVENTTYPE*>(this) != nullptr;
   }

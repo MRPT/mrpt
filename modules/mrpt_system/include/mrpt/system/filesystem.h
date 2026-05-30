@@ -125,7 +125,7 @@ bool directoryExists(const std::string& fileName);
  *  Invalid chars are: '<','>',':','"','/','\\','|','?','*'
  */
 std::string fileNameStripInvalidChars(
-    const std::string& filename, const char replacement_to_invalid_chars = '_');
+    const std::string& filename, char replacement_to_invalid_chars = '_');
 
 /** Replace the filename extension by another one.
  *  Example:

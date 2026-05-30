@@ -47,15 +47,15 @@ target_link_libraries(imgui_lib PUBLIC
     OpenGL::GL
 )
 
-target_compile_definitions(imgui_lib PUBLIC
-  IMGUI_IMPL_OPENGL_ES3
-)
-
-# ImGui needs to know which loader to use — we rely on the system GL
-# headers directly (GL 3.3 core is enough).
-target_compile_definitions(imgui_lib PUBLIC
-    IMGUI_IMPL_OPENGL_LOADER_CUSTOM   # we don't use glad/glew from imgui
-)
+# GLES3 is only available on Linux/Android/embedded; macOS uses standard OpenGL
+if (NOT APPLE)
+  target_compile_definitions(imgui_lib PUBLIC IMGUI_IMPL_OPENGL_ES3)
+  # On Linux with custom loader, rely on system GL headers directly
+  target_compile_definitions(imgui_lib PUBLIC IMGUI_IMPL_OPENGL_LOADER_CUSTOM)
+else()
+  # On macOS, use imgui's own embedded loader which handles Apple OpenGL setup
+  target_include_directories(imgui_lib PUBLIC ${OPENGL_INCLUDE_DIR})
+endif()
 
 # ---------------------------------------------------------------
 # Demo executable

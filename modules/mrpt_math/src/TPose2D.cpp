@@ -16,6 +16,9 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TPose3D.h>
+#ifdef _MSC_VER
+#include "MatrixVectorBase_impl.h"
+#endif
 
 using namespace mrpt::math;
 

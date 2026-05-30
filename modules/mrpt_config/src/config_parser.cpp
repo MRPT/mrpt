@@ -46,23 +46,30 @@ std::string mci::parse_process_var_eval(const mci::ParseContext& pc, std::string
     auto p = expr.find("$env{");
     if (p != std::string::npos)
     {
-      auto pend = expr.find("}", p);
+      auto pend = expr.find('}', p);
       if (pend == std::string::npos)
+      {
         throw std::runtime_error(
             mrpt::format("Line %u: Expected closing `}` near: `%s`", pc.line_count, expr.c_str()));
+      }
       const auto substr = expr.substr(p + 5, pend - p - 5);
       std::string new_expr = expr.substr(0, p);
-      auto env_val = ::getenv(substr.c_str());
-      if (env_val) new_expr += std::string(env_val);
+      auto* env_val = ::getenv(substr.c_str());
+      if (env_val)
+      {
+        new_expr += std::string(env_val);
+      }
       new_expr += expr.substr(pend + 1);
       new_expr.swap(expr);
     }
     else if ((p = expr.find("$eval{")) != std::string::npos)
     {
-      auto pend = expr.find("}", p);
+      auto pend = expr.find('}', p);
       if (pend == std::string::npos)
+      {
         throw std::runtime_error(
             mrpt::format("Line %u: Expected closing `}` near: `%s`", pc.line_count, expr.c_str()));
+      }
 
       const auto substr = expr.substr(p + 6, pend - p - 6);
       mrpt::expr::CRuntimeCompiledExpression cexpr;
@@ -74,7 +81,9 @@ std::string mci::parse_process_var_eval(const mci::ParseContext& pc, std::string
       new_expr.swap(expr);
     }
     else
+    {
       break;  // nothing else to evaluate
+    }
   }
   return expr;
 }
@@ -94,7 +103,7 @@ void mci::parse_process_var_define(
 
 std::string mrpt::config::config_parser(const std::string& input)
 {
-  const auto in_str = input.data();
+  const auto* const in_str = input.data();
   const auto in_len = input.size();
 
   std::string output;
@@ -138,8 +147,10 @@ std::string mrpt::config::config_parser(const std::string& input)
       {
         // Extract rest of this line:
         i += 7;
-        std::string var_name, var_value;
-        bool in_var_name = false, done_var_name = false;
+        std::string var_name;
+        std::string var_value;
+        bool in_var_name = false;
+        bool done_var_name = false;
         while (i < in_len && in_str[i] != '\r' && in_str[i] != '\n')
         {
           const char ch = in_str[i];
@@ -201,8 +212,10 @@ std::string mrpt::config::config_parser(const std::string& input)
 
         const auto it = pc.defined_vars.find(varname);
         if (it == pc.defined_vars.end())
+        {
           throw std::runtime_error(
               mrpt::format("Line %u: Unknown variable `${%s}`", pc.line_count, varname.c_str()));
+        }
 
         const auto str_out = parse_process_var_eval(pc, it->second);
 

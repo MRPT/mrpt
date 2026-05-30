@@ -570,7 +570,7 @@ void CArchive::sendMessage(const CMessage& msg)
   buf[nBytesTx++] = 0x96;
 
   // Send buffer -------------------------------------
-  WriteBuffer(&buf[0], nBytesTx);  // Exceptions will be raised on errors here
+  WriteBuffer(buf.data(), nBytesTx);  // Exceptions will be raised on errors here
 
   MRPT_END
 }
@@ -655,7 +655,7 @@ bool CArchive::receiveMessage(CMessage& msg)
           msg.content.resize(payload_len);
           if (!msg.content.empty())
           {
-            std::memcpy(&msg.content[0], &buf[3], payload_len);
+            std::memcpy(msg.content.data(), &buf[3], payload_len);
           }
         }  // end if
         if (buf[0] == 0x79)
@@ -663,7 +663,7 @@ bool CArchive::receiveMessage(CMessage& msg)
           msg.content.resize(payload_len);
           if (!msg.content.empty())
           {
-            std::memcpy(&msg.content[0], &buf[4], payload_len);
+            std::memcpy(msg.content.data(), &buf[4], payload_len);
           }
         }  // end if
         return true;

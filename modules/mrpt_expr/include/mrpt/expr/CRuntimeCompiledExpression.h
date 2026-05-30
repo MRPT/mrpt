@@ -27,9 +27,7 @@ template <typename T>
 class expression;
 }
 
-namespace mrpt
-{
-namespace expr
+namespace mrpt::expr
 {
 /** A wrapper of `exprtk` runtime expression compiler: it takes a string
  * representing an expression (from a simple mathematical formula to a complete
@@ -70,6 +68,12 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
  public:
   /** Default ctor */
   CRuntimeCompiledExpression();
+  ~CRuntimeCompiledExpression();
+
+  CRuntimeCompiledExpression(const CRuntimeCompiledExpression&);
+  CRuntimeCompiledExpression& operator=(const CRuntimeCompiledExpression&);
+  CRuntimeCompiledExpression(CRuntimeCompiledExpression&&) noexcept;
+  CRuntimeCompiledExpression& operator=(CRuntimeCompiledExpression&&) noexcept;
 
   /** Initializes the object by compiling an expression.
    * \exception std::runtime_error On any syntax error or undefined symbol
@@ -97,29 +101,18 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
       const std::map<std::string, double*>& variables);
 
   /** Register a user-defined nullary function. (New in MRPT 2.5.8) */
-  void register_function(const std::string& name, const std::function<double()>& func)
-  {
-    m_funcs_0[name] = func;
-  }
+  void register_function(const std::string& name, const std::function<double()>& func);
 
   /** Register a user-defined unary function. (New in MRPT 2.5.8) */
-  void register_function(const std::string& name, const std::function<double(double)>& func)
-  {
-    m_funcs_1[name] = func;
-  }
+  void register_function(const std::string& name, const std::function<double(double)>& func);
 
   /** Register a user-defined binary function. (New in MRPT 2.5.8) */
-  void register_function(const std::string& name, const std::function<double(double, double)>& func)
-  {
-    m_funcs_2[name] = func;
-  }
+  void register_function(
+      const std::string& name, const std::function<double(double, double)>& func);
 
   /** Register a user-defined ternary function. (New in MRPT 2.5.8) */
   void register_function(
-      const std::string& name, const std::function<double(double, double, double)>& func)
-  {
-    m_funcs_3[name] = func;
-  }
+      const std::string& name, const std::function<double(double, double, double)>& func);
 
   /** Evaluates the current value of the precompiled formula.
    * \exception std::runtime_error If the formula has not been compiled yet.
@@ -152,6 +145,4 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 
 };  // End of class def.
 
-}  // namespace expr
-
-}  // namespace mrpt
+}  // namespace mrpt::expr

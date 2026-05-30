@@ -48,8 +48,14 @@ mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
   const float N_inv = 1.0f / static_cast<float>(N);  // For efficiency, keep this value.
 
   // Non vectorized version:
-  float SumXa = 0, SumXb = 0, SumYa = 0, SumYb = 0;
-  float Sxx = 0, Sxy = 0, Syx = 0, Syy = 0;
+  float SumXa = 0;
+  float SumXb = 0;
+  float SumYa = 0;
+  float SumYb = 0;
+  float Sxx = 0;
+  float Sxy = 0;
+  float Syx = 0;
+  float Syy = 0;
 
   for (const auto& p : in_correspondences)
   {
@@ -152,7 +158,10 @@ bool tfest::se2_l2(
 
     // Compute the normalized covariance matrix:
     // -------------------------------------------
-    double var_x_a = 0, var_y_a = 0, var_x_b = 0, var_y_b = 0;
+    double var_x_a = 0;
+    double var_y_a = 0;
+    double var_x_b = 0;
+    double var_y_b = 0;
     const double N_1_inv = 1.0 / static_cast<double>(N - 1);
 
     // 0) Precompute the unbiased variances estimations:

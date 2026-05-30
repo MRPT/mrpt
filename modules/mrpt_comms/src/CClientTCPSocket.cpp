@@ -613,7 +613,12 @@ int CClientTCPSocket::setTCPNoDelay(int newValue)
 
   return setsockopt(
       m_hSock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&newValue),
-      static_cast<socklen_t>(length));
+#ifdef _WIN32
+      static_cast<int>(length)
+#else
+      static_cast<socklen_t>(length)
+#endif
+  );
 }
 
 /*---------------------------------------------------------------

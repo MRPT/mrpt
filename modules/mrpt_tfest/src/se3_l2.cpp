@@ -83,10 +83,14 @@ bool se3_l2_internal(
 
   ASSERT_EQUAL_(points_this.size(), points_other.size());
   // Compute the centroids
-  TPoint3D ct_others(0, 0, 0), ct_this(0, 0, 0);
+  TPoint3D ct_others(0, 0, 0);
+  TPoint3D ct_this(0, 0, 0);
   const size_t nMatches = points_this.size();
 
-  if (nMatches < 3) return false;  // Nothing we can estimate without 3 points!!
+  if (nMatches < 3)
+  {
+    return false;  // Nothing we can estimate without 3 points!!
+  }
 
   for (size_t i = 0; i < nMatches; i++)
   {
@@ -162,8 +166,10 @@ bool se3_l2_internal(
   }
 
   // out_transform: Create a pose rotation with the quaternion
-  for (unsigned int i = 0; i < 4; i++)  // insert the quaternion part
+  for (unsigned int i = 0; i < 4; i++)
+  {  // insert the quaternion part
     out_transform[i + 3] = v[i];
+  }
 
   // Compute scale
   double s;
@@ -223,7 +229,8 @@ bool tfest::se3_l2(
 {
   // Transform data types:
   const size_t N = corrs.size();
-  std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
+  std::vector<mrpt::math::TPoint3D> points_this(N);
+  std::vector<mrpt::math::TPoint3D> points_other(N);
   for (size_t i = 0; i < N; i++)
   {
     points_this[i].x = corrs[i].global.x;
@@ -244,7 +251,8 @@ bool tfest::se3_l2(
 {
   // Transform data types:
   const size_t N = corrs.size();
-  std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
+  std::vector<mrpt::math::TPoint3D> points_this(N);
+  std::vector<mrpt::math::TPoint3D> points_other(N);
   for (size_t i = 0; i < N; i++)
   {
     points_this[i].x = corrs[i].global.x;

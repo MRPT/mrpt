@@ -55,20 +55,28 @@ bool CFileGZInputStream::open(
 {
   MRPT_START
 
-  if (m_f->f) gzclose(m_f->f);
+  if (m_f->f)
+  {
+    gzclose(m_f->f);
+  }
 
   // Get compressed file size:
   m_file_size = mrpt::system::getFileSize(fileName);
   if (m_file_size == uint64_t(-1))
   {
     if (error_msg)
+    {
       error_msg.value().get() = mrpt::format("Couldn't access the file '%s'", fileName.c_str());
+    }
     return false;
   }
 
   // Open gz stream:
   m_f->f = gzopen(fileName.c_str(), "rb");
-  if (m_f->f == nullptr && error_msg) error_msg.value().get() = std::string(strerror(errno));
+  if (m_f->f == nullptr && error_msg)
+  {
+    error_msg.value().get() = std::string(strerror(errno));
+  }
 
   m_f->filename = fileName;
 
@@ -124,9 +132,10 @@ bool CFileGZInputStream::fileOpenCorrectly() const { return m_f->f != nullptr; }
 bool CFileGZInputStream::checkEOF()
 {
   if (!m_f->f)
+  {
     return true;
-  else
-    return 0 != gzeof(m_f->f);
+  }
+  return 0 != gzeof(m_f->f);
 }
 
 uint64_t CFileGZInputStream::Seek(int64_t, CStream::TSeekOrigin)

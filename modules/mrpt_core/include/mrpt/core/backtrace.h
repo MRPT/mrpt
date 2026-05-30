@@ -52,7 +52,7 @@ struct TCallStackBackTrace
    * See [environment variables](env-vars.html) that can change the output
    * format.
    */
-  std::string asString() const noexcept;
+  [[nodiscard]] std::string asString() const noexcept;
 };
 
 /** Returns a list of strings representing the current call stack

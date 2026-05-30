@@ -72,7 +72,8 @@ std::string exception_to_str(const std::exception& e);
 
 struct ExceptionWithCallBackBase
 {
-  ExceptionWithCallBackBase(const std::string original_what, const TCallStackBackTrace call_stack) :
+  ExceptionWithCallBackBase(
+      const std::string& original_what, const TCallStackBackTrace& call_stack) :
       originalWhat(original_what), callStack(call_stack)
   {
   }

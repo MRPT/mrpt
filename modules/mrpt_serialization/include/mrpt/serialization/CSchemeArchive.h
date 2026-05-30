@@ -96,11 +96,7 @@ class CSchemeArchive : public mrpt::serialization::CSchemeArchiveBase_impl
     ReadObject(*m_parent, obj);
     return *m_parent;
   }
-  void readTo(mrpt::serialization::CSerializable& obj) override
-  {
-    WriteObject(*m_parent, obj);
-    return;
-  }
+  void readTo(mrpt::serialization::CSerializable& obj) override { WriteObject(*m_parent, obj); }
 
   mrpt::serialization::CSchemeArchiveBase operator[](size_t idx) override
   {

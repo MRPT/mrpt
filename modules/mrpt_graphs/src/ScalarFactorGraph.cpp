@@ -133,10 +133,11 @@ void ScalarFactorGraph::updateEstimation(
     ASSERT_(e != nullptr);
     // Jacob:
     const double w = std::sqrt(e->getInformation());
-    double dr_dxi, dr_dxj;
+    double dr_dxi;
+    double dr_dxj;
     e->evalJacobian(dr_dxi, dr_dxj);
-    const int node_id_i = static_cast<int>(e->node_id_i),
-              node_id_j = static_cast<int>(e->node_id_j);
+    const int node_id_i = static_cast<int>(e->node_id_i);
+    const int node_id_j = static_cast<int>(e->node_id_j);
     A_tri.emplace_back(edge_counter, node_id_i, w * dr_dxi);
     A_tri.emplace_back(edge_counter, node_id_j, w * dr_dxj);
     // gradient:
@@ -191,8 +192,10 @@ void ScalarFactorGraph::updateEstimation(
     for (int l = n - 1; l >= 0; l--)
     {
       if (!(l % show_progress_steps))
+      {
         MRPT_LOG_DEBUG_FMT(
             "Computing variance %6.02f%%... \r", 100.0 * static_cast<double>(n - l - 1) / n);
+      }
 
       const double utll = UT.coeff(l, l);
 
@@ -201,7 +204,10 @@ void ScalarFactorGraph::updateEstimation(
       for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator jt(UTrow, l); jt; ++jt)
       {
         const int j = static_cast<int>(jt.col());
-        if (j <= l) continue;  // upper triangular only
+        if (j <= l)
+        {
+          continue;  // upper triangular only
+        }
 
         // Compute off-diagonal variances Sigma(j,l) = Sigma(l,j)
         // using only non-zero entries in row l of UT (SUM 1 and SUM 2 merged):
@@ -209,11 +215,18 @@ void ScalarFactorGraph::updateEstimation(
         for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(UTrow, l); it; ++it)
         {
           const int i = static_cast<int>(it.col());
-          if (i <= l) continue;
+          if (i <= l)
+          {
+            continue;
+          }
           if (i <= j)
+          {
             sum += it.value() * solved_covariance.coeff(i, j);
+          }
           else
+          {
             sum += it.value() * solved_covariance.coeff(j, i);
+          }
         }
         solved_covariance.insert(l, j) = -sum / utll;
         subSigmas += jt.value() * solved_covariance.coeff(l, j);

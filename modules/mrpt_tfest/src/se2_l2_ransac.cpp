@@ -117,7 +117,8 @@ bool tfest::se2_l2_robust(
   timlog.enter("ransac.find_max*");
 #endif
   // Find the max. index of "this" and "other:
-  unsigned int maxThis = 0, maxOther = 0;
+  unsigned int maxThis = 0;
+  unsigned int maxOther = 0;
   for (const auto& in_correspondence : in_correspondences)
   {
     maxThis = max(maxThis, in_correspondence.globalIdx);
@@ -222,7 +223,8 @@ bool tfest::se2_l2_robust(
                                 // changed in the first loop
   }
 
-  std::vector<bool> alreadySelectedThis, alreadySelectedOther;
+  std::vector<bool> alreadySelectedThis;
+  std::vector<bool> alreadySelectedOther;
 
   if (!params.ransac_algorithmForLandmarks)
   {

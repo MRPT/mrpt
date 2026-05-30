@@ -49,9 +49,13 @@ bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
     }
 
     if (pClassThis->getBaseClass)
+    {
       pClassThis = (*pClassThis->getBaseClass)();
+    }
     else
+    {
       pClassThis = nullptr;  // The root class
+    }
   }
 
   // Parent class not found
@@ -82,9 +86,13 @@ bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
     }
 
     if (pClassThis->getBaseClass)
+    {
       pClassThis = (*pClassThis->getBaseClass)();
+    }
     else
+    {
       pClassThis = nullptr;  // The root class
+    }
   }
 
   // Parent class not found
@@ -100,7 +108,7 @@ CObject::Ptr TRuntimeClassId::createObject() const
         "[TRuntimeClassId::createObject] Trying to create an object "
         "without dynamic constructor. classname=`%s`\n",
         className != nullptr ? className : "nullptr");
-    return CObject::Ptr();
+    return {};
   }
 
   try
@@ -120,7 +128,10 @@ TRuntimeClassId* CObject::_GetBaseClass() { return nullptr; }
 
 mrpt::rtti::CObject::Ptr mrpt::rtti::classFactory(const std::string& className)
 {
-  auto pR = findRegisteredClass(className);
-  if (!pR) return nullptr;
+  const auto* pR = findRegisteredClass(className);
+  if (!pR)
+  {
+    return nullptr;
+  }
   return pR->createObject();
 }

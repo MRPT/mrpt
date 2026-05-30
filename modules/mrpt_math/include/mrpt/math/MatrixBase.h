@@ -351,3 +351,9 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 };
 
 }  // namespace mrpt::math
+
+// On MSVC, consumers compile template implementations inline
+// (the DLL excludes instantiation files to avoid LNK1189).
+#if defined(_MSC_VER) && !defined(mrpt_math_EXPORTS)
+#include <mrpt/math/impl/MatrixBase_impl.h>
+#endif

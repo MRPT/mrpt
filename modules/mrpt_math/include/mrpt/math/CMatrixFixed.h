@@ -454,3 +454,9 @@ struct TTypeName<mrpt::math::CMatrixFixed<T, N, M>>
   }
 };
 }  // namespace mrpt::typemeta
+
+// On MSVC, consumers compile template implementations inline
+// (the DLL excludes instantiation files to avoid LNK1189).
+#if defined(_MSC_VER) && !defined(mrpt_math_EXPORTS)
+#include <mrpt/math/impl/CMatrixFixed_impl.h>
+#endif

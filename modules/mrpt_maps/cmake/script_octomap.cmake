@@ -44,6 +44,7 @@ if (NOT OCTOMAP_FOUND)
 			-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 			-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
 			${CMD_CMAKE_POSTFIX}
+			-DCMAKE_POLICY_VERSION_MINIMUM=3.5
 		  BUILD_COMMAND
 			${CMAKE_COMMAND} --build ${mrpt_maps_BINARY_DIR}/EP_octomap-prefix/src/EP_octomap-build --config $<CONFIG> --target octomap-static
 			COMMAND ${CMAKE_COMMAND} -E copy ${mrpt_maps_BINARY_DIR}/3rdparty/octomap/lib/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${mrpt_maps_BINARY_DIR}/lib/

@@ -41,7 +41,10 @@ inline uint32_t twist(const uint32_t m, const uint32_t s0, const uint32_t s1)
 
 Generator_MT19937::result_type Generator_MT19937::operator()()
 {
-  if (!m_index) generateNumbers();
+  if (!m_index)
+  {
+    generateNumbers();
+  }
 
   uint32_t y = m_MT[m_index];
   y ^= y >> 11;
@@ -51,14 +54,20 @@ Generator_MT19937::result_type Generator_MT19937::operator()()
 
   // Wrap index to [0,623].
   m_index++;
-  if (m_index >= 624) m_index = 0;
+  if (m_index >= 624)
+  {
+    m_index = 0;
+  }
 
   return y;
 }
 
 void Generator_MT19937::generateNumbers()
 {
-  if (!m_seed_initialized) this->seed(std::random_device{}());
+  if (!m_seed_initialized)
+  {
+    this->seed(std::random_device{}());
+  }
 
   // Code from the implementation by Rick Wagner
   //  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
@@ -69,8 +78,14 @@ void Generator_MT19937::generateNumbers()
   const int M = 397;  // period parameter
 
   uint32_t* p = m_MT;
-  for (int i = N - M; i--; ++p) *p = twist(p[M], p[0], p[1]);
-  for (int i = M; --i; ++p) *p = twist(p[M - N], p[0], p[1]);
+  for (int i = N - M; i--; ++p)
+  {
+    *p = twist(p[M], p[0], p[1]);
+  }
+  for (int i = M; --i; ++p)
+  {
+    *p = twist(p[M - N], p[0], p[1]);
+  }
   *p = twist(p[M - N], p[0], m_MT[0]);
 }
 
@@ -80,7 +95,9 @@ void Generator_MT19937::seed(const uint32_t seed)
   m_MT[0] = seed;
   // 0x6c078965
   for (uint32_t i = 1; i < 624; i++)
-    m_MT[i] = static_cast<uint32_t>(1812433253 * (m_MT[i - 1] ^ (m_MT[i - 1] >> 30)) + i);
+  {
+    m_MT[i] = (1812433253 * (m_MT[i - 1] ^ (m_MT[i - 1] >> 30)) + i);
+  }
 
   m_index = 0;
 }

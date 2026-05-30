@@ -20,14 +20,12 @@
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/tfest/indiv-compat-decls.h>
 
-namespace mrpt
-{
 /** Functions for estimating the optimal transformation between two frames of
  * references given measurements of corresponding points.
  * \sa mrpt::slam::CICP
  * \ingroup mrpt_tfest_grp
  */
-namespace tfest
+namespace mrpt::tfest
 {
 /** \addtogroup mrpt_tfest_grp
  * @{ */
@@ -123,7 +121,7 @@ struct TSE2RobustParams
    */
   // std::function<bool(TPotentialMatch)>  user_individual_compat_callback; //
   // This could be used in the future when we enforce C++11 to users...
-  TFunctorCheckPotentialMatch user_individual_compat_callback = {};
+  TFunctorCheckPotentialMatch user_individual_compat_callback;
 
   /** Default values */
   TSE2RobustParams() = default;
@@ -192,5 +190,4 @@ bool se2_l2_robust(
     TSE2RobustResult& out_results);
 
 /** @} */  // end of grouping
-}  // namespace tfest
-}  // namespace mrpt
+}  // namespace mrpt::tfest

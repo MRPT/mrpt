@@ -28,28 +28,40 @@ static_assert(
 /*---------------------------------------------------------------
               Constructor
  ---------------------------------------------------------------*/
-CFileStream::CFileStream() : m_f() {}
+CFileStream::CFileStream() {}
 /*---------------------------------------------------------------
               Constructor
  ---------------------------------------------------------------*/
-CFileStream::CFileStream(const string& fileName, TFileOpenModes mode_) : m_f()
+CFileStream::CFileStream(const string& fileName, TFileOpenModes mode_)
 {
   std::ios_base::openmode mode = std::ios_base::in;
   if (mode_ == fomRead)
+  {
     mode = std::ios_base::in;
+  }
   else if (mode_ == fomWrite)
+  {
     mode = std::ios_base::out | std::ios_base::trunc;
+  }
   else if (mode_ == fomAppend)
+  {
     mode = std::ios_base::app | std::ios_base::out;
+  }
   else if (mode_ == (fomRead | fomWrite))
+  {
     mode = std::ios_base::in | std::ios_base::out | std::ios_base::trunc;
+  }
   else if (mode_ == (fomAppend | fomWrite))
+  {
     mode = std::ios_base::in | std::ios_base::out | std::ios_base::app;
+  }
 
   // Try to open the file:
   m_f.open(fileName.c_str(), mode);
   if (!m_f.is_open())
+  {
     throw std::runtime_error(std::string("CFileStream: Error creating/opening: ") + fileName);
+  }
 }
 
 /*---------------------------------------------------------------
@@ -59,17 +71,30 @@ bool CFileStream::open(const std::string& fileName, TFileOpenModes mode_)
 {
   std::ios_base::openmode mode = std::ios_base::in;
   if (mode_ == fomRead)
+  {
     mode = std::ios_base::in;
+  }
   else if (mode_ == fomWrite)
+  {
     mode = std::ios_base::out | std::ios_base::trunc;
+  }
   else if (mode_ == fomAppend)
+  {
     mode = std::ios_base::app | std::ios_base::out;
+  }
   else if (mode_ == (fomRead | fomWrite))
+  {
     mode = std::ios_base::in | std::ios_base::out | std::ios_base::trunc;
+  }
   else if (mode_ == (fomAppend | fomWrite))
+  {
     mode = std::ios_base::in | std::ios_base::out | std::ios_base::app;
+  }
 
-  if (m_f.is_open()) m_f.close();
+  if (m_f.is_open())
+  {
+    m_f.close();
+  }
 
   m_f.open(fileName.c_str(), ios_base::binary | mode);
   return m_f.is_open();
@@ -168,9 +193,10 @@ uint64_t CFileStream::getPosition() const
 {
   auto& f = const_cast<std::fstream&>(m_f);
   if (m_f.is_open())
+  {
     return static_cast<uint64_t>(f.tellg());
-  else
-    return 0;
+  }
+  return 0;
 }
 
 /*---------------------------------------------------------------
@@ -179,9 +205,10 @@ uint64_t CFileStream::getPosition() const
 uint64_t CFileStream::getPositionI()
 {
   if (m_f.is_open())
+  {
     return static_cast<uint64_t>(m_f.tellg());
-  else
-    return 0;
+  }
+  return 0;
 }
 
 /*---------------------------------------------------------------
@@ -190,9 +217,10 @@ uint64_t CFileStream::getPositionI()
 uint64_t CFileStream::getPositionO()
 {
   if (m_f.is_open())
+  {
     return static_cast<uint64_t>(m_f.tellp());
-  else
-    return 0;
+  }
+  return 0;
 }
 
 /*---------------------------------------------------------------
@@ -228,5 +256,8 @@ bool CFileStream::checkEOF()
 
 void CFileStream::clearError()
 {
-  if (m_f.is_open()) m_f.clear();
+  if (m_f.is_open())
+  {
+    m_f.clear();
+  }
 }
