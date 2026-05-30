@@ -73,8 +73,6 @@ class CText : public CVisualObject
 
   virtual ~CText() override;
 
-  std::pair<double, double> computeTextExtension() const;
-
   void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 };
 

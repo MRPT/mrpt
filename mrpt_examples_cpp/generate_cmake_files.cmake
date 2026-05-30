@@ -222,13 +222,6 @@ set(LIST_EXAMPLES_IN_THIS_DIR
 set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_gui mrpt::mrpt_hwdrivers mrpt::mrpt_libapps_gui)
 GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-# === Depending on: mrpt::mrpt_gui, mrpt::mrpt_maps ===
-set(LIST_EXAMPLES_IN_THIS_DIR
-  opengl_ray_trace_example
-  )
-set(CMAKE_EXAMPLE_DEPS mrpt::mrpt_gui mrpt::mrpt_maps)
-GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-
 # === Depending on: mrpt::mrpt_random ===
 set(LIST_EXAMPLES_IN_THIS_DIR
   random_examples

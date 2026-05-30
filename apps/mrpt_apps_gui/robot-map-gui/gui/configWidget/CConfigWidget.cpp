@@ -9,6 +9,8 @@
    */
 #include "CConfigWidget.h"
 
+#include <mrpt/config/CConfigFileMemory.h>
+
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QListWidget>
@@ -77,20 +79,25 @@ void CConfigWidget::saveConfig()
   {
     return;
   }
-  QFile file(configName);
-  if (!file.open(QIODevice::WriteOnly))
-  {
-    QMessageBox::information(this, tr("Unable to open file"), file.errorString());
-    return;
-  }
-  mrpt::io::CFileOutputStream f(configName.toStdString(), mrpt::io::OpenMode::APPEND);
 
-  for (int i = 0; i < m_ui->stackedWidget->count(); ++i)
+  try
   {
-    QWidget* w = m_ui->stackedWidget->widget(i);
-    COccupancyConfig* o = dynamic_cast<COccupancyConfig*>(w);
-    Q_UNUSED(o);
-    // TODO: saving configurations
+    mrpt::config::CConfigFileMemory cfg;
+    mrpt::maps::TSetOfMetricMapInitializers mapInits = config();
+    mapInits.saveToConfigFile(cfg, "MetricMaps");
+
+    QFile file(configName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+      QMessageBox::information(this, tr("Unable to open file"), file.errorString());
+      return;
+    }
+    const std::string content = cfg.getContent();
+    file.write(content.c_str(), static_cast<qint64>(content.size()));
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::critical(this, tr("Error saving config"), QString::fromStdString(e.what()));
   }
 }
 

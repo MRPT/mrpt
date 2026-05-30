@@ -42,5 +42,4 @@ MRPT_WARNING(
 //#include <mrpt/maps/PCL_adapters.h>  // NOTE: This file must be included from
 // the user code only if he has already include PCL headers.
 
-#include <mrpt/viz/CAngularObservationMesh.h>
 #include <mrpt/viz/CPlanarLaserScan.h>

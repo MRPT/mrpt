@@ -14,24 +14,17 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/viz/CAngularObservationMesh.h>
-#include <mrpt/viz/CDisk.h>
-#include <mrpt/viz/CGridPlaneXY.h>
-#include <mrpt/viz/CSetOfObjects.h>
-#include <mrpt/viz/CSphere.h>
-#include <mrpt/viz/Scene.h>
-#include <mrpt/viz/stock_objects.h>
 
 #include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
-using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::obs;
@@ -79,109 +72,42 @@ class ICPTests : public ::testing::Test
     EXPECT_NEAR(good_pose.distanceTo(pdf->getMeanVal()), 0, 0.02);
   }
 
-  static void generateObjects(CSetOfObjects::Ptr& world)
+  static void generateSyntheticCloud(CSimplePointsMap& out_map, const CPose3D& origin)
   {
-    CSphere::Ptr sph = std::make_shared<CSphere>(0.5);
-    sph->setLocation(0, 0, 0);
-    sph->setColor(1, 0, 0);
-    world->insert(sph);
-
-    CDisk::Ptr pln = std::make_shared<CDisk>();
-    pln->setDiskRadius(2);
-    pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
-    pln->setColor(0.8f, 0, 0);
-    world->insert(pln);
-
+    // Generate a grid of points on a plane to serve as a synthetic 3D scan.
+    for (int ix = -10; ix <= 10; ix++)
     {
-      CDisk::Ptr pln2 = std::make_shared<CDisk>();
-      pln2->setDiskRadius(2);
-      pln2->setPose(CPose3D(0, 0, 0, 30.0_deg, -20.0_deg, -2.0_deg));
-      pln2->setColor(0.9f, 0, 0);
-      world->insert(pln2);
+      for (int iy = -10; iy <= 10; iy++)
+      {
+        mrpt::math::TPoint3D pt(ix * 0.2, iy * 0.2, 0.0);
+        mrpt::math::TPoint3D g;
+        origin.composePoint(pt.x, pt.y, pt.z, g.x, g.y, g.z);
+        out_map.insertPointFast(
+            static_cast<float>(g.x), static_cast<float>(g.y), static_cast<float>(g.z));
+      }
     }
+    out_map.mark_as_modified();
   }
 };
 
 TEST_F(ICPTests, AlignScans_icpClassic) { align2scans(icpClassic); }
 TEST_F(ICPTests, AlignScans_icpLevenbergMarquardt) { align2scans(icpLevenbergMarquardt); }
 
-TEST_F(ICPTests, RayTracingICP3D)
+TEST_F(ICPTests, SyntheticICP3D)
 {
-  // Increase this values to get more precision. It will also increase run
-  // time.
-  const size_t HOW_MANY_YAWS = 150;
-  const size_t HOW_MANY_PITCHS = 150;
+  CPose3D SCAN2_POSE_ERROR(0.05, -0.03, 0.02, 0.01, 0.02, 0.02);
 
-  // The two origins for the 3D scans
-  CPose3D viewpoint1(-0.3, 0.7, 3, 5.0_deg, 80.0_deg, 3.0_deg);
-  CPose3D viewpoint2(0.5, -0.2, 2.6, -5.0_deg, 100.0_deg, -7.0_deg);
-
-  CPose3D SCAN2_POSE_ERROR(0.15, -0.07, 0.10, -0.03, 0.1, 0.1);
-
-  // Create the reference objects:
-  Scene::Ptr scene1 = std::make_shared<Scene>();
-  Scene::Ptr scene2 = std::make_shared<Scene>();
-  Scene::Ptr scene3 = std::make_shared<Scene>();
-
-  CGridPlaneXY::Ptr plane1 = std::make_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
-  plane1->setColor(0.3f, 0.3f, 0.3f);
-  scene1->insert(plane1);
-  scene2->insert(plane1);
-  scene3->insert(plane1);
-
-  CSetOfObjects::Ptr world = std::make_shared<CSetOfObjects>();
-  generateObjects(world);
-  scene1->insert(world);
-
-  // Perform the 3D scans:
-  CAngularObservationMesh::Ptr aom1 = std::make_shared<CAngularObservationMesh>();
-  CAngularObservationMesh::Ptr aom2 = std::make_shared<CAngularObservationMesh>();
-
-  CAngularObservationMesh::trace2DSetOfRays(
-      scene1, viewpoint1, aom1,
-      CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_PITCHS),
-      CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_YAWS));
-  CAngularObservationMesh::trace2DSetOfRays(
-      scene1, viewpoint2, aom2,
-      CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_PITCHS),
-      CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI, HOW_MANY_YAWS));
-
-  // Put the viewpoints origins:
-  {
-    CSetOfObjects::Ptr origin1 = stock_objects::CornerXYZ();
-    origin1->setPose(viewpoint1);
-    origin1->setScale(0.6f);
-    scene1->insert(origin1);
-    scene2->insert(origin1);
-  }
-  {
-    CSetOfObjects::Ptr origin2 = stock_objects::CornerXYZ();
-    origin2->setPose(viewpoint2);
-    origin2->setScale(0.6f);
-    scene1->insert(origin2);
-    scene2->insert(origin2);
-  }
-
-  // Show the scanned points:
+  // Generate two synthetic 3D point clouds from the same reference frame.
   CSimplePointsMap M1, M2;
-
-  aom1->generatePointCloud(&M1);
-  aom2->generatePointCloud(&M2);
+  generateSyntheticCloud(M1, CPose3D());
+  generateSyntheticCloud(M2, CPose3D());
 
   // Create the wrongly-localized M2:
   CSimplePointsMap M2_noisy;
   M2_noisy = M2;
   M2_noisy.changeCoordinatesReference(SCAN2_POSE_ERROR);
 
-  M1.renderOptions.color = mrpt::img::TColorf(1, 0, 0);
-  M2_noisy.renderOptions.color = mrpt::img::TColorf(0, 0, 1);
-
-  scene2->insert(M1.getVisualization());
-  scene2->insert(M2_noisy.getVisualization());
-
-  // --------------------------------------
   // Do the ICP-3D
-  // --------------------------------------
   CICP icp;
   CICP::TReturnInfo icp_info;
 
@@ -198,6 +124,6 @@ TEST_F(ICPTests, RayTracingICP3D)
 
   // Checks:
   EXPECT_NEAR(0, (mean.asVectorVal() - SCAN2_POSE_ERROR.asVectorVal()).array().abs().mean(), 0.02)
-      << "ICP output: mean= " << mean << endl
+      << "ICP output: mean= " << mean << "\n"
       << "Real displacement: " << SCAN2_POSE_ERROR << "\n";
 }

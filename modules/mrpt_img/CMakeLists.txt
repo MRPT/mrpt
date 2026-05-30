@@ -40,7 +40,6 @@ set(LIB_SOURCES
   src/registerAllClasses.cpp
   src/TCamera.cpp
   src/TColor.cpp
-  src/TColorManager.cpp
   src/TPixelCoord.cpp
   src/TStereoCamera.cpp
 )
@@ -69,7 +68,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/img/registerAllClasses.h
   include/mrpt/img/TCamera.h
   include/mrpt/img/TColor.h
-  include/mrpt/img/TColorManager.h
   include/mrpt/img/TPixelCoord.h
   include/mrpt/img/TStereoCamera.h
 )

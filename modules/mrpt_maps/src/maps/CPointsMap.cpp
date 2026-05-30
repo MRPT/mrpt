@@ -1753,9 +1753,13 @@ bool CPointsMap::internal_insertObservation(
 
     if (insertionOptions.fuseWithExisting)
     {
-      THROW_EXCEPTION(
-          "Fuse point cloud not implemented yet for "
-          "CObservationRotatingScan");
+      // Build a temporary map from the rotating scan, then fuse.
+      CSimplePointsMap auxMap;
+      auxMap.insertionOptions = insertionOptions;
+      auxMap.insertionOptions.fuseWithExisting = false;
+      auxMap.insertionOptions.addToExistingPointsMap = false;
+      auxMap.internal_insertObservation(obs, robotPose);
+      fuseWith(&auxMap, insertionOptions.minDistBetweenLaserPoints, nullptr);
     }
     else
     {

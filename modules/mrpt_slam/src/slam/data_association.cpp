@@ -581,7 +581,6 @@ void mrpt::slam::data_association_independent_predictions(
   ASSERT_(metric == metricMaha || metric == metricML);
   // const double chi2thres = mrpt::math::chi2inv( chi2quantile, length_O );
 
-  // TODO: Optimized version!!
   CMatrixDouble Y_predictions_cov_full(length_O * nPredictions, length_O * nPredictions);
   CMatrixDouble COV_i(length_O, length_O);
   for (size_t i = 0; i < nPredictions; i++)

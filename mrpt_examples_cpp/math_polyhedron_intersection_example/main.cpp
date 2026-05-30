@@ -14,7 +14,6 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/math/TObject3D.h>
-#include <mrpt/viz/CAngularObservationMesh.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CPolyhedron.h>
@@ -27,7 +26,6 @@ using namespace mrpt::gui;
 using namespace mrpt::viz;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using mrpt::viz::CAngularObservationMesh;
 using namespace mrpt::system;
 
 const double GRID_R = 1.0;

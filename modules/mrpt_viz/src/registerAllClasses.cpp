@@ -122,9 +122,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_viz)
   registerClassCustomName("mrpt::opengl::COpenGLScene", CLASS_ID(Scene));
   registerClassCustomName("mrpt::opengl::COpenGLViewport", CLASS_ID(Viewport));
 
-// These ones are in the lib: mrpt-obsmaps
-// registerClass( CLASS_ID( CPlanarLaserScan ) );
-// registerClass( CLASS_ID( CAngularObservationMesh ) );
+// CPlanarLaserScan is registered in mrpt_maps
 #endif
 }
 

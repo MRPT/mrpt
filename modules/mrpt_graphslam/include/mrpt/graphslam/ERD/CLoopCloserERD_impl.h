@@ -707,12 +707,6 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
   MRPT_LOG_DEBUG_STREAM(
       "- groupB:\t" << getSTLContainerAsString(groupB) << " - size: " << groupB.size() << endl);
 
-  // verify that the number of laserScans is the same as the number of poses
-  // if
-  // the TGenerateHyptsPoolAdParams is used
-  // formulate into function and pass std::vector<uint32_t> and
-  // ad_params->group
-  // TODO
   if (ad_params)
   {
     const auto& p = ad_params->groupA_params;
@@ -1302,18 +1296,6 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
   // just visited the first node
   visited_nodes.at(starting_node) = true;
 
-  //// TODO Remove these - >>>>>>>>>>>>>>>>>>>>
-  //// printing the pool for verification
-  // std::cout << "Pool of Paths: " << "\n";
-  // for (typename std::set<path_t*>::const_iterator it =
-  // pool_of_paths.begin();
-  // it != pool_of_paths.end(); ++it) {
-  // printSTLContainer((*it)->nodes_traversed);
-  //}
-  // std::cout << "------ Done with the starting node ... ------" << "\n";
-  // int iters = 0;
-  //// TODO Remove these - <<<<<<<<<<<<<<<<<<<<< vvvUNCOMMENT BELOW AS WELLvvv
-
   while (true)
   {
     // if there is at least one false, exit loop
@@ -1340,28 +1322,6 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 
     path_t* optimal_path = this->popMinUncertaintyPath(&pool_of_paths);
     TNodeID dest = optimal_path->getDestination();
-
-    //// TODO Remove these - >>>>>>>>>>>>>>>>>>>> ^^^UNCOMMENT ABOVE AS
-    /// WELL^^^
-    // std::cout << iters << " " << std::string(40, '>') << "\n";
-    // std::cout << "current path Destination: " << dest << "\n";
-    //// printing the pool for verification
-    // std::cout << "Pool of Paths: " << "\n";
-    // for (typename std::set<path_t*>::const_iterator
-    // it = pool_of_paths.begin();
-    // it != pool_of_paths.end(); ++it) {
-    // printSTLContainer((*it)->nodes_traversed);
-    //}
-    // std::cout << "Nodes visited: " << "\n";
-    // std::vector<int> tmp_vec;
-    // for (int i = 0; i != visited_nodes.size(); ++i) {
-    // tmp_vec.push_back(i);
-    //}
-    // printSTLContainer(tmp_vec); std::cout << "\n"; // indices of numbers
-    // printSTLContainer(visited_nodes);         // actual flags
-    // std::cout << std::string(40, '<') << " " << iters++ << "\n";
-    // mrpt::system::pause();
-    //// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
 
     if (!visited_nodes.at(dest))
     {

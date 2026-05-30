@@ -414,12 +414,28 @@ bool CFFMPEG_InputStream::retrieveFrame(
       // << "\n"; std::cout << "  linsize: " <<
       // ctx->pFrameRGB->linesize[0] << "\n";
 
-      if (ctx->pFrameRGB->linesize[0] != ((m_grab_as_grayscale ? 1 : 3) * width))
-        THROW_EXCEPTION("FIXME: linesize!=width case not handled yet.");
-
-      out_img.loadFromMemoryBuffer(
-          width, height, m_grab_as_grayscale ? mrpt::img::CH_GRAY : mrpt::img::CH_RGB,
-          ctx->pFrameRGB->data[0]);
+      const int channels = m_grab_as_grayscale ? 1 : 3;
+      const int stride = ctx->pFrameRGB->linesize[0];
+      if (stride != channels * width)
+      {
+        // Padded frame: copy row-by-row into a tightly-packed buffer.
+        std::vector<uint8_t> packed(channels * width * height);
+        for (int row = 0; row < height; row++)
+        {
+          std::memcpy(
+              packed.data() + row * channels * width, ctx->pFrameRGB->data[0] + row * stride,
+              channels * width);
+        }
+        out_img.loadFromMemoryBuffer(
+            width, height, m_grab_as_grayscale ? mrpt::img::CH_GRAY : mrpt::img::CH_RGB,
+            packed.data());
+      }
+      else
+      {
+        out_img.loadFromMemoryBuffer(
+            width, height, m_grab_as_grayscale ? mrpt::img::CH_GRAY : mrpt::img::CH_RGB,
+            ctx->pFrameRGB->data[0]);
+      }
 
       // Output frame timestamp:
       outPTS = ctx->pFrame->pts;

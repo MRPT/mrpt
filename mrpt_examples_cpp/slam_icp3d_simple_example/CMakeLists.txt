@@ -12,11 +12,12 @@ find_package(mrpt_common REQUIRED)
 # Dependencies
 find_package(mrpt_slam REQUIRED)
 find_package(mrpt_gui REQUIRED)
+find_package(mrpt_random REQUIRED)
 
 
 # Define the executable target:
 mrpt_add_executable(
   TARGET slam_icp3d_simple_example
   SOURCES main.cpp
-  LINK_LIBRARIES mrpt::mrpt_slam mrpt::mrpt_gui 
+  LINK_LIBRARIES mrpt::mrpt_slam mrpt::mrpt_gui mrpt::mrpt_random
 )

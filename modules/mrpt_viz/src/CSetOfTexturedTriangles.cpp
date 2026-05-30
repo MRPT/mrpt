@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/math/geometry.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/CSetOfTexturedTriangles.h>
 
@@ -72,10 +73,27 @@ void CSetOfTexturedTriangles::serializeFrom(mrpt::serialization::CArchive& in, u
   CVisualObject::notifyChange();
 }
 
-bool CSetOfTexturedTriangles::traceRay(
-    [[maybe_unused]] const mrpt::poses::CPose3D& o, [[maybe_unused]] double& dist) const
+bool CSetOfTexturedTriangles::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
-  throw std::runtime_error("TODO: TraceRay not implemented in CSetOfTexturedTriangles");
+  std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
+
+  // Build a list of TPolygonWithPlane from the triangle buffer and delegate
+  // to the generic mrpt::math::traceRay implementation.
+  const size_t N = m_triangles.size();
+  std::vector<mrpt::math::TPolygonWithPlane> polys(N);
+  mrpt::math::TPolygon3D tmp(3);
+  for (size_t i = 0; i < N; i++)
+  {
+    const auto& t = m_triangles[i];
+    for (size_t j = 0; j < 3; j++)
+    {
+      tmp[j].x = t.x(j);
+      tmp[j].y = t.y(j);
+      tmp[j].z = t.z(j);
+    }
+    polys[i] = tmp;
+  }
+  return mrpt::math::traceRay(polys, (o - getCPose()).asTPose(), dist);
 }
 
 auto CSetOfTexturedTriangles::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf

@@ -593,7 +593,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
       mrpt::obs::CObservation2DRangeScan& laser_scan_in,
       mrpt::obs::CObservation2DRangeScan* laser_scan_out,
       const int keep_every_n_entries = 2);
-  void alignOpticalWithMRPTFrame();  // TODO - either use it or remove it
+  void alignOpticalWithMRPTFrame();
   /**\brief Query the observer instance for any user events.
    *
    * Query the given observer for any events (keystrokes, mouse clicks,
@@ -845,9 +845,6 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
   mrpt::img::TColor m_current_constraint_type_color;
   /**\}*/
 
-  // frame transformation from the RGBD_TUM GrountTruth to the MRPT
-  // reference frame
-  // TODO - either use it or lose it...
   mrpt::math::CMatrixDouble33 m_rot_TUM_to_MRPT;
   /** How big are the robots going to be in the scene */
   size_t m_robot_model_size;

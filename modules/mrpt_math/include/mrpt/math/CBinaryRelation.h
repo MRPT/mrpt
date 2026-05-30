@@ -46,9 +46,6 @@ template <typename T, typename U, bool UIsObject = false>
 class CBinaryRelation
 {
  private:
-  // TODO: VIRTUALIZE INSERTROWSANDCOLS!!! AND REIMPLEMENT IN
-  // CMATRIXTEMPLATEOBJECTS.
-
   /**Matrix type used to store the actual relation. */
   using MatrixType = typename detail::MatrixWrapper<U, UIsObject>::MatrixType;
 

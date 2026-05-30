@@ -38,7 +38,6 @@ See the tutorial: \ref tutorial_3D_scenes
 ## Rendering primitives
 
 Below is a list of the available rendering primitive classes.
-<!-- TODO: Update screenshots for v3 class names -->
 
 - mrpt::viz::CArrow: ![CArrow](_static/preview_CArrow.png)
 - mrpt::viz::CAssimpModel: ![CAssimpModel](_static/preview_CAssimpModel.png)
@@ -81,7 +80,6 @@ mrpt::viz::CSetOfObjects::posePDF2opengl():
 - mrpt::viz::CSetOfObjects::posePDF2opengl() for mrpt::poses::CPosePDFParticles: ![pose PDF particles](_static/preview_CPosePDFParticles_as_opengl.png)
 
 Note: The following extra visual classes are provided by other libraries:
-- mrpt::viz::CAngularObservationMesh (in mrpt-maps): ![CAngularObservationMesh](_static/preview_CAngularObservationMesh.png)
 - mrpt::viz::CPlanarLaserScan (in mrpt-maps): ![CPlanarLaserScan](_static/preview_CPlanarLaserScan.png)
 
 ## Multi-light API
