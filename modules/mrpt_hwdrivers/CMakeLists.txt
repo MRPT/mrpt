@@ -27,6 +27,66 @@ if(CMAKE_MRPT_HAS_FREENECT AND CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 	endif()
 endif()
 
+# In the colcon modular build, mrpt_freenect is not defined by 3rdparty/CMakeLists.txt.
+# Build it inline here when the embedded version is required.
+if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
+	set(_freenect_src_dir "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty/libfreenect")
+	if(NOT EXISTS "${_freenect_src_dir}/include/libfreenect.h")
+		message(WARNING "Embedded libfreenect sources not found at ${_freenect_src_dir}. Disabling Kinect support.")
+		set(CMAKE_MRPT_HAS_FREENECT 0)
+		set(CMAKE_MRPT_HAS_KINECT 0)
+	else()
+		set(_freenect_srcs
+			${_freenect_src_dir}/src/cameras.c
+			${_freenect_src_dir}/src/core.c
+			${_freenect_src_dir}/src/flags.c
+			${_freenect_src_dir}/src/loader.c
+			${_freenect_src_dir}/src/registration.c
+			${_freenect_src_dir}/src/audio.c
+			${_freenect_src_dir}/src/tilt.c
+			${_freenect_src_dir}/src/usb_libusb10.c
+		)
+		if(WIN32)
+			list(APPEND _freenect_srcs
+				${_freenect_src_dir}/platform/windows/libusb10emu/libusb-1.0/libusbemu.cpp
+				${_freenect_src_dir}/platform/windows/libusb10emu/libusb-1.0/failguard.cpp
+			)
+		endif()
+		if(NOT TARGET mrpt_freenect)
+			add_library(mrpt_freenect STATIC ${_freenect_srcs})
+			if(WIN32)
+				target_include_directories(mrpt_freenect SYSTEM PUBLIC
+					${_freenect_src_dir}/platform/windows
+					${_freenect_src_dir}/platform/windows/libusb10emu
+				)
+			endif()
+			if(MSVC)
+				# Force only the .c sources to compile as C++ (MSVC C compiler
+				# has limited C99/C11 support); .cpp files already have the right
+				# language from their extension.
+				foreach(_fsrc IN LISTS _freenect_srcs)
+					if(_fsrc MATCHES "\\.c$")
+						set_source_files_properties("${_fsrc}" PROPERTIES LANGUAGE CXX)
+					endif()
+				endforeach()
+			endif()
+			if(MRPT_COMPILER_IS_GCC_OR_CLANG)
+				target_compile_options(mrpt_freenect PRIVATE
+					-fPIC -Wno-ignored-qualifiers -Wno-unused-function -Wno-unused-const-variable
+				)
+				target_compile_definitions(mrpt_freenect PRIVATE
+					_GNU_SOURCE _BSD_SOURCE _DEFAULT_SOURCE
+				)
+			endif()
+			target_include_directories(mrpt_freenect SYSTEM PUBLIC ${_freenect_src_dir}/include)
+			target_link_libraries(mrpt_freenect PUBLIC PkgConfig::PKG_LIBUSB10)
+			set_target_properties(mrpt_freenect PROPERTIES FOLDER "3rd party")
+		endif()
+		unset(_freenect_srcs)
+	endif()
+	unset(_freenect_src_dir)
+endif()
+
 if(CMAKE_MRPT_HAS_LIBDC1394_2)
 	if ("${LIBDC1394_2_INCLUDE_DIRS}")
 		include_directories("${LIBDC1394_2_INCLUDE_DIRS}")

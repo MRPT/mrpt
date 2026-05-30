@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#define _USE_MATH_DEFINES  // For M_PI on MSVC
 #include <gtest/gtest.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/fourier.h>

@@ -464,3 +464,9 @@ std::ostream& operator<<(std::ostream& o, const MatrixVectorBase<Scalar, Derived
 }
 
 }  // namespace mrpt::math
+
+// On MSVC, consumers compile template implementations inline
+// (the DLL excludes instantiation files to avoid LNK1189).
+#if defined(_MSC_VER) && !defined(mrpt_math_EXPORTS)
+#include <mrpt/math/impl/MatrixVectorBase_impl.h>
+#endif

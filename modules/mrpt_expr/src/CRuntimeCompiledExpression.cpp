@@ -80,6 +80,14 @@ CRuntimeCompiledExpression::CRuntimeCompiledExpression() :
     m_impl(mrpt::make_impl<CRuntimeCompiledExpression::Impl>())
 {
 }
+CRuntimeCompiledExpression::~CRuntimeCompiledExpression() = default;
+CRuntimeCompiledExpression::CRuntimeCompiledExpression(const CRuntimeCompiledExpression&) = default;
+CRuntimeCompiledExpression& CRuntimeCompiledExpression::operator=(
+    const CRuntimeCompiledExpression&) = default;
+CRuntimeCompiledExpression::CRuntimeCompiledExpression(CRuntimeCompiledExpression&&) noexcept =
+    default;
+CRuntimeCompiledExpression& CRuntimeCompiledExpression::operator=(
+    CRuntimeCompiledExpression&&) noexcept = default;
 
 void CRuntimeCompiledExpression::compile(
     const std::string& expression,
@@ -166,6 +174,30 @@ void CRuntimeCompiledExpression::register_symbol_table(
     symbol_table.add_variable(v.first, *var);
   }
   m_impl->m_compiled_formula.register_symbol_table(symbol_table);
+}
+
+void CRuntimeCompiledExpression::register_function(
+    const std::string& name, const std::function<double()>& func)
+{
+  m_funcs_0[name] = func;
+}
+
+void CRuntimeCompiledExpression::register_function(
+    const std::string& name, const std::function<double(double)>& func)
+{
+  m_funcs_1[name] = func;
+}
+
+void CRuntimeCompiledExpression::register_function(
+    const std::string& name, const std::function<double(double, double)>& func)
+{
+  m_funcs_2[name] = func;
+}
+
+void CRuntimeCompiledExpression::register_function(
+    const std::string& name, const std::function<double(double, double, double)>& func)
+{
+  m_funcs_3[name] = func;
 }
 
 exprtk::expression<double>& CRuntimeCompiledExpression::get_raw_exprtk_expr()

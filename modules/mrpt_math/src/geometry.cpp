@@ -29,6 +29,10 @@
 #include <mrpt/math/ops_containers.h>
 
 #include <Eigen/Dense>
+#ifdef _MSC_VER
+#include "MatrixBase_impl.h"
+#include "MatrixVectorBase_impl.h"
+#endif
 
 using namespace mrpt;
 using namespace std;

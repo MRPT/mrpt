@@ -17,6 +17,9 @@
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
+#ifdef _MSC_VER
+#include "MatrixVectorBase_impl.h"
+#endif
 
 namespace mrpt::math
 {
