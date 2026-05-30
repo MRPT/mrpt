@@ -38,7 +38,6 @@ See the tutorial: \ref tutorial_3D_scenes
 ## Rendering primitives
 
 Below is a list of the available rendering primitive classes.
-<!-- TODO: Update screenshots for v3 class names -->
 
 - mrpt::viz::CArrow: ![CArrow](_static/preview_CArrow.png)
 - mrpt::viz::CAssimpModel: ![CAssimpModel](_static/preview_CAssimpModel.png)
