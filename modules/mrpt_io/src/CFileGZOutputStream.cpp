@@ -45,8 +45,10 @@ CFileGZOutputStream::CFileGZOutputStream(
   MRPT_START
   std::string err_msg;
   if (!open(fileName, compressionLevel, err_msg, mode))
+  {
     THROW_EXCEPTION_FMT(
         "Error trying to open file: '%s', error: '%s'", fileName.c_str(), err_msg.c_str());
+  }
   MRPT_END
 }
 
@@ -58,13 +60,19 @@ bool CFileGZOutputStream::open(
 {
   MRPT_START
 
-  if (m_f->f) gzclose(m_f->f);
+  if (m_f->f)
+  {
+    gzclose(m_f->f);
+  }
 
   // Open gz stream:
   m_f->f = gzopen(
       fileName.c_str(),
       mrpt::format("%cb%i", mode == OpenMode::APPEND ? 'a' : 'w', compress_level).c_str());
-  if (m_f->f == nullptr && error_msg) error_msg.value().get() = std::string(strerror(errno));
+  if (m_f->f == nullptr && error_msg)
+  {
+    error_msg.value().get() = std::string(strerror(errno));
+  }
 
   m_f->filename = fileName;
 

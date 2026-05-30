@@ -195,7 +195,7 @@ double mrpt::Clock::toDouble(const mrpt::Clock::time_point t) noexcept
   return (static_cast<double>(t.time_since_epoch().count()) - 116444736e9) / 10000000.0;
 }
 
-void mrpt::Clock::setActiveClock(const Source s)
+void mrpt::Clock::setActiveClock(Source s)
 {
   ASSERT_(
       s == mrpt::Clock::Source::Realtime || s == mrpt::Clock::Source::Monotonic ||
@@ -216,7 +216,8 @@ int64_t mrpt::Clock::resetMonotonicToRealTimeEpoch() noexcept
   auto& clk = mrpt::internal::ClockState::Instance();
 
 #if !defined(_WIN32)
-  timespec tim_rt{0, 0}, tim_mono{0, 0};
+  timespec tim_rt{0, 0};
+  timespec tim_mono{0, 0};
   clock_gettime(CLOCK_REALTIME, &tim_rt);
   clock_gettime(CLOCK_MONOTONIC, &tim_mono);
   clk.m2r_epoch.monotonic_ns = as_nanoseconds(tim_mono);

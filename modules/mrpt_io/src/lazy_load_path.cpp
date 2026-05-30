@@ -34,7 +34,10 @@ std::string mrpt::io::lazy_load_absolute_path(const std::string& relativeOrAbsol
 
   const auto lastChar = *LAZY_LOAD_PATH_BASE.rbegin();
 
-  if (lastChar != '/' && lastChar != '\\') out_path += "/";
+  if (lastChar != '/' && lastChar != '\\')
+  {
+    out_path += "/";
+  }
 
   out_path += fil;
   return out_path;

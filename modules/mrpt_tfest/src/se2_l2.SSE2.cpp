@@ -68,7 +68,8 @@ internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
     sum_ab_xyz = _mm_add_ps(sum_ab_xyz, _mm_mul_ps(a_xyxy, b_xyyx));
   }
 
-  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float sums_a[4], sums_b[4];
+  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float sums_a[4];
+  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float sums_b[4];
   _mm_store_ps(sums_a, sum_a_xyz);
   _mm_store_ps(sums_b, sum_b_xyz);
 
@@ -86,7 +87,8 @@ internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
   // means_a[1]: mean_y_a
   // means_b[0]: mean_x_b
   // means_b[1]: mean_y_b
-  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float means_a[4], means_b[4];
+  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float means_a[4];
+  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float means_b[4];
   _mm_store_ps(means_a, sum_a_xyz);
   _mm_store_ps(means_b, sum_b_xyz);
 

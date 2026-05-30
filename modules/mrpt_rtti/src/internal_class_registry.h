@@ -33,13 +33,12 @@ struct queue_register_functions_t
   {
     std::lock_guard<std::mutex> lock(funcs_cs);
     if (funcs.empty())
-      return false;
-    else
     {
-      ret = funcs.front();
-      funcs.pop();
-      return true;
+      return false;
     }
+    ret = funcs.front();
+    funcs.pop();
+    return true;
   }
 };
 

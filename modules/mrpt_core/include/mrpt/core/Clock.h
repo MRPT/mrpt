@@ -47,13 +47,13 @@ class Clock
   static double nowDouble() noexcept { return toDouble(now()); }
 
   /** Create a timestamp from its double representation. \sa toDouble */
-  static time_point fromDouble(const double t) noexcept;
+  static time_point fromDouble(double t) noexcept;
 
   /** Converts a timestamp to a UNIX time_t-like number, with fractional part.
    *  If t is an invalid (default-contructed) time_point, `0.0` will be
    * returned.
    * \sa fromDouble */
-  static double toDouble(const time_point t) noexcept;
+  static double toDouble(time_point t) noexcept;
 
   /** Options for setting the source of all timestamps across MRPT:
    * setActiveClock(), now()
@@ -86,7 +86,7 @@ class Clock
    * subsequent call to now(), perhaps in a parallel thread, does not
    * return an undefined time_point value.
    */
-  static void setActiveClock(const Source s);
+  static void setActiveClock(Source s);
 
   /** Returns the currently selected clock. */
   static Source getActiveClock();

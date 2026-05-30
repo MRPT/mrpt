@@ -107,7 +107,10 @@ class CStream
     for (size_t i = 0; i < N; i++)
     {
       this->printf(fmt, V[i]);
-      if (i != (N - 1)) this->printf("%c", separator);
+      if (i != (N - 1))
+      {
+        this->printf("%c", separator);
+      }
     }
     this->printf("]");
   }

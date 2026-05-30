@@ -45,7 +45,10 @@ void CPipe::initializePipe(CPipeReadEndPoint& outReadPipe, CPipeWriteEndPoint& o
 #else
   // UNIX pipes
   int fds[2];
-  if (::pipe(fds)) THROW_EXCEPTION("Unix error creating pipe endpoints!");
+  if (::pipe(fds))
+  {
+    THROW_EXCEPTION("Unix error creating pipe endpoints!");
+  }
 
   outReadPipe.m_pipe_file = fds[0];
   outWritePipe.m_pipe_file = fds[1];
@@ -137,82 +140,80 @@ size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
     const auto bytes_read = ::read(m_pipe_file, Buffer, Count);
     return bytes_read < 0 ? 0 : static_cast<size_t>(bytes_read);
   }
-  else
+
+  // Use timeouts:
+  size_t alreadyRead = 0;
+  bool timeoutExpired = false;
+
+  struct timeval timeoutSelect
   {
-    // Use timeouts:
-    size_t alreadyRead = 0;
-    bool timeoutExpired = false;
+  };
+  struct timeval* ptrTimeout{nullptr};
 
-    struct timeval timeoutSelect
+  // Init fd_set structure & add our socket to it:
+  fd_set read_fds;
+  FD_ZERO(&read_fds);
+  FD_SET(m_pipe_file, &read_fds);
+
+  // Loop until timeout expires or the socket is closed.
+  while (alreadyRead < Count && !timeoutExpired)
+  {
+    // Use the "first" or "between" timeouts:
+    unsigned int curTimeout_us = alreadyRead == 0 ? timeout_read_start_us : timeout_read_between_us;
+
+    if (curTimeout_us == 0)
+      ptrTimeout = nullptr;
+    else
     {
-    };
-    struct timeval* ptrTimeout{nullptr};
+      timeoutSelect.tv_sec = curTimeout_us / 1000000;
+      timeoutSelect.tv_usec = (curTimeout_us % 1000000);
+      ptrTimeout = &timeoutSelect;
+    }
 
-    // Init fd_set structure & add our socket to it:
-    fd_set read_fds;
-    FD_ZERO(&read_fds);
-    FD_SET(m_pipe_file, &read_fds);
-
-    // Loop until timeout expires or the socket is closed.
-    while (alreadyRead < Count && !timeoutExpired)
+    // Wait for received data
+    if (::select(
+            m_pipe_file + 1,  // __nfds
+            &read_fds,        // Wait for read
+            nullptr,          // Wait for write
+            nullptr,          // Wait for except.
+            ptrTimeout)       // Timeout
+        != 1)
+    {  // Timeout:
+      timeoutExpired = true;
+    }
+    else
     {
-      // Use the "first" or "between" timeouts:
-      unsigned int curTimeout_us =
-          alreadyRead == 0 ? timeout_read_start_us : timeout_read_between_us;
+      // Compute remaining part:
+      const size_t remainToRead = Count - alreadyRead;
 
-      if (curTimeout_us == 0)
-        ptrTimeout = nullptr;
+      // Receive bytes:
+      const auto bytes_read =
+          ::read(m_pipe_file, reinterpret_cast<char*>(Buffer) + alreadyRead, remainToRead);
+      const size_t readNow = bytes_read < 0 ? 0 : static_cast<size_t>(bytes_read);
+
+      if (readNow != static_cast<size_t>(-1))
+      {
+        // Accumulate the received length:
+        alreadyRead += readNow;
+      }
       else
       {
-        timeoutSelect.tv_sec = curTimeout_us / 1000000;
-        timeoutSelect.tv_usec = (curTimeout_us % 1000000);
-        ptrTimeout = &timeoutSelect;
+        // Error:
+        this->close();
+        return alreadyRead;
       }
-
-      // Wait for received data
-      if (::select(
-              m_pipe_file + 1,  // __nfds
-              &read_fds,        // Wait for read
-              nullptr,          // Wait for write
-              nullptr,          // Wait for except.
-              ptrTimeout)       // Timeout
-          != 1)
-      {  // Timeout:
+      if (readNow == 0 && remainToRead != 0)
+      {
+        // We had an event of data available, so if we have now a
+        // zero,
+        //  the socket has been gracefully closed:
         timeoutExpired = true;
+        close();
       }
-      else
-      {
-        // Compute remaining part:
-        const size_t remainToRead = Count - alreadyRead;
+    }
+  }  // end while
+  return alreadyRead;
 
-        // Receive bytes:
-        const auto bytes_read =
-            ::read(m_pipe_file, reinterpret_cast<char*>(Buffer) + alreadyRead, remainToRead);
-        const size_t readNow = bytes_read < 0 ? 0 : static_cast<size_t>(bytes_read);
-
-        if (readNow != static_cast<size_t>(-1))
-        {
-          // Accumulate the received length:
-          alreadyRead += readNow;
-        }
-        else
-        {
-          // Error:
-          this->close();
-          return alreadyRead;
-        }
-        if (readNow == 0 && remainToRead != 0)
-        {
-          // We had an event of data available, so if we have now a
-          // zero,
-          //  the socket has been gracefully closed:
-          timeoutExpired = true;
-          close();
-        }
-      }
-    }  // end while
-    return alreadyRead;
-  }
 #endif
 }
 
@@ -238,13 +239,13 @@ size_t CPipeBaseEndPoint::Write(const void* Buffer, size_t Count)
 }
 
 //  ------------- CPipeReadEndPoint  -------------
-CPipeReadEndPoint::CPipeReadEndPoint() : CPipeBaseEndPoint() {}
+CPipeReadEndPoint::CPipeReadEndPoint() {}
 CPipeReadEndPoint::CPipeReadEndPoint(const std::string& serialized) : CPipeBaseEndPoint(serialized)
 {
 }
 
 //  ------------- CPipeWriteEndPoint  -------------
-CPipeWriteEndPoint::CPipeWriteEndPoint() : CPipeBaseEndPoint() {}
+CPipeWriteEndPoint::CPipeWriteEndPoint() {}
 CPipeWriteEndPoint::CPipeWriteEndPoint(const std::string& serialized) :
     CPipeBaseEndPoint(serialized)
 {

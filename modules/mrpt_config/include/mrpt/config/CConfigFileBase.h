@@ -294,12 +294,16 @@ class CConfigFileBase
   {
     std::string aux = readString(section, name, "", failIfNotFound);
     if (aux.empty())
+    {
       outMatrix = defaultMatrix;
+    }
     else
     {
       // Parse the text into a vector:
       if (!outMatrix.fromMatlabStringFormat(aux))
+      {
         THROW_EXCEPTION_FMT("Error parsing matrix: '%s'", aux.c_str());
+      }
     }
   }
 
@@ -333,7 +337,10 @@ class CConfigFileBase
   {
     MRPT_START
     const std::string sVal = read_string_first_word(section, name, "", failIfNotFound);
-    if (sVal.empty()) return defaultValue;
+    if (sVal.empty())
+    {
+      return defaultValue;
+    }
     // Text or numeric value?
     if (::isdigit(sVal[0]))
     {  // Seems a number:

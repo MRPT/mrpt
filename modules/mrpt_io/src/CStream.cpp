@@ -35,7 +35,10 @@ int CStream::printf(const char* fmt, ...)
 {
   MRPT_START
 
-  if (!fmt) throw std::runtime_error("fmt in CStream::printf cannot be NULL");
+  if (!fmt)
+  {
+    throw std::runtime_error("fmt in CStream::printf cannot be NULL");
+  }
 
   int result = -1, length = 1024;
   vector<char> buffer;

@@ -113,7 +113,10 @@ class CClassRegistry
     std::shared_lock<std::shared_mutex> lk(m_mtx);
 
     std::vector<const TRuntimeClassId*> ret;
-    for (auto& registeredClasse : m_ns_classes) ret.push_back(registeredClasse.second);
+    for (auto& registeredClasse : m_ns_classes)
+    {
+      ret.push_back(registeredClasse.second);
+    }
     return ret;
   }
 
@@ -147,7 +150,10 @@ class CClassRegistry
  */
 void mrpt::rtti::registerAllPendingClasses()
 {
-  if (!pending_class_registers_modified) return;  // Quick return
+  if (!pending_class_registers_modified)
+  {
+    return;  // Quick return
+  }
 
   while (pending_class_registers_count() != 0)
   {

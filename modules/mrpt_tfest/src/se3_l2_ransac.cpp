@@ -68,8 +68,10 @@ bool tfest::se3_l2_robust(
   for (size_t iterations = 0; iterations < maxIters; iterations++)
   {
     if (params.verbose)
+    {
       std::cout << "[tfest::se3_l2_robust] Iteration " << (iterations + 1) << "/" << maxIters
                 << "\n";
+    }
 
     // Generate maybe inliers
     const auto rub = mrpt::math::linspace<uint32_t>(
@@ -91,7 +93,10 @@ bool tfest::se3_l2_robust(
         mrpt::tfest::TPotentialMatch pm;
         pm.idx_this = in_correspondences[idx].globalIdx;
         pm.idx_other = in_correspondences[idx].localIdx;
-        if (!params.user_individual_compat_callback(pm)) continue;  // Skip this one!
+        if (!params.user_individual_compat_callback(pm))
+        {
+          continue;  // Skip this one!
+        }
       }
 
       mbInliers.push_back(in_correspondences[idx]);
@@ -102,9 +107,11 @@ bool tfest::se3_l2_robust(
     if (cSet.size() < n)
     {
       if (params.verbose)
+      {
         std::cerr << "[tfest::se3_l2_robust] Iter " << iterations
                   << ": It was not possible to find the min no of "
                      "(compatible) matching pairs.\n";
+      }
       continue;  // Try again
     }
 
@@ -142,7 +149,10 @@ bool tfest::se3_l2_robust(
         mrpt::tfest::TPotentialMatch pm;
         pm.idx_this = in_correspondences[idx].globalIdx;
         pm.idx_other = in_correspondences[idx].localIdx;
-        if (!params.user_individual_compat_callback(pm)) continue;  // Skip this one!
+        if (!params.user_individual_compat_callback(pm))
+        {
+          continue;  // Skip this one!
+        }
       }
 
       // Consensus set: Maybe inliers + new point
@@ -186,7 +196,10 @@ bool tfest::se3_l2_robust(
       // Good set of points found
       TMatchingPairList cSetInliers;
       cSetInliers.resize(cSet.size());
-      for (size_t m = 0; m < cSet.size(); m++) cSetInliers[m] = in_correspondences[cSet[m]];
+      for (size_t m = 0; m < cSet.size(); m++)
+      {
+        cSetInliers[m] = in_correspondences[cSet[m]];
+      }
 
       // Compute output: Consensus Set + Initial Inliers Guess
       CPose3DQuat cIOutQuat;
@@ -227,7 +240,10 @@ bool tfest::se3_l2_robust(
 
   if (max_size == 0)
   {
-    if (params.verbose) std::cerr << "[se3_l2_robust] No solution found, maximum size is == 0!\n";
+    if (params.verbose)
+    {
+      std::cerr << "[se3_l2_robust] No solution found, maximum size is == 0!\n";
+    }
     return false;
   }
 

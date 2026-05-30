@@ -16,6 +16,7 @@
 #include <mrpt/core/format.h>
 
 #include <fstream>
+#include <string>
 
 bool mrpt::containers::internal::dynamic_grid_txt_saver::saveToTextFile(
     const std::string& fileName) const
@@ -26,7 +27,8 @@ bool mrpt::containers::internal::dynamic_grid_txt_saver::saveToTextFile(
   {
     return false;
   }
-  const unsigned int sy = getSizeY(), sx = getSizeX();
+  const unsigned int sy = getSizeY();
+  const unsigned int sx = getSizeX();
   for (unsigned int cy = 0; cy < sy; cy++)
   {
     for (unsigned int cx = 0; cx < sx; cx++)

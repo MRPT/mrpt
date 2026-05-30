@@ -62,7 +62,7 @@ void shuffle(RandomIt first, RandomIt last)
 template <class RandomIt, class URBG>
 void partial_shuffle(RandomIt first, RandomIt last, URBG&& g, size_t N)
 {
-  const uint64_t n = static_cast<uint64_t>(last - first);
+  const auto n = static_cast<uint64_t>(last - first);
   if (n == 0 || N == 0)
   {
     return;

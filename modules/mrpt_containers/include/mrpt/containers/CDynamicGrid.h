@@ -31,10 +31,10 @@ struct dynamic_grid_txt_saver
   dynamic_grid_txt_saver() = default;
   virtual ~dynamic_grid_txt_saver() = default;
 
-  bool saveToTextFile(const std::string& fileName) const;
-  virtual unsigned int getSizeX() const = 0;
-  virtual unsigned int getSizeY() const = 0;
-  virtual float getCellAsFloat(unsigned int cx, unsigned int cy) const = 0;
+  [[nodiscard]] bool saveToTextFile(const std::string& fileName) const;
+  [[nodiscard]] virtual unsigned int getSizeX() const = 0;
+  [[nodiscard]] virtual unsigned int getSizeY() const = 0;
+  [[nodiscard]] virtual float getCellAsFloat(unsigned int cx, unsigned int cy) const = 0;
 };
 }  // namespace internal
 
@@ -210,14 +210,15 @@ class CDynamicGrid
     new_map.resize(new_size_x * new_size_y, defaultValueNewCells);
 
     // Copy previous rows:
-    iterator itSrc, itDst;
+    iterator itSrc;
+    iterator itDst;
     for (std::size_t y = 0; y < m_size_y; y++)
     {
       const auto idxSrc = static_cast<typename std::vector<T>::difference_type>(y * m_size_x);
       const auto idxDst = static_cast<typename std::vector<T>::difference_type>(
           extra_x_left + (y + extra_y_top) * new_size_x);
 
-      std::size_t x;
+      std::size_t x = 0;
       for (x = 0, itSrc = (m_map.begin() + idxSrc), itDst = (new_map.begin() + idxDst);
            x < m_size_x; ++x, ++itSrc, ++itDst)
       {
@@ -296,23 +297,23 @@ class CDynamicGrid
   }
 
   /** Returns the horizontal size of grid map in cells count */
-  size_t getSizeX() const { return m_size_x; }
+  [[nodiscard]] size_t getSizeX() const { return m_size_x; }
   /** Returns the vertical size of grid map in cells count */
-  size_t getSizeY() const { return m_size_y; }
+  [[nodiscard]] size_t getSizeY() const { return m_size_y; }
   /** Returns the "x" coordinate of left side of grid map */
-  double getXMin() const { return m_x_min; }
+  [[nodiscard]] double getXMin() const { return m_x_min; }
   /** Returns the "x" coordinate of right side of grid map */
-  double getXMax() const { return m_x_max; }
+  [[nodiscard]] double getXMax() const { return m_x_max; }
   /** Returns the "y" coordinate of top side of grid map */
-  double getYMin() const { return m_y_min; }
+  [[nodiscard]] double getYMin() const { return m_y_min; }
   /** Returns the "y" coordinate of bottom side of grid map */
-  double getYMax() const { return m_y_max; }
+  [[nodiscard]] double getYMax() const { return m_y_max; }
   /** Returns the resolution of the grid map */
-  double getResolution() const { return m_resolution; }
+  [[nodiscard]] double getResolution() const { return m_resolution; }
   /** Transform a coordinate values into cell indexes */
-  int x2idx(double x) const { return static_cast<int>((x - m_x_min) / m_resolution); }
-  int y2idx(double y) const { return static_cast<int>((y - m_y_min) / m_resolution); }
-  int xy2idx(double x, double y) const { return x2idx(x) + y2idx(y) * m_size_x; }
+  [[nodiscard]] int x2idx(double x) const { return static_cast<int>((x - m_x_min) / m_resolution); }
+  [[nodiscard]] int y2idx(double y) const { return static_cast<int>((y - m_y_min) / m_resolution); }
+  [[nodiscard]] int xy2idx(double x, double y) const { return x2idx(x) + y2idx(y) * m_size_x; }
 
   /** Transform a global (linear) cell index value into its corresponding
    * (x,y) cell indexes. */
@@ -324,8 +325,8 @@ class CDynamicGrid
 
   /** Transform a cell index into a coordinate value of the cell central point
    */
-  double idx2x(int cx) const { return m_x_min + (cx + 0.5) * m_resolution; }
-  double idx2y(int cy) const { return m_y_min + (cy + 0.5) * m_resolution; }
+  [[nodiscard]] double idx2x(int cx) const { return m_x_min + (cx + 0.5) * m_resolution; }
+  [[nodiscard]] double idx2y(int cy) const { return m_y_min + (cy + 0.5) * m_resolution; }
 
   /** Get the entire grid as a matrix.
    *  \tparam MAT The type of the matrix, typically a
@@ -345,7 +346,7 @@ class CDynamicGrid
     {
       return;
     }
-    const T* c = &m_map[0];
+    const T* c = m_map.data();
     for (size_t cy = 0; cy < m_size_y; cy++)
     {
       for (size_t cx = 0; cx < m_size_x; cx++)
@@ -357,17 +358,17 @@ class CDynamicGrid
 
   /** The user must implement this in order to provide "saveToTextFile" a way
    * to convert each cell into a numeric value */
-  virtual float cell2float(const T&) const { return 0; }
+  virtual float cell2float(const T& /*unused*/) const { return 0; }
   /** Saves a float representation of the grid (via "cell2float()") to a text
    * file. \return false on error */
-  bool saveToTextFile(const std::string& fileName) const
+  [[nodiscard]] bool saveToTextFile(const std::string& fileName) const
   {
     struct aux_saver : public internal::dynamic_grid_txt_saver
     {
       aux_saver(const CDynamicGrid<T>& obj) : m_obj(obj) {}
-      unsigned int getSizeX() const override { return m_obj.getSizeX(); }
-      unsigned int getSizeY() const override { return m_obj.getSizeY(); }
-      float getCellAsFloat(unsigned int cx, unsigned int cy) const override
+      [[nodiscard]] unsigned int getSizeX() const override { return m_obj.getSizeX(); }
+      [[nodiscard]] unsigned int getSizeY() const override { return m_obj.getSizeY(); }
+      [[nodiscard]] float getCellAsFloat(unsigned int cx, unsigned int cy) const override
       {
         return m_obj.cell2float(m_obj.m_map[cx + cy * m_obj.getSizeX()]);
       }
@@ -404,7 +405,11 @@ class CDynamicGrid
     }
     else
     {
-      float xmin, xmax, ymin, ymax, res;
+      float xmin;
+      float xmax;
+      float ymin;
+      float ymax;
+      float res;
       in >> xmin >> xmax >> ymin >> ymax >> res;
       m_x_min = xmin;
       m_x_max = xmax;
@@ -417,7 +422,6 @@ class CDynamicGrid
     m_map.resize(m_size_x * m_size_y);
   }
 
- protected:
   /** The cells  */
   grid_data_t m_map;
   /** Used only from logically const method that really need to modify the

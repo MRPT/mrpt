@@ -52,7 +52,10 @@ CMemoryStream::~CMemoryStream()
   if (!m_read_only)
   {
     // Free buffer:
-    if (m_memory.get()) free(m_memory.get());
+    if (m_memory.get())
+    {
+      free(m_memory.get());
+    }
     m_memory = nullptr;
     m_size = 0;
     m_position = 0;
@@ -62,13 +65,18 @@ CMemoryStream::~CMemoryStream()
 void CMemoryStream::resize(uint64_t newSize)
 {
   if (m_read_only)
+  {
     THROW_EXCEPTION(
         "[CMemoryStream::resize] Cannot change memory block size since it "
         "was set with 'assign'");
+  }
 
   if (!newSize)
   {  // Free buffer:
-    if (m_memory.get()) free(m_memory.get());
+    if (m_memory.get())
+    {
+      free(m_memory.get());
+    }
     m_memory = nullptr;
     m_size = 0;
     m_position = 0;
@@ -78,12 +86,18 @@ void CMemoryStream::resize(uint64_t newSize)
     m_memory.set(realloc(m_memory.get(), newSize));
 
     // Check for non-memory errors??
-    if (newSize) ASSERT_(m_memory.get());
+    if (newSize)
+    {
+      ASSERT_(m_memory.get());
+    }
 
     m_size = newSize;
   }
 
-  if (m_bytesWritten > m_size) m_bytesWritten = m_size;
+  if (m_bytesWritten > m_size)
+  {
+    m_bytesWritten = m_size;
+  }
 }
 
 size_t CMemoryStream::Read(void* Buffer, size_t Count)
@@ -93,7 +107,10 @@ size_t CMemoryStream::Read(void* Buffer, size_t Count)
   size_t nToRead = std::min<size_t>(Count, maxAvail > 0 ? static_cast<size_t>(maxAvail) : 0);
 
   // Copy the memory block:
-  if (nToRead > 0) memcpy(Buffer, reinterpret_cast<char*>(m_memory.get()) + m_position, nToRead);
+  if (nToRead > 0)
+  {
+    memcpy(Buffer, reinterpret_cast<char*>(m_memory.get()) + m_position, nToRead);
+  }
 
   // Update cursor position:
   m_position += nToRead;
@@ -138,7 +155,10 @@ uint64_t CMemoryStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
       break;
   };
 
-  if (m_position >= m_size) m_position = m_size - 1;
+  if (m_position >= m_size)
+  {
+    m_position = m_size - 1;
+  }
 
   return m_position;
 }
@@ -208,7 +228,10 @@ bool CMemoryStream::loadBufferFromFile(const std::string& file_name)
 void mrpt::io::internal::free_fn_for_zmq(void* /* data*/, void* hint)
 {
   auto* fd = reinterpret_cast<mrpt::io::internal::TFreeFnDataForZMQ*>(hint);
-  if (fd->do_free) delete fd->buf;
+  if (fd->do_free)
+  {
+    delete fd->buf;
+  }
   delete fd;
 }
 

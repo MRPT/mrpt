@@ -32,12 +32,12 @@ class CSchemeArchiveBase_impl
 {
  public:
   virtual ~CSchemeArchiveBase_impl() = default;
-  virtual CSchemeArchiveBase& operator=(const int32_t) = 0;
-  virtual CSchemeArchiveBase& operator=(const uint32_t) = 0;
-  virtual CSchemeArchiveBase& operator=(const int64_t) = 0;
-  virtual CSchemeArchiveBase& operator=(const uint64_t) = 0;
-  virtual CSchemeArchiveBase& operator=(const float) = 0;
-  virtual CSchemeArchiveBase& operator=(const double) = 0;
+  virtual CSchemeArchiveBase& operator=(int32_t) = 0;
+  virtual CSchemeArchiveBase& operator=(uint32_t) = 0;
+  virtual CSchemeArchiveBase& operator=(int64_t) = 0;
+  virtual CSchemeArchiveBase& operator=(uint64_t) = 0;
+  virtual CSchemeArchiveBase& operator=(float) = 0;
+  virtual CSchemeArchiveBase& operator=(double) = 0;
   virtual CSchemeArchiveBase& operator=(const std::string) = 0;
   virtual CSchemeArchiveBase& operator=(bool) = 0;
 
@@ -65,7 +65,7 @@ class CSchemeArchiveBase_impl
   // Dict accessor
   virtual CSchemeArchiveBase operator[](std::string) = 0;
 
- public:  // should make it private by virtue of friend class
+  // should make it private by virtue of friend class
   void setParent(CSchemeArchiveBase* parent) { m_parent = parent; }
 
  protected:
@@ -101,7 +101,7 @@ class CSchemeArchiveBase
   CSchemeArchiveBase& operator=(const uint64_t val) { return (*pimpl).operator=(val); }
   CSchemeArchiveBase& operator=(const float val) { return (*pimpl).operator=(val); }
   CSchemeArchiveBase& operator=(const double val) { return (*pimpl).operator=(val); }
-  CSchemeArchiveBase& operator=(const std::string val) { return (*pimpl).operator=(val); }
+  CSchemeArchiveBase& operator=(std::string val) { return (*pimpl).operator=(val); }
   CSchemeArchiveBase& operator=(bool val) { return (*pimpl).operator=(val); }
   // Type conversion methods
   explicit operator int32_t() const { return static_cast<int32_t>(*pimpl); }

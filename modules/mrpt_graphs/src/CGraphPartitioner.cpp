@@ -35,12 +35,15 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
     bool forceSimetry)
 {
   size_t nodeCount;  // Nodes count
-  GRAPH_MATRIX Adj, eigenVectors;
+  GRAPH_MATRIX Adj;
+  GRAPH_MATRIX eigenVectors;
   std::vector<typename GRAPH_MATRIX::Scalar> eigenValues;
 
   // Check matrix is square:
   if (in_A.cols() != int(nodeCount = in_A.rows()))
+  {
     THROW_EXCEPTION("Weights matrix is not square!!");
+  }
 
   // Shi & Malik's method
   //-----------------------------------------------------------------
@@ -50,11 +53,17 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
   {
     Adj.setSize(nodeCount, nodeCount);
     for (size_t i = 0; i < nodeCount; i++)
+    {
       for (size_t j = i; j < nodeCount; j++)
+      {
         Adj(i, j) = Adj(j, i) = 0.5f * (in_A(i, j) + in_A(j, i));
+      }
+    }
   }
   else
+  {
     Adj = in_A;
+  }
 
   // Compute eigen-vectors of laplacian:
   GRAPH_MATRIX LAPLACIAN;
@@ -70,7 +79,10 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
   size_t nRows = eigenVectors.rows();
 
   // for (i=0;i<eigenVectors.cols();i++) mean+=eigenVectors(colNo,i);
-  for (size_t i = 0; i < nRows; i++) mean += eigenVectors(i, colNo);
+  for (size_t i = 0; i < nRows; i++)
+  {
+    mean += eigenVectors(i, colNo);
+  }
   mean /= static_cast<double>(nRows);
 
   out_part1.clear();
@@ -79,24 +91,34 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
   for (size_t i = 0; i < nRows; i++)
   {
     if (eigenVectors(i, colNo) >= mean)
+    {
       out_part1.push_back(static_cast<uint32_t>(i));
+    }
     else
+    {
       out_part2.push_back(static_cast<uint32_t>(i));
+    }
   }
 
   // Special and strange case: Constant eigenvector: Split nodes in two
   //    equally sized parts arbitrarily:
   // ------------------------------------------------------------------
-  if (!out_part1.size() || !out_part2.size())
+  if (out_part1.empty() || out_part2.empty())
   {
     out_part1.clear();
     out_part2.clear();
     // Assign 50%-50%:
     for (size_t i = 0; i < static_cast<size_t>(Adj.cols()); i++)
+    {
       if (i <= static_cast<size_t>(Adj.cols()) / 2)
+      {
         out_part1.push_back(static_cast<uint32_t>(i));
+      }
       else
+      {
         out_part2.push_back(static_cast<uint32_t>(i));
+      }
+    }
   }
 
   // Compute the N-cut value
@@ -120,16 +142,20 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
   MRPT_START
 
   size_t nodeCount;
-  std::vector<uint32_t> p1, p2;
+  std::vector<uint32_t> p1;
+  std::vector<uint32_t> p2;
   num_t cut_value;
-  size_t i, j;
+  size_t i;
+  size_t j;
   GRAPH_MATRIX Adj;
 
   out_parts.clear();
 
   // Check matrix is square:
   if (in_A.cols() != int(nodeCount = in_A.rows()))
+  {
     THROW_EXCEPTION("Weights matrix is not square!!");
+  }
 
   if (nodeCount == 1)
   {
@@ -144,42 +170,63 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
   {
     Adj.setSize(nodeCount, nodeCount);
     for (i = 0; i < nodeCount; i++)
-      for (j = i; j < nodeCount; j++) Adj(i, j) = Adj(j, i) = 0.5f * (in_A(i, j) + in_A(j, i));
+    {
+      for (j = i; j < nodeCount; j++)
+      {
+        Adj(i, j) = Adj(j, i) = 0.5f * (in_A(i, j) + in_A(j, i));
+      }
+    }
   }
   else
+  {
     Adj = in_A;
+  }
 
   // Make bisection
   if (useSpectralBisection)
+  {
     SpectralBisection(Adj, p1, p2, cut_value, false);
+  }
   else
+  {
     exactBisection(Adj, p1, p2, cut_value, false);
+  }
 
   if (verbose)
+  {
     std::cout << mrpt::format(
         "Cut:%u=%u+%u,nCut=%.02f->", static_cast<unsigned int>(nodeCount),
         static_cast<unsigned int>(p1.size()), static_cast<unsigned int>(p2.size()), cut_value);
+  }
 
   // Is it a useful partition?
   if (cut_value > threshold_Ncut || p1.size() < minSizeClusters || p2.size() < minSizeClusters)
   {
     if (verbose)
+    {
       std::cout << "->NO!"
                 << "\n";
+    }
 
     // No:
     p1.clear();
-    for (i = 0; i < nodeCount; i++) p1.push_back(static_cast<uint32_t>(i));
+    for (i = 0; i < nodeCount; i++)
+    {
+      p1.push_back(static_cast<uint32_t>(i));
+    }
     out_parts.push_back(p1);
   }
   else
   {
     if (verbose)
+    {
       std::cout << "->YES!"
                 << "\n";
+    }
 
     // Yes:
-    std::vector<std::vector<uint32_t>> p1_parts, p2_parts;
+    std::vector<std::vector<uint32_t>> p1_parts;
+    std::vector<std::vector<uint32_t>> p2_parts;
 
     if (recursive)
     {
@@ -188,7 +235,12 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
       // sub-matrix:
       GRAPH_MATRIX A_1(p1.size(), p1.size());
       for (i = 0; i < p1.size(); i++)
-        for (j = 0; j < p1.size(); j++) A_1(i, j) = in_A(p1[i], p1[j]);
+      {
+        for (j = 0; j < p1.size(); j++)
+        {
+          A_1(i, j) = in_A(p1[i], p1[j]);
+        }
+      }
 
       RecursiveSpectralPartition(
           A_1, p1_parts, threshold_Ncut, forceSimetry, useSpectralBisection, recursive,
@@ -199,7 +251,12 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
       // sub-matrix:
       GRAPH_MATRIX A_2(p2.size(), p2.size());
       for (i = 0; i < p2.size(); i++)
-        for (j = 0; j < p2.size(); j++) A_2(i, j) = in_A(p2[i], p2[j]);
+      {
+        for (j = 0; j < p2.size(); j++)
+        {
+          A_2(i, j) = in_A(p2[i], p2[j]);
+        }
+      }
 
       RecursiveSpectralPartition(
           A_2, p2_parts, threshold_Ncut, forceSimetry, useSpectralBisection, recursive,
@@ -211,14 +268,20 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
       // remap p1 nodes:
       for (i = 0; i < p1_parts.size(); i++)
       {
-        for (j = 0; j < p1_parts[i].size(); j++) p1_parts[i][j] = p1[p1_parts[i][j]];
+        for (j = 0; j < p1_parts[i].size(); j++)
+        {
+          p1_parts[i][j] = p1[p1_parts[i][j]];
+        }
         out_parts.push_back(p1_parts[i]);
       }
 
       // remap p2 nodes:
       for (i = 0; i < p2_parts.size(); i++)
       {
-        for (j = 0; j < p2_parts[i].size(); j++) p2_parts[i][j] = p2[p2_parts[i][j]];
+        for (j = 0; j < p2_parts[i].size(); j++)
+        {
+          p2_parts[i][j] = p2[p2_parts[i][j]];
+        }
 
         out_parts.push_back(p2_parts[i]);
       }
@@ -244,7 +307,8 @@ num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
     const std::vector<uint32_t>& in_part1,
     const std::vector<uint32_t>& in_part2)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   const size_t size1 = in_part1.size();
   const size_t size2 = in_part2.size();
 
@@ -252,25 +316,48 @@ num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
   // -----------------------------------------------
   num_t cut_AB = 0;
   for (i = 0; i < size1; i++)
-    for (j = 0; j < size2; j++) cut_AB += in_A(in_part1[i], in_part2[j]);
+  {
+    for (j = 0; j < size2; j++)
+    {
+      cut_AB += in_A(in_part1[i], in_part2[j]);
+    }
+  }
 
   num_t assoc_AA = 0;
   for (i = 0; i < size1; i++)
+  {
     for (j = i; j < size1; j++)
-      if (i != j) assoc_AA += in_A(in_part1[i], in_part1[j]);
+    {
+      if (i != j)
+      {
+        assoc_AA += in_A(in_part1[i], in_part1[j]);
+      }
+    }
+  }
 
   num_t assoc_BB = 0;
   for (i = 0; i < size2; i++)
+  {
     for (j = i; j < size2; j++)
-      if (i != j) assoc_BB += in_A(in_part2[i], in_part2[j]);
+    {
+      if (i != j)
+      {
+        assoc_BB += in_A(in_part2[i], in_part2[j]);
+      }
+    }
+  }
 
   num_t assoc_AV = assoc_AA + cut_AB;
   num_t assoc_BV = assoc_BB + cut_AB;
 
   if (cut_AB == num_t{0})
+  {
     return 0;
+  }
   else
+  {
     return cut_AB / assoc_AV + cut_AB / assoc_BV;
+  }
 }
 
 /*---------------------------------------------------------------
@@ -285,16 +372,22 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
     bool forceSimetry)
 {
   size_t nodeCount;  // Nodes count
-  size_t i, j;
+  size_t i;
+  size_t j;
   GRAPH_MATRIX Adj;
-  std::vector<bool> partition, bestPartition;
-  std::vector<uint32_t> part1, part2;
-  num_t partCutValue, bestCutValue = std::numeric_limits<num_t>::max();
+  std::vector<bool> partition;
+  std::vector<bool> bestPartition;
+  std::vector<uint32_t> part1;
+  std::vector<uint32_t> part2;
+  num_t partCutValue;
+  num_t bestCutValue = std::numeric_limits<num_t>::max();
   bool end = false;
 
   // Check matrix is square:
   if (in_A.cols() != int(nodeCount = in_A.rows()))
+  {
     THROW_EXCEPTION("Weights matrix is not square!!");
+  }
 
   ASSERT_(nodeCount >= 2);
 
@@ -303,10 +396,17 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
   {
     Adj.setSize(nodeCount, nodeCount);
     for (i = 0; i < nodeCount; i++)
-      for (j = i; j < nodeCount; j++) Adj(i, j) = Adj(j, i) = 0.5f * (in_A(i, j) + in_A(j, i));
+    {
+      for (j = i; j < nodeCount; j++)
+      {
+        Adj(i, j) = Adj(j, i) = 0.5f * (in_A(i, j) + in_A(j, i));
+      }
+    }
   }
   else
+  {
     Adj = in_A;
+  }
 
   // Brute force: compute all possible partitions:
   //-----------------------------------------------------------------
@@ -326,9 +426,13 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
     for (i = 0; i < nodeCount; i++)
     {
       if (partition[i])
+      {
         part2.push_back(static_cast<uint32_t>(i));
+      }
       else
+      {
         part1.push_back(static_cast<uint32_t>(i));
+      }
     }
 
     // Compute the n-cut:
@@ -352,7 +456,10 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 
     // End criterion:
     end = true;
-    for (i = 0; end && i < nodeCount; i++) end = end && partition[i];
+    for (i = 0; end && i < nodeCount; i++)
+    {
+      end = end && partition[i];
+    }
 
   };  // End of while
 
@@ -365,9 +472,13 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
   for (i = 0; i < nodeCount; i++)
   {
     if (bestPartition[i])
+    {
       out_part2.push_back(static_cast<uint32_t>(i));
+    }
     else
+    {
       out_part1.push_back(static_cast<uint32_t>(i));
+    }
   }
 }
 

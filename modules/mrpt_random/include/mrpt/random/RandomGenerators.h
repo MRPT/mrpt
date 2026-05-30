@@ -160,7 +160,7 @@ class CRandomGenerator
     const size_t N = v.size();
     for (size_t c = 0; c < N; c++)
     {
-      v[c] = static_cast<typename std::decay<decltype(v[c])>::type>(drawUniform(min, max));
+      v[c] = static_cast<std::decay_t<decltype(v[c])>>(drawUniform(min, max));
     }
   }
 
