@@ -27,11 +27,17 @@ namespace mrpt::math
 /** \addtogroup  geometry_grp
  * @{ */
 
-// Ensure 1-byte memory alignment, no additional stride bytes.
-#pragma pack(push, 1)
+// Note: TPoint3D_data / TPoint3D_ are intentionally NOT wrapped in
+// `#pragma pack(1)`. They contain only same-type scalar members (3 floats or
+// 3 doubles), so they never have internal padding regardless of packing. Wrapping
+// the rich TPoint3D_ class in `#pragma pack` would defeat MSVC's
+// `__declspec(empty_bases)` (MRPT_EMPTY_BASES) empty-base optimization, inflating
+// sizeof(TPoint3Df) beyond 12 bytes and breaking GPU vertex layouts (see
+// TTriangle and RenderableProxy). The mixed-type color POD structs below DO need
+// packing and have their own `#pragma pack(1)` region.
 
 /** Trivially copiable underlying data for TPoint3D
- * 1-byte memory packed, no padding]
+ * (no internal padding: same-type scalar members only)
  */
 template <typename T>
 struct TPoint3D_data
@@ -134,7 +140,7 @@ struct MRPT_EMPTY_BASES TPoint3D_ :
 
   /** Pointer to the first coordinate (x).
    *  Enables branch-free iteration and SIMD-friendly access to (x, y, z).
-   *  Valid because TPoint3D_data uses #pragma pack(1) with only POD members. */
+   *  Valid because TPoint3D_data holds only contiguous same-type POD members. */
   T* data() { return &this->x; }
   const T* data() const { return &this->x; }
 
@@ -352,6 +358,10 @@ using TPoint3Df = TPoint3D_<float>;
 using TVector3D = TPoint3D;
 /** Single-precision variant of TVector3D. */
 using TVector3Df = TPoint3Df;
+
+// Ensure 1-byte memory alignment, no additional stride bytes, for the
+// mixed-type (point + color/intensity) POD structs below.
+#pragma pack(push, 1)
 
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZIu8

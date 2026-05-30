@@ -27,6 +27,11 @@ static_assert(std::is_trivial_v<TPoint2D_data<double>>);
 static_assert(std::is_trivially_copyable_v<TPoint2D>);
 static_assert(std::is_trivially_copyable_v<TPoint2Df>);
 
+// Lock down the in-memory layout: the empty helper bases must be optimized away
+// (EBO) so the only storage is x,y. See the matching note in TPoint3D.cpp.
+static_assert(sizeof(TPoint2Df) == 2 * sizeof(float), "TPoint2Df must be tightly packed (EBO)");
+static_assert(sizeof(TPoint2D) == 2 * sizeof(double), "TPoint2D must be tightly packed (EBO)");
+
 template <typename T>
 TPoint2D_<T>::TPoint2D_(const TPose2D& p) :
     TPoint2D_data<T>{static_cast<T>(p.x), static_cast<T>(p.y)}

@@ -28,6 +28,14 @@ static_assert(std::is_trivial_v<TPoint3D_data<double>>);
 static_assert(std::is_trivially_copyable_v<TPoint3D>);
 static_assert(std::is_trivially_copyable_v<TPoint3Df>);
 
+// Lock down the in-memory layout: the empty helper bases must be optimized away
+// (EBO; on MSVC this needs MRPT_EMPTY_BASES and the type must not be under
+// #pragma pack) so the only storage is x,y,z. Downstream GPU vertex buffers and
+// packed structs (e.g. mrpt::viz::TTriangle, mrpt::opengl::RenderableProxy) rely
+// on this exact size.
+static_assert(sizeof(TPoint3Df) == 3 * sizeof(float), "TPoint3Df must be tightly packed (EBO)");
+static_assert(sizeof(TPoint3D) == 3 * sizeof(double), "TPoint3D must be tightly packed (EBO)");
+
 template <typename T>
 TPoint3D_<T>::TPoint3D_(const TPoint2D_<T>& p) : TPoint3D_data<T>{p.x, p.y, 0}
 {
