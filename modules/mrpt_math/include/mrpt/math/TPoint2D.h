@@ -54,7 +54,7 @@ struct TPoint2D_data
  * \ingroup geometry_grp
  */
 template <typename T>
-struct TPoint2D_ :
+struct MRPT_EMPTY_BASES TPoint2D_ :
     public TPoseOrPoint,
     public TPoint2D_data<T>,
     public internal::ProvideStaticResize<TPoint2D_<T>>,

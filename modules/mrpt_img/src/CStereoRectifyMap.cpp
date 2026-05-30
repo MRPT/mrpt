@@ -213,8 +213,12 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
     up = Eigen::Vector3d(0, 0, 1);
   }
   Eigen::Vector3d e2 = (e1.cross(up)).normalized();
-  // Recompute to ensure orthogonality
-  e2 = (e1.cross(up)).normalized();
+  // If e1 is parallel to up, try a different fallback axis
+  if (!e2.allFinite() || e2.norm() < 0.5)
+  {
+    up = Eigen::Vector3d(1, 0, 0);
+    e2 = (e1.cross(up)).normalized();
+  }
 
   // e3 = e1 x e2
   Eigen::Vector3d e3 = e1.cross(e2);

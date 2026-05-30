@@ -54,7 +54,6 @@ using namespace mrpt;
 using namespace mrpt::comms;
 using namespace mrpt::io;
 using namespace std;
-using namespace std::literals;
 
 // ctor
 CSerialPort::CSerialPort(const string& portName, bool openNow) : m_serialName(portName)
@@ -708,7 +707,7 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
     if (alreadyRead < Count)
     {
       // Wait 1 more ms for new data to arrive.
-      std::this_thread::sleep_for(1ms);
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
     // Reset interbytes timer:
@@ -768,7 +767,8 @@ std::string CSerialPort::ReadString(
       }
     }
     // If we are still here, string is not finished:
-    std::this_thread::sleep_for(1ms);  // Wait 1 more ms for new data to arrive.
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(1));  // Wait 1 more ms for new data to arrive.
 #else
     // Bytes waiting in the queue?
     // Check if we are still connected or there is an error...
@@ -808,7 +808,8 @@ std::string CSerialPort::ReadString(
       // we decide to move the sleep here to satisfy realtime requirement
       // in the case where we are waiting a n-length string at a frequency
       // greater than 1/n...
-      std::this_thread::sleep_for(1ms);  // Wait 1 more ms for new data to arrive.
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(1));  // Wait 1 more ms for new data to arrive.
     }
 // If we are still here, string is not finished:
 #endif
@@ -862,7 +863,7 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
         gettimeofday(&end, nullptr);
         usecs = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
       } while (usecs < 60);
-      // std::this_thread::sleep_for(1ms);
+      // std::this_thread::sleep_for(std::chrono::milliseconds(1));
       // we'll continue writing in 1 ms.
     }
   } while ((total_bytes_written < Count) && (!errno || EAGAIN == errno));

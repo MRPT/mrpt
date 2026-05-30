@@ -32,6 +32,16 @@ struct TPoseOrPoint
 {
 };
 
+/** On MSVC, enable Empty Base Class Optimization (EBO) for classes with
+ *  multiple empty bases so sizeof() matches the expected packed layout.
+ *  See: https://devblogs.microsoft.com/cppblog/empty-base-class-optimization/
+ */
+#ifdef _MSC_VER
+#define MRPT_EMPTY_BASES __declspec(empty_bases)
+#else
+#define MRPT_EMPTY_BASES
+#endif
+
 /** Forward declarations of all mrpt::math classes related to poses and points
  */
 template <typename T>

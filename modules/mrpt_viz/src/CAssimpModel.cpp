@@ -246,8 +246,8 @@ void CAssimpModel::loadScene(const std::string& file_name, int flags)
 
   MRPT_END
 #else
-  MRPT_UNUSED_PARAM(file_name);
-  MRPT_UNUSED_PARAM(flags);
+  (void)(file_name);
+  (void)(flags);
   THROW_EXCEPTION("MRPT was built without Assimp support. Cannot load 3D models.");
 #endif
 }
@@ -349,9 +349,9 @@ void CAssimpModel::processNode(
     processNode(node->mChildren[i], scene, worldTransform);
   }
 #else
-  MRPT_UNUSED_PARAM(nodePtr);
-  MRPT_UNUSED_PARAM(scenePtr);
-  MRPT_UNUSED_PARAM(parentTransform);
+  (void)(nodePtr);
+  (void)(scenePtr);
+  (void)(parentTransform);
 #endif
 }
 
@@ -660,9 +660,9 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
 
   MRPT_END
 #else
-  MRPT_UNUSED_PARAM(meshPtr);
-  MRPT_UNUSED_PARAM(scenePtr);
-  MRPT_UNUSED_PARAM(transform);
+  (void)(meshPtr);
+  (void)(scenePtr);
+  (void)(transform);
 #endif
 }
 
@@ -760,7 +760,7 @@ const CAssimpModel::LoadedTexture* CAssimpModel::loadTexture(const std::string& 
 
   MRPT_END
 #else
-  MRPT_UNUSED_PARAM(texturePath);
+  (void)(texturePath);
   return nullptr;
 #endif
 }

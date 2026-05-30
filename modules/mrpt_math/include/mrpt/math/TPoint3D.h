@@ -64,7 +64,7 @@ struct TPoint3D_data
  * \ingroup geometry_grp
  */
 template <typename T>
-struct TPoint3D_ :
+struct MRPT_EMPTY_BASES TPoint3D_ :
     public TPoseOrPoint,
     public TPoint3D_data<T>,
     public internal::ProvideStaticResize<TPoint3D_<T>>,
