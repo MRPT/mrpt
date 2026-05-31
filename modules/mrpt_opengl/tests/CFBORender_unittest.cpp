@@ -204,7 +204,11 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
   int height = 400;
   const float camera_fov_deg = 120.0f;
 
+#ifdef _MSC_VER
+  ::_putenv_s("MRPT_FBORENDER_SHOW_DEVICES", "1");
+#else
   ::setenv("MRPT_FBORENDER_SHOW_DEVICES", "1", 1);  // NOLINT
+#endif
 
   // Create the FBO renderer (mrpt::opengl)
   mrpt::opengl::CFBORender renderer(width, height);
