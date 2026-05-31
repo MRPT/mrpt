@@ -17,7 +17,17 @@ find_package(mrpt_opengl REQUIRED)
 #    License: MIT (see imgui/LICENSE.txt)
 
 # 3) GLFW
-find_package(glfw3 3.3 REQUIRED)
+#    This example compiles Dear ImGui's GLFW backend, so it needs a real,
+#    discoverable glfw3 package (system- or vcpkg-provided). MRPT bundles its
+#    own GLFW privately inside mrpt_imgui, but does not export a consumable
+#    glfw3 config for downstream projects. When glfw3 is not available (e.g. the
+#    GUI-disabled Windows CI), skip this optional example instead of failing the
+#    whole mrpt_examples_cpp build.
+find_package(glfw3 3.3 QUIET)
+if (NOT glfw3_FOUND)
+  message(STATUS "imgui_mrpt_example: glfw3 not found, skipping this example.")
+  return()
+endif()
 
 # 4) OpenGL
 find_package(OpenGL REQUIRED)
