@@ -233,6 +233,8 @@ endif()
 if (MSVC)
 	set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
 	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/DELAYLOAD:wlanapi.dll")
+	# /DELAYLOAD requires the delay-load helper from delayimp.lib
+	target_link_libraries(${PROJECT_NAME} PRIVATE delayimp)
 endif()
 
 if(CMAKE_MRPT_HAS_FREENECT)

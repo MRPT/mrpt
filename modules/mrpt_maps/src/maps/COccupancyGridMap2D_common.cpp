@@ -326,11 +326,10 @@ void COccupancyGridMap2D::freeMap()
  ---------------------------------------------------------------*/
 void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 {
-  constexpr size_t N = 256;  // always 8-bit cells
-
   // Thread-safe one-time initialization of the per-value entropy lookup table
   static const std::vector<float> localEntropyTable = []()
   {
+    constexpr size_t N = 256;  // always 8-bit cells
     std::vector<float> t(N, 0.0f);
     for (size_t i = 0; i < N; i++)
     {

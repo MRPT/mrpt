@@ -48,8 +48,15 @@ class CReflectivityGridMap2D :
   DEFINE_SERIALIZABLE(CReflectivityGridMap2D, mrpt::maps)
 
  protected:
-  /** Lookup tables for log-odds */
-  static CLogOddsGridMapLUT<cell_t> m_logodd_lut;
+  /** Lookup tables for log-odds.
+   * Returned as a function-local static to avoid MSVC DLL-export issues
+   * with static data members (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS only exports
+   * functions, not data). */
+  static CLogOddsGridMapLUT<cell_t>& logodd_lut()
+  {
+    static CLogOddsGridMapLUT<cell_t> lut;
+    return lut;
+  }
 
  public:
   /** Calls the base CMetricMap::clear
@@ -57,7 +64,7 @@ class CReflectivityGridMap2D :
    * classes.
    */
   void clear() { CMetricMap::clear(); }
-  float cell2float(const int8_t& c) const override { return m_logodd_lut.l2p(c); }
+  float cell2float(const int8_t& c) const override { return logodd_lut().l2p(c); }
 
   /** Constructor  */
   CReflectivityGridMap2D(

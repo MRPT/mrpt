@@ -73,6 +73,7 @@ jobs:
               -DDISABLE_WXWIDGETS=ON \
               -DMRPT_WITH_QT=OFF \
               -DDISABLE_ASSIMP=ON \
+              -DMRPT_WITH_NANOGUI=OFF \
               "-DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE" \
               "-DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET_TRIPLET" \
               -DCMAKE_C_COMPILER_LAUNCHER=sccache \

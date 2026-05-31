@@ -34,9 +34,19 @@ if (NOT OCTOMAP_FOUND)
 
 		# download from GH (pinned to commit 9ebcfdc, master as of 2024-01; v1.9.6 and older fail with CMake >= 3.5)
 		# Use URL/tarball instead of GIT_REPOSITORY to support CMake 3.22 (ROS2 Humble):
+		# On MSVC+Ninja, octomap's CMakeLists.txt generates duplicate Ninja rules for
+		# octomath.lib, causing "multiple rules generate" errors. Use NMake as the
+		# sub-generator to avoid this known octomap/Ninja incompatibility.
+		if(MSVC)
+			set(_OCTOMAP_GENERATOR "NMake Makefiles")
+		else()
+			set(_OCTOMAP_GENERATOR "${CMAKE_GENERATOR}")
+		endif()
+
 		ExternalProject_Add(EP_octomap
 		  URL               "https://github.com/OctoMap/octomap/archive/9ebcfdc5dd6836686134a39de742cc9211dd1ad6.zip"
 		  SOURCE_DIR        "${mrpt_maps_BINARY_DIR}/3rdparty/octomap/"
+		  CMAKE_GENERATOR   "${_OCTOMAP_GENERATOR}"
 		  CMAKE_ARGS
 			-DBUILD_TESTING=OFF
 			-DBUILD_DYNAMICETD3D_SUBPROJECT=OFF

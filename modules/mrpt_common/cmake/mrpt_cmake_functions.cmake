@@ -899,22 +899,32 @@ function(mrpt_add_python_binding_test MODULE_NAME)
   # whatever PYTHONPATH exists at test-run time rather than baking a
   # configure-time snapshot.
   set(_staging "${CMAKE_CURRENT_BINARY_DIR}/python_staging")
-  set(_wrapper "${CMAKE_CURRENT_BINARY_DIR}/_python_test_wrapper.sh")
-  file(WRITE "${_wrapper}"
-    "#!/bin/sh\nexport PYTHONPATH=\"${_staging}:\${PYTHONPATH}\"\nexec \"$@\"\n"
-  )
-  # Make it executable
-  file(CHMOD "${_wrapper}" PERMISSIONS
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE
-  )
-
-  add_test(
-    NAME python_${MODULE_NAME}
-    COMMAND "${_wrapper}" ${Python3_EXECUTABLE} ${_PBT_SCRIPT}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+  if(WIN32)
+    set(_wrapper "${CMAKE_CURRENT_BINARY_DIR}/_python_test_wrapper.bat")
+    file(WRITE "${_wrapper}"
+      "@echo off\r\nset \"PYTHONPATH=${_staging};%PYTHONPATH%\"\r\n%*\r\n"
+    )
+    add_test(
+      NAME python_${MODULE_NAME}
+      COMMAND cmd /c "${_wrapper}" "${Python3_EXECUTABLE}" "${_PBT_SCRIPT}"
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+  else()
+    set(_wrapper "${CMAKE_CURRENT_BINARY_DIR}/_python_test_wrapper.sh")
+    file(WRITE "${_wrapper}"
+      "#!/bin/sh\nexport PYTHONPATH=\"${_staging}:\${PYTHONPATH}\"\nexec \"$@\"\n"
+    )
+    file(CHMOD "${_wrapper}" PERMISSIONS
+      OWNER_READ OWNER_WRITE OWNER_EXECUTE
+      GROUP_READ GROUP_EXECUTE
+      WORLD_READ WORLD_EXECUTE
+    )
+    add_test(
+      NAME python_${MODULE_NAME}
+      COMMAND "${_wrapper}" ${Python3_EXECUTABLE} ${_PBT_SCRIPT}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+  endif()
   set_tests_properties(python_${MODULE_NAME} PROPERTIES
     LABELS   "python_bindings"
     DEPENDS  "_bindings"

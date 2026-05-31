@@ -145,7 +145,7 @@ PYBIND11_MODULE(_bindings, m)
 
             auto r = pts.unchecked<2>();
             self.clear();
-            for (ssize_t i = 0; i < r.shape(0); i++)
+            for (py::ssize_t i = 0; i < r.shape(0); i++)
             {
               self.insertPoint(r(i, 0), r(i, 1), r(i, 2));
             }
@@ -535,7 +535,7 @@ PYBIND11_MODULE(_bindings, m)
             {
               vpf_v[i] = vpf(i);
             }
-            for (ssize_t i = 0; i < fv.shape(0); i++)
+            for (py::ssize_t i = 0; i < fv.shape(0); i++)
             {
               fv_v[i] = fv(i);
             }

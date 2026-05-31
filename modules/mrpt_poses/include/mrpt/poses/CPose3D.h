@@ -94,7 +94,7 @@ class CPose3D :
 
   // Grant access to CRTP base-class templates that use derived().m_coords
   friend class CPoseOrPoint<CPose3D, 6>;
-  friend class mrpt::poses::detail::pose_point_impl<CPose3D, 1>;
+  friend struct mrpt::poses::detail::pose_point_impl<CPose3D, 1>;
 
  public:
   /** Read-only access to the raw [x,y,z] translation vector storage. */
