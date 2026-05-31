@@ -77,9 +77,6 @@ mrpt::maps::CMetricMap::Ptr CReflectivityGridMap2D::internal_CreateFromMapDefini
 
 IMPLEMENTS_SERIALIZABLE(CReflectivityGridMap2D, CMetricMap, mrpt::maps)
 
-// Lookup tables for log-odds
-CLogOddsGridMapLUT<CReflectivityGridMap2D::cell_t> CReflectivityGridMap2D::m_logodd_lut;
-
 /*---------------------------------------------------------------
             Constructor
   ---------------------------------------------------------------*/
@@ -93,7 +90,7 @@ CReflectivityGridMap2D::CReflectivityGridMap2D(
 /*---------------------------------------------------------------
             clear
   ---------------------------------------------------------------*/
-void CReflectivityGridMap2D::internal_clear() { fill(m_logodd_lut.p2l(0.5)); }
+void CReflectivityGridMap2D::internal_clear() { fill(logodd_lut().p2l(0.5)); }
 /*---------------------------------------------------------------
             isEmpty
   ---------------------------------------------------------------*/
@@ -135,7 +132,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
     sensor_pose.composeFrom(robotPose3D, o.sensorPose);
 
     // log-odd increment due to the observation:
-    const cell_t logodd_observation = m_logodd_lut.p2l(o.reflectivityLevel);
+    const cell_t logodd_observation = logodd_lut().p2l(o.reflectivityLevel);
 
     // Update cell, with saturation:
     cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
@@ -147,7 +144,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
       const double new_x_max = std::min(m_x_max, sensor_pose.x());
       const double new_y_max = std::min(m_y_max, sensor_pose.y());
 
-      const int8_t default_cell = m_logodd_lut.p2l(0.5);
+      const int8_t default_cell = logodd_lut().p2l(0.5);
       resize(new_x_min, new_x_max, new_y_min, new_y_max, default_cell, 2.0 /* addit. margin */);
 
       // Now we should get the cell:
@@ -201,7 +198,7 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
     {
       ASSERT_GE_(o.reflectivityLevel, 0);
       ASSERT_LE_(o.reflectivityLevel, 1);
-      return -0.5 * square((m_logodd_lut.l2p(*cell) - o.reflectivityLevel) / o.sensorStdNoise);
+      return -0.5 * square((logodd_lut().l2p(*cell) - o.reflectivityLevel) / o.sensorStdNoise);
     }
   }
   else
@@ -309,7 +306,7 @@ void CReflectivityGridMap2D::getAsImage(CImage& img, bool verticalFlip, bool for
         destPtr = img.ptr<uint8_t>(0, int(y));
       for (unsigned int x = 0; x < m_size_x; x++)
       {
-        *destPtr++ = m_logodd_lut.l2p_255(*srcPtr++);
+        *destPtr++ = logodd_lut().l2p_255(*srcPtr++);
       }
     }
   }
@@ -326,7 +323,7 @@ void CReflectivityGridMap2D::getAsImage(CImage& img, bool verticalFlip, bool for
         destPtr = img.ptr<uint8_t>(0, int(y));
       for (unsigned int x = 0; x < m_size_x; x++)
       {
-        uint8_t c = m_logodd_lut.l2p_255(*srcPtr++);
+        uint8_t c = logodd_lut().l2p_255(*srcPtr++);
         *destPtr++ = c;
         *destPtr++ = c;
         *destPtr++ = c;
@@ -363,7 +360,7 @@ void CReflectivityGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) c
     destPtr_trans = imgTrans.ptr<uint8_t>(0, int(y));
     for (unsigned int x = 0; x < m_size_x; x++)
     {
-      uint8_t cell255 = m_logodd_lut.l2p_255(*srcPtr++);
+      uint8_t cell255 = logodd_lut().l2p_255(*srcPtr++);
       *destPtr_color++ = cell255;
 
       int8_t auxC = static_cast<int8_t>(static_cast<int>(static_cast<signed short>(cell255)) - 128);
