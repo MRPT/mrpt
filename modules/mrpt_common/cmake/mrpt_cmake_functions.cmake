@@ -619,6 +619,31 @@ endfunction()
 
 
 # -----------------------------------------------------------------------------
+# _mrpt_get_vcpkg_dlls(<out_var>)
+#
+# Returns (in out_var) the list of *.dll files in the active vcpkg installed
+# bin dir, or empty if not a vcpkg build. These (gtest, zlib, zstd, tinyxml2,
+# ...) are linked into mrpt binaries but are NOT reported by
+# $<TARGET_RUNTIME_DLLS:>, so they must be staged next to test exes / .pyd
+# files explicitly on Windows (PATH is not searched for .pyd dependencies).
+# -----------------------------------------------------------------------------
+function(_mrpt_get_vcpkg_dlls _out_var)
+  set(_bin "")
+  if(DEFINED VCPKG_INSTALLED_DIR AND DEFINED VCPKG_TARGET_TRIPLET)
+    set(_bin "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin")
+  elseif(DEFINED _VCPKG_INSTALLED_DIR AND DEFINED VCPKG_TARGET_TRIPLET)
+    set(_bin "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin")
+  elseif(DEFINED ENV{VCPKG_INSTALLATION_ROOT} AND DEFINED VCPKG_TARGET_TRIPLET)
+    set(_bin "$ENV{VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin")
+  endif()
+  set(_dlls "")
+  if(_bin AND EXISTS "${_bin}")
+    file(GLOB _dlls "${_bin}/*.dll")
+  endif()
+  set(${_out_var} "${_dlls}" PARENT_SCOPE)
+endfunction()
+
+# -----------------------------------------------------------------------------
 # mrpt_add_test(
 #	TARGET name
 #	SOURCES ${SRC_FILES}
@@ -668,6 +693,14 @@ function(mrpt_add_test)
       target_link_options(${MRPT_ADD_TEST_TARGET} PRIVATE --coverage)
     endif()
 
+    # MSVC defaults to a 1 MB stack, vs 8 MB on Linux. Several MRPT objects
+    # (e.g. navigators) are large enough that instantiating one on the stack in
+    # a test overflows the 1 MB limit (STATUS_STACK_OVERFLOW / c00000fd), while
+    # the same test passes on Linux. Reserve 8 MB to match the Linux default.
+    if(MSVC)
+      target_link_options(${MRPT_ADD_TEST_TARGET} PRIVATE "/STACK:8388608")
+    endif()
+
     # Make common_headers visible:
     target_include_directories(${MRPT_ADD_TEST_TARGET} PRIVATE ${mrpt_common_DIR}/../common_headers/)
 
@@ -702,6 +735,30 @@ function(mrpt_add_test)
     add_test(${MRPT_ADD_TEST_TARGET}_build "${CMAKE_COMMAND}" --build ${CMAKE_CURRENT_BINARY_DIR} --target ${MRPT_ADD_TEST_TARGET})
     add_test(run_${MRPT_ADD_TEST_TARGET} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MRPT_ADD_TEST_TARGET})
     set_tests_properties(run_${MRPT_ADD_TEST_TARGET} PROPERTIES DEPENDS ${MRPT_ADD_TEST_TARGET}_build)
+
+    # On Windows the test exe links several mrpt module DLLs that live in their
+    # own build/<pkg>/bin dirs, not on PATH when ctest runs (=> 0xC0000135
+    # STATUS_DLL_NOT_FOUND). Copy all dependent runtime DLLs next to the exe so
+    # the loader finds them. The IF/true genex no-ops for static builds.
+    if(WIN32)
+      add_custom_command(TARGET ${MRPT_ADD_TEST_TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E
+          $<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:${MRPT_ADD_TEST_TARGET}>>,copy_if_different,true>
+          $<TARGET_RUNTIME_DLLS:${MRPT_ADD_TEST_TARGET}> $<TARGET_FILE_DIR:${MRPT_ADD_TEST_TARGET}>
+        COMMAND_EXPAND_LISTS
+        VERBATIM
+      )
+      # Also stage vcpkg DLLs (gtest, zlib, ...) not seen by TARGET_RUNTIME_DLLS:
+      _mrpt_get_vcpkg_dlls(_mrpt_vcpkg_dlls)
+      if(_mrpt_vcpkg_dlls)
+        add_custom_command(TARGET ${MRPT_ADD_TEST_TARGET} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${_mrpt_vcpkg_dlls} $<TARGET_FILE_DIR:${MRPT_ADD_TEST_TARGET}>
+          COMMAND_EXPAND_LISTS
+          VERBATIM
+        )
+      endif()
+    endif()
 
     add_custom_target(run_${MRPT_ADD_TEST_TARGET} COMMAND ${MRPT_ADD_TEST_TARGET})
     add_dependencies(run_${MRPT_ADD_TEST_TARGET} ${MRPT_ADD_TEST_TARGET})
@@ -843,6 +900,32 @@ function(mrpt_add_python_module MODULE_NAME CPP_SOURCES)
     install(TARGETS _bindings LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}/mrpt/${MODULE_NAME}/)
     # Install the Python package
     install(DIRECTORY python/mrpt DESTINATION ${PYTHON_INSTALL_DIR} FILES_MATCHING PATTERN "*.py")
+
+    # On Windows, the loader searches a loaded extension module's own directory
+    # for its dependent DLLs (mrpt module DLLs, vcpkg runtime DLLs, ...) — PATH
+    # is *not* searched for .pyd dependencies (Python 3.8+). Stage those DLLs
+    # next to _bindings.pyd so `import mrpt.<name>` works from the build tree.
+    # The IF/true genex makes the copy a no-op for static builds (empty list).
+    if(WIN32)
+      add_custom_command(TARGET _bindings POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E
+          $<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:_bindings>>,copy_if_different,true>
+          $<TARGET_RUNTIME_DLLS:_bindings> "${_py_staging_dir}"
+        COMMAND_EXPAND_LISTS
+        VERBATIM
+      )
+      # Also stage vcpkg DLLs (zlib, zstd, tinyxml2, ...) not seen by
+      # TARGET_RUNTIME_DLLS; PATH is not searched for .pyd dependencies.
+      _mrpt_get_vcpkg_dlls(_mrpt_vcpkg_dlls)
+      if(_mrpt_vcpkg_dlls)
+        add_custom_command(TARGET _bindings POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${_mrpt_vcpkg_dlls} "${_py_staging_dir}"
+          COMMAND_EXPAND_LISTS
+          VERBATIM
+        )
+      endif()
+    endif()
   endif()
 endfunction()
 
@@ -894,39 +977,22 @@ function(mrpt_add_python_binding_test MODULE_NAME)
   # PYTHONPATH set at *test-run time* by colcon's command-prefix hooks, which
   # source each dependency's pythonpath.sh.  We must *not* override that
   # PYTHONPATH — only prepend our staging dir.
-  #
-  # We use a small wrapper script so that the staging dir is prepended to
-  # whatever PYTHONPATH exists at test-run time rather than baking a
-  # configure-time snapshot.
   set(_staging "${CMAKE_CURRENT_BINARY_DIR}/python_staging")
-  if(WIN32)
-    set(_wrapper "${CMAKE_CURRENT_BINARY_DIR}/_python_test_wrapper.bat")
-    file(WRITE "${_wrapper}"
-      "@echo off\r\nset \"PYTHONPATH=${_staging};%PYTHONPATH%\"\r\n%*\r\n"
-    )
-    add_test(
-      NAME python_${MODULE_NAME}
-      COMMAND cmd /c "${_wrapper}" "${Python3_EXECUTABLE}" "${_PBT_SCRIPT}"
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-  else()
-    set(_wrapper "${CMAKE_CURRENT_BINARY_DIR}/_python_test_wrapper.sh")
-    file(WRITE "${_wrapper}"
-      "#!/bin/sh\nexport PYTHONPATH=\"${_staging}:\${PYTHONPATH}\"\nexec \"$@\"\n"
-    )
-    file(CHMOD "${_wrapper}" PERMISSIONS
-      OWNER_READ OWNER_WRITE OWNER_EXECUTE
-      GROUP_READ GROUP_EXECUTE
-      WORLD_READ WORLD_EXECUTE
-    )
-    add_test(
-      NAME python_${MODULE_NAME}
-      COMMAND "${_wrapper}" ${Python3_EXECUTABLE} ${_PBT_SCRIPT}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-  endif()
+  # Invoke the interpreter directly (no shell wrapper) and prepend our staging
+  # dir to PYTHONPATH via CTest's ENVIRONMENT_MODIFICATION, which uses the
+  # platform-native path separator and composes with whatever PYTHONPATH
+  # colcon's command-prefix hooks set at test-run time (it modifies, not
+  # overrides, the inherited environment). This avoids the fragile
+  # `cmd /c wrapper.bat` quoting on Windows (which broke with forward-slash
+  # paths: "The syntax of the command is incorrect.").
+  add_test(
+    NAME python_${MODULE_NAME}
+    COMMAND "${Python3_EXECUTABLE}" "${_PBT_SCRIPT}"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  )
   set_tests_properties(python_${MODULE_NAME} PROPERTIES
     LABELS   "python_bindings"
     DEPENDS  "_bindings"
+    ENVIRONMENT_MODIFICATION "PYTHONPATH=path_list_prepend:${_staging}"
   )
 endfunction()
