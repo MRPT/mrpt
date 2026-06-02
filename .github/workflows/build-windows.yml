@@ -59,6 +59,15 @@ jobs:
         shell: bash
         run: |
           pip install colcon-common-extensions numpy
+          # The python binding tests run with vcpkg's python3 (selected by
+          # pybind11 FINDPYTHON), not the hosted Python above, so numpy must be
+          # installed for *that* interpreter too (else e.g. mrpt.tfest import
+          # fails with "No module named 'numpy'").
+          PYV="$VCPKG_INSTALLATION_ROOT/installed/x64-windows/tools/python3/python.exe"
+          if [ -x "$PYV" ]; then
+            "$PYV" -m ensurepip --default-pip || true
+            "$PYV" -m pip install --no-warn-script-location numpy
+          fi
 
       - name: Colcon Build
         shell: bash
@@ -82,6 +91,21 @@ jobs:
       - name: Colcon Test
         shell: bash
         run: |
+          # `mrpt` is a PEP 420 namespace package split across each module's
+          # build/<pkg>/python_staging dir (each holding mrpt/<name>/_bindings.pyd
+          # plus its staged DLLs). Unlike Linux, colcon under git-bash does not
+          # compose the dependency PYTHONPATH on Windows, so cross-package
+          # imports (e.g. mrpt.serialization -> mrpt.rtti) fail with
+          # "No module named ...". Put every staging dir on PYTHONPATH so the
+          # namespace package merges; colcon then prepends each test's own
+          # staging dir on top via ENVIRONMENT_MODIFICATION.
+          base="$(pwd -W)"
+          export PYTHONPATH="$(find build -maxdepth 2 -type d -name python_staging | sed "s#^build#${base}/build#" | paste -sd';')"
+          echo "PYTHONPATH=$PYTHONPATH"
+          # Run the binding tests in UTF-8 mode: some test scripts print
+          # non-ASCII characters (e.g. the ~ approx sign) which the default
+          # Windows cp1252 console codec cannot encode -> UnicodeEncodeError.
+          export PYTHONUTF8=1
           colcon test \
             --event-handlers console_direct+ \
             --return-code-on-test-failure
