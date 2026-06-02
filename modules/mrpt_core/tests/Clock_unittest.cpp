@@ -95,6 +95,48 @@ TEST(clock, checkSynchEpoch)
   }
 }
 
+TEST(clock, fromDouble_toDouble_roundtrip)
+{
+  // Round-trip a range of UNIX timestamps through fromDouble()/toDouble().
+  // The 1e-7 s resolution of Clock::duration bounds the achievable accuracy.
+  const double timestamps[] = {
+      0.0, 1e-3, 1.0, 100.0, 1300000000.123, 1700000000.5,
+  };
+  for (const double t : timestamps)
+  {
+    const double back = mrpt::Clock::toDouble(mrpt::Clock::fromDouble(t));
+    EXPECT_NEAR(back, t, 1e-6) << "t=" << t;
+  }
+}
+
+TEST(clock, fromDouble_negativeAndNearEpoch)
+{
+  // Regression test for an undefined-behavior bug: fromDouble() used to cast a
+  // potentially-negative double directly to uint64_t. That cast wraps on
+  // x86-64 but saturates to 0 on AArch64, so e.g. fromDouble(-1e-3) and
+  // fromDouble(-2e-3) collapsed to the *same* tick on ARM while staying
+  // distinct on x86. Such tiny negative timestamps appear when callers subtract
+  // a small offset from a timestamp whose UNIX time is ~0 (datasets with
+  // zeroed/relative stamps). Ordering and spacing must be preserved on every
+  // platform.
+  const auto tm2 = mrpt::Clock::fromDouble(-2e-3);
+  const auto tm1 = mrpt::Clock::fromDouble(-1e-3);
+  const auto t0 = mrpt::Clock::fromDouble(0.0);
+  const auto tp1 = mrpt::Clock::fromDouble(+1e-3);
+
+  // Strictly monotonic in the same order as the input doubles:
+  EXPECT_LT(tm2.time_since_epoch().count(), tm1.time_since_epoch().count());
+  EXPECT_LT(tm1.time_since_epoch().count(), t0.time_since_epoch().count());
+  EXPECT_LT(t0.time_since_epoch().count(), tp1.time_since_epoch().count());
+
+  // Each 1 ms step must be exactly 10000 ticks (1 tick = 100 ns):
+  EXPECT_EQ(tm1.time_since_epoch().count() - tm2.time_since_epoch().count(), INT64_C(10000));
+  EXPECT_EQ(t0.time_since_epoch().count() - tm1.time_since_epoch().count(), INT64_C(10000));
+
+  // And the differences survive the conversion back to seconds:
+  EXPECT_NEAR(mrpt::Clock::toDouble(tm1) - mrpt::Clock::toDouble(tm2), 1e-3, 1e-9);
+}
+
 TEST(clock, simulatedTime)
 {
   const auto t0 = mrpt::Clock::now();

@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.15.13: UNRELEASED
+  - \ref mrpt_core_grp
+    - mrpt::Clock::fromDouble(): Fixed undefined behavior (and platform-dependent results) when converting timestamps whose UNIX time is negative or near zero. The intermediate value was cast from a negative `double` to `uint64_t`, which wraps on x86-64 but saturates to 0 on AArch64, collapsing distinct timestamps to the same tick on ARM.
   - \ref mrpt_maps_grp
     - mrpt::maps::CPointsMap now pads with zeros if trying to insert a source point clouds with less fields than the target.
 

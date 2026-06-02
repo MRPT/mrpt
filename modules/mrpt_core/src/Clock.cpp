@@ -180,8 +180,19 @@ mrpt::Clock::time_point mrpt::Clock::now() noexcept
 
 mrpt::Clock::time_point mrpt::Clock::fromDouble(const double t) noexcept
 {
-  return mrpt::Clock::time_point(
-      mrpt::Clock::duration(uint64_t(t * 10000000.0) + UINT64_C(116444736) * UINT64_C(1000000000)));
+  // Offset between the 1601-01-01 epoch used by Clock::duration and the
+  // 1970-01-01 UNIX epoch, in 100-nanosecond ticks.
+  constexpr int64_t UNIX_EPOCH_OFFSET = INT64_C(116444736) * INT64_C(1000000000);
+
+  // Note: `t` (a UNIX timestamp) can be negative for instants before 1970, or
+  // when callers do timestamp arithmetic that briefly goes negative. We must
+  // therefore go through a *signed* integer: casting a negative double directly
+  // to uint64_t is undefined behavior, and platforms disagree on the result
+  // (x86-64 wraps modulo 2^64, while AArch64 saturates to 0). The final tick
+  // count is >= 0 for any representable time_point, so the cast to the unsigned
+  // duration rep is safe.
+  return mrpt::Clock::time_point(mrpt::Clock::duration(
+      static_cast<uint64_t>(static_cast<int64_t>(t * 10000000.0) + UNIX_EPOCH_OFFSET)));
 }
 
 // Convert to time_t UNIX timestamp, with fractional part.
