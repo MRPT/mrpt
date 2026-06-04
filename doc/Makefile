@@ -5,12 +5,12 @@
 export PYTHONPATH := $(HOME)/code/doxyrest_b/doxyrest/sphinx/:$(PYTHONPATH)
 export PATH := $(HOME)/code/doxyrest_b/build/doxyrest/bin/Release:$(PATH)
 export MRPT_VERSION_STR := $(shell head -n1 ../version_prefix.txt)
-export MRPT_LIST_INCLUDE_DIRS := $(shell for f in ../libs/*/include; do printf "$$(realpath $$f) "; done)
-export MRPT_DOX_INPUT_DIRS := $(shell for f in ../libs/*; do printf "$$(realpath $$f) "; done)
+export MRPT_LIST_INCLUDE_DIRS := $(shell for f in ../modules/*/include; do printf "$$(realpath $$f) "; done)
+export MRPT_DOX_INPUT_DIRS := $(shell for f in ../modules/*; do printf "$$(realpath $$f) "; done)
 
 # Use to quickly test the documentation scripts:
 ifeq ($(MRPT_DOCS_FAST_TEST),1)
-export MRPT_DOX_INPUT_DIRS := $(shell realpath ../libs/gui)
+export MRPT_DOX_INPUT_DIRS := $(shell realpath ../modules/mrpt_gui)
 endif
 
 
