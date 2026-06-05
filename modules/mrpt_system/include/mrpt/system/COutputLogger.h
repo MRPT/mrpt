@@ -447,7 +447,7 @@ struct COutputLoggerStreamWrapper
       {                                                                          \
         first = false;                                                           \
         tim.Tic();                                                               \
-        ::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this) << (__CONTENTS); \
+        ::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this) << __CONTENTS; /* NOLINT */ \
       }                                                                          \
     }                                                                            \
   } while (0)
