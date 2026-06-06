@@ -436,20 +436,20 @@ struct COutputLoggerStreamWrapper
     }                                                              \
   } while (0)
 
-#define INTERNAL_MRPT_LOG_THROTTLE_STREAM(_LVL, _PERIOD_SECONDS, __CONTENTS)     \
-  do                                                                             \
-  {                                                                              \
-    if (this->isLoggingLevelVisible(_LVL))                                       \
-    {                                                                            \
-      static mrpt::system::CTicTac tim;                                          \
-      static bool first = true;                                                  \
-      if (first || tim.Tac() > (_PERIOD_SECONDS))                                \
-      {                                                                          \
-        first = false;                                                           \
-        tim.Tic();                                                               \
+#define INTERNAL_MRPT_LOG_THROTTLE_STREAM(_LVL, _PERIOD_SECONDS, __CONTENTS)                \
+  do                                                                                        \
+  {                                                                                         \
+    if (this->isLoggingLevelVisible(_LVL))                                                  \
+    {                                                                                       \
+      static mrpt::system::CTicTac tim;                                                     \
+      static bool first = true;                                                             \
+      if (first || tim.Tac() > (_PERIOD_SECONDS))                                           \
+      {                                                                                     \
+        first = false;                                                                      \
+        tim.Tic();                                                                          \
         ::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this) << __CONTENTS; /* NOLINT */ \
-      }                                                                          \
-    }                                                                            \
+      }                                                                                     \
+    }                                                                                       \
   } while (0)
 
 #define INTERNAL_MRPT_LOG_THROTTLE_FMT(_LVL, _PERIOD_SECONDS, _FMT_STRING, ...) \

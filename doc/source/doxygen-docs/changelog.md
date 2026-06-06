@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+\note Starting from **MRPT 3.0.0**, changes are reported separately in each
+module's own `CHANGELOG.rst` file (located next to its `package.xml`).
+The entries below cover the MRPT 2.x series.
+
 # Version 2.15.13: UNRELEASED
   - \ref mrpt_core_grp
     - mrpt::Clock::fromDouble(): Fixed undefined behavior (and platform-dependent results) when converting timestamps whose UNIX time is negative or near zero. The intermediate value was cast from a negative `double` to `uint64_t`, which wraps on x86-64 but saturates to 0 on AArch64, collapsing distinct timestamps to the same tick on ARM.
