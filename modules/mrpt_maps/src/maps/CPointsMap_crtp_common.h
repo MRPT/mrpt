@@ -17,6 +17,8 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 
+#include <Eigen/Dense>
+
 namespace mrpt::maps::detail
 {
 template <class Derived>

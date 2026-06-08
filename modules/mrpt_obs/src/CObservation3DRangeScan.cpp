@@ -29,6 +29,7 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/viz/CPointCloud.h>
 
+#include <Eigen/Dense>
 #include <cstring>
 #include <limits>
 #include <mutex>

@@ -15,6 +15,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_viz REQUIRED)
 find_package(mrpt_poses REQUIRED)
 find_package(mrpt_img REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
@@ -86,10 +87,14 @@ mrpt_add_library(
     mrpt::mrpt_viz
     mrpt::mrpt_poses
     mrpt::mrpt_img
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_viz
     mrpt_poses
     mrpt_img
+  UNITTEST_LINK_LIBRARIES
+    Eigen3::Eigen
 )
 
 mrpt_add_python_module(opengl python_bindings/${PROJECT_NAME}_py.cpp)

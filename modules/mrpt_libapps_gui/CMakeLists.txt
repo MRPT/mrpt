@@ -4,6 +4,7 @@ project(mrpt_libapps_gui LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_libapps_cli REQUIRED)
 find_package(mrpt_gui REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(CLI11 REQUIRED)
 find_package(Threads REQUIRED)
 find_package(wxWidgets COMPONENTS core base gl adv QUIET)
@@ -46,6 +47,8 @@ mrpt_add_library(
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_libapps_cli
     mrpt::mrpt_gui
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_libapps_cli
     mrpt_gui

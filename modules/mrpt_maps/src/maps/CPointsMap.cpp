@@ -38,6 +38,7 @@
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/CSetOfObjects.h>
 
+#include <Eigen/Dense>
 #include <fstream>
 #include <sstream>
 

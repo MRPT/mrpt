@@ -26,6 +26,7 @@
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
 
+#include <Eigen/Dense>
 #include <chrono>
 #include <iostream>
 #include <thread>

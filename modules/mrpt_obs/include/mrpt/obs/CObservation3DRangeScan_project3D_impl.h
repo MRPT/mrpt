@@ -22,8 +22,6 @@
 #include <mrpt/obs/TRangeImageFilter.h>
 #include <mrpt/viz/pointcloud_adapters.h>
 
-#include <Eigen/Dense>  // block<>()
-
 namespace mrpt::obs::detail
 {
 // Auxiliary functions which implement SSE-optimized proyection of 3D point
@@ -271,7 +269,12 @@ void unprojectInto(
           // coordinates
           // wrt the depth camera, into the intensity camera:
           pca.getPointXYZ(i, pt_wrt_depth[0], pt_wrt_depth[1], pt_wrt_depth[2]);
-          pt_wrt_color = T_inv * pt_wrt_depth;
+          // pt_wrt_color = T_inv * pt_wrt_depth (Eigen-free 4x4 matvec)
+          for (int _r = 0; _r < 4; _r++)
+          {
+            pt_wrt_color[_r] = 0;
+            for (int _c = 0; _c < 4; _c++) pt_wrt_color[_r] += T_inv(_r, _c) * pt_wrt_depth[_c];
+          }
 
           // Project to image plane:
           if (pt_wrt_color[2] > 0)
@@ -351,7 +354,12 @@ void unprojectInto(
     for (size_t i = 0; i < nPts; i++)
     {
       pca.getPointXYZ(i, pt[0], pt[1], pt[2]);
-      pt_transf = HM * pt;
+      // pt_transf = HM * pt (Eigen-free 4x4 matvec)
+      for (int _r = 0; _r < 4; _r++)
+      {
+        pt_transf[_r] = 0;
+        for (int _c = 0; _c < 4; _c++) pt_transf[_r] += HM(_r, _c) * pt[_c];
+      }
       pca.setPointXYZ(i, pt_transf[0], pt_transf[1], pt_transf[2]);
     }
   }
