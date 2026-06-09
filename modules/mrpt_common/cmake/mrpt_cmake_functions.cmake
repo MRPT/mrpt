@@ -19,6 +19,10 @@ include(GNUInstallDirs) # for install dirs in multilib
 include(CMakePackageConfigHelpers)
 include(CTest)
 
+# ROS build farm for Humble does NOT pass "-DBUILD_TESTING=OFF" in bin builds
+# so we must default to NOT building tests until the oldest supported ROS distro does :-(
+option(BUILD_TESTING "Build tests" OFF)
+
 # Build static or dynamic libs?
 # ===================================================
 # Default: dynamic libraries (except if building to JavaScript code)
