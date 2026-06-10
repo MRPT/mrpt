@@ -12,6 +12,9 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_gui REQUIRED)
 find_package(mrpt_slam REQUIRED)
 find_package(CLI11 REQUIRED)
+# This app uses Eigen directly (mrpt::math::multiply_HCHt requires <Eigen/Dense>
+# in the calling translation unit):
+find_package(Eigen3 REQUIRED)
 mrpt_find_wxwidgets()
 if(NOT wxWidgets_FOUND)
   message(STATUS "wxWidgets not found — skipping ${PROJECT_NAME}")
@@ -36,6 +39,7 @@ mrpt_add_executable(
     mrpt::mrpt_slam
     CLI11::CLI11
     wxWidgets::wxWidgets
+    Eigen3::Eigen
 )
 
 

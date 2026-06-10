@@ -12,7 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <libfyaml/libfyaml-core.h>
+#include <libfyaml.h>
 #include <mrpt/containers/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
