@@ -824,14 +824,25 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
                 KFMatrix out(pkk_in.rows(), pkk_in.cols());
                 if (KF_options.use_joseph_form)
                 {
-                  // out = (I-K*H) * P * (I-K*H)^T + K*S*K^T
+                  // out = (I-K*H) * P * (I-K*H)^T + K*R*K^T
+                  // NOTE: the additive term uses the measurement noise R, not
+                  // S = H*P*H^T + R. Using S here would double-count the
+                  // H*P*H^T*K^T term already present in (I-K*H)*P*(I-K*H)^T and
+                  // over-inflate the covariance.
                   KFMatrix tmp1;
                   KFMatrix tmp2;
                   kf_detail::matmul(tmp1, m_aux_K_dh_dx, pkk_in);
                   kf_detail::matmul_ABt(out, tmp1, m_aux_K_dh_dx);
-                  kf_detail::matmul(tmp1, m_K, S_observed);
-                  kf_detail::matmul_ABt(tmp2, tmp1, m_K);
-                  kf_detail::mat_scale_acc(out, tmp2, kftype(1));
+                  // K*R*K^T, with the block-diagonal observation noise R
+                  // (one OBS_SIZE x OBS_SIZE R block per observation):
+                  const size_t N_obs_blocks = m_K.cols() / OBS_SIZE;
+                  for (size_t i = 0; i < N_obs_blocks; i++)
+                  {
+                    KFMatrix K_i = m_K.blockCopy(0, i * OBS_SIZE, m_K.rows(), OBS_SIZE);
+                    kf_detail::matmul(tmp1, K_i, R);
+                    kf_detail::matmul_ABt(tmp2, tmp1, K_i);
+                    kf_detail::mat_scale_acc(out, tmp2, kftype(1));
+                  }
                 }
                 else
                 {

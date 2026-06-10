@@ -296,7 +296,7 @@ class slamdemoFrame : public wxFrame
 
   /** A registry of all data for the simulation, used to compute errors, etc..
    */
-  std::vector<THistoric, Eigen::aligned_allocator<THistoric>> m_historicData;
+  std::vector<THistoric> m_historicData;
 
   /** Reset the simulator and re-generate the ground truth map
    *  map_type can be:
