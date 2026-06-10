@@ -28,7 +28,7 @@
 #include <mrpt/obs/CObservationRotatingScan.h>  // not included in obs.h since it's in mrpt-maps
 #include <mrpt/poses/CPosePDFParticles.h>
 
-#include <iomanip>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::viz;
@@ -508,7 +508,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
       mrpt::img::CImage img_range;
 
       float maxActualRange = obs->rangeImage.maxCoeff();
-      if (maxActualRange == 0) maxActualRange = 1.0f;
+      if (maxActualRange == 0)
+      {
+        maxActualRange = 1.0f;
+      }
 
       img_range.setFromMatrix(
           obs->rangeImage.asEigen().cast<float>() * (1.0f / maxActualRange),
@@ -527,7 +530,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(const CSerializable::Ptr& sel_ob
       mrpt::img::CImage img_intensity;
 
       float maxActualInt = obs->intensityImage.maxCoeff();
-      if (maxActualInt == 0) maxActualInt = 1.0f;
+      if (maxActualInt == 0)
+      {
+        maxActualInt = 1.0f;
+      }
 
       img_intensity.setFromMatrix(
           obs->intensityImage.asEigen().cast<float>() * (1.0f / maxActualInt),
