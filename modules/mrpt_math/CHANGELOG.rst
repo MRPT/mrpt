@@ -2,6 +2,14 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#1363 <https://github.com/MRPT/mrpt/issues/1363>`_ from MRPT/fix/dont-export-eigen3-dep
+  refactor: limit visibility of eigen3 as build dep
+* fix: KF math errors
+* refactor: limit visibility of eigen3 as build dep
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.0 (2026-06-06)
 ------------------
 
