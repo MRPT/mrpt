@@ -67,7 +67,7 @@ jobs:
               -G Ninja \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -DCMAKE_VERBOSE_MAKEFILE=ON \
-              -DMRPT_BUILD_TESTING=ON \
+              -DBUILD_TESTING=ON \
               -DDISABLE_WXWIDGETS=ON \
               -DMRPT_WITH_QT=OFF \
               -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \

@@ -15,13 +15,18 @@
 # find_package(mrpt_common REQUIRED) # this includes mrpt_cmake_functions.cmake
 #
 
+# ROS build farm for Humble does NOT pass "-DBUILD_TESTING=OFF" in bin builds
+# so we must default to NOT building tests until the oldest supported ROS distro does :-(
+#
+# IMPORTANT: this must be defined *before* include(CTest) below, since that
+# module itself does `option(BUILD_TESTING "..." ON)`, which is a no-op if
+# the cache variable already exists. Defining it first here makes CTest's
+# own option() the no-op instead, so our OFF default actually sticks.
+set(BUILD_TESTING OFF CACHE BOOL "Build tests")
+
 include(GNUInstallDirs) # for install dirs in multilib
 include(CMakePackageConfigHelpers)
 include(CTest)
-
-# ROS build farm for Humble does NOT pass "-DBUILD_TESTING=OFF" in bin builds
-# so we must default to NOT building tests until the oldest supported ROS distro does :-(
-option(BUILD_TESTING "Build tests" OFF)
 
 # Build static or dynamic libs?
 # ===================================================

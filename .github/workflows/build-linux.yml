@@ -71,7 +71,8 @@ jobs:
             --cmake-args \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -DENABLE_COVERAGE=${{ matrix.coverage }} \
-              -DCMAKE_VERBOSE_MAKEFILE=ON
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DBUILD_TESTING=ON
 
       - name: Colcon Test
         run: |
