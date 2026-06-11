@@ -51,9 +51,6 @@ if(MRPT_HAS_LIBFYAML)
 			SOURCE_DIR ${LIBFYAML_DIR}
 			INSTALL_DIR "${LIBFYAML_INSTALL_DIR}"
 			CMAKE_ARGS
-			# libfyaml's CMakeLists uses cmake_minimum_required(VERSION 3.0),
-			# which recent CMake (>=4.0) rejects. Allow it to configure anyway.
-			-DCMAKE_POLICY_VERSION_MINIMUM=3.5
 			-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
 			-DBUILD_SHARED_LIBS:BOOL=OFF
 			-DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
@@ -61,6 +58,10 @@ if(MRPT_HAS_LIBFYAML)
 			-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
 			-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
 			-DENABLE_LIBCLANG=OFF
+			# We embed libfyaml as a library only: never build its test suite
+			# (which otherwise FetchContent's the "check" framework, needing
+			# network access and breaking isolated/.deb builds).
+			-DBUILD_TESTING=OFF
 			-DCMAKE_POSITION_INDEPENDENT_CODE=ON
 			BUILD_BYPRODUCTS ${LIBFYAML_LIB}
 			)
