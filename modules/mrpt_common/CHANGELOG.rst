@@ -2,6 +2,19 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix: BUILD_TESTING=OFF default was ignored due to include(CTest) ordering
+  CTest's own option(BUILD_TESTING ... ON) ran first and created the cache
+  variable, making our subsequent option(BUILD_TESTING ... OFF) a no-op.
+  This left BUILD_TESTING=ON on the ROS build farm (which doesn't pass
+  -DBUILD_TESTING=OFF), causing find_package(GTest REQUIRED) to fail and
+  break the mrpt_core binary build.
+  Also fix CI workflows to pass the correct -DBUILD_TESTING=ON flag
+  (macOS/Windows previously used the non-existent MRPT_BUILD_TESTING,
+  and Linux relied on the buggy default).
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.1 (2026-06-11)
 ------------------
 * Merge pull request `#1363 <https://github.com/MRPT/mrpt/issues/1363>`_ from MRPT/fix/dont-export-eigen3-dep

@@ -2,6 +2,11 @@
 Changelog for package mrpt_libapps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix: add missing build deps on wxWidgets
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.1 (2026-06-11)
 ------------------
 * Merge pull request `#1363 <https://github.com/MRPT/mrpt/issues/1363>`_ from MRPT/fix/dont-export-eigen3-dep

@@ -2,6 +2,9 @@
 Changelog for package mrpt_apps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.0.1 (2026-06-11)
 ------------------
 * fix: clang-format include order in perf-graphslam.cpp

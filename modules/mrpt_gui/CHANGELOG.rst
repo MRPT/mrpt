@@ -2,6 +2,9 @@
 Changelog for package mrpt_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.0.1 (2026-06-11)
 ------------------
 * fix: enable isolated/Debian-package builds of apps_gui
