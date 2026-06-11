@@ -51,6 +51,9 @@ if(MRPT_HAS_LIBFYAML)
 			SOURCE_DIR ${LIBFYAML_DIR}
 			INSTALL_DIR "${LIBFYAML_INSTALL_DIR}"
 			CMAKE_ARGS
+			# libfyaml's CMakeLists uses cmake_minimum_required(VERSION 3.0),
+			# which recent CMake (>=4.0) rejects. Allow it to configure anyway.
+			-DCMAKE_POLICY_VERSION_MINIMUM=3.5
 			-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
 			-DBUILD_SHARED_LIBS:BOOL=OFF
 			-DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
