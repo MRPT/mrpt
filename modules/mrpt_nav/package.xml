@@ -16,7 +16,7 @@
   <depend>mrpt_kinematics</depend>
   <depend>mrpt_viz</depend>
 
-  <build_depend>libeigen3-dev</build_depend>
+  <build_depend>eigen</build_depend>
 
   <export>
     <build_type>cmake</build_type>

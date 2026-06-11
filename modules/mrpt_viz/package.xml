@@ -20,7 +20,7 @@
   <depend>mrpt_poses</depend>
   <depend>mrpt_img</depend>
 
-  <build_depend>libeigen3-dev</build_depend>
+  <build_depend>eigen</build_depend>
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
 

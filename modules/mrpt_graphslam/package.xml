@@ -15,7 +15,7 @@
   <depend>mrpt_slam</depend>
   <depend>mrpt_gui</depend>
 
-  <build_depend>libeigen3-dev</build_depend>
+  <build_depend>eigen</build_depend>
 
   <export>
     <build_type>cmake</build_type>

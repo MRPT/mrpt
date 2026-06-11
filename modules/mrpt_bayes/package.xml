@@ -20,7 +20,7 @@
   <depend>mrpt_config</depend>
   <depend>mrpt_math</depend>
 
-  <build_depend>libeigen3-dev</build_depend>
+  <build_depend>eigen</build_depend>
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
 
