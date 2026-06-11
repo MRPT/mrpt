@@ -1,19 +1,33 @@
-## Changed apps/libraries
+## Description
 
-* modified-libX
-* modified-appY
-* ...
+<!-- What does this PR do, and why? -->
 
-## PR Description
+## Type of change
 
-* (*REMOVE THIS LINE IF NOT NEEDED*) This PR Closes issue #XXX
-* (*REMOVE THIS LINE IF NOT NEEDED*)
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change (changes existing behavior/API)
+- [ ] Refactor / code cleanup (no functional change)
+- [ ] Documentation
+- [ ] CI / build system
 
----
+## Affected modules / apps
 
-I acknowledge to have:
-* Read the [`CONTRIBUTING`](https://github.com/MRPT/mrpt/blob/master/.github/CONTRIBUTING.md) page
-* Updated [`doc/source/doxygen-docs/changelog.md`](https://github.com/MRPT/mrpt/blob/develop/doc/source/doxygen-docs/changelog.md) to describe these changes (if applicable)
-* Updated [`AUTHORS`](https://github.com/MRPT/mrpt/blob/master/AUTHORS) (if applicable)
+<!-- e.g. mrpt_maps, mrpt_slam, rawlog-edit -->
 
-(Notify: @MRPT/owners )
+## Related issues
+
+<!-- e.g. Closes #XXX -->
+
+## Testing
+
+<!-- How was this verified? New/updated unit tests, manual testing steps, etc. -->
+
+## Checklist
+
+- [ ] I have read [`CONTRIBUTING.md`](https://github.com/MRPT/mrpt/blob/develop/.github/CONTRIBUTING.md)
+- [ ] Code follows the [MRPT coding style](https://github.com/MRPT/mrpt/blob/develop/doc/source/MRPT_Coding_Style.rst) and passes `clang-format`
+- [ ] Builds successfully with `colcon build`
+- [ ] Added/updated unit tests where applicable
+- [ ] Updated [`changelog.md`](https://github.com/MRPT/mrpt/blob/develop/doc/source/doxygen-docs/changelog.md) (if user-visible)
+- [ ] Updated [`AUTHORS`](https://github.com/MRPT/mrpt/blob/develop/AUTHORS) (if first contribution)
