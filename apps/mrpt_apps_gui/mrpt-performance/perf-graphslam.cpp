@@ -12,10 +12,11 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include "common.h"
+
 // Reuse code from unit test (vendored copy so this benchmark builds when the
 // package is compiled in isolation, e.g. as a Debian package):
 #include "graph_slam_levmarq_test_common.h"
-#include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::math;
