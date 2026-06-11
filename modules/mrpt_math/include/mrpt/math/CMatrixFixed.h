@@ -65,7 +65,33 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
  private:
   /** RowMajor matrix data */
   using vec_t = std::array<T, static_cast<std::size_t>(ROWS* COLS)>;
-  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) vec_t m_data;
+
+  /** Byte-alignment actually requested for `m_data`, and for the
+   * `Eigen::Map<>` views returned by `asEigen()`.
+   *
+   * Eigen only vectorizes (and therefore only benefits from)
+   * MRPT_MAX_STATIC_ALIGN_BYTES-aligned storage when `sizeof(vec_t)` is an
+   * exact multiple of that alignment. Requesting that alignment
+   * unconditionally (e.g. for a 3x3 matrix, as used by
+   * mrpt::poses::CPose3D) over-aligns CMatrixFixed for no benefit, and some
+   * GCC versions miscompute virtual-base subobject offsets for classes
+   * that (transitively) contain such over-aligned members, leading to
+   * misaligned SIMD accesses and crashes (see mrpt::viz::CFrustum). For
+   * those sizes, fall back to the natural alignment of `T`, matching
+   * Eigen's own alignment criterion.
+   */
+  constexpr static std::size_t DATA_ALIGN_BYTES =
+      (sizeof(T) * ROWS * COLS) % MRPT_MAX_STATIC_ALIGN_BYTES == 0 ? MRPT_MAX_STATIC_ALIGN_BYTES
+                                                                   : alignof(T);
+
+  /** MapOptions for `Eigen::Map<>`, consistent with DATA_ALIGN_BYTES.
+   * (0 == Eigen::Unaligned; not using the Eigen enum here to avoid requiring
+   * a full `<Eigen/Core>` include in this header). */
+  constexpr static int EIGEN_MAP_ALIGN_BYTES =
+      (sizeof(T) * ROWS * COLS) % MRPT_MAX_STATIC_ALIGN_BYTES == 0 ? MRPT_MAX_STATIC_ALIGN_BYTES
+                                                                   : 0;
+
+  alignas(DATA_ALIGN_BYTES) vec_t m_data;
 
  public:
   /** @name Iterators interface
@@ -276,8 +302,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   /** Get as an Eigen-compatible Eigen::Map object  */
   template <
       typename EIGEN_MATRIX = eigen_t,
-      typename EIGEN_MAP =
-          Eigen::Map<EIGEN_MATRIX, MRPT_MAX_STATIC_ALIGN_BYTES, Eigen::InnerStride<1>>>
+      typename EIGEN_MAP = Eigen::Map<EIGEN_MATRIX, EIGEN_MAP_ALIGN_BYTES, Eigen::InnerStride<1>>>
   EIGEN_MAP asEigen()
   {
     static_assert(
@@ -291,7 +316,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   template <
       typename EIGEN_MATRIX = eigen_t,
       typename EIGEN_MAP =
-          Eigen::Map<const EIGEN_MATRIX, MRPT_MAX_STATIC_ALIGN_BYTES, Eigen::InnerStride<1>>>
+          Eigen::Map<const EIGEN_MATRIX, EIGEN_MAP_ALIGN_BYTES, Eigen::InnerStride<1>>>
   EIGEN_MAP asEigen() const
   {
     static_assert(

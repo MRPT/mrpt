@@ -30,5 +30,14 @@ e2 = CRuntimeCompiledExpression()
 e2.compile("x * x", {"x": 5.0})
 check("x*x at x=5 == 25", abs(e2.eval() - 25.0) < 1e-12)
 
+# Stress test: the dict passed to compile() is a temporary on the Python side.
+# Allocate/free a bunch of garbage dicts afterwards to encourage heap reuse,
+# then make sure eval() still returns the correct result (regression test for
+# a use-after-free in the pybind11 binding of compile()).
+for _ in range(1000):
+    _garbage = [{"a": float(i), "b": float(i)} for i in range(50)]
+    del _garbage
+check("x*x at x=5 == 25 after heap churn", abs(e2.eval() - 25.0) < 1e-12)
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

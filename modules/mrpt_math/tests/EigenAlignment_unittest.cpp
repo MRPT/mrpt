@@ -50,17 +50,26 @@ struct Foo
   mrpt::math::CMatrixFixed<double, 3, 3> m2;
 };
 
+// CMatrixFixed<double,3,3> is only required to honor its own alignment
+// requirement (8 bytes, matching alignof(Eigen::Matrix3d) since a 3x3 matrix
+// is not a vectorizable size for Eigen), not the larger
+// EIGEN_MAX_ALIGN_BYTES (32, for AVX). Over-aligning it would make
+// CMatrixFixed an over-aligned type, which some GCC versions mis-layout when
+// it ends up (transitively) as a virtual base class member, leading to
+// crashes (see mrpt::viz::CFrustum).
+constexpr std::size_t MATRIX33_ALIGN_BYTES = alignof(mrpt::math::CMatrixFixed<double, 3, 3>);
+
 template <unsigned int INTER_SPACE>
 void checkAlignedFoo(const Foo<INTER_SPACE>& d, const std::string& testName)
 {
-  EXPECT_TRUE(mrpt::system::is_aligned<EIGEN_MAX_ALIGN_BYTES>(&d.m1(0, 0)))
+  EXPECT_TRUE(mrpt::system::is_aligned<MATRIX33_ALIGN_BYTES>(&d.m1(0, 0)))
       << "test: " << testName << "\nINTER_SPACE=" << INTER_SPACE
       << "\nm1(0,0)=" << static_cast<const void*>(&d.m1(0, 0))
-      << "\nFailed against: EIGEN_MAX_ALIGN_BYTES=" << EIGEN_MAX_ALIGN_BYTES;
-  EXPECT_TRUE(mrpt::system::is_aligned<EIGEN_MAX_ALIGN_BYTES>(&d.m2(0, 0)))
+      << "\nFailed against: MATRIX33_ALIGN_BYTES=" << MATRIX33_ALIGN_BYTES;
+  EXPECT_TRUE(mrpt::system::is_aligned<MATRIX33_ALIGN_BYTES>(&d.m2(0, 0)))
       << "test: " << testName << "\nINTER_SPACE=" << INTER_SPACE
       << "\nm2(0,0)=" << static_cast<const void*>(&d.m2(0, 0))
-      << "\nFailed against: EIGEN_MAX_ALIGN_BYTES=" << EIGEN_MAX_ALIGN_BYTES;
+      << "\nFailed against: MATRIX33_ALIGN_BYTES=" << MATRIX33_ALIGN_BYTES;
 }
 
 template <unsigned int INTER_SPACE>

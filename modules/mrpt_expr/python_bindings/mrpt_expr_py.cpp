@@ -17,6 +17,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <map>
+#include <string>
+
 // MRPT headers
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 
@@ -28,14 +31,23 @@ PYBIND11_MODULE(_bindings, m)
 {
   m.doc() = "Python bindings for mrpt-expr (Runtime expression parser)";
 
-  py::class_<CRuntimeCompiledExpression>(m, "CRuntimeCompiledExpression")
+  py::class_<CRuntimeCompiledExpression>(m, "CRuntimeCompiledExpression", py::dynamic_attr())
       .def(py::init<>())
       // Main compilation method
       .def(
           "compile",
-          [](CRuntimeCompiledExpression& self, const std::string& expression,
+          [](py::object self_obj, const std::string& expression,
              const std::map<std::string, double>& variables)
-          { self.compile(expression, variables); },
+          {
+            auto& self = self_obj.cast<CRuntimeCompiledExpression&>();
+            // exprtk stores references into `variables`, but the map built
+            // by pybind11 from the Python dict is a temporary: keep a copy
+            // alive for as long as the Python object lives.
+            auto* vars = new std::map<std::string, double>(variables);
+            self_obj.attr("_vars_keepalive") = py::capsule(
+                vars, [](void* p) { delete static_cast<std::map<std::string, double>*>(p); });
+            self.compile(expression, *vars);
+          },
           "expression"_a, "variables"_a = std::map<std::string, double>{},
           "Compiles a string expression with optional variable and constant maps.")
 
