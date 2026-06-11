@@ -94,8 +94,8 @@ void homogeneousMatrixInverse(
   out_xyz[1] = tx * in_R(0, 1) + ty * in_R(1, 1) + tz * in_R(2, 1);
   out_xyz[2] = tx * in_R(0, 2) + ty * in_R(1, 2) + tz * in_R(2, 2);
 
-  // 3x3 rotation part: transpose
-  out_R = in_R.transpose();
+  // 3x3 rotation part: transpose (Eigen-free element-wise assignment)
+  out_R.insertMatrixTransposed(0, 0, in_R);
 
   MRPT_END
 }

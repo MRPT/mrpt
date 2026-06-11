@@ -29,6 +29,7 @@
 #include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/stock_objects.h>
 
+#include <Eigen/Dense>
 #include <fstream>
 
 using namespace mrpt::apps;

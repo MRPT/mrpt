@@ -264,7 +264,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
   CMatrixDynamic<Scalar> blockCopy(
       Index_t start_row, Index_t start_col, size_type_t BLOCK_ROWS, size_type_t BLOCK_COLS) const
   {
-    return extractMatrix(start_row, start_col, BLOCK_ROWS, BLOCK_COLS);
+    // Note: extractMatrix()'s argument order is (rows, cols, start_row, start_col):
+    return extractMatrix(BLOCK_ROWS, BLOCK_COLS, start_row, start_col);
   }
 
   template <size_type_t BLOCK_ROWS, size_type_t BLOCK_COLS>

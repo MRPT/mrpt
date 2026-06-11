@@ -14,6 +14,8 @@
 
   <depend>mrpt_opengl</depend>
 
+  <depend>libeigen3-dev</depend> <!-- Needed by nanogui public headers -->
+
   <build_depend>libxrandr</build_depend>
   <build_depend>libxxf86vm</build_depend>
   <build_depend>opengl</build_depend>

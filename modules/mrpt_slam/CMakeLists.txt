@@ -4,6 +4,7 @@ project(mrpt_slam LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_maps REQUIRED)
 find_package(mrpt_topography REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # Optional TBB support (used in PF_implementations.h):
 find_package(TBB QUIET)
@@ -80,9 +81,13 @@ mrpt_add_library(
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_maps
     mrpt::mrpt_topography
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_maps
     mrpt_topography
+  UNITTEST_LINK_LIBRARIES
+    Eigen3::Eigen
 )
 
 if (TBB_FOUND)

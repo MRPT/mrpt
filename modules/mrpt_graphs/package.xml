@@ -21,6 +21,7 @@
   <depend>mrpt_io</depend>
   <depend>mrpt_viz</depend>
 
+  <build_depend>libeigen3-dev</build_depend>
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
 

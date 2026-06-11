@@ -16,6 +16,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_io REQUIRED)
 find_package(mrpt_config REQUIRED)
 find_package(mrpt_math REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # Include Asian fonts in mrpt::img::CCanvas ?
 set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in mrpt::img::CCanvas (increases library size).")
@@ -80,6 +81,8 @@ mrpt_add_library(
     mrpt::mrpt_config
     mrpt::mrpt_io
     mrpt::mrpt_math
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_config
     mrpt_io

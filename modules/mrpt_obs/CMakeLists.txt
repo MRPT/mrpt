@@ -15,6 +15,7 @@ project(mrpt_obs LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_viz REQUIRED)
 find_package(mrpt_tfest REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 include(./cmake/script_tinyxml2.cmake REQUIRED)  # tinyxml2 lib
 
@@ -164,6 +165,8 @@ mrpt_add_library(
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_viz
     mrpt::mrpt_tfest
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_viz
     mrpt_tfest

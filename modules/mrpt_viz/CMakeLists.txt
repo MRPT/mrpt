@@ -14,6 +14,7 @@ project(mrpt_viz LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_poses REQUIRED)
 find_package(mrpt_img REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 include(./cmake/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
 
@@ -164,7 +165,8 @@ mrpt_add_library(
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_poses
     mrpt::mrpt_img
-#  PRIVATE_LINK_LIBRARIES
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_poses
     mrpt_img

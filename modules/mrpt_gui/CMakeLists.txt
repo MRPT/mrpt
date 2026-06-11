@@ -5,6 +5,7 @@ project(mrpt_gui LANGUAGES C CXX)
 # Ensure core MRPT packages used here are available to CMake
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_opengl REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 include(./cmake/script_nanogui.cmake REQUIRED)
 include(./cmake/script_qt.cmake REQUIRED)
@@ -81,8 +82,10 @@ mrpt_add_library(
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_opengl
     ${nanogui_dep}
+    Eigen3::Eigen  # Needed by nanogui public headers
   CMAKE_DEPENDENCIES
     mrpt_opengl
+    Eigen3 # Needed by nanogui public headers
 )
 
 # Install 3rdparty mathplot header so downstream apps can use it as

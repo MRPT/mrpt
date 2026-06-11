@@ -18,6 +18,8 @@
   <depend>mrpt_kinematics</depend>
   <depend>mrpt_nav</depend>
 
+  <build_depend>libeigen3-dev</build_depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>

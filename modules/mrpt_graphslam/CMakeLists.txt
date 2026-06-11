@@ -4,6 +4,7 @@ project(mrpt_graphslam LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_slam REQUIRED)
 find_package(mrpt_gui REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # define lib:
 set(LIB_SOURCES
@@ -70,7 +71,9 @@ mrpt_add_library(
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_slam
     mrpt::mrpt_gui
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_slam
     mrpt_gui
+    Eigen3
 )

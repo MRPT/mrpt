@@ -14,6 +14,7 @@ project(mrpt_tfest LANGUAGES C CXX)
 # MRPT CMake scripts: "mrpt_xxx()"
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_poses REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # define lib:
 set(LIB_SOURCES
@@ -50,7 +51,8 @@ mrpt_add_library(
   UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_poses
-#  PRIVATE_LINK_LIBRARIES
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_poses
 )

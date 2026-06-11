@@ -16,6 +16,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_config REQUIRED)
 find_package(mrpt_math REQUIRED)
 find_package(mrpt_random REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 
 # define lib:
@@ -47,7 +48,8 @@ mrpt_add_library(
     mrpt::mrpt_config
     mrpt::mrpt_math
     mrpt::mrpt_random
-#  PRIVATE_LINK_LIBRARIES
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_config
     mrpt_math

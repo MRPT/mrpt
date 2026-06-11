@@ -220,26 +220,25 @@ mrpt_add_library(
     mrpt::mrpt_system
     mrpt::mrpt_serialization
     mrpt::mrpt_random
-    Eigen3::Eigen
     nanoflann::nanoflann
-#  PRIVATE_LINK_LIBRARIES
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_system
     mrpt_serialization
     mrpt_random
   # Other imported targets:
     nanoflann # find_package() lib name
-    ${eigen_dep}
   UNITTEST_LINK_LIBRARIES
     mrpt::mrpt_io
+    Eigen3::Eigen
 )
 
 if (MSVC)
-  # On MSVC, public headers conditionally include *_impl.h which need Eigen.
-  # find_path gives a concrete filesystem path (no generator expressions),
-  # so it survives export/install and is visible to downstream consumers
-  # (e.g. mrpt_topography) even if their find_dependency(Eigen3) does not
-  # propagate the include dirs on its own.
+  # On MSVC, public headers conditionally include *_impl.h (guarded by _MSC_VER)
+  # which need Eigen. Eigen3::Eigen is linked PRIVATE so find_dependency(Eigen3)
+  # is NOT emitted in mrpt_math-config.cmake; instead, propagate the include dir
+  # as a concrete path so MSVC consumers compile without a separate find_package.
   find_path(_mrptmath_eigen_inc "Eigen/Dense"
     HINTS
       "${EIGEN3_INCLUDE_DIR}"

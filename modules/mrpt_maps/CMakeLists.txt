@@ -13,6 +13,7 @@ project(mrpt_maps LANGUAGES C CXX)
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_obs REQUIRED)
 find_package(mrpt_graphs REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 include(./cmake/script_gridmap_options.cmake REQUIRED) # Gridmap options
 include(./cmake/script_octomap.cmake REQUIRED)     # Check for the octomap library
@@ -129,6 +130,8 @@ mrpt_add_library(
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_obs
     mrpt::mrpt_graphs
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_obs
     mrpt_graphs

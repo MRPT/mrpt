@@ -71,6 +71,7 @@ Do not hardcode compiler flags (like -std=c++17 or -fPIC). The MRPT CMake wrappe
 
 Do not use raw pointers for ownership. Default to std::shared_ptr or std::unique_ptr, and use MRPT's smart pointer macros where applicable.
 
+Do not expose Eigen3 headers in public API files unless explicitly allowed by the user. Keep Eigen3 specific #include's in private "src/" files.
 
 ## 5. Pybind11 modules
 

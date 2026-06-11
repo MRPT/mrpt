@@ -41,6 +41,9 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/Scene.h>
 
+// Needed by mrpt::math::multiply_HCHt() (instantiates Eigen in the calling TU):
+#include <Eigen/Dense>
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::io;

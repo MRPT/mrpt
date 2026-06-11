@@ -13,6 +13,7 @@ find_package(mrpt_common REQUIRED)
 find_package(mrpt_maps REQUIRED)
 find_package(mrpt_kinematics REQUIRED)
 find_package(mrpt_viz REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # define lib:
 set(LIB_SOURCES
@@ -119,6 +120,8 @@ mrpt_add_library(
     mrpt::mrpt_maps
     mrpt::mrpt_kinematics
     mrpt::mrpt_viz
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_maps
     mrpt_kinematics

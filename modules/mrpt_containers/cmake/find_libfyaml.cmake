@@ -58,6 +58,10 @@ if(MRPT_HAS_LIBFYAML)
 			-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
 			-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
 			-DENABLE_LIBCLANG=OFF
+			# We embed libfyaml as a library only: never build its test suite
+			# (which otherwise FetchContent's the "check" framework, needing
+			# network access and breaking isolated/.deb builds).
+			-DBUILD_TESTING=OFF
 			-DCMAKE_POSITION_INDEPENDENT_CODE=ON
 			BUILD_BYPRODUCTS ${LIBFYAML_LIB}
 			)
