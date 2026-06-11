@@ -2,8 +2,8 @@
 Changelog for package mrpt_apps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.1 (2026-06-11)
+------------------
 * fix: clang-format include order in perf-graphslam.cpp
 * fix: enable isolated/Debian-package builds of apps_gui
   Two issues surface when building packages in isolation (as the ROS build farm

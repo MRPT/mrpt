@@ -5,7 +5,7 @@
 -->
 <package format="3">
   <name>mrpt_topography</name>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <description>The MRPT C++ library mrpt_topography</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>

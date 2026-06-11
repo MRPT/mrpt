@@ -2,8 +2,8 @@
 Changelog for package mrpt_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.1 (2026-06-11)
+------------------
 * fix: enable isolated/Debian-package builds of apps_gui
   Two issues surface when building packages in isolation (as the ROS build farm
   and .deb packaging do), where sibling modules are only available as installed

@@ -5,7 +5,7 @@
 -->
 <package format="3">
   <name>mrpt_data</name>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <description>MRPT shared data files: test datasets and example config files</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>

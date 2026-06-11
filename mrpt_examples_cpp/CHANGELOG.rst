@@ -2,8 +2,8 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.1 (2026-06-11)
+------------------
 * Merge pull request `#1363 <https://github.com/MRPT/mrpt/issues/1363>`_ from MRPT/fix/dont-export-eigen3-dep
   refactor: limit visibility of eigen3 as build dep
 * fix: build errors from limiting Eigen3 visibility + KF Joseph form
