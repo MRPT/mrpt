@@ -2,8 +2,8 @@
 Changelog for package mrpt_libapps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.2 (2026-06-11)
+------------------
 * Fix: add missing build deps on wxWidgets
 * Contributors: Jose Luis Blanco-Claraco
 

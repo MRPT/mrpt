@@ -2,8 +2,8 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.2 (2026-06-11)
+------------------
 * fix: BUILD_TESTING=OFF default was ignored due to include(CTest) ordering
   CTest's own option(BUILD_TESTING ... ON) ran first and created the cache
   variable, making our subsequent option(BUILD_TESTING ... OFF) a no-op.
