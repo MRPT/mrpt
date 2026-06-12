@@ -24,7 +24,8 @@ namespace
 // Model: a 2D line y = a*x + b, represented as a 1x2 matrix [a b].
 // Fit a line through the two selected points.
 void fitLine(
-    const CMatrixDouble& allData, const std::vector<size_t>& useIndices,
+    const CMatrixDouble& allData,
+    const std::vector<size_t>& useIndices,
     std::vector<CMatrixDouble>& fitModels)
 {
   ASSERT_EQUAL_(useIndices.size(), 2U);
@@ -51,8 +52,10 @@ void fitLine(
 }
 
 void lineDistance(
-    const CMatrixDouble& allData, const std::vector<CMatrixDouble>& testModels,
-    const double distanceThreshold, unsigned int& out_bestModelIndex,
+    const CMatrixDouble& allData,
+    const std::vector<CMatrixDouble>& testModels,
+    const double distanceThreshold,
+    unsigned int& out_bestModelIndex,
     std::vector<size_t>& out_inlierIndices)
 {
   out_inlierIndices.clear();
@@ -102,14 +105,17 @@ TEST(RANSAC, FitLineWithOutliers)
   for (size_t i = 0; i < N_INLIERS; i++)
   {
     const double x = mrpt::random::getRandomGenerator().drawUniform(-10.0, 10.0);
-    const double y = TRUE_A * x + TRUE_B + mrpt::random::getRandomGenerator().drawGaussian1D(0, 0.01);
+    const double y =
+        TRUE_A * x + TRUE_B + mrpt::random::getRandomGenerator().drawGaussian1D(0, 0.01);
     data(0, static_cast<int>(i)) = x;
     data(1, static_cast<int>(i)) = y;
   }
   for (size_t i = 0; i < N_OUTLIERS; i++)
   {
-    data(0, static_cast<int>(N_INLIERS + i)) = mrpt::random::getRandomGenerator().drawUniform(-10.0, 10.0);
-    data(1, static_cast<int>(N_INLIERS + i)) = mrpt::random::getRandomGenerator().drawUniform(-50.0, 50.0);
+    data(0, static_cast<int>(N_INLIERS + i)) =
+        mrpt::random::getRandomGenerator().drawUniform(-10.0, 10.0);
+    data(1, static_cast<int>(N_INLIERS + i)) =
+        mrpt::random::getRandomGenerator().drawUniform(-50.0, 50.0);
   }
 
   RANSAC ransac;

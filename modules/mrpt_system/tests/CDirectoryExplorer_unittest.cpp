@@ -37,7 +37,10 @@ class TempDirFixture : public ::testing::Test
     ASSERT_TRUE(mrpt::system::createDirectory(dir + "/subdir"));
   }
 
-  void TearDown() override { mrpt::system::deleteFilesInDirectory(dir, /*deleteDirectoryAsWell=*/true); }
+  void TearDown() override
+  {
+    mrpt::system::deleteFilesInDirectory(dir, /*deleteDirectoryAsWell=*/true);
+  }
 };
 }  // namespace
 
