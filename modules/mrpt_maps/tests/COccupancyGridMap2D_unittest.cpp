@@ -240,6 +240,37 @@ TEST(COccupancyGridMap2DTests, resizeGridGrowsKeepsContent)
   EXPECT_NEAR(grid.getCell(cx1, cy1), 0.2f, 0.02f);
 }
 
+TEST(COccupancyGridMap2DTests, subSampleHalvesResolution)
+{
+  const float res = 0.10f;
+  COccupancyGridMap2D grid(-1.0f, 1.0f, -1.0f, 1.0f, res);
+  grid.fill(1.0f);  // all free
+
+  // Mark the 2x2 block of old cells (8,8)-(9,9) as occupied. After
+  // subSample(2), this block exactly covers new cell (4,4), which must
+  // therefore become fully occupied while its neighbor (5,4) stays free.
+  const int cx = 8;
+  const int cy = 8;
+  for (int dx = 0; dx <= 1; dx++)
+    for (int dy = 0; dy <= 1; dy++) grid.setCell(cx + dx, cy + dy, 0.0f);
+
+  const unsigned int origSizeX = grid.getSizeX();
+  const unsigned int origSizeY = grid.getSizeY();
+
+  grid.subSample(2);
+
+  EXPECT_NEAR(grid.getResolution(), res * 2, 1e-4f);
+  EXPECT_EQ(grid.getSizeX(), origSizeX / 2);
+  EXPECT_EQ(grid.getSizeY(), origSizeY / 2);
+
+  // The down-sampled cell covering the all-occupied 2x2 block must be fully
+  // occupied; its free neighbor must remain free.
+  const int newCx = cx / 2;
+  const int newCy = cy / 2;
+  EXPECT_NEAR(grid.getCell(newCx, newCy), 0.0f, 0.05f);
+  EXPECT_NEAR(grid.getCell(newCx + 1, newCy), 1.0f, 0.05f);
+}
+
 TEST(COccupancyGridMap2DTests, computeEntropyKnownMap)
 {
   // Verify computeEntropy() runs without crashing and returns non-negative values.
