@@ -113,7 +113,7 @@ TEST(TTwist3D, RotateYaw90)
 {
   // 90 deg yaw rotation: x axis maps to y axis
   TTwist3D tw(1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-  TPose3D rot(0, 0, 0, M_PI_2, 0, 0);
+  TPose3D rot(0, 0, 0, M_PI / 2, 0, 0);
   TTwist3D rotated = tw.rotated(rot);
 
   EXPECT_NEAR(rotated.vx, 0.0, 1e-9);
