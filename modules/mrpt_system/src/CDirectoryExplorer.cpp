@@ -94,6 +94,11 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
   if (mask & FILE_ATTRIB_ARCHIVE) mask |= FILE_ATTRIBUTE_NORMAL;
   do
   {
+    if (!strcmp(f.cFileName, ".") || !strcmp(f.cFileName, ".."))
+    {
+      continue;
+    }
+
     if ((mask & f.dwFileAttributes) != 0)  // Passes the user masks:
     {
       // File name:
