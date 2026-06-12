@@ -114,7 +114,10 @@ mrpt::serialization::CArchive& mrpt::math::operator<<(
     out.WriteAs<uint8_t>(4);
     out << o.getAs<TPolygon2D>();
   }
-  THROW_EXCEPTION("Unexpected type index");
+  else
+  {
+    THROW_EXCEPTION("Unexpected type index");
+  }
   return out;
 }
 
