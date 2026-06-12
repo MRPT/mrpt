@@ -112,11 +112,15 @@ set(LIB_UNIT_TEST_SOURCES
   tests/matrix_ops5_unittest.cpp
   tests/matrix_yaml_unittest.cpp
   tests/poly_roots_unittest.cpp
+  tests/ransac_unittest.cpp
   tests/robust_kernels_unittest.cpp
   tests/slerp_unittest.cpp
   tests/TBoundingBox_unittest.cpp
+  tests/TObject2D_unittest.cpp
+  tests/TObject3D_unittest.cpp
   tests/TOrientedBox_unittest.cpp
   tests/TPoseOrPoint_unittest.cpp
+  tests/TTwist3D_unittest.cpp
   tests/wrap2pi_unittest.cpp
 )
 
