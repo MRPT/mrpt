@@ -46,7 +46,7 @@ DECLARE_OP_FUNCTION(op_export_txt)
     {
       getArgValue<string>(cmdline, "input", m_inFile);
 
-      m_filPrefix = extractFileDirectory(m_inFile) + extractFileName(m_inFile);
+      m_filPrefix = buildOutputFilesPrefix(m_inFile);
     }
 
     // return false on any error.

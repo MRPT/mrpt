@@ -342,7 +342,7 @@ bool mrpt::system::copyFile(
     return true;
   }
 
-  if (outErrStr)
+  if (outErrStr != nullptr)
   {
     *outErrStr = ec.message();
   }
