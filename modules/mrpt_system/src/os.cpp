@@ -23,6 +23,9 @@
 #include <mrpt/version.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#ifndef _WIN32
+#include <sys/wait.h>
+#endif
 
 #include <cctype>
 #include <cerrno>
@@ -698,7 +701,10 @@ int executeCommand(
   {
     sout << "Popen Execution failed!"
          << "\n";
-    *output = sout.str();
+    if (output)
+    {
+      *output = sout.str();
+    }
     return -1;
   }
 
@@ -710,6 +716,10 @@ int executeCommand(
 
   // Close
   exit_code = pclose(in);
+  if (exit_code != -1 && WIFEXITED(exit_code))
+  {
+    exit_code = WEXITSTATUS(exit_code);
+  }
 #else
   try
   {

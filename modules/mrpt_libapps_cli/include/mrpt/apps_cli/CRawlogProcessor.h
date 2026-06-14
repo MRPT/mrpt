@@ -19,6 +19,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
 #include <iostream>
@@ -30,6 +31,19 @@ class App;
 
 namespace mrpt::apps
 {
+/** Builds the common path prefix used to derive the names of additional
+ * output files from an input rawlog file path, e.g. "/path/to/foo.rawlog"
+ * becomes "/path/to/foo". */
+inline std::string buildOutputFilesPrefix(const std::string& inputRawlogFile)
+{
+  std::string dir = mrpt::system::extractFileDirectory(inputRawlogFile);
+  if (!dir.empty())
+  {
+    dir += "/";
+  }
+  return dir + mrpt::system::extractFileName(inputRawlogFile);
+}
+
 /** A virtual class that implements the common stuff around parsing a rawlog
  * file and (optionally) display a progress indicator to the console.
  * \ingroup mrpt_apps_grp
@@ -174,25 +188,29 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
   {
     // Process each observation individually, either from "obs" or each
     // within a "SF":
+    // Note: a reference to the actual smart pointer (held in "obs" or
+    // inside "SF") must be used here so that, if a derived processor resets
+    // it (e.g. to filter out an observation), the change is reflected in
+    // what is later read by OnPostProcess().
     for (size_t idxObs = 0; true; idxObs++)
     {
-      mrpt::obs::CObservation::Ptr obs_indiv;
+      mrpt::obs::CObservation::Ptr* obs_indiv = nullptr;
       if (obs)
       {
         if (idxObs > 0) break;
-        obs_indiv = obs;
+        obs_indiv = &obs;
       }
       else if (SF)
       {
         if (idxObs >= SF->size()) break;
-        obs_indiv = SF->getObservationByIndex(idxObs);
+        obs_indiv = &SF->getObservationByIndex(idxObs);
       }
       else
         break;  // shouldn't...
 
-      // Process "obs_indiv":
-      ASSERT_(obs_indiv);
-      if (!processOneObservation(obs_indiv))
+      // Process "*obs_indiv":
+      ASSERT_(*obs_indiv);
+      if (!processOneObservation(*obs_indiv))
       {
         return false;
       }

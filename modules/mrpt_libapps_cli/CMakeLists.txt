@@ -43,6 +43,7 @@ set(LIB_SOURCES
 
 set(LIB_UNIT_TEST_SOURCES
   tests/RawlogGrabberApp_unittest.cpp
+  tests/rawlog-edit_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

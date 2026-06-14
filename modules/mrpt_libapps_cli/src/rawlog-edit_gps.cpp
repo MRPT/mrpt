@@ -369,7 +369,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose), m_GPS_entriesSaved(0)
     {
       getArgValue<string>(cmdline, "input", m_inFile);
-      m_filPrefix = extractFileDirectory(m_inFile) + extractFileName(m_inFile);
+      m_filPrefix = buildOutputFilesPrefix(m_inFile);
     }
 
     // return false on any error.
@@ -564,7 +564,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
         CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose), m_GPS_entriesSaved(0)
     {
       getArgValue<string>(cmdline, "input", m_inFile);
-      m_filPrefix = extractFileDirectory(m_inFile) + extractFileName(m_inFile);
+      m_filPrefix = buildOutputFilesPrefix(m_inFile);
     }
 
     // return false on any error.
