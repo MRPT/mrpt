@@ -243,13 +243,19 @@ void consoleColorAndStyle(
  * \param[in]   command Command to execute
  * \param[out]  output  Pointer to string containing the shell output
  * \param[in]   mode read/write access
+ * \param[in]   workingDirectory If not empty, the working directory the
+ *              command is run from.
  *
  * \return 0 for success, -1 otherwise.
  *
  * \note Original code snippet found in http://stackoverflow.com/a/30357710
+ * \note The workingDirectory parameter was added in MRPT 3.0.2
  */
 int executeCommand(
-    const std::string& command, std::string* output = nullptr, const std::string& mode = "r");
+    const std::string& command,
+    std::string* output = nullptr,
+    const std::string& mode = "r",
+    const std::string& workingDirectory = std::string());
 
 /** Executes the given command (which may contain a program + arguments), and
 waits until it finishes.

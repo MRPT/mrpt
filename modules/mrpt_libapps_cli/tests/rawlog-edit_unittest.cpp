@@ -118,17 +118,24 @@ class RawlogEditCLITest : public ::testing::Test
   // Runs the binary with the current working directory set to m_tempDir,
   // since some operations (--export-gps-all, --externalize, ...) write
   // additional output files relative to the current directory.
+  //
+  // On Windows, stderr is already merged into the captured stdout pipe by
+  // executeCommand(), so "2>&1" (which would otherwise be passed as a
+  // literal argument to the program, since there is no shell involved) is
+  // only added on Unix.
   [[nodiscard]] CmdResult run(const std::vector<std::string>& args) const
   {
-    std::string cmd = "cd \"" + m_tempDir + "\" && \"" + m_bin + "\"";
+    std::string cmd = "\"" + m_bin + "\"";
     for (const auto& a : args)
     {
       cmd += " \"" + a + "\"";
     }
+#ifndef _WIN32
     cmd += " 2>&1";
+#endif
 
     CmdResult r;
-    r.exitCode = mrpt::system::executeCommand(cmd, &r.output);
+    r.exitCode = mrpt::system::executeCommand(cmd, &r.output, "r", m_tempDir);
     return r;
   }
 

@@ -29,7 +29,7 @@ namespace mrpt::obs
  *  - Anything else will be left unmodified.
  *
  *  For example, the default format string used in
- *  `rawlog-edit --rename-externals` is `"${type}_${label}_%.06%f"`.
+ *  `rawlog-edit --rename-externals` is `"${type}_${label}_%.06f"`.
  *
  * \ingroup mrpt_obs_grp
  * \note (new in MRPT 2.4.1)
