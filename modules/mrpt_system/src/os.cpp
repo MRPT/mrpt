@@ -799,21 +799,53 @@ int executeCommand(
     siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
     // If a custom working directory is requested, the child process' DLL
-    // search may no longer find the directory where the calling process'
-    // shared libraries live (which is normally reachable via the current
-    // directory). Work around this by temporarily prepending the calling
-    // process' current directory to PATH, so the child inherits it.
+    // search may no longer find the directories where the calling process'
+    // dependent DLLs live: changing the child's current directory drops both
+    // the parent's current directory and its application directory from the
+    // child's default DLL search order, terminating it with
+    // STATUS_DLL_NOT_FOUND (0xC0000135). Work around this by temporarily
+    // prepending both of those directories to PATH, which the child inherits.
     std::string savedPath;
     bool pathModified = false;
     if (!workingDirectory.empty())
     {
+      std::string extraDirs;
+
+      // (1) Parent's current directory.
       char curDir[MAX_PATH];
-      if (GetCurrentDirectoryA(MAX_PATH, curDir))
+      if (GetCurrentDirectoryA(MAX_PATH, curDir) > 0)
       {
-        char pathBuf[32768];
-        const DWORD pathLen = GetEnvironmentVariableA("PATH", pathBuf, sizeof(pathBuf));
-        savedPath = (pathLen > 0) ? std::string(pathBuf, pathLen) : std::string();
-        const std::string newPath = std::string(curDir) + ";" + savedPath;
+        extraDirs += curDir;
+        extraDirs += ';';
+      }
+
+      // (2) Parent's executable (application) directory: dependent DLLs of the
+      // child binary are commonly co-located with the parent that links the
+      // same libraries.
+      char exePath[MAX_PATH];
+      if (GetModuleFileNameA(NULL, exePath, MAX_PATH) > 0)
+      {
+        std::string exeDir = exePath;
+        const auto slash = exeDir.find_last_of("\\/");
+        if (slash != std::string::npos)
+        {
+          exeDir.resize(slash);
+          extraDirs += exeDir;
+          extraDirs += ';';
+        }
+      }
+
+      if (!extraDirs.empty())
+      {
+        // Query the current PATH with the proper (possibly large) buffer size.
+        const DWORD needed = GetEnvironmentVariableA("PATH", nullptr, 0);
+        if (needed > 0)
+        {
+          std::vector<char> pathBuf(needed);
+          const DWORD pathLen = GetEnvironmentVariableA("PATH", pathBuf.data(), needed);
+          savedPath.assign(pathBuf.data(), pathLen);
+        }
+        const std::string newPath = extraDirs + savedPath;
         SetEnvironmentVariableA("PATH", newPath.c_str());
         pathModified = true;
       }
