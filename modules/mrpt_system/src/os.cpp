@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -748,35 +749,36 @@ int executeCommand(
   {
     exit_code = -1;
 
-    HANDLE g_hChildStd_IN_Rd = NULL;
-    HANDLE g_hChildStd_IN_Wr = NULL;
-    HANDLE g_hChildStd_OUT_Rd = NULL;
-    HANDLE g_hChildStd_OUT_Wr = NULL;
-
-    HANDLE g_hInputFile = NULL;
     SECURITY_ATTRIBUTES saAttr;
-    // Set the bInheritHandle flag so pipe handles are inherited.
+    // Set the bInheritHandle flag so the handles below are inherited.
     saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
     saAttr.bInheritHandle = TRUE;
     saAttr.lpSecurityDescriptor = NULL;
-    // Create a pipe for the child process's STDOUT.
-    if (!CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0))
-      throw winerror2str("StdoutRd CreatePipe");
 
-    // Ensure the read handle to the pipe for STDOUT is not inherited.
+    // Capture the child's stdout+stderr through a temporary file instead of
+    // an anonymous pipe: pipes require careful, race-free draining while the
+    // child is still running (see git history for repeated failed attempts),
+    // whereas a file can simply be read back in full once the child has
+    // exited and the OS has flushed and closed it.
+    char tempDir[MAX_PATH];
+    char tempFile[MAX_PATH];
+    if (GetTempPathA(MAX_PATH, tempDir) == 0) throw winerror2str("GetTempPath");
+    if (GetTempFileNameA(tempDir, "mrp", 0, tempFile) == 0) throw winerror2str("GetTempFileName");
 
-    if (!SetHandleInformation(g_hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0))
-      throw winerror2str("Stdout SetHandleInformation");
+    HANDLE hChildStdOut = CreateFileA(
+        tempFile, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, &saAttr, CREATE_ALWAYS,
+        FILE_ATTRIBUTE_TEMPORARY, NULL);
+    if (hChildStdOut == INVALID_HANDLE_VALUE)
+    {
+      DeleteFileA(tempFile);
+      throw winerror2str("CreateFile (output capture)");
+    }
 
-    // Create a pipe for the child process's STDIN.
-
-    if (!CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0))
-      throw winerror2str("Stdin CreatePipe");
-
-    // Ensure the write handle to the pipe for STDIN is not inherited.
-
-    if (!SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0))
-      throw winerror2str("Stdin SetHandleInformation");
+    // Feed the child an empty stdin (the NUL device), so console-related
+    // calls on a redirected stdin (e.g. _kbhit()) behave predictably instead
+    // of operating on a pipe with no writer.
+    HANDLE hChildStdIn = CreateFileA(
+        "NUL", GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, &saAttr, OPEN_EXISTING, 0, NULL);
 
     // Create the child process:
     PROCESS_INFORMATION piProcInfo;
@@ -793,9 +795,9 @@ int executeCommand(
 
     ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
     siStartInfo.cb = sizeof(STARTUPINFO);
-    siStartInfo.hStdError = g_hChildStd_OUT_Wr;
-    siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
-    siStartInfo.hStdInput = g_hChildStd_IN_Rd;
+    siStartInfo.hStdError = hChildStdOut;
+    siStartInfo.hStdOutput = hChildStdOut;
+    siStartInfo.hStdInput = hChildStdIn;
     siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
     // If a custom working directory is requested, the child process' DLL
@@ -851,52 +853,39 @@ int executeCommand(
       }
     }
 
+    // CreateProcessA() is allowed to write into its lpCommandLine buffer, so
+    // pass a writable copy rather than command.c_str().
+    std::vector<char> cmdLine(command.begin(), command.end());
+    cmdLine.push_back('\0');
+
     // Create the child process.
     bSuccess = CreateProcessA(
         NULL,
-        (LPSTR)command.c_str(),  // command line
-        NULL,                    // process security attributes
-        NULL,                    // primary thread security attributes
-        TRUE,                    // handles are inherited
-        0,                       // creation flags
-        NULL,                    // use parent's environment
+        cmdLine.data(),  // command line
+        NULL,            // process security attributes
+        NULL,            // primary thread security attributes
+        TRUE,            // handles are inherited
+        0,               // creation flags
+        NULL,            // use parent's environment
         workingDirectory.empty() ? NULL : workingDirectory.c_str(),  // current directory
         &siStartInfo,                                                // STARTUPINFO pointer
         &piProcInfo);                                                // receives PROCESS_INFORMATION
 
     if (pathModified) SetEnvironmentVariableA("PATH", savedPath.c_str());
 
+    // Close our copies of the handles inherited by the child; we don't need
+    // them in this process anymore.
+    CloseHandle(hChildStdOut);
+    if (hChildStdIn != INVALID_HANDLE_VALUE) CloseHandle(hChildStdIn);
+
     // If an error occurs, exit the application.
-    if (!bSuccess) throw winerror2str("CreateProcess");
-
-    // Close the parent's copies of the pipe ends that belong to the child.
-    // Crucially, the parent must close its own copy of the stdout/stderr WRITE
-    // end: otherwise the blocking ReadFile() below would never observe EOF
-    // (ERROR_BROKEN_PIPE), since a write end of the pipe would still be open
-    // in this process. We also don't feed the child any input, so close the
-    // stdin ends as well (the child sees EOF on stdin).
-    CloseHandle(g_hChildStd_OUT_Wr);
-    g_hChildStd_OUT_Wr = NULL;
-    CloseHandle(g_hChildStd_IN_Rd);
-    g_hChildStd_IN_Rd = NULL;
-    CloseHandle(g_hChildStd_IN_Wr);
-    g_hChildStd_IN_Wr = NULL;
-
-    // Read from the pipe (merged stdout+stderr of the child) until EOF. This
-    // blocking read is race-free: it returns all the child's output, including
-    // any final burst flushed right before it exits, and ends with a broken
-    // pipe error once the child has closed its (only remaining) write end.
-    DWORD dwRead;
-    CHAR chBuf[4096];
-    for (;;)
+    if (!bSuccess)
     {
-      const BOOL ok = ReadFile(g_hChildStd_OUT_Rd, chBuf, sizeof(chBuf), &dwRead, NULL);
-      if (!ok || dwRead == 0) break;  // EOF (ERROR_BROKEN_PIPE) or error
-      sout.write(chBuf, dwRead);
+      DeleteFileA(tempFile);
+      throw winerror2str("CreateProcess");
     }
 
-    // The child has closed its stdout: wait for full termination and collect
-    // the exit code.
+    // Wait for full termination and collect the exit code.
     WaitForSingleObject(piProcInfo.hProcess, INFINITE);
     DWORD exitval = 0;
     if (GetExitCodeProcess(piProcInfo.hProcess, &exitval)) exit_code = exitval;
@@ -905,9 +894,13 @@ int executeCommand(
     CloseHandle(piProcInfo.hProcess);
     CloseHandle(piProcInfo.hThread);
 
-    // Close the read end of the stdout pipe (we're done reading).
-    CloseHandle(g_hChildStd_OUT_Rd);
-    g_hChildStd_OUT_Rd = NULL;
+    // The child has exited and the OS has closed (and flushed) its handle to
+    // the output file: read it back in full.
+    {
+      std::ifstream f(tempFile, std::ios::binary);
+      if (f) sout << f.rdbuf();
+    }
+    DeleteFileA(tempFile);
   }
   catch (std::string& errStr)
   {
