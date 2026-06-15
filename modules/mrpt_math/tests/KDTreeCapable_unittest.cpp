@@ -14,11 +14,14 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/math/KDTreeCapable.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
 
-#include <cmath>
 #include <nanoflann.hpp>
 #include <vector>
 
+namespace
+{
 /** Minimal 2D point cloud adapter for KDTreeCapable. */
 struct PointCloud2D : public mrpt::math::KDTreeCapable<PointCloud2D>
 {
@@ -30,7 +33,7 @@ struct PointCloud2D : public mrpt::math::KDTreeCapable<PointCloud2D>
     return dim == 0 ? mrpt::d2f(pts[idx].x) : mrpt::d2f(pts[idx].y);
   }
   template <class BBOX>
-  bool kdtree_get_bbox(BBOX&) const
+  bool kdtree_get_bbox([[maybe_unused]] BBOX& bbox) const
   {
     return false;
   }
@@ -44,16 +47,23 @@ struct PointCloud3D : public mrpt::math::KDTreeCapable<PointCloud3D>
   size_t kdtree_get_point_count() const { return pts.size(); }
   float kdtree_get_pt(size_t idx, int dim) const
   {
-    if (dim == 0) return mrpt::d2f(pts[idx].x);
-    if (dim == 1) return mrpt::d2f(pts[idx].y);
+    if (dim == 0)
+    {
+      return mrpt::d2f(pts[idx].x);
+    }
+    if (dim == 1)
+    {
+      return mrpt::d2f(pts[idx].y);
+    }
     return mrpt::d2f(pts[idx].z);
   }
   template <class BBOX>
-  bool kdtree_get_bbox(BBOX&) const
+  bool kdtree_get_bbox([[maybe_unused]] BBOX& bbox) const
   {
     return false;
   }
 };
+}  // namespace
 
 TEST(KDTreeCapable, closestPoint2D)
 {
@@ -66,12 +76,13 @@ TEST(KDTreeCapable, closestPoint2D)
       {-1, -1}
   };
 
-  float cx, cy, distSqr;
-  const size_t idx = cloud.kdTreeClosestPoint2D(0.1f, 0.05f, cx, cy, distSqr);
+  mrpt::math::TPoint2Df c;
+  float distSqr = 0;
+  const size_t idx = cloud.kdTreeClosestPoint2D(0.1f, 0.05f, c.x, c.y, distSqr);
 
   EXPECT_EQ(idx, 0u);
-  EXPECT_NEAR(cx, 0.f, 1e-5f);
-  EXPECT_NEAR(cy, 0.f, 1e-5f);
+  EXPECT_NEAR(c.x, 0.f, 1e-5f);
+  EXPECT_NEAR(c.y, 0.f, 1e-5f);
   EXPECT_LT(distSqr, 0.02f);
 }
 
@@ -84,11 +95,12 @@ TEST(KDTreeCapable, closestPoint2D_nearBoundary)
       {3, 3}
   };
 
-  float cx, cy, distSqr;
-  const size_t idx = cloud.kdTreeClosestPoint2D(2.9f, 0.1f, cx, cy, distSqr);
+  mrpt::math::TPoint2Df c;
+  float distSqr = 0;
+  const size_t idx = cloud.kdTreeClosestPoint2D(2.9f, 0.1f, c.x, c.y, distSqr);
 
   EXPECT_EQ(idx, 1u);
-  EXPECT_NEAR(cx, 3.f, 1e-4f);
+  EXPECT_NEAR(c.x, 3.f, 1e-4f);
 }
 
 TEST(KDTreeCapable, nClosestPoint2D)
@@ -101,12 +113,17 @@ TEST(KDTreeCapable, nClosestPoint2D)
       {10, 10}
   };
 
-  std::vector<float> xs, ys, dists;
+  std::vector<float> xs;
+  std::vector<float> ys;
+  std::vector<float> dists;
   const auto idxs = cloud.kdTreeNClosestPoint2D(0.f, 0.f, 3, xs, ys, dists);
 
   ASSERT_EQ(idxs.size(), 3u);
   // The 3 closest should NOT include (10,10):
-  for (size_t i = 0; i < 3; i++) EXPECT_LT(dists[i], 5.f);
+  for (size_t i = 0; i < 3; i++)
+  {
+    EXPECT_LT(dists[i], 5.f);
+  }
   // First result should be (0,0) itself:
   EXPECT_EQ(idxs[0], 0u);
 }
@@ -121,11 +138,12 @@ TEST(KDTreeCapable, closestPoint3D)
       {0, 0, 1}
   };
 
-  float ox, oy, oz, distSqr;
-  const size_t idx = cloud.kdTreeClosestPoint3D(0.1f, 0.1f, 0.8f, ox, oy, oz, distSqr);
+  mrpt::math::TPoint3Df o;
+  float distSqr = 0;
+  const size_t idx = cloud.kdTreeClosestPoint3D(0.1f, 0.1f, 0.8f, o.x, o.y, o.z, distSqr);
 
   EXPECT_EQ(idx, 3u);
-  EXPECT_NEAR(oz, 1.f, 1e-4f);
+  EXPECT_NEAR(o.z, 1.f, 1e-4f);
 }
 
 TEST(KDTreeCapable, radiusSearch2D)
@@ -145,5 +163,7 @@ TEST(KDTreeCapable, radiusSearch2D)
   EXPECT_EQ(count, 3u);
   EXPECT_EQ(results.size(), 3u);
   for (const auto& r : results)
+  {
     EXPECT_LT(r.first, 3u);  // index should be 0, 1, or 2 (not the far point)
+  }
 }

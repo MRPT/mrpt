@@ -29,6 +29,8 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
+namespace
+{
 constexpr size_t demo9_N = 9;
 constexpr std::array<float, demo9_N> demo9_xs{0, 0, 0, 1, 1, 1, 2, 2, 2};
 constexpr std::array<float, demo9_N> demo9_ys{0, 1, 2, 0, 1, 2, 0, 1, 2};
@@ -58,9 +60,9 @@ void do_test_insertPoints()
     {
       auto [x, y, z] = [&]()
       {
-        float xi, yi, zi;
-        pts.getPoint(i, xi, yi, zi);
-        return std::tuple{xi, yi, zi};
+        mrpt::math::TPoint3Df pt;
+        pts.getPoint(i, pt.x, pt.y, pt.z);
+        return std::tuple{pt.x, pt.y, pt.z};
       }();
       EXPECT_EQ(x, demo9_xs[i]);
       EXPECT_EQ(y, demo9_ys[i]);
@@ -72,15 +74,15 @@ void do_test_insertPoints()
   {
     const MAP pts1 = load_demo_9pts_map<MAP>();
 
-    MAP pts2 = pts1;
-    MAP pts3 = pts1;
+    const MAP pts2 = pts1;  // NOLINT
+    const MAP pts3 = pts1;  // NOLINT
 
     EXPECT_EQ(pts1.size(), pts2.size());
     EXPECT_EQ(pts2.size(), pts3.size());
     for (size_t i = 0; i < demo9_N; i++)
     {
-      float x2, y2, z2;
-      float x3, y3, z3;
+      float x2, y2, z2;  // NOLINT
+      float x3, y3, z3;  // NOLINT
       pts2.getPoint(i, x2, y2, z2);
       pts3.getPoint(i, x3, y3, z3);
       EXPECT_EQ(x2, x3);
@@ -105,7 +107,7 @@ void do_test_insertPoints()
 
     for (size_t i = 0; i < 2 * demo9_N; i++)
     {
-      float x, y, z;
+      float x, y, z;  // NOLINT
       pts.getPoint(i, x, y, z);
       EXPECT_EQ(x, demo9_xs[i % demo9_N]);
       EXPECT_EQ(y, demo9_ys[i % demo9_N]);
@@ -249,6 +251,8 @@ void do_tests_loadSaveStreams()
     EXPECT_FALSE(ret);
   }
 }
+
+}  // namespace
 
 TEST(CSimplePointsMapTests, insertPoints) { do_test_insertPoints<CSimplePointsMap>(); }
 
@@ -512,8 +516,8 @@ TEST(CSimplePointsMapTests, nn_single_search_2D)
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
 
   TPoint2Df result;
-  float distSqr;
-  uint64_t resultIdx;
+  float distSqr = 0;
+  uint64_t resultIdx = 0;
   const bool found = pts.nn_single_search({0.1f, 0.1f}, result, distSqr, resultIdx);
 
   ASSERT_TRUE(found);
@@ -527,8 +531,8 @@ TEST(CSimplePointsMapTests, nn_single_search_3D)
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
 
   TPoint3Df result;
-  float distSqr;
-  uint64_t resultIdx;
+  float distSqr = 0;
+  uint64_t resultIdx = 0;
   const bool found = pts.nn_single_search({2.1f, 2.1f, 2.1f}, result, distSqr, resultIdx);
 
   ASSERT_TRUE(found);
@@ -571,5 +575,7 @@ TEST(CSimplePointsMapTests, nn_radius_search_3D)
 
   ASSERT_EQ(results.size(), 1u);
   EXPECT_EQ(idxs[0], 0u);
+  ASSERT_EQ(idxs.size(), 1u);
+  ASSERT_EQ(dists.size(), 1u);
   EXPECT_FLOAT_EQ(dists[0], 0.0f);
 }
