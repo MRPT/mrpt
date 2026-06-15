@@ -683,7 +683,10 @@ std::string find_mrpt_shared_dir()
 }  // end of find_mrpt_shared_dir
 
 int executeCommand(
-    const std::string& command, std::string* output /*=nullptr*/, const std::string& mode /*="r"*/)
+    const std::string& command,
+    std::string* output /*=nullptr*/,
+    const std::string& mode /*="r"*/,
+    const std::string& workingDirectory /*=std::string()*/)
 {
   using namespace std;
 
@@ -695,8 +698,11 @@ int executeCommand(
   // Run Popen
   char buff[512];
 
+  const std::string actualCommand =
+      workingDirectory.empty() ? command : ("cd \"" + workingDirectory + "\" && " + command);
+
   // Test output
-  FILE* in = popen(command.c_str(), mode.c_str());
+  FILE* in = popen(actualCommand.c_str(), mode.c_str());
   if (!in)
   {
     sout << "Popen Execution failed!"
@@ -784,9 +790,9 @@ int executeCommand(
         TRUE,                    // handles are inherited
         0,                       // creation flags
         NULL,                    // use parent's environment
-        NULL,                    // use parent's current directory
-        &siStartInfo,            // STARTUPINFO pointer
-        &piProcInfo);            // receives PROCESS_INFORMATION
+        workingDirectory.empty() ? NULL : workingDirectory.c_str(),  // current directory
+        &siStartInfo,                                                // STARTUPINFO pointer
+        &piProcInfo);                                                // receives PROCESS_INFORMATION
 
     // If an error occurs, exit the application.
     if (!bSuccess) throw winerror2str("CreateProcess");
