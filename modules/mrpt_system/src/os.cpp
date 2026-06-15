@@ -892,6 +892,19 @@ int executeCommand(
         {
           if (exitval != STILL_ACTIVE)
           {
+            // The child may have written its final burst of output (e.g. a
+            // flush on exit) and terminated between the PeekNamedPipe() above
+            // and this point. Drain any output still buffered in the pipe
+            // before leaving, otherwise it would be silently lost.
+            for (;;)
+            {
+              DWORD dwRemaining = 0;
+              PeekNamedPipe(g_hChildStd_OUT_Rd, NULL, NULL, NULL, &dwRemaining, NULL);
+              if (!dwRemaining) break;
+              if (!ReadFile(g_hChildStd_OUT_Rd, chBuf, sizeof(chBuf), &dwRead, NULL) || dwRead == 0)
+                break;
+              sout.write(chBuf, dwRead);
+            }
             exit_code = exitval;
             break;
           }

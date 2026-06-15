@@ -40,7 +40,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
     string imgFileExtension;
     string outDir;
 
-    std::string m_obsFmtString = "${type}_${label}_%.06%f";
+    std::string m_obsFmtString = "${type}_${label}_%.06f";
 
    public:
     size_t entries_converted;

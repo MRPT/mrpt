@@ -92,7 +92,7 @@ std::string val_output_file;
 std::string val_plugins;
 std::string val_outdir = ".";
 std::string val_image_format = "png";
-std::string val_externals_filename_fmt = "${type}_${label}_%.06%f";
+std::string val_externals_filename_fmt = "${type}_${label}_%.06f";
 bool val_txt_externals = false;
 std::string val_img_size;
 bool val_rectify_centers = false;
@@ -134,7 +134,7 @@ void RawlogEditApp::run(int argc, const char** argv)
   cmd.add_option(
       "--externals-filename-format", val_externals_filename_fmt,
       "Format string for the command --rename-externals."
-      "(Default: \"${type}_${label}_%.06%f\"). Refer to docs for "
+      "(Default: \"${type}_${label}_%.06f\"). Refer to docs for "
       "mrpt::obs::format_externals_filename().");
   cmd.add_flag(
       "--txt-externals", val_txt_externals,
