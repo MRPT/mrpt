@@ -698,8 +698,25 @@ int executeCommand(
   // Run Popen
   char buff[512];
 
+  const auto shellQuote = [](const std::string& s)
+  {
+    std::string out;
+    out.reserve(s.size() + 2);
+    out.push_back('\'');
+    for (const char c : s)
+    {
+      if (c == '\'')
+        out += "'\\''";
+      else
+        out.push_back(c);
+    }
+    out.push_back('\'');
+    return out;
+  };
+
   const std::string actualCommand =
-      workingDirectory.empty() ? command : ("cd \"" + workingDirectory + "\" && " + command);
+      workingDirectory.empty() ? command
+                               : ("cd -- " + shellQuote(workingDirectory) + " && " + command);
 
   // Test output
   FILE* in = popen(actualCommand.c_str(), mode.c_str());
@@ -781,6 +798,27 @@ int executeCommand(
     siStartInfo.hStdInput = g_hChildStd_IN_Rd;
     siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
+    // If a custom working directory is requested, the child process' DLL
+    // search may no longer find the directory where the calling process'
+    // shared libraries live (which is normally reachable via the current
+    // directory). Work around this by temporarily prepending the calling
+    // process' current directory to PATH, so the child inherits it.
+    std::string savedPath;
+    bool pathModified = false;
+    if (!workingDirectory.empty())
+    {
+      char curDir[MAX_PATH];
+      if (GetCurrentDirectoryA(MAX_PATH, curDir))
+      {
+        char pathBuf[32768];
+        const DWORD pathLen = GetEnvironmentVariableA("PATH", pathBuf, sizeof(pathBuf));
+        savedPath = (pathLen > 0) ? std::string(pathBuf, pathLen) : std::string();
+        const std::string newPath = std::string(curDir) + ";" + savedPath;
+        SetEnvironmentVariableA("PATH", newPath.c_str());
+        pathModified = true;
+      }
+    }
+
     // Create the child process.
     bSuccess = CreateProcessA(
         NULL,
@@ -793,6 +831,8 @@ int executeCommand(
         workingDirectory.empty() ? NULL : workingDirectory.c_str(),  // current directory
         &siStartInfo,                                                // STARTUPINFO pointer
         &piProcInfo);                                                // receives PROCESS_INFORMATION
+
+    if (pathModified) SetEnvironmentVariableA("PATH", savedPath.c_str());
 
     // If an error occurs, exit the application.
     if (!bSuccess) throw winerror2str("CreateProcess");
