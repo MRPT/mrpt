@@ -136,6 +136,7 @@ class RawlogEditCLITest : public ::testing::Test
 
     CmdResult r;
     r.exitCode = mrpt::system::executeCommand(cmd, &r.output, "r", m_tempDir);
+    printf("----- DEBUG OUTPUT: \n%s\n-----\n", r.output.c_str());
     return r;
   }
 
@@ -188,6 +189,9 @@ TEST_F(RawlogEditCLITest, Info_TestRtkPath)
 {
   const auto in = datasetCopy("test_rtk_path.rawlog");
   const auto r = run({"--info", "-i", in, "-q"});
+  std::cerr << "[DBG Info_TestRtkPath] exitCode=" << r.exitCode << " outputLen=" << r.output.size()
+            << "\n=== output begin ===\n"
+            << r.output << "\n=== output end ===\n";
   EXPECT_EQ(r.exitCode, 0);
   EXPECT_NE(r.output.find("Overall number of objects"), std::string::npos);
   EXPECT_NE(r.output.find("GPS_RTK_FRONT_L"), std::string::npos);
