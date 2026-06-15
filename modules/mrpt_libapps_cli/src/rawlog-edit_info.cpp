@@ -166,4 +166,10 @@ DECLARE_OP_FUNCTION(op_info)
                      "%15s /%7u /%7.03f /%6.03f  (%s)\n", label.c_str(),
                      static_cast<unsigned>(ips.occurrences), Hz, dur, ips.className.c_str());
   }
+
+  // Ensure all output reaches the OS-level stdout handle before the
+  // process exits (relying on the implicit flush at static destruction
+  // time is unreliable when stdout is redirected to a file, e.g. on
+  // Windows).
+  std::cout.flush();
 }
