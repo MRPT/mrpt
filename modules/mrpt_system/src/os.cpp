@@ -869,52 +869,45 @@ int executeCommand(
     // If an error occurs, exit the application.
     if (!bSuccess) throw winerror2str("CreateProcess");
 
-    // Read from pipe that is the standard output for child process.
+    // Close the parent's copies of the pipe ends that belong to the child.
+    // Crucially, the parent must close its own copy of the stdout/stderr WRITE
+    // end: otherwise the blocking ReadFile() below would never observe EOF
+    // (ERROR_BROKEN_PIPE), since a write end of the pipe would still be open
+    // in this process. We also don't feed the child any input, so close the
+    // stdin ends as well (the child sees EOF on stdin).
+    CloseHandle(g_hChildStd_OUT_Wr);
+    g_hChildStd_OUT_Wr = NULL;
+    CloseHandle(g_hChildStd_IN_Rd);
+    g_hChildStd_IN_Rd = NULL;
+    CloseHandle(g_hChildStd_IN_Wr);
+    g_hChildStd_IN_Wr = NULL;
+
+    // Read from the pipe (merged stdout+stderr of the child) until EOF. This
+    // blocking read is race-free: it returns all the child's output, including
+    // any final burst flushed right before it exits, and ends with a broken
+    // pipe error once the child has closed its (only remaining) write end.
     DWORD dwRead;
     CHAR chBuf[4096];
-    bSuccess = FALSE;
-    DWORD exitval = 0;
-    exit_code = 0;
     for (;;)
     {
-      DWORD dwAvailable = 0;
-      PeekNamedPipe(g_hChildStd_OUT_Rd, NULL, NULL, NULL, &dwAvailable, NULL);
-      if (dwAvailable)
-      {
-        bSuccess = ReadFile(g_hChildStd_OUT_Rd, chBuf, sizeof(chBuf), &dwRead, NULL);
-        if (!bSuccess || dwRead == 0) break;
-        sout.write(chBuf, dwRead);
-      }
-      else
-      {
-        // process ended?
-        if (GetExitCodeProcess(piProcInfo.hProcess, &exitval))
-        {
-          if (exitval != STILL_ACTIVE)
-          {
-            // The child may have written its final burst of output (e.g. a
-            // flush on exit) and terminated between the PeekNamedPipe() above
-            // and this point. Drain any output still buffered in the pipe
-            // before leaving, otherwise it would be silently lost.
-            for (;;)
-            {
-              DWORD dwRemaining = 0;
-              PeekNamedPipe(g_hChildStd_OUT_Rd, NULL, NULL, NULL, &dwRemaining, NULL);
-              if (!dwRemaining) break;
-              if (!ReadFile(g_hChildStd_OUT_Rd, chBuf, sizeof(chBuf), &dwRead, NULL) || dwRead == 0)
-                break;
-              sout.write(chBuf, dwRead);
-            }
-            exit_code = exitval;
-            break;
-          }
-        }
-      }
+      const BOOL ok = ReadFile(g_hChildStd_OUT_Rd, chBuf, sizeof(chBuf), &dwRead, NULL);
+      if (!ok || dwRead == 0) break;  // EOF (ERROR_BROKEN_PIPE) or error
+      sout.write(chBuf, dwRead);
     }
+
+    // The child has closed its stdout: wait for full termination and collect
+    // the exit code.
+    WaitForSingleObject(piProcInfo.hProcess, INFINITE);
+    DWORD exitval = 0;
+    if (GetExitCodeProcess(piProcInfo.hProcess, &exitval)) exit_code = exitval;
 
     // Close handles to the child process and its primary thread.
     CloseHandle(piProcInfo.hProcess);
     CloseHandle(piProcInfo.hThread);
+
+    // Close the read end of the stdout pipe (we're done reading).
+    CloseHandle(g_hChildStd_OUT_Rd);
+    g_hChildStd_OUT_Rd = NULL;
   }
   catch (std::string& errStr)
   {
