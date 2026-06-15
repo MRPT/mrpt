@@ -2,6 +2,13 @@
 Changelog for package mrpt_libapps_cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix rawlog-edit CLI unittest failure on Windows CI (`#1370 <https://github.com/MRPT/mrpt/issues/1370>`_)
+* Merge pull request `#1369 <https://github.com/MRPT/mrpt/issues/1369>`_ from MRPT/test/rawlog-edit-cli-coverage
+  Add rawlog-edit CLI test coverage and fix related bugs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.2 (2026-06-11)
 ------------------
 

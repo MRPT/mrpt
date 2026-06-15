@@ -2,6 +2,18 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix rawlog-edit CLI unittest failure on Windows CI (`#1370 <https://github.com/MRPT/mrpt/issues/1370>`_)
+* Update nanoflann to 1.10.1 and add KD-tree query tests for CPointsMap
+* Merge pull request `#1366 <https://github.com/MRPT/mrpt/issues/1366>`_ from MRPT/feature/occgrid2d-test-coverage-completion
+  test(mrpt_maps): complete COccupancyGridMap2D unit test coverage
+* test(mrpt_maps): add COccupancyGridMap2D coverage for subSample, simulate, likelihood, matching
+  Adds a subSampleHalvesResolution unit test and three new test files covering
+  laser/sonar scan simulation, all TLikelihoodMethod likelihood computations,
+  and determineMatching2D.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.2 (2026-06-11)
 ------------------
 

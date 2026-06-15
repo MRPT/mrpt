@@ -2,6 +2,12 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#1368 <https://github.com/MRPT/mrpt/issues/1368>`_ from wentasah/export-opengl
+  mrpt_opengl: Export opengl dependency
+* Contributors: Jose Luis Blanco-Claraco, Michal Sojka
+
 3.0.2 (2026-06-11)
 ------------------
 

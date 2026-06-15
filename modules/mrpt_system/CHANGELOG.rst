@@ -2,6 +2,12 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix rawlog-edit CLI unittest failure on Windows CI (`#1370 <https://github.com/MRPT/mrpt/issues/1370>`_)
+* Increase unit test coverage for mrpt_math, mrpt_io, mrpt_system (`#1365 <https://github.com/MRPT/mrpt/issues/1365>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.2 (2026-06-11)
 ------------------
 

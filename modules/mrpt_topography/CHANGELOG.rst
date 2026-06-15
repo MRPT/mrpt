@@ -2,6 +2,9 @@
 Changelog for package mrpt_topography
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.0.2 (2026-06-11)
 ------------------
 
