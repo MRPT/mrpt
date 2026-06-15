@@ -21,6 +21,7 @@
 #include <mrpt/system/os.h>
 #include <test_mrpt_common.h>
 
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -118,17 +119,31 @@ class RawlogEditCLITest : public ::testing::Test
   // Runs the binary with the current working directory set to m_tempDir,
   // since some operations (--export-gps-all, --externalize, ...) write
   // additional output files relative to the current directory.
+  //
+  // mrpt::system::executeCommand() runs the command line directly
+  // (via CreateProcess() on Windows, popen() on Unix), without any shell
+  // `cd` step, so the process working directory is changed here instead.
+  // On Windows, stderr is already merged into the captured stdout pipe by
+  // executeCommand(), so "2>&1" (which would otherwise be passed as a
+  // literal argument to the program) is only added on Unix.
   [[nodiscard]] CmdResult run(const std::vector<std::string>& args) const
   {
-    std::string cmd = "cd \"" + m_tempDir + "\" && \"" + m_bin + "\"";
+    const auto prevDir = std::filesystem::current_path();
+    std::filesystem::current_path(m_tempDir);
+
+    std::string cmd = "\"" + m_bin + "\"";
     for (const auto& a : args)
     {
       cmd += " \"" + a + "\"";
     }
+#ifndef _WIN32
     cmd += " 2>&1";
+#endif
 
     CmdResult r;
     r.exitCode = mrpt::system::executeCommand(cmd, &r.output);
+
+    std::filesystem::current_path(prevDir);
     return r;
   }
 
