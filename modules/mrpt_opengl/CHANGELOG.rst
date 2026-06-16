@@ -2,8 +2,8 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.4 (2026-06-17)
+------------------
 * fix: conservative use depend to ensure opengl binary libs are added downstream of mrpt_opengl
 * Merge pull request `#1371 <https://github.com/MRPT/mrpt/issues/1371>`_ from wentasah/export-opengl
   mrpt_opengl: Add opengl build_depend back

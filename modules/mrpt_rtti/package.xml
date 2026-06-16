@@ -5,7 +5,7 @@
 -->
 <package format="3">
   <name>mrpt_rtti</name>
-  <version>3.0.3</version>
+  <version>3.0.4</version>
   <description>The MRPT C++ library mrpt_rtti</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
