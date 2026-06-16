@@ -17,8 +17,8 @@
   <depend>mrpt_img</depend>
 
   <build_depend>eigen</build_depend>
-  <build_depend>opengl</build_depend>
-  <build_export_depend>opengl</build_export_depend>
+
+  <depend>opengl</depend> <!-- Use the all-3 depend not to rely on debian sh-libs to actually add opengl libs binaries downstream -->
 
   <export>
     <build_type>cmake</build_type>
