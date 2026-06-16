@@ -2,6 +2,19 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix: conservative use depend to ensure opengl binary libs are added downstream of mrpt_opengl
+* Merge pull request `#1371 <https://github.com/MRPT/mrpt/issues/1371>`_ from wentasah/export-opengl
+  mrpt_opengl: Add opengl build_depend back
+* mrpt_opengl: Add opengl build_depend back
+  In a recent commit, build_depend was replaced with
+  build_export_depend. But it seems that both build_depend and
+  build_export_depend need to be specified. Without build_depend, ROS
+  build farm complains about OpenGL not being available:
+  Could NOT find OpenGL (missing: OPENGL_opengl_LIBRARY OPENGL_glx_LIBRARY OPENGL_INCLUDE_DIR)
+* Contributors: Jose Luis Blanco-Claraco, Michal Sojka
+
 3.0.3 (2026-06-15)
 ------------------
 * Merge pull request `#1368 <https://github.com/MRPT/mrpt/issues/1368>`_ from wentasah/export-opengl

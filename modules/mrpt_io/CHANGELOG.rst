@@ -2,6 +2,9 @@
 Changelog for package mrpt_io
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.0.3 (2026-06-15)
 ------------------
 * Increase unit test coverage for mrpt_math, mrpt_io, mrpt_system (`#1365 <https://github.com/MRPT/mrpt/issues/1365>`_)

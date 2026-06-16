@@ -2,6 +2,9 @@
 Changelog for package mrpt_expr
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.0.3 (2026-06-15)
 ------------------
 * Merge pull request `#1364 <https://github.com/MRPT/mrpt/issues/1364>`_ from MRPT/fix/rdev-test-failures-3.0.3
