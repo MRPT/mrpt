@@ -169,7 +169,7 @@ bool CFFMPEG_InputStream::openURL(
 #endif
     if (codecType == AVMEDIA_TYPE_VIDEO)
     {
-      ctx->videoStream = (int)i;
+      ctx->videoStream = static_cast<int>(i);
       break;
     }
   }

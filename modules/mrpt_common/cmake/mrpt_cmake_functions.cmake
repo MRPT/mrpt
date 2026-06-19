@@ -179,7 +179,8 @@ endfunction()
 function(mrpt_set_target_cxx17 TARGETNAME)
   target_compile_features(${TARGETNAME} PUBLIC cxx_std_17)
   if (MSVC)
-    target_compile_options(${TARGETNAME} PUBLIC /std:c++17)
+    # Scoped to CXX sources only: a target may also contain plain C sources
+    target_compile_options(${TARGETNAME} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:/std:c++17>)
   endif()
 endfunction()
 
