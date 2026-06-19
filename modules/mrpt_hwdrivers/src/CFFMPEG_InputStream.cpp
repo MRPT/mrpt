@@ -284,12 +284,15 @@ void CFFMPEG_InputStream::close()
   // Close the codec
   if (ctx->pCodecCtx)
   {
-#if LIBAVFORMAT_VERSION_MAJOR >= 57
+#if LIBAVCODEC_VERSION_MAJOR >= 55
     // pCodecCtx was allocated with avcodec_alloc_context3(); free (and close)
     // it. avcodec_close() was deprecated and removed in modern FFmpeg.
     avcodec_free_context(&ctx->pCodecCtx);
 #else
+    // avcodec_close() only releases internal codec data, not the
+    // AVCodecContext itself.
     avcodec_close(ctx->pCodecCtx);
+    av_free(ctx->pCodecCtx);
 #endif
     ctx->pCodecCtx = nullptr;
   }
