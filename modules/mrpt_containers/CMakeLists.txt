@@ -22,6 +22,7 @@ include(./cmake/find_libfyaml.cmake REQUIRED)    # Defines system or embedded ve
 set(LIB_SOURCES
   src/ts_hash_map.cpp
   src/yaml.cpp
+  src/yaml_fy_shim.c
   src/CDynamicGrid.cpp
 )
 
