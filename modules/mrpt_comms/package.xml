@@ -24,6 +24,9 @@
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
 
+  <!-- Optional dependency, auto-detected by CMake script at build time -->
+  <build_depend>libftdi1-dev</build_depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>

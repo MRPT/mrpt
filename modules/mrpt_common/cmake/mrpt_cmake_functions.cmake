@@ -867,15 +867,21 @@ endfunction()
 # Defined PYTHON_INSTALL_DIR() following ROS & Debian conventions depending on the detected build environment
 # From: https://github.com/ament/ament_cmake/blob/rolling/ament_cmake_python/ament_cmake_python-extras.cmake
 macro(mrpt_ament_cmake_python_get_python_install_dir)
-  # Required for colcon to detect the python module and extend the PYTHONPATH env var:
-  set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages/")  # this is prefixed with "/opt/ros/xxx/"
+  if (DEFINED MRPT_PYTHON_INSTALL_DIR AND NOT "${MRPT_PYTHON_INSTALL_DIR}" STREQUAL "")
+    # Explicit override (e.g. Debian packaging passes
+    # -DMRPT_PYTHON_INSTALL_DIR=lib/python3/dist-packages):
+    set(_output "${MRPT_PYTHON_INSTALL_DIR}")
+  else()
+    # Default (colcon/ROS): required for colcon to detect the python module and
+    # extend the PYTHONPATH env var. This is prefixed with "/opt/ros/xxx/".
+    set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages/")
+  endif()
 
   set(PYTHON_INSTALL_DIR
     "${_output}"
     CACHE INTERNAL
     "The directory for Python library installation. This needs to be in PYTHONPATH when 'setup.py install' is called.")
   unset(_output)
-#  endif()
 endmacro()
 
 # Function to generalize Python module creation
