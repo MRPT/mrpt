@@ -60,8 +60,9 @@ void generatePointClouds(CSimplePointsMap& M1, CSimplePointsMap& M2)
     const double phi = std::acos(rng.drawUniform(-1.0, 1.0));
     const double r = 0.5;
     M1.insertPoint(
-        r * std::sin(phi) * std::cos(theta), r * std::sin(phi) * std::sin(theta),
-        r * std::cos(phi));
+        static_cast<float>(r * std::sin(phi) * std::cos(theta)),
+        static_cast<float>(r * std::sin(phi) * std::sin(theta)),
+        static_cast<float>(r * std::cos(phi)));
   }
 
   // Disk 1: radius 2, pose (0,0,0, 0, 5deg, 5deg)
@@ -73,7 +74,8 @@ void generatePointClouds(CSimplePointsMap& M1, CSimplePointsMap& M2)
     mrpt::math::TPoint3D local(r * std::cos(ang), r * std::sin(ang), 0);
     mrpt::math::TPoint3D world;
     disk1_pose.composePoint(local, world);
-    M1.insertPoint(world.x, world.y, world.z);
+    M1.insertPoint(
+        static_cast<float>(world.x), static_cast<float>(world.y), static_cast<float>(world.z));
   }
 
   // Disk 2: radius 2, pose (0, 0, 0, 30deg, -20deg, -2deg)
@@ -85,7 +87,8 @@ void generatePointClouds(CSimplePointsMap& M1, CSimplePointsMap& M2)
     mrpt::math::TPoint3D local(r * std::cos(ang), r * std::sin(ang), 0);
     mrpt::math::TPoint3D world;
     disk2_pose.composePoint(local, world);
-    M1.insertPoint(world.x, world.y, world.z);
+    M1.insertPoint(
+        static_cast<float>(world.x), static_cast<float>(world.y), static_cast<float>(world.z));
   }
 
   // M2 is M1 with a known pose error applied

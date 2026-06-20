@@ -4,7 +4,7 @@
 # Replace this path with your local build of doxyrest:
 export PYTHONPATH := $(HOME)/code/doxyrest_b/doxyrest/sphinx/:$(PYTHONPATH)
 export PATH := $(HOME)/code/doxyrest_b/build/doxyrest/bin/Release:$(PATH)
-export MRPT_VERSION_STR := $(shell head -n1 ../version_prefix.txt)
+export MRPT_VERSION_STR := $(shell sed -n 's:.*<version>\([0-9.]*\)</version>.*:\1:p' ../modules/mrpt_common/package.xml | head -n1)
 export MRPT_LIST_INCLUDE_DIRS := $(shell for f in ../modules/*/include; do printf "$$(realpath $$f) "; done)
 export MRPT_DOX_INPUT_DIRS := $(shell for f in ../modules/*; do printf "$$(realpath $$f) "; done)
 

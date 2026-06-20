@@ -21,7 +21,7 @@ INCLUDE_DIRS=(modules apps mrpt_examples_cpp)
 EXCLUDE_PATTERNS=(3rdparty imgui)
 
 # Verify we are running from the repo root
-if [[ ! -f version_prefix.txt ]]; then
+if [[ ! -f colcon_defaults.yaml ]]; then
   echo "ERROR: Run this script from the MRPT repository root." >&2
   exit 1
 fi

@@ -22,6 +22,7 @@ include(./cmake/find_libfyaml.cmake REQUIRED)    # Defines system or embedded ve
 set(LIB_SOURCES
   src/ts_hash_map.cpp
   src/yaml.cpp
+  src/yaml_fy_shim.c
   src/CDynamicGrid.cpp
 )
 
@@ -80,6 +81,15 @@ mrpt_add_library(
     mrpt_core
     mrpt_typemeta
 )
+
+# MSVC's <stdatomic.h> (pulled in transitively via libfyaml.h) requires C11,
+# but MSVC defaults .c files to C89/C17-without-atomics unless asked explicitly,
+# and even with /std:c17 the atomic support itself must be opted into separately
+# (mirrors the flags libfyaml's own CMakeLists.txt uses for MSVC).
+if (MSVC)
+	set_source_files_properties(src/yaml_fy_shim.c PROPERTIES
+		COMPILE_OPTIONS "/std:c17;/experimental:c11atomics")
+endif()
 
 if (TARGET mrpt_libfyaml)
 		target_link_libraries(${PROJECT_NAME} PRIVATE mrpt_libfyaml)

@@ -138,7 +138,7 @@ class COpenNI2Generic::CDevice
   template <class NI_PIXEL, class MRPT_DATA>
   void copyRow(const char* src, MRPT_DATA& rgb, int w, const int y)
   {
-    const auto* s = (const NI_PIXEL*)src;
+    const auto* s = reinterpret_cast<const NI_PIXEL*>(src);
     for (int xc = 0; xc < w; ++xc, ++s)
     {
       int x = xc;
@@ -153,7 +153,7 @@ class COpenNI2Generic::CDevice
   template <class NI_PIXEL, class MRPT_DATA>
   void copyFrame(openni::VideoFrameRef& frame, MRPT_DATA& dst)
   {
-    const char* data = (const char*)frame.getData();
+    const char* data = reinterpret_cast<const char*>(frame.getData());
     const int stride = frame.getStrideInBytes();
     const int width = frame.getWidth();
     const int height = frame.getHeight();

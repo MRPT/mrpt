@@ -159,7 +159,7 @@ int COpenNI2Generic::getConnectedDevices()
 
   const size_t numDevices = oni2InfoArray.getSize();
   showLog(mrpt::format("[%s]\n", __FUNCTION__));
-  showLog(mrpt::format(" Get device list. %d devices connected.\n", (int)numDevices));
+  showLog(mrpt::format(" Get device list. %d devices connected.\n", static_cast<int>(numDevices)));
 
   // Search new devices.
   std::set<int> newDevices;
@@ -170,7 +170,7 @@ int COpenNI2Generic::getConnectedDevices()
     showLog(oni2DevInfoStr(info, 3) + "\n");
 
     bool isExist = false;
-    for (unsigned int j = 0, j_end = vDevices.size(); j < j_end && isExist == false; ++j)
+    for (size_t j = 0, j_end = vDevices.size(); j < j_end && isExist == false; ++j)
     {
       if (cmpONI2Device(info, vDevices[j]->getInfo()))
       {
@@ -187,7 +187,8 @@ int COpenNI2Generic::getConnectedDevices()
   {
     const openni::DeviceInfo& info = oni2InfoArray[newDevice];
     CDevice::Ptr device = CDevice::create(
-        info, (openni::PixelFormat)m_rgb_format, (openni::PixelFormat)m_depth_format, m_verbose);
+        info, static_cast<openni::PixelFormat>(m_rgb_format),
+        static_cast<openni::PixelFormat>(m_depth_format), m_verbose);
     vDevices.push_back(device);
     {
       unsigned int sn;
@@ -227,7 +228,7 @@ bool COpenNI2Generic::isOpen([[maybe_unused]] const unsigned sensor_id) const
 {
 #if MRPT_HAS_OPENNI2
   std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
-  if ((int)sensor_id >= getNumDevices())
+  if (static_cast<int>(sensor_id) >= getNumDevices())
   {
     return false;
   }
@@ -246,7 +247,7 @@ void COpenNI2Generic::open([[maybe_unused]] unsigned sensor_id)
   {
     THROW_EXCEPTION("No OpenNI2 devices found.");
   }
-  if ((int)sensor_id >= getNumDevices())
+  if (static_cast<int>(sensor_id) >= getNumDevices())
   {
     THROW_EXCEPTION("Sensor index is higher than the number of connected devices.");
   }
@@ -262,7 +263,7 @@ void COpenNI2Generic::open([[maybe_unused]] unsigned sensor_id)
     printf(
         "[COpenNI2Generic] DBG: [%s] about to call vDevices[%d]->open()\n", __FUNCTION__,
         sensor_id);
-  vDevices[sensor_id]->open(m_width, m_height, m_fps);
+  vDevices[sensor_id]->open(m_width, m_height, static_cast<int>(m_fps));
   showLog(vDevices[sensor_id]->getLog() + "\n");
   showLog(mrpt::format(" Device [%d] ", sensor_id));
   if (vDevices[sensor_id]->isOpen())
@@ -316,8 +317,8 @@ unsigned int COpenNI2Generic::openDevicesBySerialNum(
       printf(
           "[COpenNI2Generic] DBG: [%s] about to call "
           "vDevices[%d]->open(%d,%d,%d)\n",
-          __FUNCTION__, sensor_id, width, height, (int)m_fps);
-    if (vDevices[sensor_id]->open(width, height, m_fps) == false)
+          __FUNCTION__, sensor_id, width, height, static_cast<int>(m_fps));
+    if (vDevices[sensor_id]->open(width, height, static_cast<int>(m_fps)) == false)
     {
       showLog(vDevices[sensor_id]->getLog());
       continue;
@@ -353,7 +354,7 @@ bool COpenNI2Generic::getDeviceIDFromSerialNum(
     }
     if (sn == SerialRequired)
     {
-      sensor_id = (int)i;
+      sensor_id = static_cast<int>(i);
       return true;
     }
   }
@@ -372,7 +373,7 @@ void COpenNI2Generic::close([[maybe_unused]] unsigned sensor_id)
   {
     THROW_EXCEPTION("No OpenNI2 devices found.");
   }
-  if ((int)sensor_id >= getNumDevices())
+  if (static_cast<int>(sensor_id) >= getNumDevices())
   {
     THROW_EXCEPTION("Sensor index is higher than the number of connected devices.");
   }
@@ -404,7 +405,7 @@ void COpenNI2Generic::getNextFrameRGB(
   {
     THROW_EXCEPTION("No OpenNI2 devices found.");
   }
-  if ((int)sensor_id >= getNumDevices())
+  if (static_cast<int>(sensor_id) >= getNumDevices())
   {
     THROW_EXCEPTION("Sensor index is higher than the number of connected devices.");
   }
@@ -433,7 +434,7 @@ void COpenNI2Generic::getNextFrameD(
   {
     THROW_EXCEPTION("No OpenNI2 devices found.");
   }
-  if ((int)sensor_id >= getNumDevices())
+  if (static_cast<int>(sensor_id) >= getNumDevices())
   {
     THROW_EXCEPTION("Sensor index is higher than the number of connected devices.");
   }
@@ -469,7 +470,7 @@ void COpenNI2Generic::getNextFrameRGBD(
   {
     THROW_EXCEPTION("No OpenNI2 devices found.");
   }
-  if ((int)sensor_id >= getNumDevices())
+  if (static_cast<int>(sensor_id) >= getNumDevices())
   {
     THROW_EXCEPTION("Sensor index is higher than the number of connected devices.");
   }
@@ -869,14 +870,15 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
   resize(obs, width, height);
 
   const char* data[STREAM_TYPE_SIZE] = {
-      (const char*)frame[COLOR_STREAM].getData(), (const char*)frame[DEPTH_STREAM].getData()};
+      reinterpret_cast<const char*>(frame[COLOR_STREAM].getData()),
+      reinterpret_cast<const char*>(frame[DEPTH_STREAM].getData())};
   const int step[STREAM_TYPE_SIZE] = {
       frame[COLOR_STREAM].getStrideInBytes(), frame[DEPTH_STREAM].getStrideInBytes()};
 
   for (int yc = 0; yc < height; ++yc)
   {
-    const auto* pRgb = (const openni::RGB888Pixel*)data[COLOR_STREAM];
-    const auto* pDepth = (const openni::DepthPixel*)data[DEPTH_STREAM];
+    const auto* pRgb = reinterpret_cast<const openni::RGB888Pixel*>(data[COLOR_STREAM]);
+    const auto* pDepth = reinterpret_cast<const openni::DepthPixel*>(data[DEPTH_STREAM]);
     for (int xc = 0; xc < width; ++xc, ++pDepth, ++pRgb)
     {
       int x = xc;
@@ -1053,13 +1055,13 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
     printf(
         "      [COpenNI2Generic::CDevice::CStream::open] opening sensor "
         "stream with m_type == %d\n",
-        (int)m_type);
+        static_cast<int>(m_type));
   openni::Status rc = openni::STATUS_OK;
   //	if(m_type == openni::SENSOR_COLOR) {
   //		m_type = openni::SENSOR_IR;
   //		m_strName="openni::SENSOR_IR";	// SEB added
   //		if (m_verbose) printf("DBG: changing type to SENSOR_IR
-  //(%d)\n",(int)m_type);
+  //(%d)\n",static_cast<int>(m_type));
   //	}  // added whole if stmt
   rc = m_stream.create(m_device, m_type);
   if (rc != openni::STATUS_OK)
@@ -1074,7 +1076,7 @@ bool COpenNI2Generic::CDevice::CStream::open(int w, int h, int fps)
       m_strName = "openni::SENSOR_IR";  // SEB added
       if (m_verbose)
       {
-        printf("DBG: changing type to SENSOR_IR (%d)\n", (int)m_type);
+        printf("DBG: changing type to SENSOR_IR (%d)\n", static_cast<int>(m_type));
       }
       rc = m_stream.create(m_device, m_type);
     }  // SEB added whole if stmt

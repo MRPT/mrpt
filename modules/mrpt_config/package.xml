@@ -21,6 +21,10 @@
 
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
+  <!-- System libsimpleini is used together with ICU (for the SI_CONVERT_ICU
+       Unicode conversion, avoiding the bundled copyrighted ConvertUTF.h). -->
+  <build_depend>libsimpleini-dev</build_depend>
+  <build_depend>libicu-dev</build_depend>
 
   <export>
     <build_type>cmake</build_type>
