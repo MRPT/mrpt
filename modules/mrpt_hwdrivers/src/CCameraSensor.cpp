@@ -1,0 +1,1243 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
+#include <mrpt/hwdrivers/CCameraSensor.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/system/thread_name.h>
+
+#include <memory>
+#include <thread>
+
+using namespace mrpt;
+using namespace mrpt::hwdrivers;
+using namespace mrpt::obs;
+using namespace mrpt::config;
+using namespace mrpt::system;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
+using namespace mrpt::img;
+using namespace std;
+using namespace std::literals;
+
+IMPLEMENTS_GENERIC_SENSOR(CCameraSensor, mrpt::hwdrivers)
+
+/* -----------------------------------------------------
+        Constructor
+   ----------------------------------------------------- */
+CCameraSensor::CCameraSensor() :
+    mrpt::system::COutputLogger("CCameraSensor"),
+    m_sensorPose(),
+    m_grabber_type("opencv"),
+
+    m_cv_camera_type("CAMERA_CV_AUTODETECT"),
+    m_cv_options(),
+
+    m_dc1394_options(),
+
+    // ---
+    m_img_dir_url(""),
+    m_img_dir_left_format("imL_%04d.jpg"),
+    m_img_dir_right_format("imR_%04d.jpg"),
+
+    m_external_image_saver_count(std::thread::hardware_concurrency()),
+
+    m_hook_pre_save(nullptr)
+
+{
+  m_sensorLabel = "CAMERA";
+  m_state = CGenericSensor::ssInitializing;
+}
+
+/* -----------------------------------------------------
+        initialize
+   ----------------------------------------------------- */
+void CCameraSensor::initialize()
+{
+  std::cout << "[CCameraSensor::initialize] Opening camera..."
+            << "\n";
+  close();
+
+  // Select type of device
+  m_grabber_type = trim(lowerCase(m_grabber_type));
+  m_cv_camera_type = trim(upperCase(m_cv_camera_type));
+
+  if (m_grabber_type == "opencv")
+  {
+    // OpenCV driver:
+    TCameraType ct;
+    try
+    {
+      ct = mrpt::typemeta::TEnumType<TCameraType>::name2value(m_cv_camera_type);
+    }
+    catch (std::exception&)
+    {
+      m_state = CGenericSensor::ssError;
+      throw;
+    }
+    std::cout << mrpt::format(
+        "[CCameraSensor::initialize] opencv camera, index: %i type: "
+        "%i...\n",
+        int(m_cv_camera_index), static_cast<int>(ct));
+    m_cap_cv = std::make_unique<CImageGrabber_OpenCV>(m_cv_camera_index, ct, m_cv_options);
+
+    if (!m_cap_cv->isOpen())
+    {
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION(
+          "[CCameraSensor::initialize] ERROR: Couldn't open OpenCV "
+          "camera.");
+    }
+  }
+  else if (m_grabber_type == "dc1394")
+  {
+    // m_cap_dc1394
+    std::cout << mrpt::format(
+        "[CCameraSensor::initialize] dc1394 camera, GUID: 0x%lX  "
+        "UNIT:%d...\n",
+        long(m_dc1394_camera_guid), m_dc1394_camera_unit);
+    m_cap_dc1394 = std::make_unique<CImageGrabber_dc1394>(
+        m_dc1394_camera_guid, m_dc1394_camera_unit, m_dc1394_options, true /* verbose */);
+
+    if (!m_cap_dc1394->isOpen())
+    {
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION(
+          "[CCameraSensor::initialize] ERROR: Couldn't open dc1394 "
+          "camera.");
+    }
+  }
+  else if (m_grabber_type == "bumblebee_dc1394")
+  {
+    std::cout << mrpt::format(
+        "[CCameraSensor::initialize] bumblebee_libdc1394 camera: "
+        "GUID:0x%08X Index:%i FPS:%f...\n",
+        static_cast<unsigned int>(m_bumblebee_dc1394_camera_guid), m_bumblebee_dc1394_camera_unit,
+        m_bumblebee_dc1394_framerate);
+    m_cap_bumblebee_dc1394 = std::make_unique<CStereoGrabber_Bumblebee_libdc1394>(
+        m_bumblebee_dc1394_camera_guid, m_bumblebee_dc1394_camera_unit,
+        m_bumblebee_dc1394_framerate);
+  }
+  else if (m_grabber_type == "ffmpeg")
+  {
+    // m_cap_ffmpeg
+    std::cout << mrpt::format(
+        "[CCameraSensor::initialize] FFmpeg stream: %s...\n", m_ffmpeg_url.c_str());
+    m_cap_ffmpeg = std::make_unique<CFFMPEG_InputStream>();
+
+    if (!m_cap_ffmpeg->openURL(m_ffmpeg_url, m_capture_grayscale))
+    {
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION_FMT("Error opening FFmpeg stream: %s", m_ffmpeg_url.c_str());
+    }
+  }
+  else if (m_grabber_type == "kinect")
+  {
+    std::cout << "[CCameraSensor::initialize] Kinect camera...\n";
+    m_cap_kinect = std::make_unique<CKinect>();
+    m_cap_kinect->enableGrab3DPoints(m_kinect_save_3d);
+    m_cap_kinect->enableGrabDepth(m_kinect_save_range_img);
+    m_cap_kinect->enableGrabRGB(m_kinect_save_intensity_img);
+    m_cap_kinect->setVideoChannel(
+        m_kinect_video_rgb ? CKinect::VIDEO_CHANNEL_RGB : CKinect::VIDEO_CHANNEL_IR);
+
+    if (!m_path_for_external_images.empty())
+      m_cap_kinect->setPathForExternalImages(m_path_for_external_images);
+
+    // Open it:
+    try
+    {
+      m_cap_kinect->initialize();  // This will launch an exception if needed.
+    }
+    catch (std::exception&)
+    {
+      m_state = CGenericSensor::ssError;
+      throw;
+    }
+  }
+  else if (m_grabber_type == "openni2")
+  {
+    std::cout << "[CCameraSensor::initialize] OpenNI2 sensor...\n";
+    m_cap_openni2 = std::make_unique<COpenNI2Sensor>();
+    m_cap_openni2->enableGrab3DPoints(m_kinect_save_3d);  // It uses the
+    // same options as
+    // the Kinect
+    // grabber
+    m_cap_openni2->enableGrabDepth(m_kinect_save_range_img);
+    m_cap_openni2->enableGrabRGB(m_kinect_save_intensity_img);
+
+    if (!m_path_for_external_images.empty())
+      m_cap_openni2->setPathForExternalImages(m_path_for_external_images);
+
+    // Open it:
+    try
+    {
+      m_cap_openni2->initialize();  // This will launch an exception if needed.
+    }
+    catch (const std::exception& e)
+    {
+      m_state = CGenericSensor::ssError;
+      throw e;
+    }
+  }
+  else if (m_grabber_type == "image_dir")
+  {
+    // m_cap_image_dir
+    std::cout << mrpt::format(
+        "[CCameraSensor::initialize] Image dir: %s...\n", m_img_dir_url.c_str());
+    m_cap_image_dir = std::make_unique<std::string>();
+  }
+  else if (m_grabber_type == "rawlog")
+  {
+    // m_cap_rawlog
+    std::cout << mrpt::format(
+        "[CCameraSensor::initialize] Rawlog stream: %s...\n", m_rawlog_file.c_str());
+    m_cap_rawlog = std::make_unique<CCompressedInputStream>();
+
+    if (!m_cap_rawlog->open(m_rawlog_file))
+    {
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION_FMT("Error opening rawlog file: %s", m_rawlog_file.c_str());
+    }
+    // File open OK.
+    // Localize the external images directory of this rawlog, if it exists:
+    m_rawlog_detected_images_dir = CRawlog::detectImagesDirectory(m_rawlog_file);
+  }
+  else if (m_grabber_type == "flycap")
+  {
+    std::cout << "[CCameraSensor::initialize] PGR FlyCapture2 camera...\n";
+    try
+    {
+      // Open camera and start capture:
+      m_cap_flycap = std::make_unique<CImageGrabber_FlyCapture2>(m_flycap_options);
+    }
+    catch (std::exception&)
+    {
+      m_state = CGenericSensor::ssError;
+      throw;
+    }
+  }
+  else if (m_grabber_type == "flycap_stereo")
+  {
+    std::cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera...\n";
+    try
+    {
+      // Open camera and start capture:
+      m_cap_flycap_stereo_l = std::make_unique<CImageGrabber_FlyCapture2>();
+      m_cap_flycap_stereo_r = std::make_unique<CImageGrabber_FlyCapture2>();
+
+      std::cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo "
+                   "camera: Opening LEFT camera...\n";
+      m_cap_flycap_stereo_l->open(m_flycap_stereo_options[0], false /* don't start grabbing */);
+
+      std::cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo "
+                   "camera: Opening RIGHT camera...\n";
+      m_cap_flycap_stereo_r->open(m_flycap_stereo_options[1], false /* don't start grabbing */);
+
+      // Now, start grabbing "simultaneously":
+      if (m_fcs_start_synch_capture)
+      {
+        const CImageGrabber_FlyCapture2* cams[2] = {
+            m_cap_flycap_stereo_l.get(), m_cap_flycap_stereo_r.get()};
+        CImageGrabber_FlyCapture2::startSyncCapture(2, cams);
+      }
+      else
+      {
+        m_cap_flycap_stereo_l->startCapture();
+        m_cap_flycap_stereo_r->startCapture();
+      }
+    }
+    catch (std::exception&)
+    {
+      m_state = CGenericSensor::ssError;
+      throw;
+    }
+  }
+  else if (m_grabber_type == "myntd")
+  {
+    std::cout << "[CCameraSensor::initialize] MYNTEYE-D camera ...\n";
+
+    // Open it:
+    try
+    {
+      m_myntd = std::make_unique<CMyntEyeCamera>(m_myntd_options);
+    }
+    catch (const std::exception& e)
+    {
+      m_state = CGenericSensor::ssError;
+      throw e;
+    }
+  }
+  else
+    THROW_EXCEPTION_FMT("Unknown 'grabber_type' found: %s", m_grabber_type.c_str());
+
+  // Change state:
+  std::cout << "[CCameraSensor::initialize] Done!"
+            << "\n";
+  m_state = CGenericSensor::ssWorking;
+
+  // Launch independent thread?
+  if (m_external_images_own_thread)
+  {
+    m_threadImagesSaverShouldEnd = false;
+
+    m_threadImagesSaver.clear();
+    m_threadImagesSaver.resize(m_external_image_saver_count);
+
+    m_toSaveList.clear();
+    m_toSaveList.resize(m_external_image_saver_count);
+
+    for (unsigned int i = 0; i < m_external_image_saver_count; ++i)
+    {
+      m_threadImagesSaver[i] = std::thread(&CCameraSensor::thread_save_images, this, i);
+
+      mrpt::system::thread_name("CameraSaveImages", m_threadImagesSaver[i]);
+    }
+  }
+}
+
+/* -----------------------------------------------------
+        close
+   ----------------------------------------------------- */
+void CCameraSensor::close()
+{
+  m_cap_cv.reset();
+  m_cap_dc1394.reset();
+  m_cap_flycap.reset();
+  m_cap_flycap_stereo_l.reset();
+  m_cap_flycap_stereo_r.reset();
+  m_cap_bumblebee_dc1394.reset();
+  m_cap_ffmpeg.reset();
+  m_cap_rawlog.reset();
+  m_cap_kinect.reset();
+  m_cap_image_dir.reset();
+
+  m_state = CGenericSensor::ssInitializing;
+
+  // Wait for threads:
+  if (!m_threadImagesSaver.empty())
+  {
+    m_threadImagesSaverShouldEnd = true;
+    for (auto& i : m_threadImagesSaver)
+      if (i.joinable()) i.join();
+  }
+}
+
+/* -----------------------------------------------------
+        loadConfig_sensorSpecific
+   ----------------------------------------------------- */
+void CCameraSensor::loadConfig_sensorSpecific(
+    const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
+{
+  // At this point, my parent class CGenericSensor has already loaded its
+  // params:
+  //  Since cameras are special, we'll take control over "m_grab_decimation"
+  //  so
+  //  external image files are not saved just to be discarded later on...
+  if (m_grab_decimation > 0)
+  {
+    m_camera_grab_decimator = static_cast<int>(m_grab_decimation);
+    m_camera_grab_decimator_counter = 0;
+    // Reset in parent:
+    m_grab_decimation = 0;
+  }
+  else
+    m_camera_grab_decimator = m_camera_grab_decimator_counter = 0;
+
+  m_grabber_type = configSource.read_string_first_word(iniSection, "grabber_type", m_grabber_type);
+
+  // OpenCV options:
+  m_cv_camera_type =
+      configSource.read_string_first_word(iniSection, "cv_camera_type", m_cv_camera_type);
+  m_cv_camera_index = configSource.read_int(iniSection, "cv_camera_index", m_cv_camera_index);
+
+  m_cv_options.frame_width =
+      configSource.read_int(iniSection, "cv_frame_width", m_cv_options.frame_width);
+  m_cv_options.frame_height =
+      configSource.read_int(iniSection, "cv_frame_height", m_cv_options.frame_height);
+  m_cv_options.gain = configSource.read_double(iniSection, "cv_gain", m_cv_options.gain);
+  m_cv_options.ieee1394_fps =
+      configSource.read_double(iniSection, "cv_fps", m_cv_options.ieee1394_fps);
+
+  m_capture_grayscale = configSource.read_bool(iniSection, "capture_grayscale", false);
+
+  m_cv_options.ieee1394_grayscale = m_capture_grayscale;
+
+  // dc1394 options:
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_camera_guid, uint64_t, m_dc1394_camera_guid, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(dc1394_camera_unit, int, m_dc1394_camera_unit, configSource, iniSection)
+
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_frame_width, int, m_dc1394_options.frame_width, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_frame_height, int, m_dc1394_options.frame_height, configSource, iniSection)
+
+  MRPT_LOAD_HERE_CONFIG_VAR(dc1394_mode7, int, m_dc1394_options.mode7, configSource, iniSection)
+
+  MRPT_LOAD_HERE_CONFIG_VAR(dc1394_shutter, int, m_dc1394_options.shutter, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(dc1394_gain, int, m_dc1394_options.gain, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(dc1394_gamma, int, m_dc1394_options.gamma, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_brightness, int, m_dc1394_options.brightness, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_exposure, int, m_dc1394_options.exposure, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_sharpness, int, m_dc1394_options.sharpness, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_white_balance, int, m_dc1394_options.white_balance, configSource, iniSection)
+
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_shutter_mode, int, m_dc1394_options.shutter_mode, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_gain_mode, int, m_dc1394_options.gain_mode, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_gamma_mode, int, m_dc1394_options.gamma_mode, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_brightness_mode, int, m_dc1394_options.brightness_mode, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_exposure_mode, int, m_dc1394_options.exposure_mode, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_sharpness_mode, int, m_dc1394_options.sharpness_mode, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_white_balance_mode, int, m_dc1394_options.white_balance_mode, configSource, iniSection)
+
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_trigger_power, int, m_dc1394_options.trigger_power, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_trigger_mode, int, m_dc1394_options.trigger_mode, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_trigger_source, int, m_dc1394_options.trigger_source, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_trigger_polarity, int, m_dc1394_options.trigger_polarity, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      dc1394_ring_buffer_size, int, m_dc1394_options.ring_buffer_size, configSource, iniSection)
+
+  // Bumblebee_dc1394 options:
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      bumblebee_dc1394_camera_guid, uint64_t, m_bumblebee_dc1394_camera_guid, configSource,
+      iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      bumblebee_dc1394_camera_unit, int, m_bumblebee_dc1394_camera_unit, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      bumblebee_dc1394_framerate, double, m_bumblebee_dc1394_framerate, configSource, iniSection)
+
+  // FFmpeg options:
+  m_ffmpeg_url =
+      mrpt::system::trim(configSource.read_string(iniSection, "ffmpeg_url", m_ffmpeg_url));
+
+  // Rawlog options:
+  m_rawlog_file =
+      mrpt::system::trim(configSource.read_string(iniSection, "rawlog_file", m_rawlog_file));
+  m_rawlog_camera_sensor_label = mrpt::system::trim(configSource.read_string(
+      iniSection, "rawlog_camera_sensor_label", m_rawlog_camera_sensor_label));
+
+  // Image directory options:
+  m_img_dir_url =
+      mrpt::system::trim(configSource.read_string(iniSection, "image_dir_url", m_img_dir_url));
+  m_img_dir_left_format = mrpt::system::trim(
+      configSource.read_string(iniSection, "left_format", m_img_dir_left_format));
+  m_img_dir_right_format =
+      mrpt::system::trim(configSource.read_string(iniSection, "right_format", ""));
+  m_img_dir_start_index = configSource.read_int(iniSection, "start_index", m_img_dir_start_index);
+  ;
+  m_img_dir_end_index = configSource.read_int(iniSection, "end_index", m_img_dir_end_index);
+
+  m_img_dir_is_stereo = !m_img_dir_right_format.empty();
+  m_img_dir_counter = m_img_dir_start_index;
+
+  m_kinect_save_3d = configSource.read_bool(iniSection, "kinect_grab_3d", m_kinect_save_3d);
+  m_kinect_save_intensity_img =
+      configSource.read_bool(iniSection, "kinect_grab_intensity", m_kinect_save_intensity_img);
+  m_kinect_save_range_img =
+      configSource.read_bool(iniSection, "kinect_grab_range", m_kinect_save_range_img);
+  m_kinect_video_rgb = configSource.read_bool(iniSection, "kinect_video_rgb", m_kinect_video_rgb);
+
+  // FlyCap:
+  m_flycap_options.loadOptionsFrom(configSource, iniSection, "flycap_");
+
+  // Myntd:
+  {
+    mrpt::config::CConfigFilePrefixer c(configSource, "", "myntd_");
+    m_myntd_options.loadFromConfigFile(c, iniSection);
+  }
+
+  // FlyCap stereo
+  m_fcs_start_synch_capture =
+      configSource.read_bool(iniSection, "fcs_start_synch_capture", m_fcs_start_synch_capture);
+  m_flycap_stereo_options[0].loadOptionsFrom(configSource, iniSection, "fcs_LEFT_");
+  m_flycap_stereo_options[1].loadOptionsFrom(configSource, iniSection, "fcs_RIGHT_");
+
+  // Special stuff: FPS
+  map<double, grabber_dc1394_framerate_t> map_fps;
+  map<double, grabber_dc1394_framerate_t>::iterator it_fps;
+  map_fps[1.875] = FRAMERATE_1_875;
+  map_fps[3.75] = FRAMERATE_3_75;
+  map_fps[7.5] = FRAMERATE_7_5;
+  map_fps[15] = FRAMERATE_15;
+  map_fps[30] = FRAMERATE_30;
+  map_fps[60] = FRAMERATE_60;
+  map_fps[120] = FRAMERATE_120;
+  map_fps[240] = FRAMERATE_240;
+
+  // ... for dc1394
+  double the_fps = configSource.read_double(iniSection, "dc1394_framerate", 15.0);
+  it_fps = map_fps.find(the_fps);
+  if (it_fps == map_fps.end())
+    THROW_EXCEPTION_FMT("ERROR: DC1394 framerate seems to be not a valid number: %f", the_fps);
+
+  m_dc1394_options.framerate = it_fps->second;
+
+  // Special stuff: color encoding:
+  map<string, grabber_dc1394_color_coding_t> map_color;
+  map<string, grabber_dc1394_color_coding_t>::iterator it_color;
+#define ADD_COLOR_MAP(c) map_color[#c] = c;
+  ADD_COLOR_MAP(COLOR_CODING_MONO8)
+  ADD_COLOR_MAP(COLOR_CODING_YUV411)
+  ADD_COLOR_MAP(COLOR_CODING_YUV422)
+  ADD_COLOR_MAP(COLOR_CODING_YUV444)
+  ADD_COLOR_MAP(COLOR_CODING_RGB8)
+  ADD_COLOR_MAP(COLOR_CODING_MONO16)
+
+  string the_color_coding = mrpt::system::upperCase(configSource.read_string_first_word(
+      iniSection, "dc1394_color_coding", "COLOR_CODING_YUV422"));
+  it_color = map_color.find(the_color_coding);
+  if (it_color == map_color.end())
+    THROW_EXCEPTION_FMT(
+        "ERROR: Color coding seems not to be valid : '%s'", the_color_coding.c_str());
+  m_dc1394_options.color_coding = it_color->second;
+
+  m_external_images_format = mrpt::system::trim(
+      configSource.read_string(iniSection, "external_images_format", m_external_images_format));
+  m_external_images_jpeg_quality = configSource.read_int(
+      iniSection, "external_images_jpeg_quality", m_external_images_jpeg_quality);
+  m_external_images_own_thread = configSource.read_bool(
+      iniSection, "external_images_own_thread", m_external_images_own_thread);
+  m_external_image_saver_count = configSource.read_int(
+      iniSection, "external_images_own_thread_count", m_external_image_saver_count);
+
+  // Sensor pose:
+  m_sensorPose.setFromValues(
+      configSource.read_float(iniSection, "pose_x", 0),
+      configSource.read_float(iniSection, "pose_y", 0),
+      configSource.read_float(iniSection, "pose_z", 0),
+      DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
+      DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
+}
+
+/* -----------------------------------------------------
+        Destructor
+   ----------------------------------------------------- */
+CCameraSensor::~CCameraSensor() { close(); }
+
+/* -----------------------------------------------------
+        getNextFrame
+----------------------------------------------------- */
+CObservation::Ptr CCameraSensor::getNextFrame()
+{
+  std::vector<CSerializable::Ptr> out_obs;
+  getNextFrame(out_obs);
+  if (out_obs.empty())
+  {
+    return {};
+  }
+
+  return std::dynamic_pointer_cast<CObservation>(out_obs[0]);
+}
+
+/* -----------------------------------------------------
+        getNextFrame
+----------------------------------------------------- */
+void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
+{
+  CObservationImage::Ptr obs;
+  CObservationStereoImages::Ptr stObs;
+  CObservation3DRangeScan::Ptr obs3D;  // 3D range image, also with an intensity channel
+  CObservationIMU::Ptr obsIMU;         // IMU observation grabbed by DUO3D cameras
+
+  bool capture_ok = false;
+
+  if (m_cap_cv)
+  {
+    auto grabbed = m_cap_cv->grabFrame();
+    if (!grabbed)
+    {  // Error
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("Error grabbing image");
+    }
+    else
+    {
+      obs = std::make_shared<CObservationImage>(std::move(*grabbed));
+      capture_ok = true;
+    }
+  }
+  else if (m_cap_dc1394)
+  {
+    auto grabbed = m_cap_dc1394->grabFrame();
+    if (!grabbed)
+    {  // Error
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("Error grabbing image");
+    }
+    else
+    {
+      obs = std::make_shared<CObservationImage>(std::move(*grabbed));
+      capture_ok = true;
+    }
+  }
+  else if (m_cap_kinect)
+  {
+    obs3D = std::make_shared<CObservation3DRangeScan>();
+
+    // Specially at start-up, there may be a delay grabbing so a few calls
+    // return false: add a timeout.
+    const mrpt::system::TTimeStamp t0 = mrpt::Clock::now();
+    double max_timeout = 3.0;  // seconds
+
+    // If we have an "MRPT_CCAMERA_KINECT_TIMEOUT_MS" environment variable,
+    // use that timeout instead:
+    const char* envVal = getenv("MRPT_CCAMERA_KINECT_TIMEOUT_MS");
+    if (envVal) max_timeout = atoi(envVal) * 0.001;
+
+    bool there_is_obs, hardware_error;
+    do
+    {
+      m_cap_kinect->getNextObservation(*obs3D, there_is_obs, hardware_error);
+      if (!there_is_obs) std::this_thread::sleep_for(1ms);
+    } while (!there_is_obs && mrpt::system::timeDifference(t0, mrpt::Clock::now()) < max_timeout);
+
+    if (!there_is_obs || hardware_error)
+    {  // Error
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("Error grabbing image from Kinect camera.");
+    }
+    else
+      capture_ok = true;
+  }
+  else if (m_cap_openni2)
+  {
+    obs3D = std::make_shared<CObservation3DRangeScan>();
+    // Specially at start-up, there may be a delay grabbing so a few calls
+    // return false: add a timeout.
+    const mrpt::system::TTimeStamp t0 = mrpt::Clock::now();
+    double max_timeout = 3.0;  // seconds
+    bool there_is_obs, hardware_error;
+    do
+    {
+      m_cap_openni2->getNextObservation(*obs3D, there_is_obs, hardware_error);
+      if (!there_is_obs) std::this_thread::sleep_for(1ms);
+    } while (!there_is_obs && mrpt::system::timeDifference(t0, mrpt::Clock::now()) < max_timeout);
+
+    if (!there_is_obs || hardware_error)
+    {  // Error
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("Error grabbing image from OpenNI2 camera.");
+    }
+    else
+      capture_ok = true;
+  }
+  else if (m_cap_bumblebee_dc1394)
+  {
+    stObs = std::make_shared<CObservationStereoImages>();
+    if (!m_cap_bumblebee_dc1394->getStereoObservation(*stObs))
+    {
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("Error grabbing stereo images");
+    }
+    else
+    {
+      capture_ok = true;
+    }
+  }
+  else if (m_cap_ffmpeg)
+  {
+    static bool anyGood = false;
+    auto grabbed = m_cap_ffmpeg->grabFrame();
+    if (!grabbed)
+    {  // Error
+      m_state = CGenericSensor::ssError;
+      if (!anyGood)
+      {
+        THROW_EXCEPTION("Error grabbing image");
+      }
+      else
+      {
+        MRPT_LOG_THROTTLE_WARN(
+            2.0,
+            "ffmpeg capture driver: Failed to get frame (temporary "
+            "error or EOF?)");
+        capture_ok = true;
+      }
+    }
+    else
+    {
+      obs = std::make_shared<CObservationImage>();
+      obs->image = std::move(*grabbed);
+
+      anyGood = true;
+      capture_ok = true;
+    }
+  }
+  else if (m_cap_image_dir)
+  {
+    if (m_img_dir_counter > m_img_dir_end_index)
+    {
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("Reached end index.");
+    }
+
+    std::string auxL = mrpt::format("%s/%s", m_img_dir_url.c_str(), m_img_dir_left_format.c_str());
+    if (m_img_dir_is_stereo)
+    {
+      stObs = std::make_shared<CObservationStereoImages>();
+      if (!stObs->imageLeft.loadFromFile(format(auxL.c_str(), m_img_dir_counter)))
+      {
+        m_state = CGenericSensor::ssError;
+        THROW_EXCEPTION("Error reading images from directory");
+      }
+      std::string auxR =
+          mrpt::format("%s/%s", m_img_dir_url.c_str(), m_img_dir_right_format.c_str());
+      if (!stObs->imageRight.loadFromFile(format(auxR.c_str(), m_img_dir_counter++)))
+      {
+        m_state = CGenericSensor::ssError;
+        THROW_EXCEPTION("Error reading images from directory");
+      }
+      else
+        capture_ok = true;
+    }
+    else
+    {
+      // use only left image prefix
+      obs = std::make_shared<CObservationImage>();
+      if (!obs->image.loadFromFile(format(auxL.c_str(), m_img_dir_counter++)))
+      {
+        m_state = CGenericSensor::ssError;
+        THROW_EXCEPTION("Error reading images from directory");
+      }
+      else
+        capture_ok = true;
+    }
+  }
+  else if (m_cap_rawlog)
+  {
+    // Read in a loop until we found at least one image:
+    //  Assign to: obs && stObs
+    CSerializable::Ptr newObs;
+    while (!obs && !stObs && !obs3D)
+    {
+      archiveFrom(*m_cap_rawlog) >> newObs;
+      if (IS_DERIVED(*newObs, CObservation))
+      {
+        CObservation::Ptr o = std::dynamic_pointer_cast<CObservation>(newObs);
+        if (!m_rawlog_camera_sensor_label.empty() && m_rawlog_camera_sensor_label != o->sensorLabel)
+          continue;
+
+        if (IS_CLASS(*o, CObservationImage))
+          obs = std::dynamic_pointer_cast<CObservationImage>(o);
+        else if (IS_CLASS(*o, CObservationStereoImages))
+          stObs = std::dynamic_pointer_cast<CObservationStereoImages>(o);
+        else if (IS_CLASS(*o, CObservation3DRangeScan))
+          obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(o);
+      }
+      else if (IS_CLASS(*newObs, CSensoryFrame))
+      {
+        CSensoryFrame::Ptr sf = std::dynamic_pointer_cast<CSensoryFrame>(newObs);
+
+        for (auto& o : *sf)
+        {
+          if (!m_rawlog_camera_sensor_label.empty() &&
+              m_rawlog_camera_sensor_label != o->sensorLabel)
+            continue;
+
+          if (IS_CLASS(*o, CObservationImage))
+          {
+            obs = std::dynamic_pointer_cast<CObservationImage>(o);
+            break;
+          }
+          else if (IS_CLASS(*o, CObservationStereoImages))
+          {
+            stObs = std::dynamic_pointer_cast<CObservationStereoImages>(o);
+            break;
+          }
+          else if (IS_CLASS(*o, CObservation3DRangeScan))
+          {
+            obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(o);
+            break;
+          }
+        }
+      }
+      if (obs || stObs || obs3D)
+      {
+        // We must convert externally stored images into "normal
+        // in-memory" images.
+        const std::string old_dir = CImage::getImagesPathBase();  // Save current
+        CImage::setImagesPathBase(m_rawlog_detected_images_dir);
+
+        if (obs && obs->image.isExternallyStored())
+        {
+          bool loadOk = obs->image.loadFromFile(obs->image.getExternalStorageFileAbsolutePath());
+          ASSERT_(loadOk);
+        }
+
+        if (obs3D && obs3D->hasIntensityImage && obs3D->intensityImage.isExternallyStored())
+        {
+          bool loadOk = obs3D->intensityImage.loadFromFile(
+              obs3D->intensityImage.getExternalStorageFileAbsolutePath());
+          ASSERT_(loadOk);
+        }
+
+        if (stObs && stObs->imageLeft.isExternallyStored())
+        {
+          bool loadOk =
+              stObs->imageLeft.loadFromFile(stObs->imageLeft.getExternalStorageFileAbsolutePath());
+          ASSERT_(loadOk);
+        }
+
+        if (stObs && stObs->hasImageRight && stObs->imageRight.isExternallyStored())
+        {
+          bool loadOk = stObs->imageRight.loadFromFile(
+              stObs->imageRight.getExternalStorageFileAbsolutePath());
+          ASSERT_(loadOk);
+        }
+
+        if (stObs && stObs->hasImageDisparity && stObs->imageDisparity.isExternallyStored())
+        {
+          bool loadOk = stObs->imageDisparity.loadFromFile(
+              stObs->imageDisparity.getExternalStorageFileAbsolutePath());
+          ASSERT_(loadOk);
+        }
+
+        CImage::setImagesPathBase(old_dir);  // Restore
+      }
+      else
+        continue;  // Keep reading
+    }
+    capture_ok = true;
+  }
+  else if (m_cap_flycap)
+  {
+    bool ok;
+    if (!m_cap_flycap->isStereo())  // Mono image
+    {
+      obs = std::make_shared<CObservationImage>();
+      ok = m_cap_flycap->getObservation(*obs);
+    }
+    else  // Stereo camera connected
+    {
+      stObs = std::make_shared<CObservationStereoImages>();
+      ok = m_cap_flycap->getObservation(*stObs);
+    }
+
+    if (!ok)
+    {  // Error
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("Error grabbing image");
+    }
+    else
+      capture_ok = true;
+  }
+  else if (m_cap_flycap_stereo_l && m_cap_flycap_stereo_r)
+  {
+    stObs = std::make_shared<CObservationStereoImages>();
+
+    CObservationImage obsL, obsR;
+
+    bool ok1, ok2 = false;
+
+    ok1 = m_cap_flycap_stereo_r->getObservation(obsL);
+    if (ok1) ok2 = m_cap_flycap_stereo_l->getObservation(obsR);
+
+    if (!ok1 || !ok2)
+    {
+      // Error
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("Error grabbing disparity images");
+    }
+    else
+    {
+      // Joint the two images as one stereo:
+      const double At = mrpt::system::timeDifference(obsL.timestamp, obsR.timestamp);
+      if (std::abs(At) > 0.1)
+      {
+        std::cout << "[CCamera, flycap_stereo] Warning: Too large delay "
+                     "between left & right images: "
+                  << At << " sec.\n";
+      }
+
+      // It seems that the timestamp is not always filled in from FlyCap
+      // driver?
+      stObs->timestamp =
+          (obsL.timestamp != INVALID_TIMESTAMP) ? obsL.timestamp : mrpt::Clock::now();
+      stObs->imageLeft = std::move(obsL.image);
+      stObs->imageRight = std::move(obsR.image);
+      capture_ok = true;
+    }
+  }
+  else if (m_myntd)
+  {
+    obs3D = std::make_shared<CObservation3DRangeScan>();
+
+    auto grabbed3D = m_myntd->grabFrame();
+    static int noObsCnt = 0;
+
+    if (!grabbed3D)
+    {
+      if (noObsCnt++ > 100)
+      {
+        m_state = CGenericSensor::ssError;
+        THROW_EXCEPTION("Error getting observations from MYNTEYE-D camera.");
+      }
+    }
+    else
+    {
+      noObsCnt = 0;
+      *obs3D = std::move(*grabbed3D);
+    }
+    capture_ok = true;
+  }
+  else
+  {
+    THROW_EXCEPTION(
+        "There is no initialized camera driver: has 'initialize()' been "
+        "called?");
+  }
+
+  ASSERT_(capture_ok);
+
+  // Are we supposed to do a decimation??
+  m_camera_grab_decimator_counter++;
+  if (m_camera_grab_decimator_counter < m_camera_grab_decimator)
+  {
+    // Done here:
+    out_obs.push_back(CObservation::Ptr());
+    return;
+  }
+  // Continue as normal:
+  m_camera_grab_decimator_counter = 0;
+
+  // Allow temporary failures to get any frame
+  // ASSERT_(obs || stObs || obs3D || obsIMU);
+
+  // If we grabbed an image: prepare it and add it to the internal queue:
+  if (obs)
+  {
+    obs->sensorLabel = m_sensorLabel;
+    obs->setSensorPose(m_sensorPose);
+  }
+  else if (stObs)
+  {
+    stObs->sensorLabel = m_sensorLabel;
+    stObs->setSensorPose(m_sensorPose);
+  }
+  else if (obs3D)
+  {
+    obs3D->sensorLabel = m_sensorLabel;
+    obs3D->setSensorPose(m_sensorPose);
+  }
+  if (obsIMU)
+  {
+    obsIMU->sensorLabel = m_sensorLabel + "_IMU";
+    obsIMU->setSensorPose(m_sensorPose);
+  }
+
+  // Convert to grayscale if the user wants so and  the driver did ignored us:
+  if (m_capture_grayscale)
+  {
+    if (obs)
+    {
+      if (obs->image.isColor()) obs->image = obs->image.grayscale();
+    }
+    else if (stObs)
+    {
+      if (stObs->imageLeft.isColor()) stObs->imageLeft = stObs->imageLeft.grayscale();
+      if (stObs->hasImageRight && stObs->imageRight.isColor())
+        stObs->imageRight = stObs->imageRight.grayscale();
+      if (stObs->hasImageDisparity && stObs->imageDisparity.isColor())
+        stObs->imageDisparity = stObs->imageDisparity.grayscale();
+    }
+    else if (obs3D)
+    {
+      if (obs3D->hasIntensityImage && obs3D->intensityImage.isColor())
+        obs3D->intensityImage = obs3D->intensityImage.grayscale();
+    }
+  }
+
+  // External storage?
+  // If true, we'll return nothing, but the observation will be
+  // inserted from the thread.
+  bool delayed_insertion_in_obs_queue = false;
+  if (!m_path_for_external_images.empty())
+  {
+    if (stObs)  // If we have grabbed an stereo observation ...
+    {           // Stereo obs  -------
+      if (m_external_images_own_thread)
+      {
+        m_csToSaveList.lock();
+
+        // Select the "m_toSaveList" with the shortest pending queue:
+        size_t idx_min = 0;
+        for (size_t i = 0; i < m_toSaveList.size(); ++i)
+          if (m_toSaveList[i].size() < m_toSaveList[idx_min].size()) idx_min = i;
+        // Insert:
+        m_toSaveList[idx_min].insert(TListObsPair(stObs->timestamp, stObs));
+
+        m_csToSaveList.unlock();
+
+        delayed_insertion_in_obs_queue = true;
+      }
+      else
+      {
+        const string filNameL = fileNameStripInvalidChars(trim(m_sensorLabel)) +
+                                mrpt::format(
+                                    "_L_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
+                                    m_external_images_format.c_str());
+        const string filNameR = fileNameStripInvalidChars(trim(m_sensorLabel)) +
+                                mrpt::format(
+                                    "_R_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
+                                    m_external_images_format.c_str());
+        const string filNameD = fileNameStripInvalidChars(trim(m_sensorLabel)) +
+                                mrpt::format(
+                                    "_D_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
+                                    m_external_images_format.c_str());
+        // std::cout << "[CCameraSensor] Saving " << filName << "\n";
+        if (!stObs->imageLeft.saveToFile(
+                m_path_for_external_images + string("/") + filNameL,
+                m_external_images_jpeg_quality))
+        {
+          THROW_EXCEPTION("Error saving externally-stored images");
+        }
+        stObs->imageLeft.setExternalStorage(filNameL);
+
+        if (stObs->hasImageRight)
+        {
+          if (!stObs->imageRight.saveToFile(
+                  m_path_for_external_images + string("/") + filNameR,
+                  m_external_images_jpeg_quality))
+          {
+            THROW_EXCEPTION("Error saving externally-stored images");
+          }
+
+          stObs->imageRight.setExternalStorage(filNameR);
+        }
+        if (stObs->hasImageDisparity)
+        {
+          if (!stObs->imageDisparity.saveToFile(
+                  m_path_for_external_images + string("/") + filNameD,
+                  m_external_images_jpeg_quality))
+          {
+            THROW_EXCEPTION("Error saving externally-stored images");
+          }
+
+          stObs->imageDisparity.setExternalStorage(filNameD);
+        }
+      }
+    }
+    else if (obs)
+    {  // Monocular image obs  -------
+      if (m_external_images_own_thread)
+      {
+        m_csToSaveList.lock();
+
+        // Select the "m_toSaveList" with the shortest pending queue:
+        size_t idx_min = 0;
+        for (size_t i = 0; i < m_toSaveList.size(); ++i)
+          if (m_toSaveList[i].size() < m_toSaveList[idx_min].size()) idx_min = i;
+
+        // Insert:
+        m_toSaveList[idx_min].insert(TListObsPair(obs->timestamp, obs));
+
+        m_csToSaveList.unlock();
+        delayed_insertion_in_obs_queue = true;
+      }
+      else
+      {
+        string filName =
+            fileNameStripInvalidChars(trim(m_sensorLabel)) +
+            mrpt::format(
+                "_%f.%s", mrpt::Clock::toDouble(obs->timestamp), m_external_images_format.c_str());
+        // std::cout << "[CCameraSensor] Saving " << filName << "\n";
+        if (!obs->image.saveToFile(
+                m_path_for_external_images + string("/") + filName, m_external_images_jpeg_quality))
+        {
+          THROW_EXCEPTION("Error saving externally-stored images");
+        }
+
+        obs->image.setExternalStorage(filName);
+      }
+    }  // end else
+  }
+
+  if (!delayed_insertion_in_obs_queue)
+  {
+    if (stObs) out_obs.push_back(CObservation::Ptr(stObs));
+    if (obs) out_obs.push_back(CObservation::Ptr(obs));
+    if (obs3D) out_obs.push_back(CObservation::Ptr(obs3D));
+  }
+  return;
+}
+
+/* -----------------------------------------------------
+        doProcess
+----------------------------------------------------- */
+void CCameraSensor::doProcess()
+{
+  vector<CSerializable::Ptr> out_obs;
+  getNextFrame(out_obs);
+  appendObservations(out_obs);
+}
+
+/* -----------------------------------------------------
+        setSoftwareTriggerLevel
+----------------------------------------------------- */
+void CCameraSensor::setSoftwareTriggerLevel(bool level)
+{
+  if (m_cap_dc1394)
+  {
+    if (!m_cap_dc1394->setSoftwareTriggerLevel(level))
+    {  // Error
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("Error setting Trigger level by software");
+    }
+  }
+  else
+  {
+    THROW_EXCEPTION("Software trigger is not implemented for this camera type");
+  }
+}
+
+/* -----------------------------------------------------
+        setPathForExternalImages
+----------------------------------------------------- */
+void CCameraSensor::setPathForExternalImages(const std::string& directory)
+{
+  if (!mrpt::system::createDirectory(directory))
+  {
+    THROW_EXCEPTION_FMT(
+        "Cannot create the directory for externally saved images: `%s`", directory.c_str());
+  }
+  m_path_for_external_images = directory;
+}
+
+/* -----------------------------------------------------
+    THREAD: Saver of external images
+   ----------------------------------------------------- */
+void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
+{
+  while (!m_threadImagesSaverShouldEnd)
+  {
+    TListObservations newObs;
+
+    // is there any new image?
+    m_csToSaveList.lock();
+    m_toSaveList[my_working_thread_index].swap(newObs);
+    m_csToSaveList.unlock();
+
+    for (auto i = newObs.begin(); i != newObs.end(); ++i)
+    {
+      // Optional user-code hook:
+      if (m_hook_pre_save)
+      {
+        if (IS_DERIVED(*i->second, CObservation))
+        {
+          mrpt::obs::CObservation::Ptr obs =
+              std::dynamic_pointer_cast<mrpt::obs::CObservation>(i->second);
+          m_hook_pre_save(obs, m_hook_pre_save_param);
+        }
+      }
+
+      if (IS_CLASS(*i->second, CObservationImage))
+      {
+        CObservationImage::Ptr obs = std::dynamic_pointer_cast<CObservationImage>(i->second);
+
+        string filName =
+            fileNameStripInvalidChars(trim(m_sensorLabel)) +
+            mrpt::format(
+                "_%f.%s", mrpt::Clock::toDouble(obs->timestamp), m_external_images_format.c_str());
+
+        if (!obs->image.saveToFile(
+                m_path_for_external_images + string("/") + filName, m_external_images_jpeg_quality))
+        {
+          THROW_EXCEPTION("Error saving externally-stored images");
+        }
+
+        obs->image.setExternalStorage(filName);
+      }
+      else if (IS_CLASS(*i->second, CObservationStereoImages))
+      {
+        CObservationStereoImages::Ptr stObs =
+            std::dynamic_pointer_cast<CObservationStereoImages>(i->second);
+
+        const string filNameL = fileNameStripInvalidChars(trim(m_sensorLabel)) +
+                                mrpt::format(
+                                    "_L_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
+                                    m_external_images_format.c_str());
+        const string filNameR = fileNameStripInvalidChars(trim(m_sensorLabel)) +
+                                mrpt::format(
+                                    "_R_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
+                                    m_external_images_format.c_str());
+        const string filNameD = fileNameStripInvalidChars(trim(m_sensorLabel)) +
+                                mrpt::format(
+                                    "_D_%f.%s", mrpt::Clock::toDouble(stObs->timestamp),
+                                    m_external_images_format.c_str());
+
+        if (!stObs->imageLeft.saveToFile(
+                m_path_for_external_images + string("/") + filNameL,
+                m_external_images_jpeg_quality))
+        {
+          THROW_EXCEPTION("Error saving externally-stored images");
+        }
+
+        stObs->imageLeft.setExternalStorage(filNameL);
+
+        if (stObs->hasImageRight)
+        {
+          if (!stObs->imageRight.saveToFile(
+                  m_path_for_external_images + string("/") + filNameR,
+                  m_external_images_jpeg_quality))
+          {
+            THROW_EXCEPTION("Error saving externally-stored images");
+          }
+
+          stObs->imageRight.setExternalStorage(filNameR);
+        }
+        if (stObs->hasImageDisparity)
+        {
+          if (!stObs->imageDisparity.saveToFile(
+                  m_path_for_external_images + string("/") + filNameD,
+                  m_external_images_jpeg_quality))
+          {
+            THROW_EXCEPTION("Error saving externally-stored images");
+          }
+
+          stObs->imageDisparity.setExternalStorage(filNameD);
+        }
+      }
+
+      // Append now:
+      appendObservation(i->second);
+    }
+
+    std::this_thread::sleep_for(2ms);
+  }
+}

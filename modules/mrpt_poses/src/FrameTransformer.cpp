@@ -1,0 +1,99 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/exceptions.h>  // for ASSERTMSG_
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/FrameTransformer.h>  // for FrameTransformer, FrameTran...
+#include <mrpt/system/datetime.h>         // for TTimeStamp, INVALID_TIMESTAMP
+
+#include <string>  // for string
+
+using namespace mrpt::poses;
+
+// ------- FrameTransformerInterface --------
+template <size_t DIM>
+FrameTransformerInterface<DIM>::FrameTransformerInterface() = default;
+template <size_t DIM>
+FrameTransformerInterface<DIM>::~FrameTransformerInterface() = default;
+
+namespace mrpt
+{
+namespace poses
+{
+// Explicit instantations:
+template class FrameTransformerInterface<2>;
+template class FrameTransformerInterface<3>;
+}  // namespace poses
+}  // namespace mrpt
+
+// ------- FrameTransformer --------
+template <size_t DIM>
+FrameTransformer<DIM>::FrameTransformer() = default;
+template <size_t DIM>
+FrameTransformer<DIM>::~FrameTransformer() = default;
+
+template <size_t DIM>
+void FrameTransformer<DIM>::sendTransform(
+    const std::string& parent_frame,
+    const std::string& child_frame,
+    const typename base_t::pose_t& child_wrt_parent,
+    const mrpt::system::TTimeStamp& timestamp)
+{
+  m_pose_edges_buffer[parent_frame][child_frame] = TF_TreeEdge(child_wrt_parent, timestamp);
+}
+
+// future work: allow graph traversal and do pose chain composition?
+// We dont need to replicate the full functionality of ROS tf, though... just
+// what we really need.
+
+template <size_t DIM>
+FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
+    const std::string& target_frame,
+    const std::string& source_frame,
+    typename base_t::light_type& child_wrt_parent,
+    const mrpt::system::TTimeStamp query_time,
+    const double timeout_secs)
+{
+  ASSERTMSG_(timeout_secs == .0, "timeout_secs!=0: Blocking calls not supported yet!");
+  ASSERTMSG_(
+      query_time == INVALID_TIMESTAMP, "`query_time` different than 'latest' not supported yet!");
+
+  const auto& it_src = m_pose_edges_buffer.find(source_frame);
+  if (it_src == m_pose_edges_buffer.end())
+  {
+    return LKUP_UNKNOWN_FRAME;
+  }
+
+  const auto& it_dst = it_src->second.find(target_frame);
+  if (it_dst == it_src->second.end())
+  {
+    return LKUP_NO_CONNECTIVITY;
+  }
+
+  const TF_TreeEdge& te = it_dst->second;
+  child_wrt_parent = te.pose.asTPose();
+
+  return LKUP_GOOD;
+}
+
+namespace mrpt
+{
+namespace poses
+{
+// Explicit instantations:
+template class FrameTransformer<2>;
+template class FrameTransformer<3>;
+}  // namespace poses
+}  // namespace mrpt

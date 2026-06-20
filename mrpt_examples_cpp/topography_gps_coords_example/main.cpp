@@ -1,0 +1,127 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/math/TPose3D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/topography.h>
+
+#include <Eigen/Dense>
+#include <iostream>
+
+using namespace mrpt;
+using namespace mrpt::poses;
+using namespace mrpt::math;
+using namespace std;
+
+void TestGPS_coords()
+{
+  // ENU:
+  const mrpt::topography::TGeodeticCoords p0(
+      RAD2DEG(0.6408472493152757),   // lat
+      RAD2DEG(-0.0780454933097760),  // lon
+      53.200600                      // height meters
+  );
+
+  const mrpt::topography::TGeodeticCoords p1(
+      RAD2DEG(0.6408615769267271),   // lat
+      RAD2DEG(-0.0780621148947297),  // lon
+      56.210100                      // meters
+  );
+
+  std::cout << "Point 0: lat=" << p0.lat << " lon=" << p0.lon << " alt=" << p0.height << "\n";
+  std::cout << "Point 1: lat=" << p1.lat << " lon=" << p1.lon << " alt=" << p1.height << "\n";
+
+  mrpt::math::TPoint3D p;
+  mrpt::topography::geodeticToENU_WGS84(p1, p, p0);
+  std::cout << "ENU XYZ coords: " << p << "\n";
+
+  // Geocentric:
+  const mrpt::topography::TGeodeticCoords pt0(32.0, -10.0, 0.0);
+  const mrpt::topography::TGeodeticCoords pt1(32.0, -10.0, 500.0);
+
+  mrpt::math::TPoint3D geo0, geo1;
+  mrpt::topography::geodeticToGeocentric_WGS84(pt0, geo0);
+  mrpt::topography::geodeticToGeocentric_WGS84(pt1, geo1);
+  std::cout << "P0 XYZ geocentric coords: " << geo0 << "\n";
+  std::cout << "P1 XYZ geocentric coords: " << geo1 << "\n";
+
+  // ENU_axes_from_WGS84
+  mrpt::math::TPose3D pose_ENU;
+  mrpt::topography::ENU_axes_from_WGS84(pt0.lon, pt0.lat, pt0.height, pose_ENU);
+  std::cout << "ENU system of coordinates for lat=" << pt0.lat << " lon=" << pt0.lon
+            << " alt=" << pt0.height << " is: \n"
+            << mrpt::poses::CPose3D(pose_ENU).getHomogeneousMatrixVal<CMatrixDouble44>() << "\n";
+
+  std::cout << "P0->P1: " << (geo1 - geo0) << "\n";
+  std::cout
+      << "(p1.h-p0.h)*ENU_Z: "
+      << (pt1.height - pt0.height) *
+             mrpt::poses::CPose3D(pose_ENU).getRotationMatrix().blockCopy<3, 1>(0, 2).transpose()
+      << "\n";
+
+  // UTM:
+  // See: http://www.mathworks.com/matlabcentral/fileexchange/10915
+  std::cout << endl
+            << "UTM coordinate test:"
+            << "\n";
+
+  double lats[] = {40.3154333, 46.283900, 37.577833, 28.645650, 38.855550, 25.061783};
+  double lons[] = {-3.4857166, 7.8012333, -119.95525, -17.759533, -94.7990166, 121.640266};
+  int zone;
+  char band;
+  for (size_t i = 0; i < sizeof(lats) / sizeof(lats[0]); i++)
+  {
+    topography::TUTMCoords UTMCoords;
+    const double la = lats[i];
+    const double lo = lons[i];
+    // mrpt::topography::LatLonToUTM( la,lo, x,y,zone,band );
+    mrpt::topography::geodeticToUTM(topography::TGeodeticCoords(la, lo, 0), UTMCoords, zone, band);
+    std::cout << "Lat: " << la << " Lon: " << lo << " x: " << UTMCoords.x << " y: " << UTMCoords.y
+              << " zone: " << zone << " band: " << band << "\n";
+  }
+}
+
+void TestGeoid2Geocentric()
+{
+  const double lon0 = -3.733572031;  // RAD2DEG( 0.6408472493152757L );
+  const double lat0 = 37.89250616;   // RAD2DEG(-0.0780454933097760L );
+  const double h0 = 515.579;         // 53.200600; // meters
+
+  std::cout << "\n";
+  std::cout << mrpt::format("Point: lon=%.012f lat=%.012f h=%.04f\n", lon0, lat0, h0);
+
+  mrpt::math::TPoint3D p;
+  mrpt::topography::geodeticToGeocentric_WGS84(
+      mrpt::topography::TGeodeticCoords(lon0, lat0, h0), p);
+
+  std::cout << "In geocentric coords: " << p << "\n";
+}
+
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main()
+{
+  try
+  {
+    TestGPS_coords();
+    TestGeoid2Geocentric();
+    return 0;
+  }
+  catch (exception& e)
+  {
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
+    return -1;
+  }
+}

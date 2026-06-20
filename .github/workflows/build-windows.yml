@@ -1,4 +1,3 @@
-# Based on GTSAM file (by @ProfFan)
 name: CI Windows
 
 on: [push, pull_request]
@@ -7,71 +6,167 @@ jobs:
   build:
     name: ${{ matrix.name }} ${{ matrix.build_type }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 1
-      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
-      VERBOSE: 1  # to show all cmake scripts debug info
+      COLCON_HOME: ${{ github.workspace }}/.colcon
+      SCCACHE_GHA_ENABLED: "true"
+      VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
     strategy:
       fail-fast: false
       matrix:
-        # Github Actions requires a single row to be added to the build matrix.
-        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
-        name: [windows-latest]
-
+        name: [windows-2025-msvc]
         build_type: [Release]
         include:
-          - name: windows-latest
-            os: windows-latest
+          - name: windows-2025-msvc
+            os: windows-2025
             compiler: cl
-            platform: 64
 
     steps:
-      - name: Print env
-        run: |
-          echo github.event.action: ${{ github.event.action }}
-          echo github.event_name: ${{ github.event_name }}
-
-      - name: Install OpenCV
-        run: |
-          choco install --verbose opencv
-
-      - name: Install WxWidgets
-        run: |
-          choco install --verbose wxwidgets
-
-      - name: Install Qt5
-        uses: jurplel/install-qt-action@v4
-
-      # (Jul 2022: Disabled since find_package(Doxygen) in Octomap leads to 
-      #  internal Doxygen.exe errors leading to CI failure)
-      #- name: Install doxygen+graphviz
-      #  run: |
-      #    choco install --verbose doxygen 
-      #    choco install --verbose graphviz
-
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
 
       - name: Git submodule
         run: |
           git submodule sync
           git submodule update --init --recursive
 
-      - name: CMake configure
-        shell: bash
-        run: |
-          cmake -DMRPT_BUILD_TESTING=On \
-                -DMRPT_ALLOW_LGPLV3=ON \
-                -DDISABLE_ASSIMP=On \
-                -S . \
-                -B .
+      - name: Expose GitHub Actions cache to vcpkg
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-      - name: Build
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: Set up MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Install vcpkg dependencies
         shell: bash
         run: |
-          cmake --build . -j 4 --config ${{ matrix.build_type }} --target all_mrpt_libs
-          cmake --build . -j 4 --config ${{ matrix.build_type }} --target tests_build_all
-          cmake --build . -j 4 --config ${{ matrix.build_type }} --target test_legacy
+          vcpkg install eigen3 zlib zstd tinyxml2 gtest cli11 pybind11 --triplet x64-windows
+          echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "VCPKG_TARGET_TRIPLET=x64-windows" >> $GITHUB_ENV
+
+      - name: Install colcon
+        shell: bash
+        run: |
+          pip install colcon-common-extensions numpy
+          # The python binding tests run with vcpkg's python3 (selected by
+          # pybind11 FINDPYTHON), not the hosted Python above, so numpy must be
+          # installed for *that* interpreter too (else e.g. mrpt.tfest import
+          # fails with "No module named 'numpy'").
+          PYV="$VCPKG_INSTALLATION_ROOT/installed/x64-windows/tools/python3/python.exe"
+          if [ -x "$PYV" ]; then
+            "$PYV" -m ensurepip --default-pip || true
+            "$PYV" -m pip install --no-warn-script-location numpy
+          fi
+
+      - name: Colcon Build
+        shell: bash
+        run: |
+          colcon build \
+            --event-handlers console_direct+ \
+            --cmake-args \
+              -G Ninja \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DBUILD_TESTING=ON \
+              -DDISABLE_WXWIDGETS=ON \
+              -DMRPT_WITH_QT=OFF \
+              -DDISABLE_ASSIMP=ON \
+              -DMRPT_WITH_NANOGUI=OFF \
+              "-DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE" \
+              "-DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET_TRIPLET" \
+              -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+
+      - name: Colcon Test
+        shell: bash
+        run: |
+          # `mrpt` is a PEP 420 namespace package split across each module's
+          # build/<pkg>/python_staging dir (each holding mrpt/<name>/_bindings.pyd
+          # plus its staged DLLs). Unlike Linux, colcon under git-bash does not
+          # compose the dependency PYTHONPATH on Windows, so cross-package
+          # imports (e.g. mrpt.serialization -> mrpt.rtti) fail with
+          # "No module named ...". Put every staging dir on PYTHONPATH so the
+          # namespace package merges; colcon then prepends each test's own
+          # staging dir on top via ENVIRONMENT_MODIFICATION.
+          base="$(pwd -W)"
+          export PYTHONPATH="$(find build -maxdepth 2 -type d -name python_staging | sed "s#^build#${base}/build#" | paste -sd';')"
+          echo "PYTHONPATH=$PYTHONPATH"
+          # Run the binding tests in UTF-8 mode: some test scripts print
+          # non-ASCII characters (e.g. the ~ approx sign) which the default
+          # Windows cp1252 console codec cannot encode -> UnicodeEncodeError.
+          export PYTHONUTF8=1
+          colcon test \
+            --event-handlers console_direct+ \
+            --return-code-on-test-failure
+
+  # ---------------------------------------------------------------------------
+  # Windows installer packaging — RELEASES ONLY (tag pushes).
+  # Replaces the old AppVeyor pipeline (removed). Builds the NSIS installer and
+  # attaches it to the GitHub Release for the pushed tag.
+  #
+  # TODO(installer): this job is a skeleton. Before enabling, the following must
+  # be ported from the removed appveyor.yml to the modular colcon build:
+  #   - TODO: Establish a packaging/CPack target in the 3.x modular layout. The
+  #           old monolithic `cmake --build . --target PACKAGE` no longer exists
+  #           (there is no root CMakeLists.txt). Decide how to aggregate all
+  #           mrpt_* modules into a single NSIS installer under colcon.
+  #   - TODO: Install NSIS on the runner (e.g. `choco install nsis -y`) and copy
+  #           `cmakemodules/registerExtension.nsh` into the NSIS Include dir.
+  #   - TODO: Build the GUI-enabled apps the installer is meant to ship. The CI
+  #           build above disables them (-DDISABLE_WXWIDGETS=ON -DMRPT_WITH_QT=OFF
+  #           -DDISABLE_ASSIMP=ON); a real installer needs wxWidgets/Qt provided
+  #           via vcpkg (eigen3 zlib zstd tinyxml2 gtest cli11 pybind11 + wxwidgets qt5).
+  #   - TODO: Rename the artifact to `mrpt-release-<tag>.exe` (was PKG_NAME logic).
+  #   - TODO: Verify build fits the time budget; AppVeyor disabled several
+  #           BUILD_APP_* targets to stay under its 90-min limit.
+  # ---------------------------------------------------------------------------
+  package:
+    name: Windows installer (release)
+    runs-on: windows-2025
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Git submodule
+        run: |
+          git submodule sync
+          git submodule update --init --recursive
+
+      # TODO(installer): install NSIS + GUI deps, configure & build the installer.
+      # - name: Install NSIS
+      #   run: choco install nsis -y
+      # - name: Build installer
+      #   run: <colcon/cpack packaging command, see TODOs above>
+
+      # TODO(installer): upload the produced installer as a workflow artifact.
+      # - name: Upload installer artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: mrpt-windows-installer
+      #     path: mrpt-release-*.exe
+
+      # TODO(installer): attach the installer to the GitHub Release for this tag.
+      # Replaces AppVeyor's `deploy: provider: GitHub` block (release on tag).
+      # - name: Attach installer to GitHub Release
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     files: mrpt-release-*.exe
+      - name: Packaging not yet implemented
+        run: |
+          echo "Windows installer packaging is not yet implemented (see TODOs)."
+          echo "Skipping for now; tracked as the AppVeyor -> GHA installer migration."

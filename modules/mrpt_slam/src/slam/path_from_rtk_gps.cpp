@@ -1,0 +1,580 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/math/data_utils.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/slam/path_from_rtk_gps.h>
+#include <mrpt/tfest/se3.h>
+#include <mrpt/topography/conversions.h>
+#include <mrpt/topography/data_types.h>
+
+#include <memory>
+
+using namespace std;
+using namespace mrpt;
+using namespace mrpt::obs;
+using namespace mrpt::math;
+using namespace mrpt::poses;
+using namespace mrpt::system;
+using namespace mrpt::tfest;
+using namespace mrpt::config;
+using namespace mrpt::topography;
+
+namespace
+{
+template <class T>
+std::set<T> make_set(const T& v0, const T& v1)
+{
+  std::set<T> s;
+  s.insert(v0);
+  s.insert(v1);
+  return s;
+}
+
+}  // namespace
+
+/*---------------------------------------------------------------
+          path_from_rtk_gps
+ ---------------------------------------------------------------*/
+void mrpt::slam::path_from_rtk_gps(
+    mrpt::poses::CPose3DInterpolator& robot_path,
+    const mrpt::obs::CRawlog& rawlog,
+    size_t first,
+    size_t last,
+    bool disableGPSInterp,
+    int PATH_SMOOTH_FILTER,
+    TPathFromRTKInfo* outInfo)
+{
+  MRPT_START
+
+  // Go: generate the map:
+  ASSERT_(first <= last);
+  ASSERT_(last <= rawlog.size() - 1);
+
+  set<string> lstGPSLabels;
+
+  robot_path.clear();
+  robot_path.setMaxTimeInterpolation(
+      std::chrono::seconds(3));  // Max. seconds of GPS blackout not to interpolate.
+  robot_path.setInterpolationMethod(mrpt::poses::imSSLSLL);
+
+  TPathFromRTKInfo outInfoTemp;
+  if (outInfo)
+  {
+    *outInfo = outInfoTemp;
+  }
+
+  // label -> (time -> 3D local coords)
+  map<string, map<Clock::time_point, TPoint3D>> gps_paths;
+
+  bool abort = false;
+  bool ref_valid = false;
+
+  // Load configuration block:
+  CConfigFileMemory memFil;
+  rawlog.getCommentTextAsConfigFile(memFil);
+
+  TGeodeticCoords ref(
+      memFil.read_double("GPS_ORIGIN", "lat_deg", 0),
+      memFil.read_double("GPS_ORIGIN", "lon_deg", 0),
+      memFil.read_double("GPS_ORIGIN", "height", 0));
+
+  ref_valid = !ref.isClear();
+
+  // Do we have info for the consistency test?
+  const double std_0 = memFil.read_double("CONSISTENCY_TEST", "std_0", 0);
+  bool doConsistencyCheck = std_0 > 0;
+
+  // Do we have the "reference uncertainty" matrix W^\star ??
+  memFil.read_matrix("UNCERTAINTY", "W_star", outInfoTemp.W_star);
+  const bool doUncertaintyCovs = outInfoTemp.W_star.rows() != 0;
+  if (doUncertaintyCovs && (outInfoTemp.W_star.rows() != 6 || outInfoTemp.W_star.cols() != 6))
+    THROW_EXCEPTION(
+        "ERROR: W_star matrix for uncertainty estimation is provided but "
+        "it's not a 6x6 matrix.");
+
+  // ------------------------------------------
+  // Look for the 2 observations:
+  // ------------------------------------------
+
+  // The list with all time ordered gps's in valid RTK mode
+  using TListGPSs =
+      std::map<mrpt::Clock::time_point, std::map<std::string, CObservationGPS::ConstPtr>>;
+  TListGPSs list_gps_obs;
+
+  map<string, size_t> GPS_RTK_reads;                  // label-># of RTK readings
+  map<string, TPoint3D> GPS_local_coords_on_vehicle;  // label -> local pose on the vehicle
+
+  for (size_t i = first; !abort && i <= last; i++)
+  {
+    switch (rawlog.getType(i))
+    {
+      default:
+        break;
+
+      case CRawlog::TEntryType::etObservation:
+      {
+        CObservation::ConstPtr o = rawlog.getAsObservation(i);
+
+        if (o->GetRuntimeClass() == CLASS_ID(CObservationGPS))
+        {
+          CObservationGPS::ConstPtr obs = std::dynamic_pointer_cast<const CObservationGPS>(o);
+
+          if (obs->has_GGA_datum() &&
+              obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality == 4)
+          {
+            // Add to the list:
+            list_gps_obs[obs->timestamp][obs->sensorLabel] = obs;
+
+            lstGPSLabels.insert(obs->sensorLabel);
+          }
+
+          // Save to GPS paths:
+          if (obs->has_GGA_datum() &&
+              (obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality == 4 ||
+               obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality == 5))
+          {
+            GPS_RTK_reads[obs->sensorLabel]++;
+
+            // map<string,TPoint3D> GPS_local_coords_on_vehicle;  //
+            // label -> local pose on the vehicle
+            if (GPS_local_coords_on_vehicle.find(obs->sensorLabel) ==
+                GPS_local_coords_on_vehicle.end())
+              GPS_local_coords_on_vehicle[obs->sensorLabel] = TPoint3D(obs->sensorPose.asTPose());
+
+            // map<string, map<Clock::time_point,TPoint3D> >
+            // gps_paths;
+            // //
+            // label -> (time -> 3D local coords)
+            gps_paths[obs->sensorLabel][obs->timestamp] = TPoint3D(
+                obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees,
+                obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees,
+                obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters);
+          }
+        }
+      }
+      break;
+    }  // end switch type
+
+  }  // end for i
+
+  // -----------------------------------------------------------
+  // At this point we already have the sensor positions, thus
+  //  we can estimate the covariance matrix D:
+  // -----------------------------------------------------------
+  map<set<string>, double> Ad_ij;         // InterGPS distances in 2D
+  map<set<string>, double> phi_ij;        // Directions on XY of the lines between i-j
+  map<string, size_t> D_cov_indexes;      // Sensor label-> index in GPS list (0..N-1)
+  map<size_t, string> D_cov_rev_indexes;  // Reverse of D_cov_indexes
+
+  // pairList[k] = (label_a, label_b) for the k-th pair (index_a < index_b),
+  // used to index rows/cols of D_cov and D_mean.
+  vector<pair<string, string>> pairList;
+
+  CMatrixDouble D_cov;    // square distances cov
+  CMatrixDouble D_cov_1;  // square distances cov (inverse)
+  CVectorDouble D_mean;   // square distances mean
+
+  if (doConsistencyCheck && GPS_local_coords_on_vehicle.size() >= 3)
+  {
+    // Build GPS label -> sequential index, and all pairwise distances/angles
+    size_t cnt = 0;
+    for (auto i = GPS_local_coords_on_vehicle.begin(); i != GPS_local_coords_on_vehicle.end(); ++i)
+    {
+      D_cov_indexes[i->first] = cnt;
+      D_cov_rev_indexes[cnt] = i->first;
+      cnt++;
+
+      for (auto j = i; j != GPS_local_coords_on_vehicle.end(); ++j)
+      {
+        if (i != j)
+        {
+          const TPoint3D& pi = i->second;
+          const TPoint3D& pj = j->second;
+          Ad_ij[make_set(i->first, j->first)] = pi.distanceTo(pj);
+          phi_ij[make_set(i->first, j->first)] = atan2(pj.y - pi.y, pj.x - pi.x);
+        }
+      }
+    }
+
+    const size_t N = GPS_local_coords_on_vehicle.size();
+    const size_t numPairs = N * (N - 1) / 2;
+
+    // Build ordered pair list (index_a < index_b, lexicographic)
+    for (size_t i = 0; i < N; ++i)
+    {
+      for (size_t j = i + 1; j < N; ++j)
+      {
+        pairList.emplace_back(D_cov_rev_indexes[i], D_cov_rev_indexes[j]);
+      }
+    }
+
+    D_cov.setSize(static_cast<int>(numPairs), static_cast<int>(numPairs));
+    D_mean.resize(static_cast<int>(numPairs));
+
+    // Build D_cov using error-propagation formulas generalised to N GPS:
+    //   - Diagonal: Var(d_ab^2) = 8 * sigma^2 * d_ab^2 / (4*sigma^2) = 2*d_ab^2
+    //   - Off-diagonal (pairs p=(a,b) and q=(c,d)):
+    //       If they share GPS k:
+    //         sign = +1 if k is in the same position (both first or both last)
+    //         sign = -1 if k is in different positions
+    //         value = sign * d_p * d_q * cos(phi_p - phi_q)
+    //       If they share no GPS: 0
+    //   The whole matrix is then scaled by 4*std_0^2.
+    for (int p = 0; p < static_cast<int>(numPairs); ++p)
+    {
+      const auto& la = pairList[p].first;
+      const auto& lb = pairList[p].second;
+      const size_t ia = D_cov_indexes[la];
+      const size_t ib = D_cov_indexes[lb];
+      const double dab = Ad_ij[make_set(la, lb)];
+
+      D_cov(p, p) = 2.0 * square(dab);
+      D_mean[p] = square(dab);
+
+      for (int q = p + 1; q < static_cast<int>(numPairs); ++q)
+      {
+        const auto& lc = pairList[q].first;
+        const auto& ld = pairList[q].second;
+        const size_t ic = D_cov_indexes[lc];
+        const size_t id = D_cov_indexes[ld];
+        const double dcd = Ad_ij[make_set(lc, ld)];
+        const double phiab = phi_ij[make_set(la, lb)];
+        const double phicd = phi_ij[make_set(lc, ld)];
+
+        // sign = +1 if shared GPS is in same position in both pairs, -1 otherwise
+        double sign = 0.0;
+        if (ia == ic || ib == id)
+        {
+          sign = +1.0;
+        }
+        else if (ia == id || ib == ic)
+        {
+          sign = -1.0;
+        }
+        else
+        {
+          D_cov(p, q) = D_cov(q, p) = 0.0;
+          continue;
+        }
+
+        D_cov(p, q) = D_cov(q, p) = sign * dab * dcd * cos(phiab - phicd);
+      }
+    }
+
+    D_cov *= 4.0 * square(std_0);
+    D_cov_1 = D_cov.inverse_LLt();
+
+    // std::cout << D_cov.inMatlabFormat() << "\n";
+  }
+  else
+  {
+    doConsistencyCheck = false;
+  }
+
+  // ------------------------------------------
+  // Look for the 2 observations:
+  // ------------------------------------------
+  int N_GPSs = static_cast<int>(list_gps_obs.size());
+
+  if (N_GPSs)
+  {
+    // loop interpolate 1-out-of-5: this solves the issue with JAVAD GPSs
+    //  that skip some readings at some times .0 .2 .4 .6 .8
+    if (list_gps_obs.size() > 4)
+    {
+      auto F = list_gps_obs.begin();
+      ++F;
+      ++F;
+      auto E = list_gps_obs.end();
+      --E;
+      --E;
+
+      for (auto it = F; it != E; ++it)
+      {
+        // Now check if we have 3 gps with the same time stamp:
+        // const size_t N = i->second.size();
+        std::map<std::string, CObservationGPS::ConstPtr>& GPS = it->second;
+
+        // Check if any in "lstGPSLabels" is missing here:
+        for (const auto& lstGPSLabel : lstGPSLabels)
+        {
+          // For each GPS in the current timestamp:
+          bool fnd = (GPS.find(lstGPSLabel) != GPS.end());
+
+          if (fnd) continue;  // this one is present.
+
+          // Ok, we have "*l" missing in the set "*i".
+          // Try to interpolate from neighbors:
+          auto i_b1 = it;
+          --i_b1;
+          auto i_a1 = it;
+          ++i_a1;
+
+          CObservationGPS::ConstPtr GPS_b1, GPS_a1;
+
+          if (i_b1->second.find(lstGPSLabel) != i_b1->second.end())
+            GPS_b1 = i_b1->second.find(lstGPSLabel)->second;
+
+          if (i_a1->second.find(lstGPSLabel) != i_a1->second.end())
+            GPS_a1 = i_a1->second.find(lstGPSLabel)->second;
+
+          if (!disableGPSInterp && GPS_a1 && GPS_b1)
+          {
+            if (mrpt::system::timeDifference(GPS_b1->timestamp, GPS_a1->timestamp) < 0.5)
+            {
+              auto new_gps = CObservationGPS::Create(*GPS_a1);
+              new_gps->sensorLabel = lstGPSLabel;
+
+              // cout <<
+              // mrpt::system::timeLocalToString(GPS_b1->timestamp)
+              // << " " <<
+              // mrpt::system::timeLocalToString(GPS_a1->timestamp)
+              // << " " << *l;
+              // std::cout << "\n";
+
+              new_gps->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees =
+                  0.5 * (GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees +
+                         GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees);
+              new_gps->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees =
+                  0.5 * (GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees +
+                         GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees);
+              new_gps->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters =
+                  0.5 * (GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters +
+                         GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters);
+
+              new_gps->timestamp = mrpt::Clock::time_point(mrpt::Clock::duration(
+                  (GPS_a1->timestamp.time_since_epoch().count() +
+                   GPS_b1->timestamp.time_since_epoch().count()) /
+                  2));
+
+              it->second[new_gps->sensorLabel] = new_gps;
+            }
+          }
+        }
+      }  // end loop interpolate 1-out-of-5
+    }
+
+    int idx_in_GPSs = 0;
+
+    for (auto i = list_gps_obs.begin(); i != list_gps_obs.end(); ++i, idx_in_GPSs++)
+    {
+      // Now check if we have 3 gps with the same time stamp:
+      if (i->second.size() >= 3)
+      {
+        const size_t N = i->second.size();
+        std::map<std::string, CObservationGPS::ConstPtr>& GPS = i->second;
+        CVectorDouble X(N), Y(N), Z(N);    // Global XYZ coordinates
+        std::map<string, size_t> XYZidxs;  // Sensor label -> indices in X Y Z
+
+        if (!ref_valid)  // get the reference lat/lon, if it's not set
+        // from rawlog configuration block.
+        {
+          ref_valid = true;
+          ref = GPS.begin()
+                    ->second->getMsgByClass<gnss::Message_NMEA_GGA>()
+                    .getAsStruct<TGeodeticCoords>();
+        }
+
+        // Compute the XYZ coordinates of all sensors:
+        TMatchingPairList corrs;
+        unsigned int k;
+        std::map<std::string, CObservationGPS::ConstPtr>::iterator g_it;
+
+        for (k = 0, g_it = GPS.begin(); g_it != GPS.end(); ++g_it, ++k)
+        {
+          TPoint3D P;
+          mrpt::topography::geodeticToENU_WGS84(
+              g_it->second->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>(),
+              P, ref);
+
+          // Correction of offsets:
+          const string sect = string("OFFSET_") + g_it->second->sensorLabel;
+          P.x += memFil.read_double(sect, "x", 0);
+          P.y += memFil.read_double(sect, "y", 0);
+          P.z += memFil.read_double(sect, "z", 0);
+
+          XYZidxs[g_it->second->sensorLabel] = k;  // Save index correspondence
+
+          // Create the correspondence:
+          corrs.push_back(TMatchingPair(
+              k, k,  // Indices
+                     // "This"/Global coords
+              d2f(P.x), d2f(P.y), d2f(P.z),
+              // "other"/local coordinates
+              d2f(g_it->second->sensorPose.x()), d2f(g_it->second->sensorPose.y()),
+              d2f(g_it->second->sensorPose.z())));
+
+          X[k] = P.x;
+          Y[k] = P.y;
+          Z[k] = P.z;
+        }
+
+        if (doConsistencyCheck && GPS.size() >= 3)
+        {
+          // Compute all pairwise squared distances in the same order as pairList
+          const int numP = static_cast<int>(pairList.size());
+          CVectorDouble iGPSdist2(numP);
+          for (int pidx = 0; pidx < numP; ++pidx)
+          {
+            const auto& la = pairList[pidx].first;
+            const auto& lb = pairList[pidx].second;
+            TPoint3D Pa(X[XYZidxs[la]], Y[XYZidxs[la]], Z[XYZidxs[la]]);
+            TPoint3D Pb(X[XYZidxs[lb]], Y[XYZidxs[lb]], Z[XYZidxs[lb]]);
+            iGPSdist2[pidx] = Pa.sqrDistanceTo(Pb);
+          }
+
+          double mahaD = mrpt::math::mahalanobisDistance(iGPSdist2, D_mean, D_cov_1);
+          outInfoTemp.mahalabis_quality_measure[i->first] = mahaD;
+        }  // end consistency
+
+        // Use a 6D matching method to estimate the location of the
+        // vehicle:
+        CPose3DQuat optimal_pose;
+        double optimal_scale;
+
+        // "this" (reference map) -> GPS global coordinates
+        // "other" -> GPS local coordinates on the vehicle
+        mrpt::tfest::se3_l2(corrs, optimal_pose, optimal_scale,
+                            true);  // Force scale=1
+        // std::cout << "optimal pose: " << optimal_pose << " " <<
+        // optimal_scale << "\n";
+        MRPT_CHECK_NORMAL_NUMBER(optimal_pose.x());
+        MRPT_CHECK_NORMAL_NUMBER(optimal_pose.y());
+        MRPT_CHECK_NORMAL_NUMBER(optimal_pose.z());
+        MRPT_CHECK_NORMAL_NUMBER(optimal_pose.quat().x());
+        MRPT_CHECK_NORMAL_NUMBER(optimal_pose.quat().y());
+        MRPT_CHECK_NORMAL_NUMBER(optimal_pose.quat().z());
+        MRPT_CHECK_NORMAL_NUMBER(optimal_pose.quat().r());
+
+        // Final vehicle pose:
+        const CPose3D veh_pose = CPose3D(optimal_pose);
+
+        // Add to the interpolator:
+        robot_path.insert(i->first, veh_pose);
+
+        // If we have W_star, compute the pose uncertainty:
+        if (doUncertaintyCovs)
+        {
+          CPose3DPDFGaussian final_veh_uncert;
+          final_veh_uncert.mean.setFromValues(0, 0, 0, 0, 0, 0);
+          final_veh_uncert.cov = outInfoTemp.W_star;
+
+          // Rotate the covariance according to the real vehicle pose:
+          final_veh_uncert.changeCoordinatesReference(veh_pose);
+
+          outInfoTemp.vehicle_uncertainty[i->first] = final_veh_uncert.cov;
+        }
+      }
+
+    }  // end for i
+
+    if (PATH_SMOOTH_FILTER > 0 && robot_path.size() > 1)
+    {
+      CPose3DInterpolator filtered_robot_path = robot_path;
+
+      // Do Angles smoother filter of the path:
+      // ---------------------------------------------
+      const double MAX_DIST_TO_FILTER = 4.0;
+
+      for (auto i = robot_path.begin(); i != robot_path.end(); ++i)
+      {
+        mrpt::math::TPose3D p = i->second;
+
+        CVectorDouble pitchs, rolls;  // The elements to average
+
+        pitchs.push_back(p.pitch);
+        rolls.push_back(p.roll);
+
+        auto q = i;
+        for (int k = 0; k < PATH_SMOOTH_FILTER && q != robot_path.begin(); k++)
+        {
+          --q;
+          if (std::abs(mrpt::system::timeDifference(q->first, i->first)) < MAX_DIST_TO_FILTER)
+          {
+            pitchs.push_back(q->second.pitch);
+            rolls.push_back(q->second.roll);
+          }
+        }
+        q = i;
+        for (int k = 0; k < PATH_SMOOTH_FILTER && q != (--robot_path.end()); k++)
+        {
+          ++q;
+          if (std::abs(mrpt::system::timeDifference(q->first, i->first)) < MAX_DIST_TO_FILTER)
+          {
+            pitchs.push_back(q->second.pitch);
+            rolls.push_back(q->second.roll);
+          }
+        }
+
+        p.pitch = mrpt::math::averageWrap2Pi(pitchs);
+        p.roll = mrpt::math::averageWrap2Pi(rolls);
+
+        // save in filtered path:
+        filtered_robot_path.insert(i->first, p);
+      }
+      // Replace:
+      robot_path = filtered_robot_path;
+
+    }  // end PATH_SMOOTH_FILTER
+
+  }  // end step generate 6D path
+
+  // Here we can set best_gps_path  (that with the max. number of RTK
+  // fixed/foat readings):
+  if (outInfo)
+  {
+    string bestLabel;
+    size_t bestNum = 0;
+    for (auto& GPS_RTK_read : GPS_RTK_reads)
+    {
+      if (GPS_RTK_read.second > bestNum)
+      {
+        bestNum = GPS_RTK_read.second;
+        bestLabel = GPS_RTK_read.first;
+      }
+    }
+    outInfoTemp.best_gps_path = gps_paths[bestLabel];
+
+    // and transform to XYZ:
+    // Correction of offsets:
+    const string sect = string("OFFSET_") + bestLabel;
+    const double off_X = memFil.read_double(sect, "x", 0);
+    const double off_Y = memFil.read_double(sect, "y", 0);
+    const double off_Z = memFil.read_double(sect, "z", 0);
+
+    // map<TTimeStamp,TPoint3D> best_gps_path;		// time -> 3D local
+    // coords
+    for (auto& i : outInfoTemp.best_gps_path)
+    {
+      TPoint3D P;
+      TPoint3D& pl = i.second;
+      mrpt::topography::geodeticToENU_WGS84(
+          TGeodeticCoords(
+              pl.x, pl.y,
+              pl.z),  // i->second.x,i->second.y,i->second.z,
+          // // lat, lon, heigh
+          P,  // X Y Z
+          ref);
+
+      pl.x = P.x + off_X;
+      pl.y = P.y + off_Y;
+      pl.z = P.z + off_Z;
+    }
+  }  // end best_gps_path
+
+  if (outInfo) *outInfo = outInfoTemp;
+
+  MRPT_END
+}

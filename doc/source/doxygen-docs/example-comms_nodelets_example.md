@@ -34,4 +34,4 @@ Contents of `comms_nodelets_example/NodeletsTest_impl.cpp`:
 \include comms_nodelets_example/NodeletsTest_impl.cpp
 
 C++ example source code:
-\include comms_nodelets_example/test.cpp
+\include comms_nodelets_example/main.cpp

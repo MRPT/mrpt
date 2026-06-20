@@ -1,0 +1,73 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/containers/PerThreadDataHolder.h>
+
+#include <memory>
+#include <thread>
+
+namespace mrpt::opengl
+{
+/** A wrapper for an OpenGL vertex array object (VAO).
+ * Refer to docs for glGenVertexArrays().
+ *
+ * \ingroup mrpt_opengl_grp
+ * \note OpenGL VAOs *cannot* be shared among threads/GL contexts.
+ */
+class VertexArrayObject
+{
+ public:
+  VertexArrayObject();
+  ~VertexArrayObject() = default;
+
+  /** Calls create() only if the buffer has not been created yet. */
+  void createOnce()
+  {
+    if (!isCreated()) m_impl.create();
+  }
+  bool isCreated() const { return m_impl.m_state.get().created; }
+
+  /** Automatically called upon destructor, no need for the user to call it in
+   * normal situations. */
+  void destroy() { m_impl.destroy(); }
+
+  void bind() const { m_impl.bind(); }
+  void release() { m_impl.bind(); }
+
+  unsigned int bufferId() const { return m_impl.m_state.get().buffer_id; }
+
+ private:
+  struct RAII_Impl
+  {
+    RAII_Impl() = default;
+    ~RAII_Impl();
+
+    void create();
+    void destroy();
+    void bind() const;
+    void release();
+
+    struct State
+    {
+      bool created = false;
+      unsigned int buffer_id = 0;
+    };
+
+    mrpt::containers::PerThreadDataHolder<State> m_state;
+  };
+  RAII_Impl m_impl;
+};
+
+}  // namespace mrpt::opengl

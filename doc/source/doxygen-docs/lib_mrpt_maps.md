@@ -18,15 +18,11 @@ in the rest of MRPT classes.
 Interesting starting points:
 <ul>
 <li> To see the list of existing metric maps, see the classes inheriting from
-the base virtual mrpt::maps::CMetricMap. <b>Note:</b> There are two special
-maps which are not declared here in mrpt-maps, but
-in <a href="mrpt-vision.html" >mrpt-vision</a>, due to their
-heavy dependence on computer vision functions. </li>
-<li> This library also adds new classes to the namespace mrpt::opengl, which
-couldn't be included in the library mrpt-opengl due to its heavy dependence on
-map classes declared here. The classes are:
-mrpt::opengl::CAngularObservationMesh,
-mrpt::opengl::CPlanarLaserScan </li>
+the base virtual mrpt::maps::CMetricMap. </li>
+<li> This library also adds visualization classes to the namespace mrpt::viz,
+which couldn't be included in mrpt-viz due to their dependence on map classes
+declared here. The classes are:
+mrpt::viz::CPlanarLaserScan </li>
 </ul>
 
 mrpt::maps::CMultiMetricMap provides a versatile container for multiple metric

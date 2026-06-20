@@ -1,0 +1,48 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include "holonomic_navigator_demoApp.h"
+
+//(*AppHeaders
+#include <wx/image.h>
+
+#include "holonomic_navigator_demoMain.h"
+//*)
+
+IMPLEMENT_APP(holonomic_navigator_demoApp)
+
+bool holonomic_navigator_demoApp::OnInit()
+{
+  // Starting in wxWidgets 2.9.0, we must reset numerics locale to "C",
+  //  if we want numbers to use "." in all countries. The App::OnInit() is a
+  //  perfect place to undo
+  //  the default wxWidgets settings. (JL @ Sep-2009)
+  wxSetlocale(LC_NUMERIC, wxString("C"));
+
+  //(*AppInitialize
+  bool wxsOK = true;
+  wxInitAllImageHandlers();
+  if (wxsOK)
+  {
+    auto* Frame = new holonomic_navigator_demoFrame(nullptr);
+    Frame->Show();
+    // Maximize must happen *after* Show(): on wxGTK, maximizing a top-level
+    // window before it is realized leaves it at the (tiny) sizer min size and
+    // triggers a cascade of GTK negative-allocation warnings.
+    Frame->Maximize();
+    SetTopWindow(Frame);
+  }
+  //*)
+  return wxsOK;
+}

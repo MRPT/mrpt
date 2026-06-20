@@ -1,0 +1,202 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#ifndef HOLONOMIC_NAVIGATOR_DEMOMAIN_H
+#define HOLONOMIC_NAVIGATOR_DEMOMAIN_H
+
+//(*Headers(holonomic_navigator_demoFrame)
+#include <wx/frame.h>
+#include <wx/menu.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/radiobox.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
+#include <wx/statusbr.h>
+#include <wx/textctrl.h>
+#include <wx/things/toggle.h>
+#include <wx/timer.h>
+
+#include "MyGLCanvas.h"
+//*)
+
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/nav.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSetOfObjects.h>
+#include <mrpt/viz/CSimpleLine.h>
+
+#include <memory>  // unique_ptr
+
+// JLBC: Unix X headers have these funny things...
+#ifdef Button1
+#undef Button1
+#undef Button2
+#undef Button3
+#undef Button4
+#undef Button5
+#undef Button6
+#undef Button7
+#endif
+// To avoid conflicts between Eigen & X11 headers
+#ifdef Success
+#undef Success
+#endif
+
+class holonomic_navigator_demoFrame : public wxFrame
+{
+ public:
+  holonomic_navigator_demoFrame(wxWindow* parent, wxWindowID id = -1);
+  ~holonomic_navigator_demoFrame() override;
+
+ private:
+  //(*Handlers(holonomic_navigator_demoFrame)
+  void OnQuit([[maybe_unused]] wxCommandEvent& event);
+  void OnAbout([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPlaceRobotClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPlaceTargetClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStartClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStopClick([[maybe_unused]] wxCommandEvent& event);
+  void OntimRunSimulTrigger(wxTimerEvent& event);
+  void OnMenuItemChangeVisibleStuff([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuItemClearRobotPath([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnLoadMapClick([[maybe_unused]] wxCommandEvent& event);
+  //*)
+
+  //(*Identifiers(holonomic_navigator_demoFrame)
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_BUTTON6;
+  static const wxWindowID ID_BUTTON7;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_RADIOBOX1;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_PANEL1;
+  static const wxWindowID ID_PANEL2;
+  static const wxWindowID ID_NOTEBOOK1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_XY_GLCANVAS;
+  static const wxWindowID ID_CUSTOM1;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_MENUITEM4;
+  static const wxWindowID idMenuQuit;
+  static const wxWindowID ID_MENUITEM1;
+  static const wxWindowID ID_MENUITEM2;
+  static const wxWindowID ID_MENUITEM3;
+  static const wxWindowID idMenuAbout;
+  static const wxWindowID ID_STATUSBAR1;
+  static const wxWindowID ID_TIMER1;
+  //*)
+
+  //(*Declarations(holonomic_navigator_demoFrame)
+  wxTimer timRunSimul;
+  wxTextCtrl* edInfoLocalView;
+  wxCustomButton* btnStop;
+  wxNotebook* Notebook1;
+  wxRadioBox* rbHoloMethod;
+  wxMenuItem* MenuItem5;
+  wxStaticText* StaticText2;
+  wxCustomButton* btnStart;
+  wxMenu* Menu3;
+  wxTextCtrl* edHoloParams;
+  wxCustomButton* btnLoadMap;
+  wxCustomButton* btnQuit;
+  wxPanel* Panel1;
+  wxStaticText* StaticText1;
+  wxMenuItem* MenuItem3;
+  wxMenuItem* mnuViewRobotPath;
+  wxStatusBar* StatusBar1;
+  wxCustomButton* btnHelp;
+  wxCustomButton* btnPlaceRobot;
+  wxPanel* Panel2;
+  wxMenuItem* mnuViewMaxRange;
+  wxCustomButton* btnPlaceTarget;
+  CMyGLCanvas* m_plotScan;
+  CMyGLCanvas* m_plot3D;
+  //*)
+
+  DECLARE_EVENT_TABLE()
+
+  /* Methods: */
+  void updateMap3DView();
+  void reinitSimulator();  // Create navigator object & load params from GUI
+  void simulateOneStep(double time_step);
+  void updateViewsDynamicObjects();  // Update 3D object positions and refresh
+  // views.
+
+  void Onplot3DMouseClick(wxMouseEvent& event);
+  void Onplot3DMouseMove(wxMouseEvent& event);
+
+  /* Vars: */
+  struct TOptions : public mrpt::config::CLoadableOptions
+  {
+    double ROBOT_MAX_SPEED{4.0};
+    double MAX_SENSOR_RADIUS{5.0};
+    uint64_t SENSOR_NUM_RANGES{181};
+    double SENSOR_RANGE_NOISE_STD{0.02};
+
+    TOptions() = default;
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source,
+        const std::string& section) override;  // See base docs
+    void saveToConfigFile(
+        mrpt::config::CConfigFileBase& source,
+        const std::string& section) const override;  // See base docs
+  };
+
+  TOptions m_simul_options;
+
+  /**  The state of the cursor onto the 3D view:
+   */
+  enum TCursorPickState
+  {
+    cpsNone = 0,
+    cpsPickTarget,
+    cpsPlaceRobot
+  };
+
+  std::unique_ptr<mrpt::nav::CAbstractHolonomicReactiveMethod> m_holonomicMethod;
+  mrpt::maps::COccupancyGridMap2D m_gridMap;
+  mrpt::math::TPose2D m_targetPose;
+  mrpt::math::TPose2D m_robotPose;
+
+  mrpt::system::CTicTac m_runtime;
+  /** Of the cursor on the 3D view (in world coordinates at Z=0) */
+  mrpt::math::TPoint2D m_curCursorPos;
+  /** The state of the cursor onto the 3D view: */
+  TCursorPickState m_cursorPickState;
+
+  // ========= Opengl View: Map & robot  =======
+  mrpt::viz::CSetOfObjects::Ptr gl_grid;
+  mrpt::viz::CSetOfObjects::Ptr gl_robot, gl_target;
+  mrpt::viz::CSetOfObjects::Ptr m_gl_placing_nav_target;
+  mrpt::viz::CSetOfObjects::Ptr m_gl_placing_robot;
+  mrpt::viz::CDisk::Ptr gl_robot_sensor_range;
+  mrpt::viz::CSetOfLines::Ptr gl_robot_path;
+  mrpt::viz::CPlanarLaserScan::Ptr gl_scan3D, gl_scan2D;
+  mrpt::viz::CPointCloud::Ptr gl_path;
+
+  // ========= Opengl View: Local view (holonomic)  =======
+  mrpt::viz::CSimpleLine::Ptr gl_line_direction;
+  mrpt::viz::CPointCloud::Ptr gl_rel_target;
+  mrpt::viz::CSetOfLines::Ptr gl_nd_gaps;
+};
+
+#endif  // HOLONOMIC_NAVIGATOR_DEMOMAIN_H

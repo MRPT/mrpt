@@ -1,0 +1,67 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
+
+namespace mrpt::nav
+{
+/** Implementation of multi-objective motion chooser using scalarization: a
+ * user-given formula is used to
+ * collapse all the scores into a single scalar score. The candidate with the
+ * highest positive score is selected.
+ * Note that assert expressions are honored via the base class
+ * CMultiObjectiveMotionOptimizerBase
+ *
+ * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
+ * \ingroup nav_reactive
+ */
+class CMultiObjMotionOpt_Scalarization : public mrpt::nav::CMultiObjectiveMotionOptimizerBase
+{
+  DEFINE_MRPT_OBJECT(CMultiObjMotionOpt_Scalarization, mrpt::nav)
+
+ public:
+  CMultiObjMotionOpt_Scalarization();
+
+  void loadConfigFile(const mrpt::config::CConfigFileBase& c) override;
+  void saveConfigFile(mrpt::config::CConfigFileBase& c) const override;
+
+  struct TParams : public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
+  {
+    /** A formula that takes all/a subset of scores and generates a scalar
+     * global score. */
+    std::string scalar_score_formula;
+
+    TParams();
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source,
+        const std::string& section) override;  // See base docs
+    void saveToConfigFile(
+        mrpt::config::CConfigFileBase& cfg,
+        const std::string& section) const override;  // See base docs
+  };
+
+  TParams parameters;
+
+  void clear() override;
+
+ protected:
+  mrpt::expr::CRuntimeCompiledExpression m_expr_scalar_formula;
+  std::map<std::string, double> m_expr_scalar_vars;
+
+  // This virtual method is called by decide().
+  std::optional<size_t> impl_decide(
+      const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo& extra_info) override;
+};
+}  // namespace mrpt::nav

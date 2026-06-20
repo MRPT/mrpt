@@ -38,20 +38,11 @@ do
 done
 
 # Sets the bash variables:
-# MRPT_VERSION_STR, MRPT_VER_MMP, MRPT_VERSION_{MAJOR,MINOR,PATCH}
+# MRPT_VERSION_STR, MRPT_VER_MMP, MRPT_VER_MM, MRPT_VERSION_{MAJOR,MINOR,PATCH}
+# The version is read from modules/mrpt_common/package.xml.
 # --------------------------------
-if [ -f version_prefix.txt ];
-then
-	MRPT_VERSION_STR=$(head -n 1 version_prefix.txt)
-	MRPT_VERSION_MAJOR=${MRPT_VERSION_STR:0:1}
-	MRPT_VERSION_MINOR=${MRPT_VERSION_STR:2:1}
-	MRPT_VERSION_PATCH=${MRPT_VERSION_STR:4:1}
-	MRPT_VER_MMP="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}.${MRPT_VERSION_PATCH}"
-	echo "MRPT version: ${MRPT_VER_MMP}"
-else
-	echo "Error: cannot find version_prefix.txt!! Invoke scripts from mrpt sources root directory."
-	exit 1
-fi
+CUR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$CUR_SCRIPT_DIR/parse_mrpt_version.sh"
 
 if [ $APPEND_SNAPSHOT_NUM == "1" ];
 then
@@ -88,13 +79,16 @@ then
 	echo "> Exporting git source tree to ${OUT_DIR}"
 	git archive --format=tar HEAD | tar -x -C "${OUT_DIR}"
 
-	# Include external submodules:
-	EXTERNAL_MODS="nanogui nanogui/ext/nanovg googletest libfyaml rplidar_sdk ${MRPT_PKG_EXPORTED_SUBMODULES}"
+	# Include external submodules. Each entry is "<path-relative-to-MRPTSRC>",
+	# i.e. the actual on-disk submodule path, which is also where it must land
+	# inside OUT_DIR (modules/* submodules moved there in MRPT 3.x; only
+	# googletest and rplidar_sdk remain directly under 3rdparty/):
+	EXTERNAL_MODS="modules/mrpt_gui/3rdparty/nanogui modules/mrpt_gui/3rdparty/nanogui/ext/nanovg 3rdparty/googletest modules/mrpt_containers/3rdparty/libfyaml 3rdparty/rplidar_sdk ${MRPT_PKG_EXPORTED_SUBMODULES}"
 	for MOD in $EXTERNAL_MODS;
 	do
-		echo "> Exporting git submodule: ${MRPTSRC}/3rdparty/$MOD"
-		cd "${MRPTSRC}/3rdparty/$MOD"
-		git archive --format=tar HEAD | tar -x -C "${OUT_DIR}/3rdparty/$MOD"
+		echo "> Exporting git submodule: ${MRPTSRC}/$MOD"
+		cd "${MRPTSRC}/$MOD"
+		git archive --format=tar HEAD | tar -x -C "${OUT_DIR}/$MOD"
 	done
 
 	cd "${MRPTSRC}"

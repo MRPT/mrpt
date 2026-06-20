@@ -1,0 +1,140 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/io/CCompressedOutputStream.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+
+#include <iostream>
+
+using namespace mrpt;
+using namespace mrpt::poses;
+using namespace mrpt::viz;
+using namespace mrpt::gui;
+using namespace mrpt::io;
+using namespace mrpt::system;
+using namespace mrpt::serialization;
+using namespace std;
+
+/* ------------------------------------------------------------------------
+          Test_SoG_Merge
+   ------------------------------------------------------------------------ */
+void Test_SoG_Merge()
+{
+  CPosePDFSOG pdf;
+
+  CPosePDFSOG::TGaussianMode m;
+  m.mean = CPose2D(1.1, -0.1, -2.0_deg);
+
+  m.cov.setIdentity();
+  m.cov(0, 0) = m.cov(1, 1) = square(0.1);
+  m.cov(2, 2) = square(2.0_deg);
+  m.log_w = 0;
+
+  pdf.clear();
+  pdf.push_back(m);
+
+  m.mean = CPose2D(1.1, 0.1, 2.0_deg);
+  pdf.push_back(m);
+
+  m.mean = CPose2D(2, 0, 20.0_deg);
+  pdf.push_back(m);
+
+  std::cout << "Initial PDF: mean: " << pdf.getMeanVal() << "\n";
+  std::cout << pdf.getCovariance() << endl << "\n";
+
+#if MRPT_HAS_WXWIDGETS
+  CDisplayWindow3D win_before("Before merge");
+  CDisplayWindow3D win_after("After merge");
+#endif
+
+  {
+    Scene scene;
+    CSetOfObjects::Ptr o = CSetOfObjects::Create();
+    pdf.getAs3DObject(o);
+    scene.insert(o);
+    scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
+
+    CCompressedOutputStream f("sog_before.3Dscene");
+    archiveFrom(f) << scene;
+
+#if MRPT_HAS_WXWIDGETS
+    Scene::Ptr sc = win_before.get3DSceneAndLock();
+    *sc = scene;
+    win_before.unlockAccess3DScene();
+    win_before.setCameraZoom(5);
+    win_before.setCameraPointingToPoint(1, 0, 0);
+    win_before.forceRepaint();
+#endif
+  }
+
+  std::cout << "Merging...";
+  pdf.mergeModes(0.9, true);
+  std::cout << " # modes after: " << pdf.size() << "\n";
+
+  std::cout << "Final PDF: mean: " << pdf.getMeanVal() << "\n";
+  std::cout << pdf.getCovariance() << endl << "\n";
+
+  {
+    Scene scene;
+    CSetOfObjects::Ptr o = CSetOfObjects::Create();
+    pdf.getAs3DObject(o);
+    scene.insert(o);
+    scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
+
+    CCompressedOutputStream f("sog_after.3Dscene");
+    archiveFrom(f) << scene;
+
+#if MRPT_HAS_WXWIDGETS
+    Scene::Ptr sc = win_after.get3DSceneAndLock();
+    *sc = scene;
+    win_after.unlockAccess3DScene();
+    win_after.setCameraZoom(5);
+    win_after.setCameraPointingToPoint(1, 0, 0);
+    win_after.forceRepaint();
+#endif
+  }
+
+#if MRPT_HAS_WXWIDGETS
+  std::cout << "Push any key to exit..."
+            << "\n";
+  mrpt::system::os::getch();
+#endif
+}
+
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
+{
+  try
+  {
+    Test_SoG_Merge();
+
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Untyped exception!");
+    return -1;
+  }
+}

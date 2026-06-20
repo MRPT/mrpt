@@ -859,7 +859,7 @@ EXCLUDE_SYMBOLS        = A B YAML Eigen MyNS cv exprtk literals cv_bridge
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = ../../samples/
+EXAMPLE_PATH           = ../../mrpt_examples_cpp/
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
@@ -2038,40 +2038,7 @@ SEARCH_INCLUDES        = YES
 # preprocessor.
 # This tag requires that the tag SEARCH_INCLUDES is set to YES.
 
-INCLUDE_PATH           = \
-	../../libs/apps \
-	../../libs/bayes \
-	../../libs/comms \
-	../../libs/config \
-	../../libs/containers \
-	../../libs/core \
-	../../libs/expr \
-	../../libs/graphs \
-	../../libs/graphslam \
-	../../libs/gui \
-	../../libs/hwdrivers \
-	../../libs/img \
-	../../libs/io \
-	../../libs/kinematics \
-	../../libs/maps \
-	../../libs/math \
-	../../libs/nav \
-	../../libs/obs \
-	../../libs/opengl \
-	../../libs/poses \
-	../../libs/random \
-	../../libs/ros1bridge \
-	../../libs/ros2bridge \
-	../../libs/rtti \
-	../../libs/serialization \
-	../../libs/slam \
-	../../libs/system \
-	../../libs/tclap \
-	../../libs/tfest \
-	../../libs/topography \
-	../../libs/typemeta \
-	../../libs/vision \
-	../../libs/vision-lgpl
+INCLUDE_PATH           = $(MRPT_LIST_INCLUDE_DIRS)
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
@@ -2092,9 +2059,7 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = MRPT_HAS_SSE2 \
                          MRPT_HAS_SSE3 \
                          MRPT_HAS_SSE4 \
-                         MRPT_HAS_MATLAB=1 \
                          MRPT_HAS_WXWIDGETS=1 \
-                         MRPT_HAS_OPENCV=1 \
                          MRPT_HAS_NANOGUI=1
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

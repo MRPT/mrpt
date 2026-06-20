@@ -1,0 +1,79 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/containers/yaml.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/CText.h>
+
+using namespace mrpt;
+using namespace mrpt::viz;
+using namespace mrpt::math;
+using namespace std;
+
+IMPLEMENTS_SERIALIZABLE(CText, CVisualObject, mrpt::viz)
+
+CText::~CText() = default;
+
+uint8_t CText::serializeGetVersion() const { return 2; }
+void CText::serializeTo(mrpt::serialization::CArchive& out) const
+{
+  writeToStreamRender(out);
+  out << m_str;
+  out << m_fontName;
+  out << static_cast<uint32_t>(m_fontHeight);
+}
+
+void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+{
+  switch (version)
+  {
+    case 0:
+    case 1:
+    case 2:
+    {
+      uint32_t i;
+      readFromStreamRender(in);
+      in >> m_str;
+      if (version >= 1)
+      {
+        in >> m_fontName;
+        in >> i;
+        m_fontHeight = i;
+
+        if (version < 2)
+        {
+          in >> i;
+          // dummy, removed in v2: m_fontWidth = i;
+        }
+      }
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+}
+
+auto CText::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
+{
+  return {
+      {0.f, 0.f, 0.f},
+      {0.f, 0.f, 0.f}
+  };
+}
+
+void CText::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
+{
+  CVisualObject::toYAMLMap(propertiesMap);
+  propertiesMap["text"] = m_str;
+}

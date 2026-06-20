@@ -1,0 +1,101 @@
+# ------------------------------------------------------------------------------
+#        Mobile Robot Programming Toolkit (MRPT)
+#
+# Copyright (c) 2005-2026, Jose Luis Blanco-Claraco, contributors (see Git history)
+# All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------------------------------------------
+
+cmake_minimum_required(VERSION 3.16)
+
+# Tell CMake we'll use C++ for use in its tests/flags
+project(mrpt_img LANGUAGES C CXX)
+
+# MRPT CMake scripts: "mrpt_xxx()"
+find_package(mrpt_common REQUIRED)
+find_package(mrpt_io REQUIRED)
+find_package(mrpt_config REQUIRED)
+find_package(mrpt_math REQUIRED)
+find_package(Eigen3 REQUIRED)
+
+# Include Asian fonts in mrpt::img::CCanvas ?
+set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in mrpt::img::CCanvas (increases library size).")
+
+# define lib:
+set(LIB_SOURCES
+  src/camera_geometry.cpp
+  src/CCanvas.cpp
+  src/CImage_impl.cpp
+  src/CImage_impl.h
+  src/CImage_loadXPM.cpp
+  src/CImage.cpp
+  src/CImage.SSE2.cpp
+  src/CImage.SSEx.h
+  src/CImage.SSSE3.cpp
+  src/CImagePyramid.cpp
+  src/CMappedImage.cpp
+  src/color_maps.cpp
+  src/CStereoRectifyMap.cpp
+  src/CUndistortMap.cpp
+  src/CVideoFileWriter.cpp
+  src/registerAllClasses.cpp
+  src/TCamera.cpp
+  src/TColor.cpp
+  src/TPixelCoord.cpp
+  src/TStereoCamera.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
+  tests/CImage_unittest.cpp
+  tests/CImagePyramid_unittest.cpp
+  tests/CUndistortMap_unittest.cpp
+  tests/color_maps_unittest.cpp
+  tests/TCamera_unittest.cpp
+  tests/camera_geometry_unittest.cpp
+)
+
+set(LIB_PUBLIC_HEADERS
+  include/mrpt/img/camera_geometry.h
+  include/mrpt/img/CCanvas.h
+  include/mrpt/img/CImage.h
+  include/mrpt/img/CImage_Eigen.h
+  include/mrpt/img/CImagePyramid.h
+  include/mrpt/img/CMappedImage.h
+  include/mrpt/img/color_maps.h
+  include/mrpt/img/CStereoRectifyMap.h
+  include/mrpt/img/CUndistortMap.h
+  include/mrpt/img/CVideoFileWriter.h
+  include/mrpt/img/DistortionModel.h
+  include/mrpt/img/registerAllClasses.h
+  include/mrpt/img/TCamera.h
+  include/mrpt/img/TColor.h
+  include/mrpt/img/TPixelCoord.h
+  include/mrpt/img/TStereoCamera.h
+)
+
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
+  PUBLIC_LINK_LIBRARIES
+    mrpt::mrpt_config
+    mrpt::mrpt_io
+    mrpt::mrpt_math
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
+  CMAKE_DEPENDENCIES
+    mrpt_config
+    mrpt_io
+    mrpt_math
+  # Other imported targets:
+)
+
+# Python wrapper:
+mrpt_add_python_module(img
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+
+mrpt_add_python_binding_test(img NEEDS_NUMPY
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_img_test.py
+)
+

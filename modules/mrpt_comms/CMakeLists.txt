@@ -1,0 +1,83 @@
+# ------------------------------------------------------------------------------
+#        Mobile Robot Programming Toolkit (MRPT)
+#
+# Copyright (c) 2005-2026, Jose Luis Blanco-Claraco, contributors (see Git history)
+# All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------------------------------------------
+
+cmake_minimum_required(VERSION 3.16)
+
+# Tell CMake we'll use C++ for use in its tests/flags
+project(mrpt_comms LANGUAGES C CXX)
+
+# MRPT CMake scripts: "mrpt_xxx()"
+find_package(mrpt_common REQUIRED)
+find_package(mrpt_io REQUIRED)
+
+find_package(Threads REQUIRED)
+
+if (BUILD_TESTING)
+  find_package(mrpt_poses REQUIRED) # for unit tests
+endif()
+
+include(./cmake/script_ftdi.cmake REQUIRED)
+
+
+# define lib:
+set(LIB_SOURCES
+  src/CClientTCPSocket.cpp
+  src/CInterfaceFTDI_common.cpp
+  src/CInterfaceFTDI_LIN.cpp
+  src/CInterfaceFTDI_WIN.cpp
+  src/CSerialPort.cpp
+  src/CServerTCPSocket_common.cpp
+  src/CServerTCPSocket.cpp
+  src/net_utils.cpp
+  src/nodelets.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
+  tests/nodelets_unittest.cpp
+  tests/sockets_unittest.cpp
+)
+
+set(LIB_PUBLIC_HEADERS
+  include/mrpt/comms.h
+  include/mrpt/comms/CServerTCPSocket.h
+  include/mrpt/comms/nodelets.h
+  include/mrpt/comms/registerAllClasses.h
+  include/mrpt/comms/CSerialPort.h
+  include/mrpt/comms/CInterfaceFTDI.h
+  include/mrpt/comms/CClientTCPSocket.h
+  include/mrpt/comms/net_utils.h
+)
+
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
+  PUBLIC_LINK_LIBRARIES
+    mrpt::mrpt_io
+  CMAKE_DEPENDENCIES
+    mrpt_io
+  UNITTEST_LINK_LIBRARIES
+    mrpt::mrpt_poses
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+
+if(CMAKE_MRPT_HAS_FTDI_SYSTEM)
+  target_link_libraries(${PROJECT_NAME} PRIVATE imp_ftdi)
+endif()
+if (MINGW)
+  target_link_libraries(${PROJECT_NAME} PRIVATE WS2_32)
+endif()
+
+mrpt_add_python_module(comms
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+
+mrpt_add_python_binding_test(comms
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_comms_test.py
+)

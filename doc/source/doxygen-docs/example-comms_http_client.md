@@ -9,4 +9,4 @@ Ok: 14160 bytes of type: text/html; charset=ISO-8859-1
 ~~~~~~~~~~~~~
 
 C++ example source code:
-\include comms_http_client/test.cpp
+\include comms_http_client/main.cpp

@@ -1,0 +1,132 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
+#include <mrpt/io/CCompressedOutputStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+
+#include <iostream>
+
+using namespace mrpt::hwdrivers;
+using namespace mrpt::gui;
+using namespace mrpt::obs;
+using namespace mrpt::system;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
+using namespace std;
+
+// ------------------------------------------------------
+//				TestCaptureOpenCV
+// ------------------------------------------------------
+bool LIVE_CAM = true;
+int N_CAM_TO_OPEN = 0;
+std::string AVI_TO_OPEN;
+
+void TestCapture_OpenCV()
+{
+  CImageGrabber_OpenCV* capture = nullptr;
+
+  if (LIVE_CAM)
+  {
+#if 0  // test: Select the desired resolution
+		mrpt::vision::TCaptureCVOptions	opts;
+		opts.frame_width = 320;
+		opts.frame_height = 240;
+		capture = new CImageGrabber_OpenCV( 0, CAMERA_CV_AUTODETECT, opts );
+#else
+    capture = new CImageGrabber_OpenCV(N_CAM_TO_OPEN, CAMERA_CV_AUTODETECT);
+#endif
+  }
+  else
+  {
+    capture = new CImageGrabber_OpenCV(AVI_TO_OPEN);
+  }
+
+  CTicTac tictac;
+
+  std::cout << "Press any key to stop capture to 'capture.rawlog'..."
+            << "\n";
+
+  CCompressedOutputStream fil("./capture.rawlog");
+
+  CDisplayWindow win("Capturing...");
+
+  int cnt = 0;
+
+  while (!mrpt::system::os::kbhit())
+  {
+    if ((cnt++ % 20) == 0)
+    {
+      if (cnt > 0)
+      {
+        double t = tictac.Tac();
+        double FPS = 20 / t;
+        printf("\n %f FPS\n", FPS);
+      }
+      tictac.Tic();
+    }
+
+    auto obs = capture->grabFrame();
+    if (!obs)
+    {
+      cerr << "Error retrieving images!"
+           << "\n";
+      break;
+    }
+
+    archiveFrom(fil) << obs.value();
+
+    std::cout << ".";
+    cout.flush();
+    if (win.isOpen()) win.showImage(obs->image);
+  }
+
+  delete capture;
+}
+
+int main(int argc, char** argv)
+{
+  try
+  {
+    if (argc > 1)
+    {
+      if (!strstr(argv[1], ".avi"))
+      {
+        LIVE_CAM = true;
+        N_CAM_TO_OPEN = atoi(argv[1]);
+      }
+      else
+      {
+        LIVE_CAM = false;
+        AVI_TO_OPEN = argv[1];
+      }
+    }
+
+    TestCapture_OpenCV();
+
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
+}

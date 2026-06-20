@@ -1,0 +1,125 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/img/TColor.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
+
+using namespace mrpt::img;
+using mrpt::serialization::CArchive;
+
+// Check "#pragma pack(push, 1)" is doing its job:
+static_assert(sizeof(TColor) == 4 * sizeof(uint8_t));
+static_assert(sizeof(TColorf) == 4 * sizeof(float));
+
+TColor mrpt::img::operator+(const TColor& a, const TColor& b)
+{
+  TColor ret;
+  ret.R = a.R + b.R;
+  ret.G = a.G + b.G;
+  ret.B = a.B + b.B;
+  ret.A = a.A + b.A;
+
+  return ret;
+}
+
+TColor mrpt::img::operator-(const TColor& a, const TColor& b)
+{
+  TColor ret;
+  ret.R = a.R - b.R;
+  ret.G = a.G - b.G;
+  ret.B = a.B - b.B;
+  ret.A = a.A - b.A;
+
+  return ret;
+}
+
+TColor& TColor::operator+=(const TColor& other)
+{
+  this->R += other.R;
+  this->G += other.G;
+  this->B += other.B;
+  this->A += other.A;
+
+  return *this;
+}
+
+TColor& TColor::operator-=(const TColor& other)
+{
+  this->R -= other.R;
+  this->G -= other.G;
+  this->B -= other.B;
+  this->A -= other.A;
+
+  return *this;
+}
+
+bool mrpt::img::operator==(const TColor& a, const TColor& b)
+{
+  return a.R == b.R && a.G == b.G && a.B == b.B && a.A == b.A;
+}
+
+bool mrpt::img::operator==(const TColorf& a, const TColorf& b)
+{
+  return a.R == b.R && a.G == b.G && a.B == b.B && a.A == b.A;
+}
+
+// Text streaming:
+std::ostream& mrpt::img::operator<<(std::ostream& o, const TColor& c)
+{
+  char buf[200];
+  mrpt::system::os::sprintf(
+      buf, sizeof(buf), "RGBA=[%u,%u,%u,%u]", static_cast<unsigned int>(c.R),
+      static_cast<unsigned int>(c.G), static_cast<unsigned int>(c.B),
+      static_cast<unsigned int>(c.A));
+  o << buf;
+  return o;
+}
+
+// Binary streaming:
+CArchive& mrpt::img::operator<<(CArchive& o, const TColor& c)
+{
+  o << c.R << c.G << c.B << c.A;
+  return o;
+}
+
+CArchive& mrpt::img::operator>>(CArchive& i, TColor& c)
+{
+  i >> c.R >> c.G >> c.B >> c.A;
+  return i;
+}
+
+// Text streaming:
+std::ostream& mrpt::img::operator<<(std::ostream& o, const TColorf& c)
+{
+  char buf[200];
+  mrpt::system::os::sprintf(
+      buf, sizeof(buf), "RGBAf=[%lf,%lf,%lf,%lf]", static_cast<double>(c.R),
+      static_cast<double>(c.G), static_cast<double>(c.B), static_cast<double>(c.A));
+  o << buf;
+  return o;
+}
+
+// Binary streaming:
+CArchive& mrpt::img::operator<<(CArchive& o, const TColorf& c)
+{
+  o << c.R << c.G << c.B << c.A;
+  return o;
+}
+
+CArchive& mrpt::img::operator>>(CArchive& i, TColorf& c)
+{
+  i >> c.R >> c.G >> c.B >> c.A;
+  return i;
+}

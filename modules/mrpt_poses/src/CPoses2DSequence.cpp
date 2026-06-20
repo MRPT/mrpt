@@ -1,0 +1,118 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/poses/CPoses2DSequence.h>
+#include <mrpt/serialization/CArchive.h>
+
+using namespace mrpt;
+using namespace mrpt::poses;
+using namespace mrpt::math;
+
+IMPLEMENTS_SERIALIZABLE(CPoses2DSequence, CSerializable, mrpt::poses)
+
+size_t CPoses2DSequence::posesCount() { return poses.size(); }
+uint8_t CPoses2DSequence::serializeGetVersion() const { return 0; }
+void CPoses2DSequence::serializeTo(mrpt::serialization::CArchive& out) const
+{
+  out.WriteAs<uint32_t>(poses.size());
+  for (const auto& p : poses) out << p;
+}
+void CPoses2DSequence::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+{
+  switch (version)
+  {
+    case 0:
+    {
+      poses.resize(in.ReadAs<uint32_t>());
+      for (auto& p : poses) in >> p;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+}
+
+/*---------------------------------------------------------------
+Reads the stored pose at index "ind", where the first one is 0, the last
+"posesCount() - 1"
+ ---------------------------------------------------------------*/
+CPose2D CPoses2DSequence::getPose(unsigned int ind) const
+{
+  if (ind >= poses.size()) THROW_EXCEPTION("Index out of range!!");
+  return poses[ind];
+}
+
+void CPoses2DSequence::getPose(unsigned int ind, CPose2D& outPose) { outPose = getPose(ind); }
+
+/*---------------------------------------------------------------
+Changes the stored pose at index "ind", where the first one is 0, the last
+"posesCount() - 1"
+ ---------------------------------------------------------------*/
+void CPoses2DSequence::changePose(unsigned int ind, CPose2D& inPose)
+{
+  if (ind >= poses.size()) THROW_EXCEPTION("Index out of range!!");
+
+  *((&(poses[ind])) + ind) = inPose;
+}
+
+/*---------------------------------------------------------------
+  Appends a new pose at the end of sequence. Remember that poses are relative,
+ incremental to the last one.
+ ---------------------------------------------------------------*/
+void CPoses2DSequence::appendPose(CPose2D& newPose) { poses.push_back(newPose); }
+
+/*---------------------------------------------------------------
+      Clears the sequence.
+ ---------------------------------------------------------------*/
+void CPoses2DSequence::clear() { poses.clear(); }
+/*---------------------------------------------------------------
+ ---------------------------------------------------------------*/
+/** Returns the absolute pose of a robot after moving "n" poses, so for "n=0"
+ * the origin pose (0,0,0deg) is returned, for "n=1" the first pose is returned,
+ * and for "n=posesCount()", the pose
+ *  of robot after moving ALL poses is returned, all of them relative to the
+ * starting pose.
+ */
+CPose2D CPoses2DSequence::absolutePoseOf(unsigned int n)
+{
+  CPose2D ret(0, 0, 0);
+  unsigned int i;
+
+  if (n > poses.size()) THROW_EXCEPTION("Index out of range!!");
+
+  for (i = 0; i < n; i++) ret = ret + poses[i];
+
+  return ret;
+}
+
+CPose2D CPoses2DSequence::absolutePoseAfterAll()
+{
+  return absolutePoseOf(static_cast<unsigned int>(posesCount()));
+}
+
+double CPoses2DSequence::computeTraveledDistanceAfter(size_t n)
+{
+  double dist = 0;
+
+  if (n > poses.size()) THROW_EXCEPTION("Index out of range!!");
+
+  for (size_t i = 0; i < n; i++) dist += poses[i].norm();
+
+  return dist;
+}
+
+double CPoses2DSequence::computeTraveledDistanceAfterAll()
+{
+  return computeTraveledDistanceAfter(posesCount());
+}

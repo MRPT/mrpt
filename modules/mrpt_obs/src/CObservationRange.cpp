@@ -1,0 +1,122 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/serialization/CArchive.h>
+
+using namespace mrpt::obs;
+using namespace mrpt::poses;
+
+// This must be added to any CSerializable class implementation file.
+IMPLEMENTS_SERIALIZABLE(CObservationRange, CObservation, mrpt::obs)
+
+uint8_t CObservationRange::serializeGetVersion() const { return 4; }
+void CObservationRange::serializeTo(mrpt::serialization::CArchive& out) const
+{
+  // The data
+  out << minSensorDistance << maxSensorDistance << sensorConeAperture;
+  const uint32_t n = static_cast<uint32_t>(sensedData.size());
+  out << n;
+  for (uint32_t i = 0; i < n; i++)
+    out << sensedData[i].sensorID << CPose3D(sensedData[i].sensorPose)
+        << sensedData[i].sensedDistance << sensedData[i].sensorNoiseStdDeviation;  // v4
+  out << sensorLabel << timestamp;
+}
+
+void CObservationRange::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+{
+  switch (version)
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    {
+      uint32_t i, n;
+
+      // The data
+      in >> minSensorDistance >> maxSensorDistance >> sensorConeAperture;
+
+      in >> n;
+      sensedData.clear();
+      sensedData.resize(n);
+      CPose3D aux;
+      for (i = 0; i < n; i++)
+      {
+        if (version >= 3)
+          in >> sensedData[i].sensorID;
+        else
+          sensedData[i].sensorID = static_cast<uint16_t>(i);
+
+        in >> aux >> sensedData[i].sensedDistance;
+        sensedData[i].sensorPose = aux.asTPose();
+
+        if (version >= 4) in >> sensedData[i].sensorNoiseStdDeviation;
+      }
+
+      if (version >= 1)
+        in >> sensorLabel;
+      else
+        sensorLabel = "";
+
+      if (version >= 2)
+        in >> timestamp;
+      else
+        timestamp = INVALID_TIMESTAMP;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+}
+
+/*---------------------------------------------------------------
+           getSensorPose
+ ---------------------------------------------------------------*/
+mrpt::poses::CPose3D CObservationRange::getSensorPose() const
+{
+  if (!sensedData.empty()) return mrpt::poses::CPose3D(sensedData[0].sensorPose);
+  return mrpt::poses::CPose3D(0, 0, 0);
+}
+
+/*---------------------------------------------------------------
+           setSensorPose
+ ---------------------------------------------------------------*/
+void CObservationRange::setSensorPose(const CPose3D& newSensorPose)
+{
+  for (auto& sd : sensedData) sd.sensorPose = newSensorPose.asTPose();
+}
+
+void CObservationRange::getDescriptionAsText(std::ostream& o) const
+{
+  using namespace std;
+  CObservation::getDescriptionAsText(o);
+
+  o << "minSensorDistance       = " << minSensorDistance << " m\n";
+  o << "maxSensorDistance       = " << maxSensorDistance << " m\n";
+  o << "sensorConeAperture     = " << RAD2DEG(sensorConeAperture) << " deg\n";
+
+  // For each entry in this sequence:
+  o << "  SENSOR_ID    RANGE (m)   STD_DEV (m)  SENSOR POSE (on the robot) "
+       "\n";
+  o << "-------------------------------------------------------\n";
+  for (const auto& q : sensedData)
+  {
+    o << mrpt::format("     %7u", static_cast<unsigned int>(q.sensorID));
+    o << mrpt::format("    %4.03f   ", q.sensedDistance);
+    o << mrpt::format("    %4.03f   ", q.sensorNoiseStdDeviation);
+    o << q.sensorPose << "\n";
+  }
+}

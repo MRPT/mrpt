@@ -1,5 +1,5 @@
 
-include(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(${MRPT_SOURCE_DIR}/cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 # ----------------------------------
 # wxThings
@@ -91,6 +91,26 @@ endif()
 # ----------------------------------
 # Build RPLIDAR?
 # ----------------------------------
+# Build the RoboPeak Lidar library?
+set(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
+if ((${CMAKE_MRPT_KERNEL} MATCHES "GNU") # It doesnt build in hurd
+    OR APPLE # and macos
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64")   # fails: termios2
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64el") # fails: termios2
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "powerpc") # fails: termios2
+    OR MINGW
+    )
+	set(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
+endif()
+# Decl option:
+set(MRPT_WITH_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
+if(MRPT_WITH_ROBOPEAK_LIDAR)
+	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
+else()
+	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
+endif()
+
+
 option(MRPT_BUILD_rplidar_sdk "Build rplidar_sdk" ON)
 mark_as_advanced(MRPT_BUILD_rplidar_sdk)
 
@@ -160,135 +180,6 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR AND MRPT_BUILD_rplidar_sdk)
 endif()
 
 # ----------------------------------
-# Build xSens IMU library
-# ----------------------------------
-option(MRPT_BUILD_xsens "Build mrpt_xsens lib" ON)
-mark_as_advanced(MRPT_BUILD_xsens)
-
-if(CMAKE_MRPT_HAS_xSENS AND MRPT_BUILD_xsens)
-	file(GLOB_RECURSE SRCS
-		xspublic/*.cpp
-		xspublic/*.c
-		xspublic/*.h
-	)
-
-	add_library(mrpt_xsens STATIC ${SRCS})
-
-	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		target_compile_options(mrpt_xsens PRIVATE
-			-fPIC
-			-fms-extensions  # Unnamed structs in unions
-			-Wno-variadic-macros
-			-Wno-parentheses
-		)
-		target_compile_definitions(mrpt_xsens PRIVATE
-			_POSIX_C_SOURCE=200809L  # Needed to have CLOCK_REALTIME,... in gcc
-			_LOG_TO_STDOUT
-		)
-	endif()
-
-	# Embedded version:
-	target_include_directories(mrpt_xsens SYSTEM PUBLIC
-		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/3rdparty/xspublic/>
-		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/3rdparty/xspublic/xstypes/>
-		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscommon/>
-		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscontroller/>
-	)
-
-	# Couldn't make this to work with a regular target_compile_options() cmd:
-	if (MSVC)
-		set(xsens_flag "/FI ${MRPT_SOURCE_DIR}/3rdparty/xspublic/msvc_include.h ")
-	else()
-		set(xsens_flag "-include xscommon_config.h -include xsens_compat.h -include xscontrollerconfig.h ")
-	endif()
-	set_property(TARGET mrpt_xsens APPEND_STRING
-		PROPERTY COMPILE_FLAGS ${xsens_flag}
-	)
-
-	if (MSVC)
-		target_compile_definitions(mrpt_xsens PRIVATE XDA_STATIC_LIB)
-	else()
-		# Needed for <time.h> to define timegm()
-		target_compile_definitions(mrpt_xsens PRIVATE 
-			_GNU_SOURCE
-			_BSD_SOURCE
-			_DEFAULT_SOURCE
-			)
-	endif()
-	
-
-	# needs to be exported, even if private, to make cmake happy since it wants
-	# libraries to be statically-linkable:
-	export(
-		TARGETS mrpt_xsens
-		FILE "${CMAKE_CURRENT_BINARY_DIR}/mrpt_xsens-targets.cmake"
-	)
-	install(TARGETS mrpt_xsens EXPORT mrpt_xsens-targets
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	)
-	install(EXPORT mrpt_xsens-targets
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mrpt_xsens
-	)
-
-	# Feature should be "cxx_std_11", but it's unknown to cmake 3.5.1 in Xenial:
-	target_compile_features(mrpt_xsens PRIVATE cxx_constexpr)
-	set_target_properties(mrpt_xsens PROPERTIES FOLDER "3rd party")
-	unset(SRCS)
-endif()
-
-
-
-# ----------------------------------
-# Built-in version of freeglut?
-# ----------------------------------
-if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM)
-	file(GLOB SRCS
-		freeglut/*.c
-		freeglut/GL/*.h
-	)
-	add_library(mrpt_freeglut STATIC ${SRCS})
-
-	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		target_compile_options(mrpt_freeglut PRIVATE
-			-fPIC
-		)
-	endif()
-	CHECK_INCLUDE_FILE("sys/time.h" HAVE_SYS_TIME_H)
-	CHECK_INCLUDE_FILE("sys/ioctl.h" HAVE_SYS_IOCTL_H)
-	CHECK_INCLUDE_FILE("fcntl.h" HAVE_FCNTL_H)
-	CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
-
-	target_compile_definitions(mrpt_freeglut PUBLIC
-		FREEGLUT_STATIC # or /DFREEGLUT_EXPORTS
-		HAVE_SYS_TIME_H=$<BOOL:${HAVE_SYS_TIME_H}>
-		HAVE_SYS_IOCTL_H=$<BOOL:${HAVE_SYS_IOCTL_H}>
-		HAVE_FCNTL_H=$<BOOL:${HAVE_FCNTL_H}>
-		HAVE_UNISTD_H=$<BOOL:${HAVE_UNISTD_H}>
-		)
-
-	# Embedded version:
-	target_include_directories(mrpt_freeglut SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty/freeglut/
-	)
-	set_target_properties(mrpt_freeglut PROPERTIES FOLDER "3rd party")
-
-	# Depend on X11 lib:
-	if (UNIX)
-		target_link_libraries(mrpt_freeglut PUBLIC
-			X11
-			${OPENGL_glu_LIBRARY}
-		)
-	endif()
-	if (MINGW)
-		target_link_libraries(mrpt_freeglut PRIVATE winmm
-		)
-	endif()
-	unset(SRCS)
-endif()
-
-# ----------------------------------
 # Built-in version of Glew?
 # ----------------------------------
 if(WIN32)
@@ -326,7 +217,7 @@ endif()
 # ----------------------------------
 # nanogui:
 # ----------------------------------
-# Already handled in cmakemodules/script_nanogui.cmake
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_nanogui.cmake REQUIRED)     # Check for nanogui
 
 # ----------------------------------
 # libfyaml

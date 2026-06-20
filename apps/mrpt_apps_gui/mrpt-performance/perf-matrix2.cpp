@@ -1,0 +1,129 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
+#include <mrpt/random.h>
+
+#include <Eigen/Dense>
+
+#include "common.h"
+
+using namespace mrpt;
+using namespace mrpt::math;
+using namespace mrpt::random;
+using namespace std;
+
+// Cholesky:
+template <typename T, size_t DIM1>
+double matrix_test_chol_dyn([[maybe_unused]] int a1, [[maybe_unused]] int a2)
+{
+  auto A = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDynamic<T>>(DIM1, 0.2);
+  CMatrixDynamic<T> chol_U;
+
+  const long N = 100;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    A.chol(chol_U);
+  }
+  return tictac.Tac() / N;
+}
+
+double matrix_test_chol_Nx6x6_dyn(int DIM, int nReps)
+{
+  CMatrixDouble C(DIM * 6, DIM * 6);
+  for (int i = 0; i < DIM; i++)
+  {
+    auto subCov = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(6, 0.2);
+    C.insertMatrix(i * 6, i * 6, subCov);
+  }
+
+  CMatrixDouble chol_U;
+
+  const long N = nReps == 0 ? 10 : nReps;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    C.chol(chol_U);
+  }
+  return tictac.Tac() / static_cast<double>(N);
+}
+
+template <typename T, size_t DIM1>
+double matrix_test_chol_fix([[maybe_unused]] int a1, [[maybe_unused]] int a2)
+{
+  auto A = getRandomGenerator()
+               .drawDefinitePositiveMatrix<
+                   CMatrixFixed<T, DIM1, DIM1>, mrpt::math::CVectorFixed<T, DIM1>>(DIM1, 0.2);
+  CMatrixFixed<T, DIM1, DIM1> chol_U;
+
+  const long N = 100;
+  CTicTac tictac;
+  for (long i = 0; i < N; i++)
+  {
+    A.chol(chol_U);
+  }
+  return tictac.Tac() / N;
+}
+
+// CSparseMatrix (CXSparse-based) was removed in MRPT 3.x.
+// Sparse Cholesky benchmarks are disabled.
+
+double matrix_test_loadFromArray([[maybe_unused]] int N, [[maybe_unused]] int a2)
+{
+  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) double nums[4 * 4] = {0, 1, 2,  3,  4,  5,  6,  7,
+                                                             8, 9, 10, 11, 12, 13, 14, 15};
+
+  CMatrixFixed<double, 4, 4> M;
+
+  CTicTac tictac;
+  M.loadFromArray(nums);
+  return tictac.Tac();
+}
+
+double matrix_test_loadWithEigenMap([[maybe_unused]] int N, [[maybe_unused]] int a2)
+{
+  alignas(16) double nums[4 * 4] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
+  CMatrixFixed<double, 4, 4> M;
+
+  CTicTac tictac;
+  M = Eigen::Map<CMatrixFixed<double, 4, 4>::eigen_t, Eigen::Aligned16>(nums);
+  const double t = tictac.Tac();
+  dummy_do_nothing_with_string(mrpt::format("%e", M(0, 0)));
+  return t;
+}
+
+// ------------------------------------------------------
+// register_tests_matrices: Part 2
+// ------------------------------------------------------
+void register_tests_matrices2()
+{
+  lstTests.emplace_back("matrix: chol, dyn[double] 4x4", matrix_test_chol_dyn<double, 4>);
+  lstTests.emplace_back("matrix: chol, fix[double] 4x4", matrix_test_chol_fix<double, 4>);
+  lstTests.emplace_back("matrix: chol, dyn[double] 40x40", matrix_test_chol_dyn<double, 40>);
+
+  // CSparseMatrix removed in MRPT 3.x — sparse Cholesky tests disabled
+  lstTests.emplace_back("matrix: chol, dyn[double] 10x[6x6]", matrix_test_chol_Nx6x6_dyn, 10);
+  lstTests.emplace_back("matrix: chol, dyn[double] 20x[6x6]", matrix_test_chol_Nx6x6_dyn, 20);
+  lstTests.emplace_back("matrix: chol, dyn[double] 50x[6x6]", matrix_test_chol_Nx6x6_dyn, 50);
+  lstTests.emplace_back("matrix: chol, dyn[double] 100x[6x6]", matrix_test_chol_Nx6x6_dyn, 100, 2);
+  lstTests.emplace_back("matrix: chol, dyn[double] 120x[6x6]", matrix_test_chol_Nx6x6_dyn, 120, 2);
+  lstTests.emplace_back("matrix: chol, dyn[double] 140x[6x6]", matrix_test_chol_Nx6x6_dyn, 140, 2);
+
+  lstTests.emplace_back("matrix: loadFromArray[double] 4x4", matrix_test_loadFromArray, 1e7);
+  lstTests.emplace_back("matrix: load Eigen::Map[double] 4x4", matrix_test_loadWithEigenMap, 1e7);
+}

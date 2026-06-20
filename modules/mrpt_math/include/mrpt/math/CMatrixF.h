@@ -1,0 +1,71 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/point_poses2vectors.h>
+#include <mrpt/serialization/CSerializable.h>
+
+namespace mrpt::math
+{
+/**  This class is a "CSerializable" wrapper for "CMatrixFloat".
+ * \note For a complete introduction to Matrices and vectors in MRPT, see:
+ * https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
+ * \ingroup mrpt_math_grp
+ */
+class CMatrixF : public mrpt::serialization::CSerializable, public CMatrixFloat
+{
+  DEFINE_SERIALIZABLE(CMatrixF, mrpt::math)
+  DEFINE_SCHEMA_SERIALIZABLE()
+
+ public:
+  /** Constructor  */
+  CMatrixF() : CMatrixFloat(1, 1) {}
+
+  /** Constructor */
+  CMatrixF(matrix_dim_t row, matrix_dim_t col) : CMatrixFloat(row, col) {}
+
+  /** Copy constructor */
+  explicit CMatrixF(const CMatrixFloat& m) : CMatrixFloat(m) {}
+
+  /** Copy constructor */
+  explicit CMatrixF(const CMatrixDynamic<double>& m) : CMatrixFloat(m) {}
+  MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixF)
+
+  /** Assignment operator for float matrixes
+   */
+  template <class OTHERMAT>
+  CMatrixF& operator=(const OTHERMAT& m)
+  {
+    CMatrixFloat::operator=(m);
+    return *this;
+  }
+
+  /*! Assignment operator from any other Eigen class */
+  template <typename OtherDerived>
+  CMatrixF& operator=(const Eigen::MatrixBase<OtherDerived>& other)
+  {
+    CMatrixDynamic<float>::operator=(other);
+    return *this;
+  }
+  /*! Constructor from any other Eigen class */
+  template <typename OtherDerived>
+  CMatrixF(const Eigen::MatrixBase<OtherDerived>& other) : CMatrixDynamic<float>(other)
+  {
+  }
+
+};  // end of class definition
+mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, CMatrixF::Ptr& pObj);
+
+}  // namespace mrpt::math

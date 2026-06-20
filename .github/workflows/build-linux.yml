@@ -1,4 +1,4 @@
-# Based on GTSAM file (by @ProfFan)
+# Updated for MRPT 3.0 (colcon + Codecov)
 name: CI Linux
 
 on: [push, pull_request]
@@ -10,17 +10,13 @@ jobs:
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 1
-      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
-      VERBOSE: 1 # to show all cmake scripts debug info
+      # Environment for colcon
+      COLCON_HOME: ${{ github.workspace }}/.colcon
 
     strategy:
       fail-fast: false
       matrix:
-        # Github Actions requires a single row to be added to the build matrix.
-        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [ubuntu-latest-clang, ubuntu-latest-gcc]
-
         build_type: [Release]
         include:
           - name: ubuntu-latest-clang
@@ -35,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
 
       - name: Git submodule
         run: |
@@ -44,14 +40,13 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          # See bug/issue: https://github.com/orgs/community/discussions/47863
-          sudo apt-mark hold grub-efi-amd64-signed 
-
+          #sudo apt-mark hold grub-efi-amd64-signed 
           sudo apt-get -y update
           sudo apt-get -y upgrade
 
-          sudo apt install cmake build-essential cmake libwxgtk3.2-dev \
-                           libopencv-dev libeigen3-dev libgtest-dev \
+          # MRPT Dependencies + Colcon Tooling
+          sudo apt install -y cmake build-essential libwxgtk3.2-dev \
+                           libeigen3-dev libgtest-dev \
                            freeglut3-dev libglfw3-dev libassimp-dev \
                            libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
                            libxrandr-dev libxxf86vm-dev \
@@ -60,44 +55,47 @@ jobs:
                            liboctomap-dev libopenni2-dev \
                            libtinyxml2-dev \
                            libdc1394-dev \
-                           yamllint libicu-dev libsimpleini-dev \
+                           lcov yamllint \
+                           libicu-dev libsimpleini-dev \
+                           libcli11-dev \
                            libzstd-dev
 
+          # Added: python3-pip and colcon installation via pip
+          sudo apt install -y pybind11-dev python3-dev python3-pip
+          pip3 install --break-system-packages colcon-common-extensions colcon-lcov-result numpy
 
-          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-            sudo apt install libicu-dev libsimpleini-dev
-            # to enable pymrpt:
-            sudo apt install pybind11-dev python3-dev #python3-numpy
-          fi
-
-          if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            sudo apt-get install -y g++ g++
-            echo "CC=gcc" >> $GITHUB_ENV
-            echo "CXX=g++" >> $GITHUB_ENV
-          else
-            sudo apt-get install -y clang g++-multilib
-            echo "CC=clang" >> $GITHUB_ENV
-            echo "CXX=clang++" >> $GITHUB_ENV
-          fi
-
-      - name: CMake configure
+      - name: Colcon Build
         run: |
-          cmake -DMRPT_BUILD_EXAMPLES=On \
-                -DMRPT_BUILD_TESTING=On \
-                -DMRPT_ENABLE_COVERAGE="${{ matrix.coverage }}" \
-                -DMRPT_ALLOW_LGPLV3=ON \
-                -DCMAKE_VERBOSE_MAKEFILE=ON \
-                -H. -Bbuild
+          colcon build \
+            --event-handlers console_direct+ \
+            --cmake-args \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -DENABLE_COVERAGE=${{ matrix.coverage }} \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DBUILD_TESTING=ON
 
-      - name: Unit tests
+      - name: Colcon Test
         run: |
-          make -C build tests_build_all
-          make test_legacy -C build -j1
-          if [ "${{ matrix.coverage }}" = "ON" ]; then
-            make gcov -C build
-            bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
-          fi
+          colcon test \
+            --event-handlers console_direct+ \
+            --return-code-on-test-failure
 
-      - name: Build all
+      - name: Generate Coverage Report
+        if: matrix.coverage == 'ON'
         run: |
-          make -C build
+          # Capture coverage from all sub-folders in build/
+          lcov --capture --directory build --output-file coverage.info \
+            --ignore-errors mismatch,negative,empty,unused
+          # Filter out system headers and third-party code
+          lcov --remove coverage.info '/usr/*' '*/build/*' '*/3rdparty/*' '*/3rdparty/*/*' '*/3rdparty/*/*/*' '*/tests/*.cpp' \
+            --output-file coverage.info \
+            --ignore-errors empty,unused
+          lcov --list coverage.info
+
+      - name: Upload to Codecov
+        if: matrix.coverage == 'ON'
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true

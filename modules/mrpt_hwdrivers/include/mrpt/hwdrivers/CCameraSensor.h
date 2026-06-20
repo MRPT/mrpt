@@ -1,0 +1,499 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#pragma once
+
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
+#include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
+#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
+#include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/hwdrivers/CMyntEyeCamera.h>
+#include <mrpt/hwdrivers/COpenNI2Sensor.h>
+#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/system/COutputLogger.h>
+
+#include <functional>
+#include <memory>  // unique_ptr
+#include <thread>
+
+namespace mrpt::hwdrivers
+{
+/** \brief Central hub for camera and video grabbers in MRPT, implementing the
+ * CGenericSensor interface.
+ *
+ * This class provides a uniform interface to a variety of camera backends
+ * (OpenCV, dc1394/FireWire, FFmpeg RTSP, Kinect, OpenNI2, Point Grey
+ * FlyCapture2, MYNT EYE, rawlog replay, and image-directory playback).
+ * Produced observations are of type mrpt::obs::CObservationImage (monocular),
+ * mrpt::obs::CObservationStereoImages (stereo), or
+ * mrpt::obs::CObservation3DRangeScan (depth cameras).
+ *
+ * \note Requires OpenCV. Additional backends need their respective libraries
+ * (libdc1394, libfreenect, FlyCapture2 SDK, MYNT SDK, FFmpeg).
+ *
+ *   This class provides the user with a uniform interface to a variety of
+ * other classes which manage only one specific camera "driver" (opencv, ffmpeg,
+ * PGR FlyCapture,...)
+ *
+ *   Following the "generic sensor" interface, all the parameters must be
+ * passed int the form of a configuration file,
+ *   which may be also formed on the fly (without being a real config file) as
+ * in this example:
+ *
+ *  \code
+ *   CCameraSensor myCam;
+ *   const string str =
+ *      "[CONFIG]\n"
+ *      "grabber_type=opencv\n";
+ *
+ *   CConfigFileMemory	cfg(str);
+ *   myCam.loadConfig(cfg,"CONFIG");
+ *   myCam.initialize();
+ *   CObservation::Ptr obs = myCam.getNextFrame();
+ *  \endcode
+ *
+ *  Images can be retrieved through the normal "doProcess()" interface, or the
+ * specific method "getNextFrame()".
+ *
+ * Some notes:
+ *  - "grabber_type" determines the class to use internally for image capturing
+ * (see below).
+ *  - For the meaning of cv_camera_type and other parameters, refer to
+ * mrpt::hwdrivers::CImageGrabber_OpenCV
+ *  - For the parameters of dc1394 parameters, refer to generic IEEE1394
+ * documentation, and to mrpt::hwdrivers::TCaptureOptions_dc1394.
+ *
+ *  Images can be saved in the "external storage" mode. Detached threads are
+ * created for this task. See \a setPathForExternalImages() and \a
+ * setExternalImageFormat().
+ *  These methods are called automatically from the app rawlog-grabber.
+ *
+ *  These is the list of all accepted parameters:
+ *
+ *  \code
+ *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+ * -------------------------------------------------------
+ *   [supplied_section_name]
+ *    # Select one of the grabber implementations -----------------------
+ *    grabber_type       = opencv | dc1394 | bumblebee_dc1394 | ffmpeg | rawlog
+ * | svs | kinect | flycap | flycap_stereo | image_dir | myntd
+ *
+ *    #  Options for any grabber_type ------------------------------------
+ *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0,
+ * display 1 out of N captured frames.
+ *    preview_reduction  = 0     // 0 or 1 (or not present): The preview shows
+ * the actual image. For 2,3,..., reduces the size of the image by that factor,
+ * only for the preview window.
+ *    capture_grayscale  = 0     // 1:capture in grayscale, whenever the driver
+ * allows it. Default=0
+ *    #  For externaly stored images, the format of image files (default=jpg)
+ *    #external_images_format  = jpg
+ *
+ *    #  For externaly stored images: whether to spawn independent threads to
+ * save the image files.
+ *    #external_images_own_thread  = 1   // 0 or 1
+ *
+ *    # If external_images_own_thread=1, this changes the number of threads to
+ * launch
+ *    #  to save image files. The default is determined from
+ * mrpt::system::getNumberOfProcessors()
+ *    #  and should be OK unless you want to save processor time for other
+ * things.
+ *    #external_images_own_thread_count = 2    // >=1
+ *
+ *    # (Only when external_images_format=jpg): Optional parameter to set the
+ * JPEG compression quality:
+ *    #external_images_jpeg_quality = 95    // [1-100]. Default: 95
+ *
+ *    # Pose of the sensor on the robot:
+ *    pose_x=0		; (meters)
+ *    pose_y=0
+ *    pose_z=0
+ *    pose_yaw=0	; (Angles in degrees)
+ *    pose_pitch=0
+ *    pose_roll=0
+ *
+ *    # Options for grabber_type= opencv  ------------------------------------
+ *    cv_camera_index  = 0       // [opencv] Number of camera to open
+ *    cv_camera_type   = CAMERA_CV_AUTODETECT
+ *    cv_frame_width   = 640     // [opencv] Capture width (not present or set
+ * to 0 for default)
+ *    cv_frame_height  = 480     // [opencv] Capture height (not present or set
+ * to 0 for default)
+ *    cv_fps           = 15      // [opencv] IEEE1394 cams only: Capture FPS
+ * (not present or 0 for default)
+ *    cv_gain          = 0       // [opencv] Camera gain, if available (nor
+ * present or set to 0 for default).
+ *
+ *    # Options for grabber_type= dc1394 -------------------------------------
+ *    dc1394_camera_guid   = 0 | 0x11223344    // 0 (or not present): the first
+ * camera; A hexadecimal number: The GUID of the camera to open
+ *    dc1394_camera_unit   = 0     			// 0 (or not present): the first
+ * camera; 0,1,2,...: The unit number (within the given GUID) of the camera to
+ * open (Stereo cameras: 0 or 1)
+ *    dc1394_frame_width	= 640
+ *    dc1394_frame_height	= 480
+ *    dc1394_framerate		= 15					// eg: 7.5, 15, 30, 60,
+ * etc... For possibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
+ *    dc1394_mode7         = -1                    // -1: Ignore, i>=0, set to
+ * MODE7_i
+ *    dc1394_color_coding	= COLOR_CODING_YUV422	// For possibilities see
+ * mrpt::hwdrivers::TCaptureOptions_dc1394
+ *    # Options for setting feature values: dc1394_<feature> = <n>
+ *    # with <feature> = brightness | exposure | sharpness | white_balance |
+ * gamma | shutter | gain
+ *    #      <n> a value, or -1 (or not present) for not to change this feature
+ * value in the camera, possible values are shown in execution
+ *    dc1394_shutter       = -1
+ *    # Options for setting feature modes: dc1394_<feature>_mode = <n>
+ *    # with <feature> = brightness | exposure | sharpness | white_balance |
+ * gamma | shutter | gain
+ *    #      <n> = -1 (or not present) [not to change] | 0 [manual] | 1 [auto]
+ * | 2 [one_push_auto]
+ *    dc1394_shutter_mode	= -1
+ *    # Options for setting trigger options:
+ *    dc1394_trigger_power	= -1    // -1 (or not present) for not to change
+ * | 0 [OFF] | 1 [ON]
+ *    dc1394_trigger_mode	= -1    // -1 (or not present) for not to change |
+ * 0..7 corresponding to possible modes 0,1,2,3,4,5,14,15
+ *    dc1394_trigger_source= -1    // -1 (or not present) for not to change |
+ * 0..4 corresponding to possible sources 0,1,2,3,SOFTWARE
+ *    dc1394_trigger_polarity = -1 // -1 (or not present) for not to change | 0
+ * [ACTIVE_LOW] | 1 [ACTIVE_HIGH]
+ *    dc1394_ring_buffer_size = 15  // Length of frames ring buffer (internal
+ * to libdc1394)
+ *
+ *    # Options for grabber_type= bumblebee_dc1394
+ * ----------------------------------
+ *    bumblebee_dc1394_camera_guid   = 0 | 0x11223344  // 0 (or not present):
+ * the first camera; A hexadecimal number: The GUID of the camera to open
+ *    bumblebee_dc1394_camera_unit   = 0     			// 0 (or not present):
+ * the first camera; 0,1,2,...: The unit number (within the given GUID) of the
+ * camera to open (Stereo cameras: 0 or 1)
+ *    bumblebee_dc1394_framerate     = 15				// eg: 7.5, 15, 30,
+ * 60, etc... For possibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
+ *
+ *    # Options for grabber_type= ffmpeg -------------------------------------
+ *    ffmpeg_url             = rtsp://127.0.0.1      // [ffmpeg] The video file
+ * or IP camera to open
+ *
+ *    # Options for grabber_type= rawlog -------------------------------------
+ *    rawlog_file            = mylog.rawlog          // [rawlog] This can be
+ * used to simulate the capture of images already grabbed in the past in the
+ * form of a MRPT rawlog.
+ *    rawlog_camera_sensor_label  = CAMERA1          // [rawlog] If this field
+ * is not present, all images found in the rawlog will be retrieved. Otherwise,
+ * only those observations with a matching sensor label.
+ *
+ *    # Options for grabber_type= svs -------------------------------------
+ *    svs_camera_index = 0
+ *    svs_frame_width = 800
+ *    svs_frame_height = 600
+ *    svs_framerate = 25.0
+ *    svs_NDisp = ...
+ *    svs_Corrsize = ...
+ *    svs_LR = ...
+ *    svs_Thresh = ...
+ *    svs_Unique = ...
+ *    svs_Horopter = ...
+ *    svs_SpeckleSize = ...
+ *    svs_procesOnChip = false
+ *    svs_calDisparity = true
+ *
+ *    # Options for grabber_type= XBox kinect
+ * -------------------------------------
+ *    kinect_grab_intensity  = true            // whether to save the intensity
+ * (RGB) channel
+ *    kinect_grab_3d         = true            // whether to save the 3D points
+ *    kinect_grab_range      = true            // whether to save the depth
+ * image
+ *    #kinect_video_rgb       = true            // Optional. If set to "false",
+ * the IR intensity channel will be grabbed instead of the color RGB channel.
+ *
+ *    # Options for grabber_type= flycap (Point Grey Research's FlyCapture 2
+ * for Monocular and Stereo cameras, e.g. Bumblebee2) --------
+ *    flycap_camera_index           = 0
+ *    #... (all the parameters enumerated in
+ * mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "flycap_")
+ *
+ *    # Options for grabber_type= flycap_stereo (Point Grey Research's
+ * FlyCapture 2, two cameras setup as a stereo pair) ------
+ *    # fcs_start_synch_capture   = false  // *Important*: Only set to true if
+ * using Firewire cameras: the "startSyncCapture()" command is unsupported in
+ * USB3 and GigaE cameras.
+ *
+ *    fcs_LEFT_camera_index           = 0
+ *    #... (all the parameters enumerated in
+ * mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_LEFT_")
+ *    fcs_RIGHT_camera_index          = 0
+ *    #... (all the parameters enumerated in
+ * mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_RIGHT_")
+ *
+ *    # Options for grabber_type= image_dir
+ *    image_dir_url					= 				// [string] URL of the
+ * directory
+ *    left_filename_format				= imL_%05d.jpg	// [string] Format
+ * including prefix, number of trailing zeros, digits and image format
+ * (extension)
+ *    right_filename_format			= imR_%05d.jpg	// [string] Format
+ * including prefix, number of trailing zeros, digits and image format
+ * (extension). Leave blank if only images from one camera will be used.
+ *    start_index						= 0				// [int]
+ * Starting index for images
+ *    end_index						= 100			// [int]	End index
+ * for the images
+ *
+ *    # Options for grabber_type= myntd  ------------------------------------
+ *    myntd_xxx  =
+ *
+ *  \endcode
+ *
+ *  \note The execution rate, in rawlog-grabber or the user code calling
+ * doProcess(), should be greater than the required capture FPS.
+ *  \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and
+ * "chmod 666 /dev/raw1394" for allowing any user R/W access to firewire
+ * cameras.
+ * \note [New in MRPT 1.4.0] The `bumblebee` driver has been deleted, use the
+ * `flycap` driver in stereo mode.
+ *  \sa mrpt::hwdrivers::CImageGrabber_OpenCV,
+ * mrpt::hwdrivers::CImageGrabber_dc1394, CGenericSensor
+ * \ingroup mrpt_hwdrivers_grp
+ */
+class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
+{
+  DEFINE_GENERIC_SENSOR(CCameraSensor)
+
+ public:
+  using Ptr = std::shared_ptr<CCameraSensor>;
+  /** \brief Constructor. The camera is not open until initialize() is called. */
+  CCameraSensor();
+
+  /** \brief Destructor. Closes the camera if open. */
+  ~CCameraSensor() override;
+
+  /** \brief Runs one sensor acquisition cycle (called by rawlog-grabber). */
+  void doProcess() override;
+
+  /** \brief Retrieves the next frame from the video source.
+   *
+   * Raises an exception on any error.
+   * The returned observation type depends on the grabber backend:
+   *  - mrpt::obs::CObservationImage for monocular cameras or video files.
+   *  - mrpt::obs::CObservationStereoImages for stereo cameras.
+   *  - mrpt::obs::CObservation3DRangeScan for 3-D depth cameras.
+   *
+   * \return A shared pointer to the captured observation.
+   */
+  mrpt::obs::CObservation::Ptr getNextFrame();
+
+  /** \brief Retrieves the next frame(s) from the video source into a vector.
+   *
+   * \param[out] out_obs The vector to which newly captured observations are
+   * appended.
+   */
+  void getNextFrame(std::vector<mrpt::serialization::CSerializable::Ptr>& out_obs);
+
+  /** \brief Opens the camera using the parameters previously loaded via
+   * loadConfig().
+   *
+   * \exception std::exception If the camera cannot be opened.
+   */
+  void initialize() override;
+
+  /** \brief Closes the camera connection.
+   *
+   * Called automatically on destruction.
+   */
+  void close();
+
+  /** \brief Sets the software trigger level (ON or OFF) for cameras that
+   * support software triggering.
+   *
+   * \param[in] level true to assert (ON), false to de-assert (OFF).
+   */
+  void setSoftwareTriggerLevel(bool level);
+
+  /** \brief Sets the directory path for externally saved image files.
+   *
+   * When set to a non-empty string, captured images are stored as files
+   * in that directory and the observation holds only the relative file path.
+   * An empty string (the default) causes images to be embedded directly in
+   * the rawlog.
+   *
+   * \param[in] directory Path to the target directory.
+   * \exception std::exception If the directory does not exist and cannot be
+   * created.
+   */
+  void setPathForExternalImages(const std::string& directory) override;
+
+  /** \brief Enables spawning a dedicated thread for saving images to disk.
+   *
+   * Must be called before initialize().
+   * \param[in] enable true to enable the dedicated save thread (default).
+   */
+  void enableLaunchOwnThreadForSavingImages(bool enable = true)
+  {
+    m_external_images_own_thread = enable;
+  };
+
+  /** Functor type */
+  using TPreSaveUserHook =
+      std::function<void(const mrpt::obs::CObservation::Ptr& obs, void* user_ptr)>;
+
+  /** \brief Registers a callback to be executed just before each image is
+   * saved to disk (when external storage is enabled).
+   *
+   * Useful for image preprocessing such as rectification. The callback may be
+   * invoked from a detached worker thread, so it must be thread-safe.
+   * Must be called before initialize().
+   *
+   * \param[in] user_function The callable to invoke before saving.
+   * \param[in] user_ptr Opaque pointer forwarded to the callback.
+   */
+  void addPreSaveHook(TPreSaveUserHook user_function, void* user_ptr)
+  {
+    m_hook_pre_save = user_function;
+    m_hook_pre_save_param = user_ptr;
+  };
+
+ protected:
+  // Options for any grabber_type ------------------------------------
+  poses::CPose3D m_sensorPose;
+
+  /** Can be "opencv",... */
+  std::string m_grabber_type;
+  bool m_capture_grayscale{false};
+
+  // Options for grabber_type= opencv  ------------------------------------
+  int m_cv_camera_index{0};
+  std::string m_cv_camera_type;
+  TCaptureCVOptions m_cv_options;
+
+  // Options for grabber_type= dc1394 -------------------------------------
+  uint64_t m_dc1394_camera_guid{0};
+  int m_dc1394_camera_unit{0};
+  TCaptureOptions_dc1394 m_dc1394_options;
+
+  // Options for grabber_type= bumblebee_dc1394
+  // ----------------------------------
+  uint64_t m_bumblebee_dc1394_camera_guid{0};
+  int m_bumblebee_dc1394_camera_unit{0};
+  double m_bumblebee_dc1394_framerate{15};
+
+  // Options for grabber_type= ffmpeg -------------------------------------
+  std::string m_ffmpeg_url;
+
+  // Options for grabber_type= rawlog -------------------------------------
+  std::string m_rawlog_file;
+  std::string m_rawlog_camera_sensor_label;
+  std::string m_rawlog_detected_images_dir;
+
+  // Options for grabber_type= XBox kinect
+  // -------------------------------------
+  /** Save the 3D point cloud (default: true) */
+  bool m_kinect_save_3d{true};
+  /** Save the 2D range image (default: true) */
+  bool m_kinect_save_range_img{true};
+  /** Save the 2D intensity image (default: true) */
+  bool m_kinect_save_intensity_img{true};
+  /** Save RGB or IR channels (default:true) */
+  bool m_kinect_video_rgb{true};
+
+  // Options for grabber type= flycap
+  // -----------------------------------------
+  TCaptureOptions_FlyCapture2 m_flycap_options;
+
+  // Options for grabber type= myntd
+  // -----------------------------------------
+  TMyntEyeCameraParameters m_myntd_options;
+
+  // Options for grabber type= flycap_stereo
+  // -----------------------------------------
+  bool m_fcs_start_synch_capture{false};
+  TCaptureOptions_FlyCapture2 m_flycap_stereo_options[2];  // [0]:left, [1]:right
+
+  // Options for grabber type= image_dir
+  std::string m_img_dir_url;
+  std::string m_img_dir_left_format;
+  std::string m_img_dir_right_format;
+  int m_img_dir_start_index{0};
+  int m_img_dir_end_index{100};
+
+  bool m_img_dir_is_stereo{true};
+  int m_img_dir_counter{0};
+
+  // Other options:
+  /** Whether to launch independent thread */
+  bool m_external_images_own_thread{false};
+
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
+
+ private:
+  // Only one of these will be !=nullptr at a time ===========
+  /** The OpenCV capture object. */
+  std::unique_ptr<CImageGrabber_OpenCV> m_cap_cv;
+  /** The dc1394 capture object. */
+  std::unique_ptr<CImageGrabber_dc1394> m_cap_dc1394;
+  /** The FlyCapture2 object */
+  std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap;
+  /** The FlyCapture2 object for stereo pairs */
+  std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap_stereo_l, m_cap_flycap_stereo_r;
+  std::unique_ptr<CStereoGrabber_Bumblebee_libdc1394> m_cap_bumblebee_dc1394;
+  /** The FFMPEG capture object */
+  std::unique_ptr<CFFMPEG_InputStream> m_cap_ffmpeg;
+  /** The input file for rawlogs */
+  std::unique_ptr<mrpt::io::CCompressedInputStream> m_cap_rawlog;
+  /** Kinect camera object. */
+  std::unique_ptr<CKinect> m_cap_kinect;
+  /** OpenNI2 object. */
+  std::unique_ptr<COpenNI2Sensor> m_cap_openni2;
+  /** Read images from directory */
+  std::unique_ptr<std::string> m_cap_image_dir;
+  /** The MYNT EYE capture object */
+  std::unique_ptr<CMyntEyeCamera> m_myntd;
+  // =========================
+
+  int m_camera_grab_decimator{0};
+  int m_camera_grab_decimator_counter{0};
+
+  /** @name Stuff related to working threads to save images to disk
+    @{ */
+  /** Number of working threads. Default:1, set to 2 in quad cores. */
+  unsigned int m_external_image_saver_count;
+  std::vector<std::thread> m_threadImagesSaver;
+
+  bool m_threadImagesSaverShouldEnd{false};
+  /** The critical section for m_toSaveList */
+  std::mutex m_csToSaveList;
+  /** The queues of objects to be returned by getObservations, one for each
+   * working thread. */
+  std::vector<TListObservations> m_toSaveList;
+  /** Thread to save images to files. */
+  void thread_save_images(unsigned int my_working_thread_index);
+
+  TPreSaveUserHook m_hook_pre_save;
+  void* m_hook_pre_save_param{nullptr};
+  /**  @} */
+
+};  // end class
+
+}  // namespace mrpt::hwdrivers

@@ -1,0 +1,62 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/demangle.h>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+//
+#include <DbgHelp.h>
+#else
+#include <cxxabi.h>  // __cxa_demangle()
+#include <dlfcn.h>   // dladdr()
+#ifndef __EMSCRIPTEN__
+#include <execinfo.h>
+#endif
+#include <cstdlib>
+#include <string>
+#endif
+
+std::string mrpt::demangle(const std::string& symbolName)
+{
+  if (symbolName.empty())
+  {
+    return {};
+  }
+
+#ifdef __EMSCRIPTEN__
+  return symbolName;
+#endif
+
+#if defined(_WIN32)
+  char undecorated_name[1024];
+  if (!UnDecorateSymbolName(
+          symbolName.c_str(), undecorated_name, sizeof(undecorated_name), UNDNAME_COMPLETE))
+  {
+    return symbolName;
+  }
+  else
+  {
+    return std::string(undecorated_name);
+  }
+#else
+  char* demangled = nullptr;
+  int status = -1;
+  demangled = abi::__cxa_demangle(symbolName.c_str(), nullptr, nullptr, &status);
+  std::string ret = status == 0 ? std::string(demangled) : symbolName;
+  free(demangled);
+  return ret;
+#endif
+}

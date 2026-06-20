@@ -1,0 +1,127 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+// Implementation file for CWindowObserver class
+#include <mrpt/graphslam/misc/CWindowObserver.h>
+#include <mrpt/gui/CBaseGUIWindow.h>
+#include <mrpt/viz/Viewport.h>
+
+using namespace mrpt::graphslam;
+
+CWindowObserver::CWindowObserver()
+{
+  m_help_msg =
+      "User options:\n"
+      " - h/H: Toggle help message\n"
+      " - Alt+Enter: Toggle fullscreen\n"
+      " - Mouse click: Set camera manually\n"
+      " - Ctrl+c: Halt program execution";
+
+  // register the default keystrokes
+  m_key_codes_to_pressed["h"] = false;
+  m_key_codes_to_pressed["Alt+Enter"] = false;
+  m_key_codes_to_pressed["Ctrl+c"] = false;
+  m_key_codes_to_pressed["mouse_clicked"] = false;
+}
+
+void CWindowObserver::returnEventsStruct(
+    std::map<std::string, bool>* codes_to_pressed, bool reset_keypresses /*= true */)
+{
+  *codes_to_pressed = m_key_codes_to_pressed;
+
+  // reset the code flags
+  if (reset_keypresses)
+  {
+    for (auto& map_it : m_key_codes_to_pressed)
+    {
+      map_it.second = false;
+    }
+  }
+}
+
+void CWindowObserver::registerKeystroke(const std::string key_str, const std::string key_desc)
+{
+  m_help_msg += std::string("\n") + " - " + key_str + "/" + mrpt::system::upperCase(key_str) +
+                ": " + key_desc;
+
+  m_key_codes_to_pressed[key_str] = false;
+}
+
+void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
+{
+  if (e.isOfType<mrpt::system::mrptEventOnDestroy>())
+  {
+    const auto& ev = dynamic_cast<const mrpt::system::mrptEventOnDestroy&>(e);
+    (void)ev;
+    std::cout << "Event received: mrptEventOnDestroy"
+              << "\n";
+  }
+  else if (e.isOfType<mrpt::gui::mrptEventWindowResize>())
+  {
+    const auto& ev = static_cast<const mrpt::gui::mrptEventWindowResize&>(e);
+    std::cout << "Resize event received from: " << ev.source_object
+              << ", new size: " << ev.new_width << " x " << ev.new_height << "\n";
+  }
+  else if (e.isOfType<mrpt::gui::mrptEventWindowChar>())
+  {
+    const auto& ev = dynamic_cast<const mrpt::gui::mrptEventWindowChar&>(e);
+    std::cout << "Char event received from: " << ev.source_object << ". Char code: " << ev.char_code
+              << " modif: " << ev.key_modifiers << "\n";
+    ;
+
+    switch (ev.char_code)
+    {
+      case 'h':
+      case 'H':
+        m_key_codes_to_pressed["h"] = true;
+        break;
+      case 'c':
+      case 'C':
+        // case 3: // <C-c>
+        if (ev.key_modifiers == 8192)
+        {
+          std::cout << "Pressed C-c inside CDisplayWindow3D"
+                    << "\n";
+          m_key_codes_to_pressed["Ctrl+c"] = true;
+        }
+        break;
+
+      default:
+        // just raise the corresponding flag. Let the class which
+        // actually
+        // cares translate the character to its corresponding meaning.
+        // Pressed letter is stored in lower case form only to make it
+        // easier
+        // to check afterwards
+        m_key_codes_to_pressed[mrpt::system::lowerCase(
+            std::string(1, static_cast<char>(ev.char_code)))] = true;
+        break;
+    }
+
+  }  // end of e.isOftype<mrptEventWindowChar>
+  else if (e.isOfType<mrpt::gui::mrptEventWindowClosed>())
+  {
+    const auto& ev = dynamic_cast<const mrpt::gui::mrptEventWindowClosed&>(e);
+    std::cout << "Window closed event received from: " << ev.source_object << "\n";
+  }
+  else if (e.isOfType<mrpt::gui::mrptEventMouseDown>())
+  {
+    const auto& ev = dynamic_cast<const mrpt::gui::mrptEventMouseDown&>(e);
+    m_key_codes_to_pressed["mouse_clicked"] = true;
+
+    std::cout << "Mouse down event received from: " << ev.source_object << "pt: " << ev.coords.x
+              << "," << ev.coords.y << "\n";
+  }
+  // mrptEventGLPostRender was removed in v3.0
+}

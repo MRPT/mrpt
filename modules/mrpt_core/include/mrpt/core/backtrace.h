@@ -1,0 +1,84 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <string>
+#include <vector>
+
+namespace mrpt
+{
+/** \addtogroup mrpt_core_grp
+ * @{ */
+
+/** Used in callStackBackTrace() */
+struct TCallStackEntry
+{
+  TCallStackEntry() = default;
+
+  /** Address of the calling point */
+  void* address = nullptr;
+
+  /** Demangled symbol name (empty if not available) */
+  std::string symbolName;
+  /** Original (before demangle) symbol name  (empty if not available) */
+  std::string symbolNameOriginal;
+
+  std::string sourceFileName, sourceFileFullPath;
+  int sourceFileNumber = 0;
+};
+
+#ifdef _MSC_VER
+template class std::vector<TCallStackEntry>;
+#endif
+
+/** See: callStackBackTrace() */
+struct TCallStackBackTrace
+{
+  TCallStackBackTrace();
+  std::vector<TCallStackEntry> backtrace_levels;
+
+  /** Prints all backtrace entries, one per line in a human-readable format.
+   * See [environment variables](env-vars.html) that can change the output
+   * format.
+   */
+  [[nodiscard]] std::string asString() const noexcept;
+};
+
+/** Returns a list of strings representing the current call stack
+ * backtrace. If possible, human-readable names are used for
+ * functions. Source code line numbers will be also recovered
+ * if code has symbols (`-g` or `-g1` in GCC).
+ *
+ * See [environment variables](env-vars.html) that can modify the behavior
+ * of this function.
+ *
+ * \note (Moved from mrpt-system to mrpt-core in MRPT 2.1.5)
+ */
+void callStackBackTrace(
+    TCallStackBackTrace& out_bt,
+    unsigned int framesToSkip = 1,
+    unsigned int framesToCapture = 64) noexcept;
+
+/// \overload
+inline TCallStackBackTrace callStackBackTrace(
+    unsigned int framesToSkip = 1, unsigned int framesToCapture = 64) noexcept
+{
+  TCallStackBackTrace bt;
+  callStackBackTrace(bt, framesToSkip, framesToCapture);
+  return bt;
+}
+
+/** @} */
+
+}  // namespace mrpt

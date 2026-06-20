@@ -1,0 +1,74 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/kinematics/CVehicleVelCmd.h>
+#include <mrpt/serialization/CArchive.h>
+
+using namespace mrpt::kinematics;
+
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CVehicleVelCmd, CSerializable, mrpt::kinematics)
+
+CVehicleVelCmd::CVehicleVelCmd() = default;
+CVehicleVelCmd::CVehicleVelCmd(const CVehicleVelCmd& other) { *this = other; }
+CVehicleVelCmd::~CVehicleVelCmd() = default;
+std::string mrpt::kinematics::CVehicleVelCmd::asString() const
+{
+  std::string s;
+  s += "(";
+  for (size_t i = 0; i < getVelCmdLength(); i++)
+  {
+    s += mrpt::format(
+        "%s=%.03f ", getVelCmdDescription(static_cast<int>(i)).c_str(),
+        getVelCmdElement(static_cast<int>(i)));
+  }
+  s += ")";
+  return s;
+}
+
+CVehicleVelCmd& CVehicleVelCmd::operator=(const CVehicleVelCmd& other)
+{
+  const size_t nThis = this->getVelCmdLength();
+  ASSERTMSG_(typeid(*this) == typeid(other), "Trying to copy incompatible classes");
+  for (size_t i = 0; i < nThis; i++)
+    this->setVelCmdElement(static_cast<int>(i), other.getVelCmdElement(static_cast<int>(i)));
+  return *this;
+}
+
+void CVehicleVelCmd::TVelCmdParams::loadConfigFile(
+    const mrpt::config::CConfigFileBase& cfg, const std::string& section)
+{
+  MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_V_mps, double, cfg, section);
+  MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(
+      robotMax_W_degps, double, robotMax_W_radps, cfg, section);
+  MRPT_LOAD_CONFIG_VAR(robotMinCurvRadius, double, cfg, section);
+}
+
+void CVehicleVelCmd::TVelCmdParams::saveToConfigFile(
+    mrpt::config::CConfigFileBase& c, const std::string& s) const
+{
+  MRPT_SAVE_CONFIG_VAR_COMMENT(
+      robotMax_V_mps,
+      "Max. linear speed (m/s) [Default=-1 (not set), will raise exception "
+      "if needed and not set]");
+  MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(
+      "robotMax_W_degps", robotMax_W_radps,
+      "Max. angular speed (deg/s) [Default=-1 (not set), will raise "
+      "exception if needed and not set]");
+  MRPT_SAVE_CONFIG_VAR_COMMENT(
+      robotMinCurvRadius,
+      "Min. radius of curvature of paths (m) [Default=-1 (not set), will "
+      "raise exception if needed and not set]");
+}
+
+CVehicleVelCmd::TVelCmdParams::TVelCmdParams() = default;

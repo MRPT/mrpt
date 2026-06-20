@@ -1,0 +1,81 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+/** \example typemeta_TTypeName/main.cpp */
+
+//! [example typename]
+#include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/typemeta/TTypeName_stl.h>
+
+#include <iostream>
+#include <memory>  // shared_ptr
+
+// Declare custom user types:
+struct MyFooClass
+{
+  using Ptr = std::shared_ptr<MyFooClass>;
+};
+namespace MyNS
+{
+struct MyBarClass
+{
+};
+struct MyBarClass2
+{
+  DECLARE_TTYPENAME_CLASSNAME(MyNS::MyBarClass2)
+};
+}  // namespace MyNS
+DECLARE_CUSTOM_TTYPENAME(MyFooClass);
+DECLARE_CUSTOM_TTYPENAME(MyNS::MyBarClass);
+
+void Test_TypeName()
+{
+  using namespace std;
+  using namespace mrpt::typemeta;
+
+  // Evaluation of type names as constexpr strings:
+  constexpr auto s1 = TTypeName<int32_t>::get();
+  std::cout << s1 << "\n";
+
+  std::cout << TTypeName<set<vector<double>>>::get() << "\n";
+
+  // Evaluation of user-defined types:
+  std::cout << TTypeName<MyFooClass>::get() << "\n";
+  std::cout << TTypeName<MyFooClass::Ptr>::get() << "\n";
+  std::cout << TTypeName<MyNS::MyBarClass>::get() << "\n";
+  std::cout << TTypeName<MyNS::MyBarClass2>::get() << "\n";
+
+  // STL typenames as strings:
+  std::cout << TTypeName<double>::get() << "\n";
+  std::cout << TTypeName<vector<double>>::get() << "\n";
+  std::cout << TTypeName<array<int32_t, 5>>::get() << "\n";
+  std::cout << TTypeName<set<double>>::get() << "\n";
+  std::cout << TTypeName<pair<int32_t, pair<int32_t, int32_t>>>::get() << "\n";
+  std::cout << TTypeName<map<double, set<int32_t>>>::get() << "\n";
+  std::cout << TTypeName<set<multimap<double, pair<MyFooClass, MyNS::MyBarClass2>>>>::get() << "\n";
+}
+//! [example typename]
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
+{
+  try
+  {
+    Test_TypeName();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << e.what() << "\n";
+    return -1;
+  }
+}

@@ -1,0 +1,36 @@
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
+project(ptg-configurator)
+
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
+
+# Dependencies
+find_package(mrpt_gui REQUIRED)
+find_package(mrpt_nav REQUIRED)
+mrpt_find_wxwidgets()
+if(NOT wxWidgets_FOUND)
+  message(STATUS "wxWidgets not found — skipping ${PROJECT_NAME}")
+  return()
+endif()
+
+# Define the executable target:
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES
+    ptgConfiguratorApp.cpp
+    ptgConfiguratorApp.h
+    ptgConfiguratorMain.cpp
+    ptgConfiguratorMain.h
+    ../wx-common/MyGLCanvas.cpp
+    ../wx-common/MyGLCanvas.h
+  LINK_LIBRARIES
+    mrpt::mrpt_gui
+    mrpt::mrpt_nav
+    wxWidgets::wxWidgets
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ../wx-common/)

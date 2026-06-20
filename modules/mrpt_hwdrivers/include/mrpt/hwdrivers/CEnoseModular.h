@@ -1,0 +1,154 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#pragma once
+
+#include <mrpt/comms/CInterfaceFTDI.h>
+#include <mrpt/comms/CSerialPort.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+
+#include <memory>  // unique_ptr
+#include <optional>
+
+namespace mrpt::hwdrivers
+{
+/** \brief Interfaces the MAPIR e-NoseModular electronic nose via FTDI USB or
+ * a serial port.
+ *
+ * The e-NoseModular board (v1.0, University of Malaga, 2013) hosts a master
+ * MCU and optional slave expansion boards, each carrying chemical gas sensors.
+ * Produced observations are of type mrpt::obs::CObservationGasSensors
+ * containing readings from all connected sensor nodes (master + slaves).
+ *
+ * Connection is possible via an FTDI USB chip (identified by serial number) or
+ * a standard serial port. Configure one approach in the ini file.
+ *
+ * A class for interfacing an e-NoseModular via a FTDI USB link.
+ *  Implemented for the Mdular board v1.0 designed by 2013 @ MAPIR (University
+ * of Malaga).
+ *
+ *  \code
+ *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+ * -------------------------------------------------------
+ *   [supplied_section_name]
+ *    USB_serialname=ENOSE001   // USB FTDI pipe: will open only if COM_port_*
+ * are not set or empty
+ *
+ *    COM_port_WIN = COM1       // Serial port to connect to.
+ *    COM_port_LIN = ttyS0
+ *
+ *    COM_baudRate = 115200
+ *
+ *    ; 3D position (in meters) of the master +slave eNoses
+ *    enose_poses_x=<MASTER X> <SLAVE#1 X> <SLAVE#2 X> <SLAVE#3 X>...
+ *    enose_poses_y=<MASTER Y> <SLAVE#1 Y> <SLAVE#2 Y> <SLAVE#3 Y>...
+ *    enose_poses_z=<MASTER Z> <SLAVE#1 Z> <SLAVE#2 Z> <SLAVE#3 Z>...
+ *
+ *    ; 3D pose angles (in degrees) of the master +slave eNoses
+ *    enose_poses_yaw=<MASTER YAW> <SLAVE#1 YAW> <SLAVE#2 YAW> <SLAVE#3 YAW>...
+ *    enose_poses_pitch=<MASTER PITCH> <SLAVE#1 PITCH> <SLAVE#2 PITCH> <SLAVE#3
+ * PITCH>...
+ *    enose_poses_roll=<MASTER ROLL> <SLAVE#1 ROLL> <SLAVE#2 ROLL> <SLAVE#3
+ * ROLL>...
+ *
+ *  \endcode
+ *
+ * \ingroup mrpt_hwdrivers_grp
+ */
+class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
+{
+  DEFINE_GENERIC_SENSOR(CEnoseModular)
+
+ protected:
+  /** A copy of the device serial number (to open the USB FTDI chip)
+   */
+  std::string m_usbSerialNumber;
+  mrpt::system::TTimeStamp initial_timestamp;
+  bool first_reading;
+
+  /** If not an empty string (default), will open that serial port, otherwise
+   * will try to open USB FTDI device "m_usbSerialNumber" */
+  std::string m_COM_port;
+  /** Default=115200 */
+  unsigned int m_COM_baud{115200};
+
+  // Only one of these two streams will be !=nullptr and open for each
+  // specific eNose board!
+  /** FTDI comms pipe (when not in serial port mode) */
+  std::unique_ptr<mrpt::comms::CInterfaceFTDI> m_stream_FTDI;
+  /** Serial port comms */
+  std::unique_ptr<mrpt::comms::CSerialPort> m_stream_SERIAL;
+
+  /** The 3D pose of the master + N slave eNoses on the robot (meters &
+   * radians) */
+  std::vector<float> enose_poses_x, enose_poses_y, enose_poses_z, enose_poses_yaw,
+      enose_poses_pitch, enose_poses_roll;
+
+  /** Tries to connect to the USB device (if disconnected).
+   * \return nullptr on error, otherwise a stream to be used for comms.
+   */
+  mrpt::io::CStream* checkConnectionAndConnect();
+
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& section) override;
+
+  /** Purge the Serial/FTDI buffer */
+  void purgeBuffers();
+
+ public:
+  /** Constructor
+   * \param serialNumberUSBdevice The serial number (text) of the device to
+   * open.
+   *  The constructor will try to open the device. You can check if it failed
+   * calling "isOpen()".
+   */
+  CEnoseModular();
+
+  /** Request the master eNose the latest readings from all the eNoses.
+   *  The output observation contains a valid timestamp and 3D positions if
+   * "loadConfig" has been called previously.
+   * \return true if OK, false if there were any error.
+   */
+  /** Request the master eNose the latest readings from all the eNoses.
+   * \return std::nullopt on error, or the observation on success.
+   */
+  [[nodiscard]] std::optional<mrpt::obs::CObservationGasSensors> grabFrame();
+
+  /** \deprecated Use grabFrame() instead. */
+  [[deprecated("Use grabFrame() instead")]] bool getObservation(
+      mrpt::obs::CObservationGasSensors& outObservation)
+  {
+    auto r = grabFrame();
+    if (!r) return false;
+    outObservation = std::move(*r);
+    return true;
+  }
+
+  // See docs in parent class
+  void doProcess() override;
+
+  /** If not an empty string, will open that serial port, otherwise will try
+   * to open USB FTDI device "m_usbSerialNumber"
+   *  The default is an empty string. Example strings: "COM1", "ttyUSB0", ...
+   */
+  void setSerialPort(const std::string& port) { m_COM_port = port; }
+  std::string getSerialPort() const { return m_COM_port; }
+  /** Set the serial port baud rate (default: 115200) */
+  void setSerialPortBaud(unsigned int baud) { m_COM_baud = baud; }
+  unsigned int getSerialPortBaud() const { return m_COM_baud; }
+};  // end of class
+}  // namespace mrpt::hwdrivers

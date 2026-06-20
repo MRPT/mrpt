@@ -1,0 +1,41 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+namespace mrpt::system
+{
+/** A high-performance stopwatch, with typical resolution of nanoseconds.
+ *
+ * This always uses the system MONOTONIC clock, despite the setting in
+ * mrpt::Clock.
+ *
+ *  \note The class is named after the Spanish equivalent of "Tic-Toc" ;-)
+ * \ingroup mrpt_system_grp
+ */
+class CTicTac
+{
+ public:
+  /** Default constructor. Implicitly calls Tic() */
+  CTicTac() noexcept;
+  /** Starts the stopwatch. \sa Tac() */
+  void Tic() noexcept;
+  /** Stops the stopwatch.  \return Returns the ellapsed time in seconds.
+   * \sa Tic() */
+  [[nodiscard]] double Tac() const noexcept;
+
+ private:
+  alignas(16) unsigned long largeInts[4]{0, 0};
+};  // End of class def.
+
+}  // namespace mrpt::system

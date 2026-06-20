@@ -1,0 +1,97 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/core/Stringifyable.h>
+#include <mrpt/serialization/CSerializable.h>
+
+#include <string>
+
+namespace mrpt::kinematics
+{
+/** Virtual base for velocity commands of different kinematic models of planar
+ * mobile robot.
+ * \ingroup mrpt_kinematics_grp */
+class CVehicleVelCmd : public mrpt::serialization::CSerializable, public mrpt::Stringifyable
+{
+  DEFINE_VIRTUAL_SERIALIZABLE(CVehicleVelCmd, mrpt::kinematics)
+ public:
+  CVehicleVelCmd();
+  CVehicleVelCmd(const CVehicleVelCmd& other);
+  ~CVehicleVelCmd() override;
+  CVehicleVelCmd& operator=(const CVehicleVelCmd& other);
+
+  /** Get number of components in each velocity command */
+  virtual size_t getVelCmdLength() const = 0;
+  /** Get textual, human-readable description of each velocity command
+   * component */
+  virtual std::string getVelCmdDescription(const int index) const = 0;
+  /** Get each velocity command component */
+  virtual double getVelCmdElement(const int index) const = 0;
+  /** Set each velocity command component */
+  virtual void setVelCmdElement(const int index, const double val) = 0;
+  /** Returns true if the command means "do not move" / "stop". \sa setToStop
+   */
+  virtual bool isStopCmd() const = 0;
+  /** Set to a command that means "do not move" / "stop". \sa isStopCmd */
+  virtual void setToStop() = 0;
+  /** Returns a human readable description of the cmd */
+  std::string asString() const override;
+
+  /** Parameters that may be used by cmdVel_limits() in any derived classes.
+   */
+  struct TVelCmdParams
+  {
+    /** Max. linear speed (m/s) [Default=-1 (not set), will raise exception
+     * if needed and not set] */
+    double robotMax_V_mps{-1.};
+    /** Max. angular speed (rad/s) [Default=-1 (not set), will raise
+     * exception if needed and not set] */
+    double robotMax_W_radps{-1.};
+    /** Min. radius of curvature of paths (m) [Default=-1 (not set), will
+     * raise exception if needed and not set] */
+    double robotMinCurvRadius{-1.};
+
+    TVelCmdParams();
+    /** Load any parameter required by a CVehicleVelCmd derived class. */
+    void loadConfigFile(const mrpt::config::CConfigFileBase& cfg, const std::string& section);
+    void saveToConfigFile(mrpt::config::CConfigFileBase& c, const std::string& s) const;
+  };
+
+  /** Scale the velocity command encoded in this object.
+   * \param[in] vel_scale A scale within [0,1] reflecting how much should be
+   * the raw velocity command be lessen (e.g. for safety reasons,...).
+   * \param[out] out_vel_cmd
+   *
+   * Users can directly inherit from existing implementations instead of
+   * manually redefining this method:
+   *  - mrpt::kinematics::CVehicleVelCmd_DiffDriven
+   *  - mrpt::kinematics::CVehicleVelCmd_Holo
+   */
+  virtual void cmdVel_scale(double vel_scale) = 0;
+
+  /** Updates this command, computing a blended version of `beta` (within
+   * [0,1]) of `vel_cmd` and `1-beta` of `prev_vel_cmd`, simultaneously
+   * to honoring any user-side maximum velocities.
+   * \return The [0,1] ratio that the cmdvel had to be scaled down, or 1.0 if
+   * none.
+   */
+  virtual double cmdVel_limits(
+      const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd,
+      const double beta,
+      const TVelCmdParams& params) = 0;
+};
+
+}  // namespace mrpt::kinematics

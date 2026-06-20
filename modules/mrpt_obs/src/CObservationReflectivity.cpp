@@ -1,0 +1,66 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/obs/CObservationReflectivity.h>
+#include <mrpt/serialization/CArchive.h>
+
+using namespace mrpt::obs;
+using namespace mrpt::poses;
+
+// This must be added to any CSerializable class implementation file.
+IMPLEMENTS_SERIALIZABLE(CObservationReflectivity, CObservation, mrpt::obs)
+
+uint8_t CObservationReflectivity::serializeGetVersion() const { return 1; }
+void CObservationReflectivity::serializeTo(mrpt::serialization::CArchive& out) const
+{
+  out << reflectivityLevel << channel << sensorPose;
+  out << sensorLabel << timestamp;
+}
+
+void CObservationReflectivity::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+{
+  switch (version)
+  {
+    case 0:
+    case 1:
+    {
+      in >> reflectivityLevel;
+      if (version >= 1) in >> channel;
+      in >> sensorPose;
+      in >> sensorLabel >> timestamp;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+}
+
+void CObservationReflectivity::getDescriptionAsText(std::ostream& o) const
+{
+  CObservation::getDescriptionAsText(o);
+
+  o << "reflectivityLevel=" << reflectivityLevel << "\n";
+  o << "channel=" << channel << " (-1=any)"
+    << "\n";
+}
+
+std::string CObservationReflectivity::exportTxtHeader() const
+{
+  return "reflectivityLevel  channel";
+}
+
+std::string CObservationReflectivity::exportTxtDataRow() const
+{
+  return mrpt::format("%18.5f %5d", reflectivityLevel, channel);
+}

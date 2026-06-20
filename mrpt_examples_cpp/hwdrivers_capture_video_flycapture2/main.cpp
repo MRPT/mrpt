@@ -1,0 +1,111 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
+#include <mrpt/io/CCompressedOutputStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>
+
+#include <iostream>
+
+using namespace mrpt::hwdrivers;
+using namespace mrpt::obs;
+using namespace mrpt::gui;
+using namespace mrpt::io;
+using namespace mrpt::serialization;
+using namespace mrpt::system;
+using namespace std;
+
+// ------------------------------------------------------
+//				TestCapture_FlyCapture2
+// ------------------------------------------------------
+
+void TestCapture_FlyCapture2()
+{
+  std::cout << " FlyCapture2 version: " << CImageGrabber_FlyCapture2::getFC2version() << "\n";
+
+  // Create camera object:
+  CImageGrabber_FlyCapture2 capture;
+
+  // Open camera:
+  TCaptureOptions_FlyCapture2 cam_options;
+
+  cam_options.framerate = "FRAMERATE_30";
+  cam_options.videomode = "VIDEOMODE_1280x960RGB";
+  // cam_options.videomode="VIDEOMODE_1280x960Y8";
+
+  capture.open(cam_options);
+
+  CTicTac tictac;
+  std::cout << "Press any key to stop capture to 'capture.rawlog'..."
+            << "\n";
+
+  CCompressedOutputStream fil("./capture.rawlog");
+
+  CDisplayWindow win("Capturing...");
+
+  int cnt = 0;
+
+  CObservationImage::Ptr obs = CObservationImage::Create();  // Memory will be freed
+  // by SF
+  // destructor in each loop.
+
+  while (!mrpt::system::os::kbhit())
+  {
+    if ((cnt++ % 20) == 0)
+    {
+      if (cnt > 0)
+      {
+        double t = tictac.Tac();
+        double FPS = 20 / t;
+        printf("\n %f FPS\n", FPS);
+      }
+      tictac.Tic();
+    }
+
+    if (!capture.getObservation(*obs))
+    {
+      cerr << "Error retrieving images!"
+           << "\n";
+      break;
+    }
+
+    std::cout << ".";
+    cout.flush();
+    if (win.isOpen()) win.showImage(obs->image);
+
+    archiveFrom(fil) << obs;
+  }
+}
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
+{
+  try
+  {
+    TestCapture_FlyCapture2();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
+}

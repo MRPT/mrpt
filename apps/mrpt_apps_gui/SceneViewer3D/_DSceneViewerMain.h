@@ -1,0 +1,252 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#ifndef _DSCENEVIEWERMAIN_H
+#define _DSCENEVIEWERMAIN_H
+
+#include <mrpt/gui/CWxGLCanvasBase.h>
+#include <mrpt/gui/WxUtils.h>
+#include <mrpt/system/datetime.h>
+#include <wx/artprov.h>
+#include <wx/bitmap.h>
+#include <wx/frame.h>
+#include <wx/image.h>
+#include <wx/intl.h>
+#include <wx/menu.h>
+#include <wx/msgdlg.h>
+#include <wx/statline.h>
+#include <wx/statusbr.h>
+#include <wx/string.h>
+#include <wx/things/toggle.h>
+#include <wx/timer.h>
+#include <wx/toolbar.h>
+
+#include <ctime>
+#include <optional>
+
+class CDlgCamTracking;
+class CMyGLCanvas : public mrpt::gui::CWxGLCanvasBase
+{
+ public:
+  CMyGLCanvas(
+      wxWindow* parent,
+      wxWindowID id = wxID_ANY,
+      const wxPoint& pos = wxDefaultPosition,
+      const wxSize& size = wxDefaultSize,
+      long style = 0,
+      const wxString& name = _T("CWxGLCanvasBase")) :
+      CWxGLCanvasBase(parent, id, pos, size, style, name)
+  {
+  }
+
+  void OnCharCustom(wxKeyEvent& event) override;
+
+  void OnPreRender() override;
+  void OnPostRender() override;
+  void OnPostRenderSwapBuffers(double At, wxPaintDC& dc) override;
+  void OnRenderError(const wxString& str) override;
+};
+
+class _DSceneViewerFrame : public wxFrame
+{
+  friend class CMyGLCanvas;
+  friend class CDlgCamTracking;
+
+ public:
+  _DSceneViewerFrame(wxWindow* parent, wxWindowID id = -1);
+  ~_DSceneViewerFrame() override;
+
+ private:
+  //(*Handlers(_DSceneViewerFrame)
+  void OnQuit([[maybe_unused]] wxCommandEvent& event);
+  void OnAbout([[maybe_unused]] wxCommandEvent& event);
+  void OnNewScene([[maybe_unused]] wxCommandEvent& event);
+  void OnOpenFile([[maybe_unused]] wxCommandEvent& event);
+  void OntimLoadFileCmdLineTrigger(wxTimerEvent& event);
+  void OnbtnAutoplayClicked([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuBackColor([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuOptions([[maybe_unused]] wxCommandEvent& event);
+  void OnPrevious([[maybe_unused]] wxCommandEvent& event);
+  void OnNext([[maybe_unused]] wxCommandEvent& event);
+  void OnClose(wxCloseEvent& event);
+  void OnBtnRecordClicked([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnOrthoClicked([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnShadowsClicked([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSSAOClicked([[maybe_unused]] wxCommandEvent& event);
+  void OnReload([[maybe_unused]] wxCommandEvent& event);
+  void OnInsert3DS([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuSave([[maybe_unused]] wxCommandEvent& event);
+  void OnChangeCameraPose([[maybe_unused]] wxCommandEvent& event);
+  void OnTravellingTrigger(wxTimerEvent& event);
+  void OnStartCameraTravelling([[maybe_unused]] wxCommandEvent& event);
+  void OnClose1(wxCloseEvent& event);
+  void OnMenuAddSICK([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuDeleteAll([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuItem14Selected([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuCameraTrackingArbitrary([[maybe_unused]] wxCommandEvent& event);
+  void OnmnuItemShowCloudOctreesSelected([[maybe_unused]] wxCommandEvent& event);
+  void OnmnuItemChangeMaxPointsPerOctreeNodeSelected([[maybe_unused]] wxCommandEvent& event);
+  void OnmnuSceneStatsSelected([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuPrintScene([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuItemImportPLYPointCloud([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuItemExportPointsPLY([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuItemHighResRender([[maybe_unused]] wxCommandEvent& event);
+  void OnmnuSelectionDeleteSelected([[maybe_unused]] wxCommandEvent& event);
+  void OnmnuSelectionScaleSelected([[maybe_unused]] wxCommandEvent& event);
+  void OnmnuSelectByClassSelected([[maybe_unused]] wxCommandEvent& event);
+  void OnmnuSelectNoneSelected([[maybe_unused]] wxCommandEvent& event);
+  void OnmnuImportLASSelected([[maybe_unused]] wxCommandEvent& event);
+  //*)
+  void OnmnuImportImageView([[maybe_unused]] wxCommandEvent& event);
+
+  void OntimAutoplay(wxTimerEvent& event);
+  void OntimFileWatch(wxTimerEvent& event);
+
+  void applyShadowsOptions();
+  void applySSAOOptions();
+
+  //(*Identifiers(_DSceneViewerFrame)
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_STATICLINE1;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_STATICLINE2;
+  static const wxWindowID ID_BUTTON6;
+  static const wxWindowID ID_BUTTON7;
+  static const wxWindowID ID_BUTTON_SHADOWS;
+  static const wxWindowID ID_BUTTON_SSAO;
+  static const wxWindowID ID_BUTTON8;
+  static const wxWindowID ID_BUTTON9;
+  static const wxWindowID ID_STATICLINE3;
+  static const wxWindowID ID_BUTTON10;
+  static const wxWindowID ID_BUTTON11;
+  static const wxWindowID ID_MENUITEM1;
+  static const wxWindowID ID_MENUITEM2;
+  static const wxWindowID ID_MENUITEM5;
+  static const wxWindowID ID_MENUITEM7;
+  static const wxWindowID ID_MENUITEM6;
+  static const wxWindowID ID_MENUITEM_ImportImage;
+  static const wxWindowID ID_MENUITEM20;
+  static const wxWindowID ID_MENUITEM25;
+  static const wxWindowID ID_MENUITEM19;
+  static const wxWindowID ID_MENUITEM22;
+  static const wxWindowID ID_MENUITEM21;
+  static const wxWindowID ID_MENUITEM29;
+  static const wxWindowID ID_MENUITEM30;
+  static const wxWindowID ID_MENUITEM12;
+  static const wxWindowID ID_MENUITEM23;
+  static const wxWindowID ID_MENUITEM18;
+  static const wxWindowID ID_MENUITEM_PRINT_TEXT;
+  static const wxWindowID idMenuQuit;
+  static const wxWindowID ID_MENUITEM24;
+  static const wxWindowID ID_MENUITEM26;
+  static const wxWindowID ID_MENUITEM27;
+  static const wxWindowID ID_MENUITEM28;
+  static const wxWindowID ID_MENUITEM4;
+  static const wxWindowID ID_MENUITEM3;
+  static const wxWindowID ID_MENUITEM15;
+  static const wxWindowID ID_MENUITEM17;
+  static const wxWindowID ID_MENUITEM16;
+  static const wxWindowID ID_MENUITEM11;
+  static const wxWindowID ID_MENUITEM9;
+  static const wxWindowID ID_MENUITEM8;
+  static const wxWindowID ID_MENUITEM10;
+  static const wxWindowID ID_MENUITEM14;
+  static const wxWindowID ID_MENUITEM13;
+  static const wxWindowID idMenuAbout;
+  static const wxWindowID ID_STATUSBAR1;
+  static const wxWindowID ID_TIMER1;
+  //*)
+
+  static const wxWindowID ID_TRAVELLING_TIMER;
+  static const wxWindowID ID_TIMER_AUTOPLAY;
+  static const wxWindowID ID_TIMER_FILEWATCH;
+
+  //(*Declarations(_DSceneViewerFrame)
+  wxMenuItem* MenuItem8;
+  wxMenuItem* MenuItemImportImage;
+  wxMenuItem* mnuSelectionDelete;
+  wxMenuItem* MenuItem7;
+  wxCustomButton* btnCapture;
+  wxCustomButton* btnNew;
+  wxCustomButton* btnNext;
+  wxMenuItem* MenuItem5;
+  wxMenu* Menu3;
+  wxMenu* MenuItem20;
+  wxMenuItem* MenuItem14;
+  wxCustomButton* btnToolbarOpen;
+  wxMenuItem* mnuItemChangeMaxPointsPerOctreeNode;
+  wxCustomButton* btnQuit;
+  wxCustomButton* btnAutoplay;
+  wxMenuItem* MenuItem22;
+  wxMenuItem* MenuItem10;
+  wxStaticLine* StaticLine2;
+  wxMenuItem* MenuItem24;
+  wxCustomButton* btnOptions;
+  wxMenuItem* mnuSelectNone;
+  wxMenuItem* mnuSceneStats;
+  wxMenuItem* mnuPrintScene;
+  wxMenuItem* mnuSelectionScale;
+  wxMenuItem* mnuImportLAS;
+  wxCustomButton* btnOrtho;
+  wxCustomButton* btnShadows;
+  wxCustomButton* btnSSAO;
+  wxStatusBar* StatusBar1;
+  wxMenuItem* MenuItem6;
+  wxStaticLine* StaticLine3;
+  wxStaticLine* StaticLine1;
+  wxMenuItem* MenuItem23;
+  wxTimer timLoadFileCmdLine;
+  wxCustomButton* btnAbout;
+  wxMenuItem* MenuItem21;
+  wxMenuItem* mnuSelectByClass;
+  wxMenuItem* MenuItem16;
+  wxMenuItem* MenuItem9;
+  wxMenu* MenuItem18;
+  wxMenuItem* mnuItemShowCloudOctrees;
+  wxCustomButton* btnReload;
+  wxCustomButton* btnPrev;
+  wxMenu* Menu4;
+  wxMenuItem* MenuItem19;
+  wxMenu* MenuItem11;
+  wxMenu* MenuItem17;
+  //*)
+
+  CMyGLCanvas* m_canvas;
+  std::unique_ptr<wxTimer> m_autoplayTimer;
+  std::unique_ptr<wxTimer> m_timerFileWatch;
+  time_t m_loadedFileLastMTime = 0;
+
+  /** The list of currently selected objects */
+  std::vector<mrpt::viz::CVisualObject::Ptr> m_selected_gl_objects;
+
+  wxTimer m_tTravelling;
+  bool m_travelling_is_arbitrary;
+  std::optional<mrpt::Clock::time_point> m_travelling_start_time;
+
+  int m_nTicksNumber;
+  double m_nCurrentAzimuth;
+  int maxv;
+  void loadFromFile(const std::string& fil, bool isInASequence = false);
+  void updateTitle();
+  void clear_all_octrees_in_scene();
+
+  CDlgCamTracking* m_dlg_tracking;
+
+  DECLARE_EVENT_TABLE()
+};
+
+#endif  // _DSCENEVIEWERMAIN_H

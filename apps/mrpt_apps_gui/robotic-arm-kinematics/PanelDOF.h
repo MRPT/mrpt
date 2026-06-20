@@ -1,0 +1,53 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#ifndef PANELDOF_H
+#define PANELDOF_H
+
+//(*Headers(PanelDOF)
+#include <wx/htmllbox.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/textctrl.h>
+//*)
+
+class PanelDOF : public wxPanel
+{
+ public:
+  PanelDOF(wxWindow* parent, wxWindowID id = wxID_ANY);
+  ~PanelDOF() override;
+
+  //(*Declarations(PanelDOF)
+  wxSimpleHtmlListBox* Label1;
+  wxTextCtrl* TextCtrl1;
+  wxSlider* Slider1;
+  //*)
+
+ protected:
+  //(*Identifiers(PanelDOF)
+  static const wxWindowID ID_SIMPLEHTMLLISTBOX2;
+  static const wxWindowID ID_SLIDER1;
+  static const wxWindowID ID_TEXTCTRL1;
+  //*)
+
+ private:
+  //(*Handlers(PanelDOF)
+  void OnSlider1CmdScroll(wxScrollEvent& event);
+  //*)
+
+  DECLARE_EVENT_TABLE()
+};
+
+#endif

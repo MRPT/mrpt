@@ -1,0 +1,72 @@
+# ------------------------------------------------------------------------------
+#        Mobile Robot Programming Toolkit (MRPT)
+#
+# Copyright (c) 2005-2026, Jose Luis Blanco-Claraco, contributors (see Git history)
+# All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------------------------------------------
+
+cmake_minimum_required(VERSION 3.16)
+
+# Tell CMake we'll use C++ for use in its tests/flags
+project(mrpt_tfest LANGUAGES C CXX)
+
+# MRPT CMake scripts: "mrpt_xxx()"
+find_package(mrpt_common REQUIRED)
+find_package(mrpt_poses REQUIRED)
+find_package(Eigen3 REQUIRED)
+
+# define lib:
+set(LIB_SOURCES
+  src/registerAllClasses.cpp
+  src/se2_l2_internal.h
+  src/se2_l2_ransac.cpp
+  src/se2_l2.cpp
+  src/se2_l2.SSE2.cpp
+  src/se3_l2_ransac.cpp
+  src/se3_l2.cpp
+  src/TMatchingPair.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
+  tests/se3_unittest.cpp
+)
+
+set(LIB_PUBLIC_HEADERS
+  include/mrpt/tfest.h
+  include/mrpt/tfest/indiv-compat-decls.h
+  include/mrpt/tfest/registerAllClasses.h
+  include/mrpt/tfest/se2.h
+  include/mrpt/tfest/se3.h
+  include/mrpt/tfest/TMatchingPair.h
+)
+
+if (BUILD_TESTING)
+  find_package(mrpt_io REQUIRED) # for unit tests
+endif()
+
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
+  PUBLIC_LINK_LIBRARIES
+    mrpt::mrpt_poses
+  PRIVATE_LINK_LIBRARIES
+    Eigen3::Eigen
+  CMAKE_DEPENDENCIES
+    mrpt_poses
+)
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+    <mrpt/tfest/se3.h>
+)
+
+# Python wrapper:
+mrpt_add_python_module(tfest
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+
+mrpt_add_python_binding_test(tfest
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_tfest_test.py
+)
+

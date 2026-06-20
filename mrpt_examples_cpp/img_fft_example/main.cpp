@@ -1,0 +1,153 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/img/CImage.h>
+#include <mrpt/math/CMatrixF.h>
+#include <mrpt/math/fourier.h>
+#include <mrpt/system/CTicTac.h>
+
+#include <iostream>
+
+using namespace mrpt;
+using namespace mrpt::math;
+using namespace mrpt::system;
+using namespace mrpt::img;
+using namespace std;
+
+// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
+string myDataDir(
+    MRPT_EXAMPLES_BASE_DIRECTORY + string("img_correlation_example/"));  // Reuse it's images
+
+// ------------------------------------------------------
+//				TestFFT_2D_real
+// ------------------------------------------------------
+void TestFFT_2D_real()
+{
+  CMatrixF A, RES_R, RES_I, B, D;
+  CTicTac tictac;
+
+  printf("Loading matrix from file...");
+  A.loadFromTextFile("dft2_test.txt");
+  printf("ok\n");
+
+  printf(
+      "Computing 2D FFT of %ux%u...", static_cast<unsigned int>(A.rows()),
+      static_cast<unsigned int>(A.cols()));
+  tictac.Tic();
+  math::dft2_real(A, RES_R, RES_I);
+  printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
+
+  RES_R.saveToTextFile("_out_dft2_real.txt");
+  RES_I.saveToTextFile("_out_dft2_imag.txt");
+
+  printf(
+      "Computing 2D IFFT of %ux%u...", static_cast<unsigned int>(A.rows()),
+      static_cast<unsigned int>(A.cols()));
+  tictac.Tic();
+  math::idft2_real(RES_R, RES_I, B);
+  printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
+
+  //	B.saveToTextFile("_out_ifft2.txt");
+  D = B - A;
+  //	D.saveToTextFile("_out_dft2_error_diffs.txt");
+
+  mrpt::math::matrix_index_t u, v;
+  const float maxError = D.maxCoeff(u, v);
+
+  printf("Maximum error between 'A' and 'IFFT(FFT(A))'=%e\n", maxError);
+}
+
+// ------------------------------------------------------
+//				TestFFT_2D_complex
+// ------------------------------------------------------
+void TestFFT_2D_complex()
+{
+  CMatrixF DATA_R, DATA_I, RES_R, RES_I, B_R, B_I, D_R, D_I;
+  CTicTac tictac;
+
+  printf("Loading matrix from file...");
+  DATA_R.loadFromTextFile("complex_dft2_test_real.txt");
+  DATA_I.loadFromTextFile("complex_dft2_test_imag.txt");
+  printf("ok\n");
+
+  printf(
+      "Computing 2D complex FFT of %ux%u...", static_cast<unsigned int>(DATA_R.rows()),
+      static_cast<unsigned int>(DATA_R.cols()));
+  tictac.Tic();
+  math::dft2_complex(DATA_R, DATA_I, RES_R, RES_I);
+  printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
+
+  RES_R.saveToTextFile("_out_complex_dft2_real.txt");
+  RES_I.saveToTextFile("_out_complex_dft2_imag.txt");
+
+  printf(
+      "Computing 2D complex IFFT of %ux%u...", static_cast<unsigned int>(DATA_R.rows()),
+      static_cast<unsigned int>(DATA_R.cols()));
+  tictac.Tic();
+  math::idft2_complex(RES_R, RES_I, B_R, B_I);
+  printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
+
+  //	B.saveToTextFile("_out_ifft2.txt");
+  D_R = B_R - DATA_R;
+  D_I = B_I - DATA_I;
+  //	D.saveToTextFile("_out_dft2_error_diffs.txt");
+
+  mrpt::math::matrix_index_t u, v;
+  const float maxError_R = D_R.maxCoeff(u, v);
+  const float maxError_I = D_I.maxCoeff(u, v);
+
+  printf("Maximum error between 'A' and 'IFFT(FFT(A))'=%e\n", maxError_R);
+  printf("Maximum error between 'A' and 'IFFT(FFT(A))'=%e\n", maxError_I);
+}
+
+// ------------------------------------------------------
+//				TestImageFFT
+// ------------------------------------------------------
+void TestImageFFT()
+{
+  CTicTac tictac;
+  CImage IM1, IM2;
+  CMatrixF imgCorr;
+
+  bool loadOk = IM1.loadFromFile(
+      myDataDir + string("fft2_test_image_patch.jpg"), mrpt::img::CH_AS_IS);  // "Patch"
+  ASSERT_(loadOk);
+
+  loadOk = IM2.loadFromFile(
+      myDataDir + string("fft2_test_image.jpg"),
+      mrpt::img::CH_AS_IS);  // Ref. image
+  ASSERT_(loadOk);
+
+  printf("Computing images correlation...");
+  tictac.Tic();
+  IM2.cross_correlation_FFT(IM1, imgCorr);
+  printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
+
+  imgCorr.saveToTextFile("_out_dft2_image_test.txt");
+}
+
+int main()
+{
+  try
+  {
+    TestImageFFT();
+
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+}

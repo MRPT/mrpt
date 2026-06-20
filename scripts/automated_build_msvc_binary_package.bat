@@ -15,9 +15,9 @@ REM Make sure params are OK:
 REM ------------------------------
 IF "%1" == "" GOTO SHOW_USAGE
 IF NOT EXIST "%1" GOTO SHOW_USAGE2
-IF NOT EXIST "%1\version_prefix.txt" GOTO SHOW_USAGE2
+IF NOT EXIST "%1\colcon_defaults.yaml" GOTO SHOW_USAGE2
 
-IF EXIST ".\version_prefix.txt" GOTO NO_GOOD
+IF EXIST ".\colcon_defaults.yaml" GOTO NO_GOOD
 
 REM 1) Compile debug libs (so Cmake find them in the next run)
 REM ----------------------------------------------

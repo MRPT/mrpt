@@ -1,0 +1,147 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/bayes/CParticleFilterCapable.h>
+#include <mrpt/io/vector_loadsave.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/math/ops_vectors.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/random.h>
+#include <mrpt/system/filesystem.h>
+
+#include <iostream>
+#include <map>
+
+using namespace mrpt::bayes;
+using namespace mrpt::math;
+using namespace mrpt::random;
+using namespace mrpt::system;
+using namespace mrpt::io;
+using namespace std;
+
+double MIN_LOG_WEIG = -1.0;
+
+unsigned int N_TESTS = 500;
+int N_PARTICLES = 100;
+
+// For batch experiment:
+CVectorDouble min_log_ws;
+map<string, CVectorDouble> results;
+
+// vectorToTextFile( out_indxs, #ALGOR, true, true); /* By rows, append */
+
+#define TEST_RESAMPLING(ALGOR)                                                               \
+  mrpt::system::deleteFile(#ALGOR);                                                          \
+  /*printf(#ALGOR);*/                                                                        \
+  /*printf("\n");*/                                                                          \
+  ERR_MEANs.clear();                                                                         \
+  ERR_STDs.clear();                                                                          \
+  for (size_t i = 0; i < N_TESTS; i++)                                                       \
+  {                                                                                          \
+    mrpt::random::getRandomGenerator().drawUniformVector(log_ws, MIN_LOG_WEIG, 0.0);         \
+    CParticleFilterCapable::log2linearWeights(log_ws, lin_ws);                               \
+    CParticleFilterCapable::computeResampling(CParticleFilter::ALGOR, log_ws, out_indxs);    \
+    hist_parts = mrpt::math::histogram(out_indxs, 0.0, static_cast<double>(M - 1), M, true); \
+    vector<double> errs_hist = lin_ws - hist_parts;                                          \
+    ERR_MEANs.push_back(mrpt::math::mean(errs_hist));                                        \
+    ERR_STDs.push_back(mrpt::math::stddev(errs_hist));                                       \
+  }                                                                                          \
+  printf("%s: ERR_MEAN %e\n", #ALGOR, mrpt::math::mean(ERR_MEANs));                          \
+  printf("%s: ERR_STD %f\n", #ALGOR, mrpt::math::mean(ERR_STDs));                            \
+  results[#ALGOR].push_back(mrpt::math::mean(ERR_STDs));
+
+// ------------------------------------------------------
+//                  TestResampling
+// ------------------------------------------------------
+void TestResampling()
+{
+  vector<double> log_ws;
+  std::vector<size_t> out_indxs;
+
+  const size_t M = N_PARTICLES;
+
+  log_ws.resize(M);
+  // vectorToTextFile( log_ws, "log_ws.txt");
+
+  // Compute normalized linear weights:
+  vector<double> lin_ws;
+  vector<double> hist_parts;
+  vector<double> ERR_MEANs;
+  vector<double> ERR_STDs;
+
+  // prMultinomial
+  TEST_RESAMPLING(prMultinomial)
+  // prResidual
+  TEST_RESAMPLING(prResidual)
+  // prStratified
+  TEST_RESAMPLING(prStratified)
+  // prSystematic
+  TEST_RESAMPLING(prSystematic)
+}
+
+void TestBatch()
+{
+  for (double LL = -2; LL <= 2.01; LL += 0.08)
+  {
+    double L = pow(10.0, LL);
+
+    min_log_ws.push_back(L);
+    printf("MIN_LOG_W=%f\n", L);
+
+    MIN_LOG_WEIG = L;
+    TestResampling();
+  }
+
+  // Save results to files:
+  CVectorDouble R;
+
+  (void)vectorToTextFile(min_log_ws, "min_log_ws.txt");
+
+  R = results["prMultinomial"];
+  (void)vectorToTextFile(R, "prMultinomial.txt");
+  R = results["prResidual"];
+  (void)vectorToTextFile(R, "prResidual.txt");
+  R = results["prStratified"];
+  (void)vectorToTextFile(R, "prStratified.txt");
+  R = results["prSystematic"];
+  (void)vectorToTextFile(R, "prSystematic.txt");
+}
+
+// ------------------------------------------------------
+//                        MAIN
+// ------------------------------------------------------
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
+{
+  try
+  {
+    getRandomGenerator().randomize();
+
+    if (argc > 1) N_PARTICLES = atoi(argv[1]);
+
+    // TestResampling();
+    TestBatch();
+
+    return 0;
+  }
+  catch (exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+  catch (...)
+  {
+    cerr << "Untyped excepcion!!";
+    return -1;
+  }
+}

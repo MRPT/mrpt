@@ -1,0 +1,94 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#pragma once
+
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/poses/CPose3D.h>
+
+#include <optional>
+#include <utility>
+
+namespace mrpt::maps
+{
+/** Virtual base class for Digital Elevation Model (DEM) maps. See derived
+ * classes for details.
+ * This class implements those operations which are especific to DEMs.
+ * \ingroup mrpt_maps_grp */
+class CHeightGridMap2D_Base
+{
+ public:
+  CHeightGridMap2D_Base();
+  virtual ~CHeightGridMap2D_Base();
+
+  /** @name Specific API for Digital Elevation Model (DEM) maps
+    @{ */
+  /** Gets the intersection between a 3D line and a Height Grid map (taking
+   * into account the different heights of each individual cell)  */
+  bool intersectLine3D(const mrpt::math::TLine3D& r1, mrpt::math::TObject3D& obj) const;
+
+  /** Computes the minimum and maximum height in the grid.
+   * \return False if there is no observed cell yet.
+   * \deprecated Use getMinMaxHeightOpt() returning optional instead.
+   */
+  [[nodiscard]] bool getMinMaxHeight(float& z_min, float& z_max) const;
+
+  /** Returns {z_min, z_max} if any cell is observed, or std::nullopt otherwise. */
+  [[nodiscard]] std::optional<std::pair<float, float>> getMinMaxHeightOpt() const;
+
+  /** Extra params for insertIndividualPoint() */
+  struct TPointInsertParams
+  {
+    /** (Default:0.0) If !=0, use this value as the uncertainty (standard
+     * deviation) for the point "z" coordinate, instead of the map-wise
+     * default value. */
+    double pt_z_std{0.0};
+    /** (default: true) run any required operation to ensure the map
+     * reflects the changes caused by this point. Otherwise, calling
+     * dem_update_map() is required. */
+    bool update_map_after_insertion{true};
+
+    TPointInsertParams();
+  };
+  /** Update the DEM with one new point.
+   * \sa mrpt::maps::CMetricMap::insertObservation() for inserting
+   * higher-level objects like 2D/3D LIDAR scans
+   * \return true if updated OK, false if (x,y) is out of bounds */
+  virtual bool insertIndividualPoint(
+      const double x,
+      const double y,
+      const double z,
+      const TPointInsertParams& params = TPointInsertParams()) = 0;
+
+  virtual double dem_get_resolution() const = 0;
+  virtual size_t dem_get_size_x() const = 0;
+  virtual size_t dem_get_size_y() const = 0;
+  /** Get cell 'z' by (cx,cy) cell indices. \return false if out of bounds or
+   * un-observed cell. */
+  virtual bool dem_get_z_by_cell(size_t cx, size_t cy, double& z_out) const = 0;
+  /** Get cell 'z' (x,y) by metric coordinates. \return false if out of bounds
+   * or un-observed cell. */
+  virtual bool dem_get_z(const double x, const double y, double& z_out) const = 0;
+  /** Ensure that all observations are reflected in the map estimate */
+  virtual void dem_update_map() = 0;
+  /** @} */
+
+  /** Internal method called by internal_insertObservation() */
+  bool dem_internal_insertObservation(
+      const mrpt::obs::CObservation& obs,
+      const std::optional<const mrpt::poses::CPose3D>& robotPose = std::nullopt);
+};
+}  // namespace mrpt::maps

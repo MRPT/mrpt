@@ -47,7 +47,7 @@ int main()
   }
   catch (std::exception& e)
   {
-    std::cerr << "**Exception**: " << e.what() << std::endl;
+    std::cerr << "**Exception**: " << e.what() << "\n";
     return -1;
   }
 }

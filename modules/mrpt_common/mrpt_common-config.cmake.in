@@ -1,0 +1,31 @@
+#                      _
+#                     | |    Mobile Robot Programming Toolkit (MRPT)
+# _ __ ___  _ __ _ __ | |_
+#| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+#| | | | | | |  | |_) | |_
+#|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+#               | |
+#               |_|
+#
+# Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+# See: https://www.mrpt.org/Authors - All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+
+# mrpt_common: Defined common CMake variables and functions to unify building
+# of all MRPT modules.
+#
+# Main functions (refer to their docs in mrpt_cmake_functions.cmake):
+#  - mrpt_add_library()
+#  - mrpt_add_executable()
+#
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
+
+# TODO: Support INSTALL path
+list(APPEND CMAKE_MODULE_PATH @CMAKE_CURRENT_LIST_DIR@)
+#	$<BUILD_INTERFACE:"@mrpt-common_SOURCE_DIR@">
+#	$<INSTALL_INTERFACE:"${CMAKE_CURRENT_LIST_DIR}">
+
+
+#TODO: include(mrpt-version)
+include(mrpt_cmake_functions)

@@ -1,14 +1,21 @@
-/* +------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          https://www.mrpt.org/                         |
-   |                                                                        |
-   | Copyright (c) 2005-2026, Individual contributors, see AUTHORS file     |
-   | See: https://www.mrpt.org/Authors - All rights reserved.               |
-   | Released under BSD License. See: https://www.mrpt.org/License          |
-   +------------------------------------------------------------------------+ */
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
 
 // This seems to be assumed by OpenNI.h and undefined for some reason in
 // GCC/Ubuntu
+#include <mrpt/core/config.h>  // MRPT_OS_*()
+
 #if !defined(MRPT_OS_WINDOWS)
 #define linux 1
 #endif
@@ -87,11 +94,11 @@ int main(int argc, char** argv)
 
     rc = device.open(deviceURI);
 
-    // cout << endl << "Do we have IR sensor? " <<
+    // std::cout << endl << "Do we have IR sensor? " <<
     // device.hasSensor(openni::SENSOR_IR);
-    // cout << endl << "Do we have RGB sensor? " <<
+    // std::cout << endl << "Do we have RGB sensor? " <<
     // device.hasSensor(openni::SENSOR_COLOR);
-    // cout << endl << "Do we have Depth sensor? " <<
+    // std::cout << endl << "Do we have Depth sensor? " <<
     // device.hasSensor(openni::SENSOR_DEPTH);
 
     if (rc != openni::STATUS_OK)
@@ -130,7 +137,7 @@ int main(int argc, char** argv)
     }
     else
     {
-      cout << "Device doesn't do image registration!" << endl;
+      std::cout << "Device doesn't do image registration!" << "\n";
     }
 
     if (!depth.isValid() || !rgb.isValid())
@@ -147,9 +154,9 @@ int main(int argc, char** argv)
     }
 
     //	if (device.setDepthColorSyncEnabled(true) == openni::STATUS_OK)
-    //		cout << "setDepthColorSyncEnabled" << endl;
+    //		cout << "setDepthColorSyncEnabled" << "\n";
     //	else
-    //		cout << "setDepthColorSyncEnabled failed!" << endl;
+    //		cout << "setDepthColorSyncEnabled failed!" << "\n";
 
     // rc = device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_OFF);
 
@@ -169,12 +176,12 @@ int main(int argc, char** argv)
     // Create output directory for images ------------------------------
     const string out_img_dir = out_name + string("_Images");
 
-    cout << "Creating images directory: " << out_img_dir << endl;
+    std::cout << "Creating images directory: " << out_img_dir << "\n";
     mrpt::system::createDirectory(out_img_dir);
 
     // Create rawlog file ----------------------------------------------
     const string out_rawlog_fil = out_name + string(".rawlog");
-    cout << "Creating rawlog: " << out_rawlog_fil << endl;
+    std::cout << "Creating rawlog: " << out_rawlog_fil << "\n";
     mrpt::io::CCompressedOutputStream f_out(out_rawlog_fil);
 
     // Fill out the common field to all entries:
@@ -222,9 +229,9 @@ int main(int argc, char** argv)
     bool sampleinsync = false;
 
     if (manual_mode)
-      cout << "Press any key to grab a frame. 'ESC' to stop\n";
+      std::cout << "Press any key to grab a frame. 'ESC' to stop\n";
     else
-      cout << "Press any key to stop\n";
+      std::cout << "Press any key to stop\n";
 
     while ((!system::os::kbhit() && !manual_mode) || manual_mode)
     {
@@ -255,26 +262,26 @@ int main(int argc, char** argv)
           depth.readFrame(&framed);
 
         double t2 = tictac.Tac() * 1000;
-        cout << "frame " << frame << ". t1: " << t1 << ", t2: " << t2;
+        std::cout << "frame " << frame << ". t1: " << t1 << ", t2: " << t2;
 
         if (t2 > t1)
         {
-          cout << " --- out of sync";
+          std::cout << " --- out of sync";
           depthfirst = !depthfirst;
         }
         else
         {
-          cout << " --- in sync    ";
+          std::cout << " --- in sync    ";
           sampleinsync = true;
         }
 
-        cout << "\r";
+        std::cout << "\r";
       }
 
       if ((framed.getWidth() != framergb.getWidth()) ||
           (framed.getHeight() != framergb.getHeight()))
       {
-        cout << "\nBoth frames don't have the same size.";
+        std::cout << "\nBoth frames don't have the same size.";
       }
       else
       {
@@ -325,7 +332,7 @@ int main(int argc, char** argv)
       }
     }
 
-    cout << "\nStopping...\n";
+    std::cout << "\nStopping...\n";
 
     depth.destroy();
     rgb.destroy();
@@ -335,7 +342,7 @@ int main(int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    std::cout << "MRPT exception caught: " << e.what() << std::endl;
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
     return -1;
   }
 }

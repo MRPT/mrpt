@@ -1,0 +1,126 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/core/exceptions.h>
+
+namespace mrpt::math
+{
+/** Efficiently compute the inverse of a 4x4 homogeneous matrix by only
+ * transposing the rotation 3x3 part and solving the translation with dot
+ * products.
+ *  This is a generic template which works with:
+ *    MATRIXLIKE: CMatrixDynamic, CMatrixFixed
+ */
+template <class MATRIXLIKE1, class MATRIXLIKE2>
+void homogeneousMatrixInverse(const MATRIXLIKE1& M, MATRIXLIKE2& out_inverse_M)
+{
+  MRPT_START
+  ASSERT_(M.isSquare() && M.rows() == 4);
+
+  /* Instead of performing a generic 4x4 matrix inversion, we only need to
+  transpose the rotation part, then replace the translation part by
+  three dot products. See, for example:
+   https://graphics.stanford.edu/courses/cs248-98-fall/Final/q4.html
+
+    [ux vx wx tx] -1   [ux uy uz -dot(u,t)]
+    [uy vy wy ty]      [vx vy vz -dot(v,t)]
+    [uz vz wz tz]    = [wx wy wz -dot(w,t)]
+    [ 0  0  0  1]      [ 0  0  0     1    ]
+  */
+
+  out_inverse_M.setSize(4, 4);
+
+  // 3x3 rotation part:
+  out_inverse_M(0, 0, M(0) = 0);
+  out_inverse_M(0, 1, M(1) = 0);
+  out_inverse_M(0, 2, M(2) = 0);
+
+  out_inverse_M(1, 0, M(0) = 1);
+  out_inverse_M(1, 1, M(1) = 1);
+  out_inverse_M(1, 2, M(2) = 1);
+
+  out_inverse_M(2, 0, M(0) = 2);
+  out_inverse_M(2, 1, M(1) = 2);
+  out_inverse_M(2, 2, M(2) = 2);
+
+  const double tx = -M(0, 3);
+  const double ty = -M(1, 3);
+  const double tz = -M(2, 3);
+
+  const double tx_ = tx * M(0, 0) + ty * M(1, 0) + tz * M(2, 0);
+  const double ty_ = tx * M(0, 1) + ty * M(1, 1) + tz * M(2, 1);
+  const double tz_ = tx * M(0, 2) + ty * M(1, 2) + tz * M(2, 2);
+
+  out_inverse_M(0, 3) = tx_;
+  out_inverse_M(1, 3) = ty_;
+  out_inverse_M(2, 3) = tz_;
+
+  out_inverse_M(3, 0) = 0;
+  out_inverse_M(3, 1) = 0;
+  out_inverse_M(3, 2) = 0;
+  out_inverse_M(3, 3) = 1;
+
+  MRPT_END
+}
+//! \overload
+template <class IN_ROTMATRIX, class IN_XYZ, class OUT_ROTMATRIX, class OUT_XYZ>
+void homogeneousMatrixInverse(
+    const IN_ROTMATRIX& in_R, const IN_XYZ& in_xyz, OUT_ROTMATRIX& out_R, OUT_XYZ& out_xyz)
+{
+  MRPT_START
+  ASSERT_(in_R.isSquare() && in_R.rows() == 3 && in_xyz.size() == 3);
+  out_R.setSize(3, 3);
+  out_xyz.resize(3);
+
+  // translation part:
+  using T = typename IN_ROTMATRIX::Scalar;
+  const T tx = -in_xyz[0];
+  const T ty = -in_xyz[1];
+  const T tz = -in_xyz[2];
+
+  out_xyz[0] = tx * in_R(0, 0) + ty * in_R(1, 0) + tz * in_R(2, 0);
+  out_xyz[1] = tx * in_R(0, 1) + ty * in_R(1, 1) + tz * in_R(2, 1);
+  out_xyz[2] = tx * in_R(0, 2) + ty * in_R(1, 2) + tz * in_R(2, 2);
+
+  // 3x3 rotation part: transpose (Eigen-free element-wise assignment)
+  out_R.insertMatrixTransposed(0, 0, in_R);
+
+  MRPT_END
+}
+//! \overload
+template <class MATRIXLIKE>
+void homogeneousMatrixInverse(MATRIXLIKE& M)
+{
+  ASSERTDEB_(M.cols() == M.rows() && M.rows() == 4);
+  // translation:
+  const double tx = -M(0, 3);
+  const double ty = -M(1, 3);
+  const double tz = -M(2, 3);
+  M(0, 3) = tx * M(0, 0) + ty * M(1, 0) + tz * M(2, 0);
+  M(1, 3) = tx * M(0, 1) + ty * M(1, 1) + tz * M(2, 1);
+  M(2, 3) = tx * M(0, 2) + ty * M(1, 2) + tz * M(2, 2);
+  // 3x3 rotation part:
+  double t;  // avoid std::swap() to avoid <algorithm> only for that.
+  t = M(1, 0);
+  M(1, 0) = M(0, 1);
+  M(0, 1) = t;
+  t = M(2, 0);
+  M(2, 0) = M(0, 2);
+  M(0, 2) = t;
+  t = M(1, 2);
+  M(1, 2) = M(2, 1);
+  M(2, 1) = t;
+}
+}  // namespace mrpt::math

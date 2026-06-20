@@ -1,0 +1,90 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#include "CIniEditor.h"
+
+#include "xRawLogViewerMain.h"
+
+//(*InternalHeaders(CIniEditor)
+#include <wx/font.h>
+#include <wx/intl.h>
+#include <wx/settings.h>
+#include <wx/string.h>
+//*)
+
+//(*IdInit(CIniEditor)
+const wxWindowID CIniEditor::ID_BUTTON1 = wxNewId();
+const wxWindowID CIniEditor::ID_BUTTON2 = wxNewId();
+const wxWindowID CIniEditor::ID_TEXTCTRL1 = wxNewId();
+//*)
+
+BEGIN_EVENT_TABLE(CIniEditor, wxDialog)
+//(*EventTable(CIniEditor)
+//*)
+END_EVENT_TABLE()
+
+CIniEditor::CIniEditor(
+    wxWindow* parent,
+    wxWindowID id,
+    [[maybe_unused]] const wxPoint& pos,
+    [[maybe_unused]] const wxSize& size)
+{
+  //(*Initialize(CIniEditor)
+  wxFlexGridSizer* FlexGridSizer2;
+  wxFlexGridSizer* FlexGridSizer1;
+
+  Create(
+      parent, id, _("Edit "), wxDefaultPosition, wxDefaultSize,
+      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER, _T("id"));
+  SetClientSize(wxDefaultSize);
+  Move(wxDefaultPosition);
+  FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
+  FlexGridSizer1->AddGrowableCol(0);
+  FlexGridSizer1->AddGrowableRow(1);
+  FlexGridSizer2 = new wxFlexGridSizer(0, 2, 0, 0);
+  btnOK = new wxButton(
+      this, ID_BUTTON1, _("OK"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON1"));
+  FlexGridSizer2->Add(btnOK, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  btnCancel = new wxButton(
+      this, ID_BUTTON2, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
+      _T("ID_BUTTON2"));
+  FlexGridSizer2->Add(btnCancel, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+  FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
+  edText = new wxTextCtrl(
+      this, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(516, 372),
+      wxTE_MULTILINE | wxHSCROLL | wxVSCROLL | wxTE_PROCESS_TAB, wxDefaultValidator,
+      _T("ID_TEXTCTRL1"));
+  wxFont edTextFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
+  if (!edTextFont.Ok()) edTextFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+  edTextFont.SetPointSize(static_cast<int>(edTextFont.GetPointSize() * 1.000000));
+  edText->SetFont(edTextFont);
+  FlexGridSizer1->Add(edText, 1, wxEXPAND, 5);
+  SetSizer(FlexGridSizer1);
+  FlexGridSizer1->Fit(this);
+  FlexGridSizer1->SetSizeHints(this);
+  Center();
+
+  Bind(wxEVT_BUTTON, &CIniEditor::OnbtnOKClick, this, ID_BUTTON1);
+  Bind(wxEVT_BUTTON, &CIniEditor::OnbtnCancelClick, this, ID_BUTTON2);
+  //*)
+}
+
+CIniEditor::~CIniEditor()
+{
+  //(*Destroy(CIniEditor)
+  //*)
+}
+
+void CIniEditor::OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event) { EndModal(0); }
+void CIniEditor::OnbtnOKClick([[maybe_unused]] wxCommandEvent& event) { EndModal(1); }

@@ -179,6 +179,13 @@ function formatDocBlock_anchor(block, context)
 end
 
 function formatDocBlock_image(block, context)
+	-- Doxygen emits one <image> per output format (html, latex, rtf, docbook).
+	-- Only render the html variant (or format-agnostic ones) to avoid duplicates.
+	local kind = block.imageKind or ""
+	if kind ~= "" and kind ~= "html" then
+		return ""
+	end
+
 	local s = "\n\n.. image:: " .. block.name .. "\n"
 	if block.width ~= 0 then
 		s = s .. "\t:width: " .. block.width .. "\n"

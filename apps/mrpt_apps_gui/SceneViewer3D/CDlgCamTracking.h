@@ -1,0 +1,90 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#ifndef CDLGCAMTRACKING_H
+#define CDLGCAMTRACKING_H
+
+//(*Headers(CDlgCamTracking)
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/dialog.h>
+#include <wx/grid.h>
+#include <wx/menu.h>
+#include <wx/sizer.h>
+#include <wx/textctrl.h>
+//*)
+
+#include <mrpt/poses/CPose3DInterpolator.h>
+
+class _DSceneViewerFrame;
+
+class CDlgCamTracking : public wxDialog
+{
+ public:
+  CDlgCamTracking(
+      _DSceneViewerFrame* parent,
+      wxWindowID id = wxID_ANY,
+      const wxPoint& pos = wxDefaultPosition,
+      const wxSize& size = wxDefaultSize);
+  ~CDlgCamTracking() override;
+
+  //(*Declarations(CDlgCamTracking)
+  wxButton* btnStop;
+  wxButton* btnGrab;
+  wxButton* btnSave;
+  wxButton* btnStart;
+  wxButton* btnClose;
+  wxMenuItem* MenuItem1;
+  wxButton* btnLoad;
+  wxGrid* gridPoses;
+  wxCheckBox* cbConstVel;
+  wxTextCtrl* edVel;
+  wxMenu menuGrid;
+  //*)
+
+  // The camera path:
+  mrpt::poses::CPose3DInterpolator m_poses;
+  void UpdateTableFromPoses();
+
+ protected:
+  _DSceneViewerFrame* m_main_win;
+
+  //(*Identifiers(CDlgCamTracking)
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_BUTTON6;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_GRID1;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_MENUITEM1;
+  //*)
+
+ private:
+  //(*Handlers(CDlgCamTracking)
+  void OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event);
+  void OnMenuItemDelete([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSaveClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnLoadClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnGrabClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStartClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStopClick([[maybe_unused]] wxCommandEvent& event);
+  //*)
+
+  DECLARE_EVENT_TABLE()
+};
+
+#endif

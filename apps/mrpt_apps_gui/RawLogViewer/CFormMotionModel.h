@@ -1,0 +1,246 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#ifndef CFORMMOTIONMODEL_H
+#define CFORMMOTIONMODEL_H
+
+//(*Headers(CFormMotionModel)
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/dialog.h>
+#include <wx/hyperlink.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/radiobut.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+//*)
+
+// The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
+//  See http://sourceforge.net/projects/wxmathplot
+#include <mrpt/3rdparty/mathplot/mathplot.h>
+
+class CFormMotionModel : public wxDialog
+{
+ public:
+  CFormMotionModel(wxWindow* parent, wxWindowID id = -1);
+  ~CFormMotionModel() override;
+
+  //(*Identifiers(CFormMotionModel)
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_HYPERLINKCTRL1;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_STATICTEXT6;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_STATICTEXT7;
+  static const wxWindowID ID_STATICTEXT26;
+  static const wxWindowID ID_TEXTCTRL15;
+  static const wxWindowID ID_STATICTEXT27;
+  static const wxWindowID ID_STATICTEXT8;
+  static const wxWindowID ID_TEXTCTRL4;
+  static const wxWindowID ID_STATICTEXT9;
+  static const wxWindowID ID_STATICTEXT10;
+  static const wxWindowID ID_TEXTCTRL5;
+  static const wxWindowID ID_STATICTEXT11;
+  static const wxWindowID ID_BUTTON10;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_BUTTON8;
+  static const wxWindowID ID_PANEL2;
+  static const wxWindowID ID_STATICTEXT12;
+  static const wxWindowID ID_TEXTCTRL6;
+  static const wxWindowID ID_STATICTEXT13;
+  static const wxWindowID ID_STATICTEXT14;
+  static const wxWindowID ID_TEXTCTRL7;
+  static const wxWindowID ID_STATICTEXT15;
+  static const wxWindowID ID_STATICTEXT16;
+  static const wxWindowID ID_TEXTCTRL8;
+  static const wxWindowID ID_STATICTEXT17;
+  static const wxWindowID ID_STATICTEXT18;
+  static const wxWindowID ID_TEXTCTRL9;
+  static const wxWindowID ID_STATICTEXT19;
+  static const wxWindowID ID_STATICTEXT20;
+  static const wxWindowID ID_TEXTCTRL10;
+  static const wxWindowID ID_STATICTEXT21;
+  static const wxWindowID ID_STATICTEXT29;
+  static const wxWindowID ID_TEXTCTRL17;
+  static const wxWindowID ID_STATICTEXT30;
+  static const wxWindowID ID_STATICTEXT31;
+  static const wxWindowID ID_TEXTCTRL18;
+  static const wxWindowID ID_STATICTEXT32;
+  static const wxWindowID ID_BUTTON11;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_BUTTON9;
+  static const wxWindowID ID_PANEL3;
+  static const wxWindowID ID_NOTEBOOK1;
+  static const wxWindowID ID_RADIOBUTTON1;
+  static const wxWindowID ID_BUTTON6;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_STATICTEXT34;
+  static const wxWindowID ID_TEXTCTRL19;
+  static const wxWindowID ID_STATICTEXT33;
+  static const wxWindowID ID_TEXTCTRL20;
+  static const wxWindowID ID_RADIOBUTTON2;
+  static const wxWindowID ID_STATICTEXT22;
+  static const wxWindowID ID_TEXTCTRL11;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_BUTTON7;
+  static const wxWindowID ID_STATICTEXT23;
+  static const wxWindowID ID_TEXTCTRL12;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_STATICTEXT25;
+  static const wxWindowID ID_TEXTCTRL13;
+  static const wxWindowID ID_TEXTCTRL14;
+  static const wxWindowID ID_TEXTCTRL16;
+  static const wxWindowID ID_PANEL1;
+  static const wxWindowID ID_STATICTEXT24;
+  static const wxWindowID ID_CUSTOM1;
+  static const wxWindowID ID_STATICTEXT28;
+  static const wxWindowID ID_CUSTOM2;
+  //*)
+
+ protected:
+  //(*Handlers(CFormMotionModel)
+  void OnbtnOkClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnGaussOKClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnThrunOkClick([[maybe_unused]] wxCommandEvent& event);
+  void OnInit(wxInitDialogEvent& event);
+  void OnrbFileSelect([[maybe_unused]] wxCommandEvent& event);
+  void OnrbLoadedSelect([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnGetFromCurrentClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSimulateClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSimulateThrunClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnResetGaussClick([[maybe_unused]] wxCommandEvent& event);
+  void OnButton1Click([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnResetThrunClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPickInputClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPickOutClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnGetFromFileClick([[maybe_unused]] wxCommandEvent& event);
+  void OncbAllClick([[maybe_unused]] wxCommandEvent& event);
+  //*)
+
+ public:
+  //(*Declarations(CFormMotionModel)
+  wxStaticText* StaticText10;
+  wxBoxSizer* BoxSizer4;
+  wxTextCtrl* txtAphi;
+  wxStaticText* StaticText22;
+  wxStaticText* StaticText9;
+  wxTextCtrl* edAddPhi;
+  wxRadioButton* rbLoaded;
+  wxStaticText* StaticText20;
+  wxFlexGridSizer* FlexGridSizer4;
+  wxButton* btnOk;
+  wxButton* btnThrunOk;
+  wxBoxSizer* BoxSizer5;
+  wxStaticText* StaticText29;
+  wxButton* btnGaussOK;
+  wxButton* btnSimulate;
+  wxTextCtrl* txtAx;
+  wxStaticText* StaticText33;
+  wxStaticText* StaticText13;
+  wxTextCtrl* edA2;
+  wxStaticText* StaticText2;
+  wxStaticText* StaticText30;
+  wxStaticText* StaticText14;
+  wxButton* btnGetFromFile;
+  wxStaticText* StaticText26;
+  wxStaticText* StaticText6;
+  wxNotebook* PageControl1;
+  wxTextCtrl* edA1;
+  wxFlexGridSizer* FlexGridSizer5;
+  wxStaticText* StaticText32;
+  wxStaticText* StaticText19;
+  wxButton* btnSimulateThrun;
+  wxTextCtrl* edMinStdXY;
+  wxStaticText* StaticText8;
+  wxStaticText* StaticText11;
+  mpWindow* plotSamplesXY;
+  wxStaticText* StaticText18;
+  wxTextCtrl* edA4;
+  wxPanel* Panel1;
+  wxStaticText* StaticText31;
+  wxFlexGridSizer* FlexGridSizer2;
+  wxStaticText* StaticText1;
+  wxStaticText* StaticText27;
+  wxStaticText* StaticText3;
+  mpWindow* plotSamplesPHI;
+  wxTextCtrl* edA3;
+  wxHyperlinkCtrl* HyperlinkCtrl1;
+  wxButton* btnGetFromCurrent;
+  wxFlexGridSizer* FlexGridSizer7;
+  wxTextCtrl* edG_A3;
+  wxButton* btnPickInput;
+  wxTextCtrl* edRangeFrom;
+  wxButton* btnPickOut;
+  wxButton* btnResetGauss;
+  wxPanel* Panel3;
+  wxStaticText* StaticText21;
+  wxStaticText* StaticText23;
+  wxStaticText* StaticText24;
+  wxTextCtrl* edG_A2;
+  wxStaticText* StaticText34;
+  wxStaticText* StaticText5;
+  wxStaticText* StaticText7;
+  wxFlexGridSizer* FlexGridSizer8;
+  wxTextCtrl* txtAy;
+  wxRadioButton* rbFile;
+  wxTextCtrl* edRangeTo;
+  wxTextCtrl* edAddXY;
+  wxStaticText* StaticText28;
+  wxStaticText* StaticText15;
+  wxStaticText* StaticText12;
+  wxCheckBox* cbAll;
+  wxTextCtrl* edNumParts;
+  wxFlexGridSizer* FlexGridSizer6;
+  wxPanel* Panel2;
+  wxStaticBoxSizer* StaticBoxSizer1;
+  wxFlexGridSizer* FlexGridSizer1;
+  wxStaticText* StaticText25;
+  wxFlexGridSizer* FlexGridSizer11;
+  wxBoxSizer* BoxSizer3;
+  wxTextCtrl* edG_A4;
+  wxStaticText* StaticText17;
+  wxStaticText* StaticText4;
+  wxTextCtrl* txtInputFile;
+  wxTextCtrl* edMinStdPHI;
+  wxTextCtrl* edG_A1;
+  wxStaticText* StaticText16;
+  wxTextCtrl* txtOutputFile;
+  wxButton* btnResetThrun;
+  //*)
+
+  // Layers for the 2D graphs:
+  mpFXYVector* lyAction2D_XY;
+  mpFXYVector* lyAction2D_PHI;
+
+ private:
+  void loadFromGaussian();
+  void loadFromThrun();
+
+  void applyToLoadedRawlog();
+  void applyToRawlogFile();
+
+  void drawRandomSamples();
+  void showOptionsInDialog();
+
+  DECLARE_EVENT_TABLE()
+};
+
+#endif

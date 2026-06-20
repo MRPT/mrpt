@@ -1,0 +1,96 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+
+#include "rawlog-edit-declarations.h"
+
+using namespace mrpt;
+using namespace mrpt::obs;
+using namespace mrpt::system;
+using namespace mrpt::apps;
+using namespace std;
+using namespace mrpt::io;
+
+// ======================================================================
+//		op_list_images
+// ======================================================================
+DECLARE_OP_FUNCTION(op_list_images)
+{
+  // A class to do this operation:
+  class CRawlogProcessor_ListImages : public CRawlogProcessorOnEachObservation
+  {
+   protected:
+    string m_out_file;
+    std::ofstream m_out;
+
+   public:
+    CRawlogProcessor_ListImages(
+        CCompressedInputStream& in_rawlog, CLI::App& cmdline, bool Verbose) :
+        CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
+    {
+      getArgValue<std::string>(cmdline, "text-file-output", m_out_file);
+      VERBOSE_COUT << "Writing list to: " << m_out_file << "\n";
+
+      m_out.open(m_out_file.c_str());
+
+      if (!m_out.is_open()) throw std::runtime_error("list-images: Cannot open output text file.");
+    }
+
+    bool processOneObservation(CObservation::Ptr& obs) override
+    {
+      const string label_time =
+          mrpt::format("%s_%f", obs->sensorLabel.c_str(), mrpt::Clock::toDouble(obs->timestamp));
+      if (IS_CLASS(*obs, CObservationStereoImages))
+      {
+        CObservationStereoImages::Ptr obsSt =
+            std::dynamic_pointer_cast<CObservationStereoImages>(obs);
+        // save image to file & convert into external storage:
+        if (obsSt->imageLeft.isExternallyStored())
+          m_out << obsSt->imageLeft.getExternalStorageFile() << "\n";
+
+        if (obsSt->imageRight.isExternallyStored())
+          m_out << obsSt->imageRight.getExternalStorageFile() << "\n";
+      }
+      else if (IS_CLASS(*obs, CObservationImage))
+      {
+        CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(obs);
+
+        if (obsIm->image.isExternallyStored())
+          m_out << obsIm->image.getExternalStorageFile() << "\n";
+      }
+      else if (IS_CLASS(*obs, CObservation3DRangeScan))
+      {
+        CObservation3DRangeScan::Ptr obs3D =
+            std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
+
+        if (obs3D->intensityImage.isExternallyStored())
+          m_out << obs3D->intensityImage.getExternalStorageFile() << "\n";
+      }
+
+      return true;
+    }
+  };
+
+  // Process
+  // ---------------------------------
+  CRawlogProcessor_ListImages proc(in_rawlog, cmdline, verbose);
+  proc.doProcessRawlog();
+
+  // Dump statistics:
+  // ---------------------------------
+  VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
+}

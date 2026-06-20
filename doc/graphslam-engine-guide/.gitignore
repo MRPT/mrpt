@@ -1,0 +1,14 @@
+tex_includes/version.tex
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.nlo
+*.nls
+*.out
+*.pdf
+*.toc

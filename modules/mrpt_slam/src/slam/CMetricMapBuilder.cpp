@@ -1,0 +1,110 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CMetricMapBuilder.h>
+#include <mrpt/system/filesystem.h>
+
+using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::io;
+using namespace mrpt::poses;
+using namespace mrpt::serialization;
+
+CMetricMapBuilder::CMetricMapBuilder() :
+    mrpt::system::COutputLogger("CMetricMapBuilder"), options(this->m_min_verbosity_level)
+{
+  MRPT_LOG_DEBUG("CMetricMapBuilder ctor.");
+}
+
+CMetricMapBuilder::~CMetricMapBuilder() { MRPT_LOG_DEBUG("CMetricMapBuilder dtor."); }
+
+/*---------------------------------------------------------------
+          clear
+Clear all elements of the maps, and reset localization to (0,0,0deg).
+  ---------------------------------------------------------------*/
+void CMetricMapBuilder::clear()
+{
+  MRPT_LOG_DEBUG("CMetricMapBuilder::clear() called.");
+  CSimpleMap dummyMap;
+  CPosePDFGaussian dummyPose;
+
+  // Initialize with an empty map and pose to (0,0,0)
+  initialize(dummyMap, &dummyPose);
+}
+
+/*---------------------------------------------------------------
+          loadCurrentMapFromFile
+  ---------------------------------------------------------------*/
+void CMetricMapBuilder::loadCurrentMapFromFile(const std::string& fileName)
+{
+  CSimpleMap map;
+
+  // New file??
+  if (mrpt::system::fileExists(fileName))
+  {
+    MRPT_LOG_INFO_STREAM(
+        "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map "
+        "from '"
+        << fileName << "' ..."
+        << "\n");
+    CCompressedInputStream f(fileName);
+
+    // Load from file:
+    archiveFrom(f) >> map;
+  }
+  else
+  {  // Is a new file, start with an empty map:
+    MRPT_LOG_WARN_STREAM(
+        "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map "
+        "from '"
+        << fileName << "' ..."
+        << "\n");
+    map.clear();
+  }
+
+  // Initialize the map builder with this map
+  initialize(map);
+}
+
+/*---------------------------------------------------------------
+          saveCurrentMapToFile
+  ---------------------------------------------------------------*/
+void CMetricMapBuilder::saveCurrentMapToFile(const std::string& fileName, bool compressGZ) const
+{
+  // get current map:
+  CSimpleMap curmap;
+  getCurrentlyBuiltMap(curmap);
+
+  MRPT_LOG_INFO_STREAM(
+      "[CMetricMapBuilder::saveCurrentMapToFile] Saving current map to '" << fileName << "' ..."
+                                                                          << "\n");
+
+  // Save to file:
+  if (compressGZ)
+  {
+    CCompressedOutputStream f(fileName);
+    archiveFrom(f) << curmap;
+  }
+  else
+  {
+    CFileOutputStream f(fileName);
+    archiveFrom(f) << curmap;
+  }
+}

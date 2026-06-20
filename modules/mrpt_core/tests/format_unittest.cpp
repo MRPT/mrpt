@@ -1,0 +1,37 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <gtest/gtest.h>
+#include <mrpt/core/format.h>
+
+// Load data from constant file and check for exact match.
+TEST(FormatTest, LargeStrings)
+{
+  std::string test_str;
+  const size_t test_str_len = 30000;
+  test_str.assign(test_str_len, 'A');
+
+  std::string s = mrpt::format("%u %s", static_cast<unsigned int>(10), test_str.c_str());
+
+  const size_t out_str_len = s.size();
+
+  // If it works, out len must be that of the string, plus 3 from "10 "
+  EXPECT_EQ(out_str_len, (test_str_len + 3));
+}
+
+TEST(FormatTest, ToString)
+{
+  EXPECT_EQ(mrpt::to_string(false), "false");
+  EXPECT_EQ(mrpt::to_string(true), "true");
+}

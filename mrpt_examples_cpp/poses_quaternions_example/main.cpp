@@ -1,0 +1,85 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/math/CQuaternion.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
+
+#include <iostream>
+
+using namespace mrpt;
+using namespace mrpt::poses;
+using namespace mrpt::math;
+using namespace std;
+
+// ------------------------------------------------------
+//				TestQuaternions
+// ------------------------------------------------------
+void TestQuaternions()
+{
+  CQuaternionDouble q1, q2, q3;
+
+  // q1 = CQuaternionDouble(1,2,3,4); q1.normalize();
+  CPose3D p1(0, 0, 0, 10.0_deg, 30.0_deg, -20.0_deg);
+  p1.getAsQuaternion(q1);
+
+  CPose3D p2(0, 0, 0, 30.0_deg, -20.0_deg, 10.0_deg);
+  p2.getAsQuaternion(q2);
+
+  // q3 = q1 x q2
+  q3.crossProduct(q1, q2);
+
+  const CPose3D p3 = p1 + p2;
+
+  std::cout << "q1 = " << q1 << "\n";
+  std::cout << "q1 as CPose3D = " << CPose3D(q1, 0, 0, 0) << "\n";
+  std::cout << "\n";
+  std::cout << "q2 = " << q2 << "\n";
+  std::cout << "q2 as CPose3D = " << CPose3D(q2, 0, 0, 0) << "\n";
+  std::cout << "\n";
+  std::cout << "q3 = q1 * q2 = " << q3 << "\n";
+  std::cout << "q3 as CPose3D = " << CPose3D(q3, 0, 0, 0) << "\n";
+
+  std::cout << endl << "Should be equal to p3 = p1 (+) p2 = " << p3 << "\n";
+}
+
+void TestQuaternionsIterators()
+{
+  CPose3DQuat q(1.0, 2.0, 3.0, CQuaternionDouble());
+
+  std::cout << "Dump with iterators: ";
+  for (CPose3DQuat::iterator it = q.begin(); it != q.end(); ++it) std::cout << *it << " ";
+  std::cout << "\n";
+}
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
+{
+  try
+  {
+    TestQuaternions();
+    TestQuaternionsIterators();
+
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
+}

@@ -1,0 +1,195 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#ifndef CDLGPARAMS_H
+#define CDLGPARAMS_H
+
+//(*Headers(CDlgParams)
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/dialog.h>
+#include <wx/panel.h>
+#include <wx/radiobox.h>
+#include <wx/radiobut.h>
+#include <wx/sizer.h>
+#include <wx/spinctrl.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+//*)
+
+class CDlgParams : public wxDialog
+{
+ public:
+  CDlgParams(
+      wxWindow* parent,
+      wxWindowID id = wxID_ANY,
+      const wxPoint& pos = wxDefaultPosition,
+      const wxSize& size = wxDefaultSize);
+  ~CDlgParams() override;
+
+  //(*Declarations(CDlgParams)
+  wxStaticText* StaticText24;
+  wxStaticText* StaticText22;
+  wxSpinCtrl* edOverSensor;
+  wxTextCtrl* edMapFile;
+  wxTextCtrl* edPathStepSize;
+  wxStaticText* StaticText21;
+  wxRadioButton* rbMapRandom;
+  wxStaticText* StaticText13;
+  wxStaticText* StaticText14;
+  wxCheckBox* cbJacobTran;
+  wxStaticText* StaticText15;
+  wxTextCtrl* edSpuriousStd;
+  wxTextCtrl* edMinR;
+  wxRadioButton* rbKFdavison;
+  wxStaticText* StaticText17;
+  wxRadioBox* rbDAMetric;
+  wxStaticText* StaticText28;
+  wxRadioButton* rbKFnaiv;
+  wxSpinCtrl* edIKFiters;
+  wxTextCtrl* edOdomStdXY;
+  wxCheckBox* cbJacobObs;
+  wxRadioButton* rbIKF;
+  wxStaticText* StaticText20;
+  wxStaticText* StaticText18;
+  wxStaticText* StaticText1;
+  wxStaticText* StaticText10;
+  wxStaticText* StaticText16;
+  wxSpinCtrl* edLMs;
+  wxStaticText* StaticText3;
+  wxButton* btnOk;
+  wxStaticText* StaticText23;
+  wxButton* btnBrowse;
+  wxSpinCtrl* edSeed;
+  wxRadioButton* rbIKFdavison;
+  wxSpinCtrl* edOverOdom;
+  wxPanel* panelDA;
+  wxTextCtrl* edMaxR;
+  wxStaticText* StaticText8;
+  wxStaticText* StaticText12;
+  wxTextCtrl* edPathLen;
+  wxTextCtrl* edStdAngle;
+  wxStaticText* StaticText7;
+  wxStaticText* StaticText4;
+  wxTextCtrl* edSenX;
+  wxStaticText* StaticText5;
+  wxStaticText* StaticText2;
+  wxTextCtrl* edSpuriousMean;
+  wxStaticText* StaticText27;
+  wxTextCtrl* edChi2;
+  wxRadioButton* rbMapFile;
+  wxStaticText* StaticText26;
+  wxStaticText* StaticText6;
+  wxTextCtrl* edICMLrefDist;
+  wxButton* btnCancel;
+  wxRadioBox* rbDAMethod;
+  wxTextCtrl* edStdRange;
+  wxRadioBox* rbICmetric;
+  wxTextCtrl* edStdOdomPhi;
+  wxStaticText* StaticText19;
+  wxTextCtrl* edSenY;
+  wxTextCtrl* edSenPhi;
+  wxCheckBox* cbSensorDistin;
+  wxStaticText* StaticText9;
+  wxTextCtrl* edFOV;
+  wxStaticText* StaticText11;
+  wxRadioButton* rbMapCorridor;
+  wxStaticText* StaticText25;
+  //*)
+
+ protected:
+  //(*Identifiers(CDlgParams)
+  static const wxWindowID ID_RADIOBUTTON1;
+  static const wxWindowID ID_RADIOBUTTON2;
+  static const wxWindowID ID_RADIOBUTTON3;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_SPINCTRL1;
+  static const wxWindowID ID_RADIOBUTTON4;
+  static const wxWindowID ID_STATICTEXT25;
+  static const wxWindowID ID_CHECKBOX2;
+  static const wxWindowID ID_CHECKBOX3;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_TEXTCTRL4;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_TEXTCTRL5;
+  static const wxWindowID ID_STATICTEXT6;
+  static const wxWindowID ID_TEXTCTRL6;
+  static const wxWindowID ID_RADIOBOX3;
+  static const wxWindowID ID_STATICTEXT17;
+  static const wxWindowID ID_TEXTCTRL13;
+  static const wxWindowID ID_STATICTEXT24;
+  static const wxWindowID ID_TEXTCTRL15;
+  static const wxWindowID ID_RADIOBOX1;
+  static const wxWindowID ID_RADIOBOX2;
+  static const wxWindowID ID_PANEL1;
+  static const wxWindowID ID_RADIOBUTTON5;
+  static const wxWindowID ID_STATICTEXT9;
+  static const wxWindowID ID_RADIOBUTTON6;
+  static const wxWindowID ID_STATICTEXT7;
+  static const wxWindowID ID_SPINCTRL2;
+  static const wxWindowID ID_STATICTEXT8;
+  static const wxWindowID ID_SPINCTRL3;
+  static const wxWindowID ID_RADIOBUTTON7;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_STATICTEXT11;
+  static const wxWindowID ID_TEXTCTRL7;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_STATICTEXT12;
+  static const wxWindowID ID_TEXTCTRL8;
+  static const wxWindowID ID_STATICTEXT23;
+  static const wxWindowID ID_TEXTCTRL14;
+  static const wxWindowID ID_STATICTEXT10;
+  static const wxWindowID ID_TEXTCTRL12;
+  static const wxWindowID ID_STATICTEXT13;
+  static const wxWindowID ID_STATICTEXT14;
+  static const wxWindowID ID_STATICTEXT15;
+  static const wxWindowID ID_STATICTEXT16;
+  static const wxWindowID ID_TEXTCTRL9;
+  static const wxWindowID ID_TEXTCTRL10;
+  static const wxWindowID ID_TEXTCTRL11;
+  static const wxWindowID ID_STATICTEXT26;
+  static const wxWindowID ID_STATICTEXT27;
+  static const wxWindowID ID_STATICTEXT28;
+  static const wxWindowID ID_TEXTCTRL16;
+  static const wxWindowID ID_TEXTCTRL17;
+  static const wxWindowID ID_STATICTEXT18;
+  static const wxWindowID ID_SPINCTRL4;
+  static const wxWindowID ID_STATICTEXT19;
+  static const wxWindowID ID_STATICTEXT20;
+  static const wxWindowID ID_SPINCTRL5;
+  static const wxWindowID ID_STATICTEXT21;
+  static const wxWindowID ID_STATICTEXT22;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
+  //*)
+
+  // private:
+ public:
+  //(*Handlers(CDlgParams)
+  void OnbtnOkClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnCancelClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnBrowseClick([[maybe_unused]] wxCommandEvent& event);
+  void OnrbIKFdavisonSelect([[maybe_unused]] wxCommandEvent& event);
+  void OnUpdateControlsState([[maybe_unused]] wxCommandEvent& event);
+  //*)
+
+  DECLARE_EVENT_TABLE()
+};
+
+#endif

@@ -1,0 +1,65 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/math/CMatrixB.h>
+#include <mrpt/serialization/CArchive.h>
+
+using namespace mrpt;
+using namespace mrpt::math;
+
+// This must be added to any CSerializable class implementation file.
+IMPLEMENTS_SERIALIZABLE(CMatrixB, CSerializable, mrpt::math)
+
+uint8_t CMatrixB::serializeGetVersion() const { return 0; }
+void CMatrixB::serializeTo(mrpt::serialization::CArchive& out) const
+{
+  out.WriteAs<uint32_t>(sizeof(bool));
+
+  // First, write the number of rows and columns:
+  out.WriteAs<uint32_t>(rows());
+  out.WriteAs<uint32_t>(cols());
+
+  if (rows() > 0 && cols() > 0)
+    out.WriteBuffer(
+        &(*this)(0, 0), sizeof(bool) * static_cast<size_t>(cols()) * static_cast<size_t>(rows()));
+}
+
+void CMatrixB::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+{
+  switch (version)
+  {
+    case 0:
+    {
+      uint32_t size_bool;
+      in >> size_bool;
+      if (size_bool != sizeof(bool))
+        THROW_EXCEPTION("Error: size of 'bool' is different in serialized data!");
+
+      uint32_t nRows, nCols;
+
+      // First, write the number of rows and columns:
+      in >> nRows >> nCols;
+
+      setSize(nRows, nCols);
+
+      if (nRows > 0 && nCols > 0)
+        in.ReadBuffer(
+            &(*this)(0, 0),
+            sizeof(bool) * static_cast<size_t>(cols()) * static_cast<size_t>(rows()));
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+}

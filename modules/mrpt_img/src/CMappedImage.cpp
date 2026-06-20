@@ -1,0 +1,122 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/round.h>
+#include <mrpt/img/CMappedImage.h>
+
+using namespace mrpt;
+using namespace mrpt::img;
+using namespace mrpt::math;
+
+/*---------------------------------------------------------------
+        Constructor
+ ---------------------------------------------------------------*/
+CMappedImage::CMappedImage(
+    CImage::Ptr img, double x0, double x1, double y0, double y1, TInterpolationMethod method) :
+    m_img(std::move(img)), m_x0(x0), m_x1(x1), m_y0(y0), m_y1(y1), m_pixel_size(0), m_method(method)
+{
+  if (m_img->isColor())
+  {
+    auto new_img = CImage::Create();
+    m_img->grayscale(*new_img);
+    m_img = new_img;
+  }
+  changeCoordinates(x0, x1, y0, y1);
+}
+
+/*---------------------------------------------------------------
+        changeCoordinates
+ ---------------------------------------------------------------*/
+void CMappedImage::changeCoordinates(double x0, double x1, double y0, double y1)
+{
+  MRPT_START
+  ASSERT_(x0 != x1);
+  ASSERT_(y0 != y1);
+
+  m_x0 = x0;
+  m_x1 = x1;
+  m_y0 = y0;
+  m_y1 = y1;
+
+  if (y1 < 0 || x1 < 0)
+  {
+    m_x1 = m_img->getWidth() - 1;
+    m_y1 = m_img->getHeight() - 1;
+  }
+
+  ASSERT_(m_img->getWidth() > 0 && m_img->getHeight());
+
+  m_pixel_size = (m_x1 - m_x0) / m_img->getWidth();
+
+  MRPT_END
+}
+
+/*---------------------------------------------------------------
+        getPixel
+ ---------------------------------------------------------------*/
+double CMappedImage::getPixel(double x, double y) const
+{
+  // Image size:
+  const auto W = m_img->getWidth();
+  const auto H = m_img->getHeight();
+
+  // the sub-pixel pixel coordinates:
+  const double px = (x - m_x0) / m_pixel_size;
+  const double py = (y - m_y0) / m_pixel_size;
+
+  if (px < 0 || py < 0 || px > W || py > H)
+  {
+    return 0;
+  }  // Out of image
+
+  switch (m_method)
+  {
+    case IMG_INTERP_NN:
+    {
+      // The closest pixel:
+      const auto px0 = mrpt::round(px);
+      const auto py0 = mrpt::round(py);
+      return static_cast<double>((*m_img).at<uint8_t>(px0, py0));
+    }
+    break;
+    case IMG_INTERP_LINEAR:
+    {
+      // See: http://en.wikipedia.org/wiki/Bilinear_interpolation
+
+      // The four pixels around:
+      const int px0 = static_cast<int>(floor(px));
+      const int px1 = static_cast<int>(ceil(px));
+      const int py0 = static_cast<int>(floor(py));
+      const int py1 = static_cast<int>(ceil(py));
+
+      const auto P11 = static_cast<double>((*m_img).at<uint8_t>(px0, py0));
+      const auto P12 = static_cast<double>((*m_img).at<uint8_t>(px0, py1));
+      const auto P21 = static_cast<double>((*m_img).at<uint8_t>(px1, py0));
+      const auto P22 = static_cast<double>((*m_img).at<uint8_t>(px1, py1));
+
+      const double R1 = (P11 * (px1 - px)) /* /(px1-px0)*/ + (P21 * (px - px0)) /* /(px1-px0) */;
+      const double R2 = (P12 * (px1 - px)) /* /(px1-px0)*/ + (P22 * (px - px0)) /* /(px1-px0) */;
+
+      return (R1 * (py1 - py)) + (R2 * (py - py0));
+    }
+    break;
+
+    case IMG_INTERP_CUBIC:
+    case IMG_INTERP_AREA:
+    default:
+      THROW_EXCEPTION(
+          "The selected interpolation method is not supported in this "
+          "method.");
+  };
+}

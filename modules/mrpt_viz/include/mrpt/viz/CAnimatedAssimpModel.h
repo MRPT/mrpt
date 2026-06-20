@@ -1,0 +1,249 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/viz/CAssimpModel.h>
+
+#include <map>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+// Forward declarations for Assimp types (avoid leaking assimp headers)
+struct aiNode;
+
+namespace mrpt::viz
+{
+
+/**
+ * Extension of CAssimpModel with skeletal animation support.
+ *
+ * Supports models that contain bone hierarchies and keyframed animations
+ * (FBX, glTF/GLB, Collada, etc. via Assimp).
+ *
+ * CPU-side vertex skinning is performed each time the animation time
+ * changes: bind-pose vertex positions are stored on first load and then
+ * transformed through the active bone matrices every frame.
+ *
+ * Usage:
+ * \code
+ *   auto model = CAnimatedAssimpModel::Create();
+ *   model->loadScene("character.glb");
+ *
+ *   // In simulation loop:
+ *   model->setAnimationTime(simTime);  // updates bone transforms & rebuilds geometry
+ * \endcode
+ *
+ * \ingroup mrpt_viz_grp
+ */
+class CAnimatedAssimpModel : public CAssimpModel
+{
+  DEFINE_SERIALIZABLE(CAnimatedAssimpModel, mrpt::viz)
+
+ public:
+  CAnimatedAssimpModel() = default;
+
+  // ========== Model Loading (override) ==========
+
+  /** Loads a 3D scene and extracts skeleton/animation data. */
+  void loadScene(
+      const std::string& file_name,
+      int flags = LoadFlags::RealTimeMaxQuality | LoadFlags::FlipUVs | LoadFlags::Verbose);
+
+  // ========== Animation Control ==========
+
+  /** Set current animation time in seconds.
+   *  Updates all bone transforms for the active animation and
+   *  rebuilds the mesh geometry with skinned positions. */
+  void setAnimationTime(double timeSeconds);
+
+  /** Get animation duration in seconds. */
+  [[nodiscard]] double getAnimationDuration(size_t animIndex = 0) const;
+
+  /** Get number of animations in the model. */
+  [[nodiscard]] size_t getAnimationCount() const;
+
+  /** Get animation name by index. */
+  [[nodiscard]] std::string getAnimationName(size_t animIndex) const;
+
+  /** Select which animation to play (by index). */
+  void setActiveAnimation(size_t animIndex);
+
+  /** Select which animation to play (by name).
+   *  Does nothing if the name is not found. */
+  void setActiveAnimation(const std::string& animName);
+
+  /** Enable/disable animation looping. */
+  void setLooping(bool loop) { looping_ = loop; }
+
+  /** Get current normalized animation progress [0,1]. */
+  [[nodiscard]] double getAnimationProgress() const;
+
+  // ========== Bone Access (for procedural animation) ==========
+
+  /** Get number of bones. */
+  [[nodiscard]] size_t getBoneCount() const { return bones_.size(); }
+
+  /** Get bone index by name, or -1 if not found. */
+  [[nodiscard]] int getBoneIndex(const std::string& boneName) const;
+
+  /** Override a bone's local transform (for procedural animation). */
+  void setBoneLocalTransform(size_t boneIndex, const mrpt::math::CMatrixDouble44& localTransform);
+
+  /** Clear all bone overrides, return to animation-driven transforms. */
+  void clearBoneOverrides();
+
+ private:
+  // ========== Internal Bone Data ==========
+
+  struct Bone
+  {
+    std::string name;
+    int parentIndex = -1;       //!< -1 for root bones
+    std::vector<int> children;  //!< child bone indices for O(N) traversal
+
+    // Bind pose (rest position)
+    mrpt::math::CMatrixDouble44 offsetMatrix;  //!< mesh space -> bone space
+
+    // Current animated transform
+    mrpt::math::CMatrixDouble44 localTransform;   //!< relative to parent
+    mrpt::math::CMatrixDouble44 globalTransform;  //!< world space
+    mrpt::math::CMatrixDouble44 finalTransform;   //!< for skinning
+    // Optional override (for procedural animation)
+    bool hasOverride = false;
+    mrpt::math::CMatrixDouble44 overrideTransform;
+  };
+
+  struct VertexBoneData
+  {
+    static constexpr int MAX_BONES_PER_VERTEX = 4;
+    int boneIds[MAX_BONES_PER_VERTEX] = {-1, -1, -1, -1};
+    float weights[MAX_BONES_PER_VERTEX] = {0.f, 0.f, 0.f, 0.f};
+
+    void addBoneWeight(int boneId, float weight);
+    void normalize();
+  };
+
+  // Animation keyframe data
+  struct VectorKey
+  {
+    double time = 0.0;
+    mrpt::math::TPoint3Df value;
+  };
+
+  struct QuatKey
+  {
+    double time = 0.0;
+    float w = 1.f, x = 0.f, y = 0.f, z = 0.f;
+  };
+
+  struct BoneAnimation
+  {
+    std::string boneName;
+    int boneIndex = -1;
+    std::vector<VectorKey> positionKeys;
+    std::vector<QuatKey> rotationKeys;
+    std::vector<VectorKey> scalingKeys;
+  };
+
+  struct Animation
+  {
+    std::string name;
+    double duration = 0.0;  //!< in ticks
+    double ticksPerSecond = 25.0;
+    std::vector<BoneAnimation> channels;
+  };
+
+  // ========== Bind-Pose Storage for CPU Skinning ==========
+
+  struct MeshBindPose
+  {
+    std::vector<mrpt::math::TPoint3Df> positions;
+    std::vector<mrpt::math::TPoint3Df> normals;
+  };
+  std::vector<MeshBindPose> meshBindPoses_;
+
+  // ========== Member Variables ==========
+
+  std::vector<Bone> bones_;
+  std::unordered_map<std::string, int> boneNameToIndex_;
+
+  /** Per-vertex skinning data.  Key = (uint64_t(meshIdx) << 32) | vertIdx. */
+  std::unordered_map<uint64_t, VertexBoneData> vertexBoneMap_;
+
+  std::vector<Animation> animations_;
+  uint32_t activeAnimation_ = 0;
+  double currentTime_ = 0.0;
+  bool looping_ = true;
+  bool hasSkeleton_ = false;
+
+  mrpt::math::CMatrixDouble44 globalInverseTransform_;
+
+  // ========== Internal Methods ==========
+
+  /** Extract skeleton data from the loaded aiScene. */
+  void extractSkeletonData();
+
+  /** Build parent-child relationships by walking the aiNode tree. */
+  void buildBoneHierarchy(const aiNode* node, int parentBoneIdx);
+
+  void captureBindPose();
+
+  /** Apply skinning to aiScene mesh vertices, then re-run processAssimpScene(). */
+  void rebuildSkinnedGeometry();
+
+  void applySkinningToScene();
+  void restoreBindPoseToScene();
+
+  /** Update all bone transforms for current animation time. */
+  void updateBoneTransforms();
+
+  /** Recursively compute global transforms from local transforms. */
+  void computeGlobalTransforms(size_t boneIndex);
+
+  /** Interpolate position at given time. */
+  mrpt::math::TPoint3Df interpolatePosition(const BoneAnimation& channel, double animTime) const;
+
+  /** Interpolate rotation (SLERP) at given time. Returns unit quaternion. */
+  [[nodiscard]] QuatKey interpolateRotation(const BoneAnimation& channel, double animTime) const;
+
+  /** Interpolate scale at given time. */
+  mrpt::math::TPoint3Df interpolateScaling(const BoneAnimation& channel, double animTime) const;
+
+  /** Build a 4x4 TRS matrix from position, quaternion, scale. */
+  static mrpt::math::CMatrixDouble44 buildTransformMatrix(
+      const mrpt::math::TPoint3Df& pos,
+      float qw,
+      float qx,
+      float qy,
+      float qz,
+      const mrpt::math::TPoint3Df& scale);
+
+  /** Apply skinning to transform a vertex position. */
+  mrpt::math::TPoint3Df skinVertex(
+      const mrpt::math::TPoint3Df& vertex, const VertexBoneData& vbd) const;
+
+  /** Apply skinning to transform a vertex normal. */
+  mrpt::math::TPoint3Df skinNormal(
+      const mrpt::math::TPoint3Df& normal, const VertexBoneData& vbd) const;
+
+  /** Encode a (mesh, vertex) pair into a single lookup key. */
+  static uint64_t vertexKey(uint32_t meshIdx, uint32_t vertIdx)
+  {
+    return (static_cast<uint64_t>(meshIdx) << 32) | static_cast<uint64_t>(vertIdx);
+  }
+};
+
+}  // namespace mrpt::viz

@@ -1,0 +1,205 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/containers/deepcopy_poly_ptr.h>
+#include <mrpt/obs/CAction.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/serialization/CSerializable.h>
+
+#include <optional>
+
+namespace mrpt::obs
+{
+/** Declares a class for storing a collection of robot actions. It is used in
+ * mrpt::obs::CRawlog,
+ *    for logs storage and particle filter based simulations.
+ *
+ * \sa CAction, CRawlog
+ * \ingroup mrpt_obs_grp
+ */
+class CActionCollection : public mrpt::serialization::CSerializable
+{
+  DEFINE_SERIALIZABLE(CActionCollection, mrpt::obs)
+
+ protected:
+  /** The robot "actions" */
+  std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>> m_actions;
+
+ public:
+  /** ctor */
+  CActionCollection() = default;
+  /** Constructor from a single action. */
+  CActionCollection(CAction& a);
+
+  /** You can use CActionCollection::begin to get a iterator to the first
+   * element.
+   */
+  using iterator = std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::iterator;
+
+  /** You can use CActionCollection::begin to get a iterator to the first
+   * element.
+   */
+  using const_iterator =
+      std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::const_iterator;
+
+  /** Returns a iterator to the first action: this is an example of usage:
+   * \code
+   *   CActionCollection  acts;
+   *   ...
+   *   for (CActionCollection::iterator it=acts.begin();it!=acts.end();++it)
+   *	  {
+   *      (*it)->... // (*it) is a "CAction::Ptr"
+   *   }
+   *
+   * \endcode
+   */
+  [[nodiscard]] const_iterator begin() const { return m_actions.begin(); }
+
+  /// \overload
+  iterator begin() { return m_actions.begin(); }
+
+  /** Returns a iterator pointing to the end of the list: this is an example
+   *of usage:
+   * \code
+   *   CActionCollection  acts;
+   *   ...
+   *   for (CActionCollection::iterator it=acts.begin();it!=acts.end();++it)
+   *	  {
+   *      (*it)->... // (*it) is a "CAction::Ptr"
+   *   }
+   *
+   * \endcode
+   */
+  [[nodiscard]] const_iterator end() const { return m_actions.end(); }
+
+  /// \overload
+  iterator end() { return m_actions.end(); }
+
+  /** Removes the given action in the list, and return an iterator to the next
+   * element (or this->end() if it was the last one).
+   */
+  iterator erase(const iterator& it);
+
+  /** Erase all actions from the list */
+  void clear();
+
+  /** Access the i'th action.DO NOT MODIFY the returned object, make a copy of
+   * ir with "CSerializable::duplicate" if desired.
+   *  First element is 0.
+   * \exception std::exception On index out of bounds.
+   */
+  [[nodiscard]] CAction::Ptr get(size_t index);
+  [[nodiscard]] CAction::ConstPtr get(size_t index) const;
+
+  /** Access to the i'th action of a given class, or a nullptr smart pointer
+  if there is no action of that class in the list.
+  *  Example:
+  * \code
+     CActionRobotMovement2D::Ptr obs =
+  acts->getActionByClass<CActionRobotMovement2D>();
+  * \endcode
+  * By default (ith=0), the first one is returned.
+  */
+  template <typename T>
+  typename T::ConstPtr getActionByClass(size_t ith = 0) const
+  {
+    MRPT_START
+    size_t foundCount = 0;
+    const mrpt::rtti::TRuntimeClassId* class_ID = &T::GetRuntimeClassIdStatic();
+    for (const auto& it : *this)
+      if (it->GetRuntimeClass()->derivedFrom(class_ID))
+        if (foundCount++ == ith)
+        {
+          return std::dynamic_pointer_cast<const T>(it.get_ptr());
+        }
+    return typename T::ConstPtr();  // Not found: return empty smart pointer
+    MRPT_END
+  }
+
+  template <typename T>
+  typename T::Ptr getActionByClass(size_t ith = 0)
+  {
+    return std::const_pointer_cast<T>(
+        static_cast<const CActionCollection*>(this)->getActionByClass<T>(ith));
+  }
+
+  /** Add a new object to the list, making a deep copy. */
+  void insert(const CAction& action);
+
+  /** Add a new object to the list (no deep copy).
+   * \note (New in MRPT 2.3.1) */
+  void insertPtr(const CAction::Ptr& action);
+
+  /** Returns the actions count in the collection.
+   */
+  size_t size() const;
+
+  /** Returns the best pose increment estimator in the collection, based on
+   * the determinant of its pose change covariance matrix.
+   * \return The estimation, or nullptr if none is available.
+   */
+  CActionRobotMovement2D::ConstPtr getBestMovementEstimation() const;
+  CActionRobotMovement2D::Ptr getBestMovementEstimation()
+  {
+    return std::const_pointer_cast<CActionRobotMovement2D>(
+        static_cast<const CActionCollection*>(this)->getBestMovementEstimation());
+  }
+
+  /** Returns the pose increment estimator in the collection having the
+   * specified type.
+   * \return The estimation, or nullptr if none is available.
+   */
+  CActionRobotMovement2D::ConstPtr getMovementEstimationByType(
+      CActionRobotMovement2D::TEstimationMethod method) const;
+  CActionRobotMovement2D::Ptr getMovementEstimationByType(
+      CActionRobotMovement2D::TEstimationMethod method)
+  {
+    return std::const_pointer_cast<CActionRobotMovement2D>(
+        static_cast<const CActionCollection*>(this)->getMovementEstimationByType(method));
+  }
+
+  /** Look for the first 2D or 3D "odometry" found in this collection of
+   * actions, and return the "mean" increment of the robot according to it.
+   * \return true on success,false on no odometry found.
+   * \deprecated Use getFirstMovementEstimationMean() returning optional instead.
+   */
+  [[nodiscard]] bool getFirstMovementEstimationMean(mrpt::poses::CPose3D& out_pose_increment) const;
+
+  /** Returns the mean pose increment from the first odometry action found,
+   * or std::nullopt if none exists. */
+  [[nodiscard]] std::optional<mrpt::poses::CPose3D> getFirstMovementEstimationMean() const;
+
+  /** Look for the first 2D or 3D "odometry" found in this collection of
+   * actions, and return the "mean" increment of the robot and its covariance
+   * according to it.
+   * \return true on success,false on no odometry found.
+   * \deprecated Use getFirstMovementEstimation() returning optional instead.
+   */
+  [[nodiscard]] bool getFirstMovementEstimation(
+      mrpt::poses::CPose3DPDFGaussian& out_pose_increment) const;
+
+  /** Returns the pose PDF increment from the first odometry action found,
+   * or std::nullopt if none exists. */
+  [[nodiscard]] std::optional<mrpt::poses::CPose3DPDFGaussian> getFirstMovementEstimation() const;
+
+  /** Remove an action from the list by its index.
+   * \exception std::exception On index out of bounds.
+   */
+  void eraseByIndex(size_t index);
+
+};  // End of class def.
+
+}  // namespace mrpt::obs

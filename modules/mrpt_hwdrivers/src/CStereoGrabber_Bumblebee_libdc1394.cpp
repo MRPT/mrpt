@@ -1,0 +1,89 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
+
+#include <map>
+
+using namespace std;
+using namespace mrpt;
+using namespace mrpt::obs;
+using namespace mrpt::hwdrivers;
+
+CStereoGrabber_Bumblebee_libdc1394::CStereoGrabber_Bumblebee_libdc1394(
+    uint64_t cameraGUID, uint16_t cameraUnit, double frameRate) :
+    m_firewire_capture(nullptr), m_bInitialized(false)
+{
+  MRPT_TRY_START
+
+  TCaptureOptions_dc1394 opt1394;
+  opt1394.mode7 = 3;                  // stereo cameras are captured with MODE7-3
+  opt1394.deinterlace_stereo = true;  // It is stereo.
+
+  std::map<double, grabber_dc1394_framerate_t> Rs;
+  Rs[1.875] = FRAMERATE_1_875;
+  Rs[3.75] = FRAMERATE_3_75;
+  Rs[7.5] = FRAMERATE_7_5;
+  Rs[15] = FRAMERATE_15;
+  Rs[30] = FRAMERATE_30;
+  Rs[60] = FRAMERATE_60;
+  Rs[120] = FRAMERATE_120;
+  Rs[240] = FRAMERATE_240;
+
+  if (Rs.find(frameRate) != Rs.end())
+    opt1394.framerate = Rs[frameRate];
+  else
+    cerr << "[CStereoGrabber_Bumblebee_libdc1394] Ignoring unknown "
+            "framerate: "
+         << frameRate << "\n";
+
+  m_firewire_capture = new CImageGrabber_dc1394(cameraGUID, cameraUnit, opt1394);
+
+  if (!m_firewire_capture->isOpen())
+    cerr << "[CStereoGrabber_Bumblebee] The camera couldn't be open"
+         << "\n";
+
+  MRPT_TRY_END
+}
+
+/*-------------------------------------------------------------
+          Destructor
+ -------------------------------------------------------------*/
+CStereoGrabber_Bumblebee_libdc1394::~CStereoGrabber_Bumblebee_libdc1394()
+{
+  if (m_firewire_capture)
+  {
+    delete m_firewire_capture;
+    m_firewire_capture = nullptr;
+  }
+}
+
+/*-------------------------------------------------------------
+          get the image
+ -------------------------------------------------------------*/
+bool CStereoGrabber_Bumblebee_libdc1394::getStereoObservation(
+    mrpt::obs::CObservationStereoImages& out_observation)
+{
+  if (!m_firewire_capture->isOpen())
+  {
+    cerr << "[CStereoGrabber_Bumblebee] The camera couldn't be open"
+         << "\n";
+    return false;
+  }
+
+  auto grabbed = m_firewire_capture->grabStereoFrame();
+  if (!grabbed) return false;
+  out_observation = std::move(*grabbed);
+  return true;  // All ok
+}

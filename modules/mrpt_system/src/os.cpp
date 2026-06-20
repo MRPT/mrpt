@@ -1,0 +1,1046 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/config.h>  // MRPT_OS_*()
+#include <mrpt/core/exceptions.h>
+#include <mrpt/core/format.h>
+#include <mrpt/core/winerror2str.h>
+#include <mrpt/system/config.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/version.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#ifndef _WIN32
+#include <sys/wait.h>
+#endif
+
+#include <cctype>
+#include <cerrno>
+#include <cfloat>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <limits>
+#include <map>
+#include <mutex>
+#include <sstream>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+//
+#include <conio.h>
+#include <direct.h>
+#include <io.h>
+#include <sys/utime.h>
+#include <tlhelp32.h>
+#else
+#include <poll.h>
+#include <pthread.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <termios.h>
+#include <unistd.h>
+#include <utime.h>
+
+#include <cerrno>
+#include <ctime>
+#endif
+
+#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#include <dlfcn.h>
+#endif
+
+#ifdef MRPT_OS_LINUX
+#define _access access
+#define _rmdir  rmdir
+#define _stat   stat
+#endif
+
+#ifndef _WIN32
+namespace
+{
+/** By ninjalj in
+ * http://stackoverflow.com/questions/3962263/checking-if-a-key-was-pressed
+ */
+int myKbhit()
+{
+  struct termios oldtio
+  {
+  }, curtio{};
+  //		struct sigaction sa;
+
+  /* Save stdin terminal attributes */
+  tcgetattr(0, &oldtio);
+
+  /* Set non-canonical no-echo for stdin */
+  tcgetattr(0, &curtio);
+  curtio.c_lflag &= static_cast<tcflag_t>(~(ICANON | ECHO));
+  tcsetattr(0, TCSANOW, &curtio);
+
+  struct pollfd pfds[1];
+
+  /* See if there is data available */
+  pfds[0].fd = 0;
+  pfds[0].events = POLLIN;
+  const int ret = poll(pfds, 1, 0);
+
+  /* restore terminal attributes */
+  tcsetattr(0, TCSANOW, &oldtio);
+
+  return (ret > 0);
+}
+
+}  // namespace
+#endif  // !_WIN32
+
+namespace
+{
+struct LoadedModuleInfo
+{
+#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+  void* handle = nullptr;
+#endif
+#ifdef MRPT_OS_WINDOWS
+  HMODULE handle = nullptr;
+#endif
+};
+
+struct ModulesRegistry
+{
+  static ModulesRegistry& Instance()
+  {
+    static ModulesRegistry obj;
+    return obj;
+  }
+
+  ModulesRegistry() = default;
+  ~ModulesRegistry()
+  {
+    try
+    {
+      // Make a copy, since each unload() call would invalidate iterators
+      // to the changing list "loadedModules":
+      loadedModules_mtx.lock();
+      auto lstCopy = loadedModules;
+      loadedModules_mtx.unlock();
+
+      for (auto& ent : lstCopy)
+      {
+        mrpt::system::unloadPluginModule(ent.first);
+      }
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << "[~ModulesRegistry] Exception: " << mrpt::exception_to_str(e);
+    }
+  }
+
+  // Delete copy and move constructors and assignment operators
+  ModulesRegistry(const ModulesRegistry&) = delete;
+  ModulesRegistry& operator=(const ModulesRegistry&) = delete;
+  ModulesRegistry(ModulesRegistry&&) = delete;
+  ModulesRegistry& operator=(ModulesRegistry&&) = delete;
+
+  using full_path_t = std::string;
+  std::map<full_path_t, LoadedModuleInfo> loadedModules;
+  std::mutex loadedModules_mtx;
+};
+
+}  // namespace
+
+namespace mrpt::system
+{
+
+std::string MRPT_getCompilationDate()
+{
+  time_t now;
+  char* endptr;
+  const char* source_date_epoch = MRPT_SOURCE_DATE_EPOCH;
+
+  errno = 0;
+  unsigned long epoch = strtoul(source_date_epoch, &endptr, 10);
+  if (epoch == 0 ||
+      ((errno == ERANGE && (epoch == std::numeric_limits<unsigned long>::max() || epoch == 0)) ||
+       (errno != 0 && epoch == 0)))
+  {
+    // Last resort:
+    now = time(nullptr);
+  }
+  else
+  {
+    now = static_cast<time_t>(epoch);
+  }
+  struct tm* build_time = gmtime(&now);
+  const int year = build_time->tm_year + 1900;
+  const int month = build_time->tm_mon + 1;
+  const int day = build_time->tm_mday;
+
+  return mrpt::format(
+      "%i-%02i-%02i %02i:%02i:%02i UTC", year, month, day, build_time->tm_hour, build_time->tm_min,
+      build_time->tm_sec);
+}
+
+std::string MRPT_getVersion() { return {::MRPT_version_str}; }
+
+/*---------------------------------------------------------------
+            sprintf
+---------------------------------------------------------------*/
+int os::sprintf(char* buf, [[maybe_unused]] size_t bufSize, const char* format, ...) noexcept
+{
+  int result;
+  va_list ap;
+  va_start(ap, format);
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+  // Use a secure version in Visual Studio 2005:
+  result = ::vsprintf_s(buf, bufSize, format, ap);
+#else
+  // Use vsnprintf to avoid deprecation warnings on macOS:
+  result = ::vsnprintf(buf, bufSize, format, ap);
+#endif
+
+  va_end(ap);
+  return result;
+}
+
+/*---------------------------------------------------------------
+          vsprintf
+---------------------------------------------------------------*/
+int os::vsprintf(
+    char* buf, [[maybe_unused]] size_t bufSize, const char* format, va_list args) noexcept
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+  // Use a secure version in Visual Studio 2005:
+  return ::vsprintf_s(buf, bufSize, format, args);
+#else
+  return ::vsnprintf(buf, bufSize, format, args);
+#endif
+}
+
+/*---------------------------------------------------------------
+        vsnprintf
+---------------------------------------------------------------*/
+int os::vsnprintf(char* buf, size_t bufSize, const char* format, va_list args) noexcept
+{
+#if defined(_MSC_VER)
+#if (_MSC_VER >= 1400)
+  // Use a secure version in Visual Studio 2005:
+  return ::vsnprintf_s(buf, bufSize, _TRUNCATE, format, args);
+#else
+  return ::vsprintf(buf, format, args);
+#endif
+#else
+  // Use standard version:
+  return ::vsnprintf(buf, bufSize, format, args);
+#endif
+}
+
+/*---------------------------------------------------------------
+          fopen
+---------------------------------------------------------------*/
+FILE* os::fopen(const std::string& fileName, const char* mode) noexcept
+{
+  return fopen(fileName.c_str(), mode);
+}
+
+/*---------------------------------------------------------------
+          fopen
+---------------------------------------------------------------*/
+FILE* os::fopen(const char* fileName, const char* mode) noexcept
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+  // Use a secure version in Visual Studio 2005:
+  FILE* f;
+  if (0 != ::fopen_s(&f, fileName, mode))
+    return NULL;
+  else
+    return f;
+#else
+  // Use standard version:
+  return ::fopen(fileName, mode);
+#endif
+}
+
+/*---------------------------------------------------------------
+          fclose
+---------------------------------------------------------------*/
+void os::fclose(FILE* f)
+{
+  ASSERTMSG_(f, "Trying to close a nullptr 'FILE*' descriptor");
+  ::fclose(f);
+}
+
+/*---------------------------------------------------------------
+            strcat
+---------------------------------------------------------------*/
+char* os::strcat(char* dest, [[maybe_unused]] size_t destSize, const char* source) noexcept
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+  ::strcat_s(dest, destSize, source);
+#else
+  ::strcat(dest, source);
+#endif
+  return dest;
+}
+
+/*---------------------------------------------------------------
+            strcpy
+---------------------------------------------------------------*/
+char* os::strcpy(char* dest, [[maybe_unused]] size_t destSize, const char* source) noexcept
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+  ::strcpy_s(dest, destSize, source);
+#else
+  ::strcpy(dest, source);
+#endif
+  return dest;
+}
+
+/*---------------------------------------------------------------
+            strcmp
+---------------------------------------------------------------*/
+int os::_strcmp(const char* str1, const char* str2) noexcept { return ::strcmp(str1, str2); }
+
+/*---------------------------------------------------------------
+            strcmpi
+---------------------------------------------------------------*/
+int os::_strcmpi(const char* str1, const char* str2) noexcept
+{
+#ifdef _WIN32
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+  return ::_strcmpi(str1, str2);
+#else
+  return ::strcmpi(str1, str2);
+#endif
+#else
+  return ::strcasecmp(str1, str2);
+#endif
+}
+
+/** An OS-independent version of strncmp.
+ * \return It will return 0 when both strings are equal, casi sensitive.
+ */
+int os::_strncmp(const char* str1, const char* str2, size_t count) noexcept
+{
+  return ::strncmp(str1, str2, count);
+}
+
+/** An OS-independent version of strnicmp.
+ * \return It will return 0 when both strings are equal, casi insensitive.
+ */
+int os::_strnicmp(const char* str1, const char* str2, size_t count) noexcept
+{
+#if defined(_MSC_VER)
+  return ::_strnicmp(str1, str2, count);
+#else
+  return ::strncasecmp(str1, str2, count);
+#endif
+}
+
+/*---------------------------------------------------------------
+            memcpy
+---------------------------------------------------------------*/
+void os::memcpy(
+    void* dest, [[maybe_unused]] size_t destSize, const void* src, size_t copyCount) noexcept
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+  ::memcpy_s(dest, destSize, src, copyCount);
+#else
+  ::memcpy(dest, src, copyCount);
+#endif
+}
+
+/*---------------------------------------------------------------
+            getch
+---------------------------------------------------------------*/
+int os::getch() noexcept
+{
+#ifdef _WIN32
+  return ::getch();  // cin.get();
+#else
+  struct termios old_state
+  {
+  }, new_state{};
+  int ch;
+  tcgetattr(STDIN_FILENO, &old_state);
+  new_state = old_state;
+  new_state.c_lflag &= static_cast<tcflag_t>(~(ICANON | ECHO));
+  tcsetattr(STDIN_FILENO, TCSANOW, &new_state);
+  ch = getchar();
+  tcsetattr(STDIN_FILENO, TCSANOW, &old_state);
+  return ch;
+#endif
+}
+
+/*---------------------------------------------------------------
+            kbhit
+---------------------------------------------------------------*/
+bool os::kbhit() noexcept
+{
+#ifdef _WIN32
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+  return ::_kbhit() != 0;
+#else
+  return ::kbhit() != 0;
+#endif
+#else
+  return myKbhit();
+#endif
+}
+
+/*---------------------------------------------------------------
+            os::fprintf
+---------------------------------------------------------------*/
+int os::fprintf(FILE* fil, const char* frm, ...) noexcept
+{
+  int result;
+  va_list ap;
+  va_start(ap, frm);
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+  // Use a secure version in Visual Studio 2005:
+  result = ::vfprintf_s(fil, frm, ap);
+
+#else
+  // Use standard version:
+  result = ::vfprintf(fil, frm, ap);
+#endif
+
+  va_end(ap);
+  return result;
+}
+
+/*---------------------------------------------------------------
+          mrpt::system::pause
+---------------------------------------------------------------*/
+void pause(const std::string& msg) noexcept
+{
+  std::cout << msg << "\n";
+  os::getch();
+}
+
+/*---------------------------------------------------------------
+          clearConsole
+---------------------------------------------------------------*/
+void clearConsole()
+{
+#ifdef _WIN32
+  int ret = ::system("cls");
+#else
+  int ret = ::system("clear");
+#endif
+  if (ret)
+  {
+    std::cerr << "[mrpt::system::clearConsole] Error invoking 'clear screen' "
+              << "\n";
+  }
+}
+
+/*---------------------------------------------------------------
+          _strtoll
+  ---------------------------------------------------------------*/
+int64_t os::_strtoll(const char* nptr, char** endptr, int base)
+{
+#ifdef _WIN32
+  return static_cast<int64_t>(::strtol(nptr, endptr, base));
+#else
+  return static_cast<int64_t>(::strtoll(nptr, endptr, base));
+#endif
+}
+
+/*---------------------------------------------------------------
+          _strtoull
+  ---------------------------------------------------------------*/
+uint64_t os::_strtoull(const char* nptr, char** endptr, int base)
+{
+#ifdef _WIN32
+  return static_cast<uint64_t>(::strtoul(nptr, endptr, base));
+#else
+  return static_cast<uint64_t>(::strtoull(nptr, endptr, base));
+#endif
+}
+
+void consoleColorAndStyle(
+    ConsoleForegroundColor fg,
+    ConsoleBackgroundColor bg,
+    ConsoleTextStyle style,
+    bool applyToStdErr)
+{
+#if defined(_WIN32)
+  static int normal_attributes = -1;
+  HANDLE hstdout = GetStdHandle(applyToStdErr ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
+  fflush(applyToStdErr ? stderr : stdout);
+
+  if (normal_attributes < 0)
+  {
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    GetConsoleScreenBufferInfo(hstdout, &info);
+    normal_attributes = info.wAttributes;
+  }
+
+  SetConsoleTextAttribute(
+      hstdout,
+      (WORD)(fg == ConsoleForegroundColor::DEFAULT
+                 ? normal_attributes
+                 : ((fg == ConsoleForegroundColor::BLUE ? FOREGROUND_BLUE : 0) |
+                    (fg == ConsoleForegroundColor::GREEN ? FOREGROUND_GREEN : 0) |  //
+                    (fg == ConsoleForegroundColor::RED ? FOREGROUND_RED : 0) |
+                    FOREGROUND_INTENSITY)));
+#else
+  static std::mutex mtx;
+  std::lock_guard<std::mutex> lck(mtx);
+
+  static ConsoleForegroundColor last_fg = ConsoleForegroundColor::DEFAULT;
+  static ConsoleBackgroundColor last_bg = ConsoleBackgroundColor::DEFAULT;
+  static ConsoleTextStyle last_style = ConsoleTextStyle::REGULAR;
+
+  if (fg == last_fg && bg == last_bg && style == last_style)
+  {
+    return;
+  }
+  last_fg = fg;
+  last_bg = bg;
+  last_style = style;
+
+  // *nix:
+  FILE* f = applyToStdErr ? stdout : stderr;
+  const int fd = applyToStdErr ? STDOUT_FILENO : STDERR_FILENO;
+
+  // No color support if it is not a real console:
+  if (!isatty(fd))
+  {
+    return;
+  }
+
+  fflush(f);
+
+  std::vector<int> codes;
+  if (int c = static_cast<int>(fg); c != 0)
+  {
+    codes.push_back(c);
+  }
+  if (int c = static_cast<int>(bg); c != 0)
+  {
+    codes.push_back(c);
+  }
+  if (int c = static_cast<int>(style); c != 0)
+  {
+    codes.push_back(c);
+  }
+  if (codes.empty())
+  {
+    codes.push_back(0);
+  }
+
+  std::string sFormat;
+  for (size_t i = 0; i < codes.size(); i++)
+  {
+    sFormat.append(std::to_string(codes[i]));
+    if (i + 1 == codes.size())
+    {
+      continue;
+    }
+    sFormat.append(";");
+  }
+
+  fprintf(f, "\033[%sm", sFormat.c_str());
+#endif
+}
+
+namespace
+{
+constexpr const char* const sLicenseTextF =
+    "                     Mobile Robot Programming Toolkit (MRPT)                \n"
+    "                          https://www.mrpt.org/                             \n"
+    "                                                                            \n"
+    " Copyright (c) 2005-%Y, Individual contributors, see AUTHORS file       \n"
+    " See: https://www.mrpt.org/Authors - All rights reserved.                   \n"
+    " Released under BSD License. See details in https://www.mrpt.org/License    \n";
+}
+
+const std::string& getMRPTLicense()
+{
+  thread_local bool sLicenseTextReady = false;
+  thread_local std::string sLicenseText;
+
+  if (!sLicenseTextReady)
+  {
+    // Automatically update the last year of the copyright to the
+    // compilation date:
+    time_t rawtime;
+    struct tm* timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    char buf[1024];
+    ::strftime(buf, sizeof(buf), sLicenseTextF, timeinfo);
+    sLicenseText = std::string(buf);
+    sLicenseTextReady = true;
+  }
+  return sLicenseText;
+}
+
+/*---------------------------------------------------------------
+launchProcess
+---------------------------------------------------------------*/
+bool launchProcess(const std::string& command)
+{
+#ifdef _WIN32
+  STARTUPINFOA SI;
+  PROCESS_INFORMATION PI;
+  memset(&SI, 0, sizeof(STARTUPINFOA));
+  SI.cb = sizeof(STARTUPINFOA);
+  if (CreateProcessA(NULL, (LPSTR)command.c_str(), NULL, NULL, true, 0, NULL, NULL, &SI, &PI))
+  {
+    // Wait:
+    WaitForSingleObject(PI.hProcess, INFINITE);
+    return true;
+  }  // End of process executed OK
+  else
+  {
+    std::cerr << winerror2str("launchProcess");
+    return false;
+  }
+
+#else
+
+  return 0 == ::system(command.c_str());
+
+#endif
+
+}  // end launchProcess
+
+std::string find_mrpt_shared_dir()
+{
+  static bool mrpt_shared_first_call = true;
+  static std::string found_mrpt_shared_dir;
+
+  if (mrpt_shared_first_call)
+  {
+    mrpt_shared_first_call = false;
+
+    for (int attempt = 0;; attempt++)
+    {
+      std::string dir;
+      switch (attempt)
+      {
+        case 0:
+          dir = std::string(MRPT_SOURCE_BASE_DIRECTORY) + std::string("/share/mrpt/");
+          break;
+        case 1:
+          dir = std::string(MRPT_INSTALL_PREFIX_DIRECTORY) + std::string("/share/mrpt/");
+          break;
+        case 2:
+          // colcon workspace: mrpt_data installs to a sibling package prefix
+          dir = std::string(MRPT_INSTALL_PREFIX_DIRECTORY) +
+                std::string("/../mrpt_data/share/mrpt_data/");
+          break;
+#ifdef _WIN32
+        case 3:
+        {
+          char curExe[4096];
+          GetModuleFileNameA(nullptr, curExe, sizeof(curExe));
+
+          dir = mrpt::system::extractFileDirectory(std::string(curExe)) + "/../share/mrpt/";
+        }
+        break;
+#endif
+
+        default:
+          found_mrpt_shared_dir = ".";
+          break;
+      };
+      if (!dir.empty() && mrpt::system::directoryExists(dir))
+      {
+        found_mrpt_shared_dir = dir;
+      }
+
+      if (!found_mrpt_shared_dir.empty())
+      {
+        break;
+      }
+    }
+  }
+
+  return found_mrpt_shared_dir;
+}  // end of find_mrpt_shared_dir
+
+int executeCommand(
+    const std::string& command,
+    std::string* output /*=nullptr*/,
+    const std::string& mode /*="r"*/,
+    const std::string& workingDirectory /*=std::string()*/)
+{
+  using namespace std;
+
+  // Create the stringstream
+  stringstream sout;
+  int exit_code = -1;
+
+#ifndef _WIN32
+  // Run Popen
+  char buff[512];
+
+  const auto shellQuote = [](const std::string& s)
+  {
+    std::string out;
+    out.reserve(s.size() + 2);
+    out.push_back('\'');
+    for (const char c : s)
+    {
+      if (c == '\'')
+        out += "'\\''";
+      else
+        out.push_back(c);
+    }
+    out.push_back('\'');
+    return out;
+  };
+
+  const std::string actualCommand =
+      workingDirectory.empty() ? command
+                               : ("cd -- " + shellQuote(workingDirectory) + " && " + command);
+
+  // Test output
+  FILE* in = popen(actualCommand.c_str(), mode.c_str());
+  if (!in)
+  {
+    sout << "Popen Execution failed!"
+         << "\n";
+    if (output)
+    {
+      *output = sout.str();
+    }
+    return -1;
+  }
+
+  // Parse output
+  while (fgets(buff, sizeof(buff), in) != nullptr)
+  {
+    sout << buff;
+  }
+
+  // Close
+  exit_code = pclose(in);
+  if (exit_code != -1 && WIFEXITED(exit_code))
+  {
+    exit_code = WEXITSTATUS(exit_code);
+  }
+#else
+  try
+  {
+    exit_code = -1;
+
+    SECURITY_ATTRIBUTES saAttr;
+    // Set the bInheritHandle flag so the handles below are inherited.
+    saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+    saAttr.bInheritHandle = TRUE;
+    saAttr.lpSecurityDescriptor = NULL;
+
+    // Capture the child's stdout+stderr through a temporary file instead of
+    // an anonymous pipe: pipes require careful, race-free draining while the
+    // child is still running (see git history for repeated failed attempts),
+    // whereas a file can simply be read back in full once the child has
+    // exited and the OS has flushed and closed it.
+    char tempDir[MAX_PATH];
+    char tempFile[MAX_PATH];
+    if (GetTempPathA(MAX_PATH, tempDir) == 0) throw winerror2str("GetTempPath");
+    if (GetTempFileNameA(tempDir, "mrp", 0, tempFile) == 0) throw winerror2str("GetTempFileName");
+
+    HANDLE hChildStdOut = CreateFileA(
+        tempFile, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, &saAttr, CREATE_ALWAYS,
+        FILE_ATTRIBUTE_TEMPORARY, NULL);
+    if (hChildStdOut == INVALID_HANDLE_VALUE)
+    {
+      DeleteFileA(tempFile);
+      throw winerror2str("CreateFile (output capture)");
+    }
+
+    // Feed the child an empty stdin (the NUL device), so console-related
+    // calls on a redirected stdin (e.g. _kbhit()) behave predictably instead
+    // of operating on a pipe with no writer.
+    HANDLE hChildStdIn = CreateFileA(
+        "NUL", GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, &saAttr, OPEN_EXISTING, 0, NULL);
+
+    // Create the child process:
+    PROCESS_INFORMATION piProcInfo;
+    STARTUPINFOA siStartInfo;
+    BOOL bSuccess = FALSE;
+
+    // Set up members of the PROCESS_INFORMATION structure.
+
+    ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
+
+    // Set up members of the STARTUPINFO structure.
+    // This structure specifies the STDIN and STDOUT handles for
+    // redirection.
+
+    ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
+    siStartInfo.cb = sizeof(STARTUPINFO);
+    siStartInfo.hStdError = hChildStdOut;
+    siStartInfo.hStdOutput = hChildStdOut;
+    siStartInfo.hStdInput = hChildStdIn;
+    siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+    // If a custom working directory is requested, the child process' DLL
+    // search may no longer find the directories where the calling process'
+    // dependent DLLs live: changing the child's current directory drops both
+    // the parent's current directory and its application directory from the
+    // child's default DLL search order, terminating it with
+    // STATUS_DLL_NOT_FOUND (0xC0000135). Work around this by temporarily
+    // prepending both of those directories to PATH, which the child inherits.
+    std::string savedPath;
+    bool pathModified = false;
+    if (!workingDirectory.empty())
+    {
+      std::string extraDirs;
+
+      // (1) Parent's current directory.
+      char curDir[MAX_PATH];
+      if (GetCurrentDirectoryA(MAX_PATH, curDir) > 0)
+      {
+        extraDirs += curDir;
+        extraDirs += ';';
+      }
+
+      // (2) Parent's executable (application) directory: dependent DLLs of the
+      // child binary are commonly co-located with the parent that links the
+      // same libraries.
+      char exePath[MAX_PATH];
+      if (GetModuleFileNameA(NULL, exePath, MAX_PATH) > 0)
+      {
+        std::string exeDir = exePath;
+        const auto slash = exeDir.find_last_of("\\/");
+        if (slash != std::string::npos)
+        {
+          exeDir.resize(slash);
+          extraDirs += exeDir;
+          extraDirs += ';';
+        }
+      }
+
+      if (!extraDirs.empty())
+      {
+        // Query the current PATH with the proper (possibly large) buffer size.
+        const DWORD needed = GetEnvironmentVariableA("PATH", nullptr, 0);
+        if (needed > 0)
+        {
+          std::vector<char> pathBuf(needed);
+          const DWORD pathLen = GetEnvironmentVariableA("PATH", pathBuf.data(), needed);
+          savedPath.assign(pathBuf.data(), pathLen);
+        }
+        const std::string newPath = extraDirs + savedPath;
+        SetEnvironmentVariableA("PATH", newPath.c_str());
+        pathModified = true;
+      }
+    }
+
+    // CreateProcessA() is allowed to write into its lpCommandLine buffer, so
+    // pass a writable copy rather than command.c_str().
+    std::vector<char> cmdLine(command.begin(), command.end());
+    cmdLine.push_back('\0');
+
+    // Create the child process.
+    bSuccess = CreateProcessA(
+        NULL,
+        cmdLine.data(),  // command line
+        NULL,            // process security attributes
+        NULL,            // primary thread security attributes
+        TRUE,            // handles are inherited
+        0,               // creation flags
+        NULL,            // use parent's environment
+        workingDirectory.empty() ? NULL : workingDirectory.c_str(),  // current directory
+        &siStartInfo,                                                // STARTUPINFO pointer
+        &piProcInfo);                                                // receives PROCESS_INFORMATION
+
+    if (pathModified) SetEnvironmentVariableA("PATH", savedPath.c_str());
+
+    // Close our copies of the handles inherited by the child; we don't need
+    // them in this process anymore.
+    CloseHandle(hChildStdOut);
+    if (hChildStdIn != INVALID_HANDLE_VALUE) CloseHandle(hChildStdIn);
+
+    // If an error occurs, exit the application.
+    if (!bSuccess)
+    {
+      DeleteFileA(tempFile);
+      throw winerror2str("CreateProcess");
+    }
+
+    // Wait for full termination and collect the exit code.
+    WaitForSingleObject(piProcInfo.hProcess, INFINITE);
+    DWORD exitval = 0;
+    if (GetExitCodeProcess(piProcInfo.hProcess, &exitval)) exit_code = exitval;
+
+    // Close handles to the child process and its primary thread.
+    CloseHandle(piProcInfo.hProcess);
+    CloseHandle(piProcInfo.hThread);
+
+    // The child has exited and the OS has closed (and flushed) its handle to
+    // the output file: read it back in full.
+    {
+      std::ifstream f(tempFile, std::ios::binary);
+      if (f) sout << f.rdbuf();
+    }
+    DeleteFileA(tempFile);
+  }
+  catch (std::string& errStr)
+  {
+    std::cerr << errStr;
+    return 1;  // !=0 means error
+  }
+#endif
+  // set output - if valid pointer given
+  if (output)
+  {
+    *output = sout.str();
+  }
+
+  // Return exit code
+  return exit_code;
+}  // end of executeCommand
+
+bool loadPluginModule(
+    const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs)
+{
+  auto& md = ModulesRegistry::Instance();
+  std::lock_guard<std::mutex> lck(md.loadedModules_mtx);
+
+  std::string sError;
+
+#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+  void* handle = dlopen(moduleFileName.c_str(), RTLD_LAZY);
+#elif defined(MRPT_OS_WINDOWS)
+  HMODULE handle = LoadLibraryA(moduleFileName.c_str());
+#else
+  void* handle = nullptr;
+  sError = "Unsupported OS";
+#endif
+
+  if (handle)
+  {
+    // register for future dlclose()
+    md.loadedModules[moduleFileName].handle = handle;
+    return true;
+  }
+
+#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+  sError = mrpt::format("Error loading '%s':\n%s\n", moduleFileName.c_str(), dlerror());
+#elif defined(MRPT_OS_WINDOWS)
+  sError = mrpt::format(
+      "Error loading '%s':\nWindows error: %u\n", moduleFileName.c_str(), GetLastError());
+#endif
+
+  if (outErrorMsgs)
+  {
+    outErrorMsgs.value().get() += sError;
+  }
+  else
+  {
+    std::cerr << sError;
+  }
+  return false;
+}
+
+bool unloadPluginModule(
+    const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs)
+{
+  auto& md = ModulesRegistry::Instance();
+  std::lock_guard<std::mutex> lck(md.loadedModules_mtx);
+
+  std::string sError;
+
+  const auto it = md.loadedModules.find(moduleFileName);
+  if (it == md.loadedModules.end())
+  {
+    sError = "Module filename '" + moduleFileName +
+             "' not found in previous calls to loadPluginModule().";
+  }
+  else
+  {
+#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+    if (0 != dlclose(it->second.handle))
+    {
+      sError = mrpt::format("Error unloading '%s':\n%s\n", moduleFileName.c_str(), dlerror());
+    }
+#elif defined(MRPT_OS_WINDOWS)
+    if (!FreeLibrary(it->second.handle))
+    {
+      sError = mrpt::format(
+          "Error unloading '%s':\nWindows error: %u\n", moduleFileName.c_str(), GetLastError());
+    }
+#endif
+  }
+
+  if (!sError.empty())
+  {
+    if (outErrorMsgs)
+    {
+      outErrorMsgs.value().get() += sError;
+    }
+    else
+    {
+      std::cerr << sError;
+    }
+    return false;
+  }
+
+  md.loadedModules.erase(it);
+  return true;
+}
+
+bool loadPluginModules(
+    const std::string& moduleFileNames, mrpt::optional_ref<std::string> outErrorMsgs)
+{
+  std::vector<std::string> lstModules;
+  mrpt::system::tokenize(moduleFileNames, ",", lstModules);
+
+  bool allOk = true;
+  for (const auto& sLib : lstModules)
+  {
+    if (!loadPluginModule(sLib, outErrorMsgs))
+    {
+      allOk = false;
+    }
+  }
+
+  return allOk;
+}
+
+bool unloadPluginModules(
+    const std::string& moduleFileNames, mrpt::optional_ref<std::string> outErrorMsgs)
+{
+  std::vector<std::string> lstModules;
+  mrpt::system::tokenize(moduleFileNames, ",", lstModules);
+
+  bool allOk = true;
+  for (const auto& sLib : lstModules)
+  {
+    if (!unloadPluginModule(sLib, outErrorMsgs))
+    {
+      allOk = false;
+    }
+  }
+
+  return allOk;
+}
+
+}  // namespace mrpt::system

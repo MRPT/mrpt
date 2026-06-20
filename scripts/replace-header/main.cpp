@@ -58,14 +58,14 @@ int main(int argc, char** argv)
   ifstream f(in_file_name);
   if (f.fail())
   {
-    cerr << "ERROR: cannot open " << in_file_name << endl;
+    cerr << "ERROR: cannot open " << in_file_name << "\n";
     return 1;
   }
 
   ofstream of(out_file_name);
   if (of.fail())
   {
-    cerr << "ERROR: cannot create " << out_file_name << endl;
+    cerr << "ERROR: cannot create " << out_file_name << "\n";
     return 1;
   }
 

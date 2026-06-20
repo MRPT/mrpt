@@ -1,30 +1,14 @@
 \page changelog Change Log
 
-# Version 2.15.18: Released May 12th, 2026
-- Hot fix: fixes needed to build new octomap targets upstream in ROS build farms.
+\note Starting from **MRPT 3.0.0**, changes are reported separately in each
+module's own `CHANGELOG.rst` file (located next to its `package.xml`).
+The entries below cover the MRPT 2.x series.
 
-# Version 2.15.17: Released May 9th, 2026
-- Hot fix: upgrade vendored octomap version to latest devel commit to fix cmake errors in Ubuntu 26.04+.
-
-# Version 2.15.16: Released May 7th, 2026
-- Hot fix: upgrade vendored octomap version to 1.10.0 to fix cmake errors in Ubuntu 26.04+.
-
-# Version 2.15.15: Released May 5th, 2026
-- Changes in apps:
-  - SceneViewer3D: autoreload file if changed externally
-  - \ref mrpt_maps_grp
-    - mrpt::obs::recolorize3Dpc(): BUGFIX: Wrong colorization for "rgb" uint8 fields.
-
-# Version 2.15.14: Released Apr 20th, 2026
-- Changes in applications:
-  - Apps renamed ini2yaml ==> mrpt-ini2yaml, yaml2ini ==> mrpt-yaml2ini to address Debian bug [#1133167](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1133167)
-- Changes in libraries:
-  - Fix build with g++16. Closes Debian bug [1133562](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1133562)
-
-# Version 2.15.13: Release Apr 14th, 2026
+# Version 2.15.13: UNRELEASED
+  - \ref mrpt_core_grp
+    - mrpt::Clock::fromDouble(): Fixed undefined behavior (and platform-dependent results) when converting timestamps whose UNIX time is negative or near zero. The intermediate value was cast from a negative `double` to `uint64_t`, which wraps on x86-64 but saturates to 0 on AArch64, collapsing distinct timestamps to the same tick on ARM.
   - \ref mrpt_maps_grp
     - mrpt::maps::CPointsMap now pads with zeros if trying to insert a source point clouds with less fields than the target.
-    - mrpt::obs::recolorize3Dpc(): Add optional outlier removal parameter
 
 # Version 2.15.12: Release Apr 6th, 2026
   - \ref mrpt_maps_grp
@@ -57,15 +41,12 @@
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - New class mrpt::opengl::CAnimatedAssimpModel for 3D models with animations.
-  - \ref mrpt_system_grp
-    - Removed old duplicated version of WorkerThreadsPool.
+
 
 # Version 2.15.7: Released Feb 3rd, 2026
 - Changes in libraries:
   - \ref mrpt_io_grp
     - Support for ZStd compression with mrpt::io::CCompressedInputStream and mrpt::io::CCompressedOutputStream
-- General:
-  - Changed all applications and libraries to use zstd as default compression method.
 
 # Version 2.15.6: Released Jan 29th, 2026
 - nanogui: Updated to new version (DockablePanel)
@@ -1633,7 +1614,7 @@ for improved performance.
 SICK TIM series lidar including Tim55x, Tim56x
       - mrpt::hwdrivers::CSICKTim561Eth
     - A new test sample for SICK TIM561(TIM55x/TIM56x) lidar:
-      - sample/SICK_tim561eth_test/test.cpp
+      - sample/SICK_tim561eth_test/main.cpp
   - BUG FIXES:
     - Fix likelihood computation in mrpt::maps::CReflectivityGridMap2D
 (which led to crash)
@@ -2628,8 +2609,8 @@ mrpt::reactivenav::build_PTG_collision_grids() to become more generic for 2D
     - mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer
 features enough to justify a class.
   - New examples:
-    - [MRPT]/samples/threadsPipe
-    - [MRPT]/samples/NIDAQ_test
+    - [MRPT]/mrpt_examples_cpp/threadsPipe
+    - [MRPT]/mrpt_examples_cpp/NIDAQ_test
     - [MRPT]/openNI2_RGBD_demo (by Mariano Jaimez Tarifa)
     - [MRPT]/openNI2_proximity_demo (by Mariano Jaimez Tarifa)
   - Build system:

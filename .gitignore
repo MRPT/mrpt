@@ -1,11 +1,14 @@
 *~
 build*
 install*
+log
 *.layout
 CMakeFiles/
 CMakeLists.txt.user*
 SOURCE_DATE_EPOCH
 *.backup
+
+./my*.ini  # examples leftovers
 
 share/mrpt/config_files/rawlog-grabber/*.rawlog
 
@@ -26,6 +29,8 @@ graphslam_results/
 #visual studio
 .vs/*
 .vscode
+!.vscode/settings.json
+
 
 # doxygen files
 doc/source/dox_mrpt.tag
@@ -43,3 +48,9 @@ doc/source/doxygen-index.rst
 .cmake
 doc/venv
 .pc
+.cache
+my_config.ini
+*.ini
+cache_*.bin.gz
+**/__pycache__
+.claude

@@ -1,0 +1,135 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/format.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CCS.h>
+#include <mrpt/serialization/CArchive.h>
+
+using namespace mrpt;
+using namespace mrpt::nav;
+using namespace mrpt::system;
+
+IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_CCS, CParameterizedTrajectoryGenerator, mrpt::nav)
+
+void CPTG_DiffDrive_CCS::loadFromConfigFile(
+    const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
+{
+  CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(cfg, sSection);
+
+  MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(K, double, cfg, sSection);
+
+  // The constant curvature turning radius used in this PTG:
+  R = V_MAX / W_MAX;
+}
+void CPTG_DiffDrive_CCS::saveToConfigFile(
+    mrpt::config::CConfigFileBase& cfg, const std::string& sSection) const
+{
+  MRPT_START
+  const int WN = 25, WV = 30;
+  CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(cfg, sSection);
+
+  cfg.write(sSection, "K", K, WN, WV, "K=+1 forward paths; K=-1 for backwards paths.");
+
+  MRPT_END
+}
+
+void CPTG_DiffDrive_CCS::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+{
+  CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
+
+  switch (version)
+  {
+    case 0:
+      in >> K;
+      break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+}
+
+uint8_t CPTG_DiffDrive_CCS::serializeGetVersion() const { return 0; }
+void CPTG_DiffDrive_CCS::serializeTo(mrpt::serialization::CArchive& out) const
+{
+  CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
+  out << K;
+}
+
+std::string CPTG_DiffDrive_CCS::getDescription() const
+{
+  return mrpt::format("CPTG_DiffDrive_CCS,K=%i", static_cast<int>(K));
+}
+
+void CPTG_DiffDrive_CCS::ptgDiffDriveSteeringFunction(
+    float alpha,
+    float t,
+    [[maybe_unused]] float x,
+    [[maybe_unused]] float y,
+    [[maybe_unused]] float phi,
+    float& v,
+    float& w) const
+{
+  float u = static_cast<float>(fabs(alpha)) * 0.5f;  // 0.14758362f;  // u = atan(0.5)* alpha /
+  // PI;
+
+  if (t < u * R / V_MAX)
+  {
+    // l-
+    v = static_cast<float>(-V_MAX);
+    w = static_cast<float>(W_MAX);
+  }
+  else if (t < (u + M_PI / 2) * R / V_MAX)
+  {
+    // l+ pi/2
+    v = static_cast<float>(V_MAX);
+    w = static_cast<float>(W_MAX);
+  }
+  else
+  {
+    // s+:
+    v = static_cast<float>(V_MAX);
+    w = 0;
+  }
+
+  // Turn in the opposite direction??
+  if (alpha < 0) w *= -1;
+
+  v *= static_cast<float>(K);
+  w *= static_cast<float>(K);
+}
+
+bool CPTG_DiffDrive_CCS::PTG_IsIntoDomain(double x, double y) const
+{
+  // If signs of K and X are different, it is into the domain:
+  if ((K * x) < 0)
+  {
+    return true;
+  }
+
+  if (fabs(y) >= R)
+  {
+    // Segmento de arriba:
+    return (fabs(x) <= R);
+  }
+  else
+  {
+    // The circle at (0,R):
+    return (square(x) + square(fabs(y) - R)) <= R;
+  }
+}
+
+void CPTG_DiffDrive_CCS::loadDefaultParams()
+{
+  CPTG_DiffDrive_CollisionGridBased::loadDefaultParams();
+  K = +1.0;
+}

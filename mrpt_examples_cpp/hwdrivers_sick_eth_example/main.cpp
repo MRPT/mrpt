@@ -1,0 +1,81 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+/*
+   This example was contributed by Adrien Barral - Robopec (France)
+*/
+
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/hwdrivers/CLMS100eth.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // [mrpt-maps]
+
+#include <chrono>
+#include <iostream>
+#include <thread>
+
+using namespace mrpt;
+using namespace mrpt::obs;
+using namespace mrpt::viz;
+using namespace mrpt::hwdrivers;
+using namespace mrpt::gui;
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+  if (argc < 3)
+  {
+    std::cout << "Usage : " << argv[0] << " <IP> <port> "
+              << "\n";
+    return 0;
+  }
+
+  CLMS100Eth laser(string(argv[1]), atoi(argv[2]));
+  laser.turnOn();
+
+  bool isOutObs, hardwareError;
+  CObservation2DRangeScan outObs;
+  laser.doProcessSimple(isOutObs, outObs, hardwareError);
+
+  CDisplayWindow3D win3D("Scan", 200, 200);
+
+  Scene::Ptr ptr_scene = win3D.get3DSceneAndLock();
+
+  {
+    mrpt::viz::CPlanarLaserScan::Ptr obj = mrpt::viz::CPlanarLaserScan::Create();
+    obj->clear();
+    obj->setColor(0, 0, 1);
+    obj->setName("scan_LMS100");
+    obj->setScan(outObs);
+    ptr_scene->insert(obj);
+  }
+
+  win3D.unlockAccess3DScene();
+  win3D.forceRepaint();
+
+  while (win3D.isOpen())
+  {
+    laser.doProcessSimple(isOutObs, outObs, hardwareError);
+
+    ptr_scene = win3D.get3DSceneAndLock();
+    mrpt::viz::CPlanarLaserScan::Ptr obj =
+        std::dynamic_pointer_cast<mrpt::viz::CPlanarLaserScan>(ptr_scene->getByName("scan_LMS100"));
+    obj->clear();
+    obj->setScan(outObs);
+    win3D.unlockAccess3DScene();
+    win3D.forceRepaint();
+    std::this_thread::sleep_for(20ms);
+  }
+  win3D.waitForKey();
+  return 0;
+}

@@ -21,9 +21,9 @@ return $ret
 
 }
 
-if ! [ -f version_prefix.txt ]
+if ! [ -f colcon_defaults.yaml ]
 then
-	echo "ERROR: Cannot find the file version_prefix.txt!"
+	echo "ERROR: Cannot find the file colcon_defaults.yaml!"
 	echo "It should be at the MRPT root directory."
 	echo "Change to the root directory and rerun script."
 	exit 1

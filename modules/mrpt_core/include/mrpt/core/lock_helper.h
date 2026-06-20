@@ -1,0 +1,75 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#pragma once
+
+#include <type_traits>
+
+namespace mrpt
+{
+/** Auxiliary helper structure for mrpt::lockHelper()
+ * \ingroup mrpt_core_grp
+ */
+template <class T>
+class LockHelper
+{
+  using Tnc = std::remove_const_t<T>;
+
+ public:
+  explicit LockHelper(const Tnc* l) : l_{const_cast<Tnc*>(l)} { l_->lock(); }
+  ~LockHelper()
+  {
+    if (l_)
+    {
+      l_->unlock();
+    }
+  }
+
+  LockHelper(const LockHelper& o) = delete;
+  LockHelper& operator=(const LockHelper& o) = delete;
+
+  LockHelper(LockHelper&& o) : l_{o.l_} { o.l_ = nullptr; }
+  LockHelper& operator=(LockHelper&& o)
+  {
+    l_ = o.l_;
+    o.l_ = nullptr;
+    return *this;
+  }
+
+  /** Can be used to unlock the mutex before this object dtor
+   * \note [New in MRPT 2.1.5]
+   */
+  void unlock()
+  {
+    if (!l_)
+    {
+      return;
+    }
+    l_->unlock();
+    l_ = nullptr;
+  }
+
+ private:
+  Tnc* l_{nullptr};
+};
+
+/** Syntactic sugar to easily create a locker to any kind of std::mutex
+ * \ingroup mrpt_core_grp
+ */
+template <class T>
+LockHelper<T> lockHelper(T& t)
+{
+  return LockHelper<T>(&t);
+}
+}  // namespace mrpt

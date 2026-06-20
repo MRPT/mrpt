@@ -1,0 +1,397 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/config.h>
+#include <mrpt/viz/pointcloud_adapters.h>
+
+// NOTE: Only include this file if you have PCL installed in your system
+//        and do it only after including MRPT headers...
+
+// Make sure the essential PCL headers are included:
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
+namespace mrpt::viz
+{
+/** Specialization
+ * mrpt::viz::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> > for an XYZ
+ * point cloud (without RGB) \ingroup mrpt_adapters_grp */
+template <>
+class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>>
+{
+ private:
+  pcl::PointCloud<pcl::PointXYZ>& m_obj;
+
+ public:
+  /** The type of each point XYZ coordinates */
+  using coords_t = float;
+
+  /** Has native RGB info (as floats)? */
+  static constexpr bool HAS_RGBf = false;
+  /** Has native RGB info (as uint8_t)? */
+  static constexpr bool HAS_RGBu8 = false;
+
+  /** Constructor (accept a const ref for convenience) */
+  PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZ>& obj) :
+      m_obj(*const_cast<pcl::PointCloud<pcl::PointXYZ>*>(&obj))
+  {
+  }
+  /** Get number of points */
+  size_t size() const { return m_obj.points.size(); }
+  /** Set number of points (to uninitialized values) */
+  void resize(size_t N) { m_obj.points.resize(N); }
+  /** Set height and width (for organized) */
+  void setDimensions(size_t height, size_t width)
+  {
+    m_obj.height = height;
+    m_obj.width = width;
+  }
+  /** Get XYZ coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  {
+    const pcl::PointXYZ& p = m_obj.points[idx];
+    x = p.x;
+    y = p.y;
+    z = p.z;
+  }
+  /** Set XYZ coordinates of i'th point */
+  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  {
+    pcl::PointXYZ& p = m_obj.points[idx];
+    p.x = x;
+    p.y = y;
+    p.z = z;
+  }
+
+  /** Set Invalid Point */
+  void setInvalidPoint(size_t idx)
+  {
+    pcl::PointXYZ& p = m_obj.points[idx];
+    p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN();
+  }
+};  // end of mrpt::viz::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> >
+
+/** Specialization
+ * mrpt::viz::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> > for an
+ * XYZ point cloud with RGB  \ingroup mrpt_adapters_grp */
+template <>
+class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
+{
+ private:
+  pcl::PointCloud<pcl::PointXYZRGB>& m_obj;
+
+ public:
+  /** The type of each point XYZ coordinates */
+  using coords_t = float;
+
+  /** Has native RGB info (as floats)? */
+  static constexpr bool HAS_RGBf = false;
+  /** Has native RGB info (as uint8_t)? */
+  static constexpr bool HAS_RGBu8 = true;
+
+  /** Constructor (accept a const ref for convenience) */
+  PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZRGB>& obj) :
+      m_obj(*const_cast<pcl::PointCloud<pcl::PointXYZRGB>*>(&obj))
+  {
+  }
+  /** Get number of points */
+  size_t size() const { return m_obj.points.size(); }
+  /** Set number of points (to uninitialized values) */
+  void resize(size_t N) { m_obj.points.resize(N); }
+  /** Set height and width (for organized) */
+  void setDimensions(size_t height, size_t width)
+  {
+    m_obj.height = height;
+    m_obj.width = width;
+  }
+
+  /** Get XYZ coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  {
+    const pcl::PointXYZRGB& p = m_obj.points[idx];
+    x = p.x;
+    y = p.y;
+    z = p.z;
+  }
+  /** Set XYZ coordinates of i'th point */
+  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  {
+    pcl::PointXYZRGB& p = m_obj.points[idx];
+    p.x = x;
+    p.y = y;
+    p.z = z;
+    p.r = p.g = p.b = 255;
+  }
+
+  /** Get XYZ_RGBf coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ_RGBf(size_t idx, T& x, T& y, T& z, float& r, float& g, float& b) const
+  {
+    const pcl::PointXYZRGB& p = m_obj.points[idx];
+    x = p.x;
+    y = p.y;
+    z = p.z;
+    r = p.r / 255.f;
+    g = p.g / 255.f;
+    b = p.b / 255.f;
+  }
+  /** Set XYZ_RGBf coordinates of i'th point */
+  void setPointXYZ_RGBf(
+      size_t idx,
+      const coords_t x,
+      const coords_t y,
+      const coords_t z,
+      const float r,
+      const float g,
+      const float b)
+  {
+    pcl::PointXYZRGB& p = m_obj.points[idx];
+    p.x = x;
+    p.y = y;
+    p.z = z;
+    p.r = r * 255;
+    p.g = g * 255;
+    p.b = b * 255;
+  }
+
+  /** Get XYZ_RGBu8 coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ_RGBu8(size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
+  {
+    const pcl::PointXYZRGB& p = m_obj.points[idx];
+    x = p.x;
+    y = p.y;
+    z = p.z;
+    r = p.r;
+    g = p.g;
+    b = p.b;
+  }
+  /** Set XYZ_RGBu8 coordinates of i'th point */
+  void setPointXYZ_RGBu8(
+      size_t idx,
+      const coords_t x,
+      const coords_t y,
+      const coords_t z,
+      const uint8_t r,
+      const uint8_t g,
+      const uint8_t b)
+  {
+    pcl::PointXYZRGB& p = m_obj.points[idx];
+    p.x = x;
+    p.y = y;
+    p.z = z;
+    p.r = r;
+    p.g = g;
+    p.b = b;
+  }
+
+  /** Get RGBf color of i'th point */
+  void getPointRGBf(size_t idx, float& r, float& g, float& b) const
+  {
+    const pcl::PointXYZRGB& p = m_obj.points[idx];
+    r = p.r / 255.f;
+    g = p.g / 255.f;
+    b = p.b / 255.f;
+  }
+  /** Set XYZ_RGBf coordinates of i'th point */
+  void setPointRGBf(size_t idx, const float r, const float g, const float b)
+  {
+    pcl::PointXYZRGB& p = m_obj.points[idx];
+    p.r = r * 255;
+    p.g = g * 255;
+    p.b = b * 255;
+  }
+
+  /** Get RGBu8 color of i'th point */
+  void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
+  {
+    const pcl::PointXYZRGB& p = m_obj.points[idx];
+    r = p.r;
+    g = p.g;
+    b = p.b;
+  }
+  /** Set RGBu8 coordinates of i'th point */
+  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  {
+    pcl::PointXYZRGB& p = m_obj.points[idx];
+    p.r = r;
+    p.g = g;
+    p.b = b;
+  }
+
+};  // end of mrpt::viz::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>
+// >
+
+/** Specialization
+ * mrpt::viz::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA> > for an
+ * XYZ point cloud with RGB  \ingroup mrpt_adapters_grp */
+template <>
+class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
+{
+ private:
+  pcl::PointCloud<pcl::PointXYZRGBA>& m_obj;
+
+ public:
+  /** The type of each point XYZ coordinates */
+  using coords_t = float;
+
+  /** Has native RGB info (as floats)? */
+  static constexpr bool HAS_RGBf = false;
+  /** Has native RGB info (as uint8_t)? */
+  static constexpr bool HAS_RGBu8 = true;
+
+  /** Constructor (accept a const ref for convenience) */
+  PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZRGBA>& obj) :
+      m_obj(*const_cast<pcl::PointCloud<pcl::PointXYZRGBA>*>(&obj))
+  {
+  }
+  /** Get number of points */
+  size_t size() const { return m_obj.points.size(); }
+  /** Set number of points (to uninitialized values) */
+  void resize(size_t N) { m_obj.points.resize(N); }
+  /** Set height and width (for organized) */
+  void setDimensions(size_t height, size_t width)
+  {
+    m_obj.height = height;
+    m_obj.width = width;
+  }
+
+  /** Get XYZ coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ(size_t idx, T& x, T& y, T& z) const
+  {
+    const pcl::PointXYZRGBA& p = m_obj.points[idx];
+    x = p.x;
+    y = p.y;
+    z = p.z;
+  }
+  /** Set XYZ coordinates of i'th point */
+  void setPointXYZ(size_t idx, const coords_t x, const coords_t y, const coords_t z)
+  {
+    pcl::PointXYZRGBA& p = m_obj.points[idx];
+    p.x = x;
+    p.y = y;
+    p.z = z;
+    p.r = p.g = p.b = 255;
+  }
+
+  /** Set Invalid Point */
+  void setInvalidPoint(size_t idx)
+  {
+    pcl::PointXYZRGBA& p = m_obj.points[idx];
+    p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN();
+  }
+
+  /** Get XYZ_RGBf coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ_RGBf(size_t idx, T& x, T& y, T& z, float& r, float& g, float& b) const
+  {
+    const pcl::PointXYZRGBA& p = m_obj.points[idx];
+    x = p.x;
+    y = p.y;
+    z = p.z;
+    r = p.r / 255.f;
+    g = p.g / 255.f;
+    b = p.b / 255.f;
+  }
+  /** Set XYZ_RGBf coordinates of i'th point */
+  void setPointXYZ_RGBf(
+      size_t idx,
+      const coords_t x,
+      const coords_t y,
+      const coords_t z,
+      const float r,
+      const float g,
+      const float b)
+  {
+    pcl::PointXYZRGBA& p = m_obj.points[idx];
+    p.x = x;
+    p.y = y;
+    p.z = z;
+    p.r = r * 255;
+    p.g = g * 255;
+    p.b = b * 255;
+  }
+
+  /** Get XYZ_RGBu8 coordinates of i'th point */
+  template <typename T>
+  void getPointXYZ_RGBu8(size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
+  {
+    const pcl::PointXYZRGBA& p = m_obj.points[idx];
+    x = p.x;
+    y = p.y;
+    z = p.z;
+    r = p.r;
+    g = p.g;
+    b = p.b;
+  }
+  /** Set XYZ_RGBu8 coordinates of i'th point */
+  void setPointXYZ_RGBu8(
+      size_t idx,
+      const coords_t x,
+      const coords_t y,
+      const coords_t z,
+      const uint8_t r,
+      const uint8_t g,
+      const uint8_t b)
+  {
+    pcl::PointXYZRGBA& p = m_obj.points[idx];
+    p.x = x;
+    p.y = y;
+    p.z = z;
+    p.r = r;
+    p.g = g;
+    p.b = b;
+  }
+
+  /** Get RGBf color of i'th point */
+  void getPointRGBf(size_t idx, float& r, float& g, float& b) const
+  {
+    const pcl::PointXYZRGBA& p = m_obj.points[idx];
+    r = p.r / 255.f;
+    g = p.g / 255.f;
+    b = p.b / 255.f;
+  }
+  /** Set XYZ_RGBf coordinates of i'th point */
+  void setPointRGBf(size_t idx, const float r, const float g, const float b)
+  {
+    pcl::PointXYZRGBA& p = m_obj.points[idx];
+    p.r = r * 255;
+    p.g = g * 255;
+    p.b = b * 255;
+  }
+
+  /** Get RGBu8 color of i'th point */
+  void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
+  {
+    const pcl::PointXYZRGBA& p = m_obj.points[idx];
+    r = p.r;
+    g = p.g;
+    b = p.b;
+  }
+  /** Set RGBu8 coordinates of i'th point */
+  void setPointRGBu8(size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+  {
+    pcl::PointXYZRGBA& p = m_obj.points[idx];
+    p.r = r;
+    p.g = g;
+    p.b = b;
+  }
+
+};  // end of mrpt::viz::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>
+// >
+}  // namespace mrpt::viz

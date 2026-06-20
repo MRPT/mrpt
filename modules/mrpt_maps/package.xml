@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mrpt_maps</name>
+  <version>3.0.5</version>
+  <description>The MRPT C++ library mrpt_maps</description>
+
+  <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
+  <license file="LICENSE">BSD</license>
+
+  <url type="website">https://github.com/MRPT/</url>
+
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <depend>mrpt_obs</depend>
+  <depend>mrpt_graphs</depend>
+
+  <build_depend>eigen</build_depend>
+  <build_depend>pybind11-dev</build_depend>
+  <build_depend>python3-dev</build_depend>
+  <!-- Optional system library for the octomap-based maps; if absent upstream
+       falls back to downloading & building an embedded copy, which is not
+       allowed in distro packaging, so we depend on the system version. -->
+  <build_depend>liboctomap-dev</build_depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+
+</package>

@@ -1,0 +1,146 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <vector>
+
+namespace mrpt::io
+{
+// clang-format off
+/** @defgroup vector_loadsave Load and save vectors to files (in #include <mrpt/io/vector_loadsave.h>)
+ * \ingroup mrpt_io_grp
+ * @{ */
+// clang-format on
+
+/** Saves a vector directly as a binary dump to a file:
+ * \return Returns false on any error, true on everything OK.
+ * \sa loadBinaryFile
+ */
+bool vectorToBinaryFile(const std::vector<uint8_t>& vec, const std::string& fileName);
+
+/** Loads a entire file as a vector of bytes.
+ * \return Returns false on any error, true on everything OK.
+ * \sa vectorToBinaryFile
+ * \deprecated Use loadBinaryFile(const std::string&) returning optional instead.
+ */
+[[nodiscard]] bool loadBinaryFile(std::vector<uint8_t>& out_data, const std::string& fileName);
+
+/** Loads an entire file as a vector of bytes.
+ * \return The file contents, or std::nullopt on any error.
+ * \sa vectorToBinaryFile
+ */
+[[nodiscard]] std::optional<std::vector<uint8_t>> loadBinaryFile(const std::string& fileName);
+
+/** Loads a text file as a vector of string lines.
+ * \return Returns false on any error, true on everything OK.
+ * \sa file_get_contents()
+ * \deprecated Use loadTextFile(const std::string&) returning optional instead.
+ */
+[[nodiscard]] bool loadTextFile(std::vector<std::string>& o, const std::string& fileName);
+
+/** Loads a text file as a vector of string lines.
+ * \return The lines, or std::nullopt on any error.
+ * \sa file_get_contents()
+ */
+[[nodiscard]] std::optional<std::vector<std::string>> loadTextFile(const std::string& fileName);
+
+/** Loads an entire text file and return its contents as a single std::string.
+ * \exception std::runtime_error On any read error.
+ * \sa loadBinaryFile(), loadTextFile()
+ * \note Relying on C++17 RVO to return a string without worring on
+ * return-by-value of big objects.
+ */
+std::string file_get_contents(const std::string& fileName);
+
+/** Options for vectorToTextFile().
+ * \ingroup mrpt_io_grp
+ */
+struct VectorTextFileOptions
+{
+  bool append = false;  //!< Append to existing file instead of overwriting
+  bool byRows = false;  //!< Write one element per row; default is one per column
+};
+
+/** A useful function for debugging, which saves a numeric std::vector as a
+ * plain-text file compatible with MATLAB.
+ * \return Returns false on any error, true on everything OK.
+ */
+[[nodiscard]] bool vectorToTextFile(
+    const std::vector<float>& vec,
+    const std::string& fileName,
+    const VectorTextFileOptions& opts = {});
+//! \overload
+[[nodiscard]] bool vectorToTextFile(
+    const std::vector<double>& vec,
+    const std::string& fileName,
+    const VectorTextFileOptions& opts = {});
+//! \overload
+[[nodiscard]] bool vectorToTextFile(
+    const std::vector<int>& vec,
+    const std::string& fileName,
+    const VectorTextFileOptions& opts = {});
+//! \overload
+[[nodiscard]] bool vectorToTextFile(
+    const std::vector<size_t>& vec,
+    const std::string& fileName,
+    const VectorTextFileOptions& opts = {});
+
+/** \deprecated Use vectorToTextFile(vec, fileName, VectorTextFileOptions) instead. */
+[[deprecated(
+    "Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]] [[nodiscard]] bool
+vectorToTextFile(
+    const std::vector<float>& vec, const std::string& fileName, bool append, bool byRows = false);
+//! \overload \deprecated
+[[deprecated(
+    "Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]] [[nodiscard]] bool
+vectorToTextFile(
+    const std::vector<double>& vec, const std::string& fileName, bool append, bool byRows = false);
+//! \overload \deprecated
+[[deprecated(
+    "Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]] [[nodiscard]] bool
+vectorToTextFile(
+    const std::vector<int>& vec, const std::string& fileName, bool append, bool byRows = false);
+//! \overload \deprecated
+[[deprecated(
+    "Use vectorToTextFile(vec, fileName, VectorTextFileOptions{}) instead")]] [[nodiscard]] bool
+vectorToTextFile(
+    const std::vector<size_t>& vec, const std::string& fileName, bool append, bool byRows = false);
+//! \overload
+template <class EIGEN_MATRIX>
+[[nodiscard]] bool vectorToTextFile(const EIGEN_MATRIX& vec, const std::string& fileName)
+{
+  try
+  {
+    vec.saveToTextFile(fileName);
+    return true;
+  }
+  catch (...)
+  {
+    return false;
+  }
+}
+
+/** Load a numeric std::vector<double> from a text file (compat. with MATLAB)
+ * \return Returns false on any error, true on everything OK.
+ * \sa loadBinaryFile
+ */
+bool vectorNumericFromTextFile(
+    std::vector<double>& vec, const std::string& fileName, const bool byRows = false);
+
+/** @} */
+
+}  // namespace mrpt::io

@@ -1,0 +1,27 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/3rdparty/spimpl.h>
+namespace mrpt
+{
+template <typename T>
+using pimpl = spimpl::impl_ptr<T>;
+
+template <class T, class... Args>
+pimpl<T> make_impl(Args&&... args)
+{
+  return spimpl::make_impl<T, Args...>(std::forward<Args>(args)...);
+}
+}  // namespace mrpt

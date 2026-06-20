@@ -1,0 +1,165 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <CTraitsTest.h>
+#include <gtest/gtest.h>
+#include <mrpt/containers/circular_buffer.h>
+#include <mrpt/core/common.h>
+
+#include <array>
+#include <random>
+
+template class mrpt::CTraitsTest<mrpt::containers::circular_buffer<char>>;
+
+using cb_t = int;
+
+TEST(circular_buffer_tests, EmptyPop)
+{
+  mrpt::containers::circular_buffer<cb_t> cb(10);
+  EXPECT_THROW(cb.pop(), std::exception);
+}
+TEST(circular_buffer_tests, EmptyPopAfterPushes)
+{
+  constexpr size_t LEN = 20;
+  mrpt::containers::circular_buffer<cb_t> cb(LEN);
+  for (size_t nWr = 0; nWr < LEN; nWr++)
+  {
+    for (size_t i = 0; i < nWr; i++)
+    {
+      cb.push(12);
+    }
+    for (size_t i = 0; i < nWr; i++)
+    {
+      (void)cb.pop();
+    }
+    // The next one must fail:
+    EXPECT_THROW(cb.pop(), std::exception);
+  }
+}
+
+TEST(circular_buffer_tests, RandomWriteAndPeek)
+{
+  constexpr size_t LEN = 20;
+  mrpt::containers::circular_buffer<cb_t> cb(LEN);
+
+  std::mt19937_64 generator(12345);
+
+  for (size_t iter = 0; iter < 1000; iter++)
+  {
+    const size_t nWr = generator() % LEN;
+    for (size_t i = 0; i < nWr; i++)
+    {
+      cb.push(static_cast<cb_t>(i));
+    }
+    for (size_t i = 0; i < nWr; i++)
+    {
+      EXPECT_EQ(cb.peek(i), cb_t(i));
+    }
+    for (size_t i = 0; i < nWr; i++)
+    {
+      EXPECT_EQ(cb.pop(), cb_t(i));
+    }
+  }
+}
+TEST(circular_buffer_tests, RandomWriteManyAndPeek)
+{
+  constexpr size_t LEN = 20;
+  mrpt::containers::circular_buffer<cb_t> cb(LEN);
+  std::vector<cb_t> dum_buf;
+  std::mt19937_64 generator(12345);
+
+  for (size_t iter = 0; iter < 1000; iter++)
+  {
+    const size_t nWr = 1 + generator() % (LEN - 1);
+    dum_buf.resize(nWr);
+    cb.push_many(&dum_buf[0], nWr);
+    if (iter % 2)
+    {
+      for (size_t i = 0; i < nWr; i++) (void)cb.peek(i);
+    }
+    else
+    {
+      cb.peek_many(&dum_buf[0], nWr);
+    }
+    if (iter % 3)
+    {
+      for (size_t i = 0; i < nWr; i++) (void)cb.pop();
+    }
+    else
+    {
+      cb.pop_many(&dum_buf[0], nWr);
+    }
+  }
+}
+TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
+{
+  constexpr size_t LEN = 20;
+  mrpt::containers::circular_buffer<cb_t> cb(LEN);
+  std::mt19937_64 generator(12345);
+
+  for (size_t iter = 0; iter < 100; iter++)
+  {
+    const size_t nWr = generator() % LEN;
+    for (size_t i = 0; i < nWr; i++)
+    {
+      cb.push(static_cast<cb_t>(i));
+    }
+    for (unsigned k = 0; k < 5; k++)
+    {
+      EXPECT_ANY_THROW(cb.peek(nWr + k));
+    }
+    for (size_t i = 0; i < nWr; i++) (void)cb.pop();
+  }
+}
+
+TEST(circular_buffer_tests, Size)
+{
+  mrpt::containers::circular_buffer<cb_t> cb(10);
+  for (size_t i = 0; i < cb.capacity() - 1; i++)
+  {
+    cb.push(0);
+    EXPECT_EQ(cb.size(), i + 1);
+  }
+  EXPECT_ANY_THROW(cb.push(0));
+  for (size_t i = 0; i < cb.capacity() - 1; i++)
+  {
+    cb.pop();
+    EXPECT_EQ(cb.size(), cb.capacity() - 2 - i);
+  }
+}
+
+template <typename T>
+void impl_WritePeekCheck()
+{
+  constexpr T LEN = 20;
+  mrpt::containers::circular_buffer<T> cb(LEN + 1);
+
+  for (T i = 0; i < LEN; i++)
+  {
+    cb.push(i);
+  }
+
+  std::array<T, LEN> peek_vals{};
+  cb.peek_many(&peek_vals[0], LEN);
+
+  for (T i = 0; i < LEN; i++)
+  {
+    EXPECT_EQ(static_cast<int>(peek_vals[i]), static_cast<int>(i));
+  }
+}
+
+TEST(circular_buffer_tests, WritePeekCheck_uint8_t) { impl_WritePeekCheck<uint8_t>(); }
+TEST(circular_buffer_tests, WritePeekCheck_uint16_t) { impl_WritePeekCheck<uint16_t>(); }
+TEST(circular_buffer_tests, WritePeekCheck_uint32_t) { impl_WritePeekCheck<uint32_t>(); }
+TEST(circular_buffer_tests, WritePeekCheck_uint64_t) { impl_WritePeekCheck<uint64_t>(); }

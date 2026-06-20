@@ -1,4 +1,3 @@
-# Based on GTSAM file (by @ProfFan)
 name: CI macOS
 
 on: [push, pull_request]
@@ -7,62 +6,95 @@ jobs:
   build:
     name: ${{ matrix.name }} ${{ matrix.build_type }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 1
-      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
-      VERBOSE: 1  # to show all cmake scripts debug info
+      COLCON_HOME: ${{ github.workspace }}/.colcon
+      SCCACHE_GHA_ENABLED: "true"
 
     strategy:
       fail-fast: false
       matrix:
-        # Github Actions requires a single row to be added to the build matrix.
-        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
-        name: [
-          macOS-latest,
-        ]
-
-        build_type: [ Release ]
+        build_type: [Release]
         include:
-          - name: macos-latest
-            os: macos-latest
+          - name: macos-15-xcode-16
+            os: macos-15
             compiler: xcode
+            version: "16"
+            arch: arm64
 
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
+
+      - name: Select Xcode ${{ matrix.version }}
+        run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
 
       - name: Git submodule
         run: |
           git submodule sync
           git submodule update --init --recursive
 
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: Cache Homebrew downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: brew-${{ matrix.os }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
+          restore-keys: brew-${{ matrix.os }}-
+
       - name: Install Dependencies
         run: |
-          brew install cmake ninja
-          brew install nasm
-          brew install eigen
-          brew install opencv
-          brew install suite-sparse
-          brew ls suite-sparse
-          brew install assimp
+          brew install cmake ninja eigen assimp tinyxml2 zstd glfw googletest cli11
           echo "CC=clang" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
 
-      - name: CMake configure
+      - name: Install colcon
         run: |
-          cmake -DMRPT_BUILD_EXAMPLES=On \
-                -DMRPT_BUILD_TESTING=On \
-                -DMRPT_ALLOW_LGPLV3=ON \
-                -DCMAKE_VERBOSE_MAKEFILE=ON \
-                -H. -Bbuild
+          python3 -m venv .ci-venv
+          source .ci-venv/bin/activate
+          pip install colcon-common-extensions numpy
+          echo "${{ github.workspace }}/.ci-venv/bin" >> $GITHUB_PATH
 
-      - name: Unit tests
+      - name: Colcon Build
         run: |
-          make -C build tests_build_all
-          make test_legacy -C build -j1
+          colcon build \
+            --event-handlers console_direct+ \
+            --cmake-args \
+              -G Ninja \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DBUILD_TESTING=ON \
+              -DDISABLE_WXWIDGETS=ON \
+              -DMRPT_WITH_QT=OFF \
+              -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+              -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
 
-      - name: Build all
+      - name: Colcon Test
         run: |
-          make -C build
+          colcon test \
+            --event-handlers console_direct+ \
+            --return-code-on-test-failure
+
+      - name: Debug failing tests under lldb (on failure)
+        if: failure()
+        run: |
+          source .ci-venv/bin/activate
+          echo "=== lldb backtraces for failing test binaries ==="
+          # Only run lldb on known-failing tests to save time
+          for test_bin in \
+            build/mrpt_img/bin/test_mrpt_img \
+            build/mrpt_math/bin/test_mrpt_math; do
+            [ -x "$test_bin" ] || continue
+            echo ""
+            echo "===== $test_bin ====="
+            lldb \
+              -o "run" \
+              -o "bt all" \
+              -o "quit" \
+              -- "$test_bin" 2>&1 | head -120 || true
+          done

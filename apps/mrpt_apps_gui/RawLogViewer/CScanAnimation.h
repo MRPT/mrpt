@@ -1,0 +1,136 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#ifndef CSCANANIMATION_H
+#define CSCANANIMATION_H
+
+//(*Headers(CScanAnimation)
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/checklst.h>
+#include <wx/dialog.h>
+#include <wx/radiobut.h>
+#include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/spinctrl.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+
+#include "MyGLCanvas.h"
+//*)
+
+// The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
+//  See http://sourceforge.net/projects/wxmathplot
+#include <mrpt/3rdparty/mathplot/mathplot.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/viz/CPointCloudColoured.h>
+
+class CScanAnimation : public wxDialog
+{
+ public:
+  CScanAnimation(
+      wxWindow* parent,
+      wxWindowID id = wxID_ANY,
+      const wxPoint& pos = wxDefaultPosition,
+      const wxSize& size = wxDefaultSize);
+  ~CScanAnimation() override;
+
+  //(*Declarations(CScanAnimation)
+  wxButton* btnStop;
+  wxSlider* slPos;
+  wxSpinCtrl* edDelay;
+  wxStaticText* StaticText1;
+  wxStaticText* StaticText2;
+  wxStaticText* StaticText3;
+  wxButton* btnClose;
+  wxButton* btnJump;
+  wxSpinCtrl* edIndex;
+  wxCheckBox* cbViewOrtho;
+  wxButton* btnPlay;
+  CMyGLCanvas* m_plot3D;
+  wxTextCtrl* edTimestamp;
+  wxCheckListBox* lstObsLabels;
+  wxButton* btnVizOptions;
+  //*)
+
+ protected:
+  //(*Identifiers(CScanAnimation)
+  static const wxWindowID ID_LIST_OBS_LABELS;
+  static const wxWindowID ID_RADIOBUTTON2;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_STATICTEXT22;
+  static const wxWindowID ID_TEXTCTRL11;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_SPINCTRL2;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_XY_GLCANVAS;
+  static const wxWindowID ID_SLIDER1;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_SPINCTRL1;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_CHECKBOX2;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_BUTTON6;
+  static const wxWindowID ID_BUTTON7;
+  //*)
+  static const wxWindowID ID_BUTTON_SAVE_SCENE;
+
+ private:
+  //(*Handlers(CScanAnimation)
+  void OnbtnPlayClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStopClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event);
+  void OnslPosCmdScrollChanged([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnJumpClick([[maybe_unused]] wxCommandEvent& event);
+  void OnslPosCmdScroll(wxScrollEvent& event);
+  void OnbtnPickInputClick([[maybe_unused]] wxCommandEvent& event);
+  void OnInit(wxInitDialogEvent& event);
+  void OncbViewOrthoClick([[maybe_unused]] wxCommandEvent& event);
+  //*)
+
+  void OnbtnVizOptions([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSave3DScene([[maybe_unused]] wxCommandEvent& event);
+
+  DECLARE_EVENT_TABLE()
+
+  bool m_stop;
+
+  using sensor_label_t = std::string;
+  std::map<sensor_label_t, bool> m_visibleSensors;
+
+  struct TRenderObject
+  {
+    mrpt::system::TTimeStamp timestamp;
+    mrpt::viz::CVisualObject::Ptr obj;
+  };
+  using TListGlObjects = std::map<std::string, TRenderObject>;
+  /** All the observations added to the map. */
+  TListGlObjects m_gl_objects;
+
+  /// Get the rawlog entry (from cur. loaded rawlog), build and displays its
+  /// map:
+  /// \return true if the viz has been refreshed.
+  bool rebuild_view(bool forceRefreshView = false);
+
+  /// This method is called in any case for displaying a laser scan.
+  ///  We keep an internal list of recent scans so they don't vanish
+  ///  instantaneously.
+  /// \return true if the viz should be refreshed.
+  bool update_opengl_viz(const mrpt::obs::CSensoryFrame& sf);
+};
+
+#endif

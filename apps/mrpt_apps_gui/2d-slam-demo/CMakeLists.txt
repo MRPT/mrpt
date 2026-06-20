@@ -1,0 +1,46 @@
+#-----------------------------------------------------------------------------------------------
+# CMake file for MRPT app
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
+project(2d-slam-demo)
+
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
+
+# Dependencies
+find_package(mrpt_gui REQUIRED)
+find_package(mrpt_slam REQUIRED)
+find_package(CLI11 REQUIRED)
+# This app uses Eigen directly (mrpt::math::multiply_HCHt requires <Eigen/Dense>
+# in the calling translation unit):
+find_package(Eigen3 REQUIRED)
+mrpt_find_wxwidgets()
+if(NOT wxWidgets_FOUND)
+  message(STATUS "wxWidgets not found — skipping ${PROJECT_NAME}")
+  return()
+endif()
+
+# Define the executable target:
+mrpt_add_executable(
+  TARGET ${PROJECT_NAME}
+  SOURCES 
+    slamdemoApp.cpp
+    slamdemoApp.h
+    slamdemoMain.cpp
+    slamdemoMain.h
+    batch_experiments.cpp
+    CDlgParams.cpp
+    CDlgParams.h
+    CLogView.cpp
+    CLogView.h
+  LINK_LIBRARIES
+    mrpt::mrpt_gui
+    mrpt::mrpt_slam
+    CLI11::CLI11
+    wxWidgets::wxWidgets
+    Eigen3::Eigen
+)
+
+
+#AppStartMenuLink(${PROJECT_NAME} "2D KF-SLAM Simulator")   # Add link to the Start menu (in Windows Installable packages)

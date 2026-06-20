@@ -1,0 +1,93 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/gui/CDisplayWindow.h>
+
+#include <iostream>
+
+namespace
+{
+// ------------------------------------------------------
+//				TestFonts
+// ------------------------------------------------------
+void TestFonts()
+{
+  using namespace mrpt;
+  using namespace mrpt::gui;
+  using namespace mrpt::img;
+  using namespace std;
+
+  CImage img(400, 300);
+
+  img.filledRectangle({0, 0}, {400, 300}, TColor(0x50, 0x50, 0x50));
+
+  int y = 10;
+  img.selectTextFont("5x7");
+  img.textOut({10, y}, "Hello World! with font \"5x7\"", TColor::white());
+  y += 20;
+
+  img.selectTextFont("6x13");
+  img.textOut({10, y}, "Hello World! with font \"6x13\"", TColor::white());
+  y += 20;
+
+  img.selectTextFont("6x13B");
+  img.textOut({10, y}, "Hello World! with font \"6x13B\"", TColor::white());
+  y += 20;
+
+  img.selectTextFont("6x13O");
+  img.textOut({10, y}, "Hello World! with font \"6x13O\"", TColor::white());
+  y += 20;
+
+  img.selectTextFont("9x15");
+  img.textOut({10, y}, "Hello World! with font \"9x15\"", TColor::white());
+  y += 20;
+
+  img.selectTextFont("9x15B");
+  img.textOut({10, y}, "Hello World! with font \"9x15B\"", TColor::white());
+  y += 20;
+
+  img.selectTextFont("18x18ja");
+  img.textOut({10, y}, "MRPTのフォントは易しいです!", TColor::white());
+  y += 20;
+
+  img.selectTextFont("10x20");
+  img.textOut({10, y}, "Hello World! with font \"10x20\"", TColor::white());
+  y += 20;
+
+  CDisplayWindow win1("MRPT - Demo of text fonts render");
+  win1.setPos(10, 10);
+  win1.showImage(img);
+
+  std::cout << "Push a key in the console or in the window to continue...";
+  win1.waitForKey();
+  std::cout << "Done\n";
+}
+}  // namespace
+
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main()
+{
+  try
+  {
+    TestFonts();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+}

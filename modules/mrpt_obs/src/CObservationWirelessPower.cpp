@@ -1,0 +1,81 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/obs/CObservationWirelessPower.h>
+#include <mrpt/serialization/CArchive.h>
+
+using namespace mrpt::obs;
+using namespace mrpt::poses;
+
+// This must be added to any CSerializable class implementation file.
+IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation, mrpt::obs)
+
+uint8_t CObservationWirelessPower::serializeGetVersion() const { return 3; }
+void CObservationWirelessPower::serializeTo(mrpt::serialization::CArchive& out) const
+{
+  out << power << sensorLabel << timestamp << sensorPoseOnRobot;  // in v3
+}
+
+void CObservationWirelessPower::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+{
+  switch (version)
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    {
+      in >> power;
+      if (version >= 1)
+        in >> sensorLabel;
+      else
+        sensorLabel = "";
+
+      if (version >= 2)
+        in >> timestamp;
+      else
+        timestamp = INVALID_TIMESTAMP;
+
+      if (version >= 3)
+        in >> sensorPoseOnRobot;
+      else
+        sensorPoseOnRobot = CPose3D();
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  };
+}
+
+mrpt::poses::CPose3D CObservationWirelessPower::getSensorPose() const { return sensorPoseOnRobot; }
+
+void CObservationWirelessPower::setSensorPose(const CPose3D& newSensorPose)
+{
+  sensorPoseOnRobot = newSensorPose;
+}
+
+void CObservationWirelessPower::getDescriptionAsText(std::ostream& o) const
+{
+  CObservation::getDescriptionAsText(o);
+  o << mrpt::format("Measured Power: %.02f/100\n", power);
+}
+
+std::string CObservationWirelessPower::exportTxtHeader() const
+{
+  return mrpt::format("%18s", "POWER[0,100]");
+}
+std::string CObservationWirelessPower::exportTxtDataRow() const
+{
+  return mrpt::format("%18.5f ", power);
+}

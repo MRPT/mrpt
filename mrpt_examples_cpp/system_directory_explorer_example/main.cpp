@@ -1,0 +1,96 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/exceptions.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/filesystem.h>
+
+#include <iostream>
+#include <string>
+
+using namespace mrpt;
+using namespace mrpt::system;
+using namespace std;
+
+// ------------------------------------------------------
+//				TestDirExplorer
+// ------------------------------------------------------
+void TestDirExplorer()
+{
+  CDirectoryExplorer::TFileInfoList lst;
+
+  string path(mrpt::system::getcwd());
+  printf("Exploring path: %s\n", path.c_str());
+
+  CDirectoryExplorer::explore(path, FILE_ATTRIB_ARCHIVE | FILE_ATTRIB_DIRECTORY, lst);
+
+  printf("Found %zu files:\n", lst.size());
+
+  for (CDirectoryExplorer::TFileInfoList::iterator it = lst.begin(); it != lst.end(); ++it)
+  {
+    printf("name: %s\n", it->name.c_str());
+    printf("wholePath: %s\n", it->wholePath.c_str());
+    printf("isDir: %c\n", it->isDir ? 'Y' : 'N');
+    printf("size: %zu bytes\n", static_cast<size_t>(it->fileSize));
+    printf("-----------------------\n");
+  }
+}
+
+// ------------------------------------------------------
+//				TestFileNames
+// ------------------------------------------------------
+void TestFileNames()
+{
+  // Test extractFileName
+  string S;
+
+  S = "foo.bar";
+  std::cout << "file: " << S << " -> extractFileName : " << mrpt::system::extractFileName(S)
+            << "\n";
+
+  S = "foo.b";
+  std::cout << "file: " << S << " -> extractFileName : " << mrpt::system::extractFileName(S)
+            << "\n";
+
+  S = "foo.bardotbar.too";
+  std::cout << "file: " << S << " -> extractFileName : " << mrpt::system::extractFileName(S)
+            << "\n";
+
+  S = "foo";
+  std::cout << "file: " << S << " -> extractFileName : " << mrpt::system::extractFileName(S)
+            << "\n";
+
+  S = "foo.";
+  std::cout << "file: " << S << " -> extractFileName : " << mrpt::system::extractFileName(S)
+            << "\n";
+}
+
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main()
+{
+  try
+  {
+    TestDirExplorer();
+    TestFileNames();
+
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+}

@@ -1,0 +1,88 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/round.h>
+#include <mrpt/random.h>
+
+#include "common.h"
+
+using namespace mrpt;
+using namespace mrpt::math;
+using namespace mrpt::random;
+using namespace std;
+
+// ------------------------------------------------------
+//				Benchmark Misc. Math
+// ------------------------------------------------------
+double math_test_round([[maybe_unused]] int a1, [[maybe_unused]] int a2)
+{
+  const long N = 100000000;
+  CTicTac tictac;
+
+  int a;
+  double b = 2.3;
+  for (long i = 0; i < N; i++)
+  {
+    a = mrpt::round(b);
+  }
+  double T = tictac.Tac() / N;
+  dummy_do_nothing_with_string(mrpt::format("%i", a));
+  return T;
+}
+
+template <typename T, typename FUNC>
+double math_test_FUNC([[maybe_unused]] int a1, [[maybe_unused]] int a2, FUNC func)
+{
+  const long N = 100000000;
+  CTicTac tictac;
+
+  T x = 1.0, y = 2.0, r = .0;
+  tictac.Tic();
+  for (long i = 0; i < N; i++)
+  {
+    r = func(x, y);
+  }
+  double t = tictac.Tac() / N;
+  dummy_do_nothing_with_string(mrpt::format("%f", r));
+  return t;
+}
+
+// ------------------------------------------------------
+// register_tests_math
+// ------------------------------------------------------
+void register_tests_math()
+{
+  getRandomGenerator().randomize(1234);
+
+  lstTests.emplace_back("math: round", math_test_round);
+
+  using namespace std::placeholders;
+  lstTests.emplace_back(
+      "math: std::hypot(float)", [=](auto&& arg1, auto&& arg2)
+      { return math_test_FUNC<float, decltype(std::hypotf)>(arg1, arg2, std::hypotf); });
+  lstTests.emplace_back(
+      "math: mrpt::hypot_fast(float)",
+      [=](auto&& arg1, auto&& arg2)
+      {
+        return math_test_FUNC<float, decltype(mrpt::hypot_fast<float>)>(
+            arg1, arg2, mrpt::hypot_fast<float>);
+      });
+  lstTests.emplace_back(
+      "math: mrpt::hypot_fast(double)",
+      [=](auto&& arg1, auto&& arg2)
+      {
+        return math_test_FUNC<double, decltype(mrpt::hypot_fast<double>)>(
+            arg1, arg2, mrpt::hypot_fast<double>);
+      });
+}

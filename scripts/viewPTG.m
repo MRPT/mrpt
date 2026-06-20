@@ -17,11 +17,11 @@ assert(size(phis,1)==nTrajs);
 assert(size(ds,1)==nTrajs);
 
 % Draw paths:
-DECIM = 1;  % Decimation (dont draw all)
+decimation = 1;  % Decimation (dont draw all)
 
 figure(1);
 clf;
-for alpha=1:DECIM:nTrajs,
+for alpha=1:decimation:nTrajs,
   x=xs(alpha,:);
   y=ys(alpha,:);
   plot(x,y,'-k'); hold on; 

@@ -1,0 +1,155 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+/** \example rtti_example1/main.cpp */
+
+//! [example-define-class]
+#include <mrpt/rtti/CObject.h>
+
+#include <iostream>
+#include <memory>
+
+namespace MyNS
+{
+class Foo : public mrpt::rtti::CObject
+{
+ public:
+  Foo() {}
+  DEFINE_MRPT_OBJECT(Foo, MyNS)
+
+  void printName()
+  {
+    std::cout << "printName: Foo"
+              << "\n";
+  }
+};
+
+class BarBase : public mrpt::rtti::CObject
+{
+ public:
+  BarBase() {}
+  DEFINE_VIRTUAL_MRPT_OBJECT(BarBase, MyNS)
+
+  virtual void printName()
+  {
+    std::cout << "printName: BarBase"
+              << "\n";
+  }
+};
+
+class Bar : public BarBase
+{
+ public:
+  Bar() {}
+  DEFINE_MRPT_OBJECT(Bar, MyNS)
+
+  void printName() override
+  {
+    std::cout << "class: Bar"
+              << "\n";
+  }
+  void specificBarMethod()
+  {
+    std::cout << "specificBarMethod: reached."
+              << "\n";
+  }
+};
+}  // namespace MyNS
+
+IMPLEMENTS_MRPT_OBJECT(Foo, mrpt::rtti::CObject, MyNS)
+IMPLEMENTS_VIRTUAL_MRPT_OBJECT(BarBase, mrpt::rtti::CObject, MyNS)
+IMPLEMENTS_MRPT_OBJECT(Bar, MyNS::BarBase, MyNS)
+
+//! [example-define-class]
+
+//! [example-define-class-test]
+void Test_UserTypes()
+{
+  using namespace MyNS;
+  const auto id_foo = CLASS_ID(Foo);
+  std::cout << "RTTI Foo (static): " << id_foo->className << "\n";
+
+  // Pointers:
+  Bar::Ptr pBar = std::make_shared<Bar>();
+  BarBase::Ptr pBase = mrpt::ptr_cast<BarBase>::from(pBar);
+  mrpt::rtti::CObject::Ptr pObj = mrpt::ptr_cast<mrpt::rtti::CObject>::from(pBar);
+
+  pBar->printName();
+  pBase->printName();
+  std::cout << "Is Foo?   => " << (IS_DERIVED(*pObj, Foo) ? "Yes\n" : "No\n");
+  std::cout << "Is BarBase? => " << (IS_DERIVED(*pObj, BarBase) ? "Yes\n" : "No\n");
+  std::cout << "Is Bar?  => " << (IS_DERIVED(*pObj, Bar) ? "Yes\n" : "No\n");
+  if (IS_CLASS(*pObj, Bar))
+  {
+    auto pBar2 = mrpt::ptr_cast<Bar>::from(pObj);
+    pBar2->specificBarMethod();
+  }
+}
+
+//! [example-define-class-test]
+
+//! [example-factory]
+void do_register()
+{
+  // Register with explicit namespace:
+  mrpt::rtti::registerClass(CLASS_ID_NAMESPACE(Foo, MyNS));
+  {
+    // Register without explicit namespace:
+    using namespace MyNS;
+    mrpt::rtti::registerClass(CLASS_ID(BarBase));
+    mrpt::rtti::registerClass(CLASS_ID(Bar));
+    mrpt::rtti::registerClassCustomName("MyNS::Bar", CLASS_ID(Bar));
+  }
+}
+
+void Test_UserTypesFactory()
+{
+  do_register();
+
+  // Test register:
+  {
+    const auto& allClasses = mrpt::rtti::getAllRegisteredClasses();
+    for (const auto& cl : allClasses)
+    {
+      std::cout << "Known class: " << cl->className << ", children of "
+                << (cl->getBaseClass ? cl->getBaseClass()->className : "(none)") << "\n";
+    }
+  }
+
+  // Test factory:
+  {
+    mrpt::rtti::CObject::Ptr pObj = mrpt::rtti::classFactory("MyNS::Bar");
+    if (IS_CLASS(*pObj, MyNS::Bar))
+    {
+      auto pBar = mrpt::ptr_cast<MyNS::Bar>::from(pObj);
+      pBar->specificBarMethod();
+    }
+  }
+}
+
+//! [example-factory]
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
+{
+  try
+  {
+    Test_UserTypes();
+    Test_UserTypesFactory();
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+}

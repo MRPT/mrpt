@@ -1,0 +1,1354 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/StackAlloc.h>
+#include <mrpt/core/round.h>  // round()
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/serialization/CArchive.h>
+
+using namespace mrpt;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
+using namespace mrpt::math;
+using namespace mrpt::poses;
+using namespace std;
+
+/// Per-ray endpoint in world coordinates and cell indices.
+struct TLocalPoint
+{
+  float x{0}, y{0};
+  int cx{0}, cy{0};
+};
+
+bool COccupancyGridMap2D::internal_insertObservation(
+    const CObservation& obs, const std::optional<const mrpt::poses::CPose3D>& robotPose)
+{
+  // NOTE: we avoid MRPT_START/MRPT_END (try/catch) because alloca-based
+  // buffers must not cross exception boundaries.
+
+  static constexpr int FRBITS = 9;
+
+  CPose2D robotPose2D;
+  CPose3D robotPose3D;
+
+  // Invalidate the precomputed-likelihood cache:
+  m_likelihoodCacheOutDated = true;
+
+  if (robotPose)
+  {
+    robotPose2D = CPose2D(*robotPose);
+    robotPose3D = (*robotPose);
+  }
+  // else: default (0,0,0)
+
+  // The occupied and free probabilities:
+  const float maxCertainty = insertionOptions.maxOccupancyUpdateCertainty;
+  float maxFreeCertainty = insertionOptions.maxFreenessUpdateCertainty;
+  if (maxFreeCertainty == 0.0f)
+  {
+    maxFreeCertainty = maxCertainty;
+  }
+  float maxFreeCertaintyNoEcho = insertionOptions.maxFreenessInvalidRanges;
+  if (maxFreeCertaintyNoEcho == 0.0f)
+  {
+    maxFreeCertaintyNoEcho = maxCertainty;
+  }
+
+  cellType logodd_observation_free = std::max<cellType>(1, p2l(maxFreeCertainty));
+  cellType logodd_observation_occupied = 3 * std::max<cellType>(1, p2l(maxCertainty));
+  cellType logodd_noecho_free = std::max<cellType>(1, p2l(maxFreeCertaintyNoEcho));
+
+  // saturation limits:
+  cellType logodd_thres_occupied = OCCGRID_CELLTYPE_MIN + logodd_observation_occupied;
+  cellType logodd_thres_free =
+      OCCGRID_CELLTYPE_MAX - std::max(logodd_noecho_free, logodd_observation_free);
+
+  if (IS_CLASS(obs, CObservation2DRangeScan))
+  {
+    /********************************************************************
+
+          OBSERVATION TYPE: CObservation2DRangeScan
+
+      ********************************************************************/
+    const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
+    CPose3D sensorPose3D = robotPose3D + o.sensorPose;
+    CPose2D laserPose(sensorPose3D);
+
+    // Insert only HORIZONTAL scans, since the grid is supposed to
+    //  be a horizontal representation of space.
+    bool reallyInsert = o.isPlanarScan(insertionOptions.horizontalTolerance);
+    unsigned int decimation = insertionOptions.decimation;
+
+    // Check the altitude of the map (if feature enabled!)
+    if (insertionOptions.useMapAltitude &&
+        std::fabs(insertionOptions.mapAltitude - sensorPose3D.z()) > 0.001)
+    {
+      reallyInsert = false;
+    }
+
+    // Manage horizontal scans, but with the sensor bottom-up:
+    //  Use the z-axis direction of the transformed Z axis of the sensor
+    //  coordinates:
+    bool sensorIsBottomwards = sensorPose3D.getHomogeneousMatrixVal<CMatrixDouble44>()(2, 2) < 0;
+
+    if (reallyInsert)
+    {
+      // ---------------------------------------------
+      //		Insert the scan as simple rays:
+      // ---------------------------------------------
+      int cx, cy, N = static_cast<int>(o.getScanSize());
+      float A, dAK;
+
+      // Parameters values:
+      const float maxDistanceInsertion = insertionOptions.maxDistanceInsertion;
+      const bool invalidAsFree = insertionOptions.considerInvalidRangesAsFreeSpace;
+      float new_x_max, new_x_min;
+      float new_y_max, new_y_min;
+      float last_valid_range = maxDistanceInsertion;
+
+      int K = m_updateInfoChangeOnly.enabled ? m_updateInfoChangeOnly.laserRaysSkip : decimation;
+      size_t idx, nRanges = o.getScanSize();
+      float curRange = 0;
+
+      // Start position:
+      const float px = d2f(laserPose.x());
+      const float py = d2f(laserPose.y());
+
+#if defined(_DEBUG)
+      MRPT_CHECK_NORMAL_NUMBER(px);
+      MRPT_CHECK_NORMAL_NUMBER(py);
+#endif
+
+      // Here we go! Now really insert changes in the grid:
+      if (!insertionOptions.wideningBeamsWithDistance)
+      {
+        // Method: Simple rays:
+        // -------------------------------------
+
+        // Allocate scan endpoint buffers. The MRPT_STACK_ALLOC macro
+        // keeps the alloca() call in *this* stack frame (critical!)
+        // and falls back to heap for large scans:
+        MRPT_STACK_ALLOC(float, scanPoints_x_alloc, nRanges);
+        MRPT_STACK_ALLOC(float, scanPoints_y_alloc, nRanges);
+        auto* scanPoints_x = scanPoints_x_alloc.get();
+        auto* scanPoints_y = scanPoints_y_alloc.get();
+
+        if (o.rightToLeft ^ sensorIsBottomwards)
+        {
+          A = d2f(laserPose.phi() - 0.5f * o.aperture);
+          dAK = static_cast<float>(K) * o.aperture / static_cast<float>(N);
+        }
+        else
+        {
+          A = d2f(laserPose.phi() + 0.5f * o.aperture);
+          dAK = -static_cast<float>(K) * o.aperture / static_cast<float>(N);
+        }
+
+        new_x_max = -(numeric_limits<float>::max)();
+        new_x_min = (numeric_limits<float>::max)();
+        new_y_max = -(numeric_limits<float>::max)();
+        new_y_min = (numeric_limits<float>::max)();
+
+        // Compute scan endpoints. Use index-based access — pointer
+        // arithmetic with stride K was the source of a SEGFAULT when
+        // K > 1 caused out-of-bounds writes:
+        for (idx = 0; idx < nRanges; idx += K)
+        {
+          if (o.getScanRangeValidity(idx))
+          {
+            curRange = o.getScanRange(idx);
+            const float R = std::min(maxDistanceInsertion, curRange);
+
+            scanPoints_x[idx] = px + std::cos(A) * R;
+            scanPoints_y[idx] = py + std::sin(A) * R;
+            last_valid_range = curRange;
+          }
+          else
+          {
+            if (invalidAsFree)
+            {
+              const float R = std::min(maxDistanceInsertion, 0.5f * last_valid_range);
+              scanPoints_x[idx] = px + std::cos(A) * R;
+              scanPoints_y[idx] = py + std::sin(A) * R;
+            }
+            else
+            {
+              scanPoints_x[idx] = px;
+              scanPoints_y[idx] = py;
+            }
+          }
+          A += dAK;
+
+          // Adjust bounding box (will not change if not required):
+          new_x_max = max(new_x_max, scanPoints_x[idx]);
+          new_x_min = min(new_x_min, scanPoints_x[idx]);
+          new_y_max = max(new_y_max, scanPoints_y[idx]);
+          new_y_min = min(new_y_min, scanPoints_y[idx]);
+        }
+
+        // Add an extra margin:
+        const float securityMargin = 15 * m_resolution;
+
+        if (new_x_max > m_xMax - securityMargin)
+        {
+          new_x_max += 2 * securityMargin;
+        }
+        else
+        {
+          new_x_max = m_xMax;
+        }
+        if (new_x_min < m_xMin + securityMargin)
+        {
+          new_x_min -= 2;
+        }
+        else
+        {
+          new_x_min = m_xMin;
+        }
+
+        if (new_y_max > m_yMax - securityMargin)
+        {
+          new_y_max += 2 * securityMargin;
+        }
+        else
+        {
+          new_y_max = m_yMax;
+        }
+        if (new_y_min < m_yMin + securityMargin)
+        {
+          new_y_min -= 2;
+        }
+        else
+        {
+          new_y_min = m_yMin;
+        }
+
+        // -----------------------
+        //   Resize to make room:
+        // -----------------------
+        resizeGrid(new_x_min, new_x_max, new_y_min, new_y_max, 0.5);
+
+        // For updateCell_fast methods:
+        cellType* theMapArray = &m_map[0];
+        unsigned theMapSize_x = m_size_x;
+
+        int cx0 = x2idx(px);  // Remember: This must be after the resizeGrid!!
+        int cy0 = y2idx(py);
+
+        // Insert rays:
+        for (idx = 0; idx < nRanges; idx += K)
+        {
+          if (!o.getScanRangeValidity(idx) && !invalidAsFree)
+          {
+            continue;
+          }
+
+          // Starting position: Laser position
+          cx = cx0;
+          cy = cy0;
+
+          // Target, in cell indexes:
+          int trg_cx = x2idx(scanPoints_x[idx]);
+          int trg_cy = y2idx(scanPoints_y[idx]);
+
+          // The x> comparison implicitly holds if x<0
+          ASSERT_(
+              static_cast<unsigned int>(trg_cx) < m_size_x &&
+              static_cast<unsigned int>(trg_cy) < m_size_y);
+
+          // Use "fractional integers" to approximate float operations
+          //  during the ray tracing:
+          int Acx = trg_cx - cx;
+          int Acy = trg_cy - cy;
+
+          int Acx_ = std::abs(Acx);
+          int Acy_ = std::abs(Acy);
+
+          int nStepsRay = max(Acx_, Acy_);
+          if (!nStepsRay)
+          {
+            continue;  // May be...
+          }
+
+          // Integers store "float values * 128"
+          const float N_1 = 1.0f / static_cast<float>(nStepsRay);
+
+          // Increments at each raytracing step:
+          int frAcx = (Acx < 0 ? -1 : +1) * mrpt::round(static_cast<float>(Acx_ << FRBITS) * N_1);
+          int frAcy = (Acy < 0 ? -1 : +1) * mrpt::round(static_cast<float>(Acy_ << FRBITS) * N_1);
+
+          int frCX = cx << FRBITS;
+          int frCY = cy << FRBITS;
+          const auto logodd_free =
+              o.getScanRangeValidity(idx) ? logodd_observation_free : logodd_noecho_free;
+
+          for (int nStep = 0; nStep < nStepsRay; nStep++)
+          {
+            updateCell_fast_free(cx, cy, logodd_free, logodd_thres_free, theMapArray, theMapSize_x);
+
+            frCX += frAcx;
+            frCY += frAcy;
+
+            cx = frCX >> FRBITS;
+            cy = frCY >> FRBITS;
+          }
+
+          // And finally, the occupied cell at the end:
+          // Only if:
+          //  - It was a valid ray, and
+          //  - The ray was not truncated
+          if (o.getScanRangeValidity(idx) && o.getScanRange(idx) < maxDistanceInsertion)
+            updateCell_fast_occupied(
+                trg_cx, trg_cy, logodd_observation_occupied, logodd_thres_occupied, theMapArray,
+                theMapSize_x);
+
+        }  // End of each range
+
+      }  // end insert with simple rays
+      else
+      {
+        // ---------------------------------
+        //  		Widen rays
+        // Algorithm in: https://www.mrpt.org/Occupancy_Grids
+        // ---------------------------------
+        if (o.rightToLeft ^ sensorIsBottomwards)
+        {
+          A = d2f(laserPose.phi()) - 0.5f * o.aperture;
+          dAK = static_cast<float>(K) * o.aperture / static_cast<float>(N);
+        }
+        else
+        {
+          A = d2f(laserPose.phi()) + 0.5f * o.aperture;
+          dAK = -static_cast<float>(K) * o.aperture / static_cast<float>(N);
+        }
+
+        new_x_max = -(numeric_limits<float>::max)();
+        new_x_min = (numeric_limits<float>::max)();
+        new_y_max = -(numeric_limits<float>::max)();
+        new_y_min = (numeric_limits<float>::max)();
+
+        last_valid_range = maxDistanceInsertion;
+        for (idx = 0; idx < nRanges; idx += K)
+        {
+          float scanPoint_x, scanPoint_y;
+          if (o.getScanRangeValidity(idx))
+          {
+            curRange = o.getScanRange(idx);
+            float R = min(maxDistanceInsertion, curRange);
+
+            scanPoint_x = px + std::cos(A) * R;
+            scanPoint_y = py + std::sin(A) * R;
+            last_valid_range = curRange;
+          }
+          else
+          {
+            if (invalidAsFree)
+            {
+              float R = min(maxDistanceInsertion, 0.5f * last_valid_range);
+              scanPoint_x = px + std::cos(A) * R;
+              scanPoint_y = py + std::sin(A) * R;
+            }
+            else
+            {
+              scanPoint_x = px;
+              scanPoint_y = py;
+            }
+          }
+          A += dAK;
+
+          // Adjust bounding box (will not change if not required):
+          new_x_max = max(new_x_max, scanPoint_x);
+          new_x_min = min(new_x_min, scanPoint_x);
+          new_y_max = max(new_y_max, scanPoint_y);
+          new_y_min = min(new_y_min, scanPoint_y);
+        }
+
+        // Add an extra margin:
+        const float securityMargin = 15 * m_resolution;
+
+        if (new_x_max > m_xMax - securityMargin)
+        {
+          new_x_max += 2 * securityMargin;
+        }
+        else
+        {
+          new_x_max = m_xMax;
+        }
+        if (new_x_min < m_xMin + securityMargin)
+        {
+          new_x_min -= 2;
+        }
+        else
+        {
+          new_x_min = m_xMin;
+        }
+
+        if (new_y_max > m_yMax - securityMargin)
+        {
+          new_y_max += 2 * securityMargin;
+        }
+        else
+        {
+          new_y_max = m_yMax;
+        }
+        if (new_y_min < m_yMin + securityMargin)
+        {
+          new_y_min -= 2;
+        }
+        else
+        {
+          new_y_min = m_yMin;
+        }
+
+        // -----------------------
+        //   Resize to make room:
+        // -----------------------
+        resizeGrid(new_x_min, new_x_max, new_y_min, new_y_max, 0.5);
+
+        // For updateCell_fast methods:
+        cellType* theMapArray = &m_map[0];
+        unsigned theMapSize_x = m_size_x;
+
+        // int  cx0 = x2idx(px);		// Remember: This must be after
+        // the
+        // resizeGrid!!
+        // int  cy0 = y2idx(py);
+
+        // Now go and insert the triangles of each beam:
+        if (o.rightToLeft ^ sensorIsBottomwards)
+        {
+          A = d2f(laserPose.phi()) - 0.5f * o.aperture;
+          dAK = static_cast<float>(K) * o.aperture / static_cast<float>(N);
+        }
+        else
+        {
+          A = d2f(laserPose.phi()) + 0.5f * o.aperture;
+          dAK = -static_cast<float>(K) * o.aperture / static_cast<float>(N);
+        }
+
+        // Insert the rays:
+        // ------------------------------------------
+        // Vertices of the triangle: In meters
+        TLocalPoint P0, P1, P2, P1b;
+
+        last_valid_range = maxDistanceInsertion;
+
+        const float dA_2 = 0.5f * o.aperture / static_cast<float>(N);
+        for (idx = 0; idx < nRanges; idx += K, A += dAK)
+        {
+          float theR;  // The range of this beam
+          if (o.getScanRangeValidity(idx))
+          {
+            curRange = o.getScanRange(idx);
+            last_valid_range = curRange;
+            theR = min(maxDistanceInsertion, curRange);
+          }
+          else
+          {
+            // Invalid range:
+            if (invalidAsFree)
+            {
+              theR = min(maxDistanceInsertion, 0.5f * last_valid_range);
+            }
+            else
+            {
+              continue;  // Nothing to do
+            }
+          }
+          if (theR < m_resolution)
+          {
+            continue;  // Range must be larger than a cell...
+          }
+          theR -= m_resolution;  // Remove one cell of length, which
+          // will be filled with "occupied" later.
+
+          /* ---------------------------------------------------------
+            Fill one triangle with vertices: P0,P1,P2
+           ---------------------------------------------------------
+           */
+          P0.x = px;
+          P0.y = py;
+
+          P1.x = px + std::cos(A - dA_2) * theR;
+          P1.y = py + std::sin(A - dA_2) * theR;
+
+          P2.x = px + std::cos(A + dA_2) * theR;
+          P2.y = py + std::sin(A + dA_2) * theR;
+
+          // Order the vertices by the "y": P0->bottom, P2: top
+          if (P2.y < P1.y)
+          {
+            std::swap(P2, P1);
+          }
+          if (P2.y < P0.y)
+          {
+            std::swap(P2, P0);
+          }
+          if (P1.y < P0.y)
+          {
+            std::swap(P1, P0);
+          }
+
+          // In cell indexes:
+          P0.cx = x2idx(P0.x);
+          P0.cy = y2idx(P0.y);
+          P1.cx = x2idx(P1.x);
+          P1.cy = y2idx(P1.y);
+          P2.cx = x2idx(P2.x);
+          P2.cy = y2idx(P2.y);
+
+#if defined(_DEBUG)
+          // The x> comparison implicitly holds if x<0
+          ASSERT_(
+              static_cast<unsigned int>(P0.cx) < m_size_x &&
+              static_cast<unsigned int>(P0.cy) < m_size_y);
+          ASSERT_(
+              static_cast<unsigned int>(P1.cx) < m_size_x &&
+              static_cast<unsigned int>(P1.cy) < m_size_y);
+          ASSERT_(
+              static_cast<unsigned int>(P2.cx) < m_size_x &&
+              static_cast<unsigned int>(P2.cy) < m_size_y);
+#endif
+
+          struct
+          {
+            int frX, frY;
+            int cx, cy;
+          } R1, R2;  // Fractional coords of the two rays:
+
+          // Special case: one single row
+          if (P0.cy == P2.cy && P0.cy == P1.cy)
+          {
+            // Optimized case:
+            int min_cx = min3(P0.cx, P1.cx, P2.cx);
+            int max_cx = max3(P0.cx, P1.cx, P2.cx);
+
+            for (int ccx = min_cx; ccx <= max_cx; ccx++)
+              updateCell_fast_free(
+                  ccx, P0.cy, logodd_observation_free, logodd_thres_free, theMapArray,
+                  theMapSize_x);
+          }
+          else
+          {
+            // The intersection point P1b in the segment P0-P2 at
+            // the "y" of P1:
+            P1b.y = P1.y;
+            P1b.x = P0.x + (P1.y - P0.y) * (P2.x - P0.x) / (P2.y - P0.y);
+
+            P1b.cx = x2idx(P1b.x);
+            P1b.cy = y2idx(P1b.y);
+
+            // Use "fractional integers" to approximate float
+            // operations during the ray tracing:
+            // Integers store "float values * 128"
+            const int Acx01 = P1.cx - P0.cx;
+            const int Acy01 = P1.cy - P0.cy;
+            const int Acx01b = P1b.cx - P0.cx;
+            // const int Acy01b = P1b.cy - P0.cy;  // = Acy01
+
+            // Increments at each raytracing step:
+            const float inv_N_01 =
+                1.0f /
+                static_cast<float>(max3(std::abs(Acx01), std::abs(Acy01), std::abs(Acx01b)) + 1);
+            const int frAcx01 = mrpt::round(static_cast<float>(Acx01 << FRBITS) * inv_N_01);
+            const int frAcy01 = mrpt::round(static_cast<float>(Acy01 << FRBITS) * inv_N_01);
+            const int frAcx01b = mrpt::round(static_cast<float>(Acx01b << FRBITS) * inv_N_01);
+
+            // ------------------------------------
+            // First sub-triangle: P0-P1-P1b
+            // ------------------------------------
+            R1.cx = P0.cx;
+            R1.cy = P0.cy;
+            R1.frX = P0.cx << FRBITS;
+            R1.frY = P0.cy << FRBITS;
+
+            int frAx_R1 = 0, frAx_R2 = 0;  //, frAy_R2;
+            int frAy_R1 = frAcy01;
+
+            // Start R1=R2 = P0... unlesss P0.cy == P1.cy, i.e.
+            // there is only one row:
+            if (P0.cy != P1.cy)
+            {
+              R2 = R1;
+              //  R1 & R2 follow the edges: P0->P1  & P0->P1b
+              //  R1 is forced to be at the left hand:
+              if (P1.x < P1b.x)
+              {
+                // R1: P0->P1
+                frAx_R1 = frAcx01;
+                frAx_R2 = frAcx01b;
+              }
+              else
+              {
+                // R1: P0->P1b
+                frAx_R1 = frAcx01b;
+                frAx_R2 = frAcx01;
+              }
+            }
+            else
+            {
+              R2.cx = P1.cx;
+              R2.cy = P1.cy;
+              R2.frX = P1.cx << FRBITS;
+              // R2.frY = P1.cy << FRBITS;
+            }
+
+            int last_insert_cy = -1;
+            // int last_insert_cx = -1;
+            do
+            {
+              if (last_insert_cy != R1.cy)  // || last_insert_cx!=R1.cx)
+              {
+                last_insert_cy = R1.cy;
+                //	last_insert_cx = R1.cx;
+
+                for (int ccx = R1.cx; ccx <= R2.cx; ccx++)
+                  updateCell_fast_free(
+                      ccx, R1.cy, logodd_observation_free, logodd_thres_free, theMapArray,
+                      theMapSize_x);
+              }
+
+              R1.frX += frAx_R1;
+              R1.frY += frAy_R1;
+              R2.frX += frAx_R2;  // R1.frY += frAcy01;
+
+              R1.cx = R1.frX >> FRBITS;
+              R1.cy = R1.frY >> FRBITS;
+              R2.cx = R2.frX >> FRBITS;
+            } while (R1.cy < P1.cy);
+
+            // ------------------------------------
+            // Second sub-triangle: P1-P1b-P2
+            // ------------------------------------
+
+            // Use "fractional integers" to approximate float
+            // operations during the ray tracing:
+            // Integers store "float values * 128"
+            const int Acx12 = P2.cx - P1.cx;
+            const int Acy12 = P2.cy - P1.cy;
+            const int Acx1b2 = P2.cx - P1b.cx;
+            // const int Acy1b2 = Acy12
+
+            // Increments at each raytracing step:
+            const float inv_N_12 =
+                1.0f /
+                static_cast<float>(max3(std::abs(Acx12), std::abs(Acy12), std::abs(Acx1b2)) + 1);
+            const int frAcx12 = mrpt::round(static_cast<float>(Acx12 << FRBITS) * inv_N_12);
+            const int frAcy12 = mrpt::round(static_cast<float>(Acy12 << FRBITS) * inv_N_12);
+            const int frAcx1b2 = mrpt::round(static_cast<float>(Acx1b2 << FRBITS) * inv_N_12);
+
+            // R1, R2 follow edges P1->P2 & P1b->P2
+            // R1 forced to be at the left hand
+            frAy_R1 = frAcy12;
+            if (!frAy_R1)
+            {
+              frAy_R1 = 2 << FRBITS;  // If Ay=0, force >0 so the
+            }
+            // do...while loop below ends in ONE iteration.
+
+            if (P1.x < P1b.x)
+            {
+              // R1: P1->P2,  R2: P1b->P2
+              R1.cx = P1.cx;
+              R1.cy = P1.cy;
+              R2.cx = P1b.cx;
+              R2.cy = P1b.cy;
+              frAx_R1 = frAcx12;
+              frAx_R2 = frAcx1b2;
+            }
+            else
+            {
+              // R1: P1b->P2,  R2: P1->P2
+              R1.cx = P1b.cx;
+              R1.cy = P1b.cy;
+              R2.cx = P1.cx;
+              R2.cy = P1.cy;
+              frAx_R1 = frAcx1b2;
+              frAx_R2 = frAcx12;
+            }
+
+            R1.frX = R1.cx << FRBITS;
+            R1.frY = R1.cy << FRBITS;
+            R2.frX = R2.cx << FRBITS;
+            R2.frY = R2.cy << FRBITS;
+
+            last_insert_cy = -100;
+            // last_insert_cx=-100;
+
+            do
+            {
+              if (last_insert_cy != R1.cy)  // || last_insert_cx!=R1.cx)
+              {
+                //	last_insert_cx = R1.cx;
+                last_insert_cy = R1.cy;
+                for (int ccx = R1.cx; ccx <= R2.cx; ccx++)
+                  updateCell_fast_free(
+                      ccx, R1.cy, logodd_observation_free, logodd_thres_free, theMapArray,
+                      theMapSize_x);
+              }
+
+              R1.frX += frAx_R1;
+              R1.frY += frAy_R1;
+              R2.frX += frAx_R2;  // R1.frY += frAcy01;
+
+              R1.cx = R1.frX >> FRBITS;
+              R1.cy = R1.frY >> FRBITS;
+              R2.cx = R2.frX >> FRBITS;
+            } while (R1.cy <= P2.cy);
+
+          }  // end of free-area normal case (not a single row)
+
+          // ----------------------------------------------------
+          // The final occupied cells along the edge P1<->P2
+          // Only if:
+          //  - It was a valid ray, and
+          //  - The ray was not truncated
+          // ----------------------------------------------------
+          if (o.getScanRangeValidity(idx) && o.getScanRange(idx) < maxDistanceInsertion)
+          {
+            theR += m_resolution;
+
+            P1.x = px + std::cos(A - dA_2) * theR;
+            P1.y = py + std::sin(A - dA_2) * theR;
+
+            P2.x = px + std::cos(A + dA_2) * theR;
+            P2.y = py + std::sin(A + dA_2) * theR;
+
+            P1.cx = x2idx(P1.x);
+            P1.cy = y2idx(P1.y);
+            P2.cx = x2idx(P2.x);
+            P2.cy = y2idx(P2.y);
+
+#if defined(_DEBUG)
+            // The x> comparison implicitly holds if x<0
+            ASSERT_(
+                static_cast<unsigned int>(P1.cx) < m_size_x &&
+                static_cast<unsigned int>(P1.cy) < m_size_y);
+            ASSERT_(
+                static_cast<unsigned int>(P2.cx) < m_size_x &&
+                static_cast<unsigned int>(P2.cy) < m_size_y);
+#endif
+
+            // Special case: Only one cell:
+            if (P2.cx == P1.cx && P2.cy == P1.cy)
+            {
+              updateCell_fast_occupied(
+                  P1.cx, P1.cy, logodd_observation_occupied, logodd_thres_occupied, theMapArray,
+                  theMapSize_x);
+            }
+            else
+            {
+              // Use "fractional integers" to approximate float
+              // operations during the ray tracing:
+              // Integers store "float values * 128"
+              const int AcxE = P2.cx - P1.cx;
+              const int AcyE = P2.cy - P1.cy;
+
+              // Increments at each raytracing step:
+              const int nSteps = (max(std::abs(AcxE), std::abs(AcyE)) + 1);
+              const float inv_N_12 = 1.0f / static_cast<float>(nSteps);
+              const int frAcxE = mrpt::round(static_cast<float>(AcxE << FRBITS) * inv_N_12);
+              const int frAcyE = mrpt::round(static_cast<float>(AcyE << FRBITS) * inv_N_12);
+
+              R1.cx = P1.cx;
+              R1.cy = P1.cy;
+              R1.frX = R1.cx << FRBITS;
+              R1.frY = R1.cy << FRBITS;
+
+              for (int nStep = 0; nStep <= nSteps; nStep++)
+              {
+                updateCell_fast_occupied(
+                    R1.cx, R1.cy, logodd_observation_occupied, logodd_thres_occupied, theMapArray,
+                    theMapSize_x);
+
+                R1.frX += frAcxE;
+                R1.frY += frAcyE;
+                R1.cx = R1.frX >> FRBITS;
+                R1.cy = R1.frY >> FRBITS;
+              }
+
+            }  // end do a line
+
+          }  // end if we must set occupied cells
+
+        }  // End of each range
+
+      }  // end insert with beam widening
+
+      // Finished:
+      return true;
+    }
+    else
+    {
+      // A non-horizontal scan:
+      return false;
+    }
+  }
+  else if (IS_CLASS(obs, CObservationRange))
+  {
+    const auto& o = dynamic_cast<const CObservationRange&>(obs);
+    const CPose3D spose = o.getSensorPose();
+    CPose3D sensorPose3D = robotPose3D + spose;
+    CPose2D laserPose(sensorPose3D);
+
+    // Insert only HORIZONTAL scans, since the grid is supposed to
+    //  be a horizontal representation of space.
+    bool reallyInsert = true;
+    unsigned int decimation = insertionOptions.decimation;
+
+    // Check the altitude of the map (if feature enabled!)
+    if (insertionOptions.useMapAltitude &&
+        std::fabs(insertionOptions.mapAltitude - sensorPose3D.z()) > 0.001)
+    {
+      reallyInsert = false;
+    }
+    if (reallyInsert)
+    {
+      // ---------------------------------------------
+      //		Insert the scan as simple rays:
+      // ---------------------------------------------
+
+      // int		/*cx,cy,*/ N =  o.sensedData.size();
+      float px, py;
+      float A, dAK;
+
+      // Parameters values:
+      const float maxDistanceInsertion = insertionOptions.maxDistanceInsertion;
+      const bool invalidAsFree = insertionOptions.considerInvalidRangesAsFreeSpace;
+      float new_x_max, new_x_min;
+      float new_y_max, new_y_min;
+      float last_valid_range = maxDistanceInsertion;
+
+      int K = m_updateInfoChangeOnly.enabled ? m_updateInfoChangeOnly.laserRaysSkip : decimation;
+      size_t idx, nRanges = o.sensedData.size();
+      float curRange = 0;
+
+      // Start position:
+      px = d2f(laserPose.x());
+      py = d2f(laserPose.y());
+
+#if defined(_DEBUG)
+      MRPT_CHECK_NORMAL_NUMBER(px);
+      MRPT_CHECK_NORMAL_NUMBER(py);
+#endif
+      // ---------------------------------
+      //  		Widen rays
+      // Algorithm in: https://www.mrpt.org/Occupancy_Grids
+      // ---------------------------------
+      A = d2f(laserPose.phi());
+      dAK = 0;
+
+      new_x_max = -(numeric_limits<float>::max)();
+      new_x_min = (numeric_limits<float>::max)();
+      new_y_max = -(numeric_limits<float>::max)();
+      new_y_min = (numeric_limits<float>::max)();
+
+      last_valid_range = maxDistanceInsertion;
+
+      for (idx = 0; idx < nRanges; idx += K)
+      {
+        float scanPoint_x, scanPoint_y;
+        if (o.sensedData[idx].sensedDistance < maxDistanceInsertion)
+        {
+          curRange = o.sensedData[idx].sensedDistance;
+          float R = min(maxDistanceInsertion, curRange);
+
+          scanPoint_x = px + std::cos(A) * R;
+          scanPoint_y = py + std::sin(A) * R;
+          last_valid_range = curRange;
+        }
+        else
+        {
+          if (invalidAsFree)
+          {
+            float R = min(maxDistanceInsertion, 0.5f * last_valid_range);
+            scanPoint_x = px + std::cos(A) * R;
+            scanPoint_y = py + std::sin(A) * R;
+          }
+          else
+          {
+            scanPoint_x = px;
+            scanPoint_y = py;
+          }
+        }
+        A += dAK;
+
+        // Adjust bounding box:
+        new_x_max = max(new_x_max, scanPoint_x);
+        new_x_min = min(new_x_min, scanPoint_x);
+        new_y_max = max(new_y_max, scanPoint_y);
+        new_y_min = min(new_y_min, scanPoint_y);
+      }
+
+      // Add an extra margin:
+      const float securityMargin = 15 * m_resolution;
+
+      if (new_x_max > m_xMax - securityMargin)
+      {
+        new_x_max += 2 * securityMargin;
+      }
+      else
+      {
+        new_x_max = m_xMax;
+      }
+      if (new_x_min < m_xMin + securityMargin)
+      {
+        new_x_min -= 2;
+      }
+      else
+      {
+        new_x_min = m_xMin;
+      }
+
+      if (new_y_max > m_yMax - securityMargin)
+      {
+        new_y_max += 2 * securityMargin;
+      }
+      else
+      {
+        new_y_max = m_yMax;
+      }
+      if (new_y_min < m_yMin + securityMargin)
+      {
+        new_y_min -= 2;
+      }
+      else
+      {
+        new_y_min = m_yMin;
+      }
+
+      // -----------------------
+      //   Resize to make room:
+      // -----------------------
+      resizeGrid(new_x_min, new_x_max, new_y_min, new_y_max, 0.5);
+
+      // For updateCell_fast methods:
+      cellType* theMapArray = &m_map[0];
+      unsigned theMapSize_x = m_size_x;
+
+      // int  cx0 = x2idx(px);		// Remember: This must be after the
+      // resizeGrid!!
+      // int  cy0 = y2idx(py);
+
+      // Now go and insert the triangles of each beam:
+      // -----------------------------------------------
+      A = d2f(laserPose.phi()) - 0.5f * o.sensorConeAperture;
+      dAK = 0;
+
+      // Insert the rays:
+      // ------------------------------------------
+      // Vertices of the triangle: In meters
+      TLocalPoint P0, P1, P2, P1b;
+
+      last_valid_range = maxDistanceInsertion;
+
+      const float dA_2 = 0.5f * o.sensorConeAperture;
+      for (idx = 0; idx < nRanges; idx += K, A += dAK)
+      {
+        float theR;  // The range of this beam
+        if (o.sensedData[idx].sensedDistance < maxDistanceInsertion)
+        {
+          curRange = o.sensedData[idx].sensedDistance;
+          last_valid_range = curRange;
+          theR = min(maxDistanceInsertion, curRange);
+        }
+        else
+        {
+          // Invalid range:
+          if (invalidAsFree)
+          {
+            theR = min(maxDistanceInsertion, 0.5f * last_valid_range);
+          }
+          else
+          {
+            continue;  // Nothing to do
+          }
+        }
+        if (theR < m_resolution)
+        {
+          continue;  // Range must be larger than a cell...
+        }
+        theR -= m_resolution;  // Remove one cell of length, which will be
+        // filled with "occupied" later.
+
+        /* ---------------------------------------------------------
+            Fill one triangle with vertices: P0,P1,P2
+           --------------------------------------------------------- */
+        P0.x = px;
+        P0.y = py;
+
+        P1.x = px + std::cos(A - dA_2) * theR;
+        P1.y = py + std::sin(A - dA_2) * theR;
+
+        P2.x = px + std::cos(A + dA_2) * theR;
+        P2.y = py + std::sin(A + dA_2) * theR;
+
+        // Order the vertices by the "y": P0->bottom, P2: top
+        if (P2.y < P1.y)
+        {
+          std::swap(P2, P1);
+        }
+        if (P2.y < P0.y)
+        {
+          std::swap(P2, P0);
+        }
+        if (P1.y < P0.y)
+        {
+          std::swap(P1, P0);
+        }
+
+        // In cell indexes:
+        P0.cx = x2idx(P0.x);
+        P0.cy = y2idx(P0.y);
+        P1.cx = x2idx(P1.x);
+        P1.cy = y2idx(P1.y);
+        P2.cx = x2idx(P2.x);
+        P2.cy = y2idx(P2.y);
+
+#if defined(_DEBUG)
+        // The x> comparison implicitly holds if x<0
+        ASSERT_(
+            static_cast<unsigned int>(P0.cx) < m_size_x &&
+            static_cast<unsigned int>(P0.cy) < m_size_y);
+        ASSERT_(
+            static_cast<unsigned int>(P1.cx) < m_size_x &&
+            static_cast<unsigned int>(P1.cy) < m_size_y);
+        ASSERT_(
+            static_cast<unsigned int>(P2.cx) < m_size_x &&
+            static_cast<unsigned int>(P2.cy) < m_size_y);
+#endif
+
+        struct
+        {
+          int frX, frY;
+          int cx, cy;
+        } R1, R2;  // Fractional coords of the two rays:
+
+        // Special case: one single row
+        if (P0.cy == P2.cy && P0.cy == P1.cy)
+        {
+          // Optimized case:
+          int min_cx = min3(P0.cx, P1.cx, P2.cx);
+          int max_cx = max3(P0.cx, P1.cx, P2.cx);
+
+          for (int ccx = min_cx; ccx <= max_cx; ccx++)
+            updateCell_fast_free(
+                ccx, P0.cy, logodd_observation_free, logodd_thres_free, theMapArray, theMapSize_x);
+        }
+        else
+        {
+          // The intersection point P1b in the segment P0-P2 at the
+          // "y" of P1:
+          P1b.y = P1.y;
+          P1b.x = P0.x + (P1.y - P0.y) * (P2.x - P0.x) / (P2.y - P0.y);
+
+          P1b.cx = x2idx(P1b.x);
+          P1b.cy = y2idx(P1b.y);
+
+          // Use "fractional integers" to approximate float operations
+          // during the ray tracing:
+          // Integers store "float values * 128"
+          const int Acx01 = P1.cx - P0.cx;
+          const int Acy01 = P1.cy - P0.cy;
+          const int Acx01b = P1b.cx - P0.cx;
+          // const int Acy01b = P1b.cy - P0.cy;  // = Acy01
+
+          // Increments at each raytracing step:
+          const float inv_N_01 =
+              1.0f /
+              static_cast<float>(max3(std::abs(Acx01), std::abs(Acy01), std::abs(Acx01b)) + 1);
+          const int frAcx01 = mrpt::round(static_cast<float>(Acx01 << FRBITS) * inv_N_01);
+          const int frAcy01 = mrpt::round(static_cast<float>(Acy01 << FRBITS) * inv_N_01);
+          const int frAcx01b = mrpt::round(static_cast<float>(Acx01b << FRBITS) * inv_N_01);
+
+          // ------------------------------------
+          // First sub-triangle: P0-P1-P1b
+          // ------------------------------------
+          R1.cx = P0.cx;
+          R1.cy = P0.cy;
+          R1.frX = P0.cx << FRBITS;
+          R1.frY = P0.cy << FRBITS;
+
+          int frAx_R1 = 0, frAx_R2 = 0;  //, frAy_R2;
+          int frAy_R1 = frAcy01;
+
+          // Start R1=R2 = P0... unlesss P0.cy == P1.cy, i.e. there is
+          // only one row:
+          if (P0.cy != P1.cy)
+          {
+            R2 = R1;
+            //  R1 & R2 follow the edges: P0->P1  & P0->P1b
+            //  R1 is forced to be at the left hand:
+            if (P1.x < P1b.x)
+            {
+              // R1: P0->P1
+              frAx_R1 = frAcx01;
+              frAx_R2 = frAcx01b;
+            }
+            else
+            {
+              // R1: P0->P1b
+              frAx_R1 = frAcx01b;
+              frAx_R2 = frAcx01;
+            }
+          }
+          else
+          {
+            R2.cx = P1.cx;
+            R2.cy = P1.cy;
+            R2.frX = P1.cx << FRBITS;
+            // R2.frY = P1.cy <<FRBITS;
+          }
+          int last_insert_cy = -1;
+          // int last_insert_cx = -1;
+          do
+          {
+            if (last_insert_cy != R1.cy)  // || last_insert_cx!=R1.cx)
+            {
+              last_insert_cy = R1.cy;
+              //	last_insert_cx = R1.cx;
+
+              for (int ccx = R1.cx; ccx <= R2.cx; ccx++)
+                updateCell_fast_free(
+                    ccx, R1.cy, logodd_observation_free, logodd_thres_free, theMapArray,
+                    theMapSize_x);
+            }
+
+            R1.frX += frAx_R1;
+            R1.frY += frAy_R1;
+            R2.frX += frAx_R2;  // R1.frY += frAcy01;
+
+            R1.cx = R1.frX >> FRBITS;
+            R1.cy = R1.frY >> FRBITS;
+            R2.cx = R2.frX >> FRBITS;
+          } while (R1.cy < P1.cy);
+          // ------------------------------------
+          // Second sub-triangle: P1-P1b-P2
+          // ------------------------------------
+
+          // Use "fractional integers" to approximate float operations
+          // during the ray tracing:
+          // Integers store "float values * 128"
+          const int Acx12 = P2.cx - P1.cx;
+          const int Acy12 = P2.cy - P1.cy;
+          const int Acx1b2 = P2.cx - P1b.cx;
+          // const int Acy1b2 = Acy12
+
+          // Increments at each raytracing step:
+          const float inv_N_12 =
+              1.0f /
+              static_cast<float>(max3(std::abs(Acx12), std::abs(Acy12), std::abs(Acx1b2)) + 1);
+          const int frAcx12 = mrpt::round(static_cast<float>(Acx12 << FRBITS) * inv_N_12);
+          const int frAcy12 = mrpt::round(static_cast<float>(Acy12 << FRBITS) * inv_N_12);
+          const int frAcx1b2 = mrpt::round(static_cast<float>(Acx1b2 << FRBITS) * inv_N_12);
+
+          // R1, R2 follow edges P1->P2 & P1b->P2
+          // R1 forced to be at the left hand
+          frAy_R1 = frAcy12;
+          if (!frAy_R1)
+          {
+            frAy_R1 = 2 << FRBITS;  // If Ay=0, force >0 so do...while ends in one step.
+          }
+
+          if (P1.x < P1b.x)
+          {
+            // R1: P1->P2,  R2: P1b->P2
+            R1.cx = P1.cx;
+            R1.cy = P1.cy;
+            R2.cx = P1b.cx;
+            R2.cy = P1b.cy;
+            frAx_R1 = frAcx12;
+            frAx_R2 = frAcx1b2;
+          }
+          else
+          {
+            // R1: P1b->P2,  R2: P1->P2
+            R1.cx = P1b.cx;
+            R1.cy = P1b.cy;
+            R2.cx = P1.cx;
+            R2.cy = P1.cy;
+            frAx_R1 = frAcx1b2;
+            frAx_R2 = frAcx12;
+          }
+
+          R1.frX = R1.cx << FRBITS;
+          R1.frY = R1.cy << FRBITS;
+          R2.frX = R2.cx << FRBITS;
+          R2.frY = R2.cy << FRBITS;
+
+          last_insert_cy = -100;
+          // last_insert_cx=-100;
+
+          do
+          {
+            if (last_insert_cy != R1.cy)  // || last_insert_cx!=R1.cx)
+            {
+              //	last_insert_cx = R1.cx;
+              last_insert_cy = R1.cy;
+              for (int ccx = R1.cx; ccx <= R2.cx; ccx++)
+                updateCell_fast_free(
+                    ccx, R1.cy, logodd_observation_free, logodd_thres_free, theMapArray,
+                    theMapSize_x);
+            }
+
+            R1.frX += frAx_R1;
+            R1.frY += frAy_R1;
+            R2.frX += frAx_R2;  // R1.frY += frAcy01;
+
+            R1.cx = R1.frX >> FRBITS;
+            R1.cy = R1.frY >> FRBITS;
+            R2.cx = R2.frX >> FRBITS;
+          } while (R1.cy <= P2.cy);
+
+        }  // end of free-area normal case (not a single row)
+
+        // ----------------------------------------------------
+        // The final occupied cells along the edge P1<->P2
+        // Only if:
+        //  - It was a valid ray, and
+        //  - The ray was not truncated
+        // ----------------------------------------------------
+        if (o.sensedData[idx].sensedDistance < maxDistanceInsertion)
+        {
+          theR += m_resolution;
+
+          P1.x = px + std::cos(A - dA_2) * theR;
+          P1.y = py + std::sin(A - dA_2) * theR;
+
+          P2.x = px + std::cos(A + dA_2) * theR;
+          P2.y = py + std::sin(A + dA_2) * theR;
+
+          P1.cx = x2idx(P1.x);
+          P1.cy = y2idx(P1.y);
+          P2.cx = x2idx(P2.x);
+          P2.cy = y2idx(P2.y);
+
+#if defined(_DEBUG)
+          // The x> comparison implicitly holds if x<0
+          ASSERT_(
+              static_cast<unsigned int>(P1.cx) < m_size_x &&
+              static_cast<unsigned int>(P1.cy) < m_size_y);
+          ASSERT_(
+              static_cast<unsigned int>(P2.cx) < m_size_x &&
+              static_cast<unsigned int>(P2.cy) < m_size_y);
+#endif
+
+          // Special case: Only one cell:
+          if (P2.cx == P1.cx && P2.cy == P1.cy)
+          {
+            updateCell_fast_occupied(
+                P1.cx, P1.cy, logodd_observation_occupied, logodd_thres_occupied, theMapArray,
+                theMapSize_x);
+          }
+          else
+          {
+            // Use "fractional integers" to approximate float
+            // operations during the ray tracing:
+            // Integers store "float values * 128"
+            const int AcxE = P2.cx - P1.cx;
+            const int AcyE = P2.cy - P1.cy;
+
+            // Increments at each raytracing step:
+            const int nSteps = (max(std::abs(AcxE), std::abs(AcyE)) + 1);
+            const float inv_N_12 = 1.0f / static_cast<float>(nSteps);
+            const int frAcxE = mrpt::round(static_cast<float>(AcxE << FRBITS) * inv_N_12);
+            const int frAcyE = mrpt::round(static_cast<float>(AcyE << FRBITS) * inv_N_12);
+
+            R1.cx = P1.cx;
+            R1.cy = P1.cy;
+            R1.frX = R1.cx << FRBITS;
+            R1.frY = R1.cy << FRBITS;
+
+            for (int nStep = 0; nStep <= nSteps; nStep++)
+            {
+              updateCell_fast_occupied(
+                  R1.cx, R1.cy, logodd_observation_occupied, logodd_thres_occupied, theMapArray,
+                  theMapSize_x);
+
+              R1.frX += frAcxE;
+              R1.frY += frAcyE;
+              R1.cx = R1.frX >> FRBITS;
+              R1.cy = R1.frY >> FRBITS;
+            }
+
+          }  // end do a line
+
+        }  // end if we must set occupied cells
+
+      }  // End of each range
+
+      return true;
+    }  // end reallyInsert
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    /********************************************************************
+        OBSERVATION TYPE: Unknown
+    ********************************************************************/
+    return false;
+  }
+
+  //	MRPT_END
+}
+
+void COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
+    const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
+{
+  MRPT_LOAD_CONFIG_VAR(mapAltitude, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(maxDistanceInsertion, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(maxOccupancyUpdateCertainty, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(maxFreenessUpdateCertainty, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(maxFreenessInvalidRanges, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(useMapAltitude, bool, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(considerInvalidRangesAsFreeSpace, bool, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR_CAST(decimation, int, uint16_t, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR_DEGREESf(horizontalTolerance, iniFile, section);
+
+  MRPT_LOAD_CONFIG_VAR(CFD_features_gaussian_size, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(CFD_features_median_size, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(wideningBeamsWithDistance, bool, iniFile, section);
+}
+
+void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(std::ostream& out) const
+{
+  out << "\n----------- [COccupancyGridMap2D::TInsertionOptions] "
+         "------------ "
+         "\n\n";
+
+  LOADABLEOPTS_DUMP_VAR(mapAltitude, float)
+  LOADABLEOPTS_DUMP_VAR(maxDistanceInsertion, float)
+  LOADABLEOPTS_DUMP_VAR(maxOccupancyUpdateCertainty, float)
+  LOADABLEOPTS_DUMP_VAR(maxFreenessUpdateCertainty, float)
+  LOADABLEOPTS_DUMP_VAR(maxFreenessInvalidRanges, float)
+  LOADABLEOPTS_DUMP_VAR(useMapAltitude, bool)
+  LOADABLEOPTS_DUMP_VAR(considerInvalidRangesAsFreeSpace, bool)
+  LOADABLEOPTS_DUMP_VAR(decimation, int)
+  LOADABLEOPTS_DUMP_VAR(horizontalTolerance, float)
+  LOADABLEOPTS_DUMP_VAR(CFD_features_gaussian_size, float)
+  LOADABLEOPTS_DUMP_VAR(CFD_features_median_size, float)
+  LOADABLEOPTS_DUMP_VAR(wideningBeamsWithDistance, bool)
+
+  out << "\n";
+}
+
+void COccupancyGridMap2D::OnPostSuccesfulInsertObs(const mrpt::obs::CObservation&)
+{
+  m_is_empty = false;
+}

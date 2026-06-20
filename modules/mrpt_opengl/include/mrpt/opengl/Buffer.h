@@ -1,0 +1,151 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/containers/NonCopiableData.h>
+#include <mrpt/core/lock_helper.h>
+
+#include <mutex>
+#include <thread>
+
+namespace mrpt::opengl
+{
+/** A wrapper for an OpenGL buffer object (eg Vertex Buffer Object or VBO)
+ * Refer to docs for glGenBuffers() and glBufferData().
+ *
+ * \sa FrameBuffer
+ * \ingroup mrpt_opengl_grp
+ * \note OpenGL Buffer Objects *can* be shared among threads.
+ */
+class Buffer
+{
+ public:
+  enum class Type : uint16_t
+  {
+    Vertex = 0x8892,        // GL_ARRAY_BUFFER (Default)
+    ElementIndex = 0x8893,  // GL_ELEMENT_ARRAY_BUFFER
+    PixelPack = 0x88EB,     // GL_PIXEL_PACK_BUFFER
+    PixelUnpack = 0x88EC    // GL_PIXEL_UNPACK_BUFFER
+  };
+
+  enum class Usage : uint16_t
+  {
+    StreamDraw = 0x88E0,   // GL_STREAM_DRAW
+    StreamRead = 0x88E1,   // GL_STREAM_READ
+    StreamCopy = 0x88E2,   // GL_STREAM_COPY
+    StaticDraw = 0x88E4,   // GL_STATIC_DRAW (Default)
+    StaticRead = 0x88E5,   // GL_STATIC_READ
+    StaticCopy = 0x88E6,   // GL_STATIC_COPY
+    DynamicDraw = 0x88E8,  // GL_DYNAMIC_DRAW
+    DynamicRead = 0x88E9,  // GL_DYNAMIC_READ
+    DynamicCopy = 0x88EA   // GL_DYNAMIC_COPY
+  };
+
+  explicit Buffer(Type type);
+  Buffer() : Buffer(Type::Vertex) {}
+  ~Buffer() = default;
+
+  [[nodiscard]] Type type() const
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    return m_impl.type;
+  }
+
+  [[nodiscard]] Usage usage() const
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    return m_impl.usage;
+  }
+  void setUsage(const Usage u)
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.usage = u;
+  }
+
+  /** Calls create() only if the buffer has not been created yet. */
+  void createOnce()
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    if (!m_impl.created)
+    {
+      m_impl.create();
+    }
+  }
+  [[nodiscard]] bool initialized() const
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    return m_impl.created;
+  }
+
+  /** Automatically called upon destructor, no need for the user to call it in
+   * normal situations. */
+  void destroy()
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.destroy();
+  }
+
+  void bind()
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.bind();
+  }
+  void unbind()
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.unbind();
+  }
+
+  [[nodiscard]] unsigned int bufferId() const
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    return m_impl.buffer_id;
+  }
+
+  /** Reserves byteCount bytes in the buffer and copy to it the provided data.
+   * create() and bind() must be called before using this method.
+   */
+  void allocate(const void* data, int byteCount)
+  {
+    auto lck = mrpt::lockHelper(m_implMtx.data);
+    m_impl.allocate(data, byteCount);
+  }
+
+ private:
+  struct RAII_Impl
+  {
+    RAII_Impl(Buffer::Type t);
+    ~RAII_Impl();
+
+    Buffer::Type type;
+    Buffer::Usage usage = Buffer::Usage::StaticDraw;
+
+    void create();
+    void destroy();
+    void bind();
+    void unbind();
+    void allocate(const void* data, int byteCount);
+
+    bool created = false;
+    unsigned int buffer_id = 0;
+    std::thread::id created_from;
+  };
+  RAII_Impl m_impl;
+  mrpt::containers::NonCopiableData<std::mutex> m_implMtx;
+};
+
+// For use in glVertexAttribPointer()
+#define BUFFER_OFFSET(offset) (reinterpret_cast<GLvoid*>(offset))
+
+}  // namespace mrpt::opengl

@@ -51,7 +51,7 @@ mrpt::comms::net::http_get() is an easy way to GET an HTTP resource from any C++
 program. You can also use mrpt::comms::net::http_request() to access APIs
 requiring the POST method.
 
-See: \ref comms_http_client/test.cpp
-\snippet comms_http_client/test.cpp example-http-get
+See: \ref comms_http_client/main.cpp
+\snippet comms_http_client/main.cpp example-http-get
 
 # Library contents

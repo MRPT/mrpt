@@ -1,0 +1,70 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include "ptgConfiguratorApp.h"
+
+//(*AppHeaders
+#include <wx/image.h>
+
+#include "ptgConfiguratorMain.h"
+//*)
+#include <mrpt/core/config.h>  // MRPT_OS_*()
+#include <mrpt/system/os.h>
+#include <wx/cmdline.h>
+
+IMPLEMENT_APP(ptgConfiguratorApp)
+
+bool ptgConfiguratorApp::OnInit()
+{
+  // Starting in wxWidgets 2.9.0, we must reset numerics locale to "C",
+  //  if we want numbers to use "." in all countries. The App::OnInit() is a
+  //  perfect place to undo
+  //  the default wxWidgets settings. (JL @ Sep-2009)
+  wxSetlocale(LC_NUMERIC, wxString("C"));
+  static const wxCmdLineEntryDesc cmdLineDesc[] = {
+#ifdef MRPT_OS_LINUX
+      {wxCMD_LINE_OPTION,     "l",        "load",                                    "load a library",wxCMD_LINE_VAL_STRING, 0                                                                                                                         },
+#endif
+      {wxCMD_LINE_OPTION,     "i",         "ini",                                  "INI file to load", wxCMD_LINE_VAL_STRING, 0},
+      {wxCMD_LINE_OPTION,     "s", "ini-section", "INI file section to load (default=\"PTG_PARAMS\")",
+                          wxCMD_LINE_VAL_STRING, 0                                                                                                },
+      {  wxCMD_LINE_NONE, nullptr,       nullptr,                                             nullptr,   wxCMD_LINE_VAL_NONE, 0}
+  };
+
+  wxCmdLineParser parser(cmdLineDesc, argc, argv);
+  parser.Parse(true);
+  wxString libraryPath;
+  if (parser.Found("l", &libraryPath)) mrpt::system::loadPluginModules(libraryPath.ToStdString());
+
+  bool wxsOK = true;
+  wxInitAllImageHandlers();
+  if (wxsOK)
+  {
+    auto* Frame = new ptgConfiguratorframe(nullptr);
+    Frame->Show();
+    SetTopWindow(Frame);
+
+    wxString iniFilePath;
+    if (parser.Found("i", &iniFilePath))
+    {
+      Frame->getCfgBox()->LoadFile(iniFilePath);
+      Frame->m_disableLoadDefaultParams = true;
+    }
+
+    wxString iniSection;
+    if (parser.Found("s", &iniSection)) Frame->m_cfgFileSection = iniSection.ToStdString();
+  }
+
+  return wxsOK;
+}

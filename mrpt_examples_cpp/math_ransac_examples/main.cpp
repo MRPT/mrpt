@@ -1,0 +1,251 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/containers/copy_container_typecasting.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/math/ransac_applications.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/CTexturedPlane.h>
+#include <mrpt/viz/stock_objects.h>
+
+#include <iostream>
+
+using namespace mrpt;
+using namespace mrpt::gui;
+using namespace mrpt::math;
+using namespace mrpt::random;
+using namespace mrpt::poses;
+using namespace mrpt::system;
+using namespace std;
+
+mrpt::gui::CDisplayWindow3D::Ptr win;
+
+// ------------------------------------------------------
+//				TestRANSACPlanes
+// ------------------------------------------------------
+void TestRANSACPlanes()
+{
+  getRandomGenerator().randomize();
+
+  // Generate random points:
+  // ------------------------------------
+  const size_t N_PLANES = 3;
+
+  const size_t N_plane = 300;
+  const size_t N_noise = 300;
+
+  const double PLANE_EQ[N_PLANES][4] = {
+      {1,   -1, 1, -2},
+      {1, +1.5, 1, -1},
+      {0,   -1, 1, +2}
+  };
+
+  CVectorDouble xs, ys, zs;
+  for (size_t p = 0; p < N_PLANES; p++)
+  {
+    for (size_t i = 0; i < N_plane; i++)
+    {
+      const double xx =
+          getRandomGenerator().drawUniform(-3, 3) + 5 * cos(0.4 * static_cast<double>(p));
+      const double yy =
+          getRandomGenerator().drawUniform(-3, 3) + 5 * sin(0.4 * static_cast<double>(p));
+      const double zz =
+          -(PLANE_EQ[p][3] + PLANE_EQ[p][0] * xx + PLANE_EQ[p][1] * yy) / PLANE_EQ[p][2];
+      xs.push_back(xx);
+      ys.push_back(yy);
+      zs.push_back(zz);
+    }
+  }
+
+  for (size_t i = 0; i < N_noise; i++)
+  {
+    xs.push_back(getRandomGenerator().drawUniform(-7, 7));
+    ys.push_back(getRandomGenerator().drawUniform(-7, 7));
+    zs.push_back(getRandomGenerator().drawUniform(-7, 7));
+  }
+
+  // Run RANSAC
+  // ------------------------------------
+  vector<pair<size_t, TPlane>> detectedPlanes;
+  const double DIST_THRESHOLD = 0.05;
+
+  CTicTac tictac;
+
+  ransac_detect_3D_planes(xs, ys, zs, detectedPlanes, DIST_THRESHOLD, 40);
+
+  // Display output:
+  std::cout << "RANSAC method: ransac_detect_3D_planes"
+            << "\n";
+  std::cout << " Computation time: " << tictac.Tac() * 1000.0 << " ms"
+            << "\n";
+  std::cout << " " << detectedPlanes.size() << " planes detected."
+            << "\n";
+
+  // Show GUI
+  // --------------------------
+  win = mrpt::gui::CDisplayWindow3D::Create("RANSAC: 3D planes", 500, 500);
+
+  viz::Scene::Ptr scene = viz::Scene::Create();
+
+  scene->insert(viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1));
+  scene->insert(viz::stock_objects::CornerXYZ());
+
+  for (vector<pair<size_t, TPlane>>::iterator p = detectedPlanes.begin(); p != detectedPlanes.end();
+       ++p)
+  {
+    auto glPlane = viz::CTexturedPlane::Create(-10, 10, -10, 10);
+
+    TPose3D glPlanePose;
+    p->second.getAsPose3D(glPlanePose);
+    glPlane->setPose(glPlanePose);
+
+    glPlane->setColor(
+        getRandomGenerator().drawUniform<float>(0, 1),
+        getRandomGenerator().drawUniform<float>(0, 1),
+        getRandomGenerator().drawUniform<float>(0, 1), 0.6f);
+
+    scene->insert(glPlane);
+  }
+
+  {
+    auto points = viz::CPointCloud::Create();
+    points->setColor(0, 0, 1);
+    points->setPointSize(3);
+    points->enableColorFromZ();
+
+    // Convert double -> float:
+    vector<float> xsf, ysf, zsf;
+    mrpt::containers::copy_container_typecasting(xs, xsf);
+    mrpt::containers::copy_container_typecasting(ys, ysf);
+    mrpt::containers::copy_container_typecasting(zs, zsf);
+
+    points->setAllPoints(xsf, ysf, zsf);
+
+    scene->insert(points);
+  }
+
+  win->get3DSceneAndLock() = scene;
+  win->unlockAccess3DScene();
+  win->forceRepaint();
+
+  win->waitForKey();
+}
+
+// ------------------------------------------------------
+//				TestRANSACLines
+// ------------------------------------------------------
+void TestRANSACLines()
+{
+  getRandomGenerator().randomize();
+
+  // Generate random points in 2D
+  // ------------------------------------
+  const size_t N_LINES = 4;
+
+  const size_t N_line = 30;
+  const size_t N_noise = 50;
+
+  const double LINE_EQ[N_LINES][3] = {
+      {  1,   -1, -2},
+      {  1, +1.5, -1},
+      {  0,   -1, +2},
+      {0.5, -0.3, +1}
+  };
+
+  CVectorDouble xs, ys;
+  for (size_t p = 0; p < N_LINES; p++)
+  {
+    for (size_t i = 0; i < N_line; i++)
+    {
+      const double xx = getRandomGenerator().drawUniform(-10, 10);
+      const double yy = getRandomGenerator().drawGaussian1D(0, 0.05) -
+                        (LINE_EQ[p][2] + LINE_EQ[p][0] * xx) / LINE_EQ[p][1];
+      xs.push_back(xx);
+      ys.push_back(yy);
+    }
+  }
+
+  for (size_t i = 0; i < N_noise; i++)
+  {
+    xs.push_back(getRandomGenerator().drawUniform(-15, 15));
+    ys.push_back(getRandomGenerator().drawUniform(-15, 15));
+  }
+
+  // Run RANSAC
+  // ------------------------------------
+  vector<pair<size_t, TLine2D>> detectedLines;
+  const double DIST_THRESHOLD = 0.2;
+
+  CTicTac tictac;
+
+  ransac_detect_2D_lines(xs, ys, detectedLines, DIST_THRESHOLD, 20);
+
+  // Display output:
+  std::cout << "RANSAC method: ransac_detect_2D_lines"
+            << "\n";
+  std::cout << " Computation time: " << tictac.Tac() * 1000.0 << " ms"
+            << "\n";
+  std::cout << " " << detectedLines.size() << " lines detected."
+            << "\n";
+
+  // Show GUI
+  // --------------------------
+  mrpt::gui::CDisplayWindowPlots win2("Set of points", 500, 500);
+
+  win2.plot(xs, ys, ".b4", "points");
+
+  unsigned int n = 0;
+  for (vector<pair<size_t, TLine2D>>::iterator p = detectedLines.begin(); p != detectedLines.end();
+       ++p)
+  {
+    CVectorDouble lx(2), ly(2);
+    lx[0] = -15;
+    lx[1] = 15;
+    for (CVectorDouble::Index q = 0; q < lx.size(); q++)
+      ly[q] = -(p->second.coefs[2] + p->second.coefs[0] * lx[q]) / p->second.coefs[1];
+    win2.plot(lx, ly, "r-1", mrpt::format("line_%u", n++));
+  }
+
+  win2.axis_fit();
+  win2.axis_equal();
+
+  win2.waitForKey();
+}
+
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main()
+{
+  try
+  {
+    TestRANSACPlanes();
+    std::cout << endl << "Now running detection of lines..." << endl << "\n";
+    TestRANSACLines();
+
+    win.reset();
+
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+}

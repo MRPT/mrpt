@@ -1,0 +1,155 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+/** \file static string for constexpr. Based on:
+ * https://akrzemi1.wordpress.com/2017/06/28/compile-time-string-concatenation/
+ * (Boost License)
+ */
+
+#include <mrpt/typemeta/xassert.h>
+
+#include <string>
+
+namespace mrpt
+{
+namespace typemeta
+{
+template <std::size_t N>
+class string_literal
+{
+  const char (&_lit)[N + 1];
+
+ public:
+  /** Ctor from C string literal, with trailing zero. */
+  constexpr string_literal(const char (&lit)[N + 1]) : _lit((MRPT_X_ASSERT(lit[N] == '\0'), lit)) {}
+  constexpr std::size_t size() const { return N; }
+  constexpr char operator[](std::size_t i) const { return MRPT_X_ASSERT(i < N), _lit[i]; }
+  constexpr const char* c_str() const { return _lit; }
+  constexpr operator const char*() const { return _lit; }
+  operator std::string() const { return _lit; }
+};
+
+template <std::size_t N_PLUS_1>
+constexpr auto literal(const char (&lit)[N_PLUS_1]) -> string_literal<N_PLUS_1 - 1>
+{
+  return string_literal<N_PLUS_1 - 1>(lit);
+}
+
+#define REQUIRES(...) typename std::enable_if<(__VA_ARGS__), bool>::type = true
+
+namespace internal
+{
+// the type used to receive the pack
+template <std::size_t... I>
+struct sequence
+{
+};
+
+// auxiliary meta-function for making (N+1)-sized sequence
+// from an N-sized sequence
+template <typename T>
+struct append;
+
+template <std::size_t... I>
+struct append<sequence<I...>>
+{
+  using type = sequence<I..., sizeof...(I)>;
+};
+
+// recursive implementation of make_sequence
+
+template <std::size_t I>
+struct make_sequence_;
+
+template <std::size_t I>
+using make_sequence = typename make_sequence_<I>::type;
+
+template <>
+struct make_sequence_<0>  // recursion end
+{
+  using type = sequence<>;
+};
+
+template <std::size_t I>
+struct make_sequence_ : append<make_sequence<I - 1>>
+{
+  static_assert(I >= 0, "negative size");
+};
+}  // namespace internal
+
+template <std::size_t N>
+class array_string
+{
+  char _array[N + 1]{};
+
+  template <typename S1, typename S2, std::size_t... PACK1, std::size_t... PACK2>
+  constexpr array_string(
+      const S1& s1, const S2& s2, internal::sequence<PACK1...>, internal::sequence<PACK2...>) :
+      _array{s1[PACK1]..., s2[PACK2]..., '\0'}
+  {
+  }
+
+ public:
+  /** ctor: literal + literal */
+  template <std::size_t N1, REQUIRES(N1 <= N)>
+  constexpr array_string(const string_literal<N1>& s1, const string_literal<N - N1>& s2) :
+      array_string{s1, s2, internal::make_sequence<N1>{}, internal::make_sequence<N - N1>{}}
+  {
+  }
+
+  /** ctor: string + literal */
+  template <std::size_t N1, REQUIRES(N1 <= N)>
+  constexpr array_string(const array_string<N1>& s1, const string_literal<N - N1>& s2) :
+      array_string{s1, s2, internal::make_sequence<N1>{}, internal::make_sequence<N - N1>{}}
+  {
+  }
+
+  /** ctor: string + string */
+  template <std::size_t N1, REQUIRES(N1 <= N)>
+  constexpr array_string(const array_string<N1>& s1, const array_string<N - N1>& s2) :
+      array_string{s1, s2, internal::make_sequence<N1>{}, internal::make_sequence<N - N1>{}}
+  {
+  }
+
+  constexpr std::size_t size() const { return N; }
+  constexpr char operator[](std::size_t i) const { return MRPT_X_ASSERT(i < N), _array[i]; }
+  constexpr const char* c_str() const { return _array; }
+  constexpr operator const char*() const { return c_str(); }
+  operator std::string() const { return c_str(); }
+};
+
+template <std::size_t N1, std::size_t N2>
+constexpr auto operator+(const string_literal<N1>& s1, const string_literal<N2>& s2)
+    -> array_string<N1 + N2>
+{
+  return array_string<N1 + N2>(s1, s2);
+}
+
+template <std::size_t N1, std::size_t N2>
+constexpr auto operator+(const array_string<N1>& s1, const string_literal<N2>& s2)
+    -> array_string<N1 + N2>
+{
+  return array_string<N1 + N2>(s1, s2);
+}
+
+template <std::size_t N1, std::size_t N2>
+constexpr auto operator+(const array_string<N1>& s1, const array_string<N2>& s2)
+    -> array_string<N1 + N2>
+{
+  return array_string<N1 + N2>(s1, s2);
+}
+
+}  // namespace typemeta
+}  // namespace mrpt

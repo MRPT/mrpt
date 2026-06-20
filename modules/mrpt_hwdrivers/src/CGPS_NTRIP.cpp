@@ -1,0 +1,79 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/config/CConfigFilePrefixer.h>
+#include <mrpt/hwdrivers/CGPS_NTRIP.h>
+
+#include <iostream>
+
+using namespace mrpt::hwdrivers;
+using namespace mrpt::obs;
+using namespace mrpt::system;
+using namespace std;
+
+IMPLEMENTS_GENERIC_SENSOR(CGPS_NTRIP, mrpt::hwdrivers)
+
+/** Constructor. See mrpt::hwdrivers::CGPSInterface for the meaning of params.
+ */
+CGPS_NTRIP::CGPS_NTRIP() : gps(), ntrip() {}
+/** Destructor */
+CGPS_NTRIP::~CGPS_NTRIP() = default;
+void CGPS_NTRIP::initialize()
+{
+  gps.initialize();
+  ntrip.initialize();
+}
+
+// See docs in parent class
+void CGPS_NTRIP::doProcess()
+{
+  // Process GPS:
+  gps.doProcess();
+
+  // Move sensed observations to this object:
+  {
+    const TListObservations lst = gps.getObservations();
+
+    std::vector<mrpt::serialization::CSerializable::Ptr> vect;
+    vect.reserve(lst.size());
+    for (const auto& kv : lst) vect.push_back(kv.second);
+    this->appendObservations(vect);
+  }
+
+  // New GGA frames?
+  std::string sLastGGA = gps.getLastGGA();
+  if (!sLastGGA.empty())
+  {
+    if (m_verbose)
+      std::cout << "[CGPS_NTRIP] Redirecting GGA frame from GPS->NTRIP: '" << sLastGGA << "'"
+                << "\n";
+
+    ntrip.getNTRIPClient().sendBackToServer(sLastGGA + std::string("\r\n"));
+  }
+
+  // Process NTRIP server comms:
+  ntrip.doProcess();
+}
+
+void CGPS_NTRIP::loadConfig_sensorSpecific(
+    const mrpt::config::CConfigFileBase& cfg, const std::string& section)
+{
+  // Load GPS params:
+  gps.loadConfig(mrpt::config::CConfigFilePrefixer(cfg, "", "gps_"), section);
+  // NTRIP params:
+  ntrip.loadConfig(mrpt::config::CConfigFilePrefixer(cfg, "", "ntrip_"), section);
+
+  // Own params:
+  // (none yet)
+}

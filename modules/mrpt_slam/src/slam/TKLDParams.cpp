@@ -1,0 +1,56 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/TKLDParams.h>
+
+using namespace mrpt::slam;
+
+/*---------------------------------------------------------------
+          TKLDParams
+ ---------------------------------------------------------------*/
+TKLDParams::TKLDParams() : KLD_binSize_PHI(5.0_deg) {}
+/*---------------------------------------------------------------
+          dumpToTextStream
+  ---------------------------------------------------------------*/
+void TKLDParams::dumpToTextStream(std::ostream& out) const
+{
+  out << "\n----------- [TKLDParams] ------------ \n\n";
+
+  out << mrpt::format("KLD_minSampleSize                       = %i\n", KLD_minSampleSize);
+  out << mrpt::format("KLD_maxSampleSize                       = %i\n", KLD_maxSampleSize);
+  out << mrpt::format("KLD_binSize_XY                          = %f m\n", KLD_binSize_XY);
+  out << mrpt::format(
+      "KLD_binSize_PHI                         = %f deg\n", RAD2DEG(KLD_binSize_PHI));
+  out << mrpt::format("KLD_delta                               = %f\n", KLD_delta);
+  out << mrpt::format("KLD_epsilon                             = %f\n", KLD_epsilon);
+  out << "\n";
+}
+
+/*---------------------------------------------------------------
+          loadFromConfigFile
+  ---------------------------------------------------------------*/
+void TKLDParams::loadFromConfigFile(
+    const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
+{
+  MRPT_LOAD_CONFIG_VAR(KLD_minSampleSize, uint32_t, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(KLD_maxSampleSize, uint32_t, iniFile, section);
+
+  MRPT_LOAD_CONFIG_VAR(KLD_binSize_XY, double, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR_DEGREES(KLD_binSize_PHI, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(KLD_delta, double, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(KLD_epsilon, double, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(KLD_minSamplesPerBin, double, iniFile, section);
+}

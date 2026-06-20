@@ -1,0 +1,238 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
+
+#include <chrono>
+#include <optional>
+#include <thread>
+
+#if MRPT_HAS_OPENCV
+// cv::VideoCapture moved from highgui in opencv2 to videoio in opencv3:
+#ifdef HAVE_OPENCV_VIDEOIO
+#include <opencv2/videoio.hpp>
+#else
+#include <opencv2/highgui/highgui.hpp>
+#endif
+#endif  // MRPT_HAS_OPENCV
+
+using namespace std;
+using namespace mrpt;
+using namespace mrpt::hwdrivers;
+
+struct CImageGrabber_OpenCV::Impl
+{
+#if MRPT_HAS_OPENCV
+  cv::VideoCapture cap;
+#endif
+};
+
+/*-------------------------------------------------------------
+        Constructor
+-------------------------------------------------------------*/
+CImageGrabber_OpenCV::CImageGrabber_OpenCV(
+    [[maybe_unused]] int cameraIndex,
+    [[maybe_unused]] TCameraType cameraType,
+    [[maybe_unused]] const TCaptureCVOptions& options) :
+    m_capture(mrpt::make_impl<CImageGrabber_OpenCV::Impl>())
+{
+  MRPT_START
+  m_bInitialized = false;
+
+#if MRPT_HAS_OPENCV
+  int cv_cap_indx = 0;
+  switch (cameraType)
+  {
+    case CAMERA_CV_AUTODETECT:
+      cv_cap_indx = cv::CAP_ANY;
+      break;
+    case CAMERA_CV_DC1394:
+      cv_cap_indx = cv::CAP_DC1394;
+      break;
+    case CAMERA_CV_VFL:
+      cv_cap_indx = cv::CAP_V4L;
+      break;
+    case CAMERA_CV_DSHOW:
+      cv_cap_indx = cv::CAP_DSHOW;
+      break;
+    default:
+      THROW_EXCEPTION_FMT("Invalid camera type: %i", cameraType);
+  }
+
+  cv_cap_indx += cameraIndex;
+
+  // Open camera:
+  if (!m_capture->cap.open(cv_cap_indx))
+  {
+    cerr << mrpt::format("[CImageGrabber_OpenCV] ERROR: Can't open camera '%i'!!\n", cameraIndex);
+    return;
+  }
+
+  // Set properties:
+  // Based on code from Orocos project. Thanks!
+  // ----------------------------------------
+  // Global settings
+  if (options.gain != 0)
+  {
+    if (!m_capture->cap.set(cv::CAP_PROP_GAIN, options.gain))
+      cerr << "[CImageGrabber_OpenCV] Warning: Could not set the "
+              "capturing gain property!"
+           << "\n";
+  }
+
+  // Settings only for firewire
+  if (cameraType == CAMERA_CV_DC1394)
+  {
+    if (options.frame_height != 0 && options.frame_width != 0)
+    {
+      // MODE_320x240_YUV422 ****
+      //
+      enum
+      {
+        MY_MODE_160x120_YUV444 = 64,
+        MY_MODE_320x240_YUV422,  // ***
+        MY_MODE_640x480_YUV411,
+        MY_MODE_640x480_YUV422,  // ***
+        MY_MODE_640x480_RGB,     // ?
+        MY_MODE_640x480_MONO,    // ***
+        MY_MODE_640x480_MONO16
+      };
+
+      int cvMode1394 = -1;
+      if (options.frame_height == 320 && options.frame_width == 240)
+        cvMode1394 = MY_MODE_320x240_YUV422;
+      else if (
+          options.frame_height == 640 && options.frame_width == 480 && !options.ieee1394_grayscale)
+        cvMode1394 = MY_MODE_640x480_YUV422;
+      else if (
+          options.frame_height == 640 && options.frame_width == 480 && options.ieee1394_grayscale)
+        cvMode1394 = MY_MODE_640x480_MONO;
+
+      if (cvMode1394 > 0)
+      {
+        if (!m_capture->cap.set(cv::CAP_PROP_MODE, cvMode1394))
+          cerr << "[CImageGrabber_OpenCV] Warning: Could not set the "
+                  "capturing mode "
+               << cvMode1394 << " property!"
+               << "\n";
+      }
+      else
+        cerr << "[CImageGrabber_OpenCV] Warning: Not valid combination "
+                "of width x height x color mode for OpenCV/IEEE1394 "
+                "interface"
+             << "\n";
+    }
+
+    // Not needed: Default seems to be = 1
+    // if(cvSetCaptureProperty(M_CAPTURE,CV_CAP_PROP_CONVERT_RGB,_capture_convert.value())<1)
+    //	cerr << "[CImageGrabber_OpenCV] Warning: Could not set the RGB
+    // conversion property!" << "\n";
+
+    if (!m_capture->cap.set(cv::CAP_PROP_FPS, options.ieee1394_fps))
+      cerr << "[CImageGrabber_OpenCV] Warning: Could not set the fps "
+              "property!"
+           << "\n";
+  }
+
+  // Settings only for V4L
+  if (cameraType == CAMERA_CV_AUTODETECT || cameraType == CAMERA_CV_VFL ||
+      cameraType == CAMERA_CV_DSHOW)
+  {
+    if (options.frame_width != 0 && options.frame_height != 0)
+    {
+      // First set width then height. The first command always returns a
+      // error!
+      m_capture->cap.set(cv::CAP_PROP_FRAME_WIDTH, options.frame_width);
+      if (!m_capture->cap.set(cv::CAP_PROP_FRAME_HEIGHT, options.frame_height))
+        cerr << "[CImageGrabber_OpenCV] Warning: Could not set the "
+                "frame width & height property!"
+             << "\n";
+    }
+  }
+
+  // remember that we successfully initialized everything
+  m_bInitialized = true;
+#else
+  THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+#endif
+  MRPT_END
+}
+
+CImageGrabber_OpenCV::CImageGrabber_OpenCV([[maybe_unused]] const std::string& AVI_fileName) :
+    m_capture(mrpt::make_impl<CImageGrabber_OpenCV::Impl>())
+{
+  MRPT_START
+  m_bInitialized = false;
+
+#if MRPT_HAS_OPENCV
+  if (!m_capture->cap.open(AVI_fileName))
+  {
+    printf("[CImageGrabber_OpenCV] Warning! Can't open AVI file '%s'!!\n", AVI_fileName.c_str());
+    return;
+  }
+
+  // remember that we successfully initialized everything
+  m_bInitialized = true;
+#else
+  THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+#endif
+  MRPT_END
+}
+
+/*-------------------------------------------------------------
+          Destructor
+ -------------------------------------------------------------*/
+CImageGrabber_OpenCV::~CImageGrabber_OpenCV()
+{
+#if MRPT_HAS_OPENCV
+  if (m_bInitialized)
+  {
+    m_capture->cap.release();
+  }
+#endif
+}
+
+/*-------------------------------------------------------------
+          get the image
+ -------------------------------------------------------------*/
+std::optional<mrpt::obs::CObservationImage> CImageGrabber_OpenCV::grabFrame()
+{
+  MRPT_START
+
+  if (!m_bInitialized) return std::nullopt;
+
+#if MRPT_HAS_OPENCV
+  if (!m_capture->cap.grab()) return std::nullopt;
+
+  for (int nTries = 0; nTries < 10; nTries++)
+  {
+    cv::Mat capImg;
+    if (m_capture->cap.retrieve(capImg))
+    {
+      mrpt::obs::CObservationImage obs;
+      obs.timestamp = mrpt::Clock::now();
+      obs.image = mrpt::img::CImage(capImg, mrpt::img::SHALLOW_COPY);
+      return obs;
+    }
+    cerr << "[CImageGrabber_OpenCV] WARNING: Ignoring error #" << nTries + 1
+         << " retrieving frame..."
+         << "\n";
+    std::this_thread::sleep_for(1ms);
+  }
+  return std::nullopt;
+#else
+  THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+#endif
+  MRPT_END
+}

@@ -1,0 +1,154 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#ifndef CFORMPLAYVIDEO_H
+#define CFORMPLAYVIDEO_H
+
+//(*Headers(CFormPlayVideo)
+#include <wx/bmpbuttn.h>
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/combobox.h>
+#include <wx/dialog.h>
+#include <wx/panel.h>
+#include <wx/radiobut.h>
+#include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/spinctrl.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+//*)
+
+#include <mrpt/core/Clock.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/obs/obs_frwds.h>
+
+class CFormPlayVideo : public wxDialog
+{
+ public:
+  CFormPlayVideo(wxWindow* parent, wxWindowID id = -1);
+  ~CFormPlayVideo() override;
+
+  // Set to true to enable play, false to stop.
+  bool m_nowPlaying;
+
+  wxComboBox* getImageDirsCombo() { return cbImageDirs; }
+  //(*Identifiers(CFormPlayVideo)
+  static const wxWindowID ID_RADIOBUTTON1;
+  static const wxWindowID ID_RADIOBUTTON2;
+  static const wxWindowID ID_STATICTEXT22;
+  static const wxWindowID ID_TEXTCTRL11;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_CHECKBOX1;
+  static const wxWindowID ID_CHECKBOX2;
+  static const wxWindowID ID_CHECKBOX3;
+  static const wxWindowID ID_CHECKBOX4;
+  static const wxWindowID ID_STATICTEXT8;
+  static const wxWindowID ID_SPINCTRL2;
+  static const wxWindowID ID_STATICTEXT6;
+  static const wxWindowID ID_COMBOBOX1;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_STATICTEXT7;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_SLIDER1;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_SPINCTRL1;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_BITMAPBUTTON1;
+  static const wxWindowID ID_STATICTEXT4;
+  static const wxWindowID ID_BITMAPBUTTON2;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_BITMAPBUTTON3;
+  static const wxWindowID ID_PANEL3;
+  static const wxWindowID ID_PANEL4;
+  static const wxWindowID ID_PANEL2;
+  //*)
+
+ protected:
+  //(*Handlers(CFormPlayVideo)
+  void OnbtnPickClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnStopClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnPlayClick([[maybe_unused]] wxCommandEvent& event);
+  void OnInit(wxInitDialogEvent& event);
+  void OnrbLoadedSelect([[maybe_unused]] wxCommandEvent& event);
+  void OnrbFileSelect([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnCloseClick([[maybe_unused]] wxCommandEvent& event);
+  void OnprogressBarCmdScrollChanged(wxScrollEvent& event);
+  void OnbtnSaveCam1Click([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSaveCam2Click([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnSaveCam3Click([[maybe_unused]] wxCommandEvent& event);
+  void OncbImageDirsSelect([[maybe_unused]] wxCommandEvent& event);
+  //*)
+
+  bool showSensoryFrame(
+      mrpt::obs::CSensoryFrame& SF, size_t& nImgs, mrpt::Clock::time_point& timestamp);
+
+  bool showSensoryFrameImpl(
+      mrpt::obs::CSensoryFrame& SF, size_t& nImgs, mrpt::Clock::time_point& timestamp);
+
+  void drawHorzRules(mrpt::img::CImage& img);
+
+  //(*Declarations(CFormPlayVideo)
+  wxBoxSizer* BoxSizer4;
+  wxStaticText* StaticText22;
+  wxButton* btnStop;
+  wxRadioButton* rbLoaded;
+  wxBitmapButton* btnSaveCam2;
+  wxStaticText* lbProgress;
+  wxBoxSizer* BoxSizer5;
+  wxStaticText* StaticText2;
+  wxButton* btnClose;
+  wxPanel* pnRight;
+  wxSpinCtrl* edHorzRuleSpace;
+  wxStaticText* StaticText6;
+  wxSlider* progressBar;
+  wxPanel* pnRight2;
+  wxCheckBox* cbDrawStereoRules;
+  wxStaticText* StaticText1;
+  wxCheckBox* cbOrderByY;
+  wxBitmapButton* btnSaveCam1;
+  wxButton* btnJump;
+  wxStaticText* StaticText3;
+  wxButton* btnPickInput;
+  wxStaticText* lbCam1;
+  wxComboBox* cbImageDirs;
+  wxSpinCtrl* edIndex;
+  wxBitmapButton* btnSaveCam3;
+  wxFlexGridSizer* FlexGridSizer8;
+  wxRadioButton* rbFile;
+  wxStaticText* lbCam3;
+  wxFlexGridSizer* FlexGridSizer6;
+  wxStaticBoxSizer* StaticBoxSizer1;
+  wxFlexGridSizer* FlexGridSizer1;
+  wxCheckBox* cbReduceLarge;
+  wxPanel* pnLeft;
+  wxCheckBox* cbOrderByYaw;
+  wxTextCtrl* edDelay;
+  wxStaticText* lbCam2;
+  wxButton* btnPlay;
+  wxTextCtrl* edFile;
+  //*)
+
+ private:
+  bool firstFit;
+  void saveCamImage(int nPanel);
+  int m_idxInRawlog;
+
+  DECLARE_EVENT_TABLE()
+};
+
+#endif

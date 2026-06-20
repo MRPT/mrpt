@@ -1,0 +1,204 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
+#include <mrpt/system/os.h>
+#include <mrpt/viz/CAxis.h>
+#include <mrpt/viz/CPlanarLaserScan.h>  // in library mrpt-maps
+
+using namespace std;
+using namespace mrpt::obs;
+using namespace mrpt::io;
+using namespace mrpt::hwdrivers;
+
+/*-------------------------------------------------------------
+            Constructor
+-------------------------------------------------------------*/
+C2DRangeFinderAbstract::C2DRangeFinderAbstract() :
+    mrpt::system::COutputLogger("C2DRangeFinderAbstract")
+{
+}
+
+/*-------------------------------------------------------------
+            Destructor
+-------------------------------------------------------------*/
+C2DRangeFinderAbstract::~C2DRangeFinderAbstract() = default;
+
+void C2DRangeFinderAbstract::bindIO(const std::shared_ptr<CStream>& streamIO)
+{
+  m_csChangeStream.lock();
+  m_stream = streamIO;
+  m_csChangeStream.unlock();
+}
+
+/*-------------------------------------------------------------
+            getObservation
+-------------------------------------------------------------*/
+void C2DRangeFinderAbstract::getObservation(
+    bool& outThereIsObservation,
+    mrpt::obs::CObservation2DRangeScan& outObservation,
+    bool& hardwareError)
+{
+  m_csLastObservation.lock();
+
+  hardwareError = m_hardwareError;
+  outThereIsObservation = m_lastObservationIsNew;
+
+  if (outThereIsObservation) outObservation = m_lastObservation;
+
+  m_csLastObservation.unlock();
+}
+
+/*-------------------------------------------------------------
+            doProcess
+-------------------------------------------------------------*/
+void C2DRangeFinderAbstract::doProcess()
+{
+  bool thereIs, hwError;
+
+  if (!m_nextObservation) m_nextObservation = std::make_shared<CObservation2DRangeScan>();
+
+  doProcessSimple(thereIs, *m_nextObservation, hwError);
+
+  if (hwError)
+  {
+    m_state = ssError;
+    MRPT_LOG_THROTTLE_ERROR(5.0, "Error reading from the sensor hardware. Will retry.");
+  }
+
+  if (thereIs)
+  {
+    m_state = ssWorking;
+
+    appendObservation(m_nextObservation);
+    m_nextObservation.reset();  // Create a new object in the next call
+  }
+}
+
+void C2DRangeFinderAbstract::internal_notifyGoodScanNow()
+{
+  const auto new_t = mrpt::Clock::now();
+
+  if (m_last_good_scan != INVALID_TIMESTAMP)
+  {
+    m_estimated_scan_period =
+        0.9 * m_estimated_scan_period + 0.1 * mrpt::system::timeDifference(m_last_good_scan, new_t);
+  }
+  m_last_good_scan = new_t;
+  m_failure_waiting_scan_counter = 0;
+}
+
+// Returns true if ok, false if this seems to be an error
+bool C2DRangeFinderAbstract::internal_notifyNoScanReceived()
+{
+  if (m_last_good_scan == INVALID_TIMESTAMP)
+  {
+    return true;
+  }
+
+  const double dt = mrpt::system::timeDifference(m_last_good_scan, mrpt::Clock::now());
+
+  if (dt > 1.50 * m_estimated_scan_period)
+    if (++m_failure_waiting_scan_counter >= m_max_missed_scan_failures)
+    {
+      return false;
+    }
+
+  return true;
+}
+
+/*-------------------------------------------------------------
+            loadExclusionAreas
+-------------------------------------------------------------*/
+void C2DRangeFinderAbstract::loadCommonParams(
+    const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection)
+{
+  // Load exclusion areas:
+  m_lstExclusionPolys.clear();
+  m_lstExclusionAngles.clear();
+
+  unsigned int N = 1;
+
+  for (;;)
+  {
+    vector<double> x, y, z_range;
+    configSource.read_vector(
+        iniSection, mrpt::format("exclusionZone%u_x", N), vector<double>(0), x);
+    configSource.read_vector(
+        iniSection, mrpt::format("exclusionZone%u_y", N), vector<double>(0), y);
+    configSource.read_vector(
+        iniSection, mrpt::format("exclusionZone%u_z", N++), vector<double>(0), z_range);
+
+    if (!x.empty() && !y.empty())
+    {
+      ASSERT_(x.size() == y.size());
+      CObservation2DRangeScan::TListExclusionAreasWithRanges::value_type dat;
+
+      dat.first.set_vertices(x, y);
+      if (z_range.empty())
+      {
+        dat.second.first = -std::numeric_limits<double>::max();
+        dat.second.second = std::numeric_limits<double>::max();
+      }
+      else
+      {
+        ASSERTMSG_(z_range.size() == 2, "exclusionZone%u_z must be a range [z_min z_max]");
+        ASSERT_(z_range[0] <= z_range[1]);
+
+        dat.second.first = z_range[0];
+        dat.second.second = z_range[1];
+      }
+
+      m_lstExclusionPolys.push_back(dat);
+    }
+    else
+      break;
+  }
+
+  // Load forbiden angles;
+  N = 1;
+
+  for (;;)
+  {
+    const double ini = DEG2RAD(
+        configSource.read_double(iniSection, mrpt::format("exclusionAngles%u_ini", N), -1000));
+    const double end = DEG2RAD(
+        configSource.read_double(iniSection, mrpt::format("exclusionAngles%u_end", N++), -1000));
+
+    if (ini > -M_PI && end > -M_PI)
+      m_lstExclusionAngles.emplace_back(ini, end);
+    else
+      break;
+  }
+
+  // Max. missed scan failures:
+  m_max_missed_scan_failures =
+      configSource.read_int(iniSection, "maxMissedScansToDeclareError", m_max_missed_scan_failures);
+}
+
+/*-------------------------------------------------------------
+            filterByExclusionAreas
+-------------------------------------------------------------*/
+void C2DRangeFinderAbstract::filterByExclusionAreas(mrpt::obs::CObservation2DRangeScan& obs) const
+{
+  obs.filterByExclusionAreas(m_lstExclusionPolys);
+}
+
+/*-------------------------------------------------------------
+            filterByExclusionAngles
+-------------------------------------------------------------*/
+void C2DRangeFinderAbstract::filterByExclusionAngles(mrpt::obs::CObservation2DRangeScan& obs) const
+{
+  obs.filterByExclusionAngles(m_lstExclusionAngles);
+}

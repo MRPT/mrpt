@@ -1,0 +1,109 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
+#include <mrpt/serialization/CArchive.h>  // impl of << operator
+#ifdef _MSC_VER
+#include "MatrixVectorBase_impl.h"
+#endif
+
+namespace mrpt::math
+{
+static_assert(std::is_trivial_v<TPoint3D_data<float>>);
+static_assert(std::is_trivial_v<TPoint3D_data<double>>);
+static_assert(std::is_trivially_copyable_v<TPoint3D>);
+static_assert(std::is_trivially_copyable_v<TPoint3Df>);
+
+// Lock down the in-memory layout: the empty helper bases must be optimized away
+// (EBO; on MSVC this needs MRPT_EMPTY_BASES and the type must not be under
+// #pragma pack) so the only storage is x,y,z. Downstream GPU vertex buffers and
+// packed structs (e.g. mrpt::viz::TTriangle, mrpt::opengl::RenderableProxy) rely
+// on this exact size.
+static_assert(sizeof(TPoint3Df) == 3 * sizeof(float), "TPoint3Df must be tightly packed (EBO)");
+static_assert(sizeof(TPoint3D) == 3 * sizeof(double), "TPoint3D must be tightly packed (EBO)");
+
+template <typename T>
+TPoint3D_<T>::TPoint3D_(const TPoint2D_<T>& p) : TPoint3D_data<T>{p.x, p.y, 0}
+{
+}
+
+template <typename T>
+TPoint3D_<T>::TPoint3D_(const TPose2D& p) :
+    TPoint3D_data<T>{static_cast<T>(p.x), static_cast<T>(p.y), 0}
+{
+}
+
+template <typename T>
+TPoint3D_<T>::TPoint3D_(const TPose3D& p) :
+    TPoint3D_data<T>{static_cast<T>(p.x), static_cast<T>(p.y), static_cast<T>(p.z)}
+{
+}
+
+template <typename T>
+bool TPoint3D_<T>::operator<(const TPoint3D_<T>& p) const
+{
+  if (this->x < p.x)
+    return true;
+  else if (this->x > p.x)
+    return false;
+  else if (this->y < p.y)
+    return true;
+  else if (this->y > p.y)
+    return false;
+  else
+    return this->z < p.z;
+}
+
+template <typename T>
+void TPoint3D_<T>::fromString(const std::string& s)
+{
+  mrpt::math::CMatrixDynamic<T> m;
+  if (!m.fromMatlabStringFormat(s))
+    THROW_EXCEPTION_FMT("Malformed expression in ::fromString, s=\"%s\"", s.c_str());
+  ASSERTMSG_(m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
+  this->x = m(0, 0);
+  this->y = m(0, 1);
+  this->z = m(0, 2);
+}
+
+// Explicit instantiations:
+template struct TPoint3D_<float>;
+template struct TPoint3D_<double>;
+
+mrpt::serialization::CArchive& operator>>(
+    mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBu8& p)
+{
+  return in >> p.pt >> p.r >> p.g >> p.b;
+}
+mrpt::serialization::CArchive& operator<<(
+    mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBu8& p)
+{
+  return out << p.pt << p.r << p.g << p.b;
+}
+
+mrpt::serialization::CArchive& operator>>(
+    mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBAu8& p)
+{
+  return in >> p.pt >> p.r >> p.g >> p.b >> p.a;
+}
+mrpt::serialization::CArchive& operator<<(
+    mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBAu8& p)
+{
+  return out << p.pt << p.r << p.g << p.b << p.a;
+}
+
+}  // namespace mrpt::math

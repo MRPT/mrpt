@@ -9,4 +9,4 @@ See also: [index of motion planning algorithms]()
 
 ![nav_circ_robot_path_planning screenshot](doc/source/images/nav_circ_robot_path_planning_screenshot.png)
 C++ example source code:
-\include nav_circ_robot_path_planning/test.cpp
+\include nav_circ_robot_path_planning/main.cpp

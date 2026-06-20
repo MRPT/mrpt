@@ -1,0 +1,84 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/math/CProbabilityDensityFunction.h>
+#include <mrpt/poses/CPoint2D.h>
+
+namespace mrpt::poses
+{
+/** Declares a class that represents a Probability Distribution function (PDF)
+ * of a 2D point (x,y).
+ *   This class is just the base class for unifying many different
+ *    ways this PDF can be implemented.
+ *
+ *  For convenience, a pose composition is also defined for any
+ *    PDF derived class, changeCoordinatesReference, in the form of a method
+ * rather than an operator.
+ *
+ *  For a similar class for 6D poses (a 3D point with attitude), see CPose3DPDF
+ *
+ *  See also:
+ *  [probabilistic spatial representations](tutorial-pdf-over-poses.html)
+ *
+ * \ingroup poses_pdf_grp
+ * \sa CPoint2D, CPointPDF
+ */
+class CPoint2DPDF :
+    public mrpt::serialization::CSerializable,
+    public mrpt::math::CProbabilityDensityFunction<CPoint2D, 2>
+{
+  DEFINE_VIRTUAL_SERIALIZABLE(CPoint2DPDF, mrpt::poses)
+
+ public:
+  CPoint2DPDF() = default;
+  CPoint2DPDF(const CPoint2DPDF&) = default;
+  CPoint2DPDF(CPoint2DPDF&&) = default;
+  CPoint2DPDF& operator=(const CPoint2DPDF&) = default;
+  CPoint2DPDF& operator=(CPoint2DPDF&&) = default;
+  virtual ~CPoint2DPDF() = default;
+
+  /** Copy operator, translating if necessary (for example, between particles
+   * and gaussian representations)
+   */
+  virtual void copyFrom(const CPoint2DPDF& o) = 0;
+
+  virtual void changeCoordinatesReference(const CPose3D& newReferenceBase) = 0;
+
+  /** Bayesian fusion of two point distributions (product of two
+   * distributions->new distribution), then save the result in this object
+   * (WARNING: See implementing classes to see classes that can and cannot be
+   * mixtured!)
+   * \param p1 The first distribution to fuse
+   * \param p2 The second distribution to fuse
+   * \param minMahalanobisDistToDrop If set to different of 0, the result of
+   * very separate Gaussian modes (that will result in negligible components)
+   * in SOGs will be dropped to reduce the number of modes in the output.
+   */
+  virtual void bayesianFusion(
+      const CPoint2DPDF& p1, const CPoint2DPDF& p2, const double minMahalanobisDistToDrop = 0) = 0;
+
+  enum
+  {
+    is_3D_val = 0
+  };
+  static constexpr bool is_3D() { return is_3D_val != 0; }
+  enum
+  {
+    is_PDF_val = 1
+  };
+  static constexpr bool is_PDF() { return is_PDF_val != 0; }
+};  // End of class def.
+
+}  // namespace mrpt::poses

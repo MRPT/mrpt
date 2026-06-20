@@ -1,0 +1,339 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#pragma once
+
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+
+#include <iostream>
+
+namespace CLI
+{
+class App;
+}
+
+namespace mrpt::apps
+{
+/** Builds the common path prefix used to derive the names of additional
+ * output files from an input rawlog file path, e.g. "/path/to/foo.rawlog"
+ * becomes "/path/to/foo". */
+inline std::string buildOutputFilesPrefix(const std::string& inputRawlogFile)
+{
+  std::string dir = mrpt::system::extractFileDirectory(inputRawlogFile);
+  if (!dir.empty())
+  {
+    dir += "/";
+  }
+  return dir + mrpt::system::extractFileName(inputRawlogFile);
+}
+
+/** A virtual class that implements the common stuff around parsing a rawlog
+ * file and (optionally) display a progress indicator to the console.
+ * \ingroup mrpt_apps_grp
+ */
+class CRawlogProcessor
+{
+ protected:
+  mrpt::io::CCompressedInputStream& m_in_rawlog;
+  CLI::App& m_cmdline;
+  bool verbose;
+  mrpt::system::TTimeStamp m_last_console_update;
+  mrpt::system::CTicTac m_timParse;
+
+ public:
+  uint64_t m_physicalFileSize = 0;
+  size_t m_rawlogEntry = 0;
+  double m_timToParse;  // Public variable, at end will hold ellapsed time.
+
+  // Ctor
+  CRawlogProcessor(
+      mrpt::io::CCompressedInputStream& _in_rawlog, CLI::App& _cmdline, bool _verbose) :
+      m_in_rawlog(_in_rawlog),
+      m_cmdline(_cmdline),
+      verbose(_verbose),
+      m_last_console_update(mrpt::Clock::now())
+  {
+    m_physicalFileSize = _in_rawlog.getTotalBytesCount();
+  }
+
+  // The main method:
+  void doProcessRawlog()
+  {
+    // The 3 different objects we can read from a rawlog:
+    mrpt::obs::CActionCollection::Ptr actions;
+    mrpt::obs::CSensoryFrame::Ptr SF;
+    mrpt::obs::CObservation::Ptr obs;
+
+    m_timParse.Tic();
+
+    size_t rawlogEntryCount = 0;
+
+    // Parse the entire rawlog:
+    auto arch = mrpt::serialization::archiveFrom(m_in_rawlog);
+    while (mrpt::obs::CRawlog::getActionObservationPairOrObservation(
+        arch, actions, SF, obs, rawlogEntryCount))
+    {
+      m_rawlogEntry = rawlogEntryCount - 1;
+
+      // Abort if the user presses ESC:
+      if (mrpt::system::os::kbhit())
+        if (27 == mrpt::system::os::getch())
+        {
+          std::cerr << "Aborted since user pressed ESC.\n";
+          break;
+        }
+
+      // Update status to the console?
+      const mrpt::system::TTimeStamp tNow = mrpt::Clock::now();
+      if (mrpt::system::timeDifference(m_last_console_update, tNow) > 0.25)
+      {
+        m_last_console_update = tNow;
+        uint64_t fil_pos = m_in_rawlog.getPosition();
+        if (verbose)
+        {
+          std::cout << mrpt::format(
+              "Progress: %7u objects --- Pos: %9sB/%c%9sB \r",
+              static_cast<unsigned int>(m_rawlogEntry + 1),
+              mrpt::system::unitsFormat(static_cast<double>(fil_pos)).c_str(),
+              (fil_pos > m_physicalFileSize ? '>' : ' '),
+              mrpt::system::unitsFormat(static_cast<double>(m_physicalFileSize))
+                  .c_str());  // \r -> don't go to the next line...
+
+          std::cout.flush();
+        }
+      }
+
+      // Do whatever:
+      bool process_ret = processOneEntry(actions, SF, obs);
+
+      // Post process:
+      OnPostProcess(actions, SF, obs);
+
+      // Clear read objects:
+      actions.reset();
+      SF.reset();
+      obs.reset();
+
+      if (!process_ret)
+      {
+        // Returning false means we should stop parsing the rest of the
+        // rawlog:
+        std::cerr << "\nParsing stopped due to request from Rawlog "
+                     "filter implementation.\n";
+        break;
+      }
+    };  // end while
+
+    if (verbose) std::cout << "\n";  // new line after the "\r".
+
+    m_timToParse = m_timParse.Tac();
+
+  }  // end doProcessRawlog
+
+  virtual ~CRawlogProcessor() = default;
+
+  // The virtual method of the user to be invoked for each read object:
+  //  Return false to abort and stop the read loop.
+  virtual bool processOneEntry(
+      mrpt::obs::CActionCollection::Ptr& actions,
+      mrpt::obs::CSensoryFrame::Ptr& SF,
+      mrpt::obs::CObservation::Ptr& obs) = 0;
+
+  // This method can be reimplemented to save the modified object to an output
+  // stream.
+  virtual void OnPostProcess(
+      [[maybe_unused]] mrpt::obs::CActionCollection::Ptr& actions,
+      [[maybe_unused]] mrpt::obs::CSensoryFrame::Ptr& SF,
+      [[maybe_unused]] mrpt::obs::CObservation::Ptr& obs)
+  {
+    // Default: Do nothing
+  }
+
+};  // end CRawlogProcessor
+
+/** A virtual class that implements the common stuff around parsing a rawlog
+ * file
+ * and (optionally) display a progress indicator to the console.
+ */
+class CRawlogProcessorOnEachObservation : public CRawlogProcessor
+{
+ public:
+  CRawlogProcessorOnEachObservation(
+      mrpt::io::CCompressedInputStream& in_rawlog, CLI::App& cmdline, bool enable_verbose) :
+      CRawlogProcessor(in_rawlog, cmdline, enable_verbose)
+  {
+  }
+
+  bool processOneEntry(
+      mrpt::obs::CActionCollection::Ptr& actions,
+      mrpt::obs::CSensoryFrame::Ptr& SF,
+      mrpt::obs::CObservation::Ptr& obs) override
+  {
+    // Process each observation individually, either from "obs" or each
+    // within a "SF":
+    // Note: a reference to the actual smart pointer (held in "obs" or
+    // inside "SF") must be used here so that, if a derived processor resets
+    // it (e.g. to filter out an observation), the change is reflected in
+    // what is later read by OnPostProcess().
+    for (size_t idxObs = 0; true; idxObs++)
+    {
+      mrpt::obs::CObservation::Ptr* obs_indiv = nullptr;
+      if (obs)
+      {
+        if (idxObs > 0) break;
+        obs_indiv = &obs;
+      }
+      else if (SF)
+      {
+        if (idxObs >= SF->size()) break;
+        obs_indiv = &SF->getObservationByIndex(idxObs);
+      }
+      else
+        break;  // shouldn't...
+
+      // Process "*obs_indiv":
+      ASSERT_(*obs_indiv);
+      if (!processOneObservation(*obs_indiv))
+      {
+        return false;
+      }
+    }
+
+    if (actions)
+    {
+      for (auto& act : *actions)
+      {
+        if (!processOneAction(act.get_ptr()))
+        {
+          return false;
+        }
+      }
+    }
+
+    return true;  // No error.
+  }
+
+  // To be implemented by the user. Return false on any error to abort
+  // processing.
+  virtual bool processOneObservation(mrpt::obs::CObservation::Ptr& obs) = 0;
+  virtual bool processOneAction(mrpt::obs::CAction::Ptr&) { return true; }
+
+};  // end CRawlogProcessorOnEachObservation
+
+/** A specialization of CRawlogProcessorOnEachObservation that handles the
+ * common case of
+ *  filtering entries in a rawlog depending on the return value of a user
+ * function.
+ */
+class CRawlogProcessorFilterObservations : public CRawlogProcessorOnEachObservation
+{
+ public:
+  mrpt::io::CCompressedOutputStream& m_out_rawlog;
+  size_t m_entries_removed, m_entries_parsed;
+  /** Set to true to indicate that we are sure we don't have to keep on
+   * reading. */
+  bool m_we_are_done_with_this_rawlog;
+
+  CRawlogProcessorFilterObservations(
+      mrpt::io::CCompressedInputStream& in_rawlog,
+      CLI::App& cmdline,
+      bool enable_verbose,
+      mrpt::io::CCompressedOutputStream& out_rawlog) :
+      CRawlogProcessorOnEachObservation(in_rawlog, cmdline, enable_verbose),
+      m_out_rawlog(out_rawlog),
+      m_entries_removed(0),
+      m_entries_parsed(0),
+      m_we_are_done_with_this_rawlog(false)
+  {
+  }
+
+  /** To be implemented by users: return false means entry must be removed */
+  virtual bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) = 0;
+
+  /** To be implemented by users: return false means entry must be removed */
+  virtual bool tellIfThisActPasses(mrpt::obs::CAction::Ptr&) { return true; }
+
+  // Process each entry. Return false on any error to abort processing.
+  bool processOneObservation(mrpt::obs::CObservation::Ptr& obs) override
+  {
+    if (!tellIfThisObsPasses(obs))
+    {
+      obs.reset();  // Free object (all aliases)
+      m_entries_removed++;
+    }
+    m_entries_parsed++;
+
+    if (m_we_are_done_with_this_rawlog) return false;  // We are done, finish execution.
+
+    return true;
+  }
+
+  // Process each entry. Return false on any error to abort processing.
+  bool processOneAction(mrpt::obs::CAction::Ptr& act) override
+  {
+    if (!tellIfThisActPasses(act))
+    {
+      act.reset();  // Free object (all aliases)
+      m_entries_removed++;
+    }
+    m_entries_parsed++;
+
+    if (m_we_are_done_with_this_rawlog) return false;  // We are done, finish execution.
+
+    return true;
+  }
+
+  // Save those entries which are not nullptr.
+  void OnPostProcess(
+      mrpt::obs::CActionCollection::Ptr& actions,
+      mrpt::obs::CSensoryFrame::Ptr& SF,
+      mrpt::obs::CObservation::Ptr& obs) override
+  {
+    if (actions)
+    {
+      ASSERT_(actions && SF);
+      // Remove from SF those observations freed:
+      for (auto it = SF->begin(); it != SF->end();)
+      {
+        if (*it)
+          it++;
+        else
+          it = SF->erase(it);
+      }
+      for (auto it = actions->begin(); it != actions->end();)
+      {
+        if (*it)
+          it++;
+        else
+          it = actions->erase(it);
+      }
+      // Save if not empty:
+      if (actions->size() > 0 || SF->size() > 0)
+        mrpt::serialization::archiveFrom(m_out_rawlog) << actions << SF;
+    }
+    else
+    {
+      if (obs) mrpt::serialization::archiveFrom(m_out_rawlog) << obs;
+    }
+  }
+
+};  // end CRawlogProcessorOnEachObservation
+
+}  // namespace mrpt::apps

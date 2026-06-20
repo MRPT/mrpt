@@ -1,0 +1,353 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/containers/circular_buffer.h>
+#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
+#include <mrpt/poses/CPose3D.h>
+
+namespace mrpt::hwdrivers
+{
+/** \brief Driver for Hokuyo URG/UTM/UXM/UST 2-D laser range-finders via the
+ * SCIP-2.0 protocol over USB serial or Ethernet.
+ *
+ * Produces observations of type mrpt::obs::CObservation2DRangeScan.
+ * Both USB (serial) and Ethernet connections are supported; set either
+ * COM_port_WIN/COM_port_LIN or IP_DIR + PORT_DIR in the config file.
+ *
+ * \note No external library is required; communication is handled directly via
+ * a serial port or TCP socket.
+ *
+ * This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO
+ * URG/UTM/UXM/UST laser scanners (USB or Ethernet).
+ *  Refer to the example code
+ * [HOKUYO_laser_test](http://www.mrpt.org/tutorials/mrpt-examples/example_hokuyo_urgutm_laser_scanner/)
+ *  and to example rawlog-grabber [config
+ * files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/rawlog-grabber)
+ *
+ *  See also the application "rawlog-grabber" for a ready-to-use application to
+ * gather data from the scanner.
+ *
+ *  \code
+ *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+ * -------------------------------------------------------
+ *   [supplied_section_name]
+ *    HOKUYO_motorSpeed_rpm=600
+ *    #HOKUYO_HS_mode   = false    // Optional (un-comment line if used):
+ * Set/unset the High-sensitivity mode (not on all models/firmwares!)
+ *
+ *    # Uncomment serial port or IP address, depending on the Hokuyo model
+ * (serial/USB vs. Ethernet):
+ *    COM_port_WIN = COM3       // Serial port name in Windows
+ *    COM_port_LIN = ttyS0      // Serial port name in GNU/Linux
+ *    #IP_DIR	=	192.168.0.10 // Uncommented this and "PORT_DIR" if the
+ * used HOKUYO is connected by Ethernet instead of USB
+ *    #PORT_DIR = 10940         // Default value: 10940
+ *
+ *    pose_x=0.21	// Laser range scaner 3D position in the robot (meters)
+ *    pose_y=0
+ *    pose_z=0.34
+ *    pose_yaw=0	// Angles in degrees
+ *    pose_pitch=0
+ *    pose_roll=0
+ *
+ *    #disable_firmware_timestamp = true   // Uncomment to use PC time instead
+ * of laser time
+ *
+ *    # Optional: reduced FOV:
+ *    # reduced_fov  = 25 // Deg
+ *
+ *    # Sets decimation of scans directly at the Hokuyo scanner.
+ *    # 0=means send all scans, 1=means send 50% of scans, etc.
+ *    # scan_interval = 0
+ *
+ *    # Overrides communication timeout [milliseconds]
+ *    # comms_timeout_ms = 100
+ *
+ *    #preview = true // Enable GUI visualization of captured data
+ *
+ *    # Optional: Exclusion zones to avoid the robot seeing itself:
+ *    #exclusionZone1_x = 0.20 0.30 0.30 0.20
+ *    #exclusionZone1_y = 0.20 0.30 0.30 0.20
+ *
+ *    # Optional: Exclusion zones to avoid the robot seeing itself:
+ *    #exclusionAngles1_ini = 20  // Deg
+ *    #exclusionAngles1_end = 25  // Deg
+ *
+ *  \endcode
+ * \ingroup mrpt_hwdrivers_grp
+ */
+class CHokuyoURG : public C2DRangeFinderAbstract
+{
+  DEFINE_GENERIC_SENSOR(CHokuyoURG)
+ public:
+  /** Used in CHokuyoURG::displayVersionInfo */
+  struct TSensorInfo
+  {
+    /** The sensor model */
+    std::string model;
+    /** Min/Max ranges, in meters. */
+    double d_min{0}, d_max{0};
+    /** Number of measuremens per 360 degrees. */
+    int scans_per_360deg{0};
+    /** First, last, and front step of the scanner angular span. */
+    int scan_first{0}, scan_last{0}, scan_front{0};
+    /** Standard motor speed, rpm. */
+    int motor_speed_rpm{0};
+  };
+
+ private:
+  /** The first and last ranges to consider from the scan. */
+  int m_firstRange{44}, m_lastRange{725};
+  /** The motor speed (default=600rpm) */
+  int m_motorSpeed_rpm{0};
+  /** The sensor 6D pose: */
+  poses::CPose3D m_sensorPose{0, 0, 0, 0, 0, 0};
+  /** Auxiliary buffer for readings */
+  mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
+
+  /** The last sent measurement command (MDXXX), including the last 0x0A. */
+  std::string m_lastSentMeasCmd;
+
+  /** High sensitivity [HS] mode (default: false) */
+  bool m_highSensMode{false};
+
+  /** Enables the SCIP2.0 protocol (this must be called at the very
+   * begining!).
+   * \return false on any error
+   */
+  bool enableSCIP20();
+
+  /** Passes to 115200bps bitrate.
+   * \return false on any error
+   */
+  bool setHighBaudrate();
+
+  /** Switchs the laser on.
+   * \return false on any error
+   */
+  bool switchLaserOn();
+
+  /** Switchs the laser off
+   * \return false on any error
+   */
+  bool switchLaserOff();
+
+  /** Changes the motor speed in rpm's (default 600rpm)
+   * \return false on any error
+   */
+  bool setMotorSpeed(int motoSpeed_rpm);
+
+  /** Ask to the device, and print to the debug stream, details about the
+   * firmware version,serial number,...
+   * \return false on any error
+   */
+  bool displayVersionInfo();
+
+  /** Ask to the device, and print to the debug stream, details about the
+   * sensor model.
+   *  It also optionally saves all the information in an user supplied data
+   * structure "out_data".
+   * \return false on any error
+   */
+  bool displaySensorInfo(CHokuyoURG::TSensorInfo* out_data = nullptr);
+
+  /** Start the continuous scanning mode, using parameters stored in the
+   * object (loaded
+   * from the .ini file). Maps to SCIP2.0 commands MD (no intensity) or ME
+   * (intensity).
+   * After this command the device will start to send scans until
+   * switchLaserOff() is called.
+   * \return false on any error
+   */
+  bool startScanningMode();
+
+  /** Turns the laser on */
+  void initialize() override;
+
+  /** Parses the response from the device from raw bytes in m_rx_buffer, and
+   * stored the received frame in m_rcv_data. Status codes are stored in
+   * m_rcv_status0 and m_rcv_status1.
+   *
+   * If additionalWaitForData is true, a minimum 100ms timeout is applied, if
+   * m_comms_timeout_ms is smaller than that.
+   *
+   * \return false on any error or if received frame is incomplete and needs
+   * more input bytes.
+   */
+  bool parseResponse(bool additionalWaitForData = true);
+
+  /** Assures a minimum number of bytes in the input buffer, reading from the
+   * serial port or socket only if required.
+   *
+   * If additionalWaitForData is true, a minimum 100ms timeout is applied, if
+   * m_comms_timeout_ms is smaller than that.
+   *
+   * \return false if the number of bytes are not available, even after
+   * trying to fetch more data from the serial port.
+   */
+  bool ensureBufferHasBytes(size_t nDesiredBytes, bool additionalWaitForData);
+
+ public:
+  /** Constructor
+   */
+  CHokuyoURG();
+
+  /** Destructor: turns the laser off */
+  ~CHokuyoURG() override;
+
+  /** \brief Reads and decodes incoming SCIP-2.0 data; stores a complete scan
+   * when available.
+   *
+   * Typically called from a dedicated polling thread.
+   *
+   * \param[out] outThereIsObservation Set to true when a full scan is ready.
+   * \param[out] outObservation        Filled with the new scan when
+   *             outThereIsObservation is true.
+   * \param[out] hardwareError         Set to true on communication failure.
+   */
+  void doProcessSimple(
+      bool& outThereIsObservation,
+      mrpt::obs::CObservation2DRangeScan& outObservation,
+      bool& hardwareError) override;
+
+  /** \brief Initializes communication and starts the continuous scan mode.
+   *
+   * Must be called before requesting any observations.
+   * \return true on success, false on any error.
+   */
+  bool turnOn() override;
+
+  /** \brief Stops the continuous scan mode and puts the device in idle state.
+   *
+   * \return true on success, false on any error.
+   */
+  bool turnOff() override;
+
+  /** \brief Discards any pending bytes in the receive buffer. */
+  void purgeBuffers();
+
+  /** \brief Configures the serial port device name for USB/serial connection.
+   *
+   * When set, the port is opened automatically on the first data request.
+   * \param[in] port_name Device name, e.g. "ttyUSB0" or "COM3".
+   */
+  void setSerialPort(const std::string& port_name) { m_com_port = port_name; }
+
+  /** \brief Configures the IP address and TCP port for Ethernet connection.
+   *
+   * \param[in] ip   IPv4 address of the Hokuyo (e.g. "192.168.0.10").
+   * \param[in] port TCP port (default for Hokuyo: 10940).
+   */
+  void setIPandPort(const std::string& ip, const unsigned int& port)
+  {
+    m_ip_dir = ip;
+    m_port_dir = port;
+  }
+
+  /** \brief Returns the currently configured serial port name.
+   * \return The device name as set by setSerialPort().
+   */
+  const std::string getSerialPort() { return m_com_port; }
+
+  /** \brief Restricts the angular field of view of the scanner.
+   *
+   * Must be called before turnOn(). Pass 0 to disable FOV restriction.
+   * \param[in] fov Desired half-FOV in radians (full FOV = 2*fov).
+   */
+  void setReducedFOV(const double fov) { m_reduced_fov = fov; }
+
+  /** \brief Enables or disables High-Sensitivity (HS) mode.
+   *
+   * Not available on all firmware versions.
+   * \param[in] enabled true to enable HS mode.
+   * \return false on any communication error.
+   */
+  bool setHighSensitivityMode(bool enabled);
+
+  /** \brief Enables or disables intensity (RSSI) capture alongside range.
+   *
+   * Should not be changed while scanning is active.
+   * \param[in] enabled true to request intensity data.
+   * \return false on any communication error.
+   */
+  bool setIntensityMode(bool enabled);
+
+  /** \brief Sets the scan decimation factor.
+   *
+   * A value of 0 means all scans are transmitted; N>0 means only 1 out of
+   * (N+1) scans is sent. Must be set before initialize().
+   * \param[in] skipScanCount Number of scans to skip between deliveries.
+   */
+  void setScanInterval(unsigned int skipScanCount);
+
+  /** \brief Returns the current scan decimation count.
+   * \return The skip count as set by setScanInterval().
+   */
+  unsigned int getScanInterval() const;
+
+  void sendCmd(const char* str);
+
+ protected:
+  /** temp buffer for incoming data packets */
+  std::string m_rcv_data;
+  char m_rcv_status0 = '\0', m_rcv_status1 = '\0';
+
+  /** Returns true if there is a valid stream bound to the laser scanner,
+   * otherwise it first try to open the serial port "m_com_port"
+   */
+  bool ensureStreamIsOpen();
+
+  /** Called upon dtor, or when trying to recover from a disconnected sensor
+   */
+  void closeStreamConnection();
+
+  /** Used to reduce artificially the interval of scan ranges. */
+  double m_reduced_fov{0};
+
+  /** If set to non-empty, the serial port will be attempted to be opened
+   * automatically when this class is first used to request data from the
+   * laser. */
+  std::string m_com_port{};
+
+  /** If set to non-empty and m_port_dir too, the program will try to connect
+   * to a Hokuyo using Ethernet communication */
+  std::string m_ip_dir{};
+  /** If set to non-empty and m_ip_dir too, the program will try to connect to
+   * a Hokuyo using Ethernet communication */
+  unsigned int m_port_dir{10940};
+
+  /** The information gathered when the laser is first open */
+  TSensorInfo m_sensor_info;
+
+  /** Time of the first data packet, for synchronization purposes. */
+  uint32_t m_timeStartUI{0};
+  /** Counter to discard to first few packets before setting the
+   * correspondence between device and computer timestamps. */
+  int m_timeStartSynchDelay{0};
+  mrpt::system::TTimeStamp m_timeStartTT;
+  bool m_disable_firmware_timestamp{false};
+  /** Get intensity from lidar scan (default: false) */
+  bool m_intensity{false};
+  unsigned int m_scan_interval{0};
+  int m_comms_timeout_ms = 100;
+  int m_comms_between_timeout_ms = 1;
+
+  /** See the class documentation at the top for expected parameters */
+  void loadConfig_sensorSpecific(
+      const mrpt::config::CConfigFileBase& configSource, const std::string& iniSection) override;
+
+};  // End of class
+
+}  // namespace mrpt::hwdrivers

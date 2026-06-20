@@ -1,11 +1,10 @@
-\defgroup mrpt_slam_grp [mrpt-slam]
+\defgroup mrpt_slam_grp [mrpt_slam]
 
 SLAM and PF-localization algorithms
 
 [TOC]
 
-# Library mrpt-slam
-
+# Library mrpt_slam
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
@@ -13,25 +12,34 @@ This library is part of MRPT and can be installed in Debian-based systems with:
 
 Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
-Interesting stuff in this library:
+`mrpt_slam` provides SLAM and probabilistic localization algorithms:
 
-- mrpt::slam::CMetricMapBuilder: A virtual base for both ICP and RBPF-based SLAM.
+## Localization
 
-- mrpt::slam::CMonteCarloLocalization2D: Particle filter-based (Monte Carlo) localization for a robot in a planar scenario.
+- mrpt::slam::CMonteCarloLocalization2D: Particle filter (Monte Carlo) localization for a robot in a planar scenario.
+- mrpt::slam::CMonteCarloLocalization3D: 3D particle-filter localization.
 
-- mrpt::maps::CMultiMetricMap: The most versatile kind of metric map, which contains an arbitrary number of any other maps.
+## Metric-map-based SLAM
 
-- Kalman Filters-based Range-Bearing SLAM, in 2D and 3D: See mrpt::slam::CRangeBearingKFSLAM and mrpt::slam::CRangeBearingKFSLAM2D.
+- mrpt::slam::CMetricMapBuilder: Virtual base for ICP and RBPF-based SLAM.
+- mrpt::slam::CMetricMapBuilderICP: Incremental ICP-based mapping.
+- mrpt::slam::CMetricMapBuilderRBPF: Rao-Blackwellized Particle Filter SLAM.
 
-- Data association: The NN and the JCBB algorithms, as very generic templates. See data_association.h
+## Landmark-based (EKF) SLAM
 
+- mrpt::slam::CRangeBearingKFSLAM: Range-bearing EKF SLAM in 3D.
+- mrpt::slam::CRangeBearingKFSLAM2D: Range-bearing EKF SLAM in 2D.
 
-See the full list of classes in mrpt::slam.
-Note that there are many classes
-in that namespace not in the library mrpt-slam, but in libraries mrpt-slam depends
-on. However, in you set mrpt-slam as a dependence of your project, you can be safe
-all mrpt::slam classes will be available to you.
+## Multi-metric maps
 
-See also: For Graph-SLAM, see the namespace mrpt::graphslam in the library mrpt-graphslam.
+- mrpt::maps::CMultiMetricMap: Contains an arbitrary combination of metric maps
+  (occupancy grids, point clouds, landmark maps, etc.) updated simultaneously.
+
+## Data association
+
+The `data_association.h` header provides both NN and JCBB algorithms as
+generic templates — suitable for any measurement/landmark combination.
+
+See also: For Graph-SLAM, see the namespace mrpt::graphslam in `mrpt_graphslam`.
 
 # Library contents

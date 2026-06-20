@@ -1,0 +1,237 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/lock_helper.h>
+#include <mrpt/gui/CBaseGUIWindow.h>
+#include <mrpt/gui/WxSubsystem.h>
+#include <mrpt/system/os.h>
+
+#include <iostream>
+
+using namespace mrpt;
+using namespace mrpt::gui;
+using namespace mrpt::system;
+using namespace std;
+
+/*---------------------------------------------------------------
+          Ctor
+ ---------------------------------------------------------------*/
+CBaseGUIWindow::CBaseGUIWindow(
+    void* winobj_voidptr,
+    uint16_t CMD_CREATE_WIN,
+    uint16_t CMD_DESTROY_WIN,
+    std::string initial_caption) :
+    m_CMD_CREATE_WIN(CMD_CREATE_WIN),
+    m_CMD_DESTROY_WIN(CMD_DESTROY_WIN),
+    m_winobj_voidptr(winobj_voidptr),
+    m_caption(std::move(initial_caption))
+{
+}
+
+/*---------------------------------------------------------------
+          Create the wx Window
+ ---------------------------------------------------------------*/
+void CBaseGUIWindow::createWxWindow(
+    [[maybe_unused]] unsigned int initialWidth, [[maybe_unused]] unsigned int initialHeight)
+{
+  MRPT_START
+#if MRPT_HAS_WXWIDGETS
+  // Create the main wxThread:
+  // -------------------------------
+  if (!WxSubsystem::CreateOneInstanceMainThread())
+  {
+    return;  // Error!
+  }
+
+  // Create window:
+  auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
+  REQ->source2D = static_cast<gui::CDisplayWindow*>(m_winobj_voidptr);
+  REQ->source3D = static_cast<gui::CDisplayWindow3D*>(m_winobj_voidptr);
+  REQ->sourcePlots = static_cast<gui::CDisplayWindowPlots*>(m_winobj_voidptr);
+  REQ->str = m_caption;
+  REQ->OPCODE = static_cast<WxSubsystem::OpCode>(m_CMD_CREATE_WIN);
+  REQ->voidPtr = static_cast<void*>(m_hwnd.getPtrToPtr());
+  REQ->x = initialWidth;
+  REQ->y = initialHeight;
+
+  WxSubsystem::PushPendingWxRequest(std::move(REQ));
+
+  // Wait for the window to realize and signal it's alive:
+  if (!WxSubsystem::isConsoleApp())
+  {
+    std::this_thread::sleep_for(20ms);  // Force at least 1-2 timer ticks for processing the event:
+    wxApp::GetInstance()->Yield(true);
+  }
+  int maxTimeout =
+#ifdef _DEBUG
+      30000;
+#else
+      6000;
+#endif
+  // If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable, use that
+  // timeout instead:
+  if (const char* envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS"); envVal != nullptr)
+  {
+    maxTimeout = atoi(envVal);
+  }
+
+  auto future = m_threadReady.get_future();
+  if (future.wait_for(std::chrono::milliseconds(maxTimeout)) ==
+      std::future_status::timeout)  // 2 secs should be enough...
+  {
+    cerr << "[CBaseGUIWindow::ctor] Timeout waiting window creation."
+         << "\n";
+  }
+#else
+  THROW_EXCEPTION("MRPT compiled without wxWidgets!");
+#endif
+  MRPT_END
+}
+
+/*---------------------------------------------------------------
+          Dtor
+ ---------------------------------------------------------------*/
+CBaseGUIWindow::~CBaseGUIWindow() = default;
+/*---------------------------------------------------------------
+        destroyWxWindow
+ ---------------------------------------------------------------*/
+void CBaseGUIWindow::destroyWxWindow()
+{
+  MRPT_START
+#if MRPT_HAS_WXWIDGETS
+  // Send close request:
+  if (m_hwnd.get())
+  {
+    auto REQ = std::make_unique<WxSubsystem::TRequestToWxMainThread>();
+    REQ->OPCODE = static_cast<WxSubsystem::OpCode>(m_CMD_DESTROY_WIN);
+    REQ->source2D = static_cast<gui::CDisplayWindow*>(m_winobj_voidptr);
+    REQ->source3D = static_cast<gui::CDisplayWindow3D*>(m_winobj_voidptr);
+    REQ->sourcePlots = static_cast<gui::CDisplayWindowPlots*>(m_winobj_voidptr);
+
+    WxSubsystem::PushPendingWxRequest(std::move(REQ));
+
+    // Wait until the thread ends:
+    if (!WxSubsystem::isConsoleApp())
+    {
+      std::this_thread::sleep_for(20ms);  // Force at least 1-2 timer
+      // ticks for processing the
+      // event:
+      wxApp::GetInstance()->Yield(true);
+    }
+    const int maxTimeout =
+#ifdef _DEBUG
+        30000;
+#else
+        6000;
+#endif
+    if (m_windowDestroyed.get_future().wait_for(std::chrono::milliseconds(maxTimeout)) ==
+        std::future_status::timeout)
+    {
+      cerr << "[CBaseGUIWindow::dtor] Timeout waiting window destruction."
+           << "\n";
+    }
+  }
+  WxSubsystem::waitWxShutdownsIfNoWindows();
+#endif
+  MRPT_END
+}
+
+void* CBaseGUIWindow::getWxObject()
+{
+  auto lck = mrpt::lockHelper(m_mtx);
+  return m_hwnd.get();
+}
+
+void CBaseGUIWindow::notifyChildWindowDestruction()
+{
+  auto lck = mrpt::lockHelper(m_mtx);
+  m_hwnd = nullptr;
+}
+
+int CBaseGUIWindow::waitForKey(bool ignoreControlKeys, mrptKeyModifier* out_pushModifier)
+{
+  int k = 0;
+  if (out_pushModifier)
+  {
+    *out_pushModifier = MRPTKMOD_NONE;
+  }
+
+  {
+    auto lck = mrpt::lockHelper(m_mtx);
+    m_keyPushed = false;
+  }
+
+  for (;;)
+  {
+    if (os::kbhit())
+    {
+      k = os::getch();
+      return k;
+    }
+
+    auto lck = mrpt::lockHelper(m_mtx);
+    if (m_keyPushed)
+    {
+      k = m_keyPushedCode;
+      m_keyPushed = false;
+      if (m_keyPushedCode < 256 || !ignoreControlKeys)
+      {
+        if (out_pushModifier)
+        {
+          *out_pushModifier = m_keyPushedModifier;
+        }
+        return k;
+      }
+      // Ignore and keep waiting
+    }
+    lck.unlock();
+
+    std::this_thread::sleep_for(10ms);
+    // Are we still alive?
+    if (!isOpen())
+    {
+      return 0;
+    }
+  }
+}
+
+/*---------------------------------------------------------------
+          getPushedKey
+ ---------------------------------------------------------------*/
+int CBaseGUIWindow::getPushedKey(mrptKeyModifier* out_pushModifier)
+{
+  auto lck = mrpt::lockHelper(m_mtx);
+
+  if (out_pushModifier)
+  {
+    *out_pushModifier = MRPTKMOD_NONE;
+  }
+
+  if (!m_keyPushed)
+  {
+    return 0;
+  }
+
+  int k = m_keyPushedCode;
+  m_keyPushed = false;
+  if (out_pushModifier)
+  {
+    *out_pushModifier = m_keyPushedModifier;
+  }
+  return k;
+}
+
+bool CBaseGUIWindow::isOpen() { return m_hwnd != nullptr; }
+
+void CBaseGUIWindow::notifySemThreadReady() { m_threadReady.set_value(); }

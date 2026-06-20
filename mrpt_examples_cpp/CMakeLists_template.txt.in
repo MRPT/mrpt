@@ -1,0 +1,20 @@
+#-----------------------------------------------------------------------------------------------
+# CMake file for the MRPT example: @CMAKE_MRPT_EXAMPLE_NAME@
+# Generated automatically - Manual changes may be overwritten.
+#-----------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.16)
+
+project(@CMAKE_MRPT_EXAMPLE_NAME@)
+
+# Basic MRPT infrastructure
+find_package(mrpt_common REQUIRED)
+
+# Dependencies
+@TPL_FIND_PACKAGES@
+@CMAKE_MRPT_EXAMPLE_EXTRA_CODE@
+# Define the executable target:
+mrpt_add_executable(
+  TARGET @CMAKE_MRPT_EXAMPLE_NAME@
+  SOURCES main.cpp
+  LINK_LIBRARIES @TPL_LINK_LIBRARIES@
+)

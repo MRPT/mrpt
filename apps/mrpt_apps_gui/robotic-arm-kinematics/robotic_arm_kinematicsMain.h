@@ -1,0 +1,194 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#ifndef robotic_arm_KINEMATICSMAIN_H
+#define robotic_arm_KINEMATICSMAIN_H
+
+//(*Headers(robotic_arm_kinematicsFrame)
+#include <wx/button.h>
+#include <wx/frame.h>
+#include <wx/htmllbox.h>
+#include <wx/listbox.h>
+#include <wx/menu.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/radiobox.h>
+#include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+
+#include "MyGLCanvas.h"
+//*)
+
+#include <mrpt/kinematics/CKinematicChain.h>
+
+#include "PanelDOF.h"
+
+class robotic_arm_kinematicsFrame : public wxFrame
+{
+ public:
+  robotic_arm_kinematicsFrame(wxWindow* parent, wxWindowID id = -1);
+  ~robotic_arm_kinematicsFrame() override;
+
+  void OnSliderDOFScroll(wxScrollEvent&);
+  void OnSliderDOFScrollBis(wxCommandEvent&)
+  {
+    wxScrollEvent e;
+    OnSliderDOFScroll(e);
+  }
+
+ private:
+  //(*Handlers(robotic_arm_kinematicsFrame)
+  void OnQuit([[maybe_unused]] wxCommandEvent& event);
+  void OnAbout([[maybe_unused]] wxCommandEvent& event);
+  void OnlistLinksSelect([[maybe_unused]] wxCommandEvent& event);
+  void OnSliderScroll([[maybe_unused]] wxCommandEvent& event);
+  void OnButtonSaveFromEdit([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnClearClick([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnAddLinkClick([[maybe_unused]] wxCommandEvent& event);
+  void OnLoadBinary([[maybe_unused]] wxCommandEvent& event);
+  void OnSaveBinary([[maybe_unused]] wxCommandEvent& event);
+  void OnrbTypeSelect([[maybe_unused]] wxCommandEvent& event);
+  void OnbtnDeleteClick([[maybe_unused]] wxCommandEvent& event);
+  void OnlbXYZsSelect([[maybe_unused]] wxCommandEvent& event);
+  void On1stXYZSelect([[maybe_unused]] wxCommandEvent& event);
+  //*)
+
+  //(*Identifiers(robotic_arm_kinematicsFrame)
+  static const wxWindowID ID_RADIOBOX2;
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_SIMPLEHTMLLISTBOX1;
+  static const wxWindowID ID_BUTTON5;
+  static const wxWindowID ID_BUTTON6;
+  static const wxWindowID ID_BUTTON7;
+  static const wxWindowID ID_RADIOBOX1;
+  static const wxWindowID ID_STATICLINE4;
+  static const wxWindowID ID_SIMPLEHTMLLISTBOX2;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_STATICTEXT3;
+  static const wxWindowID ID_BUTTON1;
+  static const wxWindowID ID_SLIDER1;
+  static const wxWindowID ID_STATICLINE1;
+  static const wxWindowID ID_SIMPLEHTMLLISTBOX3;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_STATICTEXT5;
+  static const wxWindowID ID_BUTTON2;
+  static const wxWindowID ID_SLIDER2;
+  static const wxWindowID ID_STATICLINE2;
+  static const wxWindowID ID_SIMPLEHTMLLISTBOX4;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_STATICTEXT7;
+  static const wxWindowID ID_BUTTON3;
+  static const wxWindowID ID_SLIDER3;
+  static const wxWindowID ID_STATICLINE3;
+  static const wxWindowID ID_SIMPLEHTMLLISTBOX5;
+  static const wxWindowID ID_TEXTCTRL4;
+  static const wxWindowID ID_STATICTEXT9;
+  static const wxWindowID ID_BUTTON4;
+  static const wxWindowID ID_SLIDER4;
+  static const wxWindowID ID_PANEL1;
+  static const wxWindowID ID_XY_GLCANVAS;
+  static const wxWindowID ID_STATICTEXT10;
+  static const wxWindowID ID_PANEL2;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_LISTBOX1;
+  static const wxWindowID ID_TEXTCTRL5;
+  static const wxWindowID ID_PANEL3;
+  static const wxWindowID ID_NOTEBOOK1;
+  static const wxWindowID ID_MENUITEM3;
+  static const wxWindowID ID_MENUITEM1;
+  static const wxWindowID ID_MENUITEM2;
+  static const wxWindowID idMenuQuit;
+  static const wxWindowID idMenuAbout;
+  //*)
+
+  //(*Declarations(robotic_arm_kinematicsFrame)
+  wxButton* btnDelete;
+  wxSlider* slD;
+  wxPanel* pnDOFs;
+  wxPanel* Panel1;
+  wxButton* btnA;
+  wxStaticLine* StaticLine2;
+  wxSimpleHtmlListBox* SimpleHtmlListBox2;
+  wxButton* btnClear;
+  wxTextCtrl* edTheta;
+  wxSimpleHtmlListBox* SimpleHtmlListBox3;
+  wxTextCtrl* edD;
+  wxRadioBox* rbType;
+  wxSlider* slTheta;
+  wxStaticText* StaticText1;
+  wxStaticText* StaticText10;
+  CMyGLCanvas* m_plot3D;
+  wxStaticText* StaticText3;
+  wxTextCtrl* edA;
+  wxButton* btnAddLink;
+  wxMenuItem* MenuItem3;
+  wxStaticLine* StaticLine1;
+  wxPanel* panelProperties;
+  wxTextCtrl* edMatrix;
+  wxStaticLine* StaticLine3;
+  wxSlider* slA;
+  wxStaticText* StaticText7;
+  wxListBox* lbXYZs;
+  wxMenuItem* MenuItem5;
+  wxButton* btnD;
+  wxStaticText* StaticText5;
+  wxStaticText* StaticText2;
+  wxSimpleHtmlListBox* SimpleHtmlListBox4;
+  wxButton* btnAlpha;
+  wxNotebook* Notebook1;
+  wxSimpleHtmlListBox* SimpleHtmlListBox5;
+  wxRadioBox* RadioBox1;
+  wxMenuItem* MenuItem4;
+  wxButton* btnTh;
+  wxStaticLine* StaticLine4;
+  wxSimpleHtmlListBox* listLinks;
+  wxSlider* slAlpha;
+  wxBoxSizer* boxSizerDOFs;
+  wxStaticText* StaticText9;
+  wxTextCtrl* edAlpha;
+  //*)
+
+  DECLARE_EVENT_TABLE()
+
+ protected:
+  mrpt::kinematics::CKinematicChain m_robot;
+
+  std::vector<std::unique_ptr<PanelDOF>> m_dof_panels;
+
+  mrpt::viz::CSetOfObjects::Ptr m_gl_robot;
+
+  std::vector<mrpt::poses::CPose3D> m_all_poses;
+
+  /** Regenerate the left list from m_robot */
+  void UpdateListLinks();
+
+  /** Regenerate the bottom controls from m_robot */
+  void RegenerateDOFPanels();
+
+  /** Just update the DOF panel status from m_robot */
+  void UpdateDOFPanels();
+
+  void Regenerate3DView();
+
+  void OnListSelectionChange();
+
+  void UpdateMatrixView();
+};
+
+extern robotic_arm_kinematicsFrame* the_win;
+
+#endif  // robotic_arm_KINEMATICSMAIN_H

@@ -1,0 +1,79 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <cstddef>  // std:size_t
+
+/*! \file math_frwds.h
+ * Forward declarations of all mrpt::math classes related to vectors, arrays
+ * and matrices.
+ * Many of the function implementations are in ops_matrices.h, others in
+ * ops_containers.h
+ */
+
+// Minimum Eigen forward declarations for use in MRPT templates:
+namespace Eigen
+{
+template <typename PlainObjectType, int MapOptions, typename StrideType>
+class Map;
+template <int Value>
+class InnerStride;
+template <int Outer, int Inner>
+class Stride;
+template <
+    typename Scalar,
+    int Rows,
+    int Cols,
+    int Options,
+    int MaxRows /*= _Rows*/,
+    int MaxCols /* = _Cols*/>
+class Matrix;
+// For reference: _Options =
+// /*AutoAlign*/ 0 | ((_Rows == 1 && _Cols != 1) ? /*Eigen::RowMajor*/ 1
+//  : (_Cols == 1 && _Rows != 1) ? /*Eigen::ColMajor*/ 0 : /*default: Col*/ 0)
+// ==> That is: _Options=1 for RowMajor as it's the default in MRPT matrices.
+
+template <typename Derived>
+class MatrixBase;
+template <typename Derived>
+struct EigenBase;
+template <typename VectorType, int Size>
+class VectorBlock;
+template <typename LHS, typename RHS, int Option>
+class Product;
+template <typename BinaryOp, typename LhsType, typename RhsType>
+class CwiseBinaryOp;
+}  // namespace Eigen
+
+namespace mrpt::math
+{
+using matrix_index_t = long int;  //!< Index type for matrices
+using matrix_dim_t = long int;    //!< Size type for matrices
+
+/** For usage in one of the constructors of CMatrixFixed or
+   CMatrixDynamic (and derived classes), if it's not required
+   to fill it with zeros at the constructor to save time. */
+enum TConstructorFlags_Matrices
+{
+  UNINITIALIZED_MATRIX = 0
+};
+
+template <class T>
+class CMatrixDynamic;
+template <typename T, matrix_dim_t ROWS, matrix_dim_t COLS>
+class CMatrixFixed;
+template <class T>
+class CVectorDynamic;
+
+}  // namespace mrpt::math

@@ -1,0 +1,78 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/core/exceptions.h>
+#include <mrpt/core/format.h>
+#include <mrpt/io/vector_loadsave.h>
+#include <mrpt/io/zip.h>
+#include <mrpt/system/CTicTac.h>
+
+#include <cstdio>
+#include <iostream>
+
+using namespace mrpt;
+using namespace std;
+
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main(int argc, char** argv)
+{
+  try
+  {
+    if (argc < 2)
+    {
+      cerr << "Usage: test-compress <input_file> [compression level 1-9]"
+           << "\n";
+      return -1;
+    }
+
+    std::vector<uint8_t> buf;
+
+    if (!mrpt::io::loadBinaryFile(buf, argv[1]))
+    {
+      cerr << "Error loading file: " << argv[1] << "\n";
+      return -1;
+    }
+
+    string gzfile = mrpt::format("%s.gz", argv[1]);
+    int compress_level = 9;
+    if (argc >= 3)
+    {
+      compress_level = atoi(argv[2]);
+    }
+    mrpt::system::CTicTac tictac;
+
+    tictac.Tic();
+
+    if (!mrpt::io::zip::compress_gz_file(gzfile, buf, compress_level))
+    {
+      cerr << "Error writing compressing file: " << gzfile << "\n";
+      return -1;
+    }
+
+    double t = tictac.Tac();
+    std::cout << mrpt::format(
+                     "Compressed %s (compress level=%i) in %.04f seconds.", gzfile.c_str(),
+                     compress_level, t)
+              << "\n";
+
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+}

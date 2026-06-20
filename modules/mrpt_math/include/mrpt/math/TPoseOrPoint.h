@@ -1,0 +1,139 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/core/exceptions.h>
+#include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/typemeta/TTypeName.h>  // Used in all derived classes
+
+#include <iosfwd>  // std::ostream
+#include <type_traits>
+
+namespace mrpt::math
+{
+/** \addtogroup  geometry_grp
+ * @{ */
+
+/** Base type of all TPoseXX and TPointXX classes in mrpt::math.
+ * Useful for type traits. No virtual methods at all.
+ */
+struct TPoseOrPoint
+{
+};
+
+/** On MSVC, enable Empty Base Class Optimization (EBO) for classes with
+ *  multiple empty bases so sizeof() matches the expected packed layout.
+ *  See: https://devblogs.microsoft.com/cppblog/empty-base-class-optimization/
+ */
+#ifdef _MSC_VER
+#define MRPT_EMPTY_BASES __declspec(empty_bases)
+#else
+#define MRPT_EMPTY_BASES
+#endif
+
+/** Forward declarations of all mrpt::math classes related to poses and points
+ */
+template <typename T>
+struct TPoint2D_;
+using TPoint2D = TPoint2D_<double>;
+using TPoint2Df = TPoint2D_<float>;
+
+template <typename T>
+struct TPoint3D_;
+using TPoint3D = TPoint3D_<double>;
+using TPoint3Df = TPoint3D_<float>;
+
+struct TPose2D;
+struct TPose3D;
+struct TPose3DQuat;
+struct TPoseOrPoint;
+struct TTwist2D;
+struct TTwist3D;
+template <class T>
+class CQuaternion;
+
+struct TSegment2D;
+struct TSegment3D;
+struct TLine2D;
+struct TLine3D;
+class TPolygon3D;
+class TPolygon2D;
+struct TObject3D;
+struct TObject2D;
+struct TPlane;
+
+namespace internal
+{
+/** Provided for STL and matrices/vectors compatibility */
+template <typename Derived>
+struct ProvideStaticResize
+{
+  [[nodiscard]] constexpr std::size_t rows() const { return Derived::static_size; }
+  [[nodiscard]] constexpr std::size_t cols() const { return 1; }
+  [[nodiscard]] constexpr std::size_t size() const { return Derived::static_size; }
+
+  /** throws if attempted to resize to incorrect length */
+  void resize(std::size_t n) { ASSERT_EQUAL_(n, Derived::static_size); }
+};
+
+/** Provides a returning asString() by delegating to the derived void asString(s) overload. */
+template <typename Derived>
+struct ProvidesStringConversion
+{
+  [[nodiscard]] std::string asString() const
+  {
+    std::string s;
+    static_cast<const Derived*>(this)->asString(s);
+    return s;
+  }
+};
+}  // namespace internal
+
+/** Text streaming function */
+template <
+    class PoseOrPoint,
+    typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
+std::ostream& operator<<(std::ostream& o, const PoseOrPoint& p)
+{
+  o << p.asString();
+  return o;
+}
+
+/** Binary streaming function */
+template <
+    class PoseOrPoint,
+    typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
+mrpt::serialization::CArchive& operator>>(mrpt::serialization::CArchive& in, PoseOrPoint& o)
+{
+  for (size_t i = 0; i < o.static_size; i++)
+  {
+    in >> o[i];
+  }
+  return in;
+}
+
+/** Binary streaming function */
+template <
+    class PoseOrPoint,
+    typename = std::enable_if_t<std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
+mrpt::serialization::CArchive& operator<<(mrpt::serialization::CArchive& out, const PoseOrPoint& o)
+{
+  for (size_t i = 0; i < o.static_size; i++)
+  {
+    out << o[i];
+  }
+  return out;
+}
+
+}  // namespace mrpt::math

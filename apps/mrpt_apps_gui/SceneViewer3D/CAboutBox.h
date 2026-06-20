@@ -1,0 +1,80 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#ifndef CABOUTBOX_H
+#define CABOUTBOX_H
+
+//(*Headers(CAboutBox)
+#include <wx/button.h>
+#include <wx/dialog.h>
+#include <wx/notebook.h>
+#include <wx/sizer.h>
+#include <wx/statbmp.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+//*)
+
+#ifdef Button1
+#undef Button1
+#endif
+// To avoid conflicts between Eigen & X11 headers
+#ifdef Success
+#undef Success
+#endif
+
+class CAboutBox : public wxDialog
+{
+ public:
+  CAboutBox(wxWindow* parent, wxWindowID id = -1);
+  ~CAboutBox() override;
+
+  //(*Identifiers(CAboutBox)
+  static const wxWindowID ID_STATICTEXT1;
+  static const wxWindowID ID_STATICTEXT2;
+  static const wxWindowID ID_STATICBITMAP1;
+  static const wxWindowID ID_STATICLINE1;
+  static const wxWindowID ID_TEXTCTRL4;
+  static const wxWindowID ID_TEXTCTRL1;
+  static const wxWindowID ID_TEXTCTRL2;
+  static const wxWindowID ID_TEXTCTRL3;
+  static const wxWindowID ID_NOTEBOOK1;
+  static const wxWindowID ID_BUTTON1;
+  //*)
+
+ protected:
+  //(*Handlers(CAboutBox)
+  void OnInit(wxInitDialogEvent& event);
+  void OnButton1Click([[maybe_unused]] wxCommandEvent& event);
+  //*)
+
+  //(*Declarations(CAboutBox)
+  wxFlexGridSizer* FlexGridSizer4;
+  wxNotebook* Notebook1;
+  wxStaticText* lbProgName;
+  wxButton* Button1;
+  wxStaticBitmap* StaticBitmap1;
+  wxTextCtrl* lbLicense;
+  wxTextCtrl* lbInfo;
+  wxStaticText* lbBuild;
+  wxStaticLine* StaticLine1;
+  wxTextCtrl* TextCtrl2;
+  wxTextCtrl* TextCtrl1;
+  wxFlexGridSizer* FlexGridSizer1;
+  //*)
+
+ private:
+  DECLARE_EVENT_TABLE()
+};
+
+#endif

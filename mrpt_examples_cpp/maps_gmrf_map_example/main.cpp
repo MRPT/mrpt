@@ -1,0 +1,123 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/random.h>
+#include <mrpt/viz/CPointCloud.h>
+#include <mrpt/viz/stock_objects.h>
+
+#include <iostream>
+
+using namespace mrpt;
+using namespace mrpt::maps;
+using namespace mrpt::math;
+using namespace mrpt::random;
+using namespace std;
+
+// Example of custom connectivity pattern:
+struct MyConnectivityVisitor : public mrpt::maps::CRandomFieldGridMap2D::ConnectivityDescriptor
+{
+  /** Implement the check of whether node i=(icx,icy) is connected with node
+   * j=(jcx,jcy).
+   * This visitor method will be called only for immediate neighbors.
+   * \return true if connected (and the "information" value should be also
+   * updated in out_edge_information), false otherwise.
+   */
+  bool getEdgeInformation(
+      /** The parent map on which we are running */
+      [[maybe_unused]] const CRandomFieldGridMap2D* parent,
+      /** (cx,cy) for node "i" */
+      size_t icx,
+      size_t icy,
+      /** (cx,cy) for node "j" */
+      [[maybe_unused]] size_t jcx,
+      [[maybe_unused]] size_t jcy,
+      /** Must output here the inverse of the variance of the constraint
+       edge. */
+      double& out_edge_information) override
+  {
+    out_edge_information = 1.0 / (1.0 + static_cast<double>(icx) + static_cast<double>(icy));
+    return true;
+  }
+};
+
+void Example_GMRF()
+{
+  const double X_SIZE = 10.0;
+  const double Y_SIZE = 10.0;
+  const double RESOLUTION = 0.5;
+
+  mrpt::maps::CGasConcentrationGridMap2D gasmap(
+      CRandomFieldGridMap2D::mrGMRF_SD /*map type*/, 0, X_SIZE, 0, Y_SIZE,
+      RESOLUTION /* resolution */
+  );
+
+  auto conn = mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr(
+      new MyConnectivityVisitor);
+  gasmap.setMinLoggingLevel(mrpt::system::LVL_DEBUG);
+  gasmap.setCellsConnectivity(conn);
+  gasmap.clear();  // for the connectivity to be taken into account.
+
+  auto gl_data = mrpt::viz::CPointCloud::Create();
+  gl_data->setPointSize(3.0f);
+
+  for (int i = 0; i < 20; i++)
+  {
+    const double value = getRandomGenerator().drawUniform(0.01, 0.99);
+    const double x = getRandomGenerator().drawUniform(0.1, 0.95 * X_SIZE);
+    const double y = getRandomGenerator().drawUniform(0.1, 0.95 * Y_SIZE);
+
+    printf("Observation: (x,y)=(%6.02f,%6.02f,)  => value: %6.03f\n", x, y, value);
+    gl_data->insertPoint(mrpt::math::TPoint3D(x, y, value));
+
+    gasmap.insertIndividualReading(value, TPoint2D(x, y), false /*dont update map now*/);
+  }
+
+  // Update only once now:
+  gasmap.updateMapEstimation();
+
+  // 3D view:
+  auto glObj = gasmap.getVisualization();
+
+  mrpt::gui::CDisplayWindow3D win("Map", 640, 480);
+
+  mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
+  scene->insert(mrpt::viz::stock_objects::CornerXYZSimple(1.0f, 4.0f));
+  scene->insert(gl_data);
+  scene->insert(glObj);
+  win.unlockAccess3DScene();
+  win.repaint();
+
+  win.waitForKey();
+}
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
+{
+  try
+  {
+    Example_GMRF();
+    return 0;
+  }
+  catch (exception& e)
+  {
+    std::cout << "MRPT exception caught: " << e.what() << "\n";
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
+}

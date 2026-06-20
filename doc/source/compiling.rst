@@ -33,8 +33,7 @@ Minimum compiler requisites:
     
        # All Ubuntu versions:
        sudo apt install build-essential pkg-config cmake \
-         libopencv-dev libeigen3-dev zlib1g-dev \
-         libsuitesparse-dev libjpeg-dev \
+         libeigen3-dev zlib1g-dev \
          libwxgtk3.2-dev \
          libicu-dev libsimpleini-dev \
          libzstd-dev
@@ -44,13 +43,13 @@ Minimum compiler requisites:
     .. code-block:: bash
 
        # Build OpenGL graphics, Qt and nanogui GUIs:
-       sudo apt install freeglut3-dev libassimp-dev libglfw3-dev \
+       sudo apt install libassimp-dev libglfw3-dev \
             libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
             libxrandr-dev libxxf86vm-dev
 
        # Support most common sensors:
-       sudo apt install libftdi1-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
-            libdc1394-22-dev libavformat-dev libswscale-dev libpcap-dev \
+       sudo apt install libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
+            libdc1394-dev libavformat-dev libswscale-dev libpcap-dev \
             liboctomap-dev libopenni2-dev
 
        # Support showing debug information in call stacks upon exceptions:
@@ -104,12 +103,6 @@ Minimum compiler requisites:
            nmake -f makefile.vc BUILD=release SHARED=1 RUNTIME_LIBS=dynamic DEBUG_INFO=0 VENDOR=mrpt USE_OPENGL=1 TARGET_CPU=amd64
            nmake -f makefile.vc BUILD=debug SHARED=1 RUNTIME_LIBS=dynamic DEBUG_INFO=1 VENDOR=mrpt USE_OPENGL=1 TARGET_CPU=amd64
 
-    **OpenCV (Optional, but strongly recommended)**
-
-    Download the `latest OpenCV release <https://github.com/opencv/opencv/releases/latest>`_
-    either as source code and compile it, or (easier) install the provided
-    ``opencv-x.y.z-vcZZ.exe`` installer.
-
     **FFmpeg for Win32 (Optional)**
 
     These libraries are optional, you will need them only if you plan to read
@@ -138,33 +131,36 @@ Minimum compiler requisites:
     ``WpdPacl/Include`` and ``wpcap.lib``, respectivaly.
 
 
-2. Build using cmake
+2. Build using colcon
 ----------------------
 
-Using the console
-~~~~~~~~~~~~~~~~~~~
+MRPT 3.0 uses a modular `colcon <https://colcon.readthedocs.io/>`_ workspace.
+Install colcon first:
 
-The usual cmake stuff:
+.. code-block:: bash
+
+  pip3 install colcon-common-extensions
+
+Then build and test:
 
 .. code-block:: bash
 
   cd mrpt
-  mkdir build
-  cd build
-  cmake ..
-  cmake --build .
-  # To run tests:
-  make test_legacy  # or "make test" to see less details
+  colcon build
+  colcon test
 
-Using cmake-gui
-~~~~~~~~~~~~~~~~~~~
+You can also build only specific modules, e.g.:
 
-- Open cmake-gui (Available for Windows/Linux) and set the “source dir” to the
-  root directory of the MRPT source package you have downloaded.
-- Set the “binary directory” to a new, empty directory where to generate the
-  project files.
-- Press “configure”, check for errors, tune the options as required (read below for a description of some options) and finally click “Generate”.
-- Click on "open project" and build as usual.
+.. code-block:: bash
+
+  colcon build --packages-up-to mrpt_obs
+
+Using cmake-gui (advanced)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Individual modules can still be configured with cmake-gui for IDE integration.
+Point cmake-gui at a module subdirectory (e.g. ``modules/mrpt_core``) and set
+the binary directory to a separate build folder.
 
 3. CMake build options
 ------------------------
@@ -219,9 +215,6 @@ For GNU GCC compiler only:
 
         As usual with make, add a ``-j4`` or any higher number to exploit parallelization.
         For building wxWidgets with MinGW **for 64bit** you will need to add ``TARGET_CPU=amd64`` to the parameters above. Otherwise, even with MinGW64 you will obtain 32bit builds.
-
-      - Build OpenCV. Use its CMake build system, select the MinGW compiler and
-        follow the generic OpenCV compilation instructions.
 
     - Open cmake-gui and select MRPT source directory and an empty target (binary) directory.
       Press configure and in the compilers dialog pick MinGW Makefiles. If you obtain an error like:

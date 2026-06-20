@@ -1,0 +1,96 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+#pragma once
+
+#include <mrpt/core/config.h>  // MRPT_OS_*()
+#include <mrpt/system/os.h>
+
+#include <mutex>
+#include <queue>
+#include <thread>
+
+namespace mrpt::system
+{
+/** This class subscribes to notifications of file system changes, thus it can
+ * be used to efficiently stay informed about changes in a directory tree.
+ *  - Windows: Requires Windows 2000 or newer.
+ *  - Linux: Requires kernel 2.6.13 or newer.
+ *  Using this class in an old Linux or other unsoported system (Unix,etc...)
+ * has no effect, i.e. no notification will be ever received.
+ *  \sa CDirectoryExplorer
+ * \ingroup mrpt_system_grp
+ */
+class CFileSystemWatcher
+{
+ public:
+  /** Each of the changes detected by mrpt::system::CFileSystemWatcher
+   */
+  struct TFileSystemChange
+  {
+    TFileSystemChange() = default;
+    /** Complete path of the file/directory that has changed. */
+    std::string path{};
+    /** Whether the event happened to a file or a directory. */
+    bool isDir{false};
+    bool eventModified{false};
+    bool eventCloseWrite{false};
+    bool eventDeleted{false};
+    bool eventMovedTo{false};
+    bool eventMovedFrom{false};
+    bool eventCreated{false};
+    bool eventAccessed{false};
+  };
+
+  using TFileSystemChangeList = std::deque<TFileSystemChange>;
+
+  /** Creates the subscription to a specified path.
+   * \param path The file or directory to watch.
+   */
+  CFileSystemWatcher(const std::string& path);
+
+  /** Destructor
+   */
+  virtual ~CFileSystemWatcher();
+
+  /** Call this method sometimes to get the list of changes in the watched
+   * directory.
+   *  \sa processChange
+   */
+  void getChanges(TFileSystemChangeList& out_list);
+
+ private:
+  /** Ended in "/" */
+  std::string m_watchedDirectory;
+#ifdef _WIN32
+  void* m_hNotif{nullptr};
+  std::thread m_watchThread;
+  /** Watch thread; only needed in win32 */
+  void thread_win32_watch();
+  std::queue<TFileSystemChange*> m_queue_events_win32_msgs;
+  mutable std::mutex m_queue_events_win32_cs;
+#endif
+
+#if defined(MRPT_OS_LINUX) || defined(__APPLE__)
+#include <mrpt/system/config.h>
+#if MRPT_HAS_INOTIFY
+  /** The fd returned by inotify_init. */
+  int m_fd;
+  /** The fd of the watch. */
+  int m_wd;
+#endif
+#endif
+
+};  // End of class def.
+
+}  // namespace mrpt::system

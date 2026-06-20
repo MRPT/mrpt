@@ -1,0 +1,31 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#pragma once
+
+namespace mrpt::graphslam::optimizers
+{
+template <class GRAPH_T>
+void CGraphSlamOptimizer<GRAPH_T>::loadParams(const std::string& source_fname)
+{
+  std::string section("OptimizerParameters");
+  this->setVerbosityLevelFromSection(source_fname, section);
+}
+
+template <class GRAPH_T>
+void CGraphSlamOptimizer<GRAPH_T>::printParams() const
+{
+  std::cout << "GSO Verbosity: " << this->getMinLoggingLevelStr() << "\n";
+}
+}  // namespace mrpt::graphslam::optimizers

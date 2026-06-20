@@ -1,0 +1,136 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#pragma once
+
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/nav/planners/PlannerRRT_common.h>
+#include <mrpt/nav/planners/TMoveTree.h>
+
+#include <numeric>
+
+namespace mrpt::nav
+{
+/** \addtogroup nav_planners Path planning
+ * \ingroup mrpt_nav_grp
+ * @{ */
+
+/** TP Space-based RRT path planning for SE(2) (planar) robots.
+ *
+ *  This planner algorithm is described in the paper:
+ *   - M. Bellone, J.L. Blanco, A. Gimenez, "TP-Space RRT: Kinematic path
+ * planning of non-holonomic any-shape vehicles", International Journal of
+ * Advanced Robotic Systems, 2015.
+ *
+ *  Typical usage:
+ * \code
+ * mrpt::nav::PlannerRRT_SE2_TPS  planner;
+ *
+ * // Set or load planner parameters:
+ * //planner.loadConfig( mrpt::config::CConfigFile("config_file.cfg") );
+ * //planner.params.... // See RRTAlgorithmParams
+ *
+ * // Set RRT end criteria (when to stop searching for a solution)
+ * //planner.end_criteria.... // See RRTEndCriteria
+ *
+ * planner.initialize();  // Initialize after setting the algorithm parameters
+ *
+ * // Set up planning problem:
+ * PlannerRRT_SE2_TPS::TPlannerResult planner_result;
+ * PlannerRRT_SE2_TPS::TPlannerInput planner_input;
+ * // Start & goal:
+ * planner_input.start_pose = mrpt::math::TPose2D(XXX,XXX,XXX);
+ * planner_input.goal_pose  = mrpt::math::TPose2D(XXX,XXX,XXX);
+ * // Set obtacles: (...)
+ * // planner_input.obstacles_points ...
+ * // Set workspace bounding box for picking random poses in the RRT algorithm:
+ * planner_input.world_bbox_min = mrpt::math::TPoint2D(XX,YY);
+ * planner_input.world_bbox_max = mrpt::math::TPoint2D(XX,YY);
+ * // Do path planning:
+ * planner.solve( planner_input, planner_result);
+ * // Analyze contents of planner_result...
+ * \endcode
+ *
+ *  - Changes history:
+ *    - 06/MAR/2014: Creation (MB)
+ *    - 06/JAN/2015: Refactoring (JLBC)
+ *
+ *  \todo Factorize into more generic path planner classes!  //template <class
+ * POSE, class MOTIONS>...
+ */
+class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
+{
+ public:
+  /** The type of poses at nodes */
+  using node_pose_t = mrpt::math::TPose2D;
+
+  struct TPlannerInput : public TPlannerInputTempl<node_pose_t, node_pose_t>
+  {
+    TPlannerInput()
+    {
+      start_pose = mrpt::math::TPose2D(0, 0, 0);
+      goal_pose = mrpt::math::TPose2D(0, 0, 0);
+      world_bbox_min = mrpt::math::TPose2D(-10., -10.0, -M_PI);
+      world_bbox_max = mrpt::math::TPose2D(10., 10.0, M_PI);
+    }
+  };
+
+  struct TPlannerResult : public TPlannerResultTempl<TMoveTreeSE2_TP>
+  {
+  };
+
+  /** Constructor */
+  PlannerRRT_SE2_TPS();
+
+  /** Load all params from a config file source */
+  void loadConfig(
+      const mrpt::config::CConfigFileBase& cfgSource,
+      const std::string& sSectionName = std::string("PTG_CONFIG"));
+
+  /** Must be called after setting all params (see `loadConfig()`) and before
+   * calling `solve()` */
+  void initialize();
+
+  /** The main API entry point: tries to find a planned path from 'goal' to
+   * 'target' */
+  void solve(const TPlannerInput& pi, TPlannerResult& result);
+
+ protected:
+  bool m_initialized{false};
+
+ private:
+  using CandidateMap = std::map<double, TMoveEdgeSE2_TP>;
+
+  /** Insert the lowest-cost candidate edge into the tree and update the best
+   *  solution tracking in `result`.  Returns true if this edge is a new
+   *  best solution to the goal. */
+  bool tryInsertBestCandidate(
+      const CandidateMap& candidates, const TPlannerInput& pi, TPlannerResult& result);
+
+  /** Save a 3-D scene log of the current tree state (respects
+   * params.save_3d_log_freq decimation). */
+  void saveSolveIterationLog(
+      const TPlannerInput& pi,
+      const TPlannerResult& result,
+      const mrpt::poses::CPose2D& x_rand_pose,
+      const std::string& log_msg,
+      size_t& log_decimation_cnt,
+      size_t rrt_iter_counter,
+      size_t solve_count,
+      bool highlight_last_edge = true);
+
+};  // end class PlannerRRT_SE2_TPS
+
+/** @} */
+}  // namespace mrpt::nav

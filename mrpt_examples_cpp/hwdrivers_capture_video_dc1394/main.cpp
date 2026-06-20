@@ -1,0 +1,120 @@
+/*                    _
+                     | |    Mobile Robot Programming Toolkit (MRPT)
+ _ __ ___  _ __ _ __ | |_
+| '_ ` _ \| '__| '_ \| __|          https://www.mrpt.org/
+| | | | | | |  | |_) | |_
+|_| |_| |_|_|  | .__/ \__|     https://github.com/MRPT/mrpt/
+               | |
+               |_|
+
+ Copyright (c) 2005-2026, Individual contributors, see AUTHORS file
+ See: https://www.mrpt.org/Authors - All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
+#include <mrpt/system/CTicTac.h>
+
+#include <iostream>
+
+using namespace mrpt::hwdrivers;
+using namespace mrpt::gui;
+using namespace mrpt::obs;
+using namespace mrpt::system;
+using namespace std;
+
+// #define DO_CAPTURE		1
+#define DO_CAPTURE 0
+
+// ------------------------------------------------------
+//				TestCapture
+// ------------------------------------------------------
+
+void TestCapture_1394()
+{
+  TCaptureOptions_dc1394 options;
+
+  uint64_t cameraGUID = 0;
+  uint16_t cameraUnit = 0;
+
+  options.frame_width = 1024;  // 640;
+  options.frame_height = 768;  // 480;
+  options.color_coding = COLOR_CODING_YUV422;
+
+  // Other capture options:
+  // options.shutter = 900;
+
+  // For stereo Bumblebee tests/debugging (Use the Bumblebee class in
+  // mrpt::vision instead!)
+  //	options.mode7 = 3;
+  //	options.deinterlace_stereo = true;
+
+  CImageGrabber_dc1394 capture(cameraGUID, cameraUnit, options, true /* Verbose */);
+
+  CTicTac tictac;
+
+  std::cout << "Press any key to stop capture to 'capture.rawlog'..."
+            << "\n";
+
+#if DO_CAPTURE
+  CCompressedOutputStream fil("./capture.rawlog");
+#endif
+
+  CDisplayWindow win("Capturing...");
+
+  int cnt = 0;
+
+  while (!mrpt::system::os::kbhit())
+  {
+    if ((cnt++ % 10) == 0)
+    {
+      if (cnt > 0)
+      {
+        double t = tictac.Tac();
+        double FPS = 10 / t;
+        printf("\n %f FPS\n", FPS);
+
+        // Other capture options:
+        // options.shutter = cnt + 1;
+        // capture.changeCaptureOptions(options);
+      }
+      tictac.Tic();
+    }
+
+    auto obs = capture.grabFrame();
+    if (!obs)
+    {
+      cerr << "Error retrieving images!"
+           << "\n";
+      break;
+    }
+
+#if DO_CAPTURE
+    fil << obs.value();
+#endif
+    std::cout << ".";
+    cout.flush();
+    if (win.isOpen()) win.showImage(obs->image);
+  }
+}
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
+{
+  try
+  {
+    TestCapture_1394();
+
+    return 0;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << "\n";
+    return -1;
+  }
+  catch (...)
+  {
+    printf("Another exception!!");
+    return -1;
+  }
+}

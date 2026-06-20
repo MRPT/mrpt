@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mrpt_examples_cpp</name>
+  <version>3.0.5</version>
+  <description>C++ examples demonstrating MRPT functionality</description>
+
+  <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
+  <license file="LICENSE">BSD</license>
+
+  <url type="website">https://github.com/MRPT/</url>
+
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <depend>mrpt_common</depend>
+  <depend>mrpt_gui</depend>
+  <depend>mrpt_imgui</depend>
+  <depend>mrpt_graphslam</depend>
+  <depend>mrpt_libapps_cli</depend>
+  <depend>mrpt_libapps_gui</depend>
+  <depend>mrpt_nav</depend>
+
+  <depend>mrpt_data</depend>
+
+  <build_depend>libglfw3-dev</build_depend>  <!-- For: imgui_mrpt_example -->
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>

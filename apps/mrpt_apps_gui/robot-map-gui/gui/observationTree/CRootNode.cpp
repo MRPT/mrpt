@@ -1,0 +1,39 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          https://www.mrpt.org/                            |
+   |                                                                           |
+   | Copyright (c) 2005-2026, Individual contributors, see AUTHORS file        |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
+   +---------------------------------------------------------------------------+
+   */
+#include "CRootNode.h"
+
+#include "CPairNode.h"
+
+using namespace mrpt;
+using namespace mrpt::maps;
+
+CRootNode::CRootNode(const CSimpleMap& simplemap) : CNode(nullptr)
+{
+  if (!simplemap.empty())
+  {
+    size_t idx = 0;
+    for (auto& p : simplemap)
+    {
+      auto* node = new CPairNode(this, p, idx++);
+      m_posesNode.push_back(node);
+    }
+  }
+}
+
+int CRootNode::childCount() const { return static_cast<int>(m_posesNode.size()); }
+CNode* CRootNode::child(int id)
+{
+  int size = static_cast<int>(m_posesNode.size());
+  ASSERT_(id <= size);
+  return m_posesNode[id];
+}
+
+CNode::ObjectType CRootNode::type() const { return ObjectType::Root; }
+std::string CRootNode::displayName() const { return "root"; }

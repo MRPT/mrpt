@@ -1,0 +1,143 @@
+# ------------------------------------------------------------------------------
+#        Mobile Robot Programming Toolkit (MRPT)
+#
+# Copyright (c) 2005-2026, Jose Luis Blanco-Claraco, contributors (see Git history)
+# All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------------------------------------------
+
+cmake_minimum_required(VERSION 3.16)
+
+# Tell CMake we'll use C++ for use in its tests/flags
+project(mrpt_core LANGUAGES C CXX)
+
+# MRPT CMake scripts: "mrpt_xxx()"
+find_package(mrpt_common REQUIRED)
+
+# find dependencies:
+find_package(Threads REQUIRED)
+
+include(./cmake/bfd.cmake REQUIRED)
+include(./cmake/detect_functions_headers.cmake REQUIRED)
+include(./cmake/detect_word_size.cmake REQUIRED)
+include(./cmake/exceptions_and_backtraces.cmake REQUIRED)
+include(./cmake/max_alignment.cmake REQUIRED)
+include(./cmake/simd.cmake REQUIRED)
+include(./cmake/tbb.cmake REQUIRED)
+
+include(./cmake/script_create_version_h.cmake REQUIRED)
+
+
+# define lib:
+set(LIB_SOURCES
+  src/Clock.cpp
+  src/demangle.cpp
+  src/format.cpp
+  src/get_env.cpp
+  src/exceptions.cpp
+  src/cpu.cpp
+  src/reverse_bytes.cpp
+  src/backtrace.cpp
+  src/aligned_malloc.cpp
+  src/WorkerThreadsPool.cpp
+  src/winerror2str.cpp
+)
+
+set(LIB_UNIT_TEST_SOURCES
+  tests/constexpr_for_unittest.cpp
+  tests/cpu_unittest.cpp
+  tests/bits_math_unittest.cpp
+  tests/reverse_bytes_unittest.cpp
+  tests/format_unittest.cpp
+  tests/WorkerThreadsPool_unittest.cpp
+  tests/exception_unittest.cpp
+  tests/aligned_malloc_unittest.cpp
+  tests/Clock_unittest.cpp
+  tests/lock_helper_unittest.cpp
+  tests/from_string_unittest.cpp
+  tests/is_defined_unittest.cpp
+  tests/round_unittest.cpp
+)
+
+set(LIB_PUBLIC_HEADERS
+  include/mrpt/3rdparty/spimpl.h
+  include/mrpt/registerAllClasses.h
+  include/mrpt/core/optional_ref.h
+  include/mrpt/core/backtrace.h
+  include/mrpt/core/alignment_req.h
+  include/mrpt/core/aligned_std_vector.h
+  include/mrpt/core/round.h
+  include/mrpt/core/cpu.h
+  include/mrpt/core/WorkerThreadsPool.h
+  include/mrpt/core/Clock.h
+  include/mrpt/core/bits_mem.h
+  include/mrpt/core/lock_helper.h
+  include/mrpt/core/SSE_types.h
+  include/mrpt/core/format.h
+  include/mrpt/core/safe_pointers.h
+  include/mrpt/core/bits_math.h
+  include/mrpt/core/exceptions.h
+  include/mrpt/core/constexpr_for.h
+  include/mrpt/core/reverse_bytes.h
+  include/mrpt/core/from_string.h
+  include/mrpt/core/aligned_allocator.h
+  include/mrpt/core/is_defined.h
+  include/mrpt/core/abs_diff.h
+  include/mrpt/core/winerror2str.h
+  include/mrpt/core/demangle.h
+  include/mrpt/core/is_shared_ptr.h
+  include/mrpt/core/aligned_std_basicstring.h
+  include/mrpt/core/integer_select.h
+  include/mrpt/core/bit_cast.h
+  include/mrpt/core/pimpl.h
+  include/mrpt/core/get_env.h
+  include/mrpt/core/Stringifyable.h
+  include/mrpt/core/common.h
+  include/mrpt/core/initializer.h
+  include/mrpt/core/SSE_macros.h
+  include/mrpt/core/StackAlloc.h
+  include/mrpt/core/byte_manip.h
+)
+
+mrpt_add_library(
+  TARGET ${PROJECT_NAME}
+  SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
+#  PUBLIC_LINK_LIBRARIES
+#   xxx
+#  PRIVATE_LINK_LIBRARIES
+#  CMAKE_DEPENDENCIES
+#   xxx
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads) # for WorkerThreads
+
+# Fix a MSVC binary-breaking compatibility in MSVC 2017 15.8:
+if (MSVC)
+  target_compile_definitions(${PROJECT_NAME} PUBLIC -D_ENABLE_EXTENDED_ALIGNED_STORAGE)
+endif()
+
+if(WIN32)
+  target_link_libraries(${PROJECT_NAME} PRIVATE Dbghelp) # For mrpt::demangle(), mrpt::callStackBackTrace()
+else()
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_DL_LIBS}) # For mrpt::callStackBackTrace()
+endif()
+
+if (CMAKE_MRPT_HAS_BFD)
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${BFD_LIBRARIES})
+endif()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH=${MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH}U)
+if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_EXCEPTIONS_WITH_CALL_STACK)
+endif()
+
+# Python wrapper:
+mrpt_add_python_module(core
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+
+mrpt_add_python_binding_test(core
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_core_test.py
+)
+
