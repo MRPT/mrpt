@@ -157,3 +157,21 @@ For ROS 2 packages that previously depended on `mrpt_ros` (MRPT 2.x wrappers), s
 
 - Do not use the compound command "cd foo && git ...", instead, use "git -C foo ...".
 
+## 8. Making a release
+
+Full procedure: `doc/source/make_a_mrpt_release.rst`. Quick summary:
+
+* Each module/app has its own `package.xml` version and `CHANGELOG.rst`,
+  bumped together via `catkin_prepare_release` (from the `catkin_pkg`
+  Python package), run from the repo root on branch `develop`.
+* `develop` is then merged into `master`, tagged, and packaged with
+  `packaging/make_release.sh` (produces signed `.tar.gz`/`.zip` in
+  `$HOME/mrpt_release/`).
+* `packaging/release.py` automates the whole flow end-to-end (version bump
+  → changelog → merge to master → tarball + GPG signature → `gh release
+  create` with the tarball/zip/signature attached for Debian's `uscan`),
+  pausing for explicit confirmation before pushing `master` or publishing
+  the GitHub release. Run with `--dry-run` first to preview the commands.
+* Do not run `packaging/release.py` or any step that pushes/tags/publishes
+  unless the user explicitly asks for an actual release to be cut.
+
