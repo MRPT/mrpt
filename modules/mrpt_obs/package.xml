@@ -24,7 +24,7 @@
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
   <!-- Required system library, used internally for XML parsing -->
-  <build_depend>libtinyxml2-dev</build_depend>
+  <build_depend>tinyxml2</build_depend>
 
   <export>
     <build_type>cmake</build_type>

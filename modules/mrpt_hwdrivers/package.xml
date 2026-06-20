@@ -17,14 +17,11 @@
   <depend>mrpt_viz</depend>
 
   <!-- Optional dependencies, auto-detected by CMake scripts at build time -->
-  <build_depend>libavcodec-dev</build_depend>
-  <build_depend>libavformat-dev</build_depend>
-  <build_depend>libavutil-dev</build_depend>
-  <build_depend>libswscale-dev</build_depend>
+  <build_depend>ffmpeg-dev</build_depend>
   <build_depend>libdc1394-dev</build_depend>
   <build_depend>libopenni2-dev</build_depend>
-  <build_depend>libpcap-dev</build_depend>
-  <build_depend>libusb-1.0-0-dev</build_depend>
+  <build_depend>libpcap</build_depend>
+  <build_depend>libusb-1.0-dev</build_depend>
 
   <export>
     <build_type>cmake</build_type>
