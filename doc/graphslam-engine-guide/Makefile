@@ -15,7 +15,17 @@ all: graphslam-engine-guide.pdf
 # -interactive=nonstopmode keeps the pdflatex backend from stopping at a
 # missing file reference and interactively asking you for an alternative.
 
-graphslam-engine-guide.pdf: graphslam-engine-guide.tex
+# MRPT_VERSION_STR may already be exported by the caller (doc/Makefile,
+# packaging/make_release.sh); fall back to parsing package.xml directly so
+# this guide can also be built standalone:
+MRPT_VERSION_STR ?= $(shell sed -n 's:.*<version>\([0-9.]*\)</version>.*:\1:p' ../../modules/mrpt_common/package.xml | head -n1)
+
+tex_includes/version.tex: FORCE
+	printf '%s\n' '\newcommand{\MRPTVERSION}{$(MRPT_VERSION_STR)}' > $@
+
+FORCE:
+
+graphslam-engine-guide.pdf: graphslam-engine-guide.tex tex_includes/version.tex
 	latexmk -pdf -pdflatex="pdflatex -interactive=nonstopmode" -bibtex -use-make graphslam-engine-guide.tex
 
 graphslam-engine-guide.ps.gz: graphslam-engine-guide.pdf
