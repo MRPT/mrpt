@@ -1,0 +1,69 @@
+=head1 NAME
+
+graphslam-engine - Offline Graph-SLAM engine driven by a rawlog dataset
+
+=head1 SYNOPSIS
+
+   graphslam-engine -i <config_file.ini> -r <dataset.rawlog>
+                     [-g <ground_truth.txt>] [-n <node-reg-decider>]
+                     [-e <edge-reg-decider>] [-o <optimizer>]
+                     [--list-node-regs] [--list-edge-regs] [--list-all-regs]
+                     [--version] [-h]
+
+=head1 DESCRIPTION
+
+B<graphslam-engine> runs an offline pose-graph SLAM engine on a rawlog
+dataset, using pluggable node-registration, edge-registration and
+optimizer classes, and reports/visualizes the resulting pose graph.
+
+=head1 OPTIONS
+
+   -i <config_file.ini>,  --ini-file <config_file.ini>
+     (required) .ini configuration file.
+
+   -r <dataset.rawlog>,  --rawlog <dataset.rawlog>
+     (required) Rawlog dataset file.
+
+   -g <ground_truth.txt>,  --ground-truth <ground_truth.txt>
+     Ground-truth textfile (optional).
+
+   -n <decider>,  --node-reg <decider>
+     Node Registration Decider class (default: CFixedIntervalsNRD).
+
+   -e <decider>,  --edge-reg <decider>
+     Edge Registration Decider class (default: CICPCriteriaERD).
+
+   -o <optimizer>,  --optimizer <optimizer>
+     GraphSlam Optimizer class (default: CLevMarqGSO).
+
+   --list-node-regs
+     List available node registration decider classes and exit.
+
+   --list-edge-regs
+     List available edge registration decider classes and exit.
+
+   --list-all-regs
+     List all available registration/optimizer classes and exit.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+=head1 BUGS
+
+Please report bugs at https://github.com/MRPT/mrpt/issues
+
+=head1 SEE ALSO
+
+The application list and their documentation: https://docs.mrpt.org/reference/latest/applications.html
+
+=head1 AUTHORS
+
+B<graphslam-engine> is part of the Mobile Robot Programming Toolkit (MRPT),
+and was originally written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=cut

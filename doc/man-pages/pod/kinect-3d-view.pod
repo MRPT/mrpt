@@ -1,0 +1,45 @@
+=head1 NAME
+
+kinect-3d-view - Live 3D view of a Kinect RGB-D sensor stream
+
+=head1 SYNOPSIS
+
+   kinect-3d-view [config_file.ini]
+
+=head1 DESCRIPTION
+
+B<kinect-3d-view> grabs frames from a Kinect sensor via C<mrpt::hwdrivers::CKinect>
+in a background thread and renders them live as a coloured 3D point cloud
+(optionally as an octomap), demonstrating multi-threaded grabbing together
+with live 3D rendering.
+
+An optional .ini configuration file may be given to set up the sensor
+(otherwise sensible defaults are used).
+
+=head1 KEY BINDINGS
+
+While the 3D view window has focus:
+
+   o / i      Zoom out / in
+   w / s      Tilt up / down
+   c          Switch between RGB and IR image
+   9          Save the current intensity/IR image to disk
+   p          Toggle point-cloud / octomap rendering
+   mouse      Orbit the 3D view
+
+=head1 BUGS
+
+Please report bugs at https://github.com/MRPT/mrpt/issues
+
+=head1 SEE ALSO
+
+The application list and their documentation: https://docs.mrpt.org/reference/latest/applications.html
+
+=head1 AUTHORS
+
+B<kinect-3d-view> is part of the Mobile Robot Programming Toolkit (MRPT),
+and was originally written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=cut
