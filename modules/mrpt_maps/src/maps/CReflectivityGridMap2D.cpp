@@ -161,7 +161,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
     *cell = static_cast<cell_t>(cell_new);
 
     return true;  // Done!
-  }               // end if "CObservationGasSensors"
+  }  // end if "CObservationGasSensors"
 
   return false;
 
@@ -192,17 +192,17 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
     sensor_pose.composeFrom(takenFrom, o.sensorPose);
 
     const cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
-    if (!cell)
-      return 0;  // out of the map..
-    else
+    if (cell == nullptr)
     {
-      ASSERT_GE_(o.reflectivityLevel, 0);
-      ASSERT_LE_(o.reflectivityLevel, 1);
-      return -0.5 * square((logodd_lut().l2p(*cell) - o.reflectivityLevel) / o.sensorStdNoise);
+      return 0;  // out of the map..
     }
+
+    ASSERT_GE_(o.reflectivityLevel, .0f);
+    ASSERT_LE_(o.reflectivityLevel, .1f);
+    return -0.5 * square((logodd_lut().l2p(*cell) - o.reflectivityLevel) / o.sensorStdNoise);
   }
-  else
-    return 0;
+
+  return 0;
 
   MRPT_END
 }
@@ -215,7 +215,10 @@ void CReflectivityGridMap2D::serializeTo(mrpt::serialization::CArchive& out) con
   // Map cells:
   const auto n = static_cast<uint32_t>(m_map.size());
   out << n;
-  if (n) out.WriteBuffer(&m_map[0], n);
+  if (n)
+  {
+    out.WriteBuffer(&m_map[0], n);
+  }
 
   // Save the insertion options
   out << insertionOptions.channel;  // v3
@@ -238,12 +241,21 @@ void CReflectivityGridMap2D::serializeFrom(mrpt::serialization::CArchive& in, ui
       uint32_t n;
       in >> n;
       m_map.resize(n);
-      if (n) in.ReadBuffer(&m_map[0], n);
+      if (n)
+      {
+        in.ReadBuffer(&m_map[0], n);
+      }
 
       // Load the insertion options:
-      if (version >= 3) in >> insertionOptions.channel;
+      if (version >= 3)
+      {
+        in >> insertionOptions.channel;
+      }
 
-      if (version >= 1) in >> genericMapParams;
+      if (version >= 1)
+      {
+        in >> genericMapParams;
+      }
     }
     break;
     default:

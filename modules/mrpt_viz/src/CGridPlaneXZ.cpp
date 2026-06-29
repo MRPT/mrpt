@@ -78,7 +78,7 @@ void CGridPlaneXZ::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
 
 void CGridPlaneXZ::updateBuffers() const
 {
-  ASSERT_GT_(m_frequency, 0);
+  ASSERT_GT_(m_frequency, .0f);
 
   std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
 

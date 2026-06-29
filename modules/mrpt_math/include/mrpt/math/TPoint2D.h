@@ -277,7 +277,7 @@ struct MRPT_EMPTY_BASES TPoint2D_ : public TPoint2D_data<T>, public TPoseOrPoint
   [[nodiscard]] TPoint2D_<T> unitarize() const
   {
     const T n = norm();
-    ASSERT_GT_(n, 0);
+    ASSERT_GT_(n, static_cast<T>(0));
     const T f = 1 / n;
     return {TPoint2D_data<T>::x * f, TPoint2D_data<T>::y * f};
   }
