@@ -870,7 +870,10 @@ class KDTreeCapable
     if (!m_kdtree3d_data.index) return false;  // no points: nothing to save
     const uint64_t n = m_kdtree3d_data.m_num_points;
     out.write(reinterpret_cast<const char*>(&n), sizeof(n));
+    ASSERTMSG_(
+        static_cast<bool>(out), "kdtree_save_index_3D(): failed to write point-count header.");
     m_kdtree3d_data.index->saveIndex(out);
+    ASSERTMSG_(static_cast<bool>(out), "kdtree_save_index_3D(): failed to write serialized index.");
     return true;
   }
 
@@ -885,17 +888,13 @@ class KDTreeCapable
    *  \sa kdtree_save_index_3D */
   void kdtree_load_index_3D(std::istream& in) const
   {
-    std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
-
-    // Drop any stale trees first.
-    m_kdtree2d_data.clear();
-    m_kdtree3d_data.clear();
 
     const size_t N = derived().kdtree_get_point_count();
 
     uint64_t savedN = 0;
     in.read(reinterpret_cast<char*>(&savedN), sizeof(savedN));
+    ASSERTMSG_(static_cast<bool>(in), "kdtree_load_index_3D(): failed to read point-count header.");
     ASSERTMSG_(
         savedN == static_cast<uint64_t>(N),
         mrpt::format(
@@ -904,19 +903,29 @@ class KDTreeCapable
             "restored before loading the index.",
             static_cast<unsigned long long>(savedN), N));
 
-    m_kdtree3d_data.m_num_points = N;
-    m_kdtree3d_data.m_dim = 3;
+    // Build the new index into a local variable first, so the object is only
+    // mutated once the load is known to have succeeded (a failed read must
+    // never leave the cached trees cleared but "up-to-date").
+    std::unique_ptr<tree3d_t> newIndex;
     if (N)
     {
       // SkipInitialBuildIndex: construct the index WITHOUT building it, since
       // loadIndex() below installs the deserialized tree instead.
-      m_kdtree3d_data.index = std::make_unique<tree3d_t>(
+      newIndex = std::make_unique<tree3d_t>(
           3, derived(),
           nanoflann::KDTreeSingleIndexAdaptorParams(
               kdtree_search_params.leaf_max_size,
               nanoflann::KDTreeSingleIndexAdaptorFlags::SkipInitialBuildIndex));
-      m_kdtree3d_data.index->loadIndex(in);
+      newIndex->loadIndex(in);
+      ASSERTMSG_(static_cast<bool>(in), "kdtree_load_index_3D(): failed to read serialized index.");
     }
+
+    std::lock_guard<std::mutex> lck(m_kdtree_mtx);
+    m_kdtree2d_data.clear();
+    m_kdtree3d_data.clear();
+    m_kdtree3d_data.m_num_points = N;
+    m_kdtree3d_data.m_dim = 3;
+    m_kdtree3d_data.index = std::move(newIndex);
     m_kdtree_is_uptodate = true;
   }
 
@@ -928,24 +937,23 @@ class KDTreeCapable
     if (!m_kdtree2d_data.index) return false;  // no points: nothing to save
     const uint64_t n = m_kdtree2d_data.m_num_points;
     out.write(reinterpret_cast<const char*>(&n), sizeof(n));
+    ASSERTMSG_(
+        static_cast<bool>(out), "kdtree_save_index_2D(): failed to write point-count header.");
     m_kdtree2d_data.index->saveIndex(out);
+    ASSERTMSG_(static_cast<bool>(out), "kdtree_save_index_2D(): failed to write serialized index.");
     return true;
   }
 
   /** 2D counterpart of kdtree_load_index_3D(). \sa kdtree_save_index_2D */
   void kdtree_load_index_2D(std::istream& in) const
   {
-    std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
-
-    // Drop any stale trees first.
-    m_kdtree2d_data.clear();
-    m_kdtree3d_data.clear();
 
     const size_t N = derived().kdtree_get_point_count();
 
     uint64_t savedN = 0;
     in.read(reinterpret_cast<char*>(&savedN), sizeof(savedN));
+    ASSERTMSG_(static_cast<bool>(in), "kdtree_load_index_2D(): failed to read point-count header.");
     ASSERTMSG_(
         savedN == static_cast<uint64_t>(N),
         mrpt::format(
@@ -954,19 +962,29 @@ class KDTreeCapable
             "restored before loading the index.",
             static_cast<unsigned long long>(savedN), N));
 
-    m_kdtree2d_data.m_num_points = N;
-    m_kdtree2d_data.m_dim = 2;
+    // Build the new index into a local variable first, so the object is only
+    // mutated once the load is known to have succeeded (a failed read must
+    // never leave the cached trees cleared but "up-to-date").
+    std::unique_ptr<tree2d_t> newIndex;
     if (N)
     {
       // SkipInitialBuildIndex: construct the index WITHOUT building it, since
       // loadIndex() below installs the deserialized tree instead.
-      m_kdtree2d_data.index = std::make_unique<tree2d_t>(
+      newIndex = std::make_unique<tree2d_t>(
           2, derived(),
           nanoflann::KDTreeSingleIndexAdaptorParams(
               kdtree_search_params.leaf_max_size,
               nanoflann::KDTreeSingleIndexAdaptorFlags::SkipInitialBuildIndex));
-      m_kdtree2d_data.index->loadIndex(in);
+      newIndex->loadIndex(in);
+      ASSERTMSG_(static_cast<bool>(in), "kdtree_load_index_2D(): failed to read serialized index.");
     }
+
+    std::lock_guard<std::mutex> lck(m_kdtree_mtx);
+    m_kdtree2d_data.clear();
+    m_kdtree3d_data.clear();
+    m_kdtree2d_data.m_num_points = N;
+    m_kdtree2d_data.m_dim = 2;
+    m_kdtree2d_data.index = std::move(newIndex);
     m_kdtree_is_uptodate = true;
   }
 
@@ -1023,7 +1041,7 @@ class KDTreeCapable
   /// asking the child class for the data points.
   void rebuild_kdTree_2D() const
   {
-    if (m_kdtree_is_uptodate) return;
+    if (m_kdtree_is_uptodate && m_kdtree2d_data.index) return;
 
     std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
@@ -1057,7 +1075,7 @@ class KDTreeCapable
   /// asking the child class for the data points.
   void rebuild_kdTree_3D() const
   {
-    if (m_kdtree_is_uptodate) return;
+    if (m_kdtree_is_uptodate && m_kdtree3d_data.index) return;
     std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
 
