@@ -20,24 +20,63 @@
 #include <thread>
 #include <vector>
 
+namespace
+{
+// Identity-based deregistration only works for callbacks stored as actual
+// function pointers (free functions / static members / non-capturing
+// lambdas *explicitly* decayed to a function pointer): logDeregisterCallback()
+// compares std::function::target<FnPtr>(), which is only non-null when the
+// std::function was constructed directly from a value of that exact pointer
+// type (assigning a lambda closure directly does NOT count, even if the
+// lambda is non-capturing).
+int g_callCountA = 0;
+int g_callCountB = 0;
+
+void CallbackA(
+    std::string_view, const mrpt::system::VerbosityLevel, std::string_view,
+    const mrpt::Clock::time_point)
+{
+  g_callCountA++;
+}
+
+void CallbackB(
+    std::string_view, const mrpt::system::VerbosityLevel, std::string_view,
+    const mrpt::Clock::time_point)
+{
+  g_callCountB++;
+}
+}  // namespace
+
 TEST(COutputLogger, RegisterDeregisterCallback)
 {
   mrpt::system::COutputLogger log;
   log.setVerbosityLevel(mrpt::system::LVL_DEBUG);
 
-  int callCount = 0;
-  auto cb = [&](std::string_view, const mrpt::system::VerbosityLevel, std::string_view,
-                const mrpt::Clock::time_point&) { callCount++; };
+  g_callCountA = g_callCountB = 0;
+  int& callCountA = g_callCountA;
+  int& callCountB = g_callCountB;
+  // Two distinct function pointers, so that logDeregisterCallback() removing
+  // "a" cannot spuriously also match "b".
+  mrpt::system::output_logger_callback_t cbA = &CallbackA;
+  mrpt::system::output_logger_callback_t cbB = &CallbackB;
 
-  log.logRegisterCallback(cb);
+  log.logRegisterCallback(cbA);
+  log.logRegisterCallback(cbB);
   log.logStr(mrpt::system::LVL_INFO, "hello");
-  EXPECT_EQ(callCount, 1);
+  EXPECT_EQ(callCountA, 1);
+  EXPECT_EQ(callCountB, 1);
 
-  EXPECT_TRUE(log.logDeregisterCallback(cb));
+  // Deregistering "a" must stop only "a" from firing, "b" must keep firing.
+  EXPECT_TRUE(log.logDeregisterCallback(cbA));
   log.logStr(mrpt::system::LVL_INFO, "world");
-  EXPECT_EQ(callCount, 1);  // no further calls after deregistering
+  EXPECT_EQ(callCountA, 1);  // no further calls after deregistering
+  EXPECT_EQ(callCountB, 2);  // still active
 
-  EXPECT_FALSE(log.logDeregisterCallback(cb));  // already removed
+  EXPECT_FALSE(log.logDeregisterCallback(cbA));  // already removed
+
+  EXPECT_TRUE(log.logDeregisterCallback(cbB));
+  log.logStr(mrpt::system::LVL_INFO, "!");
+  EXPECT_EQ(callCountB, 2);  // no further calls after deregistering
 }
 
 // Regression test for a data race between logStr() iterating the callback
@@ -50,6 +89,7 @@ TEST(COutputLogger, ConcurrentRegisterAndLog)
   log.setVerbosityLevel(mrpt::system::LVL_DEBUG);
   log.logging_enable_console_output = false;
 
+  std::atomic<bool> start{false};
   std::atomic<bool> stop{false};
   std::atomic<int> callCount{0};
 
@@ -59,6 +99,9 @@ TEST(COutputLogger, ConcurrentRegisterAndLog)
   std::thread loggerThread(
       [&]()
       {
+        while (!start)
+        {
+        }
         while (!stop)
         {
           log.logStr(mrpt::system::LVL_INFO, "tick");
@@ -68,15 +111,18 @@ TEST(COutputLogger, ConcurrentRegisterAndLog)
   std::thread registerThread(
       [&]()
       {
-        for (int i = 0; i < 200; i++)
+        while (!start)
+        {
+        }
+        for (int i = 0; i < 5000; i++)
         {
           log.logRegisterCallback(cb);
           log.logDeregisterCallback(cb);
         }
       });
 
+  start = true;
   registerThread.join();
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   stop = true;
   loggerThread.join();
 
