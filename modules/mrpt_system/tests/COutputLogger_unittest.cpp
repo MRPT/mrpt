@@ -33,14 +33,18 @@ int g_callCountA = 0;
 int g_callCountB = 0;
 
 void CallbackA(
-    std::string_view, const mrpt::system::VerbosityLevel, std::string_view,
+    std::string_view,
+    const mrpt::system::VerbosityLevel,
+    std::string_view,
     const mrpt::Clock::time_point)
 {
   g_callCountA++;
 }
 
 void CallbackB(
-    std::string_view, const mrpt::system::VerbosityLevel, std::string_view,
+    std::string_view,
+    const mrpt::system::VerbosityLevel,
+    std::string_view,
     const mrpt::Clock::time_point)
 {
   g_callCountB++;
