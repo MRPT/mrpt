@@ -30,11 +30,25 @@
 #include <optional>
 #include <ostream>
 
+// KDTreeSingleIndexAdaptorFlags::SkipInitialBuildIndex, required to load an
+// index without immediately rebuilding it, was added in nanoflann v1.4.3.
+// NOTE: nanoflann's own NANOFLANN_VERSION macro was NOT bumped for that
+// patch release (v1.4.2 and v1.4.3 both report 0x142), so a version check
+// right at that boundary cannot reliably tell them apart. Gate on a higher,
+// unambiguous threshold instead, at the cost of also disabling save/load on
+// the (rare) exact v1.4.3 release.
+#define MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD (NANOFLANN_VERSION >= 0x150)
+
 /** Feature-detection macro for the `mrpt::math::KDTreeCapable` KD-tree index
  *  save/load API (`kdtree_save_index_2D()`/`kdtree_load_index_2D()` and their 3D
  *  counterparts). Downstream code that must build against both this and older
- *  MRPT versions can `#if defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)`. */
+ *  MRPT versions can `#if defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)`.
+ *  Only defined when the underlying nanoflann version actually supports it
+ *  (see MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD); on older nanoflann versions the
+ *  save/load methods still exist but throw `std::runtime_error` at runtime. */
+#if MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
 #define MRPT_HAS_KDTREE_SAVE_LOAD_INDEX 1
+#endif
 
 // Smooth transition to nanoflann>=1.5.0 for older versions:
 namespace nanoflann
@@ -867,9 +881,12 @@ class KDTreeCapable
    *
    *  The typical use case is caching the (costly to build) index alongside a
    *  serialized point cloud, so it does not have to be rebuilt on load.
+   *
+   *  Requires nanoflann >= v1.5.0; throws `std::runtime_error` otherwise.
    *  \sa kdtree_load_index_3D */
-  bool kdtree_save_index_3D(std::ostream& out) const
+  bool kdtree_save_index_3D([[maybe_unused]] std::ostream& out) const
   {
+#if MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
     rebuild_kdTree_3D();  // ensure it is built (locks/unlocks internally)
     std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     if (!m_kdtree3d_data.index) return false;  // no points: nothing to save
@@ -880,6 +897,9 @@ class KDTreeCapable
     m_kdtree3d_data.index->saveIndex(out);
     ASSERTMSG_(static_cast<bool>(out), "kdtree_save_index_3D(): failed to write serialized index.");
     return true;
+#else
+    THROW_EXCEPTION("kdtree_save_index_3D() requires nanoflann >= v1.5.0.");
+#endif
   }
 
   /** Restores a 3D KD-tree index previously written by `kdtree_save_index_3D()`,
@@ -890,9 +910,12 @@ class KDTreeCapable
    *  header (throws `std::runtime_error` on mismatch). On success the index is
    *  marked up-to-date and will NOT be rebuilt on the next query, until the
    *  derived class calls `kdtree_mark_as_outdated()` (e.g. if points change).
+   *
+   *  Requires nanoflann >= v1.5.0; throws `std::runtime_error` otherwise.
    *  \sa kdtree_save_index_3D */
-  void kdtree_load_index_3D(std::istream& in) const
+  void kdtree_load_index_3D([[maybe_unused]] std::istream& in) const
   {
+#if MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
     using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
 
     const size_t N = derived().kdtree_get_point_count();
@@ -932,11 +955,16 @@ class KDTreeCapable
     m_kdtree3d_data.m_dim = 3;
     m_kdtree3d_data.index = std::move(newIndex);
     m_kdtree_is_uptodate = true;
+#else
+    THROW_EXCEPTION("kdtree_load_index_3D() requires nanoflann >= v1.5.0.");
+#endif
   }
 
-  /** 2D counterpart of kdtree_save_index_3D(). \sa kdtree_load_index_2D */
-  bool kdtree_save_index_2D(std::ostream& out) const
+  /** 2D counterpart of kdtree_save_index_3D(). Requires nanoflann >= v1.5.0;
+   *  throws `std::runtime_error` otherwise. \sa kdtree_load_index_2D */
+  bool kdtree_save_index_2D([[maybe_unused]] std::ostream& out) const
   {
+#if MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
     rebuild_kdTree_2D();  // ensure it is built (locks/unlocks internally)
     std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     if (!m_kdtree2d_data.index) return false;  // no points: nothing to save
@@ -947,11 +975,16 @@ class KDTreeCapable
     m_kdtree2d_data.index->saveIndex(out);
     ASSERTMSG_(static_cast<bool>(out), "kdtree_save_index_2D(): failed to write serialized index.");
     return true;
+#else
+    THROW_EXCEPTION("kdtree_save_index_2D() requires nanoflann >= v1.5.0.");
+#endif
   }
 
-  /** 2D counterpart of kdtree_load_index_3D(). \sa kdtree_save_index_2D */
-  void kdtree_load_index_2D(std::istream& in) const
+  /** 2D counterpart of kdtree_load_index_3D(). Requires nanoflann >= v1.5.0;
+   *  throws `std::runtime_error` otherwise. \sa kdtree_save_index_2D */
+  void kdtree_load_index_2D([[maybe_unused]] std::istream& in) const
   {
+#if MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
     using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
 
     const size_t N = derived().kdtree_get_point_count();
@@ -991,7 +1024,12 @@ class KDTreeCapable
     m_kdtree2d_data.m_dim = 2;
     m_kdtree2d_data.index = std::move(newIndex);
     m_kdtree_is_uptodate = true;
+#else
+    THROW_EXCEPTION("kdtree_load_index_2D() requires nanoflann >= v1.5.0.");
+#endif
   }
+
+#undef MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
 
   /** @} */
 

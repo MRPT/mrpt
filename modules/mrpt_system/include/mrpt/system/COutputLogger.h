@@ -343,6 +343,13 @@ class COutputLogger
   mutable std::deque<TMsg> m_history;
   std::shared_ptr<std::mutex> m_historyMtx = std::make_shared<std::mutex>();
 
+  /** Guards m_listCallbacks: logRegisterCallback()/logDeregisterCallback() may
+   * be called (e.g. by a GUI thread hooking into a logger) concurrently with
+   * logStr() running on the logger's own thread, which iterates the list.
+   * A shared_ptr, like m_historyMtx above, so COutputLogger stays copy-
+   * assignable (std::mutex itself is not; loggerReset() relies on this via
+   * `*this = COutputLogger()`). */
+  std::shared_ptr<std::mutex> m_listCallbacksMtx = std::make_shared<std::mutex>();
   std::deque<output_logger_callback_t> m_listCallbacks;
 };
 
