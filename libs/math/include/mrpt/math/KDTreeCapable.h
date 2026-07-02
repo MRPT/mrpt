@@ -11,15 +11,25 @@
 // nanoflann library:
 #include <mrpt/core/common.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/format.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 
 #include <array>
 #include <atomic>
+#include <cstdint>
+#include <istream>
 #include <memory>  // unique_ptr
 #include <mutex>
 #include <nanoflann.hpp>
 #include <optional>
+#include <ostream>
+
+/** Feature-detection macro for the `mrpt::math::KDTreeCapable` KD-tree index
+ *  save/load API (`kdtree_save_index_2D()`/`kdtree_load_index_2D()` and their 3D
+ *  counterparts). Downstream code that must build against both this and older
+ *  MRPT versions can `#if defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)`. */
+#define MRPT_HAS_KDTREE_SAVE_LOAD_INDEX 1
 
 // Smooth transition to nanoflann>=1.5.0 for older versions:
 namespace nanoflann
@@ -836,6 +846,131 @@ class KDTreeCapable
 
   inline void kdTreeEnsureIndexBuilt3D() { rebuild_kdTree_3D(); }
   inline void kdTreeEnsureIndexBuilt2D() { rebuild_kdTree_2D(); }
+
+  /** @name KD-tree index (de)serialization
+   *  @{ */
+
+  /** Serializes the current 3D KD-tree index into the given binary stream,
+   *  building it first if needed. Returns `false` (writing nothing) if the map
+   *  has no points.
+   *
+   *  IMPORTANT: only the tree *topology* is written, NOT the point data. To
+   *  restore it later, first load the points so that `kdtree_get_point_count()`
+   *  and `kdtree_get_pt()` return the identical dataset, then call
+   *  `kdtree_load_index_3D()`. A point-count header is written so that
+   *  `kdtree_load_index_3D()` can detect a mismatched dataset.
+   *
+   *  The typical use case is caching the (costly to build) index alongside a
+   *  serialized point cloud, so it does not have to be rebuilt on load.
+   *  \sa kdtree_load_index_3D */
+  bool kdtree_save_index_3D(std::ostream& out) const
+  {
+    rebuild_kdTree_3D();  // ensure it is built (locks/unlocks internally)
+    std::lock_guard<std::mutex> lck(m_kdtree_mtx);
+    if (!m_kdtree3d_data.index) return false;  // no points: nothing to save
+    const uint64_t n = m_kdtree3d_data.m_num_points;
+    out.write(reinterpret_cast<const char*>(&n), sizeof(n));
+    m_kdtree3d_data.index->saveIndex(out);
+    return true;
+  }
+
+  /** Restores a 3D KD-tree index previously written by `kdtree_save_index_3D()`,
+   *  avoiding the (costly) rebuild that would otherwise happen on the next query.
+   *
+   *  The associated points MUST already be present and identical to those used
+   *  when the index was saved; this is verified against the stored point-count
+   *  header (throws `std::runtime_error` on mismatch). On success the index is
+   *  marked up-to-date and will NOT be rebuilt on the next query, until the
+   *  derived class calls `kdtree_mark_as_outdated()` (e.g. if points change).
+   *  \sa kdtree_save_index_3D */
+  void kdtree_load_index_3D(std::istream& in) const
+  {
+    std::lock_guard<std::mutex> lck(m_kdtree_mtx);
+    using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
+
+    // Drop any stale trees first.
+    m_kdtree2d_data.clear();
+    m_kdtree3d_data.clear();
+
+    const size_t N = derived().kdtree_get_point_count();
+
+    uint64_t savedN = 0;
+    in.read(reinterpret_cast<char*>(&savedN), sizeof(savedN));
+    ASSERTMSG_(
+        savedN == static_cast<uint64_t>(N),
+        mrpt::format(
+            "kdtree_load_index_3D(): saved index point count (%llu) does not "
+            "match the currently loaded points (%zu). The points must be "
+            "restored before loading the index.",
+            static_cast<unsigned long long>(savedN), N));
+
+    m_kdtree3d_data.m_num_points = N;
+    m_kdtree3d_data.m_dim = 3;
+    if (N)
+    {
+      // SkipInitialBuildIndex: construct the index WITHOUT building it, since
+      // loadIndex() below installs the deserialized tree instead.
+      m_kdtree3d_data.index = std::make_unique<tree3d_t>(
+          3, derived(),
+          nanoflann::KDTreeSingleIndexAdaptorParams(
+              kdtree_search_params.leaf_max_size,
+              nanoflann::KDTreeSingleIndexAdaptorFlags::SkipInitialBuildIndex));
+      m_kdtree3d_data.index->loadIndex(in);
+    }
+    m_kdtree_is_uptodate = true;
+  }
+
+  /** 2D counterpart of kdtree_save_index_3D(). \sa kdtree_load_index_2D */
+  bool kdtree_save_index_2D(std::ostream& out) const
+  {
+    rebuild_kdTree_2D();  // ensure it is built (locks/unlocks internally)
+    std::lock_guard<std::mutex> lck(m_kdtree_mtx);
+    if (!m_kdtree2d_data.index) return false;  // no points: nothing to save
+    const uint64_t n = m_kdtree2d_data.m_num_points;
+    out.write(reinterpret_cast<const char*>(&n), sizeof(n));
+    m_kdtree2d_data.index->saveIndex(out);
+    return true;
+  }
+
+  /** 2D counterpart of kdtree_load_index_3D(). \sa kdtree_save_index_2D */
+  void kdtree_load_index_2D(std::istream& in) const
+  {
+    std::lock_guard<std::mutex> lck(m_kdtree_mtx);
+    using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
+
+    // Drop any stale trees first.
+    m_kdtree2d_data.clear();
+    m_kdtree3d_data.clear();
+
+    const size_t N = derived().kdtree_get_point_count();
+
+    uint64_t savedN = 0;
+    in.read(reinterpret_cast<char*>(&savedN), sizeof(savedN));
+    ASSERTMSG_(
+        savedN == static_cast<uint64_t>(N),
+        mrpt::format(
+            "kdtree_load_index_2D(): saved index point count (%llu) does not "
+            "match the currently loaded points (%zu). The points must be "
+            "restored before loading the index.",
+            static_cast<unsigned long long>(savedN), N));
+
+    m_kdtree2d_data.m_num_points = N;
+    m_kdtree2d_data.m_dim = 2;
+    if (N)
+    {
+      // SkipInitialBuildIndex: construct the index WITHOUT building it, since
+      // loadIndex() below installs the deserialized tree instead.
+      m_kdtree2d_data.index = std::make_unique<tree2d_t>(
+          2, derived(),
+          nanoflann::KDTreeSingleIndexAdaptorParams(
+              kdtree_search_params.leaf_max_size,
+              nanoflann::KDTreeSingleIndexAdaptorFlags::SkipInitialBuildIndex));
+      m_kdtree2d_data.index->loadIndex(in);
+    }
+    m_kdtree_is_uptodate = true;
+  }
+
+  /** @} */
 
   /* @} */
 
