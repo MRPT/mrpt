@@ -269,20 +269,28 @@ void COutputLogger::logRegisterCallback(output_logger_callback_t userFunc)
   m_listCallbacks.emplace_back(userFunc);
 }
 
+// Identity is only comparable for callbacks stored as an actual function
+// pointer (free functions / static members / non-capturing lambdas
+// explicitly decayed to a function pointer): target<fnType>() -- NOT
+// target<fnType*>(), which never matches the contained target and left the
+// previous version of this helper dereferencing a null pointer (UB) on
+// every call. Returns 0 (never a valid pointer identity) if the callback
+// has no such comparable identity.
 template <typename T, typename... U>
-size_t getAddress(std::function<T(U...)> f)
+size_t getAddress(const std::function<T(U...)>& f)
 {
   using fnType = T (*)(U...);
-  auto** fnPointer = f.template target<fnType*>();
-  return (size_t)*fnPointer;
+  const fnType* fnPointer = f.template target<fnType>();
+  return fnPointer ? reinterpret_cast<size_t>(*fnPointer) : 0;
 }
 
 bool COutputLogger::logDeregisterCallback(output_logger_callback_t userFunc)
 {
   auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
+  const size_t userAddr = getAddress(userFunc);
   for (auto it = m_listCallbacks.begin(); it != m_listCallbacks.end(); ++it)
   {
-    if (getAddress(*it) == getAddress(userFunc))
+    if (userAddr != 0 && getAddress(*it) == userAddr)
     {
       m_listCallbacks.erase(it);
       return true;
