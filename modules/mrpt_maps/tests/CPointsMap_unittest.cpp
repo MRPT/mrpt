@@ -21,6 +21,7 @@
 
 #include <array>
 #include <sstream>
+#include <stdexcept>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -578,4 +579,93 @@ TEST(CSimplePointsMapTests, nn_radius_search_3D)
   ASSERT_EQ(idxs.size(), 1u);
   ASSERT_EQ(dists.size(), 1u);
   EXPECT_FLOAT_EQ(dists[0], 0.0f);
+}
+
+// ----------------------------------------------------------------------
+// Tests for KDTreeCapable::kdtree_save_index_2D/3D() and
+// kdtree_load_index_2D/3D(), over the same 3x3x3 demo point cloud.
+// ----------------------------------------------------------------------
+
+TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex3D)
+{
+  const auto pts = load_demo_9pts_map<CSimplePointsMap>();
+
+  std::stringstream ss;
+  ASSERT_TRUE(pts.kdtree_save_index_3D(ss));
+
+  // A fresh map with the identical points (same count) can load the index:
+  auto pts2 = load_demo_9pts_map<CSimplePointsMap>();
+  pts2.kdtree_load_index_3D(ss);
+
+  float closestX, closestY, closestZ, distSqr;
+  const size_t idx =
+      pts2.kdTreeClosestPoint3D(2.1f, 2.1f, 2.1f, closestX, closestY, closestZ, distSqr);
+
+  EXPECT_EQ(idx, demo9_N - 1);
+  EXPECT_FLOAT_EQ(closestX, 2.0f);
+  EXPECT_FLOAT_EQ(closestY, 2.0f);
+  EXPECT_FLOAT_EQ(closestZ, 2.0f);
+  EXPECT_NEAR(distSqr, 0.03f, 1e-5f);
+}
+
+TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex2D)
+{
+  const auto pts = load_demo_9pts_map<CSimplePointsMap>();
+
+  std::stringstream ss;
+  ASSERT_TRUE(pts.kdtree_save_index_2D(ss));
+
+  auto pts2 = load_demo_9pts_map<CSimplePointsMap>();
+  pts2.kdtree_load_index_2D(ss);
+
+  float closestX, closestY, distSqr;
+  const size_t idx = pts2.kdTreeClosestPoint2D(0.1f, 0.1f, closestX, closestY, distSqr);
+
+  EXPECT_EQ(idx, 0u);
+  EXPECT_FLOAT_EQ(closestX, 0.0f);
+  EXPECT_FLOAT_EQ(closestY, 0.0f);
+  EXPECT_NEAR(distSqr, 0.02f, 1e-5f);
+}
+
+TEST(CSimplePointsMapTests, kdtreeSaveIndexAfterOtherDimensionQueried)
+{
+  // Regression test: querying one dimension first must not make the other
+  // dimension's save_index() spuriously return false (shared uptodate flag).
+  const auto pts = load_demo_9pts_map<CSimplePointsMap>();
+
+  float cx, cy, cz, distSqr;
+  pts.kdTreeClosestPoint2D(0.1f, 0.1f, cx, cy, distSqr);
+
+  std::stringstream ss;
+  ASSERT_TRUE(pts.kdtree_save_index_3D(ss));
+
+  auto pts2 = load_demo_9pts_map<CSimplePointsMap>();
+  pts2.kdtree_load_index_3D(ss);
+  const size_t idx = pts2.kdTreeClosestPoint3D(2.1f, 2.1f, 2.1f, cx, cy, cz, distSqr);
+  EXPECT_EQ(idx, demo9_N - 1);
+}
+
+TEST(CSimplePointsMapTests, kdtreeSaveIndexEmptyMap)
+{
+  const CSimplePointsMap emptyPts;
+
+  std::stringstream ss2D, ss3D;
+  // No points: nothing is written, and the call returns false.
+  EXPECT_FALSE(emptyPts.kdtree_save_index_2D(ss2D));
+  EXPECT_FALSE(emptyPts.kdtree_save_index_3D(ss3D));
+}
+
+TEST(CSimplePointsMapTests, kdtreeLoadIndexPointCountMismatchThrows)
+{
+  const auto pts = load_demo_9pts_map<CSimplePointsMap>();
+
+  std::stringstream ss;
+  ASSERT_TRUE(pts.kdtree_save_index_3D(ss));
+
+  // A map with a different point count must fail the point-count header
+  // check performed by kdtree_load_index_3D().
+  CSimplePointsMap mismatched;
+  mismatched.insertPoint(0.0f, 0.0f, 0.0f);
+
+  EXPECT_THROW(mismatched.kdtree_load_index_3D(ss), std::exception);
 }
