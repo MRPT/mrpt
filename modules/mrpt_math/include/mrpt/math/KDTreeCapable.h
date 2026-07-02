@@ -30,11 +30,25 @@
 #include <optional>
 #include <ostream>
 
+// KDTreeSingleIndexAdaptorFlags::SkipInitialBuildIndex, required to load an
+// index without immediately rebuilding it, was added in nanoflann v1.4.3.
+// NOTE: nanoflann's own NANOFLANN_VERSION macro was NOT bumped for that
+// patch release (v1.4.2 and v1.4.3 both report 0x142), so a version check
+// right at that boundary cannot reliably tell them apart. Gate on a higher,
+// unambiguous threshold instead, at the cost of also disabling save/load on
+// the (rare) exact v1.4.3 release.
+#define MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD (NANOFLANN_VERSION >= 0x150)
+
 /** Feature-detection macro for the `mrpt::math::KDTreeCapable` KD-tree index
  *  save/load API (`kdtree_save_index_2D()`/`kdtree_load_index_2D()` and their 3D
  *  counterparts). Downstream code that must build against both this and older
- *  MRPT versions can `#if defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)`. */
+ *  MRPT versions can `#if defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)`.
+ *  Only defined when the underlying nanoflann version actually supports it
+ *  (see MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD); on older nanoflann versions the
+ *  save/load methods still exist but throw `std::runtime_error` at runtime. */
+#if MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
 #define MRPT_HAS_KDTREE_SAVE_LOAD_INDEX 1
+#endif
 
 // Smooth transition to nanoflann>=1.5.0 for older versions:
 namespace nanoflann
@@ -854,15 +868,6 @@ class KDTreeCapable
 
   /** @name KD-tree index (de)serialization
    *  @{ */
-
-  // KDTreeSingleIndexAdaptorFlags::SkipInitialBuildIndex, required to load an
-  // index without immediately rebuilding it, was added in nanoflann v1.4.3.
-  // NOTE: nanoflann's own NANOFLANN_VERSION macro was NOT bumped for that
-  // patch release (v1.4.2 and v1.4.3 both report 0x142), so a version check
-  // right at that boundary cannot reliably tell them apart. Gate on a higher,
-  // unambiguous threshold instead, at the cost of also disabling save/load on
-  // the (rare) exact v1.4.3 release.
-#define MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD (NANOFLANN_VERSION >= 0x150)
 
   /** Serializes the current 3D KD-tree index into the given binary stream,
    *  building it first if needed. Returns `false` (writing nothing) if the map
