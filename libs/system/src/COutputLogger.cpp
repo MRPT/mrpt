@@ -79,10 +79,19 @@ void COutputLogger::logStr(const VerbosityLevel level, std::string_view msg_str)
 
   if (level >= m_min_verbosity_level && logging_enable_console_output) msg.dumpToConsole();
 
-  // User callbacks:
+  // User callbacks: copy the list under the lock, then invoke the callbacks
+  // outside of it, so a slow/blocking callback doesn't hold up whoever else
+  // is concurrently registering/deregistering (or logging from another
+  // thread), and so a callback that itself calls logRegisterCallback() /
+  // logDeregisterCallback() on this same logger cannot deadlock.
   if (level >= m_min_verbosity_level_callbacks)
   {
-    for (const auto& c : m_listCallbacks) c(msg.body, msg.level, msg.name, msg.timestamp);
+    std::deque<output_logger_callback_t> callbacksCopy;
+    {
+      auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
+      callbacksCopy = m_listCallbacks;
+    }
+    for (const auto& c : callbacksCopy) c(msg.body, msg.level, msg.name, msg.timestamp);
   }
 }
 
@@ -256,6 +265,7 @@ void COutputLogger::TMsg::dumpToConsole() const
 
 void COutputLogger::logRegisterCallback(output_logger_callback_t userFunc)
 {
+  auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
   m_listCallbacks.emplace_back(userFunc);
 }
 
@@ -269,6 +279,7 @@ size_t getAddress(std::function<T(U...)> f)
 
 bool COutputLogger::logDeregisterCallback(output_logger_callback_t userFunc)
 {
+  auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
   for (auto it = m_listCallbacks.begin(); it != m_listCallbacks.end(); ++it)
   {
     if (getAddress(*it) == getAddress(userFunc))
