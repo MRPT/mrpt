@@ -161,7 +161,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
     *cell = static_cast<cell_t>(cell_new);
 
     return true;  // Done!
-  }  // end if "CObservationGasSensors"
+  }               // end if "CObservationGasSensors"
 
   return false;
 
