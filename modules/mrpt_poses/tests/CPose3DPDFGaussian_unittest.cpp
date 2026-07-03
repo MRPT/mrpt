@@ -466,3 +466,60 @@ TEST_F(Pose3DPDFGaussTests, ChangeCoordsRef)
   testChangeCoordsRef(
       1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.2, -8, 45, 10, 50.0_deg, -10.0_deg, 30.0_deg);
 }
+
+TEST(CPose3DPDFGaussian, DrawSamplesBayesianFusionInverseAndOperators)
+{
+  CMatrixDouble66 cov;
+  cov.setIdentity();
+  cov *= 0.01;
+  CPose3DPDFGaussian p(CPose3D(1, 2, 3, 0.1, 0.2, 0.3), cov);
+
+  std::vector<CVectorDouble> samples;
+  p.drawManySamples(10, samples);
+  EXPECT_EQ(samples.size(), 10u);
+
+  CPose3DPDFGaussian p2(CPose3D(1.01, 2, 3, 0.1, 0.2, 0.3), cov);
+  CPose3DPDFGaussian fused;
+  fused.bayesianFusion(static_cast<const CPose3DPDF&>(p), static_cast<const CPose3DPDF&>(p2));
+  EXPECT_NEAR(fused.mean.x(), 1.005, 0.01);
+
+  CPose3DPDFGaussian inv;
+  p.inverse(inv);
+
+  CPose3DPDFGaussian a(CPose3D(1, 0, 0, 0, 0, 0), cov);
+  a += CPose3D(1, 0, 0, 0, 0, 0);
+  EXPECT_NEAR(a.mean.x(), 2.0, 1e-6);
+
+  CPose3DPDFGaussian b(CPose3D(1, 0, 0, 0, 0, 0), cov);
+  b += CPose3DPDFGaussian(CPose3D(1, 0, 0, 0, 0, 0), cov);
+  EXPECT_NEAR(b.mean.x(), 2.0, 1e-6);
+
+  CPose3DPDFGaussian c(CPose3D(2, 0, 0, 0, 0, 0), cov);
+  c -= CPose3DPDFGaussian(CPose3D(1, 0, 0, 0, 0, 0), cov);
+  EXPECT_NEAR(c.mean.x(), 1.0, 1e-6);
+
+  double pAtMean = p.evaluatePDF(p.mean);
+  EXPECT_GT(pAtMean, 0.0);
+  EXPECT_NEAR(p.evaluateNormalizedPDF(p.mean), 1.0, 1e-3);
+
+  double d = p.mahalanobisDistanceTo(p);
+  EXPECT_NEAR(d, 0.0, 1e-9);
+
+  // Exercise the zero-covariance / non-matching-mean infinity branch:
+  CPose3DPDFGaussian zeroCovP(CPose3D(0, 0, 0, 0, 0, 0), CMatrixDouble66());
+  CPose3DPDFGaussian zeroCovQ(CPose3D(1, 0, 0, 0, 0, 0), CMatrixDouble66());
+  EXPECT_TRUE(std::isinf(zeroCovP.mahalanobisDistanceTo(zeroCovQ)));
+
+  std::ostringstream ss;
+  ss << p;
+  EXPECT_FALSE(ss.str().empty());
+
+  CMatrixDouble subCov = p.getCovSubmatrix2D();
+  CMatrixDouble subCov2;
+  p.getCovSubmatrix2D(subCov2);
+  EXPECT_TRUE(subCov == subCov2);
+  EXPECT_EQ(subCov.rows(), 3);
+
+  EXPECT_TRUE(p == p);
+  EXPECT_FALSE(p == p2);
+}

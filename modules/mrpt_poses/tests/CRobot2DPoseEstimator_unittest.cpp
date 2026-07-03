@@ -13,6 +13,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/system/datetime.h>
 
@@ -98,4 +99,61 @@ TEST(CRobot2DPoseEstimator, integrateOdometryAndLocalization)
   rpe.reset();
   ok = rpe.getCurrentEstimate(p, vl, vg, t1);
   EXPECT_FALSE(ok);
+}
+
+TEST(CRobot2DPoseEstimator, extrapolateRobotPose_StillAndAckermannArc)
+{
+  using namespace mrpt::poses;
+  using namespace mrpt::math;
+
+  // Still (all velocities zero):
+  TPose2D p{1, 2, 0.3};
+  TTwist2D vlStill{0, 0, 0};
+  TPose2D outStill;
+  CRobot2DPoseEstimator::extrapolateRobotPose(p, vlStill, 1.0, outStill);
+  EXPECT_NEAR(outStill.x, p.x, 1e-9);
+  EXPECT_NEAR(outStill.y, p.y, 1e-9);
+  EXPECT_NEAR(outStill.phi, p.phi, 1e-9);
+
+  // Ackermann-like arc (vy==0, non-zero omega):
+  TPose2D p0{0, 0, 0};
+  TTwist2D vlArc{1.0, 0.0, 0.5};
+  TPose2D outArc;
+  CRobot2DPoseEstimator::extrapolateRobotPose(p0, vlArc, 1.0, outArc);
+  EXPECT_GT(outArc.x, 0.0);
+  EXPECT_NEAR(outArc.phi, 0.5, 1e-9);
+}
+
+TEST(CRobot2DPoseEstimator, GetLatestRobotPoseBothOverloads)
+{
+  using namespace mrpt::poses;
+  using namespace mrpt::math;
+
+  CRobot2DPoseEstimator rpe;
+  TPose2D outNone;
+  EXPECT_FALSE(rpe.getLatestRobotPose(outNone));
+  EXPECT_NEAR(outNone.x, 0.0, 1e-9);
+
+  const auto t0 = mrpt::Clock::now();
+  const auto t1 = mrpt::system::timestampAdd(t0, 1.0);
+
+  const TPose2D loc1{10, 20, 0.1};
+  rpe.processUpdateNewPoseLocalization(loc1, t0);
+
+  TPose2D outLocOnly;
+  EXPECT_TRUE(rpe.getLatestRobotPose(outLocOnly));
+  EXPECT_NEAR(outLocOnly.x, loc1.x, 1e-6);
+
+  CPose2D outLocOnlyCPose;
+  EXPECT_TRUE(rpe.getLatestRobotPose(outLocOnlyCPose));
+  EXPECT_NEAR(outLocOnlyCPose.x(), loc1.x, 1e-6);
+
+  const TPose2D odo1{0, 0, 0};
+  rpe.processUpdateNewOdometry(odo1, t1, false, TTwist2D(0, 0, 0));
+
+  TPose2D outOdoNewer;
+  EXPECT_TRUE(rpe.getLatestRobotPose(outOdoNewer));
+
+  // Exercise the dT<=0 warning branch and the hasVelocities=false branch:
+  rpe.processUpdateNewOdometry(odo1, t1, false, TTwist2D(0, 0, 0));
 }

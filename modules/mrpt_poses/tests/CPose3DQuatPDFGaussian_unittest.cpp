@@ -14,14 +14,18 @@
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <Eigen/Dense>
+#include <filesystem>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -570,4 +574,98 @@ TEST_F(Pose3DQuatPDFGaussTests, ChangeCoordsRef)
       1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.1, -8, 45, 10, 50.0_deg, -10.0_deg, 30.0_deg);
   testChangeCoordsRef(
       1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.2, -8, 45, 10, 50.0_deg, -10.0_deg, 30.0_deg);
+}
+
+TEST(CPose3DQuatPDFGaussian, ConstructorsFromOtherPDFsAndCopyFrom)
+{
+  CMatrixDouble33 cov2d;
+  cov2d.setIdentity();
+  cov2d *= 0.01;
+  CPosePDFGaussian pose2d(CPose2D(1, 2, 0.1), cov2d);
+  CPose3DQuatPDFGaussian fromPose2d(pose2d);
+  EXPECT_NEAR(fromPose2d.mean.x(), 1.0, 1e-6);
+
+  CMatrixDouble66 cov3d;
+  cov3d.setIdentity();
+  cov3d *= 0.01;
+  CPose3DPDFGaussian pose3d(CPose3D(1, 2, 3, 0.1, 0.2, 0.3), cov3d);
+  CPose3DQuatPDFGaussian fromPose3d(pose3d);
+  EXPECT_NEAR(fromPose3d.mean.x(), 1.0, 1e-6);
+
+  CPose3DQuatPDFGaussian empty(mrpt::math::UNINITIALIZED_QUATERNION);
+  (void)empty;
+
+  CPose3DQuat meanOut;
+  fromPose3d.getMean(meanOut);
+  EXPECT_NEAR(meanOut.x(), 1.0, 1e-6);
+
+  CPose3DQuatPDFGaussian copied;
+  copied.copyFrom(static_cast<const CPose3DQuatPDF&>(fromPose3d));
+  EXPECT_NEAR(copied.mean.x(), 1.0, 1e-6);
+
+  CPose3DQuatPDFGaussian copiedFrom2d;
+  copiedFrom2d.copyFrom(static_cast<const CPosePDF&>(pose2d));
+  EXPECT_NEAR(copiedFrom2d.mean.x(), 1.0, 1e-6);
+}
+
+TEST(CPose3DQuatPDFGaussian, CopyFromEuler_JacobianAndUTPaths)
+{
+  CMatrixDouble66 cov3d;
+  cov3d.setIdentity();
+  cov3d *= 0.01;
+  CPose3DPDFGaussian pose3d(CPose3D(1, 2, 3, 0.1, 0.2, 0.3), cov3d);
+
+  // Jacobian-based path (default):
+  ASSERT_FALSE(mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION());
+  CPose3DQuatPDFGaussian viaJacob;
+  viaJacob.copyFrom(pose3d);
+  EXPECT_NEAR(viaJacob.mean.x(), 1.0, 1e-6);
+
+  // Unscented-transform path:
+  mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(true);
+  CPose3DQuatPDFGaussian viaUT;
+  viaUT.copyFrom(pose3d);
+  EXPECT_NEAR(viaUT.mean.x(), 1.0, 1e-3);
+  mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(false);
+  ASSERT_FALSE(mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION());
+}
+
+TEST(CPose3DQuatPDFGaussian, SerializationSaveFileDrawSamplesAndEvaluate)
+{
+  CMatrixDouble77 cov;
+  cov.setIdentity();
+  cov *= 0.01;
+  CPose3DQuatPDFGaussian p(CPose3DQuat(CPose3D(1, 2, 3, 0.1, 0.2, 0.3)), cov);
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+  arch << p;
+  buf.Seek(0);
+  CPose3DQuatPDFGaussian p2;
+  arch >> p2;
+  EXPECT_TRUE(p == p2);
+
+  const auto tmpf =
+      (std::filesystem::temp_directory_path() / "mrpt_test_pose3dquatpdfgaussian.txt").string();
+  EXPECT_TRUE(p.saveToTextFile(tmpf));
+
+  CPose3DQuat sample;
+  p.drawSingleSample(sample);
+
+  std::vector<CVectorDouble> samples;
+  p.drawManySamples(10, samples);
+  EXPECT_EQ(samples.size(), 10u);
+
+  double pAtMean = p.evaluatePDF(p.mean);
+  EXPECT_GT(pAtMean, 0.0);
+  EXPECT_NEAR(p.evaluateNormalizedPDF(p.mean), 1.0, 1e-3);
+
+  double d = p.mahalanobisDistanceTo(p);
+  EXPECT_NEAR(d, 0.0, 1e-6);
+
+  std::ostringstream ss;
+  ss << p;
+  EXPECT_FALSE(ss.str().empty());
+
+  EXPECT_TRUE(p == p);
 }

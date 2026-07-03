@@ -14,6 +14,8 @@
 
 #include <mrpt/core/initializer.h>
 #include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPoint2DPDF.h>
+#include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
@@ -69,6 +71,9 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_poses)
   registerClass(CLASS_ID(CPointPDFGaussian));
   registerClass(CLASS_ID(CPointPDFParticles));
   registerClass(CLASS_ID(CPointPDFSOG));
+
+  registerClass(CLASS_ID(CPoint2DPDF));
+  registerClass(CLASS_ID(CPoint2DPDFGaussian));
 
   registerClass(CLASS_ID(CPosePDF));
   registerClass(CLASS_ID(CPose3DPDF));
