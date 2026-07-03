@@ -26,8 +26,8 @@
   <build_depend>eigen</build_depend>
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
-  <!-- kd-trees: system version preferred, embedded copy as fallback -->
-  <build_depend>libnanoflann-dev</build_depend>
+  <!-- kd-trees: vendored version preferred, more up-to-date than libnanoflann-dev, embedded copy as fallback -->
+  <build_depend>nanoflann</build_depend>
 
 
   <export>
