@@ -71,7 +71,7 @@ class OptionsCapable
    * left unmodified) -- or if this class does not define any
    * "creationOptions" group at all (the default implementation).
    */
-  virtual bool trySetCreationOptions(
+  [[nodiscard]] virtual bool trySetCreationOptions(
       [[maybe_unused]] const mrpt::config::CConfigFileBase& cfg,
       [[maybe_unused]] const std::string& section)
   {
