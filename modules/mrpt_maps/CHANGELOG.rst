@@ -2,8 +2,8 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.0 (2026-07-03)
+------------------
 * Merge pull request `#1377 <https://github.com/MRPT/mrpt/issues/1377>`_ from MRPT/feat/options-capable-in-config
   feat(mrpt_config): add OptionsCapable mixin, implement in map classes
 * feat(mrpt_config): add OptionsCapable mixin, implement in map classes

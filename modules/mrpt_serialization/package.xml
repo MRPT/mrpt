@@ -5,7 +5,7 @@
 -->
 <package format="3">
   <name>mrpt_serialization</name>
-  <version>3.0.5</version>
+  <version>3.1.0</version>
   <description>The MRPT C++ library mrpt_serialization</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>

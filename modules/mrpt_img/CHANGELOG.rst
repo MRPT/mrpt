@@ -2,8 +2,8 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.0 (2026-07-03)
+------------------
 * chore: remove undesired bin file
 * Contributors: Jose Luis Blanco-Claraco
 

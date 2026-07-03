@@ -2,8 +2,8 @@
 Changelog for package mrpt_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.0 (2026-07-03)
+------------------
 * chore: ASSERT\_ macros better logging
 * Contributors: Jose Luis Blanco-Claraco
 

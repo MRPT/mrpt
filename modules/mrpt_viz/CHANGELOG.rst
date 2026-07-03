@@ -2,8 +2,8 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.0 (2026-07-03)
+------------------
 * chore: clean warnings
 * Contributors: Jose Luis Blanco-Claraco
 
