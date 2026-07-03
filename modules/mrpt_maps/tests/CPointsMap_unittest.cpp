@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -588,6 +589,9 @@ TEST(CSimplePointsMapTests, nn_radius_search_3D)
 
 TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex3D)
 {
+#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+  GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
+#endif
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
 
   std::stringstream ss;
@@ -610,6 +614,9 @@ TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex3D)
 
 TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex2D)
 {
+#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+  GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
+#endif
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
 
   std::stringstream ss;
@@ -629,6 +636,9 @@ TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex2D)
 
 TEST(CSimplePointsMapTests, kdtreeSaveIndexAfterOtherDimensionQueried)
 {
+#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+  GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
+#endif
   // Regression test: querying one dimension first must not make the other
   // dimension's save_index() spuriously return false (shared uptodate flag).
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
@@ -647,6 +657,9 @@ TEST(CSimplePointsMapTests, kdtreeSaveIndexAfterOtherDimensionQueried)
 
 TEST(CSimplePointsMapTests, kdtreeSaveIndexEmptyMap)
 {
+#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+  GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
+#endif
   const CSimplePointsMap emptyPts;
 
   std::stringstream ss2D, ss3D;
@@ -657,6 +670,9 @@ TEST(CSimplePointsMapTests, kdtreeSaveIndexEmptyMap)
 
 TEST(CSimplePointsMapTests, kdtreeLoadIndexPointCountMismatchThrows)
 {
+#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+  GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
+#endif
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
 
   std::stringstream ss;
