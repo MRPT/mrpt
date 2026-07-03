@@ -15,6 +15,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
@@ -67,7 +68,8 @@ struct THeightGridmapCell
 class CHeightGridMap2D :
     public mrpt::maps::CMetricMap,
     public mrpt::containers::CDynamicGrid<THeightGridmapCell>,
-    public CHeightGridMap2D_Base
+    public CHeightGridMap2D_Base,
+    public mrpt::config::OptionsCapable
 {
   DEFINE_SERIALIZABLE(CHeightGridMap2D, mrpt::maps)
  public:
@@ -126,6 +128,9 @@ class CHeightGridMap2D :
 
     mrpt::img::TColormap colorMap{mrpt::img::cmJET};
   } insertionOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** See docs in base class: in this class it always returns 0 */
   float compute3DMatchingRatio(

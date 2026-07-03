@@ -15,6 +15,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CVoxelMapBase.h>
@@ -122,7 +123,8 @@ template <typename voxel_node_t, typename occupancy_t = int8_t>
 class CVoxelMapOccupancyBase :
     public CVoxelMapBase<voxel_node_t>,
     public detail::logoddscell_traits<occupancy_t>,
-    public mrpt::maps::NearestNeighborsCapable
+    public mrpt::maps::NearestNeighborsCapable,
+    public mrpt::config::OptionsCapable
 {
  protected:
   using occupancy_value_t = occupancy_t;
@@ -189,6 +191,15 @@ class CVoxelMapOccupancyBase :
   TVoxelMap_LikelihoodOptions likelihoodOptions;
 
   TVoxelMap_RenderingOptions renderingOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override
+  {
+    return {
+        { "insertionOptions",  &insertionOptions},
+        {"likelihoodOptions", &likelihoodOptions},
+    };
+  }
 
   /** Performs Bayesian fusion of a new observation of a cell.
    * This method increases the "occupancy-ness" of a cell, managing possible

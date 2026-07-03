@@ -15,6 +15,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
@@ -43,7 +44,8 @@ namespace mrpt::maps
 class CReflectivityGridMap2D :
     public CMetricMap,
     public mrpt::containers::CDynamicGrid<int8_t>,
-    public CLogOddsGridMap2D<int8_t>
+    public CLogOddsGridMap2D<int8_t>,
+    public mrpt::config::OptionsCapable
 {
   DEFINE_SERIALIZABLE(CReflectivityGridMap2D, mrpt::maps)
 
@@ -95,6 +97,9 @@ class CReflectivityGridMap2D :
                           //! CObservationReflectivity instances with a differing
                           //! channel. (Default=-1)
   } insertionOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** See docs in base class: in this class this always returns 0 */
   float compute3DMatchingRatio(

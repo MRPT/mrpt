@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CMatrixF.h>
@@ -45,7 +46,7 @@ namespace mrpt::maps
  * \ingroup mrpt_maps_grp
  * \sa CMetricMap
  */
-class CBeaconMap : public mrpt::maps::CMetricMap
+class CBeaconMap : public mrpt::maps::CMetricMap, public mrpt::config::OptionsCapable
 {
   DEFINE_SERIALIZABLE(CBeaconMap, mrpt::maps)
 
@@ -195,6 +196,9 @@ class CBeaconMap : public mrpt::maps::CMetricMap
      */
     float SOG_separationConstant{3.0f};
   } insertionOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** Save to a MATLAB script which displays 3D error ellipses for the map.
    *	\param file		The name of the file to save the script to.

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/core/optional_ref.h>
@@ -84,7 +85,8 @@ class CPointsMap :
     public mrpt::math::KDTreeCapable<CPointsMap>,
     public mrpt::viz::PLY_Importer,
     public mrpt::viz::PLY_Exporter,
-    public mrpt::maps::NearestNeighborsCapable
+    public mrpt::maps::NearestNeighborsCapable,
+    public mrpt::config::OptionsCapable
 {
   DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap, mrpt::maps)
 
@@ -358,6 +360,9 @@ class CPointsMap :
     mrpt::img::TColormap colormap{mrpt::img::cmNONE};
   };
   TRenderOptions renderOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** Insert the contents of another map into this one with some geometric
    * transformation, without fusing close points.

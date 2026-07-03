@@ -15,6 +15,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/core/pimpl.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -43,7 +44,7 @@ namespace mrpt::maps
  * \ingroup mrpt_maps_grp
  */
 template <class octree_t, class octree_node_t>
-class COctoMapBase : public mrpt::maps::CMetricMap
+class COctoMapBase : public mrpt::maps::CMetricMap, public mrpt::config::OptionsCapable
 {
  public:
   using myself_t = COctoMapBase<octree_t, octree_node_t>;
@@ -238,6 +239,15 @@ class COctoMapBase : public mrpt::maps::CMetricMap
   };
 
   TLikelihoodOptions likelihoodOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override
+  {
+    return {
+        { "insertionOptions",  &insertionOptions},
+        {"likelihoodOptions", &likelihoodOptions},
+    };
+  }
 
   void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override;
 

@@ -2375,3 +2375,12 @@ bool CPointsMap::saveToKittiVelodyneFile(const std::string& filename) const
     return false;
   }
 }
+
+std::map<std::string, mrpt::config::CLoadableOptions*> CPointsMap::optionsByName()
+{
+  return {
+      { "insertionOptions",  &insertionOptions},
+      {"likelihoodOptions", &likelihoodOptions},
+      {    "renderOptions",     &renderOptions},
+  };
+}
