@@ -2,6 +2,27 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#1377 <https://github.com/MRPT/mrpt/issues/1377>`_ from MRPT/feat/options-capable-in-config
+  feat(mrpt_config): add OptionsCapable mixin, implement in map classes
+* feat(mrpt_config): add OptionsCapable mixin, implement in map classes
+  Backports mola::OptionsCapable (MOLAorg/mola) into mrpt_config, next to
+  CLoadableOptions: a virtual interface exposing a class' CLoadableOptions
+  members generically by name, plus a safe creation-options setter. This lets
+  generic tooling (de)serialize a map's insertion/likelihood/render options
+  without knowing the concrete class.
+  Implement it in every mrpt_maps class that holds CLoadableOptions-derived
+  members: COccupancyGridMap2D, COccupancyGridMap3D, CPointsMap,
+  CHeightGridMap2D, CHeightGridMap2D_MRF, CWirelessPowerGridMap2D,
+  CGasConcentrationGridMap2D, CRandomFieldGridMap3D, CReflectivityGridMap2D,
+  CBeaconMap, COctoMapBase and CVoxelMapOccupancyBase.
+* Merge pull request `#1376 <https://github.com/MRPT/mrpt/issues/1376>`_ from MRPT/port/2x-fixes-jul2026
+  Port 2.x fixes: COutputLogger thread-safety, octomap build flag
+* Merge pull request `#1374 <https://github.com/MRPT/mrpt/issues/1374>`_ from MRPT/feat/kdtree-save-load-index
+  feat(math): KDTreeCapable save/load of the KD-tree index (2D and 3D)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.4 (2026-06-17)
 ------------------
 

@@ -2,6 +2,14 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#1376 <https://github.com/MRPT/mrpt/issues/1376>`_ from MRPT/port/2x-fixes-jul2026
+  Port 2.x fixes: COutputLogger thread-safety, octomap build flag
+* Merge pull request `#1374 <https://github.com/MRPT/mrpt/issues/1374>`_ from MRPT/feat/kdtree-save-load-index
+  feat(math): KDTreeCapable save/load of the KD-tree index (2D and 3D)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.4 (2026-06-17)
 ------------------
 

@@ -2,6 +2,11 @@
 Changelog for package mrpt_typemeta
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix: static_string build error for i386
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.4 (2026-06-17)
 ------------------
 

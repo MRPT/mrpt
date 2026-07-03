@@ -2,6 +2,9 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.0.4 (2026-06-17)
 ------------------
 
