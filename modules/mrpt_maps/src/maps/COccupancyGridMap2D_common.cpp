@@ -913,3 +913,11 @@ void COccupancyGridMap2D::nn_radius_search(
     if (maxPoints && results.size() >= maxPoints) break;
   }
 }
+
+std::map<std::string, mrpt::config::CLoadableOptions*> COccupancyGridMap2D::optionsByName()
+{
+  return {
+      { "insertionOptions",  &insertionOptions},
+      {"likelihoodOptions", &likelihoodOptions},
+  };
+}

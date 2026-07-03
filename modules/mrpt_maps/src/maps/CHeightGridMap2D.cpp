@@ -410,3 +410,10 @@ float CHeightGridMap2D::compute3DMatchingRatio(
 }
 
 CHeightGridMap2D::TMapRepresentation CHeightGridMap2D::getMapType() { return m_mapType; }
+
+std::map<std::string, mrpt::config::CLoadableOptions*> CHeightGridMap2D::optionsByName()
+{
+  return {
+      {"insertionOptions", &insertionOptions},
+  };
+}

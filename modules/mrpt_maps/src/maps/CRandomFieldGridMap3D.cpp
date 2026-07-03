@@ -408,3 +408,10 @@ void CRandomFieldGridMap3D::TPriorFactorGMRF::evalJacobian(double& dr_dx_i, doub
   dr_dx_i = +1.0;
   dr_dx_j = -1.0;
 }
+
+std::map<std::string, mrpt::config::CLoadableOptions*> CRandomFieldGridMap3D::optionsByName()
+{
+  return {
+      {"insertionOptions", &insertionOptions},
+  };
+}

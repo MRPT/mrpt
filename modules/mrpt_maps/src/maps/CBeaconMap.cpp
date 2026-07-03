@@ -1151,3 +1151,11 @@ void CBeaconMap::saveToTextFile(const string& fil) const
   os::fclose(f);
   MRPT_END
 }
+
+std::map<std::string, mrpt::config::CLoadableOptions*> CBeaconMap::optionsByName()
+{
+  return {
+      { "insertionOptions",  &insertionOptions},
+      {"likelihoodOptions", &likelihoodOptions},
+  };
+}

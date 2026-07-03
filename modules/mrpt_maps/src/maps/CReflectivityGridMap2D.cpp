@@ -394,3 +394,10 @@ float CReflectivityGridMap2D::compute3DMatchingRatio(
 {
   return 0;
 }
+
+std::map<std::string, mrpt::config::CLoadableOptions*> CReflectivityGridMap2D::optionsByName()
+{
+  return {
+      {"insertionOptions", &insertionOptions},
+  };
+}

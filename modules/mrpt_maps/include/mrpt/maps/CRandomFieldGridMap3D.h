@@ -15,6 +15,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/containers/CDynamicGrid3D.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>
 #include <mrpt/math/TPoint3D.h>
@@ -76,7 +77,8 @@ struct TRandomFieldVoxel
 class CRandomFieldGridMap3D :
     public mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>,
     public mrpt::serialization::CSerializable,
-    public mrpt::system::COutputLogger
+    public mrpt::system::COutputLogger,
+    public mrpt::config::OptionsCapable
 {
   using BASE = mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>;
 
@@ -146,6 +148,9 @@ class CRandomFieldGridMap3D :
 
   /** \sa updateMapEstimation() */
   TInsertionOptions insertionOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** Changes the size of the grid, maintaining previous contents. \sa setSize
    */

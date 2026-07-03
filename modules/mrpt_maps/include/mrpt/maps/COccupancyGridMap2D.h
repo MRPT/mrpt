@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/core/safe_pointers.h>
@@ -66,7 +67,8 @@ namespace mrpt::maps
 class COccupancyGridMap2D :
     public CMetricMap,
     public CLogOddsGridMap2D<OccGridCellTraits::cellType>,
-    public mrpt::maps::NearestNeighborsCapable
+    public mrpt::maps::NearestNeighborsCapable,
+    public mrpt::config::OptionsCapable
 {
   DEFINE_SERIALIZABLE(COccupancyGridMap2D, mrpt::maps)
  public:
@@ -609,6 +611,9 @@ class COccupancyGridMap2D :
      * if set to true (default=false). */
     bool enableLikelihoodCache{true};
   } likelihoodOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** Auxiliary private class. */
   using TPairLikelihoodIndex = std::pair<double, mrpt::math::TPoint2D>;
