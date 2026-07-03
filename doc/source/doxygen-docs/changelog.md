@@ -1,5 +1,11 @@
 \page changelog Change Log
 
+# Version 2.15.19: Released Jul 3rd, 2026
+- fix(system): correct dangling-pointer bug in COutputLogger::logDeregisterCallback
+- fix(system): guard COutputLogger's callback list against concurrent register/log
+- fix(math): harden KDTreeCapable save/load index against stale-flag and partial-failure bugs
+- feat(math): KDTreeCapable save/load of the KD-tree index (2D and 3D)
+
 # Version 2.15.18: Released May 12th, 2026
 - Hot fix: fixes needed to build new octomap targets upstream in ROS build farms.
 
