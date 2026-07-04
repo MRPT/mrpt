@@ -5,7 +5,7 @@
 -->
 <package format="3">
   <name>mrpt_containers</name>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
   <description>The MRPT C++ library mrpt_containers</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>

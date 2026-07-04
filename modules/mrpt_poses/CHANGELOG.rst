@@ -2,8 +2,8 @@
 Changelog for package mrpt_poses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.1 (2026-07-04)
+------------------
 * add more mrpt_poses unit tests
 * Contributors: Jose Luis Blanco-Claraco
 
