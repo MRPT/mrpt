@@ -2,6 +2,9 @@
 Changelog for package mrpt_serialization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.1.0 (2026-07-03)
 ------------------
 

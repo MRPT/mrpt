@@ -2,6 +2,11 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* math: add nanoflann as rosdep dependency (more up-to-date than system libnanoflann-dev)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.0 (2026-07-03)
 ------------------
 * Merge pull request `#1376 <https://github.com/MRPT/mrpt/issues/1376>`_ from MRPT/port/2x-fixes-jul2026
