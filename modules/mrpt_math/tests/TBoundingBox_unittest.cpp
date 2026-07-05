@@ -13,8 +13,10 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/TPose3D.h>
+#include <mrpt/serialization/CArchive.h>
 
 template <typename T>
 void testDefaultCtor()
@@ -126,6 +128,38 @@ TEST(TBoundingBox, intersections)
 {
   testIntersections<float>();
   testIntersections<double>();
+}
+
+TEST(TBoundingBox, SerializationRoundTrip)
+{
+  mrpt::math::TBoundingBox bb({0, 1, 2}, {3, 4, 5});
+
+  mrpt::io::CMemoryStream membuf;
+  auto arch = mrpt::serialization::archiveFrom(membuf);
+  arch << bb;
+  membuf.Seek(0);
+
+  mrpt::math::TBoundingBox bb2;
+  arch >> bb2;
+
+  EXPECT_EQ(bb.min, bb2.min);
+  EXPECT_EQ(bb.max, bb2.max);
+}
+
+TEST(TBoundingBox, SerializationRoundTripFloat)
+{
+  mrpt::math::TBoundingBoxf bb({0, 1, 2}, {3, 4, 5});
+
+  mrpt::io::CMemoryStream membuf;
+  auto arch = mrpt::serialization::archiveFrom(membuf);
+  arch << bb;
+  membuf.Seek(0);
+
+  mrpt::math::TBoundingBoxf bb2;
+  arch >> bb2;
+
+  EXPECT_EQ(bb.min, bb2.min);
+  EXPECT_EQ(bb.max, bb2.max);
 }
 
 TEST(TBoundingBox, compose)

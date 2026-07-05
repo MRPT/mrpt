@@ -130,7 +130,7 @@ void mrpt::math::ransac_detect_3D_planes(
   // ---------------------------------------------
   // For each plane:
   // ---------------------------------------------
-  for (;;)
+  while (remainingPoints.cols() >= 3)
   {
     std::vector<size_t> this_best_inliers;
     CMatrixDynamic<NUMTYPE> this_best_model;

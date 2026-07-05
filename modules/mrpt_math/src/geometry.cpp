@@ -1535,7 +1535,7 @@ bool math::intersect(const TObject3D& o1, const TObject3D& o2, TObject3D& obj)
     else if (o2.getPolygon(po2))
       return intersect(l1, po2, obj);
     else if (o2.getPlane(pl2))
-      return intersect(l2, pl2, obj);  // else return false;
+      return intersect(l1, pl2, obj);  // else return false;
   }
   else if (o1.getPolygon(po1))
   {

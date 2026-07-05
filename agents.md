@@ -175,28 +175,59 @@ Full procedure: `doc/source/make_a_mrpt_release.rst`. Quick summary:
 * Do not run `packaging/release.py` or any step that pushes/tags/publishes
   unless the user explicitly asks for an actual release to be cut.
 
-## 9. Code Coverage Status (baseline: 2026-07-03)
+## 9. Code Coverage Status (baseline: 2026-07-03, refreshed 2026-07-05)
 
 A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
-overall: **44.8% lines / 31.0% branches** — well short of goal.
+overall (2026-07-05): **51.0% lines / 37.8% branches** — well short of goal.
+Per-module rows below are still the 2026-07-03 baseline except where a row is
+tagged with a newer date (e.g. `mrpt_math`, after its unit-test pass).
 
 To reproduce:
 ```bash
 colcon build --base-paths modules --cmake-args -DENABLE_COVERAGE=ON -DBUILD_TESTING=ON
 colcon test --base-paths modules
-gcovr --root . -j$(nproc) --gcov-ignore-parse-errors=negative_hits.warn_once_per_file \
+gcovr --root . -j$(nproc) --gcov-ignore-parse-errors=all \
   --exclude-unreachable-branches --exclude-throw-branches \
   --exclude '.*/3rdparty/.*' --exclude '.*/tests/.*' --exclude '.*_unittest\.cpp' \
   --exclude '.*/python_bindings/.*' --exclude '.*/samples/.*' \
   --json-pretty -o coverage.json build
 ```
+(`--gcov-ignore-parse-errors=all` is needed, not just `negative_hits.warn_once_per_file`:
+large repos also trip gcovr's "suspicious hits" detector, e.g. on
+`mrpt_maps/src/maps/COccupancyGridMap2D_likelihood.cpp`, which otherwise aborts
+the whole run with a `SuspiciousHits` exception.)
+
 Gotcha: with symlink-install, the same header is reported twice by gcovr
 (once under `modules/<pkg>/include/...`, once under the symlinked
 `install/<pkg>/include/...`). Dedupe by stripping the leading `modules/` or
 `install/` path segment and merging line hit-counts (max) before computing
 per-file/per-module percentages, or numbers will be wrong in both directions.
+`scripts/coverage_module_report.py coverage.json <module1> [<module2> ...]`
+does this dedupe and prints per-file + aggregate line/branch % for the given
+module(s), e.g. `scripts/coverage_module_report.py coverage.json mrpt_math`.
+
+### Measuring a single module's coverage after changing it
+
+When you only touched one module and want its updated number, it's tempting
+to build+test just that module (`colcon build --packages-up-to mrpt_XXX`,
+`colcon test --packages-select mrpt_XXX`) and run gcovr over just
+`build/mrpt_XXX`. **This badly undercounts modules with template-heavy public
+headers** (e.g. `CMatrixFixed.h`, `CMatrixDynamic.h` in `mrpt_math`): most of
+those headers' instantiation coverage comes from *other* modules' tests
+exercising them (mrpt_poses, mrpt_obs, mrpt_maps, ... all instantiate
+matrix/point/pose templates too), not from the owning module's own tests. An
+isolated single-package run only credits the owning module's own test binary,
+which can read 30-40 points lower than the true, whole-repo number.
+
+To get a number comparable to the table below, you must rebuild + retest
+**all** packages (coverage instrumentation is a global CMake cache option,
+so `colcon build`/`colcon test` with no `--packages-*` filter reuses existing
+object files and is normally fast/incremental — a few minutes, not a full
+rebuild from scratch), then run gcovr once over the whole `build` tree and
+filter with `coverage_module_report.py` as above. There isn't a fast, cheap,
+and accurate path — pick two.
 
 ### Coverage by module (worst first)
 
@@ -221,7 +252,6 @@ per-file/per-module percentages, or numbers will be wrong in both directions.
 | mrpt_libapps_gui | 803/1288 | 62.3% | 45.6% |
 | mrpt_nav | 4004/6234 | 64.2% | 46.6% |
 | mrpt_slam | 2777/4299 | 64.6% | 43.7% |
-| mrpt_math | 4970/7495 | 66.3% | 38.5% |
 | mrpt_tfest | 453/649 | 69.8% | 53.6% |
 | mrpt_serialization | 496/708 | 70.1% | 45.2% |
 | mrpt_rtti | 126/176 | 71.6% | 56.7% |
@@ -230,6 +260,7 @@ per-file/per-module percentages, or numbers will be wrong in both directions.
 | mrpt_config | 434/551 | 78.8% | 63.7% |
 | mrpt_containers | 1610/1956 | 82.3% | 38.6% |
 | mrpt_random | 139/167 | 83.2% | 73.9% |
+| mrpt_math (2026-07-05) | 6575/7682 | 85.6% | 56.3% |
 | mrpt_core | 540/630 | 85.7% | 50.3% |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
 | mrpt_typemeta | 57/57 | 100.0% | 75.2% |
@@ -263,7 +294,7 @@ stb_image_write, public-domain third-party). Excluding those, first-party
    (highest-value gaps, ordinary unit tests would work immediately):
    `mrpt_system/src/md5.cpp`, `mrpt_graphslam/src/{CEdgeCounter,TSlidingWindow,
    CWindowObserver}.cpp`, `mrpt_obs/src/gnss_messages_novatel.cpp`,
-   `mrpt_obs/src/carmen_log_tools.cpp`, `mrpt_math/src/ransac_applications.cpp`,
+   `mrpt_obs/src/carmen_log_tools.cpp`,
    `mrpt_viz/src/PLY_import_export.cpp`, `mrpt_viz/src/COrbitCameraController.cpp`,
    `mrpt_img/src/CImage_loadXPM.cpp`, `mrpt_slam/src/slam/
    CRejectionSamplingRangeOnlyLocalization.cpp`.
@@ -272,7 +303,7 @@ stb_image_write, public-domain third-party). Excluding those, first-party
    raw percentage gains)**: `mrpt_viz/src/CPolyhedron.cpp` (1420 uncovered,
    pure geometry, no GUI dependency — good test target),
    `mrpt_maps/src/maps/CRandomFieldGridMap2D.cpp` (827),
-   `mrpt_math/src/geometry.cpp` (662), `mrpt_maps/src/maps/CPointsMap.cpp` (547),
+   `mrpt_maps/src/maps/CPointsMap.cpp` (547),
    `mrpt_maps/src/maps/CGasConcentrationGridMap2D.cpp` (520),
    `mrpt_obs/src/CObservation3DRangeScan.cpp` (459).
 
