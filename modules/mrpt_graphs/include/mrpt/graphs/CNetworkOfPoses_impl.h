@@ -32,6 +32,8 @@
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/system/string_utils.h>
 
+#include <Eigen/Dense>
+
 namespace mrpt::graphs::detail
 {
 using namespace std;

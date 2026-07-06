@@ -175,14 +175,22 @@ Full procedure: `doc/source/make_a_mrpt_release.rst`. Quick summary:
 * Do not run `packaging/release.py` or any step that pushes/tags/publishes
   unless the user explicitly asks for an actual release to be cut.
 
-## 9. Code Coverage Status (baseline: 2026-07-03, refreshed 2026-07-05)
+## 9. Code Coverage Status (baseline: 2026-07-03, refreshed 2026-07-06)
 
 A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
-overall (2026-07-05): **51.0% lines / 37.8% branches** — well short of goal.
+overall (2026-07-06): **51.3% lines / 38.1% branches** — well short of goal.
 Per-module rows below are still the 2026-07-03 baseline except where a row is
-tagged with a newer date (e.g. `mrpt_math`, after its unit-test pass).
+tagged with a newer date (e.g. `mrpt_math`, `mrpt_graphs`, after their
+unit-test passes).
+
+Gotcha (2026-07-06): the system `gcov` alias (`/etc/alternatives/gcov`) may
+point to an unrelated binary (observed pointing to `/usr/bin/gc`), causing
+gcovr to silently mis-decode gcov output as garbage/UnicodeDecodeErrors.
+Pass `--gcov-executable gcov-<major-version-matching-the-compiler>` (e.g.
+`gcov-13`) explicitly to `gcovr` rather than relying on the `gcov` PATH
+lookup.
 
 To reproduce:
 ```bash
@@ -235,35 +243,35 @@ and accurate path — pick two.
 |---|---|---|---|
 | mrpt_imgui | 0/53 | 0.0% | 0.0% |
 | mrpt_gui | 22/4621 | 0.5% | 0.2% |
-| mrpt_libapps_cli | 173/1910 | 9.1% | 6.0% |
 | mrpt_hwdrivers | 913/6592 | 13.9% | 9.7% |
-| mrpt_comms | 236/902 | 26.2% | 12.8% |
-| mrpt_viz | 2660/9024 | 29.5% | 16.9% |
+| mrpt_comms | 237/1013 | 23.4% | 11.2% |
+| mrpt_viz | 2660/9024 | 29.5% | 17.3% |
 | mrpt_kinematics | 184/482 | 38.2% | 17.9% |
-| mrpt_img | 4131/10271 | 40.2%† | 30.4% |
-| mrpt_graphslam | 257/611 | 42.1% | 37.1% |
-| mrpt_obs | 2839/6723 | 42.2% | 25.4% |
-| mrpt_poses | 3128/6746 | 46.4% | 23.5% |
-| mrpt_topography | 172/364 | 47.3% | 26.9% |
-| mrpt_maps | 5598/11648 | 48.1% | 32.5% |
-| mrpt_opengl | 2035/4234 | 48.1% | 30.0% |
-| mrpt_system | 954/1900 | 50.2% | 36.6% |
-| mrpt_io | 719/1292 | 55.7% | 39.6% |
-| mrpt_libapps_gui | 803/1288 | 62.3% | 45.6% |
-| mrpt_nav | 4004/6234 | 64.2% | 46.6% |
-| mrpt_slam | 2777/4299 | 64.6% | 43.7% |
-| mrpt_tfest | 453/649 | 69.8% | 53.6% |
-| mrpt_serialization | 496/708 | 70.1% | 45.2% |
-| mrpt_rtti | 126/176 | 71.6% | 56.7% |
-| mrpt_bayes | 793/1052 | 75.4% | 53.5% |
-| mrpt_graphs | 497/643 | 77.3% | 60.6% |
-| mrpt_config | 434/551 | 78.8% | 63.7% |
-| mrpt_containers | 1610/1956 | 82.3% | 38.6% |
-| mrpt_random | 139/167 | 83.2% | 73.9% |
-| mrpt_math (2026-07-05) | 6575/7682 | 85.6% | 56.3% |
-| mrpt_core | 540/630 | 85.7% | 50.3% |
+| mrpt_img | 4132/10271 | 40.2%† | 30.0% |
+| mrpt_graphslam | 257/611 | 42.1% | 37.3% |
+| mrpt_obs | 2922/6723 | 43.5% | 26.3% |
+| mrpt_topography | 172/364 | 47.3% | 27.9% |
+| mrpt_maps | 5605/11648 | 48.1% | 32.7% |
+| mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
+| mrpt_system | 1012/1900 | 53.3% | 39.6% |
+| mrpt_io | 726/1292 | 56.2% | 39.9% |
+| mrpt_libapps_cli | 1130/1910 | 59.2% | 38.0% |
+| mrpt_libapps_gui | 952/1567 | 60.8% | 42.6% |
+| mrpt_nav | 3928/6234 | 63.0% | 45.3% |
+| mrpt_slam | 2778/4299 | 64.6% | 43.7% |
+| mrpt_tfest | 453/649 | 69.8% | 53.9% |
+| mrpt_rtti | 126/176 | 71.6% | 73.5% |
+| mrpt_serialization | 511/708 | 72.2% | 52.5% |
+| mrpt_bayes | 805/1052 | 76.5% | 55.2% |
+| mrpt_config | 445/551 | 80.8% | 65.1% |
+| mrpt_containers | 1639/1956 | 83.8% | 55.6% |
+| mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
+| mrpt_core | 541/628 | 86.1% | 64.8% |
+| mrpt_graphs (2026-07-06) | 1022/1111 | 92.0% | 76.7% |
+| mrpt_poses | 6263/6787 | 92.3% | 59.8% |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
-| mrpt_typemeta | 57/57 | 100.0% | 75.2% |
+| mrpt_random | 160/167 | 95.8% | 85.1% |
+| mrpt_typemeta | 57/57 | 100.0% | 85.1% |
 
 † `mrpt_img` includes the vendored `src/stb/*.h` (stb_image/stb_image_resize2/
 stb_image_write, public-domain third-party). Excluding those, first-party
@@ -271,7 +279,7 @@ stb_image_write, public-domain third-party). Excluding those, first-party
 
 ### Weak areas, grouped by root cause
 
-1. **Hardware drivers — `mrpt_hwdrivers` (13.9%), most of `mrpt_comms` (26.2%)**:
+1. **Hardware drivers — `mrpt_hwdrivers` (13.9%), most of `mrpt_comms` (23.4%)**:
    inherently hard to unit-test since they talk to real serial ports/USB/GPS/
    LIDAR/cameras (`CHokuyoURG`, `CSickLaserSerial`, `COpenNI2Generic`,
    `CVelodyneScanner`, `CSerialPort`, `CNTRIPClient`, `CKinect`, etc., all at
@@ -285,8 +293,8 @@ stb_image_write, public-domain third-party). Excluding those, first-party
    Realistic path to improvement is extracting non-UI logic into testable
    helpers, or headless/offscreen-context tests, not brute-force unit tests.
 
-3. **CLI apps — `mrpt_libapps_cli` (9.1%)**: `rawlog-edit_*.cpp`,
-   `RawlogEditApp.cpp`, `CRawlogProcessor.h` are 0%. These are better suited to
+3. **CLI apps — `mrpt_libapps_cli` (59.2% as of 2026-07-06, was 9.1%)**: some
+   `rawlog-edit_*.cpp` paths remain untested. These are better suited to
    subprocess/golden-file integration tests (run the built binary against
    sample rawlogs, diff the output) than pure unit tests.
 
@@ -307,17 +315,14 @@ stb_image_write, public-domain third-party). Excluding those, first-party
    `mrpt_maps/src/maps/CGasConcentrationGridMap2D.cpp` (520),
    `mrpt_obs/src/CObservation3DRangeScan.cpp` (459).
 
-6. **Probability-distribution classes under-tested in `mrpt_poses` (46.4%)**:
-   `CPosePDFSOG.cpp` (7.6%), `CPose3DPDFGrid.cpp` (14.1%),
-   `CPosePDFGaussianInf.cpp` (21.5%), `CPosePDFGaussian.cpp` (22.6%),
-   `CPosePDFParticles.cpp` (27.4%) — each PDF representation has its own
-   math and mostly lacks dedicated unit tests.
+6. **Resolved (2026-07-06): `mrpt_poses` was 46.4%, now 92.3%** after its
+   unit-test pass (see git history) — no longer a weak area.
 
 7. **Near-target modules (75-90%), smallest remaining gap to close first**:
-   `mrpt_bayes` (`CKalmanFilterCapable_impl.h` 71.4%), `mrpt_graphs`
-   (`CGraphPartitioner.cpp` 55.9%), `mrpt_config` (`CConfigFile.cpp` 59.3%),
-   `mrpt_containers` (`yaml.cpp` 78.8%), `mrpt_random`
-   (`RandomGenerators.h` 73.2%), `mrpt_core` (`safe_pointers.h` 48.5%).
+   `mrpt_bayes` (`CKalmanFilterCapable_impl.h` 71.4%), `mrpt_config`
+   (`CConfigFile.cpp` 59.3%), `mrpt_containers` (`yaml.cpp` 78.8%).
+   (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06,
+   both now >90%.)
 
 Branch coverage lags line coverage everywhere (often by 15-30 points),
 indicating error-handling and edge-case branches are the norm left untested

@@ -408,7 +408,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
 
       if (auto_expand_set)
       {  // set auto-expansion
-        for (TNodeID curr_node_ID = *node_IDs.begin(); curr_node_ID != *node_IDs.rbegin();
+        for (TNodeID curr_node_ID = *node_IDs.begin(); curr_node_ID <= *node_IDs.rbegin();
              ++curr_node_ID)
         {
           node_IDs_real.insert(curr_node_ID);

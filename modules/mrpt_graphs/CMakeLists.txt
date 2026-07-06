@@ -25,6 +25,12 @@ set(LIB_SOURCES
 )
 
 set(LIB_UNIT_TEST_SOURCES
+  tests/CAStarAlgorithm_unittest.cpp
+  tests/CDirectedGraph_unittest.cpp
+  tests/CDirectedTree_unittest.cpp
+  tests/CGraphPartitioner_unittest.cpp
+  tests/CNetworkOfPoses_unittest.cpp
+  tests/dijkstra_unittest.cpp
   tests/ScalarFactorGraph_unittest.cpp
 )
 
