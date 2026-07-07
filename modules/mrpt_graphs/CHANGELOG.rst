@@ -2,8 +2,8 @@
 Changelog for package mrpt_graphs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.2 (2026-07-07)
+------------------
 * Fix undefined behavior in ``connectGraphPartitions()``'s overlap check
   (dereferenced a past-the-end iterator), which could cause spurious
   assertion failures on some C++ standard library implementations.

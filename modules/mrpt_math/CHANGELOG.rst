@@ -2,8 +2,8 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.2 (2026-07-07)
+------------------
 * Fix ``nanoflann`` declared as a build-only dependency in ``package.xml``,
   which prevented it from being found by downstream packages' CMake
   configuration on ROS build farms.
