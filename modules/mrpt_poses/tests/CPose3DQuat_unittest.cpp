@@ -14,10 +14,12 @@
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <Eigen/Dense>
 
@@ -833,4 +835,80 @@ TEST_F(Pose3DQuatTests, NormalizationJacobian)
   test_normalizeJacob(0.0_deg, 0.0_deg, 10.0_deg);
   test_normalizeJacob(-30.0_deg, 10.0_deg, 60.0_deg);
   test_normalizeJacob(10.0_deg, -50.0_deg, -40.0_deg);
+}
+
+TEST(CPose3DQuat, ConstructorsFromMatrixAndHomogeneousMatrixRef)
+{
+  CPose3D p3d(1, 2, 3, 0.1, 0.2, 0.3);
+  CMatrixDouble44 hm = p3d.getHomogeneousMatrixVal<CMatrixDouble44>();
+
+  CPose3DQuat fromHM(hm);
+  EXPECT_NEAR(fromHM.x(), 1.0, 1e-9);
+  EXPECT_NEAR(fromHM.y(), 2.0, 1e-9);
+
+  CMatrixDouble44 hm2;
+  fromHM.getHomogeneousMatrix(hm2);
+  EXPECT_TRUE(hm2 == fromHM.getHomogeneousMatrix());
+}
+
+TEST(CPose3DQuat, ScalarMultiplyAndSerialization)
+{
+  CPose3DQuat p(CPose3D(1, 2, 3, 0.1, 0.2, 0.3));
+  CPose3DQuat q = p;
+  q *= 2.0;
+  EXPECT_NEAR(q.x(), 2.0, 1e-9);
+  EXPECT_NEAR(q.y(), 4.0, 1e-9);
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+  arch << p;
+  buf.Seek(0);
+  CPose3DQuat p2;
+  arch >> p2;
+  EXPECT_TRUE(p == p2);
+  EXPECT_FALSE(p != p2);
+
+  std::ostringstream ss;
+  ss << p;
+  EXPECT_FALSE(ss.str().empty());
+}
+
+TEST(CPose3DQuat, SphericalCoordinatesEdgeCasesAndUnaryInverse)
+{
+  CPose3DQuat p(CPose3D(0, 0, 0, 0, 0, 0));
+
+  double range;
+  double yaw;
+  double pitch;
+  p.sphericalCoordinates(TPoint3D(0, 0, 0), range, yaw, pitch);
+  EXPECT_NEAR(range, 0.0, 1e-9);
+  EXPECT_NEAR(yaw, 0.0, 1e-9);
+  EXPECT_NEAR(pitch, 0.0, 1e-9);
+
+  CPose3DQuat negP = -p;
+  CPose3DQuat pInv = p;
+  pInv.inverse();
+  EXPECT_NEAR(negP.x(), pInv.x(), 1e-9);
+
+  CPoint3D g(1, 2, 3);
+  CPoint3D l = g - p;
+  EXPECT_NEAR(l.x(), 1.0, 1e-9);
+
+  TPoint3D gT(1, 2, 3);
+  TPoint3D lT = gT - p;
+  EXPECT_NEAR(lT.x, 1.0, 1e-9);
+
+  EXPECT_EQ(p.asTPose(), TPose3DQuat(0, 0, 0, 1, 0, 0, 0));
+}
+
+TEST(CPose3DQuat, FromStringVariants)
+{
+  CPose3DQuat p;
+  p.fromString("[1.0 2.0 3.0 1.0 0.0 0.0 0.0]");
+  EXPECT_NEAR(p.x(), 1.0, 1e-9);
+  EXPECT_NEAR(p.z(), 3.0, 1e-9);
+
+  CPose3DQuat p2;
+  p2.fromStringRaw("1.0 2.0 3.0 1.0 0.0 0.0 0.0");
+  EXPECT_NEAR(p2.x(), p.x(), 1e-9);
 }

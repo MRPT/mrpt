@@ -36,6 +36,13 @@ class string_literal
   constexpr string_literal(const char (&lit)[N + 1]) : _lit((MRPT_X_ASSERT(lit[N] == '\0'), lit)) {}
   constexpr std::size_t size() const { return N; }
   constexpr char operator[](std::size_t i) const { return MRPT_X_ASSERT(i < N), _lit[i]; }
+  // On platforms where ptrdiff_t==int (e.g. i386), an `int` index is an exact
+  // match for the built-in operator[](const char*, ptrdiff_t) synthesized
+  // from operator const char*() below, while it's only a standard conversion
+  // to operator[](size_t) above: each candidate wins on a different argument,
+  // making plain `obj[0]` ambiguous. This overload is an exact match on both
+  // the object and the index on every platform, removing the ambiguity.
+  constexpr char operator[](int i) const { return (*this)[static_cast<std::size_t>(i)]; }
   constexpr const char* c_str() const { return _lit; }
   constexpr operator const char*() const { return _lit; }
   operator std::string() const { return _lit; }
@@ -125,6 +132,9 @@ class array_string
 
   constexpr std::size_t size() const { return N; }
   constexpr char operator[](std::size_t i) const { return MRPT_X_ASSERT(i < N), _array[i]; }
+  // See the same-named overload in string_literal above for why this is needed
+  // on platforms where ptrdiff_t==int (e.g. i386).
+  constexpr char operator[](int i) const { return (*this)[static_cast<std::size_t>(i)]; }
   constexpr const char* c_str() const { return _array; }
   constexpr operator const char*() const { return c_str(); }
   operator std::string() const { return c_str(); }

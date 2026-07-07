@@ -14,11 +14,15 @@
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/num_jacobian.h>
+#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/Lie/SE.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <Eigen/Dense>
 
@@ -881,4 +885,205 @@ TEST_F(Pose3DTests, translation)
   const auto p = mrpt::poses::CPose3D::FromXYZYawPitchRoll(1.0, 2.0, 3.0, 0, 0, 0);
   const mrpt::math::TPoint3D t = p.translation();
   EXPECT_EQ(t, mrpt::math::TPoint3D(1, 2, 3));
+}
+
+TEST(CPose3D, ConstructorsFromOtherTypes)
+{
+  CPoint3D pt(1, 2, 3);
+  CPose3D fromPt(pt);
+  EXPECT_DOUBLE_EQ(fromPt.x(), 1.0);
+  EXPECT_DOUBLE_EQ(fromPt.z(), 3.0);
+
+  CMatrixDouble44 hm;
+  hm.setIdentity();
+  hm(0, 3) = 1;
+  hm(1, 3) = 2;
+  hm(2, 3) = 3;
+  CPose3D fromHM44(hm);
+  EXPECT_NEAR(fromHM44.x(), 1.0, 1e-9);
+
+  CMatrixDouble hmDyn(4, 4);
+  hmDyn.setIdentity();
+  hmDyn(0, 3) = 1;
+  hmDyn(1, 3) = 2;
+  hmDyn(2, 3) = 3;
+  CPose3D fromHMDyn(hmDyn);
+  EXPECT_NEAR(fromHMDyn.x(), 1.0, 1e-9);
+
+  CQuaternionDouble q;
+  q.crossProduct(CQuaternionDouble(), CQuaternionDouble());
+  CPose3D fromQuat(q, 1, 2, 3);
+  EXPECT_NEAR(fromQuat.x(), 1.0, 1e-9);
+
+  CPose3DQuat pq(CPose3D(1, 2, 3, 0.1, 0.2, 0.3));
+  CPose3D fromPQ(pq);
+  EXPECT_NEAR(fromPQ.x(), 1.0, 1e-9);
+  EXPECT_NEAR(fromPQ.yaw(), 0.1, 1e-6);
+}
+
+TEST(CPose3D, SerializationRoundTrip)
+{
+  CPose3D p(1, 2, 3, 0.1, 0.2, 0.3);
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+  arch << p;
+  buf.Seek(0);
+  CPose3D p2;
+  arch >> p2;
+  EXPECT_TRUE(p == p2);
+  EXPECT_FALSE(p != p2);
+
+  std::ostringstream ss;
+  ss << p;
+  EXPECT_FALSE(ss.str().empty());
+}
+
+TEST(CPose3D, ScalarOpsYPRSphericalAndDistance)
+{
+  CPose3D p(1, 2, 3, 0.1, 0.2, 0.3);
+  p.normalizeAngles();
+
+  CPose3D q(1, 2, 3, 0.1, 0.2, 0.3);
+  q *= 2.0;
+  EXPECT_NEAR(q.x(), 2.0, 1e-9);
+  EXPECT_NEAR(q.yaw(), 0.2, 1e-9);
+
+  auto [yaw, pitch, roll] = p.getYawPitchRoll();
+  EXPECT_NEAR(yaw, 0.1, 1e-6);
+  double yaw2;
+  double pitch2;
+  double roll2;
+  p.getYawPitchRoll(yaw2, pitch2, roll2);
+  EXPECT_NEAR(yaw2, yaw, 1e-9);
+  EXPECT_NEAR(pitch2, pitch, 1e-9);
+  EXPECT_NEAR(roll2, roll, 1e-9);
+
+  double range;
+  double sphYaw;
+  double sphPitch;
+  CPose3D(1, 0, 0, 0, 0, 0).sphericalCoordinates(TPoint3D(2, 0, 0), range, sphYaw, sphPitch);
+  EXPECT_NEAR(range, 1.0, 1e-9);
+  EXPECT_NEAR(sphYaw, 0.0, 1e-9);
+
+  // Exercise the y==0,x==0 and range==0 branches:
+  double range0;
+  double yaw0;
+  double pitch0;
+  CPose3D(0, 0, 0, 0, 0, 0).sphericalCoordinates(TPoint3D(0, 0, 0), range0, yaw0, pitch0);
+  EXPECT_NEAR(range0, 0.0, 1e-9);
+  EXPECT_NEAR(yaw0, 0.0, 1e-9);
+  EXPECT_NEAR(pitch0, 0.0, 1e-9);
+
+  CPose3D opp = p.getOppositeScalar();
+  EXPECT_NEAR(opp.x(), -1.0, 1e-9);
+  EXPECT_NEAR(opp.yaw(), -0.1, 1e-6);
+
+  CPose3D a(1, 2, 3, 0, 0, 0);
+  a.addComponents(CPose3D(1, 1, 1, 0.1, 0, 0));
+  EXPECT_NEAR(a.x(), 2.0, 1e-9);
+  EXPECT_NEAR(a.yaw(), 0.1, 1e-6);
+
+  EXPECT_NEAR(p.distanceEuclidean6D(p), 0.0, 1e-9);
+
+  EXPECT_TRUE(CPose3D(0, 0, 0, 0, 0, 0).isHorizontal(1e-6));
+  EXPECT_FALSE(CPose3D(0, 0, 0, 0, 0.5, 0).isHorizontal(1e-6));
+
+  EXPECT_FALSE(p.asString().empty());
+}
+
+TEST(CPose3D, ComposePointWithJacobiansAndRotateVector)
+{
+  CPose3D p(1, 2, 3, 0.1, 0.2, 0.3);
+
+  double gx;
+  double gy;
+  double gz;
+  CMatrixDouble33 dpoint;
+  CMatrixDouble36 dpose;
+  CMatrixDouble36 dse3;
+  p.composePoint(1, 2, 3, gx, gy, gz, dpoint, dpose, dse3, false);
+  EXPECT_EQ(dpoint.rows(), 3);
+  EXPECT_EQ(dpose.rows(), 3);
+  EXPECT_EQ(dse3.rows(), 3);
+
+  CMatrixDouble36 dposeApprox;
+  double gx2;
+  double gy2;
+  double gz2;
+  p.composePoint(1, 2, 3, gx2, gy2, gz2, std::nullopt, dposeApprox, std::nullopt, true);
+  EXPECT_EQ(dposeApprox.rows(), 3);
+
+  TVector3D v(1, 0, 0);
+  TVector3D rotated = p.rotateVector(v);
+  TVector3D back = p.inverseRotateVector(rotated);
+  EXPECT_NEAR(back.x, v.x, 1e-6);
+  EXPECT_NEAR(back.y, v.y, 1e-6);
+  EXPECT_NEAR(back.z, v.z, 1e-6);
+
+  CPose3D::vector_t vec;
+  p.asVector(vec);
+  EXPECT_NEAR(vec[0], 1.0, 1e-9);
+
+  CPose3D negP = -p;
+  CPose3D pInv = p;
+  pInv.inverse();
+  EXPECT_NEAR(negP.x(), pInv.x(), 1e-6);
+
+  CQuaternionDouble q;
+  CMatrixDouble43 dq_dr;
+  p.getAsQuaternion(q, dq_dr);
+  EXPECT_NEAR(q.norm(), 1.0, 1e-6);
+
+  CMatrixDouble33 jr = p.jacobian_rodrigues_from_YPR();
+  EXPECT_EQ(jr.rows(), 3);
+  CMatrixDouble66 jpr = p.jacobian_pose_rodrigues_from_YPR();
+  EXPECT_EQ(jpr.rows(), 6);
+
+  // Near-identity rotation to hit the q.r()>=1-1e-9 branch:
+  CMatrixDouble33 jrIdentity = CPose3D(0, 0, 0, 0, 0, 0).jacobian_rodrigues_from_YPR();
+  EXPECT_NEAR(jrIdentity(0, 2), 1.0, 1e-6);
+}
+
+TEST(CPose3D, OperatorsWithPointsAndComposeFrom)
+{
+  CPose3D p(1, 0, 0, M_PI / 2, 0, 0);
+
+  CPoint3D pt3 = p + CPoint3D(1, 0, 0);
+  EXPECT_NEAR(pt3.x(), 1.0, 1e-6);
+  EXPECT_NEAR(pt3.y(), 1.0, 1e-6);
+
+  CPoint3D pt2 = p + CPoint2D(1, 0);
+  EXPECT_NEAR(pt2.x(), 1.0, 1e-6);
+  EXPECT_NEAR(pt2.y(), 1.0, 1e-6);
+
+  CPose3D dest;
+  dest.composeFrom(p, CPose3D(1, 0, 0, 0, 0, 0));
+  EXPECT_NEAR(dest.x(), 1.0, 1e-6);
+  EXPECT_NEAR(dest.y(), 1.0, 1e-6);
+
+  // Exercise the (this == &B) aliasing branch:
+  CPose3D aliasTest(1, 0, 0, 0, 0, 0);
+  aliasTest.composeFrom(p, aliasTest);
+  EXPECT_NEAR(aliasTest.x(), 1.0, 1e-6);
+  EXPECT_NEAR(aliasTest.y(), 1.0, 1e-6);
+}
+
+TEST(CPose3D, FromStringAndHomogeneousMatrixRef)
+{
+  CPose3D p;
+  p.fromString("[1.0 2.0 3.0 10.0 20.0 30.0]");
+  EXPECT_NEAR(p.x(), 1.0, 1e-9);
+  EXPECT_NEAR(p.yaw(), DEG2RAD(10.0), 1e-9);
+
+  CPose3D p2;
+  p2.fromStringRaw("1.0 2.0 3.0 10.0 20.0 30.0");
+  EXPECT_NEAR(p2.x(), p.x(), 1e-9);
+
+  CMatrixDouble44 hm;
+  p.getHomogeneousMatrix(hm);
+  CMatrixDouble44 hm2 = p.getHomogeneousMatrix();
+  EXPECT_TRUE(hm == hm2);
+
+  EXPECT_EQ(p.asTPose(), TPose3D(p.x(), p.y(), p.z(), p.yaw(), p.pitch(), p.roll()));
 }

@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 
@@ -34,7 +35,7 @@ namespace mrpt::maps
  * mrpt::maps::CMultiMetricMap
  * \ingroup mrpt_maps_grp
  */
-class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
+class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D, public mrpt::config::OptionsCapable
 {
   DEFINE_SERIALIZABLE(CGasConcentrationGridMap2D, mrpt::maps)
  public:
@@ -90,6 +91,9 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
     /** @} */
 
   } insertionOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** Returns a 3D object representing the map */
   void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;

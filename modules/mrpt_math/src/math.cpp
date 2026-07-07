@@ -62,14 +62,37 @@ double math::chi2inv(double P, unsigned int dim)
  ---------------------------------------------------------------*/
 uint64_t math::factorial64(unsigned int n)
 {
-  uint64_t ret = 1;
+  // Precomputed factorials from 0! to 20!
+  constexpr uint64_t table[] = {
+      1ULL,
+      1ULL,
+      2ULL,
+      6ULL,
+      24ULL,
+      120ULL,
+      720ULL,
+      5040ULL,
+      40320ULL,
+      362880ULL,
+      3628800ULL,
+      39916800ULL,
+      479001600ULL,
+      6227020800ULL,
+      87178291200ULL,
+      1307674368000ULL,
+      20922789888000ULL,
+      355687428096000ULL,
+      6402373705728000ULL,
+      121645100408832000ULL,
+      2432902008176640000ULL};
 
-  for (unsigned int i = 2; i <= n; i++)
+  if (n > 20)
   {
-    ret *= i;
+    // Handle error: throw exception, return 0, etc.
+    throw std::overflow_error("Factorial exceeds 64-bit integer limit");
   }
 
-  return ret;
+  return table[n];
 }
 
 /*---------------------------------------------------------------
@@ -77,14 +100,8 @@ uint64_t math::factorial64(unsigned int n)
  ---------------------------------------------------------------*/
 double math::factorial(unsigned int n)
 {
-  double retLog = 0;
-
-  for (unsigned int i = 2; i <= n; i++)
-  {
-    retLog += std::log(static_cast<double>(n));
-  }
-
-  return std::exp(retLog);
+  // std::tgamma(n + 1) calculates n!
+  return std::tgamma(static_cast<double>(n) + 1.0);
 }
 
 /*---------------------------------------------------------------

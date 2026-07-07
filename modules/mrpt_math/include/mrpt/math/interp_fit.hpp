@@ -137,9 +137,11 @@ NUMTYPE leastSquareLinearFit(
 
   // wrap?
   if (!wrap2pi)
+  {
     return ret;
-  else
-    return mrpt::math::wrapToPi(ret);
+  }
+
+  return mrpt::math::wrapToPi(ret);
 
   MRPT_END
 }
@@ -154,7 +156,7 @@ void leastSquareLinearFit(
 {
   MRPT_START
 
-  // http://en.wikipedia.org/wiki/Linear_least_squares
+  // https://en.wikipedia.org/wiki/Linear_least_squares
   ASSERT_(x.size() == y.size());
   ASSERT_(x.size() > 1);
 
@@ -175,7 +177,9 @@ void leastSquareLinearFit(
   CMatrixDynamic<NUM> XXt;
   XXt.matProductOf_AAt(Xt);
   const auto XXt_inv = XXt.inverse_LLt();
-  const auto XXt_inv_X = XXt_inv * Xt;
+  // Note: cannot use XXt_inv*Xt since operator* only supports square matrices.
+  CMatrixDynamic<NUM> XXt_inv_X;
+  XXt_inv_X.matProductOf_AB(XXt_inv, Xt);
   CMatrixDynamic<NUM> B;
   B.matProductOf_Ab(XXt_inv_X, y);
   ASSERT_(B.size() == 2);
@@ -183,9 +187,19 @@ void leastSquareLinearFit(
   const size_t tsN = size_t(ts.size());
   outs.resize(tsN);
   if (!wrap2pi)
-    for (size_t k = 0; k < tsN; k++) outs[k] = B[0] + B[1] * (ts[k] - x_min);
+  {
+    for (size_t k = 0; k < tsN; k++)
+    {
+      outs[k] = B[0] + B[1] * (ts[k] - x_min);
+    }
+  }
   else
-    for (size_t k = 0; k < tsN; k++) outs[k] = mrpt::math::wrapToPi(B[0] + B[1] * (ts[k] - x_min));
+  {
+    for (size_t k = 0; k < tsN; k++)
+    {
+      outs[k] = mrpt::math::wrapToPi(B[0] + B[1] * (ts[k] - x_min));
+    }
+  }
   MRPT_END
 }
 }  // namespace mrpt::math

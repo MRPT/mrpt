@@ -340,3 +340,10 @@ void CWirelessPowerGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) 
   CRandomFieldGridMap2D::getVisualizationInto(o);
   MRPT_END
 }
+
+std::map<std::string, mrpt::config::CLoadableOptions*> CWirelessPowerGridMap2D::optionsByName()
+{
+  return {
+      {"insertionOptions", &insertionOptions},
+  };
+}

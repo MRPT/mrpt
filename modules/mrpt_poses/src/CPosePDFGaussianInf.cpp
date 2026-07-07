@@ -423,7 +423,7 @@ std::ostream& mrpt::poses::operator<<(std::ostream& out, const CPosePDFGaussianI
 /*---------------------------------------------------------------
             operator +
  ---------------------------------------------------------------*/
-poses::CPosePDFGaussianInf operator+(
+poses::CPosePDFGaussianInf mrpt::poses::operator+(
     const mrpt::poses::CPose2D& A, const mrpt::poses::CPosePDFGaussianInf& B)
 {
   poses::CPosePDFGaussianInf ret(B);

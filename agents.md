@@ -175,3 +175,154 @@ Full procedure: `doc/source/make_a_mrpt_release.rst`. Quick summary:
 * Do not run `packaging/release.py` or any step that pushes/tags/publishes
   unless the user explicitly asks for an actual release to be cut.
 
+## 9. Code Coverage Status (baseline: 2026-07-03, refreshed 2026-07-06)
+
+A full rebuild of all 33 `modules/*` packages was done with coverage
+instrumentation, followed by a full `colcon test` run (all tests passed) and a
+`gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
+overall (2026-07-06): **51.3% lines / 38.1% branches** — well short of goal.
+Per-module rows below are still the 2026-07-03 baseline except where a row is
+tagged with a newer date (e.g. `mrpt_math`, `mrpt_graphs`, after their
+unit-test passes).
+
+Gotcha (2026-07-06): the system `gcov` alias (`/etc/alternatives/gcov`) may
+point to an unrelated binary (observed pointing to `/usr/bin/gc`), causing
+gcovr to silently mis-decode gcov output as garbage/UnicodeDecodeErrors.
+Pass `--gcov-executable gcov-<major-version-matching-the-compiler>` (e.g.
+`gcov-13`) explicitly to `gcovr` rather than relying on the `gcov` PATH
+lookup.
+
+To reproduce:
+```bash
+colcon build --base-paths modules --cmake-args -DENABLE_COVERAGE=ON -DBUILD_TESTING=ON
+colcon test --base-paths modules
+gcovr --root . -j$(nproc) --gcov-ignore-parse-errors=all \
+  --exclude-unreachable-branches --exclude-throw-branches \
+  --exclude '.*/3rdparty/.*' --exclude '.*/tests/.*' --exclude '.*_unittest\.cpp' \
+  --exclude '.*/python_bindings/.*' --exclude '.*/samples/.*' \
+  --json-pretty -o coverage.json build
+```
+(`--gcov-ignore-parse-errors=all` is needed, not just `negative_hits.warn_once_per_file`:
+large repos also trip gcovr's "suspicious hits" detector, e.g. on
+`mrpt_maps/src/maps/COccupancyGridMap2D_likelihood.cpp`, which otherwise aborts
+the whole run with a `SuspiciousHits` exception.)
+
+Gotcha: with symlink-install, the same header is reported twice by gcovr
+(once under `modules/<pkg>/include/...`, once under the symlinked
+`install/<pkg>/include/...`). Dedupe by stripping the leading `modules/` or
+`install/` path segment and merging line hit-counts (max) before computing
+per-file/per-module percentages, or numbers will be wrong in both directions.
+`scripts/coverage_module_report.py coverage.json <module1> [<module2> ...]`
+does this dedupe and prints per-file + aggregate line/branch % for the given
+module(s), e.g. `scripts/coverage_module_report.py coverage.json mrpt_math`.
+
+### Measuring a single module's coverage after changing it
+
+When you only touched one module and want its updated number, it's tempting
+to build+test just that module (`colcon build --packages-up-to mrpt_XXX`,
+`colcon test --packages-select mrpt_XXX`) and run gcovr over just
+`build/mrpt_XXX`. **This badly undercounts modules with template-heavy public
+headers** (e.g. `CMatrixFixed.h`, `CMatrixDynamic.h` in `mrpt_math`): most of
+those headers' instantiation coverage comes from *other* modules' tests
+exercising them (mrpt_poses, mrpt_obs, mrpt_maps, ... all instantiate
+matrix/point/pose templates too), not from the owning module's own tests. An
+isolated single-package run only credits the owning module's own test binary,
+which can read 30-40 points lower than the true, whole-repo number.
+
+To get a number comparable to the table below, you must rebuild + retest
+**all** packages (coverage instrumentation is a global CMake cache option,
+so `colcon build`/`colcon test` with no `--packages-*` filter reuses existing
+object files and is normally fast/incremental — a few minutes, not a full
+rebuild from scratch), then run gcovr once over the whole `build` tree and
+filter with `coverage_module_report.py` as above. There isn't a fast, cheap,
+and accurate path — pick two.
+
+### Coverage by module (worst first)
+
+| Module | Covered/Total lines | Line % | Branch % |
+|---|---|---|---|
+| mrpt_imgui | 0/53 | 0.0% | 0.0% |
+| mrpt_gui | 22/4621 | 0.5% | 0.2% |
+| mrpt_hwdrivers | 913/6592 | 13.9% | 9.7% |
+| mrpt_comms | 237/1013 | 23.4% | 11.2% |
+| mrpt_viz | 2660/9024 | 29.5% | 17.3% |
+| mrpt_kinematics | 184/482 | 38.2% | 17.9% |
+| mrpt_img | 4132/10271 | 40.2%† | 30.0% |
+| mrpt_graphslam | 257/611 | 42.1% | 37.3% |
+| mrpt_obs | 2922/6723 | 43.5% | 26.3% |
+| mrpt_topography | 172/364 | 47.3% | 27.9% |
+| mrpt_maps | 5605/11648 | 48.1% | 32.7% |
+| mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
+| mrpt_system | 1012/1900 | 53.3% | 39.6% |
+| mrpt_io | 726/1292 | 56.2% | 39.9% |
+| mrpt_libapps_cli | 1130/1910 | 59.2% | 38.0% |
+| mrpt_libapps_gui | 952/1567 | 60.8% | 42.6% |
+| mrpt_nav | 3928/6234 | 63.0% | 45.3% |
+| mrpt_slam | 2778/4299 | 64.6% | 43.7% |
+| mrpt_rtti | 126/176 | 71.6% | 73.5% |
+| mrpt_serialization | 511/708 | 72.2% | 52.5% |
+| mrpt_bayes | 805/1052 | 76.5% | 55.2% |
+| mrpt_config | 445/551 | 80.8% | 65.1% |
+| mrpt_containers | 1639/1956 | 83.8% | 55.6% |
+| mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
+| mrpt_core | 541/628 | 86.1% | 64.8% |
+| mrpt_graphs (2026-07-06) | 1022/1111 | 92.0% | 76.7% |
+| mrpt_poses | 6263/6787 | 92.3% | 59.8% |
+| mrpt_expr | 93/100 | 93.0% | 60.2% |
+| mrpt_random | 160/167 | 95.8% | 85.1% |
+| mrpt_tfest (2026-07-07) | 633/652 | 97.1% | 73.3% |
+| mrpt_typemeta | 57/57 | 100.0% | 85.1% |
+
+† `mrpt_img` includes the vendored `src/stb/*.h` (stb_image/stb_image_resize2/
+stb_image_write, public-domain third-party). Excluding those, first-party
+`mrpt_img` coverage is 48.0%. Treat `src/stb/*` as out of scope for new tests.
+
+### Weak areas, grouped by root cause
+
+1. **Hardware drivers — `mrpt_hwdrivers` (13.9%), most of `mrpt_comms` (23.4%)**:
+   inherently hard to unit-test since they talk to real serial ports/USB/GPS/
+   LIDAR/cameras (`CHokuyoURG`, `CSickLaserSerial`, `COpenNI2Generic`,
+   `CVelodyneScanner`, `CSerialPort`, `CNTRIPClient`, `CKinect`, etc., all at
+   0%). Improving this needs a mockable transport layer (inject a fake
+   `CStream`/socket) rather than plain unit tests against hardware.
+
+2. **GUI/rendering — `mrpt_gui` (0.5%), `mrpt_imgui` (0%), and GUI-only files
+   inside `mrpt_viz`/`mrpt_opengl`**: `mathplot.cpp`, `CDisplayWindow*.cpp`,
+   `WxUtils.cpp`, `CWxGLCanvasBase.cpp`, `CQtGlCanvasBase.cpp`,
+   `CImGuiSceneView.cpp` need a live display/OpenGL context and are 0%.
+   Realistic path to improvement is extracting non-UI logic into testable
+   helpers, or headless/offscreen-context tests, not brute-force unit tests.
+
+3. **CLI apps — `mrpt_libapps_cli` (59.2% as of 2026-07-06, was 9.1%)**: some
+   `rawlog-edit_*.cpp` paths remain untested. These are better suited to
+   subprocess/golden-file integration tests (run the built binary against
+   sample rawlogs, diff the output) than pure unit tests.
+
+4. **Quick wins — pure-logic files at 0% with no hardware/GUI dependency**
+   (highest-value gaps, ordinary unit tests would work immediately):
+   `mrpt_system/src/md5.cpp`, `mrpt_graphslam/src/{CEdgeCounter,TSlidingWindow,
+   CWindowObserver}.cpp`, `mrpt_obs/src/gnss_messages_novatel.cpp`,
+   `mrpt_obs/src/carmen_log_tools.cpp`,
+   `mrpt_viz/src/PLY_import_export.cpp`, `mrpt_viz/src/COrbitCameraController.cpp`,
+   `mrpt_img/src/CImage_loadXPM.cpp`, `mrpt_slam/src/slam/
+   CRejectionSamplingRangeOnlyLocalization.cpp`.
+
+5. **Biggest single-file impact (most uncovered lines, worth prioritizing for
+   raw percentage gains)**: `mrpt_viz/src/CPolyhedron.cpp` (1420 uncovered,
+   pure geometry, no GUI dependency — good test target),
+   `mrpt_maps/src/maps/CRandomFieldGridMap2D.cpp` (827),
+   `mrpt_maps/src/maps/CPointsMap.cpp` (547),
+   `mrpt_maps/src/maps/CGasConcentrationGridMap2D.cpp` (520),
+   `mrpt_obs/src/CObservation3DRangeScan.cpp` (459).
+
+6. **Near-target modules (75-90%), smallest remaining gap to close first**:
+   `mrpt_bayes` (`CKalmanFilterCapable_impl.h` 71.4%), `mrpt_config`
+   (`CConfigFile.cpp` 59.3%), `mrpt_containers` (`yaml.cpp` 78.8%).
+   (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06,
+   both now >90%.)
+
+Branch coverage lags line coverage everywhere (often by 15-30 points),
+indicating error-handling and edge-case branches are the norm left untested
+even in files with decent line coverage — prioritize adding failure-path
+tests, not just more happy-path calls.
+

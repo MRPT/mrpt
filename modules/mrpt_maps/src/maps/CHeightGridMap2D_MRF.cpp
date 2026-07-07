@@ -307,3 +307,10 @@ void CHeightGridMap2D_MRF::getAs3DObject(
   CRandomFieldGridMap2D::getAs3DObject(meanObj, varObj);
   MRPT_END
 }
+
+std::map<std::string, mrpt::config::CLoadableOptions*> CHeightGridMap2D_MRF::optionsByName()
+{
+  return {
+      {"insertionOptions", &insertionOptions},
+  };
+}

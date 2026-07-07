@@ -1261,3 +1261,10 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
     return false;
   }
 }
+
+std::map<std::string, mrpt::config::CLoadableOptions*> CGasConcentrationGridMap2D::optionsByName()
+{
+  return {
+      {"insertionOptions", &insertionOptions},
+  };
+}

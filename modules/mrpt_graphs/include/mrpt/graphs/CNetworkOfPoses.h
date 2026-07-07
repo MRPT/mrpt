@@ -408,7 +408,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
 
       if (auto_expand_set)
       {  // set auto-expansion
-        for (TNodeID curr_node_ID = *node_IDs.begin(); curr_node_ID != *node_IDs.rbegin();
+        for (TNodeID curr_node_ID = *node_IDs.begin(); curr_node_ID <= *node_IDs.rbegin();
              ++curr_node_ID)
         {
           node_IDs_real.insert(curr_node_ID);
@@ -650,7 +650,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
 
     // assertion - non-overlapping groups
     ASSERTMSG_(
-        *groupA.rend() < *groupB.rbegin() || *groupA.rbegin() > *groupB.rend(),
+        *groupA.rbegin() < *groupB.begin() || *groupB.rbegin() < *groupA.begin(),
         "Groups A, B contain overlapping nodeIDs");
 
     // decide what group contains the low/high nodeIDs

@@ -61,6 +61,7 @@ set(LIB_SOURCES
 )
 
 set(LIB_UNIT_TEST_SOURCES
+  tests/CPose2D_unittest.cpp
   tests/CPosePDFGrid_unittest.cpp
   tests/CQuaternion_unittest.cpp
   tests/CPose3D_unittest.cpp
@@ -81,6 +82,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CPose3DPDFGaussian_unittest.cpp
   tests/matrix_serialization_unittest.cpp
   tests/Lie_unittest.cpp
+  tests/Lie_SO_unittest.cpp
   tests/PosePDF_implementations_unittest.cpp
 )
 

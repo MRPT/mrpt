@@ -226,7 +226,7 @@ struct MRPT_EMPTY_BASES TPoint3D_ : public TPoint3D_data<T>, public TPoseOrPoint
   [[nodiscard]] TPoint3D_<T> unitarize() const
   {
     const T n = norm();
-    ASSERT_GT_(n, 0);
+    ASSERT_GT_(n, static_cast<T>(0));
     const T f = 1 / n;
     return {TPoint3D_data<T>::x * f, TPoint3D_data<T>::y * f, TPoint3D_data<T>::z * f};
   }

@@ -2,6 +2,27 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.2 (2026-07-07)
+------------------
+* Fix ``nanoflann`` declared as a build-only dependency in ``package.xml``,
+  which prevented it from being found by downstream packages' CMake
+  configuration on ROS build farms.
+* Increase unit test coverage.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.1 (2026-07-04)
+------------------
+* math: add nanoflann as rosdep dependency (more up-to-date than system libnanoflann-dev)
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.0 (2026-07-03)
+------------------
+* Merge pull request `#1376 <https://github.com/MRPT/mrpt/issues/1376>`_ from MRPT/port/2x-fixes-jul2026
+  Port 2.x fixes: COutputLogger thread-safety, octomap build flag
+* Merge pull request `#1374 <https://github.com/MRPT/mrpt/issues/1374>`_ from MRPT/feat/kdtree-save-load-index
+  feat(math): KDTreeCapable save/load of the KD-tree index (2D and 3D)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.0.4 (2026-06-17)
 ------------------
 

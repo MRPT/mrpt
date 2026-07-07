@@ -71,6 +71,10 @@ void TPolygon3D::getAsSegmentList(vector<TSegment3D>& v) const
 {
   size_t N = size();
   v.resize(N);
+  if (N == 0)
+  {
+    return;
+  }
   for (size_t i = 0; i < N - 1; i++) v[i] = TSegment3D(operator[](i), operator[](i + 1));
   v[N - 1] = TSegment3D(operator[](N - 1), operator[](0));
 }

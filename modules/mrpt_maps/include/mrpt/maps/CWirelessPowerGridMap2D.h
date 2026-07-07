@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 
@@ -34,7 +35,7 @@ namespace mrpt::maps
  * mrpt::maps::CMultiMetricMap
  * \ingroup mrpt_maps_grp
  */
-class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
+class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D, public mrpt::config::OptionsCapable
 {
   DEFINE_SERIALIZABLE(CWirelessPowerGridMap2D, mrpt::maps)
  public:
@@ -63,6 +64,9 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
     void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
   } insertionOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** Returns a 3D object representing the map  */
   void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;

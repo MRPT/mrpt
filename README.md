@@ -53,7 +53,7 @@ while preserving the data structures and algorithms at the core of MRPT.
 ### Install from ROS repositories
 
 ```bash
-# ROS 1
+# ROS 1 (deprecated)
 sudo apt install ros-$ROS_DISTRO-mrpt2
 
 # ROS 2

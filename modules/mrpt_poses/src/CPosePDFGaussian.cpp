@@ -401,7 +401,7 @@ std::ostream& mrpt::poses::operator<<(std::ostream& out, const CPosePDFGaussian&
 /*---------------------------------------------------------------
             operator +
  ---------------------------------------------------------------*/
-poses::CPosePDFGaussian operator+(
+poses::CPosePDFGaussian mrpt::poses::operator+(
     const mrpt::poses::CPose2D& A, const mrpt::poses::CPosePDFGaussian& B)
 {
   poses::CPosePDFGaussian ret(B);

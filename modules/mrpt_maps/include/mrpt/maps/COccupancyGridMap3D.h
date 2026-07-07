@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/maps/CLogOddsGridMap3D.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -47,7 +48,8 @@ namespace mrpt::maps
 class COccupancyGridMap3D :
     public CMetricMap,
     public CLogOddsGridMap3D<OccGridCellTraits::cellType>,
-    public mrpt::maps::NearestNeighborsCapable
+    public mrpt::maps::NearestNeighborsCapable,
+    public mrpt::config::OptionsCapable
 {
   DEFINE_SERIALIZABLE(COccupancyGridMap3D, mrpt::maps)
  public:
@@ -316,6 +318,9 @@ class COccupancyGridMap3D :
   };
 
   TLikelihoodOptions likelihoodOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** Options for the conversion of a mrpt::maps::COccupancyGridMap3D into a
    * mrpt::viz::COctoMapVoxels */

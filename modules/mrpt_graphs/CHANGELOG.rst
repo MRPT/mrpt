@@ -2,6 +2,24 @@
 Changelog for package mrpt_graphs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.2 (2026-07-07)
+------------------
+* Fix undefined behavior in ``connectGraphPartitions()``'s overlap check
+  (dereferenced a past-the-end iterator), which could cause spurious
+  assertion failures on some C++ standard library implementations.
+* Fix ``CDijkstra`` not throwing ``NotConnectedGraph`` for disconnected
+  graphs.
+* Fix an off-by-one bug in ``CNetworkOfPoses::extractSubGraph()`` that
+  excluded the highest node ID in the range.
+* Increase unit test coverage.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.1 (2026-07-04)
+------------------
+
+3.1.0 (2026-07-03)
+------------------
+
 3.0.4 (2026-06-17)
 ------------------
 

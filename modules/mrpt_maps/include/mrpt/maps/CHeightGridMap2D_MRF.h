@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <mrpt/config/OptionsCapable.h>
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 
@@ -35,7 +36,10 @@ namespace mrpt::maps
  * \note New in MRPT 1.4.0
  * \ingroup mrpt_maps_grp
  */
-class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D, public CHeightGridMap2D_Base
+class CHeightGridMap2D_MRF :
+    public CRandomFieldGridMap2D,
+    public CHeightGridMap2D_Base,
+    public mrpt::config::OptionsCapable
 {
   DEFINE_SERIALIZABLE(CHeightGridMap2D_MRF, mrpt::maps)
  public:
@@ -62,6 +66,9 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D, public CHeightGridMap
         const std::string& section) override;                 // See base docs
     void dumpToTextStream(std::ostream& out) const override;  // See base docs
   } insertionOptions;
+
+  // mrpt::config::OptionsCapable interface:
+  [[nodiscard]] std::map<std::string, mrpt::config::CLoadableOptions*> optionsByName() override;
 
   /** Returns a 3D object representing the map */
   void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;

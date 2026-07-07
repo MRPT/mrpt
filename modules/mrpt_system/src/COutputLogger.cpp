@@ -86,10 +86,19 @@ void COutputLogger::logStr(const VerbosityLevel level, std::string_view msg_str)
     msg.dumpToConsole();
   }
 
-  // User callbacks:
+  // User callbacks: copy the list under the lock, then invoke the callbacks
+  // outside of it, so a slow/blocking callback doesn't hold up whoever else
+  // is concurrently registering/deregistering (or logging from another
+  // thread), and so a callback that itself calls logRegisterCallback() /
+  // logDeregisterCallback() on this same logger cannot deadlock.
   if (level >= m_min_verbosity_level_callbacks)
   {
-    for (const auto& c : m_listCallbacks)
+    std::deque<output_logger_callback_t> callbacksCopy;
+    {
+      auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
+      callbacksCopy = m_listCallbacks;
+    }
+    for (const auto& c : callbacksCopy)
     {
       c(msg.body, msg.level, msg.name, msg.timestamp);
     }
@@ -317,14 +326,26 @@ void COutputLogger::TMsg::dumpToConsole() const
 
 void COutputLogger::logRegisterCallback(output_logger_callback_t userFunc)
 {
+  auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
   m_listCallbacks.emplace_back(userFunc);
 }
 
 bool COutputLogger::logDeregisterCallback(output_logger_callback_t userFunc)
 {
+  // Identity is only comparable for callbacks convertible to a plain function
+  // pointer (free functions, static members, non-capturing lambdas): the
+  // signature below must match output_logger_callback_t's exactly, otherwise
+  // target<>() always returns nullptr and this would spuriously "match" the
+  // first registered callback regardless of identity.
+  using callback_fnptr_t = void (*)(
+      std::string_view, mrpt::system::VerbosityLevel, std::string_view, mrpt::Clock::time_point);
+
+  auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
+  const auto* userTarget = userFunc.target<callback_fnptr_t>();
   for (auto it = m_listCallbacks.begin(); it != m_listCallbacks.end(); ++it)
   {
-    if (it->target<void (*)()>() == userFunc.target<void (*)()>())
+    const auto* itTarget = it->target<callback_fnptr_t>();
+    if (userTarget && itTarget && *userTarget == *itTarget)
     {
       m_listCallbacks.erase(it);
       return true;

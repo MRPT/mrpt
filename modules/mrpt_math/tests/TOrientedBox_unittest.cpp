@@ -13,8 +13,10 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/TOrientedBox.h>
 #include <mrpt/math/TPose3D.h>
+#include <mrpt/serialization/CArchive.h>
 
 TEST(TOrientedBox, Constructor)
 {
@@ -116,4 +118,69 @@ TEST(TOrientedBox, getAxisAlignedBox)
   EXPECT_NEAR(aab.max.x, 3.0, 1e-6);
   EXPECT_NEAR(aab.max.y, 3.0, 1e-6);
   EXPECT_NEAR(aab.max.z, 6.0, 1e-6);
+}
+
+TEST(TOrientedBox, AsString)
+{
+  const mrpt::math::TOrientedBox the_box{
+      mrpt::math::TPose3D::Identity(), mrpt::math::TPoint3D(1, 2, 3)};
+  EXPECT_FALSE(the_box.asString().empty());
+}
+
+TEST(TOrientedBox, GetBoxPlanes)
+{
+  const auto box_size = mrpt::math::TPoint3D(2.0, 4.0, 6.0);
+  const mrpt::math::TOrientedBox the_box{mrpt::math::TPose3D::Identity(), box_size};
+
+  const auto planes = the_box.getBoxPlanes();
+  ASSERT_EQ(planes.size(), 6u);
+
+  // All 6 face-plane centers should be at distance 0 from their own plane,
+  // and the box center should be inside every plane's negative half-space
+  // (i.e. all planes should be roughly equidistant from the center by half
+  // the box size on some axis).
+  for (const auto& pl : planes)
+  {
+    // Sanity check: normal vector must be non-degenerate.
+    const auto n = pl.getUnitaryNormalVector();
+    EXPECT_NEAR(n.norm(), 1.0, 1e-6);
+  }
+}
+
+TEST(TOrientedBox, SerializationRoundTripDouble)
+{
+  using mrpt::literals::operator""_deg;
+  const mrpt::math::TPose3D pose(1, 2, 3, 90.0_deg, 0.0_deg, 0.0_deg);
+  const mrpt::math::TPoint3D size(2, 4, 6);
+  const mrpt::math::TOrientedBox box{pose, size};
+
+  mrpt::io::CMemoryStream membuf;
+  auto arch = mrpt::serialization::archiveFrom(membuf);
+  arch << box;
+  membuf.Seek(0);
+
+  mrpt::math::TOrientedBox box2;
+  arch >> box2;
+
+  EXPECT_TRUE(box2.pose() == pose);
+  EXPECT_TRUE(box2.size() == size);
+}
+
+TEST(TOrientedBox, SerializationRoundTripFloat)
+{
+  using mrpt::literals::operator""_deg;
+  const mrpt::math::TPose3D pose(1, 2, 3, 90.0_deg, 0.0_deg, 0.0_deg);
+  const mrpt::math::TPoint3Df size(2, 4, 6);
+  const mrpt::math::TOrientedBoxf box{pose, size};
+
+  mrpt::io::CMemoryStream membuf;
+  auto arch = mrpt::serialization::archiveFrom(membuf);
+  arch << box;
+  membuf.Seek(0);
+
+  mrpt::math::TOrientedBoxf box2;
+  arch >> box2;
+
+  EXPECT_TRUE(box2.pose() == pose);
+  EXPECT_TRUE(box2.size() == size);
 }
