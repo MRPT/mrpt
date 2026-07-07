@@ -29,7 +29,9 @@ set(LIB_SOURCES
 )
 
 set(LIB_UNIT_TEST_SOURCES
+  tests/se2_unittest.cpp
   tests/se3_unittest.cpp
+  tests/TMatchingPair_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
@@ -55,6 +57,8 @@ mrpt_add_library(
     Eigen3::Eigen
   CMAKE_DEPENDENCIES
     mrpt_poses
+  UNITTEST_LINK_LIBRARIES
+    mrpt::mrpt_io
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE

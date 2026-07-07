@@ -242,3 +242,162 @@ TEST(tfest, se3_l2_robust)
                  << outQuat << "\n";
   }
 }
+
+TEST(tfest, se3_l2_TooFewPointsFails)
+{
+  TPoints pA, pB;
+  generate_points(pA, pB);
+
+  TMatchingPairList list;
+  generate_list_of_points(pA, pB, list);
+  // Keep just 2 correspondences, below the minimum of 3 required:
+  while (list.size() > 2)
+  {
+    list.erase(list.begin());
+  }
+
+  CPose3DQuat outQuat;
+  double scale;
+  EXPECT_FALSE(mrpt::tfest::se3_l2(list, outQuat, scale));
+}
+
+TEST(tfest, se3_l2_ForceScaleToUnity)
+{
+  TPoints pA, pB;
+  CPose3DQuat qPose = generate_points(pA, pB);
+
+  TMatchingPairList list;
+  generate_list_of_points(pA, pB, list);
+
+  CPose3DQuat outQuat;
+  double scale;
+  ASSERT_TRUE(mrpt::tfest::se3_l2(list, outQuat, scale, /*forceScaleToUnity=*/true));
+  EXPECT_NEAR(scale, 1.0, 1e-9);
+
+  double err = 0.0;
+  for (unsigned int i = 0; i < 3; ++i)
+  {
+    err += square(std::fabs(qPose[i]) - std::fabs(outQuat[i]));
+  }
+  EXPECT_TRUE(std::sqrt(err) < 0.5) << "Scale-forced translation differs too much from ground "
+                                       "truth (rigid input, so this should hold).";
+}
+
+TEST(tfest, se3_l2_DoublePrecisionList)
+{
+  TPoints pA, pB;
+  CPose3DQuat qPose = generate_points(pA, pB);
+
+  TMatchingPairList_d list;
+  generate_list_of_points(pA, pB, list);
+
+  CPose3DQuat outQuat;
+  double scale;
+  ASSERT_TRUE(mrpt::tfest::se3_l2(list, outQuat, scale));
+
+  double err = 0.0;
+  for (unsigned int i = 0; i < 7; ++i)
+  {
+    err += square(std::fabs(qPose[i]) - std::fabs(outQuat[i]));
+  }
+  EXPECT_TRUE(std::sqrt(err) < 1e-6);
+}
+
+TEST(tfest, se3_l2_robust_UserCallbackFiltersSubset)
+{
+  TPoints pA, pB;
+  generate_points(pA, pB);
+
+  TMatchingPairList list;
+  generate_list_of_points(pA, pB, list);
+
+  mrpt::tfest::TSE3RobustResult estimateResult;
+  mrpt::tfest::TSE3RobustParams params;
+  params.ransac_minSetSize = 3;
+  params.ransac_maxSetSizePct = 3.0 / static_cast<double>(list.size());
+  // Reject the correspondence with globalIdx==4, forcing the RANSAC loop to
+  // skip over it whenever picked:
+  params.user_individual_compat_callback = [](const TPotentialMatch& pm) -> bool
+  { return pm.idx_this != 4; };
+
+  ASSERT_TRUE(mrpt::tfest::se3_l2_robust(list, params, estimateResult));
+  for (const auto idx : estimateResult.inliers_idx)
+  {
+    EXPECT_NE(idx, 4u);
+  }
+}
+
+TEST(tfest, se3_l2_robust_VerboseNoSolutionFound)
+{
+  TPoints pA, pB;
+  generate_points(pA, pB);
+
+  TMatchingPairList list;
+  generate_list_of_points(pA, pB, list);  // 5 correspondences
+
+  mrpt::tfest::TSE3RobustResult estimateResult;
+  mrpt::tfest::TSE3RobustParams params;
+  params.ransac_minSetSize = 3;
+  params.ransac_maxSetSizePct = 1.0;
+  params.ransac_nmaxSimulations = 5;
+  params.verbose = true;
+  // Reject every single correspondence => the min-set-size can never be
+  // reached, forcing "No solution found" (max_size==0) return path:
+  params.user_individual_compat_callback = [](const TPotentialMatch&) -> bool { return false; };
+
+  EXPECT_FALSE(mrpt::tfest::se3_l2_robust(list, params, estimateResult));
+}
+
+TEST(tfest, se3_l2_robust_DegenerateMinSetSizeBelowThree)
+{
+  // With ransac_minSetSize < 3, the internal se3_l2() call on the "maybe
+  // inliers" subset always fails (Horn's method needs >= 3 points),
+  // exercising that failure path inside the RANSAC loop:
+  TPoints pA, pB;
+  generate_points(pA, pB);
+
+  TMatchingPairList list;
+  generate_list_of_points(pA, pB, list);
+
+  mrpt::tfest::TSE3RobustResult estimateResult;
+  mrpt::tfest::TSE3RobustParams params;
+  params.ransac_minSetSize = 2;
+  params.ransac_maxSetSizePct = 1.0;
+  params.ransac_nmaxSimulations = 5;
+
+  EXPECT_FALSE(mrpt::tfest::se3_l2_robust(list, params, estimateResult));
+}
+
+TEST(tfest, se3_l2_LargeRotationQuaternionSignFlip)
+{
+  // A rotation close to 180 degrees maximizes the chance of the internal
+  // Horn's method quaternion having a negative "w" (q_r) component before
+  // the sign-normalization step.
+  TPoints pA(5), pB(5);
+  pA[0] = {0.0, 0.5, 0.4};
+  pA[1] = {1.0, 1.5, -0.1};
+  pA[2] = {1.2, 1.1, 0.9};
+  pA[3] = {0.7, 0.3, 3.4};
+  pA[4] = {1.9, 2.5, -1.7};
+
+  const CPose3D truePose(0.5, 1.5, 0.75, 170.0_deg, 20.0_deg, 5.0_deg);
+  const CPose3DQuat qPose(truePose);
+  for (auto& p : pB)
+  {
+    p.resize(3);
+  }
+  for (unsigned int i = 0; i < 5; ++i)
+  {
+    qPose.inverseComposePoint(pA[i][0], pA[i][1], pA[i][2], pB[i][0], pB[i][1], pB[i][2]);
+  }
+
+  TMatchingPairList list;
+  generate_list_of_points(pA, pB, list);
+
+  CPose3DQuat outQuat;
+  double scale;
+  ASSERT_TRUE(mrpt::tfest::se3_l2(list, outQuat, scale));
+  // Just check we get a finite, sane result; the actual quaternion sign
+  // internal branch is not user-observable.
+  EXPECT_TRUE(std::isfinite(outQuat[3]));
+}

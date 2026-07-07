@@ -259,7 +259,6 @@ and accurate path — pick two.
 | mrpt_libapps_gui | 952/1567 | 60.8% | 42.6% |
 | mrpt_nav | 3928/6234 | 63.0% | 45.3% |
 | mrpt_slam | 2778/4299 | 64.6% | 43.7% |
-| mrpt_tfest | 453/649 | 69.8% | 53.9% |
 | mrpt_rtti | 126/176 | 71.6% | 73.5% |
 | mrpt_serialization | 511/708 | 72.2% | 52.5% |
 | mrpt_bayes | 805/1052 | 76.5% | 55.2% |
@@ -271,6 +270,7 @@ and accurate path — pick two.
 | mrpt_poses | 6263/6787 | 92.3% | 59.8% |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
 | mrpt_random | 160/167 | 95.8% | 85.1% |
+| mrpt_tfest (2026-07-07) | 633/652 | 97.1% | 73.3% |
 | mrpt_typemeta | 57/57 | 100.0% | 85.1% |
 
 † `mrpt_img` includes the vendored `src/stb/*.h` (stb_image/stb_image_resize2/
@@ -315,10 +315,7 @@ stb_image_write, public-domain third-party). Excluding those, first-party
    `mrpt_maps/src/maps/CGasConcentrationGridMap2D.cpp` (520),
    `mrpt_obs/src/CObservation3DRangeScan.cpp` (459).
 
-6. **Resolved (2026-07-06): `mrpt_poses` was 46.4%, now 92.3%** after its
-   unit-test pass (see git history) — no longer a weak area.
-
-7. **Near-target modules (75-90%), smallest remaining gap to close first**:
+6. **Near-target modules (75-90%), smallest remaining gap to close first**:
    `mrpt_bayes` (`CKalmanFilterCapable_impl.h` 71.4%), `mrpt_config`
    (`CConfigFile.cpp` 59.3%), `mrpt_containers` (`yaml.cpp` 78.8%).
    (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06,
