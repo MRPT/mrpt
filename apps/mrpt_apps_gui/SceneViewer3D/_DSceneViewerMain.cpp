@@ -375,8 +375,6 @@ const wxWindowID _DSceneViewerFrame::ID_TIMER_AUTOPLAY = wxNewId();
 
 const wxWindowID _DSceneViewerFrame::ID_TIMER_FILEWATCH = wxNewId();
 
-const long _DSceneViewerFrame::ID_TIMER_FILEWATCH = wxNewId();
-
 BEGIN_EVENT_TABLE(_DSceneViewerFrame, wxFrame)
 //(*EventTable(_DSceneViewerFrame)
 //*)
