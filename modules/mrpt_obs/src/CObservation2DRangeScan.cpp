@@ -299,14 +299,6 @@ float CObservation2DRangeScan::getScanRelativeTimestamp(size_t idx) const
   return sweepDuration * static_cast<float>(idx) / static_cast<float>(N - 1);
 }
 
-float CObservation2DRangeScan::getScanRelativeTimestamp(size_t idx) const
-{
-  ASSERT_LT_(idx, m_scan.size());
-  const size_t N = m_scan.size();
-  if (N <= 1 || sweepDuration <= 0.0f) return 0.0f;
-  return sweepDuration * static_cast<float>(idx) / static_cast<float>(N - 1);
-}
-
 /*---------------------------------------------------------------
             filterByExclusionAreas
  ---------------------------------------------------------------*/
