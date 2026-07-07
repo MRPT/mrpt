@@ -24,16 +24,51 @@ useful to someone else maintaining MRPT in the future... ;-)
    ``2.x`` git branch history of this same file.
 
 
-1) Bump module versions and generate changelogs
+1) Generate, review and commit the changelogs
 ------------------------------------------------
 
 - Go to the MRPT git cloned repository.
 - Make sure of being on branch ``develop`` and that it is up to date and clean.
 - Make sure CI is green on ``develop``.
-- Bump the version of **all** modules/apps and regenerate each
-  ``CHANGELOG.rst`` from the conventional-commits-like history since the
-  last tag, using ``catkin_prepare_release`` (provided by the ``catkin_pkg``
-  Python package: ``pip install catkin_pkg`` or ``apt install
+- Before touching any version number, generate a **"Forthcoming"** section
+  in every module/app's ``CHANGELOG.rst``, summarizing commits since the
+  last tag, using ``catkin_generate_changelog`` (also from the
+  ``catkin_pkg`` package). Run it from the repository root:
+
+.. code-block:: bash
+
+   cd MRPT_ROOT
+   git checkout develop && git pull
+   catkin_generate_changelog
+   # Answer "y" per-package (or pass -y for non-interactive) to (re)write
+   # each modules/*/CHANGELOG.rst and apps/*/CHANGELOG.rst "Forthcoming"
+   # section.
+
+- **Review and hand-edit** the generated "Forthcoming" sections before
+  committing: consolidate/merge duplicate or near-duplicate lines, drop
+  noise (raw "Merge pull request ..." commit bodies, internal-only commits
+  such as pure code-coverage/test additions), and fix wording so each
+  module's changelog reads as a coherent summary for end users.
+- Commit the reviewed changelogs **separately**, before any version bump:
+
+.. code-block:: bash
+
+   git add -u  # or list the changed CHANGELOG.rst files explicitly
+   git commit -m "Update changelogs for upcoming release"
+
+  This keeps changelog wording/review as its own reviewable commit,
+  decoupled from the automatic version-bump commit created in the next
+  step.
+
+
+2) Bump module versions
+------------------------------------------------
+
+- Bump the ``<version>`` of **all** modules/apps and finalize the
+  already-reviewed ``CHANGELOG.rst`` "Forthcoming" sections (renaming them
+  to the new dated section, e.g. ``3.0.5 (2026-06-21)``) using
+  ``catkin_prepare_release`` (provided by the ``catkin_pkg`` Python
+  package: ``pip install catkin_pkg`` or ``apt install
   python3-catkin-pkg``). Run it from the repository root so it discovers
   every ``package.xml`` under ``modules/*`` and ``apps/*``:
 
@@ -68,7 +103,7 @@ useful to someone else maintaining MRPT in the future... ;-)
    git tag --sign X.Y.Z
 
 
-2) Merge into master and push
+3) Merge into master and push
 -------------------------------
 
 .. code-block:: bash
@@ -80,7 +115,7 @@ useful to someone else maintaining MRPT in the future... ;-)
    git push origin X.Y.Z
 
 
-3) Generate the source code packages
+4) Generate the source code packages
 --------------------------------------
 
 - Stay on ``master``, at the just-created tag.
@@ -104,7 +139,7 @@ useful to someone else maintaining MRPT in the future... ;-)
    git clean -fd
 
 
-4) Create the GitHub release and attach assets
+5) Create the GitHub release and attach assets
 -------------------------------------------------
 
 - Aggregate the per-module ``CHANGELOG.rst`` entries for the new version
@@ -129,12 +164,21 @@ useful to someone else maintaining MRPT in the future... ;-)
 Automating the release
 -------------------------
 
-Steps 1-4 above are scripted end-to-end by ``packaging/release.py``. It
+Steps 2-5 above are scripted end-to-end by ``packaging/release.py``. It
 runs the same commands documented here, in the same order, and stops to
 ask for an explicit "yes" before each action that is hard to reverse or
 publicly visible (pushing ``develop``'s tag/commit, merging and pushing
 ``master``, and creating/publishing the GitHub release). Run it from the
 repository root:
+
+.. note::
+
+   Step 1 (generate, review and commit the changelogs) is **not**
+   automated: it calls ``catkin_prepare_release`` non-interactively
+   (``-y``), which would otherwise generate "Forthcoming" changelog
+   entries straight from raw commit messages with no chance to review or
+   consolidate them. Always do step 1 by hand first, commit it, and only
+   then run ``packaging/release.py``.
 
 .. code-block:: bash
 
@@ -153,7 +197,7 @@ hard-to-reverse actions, so a human confirmation gate is kept at those two
 points even when every other step is automated.
 
 
-5) Create a new Debian package
+6) Create a new Debian package
 --------------------------------
 
 As of MRPT 2.4.0 (Oct/2021), we switched to gbp with:
@@ -164,7 +208,7 @@ As of MRPT 2.4.0 (Oct/2021), we switched to gbp with:
 Instructions:
 
 1) Make sure of having generated and uploaded to the GitHub release the
-   `xxx.tar.gz` and its PGP signature (part "3" and "4" above).
+   `xxx.tar.gz` and its PGP signature (part "4" and "5" above).
 
 2) Go to the directory where the mrpt gbp repo is cloned and integrate the
    new release with:
