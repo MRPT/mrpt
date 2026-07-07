@@ -314,8 +314,15 @@ bool tfest::se2_l2_robust(
         // If we are within the first two correspondences, just add them
         // to the subset:
         // ------------------------------------------------------------------------------------------------------
+        const bool isFirstPoint = subSet.empty();
         subSet.push_back(corr_j);
-        markAsPicked(corr_j, alreadySelectedThis, alreadySelectedOther);
+        if (isFirstPoint)
+        {
+          markAsPicked(corr_j, alreadySelectedThis, alreadySelectedOther);
+        }
+        // else: the candidate second point is only marked as picked once
+        // accepted below, so a rejected candidate remains available for
+        // future pairing attempts instead of being excluded forever.
 
         if (subSet.size() == 2)
         {
