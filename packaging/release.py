@@ -88,7 +88,10 @@ def aggregate_changelog_notes(version: str) -> str:
     by module, skipping modules with no entries for this version."""
     sections: list[str] = []
     pattern = re.compile(
-        rf"^{re.escape(version)} \([0-9-]+\)\n-+\n(.*?)(?=\n\S.*\n-+\n|\Z)",
+        # [^\n]* (not DOTALL's .*) keeps the next-section lookahead confined
+        # to a single line, so re.DOTALL (needed for the multi-line capture
+        # group) doesn't let it skip ahead to a much later version header.
+        rf"^{re.escape(version)} \([0-9-]+\)\n-+\n(.*?)(?=\n\S[^\n]*\n-+\n|\Z)",
         re.DOTALL | re.MULTILINE,
     )
     for changelog in sorted(glob.glob(str(REPO_ROOT / "modules" / "*" / "CHANGELOG.rst"))) + sorted(
