@@ -2,6 +2,14 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix ``nanoflann`` declared as a build-only dependency in ``package.xml``,
+  which prevented it from being found by downstream packages' CMake
+  configuration on ROS build farms.
+* Increase unit test coverage.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.1 (2026-07-04)
 ------------------
 * math: add nanoflann as rosdep dependency (more up-to-date than system libnanoflann-dev)

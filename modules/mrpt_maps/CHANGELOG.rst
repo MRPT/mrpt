@@ -2,6 +2,9 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.1.1 (2026-07-04)
 ------------------
 * test(mrpt_maps): skip kdtree save/load-index tests on old nanoflann

@@ -2,6 +2,15 @@
 Changelog for package mrpt_tfest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix a bug in ``se2_l2_robust()``'s point-matching RANSAC variant where a
+  single rejected candidate pair could permanently exclude a valid
+  correspondence from all further iterations, sometimes leaving the
+  result empty.
+* Increase unit test coverage.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.1 (2026-07-04)
 ------------------
 
