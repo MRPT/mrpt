@@ -216,6 +216,22 @@ per-file/per-module percentages, or numbers will be wrong in both directions.
 does this dedupe and prints per-file + aggregate line/branch % for the given
 module(s), e.g. `scripts/coverage_module_report.py coverage.json mrpt_math`.
 
+Gotcha (2026-07-09): re-running a coverage-instrumented test binary directly
+(not via `colcon test`) without deleting old `.gcda` files first causes
+`libgcov profiling error: ... overwriting an existing profile data with a
+different checksum` — safe to ignore for pass/fail, but before trusting a
+`gcovr` report, `find build -iname '*.gcda' -delete` and re-run `colcon test`
+once to get a clean, single-run coverage capture.
+
+Gotcha (2026-07-09): `mrpt_math` only explicitly instantiates fixed-size
+matrices/vectors for a handful of dimensions (square `CMatrixFixed`: 2,3,4,6,
+7,12; `CVectorFixed`: 2,3,4,5,6,7,12 — see
+`mrpt_math/src/MatrixVectorBase_instantiate_{CMatrixFixed,CVectorFixed}.cpp`).
+Writing a test that instantiates a template (e.g. `CKalmanFilterCapable<...>`)
+with a size outside that list, such as `VEH_SIZE=1`, compiles but fails to
+*link* (`undefined reference to MatrixVectorBase<...>::impl_op_...`). Pick a
+supported size (2 is the smallest) for any new fixed-size-matrix-based test.
+
 ### Measuring a single module's coverage after changing it
 
 When you only touched one module and want its updated number, it's tempting
@@ -261,8 +277,6 @@ and accurate path — pick two.
 | mrpt_slam | 2778/4299 | 64.6% | 43.7% |
 | mrpt_rtti | 126/176 | 71.6% | 73.5% |
 | mrpt_serialization | 511/708 | 72.2% | 52.5% |
-| mrpt_bayes | 805/1052 | 76.5% | 55.2% |
-| mrpt_config | 445/551 | 80.8% | 65.1% |
 | mrpt_containers | 1639/1956 | 83.8% | 55.6% |
 | mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
 | mrpt_core | 541/628 | 86.1% | 64.8% |
@@ -270,6 +284,8 @@ and accurate path — pick two.
 | mrpt_poses | 6263/6787 | 92.3% | 59.8% |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
 | mrpt_random | 160/167 | 95.8% | 85.1% |
+| mrpt_bayes (2026-07-09) | 1036/1078 | 96.1% | 77.4% |
+| mrpt_config (2026-07-09) | 531/548 | 96.9% | 82.3% |
 | mrpt_tfest (2026-07-07) | 633/652 | 97.1% | 73.3% |
 | mrpt_typemeta | 57/57 | 100.0% | 85.1% |
 
@@ -316,10 +332,9 @@ stb_image_write, public-domain third-party). Excluding those, first-party
    `mrpt_obs/src/CObservation3DRangeScan.cpp` (459).
 
 6. **Near-target modules (75-90%), smallest remaining gap to close first**:
-   `mrpt_bayes` (`CKalmanFilterCapable_impl.h` 71.4%), `mrpt_config`
-   (`CConfigFile.cpp` 59.3%), `mrpt_containers` (`yaml.cpp` 78.8%).
-   (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06,
-   both now >90%.)
+   `mrpt_containers` (`yaml.cpp` 78.8%).
+   (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06;
+   `mrpt_bayes` and `mrpt_config` cleared it as of 2026-07-09, both now >96%.)
 
 Branch coverage lags line coverage everywhere (often by 15-30 points),
 indicating error-handling and edge-case branches are the norm left untested
