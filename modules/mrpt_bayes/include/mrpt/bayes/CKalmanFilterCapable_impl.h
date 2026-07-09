@@ -427,15 +427,21 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
         // KF_aux_estimate_*, restore it:
         std::memcpy(&m_xkk[0], &x_vehicle[0], sizeof(m_xkk[0]) * VEH_SIZE);
 
-        mrpt::math::estimateJacobian(
-            x_feat,
-            std::function<void(
-                const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat, KFArray_OBS& out_x)>(
-                &KF_aux_estimate_obs_Hy_jacobian),
-            feat_increments, std::pair<KFCLASS*, size_t>(this, lm_idx), Hy);
-        // The state vector was temporarily modified by
-        // KF_aux_estimate_*, restore it:
-        std::memcpy(&m_xkk[lm_idx_in_statevector], &x_feat[0], sizeof(m_xkk[0]) * FEAT_SIZE);
+        // For non-SLAM problems (FEAT_SIZE==0) there is no feature state to
+        // estimate a Jacobian for: x_feat is always empty, so skip the call
+        // (estimateJacobian() requires a non-empty input vector).
+        if constexpr (FEAT_SIZE != 0)
+        {
+          mrpt::math::estimateJacobian(
+              x_feat,
+              std::function<void(
+                  const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat,
+                  KFArray_OBS& out_x)>(&KF_aux_estimate_obs_Hy_jacobian),
+              feat_increments, std::pair<KFCLASS*, size_t>(this, lm_idx), Hy);
+          // The state vector was temporarily modified by
+          // KF_aux_estimate_*, restore it:
+          std::memcpy(&m_xkk[lm_idx_in_statevector], &x_feat[0], sizeof(m_xkk[0]) * FEAT_SIZE);
+        }
 
         if (KF_options.debug_verify_analytic_jacobians)
         {
