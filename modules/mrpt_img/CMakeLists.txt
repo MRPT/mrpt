@@ -46,12 +46,20 @@ set(LIB_SOURCES
 )
 
 set(LIB_UNIT_TEST_SOURCES
+  tests/camera_geometry_unittest.cpp
+  tests/CCanvas_unittest.cpp
+  tests/CImage_loadXPM_unittest.cpp
+  tests/CImage_SSEx_unittest.cpp
   tests/CImage_unittest.cpp
   tests/CImagePyramid_unittest.cpp
-  tests/CUndistortMap_unittest.cpp
+  tests/CMappedImage_unittest.cpp
   tests/color_maps_unittest.cpp
+  tests/CUndistortMap_unittest.cpp
+  tests/CVideoFileWriter_unittest.cpp
   tests/TCamera_unittest.cpp
-  tests/camera_geometry_unittest.cpp
+  tests/TColor_unittest.cpp
+  tests/TPixelCoord_unittest.cpp
+  tests/TStereoCamera_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/core/integer_select.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/serialization/CSerializable.h>
 
 #include <map>

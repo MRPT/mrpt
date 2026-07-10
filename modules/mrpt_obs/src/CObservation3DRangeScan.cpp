@@ -641,8 +641,10 @@ void CObservation3DRangeScan::load_impl() const
     {
       CMatrixFloat M;
       M.loadFromTextFile(fil);
-      ASSERT_EQUAL_(M.rows(), 3);
-      const auto N = M.cols();
+      // Each row is one 3D point (X,Y,Z), matching the layout written by
+      // points3D_convertToExternalStorage().
+      ASSERT_EQUAL_(M.cols(), 3);
+      const auto N = M.rows();
 
       auto& xs = const_cast<std::vector<float>&>(points3D_x);
       auto& ys = const_cast<std::vector<float>&>(points3D_y);
@@ -650,9 +652,12 @@ void CObservation3DRangeScan::load_impl() const
       xs.resize(N);
       ys.resize(N);
       zs.resize(N);
-      std::memcpy(&xs[0], &M(0, 0), sizeof(float) * N);
-      std::memcpy(&ys[0], &M(1, 0), sizeof(float) * N);
-      std::memcpy(&zs[0], &M(2, 0), sizeof(float) * N);
+      for (int i = 0; i < N; i++)
+      {
+        xs[i] = M(i, 0);
+        ys[i] = M(i, 1);
+        zs[i] = M(i, 2);
+      }
     }
     else
     {
@@ -1133,7 +1138,10 @@ void CObservation3DRangeScan::convertTo2DScan(
     const T3DPointsTo2DScanParams& sp,
     const TRangeImageFilterParams& fp)
 {
-  out_scan2d.sensorLabel = sensorLabel;
+  // Use the user-provided label if given; otherwise, inherit the label from
+  // this 3D observation (kept for backward compatibility with callers that
+  // leave T3DPointsTo2DScanParams::sensorLabel at its default empty value).
+  out_scan2d.sensorLabel = sp.sensorLabel.empty() ? sensorLabel : sp.sensorLabel;
   out_scan2d.timestamp = this->timestamp;
 
   if (!this->hasRangeImage)

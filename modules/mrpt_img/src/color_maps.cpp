@@ -114,7 +114,10 @@ std::tuple<float, float, float> mrpt::img::rgb2hsv(float r, float g, float b)
       }
       else
       {
-        h = 1 - ((g - b) / (6 * (Max - Min)));
+        // Wrap into the top of the hue circle (g < b): adding the
+        // (negative) fraction keeps h within [0,1) instead of overshooting
+        // past 1.
+        h = 1 + ((g - b) / (6 * (Max - Min)));
       }
     }
     else if (Max == g)

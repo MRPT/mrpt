@@ -51,7 +51,7 @@ void impl_image_SSE2_scale_half_1c8u(
 
   const int sw = w / 16;
   const int sh = h / 2;
-  const int rest_w = w - (16 * w);
+  const int rest_w = w - (16 * sw);
 
   for (int i = 0; i < sh; i++)
   {
@@ -94,7 +94,7 @@ void impl_image_SSE2_scale_half_smooth_1c8u(
 
   const int sw = w / 16;
   const int sh = h / 2;
-  const int rest_w = w - (16 * w);
+  const int rest_w = w - (16 * sw);
 
   for (int i = 0; i < sh; i++)
   {
@@ -118,7 +118,7 @@ void impl_image_SSE2_scale_half_smooth_1c8u(
     if (rest_w != 0)
     {
       const uint8_t* ir = in + static_cast<std::ptrdiff_t>(16 * sw);
-      const uint8_t* irr = in + step_in;
+      const uint8_t* irr = in + step_in + static_cast<std::ptrdiff_t>(16 * sw);
       for (int p = 0; p < rest_w / 2; p++)
       {
         *outp++ = static_cast<uint8_t>((ir[0] + ir[1] + irr[0] + irr[1]) / 4);

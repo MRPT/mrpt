@@ -115,7 +115,6 @@ void CSensoryFrame::eraseByIndex(size_t idx)
 
   m_cachedMap.reset();
   auto it = begin() + idx;
-  ASSERT_(!*it);
   m_observations.erase(it);
   MRPT_END
 }

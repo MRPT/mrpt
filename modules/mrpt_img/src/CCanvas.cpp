@@ -163,7 +163,9 @@ void CCanvas::line(
 
   auto pt = TPixelCoordf(pt0);
 
-  for (int i = 0; i < N; i++)
+  // Note: loop is inclusive of i==N so that the last point drawn is exactly
+  // pt1 (pt0 + N*step == pt1), not one step short of it.
+  for (int i = 0; i <= N; i++)
   {
     setPixel(TPixelCoord{pt}, color);
     pt.x += step.x;
