@@ -266,7 +266,6 @@ and accurate path — pick two.
 | mrpt_img | 4132/10271 | 40.2%† | 30.0% |
 | mrpt_graphslam | 257/611 | 42.1% | 37.3% |
 | mrpt_obs | 2922/6723 | 43.5% | 26.3% |
-| mrpt_topography | 172/364 | 47.3% | 27.9% |
 | mrpt_maps | 5605/11648 | 48.1% | 32.7% |
 | mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
 | mrpt_system | 1012/1900 | 53.3% | 39.6% |
@@ -287,6 +286,7 @@ and accurate path — pick two.
 | mrpt_bayes (2026-07-09) | 1036/1078 | 96.1% | 77.4% |
 | mrpt_config (2026-07-09) | 531/548 | 96.9% | 82.3% |
 | mrpt_tfest (2026-07-07) | 633/652 | 97.1% | 73.3% |
+| mrpt_topography (2026-07-10) | 373/375 | 99.5% | 91.2% |
 | mrpt_typemeta | 57/57 | 100.0% | 85.1% |
 
 † `mrpt_img` includes the vendored `src/stb/*.h` (stb_image/stb_image_resize2/
