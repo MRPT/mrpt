@@ -265,7 +265,10 @@ void mrpt::topography::geocentricToGeodetic(
   const double slat = sin(out_coords.lat.decimal_value);
   const double N = sa2 / sqrt(sa2 * clat * clat + sb2 * slat * slat);
 
-  out_coords.height = p / clat - N;
+  // Note: the more obvious "height = p/clat - N" is numerically unstable
+  // close to the poles, where both p and clat tend to zero. The formula
+  // below is mathematically equivalent but well-conditioned everywhere.
+  out_coords.height = p * clat + in_point.z * slat - N * (1.0 - e2 * slat * slat);
 
   out_coords.lon = RAD2DEG(out_coords.lon.decimal_value);
   out_coords.lat = RAD2DEG(out_coords.lat.decimal_value);
@@ -456,6 +459,14 @@ void mrpt::topography::geodeticToUTM(
   UTMCoords.y = static_cast<double>(nu * v * (1 + psi) + B);
   UTMCoords.z = static_cast<double>(GeodeticCoords.height);
 
+  // Apply the false northing for points south of the equator, so that
+  // northing values are always positive, following the standard UTM
+  // convention (and matching what UTMToGeodetic() expects on input).
+  if (UTMCoords.y < 0)
+  {
+    UTMCoords.y += 1e7;
+  }
+
   UTMZone = Huso;
   UTMLatitudeBand = letter;
 }
@@ -513,7 +524,8 @@ void mrpt::topography::GeodeticToUTM(
 
   if (yy < 0)
   {
-    yy += 9999999;
+    // Standard UTM false northing for the southern hemisphere.
+    yy += 1e7;
   }
 
   out_UTM_zone = Huso;
@@ -606,8 +618,20 @@ void mrpt::topography::transformHelmert2D_TOPCON(
 void mrpt::topography::transformHelmert3D(
     const mrpt::math::TPoint3D& p, const TDatumHelmert3D& d, mrpt::math::TPoint3D& o)
 {
-  TDatum7Params d2(d.dX, d.dY, d.dZ, -1 * d.Rx, -1 * d.Ry, -1 * d.Rz, d.dS);
-  transform7params(p, d2, o);
+  // Note: d.Rx/Ry/Rz and d.dS are already converted to radians/fraction by
+  // the TDatumHelmert3D constructor, so the transform7params() matrix
+  // formula is applied here directly (using the sign convention of this
+  // Helmert3D transformation) instead of routing through the
+  // TDatum7Params constructor, which expects raw arc-seconds/ppm input and
+  // would otherwise convert these values a second time.
+  const double scale = (1 + d.dS);
+  const double Rx = -d.Rx;
+  const double Ry = -d.Ry;
+  const double Rz = -d.Rz;
+
+  o.x = d.dX + scale * (p.x + p.y * Rz - p.z * Ry);
+  o.y = d.dY + scale * (-p.x * Rz + p.y + p.z * Rx);
+  o.z = d.dZ + scale * (p.x * Ry - p.y * Rx + p.z);
 }
 
 /**  Helmert 3D transformation:
@@ -661,34 +685,17 @@ void mrpt::topography::ENUToGeocentric(
   TPoint3D P_geocentric_ref;
   mrpt::topography::geodeticToGeocentric(in_coords_origin, P_geocentric_ref, ellip);
 
-  CVectorDouble P_ref(3);
-  P_ref[0] = P_geocentric_ref.x;
-  P_ref[1] = P_geocentric_ref.y;
-  P_ref[2] = P_geocentric_ref.z;
+  const double clat = cos(DEG2RAD(in_coords_origin.lat));
+  const double slat = sin(DEG2RAD(in_coords_origin.lat));
+  const double clon = cos(DEG2RAD(in_coords_origin.lon));
+  const double slon = sin(DEG2RAD(in_coords_origin.lon));
 
-  // Z axis -> In direction out-ward the center of the Earth:
-  CVectorDouble REF_X(3);
-  CVectorDouble REF_Y(3);
-  CVectorDouble REF_Z(3);
-  math::normalize(P_ref, REF_Z);
-
-  // 1st column: Starting at the reference point, move in the tangent
-  // direction
-  //   east-ward: I compute this as the derivative of P_ref wrt "longitude":
-  //      A_east[0] =-(N+in_height_meters)*cos(lat)*sin(lon);  --> -Z[1]
-  //      A_east[1] = (N+in_height_meters)*cos(lat)*cos(lon);  -->  Z[0]
-  //      A_east[2] = 0;                                       -->  0
-  // ---------------------------------------------------------------------------
-  CVectorDouble AUX_X(3);
-  AUX_X[0] = -REF_Z[1];
-  AUX_X[1] = REF_Z[0];
-  AUX_X[2] = 0;
-  math::normalize(AUX_X, REF_X);
-
-  // 2nd column: The cross product:
-  math::crossProduct3D(REF_Z, REF_X, REF_Y);
-
-  out_coords.x = REF_X[0] * p.x + REF_Y[0] * p.y + REF_Z[0] * p.z + P_geocentric_ref.x;
-  out_coords.y = REF_X[1] * p.x + REF_Y[1] * p.y + REF_Z[1] * p.z + P_geocentric_ref.y;
-  out_coords.z = REF_X[2] * p.x + REF_Y[2] * p.y + REF_Z[2] * p.z + P_geocentric_ref.z;
+  // ENU basis vectors expressed in the geocentric frame, with the "Up" axis
+  // being the normal to the ellipsoid at the reference point (the same
+  // convention used by geodeticToENU_WGS84 / geocentricToENU_WGS84), so
+  // that this function is their exact inverse. This is the transpose of
+  // the rotation applied in geocentricToENU_WGS84.
+  out_coords.x = -slon * p.x - clon * slat * p.y + clon * clat * p.z + P_geocentric_ref.x;
+  out_coords.y = clon * p.x - slon * slat * p.y + slon * clat * p.z + P_geocentric_ref.y;
+  out_coords.z = clat * p.y + slat * p.z + P_geocentric_ref.z;
 }

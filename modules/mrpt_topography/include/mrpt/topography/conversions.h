@@ -50,7 +50,13 @@ void geodeticToENU_WGS84(
     mrpt::math::TPoint3D& out_ENU_point,
     const TGeodeticCoords& in_coords_origin);
 
-/** ENU to geocentric coordinates. \sa geodeticToENU_WGS84 */
+/** ENU to geocentric coordinates.
+ * \note The "Up" (Z) direction of the input ENU point is the normal to the
+ * ellipsoid at \a in_coords_origin, the same convention used by
+ * geodeticToENU_WGS84(), so that both functions are exact inverses of
+ * each other.
+ * \sa geodeticToENU_WGS84
+ */
 void ENUToGeocentric(
     const mrpt::math::TPoint3D& in_ENU_point,
     const TGeodeticCoords& in_coords_origin,
@@ -107,6 +113,11 @@ void transform7params(
     const TDatum7Params& in_datum,
     mrpt::math::TPoint3D& out_point);
 
+/** Same as transform7params(), but taking the rotation matrix elements
+ * directly (as used by TOPCON equipment/software) instead of small-angle
+ * rotation parameters.
+ * \sa transform7params
+ */
 void transform7params_TOPCON(
     const mrpt::math::TPoint3D& in_point,
     const TDatum7Params_TOPCON& in_datum,
@@ -130,6 +141,11 @@ void transform10params(
 void transformHelmert2D(
     const mrpt::math::TPoint2D& p, const TDatumHelmert2D& d, mrpt::math::TPoint2D& o);
 
+/** Same as transformHelmert2D(), but taking the affine transformation
+ * coefficients directly (as used by TOPCON equipment/software) instead of
+ * rotation angle and scale parameters.
+ * \sa transformHelmert2D
+ */
 void transformHelmert2D_TOPCON(
     const mrpt::math::TPoint2D& p, const TDatumHelmert2D_TOPCON& d, mrpt::math::TPoint2D& o);
 
@@ -141,6 +157,11 @@ void transformHelmert2D_TOPCON(
 void transformHelmert3D(
     const mrpt::math::TPoint3D& p, const TDatumHelmert3D& d, mrpt::math::TPoint3D& o);
 
+/** Same as transformHelmert3D(), but taking the affine transformation
+ * coefficients directly (as used by TOPCON equipment/software) instead of
+ * rotation angle and scale parameters.
+ * \sa transformHelmert3D
+ */
 void transformHelmert3D_TOPCON(
     const mrpt::math::TPoint3D& p, const TDatumHelmert3D_TOPCON& d, mrpt::math::TPoint3D& o);
 
@@ -198,7 +219,9 @@ inline void UTMToGeodetic(
 }
 
 /** Convert latitude and longitude coordinates into UTM coordinates, computing
- * the corresponding UTM zone and latitude band.
+ * the corresponding UTM zone and latitude band. For the southern
+ * hemisphere, the standard UTM false northing (1e7 m) is applied so that
+ * \a out_UTM_y is always positive.
  *   This method is based on public code by Gabriel Ruiz Martinez and Rafael
  * Palacios.
  *   Example:
@@ -222,6 +245,15 @@ void GeodeticToUTM(
     char& out_UTM_latitude_band,
     const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84());
 
+/** Convert geodetic coordinates into UTM coordinates, computing the
+ * corresponding UTM zone and latitude band.
+ * Equivalent to GeodeticToUTM(), but taking/returning MRPT topography
+ * types (TGeodeticCoords, TUTMCoords) directly. For the southern
+ * hemisphere, the standard UTM false northing (1e7 m) is applied so that
+ * \a UTMCoords.y is always positive, matching the convention expected by
+ * UTMToGeodetic().
+ * \sa GeodeticToUTM, UTMToGeodetic
+ */
 void geodeticToUTM(
     const TGeodeticCoords& GeodeticCoords,
     TUTMCoords& UTMCoords,

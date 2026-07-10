@@ -42,7 +42,9 @@ struct TCoords
   /** Automatic conversion to a double value (read-only) */
   operator double() const { return decimal_value; }
 
-  /** Automatic conversion to a double value (read-only) */
+  /** Automatic conversion to a mutable reference to the underlying decimal
+   * value, so a TCoords can be assigned to directly as if it were a
+   * plain double. */
   operator double&() { return decimal_value; }
 
   /** Set from a decimal value (XX.YYYYY) in degrees. */
@@ -229,10 +231,17 @@ struct TDatum7Params
   }
 };
 
+/** Same parameters as TDatum7Params, but with the rotation given directly
+ * as a 3x3 matrix (m11..m33), following the convention used by TOPCON
+ * equipment/software.
+ * \sa TDatum7Params, transform7params_TOPCON
+ */
 struct TDatum7Params_TOPCON
 {
   /** Deltas (X,Y,Z) */
   double dX, dY, dZ;
+  /** Rotation matrix elements (row-major: m11,m12,m13; m21,m22,m23;
+   * m31,m32,m33) */
   double m11, m12, m13, m21, m22, m23, m31, m32, m33;
   /** Scale factor (in ppm) (Scale is 1+dS/1e6) */
   double dS;
@@ -327,8 +336,16 @@ struct TDatumHelmert2D
   }
 };
 
+/** Same transformation as TDatumHelmert2D, but with the affine
+ * transformation coefficients given directly, following the convention
+ * used by TOPCON equipment/software:
+ *   [ X Y ]_WGS84 = [ a -b; b a ] [ X Y ]_local + [ c d ]
+ * \sa TDatumHelmert2D, transformHelmert2D_TOPCON
+ */
 struct TDatumHelmert2D_TOPCON
 {
+  /** Affine transformation coefficients, see the struct documentation for
+   * the formula. */
   double a, b, c, d;
 
   TDatumHelmert2D_TOPCON(const double _a, const double _b, const double _c, const double _d) :
@@ -366,11 +383,17 @@ struct TDatumHelmert3D
   }
 };
 
-/** Parameters for a topographic transformation
- * \sa TDatumHelmert2D, transformHelmert3D
+/** Same transformation as TDatumHelmert3D, but with the affine
+ * transformation coefficients given directly, following the convention
+ * used by TOPCON equipment/software:
+ *   [ X Y ]_WGS84 = [ a b; d e ] [ X Y ]_local + [ c f ], Z_WGS84 =
+ * Z_local + g
+ * \sa TDatumHelmert3D, transformHelmert3D_TOPCON
  */
 struct TDatumHelmert3D_TOPCON
 {
+  /** Affine transformation coefficients, see the struct documentation for
+   * the formula. */
   double a, b, c, d, e, f, g;
 
   TDatumHelmert3D_TOPCON(
