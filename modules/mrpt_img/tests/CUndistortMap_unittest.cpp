@@ -212,6 +212,25 @@ TEST(CUndistortMap, Undistort_inPlace)
   EXPECT_EQ(img.getHeight(), static_cast<int>(cam.nrows));
 }
 
+TEST(CUndistortMap, UndistortBeforeSetThrows)
+{
+  CUndistortMap map;
+  CImage in(64, 64, CH_GRAY);
+  CImage out;
+  EXPECT_THROW(map.undistort(in, out), std::exception);
+  EXPECT_THROW(map.undistort(in), std::exception);
+}
+
+TEST(CUndistortMap, UnknownDistortionModelThrows)
+{
+  auto cam = makeSampleCameraNoDistortion();
+  // Inject an out-of-range enum value not handled by the switch statement.
+  cam.distortion = static_cast<DistortionModel>(99);
+
+  CUndistortMap map;
+  EXPECT_THROW(map.setFromCamParams(cam), std::exception);
+}
+
 TEST(CUndistortMap, Undistort_fromFile)
 {
   const auto tstImg =
@@ -327,4 +346,148 @@ TEST(CStereoRectifyMap, Rectify_color)
 
   EXPECT_EQ(outLeft.getWidth(), 640);
   EXPECT_TRUE(outLeft.isColor());
+}
+
+TEST(CStereoRectifyMap, RectifyBeforeSetThrows)
+{
+  CStereoRectifyMap rectMap;
+  CImage inLeft(640, 480, CH_GRAY);
+  CImage inRight(640, 480, CH_GRAY);
+  CImage outLeft, outRight;
+  EXPECT_THROW(rectMap.rectify(inLeft, inRight, outLeft, outRight), std::exception);
+}
+
+TEST(CStereoRectifyMap, GetRectifiedParamsBeforeSetThrows)
+{
+  CStereoRectifyMap rectMap;
+  EXPECT_THROW((void)rectMap.getRectifiedImageParams(), std::exception);
+  EXPECT_THROW((void)rectMap.getRectifiedLeftImageParams(), std::exception);
+  EXPECT_THROW((void)rectMap.getRectifiedRightImageParams(), std::exception);
+}
+
+TEST(CStereoRectifyMap, InPlaceRectifyThrows)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCamera();
+  stereo.rightCamera = makeSampleCamera();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  rectMap.setFromCamParams(stereo);
+
+  CImage img(640, 480, CH_GRAY);
+  CImage other(640, 480, CH_GRAY);
+  // Same image used as both input and output for the left pair is rejected.
+  EXPECT_THROW(rectMap.rectify(img, other, img, other), std::exception);
+}
+
+TEST(CStereoRectifyMap, AlphaAndCentersCoincideOptions)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCamera();
+  stereo.rightCamera = makeSampleCamera();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  EXPECT_EQ(rectMap.getAlpha(), -1.0);
+  rectMap.setAlpha(0.5);
+  EXPECT_EQ(rectMap.getAlpha(), 0.5);
+
+  EXPECT_FALSE(rectMap.isEnabledBothCentersCoincide());
+  rectMap.enableBothCentersCoincide(true);
+  EXPECT_TRUE(rectMap.isEnabledBothCentersCoincide());
+
+  rectMap.setInterpolationMethod(IMG_INTERP_NN);
+  EXPECT_EQ(rectMap.getInterpolationMethod(), IMG_INTERP_NN);
+
+  rectMap.setFromCamParams(stereo);
+  EXPECT_TRUE(rectMap.isSet());
+
+  const auto& leftRot = rectMap.getLeftCameraRot();
+  const auto& rightRot = rectMap.getRightCameraRot();
+  EXPECT_NEAR(leftRot.norm(), 1.0, 1e-6);
+  EXPECT_NEAR(rightRot.norm(), 1.0, 1e-6);
+}
+
+TEST(CStereoRectifyMap, EnableResizeOutput)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCamera();
+  stereo.rightCamera = makeSampleCamera();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  EXPECT_FALSE(rectMap.isEnabledResizeOutput());
+  rectMap.enableResizeOutput(true, 320, 240);
+  EXPECT_TRUE(rectMap.isEnabledResizeOutput());
+  EXPECT_EQ(rectMap.getResizeOutputSize().x, 320);
+  EXPECT_EQ(rectMap.getResizeOutputSize().y, 240);
+
+  rectMap.setFromCamParams(stereo);
+
+  CImage inLeft(640, 480, CH_GRAY);
+  CImage inRight(640, 480, CH_GRAY);
+  fillGradient(inLeft);
+  fillGradient(inRight);
+
+  CImage outLeft, outRight;
+  rectMap.rectify(inLeft, inRight, outLeft, outRight);
+
+  EXPECT_EQ(outLeft.getWidth(), 320);
+  EXPECT_EQ(outLeft.getHeight(), 240);
+}
+
+TEST(CStereoRectifyMap, SetRectifyMapsDirect)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.leftCamera.ncols = 4;
+  stereo.leftCamera.nrows = 4;
+  stereo.rightCamera = stereo.leftCamera;
+
+  CStereoRectifyMap rectMap;
+  EXPECT_FALSE(rectMap.isSet());
+
+  const size_t n = 4 * 4;
+  std::vector<float> lx(n, 1.0f);
+  std::vector<float> ly(n, 1.0f);
+  std::vector<float> rx(n, 2.0f);
+  std::vector<float> ry(n, 2.0f);
+  rectMap.setRectifyMaps(lx, ly, rx, ry);
+  EXPECT_TRUE(rectMap.isSet());
+}
+
+TEST(CStereoRectifyMap, SetRectifyMapsFastSwapsInput)
+{
+  CStereoRectifyMap rectMap;
+  std::vector<float> lx(4, 1.0f);
+  std::vector<float> ly(4, 1.0f);
+  std::vector<float> rx(4, 2.0f);
+  std::vector<float> ry(4, 2.0f);
+  rectMap.setRectifyMapsFast(lx, ly, rx, ry);
+  EXPECT_TRUE(rectMap.isSet());
+  // The input vectors are swapped-out (emptied) by the "fast" overload.
+  EXPECT_TRUE(lx.empty());
+}
+
+TEST(CStereoRectifyMap, UnknownDistortionModelThrows)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  stereo.leftCamera.distortion = static_cast<DistortionModel>(99);
+
+  CStereoRectifyMap rectMap;
+  EXPECT_THROW(rectMap.setFromCamParams(stereo), std::exception);
+}
+
+TEST(CStereoRectifyMap, MismatchedCameraResolutionsAssert)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCamera();
+  stereo.rightCamera = makeSampleCamera();
+  stereo.rightCamera.ncols = stereo.leftCamera.ncols + 10;
+
+  CStereoRectifyMap rectMap;
+  EXPECT_THROW(rectMap.setFromCamParams(stereo), std::exception);
 }

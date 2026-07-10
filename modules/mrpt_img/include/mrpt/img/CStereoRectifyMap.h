@@ -215,9 +215,6 @@ class CStereoRectifyMap
    * parameters of these images.
    * \exception std::exception If the rectification maps have not been
    * computed.
-   * \note The same image CANNOT be at the same time input and output, in
-   * which case an exception will be raised (but see the overloaded version
-   * for in-place rectification)
    */
   void rectify(
       const mrpt::img::CImage& in_left_image,

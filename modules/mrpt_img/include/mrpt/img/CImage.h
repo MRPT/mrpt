@@ -247,8 +247,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   void filledRectangle(
       const TPixelCoord& pt0, const TPixelCoord& pt1, mrpt::img::TColor color) override;
 
-  /** Returns a new image scaled down to half its original size
-   * \exception std::exception On odd size
+  /** Returns a new image scaled down to half its original size. Odd
+   * dimensions are truncated (integer division by 2), not rejected.
    * \sa scaleDouble, scaleImage
    */
   [[nodiscard]] CImage scaleHalf(TInterpolationMethod interp) const
@@ -259,11 +259,12 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   }
 
   /** \overload
-   *  \return true if an optimized SSE2/SSE3 version could be used. */
+   *  \return Always false in the current implementation (reserved for a
+   *  future SIMD-optimized fast path); the scaling itself always takes
+   *  place regardless of the returned value. */
   bool scaleHalf(CImage& out_image, TInterpolationMethod interp) const;
 
   /** Returns a new image scaled up to double its original size.
-   * \exception std::exception On odd size
    * \sa scaleHalf, scaleImage
    */
   [[nodiscard]] CImage scaleDouble(TInterpolationMethod interp) const
@@ -766,8 +767,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** \overload.
    * In-place is supported by setting `ret=*this`.
-   * \return true if SSE2 version has been run (or if the image was already
-   * grayscale)
+   * \return true if the image was already grayscale (shallow-copied, no
+   * conversion performed); false if an RGB/RGBA-to-gray conversion was run.
    */
   bool grayscale(CImage& ret) const;
 

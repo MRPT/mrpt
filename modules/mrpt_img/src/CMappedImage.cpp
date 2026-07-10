@@ -15,6 +15,8 @@
 #include <mrpt/core/round.h>
 #include <mrpt/img/CMappedImage.h>
 
+#include <algorithm>
+
 using namespace mrpt;
 using namespace mrpt::img;
 using namespace mrpt::math;
@@ -75,7 +77,7 @@ double CMappedImage::getPixel(double x, double y) const
   const double px = (x - m_x0) / m_pixel_size;
   const double py = (y - m_y0) / m_pixel_size;
 
-  if (px < 0 || py < 0 || px > W || py > H)
+  if (px < 0 || py < 0 || px >= W || py >= H)
   {
     return 0;
   }  // Out of image
@@ -94,21 +96,26 @@ double CMappedImage::getPixel(double x, double y) const
     {
       // See: http://en.wikipedia.org/wiki/Bilinear_interpolation
 
-      // The four pixels around:
+      // The four pixels around (px1/py1 clamped to stay in-image; using
+      // px0+1 instead of ceil(px) avoids the weights degenerating to zero
+      // when px falls exactly on an integer pixel coordinate):
       const int px0 = static_cast<int>(floor(px));
-      const int px1 = static_cast<int>(ceil(px));
+      const int px1 = std::min(px0 + 1, W - 1);
       const int py0 = static_cast<int>(floor(py));
-      const int py1 = static_cast<int>(ceil(py));
+      const int py1 = std::min(py0 + 1, H - 1);
 
       const auto P11 = static_cast<double>((*m_img).at<uint8_t>(px0, py0));
       const auto P12 = static_cast<double>((*m_img).at<uint8_t>(px0, py1));
       const auto P21 = static_cast<double>((*m_img).at<uint8_t>(px1, py0));
       const auto P22 = static_cast<double>((*m_img).at<uint8_t>(px1, py1));
 
-      const double R1 = (P11 * (px1 - px)) /* /(px1-px0)*/ + (P21 * (px - px0)) /* /(px1-px0) */;
-      const double R2 = (P12 * (px1 - px)) /* /(px1-px0)*/ + (P22 * (px - px0)) /* /(px1-px0) */;
+      const double dx = px - px0;
+      const double dy = py - py0;
 
-      return (R1 * (py1 - py)) + (R2 * (py - py0));
+      const double R1 = P11 * (1 - dx) + P21 * dx;
+      const double R2 = P12 * (1 - dx) + P22 * dx;
+
+      return R1 * (1 - dy) + R2 * dy;
     }
     break;
 
