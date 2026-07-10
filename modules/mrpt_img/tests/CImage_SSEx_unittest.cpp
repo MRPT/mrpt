@@ -25,6 +25,7 @@
 #include <mrpt/core/config.h>  // MRPT_ARCH_INTEL_COMPATIBLE
 #include <mrpt/img/registerAllClasses.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <vector>
 
