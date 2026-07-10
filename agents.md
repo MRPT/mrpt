@@ -264,7 +264,6 @@ and accurate path — pick two.
 | mrpt_viz | 2660/9024 | 29.5% | 17.3% |
 | mrpt_kinematics | 184/482 | 38.2% | 17.9% |
 | mrpt_graphslam | 257/611 | 42.1% | 37.3% |
-| mrpt_obs | 2922/6723 | 43.5% | 26.3% |
 | mrpt_maps | 5605/11648 | 48.1% | 32.7% |
 | mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
 | mrpt_system | 1012/1900 | 53.3% | 39.6% |
@@ -278,6 +277,8 @@ and accurate path — pick two.
 | mrpt_containers | 1639/1956 | 83.8% | 55.6% |
 | mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
 | mrpt_core | 541/628 | 86.1% | 64.8% |
+| mrpt_obs (2026-07-10) | 4631/5324 | 87.0% | 56.1% |
+| mrpt_img (2026-07-10)† | 2255/2495 | 90.4% | 69.2% |
 | mrpt_graphs (2026-07-06) | 1022/1111 | 92.0% | 76.7% |
 | mrpt_poses | 6263/6787 | 92.3% | 59.8% |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
@@ -287,7 +288,6 @@ and accurate path — pick two.
 | mrpt_tfest (2026-07-07) | 633/652 | 97.1% | 73.3% |
 | mrpt_topography (2026-07-10) | 373/375 | 99.5% | 91.2% |
 | mrpt_typemeta | 57/57 | 100.0% | 85.1% |
-| mrpt_img (2026-07-10)† | 2255/2495 | 90.4% | 69.2% |
 
 † `mrpt_img` vendors third-party `src/stb/*.h` (stb_image/stb_image_resize2/
 stb_image_write, public-domain), which is out of scope for tests and excluded
@@ -332,24 +332,27 @@ weight.
 4. **Quick wins — pure-logic files at 0% with no hardware/GUI dependency**
    (highest-value gaps, ordinary unit tests would work immediately):
    `mrpt_system/src/md5.cpp`, `mrpt_graphslam/src/{CEdgeCounter,TSlidingWindow,
-   CWindowObserver}.cpp`, `mrpt_obs/src/gnss_messages_novatel.cpp`,
-   `mrpt_obs/src/carmen_log_tools.cpp`,
+   CWindowObserver}.cpp`,
    `mrpt_viz/src/PLY_import_export.cpp`, `mrpt_viz/src/COrbitCameraController.cpp`,
    `mrpt_slam/src/slam/CRejectionSamplingRangeOnlyLocalization.cpp`.
-   (`mrpt_img/src/CImage_loadXPM.cpp` cleared this bucket as of 2026-07-10, now ~90%.)
+   (`mrpt_img/src/CImage_loadXPM.cpp` cleared this bucket as of 2026-07-10, now ~90%;
+   `mrpt_obs/src/gnss_messages_novatel.cpp` and `mrpt_obs/src/carmen_log_tools.cpp`
+   also cleared as of 2026-07-10, now at 100% and 88.2% respectively.)
 
 5. **Biggest single-file impact (most uncovered lines, worth prioritizing for
    raw percentage gains)**: `mrpt_viz/src/CPolyhedron.cpp` (1420 uncovered,
    pure geometry, no GUI dependency — good test target),
    `mrpt_maps/src/maps/CRandomFieldGridMap2D.cpp` (827),
    `mrpt_maps/src/maps/CPointsMap.cpp` (547),
-   `mrpt_maps/src/maps/CGasConcentrationGridMap2D.cpp` (520),
-   `mrpt_obs/src/CObservation3DRangeScan.cpp` (459).
+   `mrpt_maps/src/maps/CGasConcentrationGridMap2D.cpp` (520).
+   (`mrpt_obs/src/CObservation3DRangeScan.cpp` cleared this bucket as of
+   2026-07-10, now at 89.1%.)
 
 6. **Near-target modules (75-90%), smallest remaining gap to close first**:
    `mrpt_containers` (`yaml.cpp` 78.8%).
    (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06;
-   `mrpt_bayes` and `mrpt_config` cleared it as of 2026-07-09, both now >96%.)
+   `mrpt_bayes` and `mrpt_config` cleared it as of 2026-07-09, both now >96%;
+   `mrpt_obs` cleared it as of 2026-07-10, now at 87.0%.)
 
 Branch coverage lags line coverage everywhere (often by 15-30 points),
 indicating error-handling and edge-case branches are the norm left untested

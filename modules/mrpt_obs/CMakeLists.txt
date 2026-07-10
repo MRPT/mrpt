@@ -77,10 +77,25 @@ set(LIB_SOURCES
 )
 
 set(LIB_UNIT_TEST_SOURCES
+  tests/CActionCollection_unittest.cpp
+  tests/carmen_log_tools_unittest.cpp
+  tests/CObservation3DRangeScan_unittest.cpp
   tests/CObservationIMU_unittest.cpp
+  tests/CMetricMap_unittest.cpp
+  tests/CObservation2DRangeScan_unittest.cpp
+  tests/CObservationGasSensors_unittest.cpp
+  tests/CObservationGPS_unittest.cpp
+  tests/CObservationMisc_unittest.cpp
+  tests/CObservationPopulated_unittest.cpp
+  tests/CObservation_unittest.cpp
+  tests/CObservationVelodyneScan_unittest.cpp
+  tests/CRawlog_content_unittest.cpp
   tests/CRawlog_unittest.cpp
+  tests/CSensoryFrame_unittest.cpp
   tests/CSerializable_unittest.cpp
   tests/CSimpleMap_unittest.cpp
+  tests/gnss_messages_unittest.cpp
+  tests/TPixelLabelInfo_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

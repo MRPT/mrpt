@@ -227,7 +227,7 @@ bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
 {
   try
   {
-    mrpt::containers::yaml root = mrpt::containers::yaml::FromFile(str);
+    mrpt::containers::yaml root = mrpt::containers::yaml::FromText(str);
 
     // Clear previous contents:
     clear();
