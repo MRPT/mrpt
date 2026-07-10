@@ -339,7 +339,7 @@ struct TDatumHelmert2D
 /** Same transformation as TDatumHelmert2D, but with the affine
  * transformation coefficients given directly, following the convention
  * used by TOPCON equipment/software:
- *   [ X Y ]_WGS84 = [ a -b; b a ] [ X Y ]_local + [ c d ]
+ *   [ X Y ]_WGS84 = [ a b; -b a ] [ X Y ]_local + [ c d ]
  * \sa TDatumHelmert2D, transformHelmert2D_TOPCON
  */
 struct TDatumHelmert2D_TOPCON

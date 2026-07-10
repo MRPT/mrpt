@@ -378,6 +378,7 @@ TEST(CObservation3DRangeScan, ExternalStorageAsTextRoundtrip)
   const std::string tmpDir = mrpt::system::getTempFileName() + "_dirtxt";
   mrpt::system::createDirectory(tmpDir);
 
+  const bool origExternalsAsText = CObservation3DRangeScan::EXTERNALS_AS_TEXT();
   CObservation3DRangeScan::EXTERNALS_AS_TEXT(true);
 
   CObservation3DRangeScan o;
@@ -398,7 +399,7 @@ TEST(CObservation3DRangeScan, ExternalStorageAsTextRoundtrip)
   EXPECT_NEAR(o.points3D_y[1], 4.25f, 1e-3f);
   EXPECT_EQ(o.rangeImage.rows(), 3);
 
-  CObservation3DRangeScan::EXTERNALS_AS_TEXT(false);
+  CObservation3DRangeScan::EXTERNALS_AS_TEXT(origExternalsAsText);
   mrpt::system::deleteFilesInDirectory(tmpDir, true /*delete dir too*/);
 }
 
