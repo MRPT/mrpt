@@ -24,6 +24,26 @@
 # own option() the no-op instead, so our OFF default actually sticks.
 set(BUILD_TESTING OFF CACHE BOOL "Build tests")
 
+# ROS "*dev" build farm jobs explicitly pass -DBUILD_TESTING=1 and run our
+# full unit-test suite on every commit, on top of a full from-scratch
+# --cmake-clean-cache rebuild. That doubles build time and already routinely
+# times out (>120 min) before a single test even runs (observed 2026-07-10
+# on Kdev__mrpt3__ubuntu_noble_amd64: the clean rebuild alone, compiling test
+# binaries for ~half the modules, ate the whole remaining budget and
+# `colcon test` was never invoked). The exact same tests already run on every
+# push/PR via GitHub Actions CI (which never sources a ROS environment), so
+# re-running them here adds build-farm risk without adding coverage. Detect a
+# sourced ROS environment running inside Jenkins (both `ROS_DISTRO`, set by
+# the buildfarm's `. /opt/ros/<distro>/setup.sh`, and `JENKINS_URL`, set by
+# any Jenkins job) and force tests off there, regardless of what
+# -DBUILD_TESTING was passed on the command line. The AND of both signals
+# avoids false positives for a developer who merely has ROS sourced locally.
+# Escape hatch: -DMRPT_FORCE_TESTS_ON_ROS_BUILDFARM=ON.
+option(MRPT_FORCE_TESTS_ON_ROS_BUILDFARM "Do not auto-skip tests when running on the ROS build farm" OFF)
+if (DEFINED ENV{ROS_DISTRO} AND DEFINED ENV{JENKINS_URL} AND NOT MRPT_FORCE_TESTS_ON_ROS_BUILDFARM)
+  set(BUILD_TESTING OFF CACHE BOOL "Build tests" FORCE)
+endif()
+
 include(GNUInstallDirs) # for install dirs in multilib
 include(CMakePackageConfigHelpers)
 include(CTest)

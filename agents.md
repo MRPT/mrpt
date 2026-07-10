@@ -175,7 +175,28 @@ Full procedure: `doc/source/make_a_mrpt_release.rst`. Quick summary:
 * Do not run `packaging/release.py` or any step that pushes/tags/publishes
   unless the user explicitly asks for an actual release to be cut.
 
-## 9. Code Coverage Status (baseline: 2026-07-03, refreshed 2026-07-06)
+## 9. ROS build farm "dev" jobs skip tests (2026-07-10)
+
+ROS "*dev" buildfarm Jenkins jobs (e.g. `Kdev__mrpt3__ubuntu_noble_amd64`) run
+`colcon build -DBUILD_TESTING=0` once, then a **second, fully clean**
+`colcon build --cmake-clean-cache -DBUILD_TESTING=1` pass that also compiles
+every module's gtest binaries. This doubles build time and was observed to
+blow the 120-minute Jenkins timeout mid-way through the second pass, before
+`colcon test` was ever invoked (no test results were produced at all). The
+same test suite already runs on every push/PR via GitHub Actions CI
+(`.github/workflows/build-linux.yml`), which never sources a ROS environment.
+
+Fix: `modules/mrpt_common/cmake/mrpt_cmake_functions.cmake` now forces
+`BUILD_TESTING` back to `OFF` (overriding the buildfarm's explicit
+`-DBUILD_TESTING=1`) whenever both `ROS_DISTRO` (sourced ROS env) and
+`JENKINS_URL` (any Jenkins job) are set in the environment — i.e. only on the
+ROS build farm itself, not for a developer who merely has ROS sourced
+locally. Escape hatch: `-DMRPT_FORCE_TESTS_ON_ROS_BUILDFARM=ON` re-enables
+tests there if ever needed. Since both `mrpt_add_test()` and
+`mrpt_add_python_binding_test()` already gate on `BUILD_TESTING`, no other
+files needed changes.
+
+## 10. Code Coverage Status (baseline: 2026-07-03, refreshed 2026-07-06)
 
 A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
