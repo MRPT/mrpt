@@ -137,7 +137,21 @@ void TPixelLabelInfo<BYTES_REQUIRED_>::Print(std::ostream& out) const
 }
 
 // Explicit instantiations:
+// (needed since internal_{read,write}ToStream()/Print() are defined here,
+// not in the header, so their vtable entries must be emitted in this
+// translation unit for any other TU that instantiates these classes,
+// e.g. unit tests, to link against.)
 template void TPixelLabelInfo<1>::Print(std::ostream& out) const;
 template void TPixelLabelInfo<2>::Print(std::ostream& out) const;
 template void TPixelLabelInfo<4>::Print(std::ostream& out) const;
 template void TPixelLabelInfo<8>::Print(std::ostream& out) const;
+
+template void TPixelLabelInfo<1>::internal_readFromStream(mrpt::serialization::CArchive& in);
+template void TPixelLabelInfo<2>::internal_readFromStream(mrpt::serialization::CArchive& in);
+template void TPixelLabelInfo<4>::internal_readFromStream(mrpt::serialization::CArchive& in);
+template void TPixelLabelInfo<8>::internal_readFromStream(mrpt::serialization::CArchive& in);
+
+template void TPixelLabelInfo<1>::internal_writeToStream(mrpt::serialization::CArchive& out) const;
+template void TPixelLabelInfo<2>::internal_writeToStream(mrpt::serialization::CArchive& out) const;
+template void TPixelLabelInfo<4>::internal_writeToStream(mrpt::serialization::CArchive& out) const;
+template void TPixelLabelInfo<8>::internal_writeToStream(mrpt::serialization::CArchive& out) const;
