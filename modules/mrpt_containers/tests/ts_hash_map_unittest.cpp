@@ -67,3 +67,29 @@ TEST(ts_hash_map, stdstring_key)
     EXPECT_TRUE(it->second == 1.0);
   }
 }
+
+TEST(ts_hash_map, tooManyCollisionsThrows)
+{
+  // These 6 keys were found to all reduce to the same uint8_t hash bucket
+  // under the current reduced_hash() (dbj2-based) implementation; verify
+  // that assumption still holds before relying on it, so a future change to
+  // reduced_hash() fails this assertion instead of silently not exercising
+  // the "too many collisions" path:
+  const char* collidingKeys[] = {"k0", "k197", "k607", "k848", "k925", "k1245"};
+  uint8_t firstHash = 0;
+  mrpt::containers::reduced_hash(collidingKeys[0], firstHash);
+  for (const char* key : collidingKeys)
+  {
+    uint8_t hash = 0;
+    mrpt::containers::reduced_hash(key, hash);
+    ASSERT_EQ(hash, firstHash);
+  }
+
+  // This exceeds the default of 5 allowed collisions per hash bucket:
+  mrpt::containers::ts_hash_map<std::string, double> m;
+  for (int i = 0; i < 5; i++)
+  {
+    m[collidingKeys[i]] = static_cast<double>(i);
+  }
+  EXPECT_THROW(m[collidingKeys[5]] = 0.0, std::runtime_error);
+}

@@ -1029,4 +1029,487 @@ MRPT_TEST(yaml, integerConversions)
 }
 MRPT_TEST_END()
 
+MRPT_TEST(yaml, narrowIntegerAssignments)
+{
+  mrpt::containers::yaml p;
+  p["i8"] = int8_t(-8);
+  p["u8"] = uint8_t(8);
+  p["i16"] = int16_t(-16);
+  p["u16"] = uint16_t(16);
+  p["i32"] = int32_t(-32);
+  p["u32"] = uint32_t(32);
+  p["f"] = 1.5f;
+
+  EXPECT_EQ(p["i8"].as<int>(), -8);
+  EXPECT_EQ(p["u8"].as<int>(), 8);
+  EXPECT_EQ(p["i16"].as<int>(), -16);
+  EXPECT_EQ(p["u16"].as<int>(), 16);
+  EXPECT_EQ(p["i32"].as<int>(), -32);
+  EXPECT_EQ(p["u32"].as<int>(), 32);
+  EXPECT_EQ(p["f"].as<double>(), 1.5);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, typeNameVariants)
+{
+  using mrpt::containers::yaml;
+
+  {
+    yaml::node_t n;  // default: null node (holds std::monostate directly)
+    EXPECT_EQ(n.typeName(), "null");
+  }
+  {
+    yaml::node_t n(true);
+    EXPECT_EQ(n.typeName(), "scalar(bool)");
+  }
+  {
+    yaml::node_t n(uint64_t(42));
+    EXPECT_EQ(n.typeName(), "scalar(uint64_t)");
+  }
+  {
+    yaml::node_t n(int64_t(-42));
+    EXPECT_EQ(n.typeName(), "scalar(int64_t)");
+  }
+  {
+    yaml::node_t n(3.14);
+    EXPECT_EQ(n.typeName(), "scalar(double)");
+  }
+  {
+    yaml::node_t n(std::string("foo"));
+    EXPECT_EQ(n.typeName(), "scalar(std::string)");
+  }
+  {
+    // A scalar node that itself holds std::monostate (as opposed to a null d):
+    yaml p;
+    p["a"];  // auto-creates a null child, but as a plain node (not scalar_t)
+    EXPECT_EQ(p["a"].node().typeName(), "null");
+  }
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, mutableAsAccessors)
+{
+  using mrpt::containers::yaml;
+
+  yaml p = yaml::Sequence({1.0, 2.0});
+  yaml::sequence_t& seq = p.asSequence();
+  EXPECT_EQ(seq.size(), 2U);
+
+  yaml m = yaml::Map({
+      {"K", 1.0}
+  });
+  yaml::map_t& mm = m.asMap();
+  EXPECT_EQ(mm.size(), 1U);
+
+  yaml s;
+  s = 5.0;
+  yaml::scalar_t& sc = s.asScalar();
+  EXPECT_TRUE(std::holds_alternative<double>(sc));
+
+  // Same for the underlying node_t:
+  yaml::node_t& mutSeqNode = p.node();
+  EXPECT_EQ(mutSeqNode.asSequence().size(), 2U);
+
+  yaml::node_t& mutMapNode = m.node();
+  EXPECT_EQ(mutMapNode.asMap().size(), 1U);
+
+  yaml::node_t& mutScalarNode = s.node();
+  EXPECT_TRUE(std::holds_alternative<double>(mutScalarNode.asScalar()));
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, nullNodeEdgeCases)
+{
+  using mrpt::containers::yaml;
+
+  yaml p;
+  EXPECT_TRUE(p.isNullNode());
+  EXPECT_FALSE(p.has("anything"));          // has() on a null node returns false
+  EXPECT_EQ(p.scalarType(), typeid(void));  // scalarType() on a null node
+
+  // read operator[] on a null node throws (only the const overload throws;
+  // the non-const overload auto-vivifies the node into a map instead):
+  const yaml constNullNode;
+  EXPECT_THROW((void)constNullNode["x"], std::exception);
+  EXPECT_NO_THROW((void)p["x"]);
+  EXPECT_TRUE(p.isMap());
+
+  // write operator[] on a non-map (scalar) node throws:
+  yaml scalarNode;
+  scalarNode = 1.0;
+  EXPECT_THROW(scalarNode["x"] = 2.0, std::exception);
+
+  // read operator[] on a non-map (scalar) node throws:
+  const yaml constScalarNode = scalarNode;
+  EXPECT_THROW((void)constScalarNode["x"], std::exception);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, emptyThrowsOnScalar)
+{
+  mrpt::containers::yaml p;
+  p = 3.0;
+  EXPECT_THROW((void)p.empty(), std::exception);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, eraseMissingOrOutOfRange)
+{
+  mrpt::containers::yaml m = mrpt::containers::yaml::Map({
+      {"K", 1.0}
+  });
+  EXPECT_EQ(m.erase("notThere"), 0U);
+  EXPECT_EQ(m.erase("K"), 1U);
+  EXPECT_TRUE(m.empty());
+
+  mrpt::containers::yaml s = mrpt::containers::yaml::Sequence({1.0, 2.0});
+  EXPECT_FALSE(s.erase(-1));
+  EXPECT_FALSE(s.erase(2));
+  EXPECT_TRUE(s.erase(0));
+  EXPECT_EQ(s.asSequence().size(), 1U);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, fromStream)
+{
+  std::stringstream ss;
+  ss << "a: 1\nb: two\n";
+
+  auto p = mrpt::containers::yaml::FromStream(ss);
+  EXPECT_EQ(p["a"].as<int>(), 1);
+  EXPECT_EQ(p["b"].as<std::string>(), "two");
+
+  mrpt::containers::yaml q;
+  std::stringstream ss2;
+  ss2 << "c: 3\n";
+  q.loadFromStream(ss2);
+  EXPECT_EQ(q["c"].as<int>(), 3);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, loadFromFileMissing)
+{
+  EXPECT_THROW(
+      mrpt::containers::yaml::FromFile("/nonexistent/path/does_not_exist.yaml"), std::exception);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, printAsYAMLToStdout)
+{
+  mrpt::containers::yaml p = mrpt::containers::yaml::Map({
+      {"K", 1.0}
+  });
+  // Just exercise the no-arg overload that writes to std::cout; nothing to assert.
+  testing::internal::CaptureStdout();
+  p.printAsYAML();
+  const std::string out = testing::internal::GetCapturedStdout();
+  EXPECT_NE(out.find("K:"), std::string::npos);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, doubleAsString)
+{
+  mrpt::containers::yaml p;
+  p["x"] = 3.5;
+  EXPECT_EQ(p["x"].as<std::string>(), "3.5");
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, nullScalarAsBoolAndThrow)
+{
+  mrpt::containers::yaml p;
+  p["a"];  // auto-created, still a null node (not a scalar)
+  // as<T>() is only valid on scalar nodes, so it throws on a null node:
+  EXPECT_THROW((void)p["a"].as<bool>(), std::exception);
+  EXPECT_THROW((void)p["a"].as<int>(), std::exception);
+
+  // A scalar node holding a null value (monostate) converts to false for bool.
+  // This is distinct from a "null node" (no scalar at all): parse it from YAML
+  // so it is a genuine null *scalar*:
+  mrpt::containers::yaml q = mrpt::containers::yaml::FromText("a: null\n");
+  EXPECT_TRUE(q["a"].isScalar());
+  EXPECT_FALSE(q["a"].as<bool>());
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, longCommentShortenedInDebugStructure)
+{
+  using mrpt::containers::CommentPosition;
+
+  mrpt::containers::yaml p = mrpt::containers::yaml::Map({
+      {"K", 1.0}
+  });
+  p["K"].comment("This is a very long top comment that must be shortened", CommentPosition::TOP);
+  p["K"].comment("Right comment also quite long here", CommentPosition::RIGHT);
+
+  std::stringstream ss;
+  p.printDebugStructure(ss);
+  const auto s = ss.str();
+  EXPECT_NE(s.find("..."), std::string::npos);
+
+  // A node with no comments prints "[none]":
+  mrpt::containers::yaml q = mrpt::containers::yaml::Map({
+      {"V", 2.0}
+  });
+  std::stringstream ss2;
+  q.printDebugStructure(ss2);
+  EXPECT_NE(ss2.str().find("[none]"), std::string::npos);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, multilineRightComment)
+{
+  using mrpt::containers::CommentPosition;
+
+  mrpt::containers::yaml p;
+  p["x"] = 1.0;
+  p["x"].comment("line one\nline two", CommentPosition::RIGHT);
+
+  std::stringstream ss;
+  p.printAsYAML(ss);
+  const auto s = ss.str();
+  // Newlines in a right-side comment are stripped:
+  EXPECT_EQ(s.find("line one\nline two"), std::string::npos);
+  EXPECT_NE(s.find("line oneline two"), std::string::npos);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, nullScalarWithRightComment)
+{
+  using mrpt::containers::CommentPosition;
+
+  mrpt::containers::yaml p;
+  p["a"];  // auto-created null (non-scalar) node
+  p["a"].comment("a right comment", CommentPosition::RIGHT);
+
+  std::stringstream ss;
+  p.printAsYAML(ss);
+  EXPECT_NE(ss.str().find("a right comment"), std::string::npos);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, shortFormatSkippedForNonScalarEntries)
+{
+  // A sequence with a nested map entry cannot be printed in short format,
+  // even if requested: the printer silently falls back to the long form.
+  mrpt::containers::yaml n = mrpt::containers::yaml::Sequence({1.0});
+  n.asSequence().push_back(mrpt::containers::yaml::Map({
+      {"K", 1.0}
+  }));
+  n.node().printInShortFormat = true;
+
+  mrpt::containers::YamlEmitOptions eo;
+  eo.emitHeader = false;
+
+  std::stringstream ss;
+  n.printAsYAML(ss, eo);
+  const auto s = ss.str();
+
+  // Long format uses "- " list markers; short format would use "[...]":
+  EXPECT_NE(s.find("- "), std::string::npos);
+  EXPECT_EQ(s.find('['), std::string::npos);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, integerIndexOperators)
+{
+  using mrpt::containers::yaml;
+
+  yaml p = yaml::Sequence({10.0, 20.0, 30.0});
+
+  // yaml::operator[](int) / operator()(int), read and write:
+  EXPECT_NEAR(p[1].as<double>(), 20.0, 1e-9);
+  EXPECT_NEAR(p(1).as<double>(), 20.0, 1e-9);
+  p(1) = 99.0;
+  EXPECT_NEAR(p[1].as<double>(), 99.0, 1e-9);
+
+  const yaml& cp = p;
+  EXPECT_NEAR(cp[1].as<double>(), 99.0, 1e-9);
+  EXPECT_NEAR(cp(1).as<double>(), 99.0, 1e-9);
+
+  EXPECT_THROW((void)p(10), std::out_of_range);
+  EXPECT_THROW((void)cp(10), std::out_of_range);
+
+  // erase(int):
+  EXPECT_TRUE(p.erase(0));
+  EXPECT_EQ(p.asSequence().size(), 2U);
+  EXPECT_FALSE(p.erase(100));
+
+  // Nested map inside a sequence, exercised through yaml_ref/yaml_cref
+  // integer index operators:
+  yaml outer = yaml::Map({
+      {"seq", yaml::Sequence({1.0, 2.0})}
+  });
+  outer["seq"][1] = 42.0;
+  EXPECT_NEAR(outer["seq"][1].as<double>(), 42.0, 1e-9);
+  EXPECT_THROW((void)outer["seq"][100], std::out_of_range);
+
+  const yaml& coutgroup = outer;
+  EXPECT_NEAR(coutgroup["seq"][1].as<double>(), 42.0, 1e-9);
+  EXPECT_THROW((void)coutgroup["seq"][100], std::out_of_range);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, streamInsertionOperator)
+{
+  using mrpt::containers::yaml;
+
+  yaml p = yaml::Map({
+      {"k", 1.0}
+  });
+
+  std::stringstream ss1;
+  ss1 << p;
+  EXPECT_NE(ss1.str().find("k:"), std::string::npos);
+
+  std::stringstream ss2;
+  ss2 << p["k"];  // yaml_ref
+  EXPECT_NE(ss2.str().find('1'), std::string::npos);
+
+  const yaml& cp = p;
+  std::stringstream ss3;
+  ss3 << cp["k"];  // yaml_cref
+  EXPECT_NE(ss3.str().find('1'), std::string::npos);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, keyCommentsAPI)
+{
+  using mrpt::containers::CommentPosition;
+  using mrpt::containers::yaml;
+
+  yaml p = yaml::Map({
+      {"k", 1.0}
+  });
+
+  EXPECT_FALSE(p.keyHasComment("k"));
+  EXPECT_FALSE(p.keyHasComment("k", CommentPosition::TOP));
+
+  p.keyComment("k", "a key comment", CommentPosition::TOP);
+  EXPECT_TRUE(p.keyHasComment("k"));
+  EXPECT_TRUE(p.keyHasComment("k", CommentPosition::TOP));
+  EXPECT_EQ(p.keyComment("k"), "a key comment");
+  EXPECT_EQ(p.keyComment("k", CommentPosition::TOP), "a key comment");
+
+  yaml::node_t& knMut = p.keyNode("k");
+  EXPECT_EQ(knMut.internalAsStr(), "k");
+
+  const yaml& cp = p;
+  const yaml::node_t& kn = cp.keyNode("k");
+  EXPECT_EQ(kn.internalAsStr(), "k");
+  EXPECT_TRUE(cp.keyHasComment("k"));
+  EXPECT_TRUE(cp.keyHasComment("k", CommentPosition::TOP));
+  EXPECT_EQ(cp.keyComment("k"), "a key comment");
+  EXPECT_EQ(cp.keyComment("k", CommentPosition::TOP), "a key comment");
+
+  EXPECT_THROW((void)p.keyComment("missing"), std::exception);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, valueCommentsAPI)
+{
+  using mrpt::containers::CommentPosition;
+  using mrpt::containers::yaml;
+
+  // These calls on the root document object itself (as opposed to through
+  // a yaml_ref/yaml_cref proxy from operator[]) exercise yaml::hasComment()/
+  // comment() in yaml.cpp:
+  yaml p = yaml::Map({
+      {"k", 1.0}
+  });
+
+  EXPECT_FALSE(p.hasComment());
+  EXPECT_FALSE(p.hasComment(CommentPosition::TOP));
+
+  p.comment("root comment", CommentPosition::TOP);
+  EXPECT_TRUE(p.hasComment());
+  EXPECT_TRUE(p.hasComment(CommentPosition::TOP));
+  EXPECT_EQ(p.comment(), "root comment");
+  EXPECT_EQ(p.comment(CommentPosition::TOP), "root comment");
+
+  // Proxy (yaml_ref/yaml_cref) comment accessors, inline in the header:
+  EXPECT_FALSE(p["k"].hasComment());
+  EXPECT_FALSE(p["k"].hasComment(CommentPosition::TOP));
+
+  p["k"].comment("value comment", CommentPosition::TOP);
+  EXPECT_TRUE(p["k"].hasComment());
+  EXPECT_TRUE(p["k"].hasComment(CommentPosition::TOP));
+  EXPECT_EQ(p["k"].comment(), "value comment");
+  EXPECT_EQ(p["k"].comment(CommentPosition::TOP), "value comment");
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, nestedRefChainedSubscript)
+{
+  using mrpt::containers::yaml;
+
+  // Chaining subscripts on an already-obtained yaml_ref/yaml_cref exercises
+  // yaml_ref::operator[](string/const char*/int) and yaml_cref's counterparts,
+  // as opposed to the top-level yaml::operator[] overloads:
+  yaml p = yaml::Map({
+      {"outer", yaml::Map({{"inner", 1.0}})}
+  });
+
+  p["outer"]["inner"] = 2.0;
+  EXPECT_NEAR(p["outer"]["inner"].as<double>(), 2.0, 1e-9);
+
+  const char* innerKey = "inner";
+  EXPECT_NEAR(p["outer"][innerKey].as<double>(), 2.0, 1e-9);
+
+  const yaml& cp = p;
+  EXPECT_NEAR(cp["outer"]["inner"].as<double>(), 2.0, 1e-9);
+  EXPECT_NEAR(cp["outer"][innerKey].as<double>(), 2.0, 1e-9);
+
+  // std::string keys (as opposed to string literals, which prefer the
+  // `const char*` overloads) exercise the std::string overloads of
+  // yaml_ref::operator[] and yaml_cref::operator[]:
+  const std::string innerKeyStr = "inner";
+  mrpt::containers::yaml_ref outerRef = p["outer"];
+  outerRef[innerKeyStr] = 3.0;
+  EXPECT_NEAR(outerRef[innerKeyStr].as<double>(), 3.0, 1e-9);
+
+  const mrpt::containers::yaml_ref constOuterRef = outerRef;
+  EXPECT_NEAR(constOuterRef[innerKeyStr].as<double>(), 3.0, 1e-9);
+
+  mrpt::containers::yaml_cref outerCref = cp["outer"];
+  EXPECT_NEAR(outerCref[innerKeyStr].as<double>(), 3.0, 1e-9);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, loadAndFromFileRoundTrip)
+{
+  using mrpt::containers::yaml;
+
+  const std::string fileName = "test_yaml_roundtrip.yaml";
+  {
+    std::ofstream f(fileName);
+    f << "a: 1\nb: two\n";
+  }
+
+  yaml p1;
+  p1.loadFromFile(fileName);
+  EXPECT_EQ(p1["a"].as<int>(), 1);
+  EXPECT_EQ(p1["b"].as<std::string>(), "two");
+
+  yaml p2 = yaml::FromFile(fileName);
+  EXPECT_EQ(p2["a"].as<int>(), 1);
+
+  std::remove(fileName.c_str());
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, nullScalarTypeName)
+{
+  using mrpt::containers::yaml;
+
+  // A scalar node holding std::monostate (a "null scalar") is also
+  // considered a "null node" by isNullNode(), and typeName() reports "null"
+  // for it too (same as a plain, never-assigned null node):
+  yaml p = yaml::FromText("a: null\n");
+  EXPECT_TRUE(p["a"].isScalar());
+  EXPECT_TRUE(p["a"].isNullNode());
+  EXPECT_EQ(p["a"].node().typeName(), "null");
+}
+MRPT_TEST_END()
+
 #endif  // MRPT_HAS_FYAML

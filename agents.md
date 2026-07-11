@@ -295,13 +295,13 @@ and accurate path — pick two.
 | mrpt_slam | 2778/4299 | 64.6% | 43.7% |
 | mrpt_rtti | 126/176 | 71.6% | 73.5% |
 | mrpt_serialization | 511/708 | 72.2% | 52.5% |
-| mrpt_containers | 1639/1956 | 83.8% | 55.6% |
 | mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
 | mrpt_core | 541/628 | 86.1% | 64.8% |
 | mrpt_obs (2026-07-10) | 4631/5324 | 87.0% | 56.1% |
 | mrpt_img (2026-07-10)† | 2255/2495 | 90.4% | 69.2% |
 | mrpt_graphs (2026-07-06) | 1022/1111 | 92.0% | 76.7% |
 | mrpt_poses | 6263/6787 | 92.3% | 59.8% |
+| mrpt_containers (2026-07-11) | 1146/1234 | 92.9% | 48.2%‡ |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
 | mrpt_random | 160/167 | 95.8% | 85.1% |
 | mrpt_bayes (2026-07-09) | 1036/1078 | 96.1% | 77.4% |
@@ -328,6 +328,27 @@ kernels are dead code as of the stb-based rewrite (no longer called from
 `CImage.cpp`); they are covered by direct unit tests instead, which also
 found and fixed a decimation remainder-loop bug and a swapped R/B luminance
 weight.
+
+‡ `mrpt_containers` line and branch % both come from
+`scripts/coverage_module_report.py` (max hit-count per line, OR-merged
+`(line_number, branch_index)` for branches, across duplicate
+template-instantiation entries, e.g. `CDynamicGrid<double>` vs
+`CDynamicGrid<int>` both mapping to the same header lines); raw un-deduped
+`gcovr` CLI output for this module reads ~87% lines / ~45% branches instead.
+This module-scoped run (not the whole-repo `colcon test`) is
+adequate here since `mrpt_containers`' templated headers (`CDynamicGrid`,
+`circular_buffer`, `ts_hash_map`, `deepcopy_ptr`) are almost entirely exercised
+by this module's own tests, unlike `mrpt_math`'s matrix templates. New tests
+added on 2026-07-11 also fixed two test-only misunderstandings (not source
+bugs) around `yaml`'s null-node vs. null-scalar distinction: `operator[]`
+throws for a null node only via the *const* overload (the non-const overload
+auto-vivifies into a map), and a scalar node holding `std::monostate` (e.g.
+parsed from YAML `null`) is *also* `isNullNode() == true`, which is why
+`node_t::typeName()`'s scalar-visitor branch for `std::monostate` (yaml.cpp)
+is unreachable dead code — `isNullNode()` intercepts first. The `shared_ptr<yaml>`
+alternative in `scalar_t` remains unreachable via the public API (no
+construction call sites), same as noted before; left in place as it is part of
+the variant's public type and removing it would be an ABI-affecting change.
 
 ### Weak areas, grouped by root cause
 
@@ -370,10 +391,14 @@ weight.
    2026-07-10, now at 89.1%.)
 
 6. **Near-target modules (75-90%), smallest remaining gap to close first**:
-   `mrpt_containers` (`yaml.cpp` 78.8%).
+   none currently flagged.
    (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06;
    `mrpt_bayes` and `mrpt_config` cleared it as of 2026-07-09, both now >96%;
-   `mrpt_obs` cleared it as of 2026-07-10, now at 87.0%.)
+   `mrpt_obs` improved to 87.0% as of 2026-07-10 but is still within this
+   range; `mrpt_containers` cleared it as of 2026-07-11, now at 92.9%,
+   remaining gaps being mostly defensive "should never happen" throws and
+   libfyaml parser error paths that are difficult to trigger without a
+   malformed internal parser state.)
 
 Branch coverage lags line coverage everywhere (often by 15-30 points),
 indicating error-handling and edge-case branches are the norm left untested
