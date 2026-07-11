@@ -301,7 +301,7 @@ and accurate path — pick two.
 | mrpt_img (2026-07-10)† | 2255/2495 | 90.4% | 69.2% |
 | mrpt_graphs (2026-07-06) | 1022/1111 | 92.0% | 76.7% |
 | mrpt_poses | 6263/6787 | 92.3% | 59.8% |
-| mrpt_containers (2026-07-11) | 1146/1234 | 92.9% | 45.2%‡ |
+| mrpt_containers (2026-07-11) | 1146/1234 | 92.9% | 48.2%‡ |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
 | mrpt_random | 160/167 | 95.8% | 85.1% |
 | mrpt_bayes (2026-07-09) | 1036/1078 | 96.1% | 77.4% |
@@ -329,14 +329,13 @@ kernels are dead code as of the stb-based rewrite (no longer called from
 found and fixed a decimation remainder-loop bug and a swapped R/B luminance
 weight.
 
-‡ `mrpt_containers` line % is deduped (max hit-count per source line across
-duplicate template-instantiation entries, e.g. `CDynamicGrid<double>` vs
-`CDynamicGrid<int>` both mapping to the same header lines) using the same
-approach as `scripts/coverage_module_report.py`; raw un-deduped `gcovr` output
-for this module reads ~87% lines. The 45.2% branch figure is *not* deduped
-(gcovr has no branch-level dedup option) and is therefore an undercount versus
-the true per-branch coverage; it should not be compared directly against other
-rows' branch %. This module-scoped run (not the whole-repo `colcon test`) is
+‡ `mrpt_containers` line and branch % both come from
+`scripts/coverage_module_report.py` (max hit-count per line, OR-merged
+`(line_number, branch_index)` for branches, across duplicate
+template-instantiation entries, e.g. `CDynamicGrid<double>` vs
+`CDynamicGrid<int>` both mapping to the same header lines); raw un-deduped
+`gcovr` CLI output for this module reads ~87% lines / ~45% branches instead.
+This module-scoped run (not the whole-repo `colcon test`) is
 adequate here since `mrpt_containers`' templated headers (`CDynamicGrid`,
 `circular_buffer`, `ts_hash_map`, `deepcopy_ptr`) are almost entirely exercised
 by this module's own tests, unlike `mrpt_math`'s matrix templates. New tests
@@ -395,10 +394,11 @@ the variant's public type and removing it would be an ABI-affecting change.
    none currently flagged.
    (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06;
    `mrpt_bayes` and `mrpt_config` cleared it as of 2026-07-09, both now >96%;
-   `mrpt_obs` cleared it as of 2026-07-10, now at 87.0%; `mrpt_containers`
-   cleared it as of 2026-07-11, now at 92.9%, remaining gaps being mostly
-   defensive "should never happen" throws and libfyaml parser error paths
-   that are hard to trigger without a malformed internal parser state.)
+   `mrpt_obs` improved to 87.0% as of 2026-07-10 but is still within this
+   range; `mrpt_containers` cleared it as of 2026-07-11, now at 92.9%,
+   remaining gaps being mostly defensive "should never happen" throws and
+   libfyaml parser error paths that are difficult to trigger without a
+   malformed internal parser state.)
 
 Branch coverage lags line coverage everywhere (often by 15-30 points),
 indicating error-handling and edge-case branches are the norm left untested
