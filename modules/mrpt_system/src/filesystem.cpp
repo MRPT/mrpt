@@ -242,13 +242,16 @@ std::string mrpt::system::getcwd() { return p2s(fs::current_path()); }
 std::string mrpt::system::getTempFileName()
 {
 #ifdef _WIN32
-  FILETIME tt;
-  GetSystemTimeAsFileTime(&tt);
-  const UINT uniq = static_cast<UINT>(tt.dwLowDateTime);
+  // uUnique=0 makes GetTempFileNameA generate a name from the current system
+  // time *and* verify no such file already exists, retrying until it finds a
+  // free one (and atomically creates that empty file). A nonzero uUnique
+  // (e.g. derived from GetSystemTimeAsFileTime(), whose low DWORD only
+  // changes every ~15 ms) skips that existence check entirely, so two calls
+  // made within the same clock tick silently return the *same* path.
   char TMP_PATH[MAX_PATH];
   char tmpPath[MAX_PATH];
   GetTempPathA(MAX_PATH, tmpPath);
-  GetTempFileNameA(tmpPath, "mrpt", uniq, TMP_PATH);
+  GetTempFileNameA(tmpPath, "mrpt", 0, TMP_PATH);
   return std::string(TMP_PATH);
 #else
   char tmp[] = "/tmp/mrpt_tempXXXXXX";
