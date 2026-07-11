@@ -67,3 +67,16 @@ TEST(ts_hash_map, stdstring_key)
     EXPECT_TRUE(it->second == 1.0);
   }
 }
+
+TEST(ts_hash_map, tooManyCollisionsThrows)
+{
+  // These 6 keys all reduce to the same uint8_t hash bucket (verified
+  // offline), which exceeds the default of 5 allowed collisions per bucket:
+  mrpt::containers::ts_hash_map<std::string, double> m;
+  const char* collidingKeys[] = {"k0", "k197", "k607", "k848", "k925", "k1245"};
+  for (int i = 0; i < 5; i++)
+  {
+    m[collidingKeys[i]] = static_cast<double>(i);
+  }
+  EXPECT_THROW(m[collidingKeys[5]] = 0.0, std::runtime_error);
+}

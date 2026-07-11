@@ -208,6 +208,9 @@ class yaml
     node_t(std::initializer_list<map_t::value_type> init) { d.emplace<map_t>(init); }
     node_t(std::initializer_list<sequence_t::value_type> init) { d.emplace<sequence_t>(init); }
 
+    /** True for a never-assigned node, or for a scalar holding an explicit
+     * YAML/JSON null value (e.g. parsed from `~` or `null`). Note that in the
+     * latter case isScalar() is also true. */
     [[nodiscard]] bool isNullNode() const;
     [[nodiscard]] bool isScalar() const;
     [[nodiscard]] bool isSequence() const;
@@ -434,6 +437,9 @@ class yaml
    * clear that subtree only). */
   void clear();
 
+  /** True for a never-assigned node, or for a scalar holding an explicit
+   * YAML/JSON null value (e.g. parsed from `~` or `null`). Note that in the
+   * latter case isScalar() is also true. */
   [[nodiscard]] bool isNullNode() const;
   [[nodiscard]] bool isScalar() const;
   [[nodiscard]] bool isSequence() const;
