@@ -41,6 +41,7 @@ namespace fs = std::filesystem;
 #include <conio.h>
 #include <direct.h>
 #include <io.h>
+#include <mrpt/core/winerror2str.h>
 #include <process.h>
 #include <sys/utime.h>
 #include <tlhelp32.h>
@@ -250,8 +251,14 @@ std::string mrpt::system::getTempFileName()
   // made within the same clock tick silently return the *same* path.
   char TMP_PATH[MAX_PATH];
   char tmpPath[MAX_PATH];
-  GetTempPathA(MAX_PATH, tmpPath);
-  GetTempFileNameA(tmpPath, "mrpt", 0, TMP_PATH);
+  if (GetTempPathA(MAX_PATH, tmpPath) == 0)
+  {
+    throw winerror2str("GetTempPath");
+  }
+  if (GetTempFileNameA(tmpPath, "mrpt", 0, TMP_PATH) == 0)
+  {
+    throw winerror2str("GetTempFileName");
+  }
   return std::string(TMP_PATH);
 #else
   char tmp[] = "/tmp/mrpt_tempXXXXXX";
