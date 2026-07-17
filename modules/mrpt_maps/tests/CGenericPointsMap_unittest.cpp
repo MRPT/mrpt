@@ -14,13 +14,16 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/serialization/CArchive.h>
+#include <unistd.h>
 
 #include <atomic>
+#include <filesystem>
 #include <string>
 #include <thread>
 #include <vector>
 
 using mrpt::maps::CGenericPointsMap;
+using mrpt::maps::CPointsMap;
 
 // ---------------------------------------------------------------------------
 //  Helpers
@@ -452,4 +455,164 @@ TEST(CGenericPointsMap, SubstringFieldNames)
   EXPECT_FLOAT_EQ(m.getPointField_float(0, "ring"), 1.0f);
   EXPECT_FLOAT_EQ(m.getPointField_float(0, "ring_id"), 2.0f);
   EXPECT_FLOAT_EQ(m.getPointField_float(0, "r"), 3.0f);
+}
+
+// =========================================================================
+//  Field registration corner cases
+// =========================================================================
+
+TEST(CGenericPointsMap, RegisterDuplicateFieldThrows)
+{
+  CGenericPointsMap m;
+  ASSERT_TRUE(m.registerField_float("dup"));
+  EXPECT_THROW(m.registerField_float("dup"), std::exception);
+
+  ASSERT_TRUE(m.registerField_uint32("dup2"));
+  EXPECT_THROW(m.registerField_uint32("dup2"), std::exception);
+}
+
+TEST(CGenericPointsMap, UnregisterNonexistentFieldReturnsFalse)
+{
+  CGenericPointsMap m;
+  EXPECT_FALSE(m.unregisterField("does_not_exist"));
+
+  m.registerField_float("f1");
+  EXPECT_TRUE(m.unregisterField("f1"));
+  // Removed already: a second attempt must fail:
+  EXPECT_FALSE(m.unregisterField("f1"));
+}
+
+// =========================================================================
+//  insertPointField_*() padding of out-of-sync field vectors
+// =========================================================================
+
+TEST(CGenericPointsMap, InsertPointFieldPadsMissingFloatValues)
+{
+  CGenericPointsMap m;
+  m.registerField_float("f1");
+
+  // Insert two XYZ points without touching "f1" at all, so its vector
+  // lags behind m_x/m_y/m_z:
+  m.insertPointFast(0, 0, 0);
+  m.insertPointFast(1, 0, 0);
+
+  // This call must zero-pad the missing first entry before appending:
+  m.insertPointField_float("f1", 5.0f);
+
+  EXPECT_FLOAT_EQ(m.getPointField_float(0, "f1"), 0.0f);
+  EXPECT_FLOAT_EQ(m.getPointField_float(1, "f1"), 5.0f);
+}
+
+TEST(CGenericPointsMap, InsertPointFieldPadsMissingDoubleValues)
+{
+  CGenericPointsMap m;
+  m.registerField_double("d1");
+
+  m.insertPointFast(0, 0, 0);
+  m.insertPointFast(1, 0, 0);
+  m.insertPointFast(2, 0, 0);
+
+  m.insertPointField_double("d1", 9.0);
+
+  EXPECT_DOUBLE_EQ(m.getPointField_double(0, "d1"), 0.0);
+  EXPECT_DOUBLE_EQ(m.getPointField_double(1, "d1"), 0.0);
+  EXPECT_DOUBLE_EQ(m.getPointField_double(2, "d1"), 9.0);
+}
+
+// =========================================================================
+//  getPointsBufferRef_*_field() const and non-const fallback chains
+// =========================================================================
+
+TEST(CGenericPointsMap, GetPointsBufferRefAllTypesConstAndNonConst)
+{
+  CGenericPointsMap m;
+  m.registerField_float("f1");
+  m.registerField_double("d1");
+  m.registerField_uint16("u16");
+  m.registerField_uint8("u8");
+  m.registerField_uint32("u32");
+  m.resize(3);
+  m.setPointField_float(0, "f1", 1.5f);
+  m.setPointField_double(0, "d1", 2.5);
+
+  const CGenericPointsMap& cref = m;
+
+  // Base XYZ field, resolved through CPointsMap::getPointsBufferRef_float_field:
+  const auto* xBuf = cref.getPointsBufferRef_float_field("x");
+  ASSERT_TRUE(xBuf != nullptr);
+  EXPECT_EQ(xBuf->size(), 3u);
+
+  const auto* fBuf = cref.getPointsBufferRef_float_field("f1");
+  ASSERT_TRUE(fBuf != nullptr);
+  EXPECT_FLOAT_EQ(fBuf->at(0), 1.5f);
+  EXPECT_TRUE(cref.getPointsBufferRef_float_field("missing") == nullptr);
+
+  const auto* dBuf = cref.getPointsBufferRef_double_field("d1");
+  ASSERT_TRUE(dBuf != nullptr);
+  EXPECT_DOUBLE_EQ(dBuf->at(0), 2.5);
+  EXPECT_TRUE(cref.getPointsBufferRef_double_field("missing") == nullptr);
+
+  EXPECT_TRUE(cref.getPointsBufferRef_uint16_field("u16") != nullptr);
+  EXPECT_TRUE(cref.getPointsBufferRef_uint16_field("missing") == nullptr);
+  EXPECT_TRUE(cref.getPointsBufferRef_uint8_field("u8") != nullptr);
+  EXPECT_TRUE(cref.getPointsBufferRef_uint8_field("missing") == nullptr);
+  EXPECT_TRUE(cref.getPointsBufferRef_uint32_field("u32") != nullptr);
+  EXPECT_TRUE(cref.getPointsBufferRef_uint32_field("missing") == nullptr);
+
+  // Non-const overloads:
+  EXPECT_TRUE(m.getPointsBufferRef_double_field("d1") != nullptr);
+  EXPECT_TRUE(m.getPointsBufferRef_uint16_field("u16") != nullptr);
+  EXPECT_TRUE(m.getPointsBufferRef_uint8_field("u8") != nullptr);
+  EXPECT_TRUE(m.getPointsBufferRef_uint32_field("u32") != nullptr);
+  EXPECT_TRUE(m.getPointsBufferRef_double_field("missing") == nullptr);
+}
+
+// =========================================================================
+//  PLY import/export round trip, exercising the color-field registration
+//  performed by CGenericPointsMap's overrides of the PLY virtual methods.
+// =========================================================================
+
+TEST(CGenericPointsMap, PLYRoundTripPreservesIntensity)
+{
+  // Note: MRPT's PLY writer (mrpt::viz::PLY_import_export) only stores a
+  // single "intensity" property per vertex, computed as the average of R/G/B
+  // on export, and broadcasts it back equally to R/G/B on import. It does
+  // NOT round-trip full per-channel RGB color.
+  CGenericPointsMap src;
+  src.registerField_float(CPointsMap::POINT_FIELD_COLOR_Rf);
+  src.registerField_float(CPointsMap::POINT_FIELD_COLOR_Gf);
+  src.registerField_float(CPointsMap::POINT_FIELD_COLOR_Bf);
+
+  src.insertPointFast(1.0f, 2.0f, 3.0f);
+  src.insertPointField_float(CPointsMap::POINT_FIELD_COLOR_Rf, 0.1f);
+  src.insertPointField_float(CPointsMap::POINT_FIELD_COLOR_Gf, 0.2f);
+  src.insertPointField_float(CPointsMap::POINT_FIELD_COLOR_Bf, 0.3f);
+
+  src.insertPointFast(4.0f, 5.0f, 6.0f);
+  src.insertPointField_float(CPointsMap::POINT_FIELD_COLOR_Rf, 0.4f);
+  src.insertPointField_float(CPointsMap::POINT_FIELD_COLOR_Gf, 0.5f);
+  src.insertPointField_float(CPointsMap::POINT_FIELD_COLOR_Bf, 0.6f);
+
+  static std::atomic<int> counter{0};
+  const auto dir = std::filesystem::temp_directory_path();
+  const std::string file =
+      (dir / ("mrpt_CGenericPointsMap_unittest_" + std::to_string(static_cast<long>(getpid())) +
+              "_" + std::to_string(counter++) + ".ply"))
+          .string();
+
+  ASSERT_TRUE(src.saveToPlyFile(file));
+
+  CGenericPointsMap dst;
+  ASSERT_TRUE(dst.loadFromPlyFile(file));
+
+  ASSERT_EQ(dst.size(), 2u);
+  EXPECT_TRUE(dst.hasColor_f());
+  const float intensity0 = (0.1f + 0.2f + 0.3f) / 3.0f;
+  const float intensity1 = (0.4f + 0.5f + 0.6f) / 3.0f;
+  EXPECT_NEAR(dst.getPointField_float(0, CPointsMap::POINT_FIELD_COLOR_Rf), intensity0, 1e-3f);
+  EXPECT_NEAR(dst.getPointField_float(0, CPointsMap::POINT_FIELD_COLOR_Gf), intensity0, 1e-3f);
+  EXPECT_NEAR(dst.getPointField_float(0, CPointsMap::POINT_FIELD_COLOR_Bf), intensity0, 1e-3f);
+  EXPECT_NEAR(dst.getPointField_float(1, CPointsMap::POINT_FIELD_COLOR_Rf), intensity1, 1e-3f);
+
+  std::filesystem::remove(file);
 }

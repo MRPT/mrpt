@@ -13,13 +13,17 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CReflectivityGridMap2D.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 #include <filesystem>
+#include <sstream>
 
 using mrpt::maps::CReflectivityGridMap2D;
 
@@ -174,4 +178,256 @@ TEST(CReflectivityGridMap2D, SaveRepresentation)
 
   const auto prefix = (std::filesystem::temp_directory_path() / "reflectivity_test").string();
   EXPECT_NO_THROW(m.saveMetricMapRepresentationToFile(prefix));
+}
+
+// =========================================================================
+//  isEmpty(): stub, always false
+// =========================================================================
+
+TEST(CReflectivityGridMap2D, IsEmptyAlwaysFalse)
+{
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+  EXPECT_FALSE(m.isEmpty());
+
+  mrpt::obs::CObservationReflectivity obs;
+  obs.reflectivityLevel = 0.5f;
+  obs.sensorPose = mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0);
+  m.insertObservation(obs);
+  EXPECT_FALSE(m.isEmpty());
+}
+
+// =========================================================================
+//  internal_insertObservation(): channel filtering, wrong observation type
+// =========================================================================
+
+TEST(CReflectivityGridMap2D, InsertObservationChannelMismatchReturnsFalse)
+{
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+  m.insertionOptions.channel = 3;
+
+  mrpt::obs::CObservationReflectivity obs;
+  obs.channel = 9;
+  obs.reflectivityLevel = 0.5f;
+  obs.sensorPose = mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0);
+
+  mrpt::poses::CPose3D robotPose;
+  EXPECT_FALSE(m.insertObservation(obs, robotPose));
+}
+
+TEST(CReflectivityGridMap2D, InsertObservationWrongObservationTypeReturnsFalse)
+{
+  CReflectivityGridMap2D m;
+  mrpt::obs::CObservationOdometry obs;
+  mrpt::poses::CPose3D robotPose;
+  EXPECT_FALSE(m.insertObservation(obs, robotPose));
+}
+
+// NOTE (suspected bug, see CReflectivityGridMap2D.cpp around the resize()
+// call in internal_insertObservation): the upper grid bounds are recomputed
+// with std::min() instead of std::max(), so a reading beyond the positive
+// x/y bounds fails to grow the grid and ends up throwing (via ASSERTMSG_)
+// instead of resizing. The symmetric negative-direction case happens to
+// work because CDynamicGrid::resize() internally clamps a shrinking upper
+// bound back to its previous value. These two tests document the current
+// (asymmetric) behavior.
+TEST(CReflectivityGridMap2D, InsertObservationBeyondNegativeBoundsResizesOk)
+{
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+
+  mrpt::obs::CObservationReflectivity obs;
+  obs.reflectivityLevel = 0.5f;
+  obs.sensorPose = mrpt::poses::CPose3D(-10, -10, 0, 0, 0, 0);
+
+  mrpt::poses::CPose3D robotPose;
+  EXPECT_TRUE(m.insertObservation(obs, robotPose));
+}
+
+TEST(CReflectivityGridMap2D, InsertObservationBeyondPositiveBoundsThrows)
+{
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+
+  mrpt::obs::CObservationReflectivity obs;
+  obs.reflectivityLevel = 0.5f;
+  obs.sensorPose = mrpt::poses::CPose3D(10, 10, 0, 0, 0, 0);
+
+  mrpt::poses::CPose3D robotPose;
+  EXPECT_THROW(m.insertObservation(obs, robotPose), std::exception);
+}
+
+// =========================================================================
+//  internal_computeObservationLikelihood()
+// =========================================================================
+
+TEST(CReflectivityGridMap2D, ComputeObservationLikelihoodValid)
+{
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+
+  mrpt::obs::CObservationReflectivity obs;
+  // NOTE (suspected bug): internal_computeObservationLikelihood() asserts
+  // reflectivityLevel in [0, 0.1], even though the field is documented (see
+  // CObservationReflectivity.h) to range over [0,1]. Stay within the
+  // (buggy) asserted range here; a separate test documents the assertion.
+  obs.reflectivityLevel = 0.05f;
+  obs.sensorPose = mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0);
+  obs.sensorStdNoise = 0.2f;
+
+  mrpt::poses::CPose3D takenFrom;
+  const double lik = m.computeObservationLikelihood(obs, takenFrom);
+  EXPECT_LE(lik, 0.0);
+}
+
+TEST(CReflectivityGridMap2D, ComputeObservationLikelihoodWrongObservationTypeReturnsZero)
+{
+  CReflectivityGridMap2D m;
+  mrpt::obs::CObservationOdometry obs;
+  mrpt::poses::CPose3D takenFrom;
+  EXPECT_DOUBLE_EQ(m.computeObservationLikelihood(obs, takenFrom), 0.0);
+}
+
+TEST(CReflectivityGridMap2D, ComputeObservationLikelihoodChannelMismatchReturnsZero)
+{
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+  m.insertionOptions.channel = 3;
+
+  mrpt::obs::CObservationReflectivity obs;
+  obs.channel = 7;
+  obs.reflectivityLevel = 0.05f;
+
+  mrpt::poses::CPose3D takenFrom;
+  EXPECT_DOUBLE_EQ(m.computeObservationLikelihood(obs, takenFrom), 0.0);
+}
+
+TEST(CReflectivityGridMap2D, ComputeObservationLikelihoodOutOfMapReturnsZero)
+{
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+
+  mrpt::obs::CObservationReflectivity obs;
+  obs.reflectivityLevel = 0.05f;
+  obs.sensorPose = mrpt::poses::CPose3D(100, 100, 0, 0, 0, 0);
+
+  mrpt::poses::CPose3D takenFrom;
+  EXPECT_DOUBLE_EQ(m.computeObservationLikelihood(obs, takenFrom), 0.0);
+}
+
+TEST(CReflectivityGridMap2D, ComputeObservationLikelihoodAboveBuggyBoundThrows)
+{
+  // Documents the suspected bug in the ASSERT_LE_ bound noted above: a
+  // semantically valid reflectivityLevel (in [0,1]) outside [0,0.1] makes
+  // the assertion fail.
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+
+  mrpt::obs::CObservationReflectivity obs;
+  obs.reflectivityLevel = 0.5f;
+  obs.sensorPose = mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0);
+
+  mrpt::poses::CPose3D takenFrom;
+  EXPECT_THROW(m.computeObservationLikelihood(obs, takenFrom), std::exception);
+}
+
+// =========================================================================
+//  compute3DMatchingRatio(): always 0
+// =========================================================================
+
+TEST(CReflectivityGridMap2D, Compute3DMatchingRatioAlwaysZero)
+{
+  CReflectivityGridMap2D m;
+  CReflectivityGridMap2D other;
+  mrpt::poses::CPose3D pose;
+  mrpt::maps::TMatchingRatioParams params;
+  EXPECT_FLOAT_EQ(m.compute3DMatchingRatio(&other, pose, params), 0.0f);
+}
+
+// =========================================================================
+//  getVisualizationInto()
+// =========================================================================
+
+TEST(CReflectivityGridMap2D, GetVisualizationEnabled)
+{
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+
+  mrpt::obs::CObservationReflectivity obs;
+  obs.reflectivityLevel = 0.7f;
+  obs.sensorPose = mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0);
+  m.insertObservation(obs);
+
+  m.genericMapParams.enableSaveAs3DObject = true;
+  mrpt::viz::CSetOfObjects viz;
+  EXPECT_NO_THROW(m.getVisualizationInto(viz));
+  EXPECT_FALSE(viz.empty());
+}
+
+TEST(CReflectivityGridMap2D, GetVisualizationDisabledIsANoOp)
+{
+  CReflectivityGridMap2D m(-2, 2, -2, 2, 0.5);
+  m.genericMapParams.enableSaveAs3DObject = false;
+
+  mrpt::viz::CSetOfObjects viz;
+  m.getVisualizationInto(viz);
+  EXPECT_TRUE(viz.empty());
+}
+
+// =========================================================================
+//  optionsByName()
+// =========================================================================
+
+TEST(CReflectivityGridMap2D, OptionsByName)
+{
+  CReflectivityGridMap2D m;
+  const auto opts = m.optionsByName();
+  const auto it = opts.find("insertionOptions");
+  ASSERT_NE(it, opts.end());
+  EXPECT_EQ(it->second, &m.insertionOptions);
+}
+
+// =========================================================================
+//  TInsertionOptions::loadFromConfigFile() / dumpToTextStream()
+// =========================================================================
+
+TEST(CReflectivityGridMap2D, InsertionOptionsLoadFromConfigFileAndDump)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  cfg.write("ins", "channel", 5);
+
+  CReflectivityGridMap2D::TInsertionOptions opts;
+  opts.loadFromConfigFile(cfg, "ins");
+  EXPECT_EQ(opts.channel, 5);
+
+  std::stringstream ss;
+  opts.dumpToTextStream(ss);
+  EXPECT_FALSE(ss.str().empty());
+}
+
+// =========================================================================
+//  TMapDefinition: loadFromConfigFile_map_specific(), dumpToTextStream(),
+//  internal_CreateFromMapDefinition()
+// =========================================================================
+
+TEST(CReflectivityGridMap2D, MapDefinitionLoadAndCreate)
+{
+  const mrpt::config::CConfigFileMemory cfg(R""""(
+[map_reflectivityMap_00_creationOpts]
+min_x=-4
+max_x=4
+min_y=-4
+max_y=4
+resolution=0.25
+
+[map_reflectivityMap_00_insertOpts]
+channel=2
+)"""");
+
+  CReflectivityGridMap2D::TMapDefinition def;
+  def.loadFromConfigFile(cfg, "map_reflectivityMap_00");
+
+  EXPECT_DOUBLE_EQ(def.min_x, -4.0);
+  EXPECT_DOUBLE_EQ(def.max_x, 4.0);
+  EXPECT_EQ(def.insertionOpts.channel, 2);
+
+  std::stringstream ss;
+  def.dumpToTextStream(ss);
+  EXPECT_FALSE(ss.str().empty());
+
+  const auto createdMap = CReflectivityGridMap2D::CreateFromMapDefinition(def);
+  ASSERT_NE(createdMap, nullptr);
+  EXPECT_GT(createdMap->getSizeX(), 0u);
 }

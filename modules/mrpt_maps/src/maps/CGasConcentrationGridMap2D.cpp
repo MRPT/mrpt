@@ -437,11 +437,11 @@ void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
   internal_loadFromConfigFile_common(iniFile, section);
 
   // Specific data fields for gasGridMaps
-  gasSensorLabel = iniFile.read_string(section.c_str(), "gasSensorLabel", "Full_MCEnose", true);
+  gasSensorLabel = iniFile.read_string(section.c_str(), "gasSensorLabel", "Full_MCEnose", false);
   enose_id = static_cast<uint16_t>(iniFile.read_int(section.c_str(), "enoseID", enose_id));
   // Read sensor type in hexadecimal
   {
-    std::string sensorType_str = iniFile.read_string(section.c_str(), "gasSensorType", "-1", true);
+    std::string sensorType_str = iniFile.read_string(section.c_str(), "gasSensorType", "-1", false);
     int tmpSensorType;
     stringstream convert(sensorType_str);
     convert >> std::hex >> tmpSensorType;
@@ -454,13 +454,13 @@ void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
     else
     {  // fall back to old name, or default to current value:
       gasSensorType = static_cast<uint16_t>(
-          iniFile.read_int(section.c_str(), "KF_sensorType", gasSensorType, true));
+          iniFile.read_int(section.c_str(), "KF_sensorType", gasSensorType, false));
     }
   }
-  windSensorLabel = iniFile.read_string(section.c_str(), "windSensorLabel", "Full_MCEnose", true);
+  windSensorLabel = iniFile.read_string(section.c_str(), "windSensorLabel", "Full_MCEnose", false);
 
   // Indicates if wind information must be used for Advection Simulation
-  useWindInformation = iniFile.read_bool(section.c_str(), "useWindInformation", "false", true);
+  useWindInformation = iniFile.read_bool(section.c_str(), "useWindInformation", false, false);
 
   //(rad) The initial/default value of the wind direction
   default_wind_direction = iniFile.read_float(section.c_str(), "default_wind_direction", 0, false);
@@ -473,7 +473,7 @@ void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
   std_windNoise_mod = iniFile.read_float(section.c_str(), "std_windNoise_mod", 0, false);
 
   //(m/s) The noise in the wind strenght
-  advectionFreq = iniFile.read_float(section.c_str(), "advectionFreq", 1, true);
+  advectionFreq = iniFile.read_float(section.c_str(), "advectionFreq", 1, false);
 }
 
 void CGasConcentrationGridMap2D::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
@@ -547,8 +547,16 @@ mrpt::viz::CSetOfObjects::Ptr CGasConcentrationGridMap2D::getWindAs3DObject() co
     for (cx = 0; cx < xs.size(); cx++)
     {
       // Cell values [0,inf]:
-      double dir_xy = *windGrid_direction.cellByPos(xs[cx], ys[cy]);
-      double mod_xy = *windGrid_module.cellByPos(xs[cx], ys[cy]);
+      const double* dir_cell = windGrid_direction.cellByPos(xs[cx], ys[cy]);
+      const double* mod_cell = windGrid_module.cellByPos(xs[cx], ys[cy]);
+      if (!dir_cell || !mod_cell)
+      {
+        // Sample point falls outside the wind grid (e.g. right at a
+        // boundary, due to floating point rounding): skip it.
+        continue;
+      }
+      double dir_xy = *dir_cell;
+      double mod_xy = *mod_cell;
 
       auto obj = mrpt::viz::CArrow::Create(
           mrpt::math::TPoint3Df(xs[cx], ys[cy], 0.f),
@@ -642,13 +650,20 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
       idx2cxcy(static_cast<int>(i), cell_i_cx, cell_i_cy);
 
       // Read dirwind value of cell i
-      mu_phi =
-          static_cast<float>(*windGrid_direction.cellByIndex(cell_i_cx, cell_i_cy));  //[0,2*pi]
+      const double* dir_cell = windGrid_direction.cellByIndex(cell_i_cx, cell_i_cy);
+      const double* mod_cell = windGrid_module.cellByIndex(cell_i_cx, cell_i_cy);
+      if (!dir_cell || !mod_cell)
+      {
+        // The wind grids may not have been resized in sync with the main
+        // map (see the dimension-mismatch warning above): skip this cell
+        // rather than dereferencing an out-of-bounds lookup.
+        continue;
+      }
+      mu_phi = static_cast<float>(*dir_cell);  //[0,2*pi]
       unsigned int phi_indx = round(mu_phi / LUT.phi_inc);
 
       // Read modwind value of cell i
-      mu_modwind =
-          static_cast<float>(*windGrid_module.cellByIndex(cell_i_cx, cell_i_cy));  //[0,inf)
+      mu_modwind = static_cast<float>(*mod_cell);  //[0,inf)
       mu_r = static_cast<float>(mu_modwind * At);
       if (mu_r > LUT.max_r) mu_r = LUT.max_r;
       unsigned int r_indx = round(mu_r / LUT.r_inc);
@@ -742,17 +757,21 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
     }
 
     // Update means and Cov of the Kalman filter state
+    // Note: m_stackedCov holds, per row, only a small compressed window of
+    // "stackedCovCols" columns (see mrKalmanApproximate in internal_clear()),
+    // not a full NxN matrix, so only that column range may be indexed;
+    // column 0 is always the cell's own variance.
+    const int stackedCovCols = static_cast<int>(m_stackedCov.cols());
     for (size_t it_i = 0; it_i < N; it_i++)
     {
       m_map[it_i].kf_mean() = new_means[it_i];  // means
 
       // Variances
-      // Scale the Current Covariances with the new variances
-      for (size_t it_j = 0; it_j < N; it_j++)
+      // Scale the current covariance window with the new variance:
+      for (int it_j = 0; it_j < stackedCovCols; it_j++)
       {
-        m_stackedCov(it_i, it_j) = (m_stackedCov(it_i, it_j) / m_stackedCov(it_i, it_i)) *
-                                   new_variances[it_i];  // variances
-        m_stackedCov(it_j, it_i) = m_stackedCov(it_i, it_j);
+        m_stackedCov(it_i, it_j) =
+            (m_stackedCov(it_i, it_j) / m_stackedCov(it_i, 0)) * new_variances[it_i];  // variances
       }
     }
     m_hasToRecoverMeanAndCov = true;

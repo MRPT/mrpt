@@ -285,7 +285,6 @@ and accurate path — pick two.
 | mrpt_viz | 2660/9024 | 29.5% | 17.3% |
 | mrpt_kinematics | 184/482 | 38.2% | 17.9% |
 | mrpt_graphslam | 257/611 | 42.1% | 37.3% |
-| mrpt_maps | 5605/11648 | 48.1% | 32.7% |
 | mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
 | mrpt_system | 1012/1900 | 53.3% | 39.6% |
 | mrpt_io | 726/1292 | 56.2% | 39.9% |
@@ -295,6 +294,7 @@ and accurate path — pick two.
 | mrpt_slam | 2778/4299 | 64.6% | 43.7% |
 | mrpt_rtti | 126/176 | 71.6% | 73.5% |
 | mrpt_serialization | 511/708 | 72.2% | 52.5% |
+| mrpt_maps (2026-07-17)§ | 6965/9345 | 74.5% | 53.9% |
 | mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
 | mrpt_core | 541/628 | 86.1% | 64.8% |
 | mrpt_obs (2026-07-10) | 4631/5324 | 87.0% | 56.1% |
@@ -350,6 +350,60 @@ alternative in `scalar_t` remains unreachable via the public API (no
 construction call sites), same as noted before; left in place as it is part of
 the variant's public type and removing it would be an ABI-affecting change.
 
+§ `mrpt_maps` was raised from 48.1%/32.7% (2026-07-03 baseline) to 74.5%/53.9%
+on 2026-07-17 via new/extended tests for `CRandomFieldGridMap2D` (35%→86%,
+all 5 map-type representations), `CPointsMap` (51%→80%), `CGasConcentrationGridMap2D`
+(13%→84%, incl. the wind-advection simulation path), `CBeaconMap`/`CBeacon`
+(76%→93% / new), `COccupancyGridMap2D_insert.cpp` (30%→92%), the Voronoi/
+critical-points code, `CObservationPointCloud` (new), and `customizable_obs_viz.cpp`
+(0%→97%). `CColouredOctoMap`, `COctoMap`, `CVoxelMap*`, and
+`COccupancyGridMap3D_likelihood.cpp` remain the biggest gaps (all still <55%,
+octomap/voxelmap C++ library API unfamiliarity plus a mid-session parallel-
+agent-fleet run hitting the account session limit before reaching them — see
+below). Real bugs found and fixed along the way: (1) `CGasConcentrationGridMap2D::
+getWindAs3DObject()` and `::simulateAdvection()` both dereferenced
+`CDynamicGrid::cellByPos/cellByIndex()`'s result unchecked, segfaulting
+whenever a wind-grid query point/index fell outside the grid (a boundary
+point at exactly the grid edge, or index drift when the main grid resizes
+but the wind sub-grids don't); (2) `simulateAdvection()`'s variance-update
+loop treated the *compressed* `m_stackedCov` (N rows × small W-window
+columns) as if it were a full N×N matrix, writing out-of-bounds columns and
+corrupting the heap (`double free or corruption`) on any grid larger than
+the window; (3) `TInsertionOptions::loadFromConfigFile()` marked
+`gasSensorLabel`/`gasSensorType`/`windSensorLabel`/`useWindInformation`/
+`advectionFreq` all `failIfNotFound=true` despite each having a documented
+default (making the defaults dead code and any config file missing one of
+these keys throw), and separately passed the string literal `"false"` where
+`read_bool()` expects an actual `bool` default (a non-null pointer coerces
+to `true`, silently inverting the intended default); (4)
+`COccupancyGridMap2D::findCriticalPoints()` computed `temp_x.size() - 1`
+with unsigned `size_t` arithmetic, underflowing to `SIZE_MAX` and reading
+wildly out of bounds whenever zero or one critical-point candidates were
+found (the common case for any corridor/room without branch points — i.e.
+most maps); (5) `COccupancyGridMap2D::getVoronoiClearance()` dereferenced
+`cellByIndex()`'s result unchecked, segfaulting for any negative or
+out-of-range `(cx,cy)`, reachable from `findCriticalPoints()`'s
+`x-2`/`y-2` neighbor scan. `determineMatching2D()`'s bounding-box overlap
+pre-filter (not expanded by `maxDistForCorrespondence`/
+`maxAngularDistForCorrespondence`) can also incorrectly early-reject valid
+correspondences when the two maps' raw bounding boxes don't quite touch;
+identified but *not* fixed (a hot, SIMD-optimized path used throughout
+ICP/SLAM, too risky to patch without dedicated validation) — the affected
+test was reshaped to avoid the case instead. Separately, MRPT's PLY point
+cloud writer (`mrpt::viz::PLY_import_export.cpp`) only round-trips a single
+grayscale "intensity" property (`(R+G+B)/3`, broadcast back to all three
+channels on import), not full per-channel RGB — not a bug, just a
+narrower-than-expected feature scope that a new test initially assumed
+incorrectly. A parallel 8-agent test-writing fleet was used for the first
+half of this session; all 8 hit the account's session usage limit
+mid-task, but each agent's already-applied file edits survived intact
+(edits are atomic) — after registering the surviving new files and fixing
+the crashes/config bugs above, `CColouredOctoMap`, `COctoMap`,
+`CVoxelMapOccupancyBase`, `CMultiMetricMap` (extra coverage),
+`CRandomFieldGridMap3D` (extra coverage), and `CPlanarLaserScan` were left
+untouched (the octomap/voxelmap agent died almost immediately; the others
+partially completed) and remain the best next targets.
+
 ### Weak areas, grouped by root cause
 
 1. **Hardware drivers — `mrpt_hwdrivers` (13.9%), most of `mrpt_comms` (23.4%)**:
@@ -384,11 +438,13 @@ the variant's public type and removing it would be an ABI-affecting change.
 5. **Biggest single-file impact (most uncovered lines, worth prioritizing for
    raw percentage gains)**: `mrpt_viz/src/CPolyhedron.cpp` (1420 uncovered,
    pure geometry, no GUI dependency — good test target),
-   `mrpt_maps/src/maps/CRandomFieldGridMap2D.cpp` (827),
-   `mrpt_maps/src/maps/CPointsMap.cpp` (547),
-   `mrpt_maps/src/maps/CGasConcentrationGridMap2D.cpp` (520).
+   `mrpt_maps/src/maps/CColouredOctoMap.cpp` (171, 14.5%),
+   `mrpt_maps/src/maps/COctoMap.cpp` (140, 21.3%),
+   `mrpt_maps/src/maps/COccupancyGridMap3D.cpp` (151, 51.4%).
    (`mrpt_obs/src/CObservation3DRangeScan.cpp` cleared this bucket as of
-   2026-07-10, now at 89.1%.)
+   2026-07-10, now at 89.1%; `mrpt_maps/src/maps/CRandomFieldGridMap2D.cpp`,
+   `CPointsMap.cpp`, and `CGasConcentrationGridMap2D.cpp` cleared it as of
+   2026-07-17, now at 86%/80%/84% respectively — see § above.)
 
 6. **Near-target modules (75-90%), smallest remaining gap to close first**:
    none currently flagged.

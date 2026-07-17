@@ -13,15 +13,27 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/stock_observations.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/tfest/TMatchingPair.h>
 //
 #include <test_mrpt_common.h>
 
+#include <filesystem>
+#include <fstream>
+#include <sstream>
+
 using namespace mrpt::maps;
 using namespace mrpt::obs;
+using namespace mrpt::poses;
 
 TEST(COccupancyGridMap2DTests, insert2DScan)
 {
@@ -399,4 +411,278 @@ TEST(COccupancyGridMap2DTests, voronoiClearanceCorrectness)
   // Build the full Voronoi and check center column has nonzero clearance
   grid.buildVoronoiDiagram(0.5f, 0.0f);
   EXPECT_GT(grid.getVoronoiClearance(cx, cy), 0) << "Center of corridor must be on Voronoi diagram";
+}
+
+// =========================================================================
+//  internal_insertObservation(): CObservation2DRangeScan, all branches
+// =========================================================================
+
+namespace
+{
+// A small synthetic horizontal scan, straight ahead, with a fixed range.
+CObservation2DRangeScan makeSimpleScan(size_t n, float range, bool rightToLeft = true)
+{
+  CObservation2DRangeScan scan;
+  scan.aperture = mrpt::DEG2RAD(90.0f);
+  scan.rightToLeft = rightToLeft;
+  scan.sensorPose = CPose3D::Identity();
+  scan.resizeScan(n);
+  for (size_t i = 0; i < n; i++)
+  {
+    scan.setScanRange(i, range);
+    scan.setScanRangeValidity(i, true);
+  }
+  return scan;
+}
+}  // namespace
+
+TEST(COccupancyGridMap2DTests, InsertSimpleRaysMarksOccupiedAtEndpoint)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.insertionOptions.wideningBeamsWithDistance = false;
+
+  auto scan = makeSimpleScan(181, 3.0f);
+  EXPECT_TRUE(grid.insertObservation(scan));
+
+  // Straight ahead (phi=0) should be free, with an occupied cell near the
+  // endpoint at (3,0):
+  EXPECT_GT(grid.getPos(1.0, 0), 0.51f);
+  EXPECT_LT(grid.getPos(3.0, 0), 0.49f);
+}
+
+TEST(COccupancyGridMap2DTests, InsertWidenedRaysMarksOccupiedAtEndpoint)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.insertionOptions.wideningBeamsWithDistance = true;
+
+  auto scan = makeSimpleScan(181, 3.0f);
+  EXPECT_TRUE(grid.insertObservation(scan));
+
+  EXPECT_GT(grid.getPos(1.0, 0), 0.51f);
+  EXPECT_LT(grid.getPos(3.0, 0), 0.49f);
+}
+
+TEST(COccupancyGridMap2DTests, InsertNonPlanarScanIsRejected)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+
+  auto scan = makeSimpleScan(181, 3.0f);
+  // Tilt the sensor so the scan plane is no longer horizontal:
+  scan.sensorPose = CPose3D(0, 0, 0, 0, mrpt::DEG2RAD(45.0), 0);
+
+  EXPECT_FALSE(grid.insertObservation(scan));
+}
+
+TEST(COccupancyGridMap2DTests, InsertRejectedOnAltitudeMismatch)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.insertionOptions.useMapAltitude = true;
+  grid.insertionOptions.mapAltitude = 10.0f;  // Far from the scan's z=0.
+
+  auto scan = makeSimpleScan(181, 3.0f);
+  EXPECT_FALSE(grid.insertObservation(scan));
+}
+
+TEST(COccupancyGridMap2DTests, InsertInvalidRangesAsFreeSpace)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.insertionOptions.considerInvalidRangesAsFreeSpace = true;
+
+  auto scan = makeSimpleScan(181, 3.0f);
+  // Mark the central rays as invalid (no echo):
+  for (size_t i = 88; i <= 92; i++) scan.setScanRangeValidity(i, false);
+
+  EXPECT_TRUE(grid.insertObservation(scan));
+  // With invalid-as-free enabled, some free space should still be marked
+  // close to the sensor along the invalid ray direction:
+  EXPECT_GT(grid.getPos(0.3f, 0), 0.51f);
+}
+
+TEST(COccupancyGridMap2DTests, InsertInvalidRangesNotAsFreeSpace)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.insertionOptions.considerInvalidRangesAsFreeSpace = false;
+
+  auto scan = makeSimpleScan(181, 3.0f);
+  for (size_t i = 0; i < scan.getScanSize(); i++) scan.setScanRangeValidity(i, false);
+
+  // All rays invalid and not-as-free: nothing should be marked as occupied
+  // at the nominal endpoint, but the call must still succeed.
+  EXPECT_TRUE(grid.insertObservation(scan));
+}
+
+TEST(COccupancyGridMap2DTests, InsertWithDecimationSkipsRays)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.insertionOptions.decimation = 4;
+
+  auto scan = makeSimpleScan(181, 3.0f);
+  EXPECT_TRUE(grid.insertObservation(scan));
+  EXPECT_LT(grid.getPos(3.0, 0), 0.49f);
+}
+
+TEST(COccupancyGridMap2DTests, InsertBottomwardsSensorStillInserts)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+
+  auto scan = makeSimpleScan(181, 3.0f);
+  // Rotate 180 deg around X: the sensor's Z axis now points downwards.
+  scan.sensorPose = CPose3D(0, 0, 0, 0, 0, mrpt::DEG2RAD(180.0));
+
+  EXPECT_TRUE(grid.insertObservation(scan));
+}
+
+TEST(COccupancyGridMap2DTests, InsertTruncatedRayDoesNotMarkOccupied)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.insertionOptions.maxDistanceInsertion = 2.0f;
+
+  // Range beyond maxDistanceInsertion: the ray is truncated, so its
+  // endpoint must NOT be marked occupied (only free space up to the max).
+  auto scan = makeSimpleScan(181, 4.0f);
+  EXPECT_TRUE(grid.insertObservation(scan));
+
+  EXPECT_GT(grid.getPos(1.0, 0), 0.51f);
+  // The truncated endpoint (around x=2) should not read as occupied:
+  EXPECT_GT(grid.getPos(2.0, 0), 0.49f);
+}
+
+// =========================================================================
+//  internal_insertObservation(): CObservationRange (e.g. sonar/IR ring)
+// =========================================================================
+
+TEST(COccupancyGridMap2DTests, InsertObservationRangeSonarRing)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+
+  CObservationRange obsRange;
+  obsRange.sensorConeAperture = mrpt::DEG2RAD(20.0f);
+  for (int k = 0; k < 4; k++)
+  {
+    CObservationRange::TMeasurement m;
+    m.sensorPose = mrpt::math::TPose3D(0, 0, 0, mrpt::DEG2RAD(90.0 * k), 0, 0);
+    m.sensedDistance = 2.0f;
+    obsRange.sensedData.push_back(m);
+  }
+
+  EXPECT_TRUE(grid.insertObservation(obsRange));
+  EXPECT_GT(grid.getPos(0.5, 0), 0.51f);
+}
+
+TEST(COccupancyGridMap2DTests, InsertObservationRangeAltitudeMismatchRejected)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.insertionOptions.useMapAltitude = true;
+  grid.insertionOptions.mapAltitude = 50.0f;
+
+  CObservationRange obsRange;
+  CObservationRange::TMeasurement m;
+  m.sensedDistance = 1.0f;
+  obsRange.sensedData.push_back(m);
+
+  EXPECT_FALSE(grid.insertObservation(obsRange));
+}
+
+TEST(COccupancyGridMap2DTests, InsertUnsupportedObservationTypeReturnsFalse)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+
+  mrpt::obs::CObservation3DRangeScan obs3d;  // Not handled by this map type.
+  EXPECT_FALSE(grid.insertObservation(obs3d));
+}
+
+// =========================================================================
+//  TInsertionOptions: loadFromConfigFile() / dumpToTextStream()
+// =========================================================================
+
+TEST(COccupancyGridMap2DTests, InsertionOptionsLoadFromConfigFileAndDump)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  cfg.write("ins", "maxDistanceInsertion", 12.5f);
+  cfg.write("ins", "maxOccupancyUpdateCertainty", 0.6f);
+  cfg.write("ins", "wideningBeamsWithDistance", true);
+  cfg.write("ins", "decimation", 3);
+
+  COccupancyGridMap2D::TInsertionOptions opts;
+  opts.loadFromConfigFile(cfg, "ins");
+
+  EXPECT_FLOAT_EQ(opts.maxDistanceInsertion, 12.5f);
+  EXPECT_FLOAT_EQ(opts.maxOccupancyUpdateCertainty, 0.6f);
+  EXPECT_TRUE(opts.wideningBeamsWithDistance);
+  EXPECT_EQ(opts.decimation, 3);
+
+  std::stringstream ss;
+  opts.dumpToTextStream(ss);
+  EXPECT_FALSE(ss.str().empty());
+}
+
+// =========================================================================
+//  findCriticalPoints() / computeClearance(x,y,maxSearchDistance) overload
+// =========================================================================
+
+TEST(COccupancyGridMap2DTests, FindCriticalPointsInCorridor)
+{
+  // Square map (size_x == size_y), see the note in voronoiClearanceCorrectness
+  // above about the legacy stride assumption for non-square maps.
+  const float res = 0.10f;
+  const int N = 21;  // walls at x=0 and x=20, corridor in between
+
+  COccupancyGridMap2D grid(0.0f, N * res, 0.0f, N * res, res);
+  ASSERT_EQ(static_cast<int>(grid.getSizeX()), N);
+  ASSERT_EQ(static_cast<int>(grid.getSizeY()), N);
+
+  grid.fill(1.0f);  // all free
+  for (int y = 0; y < N; y++)
+  {
+    grid.setCell(0, y, 0.0f);
+    grid.setCell(N - 1, y, 0.0f);
+  }
+
+  grid.buildVoronoiDiagram(0.5f, 0.0f);
+  EXPECT_NO_THROW(grid.findCriticalPoints(0.5f));
+}
+
+TEST(COccupancyGridMap2DTests, ComputeClearanceByCoordinatesNoObstacleNearby)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.fill(1.0f);  // all free
+
+  // No obstacle within maxSearchDistance: clamped to maxSearchDistance.
+  const float clearance = grid.computeClearance(0.0f, 0.0f, 1.0f);
+  EXPECT_NEAR(clearance, 1.0f, 1e-3f);
+}
+
+TEST(COccupancyGridMap2DTests, ComputeClearanceByCoordinatesFindsNearestObstacle)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.fill(1.0f);
+  grid.setCell(grid.x2idx(1.0), grid.y2idx(0.0), 0.0f);  // Obstacle 1m to the east.
+
+  const float clearance = grid.computeClearance(0.0f, 0.0f, 3.0f);
+  EXPECT_NEAR(clearance, 1.0f, 0.15f);
+}
+
+TEST(COccupancyGridMap2DTests, ComputeClearanceByCoordinatesNoFreeCellNearbyReturnsZero)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.fill(0.0f);  // all occupied: no free cell adjacent to the query point
+
+  EXPECT_NEAR(grid.computeClearance(0.0f, 0.0f, 1.0f), 0.0f, 1e-6f);
+}
+
+TEST(COccupancyGridMap2DTests, BuildVoronoiDiagramOnSubRegion)
+{
+  const float res = 0.10f;
+  const int N = 21;
+  COccupancyGridMap2D grid(0.0f, N * res, 0.0f, N * res, res);
+  grid.fill(1.0f);
+  for (int y = 0; y < N; y++)
+  {
+    grid.setCell(0, y, 0.0f);
+    grid.setCell(N - 1, y, 0.0f);
+  }
+
+  // Restrict the Voronoi computation to a sub-region only:
+  EXPECT_NO_THROW(grid.buildVoronoiDiagram(0.5f, 0.0f, 2, N - 3, 2, N - 3));
+  EXPECT_EQ(grid.getVoronoiDiagram().getSizeX(), grid.getSizeX());
 }

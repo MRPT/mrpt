@@ -2312,6 +2312,20 @@ bool CPointsMap::loadFromKittiVelodyneFile(const std::string& filename)
       THROW_EXCEPTION_FMT("Could not open thefile: `%s`", filename.c_str());
     }
 
+    // Plain (non-gzipped) files know their total size upfront, so a
+    // truncated file (not a multiple of one XYZI record) can be detected
+    // here. gzip streams don't expose a reliable total size without fully
+    // decompressing, so they rely on the record-read loop below instead
+    // (see CFileInputStream::Read()'s all-or-nothing contract: a mid-record
+    // EOF is reported as nRead==0, indistinguishable from a clean EOF).
+    if (f == &f_normal && (f_normal.getTotalBytesCount() % (sizeof(float) * 4)) != 0)
+    {
+      THROW_EXCEPTION_FMT(
+          "File size is not a multiple of one XYZI record (truncated or "
+          "corrupted file?): `%s`",
+          filename.c_str());
+    }
+
     this->clear();
     this->registerField_float(POINT_FIELD_INTENSITY);
     this->reserve(100000);
