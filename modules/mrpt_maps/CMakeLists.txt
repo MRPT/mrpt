@@ -75,6 +75,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/COccupancyGridMap2D_matching_unittest.cpp
   tests/COccupancyGridMap3D_unittest.cpp
   tests/COctoMap_unittest.cpp
+  tests/CColouredOctoMap_unittest.cpp
   tests/CPointCloudFilterByDistance_unittest.cpp
   tests/CGenericPointsMap_unittest.cpp
   tests/CPointsMap_unittest.cpp
@@ -86,6 +87,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CReflectivityGridMap2D_unittest.cpp
   tests/CWirelessPowerGridMap2D_unittest.cpp
   tests/customizable_obs_viz_unittest.cpp
+  tests/CPlanarLaserScan_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

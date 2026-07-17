@@ -294,7 +294,7 @@ and accurate path — pick two.
 | mrpt_slam | 2778/4299 | 64.6% | 43.7% |
 | mrpt_rtti | 126/176 | 71.6% | 73.5% |
 | mrpt_serialization | 511/708 | 72.2% | 52.5% |
-| mrpt_maps (2026-07-17)§ | 6965/9345 | 74.5% | 53.9% |
+| mrpt_maps (2026-07-17)§ | 7766/9356 | 83.0% | 59.6% |
 | mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
 | mrpt_core | 541/628 | 86.1% | 64.8% |
 | mrpt_obs (2026-07-10) | 4631/5324 | 87.0% | 56.1% |
@@ -350,17 +350,24 @@ alternative in `scalar_t` remains unreachable via the public API (no
 construction call sites), same as noted before; left in place as it is part of
 the variant's public type and removing it would be an ABI-affecting change.
 
-§ `mrpt_maps` was raised from 48.1%/32.7% (2026-07-03 baseline) to 74.5%/53.9%
-on 2026-07-17 via new/extended tests for `CRandomFieldGridMap2D` (35%→86%,
-all 5 map-type representations), `CPointsMap` (51%→80%), `CGasConcentrationGridMap2D`
-(13%→84%, incl. the wind-advection simulation path), `CBeaconMap`/`CBeacon`
-(76%→93% / new), `COccupancyGridMap2D_insert.cpp` (30%→92%), the Voronoi/
-critical-points code, `CObservationPointCloud` (new), and `customizable_obs_viz.cpp`
-(0%→97%). `CColouredOctoMap`, `COctoMap`, `CVoxelMap*`, and
-`COccupancyGridMap3D_likelihood.cpp` remain the biggest gaps (all still <55%,
-octomap/voxelmap C++ library API unfamiliarity plus a mid-session parallel-
-agent-fleet run hitting the account session limit before reaching them — see
-below). Real bugs found and fixed along the way: (1) `CGasConcentrationGridMap2D::
+§ `mrpt_maps` was raised from 48.1%/32.7% (2026-07-03 baseline) to 83.0%/59.6%
+on 2026-07-17, in two passes. Pass 1 (74.5%/53.9%) added new/extended tests
+for `CRandomFieldGridMap2D` (35%→86%, all 5 map-type representations),
+`CPointsMap` (51%→80%), `CGasConcentrationGridMap2D` (13%→84%, incl. the
+wind-advection simulation path), `CBeaconMap`/`CBeacon` (76%→93% / new),
+`COccupancyGridMap2D_insert.cpp` (30%→92%), the Voronoi/critical-points code,
+`CObservationPointCloud` (new), and `customizable_obs_viz.cpp` (0%→97%).
+Pass 2 (83.0%/59.6%) covered the remaining gaps: `COctoMap`/`CColouredOctoMap`
+(21%/15%→76%/95%, incl. the shared `COctoMapBase` template — insertion for
+2D/3D scans, `castRay`, `getPointOccupancy`, colour update via
+`SET`/`AVERAGE`/`INTEGRATE`), `CVoxelMap`/`CVoxelMapRGB`/`CVoxelMapOccupancyBase`
+(27%/22%/33%→85%/77%/94%, incl. `remove_voxels_farther_than` and the
+range-image-based colour-scan path), `COccupancyGridMap3D` (51%→82%, incl.
+the `TInsertionOptions`/`TRenderingOptions` structs and the `determineMatching2D`/
+`compute3DMatchingRatio`/`internal_computeObservationLikelihood` stubs — see
+below), `CMultiMetricMap` (75%→90%, `determineMatching2D`, `getAsSimplePointsMap`,
+`mapByIndex`, serialization), and a new `CPlanarLaserScan` test file (0%→96%).
+Real bugs found and fixed along the way: (1) `CGasConcentrationGridMap2D::
 getWindAs3DObject()` and `::simulateAdvection()` both dereferenced
 `CDynamicGrid::cellByPos/cellByIndex()`'s result unchecked, segfaulting
 whenever a wind-grid query point/index fell outside the grid (a boundary
@@ -394,15 +401,30 @@ cloud writer (`mrpt::viz::PLY_import_export.cpp`) only round-trips a single
 grayscale "intensity" property (`(R+G+B)/3`, broadcast back to all three
 channels on import), not full per-channel RGB — not a bug, just a
 narrower-than-expected feature scope that a new test initially assumed
-incorrectly. A parallel 8-agent test-writing fleet was used for the first
-half of this session; all 8 hit the account's session usage limit
-mid-task, but each agent's already-applied file edits survived intact
-(edits are atomic) — after registering the surviving new files and fixing
-the crashes/config bugs above, `CColouredOctoMap`, `COctoMap`,
-`CVoxelMapOccupancyBase`, `CMultiMetricMap` (extra coverage),
-`CRandomFieldGridMap3D` (extra coverage), and `CPlanarLaserScan` were left
-untouched (the octomap/voxelmap agent died almost immediately; the others
-partially completed) and remain the best next targets.
+incorrectly. `COccupancyGridMap3D::determineMatching2D()`,
+`::compute3DMatchingRatio()`, and `::internal_computeObservationLikelihood()`
+are all unimplemented stubs (`THROW_EXCEPTION("Implement me!")`, pre-existing,
+self-documented) — new tests assert the current (throwing) behavior rather
+than a working implementation; actually implementing them is a real
+algorithmic task, not a bug fix, and was left for a dedicated session.
+`CVoxelMapRGB`'s 3D-scan colour path and `CColouredOctoMap`'s 3D-scan path
+both unproject via a range image + camera intrinsics (`hasRangeImage`), NOT
+via `hasPoints3D`/`points3D_x/y/z` like most other 3D-scan consumers in this
+module — a manually-constructed `CObservation3DRangeScan` for tests needs
+`cameraParams.setIntrinsicParamsFromValues(...)` plus a filled `rangeImage`
+matrix, or `unprojectInto()` silently yields zero points. A parallel 8-agent
+test-writing fleet was used for the first half of this session; all 8 hit
+the account's session usage limit mid-task, but each agent's already-applied
+file edits survived intact (edits are atomic) — after registering the
+surviving new files and fixing the crashes/config bugs above, a second,
+solo pass covered the remaining gaps the fleet never reached
+(`CColouredOctoMap`, `COctoMap`, `CVoxelMap`/`CVoxelMapRGB`/
+`CVoxelMapOccupancyBase`, `COccupancyGridMap3D`, `CMultiMetricMap` extra
+coverage, and a new `CPlanarLaserScan` test file). Remaining gaps below
+~55%: `COccupancyGridMap2D_io.cpp`, `_getAs.cpp`, `_simulate.cpp` (ROS
+map-server YAML I/O and bitmap-image save/load paths), `CVoxelMapBase.h`,
+and `NearestNeighborsCapable.h`/`COctoMap.h`/`CColouredOctoMap.h` (header-only
+inline accessors, low line count but currently 0-50%).
 
 ### Weak areas, grouped by root cause
 
@@ -438,13 +460,13 @@ partially completed) and remain the best next targets.
 5. **Biggest single-file impact (most uncovered lines, worth prioritizing for
    raw percentage gains)**: `mrpt_viz/src/CPolyhedron.cpp` (1420 uncovered,
    pure geometry, no GUI dependency — good test target),
-   `mrpt_maps/src/maps/CColouredOctoMap.cpp` (171, 14.5%),
-   `mrpt_maps/src/maps/COctoMap.cpp` (140, 21.3%),
-   `mrpt_maps/src/maps/COccupancyGridMap3D.cpp` (151, 51.4%).
+   `mrpt_maps/src/maps/COccupancyGridMap2D_io.cpp` (85, 56.0%),
+   `mrpt_maps/src/maps/COccupancyGridMap2D_simulate.cpp` (49, 53.3%).
    (`mrpt_obs/src/CObservation3DRangeScan.cpp` cleared this bucket as of
    2026-07-10, now at 89.1%; `mrpt_maps/src/maps/CRandomFieldGridMap2D.cpp`,
-   `CPointsMap.cpp`, and `CGasConcentrationGridMap2D.cpp` cleared it as of
-   2026-07-17, now at 86%/80%/84% respectively — see § above.)
+   `CPointsMap.cpp`, `CGasConcentrationGridMap2D.cpp`, `CColouredOctoMap.cpp`,
+   `COctoMap.cpp`, and `COccupancyGridMap3D.cpp` all cleared it as of
+   2026-07-17 — see § above.)
 
 6. **Near-target modules (75-90%), smallest remaining gap to close first**:
    none currently flagged.
