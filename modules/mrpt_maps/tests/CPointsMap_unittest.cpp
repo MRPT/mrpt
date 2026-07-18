@@ -24,7 +24,6 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <unistd.h>
 
 #include <array>
 #include <atomic>
@@ -33,6 +32,12 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+
+#ifdef _WIN32
+#include <process.h>  // _getpid()
+#else
+#include <unistd.h>  // getpid()
+#endif
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -268,13 +273,22 @@ void do_tests_loadSaveStreams()
 
 namespace
 {
+/// Portable current-process id, used to build unique temp file names.
+long currentProcessId()
+{
+#ifdef _WIN32
+  return static_cast<long>(_getpid());
+#else
+  return static_cast<long>(getpid());
+#endif
+}
+
 /// Builds a unique path in the system temp directory for round-trip file tests.
 std::string makeTempFilePath(const std::string& suffix)
 {
   static std::atomic<int> counter{0};
   const auto dir = std::filesystem::temp_directory_path();
-  const std::string fname = "mrpt_CPointsMap_unittest_" +
-                            std::to_string(static_cast<long>(getpid())) + "_" +
+  const std::string fname = "mrpt_CPointsMap_unittest_" + std::to_string(currentProcessId()) + "_" +
                             std::to_string(counter++) + suffix;
   return (dir / fname).string();
 }
