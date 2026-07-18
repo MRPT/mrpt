@@ -14,7 +14,6 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/serialization/CArchive.h>
-#include <unistd.h>
 
 #include <atomic>
 #include <filesystem>
@@ -22,8 +21,27 @@
 #include <thread>
 #include <vector>
 
+#ifdef _WIN32
+#include <process.h>  // _getpid()
+#else
+#include <unistd.h>  // getpid()
+#endif
+
 using mrpt::maps::CGenericPointsMap;
 using mrpt::maps::CPointsMap;
+
+namespace
+{
+/// Portable current-process id, used to build unique temp file names.
+long currentProcessId()
+{
+#ifdef _WIN32
+  return static_cast<long>(_getpid());
+#else
+  return static_cast<long>(getpid());
+#endif
+}
+}  // namespace
 
 // ---------------------------------------------------------------------------
 //  Helpers
@@ -596,8 +614,8 @@ TEST(CGenericPointsMap, PLYRoundTripPreservesIntensity)
   static std::atomic<int> counter{0};
   const auto dir = std::filesystem::temp_directory_path();
   const std::string file =
-      (dir / ("mrpt_CGenericPointsMap_unittest_" + std::to_string(static_cast<long>(getpid())) +
-              "_" + std::to_string(counter++) + ".ply"))
+      (dir / ("mrpt_CGenericPointsMap_unittest_" + std::to_string(currentProcessId()) + "_" +
+              std::to_string(counter++) + ".ply"))
           .string();
 
   ASSERT_TRUE(src.saveToPlyFile(file));
