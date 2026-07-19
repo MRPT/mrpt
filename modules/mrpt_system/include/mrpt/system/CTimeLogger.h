@@ -18,10 +18,12 @@
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTicTac.h>
 
+#include <atomic>
 #include <deque>
 #include <map>
 #include <optional>
 #include <stack>
+#include <utility>
 #include <vector>
 
 namespace mrpt::system
@@ -57,7 +59,9 @@ class CTimeLogger : public mrpt::system::COutputLogger
 {
  private:
   CTicTac m_tictac;
-  bool m_enabled;
+  /** Accessed without the section mutexes from enter()/leave(); atomic to avoid
+   * a data race with enable()/disable() called from other threads. */
+  std::atomic<bool> m_enabled;
   std::string m_name;
   bool m_keep_whole_history{false};
 
@@ -116,6 +120,12 @@ class CTimeLogger : public mrpt::system::COutputLogger
   void do_enter(const std::string_view& func_name) noexcept;
   double do_leave(const std::string_view& func_name) noexcept;
 
+  /** Returns a consistent copy of all recorded sections (name + stats), taken
+   * while holding the container and per-section locks. Used by the report/save
+   * methods so they can format the results without iterating the live container
+   * concurrently with enter()/leave() from other threads. */
+  std::vector<std::pair<std::string, TCallData>> getSectionsSnapshot() const;
+
  public:
   /** Data of each call section: # of calls, minimum, maximum, average and
    * overall execution time (in seconds) \sa getStats */
@@ -131,11 +141,46 @@ class CTimeLogger : public mrpt::system::COutputLogger
   ~CTimeLogger() override;
 
   // We must define these 4 because of the definition of a virtual dtor
-  // (compiler will not generate the defaults)
-  CTimeLogger(const CTimeLogger& o) = default;
-  CTimeLogger& operator=(const CTimeLogger& o) = default;
-  CTimeLogger(CTimeLogger&& o) = default;
-  CTimeLogger& operator=(CTimeLogger&& o) = default;
+  // (compiler will not generate the defaults). They are hand-written (instead
+  // of "= default") since std::atomic<bool> is neither copyable nor movable.
+  CTimeLogger(const CTimeLogger& o) :
+      COutputLogger(o),
+      m_tictac(o.m_tictac),
+      m_enabled(o.m_enabled.load()),
+      m_name(o.m_name),
+      m_keep_whole_history(o.m_keep_whole_history),
+      m_data(o.m_data)
+  {
+  }
+  CTimeLogger& operator=(const CTimeLogger& o)
+  {
+    COutputLogger::operator=(o);
+    m_tictac = o.m_tictac;
+    m_enabled = o.m_enabled.load();
+    m_name = o.m_name;
+    m_keep_whole_history = o.m_keep_whole_history;
+    m_data = o.m_data;
+    return *this;
+  }
+  CTimeLogger(CTimeLogger&& o) :
+      COutputLogger(std::move(o)),
+      m_tictac(std::move(o.m_tictac)),
+      m_enabled(o.m_enabled.load()),
+      m_name(std::move(o.m_name)),
+      m_keep_whole_history(o.m_keep_whole_history),
+      m_data(std::move(o.m_data))
+  {
+  }
+  CTimeLogger& operator=(CTimeLogger&& o)
+  {
+    COutputLogger::operator=(std::move(o));
+    m_tictac = std::move(o.m_tictac);
+    m_enabled = o.m_enabled.load();
+    m_name = std::move(o.m_name);
+    m_keep_whole_history = o.m_keep_whole_history;
+    m_data = std::move(o.m_data);
+    return *this;
+  }
 
   /** Dump all stats to a multi-line text string. \sa dumpAllStats,
    * saveToCVSFile */
@@ -150,11 +195,6 @@ class CTimeLogger : public mrpt::system::COutputLogger
   /** Resets all stats. By default (deep_clear=false), all section names are
    * remembered (not freed) so the cost of creating upon the first next call
    * is avoided.
-   *
-   * \note By design, calling this method is the only one which is not thread
-   * safe. It's not made thread-safe to save the performance cost. Please,
-   * ensure that you call `clear()` only while there are no other threads
-   * registering annotations in the object.
    */
   void clear(bool deep_clear = false);
 

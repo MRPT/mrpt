@@ -328,6 +328,44 @@ class ts_hash_map
     auto lck = mrpt::lockHelper(m_mtx);
     return iterator(m_vec, *this, static_cast<int>(m_vec.size()), 0);
   }
+
+  /** Thread-safe traversal: invokes `f(const value_type&)` for each used entry
+   * while holding the internal mutex, so it is safe to run concurrently with
+   * find_or_alloc()/operator[]() from other threads (unlike the iterators
+   * returned by begin()/end(), whose increment is not internally
+   * synchronized). Keep the visitor cheap: it runs under the container lock. */
+  template <typename VisitorFn>
+  void visitAllEntries(VisitorFn f) const
+  {
+    auto lck = mrpt::lockHelper(m_mtx);
+    for (const auto& match_arr : m_vec)
+    {
+      for (const auto& e : match_arr)
+      {
+        if (e.used)
+        {
+          f(e);
+        }
+      }
+    }
+  }
+
+  /** \overload (non-const version) */
+  template <typename VisitorFn>
+  void visitAllEntries(VisitorFn f)
+  {
+    auto lck = mrpt::lockHelper(m_mtx);
+    for (auto& match_arr : m_vec)
+    {
+      for (auto& e : match_arr)
+      {
+        if (e.used)
+        {
+          f(e);
+        }
+      }
+    }
+  }
   /** @} */
 
 };  // end class ts_hash_map

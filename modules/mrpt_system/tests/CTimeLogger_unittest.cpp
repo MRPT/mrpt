@@ -13,11 +13,17 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/core/format.h>
 #include <mrpt/system/CTimeLogger.h>
+#include <mrpt/system/filesystem.h>
 
+#include <atomic>
 #include <chrono>
+#include <map>
 #include <mutex>
+#include <string>
 #include <thread>
+#include <vector>
 
 namespace
 {
@@ -136,4 +142,96 @@ TEST(CTimeLogger, multithread)
   const std::string s = tl.getStatsAsText();
   tl.clear(true);  // to silent console output upon dtor
   EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 9U);
+}
+
+// Reporting/saving must be safe to call from one thread while other threads
+// keep logging (including registering brand-new sections). Before the fix, the
+// report methods iterated the live container without synchronization against
+// the writers, which is a data race (crash under TSan/ASan).
+TEST(CTimeLogger, concurrentDumpWhileLogging)
+{
+  mrpt::system::CTimeLogger tl;
+  tl.enableKeepWholeHistory(true);
+
+  std::atomic_bool stop{false};
+  std::vector<std::thread> ths;
+
+  // Writers: each thread keeps allocating/updating a growing set of sections.
+  for (int t = 0; t < 8; t++)
+  {
+    ths.emplace_back(
+        [t, &tl, &stop]()
+        {
+          int i = 0;
+          while (!stop)
+          {
+            const std::string name = mrpt::format("thread%d_sec%d", t, (i++) % 40);
+            tl.enter(name);
+            tl.leave(name);
+          }
+        });
+  }
+
+  // Readers: hammer all the report/save paths concurrently with the writers.
+  const std::string csv = mrpt::system::getTempFileName();
+  for (int r = 0; r < 3; r++)
+  {
+    ths.emplace_back(
+        [&tl, &csv, &stop]()
+        {
+          while (!stop)
+          {
+            (void)tl.getStatsAsText();
+            std::map<std::string, mrpt::system::CTimeLogger::TCallStats> stats;
+            tl.getStats(stats);
+            tl.saveToCSVFile(csv);
+          }
+        });
+  }
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  stop = true;
+  for (auto& th : ths)
+  {
+    th.join();
+  }
+
+  // If we got here without crashing/deadlocking, the test passed. Sanity check:
+  EXPECT_FALSE(tl.getStatsAsText().empty());
+  tl.clear(true);  // to silent console output upon dtor
+}
+
+// clear(false) must also be safe against concurrent logging.
+TEST(CTimeLogger, concurrentClearWhileLogging)
+{
+  mrpt::system::CTimeLogger tl;
+  std::atomic_bool stop{false};
+  std::vector<std::thread> ths;
+
+  for (int t = 0; t < 6; t++)
+  {
+    ths.emplace_back(
+        [t, &tl, &stop]()
+        {
+          int i = 0;
+          while (!stop)
+          {
+            const std::string name = mrpt::format("t%d_s%d", t, (i++) % 20);
+            tl.enter(name);
+            tl.leave(name);
+          }
+        });
+  }
+
+  for (int k = 0; k < 200; k++)
+  {
+    tl.clear(false);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+  stop = true;
+  for (auto& th : ths)
+  {
+    th.join();
+  }
+  tl.clear(true);  // to silent console output upon dtor
 }

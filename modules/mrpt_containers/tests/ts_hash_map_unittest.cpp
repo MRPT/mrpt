@@ -68,6 +68,33 @@ TEST(ts_hash_map, stdstring_key)
   }
 }
 
+TEST(ts_hash_map, visitAllEntries)
+{
+  mrpt::containers::ts_hash_map<std::string, double> m;
+  m["uno"] = 1.0;
+  m["dos"] = 2.0;
+  m["tres"] = 3.0;
+
+  // const visitor: sum values and count used entries.
+  double sum = .0;
+  size_t count = 0;
+  const auto& cm = m;
+  cm.visitAllEntries(
+      [&](const auto& e)
+      {
+        sum += e.second;
+        count++;
+      });
+  EXPECT_EQ(count, 3U);
+  EXPECT_NEAR(sum, 6.0, 1e-12);
+
+  // non-const visitor: mutate in place.
+  m.visitAllEntries([](auto& e) { e.second *= 10.0; });
+  EXPECT_EQ(10.0, m["uno"]);
+  EXPECT_EQ(20.0, m["dos"]);
+  EXPECT_EQ(30.0, m["tres"]);
+}
+
 TEST(ts_hash_map, tooManyCollisionsThrows)
 {
   // These 6 keys were found to all reduce to the same uint8_t hash bucket

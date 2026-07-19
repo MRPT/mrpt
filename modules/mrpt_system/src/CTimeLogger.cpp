@@ -90,13 +90,25 @@ void CTimeLogger::clear(bool deep_clear)
   }
   else
   {
-    for (auto& e : m_data)
-    {
-      e.second.mtx.lock();
-      e.second.mtx.unlock();
-      e.second = TCallData();
-    }
+    m_data.visitAllEntries(
+        [](TDataMap::value_type& e)
+        {
+          auto lck = mrpt::lockHelper(e.second.mtx);
+          e.second = TCallData();
+        });
   }
+}
+
+std::vector<std::pair<std::string, CTimeLogger::TCallData>> CTimeLogger::getSectionsSnapshot() const
+{
+  std::vector<std::pair<std::string, TCallData>> out;
+  m_data.visitAllEntries(
+      [&out](const TDataMap::value_type& e)
+      {
+        auto lck = mrpt::lockHelper(e.second.mtx);
+        out.emplace_back(e.first, e.second);
+      });
+  return out;
 }
 
 std::string aux_format_string_multilines(const std::string& s, size_t len)
@@ -117,17 +129,15 @@ std::string aux_format_string_multilines(const std::string& s, size_t len)
 void CTimeLogger::getStats(std::map<std::string, TCallStats>& out_stats) const
 {
   out_stats.clear();
-  for (const auto& e : m_data)
+  for (const auto& [name, d] : getSectionsSnapshot())
   {
-    auto lck = mrpt::lockHelper(e.second.mtx);
-
-    TCallStats& cs = out_stats[std::string(e.first)];
-    cs.min_t = e.second.min_t;
-    cs.max_t = e.second.max_t;
-    cs.total_t = e.second.mean_t;
-    cs.mean_t = e.second.n_calls ? e.second.mean_t / static_cast<double>(e.second.n_calls) : 0;
-    cs.n_calls = e.second.n_calls;
-    cs.last_t = e.second.last_t;
+    TCallStats& cs = out_stats[name];
+    cs.min_t = d.min_t;
+    cs.max_t = d.max_t;
+    cs.total_t = d.mean_t;
+    cs.mean_t = d.n_calls ? d.mean_t / static_cast<double>(d.n_calls) : 0;
+    cs.n_calls = d.n_calls;
+    cs.last_t = d.last_t;
   }
 }
 
@@ -163,11 +173,11 @@ std::string CTimeLogger::getStatsAsText(size_t column_width) const
   stats_text += bottom_header + "\n"s;
 
   // for all the timed sections: sort by inserting into a std::map
-  using NameAndCallData = std::map<std::string_view, TCallData>;
+  using NameAndCallData = std::map<std::string, TCallData>;
   NameAndCallData stat_strs;
-  for (const auto& i : m_data)
+  for (auto& [name, d] : getSectionsSnapshot())
   {
-    stat_strs[i.first] = i.second;
+    stat_strs[name] = std::move(d);
   }
 
   // format tree-like patterns like:
@@ -185,8 +195,6 @@ std::string CTimeLogger::getStatsAsText(size_t column_width) const
   std::string last_parent;
   for (const auto& i : stat_strs)
   {
-    auto lck = mrpt::lockHelper(i.second.mtx);
-
     string line = string(i.first);  // make a copy
 
     const auto dot_pos = line.find(".");
@@ -228,10 +236,8 @@ void CTimeLogger::saveToCSVFile(const std::string& csv_file) const
   std::string s;
   s += "FUNCTION, #CALLS, LAST.T, MIN.T, MEAN.T, MAX.T, TOTAL.T [, "
        "WHOLE_HISTORY]\n";
-  for (const auto& i : m_data)
+  for (const auto& i : getSectionsSnapshot())
   {
-    auto lck = mrpt::lockHelper(i.second.mtx);
-
     s += mrpt::format(
         "\"%.*s\",%7u,%e,%e,%e,%e,%e", static_cast<int>(i.first.size()), i.first.data(),
         static_cast<unsigned int>(i.second.n_calls), i.second.last_t, i.second.min_t,
@@ -269,10 +275,8 @@ void CTimeLogger::saveToMFile(const std::string& file) const
   std::string s_maxs = "s.max=["s;
   std::string s_means = "s.mean=["s;
 
-  for (const auto& i : m_data)
+  for (const auto& i : getSectionsSnapshot())
   {
-    auto lck = mrpt::lockHelper(i.second.mtx);
-
     s_names += "'"s + i.first + "',"s;
     s_counts += std::to_string(i.second.n_calls) + ","s;
     s_mins += mrpt::format("%e,", i.second.min_t);
