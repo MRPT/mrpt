@@ -201,6 +201,51 @@ TEST(CTimeLogger, concurrentDumpWhileLogging)
   tl.clear(true);  // to silent console output upon dtor
 }
 
+// The RAII helper resolves its section once at construction and updates it at
+// destruction via a cached pointer (no second lookup, no stored name).
+TEST(CTimeLogger, scopedEntryRecords)
+{
+  mrpt::system::CTimeLogger tl;
+  {
+    mrpt::system::CTimeLoggerEntry tle(tl, "scoped");
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  EXPECT_GT(tl.getLastTime("scoped"), 5e-3);
+
+  // Explicit stop() must not double-count on later destruction:
+  {
+    mrpt::system::CTimeLoggerEntry tle(tl, "scoped2");
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    tle.stop();
+    tle.stop();  // no-op
+  }
+  std::map<std::string, mrpt::system::CTimeLogger::TCallStats> stats;
+  tl.getStats(stats);
+  EXPECT_EQ(stats["scoped2"].n_calls, 1U);
+
+  // Many scoped entries reusing the same section name (the hot path): all
+  // recorded under a single section.
+  for (int i = 0; i < 50; i++)
+  {
+    mrpt::system::CTimeLoggerEntry tle(tl, "loop");
+  }
+  tl.getStats(stats);
+  EXPECT_EQ(stats["loop"].n_calls, 50U);
+
+  tl.clear(true);  // to silent console output upon dtor
+}
+
+// A logger disabled at construction of the RAII entry records nothing.
+TEST(CTimeLogger, scopedEntryDisabled)
+{
+  mrpt::system::CTimeLogger tl(false /*disabled*/);
+  {
+    mrpt::system::CTimeLoggerEntry tle(tl, "nope");
+  }
+  EXPECT_EQ(tl.getLastTime("nope"), 0);
+  tl.clear(true);  // to silent console output upon dtor
+}
+
 // clear(false) must also be safe against concurrent logging.
 TEST(CTimeLogger, concurrentClearWhileLogging)
 {

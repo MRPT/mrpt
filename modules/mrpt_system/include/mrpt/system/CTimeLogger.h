@@ -120,6 +120,10 @@ class CTimeLogger : public mrpt::system::COutputLogger
   void do_enter(const std::string_view& func_name) noexcept;
   double do_leave(const std::string_view& func_name) noexcept;
 
+  /** Updates the min/mean/max/history stats of a single, already-resolved
+   * section. Locks only that section's mutex (not the container). */
+  void updateStat(TCallData& d, double value, bool is_time) noexcept;
+
   /** Returns a consistent copy of all recorded sections (name + stats), taken
    * while holding the container and per-section locks. Used by the report/save
    * methods so they can format the results without iterating the live container
@@ -219,7 +223,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
   /** Start of a named section \sa enter */
   void enter(const std::string_view& func_name) noexcept
   {
-    if (m_enabled)
+    if (m_enabled.load(std::memory_order_relaxed))
     {
       do_enter(func_name);
     }
@@ -228,7 +232,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
    * disabled. \sa enter */
   double leave(const std::string_view& func_name) noexcept
   {
-    return m_enabled ? do_leave(func_name) : 0;
+    return m_enabled.load(std::memory_order_relaxed) ? do_leave(func_name) : 0;
   }
   /** Return the mean execution time of the given "section", or 0 if it hasn't
    * ever been called "enter" with that section name */
@@ -279,9 +283,11 @@ struct CTimeLoggerEntry
   void stop();  //!< for correct use, see docs for CTimeLoggerEntry
 
  private:
-  // Note we cannot store the string_view since we have no guarantees of the
-  // life-time of the provided string buffer.
-  const std::string m_section_name;
+  // The target section is resolved once at construction (while the caller's
+  // string buffer is still alive), so stop() needs neither a stored name nor a
+  // second hash lookup. Null if the logger was disabled at construction or the
+  // section could not be allocated (hash-table overflow).
+  CTimeLogger::TCallData* m_data = nullptr;
   double m_entry = 0;
   bool stopped_{false};
 };

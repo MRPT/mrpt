@@ -323,7 +323,7 @@ void CTimeLogger::dumpAllStats(size_t column_width) const
 
 void CTimeLogger::do_enter(const std::string_view& func_name) noexcept
 {
-  TCallData* d_ptr = m_data.find_or_alloc(std::string(func_name));
+  TCallData* d_ptr = m_data.find_or_alloc(func_name);
   if (!d_ptr)
   {
     std::cerr << "[CTimeLogger::do_enter] Warning: skipping due to hash "
@@ -341,7 +341,7 @@ double CTimeLogger::do_leave(const std::string_view& func_name) noexcept
 {
   const double tim = m_tictac.Tac();
 
-  TCallData* d_ptr = m_data.find_or_alloc(std::string(func_name));
+  TCallData* d_ptr = m_data.find_or_alloc(func_name);
   if (!d_ptr)
   {
     std::cerr << "[CTimeLogger::do_enter] Warning: skipping due to hash "
@@ -383,21 +383,8 @@ double CTimeLogger::do_leave(const std::string_view& func_name) noexcept
   return 0;  // This shouldn't happen!
 }
 
-void CTimeLogger::registerUserMeasure(
-    const std::string_view& event_name, const double value, const bool is_time) noexcept
+void CTimeLogger::updateStat(TCallData& d, double value, bool is_time) noexcept
 {
-  if (!m_enabled)
-  {
-    return;
-  }
-  TCallData* d_ptr = m_data.find_or_alloc(std::string(event_name));
-  if (!d_ptr)
-  {
-    std::cerr << "[CTimeLogger::do_enter] Warning: skipping due to hash "
-                 "collision.\n";
-    return;
-  }
-  auto& d = *d_ptr;
   auto lck = mrpt::lockHelper(d.mtx);
 
   d.has_time_units = is_time;
@@ -425,6 +412,23 @@ void CTimeLogger::registerUserMeasure(
   }
 }
 
+void CTimeLogger::registerUserMeasure(
+    const std::string_view& event_name, const double value, const bool is_time) noexcept
+{
+  if (!m_enabled.load(std::memory_order_relaxed))
+  {
+    return;
+  }
+  TCallData* d_ptr = m_data.find_or_alloc(event_name);
+  if (!d_ptr)
+  {
+    std::cerr << "[CTimeLogger::registerUserMeasure] Warning: skipping due to "
+                 "hash collision.\n";
+    return;
+  }
+  updateStat(*d_ptr, value, is_time);
+}
+
 double CTimeLogger::getMeanTime(const std::string& name) const
 {
   TDataMap::const_iterator it = m_data.find(name);
@@ -449,9 +453,16 @@ double CTimeLogger::getLastTime(const std::string& name) const
 
 CTimeLoggerEntry::CTimeLoggerEntry(
     const CTimeLogger& logger, const std::string_view& section_name) :
-    m_logger(const_cast<CTimeLogger&>(logger)), m_section_name(section_name)
+    m_logger(const_cast<CTimeLogger&>(logger))
 {
-  m_entry = logger.m_tictac.Tac();
+  // Resolve the section now, while the caller's string buffer is still alive,
+  // so stop() needs neither a stored name nor a second hash lookup.
+  if (m_logger.m_enabled.load(std::memory_order_relaxed))
+  {
+    m_data = m_logger.m_data.find_or_alloc(section_name);
+  }
+  // Start timing last, so the lookup cost is not counted in the section time.
+  m_entry = m_logger.m_tictac.Tac();
 }
 void CTimeLoggerEntry::stop()
 {
@@ -459,11 +470,13 @@ void CTimeLoggerEntry::stop()
   {
     return;
   }
-  const double leave = m_logger.m_tictac.Tac();
-  const double dt = leave - m_entry;
-
-  m_logger.registerUserMeasure(m_section_name, dt, true);
   stopped_ = true;
+  if (!m_data)
+  {
+    return;  // disabled at construction, or hash-table overflow
+  }
+  const double dt = m_logger.m_tictac.Tac() - m_entry;
+  m_logger.updateStat(*m_data, dt, true);
 }
 
 CTimeLoggerEntry::~CTimeLoggerEntry()
