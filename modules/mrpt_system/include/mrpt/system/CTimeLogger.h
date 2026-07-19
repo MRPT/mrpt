@@ -158,6 +158,10 @@ class CTimeLogger : public mrpt::system::COutputLogger
   }
   CTimeLogger& operator=(const CTimeLogger& o)
   {
+    if (this == &o)
+    {
+      return *this;
+    }
     COutputLogger::operator=(o);
     m_tictac = o.m_tictac;
     m_enabled = o.m_enabled.load();
@@ -177,6 +181,10 @@ class CTimeLogger : public mrpt::system::COutputLogger
   }
   CTimeLogger& operator=(CTimeLogger&& o)
   {
+    if (this == &o)
+    {
+      return *this;
+    }
     COutputLogger::operator=(std::move(o));
     m_tictac = std::move(o.m_tictac);
     m_enabled = o.m_enabled.load();
@@ -199,6 +207,11 @@ class CTimeLogger : public mrpt::system::COutputLogger
   /** Resets all stats. By default (deep_clear=false), all section names are
    * remembered (not freed) so the cost of creating upon the first next call
    * is avoided.
+   *
+   * \note With deep_clear=true the section entries are actually freed, which
+   * invalidates the section resolved by any still-alive CTimeLoggerEntry; do
+   * not call clear(true) while there are outstanding CTimeLoggerEntry objects
+   * for this logger (deep_clear=false is safe, it only resets the counters).
    */
   void clear(bool deep_clear = false);
 
@@ -272,6 +285,11 @@ class CTimeLogger : public mrpt::system::COutputLogger
  *
  *    // tle dtor does nothing else, since you already called stop()
  * \endcode
+ *
+ * \note The target section is resolved once at construction and cached, so the
+ * elapsed time is recorded without a second lookup. As a consequence, the
+ * logger's `clear(true)` (deep clear) must not be called while an entry is
+ * alive, since it frees the section entries (`clear(false)` is safe).
  *
  * \ingroup mrpt_system_grp
  */

@@ -244,6 +244,10 @@ class ts_hash_map
 
   ts_hash_map& operator=(const ts_hash_map& o)
   {
+    if (this == &o)
+    {  // self-assignment would lock the (non-recursive) mutex twice
+      return *this;
+    }
     auto lck1 = mrpt::lockHelper(m_mtx);
     auto lck2 = mrpt::lockHelper(o.m_mtx);
     m_vec = o.m_vec;
@@ -252,6 +256,10 @@ class ts_hash_map
   }
   ts_hash_map& operator=(ts_hash_map&& o) noexcept
   {
+    if (this == &o)
+    {  // self-assignment would lock the (non-recursive) mutex twice
+      return *this;
+    }
     auto lck1 = mrpt::lockHelper(m_mtx);
     auto lck2 = mrpt::lockHelper(o.m_mtx);
     m_vec = std::move(o.m_vec);
