@@ -1904,6 +1904,11 @@ bool PLY_Importer::loadFromPlyFile(
     int file_type;
     float version;
     PlyFile* ply = ply_open_for_reading(filename.c_str(), elist, &file_type, &version);
+    if (!ply)
+    {
+      m_ply_import_last_error = "Error opening for reading file: '" + filename + "'";
+      return false;
+    }
 
     /* go through each kind of element that we learned is in the file */
     /* and read them */

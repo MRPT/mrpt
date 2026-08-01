@@ -95,8 +95,17 @@ set(LIB_SOURCES
 set(LIB_UNIT_TEST_SOURCES
   tests/bimap_serialize_unittest.cpp
   tests/CFileGZStreams_unittest.cpp
+  tests/CGeneralizedEllipsoid_unittest.cpp
+  tests/COrbitCameraController_unittest.cpp
+  tests/CPolyhedron_unittest.cpp
   tests/CSerializable_unittest.cpp
+  tests/CVisualObject_unittest.cpp
+  tests/MiscVisualObjects_unittest.cpp
+  tests/PLY_import_export_unittest.cpp
+  tests/pose_pdfs_unittest.cpp
+  tests/Scene_Viewport_unittest.cpp
   tests/serializations_unittest.cpp
+  tests/StockObjects_unittest.cpp
   tests/stl_serialize_unittest.cpp
 )
 

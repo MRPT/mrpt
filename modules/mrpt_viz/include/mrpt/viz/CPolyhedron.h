@@ -623,7 +623,7 @@ class CPolyhedron :
   <tr><td>PR</td><td align="center">4</td><td>Hexahedron</td></tr>
   <tr><td>P-P+</td><td align="center">4</td><td>Octahedron</td></tr>
   <tr><td>A</td><td align="center">3</td><td>Octahedron</td></tr>
-  <tr><td>C+PRC-</td><td
+  <tr><td>C-PRC+</td><td
   align="center">8</td><td>Rhombicuboctahedron</td></tr>
   <tr><td>P-AP+</td><td align="center">5</td><td>Icosahedron</td></tr>
   <tr><td>R-R+</td><td align="center">10</td><td>Icosidodecahedron</td></tr>
@@ -875,6 +875,8 @@ class CPolyhedron :
   {
     if (doCheck && !checkConsistence(vertices, faces))
       throw std::logic_error("Face list accesses a vertex out of range");
+    m_Vertices = vertices;
+    m_Faces = faces;
     for (auto& mFace : m_Faces)
     {
       if (!setNormal(mFace, doCheck)) throw std::logic_error("Bad face specification");

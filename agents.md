@@ -253,6 +253,16 @@ with a size outside that list, such as `VEH_SIZE=1`, compiles but fails to
 *link* (`undefined reference to MatrixVectorBase<...>::impl_op_...`). Pick a
 supported size (2 is the smallest) for any new fixed-size-matrix-based test.
 
+Gotcha (2026-08-02): with `gcovr` 8.6 (vs. whatever earlier version this
+baseline was first taken with), the reproduce command above can now abort
+mid-run with `GcovrMergeAssertionError: ... Got function
+mrpt::containers::yaml_ref::operator=(double) on multiple lines: 1036, 1042`
+(a header-only template function reported at two different line numbers by
+different `.gcda` files, e.g. one from `mrpt_opengl`'s and one from
+`mrpt_img`'s object files). Add `--merge-mode-functions=merge-use-line-min`
+to the `gcovr` invocation to resolve the ambiguity instead of failing the
+whole run.
+
 ### Measuring a single module's coverage after changing it
 
 When you only touched one module and want its updated number, it's tempting
@@ -282,7 +292,6 @@ and accurate path — pick two.
 | mrpt_gui | 22/4621 | 0.5% | 0.2% |
 | mrpt_hwdrivers | 913/6592 | 13.9% | 9.7% |
 | mrpt_comms | 237/1013 | 23.4% | 11.2% |
-| mrpt_viz | 2660/9024 | 29.5% | 17.3% |
 | mrpt_kinematics | 184/482 | 38.2% | 17.9% |
 | mrpt_graphslam | 257/611 | 42.1% | 37.3% |
 | mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
@@ -292,6 +301,7 @@ and accurate path — pick two.
 | mrpt_libapps_gui | 952/1567 | 60.8% | 42.6% |
 | mrpt_nav | 3928/6234 | 63.0% | 45.3% |
 | mrpt_slam | 2778/4299 | 64.6% | 43.7% |
+| mrpt_viz (2026-08-02) | 6449/9426 | 68.4% | 50.1% |
 | mrpt_rtti | 126/176 | 71.6% | 73.5% |
 | mrpt_serialization | 511/708 | 72.2% | 52.5% |
 | mrpt_maps (2026-07-17)§ | 7766/9356 | 83.0% | 59.6% |
@@ -426,6 +436,59 @@ map-server YAML I/O and bitmap-image save/load paths), `CVoxelMapBase.h`,
 and `NearestNeighborsCapable.h`/`COctoMap.h`/`CColouredOctoMap.h` (header-only
 inline accessors, low line count but currently 0-50%).
 
+`mrpt_viz` was raised from 29.5%/17.3% (2026-07-03 baseline) to 68.4%/50.1% on
+2026-08-02. `mrpt_viz` has zero OpenGL dependency (it's the abstract scene-graph
+description consumed by `mrpt_opengl`, not the other way round), so almost all
+of the gain came from new, direct, non-rendering unit tests added under
+`modules/mrpt_viz/tests/`: `CPolyhedron_unittest.cpp` (the session's single
+biggest target, `CPolyhedron.cpp` going from a large uncovered file to
+91.6%/82.8%, exercising every `Create*` platonic/Archimedean/Catalan/Johnson
+solid factory plus `getDual`/`truncate`/`cantellate`/`augment`/`rotate`/`scale`),
+`PLY_import_export_unittest.cpp`, `COrbitCameraController_unittest.cpp`,
+`Scene_Viewport_unittest.cpp`, `CVisualObject_unittest.cpp` (base class +
+the four `VisualObjectParams_*` mixins), `CGeneralizedEllipsoid_unittest.cpp`
+(the `CEllipsoid2D/3D`, `InverseDepth2D/3D`, `RangeBearing2D` family),
+`pose_pdfs_unittest.cpp`, `StockObjects_unittest.cpp`, and
+`MiscVisualObjects_unittest.cpp` (`CAxis`, `CVectorField2D/3D`, `CFrustum`,
+`CSetOfObjects`, `CCamera`, `TTriangle`, `COctoMapVoxels`, `CSkyBox`, `CDisk`,
+`CBox`, `CGridPlaneXY/XZ`, `CTexturedPlane`). A smaller share came from
+extending the `mrpt_opengl` reference-image suite with
+`CFBORender_ExtraEllipsoidsAndMesh_unittest.cpp` (the inverse-depth/
+range-bearing ellipsoid parameterizations, `CGridPlaneXZ`, `CMesh3D`), the
+same offscreen-render/PNG-diff technique as the pre-existing `CFBORender_*`
+tests — that file has to live under `mrpt_opengl/tests/` rather than
+`mrpt_viz/tests/` given the one-way dependency, but the coverage it generates
+is still credited to `mrpt_viz`'s `.gcda` files since coverage instrumentation
+is per-compiled-object, not per-test-binary. Real bugs found and fixed along
+the way: (1) `CPolyhedron::InitFromVertAndFaces()` never assigned
+`m_Vertices`/`m_Faces` from its parameters, only from whatever the member
+variables already held — harmless for the two constructors that pre-populate
+those members via their initializer list before calling it, but the
+`CPolyhedron(vertices, vector<vector<uint32_t>> faces)` convenience
+constructor left them empty, silently producing a 0-vertex/0-face polyhedron;
+(2) `PLY_Importer::loadFromPlyFile()` segfaulted (null-pointer dereference in
+`ply_close()`) instead of returning `false` for a nonexistent/unreadable
+file, since `ply_open_for_reading()` returning `nullptr` on `fopen()` failure
+was never checked; (3) `CMesh3D::loadMesh()`'s (raw-pointer overload)
+triangle face-normal computation read vertex index slot `[3]`, which for a
+triangle (as opposed to a quad) is the unused `-1` sentinel cast to
+`uint32_t` (`4294967295`), producing an out-of-bounds `std::vector` read and
+a segfault for any mesh with `enableFaceNormals(true)` and at least one
+triangle face — a `CMesh3D::loadMesh(is_quad, face_verts, vert_coords)`
+matrix-based overload right below it had the equivalent code correct, which
+is what gave away the right fix. Also fixed: the `CreateJohnsonSolidWithConstantBase()`
+API-doc example table in `CPolyhedron.h` listed `"C+PRC-"` for an 8-vertex
+rhombicuboctahedron, but the parser requires the downward-cupola component
+(`C-`) first and the upward one (`C+`) last (confirmed against
+`CreateRandomPolyhedron()`'s own internal usage) — the doc string was
+backwards and has been corrected to `"C-PRC+"`. Remaining gaps below ~55%:
+`CAnimatedAssimpModel.cpp`/`CAssimpModel.cpp` (0%, need an external 3D model
+file plus system assimp — not attempted), `CTextMessageCapable.cpp` (0%,
+on-screen text-overlay list, unexercised by any offscreen-render or unit
+test), `opengl_fonts.h` (0%, embedded glyph bitmap data), and
+`CSetOfTexturedTriangles.cpp` (2.1%, needs a rendering-based test since its
+logic is mostly buffer-upload bookkeping).
+
 ### Weak areas, grouped by root cause
 
 1. **Hardware drivers — `mrpt_hwdrivers` (13.9%), most of `mrpt_comms` (23.4%)**:
@@ -451,17 +514,20 @@ inline accessors, low line count but currently 0-50%).
    (highest-value gaps, ordinary unit tests would work immediately):
    `mrpt_system/src/md5.cpp`, `mrpt_graphslam/src/{CEdgeCounter,TSlidingWindow,
    CWindowObserver}.cpp`,
-   `mrpt_viz/src/PLY_import_export.cpp`, `mrpt_viz/src/COrbitCameraController.cpp`,
    `mrpt_slam/src/slam/CRejectionSamplingRangeOnlyLocalization.cpp`.
    (`mrpt_img/src/CImage_loadXPM.cpp` cleared this bucket as of 2026-07-10, now ~90%;
    `mrpt_obs/src/gnss_messages_novatel.cpp` and `mrpt_obs/src/carmen_log_tools.cpp`
-   also cleared as of 2026-07-10, now at 100% and 88.2% respectively.)
+   also cleared as of 2026-07-10, now at 100% and 88.2% respectively;
+   `mrpt_viz/src/PLY_import_export.cpp` and `mrpt_viz/src/COrbitCameraController.cpp`
+   cleared as of 2026-08-02, now at 54.7% and 100% respectively.)
 
 5. **Biggest single-file impact (most uncovered lines, worth prioritizing for
-   raw percentage gains)**: `mrpt_viz/src/CPolyhedron.cpp` (1420 uncovered,
-   pure geometry, no GUI dependency — good test target),
+   raw percentage gains)**:
    `mrpt_maps/src/maps/COccupancyGridMap2D_io.cpp` (85, 56.0%),
    `mrpt_maps/src/maps/COccupancyGridMap2D_simulate.cpp` (49, 53.3%).
+   (`mrpt_viz/src/CPolyhedron.cpp`, formerly the single biggest uncovered file
+   in the whole repo at 1420 uncovered lines, cleared this bucket as of
+   2026-08-02, now at 91.6%.)
    (`mrpt_obs/src/CObservation3DRangeScan.cpp` cleared this bucket as of
    2026-07-10, now at 89.1%; `mrpt_maps/src/maps/CRandomFieldGridMap2D.cpp`,
    `CPointsMap.cpp`, `CGasConcentrationGridMap2D.cpp`, `CColouredOctoMap.cpp`,
