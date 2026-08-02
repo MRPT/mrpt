@@ -98,7 +98,8 @@ TEST(pose_pdfs, Pose3DPDFParticles)
 
 TEST(pose_pdfs, Pose3DQuatPDFGaussian)
 {
-  CPose3DQuatPDFGaussian pdf(mrpt::poses::CPose3DQuat(mrpt::poses::CPose3D(1, 2, 3, 0.1, 0.2, 0.3)));
+  CPose3DQuatPDFGaussian pdf(
+      mrpt::poses::CPose3DQuat(mrpt::poses::CPose3D(1, 2, 3, 0.1, 0.2, 0.3)));
   auto obj = posePDF2opengl(pdf);
   ASSERT_TRUE(obj);
 }

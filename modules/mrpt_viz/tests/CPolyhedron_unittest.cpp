@@ -188,49 +188,95 @@ TEST(CPolyhedron, CubicPrismFromCoords)
 }
 TEST(CPolyhedron, CubicPrismFromPoints)
 {
-  checkClosedEulerFormula(
-      CPolyhedron::CreateCubicPrism(TPoint3D(-1, -1, -1), TPoint3D(1, 1, 1)));
+  checkClosedEulerFormula(CPolyhedron::CreateCubicPrism(TPoint3D(-1, -1, -1), TPoint3D(1, 1, 1)));
 }
 TEST(CPolyhedron, Pyramid)
 {
-  std::vector<TPoint2D> base{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+  std::vector<TPoint2D> base{
+      {-1, -1},
+      { 1, -1},
+      { 1,  1},
+      {-1,  1}
+  };
   checkClosedEulerFormula(CPolyhedron::CreatePyramid(base, 2.0));
 }
 TEST(CPolyhedron, PyramidNotEnoughVertices)
 {
-  std::vector<TPoint2D> base{{-1, -1}, {1, -1}};
+  std::vector<TPoint2D> base{
+      {-1, -1},
+      { 1, -1}
+  };
   EXPECT_THROW(CPolyhedron::CreatePyramid(base, 2.0), std::logic_error);
 }
 TEST(CPolyhedron, DoublePyramid)
 {
-  std::vector<TPoint2D> base{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+  std::vector<TPoint2D> base{
+      {-1, -1},
+      { 1, -1},
+      { 1,  1},
+      {-1,  1}
+  };
   checkClosedEulerFormula(CPolyhedron::CreateDoublePyramid(base, 2.0, 1.5));
 }
 TEST(CPolyhedron, TruncatedPyramid)
 {
-  std::vector<TPoint2D> base{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+  std::vector<TPoint2D> base{
+      {-1, -1},
+      { 1, -1},
+      { 1,  1},
+      {-1,  1}
+  };
   checkClosedEulerFormula(CPolyhedron::CreateTruncatedPyramid(base, 2.0, 0.5));
 }
 TEST(CPolyhedron, Frustum)
 {
-  std::vector<TPoint2D> base{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+  std::vector<TPoint2D> base{
+      {-1, -1},
+      { 1, -1},
+      { 1,  1},
+      {-1,  1}
+  };
   checkClosedEulerFormula(CPolyhedron::CreateFrustum(base, 2.0, 0.5));
 }
 TEST(CPolyhedron, CustomPrism)
 {
-  std::vector<TPoint2D> base{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+  std::vector<TPoint2D> base{
+      {-1, -1},
+      { 1, -1},
+      { 1,  1},
+      {-1,  1}
+  };
   checkClosedEulerFormula(CPolyhedron::CreateCustomPrism(base, 2.0));
 }
 TEST(CPolyhedron, CustomAntiprism)
 {
-  std::vector<TPoint2D> bottom{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
-  std::vector<TPoint2D> top{{-0.8, -0.6}, {0.6, -0.8}, {0.8, 0.6}, {-0.6, 0.8}};
+  std::vector<TPoint2D> bottom{
+      {-1, -1},
+      { 1, -1},
+      { 1,  1},
+      {-1,  1}
+  };
+  std::vector<TPoint2D> top{
+      {-0.8, -0.6},
+      { 0.6, -0.8},
+      { 0.8,  0.6},
+      {-0.6,  0.8}
+  };
   checkClosedEulerFormula(CPolyhedron::CreateCustomAntiprism(bottom, top, 2.0));
 }
 TEST(CPolyhedron, CustomAntiprismMismatchedBases)
 {
-  std::vector<TPoint2D> bottom{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
-  std::vector<TPoint2D> top{{-1, -1}, {1, -1}, {1, 1}};
+  std::vector<TPoint2D> bottom{
+      {-1, -1},
+      { 1, -1},
+      { 1,  1},
+      {-1,  1}
+  };
+  std::vector<TPoint2D> top{
+      {-1, -1},
+      { 1, -1},
+      { 1,  1}
+  };
   EXPECT_THROW(CPolyhedron::CreateCustomAntiprism(bottom, top, 2.0), std::logic_error);
 }
 TEST(CPolyhedron, Parallelepiped)
@@ -240,7 +286,12 @@ TEST(CPolyhedron, Parallelepiped)
 }
 TEST(CPolyhedron, Bifrustum)
 {
-  std::vector<TPoint2D> base{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+  std::vector<TPoint2D> base{
+      {-1, -1},
+      { 1, -1},
+      { 1,  1},
+      {-1,  1}
+  };
   checkClosedEulerFormula(CPolyhedron::CreateBifrustum(base, 1.5, 0.6, 1.2, 0.4));
 }
 TEST(CPolyhedron, Trapezohedron)
@@ -255,7 +306,10 @@ TEST(CPolyhedron, RegularAntiprism)
 {
   checkClosedEulerFormula(CPolyhedron::CreateRegularAntiprism(6, 1.0, 1.0));
 }
-TEST(CPolyhedron, RegularPrism) { checkClosedEulerFormula(CPolyhedron::CreateRegularPrism(6, 1.0, 1.0)); }
+TEST(CPolyhedron, RegularPrism)
+{
+  checkClosedEulerFormula(CPolyhedron::CreateRegularPrism(6, 1.0, 1.0));
+}
 TEST(CPolyhedron, RegularPyramid)
 {
   checkClosedEulerFormula(CPolyhedron::CreateRegularPyramid(6, 1.0, 1.0));
@@ -311,8 +365,7 @@ TEST(CPolyhedron, JohnsonSolidWithConstantBase)
 }
 TEST(CPolyhedron, JohnsonSolidInvalidStringThrows)
 {
-  EXPECT_THROW(
-      CPolyhedron::CreateJohnsonSolidWithConstantBase(4, 1.0, "ZZZ"), std::logic_error);
+  EXPECT_THROW(CPolyhedron::CreateJohnsonSolidWithConstantBase(4, 1.0, "ZZZ"), std::logic_error);
 }
 TEST(CPolyhedron, JohnsonSolidNotEnoughVerticesThrows)
 {
@@ -415,8 +468,7 @@ TEST(CPolyhedron, TraceRay)
   auto cube = CPolyhedron::CreateHexahedron(1.0);
   double dist = 0;
   // A ray from outside, pointing towards the object, should hit it:
-  const bool hit =
-      cube->traceRay(mrpt::poses::CPose3D(-10, 0, 0, 0, 0, 0), dist);
+  const bool hit = cube->traceRay(mrpt::poses::CPose3D(-10, 0, 0, 0, 0, 0), dist);
   // Either it hits (dist>0) or, depending on face winding, might miss; just
   // exercise the code path without asserting a specific geometric result.
   (void)hit;
@@ -457,7 +509,11 @@ TEST(CPolyhedron, CreateNoCheckAndEmpty)
   ASSERT_TRUE(empty);
   EXPECT_EQ(empty->getNumberOfVertices(), 0u);
 
-  std::vector<TPoint3D> vertices{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+  std::vector<TPoint3D> vertices{
+      {0, 0, 0},
+      {1, 0, 0},
+      {0, 1, 0}
+  };
   std::vector<CPolyhedron::TPolyhedronFace> faces(1);
   faces[0].vertices = {0, 1, 2};
   auto p = CPolyhedron::CreateNoCheck(vertices, faces);
@@ -468,8 +524,14 @@ TEST(CPolyhedron, CreateNoCheckAndEmpty)
 TEST(CPolyhedron, ConstructFromVerticesAndFaceIndexLists)
 {
   std::vector<TPoint3D> vertices{
-      {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}};
-  std::vector<std::vector<uint32_t>> faces{{0, 1, 2, 3}};
+      {0, 0, 0},
+      {1, 0, 0},
+      {1, 1, 0},
+      {0, 1, 0}
+  };
+  std::vector<std::vector<uint32_t>> faces{
+      {0, 1, 2, 3}
+  };
   CPolyhedron p(vertices, faces);
   EXPECT_EQ(p.getNumberOfVertices(), 4u);
   EXPECT_EQ(p.getNumberOfFaces(), 1u);
@@ -477,7 +539,11 @@ TEST(CPolyhedron, ConstructFromVerticesAndFaceIndexLists)
 
 TEST(CPolyhedron, ConstructFromVertexAndFaceListThrowsOnBadIndex)
 {
-  std::vector<TPoint3D> vertices{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+  std::vector<TPoint3D> vertices{
+      {0, 0, 0},
+      {1, 0, 0},
+      {0, 1, 0}
+  };
   std::vector<CPolyhedron::TPolyhedronFace> faces(1);
   faces[0].vertices = {0, 1, 99};  // out-of-range vertex index
   EXPECT_THROW(CPolyhedron(vertices, faces, true), std::logic_error);

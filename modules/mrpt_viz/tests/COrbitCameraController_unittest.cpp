@@ -84,8 +84,7 @@ TEST(COrbitCameraController, MouseOrbitDrag)
   const float el0 = ctrl.getElevationDegrees();
 
   ctrl.onMouseButton(100, 100, COrbitCameraController::ButtonLeft, true);
-  ctrl.onMouseMove(
-      110, 90, COrbitCameraController::ButtonLeft, COrbitCameraController::ModNone);
+  ctrl.onMouseMove(110, 90, COrbitCameraController::ButtonLeft, COrbitCameraController::ModNone);
 
   // dx=10 -> azimuth decreases; dy=-10 -> elevation decreases
   EXPECT_LT(ctrl.getAzimuthDegrees(), az0);
@@ -99,8 +98,7 @@ TEST(COrbitCameraController, MouseZoomDragWithShift)
   COrbitCameraController ctrl;
   ctrl.setZoomDistance(15.f);
   ctrl.onMouseButton(0, 0, COrbitCameraController::ButtonLeft, true);
-  ctrl.onMouseMove(
-      0, 20, COrbitCameraController::ButtonLeft, COrbitCameraController::ModShift);
+  ctrl.onMouseMove(0, 20, COrbitCameraController::ButtonLeft, COrbitCameraController::ModShift);
   // dy=20 -> zoomDistance *= 1 + 0.2
   EXPECT_GT(ctrl.getZoomDistance(), 15.f);
 }
@@ -110,8 +108,7 @@ TEST(COrbitCameraController, MouseRotateDragWithControl)
   COrbitCameraController ctrl;
   const float az0 = ctrl.getAzimuthDegrees();
   ctrl.onMouseButton(0, 0, COrbitCameraController::ButtonLeft, true);
-  ctrl.onMouseMove(
-      15, 0, COrbitCameraController::ButtonLeft, COrbitCameraController::ModControl);
+  ctrl.onMouseMove(15, 0, COrbitCameraController::ButtonLeft, COrbitCameraController::ModControl);
   EXPECT_NE(ctrl.getAzimuthDegrees(), az0);
 }
 
@@ -128,14 +125,12 @@ TEST(COrbitCameraController, MousePanWithRightOrMiddleButton)
 {
   COrbitCameraController ctrl1;
   ctrl1.onMouseButton(0, 0, COrbitCameraController::ButtonRight, true);
-  ctrl1.onMouseMove(
-      10, 5, COrbitCameraController::ButtonRight, COrbitCameraController::ModNone);
+  ctrl1.onMouseMove(10, 5, COrbitCameraController::ButtonRight, COrbitCameraController::ModNone);
   EXPECT_TRUE(ctrl1.getCameraPointingX() != 0.f || ctrl1.getCameraPointingY() != 0.f);
 
   COrbitCameraController ctrl2;
   ctrl2.onMouseButton(0, 0, COrbitCameraController::ButtonMiddle, true);
-  ctrl2.onMouseMove(
-      -10, 5, COrbitCameraController::ButtonMiddle, COrbitCameraController::ModNone);
+  ctrl2.onMouseMove(-10, 5, COrbitCameraController::ButtonMiddle, COrbitCameraController::ModNone);
   EXPECT_TRUE(ctrl2.getCameraPointingX() != 0.f || ctrl2.getCameraPointingY() != 0.f);
 }
 
@@ -153,12 +148,10 @@ TEST(COrbitCameraController, MouseGlitchFilterResetsLargeJump)
   // No button-down event registered first: a big coordinate jump should be
   // absorbed by the glitch filter (first delta ~0) instead of producing a
   // huge orbit change.
-  ctrl.onMouseMove(
-      1000, 1000, COrbitCameraController::ButtonLeft, COrbitCameraController::ModNone);
+  ctrl.onMouseMove(1000, 1000, COrbitCameraController::ButtonLeft, COrbitCameraController::ModNone);
   const float az1 = ctrl.getAzimuthDegrees();
   // A small follow-up move should now produce a small, bounded change:
-  ctrl.onMouseMove(
-      1005, 1000, COrbitCameraController::ButtonLeft, COrbitCameraController::ModNone);
+  ctrl.onMouseMove(1005, 1000, COrbitCameraController::ButtonLeft, COrbitCameraController::ModNone);
   EXPECT_NEAR(ctrl.getAzimuthDegrees(), az1, 5.0f);
 }
 

@@ -212,7 +212,10 @@ TEST(Scene, SaveAndLoadFile)
   mrpt::system::deleteFile(file);
 }
 
-TEST(Scene, LoadNonExistentFileFails) { EXPECT_FALSE(Scene().loadFromFile("/no/such/file.3Dscene")); }
+TEST(Scene, LoadNonExistentFileFails)
+{
+  EXPECT_FALSE(Scene().loadFromFile("/no/such/file.3Dscene"));
+}
 
 TEST(Scene, StreamInsertOperator)
 {
@@ -379,4 +382,3 @@ TEST(Viewport, LightParameters)
   light.ssao_enabled = true;
   EXPECT_TRUE(vp->lightParameters().ssao_enabled);
 }
-
