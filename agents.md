@@ -219,8 +219,8 @@ colcon build --base-paths modules --cmake-args -DENABLE_COVERAGE=ON -DBUILD_TEST
 colcon test --base-paths modules
 gcovr --root . -j$(nproc) --gcov-ignore-parse-errors=all \
   --exclude-unreachable-branches --exclude-throw-branches \
-  --exclude '.*/3rdparty/.*' --exclude '.*/tests/.*' --exclude '.*_unittest\.cpp' \
-  --exclude '.*/python_bindings/.*' --exclude '.*/samples/.*' \
+  --exclude '.*/3rdparty/.*' --exclude '.*/stb/.*' --exclude '.*/tests/.*' \
+  --exclude '.*_unittest\.cpp' --exclude '.*/python_bindings/.*' --exclude '.*/samples/.*' \
   --json-pretty -o coverage.json build
 ```
 (`--gcov-ignore-parse-errors=all` is needed, not just `negative_hits.warn_once_per_file`:
@@ -321,9 +321,10 @@ and accurate path — pick two.
 | mrpt_typemeta | 57/57 | 100.0% | 85.1% |
 
 † `mrpt_img` vendors third-party `src/stb/*.h` (stb_image/stb_image_resize2/
-stb_image_write, public-domain), which is out of scope for tests and excluded
-from this row (module-scoped, first-party-only measurement, `--exclude
-'.*/stb/.*'` in addition to the usual filters). The 2026-07-10 pass also fixed
+stb_image_write, public-domain), which is out of scope for tests like any
+other 3rd-party code and is excluded via `--exclude '.*/stb/.*'`, now part of
+the standard reproduce command above (previously a module-scoped, one-off
+filter just for this row). The 2026-07-10 pass also fixed
 several bugs found via new tests: a bilinear-interpolation weight collapse and
 an off-by-one edge read in `CMappedImage::getPixel`, a hue wrap-around sign
 error in `rgb2hsv()`, a missing distortion-model assignment in one
