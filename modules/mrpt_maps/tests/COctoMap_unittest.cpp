@@ -209,6 +209,57 @@ TEST(COctoMapTests, GetAsOctoMapVoxels)
   EXPECT_NO_THROW(map.getAsOctoMapVoxels(voxels));
 }
 
+TEST(COctoMapTests, GetAsOctoMapVoxelsAllColoringModes)
+{
+  COctoMap map(0.1);
+  map.insertObservation(makeSimple3DScan());
+
+  for (const auto mode :
+       {mrpt::viz::COctoMapVoxels::COLOR_FROM_HEIGHT,
+        mrpt::viz::COctoMapVoxels::COLOR_FROM_OCCUPANCY,
+        mrpt::viz::COctoMapVoxels::TRANSPARENCY_FROM_OCCUPANCY,
+        mrpt::viz::COctoMapVoxels::TRANS_AND_COLOR_FROM_OCCUPANCY, mrpt::viz::COctoMapVoxels::MIXED,
+        mrpt::viz::COctoMapVoxels::FIXED})
+  {
+    mrpt::viz::COctoMapVoxels voxels;
+    voxels.setVisualizationMode(mode);
+    EXPECT_NO_THROW(map.getAsOctoMapVoxels(voxels));
+    EXPECT_GT(voxels.getVoxelCount(0) + voxels.getVoxelCount(1), 0u);
+  }
+}
+
+TEST(COctoMapTests, GetAsOctoMapVoxelsUnsupportedColorFromRGBDataThrows)
+{
+  COctoMap map(0.1);
+  map.insertObservation(makeSimple3DScan());
+
+  mrpt::viz::COctoMapVoxels voxels;
+  voxels.setVisualizationMode(mrpt::viz::COctoMapVoxels::COLOR_FROM_RGB_DATA);
+  EXPECT_THROW(map.getAsOctoMapVoxels(voxels), std::exception);
+}
+
+TEST(COctoMapTests, GetAsOctoMapVoxelsWithGridLines)
+{
+  COctoMap map(0.1);
+  map.insertObservation(makeSimple3DScan());
+  map.renderingOptions.generateGridLines = true;
+
+  mrpt::viz::COctoMapVoxels voxels;
+  EXPECT_NO_THROW(map.getAsOctoMapVoxels(voxels));
+}
+
+TEST(COctoMapTests, MetricSizeMinMaxConstOverloads)
+{
+  COctoMap map(0.1);
+  map.insertObservation(makeSimple3DScan());
+  const COctoMap& constMap = map;
+
+  double x, y, z;
+  EXPECT_NO_THROW(constMap.getMetricSize(x, y, z));
+  EXPECT_NO_THROW(constMap.getMetricMin(x, y, z));
+  EXPECT_NO_THROW(constMap.getMetricMax(x, y, z));
+}
+
 TEST(COctoMapTests, SaveMetricMapRepresentationToFile)
 {
   COctoMap map(0.1);

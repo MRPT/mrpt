@@ -366,6 +366,7 @@ class CDynamicGrid3D
     m_size_x = in.template ReadAs<uint32_t>();
     m_size_y = in.template ReadAs<uint32_t>();
     m_size_z = in.template ReadAs<uint32_t>();
+    m_size_x_times_y = m_size_x * m_size_y;
     m_map.resize(m_size_x * m_size_y * m_size_z);
   }
 

@@ -304,7 +304,7 @@ and accurate path — pick two.
 | mrpt_viz (2026-08-02) | 6449/9426 | 68.4% | 50.1% |
 | mrpt_rtti | 126/176 | 71.6% | 73.5% |
 | mrpt_serialization | 511/708 | 72.2% | 52.5% |
-| mrpt_maps (2026-07-17)§ | 7766/9356 | 83.0% | 59.6% |
+| mrpt_maps (2026-08-03)§ | 10127/11696 | 86.6% | 62.5% |
 | mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
 | mrpt_core | 541/628 | 86.1% | 64.8% |
 | mrpt_obs (2026-07-10) | 4631/5324 | 87.0% | 56.1% |
@@ -431,11 +431,72 @@ surviving new files and fixing the crashes/config bugs above, a second,
 solo pass covered the remaining gaps the fleet never reached
 (`CColouredOctoMap`, `COctoMap`, `CVoxelMap`/`CVoxelMapRGB`/
 `CVoxelMapOccupancyBase`, `COccupancyGridMap3D`, `CMultiMetricMap` extra
-coverage, and a new `CPlanarLaserScan` test file). Remaining gaps below
-~55%: `COccupancyGridMap2D_io.cpp`, `_getAs.cpp`, `_simulate.cpp` (ROS
-map-server YAML I/O and bitmap-image save/load paths), `CVoxelMapBase.h`,
-and `NearestNeighborsCapable.h`/`COctoMap.h`/`CColouredOctoMap.h` (header-only
-inline accessors, low line count but currently 0-50%).
+coverage, and a new `CPlanarLaserScan` test file).
+
+`mrpt_maps` was further raised from 83.0%/59.6% to 86.6%/62.5% on 2026-08-03
+(pass 3), targeting the lowest-coverage files remaining after pass 2:
+`COccupancyGridMap2D_getAs.cpp` (49%→96%, all `TGetAsImageParams` combinations,
+`getAsImageFiltered()`'s gaussian/median filter branches, `getVisualizationInto()`
+enabled/disabled, `getAsPointCloud()` border-cell selection), `_io.cpp`
+(55%→93%, bitmap save/load round-trip, `loadFromBitmap()`'s centered-origin
+sentinel, `saveAsBitmapTwoMapsWithCorrespondences()`,
+`saveMetricMapRepresentationToFile()`, and the ROS map-server YAML `scale`/
+`negate`/missing-image/invalid-`mode` branches, using new fixture files
+`yaml_32_{scale,negate,badmode,missing_image}.yaml`), `_simulate.cpp`
+(53%→100%, out-of-range/short-max-range rays, noisy rays,
+`laserScanSimulator()` decimation, `laserScanSimulatorWithUncertainty()` for
+both `sumUnscented`/`sumMonteCarlo` and its unknown-method throw path),
+`_likelihood.cpp` (80%→90%, a parameterized test now drives all 7
+`TLikelihoodMethod` values through the real public dispatch instead of only
+`lmLikelihoodField_Thrun`/`_II`), `COctoMap.cpp` (75%→94%, all 7
+`COctoMapVoxels::visualization_mode_t` coloring branches plus
+`generateGridLines` and the const `getMetricSize/Min/Max` overloads),
+`CVoxelMapRGB.cpp` (76%→91%, serialization round-trip,
+`remove_voxels_farther_than`, the `ray_trace_free_space` toggle, an empty-3D-scan
+early return), `CRandomFieldGridMap3D.cpp` (79%→92%, `TInsertionOptions`
+load/dump, `saveAsCSV()` with both mean+stddev files and its failure path,
+serialization round-trip, `insertIndividualReading(..., update_map=true)`),
+and `CPointsMap_crtp_common.h` (68%→97%, the `CObservation3DRangeScan`
+overload of `loadFromRangeScan()` — `insertInvalidPoints` and the
+no-points-3D early return — which no test in the module exercised at all
+before this pass). A parallel 5-agent test-writing fleet was used for the
+first half of this pass; all 5 hit the account's session usage limit
+mid-task (same failure mode as the 8-agent fleet in pass 2), but each
+agent's already-applied file edits survived intact — a solo pass then fixed
+the resulting test failures and covered the remaining gaps (`_io.cpp`,
+`COctoMap.cpp`'s coloring-mode variants, `CRandomFieldGridMap3D.cpp`,
+`CPointsMap_crtp_common.h`'s 3D-scan overload, and a small voronoi
+three-way-junction/isolated-obstacle addition). Two new `_unittest.cpp`
+files (`COccupancyGridMap2D_getAs_unittest.cpp`, `_io_unittest.cpp`) had to
+be added by hand to `mrpt_maps/CMakeLists.txt`'s explicit
+`LIB_UNIT_TEST_SOURCES` list — unlike some other modules, this list is not
+glob-based, so a new `*_unittest.cpp` file silently never runs (and never
+moves the coverage numbers) until it's registered there. Real bugs found
+and fixed along the way: (1) `CDynamicGrid3D::dyngridcommon_readFromStream()`
+(`mrpt_containers`, used by `CRandomFieldGridMap3D` and `CLogOddsGridMap3D`)
+updated `m_size_x`/`m_size_y`/`m_size_z` from the stream but never recomputed
+the cached `m_size_x_times_y` z-axis stride, so deserializing into an object
+whose grid dimensions differ from what it had before (e.g. any freshly
+default-constructed object) left cell-index lookups using a stale stride,
+silently reading out-of-bounds heap memory instead of the intended cell — a
+memory-safety bug, not just wrong data; (2)
+`COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA()` had its
+"is this a `CObservation2DRangeScan`?" branch condition inverted
+(`if (IS_CLASS(...))` instead of `if (!IS_CLASS(...))`), so the method
+returned a constant `1e-3` fallback for its only supported observation type
+and fell through to an unconditional `dynamic_cast`-triggered `bad_cast` for
+every other type — `lmConsensusOWA` was completely non-functional before this
+fix; (3) `TLaserSimulUncertaintyParams::method`'s doc comment claimed the
+default was `sumMonteCarlo` while the member initializer actually defaults to
+`sumUnscented` (doc-only fix). `computeObservationLikelihood_ConsensusOWA()`
+also has two more `ASSERT_`-guarded preconditions that are easy to trip by
+accident rather than fix (a hot likelihood-evaluation path, same "too risky
+to patch without dedicated validation" reasoning as `determineMatching2D`
+above): `OWA_weights.size()` must not exceed the scan's point count (default
+is 100 weights), and every scan point, when re-projected from whatever pose
+is being evaluated, must land within the grid bounds or a `nCells > 0` assert
+fires — the affected tests use a generously oversized grid and a smaller
+`OWA_weights` vector to stay clear of both, rather than patching the source.
 
 `mrpt_viz` was raised from 29.5%/17.3% (2026-07-03 baseline) to 68.4%/50.1% on
 2026-08-02. `mrpt_viz` has zero OpenGL dependency (it's the abstract scene-graph

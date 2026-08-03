@@ -686,3 +686,44 @@ TEST(COccupancyGridMap2DTests, BuildVoronoiDiagramOnSubRegion)
   EXPECT_NO_THROW(grid.buildVoronoiDiagram(0.5f, 0.0f, 2, N - 3, 2, N - 3));
   EXPECT_EQ(grid.getVoronoiDiagram().getSizeX(), grid.getSizeX());
 }
+
+TEST(COccupancyGridMap2DTests, FindCriticalPointsWithThreeWayJunction)
+{
+  // Square map (size_x == size_y), see the note above about the legacy
+  // stride assumption for non-square maps.
+  // A "T" shaped free-space region (a horizontal corridor plus a vertical
+  // branch going down from its middle) produces more than one critical
+  // point, unlike the single-corridor case already covered above.
+  const float res = 0.10f;
+  const int N = 21;
+
+  COccupancyGridMap2D grid(0.0f, N * res, 0.0f, N * res, res);
+  ASSERT_EQ(static_cast<int>(grid.getSizeX()), N);
+  ASSERT_EQ(static_cast<int>(grid.getSizeY()), N);
+
+  grid.fill(0.0f);  // all occupied
+
+  // Horizontal corridor across the middle row:
+  for (int x = 0; x < N; x++) grid.setCell(x, N / 2, 1.0f);
+  // Vertical branch going down from the corridor's midpoint:
+  for (int y = 0; y <= N / 2; y++) grid.setCell(N / 2, y, 1.0f);
+
+  grid.buildVoronoiDiagram(0.5f, 0.0f);
+  EXPECT_NO_THROW(grid.findCriticalPoints(0.5f));
+}
+
+TEST(COccupancyGridMap2DTests, BuildVoronoiDiagramWithIsolatedPointObstacle)
+{
+  const float res = 0.10f;
+  const int N = 21;
+
+  COccupancyGridMap2D grid(0.0f, N * res, 0.0f, N * res, res);
+  grid.fill(1.0f);  // all free
+
+  // A single isolated occupied cell, not a wall, in the middle of free
+  // space:
+  grid.setCell(N / 2, N / 2, 0.0f);
+
+  EXPECT_NO_THROW(grid.buildVoronoiDiagram(0.5f, 0.0f));
+  EXPECT_NO_THROW(grid.findCriticalPoints(0.5f));
+}

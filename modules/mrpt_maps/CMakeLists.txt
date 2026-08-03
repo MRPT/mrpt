@@ -70,6 +70,8 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CObservationRotatingScan_unittest.cpp
   tests/COccupancyGridMap2D_unittest.cpp
   tests/COccupancyGridMap2D_serialization_unittest.cpp
+  tests/COccupancyGridMap2D_getAs_unittest.cpp
+  tests/COccupancyGridMap2D_io_unittest.cpp
   tests/COccupancyGridMap2D_simulate_unittest.cpp
   tests/COccupancyGridMap2D_likelihood_unittest.cpp
   tests/COccupancyGridMap2D_matching_unittest.cpp

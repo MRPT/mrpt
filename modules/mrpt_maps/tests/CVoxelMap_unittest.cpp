@@ -23,6 +23,7 @@
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/viz/COctoMapVoxels.h>
 
 #include <sstream>
 
@@ -476,4 +477,135 @@ prob_hit=0.85
   auto map = CVoxelMapRGB::CreateFromMapDefinition(def);
   ASSERT_NE(map, nullptr);
   EXPECT_NEAR(map->insertionOptions.prob_hit, 0.85, 1e-6);
+}
+
+// =========================================================================
+//  CVoxelMapRGB: serialization round-trip, remove_voxels_farther_than,
+//  ray_trace_free_space toggle, empty 3D scan, TMapDefinition dump
+// =========================================================================
+
+TEST(CVoxelMapRGB, SerializeRoundTrip)
+{
+  CVoxelMapRGB src(0.1);
+  ASSERT_TRUE(src.insertObservation(makeRangeImageScan()));
+  ASSERT_FALSE(src.isEmpty());
+
+  mrpt::io::CMemoryStream buf;
+  {
+    auto ar = mrpt::serialization::archiveFrom(buf);
+    ar << src;
+  }
+  buf.Seek(0);
+
+  mrpt::serialization::CSerializable::Ptr obj;
+  {
+    auto ar = mrpt::serialization::archiveFrom(buf);
+    ar >> obj;
+  }
+  auto* dst = dynamic_cast<CVoxelMapRGB*>(obj.get());
+  ASSERT_NE(dst, nullptr);
+  EXPECT_FALSE(dst->isEmpty());
+
+  // Compare occupancy at a known occupied voxel (whichever one was reported
+  // by the source map, so the test does not depend on the exact projection
+  // geometry of the range image):
+  auto occSrc = src.getOccupiedVoxels();
+  ASSERT_GT(occSrc->size(), 0u);
+  EXPECT_EQ(occSrc->size(), dst->getOccupiedVoxels()->size());
+
+  const auto& xs = occSrc->getPointsBufferRef_x();
+  const auto& ys = occSrc->getPointsBufferRef_y();
+  const auto& zs = occSrc->getPointsBufferRef_z();
+
+  double probSrc = 0;
+  double probDst = 0;
+  ASSERT_TRUE(src.getPointOccupancy(xs[0], ys[0], zs[0], probSrc));
+  ASSERT_TRUE(dst->getPointOccupancy(xs[0], ys[0], zs[0], probDst));
+  EXPECT_NEAR(probSrc, probDst, 1e-6);
+
+  // Compare per-voxel colour data round-tripped through the RGB-from-data
+  // rendering path (CVoxelMapRGB has no direct public colour getter):
+  mrpt::viz::COctoMapVoxels voxelsSrc;
+  mrpt::viz::COctoMapVoxels voxelsDst;
+  voxelsSrc.setVisualizationMode(mrpt::viz::COctoMapVoxels::COLOR_FROM_RGB_DATA);
+  voxelsDst.setVisualizationMode(mrpt::viz::COctoMapVoxels::COLOR_FROM_RGB_DATA);
+  src.getAsOctoMapVoxels(voxelsSrc);
+  dst->getAsOctoMapVoxels(voxelsDst);
+
+  ASSERT_GT(voxelsSrc.getVoxelCount(0), 0u);
+  ASSERT_EQ(voxelsSrc.getVoxelCount(0), voxelsDst.getVoxelCount(0));
+  const auto& vSrc = voxelsSrc.getVoxel(0, 0);
+  const auto& vDst = voxelsDst.getVoxel(0, 0);
+  EXPECT_EQ(vSrc.color.R, vDst.color.R);
+  EXPECT_EQ(vSrc.color.G, vDst.color.G);
+  EXPECT_EQ(vSrc.color.B, vDst.color.B);
+}
+
+TEST(CVoxelMapRGB, RemoveVoxelsFartherThanResetsFarVoxels)
+{
+  CVoxelMapRGB m(0.1);
+  m.insertionOptions.remove_voxels_farther_than = 0.5;
+
+  // Occupy a voxel that will end up far from the next sensor position:
+  m.updateVoxel(5.0, 0.0, 0.0, true);
+
+  double probBefore = 0;
+  ASSERT_TRUE(m.getPointOccupancy(5.0, 0.0, 0.0, probBefore));
+  EXPECT_GT(probBefore, 0.5);
+
+  // Insert a generic observation from a sensor placed far from that voxel:
+  // this exercises the "remove_voxels_farther_than" pruning pass, which
+  // resets the occupancy of far voxels back to log-odds zero (i.e. an
+  // "unseen" 0.5 probability), rather than erasing them from the grid.
+  auto pc = mrpt::maps::CSimplePointsMap::Create();
+  pc->insertPoint(0.05f, 0.0f, 0.0f);
+
+  mrpt::obs::CObservationPointCloud obs;
+  obs.pointcloud = pc;
+  obs.sensorPose = mrpt::poses::CPose3D::Identity();
+
+  EXPECT_TRUE(m.insertObservation(obs));
+
+  double probAfter = 0;
+  ASSERT_TRUE(m.getPointOccupancy(5.0, 0.0, 0.0, probAfter));
+  EXPECT_NEAR(probAfter, 0.5, 1e-3);
+}
+
+TEST(CVoxelMapRGB, InsertGenericObservationAsEndPoints)
+{
+  // The existing "InsertGeneric2DScanObservation" test uses the default
+  // ray_trace_free_space=true (insertPointCloudAsRays); this one covers the
+  // complementary insertPointCloudAsEndPoints branch.
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+
+  CVoxelMapRGB m(0.1);
+  m.insertionOptions.ray_trace_free_space = false;
+  EXPECT_TRUE(m.insertObservation(scan1));
+  EXPECT_FALSE(m.isEmpty());
+}
+
+TEST(CVoxelMapRGB, Insert3DScanNoPointsReturnsFalse)
+{
+  CVoxelMapRGB m(0.1);
+  mrpt::obs::CObservation3DRangeScan noPoints;
+  noPoints.hasPoints3D = false;
+  noPoints.hasRangeImage = false;
+  EXPECT_FALSE(m.insertObservation(noPoints));
+  EXPECT_TRUE(m.isEmpty());
+}
+
+TEST(CVoxelMapRGB, DumpToTextStreamMapSpecificContainsResolution)
+{
+  const mrpt::config::CConfigFileMemory cfg(R""""(
+[map_voxelrgb_01_creationOpts]
+resolution=0.25
+)"""");
+
+  CVoxelMapRGB::TMapDefinition def;
+  def.loadFromConfigFile(cfg, "map_voxelrgb_01");
+
+  std::ostringstream ss;
+  def.dumpToTextStream(ss);
+  EXPECT_NE(ss.str().find("resolution"), std::string::npos);
 }

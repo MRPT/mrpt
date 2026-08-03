@@ -845,7 +845,7 @@ class COccupancyGridMap2D :
   /** Input params for laserScanSimulatorWithUncertainty() */
   struct TLaserSimulUncertaintyParams
   {
-    /** (Default: sumMonteCarlo) Select the method to do the uncertainty
+    /** (Default: sumUnscented) Select the method to do the uncertainty
      * propagation */
     TLaserSimulUncertaintyMethod method{sumUnscented};
     /** @name Parameters for each uncertainty method

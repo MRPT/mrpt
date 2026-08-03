@@ -17,6 +17,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
@@ -1373,4 +1374,55 @@ TEST(CSimplePointsMapTests, insert2DScanWithInterpolation)
 
   // Interpolation may add extra points between consecutive scan readings:
   EXPECT_GE(pnt.size(), 267u);
+}
+
+// ----------------------------------------------------------------------
+// Tests for the CObservation3DRangeScan overload of loadFromRangeScan()
+// (CPointsMap_crtp_common.h), which is not exercised by any 2D-scan test
+// above.
+// ----------------------------------------------------------------------
+
+namespace
+{
+mrpt::obs::CObservation3DRangeScan make3DScanWithInvalidPoints()
+{
+  mrpt::obs::CObservation3DRangeScan obs;
+  obs.hasPoints3D = true;
+  obs.points3D_x = {1.0f, 0.0f, 2.0f};
+  obs.points3D_y = {1.0f, 0.0f, 2.0f};
+  obs.points3D_z = {1.0f, 0.0f, 2.0f};  // The 2nd point (0,0,0) is "invalid".
+  return obs;
+}
+}  // namespace
+
+TEST(CSimplePointsMapTests, load3DScanExcludesInvalidPointsByDefault)
+{
+  CSimplePointsMap pnt;
+  pnt.insertionOptions.insertInvalidPoints = false;
+
+  const auto obs = make3DScanWithInvalidPoints();
+  pnt.loadFromRangeScan(obs, std::nullopt);
+
+  EXPECT_EQ(pnt.size(), 2u);
+}
+
+TEST(CSimplePointsMapTests, load3DScanIncludesInvalidPointsWhenEnabled)
+{
+  CSimplePointsMap pnt;
+  pnt.insertionOptions.insertInvalidPoints = true;
+
+  const auto obs = make3DScanWithInvalidPoints();
+  pnt.loadFromRangeScan(obs, std::nullopt);
+
+  EXPECT_EQ(pnt.size(), 3u);
+}
+
+TEST(CSimplePointsMapTests, load3DScanWithNoPointsDoesNothing)
+{
+  CSimplePointsMap pnt;
+  mrpt::obs::CObservation3DRangeScan obs;
+  obs.hasPoints3D = false;
+
+  pnt.loadFromRangeScan(obs, std::nullopt);
+  EXPECT_EQ(pnt.size(), 0u);
 }
