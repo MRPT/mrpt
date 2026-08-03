@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.15.20: Released Jul 3rd, 2026
+- re-release needed to unvendor nanoflann in mrpt_ros
+
 # Version 2.15.19: Released Jul 3rd, 2026
 - fix(system): correct dangling-pointer bug in COutputLogger::logDeregisterCallback
 - fix(system): guard COutputLogger's callback list against concurrent register/log
