@@ -29,7 +29,7 @@
   <!-- kd-trees: vendored version preferred, more up-to-date than libnanoflann-dev, embedded copy as fallback.
        Exposed in the public header KDTreeCapable.h and re-exported via mrpt_math-config.cmake's
        find_dependency(nanoflann), so downstream packages need it too: must be `depend`, not `build_depend`. -->
-  <depend>nanoflann</depend>
+  <depend>nanoflann_vendor</depend>
 
 
   <export>
