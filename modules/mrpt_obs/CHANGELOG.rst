@@ -2,8 +2,8 @@
 Changelog for package mrpt_obs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.3 (2026-08-12)
+------------------
 * fix: TOPCON doc sign convention, test state leak.
 * fix(mrpt_obs): add missing explicit template instantiations for TPixelLabelInfo stream I/O.
 * mrpt_obs: increase code coverage and fix bugs across multiple observation classes.

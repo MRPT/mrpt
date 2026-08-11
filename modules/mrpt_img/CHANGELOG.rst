@@ -2,8 +2,8 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.3 (2026-08-12)
+------------------
 * fix(mrpt_img): add missing <algorithm> include for std::min/max initializer-list overloads.
 * mrpt_img: increase code coverage and fix bugs.
   Add tests across CImage, drawing primitives, and camera classes. Fix bugs in CMappedImage interpolation, RGB-to-HSV conversion, undistort_points, FFT cross-correlation, KLT bounds, and JPEG stream saving.

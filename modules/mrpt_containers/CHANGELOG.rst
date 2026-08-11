@@ -2,8 +2,8 @@
 Changelog for package mrpt_containers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.3 (2026-08-12)
+------------------
 * test(mrpt_maps): raise unit test coverage for occupancy grids and maps. Fix out-of-bounds reads in CDynamicGrid3D and invert check in computeObservationLikelihood_ConsensusOWA().
 * fix(mrpt_containers): guard ts_hash_map self-assignment; extend tests.
 * perf(mrpt_system): minimize CTimeLogger enter()/leave() overhead.

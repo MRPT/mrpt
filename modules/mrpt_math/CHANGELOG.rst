@@ -2,8 +2,8 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.3 (2026-08-12)
+------------------
 * mrpt_math: depend on nanoflann_vendor instead of nanoflann
   The nanoflann rosdep key resolves to the distro's own libnanoflann-dev,
   so it can never select a newer vendored version. Switch to the new

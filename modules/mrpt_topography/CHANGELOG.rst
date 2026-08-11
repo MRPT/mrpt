@@ -2,8 +2,8 @@
 Changelog for package mrpt_topography
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.3 (2026-08-12)
+------------------
 * fix: TOPCON doc sign convention, test state leak.
 * mrpt_topography: increase code coverage and fix bugs in conversions and transforms.
   Fix bugs in geodeticToUTM false northing, geocentricToGeodetic pole singularities, transformHelmert3D unit scaling, and ENUToGeocentric reference axis.

@@ -2,8 +2,8 @@
 Changelog for package mrpt_graphslam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.3 (2026-08-12)
+------------------
 * fix(mrpt_graphslam): match fully-qualified class names for constraint-type whitelist. Skip RGBD-TUM info parsing when rawlog is empty.
 * Contributors: Jose Luis Blanco-Claraco
 

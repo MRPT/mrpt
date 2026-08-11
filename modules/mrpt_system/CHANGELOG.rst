@@ -2,8 +2,8 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.3 (2026-08-12)
+------------------
 * perf(mrpt_system): minimize CTimeLogger enter()/leave() overhead.
 * fix(mrpt_system): make CTimeLogger reporting thread-safe vs. concurrent logging.
 * fix(mrpt_system): fix GetTempPathA/GetTempFileNameA return value checking and duplicate temp paths on Windows.

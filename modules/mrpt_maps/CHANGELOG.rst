@@ -2,8 +2,8 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.3 (2026-08-12)
+------------------
 * test(mrpt_maps): raise unit test coverage for occupancy grids and fix minor bugs.
 * fix(mrpt_maps): make CPointsMap/CGenericPointsMap tests build on MSVC.
 * test(mrpt_maps): extend coverage to octomap, voxelmap, occ3d, and multimap.
