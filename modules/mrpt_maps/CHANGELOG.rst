@@ -2,6 +2,15 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* test(mrpt_maps): raise unit test coverage for occupancy grids and fix minor bugs.
+* fix(mrpt_maps): make CPointsMap/CGenericPointsMap tests build on MSVC.
+* test(mrpt_maps): extend coverage to octomap, voxelmap, occ3d, and multimap.
+* test(mrpt_maps): raise unit-test coverage for random field grids, gas grids, and fix Voronoi clearance pointer issues.
+* fix: COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream bug.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 

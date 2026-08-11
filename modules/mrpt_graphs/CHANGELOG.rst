@@ -2,6 +2,9 @@
 Changelog for package mrpt_graphs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.1.2 (2026-07-07)
 ------------------
 * Fix undefined behavior in ``connectGraphPartitions()``'s overlap check

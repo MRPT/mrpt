@@ -2,6 +2,14 @@
 Changelog for package mrpt_obs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix: TOPCON doc sign convention, test state leak.
+* fix(mrpt_obs): add missing explicit template instantiations for TPixelLabelInfo stream I/O.
+* mrpt_obs: increase code coverage and fix bugs across multiple observation classes.
+  Fix bugs in CSensoryFrame erase, Velodyne YAML loading, GNSS message types, 3D range scan loading, and 2D scan conversion.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 

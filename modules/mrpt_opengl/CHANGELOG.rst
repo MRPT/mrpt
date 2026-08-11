@@ -2,6 +2,13 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* test(mrpt_viz): add extensive unit test coverage for mrpt::viz classes.
+  Fix bugs in CPolyhedron init, PLY importer, and CMesh3D triangle face-normal computation.
+* test(mrpt_viz, mrpt_opengl): add framebuffer regression tests for all drawing primitives.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 

@@ -2,6 +2,12 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* test(mrpt_viz): add extensive unit test coverage for mrpt::viz classes.
+  Fix bugs in CPolyhedron init, PLY importer, and CMesh3D triangle face-normal computation.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 

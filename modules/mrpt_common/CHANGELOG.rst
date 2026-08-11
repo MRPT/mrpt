@@ -2,6 +2,11 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* cmake: skip building tests on the ROS build farm's dev jobs to prevent timeouts. Use -DMRPT_FORCE_TESTS_ON_ROS_BUILDFARM=ON to override.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 
