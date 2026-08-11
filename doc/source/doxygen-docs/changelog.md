@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.15.21: Released Aug 11th, 2026
+- No real changes. Release needed to port deps to nanoflann_vendor in mrpt_ros
+
 # Version 2.15.20: Released Jul 3rd, 2026
 - re-release needed to unvendor nanoflann in mrpt_ros
 
