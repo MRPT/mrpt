@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.15.22: UNRELEASED
+- fix(core): correct unsigned-wraparound bug in Clock::toDouble() that returned a huge bogus positive value (~+1.8e12) for any timestamp before 1970-01-01, instead of a small negative number
+- fix(core): avoid undefined behavior in Clock::fromDouble() for negative/near-epoch timestamps (backport of develop's b9e4174a)
+
 # Version 2.15.21: Released Aug 11th, 2026
 - No real changes. Release needed to port deps to nanoflann_vendor in mrpt_ros
 
