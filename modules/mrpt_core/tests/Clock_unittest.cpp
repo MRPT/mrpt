@@ -137,6 +137,50 @@ TEST(clock, fromDouble_negativeAndNearEpoch)
   EXPECT_NEAR(mrpt::Clock::toDouble(tm1) - mrpt::Clock::toDouble(tm2), 1e-3, 1e-9);
 }
 
+TEST(clock, toDouble_preEpoch)
+{
+  // Regression test for an unsigned-wraparound bug: toDouble() used to
+  // compute `t.time_since_epoch().count() - UINT64_C(116444736) *
+  // UINT64_C(1000000000)` where both operands got promoted to uint64_t, even
+  // though `count()` is a *signed* int64_t. For any tick count before the
+  // 1970-01-01 UNIX epoch, the subtraction wrapped around and toDouble()
+  // returned ~+1.8e12 instead of a small negative number. This single-value
+  // check (as opposed to a difference of two toDouble() calls) is essential:
+  // a difference cancels the 2^64 wraparound and would pass even with the
+  // bug present.
+  const auto tm2ms = mrpt::Clock::fromDouble(-2e-3);
+  const double back = mrpt::Clock::toDouble(tm2ms);
+
+  EXPECT_NEAR(back, -2e-3, 1e-6);
+  EXPECT_LT(back, 0.0);
+  EXPECT_LT(std::abs(back), 1.0);  // must NOT be ~1.8e12
+}
+
+TEST(clock, toDouble_monotonicAcrossEpoch)
+{
+  // toDouble() must be strictly increasing across the 1601->1970 epoch
+  // boundary, i.e. no wraparound discontinuity for pre-epoch instants.
+  const double doubles[] = {-2e-3, -1e-3, 0.0, 1e-3, 1.0, 100.0};
+  double prev = mrpt::Clock::toDouble(mrpt::Clock::fromDouble(doubles[0]));
+  for (size_t i = 1; i < sizeof(doubles) / sizeof(doubles[0]); i++)
+  {
+    const double cur = mrpt::Clock::toDouble(mrpt::Clock::fromDouble(doubles[i]));
+    EXPECT_GT(cur, prev) << "i=" << i;
+    prev = cur;
+  }
+}
+
+TEST(clock, fromDouble_toDouble_roundtrip_negativeZeroPositive)
+{
+  // Round trip for negative, zero, and positive UNIX timestamps.
+  const double timestamps[] = {-100.0, -1.0, -1e-3, 0.0, 1e-3, 1.0, 100.0};
+  for (const double t : timestamps)
+  {
+    const double back = mrpt::Clock::toDouble(mrpt::Clock::fromDouble(t));
+    EXPECT_NEAR(back, t, 1e-6) << "t=" << t;
+  }
+}
+
 TEST(clock, simulatedTime)
 {
   const auto t0 = mrpt::Clock::now();
