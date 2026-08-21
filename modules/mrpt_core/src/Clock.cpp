@@ -203,7 +203,17 @@ double mrpt::Clock::toDouble(const mrpt::Clock::time_point t) noexcept
     return .0;  // invalid time point
   }
 
-  return (static_cast<double>(t.time_since_epoch().count()) - 116444736e9) / 10000000.0;
+  // Offset between the 1601-01-01 epoch used by Clock::duration and the
+  // 1970-01-01 UNIX epoch, in 100-nanosecond ticks.
+  constexpr int64_t UNIX_EPOCH_OFFSET = INT64_C(116444736) * INT64_C(1000000000);
+
+  // Note: the subtraction below must be done in a floating-point (signed)
+  // domain. `t.time_since_epoch().count()` is a signed int64_t, so this is
+  // already the case here; do not change either operand to an unsigned type,
+  // or the result would wrap around for any t before 1970-01-01.
+  return (static_cast<double>(t.time_since_epoch().count()) -
+          static_cast<double>(UNIX_EPOCH_OFFSET)) /
+         10000000.0;
 }
 
 void mrpt::Clock::setActiveClock(Source s)

@@ -27,6 +27,7 @@
 #include <mrpt/system/os.h>
 
 #include <CLI/CLI.hpp>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
