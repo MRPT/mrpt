@@ -126,10 +126,28 @@ TEST(vector_loadsave, file_get_contents_returns_the_whole_file)
   TempFile f;
   const std::string content = "line one\nline two\n";
   {
-    std::ofstream o(f.path());
+    // Binary mode on purpose: file_get_contents() reads the raw bytes, so a
+    // text-mode write would translate "\n" to "\r\n" on Windows and the
+    // comparison below would be off by one byte per line.
+    std::ofstream o(f.path(), std::ios::binary);
     o << content;
   }
   EXPECT_EQ(file_get_contents(f.path()), content);
+}
+
+TEST(vector_loadsave, file_get_contents_is_byte_exact)
+{
+  TempFile f;
+  // Bytes that a text-mode round-trip would mangle or truncate:
+  const std::string content("a\r\nb\0c\x1a" "d", 8);
+  {
+    std::ofstream o(f.path(), std::ios::binary);
+    o.write(content.data(), static_cast<std::streamsize>(content.size()));
+  }
+
+  const std::string back = file_get_contents(f.path());
+  EXPECT_EQ(back.size(), content.size());
+  EXPECT_EQ(back, content);
 }
 
 TEST(vector_loadsave, file_get_contents_throws_for_a_missing_file)
