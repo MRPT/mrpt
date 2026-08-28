@@ -63,7 +63,9 @@ std::optional<size_t> CMultiObjectiveMotionOptimizerBase::decide(
         }
         catch (std::exception&)
         {
-          m_score_exprs.clear();
+          // Drop *all* cached expression state: score names already registered
+          // as variables would make the next decide() throw.
+          this->clear();
           return std::nullopt;  // no good motion in this case
         }
 
@@ -101,7 +103,7 @@ std::optional<size_t> CMultiObjectiveMotionOptimizerBase::decide(
         }
         catch (std::exception&)
         {
-          m_movement_assert_exprs.clear();
+          this->clear();
           return std::nullopt;  // no good motion in this case
         }
       }

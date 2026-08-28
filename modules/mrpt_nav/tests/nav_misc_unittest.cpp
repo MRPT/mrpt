@@ -678,6 +678,28 @@ TEST(MultiObjOpt, a_score_formula_that_cannot_be_compiled_yields_no_decision)
   EXPECT_FALSE(best.has_value());
 }
 
+TEST(MultiObjOpt, a_failed_compilation_leaves_no_stale_state_behind)
+{
+  CMultiObjMotionOpt_Scalarization opt;
+  opt.parameters.formula_score.clear();
+  // The first score compiles, the second does not: the names registered while
+  // compiling the first must not survive into the next decide().
+  opt.parameters.formula_score["aaa_ok"] = "collision_free_distance";
+  opt.parameters.formula_score["zzz_bad"] = "***not valid***";
+  opt.parameters.scores_to_normalize.clear();
+  opt.parameters.scalar_score_formula = "aaa_ok";
+
+  std::vector<TCandidateMovementPTG> movs{make_candidate(1.0, 1.0)};
+
+  CMultiObjectiveMotionOptimizerBase::TResultInfo info;
+  EXPECT_FALSE(opt.decide(movs, info).has_value());
+
+  // Repairing the formula must make the optimizer usable again:
+  opt.parameters.formula_score["zzz_bad"] = "clearance";
+  CMultiObjectiveMotionOptimizerBase::TResultInfo info2;
+  EXPECT_TRUE(opt.decide(movs, info2).has_value());
+}
+
 TEST(MultiObjOpt, a_movement_assert_that_cannot_be_compiled_yields_no_decision)
 {
   CMultiObjMotionOpt_Scalarization opt;

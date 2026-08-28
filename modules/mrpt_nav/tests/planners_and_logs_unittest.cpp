@@ -27,6 +27,7 @@
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/viz/Scene.h>
 
 using namespace mrpt::nav;
@@ -64,7 +65,8 @@ void setup_planner(PlannerRRT_SE2_TPS& planner, const char* cfgText)
   planner.end_criteria.maxComputationTime = 1.0;
   planner.end_criteria.acceptedDistToTarget = 0.4;
   planner.params.ptg_verbose = false;
-  planner.params.ptg_cache_files_directory = "/tmp";
+  planner.params.ptg_cache_files_directory =
+      mrpt::system::extractFileDirectory(mrpt::system::getTempFileName());
   planner.initialize();
 }
 
