@@ -66,6 +66,11 @@ double TSlidingWindow::getMean()
   }
   else
   {
+    if (m_measurements_vec.empty())
+    {
+      return 0.0;  // undefined: report a neutral value instead of a NaN
+    }
+
     mean_out = std::accumulate(m_measurements_vec.begin(), m_measurements_vec.end(), 0.0);
     mean_out /= static_cast<double>(m_measurements_vec.size());
 
@@ -89,6 +94,11 @@ double TSlidingWindow::getStdDev()
   }
   else
   {
+    if (m_measurements_vec.empty())
+    {
+      return 0.0;  // undefined: report a neutral value instead of a NaN
+    }
+
     double mean = this->getMean();
 
     double sum_of_sq_diffs = 0;
@@ -96,7 +106,10 @@ double TSlidingWindow::getStdDev()
     {
       sum_of_sq_diffs += std::pow(*it - mean, 2);
     }
-    std_dev_out = sqrt(sum_of_sq_diffs / static_cast<double>(m_win_size));
+    // Normalize by the number of measurements actually held, not by the
+    // window capacity: otherwise a partially-filled window under-reports the
+    // deviation (and disagrees with getMean(), which uses the sample count).
+    std_dev_out = sqrt(sum_of_sq_diffs / static_cast<double>(m_measurements_vec.size()));
 
     m_std_dev_cached = std_dev_out;
     m_std_dev_updated = true;
@@ -166,12 +179,16 @@ void TSlidingWindow::resizeWindow(size_t new_size)
     m_measurements_vec.erase(
         m_measurements_vec.begin(),
         m_measurements_vec.begin() + static_cast<std::ptrdiff_t>(curr_size - new_size));
-
-    m_mean_updated = false;
-    m_median_updated = false;
   }
 
   m_win_size = new_size;
+
+  // Any cached statistic may now be stale, whether the window shrank (the
+  // measurements changed) or grew (they did not, but a cached value computed
+  // under the old capacity must not be handed out again).
+  m_mean_updated = false;
+  m_median_updated = false;
+  m_std_dev_updated = false;
 
   MRPT_END
 }
