@@ -139,7 +139,10 @@ TEST(vector_loadsave, file_get_contents_is_byte_exact)
 {
   TempFile f;
   // Bytes that a text-mode round-trip would mangle or truncate:
-  const std::string content("a\r\nb\0c\x1a" "d", 8);
+  const std::string content(
+      "a\r\nb\0c\x1a"
+      "d",
+      8);
   {
     std::ofstream o(f.path(), std::ios::binary);
     o.write(content.data(), static_cast<std::streamsize>(content.size()));
