@@ -60,6 +60,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/base64_unittest.cpp
   tests/crc_unittest.cpp
   tests/md5_unittest.cpp
+  tests/CControlledRateTimer_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

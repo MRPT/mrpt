@@ -674,11 +674,17 @@ Left documented rather than changed, as the intent is genuinely ambiguous:
 `CEdgeCounter::addEdge(name, is_loop_closure=true, is_new=true)` throws when
 the edge type already exists but silently drops the loop-closure count when
 it is new -- same arguments, opposite behavior depending on prior state.
-`CControlledRateTimer`'s header documents its low-pass filter as
-`estimation = a0*input + (1-a0)*former_estimation`, but the implementation
-applies those weights the other way round; the code is the sensible reading
-for a low-pass filter, so the doc looks like the mistake, but the PI
-controller was presumably tuned against the current behavior.
+
+`CControlledRateTimer`'s header docs were corrected to match the
+implementation rather than the reverse: the low-pass filter is
+`estimation = a0*former_estimation + (1-a0)*input` (the doc had the weights
+swapped), and the documented defaults for `Ti` (0.0194) and `a0` (0.9)
+disagreed with the member initializers (0.1 and 0.99). The control law itself
+was left untouched -- it is the sensible reading for a *low*-pass filter and
+the PI gains were presumably tuned against it. A new
+`CControlledRateTimer_unittest.cpp` pins both the documented defaults and the
+filter's weighting (with `a0 == 1` the estimate must ignore the measurement
+entirely and stay on the set-point), so the two cannot drift apart again.
 
 ### Weak areas, grouped by root cause
 
@@ -704,7 +710,7 @@ controller was presumably tuned against the current behavior.
 4. **Quick wins — pure-logic files at 0% with no hardware/GUI dependency**
    (highest-value gaps, ordinary unit tests would work immediately):
    `mrpt_graphslam/src/CWindowObserver.cpp`,
-   `mrpt_system/src/{CFileSystemWatcher,CControlledRateTimer}.cpp`.
+   `mrpt_system/src/CFileSystemWatcher.cpp`.
    (`mrpt_system/src/md5.cpp`, `mrpt_graphslam/src/{CEdgeCounter,
    TSlidingWindow}.cpp` and
    `mrpt_slam/src/slam/CRejectionSamplingRangeOnlyLocalization.cpp` all
