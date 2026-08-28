@@ -225,6 +225,13 @@ gcovr --root . -j$(nproc) --gcov-ignore-parse-errors=all \
   --exclude '.*_unittest\.cpp' --exclude '.*/python_bindings/.*' --exclude '.*/samples/.*' \
   --json-pretty -o coverage.json build
 ```
+Gotcha (2026-08-28): `--base-paths modules` deliberately excludes `apps/`, so
+the `rawlog-edit` binary is never built and the ~40 `RawlogEditCLITest` cases
+in `mrpt_libapps_cli` all `GTEST_SKIP()` with "rawlog-edit binary not found".
+Following the recipe verbatim therefore measures that module at ~8% rather
+than the ~59% recorded below. Add `apps` to the `--base-paths` list when the
+`mrpt_libapps_*` numbers matter.
+
 (`--gcov-ignore-parse-errors=all` is needed, not just `negative_hits.warn_once_per_file`:
 large repos also trip gcovr's "suspicious hits" detector, e.g. on
 `mrpt_maps/src/maps/COccupancyGridMap2D_likelihood.cpp`, which otherwise aborts
@@ -294,13 +301,13 @@ and accurate path — pick two.
 | mrpt_gui | 22/4621 | 0.5% | 0.2% |
 | mrpt_hwdrivers | 913/6592 | 13.9% | 9.7% |
 | mrpt_comms | 237/1013 | 23.4% | 11.2% |
-| mrpt_graphslam | 257/611 | 42.1% | 37.3% |
+| mrpt_graphslam (2026-08-28)¤ | 351/484 | 72.5% | 59.6% |
 | mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
-| mrpt_system | 1012/1900 | 53.3% | 39.6% |
-| mrpt_io | 726/1292 | 56.2% | 39.9% |
+| mrpt_system (2026-08-28)¤ | 917/1486 | 61.7% | 41.9% |
+| mrpt_io (2026-08-28)¤ | 688/1082 | 63.6% | 46.4% |
 | mrpt_libapps_cli | 1130/1910 | 59.2% | 38.0% |
 | mrpt_libapps_gui | 952/1567 | 60.8% | 42.6% |
-| mrpt_slam | 2778/4299 | 64.6% | 43.7% |
+| mrpt_slam (2026-08-28)¤ | 2309/3421 | 67.5% | 44.9% |
 | mrpt_viz (2026-08-02) | 6449/9426 | 68.4% | 50.1% |
 | mrpt_rtti | 126/176 | 71.6% | 73.5% |
 | mrpt_serialization | 511/708 | 72.2% | 52.5% |
@@ -628,6 +635,51 @@ Gotchas for future passes on these modules:
   not accept a `mrpt::poses::CPose2D` (there is no `TPose2D` constructor from
   it); pass `.asTPose()`.
 
+¤ Second coverage pass of 2026-08-28, on the four largest remaining pure-logic
+gaps after `mrpt_nav`/`mrpt_kinematics` (see ¶). Whole files that had never
+had a single assertion run against them: `mrpt_graphslam/src/TSlidingWindow.cpp`
+(0%), `.../CEdgeCounter.cpp` (0%), `mrpt_system/src/md5.cpp` (0%),
+`mrpt_slam/src/slam/CRejectionSamplingRangeOnlyLocalization.cpp` (0%), and
+`mrpt_io/src/vector_loadsave.cpp` (16%).
+
+Real bugs found and fixed: (1) `TSlidingWindow::getMean()` divided by zero on
+an empty window, returning NaN -- and since every comparison against a NaN is
+false, `evaluateMeasurementAbove()` was then stuck at `false` for *any* input;
+(2) `TSlidingWindow::getStdDev()` normalized by the window *capacity* instead
+of the number of measurements held, so a partially-filled window
+systematically under-reported sigma (and disagreed with `getMean()`, which
+uses the sample count); (3) `TSlidingWindow::resizeWindow()` invalidated the
+mean/median caches but never the std-dev one -- stale after a shrink, and on
+a grow it invalidated nothing at all even though the reported value depended
+on `m_win_size`; (4) `CEdgeCounter::clearAllEdges()` reset every counter
+except `m_unique_edges`, so a "cleared" instance still reported a stale
+unique-edge total; (5) `mrpt::system::md5(const std::vector<uint8_t>&)` used
+`&str[0]`, an out-of-bounds access for an empty vector whose resulting
+pointer then tripped the `ASSERT_(data)` in the overload it delegates to --
+so `md5(empty_vector)` threw while `md5(empty_string)` returned the correct
+digest; (6,7,8) `mrpt::io::vectorNumericFromTextFile()` discarded `fscanf`'s
+return value in its default (`byRows == false`) path -- `(!byRows) ||`
+short-circuits -- so a failed read still pushed the stale `number` and an
+empty file yielded `{0.0}`; it also never cleared its output vector (unlike
+`loadTextFile()`/`loadBinaryFile()`, which both do) and leaked the `FILE*`
+that every sibling function in the same file closes.
+
+Notable non-result: `CRejectionSamplingRangeOnlyLocalization.cpp` was the
+largest 0% file in the repo (117 lines), but the 10 new tests covering the
+beacon-height projection, sensor-offset compensation and two-circle
+intersection geometry all passed first try. It was simply untested, not
+broken.
+
+Left documented rather than changed, as the intent is genuinely ambiguous:
+`CEdgeCounter::addEdge(name, is_loop_closure=true, is_new=true)` throws when
+the edge type already exists but silently drops the loop-closure count when
+it is new -- same arguments, opposite behavior depending on prior state.
+`CControlledRateTimer`'s header documents its low-pass filter as
+`estimation = a0*input + (1-a0)*former_estimation`, but the implementation
+applies those weights the other way round; the code is the sensible reading
+for a low-pass filter, so the doc looks like the mistake, but the PI
+controller was presumably tuned against the current behavior.
+
 ### Weak areas, grouped by root cause
 
 1. **Hardware drivers — `mrpt_hwdrivers` (13.9%), most of `mrpt_comms` (23.4%)**:
@@ -651,9 +703,12 @@ Gotchas for future passes on these modules:
 
 4. **Quick wins — pure-logic files at 0% with no hardware/GUI dependency**
    (highest-value gaps, ordinary unit tests would work immediately):
-   `mrpt_system/src/md5.cpp`, `mrpt_graphslam/src/{CEdgeCounter,TSlidingWindow,
-   CWindowObserver}.cpp`,
-   `mrpt_slam/src/slam/CRejectionSamplingRangeOnlyLocalization.cpp`.
+   `mrpt_graphslam/src/CWindowObserver.cpp`,
+   `mrpt_system/src/{CFileSystemWatcher,CControlledRateTimer}.cpp`.
+   (`mrpt_system/src/md5.cpp`, `mrpt_graphslam/src/{CEdgeCounter,
+   TSlidingWindow}.cpp` and
+   `mrpt_slam/src/slam/CRejectionSamplingRangeOnlyLocalization.cpp` all
+   cleared this bucket as of 2026-08-28 — see ¤ above.)
    (`mrpt_img/src/CImage_loadXPM.cpp` cleared this bucket as of 2026-07-10, now ~90%;
    `mrpt_obs/src/gnss_messages_novatel.cpp` and `mrpt_obs/src/carmen_log_tools.cpp`
    also cleared as of 2026-07-10, now at 100% and 88.2% respectively;

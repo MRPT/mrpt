@@ -179,6 +179,7 @@ void CEdgeCounter::addEdgeType(const std::string& name)
 void CEdgeCounter::clearAllEdges()
 {
   m_num_loop_closures = 0;
+  m_unique_edges = 0;
 
   m_name_to_edges_num.clear();
   m_name_to_offset_y.clear();

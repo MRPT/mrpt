@@ -44,6 +44,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/data_association_unittest.cpp
   tests/path_from_rtk_gps_unittest.cpp
   tests/se3_ransac_unittest.cpp
+  tests/CRejectionSamplingRangeOnlyLocalization_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
