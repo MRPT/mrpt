@@ -72,6 +72,8 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CAbstractNavigator_unittest.cpp
   tests/nav_misc_unittest.cpp
   tests/planners_and_logs_unittest.cpp
+  tests/holonomic_config_unittest.cpp
+  tests/rnav_variants_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
