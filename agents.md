@@ -201,7 +201,9 @@ files needed changes.
 A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
-overall (2026-07-06): **51.3% lines / 38.1% branches** — well short of goal.
+overall (2026-08-28, deduplicated the same way as
+`scripts/coverage_module_report.py`): **68.5% lines / 48.8% branches**
+— still short of goal, dominated by the hardware/GUI modules below.
 Per-module rows below are still the 2026-07-03 baseline except where a row is
 tagged with a newer date (e.g. `mrpt_math`, `mrpt_graphs`, after their
 unit-test passes).
@@ -292,14 +294,12 @@ and accurate path — pick two.
 | mrpt_gui | 22/4621 | 0.5% | 0.2% |
 | mrpt_hwdrivers | 913/6592 | 13.9% | 9.7% |
 | mrpt_comms | 237/1013 | 23.4% | 11.2% |
-| mrpt_kinematics | 184/482 | 38.2% | 17.9% |
 | mrpt_graphslam | 257/611 | 42.1% | 37.3% |
 | mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
 | mrpt_system | 1012/1900 | 53.3% | 39.6% |
 | mrpt_io | 726/1292 | 56.2% | 39.9% |
 | mrpt_libapps_cli | 1130/1910 | 59.2% | 38.0% |
 | mrpt_libapps_gui | 952/1567 | 60.8% | 42.6% |
-| mrpt_nav | 3928/6234 | 63.0% | 45.3% |
 | mrpt_slam | 2778/4299 | 64.6% | 43.7% |
 | mrpt_viz (2026-08-02) | 6449/9426 | 68.4% | 50.1% |
 | mrpt_rtti | 126/176 | 71.6% | 73.5% |
@@ -308,6 +308,7 @@ and accurate path — pick two.
 | mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
 | mrpt_core | 541/628 | 86.1% | 64.8% |
 | mrpt_obs (2026-07-10) | 4631/5324 | 87.0% | 56.1% |
+| mrpt_nav (2026-08-28)¶ | 4524/5026 | 90.0% | 69.3% |
 | mrpt_img (2026-07-10)† | 2255/2495 | 90.4% | 69.2% |
 | mrpt_graphs (2026-07-06) | 1022/1111 | 92.0% | 76.7% |
 | mrpt_poses | 6263/6787 | 92.3% | 59.8% |
@@ -315,6 +316,7 @@ and accurate path — pick two.
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
 | mrpt_random | 160/167 | 95.8% | 85.1% |
 | mrpt_bayes (2026-07-09) | 1036/1078 | 96.1% | 77.4% |
+| mrpt_kinematics (2026-08-28)¶ | 426/440 | 96.8% | 83.5% |
 | mrpt_config (2026-07-09) | 531/548 | 96.9% | 82.3% |
 | mrpt_tfest (2026-07-07) | 633/652 | 97.1% | 73.3% |
 | mrpt_topography (2026-07-10) | 373/375 | 99.5% | 91.2% |
@@ -551,6 +553,81 @@ test), `opengl_fonts.h` (0%, embedded glyph bitmap data), and
 `CSetOfTexturedTriangles.cpp` (2.1%, needs a rendering-based test since its
 logic is mostly buffer-upload bookkeping).
 
+¶ `mrpt_nav` was raised from 63.0%/45.3% (2026-07-03 baseline) to
+90.0%/69.3% on 2026-08-28, together with `mrpt_kinematics`
+(38.2%/17.9% → 96.8%/83.5%), which had **no C++ unit tests at all** —
+only a python-bindings smoke test, so its `CMakeLists.txt` had no
+`LIB_UNIT_TEST_SOURCES` list at all and one had to be added. New test files:
+`mrpt_kinematics/tests/{CVehicleVelCmd,CVehicleSimul,CKinematicChain}_unittest.cpp`
+and `mrpt_nav/tests/{TWaypoint,PTG_variants,CAbstractNavigator,nav_misc,
+planners_and_logs,holonomic_config,rnav_variants,nav_interfaces}_unittest.cpp`.
+`CPTG_DiffDrive_CC`/`_CS`/`_CCS` had never been instantiated by any test
+(~2% each) and `impl_renderMoveTree.h` was at 0%.
+
+Real bugs found and fixed along the way: (1) `CVehicleVelCmd`'s copy
+constructor delegated to `operator=()`, which dispatches pure virtual methods
+while the derived object is still under construction — copy-constructing *any*
+velocity command aborted the process; (2)
+`CAbstractNavigator::internal_onStartNewNavigation()` cleared the cached pose
+history but left `m_last_curPoseVelUpdate_robot_time` untouched, so the
+`updateCurrentPoseAndSpeeds()` call right after it was skipped by its 20 ms
+minimum-period throttle and the following `ASSERT_(!m_latestPoses.empty())`
+threw on the first navigation step of *every* waypoint mission and *every*
+relative-target navigation; (3) `performNavigationStepNavigating()` ended with
+`m_navigationState = prevState;`, undoing the transitions it had just decided,
+so neither an exception nor `doEmergencyStop()` could ever leave the navigator
+in `NAV_ERROR` (the assignment was meant for `m_lastNavigationState`, and it
+was also what masked bug (2)); (4)
+`CWaypointsNavigator::checkHasReachedTarget()` dereferenced a possibly-null
+waypoint pointer via `(wp == nullptr && ...) || (wp->reached)`; (5)
+`CParameterizedTrajectoryGenerator::Alpha2index()` discarded `wrapToPi()`'s
+return value, clamping out-of-range directions to the first/last path instead
+of wrapping; (6) `CMultiObjectiveMotionOptimizerBase::decide()` returned `-1`
+from a `std::optional<size_t>` function on a formula compile error — an
+*engaged* optional holding `SIZE_MAX`, indexed out of bounds by the caller;
+(7) its `clear()` kept the variable table, so the next `decide()` threw
+"Expression name already exists as an input variable"; (8) `CLogFileRecord`'s
+legacy (pre-v15) deserialization wrote velocity components into the wrong
+slots; (9) `CReactiveNavigationSystem3D::saveConfigFile()` never called the
+`CAbstractPTGBasedReactive` implementation, so a saved 3D config was an
+unloadable stub; (10) `PlannerSimple2D::computePath()`'s endpoint bounds check
+read `!(originInside || !targetInside)`, which only flagged
+origin-outside-*and*-target-inside and let an out-of-grid target fall through
+into the search.
+
+Gotchas for future passes on these modules:
+
+* `mrpt_nav`'s `LIB_UNIT_TEST_SOURCES` is an explicit list (like `mrpt_maps`',
+  unlike glob-based modules): a new `*_unittest.cpp` silently never runs until
+  it is registered there.
+* `rnav_unittest.cpp`'s helper `return`s silently when the shared
+  `navigation-ptgs/*.ini` files are missing *and* swallows every exception, so
+  it can pass while testing nothing. New reactive-navigation tests build their
+  configuration with `mrpt::config::CConfigFileMemory` instead.
+* Reactive navigation tests must advance the robot's **navigation time**
+  (`CRobot2NavInterface::getNavigationTime()`), not only the wall/simulated
+  clock: `updateCurrentPoseAndSpeeds()` throttles to one query per 20 ms of
+  robot time, and a mock returning a constant leaves the pose cache empty.
+* `CHolonomicFullEval::navigate()` asserts `ni.clearance != nullptr`;
+  `CHolonomicVFF`/`CHolonomicND` ignore that field.
+* `CPTG_DiffDrive_*` need a polygonal robot shape in the config
+  (`shape_x0`/`shape_y0`/...) or `initialize()` throws "Robot shape was not
+  defined"; `CPTG_Holo_Blend` takes `robot_radius` instead and rejects a
+  polygonal one. `setRefDistance()` throws on a collision-grid PTG once
+  initialized.
+* With a `CPTG_Holo_Blend`, a waypoint left at `TWaypoint`'s default
+  `speed_ratio = 1.0` yields no viable movement at all and the mission times
+  out; `rnav_variants_unittest.cpp` sets an explicit `0.05`. Not investigated
+  further.
+* `CWaypointsNavigator::m_last_alignment_cmd` is set in the constructor and
+  never updated when an alignment command is issued, so the "give the
+  alignment some time to finish" wait actually measures time since the
+  navigator was constructed. Left as-is: fixing it adds a real dwell at every
+  waypoint with a heading.
+* `CVehicleSimulVirtualBase::setCurrentOdometricPose()` is templated but does
+  not accept a `mrpt::poses::CPose2D` (there is no `TPose2D` constructor from
+  it); pass `.asTPose()`.
+
 ### Weak areas, grouped by root cause
 
 1. **Hardware drivers — `mrpt_hwdrivers` (13.9%), most of `mrpt_comms` (23.4%)**:
@@ -586,6 +663,7 @@ logic is mostly buffer-upload bookkeping).
 5. **Biggest single-file impact (most uncovered lines, worth prioritizing for
    raw percentage gains)**:
    `mrpt_maps/src/maps/COccupancyGridMap2D_io.cpp` (85, 56.0%),
+   `mrpt_nav/src/reactive/CAbstractPTGBasedReactive.cpp` (123, 82.1%),
    `mrpt_maps/src/maps/COccupancyGridMap2D_simulate.cpp` (49, 53.3%).
    (`mrpt_viz/src/CPolyhedron.cpp`, formerly the single biggest uncovered file
    in the whole repo at 1420 uncovered lines, cleared this bucket as of

@@ -225,7 +225,7 @@ double CParameterizedTrajectoryGenerator::index2alpha(uint16_t k) const
 
 uint16_t CParameterizedTrajectoryGenerator::Alpha2index(double alpha, const unsigned int num_paths)
 {
-  mrpt::math::wrapToPi(alpha);
+  mrpt::math::wrapToPiInPlace(alpha);
   int k = mrpt::round(0.5 * (num_paths * (1.0 + alpha / M_PI) - 1.0));
   if (k < 0) k = 0;
   if (k >= static_cast<int>(num_paths)) k = num_paths - 1;

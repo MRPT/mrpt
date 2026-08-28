@@ -178,11 +178,11 @@ class CKinematicChain : public mrpt::serialization::CSerializable
   void update3DObject(std::vector<mrpt::poses::CPose3D>* out_all_poses = nullptr) const;
 
   /** Go thru all the links of the chain and compute the global pose of each
-   * link. The "ground" link pose "pose0" defaults to the origin of
-   * coordinates,
-   * but anything else can be passed as the optional argument.
+   * link, starting at the pose set with setOriginPose().
    * The returned vector has N+1 elements (N=number of links), since [0]
    * contains the base frame, [1] the pose after the first link, and so on.
+   * \note `pose0` is currently ignored; use setOriginPose() to relocate the
+   * whole chain.
    */
   void recomputeAllPoses(
       std::vector<mrpt::poses::CPose3D>& poses,

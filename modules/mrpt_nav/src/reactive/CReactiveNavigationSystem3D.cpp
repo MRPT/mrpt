@@ -62,6 +62,8 @@ void CReactiveNavigationSystem3D::changeRobotShape(TRobotShape robotShape)
 
 void CReactiveNavigationSystem3D::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 {
+  CAbstractPTGBasedReactive::saveConfigFile(c);
+
   const std::string s = "CReactiveNavigationSystem3D";
 
   unsigned int HEIGHT_LEVELS = static_cast<unsigned int>(m_robotShape.size());

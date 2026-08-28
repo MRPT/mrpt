@@ -67,6 +67,14 @@ set(LIB_UNIT_TEST_SOURCES
   tests/holonomic_unittest.cpp
   tests/rnav_unittest.cpp
   tests/waypoints_and_rrt_unittest.cpp
+  tests/TWaypoint_unittest.cpp
+  tests/PTG_variants_unittest.cpp
+  tests/CAbstractNavigator_unittest.cpp
+  tests/nav_misc_unittest.cpp
+  tests/planners_and_logs_unittest.cpp
+  tests/holonomic_config_unittest.cpp
+  tests/rnav_variants_unittest.cpp
+  tests/nav_interfaces_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

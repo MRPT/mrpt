@@ -26,6 +26,12 @@ set(LIB_SOURCES
   src/CVehicleSimul_DiffDriven.cpp
 )
 
+set(LIB_UNIT_TEST_SOURCES
+  tests/CKinematicChain_unittest.cpp
+  tests/CVehicleSimul_unittest.cpp
+  tests/CVehicleVelCmd_unittest.cpp
+)
+
 set(LIB_PUBLIC_HEADERS
   include/mrpt/kinematics/CVehicleSimul_Holo.h
   include/mrpt/kinematics/CVehicleSimul_DiffDriven.h
@@ -41,6 +47,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_viz
 #  PRIVATE_LINK_LIBRARIES

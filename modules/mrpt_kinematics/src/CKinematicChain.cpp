@@ -84,9 +84,8 @@ void CKinematicChain::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
   };
 }
 
-/** Go thru all the links of the chain and compute the global pose of each link.
- * The "ground" link pose "pose0" defaults to the origin of coordinates,
- * but anything else can be passed as the optional argument. */
+/** Go thru all the links of the chain and compute the global pose of each link,
+ * starting at the pose set with setOriginPose(). See header docs. */
 void CKinematicChain::recomputeAllPoses(
     std::vector<mrpt::poses::CPose3D>& poses,
     [[maybe_unused]] const mrpt::poses::CPose3D& pose0) const
