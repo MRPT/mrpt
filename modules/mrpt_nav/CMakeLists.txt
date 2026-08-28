@@ -74,6 +74,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/planners_and_logs_unittest.cpp
   tests/holonomic_config_unittest.cpp
   tests/rnav_variants_unittest.cpp
+  tests/nav_interfaces_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

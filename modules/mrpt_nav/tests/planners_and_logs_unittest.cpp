@@ -93,10 +93,10 @@ TEST(PlannerRRTSE2TPS, loads_a_polygonal_robot_shape)
 TEST(PlannerRRTSE2TPS, rejects_a_malformed_robot_shape)
 {
   PlannerRRT_SE2_TPS planner;
-  mrpt::config::CConfigFileMemory cfg(std::string{
-      "[PTG_CONFIG]\n"
-      "robot_shape = not a matlab matrix\n"
-      "PTG_COUNT = 0\n"});
+  mrpt::config::CConfigFileMemory cfg(
+      std::string{"[PTG_CONFIG]\n"
+                  "robot_shape = not a matlab matrix\n"
+                  "PTG_COUNT = 0\n"});
   EXPECT_ANY_THROW(planner.loadConfig(cfg));
 }
 

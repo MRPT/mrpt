@@ -202,8 +202,7 @@ TEST(CVehicleSimul_DiffDriven, odometry_errors_make_gt_and_odometry_diverge)
   const double gt_x0 = sim.getCurrentGTPose().x;
   const double odo_x0 = sim.getCurrentOdometricPose().x;
   sim.simulateOneTimeStep(1.0);
-  EXPECT_NEAR(
-      sim.getCurrentGTPose().x - gt_x0, sim.getCurrentOdometricPose().x - odo_x0, 1e-9);
+  EXPECT_NEAR(sim.getCurrentGTPose().x - gt_x0, sim.getCurrentOdometricPose().x - odo_x0, 1e-9);
 }
 
 // ---------------------------------------------------------------------------

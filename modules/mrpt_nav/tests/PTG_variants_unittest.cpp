@@ -33,6 +33,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CSetOfLines.h>
 
+#include <fstream>
 #include <memory>
 
 using namespace mrpt::nav;
@@ -283,14 +284,11 @@ TEST(PTGBase, collision_behavior_is_settable)
   const auto saved = CParameterizedTrajectoryGenerator::getCollisionBehavior();
 
   CParameterizedTrajectoryGenerator::setCollisionBehavior(PTGCollisionBehavior::STOP);
-  EXPECT_EQ(
-      CParameterizedTrajectoryGenerator::getCollisionBehavior(), PTGCollisionBehavior::STOP);
+  EXPECT_EQ(CParameterizedTrajectoryGenerator::getCollisionBehavior(), PTGCollisionBehavior::STOP);
 
-  CParameterizedTrajectoryGenerator::setCollisionBehavior(
-      PTGCollisionBehavior::BACK_AWAY);
+  CParameterizedTrajectoryGenerator::setCollisionBehavior(PTGCollisionBehavior::BACK_AWAY);
   EXPECT_EQ(
-      CParameterizedTrajectoryGenerator::getCollisionBehavior(),
-      PTGCollisionBehavior::BACK_AWAY);
+      CParameterizedTrajectoryGenerator::getCollisionBehavior(), PTGCollisionBehavior::BACK_AWAY);
 
   CParameterizedTrajectoryGenerator::setCollisionBehavior(saved);
 }
@@ -307,8 +305,7 @@ TEST(PTGBase, debugDumpInFiles_writes_the_trajectory_tables)
 {
   auto ptg = make_diffdrive_ptg("CPTG_DiffDrive_C");
 
-  const std::string sDir =
-      mrpt::system::getTempFileName() + std::string("_ptg_dump");
+  const std::string sDir = mrpt::system::getTempFileName() + std::string("_ptg_dump");
   const auto saved = CParameterizedTrajectoryGenerator::getOutputDebugPathPrefix();
   CParameterizedTrajectoryGenerator::setOutputDebugPathPrefix(sDir);
 
@@ -433,11 +430,12 @@ TEST(PTGBase, factory_accepts_legacy_numeric_names)
 
   // MRPT <1.5.0 named the PTG classes by a single digit:
   const std::pair<const char*, const char*> legacy[] = {
-      {"1", "CPTG_DiffDrive_C"},
+      {"1",     "CPTG_DiffDrive_C"},
       {"2", "CPTG_DiffDrive_alpha"},
-      {"3", "CPTG_DiffDrive_CCS"},
-      {"4", "CPTG_DiffDrive_CC"},
-      {"5", "CPTG_DiffDrive_CS"}};
+      {"3",   "CPTG_DiffDrive_CCS"},
+      {"4",    "CPTG_DiffDrive_CC"},
+      {"5",    "CPTG_DiffDrive_CS"}
+  };
 
   for (const auto& [digit, className] : legacy)
   {
@@ -578,4 +576,89 @@ TEST(PTGHoloBlend, relative_priority_depends_on_target_speed)
   const auto prio = ptg->evalPathRelativePriority(0, 1.0);
   EXPECT_TRUE(std::isfinite(prio));
   EXPECT_GT(prio, .0);
+}
+
+// ---------------------------------------------------------------------------
+//  Collision-grid cache files and per-path queries
+// ---------------------------------------------------------------------------
+TEST(PTGVariants, collision_grid_is_cached_to_and_reloaded_from_a_file)
+{
+  const std::string cacheFil = mrpt::system::getTempFileName() + std::string("_ptg_cache.dat.gz");
+
+  mrpt::config::CConfigFileMemory cfg;
+  fill_diffdrive_cfg(cfg, "PTG");
+
+  // 1st run: the grid is built from scratch and dumped to the cache file.
+  auto ptg1 = CParameterizedTrajectoryGenerator::CreatePTG("CPTG_DiffDrive_C", cfg, "PTG", "");
+  ptg1->initialize(cacheFil, false /*verbose*/);
+  ASSERT_TRUE(mrpt::system::fileExists(cacheFil));
+
+  // 2nd run: the very same grid is now read back from the cache.
+  auto ptg2 = CParameterizedTrajectoryGenerator::CreatePTG("CPTG_DiffDrive_C", cfg, "PTG", "");
+  ptg2->initialize(cacheFil, false);
+  EXPECT_TRUE(ptg2->isInitialized());
+
+  std::vector<double> obs1, obs2;
+  ptg1->initTPObstacles(obs1);
+  ptg2->initTPObstacles(obs2);
+  ptg1->updateTPObstacle(1.0, 0.3, obs1);
+  ptg2->updateTPObstacle(1.0, 0.3, obs2);
+  EXPECT_EQ(obs1, obs2);
+
+  // A corrupt/foreign cache file is detected and the grid rebuilt instead:
+  {
+    std::ofstream f(cacheFil, std::ios::binary | std::ios::trunc);
+    f << "not a collision grid";
+  }
+  auto ptg3 = CParameterizedTrajectoryGenerator::CreatePTG("CPTG_DiffDrive_C", cfg, "PTG", "");
+  EXPECT_NO_THROW(ptg3->initialize(cacheFil, false));
+  EXPECT_TRUE(ptg3->isInitialized());
+
+  mrpt::system::deleteFile(cacheFil);
+}
+
+TEST(PTGVariants, per_path_tp_obstacle_updates_match_the_full_update)
+{
+  auto ptg = make_diffdrive_ptg("CPTG_DiffDrive_C");
+
+  std::vector<double> all;
+  ptg->initTPObstacles(all);
+  ptg->updateTPObstacle(1.0, 0.2, all);
+
+  for (uint16_t k = 0; k < ptg->getPathCount(); k++)
+  {
+    double single = .0;
+    ptg->initTPObstacleSingle(k, single);
+    ptg->updateTPObstacleSingle(1.0, 0.2, k, single);
+    EXPECT_NEAR(single, all[k], 1e-9) << "k=" << k;
+  }
+}
+
+TEST(PTGVariants, points_beyond_the_reference_distance_map_outside_the_unit_range)
+{
+  for (const auto* name : diffdrive_ptg_names)
+  {
+    auto ptg = make_diffdrive_ptg(name);
+    // These PTGs answer with the nearest precomputed path, so the way to tell
+    // an unreachable point apart is its normalized distance being >1:
+    const double farAway = 10 * ptg->getRefDistance();
+    if (const auto inv = ptg->inverseMap_WS2TP(farAway, farAway))
+    {
+      EXPECT_GT(inv->second, 1.0) << name;
+    }
+  }
+}
+
+TEST(PTGVariants, getPathStepForDist_beyond_the_path_end_fails)
+{
+  auto ptg = make_diffdrive_ptg("CPTG_DiffDrive_C");
+  uint32_t step = 0;
+  EXPECT_FALSE(ptg->getPathStepForDist(0, 1e6 /*way beyond refDistance*/, step));
+}
+
+TEST(PTGVariants, deinitialized_ptgs_reject_path_queries)
+{
+  auto ptg = make_diffdrive_ptg("CPTG_DiffDrive_C");
+  ptg->deinitialize();
+  EXPECT_ANY_THROW(ptg->getPathStepCount(0));
 }

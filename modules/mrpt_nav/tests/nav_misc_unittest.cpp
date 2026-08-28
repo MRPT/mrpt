@@ -22,7 +22,9 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
+#include <mrpt/nav/holonomic/CHolonomicVFF.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
+#include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/nav/planners/nav_plan_geometry_utils.h>
 #include <mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h>
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
@@ -739,4 +741,64 @@ TEST(MultiObjOpt, an_invalid_scalar_formula_throws)
   std::vector<TCandidateMovementPTG> movs{make_candidate(1.0, 1.0)};
   CMultiObjectiveMotionOptimizerBase::TResultInfo info;
   EXPECT_ANY_THROW((void)opt.decide(movs, info));
+}
+
+// ---------------------------------------------------------------------------
+//  A few remaining corners
+// ---------------------------------------------------------------------------
+TEST(CHolonomicVFF, log_record_serialization_roundtrip)
+{
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+
+  CLogFileRecord_VFF rec;
+  arch << rec;
+  buf.Seek(0);
+
+  CLogFileRecord_VFF rec2;
+  EXPECT_NO_THROW(arch >> rec2);
+}
+
+TEST(PlannerSimple2D, out_of_grid_endpoints_are_reported_as_not_found)
+{
+  mrpt::maps::COccupancyGridMap2D grid;
+  grid.setSize(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.fill(0.6f);
+
+  PlannerSimple2D planner;
+  planner.robotRadius = 0.15f;
+
+  const mrpt::poses::CPose2D inside(0, 0, 0), outside(100, 100, 0);
+  std::deque<mrpt::math::TPoint2D> path;
+  bool notFound = false;
+
+  planner.computePath(grid, outside, inside, path, notFound);
+  EXPECT_TRUE(notFound);
+
+  notFound = false;
+  planner.computePath(grid, inside, outside, path, notFound);
+  EXPECT_TRUE(notFound);
+
+  notFound = false;
+  planner.computePath(grid, outside, outside, path, notFound);
+  EXPECT_TRUE(notFound);
+}
+
+TEST(PlannerSimple2D, origin_and_target_in_the_same_cell)
+{
+  mrpt::maps::COccupancyGridMap2D grid;
+  grid.setSize(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+  grid.fill(0.6f);
+
+  PlannerSimple2D planner;
+  std::deque<mrpt::math::TPoint2D> path;
+  bool notFound = true;
+
+  planner.computePath(
+      grid, mrpt::poses::CPose2D(0.01, 0.01, 0), mrpt::poses::CPose2D(0.02, 0.02, 0), path,
+      notFound);
+
+  EXPECT_FALSE(notFound);
+  ASSERT_EQ(path.size(), 1U);
+  EXPECT_NEAR(path.front().x, 0.02, 1e-9);
 }

@@ -309,10 +309,12 @@ void PlannerSimple2D::computePath(
   const TPoint2D target = TPoint2D(target_.asTPose());
 
   // Check that origin and target fall inside the grid:
-  if (!((origin.x > theMap.getXMin() && origin.x < theMap.getXMax() &&
-         origin.y > theMap.getYMin() && origin.y < theMap.getYMax()) ||
-        !(target.x > theMap.getXMin() && target.x < theMap.getXMax() &&
-          target.y > theMap.getYMin() && target.y < theMap.getYMax())))
+  const auto isInsideGrid = [&theMap](const TPoint2D& p)
+  {
+    return p.x > theMap.getXMin() && p.x < theMap.getXMax() && p.y > theMap.getYMin() &&
+           p.y < theMap.getYMax();
+  };
+  if (!isInsideGrid(origin) || !isInsideGrid(target))
   {
     notFound = true;
     return;

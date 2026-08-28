@@ -219,7 +219,11 @@ TEST(RNavVariants, clearance_evaluation_run)
 {
   RNavFixture f;
   f.build(make_rnav_config(false, true /*evaluate_clearance*/, .0, true));
-  f.robot.obstacles = {{1.0, 1.0}, {1.0, -1.0}, {1.5, 1.2}};
+  f.robot.obstacles = {
+      {1.0,  1.0},
+      {1.0, -1.0},
+      {1.5,  1.2}
+  };
 
   const mrpt::math::TPoint2D trg(2.0, .0);
   f.run(trg);
@@ -240,7 +244,10 @@ TEST(RNavVariants, obstacle_filtering_disabled_run)
 {
   RNavFixture f;
   f.build(make_rnav_config(false, false, .0, false /*enable_obstacle_filtering*/));
-  f.robot.obstacles = {{1.0, 1.0}, {1.0, -1.0}};
+  f.robot.obstacles = {
+      {1.0,  1.0},
+      {1.0, -1.0}
+  };
 
   const mrpt::math::TPoint2D trg(2.0, .0);
   f.run(trg);
@@ -275,7 +282,10 @@ TEST(RNavVariants, waypoint_navigation_run)
 {
   RNavFixture f;
   f.build(make_rnav_config(false, false, .0, true));
-  f.robot.obstacles = {{1.0, 1.0}, {1.0, -1.0}};
+  f.robot.obstacles = {
+      {1.0,  1.0},
+      {1.0, -1.0}
+  };
 
   TWaypointSequence seq;
   // Note the explicit `speed_ratio`: with the default (1.0, i.e. "arrive at
@@ -379,8 +389,7 @@ TEST(RNavVariants, config_file_roundtrip)
   f.nav->saveConfigFile(out);
 
   EXPECT_TRUE(out.sectionExists("CAbstractPTGBasedReactive"));
-  EXPECT_NEAR(
-      out.read_double("CAbstractPTGBasedReactive", "speedfilter_tau", -1.0), 0.3, 1e-6);
+  EXPECT_NEAR(out.read_double("CAbstractPTGBasedReactive", "speedfilter_tau", -1.0), 0.3, 1e-6);
   EXPECT_TRUE(out.read_bool("CAbstractPTGBasedReactive", "use_delays_model", false));
   EXPECT_TRUE(out.read_bool("CAbstractPTGBasedReactive", "evaluate_clearance", false));
   EXPECT_FALSE(out.read_bool("CAbstractPTGBasedReactive", "enable_obstacle_filtering", true));

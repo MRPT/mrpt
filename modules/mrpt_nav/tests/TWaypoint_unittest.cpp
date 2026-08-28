@@ -110,7 +110,7 @@ TEST(TWaypointSequence, load_clears_previous_contents)
 TEST(TWaypointSequence, opengl_visualization_has_one_object_per_waypoint)
 {
   TWaypointSequence seq;
-  seq.waypoints.emplace_back(1.0, 2.0, 0.5);                             // no heading
+  seq.waypoints.emplace_back(1.0, 2.0, 0.5);                              // no heading
   seq.waypoints.emplace_back(3.0, 4.0, 0.5, false, mrpt::DEG2RAD(90.0));  // + heading arrow
 
   auto gl = mrpt::viz::CSetOfObjects::Create();

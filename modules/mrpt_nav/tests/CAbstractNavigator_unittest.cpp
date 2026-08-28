@@ -144,10 +144,7 @@ struct TestNavigator : public CWaypointsNavigator
     m_navProfiler.enable(false);
   }
 
-  bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D&) const override
-  {
-    return reachable;
-  }
+  bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D&) const override { return reachable; }
   using CWaypointsNavigator::waypoints_isAligning;
   void performNavigationStep() override
   {
@@ -414,8 +411,7 @@ TEST(CAbstractNavigator, exceptions_in_the_nav_step_raise_a_nav_error)
 
   EXPECT_EQ(nav.getCurrentState(), CAbstractNavigator::TState::NAV_ERROR);
   EXPECT_EQ(nav.getErrorReason().error_code, CAbstractNavigator::TErrorCode::OTHER);
-  EXPECT_NE(
-      nav.getErrorReason().error_msg.find("synthetic navigation failure"), std::string::npos);
+  EXPECT_NE(nav.getErrorReason().error_msg.find("synthetic navigation failure"), std::string::npos);
 
   // The next step reports the error to the robot interface and stops it:
   nav.navigationStep();
