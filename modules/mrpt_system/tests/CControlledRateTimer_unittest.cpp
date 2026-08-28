@@ -92,6 +92,12 @@ TEST(CControlledRateTimer, a0_of_one_freezes_the_estimate_on_the_setpoint)
   EXPECT_GT(t.estimatedRateRaw(), .0);
 }
 
+// Note: a "larger a0 keeps the estimate nearer the set-point" test would be
+// flaky. That only holds while the achieved rate is far from the set-point;
+// on a machine that hits the target accurately the raw rate *is* the
+// set-point, both estimates converge on it, and the comparison is decided by
+// noise. The two tests here pin the filter's weighting without depending on
+// the rate actually achieved.
 TEST(CControlledRateTimer, a_small_a0_tracks_the_raw_measurement)
 {
   // The complement of the test above: weighting the former estimation by
@@ -108,27 +114,6 @@ TEST(CControlledRateTimer, a_small_a0_tracks_the_raw_measurement)
   ASSERT_GT(t.estimatedRateRaw(), .0);
   const double relErr = std::abs(t.estimatedRate() - t.estimatedRateRaw()) / t.estimatedRateRaw();
   EXPECT_LT(relErr, 1e-3);
-}
-
-TEST(CControlledRateTimer, larger_a0_smooths_more)
-{
-  // Same workload, two filter settings: the heavily-smoothed one must stay
-  // closer to the set-point it was initialized with.
-  const double setpoint = 200.0;
-
-  auto finalDistanceToSetpoint = [setpoint](double a0)
-  {
-    CControlledRateTimer t(setpoint);
-    t.lowPassParam_a0(a0);
-    t.setMinLoggingLevel(mrpt::system::LVL_ERROR);
-    for (int i = 0; i < 5; i++)
-    {
-      t.sleep();
-    }
-    return std::abs(t.estimatedRate() - setpoint);
-  };
-
-  EXPECT_LE(finalDistanceToSetpoint(0.99), finalDistanceToSetpoint(0.01));
 }
 
 TEST(CControlledRateTimer, sleep_runs_and_reports_a_rate)
