@@ -23,6 +23,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
 
+#include <chrono>
 #include <stdexcept>
 
 using namespace mrpt::nav;
@@ -480,16 +481,25 @@ TEST(CAbstractNavigator, not_approaching_the_target_times_out)
 {
   MockRobotIF robot;
   TestNavigator nav(robot);
-  nav.params_abstract_navigator.alarm_seems_not_approaching_target_timeout = 0.0;
+  nav.params_abstract_navigator.alarm_seems_not_approaching_target_timeout = 2.0;
+
+  // The alarm compares wall-clock timestamps, so drive it from the simulated
+  // clock: a plain "0 s timeout" would depend on the platform clock
+  // resolution being fine enough for two consecutive now() calls to differ.
+  const auto savedClock = mrpt::Clock::getActiveClock();
+  mrpt::Clock::setSimulatedTime(mrpt::Clock::now());
+  mrpt::Clock::setActiveClock(mrpt::Clock::Simulated);
 
   auto np = make_target(10.0, 0.0, 0.1);
   nav.navigate(&np);
 
   // The robot never moves, so the "not approaching" alarm must fire:
-  for (int i = 0; i < 5 && nav.getCurrentState() == CAbstractNavigator::TState::NAVIGATING; i++)
+  for (int i = 0; i < 10 && nav.getCurrentState() == CAbstractNavigator::TState::NAVIGATING; i++)
   {
     nav.step();
+    mrpt::Clock::setSimulatedTime(mrpt::Clock::now() + std::chrono::milliseconds(500));
   }
+  mrpt::Clock::setActiveClock(savedClock);
 
   EXPECT_EQ(nav.getCurrentState(), CAbstractNavigator::TState::NAV_ERROR);
   EXPECT_EQ(nav.getErrorReason().error_code, CAbstractNavigator::TErrorCode::CANNOT_REACH_TARGET);
@@ -730,12 +740,20 @@ TEST(CWaypointsNavigator, waypoints_with_a_heading_align_before_being_reached)
   seq.waypoints.emplace_back(1.0, 0.0, 0.4, true, mrpt::DEG2RAD(90.0));
   nav.navigateWaypoints(seq);
 
+  // The alignment settling window is measured against the wall clock; freeze
+  // a simulated one so the outcome does not depend on how fast the loop below
+  // happens to run.
+  const auto savedClock = mrpt::Clock::getActiveClock();
+  mrpt::Clock::setSimulatedTime(mrpt::Clock::now());
+  mrpt::Clock::setActiveClock(mrpt::Clock::Simulated);
+
   // Drive the robot right onto the waypoint, but with the wrong heading:
   for (int i = 0; i < 10; i++)
   {
     nav.step();
     nav.teleportTowardsTarget(0.5);
   }
+  mrpt::Clock::setActiveClock(savedClock);
 
   // The robot is at the waypoint but not aligned: the navigator requests an
   // in-place rotation instead of declaring the waypoint reached.
