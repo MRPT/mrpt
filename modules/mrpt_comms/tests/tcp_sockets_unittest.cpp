@@ -180,8 +180,11 @@ TEST(CClientTCPSocket, socketOptions)
   SocketPair p;
   ASSERT_TRUE(p.connected);
 
+  // Note: the getter returns whatever the OS stores for the flag, which is
+  // only guaranteed to be non-zero when enabled (BSD-derived stacks report a
+  // bit mask rather than 1):
   EXPECT_EQ(p.clientSide.setTCPNoDelay(1), 0);
-  EXPECT_EQ(p.clientSide.getTCPNoDelay(), 1);
+  EXPECT_NE(p.clientSide.getTCPNoDelay(), 0);
   EXPECT_EQ(p.clientSide.setTCPNoDelay(0), 0);
   EXPECT_EQ(p.clientSide.getTCPNoDelay(), 0);
 
