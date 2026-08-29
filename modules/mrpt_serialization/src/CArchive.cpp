@@ -27,6 +27,9 @@ using namespace mrpt::serialization;
 
 const uint8_t SERIALIZATION_END_FLAG = 0x88;
 
+/** Largest payload describable by sendMessage()'s 16-bit length field. */
+constexpr std::size_t MAX_MESSAGE_PAYLOAD_LEN = 0xffff;
+
 size_t CArchive::ReadBuffer(void* Buffer, size_t Count)
 {
   ASSERT_(Buffer != nullptr);
@@ -413,7 +416,9 @@ void CArchive::internal_ReadObjectHeader(
       version = static_cast<uint8_t>(version_old);
     }
     else if (
-        strClassName != "nullptr" &&
+        // Neither of these two carries a version byte, see WriteObject() and
+        // operator<<(const std::monostate&):
+        strClassName != "nullptr" && strClassName != "std::monostate" &&
         sizeof(version) != ReadBuffer(reinterpret_cast<void*>(&version), sizeof(version)))
     {
       THROW_EXCEPTION("Cannot read object streaming version from stream!");
@@ -433,7 +438,7 @@ void CArchive::internal_ReadObjectHeader(
 
     THROW_EXCEPTION_FMT(
         "Exception while parsing typed object '%s' from %s.\nOriginal exception:\n%s",
-        getArchiveDescription().c_str(), readClassName, e.what());
+        readClassName, getArchiveDescription().c_str(), e.what());
   }
 }  // end method
 
@@ -543,6 +548,16 @@ void CArchive::sendMessage(const CMessage& msg)
 {
   MRPT_START
 
+  // The frame's length field is 16 bits wide, so anything longer cannot be
+  // described by the format at all: without this check the length would
+  // silently wrap around and, past ~64 KiB, the payload copy below would run
+  // past the end of the frame buffer.
+  ASSERTMSG_(
+      msg.content.size() <= MAX_MESSAGE_PAYLOAD_LEN,
+      mrpt::format(
+          "Message payload is too long (%zu bytes) for the frame format (max: %u bytes)",
+          msg.content.size(), static_cast<unsigned int>(MAX_MESSAGE_PAYLOAD_LEN)));
+
   std::array<uint8_t, 0x10100> buf{};
   std::size_t nBytesTx = 0;
 
@@ -558,8 +573,10 @@ void CArchive::sendMessage(const CMessage& msg)
   }
   else
   {
-    buf[nBytesTx++] = msg.content.size() & 0xff;         // lo
+    // Note the order: the frame carries the high byte first, as documented
+    // in sendMessage() and as expected by receiveMessage():
     buf[nBytesTx++] = (msg.content.size() >> 8) & 0xff;  // hi
+    buf[nBytesTx++] = msg.content.size() & 0xff;         // lo
   }
 
   if (!msg.content.empty())
@@ -606,68 +623,65 @@ bool CArchive::receiveMessage(CMessage& msg)
       nBytesToRx = expectedLen - nBytesInFrame;
     }  // end else
 
-    unsigned long nBytesRx = 0;
-    try
+    // Read the missing bytes, if any. Note that a frame with an empty payload
+    // is already complete at this point, and reading zero bytes would be
+    // mistaken for an end-of-stream condition below:
+    if (nBytesToRx != 0)
     {
-      nBytesRx = ReadBuffer(&buf[nBytesInFrame], nBytesToRx);
-    }
-    catch (const std::exception& e)
-    {
-      std::cerr << "Error reading from stream: " << e.what() << "\n";
-    }
+      unsigned long nBytesRx = 0;
+      try
+      {
+        nBytesRx = ReadBuffer(&buf[nBytesInFrame], nBytesToRx);
+      }
+      catch (const std::exception& e)
+      {
+        std::cerr << "Error reading from stream: " << e.what() << "\n";
+      }
 
-    // No more data! (read timeout is already included in the call to
-    // "Read")
-    if (!nBytesRx)
-    {
-      return false;
-    }
-
-    if (!nBytesInFrame && buf[0] != 0x69 && buf[0] != 0x79)
-    {
-      // Start flag is invalid:
-      if (!tries--)
+      // No more data! (read timeout is already included in the call to
+      // "Read")
+      if (!nBytesRx)
       {
         return false;
       }
-    }
-    else
-    {
-      // Is a new byte for the frame:
-      nBytesInFrame += nBytesRx;
 
-      if (nBytesInFrame == expectedLen)
+      if (!nBytesInFrame && buf[0] != 0x69 && buf[0] != 0x79)
       {
-        // Frame complete
-        // check for frame be ok:
-
-        // End flag?
-        if (buf[nBytesInFrame - 1] != 0x96)
+        // Start flag is invalid: drop the byte and re-sync, up to a few times.
+        if (!tries--)
         {
-          // Error in frame!
           return false;
         }
-
-        // copy out data:
-        msg.type = buf[1];
-        if (buf[0] == 0x69)
-        {
-          msg.content.resize(payload_len);
-          if (!msg.content.empty())
-          {
-            std::memcpy(msg.content.data(), &buf[3], payload_len);
-          }
-        }  // end if
-        if (buf[0] == 0x79)
-        {
-          msg.content.resize(payload_len);
-          if (!msg.content.empty())
-          {
-            std::memcpy(msg.content.data(), &buf[4], payload_len);
-          }
-        }  // end if
-        return true;
+        continue;
       }
+
+      // Is a new byte for the frame:
+      nBytesInFrame += nBytesRx;
+    }
+
+    if (expectedLen != 0 && nBytesInFrame == expectedLen)
+    {
+      // Frame complete
+      // check for frame be ok:
+
+      // End flag?
+      if (buf[nBytesInFrame - 1] != 0x96)
+      {
+        // Error in frame!
+        return false;
+      }
+
+      // copy out data:
+      msg.type = buf[1];
+      msg.content.resize(payload_len);
+      if (!msg.content.empty())
+      {
+        // The payload starts right after the header, whose size depends on
+        // whether the "tiny" (1-byte length) format is in use:
+        const std::size_t payloadOffset = (buf[0] == 0x69) ? 3 : 4;
+        std::memcpy(msg.content.data(), &buf[payloadOffset], payload_len);
+      }
+      return true;
     }
   }
   MRPT_END
