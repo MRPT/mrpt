@@ -201,12 +201,12 @@ files needed changes.
 A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
-overall (2026-08-28, deduplicated the same way as
-`scripts/coverage_module_report.py`): **68.5% lines / 48.8% branches**
-— still short of goal, dominated by the hardware/GUI modules below.
-Per-module rows below are still the 2026-07-03 baseline except where a row is
-tagged with a newer date (e.g. `mrpt_math`, `mrpt_graphs`, after their
-unit-test passes).
+overall (2026-08-29, deduplicated the same way as
+`scripts/coverage_module_report.py`): **72.5% lines / 53.2% branches**
+- still short of goal, dominated by the hardware/GUI modules below.
+The whole table below was re-measured on 2026-08-29; the date tags on some
+rows mark when that module last had a dedicated unit-test pass, and point at
+the footnote describing it.
 
 Gotcha (2026-07-06): the system `gcov` alias (`/etc/alternatives/gcov`) may
 point to an unrelated binary (observed pointing to `/usr/bin/gc`), causing
@@ -300,34 +300,36 @@ and accurate path — pick two.
 | mrpt_imgui | 0/53 | 0.0% | 0.0% |
 | mrpt_gui | 22/4621 | 0.5% | 0.2% |
 | mrpt_hwdrivers | 913/6592 | 13.9% | 9.7% |
-| mrpt_comms | 237/1013 | 23.4% | 11.2% |
-| mrpt_graphslam (2026-08-28)¤ | 351/484 | 72.5% | 59.6% |
-| mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
-| mrpt_system (2026-08-28)¤ | 917/1486 | 61.7% | 41.9% |
-| mrpt_io (2026-08-28)¤ | 688/1082 | 63.6% | 46.4% |
-| mrpt_libapps_cli | 1130/1910 | 59.2% | 38.0% |
-| mrpt_libapps_gui | 952/1567 | 60.8% | 42.6% |
-| mrpt_slam (2026-08-28)¤ | 2309/3421 | 67.5% | 44.9% |
-| mrpt_viz (2026-08-02) | 6449/9426 | 68.4% | 50.1% |
-| mrpt_rtti | 126/176 | 71.6% | 73.5% |
-| mrpt_serialization | 511/708 | 72.2% | 52.5% |
-| mrpt_maps (2026-08-03)§ | 10127/11696 | 86.6% | 62.5% |
-| mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
-| mrpt_core | 541/628 | 86.1% | 64.8% |
-| mrpt_obs (2026-07-10) | 4631/5324 | 87.0% | 56.1% |
-| mrpt_nav (2026-08-28)¶ | 4524/5026 | 90.0% | 69.3% |
-| mrpt_img (2026-07-10)† | 2255/2495 | 90.4% | 69.2% |
-| mrpt_graphs (2026-07-06) | 1022/1111 | 92.0% | 76.7% |
-| mrpt_poses | 6263/6787 | 92.3% | 59.8% |
-| mrpt_containers (2026-07-11) | 1146/1234 | 92.9% | 48.2%‡ |
+| mrpt_opengl | 2041/4234 | 48.2% | 30.3% |
+| mrpt_libapps_cli | 1129/1910 | 59.1% | 38.0% |
+| mrpt_libapps_gui | 803/1288 | 62.3% | 45.8% |
+| mrpt_slam (2026-08-28)¤ | 2919/4299 | 67.9% | 45.4% |
+| mrpt_viz (2026-08-02) | 6502/9440 | 68.9% | 50.5% |
+| mrpt_common | 5/7 | 71.4% | 0.0% |
+| mrpt_graphslam (2026-08-28)¤ | 453/618 | 73.3% | 60.5% |
+| mrpt_comms (2026-08-29)» | 687/906 | 75.8% | 54.4% |
+| mrpt_examples_cpp | 99/128 | 77.3% | 46.3% |
+| mrpt_system (2026-08-29)» | 1622/1963 | 82.6% | 58.5% |
+| mrpt_rtti (2026-08-29)» | 151/176 | 85.8% | 75.1% |
+| mrpt_maps (2026-08-03)§ | 10108/11698 | 86.4% | 62.6% |
+| mrpt_io (2026-08-29)» | 1133/1310 | 86.5% | 69.7% |
+| mrpt_containers (2026-07-11) | 1632/1848 | 88.3% | 53.7%‡ |
+| mrpt_obs (2026-07-10) | 6054/6848 | 88.4% | 60.4% |
+| mrpt_math (2026-07-05) | 6808/7674 | 88.7% | 59.9% |
+| mrpt_core | 571/636 | 89.8% | 68.6% |
+| mrpt_nav (2026-08-28)¶ | 5683/6287 | 90.4% | 68.9% |
+| mrpt_graphs (2026-07-06) | 1023/1112 | 92.0% | 76.5% |
+| mrpt_poses | 6272/6787 | 92.4% | 60.2% |
+| mrpt_img (2026-07-10)† | 2838/3061 | 92.7% | 70.9% |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
-| mrpt_random | 160/167 | 95.8% | 85.1% |
-| mrpt_bayes (2026-07-09) | 1036/1078 | 96.1% | 77.4% |
-| mrpt_kinematics (2026-08-28)¶ | 426/440 | 96.8% | 83.5% |
-| mrpt_config (2026-07-09) | 531/548 | 96.9% | 82.3% |
-| mrpt_tfest (2026-07-07) | 633/652 | 97.1% | 73.3% |
-| mrpt_topography (2026-07-10) | 373/375 | 99.5% | 91.2% |
-| mrpt_typemeta | 57/57 | 100.0% | 85.1% |
+| mrpt_bayes (2026-07-09) | 1047/1090 | 96.1% | 78.9% |
+| mrpt_serialization (2026-08-29)» | 728/754 | 96.6% | 73.8% |
+| mrpt_random | 162/167 | 97.0% | 88.4% |
+| mrpt_tfest (2026-07-07) | 635/654 | 97.1% | 73.1% |
+| mrpt_kinematics (2026-08-28)¶ | 503/518 | 97.1% | 81.2% |
+| mrpt_config (2026-07-09) | 536/548 | 97.8% | 84.1% |
+| mrpt_topography (2026-07-10) | 414/417 | 99.3% | 83.2% |
+| mrpt_typemeta | 57/57 | 100.0% | 79.2% |
 
 † `mrpt_img` vendors third-party `src/stb/*.h` (stb_image/stb_image_resize2/
 stb_image_write, public-domain), which is out of scope for tests like any
@@ -686,14 +688,88 @@ the PI gains were presumably tuned against it. A new
 filter's weighting (with `a0 == 1` the estimate must ignore the measurement
 entirely and stay on the set-point), so the two cannot drift apart again.
 
+» Coverage pass of 2026-08-29 on the five remaining pure-logic modules below
+90%: `mrpt_serialization` (72.2% -> 96.6%), `mrpt_rtti` (71.6% -> 85.8%),
+`mrpt_comms` (23.4% -> 75.8%), `mrpt_io` (63.6% -> 86.5%) and `mrpt_system`
+(61.7% -> 82.6%). `mrpt_serialization` had **no unit tests of its own at
+all** before this (its `CMakeLists.txt` said so); it now has them, using only
+`std::stringstream`/`std::vector<uint8_t>` archives.
+
+Two testing techniques worth reusing:
+
+* `mrpt_comms/tests/comms_test_server.{h,cpp}` runs a one-shot local TCP
+  server built on `CServerTCPSocket`, which lets `net_utils`' HTTP client be
+  driven end-to-end (200/404, the NTRIP `SOURCETABLE` answer, chunked
+  transfer encoding, basic auth, POST bodies) with no network access:
+  `net_utils.cpp` went from 2.1% to 90.3%.
+* `mrpt_comms/tests/CSerialPort_unittest.cpp` opens a pseudo-terminal
+  (`posix_openpt`) and treats it as a serial device, so `open`/`setConfig`/
+  `Read`/`Write`/`ReadString` all run against real termios without hardware:
+  `CSerialPort.cpp` went from 0% to 68.2%. Note that `CSerialPort::Write()`
+  ends in `tcdrain()`, which on macOS blocks until the far end consumes the
+  data, so any such test must read from the master concurrently.
+
+Real bugs found and fixed: (1) `CArchive::sendMessage()` wrote the payload
+length low byte first while `receiveMessage()` and the documented frame
+format both expect the high byte first, so no message of 256 bytes or more
+could ever be received back; it also accepted payloads larger than the 16-bit
+length field, overflowing its fixed frame buffer past ~64 KiB; (2)
+`receiveMessage()` treated a complete frame with an empty payload as an
+end-of-stream, rejecting it; (3) `operator<<(const std::monostate&)` writes
+no version byte but the header parser only skipped that byte for `"nullptr"`,
+so an empty `std::variant` could not be deserialized; (4)
+`zip::decompress()`'s `std::vector` overload passed an *uninitialized* length
+to zlib's `uncompress()`, which takes it as the capacity of the output
+buffer; (5) `mrpt::system::getFileSize()` is documented to return `size_t(-1)`
+on error but used the throwing overload of `std::filesystem::file_size`, so
+`CFileGZInputStream::open()` and `zip::decompress_gz_file()` -- both
+documented to return `false` -- threw instead; (6) `CMemoryStream::Seek()`
+used the `Origin` enumerator in place of `Offset` when seeking from the end,
+and clamped to the *allocated* size minus one, which underflows on an empty
+stream; (7) `CStream::getline()` left a stray unwritten byte in the output on
+EOF; (8) `CClientTCPSocket::connect()` created the socket and then threw from
+every later failure path without closing it, leaving `isConnected()` lying;
+(9) `http_request()` never trimmed its read buffer back to what was actually
+received, so a 13-byte body came back as a ~1.4 kB vector; (10)
+`consoleColorAndStyle()` had its stream selection inverted, so
+`COutputLogger`'s error-level color codes went to stdout while the text went
+to stderr; (11) `CFileSystemWatcher`'s destructor never joined the watch
+thread it starts on Windows, so destroying one called `std::terminate()` --
+the new tests are the first code to ever destroy one. `mrpt::io::CompressionType`
+was also defined twice, identically, in `detect_compression.h` and
+`compression_options.h`, so including both headers did not compile.
+
+Left documented rather than changed:
+
+* `CClientTCPSocket::connect()` implements the "wait until the connection
+  attempt completes" step only for Linux (`epoll_wait`) and Apple
+  (`select`) -- there is no Windows branch, so a connection to a closed port
+  is reported as established there and the first `writeAsync()` then blocks
+  forever (its `select()` only watches the write set, while Winsock signals a
+  failed connect through the exception set). The two tests that depend on a
+  refused connection being noticed `GTEST_SKIP()` on Windows.
+* `CFileGZInputStream(fileName)` and `CCompressedInputStream(fileName)` both
+  document `\exception std::exception If there's an error opening the file`
+  but ignore `open()`'s result, silently yielding a closed stream; their
+  output counterparts do throw. Making them throw would change the contract
+  of `zip::decompress_gz_file()`, which relies on the current behavior.
+* `mrpt_rtti`'s remaining uncovered lines are almost entirely the deferred
+  class-registration queue (`pending_class_registers()`,
+  `queue_register_functions_t`, and the drain loop in
+  `registerAllPendingClasses()`): nothing in the repo ever pushes to it, so
+  it is dead code left over from MRPT 1.x's `CLASS_INIT` mechanism.
+  Removing it would take the module to ~94%.
+
 ### Weak areas, grouped by root cause
 
-1. **Hardware drivers — `mrpt_hwdrivers` (13.9%), most of `mrpt_comms` (23.4%)**:
-   inherently hard to unit-test since they talk to real serial ports/USB/GPS/
-   LIDAR/cameras (`CHokuyoURG`, `CSickLaserSerial`, `COpenNI2Generic`,
-   `CVelodyneScanner`, `CSerialPort`, `CNTRIPClient`, `CKinect`, etc., all at
-   0%). Improving this needs a mockable transport layer (inject a fake
-   `CStream`/socket) rather than plain unit tests against hardware.
+1. **Hardware drivers - `mrpt_hwdrivers` (13.9%)**: inherently hard to
+   unit-test since they talk to real serial ports/USB/GPS/LIDAR/cameras
+   (`CHokuyoURG`, `CSickLaserSerial`, `COpenNI2Generic`, `CVelodyneScanner`,
+   `CNTRIPClient`, `CKinect`, etc., all at 0%). Improving this needs a
+   mockable transport layer (inject a fake `CStream`/socket) rather than
+   plain unit tests against hardware. `mrpt_comms` cleared this bucket on
+   2026-08-29 (see » above): everything but `CInterfaceFTDI` turned out to be
+   testable over loopback sockets and a pseudo-terminal.
 
 2. **GUI/rendering — `mrpt_gui` (0.5%), `mrpt_imgui` (0%), and GUI-only files
    inside `mrpt_viz`/`mrpt_opengl`**: `mathplot.cpp`, `CDisplayWindow*.cpp`,
@@ -709,8 +785,11 @@ entirely and stay on the set-point), so the two cannot drift apart again.
 
 4. **Quick wins — pure-logic files at 0% with no hardware/GUI dependency**
    (highest-value gaps, ordinary unit tests would work immediately):
-   `mrpt_graphslam/src/CWindowObserver.cpp`,
-   `mrpt_system/src/CFileSystemWatcher.cpp`.
+   `mrpt_graphslam/src/CWindowObserver.cpp`.
+   (`mrpt_system/src/CFileSystemWatcher.cpp`, `mrpt_system/src/{progress,
+   hyperlink,CObserver}.cpp`, `mrpt_io/src/{detect_compression,
+   lazy_load_path}.cpp` and `mrpt_comms/src/{net_utils,CSerialPort}.cpp` all
+   cleared this bucket as of 2026-08-29 — see » above.)
    (`mrpt_system/src/md5.cpp`, `mrpt_graphslam/src/{CEdgeCounter,
    TSlidingWindow}.cpp` and
    `mrpt_slam/src/slam/CRejectionSamplingRangeOnlyLocalization.cpp` all
@@ -736,8 +815,13 @@ entirely and stay on the set-point), so the two cannot drift apart again.
    2026-07-17 — see § above.)
 
 6. **Near-target modules (75-90%), smallest remaining gap to close first**:
-   none currently flagged.
-   (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06;
+   `mrpt_system` (82.6%; `CTimeLogger.cpp`, `COutputLogger.cpp` and
+   `filesystem.cpp` are what is left), `mrpt_rtti` (85.8%, but see the dead
+   registration queue noted in » above), `mrpt_io` (86.5%; `CPipe.cpp` needs
+   child processes), `mrpt_comms` (75.8%; the rest is `CInterfaceFTDI`, which
+   needs a real FTDI device).
+   (`mrpt_serialization` cleared this bucket as of 2026-08-29, now at 96.6%;
+   `mrpt_graphs` and `mrpt_random` cleared it as of 2026-07-06;
    `mrpt_bayes` and `mrpt_config` cleared it as of 2026-07-09, both now >96%;
    `mrpt_obs` improved to 87.0% as of 2026-07-10 but is still within this
    range; `mrpt_containers` cleared it as of 2026-07-11, now at 92.9%,
