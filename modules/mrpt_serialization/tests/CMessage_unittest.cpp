@@ -69,6 +69,24 @@ TEST(CMessage, largeFrameRoundTrip)
   checkFrameRoundTrip(9, big);
 }
 
+TEST(CMessage, largestRepresentableFrameRoundTrip)
+{
+  // 65535 bytes is the largest payload the 16-bit length field can describe:
+  checkFrameRoundTrip(1, std::vector<uint8_t>(0xffff, 0xEF));
+}
+
+TEST(CMessage, oversizedPayloadIsRejected)
+{
+  CMessage msg;
+  msg.type = 1;
+  msg.content.assign(0x10000, 0x01);  // one byte too long
+
+  std::vector<uint8_t> v;
+  auto a = archiveFrom(v);
+  EXPECT_ANY_THROW(a.sendMessage(msg));
+  EXPECT_TRUE(v.empty());
+}
+
 TEST(CMessage, receiveMessageFromEmptyStreamFails)
 {
   std::vector<uint8_t> v;

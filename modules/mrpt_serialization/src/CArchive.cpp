@@ -27,6 +27,9 @@ using namespace mrpt::serialization;
 
 const uint8_t SERIALIZATION_END_FLAG = 0x88;
 
+/** Largest payload describable by sendMessage()'s 16-bit length field. */
+constexpr std::size_t MAX_MESSAGE_PAYLOAD_LEN = 0xffff;
+
 size_t CArchive::ReadBuffer(void* Buffer, size_t Count)
 {
   ASSERT_(Buffer != nullptr);
@@ -544,6 +547,16 @@ CArchive& mrpt::serialization::operator>>(CArchive& s, std::vector<std::string>&
 void CArchive::sendMessage(const CMessage& msg)
 {
   MRPT_START
+
+  // The frame's length field is 16 bits wide, so anything longer cannot be
+  // described by the format at all: without this check the length would
+  // silently wrap around and, past ~64 KiB, the payload copy below would run
+  // past the end of the frame buffer.
+  ASSERTMSG_(
+      msg.content.size() <= MAX_MESSAGE_PAYLOAD_LEN,
+      mrpt::format(
+          "Message payload is too long (%zu bytes) for the frame format (max: %u bytes)",
+          msg.content.size(), static_cast<unsigned int>(MAX_MESSAGE_PAYLOAD_LEN)));
 
   std::array<uint8_t, 0x10100> buf{};
   std::size_t nBytesTx = 0;
