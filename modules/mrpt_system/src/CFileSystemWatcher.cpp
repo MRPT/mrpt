@@ -109,9 +109,8 @@ CFileSystemWatcher::~CFileSystemWatcher()
   // Windows version:
   if (m_hNotif)
   {
-    // Make the watch thread's pending ReadDirectoryChangesW() return, so that
-    // it can finish and be joined below:
-    CancelIoEx(HANDLE(m_hNotif), nullptr);
+    // Closing the handle makes the watch thread's pending
+    // ReadDirectoryChangesW() fail, so that it returns and can be joined:
     CloseHandle(HANDLE(m_hNotif));
     m_hNotif = nullptr;
   }
