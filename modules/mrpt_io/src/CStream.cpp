@@ -87,6 +87,9 @@ bool CStream::getline(std::string& out_str)
       out_str.resize(N + 1);
       if (!Read(&out_str[N], 1))
       {
+        // End of stream: drop the byte slot that was never filled, so that
+        // the caller does not get a spurious trailing character.
+        out_str.resize(N);
         return false;
       }
 

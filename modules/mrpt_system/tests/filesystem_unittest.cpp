@@ -15,6 +15,9 @@
 #include <gtest/gtest.h>
 #include <mrpt/system/filesystem.h>
 
+#include <cstdio>
+#include <fstream>
+
 using namespace mrpt;
 using namespace std;
 
@@ -101,4 +104,21 @@ TEST(FileSystem, pathJoin)
       mrpt::system::pathJoin({"/home", "joe", "p.ini"}),  //
       "/home/joe/p.ini");
 #endif
+}
+
+TEST(FileSystem, getFileSize)
+{
+  const std::string fname = mrpt::system::getTempFileName() + "_getFileSize";
+  {
+    std::ofstream f(fname, std::ios::binary);
+    ASSERT_TRUE(f.is_open());
+    f << "0123456789";
+  }
+  EXPECT_EQ(mrpt::system::getFileSize(fname), 10U);
+
+  std::remove(fname.c_str());
+
+  // A missing file is reported by the return value, never by an exception:
+  EXPECT_EQ(mrpt::system::getFileSize(fname), static_cast<uint64_t>(-1));
+  EXPECT_EQ(mrpt::system::getFileSize(""), static_cast<uint64_t>(-1));
 }
