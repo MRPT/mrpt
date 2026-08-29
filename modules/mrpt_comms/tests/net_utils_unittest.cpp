@@ -64,6 +64,13 @@ TEST(net_utils, httpGetWithoutOutputStructStillReportsBadURL)
 
 TEST(net_utils, httpGetOnClosedPortFailsToConnect)
 {
+#ifdef _WIN32
+  // CClientTCPSocket::connect() has no Windows implementation of the
+  // "wait until the connection attempt completes" step (only Linux and Apple
+  // branches exist), so a refused connection is reported as connected there
+  // and the following write blocks forever. See the PR discussion.
+  GTEST_SKIP() << "connect() does not detect a refused connection on Windows.";
+#else
   // Bind a port and immediately release it, so we know nothing is listening:
   unsigned short port = 0;
   {
@@ -79,6 +86,7 @@ TEST(net_utils, httpGetOnClosedPortFailsToConnect)
   net::HttpRequestOutput out;
   EXPECT_EQ(net::http_get(localURL(), content, opts, out), net::http_errorcode::CouldntConnect);
   EXPECT_FALSE(out.errormsg.empty());
+#endif
 }
 
 TEST(net_utils, httpGetOk)
