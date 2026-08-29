@@ -109,21 +109,38 @@ CFileSystemWatcher::~CFileSystemWatcher()
   // Windows version:
   if (m_hNotif)
   {
-    // Kill thread:
+    // Closing the handle makes the watch thread's pending
+    // ReadDirectoryChangesW() fail, so that it returns and can be joined:
     CloseHandle(HANDLE(m_hNotif));
     m_hNotif = nullptr;
   }
+  // Destroying a joinable std::thread calls std::terminate():
+  if (m_watchThread.joinable())
+  {
+    m_watchThread.join();
+  }
+  // Drop whatever the thread queued and nobody read:
+  {
+    std::lock_guard<std::mutex> lock(m_queue_events_win32_cs);
+    while (!m_queue_events_win32_msgs.empty())
+    {
+      delete m_queue_events_win32_msgs.front();
+      m_queue_events_win32_msgs.pop();
+    }
+  }
 #else
 #if MRPT_HAS_INOTIFY
-  // Linux version:
+  // Linux version: remove the watch before closing the descriptor it belongs
+  // to, not after.
   if (m_fd >= 0)
   {
-    close(m_fd);
-    m_fd = -1;
     if (m_wd >= 0)
     {
       inotify_rm_watch(m_fd, m_wd);
+      m_wd = -1;
     }
+    close(m_fd);
+    m_fd = -1;
   }
 #endif
 #endif

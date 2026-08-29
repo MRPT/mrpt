@@ -55,6 +55,11 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CTimeLogger_unittest.cpp
   tests/string_utils_unittest.cpp
   tests/filesystem_unittest.cpp
+  tests/CFileSystemWatcher_unittest.cpp
+  tests/CObserver_unittest.cpp
+  tests/misc_system_unittest.cpp
+  tests/os_unittest.cpp
+  tests/datetime_format_unittest.cpp
   tests/thread_name_unittest.cpp
   tests/datetime_unittest.cpp
   tests/base64_unittest.cpp

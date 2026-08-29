@@ -27,6 +27,7 @@
 #include <sys/wait.h>
 #endif
 
+#include <array>
 #include <cctype>
 #include <cerrno>
 #include <cfloat>
@@ -508,21 +509,28 @@ void consoleColorAndStyle(
   static std::mutex mtx;
   std::lock_guard<std::mutex> lck(mtx);
 
-  static ConsoleForegroundColor last_fg = ConsoleForegroundColor::DEFAULT;
-  static ConsoleBackgroundColor last_bg = ConsoleBackgroundColor::DEFAULT;
-  static ConsoleTextStyle last_style = ConsoleTextStyle::REGULAR;
+  // The two streams carry independent escape-sequence state, so what was last
+  // emitted must be remembered for each of them separately:
+  static std::array<ConsoleForegroundColor, 2> last_fg = {
+      ConsoleForegroundColor::DEFAULT, ConsoleForegroundColor::DEFAULT};
+  static std::array<ConsoleBackgroundColor, 2> last_bg = {
+      ConsoleBackgroundColor::DEFAULT, ConsoleBackgroundColor::DEFAULT};
+  static std::array<ConsoleTextStyle, 2> last_style = {
+      ConsoleTextStyle::REGULAR, ConsoleTextStyle::REGULAR};
 
-  if (fg == last_fg && bg == last_bg && style == last_style)
+  const size_t idx = applyToStdErr ? 1 : 0;
+
+  if (fg == last_fg[idx] && bg == last_bg[idx] && style == last_style[idx])
   {
     return;
   }
-  last_fg = fg;
-  last_bg = bg;
-  last_style = style;
+  last_fg[idx] = fg;
+  last_bg[idx] = bg;
+  last_style[idx] = style;
 
   // *nix:
-  FILE* f = applyToStdErr ? stdout : stderr;
-  const int fd = applyToStdErr ? STDOUT_FILENO : STDERR_FILENO;
+  FILE* f = applyToStdErr ? stderr : stdout;
+  const int fd = applyToStdErr ? STDERR_FILENO : STDOUT_FILENO;
 
   // No color support if it is not a real console:
   if (!isatty(fd))
