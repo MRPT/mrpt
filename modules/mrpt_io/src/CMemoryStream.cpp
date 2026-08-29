@@ -103,7 +103,7 @@ void CMemoryStream::resize(uint64_t newSize)
 size_t CMemoryStream::Read(void* Buffer, size_t Count)
 {
   // enough bytes?
-  const long maxAvail = static_cast<long>(m_bytesWritten) - static_cast<long>(m_position);
+  const int64_t maxAvail = static_cast<int64_t>(m_bytesWritten) - static_cast<int64_t>(m_position);
   size_t nToRead = std::min<size_t>(Count, maxAvail > 0 ? static_cast<size_t>(maxAvail) : 0);
 
   // Copy the memory block:
@@ -142,24 +142,33 @@ size_t CMemoryStream::Write(const void* Buffer, size_t Count)
 
 uint64_t CMemoryStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 {
+  int64_t newPos = 0;
   switch (Origin)
   {
     case sFromBeginning:
-      m_position = static_cast<uint64_t>(Offset);
+      newPos = Offset;
       break;
     case sFromCurrent:
-      m_position += static_cast<uint64_t>(Offset);
+      newPos = static_cast<int64_t>(m_position) + Offset;
       break;
     case sFromEnd:
-      m_position = m_bytesWritten - 1 + static_cast<uint64_t>(Origin);
+      newPos = static_cast<int64_t>(m_bytesWritten) + Offset;
       break;
   };
 
-  if (m_position >= m_size)
+  // Clamp to the range of valid cursor positions. Note that the
+  // one-past-the-last-byte position is valid: it is where a subsequent
+  // Write() appends.
+  if (newPos < 0)
   {
-    m_position = m_size - 1;
+    newPos = 0;
+  }
+  if (newPos > static_cast<int64_t>(m_bytesWritten))
+  {
+    newPos = static_cast<int64_t>(m_bytesWritten);
   }
 
+  m_position = static_cast<uint64_t>(newPos);
   return m_position;
 }
 
