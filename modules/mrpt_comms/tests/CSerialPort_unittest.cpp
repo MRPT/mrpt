@@ -77,6 +77,7 @@ TEST(CSerialPort, openingAnEmptyOrMissingDeviceThrows)
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 
 #include <fcntl.h>
+#include <sys/select.h>
 #include <termios.h>
 #include <unistd.h>
 
@@ -136,9 +137,21 @@ class PtyPair
     return ::write(m_master, s.data(), s.size()) == static_cast<ssize_t>(s.size());
   }
 
-  /** Reads back whatever the port wrote out. */
-  [[nodiscard]] std::string receiveFromPort(size_t maxBytes) const
+  /** Reads back whatever the port wrote out, giving up after `timeoutMs`. */
+  [[nodiscard]] std::string receiveFromPort(size_t maxBytes, int timeoutMs = 3000) const
   {
+    fd_set rd;
+    FD_ZERO(&rd);
+    FD_SET(m_master, &rd);
+    timeval tv{};
+    tv.tv_sec = timeoutMs / 1000;
+    tv.tv_usec = 1000 * (timeoutMs % 1000);
+
+    if (::select(m_master + 1, &rd, nullptr, nullptr, &tv) <= 0)
+    {
+      return {};
+    }
+
     std::string out(maxBytes, '\0');
     const ssize_t n = ::read(m_master, out.data(), maxBytes);
     out.resize(n > 0 ? static_cast<size_t>(n) : 0);
@@ -234,9 +247,16 @@ TEST(CSerialPort, writeReachesTheOtherEnd)
   port.setTimeouts(1, 0, 200, 1, 200);
 
   const std::string msg = "PING\r\n";
-  EXPECT_EQ(port.Write(msg.data(), msg.size()), msg.size());
 
-  EXPECT_EQ(pty.receiveFromPort(64), msg);
+  // CSerialPort::Write() ends with tcdrain(), which on some platforms blocks
+  // until the far end consumes the data, so read it concurrently:
+  std::string received;
+  std::thread reader([&]() { received = pty.receiveFromPort(64); });
+
+  EXPECT_EQ(port.Write(msg.data(), msg.size()), msg.size());
+  reader.join();
+
+  EXPECT_EQ(received, msg);
 }
 
 TEST(CSerialPort, readReceivesIncomingBytes)
