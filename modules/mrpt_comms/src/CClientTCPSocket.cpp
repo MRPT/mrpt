@@ -369,7 +369,10 @@ void CClientTCPSocket::connect(
   // Save the IP of the other part.
   m_remotePartIP = remotePartAddress;
 
-  MRPT_END
+  MRPT_END_WITH_CLEAN_UP(
+      // A failed connect() must leave no half-open socket behind, so that this
+      // object looks exactly like a freshly-constructed one:
+      try { close(); } catch (const std::exception&){});
 }
 
 bool CClientTCPSocket::isConnected() const { return (m_hSock != INVALID_SOCKET); }
