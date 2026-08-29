@@ -49,7 +49,17 @@ struct SocketPair
     }
 
     std::thread th([&]() { serverSide = server->accept(5000); });
-    clientSide.connect("127.0.0.1", port, 5000);
+    try
+    {
+      clientSide.connect("127.0.0.1", port, 5000);
+    }
+    catch (...)
+    {
+      // The accept thread must be joined before it is destroyed, whatever
+      // happens on this side:
+      th.join();
+      throw;
+    }
     th.join();
 
     connected = serverSide != nullptr;

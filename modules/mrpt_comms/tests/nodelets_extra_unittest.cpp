@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/comms/nodelets.h>
 
+#include <memory>
 #include <string>
 
 using namespace mrpt::comms;
@@ -35,16 +36,18 @@ TEST(nodelets, topicIsRecreatedAfterItsLastReferenceIsDropped)
 {
   auto dir = TopicDirectory::create();
 
-  Topic* firstAddress = nullptr;
+  std::weak_ptr<Topic> firstTopic;
   {
     auto t = dir->getTopic("/transient");
-    firstAddress = t.get();
-    EXPECT_NE(firstAddress, nullptr);
+    ASSERT_TRUE(t);
+    firstTopic = t;
   }
-  // The directory only holds weak references, so the entry is gone by now and
-  // asking again builds a fresh Topic:
+  // The directory only holds weak references, so the entry is gone by now...
+  EXPECT_TRUE(firstTopic.expired());
+
+  // ...and asking again builds a fresh Topic:
   auto t2 = dir->getTopic("/transient");
-  EXPECT_NE(t2.get(), nullptr);
+  EXPECT_TRUE(t2);
 }
 
 TEST(nodelets, publishReachesEverySubscriber)
