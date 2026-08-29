@@ -330,7 +330,15 @@ std::string mrpt::system::fileNameStripInvalidChars(
 ---------------------------------------------------------------*/
 uint64_t mrpt::system::getFileSize(const std::string& fileName)
 {
-  return fs::file_size(fs::path(fileName));
+  // Use the error_code overload: this function is documented to report errors
+  // via its return value, not by throwing.
+  std::error_code ec;
+  const auto sz = fs::file_size(fs::path(fileName), ec);
+  if (ec)
+  {
+    return static_cast<uint64_t>(-1);
+  }
+  return sz;
 }
 
 /** Replace the filename extension by another one.  */

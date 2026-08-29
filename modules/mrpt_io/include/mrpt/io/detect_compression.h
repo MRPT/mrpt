@@ -13,28 +13,14 @@
 */
 #pragma once
 
-#include <cstdint>
+// Note: mrpt::io::CompressionType, the enum returned by detect_compression(),
+// is defined here, shared with the compressed stream classes:
+#include <mrpt/io/compression_options.h>
+
 #include <string>
 
 namespace mrpt::io
 {
-/** \brief Enumeration of supported compression formats.
- *
- * This enum represents the compression type detected from a file's
- * leading magic bytes.
- */
-enum class CompressionType : uint8_t
-{
-  /** Not compressed, or unsupported format */
-  None = 0,
-
-  /** Gzip-compressed stream (RFC 1952) */
-  Gzip,
-
-  /** Zstandard-compressed stream (including skippable frames) */
-  Zstd
-};
-
 /** \brief Detects whether a file is gzip- or Zstandard-compressed, or none.
  *
  * This function inspects the magic bytes at the beginning of the file
