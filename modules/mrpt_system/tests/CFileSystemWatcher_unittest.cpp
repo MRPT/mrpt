@@ -94,8 +94,16 @@ bool anyChangeMatches(
 
 TEST(CFileSystemWatcher, watchingAMissingDirectoryThrows)
 {
+#if !MRPT_HAS_INOTIFY && !defined(_WIN32)
+  // Without notification support the constructor does nothing at all, so it
+  // has no chance to notice that the directory is missing:
+  GTEST_SKIP() << "This platform has no file system notification support.";
+#else
   EXPECT_ANY_THROW(CFileSystemWatcher(mrpt::system::getTempFileName() + "_does_not_exist"));
+#endif
 }
+
+TEST(CFileSystemWatcher, watchingAnEmptyPathThrows) { EXPECT_ANY_THROW(CFileSystemWatcher("")); }
 
 TEST(CFileSystemWatcher, noChangesOnAQuietDirectory)
 {
