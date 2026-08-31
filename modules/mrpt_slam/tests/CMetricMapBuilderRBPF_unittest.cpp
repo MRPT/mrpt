@@ -83,8 +83,9 @@ void runShortSession(CMetricMapBuilderRBPF& b, size_t nSteps = 5)
 
   // First observation, with no movement:
   {
-    auto acts = makeOdometryAction(mrpt::poses::CPose2D(0, 0, 0));
-    auto sf = simulateSF(gtPose);
+    const auto t = mrpt::test::nextTimestamp();
+    auto acts = makeOdometryAction(mrpt::poses::CPose2D(0, 0, 0), t);
+    auto sf = simulateSF(gtPose, t);
     b.processActionObservation(*acts, *sf);
   }
 
@@ -93,8 +94,9 @@ void runShortSession(CMetricMapBuilderRBPF& b, size_t nSteps = 5)
     const mrpt::poses::CPose2D incr(0.4, 0, 0);
     gtPose = gtPose + incr;
 
-    auto acts = makeOdometryAction(incr);
-    auto sf = simulateSF(gtPose);
+    const auto t = mrpt::test::nextTimestamp();
+    auto acts = makeOdometryAction(incr, t);
+    auto sf = simulateSF(gtPose, t);
     b.processActionObservation(*acts, *sf);
   }
 }
@@ -414,10 +416,11 @@ const std::vector<mrpt::math::TPoint3D>& beaconPositions()
   return pts;
 }
 
-mrpt::obs::CSensoryFrame::Ptr simulateBeaconRanges(const mrpt::poses::CPose2D& robotPose)
+mrpt::obs::CSensoryFrame::Ptr simulateBeaconRanges(
+    const mrpt::poses::CPose2D& robotPose, const mrpt::system::TTimeStamp t)
 {
   auto obs = mrpt::obs::CObservationBeaconRanges::Create();
-  obs->timestamp = mrpt::Clock::now();
+  obs->timestamp = t;
   obs->stdError = 0.05f;
 
   int64_t id = 0;
@@ -465,16 +468,18 @@ void runRangeOnlySession(CMetricMapBuilderRBPF& b, size_t nSteps = 4)
 {
   mrpt::poses::CPose2D gtPose(0, 0, 0);
   {
-    auto acts = makeOdometryAction(mrpt::poses::CPose2D(0, 0, 0));
-    auto sf = simulateBeaconRanges(gtPose);
+    const auto t = mrpt::test::nextTimestamp();
+    auto acts = makeOdometryAction(mrpt::poses::CPose2D(0, 0, 0), t);
+    auto sf = simulateBeaconRanges(gtPose, t);
     b.processActionObservation(*acts, *sf);
   }
   for (size_t i = 0; i < nSteps; i++)
   {
     const mrpt::poses::CPose2D incr(0.3, 0, 0);
     gtPose = gtPose + incr;
-    auto acts = makeOdometryAction(incr);
-    auto sf = simulateBeaconRanges(gtPose);
+    const auto t = mrpt::test::nextTimestamp();
+    auto acts = makeOdometryAction(incr, t);
+    auto sf = simulateBeaconRanges(gtPose, t);
     b.processActionObservation(*acts, *sf);
   }
 }

@@ -826,6 +826,17 @@ Worth knowing for future tests here:
 * The beacon branch of the RBPF optimal proposal only handles `pdfGauss`/
   `pdfSOG` beacons, so a `CBeaconMap` feeding it needs
   `insertionOpts.insertAsMonteCarlo = false`.
+* Do **not** timestamp simulated observations/actions with one
+  `mrpt::Clock::now()` call per step: on Windows its resolution (~15 ms) is
+  coarse enough that consecutive calls return the *same* value, and
+  `CRobot2DPoseEstimator::processUpdateNewOdometry()` then drops every update
+  ("Diff. in timestamps between odometry should be >0"), so the ICP builder's
+  pose never advances. `slam_synthetic_room.h::nextTimestamp()` hands out
+  timestamps 100 ms apart instead; give the action and the observation of the
+  same step the *same* one, or the pose gets extrapolated twice.
+* `RecursiveSpectralPartition()` returns a stable set of clusters, but their
+  order depends on the sign of the eigenvector and differs between platforms:
+  sort them before comparing.
 
 ### Weak areas, grouped by root cause
 

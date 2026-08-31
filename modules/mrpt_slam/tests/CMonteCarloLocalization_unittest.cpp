@@ -65,16 +65,18 @@ mrpt::poses::CPose3D runLocalization(
 
   mrpt::poses::CPose2D gtPose(-2.0, 0.0, 0.0);
   {
-    auto acts = makeOdometryAction(mrpt::poses::CPose2D(0, 0, 0));
-    auto sf = simulateSF(gtPose);
+    const auto t = mrpt::test::nextTimestamp();
+    auto acts = makeOdometryAction(mrpt::poses::CPose2D(0, 0, 0), t);
+    auto sf = simulateSF(gtPose, t);
     pf.executeOn(pdf, acts.get(), sf.get());
   }
   for (size_t i = 0; i < nSteps; i++)
   {
     const mrpt::poses::CPose2D incr(0.3, 0, 0);
     gtPose = gtPose + incr;
-    auto acts = makeOdometryAction(incr);
-    auto sf = simulateSF(gtPose);
+    const auto t = mrpt::test::nextTimestamp();
+    auto acts = makeOdometryAction(incr, t);
+    auto sf = simulateSF(gtPose, t);
     pf.executeOn(pdf, acts.get(), sf.get());
   }
   return mrpt::poses::CPose3D(gtPose);

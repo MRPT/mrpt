@@ -62,17 +62,21 @@ mrpt::poses::CPose2D runShortSession(CMetricMapBuilderICP& b, size_t nSteps = 5)
 {
   mrpt::poses::CPose2D gtPose(-2.0, 0.0, 0.0);
 
-  auto acts0 = makeOdometryAction(mrpt::poses::CPose2D(0, 0, 0));
-  auto sf0 = simulateSF(gtPose);
-  b.processActionObservation(*acts0, *sf0);
+  {
+    const auto t = mrpt::test::nextTimestamp();
+    auto acts0 = makeOdometryAction(mrpt::poses::CPose2D(0, 0, 0), t);
+    auto sf0 = simulateSF(gtPose, t);
+    b.processActionObservation(*acts0, *sf0);
+  }
 
   for (size_t i = 0; i < nSteps; i++)
   {
     const mrpt::poses::CPose2D incr(0.4, 0, 0);
     gtPose = gtPose + incr;
 
-    auto acts = makeOdometryAction(incr);
-    auto sf = simulateSF(gtPose);
+    const auto t = mrpt::test::nextTimestamp();
+    auto acts = makeOdometryAction(incr, t);
+    auto sf = simulateSF(gtPose, t);
     b.processActionObservation(*acts, *sf);
   }
   return gtPose;
@@ -147,12 +151,13 @@ TEST(CMetricMapBuilderICP, usesGridAltitudeFilter)
   EXPECT_GT(nAtAltitude, 0U);
 
   // ...while one at a different altitude cannot feed ICP:
-  auto sf = simulateSF(mrpt::poses::CPose2D(0, 0, 0));
+  const auto t = mrpt::test::nextTimestamp();
+  auto sf = simulateSF(mrpt::poses::CPose2D(0, 0, 0), t);
   auto scan =
       std::dynamic_pointer_cast<mrpt::obs::CObservation2DRangeScan>(sf->getObservationByIndex(0));
   ASSERT_TRUE(scan);
   scan->sensorPose = mrpt::poses::CPose3D(0, 0, 5.0, 0, 0, 0);
-  auto acts = makeOdometryAction(mrpt::poses::CPose2D(1.0, 0, 0));
+  auto acts = makeOdometryAction(mrpt::poses::CPose2D(1.0, 0, 0), t);
   EXPECT_NO_THROW(b.processActionObservation(*acts, *sf));
 }
 
@@ -163,7 +168,7 @@ TEST(CMetricMapBuilderICP, refusesToRunWithoutMaps)
   b.ICP_options.mapInitializers.clear();
   b.initialize();
 
-  auto sf = simulateSF(mrpt::poses::CPose2D(0, 0, 0));
+  auto sf = simulateSF(mrpt::poses::CPose2D(0, 0, 0), mrpt::test::nextTimestamp());
   EXPECT_THROW(b.processObservation(sf->getObservationByIndex(0)), std::exception);
 }
 
@@ -203,7 +208,7 @@ TEST(CMetricMapBuilderICP, observationsWithoutTimestamp)
   CMetricMapBuilderICP b;
   setDefaultMaps(b);
 
-  auto sf = simulateSF(mrpt::poses::CPose2D(0, 0, 0));
+  auto sf = simulateSF(mrpt::poses::CPose2D(0, 0, 0), mrpt::test::nextTimestamp());
   auto obs = sf->getObservationByIndex(0);
   obs->timestamp = INVALID_TIMESTAMP;
   EXPECT_NO_THROW(b.processObservation(obs));
