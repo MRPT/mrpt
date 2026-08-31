@@ -55,8 +55,15 @@ struct TMetricMapInitializer : public mrpt::config::CLoadableOptions
   void loadFromConfigFile(
       const mrpt::config::CConfigFileBase& source,
       const std::string& sectionNamePrefix) override;  // See base docs
+  /** Saves the params to a config file, using the same section names read
+   * back by loadFromConfigFile().
+   * \note Only the common `genericMapParams` are saved: map-specific options
+   * (`<sectionNamePrefix>_insertOpts`, `_likelihoodOpts`, ...) have no
+   * saving counterpart to `loadFromConfigFile_map_specific()`, so a
+   * save/load round trip restores the list of maps and their generic params,
+   * but leaves the map-specific ones at their defaults. */
   void saveToConfigFile(
-      mrpt::config::CConfigFileBase& target, const std::string& section) const override;
+      mrpt::config::CConfigFileBase& target, const std::string& sectionNamePrefix) const override;
   void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
   /** Query the map type (C++ class), as set by the factory method

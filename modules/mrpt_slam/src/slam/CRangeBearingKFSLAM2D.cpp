@@ -750,6 +750,17 @@ void CRangeBearingKFSLAM2D::TOptions::dumpToTextStream(std::ostream& out) const
 
   out << "\n----------- [CRangeBearingKFSLAM2D::TOptions] ------------ \n\n";
 
+  out << mrpt::format("std_sensor_range                        = %f m\n", std_sensor_range);
+  out << mrpt::format(
+      "std_sensor_yaw                          = %f deg\n", RAD2DEG(std_sensor_yaw));
+  // Same units as in the config file: the third component is a heading.
+  out << mrpt::format(
+      "stds_Q_no_odo                           = [%f m, %f m, %f deg]\n", stds_Q_no_odo[0],
+      stds_Q_no_odo[1], RAD2DEG(stds_Q_no_odo[2]));
+  out << mrpt::format(
+      "create_simplemap                        = %c\n", create_simplemap ? 'Y' : 'N');
+  out << mrpt::format(
+      "quantiles_3D_representation             = %f\n", quantiles_3D_representation);
   out << mrpt::format(
       "data_assoc_method                       = %s\n",
       TEnumType<TDataAssociationMethod>::value2name(data_assoc_method).c_str());

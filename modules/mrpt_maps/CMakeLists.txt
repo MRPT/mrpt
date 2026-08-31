@@ -65,6 +65,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CHeightGridMap2Ds_unittest.cpp
   tests/CLogOddsGridMapLUT_unittest.cpp
   tests/CMultiMetricMap_unittest.cpp
+  tests/TSetOfMetricMapInitializers_unittest.cpp
   tests/CObservation3DRangeScan_unittest.cpp
   tests/CObservationPointCloud_unittest.cpp
   tests/CObservationRotatingScan_unittest.cpp

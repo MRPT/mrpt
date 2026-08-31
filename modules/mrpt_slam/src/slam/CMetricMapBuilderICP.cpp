@@ -564,7 +564,8 @@ void CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string& file)
 
   // grid map as bitmap:
   auto pGrid = metricMap.mapByClass<COccupancyGridMap2D>();
-  if (pGrid) pGrid->getAsImage(img);
+  ASSERTMSG_(pGrid, "A gridmap is required to render the current estimation");
+  pGrid->getAsImage(img);
 
   int imgHeight = static_cast<int>(img.getHeight());
 

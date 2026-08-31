@@ -70,9 +70,10 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
   MRPT_LOAD_CONFIG_VAR(forceBisectionOnly, bool, source, section);
   MRPT_LOAD_CONFIG_VAR(simil_method, enum, source, section);
   MRPT_LOAD_CONFIG_VAR(minimumNumberElementsEachCluster, uint64_t, source, section);
-  MRPT_LOAD_HERE_CONFIG_VAR("minDistForCorrespondence", float, mrp.maxDistForCorr, source, section);
+  // Note: the first macro argument is stringified, so it must NOT be quoted.
+  MRPT_LOAD_HERE_CONFIG_VAR(minDistForCorrespondence, float, mrp.maxDistForCorr, source, section);
   MRPT_LOAD_HERE_CONFIG_VAR(
-      "minMahaDistForCorrespondence", float, mrp.maxMahaDistForCorr, source, section);
+      minMahaDistForCorrespondence, float, mrp.maxMahaDistForCorr, source, section);
   MRPT_LOAD_CONFIG_VAR(maxKeyFrameDistanceToEval, uint64_t, source, section);
 
   mrpt::config::CConfigFilePrefixer cfp(source, section + std::string("."), "");
@@ -195,9 +196,11 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 
         auto relPose = pose_j - pose_i;
 
-        // Evaluate similarity metric & make it symetric:
+        // Evaluate similarity metric & make it symetric. Note that the
+        // relative pose must be inverted for the swapped evaluation, since
+        // it is always expected as "kf2 with respect to kf1":
         const auto s_ij = sim_func(map_i, map_j, relPose);
-        const auto s_ji = sim_func(map_j, map_i, relPose);
+        const auto s_ji = sim_func(map_j, map_i, -relPose);
         s_sym = 0.5 * (s_ij + s_ji);
       }
       m_A(i, j) = m_A(j, i) = s_sym;
@@ -310,14 +313,12 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
   for (auto it = indexesToRemove.rbegin(); it != indexesToRemove.rend(); ++it)
     m_individualFrames.remove(*it);
 
-  // Change coordinates reference of frames:
+  // Change coordinates reference of frames, so the first one lies at the
+  // origin:
   if (changeCoordsRef)
   {
     ASSERT_(m_individualFrames.size() > 0);
-    const auto& kf = m_individualFrames.get(0);
-
-    const CPose3D p = kf.pose->getMeanVal();
-    m_individualFrames.changeCoordinatesOrigin(p);
+    changeCoordinatesOriginPoseIndex(0);
   }
 
   // All done!

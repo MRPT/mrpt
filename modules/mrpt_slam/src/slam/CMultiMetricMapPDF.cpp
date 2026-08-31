@@ -264,6 +264,7 @@ TPose3D CMultiMetricMapPDF::getLastPose(size_t i, bool& is_valid_pose) const
   }
   else
   {
+    is_valid_pose = true;
     return *m_particles[i].d->robotPath.rbegin();
   }
 }

@@ -201,10 +201,10 @@ files needed changes.
 A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
-overall (2026-08-29, deduplicated the same way as
-`scripts/coverage_module_report.py`): **72.5% lines / 53.2% branches**
+overall (2026-08-31, deduplicated the same way as
+`scripts/coverage_module_report.py`): **73.6% lines / 54.4% branches**
 - still short of goal, dominated by the hardware/GUI modules below.
-The whole table below was re-measured on 2026-08-29; the date tags on some
+The whole table below was re-measured on 2026-08-31; the date tags on some
 rows mark when that module last had a dedicated unit-test pass, and point at
 the footnote describing it.
 
@@ -303,33 +303,33 @@ and accurate path — pick two.
 | mrpt_opengl | 2041/4234 | 48.2% | 30.3% |
 | mrpt_libapps_cli | 1129/1910 | 59.1% | 38.0% |
 | mrpt_libapps_gui | 803/1288 | 62.3% | 45.8% |
-| mrpt_slam (2026-08-28)¤ | 2919/4299 | 67.9% | 45.4% |
-| mrpt_viz (2026-08-02) | 6502/9440 | 68.9% | 50.5% |
+| mrpt_viz (2026-08-02) | 6511/9440 | 69.0% | 50.5% |
 | mrpt_common | 5/7 | 71.4% | 0.0% |
 | mrpt_graphslam (2026-08-28)¤ | 453/618 | 73.3% | 60.5% |
 | mrpt_comms (2026-08-29)» | 687/906 | 75.8% | 54.4% |
 | mrpt_examples_cpp | 99/128 | 77.3% | 46.3% |
 | mrpt_system (2026-08-29)» | 1622/1963 | 82.6% | 58.5% |
-| mrpt_rtti (2026-08-29)» | 151/176 | 85.8% | 75.1% |
-| mrpt_maps (2026-08-03)§ | 10108/11698 | 86.4% | 62.6% |
+| mrpt_rtti (2026-08-29)» | 151/176 | 85.8% | 77.4% |
+| mrpt_maps (2026-08-03)§ | 10118/11698 | 86.5% | 62.8% |
 | mrpt_io (2026-08-29)» | 1133/1310 | 86.5% | 69.7% |
-| mrpt_containers (2026-07-11) | 1632/1848 | 88.3% | 53.7%‡ |
-| mrpt_obs (2026-07-10) | 6054/6848 | 88.4% | 60.4% |
-| mrpt_math (2026-07-05) | 6808/7674 | 88.7% | 59.9% |
-| mrpt_core | 571/636 | 89.8% | 68.6% |
+| mrpt_containers (2026-07-11) | 1633/1848 | 88.4% | 54.4%‡ |
+| mrpt_obs (2026-07-10) | 6066/6856 | 88.5% | 61.0% |
+| mrpt_math (2026-07-05) | 6816/7674 | 88.8% | 60.3% |
+| mrpt_core | 571/636 | 89.8% | 69.9% |
+| mrpt_slam (2026-08-31)× | 3921/4346 | 90.2% | 62.3% |
 | mrpt_nav (2026-08-28)¶ | 5683/6287 | 90.4% | 68.9% |
 | mrpt_graphs (2026-07-06) | 1023/1112 | 92.0% | 76.5% |
-| mrpt_poses | 6272/6787 | 92.4% | 60.2% |
-| mrpt_img (2026-07-10)† | 2838/3061 | 92.7% | 70.9% |
+| mrpt_poses | 6279/6787 | 92.5% | 60.9% |
+| mrpt_img (2026-07-10)† | 2839/3061 | 92.7% | 71.0% |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
-| mrpt_bayes (2026-07-09) | 1047/1090 | 96.1% | 78.9% |
-| mrpt_serialization (2026-08-29)» | 728/754 | 96.6% | 73.8% |
+| mrpt_bayes (2026-07-09) | 1049/1090 | 96.2% | 80.2% |
+| mrpt_serialization (2026-08-29)» | 728/754 | 96.6% | 74.7% |
 | mrpt_random | 162/167 | 97.0% | 88.4% |
 | mrpt_tfest (2026-07-07) | 635/654 | 97.1% | 73.1% |
 | mrpt_kinematics (2026-08-28)¶ | 503/518 | 97.1% | 81.2% |
-| mrpt_config (2026-07-09) | 536/548 | 97.8% | 84.1% |
+| mrpt_config (2026-07-09) | 536/548 | 97.8% | 84.6% |
 | mrpt_topography (2026-07-10) | 414/417 | 99.3% | 83.2% |
-| mrpt_typemeta | 57/57 | 100.0% | 79.2% |
+| mrpt_typemeta | 57/57 | 100.0% | 80.9% |
 
 † `mrpt_img` vendors third-party `src/stb/*.h` (stb_image/stb_image_resize2/
 stb_image_write, public-domain), which is out of scope for tests like any
@@ -760,6 +760,84 @@ Left documented rather than changed:
   it is dead code left over from MRPT 1.x's `CLASS_INIT` mechanism.
   Removing it would take the module to ~94%.
 
+× Coverage pass of 2026-08-31 on `mrpt_slam` (67.9% -> 90.2%), the last
+pure-logic module still far from the goal. New tests avoid dataset files by
+simulating everything: `mrpt_slam/tests/slam_synthetic_room.h` builds a closed
+10x10 m gridmap and simulates 2D scans and odometry actions from it (shared by
+the ICP-builder, RBPF and MCL tests), while the EKF-SLAM tests drive
+`CLandmarksMap::simulateRangeBearingReadings()` over a handful of landmarks.
+Files that had never had a single assertion run against them:
+`src/slam/CLandmarksMap.cpp` (0%) and `src/slam/observations_overlap.cpp` (0%).
+
+Real bugs found and fixed: (1) `observationsOverlap()`'s `CSensoryFrame`
+overload declared its relative-pose argument `[[maybe_unused]]` and never
+forwarded it, so `CIncrementalMapPartitioner`'s `smOBSERVATION_OVERLAP`
+similarity compared every keyframe pair as if co-located; (2)
+`CIncrementalMapPartitioner::addMapFrame()` passed the *same* relative pose to
+both directions of its symmetrized similarity, but the callback always expects
+"kf2 with respect to kf1", so the swapped evaluation needs the inverse -- this
+moves one keyframe between partitions in the malaga dataset test, whose
+expected output was updated; (3) `removeSetOfNodes(..., changeCoordsRef=true)`
+composed `+p` instead of `-p`, doubling the first node's coordinates instead of
+moving it to the origin as documented (it now reuses
+`changeCoordinatesOriginPoseIndex(0)`); (4) two `TOptions` entries were loaded
+with a *quoted* first argument to `MRPT_LOAD_HERE_CONFIG_VAR`, which
+stringifies it again, so `minDistForCorrespondence`/`minMahaDistForCorrespondence`
+could never be read from a config file; (5) `mrpt::maps::CLandmarksMap` is
+`IMPLEMENTS_SERIALIZABLE` but was never registered in
+`registerAllClasses_mrpt_slam()`, so it could not be deserialized;
+(6) `TSetOfMetricMapInitializers::saveToConfigFile()` (in `mrpt_obs`) wrote a
+format `loadFromConfigFile()` cannot read -- no `<class>_count` keys and
+section names without the map index or the `_creationOpts` suffix -- so the
+round trip always yielded zero maps; (7) `CMultiMetricMapPDF::getLastPose()`
+never set its `is_valid_pose` output on the success path, unlike the two
+sibling implementations; (8) `CMetricMapBuilderICP::saveCurrentEstimationToImage()`
+dereferenced the gridmap pointer right after null-checking it, segfaulting when
+the multi-metric map has no gridmap; (9) the range-only (beacon) branch of
+`CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal()` only ever set
+`firstEstimateRobotHeading` in the no-odometry path and in the unreachable SOG
+sub-method, so with odometry present it always hit the assert guarding it --
+RO-SLAM with the exact optimal proposal could not run at all. It also printed
+the drawn position to `std::cout` on every particle; that is now a debug-level
+log message.
+
+Both `CRangeBearingKFSLAM::TOptions::dumpToTextStream()` and its 2D
+counterpart silently omitted every noise parameter they load
+(`std_sensor_*`, `stds_Q_no_odo`, `std_odo_z_additional`, ...); they now print
+them.
+
+Worth knowing for future tests here:
+
+* `CMetricMapBuilderRBPF::TConstructionOptions::loadFromConfigFile()` reads
+  `insertionAngDistance_deg`, but `CMetricMapBuilderICP::TConfigParams` reads
+  `insertionAngDistance` (already in degrees). The KF-SLAM classes'
+  `loadOptions()` always read from the section named `RangeBearingKFSLAM`,
+  whatever the file is called.
+* `CRangeBearingKFSLAM2D` asserts `pitch == 0` on every observation, so a
+  simulated `CObservationBearingRange` for it must use a zero pitch *noise*,
+  not just coplanar landmarks.
+* `CMonteCarloLocalization2D`/`3D` do not implement `pfOptimalProposal` (only
+  the standard and the two auxiliary variants); `CParticleFilter` throws for
+  it. An adaptive (KLD) sample size additionally requires
+  `resamplingMethod = prMultinomial`.
+* With known landmark IDs, the EKF-SLAM filters skip data association
+  altogether: `getLastDataAssociation().predictions_IDs` stays empty and only
+  `results.associations` is filled from the IDs.
+* The beacon branch of the RBPF optimal proposal only handles `pdfGauss`/
+  `pdfSOG` beacons, so a `CBeaconMap` feeding it needs
+  `insertionOpts.insertAsMonteCarlo = false`.
+* Do **not** timestamp simulated observations/actions with one
+  `mrpt::Clock::now()` call per step: on Windows its resolution (~15 ms) is
+  coarse enough that consecutive calls return the *same* value, and
+  `CRobot2DPoseEstimator::processUpdateNewOdometry()` then drops every update
+  ("Diff. in timestamps between odometry should be >0"), so the ICP builder's
+  pose never advances. `slam_synthetic_room.h::nextTimestamp()` hands out
+  timestamps 100 ms apart instead; give the action and the observation of the
+  same step the *same* one, or the pose gets extrapolated twice.
+* `RecursiveSpectralPartition()` returns a stable set of clusters, but their
+  order depends on the sign of the eigenvector and differs between platforms:
+  sort them before comparing.
+
 ### Weak areas, grouped by root cause
 
 1. **Hardware drivers - `mrpt_hwdrivers` (13.9%)**: inherently hard to
@@ -786,6 +864,8 @@ Left documented rather than changed:
 4. **Quick wins — pure-logic files at 0% with no hardware/GUI dependency**
    (highest-value gaps, ordinary unit tests would work immediately):
    `mrpt_graphslam/src/CWindowObserver.cpp`.
+   (`mrpt_slam/src/slam/{CLandmarksMap,observations_overlap}.cpp` cleared this
+   bucket as of 2026-08-31 — see × above.)
    (`mrpt_system/src/CFileSystemWatcher.cpp`, `mrpt_system/src/{progress,
    hyperlink,CObserver}.cpp`, `mrpt_io/src/{detect_compression,
    lazy_load_path}.cpp` and `mrpt_comms/src/{net_utils,CSerialPort}.cpp` all
@@ -820,6 +900,10 @@ Left documented rather than changed:
    registration queue noted in » above), `mrpt_io` (86.5%; `CPipe.cpp` needs
    child processes), `mrpt_comms` (75.8%; the rest is `CInterfaceFTDI`, which
    needs a real FTDI device).
+   (`mrpt_slam` cleared this bucket as of 2026-08-31, now at 90.2%; what is
+   left there is `PF_implementations.h` (60.6%, mostly the auxiliary-PF
+   sub-variants and the KLD adaptive-sampling paths), `CICP.cpp` (87.9%) and
+   `data_association.cpp` (84.5%).)
    (`mrpt_serialization` cleared this bucket as of 2026-08-29, now at 96.6%;
    `mrpt_graphs` and `mrpt_random` cleared it as of 2026-07-06;
    `mrpt_bayes` and `mrpt_config` cleared it as of 2026-07-09, both now >96%;
