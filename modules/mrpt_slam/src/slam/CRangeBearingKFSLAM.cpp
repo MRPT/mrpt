@@ -766,6 +766,19 @@ void CRangeBearingKFSLAM::TOptions::dumpToTextStream(std::ostream& out) const
 
   out << "\n----------- [CRangeBearingKFSLAM::TOptions] ------------ \n\n";
 
+  out << mrpt::format("std_sensor_range                        = %f m\n", std_sensor_range);
+  out << mrpt::format(
+      "std_sensor_yaw                          = %f deg\n", RAD2DEG(std_sensor_yaw));
+  out << mrpt::format(
+      "std_sensor_pitch                        = %f deg\n", RAD2DEG(std_sensor_pitch));
+  out << mrpt::format("std_odo_z_additional                    = %f m\n", std_odo_z_additional);
+  out << "stds_Q_no_odo                           = " << stds_Q_no_odo.asString() << "\n";
+  out << mrpt::format(
+      "create_simplemap                        = %c\n", create_simplemap ? 'Y' : 'N');
+  out << mrpt::format(
+      "force_ignore_odometry                   = %c\n", force_ignore_odometry ? 'Y' : 'N');
+  out << mrpt::format(
+      "quantiles_3D_representation             = %f\n", quantiles_3D_representation);
   out << mrpt::format(
       "doPartitioningExperiment                = %c\n", doPartitioningExperiment ? 'Y' : 'N');
   out << mrpt::format("partitioningMethod                      = %i\n", partitioningMethod);

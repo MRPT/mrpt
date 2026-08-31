@@ -750,6 +750,14 @@ void CRangeBearingKFSLAM2D::TOptions::dumpToTextStream(std::ostream& out) const
 
   out << "\n----------- [CRangeBearingKFSLAM2D::TOptions] ------------ \n\n";
 
+  out << mrpt::format("std_sensor_range                        = %f m\n", std_sensor_range);
+  out << mrpt::format(
+      "std_sensor_yaw                          = %f deg\n", RAD2DEG(std_sensor_yaw));
+  out << "stds_Q_no_odo                           = " << stds_Q_no_odo.asString() << "\n";
+  out << mrpt::format(
+      "create_simplemap                        = %c\n", create_simplemap ? 'Y' : 'N');
+  out << mrpt::format(
+      "quantiles_3D_representation             = %f\n", quantiles_3D_representation);
   out << mrpt::format(
       "data_assoc_method                       = %s\n",
       TEnumType<TDataAssociationMethod>::value2name(data_assoc_method).c_str());

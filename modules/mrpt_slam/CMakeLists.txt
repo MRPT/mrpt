@@ -45,6 +45,13 @@ set(LIB_UNIT_TEST_SOURCES
   tests/path_from_rtk_gps_unittest.cpp
   tests/se3_ransac_unittest.cpp
   tests/CRejectionSamplingRangeOnlyLocalization_unittest.cpp
+  tests/observations_overlap_unittest.cpp
+  tests/CLandmarksMap_unittest.cpp
+  tests/CIncrementalMapPartitioner_api_unittest.cpp
+  tests/CMetricMapBuilderRBPF_unittest.cpp
+  tests/CMetricMapBuilderICP_unittest.cpp
+  tests/CRangeBearingKFSLAM_unittest.cpp
+  tests/CMonteCarloLocalization_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

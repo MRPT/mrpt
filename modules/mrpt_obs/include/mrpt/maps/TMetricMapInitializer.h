@@ -55,8 +55,10 @@ struct TMetricMapInitializer : public mrpt::config::CLoadableOptions
   void loadFromConfigFile(
       const mrpt::config::CConfigFileBase& source,
       const std::string& sectionNamePrefix) override;  // See base docs
+  /** Saves the params to a config file, using the same section names read
+   * back by loadFromConfigFile() */
   void saveToConfigFile(
-      mrpt::config::CConfigFileBase& target, const std::string& section) const override;
+      mrpt::config::CConfigFileBase& target, const std::string& sectionNamePrefix) const override;
   void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
   /** Query the map type (C++ class), as set by the factory method
