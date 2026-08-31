@@ -18,6 +18,8 @@
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
+#include <algorithm>
+
 TEST(CIncrementalMapPartitioner, test_dataset)
 {
   mrpt::slam::CIncrementalMapPartitioner imp;
@@ -45,12 +47,19 @@ TEST(CIncrementalMapPartitioner, test_dataset)
   {
     return;
   }
-  // Partition #0: keyframes [0,26] + [62,98]; partition #1: [27,61].
-  std::vector<uint32_t> expected_p0, expected_p1;
-  for (uint32_t i = 0; i <= 26; i++) expected_p0.push_back(i);
-  for (uint32_t i = 62; i <= 98; i++) expected_p0.push_back(i);
-  for (uint32_t i = 27; i <= 61; i++) expected_p1.push_back(i);
+  // The two clusters are keyframes [0,26]+[62,98] and [27,61]. Which of them
+  // the spectral partitioner returns first is not stable across platforms
+  // (it depends on the sign of the eigenvector), so compare them in a
+  // canonical order:
+  std::vector<uint32_t> expected_a, expected_b;
+  for (uint32_t i = 0; i <= 26; i++) expected_a.push_back(i);
+  for (uint32_t i = 62; i <= 98; i++) expected_a.push_back(i);
+  for (uint32_t i = 27; i <= 61; i++) expected_b.push_back(i);
 
-  EXPECT_EQ(parts[0], expected_p0);
-  EXPECT_EQ(parts[1], expected_p1);
+  std::sort(
+      parts.begin(), parts.end(),
+      [](const auto& a, const auto& b) { return a.front() < b.front(); });
+
+  EXPECT_EQ(parts[0], expected_a);
+  EXPECT_EQ(parts[1], expected_b);
 }
