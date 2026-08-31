@@ -258,6 +258,11 @@ TEST(CRangeBearingKFSLAM2D, optionsLoadAndDump)
   std::stringstream ss;
   f.options.dumpToTextStream(ss);
   EXPECT_NE(ss.str().find("std_sensor_range"), std::string::npos);
+  // The heading component is reported in degrees, as it is read:
+  EXPECT_NE(
+      ss.str().find("stds_Q_no_odo                           = [0.050000 m, "
+                    "0.050000 m, 0.020000 deg]"),
+      std::string::npos);
 }
 
 TEST(CRangeBearingKFSLAM2D, saveMapAsMATLABFile)

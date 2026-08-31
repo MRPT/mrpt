@@ -753,7 +753,10 @@ void CRangeBearingKFSLAM2D::TOptions::dumpToTextStream(std::ostream& out) const
   out << mrpt::format("std_sensor_range                        = %f m\n", std_sensor_range);
   out << mrpt::format(
       "std_sensor_yaw                          = %f deg\n", RAD2DEG(std_sensor_yaw));
-  out << "stds_Q_no_odo                           = " << stds_Q_no_odo.asString() << "\n";
+  // Same units as in the config file: the third component is a heading.
+  out << mrpt::format(
+      "stds_Q_no_odo                           = [%f m, %f m, %f deg]\n", stds_Q_no_odo[0],
+      stds_Q_no_odo[1], RAD2DEG(stds_Q_no_odo[2]));
   out << mrpt::format(
       "create_simplemap                        = %c\n", create_simplemap ? 'Y' : 'N');
   out << mrpt::format(

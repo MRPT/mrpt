@@ -67,6 +67,9 @@ TEST(TSetOfMetricMapInitializers, saveLoadRoundTrip)
       std::string(got[2]->getMetricMapClassType()->className), "mrpt::maps::CSimplePointsMap");
 
   EXPECT_FALSE(got[0]->genericMapParams.enableSaveAs3DObject);
+  // Only the generic params round trip: there is no saving counterpart to
+  // loadFromConfigFile_map_specific(), so map-specific options stay at their
+  // defaults.
   EXPECT_FALSE(got[1]->genericMapParams.enableObservationLikelihood);
   EXPECT_TRUE(got[2]->genericMapParams.enableObservationLikelihood);
 }
