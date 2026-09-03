@@ -1597,8 +1597,10 @@ inline std::string scalarToString(const mrpt::containers::yaml::scalar_t& s)
           return std::to_string(val);
         else if constexpr (std::is_same_v<V, double>)
         {
+          // 17 significant digits are required to round-trip any IEEE-754
+          // double exactly; 16 is not always enough.
           std::stringstream ss;
-          ss << mrpt::format("%.16g", val);
+          ss << mrpt::format("%.17g", val);
           return ss.str();
         }
         else if constexpr (std::is_same_v<V, std::string>)

@@ -849,7 +849,9 @@ bool yaml::internalPrintAsYAML(
         }
         else if constexpr (std::is_same_v<V, double>)
         {
-          const std::string s = mrpt::format("%.16g", val);
+          // 17 significant digits are required to round-trip any IEEE-754
+          // double exactly; 16 is not always enough.
+          const std::string s = mrpt::format("%.17g", val);
           o << s;
           if (s.find('.') == std::string::npos && s.find('e') == std::string::npos &&
               s.find('E') == std::string::npos && s.find('n') == std::string::npos &&
