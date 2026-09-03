@@ -34,6 +34,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
   registerClass(CLASS_ID(CPointsMap));
   registerClass(CLASS_ID(CSimplePointsMap));
   registerClass(CLASS_ID(CGenericPointsMap));
+  registerClass(CLASS_ID(CPointsMapXYZIRT));  // deserialization compat only
   registerClass(CLASS_ID(COccupancyGridMap2D));
   registerClass(CLASS_ID(COccupancyGridMap3D));
   registerClass(CLASS_ID(CGasConcentrationGridMap2D));
