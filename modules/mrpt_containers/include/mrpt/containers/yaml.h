@@ -1232,12 +1232,17 @@ class yaml_cref
   yaml_cref operator[](const char* key) const;
   yaml_cref operator[](int index) const;
 
-  // ── scalarType, asRef ────────────────────────────────────────────────────
+  // ── scalarType, getOrDefault, asRef ──────────────────────────────────────
   [[nodiscard]] const std::type_info& scalarType() const
   {
     if (node_->isNullNode()) return typeid(void);
     return std::visit(
         [](const auto& v) -> const std::type_info& { return typeid(v); }, node_->asScalar());
+  }
+  template <typename T>
+  [[nodiscard]] T getOrDefault(const std::string& key, const T& def) const
+  {
+    return yaml(*node_).template getOrDefault<T>(key, def);
   }
   template <typename T>
   [[nodiscard]] const T& asRef() const
