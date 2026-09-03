@@ -821,8 +821,10 @@ class yaml
   };
 
   // Return: true if the last printed char is a newline char
-  static bool internalPrintNodeAsYAML(
-      const node_t& p, std::ostream& o, const InternalPrintState& ps);
+  // `ps` is taken by value (not by reference) because a pending "needs
+  // newline" flag may be consumed internally (see the TOP-comment
+  // handling) before being read again by the type dispatch below.
+  static bool internalPrintNodeAsYAML(const node_t& p, std::ostream& o, InternalPrintState ps);
 
   static void internalPrintDebugStructure(const node_t& p, std::ostream& o, unsigned int indent);
 
