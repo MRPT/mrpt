@@ -455,7 +455,7 @@ void yaml::printDebugStructure(std::ostream& o) const
   internalPrintDebugStructure(*n, o, indent);
 }
 
-bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, const InternalPrintState& ps)
+bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, InternalPrintState ps)
 {
   // Build a comments_t view (all-empty if no meta):
   static const comments_t emptyComments{};
@@ -467,10 +467,23 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, const Inter
     const std::string sInd(ps.indent, ' ');
     const std::string& comment = tc.value();
 
+    // A pending newline (e.g. this node is the value-side of a "key:" map
+    // entry, so the stream currently ends right after the ':') must be
+    // emitted before the comment text, not appended directly onto the
+    // previous line. Otherwise the comment's '#' merges with the preceding
+    // token (e.g. "modules:# comment"), which is not a valid YAML comment
+    // marker (a '#' must be preceded by whitespace) and corrupts the whole
+    // document on re-parse.
+    const bool wasPendingNL = ps.needsNL;
+    if (wasPendingNL)
+    {
+      o << "\n";
+    }
+
     // Split line by line:
     for (size_t i = 0; i < comment.size();)
     {
-      if (i > 0)
+      if (i > 0 || wasPendingNL)
       {
         o << sInd;
       }
@@ -487,8 +500,12 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, const Inter
 
       i += lineLen + 1;
     }
-    // Indent of next line:
-    if (!comment.empty())
+    // Indent of next line - only when the comment did NOT already hand off
+    // a pending newline to the value that follows: in that case, the type
+    // dispatch below (map/sequence) will emit its own newline and indent
+    // bump for that value exactly as if there had been no comment, so
+    // printing it here too would misalign (or duplicate) the indentation.
+    if (!comment.empty() && !wasPendingNL)
     {
       o << sInd;
     }
