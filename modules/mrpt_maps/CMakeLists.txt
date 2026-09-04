@@ -83,6 +83,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CPointCloudFilterByDistance_unittest.cpp
   tests/CGenericPointsMap_unittest.cpp
   tests/CPointsMap_unittest.cpp
+  tests/CPointsMapXYZIRT_unittest.cpp
   tests/CRandomFieldGridMap2D_unittest.cpp
   tests/CRandomFieldGridMap3D_unittest.cpp
   tests/serializations_unittest.cpp
