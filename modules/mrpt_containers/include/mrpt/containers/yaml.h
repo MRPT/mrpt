@@ -917,6 +917,7 @@ class yaml_ref
   // ── Container access ─────────────────────────────────────────────────────
   [[nodiscard]] sequence_t& asSequence() { return node_->asSequence(); }
   [[nodiscard]] const sequence_t& asSequence() const { return node_->asSequence(); }
+  [[nodiscard]] sequence_t asSequenceRange() const { return node_->asSequence(); }
   [[nodiscard]] map_t& asMap() { return node_->asMap(); }
   [[nodiscard]] const map_t& asMap() const { return node_->asMap(); }
   [[nodiscard]] map_t asMapRange() const { return node_->asMap(); }
@@ -1205,6 +1206,7 @@ class yaml_cref
 
   // ── Container access ─────────────────────────────────────────────────────
   [[nodiscard]] const sequence_t& asSequence() const { return node_->asSequence(); }
+  [[nodiscard]] sequence_t asSequenceRange() const { return node_->asSequence(); }
   [[nodiscard]] const map_t& asMap() const { return node_->asMap(); }
   [[nodiscard]] map_t asMapRange() const { return node_->asMap(); }
   [[nodiscard]] const scalar_t& asScalar() const { return node_->asScalar(); }
