@@ -909,38 +909,43 @@ yaml::scalar_t textToScalar(const std::string& s)
     return yaml::scalar_t(false);
   }
 
+  // A leading-zero digit string (e.g. "00", "007") is ambiguous (would imply
+  // octal in YAML 1.1; YAML 1.2 forbids leading zeros in ints) and, in
+  // practice, is almost always a zero-padded identifier (a sequence number,
+  // a zip code, ...) that the user wants preserved verbatim, not a number.
+  // Guard both the int AND the float branches below with it: a plain digit
+  // run stays a string. A genuine float like "0.5" or "0e3" is unaffected
+  // (it fails the "all digits" check, since it contains '.'/'e').
+  const bool hasHexPrefix =
+      (s.size() > 2 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) ||
+      (s.size() > 3 && (s[0] == '+' || s[0] == '-') && s[1] == '0' && (s[2] == 'x' || s[2] == 'X'));
+  const std::size_t signLen = (!s.empty() && (s[0] == '+' || s[0] == '-')) ? 1u : 0u;
+  const bool leadingZeroDigitRun = !hasHexPrefix && s.size() > signLen + 1 && s[signLen] == '0' &&
+                                   s.find_first_not_of("0123456789", signLen) == std::string::npos;
+
   // tag:yaml.org,2002:int — try signed first, then unsigned for large values
-  // Reject leading zeros (would imply octal in YAML 1.1; YAML 1.2 forbids them)
-  if (!s.empty() &&
+  if (!leadingZeroDigitRun && !s.empty() &&
       ((std::isdigit(static_cast<unsigned char>(s[0])) != 0) || s[0] == '-' || s[0] == '+'))
   {
-    const bool hasHexPrefix = (s.size() > 2 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) ||
-                              (s.size() > 3 && (s[0] == '+' || s[0] == '-') && s[1] == '0' &&
-                               (s[2] == 'x' || s[2] == 'X'));
-    const std::size_t signLen = (s[0] == '+' || s[0] == '-') ? 1u : 0u;
-    const bool leadingZeroOctal = !hasHexPrefix && s.size() > signLen + 1 && s[signLen] == '0';
-    if (!leadingZeroOctal)
+    char* end = nullptr;
+    errno = 0;
+    const long long iv = std::strtoll(s.c_str(), &end, 0);
+    if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
     {
-      char* end = nullptr;
-      errno = 0;
-      const long long iv = std::strtoll(s.c_str(), &end, 0);
-      if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
-      {
-        return yaml::scalar_t(static_cast<int64_t>(iv));
-      }
+      return yaml::scalar_t(static_cast<int64_t>(iv));
+    }
 
-      // Large positive — try unsigned
-      errno = 0;
-      const unsigned long long uv = std::strtoull(s.c_str(), &end, 0);
-      if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
-      {
-        return yaml::scalar_t(static_cast<uint64_t>(uv));
-      }
+    // Large positive — try unsigned
+    errno = 0;
+    const unsigned long long uv = std::strtoull(s.c_str(), &end, 0);
+    if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
+    {
+      return yaml::scalar_t(static_cast<uint64_t>(uv));
     }
   }
 
   // tag:yaml.org,2002:float
-  if (!s.empty())
+  if (!leadingZeroDigitRun && !s.empty())
   {
     char* end = nullptr;
     errno = 0;
