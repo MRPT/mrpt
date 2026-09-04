@@ -626,7 +626,10 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
           {
             int32_t tempdepth = 0;
             in >> tempdepth;
-            depth = static_cast<PixelDepth>(tempdepth);
+            // 0 is not a valid PixelDepth (D8U=1, D16U=2): files written by
+            // pre-release MRPT 3.x snapshots serialized this field 0-based,
+            // so a literal 0 here means "D8U", not "zero bytes per pixel".
+            depth = tempdepth == 0 ? PixelDepth::D8U : static_cast<PixelDepth>(tempdepth);
           }
 
           resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height), CH_GRAY, depth);

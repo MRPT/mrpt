@@ -1398,3 +1398,49 @@ TEST(CImage, ScaleHalfWithOddSizeTruncates)
   EXPECT_EQ(out.getWidth(), 2);
   EXPECT_EQ(out.getHeight(), 2);
 }
+
+TEST(CImage, DeserializeLegacyGrayscaleWithZeroPixelDepth)
+{
+  using namespace mrpt::img;
+
+  // Pre-release MRPT 3.x snapshots wrote the grayscale pixel-depth field of
+  // the v9 format 0-based, so such streams carry a literal 0 where D8U (=1)
+  // is meant. Build one by hand and check it still deserializes.
+  const int32_t width = 4;
+  const int32_t height = 3;
+  const int32_t imageSize = width * height;
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+
+  // Object header: class name (length OR'ed with 0x80), then version.
+  const std::string className = "CImage";
+  arch << static_cast<int8_t>(className.size() | 0x80);
+  arch.WriteBuffer(className.data(), className.size());
+  arch << static_cast<uint8_t>(9);
+
+  arch << false;                    // imgIsExternalStorage
+  arch << static_cast<uint8_t>(0);  // hasColor: grayscale
+  arch << width << height << static_cast<int32_t>(0) /* origin */ << imageSize;
+  arch << static_cast<int32_t>(0);  // pixel depth, 0-based
+  arch << false;                    // imageIsZIP
+
+  std::vector<uint8_t> pixels(static_cast<size_t>(imageSize));
+  for (size_t i = 0; i < pixels.size(); i++)
+  {
+    pixels[i] = static_cast<uint8_t>(i * 7);
+  }
+  arch.WriteBuffer(pixels.data(), pixels.size());
+
+  arch << static_cast<uint8_t>(0x88);  // end flag
+
+  buf.Seek(0);
+  CImage img;
+  arch >> img;
+
+  EXPECT_EQ(img.getWidth(), static_cast<size_t>(width));
+  EXPECT_EQ(img.getHeight(), static_cast<size_t>(height));
+  EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
+  EXPECT_EQ(img.at<uint8_t>(1, 0), pixels[1]);
+  EXPECT_EQ(img.at<uint8_t>(3, 2), pixels[11]);
+}
