@@ -821,8 +821,10 @@ class yaml
   };
 
   // Return: true if the last printed char is a newline char
-  static bool internalPrintNodeAsYAML(
-      const node_t& p, std::ostream& o, const InternalPrintState& ps);
+  // `ps` is taken by value (not by reference) because a pending "needs
+  // newline" flag may be consumed internally (see the TOP-comment
+  // handling) before being read again by the type dispatch below.
+  static bool internalPrintNodeAsYAML(const node_t& p, std::ostream& o, InternalPrintState ps);
 
   static void internalPrintDebugStructure(const node_t& p, std::ostream& o, unsigned int indent);
 
@@ -917,6 +919,7 @@ class yaml_ref
   // ── Container access ─────────────────────────────────────────────────────
   [[nodiscard]] sequence_t& asSequence() { return node_->asSequence(); }
   [[nodiscard]] const sequence_t& asSequence() const { return node_->asSequence(); }
+  [[nodiscard]] sequence_t asSequenceRange() const { return node_->asSequence(); }
   [[nodiscard]] map_t& asMap() { return node_->asMap(); }
   [[nodiscard]] const map_t& asMap() const { return node_->asMap(); }
   [[nodiscard]] map_t asMapRange() const { return node_->asMap(); }
@@ -1205,6 +1208,7 @@ class yaml_cref
 
   // ── Container access ─────────────────────────────────────────────────────
   [[nodiscard]] const sequence_t& asSequence() const { return node_->asSequence(); }
+  [[nodiscard]] sequence_t asSequenceRange() const { return node_->asSequence(); }
   [[nodiscard]] const map_t& asMap() const { return node_->asMap(); }
   [[nodiscard]] map_t asMapRange() const { return node_->asMap(); }
   [[nodiscard]] const scalar_t& asScalar() const { return node_->asScalar(); }
@@ -1232,12 +1236,17 @@ class yaml_cref
   yaml_cref operator[](const char* key) const;
   yaml_cref operator[](int index) const;
 
-  // ── scalarType, asRef ────────────────────────────────────────────────────
+  // ── scalarType, getOrDefault, asRef ──────────────────────────────────────
   [[nodiscard]] const std::type_info& scalarType() const
   {
     if (node_->isNullNode()) return typeid(void);
     return std::visit(
         [](const auto& v) -> const std::type_info& { return typeid(v); }, node_->asScalar());
+  }
+  template <typename T>
+  [[nodiscard]] T getOrDefault(const std::string& key, const T& def) const
+  {
+    return yaml(*node_).template getOrDefault<T>(key, def);
   }
   template <typename T>
   [[nodiscard]] const T& asRef() const
@@ -1597,8 +1606,10 @@ inline std::string scalarToString(const mrpt::containers::yaml::scalar_t& s)
           return std::to_string(val);
         else if constexpr (std::is_same_v<V, double>)
         {
+          // 17 significant digits are required to round-trip any IEEE-754
+          // double exactly; 16 is not always enough.
           std::stringstream ss;
-          ss << mrpt::format("%.16g", val);
+          ss << mrpt::format("%.17g", val);
           return ss.str();
         }
         else if constexpr (std::is_same_v<V, std::string>)
