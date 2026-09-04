@@ -34,6 +34,21 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
   registerClass(CLASS_ID(CPointsMap));
   registerClass(CLASS_ID(CSimplePointsMap));
   registerClass(CLASS_ID(CGenericPointsMap));
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
+  registerClass(CLASS_ID(CPointsMapXYZIRT));  // deserialization compat only
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
   registerClass(CLASS_ID(COccupancyGridMap2D));
   registerClass(CLASS_ID(COccupancyGridMap3D));
   registerClass(CLASS_ID(CGasConcentrationGridMap2D));

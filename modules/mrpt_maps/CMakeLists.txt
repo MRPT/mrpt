@@ -26,6 +26,7 @@ set(LIB_SOURCES
   src/maps/CBeaconMap.cpp
   src/maps/CGasConcentrationGridMap2D.cpp
   src/maps/CGenericPointsMap.cpp
+  src/maps/CPointsMapXYZIRT.cpp
   src/maps/CColouredOctoMap.cpp
   src/maps/CHeightGridMap2D.cpp
   src/maps/CHeightGridMap2D_Base.cpp
@@ -82,6 +83,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CPointCloudFilterByDistance_unittest.cpp
   tests/CGenericPointsMap_unittest.cpp
   tests/CPointsMap_unittest.cpp
+  tests/CPointsMapXYZIRT_unittest.cpp
   tests/CRandomFieldGridMap2D_unittest.cpp
   tests/CRandomFieldGridMap3D_unittest.cpp
   tests/serializations_unittest.cpp
