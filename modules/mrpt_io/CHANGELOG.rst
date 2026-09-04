@@ -2,8 +2,8 @@
 Changelog for package mrpt_io
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.4 (2026-09-04)
+------------------
 * test(mrpt_io): raise unit test coverage of streams, compression and path helpers (63%->82% lines) (`#1392 <https://github.com/MRPT/mrpt/issues/1392>`_).
 * fix(mrpt_io): duplicate `mrpt::io::CompressionType` definition broke including both detect_compression.h and compression_options.h in the same translation unit.
 * fix(mrpt_io): zip::decompress()'s std::vector overload passed zlib an uninitialized output-buffer capacity.

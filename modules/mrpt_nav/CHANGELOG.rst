@@ -2,8 +2,8 @@
 Changelog for package mrpt_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.4 (2026-09-04)
+------------------
 * Merge pull request `#1388 <https://github.com/MRPT/mrpt/issues/1388>`_ from MRPT/test/coverage-nav-kinematics
   test(mrpt_nav, mrpt_kinematics): raise coverage to 90%/97% and fix 10 bugs found on the way
 * test(mrpt_nav): make two timing-sensitive navigator tests platform-independent

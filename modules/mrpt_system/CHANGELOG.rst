@@ -2,8 +2,8 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.4 (2026-09-04)
+------------------
 * Merge pull request `#1393 <https://github.com/MRPT/mrpt/issues/1393>`_ from MRPT/test/coverage-system
   test(mrpt_system): cover the untested helpers and the file system watcher
 * Merge remote-tracking branch 'origin/develop' into test/coverage-comms

@@ -2,8 +2,8 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.4 (2026-09-04)
+------------------
 * fix(mrpt_img): fix CImage grayscale deserialization of legacy rawlogs storing PixelDepth as 0 (`#1399 <https://github.com/MRPT/mrpt/issues/1399>`_).
 * Contributors: Jose Luis Blanco-Claraco
 

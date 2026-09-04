@@ -2,8 +2,8 @@
 Changelog for package mrpt_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.4 (2026-09-04)
+------------------
 * Merge pull request `#1395 <https://github.com/MRPT/mrpt/issues/1395>`_ from MRPT/test/coverage-2026-08-31
   test(slam): raise mrpt_slam coverage to 90% and fix the bugs it uncovered
 * test(slam): give simulated SLAM steps explicit, increasing timestamps

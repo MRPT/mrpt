@@ -2,8 +2,8 @@
 Changelog for package mrpt_apps_cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.4 (2026-09-04)
+------------------
 * fix(mrpt_apps_cli): add missing <iostream> include in carmen2rawlog, gps2rawlog and carmen2simplemap, fixing the MSVC build.
 * Contributors: Jose Luis Blanco-Claraco
 

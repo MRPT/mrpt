@@ -2,8 +2,8 @@
 Changelog for package mrpt_containers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.4 (2026-09-04)
+------------------
 * fix(mrpt_containers): yaml double round-trip precision loss, %.16g -> %.17g (`#1396 <https://github.com/MRPT/mrpt/issues/1396>`_).
 * fix(mrpt_containers): yaml_ref/yaml_cref: add missing asSequenceRange() and yaml_cref::getOrDefault() (`#1397 <https://github.com/MRPT/mrpt/issues/1397>`_, `#1398 <https://github.com/MRPT/mrpt/issues/1398>`_).
 * fix(mrpt_containers): yaml: fix a TOP comment corrupting the document on serialize+reparse (`#1400 <https://github.com/MRPT/mrpt/issues/1400>`_).

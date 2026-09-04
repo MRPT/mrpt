@@ -2,8 +2,8 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.4 (2026-09-04)
+------------------
 * Merge pull request `#1402 <https://github.com/MRPT/mrpt/issues/1402>`_ from MRPT/fix/restore-cpointsmapxyzirt-serialization-compat
   Restore CPointsMapXYZIRT as a deserialization-only compat shim
 * tests: cover the CPointsMapXYZIRT deserialization compat stub
