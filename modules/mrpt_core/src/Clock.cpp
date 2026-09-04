@@ -207,13 +207,23 @@ double mrpt::Clock::toDouble(const mrpt::Clock::time_point t) noexcept
   // 1970-01-01 UNIX epoch, in 100-nanosecond ticks.
   constexpr int64_t UNIX_EPOCH_OFFSET = INT64_C(116444736) * INT64_C(1000000000);
 
-  // Note: the subtraction below must be done in a floating-point (signed)
-  // domain. `t.time_since_epoch().count()` is a signed int64_t, so this is
-  // already the case here; do not change either operand to an unsigned type,
-  // or the result would wrap around for any t before 1970-01-01.
-  return (static_cast<double>(t.time_since_epoch().count()) -
-          static_cast<double>(UNIX_EPOCH_OFFSET)) /
-         10000000.0;
+  // The epoch shift must happen in the INTEGER domain, before anything is
+  // converted to double: a raw tick count since 1601 is ~1.3e17, i.e. more
+  // than an order of magnitude above 2^53, so converting it first quantizes
+  // the result to ~1.6 us. Subtracting first leaves a value ~8x smaller, and
+  // splitting whole seconds from the sub-second remainder makes the
+  // conversion exact for any representable time_point.
+  //
+  // The arithmetic stays signed throughout, so instants before 1970 (a
+  // negative tick count here) are handled correctly; an unsigned operand
+  // would wrap around instead. Integer division truncates toward zero and
+  // the remainder takes the sign of the dividend, so the two terms below
+  // always share a sign and the sum cannot lose precision by cancellation.
+  const int64_t ticks = t.time_since_epoch().count() - UNIX_EPOCH_OFFSET;
+  const int64_t wholeSeconds = ticks / 10000000;
+  const int64_t remainder = ticks % 10000000;
+
+  return static_cast<double>(wholeSeconds) + static_cast<double>(remainder) * 1e-7;
 }
 
 void mrpt::Clock::setActiveClock(Source s)
