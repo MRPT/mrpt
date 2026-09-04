@@ -2,6 +2,9 @@
 Changelog for package mrpt_libapps_cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.1.3 (2026-08-12)
 ------------------
 

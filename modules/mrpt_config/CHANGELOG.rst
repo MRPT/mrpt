@@ -2,6 +2,9 @@
 Changelog for package mrpt_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.1.3 (2026-08-12)
 ------------------
 * mrpt_config: increase code coverage and fix bugs.

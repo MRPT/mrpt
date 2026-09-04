@@ -2,6 +2,9 @@
 Changelog for package mrpt_bayes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.1.3 (2026-08-12)
 ------------------
 * mrpt_bayes: increase code coverage and fix bugs.
