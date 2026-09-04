@@ -1512,4 +1512,35 @@ MRPT_TEST(yaml, nullScalarTypeName)
 }
 MRPT_TEST_END()
 
+MRPT_TEST(yaml, leadingZeroDigitStringStaysString)
+{
+  using mrpt::containers::yaml;
+
+  // A plain digit run with a leading zero (e.g. a zero-padded sequence
+  // number) must round-trip as the exact same string: an unquoted "00" is
+  // ambiguous as a YAML int (leading zeros are octal in 1.1, forbidden in
+  // 1.2), so it is kept as a string rather than silently collapsing to the
+  // integer 0 (and, formatted back, to "0" -- the padding lost for good).
+  EXPECT_EQ(yaml::FromText("v: 00\n")["v"].as<std::string>(), "00");
+  EXPECT_EQ(yaml::FromText("v: 007\n")["v"].as<std::string>(), "007");
+  EXPECT_EQ(yaml::FromText("v: 0\n")["v"].as<std::string>(), "0");
+
+  // Still convertible to a number on request, from the string form:
+  EXPECT_EQ(yaml::FromText("v: 007\n")["v"].as<int>(), 7);
+
+  // A genuine float starting with '0' is unaffected (it is not a plain
+  // digit run: it contains '.' or an exponent):
+  EXPECT_DOUBLE_EQ(yaml::FromText("v: 0.5\n")["v"].as<double>(), 0.5);
+  EXPECT_EQ(yaml::FromText("v: 0.5\n")["v"].as<std::string>(), "0.5");
+  EXPECT_DOUBLE_EQ(yaml::FromText("v: 0e3\n")["v"].as<double>(), 0.0);
+
+  // A normal (non-leading-zero) integer is unaffected:
+  EXPECT_EQ(yaml::FromText("v: 42\n")["v"].as<std::string>(), "42");
+  EXPECT_EQ(yaml::FromText("v: -42\n")["v"].as<std::string>(), "-42");
+
+  // Hex literals are unaffected (not a plain digit run):
+  EXPECT_EQ(yaml::FromText("v: 0x1A\n")["v"].as<int>(), 26);
+}
+MRPT_TEST_END()
+
 #endif  // MRPT_HAS_FYAML
