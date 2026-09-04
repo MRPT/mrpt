@@ -202,14 +202,16 @@ TEST(clock, toDouble_subMicrosecondAccuracy)
     const int64_t ticks = unixTicks + k;
     const auto tp = mrpt::Clock::time_point(mrpt::Clock::duration(ticks + UNIX_EPOCH_OFFSET));
 
-    // Exact value of the same quantity, computed without the intermediate
-    // rounding that the defect introduced:
+    // Reference value of the same quantity, computed without the
+    // intermediate rounding that the defect introduced:
     const long double exact = static_cast<long double>(ticks) / 10000000.0L;
     const long double err = std::abs(static_cast<long double>(mrpt::Clock::toDouble(tp)) - exact);
 
-    // The result's own ULP at ~1.7e9 s is 2.4e-7 s, so correctly-rounded
-    // conversion lands within half of that. The defect was ~4x above it.
-    EXPECT_LT(err, 1.25e-7L) << "k=" << k;
+    // The result's own ULP at ~1.7e9 s is 2.4e-7 s, so the bound cannot be
+    // tighter than that: on targets where `long double` is just a `double`
+    // (arm64 macOS, MSVC) the reference itself is rounded, so the two can
+    // legitimately differ by one full ULP. The defect was ~4x above this.
+    EXPECT_LT(err, 3e-7L) << "k=" << k;
   }
 }
 
@@ -228,13 +230,13 @@ TEST(clock, toDouble_distinguishesAdjacentTicks)
   {
     const auto a =
         mrpt::Clock::time_point(mrpt::Clock::duration(unixTicks + k * 10 + UNIX_EPOCH_OFFSET));
-    const auto b =
-        mrpt::Clock::time_point(mrpt::Clock::duration(unixTicks + (k + 1) * 10 + UNIX_EPOCH_OFFSET));
+    const auto b = mrpt::Clock::time_point(
+        mrpt::Clock::duration(unixTicks + (k + 1) * 10 + UNIX_EPOCH_OFFSET));
 
     const double ta = mrpt::Clock::toDouble(a);
     const double tb = mrpt::Clock::toDouble(b);
 
-    EXPECT_GT(tb, ta) << "k=" << k;              // never collapse
+    EXPECT_GT(tb, ta) << "k=" << k;                 // never collapse
     EXPECT_NEAR(tb - ta, 1e-6, 3e-7) << "k=" << k;  // within one ULP of 1 us
   }
 }
