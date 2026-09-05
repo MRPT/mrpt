@@ -180,10 +180,9 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
   Eigen::Matrix3d R_fwd = eq_fwd.toRotationMatrix();
   Eigen::Vector3d T_fwd(rp.x, rp.y, rp.z);
 
-  // We need the INVERSE pose (OpenCV convention): the transform that takes
-  // points from right camera frame to left camera frame.
+  // Rotation taking points from the LEFT camera frame to the RIGHT one
+  // (OpenCV's stereoRectify convention for its R argument).
   Eigen::Matrix3d R = R_fwd.transpose();
-  Eigen::Vector3d T = -R * T_fwd;
 
   // -----------------------------------------------------------------------
   // 2. Bouguet-style stereo rectification
@@ -200,28 +199,53 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
   // After this, both cameras have the same orientation.
 
   // 2b. Compute the rectification rotation to make epipolar lines horizontal.
-  // The baseline in the half-rotated frame:
-  Eigen::Vector3d T_half = R_half * T;
+  // The baseline in the half-rotated frame. It must be the vector pointing
+  // from the LEFT camera towards the RIGHT one, i.e. rightCameraPose's own
+  // translation (T_fwd), not T = -R*T_fwd, which is the opposite vector (the
+  // left camera as seen from the right). Using the latter flips e1, and with
+  // it e2, giving a rectification rotated 180 deg in-plane and putting the
+  // right camera at NEGATIVE x in the rectified frame - so every disparity
+  // comes out negative for an ordinary side-by-side rig. Both rectified
+  // images being flipped the same way, the pair is still epipolar-aligned,
+  // which is why an output-size or principal-point-marker check cannot see it.
+  Eigen::Vector3d T_half = R_half * T_fwd;
 
   // e1 = baseline direction (should become the new x-axis)
   Eigen::Vector3d e1 = T_half.normalized();
 
-  // e2 = perpendicular to e1 and the old y-axis (or z if degenerate)
-  Eigen::Vector3d up(0, -1, 0);  // camera y points down, so "up" is -y
-  if (std::abs(e1.dot(up)) > 0.9)
+  // e3 (new z-axis, "forward") must stay close to the cameras' own optical
+  // axis, not an arbitrary reference: it is what build_rectify_map() later
+  // divides by (p_cam.z()) to un-project a rectified pixel back through the
+  // original camera, so any component of the true forward direction that
+  // ends up outside e3 is lost - e.g. deriving e2 from crossing e1 with a
+  // fixed "up" vector (as this function used to) implicitly assigns
+  // whichever axis is left over to e3, which is the *depth* axis only by
+  // coincidence, for a specific baseline orientation. For an ordinary
+  // side-by-side stereo pair the baseline is horizontal (close to the
+  // camera's own +/-x axis), which is exactly the case where the old "up"
+  // heuristic put the original z axis into e2 instead of e3, and every
+  // rectified pixel unprojected through z=0.
+  // e1 (and T_half) are expressed in the half-rotated frame, so the forward
+  // reference must be rotated into that same frame by R_half before use -
+  // using the bare (unrotated) camera z axis here is only correct when
+  // R_half happens to be near-identity (a negligible relative rotation
+  // between the two cameras). Gram-Schmidt: the closest vector to the
+  // (rotated) forward reference that is orthogonal to e1.
+  Eigen::Vector3d e3 = R_half * Eigen::Vector3d(0, 0, 1);
+  e3 -= e3.dot(e1) * e1;
+  if (e3.squaredNorm() < 1e-12)
   {
-    up = Eigen::Vector3d(0, 0, 1);
+    // Degenerate only for a forward-facing (depth-separated) pair, where the
+    // baseline itself is close to the optical axis: fall back to the
+    // (rotated) camera y axis as the forward reference instead.
+    e3 = R_half * Eigen::Vector3d(0, 1, 0);
+    e3 -= e3.dot(e1) * e1;
   }
-  Eigen::Vector3d e2 = (e1.cross(up)).normalized();
-  // If e1 is parallel to up, try a different fallback axis
-  if (!e2.allFinite() || e2.norm() < 0.5)
-  {
-    up = Eigen::Vector3d(1, 0, 0);
-    e2 = (e1.cross(up)).normalized();
-  }
+  e3.normalize();
 
-  // e3 = e1 x e2
-  Eigen::Vector3d e3 = e1.cross(e2);
+  // e2 = e3 x e1, so that (e1, e2, e3) is right-handed exactly like the
+  // original camera axes (x=right, y=down, z=forward: x cross y = z).
+  Eigen::Vector3d e2 = e3.cross(e1);
 
   // Rrect: rotation that aligns the baseline with the x-axis
   Eigen::Matrix3d Rrect;
@@ -309,7 +333,12 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
   m_rectified_image_params.rightCamera.distortion = DistortionModel::none;
   m_rectified_image_params.rightCamera.focalLengthMeters = cam2.focalLengthMeters;
 
-  m_rectified_image_params.rightCameraPose = params.rightCameraPose;
+  // After rectification the two cameras are parallel and separated by a pure
+  // translation along the (new) x axis: report THAT geometry, not the input
+  // pose. Downstream code reads this to get the baseline it must use with the
+  // rectified images.
+  m_rectified_image_params.rightCameraPose =
+      mrpt::math::TPose3DQuat(T_fwd.norm(), 0, 0, 1, 0, 0, 0);
 
   // -----------------------------------------------------------------------
   // 6. Store rectification rotations as quaternions
