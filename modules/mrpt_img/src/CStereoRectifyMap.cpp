@@ -206,22 +206,32 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
   // e1 = baseline direction (should become the new x-axis)
   Eigen::Vector3d e1 = T_half.normalized();
 
-  // e2 = perpendicular to e1 and the old y-axis (or z if degenerate)
-  Eigen::Vector3d up(0, -1, 0);  // camera y points down, so "up" is -y
-  if (std::abs(e1.dot(up)) > 0.9)
+  // e3 (new z-axis, "forward") must stay close to the cameras' own optical
+  // axis, not an arbitrary reference: it is what build_rectify_map() later
+  // divides by (p_cam.z()) to un-project a rectified pixel back through the
+  // original camera, so any component of the true forward direction that
+  // ends up outside e3 is lost - e.g. deriving e2 from crossing e1 with a
+  // fixed "up" vector (as this function used to) implicitly assigns
+  // whichever axis is left over to e3, which is the *depth* axis only by
+  // coincidence, for a specific baseline orientation. For an ordinary
+  // side-by-side stereo pair the baseline is horizontal (close to the
+  // camera's own +/-x axis), which is exactly the case where the old "up"
+  // heuristic put the original z axis into e2 instead of e3, and every
+  // rectified pixel unprojected through z=0.
+  Eigen::Vector3d forward(0, 0, 1);  // camera z, "looking direction"
+  if (std::abs(e1.dot(forward)) > 0.9)
   {
-    up = Eigen::Vector3d(0, 0, 1);
+    // Degenerate only for a forward-facing (depth-separated) pair, where the
+    // baseline itself is close to the optical axis: fall back to the
+    // camera's y axis as the forward reference instead.
+    forward = Eigen::Vector3d(0, 1, 0);
   }
-  Eigen::Vector3d e2 = (e1.cross(up)).normalized();
-  // If e1 is parallel to up, try a different fallback axis
-  if (!e2.allFinite() || e2.norm() < 0.5)
-  {
-    up = Eigen::Vector3d(1, 0, 0);
-    e2 = (e1.cross(up)).normalized();
-  }
+  // Gram-Schmidt: the closest vector to `forward` that is orthogonal to e1.
+  Eigen::Vector3d e3 = (forward - (forward.dot(e1)) * e1).normalized();
 
-  // e3 = e1 x e2
-  Eigen::Vector3d e3 = e1.cross(e2);
+  // e2 = e3 x e1, so that (e1, e2, e3) is right-handed exactly like the
+  // original camera axes (x=right, y=down, z=forward: x cross y = z).
+  Eigen::Vector3d e2 = e3.cross(e1);
 
   // Rrect: rotation that aligns the baseline with the x-axis
   Eigen::Matrix3d Rrect;

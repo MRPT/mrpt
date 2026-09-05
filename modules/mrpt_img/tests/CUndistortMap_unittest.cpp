@@ -302,6 +302,63 @@ TEST(CStereoRectifyMap, SetFromCamParams)
   EXPECT_EQ(rp.leftCamera.nrows, 480U);
 }
 
+TEST(CStereoRectifyMap, Rectify_preservesForwardAxis)
+{
+  // With a pure-baseline (zero relative rotation) stereo pair, "straight
+  // ahead" must stay "straight ahead": a feature at the left camera's own
+  // principal point must reappear at the rectified image's own principal
+  // point. The previous Rectify_basic/_color tests only check output image
+  // *dimensions*, which a geometrically-broken rectification rotation
+  // (e.g. one that swaps the camera's forward axis into the image plane)
+  // still satisfies - they render a smooth gradient, which survives any
+  // remap, garbled or not. This test checks the actual geometry instead.
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  rectMap.setFromCamParams(stereo);
+
+  const auto& cam = stereo.leftCamera;
+  CImage      inLeft(cam.ncols, cam.nrows, CH_GRAY);
+  CImage      inRight(cam.ncols, cam.nrows, CH_GRAY);
+  inLeft.filledRectangle(
+      {0, 0}, {static_cast<int32_t>(cam.ncols) - 1, static_cast<int32_t>(cam.nrows) - 1},
+      TColor::black());
+  inRight.filledRectangle(
+      {0, 0}, {static_cast<int32_t>(cam.ncols) - 1, static_cast<int32_t>(cam.nrows) - 1},
+      TColor::black());
+  // Small bright marker at the (original) principal point:
+  const auto cx = static_cast<int32_t>(std::lround(cam.cx()));
+  const auto cy = static_cast<int32_t>(std::lround(cam.cy()));
+  inLeft.filledRectangle({cx - 3, cy - 3}, {cx + 3, cy + 3}, TColor::white());
+  inRight.filledRectangle({cx - 3, cy - 3}, {cx + 3, cy + 3}, TColor::white());
+
+  CImage outLeft, outRight;
+  rectMap.rectify(inLeft, inRight, outLeft, outRight);
+
+  // Centroid of the brightest pixels in the rectified left image:
+  double sumX = 0, sumY = 0, sumW = 0;
+  for (unsigned y = 0; y < outLeft.getHeight(); ++y)
+  {
+    for (unsigned x = 0; x < outLeft.getWidth(); ++x)
+    {
+      const double w = outLeft.at<uint8_t>(x, y);
+      sumX += w * x;
+      sumY += w * y;
+      sumW += w;
+    }
+  }
+  ASSERT_GT(sumW, 0.0);
+  const double markerX = sumX / sumW;
+  const double markerY = sumY / sumW;
+
+  const auto& rcam = rectMap.getRectifiedLeftImageParams();
+  EXPECT_NEAR(markerX, rcam.cx(), 5.0);
+  EXPECT_NEAR(markerY, rcam.cy(), 5.0);
+}
+
 TEST(CStereoRectifyMap, Rectify_basic)
 {
   TStereoCamera stereo;
