@@ -218,16 +218,23 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
   // camera's own +/-x axis), which is exactly the case where the old "up"
   // heuristic put the original z axis into e2 instead of e3, and every
   // rectified pixel unprojected through z=0.
-  Eigen::Vector3d forward(0, 0, 1);  // camera z, "looking direction"
-  if (std::abs(e1.dot(forward)) > 0.9)
+  // e1 (and T_half) are expressed in the half-rotated frame, so the forward
+  // reference must be rotated into that same frame by R_half before use -
+  // using the bare (unrotated) camera z axis here is only correct when
+  // R_half happens to be near-identity (a negligible relative rotation
+  // between the two cameras). Gram-Schmidt: the closest vector to the
+  // (rotated) forward reference that is orthogonal to e1.
+  Eigen::Vector3d e3 = R_half * Eigen::Vector3d(0, 0, 1);
+  e3 -= e3.dot(e1) * e1;
+  if (e3.squaredNorm() < 1e-12)
   {
     // Degenerate only for a forward-facing (depth-separated) pair, where the
     // baseline itself is close to the optical axis: fall back to the
-    // camera's y axis as the forward reference instead.
-    forward = Eigen::Vector3d(0, 1, 0);
+    // (rotated) camera y axis as the forward reference instead.
+    e3 = R_half * Eigen::Vector3d(0, 1, 0);
+    e3 -= e3.dot(e1) * e1;
   }
-  // Gram-Schmidt: the closest vector to `forward` that is orthogonal to e1.
-  Eigen::Vector3d e3 = (forward - (forward.dot(e1)) * e1).normalized();
+  e3.normalize();
 
   // e2 = e3 x e1, so that (e1, e2, e3) is right-handed exactly like the
   // original camera axes (x=right, y=down, z=forward: x cross y = z).

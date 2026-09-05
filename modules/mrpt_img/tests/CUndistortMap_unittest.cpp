@@ -84,6 +84,36 @@ void fillGradientColor(CImage& img)
   }
 }
 
+/** Renders a small bright marker at pixel (cx,cy) on an otherwise-black
+ *  ncols x nrows image. */
+CImage markerImage(uint32_t ncols, uint32_t nrows, double cx, double cy)
+{
+  CImage img(ncols, nrows, CH_GRAY);
+  img.filledRectangle(
+      {0, 0}, {static_cast<int32_t>(ncols) - 1, static_cast<int32_t>(nrows) - 1}, TColor::black());
+  const auto icx = static_cast<int32_t>(std::lround(cx));
+  const auto icy = static_cast<int32_t>(std::lround(cy));
+  img.filledRectangle({icx - 3, icy - 3}, {icx + 3, icy + 3}, TColor::white());
+  return img;
+}
+
+/** Intensity-weighted centroid of an image, in pixel coordinates. */
+std::pair<double, double> brightCentroid(const CImage& img)
+{
+  double sumX = 0, sumY = 0, sumW = 0;
+  for (unsigned y = 0; y < img.getHeight(); ++y)
+  {
+    for (unsigned x = 0; x < img.getWidth(); ++x)
+    {
+      const double w = img.at<uint8_t>(x, y);
+      sumX += w * x;
+      sumY += w * y;
+      sumW += w;
+    }
+  }
+  return {sumX / sumW, sumY / sumW};
+}
+
 }  // namespace
 
 // ===========================================================================
@@ -321,42 +351,99 @@ TEST(CStereoRectifyMap, Rectify_preservesForwardAxis)
   rectMap.setFromCamParams(stereo);
 
   const auto& cam = stereo.leftCamera;
-  CImage inLeft(cam.ncols, cam.nrows, CH_GRAY);
-  CImage inRight(cam.ncols, cam.nrows, CH_GRAY);
-  inLeft.filledRectangle(
-      {0, 0}, {static_cast<int32_t>(cam.ncols) - 1, static_cast<int32_t>(cam.nrows) - 1},
-      TColor::black());
-  inRight.filledRectangle(
-      {0, 0}, {static_cast<int32_t>(cam.ncols) - 1, static_cast<int32_t>(cam.nrows) - 1},
-      TColor::black());
-  // Small bright marker at the (original) principal point:
-  const auto cx = static_cast<int32_t>(std::lround(cam.cx()));
-  const auto cy = static_cast<int32_t>(std::lround(cam.cy()));
-  inLeft.filledRectangle({cx - 3, cy - 3}, {cx + 3, cy + 3}, TColor::white());
-  inRight.filledRectangle({cx - 3, cy - 3}, {cx + 3, cy + 3}, TColor::white());
+  const CImage inLeft = markerImage(cam.ncols, cam.nrows, cam.cx(), cam.cy());
+  const CImage inRight = inLeft;
 
   CImage outLeft, outRight;
   rectMap.rectify(inLeft, inRight, outLeft, outRight);
 
-  // Centroid of the brightest pixels in the rectified left image:
-  double sumX = 0, sumY = 0, sumW = 0;
-  for (unsigned y = 0; y < outLeft.getHeight(); ++y)
-  {
-    for (unsigned x = 0; x < outLeft.getWidth(); ++x)
-    {
-      const double w = outLeft.at<uint8_t>(x, y);
-      sumX += w * x;
-      sumY += w * y;
-      sumW += w;
-    }
-  }
-  ASSERT_GT(sumW, 0.0);
-  const double markerX = sumX / sumW;
-  const double markerY = sumY / sumW;
-
+  const auto [markerX, markerY] = brightCentroid(outLeft);
   const auto& rcam = rectMap.getRectifiedLeftImageParams();
   EXPECT_NEAR(markerX, rcam.cx(), 5.0);
   EXPECT_NEAR(markerY, rcam.cy(), 5.0);
+}
+
+TEST(CStereoRectifyMap, Rectify_preservesForwardAxis_withRelativeRotation)
+{
+  // Same invariant as Rectify_preservesForwardAxis, but with a non-identity
+  // relative rotation between the two cameras (e.g. a real, imperfectly
+  // mounted rig such as a multi-camera bag with no per-camera TF): R_half is
+  // then non-identity too, so a forward reference that isn't rotated along
+  // with it (the bug CodeRabbit caught in this same PR) would derive e3 from
+  // the *original*, un-rotated z axis instead of the half-rotated one.
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  // 5 deg yaw on top of the baseline translation.
+  const double yawRad = 5.0 * M_PI / 180.0;
+  stereo.rightCameraPose =
+      mrpt::math::TPose3DQuat(0.10, 0, 0, std::cos(yawRad / 2), 0, 0, std::sin(yawRad / 2));
+
+  CStereoRectifyMap rectMap;
+  rectMap.setFromCamParams(stereo);
+
+  const auto& cam = stereo.leftCamera;
+  const CImage inLeft = markerImage(cam.ncols, cam.nrows, cam.cx(), cam.cy());
+  const CImage inRight = inLeft;
+
+  CImage outLeft, outRight;
+  rectMap.rectify(inLeft, inRight, outLeft, outRight);
+
+  const auto [markerX, markerY] = brightCentroid(outLeft);
+  const auto& rcam = rectMap.getRectifiedLeftImageParams();
+  EXPECT_NEAR(markerX, rcam.cx(), 5.0);
+  EXPECT_NEAR(markerY, rcam.cy(), 5.0);
+}
+
+TEST(CStereoRectifyMap, Rectify_obliqueBaselineNearOpticalAxis)
+{
+  // A baseline mostly along the optical axis (large z component) but not
+  // exactly colinear with it: close enough to the old dot-product-based
+  // degeneracy threshold (|e1.dot(z)| > 0.9, i.e. within ~26 deg of z) to be
+  // misclassified as needing the y-axis fallback - CodeRabbit's second
+  // finding on this PR. Its actual projection onto the plane orthogonal to
+  // e1 is still well-conditioned (norm ~0.41 for the case below), so the fix
+  // must not take the fallback path here.
+  //
+  // Unlike the two tests above, this does NOT check that a principal-point
+  // marker survives: a baseline this close to the optical axis is the
+  // classic "forward motion" stereo configuration, where standard
+  // rectification legitimately reprojects the principal point far outside
+  // the original field of view (confirmed numerically: for this exact case
+  // the source ray for the rectified principal point lands at pixel
+  // x = -777 on a 640-pixel-wide camera) - a real geometric property of this
+  // configuration, not a defect. What must still hold is that
+  // setFromCamParams()/rectify() succeed and produce a well-formed
+  // (non-degenerate) rotation - i.e. that e3 was NOT snapped to the y-axis
+  // fallback, which would additionally violate right-handedness with the
+  // z-heavy baseline used here.
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  // Baseline direction (sqrt(1-0.91^2), 0, 0.91), scaled to a 10 cm baseline.
+  const double bz = 0.91;
+  const double bx = std::sqrt(1.0 - bz * bz);
+  const double baseline = 0.10;
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(baseline * bx, 0, baseline * bz, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  ASSERT_NO_THROW(rectMap.setFromCamParams(stereo));
+
+  // The rectification rotation must be a valid, finite unit quaternion (not
+  // NaN/degenerate, as it would be if e3 had zero norm before normalizing).
+  const auto& q = rectMap.getLeftCameraRot();
+  EXPECT_TRUE(
+      std::isfinite(q.r()) && std::isfinite(q.x()) && std::isfinite(q.y()) && std::isfinite(q.z()));
+  EXPECT_NEAR(q.r() * q.r() + q.x() * q.x() + q.y() * q.y() + q.z() * q.z(), 1.0, 1e-9);
+
+  const auto& cam = stereo.leftCamera;
+  const CImage inLeft = markerImage(cam.ncols, cam.nrows, cam.cx(), cam.cy());
+  const CImage inRight = inLeft;
+
+  CImage outLeft, outRight;
+  ASSERT_NO_THROW(rectMap.rectify(inLeft, inRight, outLeft, outRight));
+  EXPECT_EQ(outLeft.getWidth(), cam.ncols);
+  EXPECT_EQ(outLeft.getHeight(), cam.nrows);
 }
 
 TEST(CStereoRectifyMap, Rectify_basic)
