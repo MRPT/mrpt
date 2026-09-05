@@ -2,6 +2,13 @@
 Changelog for package mrpt_kinematics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.4 (2026-09-04)
+------------------
+* test(mrpt_kinematics): add a unit test suite (module had none), raising coverage to 97% (`#1388 <https://github.com/MRPT/mrpt/issues/1388>`_).
+* fix(mrpt_kinematics): CVehicleVelCmd's copy constructor delegated to operator=(), dispatching pure virtual methods during construction and aborting the process.
+* docs(mrpt_kinematics): CKinematicChain::recomputeAllPoses()'s documented `pose0` argument is actually ignored in favor of setOriginPose(); doc corrected to match.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.3 (2026-08-12)
 ------------------
 

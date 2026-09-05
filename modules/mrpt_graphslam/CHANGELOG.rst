@@ -2,6 +2,13 @@
 Changelog for package mrpt_graphslam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.4 (2026-09-04)
+------------------
+* test(mrpt_graphslam): raise unit test coverage of TSlidingWindow and CEdgeCounter, previously untested (41%->72% lines) (`#1389 <https://github.com/MRPT/mrpt/issues/1389>`_).
+* fix(mrpt_graphslam): TSlidingWindow::getMean()/getStdDev() gave NaN/wrong results on a partially-filled window; resizeWindow() left the std-dev cache stale.
+* fix(mrpt_graphslam): CEdgeCounter::clearAllEdges() left m_unique_edges stale.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.3 (2026-08-12)
 ------------------
 * fix(mrpt_graphslam): match fully-qualified class names for constraint-type whitelist. Skip RGBD-TUM info parsing when rawlog is empty.

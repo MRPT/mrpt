@@ -2,6 +2,9 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.4 (2026-09-04)
+------------------
+
 3.1.3 (2026-08-12)
 ------------------
 * test(mrpt_viz): add extensive unit test coverage for mrpt::viz classes.

@@ -2,6 +2,14 @@
 Changelog for package mrpt_containers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.4 (2026-09-04)
+------------------
+* fix(mrpt_containers): yaml double round-trip precision loss, %.16g -> %.17g (`#1396 <https://github.com/MRPT/mrpt/issues/1396>`_).
+* fix(mrpt_containers): yaml_ref/yaml_cref: add missing asSequenceRange() and yaml_cref::getOrDefault() (`#1397 <https://github.com/MRPT/mrpt/issues/1397>`_, `#1398 <https://github.com/MRPT/mrpt/issues/1398>`_).
+* fix(mrpt_containers): yaml: fix a TOP comment corrupting the document on serialize+reparse (`#1400 <https://github.com/MRPT/mrpt/issues/1400>`_).
+* fix(mrpt_containers): yaml: keep an unquoted leading-zero digit run (e.g. "00") as a string instead of parsing it as a number (`#1401 <https://github.com/MRPT/mrpt/issues/1401>`_).
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.3 (2026-08-12)
 ------------------
 * test(mrpt_maps): raise unit test coverage for occupancy grids and maps. Fix out-of-bounds reads in CDynamicGrid3D and invert check in computeObservationLikelihood_ConsensusOWA().

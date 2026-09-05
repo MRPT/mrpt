@@ -2,6 +2,9 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.4 (2026-09-04)
+------------------
+
 3.1.3 (2026-08-12)
 ------------------
 * mrpt_math: depend on nanoflann_vendor instead of nanoflann
