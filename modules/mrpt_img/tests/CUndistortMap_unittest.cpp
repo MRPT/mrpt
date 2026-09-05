@@ -321,8 +321,8 @@ TEST(CStereoRectifyMap, Rectify_preservesForwardAxis)
   rectMap.setFromCamParams(stereo);
 
   const auto& cam = stereo.leftCamera;
-  CImage      inLeft(cam.ncols, cam.nrows, CH_GRAY);
-  CImage      inRight(cam.ncols, cam.nrows, CH_GRAY);
+  CImage inLeft(cam.ncols, cam.nrows, CH_GRAY);
+  CImage inRight(cam.ncols, cam.nrows, CH_GRAY);
   inLeft.filledRectangle(
       {0, 0}, {static_cast<int32_t>(cam.ncols) - 1, static_cast<int32_t>(cam.nrows) - 1},
       TColor::black());
