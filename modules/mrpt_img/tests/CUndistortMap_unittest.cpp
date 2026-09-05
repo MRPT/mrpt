@@ -395,6 +395,52 @@ TEST(CStereoRectifyMap, Rectify_preservesForwardAxis_withRelativeRotation)
   EXPECT_NEAR(markerY, rcam.cy(), 5.0);
 }
 
+TEST(CStereoRectifyMap, Rectify_idealPairIsIdentity)
+{
+  // An already-rectified, distortion-free pair (parallel optical axes, right
+  // camera a pure +x baseline away, identical intrinsics) must rectify to
+  // ITSELF: the rectification rotation is the identity and the images come
+  // back unchanged.
+  //
+  // The Rectify_preservesForwardAxis tests above cannot see a violation of
+  // this, because they place their marker at the principal point, which is
+  // the one point invariant under an in-plane 180 deg flip. An OFF-CENTER
+  // marker is what distinguishes the identity from that flip - and a flip is
+  // not cosmetic here: it puts the right camera at negative x in the
+  // rectified frame, so every disparity of an ordinary rig comes out with the
+  // wrong sign.
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  rectMap.setFromCamParams(stereo);
+
+  // The rectification rotation must be the identity quaternion.
+  const auto& q = rectMap.getLeftCameraRot();
+  EXPECT_NEAR(std::abs(q.r()), 1.0, 1e-9);
+
+  // The rectified geometry must be a pure, POSITIVE baseline along x.
+  const auto& rp = rectMap.getRectifiedImageParams();
+  EXPECT_NEAR(rp.rightCameraPose.x, 0.10, 1e-9);
+  EXPECT_NEAR(rp.rightCameraPose.y, 0.0, 1e-9);
+  EXPECT_NEAR(rp.rightCameraPose.z, 0.0, 1e-9);
+
+  const auto& cam = stereo.leftCamera;
+  const double mx = cam.cx() + 100.0;
+  const double my = cam.cy() + 60.0;
+  const CImage inLeft = markerImage(cam.ncols, cam.nrows, mx, my);
+  const CImage inRight = inLeft;
+
+  CImage outLeft, outRight;
+  rectMap.rectify(inLeft, inRight, outLeft, outRight);
+
+  const auto [markerX, markerY] = brightCentroid(outLeft);
+  EXPECT_NEAR(markerX, mx, 1.0);
+  EXPECT_NEAR(markerY, my, 1.0);
+}
+
 TEST(CStereoRectifyMap, Rectify_obliqueBaselineNearOpticalAxis)
 {
   // A baseline mostly along the optical axis (large z component) but not

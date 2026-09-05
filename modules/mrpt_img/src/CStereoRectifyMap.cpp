@@ -180,10 +180,9 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
   Eigen::Matrix3d R_fwd = eq_fwd.toRotationMatrix();
   Eigen::Vector3d T_fwd(rp.x, rp.y, rp.z);
 
-  // We need the INVERSE pose (OpenCV convention): the transform that takes
-  // points from right camera frame to left camera frame.
+  // Rotation taking points from the LEFT camera frame to the RIGHT one
+  // (OpenCV's stereoRectify convention for its R argument).
   Eigen::Matrix3d R = R_fwd.transpose();
-  Eigen::Vector3d T = -R * T_fwd;
 
   // -----------------------------------------------------------------------
   // 2. Bouguet-style stereo rectification
@@ -200,8 +199,16 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
   // After this, both cameras have the same orientation.
 
   // 2b. Compute the rectification rotation to make epipolar lines horizontal.
-  // The baseline in the half-rotated frame:
-  Eigen::Vector3d T_half = R_half * T;
+  // The baseline in the half-rotated frame. It must be the vector pointing
+  // from the LEFT camera towards the RIGHT one, i.e. rightCameraPose's own
+  // translation (T_fwd), not T = -R*T_fwd, which is the opposite vector (the
+  // left camera as seen from the right). Using the latter flips e1, and with
+  // it e2, giving a rectification rotated 180 deg in-plane and putting the
+  // right camera at NEGATIVE x in the rectified frame - so every disparity
+  // comes out negative for an ordinary side-by-side rig. Both rectified
+  // images being flipped the same way, the pair is still epipolar-aligned,
+  // which is why an output-size or principal-point-marker check cannot see it.
+  Eigen::Vector3d T_half = R_half * T_fwd;
 
   // e1 = baseline direction (should become the new x-axis)
   Eigen::Vector3d e1 = T_half.normalized();
@@ -326,7 +333,12 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
   m_rectified_image_params.rightCamera.distortion = DistortionModel::none;
   m_rectified_image_params.rightCamera.focalLengthMeters = cam2.focalLengthMeters;
 
-  m_rectified_image_params.rightCameraPose = params.rightCameraPose;
+  // After rectification the two cameras are parallel and separated by a pure
+  // translation along the (new) x axis: report THAT geometry, not the input
+  // pose. Downstream code reads this to get the baseline it must use with the
+  // rectified images.
+  m_rectified_image_params.rightCameraPose =
+      mrpt::math::TPose3DQuat(T_fwd.norm(), 0, 0, 1, 0, 0, 0);
 
   // -----------------------------------------------------------------------
   // 6. Store rectification rotations as quaternions
