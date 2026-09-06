@@ -201,12 +201,17 @@ files needed changes.
 A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
-overall (2026-08-31, deduplicated the same way as
-`scripts/coverage_module_report.py`): **73.6% lines / 54.4% branches**
-- still short of goal, dominated by the hardware/GUI modules below.
-The whole table below was re-measured on 2026-08-31; the date tags on some
+overall (2026-09-06, deduplicated the same way as
+`scripts/coverage_module_report.py`): **76.4% lines**
+- still short of goal, dominated by the hardware modules below.
+The whole table below was re-measured on 2026-09-06; the date tags on some
 rows mark when that module last had a dedicated unit-test pass, and point at
 the footnote describing it.
+
+**The GUI tests need a display**: run `colcon test` under
+`xvfb-run -a --server-args="-screen 0 1280x1024x24"` (as CI does), or the
+`mrpt_gui` window tests `GTEST_SKIP()` and that module reads ~1% instead of
+~40%. `MRPT_SKIP_GUI_TESTS=1` forces the skip.
 
 Gotcha (2026-07-06): the system `gcov` alias (`/etc/alternatives/gcov`) may
 point to an unrelated binary (observed pointing to `/usr/bin/gc`), causing
@@ -298,17 +303,17 @@ and accurate path — pick two.
 | Module | Covered/Total lines | Line % | Branch % |
 |---|---|---|---|
 | mrpt_imgui | 0/53 | 0.0% | 0.0% |
-| mrpt_gui | 22/4621 | 0.5% | 0.2% |
 | mrpt_hwdrivers | 913/6592 | 13.9% | 9.7% |
-| mrpt_opengl | 2041/4234 | 48.2% | 30.3% |
+| mrpt_gui (2026-09-06)@ | 1888/4655 | 40.6% | 30.4% |
+| mrpt_opengl | 2323/4234 | 54.9% | 35.7% |
 | mrpt_libapps_cli | 1129/1910 | 59.1% | 38.0% |
 | mrpt_libapps_gui | 803/1288 | 62.3% | 45.8% |
-| mrpt_viz (2026-08-02) | 6511/9440 | 69.0% | 50.5% |
+| mrpt_viz (2026-08-02) | 6600/9440 | 69.9% | 51.4% |
 | mrpt_common | 5/7 | 71.4% | 0.0% |
-| mrpt_graphslam (2026-08-28)¤ | 453/618 | 73.3% | 60.5% |
+| mrpt_graphslam (2026-09-06)@ | 814/997 | 81.6% | 64.4% |
 | mrpt_comms (2026-08-29)» | 687/906 | 75.8% | 54.4% |
 | mrpt_examples_cpp | 99/128 | 77.3% | 46.3% |
-| mrpt_system (2026-08-29)» | 1622/1963 | 82.6% | 58.5% |
+| mrpt_system (2026-08-29)» | 1625/1963 | 82.8% | 58.5% |
 | mrpt_rtti (2026-08-29)» | 151/176 | 85.8% | 77.4% |
 | mrpt_maps (2026-08-03)§ | 10118/11698 | 86.5% | 62.8% |
 | mrpt_io (2026-08-29)» | 1133/1310 | 86.5% | 69.7% |
@@ -838,6 +843,98 @@ Worth knowing for future tests here:
   order depends on the sign of the eigenvector and differs between platforms:
   sort them before comparing.
 
+@ Coverage pass of 2026-09-06 on `mrpt_graphslam` (73.3% -> 81.6%) and
+`mrpt_gui` (0.5% -> 40.6%), the last two modules with whole files that had
+never had a single assertion run against them.
+
+`mrpt_gui` had **no `tests/` directory at all**. It now has one, and the
+window classes are tested headlessly: `xvfb-run` supplies a virtual X display
+and Mesa's software rasterizer, which is enough to open and drive
+`CDisplayWindow`, `CDisplayWindow3D` and `CDisplayWindowPlots`. That single
+change carried `mathplot.cpp` 0% -> 33%, `WxSubsystem.cpp` 4.7% -> 67%,
+`CDisplayWindow3D.cpp` 0% -> 74%, `CDisplayWindow.cpp` 0% -> 71% and
+`CDisplayWindowPlots.cpp` 0% -> 65%. `.github/workflows/build-linux.yml`
+installs `xvfb`/`libgl1-mesa-dri` and wraps `colcon test` in `xvfb-run`;
+`modules/mrpt_gui/package.xml` gained a matching `<test_depend>xvfb</test_depend>`
+(note that `test_depend` alone changes nothing - only rosdep reads it, and the
+ROS buildfarm skips this repo's tests entirely, see section 9 - so the CI
+wrapper is what actually makes them run).
+
+Worth knowing before adding more GUI tests:
+
+* Do **not** pixel-compare window screenshots. On a virtual display there is
+  no compositor, the window is never mapped, and reading its pixels back
+  yields a uniformly black image even though rendering did happen (the FPS
+  counter advances normally). Assert that a frame was grabbed and that it has
+  a plausible size instead. Reference-image comparisons belong in
+  `mrpt_opengl`'s offscreen EGL/FBO tests, which need no display at all.
+* The grabbed frame is the *client* area, which under a real window manager
+  is smaller than the requested outer size (title bar), while under Xvfb it
+  matches exactly - so exact dimensions cannot be asserted either.
+* `tests/gui_test_common.h` provides `SKIP_IF_NO_GUI()`; every window test
+  must use it so the suite still passes with no display, and
+  `MRPT_SKIP_GUI_TESTS=1` forces that path.
+* `mrpt/gui/WxUtils.h` pulls in wxWidgets headers, but the library links
+  wxWidgets *privately*, so the test target needs an explicit
+  `target_link_libraries(test_mrpt_gui PRIVATE imp_wxwidgets)`.
+* `CImage::at<T>()` is a raw `reinterpret_cast`: `at<mrpt::img::TColor>()` on
+  a 3-channel image reads/writes 4 bytes over a 3-byte pixel and corrupts the
+  heap on the last pixel. Use `at<uint8_t>(x, y, channel)`.
+
+Real bugs found and fixed: (1) `mrpt::system::CTicTac` declared its timestamp
+storage `alignas(16)` for no reason (it is only ever reinterpreted as
+`struct timespec`/`LARGE_INTEGER`, both 8-byte aligned). That alignment
+propagated through `CTimeLogger` up to
+`mrpt::graphslam::CRegistrationDeciderOrOptimizer`, which is used as a
+*virtual base*; GCC then compiled its member functions assuming `this` is
+16-byte aligned and emitted `movdqa`, while the virtual-base subobject inside
+a derived class sits at an offset that is only 8-byte aligned - so simply
+constructing a `CFixedIntervalsNRD` **segfaulted in any optimized build**,
+i.e. the whole `graphslam-engine` app was broken in Release. Same failure mode
+as the one already documented in `mrpt::math::CMatrixFixed`; a `static_assert`
+now pins the alignment. (2)
+`CNodeRegistrationDecider::registerNewNodeAtEnd()` seeded the *root* node with
+`getCurrentRobotPosEstimation()` instead of the origin, so the motion
+accumulated before the first registration was applied twice: node 1 ended up
+at 2x the travelled distance and the whole graph was offset. (3) The three
+decider `TParams` structs (`CFixedIntervalsNRD`,
+`CIncrementalNodeRegistrationDecider`, `CICPCriteriaNRD`) left
+`registration_max_distance`/`registration_max_angle` **uninitialized**, so a
+decider used without `loadParams()` compared against garbage thresholds; the
+documented defaults were dead code living only in `loadFromConfigFile()`.
+(4) `CIncrementalNodeRegistrationDecider` did not compile at all if
+instantiated: `getDescriptiveReport()` used an undefined `report_sep` and
+`checkRegistrationCondition()` used an unqualified `INVALID_NODEID`; its 3D
+registration check also printed `p1` twice via a leftover `std::cout` (now a
+debug log). (5) `TUncertaintyPath::hasLowerUncertaintyThan()` was likewise
+uninstantiable - it is `const` but called the non-`const` `getDeterminant()`;
+the determinant cache is now `mutable` and the getter `const`.
+(6) `CGlCanvasBase::setMousePos()`/`setMouseClicked()`/`updateLastPos()` and
+`CGlCanvasBaseHeadless::renderError()` were declared in the public header but
+never defined after the 3.x camera refactor - a link error for any caller, and
+`CGlCanvasBaseHeadless` was unusable (its key function was missing). The two
+click setters were dead (superseded by `COrbitCameraController`) and are gone;
+`updateLastPos()` is restored and is now actually called from
+`CWxGLCanvasBase`'s mouse handlers, which never recorded the pointer position,
+so `CDisplayWindow3D::getLastMousePosition()` - and hence
+`getLastMousePositionRay()` and all 3D picking - always returned pixel (0,0).
+(7) `wxImage2MRPTImage()` passed `swapRedBlue = true`, a leftover from MRPT
+2.x when `CImage` stored BGR; in 3.x both `CImage` and `wxImage` are RGB, so
+every wxImage -> CImage conversion came back with red and blue swapped. The
+matching dead `"BGR"` branch in `MRPTImage2wxImage()` was removed.
+(8) `CWindowObserver::OnEvent()` compared the key modifiers against the magic
+number `8192` with `==`, so Ctrl+C was missed whenever any other modifier
+(e.g. Shift) was also held; it now masks against `mrpt::gui::MRPTKMOD_CONTROL`.
+(9) `CNodeRegistrationDecider_impl.h` had `using namespace std;` at **global**
+scope in a public header, leaking into every translation unit that included
+any NRD; the definitions are now wrapped in their own namespace.
+
+`mrpt_graphslam`'s remaining gap is `CEdgeCounter`'s visualization half and
+`CWindowManager.h`, both of which need a live `CDisplayWindow3D` handed in
+from outside the module. `mrpt_gui`'s is `CDisplayWindowGUI.cpp` (nanogui /
+GLFW), `CQtGlCanvasBase.cpp` (Qt), `CAboutBox*`/`error_box.cpp` (modal dialogs
+that would block a test run) and the rest of `mathplot.cpp`.
+
 ### Weak areas, grouped by root cause
 
 1. **Hardware drivers - `mrpt_hwdrivers` (13.9%)**: inherently hard to
@@ -849,12 +946,13 @@ Worth knowing for future tests here:
    2026-08-29 (see » above): everything but `CInterfaceFTDI` turned out to be
    testable over loopback sockets and a pseudo-terminal.
 
-2. **GUI/rendering — `mrpt_gui` (0.5%), `mrpt_imgui` (0%), and GUI-only files
-   inside `mrpt_viz`/`mrpt_opengl`**: `mathplot.cpp`, `CDisplayWindow*.cpp`,
-   `WxUtils.cpp`, `CWxGLCanvasBase.cpp`, `CQtGlCanvasBase.cpp`,
-   `CImGuiSceneView.cpp` need a live display/OpenGL context and are 0%.
-   Realistic path to improvement is extracting non-UI logic into testable
-   helpers, or headless/offscreen-context tests, not brute-force unit tests.
+2. **GUI/rendering — `mrpt_imgui` (0%) and the GUI-only files still left in
+   `mrpt_gui` (40.6%)**: `CDisplayWindowGUI.cpp` (nanogui/GLFW),
+   `CQtGlCanvasBase.cpp` (Qt), `CImGuiSceneView.cpp`, the modal dialogs in
+   `CAboutBox*`/`error_box.cpp`, and the rest of `mathplot.cpp`. The
+   `CDisplayWindow*`/`WxUtils`/`CWxGLCanvasBase`/`mathplot` bulk cleared this
+   bucket on 2026-09-06 by running the tests under `xvfb-run` — see @ above;
+   the same technique should work for the nanogui/Qt canvases.
 
 3. **CLI apps — `mrpt_libapps_cli` (59.2% as of 2026-07-06, was 9.1%)**: some
    `rawlog-edit_*.cpp` paths remain untested. These are better suited to
@@ -862,8 +960,10 @@ Worth knowing for future tests here:
    sample rawlogs, diff the output) than pure unit tests.
 
 4. **Quick wins — pure-logic files at 0% with no hardware/GUI dependency**
-   (highest-value gaps, ordinary unit tests would work immediately):
-   `mrpt_graphslam/src/CWindowObserver.cpp`.
+   (highest-value gaps, ordinary unit tests would work immediately): none
+   left as of 2026-09-06.
+   (`mrpt_graphslam/src/CWindowObserver.cpp` and `mrpt_gui/src/CGlCanvasBase.cpp`
+   cleared this bucket as of 2026-09-06 — see @ above.)
    (`mrpt_slam/src/slam/{CLandmarksMap,observations_overlap}.cpp` cleared this
    bucket as of 2026-08-31 — see × above.)
    (`mrpt_system/src/CFileSystemWatcher.cpp`, `mrpt_system/src/{progress,

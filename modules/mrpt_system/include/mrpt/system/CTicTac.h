@@ -35,7 +35,24 @@ class CTicTac
   [[nodiscard]] double Tac() const noexcept;
 
  private:
-  alignas(16) unsigned long largeInts[4]{0, 0};
+  /** Opaque storage, reinterpreted as `struct timespec` (POSIX) or
+   * `LARGE_INTEGER` (Windows); both only need the natural alignment of the
+   * underlying integer type.
+   *
+   * Deliberately *not* over-aligned: CTicTac is embedded in CTimeLogger,
+   * which in turn is a member of classes used as virtual bases (e.g.
+   * mrpt::graphslam::CRegistrationDeciderOrOptimizer). GCC then compiles
+   * member functions of such a class assuming `this` has the over-aligned
+   * alignment, while the virtual-base subobject inside a derived class is
+   * only placed at its natural alignment, so the resulting aligned SIMD
+   * accesses crash. See the equivalent note in mrpt::math::CMatrixFixed. */
+  unsigned long largeInts[4]{0, 0};
 };  // End of class def.
+
+static_assert(
+    alignof(CTicTac) <= alignof(unsigned long),
+    "CTicTac must not be over-aligned: it is embedded in classes used as "
+    "virtual bases, where GCC then emits aligned SIMD accesses on "
+    "subobjects that are only naturally aligned.");
 
 }  // namespace mrpt::system

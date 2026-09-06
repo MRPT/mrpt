@@ -30,6 +30,11 @@
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
 
+  <!-- Virtual X display for the headless window unit tests; they self-skip
+       if no display is reachable, so this is only needed to actually run
+       them (e.g. `xvfb-run -a colcon test`). -->
+  <test_depend>xvfb</test_depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>
