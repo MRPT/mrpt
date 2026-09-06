@@ -13,14 +13,13 @@
 */
 #pragma once
 
-using namespace mrpt::graphslam::deciders;
-using namespace std;
-
 #include <sstream>
 
 // Implementation of classes defined in the CNodeRegistrationDecider class
 // template.
 //
+namespace mrpt::graphslam::deciders
+{
 template <class GRAPH_T>
 CNodeRegistrationDecider<GRAPH_T>::CNodeRegistrationDecider() :
     m_prev_registered_nodeID(mrpt::graphs::INVALID_NODEID)
@@ -35,7 +34,7 @@ void CNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(std::string* report
 {
   MRPT_START
 
-  stringstream ss("");
+  std::stringstream ss("");
   parent_t::getDescriptiveReport(report_str);
 
   ss << "Node Registration Decider Strategy [NRD]: "
@@ -64,7 +63,10 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
   if (this->m_prev_registered_nodeID == mrpt::graphs::INVALID_NODEID)
   {  // root
     MRPT_LOG_WARN("Registering root node...");
-    global_pose_t tmp_pose = this->getCurrentRobotPosEstimation();
+    // The root node is the origin of the graph coordinate frame: the motion
+    // accumulated so far belongs to the edge towards the first node, so
+    // seeding the root with it would apply that increment twice.
+    global_pose_t tmp_pose;
     this->addNodeAnnotsToPose(&tmp_pose);
 
 // make sure that this pair hasn't been registered yet.
@@ -158,3 +160,4 @@ typename GRAPH_T::global_pose_t CNodeRegistrationDecider<GRAPH_T>::getCurrentRob
   pose_out += m_since_prev_node_PDF.getMeanVal();
   return pose_out;
 }
+}  // namespace mrpt::graphslam::deciders

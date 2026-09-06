@@ -76,9 +76,19 @@ if (CMAKE_MRPT_HAS_NANOGUI)
 	set(EXTRA_CONFIG_CMDS "find_dependency(mrpt_nanogui QUIET)")
 endif()
 
+# Unit tests. The window-based ones self-skip if there is no window server
+# available (see tests/gui_test_common.h); CI runs them under `xvfb-run`.
+set(LIB_UNIT_TEST_SOURCES
+  tests/CGlCanvasBase_unittest.cpp
+  tests/CDisplayWindow_unittest.cpp
+  tests/CDisplayWindow3D_unittest.cpp
+  tests/WxUtils_unittest.cpp
+)
+
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_opengl
     ${nanogui_dep}
@@ -87,6 +97,13 @@ mrpt_add_library(
     mrpt_opengl
     Eigen3 # Needed by nanogui public headers
 )
+
+# The WxUtils tests include <mrpt/gui/WxUtils.h>, which pulls in wxWidgets
+# headers; the library links wxWidgets privately, so the test target needs
+# those flags explicitly:
+if(TARGET test_${PROJECT_NAME} AND TARGET imp_wxwidgets)
+  target_link_libraries(test_${PROJECT_NAME} PRIVATE imp_wxwidgets)
+endif()
 
 # Install 3rdparty mathplot header so downstream apps can use it as
 # <mrpt/3rdparty/mathplot/mathplot.h>

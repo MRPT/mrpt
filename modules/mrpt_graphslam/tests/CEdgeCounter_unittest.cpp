@@ -48,6 +48,17 @@ TEST(CEdgeCounter, registering_and_counting_edge_types)
   EXPECT_ANY_THROW(c.getNumForEdgeType("nope"));
 }
 
+TEST(CEdgeCounter, querying_an_unknown_type_through_the_output_parameter_throws)
+{
+  CEdgeCounter c;
+  c.addEdgeType("odometry");
+
+  int n = -1;
+  EXPECT_NO_THROW(c.getNumForEdgeType("odometry", &n));
+  EXPECT_EQ(n, 0);
+  EXPECT_ANY_THROW(c.getNumForEdgeType("nope", &n));
+}
+
 TEST(CEdgeCounter, adding_edges_of_a_known_type)
 {
   CEdgeCounter c;

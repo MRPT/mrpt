@@ -16,6 +16,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/bits_math.h>
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationOdometry.h>
@@ -127,8 +128,8 @@ class CFixedIntervalsNRD :
     std::string getAsString() const;
 
     // max values for new node registration
-    double registration_max_distance;
-    double registration_max_angle;
+    double registration_max_distance = 0.5;               // meters
+    double registration_max_angle = mrpt::DEG2RAD(60.0);  // radians
   };
 
   TParams params;
@@ -160,7 +161,7 @@ class CFixedIntervalsNRD :
   /**\brief Keep track of whether we are reading from an observation-only
    * rawlog file or from an action-observation rawlog
    */
-  bool m_observation_only_rawlog;
+  bool m_observation_only_rawlog = false;
 };
 }  // namespace mrpt::graphslam::deciders
 #include "CFixedIntervalsNRD_impl.h"

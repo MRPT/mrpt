@@ -16,6 +16,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/bits_math.h>
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -41,7 +42,7 @@ namespace mrpt::graphslam::deciders
  *
  * - \b registration_max_angle
  *  + \a Section       : NodeRegistrationDeciderParameters
- *  + \a Default value : 10 // degrees
+ *  + \a Default value : 15 // degrees
  *  + \a Required      : FALSE
  *
  * \ingroup mrpt_graphslam_grp
@@ -99,8 +100,8 @@ class CIncrementalNodeRegistrationDecider :
     std::string getAsString() const;
 
     // max values for new node registration
-    double registration_max_distance;
-    double registration_max_angle;
+    double registration_max_distance = 0.5;               // meters
+    double registration_max_angle = mrpt::DEG2RAD(15.0);  // radians
   };
 
   TParams params;

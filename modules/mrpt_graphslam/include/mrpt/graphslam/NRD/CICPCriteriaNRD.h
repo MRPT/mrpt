@@ -16,6 +16,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/bits_math.h>
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/CRangeScanOps.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
@@ -156,9 +157,9 @@ class CICPCriteriaNRD :
         const mrpt::config::CConfigFileBase& source, const std::string& section) override;
     void dumpToTextStream(std::ostream& out) const override;
     /** Maximum distance for new node registration */
-    double registration_max_distance;
+    double registration_max_distance = 0.5;  // meters
     /** Maximum angle difference for new node registration */
-    double registration_max_angle;
+    double registration_max_angle = mrpt::DEG2RAD(10.0);  // radians
   };
 
   TParams params;

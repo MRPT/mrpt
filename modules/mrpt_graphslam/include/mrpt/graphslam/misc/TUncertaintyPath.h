@@ -68,7 +68,7 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
   const mrpt::graphs::TNodeID& getSource() const;
   /**\brief Return the Destination node of this path */
   const mrpt::graphs::TNodeID& getDestination() const;
-  double getDeterminant();
+  double getDeterminant() const;
   /**\brief Test if the current path has a lower uncertainty than the other
    * path.
    *
@@ -101,10 +101,12 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
   constraint_t curr_pose_pdf;
 
   /**Determine whether the determinant of the Path is up-to-date and
-   * can be directly fetched or has to be computed again */
+   * can be directly fetched or has to be computed again.
+   * Mutable so that the cache can be filled in from const methods such as
+   * hasLowerUncertaintyThan(). */
   /**\{*/
-  bool determinant_is_updated;
-  double determinant_cached;
+  mutable bool determinant_is_updated;
+  mutable double determinant_cached;
   /**\}*/
 };
 }  // namespace mrpt::graphslam

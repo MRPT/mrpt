@@ -222,7 +222,7 @@ const mrpt::graphs::TNodeID& TUncertaintyPath<GRAPH_T>::getDestination() const
 }
 
 template <class GRAPH_T>
-double TUncertaintyPath<GRAPH_T>::getDeterminant()
+double TUncertaintyPath<GRAPH_T>::getDeterminant() const
 {
   using namespace mrpt;
   using namespace mrpt::math;

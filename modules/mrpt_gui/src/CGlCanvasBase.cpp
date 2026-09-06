@@ -58,6 +58,17 @@ void CGlCanvasBase::resizeViewport(int w, int h)  // NOLINT
 #endif
 }
 
+void CGlCanvasBase::updateLastPos(int x, int y)
+{
+  m_mouseLastX = x;
+  m_mouseLastY = y;
+}
+
+void CGlCanvasBaseHeadless::renderError(const std::string& err_msg)
+{
+  std::cerr << "[CGlCanvasBaseHeadless::renderError] Error: " << err_msg << "\n";
+}
+
 void CGlCanvasBase::setUseCameraFromScene(bool is) { useCameraFromScene = is; }
 bool CGlCanvasBase::getUseCameraFromScene() const { return useCameraFromScene; }
 
