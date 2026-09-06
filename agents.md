@@ -873,7 +873,9 @@ Worth knowing before adding more GUI tests:
   matches exactly - so exact dimensions cannot be asserted either.
 * `tests/gui_test_common.h` provides `SKIP_IF_NO_GUI()`; every window test
   must use it so the suite still passes with no display, and
-  `MRPT_SKIP_GUI_TESTS=1` forces that path.
+  `MRPT_SKIP_GUI_TESTS=1` forces that path. Note the macOS and Windows CI
+  jobs build with `-DDISABLE_WXWIDGETS=ON`, so the window tests skip there
+  too - only the Linux jobs actually exercise them.
 * `mrpt/gui/WxUtils.h` pulls in wxWidgets headers, but the library links
   wxWidgets *privately*, so the test target needs an explicit
   `target_link_libraries(test_mrpt_gui PRIVATE imp_wxwidgets)`.
