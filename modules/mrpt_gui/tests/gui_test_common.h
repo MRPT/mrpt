@@ -27,6 +27,13 @@ namespace mrpt::test
  * one (`xvfb-run`), and they self-skip when none is available. Windows and
  * macOS always have a window server, but MRPT there may have been built with
  * `-DDISABLE_WXWIDGETS=ON`, in which case there is no window class to test.
+ *
+ * \note This only checks that a display is *configured*, not that it is
+ * reachable: a stale `DISPLAY` (e.g. a declined X11 forwarding) makes each
+ * window test wait out `CBaseGUIWindow`'s creation timeout and then fail,
+ * which is the intended signal for a broken environment. Set
+ * `MRPT_SKIP_GUI_TESTS=1` to skip them instead, or
+ * `MRPT_WXSUBSYS_TIMEOUT_MS` to shorten the wait.
  */
 [[nodiscard]] inline const char* guiUnavailableReason()
 {

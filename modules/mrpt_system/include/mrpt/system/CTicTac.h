@@ -13,6 +13,8 @@
 */
 #pragma once
 
+#include <cstdint>
+
 namespace mrpt::system
 {
 /** A high-performance stopwatch, with typical resolution of nanoseconds.
@@ -36,21 +38,25 @@ class CTicTac
 
  private:
   /** Opaque storage, reinterpreted as `struct timespec` (POSIX) or
-   * `LARGE_INTEGER` (Windows); both only need the natural alignment of the
-   * underlying integer type.
+   * `LARGE_INTEGER` (Windows). `uint64_t` is used rather than
+   * `unsigned long` so that the 8-byte alignment both of those require holds
+   * on every platform: `unsigned long` is only 4 bytes (and 4-byte aligned)
+   * on MSVC, while `LARGE_INTEGER` contains a `LONGLONG`.
+   * `CTicTac.cpp` asserts size and alignment for the actual platform type.
    *
-   * Deliberately *not* over-aligned: CTicTac is embedded in CTimeLogger,
-   * which in turn is a member of classes used as virtual bases (e.g.
-   * mrpt::graphslam::CRegistrationDeciderOrOptimizer). GCC then compiles
-   * member functions of such a class assuming `this` has the over-aligned
-   * alignment, while the virtual-base subobject inside a derived class is
-   * only placed at its natural alignment, so the resulting aligned SIMD
-   * accesses crash. See the equivalent note in mrpt::math::CMatrixFixed. */
-  unsigned long largeInts[4]{0, 0};
+   * Deliberately *not* over-aligned beyond that: CTicTac is embedded in
+   * CTimeLogger, which in turn is a member of classes used as virtual bases
+   * (e.g. mrpt::graphslam::CRegistrationDeciderOrOptimizer). GCC then
+   * compiles member functions of such a class assuming `this` has the
+   * over-aligned alignment, while the virtual-base subobject inside a derived
+   * class is only placed at its natural alignment, so the resulting aligned
+   * SIMD accesses crash. See the equivalent note in
+   * mrpt::math::CMatrixFixed. */
+  std::uint64_t largeInts[4]{};
 };  // End of class def.
 
 static_assert(
-    alignof(CTicTac) <= alignof(unsigned long),
+    alignof(CTicTac) <= alignof(std::uint64_t),
     "CTicTac must not be over-aligned: it is embedded in classes used as "
     "virtual bases, where GCC then emits aligned SIMD accesses on "
     "subobjects that are only naturally aligned.");

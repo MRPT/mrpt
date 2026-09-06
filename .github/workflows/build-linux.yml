@@ -3,6 +3,11 @@ name: CI Linux
 
 on: [push, pull_request]
 
+# Nothing here writes to the repository: checkout only reads, and Codecov
+# uploads with its own token.
+permissions:
+  contents: read
+
 jobs:
   build:
     name: ${{ matrix.name }} ${{ matrix.build_type }}
