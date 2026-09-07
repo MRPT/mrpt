@@ -54,3 +54,7 @@ my_config.ini
 cache_*.bin.gz
 **/__pycache__
 .claude
+
+# Artifacts left in the working directory by running unit tests from here:
+/simple_LUT.txt
+/Gaussian_Wind_Weights_res*.gz
