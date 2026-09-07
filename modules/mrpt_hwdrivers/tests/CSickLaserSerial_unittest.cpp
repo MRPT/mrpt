@@ -35,18 +35,22 @@ constexpr uint16_t SICK_CRC16_GEN_POL = 0x8005;
  *  | STX | ADDR | L1 | L2 | COM | INF1 | INF2 | DATA | STA | CRC1 | CRC2 |
  */
 std::string makeScanFrame(
-    const std::vector<int>& ranges, bool mmMode, uint8_t status = 0, bool corruptCRC = false)
+    const std::vector<int>& ranges,
+    bool mmMode,
+    uint8_t status = 0,
+    bool corruptCRC = false,
+    uint8_t commandByte = 0xB0)
 {
   const int nPoints = static_cast<int>(ranges.size());
   // INF1/INF2: low 9 bits are the point count, top 2 bits select mm mode.
   const uint16_t info = static_cast<uint16_t>((nPoints & 0x01FF) | (mmMode ? 0x4000 : 0x0000));
 
   std::vector<uint8_t> f;
-  f.push_back(0x02);  // STX
-  f.push_back(0x80);  // ADDR
-  f.push_back(0);     // L1 (filled in below)
-  f.push_back(0);     // L2
-  f.push_back(0xB0);  // COM
+  f.push_back(0x02);         // STX
+  f.push_back(0x80);         // ADDR
+  f.push_back(0);            // L1 (filled in below)
+  f.push_back(0);            // L2
+  f.push_back(commandByte);  // COM
   f.push_back(static_cast<uint8_t>(info & 0xFF));
   f.push_back(static_cast<uint8_t>(info >> 8));
   for (int r : ranges)
@@ -216,10 +220,13 @@ TEST(CSickLaserSerial, silentDeviceYieldsNoScan)
 TEST(CSickLaserSerial, nonMeasurementFramesAreIgnored)
 {
   auto s = std::make_shared<MockStream>();
-  // A well-formed frame whose command byte is not 0xB0 (measurement):
-  std::string frame = makeScanFrame(std::vector<int>(10, 100), false);
-  frame[4] = static_cast<char>(0xA0);
-  s->pushRx(frame);
+  // A well-formed frame, CRC included, whose command byte is not the 0xB0 of a
+  // measurement reply. The command byte has to be set before the CRC is
+  // computed, or the driver rejects the frame at the CRC check instead and
+  // never reaches the dispatch this test is about.
+  s->pushRx(makeScanFrame(
+      std::vector<int>(10, 100), false, /*status=*/0, /*corruptCRC=*/false,
+      /*commandByte=*/0xA0));
 
   auto laser = makeBoundLaser(s);
 

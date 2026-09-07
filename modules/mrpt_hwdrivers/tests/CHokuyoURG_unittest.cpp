@@ -16,6 +16,8 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 
+#include <cmath>
+#include <cstdio>
 #include <string>
 
 #include "mock_stream.h"

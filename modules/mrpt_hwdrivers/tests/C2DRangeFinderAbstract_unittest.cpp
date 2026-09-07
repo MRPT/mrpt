@@ -184,20 +184,24 @@ TEST(C2DRangeFinderAbstract, repeatedMissingScansEventuallyReportAFailure)
 
   // Feed a burst of scans so the estimated scan period (which starts at 1 s)
   // converges down to the millisecond range this test can wait out:
+  // (the filter is a 90/10 average of the measured inter-scan time, so how
+  // many iterations this takes depends on how fast the machine is)
   laser.stageScan(makeScan(4, 1.0f));
-  for (int i = 0; i < 80; i++)
+  for (int i = 0; i < 5000 && laser.getEstimatedScanPeriod() >= 0.01; i++)
   {
     laser.doProcess();
   }
   const double period = laser.getEstimatedScanPeriod();
   EXPECT_GT(period, 0.0);
-  EXPECT_LT(period, 0.01);
+  ASSERT_LT(period, 0.01);
 
-  // Now go quiet for clearly longer than that period, `maxMissed` times:
+  // Now go quiet for clearly longer than the 1.5*period the driver tolerates,
+  // `maxMissed` times:
   laser.stageNothing();
+  const auto quiet = std::chrono::duration<double>(2.0 * period);
   for (int i = 0; i < maxMissed; i++)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    std::this_thread::sleep_for(quiet);
     laser.doProcess();
   }
   EXPECT_FALSE(laser.lastNoScanWasOk());
