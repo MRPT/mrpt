@@ -202,7 +202,7 @@ A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
 overall (2026-09-07, deduplicated the same way as
-`scripts/coverage_module_report.py`): **79.7% lines**
+`scripts/coverage_module_report.py`): **79.8% lines**
 - still short of goal, dominated by the hardware/GUI modules below.
 The whole table below was re-measured on 2026-09-07; the date tags on some
 rows mark when that module last had a dedicated unit-test pass, and point at
@@ -315,7 +315,7 @@ and accurate path — pick two.
 | mrpt_system (2026-08-29)» | 1637/1964 | 83.4% | 59.0% |
 | mrpt_rtti (2026-08-29)» | 151/176 | 85.8% | 78.1% |
 | mrpt_io (2026-08-29)» | 1133/1310 | 86.5% | 70.4% |
-| mrpt_viz (2026-09-07)◆ | 8558/9820 | 87.1% | 67.1% |
+| mrpt_viz (2026-09-07)◆ | 8684/9852 | 88.1% | 68.5% |
 | mrpt_maps (2026-09-07)★ | 10631/11789 | 90.2% | 66.4% |
 | mrpt_containers (2026-07-11) | 1803/1999 | 90.2% | 55.6%‡ |
 | mrpt_nav (2026-08-28)¶ | 5683/6287 | 90.4% | 69.0% |
@@ -1097,7 +1097,7 @@ landmark-map and no-odometry RO-SLAM branches of
    registration queue noted in » above), `mrpt_io` (86.5%; `CPipe.cpp` needs
    child processes), `mrpt_comms` (75.8%; the rest is `CInterfaceFTDI`, which
    needs a real FTDI device), `mrpt_graphslam` (81.6%, needs a live
-   `CDisplayWindow3D`), `mrpt_viz` (87.1%, see ◆ below).
+   `CDisplayWindow3D`), `mrpt_viz` (88.1%, see ◆ below).
    (`mrpt_math`, `mrpt_maps`, `mrpt_obs` and `mrpt_slam` cleared this bucket
    as of 2026-09-07 — see ★ above.)
    (`mrpt_serialization` cleared this bucket as of 2026-08-29, now at 96.6%;
@@ -1197,13 +1197,39 @@ The other real bugs found and fixed:
   color-mapping settings. Both serialization versions were bumped, keeping
   the old readers.
 
+A second pass on 2026-09-07 (87.1% -> 88.1%) closed the legacy
+`serializeFrom()` version branches with the `legacy_serialization.h` technique
+from ★ above. The viz copy of that header adds `writeLegacyRenderHeader()`,
+since every viz class starts with `CVisualObject::writeToStreamRender()`, whose
+format is versioned (0..4) *independently* of the class's own version - that
+header is what makes these frames writable by hand at all. It found:
+
+* `Viewport::serializeFrom()` read the "has image-view plane" flag added in v5
+  without the version guard every other field there has, so any stream holding
+  a viewport older than v5 - i.e. any `.3Dscene` written by a correspondingly
+  old MRPT - desynchronized there and failed to load with an EOF error.
+* The same function, and `COctoMapVoxels::serializeFrom()`, left the fields
+  absent from an older stream (clip distances, viewport visibility, colormap)
+  untouched instead of resetting them to their defaults, so loading an old
+  file into a *reused* object silently kept the previous values. Worth
+  checking for in any `serializeFrom()`: an `if (version >= N)` with no `else`.
+* `CVisualObject::castShadows(bool doCast = true)` defaulted its argument,
+  which made the no-argument `castShadows()` resolve to the *setter* on any
+  non-const object - the getter was unreachable there, and a caller reading
+  the property silently enabled shadow casting instead.
+  `CVisualObject_unittest.cpp` had already worked around it with a const
+  alias rather than fixing it. Grep for a getter/setter pair sharing a name
+  where the setter's only argument is defaulted; this was the only one left.
+
+The legacy branches of `CSphere`, `CBox`, `CSetOfLines`, `CPointCloud`,
+`CArrow`, `CAxis` and `CPointCloudColoured` turned out to be correct; the
+tests just pin them down.
+
 What is left in `mrpt_viz`: `PLY_import_export.cpp` (the vendored Stanford
 reader's per-type dispatch, only reachable with files using the less common
-property types), the legacy `serializeFrom()` version branches of most
-classes (the `legacy_serialization.h` technique from ★ above would close
-these), and `CTextMessageCapable::regenerateGLobjects()`, which is dead code:
-`mrpt_opengl`'s `CompiledViewport::renderTextOverlays()` builds the text
-geometry directly from the label strings and never touches the `gl_text`
+property types), and `CTextMessageCapable::regenerateGLobjects()`, which is
+dead code: `mrpt_opengl`'s `CompiledViewport::renderTextOverlays()` builds the
+text geometry directly from the label strings and never touches the `gl_text`
 members.
 
 Branch coverage lags line coverage everywhere (often by 15-30 points),
