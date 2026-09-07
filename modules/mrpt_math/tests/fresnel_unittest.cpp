@@ -79,7 +79,9 @@ namespace
 // using composite Simpson's rule, so that no hard-coded table is needed.
 double simpson(double x, bool sine)
 {
-  const int n = 2000000;  // even
+  // Even; the Simpson error stays far below the 1e-6 tolerance used below,
+  // while keeping the whole test in the low milliseconds.
+  const int n = 20000;
   const double h = x / n;
   auto f = [sine](double t)
   {

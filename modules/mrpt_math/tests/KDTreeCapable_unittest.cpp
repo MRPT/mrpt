@@ -352,3 +352,55 @@ TEST(KDTreeCapable, treeIsRebuiltWhenCloudChanges)
   EXPECT_EQ(cloud.kdTreeClosestPoint2D(5.f, 5.f, distSqr), 1U);
   EXPECT_NEAR(distSqr, 0.0f, 1e-6f);
 }
+
+TEST(KDTreeCapable, kNNRequestLargerThanCloud)
+{
+  // Asking for more neighbors than the cloud holds must return only as many
+  // as exist, in *every* output vector, rather than leaving stale entries.
+  PointCloud2D cloud2d;
+  cloud2d.pts.emplace_back(0, 0);
+  cloud2d.pts.emplace_back(1, 0);
+  cloud2d.pts.emplace_back(0, 1);
+
+  std::vector<size_t> idxs;
+  std::vector<float> dists, xs, ys, zs;
+
+  cloud2d.kdTreeNClosestPoint2DIdx(0.f, 0.f, 10, idxs, dists);
+  EXPECT_EQ(idxs.size(), 3U);
+  EXPECT_EQ(dists.size(), 3U);
+
+  auto found = cloud2d.kdTreeNClosestPoint2D(0.f, 0.f, 10, xs, ys, dists);
+  EXPECT_EQ(found.size(), 3U);
+  EXPECT_EQ(xs.size(), 3U);
+  EXPECT_EQ(ys.size(), 3U);
+  EXPECT_EQ(dists.size(), 3U);
+
+  std::vector<mrpt::math::TPoint2D> pts2d;
+  found = cloud2d.kdTreeNClosestPoint2D(mrpt::math::TPoint2D(0, 0), 10, pts2d, dists);
+  EXPECT_EQ(pts2d.size(), 3U);
+  EXPECT_EQ(pts2d.size(), dists.size());
+
+  PointCloud3D cloud3d;
+  cloud3d.pts.emplace_back(0, 0, 0);
+  cloud3d.pts.emplace_back(1, 0, 0);
+
+  cloud3d.kdTreeNClosestPoint3DIdx(0.f, 0.f, 0.f, 10, idxs, dists);
+  EXPECT_EQ(idxs.size(), 2U);
+  EXPECT_EQ(dists.size(), 2U);
+
+  cloud3d.kdTreeNClosestPoint3D(0.f, 0.f, 0.f, 10, xs, ys, zs, dists);
+  EXPECT_EQ(xs.size(), 2U);
+  EXPECT_EQ(ys.size(), 2U);
+  EXPECT_EQ(zs.size(), 2U);
+  EXPECT_EQ(dists.size(), 2U);
+
+  cloud3d.kdTreeNClosestPoint3DWithIdx(0.f, 0.f, 0.f, 10, xs, ys, zs, idxs, dists);
+  EXPECT_EQ(xs.size(), 2U);
+  EXPECT_EQ(idxs.size(), 2U);
+  EXPECT_EQ(dists.size(), 2U);
+
+  std::vector<mrpt::math::TPoint3D> pts3d;
+  cloud3d.kdTreeNClosestPoint3D(mrpt::math::TPoint3D(0, 0, 0), 10, pts3d, dists);
+  EXPECT_EQ(pts3d.size(), 2U);
+  EXPECT_EQ(pts3d.size(), dists.size());
+}

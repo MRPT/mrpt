@@ -76,6 +76,9 @@ TEST(CMatrixDynamic, resizeOverloads)
   EXPECT_EQ(m.rows(), 5U);
   EXPECT_EQ(m.cols(), 1U);
 
+  // Shrinking the rows while growing the columns, asking for the new cells to
+  // be zeroed: the "zero the new columns" pass must stay within the *new*
+  // buffer (2x4 = 8 cells), not iterate over the 5 old rows.
   matrix_size_t siz;
   siz[0] = 2;
   siz[1] = 4;

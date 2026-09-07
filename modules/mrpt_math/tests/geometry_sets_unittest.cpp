@@ -210,16 +210,21 @@ TEST(GeometrySets, intersectPolygonsInParallelPlanes)
 
 TEST(GeometrySets, getAngleBisectorParallelOppositeSigns)
 {
-  // y=0 and -y+2=0: parallel lines whose normals point in opposite directions
+  // y=0 and y=3, the latter written with a non-unit normal and the opposite
+  // orientation. The un-normalized coefficients matter: with A=0 the old,
+  // buggy normalization `sqrt(A^2+C^2)` equals |C|, which for C=2 happened to
+  // cancel the (also missing) factor of 2 and gave the right answer anyway.
+  // C=6 breaks that coincidence, so this pins both halves of the fix.
   const auto l1 = TLine2D::FromCoefficientsABC(0, 1, 0);
-  const auto l2 = TLine2D::FromCoefficientsABC(0, -1, 2);
+  const auto l2 = TLine2D::FromCoefficientsABC(0, -2, 6);
 
   TLine2D bis;
   getAngleBisector(l1, l2, bis);
 
-  // The bisector must be the line y=1, i.e. equidistant from both:
-  EXPECT_NEAR(bis.distance({0.0, 1.0}), 0.0, 1e-9);
-  EXPECT_NEAR(bis.distance({5.0, 1.0}), 0.0, 1e-9);
+  // The bisector must be y=1.5, i.e. equidistant from both:
+  EXPECT_NEAR(bis.distance({0.0, 1.5}), 0.0, 1e-9);
+  EXPECT_NEAR(bis.distance({5.0, 1.5}), 0.0, 1e-9);
+  EXPECT_NEAR(bis.distance({0.0, 0.0}), bis.distance({0.0, 3.0}), 1e-9);
 }
 
 TEST(GeometrySets, intersectPolygonSetsInDifferentPlanes)

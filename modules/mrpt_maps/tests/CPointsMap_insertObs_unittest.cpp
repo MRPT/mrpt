@@ -248,28 +248,34 @@ TEST(CPointsMapInsertObs, insertWithFuseWithExisting)
   const size_t nAfterFirst = map.size();
   ASSERT_GT(nAfterFirst, 0U);
 
-  // Re-inserting the same scan with fusion enabled must not double the cloud:
+  // Re-inserting the same scan with fusion enabled must not double the cloud
+  // (without fusion the size would be exactly 2*nAfterFirst):
   map.insertionOptions.fuseWithExisting = true;
   map.insertionOptions.minDistBetweenLaserPoints = 0.05f;
   EXPECT_TRUE(map.insertObservation(*scan));
-  EXPECT_LE(map.size(), 2 * nAfterFirst);
+  EXPECT_LT(map.size(), 2 * nAfterFirst);
 
-  // The same for a 3D range scan:
+  // The same for a 3D range scan. Note that a point at exactly (0,0,0) is
+  // treated as an invalid reading and dropped, so all coordinates are
+  // non-zero here to keep the count predictable:
   auto obs3D = CObservation3DRangeScan::Create();
   obs3D->timestamp = mrpt::Clock::now();
   obs3D->hasPoints3D = true;
   obs3D->resizePoints3DVectors(3);
   for (int i = 0; i < 3; i++)
   {
-    obs3D->points3D_x[i] = static_cast<float>(i);
-    obs3D->points3D_y[i] = 0.0f;
-    obs3D->points3D_z[i] = 0.0f;
+    obs3D->points3D_x[i] = static_cast<float>(i + 1);
+    obs3D->points3D_y[i] = 1.0f;
+    obs3D->points3D_z[i] = 1.0f;
   }
   CSimplePointsMap map3d;
   map3d.insertObservation(*obs3D);
+  const size_t n3dAfterFirst = map3d.size();
+  ASSERT_EQ(n3dAfterFirst, 3U);
+
   map3d.insertionOptions.fuseWithExisting = true;
   EXPECT_TRUE(map3d.insertObservation(*obs3D));
-  EXPECT_LE(map3d.size(), 6U);
+  EXPECT_LT(map3d.size(), 2 * n3dAfterFirst);
 }
 
 TEST(CPointsMapInsertObs, getAllPointsWithDecimation)
