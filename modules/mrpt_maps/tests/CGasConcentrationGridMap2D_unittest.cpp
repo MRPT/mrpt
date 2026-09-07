@@ -23,6 +23,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CSetOfObjects.h>
 
+#include <filesystem>
 #include <sstream>
 
 const double xMin = -4.0, xMax = 4.0, yMin = -4.0, yMax = 4.0;
@@ -376,4 +377,58 @@ gasSensorLabel=Full_MCEnose
   const auto createdMap = mrpt::maps::CGasConcentrationGridMap2D::CreateFromMapDefinition(def);
   ASSERT_NE(createdMap, nullptr);
   EXPECT_GT(createdMap->getSizeX(), 0u);
+}
+
+// =========================================================================
+//  Wind-advection look-up table
+// =========================================================================
+
+TEST(CGasConcentrationGridMap2D, GaussianWindLUTBuildSaveAndReload)
+{
+  // build_Gaussian_Wind_Grid() caches the generated table in a file in the
+  // current working directory, so run this from a scratch directory.
+  const auto prevDir = std::filesystem::current_path();
+  const auto tmpDir = std::filesystem::path(mrpt::system::getTempFileName() + "_windlut");
+  std::filesystem::create_directories(tmpDir);
+  std::filesystem::current_path(tmpDir);
+
+  try
+  {
+    mrpt::maps::CGasConcentrationGridMap2D grid(
+        mrpt::maps::CRandomFieldGridMap2D::mrKalmanApproximate, -0.5f, 0.5f, -0.5f, 0.5f, 0.1f);
+    grid.insertionOptions.useWindInformation = true;
+    grid.insertionOptions.advectionFreq = 1.0f;
+
+    // The first clear() generates the table from scratch and saves it:
+    grid.clear();
+    EXPECT_FALSE(std::filesystem::is_empty(tmpDir));
+
+    // A second map with the same parameters must find and load the cached one:
+    mrpt::maps::CGasConcentrationGridMap2D grid2(
+        mrpt::maps::CRandomFieldGridMap2D::mrKalmanApproximate, -0.5f, 0.5f, -0.5f, 0.5f, 0.1f);
+    grid2.insertionOptions.useWindInformation = true;
+    grid2.insertionOptions.advectionFreq = 1.0f;
+    grid2.clear();
+
+    // The advection simulation now has a usable look-up table:
+    grid2.insertIndividualReading(0.5, {0.0, 0.0}, true, true, 1.0);
+    EXPECT_TRUE(grid2.simulateAdvection(0.01));
+
+    // ...but only the approximate-Kalman representation supports it:
+    mrpt::maps::CGasConcentrationGridMap2D dmGrid(
+        mrpt::maps::CRandomFieldGridMap2D::mrKernelDM, -0.5f, 0.5f, -0.5f, 0.5f, 0.1f);
+    dmGrid.insertionOptions.useWindInformation = true;
+    dmGrid.insertionOptions.advectionFreq = 1.0f;
+    dmGrid.clear();
+    EXPECT_FALSE(dmGrid.simulateAdvection(0.01));
+  }
+  catch (...)
+  {
+    std::filesystem::current_path(prevDir);
+    std::filesystem::remove_all(tmpDir);
+    throw;
+  }
+
+  std::filesystem::current_path(prevDir);
+  std::filesystem::remove_all(tmpDir);
 }

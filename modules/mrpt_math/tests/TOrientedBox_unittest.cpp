@@ -184,3 +184,47 @@ TEST(TOrientedBox, SerializationRoundTripFloat)
   EXPECT_TRUE(box2.pose() == pose);
   EXPECT_TRUE(box2.size() == size);
 }
+
+TEST(TOrientedBox, copyAssignmentAndComparison)
+{
+  using mrpt::literals::operator""_deg;
+
+  const mrpt::math::TOrientedBox a{
+      mrpt::math::TPose3D(1, 2, 3, 30.0_deg, 0.0_deg, 0.0_deg),
+      mrpt::math::TPoint3D(1.0, 2.0, 3.0)};
+
+  // Copy assignment (it also invalidates the cached vertices):
+  mrpt::math::TOrientedBox b;
+  b = a;
+  EXPECT_TRUE(a == b);
+  EXPECT_FALSE(a != b);
+  EXPECT_EQ(b.vertices().size(), 8U);
+
+  b.setSize(mrpt::math::TPoint3D(9.0, 9.0, 9.0));
+  EXPECT_FALSE(a == b);
+  EXPECT_TRUE(a != b);
+
+  mrpt::math::TOrientedBox c;
+  c = a;
+  c.setPose(mrpt::math::TPose3D(9, 9, 9, 0.0_deg, 0.0_deg, 0.0_deg));
+  EXPECT_TRUE(a != c);
+
+  // Self-assignment must leave the box unchanged:
+  mrpt::math::TOrientedBox d = a;
+  const auto& dRef = d;
+  d = dRef;
+  EXPECT_TRUE(d == a);
+}
+
+TEST(TOrientedBox, castFloatComparison)
+{
+  const mrpt::math::TOrientedBoxf a{
+      mrpt::math::TPose3D::Identity(), mrpt::math::TPoint3Df(1.0f, 2.0f, 3.0f)};
+  const mrpt::math::TOrientedBoxf b = a;
+
+  EXPECT_TRUE(a == b);
+  EXPECT_FALSE(a != b);
+
+  const auto asDouble = a.cast<double>();
+  EXPECT_NEAR(asDouble.size().z, 3.0, 1e-6);
+}

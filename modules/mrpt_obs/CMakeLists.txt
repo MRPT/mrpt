@@ -95,6 +95,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CSerializable_unittest.cpp
   tests/CSimpleMap_unittest.cpp
   tests/gnss_messages_unittest.cpp
+  tests/legacy_serialization_unittest.cpp
   tests/TPixelLabelInfo_unittest.cpp
 )
 

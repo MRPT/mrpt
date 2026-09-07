@@ -499,7 +499,7 @@ size_t intersect(const std::vector<T>& v1, const std::vector<U>& v2, CSparseMatr
   objs.resize(M, N);
   for (size_t i = 0; i < M; i++)
   {
-    for (size_t j = 0; j < M; j++)
+    for (size_t j = 0; j < N; j++)
     {
       if (intersect(v1[i], v2[j], obj))
       {
@@ -514,7 +514,7 @@ size_t intersect(const std::vector<T>& v1, const std::vector<U>& v2, CSparseMatr
  * a vector of either TObject2D or TObject3D.
  * \sa TObject2D,TObject3D */
 template <class T, class U, class O>
-size_t intersect(const std::vector<T>& v1, const std::vector<U>& v2, std::vector<O> objs)
+size_t intersect(const std::vector<T>& v1, const std::vector<U>& v2, std::vector<O>& objs)
 {
   objs.resize(0);
   O obj;

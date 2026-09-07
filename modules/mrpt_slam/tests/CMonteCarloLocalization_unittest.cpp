@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/random.h>
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
@@ -225,4 +226,142 @@ TEST(CMonteCarloLocalization3DSynthetic, auxiliaryPFStandard)
   const auto gt =
       runLocalization(pdf, pfOptions(mrpt::bayes::CParticleFilter::pfAuxiliaryPFStandard), 3);
   EXPECT_NEAR(pdf.getMeanVal().x(), gt.x(), 1.0);
+}
+
+TEST(CMonteCarloLocalization2DSynthetic, adaptiveSampleSizeWithAuxiliaryPFs)
+{
+  // The KLD adaptive-sampling code path of the auxiliary particle filters is
+  // a separate implementation from the fixed-sample-size one:
+  const std::vector<mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm> algos = {
+      mrpt::bayes::CParticleFilter::pfAuxiliaryPFStandard,
+      mrpt::bayes::CParticleFilter::pfAuxiliaryPFOptimal};
+
+  auto map = referenceMap();
+
+  for (const auto algo : algos)
+  {
+    mrpt::random::getRandomGenerator().randomize(200 + static_cast<int>(algo));
+
+    CMonteCarloLocalization2D pdf(50);
+    pdf.options.metricMap = map;
+    pdf.options.KLD_params.KLD_minSampleSize = 20;
+    pdf.options.KLD_params.KLD_maxSampleSize = 200;
+    pdf.resetUniform(-2.5, -1.5, -0.5, 0.5, -mrpt::DEG2RAD(20.0), mrpt::DEG2RAD(20.0));
+
+    runLocalization(pdf, pfOptions(algo, true), 3);
+
+    EXPECT_GE(pdf.particlesCount(), 20U) << "PF algorithm #" << static_cast<int>(algo);
+    EXPECT_LE(pdf.particlesCount(), 200U) << "PF algorithm #" << static_cast<int>(algo);
+  }
+}
+
+TEST(CMonteCarloLocalization2DSynthetic, accumulates3DOdometryActions)
+{
+  // Both the standard proposal (which reads the action directly) and the
+  // auxiliary variants (which accumulate actions across steps) accept a
+  // CActionRobotMovement3D instead of the usual 2D one.
+  for (const auto algo :
+       {mrpt::bayes::CParticleFilter::pfStandardProposal,
+        mrpt::bayes::CParticleFilter::pfAuxiliaryPFStandard})
+  {
+    mrpt::random::getRandomGenerator().randomize(6);
+
+    auto map = referenceMap();
+
+    CMonteCarloLocalization2D pdf(20);
+    pdf.options.metricMap = map;
+    pdf.resetUniform(-2.5, -1.5, -0.5, 0.5, -mrpt::DEG2RAD(20.0), mrpt::DEG2RAD(20.0));
+
+    mrpt::bayes::CParticleFilter pf;
+    pf.m_options = pfOptions(algo);
+
+    mrpt::poses::CPose2D gtPose(-2.0, 0.0, 0.0);
+    for (int i = 0; i < 3; i++)
+    {
+      const mrpt::poses::CPose2D incr(0.3, 0, 0);
+      gtPose = gtPose + incr;
+      const auto t = mrpt::test::nextTimestamp();
+
+      // A 3D action instead of the usual 2D one:
+      auto acts = mrpt::obs::CActionCollection::Create();
+      mrpt::obs::CActionRobotMovement3D act3D;
+      act3D.timestamp = t;
+      act3D.poseChange.mean = mrpt::poses::CPose3D(incr);
+      act3D.poseChange.cov.setDiagonal(1e-4);
+      acts->insert(act3D);
+
+      auto sf = simulateSF(gtPose, t);
+      pf.executeOn(pdf, acts.get(), sf.get());
+    }
+
+    EXPECT_EQ(pdf.particlesCount(), 20U);
+    EXPECT_TRUE(std::isfinite(pdf.getMeanVal().x()));
+  }
+}
+
+TEST(CMonteCarloLocalization2DSynthetic, mixing2DAnd3DActionsThrows)
+{
+  mrpt::random::getRandomGenerator().randomize(7);
+
+  auto map = referenceMap();
+
+  CMonteCarloLocalization2D pdf(10);
+  pdf.options.metricMap = map;
+  pdf.resetUniform(-2.5, -1.5, -0.5, 0.5, -mrpt::DEG2RAD(20.0), mrpt::DEG2RAD(20.0));
+
+  // Only the auxiliary variants accumulate actions across steps, and hence
+  // are the ones that can end up mixing a 2D and a 3D one:
+  mrpt::bayes::CParticleFilter pf;
+  pf.m_options = pfOptions(mrpt::bayes::CParticleFilter::pfAuxiliaryPFStandard);
+
+  const mrpt::poses::CPose2D gtPose(-2.0, 0.0, 0.0);
+
+  // A first step with a 3D action and no observations, so the movement is
+  // only accumulated and not consumed:
+  {
+    auto acts = mrpt::obs::CActionCollection::Create();
+    mrpt::obs::CActionRobotMovement3D act3D;
+    act3D.timestamp = mrpt::test::nextTimestamp();
+    act3D.poseChange.mean = mrpt::poses::CPose3D(mrpt::poses::CPose2D(0.3, 0, 0));
+    act3D.poseChange.cov.setDiagonal(1e-4);
+    acts->insert(act3D);
+
+    // With no observations at all the movement is only accumulated:
+    pf.executeOn(pdf, acts.get(), nullptr);
+  }
+
+  // ...and now a 2D one, which cannot be mixed with the accumulated 3D:
+  {
+    const auto t = mrpt::test::nextTimestamp();
+    auto acts = makeOdometryAction(mrpt::poses::CPose2D(0.3, 0, 0), t);
+    auto sf = simulateSF(gtPose, t);
+    EXPECT_THROW(pf.executeOn(pdf, acts.get(), sf.get()), std::exception);
+  }
+}
+
+TEST(CMonteCarloLocalization3DSynthetic, auxiliaryPFOptimalAndAdaptiveSampling)
+{
+  auto map = referenceMap();
+
+  for (const auto algo :
+       {mrpt::bayes::CParticleFilter::pfAuxiliaryPFOptimal,
+        mrpt::bayes::CParticleFilter::pfAuxiliaryPFStandard})
+  {
+    mrpt::random::getRandomGenerator().randomize(300 + static_cast<int>(algo));
+
+    CMonteCarloLocalization3D pdf(40);
+    pdf.options.metricMap = map;
+    // The 3D KLD binning uses its own TPoseBin3D specialization:
+    pdf.options.KLD_params.KLD_minSampleSize = 20;
+    pdf.options.KLD_params.KLD_maxSampleSize = 150;
+    pdf.resetUniform(
+        mrpt::math::TPose3D(-2.5, -0.5, 0, -mrpt::DEG2RAD(20.0), 0, 0),
+        mrpt::math::TPose3D(-1.5, 0.5, 0, mrpt::DEG2RAD(20.0), 0, 0));
+
+    runLocalization(pdf, pfOptions(algo, true), 3);
+
+    EXPECT_GE(pdf.particlesCount(), 20U) << "PF algorithm #" << static_cast<int>(algo);
+    EXPECT_LE(pdf.particlesCount(), 150U) << "PF algorithm #" << static_cast<int>(algo);
+    EXPECT_TRUE(std::isfinite(pdf.getMeanVal().x()));
+  }
 }

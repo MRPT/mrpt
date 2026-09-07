@@ -201,10 +201,10 @@ files needed changes.
 A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
-overall (2026-09-06, deduplicated the same way as
-`scripts/coverage_module_report.py`): **76.4% lines**
-- still short of goal, dominated by the hardware modules below.
-The whole table below was re-measured on 2026-09-06; the date tags on some
+overall (2026-09-07, deduplicated the same way as
+`scripts/coverage_module_report.py`): **77.8% lines**
+- still short of goal, dominated by the hardware/GUI modules below.
+The whole table below was re-measured on 2026-09-07; the date tags on some
 rows mark when that module last had a dedicated unit-test pass, and point at
 the footnote describing it.
 
@@ -308,31 +308,31 @@ and accurate path — pick two.
 | mrpt_opengl | 2323/4234 | 54.9% | 35.7% |
 | mrpt_libapps_cli | 1129/1910 | 59.1% | 38.0% |
 | mrpt_libapps_gui | 803/1288 | 62.3% | 45.8% |
-| mrpt_viz (2026-08-02) | 6600/9440 | 69.9% | 51.4% |
+| mrpt_viz (2026-08-02) | 6617/9440 | 70.1% | 51.5% |
 | mrpt_common | 5/7 | 71.4% | 0.0% |
-| mrpt_graphslam (2026-09-06)@ | 814/997 | 81.6% | 64.4% |
 | mrpt_comms (2026-08-29)» | 687/906 | 75.8% | 54.4% |
 | mrpt_examples_cpp | 99/128 | 77.3% | 46.3% |
-| mrpt_system (2026-08-29)» | 1625/1963 | 82.8% | 58.5% |
-| mrpt_rtti (2026-08-29)» | 151/176 | 85.8% | 77.4% |
-| mrpt_maps (2026-08-03)§ | 10118/11698 | 86.5% | 62.8% |
-| mrpt_io (2026-08-29)» | 1133/1310 | 86.5% | 69.7% |
-| mrpt_containers (2026-07-11) | 1633/1848 | 88.4% | 54.4%‡ |
-| mrpt_obs (2026-07-10) | 6066/6856 | 88.5% | 61.0% |
-| mrpt_math (2026-07-05) | 6816/7674 | 88.8% | 60.3% |
-| mrpt_core | 571/636 | 89.8% | 69.9% |
-| mrpt_slam (2026-08-31)× | 3921/4346 | 90.2% | 62.3% |
-| mrpt_nav (2026-08-28)¶ | 5683/6287 | 90.4% | 68.9% |
-| mrpt_graphs (2026-07-06) | 1023/1112 | 92.0% | 76.5% |
-| mrpt_poses | 6279/6787 | 92.5% | 60.9% |
-| mrpt_img (2026-07-10)† | 2839/3061 | 92.7% | 71.0% |
+| mrpt_graphslam (2026-09-06)@ | 814/997 | 81.6% | 64.4% |
+| mrpt_system (2026-08-29)» | 1637/1964 | 83.4% | 59.0% |
+| mrpt_rtti (2026-08-29)» | 151/176 | 85.8% | 78.1% |
+| mrpt_io (2026-08-29)» | 1133/1310 | 86.5% | 70.4% |
+| mrpt_maps (2026-09-07)★ | 10631/11789 | 90.2% | 66.4% |
+| mrpt_containers (2026-07-11) | 1803/1999 | 90.2% | 55.6%‡ |
+| mrpt_nav (2026-08-28)¶ | 5683/6287 | 90.4% | 69.0% |
+| mrpt_core | 579/638 | 90.8% | 71.9% |
+| mrpt_obs (2026-09-07)★ | 6282/6857 | 91.6% | 63.1% |
+| mrpt_graphs (2026-07-06) | 1030/1113 | 92.5% | 76.8% |
+| mrpt_poses | 6282/6788 | 92.5% | 61.4% |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
-| mrpt_bayes (2026-07-09) | 1049/1090 | 96.2% | 80.2% |
-| mrpt_serialization (2026-08-29)» | 728/754 | 96.6% | 74.7% |
+| mrpt_img (2026-07-10)† | 2856/3060 | 93.3% | 71.7% |
+| mrpt_slam (2026-09-07)★ | 4065/4348 | 93.5% | 65.3% |
+| mrpt_math (2026-09-07)★ | 7472/7867 | 95.0% | 64.4% |
+| mrpt_bayes (2026-07-09) | 1049/1090 | 96.2% | 80.3% |
+| mrpt_serialization (2026-08-29)» | 728/754 | 96.6% | 75.2% |
 | mrpt_random | 162/167 | 97.0% | 88.4% |
-| mrpt_tfest (2026-07-07) | 635/654 | 97.1% | 73.1% |
+| mrpt_tfest (2026-07-07) | 635/654 | 97.1% | 72.9% |
 | mrpt_kinematics (2026-08-28)¶ | 503/518 | 97.1% | 81.2% |
-| mrpt_config (2026-07-09) | 536/548 | 97.8% | 84.6% |
+| mrpt_config (2026-07-09) | 536/548 | 97.8% | 84.7% |
 | mrpt_topography (2026-07-10) | 414/417 | 99.3% | 83.2% |
 | mrpt_typemeta | 57/57 | 100.0% | 80.9% |
 
@@ -937,6 +937,98 @@ from outside the module. `mrpt_gui`'s is `CDisplayWindowGUI.cpp` (nanogui /
 GLFW), `CQtGlCanvasBase.cpp` (Qt), `CAboutBox*`/`error_box.cpp` (modal dialogs
 that would block a test run) and the rest of `mathplot.cpp`.
 
+★ Coverage pass of 2026-09-07 on the four core algorithmic modules:
+`mrpt_math` (88.8% -> 95.0%), `mrpt_maps` (86.5% -> 90.2%), `mrpt_obs`
+(88.5% -> 91.6%) and `mrpt_slam` (90.2% -> 93.5%). All four are now at or
+above the 90% goal.
+
+The single most productive technique here was a ~30-line test helper that
+writes an MRPT object frame (`[len|0x80][class name][version byte][payload]
+[0x88]`) with an **arbitrary streaming version**, so the backwards-compatible
+branches of `serializeFrom()` can be driven without shipping binary fixture
+files. It lives as `tests/legacy_serialization.h` in both `mrpt_math` and
+`mrpt_obs` (duplicated rather than shared, since modules are independent CMake
+projects) and covers the legacy formats of `CPolygon` (v0/v1),
+`CActionRobotMovement2D` (v0..v7, both the odometry and the streamed-PDF
+paths), `CObservationStereoImages` (v0..v6), `CObservationImage` (v0..v4),
+`CObservationBeaconRanges`, `CObservationIMU`, `CObservationGasSensors` and
+`CObservation3DRangeScan` (v0..v10) - together several hundred lines that no
+test had ever reached.
+
+Real bugs found and fixed:
+
+* `mrpt::math::TLine3D::TLine3D(const TLine2D&)` computed the base point of a
+  *horizontal* 2D line (`A ~ 0`) as `-B/A`, dividing by the coefficient it had
+  just tested for zero; it should be `-C/B`, as in `TLine2D::getAsPose2D()`.
+  Every 2D->3D line conversion of a horizontal line yielded an infinite/NaN
+  base point.
+* `mrpt::math::getAngleBisector(TLine2D, TLine2D)`'s parallel-lines branch
+  normalized the second line with `sqrt(A^2 + C^2)` instead of
+  `sqrt(A^2 + B^2)`, and then added the two offsets without halving them. The
+  two errors cancelled for a line whose normalization factor happened to equal
+  `|C|`, which is exactly the case the pre-existing test used; for anything
+  else the "bisector" was one of the two input lines.
+* `mrpt::math::intersect(vector<T>, vector<U>, CSparseMatrixTemplate<O>&)`
+  (geometry.h) iterated the inner loop up to `v1.size()` instead of
+  `v2.size()`, reading out of bounds whenever the second set was smaller; its
+  `std::vector<O>` sibling took the output container **by value**, so results
+  never reached the caller. Both templates were uninstantiated dead code.
+* `KDTreeCapable`'s radius-limited k-NN searches (`kdTreeNClosestPoint2D`,
+  `kdTreeNClosestPoint3D`, `kdTreeNClosestPoint3DWithIdx`) trimmed the index
+  and distance vectors to the number of points actually found but left the
+  coordinate vectors at the requested `knn`, handing back stale entries; the
+  `TPoint2D`/`TPoint3D` overloads then sized their output from those, so
+  `pOut.size() != outDistSqr.size()`.
+* `mrpt::math::CHistogram::createWithFixedWidth()` was declared as a
+  non-static member, so the documented `CHistogram::createWithFixedWidth(...)`
+  usage did not compile - which made `mrpt::math::CMonteCarlo`'s
+  `getDistribution()` (its only caller) uninstantiable. Now `static`.
+* `mrpt::math::KLD_Gaussians()` called the non-existent
+  `inverse_LLt(out)` overload and `multiply_HCHt_scalar()` (row-vector form)
+  on a column vector; it was likewise uninstantiable dead code.
+* `CGasConcentrationGridMap2D::simulateAdvection()` indexes `m_stackedCov`,
+  which only exists for the `mrKalmanApproximate` representation, so calling
+  it on any other map type read past the end of an empty matrix and
+  segfaulted. It now returns false with an error log instead.
+
+Worth knowing for future tests here:
+
+* `CObservationVelodyneScan`'s per-ray timestamps are derived from
+  `CObservation::timestamp`, not from `getOriginalReceivedTimeStamp()` (which
+  is left at `INVALID_TIMESTAMP` in a synthetically-built scan), so the
+  `CPose3DInterpolator` fed to `generatePointCloudAlongSE3Trajectory()` must
+  be built around the former, densely enough that every query has neighbors on
+  both sides.
+* Only the **auxiliary** particle filters go through
+  `PF_SLAM_implementation_gatherActionsCheckBothActObs()`, which is what
+  accumulates actions across steps; `pfStandardProposal` reads the action
+  directly. And `PF_SLAM_implementation_doWeHaveValidObservations()` defaults
+  to `true`, so an *empty* sensory frame is still "valid" - passing a null
+  `sf` is the way to leave a movement accumulated for the next step.
+* `CObservationGPS`'s `TIMECONV_IsALeapYear()` and
+  `TIMECONV_GetNumberOfDaysInMonth()` are only ever called from the
+  `seconds >= 60.0` rollover fix-up inside
+  `TIMECONV_GetUTCTimeFromJulianDate()`. A sweep over ~2400 GPS weeks never
+  gets the accumulated floating-point error above 59.999999 s, so that branch
+  (and hence those two helpers) is unreachable in practice.
+* `CRandomFieldGridMap2D`'s largest single block of untested code was
+  `internal_clear()`'s `GMRF_use_occupancy_information` path, which builds the
+  factor-graph prior by region growing over an occupancy gridmap. Pointing
+  `insertionOptions.GMRF_gridmap_image_file` at the module's own
+  `tests/map_pgm_32.pgm` fixture is enough to drive it end to end.
+* `CGasConcentrationGridMap2D::build_Gaussian_Wind_Grid()` caches its look-up
+  table in a file named after the grid parameters **in the current working
+  directory**, and also writes a `simple_LUT.txt` debug dump. A test that
+  wants to cover both the "generate + save" and the "found, load" branches
+  must `chdir` into a scratch directory first (and restore it afterwards).
+
+`mrpt_maps`' remaining gap is concentrated in
+`CVoxelMapOccupancyBase.h`/`CVoxelMapBase.h` (voxel types other than the two
+instantiated ones), `COccupancyGridMap2D_voronoi.cpp` and
+`COccupancyGridMap3D.cpp`; `mrpt_slam`'s is `CMultiMetricMapPDF_RBPF.cpp`'s
+landmark-map and no-odometry RO-SLAM branches of
+`prediction_and_update_pfOptimalProposal()`.
+
 ### Weak areas, grouped by root cause
 
 1. **Hardware drivers - `mrpt_hwdrivers` (13.9%)**: inherently hard to
@@ -984,9 +1076,12 @@ that would block a test run) and the rest of `mathplot.cpp`.
 
 5. **Biggest single-file impact (most uncovered lines, worth prioritizing for
    raw percentage gains)**:
-   `mrpt_maps/src/maps/COccupancyGridMap2D_io.cpp` (85, 56.0%),
    `mrpt_nav/src/reactive/CAbstractPTGBasedReactive.cpp` (123, 82.1%),
-   `mrpt_maps/src/maps/COccupancyGridMap2D_simulate.cpp` (49, 53.3%).
+   `mrpt_maps/include/mrpt/maps/CVoxelMapOccupancyBase.h` (92, 62.0%),
+   `mrpt_maps/src/maps/CGenericPointsMap.cpp` (75, 84.5%),
+   `mrpt_maps/src/maps/COccupancyGridMap2D_common.cpp` (72, 84.6%).
+   (`mrpt_maps/src/maps/COccupancyGridMap2D_io.cpp` and `_simulate.cpp`
+   cleared this bucket as of 2026-08-03.)
    (`mrpt_viz/src/CPolyhedron.cpp`, formerly the single biggest uncovered file
    in the whole repo at 1420 uncovered lines, cleared this bucket as of
    2026-08-02, now at 91.6%.)
@@ -997,20 +1092,18 @@ that would block a test run) and the rest of `mathplot.cpp`.
    2026-07-17 — see § above.)
 
 6. **Near-target modules (75-90%), smallest remaining gap to close first**:
-   `mrpt_system` (82.6%; `CTimeLogger.cpp`, `COutputLogger.cpp` and
+   `mrpt_system` (83.4%; `CTimeLogger.cpp`, `COutputLogger.cpp` and
    `filesystem.cpp` are what is left), `mrpt_rtti` (85.8%, but see the dead
    registration queue noted in » above), `mrpt_io` (86.5%; `CPipe.cpp` needs
    child processes), `mrpt_comms` (75.8%; the rest is `CInterfaceFTDI`, which
-   needs a real FTDI device).
-   (`mrpt_slam` cleared this bucket as of 2026-08-31, now at 90.2%; what is
-   left there is `PF_implementations.h` (60.6%, mostly the auxiliary-PF
-   sub-variants and the KLD adaptive-sampling paths), `CICP.cpp` (87.9%) and
-   `data_association.cpp` (84.5%).)
+   needs a real FTDI device), `mrpt_graphslam` (81.6%, needs a live
+   `CDisplayWindow3D`).
+   (`mrpt_math`, `mrpt_maps`, `mrpt_obs` and `mrpt_slam` cleared this bucket
+   as of 2026-09-07 — see ★ above.)
    (`mrpt_serialization` cleared this bucket as of 2026-08-29, now at 96.6%;
    `mrpt_graphs` and `mrpt_random` cleared it as of 2026-07-06;
    `mrpt_bayes` and `mrpt_config` cleared it as of 2026-07-09, both now >96%;
-   `mrpt_obs` improved to 87.0% as of 2026-07-10 but is still within this
-   range; `mrpt_containers` cleared it as of 2026-07-11, now at 92.9%,
+   `mrpt_containers` cleared it as of 2026-07-11, now at 90.2%,
    remaining gaps being mostly defensive "should never happen" throws and
    libfyaml parser error paths that are difficult to trigger without a
    malformed internal parser state.)

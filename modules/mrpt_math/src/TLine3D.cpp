@@ -147,7 +147,7 @@ TLine3D::TLine3D(const TLine2D& l)
   else
   {
     pBase.x = 0;
-    pBase.y = -l.coefs[1] / l.coefs[0];
+    pBase.y = -l.coefs[2] / l.coefs[1];
   }
   pBase.z = 0;
 }

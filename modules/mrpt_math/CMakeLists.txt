@@ -100,6 +100,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CMatrixFixed_unittest.cpp
   tests/container_ops_unittest.cpp
   tests/CPolygon_unittest.cpp
+  tests/CHistogram_unittest.cpp
   tests/CSparseMatrixTemplate_unittest.cpp
   tests/CSplineInterpolator1D_unittest.cpp
   tests/distributions_unittest.cpp
@@ -108,9 +109,11 @@ set(LIB_UNIT_TEST_SOURCES
   tests/fresnel_unittest.cpp
   tests/geometry_dispatch_unittest.cpp
   tests/geometry_extra_unittest.cpp
+  tests/geometry_sets_unittest.cpp
   tests/geometry_unittest.cpp
   tests/interp_fit_unittest.cpp
   tests/KDTreeCapable_unittest.cpp
+  tests/matrix_api_unittest.cpp
   tests/matrix_ops_unittest.cpp
   tests/matrix_ops1_unittest.cpp
   tests/matrix_ops2_unittest.cpp
@@ -121,6 +124,8 @@ set(LIB_UNIT_TEST_SOURCES
   tests/math_unittest.cpp
   tests/ModelSearch_unittest.cpp
   tests/poly_roots_unittest.cpp
+  tests/ops_vectors_unittest.cpp
+  tests/poly_roots_extra_unittest.cpp
   tests/ransac_applications_unittest.cpp
   tests/ransac_unittest.cpp
   tests/robust_kernels_unittest.cpp
@@ -130,6 +135,8 @@ set(LIB_UNIT_TEST_SOURCES
   tests/TObject3D_unittest.cpp
   tests/TOrientedBox_unittest.cpp
   tests/TPlane_unittest.cpp
+  tests/TLine2D_TSegment2D_unittest.cpp
+  tests/TPoint2D_unittest.cpp
   tests/TPoint3D_unittest.cpp
   tests/TPolygon2D_unittest.cpp
   tests/TPolygon3D_unittest.cpp
@@ -137,6 +144,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/TPose3DQuat_unittest.cpp
   tests/TPoseOrPoint_unittest.cpp
   tests/TSegment3D_unittest.cpp
+  tests/TTwist2D_unittest.cpp
   tests/TTwist3D_unittest.cpp
   tests/wrap2pi_unittest.cpp
 )

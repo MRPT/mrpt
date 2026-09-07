@@ -361,6 +361,8 @@ class KDTreeCapable
       resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
 
       m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      ret_indexes.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
     }
     else
     {
@@ -375,6 +377,11 @@ class KDTreeCapable
       THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
 #endif
     }
+
+    // Fewer than knn points may be returned (a small cloud, or a
+    // radius-limited search):
+    out_x.resize(ret_indexes.size());
+    out_y.resize(ret_indexes.size());
 
     for (size_t i = 0; i < ret_indexes.size(); i++)
     {
@@ -446,6 +453,8 @@ class KDTreeCapable
       resultSet.init(&out_idx[0], &out_dist_sqr[0]);
 
       m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      out_idx.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
     }
     else
     {
@@ -605,6 +614,8 @@ class KDTreeCapable
       nanoflann::KNNResultSet<num_t> resultSet(knn);
       resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
       m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      ret_indexes.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
     }
     else
     {
@@ -618,6 +629,12 @@ class KDTreeCapable
       THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
 #endif
     }
+
+    // Fewer than knn points may be returned (a small cloud, or a
+    // radius-limited search):
+    out_x.resize(ret_indexes.size());
+    out_y.resize(ret_indexes.size());
+    out_z.resize(ret_indexes.size());
 
     for (size_t i = 0; i < ret_indexes.size(); i++)
     {
@@ -682,6 +699,8 @@ class KDTreeCapable
       resultSet.init(&out_idx[0], &out_dist_sqr[0]);
 
       m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      out_idx.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
     }
     else
     {
@@ -695,6 +714,12 @@ class KDTreeCapable
       THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
 #endif
     }
+
+    // Fewer than knn points may be returned (a small cloud, or a
+    // radius-limited search):
+    out_x.resize(out_idx.size());
+    out_y.resize(out_idx.size());
+    out_z.resize(out_idx.size());
 
     for (size_t i = 0; i < out_idx.size(); i++)
     {
@@ -835,6 +860,8 @@ class KDTreeCapable
       nanoflann::KNNResultSet<num_t> resultSet(knn);
       resultSet.init(&out_idx[0], &out_dist_sqr[0]);
       m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
+      out_idx.resize(resultSet.size());
+      out_dist_sqr.resize(resultSet.size());
     }
     else
     {
