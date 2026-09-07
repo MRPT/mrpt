@@ -94,6 +94,8 @@ set(LIB_SOURCES
 
 set(LIB_UNIT_TEST_SOURCES
   tests/bimap_serialize_unittest.cpp
+  tests/CAnimatedAssimpModel_unittest.cpp
+  tests/CAssimpModel_unittest.cpp
   tests/CFileGZStreams_unittest.cpp
   tests/CGeneralizedEllipsoid_unittest.cpp
   tests/COrbitCameraController_unittest.cpp
