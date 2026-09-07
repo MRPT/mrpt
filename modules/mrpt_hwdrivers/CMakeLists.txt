@@ -9,6 +9,8 @@ find_package(mrpt_viz REQUIRED)
 find_package(Threads REQUIRED)
 find_package(PkgConfig QUIET)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # Optional dependency detection scripts:
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_ffmpeg.cmake REQUIRED)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_flycapture2.cmake REQUIRED)
