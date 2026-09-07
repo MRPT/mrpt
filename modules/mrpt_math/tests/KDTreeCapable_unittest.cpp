@@ -396,6 +396,8 @@ TEST(KDTreeCapable, kNNRequestLargerThanCloud)
 
   cloud3d.kdTreeNClosestPoint3DWithIdx(0.f, 0.f, 0.f, 10, xs, ys, zs, idxs, dists);
   EXPECT_EQ(xs.size(), 2U);
+  EXPECT_EQ(ys.size(), 2U);
+  EXPECT_EQ(zs.size(), 2U);
   EXPECT_EQ(idxs.size(), 2U);
   EXPECT_EQ(dists.size(), 2U);
 
