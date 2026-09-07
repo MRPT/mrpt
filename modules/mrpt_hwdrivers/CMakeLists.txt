@@ -151,6 +151,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CGPSInterface_stream_unittest.cpp
   tests/CGPSInterface_unittest.cpp
   tests/CHokuyoURG_unittest.cpp
+  tests/CSickLaserSerial_unittest.cpp
   tests/CVelodyneScanner_unittest.cpp
   tests/mock_stream.h
 )
