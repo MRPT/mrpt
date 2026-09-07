@@ -23,6 +23,8 @@
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/serialization/optional_serialization.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/viz/CArrow.h>
+#include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/COctoMapVoxels.h>
@@ -606,4 +608,159 @@ TEST(VizLegacySerialization, CPointCloudColouredV4)
   EXPECT_FLOAT_EQ(o.getPoint3Df(1).z, 6.0f);
   EXPECT_EQ(o.getPointColor(0).R, 255);
   EXPECT_FLOAT_EQ(o.getPointSize(), 6.0f);
+}
+
+// ------------------------------------------------------------------- CArrow
+
+TEST(VizLegacySerialization, CArrow)
+{
+  for (uint8_t v = 0; v <= 3; v++)
+  {
+    CArrow o;
+    readLegacy(
+        o, "mrpt::viz::CArrow", v,
+        [v](mrpt::serialization::CArchive& a)
+        {
+          writeLegacyRenderHeader(a);
+          a << 0.0f << 0.0f << 0.0f;   // from
+          a << 1.0f << 2.0f << 3.0f;   // to
+          a << 0.3f << 0.07f << 0.2f;  // head ratio, small/large radius
+          if (v == 1)
+          {
+            a << 0.0f << 0.0f << 0.0f;  // roll/pitch/yaw, dropped after v1
+          }
+          if (v >= 2)
+          {
+            a << static_cast<uint32_t>(15);  // m_slices
+          }
+          if (v >= 3)
+          {
+            a.WriteAs<uint8_t>(0);  // VisualObjectParams_Triangles version
+            a << true;              // m_enableLight
+            a.WriteAs<uint8_t>(0);  // m_cullface
+          }
+        });
+
+    const auto bb = o.getBoundingBoxLocal();
+    EXPECT_NEAR(bb.max.z, 3.0, 1e-4) << "v" << int(v);
+    o.updateBuffers();
+    EXPECT_GT(o.shaderTrianglesBuffer().size(), 0U) << "v" << int(v);
+  }
+}
+
+// -------------------------------------------------------------------- CAxis
+
+TEST(VizLegacySerialization, CAxis)
+{
+  for (uint8_t v = 0; v <= 3; v++)
+  {
+    CAxis o;
+    readLegacy(
+        o, "mrpt::viz::CAxis", v,
+        [v](mrpt::serialization::CArchive& a)
+        {
+          writeLegacyRenderHeader(a);
+          a << -1.0f << -2.0f << -3.0f;  // min
+          a << 1.0f << 2.0f << 3.0f;     // max
+          a << 0.5f;                     // frequency
+          if (v >= 1)
+          {
+            a << true << false << true;  // per-axis tick marks
+            a << 0.4f;                   // text scale
+            for (int i = 0; i < 3; i++)
+            {
+              for (int j = 0; j < 3; j++)
+              {
+                a << 0.0f;  // text rotations
+              }
+            }
+          }
+          else
+          {
+            a << true;  // the single pre-v1 "marks" flag
+          }
+          if (v >= 2)
+          {
+            a << 0.1f;  // m_markLen
+          }
+          if (v >= 3)
+          {
+            a.WriteAs<uint8_t>(0);  // VisualObjectParams_Lines version
+            a << 2.0f;              // line width
+            a << true;              // antialiasing
+          }
+        });
+
+    EXPECT_FLOAT_EQ(o.getFrequency(), 0.5f) << "v" << int(v);
+    const auto bb = o.getBoundingBoxLocal();
+    EXPECT_NEAR(bb.min.x, -1.0, 1e-4) << "v" << int(v);
+
+    // v0 had a single flag for all three axes, and a fixed text scale:
+    EXPECT_FLOAT_EQ(o.getTextScale(), v >= 1 ? 0.4f : 0.25f) << "v" << int(v);
+
+    o.updateBuffers();
+    EXPECT_GT(o.shaderLinesVertexPointBuffer().size(), 0U) << "v" << int(v);
+  }
+}
+
+// ----------------------------------------------------------- COctoMapVoxels
+
+TEST(VizLegacySerialization, COctoMapVoxels)
+{
+  for (uint8_t v = 0; v <= 4; v++)
+  {
+    COctoMapVoxels o;
+    // A non-default colormap, to prove an old stream resets it:
+    o.colorMap(mrpt::img::cmJET);
+
+    readLegacy(
+        o, "mrpt::viz::COctoMapVoxels", v,
+        [v](mrpt::serialization::CArchive& a)
+        {
+          writeLegacyRenderHeader(a);
+          // Empty STL containers, written the way stl_serialization does:
+          // container name, element type name, then the count.
+          a << std::string("std::deque") << std::string("COctoMapVoxels::TInfoPerVoxelSet");
+          a.WriteAs<uint32_t>(0);  // m_voxel_sets
+          a << std::string("std::vector") << std::string("COctoMapVoxels::TGridCube");
+          a.WriteAs<uint32_t>(0);  // m_grid_cubes
+          a << mrpt::math::TPoint3D(-1, -1, -1) << mrpt::math::TPoint3D(2, 2, 2);
+          a << true;   // m_enable_lighting
+          a << false;  // m_showVoxelsAsPoints
+          a << 3.0f;   // m_showVoxelsAsPointsSize
+          a << true;   // m_show_grids
+          a << 1.5f;   // m_grid_width
+          a << mrpt::img::TColor(9, 8, 7, 255);
+          if (v >= 1)
+          {
+            a << true;  // m_enable_cube_transparency
+          }
+          if (v >= 2)
+          {
+            a << static_cast<uint32_t>(0);  // visualization mode
+          }
+          if (v >= 3)
+          {
+            a.WriteAs<uint8_t>(0);  // VisualObjectParams_Triangles version
+            a << true;
+            a.WriteAs<uint8_t>(0);
+          }
+          if (v >= 4)
+          {
+            a.WriteAs<uint8_t>(static_cast<uint8_t>(mrpt::img::cmGRAYSCALE));
+          }
+        });
+
+    EXPECT_TRUE(o.areGridLinesVisible()) << "v" << int(v);
+    EXPECT_FLOAT_EQ(o.getGridLinesWidth(), 1.5f) << "v" << int(v);
+    EXPECT_EQ(o.getGridLinesColor().R, 9) << "v" << int(v);
+    EXPECT_EQ(o.isCubeTransparencyEnabled(), v >= 1) << "v" << int(v);
+
+    const auto bb = o.getBoundingBoxLocal();
+    EXPECT_NEAR(bb.max.y, 2.0, 1e-4) << "v" << int(v);
+
+    // The colormap only exists from v4 on; older streams must restore the
+    // default rather than keep whatever the object had:
+    EXPECT_EQ(o.colorMap(), v >= 4 ? mrpt::img::cmGRAYSCALE : mrpt::img::cmHOT) << "v" << int(v);
+  }
 }

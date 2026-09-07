@@ -127,7 +127,14 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 
       if (version >= 3) VisualObjectParams_Triangles::params_deserialize(in);
 
-      if (version >= 4) m_color_map = static_cast<mrpt::img::TColormap>(in.ReadAs<uint8_t>());
+      if (version >= 4)
+      {
+        m_color_map = static_cast<mrpt::img::TColormap>(in.ReadAs<uint8_t>());
+      }
+      else
+      {
+        m_color_map = mrpt::img::cmHOT;  // the default, absent before v4
+      }
     }
     break;
     default:
