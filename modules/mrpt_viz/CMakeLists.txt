@@ -102,6 +102,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CPolyhedron_unittest.cpp
   tests/CSerializable_unittest.cpp
   tests/CVisualObject_unittest.cpp
+  tests/legacy_serialization_unittest.cpp
   tests/MiscVisualObjects_unittest.cpp
   tests/MiscVisualObjects2_unittest.cpp
   tests/PLY_import_export_unittest.cpp

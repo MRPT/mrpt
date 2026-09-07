@@ -36,10 +36,10 @@ TEST(CVisualObject, NameVisibilityShadowsShowName)
   box->setVisibility(false);
   EXPECT_FALSE(box->isVisible());
 
-  const auto& cbox = *box;
-  EXPECT_TRUE(cbox.castShadows());  // default=true
+  // The getter must be reachable on a non-const object too:
+  EXPECT_TRUE(box->castShadows());  // default=true
   box->castShadows(false);
-  EXPECT_FALSE(cbox.castShadows());
+  EXPECT_FALSE(box->castShadows());
 
   EXPECT_FALSE(box->isShowNameEnabled());
   box->enableShowName(true);

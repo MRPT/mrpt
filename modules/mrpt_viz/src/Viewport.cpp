@@ -235,7 +235,8 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       }
 
       // Added in v5: image mode
-      if (in.ReadAs<bool>())
+      const bool hasImageViewPlane = (version >= 5) && in.ReadAs<bool>();
+      if (hasImageViewPlane)
       {
         in >> m_imageViewPlane;
       }
@@ -266,10 +267,23 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       {
         in >> m_clip_max >> m_clip_min >> m_lightShadowClipMin >> m_lightShadowClipMax;
       }
+      else
+      {
+        // Defaults, so that loading into a reused object does not keep the
+        // clip distances it happened to have:
+        m_clip_min = 0.01f;
+        m_clip_max = 1000.0f;
+        m_lightShadowClipMin = 0.01f;
+        m_lightShadowClipMax = 1000.0f;
+      }
 
       if (version >= 10)
       {
         in >> m_isViewportVisible;
+      }
+      else
+      {
+        m_isViewportVisible = true;
       }
     }
     break;
