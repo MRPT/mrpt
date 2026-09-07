@@ -484,7 +484,7 @@ TEST(CRawlogContent, LoadTruncatedRawlogStopsGracefully)
   // Chop the file in half: the loader must keep whatever it could read
   {
     const auto sz = mrpt::system::getFileSize(tmpFile);
-    ASSERT_GT(sz, 20);
+    ASSERT_GT(sz, 20U);
     std::vector<uint8_t> data(static_cast<size_t>(sz));
     {
       mrpt::io::CFileInputStream fi(tmpFile);

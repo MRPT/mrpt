@@ -13,6 +13,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/core/bits_math.h>  // M_PI on MSVC
 #include <mrpt/math/fresnel.h>
 #include <mrpt/system/os.h>
 

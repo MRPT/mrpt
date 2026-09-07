@@ -17,6 +17,8 @@
 // point-accessor and nearest-neighbor overloads.
 
 #include <gtest/gtest.h>
+#include <mrpt/core/bits_math.h>  // M_PI on MSVC
+#include <mrpt/core/common.h>     // M_PIf on MSVC
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
