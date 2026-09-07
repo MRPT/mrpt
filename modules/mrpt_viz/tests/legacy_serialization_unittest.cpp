@@ -468,6 +468,7 @@ TEST(VizLegacySerialization, Viewport)
     o.setCustomBackgroundColor({0.9f, 0.9f, 0.9f, 1.0f});
     o.enablePolygonNicest(false);
     o.setViewportClipDistances(7.0f, 8.0f);
+    o.setLightShadowClipDistances(7.0f, 8.0f);
     o.setViewportVisibility(false);
 
     readLegacy(
@@ -492,13 +493,16 @@ TEST(VizLegacySerialization, Viewport)
     {
       EXPECT_TRUE(o.isShadowCastingEnabled()) << "v" << int(v);
     }
-    if (v >= 9)
     {
       float cmin = 0;
       float cmax = 0;
       o.getViewportClipDistances(cmin, cmax);
-      EXPECT_FLOAT_EQ(cmin, 0.05f);
-      EXPECT_FLOAT_EQ(cmax, 500.0f);
+      EXPECT_FLOAT_EQ(cmin, v >= 9 ? 0.05f : 0.01f) << "v" << int(v);
+      EXPECT_FLOAT_EQ(cmax, v >= 9 ? 500.0f : 1000.0f) << "v" << int(v);
+
+      o.getLightShadowClipDistances(cmin, cmax);
+      EXPECT_FLOAT_EQ(cmin, v >= 9 ? 0.06f : 0.01f) << "v" << int(v);
+      EXPECT_FLOAT_EQ(cmax, v >= 9 ? 400.0f : 1000.0f) << "v" << int(v);
     }
     EXPECT_EQ(o.getViewportVisibility(), v < 10) << "v" << int(v);
 
