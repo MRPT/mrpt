@@ -67,6 +67,8 @@ class CSimpleLine : virtual public CVisualObject, public VisualObjectParams_Line
     z1 = m_z1;
   }
 
+  void updateBuffers() const override;
+
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
   /** Constructor

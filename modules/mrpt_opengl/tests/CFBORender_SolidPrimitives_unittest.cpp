@@ -36,6 +36,8 @@
 #include <mrpt/viz/CSetOfTriangles.h>
 #include <mrpt/viz/Scene.h>
 #include <test_mrpt_common.h>
+//
+#include "render_reference.h"
 
 #include <Eigen/Dense>
 
@@ -64,14 +66,6 @@
 
 namespace
 {
-float imageDiff(const mrpt::img::CImage& im1, const mrpt::img::CImage& im2)
-{
-  const auto [r1, g1, b1] = im1.getAsRGBMatricesFloat();
-  const auto [r2, g2, b2] = im2.getAsRGBMatricesFloat();
-
-  return (r1 - r2).asEigen().array().abs().sum() + (g1 - g2).asEigen().array().abs().sum() +
-         (b1 - b2).asEigen().array().abs().sum();
-}
 
 void test_opengl_solidPrimitives()
 {
@@ -223,13 +217,8 @@ void test_opengl_solidPrimitives()
 
   renderer.render_RGBD(*scene, frame, depth);
 
-  mrpt::img::CImage gt_frame;
-  bool readOk_rgb = gt_frame.loadFromFile(expected_RGB_img_file);
-  EXPECT_TRUE(readOk_rgb);
-
-  const float rgb_diff = imageDiff(gt_frame, frame);
-  std::cout << "rgb_diff=" << rgb_diff << "\n";
-  EXPECT_LT(rgb_diff, 5000.0f);
+  mrpt::opengl::testing::expectMatchesReference(
+      frame, expected_RGB_img_file, 5000.0f, "rgb_diff");
 }
 
 }  // namespace

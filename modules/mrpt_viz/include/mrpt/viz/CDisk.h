@@ -50,6 +50,8 @@ class CDisk : virtual public CVisualObject, public VisualObjectParams_Triangles
 
   /** Evaluates the bounding box of this object (including possible children)
    * in the coordinate frame of the object parent. */
+  void updateBuffers() const override;
+
   [[nodiscard]] mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
   /** Ray tracing
