@@ -108,6 +108,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/pose_pdfs_unittest.cpp
   tests/RenderBuffers_unittest.cpp
   tests/Scene_Viewport_unittest.cpp
+  tests/SchemeSerialization_unittest.cpp
   tests/serializations_unittest.cpp
   tests/StockObjects_unittest.cpp
   tests/stl_serialize_unittest.cpp

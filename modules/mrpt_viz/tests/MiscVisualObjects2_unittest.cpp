@@ -20,6 +20,7 @@
 #include <mrpt/viz/CMesh.h>
 #include <mrpt/viz/CMesh3D.h>
 #include <mrpt/viz/CMeshFast.h>
+#include <mrpt/viz/COctoMapVoxels.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 #include <mrpt/viz/CSetOfLines.h>
@@ -706,6 +707,16 @@ TEST(CTextMessageCapable, AddUpdateAndClear)
   EXPECT_TRUE(c.updateTextMessage(1, "there"));
   EXPECT_FALSE(c.updateTextMessage(99, "nobody"));
 
+  // Labels start out flagged as outdated, so this must create their objects:
+  c.getTextMessages().regenerateGLobjects();
+  for (const auto& kv : c.getTextMessages().messages)
+  {
+    EXPECT_TRUE(kv.second.gl_text);
+    EXPECT_FALSE(kv.second.gl_text_outdated);
+  }
+  // ...and a second pass must leave them alone:
+  EXPECT_NO_THROW(c.getTextMessages().regenerateGLobjects());
+
   c.clearTextMessages();
   EXPECT_TRUE(c.getTextMessages().messages.empty());
 }
@@ -757,4 +768,93 @@ TEST(CText3D, SettersAndRoundTrip)
   const auto copy = serializeRoundTrip(*o);
   EXPECT_EQ(copy->getString(), "xyz");
   EXPECT_EQ(copy->getFont(), "mono");
+}
+
+// ----------------------------------------------------------- COctoMapVoxels
+
+namespace
+{
+/** COctoMapVoxels' mutators are protected, for use by the map classes that
+ *  build the visualization; this exposes them to the test. */
+class TestableOctoMapVoxels : public COctoMapVoxels
+{
+ public:
+  using COctoMapVoxels::push_back_GridCube;
+  using COctoMapVoxels::push_back_Voxel;
+  using COctoMapVoxels::resizeVoxelSets;
+  using COctoMapVoxels::setBoundingBox;
+  using COctoMapVoxels::sort_voxels_by_z;
+};
+}  // namespace
+
+TEST(COctoMapVoxels, GridCubesVoxelsAndDisplayModes)
+{
+  TestableOctoMapVoxels o;
+  o.resizeVoxelSets(2);
+  EXPECT_EQ(o.getVoxelSetCount(), 2U);
+
+  o.push_back_Voxel(0, COctoMapVoxels::TVoxel({0, 0, 0}, 0.5, mrpt::img::TColor(255, 0, 0, 255)));
+  o.push_back_Voxel(0, COctoMapVoxels::TVoxel({1, 1, 2}, 0.5, mrpt::img::TColor(0, 255, 0, 255)));
+  o.push_back_Voxel(1, COctoMapVoxels::TVoxel({2, 2, 1}, 0.5, mrpt::img::TColor(0, 0, 255, 255)));
+  EXPECT_EQ(o.getVoxelCount(0), 2U);
+  EXPECT_EQ(o.getVoxelCount(1), 1U);
+
+  o.push_back_GridCube(COctoMapVoxels::TGridCube({-1, -1, -1}, {1, 1, 1}));
+  EXPECT_EQ(o.getGridCubeCount(), 1U);
+  EXPECT_NEAR(o.getGridCube(0).max.z, 1.0f, 1e-5f);
+
+  o.setBoundingBox({-2, -2, -2}, {3, 3, 3});
+  const auto bb = o.getBoundingBoxLocal();
+  EXPECT_NEAR(bb.min.x, -2.0, 1e-4);
+  EXPECT_NEAR(bb.max.z, 3.0, 1e-4);
+
+  // Solid cubes + grid lines:
+  o.showGridLines(true);
+  o.showVoxels(0, true);
+  o.showVoxels(1, true);
+  EXPECT_TRUE(o.areGridLinesVisible());
+  EXPECT_TRUE(o.areVoxelsVisible(0));
+  o.setGridLinesWidth(2.5f);
+  o.setGridLinesColor(mrpt::img::TColor(1, 2, 3, 255));
+  EXPECT_FLOAT_EQ(o.getGridLinesWidth(), 2.5f);
+  EXPECT_EQ(o.getGridLinesColor().G, 2);
+
+  o.updateBuffers();
+  EXPECT_GT(o.shaderTrianglesBuffer().size(), 0U);
+  // One cube = 12 line pairs = 24 vertices:
+  EXPECT_EQ(o.shaderLinesVertexPointBuffer().size(), 24U);
+  EXPECT_TRUE(o.shaderPointsVertexPointBuffer().empty());
+
+  // Points mode instead of solid cubes:
+  o.showVoxelsAsPoints(true);
+  o.setVoxelAsPointsSize(5.0f);
+  EXPECT_TRUE(o.areVoxelsShownAsPoints());
+  EXPECT_FLOAT_EQ(o.getVoxelAsPointsSize(), 5.0f);
+  o.updateBuffers();
+  EXPECT_EQ(o.shaderPointsVertexPointBuffer().size(), 3U);
+
+  // A hidden set contributes nothing:
+  o.showVoxels(1, false);
+  EXPECT_FALSE(o.areVoxelsVisible(1));
+  o.updateBuffers();
+  EXPECT_EQ(o.shaderPointsVertexPointBuffer().size(), 2U);
+
+  // Grid lines off:
+  o.showGridLines(false);
+  o.updateBuffers();
+  EXPECT_TRUE(o.shaderLinesVertexPointBuffer().empty());
+
+  o.sort_voxels_by_z();
+  EXPECT_LE(o.getVoxel(0, 0).coords.z, o.getVoxel(0, 1).coords.z);
+
+  o.enableCubeTransparency(true);
+  EXPECT_TRUE(o.isCubeTransparencyEnabled());
+  o.enableLights(false);
+  EXPECT_FALSE(o.areLightsEnabled());
+  o.colorMap(mrpt::img::cmJET);
+  EXPECT_EQ(o.colorMap(), mrpt::img::cmJET);
+
+  o.clear();
+  EXPECT_EQ(o.getVoxelSetCount(), 0U);
+  EXPECT_EQ(o.getGridCubeCount(), 0U);
 }
