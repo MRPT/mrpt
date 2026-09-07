@@ -83,6 +83,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CPointCloudFilterByDistance_unittest.cpp
   tests/CGenericPointsMap_unittest.cpp
   tests/CPointsMap_unittest.cpp
+  tests/CPointsMap_insertObs_unittest.cpp
   tests/CPointsMapXYZIRT_unittest.cpp
   tests/CRandomFieldGridMap2D_unittest.cpp
   tests/CRandomFieldGridMap3D_unittest.cpp
@@ -93,6 +94,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CWirelessPowerGridMap2D_unittest.cpp
   tests/customizable_obs_viz_unittest.cpp
   tests/CPlanarLaserScan_unittest.cpp
+  tests/maps_coverage2_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

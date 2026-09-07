@@ -2225,7 +2225,7 @@ void math::getAngleBisector(const TLine2D& l1, const TLine2D& l2, TLine2D& bis)
   {
     // Both lines are parallel
     double mod1 = sqrt(square(l1.coefs[0]) + square(l1.coefs[1]));
-    double mod2 = sqrt(square(l2.coefs[0]) + square(l2.coefs[2]));
+    double mod2 = sqrt(square(l2.coefs[0]) + square(l2.coefs[1]));
     bis.coefs[0] = l1.coefs[0] / mod1;
     bis.coefs[1] = l1.coefs[1] / mod1;
     bool sameSign;
@@ -2233,10 +2233,11 @@ void math::getAngleBisector(const TLine2D& l1, const TLine2D& l2, TLine2D& bis)
       sameSign = (l1.coefs[1] * l2.coefs[1]) > 0;
     else
       sameSign = (l1.coefs[0] * l2.coefs[0]) > 0;
+    // Midway between both normalized lines:
     if (sameSign)
-      bis.coefs[2] = (l1.coefs[2] / mod1) + (l2.coefs[2] / mod2);
+      bis.coefs[2] = 0.5 * ((l1.coefs[2] / mod1) + (l2.coefs[2] / mod2));
     else
-      bis.coefs[2] = (l1.coefs[2] / mod1) - (l2.coefs[2] / mod2);
+      bis.coefs[2] = 0.5 * ((l1.coefs[2] / mod1) - (l2.coefs[2] / mod2));
   }
   else if (obj.getPoint(p))
   {

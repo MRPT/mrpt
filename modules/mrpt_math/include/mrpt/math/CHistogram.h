@@ -57,7 +57,7 @@ class CHistogram
   /** Constructor with a fixed bin width.
    * \exception std::exception On max<=min or width<=0
    */
-  CHistogram createWithFixedWidth(double min, double max, double binWidth);
+  [[nodiscard]] static CHistogram createWithFixedWidth(double min, double max, double binWidth);
 
   /** Clear the histogram:
    */

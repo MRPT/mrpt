@@ -154,3 +154,89 @@ TEST(data_utils, mahalanobisDistanceSqAndLogPDF)
   EXPECT_NEAR(out_maha2, 0.388264, 1e-4);
   EXPECT_NEAR(out_ml, 9.14118, 1e-4);
 }
+
+TEST(distributions, normalPDFInf)
+{
+  const double cov_vals[3 * 3] = {4.0, 2.0, 1.0, 2.0, 3.0, 0.5, 1.0, 0.5, 1.0};
+  const CMatrixDouble33 COV(cov_vals);
+  const CMatrixDouble33 COV_inv = COV.inverse_LLt();
+
+  const double x1_vals[3] = {1.0, 0.0, 0.0};
+  const CMatrixFixed<double, 3, 1> x0;
+  const CMatrixFixed<double, 3, 1> x1(x1_vals);
+
+  // The unscaled version must match the plain covariance-based evaluation:
+  EXPECT_NEAR(normalPDFInf(x1, x0, COV_inv), normalPDF(x1, x0, COV), 1e-12);
+
+  // The scaled version peaks at 1 for x==mu:
+  EXPECT_NEAR(normalPDFInf(x0, x0, COV_inv, true), 1.0, 1e-12);
+  EXPECT_LT(normalPDFInf(x1, x0, COV_inv, true), 1.0);
+}
+
+TEST(distributions, KLD_Gaussians)
+{
+  CMatrixDouble cov0(2, 2);
+  cov0.setIdentity();
+  CMatrixDouble cov1(2, 2);
+  cov1.setIdentity();
+
+  CVectorDouble mu0(2);
+  mu0.fill(0);
+  CVectorDouble mu1(2);
+  mu1.fill(0);
+
+  // Identical distributions => zero divergence
+  EXPECT_NEAR(KLD_Gaussians(mu0, cov0, mu1, cov1), 0.0, 1e-12);
+
+  // Shifting the mean by 1 sigma in one axis adds 0.5:
+  mu1[0] = 1.0;
+  EXPECT_NEAR(KLD_Gaussians(mu0, cov0, mu1, cov1), 0.5, 1e-12);
+
+  // Doubling the variance of one axis:
+  cov1(0, 0) = 4.0;
+  mu1[0] = 0.0;
+  EXPECT_NEAR(KLD_Gaussians(mu0, cov0, mu1, cov1), 0.5 * (std::log(4.0) + 0.25 - 1.0), 1e-12);
+
+  // Mismatched dimensions are rejected:
+  CMatrixDouble cov3(3, 3);
+  cov3.setIdentity();
+  CVectorDouble mu3(3);
+  mu3.fill(0);
+  EXPECT_THROW(KLD_Gaussians(mu0, cov0, mu3, cov3), std::exception);
+}
+
+TEST(distributions, confidenceIntervals)
+{
+  // A uniform ramp of samples in [0,100]: the 10%-90% interval must be close
+  // to [10,90] and the mean to 50.
+  CVectorDouble data(1001);
+  for (int i = 0; i < 1001; i++) data[i] = i * 0.1;
+
+  double mean = 0, lower = 0, upper = 0;
+  confidenceIntervals(data, mean, lower, upper, 0.1, 100);
+
+  EXPECT_NEAR(mean, 50.0, 1e-6);
+  EXPECT_NEAR(lower, 10.0, 2.0);
+  EXPECT_NEAR(upper, 90.0, 2.0);
+
+  // Invalid arguments:
+  CVectorDouble empty(0);
+  EXPECT_THROW(confidenceIntervals(empty, mean, lower, upper), std::exception);
+  EXPECT_THROW(confidenceIntervals(data, mean, lower, upper, 0.0), std::exception);
+  EXPECT_THROW(confidenceIntervals(data, mean, lower, upper, 1.0), std::exception);
+}
+
+TEST(distributions, confidenceIntervalsFromHistogram)
+{
+  // A flat histogram over [0,100) in 100 bins:
+  std::vector<double> coords(100), hits(100, 0.01);
+  for (int i = 0; i < 100; i++) coords[i] = i;
+
+  double lower = 0, upper = 0;
+  confidenceIntervalsFromHistogram(coords, hits, lower, upper, 0.1);
+
+  EXPECT_NEAR(lower, 9.9, 2.0);
+  EXPECT_NEAR(upper, 89.1, 2.0);
+
+  EXPECT_THROW(confidenceIntervalsFromHistogram(coords, hits, lower, upper, 0.0), std::exception);
+}

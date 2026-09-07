@@ -376,6 +376,10 @@ class KDTreeCapable
 #endif
     }
 
+    // A radius-limited search may return fewer than knn points:
+    out_x.resize(ret_indexes.size());
+    out_y.resize(ret_indexes.size());
+
     for (size_t i = 0; i < ret_indexes.size(); i++)
     {
       out_x[i] = derived().kdtree_get_pt(ret_indexes[i], 0);
@@ -619,6 +623,11 @@ class KDTreeCapable
 #endif
     }
 
+    // A radius-limited search may return fewer than knn points:
+    out_x.resize(ret_indexes.size());
+    out_y.resize(ret_indexes.size());
+    out_z.resize(ret_indexes.size());
+
     for (size_t i = 0; i < ret_indexes.size(); i++)
     {
       out_x[i] = derived().kdtree_get_pt(ret_indexes[i], 0);
@@ -695,6 +704,11 @@ class KDTreeCapable
       THROW_EXCEPTION("RKNN search requires nanoflann>=1.5.1");
 #endif
     }
+
+    // A radius-limited search may return fewer than knn points:
+    out_x.resize(out_idx.size());
+    out_y.resize(out_idx.size());
+    out_z.resize(out_idx.size());
 
     for (size_t i = 0; i < out_idx.size(); i++)
     {

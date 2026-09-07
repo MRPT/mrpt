@@ -20,6 +20,7 @@
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/obs/VelodyneCalibration.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
@@ -504,4 +505,92 @@ TEST(CObservationRotatingScan, ExternalStorageMRPTSerializationRoundtrip)
   EXPECT_EQ(rot1.rangeImage.rows(), 16);
 
   mrpt::system::deleteFile(mrpt::io::lazy_load_absolute_path(tmpFile));
+}
+
+TEST(CObservationVelodyneScan, GeneratePointCloudAlongSE3Trajectory)
+{
+  auto obs = buildSyntheticVLP16Scan(3);
+
+  // A densely-sampled vehicle path generously spanning the scan's time range
+  // (the interpolator needs neighbors on both sides of every query):
+  mrpt::poses::CPose3DInterpolator path;
+  path.setInterpolationMethod(mrpt::poses::TInterpolatorMethod::imLinearSlerp);
+  // Ray timestamps are derived from the observation timestamp:
+  const auto t0 = obs->timestamp;
+  for (int i = -20; i <= 20; i++)
+  {
+    path.insert(
+        mrpt::system::timestampAdd(t0, i * 0.01), mrpt::poses::CPose3D(i * 0.1, 0, 0, 0, 0, 0));
+  }
+
+  std::vector<mrpt::math::TPointXYZIu8> pts;
+  CObservationVelodyneScan::TGeneratePointCloudSE3Results stats;
+  obs->generatePointCloudAlongSE3Trajectory(path, pts, stats);
+
+  EXPECT_GT(stats.num_points, 0U);
+  EXPECT_EQ(stats.num_correctly_inserted_points, pts.size());
+  EXPECT_GT(pts.size(), 0U);
+
+  // An empty path yields no valid interpolated poses at all:
+  mrpt::poses::CPose3DInterpolator emptyPath;
+  std::vector<mrpt::math::TPointXYZIu8> pts2;
+  CObservationVelodyneScan::TGeneratePointCloudSE3Results stats2;
+  obs->generatePointCloudAlongSE3Trajectory(emptyPath, pts2, stats2);
+  EXPECT_GT(stats2.num_points, 0U);
+  EXPECT_EQ(stats2.num_correctly_inserted_points, 0U);
+  EXPECT_TRUE(pts2.empty());
+}
+
+TEST(CObservationVelodyneScan, GeneratePointCloudHDL32)
+{
+  // The HDL-32 has its own per-firing timestamp adjustment and block layout:
+  auto obs = CObservationVelodyneScan::Create();
+  obs->calibration = loadDefaultCal("HDL32");
+  obs->minRange = 0.5;
+  obs->maxRange = 100.0;
+  obs->timestamp = mrpt::Clock::now();
+
+  obs->scan_packets.resize(2);
+  for (size_t p = 0; p < obs->scan_packets.size(); p++)
+  {
+    RawPacket raw{};
+    raw.gps_timestamp = static_cast<uint32_t>(2000 + p * 553);
+    raw.laser_return_mode = CObservationVelodyneScan::RETMODE_STRONGEST;
+    raw.velodyne_model_ID = 0x21;  // HDL-32E
+    for (int b = 0; b < 12; b++)
+    {
+      raw.blocks[b].header = CObservationVelodyneScan::UPPER_BANK;
+      raw.blocks[b].rotation = static_cast<uint16_t>(
+          (static_cast<int>(p) * 12 * 100 + b * 100) %
+          CObservationVelodyneScan::ROTATION_MAX_UNITS);
+      for (int k = 0; k < 32; k++)
+      {
+        raw.blocks[b].returns[k].distance = 3000;
+        raw.blocks[b].returns[k].intensity = static_cast<uint8_t>(50 + k);
+      }
+    }
+    std::memcpy(
+        static_cast<void*>(&obs->scan_packets[p]), static_cast<const void*>(&raw), sizeof(raw));
+  }
+
+  obs->generatePointCloud();
+  EXPECT_GT(obs->point_cloud.size(), 0U);
+}
+
+TEST(CObservationVelodyneScan, GeneratePointCloudOutOfRangeReturnsAreDropped)
+{
+  auto obs = buildSyntheticVLP16Scan();
+
+  // Zero distance means "no return" and must never produce a point:
+  for (auto& pkt : obs->scan_packets)
+  {
+    RawPacket raw{};
+    std::memcpy(static_cast<void*>(&raw), static_cast<const void*>(&pkt), sizeof(raw));
+    for (int b = 0; b < 12; b++)
+      for (int k = 0; k < 32; k++) raw.blocks[b].returns[k].distance = 0;
+    std::memcpy(static_cast<void*>(&pkt), static_cast<const void*>(&raw), sizeof(raw));
+  }
+
+  obs->generatePointCloud();
+  EXPECT_EQ(obs->point_cloud.size(), 0U);
 }

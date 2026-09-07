@@ -22,6 +22,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CSetOfObjects.h>
+#include <test_mrpt_common.h>
 
 #include <cmath>
 #include <filesystem>
@@ -709,4 +710,77 @@ TEST(CRandomFieldGridMap2D, Compute3DMatchingRatioAlwaysZero)
   mrpt::maps::TMatchingRatioParams params;
   const float ratio = grid.compute3DMatchingRatio(&other, mrpt::poses::CPose3D(), params);
   EXPECT_FLOAT_EQ(ratio, 0.0f);
+}
+
+// =========================================================================
+//  GMRF prior built from an occupancy gridmap
+// =========================================================================
+
+TEST(CRandomFieldGridMap2D, GMRF_PriorFromOccupancyGridmapImage)
+{
+  using namespace std::string_literals;
+
+  // internal_clear() dumps a debug bitmap of the occupancy map into the
+  // current working directory, so run this from a scratch one.
+  const auto prevDir = std::filesystem::current_path();
+  const auto tmpDir = std::filesystem::path(mrpt::system::getTempFileName() + "_gmrf");
+  std::filesystem::create_directories(tmpDir);
+  std::filesystem::current_path(tmpDir);
+  struct DirRestorer
+  {
+    std::filesystem::path prev, tmp;
+    ~DirRestorer()
+    {
+      std::filesystem::current_path(prev);
+      std::filesystem::remove_all(tmp);
+    }
+  } restorer{prevDir, tmpDir};
+
+  CGasConcentrationGridMap2D grid(
+      CRandomFieldGridMap2D::mrGMRF_SD, -1.0f, 1.0f, -1.0f, 1.0f, 0.20f);
+
+  auto* opts = &grid.insertionOptions;
+  opts->GMRF_use_occupancy_information = true;
+  opts->GMRF_gridmap_image_file = mrpt::UNITTEST_BASEDIR() + "/tests/map_pgm_32.pgm"s;
+  opts->GMRF_gridmap_image_res = 0.10f;
+  opts->GMRF_gridmap_image_cx = 15;
+  opts->GMRF_gridmap_image_cy = 33;
+
+  // clear() rebuilds the factor graph, this time deriving the cell
+  // connectivity from the occupancy map through region growing:
+  grid.clear();
+
+  // The map must have been resized to match the occupancy gridmap:
+  EXPECT_GT(grid.getSizeX(), 0U);
+  EXPECT_GT(grid.getSizeY(), 0U);
+
+  grid.insertIndividualReading(0.5, {0.0, 0.0}, true, true, 1.0);
+
+  const TRandomFieldCell* cell = grid.cellByPos(0.0, 0.0);
+  ASSERT_NE(cell, nullptr);
+  EXPECT_TRUE(std::isfinite(cell->gmrf_mean()));
+}
+
+TEST(CRandomFieldGridMap2D, GMRF_OccupancyWithoutAnySourceThrows)
+{
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrGMRF_SD, -1.0f, 1.0f, -1.0f, 1.0f, 0.5f);
+
+  auto* opts = &grid.insertionOptions;
+  opts->GMRF_use_occupancy_information = true;
+  opts->GMRF_simplemap_file.clear();
+  opts->GMRF_gridmap_image_file.clear();
+
+  EXPECT_THROW(grid.clear(), std::exception);
+}
+
+TEST(CRandomFieldGridMap2D, GMRF_OccupancyFromMissingImageThrows)
+{
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrGMRF_SD, -1.0f, 1.0f, -1.0f, 1.0f, 0.5f);
+
+  auto* opts = &grid.insertionOptions;
+  opts->GMRF_use_occupancy_information = true;
+  opts->GMRF_gridmap_image_file = "/nonexistent-dir/does_not_exist.png";
+  opts->GMRF_gridmap_image_res = 0.1f;
+
+  EXPECT_THROW(grid.clear(), std::exception);
 }

@@ -606,6 +606,17 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
     return false;
   }
 
+  // The transition model below reads the per-cell variances from the
+  // compressed covariance (m_stackedCov), which only exists for the
+  // approximate Kalman representation:
+  if (m_mapType != mrKalmanApproximate)
+  {
+    MRPT_LOG_ERROR(
+        "simulateAdvection() is only implemented for the mrKalmanApproximate "
+        "map representation.");
+    return false;
+  }
+
   // Get time since last simulation
   double At = mrpt::system::timeDifference(timeLastSimulated, mrpt::Clock::now());
   std::cout << endl

@@ -372,3 +372,66 @@ TEST(CObservationGPS, DeserializeLegacyVersion9SatsThrows)
   CObservationGPS obs;
   EXPECT_THROW(arch >> obs, std::exception);
 }
+
+namespace
+{
+// Reference conversion: UTC = GPS epoch (1980-01-06 00:00:00) + week*604800 +
+// seconds - leap seconds. Comparing against that linear expression exercises
+// the whole calendar decomposition (leap years, month lengths) without
+// hard-coded dates.
+void checkGpsToUtc(uint16_t week, double sec, int leapSeconds)
+{
+  mrpt::system::TTimeParts parts;
+  ASSERT_TRUE(mrpt::obs::CObservationGPS::GPS_time_to_UTC(week, sec, leapSeconds, parts));
+
+  mrpt::system::TTimeParts epochParts;
+  epochParts.year = 1980;
+  epochParts.month = 1;
+  epochParts.day = 6;
+  const auto gpsEpoch = mrpt::system::buildTimestampFromParts(epochParts);
+  const auto expected = mrpt::system::timestampAdd(
+      gpsEpoch, week * 604800.0 + sec - static_cast<double>(leapSeconds));
+  const auto got = mrpt::system::buildTimestampFromParts(parts);
+
+  EXPECT_NEAR(mrpt::system::timeDifference(expected, got), 0.0, 1e-3)
+      << "week=" << week << " sec=" << sec << " leap=" << leapSeconds;
+
+  // The dedicated timestamp overload must agree:
+  mrpt::system::TTimeStamp ts;
+  ASSERT_TRUE(mrpt::obs::CObservationGPS::GPS_time_to_UTC(week, sec, leapSeconds, ts));
+  EXPECT_NEAR(mrpt::system::timeDifference(expected, ts), 0.0, 1e-3);
+}
+}  // namespace
+
+TEST(CObservationGPS, GPS_time_to_UTC)
+{
+  // The GPS epoch itself:
+  mrpt::system::TTimeParts utc;
+  ASSERT_TRUE(mrpt::obs::CObservationGPS::GPS_time_to_UTC(0, 0.0, 0, utc));
+  EXPECT_EQ(static_cast<int>(utc.year), 1980);
+  EXPECT_EQ(static_cast<int>(utc.month), 1);
+  EXPECT_EQ(static_cast<int>(utc.day), 6);
+
+  checkGpsToUtc(0, 0.0, 0);
+  checkGpsToUtc(1000, 86400.0 + 3600.0 + 30.5, 0);
+  checkGpsToUtc(1000, 86400.0, 18);  // leap seconds shift the instant back
+  checkGpsToUtc(2200, 604799.0, 18);
+
+  // Out-of-range seconds-of-week are rejected by both overloads:
+  EXPECT_FALSE(mrpt::obs::CObservationGPS::GPS_time_to_UTC(1000, -1.0, 0, utc));
+  EXPECT_FALSE(mrpt::obs::CObservationGPS::GPS_time_to_UTC(1000, 604801.0, 0, utc));
+  mrpt::system::TTimeStamp ts;
+  EXPECT_FALSE(mrpt::obs::CObservationGPS::GPS_time_to_UTC(1000, -1.0, 0, ts));
+}
+
+TEST(CObservationGPS, GPS_time_to_UTC_acrossCalendar)
+{
+  // Sweep several years' worth of weeks so that every month length, and the
+  // leap-year rules for 1984/2000 (divisible by 4, by 100 and by 400), are
+  // crossed at least once.
+  for (uint16_t week = 0; week < 2400; week += 3)
+  {
+    checkGpsToUtc(week, 12345.0, 0);
+    if (::testing::Test::HasFailure()) return;
+  }
+}
