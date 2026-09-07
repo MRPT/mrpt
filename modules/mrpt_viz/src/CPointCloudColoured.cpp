@@ -166,10 +166,8 @@ void CPointCloudColoured::PLY_export_get_vertex(
 {
   std::shared_lock<std::shared_mutex> wfReadLock(VisualObjectParams_Points::m_pointsMtx.data);
 
-  auto& p = m_points[idx];
-  auto& p_color = m_point_colors[idx];
-  p = pt;
-  p_color = pt_color.asTColor();
+  pt = m_points[idx];
+  pt_color = mrpt::img::TColorf(m_point_colors[idx]);
   pt_has_color = true;
 }
 

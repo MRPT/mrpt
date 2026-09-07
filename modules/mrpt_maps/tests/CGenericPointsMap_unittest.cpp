@@ -590,12 +590,11 @@ TEST(CGenericPointsMap, GetPointsBufferRefAllTypesConstAndNonConst)
 //  performed by CGenericPointsMap's overrides of the PLY virtual methods.
 // =========================================================================
 
-TEST(CGenericPointsMap, PLYRoundTripPreservesIntensity)
+TEST(CGenericPointsMap, PLYRoundTripPreservesColor)
 {
-  // Note: MRPT's PLY writer (mrpt::viz::PLY_import_export) only stores a
-  // single "intensity" property per vertex, computed as the average of R/G/B
-  // on export, and broadcasts it back equally to R/G/B on import. It does
-  // NOT round-trip full per-channel RGB color.
+  // MRPT's PLY writer (mrpt::viz::PLY_import_export) stores per-channel
+  // "red"/"green"/"blue" as uchar, so colors round-trip up to the 1/255
+  // quantization of that file format.
   CGenericPointsMap src;
   src.registerField_float(CPointsMap::POINT_FIELD_COLOR_Rf);
   src.registerField_float(CPointsMap::POINT_FIELD_COLOR_Gf);
@@ -625,12 +624,13 @@ TEST(CGenericPointsMap, PLYRoundTripPreservesIntensity)
 
   ASSERT_EQ(dst.size(), 2u);
   EXPECT_TRUE(dst.hasColor_f());
-  const float intensity0 = (0.1f + 0.2f + 0.3f) / 3.0f;
-  const float intensity1 = (0.4f + 0.5f + 0.6f) / 3.0f;
-  EXPECT_NEAR(dst.getPointField_float(0, CPointsMap::POINT_FIELD_COLOR_Rf), intensity0, 1e-3f);
-  EXPECT_NEAR(dst.getPointField_float(0, CPointsMap::POINT_FIELD_COLOR_Gf), intensity0, 1e-3f);
-  EXPECT_NEAR(dst.getPointField_float(0, CPointsMap::POINT_FIELD_COLOR_Bf), intensity0, 1e-3f);
-  EXPECT_NEAR(dst.getPointField_float(1, CPointsMap::POINT_FIELD_COLOR_Rf), intensity1, 1e-3f);
+  const float tol = 1.0f / 255.0f;
+  EXPECT_NEAR(dst.getPointField_float(0, CPointsMap::POINT_FIELD_COLOR_Rf), 0.1f, tol);
+  EXPECT_NEAR(dst.getPointField_float(0, CPointsMap::POINT_FIELD_COLOR_Gf), 0.2f, tol);
+  EXPECT_NEAR(dst.getPointField_float(0, CPointsMap::POINT_FIELD_COLOR_Bf), 0.3f, tol);
+  EXPECT_NEAR(dst.getPointField_float(1, CPointsMap::POINT_FIELD_COLOR_Rf), 0.4f, tol);
+  EXPECT_NEAR(dst.getPointField_float(1, CPointsMap::POINT_FIELD_COLOR_Gf), 0.5f, tol);
+  EXPECT_NEAR(dst.getPointField_float(1, CPointsMap::POINT_FIELD_COLOR_Bf), 0.6f, tol);
 
   std::filesystem::remove(file);
 }

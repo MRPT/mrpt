@@ -859,6 +859,7 @@ void CGenericPointsMap::PLY_export_get_vertex(
   pt.y = m_y[idx];
   pt.z = m_z[idx];
 
+  pt_has_color = false;
   if (this->hasColor_f())
   {
     pt_has_color = true;
