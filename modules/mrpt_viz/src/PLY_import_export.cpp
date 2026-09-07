@@ -1954,15 +1954,19 @@ bool PLY_Importer::loadFromPlyFile(
       /* set up for getting vertex elements */
       for (const auto& vert_prop : vert_props) ply_get_property(ply, elem_name, &vert_prop);
 
-      // Per-channel color, if the file provides it:
-      float colorScale = 1.0f;
-      for (const auto& colProp : vert_color_props)
+      // Per-channel color, if the file provides it. Each channel keeps its
+      // own scale: nothing stops a file from mixing "uchar red" with
+      // "float green".
+      std::array<float, 3> colorScale = {1.0f, 1.0f, 1.0f};
+      for (size_t ci = 0; ci < vert_color_props.size(); ci++)
       {
+        const auto& colProp = vert_color_props[ci];
         for (const auto& fileProp : plist)
         {
           if (fileProp.name != colProp.name) continue;
           ply_get_property(ply, elem_name, &colProp);
-          colorScale = plyTypeIsNormalizedFloat(fileProp.external_type) ? 1.0f : (1.0f / 255.0f);
+          colorScale[ci] =
+              plyTypeIsNormalizedFloat(fileProp.external_type) ? 1.0f : (1.0f / 255.0f);
           break;
         }
       }
@@ -1979,7 +1983,7 @@ bool PLY_Importer::loadFromPlyFile(
         const TPoint3Df xyz(pt.x, pt.y, pt.z);
         if (pt.r != VAL_NOT_SET && pt.g != VAL_NOT_SET && pt.b != VAL_NOT_SET)
         {  // RGB takes precedence over the grayscale channel, if both exist
-          const TColorf col(pt.r * colorScale, pt.g * colorScale, pt.b * colorScale);
+          const TColorf col(pt.r * colorScale[0], pt.g * colorScale[1], pt.b * colorScale[2]);
           this->PLY_import_set_vertex(j, xyz, &col);
         }
         else if (pt.intensity != VAL_NOT_SET)

@@ -74,6 +74,12 @@ TEST(RenderBuffers, LineObjectsFillTheLinesBuffer)
     ASSERT_EQ(o->shaderLinesVertexPointBuffer().size(), 2U);
     EXPECT_EQ(o->shaderLinesVertexPointBuffer()[1].y, 2.0f);
     EXPECT_EQ(o->shaderLinesVertexColorBuffer().size(), 2U);
+
+    // Both setter overloads must invalidate the cached geometry:
+    o->setLineCoords({0, 0, 0}, {4, 5, 6});
+    o->updateBuffers();
+    EXPECT_EQ(o->shaderLinesVertexPointBuffer()[1].y, 5.0f);
+    EXPECT_NEAR(o->getBoundingBoxLocal().max.z, 6.0, 1e-5);
   }
   {
     auto o = CAxis::Create(-1, -1, -1, 1, 1, 1, 1.0f, 2.0f, true);
@@ -99,6 +105,11 @@ TEST(RenderBuffers, SolidObjectsFillTheTrianglesBuffer)
     o->updateBuffers();
     // A filled disk is a triangle fan: one triangle per slice.
     EXPECT_EQ(o->shaderTrianglesBuffer().size(), 20U);
+
+    // Fewer than 3 slices cannot make a disk, and must be rejected where the
+    // mistake is made rather than at render time:
+    EXPECT_THROW(o->setSlicesCount(2), std::exception);
+    EXPECT_THROW(CDisk::Create(1.0f, 0.0f, 1), std::exception);
   }
   {
     // The ring case takes two triangles per slice:
@@ -133,7 +144,8 @@ TEST(RenderBuffers, FrustumHonorsTheDrawModeFlags)
   {
     auto o = CFrustum::Create(0.3f, 1.5f, 60.0f, 40.0f, 2.0f, true /*lines*/, true /*planes*/);
     o->updateBuffers();
-    EXPECT_GT(o->shaderLinesVertexPointBuffer().size(), 0U);
+    // A frustum is a box: 12 edges, each emitted exactly once as a vertex pair
+    EXPECT_EQ(o->shaderLinesVertexPointBuffer().size(), 24U);
     EXPECT_GT(o->shaderTrianglesBuffer().size(), 0U);
   }
   {

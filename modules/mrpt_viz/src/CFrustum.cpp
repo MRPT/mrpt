@@ -93,13 +93,14 @@ void CFrustum::updateBuffers() const
     vbd.clear();
     if (m_draw_lines)
     {
-      const std::array<int, 16> draw_path = {0, 1, 3, 2, 0, 4, 6, 2, 3, 7, 6, 4, 5, 7, 5, 1};
+      // The 12 edges of the frustum, as vertex index pairs:
+      const std::array<int, 24> edges = {0, 1, 1, 3, 3, 2, 2, 0, 0, 4, 4, 6,
+                                         6, 2, 3, 7, 7, 6, 4, 5, 5, 7, 5, 1};
 
-      for (size_t idx = 0; idx < draw_path.size(); idx++)
+      for (size_t k = 0; k < edges.size(); k += 2)
       {
-        const size_t idx_next = (idx + 1) % draw_path.size();
-        vbd.emplace_back(pts[draw_path[idx]]);
-        vbd.emplace_back(pts[draw_path[idx_next]]);
+        vbd.emplace_back(pts[edges[k]]);
+        vbd.emplace_back(pts[edges[k + 1]]);
       }
     }
     cbd.assign(vbd.size(), getColor_u8());

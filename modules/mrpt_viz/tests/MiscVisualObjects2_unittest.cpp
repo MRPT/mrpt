@@ -664,10 +664,12 @@ TEST(CVectorField3D, SerializationRoundTrip)
   o.setPointCoordinates(m, m, m);
   o.setVectorField(m, m, m);
   o.setMaxSpeedForColor(2.0f);
+  o.enableColorFromModule(true);
 
   const auto copy = serializeRoundTrip(o);
   EXPECT_EQ(copy->getVectorField_y().rows(), 2);
   EXPECT_FLOAT_EQ(copy->getMaxSpeedForColor(), 2.0f);
+  EXPECT_TRUE(copy->isColorFromModuleEnabled());
 }
 
 // ---------------------------------------------------------------- CColorBar

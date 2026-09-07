@@ -183,6 +183,28 @@ TEST(Geometry, Line3DDistance)
   }
 }
 
+TEST(Geometry, Line3DDistanceToPoint)
+{
+  const auto l = TLine3D::FromTwoPoints({0, 0, 0}, {0, 0, 1});
+  EXPECT_NEAR(l.distance({2, 0, 5}), 2.0, 1e-10);
+  EXPECT_NEAR(l.distance({0, -3, -1}), 3.0, 1e-10);
+
+  // A point exactly on the line: the radicand is zero in exact arithmetic but
+  // may round slightly negative, which used to give a NaN.
+  EXPECT_NEAR(l.distance({0, 0, 0}), 0.0, 1e-10);
+  EXPECT_NEAR(l.distance({0, 0, 7}), 0.0, 1e-10);
+
+  // Same, for a line whose base and direction are not axis-aligned:
+  const auto l2 = TLine3D::FromTwoPoints({0.3, -1.7, 2.9}, {4.1, 0.6, -3.3});
+  for (double t : {-2.0, 0.0, 0.37, 5.0})
+  {
+    const TPoint3D onLine = l2.pBase + l2.director * t;
+    const double d = l2.distance(onLine);
+    EXPECT_FALSE(std::isnan(d)) << "t=" << t;
+    EXPECT_NEAR(d, 0.0, 1e-9) << "t=" << t;
+  }
+}
+
 TEST(Geometry, Line3DDclosestPointTo)
 {
   {

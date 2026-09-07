@@ -41,9 +41,10 @@ class CDisk : virtual public CVisualObject, public VisualObjectParams_Triangles
   [[nodiscard]] float getInRadius() const { return m_radiusIn; }
   [[nodiscard]] float getOutRadius() const { return m_radiusOut; }
 
-  /** Default=50 */
+  /** Default=50. At least 3 slices are needed to form a disk. */
   void setSlicesCount(uint32_t N)
   {
+    ASSERT_GT_(N, 2U);
     m_nSlices = N;
     CVisualObject::notifyChange();
   }
@@ -64,6 +65,7 @@ class CDisk : virtual public CVisualObject, public VisualObjectParams_Triangles
   CDisk(float rOut, float rIn, uint32_t slices = 50) :
       m_radiusIn(rIn), m_radiusOut(rOut), m_nSlices(slices)
   {
+    ASSERT_GT_(slices, 2U);
   }
 
   /** Private, virtual destructor: only can be deleted from smart pointers */

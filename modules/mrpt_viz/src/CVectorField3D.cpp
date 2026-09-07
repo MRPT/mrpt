@@ -88,6 +88,15 @@ void CVectorField3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
         in >> m_still_color >> m_maxspeed_color >> m_maxspeed;
         in >> m_colorFromModule >> m_showPoints;
       }
+      else
+      {
+        // Not stored before v2: back to the constructor defaults, so that
+        // loading into a reused object does not keep its previous settings.
+        m_still_color = m_maxspeed_color = getColor_u8();
+        m_maxspeed = 1.f;
+        m_colorFromModule = false;
+        m_showPoints = true;
+      }
       break;
 
     default:

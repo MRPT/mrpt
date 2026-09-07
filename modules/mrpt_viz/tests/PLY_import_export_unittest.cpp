@@ -235,6 +235,37 @@ TEST(PLY_import_export, ReadExternalFloatColorsAndDoubleCoords)
   mrpt::system::deleteFile(file);
 }
 
+TEST(PLY_import_export, ReadMixedTypeColorChannels)
+{
+  // Nothing stops a file from declaring one channel as uchar [0,255] and
+  // another as float [0,1]; each needs its own scale.
+  const std::string file = tempPlyFile("_ext_mixed");
+  writeTextFile(
+      file,
+      "ply\n"
+      "format ascii 1.0\n"
+      "element vertex 1\n"
+      "property float x\n"
+      "property float y\n"
+      "property float z\n"
+      "property uchar red\n"
+      "property float green\n"
+      "property uchar blue\n"
+      "end_header\n"
+      "0 0 0 255 1.0 0\n");
+
+  CPointCloudColoured pc;
+  ASSERT_TRUE(pc.loadFromPlyFile(file)) << pc.getLoadPLYErrorString();
+  ASSERT_EQ(pc.size(), 1u);
+
+  const auto c = pc.getPointColor(0);
+  EXPECT_EQ(c.R, 255);
+  EXPECT_EQ(c.G, 255);
+  EXPECT_EQ(c.B, 0);
+
+  mrpt::system::deleteFile(file);
+}
+
 TEST(PLY_import_export, ReadFileWithFacesIgnoresThem)
 {
   // A mesh file: the point-cloud importers keep the vertices and skip faces.
