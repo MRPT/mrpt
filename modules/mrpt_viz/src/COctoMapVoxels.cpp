@@ -125,7 +125,16 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
       else
         m_visual_mode = COctoMapVoxels::COLOR_FROM_OCCUPANCY;
 
-      if (version >= 3) VisualObjectParams_Triangles::params_deserialize(in);
+      if (version >= 3)
+      {
+        VisualObjectParams_Triangles::params_deserialize(in);
+      }
+      else
+      {
+        // Not stored before v3: back to the defaults.
+        VisualObjectParams_Triangles::enableLight(true);
+        VisualObjectParams_Triangles::cullFaces(mrpt::viz::TCullFace::NONE);
+      }
 
       if (version >= 4)
       {

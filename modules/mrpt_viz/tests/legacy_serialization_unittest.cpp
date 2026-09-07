@@ -464,6 +464,12 @@ TEST(VizLegacySerialization, Viewport)
   for (uint8_t v = 0; v <= 10; v++)
   {
     Viewport o;
+    // Dirty every field an older stream may omit, so a missing reset shows up:
+    o.setCustomBackgroundColor({0.9f, 0.9f, 0.9f, 1.0f});
+    o.enablePolygonNicest(false);
+    o.setViewportClipDistances(7.0f, 8.0f);
+    o.setViewportVisibility(false);
+
     readLegacy(
         o, "mrpt::viz::Viewport", v,
         [v](mrpt::serialization::CArchive& a) { writeLegacyViewportPayload(a, v); });
@@ -495,6 +501,11 @@ TEST(VizLegacySerialization, Viewport)
       EXPECT_FLOAT_EQ(cmax, 500.0f);
     }
     EXPECT_EQ(o.getViewportVisibility(), v < 10) << "v" << int(v);
+
+    // Fields absent from an older stream must be reset, not left over from
+    // whatever the (reused) object had:
+    EXPECT_FLOAT_EQ(o.getCustomBackgroundColor().R, v >= 1 ? 0.25f : 0.4f) << "v" << int(v);
+    EXPECT_TRUE(o.isPolygonNicestEnabled()) << "v" << int(v);
   }
 }
 
@@ -710,8 +721,10 @@ TEST(VizLegacySerialization, COctoMapVoxels)
   for (uint8_t v = 0; v <= 4; v++)
   {
     COctoMapVoxels o;
-    // A non-default colormap, to prove an old stream resets it:
+    // Dirty the fields an older stream omits, to prove they are reset:
     o.colorMap(mrpt::img::cmJET);
+    o.enableLights(false);
+    o.cullFaces(mrpt::viz::TCullFace::BACK);
 
     readLegacy(
         o, "mrpt::viz::COctoMapVoxels", v,
@@ -762,5 +775,9 @@ TEST(VizLegacySerialization, COctoMapVoxels)
     // The colormap only exists from v4 on; older streams must restore the
     // default rather than keep whatever the object had:
     EXPECT_EQ(o.colorMap(), v >= 4 ? mrpt::img::cmGRAYSCALE : mrpt::img::cmHOT) << "v" << int(v);
+
+    // The triangle params blob only exists from v3 on:
+    EXPECT_TRUE(o.areLightsEnabled()) << "v" << int(v);
+    EXPECT_EQ(o.cullFaces(), mrpt::viz::TCullFace::NONE) << "v" << int(v);
   }
 }

@@ -185,6 +185,10 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
         in >> m_background_color.R >> m_background_color.G >> m_background_color.B >>
             m_background_color.A;
       }
+      else
+      {
+        m_background_color = mrpt::img::TColorf(0.4f, 0.4f, 0.4f);
+      }
 
       // Load objects:
       uint32_t n;
@@ -201,7 +205,7 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       }
       else
       {
-        // Defaults
+        m_OpenGL_enablePolygonNicest = true;
       }
 
       // Added in v3: Lights
