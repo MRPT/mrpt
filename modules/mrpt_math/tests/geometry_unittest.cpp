@@ -203,6 +203,13 @@ TEST(Geometry, Line3DDistanceToPoint)
     EXPECT_FALSE(std::isnan(d)) << "t=" << t;
     EXPECT_NEAR(d, 0.0, 1e-9) << "t=" << t;
   }
+
+  // A degenerate line (zero-length director) has no well-defined distance:
+  // it must not be silently reported as zero.
+  TLine3D degenerate;
+  degenerate.pBase = {0, 0, 0};
+  degenerate.director = {0, 0, 0};
+  EXPECT_TRUE(std::isnan(degenerate.distance({1, 2, 3})));
 }
 
 TEST(Geometry, Line3DDclosestPointTo)

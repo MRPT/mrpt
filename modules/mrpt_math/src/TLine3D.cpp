@@ -21,8 +21,6 @@
 #include <mrpt/math/ops_containers.h>     // squareNorm()
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 
-#include <algorithm>
-
 using namespace mrpt::math;
 
 static_assert(std::is_trivially_copyable_v<TLine3D>);
@@ -110,9 +108,13 @@ double TLine3D::distance(const TPoint3D& point) const
     d2 += d[i] * d[i];
     v2 += director[i] * director[i];
   }
+  const double radicand = d2 - (dv * dv) / v2;
   // For a point lying on the line the radicand is zero in exact arithmetic,
-  // but rounding can make it slightly negative, which would give a NaN:
-  return sqrt(std::max(.0, d2 - (dv * dv) / v2));
+  // but rounding can make it slightly negative, which would give a NaN.
+  // Note that a degenerate (zero-length) director makes the radicand itself
+  // NaN; that stays NaN here rather than being reported as a zero distance,
+  // since "< 0" is false for a NaN.
+  return sqrt(radicand < .0 ? .0 : radicand);
 }
 void TLine3D::unitarize()
 {
