@@ -148,6 +148,7 @@ set(LIB_SOURCES
 
 set(LIB_UNIT_TEST_SOURCES
   tests/C2DRangeFinderAbstract_unittest.cpp
+  tests/CGPSInterface_stream_unittest.cpp
   tests/CGPSInterface_unittest.cpp
   tests/CHokuyoURG_unittest.cpp
   tests/CVelodyneScanner_unittest.cpp
