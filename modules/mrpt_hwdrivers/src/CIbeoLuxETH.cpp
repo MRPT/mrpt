@@ -48,11 +48,16 @@ CIbeoLuxETH::CIbeoLuxETH(string _ip, unsigned int _port) :
 CIbeoLuxETH::~CIbeoLuxETH()
 {
   m_run = false;
-  dataCollectionThread.join();
-  // Wait a little for the thread to come down
-  // Don't ask why, it just works
-  // TODO: Try without the delay
-  std::this_thread::sleep_for(10ms);
+  // The thread only exists after initialize(); joining a non-started thread
+  // would throw from a destructor and abort the process.
+  if (dataCollectionThread.joinable())
+  {
+    dataCollectionThread.join();
+    // Wait a little for the thread to come down
+    // Don't ask why, it just works
+    // TODO: Try without the delay
+    std::this_thread::sleep_for(10ms);
+  }
 }
 
 void CIbeoLuxETH::dataCollection()
