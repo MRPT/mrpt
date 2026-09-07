@@ -248,8 +248,11 @@ bool CGPSInterface::tryToOpenTheCOM()
   // are always sent from the destructor).
   if (!m_setup_cmds_sent)
   {
-    m_setup_cmds_sent = true;
-    return OnConnectionEstablished();
+    // Only latch on success, so a failed attempt is retried on the next call,
+    // as the serial-port path above already does by reopening the port.
+    const bool setup_ok = OnConnectionEstablished();
+    m_setup_cmds_sent = setup_ok;
+    return setup_ok;
   }
 
   return true;  // All OK

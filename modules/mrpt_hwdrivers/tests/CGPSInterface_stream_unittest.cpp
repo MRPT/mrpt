@@ -124,6 +124,28 @@ TEST(CGPSInterfaceStream, setupAndShutdownCommandsGoOutOnTheWire)
   EXPECT_NE(s->tx().find("UNLOGALL\r\n"), std::string::npos);
 }
 
+TEST(CGPSInterfaceStream, failedSetupIsRetriedOnTheNextCall)
+{
+  auto s = std::make_shared<MockStream>();
+  CGPSInterface gps;
+  gps.bindStream(s);
+  gps.setSetupCommandsDelay(0);
+  gps.setSetupCommands({"LOG BESTPOSA ONTIME 1"});
+
+  // The link is down for the first attempt. As on the serial-port path, a
+  // stream that cannot be brought up is reported by doProcess() throwing, and
+  // the setup must not be marked as done.
+  s->setWritesThrow(true);
+  gps.initialize();
+  EXPECT_THROW(gps.doProcess(), std::exception);
+  EXPECT_TRUE(s->tx().empty());
+
+  // Once the link recovers, the setup commands are sent after all:
+  s->setWritesThrow(false);
+  gps.doProcess();
+  EXPECT_NE(s->tx().find("LOG BESTPOSA ONTIME 1"), std::string::npos);
+}
+
 TEST(CGPSInterfaceStream, setupCommandsCanSkipTheCRLF)
 {
   auto s = std::make_shared<MockStream>();
