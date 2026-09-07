@@ -173,7 +173,8 @@ class CMeshFast : virtual public CVisualObject, public VisualObjectParams_Points
     ASSERT_(m_isImage);
     const float ycenter = 0.5f * (yMin + yMax);
     const float xwidth = xMax - xMin;
-    const float newratio = float(m_textureImage.getWidth()) / float(m_textureImage.getHeight());
+    // The Y span must shrink for a wide image, hence height/width:
+    const float newratio = float(m_textureImage.getHeight()) / float(m_textureImage.getWidth());
     yMax = ycenter + 0.5f * newratio * xwidth;
     yMin = ycenter - 0.5f * newratio * xwidth;
     CVisualObject::notifyChange();

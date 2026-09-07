@@ -103,6 +103,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CSerializable_unittest.cpp
   tests/CVisualObject_unittest.cpp
   tests/MiscVisualObjects_unittest.cpp
+  tests/MiscVisualObjects2_unittest.cpp
   tests/PLY_import_export_unittest.cpp
   tests/pose_pdfs_unittest.cpp
   tests/RenderBuffers_unittest.cpp

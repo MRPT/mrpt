@@ -50,7 +50,7 @@ CVectorField3D::CVectorField3D(
   m_maxspeed = 1.f;
 }
 
-uint8_t CVectorField3D::serializeGetVersion() const { return 1; }
+uint8_t CVectorField3D::serializeGetVersion() const { return 2; }
 void CVectorField3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
   writeToStreamRender(out);
@@ -61,6 +61,9 @@ void CVectorField3D::serializeTo(mrpt::serialization::CArchive& out) const
   out << m_field_color;
   VisualObjectParams_Lines::params_serialize(out);   // v1
   VisualObjectParams_Points::params_serialize(out);  // v1
+  // v2: the module-based color mapping settings
+  out << m_still_color << m_maxspeed_color << m_maxspeed;
+  out << m_colorFromModule << m_showPoints;
 }
 void CVectorField3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -71,6 +74,7 @@ void CVectorField3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
       break;
 
     case 1:
+    case 2:
       readFromStreamRender(in);
 
       in >> x_vf >> y_vf >> z_vf;
@@ -79,6 +83,11 @@ void CVectorField3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
       in >> m_field_color;
       VisualObjectParams_Lines::params_deserialize(in);   // v1
       VisualObjectParams_Points::params_deserialize(in);  // v1
+      if (version >= 2)
+      {
+        in >> m_still_color >> m_maxspeed_color >> m_maxspeed;
+        in >> m_colorFromModule >> m_showPoints;
+      }
       break;
 
     default:

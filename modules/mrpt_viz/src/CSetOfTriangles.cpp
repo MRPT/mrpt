@@ -150,7 +150,8 @@ void CSetOfTriangles::insertTriangles(const CSetOfTriangles::Ptr& p)
   auto& tris = VisualObjectParams_Triangles::m_triangles;
   auto& trisOther = p->shaderTrianglesBuffer();
 
-  reserve(tris.size() + trisOther.size());
+  // Note: not this->reserve(), which would re-lock the same mutex.
+  tris.reserve(tris.size() + trisOther.size());
   tris.insert(tris.end(), trisOther.begin(), trisOther.end());
   polygonsUpToDate = false;
   CVisualObject::notifyChange();

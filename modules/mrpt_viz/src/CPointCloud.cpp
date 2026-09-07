@@ -19,6 +19,8 @@
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/viz/CPointCloud.h>
 
+#include <algorithm>
+
 using namespace mrpt;
 using namespace mrpt::viz;
 using namespace mrpt::img;
@@ -291,6 +293,70 @@ void CPointCloud::PLY_export_get_vertex(
   pt_has_color = false;
 
   pt = m_points[idx];
+}
+
+void CPointCloud::updateBuffers() const
+{
+  std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+
+  // "m_vertex_buffer_data" needs no work: "m_points" is an alias for it.
+  const size_t N = m_points.size();
+  const auto myColor = getColor_u8();
+
+  auto& cbd = VisualObjectParams_Points::m_color_buffer_data;
+  cbd.clear();
+
+  if (m_colorFromDepth == colNone || N == 0)
+  {
+    cbd.assign(N, myColor);
+    return;
+  }
+
+  // Range of the coordinate the color is taken from:
+  auto coordOf = [this](size_t i) -> float
+  {
+    switch (m_colorFromDepth)
+    {
+      case colX:
+        return m_points[i].x;
+      case colY:
+        return m_points[i].y;
+      default:
+        return m_points[i].z;
+    }
+  };
+
+  float vMin = coordOf(0);
+  float vMax = vMin;
+  for (size_t i = 1; i < N; i++)
+  {
+    const float v = coordOf(i);
+    mrpt::keep_min(vMin, v);
+    mrpt::keep_max(vMax, v);
+  }
+  m_minmax_valid = true;
+
+  const float span = vMax - vMin;
+  if (std::abs(span) < 1e-6f)
+  {  // All points share the coordinate: no gradient to build.
+    cbd.assign(N, myColor);
+    return;
+  }
+  const float spanInv = 1.0f / span;
+
+  m_col_slop.R = m_colorFromDepth_max.R - m_colorFromDepth_min.R;
+  m_col_slop.G = m_colorFromDepth_max.G - m_colorFromDepth_min.G;
+  m_col_slop.B = m_colorFromDepth_max.B - m_colorFromDepth_min.B;
+
+  cbd.reserve(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    const float f = std::clamp((coordOf(i) - vMin) * spanInv, 0.0f, 1.0f);
+    cbd.emplace_back(
+        f2u8(m_colorFromDepth_min.R + f * m_col_slop.R),
+        f2u8(m_colorFromDepth_min.G + f * m_col_slop.G),
+        f2u8(m_colorFromDepth_min.B + f * m_col_slop.B), myColor.A);
+  }
 }
 
 TBoundingBoxf CPointCloud::internalBoundingBoxLocal() const

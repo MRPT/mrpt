@@ -104,6 +104,8 @@ class CPointCloud :
   auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
 
  public:
+  void updateBuffers() const override;
+
   /** @name Read/Write of the list of points to render
     @{ */
 
@@ -157,7 +159,8 @@ class CPointCloud :
   {
     std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
 
-    this->clear();
+    // Note: not this->clear(), which would re-lock the same mutex.
+    m_points.clear();
     m_points.swap(pts);
     m_minmax_valid = false;
     wfWriteLock.unlock();
