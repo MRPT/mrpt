@@ -31,9 +31,9 @@
 #include <mrpt/viz/stock_objects.h>
 #include <test_mrpt_common.h>
 //
-#include "render_reference.h"
-
 #include <Eigen/Dense>
+
+#include "render_reference.h"
 
 #if MRPT_HAS_OPENGL && MRPT_HAS_EGL
 #define RUN_OFFSCREEN_RENDER_TESTS
@@ -258,8 +258,7 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
   renderer.render_RGBD(*scene, frame, depth);
 
   // Compare with ground truth
-  mrpt::opengl::testing::expectMatchesReference(
-      frame, expected_RGB_img_file, 5000.0f, "rgb_diff");
+  mrpt::opengl::testing::expectMatchesReference(frame, expected_RGB_img_file, 5000.0f, "rgb_diff");
 
   {
     mrpt::img::CImage imDepth;

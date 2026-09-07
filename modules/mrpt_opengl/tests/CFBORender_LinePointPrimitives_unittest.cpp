@@ -46,10 +46,10 @@
 #include <mrpt/viz/Scene.h>
 #include <test_mrpt_common.h>
 //
-#include "render_reference.h"
-
 #include <Eigen/Dense>
 #include <cmath>
+
+#include "render_reference.h"
 
 #if MRPT_HAS_OPENGL && MRPT_HAS_EGL
 #define RUN_OFFSCREEN_RENDER_TESTS
@@ -236,8 +236,7 @@ void test_opengl_linePointPrimitives()
 
   renderer.render_RGBD(*scene, frame, depth);
 
-  mrpt::opengl::testing::expectMatchesReference(
-      frame, expected_RGB_img_file, 5000.0f, "rgb_diff");
+  mrpt::opengl::testing::expectMatchesReference(frame, expected_RGB_img_file, 5000.0f, "rgb_diff");
 }
 
 }  // namespace

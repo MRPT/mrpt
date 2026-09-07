@@ -157,12 +157,17 @@ TEST(CPointCloud, SetAllPoints)
   EXPECT_FLOAT_EQ(o->getPoint3Df(2).x, 2.0f);
   EXPECT_FLOAT_EQ(o->getPoint3Df(2).y, -2.0f);
 
-  std::vector<mrpt::math::TPoint3D> pts{{9.0, 8.0, 7.0}};
+  std::vector<mrpt::math::TPoint3D> pts{
+      {9.0, 8.0, 7.0}
+  };
   o->setAllPoints(pts);
   ASSERT_EQ(o->size(), 1U);
   EXPECT_FLOAT_EQ(o->getPoint3Df(0).z, 7.0f);
 
-  std::vector<mrpt::math::TPoint3Df> ptsf{{1.f, 2.f, 3.f}, {4.f, 5.f, 6.f}};
+  std::vector<mrpt::math::TPoint3Df> ptsf{
+      {1.f, 2.f, 3.f},
+      {4.f, 5.f, 6.f}
+  };
   o->setAllPointsFast(ptsf);
   EXPECT_EQ(o->size(), 2U);
 }
@@ -191,8 +196,7 @@ TEST(CPointCloud, ColorFromCoordinate)
   o->enableColorFromY();
   o->updateBuffers();
   EXPECT_NE(
-      o->shaderPointsVertexColorBuffer().front().R,
-      o->shaderPointsVertexColorBuffer().back().R);
+      o->shaderPointsVertexColorBuffer().front().R, o->shaderPointsVertexColorBuffer().back().R);
 
   o->enableColorFromZ();
   o->updateBuffers();
@@ -570,7 +574,13 @@ TEST(CMesh3D, LoadFromMatrices)
   faceVerts(3, 1) = 2;
 
   mrpt::math::CMatrixDynamic<float> coords(3, 5);
-  const float pts[5][3] = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {2, 0, 0}, {2, 1, 0}};
+  const float pts[5][3] = {
+      {0, 0, 0},
+      {1, 0, 0},
+      {0, 1, 0},
+      {2, 0, 0},
+      {2, 1, 0}
+  };
   for (int i = 0; i < 5; i++)
   {
     for (int r = 0; r < 3; r++)
@@ -621,7 +631,6 @@ TEST(CVectorField3D, SettersAndGetters)
 
   EXPECT_EQ(o->getVectorField_x().rows(), 2);
   EXPECT_EQ(o->getVectorField_z().cols(), 3);
-  
 
   mrpt::math::CMatrixFloat vx;
   mrpt::math::CMatrixFloat vy;
