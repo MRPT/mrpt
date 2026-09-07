@@ -16,6 +16,7 @@
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
+#include <mrpt/hwdrivers/config.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>  // timeDifference
 #include <mrpt/system/filesystem.h>

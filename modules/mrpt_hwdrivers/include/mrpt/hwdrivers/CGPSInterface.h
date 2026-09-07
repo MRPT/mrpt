@@ -289,6 +289,8 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
   std::shared_ptr<std::mutex> m_data_stream_cs;
   std::shared_ptr<std::mutex> m_data_stream_mine_cs = std::make_shared<std::mutex>();
   bool m_data_stream_is_external{false};
+  /** Setup commands already sent over an externally-bound stream. */
+  bool m_setup_cmds_sent{false};
 
   poses::CPose3D m_sensorPose;
   std::string m_customInit;

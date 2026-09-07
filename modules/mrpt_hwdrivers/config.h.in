@@ -36,4 +36,7 @@
 /** MYNTEYE-Depth SDK is available */
 #define MRPT_HAS_MYNTEYE_D          ${CMAKE_MRPT_HAS_MYNTEYE_D}
 
+/** libpcap, used to replay Velodyne captures from a .pcap file */
+#define MRPT_HAS_LIBPCAP            ${CMAKE_MRPT_HAS_LIBPCAP}
+
 // clang-format on

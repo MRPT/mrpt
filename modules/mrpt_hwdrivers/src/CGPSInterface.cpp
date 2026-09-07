@@ -243,6 +243,18 @@ bool CGPSInterface::tryToOpenTheCOM()
     }
   }  // end of this is a serial port
 
+  // Externally-bound stream: there is nothing to open, but the user-provided
+  // setup commands still have to be sent once (their shutdown counterparts
+  // are always sent from the destructor).
+  if (!m_setup_cmds_sent)
+  {
+    // Only latch on success, so a failed attempt is retried on the next call,
+    // as the serial-port path above already does by reopening the port.
+    const bool setup_ok = OnConnectionEstablished();
+    m_setup_cmds_sent = setup_ok;
+    return setup_ok;
+  }
+
   return true;  // All OK
 }
 
@@ -543,6 +555,12 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 
 bool CGPSInterface::OnConnectionShutdown()
 {
+  // Nothing was ever connected (e.g. destroyed right after loadConfig()):
+  if (!m_data_stream || !m_data_stream_cs)
+  {
+    return false;
+  }
+
   auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream.get());
 
   if (stream_serial && !stream_serial->isOpen())

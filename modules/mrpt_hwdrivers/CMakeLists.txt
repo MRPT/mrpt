@@ -9,6 +9,8 @@ find_package(mrpt_viz REQUIRED)
 find_package(Threads REQUIRED)
 find_package(PkgConfig QUIET)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # Optional dependency detection scripts:
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_ffmpeg.cmake REQUIRED)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/script_flycapture2.cmake REQUIRED)
@@ -145,8 +147,14 @@ set(LIB_SOURCES
 )
 
 set(LIB_UNIT_TEST_SOURCES
+  tests/C2DRangeFinderAbstract_unittest.cpp
+  tests/CGPSInterface_stream_unittest.cpp
+  tests/CGenericSensor_unittest.cpp
   tests/CGPSInterface_unittest.cpp
+  tests/CHokuyoURG_unittest.cpp
+  tests/CSickLaserSerial_unittest.cpp
   tests/CVelodyneScanner_unittest.cpp
+  tests/mock_stream.h
 )
 
 set(LIB_PUBLIC_HEADERS

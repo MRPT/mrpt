@@ -50,14 +50,17 @@ void C2DRangeFinderAbstract::getObservation(
     mrpt::obs::CObservation2DRangeScan& outObservation,
     bool& hardwareError)
 {
-  m_csLastObservation.lock();
+  std::lock_guard<std::mutex> lck(m_csLastObservation);
 
   hardwareError = m_hardwareError;
   outThereIsObservation = m_lastObservationIsNew;
 
-  if (outThereIsObservation) outObservation = m_lastObservation;
-
-  m_csLastObservation.unlock();
+  if (outThereIsObservation)
+  {
+    outObservation = m_lastObservation;
+    // Consumed: a new scan must arrive before this reports one again.
+    m_lastObservationIsNew = false;
+  }
 }
 
 /*-------------------------------------------------------------
@@ -65,9 +68,13 @@ void C2DRangeFinderAbstract::getObservation(
 -------------------------------------------------------------*/
 void C2DRangeFinderAbstract::doProcess()
 {
-  bool thereIs, hwError;
+  bool thereIs = false;
+  bool hwError = false;
 
-  if (!m_nextObservation) m_nextObservation = std::make_shared<CObservation2DRangeScan>();
+  if (!m_nextObservation)
+  {
+    m_nextObservation = std::make_shared<CObservation2DRangeScan>();
+  }
 
   doProcessSimple(thereIs, *m_nextObservation, hwError);
 
@@ -75,6 +82,17 @@ void C2DRangeFinderAbstract::doProcess()
   {
     m_state = ssError;
     MRPT_LOG_THROTTLE_ERROR(5.0, "Error reading from the sensor hardware. Will retry.");
+  }
+
+  // Keep the latest result available to getObservation() as well:
+  {
+    std::lock_guard<std::mutex> lck(m_csLastObservation);
+    m_hardwareError = hwError;
+    if (thereIs)
+    {
+      m_lastObservation = *m_nextObservation;
+      m_lastObservationIsNew = true;
+    }
   }
 
   if (thereIs)

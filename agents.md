@@ -202,7 +202,7 @@ A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
 overall (2026-09-07, deduplicated the same way as
-`scripts/coverage_module_report.py`): **79.8% lines**
+`scripts/coverage_module_report.py`): **80.9% lines**
 - still short of goal, dominated by the hardware/GUI modules below.
 The whole table below was re-measured on 2026-09-07; the date tags on some
 rows mark when that module last had a dedicated unit-test pass, and point at
@@ -303,7 +303,7 @@ and accurate path — pick two.
 | Module | Covered/Total lines | Line % | Branch % |
 |---|---|---|---|
 | mrpt_imgui | 0/53 | 0.0% | 0.0% |
-| mrpt_hwdrivers | 913/6592 | 13.9% | 9.7% |
+| mrpt_hwdrivers (2026-09-07)§ | 1957/6746 | 29.0% | 20.5% |
 | mrpt_gui (2026-09-06)@ | 1888/4655 | 40.6% | 30.4% |
 | mrpt_opengl | 2323/4234 | 54.9% | 35.7% |
 | mrpt_libapps_cli | 1129/1910 | 59.1% | 38.0% |
@@ -1031,14 +1031,16 @@ landmark-map and no-odometry RO-SLAM branches of
 
 ### Weak areas, grouped by root cause
 
-1. **Hardware drivers - `mrpt_hwdrivers` (13.9%)**: inherently hard to
-   unit-test since they talk to real serial ports/USB/GPS/LIDAR/cameras
-   (`CHokuyoURG`, `CSickLaserSerial`, `COpenNI2Generic`, `CVelodyneScanner`,
-   `CNTRIPClient`, `CKinect`, etc., all at 0%). Improving this needs a
-   mockable transport layer (inject a fake `CStream`/socket) rather than
-   plain unit tests against hardware. `mrpt_comms` cleared this bucket on
-   2026-08-29 (see » above): everything but `CInterfaceFTDI` turned out to be
-   testable over loopback sockets and a pseudo-terminal.
+1. **Hardware drivers - `mrpt_hwdrivers` (29.0%)**: hard to unit-test since
+   they talk to real serial ports/USB/GPS/LIDAR/cameras. The mockable-transport
+   approach this entry used to call for was applied on 2026-09-07 (see § below)
+   and works well for any driver that reads through an injectable `CStream`.
+   What is still at 0% are the drivers that own their transport instead
+   (`COpenNI2Generic`, `CKinect`, `CCameraSensor`, `CNTRIPClient`, `CLMS100eth`,
+   `CSICKTim561Eth`, `CCANBusReader`, `CTaoboticsIMU`, ...); reaching them needs
+   the same `bindIO()`/`bindStream()` treatment first. `mrpt_comms` cleared this
+   bucket on 2026-08-29 (see » above): everything but `CInterfaceFTDI` turned
+   out to be testable over loopback sockets and a pseudo-terminal.
 
 2. **GUI/rendering — `mrpt_imgui` (0%) and the GUI-only files still left in
    `mrpt_gui` (40.6%)**: `CDisplayWindowGUI.cpp` (nanogui/GLFW),
@@ -1237,3 +1239,62 @@ indicating error-handling and edge-case branches are the norm left untested
 even in files with decent line coverage — prioritize adding failure-path
 tests, not just more happy-path calls.
 
+§ Coverage pass of 2026-09-07 (third pass of the day) on `mrpt_hwdrivers`
+(13.9% -> 29.0%).
+
+`mrpt_hwdrivers/tests/mock_stream.h` is the lever for all of it: a `CStream`
+that records everything the driver writes and replays scripted answers keyed
+on the command received, which is what request/response sensor protocols need.
+Any driver reachable through `C2DRangeFinderAbstract::bindIO()` or
+`CGPSInterface::bindStream()` becomes testable with it; the covered ones are
+`C2DRangeFinderAbstract` (0% -> 99%), `CHokuyoURG` (0% -> 62%, the whole
+SCIP2.0 handshake and scan decoder), `CSickLaserSerial` (0% -> 33%) and
+`CGPSInterface` (19% -> 47%).
+
+The pcap half of `CVelodyneScanner` (0% -> 40%) was dead code, not untested
+code, and it took four separate fixes to revive: there was no `FindPCAP.cmake`
+in the repo so `find_package(PCAP)` always failed; `MRPT_HAS_LIBPCAP` was never
+emitted into `config.h`; `CVelodyneScanner.cpp` never included that `config.h`;
+and the unit test guarded on `MRPT_HAS_TINYXML2` without including
+`mrpt/obs/config.h`. Both Velodyne tests had therefore been compiling to
+nothing on every platform, sample `.pcap` datasets and all.
+
+Warning for anyone extending this: several `MRPT_HAS_*` macros that hwdrivers
+sources still guard on are never defined anywhere in the 3.x build
+(`MRPT_HAS_OPENCV`, `MRPT_HAS_LIBDC1394_2`, `MRPT_HAS_ROBOPEAK_LIDAR`,
+`MRPT_HAS_NIDAQMX*`, `MRPT_HAS_PGR_FLYCAPTURE2`, `MRPT_HAS_KINECT_CL_NUI`), so
+those code paths are unconditionally compiled out. Do not "fix" one by adding
+the define alone: enabling `MRPT_HAS_LIBDC1394_2` was tried here and
+`CImageGrabber_dc1394.cpp` no longer compiles against current `mrpt::img`
+(6 errors), having rotted unnoticed for as long as the macro was missing.
+Several sources also fail to include `mrpt/hwdrivers/config.h` at all
+(`COpenNI2*`, `CNationalInstrumentsDAQ`, `CImageGrabber_FlyCapture2`,
+`CPhidgetInterfaceKitProximitySensors`), so even their defined macros read 0.
+
+Seven defects were found by the new tests, five of them crashes:
+
+ - `C2DRangeFinderAbstract::getObservation()` could never return anything:
+   `m_lastObservation`/`m_lastObservationIsNew`/`m_hardwareError` were read but
+   written nowhere in the class.
+ - `CHokuyoURG::parseResponse()` validated the device status code only on
+   replies carrying data, so an error answer to a status-only command (`BM`,
+   `QT`, `CR`, ...) counted as success.
+ - `CGPSInterface::OnConnectionShutdown()`, called from the destructor,
+   dereferenced a null stream when shutdown commands were configured but
+   nothing was ever opened.
+ - `CGPSInterface` setup commands were sent only from the serial-open path, so
+   with an externally bound stream they were dropped while the matching
+   shutdown commands were still sent.
+ - `~CIbeoLuxETH()` joined a never-started thread, `~CRoboPeakLidar()` called a
+   `turnOff()` that throws without the SDK, `~CImpinjRFID()` wrote to a null
+   socket and `~CGyroKVHDSP3000()` closed a null serial port -- each aborting
+   the process when a sensor was created by the factory and destroyed before
+   `initialize()`, which is precisely what `rawlog-grabber` does between
+   `createSensor()` and configuring it. `CGenericSensor_unittest.cpp` walks
+   every registered driver to keep that path honest.
+
+`CSickLaserSerial` advertised `bindIO()` but its frame reader, ACK waiter and
+command sender each `dynamic_cast`ed to `CSerialPort` and asserted on it, so
+any other stream aborted on the first read. Those four functions only ever call
+`Read()`/`Write()`, so they now use the bound stream; `open`/`setConfig`/
+`purgeBuffers` are genuinely serial-specific and were left alone.

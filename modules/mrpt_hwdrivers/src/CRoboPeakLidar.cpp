@@ -40,7 +40,15 @@ CRoboPeakLidar::CRoboPeakLidar() : m_com_port("") { m_sensorLabel = "RPLidar"; }
 -------------------------------------------------------------*/
 CRoboPeakLidar::~CRoboPeakLidar()
 {
-  turnOff();
+  // turnOff() throws when built without RPLidar support: letting that escape
+  // a destructor would abort the process.
+  try
+  {
+    turnOff();
+  }
+  catch (const std::exception&)
+  {
+  }
   disconnect();
 }
 
