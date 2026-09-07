@@ -108,7 +108,13 @@ double TLine3D::distance(const TPoint3D& point) const
     d2 += d[i] * d[i];
     v2 += director[i] * director[i];
   }
-  return sqrt(d2 - (dv * dv) / v2);
+  const double radicand = d2 - (dv * dv) / v2;
+  // For a point lying on the line the radicand is zero in exact arithmetic,
+  // but rounding can make it slightly negative, which would give a NaN.
+  // Note that a degenerate (zero-length) director makes the radicand itself
+  // NaN; that stays NaN here rather than being reported as a zero distance,
+  // since "< 0" is false for a NaN.
+  return sqrt(radicand < .0 ? .0 : radicand);
 }
 void TLine3D::unitarize()
 {

@@ -631,7 +631,8 @@ void CMesh::adjustGridToImageAR()
   ASSERT_(m_isImage);
   const float ycenter = 0.5f * (m_yMin + m_yMax);
   const float xwidth = m_xMax - m_xMin;
-  const float newratio = float(getTextureImage().getWidth()) / float(getTextureImage().getHeight());
+  // The Y span must shrink for a wide image, hence height/width:
+  const float newratio = float(getTextureImage().getHeight()) / float(getTextureImage().getWidth());
   m_yMax = ycenter + 0.5f * newratio * xwidth;
   m_yMin = ycenter - 0.5f * newratio * xwidth;
   CVisualObject::notifyChange();

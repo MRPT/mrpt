@@ -126,7 +126,7 @@ struct PlyProperty
       PLY_DATA_TYPE External_type,
       PLY_DATA_TYPE Internal_type,
       size_t Offset,
-      [[maybe_unused]] bool Is_list = false,
+      bool Is_list = false,
       PLY_DATA_TYPE Count_external = PLY_INVALID,
       PLY_DATA_TYPE Count_internal = PLY_INVALID,
       size_t Count_offset = 0) :
@@ -134,6 +134,7 @@ struct PlyProperty
       external_type(External_type),
       internal_type(Internal_type),
       offset(Offset),
+      is_list(Is_list),
       count_external(Count_external),
       count_internal(Count_internal),
       count_offset(Count_offset)
@@ -1822,10 +1823,21 @@ Entry:
   line    - line containing comment
 ******************************************************************************/
 
+/** Like mrpt::system::trim(), but also dropping the line terminators kept by
+ *  the raw header lines (including the CR of CRLF files). */
+std::string trimHeaderLine(const std::string& s)
+{
+  const char* ws = " \t\r\n";
+  const size_t b = s.find_first_not_of(ws);
+  if (b == std::string::npos) return {};
+  const size_t e = s.find_last_not_of(ws);
+  return s.substr(b, e - b + 1);
+}
+
 void add_comment(PlyFile* plyfile, const string& line)
 {
   /* skip over "comment" and leading spaces and tabs */
-  ply_put_comment(plyfile, mrpt::system::trim(line.substr(7)));
+  ply_put_comment(plyfile, trimHeaderLine(line.substr(7)));
 }
 
 /******************************************************************************
@@ -1839,7 +1851,7 @@ Entry:
 void add_obj_info(PlyFile* plyfile, const string& line)
 {
   /* skip over "obj_info" and leading spaces and tabs */
-  ply_put_obj_info(plyfile, mrpt::system::trim(line.substr(8)));
+  ply_put_obj_info(plyfile, trimHeaderLine(line.substr(8)));
 }
 
 /******************************************************************************
@@ -1874,6 +1886,18 @@ const std::array<PlyProperty, 5> vert_props = {
     PlyProperty("intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, intensity)),
     PlyProperty("timestamp", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex, timestamp)),
 };
+
+/** Per-channel color, as written by most other tools. Kept apart from
+ *  vert_props since the on-file type decides how the values must be scaled. */
+const std::array<PlyProperty, 3> vert_color_props = {
+    PlyProperty("red", PLY_UCHAR, PLY_FLOAT, offsetof(TVertex, r)),
+    PlyProperty("green", PLY_UCHAR, PLY_FLOAT, offsetof(TVertex, g)),
+    PlyProperty("blue", PLY_UCHAR, PLY_FLOAT, offsetof(TVertex, b)),
+};
+
+/** Color channels stored as an integer type use the [0,255] range; float and
+ *  double ones are already normalized to [0,1]. */
+bool plyTypeIsNormalizedFloat(PLY_DATA_TYPE t) { return t == PLY_FLOAT || t == PLY_DOUBLE; }
 
 struct TFace
 {
@@ -1918,8 +1942,8 @@ bool PLY_Importer::loadFromPlyFile(
       /* get the description of the first element */
       int num_elems = 0, nprops = 0;
 
-      // vector<PlyProperty> plist =
-      ply_get_element_description(ply, elem_name, num_elems, nprops);
+      const std::vector<PlyProperty> plist =
+          ply_get_element_description(ply, elem_name, num_elems, nprops);
 
       /* print the name of the element, for debugging */
       // printf ("element %s %d\n", elem_name, num_elems);
@@ -1929,6 +1953,23 @@ bool PLY_Importer::loadFromPlyFile(
 
       /* set up for getting vertex elements */
       for (const auto& vert_prop : vert_props) ply_get_property(ply, elem_name, &vert_prop);
+
+      // Per-channel color, if the file provides it. Each channel keeps its
+      // own scale: nothing stops a file from mixing "uchar red" with
+      // "float green".
+      std::array<float, 3> colorScale = {1.0f, 1.0f, 1.0f};
+      for (size_t ci = 0; ci < vert_color_props.size(); ci++)
+      {
+        const auto& colProp = vert_color_props[ci];
+        for (const auto& fileProp : plist)
+        {
+          if (fileProp.name != colProp.name) continue;
+          ply_get_property(ply, elem_name, &colProp);
+          colorScale[ci] =
+              plyTypeIsNormalizedFloat(fileProp.external_type) ? 1.0f : (1.0f / 255.0f);
+          break;
+        }
+      }
 
       /* grab all the vertex elements */
       this->PLY_import_set_vertex_count(num_elems);
@@ -1940,14 +1981,14 @@ bool PLY_Importer::loadFromPlyFile(
         /* grab an element from the file */
         ply_get_element(ply, reinterpret_cast<void*>(&pt));
         const TPoint3Df xyz(pt.x, pt.y, pt.z);
-        if (pt.intensity != VAL_NOT_SET)
-        {  // Grayscale
-          const TColorf col(pt.intensity, pt.intensity, pt.intensity);
+        if (pt.r != VAL_NOT_SET && pt.g != VAL_NOT_SET && pt.b != VAL_NOT_SET)
+        {  // RGB takes precedence over the grayscale channel, if both exist
+          const TColorf col(pt.r * colorScale[0], pt.g * colorScale[1], pt.b * colorScale[2]);
           this->PLY_import_set_vertex(j, xyz, &col);
         }
-        else if (pt.r != VAL_NOT_SET && pt.g != VAL_NOT_SET && pt.b != VAL_NOT_SET)
-        {  // RGB
-          const TColorf col(pt.r, pt.g, pt.b);
+        else if (pt.intensity != VAL_NOT_SET)
+        {  // Grayscale
+          const TColorf col(pt.intensity, pt.intensity, pt.intensity);
           this->PLY_import_set_vertex(j, xyz, &col);
         }
         else
@@ -2032,7 +2073,7 @@ bool PLY_Exporter::saveToPlyFile(
     {
       // Find out if we have color:
       TPoint3Df pt;
-      bool pt_has_color;
+      bool pt_has_color = false;
       TColorf pt_color;
       this->PLY_export_get_vertex(0, pt, pt_has_color, pt_color);
 
@@ -2041,7 +2082,15 @@ bool PLY_Exporter::saveToPlyFile(
       ply_describe_property(ply, "vertex", &vert_props[1]);  // y
       ply_describe_property(ply, "vertex", &vert_props[2]);  // z
 
-      if (pt_has_color) ply_describe_property(ply, "vertex", &vert_props[3]);  // intensity
+      if (pt_has_color)
+      {
+        ply_describe_property(ply, "vertex", &vert_props[3]);  // intensity
+        // ...plus the per-channel color most other tools expect:
+        for (const auto& colProp : vert_color_props)
+        {
+          ply_describe_property(ply, "vertex", &colProp);
+        }
+      }
     }
 
     ply_element_count(ply, "face", nfaces);
@@ -2061,7 +2110,7 @@ bool PLY_Exporter::saveToPlyFile(
     for (size_t i = 0; i < nverts; i++)
     {
       TPoint3Df pt;
-      bool pt_has_color;
+      bool pt_has_color = false;
       TColorf pt_color;
       this->PLY_export_get_vertex(i, pt, pt_has_color, pt_color);
 
@@ -2071,9 +2120,18 @@ bool PLY_Exporter::saveToPlyFile(
       ver.z = pt.z;
 
       if (pt_has_color)
+      {
         ver.intensity = (1.0f / 3.0f) * (pt_color.R + pt_color.G + pt_color.B);
+        // The "red"/"green"/"blue" properties are declared as uchar, so the
+        // writer converts these [0,1] floats to the [0,255] file range:
+        ver.r = pt_color.R * 255.0f;
+        ver.g = pt_color.G * 255.0f;
+        ver.b = pt_color.B * 255.0f;
+      }
       else
+      {
         ver.intensity = 0.5;
+      }
 
       ply_put_element(ply, (void*)&ver);
     }

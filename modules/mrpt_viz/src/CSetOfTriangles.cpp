@@ -104,7 +104,8 @@ CVisualObject& CSetOfTriangles::setColorA_u8(const uint8_t a)
 void CSetOfTriangles::getPolygons(std::vector<mrpt::math::TPolygon3D>& polys) const
 {
   if (!polygonsUpToDate) updatePolygons();
-  size_t N = m_polygons.size();
+  const size_t N = m_polygons.size();
+  polys.resize(N);
   for (size_t i = 0; i < N; i++) polys[i] = m_polygons[i].poly;
 }
 
@@ -114,17 +115,21 @@ void CSetOfTriangles::updatePolygons() const
   auto& tris = VisualObjectParams_Triangles::m_triangles;
 
   TPolygon3D tmp(3);
-  size_t N = tris.size();
+  const size_t N = tris.size();
   m_polygons.resize(N);
   for (size_t i = 0; i < N; i++)
+  {
+    const TTriangle& t = tris[i];
     for (size_t j = 0; j < 3; j++)
     {
-      const TTriangle& t = tris[i];
       tmp[j].x = t.x(j);
       tmp[j].y = t.y(j);
       tmp[j].z = t.z(j);
-      m_polygons[i] = tmp;
     }
+    // Only assign the completed triangle: TPolygonWithPlane fits a plane in
+    // its constructor, which throws for a partially-filled (degenerate) one.
+    m_polygons[i] = tmp;
+  }
   polygonsUpToDate = true;
   CVisualObject::notifyChange();
 }
@@ -145,7 +150,8 @@ void CSetOfTriangles::insertTriangles(const CSetOfTriangles::Ptr& p)
   auto& tris = VisualObjectParams_Triangles::m_triangles;
   auto& trisOther = p->shaderTrianglesBuffer();
 
-  reserve(tris.size() + trisOther.size());
+  // Note: not this->reserve(), which would re-lock the same mutex.
+  tris.reserve(tris.size() + trisOther.size());
   tris.insert(tris.end(), trisOther.begin(), trisOther.end());
   polygonsUpToDate = false;
   CVisualObject::notifyChange();

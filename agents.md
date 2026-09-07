@@ -202,7 +202,7 @@ A full rebuild of all 33 `modules/*` packages was done with coverage
 instrumentation, followed by a full `colcon test` run (all tests passed) and a
 `gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
 overall (2026-09-07, deduplicated the same way as
-`scripts/coverage_module_report.py`): **77.8% lines**
+`scripts/coverage_module_report.py`): **79.7% lines**
 - still short of goal, dominated by the hardware/GUI modules below.
 The whole table below was re-measured on 2026-09-07; the date tags on some
 rows mark when that module last had a dedicated unit-test pass, and point at
@@ -308,7 +308,6 @@ and accurate path — pick two.
 | mrpt_opengl | 2323/4234 | 54.9% | 35.7% |
 | mrpt_libapps_cli | 1129/1910 | 59.1% | 38.0% |
 | mrpt_libapps_gui | 803/1288 | 62.3% | 45.8% |
-| mrpt_viz (2026-08-02) | 6617/9440 | 70.1% | 51.5% |
 | mrpt_common | 5/7 | 71.4% | 0.0% |
 | mrpt_comms (2026-08-29)» | 687/906 | 75.8% | 54.4% |
 | mrpt_examples_cpp | 99/128 | 77.3% | 46.3% |
@@ -316,6 +315,7 @@ and accurate path — pick two.
 | mrpt_system (2026-08-29)» | 1637/1964 | 83.4% | 59.0% |
 | mrpt_rtti (2026-08-29)» | 151/176 | 85.8% | 78.1% |
 | mrpt_io (2026-08-29)» | 1133/1310 | 86.5% | 70.4% |
+| mrpt_viz (2026-09-07)◆ | 8558/9820 | 87.1% | 67.1% |
 | mrpt_maps (2026-09-07)★ | 10631/11789 | 90.2% | 66.4% |
 | mrpt_containers (2026-07-11) | 1803/1999 | 90.2% | 55.6%‡ |
 | mrpt_nav (2026-08-28)¶ | 5683/6287 | 90.4% | 69.0% |
@@ -1072,7 +1072,7 @@ landmark-map and no-odometry RO-SLAM branches of
    `mrpt_obs/src/gnss_messages_novatel.cpp` and `mrpt_obs/src/carmen_log_tools.cpp`
    also cleared as of 2026-07-10, now at 100% and 88.2% respectively;
    `mrpt_viz/src/PLY_import_export.cpp` and `mrpt_viz/src/COrbitCameraController.cpp`
-   cleared as of 2026-08-02, now at 54.7% and 100% respectively.)
+   cleared as of 2026-08-02, now at 60.0% and 100% respectively.)
 
 5. **Biggest single-file impact (most uncovered lines, worth prioritizing for
    raw percentage gains)**:
@@ -1097,7 +1097,7 @@ landmark-map and no-odometry RO-SLAM branches of
    registration queue noted in » above), `mrpt_io` (86.5%; `CPipe.cpp` needs
    child processes), `mrpt_comms` (75.8%; the rest is `CInterfaceFTDI`, which
    needs a real FTDI device), `mrpt_graphslam` (81.6%, needs a live
-   `CDisplayWindow3D`).
+   `CDisplayWindow3D`), `mrpt_viz` (87.1%, see ◆ below).
    (`mrpt_math`, `mrpt_maps`, `mrpt_obs` and `mrpt_slam` cleared this bucket
    as of 2026-09-07 — see ★ above.)
    (`mrpt_serialization` cleared this bucket as of 2026-08-29, now at 96.6%;
@@ -1107,6 +1107,104 @@ landmark-map and no-odometry RO-SLAM branches of
    remaining gaps being mostly defensive "should never happen" throws and
    libfyaml parser error paths that are difficult to trigger without a
    malformed internal parser state.)
+
+◆ Coverage pass of 2026-09-07 (second pass of the day) on `mrpt_viz`
+(70.1% -> 87.1%).
+
+The two Assimp-based classes (`CAssimpModel` and `CAnimatedAssimpModel`,
+~2000 lines) had no coverage at all. Their models are synthesized by the
+tests themselves: plain geometry as a Wavefront OBJ plus an MTL and a PNG
+texture written to a temp dir, and the rigged one as
+`mrpt_viz/tests/skinned_model.gltf`, a hand-built 2-joint glTF 2.0 file with
+one 3-keyframe rotation animation (a skinned, animated mesh is far easier to
+author by hand in glTF than in any other Assimp-supported format; the binary
+buffer is an inline base64 `data:` URI, so it stays a single text file).
+Both test files guard themselves with `#if MRPT_HAS_ASSIMP`.
+
+`RenderBuffers_unittest.cpp` is the durable guard for the biggest class of
+defect found here: it asserts that every visual object actually fills the
+CPU-side vertex/triangle buffers that `mrpt_opengl` later uploads to the GPU.
+`CSetOfLines`, `CSimpleLine`, `CDisk` and `CFrustum` had lost their
+buffer-filling code in the 2.x -> 3.x viz/opengl split and rendered *nothing*,
+and `CPointCloud` had lost the color half of it (so `enableColorFromX/Y/Z()`
+and `setGradientColors()` did nothing). The `mrpt_opengl` offscreen-rendering
+tests did not catch any of it because their reference images had been
+captured with the defect already present. When such an image legitimately
+changes, regenerate it with
+`MRPT_UPDATE_RENDER_REFERENCES=1 build/mrpt_opengl/bin/test_mrpt_opengl` under
+`xvfb-run`; the switch and the shared `imageDiff()` live in
+`mrpt_opengl/tests/render_reference.h`.
+
+The other real bugs found and fixed:
+
+* `CPointCloudColoured::PLY_export_get_vertex()` had its assignments
+  reversed, writing the (uninitialized) output arguments *into* the cloud
+  instead of reading a point out of it: saving a coloured cloud to PLY zeroed
+  every point in memory and wrote a file of zeros. The pre-existing
+  round-trip test passed because it compared the already-clobbered source
+  against the equally empty reloaded copy - a reminder to assert against
+  literals, not against the object that the code under test just touched.
+
+* The PLY layer never requested `red`/`green`/`blue` from the file, so the
+  importer's RGB branch was dead code and every colored PLY written by
+  another tool lost its color; MRPT only ever wrote a grayscale `intensity`.
+  Both directions now handle per-channel color (integer channels scaled from
+  [0,255], float ones taken as [0,1]), `intensity` is still written for
+  backwards compatibility, and RGB wins over it on load.
+
+* `PlyProperty`'s constructor silently dropped its `is_list` argument, so the
+  face element was written as `property int vertex_indices` instead of
+  `property list uchar int vertex_indices`.
+
+* `CPointCloud::setAllPointsFast()` and
+  `CSetOfTriangles::insertTriangles(const Ptr&)` each took the object's write
+  lock and then called a method that locks the same non-recursive
+  `std::shared_mutex` again: both deadlocked on every call ("Resource
+  deadlock avoided"). Worth grepping for this shape elsewhere.
+
+* `CSetOfTriangles::updatePolygons()` assigned its scratch polygon to the
+  output *inside* the per-vertex loop; `TPolygonWithPlane` fits a plane in
+  its constructor and throws "points are aligned" for a partially filled
+  triangle, so `traceRay()` failed on any mesh with a vertex at the origin.
+  `getPolygons()` also wrote into its output vector without resizing it.
+
+* `CAssimpModel::loadScene()` unconditionally OR'ed `aiProcess_GenSmoothNormals`
+  into the Assimp flags, which Assimp rejects together with the
+  `aiProcess_GenNormals` implied by its "fast" preset, so
+  `LoadFlags::RealTimeFast` never loaded anything.
+
+* `CAssimpModel::serializeFrom()` forwarded its own version number to
+  `CSetOfObjects::serializeFrom()`, which only knows version 0, so no stream
+  holding a current (v1) `CAssimpModel` could be read back; and
+  `CAnimatedAssimpModel` was missing from `registerAllClasses()` entirely.
+  The `SerializeTestOpenGL.WriteReadToMem` list in
+  `mrpt_viz/tests/serializations_unittest.cpp` now covers *every* registered
+  `mrpt::viz` class instead of a subset, which is what would have caught
+  both.
+
+* `CSetOfObjects::internalBoundingBoxLocal()` unioned its children's *local*
+  boxes, ignoring each child's own pose within the set (`Viewport` already
+  composed them the right way), so any composite object reported a box that
+  did not contain its own geometry.
+
+* `CMesh::adjustGridToImageAR()` and `CMeshFast::adjustGridToImageAR()` used
+  width/height where height/width was meant, stretching the grid along the
+  wrong axis.
+
+* `CCamera::serializeTo()` wrote neither the base `CVisualObject` state nor
+  the 6-DOF flag, so a camera placed with `set6DOFMode(true)` + `setPose()`
+  lost both on save/load; `CVectorField3D` likewise dropped its module-based
+  color-mapping settings. Both serialization versions were bumped, keeping
+  the old readers.
+
+What is left in `mrpt_viz`: `PLY_import_export.cpp` (the vendored Stanford
+reader's per-type dispatch, only reachable with files using the less common
+property types), the legacy `serializeFrom()` version branches of most
+classes (the `legacy_serialization.h` technique from ★ above would close
+these), and `CTextMessageCapable::regenerateGLobjects()`, which is dead code:
+`mrpt_opengl`'s `CompiledViewport::renderTextOverlays()` builds the text
+geometry directly from the label strings and never touches the `gl_text`
+members.
 
 Branch coverage lags line coverage everywhere (often by 15-30 points),
 indicating error-handling and edge-case branches are the norm left untested

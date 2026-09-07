@@ -30,8 +30,10 @@
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/stock_objects.h>
 #include <test_mrpt_common.h>
-
+//
 #include <Eigen/Dense>
+
+#include "render_reference.h"
 
 #if MRPT_HAS_OPENGL && MRPT_HAS_EGL
 #define RUN_OFFSCREEN_RENDER_TESTS
@@ -62,14 +64,6 @@
 
 namespace
 {
-float imageDiff(const mrpt::img::CImage& im1, const mrpt::img::CImage& im2)
-{
-  const auto [r1, g1, b1] = im1.getAsRGBMatricesFloat();
-  const auto [r2, g2, b2] = im2.getAsRGBMatricesFloat();
-
-  return (r1 - r2).asEigen().array().abs().sum() + (g1 - g2).asEigen().array().abs().sum() +
-         (b1 - b2).asEigen().array().abs().sum();
-}
 
 void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 {
@@ -264,28 +258,15 @@ void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
   renderer.render_RGBD(*scene, frame, depth);
 
   // Compare with ground truth
-  mrpt::img::CImage gt_frame;
-  bool readOk_rgb = gt_frame.loadFromFile(expected_RGB_img_file);
-
-  EXPECT_TRUE(readOk_rgb);
-
-  const float rgb_diff = imageDiff(gt_frame, frame);
-  std::cout << "rgb_diff=" << rgb_diff << "\n";
-  EXPECT_LT(rgb_diff, 5000.0f);
+  mrpt::opengl::testing::expectMatchesReference(frame, expected_RGB_img_file, 5000.0f, "rgb_diff");
 
   {
     mrpt::img::CImage imDepth;
     depth *= (1.0f / clipMax);
     imDepth.setFromMatrix(depth, true);
 
-    mrpt::img::CImage gt_imDepth;
-    bool readOk_depth = gt_imDepth.loadFromFile(expected_depth_img_file);
-
-    EXPECT_TRUE(readOk_depth);
-
-    const float depth_diff = imageDiff(gt_imDepth, imDepth);
-    std::cout << "depth_diff=" << depth_diff << "\n";
-    EXPECT_LT(depth_diff, 3000.0f);
+    mrpt::opengl::testing::expectMatchesReference(
+        imDepth, expected_depth_img_file, 3000.0f, "depth_diff");
   }
 }
 

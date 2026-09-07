@@ -236,14 +236,18 @@ auto CSetOfObjects::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBox
     {
       continue;
     }
+    // Each child's box must be brought into this container's frame, i.e.
+    // composed with the child's own pose:
+    const auto childBB = o->getBoundingBox();
+    const mrpt::math::TBoundingBoxf childBBf(childBB.min.cast<float>(), childBB.max.cast<float>());
     if (first)
     {
-      bb = o->getBoundingBoxLocalf();
+      bb = childBBf;
       first = false;
     }
     else
     {
-      bb = bb.unionWith(o->getBoundingBoxLocalf());
+      bb = bb.unionWith(childBBf);
     }
   }
 

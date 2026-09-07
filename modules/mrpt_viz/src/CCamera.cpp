@@ -24,15 +24,19 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CCamera, CVisualObject, mrpt::viz)
 
-uint8_t CCamera::serializeGetVersion() const { return 4; }
+uint8_t CCamera::serializeGetVersion() const { return 5; }
 void CCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
+  // v5: the base state, which carries the SE(3) pose used in 6DOF mode:
+  writeToStreamRender(out);
+
   // Save data:
   out << m_pointingX << m_pointingY << m_pointingZ << m_eyeDistance << m_azimuthDeg
       << m_elevationDeg << m_projectiveModel << m_projectiveFOVdeg;
   out << m_pinholeModel;     // v2
   out << m_useNoProjection;  // v3
   out << m_eyeRollDeg;       // v4
+  out << m_6DOFMode;         // v5
 }
 
 void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -43,7 +47,10 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
     case 2:
     case 3:
     case 4:
+    case 5:
     {
+      if (version >= 5) readFromStreamRender(in);
+
       // Load data:
       in >> m_pointingX >> m_pointingY >> m_pointingZ >> m_eyeDistance >> m_azimuthDeg >>
           m_elevationDeg >> m_projectiveModel >> m_projectiveFOVdeg;
@@ -61,6 +68,11 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
         in >> m_eyeRollDeg;
       else
         m_eyeRollDeg = 0;
+
+      if (version >= 5)
+        in >> m_6DOFMode;
+      else
+        m_6DOFMode = false;
     }
     break;
     case 0:
@@ -91,6 +103,7 @@ void CCamera::toYAMLMap(mrpt::containers::yaml& p) const
   MCP_SAVE(p, m_projectiveFOVdeg);
   MCP_SAVE(p, m_useNoProjection);
   MCP_SAVE(p, m_eyeRollDeg);
+  MCP_SAVE(p, m_6DOFMode);
 
   if (m_pinholeModel) p["pinholeModel"] = m_pinholeModel->asYAML();
 }

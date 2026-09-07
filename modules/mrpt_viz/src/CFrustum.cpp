@@ -80,6 +80,63 @@ CFrustum::CFrustum(
   this->setLineWidth(lineWidth);
 }
 
+void CFrustum::updateBuffers() const
+{
+  const std::array<mrpt::math::TPoint3Df, 8> pts = computeFrustumCorners();
+
+  // Edges:
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
+    auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+
+    vbd.clear();
+    if (m_draw_lines)
+    {
+      // The 12 edges of the frustum, as vertex index pairs:
+      const std::array<int, 24> edges = {0, 1, 1, 3, 3, 2, 2, 0, 0, 4, 4, 6,
+                                         6, 2, 3, 7, 7, 6, 4, 5, 5, 7, 5, 1};
+
+      for (size_t k = 0; k < edges.size(); k += 2)
+      {
+        vbd.emplace_back(pts[edges[k]]);
+        vbd.emplace_back(pts[edges[k + 1]]);
+      }
+    }
+    cbd.assign(vbd.size(), getColor_u8());
+  }
+
+  // Faces:
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+    auto& tris = VisualObjectParams_Triangles::m_triangles;
+
+    tris.clear();
+    if (m_draw_planes)
+    {
+      tris.emplace_back(pts[0], pts[2], pts[6]);
+      tris.emplace_back(pts[6], pts[4], pts[0]);
+
+      tris.emplace_back(pts[2], pts[3], pts[7]);
+      tris.emplace_back(pts[7], pts[6], pts[2]);
+
+      tris.emplace_back(pts[4], pts[6], pts[7]);
+      tris.emplace_back(pts[7], pts[5], pts[4]);
+
+      tris.emplace_back(pts[1], pts[5], pts[7]);
+      tris.emplace_back(pts[7], pts[3], pts[1]);
+
+      tris.emplace_back(pts[4], pts[5], pts[1]);
+      tris.emplace_back(pts[1], pts[0], pts[4]);
+
+      for (auto& t : tris)
+      {
+        t.setColor(m_planes_color);
+      }
+    }
+  }
+}
+
 uint8_t CFrustum::serializeGetVersion() const { return 2; }
 void CFrustum::serializeTo(mrpt::serialization::CArchive& out) const
 {

@@ -13,8 +13,11 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/Scene.h>
@@ -381,4 +384,151 @@ TEST(Viewport, LightParameters)
   auto& light = vp->lightParameters();
   light.ssao_enabled = true;
   EXPECT_TRUE(vp->lightParameters().ssao_enabled);
+}
+
+TEST(CCamera, ProjectionModesAndPointingAt)
+{
+  CCamera cam;
+  EXPECT_TRUE(cam.isProjective());
+  EXPECT_FALSE(cam.isOrthogonal());
+  EXPECT_FALSE(cam.isNoProjection());
+  EXPECT_FALSE(cam.hasPinholeModel());
+
+  cam.setOrthogonal();
+  EXPECT_TRUE(cam.isOrthogonal());
+  cam.setProjectiveModel();
+  EXPECT_TRUE(cam.isProjective());
+  cam.setNoProjection();
+  EXPECT_TRUE(cam.isNoProjection());
+
+  mrpt::img::TCamera intrinsics;
+  intrinsics.ncols = 640;
+  intrinsics.nrows = 480;
+  intrinsics.fx(500.0);
+  intrinsics.fy(500.0);
+  intrinsics.cx(320.0);
+  intrinsics.cy(240.0);
+  cam.setProjectiveFromPinhole(intrinsics);
+  ASSERT_TRUE(cam.hasPinholeModel());
+  EXPECT_EQ(cam.getPinholeModel()->ncols, 640U);
+  EXPECT_TRUE(cam.isProjective());
+
+  cam.setProjectiveFOVdeg(75.0f);
+  EXPECT_FLOAT_EQ(cam.getProjectiveFOVdeg(), 75.0f);
+
+  cam.setPointingAt(1.0f, 2.0f, 3.0f);
+  EXPECT_FLOAT_EQ(cam.getPointingAtX(), 1.0f);
+  EXPECT_FLOAT_EQ(cam.getPointingAtY(), 2.0f);
+  EXPECT_FLOAT_EQ(cam.getPointingAtZ(), 3.0f);
+  cam.setPointingAt(mrpt::math::TPoint3D(-1, -2, -3));
+  EXPECT_FLOAT_EQ(cam.getPointingAt().z, -3.0f);
+
+  cam.setZoomDistance(25.0f);
+  cam.setAzimuthDegrees(15.0f);
+  cam.setElevationDegrees(-20.0f);
+  cam.setRollDegrees(5.0f);
+  EXPECT_FLOAT_EQ(cam.getZoomDistance(), 25.0f);
+  EXPECT_FLOAT_EQ(cam.getElevationDegrees(), -20.0f);
+  EXPECT_FLOAT_EQ(cam.getRollDegrees(), 5.0f);
+
+  cam.set6DOFMode(true);
+  EXPECT_TRUE(cam.is6DOFMode());
+
+  // Cameras are not renderable geometry: their local box is empty.
+  const auto bb = cam.getBoundingBoxLocal();
+  EXPECT_EQ(bb.min.x, bb.max.x);
+
+  mrpt::containers::yaml props = mrpt::containers::yaml::Map();
+  cam.toYAMLMap(props);
+  EXPECT_TRUE(props.has("m_projectiveModel"));
+  EXPECT_TRUE(props.has("m_6DOFMode"));
+}
+
+TEST(CCamera, SerializationRoundTrip)
+{
+  CCamera cam;
+  cam.setPose(mrpt::poses::CPose3D(4, 5, 6, 0.1, 0.2, 0.3));
+  cam.setPointingAt(1.0f, 2.0f, 3.0f);
+  cam.setZoomDistance(11.0f);
+  cam.setAzimuthDegrees(33.0f);
+  cam.setElevationDegrees(22.0f);
+  cam.setRollDegrees(7.0f);
+  cam.setProjectiveFOVdeg(66.0f);
+  cam.set6DOFMode(true);
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+  arch << cam;
+  buf.Seek(0);
+
+  CCamera cam2;
+  arch >> cam2;
+  EXPECT_FLOAT_EQ(cam2.getPointingAtY(), 2.0f);
+  EXPECT_FLOAT_EQ(cam2.getZoomDistance(), 11.0f);
+  EXPECT_FLOAT_EQ(cam2.getAzimuthDegrees(), 33.0f);
+  EXPECT_FLOAT_EQ(cam2.getRollDegrees(), 7.0f);
+  EXPECT_FLOAT_EQ(cam2.getProjectiveFOVdeg(), 66.0f);
+  EXPECT_TRUE(cam2.is6DOFMode());
+  // In 6DOF mode the camera placement *is* the object pose, so it must be
+  // part of the stream too:
+  EXPECT_NEAR(cam2.getPose().x, 4.0, 1e-6);
+  EXPECT_NEAR(cam2.getPose().z, 6.0, 1e-6);
+}
+
+TEST(Viewport, RayForPixelCoordNeedsAKnownViewportSize)
+{
+  Scene scene;
+  auto vp = scene.getViewport("main");
+
+  // Never rendered: the viewport size is unknown, so no ray can be built.
+  EXPECT_FALSE(vp->get3DRayForPixelCoord({10, 10}).has_value());
+
+  // ...but the explicit-size overload always works:
+  const mrpt::img::TPixelCoord vpSize(640, 480);
+  mrpt::poses::CPose3D camPose;
+  const auto ray = vp->get3DRayForPixelCoord({320, 240}, vpSize, &camPose);
+  EXPECT_GT(mrpt::math::TVector3D(ray.director).norm(), 0.0);
+
+  // The ray through the center must pass very close to the point the camera
+  // is aimed at:
+  vp->getCamera().setPointingAt(0.f, 0.f, 0.f);
+  const auto center = vp->get3DRayForPixelCoord({320, 240}, vpSize);
+  EXPECT_LT(center.distance({0, 0, 0}), 1e-3);
+
+  // Off-center pixels give a different direction:
+  const auto corner = vp->get3DRayForPixelCoord({0, 0}, vpSize);
+  EXPECT_GT(
+      (mrpt::math::TVector3D(corner.director) - mrpt::math::TVector3D(center.director)).norm(),
+      1e-3);
+}
+
+TEST(Viewport, RayForPixelCoordIn6DOFAndOrthoModes)
+{
+  Scene scene;
+  auto vp = scene.getViewport("main");
+  const mrpt::img::TPixelCoord vpSize(320, 200);
+
+  auto& cam = vp->getCamera();
+  cam.set6DOFMode(true);
+  cam.setPose(mrpt::poses::CPose3D(0, 0, 5, 0, 0, 0));
+
+  mrpt::poses::CPose3D camPose;
+  const auto rayProj = vp->get3DRayForPixelCoord({160, 100}, vpSize, &camPose);
+  EXPECT_NEAR(camPose.z(), 5.0, 1e-6);
+  EXPECT_GT(mrpt::math::TVector3D(rayProj.director).norm(), 0.0);
+
+  cam.setOrthogonal();
+  const auto rayOrtho = vp->get3DRayForPixelCoord({0, 0}, vpSize);
+  EXPECT_GT(mrpt::math::TVector3D(rayOrtho.director).norm(), 0.0);
+}
+
+TEST(Viewport, SetCurrentCameraFromPose)
+{
+  Scene scene;
+  auto vp = scene.getViewport("main");
+
+  mrpt::poses::CPose3D p(1, 2, 3, 0.1, 0.2, 0.3);
+  vp->setCurrentCameraFromPose(p);
+  EXPECT_TRUE(vp->getCamera().is6DOFMode());
+  EXPECT_NEAR(vp->getCamera().getPose().x, 1.0, 1e-6);
 }

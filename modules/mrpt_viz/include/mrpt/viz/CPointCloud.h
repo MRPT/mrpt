@@ -104,6 +104,8 @@ class CPointCloud :
   auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
 
  public:
+  void updateBuffers() const override;
+
   /** @name Read/Write of the list of points to render
     @{ */
 
@@ -120,7 +122,6 @@ class CPointCloud :
   {
     std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
     m_points.resize(N);
-    m_minmax_valid = false;
     wfWriteLock.unlock();
     markAllPointsAsNew();
   }
@@ -143,7 +144,6 @@ class CPointCloud :
     m_points.resize(N);
     for (size_t i = 0; i < N; i++)
       m_points[i] = {static_cast<float>(x[i]), static_cast<float>(y[i]), static_cast<float>(z[i])};
-    m_minmax_valid = false;
     wfWriteLock.unlock();
     markAllPointsAsNew();
   }
@@ -157,9 +157,9 @@ class CPointCloud :
   {
     std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
 
-    this->clear();
+    // Note: not this->clear(), which would re-lock the same mutex.
+    m_points.clear();
     m_points.swap(pts);
-    m_minmax_valid = false;
     wfWriteLock.unlock();
     markAllPointsAsNew();
     CVisualObject::notifyChange();
@@ -221,7 +221,6 @@ class CPointCloud :
   {
     std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
     m_points[i] = {x, y, z};
-    m_minmax_valid = false;
     wfWriteLock.unlock();
     markAllPointsAsNew();
   }
@@ -288,10 +287,6 @@ class CPointCloud :
   void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 
  private:
-  /** Color linear function slope */
-  mutable mrpt::img::TColorf m_col_slop, m_col_slop_inv;
-  mutable bool m_minmax_valid{false};
-
   /** The colors used to interpolate when m_colorFromDepth is true. */
   mrpt::img::TColorf m_colorFromDepth_min = {0, 0, 0}, m_colorFromDepth_max = {0, 0, 1};
 };

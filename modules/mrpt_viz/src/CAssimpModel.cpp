@@ -77,8 +77,10 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
     case 0:
     case 1:
     {
-      // Deserialize base class
-      CSetOfObjects::serializeFrom(in, version);
+      // Deserialize base class. Note that serializeTo() always emits the
+      // base payload with CSetOfObjects' own (unversioned) writer, so the
+      // version passed here is the base's, not this class's.
+      CSetOfObjects::serializeFrom(in, 0);
 
       if (version >= 1)
       {
@@ -198,9 +200,15 @@ void CAssimpModel::loadScene(const std::string& file_name, int flags)
     assimpFlags |= aiProcess_FlipUVs;
   }
 
-  // Always triangulate and generate normals if missing
+  // Always triangulate and generate normals if missing.
+  // Note: aiProcess_GenNormals and aiProcess_GenSmoothNormals are mutually
+  // exclusive for Assimp, so only request the smooth variant if the selected
+  // preset did not already ask for flat normals (the "fast" preset does).
   assimpFlags |= aiProcess_Triangulate;
-  assimpFlags |= aiProcess_GenSmoothNormals;
+  if ((assimpFlags & aiProcess_GenNormals) == 0)
+  {
+    assimpFlags |= aiProcess_GenSmoothNormals;
+  }
   assimpFlags |= aiProcess_JoinIdenticalVertices;
   assimpFlags |= aiProcess_CalcTangentSpace;
 

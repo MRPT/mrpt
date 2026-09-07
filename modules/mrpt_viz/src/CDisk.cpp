@@ -12,8 +12,11 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/round.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/viz/CDisk.h>
+
+#include <cmath>
 
 using namespace mrpt;
 using namespace mrpt::viz;
@@ -21,6 +24,67 @@ using namespace std;
 using mrpt::poses::CPose3D;
 
 IMPLEMENTS_SERIALIZABLE(CDisk, CVisualObject, mrpt::viz)
+
+void CDisk::updateBuffers() const
+{
+  using mrpt::math::TPoint3Df;
+
+  std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Triangles::m_trianglesMtx.data);
+  auto& tris = VisualObjectParams_Triangles::m_triangles;
+
+  tris.clear();
+
+  ASSERT_GT_(m_nSlices, 2U);
+
+  const float dAng = 2 * M_PIf / static_cast<float>(m_nSlices);
+  float a = 0;
+  // unit circle points: cos(ang),sin(ang)
+  std::vector<mrpt::math::TPoint2Df> circle(m_nSlices);
+  for (unsigned int i = 0; i < m_nSlices; i++, a += dAng)
+  {
+    circle[i].x = std::cos(a);
+    circle[i].y = std::sin(a);
+  }
+
+  const float r0 = m_radiusIn;
+  const float r1 = m_radiusOut;
+
+  if (std::abs(r0) < 1e-6f)
+  {
+    // a filled disk:
+    for (unsigned int i = 0; i < m_nSlices; i++)
+    {
+      const auto ip = (i + 1) % m_nSlices;
+      tris.emplace_back(
+          TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, .0f),
+          TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, .0f), TPoint3Df(.0f, .0f, .0f));
+    }
+  }
+  else
+  {
+    // a ring:
+    for (unsigned int i = 0; i < m_nSlices; i++)
+    {
+      const auto ip = (i + 1) % m_nSlices;
+      tris.emplace_back(
+          TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, .0f),
+          TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, .0f),
+          TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f));
+
+      tris.emplace_back(
+          TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, .0f),
+          TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
+          TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f));
+    }
+  }
+
+  // All faces, same color:
+  const auto col = getColor_u8();
+  for (auto& t : tris)
+  {
+    t.setColor(col);
+  }
+}
 
 uint8_t CDisk::serializeGetVersion() const { return 2; }
 void CDisk::serializeTo(mrpt::serialization::CArchive& out) const
