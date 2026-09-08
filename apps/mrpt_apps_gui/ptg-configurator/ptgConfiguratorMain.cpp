@@ -913,15 +913,16 @@ void ptgConfiguratorframe::rebuild3Dview()
         {
           timer.Tic();
           ptg->updateClearance(ox, oy, cd);
-          ptg->updateClearancePost(cd, TP_Obstacles);
           tim_build_cd = timer.Tac();
         }
 
         timer.Tic();
         cd.renderAs3DObject(
-            *gl_TPSpace_clearance, -1.0, 1.0, -1.0, 1.0, 0.05, false /*interpolate*/);
+            *gl_TPSpace_clearance, -1.0, 1.0, -1.0, 1.0, 0.05,
+            mrpt::nav::ClearanceQuery::AtDistance);
         cd.renderAs3DObject(
-            *gl_TPSpace_clearance_interp, -1.0, 1.0, -1.0, 1.0, 0.05, true /*interpolate*/);
+            *gl_TPSpace_clearance_interp, -1.0, 1.0, -1.0, 1.0, 0.05,
+            mrpt::nav::ClearanceQuery::MeanUpToDistance);
         const double tim_render_cd = timer.Tac();
 
         StatusBar1->SetStatusText(
@@ -992,9 +993,9 @@ void ptgConfiguratorframe::rebuild3Dview()
             d = 0;
             done = true;
           }
-          uint32_t step;
-          if (!ptg->getPathStepForDist(static_cast<uint16_t>(k), d, step)) continue;
-          const auto p = ptg->getPathPose(static_cast<uint16_t>(k), step);
+          const auto step = ptg->getPathStepForDist(static_cast<uint16_t>(k), d);
+          if (!step) continue;
+          const auto p = ptg->getPathPose(static_cast<uint16_t>(k), *step);
           ptg->add_robotShape_to_setOfLines(sol, mrpt::poses::CPose2D(p));
         }
       }
@@ -1131,11 +1132,11 @@ void ptgConfiguratorframe::rebuild3Dview()
           1);
 
       // Sanity check: reproject TP_target back to WS:
-      uint32_t check_step;
-      if (ptg->getPathStepForDist(
-              static_cast<uint16_t>(k), norm_d * ptg->getRefDistance(), check_step))
+      if (const auto check_step =
+              ptg->getPathStepForDist(static_cast<uint16_t>(k), norm_d * ptg->getRefDistance());
+          check_step)
       {
-        gl_WS_target_reprojected->setPose(ptg->getPathPose(static_cast<uint16_t>(k), check_step));
+        gl_WS_target_reprojected->setPose(ptg->getPathPose(static_cast<uint16_t>(k), *check_step));
         gl_WS_target_reprojected->setName("WS-Target-reproj");
       }
       else

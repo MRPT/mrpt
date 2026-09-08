@@ -281,8 +281,8 @@ void CHolonomicFullEval::fillFactorScores(
     // Factor [7]: heading alignment with target phi
     if (ptg != nullptr)
     {
-      uint32_t ptgStep = 0;
-      ptg->getPathStepForDist(static_cast<uint16_t>(i), d * ptg->getRefDistance(), ptgStep);
+      const uint32_t ptgStep =
+          ptg->getPathStepForDistClamped(static_cast<uint16_t>(i), d * ptg->getRefDistance());
       const auto ptgPose = ptg->getPathPose(static_cast<uint16_t>(i), ptgStep);
       scores[7] = 1.0 - std::abs(mrpt::math::angDistance(target.phi, ptgPose.phi) / M_PI);
     }
@@ -447,10 +447,11 @@ CHolonomicFullEval::NavOutput CHolonomicFullEval::navigate(const NavInput& ni)
 
     // Speed control: Reduction factors
     // ---------------------------------------------
+    // The last target is the highest-priority one (see NavInput docs):
     const double targetNearnessFactor =
         m_enableApproachTargetSlowDown
             ? std::min(
-                  1.0, ni.targets.front().norm() /
+                  1.0, ni.targets.back().norm() /
                            (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
             : 1.0;
 

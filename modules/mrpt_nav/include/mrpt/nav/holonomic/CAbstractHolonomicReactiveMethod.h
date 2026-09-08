@@ -83,7 +83,11 @@ class CAbstractHolonomicReactiveMethod : public mrpt::serialization::CSerializab
     CHolonomicLogFileRecord::Ptr logRecord;
   };
 
-  static CAbstractHolonomicReactiveMethod::Ptr Factory(const std::string& className) noexcept;
+  /** Class factory from class name, e.g. `"CHolonomicVFF"`.
+   * \return nullptr if the class name is unknown or is not a holonomic
+   * method. */
+  [[nodiscard]] static CAbstractHolonomicReactiveMethod::Ptr Factory(
+      const std::string& className) noexcept;
 
   /** Invokes the holonomic navigation algorithm itself. See the description
    * of the input/output structures for details on each parameter. */
@@ -111,10 +115,6 @@ class CAbstractHolonomicReactiveMethod : public mrpt::serialization::CSerializab
   /** Sets the actual value of this parameter [m]. \sa
    * getTargetApproachSlowDownDistance() */
   virtual void setTargetApproachSlowDownDistance(const double dist) = 0;
-
-  /** Class factory from class name, e.g. `"CHolonomicVFF"`, etc.
-   * \exception std::logic_error On invalid or missing parameters. */
-  static CAbstractHolonomicReactiveMethod* Create(const std::string& className) noexcept;
 
   /** Optionally, sets the associated PTG, just in case a derived class
    * requires this info (not required for methods where the robot kinematics

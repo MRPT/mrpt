@@ -17,19 +17,18 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/planners/nav_plan_geometry_utils.h>
 
+#include <limits>
+
 using namespace mrpt;
 using namespace mrpt::math;
 
-bool mrpt::nav::collision_free_dist_segment_circ_robot(
+std::optional<double> mrpt::nav::collision_free_dist_segment_circ_robot(
     const mrpt::math::TPoint2D& p0,
     const mrpt::math::TPoint2D& p1,
     const double R,
-    const mrpt::math::TPoint2D& o,
-    double& out_col_dist)
+    const mrpt::math::TPoint2D& o)
 {
   using mrpt::square;
-
-  out_col_dist = -1.0;
 
   // Unit vector from start -> end:
   mrpt::math::TPoint2D u = (p1 - p0);
@@ -53,121 +52,76 @@ bool mrpt::nav::collision_free_dist_segment_circ_robot(
   double r1, r2;
   const int nsols = mrpt::math::solve_poly2(a, b, c, r1, r2);
 
-  if (nsols <= 0)
-  {
-    return false;
-  }
+  if (nsols <= 0) return std::nullopt;
+
   double r_min;
   if (nsols == 1)
+  {
     r_min = r1;
+  }
+  else if (r1 < 0 && r2 < 0)
+  {
+    return std::nullopt;
+  }
+  else if (r1 < 0)
+  {
+    r_min = r2;
+  }
+  else if (r2 < 0)
+  {
+    r_min = r1;
+  }
   else
   {
-    if (r1 < 0 && r2 < 0)
-    {
-      return false;
-    }
-    if (r1 < 0)
-    {
-      r_min = r2;
-    }
-    else if (r2 < 0)
-    {
-      r_min = r1;
-    }
-    else
-    {
-      r_min = std::min(r1, r2);
-    }
+    r_min = std::min(r1, r2);
   }
 
-  if (r_min > L)
-  {
-    return false;
-  }
+  if (r_min > L) return std::nullopt;
 
   // A real, valid collision:
-  out_col_dist = r_min;
-  return true;
+  return r_min;
 }
 
-bool mrpt::nav::collision_free_dist_arc_circ_robot(
-    const double arc_radius, const double R, const mrpt::math::TPoint2D& o, double& out_col_dist)
+std::optional<double> mrpt::nav::collision_free_dist_arc_circ_robot(
+    const double arc_radius, const double R, const mrpt::math::TPoint2D& o)
 {
   ASSERT_GT_(std::abs(arc_radius), 1e-10);
-  out_col_dist = -1.0;
 
-  const mrpt::math::TPoint2D ptArcCenter(.0, arc_radius);
-  const double center2obs_dist = (ptArcCenter - o).norm();
-  if (std::abs(center2obs_dist - std::abs(arc_radius)) > R)
+  // Already in collision at the starting pose: zero collision-free distance.
+  if (o.norm() <= R) return .0;
+
+  // The robot center travels along the circle of radius |arc_radius| centered
+  // at (0, arc_radius). It touches the obstacle wherever that circle meets the
+  // one of radius R around the obstacle, so this is a two-circle intersection:
+  const mrpt::math::TPoint2D arcCenter(.0, arc_radius);
+  const double arcR = std::abs(arc_radius);
+
+  const auto v = o - arcCenter;
+  const double d = v.norm();
+
+  // Separate circles, or one strictly inside the other (the latter means the
+  // robot never *stops* enclosing the obstacle, so there is no first touch):
+  if (d > arcR + R || d < std::abs(arcR - R) || d < 1e-10) return std::nullopt;
+
+  const double a = (d * d + arcR * arcR - R * R) / (2 * d);
+  const double h2 = arcR * arcR - a * a;
+  if (h2 < 0) return std::nullopt;
+  const double h = std::sqrt(h2);
+
+  const mrpt::math::TPoint2D pm = arcCenter + v * (a / d);
+  const mrpt::math::TPoint2D perp(-v.y / d, v.x / d);
+
+  // Of the (up to) two touch points, keep the one reached first, measuring the
+  // turned angle from the starting pose (0,0,0) in the direction of motion:
+  double minAngle = std::numeric_limits<double>::max();
+  for (const double side : {+1.0, -1.0})
   {
-    return false;
+    const auto p = pm + perp * (side * h);
+    // (x,y) order is intentionally like this: it makes th=0 at the origin.
+    double th = std::atan2(p.x - arcCenter.x, -(p.y - arcCenter.y));
+    if (arc_radius < 0) th = M_PI - th;
+    mrpt::keep_min(minAngle, mrpt::math::wrapTo2Pi(th));
   }
 
-  // x:
-  const double r = arc_radius;
-  const double discr = (R * r * 2.0 - o.y * r * 2.0 - R * R + o.x * o.x + o.y * o.y) *
-                       (R * r * 2.0 + o.y * r * 2.0 + R * R - o.x * o.x - o.y * o.y);
-  if (discr < 0)
-  {
-    return false;
-  }
-  const double sol_x0 =
-      ((R * R) * (-1.0 / 2.0) + (o.x * o.x) * (1.0 / 2.0) + (o.y * o.y) * (1.0 / 2.0) -
-       (o.y *
-        (-(R * R) * o.y + (R * R) * r + (o.x * o.x) * o.y + (o.x * o.x) * r - (o.y * o.y) * r +
-         o.y * o.y * o.y + o.x * sqrt(discr)) *
-        (1.0 / 2.0)) /
-           (o.y * r * -2.0 + o.x * o.x + o.y * o.y + r * r) +
-       (r *
-        (-(R * R) * o.y + (R * R) * r + (o.x * o.x) * o.y + (o.x * o.x) * r - (o.y * o.y) * r +
-         o.y * o.y * o.y + o.x * sqrt(discr)) *
-        (1.0 / 2.0)) /
-           (o.y * r * -2.0 + o.x * o.x + o.y * o.y + r * r)) /
-      o.x;
-  const double sol_x1 =
-      ((R * R) * (-1.0 / 2.0) + (o.x * o.x) * (1.0 / 2.0) + (o.y * o.y) * (1.0 / 2.0) -
-       (o.y *
-        (-(R * R) * o.y + (R * R) * r + (o.x * o.x) * o.y + (o.x * o.x) * r - (o.y * o.y) * r +
-         o.y * o.y * o.y - o.x * sqrt(discr)) *
-        (1.0 / 2.0)) /
-           (o.y * r * -2.0 + o.x * o.x + o.y * o.y + r * r) +
-       (r *
-        (-(R * R) * o.y + (R * R) * r + (o.x * o.x) * o.y + (o.x * o.x) * r - (o.y * o.y) * r +
-         o.y * o.y * o.y - o.x * sqrt(discr)) *
-        (1.0 / 2.0)) /
-           (o.y * r * -2.0 + o.x * o.x + o.y * o.y + r * r)) /
-      o.x;
-
-  // y:
-  const double sol_y0 =
-      ((R * R) * o.y * (-1.0 / 2.0) + (R * R) * r * (1.0 / 2.0) + (o.x * o.x) * o.y * (1.0 / 2.0) +
-       (o.x * o.x) * r * (1.0 / 2.0) - (o.y * o.y) * r * (1.0 / 2.0) +
-       (o.y * o.y * o.y) * (1.0 / 2.0) + o.x * sqrt(discr) * (1.0 / 2.0)) /
-      (o.y * r * -2.0 + o.x * o.x + o.y * o.y + r * r);
-  const double sol_y1 =
-      ((R * R) * o.y * (-1.0 / 2.0) + (R * R) * r * (1.0 / 2.0) + (o.x * o.x) * o.y * (1.0 / 2.0) +
-       (o.x * o.x) * r * (1.0 / 2.0) - (o.y * o.y) * r * (1.0 / 2.0) +
-       (o.y * o.y * o.y) * (1.0 / 2.0) - o.x * sqrt(discr) * (1.0 / 2.0)) /
-      (o.y * r * -2.0 + o.x * o.x + o.y * o.y + r * r);
-
-  const mrpt::math::TPoint2D sol0(sol_x0, sol_y0), sol1(sol_x1, sol_y1);
-
-  double th0 = atan2(
-      sol0.x - ptArcCenter.x,
-      -(sol0.y - ptArcCenter.y));  // (x,y) order is intentionally like this!
-  double th1 = atan2(sol1.x - ptArcCenter.x, -(sol1.y - ptArcCenter.y));
-
-  if (r > 0)
-  {
-    th0 = mrpt::math::wrapTo2Pi(th0);
-    th1 = mrpt::math::wrapTo2Pi(th1);
-  }
-  else
-  {
-    th0 = mrpt::math::wrapTo2Pi(M_PI - th0);
-    th1 = mrpt::math::wrapTo2Pi(M_PI - th1);
-  }
-
-  out_col_dist = std::abs(r) * std::min(th0, th1);
-  return true;
+  return arcR * minAngle;
 }

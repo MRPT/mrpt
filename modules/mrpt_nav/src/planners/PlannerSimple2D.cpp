@@ -295,15 +295,14 @@ static bool reconstructPath(
 /*---------------------------------------------------------------
             computePath
   ---------------------------------------------------------------*/
-void PlannerSimple2D::computePath(
+std::optional<std::deque<math::TPoint2D>> PlannerSimple2D::computePath(
     const COccupancyGridMap2D& theMap,
     const CPose2D& origin_,
     const CPose2D& target_,
-    std::deque<math::TPoint2D>& path,
-    bool& notFound,
     float maxSearchPathLength) const
 {
-  path.clear();
+  std::deque<math::TPoint2D> path;
+  bool notFound = false;
 
   const TPoint2D origin = TPoint2D(origin_.asTPose());
   const TPoint2D target = TPoint2D(target_.asTPose());
@@ -314,19 +313,14 @@ void PlannerSimple2D::computePath(
     return p.x > theMap.getXMin() && p.x < theMap.getXMax() && p.y > theMap.getYMin() &&
            p.y < theMap.getYMax();
   };
-  if (!isInsideGrid(origin) || !isInsideGrid(target))
-  {
-    notFound = true;
-    return;
-  }
+  if (!isInsideGrid(origin) || !isInsideGrid(target)) return std::nullopt;
 
   // Special case: origin and target in the same cell:
   if (theMap.x2idx(origin.x) == theMap.x2idx(target.x) &&
       theMap.y2idx(origin.y) == theMap.y2idx(target.y))
   {
     path.emplace_back(target.x, target.y);
-    notFound = false;
-    return;
+    return path;
   }
 
   const int size_x = theMap.getSizeX();
@@ -437,15 +431,15 @@ void PlannerSimple2D::computePath(
 
   } while (!notFound && searching);
 
-  if (notFound) return;
+  if (notFound) return std::nullopt;
 
   // Reconstruct path from convergence cell and subsample it:
   if (!reconstructPath(
           grid, size_x, passCellFound_x, passCellFound_y, origin, target, theMap,
           minStepInReturnedPath, maxSearchPathLength, path))
   {
-    notFound = true;
+    return std::nullopt;
   }
 
-  // That's all!! :-)
+  return path;
 }

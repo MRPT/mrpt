@@ -33,6 +33,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CSetOfLines.h>
 
+#include <cmath>
 #include <fstream>
 #include <memory>
 
@@ -363,7 +364,7 @@ TEST(PTGBase, score_priority_and_clearance_resolution_setters)
 {
   auto ptg = make_diffdrive_ptg("CPTG_DiffDrive_C");
 
-  ptg->setScorePriorty(0.25);
+  ptg->setScorePriority(0.25);
   EXPECT_NEAR(ptg->getScorePriority(), 0.25, 1e-12);
 
   ptg->setClearanceStepCount(7);
@@ -397,14 +398,10 @@ TEST(PTGBase, clearance_diagram_is_filled_from_obstacles)
   ptg->updateClearance(2.0, 1.0, cd);
   ptg->updateClearance(-2.0, -1.0, cd);
 
-  std::vector<double> tp_obs;
-  ptg->initTPObstacles(tp_obs);
-  ptg->updateClearancePost(cd, tp_obs);
-
   // Clearance values must be finite and non-negative:
   for (uint16_t k = 0; k < ptg->getPathCount(); k++)
   {
-    const double c = cd.getClearance(k, 0.5, false /*integrate_over_path*/);
+    const double c = cd.getClearance(k, 0.5, mrpt::nav::ClearanceQuery::AtDistance);
     EXPECT_TRUE(std::isfinite(c)) << "k=" << k;
     EXPECT_GE(c, .0) << "k=" << k;
   }
@@ -652,8 +649,10 @@ TEST(PTGVariants, points_beyond_the_reference_distance_map_outside_the_unit_rang
 TEST(PTGVariants, getPathStepForDist_beyond_the_path_end_fails)
 {
   auto ptg = make_diffdrive_ptg("CPTG_DiffDrive_C");
-  uint32_t step = 0;
-  EXPECT_FALSE(ptg->getPathStepForDist(0, 1e6 /*way beyond refDistance*/, step));
+  EXPECT_FALSE(ptg->getPathStepForDist(0, 1e6 /*way beyond refDistance*/).has_value());
+
+  // ...but the clamped variant still gives the last step of the path:
+  EXPECT_EQ(ptg->getPathStepForDistClamped(0, 1e6), ptg->getPathStepCount(0) - 1);
 }
 
 TEST(PTGVariants, deinitialized_ptgs_reject_path_queries)
@@ -661,4 +660,105 @@ TEST(PTGVariants, deinitialized_ptgs_reject_path_queries)
   auto ptg = make_diffdrive_ptg("CPTG_DiffDrive_C");
   ptg->deinitialize();
   EXPECT_ANY_THROW(ptg->getPathStepCount(0));
+}
+
+// ---------------------------------------------------------------------------
+//  Regression tests for the TP-Space math model
+// ---------------------------------------------------------------------------
+TEST(PTGHoloBlend, path_distance_matches_the_path_poses_with_a_speed_expression)
+{
+  // With `expr_V` the cruise speed differs per direction, and the arc length
+  // reported by getPathDist() must follow the poses of getPathPose(), not the
+  // nominal V_MAX.
+  mrpt::config::CConfigFileMemory cfg;
+  fill_holo_cfg(cfg, "PTG");
+  cfg.write("PTG", "expr_V", "V_MAX*(1.0-0.5*abs(dir)/pi)");
+
+  auto ptg = CParameterizedTrajectoryGenerator::CreatePTG("CPTG_Holo_Blend", cfg, "PTG", "");
+  ASSERT_TRUE(ptg);
+  ptg->initialize(std::string(), false);
+
+  for (uint16_t k = 0; k < ptg->getPathCount(); k++)
+  {
+    const size_t nSteps = ptg->getPathStepCount(k);
+    ASSERT_GT(nSteps, 2U);
+
+    // Numerically integrate the pose sequence and compare with getPathDist():
+    double arcLen = .0;
+    auto prev = ptg->getPathPose(k, 0);
+    for (uint32_t s = 1; s < nSteps; s++)
+    {
+      const auto cur = ptg->getPathPose(k, s);
+      arcLen += std::hypot(cur.x - prev.x, cur.y - prev.y);
+      prev = cur;
+
+      const double reported = ptg->getPathDist(k, s);
+      EXPECT_NEAR(reported, arcLen, 0.02 + 0.02 * arcLen)
+          << "k=" << k << " step=" << s << " (dir="
+          << mrpt::RAD2DEG(CParameterizedTrajectoryGenerator::Index2alpha(k, ptg->getPathCount()))
+          << " deg)";
+    }
+  }
+}
+
+TEST(PTGHoloBlend, path_time_step_is_a_per_instance_parameter)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  fill_holo_cfg(cfg, "PTG");
+  cfg.write("PTG", "path_time_step", 0.02);
+
+  auto ptg = CParameterizedTrajectoryGenerator::CreatePTG("CPTG_Holo_Blend", cfg, "PTG", "");
+  ptg->initialize(std::string(), false);
+  EXPECT_NEAR(ptg->getPathStepDuration(), 0.02, 1e-12);
+
+  // Instances are independent of each other:
+  mrpt::config::CConfigFileMemory cfg2;
+  fill_holo_cfg(cfg2, "PTG");
+  auto ptgDefault =
+      CParameterizedTrajectoryGenerator::CreatePTG("CPTG_Holo_Blend", cfg2, "PTG", "");
+  ptgDefault->initialize(std::string(), false);
+  EXPECT_NEAR(ptgDefault->getPathStepDuration(), CPTG_Holo_Blend::DEFAULT_PATH_TIME_STEP, 1e-12);
+
+  // ...and it survives a config + serialization round trip:
+  mrpt::config::CConfigFileMemory cfgOut;
+  ptg->saveToConfigFile(cfgOut, "OUT");
+  auto ptgB = CParameterizedTrajectoryGenerator::CreatePTG("CPTG_Holo_Blend", cfgOut, "OUT", "");
+  EXPECT_NEAR(ptgB->getPathStepDuration(), 0.02, 1e-12);
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+  arch << *ptg;
+  buf.Seek(0);
+  CPTG_Holo_Blend ptgC;
+  arch >> ptgC;
+  EXPECT_NEAR(ptgC.getPathStepDuration(), 0.02, 1e-12);
+
+  // A non-positive step is rejected:
+  auto ptgD = std::make_shared<CPTG_Holo_Blend>();
+  EXPECT_ANY_THROW(ptgD->setPathTimeStep(.0));
+}
+
+TEST(PTGBase, clearance_diagram_keys_are_normalized_tps_distances)
+{
+  auto ptg = make_diffdrive_ptg("CPTG_DiffDrive_C");
+
+  mrpt::nav::ClearanceDiagram cd;
+  ptg->initClearanceDiagram(cd);
+
+  EXPECT_EQ(cd.get_decimated_num_paths(), ptg->getClearanceDecimatedPaths());
+
+  for (size_t dk = 0; dk < cd.get_decimated_num_paths(); dk++)
+  {
+    const auto& samples = cd.get_path_clearance_decimated(dk);
+    ASSERT_FALSE(samples.empty());
+    EXPECT_LE(samples.size(), ptg->getClearanceStepCount());
+    for (const auto& [dist, clearance] : samples)
+    {
+      EXPECT_GT(dist, .0) << "decimated k=" << dk;
+      // Grid-based PTGs stop at the first sample at-or-past refDistance, so
+      // the last key can overshoot 1.0 by a fraction of one step:
+      EXPECT_LE(dist, 1.01) << "decimated k=" << dk;
+      EXPECT_EQ(clearance, 1.0);
+    }
+  }
 }

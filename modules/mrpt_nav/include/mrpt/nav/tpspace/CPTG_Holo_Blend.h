@@ -57,7 +57,8 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
   size_t getPathStepCount(uint16_t k) const override;
   mrpt::math::TPose2D getPathPose(uint16_t k, uint32_t step) const override;
   double getPathDist(uint16_t k, uint32_t step) const override;
-  bool getPathStepForDist(uint16_t k, double dist, uint32_t& out_step) const override;
+  using CParameterizedTrajectoryGenerator::getPathStepForDist;
+  [[nodiscard]] std::optional<uint32_t> getPathStepForDist(uint16_t k, double dist) const override;
   double getPathStepDuration() const override;
   double getMaxLinVel() const override { return V_MAX; }
   double getMaxAngVel() const override { return W_MAX; }
@@ -65,13 +66,19 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
   void updateTPObstacleSingle(
       double ox, double oy, uint16_t k, double& tp_obstacle_k) const override;
 
-  /** Duration of each PTG "step"  (default: 10e-3=10 ms) */
-  static double PATH_TIME_STEP;
-  /** Mathematical "epsilon", to detect ill-conditioned situations (e.g. 1/0)
-   * (Default: 1e-4) */
-  static double eps;
+  /** Mathematical "epsilon", to detect ill-conditioned situations (e.g. 1/0) */
+  static constexpr double EPSILON = 1e-4;
+
+  /** Default value of the per-instance path time step [s] \sa setPathTimeStep */
+  static constexpr double DEFAULT_PATH_TIME_STEP = 10e-3;
+
+  /** Duration of each PTG "step" [s] (config key: `path_time_step`).
+   *  Shorter steps mean a finer path discretization at a proportionally
+   *  higher CPU and memory cost. \sa getPathStepDuration() */
+  void setPathTimeStep(double dt);
 
  protected:
+  double m_pathTimeStep{DEFAULT_PATH_TIME_STEP};
   double T_ramp_max{-1.0};
   double V_MAX{-1.0}, W_MAX{-1.0};
   double turningRadiusReference{0.30};

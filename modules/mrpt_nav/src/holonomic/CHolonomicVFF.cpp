@@ -104,12 +104,12 @@ CHolonomicVFF::NavOutput CHolonomicVFF::navigate(const NavInput& ni)
 
   // Speed control: Reduction factors
   // ---------------------------------------------
-  if (m_enableApproachTargetSlowDown)
-  {
-    const double targetNearnessFactor =
-        std::min(1.0, trg.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist));
-    no.desiredSpeed = ni.maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
-  }
+  const double targetNearnessFactor =
+      m_enableApproachTargetSlowDown
+          ? std::min(1.0, trg.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
+          : 1.0;
+
+  no.desiredSpeed = ni.maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
 
   return no;
 }
