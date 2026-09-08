@@ -407,3 +407,61 @@ TEST(MultiObjOptScalarization, combined_score_formula)
   ASSERT_TRUE(best.has_value());
   EXPECT_EQ(*best, 1u);
 }
+
+// ============================================================================
+// Regression tests: speed reduction factors
+// ============================================================================
+TEST(HolonomicMethods, disabling_target_slowdown_still_yields_motion)
+{
+  // With the approach-target slow-down disabled, every method must still
+  // command a non-zero speed (only the *target* factor is dropped, not the
+  // obstacle one).
+  for (const char* className : {"CHolonomicVFF", "CHolonomicND", "CHolonomicFullEval"})
+  {
+    auto method = CAbstractHolonomicReactiveMethod::Factory(className);
+    ASSERT_TRUE(method) << className;
+
+    auto ni = makeNavInput(64, 0.0 /*straight ahead*/, 0.05 /*very close target*/);
+    mrpt::nav::ClearanceDiagram cd;
+    cd.resize(64, 8);
+    for (size_t k = 0; k < 8; k++) cd.get_path_clearance_decimated(k)[1.0] = 1.0;
+    ni.clearance = &cd;
+
+    method->enableApproachTargetSlowDown(true);
+    const double slowedSpeed = method->navigate(ni).desiredSpeed;
+
+    method->enableApproachTargetSlowDown(false);
+    const double fullSpeed = method->navigate(ni).desiredSpeed;
+
+    EXPECT_GT(fullSpeed, .0) << className;
+    EXPECT_LE(fullSpeed, ni.maxRobotSpeed + 1e-9) << className;
+    // A target this close must be approached more slowly when enabled:
+    EXPECT_LT(slowedSpeed, fullSpeed) << className;
+  }
+}
+
+TEST(HolonomicMethods, the_last_target_drives_the_approach_slowdown)
+{
+  // NavInput documents that the *last* target has the highest priority.
+  for (const char* className : {"CHolonomicVFF", "CHolonomicND", "CHolonomicFullEval"})
+  {
+    auto method = CAbstractHolonomicReactiveMethod::Factory(className);
+    ASSERT_TRUE(method) << className;
+
+    mrpt::nav::ClearanceDiagram cd;
+    cd.resize(64, 8);
+    for (size_t k = 0; k < 8; k++) cd.get_path_clearance_decimated(k)[1.0] = 1.0;
+
+    // Same pair of targets, swapped: only the last one may matter.
+    auto niFar = makeNavInput(64, 0.0, 0.05);
+    niFar.targets.emplace_back(0.9, 0.0, 0.0);  // far target last
+    niFar.clearance = &cd;
+
+    auto niNear = makeNavInput(64, 0.0, 0.9);
+    niNear.targets.emplace_back(0.05, 0.0, 0.0);  // near target last
+    niNear.clearance = &cd;
+
+    EXPECT_GT(method->navigate(niFar).desiredSpeed, method->navigate(niNear).desiredSpeed)
+        << className;
+  }
+}

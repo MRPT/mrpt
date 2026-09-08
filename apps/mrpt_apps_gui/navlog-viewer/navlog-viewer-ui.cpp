@@ -856,9 +856,9 @@ void NavlogViewerApp::updateVisualization()
 
             for (double d = min_shape_dists; d < max_dist; d += min_shape_dists)
             {
-              uint32_t step;
-              if (!ptg->getPathStepForDist(selected_k, d, step)) continue;
-              const auto p = ptg->getPathPose(selected_k, step);
+              const auto step = ptg->getPathStepForDist(selected_k, d);
+              if (!step) continue;
+              const auto p = ptg->getPathPose(selected_k, *step);
               ptg->add_robotShape_to_setOfLines(*gl_path, mrpt::poses::CPose2D(p));
             }
           }
@@ -967,9 +967,9 @@ void NavlogViewerApp::updateVisualization()
 
             for (double d = min_shape_dists; d < max_dist; d += min_shape_dists)
             {
-              uint32_t step;
-              if (!ptg->getPathStepForDist(selected_k, d, step)) continue;
-              const auto p = ptg->getPathPose(selected_k, step);
+              const auto step = ptg->getPathStepForDist(selected_k, d);
+              if (!step) continue;
+              const auto p = ptg->getPathPose(selected_k, *step);
               ptg->add_robotShape_to_setOfLines(*gl_path, mrpt::poses::CPose2D(p));
             }
           }

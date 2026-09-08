@@ -1298,3 +1298,83 @@ command sender each `dynamic_cast`ed to `CSerialPort` and asserted on it, so
 any other stream aborted on the first read. Those four functions only ever call
 `Read()`/`Write()`, so they now use the bound stream; `open`/`setConfig`/
 `purgeBuffers` are genuinely serial-specific and were left alone.
+
+## 11. mrpt_nav API modernization + TP-Space math fixes (2026-09-08)
+
+An API/mathematics pass over `mrpt_nav`, separate from the coverage pass of ¶.
+Nothing here is a coverage-driven change; the test count went 246 -> 251.
+
+**Out-param APIs replaced by `std::optional`** (old signature kept as a
+`[[deprecated]]` inline shim unless noted), matching what `inverseMap_WS2TP()`
+already did:
+
+* `CParameterizedTrajectoryGenerator::getPathStepForDist(k, dist)`. The old
+  3-arg form also wrote the *last* path step into `out_step` when it returned
+  false, and two call sites silently relied on that; the explicit
+  `getPathStepForDistClamped()` now covers it.
+* `nav_plan_geometry_utils`: `collision_free_dist_{segment,arc}_circ_robot()`.
+* `PlannerSimple2D::computePath()`.
+
+**Other API changes**: `ClearanceDiagram::getClearance()`'s `bool
+integrate_over_path` became `enum class ClearanceQuery` (see below);
+`CPTG_Holo_Blend::PATH_TIME_STEP` (a mutable global) became the per-instance
+`path_time_step` config key + `setPathTimeStep()`, and `eps` became
+`EPSILON`, both no-shim breaks; `setScorePriorty()` -> `setScorePriority()`;
+`updateClearancePost()` (a documented no-op since 2017) and
+`CAbstractHolonomicReactiveMethod::Create()` (declared in the header but
+**never defined anywhere** -- calling it was a link error) were deleted.
+
+**Real bugs fixed** -- each has a regression test that fails without the fix:
+
+1. `ClearanceDiagram::getClearance()`'s two modes were **swapped** relative to
+   its own docs, to every call site's comment, and to the ptg-configurator's
+   UI label; `bool=false` averaged over the path and `bool=true` returned the
+   spot value. The reactive navigator's `clearance` / `clearance_path` score
+   factors were therefore each other's values (only visible with
+   `evaluate_clearance=true`, off by default).
+2. `initClearanceDiagram()` keyed the clearance samples by the raw path
+   distance **in meters** while every consumer treats those keys as normalized
+   [0,1] TPS distances (`getClearance()` queries, the `dist_over_path > 0.5`
+   collision heuristic, and `CAbstractPTGBasedReactive`'s own
+   `dist_eucl_min` producer, which builds the same map keyed `i/num_steps`).
+3. Same function sampled steps `0, incr, 2*incr...` while
+   `evalClearanceSingleObstacle()` evaluates `incr, 2*incr, ...`, so every
+   clearance value was filed under a distance shorter than the one it was
+   measured at. Both loops now use the same steps.
+4. `CHolonomicVFF::navigate()` assigned `desiredSpeed` **inside**
+   `if (m_enableApproachTargetSlowDown)`, so with the slow-down disabled it
+   returned speed 0 and the robot never moved. ND/FullEval had it right.
+5. `CHolonomicFullEval` used `ni.targets.front()` for the approach slow-down;
+   `NavInput` documents the *last* target as the highest-priority one.
+6. `CPTG_Holo_Blend` used `V_MAX` for the post-ramp cruise speed in
+   `getPathDist()`, `getPathStepForDist()` and `updateTPObstacleSingle()`,
+   but `getPathPose()` advances at the direction-dependent
+   `internal_get_v(dir)`. With an `expr_V` set, poses and distances disagreed.
+   `inverseMap_WS2TP()` likewise pinned `T_ramp = T_ramp_max` instead of
+   `internal_get_T_ramp(alpha)`; it is now re-evaluated per Newton iteration
+   (the Jacobian ignores dT/dalpha, which only costs iterations, not accuracy,
+   since the residual is exact).
+7. `CAbstractPTGBasedReactive::calc_move_candidate_scores()` fed the
+   *normalized* collision-free distance to `getPathStepForDist()`, which takes
+   pseudometers (the ETA factor 300 lines below does `d * ref_dist` for the
+   very same call). The "end of trajectory" behind `robpose_*`,
+   `dist_eucl_final` and the target slow-down check was therefore read
+   `ref_distance` times too early along the path -- 0.74 m instead of 4 m in
+   the regression test.
+8. `collision_free_dist_arc_circ_robot()`'s closed form divided by `o.x`, so
+   **any** obstacle on the turn-center axis returned NaN. Rewritten as a
+   two-circle intersection: agrees with the old formula to 1.7e-11 over 21k
+   random collision cases, and it now returns 0 when the robot starts already
+   in collision instead of the *exit* distance.
+
+**Math model**: `calc_trans_distance_t_below_Tramp_abc_numeric()` went from a
+15-interval trapezoidal rule to 16-interval Simpson (same number of function
+evaluations, ~25x lower mean relative error), plus an exact branch for the
+degenerate `b^2-4ac ~= 0` case where the integrand is `sqrt(a)*|t-r|`.
+
+`CPTG_Holo_Blend::m_pathStepCountCache` is expressed in path time steps, so
+every write to `m_pathTimeStep` now goes through `setPathTimeStep()`, which
+clears it and rejects non-finite/non-positive values (including from a stream).
+
+New console example `mrpt_examples_cpp/nav_ptg_tpspace` walks the whole
+WS -> TP-Space -> velocity-command round trip headlessly.

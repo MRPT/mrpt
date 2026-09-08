@@ -38,12 +38,11 @@ TEST(PlannerSimple2D, findPath)
   pathPlanning.robotRadius = 0.30f;
 
   {
-    std::deque<mrpt::math::TPoint2D> thePath;
-    bool notFound;
     const mrpt::poses::CPose2D origin(20, -110, 0), target(90, 40, 0);
-    pathPlanning.computePath(gridmap, origin, target, thePath, notFound);
+    const auto optPath = pathPlanning.computePath(gridmap, origin, target);
 
-    EXPECT_FALSE(notFound);
+    ASSERT_TRUE(optPath.has_value());
+    const auto& thePath = *optPath;
     EXPECT_EQ(thePath.size(), 416U);
     EXPECT_NEAR(thePath.at(0).x, origin.x(), 1.0);
     EXPECT_NEAR(thePath.at(0).y, origin.y(), 1.0);
@@ -51,13 +50,12 @@ TEST(PlannerSimple2D, findPath)
     EXPECT_NEAR(thePath.back().y, target.y(), 1.0);
   }
   {
-    std::deque<mrpt::math::TPoint2D> thePath;
-    bool notFound;
     const mrpt::poses::CPose2D origin(90, 40, 0), target(20, -110, 0);
-    pathPlanning.computePath(
-        gridmap, origin, target, thePath, notFound, 300.0f /* Max. distance */);
+    const auto optPath =
+        pathPlanning.computePath(gridmap, origin, target, 300.0f /* Max. distance */);
 
-    EXPECT_FALSE(notFound);
+    ASSERT_TRUE(optPath.has_value());
+    const auto& thePath = *optPath;
     EXPECT_EQ(thePath.size(), 416U);
     EXPECT_NEAR(thePath.at(0).x, origin.x(), 1.0);
     EXPECT_NEAR(thePath.at(0).y, origin.y(), 1.0);
@@ -66,22 +64,14 @@ TEST(PlannerSimple2D, findPath)
   }
 
   {
-    std::deque<mrpt::math::TPoint2D> thePath;
-    bool notFound;
     const mrpt::poses::CPose2D origin(20, -110, 0), target(90, 40, 0);
-    pathPlanning.computePath(gridmap, origin, target, thePath, notFound, 10.0f /* Max. distance */);
-
-    EXPECT_TRUE(notFound);
+    EXPECT_FALSE(
+        pathPlanning.computePath(gridmap, origin, target, 10.0f /* Max. distance */).has_value());
   }
 
   {
-    std::deque<mrpt::math::TPoint2D> thePath;
-    bool notFound;
     const mrpt::poses::CPose2D origin(20, -110, 0), target(900, 40, 0);
-    pathPlanning.computePath(
-        gridmap, origin, target, thePath, notFound, 100.0f /* Max. distance */);
-
-    EXPECT_TRUE(notFound);
-    EXPECT_EQ(thePath.size(), 0U);
+    EXPECT_FALSE(
+        pathPlanning.computePath(gridmap, origin, target, 100.0f /* Max. distance */).has_value());
   }
 }

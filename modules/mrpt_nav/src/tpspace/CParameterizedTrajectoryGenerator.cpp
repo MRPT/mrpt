@@ -475,6 +475,9 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(
 
 void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(ClearanceDiagram& cd) const
 {
+  ASSERT_GT_(refDistance, .0);
+  ASSERT_GT_(m_clearance_num_points, 0);
+
   cd.resize(m_alphaValuesCount, m_clearance_decimated_paths);
   for (unsigned int decim_k = 0; decim_k < m_clearance_decimated_paths; decim_k++)
   {
@@ -483,13 +486,15 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(Clearanc
     const double numStepsPerIncr =
         (static_cast<double>(numPathSteps) - 1.0) / double(m_clearance_num_points);
 
+    // Create one entry per pose that evalClearanceSingleObstacle() will
+    // visit, so each key is the (normalized) distance at which its own
+    // clearance value is measured:
     auto& cl_path = cd.get_path_clearance_decimated(decim_k);
-    for (double step_pointer_dbl = 0.0; step_pointer_dbl < static_cast<double>(numPathSteps);
-         step_pointer_dbl += numStepsPerIncr)
+    for (unsigned int i = 1; i <= m_clearance_num_points; i++)
     {
-      const size_t step = static_cast<size_t>(mrpt::round(step_pointer_dbl));
+      const auto step = static_cast<uint32_t>(mrpt::round(i * numStepsPerIncr));
       const double dist_over_path =
-          this->getPathDist(static_cast<uint16_t>(real_k), static_cast<uint32_t>(step));
+          this->getPathDist(static_cast<uint16_t>(real_k), step) / refDistance;
       cl_path[dist_over_path] = 1.0;  // create entry in map<>
     }
   }
@@ -512,12 +517,6 @@ void CParameterizedTrajectoryGenerator::updateClearance(
   }
 }
 
-void CParameterizedTrajectoryGenerator::updateClearancePost(
-    ClearanceDiagram& /*cd*/, const std::vector<double>& /*TP_obstacles*/) const
-{
-  // Used only when in approx mode (Removed 30/01/2017)
-}
-
 void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
     const double ox,
     const double oy,
@@ -535,7 +534,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
     std::cerr << "[CParameterizedTrajectoryGenerator::"
                  "evalClearanceSingleObstacle] Warning: k="
               << k << " numPathSteps is only=" << numPathSteps
-              << " num of clearance steps=" << inout_realdist2clearance.size();
+              << " num of clearance steps=" << inout_realdist2clearance.size() << "\n";
     return;
   }
 

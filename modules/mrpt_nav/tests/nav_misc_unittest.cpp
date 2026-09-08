@@ -37,6 +37,7 @@
 
 #include <cmath>
 #include <fstream>
+#include <tuple>
 
 using namespace mrpt::nav;
 
@@ -102,27 +103,70 @@ TEST(ClearanceDiagram, resize_rejects_more_decimated_than_actual_paths)
 TEST(ClearanceDiagram, getClearance_of_an_empty_diagram_is_zero)
 {
   ClearanceDiagram cd;
-  EXPECT_EQ(cd.getClearance(0, 1.0, false), .0);
-  EXPECT_EQ(cd.getClearance(0, 1.0, true), .0);
+  EXPECT_EQ(cd.getClearance(0, 1.0, ClearanceQuery::AtDistance), .0);
+  EXPECT_EQ(cd.getClearance(0, 1.0, ClearanceQuery::MeanUpToDistance), .0);
 }
 
-TEST(ClearanceDiagram, getClearance_averages_or_integrates_over_the_path)
+TEST(ClearanceDiagram, getClearance_of_a_path_with_no_samples_is_zero)
+{
+  ClearanceDiagram cd;
+  cd.resize(20, 5);  // resized, but never populated by initClearanceDiagram()
+  ASSERT_FALSE(cd.empty());
+  EXPECT_EQ(cd.getClearance(0, 1.0, ClearanceQuery::AtDistance), .0);
+  EXPECT_EQ(cd.getClearance(0, 1.0, ClearanceQuery::MeanUpToDistance), .0);
+}
+
+TEST(ClearanceDiagram, getClearance_honors_the_query_mode)
+{
+  auto cd = make_clearance_diagram();  // samples: 0.25->0.5, 0.5->0.4, 1.0->0.3
+
+  // "AtDistance" is the sample that covers the query distance:
+  EXPECT_NEAR(cd.getClearance(0, 0.1, ClearanceQuery::AtDistance), 0.5, 1e-9);
+  EXPECT_NEAR(cd.getClearance(0, 0.5, ClearanceQuery::AtDistance), 0.3, 1e-9);
+
+  // "MeanUpToDistance" averages every sample up to (and including) that one:
+  EXPECT_NEAR(cd.getClearance(0, 0.1, ClearanceQuery::MeanUpToDistance), 0.5, 1e-9);
+  EXPECT_NEAR(
+      cd.getClearance(0, 0.5, ClearanceQuery::MeanUpToDistance), (0.5 + 0.4 + 0.3) / 3, 1e-9);
+
+  // A query beyond every stored sample uses them all:
+  EXPECT_NEAR(cd.getClearance(0, 100.0, ClearanceQuery::AtDistance), 0.3, 1e-9);
+  EXPECT_NEAR(
+      cd.getClearance(0, 100.0, ClearanceQuery::MeanUpToDistance), (0.5 + 0.4 + 0.3) / 3, 1e-9);
+
+  EXPECT_ANY_THROW(std::ignore = cd.getClearance(1000, 0.5, ClearanceQuery::AtDistance));
+}
+
+TEST(ClearanceDiagram, getClearance_deprecated_bool_overload_matches_its_documentation)
 {
   auto cd = make_clearance_diagram();
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  EXPECT_NEAR(
+      cd.getClearance(0, 0.5, false /*integrate_over_path*/),
+      cd.getClearance(0, 0.5, ClearanceQuery::AtDistance), 1e-12);
+  EXPECT_NEAR(
+      cd.getClearance(0, 0.5, true /*integrate_over_path*/),
+      cd.getClearance(0, 0.5, ClearanceQuery::MeanUpToDistance), 1e-12);
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+}
 
-  // Averaged over the path up to (and including) the first sample past the
-  // query distance:
-  const double avg = cd.getClearance(0, 0.5, false /*integrate_over_path*/);
-  EXPECT_NEAR(avg, (0.5 + 0.4 + 0.3) / 3, 1e-9);
+TEST(ClearanceDiagram, resize_to_a_single_decimated_path_is_well_defined)
+{
+  ClearanceDiagram cd;
+  cd.resize(20, 1);
+  EXPECT_EQ(cd.get_decimated_num_paths(), 1U);
+  EXPECT_EQ(cd.decimated_k_to_real_k(0), 0U);
+  for (size_t k = 0; k < 20; k++) EXPECT_EQ(cd.real_k_to_decimated_k(k), 0U);
 
-  // "integrate_over_path" keeps only the last visited sample:
-  const double last = cd.getClearance(0, 0.5, true);
-  EXPECT_NEAR(last, 0.3, 1e-9);
-
-  // A query beyond every stored sample averages them all:
-  EXPECT_NEAR(cd.getClearance(0, 100.0, false), (0.5 + 0.4 + 0.3) / 3, 1e-9);
-
-  EXPECT_ANY_THROW(cd.getClearance(1000, 0.5, false));
+  ClearanceDiagram cd1;
+  cd1.resize(1, 1);
+  EXPECT_EQ(cd1.real_k_to_decimated_k(0), 0U);
+  EXPECT_EQ(cd1.decimated_k_to_real_k(0), 0U);
 }
 
 TEST(ClearanceDiagram, path_clearance_accessors)
@@ -152,7 +196,9 @@ TEST(ClearanceDiagram, serialization_roundtrip)
 
   EXPECT_EQ(cd2.get_actual_num_paths(), cd.get_actual_num_paths());
   EXPECT_EQ(cd2.get_decimated_num_paths(), cd.get_decimated_num_paths());
-  EXPECT_NEAR(cd2.getClearance(0, 1.0, false), cd.getClearance(0, 1.0, false), 1e-12);
+  EXPECT_NEAR(
+      cd2.getClearance(0, 1.0, ClearanceQuery::AtDistance),
+      cd.getClearance(0, 1.0, ClearanceQuery::AtDistance), 1e-12);
 }
 
 TEST(ClearanceDiagram, clear_resets_everything)
@@ -169,18 +215,22 @@ TEST(ClearanceDiagram, renderAs3DObject_fills_a_mesh)
   auto cd = make_clearance_diagram();
 
   mrpt::viz::CMesh mesh;
-  cd.renderAs3DObject(mesh, -1.0, 1.0, -1.0, 1.0, 0.25, false);
+  cd.renderAs3DObject(mesh, -1.0, 1.0, -1.0, 1.0, 0.25, ClearanceQuery::AtDistance);
   EXPECT_GT(mesh.getxMax(), mesh.getxMin());
 
   // An empty diagram renders nothing, but must not throw:
   ClearanceDiagram empty;
   mrpt::viz::CMesh mesh2;
-  EXPECT_NO_THROW(empty.renderAs3DObject(mesh2, -1.0, 1.0, -1.0, 1.0, 0.25, true));
+  EXPECT_NO_THROW(
+      empty.renderAs3DObject(mesh2, -1.0, 1.0, -1.0, 1.0, 0.25, ClearanceQuery::MeanUpToDistance));
 
   // Degenerate rendering bounds are rejected:
-  EXPECT_ANY_THROW(cd.renderAs3DObject(mesh, -1.0, 1.0, -1.0, 1.0, .0 /*cell_res*/, false));
-  EXPECT_ANY_THROW(cd.renderAs3DObject(mesh, 1.0, -1.0, -1.0, 1.0, 0.25, false));
-  EXPECT_ANY_THROW(cd.renderAs3DObject(mesh, -1.0, 1.0, 1.0, -1.0, 0.25, false));
+  EXPECT_ANY_THROW(
+      cd.renderAs3DObject(mesh, -1.0, 1.0, -1.0, 1.0, .0 /*cell_res*/, ClearanceQuery::AtDistance));
+  EXPECT_ANY_THROW(
+      cd.renderAs3DObject(mesh, 1.0, -1.0, -1.0, 1.0, 0.25, ClearanceQuery::AtDistance));
+  EXPECT_ANY_THROW(
+      cd.renderAs3DObject(mesh, -1.0, 1.0, 1.0, -1.0, 0.25, ClearanceQuery::AtDistance));
 }
 
 // ---------------------------------------------------------------------------
@@ -188,73 +238,98 @@ TEST(ClearanceDiagram, renderAs3DObject_fills_a_mesh)
 // ---------------------------------------------------------------------------
 TEST(NavGeomUtils, straight_segment_hits_an_obstacle_ahead)
 {
-  double d = .0;
   // Robot of radius 0.5 moving along +x; obstacle at (2,0):
-  EXPECT_TRUE(collision_free_dist_segment_circ_robot({0, 0}, {5, 0}, 0.5, {2, 0}, d));
-  EXPECT_NEAR(d, 1.5, 1e-9);
+  const auto d = collision_free_dist_segment_circ_robot({0, 0}, {5, 0}, 0.5, {2, 0});
+  ASSERT_TRUE(d.has_value());
+  EXPECT_NEAR(*d, 1.5, 1e-9);
 }
 
 TEST(NavGeomUtils, straight_segment_misses_a_lateral_obstacle)
 {
-  double d = .0;
-  EXPECT_FALSE(collision_free_dist_segment_circ_robot({0, 0}, {5, 0}, 0.5, {2, 3}, d));
-  EXPECT_LT(d, .0);
+  EXPECT_FALSE(collision_free_dist_segment_circ_robot({0, 0}, {5, 0}, 0.5, {2, 3}).has_value());
 }
 
 TEST(NavGeomUtils, straight_segment_ignores_obstacles_behind_and_beyond)
 {
-  double d = .0;
   // Behind the start point:
-  EXPECT_FALSE(collision_free_dist_segment_circ_robot({0, 0}, {5, 0}, 0.5, {-3, 0}, d));
+  EXPECT_FALSE(collision_free_dist_segment_circ_robot({0, 0}, {5, 0}, 0.5, {-3, 0}).has_value());
   // Beyond the segment end:
-  EXPECT_FALSE(collision_free_dist_segment_circ_robot({0, 0}, {1, 0}, 0.5, {9, 0}, d));
+  EXPECT_FALSE(collision_free_dist_segment_circ_robot({0, 0}, {1, 0}, 0.5, {9, 0}).has_value());
 }
 
 TEST(NavGeomUtils, straight_segment_requires_a_non_degenerate_segment)
 {
-  double d = .0;
-  EXPECT_ANY_THROW(collision_free_dist_segment_circ_robot({0, 0}, {0, 0}, 0.5, {2, 0}, d));
+  EXPECT_ANY_THROW(
+      std::ignore = collision_free_dist_segment_circ_robot({0, 0}, {0, 0}, 0.5, {2, 0}));
 }
 
 TEST(NavGeomUtils, arc_path_hits_an_obstacle_on_the_arc)
 {
   // Arc turning left with radius 2 m: the trajectory passes through (2,2).
-  double d = .0;
-  const bool hit = collision_free_dist_arc_circ_robot(2.0, 0.5, {2.0, 2.0}, d);
-  ASSERT_TRUE(hit);
-  EXPECT_GT(d, .0);
+  const auto d = collision_free_dist_arc_circ_robot(2.0, 0.5, {2.0, 2.0});
+  ASSERT_TRUE(d.has_value());
+  EXPECT_GT(*d, .0);
   // A quarter of the circle is pi/2*R ~= 3.14 m; the collision happens a bit
   // earlier because of the robot radius:
-  EXPECT_LT(d, 2.0 * M_PI / 2);
+  EXPECT_LT(*d, 2.0 * M_PI / 2);
 }
 
 TEST(NavGeomUtils, arc_path_misses_a_far_away_obstacle)
 {
-  double d = .0;
-  EXPECT_FALSE(collision_free_dist_arc_circ_robot(2.0, 0.5, {50.0, 50.0}, d));
-  EXPECT_LT(d, .0);
+  EXPECT_FALSE(collision_free_dist_arc_circ_robot(2.0, 0.5, {50.0, 50.0}).has_value());
 }
 
 TEST(NavGeomUtils, arc_path_misses_an_obstacle_inside_the_turning_circle)
 {
-  double d = .0;
   // The center of the turning circle is at (0,2): an obstacle right there is
   // never touched by the arc.
-  EXPECT_FALSE(collision_free_dist_arc_circ_robot(2.0, 0.1, {0.0, 2.0}, d));
+  EXPECT_FALSE(collision_free_dist_arc_circ_robot(2.0, 0.1, {0.0, 2.0}).has_value());
 }
 
 TEST(NavGeomUtils, arc_path_works_for_right_turns_too)
 {
-  double d = .0;
-  const bool hit = collision_free_dist_arc_circ_robot(-2.0, 0.5, {2.0, -2.0}, d);
-  ASSERT_TRUE(hit);
-  EXPECT_GT(d, .0);
+  const auto d = collision_free_dist_arc_circ_robot(-2.0, 0.5, {2.0, -2.0});
+  ASSERT_TRUE(d.has_value());
+  EXPECT_GT(*d, .0);
 }
 
 TEST(NavGeomUtils, arc_path_requires_a_non_degenerate_radius)
 {
-  double d = .0;
-  EXPECT_ANY_THROW(collision_free_dist_arc_circ_robot(.0, 0.5, {2.0, 2.0}, d));
+  EXPECT_ANY_THROW(std::ignore = collision_free_dist_arc_circ_robot(.0, 0.5, {2.0, 2.0}));
+}
+
+TEST(NavGeomUtils, arc_path_handles_obstacles_on_the_turn_center_axis)
+{
+  // Obstacles with x==0 used to make the closed-form solution divide by zero
+  // and return NaN. Check a few of them against a brute-force sampling of the
+  // arc:
+  for (const auto [r, R, oy] :
+       {std::make_tuple(2.0, 0.5, 4.2), std::make_tuple(2.0, 0.5, -0.3),
+        std::make_tuple(-3.0, 0.4, -5.8), std::make_tuple(1.0, 0.5, 1.9)})
+  {
+    const auto d = collision_free_dist_arc_circ_robot(r, R, {0.0, oy});
+    ASSERT_TRUE(d.has_value()) << "r=" << r << " oy=" << oy;
+    EXPECT_TRUE(std::isfinite(*d)) << "r=" << r << " oy=" << oy;
+
+    // Brute force: first arc length at which the robot center is within R of
+    // the obstacle. The center follows (|r|*sin(th), r*(1-cos(th))).
+    const double arcR = std::abs(r);
+    double bruteForce = -1.0;
+    constexpr int N = 200000;
+    for (int i = 0; i <= N; i++)
+    {
+      const double th = 2.0 * M_PI * i / N;
+      const double cx = arcR * std::sin(th);
+      const double cy = r * (1.0 - std::cos(th));
+      if (std::hypot(cx - 0.0, cy - oy) <= R)
+      {
+        bruteForce = arcR * th;
+        break;
+      }
+    }
+    ASSERT_GE(bruteForce, .0) << "r=" << r << " oy=" << oy;
+    EXPECT_NEAR(*d, bruteForce, 1e-3) << "r=" << r << " oy=" << oy;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -791,19 +866,10 @@ TEST(PlannerSimple2D, out_of_grid_endpoints_are_reported_as_not_found)
   planner.robotRadius = 0.15f;
 
   const mrpt::poses::CPose2D inside(0, 0, 0), outside(100, 100, 0);
-  std::deque<mrpt::math::TPoint2D> path;
-  bool notFound = false;
 
-  planner.computePath(grid, outside, inside, path, notFound);
-  EXPECT_TRUE(notFound);
-
-  notFound = false;
-  planner.computePath(grid, inside, outside, path, notFound);
-  EXPECT_TRUE(notFound);
-
-  notFound = false;
-  planner.computePath(grid, outside, outside, path, notFound);
-  EXPECT_TRUE(notFound);
+  EXPECT_FALSE(planner.computePath(grid, outside, inside).has_value());
+  EXPECT_FALSE(planner.computePath(grid, inside, outside).has_value());
+  EXPECT_FALSE(planner.computePath(grid, outside, outside).has_value());
 }
 
 TEST(PlannerSimple2D, origin_and_target_in_the_same_cell)
@@ -813,14 +879,11 @@ TEST(PlannerSimple2D, origin_and_target_in_the_same_cell)
   grid.fill(0.6f);
 
   PlannerSimple2D planner;
-  std::deque<mrpt::math::TPoint2D> path;
-  bool notFound = true;
 
-  planner.computePath(
-      grid, mrpt::poses::CPose2D(0.01, 0.01, 0), mrpt::poses::CPose2D(0.02, 0.02, 0), path,
-      notFound);
+  const auto path = planner.computePath(
+      grid, mrpt::poses::CPose2D(0.01, 0.01, 0), mrpt::poses::CPose2D(0.02, 0.02, 0));
 
-  EXPECT_FALSE(notFound);
-  ASSERT_EQ(path.size(), 1U);
-  EXPECT_NEAR(path.front().x, 0.02, 1e-9);
+  ASSERT_TRUE(path.has_value());
+  ASSERT_EQ(path->size(), 1U);
+  EXPECT_NEAR(path->front().x, 0.02, 1e-9);
 }
