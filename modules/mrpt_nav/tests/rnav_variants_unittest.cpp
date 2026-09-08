@@ -420,3 +420,39 @@ TEST(RNavVariants, changing_the_robot_shape_after_initialization)
   tooFew.add_vertex(1, 0);
   EXPECT_ANY_THROW(f.nav->changeRobotShape(tooFew));
 }
+
+TEST(RNavVariants, end_of_trajectory_pose_is_taken_at_the_right_path_distance)
+{
+  // `robpose_*` and `dist_eucl_final` are read off the PTG path at the
+  // collision-free distance, which is normalized, while getPathStepForDist()
+  // takes pseudometers: a missing `* ref_distance` picks a step ~ref_distance
+  // times too early, leaving the reported "end of trajectory" almost on top of
+  // the robot.
+  RNavFixture f;
+  f.build(make_rnav_config(false, false, .0, true));
+  f.nav->enableKeepLogRecords(true);
+
+  const mrpt::math::TPoint2D trg(3.0, .0);  // free path, well within ref_distance
+  f.run(trg, 1 /*a single navigation step is enough*/);
+
+  CLogFileRecord rec;
+  f.nav->getLastLogRecord(rec);
+  ASSERT_FALSE(rec.infoPerPTG.empty());
+
+  const auto& factors = rec.infoPerPTG.at(0).evalFactors;
+  ASSERT_EQ(factors.count("robpose_x"), 1U);
+  ASSERT_EQ(factors.count("collision_free_distance"), 1U);
+
+  const double refDist = f.nav->getPTG(0)->getRefDistance();
+  const double colFree = factors.at("collision_free_distance");
+  const mrpt::math::TPoint2D endPose(factors.at("robpose_x"), factors.at("robpose_y"));
+
+  // Nothing blocks the way, so the candidate runs up to the target:
+  EXPECT_GT(colFree, 0.5);
+
+  // The end-of-trajectory pose must be about `colFree * refDist` metres away
+  // along the path, hence at least that far in a straight line minus the
+  // path's curvature. Anything near zero means the wrong step was picked.
+  EXPECT_GT(endPose.norm(), 0.5 * colFree * refDist)
+      << "colFree=" << colFree << " refDist=" << refDist << " end=" << endPose.asString();
+}

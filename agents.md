@@ -1354,7 +1354,14 @@ integrate_over_path` became `enum class ClearanceQuery` (see below);
    `internal_get_T_ramp(alpha)`; it is now re-evaluated per Newton iteration
    (the Jacobian ignores dT/dalpha, which only costs iterations, not accuracy,
    since the residual is exact).
-7. `collision_free_dist_arc_circ_robot()`'s closed form divided by `o.x`, so
+7. `CAbstractPTGBasedReactive::calc_move_candidate_scores()` fed the
+   *normalized* collision-free distance to `getPathStepForDist()`, which takes
+   pseudometers (the ETA factor 300 lines below does `d * ref_dist` for the
+   very same call). The "end of trajectory" behind `robpose_*`,
+   `dist_eucl_final` and the target slow-down check was therefore read
+   `ref_distance` times too early along the path -- 0.74 m instead of 4 m in
+   the regression test.
+8. `collision_free_dist_arc_circ_robot()`'s closed form divided by `o.x`, so
    **any** obstacle on the turn-center axis returned NaN. Rewritten as a
    two-circle intersection: agrees with the old formula to 1.7e-11 over 21k
    random collision cases, and it now returns 0 when the robot starts already
@@ -1364,6 +1371,10 @@ integrate_over_path` became `enum class ClearanceQuery` (see below);
 15-interval trapezoidal rule to 16-interval Simpson (same number of function
 evaluations, ~25x lower mean relative error), plus an exact branch for the
 degenerate `b^2-4ac ~= 0` case where the integrand is `sqrt(a)*|t-r|`.
+
+`CPTG_Holo_Blend::m_pathStepCountCache` is expressed in path time steps, so
+every write to `m_pathTimeStep` now goes through `setPathTimeStep()`, which
+clears it and rejects non-finite/non-positive values (including from a stream).
 
 New console example `mrpt_examples_cpp/nav_ptg_tpspace` walks the whole
 WS -> TP-Space -> velocity-command round trip headlessly.

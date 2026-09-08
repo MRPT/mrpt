@@ -911,11 +911,12 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
   const int move_k = static_cast<int>(cm.PTG->alpha2index(cm.direction));
   const double target_WS_d = WS_Target.norm();
 
-  // Coordinates of the trajectory end for the given PTG and "alpha":
+  // Coordinates of the trajectory end for the given PTG and "alpha".
+  // Note `d` is normalized, while getPathStepForDist() takes pseudometers:
   const double d = std::min(in_TPObstacles[move_k], 0.99 * target_d_norm);
-  const auto nStep = cm.PTG->getPathStepForDist(static_cast<uint16_t>(move_k), d);
-  ASSERT_(nStep.has_value());
-  const mrpt::math::TPose2D pose = cm.PTG->getPathPose(static_cast<uint16_t>(move_k), *nStep);
+  const uint32_t nStep =
+      cm.PTG->getPathStepForDistClamped(static_cast<uint16_t>(move_k), d * ref_dist);
+  const mrpt::math::TPose2D pose = cm.PTG->getPathPose(static_cast<uint16_t>(move_k), nStep);
 
   // Make sure that the target slow-down is honored, as seen in real-world
   // Euclidean space

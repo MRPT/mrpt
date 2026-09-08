@@ -20,6 +20,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTimeLogger.h>
 
+#include <cmath>
+
 using namespace mrpt::nav;
 using namespace mrpt::system;
 
@@ -50,8 +52,10 @@ mrpt::system::CTimeLogger tl_holo("CPTG_Holo_Blend");
 
 void CPTG_Holo_Blend::setPathTimeStep(double dt)
 {
-  ASSERT_GT_(dt, .0);
+  ASSERTMSG_(dt > .0 && std::isfinite(dt), "path_time_step must be finite and positive");
   m_pathTimeStep = dt;
+  // The cached step counts are expressed in these very steps:
+  m_pathStepCountCache.clear();
 }
 
 // As a macro instead of a function (uglier) to allow for const variables
@@ -198,7 +202,7 @@ void CPTG_Holo_Blend::loadDefaultParams()
   CPTG_RobotShape_Circular::loadDefaultParams();
 
   m_alphaValuesCount = 31;
-  m_pathTimeStep = DEFAULT_PATH_TIME_STEP;
+  setPathTimeStep(DEFAULT_PATH_TIME_STEP);
   T_ramp_max = 0.9;
   V_MAX = 1.0;
   W_MAX = mrpt::DEG2RAD(40);
@@ -214,8 +218,11 @@ void CPTG_Holo_Blend::loadFromConfigFile(
   MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(v_max_mps, double, V_MAX, cfg, sSection);
   MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(w_max_dps, double, W_MAX, cfg, sSection);
   MRPT_LOAD_CONFIG_VAR(turningRadiusReference, double, cfg, sSection);
-  MRPT_LOAD_HERE_CONFIG_VAR(path_time_step, double, m_pathTimeStep, cfg, sSection);
-  ASSERT_GT_(m_pathTimeStep, .0);
+  {
+    double pathTimeStep = m_pathTimeStep;
+    MRPT_LOAD_HERE_CONFIG_VAR(path_time_step, double, pathTimeStep, cfg, sSection);
+    setPathTimeStep(pathTimeStep);
+  }
 
   MRPT_LOAD_HERE_CONFIG_VAR(expr_V, string, expr_V, cfg, sSection);
   MRPT_LOAD_HERE_CONFIG_VAR(expr_W, string, expr_W, cfg, sSection);
@@ -297,10 +304,11 @@ void CPTG_Holo_Blend::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
       {
         in >> expr_V >> expr_W >> expr_T_ramp;
       }
-      m_pathTimeStep = DEFAULT_PATH_TIME_STEP;
-      if (version >= 5)
       {
-        in >> m_pathTimeStep;
+        double pathTimeStep = DEFAULT_PATH_TIME_STEP;
+        if (version >= 5) in >> pathTimeStep;
+        // Never trust a stream: an invalid step would be divided by later.
+        setPathTimeStep(pathTimeStep);
       }
       break;
     default:
