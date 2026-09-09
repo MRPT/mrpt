@@ -447,7 +447,7 @@ TEST(BayesTest, fastDrawSample_staticSampleSize)
     EXPECT_LT(idx, 5u);
   }
   // Calling once more than prepared must throw:
-  EXPECT_THROW(pdf.fastDrawSample(opts), std::exception);
+  EXPECT_THROW((void)pdf.fastDrawSample(opts), std::exception);
 }
 
 TEST(BayesTest, fastDrawSample_adaptiveSampleSize_multinomial)
@@ -500,7 +500,7 @@ TEST(BayesTest, fastDrawSample_adaptiveSampleSize_wrongMethod_Throws)
   CParticleFilter::TParticleFilterOptions drawOpts;
   drawOpts.adaptiveSampleSize = true;
   drawOpts.resamplingMethod = CParticleFilter::TParticleResamplingAlgorithm::Residual;
-  EXPECT_THROW(pdf.fastDrawSample(drawOpts), std::exception);
+  EXPECT_THROW((void)pdf.fastDrawSample(drawOpts), std::exception);
 }
 
 // ---------------------------------------------------------------------------

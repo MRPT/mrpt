@@ -330,6 +330,11 @@ class Landmark2DKF :
   }
 
  protected:
+  // Overriding the 6-argument overload below hides the base class'
+  // deprecated 4-argument one; bring it back into scope for the test in
+  // Landmark2DKF_LegacyInverseModel that overrides that overload instead.
+  using CKalmanFilterCapable<2, 2, 2, 2, double>::OnInverseObservationModel;
+
   void OnGetAction(KFArray_ACT& out_u) const override
   {
     out_u[0] = actionX;
@@ -645,6 +650,11 @@ namespace
 class Landmark2DKF_LegacyInverseModel : public Landmark2DKF
 {
  protected:
+  // Overriding the deprecated 4-argument overload below hides Landmark2DKF's
+  // 6-argument one; bring it back into scope (unused here, but avoids
+  // -Woverloaded-virtual and keeps the base's overload set intact).
+  using Landmark2DKF::OnInverseObservationModel;
+
   void OnInverseObservationModel(
       const KFArray_OBS& in_z,
       KFArray_FEAT& out_yn,

@@ -51,8 +51,8 @@ TEST(CHistogram, addAndCount)
   h.add(100);
   EXPECT_EQ(h.getBinCount(9), 1U);
 
-  EXPECT_THROW(h.getBinCount(10), std::exception);
-  EXPECT_THROW(h.getBinRatio(10), std::exception);
+  EXPECT_THROW((void)h.getBinCount(10), std::exception);
+  EXPECT_THROW((void)h.getBinRatio(10), std::exception);
 
   h.clear();
   EXPECT_EQ(h.getBinCount(0), 0U);
@@ -106,6 +106,6 @@ TEST(CHistogram, createWithFixedWidth)
   h.getHistogram(x, hits);
   EXPECT_EQ(hits.size(), 5U);
 
-  EXPECT_THROW(CHistogram::createWithFixedWidth(10.0, 0.0, 2.0), std::exception);
-  EXPECT_THROW(CHistogram::createWithFixedWidth(0.0, 10.0, 0.0), std::exception);
+  EXPECT_THROW((void)CHistogram::createWithFixedWidth(10.0, 0.0, 2.0), std::exception);
+  EXPECT_THROW((void)CHistogram::createWithFixedWidth(0.0, 10.0, 0.0), std::exception);
 }

@@ -321,6 +321,10 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   {
     MRPT_START
     setSize(static_cast<size_type>(m.rows()), static_cast<size_type>(m.cols()));
+#pragma GCC diagnostic push
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wstringop-overread"
+#endif
     for (Index r = 0; r < rows(); r++)
     {
       for (Index c = 0; c < cols(); c++)
@@ -328,6 +332,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
         (*this)(r, c) = static_cast<T>(m(r, c));
       }
     }
+#pragma GCC diagnostic pop
     MRPT_END
   }
 

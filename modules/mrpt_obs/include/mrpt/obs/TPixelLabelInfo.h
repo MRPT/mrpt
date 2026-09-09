@@ -64,7 +64,7 @@ struct TPixelLabelInfoBase
     {
       if (it->second == name)
       {
-        return it->first;
+        return static_cast<int>(it->first);
       }
     }
     return -1;

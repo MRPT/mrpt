@@ -46,7 +46,10 @@ struct TTwist2D :
   static TTwist2D FromVector(const Vector& v)
   {
     TTwist2D o;
-    for (int i = 0; i < 3; i++) o[i] = v[i];
+    for (size_t i = 0; i < 3; i++)
+    {
+      o[i] = v[static_cast<decltype(v.size())>(i)];
+    }
     return o;
   }
 

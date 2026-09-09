@@ -26,7 +26,7 @@ T interpolate(const T& x, const VECTOR& ys, const T& x0, const T& x1)
   const size_t i = int((x - x0) / Ax);
   if (i >= N - 1) return ys[N - 1];
   const T Ay = ys[i + 1] - ys[i];
-  return ys[i] + (x - (x0 + i * Ax)) * Ay / Ax;
+  return ys[i] + (x - (x0 + static_cast<T>(i) * Ax)) * Ay / Ax;
   MRPT_END
 }
 

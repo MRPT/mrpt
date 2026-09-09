@@ -156,7 +156,7 @@ TYPED_TEST(TPoint2DTests, norms)
   EXPECT_NEAR(double(u.norm()), 1.0, 1e-5);
   EXPECT_NEAR(double(u.x), 0.6, 1e-5);
 
-  EXPECT_THROW(P(0, 0).unitarize(), std::exception);
+  EXPECT_THROW((void)P(0, 0).unitarize(), std::exception);
 }
 
 TYPED_TEST(TPoint2DTests, stringConversion)

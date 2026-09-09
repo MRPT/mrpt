@@ -283,7 +283,7 @@ class CPose3DQuat :
   }
 
   /** Read-only [] operator */
-  double operator[](const std::size_t i) const
+  const double& operator[](const std::size_t i) const
   {
     switch (i)
     {

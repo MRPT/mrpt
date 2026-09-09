@@ -45,7 +45,7 @@ struct TNodeAnnotations
   }
 
   /// Used inside the operator==() of derived types:
-  virtual bool equal(const TNodeAnnotations& other) const { return true; }
+  virtual bool equal(const TNodeAnnotations& /*other*/) const { return true; }
 
   /**\brief Create and return a copy of the TNodeAnnotations object at hand.
    *
@@ -57,7 +57,7 @@ struct TNodeAnnotations
    *
    * \return True if setting the annotations part is successful.
    */
-  bool setAnnots(const self_t& other) { return true; }
+  bool setAnnots(const self_t& /*other*/) { return true; }
   /**\brief Indicates if this is a dummy TNodeAnnotations struct or if it does
    * contain meaningful data
    */

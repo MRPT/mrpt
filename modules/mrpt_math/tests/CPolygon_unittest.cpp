@@ -163,6 +163,6 @@ TEST(CPolygon, VertexAccessorsCheckBounds)
   p.add_vertex(1.0, 2.0);
   EXPECT_NEAR(p.get_vertex_x(0), 1.0, 1e-9);
   EXPECT_NEAR(p.get_vertex_y(0), 2.0, 1e-9);
-  EXPECT_THROW(p.get_vertex_x(1), std::exception);
-  EXPECT_THROW(p.get_vertex_y(1), std::exception);
+  EXPECT_THROW((void)p.get_vertex_x(1), std::exception);
+  EXPECT_THROW((void)p.get_vertex_y(1), std::exception);
 }

@@ -179,7 +179,11 @@ TEST(CObservationPointCloudDescription, getDescriptionAsText)
   obs->sensorLabel = "lidar";
   obs->sensorPose = mrpt::poses::CPose3D(1, 2, 3, 0, 0, 0);
   obs->pointcloud = CSimplePointsMap::Create();
-  for (int i = 0; i < 10; i++) obs->pointcloud->insertPoint(i * 1.0f, i * 2.0f, i * 0.5f);
+  for (int i = 0; i < 10; i++)
+  {
+    const auto fi = static_cast<float>(i);
+    obs->pointcloud->insertPoint(fi * 1.0f, fi * 2.0f, fi * 0.5f);
+  }
 
   std::ostringstream ss;
   obs->getDescriptionAsText(ss);

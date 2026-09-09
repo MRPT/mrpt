@@ -46,7 +46,7 @@ namespace bayes
  * \sa bayes::CKalmanFilterCapable::KF_options
  * \ingroup mrpt_bayes_grp
  */
-enum TKFMethod
+enum TKFMethod : std::uint8_t
 {
   kfEKFNaive = 0,
   kfEKFAlaDavison,

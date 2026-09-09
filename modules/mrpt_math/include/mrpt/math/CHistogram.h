@@ -72,10 +72,10 @@ class CHistogram
   template <typename MAT_VECTOR_LIKE, typename = typename MAT_VECTOR_LIKE::Scalar>
   void add(const MAT_VECTOR_LIKE& x)
   {
-    const size_t N = x.size();
+    const auto N = static_cast<size_t>(x.size());
     for (size_t i = 0; i < N; i++)
     {
-      this->add(static_cast<double>(x[i]));
+      this->add(static_cast<double>(x[static_cast<decltype(x.size())>(i)]));
     }
   }
 

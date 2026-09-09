@@ -313,14 +313,17 @@ class CDynamicGrid
   /** Transform a coordinate values into cell indexes */
   [[nodiscard]] int x2idx(double x) const { return static_cast<int>((x - m_x_min) / m_resolution); }
   [[nodiscard]] int y2idx(double y) const { return static_cast<int>((y - m_y_min) / m_resolution); }
-  [[nodiscard]] int xy2idx(double x, double y) const { return x2idx(x) + y2idx(y) * m_size_x; }
+  [[nodiscard]] int xy2idx(double x, double y) const
+  {
+    return x2idx(x) + y2idx(y) * static_cast<int>(m_size_x);
+  }
 
   /** Transform a global (linear) cell index value into its corresponding
    * (x,y) cell indexes. */
   void idx2cxcy(int idx, int& cx, int& cy) const
   {
-    cx = idx % m_size_x;
-    cy = idx / m_size_x;
+    cx = idx % static_cast<int>(m_size_x);
+    cy = idx / static_cast<int>(m_size_x);
   }
 
   /** Transform a cell index into a coordinate value of the cell central point
@@ -366,8 +369,14 @@ class CDynamicGrid
     struct aux_saver : public internal::dynamic_grid_txt_saver
     {
       aux_saver(const CDynamicGrid<T>& obj) : m_obj(obj) {}
-      [[nodiscard]] unsigned int getSizeX() const override { return m_obj.getSizeX(); }
-      [[nodiscard]] unsigned int getSizeY() const override { return m_obj.getSizeY(); }
+      [[nodiscard]] unsigned int getSizeX() const override
+      {
+        return static_cast<unsigned int>(m_obj.getSizeX());
+      }
+      [[nodiscard]] unsigned int getSizeY() const override
+      {
+        return static_cast<unsigned int>(m_obj.getSizeY());
+      }
       [[nodiscard]] float getCellAsFloat(unsigned int cx, unsigned int cy) const override
       {
         return m_obj.cell2float(m_obj.m_map[cx + cy * m_obj.getSizeX()]);

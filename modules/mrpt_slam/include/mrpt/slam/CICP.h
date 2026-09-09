@@ -29,7 +29,7 @@ enum TICPAlgorithm
 
 /** ICP covariance estimation methods, used in mrpt::slam::CICP::options
  * \ingroup mrpt_slam_grp  */
-enum TICPCovarianceMethod
+enum TICPCovarianceMethod : int
 {
   /** Use the covariance of the optimal registration, disregarding uncertainty
    in data association */

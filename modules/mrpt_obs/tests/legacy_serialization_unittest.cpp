@@ -147,10 +147,15 @@ TEST(LegacySerialization, CActionRobotMovement2D_v4_v5_v6)
     EXPECT_NEAR(act->velocityLocal.vy, 0.0, 1e-6);
     EXPECT_NEAR(act->velocityLocal.omega, 0.5, 1e-6);
     EXPECT_EQ(act->encoderRightTicks, 4);
-    if (version < 6) EXPECT_EQ(act->timestamp, INVALID_TIMESTAMP);
+    if (version < 6)
+    {
+      EXPECT_EQ(act->timestamp, INVALID_TIMESTAMP);
+    }
     // The additional Thrun std devs default to zero before version 5:
     if (version < 5)
+    {
       EXPECT_NEAR(act->motionModelConfiguration.thrunModel.additional_std_XY, 0.0f, 1e-9f);
+    }
   }
 }
 
@@ -295,11 +300,26 @@ TEST(LegacySerialization, CObservationStereoImages_v0_to_v4)
     EXPECT_TRUE(obs->hasImageRight);
     EXPECT_NEAR(obs->cameraPose.x(), 1.0, 1e-6);
 
-    if (version < 1) EXPECT_EQ(obs->timestamp, INVALID_TIMESTAMP);
-    if (version < 2) EXPECT_NEAR(obs->rightCameraPose.x(), 0.10, 1e-5);
-    if (version >= 2) EXPECT_NEAR(obs->rightCameraPose.x(), 0.2, 1e-5);
-    if (version >= 3) EXPECT_NEAR(obs->leftCamera.focalLengthMeters, 0.004, 1e-9);
-    if (version < 3) EXPECT_NEAR(obs->leftCamera.focalLengthMeters, 0.002, 1e-9);
+    if (version < 1)
+    {
+      EXPECT_EQ(obs->timestamp, INVALID_TIMESTAMP);
+    }
+    if (version < 2)
+    {
+      EXPECT_NEAR(obs->rightCameraPose.x(), 0.10, 1e-5);
+    }
+    if (version >= 2)
+    {
+      EXPECT_NEAR(obs->rightCameraPose.x(), 0.2, 1e-5);
+    }
+    if (version >= 3)
+    {
+      EXPECT_NEAR(obs->leftCamera.focalLengthMeters, 0.004, 1e-9);
+    }
+    if (version < 3)
+    {
+      EXPECT_NEAR(obs->leftCamera.focalLengthMeters, 0.002, 1e-9);
+    }
     EXPECT_EQ(obs->sensorLabel, version >= 4 ? "stereo_old" : "");
   }
 }
@@ -389,7 +409,7 @@ TEST(LegacySerialization, CObservationBeaconRanges_v0_to_v2)
           for (uint32_t i = 0; i < 2; i++)
           {
             a << mrpt::poses::CPoint3D(0.1 * i, 0, 0);
-            a << float(5.0f + i);
+            a << float(5.0f + static_cast<float>(i));
             a << uint32_t(100 + i);
           }
           if (version >= 1) a << mrpt::poses::CPose2D(1, 2, 0);
@@ -401,7 +421,10 @@ TEST(LegacySerialization, CObservationBeaconRanges_v0_to_v2)
     ASSERT_EQ(obs->sensedData.size(), 2U);
     EXPECT_EQ(obs->sensedData[1].beaconID, 101U);
     EXPECT_NEAR(obs->sensedData[1].sensedDistance, 6.0f, 1e-5f);
-    if (version >= 1) EXPECT_NEAR(obs->auxEstimatePose.y(), 2.0, 1e-6);
+    if (version >= 1)
+    {
+      EXPECT_NEAR(obs->auxEstimatePose.y(), 2.0, 1e-6);
+    }
     EXPECT_EQ(obs->sensorLabel, version >= 2 ? "beacons_old" : "");
     EXPECT_EQ(obs->timestamp, INVALID_TIMESTAMP);
   }
@@ -632,7 +655,10 @@ TEST(LegacySerialization, CObservation3DRangeScan_v0_to_v8)
       EXPECT_EQ(obs->cameraParams.nrows, 2U);
     }
     EXPECT_EQ(obs->sensorLabel, "depth");
-    if (version < 5) EXPECT_TRUE(obs->range_is_depth);
+    if (version < 5)
+    {
+      EXPECT_TRUE(obs->range_is_depth);
+    }
   }
 }
 

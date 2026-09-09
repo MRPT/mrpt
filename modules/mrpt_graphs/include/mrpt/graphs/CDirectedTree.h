@@ -121,6 +121,13 @@ class CDirectedTree
   {
     using tree_t = CDirectedTree<TYPE_EDGES>;
 
+    Visitor() = default;
+    virtual ~Visitor() = default;
+    Visitor(const Visitor&) = default;
+    Visitor& operator=(const Visitor&) = default;
+    Visitor(Visitor&&) = default;
+    Visitor& operator=(Visitor&&) = default;
+
     /** Virtual method to be implemented by the user and which will be
      * called during the visit to a graph with visitDepthFirst or
      * visitBreadthFirst

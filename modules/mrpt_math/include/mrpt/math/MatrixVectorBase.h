@@ -30,7 +30,7 @@ void internalAssertEigenDefined();
 
 /*! Selection of the number format in MatrixVectorBase::saveToTextFile()
  * \ingroup mrpt_math_grp */
-enum TMatrixTextFileFormat
+enum TMatrixTextFileFormat : int
 {
   /** engineering format '%e' */
   MATRIX_FORMAT_ENG = 0,

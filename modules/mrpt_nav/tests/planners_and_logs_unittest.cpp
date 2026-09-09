@@ -119,7 +119,7 @@ TEST(PlannerRRTSE2TPS, obstacles_are_taken_into_account)
   // A wall of obstacles right between start and goal:
   for (double y = -2.0; y <= 2.0; y += 0.05)
   {
-    pi.obstacles_points.insertPoint(1.0, y, .0);
+    pi.obstacles_points.insertPoint(1.0f, static_cast<float>(y), .0f);
   }
 
   PlannerRRT_SE2_TPS::TPlannerResult result;

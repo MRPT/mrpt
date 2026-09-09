@@ -54,7 +54,7 @@ mrpt::obs::CObservationBeaconRanges make_obs(
   for (const auto& [id, range] : idAndRange)
   {
     mrpt::obs::CObservationBeaconRanges::TMeasurement m;
-    m.beaconID = id;
+    m.beaconID = static_cast<int32_t>(id);
     m.sensedDistance = range;
     m.sensorLocationOnRobot = mrpt::poses::CPoint3D(0, 0, 0);
     o.sensedData.push_back(m);

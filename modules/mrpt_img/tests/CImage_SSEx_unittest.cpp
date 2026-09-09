@@ -53,7 +53,8 @@ std::vector<uint8_t> makeGray(int w, int h)
   {
     for (int x = 0; x < w; x++)
     {
-      v[static_cast<size_t>(y) * w + x] = static_cast<uint8_t>((x + y * 7) % 256);
+      v[static_cast<size_t>(y) * static_cast<size_t>(w) + static_cast<size_t>(x)] =
+          static_cast<uint8_t>((x + y * 7) % 256);
     }
   }
   return v;
@@ -66,7 +67,8 @@ std::vector<uint8_t> makeColor(int w, int h)
   {
     for (int x = 0; x < w; x++)
     {
-      const size_t off = (static_cast<size_t>(y) * w + x) * 3;
+      const size_t off =
+          (static_cast<size_t>(y) * static_cast<size_t>(w) + static_cast<size_t>(x)) * 3;
       v[off + 0] = static_cast<uint8_t>((x * 3 + y) % 256);
       v[off + 1] = static_cast<uint8_t>((x * 5 + y * 2) % 256);
       v[off + 2] = static_cast<uint8_t>((x * 7 + y * 3) % 256);
@@ -83,7 +85,7 @@ TEST(CImage_SSEx, ScaleHalf1c8u_MultipleOf16)
   const int w = 32;
   const int h = 4;
   const auto in = makeGray(w, h);
-  std::vector<uint8_t> out(static_cast<size_t>(w / 2) * (h / 2), 0);
+  std::vector<uint8_t> out(static_cast<size_t>(w / 2) * static_cast<size_t>(h / 2), 0);
 
   image_SSE2_scale_half_1c8u(in.data(), out.data(), w, h, w, w / 2);
 
@@ -92,7 +94,8 @@ TEST(CImage_SSEx, ScaleHalf1c8u_MultipleOf16)
     for (int ox = 0; ox < w / 2; ox++)
     {
       EXPECT_EQ(
-          out[static_cast<size_t>(oy) * (w / 2) + ox], in[static_cast<size_t>(2 * oy) * w + 2 * ox])
+          out[static_cast<size_t>(oy) * static_cast<size_t>(w / 2) + static_cast<size_t>(ox)],
+          in[static_cast<size_t>(2 * oy) * static_cast<size_t>(w) + static_cast<size_t>(2 * ox)])
           << "at (" << ox << "," << oy << ")";
     }
   }
@@ -104,7 +107,7 @@ TEST(CImage_SSEx, ScaleHalf1c8u_WithRemainder)
   const int w = 20;
   const int h = 2;
   const auto in = makeGray(w, h);
-  std::vector<uint8_t> out(static_cast<size_t>(w / 2) * (h / 2), 0);
+  std::vector<uint8_t> out(static_cast<size_t>(w / 2) * static_cast<size_t>(h / 2), 0);
 
   image_SSE2_scale_half_1c8u(in.data(), out.data(), w, h, w, w / 2);
 
@@ -119,8 +122,8 @@ TEST(CImage_SSEx, ScaleHalfSmooth1c8u_UniformBlock)
 {
   const int w = 32;
   const int h = 4;
-  std::vector<uint8_t> in(static_cast<size_t>(w) * h, 100);
-  std::vector<uint8_t> out(static_cast<size_t>(w / 2) * (h / 2), 0);
+  std::vector<uint8_t> in(static_cast<size_t>(w) * static_cast<size_t>(h), 100);
+  std::vector<uint8_t> out(static_cast<size_t>(w / 2) * static_cast<size_t>(h / 2), 0);
 
   image_SSE2_scale_half_smooth_1c8u(in.data(), out.data(), w, h, w, w / 2);
 
@@ -135,7 +138,7 @@ TEST(CImage_SSEx, ScaleHalfSmooth1c8u_WithRemainderStaysInRange)
   const int w = 20;
   const int h = 2;
   const auto in = makeGray(w, h);
-  std::vector<uint8_t> out(static_cast<size_t>(w / 2) * (h / 2), 0);
+  std::vector<uint8_t> out(static_cast<size_t>(w / 2) * static_cast<size_t>(h / 2), 0);
 
   image_SSE2_scale_half_smooth_1c8u(in.data(), out.data(), w, h, w, w / 2);
 
@@ -144,10 +147,10 @@ TEST(CImage_SSEx, ScaleHalfSmooth1c8u_WithRemainderStaysInRange)
   // source block.
   for (int ox = 0; ox < w / 2; ox++)
   {
-    const int a = in[2 * ox];
-    const int b = in[2 * ox + 1];
-    const int c = in[w + 2 * ox];
-    const int d = in[w + 2 * ox + 1];
+    const int a = in[static_cast<size_t>(2 * ox)];
+    const int b = in[static_cast<size_t>(2 * ox + 1)];
+    const int c = in[static_cast<size_t>(w + 2 * ox)];
+    const int d = in[static_cast<size_t>(w + 2 * ox + 1)];
     const int lo = std::min({a, b, c, d});
     const int hi = std::max({a, b, c, d});
     EXPECT_GE(out[static_cast<size_t>(ox)], lo);
@@ -171,11 +174,14 @@ TEST(CImage_SSEx, ScaleHalf3c8u_MultipleOf16)
   {
     for (int ox = 0; ox < w / 2; ox++)
     {
-      const size_t outOff = (static_cast<size_t>(oy) * (w / 2) + ox) * 3;
-      const size_t inOff = (static_cast<size_t>(2 * oy) * w + 2 * ox) * 3;
+      const size_t outOff =
+          (static_cast<size_t>(oy) * static_cast<size_t>(w / 2) + static_cast<size_t>(ox)) * 3;
+      const size_t inOff =
+          (static_cast<size_t>(2 * oy) * static_cast<size_t>(w) + static_cast<size_t>(2 * ox)) * 3;
       for (int c = 0; c < 3; c++)
       {
-        EXPECT_EQ(out[outOff + c], in[inOff + c]) << "at (" << ox << "," << oy << ") c=" << c;
+        EXPECT_EQ(out[outOff + static_cast<size_t>(c)], in[inOff + static_cast<size_t>(c)])
+            << "at (" << ox << "," << oy << ") c=" << c;
       }
     }
   }
@@ -197,7 +203,8 @@ TEST(CImage_SSEx, ScaleHalf3c8u_WithRemainder)
     const size_t inOff = static_cast<size_t>(2 * ox) * 3;
     for (int c = 0; c < 3; c++)
     {
-      EXPECT_EQ(out[outOff + c], in[inOff + c]) << "at ox=" << ox << " c=" << c;
+      EXPECT_EQ(out[outOff + static_cast<size_t>(c)], in[inOff + static_cast<size_t>(c)])
+          << "at ox=" << ox << " c=" << c;
     }
   }
 }
@@ -232,7 +239,7 @@ void checkUniformGray(
     const char* label)
 {
   const auto in = makeUniformRgb(w, h, r, g, b);
-  std::vector<uint8_t> out(static_cast<size_t>(w) * h, 0);
+  std::vector<uint8_t> out(static_cast<size_t>(w) * static_cast<size_t>(h), 0);
   fn(in.data(), out.data(), w, h, static_cast<size_t>(w) * 3, static_cast<size_t>(w));
 
   for (auto v : out)
