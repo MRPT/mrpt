@@ -445,7 +445,7 @@ TEST(CReactiveNavigationSystem3D, robot_shape_can_be_redefined)
     poly.add_vertex(0.25, 0.25);
     poly.add_vertex(0.25, -0.25);
     poly.add_vertex(-0.25, -0.25);
-    shape.setHeight(lvl, 0.4 + 0.2 * lvl);
+    shape.setHeight(lvl, 0.4 + 0.2 * static_cast<double>(lvl));
     shape.setRadius(lvl, 0.35);
   }
   EXPECT_NO_THROW(nav.changeRobotShape(shape));

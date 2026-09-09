@@ -834,7 +834,7 @@ class COccupancyGridMap2D :
 
   /** Methods for TLaserSimulUncertaintyParams in
    * laserScanSimulatorWithUncertainty() */
-  enum TLaserSimulUncertaintyMethod
+  enum TLaserSimulUncertaintyMethod : int
   {
     /** Performs an unscented transform */
     sumUnscented = 0,

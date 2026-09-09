@@ -624,9 +624,10 @@ bool CVelodyneScanner::receivePackets(
     mrpt::system::timestampToParts(mrpt::Clock::now(), parts, true);
     string sFilePostfix = "_";
     sFilePostfix += mrpt::format(
-        "%04u-%02u-%02u_%02uh%02um%02us", (unsigned int)parts.year, (unsigned int)parts.month,
-        (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute,
-        (unsigned int)parts.second);
+        "%04u-%02u-%02u_%02uh%02um%02us", static_cast<unsigned int>(parts.year),
+        static_cast<unsigned int>(parts.month), static_cast<unsigned int>(parts.day),
+        static_cast<unsigned int>(parts.hour), static_cast<unsigned int>(parts.minute),
+        static_cast<unsigned int>(parts.second));
     const string sFileName = m_pcap_output_file +
                              mrpt::system::fileNameStripInvalidChars(sFilePostfix) +
                              string(".pcap");
@@ -666,7 +667,7 @@ bool CVelodyneScanner::receivePackets(
       memcpy(
           &(packetBuffer[0]) + 42, reinterpret_cast<uint8_t*>(&out_data_pkt),
           CObservationVelodyneScan::PACKET_SIZE);
-      pcap_dump((u_char*)this->m_pcap_dumper, &header, &(packetBuffer[0]));
+      pcap_dump(static_cast<u_char*>(this->m_pcap_dumper), &header, &(packetBuffer[0]));
     }
     // Pos pkt:
     if (pos_pkt_timestamp != INVALID_TIMESTAMP)
@@ -679,7 +680,7 @@ bool CVelodyneScanner::receivePackets(
       memcpy(
           &(packetBuffer[0]) + 42, reinterpret_cast<uint8_t*>(&out_pos_pkt),
           CObservationVelodyneScan::POS_PACKET_SIZE);
-      pcap_dump((u_char*)this->m_pcap_dumper, &header, &(packetBuffer[0]));
+      pcap_dump(static_cast<u_char*>(this->m_pcap_dumper), &header, &(packetBuffer[0]));
     }
   }
 #endif

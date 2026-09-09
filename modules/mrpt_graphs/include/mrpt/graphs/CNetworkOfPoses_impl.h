@@ -250,7 +250,7 @@ struct graph_ops
     istringstream s;
     while (filParser.getNextLine(s))
     {
-      const unsigned int lineNum = filParser.getCurrentLineNumber();
+      const unsigned int lineNum = static_cast<unsigned int>(filParser.getCurrentLineNumber());
       const string lin = s.str();
 
       string key;
@@ -277,7 +277,7 @@ struct graph_ops
     // Read & process lines each at once until EOF:
     while (filParser.getNextLine(s))
     {
-      const unsigned int lineNum = filParser.getCurrentLineNumber();
+      const unsigned int lineNum = static_cast<unsigned int>(filParser.getCurrentLineNumber());
       const string lin = s.str();
 
       // Recognized strings:
@@ -816,13 +816,13 @@ struct graph_ops
   // These two are for simulating maha2 distances for non-PDF types: fallback
   // to squared-norm:
   template <class VEC>
-  static double auxMaha2Dist(VEC& err, const mrpt::poses::CPose2D& p)
+  static double auxMaha2Dist(VEC& err, const mrpt::poses::CPose2D& /*p*/)
   {
     math::wrapToPiInPlace(err[2]);
     return square(err[0]) + square(err[1]) + square(err[2]);
   }
   template <class VEC>
-  static double auxMaha2Dist(VEC& err, const mrpt::poses::CPose3D& p)
+  static double auxMaha2Dist(VEC& err, const mrpt::poses::CPose3D& /*p*/)
   {
     math::wrapToPiInPlace(err[3]);
     math::wrapToPiInPlace(err[4]);
@@ -907,7 +907,8 @@ struct graph_ops
       //
       mrpt::math::CVectorFixedDouble<constraint_t::type_value::static_size> err;
       for (size_t i = 0; i < constraint_t::type_value::static_size; i++)
-        err[i] = from_plus_delta.getPoseMean()[i] - to_mean[i];
+        err[i] = from_plus_delta.getPoseMean()[static_cast<unsigned int>(i)] -
+                 to_mean[static_cast<unsigned int>(i)];
 
       // (auxMaha2Dist will also take into account the 2PI wrapping)
       return auxMaha2Dist(err, from_plus_delta);

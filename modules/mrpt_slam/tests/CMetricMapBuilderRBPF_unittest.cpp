@@ -427,7 +427,7 @@ mrpt::obs::CSensoryFrame::Ptr simulateBeaconRanges(
   for (const auto& p : beaconPositions())
   {
     mrpt::obs::CObservationBeaconRanges::TMeasurement m;
-    m.beaconID = id++;
+    m.beaconID = static_cast<int32_t>(id++);
     m.sensorLocationOnRobot = mrpt::poses::CPoint3D(0, 0, 0);
     m.sensedDistance = static_cast<float>(mrpt::poses::CPoint3D(p).distanceTo(
         mrpt::poses::CPoint3D(robotPose.x(), robotPose.y(), 0)));

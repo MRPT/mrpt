@@ -142,7 +142,7 @@ void CNodeRegistrationDecider<GRAPH_T>::resetPDF(constraint_t* c)
 }  // end of resetPDF
 
 template <class GRAPH_T>
-void CNodeRegistrationDecider<GRAPH_T>::addNodeAnnotsToPose(global_pose_t* pose) const
+void CNodeRegistrationDecider<GRAPH_T>::addNodeAnnotsToPose(global_pose_t* /*pose*/) const
 {
 }
 

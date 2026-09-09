@@ -88,7 +88,7 @@ bool ModelSearch::ransacSingleModel(
     {
       // Update the estimation of maxIter to pick dataset with no outliers
       // at propability p
-      double f = ninliers / static_cast<double>(nSamples);
+      double f = static_cast<double>(ninliers) / static_cast<double>(nSamples);
       double p = 1 - std::pow(f, static_cast<double>(p_kernelSize));
       const double eps = std::numeric_limits<double>::epsilon();
       p = std::max(eps, p);      // Avoid division by -Inf
@@ -147,14 +147,14 @@ bool ModelSearch::geneticSingleModel(
       // copy the best elders
       for (; i < elderCnt; i++)
       {
-        population.push_back(sortedPopulation[i]);
+        population.push_back(sortedPopulation[static_cast<size_t>(i)]);
       }
 
       // mate elders to make siblings
       int se = static_cast<int>(speciesAlive);  // dead species cannot mate
       for (; i < elderCnt + siblingCnt; i++)
       {
-        Species* sibling = sortedPopulation[--se];
+        Species* sibling = sortedPopulation[static_cast<size_t>(--se)];
         population.push_back(sibling);
 
         // pick two parents, from the species not yet refactored
@@ -166,8 +166,8 @@ bool ModelSearch::geneticSingleModel(
         int p2 = (p1 > se / 2) ? (r2 % p1) : p1 + 1 + (r2 % (se - p1 - 1));
         ASSERT_(p1 != p2 && p1 < se && p2 < se);
         ASSERT_(se >= elderCnt);
-        Species* a = sortedPopulation[p1];
-        Species* b = sortedPopulation[p2];
+        Species* a = sortedPopulation[static_cast<size_t>(p1)];
+        Species* b = sortedPopulation[static_cast<size_t>(p2)];
 
         // merge the sample candidates
         std::set<size_t> sampleSet;
@@ -182,7 +182,7 @@ bool ModelSearch::geneticSingleModel(
       // generate some new random species
       for (; i < static_cast<int>(p_populationSize); i++)
       {
-        Species* s = sortedPopulation[i];
+        Species* s = sortedPopulation[static_cast<size_t>(i)];
         population.push_back(s);
         pickRandomIndex(sampleCount, p_kernelSize, s->sample);
       }
@@ -208,9 +208,9 @@ bool ModelSearch::geneticSingleModel(
         }
         ASSERT_(s.inliers.size() > 0);
 
-        s.fitness /= s.inliers.size();
+        s.fitness /= static_cast<typename TModelFit::Real>(s.inliers.size());
         // scale by the number of outliers
-        s.fitness *= (sampleCount - s.inliers.size());
+        s.fitness *= static_cast<typename TModelFit::Real>(sampleCount - s.inliers.size());
         speciesAlive++;
       }
       else

@@ -115,36 +115,37 @@ CObservationVelodyneScan::Ptr buildSyntheticVLP16Scan(
 
 TEST(VelodyneCalibration, LoadDefaultVLP16)
 {
-  const auto& cal = loadDefaultCal("VLP16");
+  const auto cal = loadDefaultCal("VLP16");
   EXPECT_FALSE(cal.empty());
   EXPECT_EQ(cal.laser_corrections.size(), 16u);
 }
 
 TEST(VelodyneCalibration, LoadDefaultHDL32)
 {
-  const auto& cal = loadDefaultCal("HDL32");
+  const auto cal = loadDefaultCal("HDL32");
   EXPECT_FALSE(cal.empty());
   EXPECT_EQ(cal.laser_corrections.size(), 32u);
 }
 
 TEST(VelodyneCalibration, LoadDefaultHDL64)
 {
-  const auto& cal = loadDefaultCal("HDL64");
+  const auto cal = loadDefaultCal("HDL64");
   EXPECT_FALSE(cal.empty());
   EXPECT_EQ(cal.laser_corrections.size(), 64u);
 }
 
 TEST(VelodyneCalibration, LoadDefaultUnknownModel)
 {
-  const auto& cal = loadDefaultCal("NOT_A_REAL_MODEL");
+  const auto cal = loadDefaultCal("NOT_A_REAL_MODEL");
   EXPECT_TRUE(cal.empty());
 }
 
 TEST(VelodyneCalibration, LoadDefaultIsCached)
 {
-  const auto& cal1 = loadDefaultCal("VLP16");
-  const auto& cal2 = loadDefaultCal("VLP16");
-  EXPECT_EQ(&cal1, &cal2);
+  // Compare addresses directly (no named references) to check the cache
+  // returns the same instance, without tripping GCC's overly-eager
+  // -Wdangling-reference heuristic on a `const auto&` binding.
+  EXPECT_EQ(&loadDefaultCal("VLP16"), &loadDefaultCal("VLP16"));
 }
 
 TEST(VelodyneCalibration, EmptyAndClear)
@@ -185,7 +186,7 @@ TEST(VelodyneCalibration, RoundtripThroughXMLFile)
 {
   // Re-derive an XML file from the default VLP-16 XML text, then reload it
   // from disk to exercise loadFromXMLFile()'s success path.
-  const auto& original = loadDefaultCal("VLP16");
+  const auto original = loadDefaultCal("VLP16");
   ASSERT_FALSE(original.empty());
 
   // We don't have direct access to the embedded XML string here, so instead

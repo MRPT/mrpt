@@ -54,7 +54,10 @@ struct HoloSimRobot : public CRobot2NavInterfaceForSimulator_Holo
     obs.clear();
     timestamp = mrpt::Clock::now();
     if (!senseSucceeds) return false;
-    for (const auto& p : obstacles) obs.insertPoint(p.x, p.y, 0.0);
+    for (const auto& p : obstacles)
+    {
+      obs.insertPoint(static_cast<float>(p.x), static_cast<float>(p.y), 0.0f);
+    }
     return true;
   }
 };

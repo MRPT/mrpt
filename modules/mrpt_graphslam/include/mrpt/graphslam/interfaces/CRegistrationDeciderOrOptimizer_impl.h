@@ -80,13 +80,13 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateVisuals()
 
 template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::notifyOfWindowEvents(
-    const std::map<std::string, bool>& events_occurred)
+    const std::map<std::string, bool>& /*events_occurred*/)
 {
   ASSERTDEB_(m_initialized_visuals);
 }
 
 template <class GRAPH_T>
-void CRegistrationDeciderOrOptimizer<GRAPH_T>::loadParams(const std::string& source_fname)
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::loadParams(const std::string& /*source_fname*/)
 {
   MRPT_LOG_DEBUG_STREAM("Loading corresponding parameters");
 }
@@ -98,7 +98,8 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::printParams() const
 }
 
 template <class GRAPH_T>
-void CRegistrationDeciderOrOptimizer<GRAPH_T>::getDescriptiveReport(std::string* report_str) const
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::getDescriptiveReport(
+    std::string* /*report_str*/) const
 {
   MRPT_LOG_DEBUG_STREAM("Generating corresponding report");
   // TODO - give the compact form here!

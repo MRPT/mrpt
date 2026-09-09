@@ -14,6 +14,7 @@
 #pragma once
 
 #include <chrono>
+#include <iosfwd>
 
 namespace mrpt
 {
@@ -119,4 +120,11 @@ class Clock
    */
   static void setSimulatedTime(const time_point& t);
 };
+
+/** Streams a Clock::time_point as the plain number of ticks in its
+ *  time_since_epoch(). Found via ADL, this also lets test frameworks (e.g.
+ *  gtest) print and compare time_point<Clock> values.
+ */
+std::ostream& operator<<(std::ostream& os, const Clock::time_point& t);
+
 }  // namespace mrpt

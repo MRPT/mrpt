@@ -435,9 +435,5 @@ std::string mrpt::system::intervalFormat(const double seconds)
   return implIntervalFormat(seconds);
 }
 
-std::ostream& mrpt::system::operator<<(std::ostream& o, const TTimeStamp& t)
-{
-  const auto v = static_cast<uint64_t>(t.time_since_epoch().count());
-  o << v;
-  return o;
-}
+// mrpt::system::operator<<(TTimeStamp) is mrpt::operator<<(Clock::time_point);
+// see the `using` declaration in datetime.h.

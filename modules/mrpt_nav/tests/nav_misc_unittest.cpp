@@ -303,7 +303,7 @@ TEST(NavGeomUtils, arc_path_handles_obstacles_on_the_turn_center_axis)
   // Obstacles with x==0 used to make the closed-form solution divide by zero
   // and return NaN. Check a few of them against a brute-force sampling of the
   // arc:
-  for (const auto [r, R, oy] :
+  for (const auto& [r, R, oy] :
        {std::make_tuple(2.0, 0.5, 4.2), std::make_tuple(2.0, 0.5, -0.3),
         std::make_tuple(-3.0, 0.4, -5.8), std::make_tuple(1.0, 0.5, 1.9)})
   {

@@ -107,9 +107,9 @@ struct MRPT_EMPTY_BASES TPoint2D_ : public TPoint2D_data<T>, public TPoseOrPoint
   [[nodiscard]] static TPoint2D_<T> FromVector(const Vector& v)
   {
     TPoint2D_<T> o;
-    for (int i = 0; i < 2; i++)
+    for (size_t i = 0; i < 2; i++)
     {
-      o[i] = static_cast<T>(v.at(i));
+      o[i] = static_cast<T>(v.at(static_cast<decltype(v.size())>(i)));
     }
     return o;
   }

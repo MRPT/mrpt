@@ -31,11 +31,11 @@ namespace kf_detail
 template <typename MAT_R, typename MAT_A, typename MAT_B>
 static void matmul_acc(MAT_R& r, const MAT_A& a, const MAT_B& b)
 {
-  for (int i = 0; i < (int)a.rows(); ++i)
+  for (int i = 0; i < static_cast<int>(a.rows()); ++i)
   {
-    for (int j = 0; j < (int)b.cols(); ++j)
+    for (int j = 0; j < static_cast<int>(b.cols()); ++j)
     {
-      for (int k = 0; k < (int)a.cols(); ++k)
+      for (int k = 0; k < static_cast<int>(a.cols()); ++k)
       {
         r(i, j) += a(i, k) * b(k, j);
       }
@@ -53,11 +53,11 @@ static void matmul(MAT_R& r, const MAT_A& a, const MAT_B& b)
 template <typename MAT_R, typename MAT_A, typename MAT_B>
 static void matmul_ABt_acc(MAT_R& r, const MAT_A& a, const MAT_B& b)
 {
-  for (int i = 0; i < (int)a.rows(); ++i)
+  for (int i = 0; i < static_cast<int>(a.rows()); ++i)
   {
-    for (int j = 0; j < (int)b.rows(); ++j)
+    for (int j = 0; j < static_cast<int>(b.rows()); ++j)
     {
-      for (int k = 0; k < (int)a.cols(); ++k)
+      for (int k = 0; k < static_cast<int>(a.cols()); ++k)
       {
         r(i, j) += a(i, k) * b(j, k);
       }
@@ -75,9 +75,9 @@ static void matmul_ABt(MAT_R& r, const MAT_A& a, const MAT_B& b)
 template <typename MAT>
 static void symmetrize(MAT& m)
 {
-  for (int r = 0; r < (int)m.rows(); ++r)
+  for (int r = 0; r < static_cast<int>(m.rows()); ++r)
   {
-    for (int c = r + 1; c < (int)m.cols(); ++c)
+    for (int c = r + 1; c < static_cast<int>(m.cols()); ++c)
     {
       const auto avg = static_cast<typename MAT::Scalar>(0.5) * (m(r, c) + m(c, r));
       m(r, c) = avg;
@@ -89,9 +89,9 @@ static void symmetrize(MAT& m)
 template <typename MAT>
 static void mat_scale_acc(MAT& dst, const MAT& src, typename MAT::Scalar scale)
 {
-  for (int r = 0; r < (int)dst.rows(); ++r)
+  for (int r = 0; r < static_cast<int>(dst.rows()); ++r)
   {
-    for (int c = 0; c < (int)dst.cols(); ++c)
+    for (int c = 0; c < static_cast<int>(dst.cols()); ++c)
     {
       dst(r, c) += scale * src(r, c);
     }
@@ -101,9 +101,9 @@ static void mat_scale_acc(MAT& dst, const MAT& src, typename MAT::Scalar scale)
 template <typename MAT>
 static void mat_sub_inplace(MAT& dst, const MAT& src)
 {
-  for (int r = 0; r < (int)dst.rows(); ++r)
+  for (int r = 0; r < static_cast<int>(dst.rows()); ++r)
   {
-    for (int c = 0; c < (int)dst.cols(); ++c)
+    for (int c = 0; c < static_cast<int>(dst.cols()); ++c)
     {
       dst(r, c) -= src(r, c);
     }
@@ -114,9 +114,9 @@ template <typename MAT>
 static std::string mat_to_str(const MAT& m)
 {
   std::ostringstream ss;
-  for (int r = 0; r < (int)m.rows(); ++r)
+  for (int r = 0; r < static_cast<int>(m.rows()); ++r)
   {
-    for (int c = 0; c < (int)m.cols(); ++c)
+    for (int c = 0; c < static_cast<int>(m.cols()); ++c)
     {
       ss << m(r, c) << " ";
     }
@@ -129,9 +129,9 @@ template <typename MAT>
 static typename MAT::Scalar mat_diff_sum_abs(const MAT& a, const MAT& b)
 {
   typename MAT::Scalar s = 0;
-  for (int r = 0; r < (int)a.rows(); ++r)
+  for (int r = 0; r < static_cast<int>(a.rows()); ++r)
   {
-    for (int c = 0; c < (int)a.cols(); ++c)
+    for (int c = 0; c < static_cast<int>(a.cols()); ++c)
     {
       auto d = a(r, c) - b(r, c);
       s += d < 0 ? -d : d;
@@ -767,7 +767,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
               m_timLogger.enter("KF:8.update stage:2.FULLKF:update xkk");
               KFVector Kytilde;
               kf_detail::matmul(Kytilde, m_K, ytilde);
-              for (int q = 0; q < (int)m_xkk.size(); q++)
+              for (int q = 0; q < static_cast<int>(m_xkk.size()); q++)
               {
                 m_xkk[q] += Kytilde[q];
               }
@@ -779,7 +779,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
 
               // diff = m_xkk - xkk_0
               KFVector diff(m_xkk.size());
-              for (int q = 0; q < (int)m_xkk.size(); q++)
+              for (int q = 0; q < static_cast<int>(m_xkk.size()); q++)
               {
                 diff[q] = m_xkk[q] - xkk_0[q];
               }
@@ -788,7 +788,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
               kf_detail::matmul(HAx_column, m_dh_dx_full_obs, diff);
               // ytilde2 = ytilde - HAx_column
               KFVector ytilde2(ytilde.size());
-              for (int q = 0; q < (int)ytilde.size(); q++)
+              for (int q = 0; q < static_cast<int>(ytilde.size()); q++)
               {
                 ytilde2[q] = ytilde[q] - HAx_column[q];
               }
@@ -796,7 +796,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
               m_xkk = xkk_0;
               KFVector Kytilde2;
               kf_detail::matmul(Kytilde2, m_K, ytilde2);
-              for (int q = 0; q < (int)m_xkk.size(); q++)
+              for (int q = 0; q < static_cast<int>(m_xkk.size()); q++)
               {
                 m_xkk[q] += Kytilde2[q];
               }
@@ -902,9 +902,9 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
                 if (KF_options.use_joseph_form)
                 {
                   // P' = P - dP - dP^T + K*S_observed*K^T
-                  for (int r = 0; r < (int)m_pkk.rows(); r++)
+                  for (int r = 0; r < static_cast<int>(m_pkk.rows()); r++)
                   {
-                    for (int c = 0; c < (int)m_pkk.cols(); c++)
+                    for (int c = 0; c < static_cast<int>(m_pkk.cols()); c++)
                     {
                       m_pkk(r, c) -= dP(r, c) + dP(c, r);
                     }
@@ -929,9 +929,9 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
                   const KFMatrix pkk_dense_result = dense_P_update(m_pkk);
 
                   KFTYPE max_diff = 0;
-                  for (int r = 0; r < (int)pkk_sparse_result.rows(); r++)
+                  for (int r = 0; r < static_cast<int>(pkk_sparse_result.rows()); r++)
                   {
-                    for (int c = 0; c < (int)pkk_sparse_result.cols(); c++)
+                    for (int c = 0; c < static_cast<int>(pkk_sparse_result.cols()); c++)
                     {
                       auto d = pkk_sparse_result(r, c) - pkk_dense_result(r, c);
                       if (d < 0)
@@ -1123,21 +1123,21 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
               KFVector Kij_vec;
               kf_detail::matmul(Kij_vec, m_pkk, h_j);
               const KFTYPE inv_Sij = KFTYPE(1) / Sij;
-              for (int q = 0; q < (int)N; q++)
+              for (int q = 0; q < static_cast<int>(N); q++)
               {
                 Kij_vec[q] *= inv_Sij;
               }
 
               // Update state: x' = x + Kij_vec * ytilde(j)
-              for (int q = 0; q < (int)N; q++)
+              for (int q = 0; q < static_cast<int>(N); q++)
               {
                 m_xkk[q] += Kij_vec[q] * ytilde[j];
               }
 
               // Update covariance: P' = P - Sij * Kij * Kij^T (rank-1 downdate)
-              for (int r = 0; r < (int)N; r++)
+              for (int r = 0; r < static_cast<int>(N); r++)
               {
-                for (int c = 0; c < (int)N; c++)
+                for (int c = 0; c < static_cast<int>(N); c++)
                 {
                   m_pkk(r, c) -= Sij * Kij_vec[r] * Kij_vec[c];
                 }
@@ -1288,7 +1288,8 @@ void addNewLandmarks(
       // Append to Pkk:
       // --------------------
       ASSERTDEB_(
-          obj.internal_getPkk().cols() == (int)idx && obj.internal_getPkk().rows() == (int)idx);
+          obj.internal_getPkk().cols() == static_cast<int>(idx) &&
+          obj.internal_getPkk().rows() == static_cast<int>(idx));
 
       obj.internal_getPkk().setSize(idx + FEAT_SIZE, idx + FEAT_SIZE);
 
@@ -1335,9 +1336,9 @@ void addNewLandmarks(
         typename KF::KFMatrix_FxF tmp_ff;
         kf_detail::matmul(tmp_fo, dyn_dhn, R);
         kf_detail::matmul_ABt(tmp_ff, tmp_fo, dyn_dhn);
-        for (int _r = 0; _r < (int)P_yn_yn.rows(); _r++)
+        for (int _r = 0; _r < static_cast<int>(P_yn_yn.rows()); _r++)
         {
-          for (int _c = 0; _c < (int)P_yn_yn.cols(); _c++)
+          for (int _c = 0; _c < static_cast<int>(P_yn_yn.cols()); _c++)
           {
             P_yn_yn(_r, _c) += tmp_ff(_r, _c);
           }
@@ -1345,9 +1346,9 @@ void addNewLandmarks(
       }
       else
       {
-        for (int _r = 0; _r < (int)P_yn_yn.rows(); _r++)
+        for (int _r = 0; _r < static_cast<int>(P_yn_yn.rows()); _r++)
         {
-          for (int _c = 0; _c < (int)P_yn_yn.cols(); _c++)
+          for (int _c = 0; _c < static_cast<int>(P_yn_yn.cols()); _c++)
           {
             P_yn_yn(_r, _c) += dyn_dhn_R_dyn_dhnT(_r, _c);
           }
@@ -1363,12 +1364,12 @@ void addNewLandmarks(
 
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 void addNewLandmarks(
-    CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE, KFTYPE>& obj,
+    CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE, KFTYPE>&,
     const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE, KFTYPE>::
-        vector_KFArray_OBS& Z,
-    const std::vector<int>& data_association,
+        vector_KFArray_OBS&,
+    const std::vector<int>&,
     const typename CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /* FEAT_SIZE=0 */, ACT_SIZE, KFTYPE>::
-        KFMatrix_OxO& R)
+        KFMatrix_OxO&)
 {
   // Do nothing: this is NOT a SLAM problem.
 }
@@ -1382,7 +1383,7 @@ size_t getNumberOfLandmarksInMap(
 // Specialization for FEAT_SIZE=0
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 size_t getNumberOfLandmarksInMap(
-    const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>& obj)
+    const CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, 0 /*FEAT_SIZE*/, ACT_SIZE, KFTYPE>&)
 {
   return 0;
 }

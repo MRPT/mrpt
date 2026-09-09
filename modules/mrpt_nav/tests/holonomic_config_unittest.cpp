@@ -297,7 +297,7 @@ TEST(CHolonomicFullEval, no_score_matrix_when_disabled)
     m.options.LOG_SCORE_MATRIX = enableLogging;
     const auto no = m.navigate(ni);
     auto* fe = dynamic_cast<CLogFileRecord_FullEval*>(no.logRecord.get());
-    return fe ? fe->dirs_scores.size() : 0U;
+    return fe ? static_cast<unsigned int>(fe->dirs_scores.size()) : 0U;
   };
 
   // The score matrix is only copied into the log record on demand:

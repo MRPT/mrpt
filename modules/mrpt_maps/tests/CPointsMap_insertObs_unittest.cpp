@@ -41,7 +41,12 @@ CSimplePointsMap makeGrid(int n = 5, float step = 1.0f)
 {
   CSimplePointsMap m;
   for (int i = 0; i < n; i++)
-    for (int j = 0; j < n; j++) m.insertPoint(i * step, j * step, 0.0f);
+  {
+    for (int j = 0; j < n; j++)
+    {
+      m.insertPoint(static_cast<float>(i) * step, static_cast<float>(j) * step, 0.0f);
+    }
+  }
   return m;
 }
 
@@ -219,7 +224,7 @@ TEST(CPointsMapInsertObs, insertPlanarMapRejectsNonHorizontalScans)
 
   CSimplePointsMap map;
   map.insertionOptions.isPlanarMap = true;
-  map.insertionOptions.horizontalTolerance = mrpt::DEG2RAD(1.0);
+  map.insertionOptions.horizontalTolerance = static_cast<float>(mrpt::DEG2RAD(1.0));
   EXPECT_FALSE(map.insertObservation(*scan));
   EXPECT_EQ(map.size(), 0U);
 
@@ -283,7 +288,10 @@ TEST(CPointsMapInsertObs, insertWithFuseWithExisting)
 TEST(CPointsMapInsertObs, getAllPointsWithDecimation)
 {
   CSimplePointsMap map;
-  for (int i = 0; i < 20; i++) map.insertPoint(i, 2 * i, 3 * i);
+  for (int i = 0; i < 20; i++)
+  {
+    map.insertPoint(static_cast<float>(i), static_cast<float>(2 * i), static_cast<float>(3 * i));
+  }
 
   std::vector<float> xs, ys;
   map.getAllPoints(xs, ys);
@@ -315,6 +323,11 @@ TEST(CPointsMapInsertObs, setAllPoints)
   const std::vector<float> Y{4.0f, 5.0f, 6.0f};
   const std::vector<float> Z{7.0f, 8.0f, 9.0f};
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  // Exercise the deprecated setAllPoints() overloads for coverage:
   map.setAllPoints(X, Y, Z);
   ASSERT_EQ(map.size(), 3U);
   mrpt::math::TPoint3D p;
@@ -330,6 +343,9 @@ TEST(CPointsMapInsertObs, setAllPoints)
   const std::vector<float> shorter{1.0f};
   EXPECT_THROW(map.setAllPoints(X, shorter), std::exception);
   EXPECT_THROW(map.setAllPoints(X, Y, shorter), std::exception);
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 }
 
 TEST(CPointsMapInsertObs, save2DToTextStream)
@@ -397,7 +413,10 @@ TEST(CPointsMapInsertObs, nnSearchOverloads)
 TEST(CPointsMapInsertObs, getVisualizationIntoColorFromZ)
 {
   CSimplePointsMap map;
-  for (int i = 0; i < 10; i++) map.insertPoint(i, 0, i * 0.1f);
+  for (int i = 0; i < 10; i++)
+  {
+    map.insertPoint(static_cast<float>(i), 0, static_cast<float>(i) * 0.1f);
+  }
 
   // Flat color:
   {

@@ -125,7 +125,15 @@ TEST(CRawlogContent, InsertCommentSetsCommentText)
   EXPECT_EQ(rawlog.getCommentText(), "hello rawlog");
 
   std::string t;
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  // Exercise the deprecated output-argument overload for coverage:
   rawlog.getCommentText(t);
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
   EXPECT_EQ(t, "hello rawlog");
 
   rawlog.setCommentText("new comment");

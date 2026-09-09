@@ -303,7 +303,9 @@ class KDTreeCapable
       float& outDistSqr2) const
   {
     float dmy1, dmy2, dmy3, dmy4;
-    kdTreeTwoClosestPoint2D(p0.x, p0.y, dmy1, dmy2, dmy3, dmy4, outDistSqr1, outDistSqr2);
+    kdTreeTwoClosestPoint2D(
+        static_cast<num_t>(p0.x), static_cast<num_t>(p0.y), dmy1, dmy2, dmy3, dmy4, outDistSqr1,
+        outDistSqr2);
     pOut1.x = static_cast<double>(dmy1);
     pOut1.y = static_cast<double>(dmy2);
     pOut2.x = static_cast<double>(dmy3);
@@ -779,7 +781,7 @@ class KDTreeCapable
     if (m_kdtree3d_data.m_num_points != 0)
     {
       const num_t xyz[3] = {x0, y0, z0};
-      m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, {});
+      (void)m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, {});
     }
     return out_indices_dist.size();
     MRPT_END
@@ -813,7 +815,7 @@ class KDTreeCapable
     if (m_kdtree2d_data.m_num_points != 0)
     {
       const num_t xyz[2] = {x0, y0};
-      m_kdtree2d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, {});
+      (void)m_kdtree2d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, {});
     }
     return out_indices_dist.size();
     MRPT_END

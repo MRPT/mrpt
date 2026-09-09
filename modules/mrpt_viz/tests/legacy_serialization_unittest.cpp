@@ -224,10 +224,10 @@ TEST(VizLegacySerialization, CSetOfLines)
           // Note: a braced list would select CVectorFloat's size ctor.
           auto vec = [](float a0, float a1)
           {
-            mrpt::math::CVectorFloat v(2);
-            v[0] = a0;
-            v[1] = a1;
-            return v;
+            mrpt::math::CVectorFloat result(2);
+            result[0] = a0;
+            result[1] = a1;
+            return result;
           };
           a << vec(0.f, 1.f) << vec(0.f, 1.f) << vec(0.f, 1.f);
           a << vec(10.f, 11.f) << vec(20.f, 21.f) << vec(30.f, 31.f);
