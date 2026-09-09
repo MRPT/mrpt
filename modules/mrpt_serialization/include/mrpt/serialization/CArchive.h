@@ -26,6 +26,7 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>  // remove_reference_t, is_polymorphic
+#include <utility>      // declval
 #include <variant>
 #include <vector>
 
@@ -607,6 +608,53 @@ CArchive& operator>>(CArchive& in, ENUM_TYPE& pEnum)
   pEnum = mrpt::typemeta::TEnumType<std::remove_cv_t<ENUM_TYPE>>::name2value(readValue);
   return in;
 }
+
+/** Detects a deduced forwarding-reference parameter that binds an rvalue
+ * archive. Used to constrain the rvalue stream operators below, and checked
+ * before any other condition so that lvalue archives are discarded without
+ * recursively re-examining those very operators. */
+template <typename ARCHIVE>
+constexpr bool is_rvalue_archive_v =
+    !std::is_lvalue_reference_v<ARCHIVE> && std::is_base_of_v<CArchive, std::decay_t<ARCHIVE>>;
+
+/** @name Support for streaming into temporary (rvalue) archives
+ * @{ */
+
+/** Inserts an object into a temporary archive, e.g. `archiveFrom(f) << x;`.
+ *
+ * Free `operator<<` overloads take the archive by non-const reference, so a
+ * temporary archive returned by archiveFrom() cannot bind to them. These
+ * forwarders solve it in the same way as the C++ standard library does for
+ * `std::basic_ostream` (see `[ostream.rvalue]`): the rvalue archive is
+ * forwarded to the regular lvalue overload, and an lvalue reference is
+ * returned so that chaining keeps working.
+ *
+ * They only take part in overload resolution if the equivalent lvalue
+ * expression is well-formed.
+ */
+template <
+    typename ARCHIVE,
+    typename T,
+    std::enable_if_t<is_rvalue_archive_v<ARCHIVE>, int> = 0,
+    typename = decltype(std::declval<CArchive&>() << std::declval<const T&>())>
+CArchive& operator<<(ARCHIVE&& out, const T& a)
+{
+  return out << a;
+}
+
+/** Extracts an object from a temporary archive, e.g. `archiveFrom(f) >> x;`.
+ *  \sa operator<<(CArchive&&, const T&) */
+template <
+    typename ARCHIVE,
+    typename T,
+    std::enable_if_t<is_rvalue_archive_v<ARCHIVE>, int> = 0,
+    typename = decltype(std::declval<CArchive&>() >> std::declval<T&>())>
+CArchive& operator>>(ARCHIVE&& in, T& a)
+{
+  return in >> a;
+}
+
+/** @} */
 
 /** CArchive for mrpt::io::CStream classes (use as template argument).
  * \sa Easier to use via function archiveFrom() */
