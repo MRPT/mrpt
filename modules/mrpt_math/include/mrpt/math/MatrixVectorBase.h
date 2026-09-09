@@ -378,12 +378,12 @@ class MatrixVectorBase
    * \param file The target filename.
    * \param fileFormat See TMatrixTextFileFormat. The format of the numbers in
    * the text file.
-   * \param appendMRPTHeader Insert this header to the file "% File generated
-   * by MRPT. Load with MATLAB with: VAR=load(FILENAME);"
+   * \param appendMRPTHeader Insert a two-line "% File generated with
+   * mrpt-math at <date>" comment header before the data.
    * \param userHeader Additional text to be written at the head of the file.
-   * Typically MALAB comments "% This file blah blah". Final end-of-line is
-   * not needed. \sa loadFromTextFile, CMatrixDynamic::inMatlabFormat,
-   * SAVE_MATRIX
+   * Typically MATLAB comments "% This file blah blah". A final end-of-line is
+   * not needed: one is added if missing. \sa loadFromTextFile,
+   * CMatrixDynamic::inMatlabFormat, SAVE_MATRIX
    */
   void saveToTextFile(
       const std::string& file,

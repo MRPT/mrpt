@@ -18,6 +18,7 @@
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 
 #include <Eigen/Dense>
+#include <algorithm>
 #include <sstream>
 
 using namespace mrpt::math;
@@ -28,9 +29,22 @@ double TSegment3D::length() const { return math::distance(point1, point2); }
 
 double TSegment3D::distance(const TPoint3D& point) const
 {
-  return std::min(
-      {math::distance(point, point1), math::distance(point, point2),
-       TLine3D(*this).distance(point)});
+  // Project the point onto the supporting line and clamp the parameter to
+  // [0,1]. Taking the minimum against the *unbounded* line distance instead
+  // under-reports whenever the projection falls outside the segment.
+  const TPoint3D dir = point2 - point1;
+  const double len2 = (dir.x * dir.x) + (dir.y * dir.y) + (dir.z * dir.z);
+  if (len2 < getEpsilon() * getEpsilon())
+  {
+    return math::distance(point, point1);  // degenerate segment: a point
+  }
+
+  const TPoint3D w = point - point1;
+  double t = ((w.x * dir.x) + (w.y * dir.y) + (w.z * dir.z)) / len2;
+  t = std::clamp(t, 0.0, 1.0);
+
+  const TPoint3D closest(point1.x + (t * dir.x), point1.y + (t * dir.y), point1.z + (t * dir.z));
+  return math::distance(point, closest);
 }
 double TSegment3D::distance(const TSegment3D& segment) const
 {
@@ -49,6 +63,19 @@ double TSegment3D::distance(const TSegment3D& segment) const
   double d = u.dot(w);
   double e = v.dot(w);
   double D = a * c - b * b;  // always >= 0
+
+  // A zero-length segment is a point: the clamping logic below would settle on
+  // the wrong endpoint, so delegate to the point-to-segment distance.
+  const double degenerateSqrLen = getEpsilon() * getEpsilon();
+  if (c < degenerateSqrLen)
+  {
+    return this->distance(segment.point1);
+  }
+  if (a < degenerateSqrLen)
+  {
+    return segment.distance(point1);
+  }
+
   double sc = 0;
   double sN = 0;
   double sD = D;  // sc = sN / sD, default sD = D >= 0

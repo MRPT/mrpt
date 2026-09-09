@@ -206,6 +206,11 @@ void MatrixVectorBase<Scalar, Derived>::saveToTextFile(
   if (!userHeader.empty())
   {
     fprintf(f, "%s", userHeader.c_str());
+    if (userHeader.back() != '\n')
+    {
+      // Ensure the header does not run into the first data row:
+      fprintf(f, "\n");
+    }
   }
 
   if (appendMRPTHeader)

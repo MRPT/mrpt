@@ -350,66 +350,6 @@ bool intersect(const TPolygonWithPlane& p1, const TLine3D& l2, double& d, double
     }
   return false;
 }
-bool intersect(const TPolygonWithPlane& p1, const TPolygonWithPlane& p2, TObject3D& obj)
-{
-  if (!intersect(p1.plane, p2.plane, obj))
-  {
-    return false;
-  }
-
-  TObject3D aux;
-  if (obj.isLine())
-  {
-    const TLine3D lin3D = obj.getAs<TLine3D>();
-    TLine3D lin3D1, lin3D2;
-    TLine2D lin2D1, lin2D2;
-    TObject2D obj2D1, obj2D2;
-    project3D(lin3D, p1.inversePose, lin3D1);
-    project3D(lin3D, p2.inversePose, lin3D2);
-    lin3D1.generate2DObject(lin2D1);
-    lin3D2.generate2DObject(lin2D2);
-    if (intersect(p1.poly2D, lin2D1, obj2D1) && intersect(p2.poly2D, lin2D2, obj2D2))
-    {
-      TObject3D obj3Dp1, obj3Dp2;
-      const TObject3D obj3D1 = obj2D1.generate3DObject();
-      const TObject3D obj3D2 = obj2D2.generate3DObject();
-      project3D(obj3D1, p1.pose, obj3Dp1);
-      project3D(obj3D2, p2.pose, obj3Dp2);
-      TSegment3D s1, s2;
-      if (obj3D1.isPoint())
-      {
-        const auto po1 = obj3D1.getAs<TPoint3D>();
-        s1 = TSegment3D(po1, po1);
-      }
-      else
-      {
-        s1 = obj3D1.getAs<TSegment3D>();
-      }
-      TPoint3D po2;
-      if (obj3D2.getPoint(po2))
-      {
-        s2 = TSegment3D(po2, po2);
-      }
-      else
-      {
-        obj3D2.getSegment(s2);
-      }
-      return intersectInCommonLine(s1, s2, lin3D, obj);
-    }
-
-    return false;
-  }
-
-  TObject2D obj2D;
-  if (intersect(p1.poly2D, p2.poly2D, obj2D))
-  {
-    aux = obj2D.generate3DObject();
-    project3D(aux, p1.pose, obj);
-    return true;
-  }
-
-  return false;
-}
 // End of auxiliary methods
 
 bool math::intersect(const TSegment3D& s1, const TSegment3D& s2, TObject3D& obj)
@@ -1963,7 +1903,8 @@ void math::assemblePolygons(
       remainder.push_back(segm);
   size_t N = tmp.size();
   CSparseMatrixTemplate<unsigned char> matches(N, N);
-  for (size_t i = 0; i < N - 1; i++)
+  // Note the "i + 1 < N" form: "i < N - 1" underflows for an empty input.
+  for (size_t i = 0; i + 1 < N; i++)
     for (size_t j = i + 1; j < N; j++)
     {
       if (distance(tmp[i].point1, tmp[j].point1) < geometryEpsilon)
@@ -2033,7 +1974,12 @@ void math::assemblePolygons(const std::vector<TObject3D>& objs, std::vector<TPol
 {
   polys = getPolygons(objs);
   const auto segms = getSegments(objs);
-  assemblePolygons(segms, polys);
+
+  // The segment-based overload replaces its output vector, so assemble into a
+  // temporary and append, or the polygons already present in `objs` are lost:
+  std::vector<TPolygon3D> fromSegments;
+  assemblePolygons(segms, fromSegments);
+  polys.insert(polys.end(), fromSegments.begin(), fromSegments.end());
 }
 
 void math::assemblePolygons(
@@ -2046,7 +1992,9 @@ void math::assemblePolygons(
 
   std::vector<TSegment3D> remainderSgms;
   const auto sgms = getSegments(tmp, remainder);
-  assemblePolygons(sgms, polys, remainderSgms);
+  std::vector<TPolygon3D> fromSegments;
+  assemblePolygons(sgms, fromSegments, remainderSgms);
+  polys.insert(polys.end(), fromSegments.begin(), fromSegments.end());
   for (const auto& o : remainderSgms) remainder.emplace_back(TObject3D::From(o));
 }
 
@@ -2059,7 +2007,9 @@ void math::assemblePolygons(
   std::vector<TObject3D> tmp;
   polys = getPolygons(objs, tmp);
   std::vector<TSegment3D> sgms = getSegments(tmp, remainder2);
-  assemblePolygons(sgms, polys, remainder1);
+  std::vector<TPolygon3D> fromSegments;
+  assemblePolygons(sgms, fromSegments, remainder1);
+  polys.insert(polys.end(), fromSegments.begin(), fromSegments.end());
 }
 
 bool intersect(const TLine2D& l1, const TSegmentWithLine& s2, TObject2D& obj)
