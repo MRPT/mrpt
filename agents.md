@@ -207,7 +207,8 @@ dominated by the hardware/GUI modules.
 ```bash
 colcon build --base-paths modules apps --cmake-args -DENABLE_COVERAGE=ON -DBUILD_TESTING=ON
 xvfb-run -a --server-args="-screen 0 1280x1024x24" colcon test --base-paths modules apps
-gcovr --root . -j$(nproc) --gcov-executable gcov-13 \
+# The gcov major version must match the compiler that built the objects:
+gcovr --root . -j$(nproc) --gcov-executable gcov-$(gcc -dumpversion | cut -d. -f1) \
   --gcov-ignore-parse-errors=all --merge-mode-functions=merge-use-line-min \
   --exclude-unreachable-branches --exclude-throw-branches \
   --exclude '.*/3rdparty/.*' --exclude '.*/stb/.*' --exclude '.*/tests/.*' \
@@ -221,9 +222,11 @@ Every flag above is there because something breaks without it:
 * **`xvfb-run`**: without a display the `mrpt_gui` window tests `GTEST_SKIP()`
   and the module reads ~1% instead of ~40%. `MRPT_SKIP_GUI_TESTS=1` forces the
   skip.
-* **`--gcov-executable gcov-<compiler major version>`**: the system `gcov`
-  alias may point at an unrelated binary, and gcovr then silently mis-decodes
-  its output.
+* **`--gcov-executable gcov-<compiler major version>`**: `gcov` must match the
+  major version of the compiler that produced the `.gcno`/`.gcda` files, and
+  the system `gcov` alias may point at an unrelated binary -- gcovr then
+  silently mis-decodes its output. The numbers in this section were taken with
+  GCC 13 / `gcov-13`; with clang, use `llvm-cov gcov` instead.
 * **`--gcov-ignore-parse-errors=all`**: large files trip gcovr's "suspicious
   hits" detector, which otherwise aborts the whole run.
 * **`--merge-mode-functions=merge-use-line-min`**: gcovr >= 8.6 aborts when a
@@ -294,7 +297,7 @@ isolated single-package run can read 30-40 points low. Incremental
   with `CVisualObject::writeToStreamRender()`, versioned independently of the
   class itself. This is consistently the highest-yield technique available.
 * **Mock transports.** `mrpt_hwdrivers/tests/mock_stream.h` is a `CStream` that
-  records writes and replays scripted answers keyed on the command received —
+  records writes and replays scripted answers keyed on the command received --
   enough for any driver reachable via `C2DRangeFinderAbstract::bindIO()` or
   `CGPSInterface::bindStream()`. `mrpt_comms` uses a one-shot local
   `CServerTCPSocket` (`comms_test_server.{h,cpp}`) for its HTTP/NTRIP client
@@ -312,7 +315,7 @@ isolated single-package run can read 30-40 points low. Incremental
   `SKIP_IF_NO_GUI()`, which every window test must use.
 * **Regenerating render references**: `MRPT_UPDATE_RENDER_REFERENCES=1
   build/mrpt_opengl/bin/test_mrpt_opengl` under `xvfb-run`. Beware: a reference
-  image captured while a defect was present will happily keep passing —
+  image captured while a defect was present will happily keep passing --
   `mrpt_viz/tests/RenderBuffers_unittest.cpp` asserts on the CPU-side vertex
   buffers instead, which is what actually caught several "renders nothing"
   regressions.
@@ -350,19 +353,19 @@ Roughly 90 real bugs have been found by these passes. The ones that recur:
   silently never runs until it is registered in the module's `CMakeLists.txt`.
 * **`mrpt_math`** only explicitly instantiates fixed-size matrices for a few
   dimensions (square `CMatrixFixed`: 2,3,4,6,7,12; `CVectorFixed`:
-  2,3,4,5,6,7,12 — see `src/MatrixVectorBase_instantiate_*.cpp`). Instantiating
+  2,3,4,5,6,7,12 -- see `src/MatrixVectorBase_instantiate_*.cpp`). Instantiating
   a template with any other size compiles but fails to *link*. Pick 2 as the
   smallest.
 * **`mrpt_hwdrivers`**: several `MRPT_HAS_*` macros the sources still guard on
   are never defined in the 3.x build (`MRPT_HAS_OPENCV`, `MRPT_HAS_LIBDC1394_2`,
   `MRPT_HAS_ROBOPEAK_LIDAR`, `MRPT_HAS_NIDAQMX*`, `MRPT_HAS_PGR_FLYCAPTURE2`,
   `MRPT_HAS_KINECT_CL_NUI`), so those paths are compiled out. Do not "fix" one
-  by adding the define alone — `CImageGrabber_dc1394.cpp` no longer compiles
+  by adding the define alone -- `CImageGrabber_dc1394.cpp` no longer compiles
   against current `mrpt::img`. Several sources also never include
   `mrpt/hwdrivers/config.h`, so even their defined macros read 0.
 * **`mrpt_nav`**: `rnav_unittest.cpp`'s helper returns silently when the shared
   `navigation-ptgs/*.ini` files are missing *and* swallows every exception, so
-  it can pass while testing nothing — build configurations with
+  it can pass while testing nothing -- build configurations with
   `CConfigFileMemory` instead. Reactive tests must advance the robot's
   *navigation* time (`getNavigationTime()`), not just the clock, or
   `updateCurrentPoseAndSpeeds()`'s 20 ms throttle leaves the pose cache empty.
@@ -377,7 +380,7 @@ Roughly 90 real bugs have been found by these passes. The ones that recur:
   never produces in practice.
 * **`mrpt_maps`**: `CVoxelMapRGB`'s and `CColouredOctoMap`'s 3D-scan colour
   paths unproject via `hasRangeImage` + camera intrinsics, *not*
-  `hasPoints3D` — a hand-built `CObservation3DRangeScan` needs
+  `hasPoints3D` -- a hand-built `CObservation3DRangeScan` needs
   `setIntrinsicParamsFromValues()` plus a filled `rangeImage`.
   `CGasConcentrationGridMap2D::build_Gaussian_Wind_Grid()` caches a LUT file in
   the *current working directory*, so a test covering both the "generate" and
@@ -388,7 +391,7 @@ Roughly 90 real bugs have been found by these passes. The ones that recur:
 * **`mrpt_slam`**: only the *auxiliary* particle filters go through
   `PF_SLAM_implementation_gatherActionsCheckBothActObs()`;
   `pfStandardProposal` reads the action directly. An empty sensory frame still
-  counts as "valid" — pass a null `sf` to leave a movement accumulated.
+  counts as "valid" -- pass a null `sf` to leave a movement accumulated.
 * **`mrpt_viz`** has zero OpenGL dependency (it is the scene-graph description
   consumed by `mrpt_opengl`), so almost all of it is testable with plain,
   non-rendering unit tests.
@@ -399,17 +402,17 @@ Roughly 90 real bugs have been found by these passes. The ones that recur:
 
 ### Where the remaining gap is
 
-1. **Hardware drivers — `mrpt_hwdrivers`**: what is still at 0% are the drivers
+1. **Hardware drivers -- `mrpt_hwdrivers`**: what is still at 0% are the drivers
    that own their transport instead of reading through an injectable `CStream`
    (`COpenNI2Generic`, `CKinect`, `CCameraSensor`, `CNTRIPClient`, `CLMS100eth`,
    `CSICKTim561Eth`, `CCANBusReader`, `CTaoboticsIMU`, …). Reaching them needs
    the same `bindIO()`/`bindStream()` treatment first.
-2. **GUI/rendering — `mrpt_imgui` (0%) and the rest of `mrpt_gui`**:
+2. **GUI/rendering -- `mrpt_imgui` (0%) and the rest of `mrpt_gui`**:
    `CDisplayWindowGUI.cpp` (nanogui/GLFW), `CQtGlCanvasBase.cpp` (Qt),
    `CImGuiSceneView.cpp`, the modal dialogs in `CAboutBox*`/`error_box.cpp`,
    and the rest of `mathplot.cpp`. The `xvfb-run` technique should work for the
    nanogui/Qt canvases too.
-3. **CLI apps — `mrpt_libapps_cli`**: some `rawlog-edit_*.cpp` paths. Better
+3. **CLI apps -- `mrpt_libapps_cli`**: some `rawlog-edit_*.cpp` paths. Better
    suited to subprocess/golden-file integration tests than unit tests.
 4. **Pure-logic files at 0%**: none left.
 5. **Largest single-file gaps**:
@@ -430,7 +433,7 @@ One line per pass; the details are in the git log.
 
 | Date | Modules | Before -> after (lines) |
 |---|---|---|
-| 2026-07-03 | baseline for all 33 modules | — |
+| 2026-07-03 | baseline for all 33 modules | -- |
 | 2026-07-06 | `mrpt_graphs`, `mrpt_random`, `mrpt_libapps_cli` | libapps_cli 9.1% -> 59.2% |
 | 2026-07-07 | `mrpt_tfest` | -> 97.1% |
 | 2026-07-09 | `mrpt_bayes`, `mrpt_config` | both -> >96% |
@@ -496,16 +499,21 @@ reports whether a fast path ran. Two constraints matter: the gray kernel
 asserts both row strides are multiples of 16 bytes, which for `CImage`'s packed
 rows means `width % 16 == 0` (the scale-half kernels handle the remainder
 themselves), and none of them can run in place. Note this also restores MRPT
-2.x's `IMG_INTERP_NN` semantics for `scaleHalf` — point sampling, where the stb
+2.x's `IMG_INTERP_NN` semantics for `scaleHalf` -- point sampling, where the stb
 `STBIR_FILTER_BOX` path box-averages.
 
 **Dead code removed from `mrpt_math`** (~1700 lines): the public headers
 `CBinaryRelation.h`, `matrix_adaptors.h`, `MatrixBlockSparseCols.h`,
-`CMonteCarlo.h` and `eigen_extensions.h`. Nothing in the repo included any of
-them, and all but `eigen_extensions.h` fail to even compile standalone — they
-reference `CMatrixTemplateObjects` (removed in the 3.x matrix rewrite) or
-`Eigen::Matrix` without including Eigen — so no working downstream code can be
-using them. Also removed: a second, unreferenced
+`CMonteCarlo.h` and `eigen_extensions.h`. These were installed as public
+headers, so external use cannot be ruled out by inspection; what can be said
+is that no in-repository consumer includes any of them, and that all but
+`eigen_extensions.h` fail to even compile standalone -- they reference
+`CMatrixTemplateObjects` (removed in the 3.x matrix rewrite) or `Eigen::Matrix`
+without including Eigen -- so any downstream `#include` of those four was
+already a compile error. `eigen_extensions.h` did compile, but holds only
+`mrpt::math::detail` helpers with no callers. Removing them is an API break to
+declare in the release notes for the next major version.
+Also removed: a second, unreferenced
 `::intersect(TPolygonWithPlane, TPolygonWithPlane, TObject3D)` in
 `geometry.cpp`, duplicating what `intersectAux()` does for the public
 `intersect(TPolygon3D, TPolygon3D)`.
@@ -513,14 +521,14 @@ using them. Also removed: a second, unreferenced
 **Real bugs found and fixed:**
 
 * `CImage::grayscale(ret)` documents in-place use (`ret = *this`), but
-  `ret.resize()` frees the source buffer before the conversion loop reads it —
+  `ret.resize()` frees the source buffer before the conversion loop reads it --
   the result was garbage plus a 2-byte heap over-read on the last pixel.
 * `mrpt::math::assemblePolygons()`'s three `TObject3D` overloads collected the
   polygons already present in the input and then called the segment-based
   overload, which **overwrites** its output vector: every pre-existing polygon
   was silently dropped.
 * `assemblePolygons(segments, ...)` looped `for (size_t i = 0; i < N - 1; i++)`,
-  which underflows to ~2^64 iterations for an empty input — a hang, not a
+  which underflows to ~2^64 iterations for an empty input -- a hang, not a
   wrong answer.
 * `TSegment3D::distance(TPoint3D)` returned
   `min(d(p,p1), d(p,p2), d(p, infinite line))`, so a point beyond an endpoint
