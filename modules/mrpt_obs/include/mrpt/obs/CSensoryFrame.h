@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/containers/deep_const_iterator.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -198,8 +199,11 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
   using iterator = std::deque<CObservation::Ptr>::iterator;
 
   /** You can use CSensoryFrame::begin to get a iterator to the first element.
+   *  Dereferencing it yields a CObservation::ConstPtr, so that a `const`
+   *  sensory frame cannot hand out mutable observations.
    */
-  using const_iterator = std::deque<CObservation::Ptr>::const_iterator;
+  using const_iterator =
+      mrpt::containers::deep_const_iterator<std::deque<CObservation::Ptr>::const_iterator>;
 
   /** Returns a constant iterator to the first observation: this is an example
    *of usage:
@@ -208,7 +212,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    *   ...
    *   for (CSensoryFrame::const_iterator it=sf.begin();it!=sf.end();++it)
    *	  {
-   *      (*it)->... // (*it) is a "CObservation*"
+   *      (*it)->... // (*it) is a "CObservation::ConstPtr"
    *   }
    *
    * \endcode
@@ -221,7 +225,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
    *   ...
    *   for (CSensoryFrame::const_iterator it=sf.begin();it!=sf.end();++it)
    *	  {
-   *      (*it)->... // (*it) is a "CObservation*"
+   *      (*it)->... // (*it) is a "CObservation::ConstPtr"
    *   }
    *
    * \endcode

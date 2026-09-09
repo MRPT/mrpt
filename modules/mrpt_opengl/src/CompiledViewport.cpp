@@ -116,7 +116,8 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
 }
 
 void CompiledViewport::addProxy(
-    const RenderableProxy::Ptr& proxy, const std::shared_ptr<mrpt::viz::CVisualObject>& sourceObj)
+    const RenderableProxy::Ptr& proxy,
+    const std::shared_ptr<const mrpt::viz::CVisualObject>& sourceObj)
 {
   MRPT_START
 
@@ -140,7 +141,7 @@ void CompiledViewport::addProxy(
   // Track object-to-proxy mapping using weak_ptr
   if (sourceObj)
   {
-    std::weak_ptr<mrpt::viz::CVisualObject> objWeak = sourceObj;
+    std::weak_ptr<const mrpt::viz::CVisualObject> objWeak = sourceObj;
     m_objectToProxy[objWeak].push_back(proxy);
   }
 
@@ -201,7 +202,7 @@ size_t CompiledViewport::cleanupOrphanedProxies()
 }
 
 void CompiledViewport::updateProxiesForObject(
-    const std::weak_ptr<mrpt::viz::CVisualObject>& weakObj,
+    const std::weak_ptr<const mrpt::viz::CVisualObject>& weakObj,
     const mrpt::viz::CVisualObject* sourceObj,
     const mrpt::math::CMatrixFloat44& modelMatrix,
     bool effectiveVisible)
@@ -220,9 +221,9 @@ void CompiledViewport::updateProxiesForObject(
     if (!src) continue;
 
     // Check if this proxy belongs to the same source object
-    auto srcWeak = std::weak_ptr<mrpt::viz::CVisualObject>(src);
-    if (!(std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>{}(srcWeak, weakObj) ||
-          std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>{}(weakObj, srcWeak)))
+    auto srcWeak = std::weak_ptr<const mrpt::viz::CVisualObject>(src);
+    if (!(std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>{}(srcWeak, weakObj) ||
+          std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>{}(weakObj, srcWeak)))
     {
       // Same object. Update model matrix, visibility, and buffers
       proxy->m_modelMatrix = modelMatrix;
@@ -864,7 +865,8 @@ void CompiledViewport::renderImageView(ShaderProgramManager& shaderManager)
   // (same logic as mrpt v2 Viewport::renderImageView)
   if (auto src = m_imageViewProxy->getSourceObject(); src)
   {
-    if (auto* ttSrc = dynamic_cast<mrpt::viz::VisualObjectParams_TexturedTriangles*>(src.get());
+    if (auto* ttSrc =
+            dynamic_cast<const mrpt::viz::VisualObjectParams_TexturedTriangles*>(src.get());
         ttSrc && ttSrc->textureImageHasBeenAssigned())
     {
       const auto& img = ttSrc->getTextureImage();

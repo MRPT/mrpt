@@ -346,8 +346,12 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 
   // Insert new scans:
   mrpt::system::TTimeStamp tim_last = INVALID_TIMESTAMP;
-  for (auto& it : sf)
+  for (const auto& itConst : sf)
   {
+    // Non-const: rendering some observations lazy-loads and caches data inside
+    // them.
+    const auto it = std::const_pointer_cast<CObservation>(itConst);
+
     const std::string sNameInMap = it->sensorLabel + std::string(" [Type: ") +
                                    it->GetRuntimeClass()->className + std::string("]");
 

@@ -61,8 +61,8 @@ mrpt::maps::CMultiMetricMap initializer1()
 mrpt::maps::CMultiMetricMap initializer2()
 {
   mrpt::maps::CMultiMetricMap m;
-  m.maps.push_back(mrpt::maps::COccupancyGridMap2D::Create());
-  m.maps.push_back(mrpt::maps::CSimplePointsMap::Create());
+  m.push_back(mrpt::maps::COccupancyGridMap2D::Create());
+  m.push_back(mrpt::maps::CSimplePointsMap::Create());
   return m;
 }
 }  // namespace
@@ -71,15 +71,15 @@ TEST(CMultiMetricMapTests, initializers)
 {
   {
     const auto m = initializer1();
-    EXPECT_EQ(m.maps.size(), 2U);
-    EXPECT_TRUE(IS_CLASS(*m.maps.at(0), mrpt::maps::COccupancyGridMap2D));
-    EXPECT_TRUE(IS_CLASS(*m.maps.at(1), mrpt::maps::CSimplePointsMap));
+    EXPECT_EQ(m.size(), 2U);
+    EXPECT_TRUE(IS_CLASS(*m.mapByIndex(0), mrpt::maps::COccupancyGridMap2D));
+    EXPECT_TRUE(IS_CLASS(*m.mapByIndex(1), mrpt::maps::CSimplePointsMap));
   }
   {
     const auto m = initializer2();
-    EXPECT_EQ(m.maps.size(), 2U);
-    EXPECT_TRUE(IS_CLASS(*m.maps.at(0), mrpt::maps::COccupancyGridMap2D));
-    EXPECT_TRUE(IS_CLASS(*m.maps.at(1), mrpt::maps::CSimplePointsMap));
+    EXPECT_EQ(m.size(), 2U);
+    EXPECT_TRUE(IS_CLASS(*m.mapByIndex(0), mrpt::maps::COccupancyGridMap2D));
+    EXPECT_TRUE(IS_CLASS(*m.mapByIndex(1), mrpt::maps::CSimplePointsMap));
   }
 }
 
@@ -88,7 +88,7 @@ TEST(CMultiMetricMapTests, copyCtorOp)
   using mrpt::maps::CSimplePointsMap;
 
   auto m1 = initializer1();
-  EXPECT_EQ(m1.maps.size(), 2U);
+  EXPECT_EQ(m1.size(), 2U);
 
   m1.mapByClass<CSimplePointsMap>()->insertPoint(1.0f, 2.0f, 3.0f);
 
@@ -111,7 +111,7 @@ TEST(CMultiMetricMapTests, moveOp)
   using mrpt::maps::CSimplePointsMap;
 
   auto m1 = initializer1();
-  EXPECT_EQ(m1.maps.size(), 2U);
+  EXPECT_EQ(m1.size(), 2U);
 
   m1.mapByClass<CSimplePointsMap>()->insertPoint(1.0f, 2.0f, 3.0f);
 
@@ -184,7 +184,7 @@ TEST(CMultiMetricMapTests, DetermineMatching2DWithOnePointsMapWorks)
 TEST(CMultiMetricMapTests, DetermineMatching2DWithZeroPointsMapsThrows)
 {
   mrpt::maps::CMultiMetricMap m;
-  m.maps.push_back(mrpt::maps::COccupancyGridMap2D::Create());  // No points map.
+  m.push_back(mrpt::maps::COccupancyGridMap2D::Create());  // No points map.
 
   mrpt::maps::CSimplePointsMap otherMap;
   otherMap.insertPoint(1.0f, 0.0f, 0.0f);
@@ -198,28 +198,30 @@ TEST(CMultiMetricMapTests, DetermineMatching2DWithZeroPointsMapsThrows)
 }
 
 // =========================================================================
-//  getAsSimplePointsMap(): 0, 1, and >1 points-map sub-map cases
+//  mapByClass<CSimplePointsMap>(): 0, 1, and >1 points-map sub-map cases
 // =========================================================================
 
-TEST(CMultiMetricMapTests, GetAsSimplePointsMapZeroReturnsNull)
+TEST(CMultiMetricMapTests, PointsMapByClassZeroReturnsNull)
 {
   mrpt::maps::CMultiMetricMap m;
-  m.maps.push_back(mrpt::maps::COccupancyGridMap2D::Create());
-  EXPECT_EQ(m.getAsSimplePointsMap(), nullptr);
+  m.push_back(mrpt::maps::COccupancyGridMap2D::Create());
+  EXPECT_EQ(m.mapByClass<mrpt::maps::CSimplePointsMap>(), nullptr);
 }
 
-TEST(CMultiMetricMapTests, GetAsSimplePointsMapOneReturnsIt)
+TEST(CMultiMetricMapTests, PointsMapByClassOneReturnsIt)
 {
   auto m = initializer1();
-  EXPECT_NE(m.getAsSimplePointsMap(), nullptr);
+  EXPECT_NE(m.mapByClass<mrpt::maps::CSimplePointsMap>(), nullptr);
 }
 
-TEST(CMultiMetricMapTests, GetAsSimplePointsMapMultipleThrows)
+TEST(CMultiMetricMapTests, PointsMapByClassMultipleSelectsByIndex)
 {
   mrpt::maps::CMultiMetricMap m;
-  m.maps.push_back(mrpt::maps::CSimplePointsMap::Create());
-  m.maps.push_back(mrpt::maps::CSimplePointsMap::Create());
-  EXPECT_ANY_THROW(m.getAsSimplePointsMap());
+  m.push_back(mrpt::maps::CSimplePointsMap::Create());
+  m.push_back(mrpt::maps::CSimplePointsMap::Create());
+  EXPECT_EQ(m.countMapsByClass<mrpt::maps::CSimplePointsMap>(), 2U);
+  EXPECT_NE(m.mapByClass<mrpt::maps::CSimplePointsMap>(1), nullptr);
+  EXPECT_EQ(m.mapByClass<mrpt::maps::CSimplePointsMap>(2), nullptr);
 }
 
 // =========================================================================
@@ -330,7 +332,7 @@ TEST(CMultiMetricMapTests, SerializeRoundTrip)
     ar.ReadObject(&m2);
   }
 
-  EXPECT_EQ(m2.maps.size(), m1.maps.size());
+  EXPECT_EQ(m2.size(), m1.size());
   EXPECT_EQ(m2.mapByClass<mrpt::maps::CSimplePointsMap>()->size(), 1u);
 }
 

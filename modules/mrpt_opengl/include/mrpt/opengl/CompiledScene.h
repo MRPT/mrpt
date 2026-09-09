@@ -263,18 +263,18 @@ class CompiledScene
    * in the scene graph DAG).
    */
   std::map<
-      std::weak_ptr<mrpt::viz::CVisualObject>,
+      std::weak_ptr<const mrpt::viz::CVisualObject>,
       std::vector<std::vector<RenderableProxy::Ptr>>,
-      std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
+      std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>>
       m_objectToProxy;
 
   /** Transient per-object occurrence counter used during
    * updateDirtyObjects() tree walk to match each tree occurrence
    * to its corresponding proxy group. Cleared before each walk. */
   std::map<
-      std::weak_ptr<mrpt::viz::CVisualObject>,
+      std::weak_ptr<const mrpt::viz::CVisualObject>,
       size_t,
-      std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
+      std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>>
       m_updateOccurrenceCounter;
 
   /** Per-object version tracking for dirty detection.
@@ -282,9 +282,9 @@ class CompiledScene
    * it last compiled, so multiple CompiledScenes sharing the same source
    * objects don't interfere with each other's dirty tracking. */
   std::map<
-      std::weak_ptr<mrpt::viz::CVisualObject>,
+      std::weak_ptr<const mrpt::viz::CVisualObject>,
       uint64_t,
-      std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
+      std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>>
       m_objectVersions;
 
   /** Centralized shader program management */
@@ -313,7 +313,7 @@ class CompiledScene
 
   /** Compiles an object and its children (for CSetOfObjects) */
   void compileObject(
-      const std::shared_ptr<mrpt::viz::CVisualObject>& obj,
+      const std::shared_ptr<const mrpt::viz::CVisualObject>& obj,
       CompiledViewport& compiledViewport,
       CompilationStats& stats,
       const mrpt::math::CMatrixFloat44& parentModelMatrix = mrpt::math::CMatrixFloat44::Identity());
@@ -324,13 +324,13 @@ class CompiledScene
       const mrpt::math::CMatrixFloat44& parentModelMatrix);
 
   /** Checks if we already have a proxy for this object */
-  [[nodiscard]] bool hasProxyFor(const std::shared_ptr<mrpt::viz::CVisualObject>& obj) const;
+  [[nodiscard]] bool hasProxyFor(const std::shared_ptr<const mrpt::viz::CVisualObject>& obj) const;
 
   /** Creates appropriate proxy types based on object's parameter mixins.
    * Returns one proxy per mixin type (e.g., CBox gets both a TrianglesProxy
    * and a LinesProxy). */
   [[nodiscard]] std::vector<RenderableProxy::Ptr> createProxiesByType(
-      const std::shared_ptr<mrpt::viz::CVisualObject>& obj);
+      const std::shared_ptr<const mrpt::viz::CVisualObject>& obj);
 
   /** Cleans up proxies for objects that no longer exist */
   void cleanupOrphanedProxies(CompilationStats& stats);
@@ -344,7 +344,7 @@ class CompiledScene
   /** Recursive helper: walks the scene tree to detect dirty objects
    * (including containers) and update their proxies' model matrices. */
   void updateDirtyObjectRecursive(
-      const std::shared_ptr<mrpt::viz::CVisualObject>& obj,
+      const std::shared_ptr<const mrpt::viz::CVisualObject>& obj,
       const mrpt::math::CMatrixFloat44& parentModelMatrix,
       bool parentDirty,
       bool parentVisible,

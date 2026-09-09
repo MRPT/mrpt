@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/containers/PerThreadDataHolder.h>
+#include <mrpt/containers/deep_const_iterator.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/TLine3D.h>
@@ -272,7 +273,9 @@ class Viewport :
   /** @name Contained objects set/get/search
     @{ */
 
-  using const_iterator = ListVisualObjects::const_iterator;
+  /** Dereferencing it yields a CVisualObject::ConstPtr, so that a `const`
+   * container cannot hand out mutable objects. */
+  using const_iterator = mrpt::containers::deep_const_iterator<ListVisualObjects::const_iterator>;
   using iterator = ListVisualObjects::iterator;
 
   [[nodiscard]] const_iterator begin() const { return m_objects.begin(); }
@@ -296,7 +299,13 @@ class Viewport :
 
   /** Returns the first object with a given name, or nullptr if not found.
    */
-  [[nodiscard]] CVisualObject::Ptr getByName(const std::string& str);
+  [[nodiscard]] CVisualObject::ConstPtr getByName(const std::string& str) const;
+  /// \overload Non-const version returning a mutable Ptr
+  [[nodiscard]] CVisualObject::Ptr getByName(const std::string& str)
+  {
+    return std::const_pointer_cast<CVisualObject>(
+        static_cast<const Viewport*>(this)->getByName(str));
+  }
 
   /** Returns the i'th object of a given class (or of a descendant class), or
   nullptr (an empty smart pointer) if not found.

@@ -56,7 +56,7 @@ class CDocument
   const RenderizableMaps renderizableMaps() const;
 
   const mrpt::maps::CSimpleMap& simplemap() const;
-  const mrpt::maps::CMultiMetricMap::TListMaps& config() const;
+  const mrpt::maps::CMultiMetricMap::TListMaps& config();
 
   const TypeConfig& typeConfig() const;
 

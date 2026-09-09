@@ -123,7 +123,7 @@ class CompiledViewport
    */
   void addProxy(
       const RenderableProxy::Ptr& proxy,
-      const std::shared_ptr<mrpt::viz::CVisualObject>& sourceObj);
+      const std::shared_ptr<const mrpt::viz::CVisualObject>& sourceObj);
 
   /** Removes proxies whose source objects have been deleted.
    * \return Number of orphaned proxies removed
@@ -134,7 +134,7 @@ class CompiledViewport
    * Called by CompiledScene::updateDirtyObjects().
    */
   void updateProxiesForObject(
-      const std::weak_ptr<mrpt::viz::CVisualObject>& weakObj,
+      const std::weak_ptr<const mrpt::viz::CVisualObject>& weakObj,
       const mrpt::viz::CVisualObject* sourceObj,
       const mrpt::math::CMatrixFloat44& modelMatrix,
       bool effectiveVisible = true);
@@ -339,9 +339,9 @@ class CompiledViewport
    * the same CVisualObject appears at multiple positions in the scene DAG).
    */
   std::map<
-      std::weak_ptr<mrpt::viz::CVisualObject>,
+      std::weak_ptr<const mrpt::viz::CVisualObject>,
       std::vector<RenderableProxy::Ptr>,
-      std::owner_less<std::weak_ptr<mrpt::viz::CVisualObject>>>
+      std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>>
       m_objectToProxy;
 
   /** @name Viewport Configuration

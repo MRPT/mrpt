@@ -87,7 +87,9 @@ void CSensoryFrame::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ver
 void CSensoryFrame::operator+=(const CSensoryFrame& sf)
 {
   m_cachedMap.reset();
-  for (const auto& obs : sf) m_observations.push_back(obs);
+  // Note: iterate the underlying list, since the public const_iterator hands
+  // out const pointers, and observations are shared, not deep-copied, here.
+  for (const auto& obs : sf.m_observations) m_observations.push_back(obs);
 }
 
 /*---------------------------------------------------------------
@@ -126,16 +128,14 @@ CObservation::ConstPtr CSensoryFrame::getObservationByIndex(size_t idx) const
 {
   MRPT_START
   ASSERT_LT_(idx, size());
-  auto it = begin() + idx;
-  return *it;
+  return m_observations.at(idx);
   MRPT_END
 }
 CObservation::Ptr& CSensoryFrame::getObservationByIndex(size_t idx)
 {
   MRPT_START
   ASSERT_LT_(idx, size());
-  auto it = begin() + idx;
-  return *it;
+  return m_observations.at(idx);
   MRPT_END
 }
 
@@ -243,7 +243,7 @@ void CSensoryFrame::internal_buildAuxPointsMap(const void* options) const
   for (const auto& it : *this)
     if (IS_CLASS(*it, CObservation2DRangeScan))
       (*ptr_internal_build_points_map_from_scan2D)(
-          dynamic_cast<CObservation2DRangeScan&>(*it.get()), m_cachedMap, options);
+          dynamic_cast<const CObservation2DRangeScan&>(*it), m_cachedMap, options);
 }
 
 bool CSensoryFrame::insertObservationsInto(

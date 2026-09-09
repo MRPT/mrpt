@@ -226,11 +226,11 @@ class RenderableProxy
    * - Query dirty flags
    * Set by CompiledScene during proxy creation.
    */
-  std::weak_ptr<mrpt::viz::CVisualObject> m_sourceObject;
+  std::weak_ptr<const mrpt::viz::CVisualObject> m_sourceObject;
 
  public:
   /** Sets the source object reference. Called by CompiledScene during compilation. */
-  void setSourceObject(std::weak_ptr<mrpt::viz::CVisualObject> obj)
+  void setSourceObject(std::weak_ptr<const mrpt::viz::CVisualObject> obj)
   {
     m_sourceObject = std::move(obj);
   }
@@ -245,7 +245,7 @@ class RenderableProxy
   bool m_visible = true;
 
   /** Returns the source object, or nullptr if it has been deleted. */
-  [[nodiscard]] std::shared_ptr<mrpt::viz::CVisualObject> getSourceObject() const
+  [[nodiscard]] std::shared_ptr<const mrpt::viz::CVisualObject> getSourceObject() const
   {
     return m_sourceObject.lock();
   }

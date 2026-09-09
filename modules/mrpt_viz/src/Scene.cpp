@@ -163,12 +163,13 @@ void Scene::insert(const CVisualObject::Ptr& newObject, const std::string& viewp
 /*---------------------------------------------------------------
               getByName
   ---------------------------------------------------------------*/
-CVisualObject::Ptr Scene::getByName(const string& str, [[maybe_unused]] const string& viewportName)
+CVisualObject::ConstPtr Scene::getByName(
+    const string& str, [[maybe_unused]] const string& viewportName) const
 {
-  CVisualObject::Ptr obj;
+  CVisualObject::ConstPtr obj;
   for (const auto& m_viewport : m_viewports)
   {
-    if (obj = m_viewport->getByName(str); obj)
+    if (obj = std::as_const(*m_viewport).getByName(str); obj)
     {
       break;
     }

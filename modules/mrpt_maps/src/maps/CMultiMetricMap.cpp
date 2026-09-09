@@ -55,7 +55,7 @@ struct MapExecutor
     MRPT_START
     // This is to avoid duplicating "::run()" for const and non-const.
     auto& mmm = const_cast<CMultiMetricMap&>(_mmm);
-    std::for_each(mmm.maps.begin(), mmm.maps.end(), op);
+    std::for_each(mmm.mapsList().begin(), mmm.mapsList().end(), op);
     MRPT_END
   }
 };  // end of MapExecutor
@@ -117,7 +117,7 @@ void CMultiMetricMap::setListOfMaps(const TSetOfMetricMapInitializers& inits)
 {
   MRPT_START
   // Erase current list of maps:
-  maps.clear();
+  m_maps.clear();
 
   auto& mmr = mrpt::maps::internal::TMetricMapTypesRegistry::Instance();
 
@@ -128,7 +128,7 @@ void CMultiMetricMap::setListOfMaps(const TSetOfMetricMapInitializers& inits)
     auto theMap = mmr.factoryMapObjectFromDefinition(*i.get());
     ASSERT_(theMap);
     // Add to the list of maps:
-    this->maps.emplace_back(theMap);
+    m_maps.emplace_back(theMap);
   }
   MRPT_END
 }
@@ -136,7 +136,7 @@ void CMultiMetricMap::setListOfMaps(const TSetOfMetricMapInitializers& inits)
 void CMultiMetricMap::internal_clear()
 {
   std::for_each(
-      maps.begin(), maps.end(),
+      m_maps.begin(), m_maps.end(),
       [](auto ptr)
       {
         if (ptr) ptr->clear();
@@ -146,9 +146,9 @@ void CMultiMetricMap::internal_clear()
 uint8_t CMultiMetricMap::serializeGetVersion() const { return 12; }
 void CMultiMetricMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  const auto n = static_cast<uint32_t>(maps.size());
+  const auto n = static_cast<uint32_t>(m_maps.size());
   out << n;
-  for (uint32_t i = 0; i < n; i++) out << *maps[i];
+  for (uint32_t i = 0; i < n; i++) out << *m_maps[i];
 }
 
 void CMultiMetricMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -168,9 +168,10 @@ void CMultiMetricMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
       // List of maps:
       uint32_t n;
       in >> n;
-      this->maps.resize(n);
+      this->m_maps.resize(n);
       for_each(
-          maps.begin(), maps.end(), ObjectReadFromStreamToPtrs<mrpt::maps::CMetricMap::Ptr>(&in));
+          m_maps.begin(), m_maps.end(),
+          ObjectReadFromStreamToPtrs<mrpt::maps::CMetricMap::Ptr>(&in));
     }
     break;
     default:
@@ -186,7 +187,7 @@ double CMultiMetricMap::internal_computeObservationLikelihood(
   double ret_log_lik = 0;
 
   std::for_each(
-      maps.begin(), maps.end(),
+      m_maps.begin(), m_maps.end(),
       [&](auto& ptr) { ret_log_lik += ptr->computeObservationLikelihood(obs, takenFrom); });
   return ret_log_lik;
 
@@ -198,7 +199,7 @@ bool CMultiMetricMap::internal_canComputeObservationLikelihood(const CObservatio
 {
   bool can_comp = false;
   std::for_each(
-      maps.begin(), maps.end(),
+      m_maps.begin(), m_maps.end(),
       [&](auto& ptr) { can_comp = can_comp || ptr->canComputeObservationLikelihood(obs); });
   return can_comp;  //-V614
 }
@@ -209,7 +210,7 @@ bool CMultiMetricMap::internal_insertObservation(
   int total_insert = 0;
 
   std::for_each(
-      maps.begin(), maps.end(),
+      m_maps.begin(), m_maps.end(),
       [&](auto& ptr)
       {
         const bool ret = ptr->insertObservation(obs, robotPose);
@@ -246,9 +247,9 @@ void CMultiMetricMap::saveMetricMapRepresentationToFile(const std::string& filNa
 {
   MRPT_START
 
-  for (size_t idx = 0; idx < maps.size(); idx++)
+  for (size_t idx = 0; idx < m_maps.size(); idx++)
   {
-    const mrpt::maps::CMetricMap* m = maps[idx].get();
+    const mrpt::maps::CMetricMap* m = m_maps[idx].get();
     ASSERT_(m);
     std::string fil = filNamePrefix;
     fil += mrpt::format(
@@ -264,7 +265,7 @@ void CMultiMetricMap::saveMetricMapRepresentationToFile(const std::string& filNa
 void CMultiMetricMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
 {
   MRPT_START
-  std::for_each(maps.begin(), maps.end(), [&](auto& ptr) { ptr->getVisualizationInto(o); });
+  std::for_each(m_maps.begin(), m_maps.end(), [&](auto& ptr) { ptr->getVisualizationInto(o); });
   MRPT_END
 }
 
@@ -278,7 +279,7 @@ float CMultiMetricMap::compute3DMatchingRatio(
 
   float accumResult = 0;
 
-  for (const auto& map : maps)
+  for (const auto& map : m_maps)
   {
     const mrpt::maps::CMetricMap* m = map.get();
     ASSERT_(m);
@@ -286,7 +287,7 @@ float CMultiMetricMap::compute3DMatchingRatio(
   }
 
   // Return average:
-  const size_t nMapsComputed = maps.size();
+  const size_t nMapsComputed = m_maps.size();
   if (nMapsComputed) accumResult /= static_cast<float>(nMapsComputed);
   return accumResult;
 
@@ -296,27 +297,16 @@ float CMultiMetricMap::compute3DMatchingRatio(
 void CMultiMetricMap::auxParticleFilterCleanUp()
 {
   MRPT_START
-  std::for_each(maps.begin(), maps.end(), [](auto& ptr) { ptr->auxParticleFilterCleanUp(); });
-  MRPT_END
-}
-
-const CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap() const
-{
-  MRPT_START
-  const auto numPointsMaps = countMapsByClass<CSimplePointsMap>();
-  ASSERT_(numPointsMaps == 1 || numPointsMaps == 0);
-  if (!numPointsMaps)
-    return nullptr;
-  else
-    return this->mapByClass<CSimplePointsMap>(0).get();
+  std::for_each(m_maps.begin(), m_maps.end(), [](auto& ptr) { ptr->auxParticleFilterCleanUp(); });
   MRPT_END
 }
 
 std::string CMultiMetricMap::asString() const
 {
   std::stringstream ss;
-  ss << "Multi-map with " << maps.size() << " children maps: ";
-  for (size_t i = 0; i < maps.size(); i++) ss << "[" << i << "] " << maps[i]->asString() << ", ";
+  ss << "Multi-map with " << m_maps.size() << " children maps: ";
+  for (size_t i = 0; i < m_maps.size(); i++)
+    ss << "[" << i << "] " << m_maps[i]->asString() << ", ";
 
   return ss.str();
 }
@@ -324,14 +314,14 @@ std::string CMultiMetricMap::asString() const
 mrpt::maps::CMetricMap::ConstPtr CMultiMetricMap::mapByIndex(size_t idx) const
 {
   MRPT_START
-  return maps.at(idx);
+  return m_maps.at(idx);
   MRPT_END
 }
 
 mrpt::maps::CMetricMap::Ptr CMultiMetricMap::mapByIndex(size_t idx)
 {
   MRPT_START
-  return maps.at(idx);
+  return m_maps.at(idx);
   MRPT_END
 }
 

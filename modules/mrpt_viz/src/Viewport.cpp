@@ -299,7 +299,7 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 /*---------------------------------------------------------------
               getByName
   ---------------------------------------------------------------*/
-CVisualObject::Ptr Viewport::getByName(const string& str)
+CVisualObject::ConstPtr Viewport::getByName(const string& str) const
 {
   for (const auto& m_object : m_objects)
   {
@@ -310,8 +310,8 @@ CVisualObject::Ptr Viewport::getByName(const string& str)
 
     if (m_object->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::viz))
     {
-      if (CVisualObject::Ptr ret =
-              std::dynamic_pointer_cast<CSetOfObjects>(m_object)->getByName(str);
+      if (CVisualObject::ConstPtr ret =
+              std::dynamic_pointer_cast<const CSetOfObjects>(m_object)->getByName(str);
           ret)
       {
         return ret;
