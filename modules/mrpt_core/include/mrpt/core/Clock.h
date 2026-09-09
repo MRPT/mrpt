@@ -121,10 +121,13 @@ class Clock
   static void setSimulatedTime(const time_point& t);
 };
 
-/** Streams a Clock::time_point as the plain number of ticks in its
- *  time_since_epoch(). Found via ADL, this also lets test frameworks (e.g.
- *  gtest) print and compare time_point<Clock> values.
+/** Lets gtest (and anything else following the same convention) print and
+ *  compare Clock::time_point values: gtest looks up `PrintTo` via ADL before
+ *  falling back to `operator<<`, so this alone is enough for
+ *  EXPECT_EQ/ASSERT_EQ on time_point<Clock> to work -- without adding a new
+ *  `operator<<` overload that could clash with unrelated ones brought into
+ *  scope by an unrelated `using namespace`.
  */
-std::ostream& operator<<(std::ostream& os, const Clock::time_point& t);
+void PrintTo(const Clock::time_point& t, std::ostream* os);
 
 }  // namespace mrpt

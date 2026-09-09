@@ -295,7 +295,7 @@ void mrpt::Clock::setSimulatedTime(const time_point& t)
   clk.simulatedTime(static_cast<uint64_t>(t.time_since_epoch().count()));
 }
 
-std::ostream& mrpt::operator<<(std::ostream& os, const mrpt::Clock::time_point& t)
+void mrpt::PrintTo(const mrpt::Clock::time_point& t, std::ostream* os)
 {
-  return os << static_cast<uint64_t>(t.time_since_epoch().count());
+  *os << static_cast<uint64_t>(t.time_since_epoch().count());
 }

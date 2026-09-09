@@ -161,10 +161,8 @@ std::string timeLocalToString(mrpt::system::TTimeStamp t, unsigned int secondFra
 std::string intervalFormat(double seconds);
 
 /** Textual representation of a TTimeStamp as the plain number in
- * time_since_epoch().count().
- * \note Defined as mrpt::operator<<(); brought into this namespace so
- * existing qualified calls (`mrpt::system::operator<<`) keep working. */
-using mrpt::operator<<;
+ * time_since_epoch().count() */
+std::ostream& operator<<(std::ostream& o, const TTimeStamp& t);
 
 /** @} */
 
