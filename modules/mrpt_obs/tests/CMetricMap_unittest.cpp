@@ -199,7 +199,6 @@ TEST(CMetricMap, DefaultVirtualMethodsThrowOrReturnDefaults)
   EXPECT_THROW(m1.compute3DMatchingRatio(&m2, mrpt::poses::CPose3D(), rparams), std::exception);
   EXPECT_THROW(m1.squareDistanceToClosestCorrespondence(0, 0), std::exception);
 
-  EXPECT_EQ(m1.getAsSimplePointsMap(), nullptr);
   const auto bbox = m1.boundingBox();
   EXPECT_FLOAT_EQ(bbox.min.x, 0.0f);
 }

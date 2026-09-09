@@ -326,17 +326,6 @@ class CMetricMap :
    * correspondence in the map. */
   virtual float squareDistanceToClosestCorrespondence(float x0, float y0) const;
 
-  /** If the map is a simple points map or it's a multi-metric map that
-   * contains EXACTLY one simple points map, return it.
-   * Otherwise, return nullptr
-   */
-  virtual const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const { return nullptr; }
-  mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
-  {
-    return const_cast<CSimplePointsMap*>(
-        const_cast<const CMetricMap*>(this)->getAsSimplePointsMap());
-  }
-
 };  // End of class def.
 
 }  // namespace mrpt::maps
