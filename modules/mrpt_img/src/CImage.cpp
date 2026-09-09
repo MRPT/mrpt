@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/core/StackAlloc.h>
+#include <mrpt/core/cpu.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/core/round.h>
 #include <mrpt/img/CImage.h>
@@ -31,6 +32,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "CImage.SSEx.h"
 #include "CImage_impl.h"
 
 // STB library includes
@@ -876,29 +878,61 @@ bool CImage::grayscale(CImage& ret) const
     return true;
   }
 
-  // Convert to grayscale
-  ret.resize(m_state->width, m_state->height, CH_GRAY, m_state->depth);
+  // In-place operation is allowed (ret==*this), but resize() below frees the
+  // source buffer, so keep the input alive in that case:
+  CImage srcHolder;
+  const Impl* srcState = m_state.get();
+  if (ret.m_state == m_state)
+  {
+    srcHolder = this->makeDeepCopy();
+    srcState = srcHolder.m_state.get();
+  }
 
-  const auto* src = m_state->image_data;
+  const int32_t w = srcState->width;
+  const int32_t h = srcState->height;
+  const auto nChannels = srcState->channels;
+
+  ret.resize(w, h, CH_GRAY, srcState->depth);
+
+  const auto* src = srcState->image_data;
   auto* dst = ret.m_state->image_data;
 
-  for (int32_t y = 0; y < m_state->height; y++)
+  // Number of leading columns handled by the SIMD kernel, if any:
+  int32_t simdCols = 0;
+
+#if MRPT_ARCH_INTEL_COMPATIBLE
+  // The kernel works on whole blocks of 16 pixels and requires both row strides
+  // to be a multiple of 16 bytes, which for packed rows means width % 16 == 0:
+  if (nChannels == 3 && srcState->depth == PixelDepth::D8U && w > 0 && (w % 16) == 0 &&
+      mrpt::cpu::supports(mrpt::cpu::feature::SSSE3))
   {
-    for (int32_t x = 0; x < m_state->width; x++)
+    image_SSSE3_rgb_to_gray_8u(
+        src, dst, w, h, srcState->row_stride_in_bytes(), ret.m_state->row_stride_in_bytes());
+    simdCols = w;
+  }
+#endif
+
+  for (int32_t y = 0; y < h; y++)
+  {
+    const auto* srcRow = src + (static_cast<size_t>(y) * srcState->row_stride_in_bytes()) +
+                         (static_cast<size_t>(simdCols) * nChannels);
+    auto* dstRow = dst + (static_cast<size_t>(y) * ret.m_state->row_stride_in_bytes()) + simdCols;
+
+    for (int32_t x = simdCols; x < w; x++)
     {
       // Luminance formula: Y = 0.299R + 0.587G + 0.114B
-      const float r = src[0];
-      const float g = src[1];
-      const float b = src[2];
+      const float r = srcRow[0];
+      const float g = srcRow[1];
+      const float b = srcRow[2];
 
-      *dst = static_cast<uint8_t>((0.299f * r) + (0.587f * g) + (0.114f * b));
+      *dstRow = static_cast<uint8_t>((0.299f * r) + (0.587f * g) + (0.114f * b));
 
-      src += m_state->channels;
-      dst++;
+      srcRow += nChannels;
+      dstRow++;
     }
   }
 
-  return false;  // No SSE optimization used
+  return simdCols != 0;
 }
 
 void CImage::scaleImage(
@@ -955,8 +989,50 @@ void CImage::scaleImage(
 
 bool CImage::scaleHalf(CImage& out_image, TInterpolationMethod interp) const
 {
+  MRPT_START
+  makeSureImageIsLoaded();
+
+#if MRPT_ARCH_INTEL_COMPATIBLE
+  // The SIMD kernels read the source while writing the target, so they cannot
+  // run in-place:
+  if (m_state->depth == PixelDepth::D8U && out_image.m_state != m_state)
+  {
+    const int32_t w = m_state->width;
+    const int32_t h = m_state->height;
+    const auto nChannels = m_state->channels;
+
+    const auto runKernel = [&](auto* kernel)
+    {
+      out_image.resize(w / 2, h / 2, nChannels, PixelDepth::D8U);
+      kernel(
+          m_state->image_data, out_image.m_state->image_data, w, h, m_state->row_stride_in_bytes(),
+          out_image.m_state->row_stride_in_bytes());
+    };
+
+    if (nChannels == 3 && interp == IMG_INTERP_NN && mrpt::cpu::supports(mrpt::cpu::feature::SSSE3))
+    {
+      runKernel(&image_SSSE3_scale_half_3c8u);
+      return true;
+    }
+    if (nChannels == 1 && mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
+    {
+      if (interp == IMG_INTERP_NN)
+      {
+        runKernel(&image_SSE2_scale_half_1c8u);
+        return true;
+      }
+      if (interp == IMG_INTERP_LINEAR)
+      {
+        runKernel(&image_SSE2_scale_half_smooth_1c8u);
+        return true;
+      }
+    }
+  }
+#endif
+
   scaleImage(out_image, m_state->width / 2, m_state->height / 2, interp);
-  return false;  // No SSE optimization
+  return false;  // Portable (stb-based) path
+  MRPT_END
 }
 
 void CImage::scaleDouble(CImage& out_image, TInterpolationMethod interp) const

@@ -161,3 +161,53 @@ TEST(CImage_loadXPM, GrayscaleColorSpec)
   ASSERT_TRUE(img.loadFromXPM(grayColor, false));
   EXPECT_EQ(img.at<uint8_t>(0, 0, 0), 127);
 }
+
+// "#RRGGBB" hexadecimal color specifications, in both letter cases.
+TEST(CImage_loadXPM, HexadecimalColorsLowerAndUpperCase)
+{
+  const char* const xpm[] = {
+      "2 2 4 1", "a c #ff0000", "b c #00FF00", "c c #0000fF", "d c #AbCdEf", "ab", "cd",
+  };
+
+  CImage img;
+  ASSERT_TRUE(img.loadFromXPM(xpm, /*swap_rb=*/false));
+  ASSERT_EQ(img.getWidth(), 2);
+  ASSERT_EQ(img.getHeight(), 2);
+
+  EXPECT_EQ(img.ptr<uint8_t>(0, 0)[0], 0xFF);
+  EXPECT_EQ(img.ptr<uint8_t>(0, 0)[1], 0x00);
+  EXPECT_EQ(img.ptr<uint8_t>(1, 0)[1], 0xFF);
+  EXPECT_EQ(img.ptr<uint8_t>(0, 1)[2], 0xFF);
+
+  // Mixed case, and digits above 9:
+  EXPECT_EQ(img.ptr<uint8_t>(1, 1)[0], 0xAB);
+  EXPECT_EQ(img.ptr<uint8_t>(1, 1)[1], 0xCD);
+  EXPECT_EQ(img.ptr<uint8_t>(1, 1)[2], 0xEF);
+}
+
+// Color names are matched case-insensitively, with spaces removed and the
+// British "grey" spelling folded onto "gray".
+TEST(CImage_loadXPM, ColorNamesAreNormalized)
+{
+  const char* const xpm[] = {
+      "2 1 2 1",
+      "a c Light Grey",
+      "b c NAVYBLUE",
+      "ab",
+  };
+
+  CImage img;
+  ASSERT_TRUE(img.loadFromXPM(xpm, /*swap_rb=*/false));
+  ASSERT_EQ(img.getWidth(), 2);
+
+  // "Light Grey" -> "lightgray":
+  const auto* p0 = img.ptr<uint8_t>(0, 0);
+  EXPECT_EQ(p0[0], p0[1]);
+  EXPECT_EQ(p0[1], p0[2]);
+  EXPECT_GT(p0[0], 128);
+
+  // "NAVYBLUE" -> "navyblue": mostly blue.
+  const auto* p1 = img.ptr<uint8_t>(1, 0);
+  EXPECT_GT(p1[2], p1[0]);
+  EXPECT_GT(p1[2], p1[1]);
+}
