@@ -48,6 +48,7 @@ set(LIB_SOURCES
 set(LIB_UNIT_TEST_SOURCES
   tests/camera_geometry_unittest.cpp
   tests/CCanvas_unittest.cpp
+  tests/CImage_legacy_serialization_unittest.cpp
   tests/CImage_loadXPM_unittest.cpp
   tests/CImage_SSEx_unittest.cpp
   tests/CImage_unittest.cpp

@@ -252,8 +252,7 @@ void impl_image_SSSE3_rgb_or_bgr_to_gray_8u(
  * k*16
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSSE3
- *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale(),
- * mrpt::img::CImage::grayscaleInPlace()
+ *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale()
  */
 void image_SSSE3_bgr_to_gray_8u(
     const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)
@@ -279,8 +278,7 @@ void image_SSSE3_bgr_to_gray_8u(
  * k*16
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSSE3
- *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale(),
- * mrpt::img::CImage::grayscaleInPlace()
+ *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale()
  */
 void image_SSSE3_rgb_to_gray_8u(
     const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)

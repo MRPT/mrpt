@@ -765,3 +765,105 @@ TEST(CameraGeometry, NoDistortionModel_PassesThroughUnchanged)
   undistort_point(pixelNoDist, undist, cam);
   expectPixelNear(undist, pixelNoDist, 1e-2f);
 }
+
+// Points behind the camera are flagged with (-1,-1) unless explicitly accepted,
+// in both argument orders of projectPoints_with_distortion().
+TEST(CameraGeometry, ProjectPointsWithDistortion_RejectsPointsBehind)
+{
+  TCamera cam = createPlumbBobCamera();
+  const TPose3D pose = TPose3D::Identity();
+  const std::vector<TPoint3D> points = {
+      {0.1, 0.1,  2.0},
+      {0.1, 0.1, -2.0},
+      {0.0, 0.0,  0.0}
+  };
+
+  for (int order = 0; order < 2; order++)
+  {
+    std::vector<TPixelCoordf> pixels;
+    if (order == 0)
+    {
+      projectPoints_with_distortion(points, pose, cam, pixels, false);
+    }
+    else
+    {
+      projectPoints_with_distortion(points, cam, pose, pixels, false);
+    }
+    ASSERT_EQ(pixels.size(), 3U);
+    EXPECT_GT(pixels[0].x, 0.0f);
+    EXPECT_FLOAT_EQ(pixels[1].x, -1.0f);
+    EXPECT_FLOAT_EQ(pixels[1].y, -1.0f);
+    EXPECT_FLOAT_EQ(pixels[2].x, -1.0f);  // z == 0 is also "behind"
+  }
+}
+
+// DistortionModel::none must be a pass-through in the batch overloads too.
+TEST(CameraGeometry, NoDistortionModel_BatchOverloads)
+{
+  TCamera cam = createStandardCamera();  // DistortionModel::none
+  const TPose3D pose = TPose3D::Identity();
+  const std::vector<TPoint3D> points = {
+      {0.5, 0.25, 2.0}
+  };
+
+  std::vector<TPixelCoordf> a;
+  std::vector<TPixelCoordf> b;
+  projectPoints_with_distortion(points, pose, cam, a);
+  projectPoints_with_distortion(points, cam, pose, b);
+
+  const TPixelCoordf expected = projectPoint<false>(cam, pose, points[0]);
+  expectPixelNear(a[0], expected, 1e-3f);
+  expectPixelNear(b[0], expected, 1e-3f);
+
+  // ... and in the unit-plane undistortion:
+  std::vector<TPoint2D> normalized;
+  undistort_points_to_unit_plane({expected}, normalized, cam);
+  ASSERT_EQ(normalized.size(), 1U);
+  EXPECT_NEAR(normalized[0].x, 0.25, 1e-6);
+  EXPECT_NEAR(normalized[0].y, 0.125, 1e-6);
+}
+
+// The fisheye model in the single-point and unit-plane undistortion entry
+// points (the batch one is covered by UndistortPoints_Fisheye_RoundTrip).
+TEST(CameraGeometry, UndistortFisheye_SinglePointAndUnitPlane)
+{
+  TCamera cam = createFisheyeCamera();
+  const TPoint3D pt(0.3, -0.2, 1.5);
+
+  TPixelCoordf distorted;
+  projectPoint_with_distortion(pt, cam, distorted);
+
+  TPixelCoordf undistorted;
+  undistort_point(distorted, undistorted, cam);
+
+  // Undistorted pixel must match the plain pinhole projection:
+  const TPixelCoordf pinhole = projectPoint<false>(cam, TPose3D::Identity(), pt);
+  expectPixelNear(undistorted, pinhole, 0.5f);
+
+  std::vector<TPoint2D> normalized;
+  undistort_points_to_unit_plane({distorted}, normalized, cam);
+  ASSERT_EQ(normalized.size(), 1U);
+  EXPECT_NEAR(normalized[0].x, pt.x / pt.z, 1e-3);
+  EXPECT_NEAR(normalized[0].y, pt.y / pt.z, 1e-3);
+}
+
+TEST(CameraGeometry, UndistortToUnitPlane_UnknownModelThrows)
+{
+  TCamera cam = createStandardCamera();
+  cam.distortion = static_cast<DistortionModel>(99);
+
+  std::vector<TPoint2D> normalized;
+  EXPECT_THROW(
+      undistort_points_to_unit_plane({TPixelCoordf(320.f, 240.f)}, normalized, cam),
+      std::exception);
+}
+
+TEST(CameraGeometry, UndistortToUnitPlane_EmptyInput)
+{
+  TCamera cam = createPlumbBobCamera();
+  std::vector<TPoint2D> normalized{
+      {1.0, 2.0}
+  };
+  undistort_points_to_unit_plane({}, normalized, cam);
+  EXPECT_TRUE(normalized.empty());
+}

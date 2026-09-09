@@ -96,7 +96,10 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       }
       else
       {
-        double vfx, vfy, vcx, vcy;
+        double vfx = 0;
+        double vfy = 0;
+        double vcx = 0;
+        double vcy = 0;
         in >> vfx >> vfy >> vcx >> vcy;
         setIntrinsicParamsFromValues(vfx, vfy, vcx, vcy);
       }
@@ -119,6 +122,12 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       if (version >= 5)
       {
         in >> cameraName;
+      }
+      else
+      {
+        // Not stored before v5: reset it, so that deserializing into a reused
+        // object does not keep a stale name (as done for nrows/ncols above).
+        cameraName = "camera1";
       }
 
       if (version >= 6)
@@ -180,11 +189,10 @@ void TCamera::loadFromConfigFile(
   ncols = static_cast<uint32_t>(out_res[0]);
   nrows = static_cast<uint32_t>(out_res[1]);
 
-  double fx, fy, cx, cy;
-  fx = cfg.read_double(section, "fx", 0, true);
-  fy = cfg.read_double(section, "fy", 0, true);
-  cx = cfg.read_double(section, "cx", 0, true);
-  cy = cfg.read_double(section, "cy", 0, true);
+  double fx = cfg.read_double(section, "fx", 0, true);
+  double fy = cfg.read_double(section, "fy", 0, true);
+  double cx = cfg.read_double(section, "cx", 0, true);
+  double cy = cfg.read_double(section, "cy", 0, true);
 
   if (fx < 2.0)
   {

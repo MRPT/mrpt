@@ -34,7 +34,7 @@ namespace mrpt::math
  *  There is an additional method "exists(i,j)" to check whether a given
  * element exists in the matrix.
  *
- *  \sa mrpt::math::MatrixBlockSparseCols, mrpt::math::CSparseMatrix,
+ *  \sa mrpt::math::CSparseMatrix,
  * CSparseSymmetricalMatrix
  *  \note Methods marked as "Doesn't check bounds" mean that if an access to an
  * element out of the matrix size is tried, an empty element will be assumed,

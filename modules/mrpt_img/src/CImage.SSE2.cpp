@@ -163,7 +163,7 @@ void image_SSE2_scale_half_1c8u(
  * k*16 (faster) or not
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSE2
- *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalfSmooth()
+ *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalf() with IMG_INTERP_LINEAR
  */
 void image_SSE2_scale_half_smooth_1c8u(
     const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)

@@ -259,9 +259,12 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   }
 
   /** \overload
-   *  \return Always false in the current implementation (reserved for a
-   *  future SIMD-optimized fast path); the scaling itself always takes
-   *  place regardless of the returned value. */
+   *  \return true if a SIMD-optimized kernel was used (8-bit images only:
+   *  SSSE3 for 3-channel IMG_INTERP_NN, SSE2 for 1-channel IMG_INTERP_NN or
+   *  IMG_INTERP_LINEAR); false if the portable resampling path ran. The
+   *  scaling itself always takes place regardless of the returned value.
+   *  \note In-place operation (`out_image` sharing this image data) always
+   *  takes the portable path. */
   bool scaleHalf(CImage& out_image, TInterpolationMethod interp) const;
 
   /** Returns a new image scaled up to double its original size.
@@ -767,8 +770,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
   /** \overload.
    * In-place is supported by setting `ret=*this`.
-   * \return true if the image was already grayscale (shallow-copied, no
-   * conversion performed); false if an RGB/RGBA-to-gray conversion was run.
+   * \return true if a fast path was taken: the image was already grayscale
+   * (shallow-copied, no conversion performed), or an SSSE3 kernel converted
+   * it; false if the portable scalar conversion loop ran.
    */
   bool grayscale(CImage& ret) const;
 

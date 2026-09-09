@@ -16,6 +16,8 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrixFixed.h>
 
+#include <vector>
+
 using namespace mrpt::img;
 
 // CCanvas is an abstract interface; CImage is the concrete implementation
@@ -204,4 +206,89 @@ TEST(CCanvas, EllipseGaussian)
 
   img.ellipseGaussian(cov, 20.0, 20.0, 2.0, TColor::white());
   SUCCEED();
+}
+
+namespace
+{
+/** A minimal CCanvas implementation that does NOT override drawImage(), so the
+ * generic per-pixel base implementation is the one under test (CImage
+ * overrides it with a faster, memcpy-based one).
+ */
+class SimpleCanvas : public mrpt::img::CCanvas
+{
+ public:
+  SimpleCanvas(int32_t w, int32_t h) : m_w(w), m_h(h), m_pixels(static_cast<size_t>(w * h)) {}
+
+  void setPixel(const TPixelCoord& pt, const mrpt::img::TColor& color) override
+  {
+    if (pt.x < 0 || pt.y < 0 || pt.x >= m_w || pt.y >= m_h)
+    {
+      return;
+    }
+    m_pixels[static_cast<size_t>(pt.y * m_w + pt.x)] = color;
+  }
+  [[nodiscard]] int32_t getWidth() const override { return m_w; }
+  [[nodiscard]] int32_t getHeight() const override { return m_h; }
+
+  [[nodiscard]] const mrpt::img::TColor& at(int32_t x, int32_t y) const
+  {
+    return m_pixels[static_cast<size_t>(y * m_w + x)];
+  }
+
+ private:
+  int32_t m_w;
+  int32_t m_h;
+  std::vector<mrpt::img::TColor> m_pixels;
+};
+}  // namespace
+
+TEST(CCanvas, BaseDrawImageColorSource)
+{
+  SimpleCanvas canvas(8, 8);
+
+  CImage src(2, 2, CH_RGB);
+  src.setPixel({0, 0}, TColor(10, 20, 30));
+  src.setPixel({1, 0}, TColor(40, 50, 60));
+  src.setPixel({0, 1}, TColor(70, 80, 90));
+  src.setPixel({1, 1}, TColor(100, 110, 120));
+
+  canvas.drawImage({3, 4}, src);
+
+  EXPECT_EQ(canvas.at(3, 4).R, 10);
+  EXPECT_EQ(canvas.at(3, 4).G, 20);
+  EXPECT_EQ(canvas.at(3, 4).B, 30);
+  EXPECT_EQ(canvas.at(4, 5).R, 100);
+  EXPECT_EQ(canvas.at(4, 5).B, 120);
+  // Untouched pixel:
+  EXPECT_EQ(canvas.at(0, 0).R, 0);
+}
+
+TEST(CCanvas, BaseDrawImageGrayscaleSourceIsReplicatedToRGB)
+{
+  SimpleCanvas canvas(8, 8);
+
+  CImage src(2, 1, CH_GRAY);
+  src.setPixelGray({0, 0}, 77);
+  src.setPixelGray({1, 0}, 200);
+
+  canvas.drawImage({1, 1}, src);
+
+  EXPECT_EQ(canvas.at(1, 1).R, 77);
+  EXPECT_EQ(canvas.at(1, 1).G, 77);
+  EXPECT_EQ(canvas.at(1, 1).B, 77);
+  EXPECT_EQ(canvas.at(2, 1).R, 200);
+}
+
+TEST(CCanvas, BaseDrawImageClipsOutsideTarget)
+{
+  SimpleCanvas canvas(4, 4);
+  CImage src(3, 3, CH_RGB);
+  src.filledRectangle({0, 0}, {2, 2}, TColor::white());
+
+  // Partially off both edges: setPixel() silently drops out-of-range writes.
+  canvas.drawImage({-1, -1}, src);
+  EXPECT_EQ(canvas.at(0, 0).R, 255);
+
+  canvas.drawImage({3, 3}, src);
+  EXPECT_EQ(canvas.at(3, 3).R, 255);
 }

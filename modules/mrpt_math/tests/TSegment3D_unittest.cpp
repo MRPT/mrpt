@@ -18,6 +18,8 @@
 #include <mrpt/math/TSegment3D.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <cmath>
+
 using namespace mrpt::math;
 
 TEST(TSegment3D, Generate2DObject)
@@ -39,12 +41,17 @@ TEST(TSegment3D, DistanceToPoint)
 {
   const TSegment3D s(TPoint3D(0, 0, 0), TPoint3D(2, 0, 0));
   EXPECT_NEAR(s.distance(TPoint3D(1, 1, 0)), 1.0, 1e-9);
-  // TSegment3D::distance() is the minimum of the distance to each endpoint
-  // and the distance to the *infinite* line through the segment, so points
-  // beyond either endpoint but still on that line report 0, not the
-  // distance to the nearest endpoint.
-  EXPECT_NEAR(s.distance(TPoint3D(-1, 0, 0)), 0.0, 1e-9);
-  EXPECT_NEAR(s.distance(TPoint3D(3, 0, 0)), 0.0, 1e-9);
+  // Points whose projection falls outside the segment measure to the nearest
+  // endpoint, not to the unbounded supporting line:
+  EXPECT_NEAR(s.distance(TPoint3D(-1, 0, 0)), 1.0, 1e-9);
+  EXPECT_NEAR(s.distance(TPoint3D(3, 0, 0)), 1.0, 1e-9);
+  EXPECT_NEAR(s.distance(TPoint3D(5, 1, 0)), std::sqrt(9.0 + 1.0), 1e-9);
+  // Endpoints themselves:
+  EXPECT_NEAR(s.distance(TPoint3D(0, 0, 0)), 0.0, 1e-9);
+  EXPECT_NEAR(s.distance(TPoint3D(2, 0, 0)), 0.0, 1e-9);
+  // A degenerate segment behaves as a point:
+  const TSegment3D degenerate(TPoint3D(1, 1, 1), TPoint3D(1, 1, 1));
+  EXPECT_NEAR(degenerate.distance(TPoint3D(1, 1, 4)), 3.0, 1e-9);
 }
 
 TEST(TSegment3D, DistanceToSegmentParallel)

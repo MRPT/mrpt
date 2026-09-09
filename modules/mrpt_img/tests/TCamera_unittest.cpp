@@ -297,3 +297,51 @@ TEST(TCamera, ToFromYAML_FishEye)
   EXPECT_TRUE(c1 == c2) << "c1:\n" << c1.asYAML() << "\nc2:\n" << c2.asYAML();
 }
 #endif
+
+TEST(TCamera, NotEqualOperator)
+{
+  const auto c1 = getSampleCameraParamsPlumbBob();
+  auto c2 = c1;
+  EXPECT_FALSE(c1 != c2);
+
+  c2.cameraName = "another_name";
+  EXPECT_TRUE(c1 != c2);
+}
+
+// Intrinsics below 2.0 are interpreted as fractions of the image size, so the
+// same config block can describe several resolutions.
+TEST(TCamera, LoadFromConfigFileNormalizedIntrinsics)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  cfg.write("CAM", "resolution", "[640 480]");
+  cfg.write("CAM", "fx", 0.5);
+  cfg.write("CAM", "fy", 0.75);
+  cfg.write("CAM", "cx", 0.5);
+  cfg.write("CAM", "cy", 0.5);
+  cfg.write("CAM", "distortion_model", "none");
+  cfg.write("CAM", "dist", "[]");
+
+  TCamera c;
+  c.loadFromConfigFile("CAM", cfg);
+
+  EXPECT_NEAR(c.fx(), 0.5 * 640, 1e-9);
+  EXPECT_NEAR(c.fy(), 0.75 * 480, 1e-9);
+  EXPECT_NEAR(c.cx(), 0.5 * 640, 1e-9);
+  EXPECT_NEAR(c.cy(), 0.5 * 480, 1e-9);
+  EXPECT_EQ(c.distortion, mrpt::img::DistortionModel::none);
+}
+
+TEST(TCamera, LoadFromConfigFileInvalidDistortionModelThrows)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  cfg.write("CAM", "resolution", "[640 480]");
+  cfg.write("CAM", "fx", 500.0);
+  cfg.write("CAM", "fy", 500.0);
+  cfg.write("CAM", "cx", 320.0);
+  cfg.write("CAM", "cy", 240.0);
+  cfg.write("CAM", "distortion_model", static_cast<int>(99));
+  cfg.write("CAM", "dist", "[0 0 0 0 0]");
+
+  TCamera c;
+  EXPECT_THROW(c.loadFromConfigFile("CAM", cfg), std::exception);
+}
