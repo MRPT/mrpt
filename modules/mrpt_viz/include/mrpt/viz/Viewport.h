@@ -366,6 +366,15 @@ class Viewport :
   /** Get a reference to the camera associated with this viewport. */
   [[nodiscard]] const mrpt::viz::CCamera& getCamera() const { return m_camera; }
 
+  /** Returns the camera that is actually used to render this viewport: a
+   * `CCamera` object inserted among its contained objects, if any (see
+   * internalResolveActiveCamera()), or getCamera() otherwise.
+   */
+  [[nodiscard]] const mrpt::viz::CCamera& resolveActiveCamera() const
+  {
+    return *internalResolveActiveCamera();
+  }
+
   [[nodiscard]] mrpt::math::TBoundingBox getBoundingBox() const;
 
   /** @} */  // end of Contained objects set/get/search

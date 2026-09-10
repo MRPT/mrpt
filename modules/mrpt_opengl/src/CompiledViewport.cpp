@@ -69,8 +69,9 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
   // Copy viewport bounds
   vizVp.getViewportPosition(m_viewX, m_viewY, m_viewWidth, m_viewHeight);
 
-  // Copy camera
-  m_camera = vizVp.getCamera();
+  // Copy camera (an explicit CCamera object inserted into the viewport, if
+  // any, takes precedence over the viewport's own default camera):
+  m_camera = vizVp.resolveActiveCamera();
   m_matricesNeedUpdate = true;
 
   // Copy lighting

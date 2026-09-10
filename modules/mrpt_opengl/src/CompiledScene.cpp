@@ -157,6 +157,7 @@ class Text2DLabelProxy : public TrianglesProxyBase
 
     m_lightEnabled = false;
     m_cullFace = mrpt::viz::TCullFace::NONE;
+    m_fontHeight = textObj->getFontHeight();
 
     // Generate text geometry using gltext
     std::vector<mrpt::viz::TTriangle> tris;
@@ -230,7 +231,65 @@ class Text2DLabelProxy : public TrianglesProxyBase
 #endif
   }
 
+  /** CText is a 2D label: it is placed at the projection of its 3D origin,
+   * but drawn at a fixed size in pixels, unaffected by the viewport
+   * projection. The glyph geometry is generated with unit height, so the
+   * whole transformation chain is replaced here by a translation to that
+   * projected point plus the pixel-to-NDC scale.
+   */
+  void render(const RenderContext& rc) const override
+  {
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+    MRPT_START
+
+    if (m_triangleCount == 0 || rc.shader == nullptr || rc.state == nullptr)
+    {
+      return;
+    }
+
+    const auto& pmv = rc.state->pmv_matrix;
+    if (std::abs(pmv(3, 3)) < 1e-10f)
+    {
+      return;
+    }
+    if (rc.state->viewport_width <= 0 || rc.state->viewport_height <= 0)
+    {
+      return;
+    }
+
+    const float vpH = static_cast<float>(rc.state->viewport_height);
+    const float vpW = static_cast<float>(rc.state->viewport_width);
+
+    const float scale = static_cast<float>(m_fontHeight) / vpH;
+    const float aspect = vpW / vpH;
+
+    // A negative Y row in the projection means the renderer is drawing
+    // upside-down (e.g. into an FBO): keep the glyphs readable.
+    const float yFlip = rc.state->p_matrix(1, 1) < 0 ? -1.0f : +1.0f;
+
+    auto m = mrpt::math::CMatrixFloat44::Identity();
+    m(0, 0) = scale / aspect;
+    m(1, 1) = scale * yFlip;
+    m(0, 3) = pmv(0, 3) / pmv(3, 3);
+    m(1, 3) = pmv(1, 3) / pmv(3, 3);
+    m(2, 3) = pmv(2, 3) / pmv(3, 3);  // keep depth, so labels can be occluded
+
+    const auto IS_TRANSPOSED = GL_TRUE;
+    glUniformMatrix4fv(rc.shader->uniformId("pmv_matrix"), 1, IS_TRANSPOSED, m.data());
+
+    TrianglesProxyBase::render(rc);
+
+    MRPT_END
+#endif
+  }
+
+  /** Screen-space labels have no meaningful position in the light's frame. */
+  bool castsShadows() const override { return false; }
+
   const char* typeName() const override { return "Text2DLabelProxy"; }
+
+ private:
+  int m_fontHeight = 20;
 };
 }  // namespace
 

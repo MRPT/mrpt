@@ -64,6 +64,10 @@ class CText : public CVisualObject
   }
   std::string getFont() const { return m_fontName; }
 
+  /** Height of the font, in pixels: the text is always rendered with this
+   * size on screen, regardless of the viewport projection. \sa setFont() */
+  int getFontHeight() const { return m_fontHeight; }
+
   /** Evaluates the bounding box of this object (including possible children)
    * in the coordinate frame of the object parent. */
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
