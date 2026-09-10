@@ -90,9 +90,9 @@ void CDocument::saveAsPng(const std::string& fileName) const
 bool CDocument::hasPointsMap() const { return m_hasPointsMap; }
 void CDocument::saveAsText(const std::string& fileName) const
 {
-  for (auto& m : m_metricmap)
+  for (const auto& m : m_metricmap)
   {
-    auto ptr = std::dynamic_pointer_cast<CSimplePointsMap>(m);
+    auto ptr = std::dynamic_pointer_cast<const CSimplePointsMap>(m);
     if (ptr)
     {
       (void)ptr->save3D_to_text_file(fileName);
@@ -131,7 +131,13 @@ const RenderizableMaps CDocument::renderizableMaps() const
 }
 
 const CSimpleMap& CDocument::simplemap() const { return m_simplemap; }
-const CMultiMetricMap::TListMaps& CDocument::config() const { return m_metricmap.maps; }
+TListConstMaps CDocument::config() const
+{
+  TListConstMaps maps;
+  maps.reserve(m_metricmap.size());
+  for (const auto& m : m_metricmap) maps.push_back(m);
+  return maps;
+}
 
 const TypeConfig& CDocument::typeConfig() const { return m_typeConfigs; }
 std::vector<size_t> CDocument::remove(const std::vector<size_t>& indexes)

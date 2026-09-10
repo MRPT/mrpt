@@ -23,6 +23,7 @@
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/data_utils.h>
@@ -411,7 +412,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
       if (SCENE3D_FREQ > 0 || SHOW_PROGRESS_3D_REAL_TIME)
       {
         mrpt::math::TBoundingBoxf bbox({-50, -50, 0}, {50, 50, 0});
-        if (auto pts = metricMap->getAsSimplePointsMap(); pts) bbox = pts->boundingBox();
+        if (auto pts = metricMap->mapByClass<CPointsMap>(); pts) bbox = pts->boundingBox();
 
         scene.insert(
             mrpt::viz::CGridPlaneXY::Create(bbox.min.x, bbox.max.x, bbox.min.y, bbox.max.y, 0, 5));

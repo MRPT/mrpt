@@ -86,9 +86,9 @@ static auto tester_for_ROSLAM_demo = [](mrpt::apps::RBPF_SLAM_App_Base& o)
   EXPECT_LT(mrpt::poses::Lie::SE<3>::log(p - p_gt).norm(), 1.0)
       << "actual pose  =" << p.asString() << "\nexpected pose=" << p_gt.asString();
 
-  const auto& maps = o.mapBuilder->getCurrentlyBuiltMetricMap().maps;
-  ASSERT_EQUAL_(maps.size(), 1U);
-  auto beaconMap = std::dynamic_pointer_cast<mrpt::maps::CBeaconMap>(maps.at(0));
+  const auto& mm = o.mapBuilder->getCurrentlyBuiltMetricMap();
+  ASSERT_EQUAL_(mm.size(), 1U);
+  auto beaconMap = std::dynamic_pointer_cast<const mrpt::maps::CBeaconMap>(mm.mapByIndex(0));
   ASSERT_(beaconMap);
 
   // TODO(jlbc): check why actual LM mean positions seem not to match GT?

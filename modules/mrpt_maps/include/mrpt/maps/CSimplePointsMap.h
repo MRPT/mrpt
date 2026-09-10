@@ -105,7 +105,6 @@ class CSimplePointsMap : public CPointsMap
   /** @} */
 
   // See base docs
-  const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override { return this; }
 
  protected:
   /** Clear the map, erasing all the points.

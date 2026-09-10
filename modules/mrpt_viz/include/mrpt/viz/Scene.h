@@ -147,8 +147,15 @@ class Scene : public mrpt::serialization::CSerializable, public std::enable_shar
   /** Returns the first object with a given name, or nullptr (an empty smart
    * pointer) if not found.
    */
+  CVisualObject::ConstPtr getByName(
+      const std::string& str, const std::string& viewportName = std::string("main")) const;
+  /// \overload Non-const version returning a mutable Ptr
   CVisualObject::Ptr getByName(
-      const std::string& str, const std::string& viewportName = std::string("main"));
+      const std::string& str, const std::string& viewportName = std::string("main"))
+  {
+    return std::const_pointer_cast<CVisualObject>(
+        static_cast<const Scene*>(this)->getByName(str, viewportName));
+  }
 
   /** Returns the i'th object of a given class (or of a descendant class), or
   nullptr (an empty smart pointer) if not found.

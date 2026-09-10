@@ -351,7 +351,7 @@ void CompiledScene::compileViewport(
         // Only the first (TexturedTriangles) proxy is used for image view
         compiledViewport.setImageViewMode(proxies.front());
         // Track in proxy maps for dirty-update support
-        std::weak_ptr<CVisualObject> weakPlane = plane;
+        std::weak_ptr<const CVisualObject> weakPlane = plane;
         m_objectToProxy[weakPlane].push_back(std::move(proxies));
         m_objectVersions[weakPlane] = plane->dataVersion();
       }
@@ -396,7 +396,7 @@ mrpt::math::CMatrixFloat44 CompiledScene::computeModelMatrix(
 }
 
 void CompiledScene::compileObject(
-    const std::shared_ptr<CVisualObject>& obj,
+    const std::shared_ptr<const CVisualObject>& obj,
     CompiledViewport& compiledViewport,
     CompilationStats& stats,
     const mrpt::math::CMatrixFloat44& parentModelMatrix)
@@ -425,7 +425,7 @@ void CompiledScene::compileObject(
   if (setOfObjects)
   {
     // Track version for containers (needed for multi-occurrence dirty detection)
-    std::weak_ptr<CVisualObject> weakObj = obj;
+    std::weak_ptr<const CVisualObject> weakObj = obj;
     m_objectVersions[weakObj] = obj->dataVersion();
 
     // Recursively compile children, passing this container's model matrix
@@ -475,7 +475,7 @@ void CompiledScene::compileObject(
   // Register in our tracking map as a new occurrence.
   // m_objectToProxy[weakObj] is a vector of occurrence groups;
   // each group is a vector of proxies for one tree position.
-  std::weak_ptr<CVisualObject> weakObj = obj;
+  std::weak_ptr<const CVisualObject> weakObj = obj;
   m_objectToProxy[weakObj].push_back(std::move(proxies));
   m_objectVersions[weakObj] = obj->dataVersion();
 
@@ -516,20 +516,20 @@ void CompiledScene::compileObject(
   MRPT_END
 }
 
-bool CompiledScene::hasProxyFor(const std::shared_ptr<CVisualObject>& obj) const
+bool CompiledScene::hasProxyFor(const std::shared_ptr<const CVisualObject>& obj) const
 {
   if (!obj)
   {
     return false;
   }
 
-  std::weak_ptr<CVisualObject> weakObj = obj;
+  std::weak_ptr<const CVisualObject> weakObj = obj;
   auto it = m_objectToProxy.find(weakObj);
   return it != m_objectToProxy.end() && !it->second.empty();
 }
 
 std::vector<RenderableProxy::Ptr> CompiledScene::createProxiesByType(
-    const std::shared_ptr<CVisualObject>& obj)
+    const std::shared_ptr<const CVisualObject>& obj)
 {
   std::vector<RenderableProxy::Ptr> proxies;
 
@@ -733,7 +733,7 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
             proxy->compile(plane.get());
           }
           compiledViewport.setImageViewMode(proxies.front());
-          std::weak_ptr<CVisualObject> weakPlane = plane;
+          std::weak_ptr<const CVisualObject> weakPlane = plane;
           m_objectToProxy[weakPlane].push_back(std::move(proxies));
           m_objectVersions[weakPlane] = plane->dataVersion();
         }
@@ -750,9 +750,9 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
       }
 
       // Helper: check if a CSetOfObjects is new (not yet tracked in m_objectVersions)
-      auto isNewContainer = [this](const std::shared_ptr<CVisualObject>& o) -> bool
+      auto isNewContainer = [this](const std::shared_ptr<const CVisualObject>& o) -> bool
       {
-        std::weak_ptr<CVisualObject> w = o;
+        std::weak_ptr<const CVisualObject> w = o;
         return m_objectVersions.find(w) == m_objectVersions.end();
       };
 
@@ -772,7 +772,8 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
         else
         {
           // Existing container: walk into it to find new children
-          std::vector<std::pair<const CSetOfObjects*, std::shared_ptr<CVisualObject>>> containers;
+          std::vector<std::pair<const CSetOfObjects*, std::shared_ptr<const CVisualObject>>>
+              containers;
           containers.push_back({setOfObjects, obj});
 
           while (!containers.empty())
@@ -901,7 +902,7 @@ void CompiledScene::updateDirtyObjects(CompilationStats& stats)
 }
 
 void CompiledScene::updateDirtyObjectRecursive(
-    const std::shared_ptr<mrpt::viz::CVisualObject>& obj,
+    const std::shared_ptr<const mrpt::viz::CVisualObject>& obj,
     const mrpt::math::CMatrixFloat44& parentModelMatrix,
     bool parentDirty,
     bool parentVisible,
@@ -911,7 +912,7 @@ void CompiledScene::updateDirtyObjectRecursive(
   {
     return;
   }
-  std::weak_ptr<mrpt::viz::CVisualObject> weakObj = obj;
+  std::weak_ptr<const mrpt::viz::CVisualObject> weakObj = obj;
   const uint64_t currentVersion = obj->dataVersion();
   auto versionIt = m_objectVersions.find(weakObj);
   const uint64_t lastVersion = (versionIt != m_objectVersions.end()) ? versionIt->second : 0;
@@ -1011,7 +1012,7 @@ void CompiledScene::updateDirtyObjectRecursive(
       if (hasProxyFor(labelPtr))
       {
         auto labelVersionIt =
-            m_objectVersions.find(std::weak_ptr<mrpt::viz::CVisualObject>(labelPtr));
+            m_objectVersions.find(std::weak_ptr<const mrpt::viz::CVisualObject>(labelPtr));
         const uint64_t labelLastVer =
             (labelVersionIt != m_objectVersions.end()) ? labelVersionIt->second : 0;
         if (dirty || labelPtr->dataVersion() != labelLastVer)
