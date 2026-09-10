@@ -630,26 +630,28 @@ constexpr bool is_rvalue_archive_v =
  * returned so that chaining keeps working.
  *
  * They only take part in overload resolution if the equivalent lvalue
- * expression is well-formed.
+ * expression is well-formed. Note that the probe, and the returned type, use
+ * the deduced archive type and not `CArchive`, so that overloads declared for
+ * a derived archive type are honored too.
  */
 template <
     typename ARCHIVE,
     typename T,
     std::enable_if_t<is_rvalue_archive_v<ARCHIVE>, int> = 0,
-    typename = decltype(std::declval<CArchive&>() << std::declval<const T&>())>
-CArchive& operator<<(ARCHIVE&& out, const T& a)
+    typename RET = decltype(std::declval<ARCHIVE&>() << std::declval<const T&>())>
+RET operator<<(ARCHIVE&& out, const T& a)
 {
   return out << a;
 }
 
 /** Extracts an object from a temporary archive, e.g. `archiveFrom(f) >> x;`.
- *  \sa operator<<(CArchive&&, const T&) */
+ *  \sa operator<<(ARCHIVE&&, const T&) */
 template <
     typename ARCHIVE,
     typename T,
     std::enable_if_t<is_rvalue_archive_v<ARCHIVE>, int> = 0,
-    typename = decltype(std::declval<CArchive&>() >> std::declval<T&>())>
-CArchive& operator>>(ARCHIVE&& in, T& a)
+    typename RET = decltype(std::declval<ARCHIVE&>() >> std::declval<T&>())>
+RET operator>>(ARCHIVE&& in, T& a)
 {
   return in >> a;
 }

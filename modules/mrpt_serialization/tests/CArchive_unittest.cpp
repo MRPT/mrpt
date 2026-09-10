@@ -691,3 +691,46 @@ TEST(CArchive, temporaryReadOnlyVectorArchive)
   archiveFrom(cv) >> out;
   EXPECT_EQ(out, "read-only");
 }
+
+namespace
+{
+/** An archive type of its own, with an insertion operator declared only for
+ *  it, to check that the rvalue forwarders honor overloads of derived archive
+ *  types (and not just of CArchive). */
+class DerivedArchive : public mrpt::serialization::CArchiveStreamBase<std::vector<uint8_t>>
+{
+ public:
+  using CArchiveStreamBase<std::vector<uint8_t>>::CArchiveStreamBase;
+};
+
+struct OnlyForDerivedArchives
+{
+  int32_t value{0};
+};
+
+DerivedArchive& operator<<(DerivedArchive& a, const OnlyForDerivedArchives& o)
+{
+  // Tagged, so that the reader can tell this overload was the one used:
+  a << std::string("derived") << o.value;
+  return a;
+}
+}  // namespace
+
+TEST(CArchive, temporaryArchiveUsesDerivedArchiveOverloads)
+{
+  std::vector<uint8_t> v;
+
+  // Both insertions must resolve to the DerivedArchive overload: the second
+  // one only can if the first returns a DerivedArchive&, not a CArchive&.
+  DerivedArchive(v) << OnlyForDerivedArchives{10} << OnlyForDerivedArchives{20};
+
+  auto rd = archiveFrom(v);
+  for (const int32_t expected : {10, 20})
+  {
+    std::string tag;
+    int32_t got = 0;
+    rd >> tag >> got;
+    EXPECT_EQ(tag, "derived");
+    EXPECT_EQ(got, expected);
+  }
+}

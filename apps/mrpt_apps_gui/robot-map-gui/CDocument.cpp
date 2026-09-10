@@ -131,7 +131,13 @@ const RenderizableMaps CDocument::renderizableMaps() const
 }
 
 const CSimpleMap& CDocument::simplemap() const { return m_simplemap; }
-const CMultiMetricMap::TListMaps& CDocument::config() { return m_metricmap.mapsList(); }
+TListConstMaps CDocument::config() const
+{
+  TListConstMaps maps;
+  maps.reserve(m_metricmap.size());
+  for (const auto& m : m_metricmap) maps.push_back(m);
+  return maps;
+}
 
 const TypeConfig& CDocument::typeConfig() const { return m_typeConfigs; }
 std::vector<size_t> CDocument::remove(const std::vector<size_t>& indexes)

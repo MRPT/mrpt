@@ -228,15 +228,15 @@ TSetOfMetricMapInitializers CConfigWidget::config()
   return mapCfg;
 }
 
-void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps& config)
+void CConfigWidget::setConfig(const TListConstMaps& config)
 {
   clearConfig();
 
-  for (auto& m : config)
+  for (const auto& m : config)
   {
     bool found = false;
     {
-      if (auto ptr = std::dynamic_pointer_cast<CSimplePointsMap>(m); ptr)
+      if (auto ptr = std::dynamic_pointer_cast<const CSimplePointsMap>(m); ptr)
       {
         CPointsConfig* pConfig = new CPointsConfig();
         addWidget(TypeOfConfig::PointsMap, pConfig);
@@ -247,7 +247,7 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps& config)
     }
     if (!found)
     {
-      if (auto ptr = std::dynamic_pointer_cast<COccupancyGridMap2D>(m); ptr)
+      if (auto ptr = std::dynamic_pointer_cast<const COccupancyGridMap2D>(m); ptr)
       {
         COccupancyConfig* pConfig = new COccupancyConfig();
         addWidget(TypeOfConfig::Occupancy, pConfig);
@@ -262,7 +262,7 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps& config)
     }
     if (!found)
     {
-      if (auto ptr = std::dynamic_pointer_cast<CGasConcentrationGridMap2D>(m); m)
+      if (auto ptr = std::dynamic_pointer_cast<const CGasConcentrationGridMap2D>(m); m)
       {
         CGasGridConfig* pConfig = new CGasGridConfig();
         addWidget(TypeOfConfig::GasGrid, pConfig);
@@ -277,7 +277,7 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps& config)
     }
     if (!found)
     {
-      if (auto ptr = std::dynamic_pointer_cast<CBeaconMap>(m); ptr)
+      if (auto ptr = std::dynamic_pointer_cast<const CBeaconMap>(m); ptr)
       {
         CBeaconConfig* pConfig = new CBeaconConfig();
         addWidget(TypeOfConfig::Beacon, pConfig);

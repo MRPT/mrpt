@@ -8,7 +8,13 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
+#include <mrpt/maps/CMetricMap.h>
+
 #include <string>
+#include <vector>
+
+/** A read-only list of metric maps, as handed out by CDocument::config() */
+using TListConstMaps = std::vector<mrpt::maps::CMetricMap::ConstPtr>;
 
 enum TypeOfConfig
 {

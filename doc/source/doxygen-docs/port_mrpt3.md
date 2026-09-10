@@ -620,7 +620,6 @@ obtain a `yaml` copy first.
 
 ---
 
-<a name="removed"></a>
 ### mrpt_serialization
 
 **Streaming into a temporary archive** now works, so the intermediate variable

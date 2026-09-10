@@ -34,7 +34,7 @@ class CConfigWidget : public QWidget
   CConfigWidget(QWidget* parent = nullptr);
   ~CConfigWidget() override;
   mrpt::maps::TSetOfMetricMapInitializers config();
-  void setConfig(const mrpt::maps::CMultiMetricMap::TListMaps& config);
+  void setConfig(const TListConstMaps& config);
 
   const SGeneralSetting& generalSetting();
 
