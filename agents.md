@@ -318,7 +318,13 @@ isolated single-package run can read 30-40 points low. Incremental
   image captured while a defect was present will happily keep passing --
   `mrpt_viz/tests/RenderBuffers_unittest.cpp` asserts on the CPU-side vertex
   buffers instead, which is what actually caught several "renders nothing"
-  regressions.
+  regressions. This happened for real: the `linePointPrimitives` reference
+  enshrined a rotated, oversized `CText`. Their tolerance is also a *whole
+  frame* sum of absolute differences (5000.0), so a wrong small object costs
+  only a few hundred points and passes. `CFBORender_ScreenSpace_unittest.cpp`
+  is the alternative to copy: it asserts invariants on the pixels (extents
+  that must not taper under a no-projection camera, glyph sizes that must not
+  depend on camera distance), so it cannot be silently re-baselined.
 
 ### Recurring defect shapes worth grepping for
 
