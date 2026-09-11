@@ -6,7 +6,9 @@ jobs:
   build:
     name: ${{ matrix.name }} ${{ matrix.build_type }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 120
+    # Cold-cache runs have been landing at 1h41m-1h51m, i.e. within minutes of
+    # the previous 120 min limit.
+    timeout-minutes: 170
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
@@ -47,6 +49,25 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
+
+      # Defender's real-time scanner opens each binary as it is written, and
+      # link.exe/mt.exe then intermittently fail to reopen their own output with
+      # "The process cannot access the file because it is being used by another
+      # process". It hits a different, unrelated target every time, so a failure
+      # says nothing about the commit that triggered it. Excluding the build
+      # tree and the toolchain also takes a sizeable bite out of the build time.
+      # Best-effort: never fail the job if the cmdlets are unavailable.
+      - name: Exclude build tree from Windows Defender
+        shell: powershell
+        continue-on-error: true
+        run: |
+          $ErrorActionPreference = 'SilentlyContinue'
+          Add-MpPreference -ExclusionPath '${{ github.workspace }}'
+          Add-MpPreference -ExclusionPath 'C:\vcpkg'
+          foreach ($p in 'cl.exe','link.exe','mt.exe','rc.exe','ninja.exe','sccache.exe') {
+            Add-MpPreference -ExclusionProcess $p
+          }
+          exit 0
 
       - name: Install vcpkg dependencies
         shell: bash
