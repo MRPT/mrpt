@@ -2,6 +2,11 @@
 Changelog for package mrpt_kinematics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.4 (2026-09-04)
 ------------------
 * test(mrpt_kinematics): add a unit test suite (module had none), raising coverage to 97% (`#1388 <https://github.com/MRPT/mrpt/issues/1388>`_).

@@ -2,6 +2,11 @@
 Changelog for package mrpt_io
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.4 (2026-09-04)
 ------------------
 * test(mrpt_io): raise unit test coverage of streams, compression and path helpers (63%->82% lines) (`#1392 <https://github.com/MRPT/mrpt/issues/1392>`_).

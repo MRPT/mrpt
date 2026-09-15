@@ -2,6 +2,11 @@
 Changelog for package mrpt_comms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.4 (2026-09-04)
 ------------------
 * test(mrpt_comms): raise unit test coverage of the TCP, HTTP, serial-port and pub/sub code (26%->76% lines) (`#1391 <https://github.com/MRPT/mrpt/issues/1391>`_).

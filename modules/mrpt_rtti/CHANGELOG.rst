@@ -2,6 +2,11 @@
 Changelog for package mrpt_rtti
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.4 (2026-09-04)
 ------------------
 * test(mrpt_rtti): add unit tests for the class registry, derivedFrom(), cloning of non-copy-constructible classes and CListOfClasses (`#1390 <https://github.com/MRPT/mrpt/issues/1390>`_).
