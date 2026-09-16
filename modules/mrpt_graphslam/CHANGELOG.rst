@@ -2,8 +2,8 @@
 Changelog for package mrpt_graphslam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * fix: resolve ROS/GCC buildfarm warnings across the affected MRPT modules and fix the real correctness issues they exposed.
 * fix: remove dangling iterator, hidden serialization overload, enum-safety, and timestamp-printing problems uncovered during the warning pass.
 * fix: replace the Clock::time_point stream overload with a gtest PrintTo hook to avoid ambiguous overload resolution.

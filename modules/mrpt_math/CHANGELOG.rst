@@ -2,8 +2,8 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * fix: resolve ROS buildfarm warnings and fix the real correctness issues they revealed.
 * feat: reconnect SIMD paths and remove dead math headers while expanding regression coverage.
 * fix: correct geometry, serialization, and matrix edge cases uncovered by the new tests.

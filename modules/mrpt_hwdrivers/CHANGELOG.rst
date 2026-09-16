@@ -2,8 +2,8 @@
 Changelog for package mrpt_hwdrivers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * fix: clean up ROS buildfarm warnings and correct the real issues they exposed across MRPT.
 * feat: expand hardware-driver coverage with mocked I/O streams, reviving dead pcap support and improving test depth.
 * fix: fix GPS, laser, and sensor-factory defects uncovered by the new mocked-stream tests.

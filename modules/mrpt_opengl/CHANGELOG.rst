@@ -2,8 +2,8 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * fix: restore 2D overlay rendering for scene cameras and text labels.
 * refactor: tighten pointer const-correctness and API consistency across the render stack.
 * fix: restore missing render buffers and fix rendering regressions uncovered by the new tests.

@@ -2,8 +2,8 @@
 Changelog for package mrpt_apps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * feat: API cleanup pass for archives, const-correctness, and points-map accessors before the next minor bump.
 * fix: address review feedback on the API cleanup by fixing archive forwarding, preserving const config access, and removing a duplicate porting-guide anchor.
 * feat(mrpt_obs,mrpt_viz,mrpt_maps): enforce deep const-correctness in smart-pointer containers and return ConstPtr from const iteration paths.

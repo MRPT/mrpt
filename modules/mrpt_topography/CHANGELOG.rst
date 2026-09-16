@@ -2,8 +2,8 @@
 Changelog for package mrpt_topography
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
 * Contributors: Jose Luis Blanco-Claraco
 

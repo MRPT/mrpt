@@ -2,8 +2,8 @@
 Changelog for package mrpt_libapps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * feat: complete API cleanups for const-correctness, archive behavior, and point-map accessors.
 * fix: strengthen deep const semantics in smart-pointer containers and related map/view APIs.
 * fix: replace the brittle points-map accessor with a safer generic conversion helper.

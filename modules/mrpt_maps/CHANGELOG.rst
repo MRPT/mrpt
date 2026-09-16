@@ -2,8 +2,8 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * feat: complete API cleanups for const-correctness, archive behavior, and point-map accessors.
 * fix: resolve ROS buildfarm warnings and the real correctness issues they exposed.
 * feat: expand coverage in map and geometry code with targeted regression tests and legacy serialization checks.

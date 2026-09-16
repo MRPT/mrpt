@@ -2,8 +2,8 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * refactor: modernize the PTG/reactive API and align navigation code with the broader 3.x cleanup.
 * fix: correct TP-Space logic and regression issues in path clearance, speed handling, and obstacle distance calculations.
 * docs: add the headless TP-Space example and refresh the PTG documentation around the current API.

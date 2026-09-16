@@ -2,8 +2,8 @@
 Changelog for package mrpt_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * refactor: modernize the API and const-correctness updates that landed across the broader 3.x cleanup.
 * fix: resolve ROS buildfarm warnings and the correctness issues they exposed in SLAM, maps, and math paths.
 * test: raise coverage in SLAM and related modules, fixing the real bugs those new tests uncovered.

@@ -2,8 +2,8 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * fix: resolve ROS buildfarm warnings and the real code issues they exposed across the project.
 * feat: reconnect SIMD paths and close image coverage gaps with new legacy-format and camera tests.
 * fix: correct stereo rectification forward-axis bugs and preserve the expected image geometry.

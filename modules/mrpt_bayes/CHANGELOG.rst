@@ -2,8 +2,8 @@
 Changelog for package mrpt_bayes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * fix: resolve ROS/GCC buildfarm warnings across the affected MRPT modules and fix the real correctness defects they exposed.
 * fix: remove dangling iterator, hidden serialization overload, and enum-safety issues uncovered during the warning cleanup pass.
 * fix: replace the Clock::time_point stream overload with a gtest PrintTo hook to avoid ambiguous overload resolution.

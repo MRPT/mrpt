@@ -2,8 +2,8 @@
 Changelog for package mrpt_containers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * feat: API cleanup pass for archive handling, const-correctness, and points-map accessors before the next minor bump.
 * feat(mrpt_obs,mrpt_viz,mrpt_maps): enforce deep const-correctness in smart-pointer containers and return ConstPtr from const iteration paths.
 * fix: resolve ROS/GCC buildfarm warnings across the affected packages and fix the real correctness issues they exposed.

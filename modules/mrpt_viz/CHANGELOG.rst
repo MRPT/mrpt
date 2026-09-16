@@ -2,8 +2,8 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2026-09-16)
+------------------
 * fix: restore 2D overlay rendering and keep scene-camera/CText labels aligned with the expected screen-space behavior.
 * refactor: modernize const-correctness and API cleanup across visualization and related containers.
 * fix: resolve ROS buildfarm warnings and the correctness issues they exposed across the visualization stack.
