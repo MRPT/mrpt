@@ -4,25 +4,10 @@ Changelog for package mrpt_apps_cli
 
 Forthcoming
 -----------
-* Merge pull request `#1413 <https://github.com/MRPT/mrpt/issues/1413>`_ from MRPT/feat/api-cleanups-3.1
-  feat: API cleanups before the next minor bump (archives, const-correctness, points-map accessor)
-* feat(mrpt_obs,mrpt_viz,mrpt_maps): deep const-correctness in smart-pointer containers
-  Reading through a `const` container of `X::Ptr` handed out mutable
-  pointees, so constness stopped at the container. Add a small
-  `mrpt::containers::deep_const_iterator` proxy and use it for the
-  `const_iterator`s of CSensoryFrame, CActionCollection, CSetOfObjects,
-  Viewport and CMultiMetricMap: dereferencing them now yields `X::ConstPtr`.
-  Also:
-  * Scene, Viewport and CSetOfObjects gain const `getByName()` overloads
-  returning a ConstPtr, matching the existing getByClass() pairs.
-  * CMultiMetricMap::maps is no longer a public member: use push_back(),
-  size(), empty(), clearMaps(), mapByIndex(), begin()/end(), or
-  mapsList() when direct manipulation of the list is really needed.
-  * The mrpt_opengl renderer now keeps `const CVisualObject` handles: it
-  was relying on the const-iteration hole, and every method it calls on
-  the source objects was already const.
-  * observationsOverlap() takes ConstPtr arguments, as it only reads.
-  Porting notes added to the MRPT 3 porting guide.
+* feat: API cleanup pass for archive handling, const-correctness, and points-map accessors before the next minor bump.
+* feat(mrpt_obs,mrpt_viz,mrpt_maps): enforce deep const-correctness in smart-pointer containers and return ConstPtr from const iteration paths.
+* feat: add const-aware accessors and update container APIs to avoid exposing mutable pointees through const containers.
+* feat: keep renderer and overlap helpers const-safe, and document the migration notes in the MRPT 3 porting guide.
 * Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
 * Contributors: Jose Luis Blanco-Claraco
 
