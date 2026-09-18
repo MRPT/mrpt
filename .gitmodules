@@ -22,3 +22,16 @@
 [submodule "3rdparty/libfyaml"]
 	path = modules/mrpt_containers/3rdparty/libfyaml
 	url = https://github.com/pantoniou/libfyaml.git
+[submodule "modules/mrpt_imgui_vendor/3rdparty/imgui"]
+	path = modules/mrpt_imgui_vendor/3rdparty/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
+[submodule "modules/mrpt_imgui_vendor/3rdparty/implot"]
+	path = modules/mrpt_imgui_vendor/3rdparty/implot
+	url = https://github.com/epezent/implot.git
+[submodule "modules/mrpt_imgui_vendor/3rdparty/portable-file-dialogs"]
+	path = modules/mrpt_imgui_vendor/3rdparty/portable-file-dialogs
+	url = https://github.com/samhocevar/portable-file-dialogs.git
+[submodule "modules/mrpt_imgui_vendor/3rdparty/IconFontCppHeaders"]
+	path = modules/mrpt_imgui_vendor/3rdparty/IconFontCppHeaders
+	url = https://github.com/juliettef/IconFontCppHeaders.git

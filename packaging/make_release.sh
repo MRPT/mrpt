@@ -82,8 +82,14 @@ then
 	# Include external submodules. Each entry is "<path-relative-to-MRPTSRC>",
 	# i.e. the actual on-disk submodule path, which is also where it must land
 	# inside OUT_DIR (modules/* submodules moved there in MRPT 3.x; only
-	# googletest and rplidar_sdk remain directly under 3rdparty/):
-	EXTERNAL_MODS="modules/mrpt_gui/3rdparty/nanogui modules/mrpt_gui/3rdparty/nanogui/ext/nanovg 3rdparty/googletest modules/mrpt_containers/3rdparty/libfyaml 3rdparty/rplidar_sdk ${MRPT_PKG_EXPORTED_SUBMODULES}"
+	# googletest and rplidar_sdk remain directly under 3rdparty/).
+	#
+	# Only submodules with no system/rosdep equivalent belong here: the rest
+	# (nanoflann, zlib, simpleini, glfw, ...) are consumed via Debian build
+	# dependencies and must NOT be shipped in the archive. The mrpt_imgui_vendor
+	# ones are shipped because no distro packages ImGui's docking branch nor the
+	# ImPlot master snapshot it requires.
+	EXTERNAL_MODS="modules/mrpt_gui/3rdparty/nanogui modules/mrpt_gui/3rdparty/nanogui/ext/nanovg 3rdparty/googletest modules/mrpt_containers/3rdparty/libfyaml 3rdparty/rplidar_sdk modules/mrpt_imgui_vendor/3rdparty/imgui modules/mrpt_imgui_vendor/3rdparty/implot modules/mrpt_imgui_vendor/3rdparty/portable-file-dialogs modules/mrpt_imgui_vendor/3rdparty/IconFontCppHeaders ${MRPT_PKG_EXPORTED_SUBMODULES}"
 	for MOD in $EXTERNAL_MODS;
 	do
 		echo "> Exporting git submodule: ${MRPTSRC}/$MOD"

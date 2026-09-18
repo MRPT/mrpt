@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mrpt_imgui_vendor</name>
+  <version>3.2.0</version>
+  <description>Vendored Dear ImGui (docking branch), ImPlot, portable-file-dialogs and an embedded icon font, built as one library for use by MRPT packages</description>
+
+  <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
+  <license file="LICENSE">BSD</license>
+  <license file="LICENSES/imgui-MIT.txt">MIT</license>
+  <license file="LICENSES/implot-MIT.txt">MIT</license>
+  <license file="LICENSES/portable-file-dialogs-WTFPL.txt">WTFPL</license>
+  <license file="LICENSES/IconFontCppHeaders-Zlib.txt">Zlib</license>
+  <license file="LICENSES/material-symbols-Apache-2.0.txt">Apache-2.0</license>
+
+  <url type="website">https://github.com/MRPT/</url>
+
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <depend>mrpt_common</depend>
+
+  <depend>libglfw3-dev</depend>
+  <depend>opengl</depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+
+</package>
