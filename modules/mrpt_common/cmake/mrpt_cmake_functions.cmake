@@ -637,6 +637,11 @@ function(mrpt_add_executable)
       )
     endif()
 
+    if(ENABLE_COVERAGE)
+      target_compile_options(${MRPT_ADD_EXECUTABLE_TARGET} PRIVATE --coverage)
+      target_link_options(${MRPT_ADD_EXECUTABLE_TARGET} PRIVATE --coverage)
+    endif()
+
     # install:
     if (NOT MRPT_ADD_EXECUTABLE_DONT_INSTALL)
       install(TARGETS ${MRPT_ADD_EXECUTABLE_TARGET}
