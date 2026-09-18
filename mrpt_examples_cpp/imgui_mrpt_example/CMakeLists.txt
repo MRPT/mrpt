@@ -13,9 +13,9 @@ find_package(mrpt_imgui  REQUIRED)  # brings in mrpt-viz transitively
 find_package(mrpt_opengl REQUIRED)
 
 # 2) Dear ImGui + ImPlot + GLFW, from the single vendored copy in the repo.
-#    That package skips itself when glfw3 is absent (e.g. the GUI-disabled
-#    Windows CI), so skip this optional example too instead of failing the
-#    whole mrpt_examples_cpp build.
+#    That package is absent only when the ImGui stack was explicitly disabled
+#    (MRPT_IMGUI_VENDOR_ENABLE=OFF); skip this optional example then, rather
+#    than failing the whole mrpt_examples_cpp build.
 find_package(mrpt_imgui_vendor QUIET)
 if (NOT mrpt_imgui_vendor_FOUND)
   message(STATUS "imgui_mrpt_example: mrpt_imgui_vendor not found, skipping this example.")

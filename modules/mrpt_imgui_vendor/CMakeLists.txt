@@ -56,13 +56,26 @@ unset(_probe)
 # ---------------------------------------------------------------------------
 # Dependencies
 # ---------------------------------------------------------------------------
-# The Windows/macOS CI jobs build with no GUI stack at all; skip the whole
-# package there instead of failing the build.
+# This package is the base of MRPT's ImGui GUI stack, so a missing GLFW is a
+# hard error rather than a silent skip: quietly dropping it would make the GUI
+# applications disappear from the build without any diagnostic. Builds that
+# genuinely want no GUI opt out explicitly.
+option(MRPT_IMGUI_VENDOR_ENABLE "Build the vendored ImGui stack (needs GLFW)" ON)
+
+if(NOT MRPT_IMGUI_VENDOR_ENABLE)
+  message(STATUS "mrpt_imgui_vendor: disabled via MRPT_IMGUI_VENDOR_ENABLE=OFF.")
+  return()
+endif()
+
 find_package(glfw3 3.3 QUIET)
 if(NOT glfw3_FOUND)
-  message(STATUS
-    "mrpt_imgui_vendor: glfw3 not found, skipping this package.")
-  return()
+  message(FATAL_ERROR
+    "mrpt_imgui_vendor requires GLFW >= 3.3, which was not found.\n"
+    "  Debian/Ubuntu:  sudo apt install libglfw3-dev\n"
+    "  macOS:          brew install glfw\n"
+    "  Windows:        vcpkg install glfw3 --triplet x64-windows\n"
+    "Configure with -DMRPT_IMGUI_VENDOR_ENABLE=OFF to build without the "
+    "ImGui GUI stack instead.")
 endif()
 
 find_package(OpenGL REQUIRED)
