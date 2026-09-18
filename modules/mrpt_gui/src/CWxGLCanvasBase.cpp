@@ -137,16 +137,22 @@ uint8_t wxButtonUp(const wxMouseEvent& e)
 
 void CWxGLCanvasBase::OnMouseDown(wxMouseEvent& event)
 {
+  updateLastPos(event.GetX(), event.GetY());
   orbitCameraController().onMouseButton(event.GetX(), event.GetY(), wxButtonDown(event), true);
 }
 
 void CWxGLCanvasBase::OnMouseUp(wxMouseEvent& event)
 {
+  updateLastPos(event.GetX(), event.GetY());
   orbitCameraController().onMouseButton(event.GetX(), event.GetY(), wxButtonUp(event), false);
 }
 
 void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 {
+  // Track the pointer even while no button is held: this is what
+  // CDisplayWindow3D::getLastMousePosition() (and hence 3D picking) reads.
+  updateLastPos(event.GetX(), event.GetY());
+
   uint8_t buttons = 0;
   if (event.LeftIsDown())
   {

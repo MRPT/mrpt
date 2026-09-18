@@ -560,8 +560,8 @@ bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
           wps.waypoint_index_current_goal < static_cast<int>(wps.waypoints.size()))
              ? &wps.waypoints[wps.waypoint_index_current_goal]
              : nullptr;
-    ret = (wp == nullptr && targetDist <= m_navigationParams->target.targetAllowedDistance) ||
-          (wp->reached);
+    ret = (wp == nullptr) ? (targetDist <= m_navigationParams->target.targetAllowedDistance)
+                          : wp->reached;
   }
   else
   {

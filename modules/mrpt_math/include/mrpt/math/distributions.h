@@ -116,11 +116,10 @@ double KLD_Gaussians(
       size_t(mu0.size()) == size_t(mu1.size()) && size_t(mu0.size()) == size_t(cov0.rows()) &&
       size_t(mu0.size()) == size_t(cov1.cols()) && cov0.isSquare() && cov1.isSquare());
   const size_t N = mu0.size();
-  MATRIXLIKE2 cov1_inv;
-  cov1.inverse_LLt(cov1_inv);
+  const MATRIXLIKE2 cov1_inv = cov1.inverse_LLt();
   const VECTORLIKE1 mu_difs = mu0 - mu1;
   return 0.5 * (log(cov1.det() / cov0.det()) + (cov1_inv * cov0).trace() +
-                multiply_HCHt_scalar(mu_difs, cov1_inv) - N);
+                multiply_HtCH_scalar(mu_difs, cov1_inv) - static_cast<double>(N));
   MRPT_END
 }
 
@@ -227,7 +226,7 @@ void confidenceIntervals(
   out_mean = mean(data);
   const auto x_min = data.minCoeff();
   const auto x_max = data.maxCoeff();
-  const auto binWidth = (x_max - x_min) / histogramNumBins;
+  const auto binWidth = (x_max - x_min) / static_cast<double>(histogramNumBins);
 
   const std::vector<double> hitsNormalized =
       mrpt::math::histogram(data, x_min, x_max, histogramNumBins);
@@ -241,8 +240,8 @@ void confidenceIntervals(
   ASSERT_(it_high != Hc.end());
   const size_t idx_low = std::distance(Hc.begin(), it_low);
   const size_t idx_high = std::distance(Hc.begin(), it_high);
-  out_lower_conf_interval = x_min + idx_low * binWidth;
-  out_upper_conf_interval = x_min + idx_high * binWidth;
+  out_lower_conf_interval = x_min + static_cast<double>(idx_low) * binWidth;
+  out_upper_conf_interval = x_min + static_cast<double>(idx_high) * binWidth;
 
   MRPT_END
 }
@@ -266,7 +265,7 @@ void confidenceIntervalsFromHistogram(
 
   const auto x_min = *histogramCoords.begin();
   const auto x_max = *histogramCoords.rbegin();
-  const auto binWidth = (x_max - x_min) / histogramCoords.size();
+  const auto binWidth = (x_max - x_min) / static_cast<double>(histogramCoords.size());
 
   std::vector<double> Hc;
   cumsum(histogramNormalizedHits, Hc);  // CDF
@@ -278,8 +277,8 @@ void confidenceIntervalsFromHistogram(
   ASSERT_(it_high != Hc.end());
   const size_t idx_low = static_cast<size_t>(std::distance(Hc.begin(), it_low));
   const size_t idx_high = static_cast<size_t>(std::distance(Hc.begin(), it_high));
-  out_lower_conf_interval = x_min + idx_low * binWidth;
-  out_upper_conf_interval = x_min + idx_high * binWidth;
+  out_lower_conf_interval = x_min + static_cast<double>(idx_low) * binWidth;
+  out_upper_conf_interval = x_min + static_cast<double>(idx_high) * binWidth;
 
   MRPT_END
 }

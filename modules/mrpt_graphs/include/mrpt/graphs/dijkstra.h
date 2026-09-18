@@ -278,7 +278,7 @@ class CDijkstra
         break;
       }
 
-      if (min_d > maximum_distance)
+      if (min_d > static_cast<double>(maximum_distance))
       {
         // We are out of the topological region of interest, skip the
         // rest of the graph:
@@ -327,7 +327,7 @@ class CDijkstra
 
         const auto dist_ui = (min_d + edge_ui_weight);
 
-        if (dist_ui > maximum_distance)  // out of radius of interest:
+        if (dist_ui > static_cast<double>(maximum_distance))  // out of radius of interest:
           continue;
 
         if (dist_ui < m_distances[i].dist)

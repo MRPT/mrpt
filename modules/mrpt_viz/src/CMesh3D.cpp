@@ -99,12 +99,15 @@ void CMesh3D::loadMesh(
       }
       else
       {
+        // Triangle faces only have 3 real vertices (v2, v3, v4); v1 is the
+        // unused "-1" sentinel for the quad's 4th vertex slot and must not
+        // be dereferenced here.
         const float vec1[3] = {
-            m_vertices[v2][0] - m_vertices[v1][0], m_vertices[v2][1] - m_vertices[v1][1],
-            m_vertices[v2][2] - m_vertices[v1][2]};
+            m_vertices[v2][0] - m_vertices[v4][0], m_vertices[v2][1] - m_vertices[v4][1],
+            m_vertices[v2][2] - m_vertices[v4][2]};
         const float vec2[3] = {
-            m_vertices[v3][0] - m_vertices[v1][0], m_vertices[v3][1] - m_vertices[v1][1],
-            m_vertices[v3][2] - m_vertices[v1][2]};
+            m_vertices[v3][0] - m_vertices[v4][0], m_vertices[v3][1] - m_vertices[v4][1],
+            m_vertices[v3][2] - m_vertices[v4][2]};
         m_normals[f][0] = vec1[1] * vec2[2] - vec1[2] * vec2[1];
         m_normals[f][1] = vec1[2] * vec2[0] - vec1[0] * vec2[2];
         m_normals[f][2] = vec1[0] * vec2[1] - vec1[1] * vec2[0];

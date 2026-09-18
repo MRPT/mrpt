@@ -20,7 +20,10 @@ using namespace mrpt::kinematics;
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CVehicleVelCmd, CSerializable, mrpt::kinematics)
 
 CVehicleVelCmd::CVehicleVelCmd() = default;
-CVehicleVelCmd::CVehicleVelCmd(const CVehicleVelCmd& other) { *this = other; }
+// Note: defaulted on purpose. The base class holds no data, and delegating to
+// operator=() here would dispatch virtual calls while the derived object is
+// still under construction.
+CVehicleVelCmd::CVehicleVelCmd(const CVehicleVelCmd& other) = default;
 CVehicleVelCmd::~CVehicleVelCmd() = default;
 std::string mrpt::kinematics::CVehicleVelCmd::asString() const
 {

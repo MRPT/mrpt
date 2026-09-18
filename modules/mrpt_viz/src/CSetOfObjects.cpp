@@ -200,9 +200,9 @@ CVisualObject& CSetOfObjects::setColorA_u8(const uint8_t a)
 /*---------------------------------------------------------------
               getByName
   ---------------------------------------------------------------*/
-CVisualObject::Ptr CSetOfObjects::getByName(const string& str)
+CVisualObject::ConstPtr CSetOfObjects::getByName(const string& str) const
 {
-  for (auto& o : m_objects)
+  for (const auto& o : m_objects)
   {
     if (!o)
     {
@@ -213,9 +213,9 @@ CVisualObject::Ptr CSetOfObjects::getByName(const string& str)
       return o;
     }
 
-    if (auto* objs = dynamic_cast<CSetOfObjects*>(o.get()))
+    if (const auto* objs = dynamic_cast<const CSetOfObjects*>(o.get()))
     {
-      CVisualObject::Ptr ret = objs->getByName(str);
+      CVisualObject::ConstPtr ret = objs->getByName(str);
       if (ret)
       {
         return ret;
@@ -236,14 +236,18 @@ auto CSetOfObjects::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBox
     {
       continue;
     }
+    // Each child's box must be brought into this container's frame, i.e.
+    // composed with the child's own pose:
+    const auto childBB = o->getBoundingBox();
+    const mrpt::math::TBoundingBoxf childBBf(childBB.min.cast<float>(), childBB.max.cast<float>());
     if (first)
     {
-      bb = o->getBoundingBoxLocalf();
+      bb = childBBf;
       first = false;
     }
     else
     {
-      bb = bb.unionWith(o->getBoundingBoxLocalf());
+      bb = bb.unionWith(childBBf);
     }
   }
 

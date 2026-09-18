@@ -26,7 +26,8 @@ void CTextMessageCapable::TListTextMessages::regenerateGLobjects() const
   for (const auto& kv : messages)
   {
     const DataPerText& labelData = kv.second;
-    if (labelData.gl_text && labelData.gl_text_outdated)
+    // Nothing to do for a label whose objects are already up to date:
+    if (labelData.gl_text && !labelData.gl_text_outdated)
     {
       continue;
     }

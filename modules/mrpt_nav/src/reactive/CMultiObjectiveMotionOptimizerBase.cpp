@@ -63,8 +63,10 @@ std::optional<size_t> CMultiObjectiveMotionOptimizerBase::decide(
         }
         catch (std::exception&)
         {
-          m_score_exprs.clear();
-          return -1;  // no good motion in this case
+          // Drop *all* cached expression state: score names already registered
+          // as variables would make the next decide() throw.
+          this->clear();
+          return std::nullopt;  // no good motion in this case
         }
 
         // Register formulas also as variables, usable by the assert()
@@ -101,8 +103,8 @@ std::optional<size_t> CMultiObjectiveMotionOptimizerBase::decide(
         }
         catch (std::exception&)
         {
-          m_movement_assert_exprs.clear();
-          return -1;  // no good motion in this case
+          this->clear();
+          return std::nullopt;  // no good motion in this case
         }
       }
     }
@@ -214,7 +216,12 @@ std::optional<size_t> CMultiObjectiveMotionOptimizerBase::decide(
   return impl_decide(movs, extra_info);
 }
 
-void CMultiObjectiveMotionOptimizerBase::clear() { m_score_exprs.clear(); }
+void CMultiObjectiveMotionOptimizerBase::clear()
+{
+  m_score_exprs.clear();
+  m_movement_assert_exprs.clear();
+  m_expr_vars.clear();
+}
 CMultiObjectiveMotionOptimizerBase::Ptr CMultiObjectiveMotionOptimizerBase::Factory(
     const std::string& className) noexcept
 {

@@ -2,6 +2,20 @@
 Changelog for package mrpt_rtti
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+* test(mrpt_rtti): add unit tests for the class registry, derivedFrom(), cloning of non-copy-constructible classes and CListOfClasses (`#1390 <https://github.com/MRPT/mrpt/issues/1390>`_).
+* fix(mrpt_rtti): internal_ReadObjectHeader()'s error message passed the archive description and class name in the wrong order.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.3 (2026-08-12)
+------------------
+
 3.1.2 (2026-07-07)
 ------------------
 

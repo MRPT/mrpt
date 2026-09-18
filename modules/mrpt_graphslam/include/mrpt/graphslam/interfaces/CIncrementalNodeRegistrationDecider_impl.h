@@ -23,7 +23,7 @@ bool CIncrementalNodeRegistrationDecider<GRAPH_T>::checkRegistrationCondition()
 
   // check that a node has already been registered - if not, default to
   // (0,0,0)
-  pose_t last_pose_inserted = this->m_prev_registered_nodeID != INVALID_NODEID
+  pose_t last_pose_inserted = this->m_prev_registered_nodeID != mrpt::graphs::INVALID_NODEID
                                   ? this->m_graph->nodes.at(this->m_prev_registered_nodeID)
                                   : pose_t();
 
@@ -62,8 +62,8 @@ bool CIncrementalNodeRegistrationDecider<GRAPH_T>::checkRegistrationConditionPos
 {
   using namespace mrpt::math;
 
-  std::cout << "In checkRegistrationConditionPose:\np1: " << p1.asString()
-            << "\np2: " << p1.asString() << "\n";
+  MRPT_LOG_DEBUG_STREAM(
+      "In checkRegistrationConditionPose:\np1: " << p1.asString() << "\np2: " << p2.asString());
 
   bool res = false;
   if ((p1.distanceTo(p2) > params.registration_max_distance) ||
@@ -103,7 +103,9 @@ void CIncrementalNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
     std::string* report_str) const
 {
   MRPT_START
-  using namespace std;
+  const static std::string report_sep(2, '\n');
+
+  parent_t::getDescriptiveReport(report_str);
 
   *report_str += params.getAsString();
   *report_str += report_sep;

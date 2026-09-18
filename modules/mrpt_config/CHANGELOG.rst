@@ -2,6 +2,20 @@
 Changelog for package mrpt_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+
+3.1.3 (2026-08-12)
+------------------
+* mrpt_config: increase code coverage and fix bugs.
+  Add unit tests for config and options classes. Fix cosmetic padding bug in CConfigFileBase::writeString().
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 

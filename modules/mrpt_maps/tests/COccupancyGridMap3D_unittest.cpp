@@ -13,15 +13,24 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/tfest/TMatchingPair.h>
+#include <mrpt/viz/COctoMapVoxels.h>
+#include <mrpt/viz/CSetOfObjects.h>
 #include <test_mrpt_common.h>
+
+#include <filesystem>
+#include <sstream>
 
 TEST(COccupancyGridMap3DTests, insert2DScan)
 {
@@ -156,4 +165,260 @@ TEST(COccupancyGridMap3DTests, insertScan3D)
     // A cell in front of the laser should have a high "freeness"
     EXPECT_GT(grid.getFreenessByPos(0.2f, 0.2f, 0.1f), 0.53f);
   }
+}
+
+// =========================================================================
+//  Likelihood: canCompute (true for 2D scans, false otherwise) and
+//  computeObservationLikelihood (unimplemented -- throws, see the
+//  "Implement me!" in COccupancyGridMap3D_likelihood.cpp)
+// =========================================================================
+
+TEST(COccupancyGridMap3DTests, CanComputeObservationLikelihood2DScanTrue)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  EXPECT_TRUE(grid.canComputeObservationLikelihood(scan1));
+}
+
+TEST(COccupancyGridMap3DTests, CanComputeObservationLikelihoodOtherTypeFalse)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation3DRangeScan scan3d;
+  EXPECT_FALSE(grid.canComputeObservationLikelihood(scan3d));
+}
+
+TEST(COccupancyGridMap3DTests, ComputeObservationLikelihoodThrows)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  EXPECT_THROW(
+      grid.computeObservationLikelihood(scan1, mrpt::poses::CPose3D::Identity()), std::exception);
+}
+
+// =========================================================================
+//  updateCell / fill / setSize / resizeGrid / isEmpty
+// =========================================================================
+
+TEST(COccupancyGridMap3DTests, IsEmptyBeforeAndAfterInsertion)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  EXPECT_TRUE(grid.isEmpty());
+
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  grid.insertObservation(scan1);
+  EXPECT_FALSE(grid.isEmpty());
+}
+
+TEST(COccupancyGridMap3DTests, UpdateCellAndFill)
+{
+  mrpt::maps::COccupancyGridMap3D grid({-2.0f, -2.0f, -2.0f}, {2.0f, 2.0f, 2.0f}, 0.5f);
+  // fill()/updateCell() are low-level cell manipulators that don't go
+  // through OnPostSuccesfulInsertObs(), so isEmpty() (which only reflects
+  // whether insertObservation() has ever succeeded) stays true; just check
+  // neither call throws.
+  EXPECT_NO_THROW(grid.fill(0.5f));
+  EXPECT_NO_THROW(grid.updateCell(0, 0, 0, 0.9f));
+}
+
+TEST(COccupancyGridMap3DTests, SetSizeAndResizeGrid)
+{
+  mrpt::maps::COccupancyGridMap3D grid({-1.0f, -1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}, 0.5f);
+  EXPECT_NO_THROW(grid.setSize({-2.0f, -2.0f, -2.0f}, {2.0f, 2.0f, 2.0f}, 0.5f));
+  EXPECT_NO_THROW(grid.resizeGrid({-3.0f, -3.0f, -3.0f}, {3.0f, 3.0f, 3.0f}));
+}
+
+// =========================================================================
+//  determineMatching2D / compute3DMatchingRatio
+// =========================================================================
+
+TEST(COccupancyGridMap3DTests, DetermineMatching2DNotImplementedThrows)
+{
+  // determineMatching2D() and compute3DMatchingRatio() are stubs (see
+  // "Implement me!" in COccupancyGridMap3D.cpp) -- verify the documented
+  // (if unfinished) behavior rather than a working match:
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  grid.insertObservation(scan1);
+
+  auto otherMap = mrpt::maps::CSimplePointsMap::Create();
+  otherMap->insertPoint(0.5f, 0.0f, 0.0f);
+
+  mrpt::maps::TMatchingParams params;
+  params.maxDistForCorrespondence = 1.0f;
+  mrpt::maps::TMatchingExtraResults extraResults;
+  mrpt::tfest::TMatchingPairList correspondences;
+
+  EXPECT_THROW(
+      grid.determineMatching2D(
+          otherMap.get(), mrpt::poses::CPose2D(0, 0, 0), correspondences, params, extraResults),
+      std::exception);
+}
+
+TEST(COccupancyGridMap3DTests, Compute3DMatchingRatioNotImplementedThrows)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  grid.insertObservation(scan1);
+
+  mrpt::maps::CSimplePointsMap otherMap;
+  otherMap.insertPoint(0.5f, 0.0f, 0.0f);
+
+  mrpt::maps::TMatchingRatioParams params;
+  EXPECT_THROW(
+      grid.compute3DMatchingRatio(&otherMap, mrpt::poses::CPose3D::Identity(), params),
+      std::exception);
+}
+
+// =========================================================================
+//  getAsOctoMapVoxels / getVisualizationInto / saveMetricMapRepresentationToFile
+// =========================================================================
+
+TEST(COccupancyGridMap3DTests, GetAsOctoMapVoxels)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  grid.insertObservation(scan1);
+
+  mrpt::viz::COctoMapVoxels voxels;
+  EXPECT_NO_THROW(grid.getAsOctoMapVoxels(voxels));
+}
+
+TEST(COccupancyGridMap3DTests, GetVisualizationInto)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  grid.insertObservation(scan1);
+
+  auto scene = mrpt::viz::CSetOfObjects::Create();
+  EXPECT_NO_THROW(grid.getVisualizationInto(*scene));
+}
+
+TEST(COccupancyGridMap3DTests, SaveMetricMapRepresentationToFile)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  grid.insertObservation(scan1);
+
+  static std::atomic<int> counter{0};
+  const auto dir = std::filesystem::temp_directory_path();
+  const std::string prefix =
+      (dir / ("mrpt_COccupancyGridMap3D_unittest_" + std::to_string(static_cast<long>(getpid())) +
+              "_" + std::to_string(counter++)))
+          .string();
+
+  EXPECT_NO_THROW(grid.saveMetricMapRepresentationToFile(prefix));
+  std::filesystem::remove(prefix + "_binary.bt");
+  std::filesystem::remove(prefix + "_3D.3Dscene");
+}
+
+// =========================================================================
+//  Serialization round-trip
+// =========================================================================
+
+TEST(COccupancyGridMap3DTests, SerializeRoundTrip)
+{
+  mrpt::maps::COccupancyGridMap3D src;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  src.insertObservation(scan1);
+
+  mrpt::io::CMemoryStream buf;
+  {
+    auto ar = mrpt::serialization::archiveFrom(buf);
+    ar << src;
+  }
+  buf.Seek(0);
+
+  mrpt::serialization::CSerializable::Ptr obj;
+  {
+    auto ar = mrpt::serialization::archiveFrom(buf);
+    ar >> obj;
+  }
+  auto* dst = dynamic_cast<mrpt::maps::COccupancyGridMap3D*>(obj.get());
+  ASSERT_NE(dst, nullptr);
+  EXPECT_FALSE(dst->isEmpty());
+}
+
+// =========================================================================
+//  TInsertionOptions / TRenderingOptions: load/save/serialize
+// =========================================================================
+
+TEST(COccupancyGridMap3DTests, InsertionOptionsConfigFileRoundTrip)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  cfg.write("ins", "maxDistanceInsertion", 20.0f);
+  cfg.write("ins", "maxOccupancyUpdateCertainty", 0.7f);
+  cfg.write("ins", "decimation", 2);
+
+  mrpt::maps::COccupancyGridMap3D::TInsertionOptions opts;
+  opts.loadFromConfigFile(cfg, "ins");
+  EXPECT_NEAR(opts.maxDistanceInsertion, 20.0f, 1e-3f);
+  EXPECT_NEAR(opts.maxOccupancyUpdateCertainty, 0.7f, 1e-3f);
+  EXPECT_EQ(opts.decimation, 2u);
+
+  mrpt::config::CConfigFileMemory cfg2;
+  EXPECT_NO_THROW(opts.saveToConfigFile(cfg2, "ins"));
+}
+
+TEST(COccupancyGridMap3DTests, RenderingOptionsSerializeRoundTrip)
+{
+  mrpt::maps::COccupancyGridMap3D::TRenderingOptions opts;
+  opts.generateGridLines = true;
+  opts.generateOccupiedVoxels = false;
+
+  mrpt::io::CMemoryStream buf;
+  {
+    auto ar = mrpt::serialization::archiveFrom(buf);
+    opts.writeToStream(ar);
+  }
+  buf.Seek(0);
+
+  mrpt::maps::COccupancyGridMap3D::TRenderingOptions dst;
+  {
+    auto ar = mrpt::serialization::archiveFrom(buf);
+    dst.readFromStream(ar);
+  }
+  EXPECT_TRUE(dst.generateGridLines);
+  EXPECT_FALSE(dst.generateOccupiedVoxels);
+}
+
+// =========================================================================
+//  TMapDefinition / optionsByName
+// =========================================================================
+
+TEST(COccupancyGridMap3DTests, MapDefinitionLoadAndCreate)
+{
+  const mrpt::config::CConfigFileMemory cfg(R""""(
+[map_occ3d_00_creationOpts]
+resolution=0.25
+
+[map_occ3d_00_insertOpts]
+maxDistanceInsertion=12.0
+)"""");
+
+  mrpt::maps::COccupancyGridMap3D::TMapDefinition def;
+  def.loadFromConfigFile(cfg, "map_occ3d_00");
+
+  std::stringstream ss;
+  def.dumpToTextStream(ss);
+  EXPECT_FALSE(ss.str().empty());
+
+  auto map = mrpt::maps::COccupancyGridMap3D::CreateFromMapDefinition(def);
+  ASSERT_NE(map, nullptr);
+  EXPECT_NEAR(map->insertionOptions.maxDistanceInsertion, 12.0f, 1e-3f);
+}
+
+TEST(COccupancyGridMap3DTests, OptionsByName)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  const auto opts = grid.optionsByName();
+  EXPECT_FALSE(opts.empty());
 }

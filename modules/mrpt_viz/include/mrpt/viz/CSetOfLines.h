@@ -146,6 +146,8 @@ class CSetOfLines :
   /** Returns true if there are no line segments. */
   [[nodiscard]] bool empty() const { return m_Segments.empty(); }
 
+  void updateBuffers() const override;
+
   /** Sets a specific line in the set, given its index. \sa appendLine */
   void setLineByIndex(size_t index, const mrpt::math::TSegment3D& segm);
 

@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/core/initializer.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/registerAllClasses.h>
@@ -26,6 +27,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_slam)
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
   registerClass(CLASS_ID(CIncrementalMapPartitioner));
+  registerClass(CLASS_ID(CLandmarksMap));
   registerClass(CLASS_ID(CMultiMetricMapPDF));
 #endif
 }

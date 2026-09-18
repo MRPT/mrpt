@@ -1665,6 +1665,17 @@ class CPointsMap :
 
 };  // End of class def.
 
+/** Returns a points map "view" of the given metric map: the map itself if it
+ * already is a points map, or its only child points map if it is a
+ * mrpt::maps::CMultiMetricMap holding exactly one. Returns nullptr if no such
+ * map exists.
+ *
+ * The returned pointer is a non-owning observer, valid as long as `map` is.
+ *
+ * \ingroup mrpt_maps_grp
+ */
+[[nodiscard]] const CPointsMap* asPointsMap(const mrpt::maps::CMetricMap& map);
+
 }  // namespace mrpt::maps
 
 namespace mrpt::viz

@@ -691,7 +691,9 @@ bool mrpt::obs::obs_to_viz(
     if (!obs) continue;
     auto glObj = mrpt::viz::CSetOfObjects::Create();
 
-    bool ok = obs_to_viz(obs, vp, *glObj);
+    // Non-const: generating the visualization of some observations lazy-loads
+    // and caches data inside them.
+    bool ok = obs_to_viz(std::const_pointer_cast<CObservation>(obs), vp, *glObj);
     if (!ok) continue;
 
     out.insert(glObj);

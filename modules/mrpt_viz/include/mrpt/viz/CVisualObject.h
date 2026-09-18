@@ -163,8 +163,11 @@ class CVisualObject : public mrpt::serialization::CSerializable
     std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
     return m_state.castShadows;
   }
-  /** Enable/disable casting shadows by this object (default=true) */
-  void castShadows(bool doCast = true)
+  /** Enable/disable casting shadows by this object (default=true).
+   *  \note The argument is not defaulted on purpose: it would make the
+   *  no-argument call resolve to this setter instead of the getter above
+   *  for any non-const object. */
+  void castShadows(bool doCast)
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.castShadows = doCast;

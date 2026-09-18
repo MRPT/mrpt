@@ -19,6 +19,8 @@
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/viz/CPointCloud.h>
 
+#include <algorithm>
+
 using namespace mrpt;
 using namespace mrpt::viz;
 using namespace mrpt::img;
@@ -213,8 +215,6 @@ void CPointCloud::insertPoint(float x, float y, float z)
 
   m_points.emplace_back(x, y, z);
 
-  m_minmax_valid = false;
-
   // JL: TODO note: Well, this can be clearly done much more efficiently
   // but...I don't have time! :-(
   wfWriteLock.unlock();
@@ -229,8 +229,6 @@ void CPointCloud::setPoint(size_t i, const float x, const float y, const float z
   std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
 
   m_points.at(i) = {x, y, z};
-
-  m_minmax_valid = false;
 
   // JL: TODO note: Well, this can be clearly done much more efficiently
   // but...I don't have time! :-(
@@ -254,7 +252,6 @@ void CPointCloud::markAllPointsAsNew()
 {
   std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
 
-  m_minmax_valid = false;
   CVisualObject::notifyChange();
 }
 
@@ -293,6 +290,69 @@ void CPointCloud::PLY_export_get_vertex(
   pt = m_points[idx];
 }
 
+void CPointCloud::updateBuffers() const
+{
+  std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+
+  // "m_vertex_buffer_data" needs no work: "m_points" is an alias for it.
+  const size_t N = m_points.size();
+  const auto myColor = getColor_u8();
+
+  auto& cbd = VisualObjectParams_Points::m_color_buffer_data;
+  cbd.clear();
+
+  if (m_colorFromDepth == colNone || N == 0)
+  {
+    cbd.assign(N, myColor);
+    return;
+  }
+
+  // Range of the coordinate the color is taken from:
+  auto coordOf = [this](size_t i) -> float
+  {
+    switch (m_colorFromDepth)
+    {
+      case colX:
+        return m_points[i].x;
+      case colY:
+        return m_points[i].y;
+      default:
+        return m_points[i].z;
+    }
+  };
+
+  float vMin = coordOf(0);
+  float vMax = vMin;
+  for (size_t i = 1; i < N; i++)
+  {
+    const float v = coordOf(i);
+    mrpt::keep_min(vMin, v);
+    mrpt::keep_max(vMax, v);
+  }
+  const float span = vMax - vMin;
+  if (std::abs(span) < 1e-6f)
+  {  // All points share the coordinate: no gradient to build.
+    cbd.assign(N, myColor);
+    return;
+  }
+  const float spanInv = 1.0f / span;
+
+  // Slopes of the color interpolation:
+  const mrpt::img::TColorf slope(
+      m_colorFromDepth_max.R - m_colorFromDepth_min.R,
+      m_colorFromDepth_max.G - m_colorFromDepth_min.G,
+      m_colorFromDepth_max.B - m_colorFromDepth_min.B);
+
+  cbd.reserve(N);
+  for (size_t i = 0; i < N; i++)
+  {
+    const float f = std::clamp((coordOf(i) - vMin) * spanInv, 0.0f, 1.0f);
+    cbd.emplace_back(
+        f2u8(m_colorFromDepth_min.R + f * slope.R), f2u8(m_colorFromDepth_min.G + f * slope.G),
+        f2u8(m_colorFromDepth_min.B + f * slope.B), myColor.A);
+  }
+}
+
 TBoundingBoxf CPointCloud::internalBoundingBoxLocal() const
 {
   // m_pointsMtx.data: already held by calls inside.
@@ -319,7 +379,6 @@ void CPointCloud::setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts)
   {
     m_points[i] = pts[i];
   }
-  m_minmax_valid = false;
   wfWriteLock.unlock();
   markAllPointsAsNew();
   CVisualObject::notifyChange();

@@ -36,7 +36,14 @@ CGyroKVHDSP3000::CGyroKVHDSP3000() : m_com_port(), m_sensorPose()
   m_sensorLabel = "KVH_DSP3000";
 }
 
-CGyroKVHDSP3000::~CGyroKVHDSP3000() { m_serialPort->close(); }
+CGyroKVHDSP3000::~CGyroKVHDSP3000()
+{
+  // The port only exists after initialize():
+  if (m_serialPort)
+  {
+    m_serialPort->close();
+  }
+}
 
 /*-------------------------------------------------------------
           doProcess

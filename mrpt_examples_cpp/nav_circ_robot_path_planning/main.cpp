@@ -64,8 +64,6 @@ void TestPathPlanning()
   PlannerSimple2D pathPlanning;
   pathPlanning.robotRadius = 0.30f;
 
-  std::deque<TPoint2D> thePath;
-  bool notFound;
   CTicTac tictac;
 
   CPose2D origin(20, -110, 0);
@@ -78,13 +76,14 @@ void TestPathPlanning()
   cout.flush();
   tictac.Tic();
 
-  pathPlanning.computePath(gridmap, origin, target, thePath, notFound);
+  const auto optPath = pathPlanning.computePath(gridmap, origin, target);
 
   double t = tictac.Tac();
   std::cout << "Done in " << t * 1000 << " ms"
             << "\n";
 
-  printf("Path found: %s\n", notFound ? "NO" : "YES");
+  printf("Path found: %s\n", optPath ? "YES" : "NO");
+  const std::deque<TPoint2D> thePath = optPath.value_or(std::deque<TPoint2D>());
   printf("Path has %zu steps\n", thePath.size());
 
   // Save result:

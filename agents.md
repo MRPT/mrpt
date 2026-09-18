@@ -175,154 +175,384 @@ Full procedure: `doc/source/make_a_mrpt_release.rst`. Quick summary:
 * Do not run `packaging/release.py` or any step that pushes/tags/publishes
   unless the user explicitly asks for an actual release to be cut.
 
-## 9. Code Coverage Status (baseline: 2026-07-03, refreshed 2026-07-06)
+## 9. ROS build farm "dev" jobs skip tests (2026-07-10)
 
-A full rebuild of all 33 `modules/*` packages was done with coverage
-instrumentation, followed by a full `colcon test` run (all tests passed) and a
-`gcovr` line/branch report. **Goal: 90% line coverage per module.** Current
-overall (2026-07-06): **51.3% lines / 38.1% branches** — well short of goal.
-Per-module rows below are still the 2026-07-03 baseline except where a row is
-tagged with a newer date (e.g. `mrpt_math`, `mrpt_graphs`, after their
-unit-test passes).
+ROS "*dev" buildfarm Jenkins jobs (e.g. `Kdev__mrpt3__ubuntu_noble_amd64`) run
+`colcon build -DBUILD_TESTING=0` once, then a **second, fully clean**
+`colcon build --cmake-clean-cache -DBUILD_TESTING=1` pass that also compiles
+every module's gtest binaries. This doubles build time and was observed to
+blow the 120-minute Jenkins timeout mid-way through the second pass, before
+`colcon test` was ever invoked (no test results were produced at all). The
+same test suite already runs on every push/PR via GitHub Actions CI
+(`.github/workflows/build-linux.yml`), which never sources a ROS environment.
 
-Gotcha (2026-07-06): the system `gcov` alias (`/etc/alternatives/gcov`) may
-point to an unrelated binary (observed pointing to `/usr/bin/gc`), causing
-gcovr to silently mis-decode gcov output as garbage/UnicodeDecodeErrors.
-Pass `--gcov-executable gcov-<major-version-matching-the-compiler>` (e.g.
-`gcov-13`) explicitly to `gcovr` rather than relying on the `gcov` PATH
-lookup.
+Fix: `modules/mrpt_common/cmake/mrpt_cmake_functions.cmake` now forces
+`BUILD_TESTING` back to `OFF` (overriding the buildfarm's explicit
+`-DBUILD_TESTING=1`) whenever both `ROS_DISTRO` (sourced ROS env) and
+`JENKINS_URL` (any Jenkins job) are set in the environment — i.e. only on the
+ROS build farm itself, not for a developer who merely has ROS sourced
+locally. Escape hatch: `-DMRPT_FORCE_TESTS_ON_ROS_BUILDFARM=ON` re-enables
+tests there if ever needed. Since both `mrpt_add_test()` and
+`mrpt_add_python_binding_test()` already gate on `BUILD_TESTING`, no other
+files needed changes.
 
-To reproduce:
+## 10. Code Coverage
+
+**Goal: 90% line coverage per module.** Overall (2026-09-09, deduplicated as
+`scripts/coverage_module_report.py` does): **81.2% lines / 59.9% branches**. The remaining gap is
+dominated by the hardware/GUI modules.
+
+### Reproducing the numbers
+
 ```bash
-colcon build --base-paths modules --cmake-args -DENABLE_COVERAGE=ON -DBUILD_TESTING=ON
-colcon test --base-paths modules
-gcovr --root . -j$(nproc) --gcov-ignore-parse-errors=all \
+colcon build --base-paths modules apps --cmake-args -DENABLE_COVERAGE=ON -DBUILD_TESTING=ON
+xvfb-run -a --server-args="-screen 0 1280x1024x24" colcon test --base-paths modules apps
+# The gcov major version must match the compiler that built the objects:
+gcovr --root . -j$(nproc) --gcov-executable gcov-$(gcc -dumpversion | cut -d. -f1) \
+  --gcov-ignore-parse-errors=all --merge-mode-functions=merge-use-line-min \
   --exclude-unreachable-branches --exclude-throw-branches \
-  --exclude '.*/3rdparty/.*' --exclude '.*/tests/.*' --exclude '.*_unittest\.cpp' \
-  --exclude '.*/python_bindings/.*' --exclude '.*/samples/.*' \
+  --exclude '.*/3rdparty/.*' --exclude '.*/stb/.*' --exclude '.*/tests/.*' \
+  --exclude '.*_unittest\.cpp' --exclude '.*/python_bindings/.*' --exclude '.*/samples/.*' \
   --json-pretty -o coverage.json build
+scripts/coverage_module_report.py coverage.json mrpt_math   # per-file + aggregate
 ```
-(`--gcov-ignore-parse-errors=all` is needed, not just `negative_hits.warn_once_per_file`:
-large repos also trip gcovr's "suspicious hits" detector, e.g. on
-`mrpt_maps/src/maps/COccupancyGridMap2D_likelihood.cpp`, which otherwise aborts
-the whole run with a `SuspiciousHits` exception.)
 
-Gotcha: with symlink-install, the same header is reported twice by gcovr
-(once under `modules/<pkg>/include/...`, once under the symlinked
-`install/<pkg>/include/...`). Dedupe by stripping the leading `modules/` or
-`install/` path segment and merging line hit-counts (max) before computing
-per-file/per-module percentages, or numbers will be wrong in both directions.
-`scripts/coverage_module_report.py coverage.json <module1> [<module2> ...]`
-does this dedupe and prints per-file + aggregate line/branch % for the given
-module(s), e.g. `scripts/coverage_module_report.py coverage.json mrpt_math`.
+Every flag above is there because something breaks without it:
 
-### Measuring a single module's coverage after changing it
+* **`xvfb-run`**: without a display the `mrpt_gui` window tests `GTEST_SKIP()`
+  and the module reads ~1% instead of ~40%. `MRPT_SKIP_GUI_TESTS=1` forces the
+  skip.
+* **`--gcov-executable gcov-<compiler major version>`**: `gcov` must match the
+  major version of the compiler that produced the `.gcno`/`.gcda` files, and
+  the system `gcov` alias may point at an unrelated binary -- gcovr then
+  silently mis-decodes its output. The numbers in this section were taken with
+  GCC 13 / `gcov-13`; with clang, use `llvm-cov gcov` instead.
+* **`--gcov-ignore-parse-errors=all`**: large files trip gcovr's "suspicious
+  hits" detector, which otherwise aborts the whole run.
+* **`--merge-mode-functions=merge-use-line-min`**: gcovr >= 8.6 aborts when a
+  header-only template function is reported at two different line numbers by
+  different `.gcda` files.
+* **`apps` in `--base-paths`**: without it `rawlog-edit` is never built and the
+  ~40 `RawlogEditCLITest` cases all skip, reading `mrpt_libapps_cli` at ~8%.
+* **`scripts/coverage_module_report.py`**: with symlink-install every header is
+  reported twice (under `modules/` and under `install/`). The script merges
+  duplicates (max hit-count per line, OR-merged branches) before computing
+  percentages; raw gcovr CLI output is wrong in both directions without it.
+* Delete stale `.gcda` (`find build -iname '*.gcda' -delete`) before a
+  measuring run: re-running an instrumented binary outside `colcon test`
+  leaves mismatched-checksum profiles behind.
 
-When you only touched one module and want its updated number, it's tempting
-to build+test just that module (`colcon build --packages-up-to mrpt_XXX`,
-`colcon test --packages-select mrpt_XXX`) and run gcovr over just
-`build/mrpt_XXX`. **This badly undercounts modules with template-heavy public
-headers** (e.g. `CMatrixFixed.h`, `CMatrixDynamic.h` in `mrpt_math`): most of
-those headers' instantiation coverage comes from *other* modules' tests
-exercising them (mrpt_poses, mrpt_obs, mrpt_maps, ... all instantiate
-matrix/point/pose templates too), not from the owning module's own tests. An
-isolated single-package run only credits the owning module's own test binary,
-which can read 30-40 points lower than the true, whole-repo number.
-
-To get a number comparable to the table below, you must rebuild + retest
-**all** packages (coverage instrumentation is a global CMake cache option,
-so `colcon build`/`colcon test` with no `--packages-*` filter reuses existing
-object files and is normally fast/incremental — a few minutes, not a full
-rebuild from scratch), then run gcovr once over the whole `build` tree and
-filter with `coverage_module_report.py` as above. There isn't a fast, cheap,
-and accurate path — pick two.
+**Measuring one module after changing it**: you must still rebuild and retest
+*everything*. Template-heavy public headers (`CMatrixFixed.h`, `TPoint3D.h`, …)
+get most of their instantiation coverage from *other* modules' tests, so an
+isolated single-package run can read 30-40 points low. Incremental
+`colcon build`/`colcon test` with no `--packages-*` filter is a few minutes.
 
 ### Coverage by module (worst first)
 
 | Module | Covered/Total lines | Line % | Branch % |
 |---|---|---|---|
 | mrpt_imgui | 0/53 | 0.0% | 0.0% |
-| mrpt_gui | 22/4621 | 0.5% | 0.2% |
-| mrpt_hwdrivers | 913/6592 | 13.9% | 9.7% |
-| mrpt_comms | 237/1013 | 23.4% | 11.2% |
-| mrpt_viz | 2660/9024 | 29.5% | 17.3% |
-| mrpt_kinematics | 184/482 | 38.2% | 17.9% |
-| mrpt_img | 4132/10271 | 40.2%† | 30.0% |
-| mrpt_graphslam | 257/611 | 42.1% | 37.3% |
-| mrpt_obs | 2922/6723 | 43.5% | 26.3% |
-| mrpt_topography | 172/364 | 47.3% | 27.9% |
-| mrpt_maps | 5605/11648 | 48.1% | 32.7% |
-| mrpt_opengl | 2035/4234 | 48.1% | 30.1% |
-| mrpt_system | 1012/1900 | 53.3% | 39.6% |
-| mrpt_io | 726/1292 | 56.2% | 39.9% |
-| mrpt_libapps_cli | 1130/1910 | 59.2% | 38.0% |
-| mrpt_libapps_gui | 952/1567 | 60.8% | 42.6% |
-| mrpt_nav | 3928/6234 | 63.0% | 45.3% |
-| mrpt_slam | 2778/4299 | 64.6% | 43.7% |
-| mrpt_rtti | 126/176 | 71.6% | 73.5% |
-| mrpt_serialization | 511/708 | 72.2% | 52.5% |
-| mrpt_bayes | 805/1052 | 76.5% | 55.2% |
-| mrpt_config | 445/551 | 80.8% | 65.1% |
-| mrpt_containers | 1639/1956 | 83.8% | 55.6% |
-| mrpt_math (2026-07-05) | 6914/8070 | 85.7% | 57.5% |
-| mrpt_core | 541/628 | 86.1% | 64.8% |
-| mrpt_graphs (2026-07-06) | 1022/1111 | 92.0% | 76.7% |
-| mrpt_poses | 6263/6787 | 92.3% | 59.8% |
+| mrpt_hwdrivers | 1966/6747 | 29.1% | 20.7% |
+| mrpt_gui | 1888/4655 | 40.6% | 30.4% |
+| mrpt_opengl | 2322/4234 | 54.8% | 35.7% |
+| mrpt_libapps_cli | 1129/1910 | 59.1% | 38.0% |
+| mrpt_libapps_gui | 803/1288 | 62.3% | 45.8% |
+| mrpt_common | 5/7 | 71.4% | n/a |
+| mrpt_comms | 694/906 | 76.6% | 54.9% |
+| mrpt_graphslam | 814/997 | 81.6% | 64.4% |
+| mrpt_system | 1639/1964 | 83.5% | 59.9% |
+| mrpt_rtti | 151/176 | 85.8% | 78.4% |
+| mrpt_io | 1133/1310 | 86.5% | 71.0% |
+| mrpt_viz | 8694/9857 | 88.2% | 68.5% |
+| mrpt_maps | 10637/11790 | 90.2% | 66.4% |
+| mrpt_nav | 5670/6276 | 90.3% | 69.0% |
+| mrpt_containers | 1809/1999 | 90.5% | 56.0% |
+| mrpt_core | 579/638 | 90.8% | 71.8% |
+| mrpt_obs | 6287/6857 | 91.7% | 63.2% |
+| mrpt_graphs | 1030/1113 | 92.5% | 76.8% |
+| mrpt_poses | 6282/6788 | 92.5% | 61.3% |
 | mrpt_expr | 93/100 | 93.0% | 60.2% |
-| mrpt_random | 160/167 | 95.8% | 85.1% |
-| mrpt_tfest (2026-07-07) | 633/652 | 97.1% | 73.3% |
-| mrpt_typemeta | 57/57 | 100.0% | 85.1% |
+| mrpt_slam | 4062/4348 | 93.4% | 65.3% |
+| mrpt_bayes | 1049/1090 | 96.2% | 80.3% |
+| mrpt_serialization | 728/754 | 96.6% | 76.9% |
+| mrpt_math | 7611/7864 | 96.8% | 65.6% |
+| mrpt_random | 162/167 | 97.0% | 88.4% |
+| mrpt_tfest | 635/654 | 97.1% | 72.9% |
+| mrpt_kinematics | 503/518 | 97.1% | 81.2% |
+| mrpt_config | 536/548 | 97.8% | 84.7% |
+| mrpt_img | 3036/3100 | 97.9% | 77.2% |
+| mrpt_topography | 414/417 | 99.3% | 83.2% |
+| mrpt_typemeta | 57/57 | 100.0% | 80.9% |
 
-† `mrpt_img` includes the vendored `src/stb/*.h` (stb_image/stb_image_resize2/
-stb_image_write, public-domain third-party). Excluding those, first-party
-`mrpt_img` coverage is 48.0%. Treat `src/stb/*` as out of scope for new tests.
+### Techniques that work
 
-### Weak areas, grouped by root cause
+* **Legacy serialization without fixture files.** A ~30-line helper writes an
+  MRPT object frame (`[len|0x80][class name][version byte][payload][0x88]`)
+  with an *arbitrary* streaming version, so the backwards-compatible branches
+  of `serializeFrom()` can be driven directly. It lives as
+  `tests/legacy_serialization.h` in `mrpt_math`, `mrpt_obs`, `mrpt_viz` and
+  `mrpt_img` (duplicated, since modules are independent CMake projects). The
+  viz copy adds `writeLegacyRenderHeader()`, because every viz class starts
+  with `CVisualObject::writeToStreamRender()`, versioned independently of the
+  class itself. This is consistently the highest-yield technique available.
+* **Mock transports.** `mrpt_hwdrivers/tests/mock_stream.h` is a `CStream` that
+  records writes and replays scripted answers keyed on the command received --
+  enough for any driver reachable via `C2DRangeFinderAbstract::bindIO()` or
+  `CGPSInterface::bindStream()`. `mrpt_comms` uses a one-shot local
+  `CServerTCPSocket` (`comms_test_server.{h,cpp}`) for its HTTP/NTRIP client
+  and a pseudo-terminal (`posix_openpt`) for `CSerialPort`, with no hardware
+  and no network.
+* **`mrpt::cpu::overrideDetectedFeature()`** forces a SIMD feature off, so both
+  the vectorized and the portable path of the same function can be asserted
+  against each other in one test regardless of the host CPU.
+* **Headless GUI.** `xvfb-run` plus Mesa's software rasterizer is enough to
+  open and drive `CDisplayWindow*`. Do **not** pixel-compare window
+  screenshots: with no compositor the window is never mapped and readback is
+  uniformly black even though rendering happened. Assert that a frame was
+  grabbed with a plausible size; reference-image comparisons belong in
+  `mrpt_opengl`'s offscreen EGL/FBO tests. `tests/gui_test_common.h` provides
+  `SKIP_IF_NO_GUI()`, which every window test must use.
+* **Regenerating render references**: `MRPT_UPDATE_RENDER_REFERENCES=1
+  build/mrpt_opengl/bin/test_mrpt_opengl` under `xvfb-run`. Beware: a reference
+  image captured while a defect was present will happily keep passing --
+  `mrpt_viz/tests/RenderBuffers_unittest.cpp` asserts on the CPU-side vertex
+  buffers instead, which is what actually caught several "renders nothing"
+  regressions. This happened for real: the `linePointPrimitives` reference
+  enshrined a rotated, oversized `CText`. Their tolerance is also a *whole
+  frame* sum of absolute differences (5000.0), so a wrong small object costs
+  only a few hundred points and passes. `CFBORender_ScreenSpace_unittest.cpp`
+  is the alternative to copy: it asserts invariants on the pixels (extents
+  that must not taper under a no-projection camera, glyph sizes that must not
+  depend on camera distance), so it cannot be silently re-baselined.
 
-1. **Hardware drivers — `mrpt_hwdrivers` (13.9%), most of `mrpt_comms` (23.4%)**:
-   inherently hard to unit-test since they talk to real serial ports/USB/GPS/
-   LIDAR/cameras (`CHokuyoURG`, `CSickLaserSerial`, `COpenNI2Generic`,
-   `CVelodyneScanner`, `CSerialPort`, `CNTRIPClient`, `CKinect`, etc., all at
-   0%). Improving this needs a mockable transport layer (inject a fake
-   `CStream`/socket) rather than plain unit tests against hardware.
+### Recurring defect shapes worth grepping for
 
-2. **GUI/rendering — `mrpt_gui` (0.5%), `mrpt_imgui` (0%), and GUI-only files
-   inside `mrpt_viz`/`mrpt_opengl`**: `mathplot.cpp`, `CDisplayWindow*.cpp`,
-   `WxUtils.cpp`, `CWxGLCanvasBase.cpp`, `CQtGlCanvasBase.cpp`,
-   `CImGuiSceneView.cpp` need a live display/OpenGL context and are 0%.
-   Realistic path to improvement is extracting non-UI logic into testable
-   helpers, or headless/offscreen-context tests, not brute-force unit tests.
+Roughly 90 real bugs have been found by these passes. The ones that recur:
 
-3. **CLI apps — `mrpt_libapps_cli` (59.2% as of 2026-07-06, was 9.1%)**: some
-   `rawlog-edit_*.cpp` paths remain untested. These are better suited to
-   subprocess/golden-file integration tests (run the built binary against
-   sample rawlogs, diff the output) than pure unit tests.
+* `if (version >= N)` with no `else` in `serializeFrom()`: fields absent from
+  an older stream keep the *reused* destination object's previous values
+  instead of being reset to their defaults.
+* Unsigned underflow in loop bounds: `for (size_t i = 0; i < n - 1; i++)` spins
+  ~2^64 times when `n == 0`. Write `i + 1 < n`.
+* A method that takes a non-recursive lock and then calls another method that
+  locks the same mutex ("Resource deadlock avoided").
+* Output parameters written into instead of read out of; output containers
+  taken **by value**; output vectors written without being resized.
+* Members read but never written; declared-but-never-defined functions (a link
+  error for any caller, invisible while nothing calls them).
+* Documented defaults that live only in `loadFromConfigFile()` while the member
+  itself is left uninitialized.
+* A getter/setter pair sharing a name where the setter's only argument is
+  defaulted: the no-argument call resolves to the *setter* on a non-const
+  object.
+* `CImage::at<T>()` is a raw `reinterpret_cast`: `at<TColor>()` on a 3-channel
+  image writes 4 bytes over a 3-byte pixel. Use `at<uint8_t>(x, y, channel)`.
+* Branch coverage lags line coverage nearly everywhere by 15-30 points:
+  error-handling and edge-case branches are what is left untested even in files
+  with good line coverage. Prioritize failure-path tests over more happy paths.
 
-4. **Quick wins — pure-logic files at 0% with no hardware/GUI dependency**
-   (highest-value gaps, ordinary unit tests would work immediately):
-   `mrpt_system/src/md5.cpp`, `mrpt_graphslam/src/{CEdgeCounter,TSlidingWindow,
-   CWindowObserver}.cpp`, `mrpt_obs/src/gnss_messages_novatel.cpp`,
-   `mrpt_obs/src/carmen_log_tools.cpp`,
-   `mrpt_viz/src/PLY_import_export.cpp`, `mrpt_viz/src/COrbitCameraController.cpp`,
-   `mrpt_img/src/CImage_loadXPM.cpp`, `mrpt_slam/src/slam/
-   CRejectionSamplingRangeOnlyLocalization.cpp`.
+### Per-module notes for future passes
 
-5. **Biggest single-file impact (most uncovered lines, worth prioritizing for
-   raw percentage gains)**: `mrpt_viz/src/CPolyhedron.cpp` (1420 uncovered,
-   pure geometry, no GUI dependency — good test target),
-   `mrpt_maps/src/maps/CRandomFieldGridMap2D.cpp` (827),
-   `mrpt_maps/src/maps/CPointsMap.cpp` (547),
-   `mrpt_maps/src/maps/CGasConcentrationGridMap2D.cpp` (520),
-   `mrpt_obs/src/CObservation3DRangeScan.cpp` (459).
+* **Explicit `LIB_UNIT_TEST_SOURCES` lists** (not glob-based) in `mrpt_maps`,
+  `mrpt_nav`, `mrpt_math`, `mrpt_img` and others: a new `*_unittest.cpp`
+  silently never runs until it is registered in the module's `CMakeLists.txt`.
+* **`mrpt_math`** only explicitly instantiates fixed-size matrices for a few
+  dimensions (square `CMatrixFixed`: 2,3,4,6,7,12; `CVectorFixed`:
+  2,3,4,5,6,7,12 -- see `src/MatrixVectorBase_instantiate_*.cpp`). Instantiating
+  a template with any other size compiles but fails to *link*. Pick 2 as the
+  smallest.
+* **`mrpt_hwdrivers`**: several `MRPT_HAS_*` macros the sources still guard on
+  are never defined in the 3.x build (`MRPT_HAS_OPENCV`, `MRPT_HAS_LIBDC1394_2`,
+  `MRPT_HAS_ROBOPEAK_LIDAR`, `MRPT_HAS_NIDAQMX*`, `MRPT_HAS_PGR_FLYCAPTURE2`,
+  `MRPT_HAS_KINECT_CL_NUI`), so those paths are compiled out. Do not "fix" one
+  by adding the define alone -- `CImageGrabber_dc1394.cpp` no longer compiles
+  against current `mrpt::img`. Several sources also never include
+  `mrpt/hwdrivers/config.h`, so even their defined macros read 0.
+* **`mrpt_nav`**: `rnav_unittest.cpp`'s helper returns silently when the shared
+  `navigation-ptgs/*.ini` files are missing *and* swallows every exception, so
+  it can pass while testing nothing -- build configurations with
+  `CConfigFileMemory` instead. Reactive tests must advance the robot's
+  *navigation* time (`getNavigationTime()`), not just the clock, or
+  `updateCurrentPoseAndSpeeds()`'s 20 ms throttle leaves the pose cache empty.
+  `CPTG_DiffDrive_*` need a polygonal `shape_x0`/`shape_y0`/... in the config;
+  `CPTG_Holo_Blend` takes `robot_radius` and rejects a polygonal shape, and
+  with it a waypoint left at the default `speed_ratio = 1.0` yields no viable
+  movement at all.
+* **`mrpt_obs`**: `CObservationVelodyneScan`'s per-ray timestamps derive from
+  `CObservation::timestamp`, not `getOriginalReceivedTimeStamp()`.
+  `CObservationGPS`'s `TIMECONV_IsALeapYear()`/`GetNumberOfDaysInMonth()` are
+  only reachable from a `seconds >= 60.0` rollover that floating-point drift
+  never produces in practice.
+* **`mrpt_maps`**: `CVoxelMapRGB`'s and `CColouredOctoMap`'s 3D-scan colour
+  paths unproject via `hasRangeImage` + camera intrinsics, *not*
+  `hasPoints3D` -- a hand-built `CObservation3DRangeScan` needs
+  `setIntrinsicParamsFromValues()` plus a filled `rangeImage`.
+  `CGasConcentrationGridMap2D::build_Gaussian_Wind_Grid()` caches a LUT file in
+  the *current working directory*, so a test covering both the "generate" and
+  "load" branches must `chdir` into a scratch dir first.
+  `COccupancyGridMap3D::determineMatching2D()`, `::compute3DMatchingRatio()`
+  and `::internal_computeObservationLikelihood()` are unimplemented stubs that
+  throw; tests assert the throwing behavior.
+* **`mrpt_slam`**: only the *auxiliary* particle filters go through
+  `PF_SLAM_implementation_gatherActionsCheckBothActObs()`;
+  `pfStandardProposal` reads the action directly. An empty sensory frame still
+  counts as "valid" -- pass a null `sf` to leave a movement accumulated.
+* **`mrpt_viz`** has zero OpenGL dependency (it is the scene-graph description
+  consumed by `mrpt_opengl`), so almost all of it is testable with plain,
+  non-rendering unit tests.
+* **`mrpt_gui`**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the
+  library links wxWidgets *privately*, so a test target needs an explicit
+  `target_link_libraries(... PRIVATE imp_wxwidgets)`. The macOS/Windows CI jobs
+  build with `-DDISABLE_WXWIDGETS=ON`, so window tests only run on Linux.
 
-6. **Near-target modules (75-90%), smallest remaining gap to close first**:
-   `mrpt_bayes` (`CKalmanFilterCapable_impl.h` 71.4%), `mrpt_config`
-   (`CConfigFile.cpp` 59.3%), `mrpt_containers` (`yaml.cpp` 78.8%).
-   (`mrpt_graphs` and `mrpt_random` cleared this bucket as of 2026-07-06,
-   both now >90%.)
+### Where the remaining gap is
 
-Branch coverage lags line coverage everywhere (often by 15-30 points),
-indicating error-handling and edge-case branches are the norm left untested
-even in files with decent line coverage — prioritize adding failure-path
-tests, not just more happy-path calls.
+1. **Hardware drivers -- `mrpt_hwdrivers`**: what is still at 0% are the drivers
+   that own their transport instead of reading through an injectable `CStream`
+   (`COpenNI2Generic`, `CKinect`, `CCameraSensor`, `CNTRIPClient`, `CLMS100eth`,
+   `CSICKTim561Eth`, `CCANBusReader`, `CTaoboticsIMU`, …). Reaching them needs
+   the same `bindIO()`/`bindStream()` treatment first.
+2. **GUI/rendering -- `mrpt_imgui` (0%) and the rest of `mrpt_gui`**:
+   `CDisplayWindowGUI.cpp` (nanogui/GLFW), `CQtGlCanvasBase.cpp` (Qt),
+   `CImGuiSceneView.cpp`, the modal dialogs in `CAboutBox*`/`error_box.cpp`,
+   and the rest of `mathplot.cpp`. The `xvfb-run` technique should work for the
+   nanogui/Qt canvases too.
+3. **CLI apps -- `mrpt_libapps_cli`**: some `rawlog-edit_*.cpp` paths. Better
+   suited to subprocess/golden-file integration tests than unit tests.
+4. **Pure-logic files at 0%**: none left.
+5. **Largest single-file gaps**:
+   `mrpt_nav/src/reactive/CAbstractPTGBasedReactive.cpp`,
+   `mrpt_maps/include/mrpt/maps/CVoxelMapOccupancyBase.h` (voxel types other
+   than the two instantiated ones), `mrpt_maps/src/maps/CGenericPointsMap.cpp`,
+   `mrpt_maps/src/maps/COccupancyGridMap2D_common.cpp`.
+6. **Known-unreachable code, deliberately left in place**: `mrpt_rtti`'s
+   deferred class-registration queue (dead since MRPT 1.x's `CLASS_INIT`;
+   removing it would take the module to ~94%), the `shared_ptr<yaml>`
+   alternative in `mrpt_containers`' `scalar_t` (ABI-affecting to remove), and
+   `mrpt_viz`'s `CTextMessageCapable::regenerateGLobjects()` (`mrpt_opengl`
+   builds text overlays directly from the label strings).
 
+### Pass history
+
+One line per pass; the details are in the git log.
+
+| Date | Modules | Before -> after (lines) |
+|---|---|---|
+| 2026-07-03 | baseline for all 33 modules | -- |
+| 2026-07-06 | `mrpt_graphs`, `mrpt_random`, `mrpt_libapps_cli` | libapps_cli 9.1% -> 59.2% |
+| 2026-07-07 | `mrpt_tfest` | -> 97.1% |
+| 2026-07-09 | `mrpt_bayes`, `mrpt_config` | both -> >96% |
+| 2026-07-10 | `mrpt_img`, `mrpt_obs`, `mrpt_topography` | img -> 93.3% |
+| 2026-07-11 | `mrpt_containers` | -> 90.2% |
+| 2026-07-17 | `mrpt_maps` (2 passes) | 48.1% -> 83.0% |
+| 2026-08-02 | `mrpt_viz` | 29.5% -> 68.4% |
+| 2026-08-03 | `mrpt_maps` (pass 3) | 83.0% -> 86.6% |
+| 2026-08-28 | `mrpt_nav`, `mrpt_kinematics`; then `mrpt_graphslam`/`mrpt_system`/`mrpt_slam`/`mrpt_io` 0%-files | nav 63.0% -> 90.0%, kinematics 38.2% -> 96.8% |
+| 2026-08-29 | `mrpt_serialization`, `mrpt_rtti`, `mrpt_comms`, `mrpt_io`, `mrpt_system` | comms 23.4% -> 75.8% |
+| 2026-08-31 | `mrpt_slam` | 67.9% -> 90.2% |
+| 2026-09-06 | `mrpt_graphslam`, `mrpt_gui` | gui 0.5% -> 40.6% |
+| 2026-09-07 | `mrpt_math`/`mrpt_maps`/`mrpt_obs`/`mrpt_slam`; then `mrpt_viz`; then `mrpt_hwdrivers` | hwdrivers 13.9% -> 29.0% |
+| 2026-09-09 | `mrpt_img`, `mrpt_math` (blind spots, docs, dead code) | see section 11 |
+
+## 11. Recent API / correctness passes
+
+### mrpt_nav: API modernization + TP-Space math (2026-09-08)
+
+**Out-param APIs replaced by `std::optional`** (old signature kept as a
+`[[deprecated]]` inline shim unless noted), matching `inverseMap_WS2TP()`:
+`CParameterizedTrajectoryGenerator::getPathStepForDist()` (the old 3-arg form
+also wrote the *last* path step on failure; `getPathStepForDistClamped()` now
+covers that explicitly), `nav_plan_geometry_utils`'
+`collision_free_dist_{segment,arc}_circ_robot()`, and
+`PlannerSimple2D::computePath()`.
+
+**Other API changes**: `ClearanceDiagram::getClearance()`'s `bool
+integrate_over_path` became `enum class ClearanceQuery`;
+`CPTG_Holo_Blend::PATH_TIME_STEP` (a mutable global) became the per-instance
+`path_time_step` config key + `setPathTimeStep()`, and `eps` became `EPSILON`
+(both no-shim breaks); `setScorePriorty()` -> `setScorePriority()`;
+`updateClearancePost()` (a no-op since 2017) and
+`CAbstractHolonomicReactiveMethod::Create()` (declared but never defined) were
+deleted.
+
+Eight real bugs were fixed with regression tests, the notable classes being:
+two enum/bool modes swapped relative to their own docs; three unit mismatches
+where normalized [0,1] TP-Space distances and raw meters were mixed at an API
+boundary; an assignment placed inside the wrong `if`; and a closed form that
+divided by a coordinate that is zero for any obstacle on the turn-center axis
+(rewritten as a two-circle intersection).
+`calc_trans_distance_t_below_Tramp_abc_numeric()` went from a 15-interval
+trapezoidal rule to 16-interval Simpson (same cost, ~25x lower error) plus an
+exact branch for the degenerate `b^2-4ac ~= 0` case.
+
+New console example `mrpt_examples_cpp/nav_ptg_tpspace` walks the whole
+WS -> TP-Space -> velocity-command round trip headlessly.
+
+### mrpt_img + mrpt_math: blind spots, docs, dead code (2026-09-09)
+
+`mrpt_img` 93.3% -> 97.9%, `mrpt_math` 95.0% -> 96.8%.
+
+**The SIMD kernels in `mrpt_img` are live again.** `CImage.SSE2.cpp` /
+`CImage.SSSE3.cpp` had been orphaned by the stb-based `CImage` rewrite: nothing
+but their own unit test called them, and `scaleHalf()`/`grayscale()` documented
+their `bool` return as "always false, reserved for a future SIMD fast path".
+`CImage::scaleHalf()` now dispatches to `image_SSSE3_scale_half_3c8u` (3-channel
+`IMG_INTERP_NN`), `image_SSE2_scale_half_1c8u` (1-channel NN) and
+`image_SSE2_scale_half_smooth_1c8u` (1-channel `IMG_INTERP_LINEAR`), and
+`grayscale()` to `image_SSSE3_rgb_to_gray_8u`; the `bool` return now truthfully
+reports whether a fast path ran. Two constraints matter: the gray kernel
+asserts both row strides are multiples of 16 bytes, which for `CImage`'s packed
+rows means `width % 16 == 0` (the scale-half kernels handle the remainder
+themselves), and none of them can run in place. Note this also restores MRPT
+2.x's `IMG_INTERP_NN` semantics for `scaleHalf` -- point sampling, where the stb
+`STBIR_FILTER_BOX` path box-averages.
+
+**Dead code removed from `mrpt_math`** (~1700 lines): the public headers
+`CBinaryRelation.h`, `matrix_adaptors.h`, `MatrixBlockSparseCols.h`,
+`CMonteCarlo.h` and `eigen_extensions.h`. These were installed as public
+headers, so external use cannot be ruled out by inspection; what can be said
+is that no in-repository consumer includes any of them, and that all but
+`eigen_extensions.h` fail to even compile standalone -- they reference
+`CMatrixTemplateObjects` (removed in the 3.x matrix rewrite) or `Eigen::Matrix`
+without including Eigen -- so any downstream `#include` of those four was
+already a compile error. `eigen_extensions.h` did compile, but holds only
+`mrpt::math::detail` helpers with no callers. Removing them is an API break to
+declare in the release notes for the next major version.
+Also removed: a second, unreferenced
+`::intersect(TPolygonWithPlane, TPolygonWithPlane, TObject3D)` in
+`geometry.cpp`, duplicating what `intersectAux()` does for the public
+`intersect(TPolygon3D, TPolygon3D)`.
+
+**Real bugs found and fixed:**
+
+* `CImage::grayscale(ret)` documents in-place use (`ret = *this`), but
+  `ret.resize()` frees the source buffer before the conversion loop reads it --
+  the result was garbage plus a 2-byte heap over-read on the last pixel.
+* `mrpt::math::assemblePolygons()`'s three `TObject3D` overloads collected the
+  polygons already present in the input and then called the segment-based
+  overload, which **overwrites** its output vector: every pre-existing polygon
+  was silently dropped.
+* `assemblePolygons(segments, ...)` looped `for (size_t i = 0; i < N - 1; i++)`,
+  which underflows to ~2^64 iterations for an empty input -- a hang, not a
+  wrong answer.
+* `TSegment3D::distance(TPoint3D)` returned
+  `min(d(p,p1), d(p,p2), d(p, infinite line))`, so a point beyond an endpoint
+  measured to the unbounded line: a point 1 m past the end of a segment
+  reported distance 0. It now clamps the projection parameter to [0,1], like
+  its correct 2D twin `TSegment2D::signedDistance()`. `distance(TSegment3D)`
+  additionally mishandled a zero-length operand (the "almost parallel" branch
+  settles on the wrong endpoint) and now delegates to the point overload.
+* `MatrixVectorBase::saveToTextFile()` wrote `userHeader` with no trailing
+  newline although the doc says "final end-of-line is not needed", gluing the
+  header onto the first data row. With the usual `%`-prefixed header that made
+  `loadFromTextFile()` skip the first row of data silently. A newline is now
+  added when missing.
+* `TCamera::serializeFrom()` did not reset `cameraName` for pre-v5 streams
+  (unlike `nrows`/`ncols`/`distortion` in the same function), so reading a
+  legacy camera into a reused object kept the previous name.
+
+**Doc corrections**: `saveToTextFile()`'s `appendMRPTHeader` text described a
+header string the code has not written for years; the SIMD kernels' doxygen
+still pointed at `CImage::scaleHalfSmooth()` and `CImage::grayscaleInPlace()`,
+neither of which exists in 3.x.

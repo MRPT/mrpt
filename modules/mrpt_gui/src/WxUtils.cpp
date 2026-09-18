@@ -26,8 +26,7 @@ using namespace std;
 
 wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 {
-  using namespace std::string_literals;
-
+  // Both CImage and wxImage store 8-bit RGB, in that channel order:
   mrpt::img::CImage new_image(img, mrpt::img::SHALLOW_COPY);
 
   // If the image is GRAYSCALE, we need to convert it into RGB, so do it
@@ -35,13 +34,6 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
   if (!new_image.isColor())
   {
     new_image = new_image.colorImage();
-  }
-
-  if (new_image.getChannelsOrder() == "BGR"s)
-  {
-    auto im = new_image.makeDeepCopy();
-    im.swapRB();
-    new_image = im;
   }
 
   const int row_in_bytes =
@@ -89,7 +81,8 @@ mrpt::img::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
   const auto lx = img.GetWidth();
   const auto ly = img.GetHeight();
 
-  newImg->loadFromMemoryBuffer(lx, ly, mrpt::img::CH_RGB, img.GetData(), true /* swap RB */);
+  // wxImage holds RGB, and so does CImage: no channel swap.
+  newImg->loadFromMemoryBuffer(lx, ly, mrpt::img::CH_RGB, img.GetData(), false /* swap RB */);
 
   return newImg;
 }

@@ -2,6 +2,23 @@
 Changelog for package mrpt_bayes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* fix: resolve ROS/GCC buildfarm warnings across the affected MRPT modules and fix the real correctness defects they exposed.
+* fix: remove dangling iterator, hidden serialization overload, and enum-safety issues uncovered during the warning cleanup pass.
+* fix: replace the Clock::time_point stream overload with a gtest PrintTo hook to avoid ambiguous overload resolution.
+* fix: tighten enum underlying types and other warning-driven fixes for safer, more portable builds.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+
+3.1.3 (2026-08-12)
+------------------
+* mrpt_bayes: increase code coverage and fix bugs.
+  Add unit tests for Kalman and Particle filters. Fix latent bugs in EKF observation Jacobians and CParticleFilterCapable resampling.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 

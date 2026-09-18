@@ -442,5 +442,11 @@ std::string mrpt::system::md5(const unsigned char* data, size_t len)
 
 std::string mrpt::system::md5(const std::vector<uint8_t>& str)
 {
-  return mrpt::system::md5(&str[0], str.size());
+  // Note: `&str[0]` would be an out-of-bounds access for an empty vector, and
+  // the resulting pointer then trips the ASSERT_() in the overload below.
+  if (str.empty())
+  {
+    return mrpt::system::md5(std::string());
+  }
+  return mrpt::system::md5(str.data(), str.size());
 }

@@ -25,6 +25,7 @@
 #endif
 
 // My classes:
+#include <mrpt/viz/CAnimatedAssimpModel.h>
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CAssimpModel.h>
 #include <mrpt/viz/CAxis.h>
@@ -112,7 +113,16 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
       CLASS_ID(CEllipsoidInverseDepth2D),
       CLASS_ID(CEllipsoidInverseDepth3D),
       CLASS_ID(CEllipsoidRangeBearing2D),
-      CLASS_ID(COctoMapVoxels)};
+      CLASS_ID(COctoMapVoxels),
+      CLASS_ID(CAssimpModel),
+      CLASS_ID(CAnimatedAssimpModel),
+      CLASS_ID(CColorBar),
+      CLASS_ID(CEllipsoid2D),
+      CLASS_ID(CMesh3D),
+      CLASS_ID(CMeshFast),
+      CLASS_ID(CSetOfTexturedTriangles),
+      CLASS_ID(CVectorField2D),
+      CLASS_ID(CVectorField3D)};
 
   for (auto& cl : lstClasses)
   {

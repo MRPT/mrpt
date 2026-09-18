@@ -2,6 +2,21 @@
 Changelog for package mrpt_topography
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+
+3.1.3 (2026-08-12)
+------------------
+* fix: TOPCON doc sign convention, test state leak.
+* mrpt_topography: increase code coverage and fix bugs in conversions and transforms.
+  Fix bugs in geodeticToUTM false northing, geocentricToGeodetic pole singularities, transformHelmert3D unit scaling, and ENUToGeocentric reference axis.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 

@@ -1464,9 +1464,9 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
           double min_shape_dists = 1.0;
           for (double d = min_shape_dists; d < max_dist; d += min_shape_dists)
           {
-            uint32_t step = 0;
-            if (!ptg->getPathStepForDist(static_cast<uint16_t>(selected_k), d, step)) continue;
-            const auto p = ptg->getPathPose(static_cast<uint16_t>(selected_k), step);
+            const auto step = ptg->getPathStepForDist(static_cast<uint16_t>(selected_k), d);
+            if (!step) continue;
+            const auto p = ptg->getPathPose(static_cast<uint16_t>(selected_k), *step);
             ptg->add_robotShape_to_setOfLines(*gl_robot_ptg_prediction, mrpt::poses::CPose2D(p));
           }
         }

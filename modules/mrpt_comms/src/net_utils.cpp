@@ -309,12 +309,23 @@ http_errorcode mrpt::comms::net::http_request(
     if (output) output.value().get().http_responsecode = http_code;
     if (output) output.value().get().out_headers = rx_headers;
 
+    // The read loop above grows the buffer in blocks, so it normally ends up
+    // larger than what was actually received: discard that unused tail, but
+    // keep the trailing null the parsing below relies on.
+    buf.resize(total_read + 1);
+    buf[total_read] = '\0';
+
     // Remove the headers from the content:
     buf.erase(buf.begin(), buf.begin() + static_cast<std::ptrdiff_t>(content_offset));
 
     // Process: "Transfer-Encoding: chunked"
-    if (0 != rx_headers.count("Transfer-Encoding") &&
-        rx_headers.at("Transfer-Encoding") == "chunked")
+    if (0 == rx_headers.count("Transfer-Encoding") ||
+        rx_headers.at("Transfer-Encoding") != "chunked")
+    {
+      // Plain content: drop the trailing null, which is not part of it.
+      buf.pop_back();
+    }
+    else
     {
       // See: http://en.wikipedia.org/wiki/Chunked_transfer_encoding
 

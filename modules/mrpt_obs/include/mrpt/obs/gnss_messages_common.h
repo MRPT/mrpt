@@ -46,7 +46,9 @@ struct gnss_message
   template <class MSG_CLASS>
   bool isOfClass() const
   {
-    return isOfType(MSG_CLASS::msg_type);
+    // MSG_CLASS::msg_type is a per-class local enum (its underlying type is
+    // not gnss_message_type_t), so an explicit cast is required here.
+    return isOfType(static_cast<gnss_message_type_t>(MSG_CLASS::msg_type));
   }
 
   /** Load from binary stream and creates object detecting its type (class

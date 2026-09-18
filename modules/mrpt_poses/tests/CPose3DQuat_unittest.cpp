@@ -847,7 +847,15 @@ TEST(CPose3DQuat, ConstructorsFromMatrixAndHomogeneousMatrixRef)
   EXPECT_NEAR(fromHM.y(), 2.0, 1e-9);
 
   CMatrixDouble44 hm2;
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  // Exercise the deprecated output-argument overload for coverage:
   fromHM.getHomogeneousMatrix(hm2);
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
   EXPECT_TRUE(hm2 == fromHM.getHomogeneousMatrix());
 }
 

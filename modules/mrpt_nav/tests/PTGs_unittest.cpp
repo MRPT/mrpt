@@ -74,12 +74,10 @@ TEST(NavTests, PTGs_tests)
         bool any_good = false;
         for (size_t k = 0; k < num_paths; k++)
         {
-          uint32_t step;
-
-          if (ptg->getPathStepForDist(static_cast<uint16_t>(k), dist, step))
+          if (const auto step = ptg->getPathStepForDist(static_cast<uint16_t>(k), dist); step)
           {
             any_good = true;
-            double d = ptg->getPathDist(static_cast<uint16_t>(k), step);
+            double d = ptg->getPathDist(static_cast<uint16_t>(k), *step);
             EXPECT_NEAR(d, dist, 0.05) << "Test: step <-> dist match\n PTG: " << sPTGDesc << endl
                                        << "dist:" << dist << "\n";
             num_tests_run++;
@@ -111,15 +109,15 @@ TEST(NavTests, PTGs_tests)
             const auto [k, normalized_d] = *inv;
             any_ok = true;
             // Now, do the inverse operation:
-            uint32_t step;
-            bool step_ok =
-                ptg->getPathStepForDist(static_cast<uint16_t>(k), normalized_d * refDist, step);
+            const auto optStep =
+                ptg->getPathStepForDist(static_cast<uint16_t>(k), normalized_d * refDist);
+            const bool step_ok = optStep.has_value();
             EXPECT_TRUE(step_ok) << "PTG: " << sPTGDesc << endl
                                  << "(tx,ty): " << tx << " " << ty << " k= " << k
                                  << " normalized_d=" << normalized_d << "\n";
             if (step_ok)
             {
-              const mrpt::math::TPose2D pose = ptg->getPathPose(static_cast<uint16_t>(k), step);
+              const mrpt::math::TPose2D pose = ptg->getPathPose(static_cast<uint16_t>(k), *optStep);
               EXPECT_NEAR(pose.x, tx, tolerance_dist)
                   << "Test: inverseMap_WS2TP\n PTG#" << n << ": " << sPTGDesc << endl
                   << "(tx,ty): " << tx << " " << ty << " k= " << k

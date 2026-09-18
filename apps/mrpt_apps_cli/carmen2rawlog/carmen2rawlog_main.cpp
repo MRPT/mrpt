@@ -36,6 +36,7 @@
 
 #include <CLI/CLI.hpp>
 #include <fstream>
+#include <iostream>
 #include <map>
 
 using namespace mrpt;

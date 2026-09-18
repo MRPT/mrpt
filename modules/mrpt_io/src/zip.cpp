@@ -139,7 +139,9 @@ void mrpt::io::zip::decompress(
   MRPT_START
 
   outData.resize(outDataEstimatedSize);
-  unsigned long actualOutSize;
+  // zlib takes this as an in/out parameter: on input it must hold the size of
+  // the output buffer.
+  auto actualOutSize = static_cast<unsigned long>(outDataEstimatedSize);
 
   ret = ::uncompress(
       outData.data(), &actualOutSize, reinterpret_cast<unsigned char*>(inData),

@@ -14,6 +14,7 @@
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/cpu.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/io/CMemoryStream.h>
@@ -465,6 +466,35 @@ TEST(CImage, KLT_response)
   }
 }
 
+TEST(CImage, KLT_responseLargeWindowSizes)
+{
+  using namespace mrpt::img;
+
+  // Big enough image so that even a half_window_size=32 fits comfortably.
+  CImage a(200, 200, CH_GRAY);
+  a.filledRectangle({0, 0}, {199, 199}, TColor(0, 0, 0x10));
+  a.filledRectangle({99, 99}, {101, 101}, TColor(0, 0, 0x90));
+
+  // These correspond to the explicit switch-case template instantiations.
+  for (int w : {12, 13, 14, 15, 16, 32})
+  {
+    const auto resp = a.KLT_response({100, 100}, w);
+    EXPECT_GT(resp, 0.0f) << " w=" << w;
+  }
+
+  // A window size not explicitly listed in the switch falls back to the
+  // generic (non-template) code path.
+  const auto respGeneric = a.KLT_response({100, 100}, 20);
+  EXPECT_GT(respGeneric, 0.0f);
+}
+
+TEST(CImage, KLT_responseOutOfBoundsWindowThrows)
+{
+  using namespace mrpt::img;
+  CImage a(20, 20, CH_GRAY);
+  EXPECT_THROW((void)a.KLT_response({1, 1}, 5), std::exception);
+}
+
 TEST(CImage, LoadAndComparePseudoRnd)
 {
   using namespace mrpt::img;
@@ -665,4 +695,1006 @@ TEST(CImage, DrawChessboardCorners)
   corners.pop_back();
   bool ok2 = img.drawChessboardCorners(corners, 3, 3, 1, 5);
   EXPECT_FALSE(ok2);
+}
+
+TEST(CImage, SetPixelGray)
+{
+  using namespace mrpt::img;
+  CImage img(5, 5, CH_GRAY);
+  img.setPixelGray({2, 2}, 123);
+  EXPECT_EQ(img.at<uint8_t>(2, 2), 123);
+
+  // Out-of-bounds is a silent no-op.
+  img.setPixelGray({100, 100}, 7);
+  img.setPixelGray({-1, -1}, 7);
+
+  // Only valid on grayscale images.
+  CImage color(5, 5, CH_RGB);
+  EXPECT_THROW(color.setPixelGray({0, 0}, 1), std::exception);
+}
+
+TEST(CImage, SetPixelChannelCounts)
+{
+  using namespace mrpt::img;
+  {
+    CImage img(3, 3, CH_GRAY);
+    img.setPixel({1, 1}, TColor(10, 20, 30));
+    EXPECT_EQ(img.at<uint8_t>(1, 1), 30);  // gray uses the Blue channel
+  }
+  {
+    CImage img(3, 3, CH_RGB);
+    img.setPixel({1, 1}, TColor(10, 20, 30));
+    EXPECT_EQ(img.at<uint8_t>(1, 1, 0), 10);
+    EXPECT_EQ(img.at<uint8_t>(1, 1, 1), 20);
+    EXPECT_EQ(img.at<uint8_t>(1, 1, 2), 30);
+  }
+  {
+    CImage img(3, 3, CH_RGBA);
+    img.setPixel({1, 1}, TColor(10, 20, 30, 40));
+    EXPECT_EQ(img.at<uint8_t>(1, 1, 0), 10);
+    EXPECT_EQ(img.at<uint8_t>(1, 1, 1), 20);
+    EXPECT_EQ(img.at<uint8_t>(1, 1, 2), 30);
+    EXPECT_EQ(img.at<uint8_t>(1, 1, 3), 40);
+  }
+}
+
+TEST(CImage, GetAsFloat)
+{
+  using namespace mrpt::img;
+  CImage img(4, 4, CH_RGB);
+  img.filledRectangle({0, 0}, {3, 3}, TColor(0, 0, 0));
+  img.setPixel({1, 1}, TColor(255, 0, 0));
+
+  EXPECT_NEAR(img.getAsFloat({1, 1}, 0), 1.0f, 1e-4f);
+  EXPECT_NEAR(img.getAsFloat({1, 1}, 1), 0.0f, 1e-4f);
+
+  // Overload without a channel: for color images, the gray-equivalent.
+  EXPECT_GT(img.getAsFloat({1, 1}), 0.0f);
+
+  CImage gray(4, 4, CH_GRAY);
+  gray.setPixel({0, 0}, TColor(128, 128, 128));
+  EXPECT_NEAR(gray.getAsFloat({0, 0}), 128.0f / 255.0f, 1e-3f);
+
+  EXPECT_THROW((void)img.getAsFloat({100, 100}, 0), std::exception);
+}
+
+TEST(CImage, ExtractPatch)
+{
+  using namespace mrpt::img;
+  CImage img(10, 10, CH_GRAY);
+  for (int y = 0; y < 10; y++)
+  {
+    for (int x = 0; x < 10; x++)
+    {
+      img.at<uint8_t>(x, y) = static_cast<uint8_t>(x + y * 10);
+    }
+  }
+
+  CImage patch;
+  img.extract_patch(patch, {2, 3}, {4, 2});
+
+  EXPECT_EQ(patch.getWidth(), 4);
+  EXPECT_EQ(patch.getHeight(), 2);
+  for (int y = 0; y < 2; y++)
+  {
+    for (int x = 0; x < 4; x++)
+    {
+      EXPECT_EQ(patch.at<uint8_t>(x, y), img.at<uint8_t>(x + 2, y + 3));
+    }
+  }
+}
+
+TEST(CImage, GetAsMatrixVariants)
+{
+  using namespace mrpt::img;
+  CImage img(4, 3, CH_GRAY);
+  for (int y = 0; y < 3; y++)
+  {
+    for (int x = 0; x < 4; x++)
+    {
+      img.at<uint8_t>(x, y) = static_cast<uint8_t>((x + y * 4) * 10);
+    }
+  }
+
+  mrpt::math::CMatrixFloat mf;
+  img.getAsMatrix(mf, true, 0, 0, -1, -1, true /* normalize */);
+  EXPECT_EQ(mf.rows(), 3);
+  EXPECT_EQ(mf.cols(), 4);
+  EXPECT_NEAR(mf(0, 0), 0.0f, 1e-3f);
+  EXPECT_GT(mf(2, 3), 0.0f);
+
+  mrpt::math::CMatrix_u8 mu;
+  img.getAsMatrix(mu, true, 0, 0, -1, -1);
+  EXPECT_EQ(mu(2, 3), img.at<uint8_t>(3, 2));
+
+  // Sub-region extraction.
+  mrpt::math::CMatrixFloat sub;
+  img.getAsMatrix(sub, true, 1, 1, 2, 2, false);
+  EXPECT_EQ(sub.rows(), 2);
+  EXPECT_EQ(sub.cols(), 2);
+  EXPECT_EQ(sub(0, 0), img.at<uint8_t>(1, 1));
+}
+
+TEST(CImage, GetAsMatrixBytesColorImage)
+{
+  using namespace mrpt::img;
+  CImage img(2, 2, CH_RGB);
+  img.setPixel({0, 0}, TColor(255, 0, 0));
+
+  mrpt::math::CMatrix_u8 mu;
+  img.getAsMatrix(mu, true, 0, 0, -1, -1);
+  // Luminance of pure red: (255*299)/1000 = 76
+  EXPECT_EQ(mu(0, 0), 76);
+}
+
+TEST(CImage, GetSize)
+{
+  using namespace mrpt::img;
+  CImage img(7, 5, CH_GRAY);
+  const auto sz = img.getSize();
+  EXPECT_EQ(sz.x, 7);
+  EXPECT_EQ(sz.y, 5);
+
+  CImage empty;
+  const auto szEmpty = empty.getSize();
+  EXPECT_EQ(szEmpty.x, 0);
+  EXPECT_EQ(szEmpty.y, 0);
+}
+
+TEST(CImage, ImagesPathBase)
+{
+  using namespace mrpt::img;
+  const auto prev = CImage::getImagesPathBase();
+  CImage::setImagesPathBase("/tmp/some_test_path");
+  EXPECT_EQ(CImage::getImagesPathBase(), "/tmp/some_test_path");
+  CImage::setImagesPathBase(prev);
+}
+
+TEST(CImage, LoadFromStreamAsJPEGInvalidDataThrows)
+{
+  using namespace mrpt::img;
+  mrpt::io::CMemoryStream buf;
+  const uint8_t garbage[] = {0x00, 0x01, 0x02, 0x03, 0x04};
+  buf.Write(garbage, sizeof(garbage));
+  buf.Seek(0);
+
+  CImage img;
+  EXPECT_THROW(img.loadFromStreamAsJPEG(buf), std::exception);
+}
+
+TEST(CImage, SaveToStreamAsJPEGEmptyImageThrows)
+{
+  using namespace mrpt::img;
+  CImage img;
+  mrpt::io::CMemoryStream buf;
+  EXPECT_THROW(img.saveToStreamAsJPEG(buf), std::exception);
+}
+
+TEST(CImage, FilterMedianInPlace)
+{
+  using namespace mrpt::img;
+  CImage img(10, 10, CH_GRAY);
+  for (int y = 0; y < 10; y++)
+  {
+    for (int x = 0; x < 10; x++)
+    {
+      *img.ptr<uint8_t>(x, y) = 100;
+    }
+  }
+  *img.ptr<uint8_t>(5, 5) = 255;  // impulse noise
+
+  img.filterMedian(img, 3);  // in-place: out_img aliases *this
+  EXPECT_LE(*img.ptr<uint8_t>(5, 5), 110u);
+}
+
+TEST(CImage, FilterGaussianInPlace)
+{
+  using namespace mrpt::img;
+  CImage img(11, 11, CH_GRAY);
+  for (int y = 0; y < 11; y++)
+  {
+    for (int x = 0; x < 11; x++)
+    {
+      *img.ptr<uint8_t>(x, y) = 0;
+    }
+  }
+  *img.ptr<uint8_t>(5, 5) = 255;
+
+  img.filterGaussian(img, 5, 5, 1.5);  // in-place
+  EXPECT_GT(*img.ptr<uint8_t>(5, 5), *img.ptr<uint8_t>(0, 0));
+}
+
+TEST(CImage, RotateImageInPlace)
+{
+  using namespace mrpt::img;
+  CImage img(20, 20, CH_GRAY);
+  for (int y = 0; y < 20; y++)
+  {
+    for (int x = 0; x < 20; x++)
+    {
+      img.at<uint8_t>(x, y) = static_cast<uint8_t>(x + y);
+    }
+  }
+
+  img.rotateImage(img, 0.0, {10, 10}, 1.0);  // in-place, zero rotation
+  EXPECT_EQ(img.getWidth(), 20);
+  EXPECT_EQ(img.getHeight(), 20);
+}
+
+TEST(CImage, GetAsRGBMatrices)
+{
+  using namespace mrpt::img;
+  {
+    CImage img(4, 3, CH_RGB);
+    for (int y = 0; y < 3; y++)
+    {
+      for (int x = 0; x < 4; x++)
+      {
+        img.setPixel(
+            {x, y}, TColor(
+                        static_cast<uint8_t>(x * 10), static_cast<uint8_t>(y * 10),
+                        static_cast<uint8_t>((x + y) * 5)));
+      }
+    }
+
+    auto [rf, gf, bf] = img.getAsRGBMatricesFloat();
+    EXPECT_EQ(rf.rows(), 3);
+    EXPECT_EQ(rf.cols(), 4);
+    EXPECT_NEAR(rf(1, 2), 20.0f / 255.0f, 1e-3f);
+    EXPECT_NEAR(gf(1, 2), 10.0f / 255.0f, 1e-3f);
+
+    auto [rb, gb, bb] = img.getAsRGBMatricesBytes();
+    EXPECT_EQ(rb(1, 2), 20);
+    EXPECT_EQ(gb(1, 2), 10);
+    EXPECT_EQ(bb(1, 2), 15);
+  }
+  {
+    // Grayscale source: R=G=B replicate the gray level.
+    CImage gray(3, 3, CH_GRAY);
+    gray.setPixel({0, 0}, TColor(42, 42, 42));
+    auto [rf, gf, bf] = gray.getAsRGBMatricesFloat();
+    EXPECT_NEAR(rf(0, 0), gf(0, 0), 1e-6f);
+    EXPECT_NEAR(gf(0, 0), bf(0, 0), 1e-6f);
+
+    auto [rb, gb, bb] = gray.getAsRGBMatricesBytes();
+    EXPECT_EQ(rb(0, 0), gb(0, 0));
+    EXPECT_EQ(gb(0, 0), bb(0, 0));
+  }
+}
+
+TEST(CImage, CrossCorrelationFFT)
+{
+  using namespace mrpt::img;
+  CImage img(32, 32, CH_GRAY);
+  for (int y = 0; y < 32; y++)
+  {
+    for (int x = 0; x < 32; x++)
+    {
+      img.at<uint8_t>(x, y) = static_cast<uint8_t>((x * 7 + y * 3) % 256);
+    }
+  }
+
+  CImage patch;
+  img.extract_patch(patch, {10, 10}, {8, 8});
+
+  mrpt::math::CMatrixFloat corr;
+  img.cross_correlation_FFT(patch, corr);
+
+  EXPECT_GT(corr.rows(), 0);
+  EXPECT_GT(corr.cols(), 0);
+
+  // This is a phase-correlation style implementation: for an exact match
+  // (the patch was extracted verbatim from the image) it should produce a
+  // single, sharp peak (much larger than the average response) rather than
+  // a flat/degenerate response.
+  float sum = 0;
+  float peak = corr(0, 0);
+  for (int r = 0; r < corr.rows(); r++)
+  {
+    for (int c = 0; c < corr.cols(); c++)
+    {
+      sum += corr(r, c);
+      peak = std::max(peak, corr(r, c));
+    }
+  }
+  const float mean = sum / static_cast<float>(corr.rows() * corr.cols());
+  EXPECT_GT(peak, mean * 2.0f);
+}
+
+TEST(CImage, CrossCorrelationFFTWithSearchWindowAndBias)
+{
+  using namespace mrpt::img;
+  CImage img(32, 32, CH_GRAY);
+  for (int y = 0; y < 32; y++)
+  {
+    for (int x = 0; x < 32; x++)
+    {
+      img.at<uint8_t>(x, y) = static_cast<uint8_t>((x * 7 + y * 3) % 256);
+    }
+  }
+
+  CImage patch;
+  img.extract_patch(patch, {4, 4}, {8, 8});
+
+  mrpt::math::CMatrixFloat corr;
+  // Exercise the optional search-window and bias parameters.
+  img.cross_correlation_FFT(patch, corr, 0, 0, 16, 16, 10.0f, 5.0f);
+
+  EXPECT_GT(corr.rows(), 0);
+  EXPECT_GT(corr.cols(), 0);
+}
+
+TEST(CImage, UnloadOnNonExternalIsNoOp)
+{
+  using namespace mrpt::img;
+  CImage img(4, 4, CH_GRAY);
+  img.unload();  // Not external-storage: should just do nothing.
+  EXPECT_FALSE(img.isEmpty());
+  EXPECT_EQ(img.getWidth(), 4);
+}
+
+TEST(CImage, ExternalStorageForceLoadAndUnload)
+{
+  using namespace mrpt::img;
+  using namespace std::string_literals;
+
+  CImage img(6, 6, CH_GRAY);
+  img.setPixel({0, 0}, TColor(9, 9, 9));
+  const auto f = mrpt::system::getTempFileName() + ".png"s;
+  ASSERT_TRUE(img.saveToFile(f));
+
+  CImage ext;
+  ext.setExternalStorage(f);
+  EXPECT_TRUE(ext.isExternallyStored());
+  EXPECT_EQ(ext.getExternalStorageFile(), f);
+  EXPECT_FALSE(ext.getExternalStorageFileAbsolutePath().empty());
+
+  // Accessing the image triggers a lazy load.
+  EXPECT_EQ(ext.getWidth(), 6);
+  ext.forceLoad();
+  ext.unload();
+  // Width should still be queryable after unload (re-loads on demand).
+  EXPECT_EQ(ext.getWidth(), 6);
+}
+
+TEST(CImage, FlipVerticalAndHorizontal)
+{
+  using namespace mrpt::img;
+  CImage img(4, 3, CH_GRAY);
+  for (int y = 0; y < 3; y++)
+  {
+    for (int x = 0; x < 4; x++)
+    {
+      img.at<uint8_t>(x, y) = static_cast<uint8_t>(x + y * 10);
+    }
+  }
+
+  // NOTE: CImage's copy ctor/operator= are shallow copies (shared pixel
+  // buffer), so an independent deep copy is required before mutating one of
+  // the two images in place.
+  CImage flippedV(img, DEEP_COPY);
+  flippedV.flipVertical();
+  for (int y = 0; y < 3; y++)
+  {
+    for (int x = 0; x < 4; x++)
+    {
+      EXPECT_EQ(flippedV.at<uint8_t>(x, y), img.at<uint8_t>(x, 2 - y));
+    }
+  }
+
+  CImage flippedH(img, DEEP_COPY);
+  flippedH.flipHorizontal();
+  for (int y = 0; y < 3; y++)
+  {
+    for (int x = 0; x < 4; x++)
+    {
+      EXPECT_EQ(flippedH.at<uint8_t>(x, y), img.at<uint8_t>(3 - x, y));
+    }
+  }
+}
+
+TEST(CImage, SwapRB)
+{
+  using namespace mrpt::img;
+  CImage img(3, 3, CH_RGB);
+  img.setPixel({1, 1}, TColor(10, 20, 30));
+  img.swapRB();
+  EXPECT_EQ(img.at<uint8_t>(1, 1, 0), 30);
+  EXPECT_EQ(img.at<uint8_t>(1, 1, 1), 20);
+  EXPECT_EQ(img.at<uint8_t>(1, 1, 2), 10);
+}
+
+TEST(CImage, ColorImageFromGray)
+{
+  using namespace mrpt::img;
+  CImage gray(4, 4, CH_GRAY);
+  gray.setPixel({0, 0}, TColor(77, 77, 77));
+
+  CImage color = gray.colorImage();
+  EXPECT_TRUE(color.isColor());
+  EXPECT_EQ(color.at<uint8_t>(0, 0, 0), 77);
+  EXPECT_EQ(color.at<uint8_t>(0, 0, 1), 77);
+  EXPECT_EQ(color.at<uint8_t>(0, 0, 2), 77);
+
+  // Already-color image: colorImage() is a (shallow) no-op copy.
+  CImage stillColor = color.colorImage();
+  EXPECT_TRUE(stillColor.isColor());
+
+  // In-place overload, including the aliased (ret==*this) case.
+  CImage gray2(3, 3, CH_GRAY);
+  gray2.setPixel({0, 0}, TColor(5, 5, 5));
+  gray2.colorImage(gray2);
+  EXPECT_TRUE(gray2.isColor());
+  EXPECT_EQ(gray2.at<uint8_t>(0, 0, 0), 5);
+}
+
+TEST(CImage, JoinImagesHorz)
+{
+  using namespace mrpt::img;
+  CImage left(3, 2, CH_GRAY);
+  CImage right(2, 2, CH_GRAY);
+  for (int y = 0; y < 2; y++)
+  {
+    for (int x = 0; x < 3; x++)
+    {
+      left.at<uint8_t>(x, y) = static_cast<uint8_t>(10 + x + y);
+    }
+    for (int x = 0; x < 2; x++)
+    {
+      right.at<uint8_t>(x, y) = static_cast<uint8_t>(90 + x + y);
+    }
+  }
+
+  CImage joined;
+  joined.joinImagesHorz(left, right);
+
+  EXPECT_EQ(joined.getWidth(), 5);
+  EXPECT_EQ(joined.getHeight(), 2);
+  for (int y = 0; y < 2; y++)
+  {
+    for (int x = 0; x < 3; x++)
+    {
+      EXPECT_EQ(joined.at<uint8_t>(x, y), left.at<uint8_t>(x, y));
+    }
+    for (int x = 0; x < 2; x++)
+    {
+      EXPECT_EQ(joined.at<uint8_t>(3 + x, y), right.at<uint8_t>(x, y));
+    }
+  }
+}
+
+TEST(CImage, JoinImagesHorzMismatchedHeightThrows)
+{
+  using namespace mrpt::img;
+  CImage a(3, 2, CH_GRAY);
+  CImage b(3, 5, CH_GRAY);
+  CImage joined;
+  EXPECT_THROW(joined.joinImagesHorz(a, b), std::exception);
+}
+
+TEST(CImage, LoadFromMemoryBuffer)
+{
+  using namespace mrpt::img;
+  std::vector<uint8_t> buf = {
+      255, 0,   0,    // pixel(0,0): red
+      0,   255, 0,    // pixel(1,0): green
+      0,   0,   255,  // pixel(0,1): blue
+      10,  20,  30,   // pixel(1,1)
+  };
+
+  CImage img;
+  img.loadFromMemoryBuffer(2, 2, CH_RGB, buf.data(), false);
+  EXPECT_EQ(img.getWidth(), 2);
+  EXPECT_EQ(img.getHeight(), 2);
+  EXPECT_EQ(img.at<uint8_t>(0, 0, 0), 255);
+  EXPECT_EQ(img.at<uint8_t>(1, 0, 1), 255);
+
+  CImage imgSwapped;
+  imgSwapped.loadFromMemoryBuffer(2, 2, CH_RGB, buf.data(), true);
+  EXPECT_EQ(imgSwapped.at<uint8_t>(0, 0, 0), 0);
+  EXPECT_EQ(imgSwapped.at<uint8_t>(0, 0, 2), 255);
+}
+
+TEST(CImage, SaveAndLoadStreamJPEG)
+{
+  using namespace mrpt::img;
+  CImage img(16, 12, CH_RGB);
+  img.filledRectangle({0, 0}, {15, 11}, TColor(10, 20, 30));
+  img.filledRectangle({2, 2}, {5, 5}, TColor(200, 100, 50));
+
+  mrpt::io::CMemoryStream buf;
+  img.saveToStreamAsJPEG(buf, 90);
+  EXPECT_GT(buf.getTotalBytesCount(), 0U);
+
+  buf.Seek(0);
+  CImage loaded;
+  loaded.loadFromStreamAsJPEG(buf);
+  EXPECT_EQ(loaded.getWidth(), 16);
+  EXPECT_EQ(loaded.getHeight(), 12);
+  EXPECT_TRUE(loaded.isColor());
+}
+
+TEST(CImage, SaveToFileMultipleFormats)
+{
+  using namespace mrpt::img;
+  using namespace std::string_literals;
+
+  CImage img(8, 6, CH_RGB);
+  img.filledRectangle({0, 0}, {7, 5}, TColor(30, 60, 90));
+
+  for (const std::string& ext : {"jpg"s, "bmp"s, "tga"s, "png"s})
+  {
+    const auto f = mrpt::system::getTempFileName() + "."s + ext;
+    EXPECT_TRUE(img.saveToFile(f, 90)) << ext;
+
+    CImage loaded;
+    EXPECT_TRUE(loaded.loadFromFile(f)) << ext;
+    EXPECT_EQ(loaded.getWidth(), 8) << ext;
+    EXPECT_EQ(loaded.getHeight(), 6) << ext;
+  }
+}
+
+TEST(CImage, SaveToFileUnknownExtensionFails)
+{
+  using namespace mrpt::img;
+  using namespace std::string_literals;
+  CImage img(4, 4, CH_RGB);
+  const auto f = mrpt::system::getTempFileName() + ".this_is_not_a_format"s;
+  EXPECT_FALSE(img.saveToFile(f));
+}
+
+TEST(CImage, LoadFromFileMissingFileFails)
+{
+  using namespace mrpt::img;
+  using namespace std::string_literals;
+  CImage img;
+  EXPECT_FALSE(img.loadFromFile(mrpt::system::getTempFileName() + "_does_not_exist.png"s));
+}
+
+TEST(CImage, LoadFromFileStaticFactory)
+{
+  using namespace mrpt::img;
+  CImage img = CImage::LoadFromFile(tstImgFileColor);
+  EXPECT_FALSE(img.isEmpty());
+}
+
+TEST(CImage, LoadFromFileStaticFactoryThrowsOnError)
+{
+  using namespace mrpt::img;
+  using namespace std::string_literals;
+  EXPECT_THROW(
+      CImage::LoadFromFile(mrpt::system::getTempFileName() + "_does_not_exist.png"s),
+      std::exception);
+}
+
+TEST(CImage, CopyFromForceLoad)
+{
+  using namespace mrpt::img;
+  using namespace std::string_literals;
+
+  CImage src(5, 5, CH_GRAY);
+  src.setPixel({0, 0}, TColor(88, 88, 88));
+  const auto f = mrpt::system::getTempFileName() + ".png"s;
+  ASSERT_TRUE(src.saveToFile(f));
+
+  CImage ext;
+  ext.setExternalStorage(f);
+
+  CImage dst;
+  dst.copyFromForceLoad(ext);
+  // copyFromForceLoad() does a shallow copy (dst shares state with ext), so
+  // the "externally stored" flag carries over; what forceLoad() guarantees
+  // is that the pixel data is resident in memory, accessible without
+  // further disk I/O.
+  EXPECT_TRUE(dst.isExternallyStored());
+  EXPECT_EQ(dst.getWidth(), 5);
+  EXPECT_EQ(dst.at<uint8_t>(0, 0), 88);
+}
+
+TEST(CImage, GetRowStrideAndChannelsOrder)
+{
+  using namespace mrpt::img;
+  CImage img(10, 5, CH_RGB);
+  EXPECT_EQ(img.getRowStride(), 30U);
+  EXPECT_EQ(img.getChannelsOrder(), "RGB");
+
+  CImage imgGray(10, 5, CH_GRAY);
+  EXPECT_EQ(imgGray.getChannelsOrder(), "GRAY");
+
+  CImage imgRgba(10, 5, CH_RGBA);
+  EXPECT_EQ(imgRgba.getChannelsOrder(), "RGBA");
+}
+
+TEST(CImage, ScaleDouble)
+{
+  using namespace mrpt::img;
+  CImage img(4, 4, CH_GRAY);
+  for (int y = 0; y < 4; y++)
+  {
+    for (int x = 0; x < 4; x++)
+    {
+      img.at<uint8_t>(x, y) = static_cast<uint8_t>(x * 10 + y);
+    }
+  }
+  CImage out;
+  img.scaleDouble(out, IMG_INTERP_NN);
+  EXPECT_EQ(out.getWidth(), 8);
+  EXPECT_EQ(out.getHeight(), 8);
+
+  const CImage out2 = img.scaleDouble(IMG_INTERP_LINEAR);
+  EXPECT_EQ(out2.getWidth(), 8);
+  EXPECT_EQ(out2.getHeight(), 8);
+}
+
+TEST(CImage, DrawImageChannelConversions)
+{
+  using namespace mrpt::img;
+
+  // Grayscale source drawn onto an RGB destination (gray replicated to R,G,B).
+  {
+    CImage dst(6, 6, CH_RGB);
+    dst.filledRectangle({0, 0}, {5, 5}, TColor::black());
+    CImage src(2, 2, CH_GRAY);
+    src.filledRectangle({0, 0}, {1, 1}, TColor(42, 42, 42));
+    dst.drawImage({1, 1}, src);
+    EXPECT_EQ(dst.at<uint8_t>(1, 1, 0), 42);
+    EXPECT_EQ(dst.at<uint8_t>(1, 1, 1), 42);
+    EXPECT_EQ(dst.at<uint8_t>(1, 1, 2), 42);
+  }
+  // Grayscale source drawn onto an RGBA destination (alpha filled with 255).
+  {
+    CImage dst(6, 6, CH_RGBA);
+    dst.filledRectangle({0, 0}, {5, 5}, TColor::black());
+    CImage src(2, 2, CH_GRAY);
+    src.filledRectangle({0, 0}, {1, 1}, TColor(9, 9, 9));
+    dst.drawImage({1, 1}, src);
+    EXPECT_EQ(dst.at<uint8_t>(1, 1, 0), 9);
+    EXPECT_EQ(dst.at<uint8_t>(1, 1, 3), 255);
+  }
+  // Color source drawn onto a grayscale destination (luminance conversion).
+  {
+    CImage dst(6, 6, CH_GRAY);
+    dst.filledRectangle({0, 0}, {5, 5}, TColor::black());
+    CImage src(2, 2, CH_RGB);
+    src.filledRectangle({0, 0}, {1, 1}, TColor(255, 0, 0));
+    dst.drawImage({1, 1}, src);
+    EXPECT_GT(dst.at<uint8_t>(1, 1), 0);
+  }
+  // Same channel-count copy (RGB -> RGB) takes the direct memcpy path.
+  {
+    CImage dst(6, 6, CH_RGB);
+    dst.filledRectangle({0, 0}, {5, 5}, TColor::black());
+    CImage src(2, 2, CH_RGB);
+    src.filledRectangle({0, 0}, {1, 1}, TColor(4, 5, 6));
+    dst.drawImage({1, 1}, src);
+    EXPECT_EQ(dst.at<uint8_t>(1, 1, 0), 4);
+    EXPECT_EQ(dst.at<uint8_t>(1, 1, 1), 5);
+    EXPECT_EQ(dst.at<uint8_t>(1, 1, 2), 6);
+  }
+  // RGB <-> RGBA channel-count mismatch is not a supported conversion.
+  {
+    CImage dst(6, 6, CH_RGB);
+    CImage src(2, 2, CH_RGBA);
+    EXPECT_THROW(dst.drawImage({1, 1}, src), std::exception);
+  }
+  // Out-of-bounds placement: partially clipped, should not crash.
+  {
+    CImage dst(4, 4, CH_GRAY);
+    CImage src(4, 4, CH_GRAY);
+    src.filledRectangle({0, 0}, {3, 3}, TColor::white());
+    dst.drawImage({2, 2}, src);
+    dst.drawImage({-2, -2}, src);
+    EXPECT_EQ(dst.at<uint8_t>(0, 0), 255);
+  }
+}
+
+TEST(CImage, ScaleHalfWithOddSizeTruncates)
+{
+  using namespace mrpt::img;
+  // Odd dimensions are truncated (integer division by 2), not rejected.
+  CImage img(5, 5, CH_GRAY);
+  CImage out;
+  img.scaleHalf(out, IMG_INTERP_NN);
+  EXPECT_EQ(out.getWidth(), 2);
+  EXPECT_EQ(out.getHeight(), 2);
+}
+
+namespace
+{
+// Runs `f` twice: once with the given CPU feature reported as available, once
+// with it forced off, so both the SIMD and the portable paths are exercised
+// regardless of the CPU actually running the tests.
+template <typename F>
+void withAndWithoutCpuFeature(mrpt::cpu::feature feat, const F& f)
+{
+  const bool original = mrpt::cpu::supports(feat);
+  for (const bool enabled : {true, false})
+  {
+    if (enabled && !original)
+    {
+      continue;  // Cannot fake a feature the CPU does not have.
+    }
+    mrpt::cpu::overrideDetectedFeature(feat, enabled);
+    f(enabled);
+  }
+  mrpt::cpu::overrideDetectedFeature(feat, original);
+}
+
+// A deterministic, non-uniform test pattern:
+mrpt::img::CImage makePattern(int w, int h, mrpt::img::TImageChannels ch)
+{
+  mrpt::img::CImage img(w, h, ch);
+  for (int y = 0; y < h; y++)
+  {
+    for (int x = 0; x < w; x++)
+    {
+      auto* p = img.ptr<uint8_t>(x, y);
+      for (int c = 0; c < ch; c++)
+      {
+        p[c] = static_cast<uint8_t>((x * 7) + (y * 13) + (c * 61));
+      }
+    }
+  }
+  return img;
+}
+}  // namespace
+
+// The SSSE3 grayscale kernel must agree with the portable luminance loop.
+TEST(CImage, GrayscaleSimdMatchesPortable)
+{
+  using namespace mrpt::img;
+
+  for (const int w : {16, 32, 24 /* not a multiple of 16: portable only */})
+  {
+    const CImage src = makePattern(w, 8, CH_RGB);
+    CImage reference;
+
+    withAndWithoutCpuFeature(
+        mrpt::cpu::feature::SSSE3,
+        [&](bool enabled)
+        {
+          CImage gray;
+          const bool usedSimd = src.grayscale(gray);
+          EXPECT_EQ(usedSimd, enabled && (w % 16) == 0) << "w=" << w;
+          ASSERT_EQ(gray.getWidth(), w);
+          ASSERT_EQ(gray.getHeight(), 8);
+          EXPECT_FALSE(gray.isColor());
+
+          if (reference.isEmpty())
+          {
+            reference = gray.makeDeepCopy();
+            return;
+          }
+          for (int y = 0; y < 8; y++)
+          {
+            for (int x = 0; x < w; x++)
+            {
+              // The two formulas are the same up to 8-bit fixed-point rounding:
+              EXPECT_NEAR(gray.at<uint8_t>(x, y), reference.at<uint8_t>(x, y), 2)
+                  << "w=" << w << " at (" << x << "," << y << ")";
+            }
+          }
+        });
+  }
+}
+
+// grayscale() documents in-place usage; the source must not be destroyed
+// before it is read.
+TEST(CImage, GrayscaleInPlace)
+{
+  using namespace mrpt::img;
+  const CImage src = makePattern(32, 8, CH_RGB);
+
+  CImage expected;
+  src.grayscale(expected);
+
+  CImage inPlace = src.makeDeepCopy();
+  inPlace.grayscale(inPlace);
+
+  ASSERT_EQ(inPlace.getWidth(), 32);
+  ASSERT_EQ(inPlace.getHeight(), 8);
+  EXPECT_FALSE(inPlace.isColor());
+  for (int y = 0; y < 8; y++)
+  {
+    for (int x = 0; x < 32; x++)
+    {
+      EXPECT_EQ(inPlace.at<uint8_t>(x, y), expected.at<uint8_t>(x, y))
+          << "at (" << x << "," << y << ")";
+    }
+  }
+}
+
+// Already-grayscale input takes the shallow-copy fast path.
+TEST(CImage, GrayscaleOfGrayIsShallowCopy)
+{
+  using namespace mrpt::img;
+  const CImage src = makePattern(8, 4, CH_GRAY);
+  CImage out;
+  EXPECT_TRUE(src.grayscale(out));
+  EXPECT_EQ(out.ptr<uint8_t>(0, 0), src.ptr<uint8_t>(0, 0));
+}
+
+// scaleHalf(): IMG_INTERP_NN keeps the top-left pixel of each 2x2 block, and
+// IMG_INTERP_LINEAR averages it (1-channel).
+TEST(CImage, ScaleHalfSimdSemantics)
+{
+  using namespace mrpt::img;
+  const CImage src = makePattern(32, 8, CH_GRAY);
+
+  withAndWithoutCpuFeature(
+      mrpt::cpu::feature::SSE2,
+      [&](bool enabled)
+      {
+        CImage nn;
+        EXPECT_EQ(src.scaleHalf(nn, IMG_INTERP_NN), enabled);
+        ASSERT_EQ(nn.getWidth(), 16);
+        ASSERT_EQ(nn.getHeight(), 4);
+
+        CImage lin;
+        EXPECT_EQ(src.scaleHalf(lin, IMG_INTERP_LINEAR), enabled);
+        ASSERT_EQ(lin.getWidth(), 16);
+        ASSERT_EQ(lin.getHeight(), 4);
+
+        if (!enabled)
+        {
+          return;  // The portable path uses a different resampling filter.
+        }
+        for (int y = 0; y < 4; y++)
+        {
+          for (int x = 0; x < 16; x++)
+          {
+            EXPECT_EQ(nn.at<uint8_t>(x, y), src.at<uint8_t>(2 * x, 2 * y));
+
+            const int avg =
+                (src.at<uint8_t>(2 * x, 2 * y) + src.at<uint8_t>(2 * x + 1, 2 * y) +
+                 src.at<uint8_t>(2 * x, 2 * y + 1) + src.at<uint8_t>(2 * x + 1, 2 * y + 1)) /
+                4;
+            EXPECT_NEAR(lin.at<uint8_t>(x, y), avg, 1);
+          }
+        }
+      });
+}
+
+// The 3-channel SSSE3 decimation kernel keeps the top-left pixel of each block.
+TEST(CImage, ScaleHalfRGBSimdSemantics)
+{
+  using namespace mrpt::img;
+  const CImage src = makePattern(32, 8, CH_RGB);
+
+  withAndWithoutCpuFeature(
+      mrpt::cpu::feature::SSSE3,
+      [&](bool enabled)
+      {
+        CImage nn;
+        EXPECT_EQ(src.scaleHalf(nn, IMG_INTERP_NN), enabled);
+        ASSERT_EQ(nn.getWidth(), 16);
+        ASSERT_EQ(nn.getHeight(), 4);
+        if (!enabled)
+        {
+          return;
+        }
+        for (int y = 0; y < 4; y++)
+        {
+          for (int x = 0; x < 16; x++)
+          {
+            for (int c = 0; c < 3; c++)
+            {
+              EXPECT_EQ(nn.ptr<uint8_t>(x, y)[c], src.ptr<uint8_t>(2 * x, 2 * y)[c])
+                  << "at (" << x << "," << y << "," << c << ")";
+            }
+          }
+        }
+      });
+}
+
+// 16-bit images have no SIMD kernel: they must fall back to the portable path.
+TEST(CImage, ScaleHalf16bitUsesPortablePath)
+{
+  using namespace mrpt::img;
+  CImage img;
+  img.resize(16, 8, CH_GRAY, PixelDepth::D16U);
+  CImage out;
+  EXPECT_FALSE(img.scaleHalf(out, IMG_INTERP_NN));
+  EXPECT_EQ(out.getWidth(), 8);
+  EXPECT_EQ(out.getHeight(), 4);
+}
+
+TEST(CImage, DeserializeLegacyGrayscaleWithZeroPixelDepth)
+{
+  using namespace mrpt::img;
+
+  // Pre-release MRPT 3.x snapshots wrote the grayscale pixel-depth field of
+  // the v9 format 0-based, so such streams carry a literal 0 where D8U (=1)
+  // is meant. Build one by hand and check it still deserializes.
+  const int32_t width = 4;
+  const int32_t height = 3;
+  const int32_t imageSize = width * height;
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+
+  // Object header: class name (length OR'ed with 0x80), then version.
+  const std::string className = "CImage";
+  arch << static_cast<int8_t>(className.size() | 0x80);
+  arch.WriteBuffer(className.data(), className.size());
+  arch << static_cast<uint8_t>(9);
+
+  arch << false;                    // imgIsExternalStorage
+  arch << static_cast<uint8_t>(0);  // hasColor: grayscale
+  arch << width << height << static_cast<int32_t>(0) /* origin */ << imageSize;
+  arch << static_cast<int32_t>(0);  // pixel depth, 0-based
+  arch << false;                    // imageIsZIP
+
+  std::vector<uint8_t> pixels(static_cast<size_t>(imageSize));
+  for (size_t i = 0; i < pixels.size(); i++)
+  {
+    pixels[i] = static_cast<uint8_t>(i * 7);
+  }
+  arch.WriteBuffer(pixels.data(), pixels.size());
+
+  arch << static_cast<uint8_t>(0x88);  // end flag
+
+  buf.Seek(0);
+  CImage img;
+  arch >> img;
+
+  EXPECT_EQ(img.getWidth(), static_cast<size_t>(width));
+  EXPECT_EQ(img.getHeight(), static_cast<size_t>(height));
+  EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
+  EXPECT_EQ(img.at<uint8_t>(1, 0), pixels[1]);
+  EXPECT_EQ(img.at<uint8_t>(3, 2), pixels[11]);
+}
+
+// RGBA (4-channel) images: BGRA->RGBA swap on load, alpha preserved, and the
+// RGBA layout passed on to the resampler.
+TEST(CImage, RGBALoadSwapAndScale)
+{
+  using namespace mrpt::img;
+
+  // Two BGRA pixels:
+  std::vector<uint8_t> bgra = {1, 2, 3, 4, 5, 6, 7, 8};
+
+  CImage img;
+  img.loadFromMemoryBuffer(2, 1, CH_RGBA, bgra.data(), true /* swapRedBlue */);
+
+  ASSERT_EQ(img.channels(), 4);
+  EXPECT_EQ(img.ptr<uint8_t>(0, 0)[0], 3);  // R <- B slot
+  EXPECT_EQ(img.ptr<uint8_t>(0, 0)[1], 2);  // G
+  EXPECT_EQ(img.ptr<uint8_t>(0, 0)[2], 1);  // B <- R slot
+  EXPECT_EQ(img.ptr<uint8_t>(0, 0)[3], 4);  // A, untouched
+  EXPECT_EQ(img.ptr<uint8_t>(1, 0)[3], 8);
+
+  // Without the swap it is a straight copy:
+  CImage direct;
+  direct.loadFromMemoryBuffer(2, 1, CH_RGBA, bgra.data(), false);
+  EXPECT_EQ(direct.ptr<uint8_t>(0, 0)[0], 1);
+  EXPECT_EQ(direct.ptr<uint8_t>(0, 0)[3], 4);
+
+  // The RGBA layout must reach the resampler:
+  CImage big(8, 8, CH_RGBA);
+  big.filledRectangle({0, 0}, {7, 7}, TColor(10, 20, 30, 40));
+  CImage small;
+  big.scaleImage(small, 4, 4, IMG_INTERP_LINEAR);
+  EXPECT_EQ(small.channels(), 4);
+  EXPECT_EQ(small.getWidth(), 4);
+}
+
+// scaleImage() to the current size is a copy (or a no-op if already the
+// target object).
+TEST(CImage, ScaleImageToSameSizeIsANoOp)
+{
+  using namespace mrpt::img;
+  CImage img(8, 4, CH_GRAY);
+  img.setPixelGray({3, 2}, 123);
+
+  CImage out;
+  img.scaleImage(out, 8, 4, IMG_INTERP_LINEAR);
+  EXPECT_EQ(out.getWidth(), 8);
+  EXPECT_EQ(out.at<uint8_t>(3, 2), 123);
+
+  // Same size, same object: must not disturb the image.
+  img.scaleImage(img, 8, 4, IMG_INTERP_LINEAR);
+  EXPECT_EQ(img.getWidth(), 8);
+  EXPECT_EQ(img.getHeight(), 4);
+  EXPECT_EQ(img.at<uint8_t>(3, 2), 123);
 }

@@ -352,7 +352,7 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
           else
             cmd_vel = std::make_shared<mrpt::kinematics::CVehicleVelCmd_Holo>();
           for (size_t k = 0; k < cmd_vel->getVelCmdLength(); k++)
-            cmd_vel->setVelCmdElement(i, vel[k]);
+            cmd_vel->setVelCmdElement(static_cast<int>(k), vel[k]);
         }
       }
       else
@@ -361,7 +361,7 @@ void CLogFileRecord::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ve
         in >> v >> w;
         cmd_vel = std::make_shared<mrpt::kinematics::CVehicleVelCmd_DiffDriven>();
         cmd_vel->setVelCmdElement(0, v);
-        cmd_vel->setVelCmdElement(0, w);
+        cmd_vel->setVelCmdElement(1, w);
       }
 
       if (version >= 15 && ptg_index_NOP < 0) in >> cmd_vel_original;

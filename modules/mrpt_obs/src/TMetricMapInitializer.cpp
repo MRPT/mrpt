@@ -16,6 +16,8 @@
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <map>
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -48,10 +50,12 @@ void TMetricMapInitializer::loadFromConfigFile(
 }
 
 void TMetricMapInitializer::saveToConfigFile(
-    mrpt::config::CConfigFileBase& target, const std::string& section) const
+    mrpt::config::CConfigFileBase& target, const std::string& sectionNamePrefix) const
 {
-  auto s = section + std::string("_") + std::string(this->metricMapClassType->className);
-  this->genericMapParams.saveToConfigFile(target, s);
+  // Common: same section naming than loadFromConfigFile(), so the result can
+  // be read back:
+  const std::string sctCreat = sectionNamePrefix + std::string("_creationOpts");
+  this->genericMapParams.saveToConfigFile(target, sctCreat);
 }
 
 void TMetricMapInitializer::dumpToTextStream(std::ostream& out) const
@@ -126,7 +130,19 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 void TSetOfMetricMapInitializers::saveToConfigFile(
     mrpt::config::CConfigFileBase& target, const std::string& section) const
 {
-  for (auto& mi : *this) mi->saveToConfigFile(target, section);
+  // Write one "<mapClassName>_count" entry per map type, plus the per-map
+  // sections, in the format expected by loadFromConfigFile():
+  std::map<std::string, unsigned int> mapCounts;
+  for (const auto& mi : *this)
+  {
+    const std::string sMapName = mi->metricMapClassType->className;
+    const unsigned int idx = mapCounts[sMapName]++;
+
+    mi->saveToConfigFile(
+        target, mrpt::format("%s_%s_%02u", section.c_str(), sMapName.c_str(), idx));
+  }
+  for (const auto& [sMapName, count] : mapCounts)
+    target.write(section, sMapName + std::string("_count"), static_cast<uint64_t>(count));
 }
 
 void TSetOfMetricMapInitializers::dumpToTextStream(std::ostream& out) const

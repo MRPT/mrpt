@@ -104,6 +104,10 @@ void OctetVectorToObject(const std::vector<uint8_t>& in_data, CSerializable::Ptr
 /** @} */
 /** This declaration must be inserted in all CSerializable classes definition,
  * within the class declaration. */
+// Note: DEFINE_SCHEMA_SERIALIZABLE() is only ever used together with, and
+// after, DEFINE_SERIALIZABLE() in the same class, which already brings in
+// `using CSerializable::serializeTo/serializeFrom;` (needed so that
+// overriding one overload here does not hide the other from CSerializable).
 #define DEFINE_SCHEMA_SERIALIZABLE()                                             \
  protected:                                                                      \
   /*! @name CSerializable virtual methods for schema based archives*/            \
@@ -139,6 +143,8 @@ void OctetVectorToObject(const std::vector<uint8_t>& in_data, CSerializable::Ptr
  protected:                                                                               \
   /*! @name CSerializable virtual methods */                                              \
   /*! @{ */                                                                               \
+  using mrpt::serialization::CSerializable::serializeTo;                                  \
+  using mrpt::serialization::CSerializable::serializeFrom;                                \
   uint8_t serializeGetVersion() const override;                                           \
   void serializeTo(mrpt::serialization::CArchive& out) const override;                    \
   void serializeFrom(mrpt::serialization::CArchive& in, uint8_t serial_version) override; \

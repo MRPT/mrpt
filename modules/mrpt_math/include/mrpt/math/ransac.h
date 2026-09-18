@@ -34,7 +34,7 @@ namespace mrpt::math
 template <typename T>
 size_t ransacDatasetSize(const CMatrixDynamic<T>& dataset)
 {
-  return dataset.cols();
+  return static_cast<size_t>(dataset.cols());
 }
 
 /** A generic RANSAC implementation. By default, the input "dataset" and output

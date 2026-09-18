@@ -112,11 +112,11 @@ int main(int argc, char** argv)
 
     // And as binary serialized files:
     // -------------------------------------
-    for (unsigned int i = 0; i < metricMap.maps.size(); i++)
+    for (unsigned int i = 0; i < metricMap.size(); i++)
     {
       using namespace std::string_literals;
 
-      const auto& m = metricMap.maps.at(i);
+      const auto m = metricMap.mapByIndex(i);
 
       const auto str = outprefix + mrpt::format("_%02u_", i) +
                        mrpt::system::fileNameStripInvalidChars(m->GetRuntimeClass()->className) +

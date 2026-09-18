@@ -56,7 +56,8 @@ class CDocument
   const RenderizableMaps renderizableMaps() const;
 
   const mrpt::maps::CSimpleMap& simplemap() const;
-  const mrpt::maps::CMultiMetricMap::TListMaps& config() const;
+  /** The list of child maps, read-only */
+  TListConstMaps config() const;
 
   const TypeConfig& typeConfig() const;
 

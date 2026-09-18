@@ -2,6 +2,26 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* fix: resolve ROS buildfarm warnings and the real code issues they exposed across the project.
+* feat: reconnect SIMD paths and close image coverage gaps with new legacy-format and camera tests.
+* fix: correct stereo rectification forward-axis bugs and preserve the expected image geometry.
+* fix: clean up deprecated or misleading image behavior and maintain compatibility with legacy serialization paths.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+* fix(mrpt_img): fix CImage grayscale deserialization of legacy rawlogs storing PixelDepth as 0 (`#1399 <https://github.com/MRPT/mrpt/issues/1399>`_).
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.3 (2026-08-12)
+------------------
+* fix(mrpt_img): add missing <algorithm> include for std::min/max initializer-list overloads.
+* mrpt_img: increase code coverage and fix bugs.
+  Add tests across CImage, drawing primitives, and camera classes. Fix bugs in CMappedImage interpolation, RGB-to-HSV conversion, undistort_points, FFT cross-correlation, KLT bounds, and JPEG stream saving.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 

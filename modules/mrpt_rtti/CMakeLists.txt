@@ -24,6 +24,7 @@ set(LIB_SOURCES
 
 set(LIB_UNIT_TEST_SOURCES
   tests/rtti_unittest.cpp
+  tests/rtti_registry_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

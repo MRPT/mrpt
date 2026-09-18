@@ -52,7 +52,7 @@ void impl_image_SSSE3_scale_half_3c8u(
 
   const int sw = w / 16;  // This are the number of 3*16 blocks in each row
   const int sh = h / 2;
-  const int rest_w = w - (16 * w);
+  const int rest_w = w - (16 * sw);
 
   for (int i = 0; i < sh; i++)
   {
@@ -162,10 +162,10 @@ void impl_image_SSSE3_rgb_or_bgr_to_gray_8u(
 	const __m128i mask10 = _mm_setr_epi8(s80, 0x0A, s80, 0x0D, s80, s80, s80, s80, s80, s80, s80, s80, s80, s80, s80, s80);
 	// blues[8-15] from D2
 	const __m128i mask11 = _mm_setr_epi8(s80, s80, s80, s80, s80, 0x00, s80, 0x03, s80, 0x06, s80, 0x09, s80, 0x0C, s80, 0x0F);
-	// Conversion factors for RGB->Y
-	const __m128i VAL_R = _mm_setr_epi8(0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D);
+	// Conversion factors for RGB->Y (Y = 77*R + 150*G + 29*B, see doc above)
+	const __m128i VAL_R = _mm_setr_epi8(0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D);
 	const __m128i VAL_G = _mm_setr_epi8(0x00, s96, 0x00, s96, 0x00, s96, 0x00, s96, 0x00, s96, 0x00, s96, 0x00, s96, 0x00, s96);
-	const __m128i VAL_B = _mm_setr_epi8(0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D);
+	const __m128i VAL_B = _mm_setr_epi8(0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D);
 	// mask:
 	const __m128i mask_low = _mm_setr_epi8(0x01, 0x03, 0x05, 0x07, 0x09, 0x0B, 0x0D, 0x0F, s80, s80, s80, s80, s80, s80, s80, s80);
 
@@ -252,8 +252,7 @@ void impl_image_SSSE3_rgb_or_bgr_to_gray_8u(
  * k*16
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSSE3
- *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale(),
- * mrpt::img::CImage::grayscaleInPlace()
+ *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale()
  */
 void image_SSSE3_bgr_to_gray_8u(
     const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)
@@ -279,8 +278,7 @@ void image_SSSE3_bgr_to_gray_8u(
  * k*16
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSSE3
- *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale(),
- * mrpt::img::CImage::grayscaleInPlace()
+ *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale()
  */
 void image_SSSE3_rgb_to_gray_8u(
     const uint8_t* in, uint8_t* out, int w, int h, size_t step_in, size_t step_out)

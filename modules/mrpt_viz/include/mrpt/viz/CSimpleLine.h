@@ -39,6 +39,7 @@ class CSimpleLine : virtual public CVisualObject, public VisualObjectParams_Line
     m_x1 = p1.x;
     m_y1 = p1.y;
     m_z1 = p1.z;
+    CVisualObject::notifyChange();
   }
 
   mrpt::math::TPoint3Df getLineStart() const { return {m_x0, m_y0, m_z0}; }
@@ -66,6 +67,8 @@ class CSimpleLine : virtual public CVisualObject, public VisualObjectParams_Line
     y1 = m_y1;
     z1 = m_z1;
   }
+
+  void updateBuffers() const override;
 
   mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 

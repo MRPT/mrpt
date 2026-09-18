@@ -2,6 +2,25 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* fix: resolve ROS buildfarm warnings and fix the real correctness issues they revealed.
+* feat: reconnect SIMD paths and remove dead math headers while expanding regression coverage.
+* fix: correct geometry, serialization, and matrix edge cases uncovered by the new tests.
+* feat: raise math/map/obs/slam test coverage with legacy-serialization and kNN regression checks.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+
+3.1.3 (2026-08-12)
+------------------
+* mrpt_math: depend on nanoflann_vendor instead of nanoflann
+  The nanoflann rosdep key resolves to the distro's own libnanoflann-dev,
+  so it can never select a newer vendored version. Switch to the new
+  nanoflann_vendor ROS package name.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 * Fix ``nanoflann`` declared as a build-only dependency in ``package.xml``,

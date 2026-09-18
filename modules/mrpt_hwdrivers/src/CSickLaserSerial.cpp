@@ -280,8 +280,7 @@ bool CSickLaserSerial::tryToOpenComms(std::string* err_msg)
 bool CSickLaserSerial::waitContinuousSampleFrame(
     vector<float>& out_ranges_meters, unsigned char& LMS_status, bool& is_mm_mode)
 {
-  auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
-  ASSERTMSG_(COM != nullptr, "No I/O channel bound to this object");
+  ASSERTMSG_(m_stream, "No I/O channel bound to this object");
 
   size_t nRead, nBytesToRead;
   size_t nFrameBytes = 0;
@@ -305,7 +304,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
 
     try
     {
-      nRead = COM->Read(buf + nFrameBytes, nBytesToRead);
+      nRead = m_stream->Read(buf + nFrameBytes, nBytesToRead);
     }
     catch (const std::exception& e)
     {
@@ -545,8 +544,7 @@ bool CSickLaserSerial::LMS_statusQuery()
 // Returns false if timeout
 bool CSickLaserSerial::LMS_waitACK(uint16_t timeout_ms)
 {
-  auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
-  ASSERT_(COM);
+  ASSERTMSG_(m_stream, "No I/O channel bound to this object");
 
   uint8_t b = 0;
   CTicTac tictac;
@@ -554,7 +552,7 @@ bool CSickLaserSerial::LMS_waitACK(uint16_t timeout_ms)
 
   do
   {
-    if (COM->Read(&b, 1))
+    if (m_stream->Read(&b, 1))
     {  // Byte rx:
       if (b == 0x06)
       {
@@ -574,8 +572,7 @@ bool CSickLaserSerial::LMS_waitACK(uint16_t timeout_ms)
 // Returns false if timeout
 bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
 {
-  auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
-  ASSERT_(COM);
+  ASSERTMSG_(m_stream, "No I/O channel bound to this object");
 
   uint8_t b;
   unsigned int nBytes = 0;
@@ -587,7 +584,7 @@ bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
   while (nBytes < 6 || (nBytes < (6U + m_received_frame_buffer[2] +
                                   static_cast<uint16_t>(m_received_frame_buffer[3] << 8))))
   {
-    if (COM->Read(&b, 1))
+    if (m_stream->Read(&b, 1))
     {
       // First byte must be STX:
       if (nBytes > 1 || (!nBytes && b == 0x02) || (nBytes == 1 && b == 0x80))
@@ -784,8 +781,7 @@ bool CSickLaserSerial::SendCommandToSICK(const uint8_t* cmd, const uint16_t cmd_
   uint8_t cmd_full[1024];
   ASSERT_(sizeof(cmd_full) > cmd_len + 4U + 2U);
 
-  auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
-  ASSERT_(COM);
+  ASSERTMSG_(m_stream, "No I/O channel bound to this object");
 
   // Create header
   cmd_full[0] = 0x02;  // STX
@@ -812,7 +808,7 @@ bool CSickLaserSerial::SendCommandToSICK(const uint8_t* cmd, const uint16_t cmd_
 
   for (int k = 0; k < NTRIES; k++)
   {
-    if (toWrite != COM->Write(cmd_full, toWrite))
+    if (toWrite != m_stream->Write(cmd_full, toWrite))
     {
       std::cout << "[CSickLaserSerial::SendCommandToSICK] Error writing data "
                    "to serial port."

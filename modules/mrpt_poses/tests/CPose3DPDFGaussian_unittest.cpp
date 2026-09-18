@@ -516,7 +516,15 @@ TEST(CPose3DPDFGaussian, DrawSamplesBayesianFusionInverseAndOperators)
 
   CMatrixDouble subCov = p.getCovSubmatrix2D();
   CMatrixDouble subCov2;
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  // Exercise the deprecated output-argument overload for coverage:
   p.getCovSubmatrix2D(subCov2);
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
   EXPECT_TRUE(subCov == subCov2);
   EXPECT_EQ(subCov.rows(), 3);
 

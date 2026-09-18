@@ -137,14 +137,14 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
         }
       }
     }
-    // New rows to zero?
+    // New rows to zero? (whole rows beyond the old row count)
     if (newElementsToZero && m_Rows > old_rows)
     {
       if constexpr (std::is_trivial_v<T>)
       {
         ::memset(
             &newData[static_cast<std::size_t>(old_rows * m_Cols)], 0,
-            sizeof(T) * static_cast<std::size_t>(m_Rows - old_rows));
+            sizeof(T) * static_cast<std::size_t>((m_Rows - old_rows) * m_Cols));
       }
       else
       {
@@ -157,10 +157,12 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
         }
       }
     }
-    // New cols to zero?
+    // New cols to zero? (only within the rows that actually survived; note
+    // that nRowsToCopy is min(old_rows, m_Rows), so a matrix that loses rows
+    // while gaining columns stays inside the new buffer)
     if (newElementsToZero && m_Cols > old_cols)
     {
-      for (Index r = 0; r < old_rows; r++)
+      for (Index r = 0; r < nRowsToCopy; r++)
       {
         if constexpr (std::is_trivial_v<T>)
         {
@@ -319,6 +321,10 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   {
     MRPT_START
     setSize(static_cast<size_type>(m.rows()), static_cast<size_type>(m.cols()));
+#pragma GCC diagnostic push
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wstringop-overread"
+#endif
     for (Index r = 0; r < rows(); r++)
     {
       for (Index c = 0; c < cols(); c++)
@@ -326,6 +332,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
         (*this)(r, c) = static_cast<T>(m(r, c));
       }
     }
+#pragma GCC diagnostic pop
     MRPT_END
   }
 

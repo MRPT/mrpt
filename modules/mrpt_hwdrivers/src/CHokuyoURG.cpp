@@ -579,6 +579,16 @@ bool CHokuyoURG::parseResponse(bool additionalWaitForData)
         m_rcv_status1 = tmp_rcv_status1;
         // Empty read bytes so far:
         for (size_t k = 0; k < peekIdx; k++) m_rx_buffer.pop();
+
+        // Status-only replies carry the error code too, so check it here
+        // as well and not just in the with-data case below:
+        if (m_rcv_status0 != '0' && (m_rcv_status0 != '9' && m_rcv_status1 != '9'))
+        {
+          MRPT_LOG_ERROR_STREAM(
+              "[Hokuyo] Error LIDAR status: " << static_cast<int>(m_rcv_status0)
+                                              << " after command: `" << m_lastSentMeasCmd << "`");
+          return false;
+        }
         return true;
       }
 

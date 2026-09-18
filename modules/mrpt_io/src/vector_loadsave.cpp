@@ -242,16 +242,25 @@ bool mrpt::io::vectorNumericFromTextFile(
     return false;
   }
 
+  // Consistent with loadTextFile()/loadBinaryFile(): loading replaces the
+  // output rather than appending to it.
+  vec.clear();
+
   double number = 0;
 
   while (!feof(f))
   {
-    int readed = fscanf(f, byRows ? "%lf" : "%lf\n", &number);
-    if ((!byRows) || (readed == 1))
+    // Note: the read count must be honored in both modes. Ignoring it for
+    // `byRows == false` appended a phantom entry (the previous value, or the
+    // initial 0) on every failed read -- so an empty file yielded {0.0}.
+    const int readed = fscanf(f, byRows ? "%lf" : "%lf\n", &number);
+    if (readed == 1)
     {
       vec.push_back(number);
     }
   }
+
+  os::fclose(f);
 
   return true;
 }

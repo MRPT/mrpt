@@ -15,6 +15,7 @@
 #include <mrpt/core/initializer.h>
 
 // My classes:
+#include <mrpt/viz/CAnimatedAssimpModel.h>
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CAssimpModel.h>
 #include <mrpt/viz/CAxis.h>
@@ -82,6 +83,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_viz)
   // mrpt::viz classes:
   DO_REGISTER(Scene);
   DO_REGISTER(Viewport);
+  DO_REGISTER(CAnimatedAssimpModel);
   DO_REGISTER(CArrow);
   DO_REGISTER(CAssimpModel);
   DO_REGISTER(CAxis);

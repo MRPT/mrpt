@@ -18,6 +18,7 @@
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/TPose2D.h>
@@ -730,6 +731,17 @@ void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
   MRPT_END
 }
 
+const CPointsMap* mrpt::maps::asPointsMap(const mrpt::maps::CMetricMap& map)
+{
+  if (const auto* pts = dynamic_cast<const CPointsMap*>(&map); pts) return pts;
+
+  if (const auto* mm = dynamic_cast<const CMultiMetricMap*>(&map); mm)
+  {
+    if (mm->countMapsByClass<CPointsMap>() == 1) return mm->mapByClass<CPointsMap>(0).get();
+  }
+  return nullptr;
+}
+
 float CPointsMap::compute3DMatchingRatio(
     const mrpt::maps::CMetricMap* otherMap2,
     const mrpt::poses::CPose3D& otherMapPose,
@@ -741,8 +753,10 @@ float CPointsMap::compute3DMatchingRatio(
 
   params.maxDistForCorrespondence = mrp.maxDistForCorr;
 
-  this->determineMatching3D(
-      otherMap2->getAsSimplePointsMap(), otherMapPose, correspondences, params, extraResults);
+  const auto* otherPts = mrpt::maps::asPointsMap(*otherMap2);
+  ASSERTMSG_(otherPts, "The other map does not contain a points map");
+
+  this->determineMatching3D(otherPts, otherMapPose, correspondences, params, extraResults);
 
   return extraResults.correspondencesRatio;
 }
@@ -2310,6 +2324,20 @@ bool CPointsMap::loadFromKittiVelodyneFile(const std::string& filename)
     if (!f)
     {
       THROW_EXCEPTION_FMT("Could not open thefile: `%s`", filename.c_str());
+    }
+
+    // Plain (non-gzipped) files know their total size upfront, so a
+    // truncated file (not a multiple of one XYZI record) can be detected
+    // here. gzip streams don't expose a reliable total size without fully
+    // decompressing, so they rely on the record-read loop below instead
+    // (see CFileInputStream::Read()'s all-or-nothing contract: a mid-record
+    // EOF is reported as nRead==0, indistinguishable from a clean EOF).
+    if (f == &f_normal && (f_normal.getTotalBytesCount() % (sizeof(float) * 4)) != 0)
+    {
+      THROW_EXCEPTION_FMT(
+          "File size is not a multiple of one XYZI record (truncated or "
+          "corrupted file?): `%s`",
+          filename.c_str());
     }
 
     this->clear();

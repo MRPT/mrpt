@@ -43,9 +43,9 @@ namespace mrpt
 namespace nav
 {
 /** Defines behaviors for where there is an obstacle *inside* the robot shape
- *right at the beginning of a PTG trajectory.
- *\ingroup nav_tpspace
- * \sa Used in CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR
+ * right at the beginning of a PTG trajectory.
+ * \ingroup nav_tpspace
+ * \sa CParameterizedTrajectoryGenerator::setCollisionBehavior()
  */
 enum class PTGCollisionBehavior
 {
@@ -60,27 +60,34 @@ enum class PTGCollisionBehavior
  * \ingroup mrpt_nav_grp
  */
 
-/** This is the base class for any user-defined PTG.
- *  There is a class factory interface in
- *CParameterizedTrajectoryGenerator::CreatePTG.
+/** Base class for all Parameterized Trajectory Generators (PTGs).
  *
- * Papers:
- *  - J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "Extending
- *Obstacle Avoidance Methods through Multiple Parameter-Space Transformations",
- *Autonomous Robots, vol. 24, no. 1, 2008.
- *http://ingmec.ual.es/~jlblanco/papers/blanco2008eoa_DRAFT.pdf
+ * A PTG defines a *family* of feasible trajectories, all starting at the robot
+ * pose (0,0,0), parameterized by a single real number \f$ \alpha \in
+ * (-\pi,\pi] \f$ discretized into `getPathCount()` paths indexed by `k`.
+ * Each path `k` is sampled at discrete `step`s, which map to a pose
+ * (getPathPose()) and a traversed arc length (getPathDist()).
  *
- * Changes history:
- *	- 30/JUN/2004: Creation (JLBC)
- *	- 16/SEP/2004: Totally redesigned.
- *	- 15/SEP/2005: Totally rewritten again, for integration into MRPT
- *Applications Repository.
- *	- 19/JUL/2009: Simplified to use only STL data types, and created the class
- *factory interface.
- *	- MAY/2016: Refactored into CParameterizedTrajectoryGenerator,
- *CPTG_DiffDrive_CollisionGridBased, PTG classes renamed.
- *	- 2016-2018: Many features added to support "PTG continuation", dynamic
- *paths depending on vehicle speeds, etc.
+ * This is what turns obstacle avoidance for a kinematically-constrained robot
+ * into a *holonomic* problem: a Workspace obstacle point is mapped by
+ * updateTPObstacle() into the collision-free length of every path, giving a
+ * "polar plot" (the TP-Space, or Trajectory Parameter Space) in which the
+ * robot can be treated as a point that moves freely in any direction
+ * \f$ \alpha \f$. The holonomic method (see \ref nav_holo) picks a direction
+ * there, and directionToMotionCommand() maps it back to a velocity command.
+ *
+ * Distances are in "pseudometers": real path lengths in meters, which callers
+ * normalize to [0,1] by getRefDistance().
+ *
+ * Instances are normally built by class name via CreatePTG(), then configured
+ * with loadFromConfigFile() and finally initialize()d (which is where
+ * collision look-up tables get built or loaded from cache, see derived
+ * classes). Use the `ptg-configurator` app to tune parameters interactively.
+ *
+ * Reference: J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal,
+ * "Extending Obstacle Avoidance Methods through Multiple Parameter-Space
+ * Transformations", Autonomous Robots, vol. 24, no. 1, 2008.
+ * http://ingmec.ual.es/~jlblanco/papers/blanco2008eoa_DRAFT.pdf
  *
  *  \ingroup nav_tpspace
  */
@@ -131,20 +138,14 @@ class CParameterizedTrajectoryGenerator :
   virtual void internal_deinitialize() = 0;
 
  public:
-  /** Computes the closest (alpha,d) TP coordinates of the trajectory point
-   * closest to the Workspace (WS)
-   *   Cartesian coordinates (x,y), relative to the current robot frame.
-   * \param[in] x X coordinate of the query point, relative to the robot
-   * frame.
-   * \param[in] y Y coordinate of the query point, relative to the robot
-   * frame.
-   * \param[out] out_k Trajectory parameter index (discretized alpha value,
-   * 0-based index).
-   * \param[out] out_d Trajectory distance, normalized such that D_max
-   * becomes 1.
-   *
-   * \return If the point (x,y) maps to a trajectory within tolerance,
-   * returns the (k, normalized_d) pair; otherwise std::nullopt.
+  /** Maps a Workspace point (x,y), in the robot frame, to the TP-Space
+   * coordinates of the closest point of the closest trajectory.
+   * \param[in] x,y Query point coordinates, relative to the robot frame [m].
+   * \param[in] tolerance_dist How far the closest trajectory point may lie
+   * from (x,y) for the mapping to be accepted [m].
+   * \return The pair (`k` path index, distance normalized so that
+   * getRefDistance() maps to 1), or std::nullopt if (x,y) is out of the PTG
+   * domain within that tolerance.
    */
   [[nodiscard]] virtual std::optional<std::pair<int, double>> inverseMap_WS2TP(
       double x, double y, double tolerance_dist = 0.10) const = 0;
@@ -241,12 +242,29 @@ class CParameterizedTrajectoryGenerator :
    * which the traversed distance is < `dist`
    * \param[in] dist Distance in pseudometers (real distance, NOT normalized
    * to [0,1] for [0,refDist])
-   * \return false if no step fulfills the condition for the given trajectory
-   * `k` (e.g. out of reference distance).
-   * Note that, anyway, the maximum distance (closest point) is returned in
-   * `out_step`.
+   * \return std::nullopt if no step fulfills the condition for the given
+   * trajectory `k` (e.g. out of reference distance).
    * \sa getPathStepCount(), getAlphaValuesCount() */
-  virtual bool getPathStepForDist(uint16_t k, double dist, uint32_t& out_step) const = 0;
+  [[nodiscard]] virtual std::optional<uint32_t> getPathStepForDist(
+      uint16_t k, double dist) const = 0;
+
+  /** \deprecated Use the std::optional-returning overload. Note that
+   * `out_step` is now left untouched when no step fulfills the condition. */
+  [[deprecated("Use the std::optional-returning getPathStepForDist(k, dist)")]] bool
+  getPathStepForDist(uint16_t k, double dist, uint32_t& out_step) const
+  {
+    const auto step = getPathStepForDist(k, dist);
+    if (step) out_step = *step;
+    return step.has_value();
+  }
+
+  /** Like getPathStepForDist(), but returning the last step of path `k`
+   * instead of failing when `dist` lies beyond the end of the path. */
+  [[nodiscard]] uint32_t getPathStepForDistClamped(uint16_t k, double dist) const
+  {
+    const auto step = getPathStepForDist(k, dist);
+    return step ? *step : static_cast<uint32_t>(getPathStepCount(k) - 1);
+  }
 
   /** Updates the radial map of closest TP-Obstacles given a single obstacle
    * point at (ox,oy)
@@ -376,7 +394,13 @@ class CParameterizedTrajectoryGenerator :
   /** When used in path planning, a multiplying factor (default=1.0) for the
    * scores for this PTG. Assign values <1 to PTGs with low priority. */
   [[nodiscard]] double getScorePriority() const { return m_score_priority; }
-  void setScorePriorty(double prior) { m_score_priority = prior; }
+  void setScorePriority(double prior) { m_score_priority = prior; }
+
+  /** \deprecated Misspelled; use setScorePriority(). */
+  [[deprecated("Use setScorePriority()")]] void setScorePriorty(double prior)
+  {
+    setScorePriority(prior);
+  }
   [[nodiscard]] unsigned getClearanceStepCount() const { return m_clearance_num_points; }
   void setClearanceStepCount(const uint16_t res) { m_clearance_num_points = res; }
 
@@ -441,17 +465,16 @@ class CParameterizedTrajectoryGenerator :
   COLLISION_BEHAVIOR();
 
   /** Must be called to resize a CD to its correct size, before calling
-   * updateClearance() */
+   * updateClearance(). Creates getClearanceStepCount() entries per decimated
+   * path, keyed by the normalized [0,1] TP-Space distance of the pose each
+   * one will be measured at. */
   void initClearanceDiagram(ClearanceDiagram& cd) const;
 
   /** Updates the clearance diagram given one (ox,oy) obstacle point, in
-   * coordinates relative
-   * to the PTG path origin.
+   * coordinates relative to the PTG path origin.
    * \param[in,out] cd The clearance will be updated here.
-   * \sa m_clearance_dist_resolution
    */
   void updateClearance(const double ox, const double oy, ClearanceDiagram& cd) const;
-  void updateClearancePost(ClearanceDiagram& cd, const std::vector<double>& TP_obstacles) const;
 
  protected:
   double refDistance{.0};
@@ -493,11 +516,16 @@ class CParameterizedTrajectoryGenerator :
   virtual void internal_writeToStream(mrpt::serialization::CArchive& out) const;
 
  public:
-  /** Evals the robot clearance for each robot pose along path `k`, for the
-   * real distances in
-   * the key of the map<>, then keep in the map value the minimum of its
-   * current stored clearance,
-   * or the computed clearance. In case of collision, clearance is zero.
+  /** Evals the robot clearance at each of the poses sampled along path `k`,
+   * one per entry of `inout_realdist2clearance`, and keeps in each map value
+   * the minimum of its current content and the newly computed clearance.
+   * In case of collision, clearance is zero.
+   *
+   * \note Map keys are normalized [0,1] TP-Space distances, and so are the
+   * values (both divided by getRefDistance()). The keys are only read for
+   * the collision heuristics; the sampled poses are determined by the
+   * number of entries, evenly spread over the path steps.
+   *
    * \param treat_as_obstacle true: normal use for obstacles; false: compute
    * shortest distances to a target point (no collision)
    */

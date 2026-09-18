@@ -3,6 +3,11 @@ name: CI Linux
 
 on: [push, pull_request]
 
+# Nothing here writes to the repository: checkout only reads, and Codecov
+# uploads with its own token.
+permissions:
+  contents: read
+
 jobs:
   build:
     name: ${{ matrix.name }} ${{ matrix.build_type }}
@@ -60,6 +65,10 @@ jobs:
                            libcli11-dev \
                            libzstd-dev
 
+          # Virtual X display + Mesa software GL, so that the mrpt_gui window
+          # tests can run headlessly (they self-skip without a display):
+          sudo apt install -y xvfb libgl1-mesa-dri
+
           # Added: python3-pip and colcon installation via pip
           sudo apt install -y pybind11-dev python3-dev python3-pip
           pip3 install --break-system-packages colcon-common-extensions colcon-lcov-result numpy
@@ -76,9 +85,12 @@ jobs:
 
       - name: Colcon Test
         run: |
-          colcon test \
-            --event-handlers console_direct+ \
-            --return-code-on-test-failure
+          # `xvfb-run` provides the virtual display the mrpt_gui tests need;
+          # every other test is unaffected by it.
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" \
+            colcon test \
+              --event-handlers console_direct+ \
+              --return-code-on-test-failure
 
       - name: Generate Coverage Report
         if: matrix.coverage == 'ON'

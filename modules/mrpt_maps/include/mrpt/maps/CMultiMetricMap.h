@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/containers/deep_const_iterator.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -102,7 +103,7 @@ class TSetOfMetricMapInitializers;
  * mrpt::maps::CMultiMetricMap theMap;
  * {
  *  auto ptMap = mrpt::maps::CSimplePointsMap::Create();
- *  theMap.maps.push_back(ptMap);
+ *  theMap.push_back(ptMap);
  * }
  * \endcode
  *
@@ -147,19 +148,30 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
     @{ */
   using TListMaps = std::deque<mrpt::maps::CMetricMap::Ptr>;
 
-  /** The list of metric maps in this object. Use dynamic_cast or smart
-   * pointer-based downcast to access maps by their actual type.
-   * You can directly manipulate this list. Helper methods to initialize it
-   * are described in the docs of CMultiMetricMap
-   */
-  TListMaps maps;
-
   using iterator = TListMaps::iterator;
-  using const_iterator = TListMaps::const_iterator;
-  iterator begin() { return maps.begin(); }
-  const_iterator begin() const { return maps.begin(); }
-  iterator end() { return maps.end(); }
-  const_iterator end() const { return maps.end(); }
+  /** Dereferencing it yields a CMetricMap::ConstPtr, so that a `const`
+   * multi-map cannot hand out mutable child maps. */
+  using const_iterator = mrpt::containers::deep_const_iterator<TListMaps::const_iterator>;
+  iterator begin() { return m_maps.begin(); }
+  const_iterator begin() const { return m_maps.begin(); }
+  iterator end() { return m_maps.end(); }
+  const_iterator end() const { return m_maps.end(); }
+
+  /** Number of child maps */
+  [[nodiscard]] size_t size() const { return m_maps.size(); }
+  /** Returns true if there are no child maps */
+  [[nodiscard]] bool empty() const { return m_maps.empty(); }
+  /** Appends a new child map to the list */
+  void push_back(const mrpt::maps::CMetricMap::Ptr& m) { m_maps.push_back(m); }
+  /** Removes all child maps */
+  void clearMaps() { m_maps.clear(); }
+
+  /** Direct access to the list of child maps, for advanced manipulation.
+   * Use dynamic_cast or smart pointer-based downcast to access maps by their
+   * actual type. Helper methods to initialize the list are described in the
+   * docs of CMultiMetricMap.
+   */
+  [[nodiscard]] TListMaps& mapsList() { return m_maps; }
 
   /** Gets the i-th map \exception std::runtime_error On out-of-bounds */
   mrpt::maps::CMetricMap::ConstPtr mapByIndex(size_t idx) const;
@@ -180,7 +192,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
   {
     size_t foundCount = 0;
     const auto* class_ID = &T::GetRuntimeClassIdStatic();
-    for (const auto& m : maps)
+    for (const auto& m : m_maps)
     {
       if (m && m->GetRuntimeClass()->derivedFrom(class_ID))
       {
@@ -199,7 +211,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
   {
     size_t foundCount = 0;
     const auto* class_ID = &T::GetRuntimeClassIdStatic();
-    for (auto& m : maps)
+    for (auto& m : m_maps)
     {
       if (m && m->GetRuntimeClass()->derivedFrom(class_ID))
       {
@@ -218,7 +230,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
   {
     size_t foundCount = 0;
     const auto* class_ID = &T::GetRuntimeClassIdStatic();
-    for (const auto& m : maps)
+    for (const auto& m : m_maps)
       if (m->GetRuntimeClass()->derivedFrom(class_ID)) foundCount++;
     return foundCount;
   }
@@ -246,7 +258,6 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
   void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const override;
   void auxParticleFilterCleanUp() override;
   void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
-  const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override;
 
   /** Returns a short description of the map. */
   std::string asString() const override;
@@ -260,6 +271,10 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
   bool internal_canComputeObservationLikelihood(const mrpt::obs::CObservation& obs) const override;
   double internal_computeObservationLikelihood(
       const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom) const override;
+
+ private:
+  /** The list of metric maps in this object */
+  TListMaps m_maps;
 
 };  // End of class def.
 

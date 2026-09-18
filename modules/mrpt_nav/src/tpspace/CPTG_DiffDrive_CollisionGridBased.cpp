@@ -844,8 +844,8 @@ double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint32_t step)
   return m_trajectory[k][step].dist;
 }
 
-bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(
-    uint16_t k, double dist, uint32_t& out_step) const
+std::optional<uint32_t> CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(
+    uint16_t k, double dist) const
 {
   ASSERT_(k < m_trajectory.size());
   const size_t numPoints = m_trajectory[k].size();
@@ -856,13 +856,11 @@ bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(
   {
     if (m_trajectory[k][n + 1].dist >= dist)
     {
-      out_step = static_cast<uint32_t>(n);
-      return true;
+      return static_cast<uint32_t>(n);
     }
   }
 
-  out_step = static_cast<uint32_t>(numPoints - 1);
-  return false;
+  return std::nullopt;
 }
 
 void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(

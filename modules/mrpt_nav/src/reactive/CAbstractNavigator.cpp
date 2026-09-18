@@ -471,6 +471,10 @@ void CAbstractNavigator::internal_onStartNewNavigation()
   m_robot.startWatchdog(1000);  // Watchdog = 1 seg
   m_latestPoses.clear();        // Clear cache of last poses.
   m_latestOdomPoses.clear();
+  // Force the next updateCurrentPoseAndSpeeds() to actually query the robot:
+  // the caches just emptied above must be refilled even if the last query was
+  // more recent than the minimum inter-query period.
+  m_last_curPoseVelUpdate_robot_time = -1e9;
   onStartNewNavigation();
 }
 
@@ -639,7 +643,10 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
     MRPT_LOG_ERROR("[CAbstractNavigator::navigationStep] Untyped exception!");
     if (m_rethrow_exceptions) throw;
   }
-  m_navigationState = prevState;
+  // Note: only the "previous state" bookkeeping is updated here. Overwriting
+  // m_navigationState would silently undo the transitions decided above (e.g.
+  // an emergency stop switching to NAV_ERROR).
+  m_lastNavigationState = prevState;
 }
 
 bool CAbstractNavigator::checkCollisionWithLatestObstacles(

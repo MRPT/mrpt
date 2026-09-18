@@ -14,10 +14,18 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/stock_observations.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/tfest/TMatchingPair.h>
+#include <mrpt/viz/CSetOfObjects.h>
 #include <test_mrpt_common.h>
+
+#include <filesystem>
 
 TEST(CMultiMetricMapTests, isEmpty)
 {
@@ -53,8 +61,8 @@ mrpt::maps::CMultiMetricMap initializer1()
 mrpt::maps::CMultiMetricMap initializer2()
 {
   mrpt::maps::CMultiMetricMap m;
-  m.maps.push_back(mrpt::maps::COccupancyGridMap2D::Create());
-  m.maps.push_back(mrpt::maps::CSimplePointsMap::Create());
+  m.push_back(mrpt::maps::COccupancyGridMap2D::Create());
+  m.push_back(mrpt::maps::CSimplePointsMap::Create());
   return m;
 }
 }  // namespace
@@ -63,15 +71,15 @@ TEST(CMultiMetricMapTests, initializers)
 {
   {
     const auto m = initializer1();
-    EXPECT_EQ(m.maps.size(), 2U);
-    EXPECT_TRUE(IS_CLASS(*m.maps.at(0), mrpt::maps::COccupancyGridMap2D));
-    EXPECT_TRUE(IS_CLASS(*m.maps.at(1), mrpt::maps::CSimplePointsMap));
+    EXPECT_EQ(m.size(), 2U);
+    EXPECT_TRUE(IS_CLASS(*m.mapByIndex(0), mrpt::maps::COccupancyGridMap2D));
+    EXPECT_TRUE(IS_CLASS(*m.mapByIndex(1), mrpt::maps::CSimplePointsMap));
   }
   {
     const auto m = initializer2();
-    EXPECT_EQ(m.maps.size(), 2U);
-    EXPECT_TRUE(IS_CLASS(*m.maps.at(0), mrpt::maps::COccupancyGridMap2D));
-    EXPECT_TRUE(IS_CLASS(*m.maps.at(1), mrpt::maps::CSimplePointsMap));
+    EXPECT_EQ(m.size(), 2U);
+    EXPECT_TRUE(IS_CLASS(*m.mapByIndex(0), mrpt::maps::COccupancyGridMap2D));
+    EXPECT_TRUE(IS_CLASS(*m.mapByIndex(1), mrpt::maps::CSimplePointsMap));
   }
 }
 
@@ -80,7 +88,7 @@ TEST(CMultiMetricMapTests, copyCtorOp)
   using mrpt::maps::CSimplePointsMap;
 
   auto m1 = initializer1();
-  EXPECT_EQ(m1.maps.size(), 2U);
+  EXPECT_EQ(m1.size(), 2U);
 
   m1.mapByClass<CSimplePointsMap>()->insertPoint(1.0f, 2.0f, 3.0f);
 
@@ -103,7 +111,7 @@ TEST(CMultiMetricMapTests, moveOp)
   using mrpt::maps::CSimplePointsMap;
 
   auto m1 = initializer1();
-  EXPECT_EQ(m1.maps.size(), 2U);
+  EXPECT_EQ(m1.size(), 2U);
 
   m1.mapByClass<CSimplePointsMap>()->insertPoint(1.0f, 2.0f, 3.0f);
 
@@ -149,4 +157,194 @@ max_y= 10
     mrpt::maps::TSetOfMetricMapInitializers map_inits;
     EXPECT_ANY_THROW(map_inits.loadFromConfigFile(cfg, "map"));
   }
+}
+
+// =========================================================================
+//  determineMatching2D(): requires exactly one CSimplePointsMap sub-map
+// =========================================================================
+
+TEST(CMultiMetricMapTests, DetermineMatching2DWithOnePointsMapWorks)
+{
+  auto m = initializer1();  // Has exactly 1 CSimplePointsMap sub-map.
+  m.mapByClass<mrpt::maps::CSimplePointsMap>()->insertPoint(1.0f, 0.0f, 0.0f);
+
+  mrpt::maps::CSimplePointsMap otherMap;
+  otherMap.insertPoint(1.0f, 0.0f, 0.0f);
+
+  mrpt::maps::TMatchingParams params;
+  params.maxDistForCorrespondence = 0.5f;
+  mrpt::maps::TMatchingExtraResults extraResults;
+  mrpt::tfest::TMatchingPairList correspondences;
+
+  EXPECT_NO_THROW(m.determineMatching2D(
+      &otherMap, mrpt::poses::CPose2D(0, 0, 0), correspondences, params, extraResults));
+  EXPECT_FALSE(correspondences.empty());
+}
+
+TEST(CMultiMetricMapTests, DetermineMatching2DWithZeroPointsMapsThrows)
+{
+  mrpt::maps::CMultiMetricMap m;
+  m.push_back(mrpt::maps::COccupancyGridMap2D::Create());  // No points map.
+
+  mrpt::maps::CSimplePointsMap otherMap;
+  otherMap.insertPoint(1.0f, 0.0f, 0.0f);
+
+  mrpt::maps::TMatchingParams params;
+  mrpt::maps::TMatchingExtraResults extraResults;
+  mrpt::tfest::TMatchingPairList correspondences;
+
+  EXPECT_ANY_THROW(m.determineMatching2D(
+      &otherMap, mrpt::poses::CPose2D(0, 0, 0), correspondences, params, extraResults));
+}
+
+// =========================================================================
+//  mapByClass<CSimplePointsMap>(): 0, 1, and >1 points-map sub-map cases
+// =========================================================================
+
+TEST(CMultiMetricMapTests, PointsMapByClassZeroReturnsNull)
+{
+  mrpt::maps::CMultiMetricMap m;
+  m.push_back(mrpt::maps::COccupancyGridMap2D::Create());
+  EXPECT_EQ(m.mapByClass<mrpt::maps::CSimplePointsMap>(), nullptr);
+}
+
+TEST(CMultiMetricMapTests, PointsMapByClassOneReturnsIt)
+{
+  auto m = initializer1();
+  EXPECT_NE(m.mapByClass<mrpt::maps::CSimplePointsMap>(), nullptr);
+}
+
+TEST(CMultiMetricMapTests, PointsMapByClassMultipleSelectsByIndex)
+{
+  mrpt::maps::CMultiMetricMap m;
+  m.push_back(mrpt::maps::CSimplePointsMap::Create());
+  m.push_back(mrpt::maps::CSimplePointsMap::Create());
+  EXPECT_EQ(m.countMapsByClass<mrpt::maps::CSimplePointsMap>(), 2U);
+  EXPECT_NE(m.mapByClass<mrpt::maps::CSimplePointsMap>(1), nullptr);
+  EXPECT_EQ(m.mapByClass<mrpt::maps::CSimplePointsMap>(2), nullptr);
+}
+
+// =========================================================================
+//  asString() / mapByIndex()
+// =========================================================================
+
+TEST(CMultiMetricMapTests, AsStringListsChildMaps)
+{
+  auto m = initializer1();
+  const auto s = m.asString();
+  EXPECT_NE(s.find("children maps"), std::string::npos);
+}
+
+TEST(CMultiMetricMapTests, MapByIndexConstAndNonConst)
+{
+  auto m = initializer1();
+  EXPECT_NE(m.mapByIndex(0), nullptr);
+
+  const auto& mc = m;
+  EXPECT_NE(mc.mapByIndex(0), nullptr);
+
+  EXPECT_THROW(m.mapByIndex(99), std::exception);
+}
+
+// =========================================================================
+//  saveMetricMapRepresentationToFile() / getVisualizationInto() /
+//  auxParticleFilterCleanUp()
+// =========================================================================
+
+TEST(CMultiMetricMapTests, SaveMetricMapRepresentationToFile)
+{
+  auto m = initializer1();
+  m.mapByClass<mrpt::maps::CSimplePointsMap>()->insertPoint(1.0f, 2.0f, 3.0f);
+
+  static std::atomic<int> counter{0};
+  const auto dir = std::filesystem::temp_directory_path();
+  const std::string prefix =
+      (dir / ("mrpt_CMultiMetricMap_unittest_" + std::to_string(static_cast<long>(getpid())) + "_" +
+              std::to_string(counter++)))
+          .string();
+
+  EXPECT_NO_THROW(m.saveMetricMapRepresentationToFile(prefix));
+
+  // Clean up whatever per-submap files were generated (names include the
+  // submap class name and index, see CMultiMetricMap.cpp):
+  for (const auto& entry : std::filesystem::directory_iterator(dir))
+  {
+    const auto fn = entry.path().filename().string();
+    if (fn.rfind(
+            "mrpt_CMultiMetricMap_unittest_" + std::to_string(static_cast<long>(getpid())) + "_" +
+                std::to_string(counter - 1),
+            0) == 0)
+      std::filesystem::remove(entry.path());
+  }
+}
+
+TEST(CMultiMetricMapTests, GetVisualizationInto)
+{
+  auto m = initializer1();
+  m.mapByClass<mrpt::maps::CSimplePointsMap>()->insertPoint(1.0f, 2.0f, 3.0f);
+
+  auto scene = mrpt::viz::CSetOfObjects::Create();
+  EXPECT_NO_THROW(m.getVisualizationInto(*scene));
+}
+
+TEST(CMultiMetricMapTests, AuxParticleFilterCleanUp)
+{
+  auto m = initializer1();
+  EXPECT_NO_THROW(m.auxParticleFilterCleanUp());
+}
+
+// =========================================================================
+//  internal_computeObservationLikelihood / canComputeObservationLikelihood
+// =========================================================================
+
+TEST(CMultiMetricMapTests, ComputeObservationLikelihoodFinite)
+{
+  auto m = initializer1();
+
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  m.insertObservation(scan1);
+
+  EXPECT_TRUE(m.canComputeObservationLikelihood(scan1));
+  const double lik = m.computeObservationLikelihood(scan1, mrpt::poses::CPose3D::Identity());
+  EXPECT_TRUE(std::isfinite(lik));
+}
+
+// =========================================================================
+//  Serialization round-trip
+// =========================================================================
+
+TEST(CMultiMetricMapTests, SerializeRoundTrip)
+{
+  auto m1 = initializer1();
+  m1.mapByClass<mrpt::maps::CSimplePointsMap>()->insertPoint(1.0f, 2.0f, 3.0f);
+
+  mrpt::io::CMemoryStream buf;
+  {
+    auto ar = mrpt::serialization::archiveFrom(buf);
+    ar << m1;
+  }
+  buf.Seek(0);
+
+  mrpt::maps::CMultiMetricMap m2;
+  {
+    auto ar = mrpt::serialization::archiveFrom(buf);
+    ar.ReadObject(&m2);
+  }
+
+  EXPECT_EQ(m2.size(), m1.size());
+  EXPECT_EQ(m2.mapByClass<mrpt::maps::CSimplePointsMap>()->size(), 1u);
+}
+
+TEST(CMultiMetricMapTests, Compute3DMatchingRatio)
+{
+  auto m = initializer1();
+  m.mapByClass<mrpt::maps::CSimplePointsMap>()->insertPoint(1.0f, 0.0f, 0.0f);
+
+  mrpt::maps::CSimplePointsMap otherMap;
+  otherMap.insertPoint(1.0f, 0.0f, 0.0f);
+
+  mrpt::maps::TMatchingRatioParams params;
+  const float ratio = m.compute3DMatchingRatio(&otherMap, mrpt::poses::CPose3D::Identity(), params);
+  EXPECT_TRUE(std::isfinite(ratio));
 }

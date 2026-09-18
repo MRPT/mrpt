@@ -67,11 +67,19 @@ CTicTac::CTicTac() noexcept
 {
   ::memset(largeInts, 0, sizeof(largeInts));
 
+  // The storage is reinterpreted as the platform's time type, so it must be
+  // both large enough and aligned at least as strictly as that type:
 #ifdef _WIN32
   static_assert(sizeof(largeInts) >= 1 * sizeof(LARGE_INTEGER), "sizeof(LARGE_INTEGER) failed!");
+  static_assert(
+      alignof(decltype(largeInts)) >= alignof(LARGE_INTEGER),
+      "largeInts is under-aligned for LARGE_INTEGER");
 #else
   static_assert(
       sizeof(largeInts) >= 1 * sizeof(struct timespec), "sizeof(struct timespec) failed!");
+  static_assert(
+      alignof(decltype(largeInts)) >= alignof(struct timespec),
+      "largeInts is under-aligned for struct timespec");
 #endif
   Tic();
 }

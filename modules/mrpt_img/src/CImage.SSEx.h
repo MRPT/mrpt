@@ -13,8 +13,12 @@
 */
 #pragma once
 
+#include <mrpt/core/config.h>  // MRPT_ARCH_INTEL_COMPATIBLE
+
 #include <cstddef>
 #include <cstdint>
+
+#if MRPT_ARCH_INTEL_COMPATIBLE
 
 // See documentation in the .cpp files CImage_SSE*.cpp
 constexpr static auto s80 = static_cast<signed char>(0x80);
@@ -31,3 +35,5 @@ void image_SSSE3_rgb_to_gray_8u(
     const uint8_t* in, uint8_t* out, int w, int h, size_t in_step, size_t out_step);
 void image_SSSE3_bgr_to_gray_8u(
     const uint8_t* in, uint8_t* out, int w, int h, size_t in_step, size_t out_step);
+
+#endif  // MRPT_ARCH_INTEL_COMPATIBLE

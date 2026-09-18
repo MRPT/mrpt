@@ -68,26 +68,20 @@ void CConfigFileBase::writeString(
     const std::string& section,
     const std::string& name,
     const std::string& str,
-    const int name_padding_width,
+    const int /*name_padding_width*/,
     const int value_padding_width,
     const std::string& comment)
 {
-  if (name_padding_width < 1 && value_padding_width < 1 && comment.empty())
+  if (value_padding_width < 1 && comment.empty())
   {
     this->writeString(section, name, str);
+    return;
   }
 
-  std::string name_pad;
-  if (name_padding_width >= 1)
-  {
-    // negative width: printf right padding
-    name_pad = mrpt::format("%*s", -name_padding_width, name.c_str());
-  }
-  else
-  {
-    name_pad = name;
-  }
-
+  // NOTE: the key itself must never be padded with whitespace: some backends
+  // (e.g. CConfigFileMemory) store it verbatim, so a padded key could no
+  // longer be found by a later read using the plain, unpadded variable name.
+  // Padding is therefore only applied to the *value* field.
   std::string value_pad;
   if (value_padding_width >= 1)
   {
@@ -105,7 +99,7 @@ void CConfigFileBase::writeString(
     value_pad += comment;
   }
 
-  this->writeString(section, name_pad, value_pad);
+  this->writeString(section, name, value_pad);
 }
 
 /*---------------------------------------------------------------

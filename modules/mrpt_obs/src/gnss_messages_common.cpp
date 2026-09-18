@@ -39,6 +39,7 @@ using namespace mrpt::obs::gnss;
   /* ====== Novatel SPAN+OEM6 ====== */ \
   DOFOR(NV_OEM6_GENERIC_SHORT_FRAME)    \
   DOFOR(NV_OEM6_INSPVAS)                \
+  DOFOR(NV_OEM6_INSCOVS)                \
   DOFOR(NV_OEM6_RANGECMP)               \
   DOFOR(NV_OEM6_RXSTATUS)               \
   DOFOR(NV_OEM6_RAWEPHEM)               \

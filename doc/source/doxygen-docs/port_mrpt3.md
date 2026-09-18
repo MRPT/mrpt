@@ -332,6 +332,36 @@ mrpt::math::vectorToTextFile(v, "file.txt", opts);
 See also `COccupancyGridMap2D::getAsImage` (`TGetAsImageParams`) and
 `computeClearance` (struct return) in [§ mrpt_maps](#maps).
 
+<a name="deep-const"></a>
+### 5. `const` containers hand out `ConstPtr`
+
+Containers of smart pointers are now deeply const-correct: reading from a
+`const` container yields `X::ConstPtr`, not `X::Ptr`. This affects the getters
+(which already had `const` / non-`const` overload pairs) and, new in 3.1, the
+`const_iterator`s of `CSensoryFrame`, `CActionCollection`, `CSetOfObjects`,
+`Viewport` and `CMultiMetricMap`.
+
+**Rule:** if you need to modify what you fetched, fetch it from a non-`const`
+reference to the container.
+
+```cpp
+// Reading through a const container:
+void f(const mrpt::obs::CSensoryFrame& sf)
+{
+  for (const auto& obs : sf)  // obs is now a CObservation::ConstPtr
+    std::cout << obs->sensorLabel;
+}
+
+// Modifying: take a non-const reference instead:
+void g(mrpt::obs::CSensoryFrame& sf)
+{
+  for (auto& obs : sf) obs->sensorLabel = "new";  // CObservation::Ptr
+}
+```
+
+Note that these `const_iterator`s are proxies (`operator*` returns by value),
+so use `(*it)->field`, not `it->field`.
+
 ---
 
 <a name="modules"></a>
@@ -590,6 +620,38 @@ obtain a `yaml` copy first.
 
 ---
 
+### mrpt_serialization
+
+**Streaming into a temporary archive** now works, so the intermediate variable
+is no longer needed:
+
+```cpp
+// Before (still valid):
+auto arch = mrpt::serialization::archiveFrom(myStream);
+arch << myVector;
+
+// Now also possible:
+mrpt::serialization::archiveFrom(myStream) << myVector;
+```
+
+This mirrors what the standard library does for `std::basic_ostream` /
+`std::basic_istream` rvalues.
+
+### mrpt_maps
+
+**`CMultiMetricMap` child-map list** — the public `maps` member is now private.
+See the [Removed APIs](#removed) table for the replacement methods.
+
+```cpp
+// MRPT 3.0:
+theMap.maps.push_back(ptMap);
+const auto n = theMap.maps.size();
+
+// MRPT 3.1:
+theMap.push_back(ptMap);
+const auto n = theMap.size();
+```
+
 <a name="removed"></a>
 ## Removed APIs
 
@@ -609,6 +671,8 @@ No direct replacement unless noted.
 | `CPointCloud::octree_get_node_count()` | Octree API removed |
 | `#include <mrpt/opengl.h>` | Use individual `<mrpt/viz/...>` headers |
 | `#include <mrpt/examples_config.h>` | Use a CMake compile definition |
+| `CMetricMap::getAsSimplePointsMap()` | Use `mrpt::maps::asPointsMap(map)` (works for any points map, and for a multi-metric map holding one), `CMultiMetricMap::mapByClass<CSimplePointsMap>()`, or a plain `dynamic_cast` |
+| `CMultiMetricMap::maps` (public member) | Use `push_back()`, `size()`, `empty()`, `clearMaps()`, `mapByIndex()`, `begin()`/`end()`, or `mapsList()` for direct access |
 | `#include <mrpt/config.h>` | Use module-specific config headers |
 
 ---

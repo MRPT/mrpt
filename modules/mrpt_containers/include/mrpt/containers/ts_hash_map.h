@@ -199,7 +199,39 @@ class ts_hash_map
   /** Number of elements accessed with write access so far */
   size_t m_size{0};
 
-  std::recursive_mutex m_mtx;  //!< for m_vec and m_size
+  std::mutex m_mtx;  //!< for m_vec and m_size
+
+  /** Compare a stored key against a lookup key. The std::string_view overload
+   * enables allocation-free lookups when KEY is std::string. */
+  static bool keys_equal(const KEY& a, const KEY& b) { return a == b; }
+  static bool keys_equal(const KEY& a, const std::string_view& b)
+  {
+    return std::string_view(a) == b;
+  }
+
+  /** Core of find_or_alloc()/operator[](), assumes m_mtx is already held. */
+  template <typename LOOKUP_KEY>
+  VALUE* find_or_alloc_unlocked(const LOOKUP_KEY& key) noexcept
+  {
+    mrpt::uint_select_by_bytecount_t<NUM_BYTES_HASH_TABLE> hash;
+    reduced_hash(key, hash);
+    auto& match_arr = m_vec[hash];
+    for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
+    {
+      if (!match_arr[i].used)
+      {
+        m_size++;
+        match_arr[i].used = true;
+        match_arr[i].first = KEY(key);  // constructs the key only on insertion
+        return &match_arr[i].second;
+      }
+      if (keys_equal(match_arr[i].first, key))
+      {
+        return &match_arr[i].second;
+      }
+    }
+    return nullptr;
+  }
 
  public:
   /** @name Constructors, read/write access and other operations
@@ -212,6 +244,10 @@ class ts_hash_map
 
   ts_hash_map& operator=(const ts_hash_map& o)
   {
+    if (this == &o)
+    {  // self-assignment would lock the (non-recursive) mutex twice
+      return *this;
+    }
     auto lck1 = mrpt::lockHelper(m_mtx);
     auto lck2 = mrpt::lockHelper(o.m_mtx);
     m_vec = o.m_vec;
@@ -220,6 +256,10 @@ class ts_hash_map
   }
   ts_hash_map& operator=(ts_hash_map&& o) noexcept
   {
+    if (this == &o)
+    {  // self-assignment would lock the (non-recursive) mutex twice
+      return *this;
+    }
     auto lck1 = mrpt::lockHelper(m_mtx);
     auto lck2 = mrpt::lockHelper(o.m_mtx);
     m_vec = std::move(o.m_vec);
@@ -251,25 +291,16 @@ class ts_hash_map
   VALUE* find_or_alloc(const KEY& key) noexcept
   {
     auto lck = mrpt::lockHelper(m_mtx);
+    return find_or_alloc_unlocked(key);
+  }
 
-    mrpt::uint_select_by_bytecount_t<NUM_BYTES_HASH_TABLE> hash;
-    reduced_hash(key, hash);
-    auto& match_arr = m_vec[hash];
-    for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
-    {
-      if (!match_arr[i].used)
-      {
-        m_size++;
-        match_arr[i].used = true;
-        match_arr[i].first = key;
-        return &match_arr[i].second;
-      }
-      if (match_arr[i].first == key)
-      {
-        return &match_arr[i].second;
-      }
-    }
-    return nullptr;
+  /** \overload Allocation-free lookup by std::string_view (only usable when
+   * KEY is std::string): avoids constructing a temporary std::string for the
+   * common case of looking up an already-existing entry. */
+  VALUE* find_or_alloc(const std::string_view& key) noexcept
+  {
+    auto lck = mrpt::lockHelper(m_mtx);
+    return find_or_alloc_unlocked(key);
   }
 
   /** Write/read via [i] operator, that creates an element if it didn't exist
@@ -278,7 +309,7 @@ class ts_hash_map
   {
     auto lck = mrpt::lockHelper(m_mtx);
 
-    VALUE* v = find_or_alloc(key);
+    VALUE* v = find_or_alloc_unlocked(key);
     if (!v)
     {
       throw std::runtime_error("ts_hash_map: too many hash collisions!");
@@ -300,7 +331,9 @@ class ts_hash_map
         return const_iterator(m_vec, *this, hash, static_cast<int>(i));
       }
     }
-    return this->end();
+    // Build the end() iterator inline (do not call end(), which would try to
+    // re-lock the non-recursive m_mtx already held here):
+    return const_iterator(m_vec, *this, static_cast<int>(m_vec.size()), 0);
   }
 
   const_iterator begin() const
@@ -327,6 +360,44 @@ class ts_hash_map
   {
     auto lck = mrpt::lockHelper(m_mtx);
     return iterator(m_vec, *this, static_cast<int>(m_vec.size()), 0);
+  }
+
+  /** Thread-safe traversal: invokes `f(const value_type&)` for each used entry
+   * while holding the internal mutex, so it is safe to run concurrently with
+   * find_or_alloc()/operator[]() from other threads (unlike the iterators
+   * returned by begin()/end(), whose increment is not internally
+   * synchronized). Keep the visitor cheap: it runs under the container lock. */
+  template <typename VisitorFn>
+  void visitAllEntries(VisitorFn f) const
+  {
+    auto lck = mrpt::lockHelper(m_mtx);
+    for (const auto& match_arr : m_vec)
+    {
+      for (const auto& e : match_arr)
+      {
+        if (e.used)
+        {
+          f(e);
+        }
+      }
+    }
+  }
+
+  /** \overload (non-const version) */
+  template <typename VisitorFn>
+  void visitAllEntries(VisitorFn f)
+  {
+    auto lck = mrpt::lockHelper(m_mtx);
+    for (auto& match_arr : m_vec)
+    {
+      for (auto& e : match_arr)
+      {
+        if (e.used)
+        {
+          f(e);
+        }
+      }
+    }
   }
   /** @} */
 

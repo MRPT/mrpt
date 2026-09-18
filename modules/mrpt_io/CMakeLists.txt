@@ -71,6 +71,12 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CTextFileLinesParser_unittest.cpp
   tests/vector_loadsave_unittest.cpp
   tests/zip_unittest.cpp
+  tests/vector_loadsave_extra_unittest.cpp
+  tests/CStream_unittest.cpp
+  tests/CMemoryStream_extra_unittest.cpp
+  tests/file_streams_unittest.cpp
+  tests/compression_unittest.cpp
+  tests/misc_io_unittest.cpp
 )
 
 # These tests are moved to mrpt_viz since that's the lowest-level module that includes all dependencies.

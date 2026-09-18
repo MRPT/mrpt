@@ -37,6 +37,19 @@ CSimpleLine::CSimpleLine(
   VisualObjectParams_Lines::enableAntiAliasing(antiAliasing);
 }
 
+void CSimpleLine::updateBuffers() const
+{
+  std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
+  auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+  auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+
+  vbd.resize(2);
+  vbd[0] = {m_x0, m_y0, m_z0};
+  vbd[1] = {m_x1, m_y1, m_z1};
+
+  cbd.assign(vbd.size(), getColor_u8());
+}
+
 uint8_t CSimpleLine::serializeGetVersion() const { return 2; }
 void CSimpleLine::serializeTo(mrpt::serialization::CArchive& out) const
 {

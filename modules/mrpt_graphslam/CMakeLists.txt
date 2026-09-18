@@ -15,6 +15,12 @@ set(LIB_SOURCES
 
 set(LIB_UNIT_TEST_SOURCES
   tests/graph_slam_levmarq_unittest.cpp
+  tests/TSlidingWindow_unittest.cpp
+  tests/CEdgeCounter_unittest.cpp
+  tests/CWindowObserver_unittest.cpp
+  tests/TUncertaintyPath_unittest.cpp
+  tests/CFixedIntervalsNRD_unittest.cpp
+  tests/CIncrementalNodeRegistrationDecider_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

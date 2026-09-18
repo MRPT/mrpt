@@ -53,6 +53,47 @@ void CSetOfLines::setLineByIndex(size_t index, const mrpt::math::TSegment3D& seg
   MRPT_END
 }
 
+void CSetOfLines::updateBuffers() const
+{
+  const auto myColor = getColor_u8();
+
+  // Lines: one pair of vertices per segment.
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Lines::m_linesMtx.data);
+    auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
+
+    vbd.clear();
+    vbd.reserve(m_Segments.size() * 2);
+    for (const auto& s : m_Segments)
+    {
+      vbd.emplace_back(s.point1);
+      vbd.emplace_back(s.point2);
+    }
+    cbd.assign(vbd.size(), myColor);
+  }
+
+  // Vertices as dots: only if the user enabled them with a non-zero size.
+  {
+    std::unique_lock<std::shared_mutex> lck(VisualObjectParams_Points::m_pointsMtx.data);
+    auto& vbd = VisualObjectParams_Points::m_vertex_buffer_data;
+    auto& cbd = VisualObjectParams_Points::m_color_buffer_data;
+
+    vbd.clear();
+    cbd.clear();
+    if (VisualObjectParams_Points::getPointSize() > .0f)
+    {
+      vbd.reserve(m_Segments.size() * 2);
+      for (const auto& s : m_Segments)
+      {
+        vbd.emplace_back(s.point1);
+        vbd.emplace_back(s.point2);
+      }
+      cbd.assign(vbd.size(), myColor);
+    }
+  }
+}
+
 uint8_t CSetOfLines::serializeGetVersion() const { return 5; }
 void CSetOfLines::serializeTo(mrpt::serialization::CArchive& out) const
 {

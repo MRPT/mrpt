@@ -34,7 +34,7 @@ namespace mrpt::math
  *  There is an additional method "exists(i,j)" to check whether a given
  * element exists in the matrix.
  *
- *  \sa mrpt::math::MatrixBlockSparseCols, mrpt::math::CSparseMatrix,
+ *  \sa mrpt::math::CSparseMatrix,
  * CSparseSymmetricalMatrix
  *  \note Methods marked as "Doesn't check bounds" mean that if an access to an
  * element out of the matrix size is tried, an empty element will be assumed,
@@ -190,8 +190,10 @@ class CSparseMatrixTemplate
   template <class MATRIX_LIKE>
   void insertMatrix(size_t row, size_t column, const MATRIX_LIKE& mat)
   {
-    for (size_t nr = 0; nr < mat.rows(); nr++)
-      for (size_t nc = 0; nc < mat.cols(); nc++) operator()(row + nr, column + nc) = mat(nr, nc);
+    for (size_t nr = 0; nr < static_cast<size_t>(mat.rows()); nr++)
+      for (size_t nc = 0; nc < static_cast<size_t>(mat.cols()); nc++)
+        operator()(row + nr, column + nc) =
+            mat(static_cast<decltype(mat.rows())>(nr), static_cast<decltype(mat.cols())>(nc));
   }
 
   // Public interface only supports const iterators. This way, no user of this

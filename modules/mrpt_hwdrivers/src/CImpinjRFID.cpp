@@ -189,6 +189,12 @@ bool CImpinjRFID::getObservation(mrpt::obs::CObservationRFID& obs)
  ---------------------------------------------------------------*/
 void CImpinjRFID::closeReader()
 {
+  // The socket only exists after initialize():
+  if (!client)
+  {
+    return;
+  }
+
   char cmd[20];
   // send a kill command to the device interface program
   strcpy(cmd, "END\0");

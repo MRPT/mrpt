@@ -911,11 +911,11 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
   const int move_k = static_cast<int>(cm.PTG->alpha2index(cm.direction));
   const double target_WS_d = WS_Target.norm();
 
-  // Coordinates of the trajectory end for the given PTG and "alpha":
+  // Coordinates of the trajectory end for the given PTG and "alpha".
+  // Note `d` is normalized, while getPathStepForDist() takes pseudometers:
   const double d = std::min(in_TPObstacles[move_k], 0.99 * target_d_norm);
-  uint32_t nStep;
-  bool pt_in_range = cm.PTG->getPathStepForDist(static_cast<uint16_t>(move_k), d, nStep);
-  ASSERT_(pt_in_range);
+  const uint32_t nStep =
+      cm.PTG->getPathStepForDistClamped(static_cast<uint16_t>(move_k), d * ref_dist);
   const mrpt::math::TPose2D pose = cm.PTG->getPathPose(static_cast<uint16_t>(move_k), nStep);
 
   // Make sure that the target slow-down is honored, as seen in real-world
@@ -1047,11 +1047,12 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
     bool WS_point_is_unique = true;
     if (!is_time_based)
     {
-      bool ok1 = cm.PTG->getPathStepForDist(
+      const auto optCurStep = cm.PTG->getPathStepForDist(
           static_cast<uint16_t>(m_lastSentVelCmd.ptg_alpha_index),
-          cur_norm_d * cm.PTG->getRefDistance(), cur_ptg_step);
-      if (ok1)
+          cur_norm_d * cm.PTG->getRefDistance());
+      if (optCurStep)
       {
+        cur_ptg_step = *optCurStep;
         // Check bijective:
         WS_point_is_unique = cm.PTG->isBijectiveAt(static_cast<uint16_t>(cur_k), cur_ptg_step);
         const uint32_t predicted_step = static_cast<uint32_t>(
@@ -1154,12 +1155,15 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
         WS_Target.x, WS_Target.y, static_cast<uint16_t>(move_k), pathDists,
         false /*treat point as target, not obstacle*/);
 
-    const auto it = std::min_element(
-        pathDists.begin(), pathDists.end(),
-        [colfree](map_d2d_t::value_type& l, map_d2d_t::value_type& r) -> bool
-        { return (l.second < r.second) && l.first < colfree; });
-    cm.props["dist_eucl_min"] =
-        (it != pathDists.end()) ? it->second * cm.PTG->getRefDistance() : 100.0;
+    // Closest approach to the target among the path samples that are
+    // actually reachable (i.e. before the collision-free distance):
+    double minNormDist = 100.0;
+    for (const auto& [pathDist, distToTarget] : pathDists)
+    {
+      if (pathDist >= colfree) break;
+      mrpt::keep_min(minNormDist, distToTarget);
+    }
+    cm.props["dist_eucl_min"] = minNormDist * cm.PTG->getRefDistance();
   }
 
   // Factor5: Hysteresis:
@@ -1200,13 +1204,13 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
   // clearance indicators that may be useful in deciding the best motion:
   double& clearance = cm.props["clearance"];
   clearance = in_clearance.getClearance(
-      static_cast<uint16_t>(move_k), target_d_norm * 1.01, false /* spot, dont interpolate */);
+      static_cast<uint16_t>(move_k), target_d_norm * 1.01, ClearanceQuery::AtDistance);
   cm.props["clearance_50p"] = in_clearance.getClearance(
-      static_cast<uint16_t>(move_k), target_d_norm * 0.5, false /* spot, dont interpolate */);
+      static_cast<uint16_t>(move_k), target_d_norm * 0.5, ClearanceQuery::AtDistance);
   cm.props["clearance_path"] = in_clearance.getClearance(
-      static_cast<uint16_t>(move_k), target_d_norm * 0.9, true /* average */);
+      static_cast<uint16_t>(move_k), target_d_norm * 0.9, ClearanceQuery::MeanUpToDistance);
   cm.props["clearance_path_50p"] = in_clearance.getClearance(
-      static_cast<uint16_t>(move_k), target_d_norm * 0.5, true /* average */);
+      static_cast<uint16_t>(move_k), target_d_norm * 0.5, ClearanceQuery::MeanUpToDistance);
 
   // Factor: ETA (Estimated Time of Arrival to target or to closest obstacle,
   // whatever it's first)
@@ -1219,13 +1223,12 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
     const double path_len_meters = d * ref_dist;
 
     // Calculate their ETA
-    uint32_t target_step;
-    bool valid_step =
-        cm.PTG->getPathStepForDist(static_cast<uint16_t>(move_k), path_len_meters, target_step);
-    if (valid_step)
+    const auto target_step =
+        cm.PTG->getPathStepForDist(static_cast<uint16_t>(move_k), path_len_meters);
+    if (target_step)
     {
       eta = cm.PTG->getPathStepDuration() *
-            target_step /* PTG original time to get to target point */
+            (*target_step) /* PTG original time to get to target point */
             * cm.speed /* times the speed scale factor*/;
 
       double discount_time = .0;
@@ -1404,11 +1407,6 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
           indexPTG, ipf.TP_Obstacles, ipf.clearance,
           mrpt::math::TPose2D(0, 0, 0) - rel_pose_PTG_origin_wrt_sense,
           params_abstract_ptg_navigator.evaluate_clearance);
-
-      if (params_abstract_ptg_navigator.evaluate_clearance)
-      {
-        ptg->updateClearancePost(ipf.clearance, ipf.TP_Obstacles);
-      }
 
       // Distances in TP-Space are normalized to [0,1]:
       const double _refD = 1.0 / ptg->getRefDistance();

@@ -2,6 +2,20 @@
 Changelog for package mrpt_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* fix: improve headless GUI testing under Xvfb and address the real failures uncovered by the coverage pass.
+* fix: correct GUI timing, mouse, modifier, and color-handling bugs that were causing crashes or wrong behavior.
+* fix: document accurate GUI skip reasons and keep CI permissions minimal and read-only.
+* feat: expand coverage for graph-slam and GUI code paths, raising the tested surface substantially.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+
+3.1.3 (2026-08-12)
+------------------
+
 3.1.2 (2026-07-07)
 ------------------
 

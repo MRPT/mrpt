@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/containers/deep_const_iterator.h>
 #include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -52,8 +53,11 @@ class CActionCollection : public mrpt::serialization::CSerializable
   /** You can use CActionCollection::begin to get a iterator to the first
    * element.
    */
-  using const_iterator =
-      std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::const_iterator;
+  /** Dereferencing it yields a CAction::ConstPtr, so that a `const` action
+   * collection cannot hand out mutable actions.
+   */
+  using const_iterator = mrpt::containers::deep_const_iterator<
+      std::deque<mrpt::containers::deepcopy_poly_ptr<CAction::Ptr>>::const_iterator>;
 
   /** Returns a iterator to the first action: this is an example of usage:
    * \code
@@ -123,7 +127,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
       if (it->GetRuntimeClass()->derivedFrom(class_ID))
         if (foundCount++ == ith)
         {
-          return std::dynamic_pointer_cast<const T>(it.get_ptr());
+          return std::dynamic_pointer_cast<const T>(it);
         }
     return typename T::ConstPtr();  // Not found: return empty smart pointer
     MRPT_END

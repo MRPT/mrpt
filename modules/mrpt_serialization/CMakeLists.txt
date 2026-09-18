@@ -26,6 +26,14 @@ set(LIB_SOURCES
   src/CSchemeArchive.cpp
 )
 
+set(LIB_UNIT_TEST_SOURCES
+  tests/serialization_test_types.cpp
+  tests/CArchive_unittest.cpp
+  tests/CMessage_unittest.cpp
+  tests/CSchemeArchive_unittest.cpp
+  tests/stl_serialization_unittest.cpp
+)
+
 set(LIB_PUBLIC_HEADERS
   include/mrpt/serialization/metaprogramming_serialization.h
   include/mrpt/serialization/optional_serialization.h
@@ -47,6 +55,7 @@ set(LIB_PUBLIC_HEADERS
 mrpt_add_library(
   TARGET ${PROJECT_NAME}
   SOURCES ${LIB_SOURCES} ${LIB_PUBLIC_HEADERS}
+  UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_rtti
 #  PRIVATE_LINK_LIBRARIES
@@ -66,13 +75,14 @@ else()
 	set(tst_json_dep "")
 endif()
 
-# NOTE: unit tests for this module are in other modules downstream, like "mrpt_io" or "mrpt_poses".
+# NOTE: additional unit tests for this module also live in downstream modules
+# like "mrpt_io" or "mrpt_poses", where actual CStream implementations exist.
 
 if (tst_json_dep)
   target_link_libraries(${PROJECT_NAME} PRIVATE ${tst_json_dep})
 
   if (TARGET test_mrpt_serialization)
-    target_link_libraries(test_mrpt_serialization ${tst_json_dep})
+    target_link_libraries(test_mrpt_serialization PRIVATE ${tst_json_dep})
   endif()
 endif()
 

@@ -34,7 +34,7 @@ void ClearanceDiagram::renderAs3DObject(
     double min_y,
     double max_y,
     double cell_res,
-    bool integrate_over_path) const
+    ClearanceQuery mode) const
 {
   ASSERT_(cell_res > 0.0);
   ASSERT_(max_x > min_x);
@@ -65,7 +65,7 @@ void ClearanceDiagram::renderAs3DObject(
         const uint16_t actual_k = CParameterizedTrajectoryGenerator::Alpha2index(
             alpha, static_cast<unsigned int>(m_actual_num_paths));
         const double dist = std::hypot(x, y);
-        clear_val = this->getClearance(actual_k, dist, integrate_over_path);
+        clear_val = this->getClearance(actual_k, dist, mode);
       }
       Z(iX, iY) = static_cast<float>(clear_val);
     }
@@ -132,8 +132,7 @@ size_t mrpt::nav::ClearanceDiagram::decimated_k_to_real_k(size_t k) const
   return ret;
 }
 
-double ClearanceDiagram::getClearance(
-    uint16_t actual_k, double dist, bool integrate_over_path) const
+double ClearanceDiagram::getClearance(uint16_t actual_k, double dist, ClearanceQuery mode) const
 {
   if (this->empty())  // If we are not using clearance values, just return a
     // fixed value:
@@ -141,37 +140,21 @@ double ClearanceDiagram::getClearance(
 
   ASSERT_LT_(actual_k, m_actual_num_paths);
 
-  const size_t k = real_k_to_decimated_k(actual_k);
+  const auto& rc_k = m_raw_clearances[real_k_to_decimated_k(actual_k)];
+  if (rc_k.empty()) return 0.0;
 
-  const auto& rc_k = m_raw_clearances[k];
-
-  double res = 0;
-  int avr_count = 0;  // weighted avrg: closer to query points weight more
-  // than at path start.
-  for (const auto& e : rc_k)
+  double sum = 0;
+  double last = 0;
+  size_t count = 0;
+  for (const auto& [sample_dist, sample_clearance] : rc_k)
   {
-    if (integrate_over_path)
-    {
-      res = e.second;
-      avr_count = 1;
-    }
-    else
-    {
-      res += e.second;
-      avr_count++;
-    }
-    if (e.first > dist) break;  // target dist reached.
+    sum += sample_clearance;
+    last = sample_clearance;
+    count++;
+    if (sample_dist > dist) break;  // target dist reached.
   }
 
-  if (!avr_count)
-  {
-    res = rc_k.begin()->second;
-  }
-  else
-  {
-    res = res / avr_count;
-  }
-  return res;
+  return mode == ClearanceQuery::MeanUpToDistance ? sum / static_cast<double>(count) : last;
 }
 
 void ClearanceDiagram::clear()
@@ -193,8 +176,16 @@ void mrpt::nav::ClearanceDiagram::resize(size_t actual_num_paths, size_t decimat
   m_actual_num_paths = actual_num_paths;
   m_raw_clearances.resize(decimated_num_paths);
 
-  m_k_d2a = static_cast<double>(m_actual_num_paths - 1) /
-            static_cast<double>(m_raw_clearances.size() - 1);
-  m_k_a2d = static_cast<double>(m_raw_clearances.size() - 1) /
-            static_cast<double>(m_actual_num_paths - 1);
+  if (m_actual_num_paths > 1 && m_raw_clearances.size() > 1)
+  {
+    m_k_d2a = static_cast<double>(m_actual_num_paths - 1) /
+              static_cast<double>(m_raw_clearances.size() - 1);
+    m_k_a2d = static_cast<double>(m_raw_clearances.size() - 1) /
+              static_cast<double>(m_actual_num_paths - 1);
+  }
+  else
+  {
+    // Degenerate case: one single (decimated) path, everything maps to index 0.
+    m_k_d2a = m_k_a2d = .0;
+  }
 }

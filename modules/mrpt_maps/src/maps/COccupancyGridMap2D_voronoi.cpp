@@ -164,7 +164,10 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
   }
 
   // Ver basis que coincidan:
-  for (size_t i = 0; i < (temp_x.size() - 1); i++)
+  // (written as "i + 1 < size()" rather than "i < size() - 1": with zero or
+  // one candidates, size()-1 underflows the unsigned size_t and the loop
+  // reads far out of bounds)
+  for (size_t i = 0; i + 1 < temp_x.size(); i++)
   {
     if (!temp_borrar[i])
     {

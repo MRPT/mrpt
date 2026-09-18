@@ -38,6 +38,12 @@ void CParticleFilterCapable::performResampling(
   const size_t in_particle_count = particlesCount();
   ASSERT_(in_particle_count > 0);
 
+  // 0 means "keep the current particle count" (see header doc):
+  if (out_particle_count == 0)
+  {
+    out_particle_count = in_particle_count;
+  }
+
   vector<size_t> indxs;
   // Build log-weight vector via a single virtual call, then index into it:
   vector<double> log_ws(in_particle_count);

@@ -2,6 +2,19 @@
 Changelog for package mrpt_poses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* refactor: align API and const-correctness updates with the broader 3.x cleanup pass.
+* fix: resolve ROS buildfarm warning issues and fix the underlying correctness bugs they surfaced.
+* fix: address stereo-rectification and pose-related regressions in the latest 3.x fixes.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+
+3.1.3 (2026-08-12)
+------------------
+
 3.1.2 (2026-07-07)
 ------------------
 

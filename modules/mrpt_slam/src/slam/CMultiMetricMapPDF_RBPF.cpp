@@ -394,7 +394,10 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
       // =================================================================
       bool methodSOGorGrid = false;  // TRUE=SOG
       CPoint3D newDrawnPosition;
-      float firstEstimateRobotHeading = std::numeric_limits<float>::max();
+      // Range-only measurements say nothing about the heading, so it is
+      // taken from the motion model (identity if there is no odometry):
+      float firstEstimateRobotHeading =
+          static_cast<float>((ith_last_pose + motionModelMeanIncr).yaw());
 
       // The parameters to discard too far gaussians:
       CPoint3D centerPositionPrior(ith_last_pose);
@@ -402,7 +405,6 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
       if (!robotActionSampler.isPrepared())
       {
-        firstEstimateRobotHeading = static_cast<float>(ith_last_pose.yaw());
         // If the map is empty: There is no solution!:
         // THROW_EXCEPTION("There is no odometry & the initial beacon
         // map is empty: RO-SLAM has no solution -> ABORTED!!!");
@@ -502,7 +504,6 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
           CPose3D auxPose =
               ith_last_pose +
               motionModelMeanIncr;  // CPose3D(robotMovement->poseChange->getEstimatedPose()));
-          firstEstimateRobotHeading = static_cast<float>(auxPose.yaw());
 
           newMode.val.mean = CPoint3D(auxPose);
 
@@ -768,12 +769,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
       }
       else
       {
-        std::cout << "Drawn: " << newDrawnPosition << "\n";
-        // std::cout << "Final cov was:\n" <<
-        // fusedObsModels.getEstimatedCovariance() << endl << "\n";
-
-        // Make sure it was initialized
-        ASSERT_(firstEstimateRobotHeading != std::numeric_limits<float>::max());
+        MRPT_LOG_DEBUG_STREAM("[RO-SLAM] Drawn position: " << newDrawnPosition);
 
         finalPose.setFromValues(
             newDrawnPosition.x(), newDrawnPosition.y(), newDrawnPosition.z(),

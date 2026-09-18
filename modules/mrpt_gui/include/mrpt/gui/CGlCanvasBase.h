@@ -40,16 +40,8 @@ class CGlCanvasBase
   CGlCanvasBase(CGlCanvasBase&&) noexcept = default;
   CGlCanvasBase& operator=(CGlCanvasBase&&) noexcept = default;
 
-  /** Saves the click position of the mouse
-   * See also setMouseClicked(bool) */
-  void setMousePos(int x, int y);
-
-  /** Sets the property mouseClicked
-   * By default, this property is false.
-   * See also setMousePos(int, int) */
-  void setMouseClicked(bool is);
-
-  /** Sets the last mouse position */
+  /** Records the latest known pointer position, in widget-local pixels.
+   *  \sa getLastMousePosition() */
   void updateLastPos(int x, int y);
 
   /** Calls the glViewport function*/
@@ -71,6 +63,8 @@ class CGlCanvasBase
    */
   [[nodiscard]] bool getUseCameraFromScene() const;
 
+  /** Latest pointer position seen by the canvas, in widget-local pixels.
+   *  \sa updateLastPos() */
   void getLastMousePosition(int& x, int& y) const
   {
     x = m_mouseLastX;
@@ -107,16 +101,15 @@ class CGlCanvasBase
   std::unique_ptr<mrpt::opengl::CompiledScene> m_compiledScene;
   std::weak_ptr<mrpt::viz::Scene> m_lastCompiledScenePtr;
   int m_mouseLastX = 0, m_mouseLastY = 0;
-  int m_mouseClickX = 0, m_mouseClickY = 0;
-  bool mouseClicked = false;
 
   mrpt::viz::COrbitCameraController m_cameraCtrl;
 
 };  // end of class
 
-/** A headless dummy implementation of CGlCanvasBase: can be used to keep track
- * of user UI mouse events and update the camera parameters, with actual
- * rendering being delegated to someone else. \ingroup mrpt_gui_grp
+/** A headless dummy implementation of CGlCanvasBase: holds the scene and the
+ * camera controller (see orbitCameraController(), which is where UI mouse
+ * events are fed into), with actual rendering delegated to someone else.
+ * \ingroup mrpt_gui_grp
  */
 class CGlCanvasBaseHeadless : public CGlCanvasBase
 {

@@ -136,7 +136,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 
   // This function depends on the observation type:
   // -----------------------------------------------------
-  if (IS_CLASS(obs, CObservation2DRangeScan))
+  if (!IS_CLASS(obs, CObservation2DRangeScan))
   {
     // THROW_EXCEPTION("This method is defined for 'CObservation2DRangeScan'
     // classes only.");
@@ -895,7 +895,7 @@ void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(std::ostream& out
   out << "OWA_weights   = [";
   for (size_t i = 0; i < OWA_weights.size(); i++)
   {
-    if (i < 3 || i > (OWA_weights.size() - 3))
+    if (i < 3 || i >= (OWA_weights.size() - 3))
       out << mrpt::format("%.03f ", OWA_weights[i]);
     else if (i == 3 && OWA_weights.size() > 6)
       out << " ... ";

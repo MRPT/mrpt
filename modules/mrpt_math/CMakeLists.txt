@@ -99,7 +99,9 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CMatrixDynamic_unittest.cpp
   tests/CMatrixFixed_unittest.cpp
   tests/container_ops_unittest.cpp
+  tests/containers_api_unittest.cpp
   tests/CPolygon_unittest.cpp
+  tests/CHistogram_unittest.cpp
   tests/CSparseMatrixTemplate_unittest.cpp
   tests/CSplineInterpolator1D_unittest.cpp
   tests/distributions_unittest.cpp
@@ -108,9 +110,12 @@ set(LIB_UNIT_TEST_SOURCES
   tests/fresnel_unittest.cpp
   tests/geometry_dispatch_unittest.cpp
   tests/geometry_extra_unittest.cpp
+  tests/geometry_numerics_unittest.cpp
+  tests/geometry_sets_unittest.cpp
   tests/geometry_unittest.cpp
   tests/interp_fit_unittest.cpp
   tests/KDTreeCapable_unittest.cpp
+  tests/matrix_api_unittest.cpp
   tests/matrix_ops_unittest.cpp
   tests/matrix_ops1_unittest.cpp
   tests/matrix_ops2_unittest.cpp
@@ -121,6 +126,8 @@ set(LIB_UNIT_TEST_SOURCES
   tests/math_unittest.cpp
   tests/ModelSearch_unittest.cpp
   tests/poly_roots_unittest.cpp
+  tests/ops_vectors_unittest.cpp
+  tests/poly_roots_extra_unittest.cpp
   tests/ransac_applications_unittest.cpp
   tests/ransac_unittest.cpp
   tests/robust_kernels_unittest.cpp
@@ -130,6 +137,8 @@ set(LIB_UNIT_TEST_SOURCES
   tests/TObject3D_unittest.cpp
   tests/TOrientedBox_unittest.cpp
   tests/TPlane_unittest.cpp
+  tests/TLine2D_TSegment2D_unittest.cpp
+  tests/TPoint2D_unittest.cpp
   tests/TPoint3D_unittest.cpp
   tests/TPolygon2D_unittest.cpp
   tests/TPolygon3D_unittest.cpp
@@ -137,13 +146,13 @@ set(LIB_UNIT_TEST_SOURCES
   tests/TPose3DQuat_unittest.cpp
   tests/TPoseOrPoint_unittest.cpp
   tests/TSegment3D_unittest.cpp
+  tests/TTwist2D_unittest.cpp
   tests/TTwist3D_unittest.cpp
   tests/wrap2pi_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
   include/mrpt/math/CAtan2LookUpTable.h
-  include/mrpt/math/CBinaryRelation.h
   include/mrpt/math/CHistogram.h
   include/mrpt/math/CLevenbergMarquardt.h
   include/mrpt/math/CMatrixB.h
@@ -151,7 +160,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/math/CMatrixDynamic.h
   include/mrpt/math/CMatrixF.h
   include/mrpt/math/CMatrixFixed.h
-  include/mrpt/math/CMonteCarlo.h
   include/mrpt/math/CPolygon.h
   include/mrpt/math/CProbabilityDensityFunction.h
   include/mrpt/math/CQuaternion.h
@@ -161,7 +169,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/math/CVectorFixed.h
   include/mrpt/math/data_utils.h
   include/mrpt/math/distributions.h
-  include/mrpt/math/eigen_extensions.h
   include/mrpt/math/epsilon.h
   include/mrpt/math/filters.h
   include/mrpt/math/fourier.h
@@ -174,14 +181,12 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/math/KDTreeCapable.h
   include/mrpt/math/mat2eig.h
   include/mrpt/math/math_frwds.h
-  include/mrpt/math/matrix_adaptors.h
   include/mrpt/math/matrix_serialization.h
   include/mrpt/math/matrix_size_t.h
   include/mrpt/math/impl/CMatrixFixed_impl.h
   include/mrpt/math/impl/MatrixBase_impl.h
   include/mrpt/math/impl/MatrixVectorBase_impl.h
   include/mrpt/math/MatrixBase.h
-  include/mrpt/math/MatrixBlockSparseCols.h
   include/mrpt/math/MatrixVectorBase.h
   include/mrpt/math/model_search_impl.h
   include/mrpt/math/model_search.h

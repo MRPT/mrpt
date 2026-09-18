@@ -39,6 +39,7 @@
 
 #include <CLI/CLI.hpp>
 #include <fstream>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::poses;

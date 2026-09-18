@@ -106,6 +106,9 @@ class CStereoRectifyMap
   /** After computing the rectification maps, this method retrieves the
    * calibration parameters of the rectified images
    *  (which won't have any distortion).
+   * The returned `rightCameraPose` describes the RECTIFIED geometry: a pure
+   * translation of the baseline length along +x, with no relative rotation.
+   * It is not a copy of the (possibly rotated, possibly oblique) input pose.
    * \exception std::exception If the rectification maps have not been
    * computed.
    */
@@ -215,9 +218,6 @@ class CStereoRectifyMap
    * parameters of these images.
    * \exception std::exception If the rectification maps have not been
    * computed.
-   * \note The same image CANNOT be at the same time input and output, in
-   * which case an exception will be raised (but see the overloaded version
-   * for in-place rectification)
    */
   void rectify(
       const mrpt::img::CImage& in_left_image,

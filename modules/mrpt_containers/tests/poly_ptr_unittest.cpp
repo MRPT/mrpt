@@ -23,9 +23,9 @@ class DummyClass
  public:
   double x = 0;
 
-  bool operator==(const DummyClass &o) const { return x == o.x; }
+  bool operator==(const DummyClass& o) const { return x == o.x; }
 
-  DummyClass *clone() const { return new DummyClass(*this); }
+  DummyClass* clone() const { return new DummyClass(*this); }
 };
 }  // namespace
 
@@ -109,6 +109,39 @@ TEST(poly_ptr, SimpleOps)
     ptr2->x += 1.0;
     EXPECT_FALSE(*ptr1 == *ptr2);
   }
+}
+
+TEST(poly_ptr, NullDereferenceThrows)
+{
+  mrpt::containers::poly_ptr<DummyClass> ptr;
+  EXPECT_THROW(ptr->x = 1.0, std::runtime_error);
+  EXPECT_THROW(*ptr, std::runtime_error);
+
+  const mrpt::containers::poly_ptr<DummyClass>& cptr = ptr;
+  EXPECT_THROW((void)cptr->x, std::runtime_error);
+  EXPECT_THROW(*cptr, std::runtime_error);
+}
+
+TEST(poly_ptr, ConstDereferenceOfNonNull)
+{
+  mrpt::containers::poly_ptr<DummyClass> ptr;
+  ptr.reset(new DummyClass());
+  ptr->x = 42.0;
+
+  const mrpt::containers::poly_ptr<DummyClass>& cptr = ptr;
+  EXPECT_NEAR(cptr->x, 42.0, 1e-9);
+  EXPECT_NEAR((*cptr).x, 42.0, 1e-9);
+}
+
+TEST(poly_ptr, ResetReplacesExistingPointer)
+{
+  mrpt::containers::poly_ptr<DummyClass> ptr;
+  ptr.reset(new DummyClass());
+  ptr->x = 1.0;
+
+  // Replacing an existing (non-null) pointer must delete the old one:
+  ptr.reset(new DummyClass());
+  EXPECT_NEAR(ptr->x, 0.0, 1e-9);
 }
 
 TEST(poly_ptr, StlContainer)

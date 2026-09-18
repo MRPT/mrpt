@@ -116,8 +116,11 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
     MRPT_LOG_INFO_STREAM("Verifying support for given MRPT graph class...");
 
     // TODO - initialize vector in a smarter way.
-    m_supported_constraint_types.push_back("CPosePDFGaussianInf");
-    m_supported_constraint_types.push_back("CPose3DPDFGaussianInf");
+    // NOTE: GetRuntimeClass()->className returns the fully-qualified,
+    // namespace-prefixed name (e.g. "mrpt::poses::CPosePDFGaussianInf"), so
+    // the whitelist must match that format too.
+    m_supported_constraint_types.push_back("mrpt::poses::CPosePDFGaussianInf");
+    m_supported_constraint_types.push_back("mrpt::poses::CPose3DPDFGaussianInf");
 
     constraint_t c;
     const string c_str(c.GetRuntimeClass()->className);
@@ -426,20 +429,26 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 
   // In case we are given an RGBD TUM Dataset - try and read the info file so
   // that we know how to play back the GT poses.
-  try
+  // This only applies when a .rawlog file is actually given (e.g. the
+  // standalone graphslam-engine CLI); skip it otherwise (e.g. the ROS 2
+  // wrapper, which always feeds sensor data via topics).
+  if (!m_rawlog_fname.empty())
   {
-    m_info_params.setRawlogFile(m_rawlog_fname);
-    m_info_params.parseFile();
-    // set the rate at which we read from the GT poses vector
-    int num_of_objects = std::atoi(m_info_params.fields["Overall number of objects"].c_str());
-    m_GT_poses_step = m_GT_poses.size() / num_of_objects;
+    try
+    {
+      m_info_params.setRawlogFile(m_rawlog_fname);
+      m_info_params.parseFile();
+      // set the rate at which we read from the GT poses vector
+      int num_of_objects = std::atoi(m_info_params.fields["Overall number of objects"].c_str());
+      m_GT_poses_step = m_GT_poses.size() / num_of_objects;
 
-    MRPT_LOG_INFO_STREAM("Overall number of objects in rawlog: " << num_of_objects);
-    MRPT_LOG_INFO_STREAM("Setting the Ground truth read step to: " << m_GT_poses_step);
-  }
-  catch (const std::exception& e)
-  {
-    MRPT_LOG_INFO_STREAM("RGBD_TUM info file was not found: " << e.what());
+      MRPT_LOG_INFO_STREAM("Overall number of objects in rawlog: " << num_of_objects);
+      MRPT_LOG_INFO_STREAM("Setting the Ground truth read step to: " << m_GT_poses_step);
+    }
+    catch (const std::exception& e)
+    {
+      MRPT_LOG_INFO_STREAM("RGBD_TUM info file was not found: " << e.what());
+    }
   }
 
   // SLAM evaluation metric

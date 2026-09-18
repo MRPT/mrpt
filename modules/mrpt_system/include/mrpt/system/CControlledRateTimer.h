@@ -89,7 +89,7 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
     m_Kp = v;
   }
 
-  /** PI controller Ti parameter [default=0.0194] */
+  /** PI controller Ti parameter [default=0.1] */
   double controllerParam_Ti() const { return m_Ti; }
   void controllerParam_Ti(double v)
   {
@@ -97,8 +97,9 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
     m_Ti = v;
   }
 
-  /** Low-pass filter a0 value [default=0.9]:
-   * estimation = a0*input + (1-a0)*former_estimation */
+  /** Low-pass filter a0 value [default=0.99]:
+   * estimation = a0*former_estimation + (1-a0)*input
+   * so larger values of `a0` mean heavier smoothing of the measured rate. */
   double lowPassParam_a0() const { return m_lowPass_a0; }
   void lowPassParam_a0(double v)
   {

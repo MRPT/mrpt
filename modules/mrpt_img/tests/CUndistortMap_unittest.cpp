@@ -84,6 +84,36 @@ void fillGradientColor(CImage& img)
   }
 }
 
+/** Renders a small bright marker at pixel (cx,cy) on an otherwise-black
+ *  ncols x nrows image. */
+CImage markerImage(uint32_t ncols, uint32_t nrows, double cx, double cy)
+{
+  CImage img(ncols, nrows, CH_GRAY);
+  img.filledRectangle(
+      {0, 0}, {static_cast<int32_t>(ncols) - 1, static_cast<int32_t>(nrows) - 1}, TColor::black());
+  const auto icx = static_cast<int32_t>(std::lround(cx));
+  const auto icy = static_cast<int32_t>(std::lround(cy));
+  img.filledRectangle({icx - 3, icy - 3}, {icx + 3, icy + 3}, TColor::white());
+  return img;
+}
+
+/** Intensity-weighted centroid of an image, in pixel coordinates. */
+std::pair<double, double> brightCentroid(const CImage& img)
+{
+  double sumX = 0, sumY = 0, sumW = 0;
+  for (unsigned y = 0; y < img.getHeight(); ++y)
+  {
+    for (unsigned x = 0; x < img.getWidth(); ++x)
+    {
+      const double w = img.at<uint8_t>(x, y);
+      sumX += w * x;
+      sumY += w * y;
+      sumW += w;
+    }
+  }
+  return {sumX / sumW, sumY / sumW};
+}
+
 }  // namespace
 
 // ===========================================================================
@@ -212,6 +242,25 @@ TEST(CUndistortMap, Undistort_inPlace)
   EXPECT_EQ(img.getHeight(), static_cast<int>(cam.nrows));
 }
 
+TEST(CUndistortMap, UndistortBeforeSetThrows)
+{
+  CUndistortMap map;
+  CImage in(64, 64, CH_GRAY);
+  CImage out;
+  EXPECT_THROW(map.undistort(in, out), std::exception);
+  EXPECT_THROW(map.undistort(in), std::exception);
+}
+
+TEST(CUndistortMap, UnknownDistortionModelThrows)
+{
+  auto cam = makeSampleCameraNoDistortion();
+  // Inject an out-of-range enum value not handled by the switch statement.
+  cam.distortion = static_cast<DistortionModel>(99);
+
+  CUndistortMap map;
+  EXPECT_THROW(map.setFromCamParams(cam), std::exception);
+}
+
 TEST(CUndistortMap, Undistort_fromFile)
 {
   const auto tstImg =
@@ -283,6 +332,166 @@ TEST(CStereoRectifyMap, SetFromCamParams)
   EXPECT_EQ(rp.leftCamera.nrows, 480U);
 }
 
+TEST(CStereoRectifyMap, Rectify_preservesForwardAxis)
+{
+  // With a pure-baseline (zero relative rotation) stereo pair, "straight
+  // ahead" must stay "straight ahead": a feature at the left camera's own
+  // principal point must reappear at the rectified image's own principal
+  // point. The previous Rectify_basic/_color tests only check output image
+  // *dimensions*, which a geometrically-broken rectification rotation
+  // (e.g. one that swaps the camera's forward axis into the image plane)
+  // still satisfies - they render a smooth gradient, which survives any
+  // remap, garbled or not. This test checks the actual geometry instead.
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  rectMap.setFromCamParams(stereo);
+
+  const auto& cam = stereo.leftCamera;
+  const CImage inLeft = markerImage(cam.ncols, cam.nrows, cam.cx(), cam.cy());
+  const CImage inRight = inLeft;
+
+  CImage outLeft, outRight;
+  rectMap.rectify(inLeft, inRight, outLeft, outRight);
+
+  const auto [markerX, markerY] = brightCentroid(outLeft);
+  const auto& rcam = rectMap.getRectifiedLeftImageParams();
+  EXPECT_NEAR(markerX, rcam.cx(), 5.0);
+  EXPECT_NEAR(markerY, rcam.cy(), 5.0);
+}
+
+TEST(CStereoRectifyMap, Rectify_preservesForwardAxis_withRelativeRotation)
+{
+  // Same invariant as Rectify_preservesForwardAxis, but with a non-identity
+  // relative rotation between the two cameras (e.g. a real, imperfectly
+  // mounted rig such as a multi-camera bag with no per-camera TF): R_half is
+  // then non-identity too, so a forward reference that isn't rotated along
+  // with it (the bug CodeRabbit caught in this same PR) would derive e3 from
+  // the *original*, un-rotated z axis instead of the half-rotated one.
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  // 5 deg yaw on top of the baseline translation.
+  const double yawRad = 5.0 * M_PI / 180.0;
+  stereo.rightCameraPose =
+      mrpt::math::TPose3DQuat(0.10, 0, 0, std::cos(yawRad / 2), 0, 0, std::sin(yawRad / 2));
+
+  CStereoRectifyMap rectMap;
+  rectMap.setFromCamParams(stereo);
+
+  const auto& cam = stereo.leftCamera;
+  const CImage inLeft = markerImage(cam.ncols, cam.nrows, cam.cx(), cam.cy());
+  const CImage inRight = inLeft;
+
+  CImage outLeft, outRight;
+  rectMap.rectify(inLeft, inRight, outLeft, outRight);
+
+  const auto [markerX, markerY] = brightCentroid(outLeft);
+  const auto& rcam = rectMap.getRectifiedLeftImageParams();
+  EXPECT_NEAR(markerX, rcam.cx(), 5.0);
+  EXPECT_NEAR(markerY, rcam.cy(), 5.0);
+}
+
+TEST(CStereoRectifyMap, Rectify_idealPairIsIdentity)
+{
+  // An already-rectified, distortion-free pair (parallel optical axes, right
+  // camera a pure +x baseline away, identical intrinsics) must rectify to
+  // ITSELF: the rectification rotation is the identity and the images come
+  // back unchanged.
+  //
+  // The Rectify_preservesForwardAxis tests above cannot see a violation of
+  // this, because they place their marker at the principal point, which is
+  // the one point invariant under an in-plane 180 deg flip. An OFF-CENTER
+  // marker is what distinguishes the identity from that flip - and a flip is
+  // not cosmetic here: it puts the right camera at negative x in the
+  // rectified frame, so every disparity of an ordinary rig comes out with the
+  // wrong sign.
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  rectMap.setFromCamParams(stereo);
+
+  // The rectification rotation must be the identity quaternion.
+  const auto& q = rectMap.getLeftCameraRot();
+  EXPECT_NEAR(std::abs(q.r()), 1.0, 1e-9);
+
+  // The rectified geometry must be a pure, POSITIVE baseline along x.
+  const auto& rp = rectMap.getRectifiedImageParams();
+  EXPECT_NEAR(rp.rightCameraPose.x, 0.10, 1e-9);
+  EXPECT_NEAR(rp.rightCameraPose.y, 0.0, 1e-9);
+  EXPECT_NEAR(rp.rightCameraPose.z, 0.0, 1e-9);
+
+  const auto& cam = stereo.leftCamera;
+  const double mx = cam.cx() + 100.0;
+  const double my = cam.cy() + 60.0;
+  const CImage inLeft = markerImage(cam.ncols, cam.nrows, mx, my);
+  const CImage inRight = inLeft;
+
+  CImage outLeft, outRight;
+  rectMap.rectify(inLeft, inRight, outLeft, outRight);
+
+  const auto [markerX, markerY] = brightCentroid(outLeft);
+  EXPECT_NEAR(markerX, mx, 1.0);
+  EXPECT_NEAR(markerY, my, 1.0);
+}
+
+TEST(CStereoRectifyMap, Rectify_obliqueBaselineNearOpticalAxis)
+{
+  // A baseline mostly along the optical axis (large z component) but not
+  // exactly colinear with it: close enough to the old dot-product-based
+  // degeneracy threshold (|e1.dot(z)| > 0.9, i.e. within ~26 deg of z) to be
+  // misclassified as needing the y-axis fallback - CodeRabbit's second
+  // finding on this PR. Its actual projection onto the plane orthogonal to
+  // e1 is still well-conditioned (norm ~0.41 for the case below), so the fix
+  // must not take the fallback path here.
+  //
+  // Unlike the two tests above, this does NOT check that a principal-point
+  // marker survives: a baseline this close to the optical axis is the
+  // classic "forward motion" stereo configuration, where standard
+  // rectification legitimately reprojects the principal point far outside
+  // the original field of view (confirmed numerically: for this exact case
+  // the source ray for the rectified principal point lands at pixel
+  // x = -777 on a 640-pixel-wide camera) - a real geometric property of this
+  // configuration, not a defect. What must still hold is that
+  // setFromCamParams()/rectify() succeed and produce a well-formed
+  // (non-degenerate) rotation - i.e. that e3 was NOT snapped to the y-axis
+  // fallback, which would additionally violate right-handedness with the
+  // z-heavy baseline used here.
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  // Baseline direction (sqrt(1-0.91^2), 0, 0.91), scaled to a 10 cm baseline.
+  const double bz = 0.91;
+  const double bx = std::sqrt(1.0 - bz * bz);
+  const double baseline = 0.10;
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(baseline * bx, 0, baseline * bz, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  ASSERT_NO_THROW(rectMap.setFromCamParams(stereo));
+
+  // The rectification rotation must be a valid, finite unit quaternion (not
+  // NaN/degenerate, as it would be if e3 had zero norm before normalizing).
+  const auto& q = rectMap.getLeftCameraRot();
+  EXPECT_TRUE(
+      std::isfinite(q.r()) && std::isfinite(q.x()) && std::isfinite(q.y()) && std::isfinite(q.z()));
+  EXPECT_NEAR(q.r() * q.r() + q.x() * q.x() + q.y() * q.y() + q.z() * q.z(), 1.0, 1e-9);
+
+  const auto& cam = stereo.leftCamera;
+  const CImage inLeft = markerImage(cam.ncols, cam.nrows, cam.cx(), cam.cy());
+  const CImage inRight = inLeft;
+
+  CImage outLeft, outRight;
+  ASSERT_NO_THROW(rectMap.rectify(inLeft, inRight, outLeft, outRight));
+  EXPECT_EQ(outLeft.getWidth(), cam.ncols);
+  EXPECT_EQ(outLeft.getHeight(), cam.nrows);
+}
+
 TEST(CStereoRectifyMap, Rectify_basic)
 {
   TStereoCamera stereo;
@@ -327,4 +536,148 @@ TEST(CStereoRectifyMap, Rectify_color)
 
   EXPECT_EQ(outLeft.getWidth(), 640);
   EXPECT_TRUE(outLeft.isColor());
+}
+
+TEST(CStereoRectifyMap, RectifyBeforeSetThrows)
+{
+  CStereoRectifyMap rectMap;
+  CImage inLeft(640, 480, CH_GRAY);
+  CImage inRight(640, 480, CH_GRAY);
+  CImage outLeft, outRight;
+  EXPECT_THROW(rectMap.rectify(inLeft, inRight, outLeft, outRight), std::exception);
+}
+
+TEST(CStereoRectifyMap, GetRectifiedParamsBeforeSetThrows)
+{
+  CStereoRectifyMap rectMap;
+  EXPECT_THROW((void)rectMap.getRectifiedImageParams(), std::exception);
+  EXPECT_THROW((void)rectMap.getRectifiedLeftImageParams(), std::exception);
+  EXPECT_THROW((void)rectMap.getRectifiedRightImageParams(), std::exception);
+}
+
+TEST(CStereoRectifyMap, InPlaceRectifyThrows)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCamera();
+  stereo.rightCamera = makeSampleCamera();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  rectMap.setFromCamParams(stereo);
+
+  CImage img(640, 480, CH_GRAY);
+  CImage other(640, 480, CH_GRAY);
+  // Same image used as both input and output for the left pair is rejected.
+  EXPECT_THROW(rectMap.rectify(img, other, img, other), std::exception);
+}
+
+TEST(CStereoRectifyMap, AlphaAndCentersCoincideOptions)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCamera();
+  stereo.rightCamera = makeSampleCamera();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  EXPECT_EQ(rectMap.getAlpha(), -1.0);
+  rectMap.setAlpha(0.5);
+  EXPECT_EQ(rectMap.getAlpha(), 0.5);
+
+  EXPECT_FALSE(rectMap.isEnabledBothCentersCoincide());
+  rectMap.enableBothCentersCoincide(true);
+  EXPECT_TRUE(rectMap.isEnabledBothCentersCoincide());
+
+  rectMap.setInterpolationMethod(IMG_INTERP_NN);
+  EXPECT_EQ(rectMap.getInterpolationMethod(), IMG_INTERP_NN);
+
+  rectMap.setFromCamParams(stereo);
+  EXPECT_TRUE(rectMap.isSet());
+
+  const auto& leftRot = rectMap.getLeftCameraRot();
+  const auto& rightRot = rectMap.getRightCameraRot();
+  EXPECT_NEAR(leftRot.norm(), 1.0, 1e-6);
+  EXPECT_NEAR(rightRot.norm(), 1.0, 1e-6);
+}
+
+TEST(CStereoRectifyMap, EnableResizeOutput)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCamera();
+  stereo.rightCamera = makeSampleCamera();
+  stereo.rightCameraPose = mrpt::math::TPose3DQuat(0.10, 0, 0, 1, 0, 0, 0);
+
+  CStereoRectifyMap rectMap;
+  EXPECT_FALSE(rectMap.isEnabledResizeOutput());
+  rectMap.enableResizeOutput(true, 320, 240);
+  EXPECT_TRUE(rectMap.isEnabledResizeOutput());
+  EXPECT_EQ(rectMap.getResizeOutputSize().x, 320);
+  EXPECT_EQ(rectMap.getResizeOutputSize().y, 240);
+
+  rectMap.setFromCamParams(stereo);
+
+  CImage inLeft(640, 480, CH_GRAY);
+  CImage inRight(640, 480, CH_GRAY);
+  fillGradient(inLeft);
+  fillGradient(inRight);
+
+  CImage outLeft, outRight;
+  rectMap.rectify(inLeft, inRight, outLeft, outRight);
+
+  EXPECT_EQ(outLeft.getWidth(), 320);
+  EXPECT_EQ(outLeft.getHeight(), 240);
+}
+
+TEST(CStereoRectifyMap, SetRectifyMapsDirect)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.leftCamera.ncols = 4;
+  stereo.leftCamera.nrows = 4;
+  stereo.rightCamera = stereo.leftCamera;
+
+  CStereoRectifyMap rectMap;
+  EXPECT_FALSE(rectMap.isSet());
+
+  const size_t n = 4 * 4;
+  std::vector<float> lx(n, 1.0f);
+  std::vector<float> ly(n, 1.0f);
+  std::vector<float> rx(n, 2.0f);
+  std::vector<float> ry(n, 2.0f);
+  rectMap.setRectifyMaps(lx, ly, rx, ry);
+  EXPECT_TRUE(rectMap.isSet());
+}
+
+TEST(CStereoRectifyMap, SetRectifyMapsFastSwapsInput)
+{
+  CStereoRectifyMap rectMap;
+  std::vector<float> lx(4, 1.0f);
+  std::vector<float> ly(4, 1.0f);
+  std::vector<float> rx(4, 2.0f);
+  std::vector<float> ry(4, 2.0f);
+  rectMap.setRectifyMapsFast(lx, ly, rx, ry);
+  EXPECT_TRUE(rectMap.isSet());
+  // The input vectors are swapped-out (emptied) by the "fast" overload.
+  EXPECT_TRUE(lx.empty());
+}
+
+TEST(CStereoRectifyMap, UnknownDistortionModelThrows)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCameraNoDistortion();
+  stereo.rightCamera = makeSampleCameraNoDistortion();
+  stereo.leftCamera.distortion = static_cast<DistortionModel>(99);
+
+  CStereoRectifyMap rectMap;
+  EXPECT_THROW(rectMap.setFromCamParams(stereo), std::exception);
+}
+
+TEST(CStereoRectifyMap, MismatchedCameraResolutionsAssert)
+{
+  TStereoCamera stereo;
+  stereo.leftCamera = makeSampleCamera();
+  stereo.rightCamera = makeSampleCamera();
+  stereo.rightCamera.ncols = stereo.leftCamera.ncols + 10;
+
+  CStereoRectifyMap rectMap;
+  EXPECT_THROW(rectMap.setFromCamParams(stereo), std::exception);
 }

@@ -2,6 +2,22 @@
 Changelog for package mrpt_apps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* feat: API cleanup pass for archives, const-correctness, and points-map accessors before the next minor bump.
+* fix: address review feedback on the API cleanup by fixing archive forwarding, preserving const config access, and removing a duplicate porting-guide anchor.
+* feat(mrpt_obs,mrpt_viz,mrpt_maps): enforce deep const-correctness in smart-pointer containers and return ConstPtr from const iteration paths.
+* feat: modernize the PTG/reactive API with std::optional-based signatures and clearer configuration semantics.
+* fix(mrpt_nav): correct seven TP-Space logic bugs, including clearance mode mismatches, distance normalization issues, zero-speed regressions, and the arc collision-distance NaN case.
+* feat(mrpt_nav): improve PTG math accuracy and documentation, and add the headless nav_ptg_tpspace example.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+
+3.1.3 (2026-08-12)
+------------------
+
 3.1.2 (2026-07-07)
 ------------------
 

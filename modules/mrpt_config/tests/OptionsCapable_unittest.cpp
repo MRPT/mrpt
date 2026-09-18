@@ -13,8 +13,12 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/OptionsCapable.h>
+#include <mrpt/system/filesystem.h>
+
+#include <sstream>
 
 namespace
 {
@@ -130,4 +134,94 @@ TEST(OptionsCapable, TrySetCreationOptionsRefusesIncompatibleChangeWhenDataPrese
   obj.hasData = false;
   EXPECT_TRUE(obj.trySetCreationOptions(cfg, "creationOptions"));
   EXPECT_DOUBLE_EQ(obj.creationOptions.voxel_size, 0.2);
+}
+
+// ---------------------------------------------------------------------------
+// CLoadableOptions base-class defaults
+// ---------------------------------------------------------------------------
+
+namespace
+{
+/** Exercises LOADABLEOPTS_DUMP_VAR for every supported variable type
+ * (dumpVar_int/float/double/bool/string). */
+struct TDumpAllTypesOptions : public mrpt::config::CLoadableOptions
+{
+  int i = 1;
+  float f = 2.0f;
+  double d = 3.0;
+  bool b = true;
+  std::string s = "hello";
+
+  void loadFromConfigFile(const mrpt::config::CConfigFileBase&, const std::string&) override {}
+  void dumpToTextStream(std::ostream& out) const override
+  {
+    LOADABLEOPTS_DUMP_VAR(i, int);
+    LOADABLEOPTS_DUMP_VAR(f, float);
+    LOADABLEOPTS_DUMP_VAR(d, double);
+    LOADABLEOPTS_DUMP_VAR(b, bool);
+    // LOADABLEOPTS_DUMP_VAR(s, string) would require an unqualified `string`
+    // type name in scope for its static_cast<string>(...); call the helper
+    // directly instead.
+    dumpVar_string(out, "s", s);
+  }
+};
+
+/** Only implements loadFromConfigFile(): relies on the CLoadableOptions
+ * default saveToConfigFile(), which must throw (not implemented). */
+struct LoadOnlyOptions : public mrpt::config::CLoadableOptions
+{
+  double value = 0.0;
+  void loadFromConfigFile(
+      const mrpt::config::CConfigFileBase& source, const std::string& section) override
+  {
+    value = source.read_double(section, "value", value);
+  }
+};
+}  // namespace
+
+TEST(CLoadableOptions, DefaultSaveToConfigFileThrows)
+{
+  LoadOnlyOptions opts;
+  mrpt::config::CConfigFileMemory cfg;
+  EXPECT_THROW(opts.saveToConfigFile(cfg, "sec"), std::exception);
+}
+
+TEST(CLoadableOptions, DefaultDumpToTextStreamUsesSaveToConfigFile)
+{
+  TDummyInsertionOptions opts;
+  opts.threshold = 3.5;
+
+  std::ostringstream ss;
+  opts.dumpToTextStream(ss);
+  EXPECT_NE(ss.str().find("threshold"), std::string::npos);
+}
+
+TEST(CLoadableOptions, DumpToConsoleDoesNotThrow)
+{
+  TDummyInsertionOptions opts;
+  EXPECT_NO_THROW(opts.dumpToConsole());
+}
+
+TEST(CLoadableOptions, DumpVarMacroForEveryType)
+{
+  TDumpAllTypesOptions opts;
+  std::ostringstream ss;
+  opts.dumpToTextStream(ss);
+  const std::string text = ss.str();
+  EXPECT_NE(text.find("i "), std::string::npos);
+  EXPECT_NE(text.find("hello"), std::string::npos);
+  EXPECT_NE(text.find("YES"), std::string::npos);
+}
+
+TEST(CLoadableOptions, LoadAndSaveConfigFileNameRoundTrip)
+{
+  const std::string tmpFile = mrpt::system::getTempFileName();
+  {
+    TDummyInsertionOptions opts;
+    opts.threshold = 7.25;
+    opts.saveToConfigFileName(tmpFile, "sec");
+  }
+  TDummyInsertionOptions opts2;
+  opts2.loadFromConfigFileName(tmpFile, "sec");
+  EXPECT_DOUBLE_EQ(opts2.threshold, 7.25);
 }

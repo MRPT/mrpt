@@ -27,6 +27,7 @@ set(LIB_SOURCES
 
 set(LIB_UNIT_TEST_SOURCES
   tests/bayes_unittest.cpp
+  tests/CKalmanFilterCapable_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

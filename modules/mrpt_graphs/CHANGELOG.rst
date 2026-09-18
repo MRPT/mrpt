@@ -2,6 +2,20 @@
 Changelog for package mrpt_graphs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* fix: resolve ROS/GCC buildfarm warnings across the affected MRPT modules and fix the real correctness issues they exposed.
+* fix: remove dangling iterator, hidden serialization overload, and enum-safety problems uncovered by the warning cleanup.
+* fix: replace the Clock::time_point stream overload with a gtest PrintTo hook to avoid ambiguous overload resolution.
+* fix: tighten enum underlying types and other warning-driven fixes for safer, more portable builds.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+
+3.1.3 (2026-08-12)
+------------------
+
 3.1.2 (2026-07-07)
 ------------------
 * Fix undefined behavior in ``connectGraphPartitions()``'s overlap check

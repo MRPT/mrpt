@@ -13,10 +13,15 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/poses/CPose2D.h>
+
+#include <cmath>
+#include <sstream>
 
 using namespace mrpt::maps;
 using namespace mrpt::obs;
@@ -25,12 +30,15 @@ using namespace mrpt::poses;
 namespace
 {
 // A map (resolution 0.1 m) with a finite vertical wall of occupied cells at
-// x=5.0, y in [-2, 2], free everywhere else. The map extends past the wall so
-// the wall cells are not on the outermost border row.
+// x=5.0, y in [-2, 2], free everywhere else. The map extends well past the
+// wall and past `buildMatchingScan()`'s maxRange in every direction, so that
+// re-evaluating a scan from a perturbed pose never projects a point outside
+// the grid bounds (some likelihood methods, e.g. lmConsensusOWA, assert on
+// that instead of handling it gracefully).
 COccupancyGridMap2D buildGridWithWall()
 {
   const float res = 0.1f;
-  COccupancyGridMap2D grid(-5.0f, 6.0f, -5.0f, 5.0f, res);
+  COccupancyGridMap2D grid(-15.0f, 16.0f, -15.0f, 15.0f, res);
   grid.fill(1.0f);  // all free
 
   const int cx = grid.x2idx(5.0f);
@@ -74,6 +82,10 @@ TEST_P(LikelihoodMethodTest, TruePoseAtLeastAsLikelyAsPerturbed)
   const auto scan = buildMatchingScan(grid, truePose);
 
   grid.likelihoodOptions.likelihoodMethod = GetParam();
+  // lmConsensusOWA requires at least as many scan points as OWA_weights
+  // entries (default: 100); keep it small and safely below the scan's ray
+  // count. Harmless for the other methods, which never read OWA_weights.
+  grid.likelihoodOptions.OWA_weights.assign(20, 1.0f / 20.0f);
 
   const double likTrue = grid.computeObservationLikelihood(scan, CPose3D(truePose));
   const double likPerturbed = grid.computeObservationLikelihood(scan, CPose3D(perturbedPose));
@@ -124,4 +136,79 @@ TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldIIMonotonicity)
   const double likPerturbed = grid.computeLikelihoodField_II(pm, CPose2D(3.0, 0.0, 0.0));
 
   EXPECT_GT(likTrue, likPerturbed);
+}
+
+// The lmConsensusOWA branch keeps its own list of the top-M individual
+// per-point likelihoods (see OWA_weights), so it needs at least as many
+// points as weights; use a small weight vector to keep this test cheap.
+TEST(COccupancyGridMap2DLikelihoodTests, ConsensusOWAMonotonicity)
+{
+  auto grid = buildGridWithWall();
+  grid.likelihoodOptions.likelihoodMethod = COccupancyGridMap2D::lmConsensusOWA;
+  grid.likelihoodOptions.OWA_weights.assign(5, 1.0f / 5.0f);
+
+  const CPose2D truePose(0.0, 0.0, 0.0);
+  const CPose2D perturbedPose(3.0, 0.0, 0.0);
+
+  const auto scan = buildMatchingScan(grid, truePose);
+
+  const double likTrue = grid.computeObservationLikelihood(scan, CPose3D(truePose));
+  const double likPerturbed = grid.computeObservationLikelihood(scan, CPose3D(perturbedPose));
+
+  EXPECT_TRUE(std::isfinite(likTrue));
+  EXPECT_TRUE(std::isfinite(likPerturbed));
+  EXPECT_GT(likTrue, likPerturbed);
+}
+
+TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodOptionsLoadFromConfigFileAndDump)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  cfg.write("lik", "LF_stdHit", 0.5f);
+  cfg.write("lik", "LF_zHit", 0.8f);
+  cfg.write("lik", "LF_decimation", 3);
+
+  COccupancyGridMap2D::TLikelihoodOptions opts;
+  opts.loadFromConfigFile(cfg, "lik");
+
+  EXPECT_FLOAT_EQ(opts.LF_stdHit, 0.5f);
+  EXPECT_FLOAT_EQ(opts.LF_zHit, 0.8f);
+  EXPECT_EQ(opts.LF_decimation, 3u);
+
+  std::ostringstream ss;
+  opts.dumpToTextStream(ss);
+  const std::string text = ss.str();
+
+  EXPECT_NE(text.find("likelihoodMethod"), std::string::npos);
+  EXPECT_NE(text.find("LF_stdHit"), std::string::npos);
+  EXPECT_NE(text.find("OWA_weights"), std::string::npos);
+}
+
+TEST(COccupancyGridMap2DLikelihoodTests, CanComputeObservationLikelihoodTrueForPlanarScan)
+{
+  const auto grid = buildGridWithWall();
+
+  const CPose2D truePose(0.0, 0.0, 0.0);
+  const auto scan = buildMatchingScan(grid, truePose);
+
+  EXPECT_TRUE(grid.canComputeObservationLikelihood(scan));
+}
+
+TEST(COccupancyGridMap2DLikelihoodTests, CanComputeObservationLikelihoodFalseForNonScanObservation)
+{
+  const auto grid = buildGridWithWall();
+
+  CObservationRange obs;  // Not a CObservation2DRangeScan
+  EXPECT_FALSE(grid.canComputeObservationLikelihood(obs));
+}
+
+TEST(COccupancyGridMap2DLikelihoodTests, CanComputeObservationLikelihoodFalseForAltitudeMismatch)
+{
+  auto grid = buildGridWithWall();
+  grid.insertionOptions.useMapAltitude = true;
+  grid.insertionOptions.mapAltitude = 5.0f;
+
+  const CPose2D truePose(0.0, 0.0, 0.0);
+  const auto scan = buildMatchingScan(grid, truePose);  // sensorPose.z() == 0
+
+  EXPECT_FALSE(grid.canComputeObservationLikelihood(scan));
 }

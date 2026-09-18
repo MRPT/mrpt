@@ -88,8 +88,8 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
         break;
       case 'c':
       case 'C':
-        // case 3: // <C-c>
-        if (ev.key_modifiers == 8192)
+        // Accept any modifier combination including Control, e.g. Ctrl+Shift+C:
+        if ((ev.key_modifiers & mrpt::gui::MRPTKMOD_CONTROL) != 0)
         {
           std::cout << "Pressed C-c inside CDisplayWindow3D"
                     << "\n";

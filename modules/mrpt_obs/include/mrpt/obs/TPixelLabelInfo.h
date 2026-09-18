@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/core/integer_select.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/serialization/CSerializable.h>
 
 #include <map>
@@ -63,7 +64,7 @@ struct TPixelLabelInfoBase
     {
       if (it->second == name)
       {
-        return it->first;
+        return static_cast<int>(it->first);
       }
     }
     return -1;

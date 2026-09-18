@@ -2,6 +2,32 @@
 Changelog for package mrpt_containers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.2.0 (2026-09-16)
+------------------
+* feat: API cleanup pass for archive handling, const-correctness, and points-map accessors before the next minor bump.
+* feat(mrpt_obs,mrpt_viz,mrpt_maps): enforce deep const-correctness in smart-pointer containers and return ConstPtr from const iteration paths.
+* fix: resolve ROS/GCC buildfarm warnings across the affected packages and fix the real correctness issues they exposed.
+* fix: replace the Clock::time_point stream overload with a gtest PrintTo hook to avoid ambiguous overload resolution.
+* fix: tighten enum underlying types and other warning-driven fixes for safer, more portable builds.
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.4 (2026-09-04)
+------------------
+* fix(mrpt_containers): yaml double round-trip precision loss, %.16g -> %.17g (`#1396 <https://github.com/MRPT/mrpt/issues/1396>`_).
+* fix(mrpt_containers): yaml_ref/yaml_cref: add missing asSequenceRange() and yaml_cref::getOrDefault() (`#1397 <https://github.com/MRPT/mrpt/issues/1397>`_, `#1398 <https://github.com/MRPT/mrpt/issues/1398>`_).
+* fix(mrpt_containers): yaml: fix a TOP comment corrupting the document on serialize+reparse (`#1400 <https://github.com/MRPT/mrpt/issues/1400>`_).
+* fix(mrpt_containers): yaml: keep an unquoted leading-zero digit run (e.g. "00") as a string instead of parsing it as a number (`#1401 <https://github.com/MRPT/mrpt/issues/1401>`_).
+* Contributors: Jose Luis Blanco-Claraco
+
+3.1.3 (2026-08-12)
+------------------
+* test(mrpt_maps): raise unit test coverage for occupancy grids and maps. Fix out-of-bounds reads in CDynamicGrid3D and invert check in computeObservationLikelihood_ConsensusOWA().
+* fix(mrpt_containers): guard ts_hash_map self-assignment; extend tests.
+* perf(mrpt_system): minimize CTimeLogger enter()/leave() overhead.
+* fix(mrpt_system): make CTimeLogger reporting thread-safe vs. concurrent logging.
+* test(mrpt_containers): raise unit-test coverage for dynamic grids, circular buffers, ts_hash_map, and YAML.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.1.2 (2026-07-07)
 ------------------
 

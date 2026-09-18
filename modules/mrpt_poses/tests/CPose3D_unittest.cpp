@@ -954,7 +954,15 @@ TEST(CPose3D, ScalarOpsYPRSphericalAndDistance)
   double yaw2;
   double pitch2;
   double roll2;
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  // Exercise the deprecated output-argument overload for coverage:
   p.getYawPitchRoll(yaw2, pitch2, roll2);
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
   EXPECT_NEAR(yaw2, yaw, 1e-9);
   EXPECT_NEAR(pitch2, pitch, 1e-9);
   EXPECT_NEAR(roll2, roll, 1e-9);
@@ -1081,7 +1089,15 @@ TEST(CPose3D, FromStringAndHomogeneousMatrixRef)
   EXPECT_NEAR(p2.x(), p.x(), 1e-9);
 
   CMatrixDouble44 hm;
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  // Exercise the deprecated output-argument overload for coverage:
   p.getHomogeneousMatrix(hm);
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
   CMatrixDouble44 hm2 = p.getHomogeneousMatrix();
   EXPECT_TRUE(hm == hm2);
 

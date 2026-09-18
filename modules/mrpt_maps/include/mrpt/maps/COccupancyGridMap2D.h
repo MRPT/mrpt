@@ -681,14 +681,12 @@ class COccupancyGridMap2D :
    * Voronoi diagram with \a buildVoronoiDiagram */
   [[nodiscard]] uint16_t getVoronoiClearance(int cx, int cy) const
   {
-#ifdef _DEBUG
-    ASSERT_GE_(cx, 0);
-    ASSERT_GE_(cy, 0);
-    ASSERT_LE_(cx, int(m_voronoi_diagram.getSizeX()));
-    ASSERT_LE_(cy, int(m_voronoi_diagram.getSizeY()));
-#endif
-    const uint16_t* cell = m_voronoi_diagram.cellByIndex(cx, cy);
-    return *cell;
+    if (cx < 0 || cy < 0) return 0;
+    const uint16_t* cell =
+        m_voronoi_diagram.cellByIndex(static_cast<unsigned int>(cx), static_cast<unsigned int>(cy));
+    // Out-of-bounds (including negative cx/cy wrapped to huge unsigned
+    // values above) reads as "not on the Voronoi diagram":
+    return cell ? *cell : 0;
   }
 
  protected:
@@ -836,7 +834,7 @@ class COccupancyGridMap2D :
 
   /** Methods for TLaserSimulUncertaintyParams in
    * laserScanSimulatorWithUncertainty() */
-  enum TLaserSimulUncertaintyMethod
+  enum TLaserSimulUncertaintyMethod : int
   {
     /** Performs an unscented transform */
     sumUnscented = 0,
@@ -847,7 +845,7 @@ class COccupancyGridMap2D :
   /** Input params for laserScanSimulatorWithUncertainty() */
   struct TLaserSimulUncertaintyParams
   {
-    /** (Default: sumMonteCarlo) Select the method to do the uncertainty
+    /** (Default: sumUnscented) Select the method to do the uncertainty
      * propagation */
     TLaserSimulUncertaintyMethod method{sumUnscented};
     /** @name Parameters for each uncertainty method

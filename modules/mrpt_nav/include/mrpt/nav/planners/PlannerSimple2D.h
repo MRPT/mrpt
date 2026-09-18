@@ -17,6 +17,9 @@
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 
+#include <deque>
+#include <optional>
+
 namespace mrpt::nav
 {
 /** \addtogroup nav_planners Path planning
@@ -55,36 +58,42 @@ class PlannerSimple2D
    */
   float robotRadius{0.35f};
 
-  /** This method compute the optimal path for a circular robot, in the given
-   *   occupancy grid map, from the origin location to a target point.
-   * The options and additional parameters to this method can be set with
-   *   member configuration variables.
+  /** Computes the optimal path for a circular robot, in the given occupancy
+   * grid map, from the origin location to a target point. Additional
+   * parameters are the public member variables of this class.
    *
-   * \param theMap	[IN] The occupancy gridmap used to the planning.
-   * \param origin	[IN] The starting pose of the robot, in coordinates of
-   * "map".
-   * \param target	[IN] The desired target pose for the robot, in
-   * coordinates of "map".
-   * \param path		[OUT] The found path, in global coordinates relative
-   * to "map".
-   * \param notFount	[OUT] Will be true if no path has been found.
-   * \param maxSearchPathLength [IN] The maximum path length to search for,
-   * in meters (-1 = no limit)
+   * \param theMap The occupancy gridmap used for the planning.
+   * \param origin The starting pose of the robot, in "map" coordinates.
+   * \param target The desired target pose, in "map" coordinates.
+   * \param maxSearchPathLength The maximum path length to search for, in
+   * meters (-1 = no limit)
+   *
+   * \return The found path, in global coordinates relative to "map", or
+   * std::nullopt if no path exists (which includes either endpoint falling
+   * outside the gridmap).
    *
    * \sa robotRadius
-   *
-   * \note If either the origin or the target are out of the gridmap
-   * extensions, `notFound` will be returned as `true`.
-   *
    * \exception std::exception On any error
    */
-  void computePath(
+  [[nodiscard]] std::optional<std::deque<mrpt::math::TPoint2D>> computePath(
+      const mrpt::maps::COccupancyGridMap2D& theMap,
+      const mrpt::poses::CPose2D& origin,
+      const mrpt::poses::CPose2D& target,
+      float maxSearchPathLength = -1) const;
+
+  /** \deprecated Use the std::optional-returning overload. */
+  [[deprecated("Use the std::optional-returning computePath()")]] void computePath(
       const mrpt::maps::COccupancyGridMap2D& theMap,
       const mrpt::poses::CPose2D& origin,
       const mrpt::poses::CPose2D& target,
       std::deque<mrpt::math::TPoint2D>& path,
       bool& notFound,
-      float maxSearchPathLength = -1) const;
+      float maxSearchPathLength = -1) const
+  {
+    auto res = computePath(theMap, origin, target, maxSearchPathLength);
+    notFound = !res.has_value();
+    path = notFound ? std::deque<mrpt::math::TPoint2D>() : std::move(*res);
+  }
 };
 
 /** @} */

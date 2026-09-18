@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/containers/deep_const_iterator.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/poses/poses_frwds.h>  // All these are needed for the auxiliary methods posePDF2opengl()
 #include <mrpt/viz/CVisualObject.h>
@@ -43,7 +44,9 @@ class CSetOfObjects : public CVisualObject
   CSetOfObjects() = default;
   virtual ~CSetOfObjects() override = default;
 
-  using const_iterator = ListVisualObjects::const_iterator;
+  /** Dereferencing it yields a CVisualObject::ConstPtr, so that a `const`
+   * container cannot hand out mutable objects. */
+  using const_iterator = mrpt::containers::deep_const_iterator<ListVisualObjects::const_iterator>;
   using iterator = ListVisualObjects::iterator;
 
   const_iterator begin() const { return m_objects.begin(); }
@@ -82,7 +85,13 @@ class CSetOfObjects : public CVisualObject
   /** Returns the first object with a given name, or a nullptr pointer if not
    * found.
    */
-  CVisualObject::Ptr getByName(const std::string& str);
+  CVisualObject::ConstPtr getByName(const std::string& str) const;
+  /// \overload Non-const version returning a mutable Ptr
+  CVisualObject::Ptr getByName(const std::string& str)
+  {
+    return std::const_pointer_cast<CVisualObject>(
+        static_cast<const CSetOfObjects*>(this)->getByName(str));
+  }
 
   /** Returns the i'th object of a given class (or of a descendant class), or
   nullptr (an empty smart pointer) if not found.

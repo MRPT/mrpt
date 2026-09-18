@@ -13,6 +13,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/core/bits_math.h>  // M_PI on MSVC
 #include <mrpt/math/fresnel.h>
 #include <mrpt/system/os.h>
 
@@ -69,5 +70,63 @@ TEST(fresnel, fresnels)
     const double val = mrpt::math::fresnel_sin_integral(x);
     EXPECT_NEAR(val, val_good, 1e-5)
         << " x: " << x << "\n val_good: " << val_good << "\n val: " << val << "\n";
+  }
+}
+
+namespace
+{
+// Reference values by direct numerical integration of the definitions
+//   C(x) = int_0^x cos(pi/2 * t^2) dt,  S(x) = int_0^x sin(pi/2 * t^2) dt
+// using composite Simpson's rule, so that no hard-coded table is needed.
+double simpson(double x, bool sine)
+{
+  // Even; the Simpson error stays far below the 1e-6 tolerance used below,
+  // while keeping the whole test in the low milliseconds.
+  const int n = 20000;
+  const double h = x / n;
+  auto f = [sine](double t)
+  {
+    const double a = M_PI * 0.5 * t * t;
+    return sine ? std::sin(a) : std::cos(a);
+  };
+  double s = f(0) + f(x);
+  for (int i = 1; i < n; i++) s += f(i * h) * ((i & 1) ? 4.0 : 2.0);
+  return s * h / 3.0;
+}
+}  // namespace
+
+TEST(fresnel, matchesNumericalIntegration)
+{
+  // Values spanning every internal branch: the power series (|x| < ~0.4), the
+  // Chebyshev expansions for each sub-range, and the asymptotic series.
+  const double xs[] = {0.05, 0.2, 0.3, 0.39, 0.5, 1.0,   2.0,   3.5,
+                       4.2,  5.0, 5.5, 6.5,  9.0, -0.25, -0.35, -5.2};
+
+  for (const double x : xs)
+  {
+    const double refC = simpson(x, false);
+    const double refS = simpson(x, true);
+
+    EXPECT_NEAR(mrpt::math::fresnel_cos_integral(x), refC, 1e-6) << "x=" << x;
+    EXPECT_NEAR(mrpt::math::fresnel_sin_integral(x), refS, 1e-6) << "x=" << x;
+
+    // The long-double entry points must agree with the double ones:
+    EXPECT_NEAR(
+        static_cast<double>(mrpt::math::lfresnel_cos_integral(static_cast<long double>(x))), refC,
+        1e-6)
+        << "x=" << x;
+    EXPECT_NEAR(
+        static_cast<double>(mrpt::math::lfresnel_sin_integral(static_cast<long double>(x))), refS,
+        1e-6)
+        << "x=" << x;
+  }
+}
+
+TEST(fresnel, oddSymmetry)
+{
+  for (const double x : {0.2, 1.0, 4.5, 6.0, 20.0})
+  {
+    EXPECT_NEAR(mrpt::math::fresnel_cos_integral(-x), -mrpt::math::fresnel_cos_integral(x), 1e-12);
+    EXPECT_NEAR(mrpt::math::fresnel_sin_integral(-x), -mrpt::math::fresnel_sin_integral(x), 1e-12);
   }
 }

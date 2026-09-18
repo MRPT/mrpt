@@ -86,7 +86,8 @@ class CPointPDF :
   void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
   {
     using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::element_type;
-    out_obj->insertCollection(*SETOFOBJECTS::posePDF2opengl(*this));
+    auto objs = SETOFOBJECTS::posePDF2opengl(*this);
+    out_obj->insert(objs->begin(), objs->end());
   }
 
   /** Returns a 3D representation of this PDF.

@@ -490,6 +490,11 @@ void mrpt::img::camera_geometry::undistort_points(
     cam.dist[i] = distortionParams[i];
   }
 
+  // Infer the distortion model from the parameter count (see doc above);
+  // without this, the default-constructed TCamera keeps
+  // DistortionModel::none and the coefficients above are silently ignored.
+  cam.distortion = distortionParams.empty() ? DistortionModel::none : DistortionModel::plumb_bob;
+
   // Use main implementation
   undistort_points(distortedPixels, undistortedPixels, cam);
 }

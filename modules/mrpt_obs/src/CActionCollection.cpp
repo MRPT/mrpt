@@ -105,7 +105,7 @@ CActionRobotMovement2D::ConstPtr CActionCollection::getBestMovementEstimation() 
     if (it->GetRuntimeClass()->derivedFrom(CLASS_ID(CActionRobotMovement2D)))
     {
       CActionRobotMovement2D::ConstPtr temp =
-          std::dynamic_pointer_cast<const CActionRobotMovement2D>(it.get_ptr());
+          std::dynamic_pointer_cast<const CActionRobotMovement2D>(it);
 
       if (temp->estimationMethod == CActionRobotMovement2D::emScan2DMatching)
       {
@@ -152,7 +152,7 @@ CActionRobotMovement2D::ConstPtr CActionCollection::getMovementEstimationByType(
     if (it->GetRuntimeClass()->derivedFrom(CLASS_ID(CActionRobotMovement2D)))
     {
       CActionRobotMovement2D::ConstPtr temp =
-          std::dynamic_pointer_cast<const CActionRobotMovement2D>(it.get_ptr());
+          std::dynamic_pointer_cast<const CActionRobotMovement2D>(it);
 
       // Is it of the required type?
       if (temp->estimationMethod == method)

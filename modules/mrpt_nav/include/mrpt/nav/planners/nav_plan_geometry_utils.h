@@ -16,6 +16,8 @@
 
 #include <mrpt/math/TPoint2D.h>
 
+#include <optional>
+
 namespace mrpt::nav
 {
 /** @addtogroup  nav_geom_grp Motion planning geometry utility functions
@@ -24,30 +26,56 @@ namespace mrpt::nav
  * @{ */
 
 /** Computes the collision-free distance for a linear segment path between two
- * points, for a circular robot, and a point obstacle (ox,oy).
- * \return true if a collision exists, and the distance along the segment will
- * be in out_col_dist; false otherwise.
+ * points, for a circular robot, and a point obstacle.
+ * \return The distance along the segment at which the robot first touches the
+ * obstacle, or std::nullopt if the segment is collision-free.
  * \exception std::runtime_error If the two points are closer than an epsilon
  * (1e-10)
  */
-bool collision_free_dist_segment_circ_robot(
+[[nodiscard]] std::optional<double> collision_free_dist_segment_circ_robot(
+    const mrpt::math::TPoint2D& p_start,
+    const mrpt::math::TPoint2D& p_end,
+    const double robot_radius,
+    const mrpt::math::TPoint2D& obstacle);
+
+/** Computes the collision-free distance for a forward path (+X) circular arc
+ * path segment from pose (0,0,0) and radius of curvature `arc_radius`
+ * (>0 -> turn towards +Y, <0 -> towards -Y), a circular robot and a point
+ * obstacle.
+ * \return The arc length at which the robot first touches the obstacle (0 if
+ * it is already in collision at the starting pose), or std::nullopt if the arc
+ * is collision-free (which includes the degenerate case of the robot enclosing
+ * the obstacle at every pose along the arc).
+ */
+[[nodiscard]] std::optional<double> collision_free_dist_arc_circ_robot(
+    const double arc_radius, const double robot_radius, const mrpt::math::TPoint2D& obstacle);
+
+/** \deprecated Use the std::optional-returning overload. */
+[[deprecated("Use the std::optional-returning overload")]] inline bool
+collision_free_dist_segment_circ_robot(
     const mrpt::math::TPoint2D& p_start,
     const mrpt::math::TPoint2D& p_end,
     const double robot_radius,
     const mrpt::math::TPoint2D& obstacle,
-    double& out_col_dist);
+    double& out_col_dist)
+{
+  const auto d = collision_free_dist_segment_circ_robot(p_start, p_end, robot_radius, obstacle);
+  out_col_dist = d.value_or(-1.0);
+  return d.has_value();
+}
 
-/** Computes the collision-free distance for a forward path (+X) circular arc
- * path segment from pose (0,0,0) and radius of curvature R (>0 -> +Y, <0 ->
- * -Y), a circular robot and a point obstacle (ox,oy). \return true if a
- * collision exists, and the distance along the path will be in out_col_dist;
- * false otherwise.
- */
-bool collision_free_dist_arc_circ_robot(
+/** \deprecated Use the std::optional-returning overload. */
+[[deprecated("Use the std::optional-returning overload")]] inline bool
+collision_free_dist_arc_circ_robot(
     const double arc_radius,
     const double robot_radius,
     const mrpt::math::TPoint2D& obstacle,
-    double& out_col_dist);
+    double& out_col_dist)
+{
+  const auto d = collision_free_dist_arc_circ_robot(arc_radius, robot_radius, obstacle);
+  out_col_dist = d.value_or(-1.0);
+  return d.has_value();
+}
 
 /** @} */
 }  // namespace mrpt::nav

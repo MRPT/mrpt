@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/core/StackAlloc.h>
+#include <mrpt/core/cpu.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/core/round.h>
 #include <mrpt/img/CImage.h>
@@ -31,6 +32,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "CImage.SSEx.h"
 #include "CImage_impl.h"
 
 // STB library includes
@@ -83,6 +85,15 @@ stbir_datatype mrpt_pixel_depth_to_stbir_type(const mrpt::img::PixelDepth depth)
     default:
       THROW_EXCEPTION("Invalid PixelDepth value");
   };
+}
+
+/** stb_image_write callback that appends the encoded bytes to a
+ * std::vector<uint8_t>, used by CImage::saveToStreamAsJPEG(). */
+void stbWriteToVectorCallback(void* context, void* data, int size)
+{
+  auto* buf = static_cast<std::vector<uint8_t>*>(context);
+  const auto* src = static_cast<const uint8_t*>(data);
+  buf->insert(buf->end(), src, src + size);
 }
 
 }  // namespace
@@ -261,6 +272,30 @@ void CImage::loadFromStreamAsJPEG(mrpt::io::CStream& in)
   MRPT_END
 }
 
+void CImage::saveToStreamAsJPEG(mrpt::io::CStream& out, int jpeg_quality) const
+{
+  MRPT_START
+  makeSureImageIsLoaded();
+  ASSERT_(!m_state->empty());
+
+  const int w = static_cast<int>(m_state->width);
+  const int h = static_cast<int>(m_state->height);
+  const int comp = static_cast<int>(m_state->channels);
+
+  std::vector<uint8_t> jpegBuf;
+  const int ok = stbi_write_jpg_to_func(
+      &stbWriteToVectorCallback, &jpegBuf, w, h, comp, m_state->image_data, jpeg_quality);
+
+  if (ok == 0 || jpegBuf.empty())
+  {
+    THROW_EXCEPTION_FMT("saveToStreamAsJPEG: JPEG encoding failed: %s", stbi_failure_reason());
+  }
+
+  out.Write(jpegBuf.data(), jpegBuf.size());
+
+  MRPT_END
+}
+
 bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 {
   MRPT_START
@@ -291,8 +326,9 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
     return 0 != stbi_write_tga(fileName.c_str(), w, h, comp, m_state->image_data);
   }
 
-  THROW_EXCEPTION_FMT(
-      "Unknown image format extension '%s' (file: '%s')", ext.c_str(), fileName.c_str());
+  // Unsupported extension: report as a plain failure, consistent with the
+  // documented "false on any error" contract (and with loadFromFile()).
+  return false;
 
   MRPT_END
 }
@@ -592,7 +628,10 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
           {
             int32_t tempdepth = 0;
             in >> tempdepth;
-            depth = static_cast<PixelDepth>(tempdepth);
+            // 0 is not a valid PixelDepth (D8U=1, D16U=2): files written by
+            // pre-release MRPT 3.x snapshots serialized this field 0-based,
+            // so a literal 0 here means "D8U", not "zero bytes per pixel".
+            depth = tempdepth == 0 ? PixelDepth::D8U : static_cast<PixelDepth>(tempdepth);
           }
 
           resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height), CH_GRAY, depth);
@@ -801,12 +840,14 @@ bool CImage::isEmpty() const { return !m_state->imgIsExternalStorage && m_state-
 float CImage::getAsFloat(const TPixelCoord& pt, int8_t channel) const
 {
   makeSureImageIsLoaded();
+  ASSERT_(pt.x >= 0 && pt.x < m_state->width && pt.y >= 0 && pt.y < m_state->height);
   return static_cast<float>(at<uint8_t>(pt.x, pt.y, channel)) / 255.0f;
 }
 
 float CImage::getAsFloat(const TPixelCoord& pt) const
 {
   makeSureImageIsLoaded();
+  ASSERT_(pt.x >= 0 && pt.x < m_state->width && pt.y >= 0 && pt.y < m_state->height);
 
   if (isColor())
   {
@@ -837,29 +878,61 @@ bool CImage::grayscale(CImage& ret) const
     return true;
   }
 
-  // Convert to grayscale
-  ret.resize(m_state->width, m_state->height, CH_GRAY, m_state->depth);
+  // In-place operation is allowed (ret==*this), but resize() below frees the
+  // source buffer, so keep the input alive in that case:
+  CImage srcHolder;
+  const Impl* srcState = m_state.get();
+  if (ret.m_state == m_state)
+  {
+    srcHolder = this->makeDeepCopy();
+    srcState = srcHolder.m_state.get();
+  }
 
-  const auto* src = m_state->image_data;
+  const int32_t w = srcState->width;
+  const int32_t h = srcState->height;
+  const auto nChannels = srcState->channels;
+
+  ret.resize(w, h, CH_GRAY, srcState->depth);
+
+  const auto* src = srcState->image_data;
   auto* dst = ret.m_state->image_data;
 
-  for (int32_t y = 0; y < m_state->height; y++)
+  // Number of leading columns handled by the SIMD kernel, if any:
+  int32_t simdCols = 0;
+
+#if MRPT_ARCH_INTEL_COMPATIBLE
+  // The kernel works on whole blocks of 16 pixels and requires both row strides
+  // to be a multiple of 16 bytes, which for packed rows means width % 16 == 0:
+  if (nChannels == 3 && srcState->depth == PixelDepth::D8U && w > 0 && (w % 16) == 0 &&
+      mrpt::cpu::supports(mrpt::cpu::feature::SSSE3))
   {
-    for (int32_t x = 0; x < m_state->width; x++)
+    image_SSSE3_rgb_to_gray_8u(
+        src, dst, w, h, srcState->row_stride_in_bytes(), ret.m_state->row_stride_in_bytes());
+    simdCols = w;
+  }
+#endif
+
+  for (int32_t y = 0; y < h; y++)
+  {
+    const auto* srcRow = src + (static_cast<size_t>(y) * srcState->row_stride_in_bytes()) +
+                         (static_cast<size_t>(simdCols) * nChannels);
+    auto* dstRow = dst + (static_cast<size_t>(y) * ret.m_state->row_stride_in_bytes()) + simdCols;
+
+    for (int32_t x = simdCols; x < w; x++)
     {
       // Luminance formula: Y = 0.299R + 0.587G + 0.114B
-      const float r = src[0];
-      const float g = src[1];
-      const float b = src[2];
+      const float r = srcRow[0];
+      const float g = srcRow[1];
+      const float b = srcRow[2];
 
-      *dst = static_cast<uint8_t>((0.299f * r) + (0.587f * g) + (0.114f * b));
+      *dstRow = static_cast<uint8_t>((0.299f * r) + (0.587f * g) + (0.114f * b));
 
-      src += m_state->channels;
-      dst++;
+      srcRow += nChannels;
+      dstRow++;
     }
   }
 
-  return false;  // No SSE optimization used
+  return simdCols != 0;
 }
 
 void CImage::scaleImage(
@@ -916,8 +989,50 @@ void CImage::scaleImage(
 
 bool CImage::scaleHalf(CImage& out_image, TInterpolationMethod interp) const
 {
+  MRPT_START
+  makeSureImageIsLoaded();
+
+#if MRPT_ARCH_INTEL_COMPATIBLE
+  // The SIMD kernels read the source while writing the target, so they cannot
+  // run in-place:
+  if (m_state->depth == PixelDepth::D8U && out_image.m_state != m_state)
+  {
+    const int32_t w = m_state->width;
+    const int32_t h = m_state->height;
+    const auto nChannels = m_state->channels;
+
+    const auto runKernel = [&](auto* kernel)
+    {
+      out_image.resize(w / 2, h / 2, nChannels, PixelDepth::D8U);
+      kernel(
+          m_state->image_data, out_image.m_state->image_data, w, h, m_state->row_stride_in_bytes(),
+          out_image.m_state->row_stride_in_bytes());
+    };
+
+    if (nChannels == 3 && interp == IMG_INTERP_NN && mrpt::cpu::supports(mrpt::cpu::feature::SSSE3))
+    {
+      runKernel(&image_SSSE3_scale_half_3c8u);
+      return true;
+    }
+    if (nChannels == 1 && mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
+    {
+      if (interp == IMG_INTERP_NN)
+      {
+        runKernel(&image_SSE2_scale_half_1c8u);
+        return true;
+      }
+      if (interp == IMG_INTERP_LINEAR)
+      {
+        runKernel(&image_SSE2_scale_half_smooth_1c8u);
+        return true;
+      }
+    }
+  }
+#endif
+
   scaleImage(out_image, m_state->width / 2, m_state->height / 2, interp);
-  return false;  // No SSE optimization
+  return false;  // Portable (stb-based) path
+  MRPT_END
 }
 
 void CImage::scaleDouble(CImage& out_image, TInterpolationMethod interp) const
@@ -1391,7 +1506,11 @@ void CImage::cross_correlation_FFT(
       float ii1 = I1_I(y, x);
       float ii2 = I2_I(y, x);
 
-      float den = square(r1) + square(ii1);
+      // A tiny epsilon avoids a division by (near) zero at frequency bins
+      // where the patch spectrum happens to vanish (common with zero-padded
+      // or periodic content), which would otherwise turn the whole
+      // correlation output into NaN once propagated through the IDFT.
+      const float den = std::max(square(r1) + square(ii1), 1e-12f);
       I2_R(y, x) = (r1 * r2 + ii1 * ii2) / den;
       I2_I(y, x) = (ii2 * r1 - r2 * ii1) / den;
     }
@@ -1992,10 +2111,11 @@ float CImage::KLT_response(const TPixelCoord& pt, const int32_t half_window_size
   const auto min_y = pt.y - half_window_size;
   const auto max_y = pt.y + half_window_size;
 
-  // Since min_* are "unsigned", checking "<" will detect negative
-  // numbers:
+  // The gradient computation below reads one extra pixel beyond the window
+  // on each side (xx-1/xx+1, yy-1/yy+1), so the valid range requires a
+  // 1-pixel margin past [min_*, max_*].
   ASSERTMSG_(
-      min_x < img_w && max_x < img_w && min_y < img_h && max_y < img_h,
+      min_x >= 1 && (max_x + 1) < img_w && min_y >= 1 && (max_y + 1) < img_h,
       "Window is out of image bounds");
 
   // Gradient sums: Use integers since they're much faster than

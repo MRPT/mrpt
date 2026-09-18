@@ -24,6 +24,19 @@ template class mrpt::CTraitsTest<mrpt::containers::circular_buffer<char>>;
 
 using cb_t = int;
 
+TEST(circular_buffer_tests, ConstructorRejectsTooSmallSize)
+{
+  EXPECT_THROW(mrpt::containers::circular_buffer<cb_t>(0), std::invalid_argument);
+  EXPECT_THROW(mrpt::containers::circular_buffer<cb_t>(2), std::invalid_argument);
+}
+
+TEST(circular_buffer_tests, PeekManyOnEmptyThrows)
+{
+  mrpt::containers::circular_buffer<cb_t> cb(10);
+  cb_t out[1];
+  EXPECT_THROW(cb.peek_many(out, 1), std::out_of_range);
+}
+
 TEST(circular_buffer_tests, EmptyPop)
 {
   mrpt::containers::circular_buffer<cb_t> cb(10);
