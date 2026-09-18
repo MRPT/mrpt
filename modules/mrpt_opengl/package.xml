@@ -19,7 +19,7 @@
   <build_depend>eigen</build_depend>
 
   <depend>opengl</depend> <!-- Use the all-3 depend not to rely on debian sh-libs to actually add opengl libs binaries downstream -->
-  <depend>opengl-es</depend> <!-- config.h bakes in whichever GLES headers were present when this package itself was built; downstream builds against opengl_api.h need the same headers installed, not just this package's own build machine -->
+  <depend>libgles-dev</depend> <!-- config.h bakes in whichever GLES headers were present when this package itself was built; downstream builds against opengl_api.h need the same headers installed, not just this package's own build machine -->
 
   <export>
     <build_type>cmake</build_type>
