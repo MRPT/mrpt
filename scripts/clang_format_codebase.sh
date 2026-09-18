@@ -17,8 +17,10 @@ fi
 # Directories to scan (relative to repo root)
 INCLUDE_DIRS=(modules apps mrpt_examples_cpp)
 
-# Path fragments to exclude
-EXCLUDE_PATTERNS=(3rdparty imgui)
+# Path fragments to exclude. All vendored code lives under a 3rdparty/
+# directory, so one pattern covers it; note that a pattern here also matches
+# same-named directories in MRPT's own headers.
+EXCLUDE_PATTERNS=(3rdparty)
 
 # Verify we are running from the repo root
 if [[ ! -f colcon_defaults.yaml ]]; then

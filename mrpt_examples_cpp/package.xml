@@ -15,6 +15,7 @@
   <depend>mrpt_common</depend>
   <depend>mrpt_gui</depend>
   <depend>mrpt_imgui</depend>
+  <depend>mrpt_imgui_vendor</depend>
   <depend>mrpt_graphslam</depend>
   <depend>mrpt_libapps_cli</depend>
   <depend>mrpt_libapps_gui</depend>
@@ -22,7 +23,6 @@
 
   <depend>mrpt_data</depend>
 
-  <build_depend>libglfw3-dev</build_depend>  <!-- For: imgui_mrpt_example -->
 
   <export>
     <build_type>cmake</build_type>
