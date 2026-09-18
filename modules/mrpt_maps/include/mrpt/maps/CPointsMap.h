@@ -1525,7 +1525,14 @@ class CPointsMap :
   template <typename BBOX>
   bool kdtree_get_bbox(BBOX& bb) const
   {
-    const auto bbox = this->boundingBox();
+    // Note the explicitly qualified (i.e. non-virtual) call: this index is
+    // built over the raw coordinate buffers of this base class, so its bounding
+    // box must be the one of those buffers, and not whatever extent a derived
+    // class may choose to report. A virtual dispatch here would also let a
+    // derived class' boundingBox() take its own mutex from within nanoflann's
+    // index build, i.e. while the kd-tree mutex is held: a lock-order inversion
+    // against any of its methods marking this map as modified.
+    const auto bbox = this->CPointsMap::boundingBox();
     bb[0].low = bbox.min.x;
     bb[1].low = bbox.min.y;
     bb[0].high = bbox.max.x;
