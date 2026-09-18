@@ -29,6 +29,7 @@
 #include <nanoflann.hpp>
 #include <optional>
 #include <ostream>
+#include <string>
 
 // KDTreeSingleIndexAdaptorFlags::SkipInitialBuildIndex, required to load an
 // index without immediately rebuilding it, was added in nanoflann v1.4.3.
@@ -49,6 +50,13 @@
 #if MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
 #define MRPT_HAS_KDTREE_SAVE_LOAD_INDEX 1
 #endif
+
+/** Feature-detection macro for `mrpt::math::KDTreeCapable::kdtree_disable()`,
+ *  the opt-out that lets a derived class declare this base class' cached
+ *  index unsupported for it. Downstream code that must build against both this
+ *  and older MRPT versions can `#if defined(MRPT_HAS_KDTREE_CAPABLE_DISABLE)`.
+ */
+#define MRPT_HAS_KDTREE_CAPABLE_DISABLE 1
 
 // Smooth transition to nanoflann>=1.5.0 for older versions:
 namespace nanoflann
@@ -125,9 +133,21 @@ class KDTreeCapable
 
   /// Constructor
   KDTreeCapable() = default;
-  KDTreeCapable(const KDTreeCapable&) : KDTreeCapable() {}
-  KDTreeCapable& operator=(const KDTreeCapable&)
+  /** Copy constructor: the cached index is NOT copied (it will be rebuilt on
+   *  demand). A kdtree_disable() opt-out is inherited from the source, but
+   *  never undone: see operator=(). */
+  KDTreeCapable(const KDTreeCapable& o) : m_kdtree_disabled_reason(o.m_kdtree_disabled_reason) {}
+  /** Copy assignment: as the copy constructor, and note that the
+   *  kdtree_disable() opt-out is *sticky*. Assigning from an object whose
+   *  index is enabled does NOT re-enable ours: an index a class declared
+   *  unsupported for itself must never come back to life through an
+   *  assignment. \sa kdtree_disable() */
+  KDTreeCapable& operator=(const KDTreeCapable& o)
   {
+    if (m_kdtree_disabled_reason.empty())
+    {
+      m_kdtree_disabled_reason = o.m_kdtree_disabled_reason;
+    }
     kdtree_mark_as_outdated();
     return *this;
   }
@@ -944,6 +964,7 @@ class KDTreeCapable
    *  \sa kdtree_save_index_3D */
   void kdtree_load_index_3D([[maybe_unused]] std::istream& in) const
   {
+    kdtree_assert_enabled();
 #if MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
     using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
 
@@ -1013,6 +1034,7 @@ class KDTreeCapable
    *  throws `std::runtime_error` otherwise. \sa kdtree_save_index_2D */
   void kdtree_load_index_2D([[maybe_unused]] std::istream& in) const
   {
+    kdtree_assert_enabled();
 #if MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
     using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
 
@@ -1072,6 +1094,37 @@ class KDTreeCapable
     m_kdtree_is_uptodate = false;
   }
 
+  /** Declares the cached index of this base class unsupported for this object,
+   *  so that every query method above throws `std::logic_error` carrying
+   *  `why` instead of silently building and searching it.
+   *
+   *  This is meant for classes that inherit from a `KDTreeCapable` for its
+   *  storage or its public interface, but that maintain their own index (e.g.
+   *  an incremental one) and for which the cached index built here would be
+   *  meaningless, unsafe, or both. Failing loudly is preferable to answering
+   *  queries over data this class cannot interpret.
+   *
+   *  Intended to be called once from the derived class' constructor; it is
+   *  then effectively immutable. There is no way back: a disabled index stays
+   *  disabled for the lifetime of the object, and neither copy construction
+   *  nor assignment can re-enable it (they can only propagate the opt-out).
+   *  Note that a derived class whose copy constructor default-constructs this
+   *  base has to call this again from it, as it would for any other
+   *  constructor.
+   *
+   *  \note Only the *index* is disabled. kdtree_mark_as_outdated() stays a
+   *        no-op-ish valid call, so that inherited mutators need no changes.
+   */
+  void kdtree_disable(const std::string& why)
+  {
+    ASSERTMSG_(!why.empty(), "kdtree_disable(): `why` cannot be empty.");
+    kdtree_mark_as_outdated();
+    m_kdtree_disabled_reason = why;
+  }
+
+  /** Whether this object's cached index is usable. \sa kdtree_disable() */
+  [[nodiscard]] bool kdtree_is_enabled() const { return m_kdtree_disabled_reason.empty(); }
+
  private:
   /** Internal structure with the KD-tree representation (mainly used to avoid
    * copying pointers with the = operator) */
@@ -1109,6 +1162,21 @@ class KDTreeCapable
   /** whether the KD tree needs to be rebuilt or not. */
   mutable std::atomic_bool m_kdtree_is_uptodate{false};
 
+  /** Empty unless kdtree_disable() was called. \sa kdtree_disable() */
+  std::string m_kdtree_disabled_reason;
+
+  /// Throws unless this object's cached index is usable. \sa kdtree_disable()
+  void kdtree_assert_enabled() const
+  {
+    if (m_kdtree_disabled_reason.empty())
+    {
+      return;
+    }
+    THROW_EXCEPTION_FMT(
+        "The mrpt::math::KDTreeCapable index is disabled for this class: %s",
+        m_kdtree_disabled_reason.c_str());
+  }
+
   /// Rebuild, if needed the KD-tree for 2D (nDims=2), 3D (nDims=3), ...
   /// asking the child class for the data points.
   void rebuild_kdTree_2D() const
@@ -1117,6 +1185,7 @@ class KDTreeCapable
     {
       return;
     }
+    kdtree_assert_enabled();
     std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
 
@@ -1153,6 +1222,7 @@ class KDTreeCapable
     {
       return;
     }
+    kdtree_assert_enabled();
     std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
 
