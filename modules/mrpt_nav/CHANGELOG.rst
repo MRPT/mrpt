@@ -2,6 +2,9 @@
 Changelog for package mrpt_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * fix: resolve the ROS warning cleanup issues and the real bugs they revealed in navigation code.

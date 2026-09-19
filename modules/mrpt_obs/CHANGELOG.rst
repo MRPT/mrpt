@@ -2,6 +2,9 @@
 Changelog for package mrpt_obs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * feat: improve API consistency and const-correctness across smart-pointer containers and points-map access.

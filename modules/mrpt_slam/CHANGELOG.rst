@@ -2,6 +2,9 @@
 Changelog for package mrpt_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * refactor: modernize the API and const-correctness updates that landed across the broader 3.x cleanup.

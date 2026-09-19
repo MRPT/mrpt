@@ -2,6 +2,9 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * fix: restore 2D overlay rendering and keep scene-camera/CText labels aligned with the expected screen-space behavior.

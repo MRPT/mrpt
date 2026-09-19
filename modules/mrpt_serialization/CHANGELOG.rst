@@ -2,6 +2,9 @@
 Changelog for package mrpt_serialization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * refactor: improve archive API ergonomics and finalize the 3.x API cleanup pass for serialization and container access.

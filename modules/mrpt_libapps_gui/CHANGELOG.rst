@@ -2,6 +2,9 @@
 Changelog for package mrpt_libapps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * feat: complete API cleanups for const-correctness, archive behavior, and point-map accessors.

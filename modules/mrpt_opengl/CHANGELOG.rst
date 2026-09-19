@@ -2,6 +2,12 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* mrpt_opengl: use renamed libgles-dev rosdep key
+* mrpt_opengl: depend on new opengl-es rosdep key
+* Contributors: Jose Luis Blanco-Claraco
+
 3.2.0 (2026-09-16)
 ------------------
 * fix: restore 2D overlay rendering for scene cameras and text labels.

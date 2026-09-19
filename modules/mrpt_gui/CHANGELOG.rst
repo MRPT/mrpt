@@ -2,6 +2,9 @@
 Changelog for package mrpt_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * fix: improve headless GUI testing under Xvfb and address the real failures uncovered by the coverage pass.

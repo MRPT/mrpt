@@ -2,6 +2,9 @@
 Changelog for package mrpt_apps_cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * feat: API cleanup pass for archive handling, const-correctness, and points-map accessors before the next minor bump.

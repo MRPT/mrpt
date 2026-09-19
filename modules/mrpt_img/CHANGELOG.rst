@@ -2,6 +2,9 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * fix: resolve ROS buildfarm warnings and the real code issues they exposed across the project.

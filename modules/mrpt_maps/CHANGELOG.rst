@@ -2,6 +2,11 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* mrpt_math, mrpt_maps: fix KDTreeCapable lock-order inversion, add index opt-out
+* Contributors: Jose Luis Blanco-Claraco
+
 3.2.0 (2026-09-16)
 ------------------
 * feat: complete API cleanups for const-correctness, archive behavior, and point-map accessors.

@@ -2,6 +2,9 @@
 Changelog for package mrpt_random
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.2.0 (2026-09-16)
 ------------------
 * Merge branch 'develop' into fix/stereo-rectify-map-axis-swap
