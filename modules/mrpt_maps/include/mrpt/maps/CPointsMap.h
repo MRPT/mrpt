@@ -157,6 +157,9 @@ class CPointsMap :
    * size of the map. This method is more
    *  efficient than constantly increasing the size of the buffers. Refer to
    * the STL C++ library's "reserve" methods.
+   *  Implementations apply a growth factor, so the resulting capacity may
+   * exceed `newLength`; subclasses that need the exact figure should use
+   * resize() followed by shrink_to_fit()-style compacting instead.
    */
   virtual void reserve(size_t newLength) = 0;
 

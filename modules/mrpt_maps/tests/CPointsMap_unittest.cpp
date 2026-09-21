@@ -1426,3 +1426,76 @@ TEST(CSimplePointsMapTests, load3DScanWithNoPointsDoesNothing)
   pnt.loadFromRangeScan(obs, std::nullopt);
   EXPECT_EQ(pnt.size(), 0u);
 }
+
+TEST(CSimplePointsMapTests, reserveAppliesGrowthFactor)
+{
+  CSimplePointsMap pnt;
+  pnt.reserve(100);
+  const size_t cap1 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.reserve(cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap2, cap1 * 2);
+}
+
+TEST(CSimplePointsMapTests, reserveDoesNotOverAllocateFreshMap)
+{
+  CSimplePointsMap pnt;
+  // On a fresh map (capacity()==0) the requested size must pass through
+  // unchanged, so one-shot pre-sizing is not penalized.
+  pnt.reserve(1000);
+  EXPECT_EQ(pnt.getPointsBufferRef_x().capacity(), 1000u);
+}
+
+TEST(CGenericPointsMapTests, reserveAppliesGrowthFactor)
+{
+  CGenericPointsMap pnt;
+  pnt.reserve(100);
+  const size_t cap1 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.reserve(cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap2, cap1 * 2);
+}
+
+TEST(CGenericPointsMapTests, resizeAppliesGrowthFactor)
+{
+  CGenericPointsMap pnt;
+  pnt.resize(100);
+  const size_t cap1 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.resize(cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap2, cap1 * 2);
+}
+
+TEST(CGenericPointsMapTests, reserveFieldAppliesGrowthFactor)
+{
+  CGenericPointsMap pnt;
+  pnt.registerField_float("intensity");
+
+  pnt.reserveField_float("intensity", 100);
+  const size_t cap1 = pnt.getPointsBufferRef_float_field("intensity")->capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.reserveField_float("intensity", cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_float_field("intensity")->capacity();
+  EXPECT_GE(cap2, cap1 * 2);
+}
+
+TEST(CGenericPointsMapTests, resizeFieldAppliesGrowthFactor)
+{
+  CGenericPointsMap pnt;
+  pnt.registerField_float("intensity");
+
+  pnt.resizeField_float("intensity", 100);
+  const size_t cap1 = pnt.getPointsBufferRef_float_field("intensity")->capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.resizeField_float("intensity", cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_float_field("intensity")->capacity();
+  EXPECT_GE(cap2, cap1 * 2);
+}
