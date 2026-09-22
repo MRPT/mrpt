@@ -436,7 +436,7 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
     m_cachedLocalBBox.reset();
-    m_dataVersion++;
+    m_dataVersion.value++;
   }
 
   /** Reset the dirty flag set with notifyChange().
@@ -463,7 +463,7 @@ class CVisualObject : public mrpt::serialization::CSerializable
     // (i.e., object has ever been modified). New code should use
     // hasToUpdateBuffersSince().
     std::shared_lock<std::shared_mutex> lckRead(m_outdatedStateMtx.data);
-    return m_dataVersion > 0;
+    return m_dataVersion.value > 0;
   }
 
   /** Returns the current data version counter. Incremented on each
@@ -472,7 +472,7 @@ class CVisualObject : public mrpt::serialization::CSerializable
   uint64_t dataVersion() const
   {
     std::shared_lock<std::shared_mutex> lckRead(m_outdatedStateMtx.data);
-    return m_dataVersion;
+    return m_dataVersion.value;
   }
 
   /** Returns true if this object's data has changed since the given
@@ -481,7 +481,7 @@ class CVisualObject : public mrpt::serialization::CSerializable
   bool hasToUpdateBuffersSince(uint64_t sinceVersion) const
   {
     std::shared_lock<std::shared_mutex> lckRead(m_outdatedStateMtx.data);
-    return m_dataVersion != sinceVersion;
+    return m_dataVersion.value != sinceVersion;
   }
 
   /// Called by the rendering system to update internal geometry buffers.
@@ -566,7 +566,31 @@ class CVisualObject : public mrpt::serialization::CSerializable
    */
   [[nodiscard]] virtual mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const = 0;
 
-  mutable uint64_t m_dataVersion{1};
+  /** Change counter read by renderers to detect dirty objects. Assigning
+   * one object onto another replaces its whole state, so the target bumps its
+   * own counter rather than inheriting the source's value, which could match
+   * what a renderer already saw and leave the change undetected. */
+  struct DataVersion
+  {
+    uint64_t value = 1;
+
+    DataVersion() = default;
+    DataVersion(const DataVersion&) = default;
+    DataVersion(DataVersion&&) = default;
+    ~DataVersion() = default;
+    DataVersion& operator=(const DataVersion&)
+    {
+      ++value;
+      return *this;
+    }
+    DataVersion& operator=(DataVersion&&) noexcept
+    {
+      ++value;
+      return *this;
+    }
+  };
+
+  mutable DataVersion m_dataVersion;
   mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_outdatedStateMtx;
 
   mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedLocalBBox;

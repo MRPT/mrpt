@@ -21,6 +21,7 @@
 #include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CSetOfLines.h>
+#include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSetOfTriangles.h>
 #include <mrpt/viz/CTexturedPlane.h>
 
@@ -141,6 +142,30 @@ TEST(CVisualObject, ChangeNotificationAndBoundingBox)
 
   const auto bb = box->getBoundingBox();
   EXPECT_LE(bb.min.x, bb.max.x);
+}
+
+// Upserting by assignment ("*existing = *fresh") must be seen as a change,
+// even when the fresh object went through the same edits as the previous one
+// and thus ended up with the same version counter.
+TEST(CVisualObject, AssignmentMarksTargetAsChanged)
+{
+  auto makeFrame = [](double x)
+  {
+    auto o = CSetOfObjects::Create();
+    o->insert(CBox::Create());
+    o->setPose(mrpt::poses::CPose3D(x, 0, 0, 0, 0, 0));
+    return o;
+  };
+
+  auto target = CSetOfObjects::Create();
+  *target = *makeFrame(1.0);
+  const auto seenVersion = target->dataVersion();
+
+  auto next = makeFrame(2.0);
+
+  *target = *next;
+  EXPECT_TRUE(target->hasToUpdateBuffersSince(seenVersion));
+  EXPECT_DOUBLE_EQ(target->getPose().x(), 2.0);
 }
 
 TEST(VisualObjectParams_Points, PointCloudMixin)

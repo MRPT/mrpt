@@ -830,14 +830,17 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
         }
         else
         {
-          // Existing container: walk into it to find new children
-          std::vector<std::pair<const CSetOfObjects*, std::shared_ptr<const CVisualObject>>>
-              containers;
-          containers.push_back({setOfObjects, obj});
+          // Existing container: walk into it to find new children. Each
+          // container carries its world matrix, so new children are placed
+          // under their actual parent frame rather than at the origin.
+          std::vector<std::pair<const CSetOfObjects*, mrpt::math::CMatrixFloat44>> containers;
+          containers.emplace_back(
+              setOfObjects,
+              computeModelMatrix(obj->getPoseAndScale(), mrpt::math::CMatrixFloat44::Identity()));
 
           while (!containers.empty())
           {
-            auto [container, containerPtr] = containers.back();
+            const auto [container, containerMatrix] = containers.back();
             containers.pop_back();
 
             for (const auto& child : *container)
@@ -853,18 +856,20 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
                 if (isNewContainer(child))
                 {
                   // New sub-container: compile fully (handles shared children)
-                  compileObject(child, compiledViewport, stats);
+                  compileObject(child, compiledViewport, stats, containerMatrix);
                   stats.numNewObjects++;
                 }
                 else
                 {
-                  containers.push_back({childContainer, child});
+                  containers.emplace_back(
+                      childContainer,
+                      computeModelMatrix(child->getPoseAndScale(), containerMatrix));
                 }
               }
               else if (!hasProxyFor(child))
               {
                 // Genuinely new leaf object - compile it
-                compileObject(child, compiledViewport, stats);
+                compileObject(child, compiledViewport, stats, containerMatrix);
                 stats.numNewObjects++;
               }
             }
@@ -880,11 +885,13 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
       // Also check composite objects' internal children
       else if (obj->isCompositeObject())
       {
+        const auto objMatrix =
+            computeModelMatrix(obj->getPoseAndScale(), mrpt::math::CMatrixFloat44::Identity());
         for (const auto& child : obj->getInternalChildren())
         {
           if (child && !hasProxyFor(child))
           {
-            compileObject(child, compiledViewport, stats);
+            compileObject(child, compiledViewport, stats, objMatrix);
             stats.numNewObjects++;
           }
         }
