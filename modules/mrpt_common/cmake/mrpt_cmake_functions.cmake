@@ -345,7 +345,7 @@ function(mrpt_configure_library TARGETNAME HEADERS_ONLY_LIBRARY ADDITIONAL_EXPOR
 
   # make project importable from build_dir:
   export(
-    TARGETS ${TARGETNAME}
+    TARGETS ${TARGETNAME} ${ADDITIONAL_EXPORT_TARGETS}
     # export to ROOT cmake directory (when building MRPT as a superproject)
     FILE ${CMAKE_BINARY_DIR}/${TARGETNAME}-targets.cmake
     NAMESPACE mrpt::
