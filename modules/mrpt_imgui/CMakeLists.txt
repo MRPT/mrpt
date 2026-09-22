@@ -50,5 +50,8 @@ if(WIN32 AND NOT TARGET mrpt_glew)
 endif()
 
 if(TARGET mrpt_glew)
-  target_link_libraries(${PROJECT_NAME} PRIVATE mrpt_glew)
+  # PUBLIC: CImGuiSceneView::render() is defined inline in the public header
+  # and calls GLEW-resolved GL functions (e.g. glBindFramebuffer), so
+  # consumers including that header also need to link against mrpt_glew.
+  target_link_libraries(${PROJECT_NAME} PUBLIC mrpt_glew)
 endif()
