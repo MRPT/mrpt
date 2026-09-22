@@ -165,7 +165,7 @@ TEST(CVisualObject, AssignmentMarksTargetAsChanged)
 
   *target = *next;
   EXPECT_TRUE(target->hasToUpdateBuffersSince(seenVersion));
-  EXPECT_DOUBLE_EQ(target->getPose().x(), 2.0);
+  EXPECT_DOUBLE_EQ(target->getPose().x, 2.0);
 }
 
 TEST(VisualObjectParams_Points, PointCloudMixin)
