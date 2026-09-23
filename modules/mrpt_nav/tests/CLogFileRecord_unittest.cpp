@@ -87,8 +87,7 @@ TEST(NavTests, NavLogLoadFromTestFile)
       mrpt::mrpt_data_dir() + string("/tests/serialize_test_data.reactivenavlog");
   if (!mrpt::system::fileExists(navlog_file))
   {
-    cerr << "WARNING: Skipping test due to missing file: " << navlog_file << "\n";
-    return;
+    GTEST_SKIP() << "Missing test data file: " << navlog_file;
   }
 
   CCompressedInputStream f(navlog_file);

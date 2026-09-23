@@ -35,12 +35,11 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
   const string dataset_fil = mrpt::mrpt_data_dir() + string("/datasets/test_rtk_path.rawlog");
   if (!mrpt::system::fileExists(dataset_fil))
   {
-    cerr << "WARNING: Skipping test due to missing file: " << dataset_fil << "\n";
-    return;
+    GTEST_SKIP() << "Missing test data file: " << dataset_fil;
   }
   if (!rawlog.loadFromRawLogFile(dataset_fil))
   {
-    cerr << "WARNING: Skipping test due to error loading file: " << dataset_fil << "\n";
+    ADD_FAILURE() << "Error loading file: " << dataset_fil;
   }
   else
   {

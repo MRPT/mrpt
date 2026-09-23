@@ -3,7 +3,7 @@
 # Usage example:
 #
 # . install/setup.bash
-# ./global_localization.py ../share/mrpt/config_files/pf-localization/localization_demo.ini
+# ./global_localization.py ../modules/mrpt_data/config_files/pf-localization/localization_demo.ini
 #
 # NOTE: This script requires the following classes that are not yet wrapped:
 #   mrpt.slam.TMonteCarloLocalizationParams  (pybind11_plan_v3.md §1.4)

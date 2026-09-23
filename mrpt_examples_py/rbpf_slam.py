@@ -6,8 +6,8 @@
 #
 # . install/setup.bash
 # ./rbpf_slam.py --help
-# ./rbpf_slam.py -c ../share/mrpt/config_files/rbpf-slam/gridmapping_optimal_sampling.ini \
-#     ../share/mrpt/datasets/2006-01ENE-21-SENA_Telecom\ Faculty_one_loop_only.rawlog
+# ./rbpf_slam.py -c ../modules/mrpt_data/config_files/rbpf-slam/gridmapping_optimal_sampling.ini \
+#     ../modules/mrpt_data/datasets/2006-01ENE-21-SENA_Telecom\ Faculty_one_loop_only.rawlog
 #
 # NOTE: This script requires mrpt.apps.RBPF_SLAM_App_Rawlog which needs
 #   mrpt_libapps_cli Python bindings (not yet implemented, pybind11_plan_v3.md §3).

@@ -20,6 +20,7 @@
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 #include <mrpt/system/filesystem.h>
+#include <test_mrpt_common.h>
 
 using mrpt::math::TPoint2D;
 
@@ -37,13 +38,11 @@ void run_rnav_test_impl(
   using namespace mrpt;
   using namespace mrpt::nav;
 
-  const std::string sFil = mrpt::system::find_mrpt_shared_dir() +
-                           std::string("config_files/navigation-ptgs/") + sFilename;
+  const std::string sFil = mrpt::mrpt_data_dir() + "/config_files/navigation-ptgs/" + sFilename;
 
   if (!mrpt::system::fileExists(sFil))
   {
-    cerr << "**WARNING* Skipping tests since file cannot be found: '" << sFil << "'\n";
-    return;
+    GTEST_SKIP() << "Test data file cannot be found: '" << sFil << "'";
   }
 
   mrpt::config::CConfigFile cfg(sFil);
@@ -204,7 +203,7 @@ void run_rnav_test(
   }
   catch (const std::exception& e)
   {
-    std::cerr << mrpt::exception_to_str(e);
+    ADD_FAILURE() << mrpt::exception_to_str(e);
   }
 }
 

@@ -27,8 +27,7 @@ TEST(NavTests, PTGs_tests)
   const string sFil = mrpt::mrpt_data_dir() + string("/tests/PTGs_for_tests.ini");
   if (!mrpt::system::fileExists(sFil))
   {
-    cerr << "**WARNING* Skipping tests since file cannot be found: '" << sFil << "'\n";
-    return;
+    GTEST_SKIP() << "Missing test data file: " << sFil;
   }
 
   mrpt::config::CConfigFile cfg(sFil);

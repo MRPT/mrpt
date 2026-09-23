@@ -348,6 +348,10 @@ Roughly 90 real bugs have been found by these passes. The ones that recur:
   object.
 * `CImage::at<T>()` is a raw `reinterpret_cast`: `at<TColor>()` on a 3-channel
   image writes 4 bytes over a 3-byte pixel. Use `at<uint8_t>(x, y, channel)`.
+* Test data looked up via anything other than `mrpt::mrpt_data_dir()`
+  (e.g. `find_mrpt_shared_dir()`), or a missing-file check that just prints a
+  warning and `return`s: the test then reports OK while testing nothing. Use
+  `mrpt_data_dir()` and `GTEST_SKIP()`.
 * Branch coverage lags line coverage nearly everywhere by 15-30 points:
   error-handling and edge-case branches are what is left untested even in files
   with good line coverage. Prioritize failure-path tests over more happy paths.
@@ -369,10 +373,7 @@ Roughly 90 real bugs have been found by these passes. The ones that recur:
   by adding the define alone -- `CImageGrabber_dc1394.cpp` no longer compiles
   against current `mrpt::img`. Several sources also never include
   `mrpt/hwdrivers/config.h`, so even their defined macros read 0.
-* **`mrpt_nav`**: `rnav_unittest.cpp`'s helper returns silently when the shared
-  `navigation-ptgs/*.ini` files are missing *and* swallows every exception, so
-  it can pass while testing nothing -- build configurations with
-  `CConfigFileMemory` instead. Reactive tests must advance the robot's
+* **`mrpt_nav`**: Reactive tests must advance the robot's
   *navigation* time (`getNavigationTime()`), not just the clock, or
   `updateCurrentPoseAndSpeeds()`'s 20 ms throttle leaves the pose cache empty.
   `CPTG_DiffDrive_*` need a polygonal `shape_x0`/`shape_y0`/... in the config;
