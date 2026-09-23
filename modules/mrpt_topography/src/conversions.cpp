@@ -139,6 +139,21 @@ void mrpt::topography::geodeticToENU_WGS84(
 }
 
 /*---------------------------------------------------------------
+          ENUToGeodetic_WGS84
+ ---------------------------------------------------------------*/
+void mrpt::topography::ENUToGeodetic_WGS84(
+    const mrpt::math::TPoint3D& in_ENU_point,
+    TGeodeticCoords& out_coords,
+    const TGeodeticCoords& in_coords_origin)
+{
+  const auto wgs84 = TEllipsoid::Ellipsoid_WGS84();
+
+  TGeocentricCoords P_geocentric;
+  ENUToGeocentric(in_ENU_point, in_coords_origin, P_geocentric, wgs84);
+  geocentricToGeodetic(P_geocentric, out_coords, wgs84);
+}
+
+/*---------------------------------------------------------------
           ENU_axes_from_WGS84
  ---------------------------------------------------------------*/
 void mrpt::topography::ENU_axes_from_WGS84(

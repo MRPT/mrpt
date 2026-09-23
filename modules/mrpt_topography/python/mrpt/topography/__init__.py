@@ -8,6 +8,7 @@ Provides:
   - geocentricToGeodetic()       : ECEF geocentric → WGS84 geodetic
   - geodeticToENU_WGS84()        : WGS84 geodetic → local ENU coordinates
   - ENUToGeocentric()            : ENU local → ECEF geocentric
+  - ENUToGeodetic_WGS84()        : ENU local → WGS84 geodetic
 
 Example::
 
@@ -23,6 +24,7 @@ import mrpt.math  # noqa: F401  (TPoint3D returned by coordinate conversion func
 
 from mrpt.topography._bindings import (
     ENUToGeocentric,
+    ENUToGeodetic_WGS84,
     TCoords,
     TGeodeticCoords,
     geocentricToGeodetic,
@@ -37,4 +39,5 @@ __all__ = [
     "geocentricToGeodetic",
     "geodeticToENU_WGS84",
     "ENUToGeocentric",
+    "ENUToGeodetic_WGS84",
 ]

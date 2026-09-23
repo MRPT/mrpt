@@ -116,6 +116,18 @@ PYBIND11_MODULE(_bindings, m)
       "Convert WGS84 geodetic point to local ENU coordinates (meters) relative to origin");
 
   m.def(
+      "ENUToGeodetic_WGS84",
+      [](const mrpt::math::TPoint3D& enu, const mrpt::topography::TGeodeticCoords& origin)
+      {
+        mrpt::topography::TGeodeticCoords gd;
+        mrpt::topography::ENUToGeodetic_WGS84(enu, gd, origin);
+        return gd;
+      },
+      "enu"_a, "origin"_a,
+      "Convert local ENU coordinates (meters) relative to origin to a WGS84 geodetic point. "
+      "Exact inverse of geodeticToENU_WGS84()");
+
+  m.def(
       "ENUToGeocentric",
       [](const mrpt::math::TPoint3D& enu, const mrpt::topography::TGeodeticCoords& origin)
       {
