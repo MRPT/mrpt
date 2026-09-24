@@ -152,7 +152,7 @@ class CPointCloudColoured :
   {
     std::shared_lock<std::shared_mutex> wfReadLock(VisualObjectParams_Points::m_pointsMtx.data);
     r = m_point_colors[index].R;
-    g = m_point_colors[index].B;
+    g = m_point_colors[index].G;
     b = m_point_colors[index].B;
   }
   mrpt::img::TColor getPointColor(size_t index) const
@@ -383,6 +383,11 @@ class PointCloudAdapter<mrpt::viz::CPointCloudColoured>
 template <class POINTSMAP>
 void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
 {
+  if (static_cast<const void*>(themap) == static_cast<const void*>(this))
+  {
+    // Loading from itself is a no-op, and would deadlock on the points mutex.
+    return;
+  }
   const mrpt::viz::PointCloudAdapter<POINTSMAP> pc_src(*themap);
   const size_t N = pc_src.size();
   {

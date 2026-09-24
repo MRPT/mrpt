@@ -150,3 +150,30 @@ TEST(CPointsMapAdapter, setPointRGBu8WritesU8Fields)
   EXPECT_EQ(m->getPointField_uint8(4, CPointsMap::POINT_FIELD_COLOR_Gu8), 0);
   EXPECT_EQ(m->getPointField_uint8(4, CPointsMap::POINT_FIELD_COLOR_Bu8), 0xff);
 }
+
+TEST(CPointCloudColoured, loadFromItselfIsNoOp)
+{
+  auto m = makeMap(true, false);
+  mrpt::viz::CPointCloudColoured pc;
+  pc.loadFromPointsMap(m.get());
+
+  pc.loadFromPointsMap(&pc);
+  ASSERT_EQ(pc.size(), N);
+  EXPECT_FLOAT_EQ(pc.getPoint3Df(7).y, 14.0f);
+  EXPECT_EQ(pc.getPointColor(7).G, 14);
+}
+
+TEST(CPointCloudColoured, getPointColorFastU8)
+{
+  mrpt::viz::CPointCloudColoured pc;
+  pc.push_back(0, 0, 0, 0.0f, 0.0f, 0.0f);
+  pc.setPointColor_u8_fast(0, 10, 20, 30);
+
+  uint8_t r = 0;
+  uint8_t g = 0;
+  uint8_t b = 0;
+  pc.getPointColor_fast(0, r, g, b);
+  EXPECT_EQ(r, 10);
+  EXPECT_EQ(g, 20);
+  EXPECT_EQ(b, 30);
+}

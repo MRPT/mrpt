@@ -1691,6 +1691,11 @@ class CPointsMap :
 namespace mrpt::viz
 {
 /** Specialization mrpt::viz::PointCloudAdapter<mrpt::maps::CPointsMap>
+ *
+ * The adapter is a short-lived view: which color fields exist, and where they
+ * are stored, is resolved at construction. Do not keep an adapter alive across
+ * changes to the map field layout (e.g. CGenericPointsMap::unregisterField()).
+ *
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CPointsMap>
