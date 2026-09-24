@@ -383,26 +383,22 @@ class PointCloudAdapter<mrpt::viz::CPointCloudColoured>
 template <class POINTSMAP>
 void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
 {
-  CVisualObject::notifyChange();
-  mrpt::viz::PointCloudAdapter<CPointCloudColoured> pc_dst(*this);
   const mrpt::viz::PointCloudAdapter<POINTSMAP> pc_src(*themap);
   const size_t N = pc_src.size();
-  pc_dst.resize(N);
-
-  for (size_t i = 0; i < N; i++)
   {
-    if (pc_dst.HAS_RGBf)
+    // One lock for the whole copy, instead of one per point:
+    std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+    m_points.resize(N);
+    m_point_colors.resize(N);
+    for (size_t i = 0; i < N; i++)
     {
       float x = 0, y = 0, z = 0, r = 0, g = 0, b = 0, a = 1;
       pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
-      pc_dst.setPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
-    }
-    else
-    {
-      float x, y, z;
-      pc_src.getPointXYZ(i, x, y, z);
-      pc_dst.setPointXYZ_RGBAf(i, x, y, z, 0, 0, 0, 1);
+      m_points[i] = {x, y, z};
+      m_point_colors[i] = mrpt::img::TColor(f2u8(r), f2u8(g), f2u8(b), f2u8(a));
     }
   }
+  markAllPointsAsNew();
+  CVisualObject::notifyChange();
 }
 }  // namespace mrpt::viz
