@@ -139,6 +139,21 @@ void mrpt::topography::geodeticToENU_WGS84(
 }
 
 /*---------------------------------------------------------------
+          ENUToGeodetic_WGS84
+ ---------------------------------------------------------------*/
+void mrpt::topography::ENUToGeodetic_WGS84(
+    const mrpt::math::TPoint3D& in_ENU_point,
+    TGeodeticCoords& out_coords,
+    const TGeodeticCoords& in_coords_origin)
+{
+  const auto wgs84 = TEllipsoid::Ellipsoid_WGS84();
+
+  TGeocentricCoords P_geocentric;
+  ENUToGeocentric(in_ENU_point, in_coords_origin, P_geocentric, wgs84);
+  geocentricToGeodetic(P_geocentric, out_coords, wgs84);
+}
+
+/*---------------------------------------------------------------
           ENU_axes_from_WGS84
  ---------------------------------------------------------------*/
 void mrpt::topography::ENU_axes_from_WGS84(
@@ -219,16 +234,13 @@ void mrpt::topography::geodeticToGeocentric_WGS84(
 void mrpt::topography::geodeticToGeocentric(
     const TGeodeticCoords& in_coords, TGeocentricCoords& out_point, const TEllipsoid& ellipsoid)
 {
-  static const precnum_t a = ellipsoid.sa;  // Semi-major axis of the Earth (meters)
-  static const precnum_t b = ellipsoid.sb;  // Semi-minor axis:
+  const precnum_t a = ellipsoid.sa;  // Semi-major axis of the Earth (meters)
+  const precnum_t b = ellipsoid.sb;  // Semi-minor axis:
 
-  static const precnum_t ae = acos(b / a);  // eccentricity:
-  static const precnum_t cos2_ae_earth =
-      square(cos(ae));  // The cos^2 of the angular eccentricity of the Earth:
-  // // 0.993305619995739L;
-  static const precnum_t sin2_ae_earth =
-      square(sin(ae));  // The sin^2 of the angular eccentricity of the Earth:
-  // // 0.006694380004261L;
+  const precnum_t ae = acos(b / a);  // eccentricity:
+  // The cos^2 and sin^2 of the angular eccentricity of the Earth:
+  const precnum_t cos2_ae_earth = square(cos(ae));
+  const precnum_t sin2_ae_earth = square(sin(ae));
 
   const precnum_t lon = DEG2RAD(precnum_t(in_coords.lon));
   const precnum_t lat = DEG2RAD(precnum_t(in_coords.lat));

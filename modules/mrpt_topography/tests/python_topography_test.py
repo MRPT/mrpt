@@ -4,7 +4,7 @@ import sys, math
 
 try:
     from mrpt.topography import (
-        TGeodeticCoords, geodeticToENU_WGS84,
+        TGeodeticCoords, geodeticToENU_WGS84, ENUToGeodetic_WGS84,
         geodeticToGeocentric_WGS84, geocentricToGeodetic,
     )
 except ImportError as e:
@@ -36,6 +36,12 @@ enu = geodeticToENU_WGS84(point, origin)
 # ~0.001 deg latitude ≈ 111 m north
 check("ENU north ~111m", abs(enu.x - 0.0) < 10.0)   # x is East
 check("ENU east ~0", 80.0 < enu.y < 130.0, f"y(north)={enu.y:.1f} m")
+
+print("ENUToGeodetic_WGS84 round-trip")
+back_pt = ENUToGeodetic_WGS84(enu, origin)
+check("ENU->geodetic lat", abs(back_pt.lat.decimal_value - 37.001) < 1e-9)
+check("ENU->geodetic lon", abs(back_pt.lon.decimal_value - (-6.0)) < 1e-9)
+check("ENU->geodetic height", abs(back_pt.height - 10.0) < 1e-4)
 
 print("geodeticToGeocentric round-trip")
 ecef = geodeticToGeocentric_WGS84(origin)
