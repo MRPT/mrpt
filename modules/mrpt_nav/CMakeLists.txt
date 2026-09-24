@@ -69,6 +69,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/waypoints_and_rrt_unittest.cpp
   tests/TWaypoint_unittest.cpp
   tests/PTG_variants_unittest.cpp
+  tests/PTG_collision_grid_unittest.cpp
   tests/CAbstractNavigator_unittest.cpp
   tests/nav_misc_unittest.cpp
   tests/planners_and_logs_unittest.cpp

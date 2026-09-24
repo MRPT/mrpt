@@ -220,13 +220,16 @@ void CReactiveNavigationSystem::transformToTPSpace(
 
   const mrpt::poses::CPose2D rel_pose_PTG_origin_wrt_sense(rel_pose_PTG_origin_wrt_sense_);
 
-  const float OBS_MAX_XY = static_cast<float>(params_abstract_ptg_navigator.ref_distance) * 1.1f;
+  // Obstacles farther than the PTG reach plus the robot radius cannot be hit:
+  const auto OBS_MAX_XY = static_cast<float>(std::max(
+      1.1 * params_abstract_ptg_navigator.ref_distance,
+      params_abstract_ptg_navigator.ref_distance + ptg->getMaxRobotRadius()));
 
   // Merge all the (k,d) for which the robot collides with each obstacle
   // point:
-  const auto xs = m_WS_Obstacles.getPointsBufferRef_x();
-  const auto ys = m_WS_Obstacles.getPointsBufferRef_y();
-  const auto zs = m_WS_Obstacles.getPointsBufferRef_z();
+  const auto& xs = m_WS_Obstacles.getPointsBufferRef_x();
+  const auto& ys = m_WS_Obstacles.getPointsBufferRef_y();
+  const auto& zs = m_WS_Obstacles.getPointsBufferRef_z();
   const size_t nObs = xs.size();
 
   for (size_t obs = 0; obs < nObs; obs++)
@@ -234,7 +237,7 @@ void CReactiveNavigationSystem::transformToTPSpace(
     double ox, oy, oz = zs[obs];
     rel_pose_PTG_origin_wrt_sense.composePoint(xs[obs], ys[obs], ox, oy);
 
-    if (ox > -OBS_MAX_XY && ox < OBS_MAX_XY && oy > -OBS_MAX_XY && oy < OBS_MAX_XY &&
+    if (ox >= -OBS_MAX_XY && ox <= OBS_MAX_XY && oy >= -OBS_MAX_XY && oy <= OBS_MAX_XY &&
         oz >= params_reactive_nav.min_obstacles_height &&
         oz <= params_reactive_nav.max_obstacles_height)
     {
@@ -295,9 +298,9 @@ bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles(
     const mrpt::math::TPose2D& relative_robot_pose) const
 {
   ASSERT_(!PTGs.empty());
-  const auto xs = m_WS_Obstacles.getPointsBufferRef_x();
-  const auto ys = m_WS_Obstacles.getPointsBufferRef_y();
-  const auto zs = m_WS_Obstacles.getPointsBufferRef_z();
+  const auto& xs = m_WS_Obstacles.getPointsBufferRef_x();
+  const auto& ys = m_WS_Obstacles.getPointsBufferRef_y();
+  const auto& zs = m_WS_Obstacles.getPointsBufferRef_z();
   const size_t nObs = xs.size();
 
   for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
