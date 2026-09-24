@@ -412,6 +412,36 @@ TEST(TopographyConversion, ENUToGeodetic_UpIsEllipsoidNormal)
   EXPECT_NEAR(out.height, ref.height + dz, 1e-4);
 }
 
+TEST(TopographyConversion, GeodeticToGeocentric_UsesGivenEllipsoidOnEveryCall)
+{
+  // Alternating ellipsoids must not reuse values from a previous call.
+  const TGeodeticCoords c(40.0, -3.7, 650.0);
+  const auto other = TEllipsoid::Ellipsoid_Walbeck_1817();
+  const auto wgs84 = TEllipsoid::Ellipsoid_WGS84();
+
+  for (int i = 0; i < 2; i++)
+  {
+    TGeocentricCoords p_other;
+    geodeticToGeocentric(c, p_other, other);
+    TGeodeticCoords c_other;
+    geocentricToGeodetic(p_other, c_other, other);
+    EXPECT_NEAR(c_other.lat, c.lat, 1e-8);
+    EXPECT_NEAR(c_other.lon, c.lon, 1e-8);
+    EXPECT_NEAR(c_other.height, c.height, 1e-4);
+
+    TGeocentricCoords p_wgs84;
+    geodeticToGeocentric(c, p_wgs84, wgs84);
+    TPoint3D p_wgs84_ref;
+    geodeticToGeocentric_WGS84(c, p_wgs84_ref);
+    EXPECT_NEAR(p_wgs84.x, p_wgs84_ref.x, 1e-3);
+    EXPECT_NEAR(p_wgs84.y, p_wgs84_ref.y, 1e-3);
+    EXPECT_NEAR(p_wgs84.z, p_wgs84_ref.z, 1e-3);
+
+    // Both ellipsoids are different enough to tell them apart:
+    EXPECT_GT((p_other - p_wgs84).norm(), 100.0);
+  }
+}
+
 TEST(TopographyConversion, RegisterAllClasses)
 {
   // Trivial smoke-test to make sure this function can be invoked without
