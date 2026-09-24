@@ -200,12 +200,26 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
   for (size_t i = 0; i < nSlices; i++) m_WS_Obstacles_inlevels[i].clear();
 
   // Sort obstacles in "slices":
-  const auto xs = m_WS_Obstacles_unsorted.getPointsBufferRef_x();
-  const auto ys = m_WS_Obstacles_unsorted.getPointsBufferRef_y();
-  const auto zs = m_WS_Obstacles_unsorted.getPointsBufferRef_z();
+  const auto& xs = m_WS_Obstacles_unsorted.getPointsBufferRef_x();
+  const auto& ys = m_WS_Obstacles_unsorted.getPointsBufferRef_y();
+  const auto& zs = m_WS_Obstacles_unsorted.getPointsBufferRef_z();
   const size_t nObs = xs.size();
 
-  const float OBS_MAX_XY = static_cast<float>(params_abstract_ptg_navigator.ref_distance) * 1.1f;
+  // Obstacles farther than the PTG reach plus the robot radius cannot be hit:
+  double maxRobotRadius = 0;
+  for (const auto& level : m_ptgmultilevel)
+  {
+    for (const auto& ptg : level.PTGs)
+    {
+      if (ptg)
+      {
+        mrpt::keep_max(maxRobotRadius, ptg->getMaxRobotRadius());
+      }
+    }
+  }
+  const auto OBS_MAX_XY = static_cast<float>(std::max(
+      1.1 * params_abstract_ptg_navigator.ref_distance,
+      params_abstract_ptg_navigator.ref_distance + maxRobotRadius));
 
   for (size_t j = 0; j < nObs; j++)
   {
@@ -253,9 +267,8 @@ void CReactiveNavigationSystem3D::transformToTPSpace(
 
   for (size_t j = 0; j < m_robotShape.size(); j++)
   {
-    const auto xs = m_WS_Obstacles_inlevels[j].getPointsBufferRef_x();
-    const auto ys = m_WS_Obstacles_inlevels[j].getPointsBufferRef_y();
-    const auto zs = m_WS_Obstacles_inlevels[j].getPointsBufferRef_z();
+    const auto& xs = m_WS_Obstacles_inlevels[j].getPointsBufferRef_x();
+    const auto& ys = m_WS_Obstacles_inlevels[j].getPointsBufferRef_y();
     const size_t nObs = xs.size();
 
     for (size_t obs = 0; obs < nObs; obs++)
@@ -336,9 +349,8 @@ bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles(
 
   for (size_t idxH = 0; idxH < nSlices; ++idxH)
   {
-    const auto xs = m_WS_Obstacles_inlevels[idxH].getPointsBufferRef_x();
-    const auto ys = m_WS_Obstacles_inlevels[idxH].getPointsBufferRef_y();
-    const auto zs = m_WS_Obstacles_inlevels[idxH].getPointsBufferRef_z();
+    const auto& xs = m_WS_Obstacles_inlevels[idxH].getPointsBufferRef_x();
+    const auto& ys = m_WS_Obstacles_inlevels[idxH].getPointsBufferRef_y();
     const size_t nObs = xs.size();
 
     for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
