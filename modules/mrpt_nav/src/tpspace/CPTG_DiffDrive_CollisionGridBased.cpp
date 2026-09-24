@@ -849,11 +849,12 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
   }
   else
   {
-    // BUGFIX: In case we start reading the file and in the end detected an
-    // error,
-    //         we must make sure that there's space enough for the grid:
+    // Reset all cells: a partial cache load or a previous initialization may
+    // have left entries that would make the build below skip cells.
+    const TCollisionCell emptyCell;
     m_collisionGrid.setSize(
-        -gridHalfSize, gridHalfSize, -gridHalfSize, gridHalfSize, m_collisionGrid.getResolution());
+        -gridHalfSize, gridHalfSize, -gridHalfSize, gridHalfSize, m_collisionGrid.getResolution(),
+        &emptyCell);
 
     const int grid_cx_max = static_cast<int>(m_collisionGrid.getSizeX()) - 1;
     const int grid_cy_max = static_cast<int>(m_collisionGrid.getSizeY()) - 1;
