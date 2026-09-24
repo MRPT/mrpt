@@ -146,9 +146,11 @@ mrpt_add_library(
   `PF_SLAM_implementation_gatherActionsCheckBothActObs()`; `pfStandardProposal`
   reads the action directly. An empty sensory frame counts as valid: pass a
   null `sf` to keep a movement accumulated.
-* **mrpt_topography**: every ENU helper uses the ellipsoid normal as "Up", and
-  `ENUToGeocentric()` is the exact inverse of `geodeticToENU_WGS84()` (in MRPT
-  2.x and 3.0.x it used a geocentric-radial "Up" instead).
+* **mrpt_topography**: every ENU helper uses the ellipsoid normal as "Up".
+  The inverse of `geodeticToENU_WGS84()` is `ENUToGeodetic_WGS84()` (returns
+  lon/lat/height); `ENUToGeocentric()` returns geocentric (ECEF) coordinates
+  and inverts `geocentricToENU_WGS84()`. In MRPT 2.x and 3.0.x,
+  `ENUToGeocentric()` used a geocentric-radial "Up" instead.
 * Known-unreachable code kept on purpose: `mrpt_rtti`'s deferred
   class-registration queue, the `shared_ptr<yaml>` alternative in
   `mrpt_containers`' `scalar_t` (ABI-affecting), and `mrpt_viz`'s
