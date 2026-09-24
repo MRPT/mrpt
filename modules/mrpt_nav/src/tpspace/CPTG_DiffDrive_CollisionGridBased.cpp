@@ -867,10 +867,16 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
     // A cell stores the distance of sample "n" of trajectory "k" if any point
     // of the cell square is within "r_n" of the footprint at that sample,
     // where r_n bounds how far any footprint point moves until the next
-    // sample (arc length of the reference point plus the rotation lever arm;
-    // exact for a constant twist between samples). Hence the stored distance
+    // sample. A point at radius rho moves at most |v| + rho*|w|, which is
+    // <= sqrt(1 + (rho/R)^2) * sqrt(v^2 + (w*R)^2), R being
+    // turningRadiusReference, and the latter is the rate of the path distance.
+    // So r_n follows from the path distance increment, whatever the twist
+    // does between the (decimated) samples. Hence the stored distance
     // never exceeds the distance at which the continuously swept footprint
     // first touches ANY obstacle point inside that cell.
+    ASSERT_GT_(turningRadiusReference, 0);
+    const double sweepPerDist = std::hypot(1.0, robotRadius / turningRadiusReference);
+
     for (size_t k = 0; k < Ki; k++)
     {
       const auto k16 = static_cast<uint16_t>(k);
@@ -884,12 +890,9 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
         double sweep = 0;
         if (n + 1 < nPoints)
         {
-          const mrpt::math::TPose2D pNext = getPathPose(k16, static_cast<uint32_t>(n + 1));
-          const double chord = std::hypot(pNext.x - p.x, pNext.y - p.y);
-          const double dPhi = std::abs(mrpt::math::angDistance(p.phi, pNext.phi));
-          const double halfPhi = 0.5 * dPhi;
-          const double arcRatio = halfPhi > 1e-9 ? halfPhi / std::sin(halfPhi) : 1.0;
-          sweep = chord * arcRatio + robotRadius * dPhi;
+          const double dDist = getPathDist(k16, static_cast<uint32_t>(n + 1)) -
+                               getPathDist(k16, static_cast<uint32_t>(n));
+          sweep = std::max(0.0, dDist) * sweepPerDist;
         }
 
         mrpt::math::TPoint2D bb_min(
@@ -920,7 +923,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
         const int ix_max = std::min(m_collisionGrid.x2idx(bb_max.x + sweep) + 1, grid_cx_max);
         const int iy_max = std::min(m_collisionGrid.y2idx(bb_max.y + sweep) + 1, grid_cy_max);
 
-        const double reach = robotRadius + sweep + half_cell * M_SQRT2;
+        const double reach = robotRadius + sweep + half_cell * std::sqrt(2.0);
         const auto d = static_cast<float>(this->getPathDist(k16, static_cast<uint32_t>(n)));
 
         for (int ix = ix_min; ix <= ix_max; ix++)

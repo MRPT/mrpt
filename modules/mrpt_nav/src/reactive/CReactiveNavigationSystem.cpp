@@ -237,7 +237,7 @@ void CReactiveNavigationSystem::transformToTPSpace(
     double ox, oy, oz = zs[obs];
     rel_pose_PTG_origin_wrt_sense.composePoint(xs[obs], ys[obs], ox, oy);
 
-    if (ox > -OBS_MAX_XY && ox < OBS_MAX_XY && oy > -OBS_MAX_XY && oy < OBS_MAX_XY &&
+    if (ox >= -OBS_MAX_XY && ox <= OBS_MAX_XY && oy >= -OBS_MAX_XY && oy <= OBS_MAX_XY &&
         oz >= params_reactive_nav.min_obstacles_height &&
         oz <= params_reactive_nav.max_obstacles_height)
     {

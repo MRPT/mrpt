@@ -205,22 +205,6 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
   const auto& zs = m_WS_Obstacles_unsorted.getPointsBufferRef_z();
   const size_t nObs = xs.size();
 
-  // Obstacles farther than the PTG reach plus the robot radius cannot be hit:
-  double maxRobotRadius = 0;
-  for (const auto& level : m_ptgmultilevel)
-  {
-    for (const auto& ptg : level.PTGs)
-    {
-      if (ptg)
-      {
-        mrpt::keep_max(maxRobotRadius, ptg->getMaxRobotRadius());
-      }
-    }
-  }
-  const auto OBS_MAX_XY = static_cast<float>(std::max(
-      1.1 * params_abstract_ptg_navigator.ref_distance,
-      params_abstract_ptg_navigator.ref_distance + maxRobotRadius));
-
   for (size_t j = 0; j < nObs; j++)
   {
     float h = 0;
@@ -234,13 +218,8 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
       h += static_cast<float>(m_robotShape.getHeight(idxH));
       if (zs[j] < h)
       {
-        // Speed-up: If the obstacle is, for sure, out of the collision
-        // grid,
-        // just don't account for it, because we don't know its mapping
-        // into TP-Obstacles anyway...
-        if (xs[j] > -OBS_MAX_XY && xs[j] < OBS_MAX_XY && ys[j] > -OBS_MAX_XY && ys[j] < OBS_MAX_XY)
-          m_WS_Obstacles_inlevels[idxH].insertPoint(xs[j], ys[j], zs[j]);
-
+        // Out-of-reach points are clipped later, in PTG coordinates:
+        m_WS_Obstacles_inlevels[idxH].insertPoint(xs[j], ys[j], zs[j]);
         break;  // stop searching for height slots.
       }
     }
@@ -270,15 +249,26 @@ void CReactiveNavigationSystem3D::transformToTPSpace(
     const auto& xs = m_WS_Obstacles_inlevels[j].getPointsBufferRef_x();
     const auto& ys = m_WS_Obstacles_inlevels[j].getPointsBufferRef_y();
     const size_t nObs = xs.size();
+    const auto& ptg = m_ptgmultilevel[ptg_idx].PTGs[j];
+
+    // Obstacles farther than the PTG reach plus the robot radius cannot be hit:
+    const double OBS_MAX_XY = std::max(
+        1.1 * params_abstract_ptg_navigator.ref_distance,
+        params_abstract_ptg_navigator.ref_distance + ptg->getMaxRobotRadius());
 
     for (size_t obs = 0; obs < nObs; obs++)
     {
-      double ox, oy;
+      double ox;
+      double oy;
       rel_pose_PTG_origin_wrt_sense.composePoint(xs[obs], ys[obs], ox, oy);
-      m_ptgmultilevel[ptg_idx].PTGs[j]->updateTPObstacle(ox, oy, out_TPObstacles);
+      if (std::abs(ox) > OBS_MAX_XY || std::abs(oy) > OBS_MAX_XY)
+      {
+        continue;
+      }
+      ptg->updateTPObstacle(ox, oy, out_TPObstacles);
       if (eval_clearance)
       {
-        m_ptgmultilevel[ptg_idx].PTGs[j]->updateClearance(ox, oy, out_clearance);
+        ptg->updateClearance(ox, oy, out_clearance);
       }
     }
   }
