@@ -31,6 +31,8 @@
 #include <cmath>
 #include <cstring>
 #include <iostream>
+#include <limits>
+#include <optional>
 
 #include "CImage.SSEx.h"
 #include "CImage_impl.h"
@@ -49,6 +51,17 @@ namespace
 {
 const thread_local bool MRPT_DEBUG_IMG_LAZY_LOAD =
     mrpt::get_env<bool>("MRPT_DEBUG_IMG_LAZY_LOAD", false);
+
+/** Number of channels to ask stb for. CImage has no 2-channel layout, so gray+alpha sources are
+ * expanded to RGBA instead of dropping their alpha. */
+int stbDesiredChannels(mrpt::img::TImageChannels loadChannels, int sourceChannels)
+{
+  if (loadChannels == mrpt::img::CH_AS_IS && sourceChannels == 2)
+  {
+    return 4;
+  }
+  return static_cast<int>(loadChannels);
+}
 
 stbir_pixel_layout mrpt_image_channel_to_stbir_layout(const mrpt::img::TImageChannels channels)
 {
@@ -201,11 +214,13 @@ bool CImage::loadFromFile(const std::string& fileName, TImageChannels loadChanne
   int original_channels = 0;
   unsigned char* image_data = nullptr;
 
-  // stbi_load loads the image from the file specified by filename.
   // desired_channels: 0=load original, 1=grayscale, 3=RGB, 4=RGBA
   int desired_channels = static_cast<int>(loadChannels);
-
-  image_data = stbi_load(fileName.c_str(), &width, &height, &original_channels, desired_channels);
+  if (stbi_info(fileName.c_str(), &width, &height, &original_channels) != 0)
+  {
+    desired_channels = stbDesiredChannels(loadChannels, original_channels);
+    image_data = stbi_load(fileName.c_str(), &width, &height, &original_channels, desired_channels);
+  }
 
   if (image_data == nullptr)
   {
@@ -225,14 +240,8 @@ bool CImage::loadFromFile(const std::string& fileName, TImageChannels loadChanne
   m_state->image_data = image_data;
 
   // Determine actual channels loaded
-  if (loadChannels == CH_AS_IS)
-  {
-    m_state->channels = static_cast<TImageChannels>(original_channels);
-  }
-  else
-  {
-    m_state->channels = loadChannels;
-  }
+  m_state->channels =
+      static_cast<TImageChannels>(desired_channels != 0 ? desired_channels : original_channels);
 
   return true;
   MRPT_END
@@ -253,21 +262,65 @@ void CImage::loadFromStreamAsJPEG(mrpt::io::CStream& in)
 
   ASSERT_(!buf.empty());
 
-  int w = 0, h = 0, channels = 0;
-  unsigned char* decoded =
-      stbi_load_from_memory(buf.data(), static_cast<int>(buf.size()), &w, &h, &channels, 0);
-
-  if (decoded == nullptr)
+  if (!loadFromEncodedBuffer(buf.data(), buf.size()))
   {
     THROW_EXCEPTION_FMT("loadFromStreamAsJPEG: stbi decode failed: %s", stbi_failure_reason());
   }
 
+  MRPT_END
+}
+
+bool CImage::loadFromEncodedBuffer(
+    const uint8_t* data,
+    std::size_t length,
+    TImageChannels loadChannels,
+    std::optional<PixelDepth> loadDepth)
+{
+  MRPT_START
+
   m_state->clear();
-  m_state->width = w;
-  m_state->height = h;
-  m_state->depth = PixelDepth::D8U;
-  m_state->channels = static_cast<TImageChannels>(channels);
-  m_state->image_data = decoded;
+
+  if (data == nullptr || length == 0 ||
+      length > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+  {
+    return false;
+  }
+  const auto len = static_cast<int>(length);
+
+  int width = 0;
+  int height = 0;
+  int original_channels = 0;
+  if (stbi_info_from_memory(data, len, &width, &height, &original_channels) == 0)
+  {
+    return false;
+  }
+  const int desired_channels = stbDesiredChannels(loadChannels, original_channels);
+  const bool is16bit =
+      loadDepth ? (*loadDepth == PixelDepth::D16U) : (stbi_is_16_bit_from_memory(data, len) != 0);
+
+  void* pixels = nullptr;
+  if (is16bit)
+  {
+    pixels =
+        stbi_load_16_from_memory(data, len, &width, &height, &original_channels, desired_channels);
+  }
+  else
+  {
+    pixels =
+        stbi_load_from_memory(data, len, &width, &height, &original_channels, desired_channels);
+  }
+  if (pixels == nullptr)
+  {
+    return false;
+  }
+
+  m_state->width = width;
+  m_state->height = height;
+  m_state->depth = is16bit ? PixelDepth::D16U : PixelDepth::D8U;
+  m_state->channels =
+      static_cast<TImageChannels>(desired_channels != 0 ? desired_channels : original_channels);
+  m_state->image_data = static_cast<uint8_t*>(pixels);
+  return true;
 
   MRPT_END
 }
