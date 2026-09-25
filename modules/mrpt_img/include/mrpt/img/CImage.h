@@ -20,7 +20,9 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CSerializable.h>
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -64,6 +66,18 @@ enum TImageChannels : uint8_t
   CH_AS_IS = 0,  //!< Load as-is, no conversion
 };
 
+/** Color filter array layouts for CImage::loadFromBayerBuffer(). Each name lists the colors of the
+ * top-left 2x2 block in row-major order, e.g. RGGB means R at (0,0), G at (1,0) and (0,1), B at
+ * (1,1). These match the ROS `bayer_*` encoding names.
+ */
+enum class BayerPattern : uint8_t
+{
+  RGGB = 0,
+  BGGR,
+  GBRG,
+  GRBG
+};
+
 /** For usage in one of the CImage constructors */
 enum ctor_CImage_ref_or_gray : uint8_t
 {
@@ -92,7 +106,9 @@ class CExceptionExternalImageNotFound : public std::runtime_error
  * - Saving/loading from files of different formats (JPG, PNG, TGA, BMP, PSD, GIF, HDR, PIC) using
  *   the methods CImage::loadFromFile() and CImage::saveToFile(). This uses the [stb
  *   library](https://github.com/nothings/stb).
+ * - Decoding the same formats from an in-memory buffer with CImage::loadFromEncodedBuffer().
  * - Importing from an XPM array (.xpm file format) using CImage::loadFromXPM()
+ * - Demosaicing raw Bayer sensor data with CImage::loadFromBayerBuffer().
  * - Binary dump using the CSerializable interface (<< and >> operators), just as most objects in
  *   MRPT. This format is not compatible with any standardized image format but it is fast.
  *
@@ -699,13 +715,50 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
     MRPT_END
   }
 
+  /** Demosaics a raw single-channel Bayer image into an RGB image (CH_RGB) of the same pixel
+   * depth, using bilinear interpolation. Border pixels are interpolated by mirroring the image
+   * around its edges, which preserves the color filter phase.
+   *
+   * \param rawpixels Pointer to the first row. For PixelDepth::D16U, rows hold native-endian
+   *        uint16_t values.
+   * \param rowStrideBytes Distance between consecutive rows, in bytes.
+   * \exception std::exception If width or height is below 2, or the stride is too small.
+   */
+  void loadFromBayerBuffer(
+      int32_t width,
+      int32_t height,
+      const uint8_t* rawpixels,
+      std::size_t rowStrideBytes,
+      BayerPattern pattern,
+      PixelDepth depth = PixelDepth::D8U);
+
+  /** Decodes an image from an in-memory encoded buffer, e.g. the contents of a JPEG or PNG file.
+   * Supported formats are those of loadFromFile().
+   *
+   * With CH_AS_IS, gray+alpha images are expanded to CH_RGBA.
+   *
+   * \param loadDepth If not set, the source depth is kept: unlike loadFromFile(), 16-bit PNG
+   *        images keep their precision (PixelDepth::D16U). Otherwise, pixels are converted to the
+   *        given depth.
+   * \return False on any error (the image is left empty).
+   * \sa loadFromFile
+   */
+  [[nodiscard]] bool loadFromEncodedBuffer(
+      const uint8_t* data,
+      std::size_t length,
+      TImageChannels loadChannels = CH_AS_IS,
+      std::optional<PixelDepth> loadDepth = std::nullopt);
+
   /** Reads the image from a binary stream containing a binary jpeg file.
-   * \exception std::exception On pixel coordinates out of bounds
+   * Any other format supported by loadFromEncodedBuffer() is also accepted, always decoded as
+   * 8-bit (PixelDepth::D8U).
+   * \exception std::exception On decoding errors
    */
   void loadFromStreamAsJPEG(mrpt::io::CStream& in);
 
-  /** Load image from a file, whose format is determined from the extension
-   * (internally uses OpenCV).
+  /** Load image from a file, whose format is determined from the file contents
+   * (internally uses the stb library).
+   * With CH_AS_IS, gray+alpha images are expanded to CH_RGBA.
    * \param fileName The file to read from.
    *
    * MRPT also provides the special loader loadFromXPM().
