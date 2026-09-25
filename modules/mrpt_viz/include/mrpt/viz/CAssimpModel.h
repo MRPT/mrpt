@@ -14,6 +14,7 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
+#include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSetOfTexturedTriangles.h>
 #include <mrpt/viz/CSetOfTriangles.h>
@@ -44,13 +45,13 @@ namespace mrpt::viz
  * - It loads 3D models using Assimp and converts them to mrpt::viz primitives
  * - Textured meshes become CSetOfTexturedTriangles children
  * - Non-textured meshes become triangle data (VisualObjectParams_Triangles)
- * - Point clouds become point data (VisualObjectParams_Points)
- * - Wireframe elements become line data (VisualObjectParams_Lines)
+ * - Line primitives become line data (VisualObjectParams_Lines)
+ * - Point primitives are ignored
  *
  * The class is a CSetOfObjects container that holds:
  * - One CSetOfTexturedTriangles per texture used in the model
  * - One CSetOfTriangles for all non-textured triangles
- * - Additional child objects for points and lines if present
+ * - One CSetOfLines per material color used by line primitives, if any
  *
  * ![mrpt::viz::CAssimpModel](preview_CAssimpModel.png)
  *
@@ -175,6 +176,9 @@ class CAssimpModel : public CSetOfObjects
   /** Returns the number of non-textured triangles in the model */
   [[nodiscard]] size_t getNonTexturedTriangleCount() const;
 
+  /** Returns the number of line segments in the model */
+  [[nodiscard]] size_t getLineCount() const;
+
   /** Returns the total vertex count across all meshes */
   [[nodiscard]] size_t getTotalVertexCount() const;
 
@@ -226,6 +230,7 @@ class CAssimpModel : public CSetOfObjects
   // Loaded content (pointers to child objects for easy access)
   std::vector<CSetOfTexturedTriangles::Ptr> m_texturedMeshes;
   CSetOfTriangles::Ptr m_nonTexturedMesh;
+  std::vector<CSetOfLines::Ptr> m_lines;  //!< One per line color
 
   // Texture cache: filepath -> texture info
   struct LoadedTexture

@@ -64,6 +64,33 @@ constexpr const char* OBJ_BARE_TRIANGLE =
     "v 0 1 0\n"
     "f 1 2 3\n";
 
+/** Two line segments (an "L" shape), no faces at all. */
+constexpr const char* OBJ_TWO_LINES =
+    "v 0 0 0\n"
+    "v 2 0 0\n"
+    "v 2 3 1\n"
+    "l 1 2\n"
+    "l 2 3\n";
+
+/** Line segments with two different materials, interleaved. */
+constexpr const char* OBJ_COLORED_LINES =
+    "mtllib lines.mtl\n"
+    "v 0 0 0\n"
+    "v 1 0 0\n"
+    "v 1 1 0\n"
+    "usemtl red\n"
+    "l 1 2\n"
+    "usemtl blue\n"
+    "l 2 3\n"
+    "usemtl red\n"
+    "l 3 1\n";
+
+constexpr const char* MTL_LINES =
+    "newmtl red\n"
+    "Kd 1.0 0.0 0.0\n"
+    "newmtl blue\n"
+    "Kd 0.0 0.0 1.0\n";
+
 /** Two triangles forming a unit square in the XY plane, with a material that
  *  has a diffuse color and a diffuse texture map. */
 constexpr const char* OBJ_TEXTURED_QUAD =
@@ -344,6 +371,87 @@ TEST(CAssimpModel, SerializationRoundTrip)
   // non-textured pointers:
   EXPECT_EQ(m2->getTexturedMeshCount(), m->getTexturedMeshCount());
   EXPECT_EQ(m2->getTotalTriangleCount(), m->getTotalTriangleCount());
+}
+
+TEST(CAssimpModel, LoadLinePrimitives)
+{
+  const TempModelDir dir;
+  dir.writeTextFile("lines.obj", OBJ_TWO_LINES);
+
+  auto m = CAssimpModel::Create();
+  m->loadScene(dir.path("lines.obj"), CAssimpModel::LoadFlags::RealTimeFast);
+
+  EXPECT_EQ(m->getLineCount(), 2U);
+  EXPECT_EQ(m->getTotalTriangleCount(), 0U);
+  EXPECT_EQ(m->getTotalVertexCount(), 4U);
+
+  const auto bb = m->getBoundingBoxLocal();
+  EXPECT_NEAR(bb.min.x, 0.0, 1e-4);
+  EXPECT_NEAR(bb.min.y, 0.0, 1e-4);
+  EXPECT_NEAR(bb.min.z, 0.0, 1e-4);
+  EXPECT_NEAR(bb.max.x, 2.0, 1e-4);
+  EXPECT_NEAR(bb.max.y, 3.0, 1e-4);
+  EXPECT_NEAR(bb.max.z, 1.0, 1e-4);
+
+  // Segment end points must be reachable as line vertex buffers of a child:
+  size_t nLineVertices = 0;
+  for (const auto& child : *m)
+  {
+    auto* lp = dynamic_cast<VisualObjectParams_Lines*>(child.get());
+    if (!lp)
+    {
+      continue;
+    }
+    child->updateBuffers();
+    nLineVertices += lp->shaderLinesVertexPointBuffer().size();
+  }
+  EXPECT_EQ(nLineVertices, 4U);
+
+  // Serialization keeps the lines:
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+  arch << *m;
+  buf.Seek(0);
+
+  auto m2 = CAssimpModel::Create();
+  arch >> *m2;
+  EXPECT_EQ(m2->getLineCount(), 2U);
+
+  m->clear();
+  EXPECT_EQ(m->getLineCount(), 0U);
+}
+
+TEST(CAssimpModel, LinePrimitivesKeepMaterialColor)
+{
+  const TempModelDir dir;
+  dir.writeTextFile("lines.obj", OBJ_COLORED_LINES);
+  dir.writeTextFile("lines.mtl", MTL_LINES);
+
+  auto m = CAssimpModel::Create();
+  m->loadScene(dir.path("lines.obj"), CAssimpModel::LoadFlags::RealTimeFast);
+  EXPECT_EQ(m->getLineCount(), 3U);
+
+  size_t nRed = 0;
+  size_t nBlue = 0;
+  for (const auto& child : *m)
+  {
+    auto lines = std::dynamic_pointer_cast<CSetOfLines>(child);
+    if (!lines)
+    {
+      continue;
+    }
+    const auto c = lines->getColor_u8();
+    if (c.R == 255 && c.G == 0 && c.B == 0)
+    {
+      nRed += lines->size();
+    }
+    else if (c.R == 0 && c.G == 0 && c.B == 255)
+    {
+      nBlue += lines->size();
+    }
+  }
+  EXPECT_EQ(nRed, 2U);
+  EXPECT_EQ(nBlue, 1U);
 }
 
 TEST(CAssimpModel, MoveSemantics)
