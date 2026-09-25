@@ -15,10 +15,12 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CAssimpModel.h>
+#include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/CSetOfTexturedTriangles.h>
 #include <mrpt/viz/CSetOfTriangles.h>
 #include <mrpt/viz/config.h>  // MRPT_HAS_ASSIMP
 
+#include <algorithm>
 #include <iostream>
 
 #if MRPT_HAS_ASSIMP
@@ -92,6 +94,7 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
       // Rebuild internal pointers to child objects
       m_texturedMeshes.clear();
       m_nonTexturedMesh.reset();
+      m_lines.clear();
 
       for (auto& child : *this)
       {
@@ -102,6 +105,10 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
         else if (auto triMesh = std::dynamic_pointer_cast<CSetOfTriangles>(child))
         {
           m_nonTexturedMesh = triMesh;
+        }
+        else if (auto lines = std::dynamic_pointer_cast<CSetOfLines>(child))
+        {
+          m_lines.push_back(lines);
         }
       }
     }
@@ -129,6 +136,7 @@ void CAssimpModel::clear()
   m_modelLoadFlags = 0;
   m_texturedMeshes.clear();
   m_nonTexturedMesh.reset();
+  m_lines.clear();
   m_textureCache.clear();
   m_cachedBBox.reset();
   m_bboxMin = {0, 0, 0};
@@ -247,6 +255,7 @@ void CAssimpModel::loadScene(const std::string& file_name, int flags)
     std::cout << "[CAssimpModel] Created:\n"
               << "  - " << m_texturedMeshes.size() << " textured mesh groups\n"
               << "  - " << (m_nonTexturedMesh ? "1" : "0") << " non-textured mesh\n"
+              << "  - " << getLineCount() << " line segments\n"
               << "  - BBox: [" << m_bboxMin << "] to [" << m_bboxMax << "]\n";
   }
 
@@ -300,6 +309,11 @@ void CAssimpModel::processAssimpScene()
   else
   {
     m_nonTexturedMesh.reset();
+  }
+
+  for (const auto& lines : m_lines)
+  {
+    insert(lines);
   }
 
   MRPT_END
@@ -547,7 +561,35 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
   {
     const aiFace& face = mesh->mFaces[f];
 
-    // We only handle triangles (should be guaranteed by aiProcess_Triangulate)
+    // Line primitives (not affected by aiProcess_Triangulate):
+    if (face.mNumIndices == 2)
+    {
+      // CSetOfLines has a single color: group segments by material color.
+      auto it = std::find_if(
+          m_lines.begin(), m_lines.end(),
+          [&](const CSetOfLines::Ptr& l) { return l->getColor_u8() == materialColor; });
+      if (it == m_lines.end())
+      {
+        auto lines = CSetOfLines::Create();
+        lines->setName("lines");
+        lines->setColor_u8(materialColor);
+        m_lines.push_back(lines);
+        it = std::prev(m_lines.end());
+      }
+
+      TPoint3D ends[2];
+      for (unsigned int v = 0; v < 2; v++)
+      {
+        const aiVector3D& pos = mesh->mVertices[face.mIndices[v]];
+        ends[v] = transform.composePoint(TPoint3D(pos.x, pos.y, pos.z));
+        updateBoundingBox(TPoint3Df(ends[v]));
+      }
+      (*it)->appendLine(TSegment3D(ends[0], ends[1]));
+      continue;
+    }
+
+    // Other than lines, we only handle triangles (should be guaranteed by
+    // aiProcess_Triangulate)
     if (face.mNumIndices != 3)
     {
       continue;
@@ -891,6 +933,16 @@ size_t CAssimpModel::getNonTexturedTriangleCount() const
   return 0;
 }
 
+size_t CAssimpModel::getLineCount() const
+{
+  size_t count = 0;
+  for (const auto& lines : m_lines)
+  {
+    count += lines->size();
+  }
+  return count;
+}
+
 size_t CAssimpModel::getTotalVertexCount() const
 {
   size_t count = 0;
@@ -904,6 +956,8 @@ size_t CAssimpModel::getTotalVertexCount() const
   {
     count += m_nonTexturedMesh->getTrianglesCount() * 3;
   }
+
+  count += getLineCount() * 2;
 
   return count;
 }
@@ -981,6 +1035,7 @@ void CAssimpModel::rebuildFromAssimpScene()
   CSetOfObjects::clear();
   m_texturedMeshes.clear();
   m_nonTexturedMesh.reset();
+  m_lines.clear();
   m_cachedBBox.reset();
   m_bboxMin = {0, 0, 0};
   m_bboxMax = {0, 0, 0};
