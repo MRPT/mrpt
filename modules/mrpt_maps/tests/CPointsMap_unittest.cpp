@@ -628,7 +628,7 @@ TEST(CSimplePointsMapTests, nn_radius_search_3D)
 
 TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex3D)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
@@ -653,7 +653,7 @@ TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex3D)
 
 TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex2D)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
@@ -675,7 +675,7 @@ TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex2D)
 
 TEST(CSimplePointsMapTests, kdtreeSaveIndexAfterOtherDimensionQueried)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   // Regression test: querying one dimension first must not make the other
@@ -696,7 +696,7 @@ TEST(CSimplePointsMapTests, kdtreeSaveIndexAfterOtherDimensionQueried)
 
 TEST(CSimplePointsMapTests, kdtreeSaveIndexEmptyMap)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   const CSimplePointsMap emptyPts;
@@ -709,7 +709,7 @@ TEST(CSimplePointsMapTests, kdtreeSaveIndexEmptyMap)
 
 TEST(CSimplePointsMapTests, kdtreeLoadIndexPointCountMismatchThrows)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
