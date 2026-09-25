@@ -750,7 +750,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
       std::optional<PixelDepth> loadDepth = std::nullopt);
 
   /** Reads the image from a binary stream containing a binary jpeg file.
-   * Any other format supported by loadFromEncodedBuffer() is also accepted.
+   * Any other format supported by loadFromEncodedBuffer() is also accepted, always decoded as
+   * 8-bit (PixelDepth::D8U).
    * \exception std::exception On decoding errors
    */
   void loadFromStreamAsJPEG(mrpt::io::CStream& in);

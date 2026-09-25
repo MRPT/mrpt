@@ -149,6 +149,18 @@ TEST(CImage, LoadFromEncodedBufferForcedDepth)
   EXPECT_EQ(wide.ptrLine<uint16_t>(1)[3 * 2 + 2], (30 + 2 + 1) * 257);
 }
 
+TEST(CImage, LoadFromStreamIs8bit)
+{
+  mrpt::io::CMemoryStream buf;
+  buf.Write(kPngGray16_3x2.data(), kPngGray16_3x2.size());
+  buf.Seek(0);
+
+  CImage img;
+  img.loadFromStreamAsJPEG(buf);
+  EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
+  EXPECT_EQ(img.at<uint8_t>(2, 1), (3000 + 300) >> 8);
+}
+
 TEST(CImage, LoadFromEncodedBufferJPEG)
 {
   CImage src(16, 12, mrpt::img::CH_RGB);

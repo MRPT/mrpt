@@ -262,7 +262,8 @@ void CImage::loadFromStreamAsJPEG(mrpt::io::CStream& in)
 
   ASSERT_(!buf.empty());
 
-  if (!loadFromEncodedBuffer(buf.data(), buf.size()))
+  // 8-bit output, as with loadFromFile(): most CImage methods assume it.
+  if (!loadFromEncodedBuffer(buf.data(), buf.size(), CH_AS_IS, PixelDepth::D8U))
   {
     THROW_EXCEPTION_FMT("loadFromStreamAsJPEG: stbi decode failed: %s", stbi_failure_reason());
   }
