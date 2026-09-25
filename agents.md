@@ -115,6 +115,8 @@ mrpt_add_library(
   `scaleHalf()`/`grayscale()` dispatch to SSE2/SSSE3 kernels and return whether
   a fast path ran; the gray kernel needs `width % 16 == 0`, and no kernel runs
   in place. `scaleHalf()` with `IMG_INTERP_NN` point-samples.
+  `BayerPattern` names the top-left 2x2 block (ROS convention); OpenCV's
+  `COLOR_Bayer*` names are shifted (ROS `RGGB` == `COLOR_BayerBG2RGB`).
 * **mrpt_viz** has no OpenGL dependency (scene-graph description consumed by
   `mrpt_opengl`), so it is testable with plain unit tests.
 * **mrpt_gui**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the library
