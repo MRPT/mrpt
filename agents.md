@@ -109,7 +109,8 @@ mrpt_add_library(
 * **mrpt_math**: fixed-size matrices are explicitly instantiated only for some
   sizes (square `CMatrixFixed`: 2,3,4,6,7,12; `CVectorFixed`: 2,3,4,5,6,7,12;
   see `src/MatrixVectorBase_instantiate_*.cpp`). Other sizes compile but fail
-  to link.
+  to link. Never `#pragma pack(1)` a struct holding a non-packed class member
+  (e.g. `TPoint3D`): misaligned members crash on strict-alignment CPUs (armhf).
 * **mrpt_img**: `CImage::at<T>()` is a raw `reinterpret_cast`; for 3-channel
   images use `at<uint8_t>(x, y, channel)`, not `at<TColor>()`.
   `scaleHalf()`/`grayscale()` dispatch to SSE2/SSSE3 kernels and return whether
