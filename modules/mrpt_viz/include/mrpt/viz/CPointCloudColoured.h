@@ -390,18 +390,22 @@ void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
   }
   const mrpt::viz::PointCloudAdapter<POINTSMAP> pc_src(*themap);
   const size_t N = pc_src.size();
+
+  // Read the source before taking our own lock, so the two objects' locks are
+  // never held at once:
+  std::vector<mrpt::math::TPoint3Df> points(N);
+  std::vector<mrpt::img::TColor> colors(N);
+  for (size_t i = 0; i < N; i++)
   {
-    // One lock for the whole copy, instead of one per point:
+    float x = 0, y = 0, z = 0, r = 0, g = 0, b = 0, a = 1;
+    pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
+    points[i] = {x, y, z};
+    colors[i] = mrpt::img::TColor(f2u8(r), f2u8(g), f2u8(b), f2u8(a));
+  }
+  {
     std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
-    m_points.resize(N);
-    m_point_colors.resize(N);
-    for (size_t i = 0; i < N; i++)
-    {
-      float x = 0, y = 0, z = 0, r = 0, g = 0, b = 0, a = 1;
-      pc_src.getPointXYZ_RGBAf(i, x, y, z, r, g, b, a);
-      m_points[i] = {x, y, z};
-      m_point_colors[i] = mrpt::img::TColor(f2u8(r), f2u8(g), f2u8(b), f2u8(a));
-    }
+    m_points = std::move(points);
+    m_point_colors = std::move(colors);
   }
   markAllPointsAsNew();
   CVisualObject::notifyChange();
