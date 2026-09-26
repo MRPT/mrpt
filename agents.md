@@ -52,6 +52,9 @@ mrpt_add_library(
   smart pointer macros.
 * Do not expose Eigen headers in public API headers unless the user allows it;
   keep Eigen `#include`s in `src/`.
+* Keep classes small (no large inline arrays): stack frames over 64 KB get
+  wrong unwind info from GCC's stack-clash protection on aarch64, crashing
+  exception backtraces.
 * Prefer `std::optional` return values over bool + output-parameter APIs
   (keep the old signature as a `[[deprecated]]` inline shim when replacing one).
 * Every new `.cpp`, `.h` and `CMakeLists.txt` starts with the MRPT header:
