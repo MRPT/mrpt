@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 
 // These #defines from:
 // https://github.com/boostorg/endian/blob/master/include/boost/endian/detail/intrinsic.hpp
@@ -113,9 +114,20 @@ void mrpt::reverseBytesInPlace(double& v_in_out) { reverseBytesInPlace_8b(v_in_o
 
 void mrpt::reverseBytesInPlace(long double& v_in_out)
 {
-  // Its size is platform-dependent (8, 12 or 16 bytes): reverse all of them.
   auto* p = reinterpret_cast<unsigned char*>(&v_in_out);
-  std::reverse(p, p + sizeof(long double));
+  if constexpr (
+      std::numeric_limits<long double>::digits == 106 && sizeof(long double) == 2 * sizeof(double))
+  {
+    // IBM double-double: a pair of doubles whose high/low order does not
+    // depend on endianness, so only swap the bytes within each of them.
+    std::reverse(p, p + sizeof(double));
+    std::reverse(p + sizeof(double), p + 2 * sizeof(double));
+  }
+  else
+  {
+    // Its size is platform-dependent (8, 12 or 16 bytes): reverse all of them.
+    std::reverse(p, p + sizeof(long double));
+  }
 }
 
 void mrpt::reverseBytesInPlace(std::chrono::time_point<mrpt::Clock>& v_in_out)
