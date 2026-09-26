@@ -36,10 +36,11 @@ check("createSensor returns the concrete class", isinstance(gps, CGPSInterface),
 check("createSensor unknown -> None", CGenericSensor.createSensor("NoSuchSensor") is None)
 
 print("Configuration")
-cfg = CConfigFileMemory("[GPS]\nsensorLabel=MY_GPS\nCOM_port_LIN=/dev/ttyNONEXISTENT\nbaudRate=4800\n")
+cfg = CConfigFileMemory(
+    "[GPS]\nsensorLabel=MY_GPS\nCOM_port_LIN=/dev/ttyNONEXISTENT\nCOM_port_WIN=COM99\nbaudRate=4800\n")
 gps.loadConfig(cfg, "GPS")
 check("sensorLabel from config", gps.getSensorLabel() == "MY_GPS", f"got {gps.getSensorLabel()}")
-check("serial port from config", gps.getSerialPortName() == "/dev/ttyNONEXISTENT",
+check("serial port from config", gps.getSerialPortName() in ("/dev/ttyNONEXISTENT", "COM99"),
       f"got {gps.getSerialPortName()}")
 check("class name", gps.getClassName() == "CGPSInterface")
 check("no observations yet", gps.getObservations() == [])

@@ -57,6 +57,21 @@ check("topological distances", dists == {0: 0.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 2.0}
 check("neighbors", gd.getNeighborsOf(1) == {0, 2, 4})
 gd.root = 0
 gd.dijkstra_nodes_estimate()
+gdis = _G2()
+gdis.insertEdge(0, 1, _CP2(1.0, 0.0, 0.0))
+gdis.insertEdge(5, 6, _CP2(1.0, 0.0, 0.0))  # a separate component
+check("disconnected: distances of reachable nodes", gdis.getNodeDistances(0) == {0: 0.0, 1: 1.0})
+check("disconnected: path within component", gdis.dijkstra_path(0, 1) == [0, 1])
+try:
+    gdis.dijkstra_path(0, 6)
+    check("disconnected: unreachable target raises", False)
+except ValueError:
+    check("disconnected: unreachable target raises", True)
+gedges = _G2()  # edges only, no node poses yet
+for i in range(3):
+    gedges.insertEdge(i, i + 1, _CP2(1.0, 0.0, 0.0))
+gedges.dijkstra_nodes_estimate()
+check("estimate with no initial node poses", abs(gedges.getNodePose(3).x - 3.0) < 1e-12)
 check("dijkstra_nodes_estimate", abs(gd.getNodePose(2).x - 2.0) < 1e-12
       and abs(gd.getNodePose(4).x - 4.0) < 1e-12, f"got {gd.getNodePose(4)}")
 

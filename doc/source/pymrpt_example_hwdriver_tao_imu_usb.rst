@@ -13,6 +13,6 @@ with the pymrpt hwdrivers module.
     </iframe>
 
 
-.. literalinclude:: ../../python-examples/hwdriver-tao-imu-usb.py
+.. literalinclude:: ../../mrpt_examples_py/hwdriver-tao-imu-usb.py
    :language: python
    :linenos:

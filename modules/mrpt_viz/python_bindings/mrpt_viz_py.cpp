@@ -106,7 +106,30 @@ PYBIND11_MODULE(_bindings, m)
           [](CVisualObject& self, const mrpt::poses::CPose2D& p)
           { self.setPose(mrpt::poses::CPose3D(p)); },
           "pose"_a)
-      .def("getPose", &CVisualObject::getPose);
+      .def("getPose", &CVisualObject::getPose)
+      .def(
+          "setColor",
+          [](CVisualObject& self, float r, float g, float b, float a)
+          { self.setColor(r, g, b, a); },
+          "r"_a, "g"_a, "b"_a, "a"_a = 1.0f, "Sets the color from float components in [0,1]")
+      .def(
+          "setLocation",
+          [](CVisualObject& self, double x, double y, double z) { self.setLocation(x, y, z); },
+          "x"_a, "y"_a, "z"_a, "Changes the position, keeping the orientation")
+      .def(
+          "setLocation",
+          [](CVisualObject& self, const mrpt::math::TPoint3D& p) { self.setLocation(p); }, "p"_a)
+      .def(
+          "setScale", [](CVisualObject& self, float s) { self.setScale(s); }, "s"_a,
+          "Sets the same scale factor in x, y and z")
+      .def(
+          "setScale",
+          [](CVisualObject& self, float sx, float sy, float sz) { self.setScale(sx, sy, sz); },
+          "sx"_a, "sy"_a, "sz"_a)
+      .def_property(
+          "castShadows", [](const CVisualObject& self) { return self.castShadows(); },
+          [](CVisualObject& self, bool doCast) { self.castShadows(doCast); },
+          "Whether the object casts shadows (if shadows are enabled in the viewport)");
 
   // Every class deriving from CVisualObject is registered with
   // py::multiple_inheritance(): most renderables inherit CVisualObject
@@ -162,6 +185,8 @@ PYBIND11_MODULE(_bindings, m)
       m, "CPointCloud", py::multiple_inheritance())
       .def(py::init<>())
       .def("clear", &CPointCloud::clear)
+      .def("setPointSize", &CPointCloud::setPointSize, "pointSize"_a, "Point size, in pixels")
+      .def("getPointSize", &CPointCloud::getPointSize)
       .def(
           "insertPoint",
           static_cast<void (CPointCloud::*)(float, float, float)>(&CPointCloud::insertPoint), "x"_a,
@@ -265,7 +290,10 @@ PYBIND11_MODULE(_bindings, m)
           })
       .def("setWireframe", &CBox::setWireframe)
       .def("isWireframe", &CBox::isWireframe)
-      .def("enableBoxBorder", &CBox::enableBoxBorder);
+      .def("enableBoxBorder", &CBox::enableBoxBorder)
+      .def(
+          "setBoxBorderColor", &CBox::setBoxBorderColor, "color"_a,
+          "Color of the box edges, drawn if enableBoxBorder()");
 
   // 12. CSphere
   py::class_<CSphere, CVisualObject, std::shared_ptr<CSphere>>(
@@ -373,7 +401,11 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("x"), py::arg("y"), py::arg("z"), py::arg("r") = 1.0f, py::arg("g") = 1.0f,
           py::arg("b") = 1.0f, py::arg("a") = 1.0f)
       .def("size", &CPointCloudColoured::size)
-      .def("__len__", [](const CPointCloudColoured& self) { return self.size(); });
+      .def("__len__", [](const CPointCloudColoured& self) { return self.size(); })
+      .def(
+          "setPointSize", &CPointCloudColoured::setPointSize, "pointSize"_a,
+          "Point size, in pixels")
+      .def("getPointSize", &CPointCloudColoured::getPointSize);
 
   // 22. stock_objects submodule
   // TTriangle

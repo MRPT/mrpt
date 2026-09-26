@@ -61,6 +61,13 @@ back_utm = topo.UTMToGeodetic(utm, zone, "N")
 check("UTM round-trip lat", abs(back_utm.lat.decimal_value - 40.3154333) < 1e-6)
 check("UTM round-trip lon", abs(back_utm.lon.decimal_value - (-3.4857166)) < 1e-6)
 check("UTM round-trip height", abs(back_utm.height - 50.0) < 1e-9)
+back_band = topo.UTMToGeodetic(utm, zone, band=band)
+check("UTM round-trip via band", abs(back_band.lat.decimal_value - 40.3154333) < 1e-6)
+try:
+    topo.UTMToGeodetic(utm, zone)
+    check("hemisphere or band required", False)
+except ValueError:
+    check("hemisphere or band required", True)
 
 print("TEllipsoid")
 wgs84 = topo.TEllipsoid.Ellipsoid_WGS84()

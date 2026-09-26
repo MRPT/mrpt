@@ -68,7 +68,7 @@ from mrpt.topography import TEllipsoid, geodeticToUTM, UTMToGeodetic
 
 utm, zone, band = geodeticToUTM(origin)
 print(f"\nUTM: x={utm.x:.2f} y={utm.y:.2f} zone={zone}{band}")
-back = UTMToGeodetic(utm, zone, "N")
+back = UTMToGeodetic(utm, zone, band=band)  # or hemisphere="N"
 print(f"  back to geodetic: lat={back.lat.decimal_value:.6f} lon={back.lon.decimal_value:.6f}")
 
 utm_intl, _, _ = geodeticToUTM(origin, TEllipsoid.Ellipsoid_Internacional_1924())

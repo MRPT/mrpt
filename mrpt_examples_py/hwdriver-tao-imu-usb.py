@@ -34,4 +34,4 @@ while True:
         print(f"t={Clock.toDouble(timestamp):.3f} "
               f"wz={obs.get(TIMUDataIndex.IMU_WZ):+.4f} rad/s "
               f"acc_z={obs.get(TIMUDataIndex.IMU_Z_ACC):+.3f} m/s2")
-    time.sleep(1.0 / imu.getProcessRate())
+    time.sleep(0.005)  # poll often: data is buffered by the driver between calls

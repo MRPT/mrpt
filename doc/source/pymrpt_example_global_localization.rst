@@ -15,6 +15,6 @@ for 2D and 3D poses, or SE(2) or SE(3), respectively.
     </iframe>
 
 
-.. literalinclude:: ../../python-examples/global_localization.py
+.. literalinclude:: ../../mrpt_examples_py/global_localization.py
    :language: python
    :linenos:

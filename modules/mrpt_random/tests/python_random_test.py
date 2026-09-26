@@ -66,6 +66,20 @@ zero_mean = g3.drawGaussianMultivariateMany(5000, cov)
 check("zero mean default", np.allclose(zero_mean.mean(axis=0), 0.0, atol=0.15))
 singular = g3.drawGaussianMultivariateMany(10, np.array([[1.0, 1.0], [1.0, 1.0]]))
 check("PSD cov accepted", np.allclose(singular[:, 0], singular[:, 1]))
+for bad_cov, what in [([[1.0, 2.0], [0.0, 1.0]], "asymmetric"), ([[1.0, 2.0], [2.0, 1.0]], "indefinite")]:
+    try:
+        g3.drawGaussianMultivariateMany(3, bad_cov)
+        check(f"{what} cov rejected", False)
+    except ValueError:
+        check(f"{what} cov rejected", True)
+g_a = _RG(5)
+g_b = _RG(5)
+try:
+    g_a.drawGaussianMultivariateMany(2, cov, mean=[1.0, 2.0, 3.0])
+except ValueError:
+    pass
+check("bad mean does not consume random numbers",
+      np.allclose(g_a.drawGaussianMultivariateMany(2, cov), g_b.drawGaussianMultivariateMany(2, cov)))
 
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

@@ -378,10 +378,10 @@ PYBIND11_MODULE(_bindings, m)
           "Returns the current robot pose estimation (a CPose3DPDF)")
       .def(
           "getCurrentlyBuiltMetricMap",
-          [](const RBPF& b) -> const mrpt::maps::CMultiMetricMap&
-          { return b.getCurrentlyBuiltMetricMap(); },
-          py::return_value_policy::reference_internal,
-          "Returns the map of the most likely particle")
+          [](const RBPF& b)
+          { return std::make_shared<mrpt::maps::CMultiMetricMap>(b.getCurrentlyBuiltMetricMap()); },
+          "Returns a copy of the map of the most likely particle (the particles are replaced as "
+          "the filter runs, so a reference would not stay valid)")
       .def(
           "getCurrentlyBuiltMap",
           [](const RBPF& b)

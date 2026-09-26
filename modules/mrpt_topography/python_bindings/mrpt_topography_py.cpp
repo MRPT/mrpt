@@ -19,6 +19,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <cctype>
+#include <optional>
+
 namespace py = pybind11;
 using namespace pybind11::literals;
 
@@ -230,19 +233,47 @@ PYBIND11_MODULE(_bindings, m)
 
   m.def(
       "UTMToGeodetic",
-      [](const mrpt::math::TPoint3D& utm, int zone, const std::string& hemisphere,
-         const mrpt::topography::TEllipsoid& ellip)
+      [](const mrpt::math::TPoint3D& utm, int zone, const std::optional<std::string>& hemisphere,
+         const mrpt::topography::TEllipsoid& ellip, const std::optional<std::string>& band)
       {
-        if (hemisphere.size() != 1)
+        if (hemisphere.has_value() == band.has_value())
         {
-          throw std::invalid_argument("hemisphere must be 'N' or 'S'");
+          throw std::invalid_argument("Pass exactly one of hemisphere ('N'/'S') or band");
+        }
+        char hem = 0;
+        if (hemisphere)
+        {
+          if (hemisphere->size() != 1)
+          {
+            throw std::invalid_argument("hemisphere must be 'N' or 'S'");
+          }
+          hem = (*hemisphere)[0];
+        }
+        else
+        {
+          // UTM latitude bands: C-M are south of the equator, N-X north.
+          const std::string south = "CDEFGHJKLM";
+          const std::string north = "NPQRSTUVWX";
+          const char b = band->size() == 1 ? static_cast<char>(std::toupper((*band)[0])) : 0;
+          if (b != 0 && south.find(b) != std::string::npos)
+          {
+            hem = 'S';
+          }
+          else if (b != 0 && north.find(b) != std::string::npos)
+          {
+            hem = 'N';
+          }
+          else
+          {
+            throw std::invalid_argument("band must be a UTM latitude band letter (C-X)");
+          }
         }
         mrpt::topography::TGeodeticCoords gd;
-        mrpt::topography::UTMToGeodetic(utm, zone, hemisphere[0], gd, ellip);
+        mrpt::topography::UTMToGeodetic(utm, zone, hem, gd, ellip);
         return gd;
       },
-      "utm"_a, "zone"_a, "hemisphere"_a,
-      "ellipsoid"_a = mrpt::topography::TEllipsoid::Ellipsoid_WGS84(),
-      "Convert UTM coordinates (utm.z is the height) in the given zone and hemisphere "
-      "('N' or 'S') to geodetic coordinates");
+      "utm"_a, "zone"_a, "hemisphere"_a = std::nullopt,
+      "ellipsoid"_a = mrpt::topography::TEllipsoid::Ellipsoid_WGS84(), "band"_a = std::nullopt,
+      "Convert UTM coordinates (utm.z is the height) to geodetic coordinates. Give either the "
+      "hemisphere ('N' or 'S') or the latitude band returned by geodeticToUTM() (band=...).");
 }

@@ -61,12 +61,12 @@ box.setColor(200, 100, 0)
 scene.insert(box)
 
 sphere = CSphere(0.5, 20)
-sphere.pose.x = 2.0
+sphere.setLocation(2.0, 0.0, 0.0)
 sphere.setColor(0, 180, 255)
 scene.insert(sphere)
 
 cyl = CCylinder(0.2, 0.0, 1.5, 20)   # cone shape
-cyl.pose.x = -2.0
+cyl.setLocation(-2.0, 0.0, 0.0)
 cyl.setColor(50, 200, 50)
 scene.insert(cyl)
 
@@ -116,26 +116,22 @@ scene.insert(simple_line)
 # Text labels
 # ---------------------------------------------------------------------------
 lbl = CText("Hello MRPT")
-lbl.setFont("sans")
+lbl.setFont("sans", 20)
 scene.insert(lbl)
 
 lbl3 = CText3D("3D label", "sans", 0.3)
-lbl3.pose.x = 1.0
-lbl3.pose.y = 1.0
+lbl3.setLocation(1.0, 1.0, 0.0)  # note: "lbl3.pose.x = ..." would modify a copy
 scene.insert(lbl3)
 
 # ---------------------------------------------------------------------------
 # Uncertainty ellipsoid
 # ---------------------------------------------------------------------------
-cov = CMatrixDouble33()
-arr = np.diag([0.5, 0.2, 0.1])
-cov2 = CMatrixDouble33(arr)
+cov2 = CMatrixDouble33(np.diag([0.5, 0.2, 0.1]))
 ell = CEllipsoid3D()
 ell.setCovMatrix(cov2)
 ell.setQuantiles(2.0)
 ell.set3DsegmentsCount(20)
-ell.pose.x = -2.0
-ell.pose.y = 2.0
+ell.setLocation(-2.0, 2.0, 0.0)
 scene.insert(ell)
 
 # ---------------------------------------------------------------------------

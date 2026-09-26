@@ -511,6 +511,10 @@ PYBIND11_MODULE(_bindings, m)
             {
               throw std::invalid_argument("Expected a 2D (HxW) array of ranges in meters");
             }
+            if (!(o.rangeUnits > 0))
+            {
+              throw std::invalid_argument("rangeUnits must be positive");
+            }
             const auto r = arr.unchecked<2>();
             o.rangeImage_setSize(static_cast<int>(r.shape(0)), static_cast<int>(r.shape(1)));
             const float maxRaw = std::numeric_limits<uint16_t>::max();
@@ -519,12 +523,16 @@ PYBIND11_MODULE(_bindings, m)
               for (py::ssize_t col = 0; col < r.shape(1); col++)
               {
                 const float raw = std::round(r(row, col) / o.rangeUnits);
-                o.rangeImage(row, col) = static_cast<uint16_t>(std::clamp(raw, 0.0f, maxRaw));
+                // NaN or infinite ranges (a common "invalid" mark) are stored as 0:
+                o.rangeImage(row, col) =
+                    std::isfinite(raw) ? static_cast<uint16_t>(std::clamp(raw, 0.0f, maxRaw)) : 0;
               }
             }
             o.hasRangeImage = true;
           },
-          "ranges"_a, "Sets the range image from an HxW array of ranges in meters")
+          "ranges"_a,
+          "Sets the range image from an HxW array of ranges in meters. NaN or infinite values "
+          "are stored as 0 (invalid).")
       .def(
           "unprojectInto",
           [](Obs3D& o, const mrpt::obs::T3DPointsProjectionParams& params)

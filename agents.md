@@ -227,6 +227,9 @@ mrpt_add_library(
   * Build NumPy arrays with an explicit shape vector
     (`py::array_t<T>(std::vector<py::ssize_t>{n})`): with pybind11 2.9,
     `py::array_t<T>(n)` creates a zero-stride array whose elements alias.
+  * Bindings built with pybind11 < 2.12 crash on NumPy >= 2 arrays (`mrpt.rtti`
+    warns at import). A pip NumPy 2 in `~/.local` shadows the system one: run
+    tests with `python3 -s` in that case.
 
 ## 7. Code coverage
 

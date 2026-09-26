@@ -78,6 +78,13 @@ ri = o3d.getRangeImageAsNumpy()
 check("range image shape", ri.shape == (H, W), f"got {ri.shape}")
 check("range image meters", np.allclose(ri, 2.0, atol=o3d.rangeUnits))
 check("raw range image", o3d.getRangeImageRawAsNumpy().dtype == np.uint16)
+o_nan = CObservation3DRangeScan()
+bad = np.full((2, 3), 1.5, dtype=np.float32)
+bad[0, 0] = np.nan
+bad[1, 2] = np.inf
+o_nan.setRangeImageFromNumpy(bad)
+raw_nan = o_nan.getRangeImageRawAsNumpy()
+check("NaN/inf ranges stored as 0", raw_nan[0, 0] == 0 and raw_nan[1, 2] == 0 and raw_nan[0, 1] > 0)
 o3d.unprojectInto()
 pts = o3d.getPoints3DAsNumpy()
 check("unprojected point count", pts.shape == (W * H, 3), f"got {pts.shape}")

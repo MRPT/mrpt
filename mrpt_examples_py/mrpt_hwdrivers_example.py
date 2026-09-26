@@ -22,6 +22,7 @@ gps.loadConfig(CConfigFileMemory("""
 [GPS]
 sensorLabel  = GPS_RTK
 COM_port_LIN = /dev/ttyUSB0
+COM_port_WIN = COM3
 baudRate     = 115200
 """), "GPS")
 print(f"{gps!r}: port={gps.getSerialPortName()}, rate={gps.getProcessRate()} Hz")

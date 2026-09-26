@@ -131,7 +131,10 @@ check("RBPF built map", rbpf.getCurrentlyBuiltMapSize() >= 1,
       f"got {rbpf.getCurrentlyBuiltMapSize()}")
 path = rbpf.getCurrentMostLikelyPath()
 check("RBPF path", len(path) >= 1)
-check("RBPF metric map", len(rbpf.getCurrentlyBuiltMetricMap()) == 1)
+built_map = rbpf.getCurrentlyBuiltMetricMap()
+check("RBPF metric map", len(built_map) == 1)
+rbpf.clear()  # destroys the particles: the returned map must stay valid
+check("RBPF map is an independent copy", len(built_map) == 1 and len(str(built_map)) > 0)
 check("RBPF pose estimate", rbpf.getCurrentPoseEstimation() is not None)
 
 print(f"\nResults: {PASS} passed, {FAIL} failed")

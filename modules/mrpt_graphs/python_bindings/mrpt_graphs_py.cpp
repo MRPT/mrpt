@@ -20,8 +20,17 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <limits>
+
 namespace py = pybind11;
 using namespace pybind11::literals;
+
+namespace
+{
+// A finite search radius makes CDijkstra build the tree of the nodes reachable
+// from the source, instead of throwing if the graph is not fully connected.
+constexpr size_t REACHABLE_ONLY = std::numeric_limits<size_t>::max() - 1;
+}  // namespace
 
 // Helper: expose CNetworkOfPoses<CPOSE> as the given Python class name
 template <typename CPOSE>
@@ -77,7 +86,11 @@ void bind_CNetworkOfPoses(py::module& m, const char* className)
           "dijkstra_path",
           [](const G& g, mrpt::graphs::TNodeID source, mrpt::graphs::TNodeID target)
           {
-            const mrpt::graphs::CDijkstra<G> dijkstra(g, source);
+            const mrpt::graphs::CDijkstra<G> dijkstra(g, source, {}, {}, REACHABLE_ONLY);
+            if (!dijkstra.getNodeDistanceToRoot(target))
+            {
+              throw py::value_error("target node is not reachable from source");
+            }
             typename mrpt::graphs::CDijkstra<G>::edge_list_t edges;
             dijkstra.getShortestPathTo(target, edges);
             std::vector<mrpt::graphs::TNodeID> path{source};
@@ -89,12 +102,12 @@ void bind_CNetworkOfPoses(py::module& m, const char* className)
           },
           "source"_a, "target"_a,
           "Shortest path (fewest edges) between two nodes as a list of node IDs, from source to "
-          "target, ignoring edge directions. Raises if target is unreachable.")
+          "target, ignoring edge directions. Raises ValueError if target is unreachable.")
       .def(
           "getNodeDistances",
           [](const G& g, mrpt::graphs::TNodeID source)
           {
-            const mrpt::graphs::CDijkstra<G> dijkstra(g, source);
+            const mrpt::graphs::CDijkstra<G> dijkstra(g, source, {}, {}, REACHABLE_ONLY);
             std::map<mrpt::graphs::TNodeID, double> dists;
             for (const auto id : dijkstra.getListOfAllNodes())
             {
