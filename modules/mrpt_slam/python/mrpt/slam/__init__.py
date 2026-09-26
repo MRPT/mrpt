@@ -10,6 +10,10 @@ Provides:
   - CMetricMapBuilderICPOptions : Options for CMetricMapBuilderICP
   - TICPAlgorithm          : Enum: icpClassic, icpLevenbergMarquardt
   - TICPCovarianceMethod   : Enum: icpCovLinealMSE, icpCovFiniteDifferences
+  - CMonteCarloLocalization2D/3D, TMonteCarloLocalizationParams, TKLDParams :
+                             particle filter localization (run it with
+                             mrpt.bayes.CParticleFilter.executeOn())
+  - CMetricMapBuilderRBPF  : Rao-Blackwellized particle filter SLAM
 
 Basic ICP-SLAM usage::
 
@@ -29,7 +33,9 @@ Basic ICP-SLAM usage::
 import mrpt.rtti          # noqa: F401
 import mrpt.serialization  # noqa: F401
 import mrpt.poses          # noqa: F401
+import mrpt.bayes          # noqa: F401  (CParticleFilter.executeOn() is attached here)
 import mrpt.maps           # noqa: F401
+import mrpt.viz            # noqa: F401
 
 from mrpt.slam._bindings import (
     CICP,
@@ -44,6 +50,12 @@ from mrpt.slam._bindings import (
     icpLevenbergMarquardt,
     icpCovLinealMSE,
     icpCovFiniteDifferences,
+    TKLDParams,
+    TMonteCarloLocalizationParams,
+    CMonteCarloLocalization2D,
+    CMonteCarloLocalization3D,
+    TPredictionParams,
+    CMetricMapBuilderRBPF,
 )
 
 __all__ = [
@@ -59,4 +71,10 @@ __all__ = [
     "icpLevenbergMarquardt",
     "icpCovLinealMSE",
     "icpCovFiniteDifferences",
+    "TKLDParams",
+    "TMonteCarloLocalizationParams",
+    "CMonteCarloLocalization2D",
+    "CMonteCarloLocalization3D",
+    "TPredictionParams",
+    "CMetricMapBuilderRBPF",
 ]

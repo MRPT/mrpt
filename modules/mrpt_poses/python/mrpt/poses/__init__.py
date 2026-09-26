@@ -10,6 +10,7 @@ mrpt-poses Python API.
 import mrpt.rtti          # noqa: F401  (CObject)
 import mrpt.serialization  # noqa: F401  (CSerializable)
 import mrpt.math           # noqa: F401  (CMatrixFixed used by getRotationMatrix, etc.)
+import mrpt.bayes          # noqa: F401  (CParticleFilterCapable, base of the particle PDFs)
 
 # Import the compiled pybind11 module
 from . import _bindings as _b
@@ -35,6 +36,8 @@ CPose3DPDFGaussian = _b.CPose3DPDFGaussian
 CPose3DPDFGaussianInf = _b.CPose3DPDFGaussianInf
 CPosePDFGaussian = _b.CPosePDFGaussian
 CPosePDFGaussianInf = _b.CPosePDFGaussianInf
+CPosePDFParticles = _b.CPosePDFParticles
+CPose3DPDFParticles = _b.CPose3DPDFParticles
 
 # Interpolators
 CPose2DInterpolator = _b.CPose2DInterpolator
@@ -60,6 +63,8 @@ __all__ = [
     "CPose3DPDFGaussianInf",
     "CPosePDFGaussian",
     "CPosePDFGaussianInf",
+    "CPosePDFParticles",
+    "CPose3DPDFParticles",
     "CPose2DInterpolator",
     "CPose3DInterpolator",
     "CPoseRandomSampler",

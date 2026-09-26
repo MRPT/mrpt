@@ -62,6 +62,7 @@ CAnimatedAssimpModel = _b.CAnimatedAssimpModel
 
 # stock_objects submodule
 stock_objects = _b.stock_objects
+posePDF2opengl = _b.posePDF2opengl
 
 # 1. Make Scene building intuitive with '<<' style (using __lshift__)
 
@@ -86,6 +87,7 @@ def create_point_cloud(pts_array, color=(255, 255, 255)):
 
 
 __all__ = [
+    'posePDF2opengl',
     'Scene', 'Viewport', 'CSetOfObjects', 'CCamera',
     'CPointCloud', 'CPointCloudColoured', 'CAssimpModel', 'AssimpLoadFlags',
     'CGridPlaneXY', 'CGridPlaneXZ',

@@ -1,237 +1,155 @@
 #!/usr/bin/env python3
 
-# Usage example:
+# Global localization of a robot with a particle filter (Monte Carlo
+# Localization) on a known map, reading odometry and laser scans from a
+# rawlog dataset.
 #
-# . install/setup.bash
-# ./global_localization.py ../modules/mrpt_data/config_files/pf-localization/localization_demo.ini
+# Usage (from the MRPT source tree):
 #
-# NOTE: This script requires the following classes that are not yet wrapped:
-#   mrpt.slam.TMonteCarloLocalizationParams  (pybind11_plan_v3.md §1.4)
-#   mrpt.slam.CMonteCarloLocalization2D      (pybind11_plan_v3.md §1.4)
-#   mrpt.maps.TSetOfMetricMapInitializers    (pybind11_plan_v3.md §1.2)
-#   mrpt.maps.CMultiMetricMap                (pybind11_plan_v3.md §1.2)
-#   mrpt.maps.CSimpleMap                     (pybind11_plan_v3.md §1.1)
-#   mrpt.serialization.archiveFrom           (pybind11_plan_v3.md §0.9)
-#   mrpt.obs.CRawlog                         (pybind11_plan_v3.md §1.1)
-#   mrpt.obs.VisualizationParameters         (pybind11_plan_v3.md §1.1)
-#   mrpt.obs.obs_to_viz                      (pybind11_plan_v3.md §1.1)
-#   mrpt.img.TColorf                         (pybind11_plan_v3.md §0.3)
+#   . install/setup.bash
+#   ./mrpt_examples_py/global_localization.py \
+#       modules/mrpt_data/config_files/pf-localization/localization_demo.ini
+#
+# Add --no-gui to run without a 3D window, and --max-steps N to stop early.
+
+import argparse
 import os
 import sys
-import argparse
 from time import sleep
 
+from mrpt.bayes import CParticleFilter, TParticleFilterOptions
 from mrpt.config import CConfigFile
-from mrpt.io import CFileGZInputStream
-from mrpt.bayes import CParticleFilter
-from mrpt.maps import CSimplePointsMap, COccupancyGridMap2D
-from mrpt.gui import CDisplayWindow3D
+from mrpt.img import TColorf
+from mrpt.io import CCompressedInputStream, archiveFrom
+from mrpt.maps import (
+    CMultiMetricMap,
+    COccupancyGridMap2D,
+    CSimpleMap,
+    TSetOfMetricMapInitializers,
+    VisualizationParameters,
+    obs_to_viz,
+)
+from mrpt.obs import CRawlog
 from mrpt.poses import CPose3D
-from mrpt.viz import CSetOfObjects
+from mrpt.slam import CMonteCarloLocalization2D, TMonteCarloLocalizationParams
 
+DEFAULT_CONFIG = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "../modules/mrpt_data/config_files/pf-localization/localization_demo.ini")
 
-# args
 parser = argparse.ArgumentParser()
-parser.add_argument('config', help='Config file.')
-parser.add_argument(
-    '-d', '--delay', help='Time delay in seconds. Default: 0.2')
-parser.add_argument('-r', '--resolution',
-                    help='Window resolution. Default: 800x600')
+parser.add_argument("config", nargs="?", default=DEFAULT_CONFIG, help="Config file (.ini)")
+parser.add_argument("-d", "--delay", type=float, default=0.2,
+                    help="Delay between steps, in seconds (default: 0.2)")
+parser.add_argument("-r", "--resolution", default="800x600",
+                    help="Window resolution (default: 800x600)")
+parser.add_argument("--no-gui", action="store_true", help="Do not open a 3D window")
+parser.add_argument("--max-steps", type=int, default=0,
+                    help="Stop after this many rawlog entries (default: 0 = all)")
 args = parser.parse_args()
 
-# get filenames from args
-config_filename = args.config
-
-# get configuration
+config_filename = os.path.abspath(args.config)
 if not os.path.exists(config_filename):
-    print('Error. Config file not found.')
-    print('Quit.')
-    sys.exit(1)
-
+    sys.exit(f"Error: config file not found: {config_filename}")
 config_file = CConfigFile(config_filename)
-print('Load config file {}.'.format(config_filename))
-sec_name = 'LocalizationExperiment'
+print(f"Loaded config file {config_filename}")
 
-rawlog_filename = config_file.read_string(sec_name, "rawlog_file", "")
-map_filename = config_file.read_string(sec_name, "map_file", "")
+# File names in the config are relative to the config file directory:
+sec_name = "LocalizationExperiment"
+config_dir = os.path.dirname(config_filename)
+rawlog_filename = os.path.join(config_dir, config_file.read_string(sec_name, "rawlog_file", ""))
+map_filename = os.path.join(config_dir, config_file.read_string(sec_name, "map_file", ""))
+particles_count = config_file.read_int(sec_name, "particles_count", 10000)
+for f in (rawlog_filename, map_filename):
+    if not os.path.exists(f):
+        sys.exit(f"Error: file not found: {f}")
 
+# Particle filter options:
+pf_options = TParticleFilterOptions()
+pf_options.loadFromConfigFileName(config_filename, "PF_options")
 
-# default filenames are relative so we need to change our dir to supplied config file dir
-curr_dir = os.path.abspath(os.curdir)
-config_dir = os.path.dirname(os.path.abspath(config_filename))
-# rawlog
-if not os.path.exists(os.path.abspath(rawlog_filename)):
-    os.chdir(config_dir)
-    if not os.path.exists(os.path.abspath(rawlog_filename)):
-        print('Error. Rawlog file not found.')
-        print('Quit.')
-        sys.exit(1)
-    else:
-        rawlog_filename = os.path.abspath(rawlog_filename)
-        os.chdir(curr_dir)
-rawlog_file = CFileGZInputStream(rawlog_filename)
-print('Load rawlog file {}.'.format(rawlog_filename))
+# MCL options, including KLD-sampling (adaptive number of particles):
+mcl_options = TMonteCarloLocalizationParams()
+mcl_options.KLD_params.loadFromConfigFileName(config_filename, "KLD_options")
 
-# map
-if not os.path.exists(os.path.abspath(map_filename)):
-    os.chdir(config_dir)
-    if not os.path.exists(os.path.abspath(map_filename)):
-        print('Error. Map file not found.')
-        print('Quit.')
-        sys.exit(1)
-    else:
-        map_filename = os.path.abspath(map_filename)
-        os.chdir(curr_dir)
-
-# Load parameters:
-# KLD (Adaptive sampling)
-# TODO: needs mrpt.slam.TMonteCarloLocalizationParams wrapped (pybind11_plan_v3.md §1.4)
-from mrpt.slam import TMonteCarloLocalizationParams  # noqa: not yet wrapped
-pdf_prediction_options = TMonteCarloLocalizationParams()
-pdf_prediction_options.KLD_params.loadFromConfigFileName(
-    config_filename, 'KLD_options')
-pdf_prediction_options.KLD_params.dumpToConsole()
-
-# Particle filtering itself:
-pf_options = CParticleFilter.TParticleFilterOptions()
-pf_options.loadFromConfigFileName(config_filename, 'PF_options')
-pf_options.dumpToConsole()
-
-# Metric maps to build:
-# TODO: needs mrpt.maps.TSetOfMetricMapInitializers and CMultiMetricMap wrapped (pybind11_plan_v3.md §1.2)
-from mrpt.maps import TSetOfMetricMapInitializers, CMultiMetricMap  # noqa: not yet wrapped
+# The metric maps used to evaluate the observation likelihoods:
 map_list = TSetOfMetricMapInitializers()
-map_list.loadFromConfigFileName(config_filename, 'MetricMap')
-map_list.dumpToConsole()
+map_list.loadFromConfigFileName(config_filename, "MetricMap")
+metric_map = CMultiMetricMap(map_list)
 
-metric_map = CMultiMetricMap()
-metric_map.setListOfMaps(map_list)
-
-# load map
-# TODO: needs mrpt.serialization.archiveFrom and mrpt.maps.CSimpleMap wrapped
-#   (pybind11_plan_v3.md §0.9 and §1.1)
-map_file = CFileGZInputStream(map_filename)
-from mrpt.serialization import archiveFrom  # noqa: not yet wrapped
-map_arch = archiveFrom(map_file)
-
-if (map_filename.endswith('.simplemap')
-        or map_filename.endswith('.simplemap.gz')):
-    from mrpt.maps import CSimpleMap  # noqa: not yet wrapped
+if map_filename.endswith((".simplemap", ".simplemap.gz")):
+    # A view-based map (poses + observations): build the metric maps from it.
     simple_map = CSimpleMap()
-    map_arch.ReadObject(simple_map)
-    metric_map.loadFromProbabilisticPosesAndObservations(simple_map)
-elif (map_filename.endswith('.gridmap')
-        or map_filename.endswith('.gridmap.gz')):
-    occ_map = COccupancyGridMap2D()
-    map_arch.ReadObject(occ_map)
-    for i in range(len(metric_map.maps)):
-        if metric_map.maps[i].GetRuntimeClass().className == 'COccupancyGridMap2D':
-            metric_map.maps[i] = occ_map
+    if not simple_map.loadFromFile(map_filename):
+        sys.exit(f"Error loading {map_filename}")
+    metric_map.loadFromSimpleMap(simple_map)
+elif map_filename.endswith((".gridmap", ".gridmap.gz")):
+    # A serialized occupancy grid: use it as the grid map.
+    grid = archiveFrom(CCompressedInputStream(map_filename)).ReadObject()
+    for i, m in enumerate(metric_map):
+        if isinstance(m, COccupancyGridMap2D):
+            metric_map[i] = grid
 else:
-    print('Error. Can not load map from unknown extension.')
-    print('Quit.')
-    sys.exit(1)
-print('Load map file {}.'.format(map_filename))
+    sys.exit(f"Error: unknown map file extension: {map_filename}")
+print(f"Loaded map file {map_filename}: {metric_map}")
 
-# get window resolution
-if args.resolution:
-    resolution_str = args.resolution
-else:
-    resolution_str = '800x600'
+grid_map = next(m for m in metric_map if isinstance(m, COccupancyGridMap2D))
 
-# gui
-try:
-    res = resolution_str.split('x')
-    win3D = CDisplayWindow3D("pf_localization", int(res[0]), int(res[1]))
-except Exception:
-    win3D = CDisplayWindow3D("pf_localization", 800, 600)
-
-# initial scene
-map_object = metric_map.getVisualization()
-
-scene_ptr = win3D.get3DSceneAndLock()
-scene_ptr.clear()
-scene_ptr.insert(map_object)
-win3D.unlockAccess3DScene()
-win3D.forceRepaint()
-
-# mcl
-# TODO: needs mrpt.slam.CMonteCarloLocalization2D wrapped (pybind11_plan_v3.md §1.4)
-from mrpt.slam import CMonteCarloLocalization2D  # noqa: not yet wrapped
+# The particle filter:
 pdf = CMonteCarloLocalization2D()
-pdf.options = pdf_prediction_options
+pdf.options = mcl_options
 pdf.options.metricMap = metric_map
+pdf.resetUniformFreeSpace(grid_map, 0.7, particles_count)
 
 pf = CParticleFilter()
-pf.m_options = pf_options
+pf.options = pf_options
 
-# initialize pdf
-pdf.resetUniformFreeSpace(metric_map.maps[0], 0.7, 40000)
+# 3D view:
+win3D = None
+if not args.no_gui:
+    from mrpt.gui import CDisplayWindow3D
 
-# Archive for reading from the file:
-rawlogArch = archiveFrom(rawlog_file)
+    w, h = (int(v) for v in args.resolution.split("x"))
+    win3D = CDisplayWindow3D("pf_localization", w, h)
+    map_object = metric_map.getVisualization()
 
-# loop
-# TODO: needs mrpt.obs.CRawlog wrapped (pybind11_plan_v3.md §1.1)
-from mrpt.obs import CRawlog  # noqa: not yet wrapped
+viz_options = VisualizationParameters()
+viz_options.pointSize = 3
+viz_options.showAxis = False
+
+# Read the rawlog as a stream, one (action, sensory frame) pair at a time:
+rawlog_arch = archiveFrom(CCompressedInputStream(rawlog_filename))
 entry = 0
+steps = 0
 while True:
-    [readOk, entry, act, sf, obs] = CRawlog.ReadFromArchive(rawlogArch, entry)
-    if not readOk:
+    read_ok, entry, actions, sf, obs = CRawlog.ReadFromArchive(rawlog_arch, entry)
+    if not read_ok:
+        break
+    if actions is None or sf is None:
+        continue  # this example needs rawlogs in the (action, sensory frame) format
+
+    stats = pf.executeOn(pdf, actions, sf)
+    cov, mean = pdf.getCovarianceAndMean()
+    print(f"Entry {entry}: {len(pdf)} particles, mean={mean}, ESS={stats.ESS_beforeResample:.3f}")
+
+    if win3D is not None:
+        gl_obs = obs_to_viz(sf, viz_options)
+        gl_obs.setPose(CPose3D(mean))
+        gl_obs.setColor(TColorf(1.0, 0.0, 0.0))
+
+        scene = win3D.get3DSceneAndLock()
+        scene.clear()
+        scene.insert(map_object)
+        scene.insert(pdf.getVisualization())
+        scene.insert(gl_obs)
+        win3D.unlockAccess3DScene()
+        win3D.forceRepaint()
+        sleep(args.delay)
+
+    steps += 1
+    if args.max_steps and steps >= args.max_steps:
         break
 
-    print('Processing entry: {}.'.format(entry))
-
-    # get covariance and mean
-    cov, mean = pdf.getCovarianceAndMean()
-
-    # get particles
-    particles_object = pdf.getVisualization()
-
-    # get visualization for laser scan (two ways for demonstration purposes)
-    if False:
-        # Alternative method 1: insert observations into a point cloud
-        points_map = CSimplePointsMap()
-        points_map.insertObs(sf)
-        glObservation = points_map.getVisualization()
-    else:
-        # Alternative 2: generic obs_to_viz()
-        # TODO: needs mrpt.obs.VisualizationParameters and obs_to_viz wrapped
-        #   (pybind11_plan_v3.md §1.1)
-        from mrpt.obs import VisualizationParameters, obs_to_viz  # noqa: not yet wrapped
-        vizOpts = VisualizationParameters()
-        vizOpts.pointSize = 3
-        vizOpts.showAxis = False
-
-        glObservation = CSetOfObjects()  # mrpt.viz.CSetOfObjects (was mrpt.opengl)
-        obs_to_viz(sf, vizOpts, glObservation)
-
-    glObservation.setPose(CPose3D(mean))
-    # TODO: needs mrpt.img.TColorf wrapped (pybind11_plan_v3.md §0.3)
-    from mrpt.img import TColorf  # noqa: not yet wrapped
-    glObservation.setColor(TColorf(1., 0., 0.))
-
-    # update pf
-    stats = pf.executeOn(pdf, act, sf)
-
-    # update scene
-    scene_ptr = win3D.get3DSceneAndLock()
-    scene_ptr.clear()
-    scene_ptr.insert(map_object)
-    scene_ptr.insert(particles_object)
-    scene_ptr.insert(glObservation)
-    win3D.unlockAccess3DScene()
-    win3D.forceRepaint()
-
-    # sleep
-    if args.delay:
-        try:
-            sleep(float(args.delay))
-        except Exception:
-            sleep(0.2)
-    else:
-        sleep(0.2)
-
-print()
-print('Done.')
-input('Press any key to quit.')
+print(f"\nDone. Final estimate: {pdf.getMean()}")
+if win3D is not None:
+    input("Press Enter to quit.")

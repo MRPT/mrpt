@@ -50,5 +50,37 @@ back = geocentricToGeodetic(ecef)
 check("round-trip lat", abs(back.lat.decimal_value - 37.0) < 1e-5)
 check("round-trip lon", abs(back.lon.decimal_value - (-6.0)) < 1e-5)
 
+print("UTM")
+import mrpt.topography as topo
+madrid = TGeodeticCoords(40.3154333, -3.4857166, 50.0)
+utm, zone, band = topo.geodeticToUTM(madrid)
+check("UTM x", abs(utm.x - 458731) < 1.0, f"got {utm.x}")
+check("UTM y", abs(utm.y - 4462881) < 1.0, f"got {utm.y}")
+check("UTM zone/band", zone == 30 and band == "T", f"got {zone}{band}")
+back_utm = topo.UTMToGeodetic(utm, zone, "N")
+check("UTM round-trip lat", abs(back_utm.lat.decimal_value - 40.3154333) < 1e-6)
+check("UTM round-trip lon", abs(back_utm.lon.decimal_value - (-3.4857166)) < 1e-6)
+check("UTM round-trip height", abs(back_utm.height - 50.0) < 1e-9)
+back_band = topo.UTMToGeodetic(utm, zone, band=band)
+check("UTM round-trip via band", abs(back_band.lat.decimal_value - 40.3154333) < 1e-6)
+try:
+    topo.UTMToGeodetic(utm, zone)
+    check("hemisphere or band required", False)
+except ValueError:
+    check("hemisphere or band required", True)
+
+print("TEllipsoid")
+wgs84 = topo.TEllipsoid.Ellipsoid_WGS84()
+check("WGS84 semiaxis", abs(wgs84.sa - 6378137.0) < 1e-6 and wgs84.name == "WGS84")
+grs80 = topo.TEllipsoid.Ellipsoid_GRS80()
+ecef_grs80 = topo.geodeticToGeocentric(origin, grs80)
+check("GRS80 ~ WGS84", abs(ecef_grs80.x - ecef.x) < 1e-3, f"{ecef_grs80.x} vs {ecef.x}")
+back_grs80 = geocentricToGeodetic(ecef_grs80, grs80)
+check("GRS80 round-trip", abs(back_grs80.lat.decimal_value - 37.0) < 1e-6)
+
+print("ENU_axes_from_WGS84")
+axes = topo.ENU_axes_from_WGS84(origin)
+check("ENU frame origin is ECEF point", abs(axes.x - ecef.x) < 1e-3, f"{axes.x} vs {ecef.x}")
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

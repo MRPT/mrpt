@@ -17,6 +17,8 @@
   <depend>mrpt_img</depend>
 
   <build_depend>eigen</build_depend>
+  <build_depend>pybind11-dev</build_depend>
+  <build_depend>python3-dev</build_depend>
 
   <depend>opengl</depend> <!-- Use the all-3 depend not to rely on debian sh-libs to actually add opengl libs binaries downstream -->
   <depend>libgles-dev</depend> <!-- config.h bakes in whichever GLES headers were present when this package itself was built; downstream builds against opengl_api.h need the same headers installed, not just this package's own build machine -->

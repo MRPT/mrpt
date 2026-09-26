@@ -349,3 +349,12 @@ endif()
 if (MINGW)
 	target_link_libraries(${PROJECT_NAME} PRIVATE WS2_32 winmm)
 endif()
+
+# Python bindings
+mrpt_add_python_module(hwdrivers
+  python_bindings/${PROJECT_NAME}_py.cpp
+)
+
+mrpt_add_python_binding_test(hwdrivers
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_hwdrivers_test.py
+)

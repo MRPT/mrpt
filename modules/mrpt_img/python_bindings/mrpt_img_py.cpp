@@ -14,6 +14,7 @@
 
 // pybind11
 #include <pybind11/numpy.h>
+#include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -55,7 +56,35 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("R", &TColor::R)
       .def_readwrite("G", &TColor::G)
       .def_readwrite("B", &TColor::B)
-      .def_readwrite("A", &TColor::A);
+      .def_readwrite("A", &TColor::A)
+      .def(py::self == py::self)
+      .def(py::self != py::self)
+      .def(
+          "__repr__",
+          [](const TColor& c)
+          {
+            return "TColor(" + std::to_string(c.R) + ", " + std::to_string(c.G) + ", " +
+                   std::to_string(c.B) + ", " + std::to_string(c.A) + ")";
+          });
+
+  // TColorf: RGBA color with float components in [0,1]
+  py::class_<TColorf>(m, "TColorf")
+      .def(py::init<>())
+      .def(py::init<float, float, float, float>(), "r"_a, "g"_a, "b"_a, "alpha"_a = 1.0f)
+      .def(py::init<const TColor&>(), "color"_a)
+      .def_readwrite("R", &TColorf::R)
+      .def_readwrite("G", &TColorf::G)
+      .def_readwrite("B", &TColorf::B)
+      .def_readwrite("A", &TColorf::A)
+      .def("asTColor", &TColorf::asTColor, "Converts to a TColor with uint8 components")
+      .def(
+          "__repr__",
+          [](const TColorf& c)
+          {
+            return "TColorf(" + std::to_string(c.R) + ", " + std::to_string(c.G) + ", " +
+                   std::to_string(c.B) + ", " + std::to_string(c.A) + ")";
+          });
+  py::implicitly_convertible<TColor, TColorf>();
 
   // 3. TPixelCoord and TPixelCoordf
   py::class_<TPixelCoord>(m, "TPixelCoord")
@@ -208,5 +237,13 @@ PYBIND11_MODULE(_bindings, m)
       .def("__repr__", [](const TStereoCamera& c) { return c.dumpAsText(); });
 
   // 7. Colormap helpers
-  m.def("colormap", &colormap, "color_map"_a, "color_index"_a);
+  py::enum_<TColormap>(m, "TColormap")
+      .value("cmNONE", cmNONE)
+      .value("cmGRAYSCALE", cmGRAYSCALE)
+      .value("cmJET", cmJET)
+      .value("cmHOT", cmHOT)
+      .export_values();
+  m.def(
+      "colormap", &colormap, "color_map"_a, "color_index"_a,
+      "Maps a value in [0,1] to a TColorf using the given colormap");
 }

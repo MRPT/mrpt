@@ -12,20 +12,40 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/CStream.h>
+#include <mrpt/io/compression_options.h>
+#include <mrpt/io/detect_compression.h>
 #include <mrpt/io/open_flags.h>
 #include <mrpt/io/vector_loadsave.h>
+#include <mrpt/io/zip.h>
+#include <mrpt/serialization/CArchive.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
 using namespace pybind11::literals;
+
+namespace
+{
+std::vector<uint8_t> bytesToVector(const py::bytes& b)
+{
+  const auto sv = static_cast<std::string_view>(b);
+  return {sv.begin(), sv.end()};
+}
+
+py::bytes vectorToBytes(const std::vector<uint8_t>& v)
+{
+  return {reinterpret_cast<const char*>(v.data()), v.size()};
+}
+}  // namespace
 
 PYBIND11_MODULE(_bindings, m)
 {
@@ -243,4 +263,152 @@ PYBIND11_MODULE(_bindings, m)
   m.def(
       "file_get_contents", &mrpt::io::file_get_contents, "fileName"_a,
       "Load an entire text file as a single string. Raises on error.");
+  m.def(
+      "vectorToBinaryFile",
+      [](const py::bytes& data, const std::string& fileName)
+      { return mrpt::io::vectorToBinaryFile(bytesToVector(data), fileName); },
+      "data"_a, "fileName"_a, "Save a bytes object to a binary file. Returns False on error.");
+
+  // -------------------------------------------------------------------------
+  // Compression
+  // -------------------------------------------------------------------------
+  py::enum_<mrpt::io::CompressionType>(m, "CompressionType")
+      .value("None_", mrpt::io::CompressionType::None)
+      .value("Gzip", mrpt::io::CompressionType::Gzip)
+      .value("Zstd", mrpt::io::CompressionType::Zstd);
+
+  py::class_<mrpt::io::CompressionOptions>(m, "CompressionOptions")
+      .def(py::init<>())
+      .def(py::init<mrpt::io::CompressionType, int>(), "type"_a, "level"_a = 1)
+      .def_readwrite("type", &mrpt::io::CompressionOptions::type)
+      .def_readwrite("level", &mrpt::io::CompressionOptions::level)
+      .def(
+          "__repr__",
+          [](const mrpt::io::CompressionOptions& o)
+          {
+            return "CompressionOptions(type=" + std::to_string(static_cast<int>(o.type)) +
+                   ", level=" + std::to_string(o.level) + ")";
+          });
+
+  m.def(
+      "detect_compression", &mrpt::io::detect_compression, "filePath"_a,
+      "Detects the compression of a file from its magic bytes (not its extension).");
+
+  m.def(
+      "archiveFrom", [](mrpt::io::CStream& s) { return mrpt::serialization::archivePtrFrom(s); },
+      "stream"_a, py::keep_alive<0, 1>(),
+      "Returns a CArchive to read/write MRPT objects from/to the given stream. The stream is "
+      "kept alive while the archive exists.");
+
+  // -------------------------------------------------------------------------
+  // CCompressedInputStream: reads plain, gzip or zstd files (auto-detected)
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::io::CCompressedInputStream, mrpt::io::CStream>(m, "CCompressedInputStream")
+      .def(py::init<>())
+      .def(py::init<const std::string&>(), "fileName"_a)
+      .def(
+          "open",
+          [](mrpt::io::CCompressedInputStream& s, const std::string& fn) { return s.open(fn); },
+          "fileName"_a, "Open a plain, gzip or zstd file for reading. Returns true on success.")
+      .def("close", &mrpt::io::CCompressedInputStream::close)
+      .def("is_open", &mrpt::io::CCompressedInputStream::is_open)
+      .def("fileOpenCorrectly", &mrpt::io::CCompressedInputStream::fileOpenCorrectly)
+      .def("checkEOF", &mrpt::io::CCompressedInputStream::checkEOF)
+      .def("filePathAtUse", &mrpt::io::CCompressedInputStream::filePathAtUse)
+      .def("getCompressionType", &mrpt::io::CCompressedInputStream::getCompressionType)
+      .def("getTotalBytesCount", &mrpt::io::CCompressedInputStream::getTotalBytesCount)
+      .def("getPosition", &mrpt::io::CCompressedInputStream::getPosition)
+      .def("getStreamDescription", &mrpt::io::CCompressedInputStream::getStreamDescription)
+      .def(
+          "__enter__",
+          [](mrpt::io::CCompressedInputStream& s) -> mrpt::io::CCompressedInputStream&
+          { return s; })
+      .def(
+          "__exit__", [](mrpt::io::CCompressedInputStream& s, py::object, py::object, py::object)
+          { s.close(); })
+      .def(
+          "__repr__", [](const mrpt::io::CCompressedInputStream& s)
+          { return "CCompressedInputStream(" + s.getStreamDescription() + ")"; });
+
+  // -------------------------------------------------------------------------
+  // CCompressedOutputStream: writes plain, gzip or zstd files
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::io::CCompressedOutputStream, mrpt::io::CStream>(m, "CCompressedOutputStream")
+      .def(py::init<>())
+      .def(
+          py::init<const std::string&, mrpt::io::OpenMode, const mrpt::io::CompressionOptions&>(),
+          "fileName"_a, "mode"_a = mrpt::io::OpenMode::TRUNCATE,
+          "options"_a = mrpt::io::CompressionOptions())
+      .def(
+          "open",
+          [](mrpt::io::CCompressedOutputStream& s, const std::string& fn,
+             const mrpt::io::CompressionOptions& options, mrpt::io::OpenMode mode)
+          { return s.open(fn, options, std::nullopt, mode); },
+          "fileName"_a, "options"_a = mrpt::io::CompressionOptions(),
+          "mode"_a = mrpt::io::OpenMode::TRUNCATE,
+          "Open a file for writing (default: zstd). Returns true on success.")
+      .def("close", &mrpt::io::CCompressedOutputStream::close)
+      .def("is_open", &mrpt::io::CCompressedOutputStream::is_open)
+      .def("fileOpenCorrectly", &mrpt::io::CCompressedOutputStream::fileOpenCorrectly)
+      .def("filePathAtUse", &mrpt::io::CCompressedOutputStream::filePathAtUse)
+      .def("getCompressionType", &mrpt::io::CCompressedOutputStream::getCompressionType)
+      .def("getPosition", &mrpt::io::CCompressedOutputStream::getPosition)
+      .def("getStreamDescription", &mrpt::io::CCompressedOutputStream::getStreamDescription)
+      .def(
+          "__enter__",
+          [](mrpt::io::CCompressedOutputStream& s) -> mrpt::io::CCompressedOutputStream&
+          { return s; })
+      .def(
+          "__exit__", [](mrpt::io::CCompressedOutputStream& s, py::object, py::object, py::object)
+          { s.close(); })
+      .def(
+          "__repr__", [](const mrpt::io::CCompressedOutputStream& s)
+          { return "CCompressedOutputStream(" + s.getStreamDescription() + ")"; });
+
+  auto zip = m.def_submodule("zip", "gzip compression of memory blocks and files");
+  zip.def(
+      "compress_gz_data_block",
+      [](const py::bytes& data, int level)
+      {
+        std::vector<uint8_t> out;
+        if (!mrpt::io::zip::compress_gz_data_block(bytesToVector(data), out, level))
+        {
+          throw std::runtime_error("compress_gz_data_block() failed");
+        }
+        return vectorToBytes(out);
+      },
+      "data"_a, "compress_level"_a = 9,
+      "Compress a bytes object into a gzip-format bytes object (level 0-9).");
+  zip.def(
+      "decompress_gz_data_block",
+      [](const py::bytes& data)
+      {
+        std::vector<uint8_t> out;
+        if (!mrpt::io::zip::decompress_gz_data_block(bytesToVector(data), out))
+        {
+          throw std::runtime_error("decompress_gz_data_block() failed");
+        }
+        return vectorToBytes(out);
+      },
+      "data"_a,
+      "Decompress a gzip-format bytes object. Data not in gzip format is returned unmodified.");
+  zip.def(
+      "compress_gz_file",
+      [](const std::string& filePath, const py::bytes& data, int level)
+      { return mrpt::io::zip::compress_gz_file(filePath, bytesToVector(data), level); },
+      "file_path"_a, "data"_a, "compress_level"_a = 9,
+      "Write a bytes object into a gzip file. Returns False on error.");
+  zip.def(
+      "decompress_gz_file",
+      [](const std::string& filePath) -> std::optional<py::bytes>
+      {
+        std::vector<uint8_t> out;
+        if (!mrpt::io::zip::decompress_gz_file(filePath, out))
+        {
+          return std::nullopt;
+        }
+        return vectorToBytes(out);
+      },
+      "file_path"_a,
+      "Read a gzip file (or a plain file, unmodified) into bytes. Returns None on error.");
 }

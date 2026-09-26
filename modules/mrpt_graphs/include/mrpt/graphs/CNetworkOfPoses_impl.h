@@ -737,7 +737,9 @@ struct graph_ops
     //
     // Keep track of the NODE_ANNOTATIONS for each node and put it after
     // the global pose computation
-    bool empty_node_annots = g->nodes.begin()->second.is_node_annots_empty;
+    // A graph may have edges but no node poses yet:
+    const bool empty_node_annots =
+        g->nodes.empty() || g->nodes.begin()->second.is_node_annots_empty;
     map<const TNodeID, TNodeAnnotations*> nodeID_to_annots;
     if (!empty_node_annots)
     {

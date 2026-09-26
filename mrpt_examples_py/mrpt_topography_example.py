@@ -60,3 +60,16 @@ point  = TGeodeticCoords(36.7213 + 0.001, -4.4214 + 0.001, 20.0)   # ~111 m N, ~
 enu = geodeticToENU_WGS84(point, origin)
 print(f"\nENU displacement from origin:")
 print(f"  East={enu.x:.2f} m  North={enu.y:.2f} m  Up={enu.z:.2f} m")
+
+# ---------------------------------------------------------------------------
+# UTM coordinates and other reference ellipsoids
+# ---------------------------------------------------------------------------
+from mrpt.topography import TEllipsoid, geodeticToUTM, UTMToGeodetic
+
+utm, zone, band = geodeticToUTM(origin)
+print(f"\nUTM: x={utm.x:.2f} y={utm.y:.2f} zone={zone}{band}")
+back = UTMToGeodetic(utm, zone, band=band)  # or hemisphere="N"
+print(f"  back to geodetic: lat={back.lat.decimal_value:.6f} lon={back.lon.decimal_value:.6f}")
+
+utm_intl, _, _ = geodeticToUTM(origin, TEllipsoid.Ellipsoid_Internacional_1924())
+print(f"  with the International 1924 ellipsoid: x={utm_intl.x:.2f} y={utm_intl.y:.2f}")

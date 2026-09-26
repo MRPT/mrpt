@@ -43,5 +43,43 @@ check("global generator exists", g2 is not None)
 v = g2.drawUniform(0.0, 10.0)
 check("global uniform in [0,10]", 0.0 <= v <= 10.0, f"got {v}")
 
+print("array samples are independent")
+_g = __import__("mrpt.random", fromlist=["CRandomGenerator"]).CRandomGenerator(1)
+_u = _g.drawUniformArray(50)
+_n = _g.drawGaussianArray(50)
+check("uniform array not constant", len(set(_u.tolist())) > 40)
+check("gaussian array not constant", len(set(_n.tolist())) > 40)
+
+print("multivariate Gaussian")
+import numpy as np
+from mrpt.random import CRandomGenerator as _RG
+g3 = _RG(42)
+cov = np.array([[4.0, 1.0], [1.0, 2.0]])
+mean = np.array([10.0, -5.0])
+one = g3.drawGaussianMultivariate(cov, mean)
+check("single sample shape", one.shape == (2,), f"got {one.shape}")
+many = g3.drawGaussianMultivariateMany(20000, cov, mean)
+check("many shape", many.shape == (20000, 2), f"got {many.shape}")
+check("sample mean", np.allclose(many.mean(axis=0), mean, atol=0.1), f"got {many.mean(axis=0)}")
+check("sample cov", np.allclose(np.cov(many.T), cov, atol=0.15), f"got {np.cov(many.T)}")
+zero_mean = g3.drawGaussianMultivariateMany(5000, cov)
+check("zero mean default", np.allclose(zero_mean.mean(axis=0), 0.0, atol=0.15))
+singular = g3.drawGaussianMultivariateMany(10, np.array([[1.0, 1.0], [1.0, 1.0]]))
+check("PSD cov accepted", np.allclose(singular[:, 0], singular[:, 1]))
+for bad_cov, what in [([[1.0, 2.0], [0.0, 1.0]], "asymmetric"), ([[1.0, 2.0], [2.0, 1.0]], "indefinite")]:
+    try:
+        g3.drawGaussianMultivariateMany(3, bad_cov)
+        check(f"{what} cov rejected", False)
+    except ValueError:
+        check(f"{what} cov rejected", True)
+g_a = _RG(5)
+g_b = _RG(5)
+try:
+    g_a.drawGaussianMultivariateMany(2, cov, mean=[1.0, 2.0, 3.0])
+except ValueError:
+    pass
+check("bad mean does not consume random numbers",
+      np.allclose(g_a.drawGaussianMultivariateMany(2, cov), g_b.drawGaussianMultivariateMany(2, cov)))
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

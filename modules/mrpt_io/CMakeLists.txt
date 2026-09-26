@@ -169,6 +169,13 @@ mrpt_add_python_module(io
   python_bindings/mrpt_io_py.cpp
 )
 
+# archiveFrom() binds mrpt_serialization's CArchive to mrpt_io streams, so only
+# the Python module (not the C++ library) needs mrpt_serialization.
+if (TARGET _bindings)
+  find_package(mrpt_serialization REQUIRED)
+  target_link_libraries(_bindings PRIVATE mrpt::mrpt_serialization)
+endif()
+
 mrpt_add_python_binding_test(io
   SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_io_test.py
 )

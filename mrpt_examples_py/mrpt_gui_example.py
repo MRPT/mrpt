@@ -44,21 +44,21 @@ win.setCameraPointingToPoint(0, 0, 0)
 scene = win.get3DSceneAndLock()
 
 # Floor grid
-grid = CGridPlaneXY.Create()
+grid = CGridPlaneXY()
 scene.insert(grid)
 
 # Coordinate axes
-axes = CAxis.Create()
+axes = CAxis()
 axes.setAxisLimits(-3, -3, -3, 3, 3, 3)
 scene.insert(axes)
 
 # A small coloured point cloud
-pts = CPointCloudColoured.Create()
+pts = CPointCloudColoured()
 import math
 for i in range(100):
     angle = 2 * math.pi * i / 100
     r = 2.0
-    pts.push_back_point(
+    pts.push_back(
         r * math.cos(angle),
         r * math.sin(angle),
         math.sin(2 * angle),          # z varies

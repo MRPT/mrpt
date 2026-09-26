@@ -13,6 +13,6 @@ the RBPF-SLAM algorithm:
     </iframe>
 
 
-.. literalinclude:: ../../python-examples/rbpf_slam.py
+.. literalinclude:: ../../mrpt_examples_py/rbpf_slam.py
    :language: python
    :linenos:

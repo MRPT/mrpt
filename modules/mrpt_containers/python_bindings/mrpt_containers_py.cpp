@@ -71,6 +71,12 @@ static yaml yaml_from_python(const py::object& obj)
 {
   if (obj.is_none()) return yaml();
 
+  // A YAML node (e.g. from YAML.from_string()) is stored as is
+  if (py::isinstance<yaml>(obj))
+  {
+    return obj.cast<yaml>();
+  }
+
   if (py::isinstance<py::bool_>(obj))
   {
     yaml y;

@@ -8,6 +8,7 @@ Demonstrates:
   - save/load to text file
 """
 
+import math
 import tempfile, os
 from mrpt.graphs import CNetworkOfPoses2D, CNetworkOfPoses3D
 from mrpt.poses import CPose2D, CPose3D
@@ -57,3 +58,15 @@ g3.insertEdge(0, 1, CPose3D(1, 0, 0, 0, 0, 0))
 
 print(f"\n3D graph: {g3.nodeCount()} nodes, {g3.edgeCount()} edges")
 print(f"  {g3}")
+
+# ---------------------------------------------------------------------------
+# Shortest paths and global poses from the graph edges
+# ---------------------------------------------------------------------------
+ring = CNetworkOfPoses2D()
+for i in range(6):
+    ring.insertEdge(i, (i + 1) % 6, CPose2D(1.0, 0.0, math.radians(60)))
+print(f"\nRing graph: path 0 -> 4 = {ring.dijkstra_path(0, 4)}")
+print(f"  hops from node 0: {ring.getNodeDistances(0)}")
+ring.root = 0
+ring.dijkstra_nodes_estimate()
+print(f"  node 3 global pose: {ring.getNodePose(3)}")

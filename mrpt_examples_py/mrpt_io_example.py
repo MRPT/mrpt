@@ -74,3 +74,25 @@ try:
         print("  gz round-trip OK ✓")
 finally:
     os.unlink(gzname)
+
+# ---------------------------------------------------------------------------
+# Compression: files in any format (plain, gzip, zstd) and memory blocks
+# ---------------------------------------------------------------------------
+import mrpt.io
+from mrpt.io import (
+    CCompressedInputStream, CCompressedOutputStream, CompressionOptions, CompressionType,
+    detect_compression,
+)
+
+with tempfile.TemporaryDirectory() as tmpdir:
+    zst_name = os.path.join(tmpdir, "data.zst")
+    with CCompressedOutputStream(zst_name, options=CompressionOptions(CompressionType.Zstd, 3)) as out:
+        out.write(b"zstd content")
+    print(f"\ndetect_compression: {detect_compression(zst_name)}")
+    with CCompressedInputStream(zst_name) as inp:  # the format is auto-detected
+        assert inp.read(100) == b"zstd content"
+    print("  zstd round-trip OK ✓")
+
+gz_block = mrpt.io.zip.compress_gz_data_block(b"x" * 1000)
+assert mrpt.io.zip.decompress_gz_data_block(gz_block) == b"x" * 1000
+print(f"gzip memory block: 1000 -> {len(gz_block)} bytes ✓")

@@ -5,7 +5,7 @@ Python examples
 =================
 
 The source code for all these Python examples can be found
-under `MRPT/python-examples <https://github.com/MRPT/mrpt/tree/develop/python-examples>`_.
+under `MRPT/mrpt_examples_py <https://github.com/MRPT/mrpt/tree/develop/mrpt_examples_py>`_.
 
 See also the `Python API documentation <https://mrpt.github.io/pymrpt-docs/mrpt.pymrpt.mrpt.html>`_.
 
