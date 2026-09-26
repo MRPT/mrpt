@@ -361,7 +361,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages([[maybe_unused]] wxCommandEven
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (format("%u images have been imported to rawlog format", static_cast<unsigned>(insertCount))
+      (mrpt::format("%u images have been imported to rawlog format", static_cast<unsigned>(insertCount))
            .c_str()),
       _("Done"), wxOK, this);
 
@@ -1964,7 +1964,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile([[maybe_unused]] wxCommandEvent& 
 
     os::fclose(f);
 
-    wxMessageBox((format("%u IMU data entries saved!", M).c_str()), _("Done"), wxOK, this);
+    wxMessageBox((mrpt::format("%u IMU data entries saved!", M).c_str()), _("Done"), wxOK, this);
   }
 
   WX_END_TRY
@@ -2027,7 +2027,7 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing([[maybe_unused]] wxComma
     os::fclose(f);
 
     wxMessageBox(
-        (format("%u bearing-range data entries saved!", M).c_str()), _("Done"), wxOK, this);
+        (mrpt::format("%u bearing-range data entries saved!", M).c_str()), _("Done"), wxOK, this);
   }
 
   WX_END_TRY

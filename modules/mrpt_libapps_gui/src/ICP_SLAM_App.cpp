@@ -153,9 +153,9 @@ void ICP_SLAM_App_Base::run()
 
   // Open log files:
   // ----------------------------------
-  CFileOutputStream f_log(format("%s/log_times.txt", OUT_DIR));
-  CFileOutputStream f_path(format("%s/log_estimated_path.txt", OUT_DIR));
-  CFileOutputStream f_pathOdo(format("%s/log_odometry_path.txt", OUT_DIR));
+  CFileOutputStream f_log(mrpt::format("%s/log_times.txt", OUT_DIR));
+  CFileOutputStream f_path(mrpt::format("%s/log_estimated_path.txt", OUT_DIR));
+  CFileOutputStream f_pathOdo(mrpt::format("%s/log_odometry_path.txt", OUT_DIR));
 
   // Create 3D window if requested:
   CDisplayWindow3D::Ptr win3D;

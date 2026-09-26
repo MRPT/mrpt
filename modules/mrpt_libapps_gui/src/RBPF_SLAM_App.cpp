@@ -240,12 +240,12 @@ void RBPF_SLAM_App_Base::run()
 
   // Open log files:
   // ----------------------------------
-  CFileOutputStream f_log(format("%s/log_times.txt", OUT_DIR));
-  CFileOutputStream f_info(format("%s/log_info.txt", OUT_DIR));
-  CFileOutputStream f_jinfo(format("%s/log_jinfo.txt", OUT_DIR));
-  CFileOutputStream f_path(format("%s/log_estimated_path.txt", OUT_DIR));
-  CFileOutputStream f_pathOdo(format("%s/log_odometry_path.txt", OUT_DIR));
-  CFileOutputStream f_partStats(format("%s/log_ParticlesStats.txt", OUT_DIR));
+  CFileOutputStream f_log(mrpt::format("%s/log_times.txt", OUT_DIR));
+  CFileOutputStream f_info(mrpt::format("%s/log_info.txt", OUT_DIR));
+  CFileOutputStream f_jinfo(mrpt::format("%s/log_jinfo.txt", OUT_DIR));
+  CFileOutputStream f_path(mrpt::format("%s/log_estimated_path.txt", OUT_DIR));
+  CFileOutputStream f_pathOdo(mrpt::format("%s/log_odometry_path.txt", OUT_DIR));
+  CFileOutputStream f_partStats(mrpt::format("%s/log_ParticlesStats.txt", OUT_DIR));
 
   f_log.printf(
       "%% time_step  execution_time(ms)  map_size(#frames)  frame_inserted? "
@@ -354,7 +354,7 @@ void RBPF_SLAM_App_Base::run()
         ASSERT_(grid);
         grid->computeEntropy(entropy);
 
-        grid->saveAsBitmapFile(format("%s/EMMI_gridmap_%03u.png", OUT_DIR, step));
+        grid->saveAsBitmapFile(mrpt::format("%s/EMMI_gridmap_%03u.png", OUT_DIR, step));
 
         f_info.printf(
             "%f %f %f %f %lu\n", entropy.I, entropy.H, entropy.mean_I, entropy.effectiveMappedArea,
@@ -369,7 +369,7 @@ void RBPF_SLAM_App_Base::run()
       // -------------
       if (SAVE_POSE_LOG)
       {
-        curPDF.saveToTextFile(format("%s/mapbuild_posepdf_%03u.txt", OUT_DIR, step));
+        curPDF.saveToTextFile(mrpt::format("%s/mapbuild_posepdf_%03u.txt", OUT_DIR, step));
       }
 
       // Map images:
@@ -387,7 +387,7 @@ void RBPF_SLAM_App_Base::run()
         {
           mrpt::img::CImage img;
           mapBuilder->drawCurrentEstimationToImage(&img);
-          bool savedOk = img.saveToFile(format("%s/mapping_%05u.png", OUT_DIR, step));
+          bool savedOk = img.saveToFile(mrpt::format("%s/mapping_%05u.png", OUT_DIR, step));
           ASSERT_(savedOk);
         }
       }
@@ -490,7 +490,7 @@ void RBPF_SLAM_App_Base::run()
 
       if (SAVE_3D_SCENE)
       {  // Save as file:
-        CCompressedOutputStream f(format("%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(), step));
+        CCompressedOutputStream f(mrpt::format("%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(), step));
         mrpt::serialization::archiveFrom(f) << *scene;
       }
 
@@ -524,7 +524,7 @@ void RBPF_SLAM_App_Base::run()
     // ------------------------------------------------------------------
     {
       unsigned long memUsage = mrpt::system::getMemoryUsage();
-      FILE* f = os::fopen(format("%s/log_MemoryUsage.txt", OUT_DIR).c_str(), "at");
+      FILE* f = os::fopen(mrpt::format("%s/log_MemoryUsage.txt", OUT_DIR).c_str(), "at");
       if (f)
       {
         os::fprintf(f, "%u\t%lu\n", step, memUsage);
@@ -566,12 +566,12 @@ void RBPF_SLAM_App_Base::run()
   // Save map:
   mapBuilder->getCurrentlyBuiltMap(finalMap);
 
-  CFileOutputStream filOut(format("%s/_finalmap_.simplemap", OUT_DIR));
+  CFileOutputStream filOut(mrpt::format("%s/_finalmap_.simplemap", OUT_DIR));
   mrpt::serialization::archiveFrom(filOut) << finalMap;
 
   // Save gridmap extend (if exists):
   const CMultiMetricMap* mostLikMap = mapBuilder->mapPDF.getCurrentMostLikelyMetricMap();
-  mostLikMap->saveMetricMapRepresentationToFile(format("%s/finalMap", OUT_DIR));
+  mostLikMap->saveMetricMapRepresentationToFile(mrpt::format("%s/finalMap", OUT_DIR));
 
   // Save the most likely path of the particle set
   FILE* f_pathPart;

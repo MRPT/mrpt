@@ -214,7 +214,7 @@ void CClientTCPSocket::connect(
   // Create the socket:
   if (INVALID_SOCKET == (m_hSock = socket(AF_INET, SOCK_STREAM, 0)))
   {
-    THROW_EXCEPTION(format("Error creating new client socket:\n%s", getLastErrorStr().c_str()));
+    THROW_EXCEPTION(mrpt::format("Error creating new client socket:\n%s", getLastErrorStr().c_str()));
   }
 
   struct sockaddr_in otherAddress;
@@ -286,14 +286,14 @@ void CClientTCPSocket::connect(
 
   if (event_count == 0)
   {
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Timeout connecting to '%s:%hu':\n%s", remotePartAddress.c_str(), remotePartTCPPort,
         getLastErrorStr().c_str()));
   }
 
   if (event_count == -1)
   {
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error connecting to '%s:%hu':\n%s", remotePartAddress.c_str(), remotePartTCPPort,
         getLastErrorStr().c_str()));
   }
@@ -318,12 +318,12 @@ void CClientTCPSocket::connect(
       timeout_ms == 0 ? nullptr : &timer);
 
   if (sel_ret == 0)
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Timeout connecting to '%s:%hu':\n%s", remotePartAddress.c_str(), remotePartTCPPort,
         getLastErrorStr().c_str()));
 
   if (sel_ret == -1)
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error connecting to '%s:%hu':\n%s", remotePartAddress.c_str(), remotePartTCPPort,
         getLastErrorStr().c_str()));
 #endif
@@ -340,13 +340,13 @@ void CClientTCPSocket::connect(
 
 #ifdef _WIN32
   if (valopt)
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error connecting to %s:%hu. Error: %i.", remotePartAddress.c_str(), remotePartTCPPort,
         valopt));
 #else
   if (valopt)
   {
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error connecting to %s:%hu. Error: %s.", remotePartAddress.c_str(), remotePartTCPPort,
         strerror(valopt)));
   }

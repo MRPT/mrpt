@@ -107,7 +107,7 @@ std::string CConfigFileMemory::readString(
 
   if (failIfNotFound && !aux)
   {
-    string tmpStr(format(
+    string tmpStr(mrpt::format(
         "Value '%s' not found in section '%s' of memory configuration "
         "string list and failIfNotFound=true.",
         name.c_str(), section.c_str()));

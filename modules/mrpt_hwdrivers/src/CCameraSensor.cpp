@@ -706,14 +706,14 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
     if (m_img_dir_is_stereo)
     {
       stObs = std::make_shared<CObservationStereoImages>();
-      if (!stObs->imageLeft.loadFromFile(format(auxL.c_str(), m_img_dir_counter)))
+      if (!stObs->imageLeft.loadFromFile(mrpt::format(auxL.c_str(), m_img_dir_counter)))
       {
         m_state = CGenericSensor::ssError;
         THROW_EXCEPTION("Error reading images from directory");
       }
       std::string auxR =
           mrpt::format("%s/%s", m_img_dir_url.c_str(), m_img_dir_right_format.c_str());
-      if (!stObs->imageRight.loadFromFile(format(auxR.c_str(), m_img_dir_counter++)))
+      if (!stObs->imageRight.loadFromFile(mrpt::format(auxR.c_str(), m_img_dir_counter++)))
       {
         m_state = CGenericSensor::ssError;
         THROW_EXCEPTION("Error reading images from directory");
@@ -725,7 +725,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
     {
       // use only left image prefix
       obs = std::make_shared<CObservationImage>();
-      if (!obs->image.loadFromFile(format(auxL.c_str(), m_img_dir_counter++)))
+      if (!obs->image.loadFromFile(mrpt::format(auxL.c_str(), m_img_dir_counter++)))
       {
         m_state = CGenericSensor::ssError;
         THROW_EXCEPTION("Error reading images from directory");

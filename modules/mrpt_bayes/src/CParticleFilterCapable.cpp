@@ -307,7 +307,7 @@ void CParticleFilterCapable::computeResampling(
 
     default:
       THROW_EXCEPTION(
-          format("ERROR: Unknown resampling method selected: %i", static_cast<int>(method)));
+          mrpt::format("ERROR: Unknown resampling method selected: %i", static_cast<int>(method)));
   }
 
   MRPT_END

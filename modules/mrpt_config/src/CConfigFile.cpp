@@ -177,7 +177,7 @@ std::string CConfigFile::readString(
 
   if (failIfNotFound && !aux)
   {
-    string tmpStr(format(
+    string tmpStr(mrpt::format(
         "Value '%s' not found in section '%s' of file '%s' and "
         "failIfNotFound=true.",
         name.c_str(), section.c_str(), m_file.c_str()));

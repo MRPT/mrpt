@@ -351,7 +351,7 @@ bool CLoopCloserERD<GRAPH_T>::getPropsOfNodeID(
   // TODO - What if the node_props->pose is indeed 0?
   ASSERTDEBMSG_(
       !(filled_pose ^ filled_scan),
-      format(
+      mrpt::format(
           "Either BOTH or NONE of the filled_pose, filled_scan should be set."
           "NodeID:  [%lu]",
           static_cast<unsigned long>(nodeID)));
@@ -642,7 +642,7 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
   ASSERTDEBMSG_(groupB, "Pointer to groupB is not valid");
   ASSERTDEBMSG_(
       max_nodes_in_group == -1 || max_nodes_in_group > 0,
-      format(
+      mrpt::format(
           "Value %d not permitted for max_nodes_in_group"
           "Either use a positive integer, "
           "or -1 for non-restrictive partition size",
@@ -717,7 +717,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 #endif
       // map should have same size
       ASSERTDEBMSG_(
-          nodes_count == p.size(), format(
+          nodes_count == p.size(), mrpt::format(
                                        "Size mismatch between nodeIDs in group [%lu]"
                                        " and corresponding properties map [%lu]",
                                        nodes_count, p.size()));
@@ -1166,7 +1166,7 @@ const mrpt::graphslam::TUncertaintyPath<GRAPH_T>* CLoopCloserERD<GRAPH_T>::findP
   }
   if (throw_exc && !res)
   {
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Path for %lu => %lu is not found. Exiting...\n", static_cast<unsigned long>(src),
         static_cast<unsigned long>(dst)));
   }

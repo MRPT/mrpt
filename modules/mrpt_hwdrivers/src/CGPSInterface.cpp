@@ -519,7 +519,7 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 
   if (m_verbose) std::cout << "[CGPSInterface] TX: " << str;
 
-  if (written != len) throw std::runtime_error(format("Error sending command: '%s'", str).c_str());
+  if (written != len) throw std::runtime_error(mrpt::format("Error sending command: '%s'", str).c_str());
   std::this_thread::sleep_for(5ms);
 
   if (!waitForAnswer)
@@ -543,14 +543,14 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
     if (m_verbose) std::cout << "[CGPSInterface] RX: " << buf << "\n";
 
     if (nRead < 3)
-      throw std::runtime_error(format("ERROR: Invalid response '%s' for command '%s'", buf, str));
+      throw std::runtime_error(mrpt::format("ERROR: Invalid response '%s' for command '%s'", buf, str));
 
     if (nRead >= 3 && buf[0] == 'R' && buf[1] == 'E')
       return;  // Ok!
     else
       ++bad_counter;
   }
-  throw std::runtime_error(format("ERROR: Invalid response '%s' for command '%s'", buf, str));
+  throw std::runtime_error(mrpt::format("ERROR: Invalid response '%s' for command '%s'", buf, str));
 }
 
 bool CGPSInterface::OnConnectionShutdown()
@@ -679,7 +679,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
   MRPT_START
   if (!os::_strcmpi(m_customInit.c_str(), "JAVAD") || !os::_strcmpi(m_customInit.c_str(), "TOPCON"))
   {
-    JAVAD_sendMessage(format("%%%%set,/par%s/imode,cmd\r\n", m_JAVAD_rtk_src_port.c_str())
+    JAVAD_sendMessage(mrpt::format("%%%%set,/par%s/imode,cmd\r\n", m_JAVAD_rtk_src_port.c_str())
                           .c_str());  // set the port in command mode
     JAVAD_sendMessage("%%set,/par/cur/term/jps/0,{nscmd,37,n,\"\"}\r\n");  // any command
     // starting
@@ -691,7 +691,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
     std::cout << "Formato de correcciones para GR3: " << m_JAVAD_rtk_format << "\n";
     if (m_JAVAD_rtk_format == "cmr")
     {
-      JAVAD_sendMessage(format(
+      JAVAD_sendMessage(mrpt::format(
                             "%%%%set,/par/cur/term/jps/1,{cmr,-1,y,%s}\r\n",
                             m_JAVAD_rtk_src_port.c_str())
                             .c_str());  // set corrections type CMR or CMR+
@@ -701,7 +701,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
     }
     else if (m_JAVAD_rtk_format == "rtcm")
     {
-      JAVAD_sendMessage(format(
+      JAVAD_sendMessage(mrpt::format(
                             "%%%%set,/par/cur/term/jps/1,{rtcm,-1,y,%s}\r\n",
                             m_JAVAD_rtk_src_port.c_str())
                             .c_str());  // set corrections type RTCM
@@ -711,7 +711,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
     }
     else if (m_JAVAD_rtk_format == "rtcm3")
     {
-      JAVAD_sendMessage(format(
+      JAVAD_sendMessage(mrpt::format(
                             "%%%%set,/par/cur/term/jps/1,{rtcm3,-1,y,%s}\r\n",
                             m_JAVAD_rtk_src_port.c_str())
                             .c_str());  // set corrections type RTCM 3.x
@@ -770,7 +770,7 @@ bool CGPSInterface::legacy_topcon_setup_commands()
   {
     const int elevation_mask = 5;  // Degs
 
-    JAVAD_sendMessage(format("%%%%set,/par/lock/elm,%i\r\n", elevation_mask)
+    JAVAD_sendMessage(mrpt::format("%%%%set,/par/lock/elm,%i\r\n", elevation_mask)
                           .c_str());                     // Set elevation mask to track satellites
     JAVAD_sendMessage("%%set,/par/base/mode/,off\r\n");  // Set Base Mode off
     JAVAD_sendMessage("%%set,/par/pos/pd/period,1.0\r\n");  // Differential
@@ -808,7 +808,7 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 
     // Set Input Mode: CMR,RTCM,...
     if (!m_topcon_useAIMMode && !m_JAVAD_rtk_format.empty())
-      JAVAD_sendMessage(format(
+      JAVAD_sendMessage(mrpt::format(
                             "%%%%set,/par%s/imode,%s\r\n", m_JAVAD_rtk_src_port.c_str(),
                             m_JAVAD_rtk_format.c_str())
                             .c_str());
@@ -827,7 +827,7 @@ bool CGPSInterface::legacy_topcon_setup_commands()
       std::cout << "... done"
                 << "\n";
   }
-  JAVAD_sendMessage(format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_topcon_data_period).c_str());
+  JAVAD_sendMessage(mrpt::format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_topcon_data_period).c_str());
   JAVAD_sendMessage(
       mrpt::format("%%%%em,,/msg/nmea/RMC:%.1f\r\n", m_topcon_data_period).c_str());  // FAMD: 10 Hz
 

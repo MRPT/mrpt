@@ -106,7 +106,7 @@ class CPoint2D : public CPoint<CPoint2D, 2>, public mrpt::serialization::CSerial
     if (n != static_size)
     {
       throw std::logic_error(
-          format("Try to change the size of CPoint2D to %u.", static_cast<unsigned>(n)));
+          mrpt::format("Try to change the size of CPoint2D to %u.", static_cast<unsigned>(n)));
     }
   }
   /** @} */

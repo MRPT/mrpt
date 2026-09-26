@@ -333,7 +333,7 @@ void TestParticlesLocalization()
           parts->setLocation(beacMap->landmarks.get(k)->pose_mean);
           parts->setRadius(0.2f);
 
-          parts->setName(format(" B%i", int(k + 1)));
+          parts->setName(mrpt::format(" B%i", int(k + 1)));
           parts->enableShowName();
           scene->insert(parts);
 #ifdef SHOW_REAL_TIME_3D
@@ -826,7 +826,7 @@ void TestParticlesLocalization()
 #endif
 
         if ((step % SCENE3D_FREQ) == 0)
-          scene->saveToFile(format("%s/3Dscene_%03u.3Dscene", OUT_DIR.c_str(), step));
+          scene->saveToFile(mrpt::format("%s/3Dscene_%03u.3Dscene", OUT_DIR.c_str(), step));
 
         step++;
       }  // while rawlogEntries
@@ -835,14 +835,14 @@ void TestParticlesLocalization()
       // );
 
       franco_matrix.setSize(step, 3);
-      franco_matrix.saveToTextFile(format("%s/franco_matrix.txt", OUT_DIR.c_str()));
+      franco_matrix.saveToTextFile(mrpt::format("%s/franco_matrix.txt", OUT_DIR.c_str()));
 
       particle_matrix.setSize(step, particle_matrix.cols());
       particle_matrix.saveToTextFile(
           mrpt::format("%s/particle_matrix.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
 
       real_ranges.setSize(step, real_ranges.cols());
-      real_ranges.saveToTextFile(format("%s/GT_ranges.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
+      real_ranges.saveToTextFile(mrpt::format("%s/GT_ranges.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
 
       real_offsets.setSize(real_offsets_rows, real_offsets.cols());
       real_offsets.saveToTextFile(
@@ -860,7 +860,7 @@ void TestParticlesLocalization()
     // Average errors:
     if (Pc_range_ini != Pc_range_end)
     {
-      CFileStream fo(format("Pc_%.06f_%.06f_RESULTs.txt", Pc_range_ini, Pc_range_end), fomAppend);
+      CFileStream fo(mrpt::format("Pc_%.06f_%.06f_RESULTs.txt", Pc_range_ini, Pc_range_end), fomAppend);
       double err_mean, err_std;
       mrpt::math::meanAndStd(vector_errs_xy, err_mean, err_std);
       fo.printf("%f %f %f\n", range_Pc, err_mean, err_std);

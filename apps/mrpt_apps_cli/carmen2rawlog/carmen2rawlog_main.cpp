@@ -93,12 +93,12 @@ int main(int argc, char** argv)
     // Check files:
     if (!mrpt::system::fileExists(input_log))
     {
-      throw runtime_error(format("Input file doesn't exist: '%s'", input_log.c_str()));
+      throw runtime_error(mrpt::format("Input file doesn't exist: '%s'", input_log.c_str()));
     }
 
     if (mrpt::system::fileExists(output_rawlog) && !overwrite)
     {
-      throw runtime_error(format(
+      throw runtime_error(mrpt::format(
           "Output file already exist: '%s' (Use --overwrite to "
           "override)",
           output_rawlog.c_str()));
@@ -112,13 +112,13 @@ int main(int argc, char** argv)
     std::ifstream input_stream(input_log.c_str());
     if (!input_stream.is_open())
     {
-      throw runtime_error(format("Error opening for read: '%s'", input_log.c_str()));
+      throw runtime_error(mrpt::format("Error opening for read: '%s'", input_log.c_str()));
     }
 
     mrpt::io::CCompressedOutputStream out_rawlog;
     if (!out_rawlog.open(output_rawlog, {mrpt::io::CompressionType::Zstd, compress_level}))
     {
-      throw runtime_error(format("Error opening for write: '%s'", output_rawlog.c_str()));
+      throw runtime_error(mrpt::format("Error opening for write: '%s'", output_rawlog.c_str()));
     }
 
     // --------------------------------

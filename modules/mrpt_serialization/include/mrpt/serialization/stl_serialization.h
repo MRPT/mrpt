@@ -117,18 +117,18 @@ CArchive& operator>>(CArchive& in, T& obj)
   const auto kType = mrpt::typemeta::TTypeName<typename T::key_type>::get();
   const auto mTp = mrpt::typemeta::TTypeName<typename T::mapped_type>::get();
   if (pref != containerName<T>())
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error: serialized container %s<%s,%s>'s preamble is "
         "wrong: '%s'",
         containerName<T>().c_str(), kType.c_str(), mTp.c_str(), pref.c_str()));
   in >> stored_K;
   if (stored_K != std::string(kType.c_str()))
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error: serialized container %s key type %s != %s", containerName<T>().c_str(),
         stored_K.c_str(), kType.c_str()));
   in >> stored_V;
   if (stored_V != std::string(mTp.c_str()))
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error: serialized container %s value type %s != %s", containerName<T>().c_str(),
         stored_V.c_str(), mTp.c_str()));
   const uint32_t n = in.ReadAs<uint32_t>();
@@ -237,18 +237,18 @@ CArchive& operator>>(CArchive& in, std::pair<T1, T2>& obj)
   std::string pref, stored_K, stored_V;
   in >> pref;
   if (pref != "std::pair")
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error: serialized std::pair<%s,%s>'s preamble is wrong: '%s'",
         mrpt::typemeta::TTypeName<T1>::get().c_str(), mrpt::typemeta::TTypeName<T2>::get().c_str(),
         pref.c_str()));
   in >> stored_K;
   if (stored_K != std::string(mrpt::typemeta::TTypeName<T1>::get().c_str()))
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error: serialized std::pair first type %s != %s", stored_K.c_str(),
         mrpt::typemeta::TTypeName<T1>::get().c_str()));
   in >> stored_V;
   if (stored_V != std::string(mrpt::typemeta::TTypeName<T2>::get().c_str()))
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error: serialized std::pair second type %s != %s", stored_V.c_str(),
         mrpt::typemeta::TTypeName<T2>::get().c_str()));
   in >> obj.first >> obj.second;

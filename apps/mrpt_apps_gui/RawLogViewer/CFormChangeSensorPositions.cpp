@@ -736,7 +736,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
       }
       else
       {  // Unknown class:
-        THROW_EXCEPTION(format(
+        THROW_EXCEPTION(mrpt::format(
             "Unexpected class found in the file: '%s'", newObj->GetRuntimeClass()->className));
       }
     }
@@ -917,12 +917,12 @@ void CFormChangeSensorPositions::OnbtnGetCurPoseClick1([[maybe_unused]] wxComman
   if (sensorPoseReadOK)
   {
     // Put the sensor pose (stored in "sensorPoseToRead"):
-    edX->SetValue((format("%f", sensorPoseToRead.x).c_str()));
-    edY->SetValue((format("%f", sensorPoseToRead.y).c_str()));
-    edZ->SetValue((format("%f", sensorPoseToRead.z).c_str()));
-    edYaw->SetValue((format("%f", RAD2DEG(sensorPoseToRead.yaw)).c_str()));
-    edPitch->SetValue((format("%f", RAD2DEG(sensorPoseToRead.pitch)).c_str()));
-    edRoll->SetValue((format("%f", RAD2DEG(sensorPoseToRead.roll)).c_str()));
+    edX->SetValue((mrpt::format("%f", sensorPoseToRead.x).c_str()));
+    edY->SetValue((mrpt::format("%f", sensorPoseToRead.y).c_str()));
+    edZ->SetValue((mrpt::format("%f", sensorPoseToRead.z).c_str()));
+    edYaw->SetValue((mrpt::format("%f", RAD2DEG(sensorPoseToRead.yaw)).c_str()));
+    edPitch->SetValue((mrpt::format("%f", RAD2DEG(sensorPoseToRead.pitch)).c_str()));
+    edRoll->SetValue((mrpt::format("%f", RAD2DEG(sensorPoseToRead.roll)).c_str()));
   }
   else
   {
@@ -993,17 +993,17 @@ void CFormChangeSensorPositions::OnbtnGetCurCamModelClick([[maybe_unused]] wxCom
   if (camReadIsOk)
   {
     // Put the camara data:
-    edFX->SetValue((format("%f", camIntrinsic(0, 0)).c_str()));
-    edFY->SetValue((format("%f", camIntrinsic(1, 1)).c_str()));
-    edCX->SetValue((format("%f", camIntrinsic(0, 2)).c_str()));
-    edCY->SetValue((format("%f", camIntrinsic(1, 2)).c_str()));
+    edFX->SetValue((mrpt::format("%f", camIntrinsic(0, 0)).c_str()));
+    edFY->SetValue((mrpt::format("%f", camIntrinsic(1, 1)).c_str()));
+    edCX->SetValue((mrpt::format("%f", camIntrinsic(0, 2)).c_str()));
+    edCY->SetValue((mrpt::format("%f", camIntrinsic(1, 2)).c_str()));
 
-    edK1->SetValue((format("%f", camDistortion[0]).c_str()));
-    edK2->SetValue((format("%f", camDistortion[1]).c_str()));
-    edP1->SetValue((format("%f", camDistortion[1]).c_str()));
-    edP2->SetValue((format("%f", camDistortion[2]).c_str()));
+    edK1->SetValue((mrpt::format("%f", camDistortion[0]).c_str()));
+    edK2->SetValue((mrpt::format("%f", camDistortion[1]).c_str()));
+    edP1->SetValue((mrpt::format("%f", camDistortion[1]).c_str()));
+    edP2->SetValue((mrpt::format("%f", camDistortion[2]).c_str()));
 
-    edFocalLen->SetValue((format("%f", camFocalLen).c_str()));
+    edFocalLen->SetValue((mrpt::format("%f", camFocalLen).c_str()));
   }
   else
   {

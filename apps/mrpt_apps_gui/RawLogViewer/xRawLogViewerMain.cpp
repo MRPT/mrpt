@@ -2002,20 +2002,20 @@ void xRawLogViewerFrame::rebuildTreeView()
   // ---------------------------
   memStats->Clear();
 
-  memStats->AppendText(format("Time to load file                 : %.03fms\n", 1000 * timeToLoad));
+  memStats->AppendText(mrpt::format("Time to load file                 : %.03fms\n", 1000 * timeToLoad));
   memStats->AppendText(
-      format("Rawlog entries                    : %u\n", static_cast<unsigned>(rawlog.size())));
-  memStats->AppendText(format("Traveled distance (from odometry) : %.02f meters\n", totalDistance));
+      mrpt::format("Rawlog entries                    : %u\n", static_cast<unsigned>(rawlog.size())));
+  memStats->AppendText(mrpt::format("Traveled distance (from odometry) : %.02f meters\n", totalDistance));
 
   if (m_treeView->getFirstTimestamp() != INVALID_TIMESTAMP)
   {
     rawlog_first_timestamp = m_treeView->getFirstTimestamp();
-    memStats->AppendText(format(
+    memStats->AppendText(mrpt::format(
         "Dataset first time-stamp (UTC)    : %s\n",
         mrpt::system::dateTimeToString(m_treeView->getFirstTimestamp()).c_str()));
   }
 
-  memStats->AppendText(format(
+  memStats->AppendText(mrpt::format(
       "Dataset duration                  : %s (hh:mm:ss,  %.03f "
       "secs.)\n",
       formatTimeInterval(experimentLenght).c_str(), experimentLenght));
@@ -2031,7 +2031,7 @@ void xRawLogViewerFrame::rebuildTreeView()
   {
     const char* className = oc.first->className;
     size_t count = oc.second;
-    memStats->AppendText(format(
+    memStats->AppendText(mrpt::format(
         " %8u %25s : %5.03f Hz\n", static_cast<unsigned>(count), className,
         double(count > 1 ? count - 1 : 1) / experimentLenght));
   }
@@ -2053,7 +2053,7 @@ void xRawLogViewerFrame::rebuildTreeView()
       Hz = double(count > 1 ? count - 1 : 1) / dur;
     }
 
-    memStats->AppendText(format(
+    memStats->AppendText(mrpt::format(
         " %8u %25s : %5.03f Hz for %.04f s, with %.03f s max delay "
         "btw readings.\n",
         static_cast<unsigned>(count), ipsl.first.c_str(), Hz, dur,
@@ -2808,7 +2808,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
           if (SF->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservationStereoImages))
           {
             auto obsSt = SF->getObservationByIndexAs<CObservationStereoImages::Ptr>(k);
-            bool savedOk = obsSt->imageLeft.saveToFile(format(
+            bool savedOk = obsSt->imageLeft.saveToFile(mrpt::format(
                 "%s/img_stereo_%u_left_%05u.%s", outDir.c_str(), k, imgSaved,
                 imgFileExtension.c_str()));
 
@@ -2816,7 +2816,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
 
             if (obsSt->hasImageRight)
             {
-              savedOk = obsSt->imageRight.saveToFile(format(
+              savedOk = obsSt->imageRight.saveToFile(mrpt::format(
                   "%s/img_stereo_%u_right_%05u.%s", outDir.c_str(), k, imgSaved,
                   imgFileExtension.c_str()));
               ASSERT_(savedOk);
@@ -2824,7 +2824,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
 
             if (obsSt->hasImageDisparity)
             {
-              savedOk = obsSt->imageDisparity.saveToFile(format(
+              savedOk = obsSt->imageDisparity.saveToFile(mrpt::format(
                   "%s/img_stereo_%u_disp_%05u.%s", outDir.c_str(), k, imgSaved,
                   imgFileExtension.c_str()));
               ASSERT_(savedOk);
@@ -2835,7 +2835,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
           {
             auto obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(k);
 
-            bool savedOk = obsIm->image.saveToFile(format(
+            bool savedOk = obsIm->image.saveToFile(mrpt::format(
                 "%s/img_monocular_%u_%05u.%s", outDir.c_str(), k, imgSaved,
                 imgFileExtension.c_str()));
             ASSERT_(savedOk);
@@ -2870,7 +2870,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
   progDia.Update(filSize);
 
   // Set error msg:
-  wxMessageBox((format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
+  wxMessageBox((mrpt::format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -3092,7 +3092,7 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent&)
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (format("Found %u range scans with no valid range values.", invalidScans).c_str()), _("Done"),
+      (mrpt::format("Found %u range scans with no valid range values.", invalidScans).c_str()), _("Done"),
       wxOK, this);
 
   WX_END_TRY
@@ -3261,7 +3261,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent&)
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (format("%u out of %u readings have been filtered out!", nFilt, nReadings).c_str()),
+      (mrpt::format("%u out of %u readings have been filtered out!", nFilt, nReadings).c_str()),
       _("Done"), wxOK, this);
 
   WX_END_TRY
@@ -3387,7 +3387,7 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent&)
   }
 
   wxMessageBox(
-      (format("%u out of %u readings have been filtered out!", nFilt, nReadings).c_str()),
+      (mrpt::format("%u out of %u readings have been filtered out!", nFilt, nReadings).c_str()),
       _("Done"), wxOK, this);
 
   WX_END_TRY
@@ -3467,7 +3467,7 @@ void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent&)
 
   progDia.Update(nEntries);
 
-  wxMessageBox((format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
+  wxMessageBox((mrpt::format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -4091,7 +4091,7 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent&)
           {
             if (!act->hasEncodersInfo)
             {
-              wxMessageBox((format(
+              wxMessageBox((mrpt::format(
                                 "An odometry measurement was found at "
                                 "entry %i which does not\ncontain "
                                 "encoders info: Cannot recompute "
@@ -4112,7 +4112,7 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent&)
           CObservationOdometry* odo = obs.get();
           if (!odo->hasEncodersInfo)
           {
-            wxMessageBox((format(
+            wxMessageBox((mrpt::format(
                               "An odometry measurement was found at "
                               "entry "
                               "%i which does not\ncontain encoders info: "
@@ -4146,7 +4146,7 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent&)
       }
     }
 
-    wxMessageBox((format("%u entries modified!", static_cast<unsigned>(M)).c_str()));
+    wxMessageBox((mrpt::format("%u entries modified!", static_cast<unsigned>(M)).c_str()));
   }
   WX_END_TRY
 }
@@ -4223,7 +4223,7 @@ void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent&)
 
     os::fclose(f);
 
-    wxMessageBox((format("%u entries saved!", M).c_str()), _("Done"), wxOK, this);
+    wxMessageBox((mrpt::format("%u entries saved!", M).c_str()), _("Done"), wxOK, this);
   }
 
   WX_END_TRY
@@ -4287,7 +4287,7 @@ void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(wxCommandEvent&)
     }
   }
 
-  wxMessageBox((format("%u entries modified!", static_cast<unsigned>(M)).c_str()));
+  wxMessageBox((mrpt::format("%u entries modified!", static_cast<unsigned>(M)).c_str()));
 
   WX_END_TRY
 }
@@ -4667,7 +4667,7 @@ void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent&)
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (format("Number of invalid ranges marked: %i", static_cast<int>(invalidRanges)).c_str()),
+      (mrpt::format("Number of invalid ranges marked: %i", static_cast<int>(invalidRanges)).c_str()),
       _("Done"), wxOK, this);
 
   WX_END_TRY
@@ -4755,7 +4755,7 @@ void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent&)
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (format("Number of changes: %i", static_cast<int>(N)).c_str()), _("Done"), wxOK, this);
+      (mrpt::format("Number of changes: %i", static_cast<int>(N)).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -5178,7 +5178,7 @@ void xRawLogViewerFrame::OnMenuRangeBearFilterIDs(wxCommandEvent&)
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (format("Number of changes: %i", static_cast<int>(N)).c_str()), _("Done"), wxOK, this);
+      (mrpt::format("Number of changes: %i", static_cast<int>(N)).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -5254,7 +5254,7 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent&)
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (format("Number of changes: %i", static_cast<int>(N)).c_str()), _("Done"), wxOK, this);
+      (mrpt::format("Number of changes: %i", static_cast<int>(N)).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -5424,7 +5424,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
 
   if (!errorMsg.empty()) wxMessageBox(errorMsg.c_str(), _("Error"));
 
-  wxMessageBox((format("Saved %u images.", nFrames).c_str()), _("Done"), wxOK, this);
+  wxMessageBox((mrpt::format("Saved %u images.", nFrames).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -5507,7 +5507,7 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent&)
 
   progDia.Update(nEntries);
 
-  wxMessageBox((format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
+  wxMessageBox((mrpt::format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -5560,7 +5560,7 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent&)
                 CObservation3DRangeScan::recoverCameraCalibrationParameters(*o, optimal_params);
 
             if (wxNO == wxMessageBox(
-                            (format(
+                            (mrpt::format(
                                  "Calibration with first "
                                  "observation:\nAverage reprojection "
                                  "error=%.04fpx.\n Accept and apply to "
@@ -5592,7 +5592,7 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent&)
 
   progDia.Update(nEntries);
 
-  wxMessageBox((format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
+  wxMessageBox((mrpt::format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }

@@ -217,7 +217,7 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
     glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame.ptrLine<uint8_t>(0));
     frame.flipVertical();
 
-    string fileName(format("%s/screenshot_%07i.png", capturingDir.c_str(), captureCount++));
+    string fileName(mrpt::format("%s/screenshot_%07i.png", capturingDir.c_str(), captureCount++));
 
     bool savedOk = frame.saveToFile(fileName);
     ASSERT_(savedOk);
@@ -928,7 +928,7 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
     // Set the file name as window title:
     updateTitle();
 
-    theWindow->StatusBar1->SetStatusText((format("File loaded in %.03fs", timeToLoad).c_str()), 0);
+    theWindow->StatusBar1->SetStatusText((mrpt::format("File loaded in %.03fs", timeToLoad).c_str()), 0);
 
     Refresh(false);
     Update();
@@ -944,7 +944,7 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
 void _DSceneViewerFrame::updateTitle()
 {
   SetTitle(
-      (format(
+      (mrpt::format(
            "SceneViewer3D - Part of the MRPT project [%s]",
            (extractFileName(loadedFileName) + string(".") + extractFileExtension(loadedFileName))
                .c_str())
@@ -1687,7 +1687,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud([[maybe_unused]] wxComman
       mrpt::system::stringListAsString(file_comments, sC);
       mrpt::system::stringListAsString(file_info, sI);
       wxMessageBox(
-          (format(
+          (mrpt::format(
                "Comments:\n--------------------\n%s\nObject "
                "info:\n--------------------\n%s",
                sC.c_str(), sI.c_str())
@@ -1713,12 +1713,12 @@ struct visitor_export_PLY
     if (IS_CLASS(*obj, CPointCloud))
     {
       CPointCloud::Ptr o = std::dynamic_pointer_cast<CPointCloud>(obj);
-      o->saveToPlyFile(format("%s_%03u.ply", filename.c_str(), ++count));
+      o->saveToPlyFile(mrpt::format("%s_%03u.ply", filename.c_str(), ++count));
     }
     else if (IS_CLASS(*obj, CPointCloudColoured))
     {
       CPointCloudColoured::Ptr o = std::dynamic_pointer_cast<CPointCloudColoured>(obj);
-      o->saveToPlyFile(format("%s_%03u.ply", filename.c_str(), ++count));
+      o->saveToPlyFile(mrpt::format("%s_%03u.ply", filename.c_str(), ++count));
     }
   }
 };

@@ -969,7 +969,7 @@ void CRangeBearingKFSLAM::getAs3DObject(mrpt::viz::CSetOfObjects::Ptr& outObj) c
 
     auto ellip = mrpt::viz::CEllipsoid3D::Create();
 
-    ellip->setName(format("%u", static_cast<unsigned int>(i)));
+    ellip->setName(mrpt::format("%u", static_cast<unsigned int>(i)));
     ellip->enableShowName(true);
     ellip->setPose(pointGauss.mean);
     ellip->setCovMatrix(pointGauss.cov);

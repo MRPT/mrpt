@@ -486,7 +486,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
       MRPT_LOG_INFO_FMT(
           "PDF of %u particles initialized in %.03fms", PARTICLE_COUNT, 1000 * tictac.Tac());
 
-      pdf.saveToTextFile(format("%s/particles_0_initial.txt", sOUT_DIR_PARTS.c_str()));
+      pdf.saveToTextFile(mrpt::format("%s/particles_0_initial.txt", sOUT_DIR_PARTS.c_str()));
 
       // -----------------------------
       //		Particle filter
@@ -1010,7 +1010,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
     // Save overall results:
     {
-      CFileOutputStream f(format("%s_SUMMARY.txt", OUT_DIR_PREFIX.c_str()), OpenMode::APPEND);
+      CFileOutputStream f(mrpt::format("%s_SUMMARY.txt", OUT_DIR_PREFIX.c_str()), OpenMode::APPEND);
 
       f.printf(
           "%% Ratio_covergence_success  #particles  "

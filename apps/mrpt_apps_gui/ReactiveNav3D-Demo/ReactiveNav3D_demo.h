@@ -578,16 +578,16 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     for (unsigned int i = 1; i <= num_lasers; i++)
     {
       ini.read_vector(
-          "LASER_CONFIG", format("LASER%d_POSE", i), std::vector<double>(0), lasercoord, true);
+          "LASER_CONFIG", mrpt::format("LASER%d_POSE", i), std::vector<double>(0), lasercoord, true);
       mrpt::obs::CObservation2DRangeScan& scan = lasers[i - 1].m_scan;
-      scan.maxRange = ini.read_float("LASER_CONFIG", format("LASER%d_MAX_RANGE", i), 50, true);
-      scan.aperture = ini.read_float("LASER_CONFIG", format("LASER%d_APERTURE", i), M_PIf, true);
-      scan.stdError = ini.read_float("LASER_CONFIG", format("LASER%d_STD_ERROR", i), 0.05f, true);
+      scan.maxRange = ini.read_float("LASER_CONFIG", mrpt::format("LASER%d_MAX_RANGE", i), 50, true);
+      scan.aperture = ini.read_float("LASER_CONFIG", mrpt::format("LASER%d_APERTURE", i), M_PIf, true);
+      scan.stdError = ini.read_float("LASER_CONFIG", mrpt::format("LASER%d_STD_ERROR", i), 0.05f, true);
       scan.sensorPose.setFromValues(
           lasercoord[0], lasercoord[1], lasercoord[2], lasercoord[3], lasercoord[4], lasercoord[5]);
-      lasers[i - 1].m_level = ini.read_int("LASER_CONFIG", format("LASER%d_LEVEL", i), 1, true);
+      lasers[i - 1].m_level = ini.read_int("LASER_CONFIG", mrpt::format("LASER%d_LEVEL", i), 1, true);
       lasers[i - 1].m_segments =
-          ini.read_int("LASER_CONFIG", format("LASER%d_SEGMENTS", i), 181, true);
+          ini.read_int("LASER_CONFIG", mrpt::format("LASER%d_SEGMENTS", i), 181, true);
     }
 
     // Read kinects params
@@ -595,27 +595,27 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     kinects.resize(num_kinects);
     for (unsigned int i = 1; i <= num_kinects; i++)
     {
-      kinects[i - 1].m_level = ini.read_int("KINECT_CONFIG", format("KINECT%d_LEVEL", i), 1, true);
-      kinects[i - 1].m_xrel = ini.read_float("KINECT_CONFIG", format("KINECT%d_X", i), 0, true);
-      kinects[i - 1].m_yrel = ini.read_float("KINECT_CONFIG", format("KINECT%d_Y", i), 0, true);
-      kinects[i - 1].m_zrel = ini.read_float("KINECT_CONFIG", format("KINECT%d_Z", i), 0, true);
+      kinects[i - 1].m_level = ini.read_int("KINECT_CONFIG", mrpt::format("KINECT%d_LEVEL", i), 1, true);
+      kinects[i - 1].m_xrel = ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_X", i), 0, true);
+      kinects[i - 1].m_yrel = ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_Y", i), 0, true);
+      kinects[i - 1].m_zrel = ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_Z", i), 0, true);
       kinects[i - 1].m_phi =
-          DEG2RAD(ini.read_float("KINECT_CONFIG", format("KINECT%d_PHI", i), 0, true));
+          DEG2RAD(ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_PHI", i), 0, true));
       kinects[i - 1].m_min_range =
-          ini.read_float("KINECT_CONFIG", format("KINECT%d_MINRANGE", i), 0, true);
+          ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_MINRANGE", i), 0, true);
       kinects[i - 1].m_max_range =
-          ini.read_float("KINECT_CONFIG", format("KINECT%d_MAXRANGE", i), 0, true);
+          ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_MAXRANGE", i), 0, true);
       kinects[i - 1].m_fov_v =
-          DEG2RAD(ini.read_float("KINECT_CONFIG", format("KINECT%d_FOV_V", i), 60, true));
+          DEG2RAD(ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_FOV_V", i), 60, true));
       kinects[i - 1].m_fov_h =
-          DEG2RAD(ini.read_float("KINECT_CONFIG", format("KINECT%d_FOV_H", i), 60, true));
+          DEG2RAD(ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_FOV_H", i), 60, true));
       kinects[i - 1].m_pitch_angle =
-          DEG2RAD(ini.read_float("KINECT_CONFIG", format("KINECT%d_PITCH", i), 0, true));
-      kinects[i - 1].m_rows = ini.read_int("KINECT_CONFIG", format("KINECT%d_ROWS", i), 10, true);
+          DEG2RAD(ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_PITCH", i), 0, true));
+      kinects[i - 1].m_rows = ini.read_int("KINECT_CONFIG", mrpt::format("KINECT%d_ROWS", i), 10, true);
       kinects[i - 1].m_columns =
-          ini.read_int("KINECT_CONFIG", format("KINECT%d_COLUMNS", i), 10, true);
+          ini.read_int("KINECT_CONFIG", mrpt::format("KINECT%d_COLUMNS", i), 10, true);
       kinects[i - 1].m_std_error =
-          ini.read_float("KINECT_CONFIG", format("KINECT%d_STD_ERROR", i), 0.05f, true);
+          ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_STD_ERROR", i), 0.05f, true);
     }
 
     // Read config params which describe the robot shape
@@ -624,10 +624,10 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     robotShape.resize(num_levels);
     for (unsigned int i = 1; i <= num_levels; i++)
     {
-      robotShape.setHeight(i - 1, ini.read_double(sect, format("LEVEL%d_HEIGHT", i), 1.0, true));
-      robotShape.setRadius(i - 1, ini.read_double(sect, format("LEVEL%d_RADIUS", i), 0.5, false));
-      ini.read_vector(sect, format("LEVEL%d_VECTORX", i), std::vector<double>(0), xaux, false);
-      ini.read_vector(sect, format("LEVEL%d_VECTORY", i), std::vector<double>(0), yaux, false);
+      robotShape.setHeight(i - 1, ini.read_double(sect, mrpt::format("LEVEL%d_HEIGHT", i), 1.0, true));
+      robotShape.setRadius(i - 1, ini.read_double(sect, mrpt::format("LEVEL%d_RADIUS", i), 0.5, false));
+      ini.read_vector(sect, mrpt::format("LEVEL%d_VECTORX", i), std::vector<double>(0), xaux, false);
+      ini.read_vector(sect, mrpt::format("LEVEL%d_VECTORY", i), std::vector<double>(0), yaux, false);
       ASSERT_(xaux.size() == yaux.size());
       for (unsigned int j = 0; j < xaux.size(); j++)
       {
@@ -716,7 +716,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
         robotpose3d.z(h);
         auto obj =
             viz::CPolyhedron::CreateCustomPrism(robotShape.polygon(i), robotShape.getHeight(i));
-        obj->setName(format("Level%d", i + 1));
+        obj->setName(mrpt::format("Level%d", i + 1));
         obj->setPose(robotpose3d);
         obj->setColor(0.2f, 0.5f, 0.2f, 1.0f);
         // obj->setWireframe(true);
@@ -744,7 +744,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
         gl_scan[i]->enableLine(true);
         gl_scan[i]->enableSurface(false);
         gl_scan[i]->enablePoints(true);
-        gl_scan[i]->setName(format("Laser%d", i + 1));
+        gl_scan[i]->setName(mrpt::format("Laser%d", i + 1));
         gl_scan[i]->setScan(lasers[i].m_scan);
         gl_scan[i]->setPose(robotpose3d);
         scene->insert(gl_scan[i]);
@@ -763,7 +763,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
         obj.push_back(indobj);
         obj[i] = viz::CPointCloud::Create();
         obj[i]->setPose(robotpose3d);
-        obj[i]->setName(format("Kinect%d", i + 1));
+        obj[i]->setName(mrpt::format("Kinect%d", i + 1));
         scene->insert(obj[i]);
         obj[i]->setColor(0.0f, 0.0f, 1.0f);
         obj[i]->setPointSize(4.0);
@@ -802,7 +802,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
         "| r - Resume navigation \t|\n"
         "| e - Exit \t\t\t\t|\n"
         "--------------------------------------------\n";
-    legend += format("\n        %.02fFPS", fps);
+    legend += mrpt::format("\n        %.02fFPS", fps);
     return legend;
   }
 
@@ -817,7 +817,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
       for (unsigned int i = 0; i < robotShape.size(); i++)
       {
         CVisualObject::Ptr obj;
-        obj = scene->getByName(format("Level%d", i + 1));
+        obj = scene->getByName(mrpt::format("Level%d", i + 1));
 
         if (i == 0)
         {

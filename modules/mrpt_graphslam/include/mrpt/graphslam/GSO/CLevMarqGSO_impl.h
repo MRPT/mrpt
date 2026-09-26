@@ -190,7 +190,7 @@ void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 
   this->m_win_manager->addTextMessage(
       5, -viz_params.offset_y_graph,
-      format("Optimized Graph: #nodes %d", static_cast<int>(this->m_graph->nodeCount())),
+      mrpt::format("Optimized Graph: #nodes %d", static_cast<int>(this->m_graph->nodeCount())),
       mrpt::img::TColorf(0.0, 0.0, 0.0),
       /* unique_index = */ viz_params.text_index_graph);
 
@@ -706,7 +706,7 @@ void CLevMarqGSO<GRAPH_T>::OptimizationParams::loadFromConfigFile(
   // asert the previous value
   ASSERTDEBMSG_(
       optimization_distance == 1 || optimization_distance > 0,
-      format("Invalid value for optimization distance: %.2f", optimization_distance));
+      mrpt::format("Invalid value for optimization distance: %.2f", optimization_distance));
 
   // optimization parameters
   cfg["verbose"] = source.read_bool(section, "verbose", false, false);

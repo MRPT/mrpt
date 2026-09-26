@@ -34,7 +34,7 @@ std::string sprintf_vector(const char* fmt, const VEC& V)
   const size_t N = V.size();
   for (size_t i = 0; i < N; i++)
   {
-    ret += format(fmt, V[i]);
+    ret += mrpt::format(fmt, V[i]);
     if (i != (N - 1)) ret += ",";
   }
   ret += "]";

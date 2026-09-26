@@ -389,7 +389,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
 
     // ask for at least 2 nodes
     ASSERTMSG_(
-        node_IDs.size() >= 2, format(
+        node_IDs.size() >= 2, mrpt::format(
                                   "Very few nodes [%lu] for which to extract a subgraph. "
                                   "Exiting\n",
                                   static_cast<unsigned long>(node_IDs.size())));
@@ -433,7 +433,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
         }
       }
       ASSERTMSG_(
-          own_it != nodes.end(), format(
+          own_it != nodes.end(), mrpt::format(
                                      "NodeID [%lu] can't be found in the initial graph.",
                                      static_cast<unsigned long>(node_IDs_it)));
 
@@ -694,7 +694,7 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
         BASE::edges.find(std::make_pair(from_id, to_id));
     ASSERTMSG_(
         itEdge != BASE::edges.end(),
-        format(
+        mrpt::format(
             "Request for edge %u->%u that doesn't exist in graph.",
             static_cast<unsigned int>(from_id), static_cast<unsigned int>(to_id)));
     return getEdgeSquareError(itEdge, ignoreCovariances);

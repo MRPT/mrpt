@@ -116,7 +116,7 @@ CSetOfObjects::Ptr graph_visualize(const GRAPH_T& g, const mrpt::containers::yam
       gl_corner->setPose(p);
       if (show_ID_labels)  // don't show IDs twice!
       {
-        gl_corner->setName(format("%u", static_cast<unsigned int>(itNod->first)));
+        gl_corner->setName(mrpt::format("%u", static_cast<unsigned int>(itNod->first)));
         gl_corner->enableShowName();
       }
       ret->insert(gl_corner);

@@ -401,7 +401,7 @@ void CVelodyneScanner::initialize()
     // (1) Create LIDAR DATA socket
     // --------------------------------
     if (INVALID_SOCKET == (m_hDataSock = socket(PF_INET, SOCK_DGRAM, 0)))
-      THROW_EXCEPTION(format(
+      THROW_EXCEPTION(mrpt::format(
           "Error creating UDP socket:\n%s", mrpt::comms::net::getLastSocketErrorStr().c_str()));
 
     struct sockaddr_in bindAddr;
@@ -429,7 +429,7 @@ void CVelodyneScanner::initialize()
     // (2) Create LIDAR POSITION socket
     // --------------------------------
     if (INVALID_SOCKET == (m_hPositionSock = socket(PF_INET, SOCK_DGRAM, 0)))
-      THROW_EXCEPTION(format(
+      THROW_EXCEPTION(mrpt::format(
           "Error creating UDP socket:\n%s", mrpt::comms::net::getLastSocketErrorStr().c_str()));
 
     bindAddr.sin_port = htons(VELODYNE_POSITION_UDP_PORT);
@@ -768,7 +768,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
       if (retval < 0)  // poll() error?
       {
         if (errno != EINTR)
-          THROW_EXCEPTION(format(
+          THROW_EXCEPTION(mrpt::format(
               "Error in UDP poll():\n%s", mrpt::comms::net::getLastSocketErrorStr().c_str()));
       }
       if (retval == 0)  // poll() timeout?

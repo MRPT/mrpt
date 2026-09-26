@@ -153,7 +153,7 @@ mrpt::serialization::CArchive& operator>>(
   istrm >> nam;
   ASSERTMSG_(
       nam == namExpect,
-      format("Error deserializing: expected '%s', got '%s'", namExpect.c_str(), nam.c_str()));
+      mrpt::format("Error deserializing: expected '%s', got '%s'", namExpect.c_str(), nam.c_str()));
   if (N) istrm.ReadBufferFixEndianness<T>(&a[0], N);
   return istrm;
 }

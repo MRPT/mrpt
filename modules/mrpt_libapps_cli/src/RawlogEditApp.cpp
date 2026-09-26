@@ -433,7 +433,7 @@ void RawlogEditApp::run(int argc, const char** argv)
   // This will be done for any operation: open the input rawlog
   // ------------------------------------------------------------
   if (!mrpt::system::fileExists(input_rawlog))
-    throw runtime_error(format("Input file doesn't exist: '%s'", input_rawlog.c_str()));
+    throw runtime_error(mrpt::format("Input file doesn't exist: '%s'", input_rawlog.c_str()));
 
   // Open input rawlog:
   CCompressedInputStream fil_input;

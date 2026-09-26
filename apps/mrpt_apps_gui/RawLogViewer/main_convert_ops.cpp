@@ -502,7 +502,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored([[maybe_unused]] wxComman
                   string("_Images");
   if (fileExists(outDir))
   {
-    wxMessageBox((format(
+    wxMessageBox((mrpt::format(
                       "*ABORTING*: Output directory for images already exists. "
                       "Select a different output path or remove the "
                       "directory:\n%s",
@@ -514,7 +514,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored([[maybe_unused]] wxComman
   createDirectory(outDir);
   if (!fileExists(outDir))
   {
-    wxMessageBox((format("*ABORTING*: Cannot create directory:\n%s", outDir.c_str()).c_str()));
+    wxMessageBox((mrpt::format("*ABORTING*: Cannot create directory:\n%s", outDir.c_str()).c_str()));
     return;
   }
 
@@ -637,7 +637,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored([[maybe_unused]] wxComman
   progDia.Update(filSize);
 
   // Set error msg:
-  wxMessageBox((format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
+  wxMessageBox((mrpt::format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }

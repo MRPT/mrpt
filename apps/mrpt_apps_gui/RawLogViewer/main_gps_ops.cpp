@@ -188,7 +188,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath([[maybe_unused]] wxCommandEvent& even
   }
 
   // Window 3d:
-  winGPSPath = std::make_shared<CDisplayWindow3D>(format(
+  winGPSPath = std::make_shared<CDisplayWindow3D>(mrpt::format(
       "GPS path, %i points (%s) %.03f meters length", int(M), the_label.c_str(), overall_distance));
 
   Scene scene;
@@ -209,12 +209,12 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath([[maybe_unused]] wxCommandEvent& even
 
   // 2D wins:
   winGPSPath2D_xy =
-      std::make_shared<CDisplayWindowPlots>(format("GPS path - XY (%s)", the_label.c_str()));
+      std::make_shared<CDisplayWindowPlots>(mrpt::format("GPS path - XY (%s)", the_label.c_str()));
   winGPSPath2D_xy->plot(xs, ys, "b");
   winGPSPath2D_xy->axis_fit(true);
 
   winGPSPath2D_xz =
-      std::make_shared<CDisplayWindowPlots>(format("GPS path - XZ (%s)", the_label.c_str()));
+      std::make_shared<CDisplayWindowPlots>(mrpt::format("GPS path - XZ (%s)", the_label.c_str()));
   winGPSPath2D_xz->plot(xs, zs, "b");
   winGPSPath2D_xz->axis_fit(true);
 
@@ -553,7 +553,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs([[maybe_unused]] wxCommandEvent& 
     mrpt::math::meanAndStd(dists, d_mean, d_std);
 
     wxMessageBox(
-        (format(
+        (mrpt::format(
              "The distance between GPS sensors is %.04fm, with\n a "
              "sigma=%.04fm, average from %u entries.",
              d_mean, d_std, static_cast<unsigned>(dists.size()))
@@ -1035,7 +1035,7 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
       joint_name += lstAllGPSlabel;
     }
 
-    MAT.saveToTextFile(format("%s_JOINT_%s.txt", fil.c_str(), joint_name.c_str()));
+    MAT.saveToTextFile(mrpt::format("%s_JOINT_%s.txt", fil.c_str(), joint_name.c_str()));
 
     CMatrixDouble MAT_REF(1, 3);
     MAT_REF(0, 0) = refCoords.lon.getDecimalValue();
@@ -1045,7 +1045,7 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
         mrpt::format("%s_JOINTREF_%s.txt", fil.c_str(), joint_name.c_str()), MATRIX_FORMAT_FIXED);
 
     wxMessageBox(
-        (format("%u entries saved!", static_cast<unsigned>(M)).c_str()), _("Done"), wxOK, this);
+        (mrpt::format("%u entries saved!", static_cast<unsigned>(M)).c_str()), _("Done"), wxOK, this);
   }
 
   WX_END_TRY

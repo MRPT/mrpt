@@ -1251,7 +1251,7 @@ void write_scalar_type(FILE* fp, PLY_DATA_TYPE code)
   /* make sure this is a valid code */
 
   if (code <= PLY_START_TYPE || code >= PLY_END_TYPE)
-    throw std::runtime_error(format("write_scalar_type: bad data code = %d", code));
+    throw std::runtime_error(mrpt::format("write_scalar_type: bad data code = %d", code));
 
   /* write the code to a file */
 
@@ -1356,7 +1356,7 @@ double get_item_value(char* item, int type)
       double_value = *pdouble;
       return (double_value);
     default:
-      throw std::runtime_error(format("get_item_value: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("get_item_value: bad type = %d", type));
   }
 }
 
@@ -1411,7 +1411,7 @@ void write_binary_item(FILE* fp, int int_val, unsigned int uint_val, double doub
       fwrite(&double_val, 8, 1, fp);
       break;
     default:
-      throw std::runtime_error(format("write_binary_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("write_binary_item: bad type = %d", type));
   }
 }
 
@@ -1445,7 +1445,7 @@ void write_ascii_item(FILE* fp, int int_val, unsigned int uint_val, double doubl
       fprintf(fp, "%g ", double_val);
       break;
     default:
-      throw std::runtime_error(format("write_ascii_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("write_ascii_item: bad type = %d", type));
   }
 }
 
@@ -1508,7 +1508,7 @@ void get_stored_item(void* ptr, int type, int* int_val, unsigned int* uint_val, 
       *uint_val = static_cast<unsigned int>(*double_val);
       break;
     default:
-      throw std::runtime_error(format("get_stored_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("get_stored_item: bad type = %d", type));
   }
 }
 
@@ -1611,7 +1611,7 @@ int get_binary_item(
       *uint_val = static_cast<unsigned int>(*double_val);
       break;
     default:
-      throw std::runtime_error(format("get_binary_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("get_binary_item: bad type = %d", type));
   }
 
 // Added by JL:
@@ -1679,7 +1679,7 @@ void get_ascii_item(
       break;
 
     default:
-      throw std::runtime_error(format("get_ascii_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("get_ascii_item: bad type = %d", type));
   }
 }
 
@@ -1741,7 +1741,7 @@ void store_item(char* item, int type, int int_val, unsigned int uint_val, double
       *pdouble = double_val;
       break;
     default:
-      throw std::runtime_error(format("store_item: bad type = %d", type));
+      throw std::runtime_error(mrpt::format("store_item: bad type = %d", type));
   }
 }
 

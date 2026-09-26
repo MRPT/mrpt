@@ -109,7 +109,7 @@ void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(std::string reg_type 
   ASSERTDEBMSG_(
       (system::strCmpI(reg_type, "node") || system::strCmpI(reg_type, "edge") ||
        system::strCmpI(reg_type, "all")),
-      format(
+      mrpt::format(
           "Registrar string '%s' does not match a known registrar name.\n"
           "Specify 'node' 'edge' or 'all'",
           reg_type.c_str()));
@@ -226,7 +226,7 @@ bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 
   ASSERTDEBMSG_(
       (system::strCmpI(reg_type, "node") || system::strCmpI(reg_type, "edge")),
-      format(
+      mrpt::format(
           "Registrar string \"%s\" does not match a known registrar name.\n"
           "Specify 'node' or 'edge' ",
           reg_type.c_str()));

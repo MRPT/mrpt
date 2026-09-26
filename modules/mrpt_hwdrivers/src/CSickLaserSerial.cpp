@@ -564,7 +564,7 @@ bool CSickLaserSerial::LMS_waitACK(uint16_t timeout_ms)
   if (b == 0x15)
     RET_ERROR("NACK received.")
   else if (b != 0)
-    RET_ERROR(format("Unexpected code received: 0x%02X", b))
+    RET_ERROR(mrpt::format("Unexpected code received: 0x%02X", b))
   else
     return false;  // RET_ERROR("Timeout")
 }

@@ -1141,7 +1141,7 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
   // Save LUT to file
   std::cout << "Saving to File ....";
 
-  CCompressedOutputStream fo(format(
+  CCompressedOutputStream fo(mrpt::format(
       "Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz", LUT.resolution, LUT.std_phi,
       LUT.std_r));
   if (!fo.fileOpenCorrectly())
@@ -1207,7 +1207,7 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
 
   try
   {
-    CCompressedInputStream fi(format(
+    CCompressedInputStream fi(mrpt::format(
         "Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz", LUT.resolution, LUT.std_phi,
         LUT.std_r));
     if (!fi.fileOpenCorrectly())

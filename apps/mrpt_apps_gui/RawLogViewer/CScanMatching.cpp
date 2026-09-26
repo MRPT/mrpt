@@ -658,7 +658,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
     {
       if (isAnimation)
       {
-        txtStep->SetLabel((format("Step: %u / %u", curStep, maxSteps).c_str()));
+        txtStep->SetLabel((mrpt::format("Step: %u / %u", curStep, maxSteps).c_str()));
         pbSteps->SetValue(curStep);
       }
 

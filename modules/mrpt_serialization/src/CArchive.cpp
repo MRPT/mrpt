@@ -513,7 +513,7 @@ void CArchive::ReadObject(CSerializable* existingObj)
   }
   if (id != id2)
   {
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s",
         id2->className, id->className));
   }

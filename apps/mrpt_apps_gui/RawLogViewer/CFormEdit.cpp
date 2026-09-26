@@ -940,7 +940,7 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
       }
       else
       {  // Unknown class:
-        THROW_EXCEPTION(format(
+        THROW_EXCEPTION(mrpt::format(
             "Unexpected class found in the file: '%s'", newObj->GetRuntimeClass()->className));
       }
     }
@@ -974,7 +974,7 @@ void CFormEdit::executeOperationOnRawlog(TRawlogFilter operation, const char* en
   progDia.Update(processMax);  // Close dialog.
 
   wxMessageBox(
-      (format("%s %i\n\nEnd message:\n%s", endMsg, changes, errorMsg.c_str()).c_str()),
+      (mrpt::format("%s %i\n\nEnd message:\n%s", endMsg, changes, errorMsg.c_str()).c_str()),
       _("Result:"), wxOK, this);
 
   if (in_fil) delete in_fil;

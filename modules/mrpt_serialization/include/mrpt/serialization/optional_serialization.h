@@ -40,12 +40,12 @@ CArchive& operator>>(CArchive& in, std::optional<T>& obj)
   std::string pref, stored_T;
   in >> pref;
   if (pref != "std::optional")
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error: serialized std::optional<%s>'s preamble is wrong: '%s'",
         mrpt::typemeta::TTypeName<T>::get().c_str(), pref.c_str()));
   in >> stored_T;
   if (stored_T != std::string(mrpt::typemeta::TTypeName<T>::get().c_str()))
-    THROW_EXCEPTION(format(
+    THROW_EXCEPTION(mrpt::format(
         "Error: serialized std::optional type %s != %s", stored_T.c_str(),
         mrpt::typemeta::TTypeName<T>::get().c_str()));
 

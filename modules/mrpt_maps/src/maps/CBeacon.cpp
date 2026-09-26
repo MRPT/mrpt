@@ -270,7 +270,7 @@ void CBeacon::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
   };
 
   viz::CText::Ptr obj2 = std::make_shared<viz::CText>();
-  obj2->setString(format("#%d", static_cast<int>(m_ID)));
+  obj2->setString(mrpt::format("#%d", static_cast<int>(m_ID)));
 
   CPoint3D meanP;
   this->getMean(meanP);

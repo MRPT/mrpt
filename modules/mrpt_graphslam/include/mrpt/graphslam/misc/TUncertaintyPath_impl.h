@@ -80,12 +80,12 @@ void TUncertaintyPath<GRAPH_T>::assertIsBetweenNodeIDs(
 {
   ASSERTDEBMSG_(
       this->getSource() == from,
-      format(
+      mrpt::format(
           "\nnodeID %lu is not the source of the path\n%s\n\n", static_cast<unsigned long>(from),
           this->getAsString().c_str()));
   ASSERTDEBMSG_(
       this->getDestination() == to,
-      format(
+      mrpt::format(
           "\nnodeID %lu is not the destination of the path\n%s\n\n", static_cast<unsigned long>(to),
           this->getAsString().c_str()));
 }

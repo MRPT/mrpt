@@ -500,7 +500,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
     wxMessageBox(mrpt::exception_to_str(e), _("Error with a delayed load image"), wxOK, this);
 
     if (wxYES == wxMessageBox(
-                     (format(
+                     (mrpt::format(
                           "The current directory for relative images "
                           "is:\n%s\n\nDo you want to set it to a different one?",
                           CImage::getImagesPathBase().c_str())
@@ -791,7 +791,7 @@ bool CFormPlayVideo::showSensoryFrameImpl(
         dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
         delete wxIMG;
 
-        lbCam1->SetLabel((format("%s - left", obsImg2->sensorLabel.c_str()).c_str()));
+        lbCam1->SetLabel((mrpt::format("%s - left", obsImg2->sensorLabel.c_str()).c_str()));
 
         // save:
         displayedImgs[0] = obsImg2;
@@ -828,7 +828,7 @@ bool CFormPlayVideo::showSensoryFrameImpl(
         dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
         delete wxIMG;
 
-        lbCam2->SetLabel((format("%s - right", obsImg2->sensorLabel.c_str()).c_str()));
+        lbCam2->SetLabel((mrpt::format("%s - right", obsImg2->sensorLabel.c_str()).c_str()));
 
         // save:
         displayedImgs[1] = obsImg2;
@@ -865,7 +865,7 @@ bool CFormPlayVideo::showSensoryFrameImpl(
         dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
         delete wxIMG;
 
-        lbCam2->SetLabel((format("%s - disparity", obsImg2->sensorLabel.c_str()).c_str()));
+        lbCam2->SetLabel((mrpt::format("%s - disparity", obsImg2->sensorLabel.c_str()).c_str()));
 
         // save:
         displayedImgs[1] = obsImg2;
@@ -912,7 +912,7 @@ bool CFormPlayVideo::showSensoryFrameImpl(
         dc.Blit(0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
         delete wxIMG;
 
-        lbCam1->SetLabel((format("%s - Intensity", obs3D->sensorLabel.c_str()).c_str()));
+        lbCam1->SetLabel((mrpt::format("%s - Intensity", obs3D->sensorLabel.c_str()).c_str()));
 
         // save:
         displayedImgs[0] = obs3D;
@@ -985,7 +985,7 @@ void CFormPlayVideo::saveCamImage(int n)
   {
     CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(displayedImgs[n]);
 
-    wxString defaultFilename = (format("%s_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+    wxString defaultFilename = (mrpt::format("%s_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
     wxFileDialog dialog(
         this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
@@ -1007,14 +1007,14 @@ void CFormPlayVideo::saveCamImage(int n)
     switch (n)
     {
       case 0:
-        defaultFilename = (format("%s_left_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+        defaultFilename = (mrpt::format("%s_left_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
         break;
       case 1:
         defaultFilename =
-            (format("%s_right_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+            (mrpt::format("%s_right_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
         break;
       case 2:
-        defaultFilename = (format("%s_disp_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+        defaultFilename = (mrpt::format("%s_disp_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
         break;
     }
 

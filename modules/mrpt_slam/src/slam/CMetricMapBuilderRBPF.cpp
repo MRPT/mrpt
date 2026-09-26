@@ -223,7 +223,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
       MRPT_LOG_INFO_STREAM(
           "New pose=" << estPos << "\n"
                       << "New ESS:" << mapPDF.ESS() << "\n");
-      MRPT_LOG_INFO(format(
+      MRPT_LOG_INFO(mrpt::format(
           "   STDs: x=%2.3f y=%2.3f z=%.03f yaw=%2.3fdeg\n", sqrt(cov(0, 0)), sqrt(cov(1, 1)),
           sqrt(cov(2, 2)), RAD2DEG(sqrt(cov(3, 3)))));
     }

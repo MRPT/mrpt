@@ -386,7 +386,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
     static_assert(N != 0, "Empty array!");
     if (m_Rows * m_Cols != static_cast<size_type>(N))
     {
-      THROW_EXCEPTION(format(
+      THROW_EXCEPTION(mrpt::format(
           "Mismatch between matrix size %lu x %lu and array of "
           "length %lu",
           m_Rows, m_Cols, N));
@@ -475,7 +475,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (row >= m_Rows || col >= m_Cols)
     {
-      THROW_EXCEPTION(format(
+      THROW_EXCEPTION(mrpt::format(
           "Indexes (%lu,%lu) out of range. Matrix is %lux%lu", static_cast<unsigned long>(row),
           static_cast<unsigned long>(col), static_cast<unsigned long>(m_Rows),
           static_cast<unsigned long>(m_Cols)));
@@ -491,7 +491,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
     if (row >= m_Rows || col >= m_Cols)
     {
-      THROW_EXCEPTION(format(
+      THROW_EXCEPTION(mrpt::format(
           "Indexes (%lu,%lu) out of range. Matrix is %lux%lu", static_cast<unsigned long>(row),
           static_cast<unsigned long>(col), static_cast<unsigned long>(m_Rows),
           static_cast<unsigned long>(m_Cols)));

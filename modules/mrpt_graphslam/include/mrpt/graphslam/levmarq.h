@@ -557,7 +557,7 @@ void optimize_graph_spa_levmarq(
       if (verbose)
       {
         std::cout << "[optimize_graph_spa_levmarq] "
-                  << format("End condition #2: %e < %e\n", delta_norm, thres_norm);
+                  << mrpt::format("End condition #2: %e < %e\n", delta_norm, thres_norm);
       }
       break;
     }
