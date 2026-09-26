@@ -14,6 +14,7 @@
 
 #include <mrpt/core/reverse_bytes.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 
@@ -109,6 +110,13 @@ void mrpt::reverseBytesInPlace(int64_t& v_in_out) { reverseBytesInPlace_8b(v_in_
 void mrpt::reverseBytesInPlace(float& v_in_out) { reverseBytesInPlace_4b(v_in_out); }
 
 void mrpt::reverseBytesInPlace(double& v_in_out) { reverseBytesInPlace_8b(v_in_out); }
+
+void mrpt::reverseBytesInPlace(long double& v_in_out)
+{
+  // Its size is platform-dependent (8, 12 or 16 bytes): reverse all of them.
+  auto* p = reinterpret_cast<unsigned char*>(&v_in_out);
+  std::reverse(p, p + sizeof(long double));
+}
 
 void mrpt::reverseBytesInPlace(std::chrono::time_point<mrpt::Clock>& v_in_out)
 {

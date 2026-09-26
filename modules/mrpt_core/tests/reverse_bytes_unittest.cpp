@@ -17,6 +17,10 @@
 #include <mrpt/core/config.h>
 #include <mrpt/core/reverse_bytes.h>
 
+#include <algorithm>
+#include <array>
+#include <cstring>
+
 // Load data from constant file and check for exact match.
 TEST(bits, reverseBytes)
 {
@@ -132,4 +136,28 @@ TEST(bits, reverseBytes)
     mrpt::reverseBytesInPlace(t);
     EXPECT_EQ(t, t_org);
   }
+}
+
+TEST(bits, reverseBytesLongDouble)
+{
+  // Compare raw bytes, since a value copy may not preserve padding bytes.
+  std::array<unsigned char, sizeof(long double)> org_bytes{};
+  for (size_t i = 0; i < org_bytes.size(); i++)
+  {
+    org_bytes[i] = static_cast<unsigned char>(i + 1);
+  }
+  long double val = 0;
+  std::memcpy(&val, org_bytes.data(), sizeof(long double));
+
+  mrpt::reverseBytesInPlace(val);
+
+  std::array<unsigned char, sizeof(long double)> rev_bytes{};
+  std::memcpy(rev_bytes.data(), &val, sizeof(long double));
+  EXPECT_TRUE(std::equal(org_bytes.rbegin(), org_bytes.rend(), rev_bytes.begin()));
+
+  const long double org = 3.125L;
+  long double val2 = org;
+  mrpt::reverseBytesInPlace(val2);
+  mrpt::reverseBytesInPlace(val2);
+  EXPECT_EQ(val2, org);
 }
