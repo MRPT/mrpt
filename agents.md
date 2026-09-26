@@ -52,9 +52,8 @@ mrpt_add_library(
   smart pointer macros.
 * Do not expose Eigen headers in public API headers unless the user allows it;
   keep Eigen `#include`s in `src/`.
-* Keep classes small (no large inline arrays): stack frames over 64 KB get
-  wrong unwind info from GCC's stack-clash protection on aarch64, crashing
-  exception backtraces.
+* Avoid huge inline members: large stack objects broke exception backtraces
+  on aarch64 (Ubuntu GCC 13, stack-clash protection).
 * Prefer `std::optional` return values over bool + output-parameter APIs
   (keep the old signature as a `[[deprecated]]` inline shim when replacing one).
 * Every new `.cpp`, `.h` and `CMakeLists.txt` starts with the MRPT header:
@@ -112,8 +111,8 @@ mrpt_add_library(
 * **mrpt_math**: fixed-size matrices are explicitly instantiated only for some
   sizes (square `CMatrixFixed`: 2,3,4,6,7,12; `CVectorFixed`: 2,3,4,5,6,7,12;
   see `src/MatrixVectorBase_instantiate_*.cpp`). Other sizes compile but fail
-  to link. Never `#pragma pack(1)` a struct holding a non-packed class member
-  (e.g. `TPoint3D`): misaligned members crash on strict-alignment CPUs (armhf).
+  to link. Never `#pragma pack(1)` a struct holding a class like `TPoint3D`
+  (SIGBUS on armhf).
 * **mrpt_img**: `CImage::at<T>()` is a raw `reinterpret_cast`; for 3-channel
   images use `at<uint8_t>(x, y, channel)`, not `at<TColor>()`.
   `scaleHalf()`/`grayscale()` dispatch to SSE2/SSSE3 kernels and return whether

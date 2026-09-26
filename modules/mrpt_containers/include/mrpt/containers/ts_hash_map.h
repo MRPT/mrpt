@@ -244,7 +244,8 @@ class ts_hash_map
   ts_hash_map() = default;
 
   ts_hash_map(const ts_hash_map& o) { *this = o; }
-  ts_hash_map(ts_hash_map&& o) noexcept { *this = std::move(o); }
+  // Not noexcept: the new object allocates its own table.
+  ts_hash_map(ts_hash_map&& o) { *this = std::move(o); }
 
   ts_hash_map& operator=(const ts_hash_map& o)
   {
