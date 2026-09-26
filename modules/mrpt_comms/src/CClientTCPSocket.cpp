@@ -593,19 +593,20 @@ size_t CClientTCPSocket::getReadPendingBytes()
   {
     return 0;  // The socket is not connected!
   }
-  unsigned long ret = 0;
-  if (
+  // FIONREAD writes an u_long on Windows, but an int on POSIX systems (a wider
+  // type would read garbage on big-endian 64-bit platforms).
 #ifdef _WIN32
-      ioctlsocket(m_hSock, FIONREAD, &ret)
+  u_long ret = 0;
+  if (ioctlsocket(m_hSock, FIONREAD, &ret))
 #else
-      ioctl(m_hSock, FIONREAD, &ret)
+  int ret = 0;
+  if (ioctl(m_hSock, FIONREAD, &ret))
 #endif
-  )
   {
     THROW_EXCEPTION("Error invoking ioctlsocket(FIONREAD)");
   }
 
-  return ret;
+  return static_cast<size_t>(ret);
 }
 
 /*---------------------------------------------------------------

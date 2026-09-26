@@ -109,6 +109,41 @@ void stbWriteToVectorCallback(void* context, void* data, int size)
   buf->insert(buf->end(), src, src + size);
 }
 
+/** Reads raw pixel bytes, converting 16-bit pixels from the little-endian stream format. */
+void readPixelBuffer(
+    mrpt::serialization::CArchive& in,
+    uint8_t* data,
+    std::size_t numBytes,
+    mrpt::img::PixelDepth depth)
+{
+  if (depth == mrpt::img::PixelDepth::D16U)
+  {
+    in.ReadBufferFixEndianness(reinterpret_cast<uint16_t*>(data), numBytes / sizeof(uint16_t));
+  }
+  else
+  {
+    in.ReadBuffer(data, numBytes);
+  }
+}
+
+/** Writes raw pixel bytes, storing 16-bit pixels in little-endian order. */
+void writePixelBuffer(
+    mrpt::serialization::CArchive& out,
+    const uint8_t* data,
+    std::size_t numBytes,
+    mrpt::img::PixelDepth depth)
+{
+  if (depth == mrpt::img::PixelDepth::D16U)
+  {
+    out.WriteBufferFixEndianness(
+        reinterpret_cast<const uint16_t*>(data), numBytes / sizeof(uint16_t));
+  }
+  else
+  {
+    out.WriteBuffer(data, numBytes);
+  }
+}
+
 }  // namespace
 
 namespace mrpt::img
@@ -488,7 +523,8 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
     // Raw bytes (no compression for now in v3.0.0)
     if (!m_state->empty())
     {
-      out.WriteBuffer(m_state->image_data, m_state->image_buffer_size_bytes());
+      writePixelBuffer(
+          out, m_state->image_data, m_state->image_buffer_size_bytes(), m_state->depth);
     }
   }
   else
@@ -541,7 +577,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
           if (imageSize > 0)
           {
-            in.ReadBuffer(m_state->image_data, imageSize);
+            readPixelBuffer(in, m_state->image_data, imageSize, depth);
           }
         }
         else
@@ -740,7 +776,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
             // Raw bytes
             if (imageSize > 0)
             {
-              in.ReadBuffer(m_state->image_data, imageSize);
+              readPixelBuffer(in, m_state->image_data, static_cast<std::size_t>(imageSize), depth);
             }
           }
         }

@@ -51,6 +51,14 @@
 namespace py = pybind11;
 using namespace pybind11::literals;
 
+// Read/write property for a field of a packed struct. def_readwrite() would
+// access it through a member pointer, which loses the packing information and
+// crashes on architectures without unaligned loads (e.g. armhf).
+#define MRPT_PACKED_READWRITE(CLASS, FIELD)           \
+  def_property(                                       \
+      #FIELD, [](const CLASS& c) { return c.FIELD; }, \
+      [](CLASS& c, decltype(CLASS::FIELD) v) { c.FIELD = v; })
+
 PYBIND11_MODULE(_bindings, m)
 {
   m.doc() = "Python bindings for mrpt::obs — sensor observations and actions";
@@ -576,26 +584,25 @@ PYBIND11_MODULE(_bindings, m)
 
   py::class_<mrpt::obs::gnss::UTC_time>(gnss, "UTC_time")
       .def(py::init<>())
-      .def_readwrite("hour", &mrpt::obs::gnss::UTC_time::hour)
-      .def_readwrite("minute", &mrpt::obs::gnss::UTC_time::minute)
-      .def_readwrite("sec", &mrpt::obs::gnss::UTC_time::sec);
+      .MRPT_PACKED_READWRITE(mrpt::obs::gnss::UTC_time, hour)
+      .MRPT_PACKED_READWRITE(mrpt::obs::gnss::UTC_time, minute)
+      .MRPT_PACKED_READWRITE(mrpt::obs::gnss::UTC_time, sec);
 
   using GGA = mrpt::obs::gnss::Message_NMEA_GGA;
   py::class_<GGA> gga(gnss, "Message_NMEA_GGA");
   py::class_<GGA::content_t>(gga, "content_t")
       .def(py::init<>())
       .def_readwrite("UTCTime", &GGA::content_t::UTCTime)
-      .def_readwrite("latitude_degrees", &GGA::content_t::latitude_degrees)
-      .def_readwrite("longitude_degrees", &GGA::content_t::longitude_degrees)
-      .def_readwrite("fix_quality", &GGA::content_t::fix_quality)
-      .def_readwrite("altitude_meters", &GGA::content_t::altitude_meters)
-      .def_readwrite("geoidal_distance", &GGA::content_t::geoidal_distance)
-      .def_readwrite("orthometric_altitude", &GGA::content_t::orthometric_altitude)
-      .def_readwrite(
-          "corrected_orthometric_altitude", &GGA::content_t::corrected_orthometric_altitude)
-      .def_readwrite("satellitesUsed", &GGA::content_t::satellitesUsed)
-      .def_readwrite("thereis_HDOP", &GGA::content_t::thereis_HDOP)
-      .def_readwrite("HDOP", &GGA::content_t::HDOP);
+      .MRPT_PACKED_READWRITE(GGA::content_t, latitude_degrees)
+      .MRPT_PACKED_READWRITE(GGA::content_t, longitude_degrees)
+      .MRPT_PACKED_READWRITE(GGA::content_t, fix_quality)
+      .MRPT_PACKED_READWRITE(GGA::content_t, altitude_meters)
+      .MRPT_PACKED_READWRITE(GGA::content_t, geoidal_distance)
+      .MRPT_PACKED_READWRITE(GGA::content_t, orthometric_altitude)
+      .MRPT_PACKED_READWRITE(GGA::content_t, corrected_orthometric_altitude)
+      .MRPT_PACKED_READWRITE(GGA::content_t, satellitesUsed)
+      .MRPT_PACKED_READWRITE(GGA::content_t, thereis_HDOP)
+      .MRPT_PACKED_READWRITE(GGA::content_t, HDOP);
   gga.def(py::init<>()).def_readwrite("fields", &GGA::fields);
 
   using RMC = mrpt::obs::gnss::Message_NMEA_RMC;
@@ -603,16 +610,16 @@ PYBIND11_MODULE(_bindings, m)
   py::class_<RMC::content_t>(rmc, "content_t")
       .def(py::init<>())
       .def_readwrite("UTCTime", &RMC::content_t::UTCTime)
-      .def_readwrite("validity_char", &RMC::content_t::validity_char)
-      .def_readwrite("latitude_degrees", &RMC::content_t::latitude_degrees)
-      .def_readwrite("longitude_degrees", &RMC::content_t::longitude_degrees)
-      .def_readwrite("speed_knots", &RMC::content_t::speed_knots)
-      .def_readwrite("direction_degrees", &RMC::content_t::direction_degrees)
-      .def_readwrite("date_day", &RMC::content_t::date_day)
-      .def_readwrite("date_month", &RMC::content_t::date_month)
-      .def_readwrite("date_year", &RMC::content_t::date_year)
-      .def_readwrite("magnetic_dir", &RMC::content_t::magnetic_dir)
-      .def_readwrite("positioning_mode", &RMC::content_t::positioning_mode);
+      .MRPT_PACKED_READWRITE(RMC::content_t, validity_char)
+      .MRPT_PACKED_READWRITE(RMC::content_t, latitude_degrees)
+      .MRPT_PACKED_READWRITE(RMC::content_t, longitude_degrees)
+      .MRPT_PACKED_READWRITE(RMC::content_t, speed_knots)
+      .MRPT_PACKED_READWRITE(RMC::content_t, direction_degrees)
+      .MRPT_PACKED_READWRITE(RMC::content_t, date_day)
+      .MRPT_PACKED_READWRITE(RMC::content_t, date_month)
+      .MRPT_PACKED_READWRITE(RMC::content_t, date_year)
+      .MRPT_PACKED_READWRITE(RMC::content_t, magnetic_dir)
+      .MRPT_PACKED_READWRITE(RMC::content_t, positioning_mode);
   rmc.def(py::init<>()).def_readwrite("fields", &RMC::fields);
 
   py::enum_<mrpt::obs::GnssFixType>(m, "GnssFixType")

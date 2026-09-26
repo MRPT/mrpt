@@ -173,6 +173,9 @@ mrpt_add_library(
   or not resized, a callee that overwrites (rather than appends to) an output
   the caller had already filled, and "in-place" operations that free the
   source buffer before reading it.
+* Multi-byte data read/written with raw `ReadBuffer()`/`WriteBuffer()` or
+  `memcpy` instead of `*FixEndianness()`: breaks on big-endian (s390x).
+  Streams and sensor packets are little-endian.
 * Members read but never written; declared-but-never-defined functions.
 * Documented defaults set only in `loadFromConfigFile()`, with the member
   itself left uninitialized.
@@ -224,6 +227,9 @@ mrpt_add_library(
     without adjusting the pointer: crashes or silent memory corruption.
   * A base and its derived classes must use the same holder type
     (`CLoadableOptions` uses `std::shared_ptr`, so every options struct too).
+  * Fields of `#pragma pack(1)` structs (GNSS messages) must be bound with
+    `MRPT_PACKED_READWRITE`, not `def_readwrite`: member pointers to unaligned
+    fields crash on armhf (Bus error).
   * Build NumPy arrays with an explicit shape vector
     (`py::array_t<T>(std::vector<py::ssize_t>{n})`): with pybind11 2.9,
     `py::array_t<T>(n)` creates a zero-stride array whose elements alias.

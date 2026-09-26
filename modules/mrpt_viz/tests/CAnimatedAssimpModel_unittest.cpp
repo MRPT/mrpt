@@ -13,6 +13,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/core/config.h>  // MRPT_IS_BIG_ENDIAN
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
@@ -33,6 +34,14 @@ std::string skinnedModelPath()
   //! JS_PRELOAD_FILE <tests/skinned_model.gltf>
   return mrpt::UNITTEST_BASEDIR() + std::string("/tests/skinned_model.gltf");
 }
+
+// Assimp's glTF importer reads binary buffers in host byte order, so glTF
+// models cannot be loaded on big-endian hosts.
+#if MRPT_IS_BIG_ENDIAN
+#define SKIP_IF_GLTF_UNSUPPORTED() GTEST_SKIP() << "glTF not supported by Assimp on big-endian"
+#else
+#define SKIP_IF_GLTF_UNSUPPORTED()
+#endif
 
 CAnimatedAssimpModel::Ptr loadTestModel()
 {
@@ -63,6 +72,7 @@ TEST(CAnimatedAssimpModel, EmptyModelDefaults)
 
 TEST(CAnimatedAssimpModel, SkeletonAndAnimationExtraction)
 {
+  SKIP_IF_GLTF_UNSUPPORTED();
   ASSERT_FILE_EXISTS_(skinnedModelPath());
   auto m = loadTestModel();
 
@@ -87,6 +97,7 @@ TEST(CAnimatedAssimpModel, SkeletonAndAnimationExtraction)
 
 TEST(CAnimatedAssimpModel, SelectActiveAnimation)
 {
+  SKIP_IF_GLTF_UNSUPPORTED();
   auto m = loadTestModel();
 
   m->setActiveAnimation(0U);
@@ -108,6 +119,7 @@ TEST(CAnimatedAssimpModel, SelectActiveAnimation)
 
 TEST(CAnimatedAssimpModel, ProgressLoopingVsClamped)
 {
+  SKIP_IF_GLTF_UNSUPPORTED();
   auto m = loadTestModel();
   m->setActiveAnimation(0U);
 
@@ -122,6 +134,7 @@ TEST(CAnimatedAssimpModel, ProgressLoopingVsClamped)
 
 TEST(CAnimatedAssimpModel, SkinningDeformsGeometry)
 {
+  SKIP_IF_GLTF_UNSUPPORTED();
   auto m = loadTestModel();
   m->setActiveAnimation(0U);
 
@@ -146,6 +159,7 @@ TEST(CAnimatedAssimpModel, SkinningDeformsGeometry)
 
 TEST(CAnimatedAssimpModel, BoneOverrides)
 {
+  SKIP_IF_GLTF_UNSUPPORTED();
   auto m = loadTestModel();
   m->setActiveAnimation(0U);
   m->setAnimationTime(0.0);
@@ -173,6 +187,7 @@ TEST(CAnimatedAssimpModel, BoneOverrides)
 
 TEST(CAnimatedAssimpModel, InterpolationBetweenKeyframes)
 {
+  SKIP_IF_GLTF_UNSUPPORTED();
   auto m = loadTestModel();
   m->setActiveAnimation(0U);
 
@@ -198,6 +213,7 @@ TEST(CAnimatedAssimpModel, InterpolationBetweenKeyframes)
 
 TEST(CAnimatedAssimpModel, SerializationRoundTrip)
 {
+  SKIP_IF_GLTF_UNSUPPORTED();
   auto m = loadTestModel();
   m->setActiveAnimation(0U);
   m->setAnimationTime(0.5);
