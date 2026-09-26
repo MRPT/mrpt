@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/topography/conversions.h>
 #include <mrpt/topography/data_types.h>
 #include <pybind11/pybind11.h>
@@ -79,6 +80,54 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // Geodetic ↔ Geocentric (ECEF) conversions
   // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // TEllipsoid - reference ellipsoid
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::topography::TEllipsoid> ellipsoid(m, "TEllipsoid");
+  ellipsoid.def(py::init<>())
+      .def(py::init<double, double, std::string>(), "sa"_a, "sb"_a, "name"_a)
+      .def_readwrite("sa", &mrpt::topography::TEllipsoid::sa, "Largest semiaxis (meters)")
+      .def_readwrite("sb", &mrpt::topography::TEllipsoid::sb, "Smallest semiaxis (meters)")
+      .def_readwrite("name", &mrpt::topography::TEllipsoid::name)
+      .def(
+          "__repr__",
+          [](const mrpt::topography::TEllipsoid& e)
+          {
+            return "TEllipsoid(name='" + e.name + "', sa=" + std::to_string(e.sa) +
+                   ", sb=" + std::to_string(e.sb) + ")";
+          });
+  {
+    using E = mrpt::topography::TEllipsoid;
+    const std::pair<const char*, E (*)()> factories[] = {
+        {                   "Ellipsoid_WGS84",                    &E::Ellipsoid_WGS84},
+        {                   "Ellipsoid_WGS72",                    &E::Ellipsoid_WGS72},
+        {                   "Ellipsoid_WGS66",                    &E::Ellipsoid_WGS66},
+        {            "Ellipsoid_Walbeck_1817",             &E::Ellipsoid_Walbeck_1817},
+        {       "Ellipsoid_Sudamericano_1969",        &E::Ellipsoid_Sudamericano_1969},
+        {"Ellipsoid_Nuevo_Internacional_1967", &E::Ellipsoid_Nuevo_Internacional_1967},
+        { "Ellipsoid_Mercury_Modificado_1968",  &E::Ellipsoid_Mercury_Modificado_1968},
+        {            "Ellipsoid_Mercury_1960",             &E::Ellipsoid_Mercury_1960},
+        {          "Ellipsoid_Krasovsky_1940",           &E::Ellipsoid_Krasovsky_1940},
+        {      "Ellipsoid_Internacional_1924",       &E::Ellipsoid_Internacional_1924},
+        {      "Ellipsoid_Internacional_1909",       &E::Ellipsoid_Internacional_1909},
+        {              "Ellipsoid_Hough_1960",               &E::Ellipsoid_Hough_1960},
+        {            "Ellipsoid_Helmert_1906",             &E::Ellipsoid_Helmert_1906},
+        {            "Ellipsoid_Hayford_1909",             &E::Ellipsoid_Hayford_1909},
+        {                   "Ellipsoid_GRS80",                    &E::Ellipsoid_GRS80},
+        {            "Ellipsoid_Fischer_1968",             &E::Ellipsoid_Fischer_1968},
+        {            "Ellipsoid_Fischer_1960",             &E::Ellipsoid_Fischer_1960},
+        {             "Ellipsoid_Clarke_1880",              &E::Ellipsoid_Clarke_1880},
+        {             "Ellipsoid_Clarke_1866",              &E::Ellipsoid_Clarke_1866},
+        {             "Ellipsoid_Bessel_1841",              &E::Ellipsoid_Bessel_1841},
+        {    "Ellipsoid_Airy_Modificado_1965",     &E::Ellipsoid_Airy_Modificado_1965},
+        {               "Ellipsoid_Airy_1830",                &E::Ellipsoid_Airy_1830},
+    };
+    for (const auto& [name, fn] : factories)
+    {
+      ellipsoid.def_static(name, fn);
+    }
+  }
+
   m.def(
       "geodeticToGeocentric_WGS84",
       [](const mrpt::topography::TGeodeticCoords& gd)
@@ -92,13 +141,25 @@ PYBIND11_MODULE(_bindings, m)
 
   m.def(
       "geocentricToGeodetic",
-      [](const mrpt::math::TPoint3D& gc)
+      [](const mrpt::math::TPoint3D& gc, const mrpt::topography::TEllipsoid& ellip)
       {
         mrpt::topography::TGeodeticCoords gd;
-        mrpt::topography::geocentricToGeodetic(gc, gd);
+        mrpt::topography::geocentricToGeodetic(gc, gd, ellip);
         return gd;
       },
-      "geocentric"_a, "Convert geocentric ECEF TPoint3D (x,y,z) to WGS84 TGeodeticCoords");
+      "geocentric"_a, "ellipsoid"_a = mrpt::topography::TEllipsoid::Ellipsoid_WGS84(),
+      "Convert geocentric ECEF TPoint3D (x,y,z) to geodetic coordinates (default: WGS84)");
+
+  m.def(
+      "geodeticToGeocentric",
+      [](const mrpt::topography::TGeodeticCoords& gd, const mrpt::topography::TEllipsoid& ellip)
+      {
+        mrpt::topography::TGeocentricCoords gc;
+        mrpt::topography::geodeticToGeocentric(gd, gc, ellip);
+        return gc;
+      },
+      "geodetic"_a, "ellipsoid"_a,
+      "Convert geodetic (lat,lon,h) to geocentric (ECEF) TPoint3D for the given ellipsoid");
 
   // -------------------------------------------------------------------------
   // Geodetic ↔ ENU (local East-North-Up) conversions
@@ -138,4 +199,50 @@ PYBIND11_MODULE(_bindings, m)
       },
       "enu"_a, "origin"_a,
       "Convert ENU local coordinates to ECEF geocentric, given a WGS84 reference origin");
+
+  m.def(
+      "ENU_axes_from_WGS84",
+      [](const mrpt::topography::TGeodeticCoords& coords, bool onlyAngles)
+      {
+        mrpt::math::TPose3D enu;
+        mrpt::topography::ENU_axes_from_WGS84(coords, enu, onlyAngles);
+        return enu;
+      },
+      "coords"_a, "only_angles"_a = false,
+      "Returns the East-North-Up frame at the given point, as a TPose3D in ECEF coordinates");
+
+  // -------------------------------------------------------------------------
+  // UTM conversions
+  // -------------------------------------------------------------------------
+  m.def(
+      "geodeticToUTM",
+      [](const mrpt::topography::TGeodeticCoords& gd, const mrpt::topography::TEllipsoid& ellip)
+      {
+        mrpt::topography::TUTMCoords utm;
+        int zone = 0;
+        char band = 0;
+        mrpt::topography::geodeticToUTM(gd, utm, zone, band, ellip);
+        return py::make_tuple(utm, zone, std::string(1, band));
+      },
+      "geodetic"_a, "ellipsoid"_a = mrpt::topography::TEllipsoid::Ellipsoid_WGS84(),
+      "Convert geodetic coordinates to UTM. Returns (utm: TPoint3D, zone: int, band: str); "
+      "utm.z is the height");
+
+  m.def(
+      "UTMToGeodetic",
+      [](const mrpt::math::TPoint3D& utm, int zone, const std::string& hemisphere,
+         const mrpt::topography::TEllipsoid& ellip)
+      {
+        if (hemisphere.size() != 1)
+        {
+          throw std::invalid_argument("hemisphere must be 'N' or 'S'");
+        }
+        mrpt::topography::TGeodeticCoords gd;
+        mrpt::topography::UTMToGeodetic(utm, zone, hemisphere[0], gd, ellip);
+        return gd;
+      },
+      "utm"_a, "zone"_a, "hemisphere"_a,
+      "ellipsoid"_a = mrpt::topography::TEllipsoid::Ellipsoid_WGS84(),
+      "Convert UTM coordinates (utm.z is the height) in the given zone and hemisphere "
+      "('N' or 'S') to geodetic coordinates");
 }

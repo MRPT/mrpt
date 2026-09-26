@@ -12,6 +12,7 @@ from . import _bindings as _b
 # Export Classes
 CImage = _b.CImage
 TColor = _b.TColor
+TColorf = _b.TColorf
 TCamera = _b.TCamera
 DistortionModel = _b.DistortionModel
 TPixelCoord = _b.TPixelCoord
@@ -34,6 +35,13 @@ def _TColor_array(self, dtype=None, **kw):
 
 TColor.__array__ = _TColor_array
 
+
+def _TColorf_array(self, dtype=None, **kw):
+    return np.array([self.R, self.G, self.B, self.A], dtype=np.float32)
+
+
+TColorf.__array__ = _TColorf_array
+
 # 3. Convenience: create color constants
 
 
@@ -47,9 +55,10 @@ class Color:
 
 # Export Functions
 colormap = _b.colormap
+TColormap = _b.TColormap
 
 TStereoCamera = _b.TStereoCamera
 TPixelCoordf = _b.TPixelCoordf
 
-__all__ = ['CImage', 'TColor', 'TCamera', 'TStereoCamera',
-           'DistortionModel', 'TPixelCoord', 'TPixelCoordf', 'Color', 'colormap']
+__all__ = ['CImage', 'TColor', 'TColorf', 'TCamera', 'TStereoCamera',
+           'DistortionModel', 'TPixelCoord', 'TPixelCoordf', 'Color', 'colormap', 'TColormap']

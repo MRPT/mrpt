@@ -18,6 +18,7 @@
 
   <depend>mrpt_common</depend>
   <depend>mrpt_system</depend>
+  <depend>mrpt_serialization</depend> <!-- only for archiveFrom() in the Python bindings -->
 
   <build_depend>libzstd-dev</build_depend>
   <build_depend>pybind11-dev</build_depend>

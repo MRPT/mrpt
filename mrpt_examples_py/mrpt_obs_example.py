@@ -59,8 +59,11 @@ print(f"\nCObservationOdometry: {odo.odometry}")
 # CActionRobotMovement2D + CActionCollection
 # ---------------------------------------------------------------------------
 action = CActionRobotMovement2D()
-# computeFromOdometry() not yet wrapped (pybind11_plan_v3.md §1.1); set odometry directly:
-action.rawOdometryIncrementReading = CPose2D(0.5, 0.0, 0.05)
+# Probabilistic odometry increment, from a Gaussian motion model:
+motion_model = CActionRobotMovement2D.TMotionModelOptions()
+motion_model.modelSelection = CActionRobotMovement2D.mmGaussian
+action.computeFromOdometry(CPose2D(0.5, 0.0, 0.05), motion_model)
+print(f"\nOdometry pose change PDF mean: {action.poseChange.getMean()}")
 
 col = CActionCollection()
 col.insert(action)
@@ -75,3 +78,29 @@ sf.insert(scan)
 sf.insert(odo)
 print(f"\nCSensoryFrame: {sf.size()} observations")
 assert sf.size() == 2
+
+# ---------------------------------------------------------------------------
+# Datasets: CRawlog (actions + observations) and CSimpleMap (keyframes)
+# ---------------------------------------------------------------------------
+import os, tempfile
+from mrpt.obs import CRawlog, CSimpleMap
+from mrpt.poses import CPose3DPDFGaussian
+
+rawlog = CRawlog()
+rawlog.insert(col)  # the action collection
+rawlog.insert(sf)   # the sensory frame
+simplemap = CSimpleMap()
+simplemap.insert(CPose3DPDFGaussian(CPose3D()), sf)
+
+with tempfile.TemporaryDirectory() as tmpdir:
+    fname = os.path.join(tmpdir, "demo.rawlog")
+    assert rawlog.saveToRawLogFile(fname)
+    loaded = CRawlog()
+    assert loaded.loadFromRawLogFile(fname)
+    print(f"\nRawlog saved and loaded back: {loaded}")
+    for i, entry in enumerate(loaded):
+        print(f"  [{i}] {type(entry).__name__}")
+    # Large rawlogs are better processed as a stream, see
+    # CRawlog.ReadFromArchive() in global_localization.py
+
+print(f"CSimpleMap: {simplemap}, first keyframe pose: {simplemap[0].pose.getMean()}")

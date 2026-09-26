@@ -41,5 +41,24 @@ try:
 except ImportError:
     print("  SKIP  (mrpt.poses not available)")
 
+print("Dijkstra")
+from mrpt.graphs import CNetworkOfPoses2D as _G2
+from mrpt.poses import CPose2D as _CP2
+gd = _G2()
+for i in range(5):
+    gd.setNodePose(i, _CP2(0.0, 0.0, 0.0))
+for i in range(4):
+    gd.insertEdge(i, i + 1, _CP2(1.0, 0.0, 0.0))
+gd.insertEdge(4, 1, _CP2(-3.0, 0.0, 0.0))  # reversed shortcut
+check("dijkstra_path uses shortcut", gd.dijkstra_path(0, 4) == [0, 1, 4], f"got {gd.dijkstra_path(0, 4)}")
+check("dijkstra_path reverse", gd.dijkstra_path(4, 0) == [4, 1, 0])
+dists = gd.getNodeDistances(0)
+check("topological distances", dists == {0: 0.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 2.0}, f"got {dists}")
+check("neighbors", gd.getNeighborsOf(1) == {0, 2, 4})
+gd.root = 0
+gd.dijkstra_nodes_estimate()
+check("dijkstra_nodes_estimate", abs(gd.getNodePose(2).x - 2.0) < 1e-12
+      and abs(gd.getNodePose(4).x - 4.0) < 1e-12, f"got {gd.getNodePose(4)}")
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

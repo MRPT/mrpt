@@ -14,11 +14,13 @@
 
 // pybind11
 #include <pybind11/chrono.h>
+#include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 // MRPT headers
+#include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TPose3D.h>
@@ -31,15 +33,18 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/poses/SO_SE_average.h>
 #include <mrpt/serialization/CSerializable.h>
 
 namespace py = pybind11;
+using namespace pybind11::literals;
 
 PYBIND11_MODULE(_bindings, m)
 {
@@ -191,6 +196,163 @@ PYBIND11_MODULE(_bindings, m)
       mrpt::poses::CPose3DPDF, mrpt::serialization::CSerializable,
       std::shared_ptr<mrpt::poses::CPose3DPDF>>
       cl3DPDF(m, "CPose3DPDF");
+
+  cl2DPDF
+      .def(
+          "getMean",
+          [](const mrpt::poses::CPosePDF &self)
+          {
+            mrpt::poses::CPose2D mean;
+            self.getMean(mean);
+            return mean;
+          },
+          "Returns the mean (expected value) of the distribution")
+      .def(
+          "getCovarianceAndMean",
+          [](const mrpt::poses::CPosePDF &self)
+          {
+            const auto [cov, mean] = self.getCovarianceAndMean();
+            return py::make_tuple(cov, mean);
+          },
+          "Returns the tuple (cov: CMatrixDouble33, mean: CPose2D)")
+      .def(
+          "getCovariance", [](const mrpt::poses::CPosePDF &self) { return self.getCovariance(); },
+          "Returns the 3x3 covariance matrix")
+      .def(
+          "saveToTextFile", &mrpt::poses::CPosePDF::saveToTextFile, "file"_a,
+          "Saves the distribution to a text file. Returns False on error.")
+      .def("__str__", &mrpt::poses::CPosePDF::asString);
+
+  cl3DPDF
+      .def(
+          "getMean",
+          [](const mrpt::poses::CPose3DPDF &self)
+          {
+            mrpt::poses::CPose3D mean;
+            self.getMean(mean);
+            return mean;
+          },
+          "Returns the mean (expected value) of the distribution")
+      .def(
+          "getCovarianceAndMean",
+          [](const mrpt::poses::CPose3DPDF &self)
+          {
+            const auto [cov, mean] = self.getCovarianceAndMean();
+            return py::make_tuple(cov, mean);
+          },
+          "Returns the tuple (cov: CMatrixDouble66, mean: CPose3D)")
+      .def(
+          "getCovariance", [](const mrpt::poses::CPose3DPDF &self) { return self.getCovariance(); },
+          "Returns the 6x6 covariance matrix")
+      .def(
+          "saveToTextFile", &mrpt::poses::CPose3DPDF::saveToTextFile, "file"_a,
+          "Saves the distribution to a text file. Returns False on error.")
+      .def("__str__", &mrpt::poses::CPose3DPDF::asString);
+
+  // -------------------------------------------------------------------------
+  // CPosePDFParticles / CPose3DPDFParticles: sample-based pose PDFs
+  // -------------------------------------------------------------------------
+  py::class_<
+      mrpt::poses::CPosePDFParticles, mrpt::poses::CPosePDF, mrpt::bayes::CParticleFilterCapable,
+      std::shared_ptr<mrpt::poses::CPosePDFParticles>>(m, "CPosePDFParticles")
+      .def(py::init<size_t>(), "M"_a = 1, "Creates M particles at the origin")
+      .def("clear", &mrpt::poses::CPosePDFParticles::clear)
+      .def("size", &mrpt::poses::CPosePDFParticles::size)
+      .def("__len__", &mrpt::poses::CPosePDFParticles::size)
+      .def(
+          "resetDeterministic", &mrpt::poses::CPosePDFParticles::resetDeterministic, "location"_a,
+          "particlesCount"_a = 0,
+          "Sets all particles to the given pose (particlesCount=0 keeps the count)")
+      .def(
+          "resetUniform", &mrpt::poses::CPosePDFParticles::resetUniform, "x_min"_a, "x_max"_a,
+          "y_min"_a, "y_max"_a, "phi_min"_a = -M_PI, "phi_max"_a = M_PI, "particlesCount"_a = -1,
+          "Spreads particles uniformly in [x_min,x_max]x[y_min,y_max]x[phi_min,phi_max]")
+      .def(
+          "resetAroundSetOfPoses", &mrpt::poses::CPosePDFParticles::resetAroundSetOfPoses,
+          "list_poses"_a, "num_particles_per_pose"_a, "spread_x"_a, "spread_y"_a,
+          "spread_phi_rad"_a)
+      .def("getParticlePose", &mrpt::poses::CPosePDFParticles::getParticlePose, "i"_a)
+      .def("getMostLikelyParticle", &mrpt::poses::CPosePDFParticles::getMostLikelyParticle)
+      .def(
+          "drawSingleSample",
+          [](const mrpt::poses::CPosePDFParticles &self)
+          {
+            mrpt::poses::CPose2D p;
+            self.drawSingleSample(p);
+            return p;
+          })
+      .def(
+          "getParticlesAsNumpy",
+          [](const mrpt::poses::CPosePDFParticles &self)
+          {
+            const size_t n = self.size();
+            py::array_t<double> arr(std::vector<py::ssize_t>{py::ssize_t(n), 4});
+            auto buf = arr.mutable_unchecked<2>();
+            for (size_t i = 0; i < n; i++)
+            {
+              const auto p = self.getParticlePose(i);
+              buf(i, 0) = p.x;
+              buf(i, 1) = p.y;
+              buf(i, 2) = p.phi;
+              buf(i, 3) = self.getW(i);
+            }
+            return arr;
+          },
+          "Returns all particles as an Nx4 array with columns (x, y, phi, log_weight)")
+      .def(
+          "__repr__", [](const mrpt::poses::CPosePDFParticles &self)
+          { return "CPosePDFParticles(" + std::to_string(self.size()) + " particles)"; });
+
+  py::class_<
+      mrpt::poses::CPose3DPDFParticles, mrpt::poses::CPose3DPDF,
+      mrpt::bayes::CParticleFilterCapable, std::shared_ptr<mrpt::poses::CPose3DPDFParticles>>(
+      m, "CPose3DPDFParticles")
+      .def(py::init<size_t>(), "M"_a = 1, "Creates M particles at the origin")
+      .def("size", &mrpt::poses::CPose3DPDFParticles::size)
+      .def("__len__", &mrpt::poses::CPose3DPDFParticles::size)
+      .def(
+          "resetDeterministic", &mrpt::poses::CPose3DPDFParticles::resetDeterministic, "location"_a,
+          "particlesCount"_a = 0,
+          "Sets all particles to the given pose (particlesCount=0 keeps the count)")
+      .def(
+          "resetUniform", &mrpt::poses::CPose3DPDFParticles::resetUniform, "corner_min"_a,
+          "corner_max"_a, "particlesCount"_a = -1,
+          "Spreads particles uniformly between two TPose3D corners")
+      .def("getParticlePose", &mrpt::poses::CPose3DPDFParticles::getParticlePose, "i"_a)
+      .def("getMostLikelyParticle", &mrpt::poses::CPose3DPDFParticles::getMostLikelyParticle)
+      .def(
+          "drawSingleSample",
+          [](const mrpt::poses::CPose3DPDFParticles &self)
+          {
+            mrpt::poses::CPose3D p;
+            self.drawSingleSample(p);
+            return p;
+          })
+      .def(
+          "getParticlesAsNumpy",
+          [](const mrpt::poses::CPose3DPDFParticles &self)
+          {
+            const size_t n = self.size();
+            py::array_t<double> arr(std::vector<py::ssize_t>{py::ssize_t(n), 7});
+            auto buf = arr.mutable_unchecked<2>();
+            for (size_t i = 0; i < n; i++)
+            {
+              const auto p = self.getParticlePose(static_cast<int>(i));
+              buf(i, 0) = p.x;
+              buf(i, 1) = p.y;
+              buf(i, 2) = p.z;
+              buf(i, 3) = p.yaw;
+              buf(i, 4) = p.pitch;
+              buf(i, 5) = p.roll;
+              buf(i, 6) = self.getW(i);
+            }
+            return arr;
+          },
+          "Returns all particles as an Nx7 array with columns "
+          "(x, y, z, yaw, pitch, roll, log_weight)")
+      .def(
+          "__repr__", [](const mrpt::poses::CPose3DPDFParticles &self)
+          { return "CPose3DPDFParticles(" + std::to_string(self.size()) + " particles)"; });
 
   // -------------------------------------------------------------------------
   // CPose3DPDFGaussian

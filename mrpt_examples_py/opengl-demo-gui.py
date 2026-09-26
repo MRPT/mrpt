@@ -29,8 +29,6 @@ glCorner2: CSetOfObjects = stock_objects.CornerXYZ(1.0)
 glCorner2.setLocation(4.0, 0.0, 0.0)
 scene.insert(glCorner2)
 
-# NOTE: CEllipsoidInverseDepth3D not yet wrapped (pybind11_plan_v3.md §0.4).
-
 # A floor "block":
 glFloor = CBox()
 glFloor.setBoxCorners(TPoint3D(-15, -15, 0), TPoint3D(15, 15, 0.1))
@@ -41,7 +39,7 @@ scene.insert(glFloor)
 # A mobile box to illustrate animations:
 glBox = CBox()
 glBox.setBoxCorners(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1))
-# NOTE: setBoxBorderColor / castShadows not yet wrapped (pybind11_plan_v3.md §0.4).
+# NOTE: setBoxBorderColor / castShadows not yet wrapped.
 scene.insert(glBox)
 
 # Move camera:

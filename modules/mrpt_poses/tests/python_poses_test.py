@@ -144,6 +144,46 @@ check("SE_average3 mean x ≈ 10", abs(r3.x - 10.0) < 0.2,
       f"got x={r3.x}")
 
 # ---------------------------------------------------------------------------
+# Particle PDFs and PDF base methods
+# ---------------------------------------------------------------------------
+print("CPosePDFParticles")
+from mrpt.poses import CPosePDFParticles, CPose3DPDFParticles, CPose2D as _P2
+from mrpt.math import TPose2D, TPose3D
+from mrpt.bayes import CParticleFilterCapable
+parts = CPosePDFParticles(100)
+check("particles count", len(parts) == 100 and parts.particlesCount() == 100)
+check("is CParticleFilterCapable", isinstance(parts, CParticleFilterCapable))
+parts.resetDeterministic(TPose2D(1.0, 2.0, 0.5))
+mean = parts.getMean()
+check("deterministic mean", abs(mean.x - 1.0) < 1e-9 and abs(mean.y - 2.0) < 1e-9,
+      f"got {mean}")
+cov, mean2 = parts.getCovarianceAndMean()
+import numpy as np
+check("deterministic cov ~0", np.allclose(np.asarray(cov), 0.0, atol=1e-12))
+check("getCovarianceAndMean mean", isinstance(mean2, _P2) and abs(mean2.phi - 0.5) < 1e-9)
+parts.resetUniform(-1.0, 1.0, -2.0, 2.0, particlesCount=500)
+arr = parts.getParticlesAsNumpy()
+check("particles array shape", arr.shape == (500, 4), f"got {arr.shape}")
+check("uniform x range", arr[:, 0].min() >= -1.0 and arr[:, 0].max() <= 1.0)
+check("uniform y spread", arr[:, 1].max() - arr[:, 1].min() > 3.0)
+parts.setW(0, 5.0)
+check("setW/getW", abs(parts.getW(0) - 5.0) < 1e-12)
+p0 = parts.getParticlePose(0)
+best = parts.getMostLikelyParticle()
+check("most likely particle", abs(best.x - p0.x) < 1e-12 and abs(best.y - p0.y) < 1e-12)
+
+print("CPose3DPDFParticles")
+p3 = CPose3DPDFParticles(10)
+p3.resetDeterministic(TPose3D(1.0, 2.0, 3.0, 0.1, 0.2, 0.3))
+m3 = p3.getMean()
+check("3D mean", abs(m3.z - 3.0) < 1e-9, f"got {m3}")
+check("3D particles array", p3.getParticlesAsNumpy().shape == (10, 7))
+
+print("CPose3DPDFGaussian base methods")
+g3 = CPose3DPDFGaussian(CPose3D(1.0, 0.0, 0.0, 0.0, 0.0, 0.0))
+check("Gaussian getMean via base", abs(g3.getMean().x - 1.0) < 1e-12)
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 print(f"\nResults: {PASS} passed, {FAIL} failed")

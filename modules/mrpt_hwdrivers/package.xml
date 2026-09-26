@@ -22,6 +22,8 @@
   <build_depend>libopenni2-dev</build_depend>
   <build_depend>libpcap</build_depend>
   <build_depend>libusb-1.0-dev</build_depend>
+  <build_depend>pybind11-dev</build_depend>
+  <build_depend>python3-dev</build_depend>
 
   <export>
     <build_type>cmake</build_type>

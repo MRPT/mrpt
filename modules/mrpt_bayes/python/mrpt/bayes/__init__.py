@@ -8,6 +8,8 @@ PDF being estimated must implement CParticleFilterCapable (in C++) or be
 driven via the mrpt.slam RBPF classes from Python.
 """
 
+import mrpt.config  # noqa: F401  (CLoadableOptions base of the options structs)
+
 from . import _bindings as _b
 
 # Enumerations

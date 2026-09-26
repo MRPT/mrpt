@@ -12,8 +12,14 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMapPDF.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -23,6 +29,12 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
+#include <mrpt/slam/CMetricMapBuilderRBPF.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
+#include <mrpt/slam/CMonteCarloLocalization3D.h>
+#include <mrpt/slam/TKLDParams.h>
+#include <mrpt/slam/TMonteCarloLocalizationParams.h>
+#include <mrpt/viz/CSetOfObjects.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -69,7 +81,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CICP::TConfigParams — ICP algorithm parameters
   // -------------------------------------------------------------------------
-  py::class_<mrpt::slam::CICP::TConfigParams>(m, "CICPOptions")
+  py::class_<
+      mrpt::slam::CICP::TConfigParams, mrpt::config::CLoadableOptions,
+      std::shared_ptr<mrpt::slam::CICP::TConfigParams>>(m, "CICPOptions")
       .def(py::init<>())
       .def_readwrite("ICP_algorithm", &mrpt::slam::CICP::TConfigParams::ICP_algorithm)
       .def_readwrite(
@@ -190,7 +204,10 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CMetricMapBuilderICP::TConfigParams — ICP-SLAM builder options
   // -------------------------------------------------------------------------
-  py::class_<mrpt::slam::CMetricMapBuilderICP::TConfigParams>(m, "CMetricMapBuilderICPOptions")
+  py::class_<
+      mrpt::slam::CMetricMapBuilderICP::TConfigParams, mrpt::config::CLoadableOptions,
+      std::shared_ptr<mrpt::slam::CMetricMapBuilderICP::TConfigParams>>(
+      m, "CMetricMapBuilderICPOptions")
       .def_readwrite(
           "matchAgainstTheGrid",
           &mrpt::slam::CMetricMapBuilderICP::TConfigParams::matchAgainstTheGrid)
@@ -218,5 +235,174 @@ PYBIND11_MODULE(_bindings, m)
             self.loadFromConfigFile(cfg, section);
           },
           "iniContent"_a, "section"_a,
-          "Load options (including mapInitializers) from an INI-format string.");
+          "Load options (including mapInitializers) from an INI-format string.")
+      .def(
+          "loadFromConfigFile",
+          [](mrpt::slam::CMetricMapBuilderICP::TConfigParams& self,
+             const mrpt::config::CConfigFileBase& cfg, const std::string& section)
+          { self.loadFromConfigFile(cfg, section); },
+          "source"_a, "section"_a, "Load options (including mapInitializers) from a config file.");
+
+  // -------------------------------------------------------------------------
+  // CParticleFilter.executeOn(): attached here to the mrpt.bayes class, since
+  // it takes mrpt_obs types that mrpt_bayes does not link against.
+  // -------------------------------------------------------------------------
+  {
+    py::object pfClass = py::module_::import("mrpt.bayes").attr("CParticleFilter");
+    pfClass.attr("executeOn") = py::cpp_function(
+        [](const mrpt::bayes::CParticleFilter& pf, mrpt::bayes::CParticleFilterCapable& obj,
+           const mrpt::obs::CActionCollection* action, const mrpt::obs::CSensoryFrame* observation)
+        {
+          mrpt::bayes::CParticleFilter::TParticleFilterStats stats;
+          pf.executeOn(obj, action, observation, &stats);
+          return stats;
+        },
+        py::name("executeOn"), py::is_method(pfClass), "obj"_a, "action"_a, "observation"_a,
+        "Runs one prediction + update (+ resampling) step of the particle filter on obj, e.g. a "
+        "CMonteCarloLocalization2D. action or observation may be None. Returns a "
+        "TParticleFilterStats.");
+  }
+
+  // -------------------------------------------------------------------------
+  // Monte Carlo localization (particle filter localization on a known map)
+  // -------------------------------------------------------------------------
+  py::class_<
+      mrpt::slam::TKLDParams, mrpt::config::CLoadableOptions,
+      std::shared_ptr<mrpt::slam::TKLDParams>>(m, "TKLDParams")
+      .def(py::init<>())
+      .def_readwrite("KLD_binSize_XY", &mrpt::slam::TKLDParams::KLD_binSize_XY)
+      .def_readwrite("KLD_binSize_PHI", &mrpt::slam::TKLDParams::KLD_binSize_PHI)
+      .def_readwrite("KLD_delta", &mrpt::slam::TKLDParams::KLD_delta)
+      .def_readwrite("KLD_epsilon", &mrpt::slam::TKLDParams::KLD_epsilon)
+      .def_readwrite("KLD_minSampleSize", &mrpt::slam::TKLDParams::KLD_minSampleSize)
+      .def_readwrite("KLD_maxSampleSize", &mrpt::slam::TKLDParams::KLD_maxSampleSize)
+      .def_readwrite("KLD_minSamplesPerBin", &mrpt::slam::TKLDParams::KLD_minSamplesPerBin);
+
+  using MCLParams = mrpt::slam::TMonteCarloLocalizationParams;
+  py::class_<MCLParams>(m, "TMonteCarloLocalizationParams")
+      .def(py::init<>())
+      .def_property(
+          "metricMap",
+          [](const MCLParams& p)
+          { return std::const_pointer_cast<mrpt::maps::CMetricMap>(p.metricMap); },
+          [](MCLParams& p, const mrpt::maps::CMetricMap::Ptr& map) { p.metricMap = map; },
+          "The map used to evaluate observation likelihoods (e.g. a CMultiMetricMap)")
+      .def_property(
+          "metricMaps",
+          [](const MCLParams& p)
+          {
+            std::vector<mrpt::maps::CMetricMap::Ptr> v;
+            for (const auto& mp : p.metricMaps)
+            {
+              v.push_back(std::const_pointer_cast<mrpt::maps::CMetricMap>(mp));
+            }
+            return v;
+          },
+          [](MCLParams& p, const std::vector<mrpt::maps::CMetricMap::Ptr>& maps)
+          { p.metricMaps.assign(maps.begin(), maps.end()); },
+          "Alternative to metricMap: one map per particle (rarely used)")
+      .def_readwrite("KLD_params", &MCLParams::KLD_params);
+
+  using MCL2D = mrpt::slam::CMonteCarloLocalization2D;
+  py::class_<MCL2D, mrpt::poses::CPosePDFParticles, std::shared_ptr<MCL2D>>(
+      m, "CMonteCarloLocalization2D")
+      .def(py::init<size_t>(), "M"_a = 1, "Creates a filter with M particles")
+      .def_readwrite("options", &MCL2D::options)
+      .def(
+          "resetUniformFreeSpace", &MCL2D::resetUniformFreeSpace, "theMap"_a,
+          "freeCellsThreshold"_a = 0.7, "particlesCount"_a = -1, "x_min"_a = -1e10,
+          "x_max"_a = 1e10, "y_min"_a = -1e10, "y_max"_a = 1e10, "phi_min"_a = -M_PI,
+          "phi_max"_a = M_PI,
+          "Spreads particles uniformly over the free space of an occupancy grid (global "
+          "localization)")
+      .def(
+          "getVisualization",
+          [](const MCL2D& pdf) { return mrpt::viz::CSetOfObjects::posePDF2opengl(pdf); },
+          "Returns a 3D representation of the particles")
+      .def(
+          "__repr__", [](const MCL2D& pdf)
+          { return "CMonteCarloLocalization2D(" + std::to_string(pdf.size()) + " particles)"; });
+
+  using MCL3D = mrpt::slam::CMonteCarloLocalization3D;
+  py::class_<MCL3D, mrpt::poses::CPose3DPDFParticles, std::shared_ptr<MCL3D>>(
+      m, "CMonteCarloLocalization3D")
+      .def(py::init<size_t>(), "M"_a = 1, "Creates a filter with M particles")
+      .def_readwrite("options", &MCL3D::options)
+      .def(
+          "getVisualization", [](const MCL3D& pdf) { return pdf.getVisualization(); },
+          "Returns a 3D representation of the particles")
+      .def(
+          "__repr__", [](const MCL3D& pdf)
+          { return "CMonteCarloLocalization3D(" + std::to_string(pdf.size()) + " particles)"; });
+
+  // -------------------------------------------------------------------------
+  // CMetricMapBuilderRBPF: Rao-Blackwellized particle filter SLAM
+  // -------------------------------------------------------------------------
+  using PredParams = mrpt::maps::CMultiMetricMapPDF::TPredictionParams;
+  py::class_<PredParams, mrpt::config::CLoadableOptions, std::shared_ptr<PredParams>>(
+      m, "TPredictionParams")
+      .def(py::init<>())
+      .def_readwrite("pfOptimalProposal_mapSelection", &PredParams::pfOptimalProposal_mapSelection)
+      .def_readwrite("ICPGlobalAlign_MinQuality", &PredParams::ICPGlobalAlign_MinQuality)
+      .def_readwrite("KLD_params", &PredParams::KLD_params)
+      .def_readwrite("icp_params", &PredParams::icp_params);
+
+  using RBPF = mrpt::slam::CMetricMapBuilderRBPF;
+  py::class_<RBPF, mrpt::slam::CMetricMapBuilder> rbpf(m, "CMetricMapBuilderRBPF");
+
+  py::class_<
+      RBPF::TConstructionOptions, mrpt::config::CLoadableOptions,
+      std::shared_ptr<RBPF::TConstructionOptions>>(rbpf, "TConstructionOptions")
+      .def(py::init<>())
+      .def_readwrite("insertionLinDistance", &RBPF::TConstructionOptions::insertionLinDistance)
+      .def_readwrite("insertionAngDistance", &RBPF::TConstructionOptions::insertionAngDistance)
+      .def_readwrite("localizeLinDistance", &RBPF::TConstructionOptions::localizeLinDistance)
+      .def_readwrite("localizeAngDistance", &RBPF::TConstructionOptions::localizeAngDistance)
+      .def_readwrite("PF_options", &RBPF::TConstructionOptions::PF_options)
+      .def_readwrite("mapsInitializers", &RBPF::TConstructionOptions::mapsInitializers)
+      .def_readwrite("predictionOptions", &RBPF::TConstructionOptions::predictionOptions);
+
+  rbpf.def(py::init<>())
+      .def(py::init<const RBPF::TConstructionOptions&>(), "options"_a)
+      .def(
+          "initialize",
+          [](RBPF& b, const mrpt::maps::CSimpleMap& initialMap) { b.initialize(initialMap); },
+          "initialMap"_a = mrpt::maps::CSimpleMap(),
+          "Resets the filter, optionally starting from a given map")
+      .def("clear", &RBPF::clear, "Clears all maps and resets the filter")
+      .def(
+          "processActionObservation", &RBPF::processActionObservation, "action"_a, "sf"_a,
+          "Processes one (action, sensory frame) pair")
+      .def(
+          "getCurrentPoseEstimation", &RBPF::getCurrentPoseEstimation,
+          "Returns the current robot pose estimation (a CPose3DPDF)")
+      .def(
+          "getCurrentlyBuiltMetricMap",
+          [](const RBPF& b) -> const mrpt::maps::CMultiMetricMap&
+          { return b.getCurrentlyBuiltMetricMap(); },
+          py::return_value_policy::reference_internal,
+          "Returns the map of the most likely particle")
+      .def(
+          "getCurrentlyBuiltMap",
+          [](const RBPF& b)
+          {
+            mrpt::maps::CSimpleMap sm;
+            b.getCurrentlyBuiltMap(sm);
+            return sm;
+          },
+          "Returns the keyframes of the most likely particle as a CSimpleMap")
+      .def("getCurrentlyBuiltMapSize", &RBPF::getCurrentlyBuiltMapSize)
+      .def(
+          "getCurrentMostLikelyPath",
+          [](const RBPF& b)
+          {
+            std::deque<mrpt::math::TPose3D> path;
+            b.getCurrentMostLikelyPath(path);
+            return std::vector<mrpt::math::TPose3D>(path.begin(), path.end());
+          },
+          "Returns the robot path of the most likely particle, as a list of TPose3D")
+      .def("getCurrentJointEntropy", &RBPF::getCurrentJointEntropy)
+      .def(
+          "saveCurrentPathEstimationToTextFile", &RBPF::saveCurrentPathEstimationToTextFile,
+          "fileName"_a);
 }

@@ -218,6 +218,15 @@ mrpt_add_library(
     other threads.
   * `reference_internal` for getters returning internal references,
     `reference` for singletons.
+  * Pass `py::multiple_inheritance()` when the registered base is not the
+    first C++ base or is a virtual base (all `mrpt.viz` renderables, drivers
+    deriving `COutputLogger` first). Otherwise pybind11 casts to the base
+    without adjusting the pointer: crashes or silent memory corruption.
+  * A base and its derived classes must use the same holder type
+    (`CLoadableOptions` uses `std::shared_ptr`, so every options struct too).
+  * Build NumPy arrays with an explicit shape vector
+    (`py::array_t<T>(std::vector<py::ssize_t>{n})`): with pybind11 2.9,
+    `py::array_t<T>(n)` creates a zero-stride array whose elements alias.
 
 ## 7. Code coverage
 

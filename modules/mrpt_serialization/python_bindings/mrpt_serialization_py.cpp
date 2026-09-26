@@ -11,10 +11,15 @@
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
+using namespace pybind11::literals;
 
 PYBIND11_MODULE(_bindings, m)
 {
   m.doc() = "Python bindings for mrpt_serialization";
+
+  // End of stream while reading objects maps to Python's EOFError, so
+  // reading loops can stop with `except EOFError`.
+  py::register_exception<mrpt::serialization::CExceptionEOF>(m, "CExceptionEOF", PyExc_EOFError);
 
   // 1. CSerializable
   // Note: py::base<mrpt::rtti::CObject>() tells pybind11 about the
@@ -35,7 +40,17 @@ PYBIND11_MODULE(_bindings, m)
           "ReadObject",
           [](mrpt::serialization::CArchive& self)
           { return self.ReadObject<mrpt::serialization::CSerializable>(); },
-          "Reads an MRPT object from the stream.")
+          "Reads an MRPT object from the stream. Raises EOFError at the end of the stream.")
+      .def(
+          "ReadObject",
+          [](mrpt::serialization::CArchive& self, mrpt::serialization::CSerializable& obj)
+          { self.ReadObject(&obj); },
+          "obj"_a,
+          "Reads an MRPT object from the stream into an existing object, which must be of the "
+          "same class.")
+      .def(
+          "__repr__", [](const mrpt::serialization::CArchive& self)
+          { return "CArchive('" + self.getArchiveDescription() + "')"; })
 
       .def(
           "WriteObject",
