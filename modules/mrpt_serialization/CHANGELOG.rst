@@ -4,6 +4,10 @@ Changelog for package mrpt_serialization
 
 3.3.0 (2026-09-26)
 ------------------
+* fix: qualify mrpt::format() calls to avoid ambiguity with std::format
+* Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
 
 3.2.0 (2026-09-16)
 ------------------

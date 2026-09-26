@@ -4,6 +4,10 @@ Changelog for package mrpt_system
 
 3.3.0 (2026-09-26)
 ------------------
+* fix: qualify mrpt::format() calls to avoid ambiguity with std::format
+* fix(system): locate mrpt_data in 3.x layouts; stop tests passing silently
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
 
 3.2.0 (2026-09-16)
 ------------------

@@ -4,6 +4,9 @@ Changelog for package mrpt_random
 
 3.3.0 (2026-09-26)
 ------------------
+* Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
 
 3.2.0 (2026-09-16)
 ------------------

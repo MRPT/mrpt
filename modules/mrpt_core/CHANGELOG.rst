@@ -4,6 +4,9 @@ Changelog for package mrpt_core
 
 3.3.0 (2026-09-26)
 ------------------
+* fix(core): add reverseBytesInPlace(long double&) for big-endian builds (`#1430 <https://github.com/MRPT/mrpt/issues/1430>`_)
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
 
 3.2.0 (2026-09-16)
 ------------------

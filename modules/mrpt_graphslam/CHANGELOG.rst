@@ -4,6 +4,9 @@ Changelog for package mrpt_graphslam
 
 3.3.0 (2026-09-26)
 ------------------
+* fix: qualify mrpt::format() calls to avoid ambiguity with std::format
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
 
 3.2.0 (2026-09-16)
 ------------------
