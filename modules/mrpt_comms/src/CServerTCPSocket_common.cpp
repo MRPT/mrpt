@@ -75,7 +75,8 @@ void CServerTCPSocket::setupSocket(
   if (INVALID_SOCKET == listen(m_serverSock, maxConnectionsWaiting))
     THROW_EXCEPTION(getLastErrorStr());
 
-  MRPT_LOG_DEBUG(mrpt::format("[CServerTCPSocket] Listening at %s:%i\n", IPaddress.c_str(), listenPort));
+  MRPT_LOG_DEBUG(
+      mrpt::format("[CServerTCPSocket] Listening at %s:%i\n", IPaddress.c_str(), listenPort));
 
   MRPT_END
 }

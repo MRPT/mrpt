@@ -519,7 +519,8 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 
   if (m_verbose) std::cout << "[CGPSInterface] TX: " << str;
 
-  if (written != len) throw std::runtime_error(mrpt::format("Error sending command: '%s'", str).c_str());
+  if (written != len)
+    throw std::runtime_error(mrpt::format("Error sending command: '%s'", str).c_str());
   std::this_thread::sleep_for(5ms);
 
   if (!waitForAnswer)
@@ -543,7 +544,8 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
     if (m_verbose) std::cout << "[CGPSInterface] RX: " << buf << "\n";
 
     if (nRead < 3)
-      throw std::runtime_error(mrpt::format("ERROR: Invalid response '%s' for command '%s'", buf, str));
+      throw std::runtime_error(
+          mrpt::format("ERROR: Invalid response '%s' for command '%s'", buf, str));
 
     if (nRead >= 3 && buf[0] == 'R' && buf[1] == 'E')
       return;  // Ok!

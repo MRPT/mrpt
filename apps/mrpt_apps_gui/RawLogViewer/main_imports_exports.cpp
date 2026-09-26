@@ -361,7 +361,8 @@ void xRawLogViewerFrame::OnImportSequenceOfImages([[maybe_unused]] wxCommandEven
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (mrpt::format("%u images have been imported to rawlog format", static_cast<unsigned>(insertCount))
+      (mrpt::format(
+           "%u images have been imported to rawlog format", static_cast<unsigned>(insertCount))
            .c_str()),
       _("Done"), wxOK, this);
 

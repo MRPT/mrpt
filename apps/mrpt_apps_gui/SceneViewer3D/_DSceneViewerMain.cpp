@@ -928,7 +928,8 @@ void _DSceneViewerFrame::loadFromFile(const std::string& fil, bool isInASequence
     // Set the file name as window title:
     updateTitle();
 
-    theWindow->StatusBar1->SetStatusText((mrpt::format("File loaded in %.03fs", timeToLoad).c_str()), 0);
+    theWindow->StatusBar1->SetStatusText(
+        (mrpt::format("File loaded in %.03fs", timeToLoad).c_str()), 0);
 
     Refresh(false);
     Update();

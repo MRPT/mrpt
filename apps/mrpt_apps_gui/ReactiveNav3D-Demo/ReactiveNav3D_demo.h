@@ -578,14 +578,19 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     for (unsigned int i = 1; i <= num_lasers; i++)
     {
       ini.read_vector(
-          "LASER_CONFIG", mrpt::format("LASER%d_POSE", i), std::vector<double>(0), lasercoord, true);
+          "LASER_CONFIG", mrpt::format("LASER%d_POSE", i), std::vector<double>(0), lasercoord,
+          true);
       mrpt::obs::CObservation2DRangeScan& scan = lasers[i - 1].m_scan;
-      scan.maxRange = ini.read_float("LASER_CONFIG", mrpt::format("LASER%d_MAX_RANGE", i), 50, true);
-      scan.aperture = ini.read_float("LASER_CONFIG", mrpt::format("LASER%d_APERTURE", i), M_PIf, true);
-      scan.stdError = ini.read_float("LASER_CONFIG", mrpt::format("LASER%d_STD_ERROR", i), 0.05f, true);
+      scan.maxRange =
+          ini.read_float("LASER_CONFIG", mrpt::format("LASER%d_MAX_RANGE", i), 50, true);
+      scan.aperture =
+          ini.read_float("LASER_CONFIG", mrpt::format("LASER%d_APERTURE", i), M_PIf, true);
+      scan.stdError =
+          ini.read_float("LASER_CONFIG", mrpt::format("LASER%d_STD_ERROR", i), 0.05f, true);
       scan.sensorPose.setFromValues(
           lasercoord[0], lasercoord[1], lasercoord[2], lasercoord[3], lasercoord[4], lasercoord[5]);
-      lasers[i - 1].m_level = ini.read_int("LASER_CONFIG", mrpt::format("LASER%d_LEVEL", i), 1, true);
+      lasers[i - 1].m_level =
+          ini.read_int("LASER_CONFIG", mrpt::format("LASER%d_LEVEL", i), 1, true);
       lasers[i - 1].m_segments =
           ini.read_int("LASER_CONFIG", mrpt::format("LASER%d_SEGMENTS", i), 181, true);
     }
@@ -595,10 +600,14 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     kinects.resize(num_kinects);
     for (unsigned int i = 1; i <= num_kinects; i++)
     {
-      kinects[i - 1].m_level = ini.read_int("KINECT_CONFIG", mrpt::format("KINECT%d_LEVEL", i), 1, true);
-      kinects[i - 1].m_xrel = ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_X", i), 0, true);
-      kinects[i - 1].m_yrel = ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_Y", i), 0, true);
-      kinects[i - 1].m_zrel = ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_Z", i), 0, true);
+      kinects[i - 1].m_level =
+          ini.read_int("KINECT_CONFIG", mrpt::format("KINECT%d_LEVEL", i), 1, true);
+      kinects[i - 1].m_xrel =
+          ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_X", i), 0, true);
+      kinects[i - 1].m_yrel =
+          ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_Y", i), 0, true);
+      kinects[i - 1].m_zrel =
+          ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_Z", i), 0, true);
       kinects[i - 1].m_phi =
           DEG2RAD(ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_PHI", i), 0, true));
       kinects[i - 1].m_min_range =
@@ -611,7 +620,8 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
           DEG2RAD(ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_FOV_H", i), 60, true));
       kinects[i - 1].m_pitch_angle =
           DEG2RAD(ini.read_float("KINECT_CONFIG", mrpt::format("KINECT%d_PITCH", i), 0, true));
-      kinects[i - 1].m_rows = ini.read_int("KINECT_CONFIG", mrpt::format("KINECT%d_ROWS", i), 10, true);
+      kinects[i - 1].m_rows =
+          ini.read_int("KINECT_CONFIG", mrpt::format("KINECT%d_ROWS", i), 10, true);
       kinects[i - 1].m_columns =
           ini.read_int("KINECT_CONFIG", mrpt::format("KINECT%d_COLUMNS", i), 10, true);
       kinects[i - 1].m_std_error =
@@ -624,10 +634,14 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
     robotShape.resize(num_levels);
     for (unsigned int i = 1; i <= num_levels; i++)
     {
-      robotShape.setHeight(i - 1, ini.read_double(sect, mrpt::format("LEVEL%d_HEIGHT", i), 1.0, true));
-      robotShape.setRadius(i - 1, ini.read_double(sect, mrpt::format("LEVEL%d_RADIUS", i), 0.5, false));
-      ini.read_vector(sect, mrpt::format("LEVEL%d_VECTORX", i), std::vector<double>(0), xaux, false);
-      ini.read_vector(sect, mrpt::format("LEVEL%d_VECTORY", i), std::vector<double>(0), yaux, false);
+      robotShape.setHeight(
+          i - 1, ini.read_double(sect, mrpt::format("LEVEL%d_HEIGHT", i), 1.0, true));
+      robotShape.setRadius(
+          i - 1, ini.read_double(sect, mrpt::format("LEVEL%d_RADIUS", i), 0.5, false));
+      ini.read_vector(
+          sect, mrpt::format("LEVEL%d_VECTORX", i), std::vector<double>(0), xaux, false);
+      ini.read_vector(
+          sect, mrpt::format("LEVEL%d_VECTORY", i), std::vector<double>(0), yaux, false);
       ASSERT_(xaux.size() == yaux.size());
       for (unsigned int j = 0; j < xaux.size(); j++)
       {

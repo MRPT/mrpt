@@ -1045,7 +1045,8 @@ void xRawLogViewerFrame::OnGenGPSTxt([[maybe_unused]] wxCommandEvent& event)
         mrpt::format("%s_JOINTREF_%s.txt", fil.c_str(), joint_name.c_str()), MATRIX_FORMAT_FIXED);
 
     wxMessageBox(
-        (mrpt::format("%u entries saved!", static_cast<unsigned>(M)).c_str()), _("Done"), wxOK, this);
+        (mrpt::format("%u entries saved!", static_cast<unsigned>(M)).c_str()), _("Done"), wxOK,
+        this);
   }
 
   WX_END_TRY

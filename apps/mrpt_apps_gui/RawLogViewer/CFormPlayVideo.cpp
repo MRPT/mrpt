@@ -985,7 +985,8 @@ void CFormPlayVideo::saveCamImage(int n)
   {
     CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(displayedImgs[n]);
 
-    wxString defaultFilename = (mrpt::format("%s_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+    wxString defaultFilename =
+        (mrpt::format("%s_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
     wxFileDialog dialog(
         this, caption, defaultDir, defaultFilename, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
@@ -1007,14 +1008,16 @@ void CFormPlayVideo::saveCamImage(int n)
     switch (n)
     {
       case 0:
-        defaultFilename = (mrpt::format("%s_left_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+        defaultFilename =
+            (mrpt::format("%s_left_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
         break;
       case 1:
         defaultFilename =
             (mrpt::format("%s_right_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
         break;
       case 2:
-        defaultFilename = (mrpt::format("%s_disp_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
+        defaultFilename =
+            (mrpt::format("%s_disp_%i.jpg", o->sensorLabel.c_str(), m_idxInRawlog).c_str());
         break;
     }
 

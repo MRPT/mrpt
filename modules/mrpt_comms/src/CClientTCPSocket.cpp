@@ -214,7 +214,8 @@ void CClientTCPSocket::connect(
   // Create the socket:
   if (INVALID_SOCKET == (m_hSock = socket(AF_INET, SOCK_STREAM, 0)))
   {
-    THROW_EXCEPTION(mrpt::format("Error creating new client socket:\n%s", getLastErrorStr().c_str()));
+    THROW_EXCEPTION(
+        mrpt::format("Error creating new client socket:\n%s", getLastErrorStr().c_str()));
   }
 
   struct sockaddr_in otherAddress;

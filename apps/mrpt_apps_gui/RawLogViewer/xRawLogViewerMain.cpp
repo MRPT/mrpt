@@ -2002,10 +2002,12 @@ void xRawLogViewerFrame::rebuildTreeView()
   // ---------------------------
   memStats->Clear();
 
-  memStats->AppendText(mrpt::format("Time to load file                 : %.03fms\n", 1000 * timeToLoad));
   memStats->AppendText(
-      mrpt::format("Rawlog entries                    : %u\n", static_cast<unsigned>(rawlog.size())));
-  memStats->AppendText(mrpt::format("Traveled distance (from odometry) : %.02f meters\n", totalDistance));
+      mrpt::format("Time to load file                 : %.03fms\n", 1000 * timeToLoad));
+  memStats->AppendText(mrpt::format(
+      "Rawlog entries                    : %u\n", static_cast<unsigned>(rawlog.size())));
+  memStats->AppendText(
+      mrpt::format("Traveled distance (from odometry) : %.02f meters\n", totalDistance));
 
   if (m_treeView->getFirstTimestamp() != INVALID_TIMESTAMP)
   {
@@ -3092,8 +3094,8 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent&)
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (mrpt::format("Found %u range scans with no valid range values.", invalidScans).c_str()), _("Done"),
-      wxOK, this);
+      (mrpt::format("Found %u range scans with no valid range values.", invalidScans).c_str()),
+      _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -3467,7 +3469,8 @@ void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent&)
 
   progDia.Update(nEntries);
 
-  wxMessageBox((mrpt::format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
+  wxMessageBox(
+      (mrpt::format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -4667,7 +4670,8 @@ void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent&)
   progDia.Update(nEntries);
 
   wxMessageBox(
-      (mrpt::format("Number of invalid ranges marked: %i", static_cast<int>(invalidRanges)).c_str()),
+      (mrpt::format("Number of invalid ranges marked: %i", static_cast<int>(invalidRanges))
+           .c_str()),
       _("Done"), wxOK, this);
 
   WX_END_TRY
@@ -5507,7 +5511,8 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent&)
 
   progDia.Update(nEntries);
 
-  wxMessageBox((mrpt::format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
+  wxMessageBox(
+      (mrpt::format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -5592,7 +5597,8 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent&)
 
   progDia.Update(nEntries);
 
-  wxMessageBox((mrpt::format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
+  wxMessageBox(
+      (mrpt::format("%u entries have been modified", nChanges).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }

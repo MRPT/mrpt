@@ -514,7 +514,8 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored([[maybe_unused]] wxComman
   createDirectory(outDir);
   if (!fileExists(outDir))
   {
-    wxMessageBox((mrpt::format("*ABORTING*: Cannot create directory:\n%s", outDir.c_str()).c_str()));
+    wxMessageBox(
+        (mrpt::format("*ABORTING*: Cannot create directory:\n%s", outDir.c_str()).c_str()));
     return;
   }
 

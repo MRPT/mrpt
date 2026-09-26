@@ -842,7 +842,8 @@ void TestParticlesLocalization()
           mrpt::format("%s/particle_matrix.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
 
       real_ranges.setSize(step, real_ranges.cols());
-      real_ranges.saveToTextFile(mrpt::format("%s/GT_ranges.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
+      real_ranges.saveToTextFile(
+          mrpt::format("%s/GT_ranges.txt", OUT_DIR.c_str()), MATRIX_FORMAT_FIXED);
 
       real_offsets.setSize(real_offsets_rows, real_offsets.cols());
       real_offsets.saveToTextFile(
@@ -860,7 +861,8 @@ void TestParticlesLocalization()
     // Average errors:
     if (Pc_range_ini != Pc_range_end)
     {
-      CFileStream fo(mrpt::format("Pc_%.06f_%.06f_RESULTs.txt", Pc_range_ini, Pc_range_end), fomAppend);
+      CFileStream fo(
+          mrpt::format("Pc_%.06f_%.06f_RESULTs.txt", Pc_range_ini, Pc_range_end), fomAppend);
       double err_mean, err_std;
       mrpt::math::meanAndStd(vector_errs_xy, err_mean, err_std);
       fo.printf("%f %f %f\n", range_Pc, err_mean, err_std);

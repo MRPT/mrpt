@@ -490,7 +490,8 @@ void RBPF_SLAM_App_Base::run()
 
       if (SAVE_3D_SCENE)
       {  // Save as file:
-        CCompressedOutputStream f(mrpt::format("%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(), step));
+        CCompressedOutputStream f(
+            mrpt::format("%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(), step));
         mrpt::serialization::archiveFrom(f) << *scene;
       }
 

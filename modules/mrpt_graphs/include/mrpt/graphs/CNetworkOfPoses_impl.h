@@ -255,16 +255,16 @@ struct graph_ops
 
       string key;
       if (!(s >> key) || key.empty())
-        THROW_EXCEPTION(
-            mrpt::format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str()));
+        THROW_EXCEPTION(mrpt::format(
+            "Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str()));
 
       if (mrpt::system::strCmpI(key, "EQUIV"))
       {
         // Process these ones at the end, for now store in a list:
         TNodeID id1, id2;
         if (!(s >> id1 >> id2))
-          THROW_EXCEPTION(
-              mrpt::format("Line %u: Can't read id1 & id2 in EQUIV line: '%s'", lineNum, lin.c_str()));
+          THROW_EXCEPTION(mrpt::format(
+              "Line %u: Can't read id1 & id2 in EQUIV line: '%s'", lineNum, lin.c_str()));
         lstEquivs[std::max(id1, id2)] = std::min(id1, id2);
       }
     }  // end 1st pass
@@ -295,8 +295,8 @@ struct graph_ops
       //  EQUIV id1 id2
       string key;
       if (!(s >> key) || key.empty())
-        THROW_EXCEPTION(
-            mrpt::format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str()));
+        THROW_EXCEPTION(mrpt::format(
+            "Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str()));
 
       if (strCmpI(key, "VERTEX2") || strCmpI(key, "VERTEX") || strCmpI(key, "VERTEX_SE2"))
       {
@@ -376,8 +376,8 @@ struct graph_ops
         TNodeID id;
         TPose3DQuat p3D;
         if (!(s >> id >> p3D.x >> p3D.y >> p3D.z >> p3D.qx >> p3D.qy >> p3D.qz >> p3D.qr))
-          THROW_EXCEPTION(
-              mrpt::format("Line %u: Error parsing VERTEX_SE3:QUAT line: '%s'", lineNum, lin.c_str()));
+          THROW_EXCEPTION(mrpt::format(
+              "Line %u: Error parsing VERTEX_SE3:QUAT line: '%s'", lineNum, lin.c_str()));
 
         // Make sure the node is new:
         if (g->nodes.find(id) != g->nodes.end())
@@ -412,7 +412,8 @@ struct graph_ops
         //
         TNodeID to_id, from_id;
         if (!(s >> from_id >> to_id))
-          THROW_EXCEPTION(mrpt::format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str()));
+          THROW_EXCEPTION(
+              mrpt::format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str()));
 
         // EQUIV? Replace ID by new one.
         {
@@ -450,14 +451,15 @@ struct graph_ops
       else if (strCmpI(key, "EDGE3"))
       {
         if (!graph_is_3D)
-          THROW_EXCEPTION(
-              mrpt::format("Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str()));
+          THROW_EXCEPTION(mrpt::format(
+              "Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str()));
 
         //  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12
         //  .. inf_16 inf_22 .. inf_66
         TNodeID to_id, from_id;
         if (!(s >> from_id >> to_id))
-          THROW_EXCEPTION(mrpt::format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str()));
+          THROW_EXCEPTION(
+              mrpt::format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str()));
 
         // EQUIV? Replace ID by new one.
         {
@@ -518,8 +520,8 @@ struct graph_ops
       else if (strCmpI(key, "EDGE_SE3:QUAT"))
       {
         if (!graph_is_3D)
-          THROW_EXCEPTION(
-              mrpt::format("Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str()));
+          THROW_EXCEPTION(mrpt::format(
+              "Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str()));
 
         //  EDGE_SE3:QUAT from_id to_id Ax Ay Az qx qy qz qw inf_11
         //  inf_12 .. inf_16 inf_22 .. inf_66
@@ -527,8 +529,8 @@ struct graph_ops
         //  .. inf_16 inf_22 .. inf_66
         TNodeID to_id, from_id;
         if (!(s >> from_id >> to_id))
-          THROW_EXCEPTION(
-              mrpt::format("Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str()));
+          THROW_EXCEPTION(mrpt::format(
+              "Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str()));
 
         // EQUIV? Replace ID by new one.
         {
@@ -594,7 +596,8 @@ struct graph_ops
       {
         TNodeID id;
         if (!(s >> id))
-          THROW_EXCEPTION(mrpt::format("Line %u: Can't read id in FIX line: '%s'", lineNum, lin.c_str()));
+          THROW_EXCEPTION(
+              mrpt::format("Line %u: Can't read id in FIX line: '%s'", lineNum, lin.c_str()));
         g->root = id;
       }
       else
@@ -873,7 +876,8 @@ struct graph_ops
             "Node %u doesn't have a global pose in 'nodes'.", static_cast<unsigned int>(from_id)));
     ASSERTMSG_(
         itPoseTo != g->nodes.end(),
-        mrpt::format("Node %u doesn't have a global pose in 'nodes'.", static_cast<unsigned int>(to_id)));
+        mrpt::format(
+            "Node %u doesn't have a global pose in 'nodes'.", static_cast<unsigned int>(to_id)));
 
     // The global poses:
     using constraint_t = typename graph_t::constraint_t;
