@@ -128,6 +128,30 @@ TEST(ts_hash_map, selfAssignment)
   EXPECT_EQ(m["uno"], 1.0);
 }
 
+TEST(ts_hash_map, tableIsNotStoredInline)
+{
+  // A large table must not make the container itself large (stack safety):
+  using big_map_t = mrpt::containers::ts_hash_map<std::string, std::string, 1, 10>;
+  EXPECT_LT(sizeof(big_map_t), 1024U);
+}
+
+TEST(ts_hash_map, copyAndMoveKeepIndependentStorage)
+{
+  mrpt::containers::ts_hash_map<std::string, double> m;
+  m["uno"] = 1.0;
+
+  auto copy = m;
+  copy["uno"] = 2.0;
+  EXPECT_EQ(m["uno"], 1.0);
+  EXPECT_EQ(copy["uno"], 2.0);
+
+  auto moved = std::move(copy);
+  EXPECT_EQ(moved["uno"], 2.0);
+  // The moved-from object must remain usable:
+  copy["dos"] = 3.0;
+  EXPECT_EQ(copy["dos"], 3.0);
+}
+
 TEST(ts_hash_map, tooManyCollisionsThrows)
 {
   // These 6 keys were found to all reduce to the same uint8_t hash bucket
