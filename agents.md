@@ -191,8 +191,13 @@ mrpt_add_library(
      here.
   3. `mrpt_add_python_module(foo python_bindings/${PROJECT_NAME}_py.cpp)` in
      the module's `CMakeLists.txt` (uncomment it if commented out).
-* `modules/mrpt_core/python/mrpt/__init__.py` imports all submodules listed in
-  `MRPT_MODULES`; add new module names there.
+* `mrpt` is a PEP 420 namespace package: never add an `mrpt/__init__.py`.
+* `package.xml` must `build_depend` on `pybind11-dev` and `python3-dev`:
+  `mrpt_add_python_module()` silently skips the bindings if pybind11 is not
+  found (e.g. on the ROS build farm).
+* A new Python module also needs its own `python3-mrpt-<mod>` Debian package
+  (`debian/control`, the `python3-mrpt` metapackage, a `.install` file and the
+  import list in `debian/tests/control`); see "Releases" below.
 * Examples live in `mrpt_examples_py`; extend them when wrapping new classes.
 * Conventions:
   * Include `<pybind11/pybind11.h>` and `<pybind11/stl.h>`; add `eigen.h`,
@@ -261,6 +266,13 @@ See "Porting ROS 2 nodes" in `doc/source/doxygen-docs/port_mrpt3.md`:
 * `packaging/release.py` automates the whole flow (use `--dry-run` first).
 * Never run `release.py` or any step that pushes, tags or publishes unless the
   user explicitly asks for a release.
+* Debian/Ubuntu packaging lives outside this repo, in two trees that must be
+  kept consistent: the official Debian one (salsa.debian.org
+  `robotics-team/mrpt`, `master`) and the Ubuntu PPA one
+  (github.com/MRPT/mrpt-ubuntu-ppa-packages, one `debian/`-only branch per
+  distro: `noble`, `resolute`). Whenever a module, library or Python package
+  is added, removed or renamed, or the `MAJOR.MINOR` SOVERSION changes, update
+  `debian/` in both trees and all PPA distro branches.
 
 ## 10. Agent tool usage
 
