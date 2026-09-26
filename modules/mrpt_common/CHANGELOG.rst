@@ -2,8 +2,8 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.0 (2026-09-26)
+------------------
 * mrpt_common: propagate --coverage to mrpt_add_executable
 * Contributors: Jose Luis Blanco-Claraco
 

@@ -2,8 +2,8 @@
 Changelog for package mrpt_imgui_vendor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.0 (2026-09-26)
+------------------
 * mrpt_imgui_vendor: new package with a single vendored Dear ImGui copy
 * mrpt_imgui_vendor: require GLFW, and provide it on Windows via vcpkg
 * Contributors: Jose Luis Blanco-Claraco

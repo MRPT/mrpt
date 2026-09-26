@@ -2,8 +2,8 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.0 (2026-09-26)
+------------------
 * mrpt_math, mrpt_maps: fix KDTreeCapable lock-order inversion, add index opt-out
 * Contributors: Jose Luis Blanco-Claraco
 

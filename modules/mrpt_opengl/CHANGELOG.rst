@@ -2,8 +2,8 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.0 (2026-09-26)
+------------------
 * mrpt_opengl: use renamed libgles-dev rosdep key
 * mrpt_opengl: depend on new opengl-es rosdep key
 * Contributors: Jose Luis Blanco-Claraco
