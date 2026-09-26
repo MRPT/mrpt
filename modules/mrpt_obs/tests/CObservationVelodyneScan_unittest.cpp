@@ -13,6 +13,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/core/reverse_bytes.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/lazy_load_path.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -61,6 +62,13 @@ struct RawPacket
 static_assert(sizeof(RawPacket) == sizeof(CObservationVelodyneScan::TVelodyneRawPacket));
 static_assert(sizeof(RawPacket) == CObservationVelodyneScan::PACKET_SIZE);
 
+// Multi-byte fields in raw packets are little-endian, as sent by the sensor.
+template <typename T>
+T le(T v)
+{
+  return mrpt::toNativeEndianness(v);
+}
+
 // Thin wrapper to avoid GCC's overly-eager -Wdangling-reference false
 // positive when binding a `const auto&` directly to the string-literal-taking
 // overload of LoadDefaultCalibration().
@@ -87,20 +95,20 @@ CObservationVelodyneScan::Ptr buildSyntheticVLP16Scan(
   for (size_t p = 0; p < nPackets; p++)
   {
     RawPacket raw{};
-    raw.gps_timestamp = static_cast<uint32_t>(1000 + p * 553);  // one packet ~553us apart
+    raw.gps_timestamp = le(static_cast<uint32_t>(1000 + p * 553));  // one packet ~553us apart
     raw.laser_return_mode = returnMode;
     raw.velodyne_model_ID = 0x22;  // VLP-16
 
     for (int b = 0; b < 12; b++)
     {
-      raw.blocks[b].header = CObservationVelodyneScan::UPPER_BANK;
+      raw.blocks[b].header = le(CObservationVelodyneScan::UPPER_BANK);
       // Rotation advances both across blocks and packets:
-      raw.blocks[b].rotation = static_cast<uint16_t>(
-          (static_cast<int>(p) * 12 * 30 + b * 30) % CObservationVelodyneScan::ROTATION_MAX_UNITS);
+      raw.blocks[b].rotation = le(static_cast<uint16_t>(
+          (static_cast<int>(p) * 12 * 30 + b * 30) % CObservationVelodyneScan::ROTATION_MAX_UNITS));
       for (int k = 0; k < 32; k++)
       {
         // Constant-range synthetic wall (5.0 m, in 2mm units):
-        raw.blocks[b].returns[k].distance = 2500;
+        raw.blocks[b].returns[k].distance = le<uint16_t>(2500);
         raw.blocks[b].returns[k].intensity = static_cast<uint8_t>(100 + k);
       }
     }
@@ -314,7 +322,7 @@ TEST(CObservationVelodyneScan, GeneratePointCloudDualReturnMode)
     std::memcpy(static_cast<void*>(&raw), static_cast<const void*>(&pkt), sizeof(raw));
     for (int b = 1; b < 12; b += 2)
     {
-      for (int k = 0; k < 32; k++) raw.blocks[b].returns[k].distance = 3000;
+      for (int k = 0; k < 32; k++) raw.blocks[b].returns[k].distance = le<uint16_t>(3000);
     }
     std::memcpy(static_cast<void*>(&pkt), static_cast<const void*>(&raw), sizeof(raw));
   }
@@ -555,18 +563,18 @@ TEST(CObservationVelodyneScan, GeneratePointCloudHDL32)
   for (size_t p = 0; p < obs->scan_packets.size(); p++)
   {
     RawPacket raw{};
-    raw.gps_timestamp = static_cast<uint32_t>(2000 + p * 553);
+    raw.gps_timestamp = le(static_cast<uint32_t>(2000 + p * 553));
     raw.laser_return_mode = CObservationVelodyneScan::RETMODE_STRONGEST;
     raw.velodyne_model_ID = 0x21;  // HDL-32E
     for (int b = 0; b < 12; b++)
     {
-      raw.blocks[b].header = CObservationVelodyneScan::UPPER_BANK;
-      raw.blocks[b].rotation = static_cast<uint16_t>(
+      raw.blocks[b].header = le(CObservationVelodyneScan::UPPER_BANK);
+      raw.blocks[b].rotation = le(static_cast<uint16_t>(
           (static_cast<int>(p) * 12 * 100 + b * 100) %
-          CObservationVelodyneScan::ROTATION_MAX_UNITS);
+          CObservationVelodyneScan::ROTATION_MAX_UNITS));
       for (int k = 0; k < 32; k++)
       {
-        raw.blocks[b].returns[k].distance = 3000;
+        raw.blocks[b].returns[k].distance = le<uint16_t>(3000);
         raw.blocks[b].returns[k].intensity = static_cast<uint8_t>(50 + k);
       }
     }
