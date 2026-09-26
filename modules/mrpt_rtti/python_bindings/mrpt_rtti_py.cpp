@@ -27,6 +27,11 @@ PYBIND11_MODULE(_bindings, m)
 {
   m.doc() = "Python bindings for mrpt_rtti";
 
+  // pybind11 version used to build all MRPT bindings, to detect an
+  // incompatible NumPy at import time (see mrpt/rtti/__init__.py).
+  m.attr("_pybind11_version") =
+      py::make_tuple(PYBIND11_VERSION_MAJOR, PYBIND11_VERSION_MINOR, PYBIND11_VERSION_PATCH);
+
   // Bind the TRuntimeClassId struct
   py::class_<mrpt::rtti::TRuntimeClassId>(m, "TRuntimeClassId")
       .def_readonly("className", &mrpt::rtti::TRuntimeClassId::className)

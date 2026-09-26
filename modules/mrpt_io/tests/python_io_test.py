@@ -49,5 +49,26 @@ print("Enums")
 check("OpenMode.TRUNCATE exists", hasattr(OpenMode, "TRUNCATE"))
 check("SeekOrigin.sFromBeginning exists", hasattr(SeekOrigin, "sFromBeginning"))
 
+print("zip / compression")
+import mrpt.io
+from mrpt.io import CompressionType, CompressionOptions, detect_compression
+payload = b"mrpt " * 200
+gz = mrpt.io.zip.compress_gz_data_block(payload)
+check("gz block smaller", len(gz) < len(payload), f"{len(gz)} vs {len(payload)}")
+check("gz block round-trip", mrpt.io.zip.decompress_gz_data_block(gz) == payload)
+with tempfile.TemporaryDirectory() as tmpdir:
+    gzfile = os.path.join(tmpdir, "data.gz")
+    check("compress_gz_file", mrpt.io.zip.compress_gz_file(gzfile, payload))
+    check("detect_compression gzip", detect_compression(gzfile) == CompressionType.Gzip)
+    check("decompress_gz_file", mrpt.io.zip.decompress_gz_file(gzfile) == payload)
+    binfile = os.path.join(tmpdir, "data.bin")
+    check("vectorToBinaryFile", mrpt.io.vectorToBinaryFile(b"\x05\x06", binfile))
+    back = mrpt.io.loadBinaryFile(binfile)
+    check("loadBinaryFile", back is not None and bytes(back) == b"\x05\x06", f"got {back!r}")
+    check("decompress_gz_file missing -> None",
+          mrpt.io.zip.decompress_gz_file(os.path.join(tmpdir, "nope.gz")) is None)
+co = CompressionOptions(CompressionType.Gzip, 5)
+check("CompressionOptions", co.type == CompressionType.Gzip and co.level == 5)
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

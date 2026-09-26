@@ -144,7 +144,7 @@ void readFileWithPoses(
 
   // make sure file exists
   ASSERTMSG_(
-      fileExists(fname), format(
+      fileExists(fname), mrpt::format(
                              "\nFile %s was not found.\n"
                              "Either specify a valid filename or set set the "
                              "m_visualize_GT flag to false\n",

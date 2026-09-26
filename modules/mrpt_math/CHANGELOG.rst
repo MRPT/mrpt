@@ -2,6 +2,18 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* fix: qualify mrpt::format() calls to avoid ambiguity with std::format
+* Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)
+* fix: test crashes on arm64 and armhf (`#1428 <https://github.com/MRPT/mrpt/issues/1428>`_)
+* fix(math): TPolygon2D::isConvex() sign flag must not be a plain char
+* changelogs
+* Merge pull request `#1417 <https://github.com/MRPT/mrpt/issues/1417>`_ from MRPT/fix/kdtree-capable-lock-order-and-optout
+* mrpt_math, mrpt_maps: fix KDTreeCapable lock-order inversion, add index opt-out
+* Contributors: Jose Luis Blanco-Claraco
+
+
 3.2.0 (2026-09-16)
 ------------------
 * fix: resolve ROS buildfarm warnings and fix the real correctness issues they revealed.

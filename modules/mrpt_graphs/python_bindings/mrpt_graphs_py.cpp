@@ -14,13 +14,23 @@
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphs/TNodeID.h>
+#include <mrpt/graphs/dijkstra.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <limits>
+
 namespace py = pybind11;
 using namespace pybind11::literals;
+
+namespace
+{
+// A finite search radius makes CDijkstra build the tree of the nodes reachable
+// from the source, instead of throwing if the graph is not fully connected.
+constexpr size_t REACHABLE_ONLY = std::numeric_limits<size_t>::max() - 1;
+}  // namespace
 
 // Helper: expose CNetworkOfPoses<CPOSE> as the given Python class name
 template <typename CPOSE>
@@ -63,6 +73,52 @@ void bind_CNetworkOfPoses(py::module& m, const char* className)
             return ids;
           },
           "Return a list of all node IDs")
+      .def(
+          "getNeighborsOf",
+          [](const G& g, mrpt::graphs::TNodeID id) { return g.getNeighborsOf(id); }, "node_id"_a,
+          "IDs of the nodes connected to the given one by an edge (in any direction)")
+      // Graph algorithms
+      .def(
+          "dijkstra_nodes_estimate", [](G& g) { g.dijkstra_nodes_estimate(); },
+          "Recomputes all node poses by composing edges along the shortest-path spanning tree "
+          "from the root node")
+      .def(
+          "dijkstra_path",
+          [](const G& g, mrpt::graphs::TNodeID source, mrpt::graphs::TNodeID target)
+          {
+            const mrpt::graphs::CDijkstra<G> dijkstra(g, source, {}, {}, REACHABLE_ONLY);
+            if (!dijkstra.getNodeDistanceToRoot(target))
+            {
+              throw py::value_error("target node is not reachable from source");
+            }
+            typename mrpt::graphs::CDijkstra<G>::edge_list_t edges;
+            dijkstra.getShortestPathTo(target, edges);
+            std::vector<mrpt::graphs::TNodeID> path{source};
+            for (const auto& e : edges)
+            {
+              path.push_back(e.first == path.back() ? e.second : e.first);
+            }
+            return path;
+          },
+          "source"_a, "target"_a,
+          "Shortest path (fewest edges) between two nodes as a list of node IDs, from source to "
+          "target, ignoring edge directions. Raises ValueError if target is unreachable.")
+      .def(
+          "getNodeDistances",
+          [](const G& g, mrpt::graphs::TNodeID source)
+          {
+            const mrpt::graphs::CDijkstra<G> dijkstra(g, source, {}, {}, REACHABLE_ONLY);
+            std::map<mrpt::graphs::TNodeID, double> dists;
+            for (const auto id : dijkstra.getListOfAllNodes())
+            {
+              if (const auto d = dijkstra.getNodeDistanceToRoot(id); d)
+              {
+                dists[id] = *d;
+              }
+            }
+            return dists;
+          },
+          "source"_a, "Topological distance (number of edges) from source to every reachable node")
       // root
       .def_readwrite("root", &G::root, "Root node ID (default: 0)")
       // File I/O

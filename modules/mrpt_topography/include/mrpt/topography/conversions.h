@@ -63,6 +63,17 @@ void ENUToGeocentric(
     TGeocentricCoords& out_coords,
     const TEllipsoid& ellip);
 
+/** ENU to longitude/latitude/height (WGS84) coordinates, relative to the
+ * given origin. This is the exact inverse of geodeticToENU_WGS84().
+ * \note The "Up" (Z) direction of the input ENU point is the normal to the
+ * ellipsoid at \a in_coords_origin.
+ * \sa geodeticToENU_WGS84, ENUToGeocentric
+ */
+void ENUToGeodetic_WGS84(
+    const mrpt::math::TPoint3D& in_ENU_point,
+    TGeodeticCoords& out_coords,
+    const TGeodeticCoords& in_coords_origin);
+
 /** ENU to EFEC (Geocentric) coordinates \sa ENUToGeocentric,
  * geodeticToENU_WGS84 */
 void geocentricToENU_WGS84(

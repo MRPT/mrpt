@@ -2,6 +2,16 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* mrpt_imgui_vendor: new package with a single vendored Dear ImGui copy
+* changelogs
+* Merge pull request `#1418 <https://github.com/MRPT/mrpt/issues/1418>`_ from MRPT/feat/imgui-vendor-package
+* mrpt_imgui_vendor: require GLFW, and provide it on Windows via vcpkg
+* mrpt_imgui_vendor: new package with a single vendored Dear ImGui copy
+* Contributors: Jose Luis Blanco-Claraco
+
+
 3.2.0 (2026-09-16)
 ------------------
 * refactor: modernize the PTG/reactive API and align navigation code with the broader 3.x cleanup.

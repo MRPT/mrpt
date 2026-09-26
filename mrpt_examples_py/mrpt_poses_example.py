@@ -104,3 +104,19 @@ avg2.append(CPose2D(1.0, 0.0, 0.0))
 avg2.append(CPose2D(1.2, 0.0, 0.0))
 result2 = avg2.get_average()
 print(f"\nAverage of 2D poses: {result2}")
+
+# ---------------------------------------------------------------------------
+# Particle-based pose PDFs
+# ---------------------------------------------------------------------------
+from mrpt.math import TPose2D
+from mrpt.poses import CPosePDFParticles
+
+particles = CPosePDFParticles(1000)
+particles.resetUniform(-1.0, 1.0, -1.0, 1.0)
+cov, mean = particles.getCovarianceAndMean()
+print(f"\n1000 uniform particles: mean={mean}")
+print(f"  covariance diagonal: {np.diag(np.asarray(cov))}")
+particles.resetAroundSetOfPoses([TPose2D(5.0, 0.0, 0.0)], 1000, 0.1, 0.1, 0.05)
+print(f"  after resetAroundSetOfPoses: mean={particles.getMean()}")
+arr = particles.getParticlesAsNumpy()  # columns: x, y, phi, log_weight
+print(f"  particles as numpy: shape={arr.shape}")

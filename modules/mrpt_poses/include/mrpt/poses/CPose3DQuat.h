@@ -385,7 +385,7 @@ class CPose3DQuat :
     if (n != static_size)
     {
       throw std::logic_error(
-          format("Try to change the size of CPose3DQuat to %u.", static_cast<unsigned>(n)));
+          mrpt::format("Try to change the size of CPose3DQuat to %u.", static_cast<unsigned>(n)));
     }
   }
 

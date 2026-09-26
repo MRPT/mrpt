@@ -63,5 +63,35 @@ print("stock_objects")
 corner = stock_objects.CornerXYZ(1.0)
 check("CornerXYZ", corner is not None)
 
+print("CVisualObject base access on every class")
+# Most classes inherit CVisualObject virtually: base methods must reach the
+# right sub-object (they used to crash or corrupt memory).
+import inspect as _inspect
+import mrpt.viz as _viz
+from mrpt.poses import CPose3D as _CP3
+from mrpt.img import TColorf as _TColorf
+_base = _viz.CSetOfObjects.__mro__[1]
+_bad = []
+for _name in dir(_viz):
+    _cls = getattr(_viz, _name)
+    if not (_inspect.isclass(_cls) and issubclass(_cls, _base) and _cls is not _base):
+        continue
+    try:
+        _o = _cls()
+    except TypeError:
+        continue  # no default constructor
+    _o.name = "obj_" + _name
+    _o.setColor(_TColorf(0.0, 1.0, 0.0))
+    _o.setPose(_CP3(1.0, 2.0, 3.0, 0.0, 0.0, 0.0))
+    _o.visible = False
+    if not (_o.name == "obj_" + _name and abs(_o.getPose().z - 3.0) < 1e-9
+            and abs(_o.getColor().G - 1.0) < 1e-6 and not _o.visible):
+        _bad.append(_name)
+check("base methods on all CVisualObject classes", not _bad, f"wrong: {_bad}")
+
+print("posePDF2opengl")
+from mrpt.poses import CPose3DPDFGaussian as _G3
+check("posePDF2opengl", len(_viz.posePDF2opengl(_G3(_CP3()))) > 0)
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

@@ -56,3 +56,11 @@ global_rng = getRandomGenerator()
 Randomize(123)
 val = global_rng.drawUniform(0.0, 1.0)
 print(f"\nGlobal RNG (seed 123): drawUniform = {val:.4f}")
+
+# ---------------------------------------------------------------------------
+# Multivariate Gaussian samples
+# ---------------------------------------------------------------------------
+cov = np.array([[1.0, 0.8], [0.8, 2.0]])
+samples = CRandomGenerator(7).drawGaussianMultivariateMany(5000, cov, mean=[10.0, 20.0])
+print(f"\n5000 samples of N([10, 20], cov): sample mean={samples.mean(axis=0)}")
+print(f"  sample covariance:\n{np.cov(samples.T)}")

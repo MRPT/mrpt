@@ -46,7 +46,7 @@ def main():
     for p in pts_this:
         # p_other = gt_pose.inverseComposePoint(p)
         p_other = gt_pose.inverseComposePoint(p[0], p[1], p[2])
-        pts_other.append(p_other)
+        pts_other.append([p_other.x, p_other.y, p_other.z])
     pts_other = np.array(pts_other)
 
     # Add some outliers to test RANSAC robustness

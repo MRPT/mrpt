@@ -65,6 +65,15 @@ void bind_mrpt_fixed_type(py::module& m, const std::string& name)
 {
   py::class_<T, std::shared_ptr<T>>(m, name.c_str())
       .def(py::init<>())
+      .def(
+          py::init(
+              [](const typename T::eigen_t& src)
+              {
+                auto mat = std::make_shared<T>();
+                mat->asEigen() = src;
+                return mat;
+              }),
+          py::arg("array"), "Builds the matrix from a NumPy array of the same shape")
       .def("as_numpy", [](const T& self) -> typename T::eigen_t { return self.asEigen(); })
       .def(
           "__array__",

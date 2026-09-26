@@ -2,6 +2,14 @@
 Changelog for package mrpt_imgui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* Merge pull request `#1419 <https://github.com/MRPT/mrpt/issues/1419>`_ from MRPT/fix/windows-imgui-glew-link
+* fix(mrpt_imgui): add bundled GLEW target to the CMake export set
+* fix(mrpt_imgui): propagate bundled GLEW link on Windows to consumers
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.2.0 (2026-09-16)
 ------------------
 * Merge branch 'develop' into fix/stereo-rectify-map-axis-swap

@@ -12,6 +12,6 @@ and populate it with different objects, including animating them across the scen
     <img src="https://mrpt.github.io/imgs/screenshot_pymrpt_example_opengl1.png" style="width: 90%;" />
 
 
-.. literalinclude:: ../../python-examples/opengl-demo-gui.py
+.. literalinclude:: ../../mrpt_examples_py/opengl-demo-gui.py
    :language: python
    :linenos:

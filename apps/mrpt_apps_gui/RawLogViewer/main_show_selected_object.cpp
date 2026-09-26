@@ -585,7 +585,7 @@ catch (CExceptionExternalImageNotFound& e)
   wxMessageBox(mrpt::exception_to_str(e), _("Error with a delayed load image"), wxOK, this);
 
   if (wxYES == wxMessageBox(
-                   (format(
+                   (mrpt::format(
                         "The current directory for relative images is:\n%s\n\nDo "
                         "you want to set it to a different one?",
                         CImage::getImagesPathBase().c_str())

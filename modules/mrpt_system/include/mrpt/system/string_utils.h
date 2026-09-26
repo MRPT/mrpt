@@ -13,6 +13,8 @@
 */
 #pragma once
 
+#include <mrpt/core/format.h>
+
 #include <cstdint>
 #include <deque>
 #include <sstream>
@@ -143,7 +145,7 @@ std::string sprintf_container(const char* fmt, const T& V)
   auto it = V.begin();
   for (; it != V.end();)
   {
-    ret += format(fmt, *it);
+    ret += mrpt::format(fmt, *it);
     ++it;
     if (it != V.end())
     {

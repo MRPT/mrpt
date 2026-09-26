@@ -2,6 +2,15 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* Merge pull request `#1419 <https://github.com/MRPT/mrpt/issues/1419>`_ from MRPT/fix/windows-imgui-glew-link
+* fix(mrpt_common): include additional export targets in build-tree export()
+* changelogs
+* mrpt_common: propagate --coverage to mrpt_add_executable
+* Contributors: Jose Luis Blanco-Claraco
+
+
 3.2.0 (2026-09-16)
 ------------------
 * Merge branch 'develop' into fix/stereo-rectify-map-axis-swap

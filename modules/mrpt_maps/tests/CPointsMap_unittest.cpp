@@ -628,7 +628,7 @@ TEST(CSimplePointsMapTests, nn_radius_search_3D)
 
 TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex3D)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
@@ -653,7 +653,7 @@ TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex3D)
 
 TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex2D)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
@@ -675,7 +675,7 @@ TEST(CSimplePointsMapTests, kdtreeSaveLoadIndex2D)
 
 TEST(CSimplePointsMapTests, kdtreeSaveIndexAfterOtherDimensionQueried)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   // Regression test: querying one dimension first must not make the other
@@ -696,7 +696,7 @@ TEST(CSimplePointsMapTests, kdtreeSaveIndexAfterOtherDimensionQueried)
 
 TEST(CSimplePointsMapTests, kdtreeSaveIndexEmptyMap)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   const CSimplePointsMap emptyPts;
@@ -709,7 +709,7 @@ TEST(CSimplePointsMapTests, kdtreeSaveIndexEmptyMap)
 
 TEST(CSimplePointsMapTests, kdtreeLoadIndexPointCountMismatchThrows)
 {
-#if !MRPT_NANOFLANN_HAS_KDTREE_SAVE_LOAD
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
   GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
 #endif
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
@@ -1425,4 +1425,77 @@ TEST(CSimplePointsMapTests, load3DScanWithNoPointsDoesNothing)
 
   pnt.loadFromRangeScan(obs, std::nullopt);
   EXPECT_EQ(pnt.size(), 0u);
+}
+
+TEST(CSimplePointsMapTests, reserveAppliesGrowthFactor)
+{
+  CSimplePointsMap pnt;
+  pnt.reserve(100);
+  const size_t cap1 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.reserve(cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap2, cap1 * 2);
+}
+
+TEST(CSimplePointsMapTests, reserveDoesNotOverAllocateFreshMap)
+{
+  CSimplePointsMap pnt;
+  // On a fresh map (capacity()==0) the requested size must pass through
+  // unchanged, so one-shot pre-sizing is not penalized.
+  pnt.reserve(1000);
+  EXPECT_EQ(pnt.getPointsBufferRef_x().capacity(), 1000u);
+}
+
+TEST(CGenericPointsMapTests, reserveAppliesGrowthFactor)
+{
+  CGenericPointsMap pnt;
+  pnt.reserve(100);
+  const size_t cap1 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.reserve(cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap2, cap1 * 2);
+}
+
+TEST(CGenericPointsMapTests, resizeAppliesGrowthFactor)
+{
+  CGenericPointsMap pnt;
+  pnt.resize(100);
+  const size_t cap1 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.resize(cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_x().capacity();
+  EXPECT_GE(cap2, cap1 * 2);
+}
+
+TEST(CGenericPointsMapTests, reserveFieldAppliesGrowthFactor)
+{
+  CGenericPointsMap pnt;
+  pnt.registerField_float("intensity");
+
+  pnt.reserveField_float("intensity", 100);
+  const size_t cap1 = pnt.getPointsBufferRef_float_field("intensity")->capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.reserveField_float("intensity", cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_float_field("intensity")->capacity();
+  EXPECT_GE(cap2, cap1 * 2);
+}
+
+TEST(CGenericPointsMapTests, resizeFieldAppliesGrowthFactor)
+{
+  CGenericPointsMap pnt;
+  pnt.registerField_float("intensity");
+
+  pnt.resizeField_float("intensity", 100);
+  const size_t cap1 = pnt.getPointsBufferRef_float_field("intensity")->capacity();
+  EXPECT_GE(cap1, 100u);
+
+  pnt.resizeField_float("intensity", cap1 + 1);
+  const size_t cap2 = pnt.getPointsBufferRef_float_field("intensity")->capacity();
+  EXPECT_GE(cap2, cap1 * 2);
 }

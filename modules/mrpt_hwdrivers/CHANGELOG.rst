@@ -2,6 +2,15 @@
 Changelog for package mrpt_hwdrivers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* fix formatting
+* fix: qualify mrpt::format() calls to avoid ambiguity with std::format
+* Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)
+* fix(system): locate mrpt_data in 3.x layouts; stop tests passing silently
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.2.0 (2026-09-16)
 ------------------
 * fix: clean up ROS buildfarm warnings and correct the real issues they exposed across MRPT.

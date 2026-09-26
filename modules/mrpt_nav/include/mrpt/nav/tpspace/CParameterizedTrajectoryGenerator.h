@@ -573,7 +573,10 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
   /** Will be called whenever the robot shape is set / updated */
   virtual void internal_processNewRobotShape() = 0;
   mrpt::math::CPolygon m_robotShape;
+  /** Circumscribed radius of m_robotShape: keep it in sync with
+   * updateMaxRobotRadius() whenever m_robotShape changes. */
   double m_robotMaxRadius{.01};
+  void updateMaxRobotRadius();
   void loadShapeFromConfigFile(
       const mrpt::config::CConfigFileBase& source, const std::string& section);
   void saveToConfigFile(

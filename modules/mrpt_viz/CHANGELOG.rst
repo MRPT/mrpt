@@ -2,6 +2,18 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* fix: big-endian and armhf test failures (`#1431 <https://github.com/MRPT/mrpt/issues/1431>`_)
+* fix: qualify mrpt::format() calls to avoid ambiguity with std::format
+* Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)
+* fix(viz): CAssimpModel: load line primitives (`#1425 <https://github.com/MRPT/mrpt/issues/1425>`_)
+* perf(viz): bulk-load CPointCloudColoured from point maps (`#1423 <https://github.com/MRPT/mrpt/issues/1423>`_)
+* fix(viz): use TPose3D::x as a field, not a method, in the new assignment test
+* fix(viz): stale pose of containers updated by assignment
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.2.0 (2026-09-16)
 ------------------
 * fix: restore 2D overlay rendering and keep scene-camera/CText labels aligned with the expected screen-space behavior.

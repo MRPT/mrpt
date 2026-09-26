@@ -2,6 +2,13 @@
 Changelog for package mrpt_libapps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* fix formatting
+* fix: qualify mrpt::format() calls to avoid ambiguity with std::format
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.2.0 (2026-09-16)
 ------------------
 * feat: complete API cleanups for const-correctness, archive behavior, and point-map accessors.

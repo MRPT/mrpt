@@ -33,7 +33,10 @@ PYBIND11_MODULE(_bindings, m)
   m.doc() = "Python bindings for mrpt_config";
 
   // Bind CLoadableOptions
-  py::class_<mrpt::config::CLoadableOptions>(m, "CLoadableOptions")
+  // shared_ptr holder, so derived option structs managed by shared_ptr (e.g.
+  // map initializers) can be bound in other modules.
+  py::class_<mrpt::config::CLoadableOptions, std::shared_ptr<mrpt::config::CLoadableOptions>>(
+      m, "CLoadableOptions")
       .def(
           "loadFromConfigFile", &mrpt::config::CLoadableOptions::loadFromConfigFile,
           "Loads options from a configuration file section.")

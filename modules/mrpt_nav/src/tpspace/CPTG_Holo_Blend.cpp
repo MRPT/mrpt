@@ -777,6 +777,13 @@ void CPTG_Holo_Blend::updateTPObstacle(
 {
   PERFORMANCE_BENCHMARK;
 
+  // Paths are at most refDistance long, so a point farther than that plus the
+  // robot radius cannot collide with any of them:
+  if (ox * ox + oy * oy > mrpt::square(refDistance + m_robotRadius))
+  {
+    return;
+  }
+
   for (unsigned int k = 0; k < m_alphaValuesCount; k++)
   {
     updateTPObstacleSingle(ox, oy, static_cast<uint16_t>(k), tp_obstacles[k]);

@@ -174,9 +174,8 @@ void PlannerTPS_VirtualBase::spaceTransformer(
     // obstacles
     // in the "grid" of the given PT
     // --------------------------------------------------------------------
-    const auto obs_xs = in_obstacles.getPointsBufferRef_x();
-    const auto obs_ys = in_obstacles.getPointsBufferRef_y();
-    const auto obs_zs = in_obstacles.getPointsBufferRef_z();
+    const auto& obs_xs = in_obstacles.getPointsBufferRef_x();
+    const auto& obs_ys = in_obstacles.getPointsBufferRef_y();
     const size_t nObs = obs_xs.size();
 
     // Init obs ranges:
@@ -226,9 +225,8 @@ void PlannerTPS_VirtualBase::spaceTransformerOneDirectionOnly(
     // obstacles
     // in the "grid" of the given PT
     // --------------------------------------------------------------------
-    const auto obs_xs = in_obstacles.getPointsBufferRef_x();
-    const auto obs_ys = in_obstacles.getPointsBufferRef_y();
-    const auto obs_zs = in_obstacles.getPointsBufferRef_z();
+    const auto& obs_xs = in_obstacles.getPointsBufferRef_x();
+    const auto& obs_ys = in_obstacles.getPointsBufferRef_y();
     const size_t nObs = obs_xs.size();
 
     // Init obs ranges:

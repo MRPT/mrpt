@@ -39,7 +39,7 @@ mrpt::serialization::CArchive& operator>>(
   in.ReadObject(&aux);
   ASSERTMSG_(
       M.cols() == aux.cols() && M.rows() == aux.rows(),
-      format(
+      mrpt::format(
           "Size mismatch: deserialized is %ux%u, expected is %ux%u",
           static_cast<unsigned>(aux.rows()), static_cast<unsigned>(aux.cols()),
           static_cast<unsigned>(NROWS), static_cast<unsigned>(NCOLS)));
@@ -56,7 +56,7 @@ mrpt::serialization::CArchive& operator>>(
   in.ReadObject(&aux);
   ASSERTMSG_(
       M.cols() == aux.cols() && M.rows() == aux.rows(),
-      format(
+      mrpt::format(
           "Size mismatch: deserialized is %ux%u, expected is %ux%u",
           static_cast<unsigned>(aux.rows()), static_cast<unsigned>(aux.cols()),
           static_cast<unsigned>(NROWS), static_cast<unsigned>(NCOLS)));

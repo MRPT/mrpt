@@ -32,6 +32,21 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::config;
 
+namespace
+{
+// Growth factor so incremental reserve() calls (e.g. from
+// insertAnotherMap()) amortize to O(1) instead of reallocating on every
+// insertion.
+size_t applyReserveGrowthFactor(size_t requestedLength, size_t currentCapacity)
+{
+  if (requestedLength > currentCapacity)
+  {
+    return std::max(requestedLength, currentCapacity * 2);
+  }
+  return requestedLength;
+}
+}  // namespace
+
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER("mrpt::maps::CGenericPointsMap", mrpt::maps::CGenericPointsMap)
 
@@ -79,6 +94,7 @@ CGenericPointsMap& CGenericPointsMap::operator=(const CGenericPointsMap& o)
 
 void CGenericPointsMap::reserve(size_t newLength)
 {
+  newLength = applyReserveGrowthFactor(newLength, m_x.capacity());
   m_x.reserve(newLength);
   m_y.reserve(newLength);
   m_z.reserve(newLength);
@@ -106,6 +122,7 @@ void CGenericPointsMap::reserve(size_t newLength)
 
 void CGenericPointsMap::resize(size_t newLength)
 {
+  this->reserve(newLength);  // apply growth factor
   m_x.resize(newLength, 0);
   m_y.resize(newLength, 0);
   m_z.resize(newLength, 0);
@@ -134,6 +151,7 @@ void CGenericPointsMap::resize(size_t newLength)
 
 void CGenericPointsMap::setSize(size_t newLength)
 {
+  this->reserve(newLength);  // apply growth factor
   m_x.assign(newLength, 0);
   m_y.assign(newLength, 0);
   m_z.assign(newLength, 0);
@@ -702,61 +720,66 @@ void CGenericPointsMap::reserveField_float(const std::string& fieldName, size_t 
 {
   auto it = m_float_fields.find(fieldName);
   ASSERT_(it != m_float_fields.end());
-  it->second.reserve(n);
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
 }
 void CGenericPointsMap::reserveField_double(const std::string& fieldName, size_t n)
 {
   auto it = m_double_fields.find(fieldName);
   ASSERT_(it != m_double_fields.end());
-  it->second.reserve(n);
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
 }
 void CGenericPointsMap::reserveField_uint16(const std::string& fieldName, size_t n)
 {
   auto it = m_uint16_fields.find(fieldName);
   ASSERT_(it != m_uint16_fields.end());
-  it->second.reserve(n);
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
 }
 void CGenericPointsMap::reserveField_uint8(const std::string& fieldName, size_t n)
 {
   auto it = m_uint8_fields.find(fieldName);
   ASSERT_(it != m_uint8_fields.end());
-  it->second.reserve(n);
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
 }
 void CGenericPointsMap::reserveField_uint32(const std::string& fieldName, size_t n)
 {
   auto it = m_uint32_fields.find(fieldName);
   ASSERT_(it != m_uint32_fields.end());
-  it->second.reserve(n);
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
 }
 
 void CGenericPointsMap::resizeField_float(const std::string& fieldName, size_t n)
 {
   auto it = m_float_fields.find(fieldName);
   ASSERT_(it != m_float_fields.end());
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
   it->second.resize(n, 0);
 }
 void CGenericPointsMap::resizeField_double(const std::string& fieldName, size_t n)
 {
   auto it = m_double_fields.find(fieldName);
   ASSERT_(it != m_double_fields.end());
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
   it->second.resize(n, 0);
 }
 void CGenericPointsMap::resizeField_uint16(const std::string& fieldName, size_t n)
 {
   auto it = m_uint16_fields.find(fieldName);
   ASSERT_(it != m_uint16_fields.end());
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
   it->second.resize(n, 0);
 }
 void CGenericPointsMap::resizeField_uint8(const std::string& fieldName, size_t n)
 {
   auto it = m_uint8_fields.find(fieldName);
   ASSERT_(it != m_uint8_fields.end());
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
   it->second.resize(n, 0);
 }
 void CGenericPointsMap::resizeField_uint32(const std::string& fieldName, size_t n)
 {
   auto it = m_uint32_fields.find(fieldName);
   ASSERT_(it != m_uint32_fields.end());
+  it->second.reserve(applyReserveGrowthFactor(n, it->second.capacity()));
   it->second.resize(n, 0);
 }
 

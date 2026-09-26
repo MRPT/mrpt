@@ -170,7 +170,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(const std::string& output_dir_fna
 #endif
             renameFile(output_dir_fname, dst_fname, &error_msg);
         ASSERTDEBMSG_(
-            did_rename, format(
+            did_rename, mrpt::format(
                             "\nError while trying to rename the output "
                             "directory: %s",
                             error_msg.c_str()));
@@ -243,13 +243,13 @@ void CGraphSlamHandler<GRAPH_T>::initEngine(
 
   ASSERTDEBMSG_(
       m_options_checker->checkRegistrationDeciderExists(node_reg_str, "node"),
-      format("\nNode Registration Decider %s is not available.\n", node_reg_str.c_str()));
+      mrpt::format("\nNode Registration Decider %s is not available.\n", node_reg_str.c_str()));
   ASSERTDEBMSG_(
       m_options_checker->checkRegistrationDeciderExists(edge_reg_str, "edge"),
-      format("\nEdge Registration Decider %s is not available.\n", edge_reg_str.c_str()));
+      mrpt::format("\nEdge Registration Decider %s is not available.\n", edge_reg_str.c_str()));
   ASSERTDEBMSG_(
       m_options_checker->checkOptimizerExists(optimizer_str),
-      format("\nOptimizer %s is not available\n", optimizer_str.c_str()));
+      mrpt::format("\nOptimizer %s is not available\n", optimizer_str.c_str()));
 
   m_engine = new mrpt::graphslam::CGraphSlamEngine<GRAPH_T>(
       m_ini_fname, m_rawlog_fname, m_gt_fname, m_win_manager,

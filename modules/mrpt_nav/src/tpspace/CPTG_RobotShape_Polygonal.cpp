@@ -25,11 +25,18 @@ void CPTG_RobotShape_Polygonal::setRobotShape(const mrpt::math::CPolygon& robotS
 {
   ASSERT_GE_(robotShape.size(), 3u);
   m_robotShape = robotShape;
-
-  m_robotMaxRadius = .0;  // Default minimum
-  for (const auto& v : m_robotShape) mrpt::keep_max(m_robotMaxRadius, v.norm());
+  updateMaxRobotRadius();
 
   internal_processNewRobotShape();
+}
+
+void CPTG_RobotShape_Polygonal::updateMaxRobotRadius()
+{
+  m_robotMaxRadius = .0;
+  for (const auto& v : m_robotShape)
+  {
+    mrpt::keep_max(m_robotMaxRadius, v.norm());
+  }
 }
 
 void CPTG_RobotShape_Polygonal::loadDefaultParams()
@@ -39,6 +46,7 @@ void CPTG_RobotShape_Polygonal::loadDefaultParams()
   m_robotShape.add_vertex(0.2, 0.1);
   m_robotShape.add_vertex(0.2, -0.1);
   m_robotShape.add_vertex(-0.15, -0.15);
+  updateMaxRobotRadius();
 }
 
 void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(
@@ -69,7 +77,11 @@ void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(
     m_robotShape.add_vertex(ptx, pty);
   }
 
-  if (any_pt) internal_processNewRobotShape();
+  if (any_pt)
+  {
+    updateMaxRobotRadius();
+    internal_processNewRobotShape();
+  }
 }
 
 void CPTG_RobotShape_Polygonal::saveToConfigFile(
@@ -131,6 +143,7 @@ void CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(mrpt::serializatio
   {
     case 0:
       in >> m_robotShape;
+      updateMaxRobotRadius();
       break;
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -150,6 +163,12 @@ double CPTG_RobotShape_Polygonal::getMaxRobotRadius() const { return m_robotMaxR
 
 bool CPTG_RobotShape_Polygonal::isPointInsideRobotShape(const double x, const double y) const
 {
+  // O(1) rejection: only points within the circumscribed circle can be inside,
+  // which avoids the O(V) polygon test for almost all obstacle points.
+  if (x * x + y * y > m_robotMaxRadius * m_robotMaxRadius)
+  {
+    return false;
+  }
   return m_robotShape.contains(mrpt::math::TPoint2D(x, y));
 }
 

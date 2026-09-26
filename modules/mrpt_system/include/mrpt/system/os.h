@@ -149,8 +149,8 @@ std::string MRPT_getVersion();
  */
 const std::string& getMRPTLicense();
 
-/** Finds the "[MRPT]/share/mrpt/" directory, if available in the system. This
- * searches in (1) source code tree, (2) install target paths. */
+/** Like getShareMRPTDir(), but returns "./" instead of an empty string if the
+ * mrpt_data directory cannot be found. */
 std::string find_mrpt_shared_dir();
 
 /** For use in consoleColorAndStyle().

@@ -169,5 +169,12 @@ yc.clear()
 check("after clear is empty",   yc.empty())
 
 # ---------------------------------------------------------------------------
+print("Assigning YAML nodes as map values")
+_m = YAML()
+_m["label"] = YAML.from_string("origin")
+_m["sub"] = YAML.from_dict({"a": 1})
+check("scalar node kept as scalar", _m["label"].as_str() == "origin", f"got {_m['label'].as_str()!r}")
+check("map node kept as map", _m["sub"]["a"].as_int() == 1)
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

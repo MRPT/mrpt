@@ -305,7 +305,7 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
     if (i == 0)
     {
       // The root node:
-      s = (format("Rawlog: %s", m_rawlog_name.c_str()).c_str());
+      s = (mrpt::format("Rawlog: %s", m_rawlog_name.c_str()).c_str());
       icon = 3;
     }
     else

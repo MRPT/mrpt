@@ -31,8 +31,7 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 
   if (!mrpt::system::fileExists(fil))
   {
-    std::cerr << "WARNING: Skipping test due to missing file: " << fil << "\n";
-    return;
+    GTEST_SKIP() << "Missing test data file: " << fil;
   }
 
   CVelodyneScanner velodyne;
@@ -69,8 +68,7 @@ TEST(CVelodyneScanner, sample_hdl32_dataset)
 
   if (!mrpt::system::fileExists(fil))
   {
-    std::cerr << "WARNING: Skipping test due to missing file: " << fil << "\n";
-    return;
+    GTEST_SKIP() << "Missing test data file: " << fil;
   }
 
   CVelodyneScanner velodyne;

@@ -33,8 +33,7 @@ namespace mrpt::math
 // the rich TPoint3D_ class in `#pragma pack` would defeat MSVC's
 // `__declspec(empty_bases)` (MRPT_EMPTY_BASES) empty-base optimization, inflating
 // sizeof(TPoint3Df) beyond 12 bytes and breaking GPU vertex layouts (see
-// TTriangle and RenderableProxy). The mixed-type color POD structs below DO need
-// packing and have their own `#pragma pack(1)` region.
+// TTriangle and RenderableProxy).
 
 /** Trivially copiable underlying data for TPoint3D
  * (no internal padding: same-type scalar members only)
@@ -367,9 +366,10 @@ using TVector3D = TPoint3D;
 /** Single-precision variant of TVector3D. */
 using TVector3Df = TPoint3Df;
 
-// Ensure 1-byte memory alignment, no additional stride bytes, for the
-// mixed-type (point + color/intensity) POD structs below.
-#pragma pack(push, 1)
+// Note: the mixed-type (point + color/intensity) structs below are NOT packed.
+// Their `pt` member is a non-packed class: packing would place it at misaligned
+// addresses (e.g. in std::vector), where its member functions and constructors
+// (which assume natural alignment) trigger bus errors on strict-alignment CPUs.
 
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZIu8
@@ -453,7 +453,7 @@ mrpt::serialization::CArchive& operator>>(
 mrpt::serialization::CArchive& operator<<(
     mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBAu8& p);
 
-/** XYZ point (float) + RGBA(float) [1-byte memory packed, no padding]
+/** XYZ point (float) + RGBA(float) [no padding]
  * \sa mrpt::math::TPoint3D */
 struct TPointXYZRGBAf
 {
@@ -467,7 +467,9 @@ struct TPointXYZRGBAf
   {
   }
 };
-#pragma pack(pop)
+// These are used in GPU vertex buffers: they must have no padding.
+static_assert(sizeof(TPointXYZfRGBAu8) == 16, "Unexpected padding in TPointXYZfRGBAu8");
+static_assert(sizeof(TPointXYZRGBAf) == 28, "Unexpected padding in TPointXYZRGBAf");
 
 /** Unary minus operator for 3D points/vectors. */
 template <typename T>

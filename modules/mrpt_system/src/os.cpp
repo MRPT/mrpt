@@ -638,57 +638,8 @@ bool launchProcess(const std::string& command)
 
 std::string find_mrpt_shared_dir()
 {
-  static bool mrpt_shared_first_call = true;
-  static std::string found_mrpt_shared_dir;
-
-  if (mrpt_shared_first_call)
-  {
-    mrpt_shared_first_call = false;
-
-    for (int attempt = 0;; attempt++)
-    {
-      std::string dir;
-      switch (attempt)
-      {
-        case 0:
-          dir = std::string(MRPT_SOURCE_BASE_DIRECTORY) + std::string("/share/mrpt/");
-          break;
-        case 1:
-          dir = std::string(MRPT_INSTALL_PREFIX_DIRECTORY) + std::string("/share/mrpt/");
-          break;
-        case 2:
-          // colcon workspace: mrpt_data installs to a sibling package prefix
-          dir = std::string(MRPT_INSTALL_PREFIX_DIRECTORY) +
-                std::string("/../mrpt_data/share/mrpt_data/");
-          break;
-#ifdef _WIN32
-        case 3:
-        {
-          char curExe[4096];
-          GetModuleFileNameA(nullptr, curExe, sizeof(curExe));
-
-          dir = mrpt::system::extractFileDirectory(std::string(curExe)) + "/../share/mrpt/";
-        }
-        break;
-#endif
-
-        default:
-          found_mrpt_shared_dir = ".";
-          break;
-      };
-      if (!dir.empty() && mrpt::system::directoryExists(dir))
-      {
-        found_mrpt_shared_dir = dir;
-      }
-
-      if (!found_mrpt_shared_dir.empty())
-      {
-        break;
-      }
-    }
-  }
-
-  return found_mrpt_shared_dir;
+  const std::string dir = mrpt::system::getShareMRPTDir();
+  return dir.empty() ? std::string("./") : dir;
 }  // end of find_mrpt_shared_dir
 
 int executeCommand(

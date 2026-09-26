@@ -12,19 +12,47 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/maps/CBeacon.h>
+#include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/maps/CGenericPointsMap.h>
+#include <mrpt/maps/CHeightGridMap2D.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap3D.h>
+#include <mrpt/maps/COctoMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CVoxelMap.h>
+#include <mrpt/maps/CVoxelMapRGB.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/customizable_obs_viz.h>
+#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/viz/CSetOfObjects.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <limits>
+#include <optional>
+
 namespace py = pybind11;
 using namespace pybind11::literals;
+
+namespace
+{
+template <typename T>
+struct type_tag
+{
+  using type = T;
+};
+}  // namespace
 
 PYBIND11_MODULE(_bindings, m)
 {
@@ -52,6 +80,63 @@ PYBIND11_MODULE(_bindings, m)
           },
           "obs"_a, "robotPose"_a = nullptr,
           "Insert an observation into the map. Returns true if the map was updated.")
+      .def(
+          "insertObs",
+          [](mrpt::maps::CMetricMap& mp, const mrpt::obs::CSensoryFrame& sf,
+             const std::optional<mrpt::poses::CPose3D>& robotPose)
+          {
+            if (robotPose)
+            {
+              return sf.insertObservationsInto(
+                  mp, std::optional<const mrpt::poses::CPose3D>(*robotPose));
+            }
+            return sf.insertObservationsInto(mp);
+          },
+          "sf"_a, "robotPose"_a = std::nullopt,
+          "Inserts all the observations of a CSensoryFrame. Returns true if any was inserted.")
+      .def(
+          "loadFromSimpleMap", &mrpt::maps::CMetricMap::loadFromSimpleMap, "simpleMap"_a,
+          "Clears the map and builds it from all keyframes of a CSimpleMap")
+      .def(
+          "computeObservationLikelihood",
+          [](const mrpt::maps::CMetricMap& mp, const mrpt::obs::CObservation& obs,
+             const mrpt::poses::CPose3D& takenFrom)
+          { return mp.computeObservationLikelihood(obs, takenFrom); },
+          "obs"_a, "takenFrom"_a, "Log-likelihood of an observation taken from a given robot pose")
+      .def(
+          "computeObservationsLikelihood",
+          [](mrpt::maps::CMetricMap& mp, const mrpt::obs::CSensoryFrame& sf,
+             const mrpt::poses::CPose3D& takenFrom)
+          { return mp.computeObservationsLikelihood(sf, takenFrom); },
+          "sf"_a, "takenFrom"_a,
+          "Log-likelihood of all observations in a CSensoryFrame taken from a given pose")
+      .def(
+          "canComputeObservationLikelihood",
+          &mrpt::maps::CMetricMap::canComputeObservationLikelihood, "obs"_a)
+      .def(
+          "getVisualization",
+          [](const mrpt::maps::CMetricMap& mp) { return mp.getVisualization(); },
+          "Returns a 3D representation of the map as a CSetOfObjects")
+      .def(
+          "getVisualizationInto", &mrpt::maps::CMetricMap::getVisualizationInto, "outObj"_a,
+          "Appends a 3D representation of the map to a CSetOfObjects")
+      .def(
+          "boundingBox",
+          [](const mrpt::maps::CMetricMap& mp)
+          {
+            const auto bb = mp.boundingBox();
+            return mrpt::math::TBoundingBox(
+                mrpt::math::TPoint3D(bb.min.x, bb.min.y, bb.min.z),
+                mrpt::math::TPoint3D(bb.max.x, bb.max.y, bb.max.z),
+                mrpt::math::TBoundingBox::CTOR_FLAGS::AllowUnordered);
+          },
+          "Bounding box of the map contents")
+      .def_readwrite("genericMapParams", &mrpt::maps::CMetricMap::genericMapParams)
+      .def(
+          "saveMetricMapRepresentationToFile",
+          &mrpt::maps::CMetricMap::saveMetricMapRepresentationToFile, "filNamePrefix"_a,
+          "Saves the map in a format suitable for inspection (e.g. images or text)")
+      .def("__str__", &mrpt::maps::CMetricMap::asString)
       .def("GetRuntimeClass", &mrpt::maps::CMetricMap::GetRuntimeClass);
 
   // -------------------------------------------------------------------------
@@ -281,4 +366,359 @@ PYBIND11_MODULE(_bindings, m)
                    std::to_string(g.getSizeY()) + ", res=" + std::to_string(g.getResolution()) +
                    ")";
           });
+
+  // -------------------------------------------------------------------------
+  // CMultiMetricMap: a container of heterogeneous metric maps
+  // -------------------------------------------------------------------------
+  using MMap = mrpt::maps::CMultiMetricMap;
+  py::class_<MMap, mrpt::maps::CMetricMap, std::shared_ptr<MMap>>(m, "CMultiMetricMap")
+      .def(py::init<>())
+      .def(
+          py::init<const mrpt::maps::TSetOfMetricMapInitializers&>(), "initializers"_a,
+          "Creates the maps described by a TSetOfMetricMapInitializers")
+      .def(
+          "setListOfMaps", &MMap::setListOfMaps, "initializers"_a,
+          "Replaces all maps with the ones described by a TSetOfMetricMapInitializers")
+      .def("size", &MMap::size)
+      .def("__len__", &MMap::size)
+      .def("push_back", &MMap::push_back, "map"_a)
+      .def("clearMaps", &MMap::clearMaps, "Removes all maps (clear() only empties them)")
+      .def(
+          "mapByIndex", [](MMap& mm, size_t i) { return mm.mapByIndex(i); }, "index"_a)
+      .def(
+          "__getitem__",
+          [](MMap& mm, size_t i)
+          {
+            if (i >= mm.size())
+            {
+              throw py::index_error();
+            }
+            return mm.mapByIndex(i);
+          })
+      .def(
+          "__setitem__",
+          [](MMap& mm, size_t i, const mrpt::maps::CMetricMap::Ptr& newMap)
+          {
+            if (i >= mm.size())
+            {
+              throw py::index_error();
+            }
+            *(mm.begin() + static_cast<std::ptrdiff_t>(i)) = newMap;
+          },
+          "Replaces the i-th map")
+      .def(
+          "__iter__", [](MMap& mm) { return py::make_iterator(mm.begin(), mm.end()); },
+          py::keep_alive<0, 1>())
+      .def_property_readonly(
+          "maps",
+          [](MMap& mm) { return std::vector<mrpt::maps::CMetricMap::Ptr>(mm.begin(), mm.end()); },
+          "A list with all the maps (to replace one, use map[i] = newMap)")
+      .def(
+          "__repr__",
+          [](const MMap& mm) { return "CMultiMetricMap(" + std::to_string(mm.size()) + " maps)"; });
+
+  // -------------------------------------------------------------------------
+  // Voxel maps (Bonxai-based sparse voxel grids)
+  // -------------------------------------------------------------------------
+  const auto bindVoxelMap = [&](auto clsTag, const char* name)
+  {
+    using T = typename decltype(clsTag)::type;
+    py::class_<T, mrpt::maps::CMetricMap, std::shared_ptr<T>>(m, name)
+        .def(
+            py::init<double, uint8_t, uint8_t>(), "resolution"_a = 0.05, "inner_bits"_a = 2,
+            "leaf_bits"_a = 3)
+        .def(
+            "updateVoxel", &T::updateVoxel, "x"_a, "y"_a, "z"_a, "occupied"_a,
+            "Updates one voxel with an occupied or free observation")
+        .def(
+            "getPointOccupancy",
+            [](const T& vm, double x, double y, double z) -> std::optional<double>
+            {
+              double p = 0;
+              if (!vm.getPointOccupancy(x, y, z, p))
+              {
+                return std::nullopt;
+              }
+              return p;
+            },
+            "x"_a, "y"_a, "z"_a,
+            "Occupancy probability [0,1] of the voxel at a point, or None if not observed")
+        .def(
+            "insertPointCloudAsRays",
+            [](T& vm, const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt)
+            { vm.insertPointCloudAsRays(pts, sensorPt); },
+            "points"_a, "sensorPt"_a,
+            "Inserts a point cloud, marking free space along the rays from sensorPt")
+        .def(
+            "insertPointCloudAsEndPoints",
+            [](T& vm, const mrpt::maps::CPointsMap& pts, const mrpt::math::TPoint3D& sensorPt)
+            { vm.insertPointCloudAsEndPoints(pts, sensorPt); },
+            "points"_a, "sensorPt"_a, "Inserts a point cloud updating only the end points")
+        .def(
+            "getOccupiedVoxels", [](T& vm) { return vm.getOccupiedVoxels(); },
+            "Returns the centers of all occupied voxels as a CSimplePointsMap")
+        .def(
+            "__repr__",
+            [name](const T& vm) {
+              return std::string(name) + "(resolution=" + std::to_string(vm.grid().resolution) +
+                     ")";
+            });
+  };
+  bindVoxelMap(type_tag<mrpt::maps::CVoxelMap>{}, "CVoxelMap");
+  bindVoxelMap(type_tag<mrpt::maps::CVoxelMapRGB>{}, "CVoxelMapRGB");
+
+  // -------------------------------------------------------------------------
+  // COccupancyGridMap3D: dense 3D occupancy grid
+  // -------------------------------------------------------------------------
+  using Grid3D = mrpt::maps::COccupancyGridMap3D;
+  py::class_<Grid3D, mrpt::maps::CMetricMap, std::shared_ptr<Grid3D>>(m, "COccupancyGridMap3D")
+      .def(
+          py::init<const mrpt::math::TPoint3D&, const mrpt::math::TPoint3D&, float>(),
+          "corner_min"_a = mrpt::math::TPoint3D(-5.0, -5.0, -5.0),
+          "corner_max"_a = mrpt::math::TPoint3D(5.0, 5.0, 5.0), "resolution"_a = 0.25f)
+      .def("fill", &Grid3D::fill, "default_value"_a = 0.5f, "Sets all voxels to a freeness value")
+      .def(
+          "getSizeX", [](const Grid3D& g) { return g.m_grid.getSizeX(); }, "Number of voxels in X")
+      .def(
+          "getSizeY", [](const Grid3D& g) { return g.m_grid.getSizeY(); }, "Number of voxels in Y")
+      .def(
+          "getSizeZ", [](const Grid3D& g) { return g.m_grid.getSizeZ(); }, "Number of voxels in Z")
+      .def(
+          "getResolution", [](const Grid3D& g) { return g.m_grid.getResolutionXY(); },
+          "Voxel size (meters)")
+      .def(
+          "getCellFreeness", &Grid3D::getCellFreeness, "cx"_a, "cy"_a, "cz"_a,
+          "Freeness probability [0,1] of a voxel by index (1 = free)")
+      .def(
+          "setCellFreeness", &Grid3D::setCellFreeness, "cx"_a, "cy"_a, "cz"_a, "value"_a,
+          "Sets the freeness probability [0,1] of a voxel by index")
+      .def(
+          "getFreenessByPos", &Grid3D::getFreenessByPos, "x"_a, "y"_a, "z"_a,
+          "Freeness probability [0,1] at a metric position (1 = free)")
+      .def(
+          "setFreenessByPos", &Grid3D::setFreenessByPos, "x"_a, "y"_a, "z"_a, "value"_a,
+          "Sets the freeness probability [0,1] at a metric position")
+      .def(
+          "__repr__",
+          [](const Grid3D& g)
+          {
+            return "COccupancyGridMap3D(size=" + std::to_string(g.m_grid.getSizeX()) + "x" +
+                   std::to_string(g.m_grid.getSizeY()) + "x" + std::to_string(g.m_grid.getSizeZ()) +
+                   ")";
+          });
+
+  // -------------------------------------------------------------------------
+  // CHeightGridMap2D: 2.5D elevation map
+  // -------------------------------------------------------------------------
+  using HMap = mrpt::maps::CHeightGridMap2D;
+  py::class_<HMap, mrpt::maps::CMetricMap, std::shared_ptr<HMap>>(m, "CHeightGridMap2D")
+      .def(
+          py::init(
+              [](double xMin, double xMax, double yMin, double yMax, double resolution) {
+                return std::make_shared<HMap>(
+                    HMap::mrSimpleAverage, xMin, xMax, yMin, yMax, resolution);
+              }),
+          "xMin"_a = -2.0, "xMax"_a = 2.0, "yMin"_a = -2.0, "yMax"_a = 2.0, "resolution"_a = 0.1)
+      .def("getSizeX", [](const HMap& h) { return h.dem_get_size_x(); })
+      .def("getSizeY", [](const HMap& h) { return h.dem_get_size_y(); })
+      .def("getResolution", [](const HMap& h) { return h.dem_get_resolution(); })
+      .def("getXMin", [](const HMap& h) { return h.getXMin(); })
+      .def("getYMin", [](const HMap& h) { return h.getYMin(); })
+      .def("countObservedCells", &HMap::countObservedCells)
+      .def(
+          "insertIndividualPoint",
+          [](HMap& h, double x, double y, double z) { return h.insertIndividualPoint(x, y, z); },
+          "x"_a, "y"_a, "z"_a, "Inserts one (x,y,z) point. Returns False if out of the map.")
+      .def(
+          "getHeight",
+          [](const HMap& h, double x, double y) -> std::optional<double>
+          {
+            double z = 0;
+            if (!h.dem_get_z(x, y, z))
+            {
+              return std::nullopt;
+            }
+            return z;
+          },
+          "x"_a, "y"_a, "Height at a metric position, or None if not observed")
+      .def(
+          "getAsNumpy",
+          [](const HMap& h)
+          {
+            const size_t sx = h.dem_get_size_x();
+            const size_t sy = h.dem_get_size_y();
+            py::array_t<double> arr(std::vector<py::ssize_t>{py::ssize_t(sy), py::ssize_t(sx)});
+            auto buf = arr.mutable_unchecked<2>();
+            for (size_t cy = 0; cy < sy; cy++)
+            {
+              for (size_t cx = 0; cx < sx; cx++)
+              {
+                double z = 0;
+                buf(cy, cx) =
+                    h.dem_get_z_by_cell(cx, cy, z) ? z : std::numeric_limits<double>::quiet_NaN();
+              }
+            }
+            return arr;
+          },
+          "Returns the heights as an HxW float64 array (NaN for unobserved cells)");
+
+  // -------------------------------------------------------------------------
+  // CBeaconMap: map of range-only beacons
+  // -------------------------------------------------------------------------
+  py::class_<
+      mrpt::maps::CBeacon, mrpt::serialization::CSerializable,
+      std::shared_ptr<mrpt::maps::CBeacon>>(m, "CBeacon")
+      .def(py::init<>())
+      .def_readwrite("m_ID", &mrpt::maps::CBeacon::m_ID, "Beacon ID")
+      .def(
+          "getMean",
+          [](const mrpt::maps::CBeacon& b)
+          {
+            mrpt::poses::CPoint3D p;
+            b.getMean(p);
+            return p;
+          },
+          "Mean position of the beacon");
+
+  py::class_<
+      mrpt::maps::CBeaconMap, mrpt::maps::CMetricMap, std::shared_ptr<mrpt::maps::CBeaconMap>>(
+      m, "CBeaconMap")
+      .def(py::init<>())
+      .def("size", &mrpt::maps::CBeaconMap::size)
+      .def("__len__", &mrpt::maps::CBeaconMap::size)
+      .def("push_back", &mrpt::maps::CBeaconMap::push_back, "beacon"_a)
+      .def(
+          "__getitem__",
+          [](mrpt::maps::CBeaconMap& bm, size_t i) -> mrpt::maps::CBeacon&
+          {
+            if (i >= bm.size())
+            {
+              throw py::index_error();
+            }
+            return bm.get(i);
+          },
+          py::return_value_policy::reference_internal);
+
+  // -------------------------------------------------------------------------
+  // COctoMap: OctoMap-based probabilistic 3D occupancy map
+  // -------------------------------------------------------------------------
+  py::class_<mrpt::maps::COctoMap, mrpt::maps::CMetricMap, std::shared_ptr<mrpt::maps::COctoMap>>(
+      m, "COctoMap")
+      .def(py::init<double>(), "resolution"_a = 0.10)
+      .def("getResolution", &mrpt::maps::COctoMap::getResolution)
+      .def("size", &mrpt::maps::COctoMap::size, "Number of octree nodes")
+      .def(
+          "updateVoxel", &mrpt::maps::COctoMap::updateVoxel, "x"_a, "y"_a, "z"_a, "occupied"_a,
+          "Updates one voxel with an occupied or free observation")
+      .def("isPointWithinOctoMap", &mrpt::maps::COctoMap::isPointWithinOctoMap, "x"_a, "y"_a, "z"_a)
+      .def(
+          "getPointOccupancy",
+          [](const mrpt::maps::COctoMap& om, float x, float y, float z)
+          { return om.getPointOccupancy(x, y, z); },
+          "x"_a, "y"_a, "z"_a,
+          "Occupancy probability [0,1] at a point, or None if the point is not in the octree")
+      .def(
+          "insertPointCloud", &mrpt::maps::COctoMap::insertPointCloud, "points"_a, "sensor_x"_a,
+          "sensor_y"_a, "sensor_z"_a, "Inserts a point cloud as rays from the sensor position")
+      .def(
+          "getMetricMin",
+          [](const mrpt::maps::COctoMap& om)
+          {
+            double x = 0;
+            double y = 0;
+            double z = 0;
+            om.getMetricMin(x, y, z);
+            return mrpt::math::TPoint3D(x, y, z);
+          })
+      .def(
+          "getMetricMax",
+          [](const mrpt::maps::COctoMap& om)
+          {
+            double x = 0;
+            double y = 0;
+            double z = 0;
+            om.getMetricMax(x, y, z);
+            return mrpt::math::TPoint3D(x, y, z);
+          });
+
+  // -------------------------------------------------------------------------
+  // CObservationPointCloud (in mrpt::obs, but part of the mrpt_maps library)
+  // -------------------------------------------------------------------------
+  using ObsPC = mrpt::obs::CObservationPointCloud;
+  py::class_<ObsPC, mrpt::obs::CObservation, std::shared_ptr<ObsPC>>(m, "CObservationPointCloud")
+      .def(py::init<>())
+      .def(
+          py::init<const mrpt::obs::CObservation3DRangeScan&>(), "scan"_a,
+          "Builds a point cloud observation from the 3D points of a depth scan")
+      .def_readwrite("pointcloud", &ObsPC::pointcloud, "The point cloud (a CPointsMap)")
+      .def_readwrite("sensorPose", &ObsPC::sensorPose)
+      .def("isExternallyStored", &ObsPC::isExternallyStored)
+      .def("getExternalStorageFile", &ObsPC::getExternalStorageFile)
+      .def(
+          "__repr__",
+          [](const ObsPC& o)
+          {
+            return "CObservationPointCloud(label='" + o.sensorLabel +
+                   "', points=" + std::to_string(o.pointcloud ? o.pointcloud->size() : 0) + ")";
+          });
+
+  // -------------------------------------------------------------------------
+  // Visualization of observations
+  // -------------------------------------------------------------------------
+  using RecolorParams = mrpt::obs::PointCloudRecoloringParameters;
+  py::class_<RecolorParams>(m, "PointCloudRecoloringParameters")
+      .def(py::init<>())
+      .def_readwrite("colorizeByField", &RecolorParams::colorizeByField)
+      .def_readwrite("invertColorMapping", &RecolorParams::invertColorMapping)
+      .def_readwrite("colorMap", &RecolorParams::colorMap)
+      .def_readwrite("colorMapMinCoord", &RecolorParams::colorMapMinCoord)
+      .def_readwrite("colorMapMaxCoord", &RecolorParams::colorMapMaxCoord)
+      .def_readwrite("outlierRejectionPercentile", &RecolorParams::outlierRejectionPercentile);
+
+  using VizParams = mrpt::obs::VisualizationParameters;
+  py::class_<VizParams>(m, "VisualizationParameters")
+      .def(py::init<>())
+      .def_readwrite("coloring", &VizParams::coloring)
+      .def_readwrite("showAxis", &VizParams::showAxis)
+      .def_readwrite("axisTickFrequency", &VizParams::axisTickFrequency)
+      .def_readwrite("axisLimits", &VizParams::axisLimits)
+      .def_readwrite("axisTickTextSize", &VizParams::axisTickTextSize)
+      .def_readwrite("colorFromRGBimage", &VizParams::colorFromRGBimage)
+      .def_readwrite("pointSize", &VizParams::pointSize)
+      .def_readwrite("drawSensorPose", &VizParams::drawSensorPose)
+      .def_readwrite("sensorPoseScale", &VizParams::sensorPoseScale)
+      .def_readwrite("onlyPointsWithColor", &VizParams::onlyPointsWithColor)
+      .def_readwrite("showSurfaceIn2Dscans", &VizParams::showSurfaceIn2Dscans)
+      .def_readwrite("showPointsIn2Dscans", &VizParams::showPointsIn2Dscans)
+      .def_readwrite("surface2DscansColor", &VizParams::surface2DscansColor)
+      .def_readwrite("points2DscansColor", &VizParams::points2DscansColor);
+
+  m.def(
+      "obs_to_viz",
+      [](const mrpt::obs::CObservation::Ptr& obs, const VizParams& p,
+         mrpt::viz::CSetOfObjects::Ptr out)
+      {
+        if (!out)
+        {
+          out = mrpt::viz::CSetOfObjects::Create();
+        }
+        mrpt::obs::obs_to_viz(obs, p, *out);
+        return out;
+      },
+      "obs"_a, "params"_a = VizParams(), "out"_a = nullptr,
+      "Renders an observation into a CSetOfObjects (a new one if out is None), and returns it");
+  m.def(
+      "obs_to_viz",
+      [](const mrpt::obs::CSensoryFrame& sf, const VizParams& p, mrpt::viz::CSetOfObjects::Ptr out)
+      {
+        if (!out)
+        {
+          out = mrpt::viz::CSetOfObjects::Create();
+        }
+        mrpt::obs::obs_to_viz(sf, p, *out);
+        return out;
+      },
+      "sf"_a, "params"_a = VizParams(), "out"_a = nullptr,
+      "Renders all observations of a CSensoryFrame into a CSetOfObjects (a new one if out is "
+      "None), and returns it");
 }

@@ -134,7 +134,9 @@ bool TPolygon2D::isConvex() const
   getAsSegmentList(sgms);
   for (size_t i = 0; i < N; i++)
   {
-    char s = 0;
+    // Plain `char` is unsigned on the AArch64 ABI, so storing -1 in it wraps
+    // to 255 and the sign comparison below never matches; use `int` instead.
+    int s = 0;
     auto l = TLine2D(sgms[i]);
     for (size_t j = 0; j < N; j++)
     {

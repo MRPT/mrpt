@@ -2,6 +2,16 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)
+* fix(viz): stale pose of containers updated by assignment
+* changelogs
+* mrpt_opengl: use renamed libgles-dev rosdep key
+* mrpt_opengl: depend on new opengl-es rosdep key
+* Contributors: Jose Luis Blanco-Claraco
+
+
 3.2.0 (2026-09-16)
 ------------------
 * fix: restore 2D overlay rendering for scene cameras and text labels.

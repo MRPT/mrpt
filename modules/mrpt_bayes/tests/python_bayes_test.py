@@ -61,5 +61,19 @@ idx = CParticleFilterCapable.computeResampling(
 check("computeResampling returns correct count", len(idx) == 10, f"got {len(idx)}")
 check("computeResampling indexes in range", all(0 <= i < 10 for i in idx))
 
+print("TParticleFilterOptions.loadFromConfigFile")
+from mrpt.config import CConfigFileMemory
+cfg = CConfigFileMemory(
+    "[PF]\nadaptiveSampleSize=0\nsampleSize=123\nBETA=0.25\n"
+    "PF_algorithm=pfAuxiliaryPFStandard\nresamplingMethod=prSystematic\n")
+opts2 = TParticleFilterOptions()
+opts2.loadFromConfigFile(cfg, "PF")
+check("sampleSize loaded", opts2.sampleSize == 123, f"got {opts2.sampleSize}")
+check("BETA loaded", abs(opts2.BETA - 0.25) < 1e-12, f"got {opts2.BETA}")
+check("PF_algorithm loaded",
+      opts2.PF_algorithm == TParticleFilterAlgorithm.AuxiliaryPFStandard, f"got {opts2.PF_algorithm}")
+check("resamplingMethod loaded",
+      opts2.resamplingMethod == TParticleResamplingAlgorithm.Systematic)
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

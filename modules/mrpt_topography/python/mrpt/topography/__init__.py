@@ -8,6 +8,10 @@ Provides:
   - geocentricToGeodetic()       : ECEF geocentric → WGS84 geodetic
   - geodeticToENU_WGS84()        : WGS84 geodetic → local ENU coordinates
   - ENUToGeocentric()            : ENU local → ECEF geocentric
+  - ENUToGeodetic_WGS84()        : ENU local → WGS84 geodetic
+  - TEllipsoid, geodeticToGeocentric() : geodetic ↔ geocentric for any ellipsoid
+  - geodeticToUTM(), UTMToGeodetic()   : geodetic ↔ UTM
+  - ENU_axes_from_WGS84()        : ENU frame at a given point
 
 Example::
 
@@ -22,8 +26,14 @@ Example::
 import mrpt.math  # noqa: F401  (TPoint3D returned by coordinate conversion functions)
 
 from mrpt.topography._bindings import (
+    ENU_axes_from_WGS84,
     ENUToGeocentric,
+    ENUToGeodetic_WGS84,
     TCoords,
+    TEllipsoid,
+    UTMToGeodetic,
+    geodeticToGeocentric,
+    geodeticToUTM,
     TGeodeticCoords,
     geocentricToGeodetic,
     geodeticToENU_WGS84,
@@ -37,4 +47,10 @@ __all__ = [
     "geocentricToGeodetic",
     "geodeticToENU_WGS84",
     "ENUToGeocentric",
+    "ENUToGeodetic_WGS84",
+    "TEllipsoid",
+    "geodeticToGeocentric",
+    "geodeticToUTM",
+    "UTMToGeodetic",
+    "ENU_axes_from_WGS84",
 ]

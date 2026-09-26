@@ -186,8 +186,10 @@ void PlannerRRT_SE2_TPS::solve(
       // ------------------------------------------------------------
       // Transform obstacles as seen from x_nearest_node -> TP_obstacles
       double TP_Obstacles_k_rand = .0;  // vector<double> TP_Obstacles;
-      const double MAX_DIST_FOR_OBSTACLES =
-          1.5 * m_PTGs[idxPTG]->getRefDistance();  // Maximum Euclidean
+      const double MAX_DIST_FOR_OBSTACLES = std::max(
+          1.5 * m_PTGs[idxPTG]->getRefDistance(),
+          m_PTGs[idxPTG]->getRefDistance() +
+              m_PTGs[idxPTG]->getMaxRobotRadius());  // Maximum Euclidean
       // distance (radius)
       // for considering
       // obstacles around the

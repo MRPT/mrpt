@@ -82,6 +82,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CColouredOctoMap_unittest.cpp
   tests/CPointCloudFilterByDistance_unittest.cpp
   tests/CGenericPointsMap_unittest.cpp
+  tests/CPointCloudColoured_fromPointsMap_unittest.cpp
   tests/CPointsMap_unittest.cpp
   tests/CPointsMap_insertObs_unittest.cpp
   tests/CPointsMapXYZIRT_unittest.cpp

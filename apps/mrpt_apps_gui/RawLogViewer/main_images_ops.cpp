@@ -98,12 +98,12 @@ void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& even
                 CLASS_ID(CObservationStereoImages))
             {
               auto obsSt = SF->getObservationByIndexAs<CObservationStereoImages::Ptr>(k);
-              bool savedOk = obsSt->imageLeft.saveToFile(format(
+              bool savedOk = obsSt->imageLeft.saveToFile(mrpt::format(
                   "%s/img_stereo_%u_left_%05u.%s", outDir.c_str(), k, imgSaved,
                   imgFileExtension.c_str()));
               ASSERT_(savedOk);
 
-              savedOk = obsSt->imageRight.saveToFile(format(
+              savedOk = obsSt->imageRight.saveToFile(mrpt::format(
                   "%s/img_stereo_%u_right_%05u.%s", outDir.c_str(), k, imgSaved,
                   imgFileExtension.c_str()));
               ASSERT_(savedOk);
@@ -113,7 +113,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& even
             if (SF->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservationImage))
             {
               auto obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(k);
-              bool savedOk = obsIm->image.saveToFile(format(
+              bool savedOk = obsIm->image.saveToFile(mrpt::format(
                   "%s/img_monocular_%u_%05u.%s", outDir.c_str(), k, imgSaved,
                   imgFileExtension.c_str()));
               ASSERT_(savedOk);
@@ -131,12 +131,12 @@ void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& even
           {
             CObservationStereoImages::Ptr obsSt =
                 std::dynamic_pointer_cast<CObservationStereoImages>(o);
-            bool savedOk = obsSt->imageLeft.saveToFile(format(
+            bool savedOk = obsSt->imageLeft.saveToFile(mrpt::format(
                 "%s/img_stereo_%s_left_%05u.%s", outDir.c_str(), obsSt->sensorLabel.c_str(),
                 imgSaved, imgFileExtension.c_str()));
             ASSERT_(savedOk);
 
-            savedOk = obsSt->imageRight.saveToFile(format(
+            savedOk = obsSt->imageRight.saveToFile(mrpt::format(
                 "%s/img_stereo_%s_right_%05u.%s", outDir.c_str(), obsSt->sensorLabel.c_str(),
                 imgSaved, imgFileExtension.c_str()));
             ASSERT_(savedOk);
@@ -145,7 +145,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& even
           else if (IS_CLASS(*o, CObservationImage))
           {
             CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(o);
-            bool savedOk = obsIm->image.saveToFile(format(
+            bool savedOk = obsIm->image.saveToFile(mrpt::format(
                 "%s/img_monocular_%s_%05u.%s", outDir.c_str(), obsIm->sensorLabel.c_str(), imgSaved,
                 imgFileExtension.c_str()));
             ASSERT_(savedOk);
@@ -172,7 +172,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs([[maybe_unused]] wxCommandEvent& even
   progDia.Update(nEntries);
 
   // Set error msg:
-  wxMessageBox((format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
+  wxMessageBox((mrpt::format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }
@@ -422,7 +422,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages([[maybe_unused]] wxCommandEvent& ev
   progDia.Update(nEntries);
 
   // Set error msg:
-  wxMessageBox((format("Images rectified: %i", N).c_str()), _("Done"), wxOK, this);
+  wxMessageBox((mrpt::format("Images rectified: %i", N).c_str()), _("Done"), wxOK, this);
 
   WX_END_TRY
 }

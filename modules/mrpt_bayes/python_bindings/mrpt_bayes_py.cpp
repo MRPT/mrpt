@@ -14,6 +14,7 @@
 
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -59,7 +60,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CParticleFilter::TParticleFilterOptions — algorithm configuration
   // -------------------------------------------------------------------------
-  py::class_<CParticleFilter::TParticleFilterOptions>(m, "TParticleFilterOptions")
+  py::class_<
+      CParticleFilter::TParticleFilterOptions, mrpt::config::CLoadableOptions,
+      std::shared_ptr<CParticleFilter::TParticleFilterOptions>>(m, "TParticleFilterOptions")
       .def(py::init<>())
       .def_readwrite(
           "adaptiveSampleSize", &CParticleFilter::TParticleFilterOptions::adaptiveSampleSize,
@@ -118,7 +121,18 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CParticleFilterCapable — static utility methods
   // -------------------------------------------------------------------------
-  py::class_<CParticleFilterCapable>(m, "CParticleFilterCapable")
+  // shared_ptr holder: concrete particle filters (e.g. mrpt.slam
+  // CMonteCarloLocalization2D) derive from it and use shared_ptr holders.
+  py::class_<CParticleFilterCapable, std::shared_ptr<CParticleFilterCapable>>(
+      m, "CParticleFilterCapable")
+      .def("particlesCount", &CParticleFilterCapable::particlesCount)
+      .def("getW", &CParticleFilterCapable::getW, "i"_a, "Returns the log-weight of particle i")
+      .def("setW", &CParticleFilterCapable::setW, "i"_a, "w"_a, "Sets the log-weight of particle i")
+      .def(
+          "normalizeWeights", [](CParticleFilterCapable& self) { return self.normalizeWeights(); },
+          "Normalizes the log-weights so the maximum is 0. Returns the max log-weight before "
+          "normalizing.")
+      .def("ESS", &CParticleFilterCapable::ESS, "Effective sample size, in the range [0,1]")
       .def_static(
           "computeResampling",
           [](CParticleFilter::TParticleResamplingAlgorithm method,

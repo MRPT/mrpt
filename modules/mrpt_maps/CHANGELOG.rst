@@ -2,6 +2,20 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* fix formatting
+* fix: qualify mrpt::format() calls to avoid ambiguity with std::format
+* Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)
+* test(maps): run the KD-tree index save/load tests (`#1424 <https://github.com/MRPT/mrpt/issues/1424>`_)
+* perf(viz): bulk-load CPointCloudColoured from point maps (`#1423 <https://github.com/MRPT/mrpt/issues/1423>`_)
+* fix(mrpt_maps): apply growth factor in CPointsMap reserve()/resize()
+* changelogs
+* Merge pull request `#1417 <https://github.com/MRPT/mrpt/issues/1417>`_ from MRPT/fix/kdtree-capable-lock-order-and-optout
+* mrpt_math, mrpt_maps: fix KDTreeCapable lock-order inversion, add index opt-out
+* Contributors: Jose Luis Blanco-Claraco
+
+
 3.2.0 (2026-09-16)
 ------------------
 * feat: complete API cleanups for const-correctness, archive behavior, and point-map accessors.

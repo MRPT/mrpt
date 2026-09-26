@@ -135,6 +135,17 @@ TEST(os, findMRPTSharedDir)
   EXPECT_EQ(a, mrpt::system::find_mrpt_shared_dir());
 }
 
+TEST(os, getShareMRPTDirFindsDataPackage)
+{
+  // Built from the source tree, mrpt_data is always reachable as a sibling:
+  const std::string dir = mrpt::system::getShareMRPTDir();
+  ASSERT_FALSE(dir.empty());
+  EXPECT_EQ(dir.back(), '/');
+  EXPECT_TRUE(mrpt::system::fileExists(dir + "config_files/navigation-ptgs/reactive2d_config.ini"))
+      << "dir: " << dir;
+  EXPECT_EQ(dir, mrpt::system::find_mrpt_shared_dir());
+}
+
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 
 TEST(os, executeCommandCapturesOutputAndExitCode)

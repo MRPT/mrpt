@@ -726,7 +726,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
     {
       m_win_manager->addTextMessage(
           m_offset_x_left, -m_offset_y_timestamp,
-          format("Simulated time: %s", timeToString(m_curr_timestamp).c_str()),
+          mrpt::format("Simulated time: %s", timeToString(m_curr_timestamp).c_str()),
           mrpt::img::TColorf(1.0, 1.0, 1.0),
           /* unique_index = */ m_text_index_timestamp);
     }
@@ -734,7 +734,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
     {
       m_win_manager->addTextMessage(
           m_offset_x_left, -m_offset_y_timestamp,
-          format("Wall time: %s", timeToString(mrpt::Clock::now()).c_str()),
+          mrpt::format("Wall time: %s", timeToString(mrpt::Clock::now()).c_str()),
           mrpt::img::TColorf(1.0, 1.0, 1.0),
           /* unique_index = */ m_text_index_timestamp);
     }
@@ -840,7 +840,7 @@ void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
   {  // just check that it's the same.
     ASSERTDEBMSG_(
         listed_nodeCount == m_graph.nodeCount(),
-        format(
+        mrpt::format(
             "listed_nodeCount [%lu] != nodeCount() [%lu]",
             static_cast<unsigned long>(listed_nodeCount),
             static_cast<unsigned long>(m_graph.nodeCount())));
@@ -853,7 +853,7 @@ void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
           class_name << " illegally added new nodes to the graph "
                      << ", wanted to see [" << listed_nodeCount << "] but saw ["
                      << m_graph.nodeCount() << "]");
-      THROW_EXCEPTION(format("Illegal node registration by %s.", class_name.c_str()));
+      THROW_EXCEPTION(mrpt::format("Illegal node registration by %s.", class_name.c_str()));
     }
   }
   MRPT_END
@@ -936,7 +936,7 @@ void CGraphSlamEngine<GRAPH_T>::computeMap() const
       const mrpt::obs::CObservation2DRangeScan::Ptr& curr_laser_scan = it->second;
       ASSERTDEBMSG_(
           curr_laser_scan,
-          format(
+          mrpt::format(
               "LaserScan of nodeID: %lu is not present.", static_cast<unsigned long>(curr_node)));
 
       // Fetch pose at which to display the LaserScan
@@ -1307,7 +1307,7 @@ void CGraphSlamEngine<GRAPH_T>::readGTFile(
 
   // make sure file exists
   ASSERTDEBMSG_(
-      fileExists(fname_GT), format(
+      fileExists(fname_GT), mrpt::format(
                                 "\nGround-truth file %s was not found.\n"
                                 "Either specify a valid ground-truth filename or set set the "
                                 "m_visualize_GT flag to false\n",
@@ -1373,7 +1373,7 @@ void CGraphSlamEngine<GRAPH_T>::readGTFileRGBD_TUM(
 
   // make sure file exists
   ASSERTDEBMSG_(
-      fileExists(fname_GT), format(
+      fileExists(fname_GT), mrpt::format(
                                 "\nGround-truth file %s was not found.\n"
                                 "Either specify a valid ground-truth filename or set set the "
                                 "m_visualize_GT flag to false\n",
@@ -2568,7 +2568,7 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(const std::string& output_di
 
   ASSERTDEBMSG_(
       directoryExists(output_dir_fname),
-      format("Output directory \"%s\" doesn't exist", output_dir_fname.c_str()));
+      mrpt::format("Output directory \"%s\" doesn't exist", output_dir_fname.c_str()));
 
   MRPT_LOG_INFO_STREAM("Generating detailed class report...");
   std::lock_guard<std::mutex> graph_lock(m_graph_section);

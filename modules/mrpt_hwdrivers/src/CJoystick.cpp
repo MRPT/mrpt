@@ -83,7 +83,7 @@ int CJoystick::getJoysticksCount()
 
   do
   {
-    if (-1 != (joy_fd = open(format("/dev/input/js%i", nJoys).c_str(), O_RDONLY)))
+    if (-1 != (joy_fd = open(mrpt::format("/dev/input/js%i", nJoys).c_str(), O_RDONLY)))
     {
       nJoys++;
       close(joy_fd);
@@ -162,7 +162,7 @@ bool CJoystick::getJoystickPosition(int nJoy, State& output)
     if (m_joy_fd != -1) close(m_joy_fd);
 
     // Go, try open joystick:
-    if ((m_joy_fd = open(format("/dev/input/js%i", nJoy).c_str(), O_RDONLY)) < 0)
+    if ((m_joy_fd = open(mrpt::format("/dev/input/js%i", nJoy).c_str(), O_RDONLY)) < 0)
     {
       return false;
     }

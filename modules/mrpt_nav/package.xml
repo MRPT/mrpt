@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>mrpt_nav</name>
-  <version>3.2.0</version>
+  <version>3.3.0</version>
   <description>The MRPT C++ library mrpt_nav</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
@@ -17,6 +17,8 @@
   <depend>mrpt_viz</depend>
 
   <build_depend>eigen</build_depend>
+  <build_depend>pybind11-dev</build_depend>
+  <build_depend>python3-dev</build_depend>
 
   <export>
     <build_type>cmake</build_type>

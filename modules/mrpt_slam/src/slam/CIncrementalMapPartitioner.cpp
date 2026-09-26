@@ -372,12 +372,12 @@ void CIncrementalMapPartitioner::getAs3DScene(
     i_sph->setColor(0, 0, 1);
 
     if (!renameIndexes)
-      i_sph->setName(format("%u", static_cast<unsigned int>(i)));
+      i_sph->setName(mrpt::format("%u", static_cast<unsigned int>(i)));
     else
     {
       auto itName = renameIndexes->find(static_cast<uint32_t>(i));
       ASSERT_(itName != renameIndexes->end());
-      i_sph->setName(format("%lu", static_cast<unsigned long>(itName->second)));
+      i_sph->setName(mrpt::format("%lu", static_cast<unsigned long>(itName->second)));
     }
 
     i_sph->enableShowName();

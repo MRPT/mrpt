@@ -25,6 +25,7 @@ set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in mrpt::img::CCanvas
 set(LIB_SOURCES
   src/camera_geometry.cpp
   src/CCanvas.cpp
+  src/CImage_bayer.cpp
   src/CImage_impl.cpp
   src/CImage_impl.h
   src/CImage_loadXPM.cpp
@@ -49,6 +50,8 @@ set(LIB_UNIT_TEST_SOURCES
   tests/camera_geometry_unittest.cpp
   tests/CCanvas_unittest.cpp
   tests/CImage_legacy_serialization_unittest.cpp
+  tests/CImage_loadFromBayerBuffer_unittest.cpp
+  tests/CImage_loadFromEncodedBuffer_unittest.cpp
   tests/CImage_loadXPM_unittest.cpp
   tests/CImage_SSEx_unittest.cpp
   tests/CImage_unittest.cpp

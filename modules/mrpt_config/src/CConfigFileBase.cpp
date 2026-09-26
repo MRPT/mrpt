@@ -229,7 +229,7 @@ std::string CConfigFileBase::read_string_first_word(
   {
     if (failIfNotFound)
     {
-      THROW_EXCEPTION(format(
+      THROW_EXCEPTION(mrpt::format(
           "Value '%s' seems to be present in section '%s' but, are "
           "all whitespaces??",
           name.c_str(), section.c_str()));

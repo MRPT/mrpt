@@ -157,6 +157,9 @@ class CPointsMap :
    * size of the map. This method is more
    *  efficient than constantly increasing the size of the buffers. Refer to
    * the STL C++ library's "reserve" methods.
+   *  Implementations apply a growth factor, so the resulting capacity may
+   * exceed `newLength`; subclasses that need the exact figure should use
+   * resize() followed by shrink_to_fit()-style compacting instead.
    */
   virtual void reserve(size_t newLength) = 0;
 
@@ -1525,7 +1528,14 @@ class CPointsMap :
   template <typename BBOX>
   bool kdtree_get_bbox(BBOX& bb) const
   {
-    const auto bbox = this->boundingBox();
+    // Note the explicitly qualified (i.e. non-virtual) call: this index is
+    // built over the raw coordinate buffers of this base class, so its bounding
+    // box must be the one of those buffers, and not whatever extent a derived
+    // class may choose to report. A virtual dispatch here would also let a
+    // derived class' boundingBox() take its own mutex from within nanoflann's
+    // index build, i.e. while the kd-tree mutex is held: a lock-order inversion
+    // against any of its methods marking this map as modified.
+    const auto bbox = this->CPointsMap::boundingBox();
     bb[0].low = bbox.min.x;
     bb[1].low = bbox.min.y;
     bb[0].high = bbox.max.x;
@@ -1681,6 +1691,11 @@ class CPointsMap :
 namespace mrpt::viz
 {
 /** Specialization mrpt::viz::PointCloudAdapter<mrpt::maps::CPointsMap>
+ *
+ * The adapter is a short-lived view: which color fields exist, and where they
+ * are stored, is resolved at construction. Do not keep an adapter alive across
+ * changes to the map field layout (e.g. CGenericPointsMap::unregisterField()).
+ *
  * \ingroup mrpt_adapters_grp*/
 template <>
 class PointCloudAdapter<mrpt::maps::CPointsMap>
@@ -1698,10 +1713,35 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
   /** Has native RGB info (as uint8_t)? */
   const bool HAS_RGBu8 = m_obj.hasColor_u8();
 
+ private:
+  const mrpt::aligned_std_vector<float>* m_Rf = nullptr;
+  const mrpt::aligned_std_vector<float>* m_Gf = nullptr;
+  const mrpt::aligned_std_vector<float>* m_Bf = nullptr;
+  const mrpt::aligned_std_vector<uint8_t>* m_Ru8 = nullptr;
+  const mrpt::aligned_std_vector<uint8_t>* m_Gu8 = nullptr;
+  const mrpt::aligned_std_vector<uint8_t>* m_Bu8 = nullptr;
+
+ public:
   /** Constructor (accept a const ref for convenience) */
   explicit PointCloudAdapter(const mrpt::maps::CPointsMap& obj) :
       m_obj(*const_cast<mrpt::maps::CPointsMap*>(&obj))
   {
+    // Resolve the color fields once: looking them up by name for each point
+    // dominated the cost of bulk reads.
+    using mrpt::maps::CPointsMap;
+    const CPointsMap& o = obj;
+    if (HAS_RGBf)
+    {
+      m_Rf = o.getPointsBufferRef_float_field(CPointsMap::POINT_FIELD_COLOR_Rf);
+      m_Gf = o.getPointsBufferRef_float_field(CPointsMap::POINT_FIELD_COLOR_Gf);
+      m_Bf = o.getPointsBufferRef_float_field(CPointsMap::POINT_FIELD_COLOR_Bf);
+    }
+    else if (HAS_RGBu8)
+    {
+      m_Ru8 = o.getPointsBufferRef_uint8_field(CPointsMap::POINT_FIELD_COLOR_Ru8);
+      m_Gu8 = o.getPointsBufferRef_uint8_field(CPointsMap::POINT_FIELD_COLOR_Gu8);
+      m_Bu8 = o.getPointsBufferRef_uint8_field(CPointsMap::POINT_FIELD_COLOR_Bu8);
+    }
   }
 
   /** Get number of points */
@@ -1755,17 +1795,17 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
   {
     using mrpt::maps::CPointsMap;
     m_obj.getPoint(idx, x, y, z);
-    if (HAS_RGBf)
+    if (m_Rf && m_Gf && m_Bf)
     {
-      r = m_obj.getPointField_float(idx, CPointsMap::POINT_FIELD_COLOR_Rf);
-      g = m_obj.getPointField_float(idx, CPointsMap::POINT_FIELD_COLOR_Gf);
-      b = m_obj.getPointField_float(idx, CPointsMap::POINT_FIELD_COLOR_Bf);
+      r = (*m_Rf)[idx];
+      g = (*m_Gf)[idx];
+      b = (*m_Bf)[idx];
     }
-    else if (HAS_RGBu8)
+    else if (m_Ru8 && m_Gu8 && m_Bu8)
     {
-      r = mrpt::u8tof(m_obj.getPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Ru8));
-      g = mrpt::u8tof(m_obj.getPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Gu8));
-      b = mrpt::u8tof(m_obj.getPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Bu8));
+      r = mrpt::u8tof((*m_Ru8)[idx]);
+      g = mrpt::u8tof((*m_Gu8)[idx]);
+      b = mrpt::u8tof((*m_Bu8)[idx]);
     }
     a = 1.0f;
   }
@@ -1806,9 +1846,9 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
     }
     else if (HAS_RGBu8)
     {
-      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Rf, r);
-      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Gf, g);
-      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Bf, b);
+      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Ru8, r);
+      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Gu8, g);
+      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Bu8, b);
     }
   }
 
@@ -1824,9 +1864,9 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
     }
     else if (HAS_RGBu8)
     {
-      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Rf, mrpt::f2u8(r));
-      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Gf, mrpt::f2u8(g));
-      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Bf, mrpt::f2u8(b));
+      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Ru8, mrpt::f2u8(r));
+      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Gu8, mrpt::f2u8(g));
+      m_obj.setPointField_uint8(idx, CPointsMap::POINT_FIELD_COLOR_Bu8, mrpt::f2u8(b));
     }
   }
 

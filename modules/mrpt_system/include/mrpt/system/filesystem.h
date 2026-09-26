@@ -43,10 +43,11 @@ std::string getTempFileName();
 /** Returns the current working directory  */
 std::string getcwd();
 
-/** Attempts to find the directory `[PREFIX/]share/mrpt/` and returns its
- * absolute path, or empty string if not found.
- * Example return paths: Linux after installing = `/usr/share/mrpt/`;
- * manually-built system = `[MRPT_SOURCE_DIR]/share/mrpt/`, etc.  */
+/** Attempts to find the root directory of the `mrpt_data` package (holding
+ * `config_files/`, `datasets/`, `tests/`) and returns its absolute path with a
+ * trailing `/`, or an empty string if not found.
+ * Example return paths: Linux after installing = `/usr/share/mrpt_data/`;
+ * source tree = `[MRPT_SOURCE_DIR]/modules/mrpt_data/`, etc.  */
 std::string getShareMRPTDir();
 
 /** Creates a directory

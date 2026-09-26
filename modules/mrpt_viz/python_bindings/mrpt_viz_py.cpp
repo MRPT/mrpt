@@ -21,6 +21,10 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TSegment3D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPosePDF.h>
 #include <mrpt/viz/CAnimatedAssimpModel.h>
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CAssimpModel.h>
@@ -84,10 +88,57 @@ PYBIND11_MODULE(_bindings, m)
           "setColor",
           [](CVisualObject& self, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
           { self.setColor(mrpt::img::TColorf(mrpt::img::TColor(r, g, b, a))); },
-          "r"_a, "g"_a, "b"_a, "a"_a = 255);
+          "r"_a, "g"_a, "b"_a, "a"_a = 255)
+      .def(
+          "setColor", [](CVisualObject& self, const mrpt::img::TColorf& c) { self.setColor(c); },
+          "color"_a, "Sets the color from a TColorf (float components in [0,1])")
+      .def(
+          "setColor",
+          [](CVisualObject& self, const mrpt::img::TColor& c)
+          { self.setColor(mrpt::img::TColorf(c)); },
+          "color"_a, "Sets the color from a TColor (uint8 components)")
+      .def("getColor", [](const CVisualObject& self) { return self.getColor(); })
+      .def(
+          "setPose", [](CVisualObject& self, const mrpt::poses::CPose3D& p) { self.setPose(p); },
+          "pose"_a)
+      .def(
+          "setPose",
+          [](CVisualObject& self, const mrpt::poses::CPose2D& p)
+          { self.setPose(mrpt::poses::CPose3D(p)); },
+          "pose"_a)
+      .def("getPose", &CVisualObject::getPose)
+      .def(
+          "setColor",
+          [](CVisualObject& self, float r, float g, float b, float a)
+          { self.setColor(r, g, b, a); },
+          "r"_a, "g"_a, "b"_a, "a"_a = 1.0f, "Sets the color from float components in [0,1]")
+      .def(
+          "setLocation",
+          [](CVisualObject& self, double x, double y, double z) { self.setLocation(x, y, z); },
+          "x"_a, "y"_a, "z"_a, "Changes the position, keeping the orientation")
+      .def(
+          "setLocation",
+          [](CVisualObject& self, const mrpt::math::TPoint3D& p) { self.setLocation(p); }, "p"_a)
+      .def(
+          "setScale", [](CVisualObject& self, float s) { self.setScale(s); }, "s"_a,
+          "Sets the same scale factor in x, y and z")
+      .def(
+          "setScale",
+          [](CVisualObject& self, float sx, float sy, float sz) { self.setScale(sx, sy, sz); },
+          "sx"_a, "sy"_a, "sz"_a)
+      .def_property(
+          "castShadows", [](const CVisualObject& self) { return self.castShadows(); },
+          [](CVisualObject& self, bool doCast) { self.castShadows(doCast); },
+          "Whether the object casts shadows (if shadows are enabled in the viewport)");
 
+  // Every class deriving from CVisualObject is registered with
+  // py::multiple_inheritance(): most renderables inherit CVisualObject
+  // virtually (through the VisualObjectParams_* mixins), so it is not at
+  // offset zero, and pybind11's single-inheritance fast path would reinterpret
+  // the pointer without the virtual-base adjustment.
   // 2. CSetOfObjects (The container node)
-  py::class_<CSetOfObjects, CVisualObject, std::shared_ptr<CSetOfObjects>>(m, "CSetOfObjects")
+  py::class_<CSetOfObjects, CVisualObject, std::shared_ptr<CSetOfObjects>>(
+      m, "CSetOfObjects", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           "insert",
@@ -114,22 +165,28 @@ PYBIND11_MODULE(_bindings, m)
           "getViewport", py::overload_cast<const std::string&>(&Scene::getViewport),
           "name"_a = "main", py::return_value_policy::reference_internal)
       .def("createViewport", &Scene::createViewport, "name"_a)
-      .def("clear", &Scene::clear)
+      .def(
+          "clear", &Scene::clear, "createMainViewport"_a = true,
+          "Removes all objects (and viewports), then re-creates the main viewport")
       .def(
           "insert",
           [](Scene& self, const CVisualObject::Ptr& obj) { self.getViewport()->insert(obj); });
 
   // 5. CCamera
-  py::class_<CCamera, CVisualObject, std::shared_ptr<CCamera>>(m, "CCamera")
+  py::class_<CCamera, CVisualObject, std::shared_ptr<CCamera>>(
+      m, "CCamera", py::multiple_inheritance())
       .def(py::init<>())
       .def("setAzimuthDegrees", &CCamera::setAzimuthDegrees)
       .def("setElevationDegrees", &CCamera::setElevationDegrees)
       .def("setZoomDistance", &CCamera::setZoomDistance);
 
   // 6. CPointCloud
-  py::class_<CPointCloud, CVisualObject, std::shared_ptr<CPointCloud>>(m, "CPointCloud")
+  py::class_<CPointCloud, CVisualObject, std::shared_ptr<CPointCloud>>(
+      m, "CPointCloud", py::multiple_inheritance())
       .def(py::init<>())
       .def("clear", &CPointCloud::clear)
+      .def("setPointSize", &CPointCloud::setPointSize, "pointSize"_a, "Point size, in pixels")
+      .def("getPointSize", &CPointCloud::getPointSize)
       .def(
           "insertPoint",
           static_cast<void (CPointCloud::*)(float, float, float)>(&CPointCloud::insertPoint), "x"_a,
@@ -152,7 +209,8 @@ PYBIND11_MODULE(_bindings, m)
           });
 
   // 7. CAssimpModel
-  py::class_<CAssimpModel, CVisualObject, std::shared_ptr<CAssimpModel>>(m, "CAssimpModel")
+  py::class_<CAssimpModel, CVisualObject, std::shared_ptr<CAssimpModel>>(
+      m, "CAssimpModel", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           "loadScene", &CAssimpModel::loadScene, py::arg("file_name"),
@@ -174,7 +232,8 @@ PYBIND11_MODULE(_bindings, m)
   // =========================================================================
 
   // 8. CGridPlaneXY
-  py::class_<CGridPlaneXY, CVisualObject, std::shared_ptr<CGridPlaneXY>>(m, "CGridPlaneXY")
+  py::class_<CGridPlaneXY, CVisualObject, std::shared_ptr<CGridPlaneXY>>(
+      m, "CGridPlaneXY", py::multiple_inheritance())
       .def(
           py::init<float, float, float, float, float, float>(), py::arg("xmin") = -10.f,
           py::arg("xmax") = 10.f, py::arg("ymin") = -10.f, py::arg("ymax") = 10.f,
@@ -186,7 +245,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("setGridFrequency", &CGridPlaneXY::setGridFrequency);
 
   // 9. CGridPlaneXZ
-  py::class_<CGridPlaneXZ, CVisualObject, std::shared_ptr<CGridPlaneXZ>>(m, "CGridPlaneXZ")
+  py::class_<CGridPlaneXZ, CVisualObject, std::shared_ptr<CGridPlaneXZ>>(
+      m, "CGridPlaneXZ", py::multiple_inheritance())
       .def(
           py::init<float, float, float, float, float, float>(), py::arg("xmin") = -10.f,
           py::arg("xmax") = 10.f, py::arg("zmin") = -10.f, py::arg("zmax") = 10.f,
@@ -198,7 +258,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("setGridFrequency", &CGridPlaneXZ::setGridFrequency);
 
   // 10. CAxis
-  py::class_<CAxis, CVisualObject, std::shared_ptr<CAxis>>(m, "CAxis")
+  py::class_<CAxis, CVisualObject, std::shared_ptr<CAxis>>(m, "CAxis", py::multiple_inheritance())
       .def(
           py::init<float, float, float, float, float, float, float, float, bool>(),
           py::arg("xmin") = -1.f, py::arg("ymin") = -1.f, py::arg("zmin") = -1.f,
@@ -212,7 +272,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("enableTickMarks", py::overload_cast<bool>(&CAxis::enableTickMarks));
 
   // 11. CBox
-  py::class_<CBox, CVisualObject, std::shared_ptr<CBox>>(m, "CBox")
+  py::class_<CBox, CVisualObject, std::shared_ptr<CBox>>(m, "CBox", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           py::init<const mrpt::math::TPoint3D&, const mrpt::math::TPoint3D&, bool, float>(),
@@ -230,17 +290,22 @@ PYBIND11_MODULE(_bindings, m)
           })
       .def("setWireframe", &CBox::setWireframe)
       .def("isWireframe", &CBox::isWireframe)
-      .def("enableBoxBorder", &CBox::enableBoxBorder);
+      .def("enableBoxBorder", &CBox::enableBoxBorder)
+      .def(
+          "setBoxBorderColor", &CBox::setBoxBorderColor, "color"_a,
+          "Color of the box edges, drawn if enableBoxBorder()");
 
   // 12. CSphere
-  py::class_<CSphere, CVisualObject, std::shared_ptr<CSphere>>(m, "CSphere")
+  py::class_<CSphere, CVisualObject, std::shared_ptr<CSphere>>(
+      m, "CSphere", py::multiple_inheritance())
       .def(py::init<float, int>(), py::arg("radius") = 1.0f, py::arg("nDivs") = 20)
       .def("setRadius", &CSphere::setRadius)
       .def("getRadius", &CSphere::getRadius)
       .def("setNumberDivs", &CSphere::setNumberDivs);
 
   // 13. CCylinder
-  py::class_<CCylinder, CVisualObject, std::shared_ptr<CCylinder>>(m, "CCylinder")
+  py::class_<CCylinder, CVisualObject, std::shared_ptr<CCylinder>>(
+      m, "CCylinder", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           py::init<float, float, float, int>(), py::arg("baseRadius"), py::arg("topRadius"),
@@ -251,7 +316,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("getHeight", &CCylinder::getHeight);
 
   // 14. CArrow
-  py::class_<CArrow, CVisualObject, std::shared_ptr<CArrow>>(m, "CArrow")
+  py::class_<CArrow, CVisualObject, std::shared_ptr<CArrow>>(
+      m, "CArrow", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           "setArrowEnds",
@@ -262,7 +328,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("setSmallRadius", &CArrow::setSmallRadius);
 
   // 15. CText
-  py::class_<CText, CVisualObject, std::shared_ptr<CText>>(m, "CText")
+  py::class_<CText, CVisualObject, std::shared_ptr<CText>>(m, "CText", py::multiple_inheritance())
       .def(py::init<>())
       .def(py::init<const std::string&>(), py::arg("text"))
       .def("setString", &CText::setString)
@@ -270,7 +336,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("setFont", &CText::setFont);
 
   // 16. CText3D
-  py::class_<CText3D, CVisualObject, std::shared_ptr<CText3D>>(m, "CText3D")
+  py::class_<CText3D, CVisualObject, std::shared_ptr<CText3D>>(
+      m, "CText3D", py::multiple_inheritance())
       .def(
           py::init<const std::string&, const std::string&, float>(), py::arg("text") = "",
           py::arg("fontName") = "sans", py::arg("scale") = 1.0f)
@@ -278,7 +345,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("getString", &CText3D::getString);
 
   // 17. CSetOfLines
-  py::class_<CSetOfLines, CVisualObject, std::shared_ptr<CSetOfLines>>(m, "CSetOfLines")
+  py::class_<CSetOfLines, CVisualObject, std::shared_ptr<CSetOfLines>>(
+      m, "CSetOfLines", py::multiple_inheritance())
       .def(py::init<>())
       .def("clear", &CSetOfLines::clear)
       .def(
@@ -292,7 +360,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("__len__", [](const CSetOfLines& self) { return self.size(); });
 
   // 18. CSimpleLine
-  py::class_<CSimpleLine, CVisualObject, std::shared_ptr<CSimpleLine>>(m, "CSimpleLine")
+  py::class_<CSimpleLine, CVisualObject, std::shared_ptr<CSimpleLine>>(
+      m, "CSimpleLine", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           "setLineCoords",
@@ -302,7 +371,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("getLineEnd", &CSimpleLine::getLineEnd);
 
   // 19. CEllipsoid3D
-  py::class_<CEllipsoid3D, CVisualObject, std::shared_ptr<CEllipsoid3D>>(m, "CEllipsoid3D")
+  py::class_<CEllipsoid3D, CVisualObject, std::shared_ptr<CEllipsoid3D>>(
+      m, "CEllipsoid3D", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           "setCovMatrix", [](CEllipsoid3D& self, const mrpt::math::CMatrixDouble33& cov)
@@ -311,7 +381,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("set3DsegmentsCount", &CEllipsoid3D::set3DsegmentsCount);
 
   // 20. CEllipsoid2D
-  py::class_<CEllipsoid2D, CVisualObject, std::shared_ptr<CEllipsoid2D>>(m, "CEllipsoid2D")
+  py::class_<CEllipsoid2D, CVisualObject, std::shared_ptr<CEllipsoid2D>>(
+      m, "CEllipsoid2D", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           "setCovMatrix", [](CEllipsoid2D& self, const mrpt::math::CMatrixDouble22& cov)
@@ -320,7 +391,7 @@ PYBIND11_MODULE(_bindings, m)
 
   // 21. CPointCloudColoured (complement to existing CPointCloud)
   py::class_<CPointCloudColoured, CVisualObject, std::shared_ptr<CPointCloudColoured>>(
-      m, "CPointCloudColoured")
+      m, "CPointCloudColoured", py::multiple_inheritance())
       .def(py::init<>())
       .def("clear", &CPointCloudColoured::clear)
       .def(
@@ -330,7 +401,11 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("x"), py::arg("y"), py::arg("z"), py::arg("r") = 1.0f, py::arg("g") = 1.0f,
           py::arg("b") = 1.0f, py::arg("a") = 1.0f)
       .def("size", &CPointCloudColoured::size)
-      .def("__len__", [](const CPointCloudColoured& self) { return self.size(); });
+      .def("__len__", [](const CPointCloudColoured& self) { return self.size(); })
+      .def(
+          "setPointSize", &CPointCloudColoured::setPointSize, "pointSize"_a,
+          "Point size, in pixels")
+      .def("getPointSize", &CPointCloudColoured::getPointSize);
 
   // 22. stock_objects submodule
   // TTriangle
@@ -351,7 +426,7 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("vertices", &TTriangle::vertices);
 
   // CDisk
-  py::class_<CDisk, CVisualObject, std::shared_ptr<CDisk>>(m, "CDisk")
+  py::class_<CDisk, CVisualObject, std::shared_ptr<CDisk>>(m, "CDisk", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           py::init<float, float, uint32_t>(), py::arg("out_radius"), py::arg("in_radius"),
@@ -364,7 +439,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("setSlicesCount", &CDisk::setSlicesCount, py::arg("N"));
 
   // CFrustum
-  py::class_<CFrustum, CVisualObject, std::shared_ptr<CFrustum>>(m, "CFrustum")
+  py::class_<CFrustum, CVisualObject, std::shared_ptr<CFrustum>>(
+      m, "CFrustum", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           py::init<float, float, float, float, float, bool, bool>(), py::arg("near_distance"),
@@ -380,7 +456,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("setPlaneColor", &CFrustum::setPlaneColor, py::arg("color"));
 
   // CSetOfTriangles
-  py::class_<CSetOfTriangles, CVisualObject, std::shared_ptr<CSetOfTriangles>>(m, "CSetOfTriangles")
+  py::class_<CSetOfTriangles, CVisualObject, std::shared_ptr<CSetOfTriangles>>(
+      m, "CSetOfTriangles", py::multiple_inheritance())
       .def(py::init<>())
       .def("clearTriangles", &CSetOfTriangles::clearTriangles)
       .def("getTrianglesCount", &CSetOfTriangles::getTrianglesCount)
@@ -396,7 +473,8 @@ PYBIND11_MODULE(_bindings, m)
       .def("insertTriangle", &CSetOfTriangles::insertTriangle, py::arg("triangle"));
 
   // CVectorField2D
-  py::class_<CVectorField2D, CVisualObject, std::shared_ptr<CVectorField2D>>(m, "CVectorField2D")
+  py::class_<CVectorField2D, CVisualObject, std::shared_ptr<CVectorField2D>>(
+      m, "CVectorField2D", py::multiple_inheritance())
       .def(py::init<>())
       .def("clear", &CVectorField2D::clear)
       .def(
@@ -418,7 +496,8 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("vx"), py::arg("vy"));
 
   // CVectorField3D
-  py::class_<CVectorField3D, CVisualObject, std::shared_ptr<CVectorField3D>>(m, "CVectorField3D")
+  py::class_<CVectorField3D, CVisualObject, std::shared_ptr<CVectorField3D>>(
+      m, "CVectorField3D", py::multiple_inheritance())
       .def(py::init<>())
       .def("clear", &CVectorField3D::clear)
       .def(
@@ -440,7 +519,7 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("px"), py::arg("py"), py::arg("pz"));
 
   // CMesh
-  py::class_<CMesh, CVisualObject, std::shared_ptr<CMesh>>(m, "CMesh")
+  py::class_<CMesh, CVisualObject, std::shared_ptr<CMesh>>(m, "CMesh", py::multiple_inheritance())
       .def(
           py::init<bool, float, float, float, float>(), py::arg("enable_transparency") = false,
           py::arg("xMin") = -1.0f, py::arg("xMax") = 1.0f, py::arg("yMin") = -1.0f,
@@ -481,7 +560,8 @@ PYBIND11_MODULE(_bindings, m)
   // =========================================================================
 
   // CColorBar (TColormap is an int enum in C++)
-  py::class_<CColorBar, CVisualObject, std::shared_ptr<CColorBar>>(m, "CColorBar")
+  py::class_<CColorBar, CVisualObject, std::shared_ptr<CColorBar>>(
+      m, "CColorBar", py::multiple_inheritance())
       .def(
           py::init(
               [](int colormap, double width, double height, float min_col, float max_col,
@@ -506,7 +586,8 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("col_max"), py::arg("value_min"), py::arg("value_max"));
 
   // CMesh3D
-  py::class_<CMesh3D, CVisualObject, std::shared_ptr<CMesh3D>>(m, "CMesh3D")
+  py::class_<CMesh3D, CVisualObject, std::shared_ptr<CMesh3D>>(
+      m, "CMesh3D", py::multiple_inheritance())
       .def(py::init<>())
       .def("enableShowEdges", &CMesh3D::enableShowEdges, py::arg("v"))
       .def("enableShowFaces", &CMesh3D::enableShowFaces, py::arg("v"))
@@ -546,7 +627,8 @@ PYBIND11_MODULE(_bindings, m)
           "verts_per_face (F,) int32");
 
   // CMeshFast
-  py::class_<CMeshFast, CVisualObject, std::shared_ptr<CMeshFast>>(m, "CMeshFast")
+  py::class_<CMeshFast, CVisualObject, std::shared_ptr<CMeshFast>>(
+      m, "CMeshFast", py::multiple_inheritance())
       .def(
           py::init<bool, float, float, float, float>(), py::arg("enable_transparency") = false,
           py::arg("xMin") = -1.0f, py::arg("xMax") = 1.0f, py::arg("yMin") = -1.0f,
@@ -581,7 +663,8 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("Z"), "Set height matrix (numpy float32 2D array)");
 
   // CTexturedPlane
-  py::class_<CTexturedPlane, CVisualObject, std::shared_ptr<CTexturedPlane>>(m, "CTexturedPlane")
+  py::class_<CTexturedPlane, CVisualObject, std::shared_ptr<CTexturedPlane>>(
+      m, "CTexturedPlane", py::multiple_inheritance())
       .def(
           py::init<float, float, float, float>(), py::arg("x_min") = -1.0f, py::arg("x_max") = 1.0f,
           py::arg("y_min") = -1.0f, py::arg("y_max") = 1.0f)
@@ -606,7 +689,7 @@ PYBIND11_MODULE(_bindings, m)
 
   // CSetOfTexturedTriangles
   py::class_<CSetOfTexturedTriangles, CVisualObject, std::shared_ptr<CSetOfTexturedTriangles>>(
-      m, "CSetOfTexturedTriangles")
+      m, "CSetOfTexturedTriangles", py::multiple_inheritance())
       .def(py::init([]() { return std::make_shared<CSetOfTexturedTriangles>(); }))
       .def("clearTriangles", [](CSetOfTexturedTriangles& self) { self.clearTriangles(); })
       .def(
@@ -624,7 +707,8 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("triangle"));
 
   // CPolyhedron
-  py::class_<CPolyhedron, CVisualObject, std::shared_ptr<CPolyhedron>>(m, "CPolyhedron")
+  py::class_<CPolyhedron, CVisualObject, std::shared_ptr<CPolyhedron>>(
+      m, "CPolyhedron", py::multiple_inheritance())
       .def_static("CreateTetrahedron", &CPolyhedron::CreateTetrahedron, py::arg("radius"))
       .def_static("CreateHexahedron", &CPolyhedron::CreateHexahedron, py::arg("radius"))
       .def_static("CreateOctahedron", &CPolyhedron::CreateOctahedron, py::arg("radius"))
@@ -700,7 +784,8 @@ PYBIND11_MODULE(_bindings, m)
           "Use per-voxel stored RGB")
       .export_values();
 
-  py::class_<COctoMapVoxels, CVisualObject, std::shared_ptr<COctoMapVoxels>>(m, "COctoMapVoxels")
+  py::class_<COctoMapVoxels, CVisualObject, std::shared_ptr<COctoMapVoxels>>(
+      m, "COctoMapVoxels", py::multiple_inheritance())
       .def(py::init<>())
       .def("clear", &COctoMapVoxels::clear)
       .def("setVisualizationMode", &COctoMapVoxels::setVisualizationMode, py::arg("mode"))
@@ -736,7 +821,8 @@ PYBIND11_MODULE(_bindings, m)
       .export_values();
 
   // CSkyBox
-  py::class_<CSkyBox, CVisualObject, std::shared_ptr<CSkyBox>>(m, "CSkyBox")
+  py::class_<CSkyBox, CVisualObject, std::shared_ptr<CSkyBox>>(
+      m, "CSkyBox", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           "assignImage",
@@ -776,7 +862,7 @@ PYBIND11_MODULE(_bindings, m)
   // CEllipsoidRangeBearing2D. CGeneralizedEllipsoidTemplate<N> has a protected destructor so
   // we cannot register the base; bind the concrete classes directly under CVisualObject instead.
   py::class_<CEllipsoidInverseDepth2D, CVisualObject, std::shared_ptr<CEllipsoidInverseDepth2D>>(
-      m, "CEllipsoidInverseDepth2D")
+      m, "CEllipsoidInverseDepth2D", py::multiple_inheritance())
       .def(py::init<>())
       .def("setQuantiles", &CEllipsoidInverseDepth2D::setQuantiles, py::arg("q"))
       .def("getQuantiles", &CEllipsoidInverseDepth2D::getQuantiles)
@@ -789,7 +875,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("getUnderflowMaxRange", &CEllipsoidInverseDepth2D::getUnderflowMaxRange);
 
   py::class_<CEllipsoidInverseDepth3D, CVisualObject, std::shared_ptr<CEllipsoidInverseDepth3D>>(
-      m, "CEllipsoidInverseDepth3D")
+      m, "CEllipsoidInverseDepth3D", py::multiple_inheritance())
       .def(py::init<>())
       .def("setQuantiles", &CEllipsoidInverseDepth3D::setQuantiles, py::arg("q"))
       .def("getQuantiles", &CEllipsoidInverseDepth3D::getQuantiles)
@@ -802,7 +888,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("getUnderflowMaxRange", &CEllipsoidInverseDepth3D::getUnderflowMaxRange);
 
   py::class_<CEllipsoidRangeBearing2D, CVisualObject, std::shared_ptr<CEllipsoidRangeBearing2D>>(
-      m, "CEllipsoidRangeBearing2D")
+      m, "CEllipsoidRangeBearing2D", py::multiple_inheritance())
       .def(py::init<>())
       .def("setQuantiles", &CEllipsoidRangeBearing2D::setQuantiles, py::arg("q"))
       .def("getQuantiles", &CEllipsoidRangeBearing2D::getQuantiles)
@@ -812,7 +898,7 @@ PYBIND11_MODULE(_bindings, m)
 
   // CAnimatedAssimpModel
   py::class_<CAnimatedAssimpModel, CAssimpModel, std::shared_ptr<CAnimatedAssimpModel>>(
-      m, "CAnimatedAssimpModel")
+      m, "CAnimatedAssimpModel", py::multiple_inheritance())
       .def(py::init<>())
       .def(
           "loadScene",
@@ -852,4 +938,16 @@ PYBIND11_MODULE(_bindings, m)
   stock.def("BumblebeeCamera", &mrpt::viz::stock_objects::BumblebeeCamera);
   stock.def("Hokuyo_URG", &mrpt::viz::stock_objects::Hokuyo_URG);
   stock.def("Hokuyo_UTM", &mrpt::viz::stock_objects::Hokuyo_UTM);
+
+  // -------------------------------------------------------------------------
+  // 3D representations of pose PDFs
+  // -------------------------------------------------------------------------
+  m.def(
+      "posePDF2opengl",
+      [](const mrpt::poses::CPosePDF& pdf) { return CSetOfObjects::posePDF2opengl(pdf); }, "pdf"_a,
+      "Returns a 3D representation of a 2D pose PDF (ellipses, particles, ...)");
+  m.def(
+      "posePDF2opengl",
+      [](const mrpt::poses::CPose3DPDF& pdf) { return CSetOfObjects::posePDF2opengl(pdf); },
+      "pdf"_a, "Returns a 3D representation of a 3D pose PDF (ellipsoids, particles, ...)");
 }

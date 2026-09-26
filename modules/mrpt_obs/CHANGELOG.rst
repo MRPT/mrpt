@@ -2,6 +2,13 @@
 Changelog for package mrpt_obs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* fix: big-endian and armhf test failures (`#1431 <https://github.com/MRPT/mrpt/issues/1431>`_)
+* Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.2.0 (2026-09-16)
 ------------------
 * feat: improve API consistency and const-correctness across smart-pointer containers and points-map access.

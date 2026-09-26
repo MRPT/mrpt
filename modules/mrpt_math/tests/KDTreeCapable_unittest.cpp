@@ -18,6 +18,7 @@
 #include <mrpt/math/TPoint3D.h>
 
 #include <nanoflann.hpp>
+#include <stdexcept>
 #include <vector>
 
 namespace
@@ -63,6 +64,17 @@ struct PointCloud3D : public mrpt::math::KDTreeCapable<PointCloud3D>
     return false;
   }
 };
+
+/** A cloud that maintains its own index and therefore opts out of the cached
+ *  one offered by the base class. \sa KDTreeCapable::kdtree_disable() */
+struct PointCloud3DNoKDTree : public PointCloud3D
+{
+  PointCloud3DNoKDTree() { kdtree_disable("PointCloud3DNoKDTree has its own index."); }
+
+  /// kdtree_is_enabled() is protected; expose it for the test below.
+  [[nodiscard]] bool isKdTreeEnabled() const { return kdtree_is_enabled(); }
+};
+
 }  // namespace
 
 TEST(KDTreeCapable, closestPoint2D)
@@ -405,4 +417,46 @@ TEST(KDTreeCapable, kNNRequestLargerThanCloud)
   cloud3d.kdTreeNClosestPoint3D(mrpt::math::TPoint3D(0, 0, 0), 10, pts3d, dists);
   EXPECT_EQ(pts3d.size(), 2U);
   EXPECT_EQ(pts3d.size(), dists.size());
+}
+
+TEST(KDTreeCapable, disabledIndexThrows)
+{
+  PointCloud3DNoKDTree cloud;
+  cloud.pts.emplace_back(0, 0, 0);
+  cloud.pts.emplace_back(1, 0, 0);
+
+  EXPECT_FALSE(cloud.isKdTreeEnabled());
+
+  float distSqr = 0;
+  float cx = 0;
+  float cy = 0;
+  float cz = 0;
+  EXPECT_THROW(cloud.kdTreeClosestPoint3D(0.f, 0.f, 0.f, cx, cy, cz, distSqr), std::logic_error);
+
+  std::vector<size_t> idxs;
+  std::vector<float> dists;
+  EXPECT_THROW(cloud.kdTreeNClosestPoint3DIdx(0.f, 0.f, 0.f, 2, idxs, dists), std::logic_error);
+
+  std::vector<nanoflann::ResultItem<size_t, float>> radiusHits;
+  EXPECT_THROW(cloud.kdTreeRadiusSearch3D(0.f, 0.f, 0.f, 100.f, radiusHits), std::logic_error);
+
+  EXPECT_THROW(cloud.kdTreeEnsureIndexBuilt3D(), std::logic_error);
+  EXPECT_THROW(cloud.kdTreeEnsureIndexBuilt2D(), std::logic_error);
+
+  // The opt-out is a property of the class, so it survives copying:
+  PointCloud3DNoKDTree cloud2 = cloud;
+  EXPECT_FALSE(cloud2.isKdTreeEnabled());
+  EXPECT_THROW(cloud2.kdTreeEnsureIndexBuilt3D(), std::logic_error);
+
+  // ...and assigning from an enabled object does not bring it back:
+  PointCloud3D enabled;
+  enabled.pts.emplace_back(0, 0, 0);
+  cloud2.PointCloud3D::operator=(enabled);
+  EXPECT_FALSE(cloud2.isKdTreeEnabled());
+  EXPECT_THROW(cloud2.kdTreeEnsureIndexBuilt3D(), std::logic_error);
+
+  // ...while plain clouds of the very same base class are unaffected:
+  PointCloud3D plain;
+  plain.pts.emplace_back(0, 0, 0);
+  EXPECT_NO_THROW(plain.kdTreeEnsureIndexBuilt3D());
 }

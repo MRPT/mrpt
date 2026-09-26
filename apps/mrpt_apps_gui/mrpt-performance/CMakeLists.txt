@@ -20,7 +20,6 @@ find_package(mrpt_img REQUIRED)
 find_package(CLI11 REQUIRED)
 
 # Compile definitions
-add_compile_definitions(MRPT_DATASET_DIR="${MRPT_SOURCE_DIR}/share/mrpt/datasets")
 add_compile_definitions(MRPT_DOC_PERF_DIR=".")
 
 # Define the executable target:

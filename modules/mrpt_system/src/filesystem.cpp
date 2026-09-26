@@ -16,6 +16,7 @@
 #include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, e
 #include <mrpt/core/format.h>
 #include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/config.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>  // for sprintf
 #include <mrpt/version.h>
@@ -401,56 +402,50 @@ mrpt::Clock::time_point mrpt::system::getFileModificationTime(const std::string&
 // Read docs in .h
 std::string mrpt::system::getShareMRPTDir()
 {
-  using std::string;
-  using std::vector;
-
-  static vector<string> sPaths;
-  static string sDetectedPath;
-  static bool is_first = true;
-  if (is_first)
+  static const std::string detectedPath = []() -> std::string
   {
-    is_first = false;
+    std::vector<std::string> paths;
 
-    // Source dir:
-    sPaths.push_back(string(MRPT_CMAKE_SOURCE_DIR) + string("/share/mrpt/"));
-    // Install dir:
-    sPaths.push_back(string(MRPT_CMAKE_INSTALL_PREFIX) + string("/share/mrpt/"));
+    // Source tree: mrpt_data is a sibling of this module:
+    paths.push_back(std::string(MRPT_SOURCE_BASE_DIRECTORY) + "/../mrpt_data/");
+    // Merged install prefix (e.g. /usr, /opt/ros/<distro>):
+    paths.push_back(std::string(MRPT_INSTALL_PREFIX_DIRECTORY) + "/share/mrpt_data/");
+    // Isolated colcon install, one prefix per package:
+    paths.push_back(std::string(MRPT_INSTALL_PREFIX_DIRECTORY) + "/../mrpt_data/share/mrpt_data/");
 
-    // Program path & ".." & "../..":
+    // Relative to the running program, for relocated installs:
     char buf[2048];
-    bool sBufOk = false;
+    bool bufOk = false;
 #ifdef _WIN32
-    sBufOk = (0 != GetModuleFileNameA(NULL, buf, sizeof(buf)));
+    bufOk = (0 != GetModuleFileNameA(nullptr, buf, sizeof(buf)));
 #endif
 #ifdef MRPT_OS_LINUX
-    ssize_t nRead = readlink("/proc/self/exe", buf, sizeof(buf));
+    const ssize_t nRead = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
     if (nRead >= 0)
     {
       buf[nRead] = '\0';
     }
-    sBufOk = (-1 != nRead);
+    bufOk = (-1 != nRead);
 #endif
-
-    if (sBufOk)
+    if (bufOk)
     {
-      string sBuf = string(buf);
-      std::replace(sBuf.begin(), sBuf.end(), '\\', '/');
-      sBuf = extractFileDirectory(sBuf);
-      sPaths.push_back(sBuf + string("share/mrpt/"));
-      sPaths.push_back(sBuf + string("../share/mrpt/"));
-      sPaths.push_back(sBuf + string("../../share/mrpt/"));
+      std::string exeDir = std::string(buf);
+      std::replace(exeDir.begin(), exeDir.end(), '\\', '/');
+      exeDir = extractFileDirectory(exeDir);
+      paths.push_back(exeDir + "../share/mrpt_data/");
+      paths.push_back(exeDir + "../../share/mrpt_data/");
     }
 
-    for (const auto& e : sPaths)
+    for (const auto& p : paths)
     {
-      if (directoryExists(e))
+      if (directoryExists(p))
       {
-        sDetectedPath = e;
-        break;
+        return toAbsolutePath(p, true) + "/";
       }
     }
-  }
-  return sDetectedPath;
+    return {};
+  }();
+  return detectedPath;
 }
 
 std::string mrpt::system::toAbsolutePath(const std::string& path, bool resolveToCanonical)

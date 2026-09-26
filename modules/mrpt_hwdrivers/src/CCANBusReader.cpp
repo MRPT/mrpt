@@ -619,7 +619,7 @@ bool CCANBusReader::waitACK(uint16_t timeout_ms)
   if (b == 0x07)  // [BELL]
     RET_ERROR("ERROR received.")
   else if (b != 0)
-    RET_ERROR(format("Unexpected code received: 0x%02X", b))
+    RET_ERROR(mrpt::format("Unexpected code received: 0x%02X", b))
   else
     return false;  // RET_ERROR("Timeout")
 }

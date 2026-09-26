@@ -2,6 +2,14 @@
 Changelog for package mrpt_comms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.0 (2026-09-26)
+------------------
+* fix: big-endian and armhf test failures (`#1431 <https://github.com/MRPT/mrpt/issues/1431>`_)
+* fix formatting
+* fix: qualify mrpt::format() calls to avoid ambiguity with std::format
+* changelogs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.2.0 (2026-09-16)
 ------------------
 * Merge branch 'develop' into fix/stereo-rectify-map-axis-swap

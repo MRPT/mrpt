@@ -1176,7 +1176,7 @@ void NavlogViewerApp::updateVisualization()
   {
     if (!log.infoPerPTG.empty())
     {
-      ADD_WIN_TEXTMSG(format(
+      ADD_WIN_TEXTMSG(mrpt::format(
                           "navDynState: curVelLocal=%s relTarget=%s "
                           "targetRelSpeed=%.02f",
                           log.infoPerPTG.front().dynState.curVelLocal.asString().c_str(),
@@ -1186,11 +1186,11 @@ void NavlogViewerApp::updateVisualization()
     }
 
     for (const auto& e : log.values)
-      ADD_WIN_TEXTMSG(format(
+      ADD_WIN_TEXTMSG(mrpt::format(
           "%-30s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3, false).c_str()));
 
     for (const auto& e : log.additional_debug_msgs)
-      ADD_WIN_TEXTMSG(format("%-30s=%s ", e.first.c_str(), e.second.c_str()));
+      ADD_WIN_TEXTMSG(mrpt::format("%-30s=%s ", e.first.c_str(), e.second.c_str()));
   }
 
   // Draw TP-obstacles
@@ -1203,7 +1203,7 @@ void NavlogViewerApp::updateVisualization()
   for (unsigned int nPTG = 0; nPTG < log.infoPerPTG.size(); nPTG++)
   {
     const bool is_selected_ptg = (int(nPTG) == log.nSelectedPTG);
-    VizPTG& viz = m_mywins3D[format("PTG%u", nPTG)];
+    VizPTG& viz = m_mywins3D[mrpt::format("PTG%u", nPTG)];
     if (!viz.win)
     {
       mustPerformLayout = true;
@@ -1211,7 +1211,7 @@ void NavlogViewerApp::updateVisualization()
       const static int W = 270;
       const static int H = 270;
 
-      viz.win = m_win->createManagedSubWindow(format("%u|TP-Obstacles", nPTG));
+      viz.win = m_win->createManagedSubWindow(mrpt::format("%u|TP-Obstacles", nPTG));
       viz.win->setLayout(new nanogui::GroupLayout(0, 0, 0, 0));
 
       viz.win->setSize({W, H});

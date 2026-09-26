@@ -810,7 +810,7 @@ class CPose3D :
     if (n != static_size)
     {
       throw std::logic_error(
-          format("Try to change the size of CPose3D to %u.", static_cast<unsigned>(n)));
+          mrpt::format("Try to change the size of CPose3D to %u.", static_cast<unsigned>(n)));
     }
   }
   /** @} */

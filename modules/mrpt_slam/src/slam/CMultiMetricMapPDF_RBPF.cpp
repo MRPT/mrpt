@@ -609,7 +609,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
                  evalGrid *= 1.0/evalGrid.maxCoeff();
                  CImage imgF(evalGrid, true);
                  static int autoCount=0;
-                 imgF.saveToFile(format("debug_%04i.png",autoCount++));*/
+                 imgF.saveToFile(mrpt::format("debug_%04i.png",autoCount++));*/
               }
             }
           }  // end for itObs (in lstObservedRanges)

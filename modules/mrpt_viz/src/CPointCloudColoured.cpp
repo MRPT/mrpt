@@ -19,6 +19,8 @@
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 
+#include <array>
+
 using namespace mrpt;
 using namespace mrpt::viz;
 using namespace mrpt::math;
@@ -182,6 +184,19 @@ void CPointCloudColoured::recolorizeByCoordinate(
 
   const float coord_range = coord_max - coord_min;
   const float coord_range_1 = coord_range != 0.0f ? 1.0f / coord_range : 1.0f;
+
+  // Colormap lookup table: evaluating the colormap is most of the cost of a
+  // per-point pass, and 1024 levels are indistinguishable on screen.
+  constexpr size_t LUT_SIZE = 1024;
+  std::array<mrpt::img::TColor, LUT_SIZE> lut;
+  for (size_t k = 0; k < LUT_SIZE; k++)
+  {
+    const auto col = mrpt::img::colormap(color_map, static_cast<float>(k) / (LUT_SIZE - 1));
+    lut[k] = mrpt::img::TColor(f2u8(col.R), f2u8(col.G), f2u8(col.B), 0xff);
+  }
+
+  // One lock for the whole pass, instead of one per point:
+  std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
   for (size_t i = 0; i < m_points.size(); i++)
   {
     float coord = .0f;
@@ -200,9 +215,10 @@ void CPointCloudColoured::recolorizeByCoordinate(
         THROW_EXCEPTION("Should not reach here");
     };
     const float col_idx = std::max(0.0f, std::min(1.0f, (coord - coord_min) * coord_range_1));
-    const auto col = mrpt::img::colormap(color_map, col_idx);
-    this->setPointColor_fast(i, col.R, col.G, col.B);
+    m_point_colors[i] = lut[static_cast<size_t>(col_idx * (LUT_SIZE - 1) + 0.5f)];
   }
+  wfWriteLock.unlock();
+  CVisualObject::notifyChange();
 }
 
 void CPointCloudColoured::toYAMLMap(mrpt::containers::yaml& propertiesMap) const

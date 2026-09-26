@@ -18,6 +18,7 @@
 #include <mrpt/core/lock_helper.h>
 
 #include <array>
+#include <memory>
 #include <mutex>
 #include <stdexcept>
 #include <string_view>
@@ -194,8 +195,11 @@ class ts_hash_map
   };
   /** @} */
  private:
-  /** The actual container */
-  vec_t m_vec;
+  /** The actual container, kept on the heap: it may be large (e.g. hundreds of
+   * KB), and embedding it would make any object holding a ts_hash_map (or a
+   * CTimeLogger) too big to be safely placed on the stack. */
+  std::unique_ptr<vec_t> m_vec_storage = std::make_unique<vec_t>();
+  vec_t& m_vec = *m_vec_storage;
   /** Number of elements accessed with write access so far */
   size_t m_size{0};
 
@@ -240,7 +244,8 @@ class ts_hash_map
   ts_hash_map() = default;
 
   ts_hash_map(const ts_hash_map& o) { *this = o; }
-  ts_hash_map(ts_hash_map&& o) noexcept { *this = std::move(o); }
+  // Not noexcept: the new object allocates its own table.
+  ts_hash_map(ts_hash_map&& o) { *this = std::move(o); }
 
   ts_hash_map& operator=(const ts_hash_map& o)
   {

@@ -72,3 +72,48 @@ g_np = grid.getAsNumpy()
 print(f"\nGrid as numpy: shape={g_np.shape}, dtype={g_np.dtype}")
 assert g_np.shape == (grid.getSizeY(), grid.getSizeX())
 print("  numpy export ✓")
+
+# ---------------------------------------------------------------------------
+# CMultiMetricMap: several maps defined in a config file, updated together
+# ---------------------------------------------------------------------------
+import math
+from mrpt.config import CConfigFileMemory
+from mrpt.maps import CMultiMetricMap, TSetOfMetricMapInitializers, CVoxelMap, COctoMap
+from mrpt.obs import CObservation2DRangeScan, CSensoryFrame
+from mrpt.math import TPoint3D
+from mrpt.poses import CPose3D
+
+map_defs = TSetOfMetricMapInitializers()
+map_defs.loadFromConfigFile(CConfigFileMemory(
+    "[Maps]\noccupancyGrid_count=1\npointsMap_count=1\n"
+    "[Maps_occupancyGrid_00_creationOpts]\nresolution=0.05\n"), "Maps")
+multimap = CMultiMetricMap(map_defs)
+print(f"\n{multimap}: {[type(m).__name__ for m in multimap]}")
+
+scan = CObservation2DRangeScan()
+scan.aperture = math.pi
+scan.resizeScan(181)
+for i in range(181):
+    scan.setScanRange(i, 3.0)
+    scan.setScanRangeValidity(i, True)
+sf = CSensoryFrame()
+sf.insert(scan)
+multimap.insertObs(sf)  # inserted into both maps
+points = next(m for m in multimap if isinstance(m, CSimplePointsMap))
+print(f"  points after inserting a scan: {len(points)}")
+print(f"  observation log-likelihood at origin: "
+      f"{multimap.computeObservationLikelihood(scan, CPose3D()):.2f}")
+
+# ---------------------------------------------------------------------------
+# 3D occupancy: sparse voxel map and octomap
+# ---------------------------------------------------------------------------
+voxels = CVoxelMap(0.1)
+voxels.insertPointCloudAsRays(points, TPoint3D(0, 0, 0))
+wall_pt = points.getPoint(90)  # (x, y, z) of the central ray end point
+print(f"\nCVoxelMap: {len(voxels.getOccupiedVoxels())} occupied voxels, "
+      f"p(occupied) at a wall = {voxels.getPointOccupancy(*wall_pt):.2f}, "
+      f"at the sensor = {voxels.getPointOccupancy(0.5, 0.0, 0.0):.2f}")
+
+octo = COctoMap(0.1)
+octo.insertPointCloud(points, 0.0, 0.0, 0.0)
+print(f"COctoMap: {octo.size()} nodes")

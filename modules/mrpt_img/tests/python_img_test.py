@@ -53,5 +53,13 @@ px = TPixelCoord(10, 20)
 check("x", px.x == 10)
 check("y", px.y == 20)
 
+print("TColorf / colormap")
+from mrpt.img import TColorf, TColormap, colormap, TColor as _TC
+cf = TColorf(1.0, 0.0, 1.0)
+check("TColorf -> TColor", cf.asTColor() == _TC(255, 0, 255, 255), f"got {cf.asTColor()}")
+check("TColor -> TColorf", abs(TColorf(_TC(0, 0, 255)).B - 1.0) < 1e-6)
+hot = colormap(TColormap.cmHOT, 1.0)
+check("colormap returns TColorf", isinstance(hot, TColorf) and hot.R > 0.9, f"got {hot}")
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

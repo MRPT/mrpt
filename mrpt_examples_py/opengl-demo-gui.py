@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-# . install/setup.bash && python3 opengl-demo-gui.py
+# . install/setup.bash && python3 opengl-demo-gui.py [--duration SECONDS]
 
+import argparse
 import time
 import math
 
@@ -11,6 +12,11 @@ from mrpt.math import TPoint3D
 from mrpt.img import TColor
 from mrpt.system import CTicTac
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--duration", type=float, default=0,
+                    help="Close the window after this many seconds (default: 0 = never)")
+args = parser.parse_args()
+
 # Create GUI:
 win = CDisplayWindow3D('MRPT GUI demo', 800, 600)
 
@@ -18,7 +24,7 @@ win = CDisplayWindow3D('MRPT GUI demo', 800, 600)
 scene = win.get3DSceneAndLock()
 
 # A grid on the XY horizontal plane:
-glGrid = CGridPlaneXY.Create(-3, 3, -3, 3, 0, 1)
+glGrid = CGridPlaneXY(-3, 3, -3, 3, 0, 1)
 scene.insert(glGrid)
 
 # A couple of XYZ "corners":
@@ -28,8 +34,6 @@ scene.insert(glCorner)
 glCorner2: CSetOfObjects = stock_objects.CornerXYZ(1.0)
 glCorner2.setLocation(4.0, 0.0, 0.0)
 scene.insert(glCorner2)
-
-# NOTE: CEllipsoidInverseDepth3D not yet wrapped (pybind11_plan_v3.md §0.4).
 
 # A floor "block":
 glFloor = CBox()
@@ -41,7 +45,9 @@ scene.insert(glFloor)
 # A mobile box to illustrate animations:
 glBox = CBox()
 glBox.setBoxCorners(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1))
-# NOTE: setBoxBorderColor / castShadows not yet wrapped (pybind11_plan_v3.md §0.4).
+glBox.enableBoxBorder(True)
+glBox.setBoxBorderColor(TColor(0, 0, 0))
+glBox.castShadows = True
 scene.insert(glBox)
 
 # Move camera:
@@ -53,7 +59,7 @@ win.unlockAccess3DScene()
 print('Close the window to quit the program')
 timer = CTicTac()
 
-while win.isOpen():
+while win.isOpen() and (args.duration <= 0 or timer.Tac() < args.duration):
     y = 5.0 * math.sin(1.0 * timer.Tac())
     glBox.setLocation(4.0, y, 0.0)
     win.repaint()

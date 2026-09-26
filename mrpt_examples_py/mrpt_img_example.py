@@ -49,12 +49,18 @@ print("  numpy round-trip ✓")
 # Optional OpenCV display
 try:
     import cv2
-    cv2.imshow("mrpt_img_example", back)
-    cv2.waitKey(1500)
-    cv2.destroyAllWindows()
-    print("  (displayed via cv2)")
 except ImportError:
-    print("  (cv2 not available — skipping display)")
+    cv2 = None
+if cv2 is None:
+    print("  (cv2 not available: skipping display)")
+else:
+    try:
+        cv2.imshow("mrpt_img_example", back)
+        cv2.waitKey(1500)
+        cv2.destroyAllWindows()
+        print("  (displayed via cv2)")
+    except cv2.error:
+        print("  (cv2 has no GUI support, e.g. opencv-python-headless: skipping display)")
 
 # ---------------------------------------------------------------------------
 # CImage.from_numpy — static constructor

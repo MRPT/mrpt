@@ -154,7 +154,7 @@ int run_build_tables()
       }
       else
       {
-        txt = format(
+        txt = mrpt::format(
             "<a href=\"comparison_%s_vs_%s.html\">&#9745;</a>", P1.config_name.c_str(),
             P2.config_name.c_str());
       }
@@ -187,7 +187,7 @@ int run_build_tables()
   for (const auto& P : lstConfigurations)
   {
     const string out_fil =
-        PERF_DATA_DIR + format("/perf-html/results_%s.html", P.config_name.c_str());
+        PERF_DATA_DIR + mrpt::format("/perf-html/results_%s.html", P.config_name.c_str());
     std::cout << "Generating: " << out_fil << "...\n";
     CFileOutputStream f(out_fil);
 
@@ -237,7 +237,7 @@ int run_build_tables()
     {
       TPerfField P2 = lstConfigurations[j];
       if (j == i) continue;
-      const string out_fil = PERF_DATA_DIR + format(
+      const string out_fil = PERF_DATA_DIR + mrpt::format(
                                                  "/perf-html/comparison_%s_vs_%s.html",
                                                  P1.config_name.c_str(), P2.config_name.c_str());
 
@@ -289,31 +289,31 @@ int run_build_tables()
 
         if (!P2_has_this_one)
         {
-          str_secs = format(
+          str_secs = mrpt::format(
               "%s / <div style=\"color:gray;\">X</div>", mrpt::system::intervalFormat(t1).c_str());
-          str_Hz = format(
+          str_Hz = mrpt::format(
               "%sHz / <div style=\"color:gray;\">X</div>",
               mrpt::system::unitsFormat(1.0 / t1).c_str());
         }
         else
         {
           const double t2 = P2_dat[test_name];
-          str_secs = format(
+          str_secs = mrpt::format(
               "%s / <div style=\"color:gray;\">%s</div>", mrpt::system::intervalFormat(t1).c_str(),
               mrpt::system::intervalFormat(t2).c_str());
 
           const double At = t1 - t2;
-          str_secs_res = format(
+          str_secs_res = mrpt::format(
               "<div style=\"color:%s;\">%s %.02f%%</div>", At > 0 ? "red" : "blue",
               At > 0 ? "&Delta;" : "&nabla;", 100 * At / t2);
 
-          str_Hz = format(
+          str_Hz = mrpt::format(
               "%sHz / <div style=\"color:gray;\">%sHz</div>",
               mrpt::system::unitsFormat(1.0 / t1).c_str(),
               mrpt::system::unitsFormat(1.0 / t2).c_str());
 
           const double AHz = 1.0 / t1 - 1.0 / t2;
-          str_Hz_res = format(
+          str_Hz_res = mrpt::format(
               "<div style=\"color:%s;\">%s %.02f%%</div>", AHz > 0 ? "blue" : "red",
               AHz > 0 ? "&Delta;" : "&nabla;", 100 * AHz / (1.0 / t2));
         }

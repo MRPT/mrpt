@@ -465,7 +465,7 @@ class CDijkstra
       auto itEdgeData = m_cached_graph.edges.find(std::make_pair(id_from, id_to));
       ASSERTMSG_(
           itEdgeData != m_cached_graph.edges.end(),
-          format(
+          mrpt::format(
               "Edge %u->%u is in Dijkstra paths but not in original "
               "graph!",
               static_cast<unsigned int>(id_from), static_cast<unsigned int>(id_to)));

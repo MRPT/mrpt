@@ -238,7 +238,7 @@ int main(int argc, char** argv)
     opts.gaussianModel.minStdPHI = odometryNoisePhi_std;
 
     // Output rawlog, gz-compressed.
-    CCompressedOutputStream fil(format("%s/%s", outDir.c_str(), outFile.c_str()));
+    CCompressedOutputStream fil(mrpt::format("%s/%s", outDir.c_str(), outFile.c_str()));
     CPose3D realPose;
 
     const size_t N_STEPS_STOP_AT_THE_BEGINNING = 4;
@@ -412,7 +412,7 @@ int main(int argc, char** argv)
         lm->setColor(1, 0, 0);
         lm->setRadius(0.1f);
         lm->setLocation(it->pose_mean);
-        lm->setName(format("LM#%u", (unsigned)it->ID));
+        lm->setName(mrpt::format("LM#%u", (unsigned)it->ID));
         // lm->enableShowName(true);
         scene->insert(lm);
       }
