@@ -18,13 +18,15 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/opengl/CFBORender.h>
+#include <mrpt/opengl/Texture.h>
 #include <mrpt/opengl/config.h>  // for MRPT_HAS_*
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/CTexturedPlane.h>
 #include <mrpt/viz/Scene.h>
 
 #include <algorithm>
-#include <iostream>
+#include <memory>
 
 #if MRPT_HAS_OPENGL && MRPT_HAS_EGL
 #define RUN_OFFSCREEN_RENDER_TESTS
@@ -53,12 +55,34 @@ bool isRed(const mrpt::img::CImage& im, int x, int y)
   return std::max({c0, c1, c2}) > 150 && std::min({c0, c1, c2}) < 100;
 }
 
+mrpt::img::CImage makeRedImage()
+{
+  mrpt::img::CImage img(8, 8, mrpt::img::CH_RGB);
+  img.filledRectangle({0, 0}, {7, 7}, mrpt::img::TColor(0xff, 0x00, 0x00));
+  return img;
+}
+
+/** Creates the renderer, or returns nullptr if this device cannot render
+ * off-screen. Only this setup step may skip a test: any later exception must
+ * fail it. */
+std::unique_ptr<mrpt::opengl::CFBORender> createRendererOrNull(std::string& whyNot)
+{
+  try
+  {
+    return std::make_unique<mrpt::opengl::CFBORender>(W, H);
+  }
+  catch (const std::exception& e)
+  {
+    whyNot = e.what();
+    return nullptr;
+  }
+}
+
 /** Two planes share one image, so they share one GPU texture. Removing one of
  * them from the scene must leave the other one textured. */
-void test_removeOneOfTwoPlanesSharingATexture()
+void test_removeOneOfTwoPlanesSharingATexture(mrpt::opengl::CFBORender& renderer)
 {
-  mrpt::img::CImage texture(8, 8, mrpt::img::CH_RGB);
-  texture.filledRectangle({0, 0}, {7, 7}, mrpt::img::TColor(0xff, 0x00, 0x00));
+  const mrpt::img::CImage texture = makeRedImage();
 
   auto scene = mrpt::viz::Scene::Create();
   scene->getViewport()->setCustomBackgroundColor({1.0f, 1.0f, 1.0f});
@@ -73,7 +97,6 @@ void test_removeOneOfTwoPlanesSharingATexture()
   scene->insert(leftPlane);
   scene->insert(rightPlane);
 
-  mrpt::opengl::CFBORender renderer(W, H);
   mrpt::img::CImage frame(W, H, mrpt::img::CH_RGB);
 
   const int leftX = W / 4;
@@ -92,6 +115,25 @@ void test_removeOneOfTwoPlanesSharingATexture()
   EXPECT_TRUE(isRed(frame, rightX, midY)) << "Remaining plane lost its shared texture";
 }
 
+/** Assigning the same image twice to one Texture must leave a single
+ * reference, so unloading it deletes the GPU texture. */
+void test_reassignSameImageReleasesOnce()
+{
+#if defined(RUN_OFFSCREEN_RENDER_TESTS)  // direct GL calls
+  const mrpt::img::CImage img = makeRedImage();
+
+  mrpt::opengl::texture_name_t name = 0;
+  {
+    mrpt::opengl::Texture tex;
+    tex.assignImage2D(img, mrpt::opengl::Texture::Options());
+    tex.assignImage2D(img, mrpt::opengl::Texture::Options());
+    name = tex.textureNameID();
+    ASSERT_EQ(glIsTexture(name), GL_TRUE);
+  }
+  EXPECT_EQ(glIsTexture(name), GL_FALSE) << "Texture leaked after its only holder was destroyed";
+#endif
+}
+
 }  // namespace
 
 #if defined(RUN_OFFSCREEN_RENDER_TESTS)
@@ -100,14 +142,27 @@ TEST(OpenGL, removeOneOfTwoPlanesSharingATexture)
 TEST(OpenGL, DISABLED_removeOneOfTwoPlanesSharingATexture)
 #endif
 {
-  try
+  std::string whyNot;
+  auto renderer = createRendererOrNull(whyNot);
+  if (!renderer)
   {
-    test_removeOneOfTwoPlanesSharingATexture();
+    GTEST_SKIP() << "No off-screen rendering on this device: " << whyNot;
   }
-  catch (const std::exception& e)
+  test_removeOneOfTwoPlanesSharingATexture(*renderer);
+}
+
+#if defined(RUN_OFFSCREEN_RENDER_TESTS)
+TEST(OpenGL, reassignSameImageReleasesOnce)
+#else
+TEST(OpenGL, DISABLED_reassignSameImageReleasesOnce)
+#endif
+{
+  // The renderer is only needed for its current OpenGL context:
+  std::string whyNot;
+  auto renderer = createRendererOrNull(whyNot);
+  if (!renderer)
   {
-    std::cerr << "***** WARNING ****: Ignoring exception in test, likely due to limited "
-                 "rendering capabilities on this device (?):\n"
-              << e.what() << "\n";
+    GTEST_SKIP() << "No off-screen rendering on this device: " << whyNot;
   }
+  test_reassignSameImageReleasesOnce();
 }

@@ -100,6 +100,7 @@ mrpt_add_library(
     mrpt_img
   UNITTEST_LINK_LIBRARIES
     Eigen3::Eigen
+    ${MRPT_OPENGL_LIBS}  # tests query GL state directly
 )
 
 mrpt_add_python_module(opengl python_bindings/${PROJECT_NAME}_py.cpp)

@@ -334,6 +334,14 @@ void Texture::internalAssignImage_2D(
     in_alpha->forceLoad();
   }
 
+  // Drop the reference held from a previous assignment, if any, so each
+  // reference is released exactly once:
+  if (get().has_value())
+  {
+    releaseTextureName(get()->name);
+    get().reset();
+  }
+
   // Check if we already have this texture loaded in GPU and avoid creating
   // duplicated texture ID:
   const auto existingTextureId = acquireExistingTexture(*in_rgb);
@@ -668,6 +676,11 @@ void Texture::assignCubeImages(
   }
 
   // allocate texture "name" (ID):
+  if (get().has_value())
+  {
+    releaseTextureName(get()->name);
+    get().reset();
+  }
   get() = getNewTextureNumber(nullptr); /* no cached img for cube textures */
 
   // activate the texture unit first before binding texture
