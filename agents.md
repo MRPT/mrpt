@@ -122,6 +122,9 @@ mrpt_add_library(
   `COLOR_Bayer*` names are shifted (ROS `RGGB` == `COLOR_BayerBG2RGB`).
 * **mrpt_viz** has no OpenGL dependency (scene-graph description consumed by
   `mrpt_opengl`), so it is testable with plain unit tests.
+* **mrpt_opengl**: `Texture` shares one GL texture among all users of the same
+  image buffer (reference counted, keyed by the pixel data pointer). Release a
+  texture before re-uploading changed pixels that live in the same buffer.
 * **mrpt_gui**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the library
   links wxWidgets privately; test targets need
   `target_link_libraries(... PRIVATE imp_wxwidgets)`. macOS/Windows CI builds
