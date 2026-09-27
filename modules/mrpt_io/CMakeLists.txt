@@ -141,8 +141,12 @@ if(CMAKE_MRPT_HAS_ZLIB)
   endif()
 
   if (NOT "${io_EXTRA_SRCS}" STREQUAL "")
+    # The bundled zconf.h only includes <unistd.h> (lseek, read, etc.) if
+    # HAVE_UNISTD_H is defined; modern compilers reject implicit declarations.
+    include(CheckIncludeFile)
+    check_include_file(unistd.h HAVE_UNISTD_H)
     if (HAVE_UNISTD_H)
-      set(extra_flags2_ "-include unistd.h")
+      set(extra_flags2_ "-DHAVE_UNISTD_H")
     endif()
 
     # Strip gcov instrumentation from bundled zlib sources; coverage of

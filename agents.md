@@ -42,6 +42,9 @@ mrpt_add_library(
   `mrpt_cmake_functions.cmake` forces `BUILD_TESTING=OFF`, since the tests
   already run in GitHub Actions CI. Override with
   `-DMRPT_FORCE_TESTS_ON_ROS_BUILDFARM=ON`.
+* Every rosdep key in a `package.xml` must resolve on all build farm
+  platforms (Ubuntu, Debian, Fedora, RHEL); otherwise that package fails to
+  build there. Leave out optional deps with an embedded fallback if missing.
 
 ## 2. C++ guidelines
 
