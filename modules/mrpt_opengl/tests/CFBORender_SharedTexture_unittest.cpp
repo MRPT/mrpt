@@ -20,7 +20,6 @@
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/Texture.h>
 #include <mrpt/opengl/config.h>  // for MRPT_HAS_*
-#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/CTexturedPlane.h>
 #include <mrpt/viz/Scene.h>
@@ -30,6 +29,8 @@
 
 #if MRPT_HAS_OPENGL && MRPT_HAS_EGL
 #define RUN_OFFSCREEN_RENDER_TESTS
+// Only needed for direct GL queries; GLEW headers are not visible to tests on Windows.
+#include <mrpt/opengl/opengl_api.h>
 #endif
 
 namespace
