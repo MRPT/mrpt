@@ -171,6 +171,8 @@ with tempfile.TemporaryDirectory() as tmpdir:
             break
         n_pairs += 1
         check_ok = ac_read is not None and sf_read is not None and obs_read is None
+    # Open files cannot be deleted on Windows: close before the tmpdir cleanup.
+    f.close()
     check("ReadFromArchive pairs", n_pairs == 3, f"got {n_pairs}")
     check("ReadFromArchive types", check_ok)
 
@@ -184,6 +186,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
             n_objs += 1
     except EOFError:
         pass
+    f2.close()
     check("ReadObject until EOFError", n_objs == 6, f"got {n_objs}")
 
 print("CSimpleMap")
