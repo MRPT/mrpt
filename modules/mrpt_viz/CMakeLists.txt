@@ -106,6 +106,8 @@ set(LIB_UNIT_TEST_SOURCES
   tests/MiscVisualObjects_unittest.cpp
   tests/MiscVisualObjects2_unittest.cpp
   tests/PLY_import_export_unittest.cpp
+  tests/RayTracingAndBounds_unittest.cpp
+  tests/Viewport_extra_unittest.cpp
   tests/pose_pdfs_unittest.cpp
   tests/RenderBuffers_unittest.cpp
   tests/Scene_Viewport_unittest.cpp

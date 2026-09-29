@@ -313,6 +313,9 @@ void CSerialPort::setConfig(
     case 134:
       BR = B134;
       break;
+    case 150:
+      BR = B150;
+      break;
     case 200:
       BR = B200;
       break;
@@ -324,6 +327,9 @@ void CSerialPort::setConfig(
       break;
     case 1200:
       BR = B1200;
+      break;
+    case 1800:
+      BR = B1800;
       break;
     case 2400:
       BR = B2400;

@@ -219,10 +219,8 @@ TEST(CCompressedInputStream, openingAMissingFileFails)
   EXPECT_FALSE(in.open(missing, err));
   EXPECT_FALSE(err.empty());
 
-  // Note: the constructor's documented "\exception" is not actually raised;
-  // it just leaves the stream closed.
-  CCompressedInputStream in2(missing);
-  EXPECT_FALSE(in2.fileOpenCorrectly());
+  // The constructor reports it with an exception, as documented:
+  EXPECT_ANY_THROW(CCompressedInputStream in2(missing));
 }
 
 TEST(CCompressedInputStream, readsAPlainUncompressedFile)

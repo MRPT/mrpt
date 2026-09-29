@@ -52,9 +52,12 @@ set(LIB_SOURCES
 set(LIB_UNIT_TEST_SOURCES
   tests/CDirectoryExplorer_unittest.cpp
   tests/COutputLogger_unittest.cpp
+  tests/COutputLogger_extra_unittest.cpp
   tests/CTimeLogger_unittest.cpp
+  tests/CTimeLogger_extra_unittest.cpp
   tests/string_utils_unittest.cpp
   tests/filesystem_unittest.cpp
+  tests/filesystem_extra_unittest.cpp
   tests/CFileSystemWatcher_unittest.cpp
   tests/CObserver_unittest.cpp
   tests/misc_system_unittest.cpp

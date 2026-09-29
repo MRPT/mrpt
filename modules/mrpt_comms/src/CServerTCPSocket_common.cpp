@@ -58,6 +58,17 @@ void CServerTCPSocket::setupSocket(
   m_serverSock = socket(AF_INET, SOCK_STREAM, 0);
   if (INVALID_SOCKET == m_serverSock) THROW_EXCEPTION(getLastErrorStr());
 
+#ifndef _WIN32
+  // Allow binding again right after a previous server on the same port has
+  // closed (connections in TIME_WAIT would otherwise make bind() fail). Not
+  // done on Windows, where this option also lets other processes steal the
+  // port.
+  {
+    const int yes = 1;
+    setsockopt(m_serverSock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
+  }
+#endif
+
   // Bind it:
   // ----------------------------
   sockaddr_in desiredIP;
@@ -66,14 +77,32 @@ void CServerTCPSocket::setupSocket(
   desiredIP.sin_addr.s_addr = inet_addr(IPaddress.c_str());
   desiredIP.sin_port = htons(listenPort);
 
+  // If the socket cannot be set up, do not leak the descriptor: the destructor
+  // does not run when the constructor throws.
+  auto failWithLastError = [this]()
+  {
+    const auto msg = getLastErrorStr();
+#ifdef _WIN32
+    closesocket(m_serverSock);
+#else
+    ::close(m_serverSock);
+#endif
+    m_serverSock = INVALID_SOCKET;
+    THROW_EXCEPTION(msg);
+  };
+
   if (INVALID_SOCKET ==
       ::bind(m_serverSock, reinterpret_cast<struct sockaddr*>(&desiredIP), sizeof(desiredIP)))
-    THROW_EXCEPTION(getLastErrorStr());
+  {
+    failWithLastError();
+  }
 
   // Put in listen mode:
   // ----------------------------
   if (INVALID_SOCKET == listen(m_serverSock, maxConnectionsWaiting))
-    THROW_EXCEPTION(getLastErrorStr());
+  {
+    failWithLastError();
+  }
 
   MRPT_LOG_DEBUG(
       mrpt::format("[CServerTCPSocket] Listening at %s:%i\n", IPaddress.c_str(), listenPort));

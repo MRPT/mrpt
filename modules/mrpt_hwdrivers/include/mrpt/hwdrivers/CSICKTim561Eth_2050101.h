@@ -101,6 +101,9 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
   bool decodeScanCfg(std::istringstream& stream);
   bool decodeScan(char* buf, mrpt::obs::CObservation2DRangeScan& outObservation);
   void sendCommand(const char* cmd);
+  /** Reads an ETX-terminated telegram. Returns the number of bytes read (0 on
+   * timeout). The buffer always ends with a null character. */
+  size_t readTelegram(char* buf, size_t maxLen, int timeout_ms);
   void roughPrint(char* msg);
 
  protected:

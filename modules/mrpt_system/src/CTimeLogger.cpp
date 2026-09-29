@@ -281,7 +281,9 @@ void CTimeLogger::saveToMFile(const std::string& file) const
     s_counts += std::to_string(i.second.n_calls) + ","s;
     s_mins += mrpt::format("%e,", i.second.min_t);
     s_maxs += mrpt::format("%e,", i.second.max_t);
-    s_means += mrpt::format("%e,", i.second.mean_t);
+    // (mean_t accumulates the sum of all the measurements)
+    s_means += mrpt::format(
+        "%e,", i.second.n_calls ? i.second.mean_t / static_cast<double>(i.second.n_calls) : 0.0);
 
     if (i.second.whole_history)
     {

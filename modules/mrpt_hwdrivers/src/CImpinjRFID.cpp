@@ -16,7 +16,9 @@
 #include <mrpt/system/os.h>
 
 #include <chrono>
+#include <cstring>
 #include <iostream>
+#include <sstream>
 #include <thread>
 
 using namespace mrpt::hwdrivers;
@@ -126,32 +128,35 @@ bool CImpinjRFID::getObservation(mrpt::obs::CObservationRFID& obs)
   try
   {
     bool receivedSomething = false;
-    char msg[34];
-    char cmd[20];
-    char epc[24];
-    char rx_pwr[5];
-    char* tmp;
+    constexpr size_t MSG_LEN = 34;
+    char msg[MSG_LEN + 1];
     obs.tag_readings.clear();
     // send an observation command to the device interface program
+    char cmd[20];
     strcpy(cmd, "OBS\0");
     client->writeAsync(cmd, 10);
 
     // receive a reading from the sensor through the socket
-    while (client->readAsync(msg, 34, 100) > 0)
+    while (true)
     {
+      std::memset(msg, 0, sizeof(msg));
+      if (client->readAsync(msg, MSG_LEN, 100) == 0)
+      {
+        break;
+      }
       receivedSomething = true;
       // the received string is in the format: ANT_PORT EPC RX_PWR
       // ZERO_FILL
-      const char* ant_port_ptr = mrpt::system::strtok(msg, " ", &tmp);
-      if (!ant_port_ptr)
+      std::istringstream ss{std::string(msg)};
+      std::string antPort;
+      std::string epc;
+      std::string rxPwr;
+      if (!(ss >> antPort >> epc >> rxPwr))
       {
         std::cerr << "[CImpinjRFID::getObservation] Unexpected format "
                      "in sensor data! (skipping).\n";
         continue;
       }
-      const char ant_port = *ant_port_ptr;
-      strcpy(epc, mrpt::system::strtok(nullptr, " ", &tmp));
-      strcpy(rx_pwr, mrpt::system::strtok(nullptr, " ", &tmp));
 
       // Fill the observation
       obs.tag_readings.resize(obs.tag_readings.size() + 1);  // Alloc space for one more tag obs
@@ -160,14 +165,10 @@ bool CImpinjRFID::getObservation(mrpt::obs::CObservationRFID& obs)
       // new tag structure
 
       // Fill in fields in "new_tag":
-      new_tag.antennaPort = mrpt::format("%c", ant_port);
-      new_tag.epc = std::string(epc);
-      new_tag.power = atof(rx_pwr);
+      new_tag.antennaPort = antPort.substr(0, 1);
+      new_tag.epc = epc;
+      new_tag.power = atof(rxPwr.c_str());
       obs.sensorLabel = m_sensorLabel;
-
-      // std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " <<
-      // "\n\tRXPWR: " << atof(rx_pwr) << " PWR READ: " << rx_pwr <<
-      // "\n";
     }
     if (receivedSomething)
     {

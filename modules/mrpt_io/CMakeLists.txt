@@ -74,6 +74,8 @@ set(LIB_UNIT_TEST_SOURCES
   tests/vector_loadsave_extra_unittest.cpp
   tests/CStream_unittest.cpp
   tests/CMemoryStream_extra_unittest.cpp
+  tests/CPipe_extra_unittest.cpp
+  tests/CCompressedStreams_extra_unittest.cpp
   tests/file_streams_unittest.cpp
   tests/compression_unittest.cpp
   tests/misc_io_unittest.cpp

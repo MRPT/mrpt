@@ -299,8 +299,9 @@ void CClientTCPSocket::connect(
         getLastErrorStr().c_str()));
   }
 
-#elif defined(MRPT_OS_APPLE)
-  // OSX: Older select() API:
+#elif defined(MRPT_OS_APPLE) || defined(_WIN32)
+  // OSX and Windows: Older select() API. Windows reports a failed connection
+  // attempt in the "errors" set, not the "write" one.
   // Wait for connect:
   timeval timer = {0, 0};
   fd_set ss_write, ss_errors;

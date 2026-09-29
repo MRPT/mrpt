@@ -192,3 +192,36 @@ TEST(OpenGL, TRenderMatrices_orthographicNDC)
   EXPECT_NEAR(cornerNdc[0], 1.0f, 1e-5f);
   EXPECT_NEAR(cornerNdc[1], 1.0f, 1e-5f);
 }
+TEST(OpenGL, TRenderMatrices_lookAtWithoutTranslation)
+{
+  // The view matrix without translation is used by sky boxes: it must be the
+  // pure rotation of the full one, with no translation and no leftovers.
+  for (const auto& eye :
+       {mrpt::math::TVector3D(3, 4, 5), mrpt::math::TVector3D(-100, 20, 1),
+        mrpt::math::TVector3D(0.5, -7, 30)})
+  {
+    mrpt::math::CMatrixFloat44 noTrans;
+    noTrans.setConstant(1234.5f);  // to detect entries left unset
+    const auto full = mrpt::opengl::TRenderMatrices::LookAt(
+        eye, mrpt::math::TVector3D(0, 0, 0), mrpt::math::TVector3D(0, 0, 1), &noTrans);
+
+    for (int r = 0; r < 4; r++)
+    {
+      for (int c = 0; c < 3; c++)
+      {
+        EXPECT_EQ(noTrans(r, c), full(r, c)) << "rotation part at " << r << "," << c;
+      }
+    }
+    EXPECT_EQ(noTrans(0, 3), 0.0f);
+    EXPECT_EQ(noTrans(1, 3), 0.0f);
+    EXPECT_EQ(noTrans(2, 3), 0.0f);
+    EXPECT_EQ(noTrans(3, 3), 1.0f);
+
+    // Degenerate inputs are rejected:
+    EXPECT_ANY_THROW(
+        mrpt::opengl::TRenderMatrices::LookAt(eye, eye, mrpt::math::TVector3D(0, 0, 1)));
+    EXPECT_ANY_THROW(mrpt::opengl::TRenderMatrices::LookAt(
+        mrpt::math::TVector3D(0, 0, 5), mrpt::math::TVector3D(0, 0, 0),
+        mrpt::math::TVector3D(0, 0, 1)));
+  }
+}

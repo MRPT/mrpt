@@ -368,27 +368,64 @@ void CompiledScene::compile(const Scene& scene, CompilationStats* stats)
   MRPT_END
 }
 
+namespace
+{
+/** Brings the clone and image-view state of a compiled viewport in line with
+ * the source viewport, whose mode can change after the first compilation. */
+void syncViewportModes(const mrpt::viz::Viewport& viz, mrpt::opengl::CompiledViewport& compiled)
+{
+  // Objects cloned from another viewport:
+  if (viz.isCloned())
+  {
+    if (!compiled.isCloningObjects() ||
+        compiled.getClonedViewportName() != viz.getClonedViewportName())
+    {
+      compiled.setCloneMode(viz.getClonedViewportName(), false);
+    }
+  }
+  else if (compiled.isCloningObjects())
+  {
+    compiled.clearCloneMode();
+  }
+
+  // Camera taken from another viewport (which does not need to be a clone):
+  if (viz.isClonedCamera())
+  {
+    if (!compiled.isCloningCamera() ||
+        compiled.getCameraSourceViewportName() != viz.isClonedCameraFrom())
+    {
+      compiled.setCloneCameraFrom(viz.isClonedCameraFrom());
+    }
+  }
+  else if (compiled.isCloningCamera())
+  {
+    compiled.clearCloneCamera();
+  }
+
+  // Image view mode:
+  if (!viz.isImageViewMode() && compiled.isImageViewMode())
+  {
+    compiled.clearImageViewMode();
+  }
+}
+}  // namespace
+
 void CompiledScene::compileViewport(
     const Viewport& vizViewport, CompiledViewport& compiledViewport, CompilationStats& stats)
 {
   MRPT_START
 
-  // Handle cloned viewport mode (objects from another viewport — skip
-  // compiling our own objects)
+  syncViewportModes(vizViewport, compiledViewport);
+
+  // Cloned viewport mode (objects from another viewport): skip compiling our
+  // own objects
   if (vizViewport.isCloned())
   {
-    compiledViewport.setCloneMode(
-        vizViewport.getClonedViewportName(), vizViewport.isClonedCamera());
     return;
   }
 
-  // Handle cloned camera only (use camera from another viewport, but
-  // compile our own objects normally)
-  if (vizViewport.isClonedCamera())
-  {
-    compiledViewport.setCloneMode(vizViewport.isClonedCameraFrom(), true /*cloneCamera*/);
-    // Don't return — continue to compile objects below
-  }
+  // A viewport that only uses the camera of another one still compiles its
+  // own objects normally, so continue below.
 
   // Handle image view mode: compile the CTexturedPlane and install it as the image proxy.
   if (vizViewport.isImageViewMode())
@@ -766,6 +803,7 @@ void CompiledScene::compileNewObjects(CompilationStats& stats)
 
     // Update viewport configuration (camera, lights, etc.)
     compiledViewport.updateFromVizViewport(vizViewport);
+    syncViewportModes(vizViewport, compiledViewport);
 
     // Skip cloned viewports
     if (vizViewport.isCloned())
@@ -1194,20 +1232,19 @@ void CompiledScene::render(int renderWidth, int renderHeight, int renderOffsetX,
       if (srcIt != m_viewports.end())
       {
         sourceVp = srcIt->second.get();
+      }
+    }
 
-        // If also cloning the camera, copy it from the source viewport.
-        // The cloned viewport will use this camera with its own viewport
-        // dimensions for matrix computation.
-        if (viewport->isCloningCamera())
-        {
-          const auto& srcVizVpName = viewport->getClonedViewportName();
-          auto srcVizVp = m_sourceScene->getViewport(srcVizVpName);
-          if (srcVizVp)
-          {
-            viewport->updateCamera(srcVizVp->getCamera());
-            viewport->forceMatrixUpdate();
-          }
-        }
+    // A viewport can use the camera of another one, whether it clones its
+    // objects or not. The camera is used with the dimensions of this viewport
+    // for the matrix computation.
+    if (viewport->isCloningCamera())
+    {
+      auto srcVizVp = m_sourceScene->getViewport(viewport->getCameraSourceViewportName());
+      if (srcVizVp)
+      {
+        viewport->updateCamera(srcVizVp->getCamera());
+        viewport->forceMatrixUpdate();
       }
     }
     viewport->render(

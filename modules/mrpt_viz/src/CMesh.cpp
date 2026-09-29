@@ -622,8 +622,17 @@ void CMesh::updateBuffers() const
 
 auto CMesh::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
+  // From the height matrix instead of the cached triangles, which are only
+  // (re)generated when the render buffers are updated:
+  float zMin = 0;
+  float zMax = 0;
+  if (Z.rows() > 0 && Z.cols() > 0)
+  {
+    zMin = Z.minCoeff();
+    zMax = Z.maxCoeff();
+  }
   return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
-      {m_xMin, m_yMin, m_zMin}, {m_xMax, m_yMax, m_zMax});
+      {m_xMin, m_yMin, zMin}, {m_xMax, m_yMax, zMax});
 }
 
 void CMesh::adjustGridToImageAR()

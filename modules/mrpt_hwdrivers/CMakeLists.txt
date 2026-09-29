@@ -150,11 +150,24 @@ set(LIB_UNIT_TEST_SOURCES
   tests/C2DRangeFinderAbstract_unittest.cpp
   tests/CGPSInterface_stream_unittest.cpp
   tests/CGenericSensor_unittest.cpp
+  tests/CGillAnemometer_unittest.cpp
   tests/CGPSInterface_unittest.cpp
   tests/CHokuyoURG_unittest.cpp
+  tests/CIbeoLuxETH_unittest.cpp
+  tests/CImpinjRFID_unittest.cpp
+  tests/CCANBusReader_unittest.cpp
+  tests/CGyroKVHDSP3000_unittest.cpp
+  tests/CLMS100Eth_unittest.cpp
+  tests/CTaoboticsIMU_unittest.cpp
+  tests/CRaePID_unittest.cpp
+  tests/CNTRIPClient_unittest.cpp
+  tests/CSICKTim561Eth_unittest.cpp
   tests/CSickLaserSerial_unittest.cpp
   tests/CVelodyneScanner_unittest.cpp
+  tests/fake_tcp_device.h
+  tests/sick_telegrams.h
   tests/mock_stream.h
+  tests/pty_device.h
 )
 
 set(LIB_PUBLIC_HEADERS
