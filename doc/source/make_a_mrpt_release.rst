@@ -164,27 +164,27 @@ useful to someone else maintaining MRPT in the future... ;-)
 Automating the release
 -------------------------
 
-Steps 2-5 above are scripted end-to-end by ``packaging/release.py``. It
+Steps 1-5 above are scripted end-to-end by ``packaging/release.py``. It
 runs the same commands documented here, in the same order, and stops to
 ask for an explicit "yes" before each action that is hard to reverse or
-publicly visible (pushing ``develop``'s tag/commit, merging and pushing
-``master``, and creating/publishing the GitHub release). Run it from the
-repository root:
-
-.. note::
-
-   Step 1 (generate, review and commit the changelogs) is **not**
-   automated: it calls ``catkin_prepare_release`` non-interactively
-   (``-y``), which would otherwise generate "Forthcoming" changelog
-   entries straight from raw commit messages with no chance to review or
-   consolidate them. Always do step 1 by hand first, commit it, and only
-   then run ``packaging/release.py``.
+publicly visible (committing the changelogs, pushing ``develop``'s
+tag/commit, merging and pushing ``master``, and creating/publishing the
+GitHub release). Run it from the repository root:
 
 .. code-block:: bash
 
-   python3 packaging/release.py --bump patch
+   python3 packaging/release.py
 
-Pass ``--dry-run`` to print every command without executing anything, or
+In step 1 the script runs ``catkin_generate_changelog``, then opens an
+interactive Claude Code session (same prompt as the ``claude-changelog``
+shell alias) to consolidate the "Forthcoming" sections into concise
+one-liners, and finally removes duplicated names from the "Contributors"
+lines. Review (and edit, if needed) the result before confirming the
+commit. The script then prints the current version and asks whether to bump
+``patch``, ``minor`` or ``major`` before running ``catkin_prepare_release``.
+
+Pass ``--dry-run`` to print every command without executing anything,
+``--bump patch|minor|major`` to skip the interactive question, or
 ``--version X.Y.Z`` to pick an explicit version instead of bumping. See
 ``python3 packaging/release.py --help`` and the script's own docstring for
 details and the full list of preconditions it checks (clean tree, correct
