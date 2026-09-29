@@ -106,6 +106,12 @@ mrpt_add_library(
     using `bindIO()` / `bindStream()`. `mrpt_comms` tests use a local
     `CServerTCPSocket` (`comms_test_server.{h,cpp}`) and a pseudo-terminal for
     `CSerialPort`.
+  * `mrpt_hwdrivers/tests/fake_tcp_device.h` (loopback TCP "device") and
+    `pty_device.h` (pseudo-terminal "serial device", Linux only): drive drivers
+    that own their socket or serial port. Drivers that open the port inside
+    `doProcess()` purge it first, so the fake must keep transmitting.
+  * `mrpt_opengl/tests/render_pixel_utils.h`: pixel helpers for offscreen render
+    tests. Assert on pixels; the frame may be RGB or BGR, use `pixelRGB()`.
   * `mrpt::cpu::overrideDetectedFeature()` disables a SIMD feature so the
     vectorized and portable paths can be compared in one test.
 
@@ -250,7 +256,7 @@ nearly everywhere: prioritize failure-path tests.
 
 ```bash
 find build -iname '*.gcda' -delete   # stale profiles corrupt the numbers
-colcon build --base-paths modules apps --cmake-args -DENABLE_COVERAGE=ON -DBUILD_TESTING=ON
+colcon build --base-paths modules apps --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_COVERAGE=ON -DBUILD_TESTING=ON
 xvfb-run -a --server-args="-screen 0 1280x1024x24" colcon test --base-paths modules apps
 gcovr --root . -j$(nproc) --gcov-executable gcov-$(gcc -dumpversion | cut -d. -f1) \
   --gcov-ignore-parse-errors=all --merge-mode-functions=merge-use-line-min \
@@ -266,6 +272,12 @@ scripts/coverage_module_report.py coverage.json mrpt_math   # per-file + aggrega
 * `gcov` major version must match the compiler (use `llvm-cov gcov` for
   clang). The two `gcovr` flags after it avoid aborts on large files and on
   header templates reported at different lines.
+* Build the coverage tree as `RelWithDebInfo`, not Debug: GCC 13 at `-O0` may
+  place a return-slot temporary of an `alignas(32)` `CMatrixFixed` at 16-byte
+  alignment, and Eigen's aligned-map assertion then aborts the whole test
+  binary, so it writes no coverage data. Debug also renames the Python modules.
+* The Codecov uploader runs its own gcov pass unless `plugins: noop` and
+  `disable_search: true` are set, which re-adds apps, tests and system headers.
 * Always use `scripts/coverage_module_report.py`: with symlink install every
   header is reported twice (`modules/` and `install/`), and raw gcovr totals
   are wrong without merging.
