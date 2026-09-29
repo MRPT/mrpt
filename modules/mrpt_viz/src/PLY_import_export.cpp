@@ -60,13 +60,16 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 #endif
 
 #include <mrpt/core/exceptions.h>
-#include <mrpt/core/reverse_bytes.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/viz/PLY_import_export.h>
 
+#include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdio>
+#include <limits>
 #include <map>
+#include <memory>
 
 using namespace std;
 using namespace mrpt;
@@ -666,6 +669,26 @@ void ply_put_obj_info(PlyFile* plyfile, const string& obj_info)
 /*  Reading  */
 /*************/
 
+namespace
+{
+/** Conversions from floating point that are defined for any input: converting
+ * a NaN, an infinity or an out-of-range value to an integer is undefined
+ * behavior, and PLY files can contain them. */
+int saturatedToInt(double v)
+{
+  if (std::isnan(v)) return 0;
+  if (v >= 2147483647.0) return std::numeric_limits<int>::max();
+  if (v <= -2147483648.0) return std::numeric_limits<int>::min();
+  return static_cast<int>(v);
+}
+unsigned int saturatedToUInt(double v)
+{
+  if (std::isnan(v) || v <= 0.0) return 0;
+  if (v >= 4294967295.0) return std::numeric_limits<unsigned int>::max();
+  return static_cast<unsigned int>(v);
+}
+}  // namespace
+
 /******************************************************************************
 Given a file pointer, get ready to read PLY data from the file.
 
@@ -687,7 +710,9 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
   if (fp == nullptr) return (nullptr);
 
   /* create record for this object */
-  auto* plyfile = new PlyFile(fp);
+  // (freed on every early return and exception; released on success)
+  auto plyfileOwner = std::make_unique<PlyFile>(fp);
+  PlyFile* plyfile = plyfileOwner.get();
 
   /* read and parse the file's header */
   string orig_line;
@@ -744,7 +769,7 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 
   /* return a pointer to the file's information */
 
-  return (plyfile);
+  return plyfileOwner.release();
 }
 
 /******************************************************************************
@@ -774,7 +799,15 @@ PlyFile* ply_open_for_reading(
 
   /* create the PlyFile data structure */
 
+  // The file is closed if the header cannot be read (also on exceptions);
+  // on success it belongs to the PlyFile, closed by ply_close()
+  std::unique_ptr<FILE, int (*)(FILE*)> fileGuard(fp, &fclose);
+
   plyfile = ply_read(fp, elem_names);
+  if (plyfile)
+  {
+    fileGuard.release();
+  }
 
   /* determine the file type and version */
   if (plyfile)
@@ -1164,8 +1197,7 @@ void binary_get_element(PlyFile* plyfile, char* elem_ptr)
       if (!get_binary_item(
               fp, bin_file_type, prop->count_external, &int_val, &uint_val, &double_val))
       {
-        // Error...
-        fprintf(stderr, "RPly::binary_get_element: Error reading binary file!\n");
+        throw std::runtime_error("PLY: unexpected end of the binary data");
       }
 
       if (store_it)
@@ -1205,11 +1237,7 @@ void binary_get_element(PlyFile* plyfile, char* elem_ptr)
           if (!get_binary_item(
                   fp, bin_file_type, prop->external_type, &int_val, &uint_val, &double_val))
           {
-            // Error...
-            fprintf(
-                stderr,
-                "RPly::binary_get_element: Error reading binary "
-                "file!\n");
+            throw std::runtime_error("PLY: unexpected end of the binary data");
           }
 
           if (store_it)
@@ -1225,8 +1253,7 @@ void binary_get_element(PlyFile* plyfile, char* elem_ptr)
       if (!get_binary_item(
               fp, bin_file_type, prop->external_type, &int_val, &uint_val, &double_val))
       {
-        // Error...
-        fprintf(stderr, "RPly::binary_get_element: Error reading binary file!\n");
+        throw std::runtime_error("PLY: unexpected end of the binary data");
       }
 
       if (store_it)
@@ -1499,18 +1526,36 @@ void get_stored_item(void* ptr, int type, int* int_val, unsigned int* uint_val, 
       break;
     case PLY_FLOAT:
       *double_val = *((float*)ptr);
-      *int_val = static_cast<int>(*double_val);
-      *uint_val = static_cast<unsigned int>(*double_val);
+      *int_val = saturatedToInt(*double_val);
+      *uint_val = saturatedToUInt(*double_val);
       break;
     case PLY_DOUBLE:
       *double_val = *((double*)ptr);
-      *int_val = static_cast<int>(*double_val);
-      *uint_val = static_cast<unsigned int>(*double_val);
+      *int_val = saturatedToInt(*double_val);
+      *uint_val = saturatedToUInt(*double_val);
       break;
     default:
       throw std::runtime_error(mrpt::format("get_stored_item: bad type = %d", type));
   }
 }
+
+namespace
+{
+/** Reads `nbytes` from the file, optionally reversing their order.
+ * \return false if the requested bytes could not be read. */
+bool readRaw(FILE* fp, void* ptr, size_t nbytes, bool reverse)
+{
+  if (fread(ptr, nbytes, 1, fp) != 1)
+  {
+    return false;
+  }
+  if (reverse)
+  {
+    std::reverse(static_cast<char*>(ptr), static_cast<char*>(ptr) + nbytes);
+  }
+  return true;
+}
+}  // namespace
 
 /******************************************************************************
 Get the value of an item from a binary file, and place the result
@@ -1536,10 +1581,18 @@ int get_binary_item(
 
   ptr = (void*)c;
 
+  // If the byte order of the file differs from the native one, the raw bytes
+  // of each item must be swapped before they are interpreted:
+#if MRPT_IS_BIG_ENDIAN
+  const bool do_reverse = (bin_file_type == PLY_BINARY_LE);
+#else
+  const bool do_reverse = (bin_file_type == PLY_BINARY_BE);
+#endif
+
   switch (type)
   {
     case PLY_CHAR:
-      if (fread(ptr, 1, 1, fp) != 1)
+      if (!readRaw(fp, ptr, 1, do_reverse))
       {
         return 0;
       }
@@ -1548,7 +1601,7 @@ int get_binary_item(
       *double_val = *int_val;
       break;
     case PLY_UCHAR:
-      if (fread(ptr, 1, 1, fp) != 1)
+      if (!readRaw(fp, ptr, 1, do_reverse))
       {
         return 0;
       }
@@ -1557,7 +1610,7 @@ int get_binary_item(
       *double_val = *uint_val;
       break;
     case PLY_SHORT:
-      if (fread(ptr, 2, 1, fp) != 1)
+      if (!readRaw(fp, ptr, 2, do_reverse))
       {
         return 0;
       }
@@ -1566,7 +1619,7 @@ int get_binary_item(
       *double_val = *int_val;
       break;
     case PLY_USHORT:
-      if (fread(ptr, 2, 1, fp) != 1)
+      if (!readRaw(fp, ptr, 2, do_reverse))
       {
         return 0;
       }
@@ -1575,7 +1628,7 @@ int get_binary_item(
       *double_val = *uint_val;
       break;
     case PLY_INT:
-      if (fread(ptr, 4, 1, fp) != 1)
+      if (!readRaw(fp, ptr, 4, do_reverse))
       {
         return 0;
       }
@@ -1584,7 +1637,7 @@ int get_binary_item(
       *double_val = *int_val;
       break;
     case PLY_UINT:
-      if (fread(ptr, 4, 1, fp) != 1)
+      if (!readRaw(fp, ptr, 4, do_reverse))
       {
         return 0;
       }
@@ -1593,44 +1646,25 @@ int get_binary_item(
       *double_val = *uint_val;
       break;
     case PLY_FLOAT:
-      if (fread(ptr, 4, 1, fp) != 1)
+      if (!readRaw(fp, ptr, 4, do_reverse))
       {
         return 0;
       }
       *double_val = *((float*)ptr);
-      *int_val = static_cast<int>(*double_val);
-      *uint_val = static_cast<unsigned int>(*double_val);
+      *int_val = saturatedToInt(*double_val);
+      *uint_val = saturatedToUInt(*double_val);
       break;
     case PLY_DOUBLE:
-      if (fread(ptr, 8, 1, fp) != 1)
+      if (!readRaw(fp, ptr, 8, do_reverse))
       {
         return 0;
       }
       *double_val = *((double*)ptr);
-      *int_val = static_cast<int>(*double_val);
-      *uint_val = static_cast<unsigned int>(*double_val);
+      *int_val = saturatedToInt(*double_val);
+      *uint_val = saturatedToUInt(*double_val);
       break;
     default:
       throw std::runtime_error(mrpt::format("get_binary_item: bad type = %d", type));
-  }
-
-// Added by JL:
-// If the Big/Little endian format in the file is different than the native
-// format, do the conversion:
-#if MRPT_IS_BIG_ENDIAN
-  const bool do_reverse = (bin_file_type == PLY_BINARY_LE);
-#else
-  const bool do_reverse = (bin_file_type == PLY_BINARY_BE);
-#endif
-
-  if (do_reverse)
-  {
-    int int_val2 = *int_val;
-    unsigned int uint_val2 = *uint_val;
-    double double_val2 = *double_val;
-    mrpt::reverseBytes(int_val2, *int_val);
-    mrpt::reverseBytes(uint_val2, *uint_val);
-    mrpt::reverseBytes(double_val2, *double_val);
   }
 
   return 1;
@@ -1674,8 +1708,8 @@ void get_ascii_item(
     case PLY_FLOAT:
     case PLY_DOUBLE:
       *double_val = atof(word);
-      *int_val = static_cast<int>(*double_val);
-      *uint_val = static_cast<unsigned int>(*double_val);
+      *int_val = saturatedToInt(*double_val);
+      *uint_val = saturatedToUInt(*double_val);
       break;
 
     default:
@@ -1756,6 +1790,11 @@ Entry:
 
 void add_element(PlyFile* plyfile, const vector<string>& words)
 {
+  if (words.size() < 3)
+  {
+    throw std::runtime_error("PLY: malformed 'element' line in the header");
+  }
+
   /* create the new element */
   plyfile->elems.emplace_back();
 
@@ -1793,6 +1832,16 @@ Entry:
 
 void add_property(PlyFile* plyfile, const vector<string>& words)
 {
+  const bool isList = words.size() > 1 && words[1] == "list";
+  if (plyfile->elems.empty())
+  {
+    throw std::runtime_error("PLY: 'property' line found before any 'element' in the header");
+  }
+  if (words.size() < (isList ? 5u : 3u))
+  {
+    throw std::runtime_error("PLY: malformed 'property' line in the header");
+  }
+
   /* add this property to the list of properties of the current element */
   PlyElement* elem = &(*plyfile->elems.rbegin());
 
@@ -1800,7 +1849,7 @@ void add_property(PlyFile* plyfile, const vector<string>& words)
 
   /* create the new property */
 
-  if (words[1] == "list")
+  if (isList)
   { /* is a list */
     prop.count_external = get_prop_type(words[2]);
     prop.external_type = get_prop_type(words[3]);
@@ -1933,6 +1982,8 @@ bool PLY_Importer::loadFromPlyFile(
       m_ply_import_last_error = "Error opening for reading file: '" + filename + "'";
       return false;
     }
+    // Closed on every exit, including the exceptions of a malformed file:
+    std::unique_ptr<PlyFile, void (*)(PlyFile*)> plyGuard(ply, &ply_close);
 
     /* go through each kind of element that we learned is in the file */
     /* and read them */
@@ -2016,8 +2067,7 @@ bool PLY_Importer::loadFromPlyFile(
       *file_obj_info = std::vector<std::string>(strs);
     }
 
-    /* close the PLY file */
-    ply_close(ply);
+    /* (the PLY file is closed by plyGuard) */
 
     // All OK:
     m_ply_import_last_error = std::string();

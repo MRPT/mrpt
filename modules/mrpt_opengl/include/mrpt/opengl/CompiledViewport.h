@@ -232,7 +232,15 @@ class CompiledViewport
    */
   void setCloneMode(const std::string& clonedViewportName, bool cloneCamera = false);
 
-  /** Disables cloning */
+  /** Makes this viewport use the camera of another one, while still rendering
+   * its own objects.
+   * \param viewportName Name of the viewport whose camera is used */
+  void setCloneCameraFrom(const std::string& viewportName);
+
+  /** Stops using the camera of another viewport */
+  void clearCloneCamera();
+
+  /** Disables cloning, of both objects and camera */
   void clearCloneMode();
 
   /** Returns true if this viewport clones objects from another */
@@ -243,6 +251,10 @@ class CompiledViewport
 
   /** Returns name of cloned viewport, or empty if not cloning */
   const std::string& getClonedViewportName() const { return m_clonedViewportName; }
+
+  /** Returns the name of the viewport whose camera is used, or empty if the
+   * viewport has its own camera */
+  const std::string& getCameraSourceViewportName() const { return m_clonedCameraViewportName; }
 
   /** @} */
 
@@ -450,6 +462,7 @@ class CompiledViewport
   bool m_isCloned = false;
   bool m_isClonedCamera = false;
   std::string m_clonedViewportName;
+  std::string m_clonedCameraViewportName;
 
   /** @} */
 
@@ -511,7 +524,9 @@ class CompiledViewport
   /** Create/recreate SSAO FBOs for the current viewport size */
   void ssaoCreateFBOs(int w, int h);
 
-  /** Destroy all SSAO GPU resources */
+  /** Deletes the G-buffer and AO framebuffers, keeping the kernel and noise */
+  void ssaoDestroyFramebuffers();
+  /** Deletes everything created by ssaoInit() and ssaoCreateFBOs() */
   void ssaoDestroy();
 
   /** Render SSAO geometry pre-pass into G-buffer */

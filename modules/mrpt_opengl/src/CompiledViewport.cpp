@@ -330,12 +330,37 @@ void CompiledViewport::setCloneMode(const std::string& clonedViewportName, bool 
   m_isCloned = true;
   m_isClonedCamera = cloneCamera;
   m_clonedViewportName = clonedViewportName;
+  m_clonedCameraViewportName = cloneCamera ? clonedViewportName : std::string();
 
   if (VIEWPORT_VERBOSE)
   {
     std::cout << "[CompiledViewport::setCloneMode] '" << m_name << "' cloning from '"
               << clonedViewportName << "'" << (cloneCamera ? " (with camera)" : "") << "\n";
   }
+
+  MRPT_END
+}
+
+void CompiledViewport::setCloneCameraFrom(const std::string& viewportName)
+{
+  MRPT_START
+
+  std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
+
+  m_isClonedCamera = true;
+  m_clonedCameraViewportName = viewportName;
+
+  MRPT_END
+}
+
+void CompiledViewport::clearCloneCamera()
+{
+  MRPT_START
+
+  std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
+
+  m_isClonedCamera = false;
+  m_clonedCameraViewportName.clear();
 
   MRPT_END
 }
@@ -349,6 +374,7 @@ void CompiledViewport::clearCloneMode()
   m_isCloned = false;
   m_isClonedCamera = false;
   m_clonedViewportName.clear();
+  m_clonedCameraViewportName.clear();
 
   MRPT_END
 }
@@ -990,7 +1016,12 @@ void CompiledViewport::ssaoInit()
 void CompiledViewport::ssaoCreateFBOs(int w, int h)
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
-  ssaoDestroy();  // delete existing resources
+  // The caller's framebuffer must be current again when returning:
+  const auto callerFBs = FrameBuffer::CurrentBinding();
+
+  // Delete the previous G-buffer and AO buffers only: the kernel, noise
+  // texture and VAO created by ssaoInit() are needed to render.
+  ssaoDestroyFramebuffers();
 
   // --- G-buffer FBO ---
   glGenFramebuffers(1, &m_ssaoGBufferFBO);
@@ -1054,13 +1085,13 @@ void CompiledViewport::ssaoCreateFBOs(int w, int h)
     glDrawBuffers(1, &buf);
   }
 
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  FrameBuffer::Bind(callerFBs);
   m_ssaoLastW = w;
   m_ssaoLastH = h;
 #endif
 }
 
-void CompiledViewport::ssaoDestroy()
+void CompiledViewport::ssaoDestroyFramebuffers()
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   auto del_tex = [](unsigned int& t)
@@ -1096,16 +1127,28 @@ void CompiledViewport::ssaoDestroy()
   del_tex(m_ssaoRawTex);
   del_fbo(m_ssaoBlurFBO);
   del_tex(m_ssaoBlurTex);
-  del_tex(m_ssaoNoiseTex);
+
+  m_ssaoLastW = 0;
+  m_ssaoLastH = 0;
+#endif
+}
+
+void CompiledViewport::ssaoDestroy()
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  ssaoDestroyFramebuffers();
+
+  if (m_ssaoNoiseTex)
+  {
+    glDeleteTextures(1, &m_ssaoNoiseTex);
+    m_ssaoNoiseTex = 0;
+  }
   if (m_ssaoDummyVAO)
   {
     glDeleteVertexArrays(1, &m_ssaoDummyVAO);
     m_ssaoDummyVAO = 0;
   }
-
   m_ssaoKernel.clear();
-  m_ssaoLastW = 0;
-  m_ssaoLastH = 0;
 #endif
 }
 
