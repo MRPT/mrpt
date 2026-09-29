@@ -2,6 +2,13 @@
 Changelog for package mrpt_comms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.1 (2026-09-29)
+------------------
+* comms: wait for the connection attempt to complete in CClientTCPSocket::connect() on Windows.
+* hwdrivers, comms: harden the network and serial drivers; add fake-device tests.
+* Increase test coverage and fix the bugs found.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.0 (2026-09-26)
 ------------------
 * fix: big-endian and armhf test failures (`#1431 <https://github.com/MRPT/mrpt/issues/1431>`_)

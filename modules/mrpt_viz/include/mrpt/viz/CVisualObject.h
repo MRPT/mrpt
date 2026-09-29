@@ -135,6 +135,9 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.name = n;
+    lckWrite.unlock();
+    // The name is drawn as a label if enableShowName() is on:
+    notifyChange();
   }
   /** Returns the name of the object */
   std::string getName() const

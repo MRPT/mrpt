@@ -19,6 +19,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
 
+#include <atomic>
 #include <thread>
 
 namespace mrpt::hwdrivers
@@ -85,15 +86,16 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
   mrpt::poses::CPose3D m_sensorPose;
   double m_maxRange{200.0};
   double m_beamApperture;
-  bool m_run;
+  std::atomic<bool> m_run{false};
   void dataCollection();
+  void dataCollectionImpl();
   std::thread dataCollectionThread;
   double convertLayerToRad(int scanlayer);
   double convertTicksToHRad(int hticks, int hticksPerRotation);
   mrpt::poses::CPoint3D convertToCartesian(float vrad, float hrad, float distance);
   float vwinkel{0.0};
   std::vector<mrpt::obs::CObservation3DRangeScan> m_observations;
-  bool m_newObs;
+  bool m_newObs{false};
   float m_vAngle;
   unsigned int lastScanNumber;
   unsigned int curScanNumber;

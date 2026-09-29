@@ -99,7 +99,8 @@ jobs:
           lcov --capture --directory build --output-file coverage.info \
             --ignore-errors mismatch,negative,empty,unused
           # Filter out system headers and third-party code
-          lcov --remove coverage.info '/usr/*' '*/build/*' '*/3rdparty/*' '*/3rdparty/*/*' '*/3rdparty/*/*/*' '*/tests/*.cpp' '*/apps/*' \
+          lcov --remove coverage.info '/usr/*' '*/build/*' '*/3rdparty/*' '*/3rdparty/*/*' '*/3rdparty/*/*/*' '*/tests/*' '*/apps/*' \
+            '*/mrpt_examples_cpp/*' '*/stb/*' \
             --output-file coverage.info \
             --ignore-errors empty,unused
           lcov --list coverage.info
@@ -109,5 +110,10 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           files: coverage.info
+          # Upload only the filtered lcov report: otherwise the uploader runs
+          # gcov on the whole tree and adds apps, examples, tests, vendored
+          # code and system headers back into the totals.
+          disable_search: true
+          plugins: noop
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true

@@ -1,7 +1,8 @@
 coverage:
   ignore:
-    - tests/*
-    - samples/*
-    - apps/*
+    - "**/tests/**"
+    - "**/samples/**"
+    - "apps/**"
+    - "mrpt_examples_cpp/**"
+    - "**/stb/**"
     - "**/3rdparty/**"
-    - 3rdparty/**

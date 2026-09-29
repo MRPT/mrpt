@@ -5,7 +5,7 @@
 -->
 <package format="3">
   <name>mrpt_config</name>
-  <version>3.3.0</version>
+  <version>3.3.1</version>
   <description>The MRPT C++ library mrpt_config</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
@@ -21,9 +21,10 @@
 
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
-  <!-- System libsimpleini is used together with ICU (for the SI_CONVERT_ICU
-       Unicode conversion, avoiding the bundled copyrighted ConvertUTF.h). -->
-  <build_depend>libsimpleini-dev</build_depend>
+  <!-- System libsimpleini (if found) is used together with ICU (for the
+       SI_CONVERT_ICU Unicode conversion, avoiding the bundled ConvertUTF.h).
+       Not declared here since it is not available on all ROS-supported
+       platforms; the embedded copy is used otherwise. -->
   <build_depend>libicu-dev</build_depend>
 
   <export>

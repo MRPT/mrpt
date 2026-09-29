@@ -18,6 +18,7 @@
 
 #include <array>
 #include <optional>
+#include <utility>
 
 namespace mrpt::opengl
 {
@@ -50,8 +51,17 @@ class Texture
 
   Texture(const Texture&) = delete;
   Texture& operator=(const Texture&) = delete;
-  Texture(Texture&&) noexcept = default;
-  Texture& operator=(Texture&&) noexcept = default;
+  Texture(Texture&& o) noexcept : m_tex(std::move(o.m_tex)) { o.m_tex.clear(); }
+  Texture& operator=(Texture&& o) noexcept
+  {
+    if (this != &o)
+    {
+      unloadTexture();
+      m_tex = std::move(o.m_tex);
+      o.m_tex.clear();
+    }
+    return *this;
+  }
 
   enum class Wrapping : uint8_t
   {

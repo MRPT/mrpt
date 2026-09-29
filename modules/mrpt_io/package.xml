@@ -5,7 +5,7 @@
 -->
 <package format="3">
   <name>mrpt_io</name>
-  <version>3.3.0</version>
+  <version>3.3.1</version>
   <description>The MRPT C++ library mrpt_io</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
@@ -21,6 +21,7 @@
   <depend>mrpt_serialization</depend> <!-- only for archiveFrom() in the Python bindings -->
 
   <build_depend>libzstd-dev</build_depend>
+  <build_depend>zlib</build_depend>
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
 

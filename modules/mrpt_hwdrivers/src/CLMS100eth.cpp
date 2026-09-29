@@ -127,79 +127,86 @@ bool CLMS100Eth::turnOn()
         char msgIn[100];
         sendCommand(msg);
 
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);  // 18
+        size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
 
-        msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
-        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
-
-        if (!read)
+        if (read == 0)
         {
           return false;
         }
+        msgIn[read - 1] = 0;
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
+        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
       }
       {
         char msg[] = {"sMN mLMPsetscancfg +2500 +1 +2500 -450000 +2250000"};
         char msgIn[100];
         sendCommand(msg);
 
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
+        size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
 
-        msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
-        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
-
-        if (!read)
+        if (read == 0)
         {
           return false;
         }
+        msgIn[read - 1] = 0;
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
+        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
       }
       {
         char msg[] = {"sWN LMDscandatacfg 01 00 0 1 0 00 00 0 0 0 0 +1"};
         char msgIn[100];
         sendCommand(msg);
 
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
+        size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
 
-        msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
-        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
-
-        if (!read)
+        if (read == 0)
         {
           return false;
         }
+        msgIn[read - 1] = 0;
+        MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
+        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
       }
       {
         char msg[] = {"sMN LMCstartmeas"};
         char msgIn[100];
         sendCommand(msg);
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
+        size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
 
-        msgIn[read - 1] = 0;
-        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
-        if (!read)
+        if (read == 0)
         {
           return false;
         }
+        msgIn[read - 1] = 0;
+        MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
       }
       {
         char msgIn[100];
         char msg[] = {"sRN STlms"};
-        do
+        // Wait for the device to report the "ready for measurement" state:
+        constexpr int MAX_STATUS_POLLS = 60;
+        bool ready = false;
+        for (int attempt = 0; attempt < MAX_STATUS_POLLS && !ready; attempt++)
         {
           sendCommand(msg);
-          size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-          std::this_thread::sleep_for(10000ms);
-
-          msgIn[read - 1] = 0;
-          MRPT_LOG_DEBUG_FMT("message : %s\n", &msgIn[1]);
-          MRPT_LOG_DEBUG_FMT("%c\n", msgIn[11]);
-          if (!read)
+          const size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
+          if (read == 0)
           {
             return false;
           }
-        } while (msgIn[11] != '7');
+          msgIn[read] = 0;
+          MRPT_LOG_DEBUG_FMT("message : %s\n", &msgIn[1]);
+          ready = read > 11 && msgIn[11] == '7';
+          if (!ready)
+          {
+            std::this_thread::sleep_for(1000ms);
+          }
+        }
+        if (!ready)
+        {
+          MRPT_LOG_ERROR("Timeout waiting for the LMS100 to become ready.");
+          return false;
+        }
       }
       m_turnedOn = true;
     }
@@ -214,6 +221,26 @@ bool CLMS100Eth::turnOn()
     return false;
   }
   return true;
+}
+
+size_t CLMS100Eth::readTelegram(char* buf, size_t maxLen, int timeout_ms)
+{
+  constexpr char ETX = 0x03;
+  size_t n = 0;
+  while (n < maxLen - 1)
+  {
+    if (m_client.readAsync(&buf[n], 1, timeout_ms, timeout_ms) != 1)
+    {
+      break;  // timeout or closed connection
+    }
+    n++;
+    if (buf[n - 1] == ETX)
+    {
+      break;
+    }
+  }
+  buf[n] = 0;
+  return n;
 }
 
 void CLMS100Eth::sendCommand(const char* cmd)
@@ -331,14 +358,12 @@ void CLMS100Eth::doProcessSimple(
   char msg[] = {"sRN LMDscandata"};
   sendCommand(msg);
   char buffIn[16 * 1024];
-  // size_t read = m_client.readAsync(buffIn, sizeof(buffIn), 100, 100);
-  // std::cout << "read :" << read << "\n";
-  // while(m_client.readAsync(buffIn, sizeof(buffIn), 100, 100)) std::cout << "Lit
-  // dans le vent" << "\n";
 
-  m_client.readAsync(buffIn, sizeof(buffIn), 40, 40);
+  // Leave room for the string terminator:
+  const size_t nRead = m_client.readAsync(buffIn, sizeof(buffIn) - 1, 40, 40);
+  buffIn[nRead] = 0;
 
-  if (decodeScan(buffIn, outObservation))
+  if (nRead != 0 && decodeScan(buffIn, outObservation))
   {
     // Do filter:
     C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);

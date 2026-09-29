@@ -20,17 +20,16 @@
 
 namespace mrpt::hwdrivers
 {
-/** This "software driver" implements the communication protocol for interfacing
- * a SICK LMS 2XX laser scanners through a standard RS232 serial port (or a
- * USB2SERIAL converter).
- *   The serial port is opened upon the first call to "doProcess" or
- * "initialize", so you must call "loadConfig" before
- *   this, or manually call "setSerialPort". Another alternative is to call the
- * base class method C2DRangeFinderAbstract::bindIO,
- *   but the "setSerialPort" interface is probably much simpler to use.
+/** This "software driver" reads the frames of a J1939 CAN bus through a
+ * serial CAN converter using an ASCII protocol (Lawicel-style commands such as
+ * "S5", "O" and "V", and frames starting with 'T'), attached to a standard
+ * RS232 serial port (or a USB2SERIAL converter). Each frame is returned as a
+ * mrpt::obs::CObservationCANBusJ1939.
  *
- *   For an example of usage see the example in
- * "samples/SICK_laser_serial_test".
+ *   The serial port is opened upon the first call to "doProcess" or
+ * "initialize", so you must call "loadConfig" before this, or manually call
+ * "setSerialPort".
+ *
  *   See also the example configuration file for rawlog-grabber in
  * "share/mrpt/config_files/rawlog-grabber".
  *
@@ -41,22 +40,19 @@ namespace mrpt::hwdrivers
  *   COM_port_WIN = COM1   // Serial port to connect to
  *   COM_port_LIN = ttyS0
  *
- *   COM_baudRate = 38400 // Possible values: 9600 (default), 38400, 5000000
- *   mm_mode      = 1/0   // 1: millimeter mode, 0:centimeter mode (Default=0)
- *   FOV          = 180   // Field of view: 100 or 180 degrees (Default=180)
- *   resolution   =  50   // Scanning resolution, in units of 1/100 degree.
- * Valid values: 25,50,100 (Default=50)
+ *   COM_baudRate = 57600  // Possible values: 9600, 38400, 57600 (default), 500000
+ *   CANBusSpeed  = 250000 // Speed of the CAN bus, in bits per second: 10000,
+ *                         // 20000, 50000, 100000, 125000, 250000 (default),
+ *                         // 500000, 800000 or 1000000
+ *   useCANReaderTimestamp = false  // (Reserved for future use)
+ *   nTries_connect = 1    // Times to try to detect the baud rate of the
+ *                         // converter (default = 1)
+ *   nTries_command = 4    // Times each setup command is retried before giving
+ *                         // up (default = 4)
  *
- *
- *   pose_x=0.21	// Laser range scaner 3D position in the robot (meters)
- *   pose_y=0
- *   pose_z=0.34
- *   pose_yaw=0	// Angles in degrees
- *   pose_pitch=0
- *   pose_roll=0
  *  \endcode
  *
- * \sa C2DRangeFinderAbstract
+ * \sa mrpt::obs::CObservationCANBusJ1939
  * \ingroup mrpt_hwdrivers_grp
  */
 class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
@@ -107,6 +103,8 @@ class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
   int m_com_baudRate{57600};
   /** Default = 1 */
   unsigned int m_nTries_connect{1};
+  /** Times each setup command is retried before giving up. Default = 4 */
+  int m_nTries_command{4};
   unsigned int m_nTries_current{0};
   int m_canbus_speed{250000};
   bool m_canreader_timestamp{false};   // for future work

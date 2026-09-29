@@ -17,7 +17,15 @@
 #include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CPointCloudColoured.h>
 
+#include <algorithm>
+#include <cmath>
+#include <cstring>
 #include <fstream>
+#include <limits>
+
+#ifndef _WIN32
+#include <sys/resource.h>
+#endif
 
 using namespace mrpt::viz;
 
@@ -352,4 +360,290 @@ TEST(PLY_import_export, EmptyCloudRoundTrip)
   EXPECT_EQ(pc2.size(), 0u);
 
   mrpt::system::deleteFile(file);
+}
+
+namespace
+{
+/** Little helper to build the raw contents of a binary PLY file. */
+class BinaryBuilder
+{
+ public:
+  explicit BinaryBuilder(bool bigEndian) : m_bigEndian(bigEndian) {}
+
+  template <typename T>
+  BinaryBuilder& put(T v)
+  {
+    char buf[sizeof(T)];
+    std::memcpy(buf, &v, sizeof(T));
+    // The bytes are in the host order: reverse them if the file has the other
+    const uint16_t one = 1;
+    uint8_t firstByte;
+    std::memcpy(&firstByte, &one, 1);
+    const bool hostIsLittleEndian = firstByte == 1;
+    if (m_bigEndian == hostIsLittleEndian)
+    {
+      std::reverse(buf, buf + sizeof(T));
+    }
+    m_data.append(buf, sizeof(T));
+    return *this;
+  }
+  const std::string& str() const { return m_data; }
+
+ private:
+  bool m_bigEndian;
+  std::string m_data;
+};
+
+void writeBinaryFile(const std::string& file, const std::string& header, const std::string& data)
+{
+  std::ofstream f(file, std::ios::binary);
+  f << header;
+  f.write(data.data(), static_cast<std::streamsize>(data.size()));
+}
+}  // namespace
+
+TEST(PLY_import_export, ReadBinaryBigEndian)
+{
+  const std::string file = tempPlyFile("_be");
+  BinaryBuilder b(true);
+  b.put<float>(1.5f).put<float>(-2.0f).put<float>(3.25f).put<float>(0.5f);
+  b.put<float>(4.0f).put<float>(5.0f).put<float>(6.0f).put<float>(1.0f);
+  writeBinaryFile(
+      file,
+      "ply\nformat binary_big_endian 1.0\nelement vertex 2\n"
+      "property float x\nproperty float y\nproperty float z\n"
+      "property float intensity\nend_header\n",
+      b.str());
+
+  CPointCloudColoured pc;
+  ASSERT_TRUE(pc.loadFromPlyFile(file)) << pc.getLoadPLYErrorString();
+  ASSERT_EQ(pc.size(), 2u);
+  EXPECT_NEAR(pc.getPoint3Df(0).x, 1.5f, 1e-6f);
+  EXPECT_NEAR(pc.getPoint3Df(0).y, -2.0f, 1e-6f);
+  EXPECT_NEAR(pc.getPoint3Df(1).z, 6.0f, 1e-6f);
+  // Grayscale from the intensity channel:
+  EXPECT_NEAR(pc.getPointColor(0).R, 128, 1);
+  EXPECT_EQ(pc.getPointColor(1).B, 255);
+
+  mrpt::system::deleteFile(file);
+}
+
+TEST(PLY_import_export, ReadBinaryLittleEndianScalarTypesAndExtraProps)
+{
+  // Each coordinate uses a different on-disk type, and there are properties
+  // the importer does not know about, which must be skipped in place.
+  const std::string file = tempPlyFile("_le_types");
+  BinaryBuilder b(false);
+  for (int i = 0; i < 2; i++)
+  {
+    b.put<int16_t>(static_cast<int16_t>(-3 + i));       // x: short
+    b.put<uint16_t>(static_cast<uint16_t>(40000 + i));  // y: ushort
+    b.put<int32_t>(-100000 + i);                        // z: int
+    b.put<uint32_t>(3000000000u);                       // extra: uint
+    b.put<int8_t>(-5);                                  // extra: char
+    b.put<uint8_t>(200);                                // extra: uchar
+    b.put<double>(0.25);                                // extra: double
+    b.put<double>(1234.5 + i);                          // timestamp: double
+  }
+  writeBinaryFile(
+      file,
+      "ply\nformat binary_little_endian 1.0\nelement vertex 2\n"
+      "property short x\nproperty ushort y\nproperty int z\n"
+      "property uint extra_uint\nproperty char extra_char\n"
+      "property uchar extra_uchar\nproperty double extra_double\n"
+      "property double timestamp\nend_header\n",
+      b.str());
+
+  CPointCloud pc;
+  ASSERT_TRUE(pc.loadFromPlyFile(file)) << pc.getLoadPLYErrorString();
+  ASSERT_EQ(pc.size(), 2u);
+  EXPECT_NEAR(pc.getPoint3Df(0).x, -3.0f, 1e-6f);
+  EXPECT_NEAR(pc.getPoint3Df(1).x, -2.0f, 1e-6f);
+  EXPECT_NEAR(pc.getPoint3Df(0).y, 40000.0f, 1e-3f);
+  EXPECT_NEAR(pc.getPoint3Df(0).z, -100000.0f, 1e-1f);
+
+  mrpt::system::deleteFile(file);
+}
+
+TEST(PLY_import_export, ReadBinaryWithFaceListElement)
+{
+  // A binary mesh: the vertex element is read, the face list (variable
+  // length records) after it is never reached but must not break the header.
+  const std::string file = tempPlyFile("_bin_faces");
+  BinaryBuilder b(false);
+  b.put<float>(0.f).put<float>(0.f).put<float>(0.f);
+  b.put<float>(1.f).put<float>(0.f).put<float>(0.f);
+  b.put<float>(0.f).put<float>(1.f).put<float>(0.f);
+  b.put<uint8_t>(3).put<int32_t>(0).put<int32_t>(1).put<int32_t>(2);
+  writeBinaryFile(
+      file,
+      "ply\nformat binary_little_endian 1.0\nelement vertex 3\n"
+      "property float x\nproperty float y\nproperty float z\n"
+      "element face 1\nproperty list uchar int vertex_indices\nend_header\n",
+      b.str());
+
+  CPointCloud pc;
+  ASSERT_TRUE(pc.loadFromPlyFile(file)) << pc.getLoadPLYErrorString();
+  EXPECT_EQ(pc.size(), 3u);
+  EXPECT_NEAR(pc.getPoint3Df(2).y, 1.0f, 1e-6f);
+
+  mrpt::system::deleteFile(file);
+}
+
+TEST(PLY_import_export, ReadListPropertyInsideVertexElement)
+{
+  // A list-valued property in the vertex element itself has to be skipped,
+  // both in ASCII and in binary files.
+  {
+    const std::string file = tempPlyFile("_list_ascii");
+    writeTextFile(
+        file,
+        "ply\nformat ascii 1.0\nelement vertex 2\n"
+        "property float x\nproperty float y\nproperty float z\n"
+        "property list uchar float extra\nend_header\n"
+        "1 2 3 2 0.5 0.25\n"
+        "4 5 6 0\n");
+    CPointCloud pc;
+    ASSERT_TRUE(pc.loadFromPlyFile(file)) << pc.getLoadPLYErrorString();
+    ASSERT_EQ(pc.size(), 2u);
+    EXPECT_NEAR(pc.getPoint3Df(1).z, 6.0f, 1e-6f);
+    mrpt::system::deleteFile(file);
+  }
+  {
+    const std::string file = tempPlyFile("_list_bin");
+    BinaryBuilder b(false);
+    b.put<float>(1.f).put<float>(2.f).put<float>(3.f);
+    b.put<uint8_t>(2).put<float>(0.5f).put<float>(0.25f);
+    b.put<float>(4.f).put<float>(5.f).put<float>(6.f);
+    b.put<uint8_t>(0);
+    writeBinaryFile(
+        file,
+        "ply\nformat binary_little_endian 1.0\nelement vertex 2\n"
+        "property float x\nproperty float y\nproperty float z\n"
+        "property list uchar float extra\nend_header\n",
+        b.str());
+    CPointCloud pc;
+    ASSERT_TRUE(pc.loadFromPlyFile(file)) << pc.getLoadPLYErrorString();
+    ASSERT_EQ(pc.size(), 2u);
+    EXPECT_NEAR(pc.getPoint3Df(1).z, 6.0f, 1e-6f);
+    mrpt::system::deleteFile(file);
+  }
+}
+
+TEST(PLY_import_export, ReadTruncatedBinaryFails)
+{
+  const std::string file = tempPlyFile("_truncated");
+  BinaryBuilder b(false);
+  b.put<float>(1.f).put<float>(2.f).put<float>(3.f);  // only 1 of 5 vertices
+  writeBinaryFile(
+      file,
+      "ply\nformat binary_little_endian 1.0\nelement vertex 5\n"
+      "property float x\nproperty float y\nproperty float z\nend_header\n",
+      b.str());
+
+  CPointCloud pc;
+  EXPECT_FALSE(pc.loadFromPlyFile(file));
+  EXPECT_FALSE(pc.getLoadPLYErrorString().empty());
+
+  mrpt::system::deleteFile(file);
+}
+
+TEST(PLY_import_export, ReadHeaderErrors)
+{
+  // Malformed headers must be reported as errors, never crash.
+  const std::vector<std::pair<std::string, std::string>> cases = {
+      {         "unknown_format","ply\nformat martian 1.0\nelement vertex 0\nend_header\n"                                 },
+      {           "unknown_type",
+       "ply\nformat ascii 1.0\nelement vertex 1\nproperty quaternion x\nend_header\n1\n"   },
+      {"property_before_element",   "ply\nformat ascii 1.0\nproperty float x\nend_header\n"},
+      {         "short_property",
+       "ply\nformat ascii 1.0\nelement vertex 1\nproperty float\nend_header\n1\n"          },
+      {    "short_list_property",
+       "ply\nformat ascii 1.0\nelement vertex 1\nproperty list uchar\nend_header\n1\n"     },
+      {          "short_element",     "ply\nformat ascii 1.0\nelement vertex\nend_header\n"},
+      {           "short_format",       "ply\nformat ascii\nelement vertex 0\nend_header\n"},
+  };
+  for (const auto& [name, contents] : cases)
+  {
+    const std::string file = tempPlyFile("_hdr_" + name);
+    writeTextFile(file, contents);
+    CPointCloud pc;
+    EXPECT_FALSE(pc.loadFromPlyFile(file)) << name;
+    EXPECT_FALSE(pc.getLoadPLYErrorString().empty()) << name;
+    mrpt::system::deleteFile(file);
+  }
+}
+
+TEST(PLY_import_export, NonFiniteAndHugeFloatValuesAreLoaded)
+{
+  // NaN, infinity and values beyond the integer range must not be a problem
+  // (converting them to integers is undefined behavior):
+  const std::string file = tempPlyFile("_nonfinite");
+  BinaryBuilder b(false);
+  b.put<float>(std::numeric_limits<float>::quiet_NaN());
+  b.put<float>(std::numeric_limits<float>::infinity());
+  b.put<float>(1e30f);
+  b.put<double>(-1e300);  // an extra double property, which is skipped
+  b.put<float>(1.0f).put<float>(2.0f).put<float>(3.0f);
+  b.put<double>(std::numeric_limits<double>::quiet_NaN());
+  writeBinaryFile(
+      file,
+      "ply\nformat binary_little_endian 1.0\nelement vertex 2\n"
+      "property float x\nproperty float y\nproperty float z\n"
+      "property double extra\nend_header\n",
+      b.str());
+
+  CPointCloud pc;
+  ASSERT_TRUE(pc.loadFromPlyFile(file)) << pc.getLoadPLYErrorString();
+  ASSERT_EQ(pc.size(), 2u);
+  EXPECT_TRUE(std::isnan(pc.getPoint3Df(0).x));
+  EXPECT_TRUE(std::isinf(pc.getPoint3Df(0).y));
+  EXPECT_NEAR(pc.getPoint3Df(1).z, 3.0f, 1e-6f);
+
+  mrpt::system::deleteFile(file);
+}
+
+TEST(PLY_import_export, FailedLoadsDoNotLeakFileDescriptors)
+{
+  const std::string bad1 = tempPlyFile("_leak_badheader");
+  const std::string bad2 = tempPlyFile("_leak_truncated");
+  const std::string good = tempPlyFile("_leak_good");
+  writeTextFile(bad1, "ply\nformat ascii 1.0\nelement vertex 1\nproperty float\nend_header\n1\n");
+  {
+    BinaryBuilder b(false);
+    b.put<float>(1.f);
+    writeBinaryFile(
+        bad2,
+        "ply\nformat binary_little_endian 1.0\nelement vertex 5\n"
+        "property float x\nproperty float y\nproperty float z\nend_header\n",
+        b.str());
+  }
+  writeTextFile(
+      good,
+      "ply\nformat ascii 1.0\nelement vertex 1\nproperty float x\nproperty float y\n"
+      "property float z\nend_header\n1 2 3\n");
+
+  // More failures than descriptors available: if each one leaked a file, the
+  // last loads would fail.
+#ifndef _WIN32
+  rlimit oldLimit{};
+  ASSERT_EQ(getrlimit(RLIMIT_NOFILE, &oldLimit), 0);
+  rlimit newLimit = oldLimit;
+  newLimit.rlim_cur = std::min<rlim_t>(oldLimit.rlim_cur, 256);
+  ASSERT_EQ(setrlimit(RLIMIT_NOFILE, &newLimit), 0);
+#endif
+  for (int i = 0; i < 1000; i++)
+  {
+    CPointCloud pc;
+    EXPECT_FALSE(pc.loadFromPlyFile(i % 2 ? bad1 : bad2));
+  }
+  CPointCloud pc;
+  EXPECT_TRUE(pc.loadFromPlyFile(good)) << pc.getLoadPLYErrorString();
+#ifndef _WIN32
+  setrlimit(RLIMIT_NOFILE, &oldLimit);
+#endif
+
+  mrpt::system::deleteFile(bad1);
+  mrpt::system::deleteFile(bad2);
+  mrpt::system::deleteFile(good);
 }

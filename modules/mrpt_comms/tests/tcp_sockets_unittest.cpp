@@ -23,6 +23,12 @@
 #include <string>
 #include <thread>
 
+#ifndef _WIN32
+#include <sys/resource.h>
+#endif
+
+#include <algorithm>
+
 #include "comms_test_server.h"
 
 using namespace mrpt::comms;
@@ -34,6 +40,7 @@ namespace
 struct SocketPair
 {
   std::unique_ptr<CServerTCPSocket> server;
+  unsigned short port = 0;
   std::unique_ptr<CClientTCPSocket> serverSide;
   CClientTCPSocket clientSide;
 
@@ -41,7 +48,6 @@ struct SocketPair
 
   SocketPair()
   {
-    unsigned short port = 0;
     server = comms_test::listenOnFreePort(port);
     if (!server)
     {
@@ -102,12 +108,6 @@ TEST(CClientTCPSocket, connectToUnresolvableHostThrows)
 
 TEST(CClientTCPSocket, connectToClosedPortThrows)
 {
-#ifdef _WIN32
-  // connect() waits for the connection attempt to complete only on Linux and
-  // Apple; on Windows it goes straight to getsockopt(SO_ERROR), which has not
-  // seen the refusal yet, so the failure is never noticed.
-  GTEST_SKIP() << "connect() does not detect a refused connection on Windows.";
-#else
   // Bind a port and immediately release it, so we know nothing is listening:
   unsigned short port = 0;
   {
@@ -118,7 +118,6 @@ TEST(CClientTCPSocket, connectToClosedPortThrows)
   CClientTCPSocket sock;
   EXPECT_ANY_THROW(sock.connect("127.0.0.1", port, 1000));
   EXPECT_FALSE(sock.isConnected());
-#endif
 }
 
 TEST(CClientTCPSocket, sendAndReceiveOverLoopback)
@@ -262,4 +261,48 @@ TEST(CServerTCPSocket, bindingAnAlreadyUsedPortThrows)
   ASSERT_TRUE(s);
 
   EXPECT_ANY_THROW(CServerTCPSocket(port, "127.0.0.1", 10, mrpt::system::LVL_ERROR));
+}
+
+#ifndef _WIN32
+TEST(CServerTCPSocket, portCanBeReusedRightAfterAConnectionClosed)
+{
+  // A server that closes a connection first leaves it in TIME_WAIT, which
+  // must not prevent a new server from listening on the same port.
+  unsigned short port = 0;
+  {
+    SocketPair pair;
+    ASSERT_TRUE(pair.connected);
+    port = pair.port;
+    pair.serverSide->close();  // the server side hangs up first
+  }
+
+  EXPECT_NO_THROW(CServerTCPSocket(port, "127.0.0.1", 10, mrpt::system::LVL_ERROR));
+}
+#endif
+
+TEST(CServerTCPSocket, failedBindDoesNotLeakDescriptors)
+{
+  unsigned short port = 0;
+  auto s = comms_test::listenOnFreePort(port);
+  ASSERT_TRUE(s);
+
+  // With a low limit of open descriptors, a leak per failed attempt would
+  // make the later attempts (and the last successful bind) fail:
+#ifndef _WIN32
+  rlimit oldLimit{};
+  ASSERT_EQ(getrlimit(RLIMIT_NOFILE, &oldLimit), 0);
+  rlimit newLimit = oldLimit;
+  newLimit.rlim_cur = std::min<rlim_t>(oldLimit.rlim_cur, 256);
+  ASSERT_EQ(setrlimit(RLIMIT_NOFILE, &newLimit), 0);
+#endif
+  for (int i = 0; i < 1000; i++)
+  {
+    EXPECT_ANY_THROW(CServerTCPSocket(port, "127.0.0.1", 10, mrpt::system::LVL_ERROR));
+  }
+  unsigned short otherPort = 0;
+  auto other = comms_test::listenOnFreePort(otherPort);
+  EXPECT_TRUE(other) << "cannot bind a free port after many failed attempts";
+#ifndef _WIN32
+  setrlimit(RLIMIT_NOFILE, &oldLimit);
+#endif
 }

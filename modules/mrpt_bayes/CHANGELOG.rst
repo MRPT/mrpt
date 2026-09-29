@@ -2,6 +2,9 @@
 Changelog for package mrpt_bayes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.1 (2026-09-29)
+------------------
+
 3.3.0 (2026-09-26)
 ------------------
 * fix: qualify mrpt::format() calls to avoid ambiguity with std::format

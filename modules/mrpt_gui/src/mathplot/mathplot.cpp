@@ -3216,8 +3216,9 @@ void mpBitmapLayer::Plot(wxDC& dc, mpWindow& w)
     if (d_width > 0 && d_height > 0)
     {
       // Build the scaled bitmap from the image, only if it has changed:
-      if (m_scaledBitmap.GetWidth() != d_width || m_scaledBitmap.GetHeight() != d_height ||
-          m_scaledBitmap_offset_x != offset_x || m_scaledBitmap_offset_y != offset_y)
+      if (!m_scaledBitmap.IsOk() || m_scaledBitmap.GetWidth() != d_width ||
+          m_scaledBitmap.GetHeight() != d_height || m_scaledBitmap_offset_x != offset_x ||
+          m_scaledBitmap_offset_y != offset_y)
       {
         wxRect r(wxRect(offset_x, offset_y, b_width, b_height));
         // Just for the case....

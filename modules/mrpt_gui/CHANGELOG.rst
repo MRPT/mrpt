@@ -2,6 +2,12 @@
 Changelog for package mrpt_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.1 (2026-09-29)
+------------------
+* mathplot: fix wx assert on first plot of a bitmap layer.
+* Update nanogui submodule: include <cassert> where assert() is used.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.0 (2026-09-26)
 ------------------
 * changelogs

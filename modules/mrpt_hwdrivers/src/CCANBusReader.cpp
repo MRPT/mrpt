@@ -171,6 +171,7 @@ void CCANBusReader::loadConfig_sensorSpecific(
 
   m_com_baudRate = configSource.read_int(iniSection, "COM_baudRate", m_com_baudRate);
   m_nTries_connect = configSource.read_int(iniSection, "nTries_connect", m_nTries_connect);
+  m_nTries_command = configSource.read_int(iniSection, "nTries_command", m_nTries_command);
 }
 
 /*-------------------------------------------------------------
@@ -227,19 +228,25 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
     // and put the CAN Converter in recording mode:
     // ==================================================================
     std::cout << "Setting up serial comms in port " << m_com_port;
-    if (!setupSerialComms()) RET_ERROR("error");
+    if (!setupSerialComms())
+    {
+      // Leave the port closed, so that the next call redoes the whole setup
+      m_mySerialPort->close();
+      RET_ERROR("error");
+    }
     std::cout << " ... done"
               << "\n";
 
     // initialize
     // set CAN Bus speed
     /**/
-    bool res;
+    bool res = false;
     std::cout << "Setting up CAN BUS Speed at: " << m_canbus_speed << "\n";
-    for (int nTry = 0; nTry < 250000 /*4*/; nTry++)
+    for (int nTry = 0; nTry < m_nTries_command; nTry++)
       if (true == (res = sendCANBusReaderSpeed())) break;
     if (!res)
     {
+      m_mySerialPort->close();
       return false;
     }
     std::cout << " ... done"
@@ -249,10 +256,11 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
     // out the CAN Bus
     std::cout << "Opening CAN BUS and starting to receive."
               << "\n";
-    for (int nTry = 0; nTry < 250000 /*4*/; nTry++)
+    for (int nTry = 0; nTry < m_nTries_command; nTry++)
       if (true == (res = CANBusOpenChannel())) break;
     if (!res)
     {
+      m_mySerialPort->close();
       return false;
     }
     std::cout << " ... done"
@@ -270,6 +278,11 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
   }
   catch (const std::exception& e)
   {
+    // Do not leave a half configured port open: it would look ready next time
+    if (m_mySerialPort)
+    {
+      m_mySerialPort->close();
+    }
     std::string s = "[CCANBusReader] Error trying to open CANBusReader at port ";
     s += e.what();
     if (err_msg) *err_msg = s;
@@ -536,7 +549,7 @@ bool CCANBusReader::setupSerialComms()
       std::cout << endl
                 << "Closing CAN Channel "
                 << "\n";
-      for (int nTry = 0; nTry < 250000 /*4*/; nTry++)
+      for (int nTry = 0; nTry < m_nTries_command; nTry++)
         if (true == CANBusCloseChannel()) break;
       std::cout << " ... done"
                 << "\n";
@@ -545,7 +558,7 @@ bool CCANBusReader::setupSerialComms()
       std::this_thread::sleep_for(100ms);
       m_mySerialPort->purgeBuffers();
 
-      for (int nTry = 0; nTry < 250000 /*4*/ && !detected_rate; nTry++)
+      for (int nTry = 0; nTry < m_nTries_command && !detected_rate; nTry++)
       {
         m_mySerialPort->purgeBuffers();
 

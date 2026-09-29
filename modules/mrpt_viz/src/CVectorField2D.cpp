@@ -172,7 +172,30 @@ void CVectorField2D::updateBuffers() const
 
 auto CVectorField2D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-  return verticesBoundingBox();
+  // Computed from the data, since the render buffers only exist after the
+  // first call to updateBuffers().
+  const int rows = static_cast<int>(xcomp.rows());
+  const int cols = static_cast<int>(xcomp.cols());
+  if (rows == 0 || cols == 0)
+  {
+    return {};
+  }
+
+  const float dx = (cols > 1) ? (xMax - xMin) / static_cast<float>(cols - 1) : 0.0f;
+  const float dy = (rows > 1) ? (yMax - yMin) / static_cast<float>(rows - 1) : 0.0f;
+
+  auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
+  for (int c = 0; c < cols; c++)
+  {
+    for (int r = 0; r < rows; r++)
+    {
+      const float px = xMin + static_cast<float>(c) * dx;
+      const float py = yMin + static_cast<float>(r) * dy;
+      bb.updateWithPoint({px, py, 0.0f});
+      bb.updateWithPoint({px + xcomp(r, c), py + ycomp(r, c), 0.0f});
+    }
+  }
+  return bb;
 }
 
 void CVectorField2D::adjustVectorFieldToGrid()

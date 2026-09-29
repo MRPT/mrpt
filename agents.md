@@ -42,6 +42,9 @@ mrpt_add_library(
   `mrpt_cmake_functions.cmake` forces `BUILD_TESTING=OFF`, since the tests
   already run in GitHub Actions CI. Override with
   `-DMRPT_FORCE_TESTS_ON_ROS_BUILDFARM=ON`.
+* Every rosdep key in a `package.xml` must resolve on all build farm
+  platforms (Ubuntu, Debian, Fedora, RHEL); otherwise that package fails to
+  build there. Leave out optional deps with an embedded fallback if missing.
 
 ## 2. C++ guidelines
 
@@ -103,6 +106,12 @@ mrpt_add_library(
     using `bindIO()` / `bindStream()`. `mrpt_comms` tests use a local
     `CServerTCPSocket` (`comms_test_server.{h,cpp}`) and a pseudo-terminal for
     `CSerialPort`.
+  * `mrpt_hwdrivers/tests/fake_tcp_device.h` (loopback TCP "device") and
+    `pty_device.h` (pseudo-terminal "serial device", Linux only): drive drivers
+    that own their socket or serial port. Drivers that open the port inside
+    `doProcess()` purge it first, so the fake must keep transmitting.
+  * `mrpt_opengl/tests/render_pixel_utils.h`: pixel helpers for offscreen render
+    tests. Assert on pixels; the frame may be RGB or BGR, use `pixelRGB()`.
   * `mrpt::cpu::overrideDetectedFeature()` disables a SIMD feature so the
     vectorized and portable paths can be compared in one test.
 
@@ -122,6 +131,9 @@ mrpt_add_library(
   `COLOR_Bayer*` names are shifted (ROS `RGGB` == `COLOR_BayerBG2RGB`).
 * **mrpt_viz** has no OpenGL dependency (scene-graph description consumed by
   `mrpt_opengl`), so it is testable with plain unit tests.
+* **mrpt_opengl**: `Texture` shares one GL texture among all users of the same
+  image buffer (reference counted, keyed by the pixel data pointer). Release a
+  texture before re-uploading changed pixels that live in the same buffer.
 * **mrpt_gui**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the library
   links wxWidgets privately; test targets need
   `target_link_libraries(... PRIVATE imp_wxwidgets)`. macOS/Windows CI builds
@@ -244,7 +256,7 @@ nearly everywhere: prioritize failure-path tests.
 
 ```bash
 find build -iname '*.gcda' -delete   # stale profiles corrupt the numbers
-colcon build --base-paths modules apps --cmake-args -DENABLE_COVERAGE=ON -DBUILD_TESTING=ON
+colcon build --base-paths modules apps --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_COVERAGE=ON -DBUILD_TESTING=ON
 xvfb-run -a --server-args="-screen 0 1280x1024x24" colcon test --base-paths modules apps
 gcovr --root . -j$(nproc) --gcov-executable gcov-$(gcc -dumpversion | cut -d. -f1) \
   --gcov-ignore-parse-errors=all --merge-mode-functions=merge-use-line-min \
@@ -260,6 +272,12 @@ scripts/coverage_module_report.py coverage.json mrpt_math   # per-file + aggrega
 * `gcov` major version must match the compiler (use `llvm-cov gcov` for
   clang). The two `gcovr` flags after it avoid aborts on large files and on
   header templates reported at different lines.
+* Build the coverage tree as `RelWithDebInfo`, not Debug: GCC 13 at `-O0` may
+  place a return-slot temporary of an `alignas(32)` `CMatrixFixed` at 16-byte
+  alignment, and Eigen's aligned-map assertion then aborts the whole test
+  binary, so it writes no coverage data. Debug also renames the Python modules.
+* The Codecov uploader runs its own gcov pass unless `plugins: noop` and
+  `disable_search: true` are set, which re-adds apps, tests and system headers.
 * Always use `scripts/coverage_module_report.py`: with symlink install every
   header is reported twice (`modules/` and `install/`), and raw gcovr totals
   are wrong without merging.
@@ -281,7 +299,9 @@ See "Porting ROS 2 nodes" in `doc/source/doxygen-docs/port_mrpt3.md`:
   own `package.xml` version and `CHANGELOG.rst`, bumped with
   `catkin_prepare_release` on `develop`; then merge into `master`, tag, and
   package with `packaging/make_release.sh`.
-* `packaging/release.py` automates the whole flow (use `--dry-run` first).
+* `packaging/release.py` automates the whole flow, including generating,
+  consolidating and committing the changelogs and asking for the bump kind
+  (use `--dry-run` first).
 * Never run `release.py` or any step that pushes, tags or publishes unless the
   user explicitly asks for a release.
 * Debian/Ubuntu packaging lives outside this repo, in two trees that must be

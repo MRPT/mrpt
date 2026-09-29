@@ -240,7 +240,8 @@ long double sineAsymptoticSeries(long double x)
   const long double epsilon = LDBL_EPSILON / 4.0L;
 
   int j = 5;
-  int numTerms = 0;
+  // Used as is if the loop ends without meeting any stop condition:
+  int numTerms = kNumAsymptoticTerms - 1;
 
   terms[0] = 1.0L;
   terms[kNumAsymptoticTerms] = 0.0L;
@@ -396,7 +397,8 @@ long double cosineAsymptoticSeries(long double x)
   const long double epsilon = LDBL_EPSILON / 4.0L;
 
   int j = 3;
-  int numTerms = 0;
+  // Used as is if the loop ends without meeting any stop condition:
+  int numTerms = kNumAsymptoticTerms - 1;
 
   terms[0] = 1.0L;
   terms[kNumAsymptoticTerms] = 0.0L;

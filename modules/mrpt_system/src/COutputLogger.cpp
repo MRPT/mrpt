@@ -252,8 +252,11 @@ void COutputLogger::dumpLogToConsole() const
 std::string COutputLogger::getLoggerLastMsg() const
 {
   auto lck = mrpt::lockHelper(*m_historyMtx);
-  TMsg last_msg = m_history.back();
-  return last_msg.getAsString();
+  if (m_history.empty())
+  {
+    return {};
+  }
+  return m_history.back().getAsString();
 }
 
 void COutputLogger::getLoggerLastMsg(std::string& msg_str) const
@@ -261,7 +264,24 @@ void COutputLogger::getLoggerLastMsg(std::string& msg_str) const
   msg_str = this->getLoggerLastMsg();
 }
 
-void COutputLogger::loggerReset() { *this = COutputLogger(); }
+void COutputLogger::loggerReset()
+{
+  // (The copy/move assignment operators are deliberately no-ops, so the state
+  // has to be restored explicitly)
+  {
+    auto lck = mrpt::lockHelper(*m_historyMtx);
+    m_history.clear();
+  }
+  {
+    auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
+    m_listCallbacks.clear();
+  }
+  m_logger_name = "COutputLogger";
+  m_min_verbosity_level = LVL_INFO;
+  m_min_verbosity_level_callbacks = LVL_INFO;
+  logging_enable_console_output = true;
+  logging_enable_keep_record = false;
+}
 
 // TMsg Struct
 // ////////////////////////////////////////////////////////////

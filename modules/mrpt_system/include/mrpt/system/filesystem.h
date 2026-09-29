@@ -63,9 +63,11 @@ bool createDirectory(const std::string& dirName);
 bool deleteFile(const std::string& fileName);
 
 /** Delete one or more files, especified by the (optional) path and the file
- * name (including '?' or '*') - Use forward slash ('/') for directories for
- * compatibility between Windows and Linux, since they will be internally
- * traslated into backward slashes ('\') if MRPT is compiled under Windows.
+ * name, which can include the wildcards '?' and '*'. Wildcards are only
+ * accepted in the file name, not in the directories of the path, and they do
+ * not match hidden files (starting with a dot) unless the pattern does too.
+ * Directories are never deleted. Use forward slash ('/') to separate
+ * directories.
  * \sa deleteFile
  */
 void deleteFiles(const std::string& s);

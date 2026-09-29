@@ -272,6 +272,13 @@ bool CRaePID::errorStatus(std::string& errorString)
   std::istream_iterator<std::string> endit;
   std::vector<std::string> errors_text(it, endit);
 
+  // A missing or incomplete reply is an error too:
+  if (errors_text.size() < 2)
+  {
+    errorString = reading.empty() ? std::string("No reply from the PID") : reading;
+    return true;
+  }
+
   // Take the first part and check the possible error condition
   if ((strcmp(errors_text[0].c_str(), "0") == 0) &&
       (strcmp(errors_text[1].c_str(), "0") == 0))  // no error
@@ -308,6 +315,11 @@ void CRaePID::getLimits(float& min, float& max)
   std::istream_iterator<std::string> it(readings_str);
   std::istream_iterator<std::string> endit;
   std::vector<std::string> readings_text(it, endit);
+
+  if (readings_text.size() < 2)
+  {
+    THROW_EXCEPTION_FMT("Unexpected reply to the limits request: '%s'", reading.c_str());
+  }
 
   // read min and max
   max = static_cast<float>(atof(readings_text[0].c_str()));

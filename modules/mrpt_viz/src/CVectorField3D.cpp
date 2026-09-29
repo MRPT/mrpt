@@ -174,5 +174,26 @@ void CVectorField3D::updateBuffers() const
 
 auto CVectorField3D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-  return verticesBoundingBox();
+  // Computed from the data, since the render buffers only exist after the
+  // first call to updateBuffers().
+  const int rows = static_cast<int>(std::min(x_vf.rows(), x_p.rows()));
+  const int cols = static_cast<int>(std::min(x_vf.cols(), x_p.cols()));
+  if (rows == 0 || cols == 0)
+  {
+    return {};
+  }
+
+  auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
+  for (int r = 0; r < rows; r++)
+  {
+    for (int c = 0; c < cols; c++)
+    {
+      const float px = x_p(r, c);
+      const float py = y_p(r, c);
+      const float pz = z_p(r, c);
+      bb.updateWithPoint({px, py, pz});
+      bb.updateWithPoint({px + x_vf(r, c), py + y_vf(r, c), pz + z_vf(r, c)});
+    }
+  }
+  return bb;
 }

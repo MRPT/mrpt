@@ -411,6 +411,11 @@ mrpt::math::CMatrixFloat44 TRenderMatrices::LookAt(
   m(3, 2) = .0f;
   m(3, 3) = 1.f;
 
+  // Rotation only: no translation in this one.
+  m(0, 3) = .0f;
+  m(1, 3) = .0f;
+  m(2, 3) = .0f;
+
   if (viewWithoutTranslation) *viewWithoutTranslation = m;
 
   // Translation:

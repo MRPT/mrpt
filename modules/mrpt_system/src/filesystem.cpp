@@ -22,9 +22,12 @@
 #include <mrpt/version.h>
 
 #include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <string_view>
+#include <system_error>
 #include <vector>
 
 #if STD_FS_IS_EXPERIMENTAL
@@ -172,24 +175,122 @@ bool mrpt::system::createDirectory(const string& dirName) { return fs::create_di
 
 bool mrpt::system::deleteFile(const string& fileName) { return 0 == remove(fileName.c_str()); }
 
+namespace
+{
+/** Shell-like wildcard matching of a file name: '*' matches any run of
+ * characters and '?' any single one. Like the shell, wildcards do not match a
+ * leading dot unless the pattern starts with one. */
+bool globMatchFileName(std::string_view pattern, std::string_view name)
+{
+  // File names are case-insensitive in the default Windows filesystems:
+  const auto sameChar = [](char a, char b)
+  {
+#ifdef _WIN32
+    return std::tolower(static_cast<unsigned char>(a)) ==
+           std::tolower(static_cast<unsigned char>(b));
+#else
+    return a == b;
+#endif
+  };
+
+  if (!name.empty() && name.front() == '.' && (pattern.empty() || pattern.front() != '.'))
+  {
+    return false;
+  }
+
+  size_t p = 0;
+  size_t n = 0;
+  size_t starP = std::string_view::npos;
+  size_t starN = 0;
+  while (n < name.size())
+  {
+    if (p < pattern.size() && (pattern[p] == '?' || sameChar(pattern[p], name[n])))
+    {
+      p++;
+      n++;
+    }
+    else if (p < pattern.size() && pattern[p] == '*')
+    {
+      starP = p++;
+      starN = n;
+    }
+    else if (starP != std::string_view::npos)
+    {
+      p = starP + 1;
+      n = ++starN;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  while (p < pattern.size() && pattern[p] == '*')
+  {
+    p++;
+  }
+  return p == pattern.size();
+}
+}  // namespace
+
 void mrpt::system::deleteFiles(const string& s)
 {
   MRPT_START
-  size_t len = s.size() + 20;
-  std::vector<char> aux(len);
-#ifdef _WIN32
-  os::sprintf(&aux[0], len, "del %s", &s[0]);
-  for (char* c = &aux[0]; *c; c++)
-    if (*c == '/') *c = '\\';
-  os::strcat(&aux[0], len, " /Q");
-#else
-  os::sprintf(&aux[0], len, "rm %s", &s[0]);
-#endif
 
-  int res = ::system(&aux[0]);
-  if (res)
+  // Only the file name part may have wildcards.
+  // (No shell involved: the names are never interpreted as commands.)
+  const fs::path pattern(s);
+  const fs::path dir = pattern.has_parent_path() ? pattern.parent_path() : fs::path(".");
+  const std::string namePattern = p2s(pattern.filename());
+
+  std::error_code ec;
+  size_t nDeleted = 0;
+  fs::directory_iterator it(dir, ec);
+  if (ec)
   {
-    fprintf(stderr, "[mrpt::system::deleteFiles] Warning: error invoking: `%s`\n", &aux[0]);
+    fprintf(
+        stderr, "[mrpt::system::deleteFiles] Warning: cannot list `%s`: %s\n", dir.string().c_str(),
+        ec.message().c_str());
+    return;
+  }
+  for (const fs::directory_iterator end; it != end; it.increment(ec))
+  {
+    if (ec)
+    {
+      fprintf(
+          stderr, "[mrpt::system::deleteFiles] Warning: error listing `%s`: %s\n",
+          dir.string().c_str(), ec.message().c_str());
+      break;
+    }
+    const auto& entry = *it;
+    std::error_code ec2;
+    // (a symbolic link to a directory is removed like any other file)
+    const auto st = entry.symlink_status(ec2);
+    if (ec2)
+    {
+      fprintf(
+          stderr, "[mrpt::system::deleteFiles] Warning: cannot stat `%s`: %s\n",
+          entry.path().string().c_str(), ec2.message().c_str());
+      continue;
+    }
+    if (st.type() == fs::file_type::directory ||
+        !globMatchFileName(namePattern, p2s(entry.path().filename())))
+    {
+      continue;
+    }
+    if (fs::remove(entry.path(), ec2))
+    {
+      nDeleted++;
+    }
+    else
+    {
+      fprintf(
+          stderr, "[mrpt::system::deleteFiles] Warning: could not delete `%s`: %s\n",
+          entry.path().string().c_str(), ec2.message().c_str());
+    }
+  }
+  if (nDeleted == 0)
+  {
+    fprintf(stderr, "[mrpt::system::deleteFiles] Warning: no file deleted for: `%s`\n", s.c_str());
   }
   MRPT_END
 }
@@ -279,21 +380,14 @@ std::string mrpt::system::getTempFileName()
 bool mrpt::system::renameFile(
     const string& oldFileName, const string& newFileName, std::string* error_msg)
 {
-  bool ret_err = 0 == rename(oldFileName.c_str(), newFileName.c_str());
+  const bool ok = 0 == rename(oldFileName.c_str(), newFileName.c_str());
 
   if (error_msg)
   {
-    if (ret_err)
-    {
-      *error_msg = strerror(errno);
-    }
-    else
-    {
-      *error_msg = "";
-    }
+    *error_msg = ok ? std::string() : std::string(strerror(errno));
   }
 
-  return ret_err;
+  return ok;
 }
 
 /*---------------------------------------------------------------

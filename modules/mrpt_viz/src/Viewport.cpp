@@ -506,7 +506,7 @@ const CCamera* Viewport::internalResolveActiveCamera(const CCamera* forceThisCam
     if (!view)
     {
       THROW_EXCEPTION_FMT(
-          "Cloned viewport '%s' not found in parent Scene", m_clonedViewport.c_str());
+          "Cloned viewport '%s' not found in parent Scene", m_clonedCameraViewport.c_str());
     }
 
     viewForGetCamera = m_isClonedCamera ? view.get() : this;

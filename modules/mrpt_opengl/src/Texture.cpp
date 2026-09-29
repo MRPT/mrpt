@@ -51,7 +51,11 @@ void Texture::unloadTexture()
 }
 
 /** This class is a workaround to crashes and memory leaks caused by not
- * reserving and freeing opengl textures from the same thread. */
+ * reserving and freeing opengl textures from the same thread.
+ *
+ * Textures created from the same image data are shared (see
+ * acquireExistingTexture()), so each texture name is reference counted and
+ * only deleted in OpenGL once its last user releases it. */
 class TextureResourceHandler
 {
  public:
@@ -74,6 +78,7 @@ class TextureResourceHandler
     glGenTextures(1, &textureID);
     CHECK_OPENGL_ERROR_IN_DEBUG();
     m_textureReservedFrom[textureID] = std::this_thread::get_id();
+    m_textureRefCount[textureID] = 1;
 
     if (rgbDataForAssociation != nullptr)
     {
@@ -91,7 +96,9 @@ class TextureResourceHandler
 #endif
   }
 
-  std::optional<texture_name_t> checkIfTextureAlreadyExists(const mrpt::img::CImage& rgb)
+  /** If a texture was already created from this image data, adds one user to
+   * it and returns its name. */
+  std::optional<texture_name_t> acquireExistingTexture(const mrpt::img::CImage& rgb)
   {
 #if (MRPT_HAS_OPENGL || MRPT_HAS_EGL)
     auto lck = mrpt::lockHelper(m_texturesMtx);
@@ -99,6 +106,7 @@ class TextureResourceHandler
     auto it = m_textureToRGBdata.getInverseMap().find(rgb.ptrLine<uint8_t>(0));
     if (it != m_textureToRGBdata.getInverseMap().end())
     {
+      m_textureRefCount.at(it->second)++;
       return it->second;
     }
 
@@ -117,7 +125,29 @@ class TextureResourceHandler
     if (MRPT_OPENGL_VERBOSE)
       std::cout << "[mrpt releaseTextureID] textureName: " << texName << "\n";
 
-    m_destroyQueue[m_textureReservedFrom.at(texName)].push_back(texName);
+    // Whoever re-assigns this image from now on gets a fresh upload: callers
+    // release a texture before re-uploading an image whose content changed.
+    if (m_textureToRGBdata.hasKey(texName))
+    {
+      m_textureToRGBdata.erase_by_key(texName);
+    }
+
+    // Unknown names are ignored: this runs from destructors, so it must not throw.
+    auto itCount = m_textureRefCount.find(texName);
+    if (itCount == m_textureRefCount.end())
+    {
+      return;
+    }
+    if (--itCount->second > 0)
+    {
+      return;  // still in use by others
+    }
+    m_textureRefCount.erase(itCount);
+
+    auto itFrom = m_textureReservedFrom.find(texName);
+    m_destroyQueue[itFrom->second].push_back(texName);
+    m_textureReservedFrom.erase(itFrom);
+
     processDestroyQueue();
     MRPT_END
 #endif
@@ -176,15 +206,16 @@ class TextureResourceHandler
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   std::mutex m_texturesMtx;
   std::map<GLuint, std::thread::id> m_textureReservedFrom;
+  std::map<GLuint, int> m_textureRefCount;  //!< Number of users of each texture name
   std::map<std::thread::id, std::vector<GLuint>> m_destroyQueue;
   mrpt::containers::bimap<GLuint, const uint8_t*> m_textureToRGBdata;
   GLint m_maxTextureUnits;
 #endif
 };
 
-std::optional<texture_name_t> checkIfTextureAlreadyExists(const mrpt::img::CImage& rgb)
+std::optional<texture_name_t> acquireExistingTexture(const mrpt::img::CImage& rgb)
 {
-  return TextureResourceHandler::Instance().checkIfTextureAlreadyExists(rgb);
+  return TextureResourceHandler::Instance().acquireExistingTexture(rgb);
 }
 
 /// Returns: [texture name, texture unit]
@@ -303,9 +334,17 @@ void Texture::internalAssignImage_2D(
     in_alpha->forceLoad();
   }
 
+  // Drop the reference held from a previous assignment, if any, so each
+  // reference is released exactly once:
+  if (get().has_value())
+  {
+    releaseTextureName(get()->name);
+    get().reset();
+  }
+
   // Check if we already have this texture loaded in GPU and avoid creating
   // duplicated texture ID:
-  const auto existingTextureId = checkIfTextureAlreadyExists(*in_rgb);
+  const auto existingTextureId = acquireExistingTexture(*in_rgb);
   if (existingTextureId.has_value())
   {
     get() = existingTextureId.value();
@@ -637,6 +676,11 @@ void Texture::assignCubeImages(
   }
 
   // allocate texture "name" (ID):
+  if (get().has_value())
+  {
+    releaseTextureName(get()->name);
+    get().reset();
+  }
   get() = getNewTextureNumber(nullptr); /* no cached img for cube textures */
 
   // activate the texture unit first before binding texture

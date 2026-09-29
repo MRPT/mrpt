@@ -16,6 +16,7 @@
 
 #include <bitset>
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 #define APPERTURE 4.712385  // in radian <=> 270°
@@ -62,8 +63,23 @@ CIbeoLuxETH::~CIbeoLuxETH()
 
 void CIbeoLuxETH::dataCollection()
 {
+  // This runs in its own thread: an exception escaping from here would
+  // terminate the whole process.
+  try
+  {
+    dataCollectionImpl();
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "[CIbeoLuxETH] Data collection thread stopped: " << e.what() << "\n";
+    m_state = ssError;
+  }
+}
+
+void CIbeoLuxETH::dataCollectionImpl()
+{
   unsigned char state = SearchForAF;
-  unsigned char msgIn[1], Header[20], ScanListHeader[44], ScanPointData[10];
+  unsigned char msgIn[1] = {0}, Header[20] = {0}, ScanListHeader[44] = {0}, ScanPointData[10] = {0};
   unsigned int datatype, /*scannumber,*/ numScanpoints, angleTicks, SPlayer,
       SPdistance;  // SPecho;
   int SPHangle;

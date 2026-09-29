@@ -56,8 +56,9 @@ void CTaoboticsIMU::doProcess()
   using namespace std::chrono_literals;
 
   ASSERTMSG_(m_activeParser, "initialize() must be called first");
-  ASSERT_(m_serialPort);
 
+  // If the port could not be opened, try again (the port object only exists
+  // once opening it has worked):
   if (m_state == ssError)
   {
     std::this_thread::sleep_for(200ms);
@@ -68,6 +69,8 @@ void CTaoboticsIMU::doProcess()
   {
     return;
   }
+  ASSERT_(m_serialPort);
+
   // try to read and parse a frame from the serial port:
   std::vector<uint8_t> buf(m_rx_buffer.available());
 
