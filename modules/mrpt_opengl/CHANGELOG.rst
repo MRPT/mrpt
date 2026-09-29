@@ -2,6 +2,12 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* viz, opengl: fix PLY import, bounding boxes, sky boxes, viewport modes and SSAO; add tests.
+* mrpt_opengl: reference count textures shared by several users (#1433).
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.0 (2026-09-26)
 ------------------
 * Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)

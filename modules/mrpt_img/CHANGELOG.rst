@@ -2,6 +2,9 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.3.0 (2026-09-26)
 ------------------
 * fix: big-endian and armhf test failures (`#1431 <https://github.com/MRPT/mrpt/issues/1431>`_)

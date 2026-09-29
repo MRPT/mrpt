@@ -2,6 +2,9 @@
 Changelog for package mrpt_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.3.0 (2026-09-26)
 ------------------
 * fix: qualify mrpt::format() calls to avoid ambiguity with std::format

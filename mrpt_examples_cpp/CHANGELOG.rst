@@ -2,6 +2,9 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.3.0 (2026-09-26)
 ------------------
 * mrpt_imgui_vendor: new package with a single vendored Dear ImGui copy

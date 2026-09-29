@@ -2,6 +2,11 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix logger reset, file helpers, time logger export and pipe handling; add tests.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.0 (2026-09-26)
 ------------------
 * fix: qualify mrpt::format() calls to avoid ambiguity with std::format
