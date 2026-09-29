@@ -262,7 +262,8 @@ class COutputLogger
   /** Fill input string with the contents of the last message in history
    */
   void getLoggerLastMsg(std::string& msg_str) const;
-  /** Reset the contents of the logger instance. Called upon construction. */
+  /** Reset the logger instance: clears the history and the callbacks, and
+   * restores the default name, verbosity levels and options. */
   void loggerReset();
 
   /** [Default=true] Set it to false in case you don't want the logged
@@ -347,8 +348,7 @@ class COutputLogger
    * be called (e.g. by a GUI thread hooking into a logger) concurrently with
    * logStr() running on the logger's own thread, which iterates the list.
    * A shared_ptr, like m_historyMtx above, so COutputLogger stays copy-
-   * assignable (std::mutex itself is not; loggerReset() relies on this via
-   * `*this = COutputLogger()`). */
+   * assignable (std::mutex itself is not). */
   std::shared_ptr<std::mutex> m_listCallbacksMtx = std::make_shared<std::mutex>();
   std::deque<output_logger_callback_t> m_listCallbacks;
 };

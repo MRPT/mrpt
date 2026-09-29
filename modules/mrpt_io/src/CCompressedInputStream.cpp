@@ -76,7 +76,12 @@ CCompressedInputStream::CCompressedInputStream() :
 CCompressedInputStream::CCompressedInputStream(const string& fileName) : CCompressedInputStream()
 {
   MRPT_START
-  open(fileName);
+  std::string err_msg;
+  if (!open(fileName, err_msg))
+  {
+    THROW_EXCEPTION_FMT(
+        "Error trying to open file: '%s', error: '%s'", fileName.c_str(), err_msg.c_str());
+  }
   MRPT_END
 }
 

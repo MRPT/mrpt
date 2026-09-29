@@ -42,6 +42,7 @@ TEST(CPipe, SerializeAndReconstructEndPoint)
 
   const std::string serialized = readPipe->serialize();
   EXPECT_FALSE(serialized.empty());
+  EXPECT_FALSE(readPipe->isOpen()) << "the handle now belongs to the new end-point";
 
   CPipeReadEndPoint reconstructed(serialized);
 

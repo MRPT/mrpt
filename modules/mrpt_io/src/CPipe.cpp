@@ -109,11 +109,16 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string& serialized)
 std::string CPipeBaseEndPoint::serialize()
 {
   ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't serialize!");
+  // The ownership of the handle goes to whoever reconstructs the end-point:
+  // this object must not close it.
 #ifdef _WIN32
-  return std::to_string(reinterpret_cast<uint64_t>(m_pipe_file));
+  const std::string ret = std::to_string(reinterpret_cast<uint64_t>(m_pipe_file));
+  m_pipe_file = nullptr;
 #else
-  return std::to_string(m_pipe_file);
+  const std::string ret = std::to_string(m_pipe_file);
+  m_pipe_file = 0;
 #endif
+  return ret;
 }
 
 // Methods that don't make sense in pipes:
