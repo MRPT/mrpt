@@ -2,8 +2,8 @@
 Changelog for package mrpt_io
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.1 (2026-09-29)
+------------------
 * Increase test coverage and fix the bugs found in loggers, file helpers, compressed streams and pipes.
 * Fix ROS build farm builds on Fedora and RHEL: declare zlib dependency, define HAVE_UNISTD_H for bundled zlib.
 * Contributors: Jose Luis Blanco-Claraco

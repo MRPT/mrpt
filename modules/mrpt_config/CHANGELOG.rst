@@ -2,8 +2,8 @@
 Changelog for package mrpt_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.1 (2026-09-29)
+------------------
 * Fix ROS build farm builds on Fedora and RHEL: drop build deps without a rosdep rule.
 * Contributors: Jose Luis Blanco-Claraco
 

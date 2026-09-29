@@ -2,8 +2,8 @@
 Changelog for package mrpt_obs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.1 (2026-09-29)
+------------------
 * Fix Windows CI: close streams in python_obs test.
 * Contributors: Jose Luis Blanco-Claraco
 

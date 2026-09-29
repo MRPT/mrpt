@@ -2,8 +2,8 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.1 (2026-09-29)
+------------------
 * fresnel: fix large-x results when long double has a tiny LDBL_EPSILON.
 * Contributors: Jose Luis Blanco-Claraco
 

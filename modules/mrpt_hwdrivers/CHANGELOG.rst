@@ -2,8 +2,8 @@
 Changelog for package mrpt_hwdrivers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.1 (2026-09-29)
+------------------
 * hwdrivers, comms: harden the network and serial drivers; add fake-device tests.
 * Increase test coverage and fix the bugs found.
 * Contributors: Jose Luis Blanco-Claraco
