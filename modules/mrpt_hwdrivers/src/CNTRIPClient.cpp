@@ -63,8 +63,11 @@ void CNTRIPClient::close()
   {
     return;
   }
+  // A promise can be satisfied only once: use a fresh one for each close.
+  m_sem_sock_closed = std::promise<void>();
+  auto closed = m_sem_sock_closed.get_future();
   m_thread_do_process = false;
-  m_sem_sock_closed.get_future().wait_for(500ms);
+  closed.wait_for(500ms);
 }
 
 /* --------------------------------------------------------
@@ -86,17 +89,26 @@ bool CNTRIPClient::open(const NTRIPArgs& params, string& out_errmsg)
   }
 
   // Try to open it:
-  m_waiting_answer_connection = true;
   m_answer_connection = connError;
   out_errmsg.clear();
 
-  m_args = params;
+  // Each request has its own result: a worker still busy with an earlier one
+  // (e.g. after a timeout) cannot answer this one.
+  auto firstConnectPromise = std::make_shared<std::promise<void>>();
+  auto firstConnectDone = firstConnectPromise->get_future();
+  {
+    std::lock_guard<std::mutex> lck(m_args_mtx);
+    m_args = params;
+    m_first_connect_promise = firstConnectPromise;
+    m_attempt_id++;
+  }
   m_thread_do_process = true;
 
   // Wait until the thread tell us the initial result...
-  if (m_sem_first_connect_done.get_future().wait_for(6s) == std::future_status::timeout)
+  if (firstConnectDone.wait_for(6s) == std::future_status::timeout)
   {
     out_errmsg = "Timeout waiting thread response";
+    this->close();
     return false;
   }
 
@@ -106,16 +118,37 @@ bool CNTRIPClient::open(const NTRIPArgs& params, string& out_errmsg)
       return true;
     case connError:
       out_errmsg = mrpt::format("Error trying to connect to server '%s'", params.server.c_str());
-      return false;
+      break;
     case connUnauthorized:
       out_errmsg = mrpt::format("Authentication failed for server '%s'", params.server.c_str());
-      return false;
+      break;
 
     default:
       out_errmsg = "UNKNOWN m_answer_connection!!";
-      return false;
+      break;
   }
+  // Do not keep retrying to connect in the background after reporting failure:
+  this->close();
+  return false;
 }
+
+namespace
+{
+/** Returns the position right after the header of an NTRIP server reply, or
+ * npos if it has not been received completely. NTRIP v1 replies "ICY 200 OK"
+ * and starts the stream right after that line; HTTP style replies end their
+ * headers with a blank line. */
+size_t responseHeaderEnd(const std::string& resp)
+{
+  if (resp.rfind("ICY ", 0) == 0)
+  {
+    const size_t eol = resp.find("\r\n");
+    return eol == std::string::npos ? eol : eol + 2;
+  }
+  const size_t blank = resp.find("\r\n\r\n");
+  return blank == std::string::npos ? blank : blank + 4;
+}
+}  // namespace
 
 /* --------------------------------------------------------
           THE WORKING THREAD
@@ -166,23 +199,36 @@ void CNTRIPClient::private_ntrip_thread()
         TConnResult connect_res = connError;
 
         std::vector<uint8_t> buf;
+        bool headerComplete = false;
+        size_t bodyStart = 0;
+        uint64_t attemptId = 0;
         try
         {
           // Nope, it's the first time: get params and try open the
-          // connection:
+          // connection. The parameters are copied, so that a later call to
+          // open() cannot change them in the middle of this attempt (and send
+          // its credentials to the server of this one).
+          NTRIPArgs args;
+          {
+            std::lock_guard<std::mutex> lck(m_args_mtx);
+            args = m_args;
+            attemptId = m_attempt_id;
+          }
           stream_data.clear();
 
           std::cout << mrpt::format(
-              "[CNTRIPClient] Trying to connect to %s:%i\n", m_args.server.c_str(), m_args.port);
+              "[CNTRIPClient] Trying to connect to %s:%i\n", args.server.c_str(), args.port);
 
-          my_sock.connect(m_args.server, static_cast<unsigned short>(m_args.port));
+          // (bounded, so a dead server does not keep this thread busy after
+          // open() gave up waiting)
+          my_sock.connect(args.server, static_cast<unsigned short>(args.port), 4000);
           if (m_thread_exit) break;
 
           // Prepare HTTP request:
           // -------------------------------------------
-          string req = mrpt::format("GET /%s HTTP/1.0\r\n", m_args.mountpoint.c_str());
+          string req = mrpt::format("GET /%s HTTP/1.0\r\n", args.mountpoint.c_str());
 
-          if (isalpha(m_args.server[0])) req += mrpt::format("Host: %s\r\n", m_args.server.c_str());
+          if (isalpha(args.server[0])) req += mrpt::format("Host: %s\r\n", args.server.c_str());
 
           req += "User-Agent: NTRIP MRPT Library\r\n";
           req += "Accept: */*\r\n";
@@ -191,9 +237,9 @@ void CNTRIPClient::private_ntrip_thread()
           // Implement HTTP Basic authentication:
           // See:
           // http://en.wikipedia.org/wiki/Basic_access_authentication
-          if (!m_args.user.empty())
+          if (!args.user.empty())
           {
-            string auth_str = m_args.user + string(":") + m_args.password;
+            string auth_str = args.user + string(":") + args.password;
             std::vector<uint8_t> v(auth_str.size());
             std::memcpy(&v[0], &auth_str[0], auth_str.size());
 
@@ -212,14 +258,32 @@ void CNTRIPClient::private_ntrip_thread()
           // Send:
           my_sock.sendString(req);
 
-          // Try to read the header of the response:
-          size_t to_read_now = 30;
-          buf.resize(to_read_now);
-          size_t len = my_sock.readAsync(&buf[0], to_read_now, 4000, 200);
+          // Read the response header: the status line and, unless it is an
+          // NTRIP v1 "ICY" reply, the headers up to the blank line. Data of
+          // the stream can already follow it in the same packets.
+          constexpr size_t MAX_HEADER = 8192;
+          string resp;
+          while (resp.size() < MAX_HEADER)
+          {
+            std::vector<uint8_t> chunk(1024);
+            const size_t len =
+                my_sock.readAsync(&chunk[0], chunk.size(), resp.empty() ? 4000 : 1000, 200);
+            if (len == 0)
+            {
+              break;
+            }
+            resp.append(chunk.begin(), chunk.begin() + static_cast<std::ptrdiff_t>(len));
+            const auto end = responseHeaderEnd(resp);
+            if (end != string::npos)
+            {
+              headerComplete = true;
+              bodyStart = end;
+              break;
+            }
+          }
+          buf.assign(resp.begin(), resp.end());
 
-          buf.resize(len);
-
-          if ((len != 0) && my_sock.isConnected()) connect_res = connOk;
+          if (headerComplete && my_sock.isConnected()) connect_res = connOk;
         }
         catch (std::exception&)
         {
@@ -231,28 +295,44 @@ void CNTRIPClient::private_ntrip_thread()
         // check the answer code:
         if (!buf.empty())
         {
-          string resp;
-          resp.resize(buf.size());
-          std::memcpy(&resp[0], &buf[0], buf.size());
+          const string resp(buf.begin(), buf.end());
+          const size_t eol = resp.find("\r\n");
+          const string statusLine = resp.substr(0, eol);
 
-          if (resp.find(" 200 ") == string::npos)
+          const bool statusOk =
+              statusLine.find(" 200 ") != string::npos ||
+              (statusLine.size() >= 4 && statusLine.compare(statusLine.size() - 4, 4, " 200") == 0);
+          if (!statusOk || !headerComplete)
           {
             // It's NOT a good response...
             connect_res = connError;
 
             // 401?
-            if (resp.find(" 401 ") != string::npos) connect_res = connUnauthorized;
+            if (statusLine.find(" 401 ") != string::npos) connect_res = connUnauthorized;
+          }
+          else if (connect_res == connOk && bodyStart < buf.size())
+          {
+            // Stream data that came along with the header:
+            stream_data.appendData(std::vector<uint8_t>(buf.begin() + bodyStart, buf.end()));
           }
         }
 
         // Signal my caller that the connection is established:
         // ---------------------------------------------------------------
-        if (m_waiting_answer_connection)
         {
-          m_waiting_answer_connection = false;
-
-          m_answer_connection = connect_res;
-          m_sem_first_connect_done.set_value();
+          std::lock_guard<std::mutex> lck(m_args_mtx);
+          if (attemptId != m_attempt_id)
+          {
+            // An open() newer than this attempt has replaced the parameters:
+            // this connection is for another server, drop it.
+            connect_res = connError;
+          }
+          else if (m_first_connect_promise)
+          {
+            m_answer_connection = connect_res;
+            m_first_connect_promise->set_value();
+            m_first_connect_promise.reset();
+          }
         }
 
         if (connect_res != connOk) my_sock.close();
@@ -352,8 +432,11 @@ bool CNTRIPClient::retrieveListOfMountpoints(
     if (0 != ::strncmp("STR;", lin.c_str(), 4)) continue;
 
     // ok, it's a stream:
+    if (!lin.empty() && lin.back() == '\r') lin.pop_back();
+
+    // Keep blank fields: they hold their column position.
     deque<string> fields;
-    mrpt::system::tokenize(lin, ";", fields);
+    mrpt::system::tokenize(lin, ";", fields, false /*do not skip blank tokens*/);
 
     if (fields.size() < 13) continue;
 
@@ -376,6 +459,11 @@ bool CNTRIPClient::retrieveListOfMountpoints(
     mnt.needs_nmea = atoi(fields[11].c_str()) != 0;
     mnt.net_ref_stations = atoi(fields[12].c_str()) != 0;
 
+    if (fields.size() >= 14) mnt.generator_model = fields[13];
+    if (fields.size() >= 15) mnt.compr_encryp = fields[14];
+    if (fields.size() >= 16 && !fields[15].empty()) mnt.authentication = fields[15][0];
+    if (fields.size() >= 17) mnt.pay_service = (fields[16] == "Y");
+    if (fields.size() >= 18) mnt.stream_bitspersec = atoi(fields[17].c_str());
     if (fields.size() >= 19) mnt.extra_info = fields[18];
 
     out_list.push_back(mnt);

@@ -47,6 +47,8 @@ void CGillAnemometer::loadConfig_sensorSpecific(
   pose_x = configSource.read_float(iniSection, "pose_x", 0, true);
   pose_y = configSource.read_float(iniSection, "pose_y", 0, true);
   pose_z = configSource.read_float(iniSection, "pose_z", 0, true);
+  // Angles are given in degrees in the configuration file, as in the rest of
+  // sensor drivers:
   pose_roll = configSource.read_float(iniSection, "pose_roll", 0, true);
   pose_pitch = configSource.read_float(iniSection, "pose_pitch", 0, true);
   pose_yaw = configSource.read_float(iniSection, "pose_yaw", 0, true);
@@ -164,8 +166,9 @@ void CGillAnemometer::doProcess()
         // Prepare observation
         obsPtr->sensorLabel = m_sensorLabel;
         obsPtr->timestamp = mrpt::Clock::now();
-        obsPtr->sensorPoseOnRobot =
-            mrpt::poses::CPose3D(pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll);
+        obsPtr->sensorPoseOnRobot = mrpt::poses::CPose3D(
+            pose_x, pose_y, pose_z, mrpt::DEG2RAD(pose_yaw), mrpt::DEG2RAD(pose_pitch),
+            mrpt::DEG2RAD(pose_roll));
         appendObservation(obsPtr);
       }
       else
@@ -200,8 +203,9 @@ void CGillAnemometer::doProcess()
         // Prepare observation
         obsPtr->sensorLabel = m_sensorLabel;
         obsPtr->timestamp = mrpt::Clock::now();
-        obsPtr->sensorPoseOnRobot =
-            mrpt::poses::CPose3D(pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll);
+        obsPtr->sensorPoseOnRobot = mrpt::poses::CPose3D(
+            pose_x, pose_y, pose_z, mrpt::DEG2RAD(pose_yaw), mrpt::DEG2RAD(pose_pitch),
+            mrpt::DEG2RAD(pose_roll));
         appendObservation(obsPtr);
       }
       else

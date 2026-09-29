@@ -40,6 +40,7 @@ set(LIB_SOURCES
 set(LIB_UNIT_TEST_SOURCES
   tests/comms_test_server.cpp
   tests/CSerialPort_unittest.cpp
+  tests/CSerialPort_extra_unittest.cpp
   tests/nodelets_unittest.cpp
   tests/nodelets_extra_unittest.cpp
   tests/net_utils_unittest.cpp

@@ -16,8 +16,11 @@
 
 #include <mrpt/containers/MT_buffer.h>
 
+#include <atomic>
 #include <future>
 #include <list>
+#include <memory>
+#include <mutex>
 
 namespace mrpt::hwdrivers
 {
@@ -99,12 +102,15 @@ class CNTRIPClient
 
   std::thread m_thread;
   std::promise<void> m_sem_sock_closed;
-  std::promise<void> m_sem_first_connect_done;
+  /** Result of the connection attempt that open() is waiting for. Each open()
+   * has its own, so a late worker cannot answer a newer request. Guarded by
+   * m_args_mtx. */
+  std::shared_ptr<std::promise<void>> m_first_connect_promise;
+  uint64_t m_attempt_id{0};  //!< incremented by each open(), guarded by m_args_mtx
 
   mutable bool m_thread_exit{false};
   /** Will be "true" between "open" and "close" */
   mutable bool m_thread_do_process{false};
-  mutable bool m_waiting_answer_connection{false};
 
   enum TConnResult
   {
@@ -116,6 +122,7 @@ class CNTRIPClient
   mutable TConnResult m_answer_connection{connError};
   /** All the parameters for the NTRIP connection */
   mutable NTRIPArgs m_args;
+  std::mutex m_args_mtx;  //!< protects m_args
 
   /** Buffer for data to be sent back to the server */
   mrpt::containers::MT_buffer m_upload_data;

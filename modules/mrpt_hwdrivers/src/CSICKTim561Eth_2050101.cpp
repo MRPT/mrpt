@@ -114,8 +114,8 @@ bool CSICKTim561Eth::rebootDev()
     char msgIn[100];
     sendCommand(msg);
 
-    size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-    msgIn[read - 1] = 0;
+    size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
+    msgIn[read > 0 ? read - 1 : 0] = 0;
     MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
     MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
@@ -131,8 +131,8 @@ bool CSICKTim561Eth::rebootDev()
     char msgIn[100];
     sendCommand(msg);
 
-    size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-    msgIn[read - 1] = 0;
+    size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
+    msgIn[read > 0 ? read - 1 : 0] = 0;
     MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
     MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
@@ -186,8 +186,8 @@ bool CSICKTim561Eth::turnOn()
         char msgIn[100];
         sendCommand(msg);
 
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-        msgIn[read - 1] = 0;
+        size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
+        msgIn[read > 0 ? read - 1 : 0] = 0;
         MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
@@ -204,8 +204,8 @@ bool CSICKTim561Eth::turnOn()
         char msgIn[100];
         sendCommand(msg);
 
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-        msgIn[read - 1] = 0;
+        size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
+        msgIn[read > 0 ? read - 1 : 0] = 0;
         MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
@@ -222,8 +222,8 @@ bool CSICKTim561Eth::turnOn()
         char msgIn[100];
         sendCommand(msg);
 
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-        msgIn[read - 1] = 0;
+        size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
+        msgIn[read > 0 ? read - 1 : 0] = 0;
         MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
@@ -240,8 +240,8 @@ bool CSICKTim561Eth::turnOn()
         char msgIn[100];
         sendCommand(msg);
 
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-        msgIn[read - 1] = 0;
+        size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
+        msgIn[read > 0 ? read - 1 : 0] = 0;
         MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
 
@@ -313,8 +313,8 @@ bool CSICKTim561Eth::turnOn()
         char msg[] = {"sEN LMDscandata 1"};
         char msgIn[100];
         sendCommand(msg);
-        size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-        msgIn[read - 1] = 0;
+        size_t read = readTelegram(msgIn, sizeof(msgIn), 1000);
+        msgIn[read > 0 ? read - 1 : 0] = 0;
         MRPT_LOG_DEBUG_FMT("read : %u\n", static_cast<unsigned int>(read));
         MRPT_LOG_DEBUG_FMT("message : %s\n", string(&msgIn[1]).c_str());
         if (!read)
@@ -352,6 +352,26 @@ bool CSICKTim561Eth::turnOn()
     return false;
   }
   return true;
+}
+
+size_t CSICKTim561Eth::readTelegram(char* buf, size_t maxLen, int timeout_ms)
+{
+  constexpr char ETX = 0x03;
+  size_t n = 0;
+  while (n < maxLen - 1)
+  {
+    if (m_client.readAsync(&buf[n], 1, timeout_ms, timeout_ms) != 1)
+    {
+      break;  // timeout or closed connection
+    }
+    n++;
+    if (buf[n - 1] == ETX)
+    {
+      break;
+    }
+  }
+  buf[n] = 0;
+  return n;
 }
 
 void CSICKTim561Eth::sendCommand(const char* cmd)
@@ -401,18 +421,19 @@ bool CSICKTim561Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservat
         }
         break;
       case 6:
-        if (strcmp(next, "1"))
+        // Device status word: 0 means OK, 1 means error, other values are
+        // warnings (e.g. contamination):
+        if (!strcmp(next, "0"))
         {
           MRPT_LOG_DEBUG("Laser is ready");
         }
-        else if (strcmp(next, "0"))
+        else if (!strcmp(next, "1"))
         {
-          MRPT_LOG_DEBUG("Laser is busy");
+          MRPT_LOG_ERROR("Laser reports an error status");
         }
         else
         {
-          MRPT_LOG_DEBUG("Laser reports error");
-          rebootDev();
+          MRPT_LOG_WARN_FMT("Laser reports a warning status: '%s'", next);
         }
         break;
       case 21:
@@ -468,9 +489,11 @@ void CSICKTim561Eth::doProcessSimple(
   sendCommand(msg);
   char buffIn[16 * 1024];
 
-  m_client.readAsync(buffIn, sizeof(buffIn), 40, 40);
+  // Leave room for the string terminator:
+  const size_t nRead = m_client.readAsync(buffIn, sizeof(buffIn) - 1, 40, 40);
+  buffIn[nRead] = 0;
 
-  if (decodeScan(buffIn, outObservation))
+  if (nRead != 0 && decodeScan(buffIn, outObservation))
   {
     // Filter:
     C2DRangeFinderAbstract::filterByExclusionAreas(outObservation);
