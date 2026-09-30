@@ -2,6 +2,9 @@
 Changelog for package mrpt_imgui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.1 (2026-09-29)
+------------------
+
 3.3.0 (2026-09-26)
 ------------------
 * Merge pull request `#1419 <https://github.com/MRPT/mrpt/issues/1419>`_ from MRPT/fix/windows-imgui-glew-link

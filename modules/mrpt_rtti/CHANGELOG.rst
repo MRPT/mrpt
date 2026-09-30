@@ -2,6 +2,9 @@
 Changelog for package mrpt_rtti
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.1 (2026-09-29)
+------------------
+
 3.3.0 (2026-09-26)
 ------------------
 * Python bindings: datasets, maps, localization, sensors (+ fixes) (`#1429 <https://github.com/MRPT/mrpt/issues/1429>`_)

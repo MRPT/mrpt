@@ -2,6 +2,11 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.1 (2026-09-29)
+------------------
+* Increase test coverage and fix the bugs found (CGenericPointsMap field API tests).
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.0 (2026-09-26)
 ------------------
 * fix formatting

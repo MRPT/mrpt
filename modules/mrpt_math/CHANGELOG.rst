@@ -2,6 +2,11 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.3.1 (2026-09-29)
+------------------
+* fresnel: fix large-x results when long double has a tiny LDBL_EPSILON.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.0 (2026-09-26)
 ------------------
 * fix: qualify mrpt::format() calls to avoid ambiguity with std::format
