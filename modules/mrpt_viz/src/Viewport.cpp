@@ -34,6 +34,27 @@ using namespace mrpt::math;
 using namespace mrpt::serialization::metaprogramming;
 using namespace std;
 
+namespace
+{
+// Half width and height [m] of the area seen by an orthographic camera, as
+// used by the renderer's projection matrix
+// (mrpt::opengl::TRenderMatrices::computeProjectionMatrix()).
+std::pair<double, double> orthoHalfExtents(double zoom, double aspect)
+{
+  double halfW = 0.25 * zoom;
+  double halfH = 0.25 * zoom;
+  if (aspect > 1)
+  {
+    halfW *= aspect;
+  }
+  else if (aspect != 0)
+  {
+    halfH /= aspect;
+  }
+  return {halfW, halfH};
+}
+}  // namespace
+
 IMPLEMENTS_SERIALIZABLE(Viewport, CSerializable, mrpt::viz)
 
 /*--------------------------------------------------------------
@@ -637,8 +658,7 @@ mrpt::math::TLine3D Viewport::get3DRayForPixelCoord(
       const double nx = (2.0 * pixelCoord.x / viewportSize.x - 1.0);
       const double ny = -(2.0 * pixelCoord.y / viewportSize.y - 1.0);
 
-      const double half_w = zoom * aspect * 0.5;
-      const double half_h = zoom * 0.5;
+      const auto [half_w, half_h] = orthoHalfExtents(zoom, aspect);
 
       mrpt::math::TPoint3D origin = eye + right * (nx * half_w) + camUp * (ny * half_h);
 
@@ -724,8 +744,7 @@ mrpt::math::TLine3D Viewport::get3DRayForPixelCoord(
     const double nx = (2.0 * pixelCoord.x / viewportSize.x - 1.0);
     const double ny = -(2.0 * pixelCoord.y / viewportSize.y - 1.0);
 
-    const double half_w = dis * aspect * 0.5;
-    const double half_h = dis * 0.5;
+    const auto [half_w, half_h] = orthoHalfExtents(dis, aspect);
 
     mrpt::math::TPoint3D origin = eye + right * (nx * half_w) + up * (ny * half_h);
 
