@@ -1593,14 +1593,18 @@ int get_binary_item(
   switch (type)
   {
     case PLY_CHAR:
+    {
       if (!readRaw(fp, ptr, 1, do_reverse))
       {
         return 0;
       }
-      *int_val = *((signed char*)ptr);
+      // Sign-extend by hand: plain char may be unsigned on this platform.
+      const auto b = static_cast<unsigned char>(c[0]);
+      *int_val = b > 0x7f ? static_cast<int>(b) - 0x100 : static_cast<int>(b);
       *uint_val = *int_val;
       *double_val = *int_val;
       break;
+    }
     case PLY_UCHAR:
       if (!readRaw(fp, ptr, 1, do_reverse))
       {
