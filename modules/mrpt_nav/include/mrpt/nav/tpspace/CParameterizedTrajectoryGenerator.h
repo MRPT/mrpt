@@ -290,6 +290,16 @@ class CParameterizedTrajectoryGenerator :
   virtual void updateTPObstacleSingle(
       double ox, double oy, uint16_t k, double& tp_obstacle_k) const = 0;
 
+  /** Batched updateTPObstacle() for `n` obstacle points, in relative
+   * coordinates wrt the origin of the PTG: the result is the same as calling
+   * updateTPObstacle() for each point. This default implementation does
+   * exactly that; PTGs with a faster batched evaluation override it.
+   * \note `tp_obstacles` must be initialized with initTPObstacles() before
+   * call.
+   */
+  virtual void updateTPObstacles(
+      const float* xs, const float* ys, std::size_t n, std::vector<double>& tp_obstacles) const;
+
   /** Loads a set of default parameters into the PTG. Users normally will call
    * `loadFromConfigFile()` instead, this method is provided
    * exclusively for the PTG-configurator tool. */

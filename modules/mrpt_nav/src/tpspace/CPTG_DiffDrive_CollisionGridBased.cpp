@@ -974,7 +974,58 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 
   }  // "else" recompute all PTG
 
+  buildFlatCollisionGrid();
+
   MRPT_END
+}
+
+void CPTG_DiffDrive_CollisionGridBased::buildFlatCollisionGrid()
+{
+  auto& g = m_flatGrid;
+  const auto& cg = m_collisionGrid;
+  const size_t nx = cg.getSizeX();
+  const size_t ny = cg.getSizeY();
+  const double res = cg.getResolution();
+
+  g.x_min = cg.getXMin();
+  g.y_min = cg.getYMin();
+  g.resolution = res;
+  g.size_x = static_cast<int>(nx);
+  g.size_y = static_cast<int>(ny);
+  g.offsets.assign(nx * ny + 1, 0);
+  g.entries.clear();
+
+  // Squared distance from the origin to the farthest point that the grid
+  // indexing maps into a non-empty cell. Index 0 also receives points up to
+  // one cell below the grid minimum, since the index is truncated toward
+  // zero, so its preimage extends one cell further out.
+  double maxR2 = 0;
+  for (size_t iy = 0; iy < ny; iy++)
+  {
+    for (size_t ix = 0; ix < nx; ix++)
+    {
+      const size_t i = ix + iy * nx;
+      const auto* cell = cg.cellByIndex(ix, iy);
+      g.offsets[i] = static_cast<uint32_t>(g.entries.size());
+      if (!cell || cell->empty())
+      {
+        continue;
+      }
+      g.entries.insert(g.entries.end(), cell->begin(), cell->end());
+
+      const double x0 = g.x_min + (ix == 0 ? -1.0 : static_cast<double>(ix)) * res;
+      const double x1 = g.x_min + static_cast<double>(ix + 1) * res;
+      const double y0 = g.y_min + (iy == 0 ? -1.0 : static_cast<double>(iy)) * res;
+      const double y1 = g.y_min + static_cast<double>(iy + 1) * res;
+      const double fx = std::max(std::abs(x0), std::abs(x1));
+      const double fy = std::max(std::abs(y0), std::abs(y1));
+      maxR2 = std::max(maxR2, fx * fx + fy * fy);
+    }
+  }
+  g.offsets[nx * ny] = static_cast<uint32_t>(g.entries.size());
+  // A small margin keeps round-off in the index computation harmless:
+  const double maxR = std::sqrt(maxR2) + 1e-6;
+  g.max_radius_sq = maxR * maxR;
 }
 
 size_t CPTG_DiffDrive_CollisionGridBased::getPathStepCount(uint16_t k) const
@@ -1043,6 +1094,58 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
   for (const auto& i : cell)
   {
     mrpt::keep_min(tp_obstacles[i.first], static_cast<double>(i.second));
+  }
+}
+
+void CPTG_DiffDrive_CollisionGridBased::updateTPObstacles(
+    const float* xs, const float* ys, std::size_t n, std::vector<double>& tp_obstacles) const
+{
+  ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
+  const auto& g = m_flatGrid;
+  if (g.offsets.empty())
+  {
+    // Not built (e.g. a PTG restored from a stream without initialize()):
+    CParameterizedTrajectoryGenerator::updateTPObstacles(xs, ys, n, tp_obstacles);
+    return;
+  }
+  for (std::size_t i = 0; i < n; i++)
+  {
+    // The same float -> double conversion as updateTPObstacle():
+    const double ox = xs[i];
+    const double oy = ys[i];
+    if (ox * ox + oy * oy > g.max_radius_sq)
+    {
+      continue;
+    }
+    // Same indexing as CDynamicGrid::cellByPos():
+    const int cx = static_cast<int>((ox - g.x_min) / g.resolution);
+    const int cy = static_cast<int>((oy - g.y_min) / g.resolution);
+    if (cx < 0 || cx >= g.size_x || cy < 0 || cy >= g.size_y)
+    {
+      continue;
+    }
+    const size_t cell =
+        static_cast<size_t>(cx) + static_cast<size_t>(cy) * static_cast<size_t>(g.size_x);
+    const uint32_t begin = g.offsets[cell];
+    const uint32_t end = g.offsets[cell + 1];
+    if (begin == end)
+    {
+      continue;
+    }
+    // The inside-the-robot test is per point, not per cell entry:
+    if (isPointInsideRobotShape(ox, oy))
+    {
+      for (uint32_t j = begin; j < end; j++)
+      {
+        internal_TPObsDistancePostprocess(
+            ox, oy, g.entries[j].second, tp_obstacles[g.entries[j].first]);
+      }
+      continue;
+    }
+    for (uint32_t j = begin; j < end; j++)
+    {
+      mrpt::keep_min(tp_obstacles[g.entries[j].first], static_cast<double>(g.entries[j].second));
+    }
   }
 }
 
