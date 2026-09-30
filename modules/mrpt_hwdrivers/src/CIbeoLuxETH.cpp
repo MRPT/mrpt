@@ -16,6 +16,7 @@
 
 #include <bitset>
 #include <chrono>
+#include <cstdint>
 #include <iostream>
 #include <thread>
 
@@ -176,8 +177,9 @@ void CIbeoLuxETH::dataCollectionImpl()
           SPlayer = ScanPointData[0] & 0x0F;  // two lower bits denote layer
           // SPecho  = ScanPointData[0] >> 4; // two higher bits
           // denote echo
-          SPHangle =
-              static_cast<char>(ScanPointData[3]) * 0x100 + ScanPointData[2];  // signed INT16 here
+          // Signed little-endian INT16 (plain "char" is unsigned on some archs):
+          SPHangle = static_cast<int16_t>(
+              static_cast<uint16_t>(ScanPointData[3] * 0x100 + ScanPointData[2]));
           SPdistance = ScanPointData[5] * 0x100 + ScanPointData[4];
 
           // Sanity checks
