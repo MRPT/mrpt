@@ -80,7 +80,13 @@
 namespace mrpt::opengl
 {
 void checkOpenGLErr_impl(unsigned int glErrorCode, const char* filename, int lineno);
-}
+
+/** Discards any pending OpenGL error flags. The number of glGetError() calls
+ * is bounded, since some contexts (e.g. a lost one) never stop reporting an
+ * error.
+ */
+void clearOpenGLErrors();
+}  // namespace mrpt::opengl
 
 /** Checks glGetError and throws an exception if an error situation is found
  */
