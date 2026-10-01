@@ -151,7 +151,7 @@ TEST(Viewport, ClonedCameraTakesTheCameraOfTheOtherViewport)
 
   // Pointing to a viewport that does not exist is an error:
   other->setClonedCameraFrom("missing");
-  EXPECT_ANY_THROW(other->resolveActiveCamera());
+  EXPECT_ANY_THROW(static_cast<void>(other->resolveActiveCamera()));
 }
 
 TEST(Viewport, RayForPixelCoordWithOrthogonalCamera)
