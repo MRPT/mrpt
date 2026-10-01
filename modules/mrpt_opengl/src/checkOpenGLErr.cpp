@@ -59,3 +59,16 @@ void mrpt::opengl::checkOpenGLErr_impl(unsigned int glErrorCode, const char* fil
   std::cerr << "[gl_utils::checkOpenGLError] " << sErr << "\n";
   THROW_EXCEPTION(sErr);
 }
+
+void mrpt::opengl::clearOpenGLErrors()
+{
+  // One call per error flag is enough: implementations keep only a few flags.
+  constexpr int MAX_CALLS = 32;
+  for (int i = 0; i < MAX_CALLS; i++)
+  {
+    if (glGetError() == GL_NO_ERROR)
+    {
+      return;
+    }
+  }
+}

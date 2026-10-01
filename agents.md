@@ -188,6 +188,10 @@ mrpt_add_library(
 * Multi-byte data read/written with raw `ReadBuffer()`/`WriteBuffer()` or
   `memcpy` instead of `*FixEndianness()`: breaks on big-endian (s390x).
   Streams and sensor packets are little-endian.
+* `#if MRPT_IS_BIG_ENDIAN` in a file that does not include
+  `mrpt/core/config.h` (directly or indirectly) silently reads 0.
+* Plain `char` used as a signed byte: it is unsigned on ARM and s390x. Use
+  `int8_t` / `signed char`.
 * Members read but never written; declared-but-never-defined functions.
 * Documented defaults set only in `loadFromConfigFile()`, with the member
   itself left uninitialized.

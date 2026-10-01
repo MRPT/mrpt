@@ -18,6 +18,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <mrpt/core/config.h>  // MRPT_IS_BIG_ENDIAN
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/config.h>  // for MRPT_HAS_*
 #include <mrpt/viz/CBox.h>
@@ -221,6 +222,11 @@ TEST(OpenGLViewport, TextMessagesAreOverlaid)
 
 TEST(OpenGLViewport, ShadowsAndSSAORender)
 {
+#if MRPT_IS_BIG_ENDIAN
+  // The software GL renderer available on big-endian hosts hangs in these
+  // render passes.
+  GTEST_SKIP() << "Shadows/SSAO rendering not tested on big-endian hosts";
+#endif
   auto renderer = makeRenderer();
   if (!renderer)
   {

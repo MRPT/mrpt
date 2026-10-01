@@ -1504,9 +1504,7 @@ void CompiledViewport::processRenderQueue(
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   // Clear any prior GL errors
-  while (glGetError() != GL_NO_ERROR)
-  {
-  }
+  clearOpenGLErrors();
 
   for (const auto& [shaderID, proxyMap] : queue)
   {

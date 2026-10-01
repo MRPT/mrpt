@@ -294,9 +294,7 @@ void CFBORender::internal_render_RGBD(
   }
 
   // Clear any stale errors after context switch
-  while (glGetError() != GL_NO_ERROR)
-  {
-  }
+  clearOpenGLErrors();
 
   // Ensure compiled scene is ready
   ensureCompiledScene(scene);

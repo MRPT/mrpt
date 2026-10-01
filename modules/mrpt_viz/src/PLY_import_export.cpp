@@ -59,6 +59,7 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 #pragma clang diagnostic ignored "-Wold-style-cast"
 #endif
 
+#include <mrpt/core/config.h>  // MRPT_IS_BIG_ENDIAN
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/viz/PLY_import_export.h>
@@ -1337,7 +1338,7 @@ Exit:
 double get_item_value(char* item, int type)
 {
   unsigned char* puchar;
-  char* pchar;
+  signed char* pchar;
   short int* pshort;
   unsigned short int* pushort;
   int* pint;
@@ -1351,7 +1352,7 @@ double get_item_value(char* item, int type)
   switch (type)
   {
     case PLY_CHAR:
-      pchar = (char*)item;
+      pchar = (signed char*)item;
       int_value = *pchar;
       return ((double)int_value);
     case PLY_UCHAR:
@@ -1495,7 +1496,7 @@ void get_stored_item(void* ptr, int type, int* int_val, unsigned int* uint_val, 
   switch (type)
   {
     case PLY_CHAR:
-      *int_val = *((char*)ptr);
+      *int_val = *((signed char*)ptr);
       *uint_val = *int_val;
       *double_val = *int_val;
       break;
@@ -1592,14 +1593,18 @@ int get_binary_item(
   switch (type)
   {
     case PLY_CHAR:
+    {
       if (!readRaw(fp, ptr, 1, do_reverse))
       {
         return 0;
       }
-      *int_val = *((char*)ptr);
+      // Sign-extend by hand: plain char may be unsigned on this platform.
+      const auto b = static_cast<unsigned char>(c[0]);
+      *int_val = b > 0x7f ? static_cast<int>(b) - 0x100 : static_cast<int>(b);
       *uint_val = *int_val;
       *double_val = *int_val;
       break;
+    }
     case PLY_UCHAR:
       if (!readRaw(fp, ptr, 1, do_reverse))
       {
