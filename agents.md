@@ -54,7 +54,9 @@ mrpt_add_library(
 * No raw owning pointers: `std::shared_ptr` / `std::unique_ptr` and MRPT's
   smart pointer macros.
 * Do not expose Eigen headers in public API headers unless the user allows it;
-  keep Eigen `#include`s in `src/`.
+  keep Eigen `#include`s in `src/`. Eigen is linked PRIVATE, so user code may
+  not even have it in the include path: public templates must also avoid
+  Eigen-based helpers (`mat2eig()`, `multiply_HCHt_scalar()`, `asEigen()`...).
 * Avoid huge inline members: large stack objects broke exception backtraces
   on aarch64 (Ubuntu GCC 13, stack-clash protection).
 * Prefer `std::optional` return values over bool + output-parameter APIs
