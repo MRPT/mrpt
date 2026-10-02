@@ -29,6 +29,9 @@ using namespace mrpt::serialization::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CMultiMetricMap, CMetricMap, mrpt::maps)
 
+CMultiMetricMap::CMultiMetricMap() = default;
+CMultiMetricMap::CMultiMetricMap(CMultiMetricMap&&) = default;
+
 // ------------------------------------------------------------------------
 // A few words explaining how all this works:
 //  The main hub for operating with all the maps in the internal list
