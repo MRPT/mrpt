@@ -34,7 +34,7 @@ constraint_t makeEdge(double x, double y, double phi, double information)
 {
   constraint_t c;
   c.mean = mrpt::poses::CPose2D(x, y, phi);
-  c.cov_inv = mrpt::math::CMatrixDouble33::Identity() * information;
+  c.cov_inv.setDiagonal(information);
   return c;
 }
 }  // namespace
