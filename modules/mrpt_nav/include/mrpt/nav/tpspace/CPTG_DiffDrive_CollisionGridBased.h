@@ -158,7 +158,11 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
   void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
 
   /** Numerically solve the diferential equations to generate a family of
-   * trajectories */
+   * trajectories. Integration runs at `diferencial_t`, while samples are
+   * stored at a fixed period (getPathStepDuration()) such that the robot
+   * moves at most `min_dist` between samples at its maximum speeds. Each path
+   * ends at a sample time, once it reaches `max_dist`, `max_time` or `max_n`
+   * samples, turns ~2*pi, or the PTG commands a null velocity. */
   void simulateTrajectories(
       float max_time,
       float max_dist,
