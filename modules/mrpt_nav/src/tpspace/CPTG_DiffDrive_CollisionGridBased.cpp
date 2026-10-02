@@ -223,8 +223,6 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 
   internal_deinitialize();  // Free previous paths
 
-  m_stepTimeDuration = diferencial_t;
-
   // Reserve the size in the buffers:
   m_trajectory.resize(m_alphaValuesCount);
 
@@ -232,10 +230,15 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
   // determine the spacing of points
   // under pure rotation
 
-  // Aux buffer:
-  TCPointVector points;
-
-  float ult_dist, ult_dist1, ult_dist2;
+  // Samples are stored at a fixed period, so step "n" happens at time
+  // n * getPathStepDuration(). The period is chosen such that, at the maximum
+  // speeds, the robot moves at most `min_dist` between samples (translation,
+  // or rotation scaled by radio_max_robot).
+  const double maxSpeed = std::max(std::abs(V_MAX), std::abs(W_MAX) * radio_max_robot);
+  ASSERT_GT_(maxSpeed, 0);
+  const auto stepsPerSample =
+      static_cast<unsigned int>(std::max(1.0, std::floor(min_dist / (maxSpeed * diferencial_t))));
+  m_stepTimeDuration = stepsPerSample * static_cast<double>(diferencial_t);
 
   // For the grid:
   float x_min = 1e3f, x_max = -1e3;
@@ -254,9 +257,9 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
       // ------------------------------------------------------------
       const float alpha = static_cast<float>(index2alpha(static_cast<uint16_t>(k)));
 
-      points.clear();
+      TCPointVector points;
       float t = .0f, dist = .0f, girado = .0f;
-      float x = .0f, y = .0f, phi = .0f, v = .0f, w = .0f, _x = .0f, _y = .0f, _phi = .0f;
+      float x = .0f, y = .0f, phi = .0f, v = .0f, w = .0f;
 
       // Sliding window with latest movement commands (for the optional
       // low-pass filtering):
@@ -265,9 +268,19 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
       // Add the first, initial point:
       points.push_back(TCPoint(x, y, phi, t, dist, v, w));
 
-      // Simulate until...
-      while (t < max_time && dist < max_dist && points.size() < max_n && fabs(girado) < 1.95 * M_PI)
+      // Set once the PTG commands a null velocity, i.e. the path has ended:
+      bool stopped = false;
+
+      // Simulate until... (checked at sample times only, to keep the samples
+      // evenly spaced in time)
+      for (unsigned int nStep = 0;; nStep++)
       {
+        if (nStep % stepsPerSample == 0 && (stopped || t >= max_time || dist >= max_dist ||
+                                            points.size() >= max_n || fabs(girado) >= 1.95 * M_PI))
+        {
+          break;
+        }
+
         // Max. aceleraciones:
         if (t > 1)
         {
@@ -278,7 +291,15 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
         }
 
         // Compute new movement command (v,w):
-        ptgDiffDriveSteeringFunction(alpha, t, x, y, phi, v, w);
+        if (stopped)
+        {
+          v = w = 0;
+        }
+        else
+        {
+          ptgDiffDriveSteeringFunction(alpha, t, x, y, phi, v, w);
+          stopped = (v == 0 && w == 0);
+        }
 
         // History of v/w ----------------------------------
         last_vs[1] = last_vs[0];
@@ -300,14 +321,10 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 
         dist += v_inTPSpace * diferencial_t;
 
-        t += diferencial_t;
+        // Computed from the step count to avoid accumulating round-off:
+        t = static_cast<float>((nStep + 1) * static_cast<double>(diferencial_t));
 
-        // Save sample if we moved far enough:
-        ult_dist1 = static_cast<float>(sqrt(square(_x - x) + square(_y - y)));
-        ult_dist2 = static_cast<float>(fabs(radio_max_robot * (_phi - phi)));
-        ult_dist = std::max(ult_dist1, ult_dist2);
-
-        if (ult_dist > min_dist)
+        if ((nStep + 1) % stepsPerSample == 0)
         {
           // Set the (v,w) to the last record:
           points.back().v = v;
@@ -315,11 +332,6 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 
           // And add the new record:
           points.push_back(TCPoint(x, y, phi, t, dist, v, w));
-
-          // For the next iter:
-          _x = x;
-          _y = y;
-          _phi = phi;
         }
 
         // for the grid:
@@ -329,10 +341,11 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
         y_max = std::max(y_max, y);
       }
 
-      // Add the final point:
-      points.back().v = v;
-      points.back().w = w;
-      points.push_back(TCPoint(x, y, phi, t, dist, v, w));
+      // Every path must have at least two samples:
+      if (points.size() < 2)
+      {
+        points.push_back(TCPoint(x, y, phi, static_cast<float>(m_stepTimeDuration), dist, v, w));
+      }
 
       // Save data to C-Space path structure:
       m_trajectory[k] = points;
@@ -815,13 +828,17 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
   if (verbose) std::cout << "Initializing PTG '" << cacheFilename << "'...";
 
   // Simulate paths:
+  // Samples are evenly spaced in time, so slow paths need more of them: the
+  // number of samples is effectively bounded by max_time only.
+  const float max_time = 100;
+  const float diferencial_t = 0.0005f;
   const float min_dist = 0.015f;
   simulateTrajectories(
-      100,                                                     // max.tim,
-      static_cast<float>(refDistance),                         // max.dist,
-      static_cast<unsigned int>(10 * refDistance / min_dist),  // max.n,
-      0.0005f,                                                 // diferencial_t
-      min_dist                                                 // min_dist
+      max_time,                                                 // max.tim,
+      static_cast<float>(refDistance),                          // max.dist,
+      static_cast<unsigned int>(max_time / diferencial_t) + 2,  // max.n,
+      diferencial_t,                                            // diferencial_t
+      min_dist                                                  // min_dist
   );
 
   // Just for debugging, etc.
@@ -829,12 +846,20 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 
   // Check for collisions between the robot shape and the grid cells:
   // ----------------------------------------------------------------------------
-  // The reference point never goes farther than refDistance from the origin,
-  // so the footprint stays within refDistance + robot radius: obstacles beyond
-  // that can never be touched. One extra cell accounts for the cell size.
+  // The footprint stays within the farthest stored reference point (about
+  // refDistance, plus up to one sample) + robot radius: obstacles beyond that
+  // can never be touched. One extra cell accounts for the cell size.
   updateMaxRobotRadius();
   const double robotRadius = getMaxRobotRadius();
-  const double gridHalfSize = refDistance + robotRadius + 2 * m_resolution;
+  double maxReach = refDistance;
+  for (const auto& path : m_trajectory)
+  {
+    for (const auto& p : path)
+    {
+      maxReach = std::max(maxReach, static_cast<double>(std::hypot(p.x, p.y)));
+    }
+  }
+  const double gridHalfSize = maxReach + robotRadius + 2 * m_resolution;
   m_collisionGrid.setSize(-gridHalfSize, gridHalfSize, -gridHalfSize, gridHalfSize, m_resolution);
 
   const size_t Ki = getAlphaValuesCount();
@@ -1175,9 +1200,33 @@ void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(mrpt::serializat
   switch (version)
   {
     case 0:
+    case 1:
       internal_deinitialize();
       in >> V_MAX >> W_MAX >> turningRadiusReference >> m_robotShape >> m_resolution >>
           m_trajectory;
+      if (version >= 1)
+      {
+        in >> m_stepTimeDuration;
+      }
+      else
+      {
+        // Older versions sampled paths by distance, not at a fixed period:
+        // use the average sample period (excluding the last, final sample).
+        double sumT = 0;
+        size_t sumN = 0;
+        for (const auto& path : m_trajectory)
+        {
+          if (path.size() > 2)
+          {
+            sumT += path[path.size() - 2].t - path.front().t;
+            sumN += path.size() - 2;
+          }
+        }
+        if (sumN > 0 && sumT > 0)
+        {
+          m_stepTimeDuration = sumT / static_cast<double>(sumN);
+        }
+      }
       updateMaxRobotRadius();
       break;
     default:
@@ -1191,10 +1240,11 @@ void CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(
   CParameterizedTrajectoryGenerator::internal_writeToStream(out);
   CPTG_RobotShape_Polygonal::internal_shape_saveToStream(out);
 
-  const uint8_t version = 0;
+  const uint8_t version = 1;
   out << version;
 
-  out << V_MAX << W_MAX << turningRadiusReference << m_robotShape << m_resolution << m_trajectory;
+  out << V_MAX << W_MAX << turningRadiusReference << m_robotShape << m_resolution << m_trajectory
+      << m_stepTimeDuration;
 }
 
 mrpt::kinematics::CVehicleVelCmd::Ptr

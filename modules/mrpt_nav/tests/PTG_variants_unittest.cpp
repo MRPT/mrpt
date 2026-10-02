@@ -30,6 +30,7 @@
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CSetOfLines.h>
 
@@ -160,6 +161,7 @@ TEST(PTGVariants, diffdrive_serialization_roundtrip)
     EXPECT_EQ(ptg2->getPathCount(), ptg->getPathCount()) << name;
     EXPECT_NEAR(ptg2->getRefDistance(), ptg->getRefDistance(), 1e-9) << name;
     EXPECT_EQ(ptg2->getDescription(), ptg->getDescription()) << name;
+    EXPECT_NEAR(ptg2->getPathStepDuration(), ptg->getPathStepDuration(), 1e-12) << name;
     // Deserialization leaves the PTG un-initialized (no LUT yet):
     EXPECT_FALSE(ptg2->isInitialized()) << name;
   }
@@ -178,6 +180,87 @@ TEST(PTGVariants, diffdrive_default_params_are_usable)
     EXPECT_GT(ptg->getPathCount(), 0U) << name;
     EXPECT_GT(ptg->getRefDistance(), .0) << name;
   }
+}
+
+TEST(PTGVariants, diffdrive_path_steps_are_evenly_spaced_in_time)
+{
+  // Step "n" must happen at n * getPathStepDuration(): no path may move
+  // faster (in TP-space distance) than the maximum robot speeds allow.
+  const double v_max = 1.0;
+  const double w_max = mrpt::DEG2RAD(60.0);
+  const double turningRadiusReference = 0.10;  // default value
+  const double maxTPSpeed = std::hypot(v_max, w_max * turningRadiusReference);
+
+  for (const auto* name : diffdrive_ptg_names)
+  {
+    auto ptg = make_diffdrive_ptg(name);
+    const double dt = ptg->getPathStepDuration();
+    ASSERT_GT(dt, .0) << name;
+
+    for (uint16_t k = 0; k < ptg->getPathCount(); k++)
+    {
+      const size_t nSteps = ptg->getPathStepCount(k);
+      for (uint32_t n = 1; n < nSteps; n++)
+      {
+        const double dDist = ptg->getPathDist(k, n) - ptg->getPathDist(k, n - 1);
+        EXPECT_LE(dDist, maxTPSpeed * dt * 1.01) << name << " k=" << k << " n=" << n;
+      }
+    }
+  }
+
+  // The straight path of the "C" PTG runs at v_max, so its distance tells
+  // the elapsed time:
+  auto ptg = make_diffdrive_ptg("CPTG_DiffDrive_C");
+  const double dt = ptg->getPathStepDuration();
+  const uint16_t k = ptg->alpha2index(.0);
+  const size_t nSteps = ptg->getPathStepCount(k);
+  ASSERT_GT(nSteps, 10U);
+  for (uint32_t n = 0; n < nSteps; n++)
+  {
+    EXPECT_NEAR(ptg->getPathDist(k, n), v_max * n * dt, 1e-3) << "n=" << n;
+  }
+  // refDistance=2 m at 1 m/s:
+  EXPECT_NEAR((nSteps - 1) * dt, 2.0, dt);
+}
+
+namespace
+{
+/** Writes and reads the stream format of older versions, without the
+ *  serialized path step duration. */
+class PTG_C_LegacyStream : public CPTG_DiffDrive_C
+{
+ public:
+  void writeV0(mrpt::serialization::CArchive& out) const
+  {
+    CParameterizedTrajectoryGenerator::internal_writeToStream(out);
+    CPTG_RobotShape_Polygonal::internal_shape_saveToStream(out);
+    out << static_cast<uint8_t>(0) << V_MAX << W_MAX << turningRadiusReference << m_robotShape
+        << m_resolution << m_trajectory;
+    out << K;
+  }
+  void readFrom(mrpt::serialization::CArchive& in) { serializeFrom(in, 0); }
+};
+}  // namespace
+
+TEST(PTGVariants, diffdrive_legacy_stream_estimates_the_path_step_duration)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  fill_diffdrive_cfg(cfg, "PTG");
+
+  PTG_C_LegacyStream ptg;
+  static_cast<CParameterizedTrajectoryGenerator&>(ptg).loadFromConfigFile(cfg, "PTG");
+  ptg.initialize(std::string(), false /*verbose*/);
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+  ptg.writeV0(arch);
+  buf.Seek(0);
+
+  PTG_C_LegacyStream ptg2;
+  ptg2.readFrom(arch);
+  EXPECT_EQ(ptg2.getPathCount(), ptg.getPathCount());
+  // Paths are sampled at a fixed period, so the estimate is exact:
+  EXPECT_NEAR(ptg2.getPathStepDuration(), ptg.getPathStepDuration(), 1e-6);
 }
 
 TEST(PTGVariants, diffdrive_render_path_and_shape)
