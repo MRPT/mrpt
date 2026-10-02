@@ -46,10 +46,9 @@ class CVoxelMap : public CVoxelMapOccupancyBase<VoxelNodeOccupancy>
   DEFINE_SERIALIZABLE(CVoxelMap, mrpt::maps)
 
  public:
-  CVoxelMap(double resolution = 0.05, uint8_t inner_bits = 2, uint8_t leaf_bits = 3) :
-      CVoxelMapOccupancyBase(resolution, inner_bits, leaf_bits)
-  {
-  }
+  // Constructors are defined in the .cpp file: inlining them in user code
+  // triggers wrong devirtualization in some GCC versions with LTO.
+  CVoxelMap(double resolution = 0.05, uint8_t inner_bits = 2, uint8_t leaf_bits = 3);
   ~CVoxelMap();
 
   MAP_DEFINITION_START(CVoxelMap)

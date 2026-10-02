@@ -125,8 +125,10 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 {
   DEFINE_SERIALIZABLE(CMultiMetricMap, mrpt::maps)
  public:
+  // Constructors are defined in the .cpp file: inlining them in user code
+  // triggers wrong devirtualization in some GCC versions with LTO.
   /** Default ctor: empty list of maps */
-  CMultiMetricMap() = default;
+  CMultiMetricMap();
 
   /** Constructor with a list of map initializers.
    * \param initializers One internal map will be created for each entry in
@@ -140,7 +142,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
   CMultiMetricMap& operator=(const CMultiMetricMap& o);
 
   /** Move ctor */
-  CMultiMetricMap(CMultiMetricMap&&) = default;
+  CMultiMetricMap(CMultiMetricMap&&);
   /** Move operator */
   CMultiMetricMap& operator=(CMultiMetricMap&&) = default;
 

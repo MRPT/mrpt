@@ -161,6 +161,9 @@ mrpt_add_library(
   caches a LUT file in the current working directory.
   `COccupancyGridMap3D`'s `determineMatching2D()`, `compute3DMatchingRatio()`
   and `internal_computeObservationLikelihood()` are unimplemented and throw.
+  Constructors of concrete `CMetricMap` classes must stay out-of-line: user
+  code inlining one (base ctor call + merged vptr stores) is miscompiled by
+  GCC with LTO (calls devirtualized to `__builtin_unreachable`).
 * **mrpt_slam**: only the auxiliary particle filters go through
   `PF_SLAM_implementation_gatherActionsCheckBothActObs()`; `pfStandardProposal`
   reads the action directly. An empty sensory frame counts as valid: pass a

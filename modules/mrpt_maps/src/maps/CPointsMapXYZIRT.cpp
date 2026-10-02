@@ -19,6 +19,8 @@ using namespace mrpt::maps;
 
 IMPLEMENTS_SERIALIZABLE(CPointsMapXYZIRT, CGenericPointsMap, mrpt::maps)
 
+CPointsMapXYZIRT::CPointsMapXYZIRT() = default;
+
 uint8_t CPointsMapXYZIRT::serializeGetVersion() const { return 0; }
 
 // Binary layout kept identical to the pre-deprecation implementation, so

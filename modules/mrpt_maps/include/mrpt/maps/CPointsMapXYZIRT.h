@@ -42,7 +42,9 @@ class [[deprecated(
   DEFINE_SERIALIZABLE(CPointsMapXYZIRT, mrpt::maps)
 
  public:
-  CPointsMapXYZIRT() = default;
+  // Constructors are defined in the .cpp file: inlining them in user code
+  // triggers wrong devirtualization in some GCC versions with LTO.
+  CPointsMapXYZIRT();
 };
 
 }  // namespace mrpt::maps

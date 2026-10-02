@@ -58,6 +58,13 @@ mrpt::maps::CMetricMap::Ptr CSimplePointsMap::internal_CreateFromMapDefinition(
 //  =========== End of Map definition Block =========
 IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap, mrpt::maps)
 
+CSimplePointsMap::CSimplePointsMap() = default;
+CSimplePointsMap::CSimplePointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
+CSimplePointsMap::CSimplePointsMap(const CSimplePointsMap& o) : CPointsMap()
+{
+  CPointsMap::operator=(o);
+}
+
 void CSimplePointsMap::reserve(size_t newLength)
 {
   // Apply a growth factor so incremental reserve() calls (e.g. from
