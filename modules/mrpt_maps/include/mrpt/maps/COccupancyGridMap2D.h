@@ -508,9 +508,9 @@ class COccupancyGridMap2D :
     /** Enabled: Rays widen with distance to approximate the real behavior
      * of lasers, disabled: insert rays as simple lines (Default=false) */
     bool wideningBeamsWithDistance{false};
-    /** (Default: 0.8) Step size for ray-tracing in sonarSimulator() and
-     * laserScanSimulator(), in cell units. Set <1 for finer tracing or >1 to
-     * speed it up. Not serialized. */
+    /** Unused: kept for backwards compatibility. Ray-tracing in
+     * sonarSimulator() and laserScanSimulator() visits exactly all the cells
+     * crossed by each ray. Not serialized. */
     double raytraceStepSizeInCellUnits{0.8};
   };
 
