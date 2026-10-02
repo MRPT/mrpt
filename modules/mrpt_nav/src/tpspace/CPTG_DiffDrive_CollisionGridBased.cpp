@@ -846,12 +846,20 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 
   // Check for collisions between the robot shape and the grid cells:
   // ----------------------------------------------------------------------------
-  // The reference point never goes farther than refDistance from the origin,
-  // so the footprint stays within refDistance + robot radius: obstacles beyond
-  // that can never be touched. One extra cell accounts for the cell size.
+  // The footprint stays within the farthest stored reference point (about
+  // refDistance, plus up to one sample) + robot radius: obstacles beyond that
+  // can never be touched. One extra cell accounts for the cell size.
   updateMaxRobotRadius();
   const double robotRadius = getMaxRobotRadius();
-  const double gridHalfSize = refDistance + robotRadius + 2 * m_resolution;
+  double maxReach = refDistance;
+  for (const auto& path : m_trajectory)
+  {
+    for (const auto& p : path)
+    {
+      maxReach = std::max(maxReach, static_cast<double>(std::hypot(p.x, p.y)));
+    }
+  }
+  const double gridHalfSize = maxReach + robotRadius + 2 * m_resolution;
   m_collisionGrid.setSize(-gridHalfSize, gridHalfSize, -gridHalfSize, gridHalfSize, m_resolution);
 
   const size_t Ki = getAlphaValuesCount();
