@@ -1030,7 +1030,8 @@ void CPTG_DiffDrive_CollisionGridBased::buildFlatCollisionGrid()
     for (size_t ix = 0; ix < nx; ix++)
     {
       const size_t i = ix + iy * nx;
-      const auto* cell = cg.cellByIndex(ix, iy);
+      const auto* cell =
+          cg.cellByIndex(static_cast<unsigned int>(ix), static_cast<unsigned int>(iy));
       g.offsets[i] = static_cast<uint32_t>(g.entries.size());
       if (!cell || cell->empty())
       {
