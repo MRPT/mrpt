@@ -21,7 +21,6 @@
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TPose3DQuat.h>
 #include <mrpt/math/matrix_serialization.h>
-#include <mrpt/math/ops_matrices.h>  // multiply_*()
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -31,8 +30,6 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/system/string_utils.h>
-
-#include <Eigen/Dense>
 
 namespace mrpt::graphs::detail
 {
@@ -788,11 +785,26 @@ struct graph_ops
   }  // end of graph_of_poses_dijkstra_init
 
   // Auxiliary funcs:
+  /** Returns v^t * M * v. Implemented without Eigen, so this header can be
+   * used without Eigen in the include path. */
+  template <class VEC, class MAT>
+  static double quadraticForm(const VEC& v, const MAT& M)
+  {
+    double r = 0;
+    for (int i = 0; i < static_cast<int>(M.rows()); i++)
+    {
+      for (int j = 0; j < static_cast<int>(M.cols()); j++)
+      {
+        r += v[i] * M(i, j) * v[j];
+      }
+    }
+    return r;
+  }
   template <class VEC>
   static double auxMaha2Dist(VEC& err, const CPosePDFGaussianInf& p)
   {
     math::wrapToPiInPlace(err[2]);
-    return mrpt::math::multiply_HtCH_scalar(err, p.cov_inv);
+    return quadraticForm(err, p.cov_inv);
   }
   template <class VEC>
   static double auxMaha2Dist(VEC& err, const CPose3DPDFGaussianInf& p)
@@ -800,14 +812,14 @@ struct graph_ops
     math::wrapToPiInPlace(err[3]);
     math::wrapToPiInPlace(err[4]);
     math::wrapToPiInPlace(err[5]);
-    return mrpt::math::multiply_HtCH_scalar(err, p.cov_inv);
+    return quadraticForm(err, p.cov_inv);
   }
   template <class VEC>
   static double auxMaha2Dist(VEC& err, const CPosePDFGaussian& p)
   {
     math::wrapToPiInPlace(err[2]);
     // err^t*cov_inv*err
-    return mrpt::math::multiply_HCHt_scalar(err, p.cov.inverse_LLt());
+    return quadraticForm(err, p.cov.inverse_LLt());
   }
   template <class VEC>
   static double auxMaha2Dist(VEC& err, const CPose3DPDFGaussian& p)
@@ -816,7 +828,7 @@ struct graph_ops
     math::wrapToPiInPlace(err[4]);
     math::wrapToPiInPlace(err[5]);
     // err^t*cov_inv*err
-    return mrpt::math::multiply_HtCH_scalar(err, p.cov.inverse_LLt());
+    return quadraticForm(err, p.cov.inverse_LLt());
   }
   // These two are for simulating maha2 distances for non-PDF types: fallback
   // to squared-norm:

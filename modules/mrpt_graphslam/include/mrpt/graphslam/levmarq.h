@@ -16,6 +16,7 @@
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector()
 #include <mrpt/containers/yaml.h>
 #include <mrpt/graphslam/types.h>
+#include <mrpt/math/ops_containers.h>  // norm(), norm_inf()
 #include <mrpt/system/CTimeLogger.h>
 
 #include <Eigen/Sparse>
