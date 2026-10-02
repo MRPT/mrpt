@@ -21,6 +21,8 @@
 #include <mrpt/random.h>
 
 #include <Eigen/Dense>
+#include <cmath>
+#include <limits>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -124,61 +126,78 @@ void COccupancyGridMap2D::simulateScanRay(
       angle_direction +
       (angleNoiseStd > .0 ? getRandomGenerator().drawGaussian1D_normalized() * angleNoiseStd : .0);
 
-// Unit vector in the directorion of the ray:
-#ifdef HAVE_SINCOS
-  double Arx, Ary;
-  ::sincos(A_, &Ary, &Arx);
-#else
-  const double Arx = cos(A_);
-  const double Ary = sin(A_);
-#endif
+  // Unit vector in the direction of the ray:
+  const double Arx = std::cos(A_);
+  const double Ary = std::sin(A_);
 
-  // Ray tracing, until collision, out of the map or out of range:
-  const unsigned int max_ray_len = mrpt::round(max_range_meters / m_resolution);
-  unsigned int ray_len = 0;
+  // Exact traversal of all the cells crossed by the ray (Amanatides & Woo),
+  // so no cell is skipped, and the range is the distance at which the ray
+  // enters the first non-free cell, i.e. its closest point to the sensor.
+  const double fx = (start_x - m_xMin) / m_resolution;
+  const double fy = (start_y - m_yMin) / m_resolution;
+  int x = static_cast<int>(std::floor(fx));
+  int y = static_cast<int>(std::floor(fy));
 
-// Use integers for all ray tracing for efficiency
-#define INTPRECNUMBIT 10
-#define int_x2idx(_X) (static_cast<int>(_X >> INTPRECNUMBIT))
-#define int_y2idx(_Y) (static_cast<int>(_Y >> INTPRECNUMBIT))
+  const int stepX = Arx >= 0 ? 1 : -1;
+  const int stepY = Ary >= 0 ? 1 : -1;
+  constexpr double kInf = std::numeric_limits<double>::infinity();
+  // Ray length [m] to cross one cell along x / y:
+  const double tDeltaX = std::abs(Arx) > 1e-12 ? m_resolution / std::abs(Arx) : kInf;
+  const double tDeltaY = std::abs(Ary) > 1e-12 ? m_resolution / std::abs(Ary) : kInf;
+  // Ray length [m] to the first cell boundary along x / y:
+  double tMaxX = std::abs(Arx) > 1e-12
+                     ? (stepX > 0 ? (x + 1 - fx) : (fx - x)) * m_resolution / std::abs(Arx)
+                     : kInf;
+  double tMaxY = std::abs(Ary) > 1e-12
+                     ? (stepY > 0 ? (y + 1 - fy) : (fy - y)) * m_resolution / std::abs(Ary)
+                     : kInf;
 
-  auto rxi = static_cast<int64_t>(((start_x - m_xMin) / m_resolution) * (1L << INTPRECNUMBIT));
-  auto ryi = static_cast<int64_t>(((start_y - m_yMin) / m_resolution) * (1L << INTPRECNUMBIT));
-
-  const auto Arxi = static_cast<int64_t>(
-      insertionOptions.raytraceStepSizeInCellUnits * Arx * (1L << INTPRECNUMBIT));
-  const auto Aryi = static_cast<int64_t>(
-      insertionOptions.raytraceStepSizeInCellUnits * Ary * (1L << INTPRECNUMBIT));
-
-  cellType hitCellOcc_int = 0;  // p2l(0.5f)
   const cellType threshold_free_int = p2l(threshold_free);
-  int x, y = int_y2idx(ryi);
+  cellType hitCellOcc_int = 0;  // p2l(0.5f)
+  double t = 0;                 // ray length at which it enters the current cell
+  bool insideGrid = false;
+  bool hit = false;
 
-  while ((x = int_x2idx(rxi)) >= 0 && (y = int_y2idx(ryi)) >= 0 && x < static_cast<int>(m_size_x) &&
-         y < static_cast<int>(m_size_y) &&
-         (hitCellOcc_int = m_map[x + y * m_size_x]) > threshold_free_int && ray_len < max_ray_len)
+  for (;;)
   {
-    rxi += Arxi;
-    ryi += Aryi;
-    ray_len++;
+    insideGrid =
+        x >= 0 && y >= 0 && x < static_cast<int>(m_size_x) && y < static_cast<int>(m_size_y);
+    if (!insideGrid || t > max_range_meters) break;
+
+    hitCellOcc_int = m_map[x + y * m_size_x];
+    if (hitCellOcc_int <= threshold_free_int)
+    {
+      hit = true;
+      break;
+    }
+    // Move on to the next cell crossed by the ray:
+    if (tMaxX < tMaxY)
+    {
+      t = tMaxX;
+      tMaxX += tDeltaX;
+      x += stepX;
+    }
+    else
+    {
+      t = tMaxY;
+      tMaxY += tDeltaY;
+      y += stepY;
+    }
   }
 
   // Store:
-  // Check out of the grid?
-  // Tip: if x<0, (unsigned)(x) will also be >>> size_x ;-)
-  if (std::abs(hitCellOcc_int) <= 1 || static_cast<unsigned>(x) >= m_size_x ||
-      static_cast<unsigned>(y) >= m_size_y)
+  // Out of the grid, out of range, or an unknown cell?
+  if (!hit || std::abs(hitCellOcc_int) <= 1)
   {
     out_valid = false;
     out_range = static_cast<float>(max_range_meters);
   }
   else
   {  // No: The normal case:
-    out_range =
-        static_cast<float>(insertionOptions.raytraceStepSizeInCellUnits * ray_len * m_resolution);
-    out_valid = (ray_len < max_ray_len);  // out_range<max_range_meters;
+    out_range = static_cast<float>(t);
+    out_valid = true;
     // Add additive Gaussian noise:
-    if (noiseStd > 0 && out_valid)
+    if (noiseStd > 0)
       out_range += static_cast<float>(noiseStd * getRandomGenerator().drawGaussian1D_normalized());
   }
 }
