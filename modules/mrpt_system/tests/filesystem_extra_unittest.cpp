@@ -128,6 +128,20 @@ TEST(filesystem, deleteFilesWithWildcards)
 }
 
 #ifndef _WIN32
+TEST(filesystem, createDirectoryReportsErrorsWithoutThrowing)
+{
+  TempDir d;
+  const std::string sub = d.file("sub");
+  EXPECT_TRUE(createDirectory(sub));
+  EXPECT_TRUE(directoryExists(sub));
+  // Already existing is not an error:
+  EXPECT_TRUE(createDirectory(sub));
+  // Missing parent directory, or a file in the way:
+  EXPECT_FALSE(createDirectory(d.file("missing/sub")));
+  d.touch("a_file");
+  EXPECT_FALSE(createDirectory(d.file("a_file")));
+}
+
 TEST(filesystem, deleteFilesRemovesSymbolicLinksButNotTheirTargets)
 {
   TempDir d;
