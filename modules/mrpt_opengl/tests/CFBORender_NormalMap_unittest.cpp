@@ -218,6 +218,29 @@ void checkDomeShading(bool shadows, bool mirroredUV = false)
   EXPECT_NEAR(meanGray(flat, c - d, c - d, c + d, c), meanGray(flat, c - d, c, c + d, c + d), 5.0);
 }
 
+/** Renders, from above, a lit plane with a solid color and no texture. */
+RGB renderColoredPlaneCenter(mrpt::opengl::CFBORender& r, bool shadows)
+{
+  auto scene = mrpt::viz::Scene::Create();
+  auto vp = scene->getViewport();
+  vp->enableShadowCasting(shadows);
+
+  auto plane = mrpt::viz::CTexturedPlane::Create(-1, 1, -1, 1);
+  plane->enableLighting(true);
+  plane->setColor_u8(0x20, 0xc0, 0x20);
+  scene->insert(plane);
+
+  auto& cam = vp->getCamera();
+  cam.setPointingAt(0, 0, 0);
+  cam.setZoomDistance(3.0f);
+  cam.setAzimuthDegrees(-90);
+  cam.setElevationDegrees(90);
+
+  mrpt::img::CImage frame(W, H, mrpt::img::CH_RGB);
+  r.render_RGB(*scene, frame);
+  return pixelRGB(frame, W / 2, H / 2);
+}
+
 }  // namespace
 
 TEST(CFBORender, NormalMapDomeLitFromLightSide) { checkDomeShading(false); }
@@ -225,5 +248,21 @@ TEST(CFBORender, NormalMapDomeLitFromLightSide) { checkDomeShading(false); }
 TEST(CFBORender, NormalMapDomeLitFromLightSideWithShadows) { checkDomeShading(true); }
 
 TEST(CFBORender, NormalMapDomeLitFromLightSideMirroredUV) { checkDomeShading(false, true); }
+
+// The plane color must be kept with or without shadows:
+TEST(CFBORender, UntexturedPlaneKeepsItsColorWhenLit)
+{
+  auto r = makeRenderer();
+  if (!r)
+  {
+    GTEST_SKIP() << "No offscreen rendering context available";
+  }
+  for (const bool shadows : {false, true})
+  {
+    const RGB c = renderColoredPlaneCenter(*r, shadows);
+    EXPECT_GT(c.g, c.r + 60) << "shadows: " << shadows;
+    EXPECT_GT(c.g, c.b + 60) << "shadows: " << shadows;
+  }
+}
 
 #endif  // RUN_OFFSCREEN_RENDER_TESTS
