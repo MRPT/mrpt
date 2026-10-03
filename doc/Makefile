@@ -1,9 +1,10 @@
 
 .DEFAULT_GOAL := all
 
-# Replace this path with your local build of doxyrest:
-export PYTHONPATH := $(HOME)/code/doxyrest_b/doxyrest/sphinx/:$(PYTHONPATH)
-export PATH := $(HOME)/code/doxyrest_b/build/doxyrest/bin/Release:$(PATH)
+# Path to your local build of doxyrest (override from the command line):
+DOXYREST_DIR ?= $(HOME)/code/doxyrest_b
+export PYTHONPATH := $(DOXYREST_DIR)/doxyrest/sphinx/:$(PYTHONPATH)
+export PATH := $(DOXYREST_DIR)/build/doxyrest/bin/Release:$(PATH)
 export MRPT_VERSION_STR := $(shell sed -n 's:.*<version>\([0-9.]*\)</version>.*:\1:p' ../modules/mrpt_common/package.xml | head -n1)
 export MRPT_LIST_INCLUDE_DIRS := $(shell for f in ../modules/*/include; do printf "$$(realpath $$f) "; done)
 export MRPT_DOX_INPUT_DIRS := $(shell for f in ../modules/*; do printf "$$(realpath $$f) "; done)
@@ -27,6 +28,7 @@ clean:
 		source/page_* \
 		source/union_* \
 		source/global.rst source/doxygen-index.rst \
+		source/examples.rst source/doxygen-docs/example-*.md \
 		2> /dev/null || true
 
 .PHONY: all
@@ -50,6 +52,8 @@ html-and-view:
 html: python-venv
 	echo "Building docs for these directories: ${MRPT_DOX_INPUT_DIRS}"
 	echo "Using MRPT_LIST_INCLUDE_DIRS: ${MRPT_LIST_INCLUDE_DIRS}"
+	# 0) Generate the pages of C++ examples:
+	bash ../scripts/generate_rst_docs_examples.sh
 	# 1) Build Doxygen
 	cd source && doxygen
 	# 2) Doxygen XML -> RST
@@ -64,6 +68,3 @@ html: python-venv
 	cp source/images/* html/
 	# Copy remote images also:
 	bash remote-static-files.sh
-
-pydocs-from-local-build:
-	cd html && bash ../../python/build-pydocs-from-local-build.sh

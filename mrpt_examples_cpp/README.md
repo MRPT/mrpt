@@ -50,4 +50,4 @@ Dependencies must be defined using the namespaced target format:
 To include your example in the official documentation:
 1.  Add a `README.md` and a screenshot in the example directory.
 2.  Place the screenshot in `[MRPT]/doc/source/images/`.
-3.  Run `[MRPT]/scripts/generate_rst_docs_examples.sh`.
+3.  The docs build (`make -C doc`) generates the example page automatically.
