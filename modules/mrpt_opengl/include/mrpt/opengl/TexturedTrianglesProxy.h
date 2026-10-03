@@ -67,6 +67,10 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
 
   std::vector<shader_id_t> requiredShaders() const override;
 
+  /** Textures with alpha cutout use a shadow map shader that discards the
+   * cut out fragments. */
+  shader_id_t shadowMapShader() const override;
+
   const char* typeName() const override { return "TexturedTrianglesProxy"; }
 
   /** @} */
@@ -83,6 +87,7 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
     bool textureInterpolate = false;
     bool textureMipMaps = true;
     bool hasTransparency = false;
+    float alphaCutoff = 0.0f;  //!< >0: cutout, <0: opaque, 0: blend
     bool hasNormalMap = false;
   };
 

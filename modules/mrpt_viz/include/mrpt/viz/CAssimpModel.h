@@ -270,8 +270,9 @@ class CAssimpModel : public CSetOfObjects
   /** Load and cache a texture */
   const LoadedTexture* loadTexture(const std::string& texturePath);
 
-  /** Get or create a CSetOfTexturedTriangles for a texture */
-  CSetOfTexturedTriangles::Ptr getOrCreateTexturedMesh(const std::string& texturePath);
+  /** Get or create a CSetOfTexturedTriangles for a texture and alpha mode */
+  CSetOfTexturedTriangles::Ptr getOrCreateTexturedMesh(
+      const std::string& texturePath, TAlphaMode alphaMode, float alphaCutoff);
 
   /** Apply triangle splitting for transparency sorting */
   void applySplitTrianglesRendering();

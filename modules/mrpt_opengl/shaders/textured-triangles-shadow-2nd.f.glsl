@@ -20,6 +20,7 @@ uniform highp float materialSpecularExponent;
 uniform lowp vec3 materialEmissive;
 
 uniform lowp sampler2D textureSampler;
+uniform mediump float alphaCutoff; // >0: cutout, <0: opaque, 0: blend
 uniform lowp sampler2D normalMapSampler;
 
 in highp vec3 frag_position, frag_normal;
@@ -94,6 +95,16 @@ void main()
 
     // material texture color:
     lowp vec4 texCol = texture(textureSampler, frag_UV) * frag_vertexColor;
+    // alphaCutoff > 0: cutout (discard, and keep the rest opaque);
+    // < 0: opaque; 0: alpha blending.
+    if (texCol.a < alphaCutoff)
+    {
+        discard;
+    }
+    if (alphaCutoff != 0.0)
+    {
+        texCol.a = 1.0;
+    }
 
     mediump vec3 litColor = materialEmissive + texCol.rgb * totalDiffuse + totalSpecular;
 

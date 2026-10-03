@@ -543,7 +543,31 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
   CSetOfTexturedTriangles::Ptr texturedMesh;
   if (hasTexture)
   {
-    texturedMesh = getOrCreateTexturedMesh(texturePath);
+    // glTF materials define how to use the texture alpha. Otherwise, the
+    // alpha mode is detected from the texture (TAlphaMode::Auto).
+    TAlphaMode alphaMode = TAlphaMode::Auto;
+    float alphaCutoff = 0.5f;
+    aiString alphaModeStr;
+    if (material &&
+        aiGetMaterialString(material, "$mat.gltf.alphaMode", 0, 0, &alphaModeStr) == AI_SUCCESS)
+    {
+      const std::string mode = alphaModeStr.C_Str();
+      if (mode == "MASK")
+      {
+        alphaMode = TAlphaMode::Mask;
+        aiGetMaterialFloat(material, "$mat.gltf.alphaCutoff", 0, 0, &alphaCutoff);
+      }
+      else if (mode == "BLEND")
+      {
+        alphaMode = TAlphaMode::Blend;
+      }
+      else if (mode == "OPAQUE")
+      {
+        alphaMode = TAlphaMode::Opaque;
+      }
+    }
+
+    texturedMesh = getOrCreateTexturedMesh(texturePath, alphaMode, alphaCutoff);
 
     // Assign normal map if found and not yet assigned
     if (!normalMapPath.empty() && texturedMesh && !texturedMesh->normalMapHasBeenAssigned())
@@ -815,13 +839,15 @@ const CAssimpModel::LoadedTexture* CAssimpModel::loadTexture(const std::string& 
 #endif
 }
 
-CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(const std::string& texturePath)
+CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(
+    const std::string& texturePath, TAlphaMode alphaMode, float alphaCutoff)
 {
-  // Check if we already have a mesh for this texture
+  // Check if we already have a mesh for this texture and alpha settings
   for (auto& mesh : m_texturedMeshes)
   {
     // Compare by name (we use texture path as name)
-    if (mesh->getName() == texturePath)
+    if (mesh->getName() == texturePath && mesh->alphaMode() == alphaMode &&
+        (alphaMode != TAlphaMode::Mask || mesh->alphaCutoff() == alphaCutoff))
     {
       return mesh;
     }
@@ -844,6 +870,9 @@ CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(const std::st
       mesh->assignImage(tex->rgb);
     }
   }
+
+  mesh->setAlphaMode(alphaMode);
+  mesh->setAlphaCutoff(alphaCutoff);
 
   // Add to children and tracking list
   insert(mesh);
