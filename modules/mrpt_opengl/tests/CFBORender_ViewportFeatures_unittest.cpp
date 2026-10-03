@@ -21,12 +21,15 @@
 #include <mrpt/core/config.h>  // MRPT_IS_BIG_ENDIAN
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/config.h>  // for MRPT_HAS_*
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSetOfTriangles.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/Scene.h>
 
+#include <array>
 #include <memory>
 
 #include "render_pixel_utils.h"
@@ -286,6 +289,93 @@ TEST(OpenGLViewport, ShadowsAndSSAORender)
   vp->enableSSAO(false);
   const auto plain2 = render(*renderer, *scene);
   EXPECT_NEAR(countColor(plain2, 0, 0, W, H, red, 80), plainRed, plainRed / 20 + 5);
+}
+
+TEST(OpenGLViewport, CulledFacesStillCastShadows)
+{
+#if MRPT_IS_BIG_ENDIAN
+  GTEST_SKIP() << "Shadows rendering not tested on big-endian hosts";
+#endif
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  // Number of pixels in the shadow of something:
+  const auto darkPixels = [](const mrpt::img::CImage& im)
+  {
+    int n = 0;
+    for (int y = 0; y < H; y++)
+    {
+      for (int x = 0; x < W; x++)
+      {
+        const RGB p = pixelRGB(im, x, y);
+        if (p.r + p.g + p.b < 3 * 150)
+        {
+          n++;
+        }
+      }
+    }
+    return n;
+  };
+
+  for (const auto cull : {mrpt::viz::TCullFace::FRONT, mrpt::viz::TCullFace::BACK})
+  {
+    auto scene = mrpt::viz::Scene::Create();
+    auto vp = scene->getViewport();
+    auto& lp = vp->lightParameters();
+    lp.lights.clear();
+    mrpt::viz::TLight sun;
+    sun.type = mrpt::viz::TLightType::Directional;
+    sun.direction = {-0.32f, 0.56f, -0.77f};
+    sun.diffuse = 1.0f;
+    sun.specular = 0.0f;
+    lp.lights.push_back(sun);
+    lp.ambient = 0.1f;
+    vp->enableShadowCasting(true, 512, 512);
+
+    auto floor =
+        mrpt::viz::CBox::Create(mrpt::math::TPoint3D(-4, -4, -0.1), mrpt::math::TPoint3D(4, 4, 0));
+    floor->setColor_u8(0xff, 0xff, 0xff, 0xff);
+    scene->insert(floor);
+
+    // A white "ceiling" made of triangles facing up, with one of its sides
+    // culled from the camera:
+    auto ceiling = mrpt::viz::CSetOfTriangles::Create();
+    const auto addTri = [&ceiling](const std::array<mrpt::math::TPoint2Df, 3>& xy)
+    {
+      mrpt::viz::TTriangle t;
+      for (int i = 0; i < 3; i++)
+      {
+        t.vertices[i].xyzrgba.pt = {xy[i].x, xy[i].y, 1.0f};
+      }
+      t.setColor(mrpt::img::TColor(0xff, 0xff, 0xff));
+      t.computeNormals();
+      ceiling->insertTriangle(t);
+    };
+    addTri({
+        {{-1, -1}, {1, -1}, {1, 1}}
+    });
+    addTri({
+        {{-1, -1}, {1, 1}, {-1, 1}}
+    });
+    ceiling->cullFaces(cull);
+    scene->insert(ceiling);
+
+    auto& cam = vp->getCamera();
+    cam.setPointingAt(0, 0, 0);
+    cam.setZoomDistance(7.0f);
+    cam.setAzimuthDegrees(-100);
+    cam.setElevationDegrees(55);
+
+    // Its shadow darkens the floor, whatever side is culled:
+    const auto withCeiling = render(*renderer, *scene);
+    ceiling->setVisibility(false);
+    const auto withoutCeiling = render(*renderer, *scene);
+    EXPECT_GT(darkPixels(withCeiling), darkPixels(withoutCeiling) + 500)
+        << "cull: " << mrpt::typemeta::TEnumType<mrpt::viz::TCullFace>::value2name(cull);
+  }
 }
 
 TEST(OpenGLViewport, CameraOnlyCloneKeepsTheViewportsOwnObjects)
