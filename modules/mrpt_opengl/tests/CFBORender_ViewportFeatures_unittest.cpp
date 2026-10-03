@@ -378,6 +378,69 @@ TEST(OpenGLViewport, CulledFacesStillCastShadows)
   }
 }
 
+TEST(OpenGLViewport, CastersFarTowardsTheLightStillCastShadows)
+{
+#if MRPT_IS_BIG_ENDIAN
+  GTEST_SKIP() << "Shadows rendering not tested on big-endian hosts";
+#endif
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  auto scene = mrpt::viz::Scene::Create();
+  auto vp = scene->getViewport();
+  auto& lp = vp->lightParameters();
+  lp.lights.clear();
+  mrpt::viz::TLight sun;
+  sun.type = mrpt::viz::TLightType::Directional;
+  sun.direction = {-0.6f, 0.5f, -0.62f};  // ~38 deg above the horizon
+  sun.diffuse = 1.0f;
+  sun.specular = 0.0f;
+  lp.lights.push_back(sun);
+  lp.ambient = 0.1f;
+  vp->enableShadowCasting(true, 512, 512);
+
+  auto floor = mrpt::viz::CBox::Create(
+      mrpt::math::TPoint3D(-40, -40, -0.1), mrpt::math::TPoint3D(40, 40, 0));
+  floor->setColor_u8(0xff, 0xff, 0xff, 0xff);
+  scene->insert(floor);
+
+  // A large ceiling high above, much farther from the floor seen by the
+  // camera than the size of the visible area:
+  auto ceiling =
+      mrpt::viz::CBox::Create(mrpt::math::TPoint3D(-40, -40, 8), mrpt::math::TPoint3D(40, 40, 8.1));
+  ceiling->setColor_u8(0xff, 0xff, 0xff, 0xff);
+  scene->insert(ceiling);
+
+  // Camera below the ceiling, looking down at the floor from close:
+  auto& cam = vp->getCamera();
+  cam.setPointingAt(0, 0, 0);
+  cam.setZoomDistance(3.0f);
+  cam.setAzimuthDegrees(-90);
+  cam.setElevationDegrees(89);
+
+  const auto meanGray = [](const mrpt::img::CImage& im)
+  {
+    double sum = 0;
+    for (int y = H / 2 - 10; y < H / 2 + 10; y++)
+    {
+      for (int x = W / 2 - 10; x < W / 2 + 10; x++)
+      {
+        const RGB p = pixelRGB(im, x, y);
+        sum += (p.r + p.g + p.b) / 3.0;
+      }
+    }
+    return sum / 400;
+  };
+
+  const double underCeiling = meanGray(render(*renderer, *scene));
+  ceiling->setVisibility(false);
+  const double sunlit = meanGray(render(*renderer, *scene));
+  EXPECT_LT(underCeiling, 0.5 * sunlit);
+}
+
 TEST(OpenGLViewport, CameraOnlyCloneKeepsTheViewportsOwnObjects)
 {
   auto renderer = makeRenderer();
