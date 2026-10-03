@@ -24,16 +24,16 @@ uniform lowp sampler2D normalMapSampler;
 
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated UV texture coords
-in highp vec3 frag_tangent;
+in highp vec4 frag_tangent;
 
 void main()
 {
     highp vec3 N = normalize(frag_normal);
 
     // Normal mapping via TBN matrix
-    highp vec3 T = normalize(frag_tangent);
+    highp vec3 T = normalize(frag_tangent.xyz);
     T = normalize(T - dot(T, N) * N);
-    highp vec3 B = cross(N, T);
+    highp vec3 B = cross(N, T) * frag_tangent.w;
     highp mat3 TBN = mat3(T, B, N);
 
     highp vec3 tangentNormal = texture(normalMapSampler, frag_UV).rgb * 2.0 - 1.0;

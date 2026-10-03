@@ -705,6 +705,9 @@ class VisualObjectParams_TexturedTriangles : public virtual CVisualObject
   /** Assigns a normal map image for tangent-space normal mapping.
    * The image should encode normals in tangent space as RGB where
    * (128,128,255) represents the unperturbed surface normal.
+   * Normals follow the OpenGL convention (green points to the image top, as
+   * in Blender or glTF). For DirectX-style normal maps, invert the green
+   * channel first.
    * \note Images are copied, the original ones can be deleted. */
   void assignNormalMap(const mrpt::img::CImage& img);
 

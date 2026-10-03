@@ -20,11 +20,13 @@
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/config.h>  // for MRPT_HAS_*
 #include <mrpt/viz/CCamera.h>
+#include <mrpt/viz/CSetOfTexturedTriangles.h>
 #include <mrpt/viz/CTexturedPlane.h>
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/Viewport.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <memory>
 
@@ -99,13 +101,15 @@ mrpt::img::CImage domeNormalMap()
   return im;
 }
 
-/** Renders a white plane (with or without the dome normal map) seen from
- *  above (+X to the right, +Y up), lit by a directional light. */
+/** Renders a white square (with or without the dome normal map) seen from
+ *  above (+X to the right, +Y up), lit by a directional light. With
+ *  mirroredUV, the texture u/v axes are swapped (a mirrored UV mapping). */
 mrpt::img::CImage renderPlane(
     mrpt::opengl::CFBORender& r,
     bool withNormalMap,
     const mrpt::math::TVector3Df& lightDir,
-    bool shadows)
+    bool shadows,
+    bool mirroredUV = false)
 {
   auto scene = mrpt::viz::Scene::Create();
   auto vp = scene->getViewport();
@@ -120,14 +124,46 @@ mrpt::img::CImage renderPlane(
   lp.ambient = 0.05f;
   vp->enableShadowCasting(shadows);
 
-  auto plane = mrpt::viz::CTexturedPlane::Create(-1, 1, -1, 1);
-  plane->enableLighting(true);
-  plane->assignImage(solidImage(0xff, 0xff, 0xff));
-  if (withNormalMap)
+  if (!mirroredUV)
   {
-    plane->assignNormalMap(domeNormalMap());
+    auto plane = mrpt::viz::CTexturedPlane::Create(-1, 1, -1, 1);
+    plane->enableLighting(true);
+    plane->assignImage(solidImage(0xff, 0xff, 0xff));
+    if (withNormalMap)
+    {
+      plane->assignNormalMap(domeNormalMap());
+    }
+    scene->insert(plane);
   }
-  scene->insert(plane);
+  else
+  {
+    auto obj = mrpt::viz::CSetOfTexturedTriangles::Create();
+    const auto addTri = [&obj](const std::array<mrpt::math::TPoint2Df, 3>& xy)
+    {
+      mrpt::viz::CSetOfTexturedTriangles::TTriangle t;
+      for (int i = 0; i < 3; i++)
+      {
+        t.vertices[i].xyzrgba.pt = {xy[i].x, xy[i].y, 0};
+        t.vertices[i].uv = {(xy[i].y + 1) * 0.5f, (xy[i].x + 1) * 0.5f};
+      }
+      t.setColor(mrpt::img::TColor(0xff, 0xff, 0xff));
+      t.computeNormals();
+      obj->insertTriangle(t);
+    };
+    addTri({
+        {{-1, -1}, {1, -1}, {1, 1}}
+    });
+    addTri({
+        {{-1, -1}, {1, 1}, {-1, 1}}
+    });
+    obj->enableLight(true);
+    obj->assignImage(solidImage(0xff, 0xff, 0xff));
+    if (withNormalMap)
+    {
+      obj->assignNormalMap(domeNormalMap());
+    }
+    scene->insert(obj);
+  }
 
   auto& cam = vp->getCamera();
   cam.setPointingAt(0, 0, 0);
@@ -157,7 +193,7 @@ double meanGray(const mrpt::img::CImage& im, int x0, int y0, int x1, int y1)
   return sum / n;
 }
 
-void checkDomeShading(bool shadows)
+void checkDomeShading(bool shadows, bool mirroredUV = false)
 {
   auto r = makeRenderer();
   if (!r)
@@ -170,15 +206,15 @@ void checkDomeShading(bool shadows)
   constexpr int d = W / 6;
 
   // Light coming from +X (screen right):
-  const auto fromX = renderPlane(*r, true, {-1.0f, 0.0f, -0.5f}, shadows);
+  const auto fromX = renderPlane(*r, true, {-1.0f, 0.0f, -0.5f}, shadows, mirroredUV);
   EXPECT_GT(meanGray(fromX, c, c - d, c + d, c + d), meanGray(fromX, c - d, c - d, c, c + d) + 30);
 
   // Light coming from +Y (screen up, lower pixel rows):
-  const auto fromY = renderPlane(*r, true, {0.0f, -1.0f, -0.5f}, shadows);
+  const auto fromY = renderPlane(*r, true, {0.0f, -1.0f, -0.5f}, shadows, mirroredUV);
   EXPECT_GT(meanGray(fromY, c - d, c - d, c + d, c), meanGray(fromY, c - d, c, c + d, c + d) + 30);
 
   // Without the normal map, the flat plane is evenly lit:
-  const auto flat = renderPlane(*r, false, {0.0f, -1.0f, -0.5f}, shadows);
+  const auto flat = renderPlane(*r, false, {0.0f, -1.0f, -0.5f}, shadows, mirroredUV);
   EXPECT_NEAR(meanGray(flat, c - d, c - d, c + d, c), meanGray(flat, c - d, c, c + d, c + d), 5.0);
 }
 
@@ -187,5 +223,7 @@ void checkDomeShading(bool shadows)
 TEST(CFBORender, NormalMapDomeLitFromLightSide) { checkDomeShading(false); }
 
 TEST(CFBORender, NormalMapDomeLitFromLightSideWithShadows) { checkDomeShading(true); }
+
+TEST(CFBORender, NormalMapDomeLitFromLightSideMirroredUV) { checkDomeShading(false, true); }
 
 #endif  // RUN_OFFSCREEN_RENDER_TESTS

@@ -600,43 +600,43 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
   std::vector<TVector3Df> normals;
   std::vector<TColor> colors;
   std::vector<mrpt::math::TPoint2Df> texCoords;
-  std::vector<TVector3Df> tangents;
+  // Tangents as (x,y,z,w), with w=+1/-1 the handedness of the UV mapping
+  std::vector<float> tangents;
 
   vertices.reserve(vertexCount);
   normals.reserve(vertexCount);
   colors.reserve(vertexCount);
   texCoords.reserve(vertexCount);
-  tangents.reserve(vertexCount);
+  tangents.reserve(vertexCount * 4);
 
   for (const auto& tri : triangles)
   {
-    // Check if we need to compute tangents from UV (fallback for zero tangents)
-    TVector3Df triTangent = tri.vertices[0].tangent;
-    const bool tangentIsZero = (triTangent.x == 0 && triTangent.y == 0 && triTangent.z == 0);
+    // Tangent and bitangent from edge vectors and UV deltas. The tangent is a
+    // fallback for vertices without one; the bitangent gives the handedness of
+    // the UV mapping (mirrored mappings need the bitangent flipped).
+    const auto& p0 = tri.vertices[0].xyzrgba.pt;
+    const auto& p1 = tri.vertices[1].xyzrgba.pt;
+    const auto& p2 = tri.vertices[2].xyzrgba.pt;
+    const TVector3Df e1(p1.x - p0.x, p1.y - p0.y, p1.z - p0.z);
+    const TVector3Df e2(p2.x - p0.x, p2.y - p0.y, p2.z - p0.z);
+    const float du1 = tri.vertices[1].uv.x - tri.vertices[0].uv.x;
+    const float dv1 = tri.vertices[1].uv.y - tri.vertices[0].uv.y;
+    const float du2 = tri.vertices[2].uv.x - tri.vertices[0].uv.x;
+    const float dv2 = tri.vertices[2].uv.y - tri.vertices[0].uv.y;
+    const float det = du1 * dv2 - du2 * dv1;
 
-    if (tangentIsZero)
+    TVector3Df triTangent(1.0f, 0.0f, 0.0f);  // degenerate UV: arbitrary tangent
+    float handedness = 1.0f;
+    if (std::abs(det) > 1e-12f)
     {
-      // Compute tangent from edge vectors and UV deltas
-      const auto& p0 = tri.vertices[0].xyzrgba.pt;
-      const auto& p1 = tri.vertices[1].xyzrgba.pt;
-      const auto& p2 = tri.vertices[2].xyzrgba.pt;
-      const float e1x = p1.x - p0.x, e1y = p1.y - p0.y, e1z = p1.z - p0.z;
-      const float e2x = p2.x - p0.x, e2y = p2.y - p0.y, e2z = p2.z - p0.z;
-      const float du1 = tri.vertices[1].uv.x - tri.vertices[0].uv.x;
-      const float dv1 = tri.vertices[1].uv.y - tri.vertices[0].uv.y;
-      const float du2 = tri.vertices[2].uv.x - tri.vertices[0].uv.x;
-      const float dv2 = tri.vertices[2].uv.y - tri.vertices[0].uv.y;
-      const float det = du1 * dv2 - du2 * dv1;
-      if (std::abs(det) > 1e-12f)
-      {
-        const float r = 1.0f / det;
-        triTangent = {
-            r * (dv2 * e1x - dv1 * e2x), r * (dv2 * e1y - dv1 * e2y), r * (dv2 * e1z - dv1 * e2z)};
-      }
-      else
-      {
-        triTangent = {1.0f, 0.0f, 0.0f};  // degenerate UV: arbitrary tangent
-      }
+      const float r = 1.0f / det;
+      triTangent = (e1 * dv2 - e2 * dv1) * r;
+      const TVector3Df triBitangent = (e2 * du1 - e1 * du2) * r;
+      const auto cross = [](const TVector3Df& a, const TVector3Df& b)
+      { return TVector3Df(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); };
+      const TVector3Df NxT = cross(cross(e1, e2), triTangent);
+      const float dotB = NxT.x * triBitangent.x + NxT.y * triBitangent.y + NxT.z * triBitangent.z;
+      handedness = dotB < 0 ? -1.0f : 1.0f;
     }
 
     for (int i = 0; i < 3; ++i)
@@ -647,10 +647,9 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
 
       // Use per-vertex tangent if available, else the computed per-triangle tangent
       const auto& vt = tri.vertices[i].tangent;
-      if (vt.x != 0 || vt.y != 0 || vt.z != 0)
-        tangents.push_back(vt);
-      else
-        tangents.push_back(triTangent);
+      const bool hasVertexTangent = vt.x != 0 || vt.y != 0 || vt.z != 0;
+      const TVector3Df& t = hasVertexTangent ? vt : triTangent;
+      tangents.insert(tangents.end(), {t.x, t.y, t.z, handedness});
 
       // rgba.r/g/b/a are uint8_t (TPointXYZfRGBAu8), use directly:
       const auto& rgba = tri.vertices[i].xyzrgba;
@@ -694,9 +693,9 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
   // Attribute 4: tangent (vec3) for normal mapping
   m_tangentBuffer.createOnce();
   m_tangentBuffer.bind();
-  m_tangentBuffer.allocate(tangents.data(), static_cast<int>(sizeof(TVector3Df) * vertexCount));
+  m_tangentBuffer.allocate(tangents.data(), static_cast<int>(sizeof(float) * tangents.size()));
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(TVector3Df), nullptr);
+  glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
 
   // Unbind
   glBindVertexArray(0);
