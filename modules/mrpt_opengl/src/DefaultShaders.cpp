@@ -108,39 +108,17 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       fragment_shader =
 #include "../shaders/textured-triangles-light.f.glsl"
           ;
-      uniforms = {
-          "p_matrix",
-          "v_matrix",
-          "m_matrix",
-          "num_lights",
-          "light_type",
-          "light_color",
-          "light_diffuse",
-          "light_specular",
-          "light_direction",
-          "light_position",
-          "light_attenuation",
-          "light_spot_cutoff",
-          "light_ambient",
-          "ambient_sky_color",
-          "ambient_ground_color",
-          "cam_position",
-          "textureSampler",
-          "alphaCutoff",
-          "normalMapSampler",
-          "materialSpecular",
-          "materialSpecularExponent",
-          "materialEmissive",
-          "fog_enabled",
-          "fog_color",
-          "fog_near",
-          "fog_far",
-          "fog_mode",
-          "fog_density",
-          "ssao_enabled",
-          "ssaoTexture",
-          "ssao_power",
-          "ssao_ambient_floor"};
+      uniforms = {"p_matrix",         "v_matrix",          "m_matrix",
+                  "num_lights",       "light_type",        "light_color",
+                  "light_diffuse",    "light_specular",    "light_direction",
+                  "light_position",   "light_attenuation", "light_spot_cutoff",
+                  "light_ambient",    "ambient_sky_color", "ambient_ground_color",
+                  "cam_position",     "textureSampler",    "alphaCutoff",
+                  "normalMapSampler", "materialSpecular",  "materialSpecularExponent",
+                  "materialEmissive", "fog_enabled",       "fog_color",
+                  "fog_near",         "fog_far",           "fog_mode",
+                  "fog_density",      "ssao_enabled",      "ssaoTexture",
+                  "ssao_power",       "ssao_ambient_floor"};
       attribs = {"position", "vertexColor", "vertexUV", "vertexNormal", "vertexTangent"};
       break;
 

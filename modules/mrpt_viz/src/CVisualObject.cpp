@@ -533,7 +533,9 @@ void VisualObjectParams_TexturedTriangles::readFromStreamTexturedObject(serializ
       }
       if (version >= 5)
       {
-        m_alphaMode = static_cast<TAlphaMode>(in.ReadAs<uint8_t>());
+        const auto mode = in.ReadAs<uint8_t>();
+        ASSERT_LE_(mode, static_cast<uint8_t>(TAlphaMode::Blend));
+        m_alphaMode = static_cast<TAlphaMode>(mode);
         in >> m_alphaCutoff;
       }
       else
