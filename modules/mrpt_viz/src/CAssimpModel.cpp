@@ -59,7 +59,7 @@ CAssimpModel& CAssimpModel::operator=(CAssimpModel&&) noexcept = default;
 // Serialization
 // ============================================================================
 
-uint8_t CAssimpModel::serializeGetVersion() const { return 1; }
+uint8_t CAssimpModel::serializeGetVersion() const { return 2; }
 
 void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -69,7 +69,6 @@ void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
   // v1: model info
   out << m_modelPath;
   out << m_modelLoadFlags;
-  out << m_splitTrianglesRenderingBBox;
 }
 
 void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -78,6 +77,7 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
   {
     case 0:
     case 1:
+    case 2:
     {
       // Deserialize base class. Note that serializeTo() always emits the
       // base payload with CSetOfObjects' own (unversioned) writer, so the
@@ -88,7 +88,10 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
       {
         in >> m_modelPath;
         in >> m_modelLoadFlags;
-        in >> m_splitTrianglesRenderingBBox;
+      }
+      if (version == 1)
+      {
+        in.ReadAs<float>();  // Unused: old split triangles bbox size
       }
 
       // Rebuild internal pointers to child objects
@@ -243,12 +246,6 @@ void CAssimpModel::loadScene(const std::string& file_name, int flags)
 
   // Process the scene
   processAssimpScene();
-
-  // Apply splitting if enabled
-  if (m_splitTrianglesRenderingBBox > 0.0f)
-  {
-    applySplitTrianglesRendering();
-  }
 
   if (verbose)
   {
@@ -917,39 +914,6 @@ TBoundingBoxf CAssimpModel::internalBoundingBoxLocal() const
 }
 
 // ============================================================================
-// Triangle Splitting
-// ============================================================================
-
-void CAssimpModel::setSplitTrianglesRenderingBBox(float bbox_size)
-{
-  if (m_splitTrianglesRenderingBBox == bbox_size)
-  {
-    return;
-  }
-
-  m_splitTrianglesRenderingBBox = bbox_size;
-
-  // If we have loaded content, reapply splitting
-  if (!m_modelPath.empty() && bbox_size > 0.0f)
-  {
-    applySplitTrianglesRendering();
-    CVisualObject::notifyChange();
-  }
-}
-
-void CAssimpModel::applySplitTrianglesRendering()
-{
-  // TODO: Implement spatial subdivision of textured meshes for correct
-  // transparency sorting. This would involve:
-  // 1. For each textured mesh, compute spatial grid based on bbox_size
-  // 2. Assign triangles to grid cells
-  // 3. Create separate child objects for each cell
-  // 4. Enable depth sorting in the renderer
-
-  // For now, this is a no-op placeholder
-}
-
-// ============================================================================
 // Query Methods
 // ============================================================================
 
@@ -1071,11 +1035,6 @@ void CAssimpModel::rebuildFromAssimpScene()
 
   // Re-process
   processAssimpScene();
-
-  if (m_splitTrianglesRenderingBBox > 0.0f)
-  {
-    applySplitTrianglesRendering();
-  }
 
   CVisualObject::notifyChange();
 #endif
