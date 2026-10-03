@@ -298,7 +298,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "ssaoTexture",
           "ssao_power",
           "ssao_ambient_floor"};
-      attribs = {"position", "vertexNormal", "vertexUV", "vertexTangent"};
+      attribs = {"position", "vertexColor", "vertexNormal", "vertexUV", "vertexTangent"};
       break;
 
     // ===========================================
