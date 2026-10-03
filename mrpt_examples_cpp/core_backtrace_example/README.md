@@ -1,3 +1,5 @@
+Captures and prints the current call stack with mrpt::callStackBackTrace().
+
 Console output (for a GNU/Linux build, without debug symbols):
 
 ```

@@ -1,3 +1,5 @@
+A TCP server and client exchanging serialized MRPT objects with mrpt::comms::CServerTCPSocket and mrpt::comms::CClientTCPSocket.
+
 Example output:
 
 ~~~~~~~~~~~~~

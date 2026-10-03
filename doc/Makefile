@@ -53,7 +53,7 @@ html: python-venv
 	echo "Building docs for these directories: ${MRPT_DOX_INPUT_DIRS}"
 	echo "Using MRPT_LIST_INCLUDE_DIRS: ${MRPT_LIST_INCLUDE_DIRS}"
 	# 0) Generate the pages of C++ examples:
-	bash ../scripts/generate_rst_docs_examples.sh
+	python3 ../scripts/generate_rst_docs_examples.py
 	# 1) Build Doxygen
 	cd source && doxygen
 	# 2) Doxygen XML -> RST
