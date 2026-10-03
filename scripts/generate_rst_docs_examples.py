@@ -95,7 +95,7 @@ def category(name):
 
 
 def write_example_page(name, src_file, readme_text, image):
-    with open(os.path.join(OUT_MD_DIR, "example-" + name + ".md"), "w") as f:
+    with open(os.path.join(OUT_MD_DIR, "example-" + name + ".md"), "w", encoding="utf-8") as f:
         f.write("\\page {} Example: {}\n".format(name, name))
         if readme_text:
             f.write("\n" + readme_text + "\n")
@@ -133,7 +133,7 @@ def main():
         if not src_file:
             continue
         readme = os.path.join(example_dir, "README.md")
-        readme_text = open(readme).read() if os.path.isfile(readme) else ""
+        readme_text = open(readme, encoding="utf-8").read() if os.path.isfile(readme) else ""
         image = screenshot(name)
         write_example_page(name, src_file, readme_text, image)
         names.append(name)
@@ -160,7 +160,7 @@ def main():
     rst += ".. toctree::\n  :hidden:\n  :maxdepth: 1\n\n"
     rst += "".join("  page_{}.rst\n".format(n) for n in names)
 
-    with open(OUT_RST, "w") as f:
+    with open(OUT_RST, "w", encoding="utf-8") as f:
         f.write(rst)
 
 
