@@ -262,6 +262,10 @@ class Viewport :
 
   [[nodiscard]] bool isShadowCastingEnabled() const { return m_shadowsEnabled; }
 
+  /** Shadow map size, as set by enableShadowCasting() (default: 2048x2048). */
+  [[nodiscard]] uint32_t getShadowMapSizeX() const { return m_ShadowMapSizeX; }
+  [[nodiscard]] uint32_t getShadowMapSizeY() const { return m_ShadowMapSizeY; }
+
   /** Enable or disable Screen-Space Ambient Occlusion (SSAO).
    *  Parameters are tuned via lightParameters().ssao_* fields.
    *  Default: disabled. */

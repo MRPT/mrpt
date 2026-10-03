@@ -93,6 +93,8 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
 
   // Copy shadow settings
   m_shadowsEnabled = vizVp.isShadowCastingEnabled();
+  m_shadowMapSizeX = vizVp.getShadowMapSizeX();
+  m_shadowMapSizeY = vizVp.getShadowMapSizeY();
 
   // Propagate SSAO enable flag
   m_ssaoEnabled = m_lightParams.ssao_enabled;
@@ -1317,7 +1319,8 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
   const int numCascades = m_renderMatrices.numShadowCascades;
 
   // Create/resize the cascade depth texture array
-  if (m_cascadeDepthArrayTexId == 0 || m_cascadeDepthArrayLayers != numCascades)
+  if (m_cascadeDepthArrayTexId == 0 || m_cascadeDepthArrayLayers != numCascades ||
+      m_cascadeDepthArraySizeX != m_shadowMapSizeX || m_cascadeDepthArraySizeY != m_shadowMapSizeY)
   {
     if (m_cascadeDepthArrayTexId != 0) glDeleteTextures(1, &m_cascadeDepthArrayTexId);
     glGenTextures(1, &m_cascadeDepthArrayTexId);
@@ -1332,6 +1335,8 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     m_cascadeDepthArrayLayers = numCascades;
+    m_cascadeDepthArraySizeX = m_shadowMapSizeX;
+    m_cascadeDepthArraySizeY = m_shadowMapSizeY;
   }
 
   // Create a single FBO for rendering directly into texture array layers
@@ -1349,6 +1354,13 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
   // Hardware polygon offset to prevent shadow acne (self-shadowing)
   glEnable(GL_POLYGON_OFFSET_FILL);
   glPolygonOffset(2.0f, 4.0f);
+
+#if defined(GL_DEPTH_CLAMP)
+  // Casters between the light and the cascade near plane must still cast
+  // shadows (e.g. a ceiling high above the floor seen by the camera):
+  // clamp their depth to the near plane instead of clipping them.
+  glEnable(GL_DEPTH_CLAMP);
+#endif
 
   // Render each cascade directly into the texture array layer
   for (int c = 0; c < numCascades; c++)
@@ -1368,6 +1380,9 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
   }
 
   glDisable(GL_POLYGON_OFFSET_FILL);
+#if defined(GL_DEPTH_CLAMP)
+  glDisable(GL_DEPTH_CLAMP);
+#endif
 
   // Restore previous FBO and viewport
   FrameBuffer::Bind(oldFBs);

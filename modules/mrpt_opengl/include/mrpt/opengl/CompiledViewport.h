@@ -264,11 +264,11 @@ class CompiledViewport
   /** Enables/disables shadow casting for this viewport.
    *
    * \param enabled Enable shadow rendering
-   * \param shadowMapSizeX Shadow map texture width (default 4096)
-   * \param shadowMapSizeY Shadow map texture height (default 4096)
+   * \param shadowMapSizeX Shadow map texture width (default 2048)
+   * \param shadowMapSizeY Shadow map texture height (default 2048)
    */
   void enableShadows(
-      bool enabled, unsigned int shadowMapSizeX = 4096, unsigned int shadowMapSizeY = 4096);
+      bool enabled, unsigned int shadowMapSizeX = 2048, unsigned int shadowMapSizeY = 2048);
 
   /** Returns true if shadow casting is enabled */
   bool areShadowsEnabled() const { return m_shadowsEnabled; }
@@ -473,8 +473,8 @@ class CompiledViewport
   bool m_shadowsEnabled = false;
 
   /** Shadow map dimensions */
-  unsigned int m_shadowMapSizeX = 4096;
-  unsigned int m_shadowMapSizeY = 4096;
+  unsigned int m_shadowMapSizeX = 2048;
+  unsigned int m_shadowMapSizeY = 2048;
 
   /** Shadow map FBO used to render directly into texture array layers */
   unsigned int m_shadowMapFBO = 0;
@@ -483,6 +483,8 @@ class CompiledViewport
    *  Created/resized on demand in renderShadowMap(). */
   unsigned int m_cascadeDepthArrayTexId = 0;
   int m_cascadeDepthArrayLayers = 0;
+  unsigned int m_cascadeDepthArraySizeX = 0;
+  unsigned int m_cascadeDepthArraySizeY = 0;
 
   /** @} */
 
