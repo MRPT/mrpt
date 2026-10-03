@@ -60,6 +60,9 @@ void main()
 
     // Sample normal map: decode from [0,1] to [-1,1]
     highp vec3 tangentNormal = texture(normalMapSampler, frag_UV).rgb * 2.0 - 1.0;
+    // Texture images have their first row at v=0, so the image "up" direction
+    // (+Y in OpenGL-convention normal maps) runs along -v:
+    tangentNormal.y = -tangentNormal.y;
     highp vec3 normal = normalize(TBN * tangentNormal);
 
     highp vec3 viewDirection = normalize(cam_position - frag_position);

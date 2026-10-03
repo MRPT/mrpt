@@ -37,6 +37,9 @@ void main()
     highp mat3 TBN = mat3(T, B, N);
 
     highp vec3 tangentNormal = texture(normalMapSampler, frag_UV).rgb * 2.0 - 1.0;
+    // Texture images have their first row at v=0, so the image "up" direction
+    // (+Y in OpenGL-convention normal maps) runs along -v:
+    tangentNormal.y = -tangentNormal.y;
     highp vec3 normal = normalize(TBN * tangentNormal);
 
     highp vec3 cam2frag = cam_position - frag_position;
