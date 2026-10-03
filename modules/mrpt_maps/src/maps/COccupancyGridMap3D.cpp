@@ -269,15 +269,19 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) 
             case COctoMapVoxels::COLOR_FROM_HEIGHT:
               coefc = 255 * inv_dz * d2f(z - bbmin.z);
               vx_color = TColor(
-                  f2u8(coefc * general_color.R), f2u8(coefc * general_color.G),
-                  f2u8(coefc * general_color.B), f2u8(255 * general_color.A));
+                  static_cast<uint8_t>(coefc * general_color.R),
+                  static_cast<uint8_t>(coefc * general_color.G),
+                  static_cast<uint8_t>(coefc * general_color.B),
+                  static_cast<uint8_t>(255 * general_color.A));
               break;
 
             case COctoMapVoxels::COLOR_FROM_OCCUPANCY:
               coefc = 240 * (1 - occ) + 15;
               vx_color = TColor(
-                  f2u8(coefc * general_color.R), f2u8(coefc * general_color.G),
-                  f2u8(coefc * general_color.B), f2u8(255 * general_color.A));
+                  static_cast<uint8_t>(coefc * general_color.R),
+                  static_cast<uint8_t>(coefc * general_color.G),
+                  static_cast<uint8_t>(coefc * general_color.B),
+                  static_cast<uint8_t>(255 * general_color.A));
               break;
 
             case COctoMapVoxels::TRANSPARENCY_FROM_OCCUPANCY:
@@ -293,8 +297,9 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) 
             case COctoMapVoxels::TRANS_AND_COLOR_FROM_OCCUPANCY:
               coefc = 240 * (1 - occ) + 15;
               vx_color = TColor(
-                  f2u8(coefc * general_color.R), f2u8(coefc * general_color.G),
-                  f2u8(coefc * general_color.B), 50);
+                  static_cast<uint8_t>(coefc * general_color.R),
+                  static_cast<uint8_t>(coefc * general_color.G),
+                  static_cast<uint8_t>(coefc * general_color.B), 50);
               break;
 
             case COctoMapVoxels::MIXED:
@@ -305,8 +310,9 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(mrpt::viz::COctoMapVoxels& gl_obj) 
                 coeft = 0;
               }
               vx_color = TColor(
-                  f2u8(coefc * general_color.R), f2u8(coefc * general_color.G),
-                  f2u8(coefc * general_color.B), static_cast<uint8_t>(coeft));
+                  static_cast<uint8_t>(coefc * general_color.R),
+                  static_cast<uint8_t>(coefc * general_color.G),
+                  static_cast<uint8_t>(coefc * general_color.B), static_cast<uint8_t>(coeft));
               break;
 
             default:

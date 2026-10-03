@@ -126,6 +126,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "ambient_ground_color",
           "cam_position",
           "textureSampler",
+          "normalMapSampler",
           "materialSpecular",
           "materialSpecularExponent",
           "materialEmissive",
@@ -139,7 +140,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
           "ssaoTexture",
           "ssao_power",
           "ssao_ambient_floor"};
-      attribs = {"position", "vertexColor", "vertexUV", "vertexNormal"};
+      attribs = {"position", "vertexColor", "vertexUV", "vertexNormal", "vertexTangent"};
       break;
 
     case DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT:

@@ -7,7 +7,7 @@ R"XXX(#version 300 es
 layout(location = 0) in vec3 position;
 layout(location = 2) in vec3 vertexNormal;
 layout(location = 3) in vec2 vertexUV;
-layout(location = 4) in vec3 vertexTangent;
+layout(location = 4) in vec4 vertexTangent;  // w: UV mapping handedness (+1 or -1)
 
 uniform highp mat4 p_matrix;
 uniform highp mat4 v_matrix;
@@ -15,7 +15,7 @@ uniform highp mat4 m_matrix;
 
 out highp vec3 frag_position, frag_normal;
 out mediump vec2 frag_UV; // Interpolated UV texture coords
-out highp vec3 frag_tangent;
+out highp vec4 frag_tangent;
 
 void main()
 {
@@ -26,7 +26,7 @@ void main()
     frag_UV            = vertexUV;
 
     // Transform tangent to world space
-    frag_tangent = normalize(normalMatrix * vertexTangent);
+    frag_tangent = vec4(normalize(normalMatrix * vertexTangent.xyz), vertexTangent.w);
 
     gl_Position        = p_matrix * v_matrix * vPos;
 }

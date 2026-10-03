@@ -43,7 +43,7 @@ uniform mediump float ssao_ambient_floor;
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
 in lowp vec4 frag_vertexColor;
-in highp vec3 frag_tangent;
+in highp vec4 frag_tangent;
 
 out lowp vec4 color;
 
@@ -52,14 +52,17 @@ void main()
     highp vec3 N = normalize(frag_normal);
 
     // Normal mapping via TBN matrix
-    highp vec3 T = normalize(frag_tangent);
+    highp vec3 T = normalize(frag_tangent.xyz);
     // Re-orthogonalize T with respect to N (Gram-Schmidt)
     T = normalize(T - dot(T, N) * N);
-    highp vec3 B = cross(N, T);
+    highp vec3 B = cross(N, T) * frag_tangent.w;
     highp mat3 TBN = mat3(T, B, N);
 
     // Sample normal map: decode from [0,1] to [-1,1]
     highp vec3 tangentNormal = texture(normalMapSampler, frag_UV).rgb * 2.0 - 1.0;
+    // Texture images have their first row at v=0, so the image "up" direction
+    // (+Y in OpenGL-convention normal maps) runs along -v:
+    tangentNormal.y = -tangentNormal.y;
     highp vec3 normal = normalize(TBN * tangentNormal);
 
     highp vec3 viewDirection = normalize(cam_position - frag_position);

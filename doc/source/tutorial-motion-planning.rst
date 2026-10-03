@@ -29,7 +29,7 @@ and invoking `mrpt::nav::PlannerSimple2D::computePath()`.
 See the complete example source code `here <page_nav_circ_robot_path_planning.html>`_.
 
 
-.. image:: images/nav_circ_robot_path_planning_screenshot.png
+.. image:: images/nav_circ_robot_path_planning_screenshot.webp
    :align: right
    :width: 300px
 

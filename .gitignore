@@ -47,6 +47,8 @@ doc/source/global.rst
 doc/source/doxygen-index.rst
 .cmake
 doc/venv
+doc/source/doxygen-docs/example-*.md
+doc/source/examples.rst
 .pc
 .cache
 my_config.ini
