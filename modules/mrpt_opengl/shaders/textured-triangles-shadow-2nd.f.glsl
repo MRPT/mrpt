@@ -24,6 +24,7 @@ uniform lowp sampler2D normalMapSampler;
 
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated UV texture coords
+in lowp vec4 frag_vertexColor;
 in highp vec4 frag_tangent;
 
 void main()
@@ -92,7 +93,7 @@ void main()
     }
 
     // material texture color:
-    lowp vec4 texCol = texture(textureSampler, frag_UV);
+    lowp vec4 texCol = texture(textureSampler, frag_UV) * frag_vertexColor;
 
     mediump vec3 litColor = materialEmissive + texCol.rgb * totalDiffuse + totalSpecular;
 
