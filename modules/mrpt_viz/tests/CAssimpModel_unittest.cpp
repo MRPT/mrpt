@@ -148,7 +148,6 @@ TEST(CAssimpModel, EmptyModelDefaults)
   EXPECT_EQ(m->getTotalTriangleCount(), 0U);
   EXPECT_EQ(m->getTotalVertexCount(), 0U);
   EXPECT_TRUE(m->getTextureInfo().empty());
-  EXPECT_FLOAT_EQ(m->getSplitTrianglesRenderingBBox(), 0.0f);
 
   // No geometry: ray tracing must simply report "no hit".
   double dist = 0;
@@ -308,27 +307,6 @@ TEST(CAssimpModel, ReloadReplacesPreviousContent)
   EXPECT_EQ(m->getTotalTriangleCount(), 1U);
 }
 
-TEST(CAssimpModel, SplitTrianglesRenderingBBoxSetter)
-{
-  const TempModelDir dir;
-  dir.writeTextFile("tri.obj", OBJ_BARE_TRIANGLE);
-
-  auto m = CAssimpModel::Create();
-  m->setSplitTrianglesRenderingBBox(2.0f);
-  EXPECT_FLOAT_EQ(m->getSplitTrianglesRenderingBBox(), 2.0f);
-
-  // Setting the same value again is a no-op:
-  m->setSplitTrianglesRenderingBBox(2.0f);
-  EXPECT_FLOAT_EQ(m->getSplitTrianglesRenderingBBox(), 2.0f);
-
-  m->loadScene(dir.path("tri.obj"), CAssimpModel::LoadFlags::RealTimeFast);
-  EXPECT_EQ(m->getTotalTriangleCount(), 1U);
-
-  // With content already loaded, this re-applies the (currently no-op) split:
-  m->setSplitTrianglesRenderingBBox(1.0f);
-  EXPECT_FLOAT_EQ(m->getSplitTrianglesRenderingBBox(), 1.0f);
-}
-
 TEST(CAssimpModel, TraceRayHitsLoadedGeometry)
 {
   const TempModelDir dir;
@@ -353,7 +331,6 @@ TEST(CAssimpModel, SerializationRoundTrip)
 
   auto m = CAssimpModel::Create();
   m->loadScene(dir.path("quad.obj"), CAssimpModel::LoadFlags::RealTimeFast);
-  m->setSplitTrianglesRenderingBBox(3.0f);
 
   mrpt::io::CMemoryStream buf;
   auto arch = mrpt::serialization::archiveFrom(buf);
@@ -365,7 +342,6 @@ TEST(CAssimpModel, SerializationRoundTrip)
 
   EXPECT_EQ(m2->getModelPath(), m->getModelPath());
   EXPECT_EQ(m2->getModelLoadFlags(), m->getModelLoadFlags());
-  EXPECT_FLOAT_EQ(m2->getSplitTrianglesRenderingBBox(), 3.0f);
 
   // The child objects are restored, and re-indexed into the textured/
   // non-textured pointers:
