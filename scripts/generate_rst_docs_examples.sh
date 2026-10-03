@@ -52,7 +52,7 @@ for d in mrpt_examples_cpp/*/; do
 	FILE_SCREENSHOT=$(ls -1 doc/source/images/${NAME}_screenshot.* 2>/dev/null | head -n1)
 	if [ -n "$FILE_SCREENSHOT" ]; then
 		echo "" >> $F
-		echo "![$NAME screenshot]($FILE_SCREENSHOT)" >> $F
+		echo "![$NAME screenshot]($(basename "$FILE_SCREENSHOT"))" >> $F
 	fi
 
 	echo "C++ example source code:" >> $F
