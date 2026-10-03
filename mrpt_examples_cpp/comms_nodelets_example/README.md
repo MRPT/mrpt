@@ -1,3 +1,5 @@
+Publish/subscribe communication between threads in the same process with mrpt::comms::nodelets.
+
 Example output:
 
 ~~~~~~~~~~~~~

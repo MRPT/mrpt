@@ -1,3 +1,5 @@
+Sends serialized objects between two threads through an operating system pipe (mrpt::io::CPipe).
+
 Example console output:
 
 ```

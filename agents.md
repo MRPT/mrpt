@@ -45,6 +45,10 @@ mrpt_add_library(
 * Every rosdep key in a `package.xml` must resolve on all build farm
   platforms (Ubuntu, Debian, Fedora, RHEL); otherwise that package fails to
   build there. Leave out optional deps with an embedded fallback if missing.
+* C++ examples (`mrpt_examples_cpp/<name>/`): the first paragraph of each
+  `README.md` is a one-line summary, and `doc/source/images/<name>_screenshot.webp`
+  (optional) its thumbnail; both feed the docs gallery
+  (`scripts/generate_rst_docs_examples.py`).
 
 ## 2. C++ guidelines
 

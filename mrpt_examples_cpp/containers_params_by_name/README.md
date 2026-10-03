@@ -1,3 +1,5 @@
+Passing a variable set of named parameters to a function with mrpt::containers::yaml.
+
 This is another use of mrpt::containers::yaml for parameter passing.
 
 Example output:

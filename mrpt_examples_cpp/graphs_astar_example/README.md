@@ -1,3 +1,5 @@
+Solves a coin change problem (a minimal set of coins adding up to a given amount) with the generic A* search algorithm in mrpt::graphs::CAStarAlgorithm.
+
 Demo for the A* generic solver:
 
 Example console output:
