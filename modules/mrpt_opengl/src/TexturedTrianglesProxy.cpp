@@ -149,6 +149,12 @@ void TexturedTrianglesProxy::render(const RenderContext& rc) const
 #endif
 }
 
+shader_id_t TexturedTrianglesProxy::shadowMapShader() const
+{
+  return m_params.alphaCutoff > 0.0f ? DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_1ST
+                                     : DefaultShaderID::TRIANGLES_SHADOW_1ST;
+}
+
 [[nodiscard]] std::vector<shader_id_t> TexturedTrianglesProxy::requiredShaders() const
 {
   // Only return the base shader here. Shadow shader variants are selected
@@ -182,6 +188,7 @@ void TexturedTrianglesProxy::extractTextureParams(const CVisualObject* sourceObj
     // Check if alpha image is assigned
     const auto& alphaImg = texTriObj->getTextureAlphaImage();
     m_params.hasTransparency = !alphaImg.isEmpty();
+    m_params.alphaCutoff = texTriObj->effectiveAlphaCutoff();
 
     m_params.hasNormalMap = texTriObj->normalMapHasBeenAssigned();
   }
@@ -199,6 +206,11 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
   if (rc.shader->hasUniform("textureSampler"))
   {
     uploadInt(rc, "textureSampler", MATERIAL_DIFFUSE_TEXTURE_UNIT);
+  }
+
+  if (rc.shader->hasUniform("alphaCutoff"))
+  {
+    uploadFloat(rc, "alphaCutoff", m_params.alphaCutoff);
   }
 
   // Normal map sampler uniform (bind to texture unit 2)

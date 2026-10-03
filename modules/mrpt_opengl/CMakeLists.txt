@@ -59,6 +59,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CFBORender_SceneUpdates_unittest.cpp
   tests/CFBORender_SharedTexture_unittest.cpp
   tests/CFBORender_NormalMap_unittest.cpp
+  tests/CFBORender_AlphaMode_unittest.cpp
   tests/TRenderMatrices_unittest.cpp
 )
 

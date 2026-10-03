@@ -22,6 +22,7 @@ uniform lowp vec3 ambient_sky_color;
 uniform lowp vec3 ambient_ground_color;
 
 uniform lowp sampler2D textureSampler;
+uniform mediump float alphaCutoff; // >0: cutout, <0: opaque, 0: blend
 uniform lowp sampler2D normalMapSampler;
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;
@@ -106,6 +107,16 @@ void main()
 
     // material texture color modulated by vertex color:
     lowp vec4 texCol = texture(textureSampler, frag_UV) * frag_vertexColor;
+    // alphaCutoff > 0: cutout (discard, and keep the rest opaque);
+    // < 0: opaque; 0: alpha blending.
+    if (texCol.a < alphaCutoff)
+    {
+        discard;
+    }
+    if (alphaCutoff != 0.0)
+    {
+        texCol.a = 1.0;
+    }
 
     mediump vec3 litColor = materialEmissive + texCol.rgb * totalDiffuse + totalSpecular;
 

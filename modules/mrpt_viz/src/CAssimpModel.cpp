@@ -545,6 +545,32 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
   {
     texturedMesh = getOrCreateTexturedMesh(texturePath);
 
+    // glTF materials define how to use the texture alpha. Otherwise, the
+    // alpha mode is detected from the texture (TAlphaMode::Auto).
+    aiString alphaMode;
+    if (texturedMesh && material &&
+        aiGetMaterialString(material, "$mat.gltf.alphaMode", 0, 0, &alphaMode) == AI_SUCCESS)
+    {
+      const std::string mode = alphaMode.C_Str();
+      if (mode == "MASK")
+      {
+        texturedMesh->setAlphaMode(TAlphaMode::Mask);
+        float cutoff = 0.5f;
+        if (aiGetMaterialFloat(material, "$mat.gltf.alphaCutoff", 0, 0, &cutoff) == AI_SUCCESS)
+        {
+          texturedMesh->setAlphaCutoff(cutoff);
+        }
+      }
+      else if (mode == "BLEND")
+      {
+        texturedMesh->setAlphaMode(TAlphaMode::Blend);
+      }
+      else if (mode == "OPAQUE")
+      {
+        texturedMesh->setAlphaMode(TAlphaMode::Opaque);
+      }
+    }
+
     // Assign normal map if found and not yet assigned
     if (!normalMapPath.empty() && texturedMesh && !texturedMesh->normalMapHasBeenAssigned())
     {

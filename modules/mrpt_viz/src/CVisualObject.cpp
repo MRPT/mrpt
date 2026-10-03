@@ -454,7 +454,7 @@ mrpt::math::TBoundingBoxf VisualObjectParams_TexturedTriangles::trianglesBoundin
 void VisualObjectParams_TexturedTriangles::writeToStreamTexturedObject(
     serialization::CArchive& out) const
 {
-  uint8_t ver = 4;
+  uint8_t ver = 5;
 
   out << ver;
   out << m_enableTransparency << m_textureInterpolate << m_textureUseMipMaps;
@@ -471,6 +471,8 @@ void VisualObjectParams_TexturedTriangles::writeToStreamTexturedObject(
   {
     out << m_normalMapImage;
   }
+  // v5: alpha mode
+  out << static_cast<uint8_t>(m_alphaMode) << m_alphaCutoff;
 }
 
 void VisualObjectParams_TexturedTriangles::readFromStreamTexturedObject(serialization::CArchive& in)
@@ -485,6 +487,7 @@ void VisualObjectParams_TexturedTriangles::readFromStreamTexturedObject(serializ
     case 2:
     case 3:
     case 4:
+    case 5:
     {
       in >> m_enableTransparency >> m_textureInterpolate;
       if (version >= 3)
@@ -528,6 +531,16 @@ void VisualObjectParams_TexturedTriangles::readFromStreamTexturedObject(serializ
           in >> m_normalMapImage;
         }
       }
+      if (version >= 5)
+      {
+        m_alphaMode = static_cast<TAlphaMode>(in.ReadAs<uint8_t>());
+        in >> m_alphaCutoff;
+      }
+      else
+      {
+        m_alphaMode = TAlphaMode::Auto;
+        m_alphaCutoff = 0.5f;
+      }
     }
     break;
     default:
@@ -552,6 +565,7 @@ void VisualObjectParams_TexturedTriangles::assignImage(
   m_textureImageAssigned = true;
 
   m_enableTransparency = true;
+  detectAlphaMode();
 
   MRPT_END
 }
@@ -569,6 +583,7 @@ void VisualObjectParams_TexturedTriangles::assignImage(const mrpt::img::CImage& 
   m_textureImageAssigned = true;
 
   m_enableTransparency = false;
+  detectAlphaMode();
 
   MRPT_END
 }
@@ -587,6 +602,7 @@ void VisualObjectParams_TexturedTriangles::assignImage(
   m_textureImageAssigned = true;
 
   m_enableTransparency = true;
+  detectAlphaMode();
 
   MRPT_END
 }
@@ -603,8 +619,79 @@ void VisualObjectParams_TexturedTriangles::assignImage(mrpt::img::CImage&& img)
   m_textureImageAssigned = true;
 
   m_enableTransparency = false;
+  detectAlphaMode();
 
   MRPT_END
+}
+
+void VisualObjectParams_TexturedTriangles::detectAlphaMode()
+{
+  // Alpha from the separate alpha image, or the 4th channel of the texture:
+  const mrpt::img::CImage* img = nullptr;
+  int step = 1;
+  int offset = 0;
+  if (m_enableTransparency && !m_textureImageAlpha.isEmpty())
+  {
+    img = &m_textureImageAlpha;
+  }
+  else if (m_textureImage.channels() == mrpt::img::CH_RGBA)
+  {
+    img = &m_textureImage;
+    step = 4;
+    offset = 3;
+  }
+  if (img == nullptr || img->isEmpty())
+  {
+    m_detectedAlphaMode = TAlphaMode::Opaque;
+    return;
+  }
+  img->forceLoad();
+
+  // Count partially and fully transparent pixels:
+  size_t partial = 0;
+  size_t transparent = 0;
+  const int32_t w = img->getWidth();
+  const int32_t h = img->getHeight();
+  for (int32_t y = 0; y < h; y++)
+  {
+    const uint8_t* row = img->ptrLine<uint8_t>(y);
+    for (int32_t x = 0; x < w; x++)
+    {
+      const uint8_t a = row[x * step + offset];
+      if (a < 8)
+      {
+        transparent++;
+      }
+      else if (a < 248)
+      {
+        partial++;
+      }
+    }
+  }
+  const size_t total = static_cast<size_t>(w) * static_cast<size_t>(h);
+  if (transparent == 0 && partial == 0)
+  {
+    m_detectedAlphaMode = TAlphaMode::Opaque;
+  }
+  else if (partial * 20 <= total)
+  {
+    // At most 5% of semi-transparent pixels (e.g. antialiased edges):
+    m_detectedAlphaMode = TAlphaMode::Mask;
+  }
+  else
+  {
+    m_detectedAlphaMode = TAlphaMode::Blend;
+  }
+}
+
+float VisualObjectParams_TexturedTriangles::effectiveAlphaCutoff() const
+{
+  if (m_alphaMode == TAlphaMode::Opaque)
+  {
+    return -1.0f;
+  }
+  const auto mode = m_alphaMode == TAlphaMode::Auto ? m_detectedAlphaMode : m_alphaMode;
+  return mode == TAlphaMode::Mask ? m_alphaCutoff : 0.0f;
 }
 
 void VisualObjectParams_TexturedTriangles::assignNormalMap(const mrpt::img::CImage& img)

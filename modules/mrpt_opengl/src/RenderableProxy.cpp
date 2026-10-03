@@ -486,9 +486,9 @@ void TrianglesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
   bool cullingWasEnabled = glIsEnabled(GL_CULL_FACE);
   GLint previousCullMode = GL_BACK;
   glGetIntegerv(GL_CULL_FACE_MODE, &previousCullMode);
-  const auto cullFace = rc.shader_id == DefaultShaderID::TRIANGLES_SHADOW_1ST
-                            ? mrpt::viz::TCullFace::NONE
-                            : m_cullFace;
+  const bool isShadowMap1stPass = rc.shader_id == DefaultShaderID::TRIANGLES_SHADOW_1ST ||
+                                  rc.shader_id == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_1ST;
+  const auto cullFace = isShadowMap1stPass ? mrpt::viz::TCullFace::NONE : m_cullFace;
 
   if (cullFace != mrpt::viz::TCullFace::NONE)
   {
