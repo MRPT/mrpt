@@ -481,19 +481,27 @@ void TrianglesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
     return;
   }
 
-  // Setup face culling
+  // Setup face culling. Culling only affects what the camera sees: all faces
+  // cast shadows, so it is disabled while rendering the shadow map.
   bool cullingWasEnabled = glIsEnabled(GL_CULL_FACE);
   GLint previousCullMode = GL_BACK;
+  glGetIntegerv(GL_CULL_FACE_MODE, &previousCullMode);
+  const auto cullFace = rc.shader_id == DefaultShaderID::TRIANGLES_SHADOW_1ST
+                            ? mrpt::viz::TCullFace::NONE
+                            : m_cullFace;
 
-  if (m_cullFace != mrpt::viz::TCullFace::NONE)
+  if (cullFace != mrpt::viz::TCullFace::NONE)
   {
     glEnable(GL_CULL_FACE);
-    glGetIntegerv(GL_CULL_FACE_MODE, &previousCullMode);
 
-    if (m_cullFace == mrpt::viz::TCullFace::BACK)
+    if (cullFace == mrpt::viz::TCullFace::BACK)
+    {
       glCullFace(GL_BACK);
-    else if (m_cullFace == mrpt::viz::TCullFace::FRONT)
+    }
+    else if (cullFace == mrpt::viz::TCullFace::FRONT)
+    {
       glCullFace(GL_FRONT);
+    }
   }
   else
   {
