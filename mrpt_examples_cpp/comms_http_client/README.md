@@ -1,3 +1,4 @@
+Downloads a web page with the HTTP client functions in mrpt::comms::net::http_get().
 
 Example output:
 
