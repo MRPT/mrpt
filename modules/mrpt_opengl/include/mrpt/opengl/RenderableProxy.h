@@ -166,6 +166,14 @@ class RenderableProxy
    */
   [[nodiscard]] virtual bool castsShadows() const { return true; }
 
+  /** The shader for the shadow map generation pass (depth only).
+   * \return TRIANGLES_SHADOW_1ST by default
+   */
+  [[nodiscard]] virtual shader_id_t shadowMapShader() const
+  {
+    return DefaultShaderID::TRIANGLES_SHADOW_1ST;
+  }
+
   /** Should this object be checked for frustum culling?
    *
    * Some objects (like skyboxes) should never be culled even if

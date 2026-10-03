@@ -48,6 +48,25 @@ enum class TCullFace : uint8_t
   FRONT
 };
 
+/** How the alpha channel of a texture is used, as glTF alphaMode.
+ *  \sa VisualObjectParams_TexturedTriangles::setAlphaMode()
+ *  \ingroup mrpt_viz_grp
+ */
+enum class TAlphaMode : uint8_t
+{
+  /** The default: Mask if the texture alpha is (nearly) binary, Opaque if it
+   * is fully opaque, or Blend otherwise. */
+  Auto = 0,
+  /** Alpha is ignored. */
+  Opaque,
+  /** Cutout: fragments with alpha below the cutoff are discarded, and the
+   * rest are fully opaque. Correct in any drawing order, also in shadows and
+   * depth images. Best for foliage, fences, etc. */
+  Mask,
+  /** Alpha blending, for semi-transparent surfaces. */
+  Blend
+};
+
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
@@ -702,6 +721,29 @@ class VisualObjectParams_TexturedTriangles : public virtual CVisualObject
 
   [[nodiscard]] bool textureImageHasBeenAssigned() const { return m_textureImageAssigned; }
 
+  /** Sets how the texture alpha channel is used (default: Auto).
+   * \sa setAlphaCutoff(), effectiveAlphaCutoff() */
+  void setAlphaMode(TAlphaMode mode)
+  {
+    m_alphaMode = mode;
+    CVisualObject::notifyChange();
+  }
+  [[nodiscard]] TAlphaMode alphaMode() const { return m_alphaMode; }
+
+  /** Alpha threshold for TAlphaMode::Mask (default: 0.5) */
+  void setAlphaCutoff(float cutoff)
+  {
+    m_alphaCutoff = cutoff;
+    CVisualObject::notifyChange();
+  }
+  [[nodiscard]] float alphaCutoff() const { return m_alphaCutoff; }
+
+  /** The alpha cutoff for the shaders: alphaCutoff() if the effective alpha
+   * mode is Mask (set explicitly, or detected by Auto), a negative value if
+   * Opaque was set explicitly (alpha is ignored), or 0 otherwise (blending).
+   */
+  [[nodiscard]] float effectiveAlphaCutoff() const;
+
   /** Assigns a normal map image for tangent-space normal mapping.
    * The image should encode normals in tangent space as RGB where
    * (128,128,255) represents the unperturbed surface normal.
@@ -760,6 +802,12 @@ class VisualObjectParams_TexturedTriangles : public virtual CVisualObject
 
   bool m_normalMapAssigned = false;
   mutable mrpt::img::CImage m_normalMapImage;
+
+  TAlphaMode m_alphaMode = TAlphaMode::Auto;
+  float m_alphaCutoff = 0.5f;
+  /** Alpha mode detected from the texture, for TAlphaMode::Auto */
+  TAlphaMode m_detectedAlphaMode = TAlphaMode::Opaque;
+  void detectAlphaMode();
 };
 
 class VisualObjectParams_Lines : public virtual CVisualObject
@@ -866,4 +914,12 @@ using namespace mrpt::viz;
 MRPT_FILL_ENUM_MEMBER(TCullFace, NONE);
 MRPT_FILL_ENUM_MEMBER(TCullFace, BACK);
 MRPT_FILL_ENUM_MEMBER(TCullFace, FRONT);
+MRPT_ENUM_TYPE_END()
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::viz::TAlphaMode)
+using namespace mrpt::viz;
+MRPT_FILL_ENUM_MEMBER(TAlphaMode, Auto);
+MRPT_FILL_ENUM_MEMBER(TAlphaMode, Opaque);
+MRPT_FILL_ENUM_MEMBER(TAlphaMode, Mask);
+MRPT_FILL_ENUM_MEMBER(TAlphaMode, Blend);
 MRPT_ENUM_TYPE_END()

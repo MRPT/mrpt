@@ -1459,7 +1459,7 @@ void CompiledViewport::buildRenderQueue(
       // Shadow 1st pass: only render depth using the shadow depth shader.
       // Skip non-triangle proxies (points, lines don't cast shadows).
       shaderIDs.clear();
-      shaderIDs.push_back(DefaultShaderID::TRIANGLES_SHADOW_1ST);
+      shaderIDs.push_back(proxy->shadowMapShader());
     }
     else if (m_shadowsEnabled)
     {
@@ -1547,7 +1547,8 @@ void CompiledViewport::processRenderQueue(
     // Determine if this is a shadow-related shader
     const bool isShadow2ndPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
                                  shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
-    const bool isShadow1stPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_1ST;
+    const bool isShadow1stPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_1ST ||
+                                 shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_1ST;
 
     // Bind cascaded shadow map texture array for 2nd pass shaders
     if (isShadow2ndPass && m_cascadeDepthArrayTexId != 0)
