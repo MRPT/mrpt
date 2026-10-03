@@ -26,7 +26,7 @@
  *
  * Textures are downloaded on the fly using wget/curl.
  *
- * \image html opengl_normal_maps_screenshot.png
+ * \image html opengl_normal_maps_screenshot.webp
  */
 
 #include <mrpt/core/format.h>

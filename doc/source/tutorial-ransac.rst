@@ -20,7 +20,7 @@ robust model fit algorithm, useful for outliers rejection.
 See also `this excellent MATLAB toolkit <https://www.peterkovesi.com/matlabfns/>`_
 by Peter Kovesi, on which MRPT implementation is strongly based.
 
-.. image:: images/math_ransac_examples_screenshot.png
+.. image:: images/math_ransac_examples_screenshot.webp
   :alt: RANSAC C++ examples
 
 2. C++ API
@@ -108,6 +108,6 @@ or a subset of image keypoints against a larger image mosaic.
 This method was discussed in our paper :cite:`blanco2013robust`.
 
 
-.. image:: maps_ransac_data_association_screenshot.png
+.. image:: maps_ransac_data_association_screenshot.webp
 	:alt: MRPT RANSAC data association screenshot
 

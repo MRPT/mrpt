@@ -28,7 +28,7 @@
  *  - H : toggle shadow casting on/off
  *  - ESC / Q : quit
  *
- * \image html opengl_ssao_demo_screenshot.png
+ * \image html opengl_ssao_demo_screenshot.webp
  */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
