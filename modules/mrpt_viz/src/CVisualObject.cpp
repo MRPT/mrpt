@@ -22,6 +22,7 @@
 #include <mrpt/viz/CText.h>
 #include <mrpt/viz/CVisualObject.h>  // Include these before windows.h!!
 
+#include <atomic>
 #include <mutex>
 
 using namespace std;
@@ -29,6 +30,46 @@ using namespace mrpt;
 using namespace mrpt::viz;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CVisualObject, CSerializable, mrpt::viz)
+
+namespace
+{
+std::atomic<uint64_t> globalSceneChangeCount{1};
+std::atomic<uint64_t> globalSceneStructureChangeCount{1};
+}  // namespace
+
+uint64_t mrpt::viz::sceneChangeCount()
+{
+  return globalSceneChangeCount.load(std::memory_order_acquire);
+}
+
+void mrpt::viz::notifySceneChange()
+{
+  globalSceneChangeCount.fetch_add(1, std::memory_order_acq_rel);
+}
+
+uint64_t mrpt::viz::sceneStructureChangeCount()
+{
+  return globalSceneStructureChangeCount.load(std::memory_order_acquire);
+}
+
+void mrpt::viz::notifySceneStructureChange()
+{
+  globalSceneStructureChangeCount.fetch_add(1, std::memory_order_acq_rel);
+  notifySceneChange();
+}
+
+void CVisualObject::updateBuffersIfNeeded() const
+{
+  // Read the version before regenerating: a change made meanwhile will
+  // trigger another regeneration next time.
+  const uint64_t v = dataVersion();
+  if (m_buffersVersion.value.load(std::memory_order_acquire) == v)
+  {
+    return;
+  }
+  updateBuffers();
+  m_buffersVersion.value.store(v, std::memory_order_release);
+}
 
 void CVisualObject::writeToStreamRender(mrpt::serialization::CArchive& out) const
 {
@@ -224,6 +265,11 @@ void CVisualObject::readFromStreamRender(mrpt::serialization::CArchive& in)
     // OLD FORMAT:
     THROW_EXCEPTION("Serialized object is too old! Unsupported format.");
   }
+  lckWrite.unlock();
+
+  // The whole state may have changed, if this object is being reused:
+  notifyChange();
+  notifyTransformChange();
 }
 
 /*--------------------------------------------------------------
@@ -233,8 +279,8 @@ CVisualObject& CVisualObject::setPose(const mrpt::poses::CPose3D& o)
 {
   m_stateMtx.data.lock();
   m_state.pose = o;
-  notifyChange();
   m_stateMtx.data.unlock();
+  notifyTransformChange();
   return *this;
 }
 CVisualObject& CVisualObject::setPose(const mrpt::poses::CPose2D& o)
@@ -254,16 +300,16 @@ CVisualObject& CVisualObject::setPose(const mrpt::poses::CPoint3D& o)
 {
   m_stateMtx.data.lock();
   m_state.pose.setFromValues(o.x(), o.y(), o.z(), 0, 0, 0);
-  notifyChange();
   m_stateMtx.data.unlock();
+  notifyTransformChange();
   return *this;
 }
 CVisualObject& CVisualObject::setPose(const mrpt::poses::CPoint2D& o)
 {
   m_stateMtx.data.lock();
   m_state.pose.setFromValues(o.x(), o.y(), 0, 0, 0, 0);
-  notifyChange();
   m_stateMtx.data.unlock();
+  notifyTransformChange();
   return *this;
 }
 

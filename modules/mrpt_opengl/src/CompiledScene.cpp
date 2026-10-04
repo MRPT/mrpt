@@ -29,14 +29,12 @@
 #include <mrpt/viz/CText3D.h>
 
 #include <Eigen/Dense>
-#include <iostream>
+#include <unordered_map>
 
 #include "gltext.h"
 
 using namespace mrpt::opengl;
 using namespace mrpt::viz;
-
-static const bool SCENE_VERBOSE = mrpt::get_env<bool>("MRPT_SCENE_VERBOSE", false);
 
 // ============================================================================
 // Text3DProxy: generates text geometry from CText3D using the gltext system
@@ -76,6 +74,7 @@ class Text3DProxy : public TrianglesProxyBase
     m_triangleCount = tris.size();
     if (m_triangleCount == 0)
     {
+      m_localBBox.reset();
       return;
     }
 
@@ -88,6 +87,8 @@ class Text3DProxy : public TrianglesProxyBase
     normals.reserve(vertexCount);
     colors.reserve(vertexCount);
 
+    auto bbox = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
+    m_transparent = false;
     for (const auto& tri : tris)
     {
       for (int i = 0; i < 3; ++i)
@@ -96,6 +97,8 @@ class Text3DProxy : public TrianglesProxyBase
         normals.push_back(tri.vertices[i].normal);
         const auto& rgba = tri.vertices[i].xyzrgba;
         colors.emplace_back(rgba.r, rgba.g, rgba.b, rgba.a);
+        bbox.updateWithPoint(tri.vertices[i].xyzrgba.pt);
+        m_transparent = m_transparent || rgba.a != 0xff;
       }
     }
 
@@ -127,7 +130,7 @@ class Text3DProxy : public TrianglesProxyBase
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    m_cachedBBox.reset();
+    m_localBBox = bbox;
     CHECK_OPENGL_ERROR_IN_DEBUG();
 
     MRPT_END
@@ -173,6 +176,7 @@ class Text2DLabelProxy : public TrianglesProxyBase
     m_triangleCount = tris.size();
     if (m_triangleCount == 0)
     {
+      m_localBBox.reset();
       return;
     }
 
@@ -185,6 +189,8 @@ class Text2DLabelProxy : public TrianglesProxyBase
     normals.reserve(vertexCount);
     colors.reserve(vertexCount);
 
+    auto bbox = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
+    m_transparent = false;
     for (const auto& tri : tris)
     {
       for (int i = 0; i < 3; ++i)
@@ -193,6 +199,8 @@ class Text2DLabelProxy : public TrianglesProxyBase
         normals.push_back(tri.vertices[i].normal);
         const auto& rgba = tri.vertices[i].xyzrgba;
         colors.emplace_back(rgba.r, rgba.g, rgba.b, rgba.a);
+        bbox.updateWithPoint(tri.vertices[i].xyzrgba.pt);
+        m_transparent = m_transparent || rgba.a != 0xff;
       }
     }
 
@@ -224,7 +232,8 @@ class Text2DLabelProxy : public TrianglesProxyBase
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    m_cachedBBox.reset();
+    // Drawn in screen space (see render()): no bounding box, never culled.
+    m_localBBox.reset();
     CHECK_OPENGL_ERROR_IN_DEBUG();
 
     MRPT_END
@@ -294,18 +303,167 @@ class Text2DLabelProxy : public TrianglesProxyBase
 }  // namespace
 
 // ============================================================================
+// Scene graph nodes
+// ============================================================================
+
+struct CompiledScene::Node
+{
+  /** The object. A weak pointer, so objects removed from the scene are not
+   * kept alive by the renderer. */
+  std::weak_ptr<const CVisualObject> obj;
+  const CVisualObject* raw = nullptr;
+
+  bool isContainer = false;
+  bool compiled = false;      //!< Proxies created (objects other than containers)
+  bool hasTransform = false;  //!< worldMatrix, etc. computed at least once
+
+  uint64_t dataVersion = 0;       //!< CVisualObject::dataVersion() uploaded to the proxies
+  uint64_t transformVersion = 0;  //!< CVisualObject::transformVersion() of worldMatrix, etc.
+
+  mrpt::math::CMatrixFloat44 worldMatrix = mrpt::math::CMatrixFloat44::Identity();
+  bool visible = false;
+  bool castShadows = true;
+
+  std::vector<RenderableProxy::Ptr> proxies;
+
+  /** Containers: their objects. Other objects: their internal children (e.g.
+   * axis labels), then their name label, if shown. */
+  std::vector<std::unique_ptr<Node>> children;
+
+  /** Whether this node is for that object instance (not another one later
+   * created at the same memory address) */
+  [[nodiscard]] bool isFor(const std::shared_ptr<const CVisualObject>& o) const
+  {
+    return raw == o.get() && !obj.owner_before(o) && !o.owner_before(obj);
+  }
+};
+
+struct CompiledScene::ViewportEntry
+{
+  std::weak_ptr<const Viewport> source;
+  const Viewport* raw = nullptr;
+
+  CompiledViewport::Ptr compiled;
+
+  /** Nodes of the viewport objects */
+  std::vector<std::unique_ptr<Node>> roots;
+
+  /** The textured plane of a viewport in image view mode */
+  std::unique_ptr<Node> imagePlane;
+
+  /** Proxies of removed nodes, to be removed from `compiled` in one pass */
+  std::vector<const RenderableProxy*> removedProxies;
+
+  [[nodiscard]] bool isFor(const Viewport::Ptr& v) const
+  {
+    return raw == v.get() && !source.owner_before(v) && !v.owner_before(source);
+  }
+};
+
+namespace
+{
+/** Brings the clone and image-view state of a compiled viewport in line with
+ * the source viewport, whose mode can change after the first compilation.
+ * \return true if anything changed */
+bool syncViewportModes(const mrpt::viz::Viewport& viz, mrpt::opengl::CompiledViewport& compiled)
+{
+  bool changed = false;
+
+  // Objects cloned from another viewport:
+  if (viz.isCloned())
+  {
+    if (!compiled.isCloningObjects() ||
+        compiled.getClonedViewportName() != viz.getClonedViewportName())
+    {
+      compiled.setCloneMode(viz.getClonedViewportName(), false);
+      changed = true;
+    }
+  }
+  else if (compiled.isCloningObjects())
+  {
+    compiled.clearCloneMode();
+    changed = true;
+  }
+
+  // Camera taken from another viewport (which does not need to be a clone):
+  if (viz.isClonedCamera())
+  {
+    if (!compiled.isCloningCamera() ||
+        compiled.getCameraSourceViewportName() != viz.isClonedCameraFrom())
+    {
+      compiled.setCloneCameraFrom(viz.isClonedCameraFrom());
+      changed = true;
+    }
+  }
+  else if (compiled.isCloningCamera())
+  {
+    compiled.clearCloneCamera();
+    changed = true;
+  }
+
+  // Image view mode:
+  if (!viz.isImageViewMode() && compiled.isImageViewMode())
+  {
+    compiled.clearImageViewMode();
+    changed = true;
+  }
+  return changed;
+}
+
+/** Transparent objects are sorted by the depth of their representative point
+ * if set, or else by that of the center of their bounding box. */
+void setSortPoints(const std::vector<RenderableProxy::Ptr>& proxies, const CVisualObject& obj)
+{
+  const auto rep = obj.getLocalRepresentativePoint();
+  const bool hasRep = rep.x != 0 || rep.y != 0 || rep.z != 0;
+  for (const auto& p : proxies)
+  {
+    if (hasRep)
+    {
+      p->m_sortPointLocal = rep;
+    }
+    else if (const auto& bb = p->localBoundingBox(); bb)
+    {
+      p->m_sortPointLocal = {
+          0.5f * (bb->min.x + bb->max.x), 0.5f * (bb->min.y + bb->max.y),
+          0.5f * (bb->min.z + bb->max.z)};
+    }
+    else
+    {
+      p->m_sortPointLocal = {0, 0, 0};
+    }
+  }
+}
+
+const mrpt::math::CMatrixFloat44& identityMatrix()
+{
+  static const auto I = mrpt::math::CMatrixFloat44::Identity();
+  return I;
+}
+
+/** Identifies the current OpenGL context, so textures are shared only among
+ * scenes rendered in the same context. Contexts not created with EGL cannot be
+ * told apart here, so they all share one scope. */
+const void* currentContextScope()
+{
+#if MRPT_HAS_EGL
+  if (EGLContext ctx = eglGetCurrentContext(); ctx != EGL_NO_CONTEXT)
+  {
+    return ctx;
+  }
+#endif
+  static const int nonEglContexts = 0;
+  return &nonEglContexts;
+}
+}  // namespace
+
+// ============================================================================
 // CompiledScene Implementation
 // ============================================================================
 
-CompiledScene::CompiledScene()
-{
-  m_contextThread = std::this_thread::get_id();
+CompiledScene::CompiledScene() { m_contextThread = std::this_thread::get_id(); }
 
-  if (SCENE_VERBOSE)
-  {
-    std::cout << "[CompiledScene] Created\n";
-  }
-}
+CompiledScene::~CompiledScene() = default;
 
 void CompiledScene::compile(const Scene& scene, CompilationStats* stats)
 {
@@ -316,157 +474,426 @@ void CompiledScene::compile(const Scene& scene, CompilationStats* stats)
   // Clear any existing compilation
   clear();
 
-  // Store reference to source scene (as const)
   m_sourceScene = &scene;
+  m_isCompiled = true;
+  m_textureShareScope = currentContextScope();
+
+  CompilationStats localStats;
+  updateIfNeeded(stats ? stats : &localStats);
+  m_lastStats = stats ? *stats : localStats;
+
+  MRPT_END
+}
+
+bool CompiledScene::updateIfNeeded(CompilationStats* stats)
+{
+  MRPT_START
+
+  if (!m_isCompiled || !m_sourceScene)
+  {
+    return false;
+  }
+
+  checkContextThread();
 
   CompilationStats localStats;
   CompilationStats& s = stats ? *stats : localStats;
   s.reset();
 
-  if (SCENE_VERBOSE)
+  // Viewports are cheap to check, and their properties (camera, lights...)
+  // are not covered by the scene change counter, so they are always synced:
+  const bool viewportsChanged = syncViewports(s);
+
+  // Read before traversing, so changes made meanwhile are seen next time:
+  const uint64_t changeCount = mrpt::viz::sceneChangeCount();
+  if (!viewportsChanged && changeCount == m_lastSceneChangeCount)
   {
-    std::cout << "[CompiledScene::compile] Starting compilation...\n";
+    return false;
+  }
+  m_lastSceneChangeCount = changeCount;
+
+  for (auto& e : m_entries)
+  {
+    syncViewportObjects(*e, s);
+    e->compiled->removeProxies(e->removedProxies);
+    e->removedProxies.clear();
   }
 
-  // Iterate over all viewports in the scene
-  for (const Viewport::Ptr& vizViewportPtr : scene.viewports())
+  const bool anyChanges = viewportsChanged || s.numObjectsUpdated > 0 || s.numNewObjects > 0 ||
+                          s.numOrphanedProxies > 0;
+  if (anyChanges)
   {
-    ASSERT_(vizViewportPtr);
-    const auto& vizViewport = *vizViewportPtr;
-    const std::string& vpName = vizViewport.getName();
-
-    // Create compiled viewport
-    auto compiledVp = std::make_shared<CompiledViewport>(vpName);
-
-    // Copy viewport configuration
-    compiledVp->updateFromVizViewport(vizViewport);
-
-    // Compile all objects in the viewport
-    compileViewport(vizViewport, *compiledVp, s);
-
-    // Store compiled viewport (map for lookup, vector for render order)
-    m_viewports[vpName] = compiledVp;
-    m_viewportRenderOrder.push_back(vpName);
-
-    if (SCENE_VERBOSE)
-    {
-      std::cout << "[CompiledScene::compile] Viewport '" << vpName
-                << "': " << compiledVp->getProxyCount() << " proxies\n";
-    }
+    m_lastStats = s;
   }
-
-  m_isCompiled = true;
-  m_lastStats = s;
-
-  if (SCENE_VERBOSE)
-  {
-    std::cout << "[CompiledScene::compile] Done. Total objects: " << s.numObjectsTotal
-              << ", compiled: " << s.numObjectsCompiled << ", proxies: " << s.numProxiesCreated
-              << "\n";
-  }
+  return anyChanges;
 
   MRPT_END
 }
 
-namespace
+bool CompiledScene::syncViewports(CompilationStats& stats)
 {
-/** Brings the clone and image-view state of a compiled viewport in line with
- * the source viewport, whose mode can change after the first compilation. */
-void syncViewportModes(const mrpt::viz::Viewport& viz, mrpt::opengl::CompiledViewport& compiled)
-{
-  // Objects cloned from another viewport:
-  if (viz.isCloned())
-  {
-    if (!compiled.isCloningObjects() ||
-        compiled.getClonedViewportName() != viz.getClonedViewportName())
-    {
-      compiled.setCloneMode(viz.getClonedViewportName(), false);
-    }
-  }
-  else if (compiled.isCloningObjects())
-  {
-    compiled.clearCloneMode();
-  }
+  bool changed = false;
 
-  // Camera taken from another viewport (which does not need to be a clone):
-  if (viz.isClonedCamera())
+  auto oldEntries = std::move(m_entries);
+  m_entries.clear();
+
+  for (const auto& vp : m_sourceScene->viewports())
   {
-    if (!compiled.isCloningCamera() ||
-        compiled.getCameraSourceViewportName() != viz.isClonedCameraFrom())
-    {
-      compiled.setCloneCameraFrom(viz.isClonedCameraFrom());
-    }
-  }
-  else if (compiled.isCloningCamera())
-  {
-    compiled.clearCloneCamera();
-  }
-
-  // Image view mode:
-  if (!viz.isImageViewMode() && compiled.isImageViewMode())
-  {
-    compiled.clearImageViewMode();
-  }
-}
-}  // namespace
-
-void CompiledScene::compileViewport(
-    const Viewport& vizViewport, CompiledViewport& compiledViewport, CompilationStats& stats)
-{
-  MRPT_START
-
-  syncViewportModes(vizViewport, compiledViewport);
-
-  // Cloned viewport mode (objects from another viewport): skip compiling our
-  // own objects
-  if (vizViewport.isCloned())
-  {
-    return;
-  }
-
-  // A viewport that only uses the camera of another one still compiles its
-  // own objects normally, so continue below.
-
-  // Handle image view mode: compile the CTexturedPlane and install it as the image proxy.
-  if (vizViewport.isImageViewMode())
-  {
-    auto plane = vizViewport.getImageViewPlane();
-    if (plane)
-    {
-      auto proxies = createProxiesByType(plane);
-      if (!proxies.empty())
-      {
-        plane->updateBuffers();
-        for (auto& proxy : proxies)
-        {
-          proxy->setSourceObject(plane);
-          proxy->m_modelMatrix = mrpt::math::CMatrixFloat44::Identity();
-          proxy->m_visible = true;
-          proxy->compile(plane.get());
-        }
-        // Only the first (TexturedTriangles) proxy is used for image view
-        compiledViewport.setImageViewMode(proxies.front());
-        // Track in proxy maps for dirty-update support
-        std::weak_ptr<const CVisualObject> weakPlane = plane;
-        m_objectToProxy[weakPlane].push_back(std::move(proxies));
-        m_objectVersions[weakPlane] = plane->dataVersion();
-      }
-    }
-    return;
-  }
-
-  // Compile all objects in viewport
-  for (const auto& obj : vizViewport)
-  {
-    if (!obj)
+    if (!vp)
     {
       continue;
     }
-
-    compileObject(obj, compiledViewport, stats);
+    std::unique_ptr<ViewportEntry> entry;
+    for (size_t i = 0; i < oldEntries.size(); i++)
+    {
+      if (oldEntries[i] && oldEntries[i]->isFor(vp))
+      {
+        changed = changed || i != m_entries.size();  // reordered
+        entry = std::move(oldEntries[i]);
+        break;
+      }
+    }
+    if (!entry)
+    {
+      entry = std::make_unique<ViewportEntry>();
+      entry->source = vp;
+      entry->raw = vp.get();
+      entry->compiled = std::make_shared<CompiledViewport>(vp->getName());
+      changed = true;
+    }
+    m_entries.push_back(std::move(entry));
   }
 
+  // Viewports no longer in the scene:
+  for (auto& e : oldEntries)
+  {
+    if (!e)
+    {
+      continue;
+    }
+    for (auto& n : e->roots)
+    {
+      releaseNode(*n, *e, stats);
+    }
+    changed = true;
+  }
+
+  if (changed)
+  {
+    m_viewports.clear();
+    for (const auto& e : m_entries)
+    {
+      m_viewports[e->compiled->getName()] = e->compiled;
+    }
+  }
+
+  for (auto& e : m_entries)
+  {
+    e->compiled->updateFromVizViewport(*e->raw);
+    changed = syncViewportModes(*e->raw, *e->compiled) || changed;
+  }
+  return changed;
+}
+
+void CompiledScene::syncViewportObjects(ViewportEntry& vp, CompilationStats& stats)
+{
+  MRPT_START
+
+  const Viewport& viz = *vp.raw;
+
+  const auto releaseRoots = [&]()
+  {
+    for (auto& n : vp.roots)
+    {
+      releaseNode(*n, vp, stats);
+    }
+    vp.roots.clear();
+  };
+
+  // A viewport cloning the objects of another one has none of its own:
+  if (viz.isCloned())
+  {
+    releaseRoots();
+    return;
+  }
+
+  // Image view mode: only the textured plane is drawn.
+  if (viz.isImageViewMode())
+  {
+    releaseRoots();
+    const auto plane = viz.getImageViewPlane();
+    if (vp.imagePlane && !vp.imagePlane->isFor(plane))
+    {
+      releaseNode(*vp.imagePlane, vp, stats);
+      vp.imagePlane.reset();
+    }
+    if (!vp.imagePlane)
+    {
+      auto proxies = createProxiesByType(*plane);
+      if (proxies.empty())
+      {
+        return;
+      }
+      plane->updateBuffersIfNeeded();
+      auto node = std::make_unique<Node>();
+      node->obj = plane;
+      node->raw = plane.get();
+      node->compiled = true;
+      node->dataVersion = plane->dataVersion();
+      // Only the first (TexturedTriangles) proxy is used for image view
+      auto& proxy = proxies.front();
+      proxy->setSourceObject(plane);
+      proxy->setResourceScope(m_textureShareScope);
+      proxy->m_modelMatrix = mrpt::math::CMatrixFloat44::Identity();
+      proxy->m_visible = true;
+      proxy->compile(plane.get());
+      node->proxies.push_back(proxy);
+      vp.compiled->setImageViewMode(proxy);
+      vp.imagePlane = std::move(node);
+      stats.numProxiesCreated++;
+      stats.numObjectsCompiled++;
+    }
+    else if (const uint64_t dv = plane->dataVersion(); dv != vp.imagePlane->dataVersion)
+    {
+      plane->updateBuffersIfNeeded();
+      for (auto& p : vp.imagePlane->proxies)
+      {
+        p->updateBuffers(plane.get());
+      }
+      vp.imagePlane->dataVersion = dv;
+      stats.numObjectsUpdated++;
+    }
+    return;
+  }
+  if (vp.imagePlane)
+  {
+    releaseNode(*vp.imagePlane, vp, stats);
+    vp.imagePlane.reset();
+  }
+
+  ParentState root;
+  root.worldMatrix = &identityMatrix();
+  syncNodes(vp.roots, viz, root, vp, stats);
+
   MRPT_END
+}
+
+template <class OBJECTS>
+void CompiledScene::syncNodes(
+    std::vector<std::unique_ptr<Node>>& nodes,
+    const OBJECTS& objects,
+    const ParentState& parent,
+    ViewportEntry& vp,
+    CompilationStats& stats)
+{
+  // The common case: the same objects as last time, in the same order.
+  bool same = true;
+  size_t n = 0;
+  for (const auto& o : objects)
+  {
+    if (!o)
+    {
+      continue;
+    }
+    if (n >= nodes.size() || !nodes[n]->isFor(o))
+    {
+      same = false;
+      break;
+    }
+    n++;
+  }
+  same = same && n == nodes.size();
+
+  if (!same)
+  {
+    // Keep the nodes of objects still present, so they keep their proxies:
+    auto oldNodes = std::move(nodes);
+    nodes.clear();
+    std::unordered_multimap<const CVisualObject*, size_t> oldIndex;
+    for (size_t i = 0; i < oldNodes.size(); i++)
+    {
+      oldIndex.emplace(oldNodes[i]->raw, i);
+    }
+
+    for (const auto& o : objects)
+    {
+      if (!o)
+      {
+        continue;
+      }
+      std::unique_ptr<Node> node;
+      const auto range = oldIndex.equal_range(o.get());
+      for (auto it = range.first; it != range.second; ++it)
+      {
+        auto& candidate = oldNodes[it->second];
+        if (candidate && candidate->isFor(o))
+        {
+          node = std::move(candidate);
+          break;
+        }
+      }
+      if (!node)
+      {
+        node = std::make_unique<Node>();
+        node->obj = o;
+        node->raw = o.get();
+        node->isContainer = dynamic_cast<const CSetOfObjects*>(o.get()) != nullptr;
+        stats.numNewObjects++;
+      }
+      nodes.push_back(std::move(node));
+    }
+
+    // Objects no longer at these positions:
+    for (auto& old : oldNodes)
+    {
+      if (old)
+      {
+        releaseNode(*old, vp, stats);
+        stats.numOrphanedProxies++;
+      }
+    }
+  }
+
+  n = 0;
+  for (const auto& o : objects)
+  {
+    if (o)
+    {
+      updateNode(*nodes[n++], o, parent, vp, stats);
+    }
+  }
+}
+
+void CompiledScene::updateNode(
+    Node& node,
+    const std::shared_ptr<const CVisualObject>& objPtr,
+    const ParentState& parent,
+    ViewportEntry& vp,
+    CompilationStats& stats)
+{
+  const CVisualObject& obj = *objPtr;
+  stats.numObjectsTotal++;
+
+  // Where and whether it is drawn:
+  const uint64_t tv = obj.transformVersion();
+  const bool transformChanged = parent.changed || !node.hasTransform || tv != node.transformVersion;
+  if (transformChanged)
+  {
+    const auto ps = obj.getPoseAndScale();
+    node.worldMatrix = computeModelMatrix(ps, *parent.worldMatrix);
+    node.visible = parent.visible && ps.visible;
+    node.castShadows = parent.castShadows && obj.castShadows();
+    node.transformVersion = tv;
+    node.hasTransform = true;
+  }
+
+  ParentState asParent;
+  asParent.worldMatrix = &node.worldMatrix;
+  asParent.changed = transformChanged;
+  asParent.visible = node.visible;
+  asParent.castShadows = node.castShadows;
+
+  if (node.isContainer)
+  {
+    syncNodes(node.children, static_cast<const CSetOfObjects&>(obj), asParent, vp, stats);
+    return;
+  }
+
+  // Objects are compiled the first time they are visible:
+  if (!node.compiled && !node.visible)
+  {
+    return;
+  }
+
+  bool dataUpdated = false;
+  if (!node.compiled)
+  {
+    compileNodeProxies(node, obj, vp, stats);
+    dataUpdated = true;
+  }
+  else if (const uint64_t dv = obj.dataVersion(); dv != node.dataVersion)
+  {
+    obj.updateBuffersIfNeeded();
+    for (auto& p : node.proxies)
+    {
+      p->updateBuffers(&obj);
+    }
+    setSortPoints(node.proxies, obj);
+    node.dataVersion = dv;
+    dataUpdated = true;
+  }
+
+  if (dataUpdated || transformChanged)
+  {
+    for (auto& p : node.proxies)
+    {
+      p->m_modelMatrix = node.worldMatrix;
+      p->m_visible = node.visible;
+      p->m_castShadows = node.castShadows;
+    }
+    stats.numObjectsUpdated++;
+  }
+
+  // Children of other objects: internal ones (e.g. axis labels), and the
+  // label with the object name.
+  const bool showName = obj.isShowNameEnabled();
+  if (obj.isCompositeObject() || showName || !node.children.empty())
+  {
+    std::vector<std::shared_ptr<const CVisualObject>> children;
+    if (obj.isCompositeObject())
+    {
+      const auto& internal = obj.getInternalChildren();
+      children.assign(internal.begin(), internal.end());
+    }
+    if (showName)
+    {
+      auto label = obj.labelObjectPtr();
+      label->setString(obj.getName());  // only notifies a change if different
+      children.push_back(label);
+    }
+    syncNodes(node.children, children, asParent, vp, stats);
+  }
+}
+
+void CompiledScene::compileNodeProxies(
+    Node& node, const CVisualObject& obj, ViewportEntry& vp, CompilationStats& stats)
+{
+  // Read before regenerating the buffers, so changes made meanwhile are
+  // uploaded next time:
+  node.dataVersion = obj.dataVersion();
+  node.compiled = true;
+  node.proxies = createProxiesByType(obj);
+  if (node.proxies.empty())
+  {
+    return;
+  }
+
+  obj.updateBuffersIfNeeded();
+  for (auto& proxy : node.proxies)
+  {
+    proxy->setSourceObject(node.obj);
+    proxy->setResourceScope(m_textureShareScope);
+    proxy->compile(&obj);
+    vp.compiled->addProxy(proxy);
+    stats.numProxiesCreated++;
+  }
+  setSortPoints(node.proxies, obj);
+  stats.numObjectsCompiled++;
+}
+
+void CompiledScene::releaseNode(Node& node, ViewportEntry& vp, CompilationStats& stats)
+{
+  for (const auto& p : node.proxies)
+  {
+    vp.removedProxies.push_back(p.get());
+    stats.numProxiesDeleted++;
+  }
+  node.proxies.clear();
+  for (auto& child : node.children)
+  {
+    releaseNode(*child, vp, stats);
+  }
+  node.children.clear();
 }
 
 mrpt::math::CMatrixFloat44 CompiledScene::computeModelMatrix(
@@ -491,650 +918,56 @@ mrpt::math::CMatrixFloat44 CompiledScene::computeModelMatrix(
   return result;
 }
 
-void CompiledScene::compileObject(
-    const std::shared_ptr<const CVisualObject>& obj,
-    CompiledViewport& compiledViewport,
-    CompilationStats& stats,
-    const mrpt::math::CMatrixFloat44& parentModelMatrix)
-{
-  MRPT_START
-
-  if (!obj)
-  {
-    return;
-  }
-
-  stats.numObjectsTotal++;
-
-  // Skip invisible objects
-  if (!obj->isVisible())
-  {
-    return;
-  }
-
-  // Compute model matrix for this object (pose + scale + parent)
-  const auto ps = obj->getPoseAndScale();
-  const auto modelMatrix = computeModelMatrix(ps, parentModelMatrix);
-
-  // Check if this is a container (CSetOfObjects)
-  const auto* setOfObjects = dynamic_cast<const CSetOfObjects*>(obj.get());
-  if (setOfObjects)
-  {
-    // Track version for containers (needed for multi-occurrence dirty detection)
-    std::weak_ptr<const CVisualObject> weakObj = obj;
-    m_objectVersions[weakObj] = obj->dataVersion();
-
-    // Recursively compile children, passing this container's model matrix
-    for (auto it = setOfObjects->begin(); it != setOfObjects->end(); ++it)
-    {
-      compileObject(*it, compiledViewport, stats, modelMatrix);
-    }
-    return;
-  }
-
-  // NOTE: We intentionally do NOT skip objects that already have proxies.
-  // The same CVisualObject can appear at multiple positions in the scene
-  // graph (DAG structure, e.g. cached models shared between blocks).
-  // Each occurrence gets its own proxy group with its own model matrix.
-
-  // Create proxy(ies) for this object — one per mixin type
-  auto proxies = createProxiesByType(obj);
-  if (proxies.empty())
-  {
-    if (SCENE_VERBOSE)
-    {
-      std::cout << "[CompiledScene::compileObject] No proxy type for: "
-                << obj->GetRuntimeClass()->className << "\n";
-    }
-    return;
-  }
-
-  obj->updateBuffers();  // Populate viz buffers first
-
-  for (auto& proxy : proxies)
-  {
-    // Set the source object reference in the proxy
-    proxy->setSourceObject(obj);
-
-    // Set the model matrix (object local frame -> world frame)
-    proxy->m_modelMatrix = modelMatrix;
-
-    // Compile the proxy (upload data to GPU)
-    proxy->compile(obj.get());
-
-    // Add to viewport
-    compiledViewport.addProxy(proxy, obj);
-
-    stats.numProxiesCreated++;
-  }
-
-  // Register in our tracking map as a new occurrence.
-  // m_objectToProxy[weakObj] is a vector of occurrence groups;
-  // each group is a vector of proxies for one tree position.
-  std::weak_ptr<const CVisualObject> weakObj = obj;
-  m_objectToProxy[weakObj].push_back(std::move(proxies));
-  m_objectVersions[weakObj] = obj->dataVersion();
-
-  stats.numObjectsCompiled++;
-
-  // Handle composite objects (e.g. CAxis has internal CText3D children)
-  if (obj->isCompositeObject())
-  {
-    const auto& children = obj->getInternalChildren();
-    for (const auto& child : children)
-    {
-      if (!child)
-      {
-        continue;
-      }
-      compileObject(child, compiledViewport, stats, modelMatrix);
-    }
-  }
-
-  // Handle enableShowName() label: compile the label CText at the same
-  // position as the parent object
-  if (obj->isShowNameEnabled())
-  {
-    auto labelPtr = obj->labelObjectPtr();
-    if (labelPtr)
-    {
-      // Ensure the label text matches the object's current name
-      labelPtr->setString(obj->getName());
-
-      // Compile the label if not already compiled
-      if (!hasProxyFor(labelPtr))
-      {
-        compileObject(labelPtr, compiledViewport, stats, modelMatrix);
-      }
-    }
-  }
-
-  MRPT_END
-}
-
-bool CompiledScene::hasProxyFor(const std::shared_ptr<const CVisualObject>& obj) const
-{
-  if (!obj)
-  {
-    return false;
-  }
-
-  std::weak_ptr<const CVisualObject> weakObj = obj;
-  auto it = m_objectToProxy.find(weakObj);
-  return it != m_objectToProxy.end() && !it->second.empty();
-}
-
-std::vector<RenderableProxy::Ptr> CompiledScene::createProxiesByType(
-    const std::shared_ptr<const CVisualObject>& obj)
+std::vector<RenderableProxy::Ptr> CompiledScene::createProxiesByType(const CVisualObject& obj)
 {
   std::vector<RenderableProxy::Ptr> proxies;
 
-  if (!obj)
-  {
-    return proxies;
-  }
-
   // Check for CSkyBox (special case: rendered with cube map, no triangle data)
-  if (dynamic_cast<const mrpt::viz::CSkyBox*>(obj.get()) != nullptr)
+  if (dynamic_cast<const mrpt::viz::CSkyBox*>(&obj) != nullptr)
   {
     proxies.push_back(std::make_shared<SkyBoxProxy>());
     return proxies;
   }
 
   // Check for CText first (special case: generates geometry in the proxy)
-  if (dynamic_cast<const mrpt::viz::CText*>(obj.get()) != nullptr)
+  if (dynamic_cast<const mrpt::viz::CText*>(&obj) != nullptr)
   {
     proxies.push_back(std::make_shared<Text2DLabelProxy>());
     return proxies;
   }
 
   // Check for CText3D (special case: generates geometry in the proxy)
-  if (dynamic_cast<const mrpt::viz::CText3D*>(obj.get()) != nullptr)
+  if (dynamic_cast<const mrpt::viz::CText3D*>(&obj) != nullptr)
   {
     proxies.push_back(std::make_shared<Text3DProxy>());
     return proxies;
   }
 
   // Check for textured triangles (more specific than plain triangles)
-  if (dynamic_cast<const VisualObjectParams_TexturedTriangles*>(obj.get()))
+  if (dynamic_cast<const VisualObjectParams_TexturedTriangles*>(&obj) != nullptr)
   {
     proxies.push_back(std::make_shared<TexturedTrianglesProxy>());
   }
   // Check for plain triangles (only if NOT textured, since textured already
   // handles the triangle data)
-  else if (dynamic_cast<const VisualObjectParams_Triangles*>(obj.get()))
+  else if (dynamic_cast<const VisualObjectParams_Triangles*>(&obj) != nullptr)
   {
     proxies.push_back(std::make_shared<TrianglesProxy>());
   }
 
-  // Check for points (independent of triangles — an object can have both)
-  if (dynamic_cast<const VisualObjectParams_Points*>(obj.get()))
+  // Check for points (independent of triangles: an object can have both)
+  if (dynamic_cast<const VisualObjectParams_Points*>(&obj) != nullptr)
   {
     proxies.push_back(std::make_shared<PointsProxy>());
   }
 
-  // Check for lines (independent of triangles — an object can have both)
-  if (dynamic_cast<const VisualObjectParams_Lines*>(obj.get()))
+  // Check for lines (independent of triangles: an object can have both)
+  if (dynamic_cast<const VisualObjectParams_Lines*>(&obj) != nullptr)
   {
     proxies.push_back(std::make_shared<LinesProxy>());
   }
 
   return proxies;
-}
-
-bool CompiledScene::updateIfNeeded(CompilationStats* stats)
-{
-  MRPT_START
-
-  if (!m_isCompiled || !m_sourceScene)
-  {
-    return false;
-  }
-
-  checkContextThread();
-
-  CompilationStats localStats;
-  CompilationStats& s = stats ? *stats : localStats;
-  s.reset();
-
-  bool anyChanges = false;
-
-  // Step 1: Cleanup orphaned proxies (deleted source objects)
-  cleanupOrphanedProxies(s);
-  if (s.numOrphanedProxies > 0)
-  {
-    anyChanges = true;
-  }
-
-  // Step 2: Scan for new objects in the source scene
-  compileNewObjects(s);
-  if (s.numNewObjects > 0)
-  {
-    anyChanges = true;
-  }
-
-  // Step 3: Update dirty objects
-  updateDirtyObjects(s);
-  if (s.numObjectsUpdated > 0)
-  {
-    anyChanges = true;
-  }
-
-  if (anyChanges)
-  {
-    m_lastStats = s;
-  }
-
-  return anyChanges;
-
-  MRPT_END
-}
-
-void CompiledScene::cleanupOrphanedProxies(CompilationStats& stats)
-{
-  MRPT_START
-
-  // Find and remove proxies whose source objects have been deleted
-  for (auto it = m_objectToProxy.begin(); it != m_objectToProxy.end();)
-  {
-    if (it->first.expired())
-    {
-      // Object was deleted - remove all its proxies (across all occurrences) from all viewports
-      for (auto& occurrenceProxies : it->second)
-      {
-        for (auto& proxy : occurrenceProxies)
-        {
-          for (auto& [name, viewport] : m_viewports)
-          {
-            viewport->removeProxy(proxy);
-          }
-          stats.numProxiesDeleted++;
-        }
-      }
-
-      m_objectVersions.erase(it->first);
-      it = m_objectToProxy.erase(it);
-      stats.numOrphanedProxies++;
-
-      if (SCENE_VERBOSE)
-      {
-        std::cout << "[CompiledScene::cleanupOrphanedProxies] Removed orphan\n";
-      }
-    }
-    else
-    {
-      ++it;
-    }
-  }
-
-  MRPT_END
-}
-
-void CompiledScene::compileNewObjects(CompilationStats& stats)
-{
-  MRPT_START
-
-  if (!m_sourceScene)
-  {
-    return;
-  }
-
-  // Iterate all viewports and their objects to find new ones
-  for (const auto& vpPtr : m_sourceScene->viewports())
-  {
-    ASSERT_(vpPtr);
-    const Viewport& vizViewport = *vpPtr;
-    const std::string& vpName = vizViewport.getName();
-
-    // Get or create compiled viewport
-    auto compiledVpIt = m_viewports.find(vpName);
-    if (compiledVpIt == m_viewports.end())
-    {
-      // New viewport - create and compile it
-      auto compiledVp = std::make_shared<CompiledViewport>(vpName);
-      compiledVp->updateFromVizViewport(vizViewport);
-      compileViewport(vizViewport, *compiledVp, stats);
-      m_viewports[vpName] = compiledVp;
-      m_viewportRenderOrder.push_back(vpName);
-      continue;
-    }
-
-    CompiledViewport& compiledViewport = *compiledVpIt->second;
-
-    // Update viewport configuration (camera, lights, etc.)
-    compiledViewport.updateFromVizViewport(vizViewport);
-    syncViewportModes(vizViewport, compiledViewport);
-
-    // Skip cloned viewports
-    if (vizViewport.isCloned())
-    {
-      continue;
-    }
-
-    // Handle image view mode: if the plane was created after initial compile, compile it now
-    if (vizViewport.isImageViewMode())
-    {
-      auto plane = vizViewport.getImageViewPlane();
-      if (plane && !compiledViewport.isImageViewMode())
-      {
-        // Viewport just transitioned to image-view mode — compile the plane proxy
-        auto proxies = createProxiesByType(plane);
-        if (!proxies.empty())
-        {
-          plane->updateBuffers();
-          for (auto& proxy : proxies)
-          {
-            proxy->setSourceObject(plane);
-            proxy->m_modelMatrix = mrpt::math::CMatrixFloat44::Identity();
-            proxy->m_visible = true;
-            proxy->compile(plane.get());
-          }
-          compiledViewport.setImageViewMode(proxies.front());
-          std::weak_ptr<const CVisualObject> weakPlane = plane;
-          m_objectToProxy[weakPlane].push_back(std::move(proxies));
-          m_objectVersions[weakPlane] = plane->dataVersion();
-        }
-      }
-      continue;
-    }
-
-    // Check each object in the viewport
-    for (const auto& obj : vizViewport)
-    {
-      if (!obj || !obj->isVisible())
-      {
-        continue;
-      }
-
-      // Helper: check if a CSetOfObjects is new (not yet tracked in m_objectVersions)
-      auto isNewContainer = [this](const std::shared_ptr<const CVisualObject>& o) -> bool
-      {
-        std::weak_ptr<const CVisualObject> w = o;
-        return m_objectVersions.find(w) == m_objectVersions.end();
-      };
-
-      // Handle containers recursively
-      const auto* setOfObjects = dynamic_cast<const CSetOfObjects*>(obj.get());
-      if (setOfObjects != nullptr)
-      {
-        if (isNewContainer(obj))
-        {
-          // New top-level container: compile fully via compileObject().
-          // This recursively creates proxy groups for ALL children,
-          // including shared objects that may already have proxies from
-          // other occurrences (DAG support).
-          compileObject(obj, compiledViewport, stats);
-          stats.numNewObjects++;
-        }
-        else
-        {
-          // Existing container: walk into it to find new children. Each
-          // container carries its world matrix, so new children are placed
-          // under their actual parent frame rather than at the origin.
-          std::vector<std::pair<const CSetOfObjects*, mrpt::math::CMatrixFloat44>> containers;
-          containers.emplace_back(
-              setOfObjects,
-              computeModelMatrix(obj->getPoseAndScale(), mrpt::math::CMatrixFloat44::Identity()));
-
-          while (!containers.empty())
-          {
-            const auto [container, containerMatrix] = containers.back();
-            containers.pop_back();
-
-            for (const auto& child : *container)
-            {
-              if (!child || !child->isVisible())
-              {
-                continue;
-              }
-
-              const auto* childContainer = dynamic_cast<const CSetOfObjects*>(child.get());
-              if (childContainer != nullptr)
-              {
-                if (isNewContainer(child))
-                {
-                  // New sub-container: compile fully (handles shared children)
-                  compileObject(child, compiledViewport, stats, containerMatrix);
-                  stats.numNewObjects++;
-                }
-                else
-                {
-                  containers.emplace_back(
-                      childContainer,
-                      computeModelMatrix(child->getPoseAndScale(), containerMatrix));
-                }
-              }
-              else if (!hasProxyFor(child))
-              {
-                // Genuinely new leaf object - compile it
-                compileObject(child, compiledViewport, stats, containerMatrix);
-                stats.numNewObjects++;
-              }
-            }
-          }
-        }
-      }
-      else if (!hasProxyFor(obj))
-      {
-        // New leaf object found - compile it
-        compileObject(obj, compiledViewport, stats);
-        stats.numNewObjects++;
-      }
-      // Also check composite objects' internal children
-      else if (obj->isCompositeObject())
-      {
-        const auto objMatrix =
-            computeModelMatrix(obj->getPoseAndScale(), mrpt::math::CMatrixFloat44::Identity());
-        for (const auto& child : obj->getInternalChildren())
-        {
-          if (child && !hasProxyFor(child))
-          {
-            compileObject(child, compiledViewport, stats, objMatrix);
-            stats.numNewObjects++;
-          }
-        }
-      }
-    }
-  }
-
-  MRPT_END
-}
-
-void CompiledScene::updateDirtyObjects(CompilationStats& stats)
-{
-  MRPT_START
-
-  if (!m_sourceScene)
-  {
-    return;
-  }
-  // Clear occurrence counter for this update pass
-  m_updateOccurrenceCounter.clear();
-
-  // Walk the entire scene tree (not just m_objectToProxy) so we also
-  // detect dirty containers (CSetOfObjects) whose pose/visibility changed.
-  for (const auto& vizViewport : m_sourceScene->viewports())
-  {
-    // For image-view viewports, update the image plane directly
-    if (vizViewport->isImageViewMode())
-    {
-      auto plane = vizViewport->getImageViewPlane();
-      if (plane)
-      {
-        updateDirtyObjectRecursive(
-            plane, mrpt::math::CMatrixFloat44::Identity(), false, true, stats);
-      }
-      continue;
-    }
-
-    for (const auto& obj : *vizViewport)
-    {
-      if (!obj)
-      {
-        continue;
-      }
-      updateDirtyObjectRecursive(obj, mrpt::math::CMatrixFloat44::Identity(), false, true, stats);
-    }
-  }
-
-  // Post-walk: update all version tracking to current values.
-  // This is deferred from the walk to ensure multi-occurrence objects
-  // (same CVisualObject at multiple tree positions) have consistent
-  // dirty detection across all their occurrences within a single pass.
-  for (auto& [weakObj, ver] : m_objectVersions)
-  {
-    auto obj = weakObj.lock();
-    if (obj) ver = obj->dataVersion();
-  }
-
-  // Post-walk: hide proxies for occurrences that no longer exist in the tree
-  // (e.g., a child was removed from a CSetOfObjects container).
-  for (auto& [weakObj, occurrences] : m_objectToProxy)
-  {
-    auto counterIt = m_updateOccurrenceCounter.find(weakObj);
-    size_t visitedOccs = (counterIt != m_updateOccurrenceCounter.end()) ? counterIt->second : 0;
-    for (size_t i = visitedOccs; i < occurrences.size(); i++)
-    {
-      for (auto& proxy : occurrences[i])
-      {
-        proxy->m_visible = false;
-      }
-    }
-  }
-
-  MRPT_END
-}
-
-void CompiledScene::updateDirtyObjectRecursive(
-    const std::shared_ptr<const mrpt::viz::CVisualObject>& obj,
-    const mrpt::math::CMatrixFloat44& parentModelMatrix,
-    bool parentDirty,
-    bool parentVisible,
-    CompilationStats& stats)
-{
-  if (!obj)
-  {
-    return;
-  }
-  std::weak_ptr<const mrpt::viz::CVisualObject> weakObj = obj;
-  const uint64_t currentVersion = obj->dataVersion();
-  auto versionIt = m_objectVersions.find(weakObj);
-  const uint64_t lastVersion = (versionIt != m_objectVersions.end()) ? versionIt->second : 0;
-  const bool selfDirty = (currentVersion != lastVersion);
-  const bool dirty = selfDirty || parentDirty;
-
-  // Read pose+scale+visible atomically to avoid tearing
-  const auto ps = obj->getPoseAndScale();
-  const bool effectiveVisible = parentVisible && ps.visible;
-
-  // Compute this object's model matrix (always needed for children)
-  const auto modelMatrix = computeModelMatrix(ps, parentModelMatrix);
-
-  // Check if this is a container (CSetOfObjects)
-  const auto* setOfObjects = dynamic_cast<const mrpt::viz::CSetOfObjects*>(obj.get());
-  if (setOfObjects)
-  {
-    // NOTE: version is NOT updated here; it's deferred to post-walk
-    // in updateDirtyObjects() for multi-occurrence consistency.
-
-    // Recurse into children, propagating dirty and visibility
-    for (const auto& childObj : *setOfObjects)
-    {
-      updateDirtyObjectRecursive(childObj, modelMatrix, dirty, effectiveVisible, stats);
-    }
-    return;
-  }
-
-  // Leaf object: update the proxy group for THIS occurrence.
-  // The occurrence counter matches tree walk order to proxy groups.
-  auto proxyIt = m_objectToProxy.find(weakObj);
-  if (proxyIt != m_objectToProxy.end())
-  {
-    size_t& occIdx = m_updateOccurrenceCounter[weakObj];
-    auto& allOccurrences = proxyIt->second;
-
-    if (occIdx < allOccurrences.size())
-    {
-      auto& occProxies = allOccurrences[occIdx];
-
-      if (dirty)
-      {
-        // Regenerate viz-side buffers only once per dirty object
-        // (not per occurrence — the data is the same)
-        if (selfDirty && occIdx == 0)
-        {
-          obj->updateBuffers();
-        }
-
-        for (auto& proxy : occProxies)
-        {
-          proxy->m_modelMatrix = modelMatrix;
-          proxy->m_visible = effectiveVisible;
-          if (selfDirty)
-          {
-            proxy->updateBuffers(obj.get());
-          }
-        }
-
-        stats.numObjectsUpdated++;
-
-        if (SCENE_VERBOSE)
-        {
-          std::cout << "[CompiledScene::updateDirtyObjects] Updated: " << obj->getName()
-                    << " (occurrence " << occIdx << ")\n";
-        }
-      }
-    }
-
-    occIdx++;
-  }
-
-  // Handle composite objects' internal children (e.g. CAxis text labels)
-  if (obj->isCompositeObject())
-  {
-    const auto& children = obj->getInternalChildren();
-    for (const auto& child : children)
-    {
-      if (!child)
-      {
-        continue;
-      }
-      updateDirtyObjectRecursive(child, modelMatrix, dirty, effectiveVisible, stats);
-    }
-  }
-
-  // Handle enableShowName() label
-  if (obj->isShowNameEnabled())
-  {
-    auto labelPtr = obj->labelObjectPtr();
-    if (labelPtr)
-    {
-      // Keep label text in sync with object name
-      labelPtr->setString(obj->getName());
-
-      // Update existing label proxy, or compile a new one
-      if (hasProxyFor(labelPtr))
-      {
-        auto labelVersionIt =
-            m_objectVersions.find(std::weak_ptr<const mrpt::viz::CVisualObject>(labelPtr));
-        const uint64_t labelLastVer =
-            (labelVersionIt != m_objectVersions.end()) ? labelVersionIt->second : 0;
-        if (dirty || labelPtr->dataVersion() != labelLastVer)
-        {
-          updateDirtyObjectRecursive(labelPtr, modelMatrix, true, effectiveVisible, stats);
-        }
-      }
-      else
-      {
-        // Label not yet compiled — find the viewport and compile it
-        for (auto& [vpName, viewport] : m_viewports)
-        {
-          compileObject(labelPtr, *viewport, stats, modelMatrix);
-          break;  // labels only need one viewport
-        }
-      }
-    }
-  }
 }
 
 void CompiledScene::recompile()
@@ -1155,44 +988,54 @@ void CompiledScene::clear()
 {
   MRPT_START
 
+  m_entries.clear();
   m_viewports.clear();
-  m_viewportRenderOrder.clear();
-  m_objectToProxy.clear();
-  m_objectVersions.clear();
-  m_updateOccurrenceCounter.clear();
   m_shaderManager.clear();
   m_sourceScene = nullptr;
   m_isCompiled = false;
+  m_lastSceneChangeCount = 0;
 
   MRPT_END
 }
 
-bool CompiledScene::hasPendingUpdates() const
+bool CompiledScene::isCompiledFrom(const mrpt::viz::Scene& scene) const
 {
-  // Check if any tracked object has changed since we last compiled it
-  for (const auto& [weakObj, ver] : m_objectVersions)
+  if (!m_isCompiled || m_sourceScene != &scene)
   {
-    auto obj = weakObj.lock();
-    if (!obj) continue;
-    if (obj->dataVersion() != ver)
+    return false;
+  }
+  if (m_entries.empty() || scene.viewports().empty())
+  {
+    return true;
+  }
+  // At least one of the compiled viewports must be still in the scene:
+  for (const auto& e : m_entries)
+  {
+    for (const auto& vp : scene.viewports())
     {
-      return true;
+      if (vp && e->isFor(vp))
+      {
+        return true;
+      }
     }
   }
-
-  // Also check if source scene has new objects we haven't compiled yet
-  // (This is a quick check - actual detection happens in compileNewObjects)
   return false;
+}
+
+bool CompiledScene::hasPendingUpdates() const
+{
+  return m_isCompiled && mrpt::viz::sceneChangeCount() != m_lastSceneChangeCount;
 }
 
 size_t CompiledScene::getProxyCount() const
 {
   size_t count = 0;
-  for (const auto& [_, occurrences] : m_objectToProxy)
+  for (const auto& e : m_entries)
   {
-    for (const auto& occ : occurrences)
+    count += e->compiled->getProxyCount();
+    if (e->imagePlane)
     {
-      count += occ.size();
+      count += e->imagePlane->proxies.size();
     }
   }
   return count;
@@ -1216,13 +1059,11 @@ void CompiledScene::render(int renderWidth, int renderHeight, int renderOffsetX,
     updateIfNeeded();
   }
 
-  // Render all viewports in insertion order (so overlay viewports
-  // render after the main viewport, not alphabetically).
-  for (const auto& name : m_viewportRenderOrder)
+  // Render all viewports in the order of the source scene (so overlay
+  // viewports render after the main viewport).
+  for (const auto& e : m_entries)
   {
-    auto it = m_viewports.find(name);
-    if (it == m_viewports.end()) continue;
-    auto& viewport = it->second;
+    auto& viewport = e->compiled;
 
     // For cloned viewports, resolve the source viewport
     const CompiledViewport* sourceVp = nullptr;
@@ -1265,18 +1106,18 @@ void CompiledScene::renderViewport(
   MRPT_START
 
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
-  auto it = m_viewports.find(viewportName);
-  if (it == m_viewports.end())
-  {
-    THROW_EXCEPTION_FMT("Viewport '%s' not found", viewportName.c_str());
-  }
-
   checkContextThread();
 
   // Auto-update if enabled
   if (m_autoUpdate)
   {
     updateIfNeeded();
+  }
+
+  auto it = m_viewports.find(viewportName);
+  if (it == m_viewports.end())
+  {
+    THROW_EXCEPTION_FMT("Viewport '%s' not found", viewportName.c_str());
   }
 
   it->second->render(renderWidth, renderHeight, renderOffsetX, renderOffsetY, m_shaderManager);

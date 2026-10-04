@@ -11,6 +11,7 @@ layout(location = 2) in vec3 vertexNormal;
 uniform highp mat4 p_matrix;
 uniform highp mat4 v_matrix;
 uniform highp mat4 m_matrix;
+uniform highp mat3 normal_matrix;  // inverse transpose of mat3(m_matrix)
 
 out highp vec3 frag_position, frag_normal;
 out lowp vec4 frag_materialColor;
@@ -19,7 +20,7 @@ void main()
 {
     highp vec4 vPos    = m_matrix * vec4(position, 1.0);
     frag_position      = vec3(vPos);
-    frag_normal        = normalize(mat3(m_matrix) * vertexNormal);
+    frag_normal        = normalize(normal_matrix * vertexNormal);
     frag_materialColor = vertexColor;
 
     gl_Position        = p_matrix * v_matrix * vPos;

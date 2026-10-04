@@ -104,11 +104,19 @@ void Viewport::getViewportPosition(double& x, double& y, double& width, double& 
 /*--------------------------------------------------------------
           clear
   ---------------------------------------------------------------*/
-void Viewport::clear() { m_objects.clear(); }
+void Viewport::clear()
+{
+  m_objects.clear();
+  notifySceneStructureChange();
+}
 /*--------------------------------------------------------------
           insert
   ---------------------------------------------------------------*/
-void Viewport::insert(const CVisualObject::Ptr& newObject) { m_objects.push_back(newObject); }
+void Viewport::insert(const CVisualObject::Ptr& newObject)
+{
+  m_objects.push_back(newObject);
+  notifySceneStructureChange();
+}
 
 uint8_t Viewport::serializeGetVersion() const { return 10; }
 void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
@@ -218,6 +226,7 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       m_objects.resize(n);
 
       for_each(m_objects.begin(), m_objects.end(), ObjectReadFromStream(&in));
+      notifySceneStructureChange();
 
       // Added in v2: Global OpenGL settings:
       if (version >= 2)
@@ -403,6 +412,7 @@ void Viewport::removeObject(const CVisualObject::Ptr& obj)
     if (*it == obj)
     {
       m_objects.erase(it);
+      notifySceneStructureChange();
       return;
     }
     else if ((*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::viz))
@@ -449,6 +459,7 @@ void Viewport::setNormalMode()
 {
   // If this was an image-mode viewport, remove the quad object to disable it.
   m_imageViewPlane.reset();
+  notifySceneStructureChange();
 
   m_isCloned = false;
   m_isClonedCamera = false;
@@ -473,6 +484,7 @@ void Viewport::internal_enableImageView(bool transparentBackground)
     m_imageViewPlane = mrpt::viz::CTexturedPlane::Create();
     // Flip vertically:
     m_imageViewPlane->setPlaneCorners(-1, 1, 1, -1);
+    notifySceneStructureChange();
   }
   setTransparent(transparentBackground);
 }
@@ -539,8 +551,7 @@ const CCamera* Viewport::internalResolveActiveCamera(const CCamera* forceThisCam
 
   // Get camera:
   // 1st: if there is a CCamera in the scene (nullptr if no camera found):
-  const auto camPtr = viewForGetCamera->getByClass<CCamera>();
-  const auto* myCamera = camPtr ? camPtr.get() : nullptr;
+  const auto* myCamera = viewForGetCamera->findCameraObject();
 
   // 2nd: the internal camera of all viewports:
   if (myCamera == nullptr)
@@ -555,6 +566,21 @@ const CCamera* Viewport::internalResolveActiveCamera(const CCamera* forceThisCam
   }
 
   return myCamera;
+}
+
+const CCamera* Viewport::findCameraObject() const
+{
+  std::lock_guard<std::mutex> lck(m_cameraObjectCacheMtx.data);
+  auto& c = m_cameraObjectCache;
+
+  const uint64_t structureCount = sceneStructureChangeCount();
+  if (c.structureChangeCount != structureCount)
+  {
+    c.camera = getByClass<CCamera>();
+    c.structureChangeCount = structureCount;
+  }
+  // The weak pointer cannot expire without a structural change, but stay safe:
+  return c.camera.lock().get();
 }
 
 void Viewport::enableShadowCasting(

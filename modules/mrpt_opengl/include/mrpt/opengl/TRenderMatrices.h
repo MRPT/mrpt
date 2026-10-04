@@ -135,12 +135,15 @@ struct TRenderMatrices
    *  Populates cascade_light_pv[] and cascade_far_planes[].
    *  \param shadowMapSize Shadow map resolution (width=height) for texel
    *         snapping to prevent shadow edge swimming.
+   *  \param maxShadowDistance Distance from the camera covered by the
+   *         cascades (clamped to zmax). If not positive, 4 times eyeDistance.
    */
   void computeCascadedLightProjectionMatrices(
       float zmin,
       float zmax,
       const mrpt::viz::TLightParameters& lp,
-      unsigned int shadowMapSize = 2048);
+      unsigned int shadowMapSize = 2048,
+      float maxShadowDistance = 0);
 
   /** Especial case for custom parameters of Orthographic projection.
    *  Equivalent to `p_matrix = ortho(...);`.

@@ -24,6 +24,45 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::img;
 
+namespace
+{
+template <class POINT>
+std::optional<TBoundingBoxf> boundingBoxOf(const std::vector<POINT>& pts)
+{
+  if (pts.empty())
+  {
+    return std::nullopt;
+  }
+  auto bb = TBoundingBoxf::PlusMinusInfinity();
+  for (const auto& p : pts)
+  {
+    bb.updateWithPoint({p.x, p.y, p.z});
+  }
+  return bb;
+}
+
+bool anyTranslucent(const std::vector<TColor>& colors)
+{
+  for (const auto& c : colors)
+  {
+    if (c.A != 0xff)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Points and lines without per-vertex colors use the object color: the
+ * color attribute is disabled in their VAO, so its constant value is used. */
+void setConstantVertexColor(const TColor& c)
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  glVertexAttrib4f(1, c.R / 255.0f, c.G / 255.0f, c.B / 255.0f, c.A / 255.0f);
+#endif
+}
+}  // namespace
+
 // ============================================================================
 // RenderableProxy static helper implementations
 // ============================================================================
@@ -134,6 +173,10 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   const auto& colors = pointsObj->shaderPointsVertexColorBuffer();
 
   m_pointCount = vertices.size();
+  m_localBBox = boundingBoxOf(vertices);
+  m_hasColorBuffer = !colors.empty() && colors.size() == m_pointCount;
+  m_baseColor = sourceObj->getColor_u8();
+  m_transparent = m_hasColorBuffer ? anyTranslucent(colors) : m_baseColor.A != 0xff;
   if (m_pointCount == 0)
   {
     return;
@@ -152,7 +195,7 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TPoint3Df), nullptr);
 
   // Upload colors (if available)
-  if (!colors.empty() && colors.size() == m_pointCount)
+  if (m_hasColorBuffer)
   {
     m_colorBuffer.createOnce();
     m_colorBuffer.bind();
@@ -171,9 +214,6 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   // Unbind
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  // Invalidate cached bounding box
-  m_cachedBBox.reset();
 
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
@@ -202,6 +242,10 @@ void PointsProxyBase::render([[maybe_unused]] const RenderContext& rc) const
   }
   m_vao.bind();
 
+  if (!m_hasColorBuffer)
+  {
+    setConstantVertexColor(m_baseColor);
+  }
   glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(m_pointCount));
 
   glBindVertexArray(0);
@@ -210,14 +254,6 @@ void PointsProxyBase::render([[maybe_unused]] const RenderContext& rc) const
 
   MRPT_END
 #endif
-}
-
-TBoundingBoxf PointsProxyBase::getBoundingBoxLocal() const
-{
-  if (m_cachedBBox.has_value()) return m_cachedBBox.value();
-
-  // Return empty bbox if no points
-  return TBoundingBoxf();
 }
 
 // ============================================================================
@@ -253,6 +289,10 @@ void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   const auto& colors = linesObj->shaderLinesVertexColorBuffer();
 
   m_vertexCount = vertices.size();
+  m_localBBox = boundingBoxOf(vertices);
+  m_hasColorBuffer = !colors.empty() && colors.size() == m_vertexCount;
+  m_baseColor = sourceObj->getColor_u8();
+  m_transparent = m_hasColorBuffer ? anyTranslucent(colors) : m_baseColor.A != 0xff;
   if (m_vertexCount == 0)
   {
     return;
@@ -272,7 +312,7 @@ void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TPoint3Df), nullptr);
 
   // Upload colors
-  if (!colors.empty() && colors.size() == m_vertexCount)
+  if (m_hasColorBuffer)
   {
     m_colorBuffer.createOnce();
     m_colorBuffer.bind();
@@ -290,8 +330,6 @@ void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   // Unbind
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  m_cachedBBox.reset();
 
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
@@ -330,6 +368,10 @@ void LinesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
 
   m_vao.bind();
 
+  if (!m_hasColorBuffer)
+  {
+    setConstantVertexColor(m_baseColor);
+  }
   glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(m_vertexCount));
 
   glBindVertexArray(0);
@@ -345,13 +387,6 @@ void LinesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
 
   MRPT_END
 #endif
-}
-
-TBoundingBoxf LinesProxyBase::getBoundingBoxLocal() const
-{
-  if (m_cachedBBox.has_value()) return m_cachedBBox.value();
-
-  return TBoundingBoxf();
 }
 
 // ============================================================================
@@ -389,6 +424,8 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   m_triangleCount = triangles.size();
   if (m_triangleCount == 0)
   {
+    m_localBBox.reset();
+    m_transparent = false;
     return;
   }
 
@@ -453,8 +490,8 @@ void TrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  // Invalidate cached bounding box
-  m_cachedBBox.reset();
+  m_localBBox = boundingBoxOf(vertices);
+  m_transparent = anyTranslucent(colors);
 
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
@@ -554,13 +591,6 @@ shader_id_t TrianglesProxyBase::selectShader(bool isShadowMapPass) const
   }
 }
 
-TBoundingBoxf TrianglesProxyBase::getBoundingBoxLocal() const
-{
-  if (m_cachedBBox.has_value()) return m_cachedBBox.value();
-
-  return TBoundingBoxf();
-}
-
 // ============================================================================
 // TexturedTrianglesProxyBase implementation
 // ============================================================================
@@ -598,6 +628,8 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
   m_triangleCount = triangles.size();
   if (m_triangleCount == 0)
   {
+    m_localBBox.reset();
+    m_transparent = false;
     return;
   }
 
@@ -709,8 +741,8 @@ void TexturedTrianglesProxyBase::compile(const mrpt::viz::CVisualObject* sourceO
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  // Invalidate cached bounding box
-  m_cachedBBox.reset();
+  m_localBBox = boundingBoxOf(vertices);
+  m_transparent = anyTranslucent(colors);
 
   CHECK_OPENGL_ERROR_IN_DEBUG();
 

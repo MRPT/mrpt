@@ -68,7 +68,7 @@ class CAxis : virtual public CVisualObject, public VisualObjectParams_Lines
   bool isCompositeObject() const override { return true; }
 
   /** Access to internal text labels (for rendering pipeline) */
-  const ListVisualObjects& getInternalChildren() const override { return m_gl_labels.get(); }
+  const ListVisualObjects& getInternalChildren() const override;
 
  protected:
   float m_xmin, m_ymin, m_zmin;
@@ -80,7 +80,18 @@ class CAxis : virtual public CVisualObject, public VisualObjectParams_Lines
   float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
   float m_markLen{0.07f};
 
-  mutable mrpt::containers::PerThreadDataHolder<mrpt::viz::ListVisualObjects> m_gl_labels;
+  /** Text labels, built for each calling thread when the axis changes */
+  struct Labels
+  {
+    uint64_t dataVersion = 0;  //!< 0: never built
+    mrpt::viz::ListVisualObjects objects;
+  };
+  mutable mrpt::containers::PerThreadDataHolder<Labels> m_gl_labels;
+
+  /** Generates the tick mark lines and/or the text labels (either may be
+   * nullptr) */
+  void generateTicksAndLabels(
+      std::vector<mrpt::math::TPoint3Df>* tickLines, ListVisualObjects* labels) const;
 };
 
 }  // namespace mrpt::viz
