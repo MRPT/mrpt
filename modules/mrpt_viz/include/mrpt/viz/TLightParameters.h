@@ -202,6 +202,13 @@ struct TLightParameters
    *  camera range; 0.75 is a good balance for robot-scale scenes. */
   float shadow_cascade_lambda = 0.75f;
 
+  /** Maximum distance from the camera at which shadows are drawn [meters].
+   *  The shadow cascades cover this range, so shorter ranges give sharper
+   *  shadows. 0 (default) means automatic: 4 times the orbit distance for
+   *  orbit cameras, or 40 m for cameras with a free pose (6DOF mode, e.g.
+   *  simulated sensor cameras), which have no orbit distance. */
+  float shadow_max_distance = 0;
+
   /** @name Screen-Space Ambient Occlusion (SSAO)
    *  SSAO approximates ambient occlusion from the depth and normal G-buffer
    *  without ray-tracing. Disabled by default.

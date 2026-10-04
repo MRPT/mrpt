@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/viz/TLightParameters.h>
 
 #include <Eigen/Dense>
 
@@ -224,4 +225,33 @@ TEST(OpenGL, TRenderMatrices_lookAtWithoutTranslation)
         mrpt::math::TVector3D(0, 0, 5), mrpt::math::TVector3D(0, 0, 0),
         mrpt::math::TVector3D(0, 0, 1)));
   }
+}
+
+TEST(OpenGL, TRenderMatrices_shadowCascadesCoverTheShadowDistance)
+{
+  mrpt::opengl::TRenderMatrices rm;
+  rm.viewport_width = 640;
+  rm.viewport_height = 480;
+  rm.FOV = 60.0f;
+  rm.eyeDistance = 10.0;
+  rm.eye = {10, 0, 2};
+  rm.pointing = {0, 0, 0};
+  rm.up = {0, 0, 1};
+  rm.computeProjectionMatrix(0.1f, 1000.0f);
+  rm.computeViewMatrix();
+
+  mrpt::viz::TLightParameters lp;
+  lp.shadow_cascades = 3;
+
+  // Default: 4 times the orbit distance
+  rm.computeCascadedLightProjectionMatrices(0.1f, 1000.0f, lp, 2048);
+  EXPECT_NEAR(rm.cascade_far_planes[2], 40.0f, 1e-3f);
+
+  // An explicit distance:
+  rm.computeCascadedLightProjectionMatrices(0.1f, 1000.0f, lp, 2048, 25.0f);
+  EXPECT_NEAR(rm.cascade_far_planes[2], 25.0f, 1e-3f);
+
+  // ... never beyond the far clip distance:
+  rm.computeCascadedLightProjectionMatrices(0.1f, 20.0f, lp, 2048, 25.0f);
+  EXPECT_NEAR(rm.cascade_far_planes[2], 20.0f, 1e-3f);
 }

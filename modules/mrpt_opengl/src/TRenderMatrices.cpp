@@ -202,7 +202,11 @@ void TRenderMatrices::computeLightProjectionMatrix(
 }
 
 void TRenderMatrices::computeCascadedLightProjectionMatrices(
-    float zmin, float zmax, const mrpt::viz::TLightParameters& lp, unsigned int shadowMapSize)
+    float zmin,
+    float zmax,
+    const mrpt::viz::TLightParameters& lp,
+    unsigned int shadowMapSize,
+    float maxShadowDistance)
 {
   const int N = std::clamp<int>(lp.shadow_cascades, 1, 4);
   numShadowCascades = N;
@@ -216,8 +220,9 @@ void TRenderMatrices::computeCascadedLightProjectionMatrices(
   // around the visible part of the scene regardless of clip-far settings.
   // A multiplier of 4 means shadows reach 4× the orbit distance, enough to
   // cover the full scene visible at that zoom level.
-  const float eyeBasedMax = static_cast<float>(eyeDistance) * 4.0f;
-  zmax = std::min(zmax, std::max(eyeBasedMax, zmin * 2.0f));
+  const float shadowRange =
+      maxShadowDistance > 0 ? maxShadowDistance : static_cast<float>(eyeDistance) * 4.0f;
+  zmax = std::min(zmax, std::max(shadowRange, zmin * 2.0f));
 
   // Ensure zmin > 0 for logarithmic splits
   const float nearClip = std::max(zmin, 0.01f);

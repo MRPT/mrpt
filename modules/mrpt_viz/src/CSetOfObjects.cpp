@@ -29,7 +29,11 @@ using namespace mrpt::serialization::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CSetOfObjects, CVisualObject, mrpt::viz)
 
-void CSetOfObjects::clear() { m_objects.clear(); }
+void CSetOfObjects::clear()
+{
+  m_objects.clear();
+  notifySceneStructureChange();
+}
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }
 void CSetOfObjects::serializeTo(mrpt::serialization::CArchive& out) const
@@ -58,6 +62,7 @@ void CSetOfObjects::serializeFrom(mrpt::serialization::CArchive& in, uint8_t ver
       m_objects.resize(n);
 
       for_each(m_objects.begin(), m_objects.end(), ObjectReadFromStream(&in));
+      notifySceneStructureChange();
     }
     break;
     default:
@@ -69,6 +74,7 @@ void CSetOfObjects::insert(const CVisualObject::Ptr& newObject)
 {
   ASSERTMSG_(newObject.get() != this, "Error: Trying to insert container into itself!");
   m_objects.push_back(newObject);
+  notifySceneStructureChange();
 }
 
 void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst) const
@@ -133,6 +139,7 @@ void CSetOfObjects::removeObject(const CVisualObject::Ptr& obj)
     if (*it == obj)
     {
       m_objects.erase(it);
+      notifySceneStructureChange();
       return;
     }
     else if ((*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::viz))

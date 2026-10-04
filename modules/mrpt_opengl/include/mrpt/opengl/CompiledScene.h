@@ -21,6 +21,7 @@
 #include <map>
 #include <memory>
 #include <thread>
+#include <vector>
 
 namespace mrpt::opengl
 {
@@ -29,13 +30,13 @@ namespace mrpt::opengl
  */
 struct CompilationStats
 {
-  size_t numObjectsTotal = 0;
-  size_t numObjectsCompiled = 0;
-  size_t numObjectsUpdated = 0;
+  size_t numObjectsTotal = 0;     //!< Objects (positions in the scene graph) visited
+  size_t numObjectsCompiled = 0;  //!< Objects whose proxies were created
+  size_t numObjectsUpdated = 0;   //!< Objects whose buffers or transforms were updated
   size_t numProxiesCreated = 0;
   size_t numProxiesDeleted = 0;
-  size_t numOrphanedProxies = 0;  //!< Proxies removed due to deleted source objects
-  size_t numNewObjects = 0;       //!< New objects added since last compile
+  size_t numOrphanedProxies = 0;  //!< Objects removed from the scene since the last update
+  size_t numNewObjects = 0;       //!< Objects added to the scene since the last update
 
   void reset()
   {
@@ -52,15 +53,20 @@ struct CompilationStats
 /** A compiled, GPU-ready representation of a mrpt::viz::Scene.
  *
  * This class bridges the gap between the abstract scene graph (mrpt::viz::Scene)
- * and the actual OpenGL rendering. It maintains the mapping between
- * CVisualObject instances and their corresponding GPU-side RenderableProxy
- * objects.
+ * and the actual OpenGL rendering. It keeps one node for each position of an
+ * object in the scene graph, holding the RenderableProxy instances of that
+ * object. The same object may appear at several positions (e.g. a model
+ * shared by several groups), each drawn with its own model matrix.
  *
  * Key responsibilities:
  * - Initial compilation: translates the entire Scene into GPU structures
- * - Incremental updates: detects changes via dirty flags and recompiles only
- *   what's needed
- * - Dynamic object support: detects newly added objects in the source Scene
+ * - Incremental updates: objects inserted or removed anywhere in the scene
+ *   graph, buffers of objects whose data changed
+ *   (mrpt::viz::CVisualObject::dataVersion()), and model matrices and
+ *   visibility of objects whose pose, scale or visibility changed
+ *   (mrpt::viz::CVisualObject::transformVersion()). If nothing changed in any
+ *   scene (mrpt::viz::sceneChangeCount()), the scene graph is not traversed.
+ * - Objects are compiled the first time they are visible.
  * - Resource management: owns all RenderableProxy instances and shader programs
  * - Rendering orchestration: delegates to CompiledViewport instances
  *
@@ -74,7 +80,7 @@ struct CompilationStats
  *
  * // Render loop:
  * while (running) {
- *   myObject->setColor(...);  // triggers dirty flag internally
+ *   myObject->setColor(...);  // increments its data version
  *   scene.insert(newObject);  // dynamically add objects
  *   compiled.updateIfNeeded(); // compiles new objects, updates changed ones
  *   compiled.render();
@@ -83,8 +89,12 @@ struct CompilationStats
  *
  * Thread safety:
  * - All CompiledScene methods must be called from the OpenGL context thread
- * - Source viz objects may be modified from other threads (they use shared_mutex)
- * - The proxy will read from viz objects during compile/update (acquires read lock)
+ * - Properties of individual viz objects (pose, color, geometry...) may be
+ *   modified from other threads, since they are protected by their own mutexes.
+ * - The structure of the scene graph (inserting or removing objects or
+ *   viewports) must not change while compile(), updateIfNeeded() or render()
+ *   run: callers must synchronize those changes with rendering (e.g. GUI
+ *   windows provide a mutex for their scene).
  *
  * \sa CompiledViewport, RenderableProxy, mrpt::viz::Scene
  * \ingroup mrpt_opengl_grp
@@ -95,7 +105,7 @@ class CompiledScene
   using Ptr = std::shared_ptr<CompiledScene>;
 
   CompiledScene();
-  ~CompiledScene() = default;
+  ~CompiledScene();
 
   // Non-copyable, non-movable (owns GPU resources)
   CompiledScene(const CompiledScene&) = delete;
@@ -108,13 +118,12 @@ class CompiledScene
 
   /** Performs initial compilation of the entire scene.
    *
-   * This creates RenderableProxy instances for all CVisualObject instances
-   * in the scene, uploads data to GPU, and prepares all necessary OpenGL
-   * state.
+   * This creates RenderableProxy instances for all visible CVisualObject
+   * instances in the scene, uploads data to GPU, and prepares all necessary
+   * OpenGL state.
    *
    * \param scene The abstract scene to compile (reference kept internally)
    * \param stats Optional pointer to receive compilation statistics
-   * \throws std::runtime_error if OpenGL context is not available
    *
    * \note This must be called from a thread with an active OpenGL context.
    * \note Calling compile() multiple times will clear previous compilation
@@ -122,20 +131,14 @@ class CompiledScene
    */
   void compile(const mrpt::viz::Scene& scene, CompilationStats* stats = nullptr);
 
-  /** Incrementally updates the compiled scene to match the source Scene.
-   *
-   * This method:
-   * 1. Removes proxies for deleted source objects (via weak_ptr expiration)
-   * 2. Creates proxies for newly added objects in the source Scene
-   * 3. Updates GPU buffers for objects whose dirty flag is set
-   *
-   * Much more efficient than full recompilation for animated/dynamic scenes.
+  /** Incrementally updates the compiled scene to match the source Scene:
+   * viewports added or removed, objects inserted or removed anywhere in the
+   * scene graph, and objects whose data, pose, scale or visibility changed.
    *
    * \param stats Optional pointer to receive update statistics
    * \return true if any updates were performed, false if nothing changed
    *
    * \note This is called automatically by render() if auto-update is enabled.
-   * \note The source Scene is re-queried each time to detect new objects.
    */
   bool updateIfNeeded(CompilationStats* stats = nullptr);
 
@@ -206,7 +209,12 @@ class CompiledScene
   /** Returns true if the scene has been compiled at least once */
   [[nodiscard]] bool isCompiled() const { return m_isCompiled; }
 
-  /** Returns true if there are pending changes that need updating */
+  /** Returns true if this was compiled from that scene object: the same
+   * instance, not another one that was later created at its memory address. */
+  [[nodiscard]] bool isCompiledFrom(const mrpt::viz::Scene& scene) const;
+
+  /** Returns true if any object of any scene changed since the last update,
+   * so the next updateIfNeeded() will check this scene for changes. */
   [[nodiscard]] bool hasPendingUpdates() const;
 
   /** Number of viewports in the compiled scene */
@@ -243,49 +251,32 @@ class CompiledScene
   /** @} */
 
  private:
+  /** A position of an object in the scene graph (defined in the .cpp file) */
+  struct Node;
+  /** A compiled viewport, with the nodes of its objects */
+  struct ViewportEntry;
+
   /** Reference to the source scene (kept for incremental updates).
    * Raw pointer because the Scene may be stack-allocated (not managed by
    * shared_ptr). The caller must ensure the Scene outlives the
    * CompiledScene. */
   const mrpt::viz::Scene* m_sourceScene = nullptr;
 
+  /** Compiled viewports, in the order of the source Scene (render order) */
+  std::vector<std::unique_ptr<ViewportEntry>> m_entries;
+
   /** Compiled viewports, indexed by name */
   std::map<std::string, CompiledViewport::Ptr> m_viewports;
 
-  /** Viewport names in insertion order (matching source Scene's vector order).
-   * Used for rendering so that overlay viewports render after main ones. */
-  std::vector<std::string> m_viewportRenderOrder;
+  /** mrpt::viz::sceneChangeCount() at the last traversal of the scene graph
+   * (0: never) */
+  uint64_t m_lastSceneChangeCount = 0;
 
-  /** Mapping: weak_ptr<CVisualObject> -> per-occurrence proxy groups.
-   * Using weak_ptr allows detection of deleted source objects.
-   * Each inner vector contains the proxies for one tree occurrence
-   * (supports the same CVisualObject appearing at multiple positions
-   * in the scene graph DAG).
-   */
-  std::map<
-      std::weak_ptr<const mrpt::viz::CVisualObject>,
-      std::vector<std::vector<RenderableProxy::Ptr>>,
-      std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>>
-      m_objectToProxy;
-
-  /** Transient per-object occurrence counter used during
-   * updateDirtyObjects() tree walk to match each tree occurrence
-   * to its corresponding proxy group. Cleared before each walk. */
-  std::map<
-      std::weak_ptr<const mrpt::viz::CVisualObject>,
-      size_t,
-      std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>>
-      m_updateOccurrenceCounter;
-
-  /** Per-object version tracking for dirty detection.
-   * Each CompiledScene independently tracks which version of each object
-   * it last compiled, so multiple CompiledScenes sharing the same source
-   * objects don't interfere with each other's dirty tracking. */
-  std::map<
-      std::weak_ptr<const mrpt::viz::CVisualObject>,
-      uint64_t,
-      std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>>
-      m_objectVersions;
+  /** Texture::Options::shareScope of the textures of this scene: the EGL
+   * context it was compiled in (one scope for all non-EGL contexts), so scenes
+   * in the same context (e.g. a GUI and offscreen sensors rendered in it)
+   * share their textures. */
+  const void* m_textureShareScope = nullptr;
 
   /** Centralized shader program management */
   ShaderProgramManager m_shaderManager;
@@ -302,53 +293,62 @@ class CompiledScene
    */
   std::thread::id m_contextThread;
 
+  /** State of the parent of a node, propagated down the scene graph. */
+  struct ParentState
+  {
+    const mrpt::math::CMatrixFloat44* worldMatrix = nullptr;
+    bool changed = false;  //!< Its world matrix, visibility or shadow casting changed
+    bool visible = true;
+    bool castShadows = true;
+  };
+
   /** @name Internal Compilation Helpers
    * @{ */
 
-  /** Compiles a viewport and all its objects */
-  void compileViewport(
-      const mrpt::viz::Viewport& vizViewport,
-      CompiledViewport& compiledViewport,
+  /** Brings the compiled viewports in line with those of the source scene.
+   * \return true if any viewport was added, removed, or changed its mode */
+  bool syncViewports(CompilationStats& stats);
+
+  /** Updates the nodes of all objects of a viewport */
+  void syncViewportObjects(ViewportEntry& vp, CompilationStats& stats);
+
+  /** Matches the nodes of a list of objects (children of a container, of a
+   * viewport, etc.) with the current objects, creating or removing nodes as
+   * needed, then updates each node. */
+  template <class OBJECTS>
+  void syncNodes(
+      std::vector<std::unique_ptr<Node>>& nodes,
+      const OBJECTS& objects,
+      const ParentState& parent,
+      ViewportEntry& vp,
       CompilationStats& stats);
 
-  /** Compiles an object and its children (for CSetOfObjects) */
-  void compileObject(
+  /** Updates a node from its object: transform, visibility, buffers, and
+   * children. */
+  void updateNode(
+      Node& node,
       const std::shared_ptr<const mrpt::viz::CVisualObject>& obj,
-      CompiledViewport& compiledViewport,
-      CompilationStats& stats,
-      const mrpt::math::CMatrixFloat44& parentModelMatrix = mrpt::math::CMatrixFloat44::Identity());
+      const ParentState& parent,
+      ViewportEntry& vp,
+      CompilationStats& stats);
+
+  /** Creates and compiles the proxies of a (non container) object. */
+  void compileNodeProxies(
+      Node& node, const mrpt::viz::CVisualObject& obj, ViewportEntry& vp, CompilationStats& stats);
+
+  /** Removes the proxies of a node and all its descendants from the viewport. */
+  static void releaseNode(Node& node, ViewportEntry& vp, CompilationStats& stats);
 
   /** Computes a model matrix from an object's pose and scale. */
   static mrpt::math::CMatrixFloat44 computeModelMatrix(
       const mrpt::viz::CVisualObject::PoseAndScale& ps,
       const mrpt::math::CMatrixFloat44& parentModelMatrix);
 
-  /** Checks if we already have a proxy for this object */
-  [[nodiscard]] bool hasProxyFor(const std::shared_ptr<const mrpt::viz::CVisualObject>& obj) const;
-
   /** Creates appropriate proxy types based on object's parameter mixins.
    * Returns one proxy per mixin type (e.g., CBox gets both a TrianglesProxy
    * and a LinesProxy). */
-  [[nodiscard]] std::vector<RenderableProxy::Ptr> createProxiesByType(
-      const std::shared_ptr<const mrpt::viz::CVisualObject>& obj);
-
-  /** Cleans up proxies for objects that no longer exist */
-  void cleanupOrphanedProxies(CompilationStats& stats);
-
-  /** Scans source scene for new objects not yet compiled */
-  void compileNewObjects(CompilationStats& stats);
-
-  /** Updates GPU buffers for objects with dirty flags */
-  void updateDirtyObjects(CompilationStats& stats);
-
-  /** Recursive helper: walks the scene tree to detect dirty objects
-   * (including containers) and update their proxies' model matrices. */
-  void updateDirtyObjectRecursive(
-      const std::shared_ptr<const mrpt::viz::CVisualObject>& obj,
-      const mrpt::math::CMatrixFloat44& parentModelMatrix,
-      bool parentDirty,
-      bool parentVisible,
-      CompilationStats& stats);
+  [[nodiscard]] static std::vector<RenderableProxy::Ptr> createProxiesByType(
+      const mrpt::viz::CVisualObject& obj);
 
   /** Validates that we're being called from the correct thread */
   void checkContextThread() const;

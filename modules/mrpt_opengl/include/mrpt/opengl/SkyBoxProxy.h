@@ -47,6 +47,7 @@ class SkyBoxProxy : public RenderableProxy
 
   [[nodiscard]] bool castsShadows() const override { return false; }
   [[nodiscard]] bool cullEligible() const override { return false; }
+  [[nodiscard]] bool isBackground() const override { return true; }
 
   [[nodiscard]] const char* typeName() const override { return "SkyBoxProxy"; }
 

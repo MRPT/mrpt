@@ -56,6 +56,7 @@ Scene::~Scene() { m_viewports.clear(); }
 void Scene::clear(bool createMainViewport)
 {
   m_viewports.clear();
+  notifySceneStructureChange();
 
   if (createMainViewport)
   {
@@ -116,6 +117,7 @@ void Scene::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       view->clear();
       view->m_objects.resize(n);
       for_each(view->m_objects.begin(), view->m_objects.end(), ObjectReadFromStream(&in));
+      notifySceneStructureChange();
     }
     break;
     case 1:
@@ -135,6 +137,7 @@ void Scene::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
         newView->m_parent = this;
         m_viewports.push_back(newView);
       }
+      notifySceneStructureChange();
     }
     break;
     default:
@@ -221,6 +224,7 @@ Viewport::Ptr Scene::createViewport(const string& viewportName)
 
   auto theNew = std::make_shared<Viewport>(this, viewportName);
   m_viewports.push_back(theNew);
+  notifySceneStructureChange();
   return theNew;
 
   MRPT_END

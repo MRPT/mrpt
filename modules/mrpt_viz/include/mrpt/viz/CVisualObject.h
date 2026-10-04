@@ -27,6 +27,7 @@
 #include <mrpt/viz/TTriangle.h>
 #include <mrpt/viz/viz_frwds.h>
 
+#include <atomic>
 #include <deque>
 #include <mutex>
 #include <optional>
@@ -67,6 +68,34 @@ enum class TAlphaMode : uint8_t
   Blend
 };
 
+/** Number of changes made so far to any object or container of any scene, in
+ * this process: object data, poses, visibility, and insertions or removals.
+ * Renderers compare it against the value they last saw, to skip re-checking a
+ * whole scene graph when nothing changed.
+ * \sa notifySceneChange()
+ * \ingroup mrpt_viz_grp
+ */
+[[nodiscard]] uint64_t sceneChangeCount();
+
+/** Increments sceneChangeCount(). Called by all methods that modify objects
+ * or the structure of a scene graph.
+ * \ingroup mrpt_viz_grp
+ */
+void notifySceneChange();
+
+/** Number of changes made so far to the structure of any scene graph, in this
+ * process: insertions or removals of objects or viewports, or whole objects
+ * being assigned (which may replace the contents of containers).
+ * \sa notifySceneStructureChange()
+ * \ingroup mrpt_viz_grp
+ */
+[[nodiscard]] uint64_t sceneStructureChangeCount();
+
+/** Increments both sceneStructureChangeCount() and sceneChangeCount().
+ * \ingroup mrpt_viz_grp
+ */
+void notifySceneStructureChange();
+
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
@@ -85,13 +114,19 @@ enum class TAlphaMode : uint8_t
  *
  * RENDERING FLOW
  * ===============
- * 1. User modifies a viz object (e.g., box.setBoxCorners(...))
- *    → This calls notifyChange() which sets the dirty flag
+ * 1. User modifies a viz object:
+ *    - Geometry or appearance (e.g. box.setBoxCorners(...), setColor()):
+ *      this calls notifyChange(), which increments dataVersion().
+ *    - Pose, scale, visibility or shadow casting: this calls
+ *      notifyTransformChange(), which increments transformVersion() only, so
+ *      renderers do not regenerate any buffer.
  *
  * 2. CompiledScene::updateIfNeeded() is called before rendering
- *    → For each tracked object with hasToUpdateBuffers() == true:
- *       a) Call sourceObj->updateBuffers()  ← populates viz buffers
+ *    → For each object whose dataVersion() changed:
+ *       a) Call sourceObj->updateBuffersIfNeeded()  ← populates viz buffers
  *       b) Call proxy->updateBuffers(sourceObj)  ← Uploads to GPU
+ *    → For each object whose transformVersion() changed, only its model
+ *      matrix and visibility are updated.
  *
  * 3. Rendering proceeds with the updated GPU buffers
  *
@@ -176,7 +211,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.visible = visible;
-    notifyChange();
+    lckWrite.unlock();
+    notifyTransformChange();
   }
 
   /** Does the object cast shadows? (default=true) */
@@ -194,7 +230,7 @@ class CVisualObject : public mrpt::serialization::CSerializable
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.castShadows = doCast;
     lckWrite.unlock();
-    notifyChange();
+    notifyTransformChange();
   }
 
   /** Enables or disables showing the name of the object as a label when
@@ -260,7 +296,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
     m_state.pose.x(x);
     m_state.pose.y(y);
     m_state.pose.z(z);
-    notifyChange();
+    lckWrite.unlock();
+    notifyTransformChange();
     return *this;
   }
 
@@ -272,7 +309,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
     m_state.pose.x(p.x);
     m_state.pose.y(p.y);
     m_state.pose.z(p.z);
-    notifyChange();
+    lckWrite.unlock();
+    notifyTransformChange();
     return *this;
   }
 
@@ -319,6 +357,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
     m_state.materialShininess = shininess;
+    lckWrite.unlock();
+    notifyChange();
   }
 
   /** Blinn-Phong specular exponent. Higher values produce a smaller, sharper
@@ -367,8 +407,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
   {
     m_stateMtx.data.lock();
     m_state.scale_x = m_state.scale_y = m_state.scale_z = s;
-    notifyChange();
     m_stateMtx.data.unlock();
+    notifyTransformChange();
     return *this;
   }
 
@@ -380,8 +420,8 @@ class CVisualObject : public mrpt::serialization::CSerializable
     m_state.scale_x = sx;
     m_state.scale_y = sy;
     m_state.scale_z = sz;
-    notifyChange();
     m_stateMtx.data.unlock();
+    notifyTransformChange();
     return *this;
   }
   /** Get the current scaling factor in one axis */
@@ -452,14 +492,22 @@ class CVisualObject : public mrpt::serialization::CSerializable
     return empty;
   }
 
-  /** Call to enable calling renderUpdateBuffers() before the next
-   * render() rendering iteration. \sa clearChangedFlag() */
+  /** Must be called after any change to the geometry or appearance of the
+   * object, so renderers regenerate its buffers (see updateBuffers()) before
+   * the next frame. \sa notifyTransformChange() */
   void notifyChange() const
   {
-    std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
-    m_cachedLocalBBox.reset();
-    m_dataVersion.value++;
+    {
+      std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
+      m_cachedLocalBBox.reset();
+    }
+    m_dataVersion.increment();
   }
+
+  /** Must be called after a change in the pose, scale, visibility or shadow
+   * casting of the object: renderers update where and whether it is drawn,
+   * without regenerating its buffers. \sa notifyChange() */
+  void notifyTransformChange() const { m_transformVersion.increment(); }
 
   /** Reset the dirty flag set with notifyChange().
    * \deprecated Prefer using the version-counter API:
@@ -484,27 +532,30 @@ class CVisualObject : public mrpt::serialization::CSerializable
     // Kept for backwards compatibility: always returns true if version > 0
     // (i.e., object has ever been modified). New code should use
     // hasToUpdateBuffersSince().
-    std::shared_lock<std::shared_mutex> lckRead(m_outdatedStateMtx.data);
-    return m_dataVersion.value > 0;
+    return dataVersion() > 0;
   }
 
   /** Returns the current data version counter. Incremented on each
    * notifyChange() call. Use this with hasToUpdateBuffersSince() for
    * multi-consumer dirty tracking. */
-  uint64_t dataVersion() const
-  {
-    std::shared_lock<std::shared_mutex> lckRead(m_outdatedStateMtx.data);
-    return m_dataVersion.value;
-  }
+  uint64_t dataVersion() const { return m_dataVersion.get(); }
+
+  /** Returns the current counter of changes in pose, scale, visibility or
+   * shadow casting. Incremented on each notifyTransformChange() call. */
+  uint64_t transformVersion() const { return m_transformVersion.get(); }
 
   /** Returns true if this object's data has changed since the given
    * version. Each consumer (e.g., CompiledScene) should store the last
    * version it processed and pass it here. */
   bool hasToUpdateBuffersSince(uint64_t sinceVersion) const
   {
-    std::shared_lock<std::shared_mutex> lckRead(m_outdatedStateMtx.data);
-    return m_dataVersion.value != sinceVersion;
+    return dataVersion() != sinceVersion;
   }
+
+  /** Calls updateBuffers() only if the object data changed since its last
+   * call through this method, so several renderers of the same object do not
+   * regenerate its buffers once each. */
+  void updateBuffersIfNeeded() const;
 
   /// Called by the rendering system to update internal geometry buffers.
   ///
@@ -592,27 +643,61 @@ class CVisualObject : public mrpt::serialization::CSerializable
    * one object onto another replaces its whole state, so the target bumps its
    * own counter rather than inheriting the source's value, which could match
    * what a renderer already saw and leave the change undetected. */
-  struct DataVersion
+  struct ChangeCounter
   {
-    uint64_t value = 1;
+    ChangeCounter() = default;
+    ChangeCounter(const ChangeCounter& o) : m_value(o.get()) {}
+    ChangeCounter(ChangeCounter&& o) noexcept : m_value(o.get()) {}
+    ~ChangeCounter() = default;
+    ChangeCounter& operator=(const ChangeCounter&)
+    {
+      increment();
+      notifySceneStructureChange();
+      return *this;
+    }
+    ChangeCounter& operator=(ChangeCounter&&) noexcept
+    {
+      increment();
+      notifySceneStructureChange();
+      return *this;
+    }
 
-    DataVersion() = default;
-    DataVersion(const DataVersion&) = default;
-    DataVersion(DataVersion&&) = default;
-    ~DataVersion() = default;
-    DataVersion& operator=(const DataVersion&)
+    [[nodiscard]] uint64_t get() const { return m_value.load(std::memory_order_acquire); }
+    void increment()
     {
-      ++value;
-      return *this;
+      m_value.fetch_add(1, std::memory_order_acq_rel);
+      notifySceneChange();
     }
-    DataVersion& operator=(DataVersion&&) noexcept
-    {
-      ++value;
-      return *this;
-    }
+
+   private:
+    std::atomic<uint64_t> m_value{1};
   };
 
-  mutable DataVersion m_dataVersion;
+  /** dataVersion() at the last call to updateBuffersIfNeeded(), or 0 if
+   * never called. A copied object has to regenerate its own buffers. */
+  struct BuffersVersion
+  {
+    BuffersVersion() = default;
+    BuffersVersion(const BuffersVersion&) {}
+    BuffersVersion(BuffersVersion&&) noexcept {}
+    ~BuffersVersion() = default;
+    BuffersVersion& operator=(const BuffersVersion&)
+    {
+      value = 0;
+      return *this;
+    }
+    BuffersVersion& operator=(BuffersVersion&&) noexcept
+    {
+      value = 0;
+      return *this;
+    }
+
+    std::atomic<uint64_t> value{0};
+  };
+
+  mutable ChangeCounter m_dataVersion;
+  mutable ChangeCounter m_transformVersion;
+  mutable BuffersVersion m_buffersVersion;
   mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_outdatedStateMtx;
 
   mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedLocalBBox;

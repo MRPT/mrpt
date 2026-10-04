@@ -68,15 +68,11 @@ void CAxis::setTickMarksLength(float len)
 
 void CAxis::updateBuffers() const
 {
-  using mrpt::math::TPoint3Df;
-
   auto& vbd = VisualObjectParams_Lines::m_vertex_buffer_data;
   auto& cbd = VisualObjectParams_Lines::m_color_buffer_data;
   std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Lines::m_linesMtx.data);
 
   vbd.clear();
-
-  m_gl_labels.get().clear();
 
   // X axis
   vbd.emplace_back(m_xmin, 0.0f, 0.0f);
@@ -87,6 +83,31 @@ void CAxis::updateBuffers() const
   // Z axis
   vbd.emplace_back(0.0f, 0.0f, m_zmin);
   vbd.emplace_back(0.0f, 0.0f, m_zmax);
+
+  generateTicksAndLabels(&vbd, nullptr);
+
+  cbd.assign(vbd.size(), getColor_u8());
+}
+
+const ListVisualObjects& CAxis::getInternalChildren() const
+{
+  // Labels are built here rather than in updateBuffers(), so each thread gets
+  // its own up-to-date set even if another thread regenerated the buffers.
+  auto& labels = m_gl_labels.get();
+  const uint64_t v = dataVersion();
+  if (labels.dataVersion != v)
+  {
+    labels.objects.clear();
+    generateTicksAndLabels(nullptr, &labels.objects);
+    labels.dataVersion = v;
+  }
+  return labels.objects;
+}
+
+void CAxis::generateTicksAndLabels(
+    std::vector<mrpt::math::TPoint3Df>* tickLines, ListVisualObjects* labels) const
+{
+  using mrpt::math::TPoint3Df;
 
   // Draw the "tick marks" for X,Y,Z
   const float ml = m_markLen * m_frequency;
@@ -115,7 +136,10 @@ void CAxis::updateBuffers() const
 
   for (unsigned int axis = 0; axis < 3; axis++)
   {
-    if (!m_marks[axis]) continue;
+    if (!m_marks[axis])
+    {
+      continue;
+    }
 
     TPoint3Df tick_incr(0, 0, 0);
     tick_incr[axis] = m_frequency;
@@ -127,35 +151,43 @@ void CAxis::updateBuffers() const
          i = i + m_frequency, cur_tf = cur_tf + tick_incr)
     {
       // Don't draw the "0" more than once
-      if (axis != 0 && std::abs(i) < 1e-4f) continue;
+      if (axis != 0 && std::abs(i) < 1e-4f)
+      {
+        continue;
+      }
 
-      mrpt::system::os::sprintf(n, 50, "%.02f", i);
+      if (labels != nullptr)
+      {
+        mrpt::system::os::sprintf(n, 50, "%.02f", i);
 
-      auto label = mrpt::viz::CText3D::Create();
-      label->setScale(m_textScale);
-      label->setPose(mrpt::poses::CPose3D(
-          cur_tf.x, cur_tf.y, cur_tf.z, mrpt::DEG2RAD(m_textRot[axis][0]),
-          mrpt::DEG2RAD(m_textRot[axis][1]), mrpt::DEG2RAD(m_textRot[axis][2])));
-      label->setString(n);
-      m_gl_labels.get().emplace_back(label);
+        auto label = mrpt::viz::CText3D::Create();
+        label->setScale(m_textScale);
+        label->setPose(mrpt::poses::CPose3D(
+            cur_tf.x, cur_tf.y, cur_tf.z, mrpt::DEG2RAD(m_textRot[axis][0]),
+            mrpt::DEG2RAD(m_textRot[axis][1]), mrpt::DEG2RAD(m_textRot[axis][2])));
+        label->setString(n);
+        labels->emplace_back(label);
+      }
 
       // tick line:
-      vbd.emplace_back(cur_tf + tick0[axis]);
-      vbd.emplace_back(cur_tf + tick1[axis]);
+      if (tickLines != nullptr)
+      {
+        tickLines->emplace_back(cur_tf + tick0[axis]);
+        tickLines->emplace_back(cur_tf + tick1[axis]);
+      }
     }
 
-    auto label = mrpt::viz::CText3D::Create();
-    label->setScale(m_textScale * 1.2f);
-    label->setPose(mrpt::poses::CPose3D(
-        endMark[axis].x, endMark[axis].y, endMark[axis].z, mrpt::DEG2RAD(m_textRot[axis][0]),
-        mrpt::DEG2RAD(m_textRot[axis][1]), mrpt::DEG2RAD(m_textRot[axis][2])));
-    label->setString(axis2name[axis]);
-    m_gl_labels.get().emplace_back(label);
+    if (labels != nullptr)
+    {
+      auto label = mrpt::viz::CText3D::Create();
+      label->setScale(m_textScale * 1.2f);
+      label->setPose(mrpt::poses::CPose3D(
+          endMark[axis].x, endMark[axis].y, endMark[axis].z, mrpt::DEG2RAD(m_textRot[axis][0]),
+          mrpt::DEG2RAD(m_textRot[axis][1]), mrpt::DEG2RAD(m_textRot[axis][2])));
+      label->setString(axis2name[axis]);
+      labels->emplace_back(label);
+    }
   }
-
-  cbd.assign(vbd.size(), getColor_u8());
-
-  for (auto& lb : m_gl_labels.get()) lb->updateBuffers();
 }
 
 uint8_t CAxis::serializeGetVersion() const { return 3; }
