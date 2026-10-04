@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
+r"""
+Monte Carlo (particle filter) global localization of a robot on a known map, from a rawlog dataset.
 
-# Global localization of a robot with a particle filter (Monte Carlo
-# Localization) on a known map, reading odometry and laser scans from a
-# rawlog dataset.
-#
-# Usage (from the MRPT source tree):
-#
-#   . install/setup.bash
-#   ./mrpt_examples_py/global_localization.py \
-#       modules/mrpt_data/config_files/pf-localization/localization_demo.ini
-#
-# Add --no-gui to run without a 3D window, and --max-steps N to stop early.
+Usage (from the MRPT source tree):
+
+  . install/setup.bash
+  ./mrpt_examples_py/global_localization.py \
+      modules/mrpt_data/config_files/pf-localization/localization_demo.ini
+
+Add --no-gui to run without a 3D window, and --max-steps N to stop early.
+"""
+# mrpt-example: video=ZfVUydQIM5E
 
 import argparse
 import os

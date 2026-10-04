@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_poses_example.py — SE(2) and SE(3) poses with mrpt.poses.
+SE(2) and SE(3) pose composition, Lie algebra and pose PDFs with mrpt.poses.
 
 Demonstrates:
   - CPose2D: 2D pose composition, inverse, norm

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_random_example.py — random number generation with mrpt.random.
+Uniform, Gaussian and multivariate random samples with mrpt.random.
 
 Demonstrates:
   - CRandomGenerator: seeded deterministic generator

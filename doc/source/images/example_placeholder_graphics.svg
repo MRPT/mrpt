@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="236" viewBox="0 0 420 236">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b5b92"/><stop offset="1" stop-color="#3b5b92" stop-opacity="0.7"/></linearGradient></defs>
+<rect width="420" height="236" fill="url(#g)"/>
+<path d="M170 70 l40 -20 l40 20 v45 l-40 20 l-40 -20 z M170 70 l40 20 l40 -20 M210 90 v45" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+<text x="210" y="190" font-family="sans-serif" font-size="22" fill="#fff" text-anchor="middle">3D graphics</text>
+</svg>

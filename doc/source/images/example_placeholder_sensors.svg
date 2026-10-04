@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="236" viewBox="0 0 420 236">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f7a8c"/><stop offset="1" stop-color="#1f7a8c" stop-opacity="0.7"/></linearGradient></defs>
+<rect width="420" height="236" fill="url(#g)"/>
+<circle cx="210" cy="115" r="9" fill="#fff"/><path d="M185 110.0 a25 25 0 0 1 50 0" fill="none" stroke="#fff" stroke-width="5" opacity="1.0"/><path d="M165 106.0 a45 45 0 0 1 90 0" fill="none" stroke="#fff" stroke-width="5" opacity="0.8"/><path d="M145 102.0 a65 65 0 0 1 130 0" fill="none" stroke="#fff" stroke-width="5" opacity="0.6"/>
+<text x="210" y="190" font-family="sans-serif" font-size="22" fill="#fff" text-anchor="middle">Sensors and datasets</text>
+</svg>

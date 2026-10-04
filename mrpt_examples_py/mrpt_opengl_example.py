@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_opengl_example.py -- Off-screen rendering with mrpt.opengl.
+Off-screen rendering of a 3D scene into an image with mrpt.opengl.
 
 Demonstrates:
   - CFBORender: off-screen OpenGL framebuffer renderer

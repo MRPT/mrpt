@@ -17,7 +17,7 @@ endif
 
 .PHONY: clean
 clean:
-	rm -fr html
+	rm -fr html markdown
 	rm -fr \
 		source/xml-dir \
 		source/class_* \
@@ -29,6 +29,8 @@ clean:
 		source/union_* \
 		source/global.rst source/doxygen-index.rst \
 		source/examples.rst source/doxygen-docs/example-*.md \
+		source/python_examples.rst source/pymrpt_example_*.rst source/_extra \
+		source/_python_api_src source/python_api \
 		2> /dev/null || true
 
 .PHONY: all
@@ -52,7 +54,7 @@ html-and-view:
 html: python-venv
 	echo "Building docs for these directories: ${MRPT_DOX_INPUT_DIRS}"
 	echo "Using MRPT_LIST_INCLUDE_DIRS: ${MRPT_LIST_INCLUDE_DIRS}"
-	# 0) Generate the pages of C++ examples:
+	# 0) Generate the pages of C++ and Python examples:
 	python3 ../scripts/generate_rst_docs_examples.py
 	# 1) Build Doxygen
 	cd source && doxygen
@@ -60,8 +62,13 @@ html: python-venv
 	cd source && bash -c "source ../venv/bin/activate && doxyrest -c doxyrest-config.lua"
 	# Remove main doc file created for nanoflann:
 	rm source/page_index.rst 2>/dev/null || true
+	# llms.txt and llms-full.txt (uses the Doxygen XML output):
+	python3 ../scripts/generate_llms_txt.py
 	# 3) RST -> HTML with Sphinx
 	bash -c "source venv/bin/activate && sphinx-build -b html source/ html/"
+	# 3b) Markdown version of each page (for AI agents), next to its HTML:
+	bash -c "source venv/bin/activate && sphinx-build -b markdown source/ markdown/"
+	cp -r markdown/. html/
 	# 4) Copy images:
 	# Doxygen has this limitation, images cannot be parsed into XML/HTML with
 	# a relative path, so we must copy them to the root directory.

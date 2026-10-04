@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+3D lines and points: construction and point-to-line distance with mrpt.math.
+"""
 
 from mrpt.math import TPoint3D, TLine3D
 

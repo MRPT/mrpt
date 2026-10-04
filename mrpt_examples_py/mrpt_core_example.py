@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_core_example.py — core utilities with mrpt.core.
+Clock, thread pool and other core utilities from mrpt.core.
 
 Demonstrates:
   - Clock: current time, conversion to/from double

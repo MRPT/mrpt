@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_topography_example.py — geodetic coordinate conversions with mrpt.topography.
+Geodetic, ECEF, ENU and UTM coordinate conversions with mrpt.topography.
 
 Demonstrates:
   - TCoords: degrees/minutes/seconds representation

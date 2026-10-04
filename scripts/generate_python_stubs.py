@@ -64,10 +64,10 @@ def replace_unnamed_types(path):
     lines = []
     for line in text.split("\n"):
         if re.match(r"\s*(def |\w+: )", line):
-            # C++ fixed-size arrays as plain lists. Older pybind11 writes
-            # "list[T[3]]", which accepts tuples too; newer, an Annotated[]
-            # needing pybind11-stubgen:
-            line = re.sub(r"\blist\[([\w.]+)\[\d+\]\]", r"list[\1] | tuple[\1, ...]", line)
+            # C++ fixed-size arrays as plain lists, the only form every
+            # pybind11 version can be reduced to. Older pybind11 writes
+            # "list[T[3]]"; newer, an Annotated[] needing pybind11-stubgen:
+            line = re.sub(r"\blist\[([\w.]+)\[\d+\]\]", r"list[\1]", line)
             line = re.sub(r"\b([\w.]+)\[\d+\]", r"list[\1]", line)
             line = re.sub(r"typing\.Annotated\[(.+?), pybind11_stubgen\.typing_ext\.\w+\([^)]*\)\]", r"\1", line)
             new = re.sub(r"(: |-> |\[)\.\.\.(?=[,)=\]:]|$)", r"\1typing.Any", line)

@@ -379,7 +379,7 @@ class TTriangleVertex:
         Set vertex color from TColor
         """
 class TTriangle:
-    vertices: list[TTriangleVertex] | tuple[TTriangleVertex, ...]
+    vertices: list[TTriangleVertex]
     @typing.overload
     def __init__(self) -> None:
         ...

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_comms_example.py — TCP and serial communication with mrpt.comms.
+TCP client sockets and serial ports with mrpt.comms (no device needed).
 
 Demonstrates:
   - CClientTCPSocket: construction, context manager, connection API

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_nav_example.py -- Navigation primitives with mrpt.nav.
+Waypoint sequences and trajectory generators (PTGs) with mrpt.nav.
 
 Demonstrates:
   - TWaypoint / TWaypointSequence / TWaypointStatus

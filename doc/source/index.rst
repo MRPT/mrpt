@@ -33,6 +33,7 @@ MRPT
   :caption: Advanced
 
   modules
+  python_api
   contributing
   bibliography
   doxygen-index
@@ -62,14 +63,14 @@ Where to start
 ------------------
 
 - `Tutorials <tutorials.html>`_
-- C++ API reference: :ref:`modules`.
-- Dozens of examples: :ref:`examples`.
+- C++ API reference: :ref:`modules`. Python API reference: :ref:`python_api`.
+- Dozens of examples: :ref:`examples` and :ref:`python_examples`.
 - GitHub repository: https://github.com/MRPT/mrpt
 - Ask questions at the mail list `mrpt-users@googlegroups.com <https://groups.google.com/forum/#!forum/mrpt-users>`_ or at `stackoverflow <https://stackoverflow.com/search?q=mrpt>`_  using the tag `mrpt`.
 - Example configuration files for  MRPT applications can be found at:
-  `MRPT/share/mrpt/config_files <https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files>`_.
+  `MRPT/modules/mrpt_data/config_files <https://github.com/MRPT/mrpt/tree/develop/modules/mrpt_data/config_files>`_.
 - Some sample datasets are stored in:
-  `MRPT/share/mrpt/datasets <https://github.com/MRPT/mrpt/tree/master/share/mrpt/datasets>`_.
+  `MRPT/modules/mrpt_data/datasets <https://github.com/MRPT/mrpt/tree/develop/modules/mrpt_data/datasets>`_.
   A more complete dataset repository is `available online <https://www.mrpt.org/robotics_datasets>`_.
 - :ref:`contributing` your bug fixes, new features, etc.
 
@@ -81,7 +82,8 @@ You may also want to see
 - Performance benchmarks: Extensive performance tests are automated by means of the application `mrpt-performance`, which was moved (2018)
   to `its own Git repository <https://github.com/MRPT/mrpt-performance-tests>`_. The results on different platforms, as well as a comparison between different
   compilers and platforms are published in https://performance.mrpt.org/
-- `Porting your code from MRPT 1.x to MRPT 2.x <porting_mrpt2.html>`_
+- :doc:`Porting your code from MRPT 2.x to MRPT 3.x <page_porting_mrpt3>`
+- :doc:`Porting your code from MRPT 1.x to MRPT 2.x <page_porting_mrpt2>`
 - MRPT is used in the `MOLA modular SLAM framework <https://github.com/MOLAorg/mola/>`_.
 
 Indices and tables

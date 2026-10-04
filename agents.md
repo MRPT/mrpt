@@ -45,10 +45,12 @@ mrpt_add_library(
 * Every rosdep key in a `package.xml` must resolve on all build farm
   platforms (Ubuntu, Debian, Fedora, RHEL); otherwise that package fails to
   build there. Leave out optional deps with an embedded fallback if missing.
-* C++ examples (`mrpt_examples_cpp/<name>/`): the first paragraph of each
-  `README.md` is a one-line summary, and `doc/source/images/<name>_screenshot.webp`
-  (optional) its thumbnail; both feed the docs gallery
-  (`scripts/generate_rst_docs_examples.py`).
+* Examples feed the docs galleries and `examples.json`
+  (`scripts/generate_rst_docs_examples.py`, see its docstring): the summary is
+  the first paragraph of `mrpt_examples_cpp/<name>/README.md` or the first
+  docstring line of `mrpt_examples_py/<name>.py`; the optional thumbnail is
+  `doc/source/images/<name>_screenshot.webp`; an optional `mrpt-example:` line
+  declares `requires=gui,hardware,dataset`, tags or a video.
 
 ## 2. C++ guidelines
 
@@ -232,6 +234,11 @@ mrpt_add_library(
   (`debian/control`, the `python3-mrpt` metapackage, a `.install` file and the
   import list in `debian/tests/control`); see "Releases" below.
 * Examples live in `mrpt_examples_py`; extend them when wrapping new classes.
+* The `.pyi` stubs next to each `__init__.py` are generated and committed: run
+  `scripts/generate_python_stubs.py` after changing bindings (CI fails if they
+  are stale and uploads the right ones as the `python-stubs` artifact, since
+  output depends on the pybind11 version). They are the source of the Python
+  API docs; `scripts/check_python_docstrings.py` lists missing docstrings.
 * Conventions:
   * Include `<pybind11/pybind11.h>` and `<pybind11/stl.h>`; add `eigen.h`,
     `numpy.h`, `operators.h`, `chrono.h`, `functional.h` as needed.

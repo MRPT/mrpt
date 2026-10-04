@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
+r"""
+Builds an occupancy grid map from a 2D lidar dataset with Rao-Blackwellized particle filter SLAM.
 
-# RBPF-SLAM: builds a gridmap from a 2D lidar dataset with a Rao-Blackwellized
-# particle filter.
-#
-# Usage (from the MRPT source tree):
-#
-#   . install/setup.bash
-#   ./mrpt_examples_py/rbpf_slam.py \
-#       -c modules/mrpt_data/config_files/rbpf-slam/gridmapping_optimal_sampling.ini
-#
-# The rawlog is read from the config file ([MappingApplication] rawlog_file)
-# unless one is given as argument. Use --max-steps N to stop early.
+Usage (from the MRPT source tree):
+
+  . install/setup.bash
+  ./mrpt_examples_py/rbpf_slam.py \
+      -c modules/mrpt_data/config_files/rbpf-slam/gridmapping_optimal_sampling.ini
+
+The rawlog is read from the config file ([MappingApplication] rawlog_file)
+unless one is given as argument. Use --max-steps N to stop early.
+"""
+# mrpt-example: video=XiKTWNOQlcU
 
 import argparse
 import os
