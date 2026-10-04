@@ -505,9 +505,9 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, [[maybe_unused]] wxWindowID id)
   Panel17->SetSizer(GridSizer14);
   GridSizer14->Fit(Panel17);
   GridSizer14->SetSizeHints(Panel17);
-  FlexGridSizer2->Add(Panel17, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+  FlexGridSizer2->Add(Panel17, 1, wxEXPAND, 0);
   plotDaJCBB = new mpWindow(Panel11, ID_CUSTOM13, wxDefaultPosition, wxDefaultSize, 0);
-  FlexGridSizer2->Add(plotDaJCBB, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 3);
+  FlexGridSizer2->Add(plotDaJCBB, 1, wxEXPAND, 3);
   Panel11->SetSizer(FlexGridSizer2);
   FlexGridSizer2->Fit(Panel11);
   FlexGridSizer2->SetSizeHints(Panel11);

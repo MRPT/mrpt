@@ -269,9 +269,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, [[maybe_unused]] wx
   FlexGridSizer4b->Add(
       cbHighlightOnePath, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
   slidPathHighlight = new wxSlider(Panel1, ID_SLIDER1, 0, 0, 100);
-  FlexGridSizer4b->Add(
-      slidPathHighlight, 1, wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-      5);
+  FlexGridSizer4b->Add(slidPathHighlight, 1, wxALL | wxEXPAND, 5);
   edIndexHighlightPath = new wxSpinCtrl(
       Panel1, ID_SPINCTRL2, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 100, 0,
       _T("ID_SPINCTRL2"));
@@ -287,9 +285,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, [[maybe_unused]] wx
   edSelectedTrajCmd = new wxTextCtrl(
       Panel1, ID_TEXTCTRL_SEL_TRAJ, _("Cmd: (none)"), wxDefaultPosition, wxSize(50, -1),
       wxTE_READONLY, wxDefaultValidator, _T("ID_TEXTCTRL_SEL_TRAJ"));
-  FlexGridSizer4b->Add(
-      edSelectedTrajCmd, 1, wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-      5);
+  FlexGridSizer4b->Add(edSelectedTrajCmd, 1, wxALL | wxEXPAND, 5);
 
   FlexGridSizer4b->AddGrowableCol(1);
   FlexGridSizer4b->AddGrowableCol(4);
