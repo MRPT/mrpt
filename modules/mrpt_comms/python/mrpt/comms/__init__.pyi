@@ -1,6 +1,4 @@
-# mrpt/comms/__init__.py
-
-r"""
+"""
 mrpt-comms Python API — TCP sockets and RS-232 / USB serial ports.
 
 Classes:
@@ -22,18 +20,12 @@ Example — Serial::
     from mrpt.comms import CSerialPort
     with CSerialPort("/dev/ttyUSB0", openNow=True) as port:
         port.setConfig(baudRate=115200)
-        port.write(b"AT\r")
+        port.write(b"AT\\r")
         response = port.read(64)
 """
-
-import mrpt.io  # noqa: F401  (CStream base type)
-
-from . import _bindings as _b
-
-CClientTCPSocket = _b.CClientTCPSocket
-CSerialPort      = _b.CSerialPort
-
-__all__ = [
-    "CClientTCPSocket",
-    "CSerialPort",
-]
+from __future__ import annotations
+import mrpt as mrpt
+from mrpt.comms._bindings import CClientTCPSocket as CClientTCPSocket
+from mrpt.comms._bindings import CSerialPort as CSerialPort
+from . import _bindings
+__all__: list = ['CClientTCPSocket', 'CSerialPort']

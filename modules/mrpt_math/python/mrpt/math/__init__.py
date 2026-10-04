@@ -38,8 +38,7 @@ CHistogram = _b.CHistogram
 _fixed_types = [name for name in dir(_b) if name.startswith(
     ("CMatrixDouble", "CVectorFixedDouble"))]
 
-for name in _fixed_types:
-    globals()[name] = getattr(_b, name)
+globals().update({n: getattr(_b, n) for n in _fixed_types})
 
 # --- Free functions ---
 wrapToPi = _b.wrapToPi

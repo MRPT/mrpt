@@ -944,8 +944,9 @@ function(mrpt_add_python_module MODULE_NAME CPP_SOURCES)
     )
 
     install(TARGETS _bindings LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}/mrpt/${MODULE_NAME}/)
-    # Install the Python package
-    install(DIRECTORY python/mrpt DESTINATION ${PYTHON_INSTALL_DIR} FILES_MATCHING PATTERN "*.py")
+    # Install the Python package, with its type stubs (scripts/generate_python_stubs.py)
+    install(DIRECTORY python/mrpt DESTINATION ${PYTHON_INSTALL_DIR}
+      FILES_MATCHING PATTERN "*.py" PATTERN "*.pyi" PATTERN "py.typed")
 
     # On Windows, the loader searches a loaded extension module's own directory
     # for its dependent DLLs (mrpt module DLLs, vcpkg runtime DLLs, ...) — PATH
