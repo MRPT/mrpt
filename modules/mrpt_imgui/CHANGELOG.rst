@@ -2,8 +2,8 @@
 Changelog for package mrpt_imgui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2026-10-04)
+------------------
 * mrpt_imgui: move CImGuiSceneView GL calls out of the inline header
 * Contributors: Jose Luis Blanco-Claraco
 

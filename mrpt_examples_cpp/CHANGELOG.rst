@@ -2,8 +2,8 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2026-10-04)
+------------------
 * docs: Python API reference, examples gallery, llms.txt and MRPT 3.x updates
 * C++ examples: fix default dataset of obs_motion_model_demo
 * mrpt_examples_cpp: one-line summary in each example README

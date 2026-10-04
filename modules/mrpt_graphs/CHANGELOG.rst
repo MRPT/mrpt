@@ -2,8 +2,8 @@
 Changelog for package mrpt_graphs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2026-10-04)
+------------------
 * Python: commit generated .pyi type stubs for all modules
 * mrpt_graphs: do not require Eigen in CNetworkOfPoses public headers
 * Contributors: Jose Luis Blanco-Claraco

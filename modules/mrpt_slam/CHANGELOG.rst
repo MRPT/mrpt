@@ -2,8 +2,8 @@
 Changelog for package mrpt_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2026-10-04)
+------------------
 * Python: commit generated .pyi type stubs for all modules
 * mrpt_maps, mrpt_slam: define CMetricMap-derived constructors out-of-line
 * Contributors: Jose Luis Blanco-Claraco

@@ -2,8 +2,8 @@
 Changelog for package mrpt_topography
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2026-10-04)
+------------------
 * Python: commit generated .pyi type stubs for all modules
 * Contributors: Jose Luis Blanco-Claraco
 

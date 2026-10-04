@@ -2,8 +2,8 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2026-10-04)
+------------------
 * docs: Python API reference, examples gallery, llms.txt and MRPT 3.x updates
 * Python: commit generated .pyi type stubs for all modules
 * Render pipeline: fix scene sync and rendering bugs, add frustum culling

@@ -2,8 +2,8 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2026-10-04)
+------------------
 * Python: commit generated .pyi type stubs for all modules
 * mrpt_system: createDirectory() returns false on errors instead of throwing
 * Contributors: Jose Luis Blanco-Claraco

@@ -2,8 +2,8 @@
 Changelog for package mrpt_typemeta
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2026-10-04)
+------------------
 * Contributors: Jose Luis Blanco-Claraco
 
 3.3.1 (2026-09-29)

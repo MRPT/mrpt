@@ -2,8 +2,8 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.0 (2026-10-04)
+------------------
 * Python: commit generated .pyi type stubs for all modules
 * Render pipeline: fix scene sync and rendering bugs, add frustum culling
 * Shadows: casters far towards the light are no longer clipped; honor the viewport shadow map size
