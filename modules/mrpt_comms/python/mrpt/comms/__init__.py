@@ -1,6 +1,6 @@
 # mrpt/comms/__init__.py
 
-"""
+r"""
 mrpt-comms Python API — TCP sockets and RS-232 / USB serial ports.
 
 Classes:

@@ -352,8 +352,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, [[maybe_unused]] wxWindow
       _T("ID_BUTTON5"));
   FlexGridSizer5->Add(btnSetLaser, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
   StaticBoxSizer1->Add(FlexGridSizer5, 1, wxEXPAND, 0);
-  FlexGridSizer12->Add(
-      StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL, 5);
+  FlexGridSizer12->Add(StaticBoxSizer1, 1, wxALL | wxEXPAND, 5);
   StaticBoxSizer6 = new wxStaticBoxSizer(wxHORIZONTAL, Panel3, _(" Decimation: "));
   FlexGridSizer13 = new wxFlexGridSizer(0, 2, 0, 0);
   FlexGridSizer13->AddGrowableCol(0);

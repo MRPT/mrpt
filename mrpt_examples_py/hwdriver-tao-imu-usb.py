@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
+"""
+Reads a Taobotics USB IMU sensor with mrpt.hwdrivers.
 
-# Example: read IMU data from a Taobotics USB IMU sensor.
-#
-# Usage:
-#   . install/setup.bash
-#   ./mrpt_examples_py/hwdriver-tao-imu-usb.py [/dev/ttyUSB0]
-#
-# Any other sensor driver can be used the same way, configured from an .ini
-# file section instead of with setters:
-#   sensor = CGenericSensor.createSensor("CGPSInterface")
-#   sensor.loadConfig(mrpt.config.CConfigFile("sensors.ini"), "GPS")
+Usage:
+  . install/setup.bash
+  ./mrpt_examples_py/hwdriver-tao-imu-usb.py [/dev/ttyUSB0]
+
+Any other sensor driver can be used the same way, configured from an .ini
+file section instead of with setters:
+  sensor = CGenericSensor.createSensor("CGPSInterface")
+  sensor.loadConfig(mrpt.config.CConfigFile("sensors.ini"), "GPS")
+"""
+# mrpt-example: requires=hardware; video=qaaP9BmZYmo
 
 import sys
 import time

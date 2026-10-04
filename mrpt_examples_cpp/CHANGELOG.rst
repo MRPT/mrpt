@@ -2,6 +2,16 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.4.0 (2026-10-04)
+------------------
+* docs: Python API reference, examples gallery, llms.txt and MRPT 3.x updates
+* C++ examples: fix default dataset of obs_motion_model_demo
+* mrpt_examples_cpp: one-line summary in each example README
+* docs: add example screenshots and shrink existing ones
+* opengl_normal_maps example: show both walls side by side
+* docs: fix building docs for MRPT 3.x
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 

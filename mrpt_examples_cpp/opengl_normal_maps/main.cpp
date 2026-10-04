@@ -20,13 +20,13 @@
  * This example demonstrates the use of normal maps for enhanced lighting
  * on textured surfaces. The scene shows:
  * - An asphalt ground plane (with normal map)
- * - Two brick walls: one without a normal map, one with a normal map
+ * - Two brick walls side by side: one without a normal map, one with it
  * - A skybox
  * - Hemispheric ambient lighting
  *
  * Textures are downloaded on the fly using wget/curl.
  *
- * \image html opengl_normal_maps_screenshot.png
+ * \image html opengl_normal_maps_screenshot.webp
  */
 
 #include <mrpt/core/format.h>
@@ -173,15 +173,15 @@ void TestNormalMaps()
     lp.lights.clear();
     mrpt::viz::TLight sunLight;
     sunLight.type = mrpt::viz::TLightType::Directional;
-    sunLight.direction = {-0.8f, -0.3f, -0.3f};
+    sunLight.direction = {-0.8f, 0.0f, -0.4f};
     sunLight.color = mrpt::img::TColorf(1.0f, 0.95f, 0.85f);
     sunLight.diffuse = 0.9f;
     sunLight.specular = 0.4f;
     lp.lights.push_back(sunLight);
 
-    // A warm point light near the ground to emphasize normal map detail
+    // A warm point light close to the walls to emphasize normal map detail
     lp.lights.push_back(mrpt::viz::TLight::PointLight(
-        {3.0f, 0.0f, 1.5f},                    // position
+        {0.0f, -7.0f, 2.5f},                   // position: grazing the walls
         mrpt::img::TColorf(1.0f, 0.8f, 0.5f),  // warm color
         1.0f,                                  // diffuse
         0.8f,                                  // specular
@@ -208,48 +208,30 @@ void TestNormalMaps()
   }
 
   // -----------------------------------------------------------------------
-  // Wall 1 (left): brick WITHOUT normal map
+  // Two brick walls side by side, in the same vertical plane (y=-8) and both
+  // facing +Y, so they can be compared under the same grazing light:
+  //  - Left (as seen from the camera): WITHOUT normal map
+  //  - Right: WITH normal map
   // -----------------------------------------------------------------------
+  for (const bool withNormalMap : {false, true})
   {
-    // A vertical wall: XY plane rotated 90° around X, placed at y=-8
-    const float wallW = 8.0f;  // half-width in X
+    const float wallW = 4.0f;  // half-width in X
     const float wallH = 3.0f;  // height
     auto wall = mrpt::viz::CTexturedPlane::Create(-wallW, wallW, 0.0f, wallH);
     wall->enableLighting(true);
 
     wall->assignImage(mrpt::img::CImage::LoadFromFile("brick_color.png"));
-    wall->setTextureRepeat(4.0f, 2.0f);
-    // No normal map for this wall
+    if (withNormalMap)
+    {
+      wall->assignNormalMap(mrpt::img::CImage::LoadFromFile("brick_normal.png"));
+    }
+    wall->setTextureRepeat(4.0f, 1.5f);
 
-    // Rotate 90° around X axis so the plane stands vertically, facing +Y
+    // Rotate 90° around X (stands vertically, facing -Y), then 180° around Z
+    // so it faces +Y, towards the scene center
     mrpt::math::TPose3D pose;
-    pose.x = 0;
+    pose.x = withNormalMap ? -wallW : wallW;
     pose.y = -8.0;
-    pose.z = 0;
-    pose.yaw = 0;
-    pose.roll = mrpt::DEG2RAD(90.0);
-    pose.pitch = 0;
-    wall->setPose(pose);
-
-    theScene->insert(wall);
-  }
-
-  // -----------------------------------------------------------------------
-  // Wall 2 (right): brick WITH normal map
-  // -----------------------------------------------------------------------
-  {
-    const float wallW = 8.0f;
-    const float wallH = 3.0f;
-    auto wall = mrpt::viz::CTexturedPlane::Create(-wallW, wallW, 0.0f, wallH);
-    wall->enableLighting(true);
-
-    wall->assignImage(mrpt::img::CImage::LoadFromFile("brick_color.png"));
-    wall->assignNormalMap(mrpt::img::CImage::LoadFromFile("brick_normal.png"));
-    wall->setTextureRepeat(4.0f, 2.0f);
-
-    mrpt::math::TPose3D pose;
-    pose.x = 0;
-    pose.y = 8.0;
     pose.z = 0;
     pose.yaw = mrpt::DEG2RAD(180.0);
     pose.roll = mrpt::DEG2RAD(90.0);
@@ -273,23 +255,24 @@ void TestNormalMaps()
   mrpt::viz::TFontParams fp2;
   fp2.color = mrpt::img::TColorf(1, 1, 0.5f);
   fp2.vfont_scale = 13;
-  win.addTextMessage(0.02, 0.04, "Front wall: NO normal map", 1, fp2);
-  win.addTextMessage(0.02, 0.08, "Back wall:  WITH normal map", 2, fp2);
+  win.addTextMessage(0.02, 0.04, "Left wall:  NO normal map", 1, fp2);
+  win.addTextMessage(0.02, 0.08, "Right wall: WITH normal map", 2, fp2);
 
   // -----------------------------------------------------------------------
   // Camera
   // -----------------------------------------------------------------------
-  win.setCameraAzimuthDeg(30.0f);
-  win.setCameraElevationDeg(20.0f);
-  win.setCameraZoom(18.0f);
-  win.setFOV(60.0f);
+  win.setCameraAzimuthDeg(90.0f);
+  win.setCameraElevationDeg(10.0f);
+  win.setCameraZoom(11.0f);
+  win.setCameraPointingToPoint(0.0f, -8.0f, 1.5f);
+  win.setFOV(50.0f);
 
   win.forceRepaint();
 
   std::cout << "\n";
   std::cout << "Normal Maps Demo\n";
-  std::cout << "  Front wall (y=-8): brick texture WITHOUT normal map\n";
-  std::cout << "  Back wall  (y=+8): brick texture WITH normal map\n";
+  std::cout << "  Left wall : brick texture WITHOUT normal map\n";
+  std::cout << "  Right wall: brick texture WITH normal map\n";
   std::cout << "  Ground           : asphalt WITH normal map\n";
   std::cout << "  Lights           : directional sun + warm point light\n";
   std::cout << "\nPress ESC or any key to exit.\n";

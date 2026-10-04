@@ -528,7 +528,7 @@ it will not be responsive to the user input or window redraw.
 For a list of existing visualization primitive classes, browse the namespace mrpt::viz,
 or inspect the example: \ref opengl_objects_demo
 
-![MRPT opengl primitives](opengl_objects_demo_screenshot.png)
+![MRPT opengl primitives](opengl_objects_demo_screenshot.webp)
 
 # 6. Text messages
 

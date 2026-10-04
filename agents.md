@@ -45,6 +45,12 @@ mrpt_add_library(
 * Every rosdep key in a `package.xml` must resolve on all build farm
   platforms (Ubuntu, Debian, Fedora, RHEL); otherwise that package fails to
   build there. Leave out optional deps with an embedded fallback if missing.
+* Examples feed the docs galleries and `examples.json`
+  (`scripts/generate_rst_docs_examples.py`, see its docstring): the summary is
+  the first paragraph of `mrpt_examples_cpp/<name>/README.md` or the first
+  docstring line of `mrpt_examples_py/<name>.py`; the optional thumbnail is
+  `doc/source/images/<name>_screenshot.webp`; an optional `mrpt-example:` line
+  declares `requires=gui,hardware,dataset`, tags or a video.
 
 ## 2. C++ guidelines
 
@@ -54,7 +60,9 @@ mrpt_add_library(
 * No raw owning pointers: `std::shared_ptr` / `std::unique_ptr` and MRPT's
   smart pointer macros.
 * Do not expose Eigen headers in public API headers unless the user allows it;
-  keep Eigen `#include`s in `src/`.
+  keep Eigen `#include`s in `src/`. Eigen is linked PRIVATE, so user code may
+  not even have it in the include path: public templates must also avoid
+  Eigen-based helpers (`mat2eig()`, `multiply_HCHt_scalar()`, `asEigen()`...).
 * Avoid huge inline members: large stack objects broke exception backtraces
   on aarch64 (Ubuntu GCC 13, stack-clash protection).
 * Prefer `std::optional` return values over bool + output-parameter APIs
@@ -131,9 +139,14 @@ mrpt_add_library(
   `COLOR_Bayer*` names are shifted (ROS `RGGB` == `COLOR_BayerBG2RGB`).
 * **mrpt_viz** has no OpenGL dependency (scene-graph description consumed by
   `mrpt_opengl`), so it is testable with plain unit tests.
-* **mrpt_opengl**: `Texture` shares one GL texture among all users of the same
-  image buffer (reference counted, keyed by the pixel data pointer). Release a
-  texture before re-uploading changed pixels that live in the same buffer.
+* **mrpt_opengl**: `Texture` shares one GL texture among users of the same
+  image buffer and options only within one `Options::shareScope`
+  (`CompiledScene` uses the EGL context it was compiled in; all non-EGL
+  contexts share one scope; `nullptr` never shares). Release a texture before
+  re-uploading changed pixels that live in the same buffer. `CompiledScene`
+  re-walks the scene graph only when `mrpt::viz::sceneChangeCount()` changes.
+  Pose/scale/visibility setters bump `transformVersion()` only (no buffer
+  rebuild); geometry changes must call `notifyChange()`.
 * **mrpt_gui**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the library
   links wxWidgets privately; test targets need
   `target_link_libraries(... PRIVATE imp_wxwidgets)`. macOS/Windows CI builds
@@ -159,6 +172,9 @@ mrpt_add_library(
   caches a LUT file in the current working directory.
   `COccupancyGridMap3D`'s `determineMatching2D()`, `compute3DMatchingRatio()`
   and `internal_computeObservationLikelihood()` are unimplemented and throw.
+  Constructors of concrete `CMetricMap` classes must stay out-of-line: user
+  code inlining one (base ctor call + merged vptr stores) is miscompiled by
+  GCC with LTO (calls devirtualized to `__builtin_unreachable`).
 * **mrpt_slam**: only the auxiliary particle filters go through
   `PF_SLAM_implementation_gatherActionsCheckBothActObs()`; `pfStandardProposal`
   reads the action directly. An empty sensory frame counts as valid: pass a
@@ -188,6 +204,10 @@ mrpt_add_library(
 * Multi-byte data read/written with raw `ReadBuffer()`/`WriteBuffer()` or
   `memcpy` instead of `*FixEndianness()`: breaks on big-endian (s390x).
   Streams and sensor packets are little-endian.
+* `#if MRPT_IS_BIG_ENDIAN` in a file that does not include
+  `mrpt/core/config.h` (directly or indirectly) silently reads 0.
+* Plain `char` used as a signed byte: it is unsigned on ARM and s390x. Use
+  `int8_t` / `signed char`.
 * Members read but never written; declared-but-never-defined functions.
 * Documented defaults set only in `loadFromConfigFile()`, with the member
   itself left uninitialized.
@@ -214,6 +234,11 @@ mrpt_add_library(
   (`debian/control`, the `python3-mrpt` metapackage, a `.install` file and the
   import list in `debian/tests/control`); see "Releases" below.
 * Examples live in `mrpt_examples_py`; extend them when wrapping new classes.
+* The `.pyi` stubs next to each `__init__.py` are generated and committed: run
+  `scripts/generate_python_stubs.py` after changing bindings (CI fails if they
+  are stale and uploads the right ones as the `python-stubs` artifact, since
+  output depends on the pybind11 version). They are the source of the Python
+  API docs; `scripts/check_python_docstrings.py` lists missing docstrings.
 * Conventions:
   * Include `<pybind11/pybind11.h>` and `<pybind11/stl.h>`; add `eigen.h`,
     `numpy.h`, `operators.h`, `chrono.h`, `functional.h` as needed.

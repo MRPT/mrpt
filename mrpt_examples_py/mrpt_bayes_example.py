@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_bayes_example.py — particle filter configuration with mrpt.bayes.
+Configures particle filter options and algorithms with mrpt.bayes.
 
 Demonstrates:
   - TParticleFilterOptions: configure algorithm, resampling, ESS threshold

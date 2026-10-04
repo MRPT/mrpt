@@ -90,6 +90,11 @@ jobs:
             "$PYV" -m pip install --no-warn-script-location numpy
           fi
 
+      # Each link step also runs vcpkg's applocal script, which copies the
+      # dependency DLLs next to the new executable. Parallel link steps into the
+      # same bin/ directory then overwrite the same DLLs at once and fail with
+      # "The process cannot access the file because it is being used by another
+      # process", so link steps run one at a time (compilation is still parallel).
       - name: Colcon Build
         shell: bash
         run: |
@@ -97,6 +102,8 @@ jobs:
             --event-handlers console_direct+ \
             --cmake-args \
               -G Ninja \
+              -DCMAKE_JOB_POOLS=link_pool=1 \
+              -DCMAKE_JOB_POOL_LINK=link_pool \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -DCMAKE_VERBOSE_MAKEFILE=ON \
               -DBUILD_TESTING=ON \

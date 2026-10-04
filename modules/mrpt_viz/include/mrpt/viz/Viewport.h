@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/containers/deep_const_iterator.h>
 #include <mrpt/core/safe_pointers.h>
@@ -28,6 +29,9 @@
 #include <mrpt/viz/CTexturedPlane.h>
 #include <mrpt/viz/TLightParameters.h>
 #include <mrpt/viz/viz_frwds.h>
+
+#include <memory>
+#include <mutex>
 
 namespace mrpt::img
 {
@@ -261,6 +265,10 @@ class Viewport :
       bool enabled = true, unsigned int SHADOW_MAP_SIZE_X = 0, unsigned int SHADOW_MAP_SIZE_Y = 0);
 
   [[nodiscard]] bool isShadowCastingEnabled() const { return m_shadowsEnabled; }
+
+  /** Shadow map size, as set by enableShadowCasting() (default: 2048x2048). */
+  [[nodiscard]] uint32_t getShadowMapSizeX() const { return m_ShadowMapSizeX; }
+  [[nodiscard]] uint32_t getShadowMapSizeY() const { return m_ShadowMapSizeY; }
 
   /** Enable or disable Screen-Space Ambient Occlusion (SSAO).
    *  Parameters are tuned via lightParameters().ssao_* fields.
@@ -497,6 +505,29 @@ class Viewport :
   mutable mrpt::viz::CSetOfLines::Ptr m_borderLines;
 
   const CCamera* internalResolveActiveCamera(const CCamera* forceThisCamera = nullptr) const;
+
+  /** The first CCamera object among the contained ones (searched
+   * recursively), or nullptr. The search result is cached until the structure
+   * of any scene changes. */
+  const CCamera* findCameraObject() const;
+
+  struct CameraObjectCache
+  {
+    CameraObjectCache() = default;
+    CameraObjectCache(const CameraObjectCache&) {}
+    CameraObjectCache& operator=(const CameraObjectCache&)
+    {
+      structureChangeCount = 0;
+      camera.reset();
+      return *this;
+    }
+    ~CameraObjectCache() = default;
+
+    uint64_t structureChangeCount = 0;  //!< 0: not valid
+    std::weak_ptr<const CCamera> camera;
+  };
+  mutable CameraObjectCache m_cameraObjectCache;
+  mutable mrpt::containers::NonCopiableData<std::mutex> m_cameraObjectCacheMtx;
 
   mrpt::viz::ListVisualObjects m_objects;
 

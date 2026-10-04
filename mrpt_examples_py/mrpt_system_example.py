@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_system_example.py — System utilities with mrpt.system.
+Timers, time loggers, CRC and base64 utilities from mrpt.system.
 
 Demonstrates:
   - CTicTac: stopwatch

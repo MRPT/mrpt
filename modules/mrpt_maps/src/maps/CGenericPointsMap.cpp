@@ -81,6 +81,8 @@ mrpt::maps::CMetricMap::Ptr CGenericPointsMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CGenericPointsMap, CPointsMap, mrpt::maps)
 
+CGenericPointsMap::CGenericPointsMap() = default;
+
 CGenericPointsMap::CGenericPointsMap(const CGenericPointsMap& o)
 {  //
   impl_copyFrom(o);

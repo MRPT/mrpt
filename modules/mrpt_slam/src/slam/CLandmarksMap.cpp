@@ -22,6 +22,8 @@
 
 IMPLEMENTS_SERIALIZABLE(CLandmarksMap, CMetricMap, mrpt::maps)
 
+mrpt::maps::CLandmarksMap::CLandmarksMap() = default;
+
 uint8_t mrpt::maps::CLandmarksMap::serializeGetVersion() const { return 0; }
 
 void mrpt::maps::CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const

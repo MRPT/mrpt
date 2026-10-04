@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_gui_example.py — 3D window with mrpt.gui.
+Opens a 3D window with mrpt.gui and populates its scene.
 
 Demonstrates:
   - CDisplayWindow3D: create, scene access, camera control

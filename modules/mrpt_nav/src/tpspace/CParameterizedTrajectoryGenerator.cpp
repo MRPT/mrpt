@@ -278,6 +278,15 @@ void CParameterizedTrajectoryGenerator::initTPObstacles(std::vector<double>& TP_
   for (size_t k = 0; k < m_alphaValuesCount; k++)
     initTPObstacleSingle(static_cast<uint16_t>(k), TP_Obstacles[k]);
 }
+void CParameterizedTrajectoryGenerator::updateTPObstacles(
+    const float* xs, const float* ys, std::size_t n, std::vector<double>& tp_obstacles) const
+{
+  for (std::size_t i = 0; i < n; i++)
+  {
+    updateTPObstacle(xs[i], ys[i], tp_obstacles);
+  }
+}
+
 void CParameterizedTrajectoryGenerator::initTPObstacleSingle(
     [[maybe_unused]] uint16_t k, double& TP_Obstacle_k) const
 {

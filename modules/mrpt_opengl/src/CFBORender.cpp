@@ -241,16 +241,15 @@ CFBORender::~CFBORender()
 
 void CFBORender::ensureCompiledScene(const mrpt::viz::Scene& scene)
 {
-  // Check if we need to create or recreate the compiled scene.
-  // Use raw pointer comparison — the Scene may be stack-allocated and not
-  // managed by shared_ptr, so shared_from_this() cannot be used.
-  if (!m_compiledScene || m_lastScene != &scene)
+  // Check if we need to create or recreate the compiled scene. The Scene may
+  // be stack-allocated (no shared_from_this()), so a new one may reuse the
+  // address of a previous one: isCompiledFrom() also checks its viewports.
+  if (!m_compiledScene || !m_compiledScene->isCompiledFrom(scene))
   {
     // Different scene or first time - create new compiled scene
     m_compiledScene = std::make_unique<CompiledScene>();
     m_compiledScene->setAutoUpdate(false);  // We manage updates explicitly
     m_compiledScene->compile(scene);
-    m_lastScene = &scene;
   }
   else
   {
@@ -294,9 +293,7 @@ void CFBORender::internal_render_RGBD(
   }
 
   // Clear any stale errors after context switch
-  while (glGetError() != GL_NO_ERROR)
-  {
-  }
+  clearOpenGLErrors();
 
   // Ensure compiled scene is ready
   ensureCompiledScene(scene);
@@ -407,15 +404,17 @@ void CFBORender::internal_render_RGBD(
       auto mainVp = m_compiledScene->getViewport("main");
       float zn = 0.01f;
       float zf = 1000.0f;
+      bool isProjective = true;
 
       if (mainVp)
       {
         const auto& mats = mainVp->getRenderMatrices();
         zn = mats.getLastClipZNear();
         zf = mats.getLastClipZFar();
+        isProjective = mats.is_projective || mats.pinhole_model.has_value();
       }
 
-      convertDepthToLinear(outDepth, zn, zf);
+      convertDepthToLinear(outDepth, zn, zf, isProjective);
     }
   }
 
@@ -426,8 +425,19 @@ void CFBORender::internal_render_RGBD(
 #endif
 }
 
-void CFBORender::convertDepthToLinear(mrpt::math::CMatrixFloat& depth, float zn, float zf) const
+void CFBORender::convertDepthToLinear(
+    mrpt::math::CMatrixFloat& depth, float zn, float zf, bool isProjective) const
 {
+  if (!isProjective)
+  {
+    // Orthographic projection: window depth is linear in the eye distance.
+    for (auto& d : depth)
+    {
+      d = (d == 1.0f) ? 0.0f /* no "echo return" */ : zn + d * (zf - zn);
+    }
+    return;
+  }
+
   using depth_lut_t = OpenGLDepth2LinearLUTs<18>;
 
   const depth_lut_t::lut_t* lut = nullptr;

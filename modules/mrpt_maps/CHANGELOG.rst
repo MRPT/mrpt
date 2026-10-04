@@ -2,6 +2,14 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.4.0 (2026-10-04)
+------------------
+* Python: commit generated .pyi type stubs for all modules
+* COccupancyGridMap3D: fix voxel colors in getAsOctoMapVoxels()
+* mrpt_maps, mrpt_slam: define CMetricMap-derived constructors out-of-line
+* COccupancyGridMap2D: exact ray tracing in laserScanSimulator() and sonarSimulator()
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 * Increase test coverage and fix the bugs found (CGenericPointsMap field API tests).

@@ -149,20 +149,19 @@ class CAssimpModel : public CSetOfObjects
   /** @name Rendering Options
    * @{ */
 
-  /** Enable (or disable if set to 0.0f) splitting of textured triangles
-   * into separate renderable objects based on spatial bounding boxes.
-   *
-   * This is required only for semi-transparent objects with overlapping
-   * regions, to ensure correct depth sorting during rendering.
-   *
-   * \param bbox_size Size of the bounding box for splitting (0.0 = disabled)
+  /** \deprecated Does nothing. Textures with transparent parts (alpha
+   * cutout) render correctly without splitting the model, see TAlphaMode.
    */
-  void setSplitTrianglesRenderingBBox(float bbox_size);
-
-  /** Returns the current triangle splitting bbox size (0.0 = disabled) */
-  [[nodiscard]] float getSplitTrianglesRenderingBBox() const
+  [[deprecated("Not needed anymore: it does nothing. See TAlphaMode")]] void
+  setSplitTrianglesRenderingBBox([[maybe_unused]] float bbox_size)
   {
-    return m_splitTrianglesRenderingBBox;
+  }
+
+  /** \deprecated Always returns 0. */
+  [[deprecated("Not needed anymore: it does nothing. See TAlphaMode")]] [[nodiscard]] float
+  getSplitTrianglesRenderingBBox() const
+  {
+    return 0.0f;
   }
 
   /** @} */
@@ -224,9 +223,6 @@ class CAssimpModel : public CSetOfObjects
   uint32_t m_modelLoadFlags = 0;
   std::string m_modelDirectory;  //!< Directory containing the model file
 
-  // Rendering options
-  float m_splitTrianglesRenderingBBox = 0.0f;
-
   // Loaded content (pointers to child objects for easy access)
   std::vector<CSetOfTexturedTriangles::Ptr> m_texturedMeshes;
   CSetOfTriangles::Ptr m_nonTexturedMesh;
@@ -270,11 +266,9 @@ class CAssimpModel : public CSetOfObjects
   /** Load and cache a texture */
   const LoadedTexture* loadTexture(const std::string& texturePath);
 
-  /** Get or create a CSetOfTexturedTriangles for a texture */
-  CSetOfTexturedTriangles::Ptr getOrCreateTexturedMesh(const std::string& texturePath);
-
-  /** Apply triangle splitting for transparency sorting */
-  void applySplitTrianglesRendering();
+  /** Get or create a CSetOfTexturedTriangles for a texture and alpha mode */
+  CSetOfTexturedTriangles::Ptr getOrCreateTexturedMesh(
+      const std::string& texturePath, TAlphaMode alphaMode, float alphaCutoff);
 
   /** Update bounding box from mesh data */
   void updateBoundingBox(const mrpt::math::TPoint3Df& point);

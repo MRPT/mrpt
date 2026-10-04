@@ -390,9 +390,7 @@ void Program::use()
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   // Clear any lingering GL errors before calling glUseProgram
-  while (glGetError() != GL_NO_ERROR)
-  {
-  }
+  clearOpenGLErrors();
 
   glUseProgram(programId());
   CHECK_OPENGL_ERROR();

@@ -117,3 +117,22 @@ jobs:
           plugins: noop
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
+
+      - name: Check Python stubs are up to date
+        if: matrix.compiler == 'gcc'
+        run: |
+          pip3 install --break-system-packages pybind11-stubgen==3.0.0
+          . install/setup.bash
+          scripts/generate_python_stubs.py
+          # Fails on modified stubs, and on new (untracked) ones:
+          git status --porcelain -- modules
+          test -z "$(git status --porcelain -- modules)"
+
+      - name: Upload regenerated Python stubs
+        if: failure() && matrix.compiler == 'gcc'
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-stubs
+          path: |
+            modules/*/python/**/*.pyi
+            modules/*/python/**/py.typed

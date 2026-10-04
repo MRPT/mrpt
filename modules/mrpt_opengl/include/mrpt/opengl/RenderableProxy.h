@@ -21,7 +21,6 @@
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/VertexArrayObject.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CVisualObject.h>
 #include <mrpt/viz/TLightParameters.h>
 
@@ -77,7 +76,7 @@ struct RenderContext
  * Lifecycle:
  * 1. Created by CompiledScene during compilation
  * 2. compile() called once to upload initial data to GPU
- * 3. updateBuffers() called when source object changes (dirty flag)
+ * 3. updateBuffers() called when the source object data changes (dataVersion())
  * 4. render() called every frame to draw
  * 5. Destroyed when source object deleted or scene recompiled
  *
@@ -116,8 +115,8 @@ class RenderableProxy
 
   /** Incremental update: refreshes GPU buffers with changed data.
    *
-   * This is called when the source object's dirty flag is set
-   * (hasToUpdateBuffers() returns true). It should:
+   * This is called when the data version of the source object changes
+   * (mrpt::viz::CVisualObject::dataVersion()). It should:
    * - Re-upload only the changed data (vertices, colors, etc.)
    * - Be as efficient as possible (don't recompile everything)
    *
@@ -162,9 +161,27 @@ class RenderableProxy
    * Used to determine if the object should be rendered during the
    * shadow map generation pass (1st pass of shadow rendering).
    *
-   * \return true if object casts shadows (default: true)
+   * \return m_castShadows by default, which follows
+   * mrpt::viz::CVisualObject::castShadows() of the object and its parents.
    */
-  [[nodiscard]] virtual bool castsShadows() const { return true; }
+  [[nodiscard]] virtual bool castsShadows() const { return m_castShadows; }
+
+  /** Whether the object is (partly) translucent, so it must be blended
+   * over whatever is behind it: such objects are drawn after all the opaque
+   * ones, from back to front. */
+  [[nodiscard]] virtual bool isTransparent() const { return m_transparent; }
+
+  /** Background objects (e.g. sky boxes) are drawn after all opaque objects,
+   * so only the uncovered pixels are shaded, and before transparent ones. */
+  [[nodiscard]] virtual bool isBackground() const { return false; }
+
+  /** The shader for the shadow map generation pass (depth only).
+   * \return TRIANGLES_SHADOW_1ST by default
+   */
+  [[nodiscard]] virtual shader_id_t shadowMapShader() const
+  {
+    return DefaultShaderID::TRIANGLES_SHADOW_1ST;
+  }
 
   /** Should this object be checked for frustum culling?
    *
@@ -180,30 +197,13 @@ class RenderableProxy
   /** @name Bounding Box (for Culling and Spatial Queries)
    * @{ */
 
-  /** Returns the object's bounding box in local coordinates.
-   *
-   * Used for frustum culling and spatial queries. The bounding box
-   * should be as tight as possible for efficient culling.
-   *
-   * \return Bounding box, or empty box if not applicable
-   *
-   * \note This is in the object's local frame, before applying pose transform
+  /** Returns the bounding box of the uploaded geometry, in the object local
+   * frame (before applying its model matrix), or nullopt if unknown or empty,
+   * in which case the object is never culled.
    */
-  [[nodiscard]] virtual mrpt::math::TBoundingBoxf getBoundingBoxLocal() const
+  [[nodiscard]] const std::optional<mrpt::math::TBoundingBoxf>& localBoundingBox() const
   {
-    return mrpt::math::TBoundingBoxf();
-  }
-
-  /** Returns the object's bounding box in world coordinates.
-   *
-   * This applies the object's pose transformation to the local bbox.
-   *
-   * \param objPose The object's SE(3) pose in world frame
-   * \return Transformed bounding box
-   */
-  [[nodiscard]] mrpt::math::TBoundingBoxf getBoundingBox(const mrpt::poses::CPose3D& objPose) const
-  {
-    return getBoundingBoxLocal().compose(objPose);
+    return m_localBBox;
   }
 
   /** @} */
@@ -228,6 +228,17 @@ class RenderableProxy
    */
   std::weak_ptr<const mrpt::viz::CVisualObject> m_sourceObject;
 
+  /** Bounding box of the uploaded geometry, set by compile(). \sa localBoundingBox() */
+  std::optional<mrpt::math::TBoundingBoxf> m_localBBox;
+
+  /** Set by compile(). \sa isTransparent() */
+  bool m_transparent = false;
+
+  /** Identifies the set of proxies (one per CompiledScene, hence per OpenGL
+   * context) that may share GPU resources such as textures. nullptr: share
+   * nothing. \sa setResourceScope() */
+  const void* m_resourceScope = nullptr;
+
  public:
   /** Sets the source object reference. Called by CompiledScene during compilation. */
   void setSourceObject(std::weak_ptr<const mrpt::viz::CVisualObject> obj)
@@ -243,6 +254,21 @@ class RenderableProxy
   /** Effective visibility (accounts for parent container visibility).
    * Updated by CompiledScene during dirty-object updates. */
   bool m_visible = true;
+
+  /** Effective shadow casting: mrpt::viz::CVisualObject::castShadows() of
+   * the object and all its parents. Updated by CompiledScene. */
+  bool m_castShadows = true;
+
+  /** Point (in the object local frame) whose eye-space depth is used to sort
+   * transparent objects. Set by CompiledScene. */
+  mrpt::math::TPoint3Df m_sortPointLocal{0, 0, 0};
+
+  /** Sets the scope in which GPU resources (e.g. textures uploaded from the
+   * same image) can be shared with other proxies. All proxies of a
+   * CompiledScene use the same scope, which must not be shared by proxies
+   * rendered with different OpenGL contexts. Must be called before compile().
+   */
+  void setResourceScope(const void* scope) { m_resourceScope = scope; }
 
   /** Returns the source object, or nullptr if it has been deleted. */
   [[nodiscard]] std::shared_ptr<const mrpt::viz::CVisualObject> getSourceObject() const
@@ -339,8 +365,6 @@ class PointsProxyBase : public RenderableProxy
   std::vector<shader_id_t> requiredShaders() const override { return {DefaultShaderID::POINTS}; }
   [[nodiscard]] bool castsShadows() const override { return false; }
 
-  mrpt::math::TBoundingBoxf getBoundingBoxLocal() const override;
-
   const char* typeName() const override { return "PointsProxyBase"; }
 
  protected:
@@ -356,8 +380,9 @@ class PointsProxyBase : public RenderableProxy
   /** Number of points to render */
   size_t m_pointCount = 0;
 
-  /** Cached bounding box */
-  mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedBBox;
+  /** If false, all points have m_baseColor */
+  bool m_hasColorBuffer = false;
+  mrpt::img::TColor m_baseColor{0xff, 0xff, 0xff, 0xff};
 };
 
 /** Specialization for proxies that render lines/wireframes.
@@ -380,8 +405,6 @@ class LinesProxyBase : public RenderableProxy
   std::vector<shader_id_t> requiredShaders() const override { return {DefaultShaderID::WIREFRAME}; }
   [[nodiscard]] bool castsShadows() const override { return false; }
 
-  mrpt::math::TBoundingBoxf getBoundingBoxLocal() const override;
-
   const char* typeName() const override { return "LinesProxyBase"; }
 
  protected:
@@ -403,8 +426,9 @@ class LinesProxyBase : public RenderableProxy
   /** Anti-aliasing enabled */
   bool m_antiAliasing = false;
 
-  /** Cached bounding box */
-  mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedBBox;
+  /** If false, all vertices have m_baseColor */
+  bool m_hasColorBuffer = false;
+  mrpt::img::TColor m_baseColor{0xff, 0xff, 0xff, 0xff};
 };
 
 /** Specialization for proxies that render triangles (with or without lighting).
@@ -424,8 +448,6 @@ class TrianglesProxyBase : public RenderableProxy
   void render(const RenderContext& rc) const override;
 
   std::vector<shader_id_t> requiredShaders() const override;
-
-  mrpt::math::TBoundingBoxf getBoundingBoxLocal() const override;
 
   const char* typeName() const override { return "TrianglesProxyBase"; }
 
@@ -450,9 +472,6 @@ class TrianglesProxyBase : public RenderableProxy
 
   /** Face culling mode */
   mrpt::viz::TCullFace m_cullFace = mrpt::viz::TCullFace::NONE;
-
-  /** Cached bounding box */
-  mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedBBox;
 
   /** Determines which shader to use based on lighting and shadow settings */
   shader_id_t selectShader(bool isShadowMapPass) const;

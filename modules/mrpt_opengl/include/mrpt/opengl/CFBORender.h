@@ -235,10 +235,6 @@ class CFBORender
   // Compiled scene (lazy-initialized on first render)
   std::unique_ptr<CompiledScene> m_compiledScene;
 
-  // Raw pointer to last rendered scene (to detect scene changes).
-  // Not owning — the caller guarantees the Scene outlives the render call.
-  const mrpt::viz::Scene* m_lastScene = nullptr;
-
   /** Internal rendering implementation */
   void internal_render_RGBD(
       const mrpt::viz::Scene& scene,
@@ -248,8 +244,11 @@ class CFBORender
   /** Ensures the compiled scene is up-to-date with the source scene */
   void ensureCompiledScene(const mrpt::viz::Scene& scene);
 
-  /** Converts raw OpenGL depth buffer to linear depth values */
-  void convertDepthToLinear(mrpt::math::CMatrixFloat& depth, float zNear, float zFar) const;
+  /** Converts raw OpenGL depth buffer to linear depth values.
+   * \param isProjective false for orthographic cameras, whose depth buffer
+   *        is already linear. */
+  void convertDepthToLinear(
+      mrpt::math::CMatrixFloat& depth, float zNear, float zFar, bool isProjective) const;
 };
 
 }  // namespace mrpt::opengl

@@ -25,11 +25,13 @@
 
 #include <Eigen/Dense>
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstring>
 #include <functional>
 #include <iostream>
 #include <random>
+#include <unordered_set>
 
 #include "gltext.h"
 
@@ -71,7 +73,7 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
 
   // Copy camera (an explicit CCamera object inserted into the viewport, if
   // any, takes precedence over the viewport's own default camera):
-  m_camera = vizVp.resolveActiveCamera();
+  updateCameraParams(vizVp.resolveActiveCamera());
   m_matricesNeedUpdate = true;
 
   // Copy lighting
@@ -93,6 +95,8 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
 
   // Copy shadow settings
   m_shadowsEnabled = vizVp.isShadowCastingEnabled();
+  m_shadowMapSizeX = vizVp.getShadowMapSizeX();
+  m_shadowMapSizeY = vizVp.getShadowMapSizeY();
 
   // Propagate SSAO enable flag
   m_ssaoEnabled = m_lightParams.ssao_enabled;
@@ -116,9 +120,7 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
   MRPT_END
 }
 
-void CompiledViewport::addProxy(
-    const RenderableProxy::Ptr& proxy,
-    const std::shared_ptr<const mrpt::viz::CVisualObject>& sourceObj)
+void CompiledViewport::addProxy(const RenderableProxy::Ptr& proxy)
 {
   MRPT_START
 
@@ -128,110 +130,7 @@ void CompiledViewport::addProxy(
   }
 
   std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
-
-  // Store in main list
   m_proxies.push_back(proxy);
-
-  // Organize by shader for efficient rendering
-  const auto shaderIDs = proxy->requiredShaders();
-  for (auto shaderID : shaderIDs)
-  {
-    m_proxiesByShader[shaderID].push_back(proxy);
-  }
-
-  // Track object-to-proxy mapping using weak_ptr
-  if (sourceObj)
-  {
-    std::weak_ptr<const mrpt::viz::CVisualObject> objWeak = sourceObj;
-    m_objectToProxy[objWeak].push_back(proxy);
-  }
-
-  if (VIEWPORT_VERBOSE)
-  {
-    std::cout << "[CompiledViewport::addProxy] '" << m_name << "' now has " << m_proxies.size()
-              << " proxies\n";
-  }
-
-  MRPT_END
-}
-
-size_t CompiledViewport::cleanupOrphanedProxies()
-{
-  MRPT_START
-
-  std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
-
-  size_t numRemoved = 0;
-
-  // Find proxies whose source objects have been deleted
-  for (auto it = m_objectToProxy.begin(); it != m_objectToProxy.end();)
-  {
-    if (it->first.expired())
-    {
-      // Object was deleted - remove all its proxies (across all occurrences)
-      for (auto& proxy : it->second)
-      {
-        // Remove from main list
-        m_proxies.erase(std::remove(m_proxies.begin(), m_proxies.end(), proxy), m_proxies.end());
-
-        // Remove from shader-organized lists
-        for (auto& [shaderID, proxyList] : m_proxiesByShader)
-        {
-          proxyList.erase(std::remove(proxyList.begin(), proxyList.end(), proxy), proxyList.end());
-        }
-
-        numRemoved++;
-      }
-
-      it = m_objectToProxy.erase(it);
-
-      if (VIEWPORT_VERBOSE)
-      {
-        std::cout << "[CompiledViewport::cleanupOrphanedProxies] '" << m_name
-                  << "' removed orphaned proxies\n";
-      }
-    }
-    else
-    {
-      ++it;
-    }
-  }
-
-  return numRemoved;
-
-  MRPT_END
-}
-
-void CompiledViewport::updateProxiesForObject(
-    const std::weak_ptr<const mrpt::viz::CVisualObject>& weakObj,
-    const mrpt::viz::CVisualObject* sourceObj,
-    const mrpt::math::CMatrixFloat44& modelMatrix,
-    bool effectiveVisible)
-{
-  MRPT_START
-
-  // Find all proxies associated with this source object in this viewport
-  // and update them. Note: m_objectToProxy only stores one proxy per obj,
-  // but the proxies list may have multiple for the same source (multi-mixin).
-  // We iterate m_proxies to find all that share the same source.
-  for (auto& proxy : m_proxies)
-  {
-    if (!proxy) continue;
-
-    auto src = proxy->getSourceObject();
-    if (!src) continue;
-
-    // Check if this proxy belongs to the same source object
-    auto srcWeak = std::weak_ptr<const mrpt::viz::CVisualObject>(src);
-    if (!(std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>{}(srcWeak, weakObj) ||
-          std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>{}(weakObj, srcWeak)))
-    {
-      // Same object. Update model matrix, visibility, and buffers
-      proxy->m_modelMatrix = modelMatrix;
-      proxy->m_visible = effectiveVisible;
-      proxy->updateBuffers(sourceObj);
-    }
-  }
 
   MRPT_END
 }
@@ -246,30 +145,28 @@ void CompiledViewport::removeProxy(const RenderableProxy::Ptr& proxy)
   }
 
   std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
-
-  // Remove from main list
   m_proxies.erase(std::remove(m_proxies.begin(), m_proxies.end(), proxy), m_proxies.end());
 
-  // Remove from shader-organized lists
-  for (auto& [shaderID, proxyList] : m_proxiesByShader)
+  MRPT_END
+}
+
+void CompiledViewport::removeProxies(const std::vector<const RenderableProxy*>& proxies)
+{
+  MRPT_START
+
+  if (proxies.empty())
   {
-    proxyList.erase(std::remove(proxyList.begin(), proxyList.end(), proxy), proxyList.end());
+    return;
   }
 
-  // Remove from object mapping
-  for (auto it = m_objectToProxy.begin(); it != m_objectToProxy.end();)
-  {
-    auto& vec = it->second;
-    vec.erase(std::remove(vec.begin(), vec.end(), proxy), vec.end());
-    if (vec.empty())
-    {
-      it = m_objectToProxy.erase(it);
-    }
-    else
-    {
-      ++it;
-    }
-  }
+  const std::unordered_set<const RenderableProxy*> toRemove(proxies.begin(), proxies.end());
+
+  std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
+  m_proxies.erase(
+      std::remove_if(
+          m_proxies.begin(), m_proxies.end(),
+          [&](const RenderableProxy::Ptr& p) { return toRemove.count(p.get()) != 0; }),
+      m_proxies.end());
 
   MRPT_END
 }
@@ -279,10 +176,7 @@ void CompiledViewport::clearProxies()
   MRPT_START
 
   std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
-
   m_proxies.clear();
-  m_proxiesByShader.clear();
-  m_objectToProxy.clear();
 
   MRPT_END
 }
@@ -429,10 +323,24 @@ void CompiledViewport::updateCamera(const mrpt::viz::CCamera& camera)
 
   std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
 
-  m_camera = camera;
+  updateCameraParams(camera);
   m_matricesNeedUpdate = true;
 
   MRPT_END
+}
+
+void CompiledViewport::updateCameraParams(const mrpt::viz::CCamera& camera)
+{
+  m_camera.noProjection = camera.isNoProjection();
+  m_camera.projective = camera.isProjective();
+  m_camera.is6DOF = camera.is6DOFMode();
+  m_camera.fovDeg = camera.getProjectiveFOVdeg();
+  m_camera.zoomDistance = camera.getZoomDistance();
+  m_camera.azimuthDeg = camera.getAzimuthDegrees();
+  m_camera.elevationDeg = camera.getElevationDegrees();
+  m_camera.pointingAt = camera.getPointingAt().cast<double>();
+  m_camera.pose = camera.getPose();
+  m_camera.pinhole = camera.getPinholeModel();
 }
 
 void CompiledViewport::setViewportBounds(double x, double y, double width, double height)
@@ -495,133 +403,6 @@ void CompiledViewport::setBorder(unsigned int width, const mrpt::img::TColor& co
   MRPT_END
 }
 
-bool CompiledViewport::CameraState::operator!=(const CameraState& other) const
-{
-  return pose != other.pose || zoomDistance != other.zoomDistance || azimuth != other.azimuth ||
-         elevation != other.elevation || FOV != other.FOV || is6DOF != other.is6DOF;
-}
-
-bool CompiledViewport::LightState::operator!=(const LightState& other) const
-{
-  return ambient != other.ambient || numLights != other.numLights ||
-         primaryDirection != other.primaryDirection || paramsHash != other.paramsHash;
-}
-
-bool CompiledViewport::updateIfNeeded()
-{
-  MRPT_START
-
-  bool anyUpdates = false;
-
-  std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
-
-  // Clean up orphaned proxies first
-  if (cleanupOrphanedProxies() > 0)
-  {
-    anyUpdates = true;
-  }
-
-  // Check camera changes
-  CameraState currentCamera;
-  currentCamera.pose = m_camera.getPose();
-  currentCamera.zoomDistance = m_camera.getZoomDistance();
-  currentCamera.azimuth = m_camera.getAzimuthDegrees();
-  currentCamera.elevation = m_camera.getElevationDegrees();
-  currentCamera.FOV = m_camera.getProjectiveFOVdeg();
-  currentCamera.is6DOF = m_camera.is6DOFMode();
-
-  if (currentCamera != m_lastCameraState)
-  {
-    m_lastCameraState = currentCamera;
-    m_matricesNeedUpdate = true;
-    anyUpdates = true;
-
-    if (VIEWPORT_VERBOSE)
-    {
-      std::cout << "[CompiledViewport::updateIfNeeded] '" << m_name << "' camera changed\n";
-    }
-  }
-
-  // Check lighting changes (detect anything that needs a repaint or
-  // shadow matrix recomputation)
-  LightState currentLight;
-  currentLight.ambient = m_lightParams.ambient;
-  currentLight.numLights = m_lightParams.lights.size();
-  currentLight.primaryDirection = m_lightParams.primaryDirectionalDirection();
-
-  // Coarse hash over all light fields to detect position/color/etc changes
-  {
-    std::size_t h = 0;
-    auto hashCombine = [&](float v)
-    {
-      // Simple float hash via bit reinterpretation
-      uint32_t bits;
-      std::memcpy(&bits, &v, sizeof(bits));
-      h ^= std::hash<uint32_t>{}(bits) + 0x9e3779b9 + (h << 6) + (h >> 2);
-    };
-    for (const auto& l : m_lightParams.lights)
-    {
-      hashCombine(static_cast<float>(l.type));
-      hashCombine(l.color.R);
-      hashCombine(l.color.G);
-      hashCombine(l.color.B);
-      hashCombine(l.diffuse);
-      hashCombine(l.specular);
-      hashCombine(l.direction.x);
-      hashCombine(l.direction.y);
-      hashCombine(l.direction.z);
-      hashCombine(l.position.x);
-      hashCombine(l.position.y);
-      hashCombine(l.position.z);
-      hashCombine(l.attenuation_constant);
-      hashCombine(l.attenuation_linear);
-      hashCombine(l.attenuation_quadratic);
-    }
-    hashCombine(m_lightParams.ambientSkyColor.R);
-    hashCombine(m_lightParams.ambientSkyColor.G);
-    hashCombine(m_lightParams.ambientSkyColor.B);
-    hashCombine(m_lightParams.ambientGroundColor.R);
-    hashCombine(m_lightParams.ambientGroundColor.G);
-    hashCombine(m_lightParams.ambientGroundColor.B);
-    hashCombine(m_lightParams.fog_enabled ? 1.0f : 0.0f);
-    hashCombine(m_lightParams.fog_color.R);
-    hashCombine(m_lightParams.fog_color.G);
-    hashCombine(m_lightParams.fog_color.B);
-    hashCombine(m_lightParams.fog_near);
-    hashCombine(m_lightParams.fog_far);
-    hashCombine(static_cast<float>(m_lightParams.fog_mode));
-    hashCombine(m_lightParams.fog_density);
-    currentLight.paramsHash = h;
-  }
-
-  if (currentLight != m_lastLightState)
-  {
-    // If primary directional direction changed, shadow matrices need recomputation
-    if (currentLight.primaryDirection != m_lastLightState.primaryDirection)
-    {
-      m_matricesNeedUpdate = true;
-    }
-    m_lastLightState = currentLight;
-    anyUpdates = true;
-
-    if (VIEWPORT_VERBOSE)
-    {
-      std::cout << "[CompiledViewport::updateIfNeeded] '" << m_name << "' lighting changed\n";
-    }
-  }
-
-  return anyUpdates;
-
-  MRPT_END
-}
-
-bool CompiledViewport::hasPendingUpdates() const
-{
-  std::shared_lock<std::shared_mutex> lock(m_stateMtx.data);
-
-  return m_matricesNeedUpdate;
-}
-
 void CompiledViewport::computePixelViewport(
     int windowWidth, int windowHeight, int offsetX, int offsetY)
 {
@@ -670,22 +451,19 @@ void CompiledViewport::updateMatrices()
   m_renderMatrices.viewport_width = m_pixelWidth;
   m_renderMatrices.viewport_height = m_pixelHeight;
   // Compute projection matrix based on camera type
-  if (m_camera.isNoProjection())
+  if (m_camera.noProjection)
   {
     m_renderMatrices.computeNoProjectionMatrix(m_clipNear, m_clipFar);
   }
   else
   {
-    m_renderMatrices.is_projective = m_camera.isProjective();
-    m_renderMatrices.FOV = m_camera.getProjectiveFOVdeg();
-    m_renderMatrices.eyeDistance = m_camera.getZoomDistance();
-    if (m_camera.hasPinholeModel())
-      m_renderMatrices.pinhole_model = m_camera.getPinholeModel();
-    else
-      m_renderMatrices.pinhole_model.reset();
-    if (m_camera.is6DOFMode())
+    m_renderMatrices.is_projective = m_camera.projective;
+    m_renderMatrices.FOV = m_camera.fovDeg;
+    m_renderMatrices.eyeDistance = m_camera.zoomDistance;
+    m_renderMatrices.pinhole_model = m_camera.pinhole;
+    if (m_camera.is6DOF)
     {
-      const auto pose = m_camera.getPose();
+      const auto& pose = m_camera.pose;
       m_renderMatrices.eye = pose.translation();
 
       // Compute pointing direction
@@ -700,15 +478,15 @@ void CompiledViewport::updateMatrices()
     else
     {
       // Orbit camera mode
-      m_renderMatrices.pointing = m_camera.getPointingAt();
-      m_renderMatrices.azimuth = DEG2RAD(m_camera.getAzimuthDegrees());
-      m_renderMatrices.elev = DEG2RAD(m_camera.getElevationDegrees());
+      m_renderMatrices.pointing = m_camera.pointingAt;
+      m_renderMatrices.azimuth = DEG2RAD(m_camera.azimuthDeg);
+      m_renderMatrices.elev = DEG2RAD(m_camera.elevationDeg);
 
       const auto c2m_u = mrpt::math::TVector3D(
           cos(m_renderMatrices.azimuth) * cos(m_renderMatrices.elev),
           sin(m_renderMatrices.azimuth) * cos(m_renderMatrices.elev), sin(m_renderMatrices.elev));
 
-      const double dis = std::max<double>(0.001, m_camera.getZoomDistance());
+      const double dis = std::max<double>(0.001, m_camera.zoomDistance);
       m_renderMatrices.eye = m_renderMatrices.pointing + c2m_u * dis;
 
       m_renderMatrices.up.x = -cos(m_renderMatrices.azimuth) * sin(m_renderMatrices.elev);
@@ -727,9 +505,25 @@ void CompiledViewport::updateMatrices()
   if (m_shadowsEnabled)
   {
     const float shadowZmax = std::min(m_lightShadowClipFar, m_clipFar);
+    // Cameras with a free pose have no orbit distance to size shadows with:
+    constexpr float DEFAULT_SHADOW_DISTANCE_6DOF = 40.0f;
+    float shadowDistance = m_lightParams.shadow_max_distance;
+    if (shadowDistance <= 0 && m_camera.is6DOF)
+    {
+      shadowDistance = DEFAULT_SHADOW_DISTANCE_6DOF;
+    }
     m_renderMatrices.computeCascadedLightProjectionMatrices(
         m_lightShadowClipNear, shadowZmax, m_lightParams,
-        std::min(m_shadowMapSizeX, m_shadowMapSizeY));
+        std::min(m_shadowMapSizeX, m_shadowMapSizeY), shadowDistance);
+  }
+  if (m_flipYProjection)
+  {
+    // Negate the Y row of the projection matrix. Done here, on the freshly
+    // computed matrix, so the flip is applied exactly once.
+    for (mrpt::math::matrix_index_t c = 0; c < m_renderMatrices.p_matrix.cols(); c++)
+    {
+      m_renderMatrices.p_matrix(1, c) *= -1.0f;
+    }
   }
   m_renderMatrices.initialized = true;
   m_matricesNeedUpdate = false;
@@ -766,13 +560,7 @@ void CompiledViewport::render(
 
   if (m_flipYProjection)
   {
-    // Negate Y row of projection matrix
-    for (mrpt::math::matrix_index_t c = 0; c < m_renderMatrices.p_matrix.cols(); c++)
-    {
-      m_renderMatrices.p_matrix(1, c) *= -1.0f;
-    }
-
-    // Compensate for winding order change
+    // Compensate for the winding order change of the flipped projection
     glFrontFace(GL_CW);
   }
 
@@ -1271,42 +1059,42 @@ void CompiledViewport::buildRenderQueueSSAOGeom(RenderQueue& queue, const TRende
   MRPT_START
   for (const auto& proxy : m_proxies)
   {
-    if (!proxy || !proxy->m_visible) continue;
+    if (!proxy || !proxy->m_visible)
+    {
+      continue;
+    }
 
     // Only render objects that have lit triangle shaders (they have normals)
-    auto shaderIDs = proxy->requiredShaders();
-    bool hasTriangles = false;
-    for (auto sid : shaderIDs)
+    const auto shaderIDs = proxy->requiredShaders();
+    const bool hasTriangles = std::any_of(
+        shaderIDs.begin(), shaderIDs.end(),
+        [](shader_id_t sid)
+        {
+          return sid == DefaultShaderID::TRIANGLES_LIGHT ||
+                 sid == DefaultShaderID::TEXTURED_TRIANGLES_LIGHT ||
+                 sid == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
+                 sid == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
+        });
+    if (!hasTriangles)
     {
-      if (sid == DefaultShaderID::TRIANGLES_LIGHT ||
-          sid == DefaultShaderID::TEXTURED_TRIANGLES_LIGHT ||
-          sid == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
-          sid == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND)
-      {
-        hasTriangles = true;
-        break;
-      }
+      continue;
     }
-    if (!hasTriangles) continue;
 
-    mrpt::math::CMatrixDouble44 modelMat;
-    modelMat.asEigen() = proxy->m_modelMatrix.asEigen().template cast<double>();
-    const mrpt::poses::CPose3D objPose(modelMat);
+    RenderQueueElement e;
+    e.proxy = proxy.get();
+    e.shader = DefaultShaderID::SSAO_GEOMETRY;
+    e.m_matrix = proxy->m_modelMatrix;
+    e.mv_matrix.asEigen() = matrices.v_matrix.asEigen() * e.m_matrix.asEigen();
+    e.pmv_matrix.asEigen() = matrices.p_matrix.asEigen() * e.mv_matrix.asEigen();
 
-    const auto [objDepth, visible, fullyVisible] =
-        depthAndVisibleInView(proxy.get(), matrices, objPose, false);
-    if (!visible) continue;
-
-    auto objMatrices = matrices;
-    objMatrices.m_matrix = proxy->m_modelMatrix;
-    objMatrices.mv_matrix.asEigen() =
-        objMatrices.v_matrix.asEigen() * objMatrices.m_matrix.asEigen();
-    objMatrices.pmv_matrix.asEigen() =
-        objMatrices.p_matrix.asEigen() * objMatrices.mv_matrix.asEigen();
-
-    queue[DefaultShaderID::SSAO_GEOMETRY].emplace(
-        static_cast<float>(objDepth), RenderQueueElement{proxy.get(), objMatrices});
+    const auto& bb = proxy->localBoundingBox();
+    if (bb && proxy->cullEligible() && !boxIntersectsClipVolume(*bb, e.pmv_matrix))
+    {
+      continue;
+    }
+    queue.opaque.push_back(e);
   }
+  queue.sort();
   MRPT_END
 }
 
@@ -1317,7 +1105,8 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
   const int numCascades = m_renderMatrices.numShadowCascades;
 
   // Create/resize the cascade depth texture array
-  if (m_cascadeDepthArrayTexId == 0 || m_cascadeDepthArrayLayers != numCascades)
+  if (m_cascadeDepthArrayTexId == 0 || m_cascadeDepthArrayLayers != numCascades ||
+      m_cascadeDepthArraySizeX != m_shadowMapSizeX || m_cascadeDepthArraySizeY != m_shadowMapSizeY)
   {
     if (m_cascadeDepthArrayTexId != 0) glDeleteTextures(1, &m_cascadeDepthArrayTexId);
     glGenTextures(1, &m_cascadeDepthArrayTexId);
@@ -1332,6 +1121,8 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     m_cascadeDepthArrayLayers = numCascades;
+    m_cascadeDepthArraySizeX = m_shadowMapSizeX;
+    m_cascadeDepthArraySizeY = m_shadowMapSizeY;
   }
 
   // Create a single FBO for rendering directly into texture array layers
@@ -1349,6 +1140,13 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
   // Hardware polygon offset to prevent shadow acne (self-shadowing)
   glEnable(GL_POLYGON_OFFSET_FILL);
   glPolygonOffset(2.0f, 4.0f);
+
+#if defined(GL_DEPTH_CLAMP)
+  // Casters between the light and the cascade near plane must still cast
+  // shadows (e.g. a ceiling high above the floor seen by the camera):
+  // clamp their depth to the near plane instead of clipping them.
+  glEnable(GL_DEPTH_CLAMP);
+#endif
 
   // Render each cascade directly into the texture array layer
   for (int c = 0; c < numCascades; c++)
@@ -1368,6 +1166,9 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
   }
 
   glDisable(GL_POLYGON_OFFSET_FILL);
+#if defined(GL_DEPTH_CLAMP)
+  glDisable(GL_DEPTH_CLAMP);
+#endif
 
   // Restore previous FBO and viewport
   FrameBuffer::Bind(oldFBs);
@@ -1408,6 +1209,7 @@ void CompiledViewport::renderNormalScene(
 #endif
   MRPT_END
 }
+
 void CompiledViewport::buildRenderQueue(
     RenderQueue& queue,
     const TRenderMatrices& matrices,
@@ -1419,14 +1221,9 @@ void CompiledViewport::buildRenderQueue(
   const auto& proxies = proxiesToRender ? *proxiesToRender : m_proxies;
   for (const auto& proxy : proxies)
   {
-    if (!proxy)
-    {
-      continue;
-    }
-
     // Skip invisible objects: check effective visibility (accounts for
-    // parent container visibility propagated by updateDirtyObjectRecursive)
-    if (!proxy->m_visible)
+    // parent container visibility)
+    if (!proxy || !proxy->m_visible)
     {
       continue;
     }
@@ -1437,29 +1234,51 @@ void CompiledViewport::buildRenderQueue(
       continue;
     }
 
-    // Frustum culling and depth computation
-    mrpt::math::CMatrixDouble44 modelMat;
-    modelMat.asEigen() = proxy->m_modelMatrix.asEigen().template cast<double>();
-    const mrpt::poses::CPose3D objPose(modelMat);
+    RenderQueueElement e;
+    e.proxy = proxy.get();
+    e.m_matrix = proxy->m_modelMatrix;
+    e.mv_matrix.asEigen() = matrices.v_matrix.asEigen() * e.m_matrix.asEigen();
 
-    const bool skipCull = isShadowMapPass || !proxy->cullEligible();
-    const auto [objDepth, visible, fullyVisible] =
-        depthAndVisibleInView(proxy.get(), matrices, objPose, skipCull);
-
-    if (!visible)
+    // Frustum culling: against the camera, or against the light frustum of
+    // this shadow cascade. Casters between the light and the cascade near
+    // plane still cast shadows (depth clamp), so that plane is not tested.
+    const auto& bb = proxy->localBoundingBox();
+    const bool checkCulling = bb.has_value() && proxy->cullEligible();
+    if (isShadowMapPass)
     {
-      stats.numProxiesCulled++;
-      continue;
+      if (checkCulling)
+      {
+        mrpt::math::CMatrixFloat44 lightPVM;
+        lightPVM.asEigen() = matrices.light_pv.asEigen() * e.m_matrix.asEigen();
+        constexpr unsigned int NEAR_PLANE = 16;
+        if (!boxIntersectsClipVolume(*bb, lightPVM, 0x3F & ~NEAR_PLANE))
+        {
+          stats.numProxiesCulled++;
+          continue;
+        }
+      }
+    }
+    else
+    {
+      e.pmv_matrix.asEigen() = matrices.p_matrix.asEigen() * e.mv_matrix.asEigen();
+      if (checkCulling && !boxIntersectsClipVolume(*bb, e.pmv_matrix))
+      {
+        stats.numProxiesCulled++;
+        continue;
+      }
     }
 
-    auto shaderIDs = proxy->requiredShaders();
+    // Eye-space depth (larger is farther), for sorting:
+    const auto& p = proxy->m_sortPointLocal;
+    const auto& MV = e.mv_matrix;
+    e.depth = -(MV(2, 0) * p.x + MV(2, 1) * p.y + MV(2, 2) * p.z + MV(2, 3));
 
+    auto shaderIDs = proxy->requiredShaders();
     if (isShadowMapPass)
     {
       // Shadow 1st pass: only render depth using the shadow depth shader.
-      // Skip non-triangle proxies (points, lines don't cast shadows).
       shaderIDs.clear();
-      shaderIDs.push_back(DefaultShaderID::TRIANGLES_SHADOW_1ST);
+      shaderIDs.push_back(proxy->shadowMapShader());
     }
     else if (m_shadowsEnabled)
     {
@@ -1468,32 +1287,121 @@ void CompiledViewport::buildRenderQueue(
       for (auto& sid : shaderIDs)
       {
         if (sid == DefaultShaderID::TRIANGLES_LIGHT)
+        {
           sid = DefaultShaderID::TRIANGLES_SHADOW_2ND;
+        }
         else if (sid == DefaultShaderID::TEXTURED_TRIANGLES_LIGHT)
+        {
           sid = DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
+        }
       }
     }
 
+    auto& layer = isShadowMapPass          ? queue.opaque
+                  : proxy->isBackground()  ? queue.background
+                  : proxy->isTransparent() ? queue.transparent
+                                           : queue.opaque;
     for (auto shaderID : shaderIDs)
     {
-      // Create per-object render state with the object's model matrix
-      auto objMatrices = matrices;
-      objMatrices.m_matrix = proxy->m_modelMatrix;
-
-      // Precompute derived matrices
-      objMatrices.mv_matrix.asEigen() =
-          objMatrices.v_matrix.asEigen() * objMatrices.m_matrix.asEigen();
-      objMatrices.pmv_matrix.asEigen() =
-          objMatrices.p_matrix.asEigen() * objMatrices.mv_matrix.asEigen();
-
-      queue[shaderID].emplace(
-          static_cast<float>(objDepth), RenderQueueElement{proxy.get(), objMatrices});
+      e.shader = shaderID;
+      layer.push_back(e);
     }
 
     stats.numProxiesRendered++;
   }
+  queue.sort();
   MRPT_END
 }
+
+void CompiledViewport::setupShaderForPass(
+    Program& shader, shader_id_t shaderID, const TRenderMatrices& matrices)
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  shader.use();
+
+  const auto IS_TRANSPOSED = GL_TRUE;
+
+  // Upload per-shader uniforms that don't change per object (p, v)
+  if (shader.hasUniform("p_matrix"))
+  {
+    glUniformMatrix4fv(shader.uniformId("p_matrix"), 1, IS_TRANSPOSED, matrices.p_matrix.data());
+  }
+  if (shader.hasUniform("v_matrix"))
+  {
+    glUniformMatrix4fv(shader.uniformId("v_matrix"), 1, IS_TRANSPOSED, matrices.v_matrix.data());
+  }
+
+  // Upload light_pv_matrix for shadow shaders (per-shader, not per-object)
+  if (shader.hasUniform("light_pv_matrix"))
+  {
+    glUniformMatrix4fv(
+        shader.uniformId("light_pv_matrix"), 1, IS_TRANSPOSED, matrices.light_pv.data());
+  }
+
+  // Bind cascaded shadow map texture array for 2nd pass shaders
+  const bool isShadow2ndPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
+                               shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
+  if (isShadow2ndPass && m_cascadeDepthArrayTexId != 0)
+  {
+    glActiveTexture(GL_TEXTURE0 + SHADOW_MAP_TEXTURE_UNIT);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_cascadeDepthArrayTexId);
+    if (shader.hasUniform("shadowMapArray"))
+    {
+      glUniform1i(shader.uniformId("shadowMapArray"), SHADOW_MAP_TEXTURE_UNIT);
+    }
+
+    // Upload cascade light_pv matrices (each one transposed)
+    static const std::array<const char*, 4> cascadeNames = {
+        "cascade_light_pv[0]", "cascade_light_pv[1]", "cascade_light_pv[2]", "cascade_light_pv[3]"};
+    const int N = std::min<int>(matrices.numShadowCascades, cascadeNames.size());
+    for (int c = 0; c < N; c++)
+    {
+      if (shader.hasUniform(cascadeNames[c]))
+      {
+        glUniformMatrix4fv(
+            shader.uniformId(cascadeNames[c]), 1, IS_TRANSPOSED,
+            matrices.cascade_light_pv[c].data());
+      }
+    }
+    // Upload cascade far planes and count
+    if (shader.hasUniform("num_shadow_cascades"))
+    {
+      glUniform1i(shader.uniformId("num_shadow_cascades"), matrices.numShadowCascades);
+    }
+    if (shader.hasUniform("cascade_far_planes"))
+    {
+      glUniform1fv(
+          shader.uniformId("cascade_far_planes"), matrices.numShadowCascades,
+          matrices.cascade_far_planes.data());
+    }
+  }
+
+  // Bind SSAO blur texture for lit shaders (all shaders that declare ssao_enabled)
+  if (shader.hasUniform("ssao_enabled"))
+  {
+    const bool ssaoActive = m_ssaoEnabled && m_ssaoBlurTex != 0;
+    glUniform1i(shader.uniformId("ssao_enabled"), ssaoActive ? 1 : 0);
+    if (ssaoActive)
+    {
+      glActiveTexture(GL_TEXTURE0 + SSAO_TEXTURE_UNIT);
+      glBindTexture(GL_TEXTURE_2D, m_ssaoBlurTex);
+      if (shader.hasUniform("ssaoTexture"))
+      {
+        glUniform1i(shader.uniformId("ssaoTexture"), SSAO_TEXTURE_UNIT);
+      }
+      if (shader.hasUniform("ssao_power"))
+      {
+        glUniform1f(shader.uniformId("ssao_power"), m_lightParams.ssao_power);
+      }
+      if (shader.hasUniform("ssao_ambient_floor"))
+      {
+        glUniform1f(shader.uniformId("ssao_ambient_floor"), m_lightParams.ssao_ambient_floor);
+      }
+    }
+  }
+#endif
+}
+
 void CompiledViewport::processRenderQueue(
     const RenderQueue& queue,
     ShaderProgramManager& shaderManager,
@@ -1504,140 +1412,88 @@ void CompiledViewport::processRenderQueue(
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
 
   // Clear any prior GL errors
-  while (glGetError() != GL_NO_ERROR)
+  clearOpenGLErrors();
+
+  const auto IS_TRANSPOSED = GL_TRUE;
+
+  // State of the current shader:
+  Program::Ptr shader;
+  shader_id_t shaderID = DefaultShaderID::NONE;
+  bool isShadowPass = false;
+  int loc_m = -1;
+  int loc_mv = -1;
+  int loc_pmv = -1;
+  int loc_normal = -1;
+
+  const auto uniformOrNone = [](const Program& p, const char* name)
+  { return p.hasUniform(name) ? p.uniformId(name) : -1; };
+
+  // Per-object render state: the per-pass matrices, plus the matrices of
+  // each object, overwritten for each one.
+  TRenderMatrices objState = matrices;
+
+  for (const auto* layer : {&queue.opaque, &queue.background, &queue.transparent})
   {
-  }
-
-  for (const auto& [shaderID, proxyMap] : queue)
-  {
-    auto shader = shaderManager.getProgram(shaderID);
-    if (!shader)
+    for (const auto& e : *layer)
     {
-      continue;
-    }
-    shader->use();
-    stats.numDrawCalls++;
-
-    const auto IS_TRANSPOSED = GL_TRUE;
-
-    // Cache uniform locations for this shader
-    const bool has_p = shader->hasUniform("p_matrix");
-    const bool has_v = shader->hasUniform("v_matrix");
-    const bool has_m = shader->hasUniform("m_matrix");
-    const bool has_mv = shader->hasUniform("mv_matrix");
-    const bool has_pmv = shader->hasUniform("pmv_matrix");
-
-    // Upload per-shader uniforms that don't change per object (p, v)
-    if (has_p)
-    {
-      glUniformMatrix4fv(shader->uniformId("p_matrix"), 1, IS_TRANSPOSED, matrices.p_matrix.data());
-    }
-
-    if (has_v)
-    {
-      glUniformMatrix4fv(shader->uniformId("v_matrix"), 1, IS_TRANSPOSED, matrices.v_matrix.data());
-    }
-
-    // Upload light_pv_matrix for shadow shaders (per-shader, not per-object)
-    const bool has_light_pv = shader->hasUniform("light_pv_matrix");
-    if (has_light_pv)
-    {
-      glUniformMatrix4fv(
-          shader->uniformId("light_pv_matrix"), 1, IS_TRANSPOSED, matrices.light_pv.data());
-    }
-
-    // Determine if this is a shadow-related shader
-    const bool isShadow2ndPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
-                                 shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
-    const bool isShadow1stPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_1ST;
-
-    // Bind cascaded shadow map texture array for 2nd pass shaders
-    if (isShadow2ndPass && m_cascadeDepthArrayTexId != 0)
-    {
-      glActiveTexture(GL_TEXTURE0 + SHADOW_MAP_TEXTURE_UNIT);
-      glBindTexture(GL_TEXTURE_2D_ARRAY, m_cascadeDepthArrayTexId);
-      if (shader->hasUniform("shadowMapArray"))
+      if (!shader || e.shader != shaderID)
       {
-        glUniform1i(shader->uniformId("shadowMapArray"), SHADOW_MAP_TEXTURE_UNIT);
-      }
-
-      // Upload cascade light_pv matrices
-      if (shader->hasUniform("cascade_light_pv"))
-      {
-        // Upload as array of mat4 (each transposed)
-        const int N = matrices.numShadowCascades;
-        for (int c = 0; c < N; c++)
+        shaderID = e.shader;
+        shader = shaderManager.getProgram(shaderID);
+        if (!shader)
         {
-          const std::string uname = "cascade_light_pv[" + std::to_string(c) + "]";
-          if (shader->hasUniform(uname.c_str()))
-          {
-            glUniformMatrix4fv(
-                shader->uniformId(uname.c_str()), 1, IS_TRANSPOSED,
-                matrices.cascade_light_pv[c].data());
-          }
+          continue;
         }
+        setupShaderForPass(*shader, shaderID, matrices);
+        loc_m = uniformOrNone(*shader, "m_matrix");
+        loc_mv = uniformOrNone(*shader, "mv_matrix");
+        loc_pmv = uniformOrNone(*shader, "pmv_matrix");
+        loc_normal = uniformOrNone(*shader, "normal_matrix");
+        isShadowPass = shaderID == DefaultShaderID::TRIANGLES_SHADOW_1ST ||
+                       shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_1ST ||
+                       shaderID == DefaultShaderID::TRIANGLES_SHADOW_2ND ||
+                       shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
       }
-      // Upload cascade far planes and count
-      if (shader->hasUniform("num_shadow_cascades"))
-      {
-        glUniform1i(shader->uniformId("num_shadow_cascades"), matrices.numShadowCascades);
-      }
-      if (shader->hasUniform("cascade_far_planes"))
-      {
-        glUniform1fv(
-            shader->uniformId("cascade_far_planes"), matrices.numShadowCascades,
-            matrices.cascade_far_planes.data());
-      }
-    }
-
-    // Bind SSAO blur texture for lit shaders (all shaders that declare ssao_enabled)
-    if (shader->hasUniform("ssao_enabled"))
-    {
-      const bool ssaoActive = m_ssaoEnabled && m_ssaoBlurTex != 0;
-      glUniform1i(shader->uniformId("ssao_enabled"), ssaoActive ? 1 : 0);
-      if (ssaoActive)
-      {
-        glActiveTexture(GL_TEXTURE0 + SSAO_TEXTURE_UNIT);
-        glBindTexture(GL_TEXTURE_2D, m_ssaoBlurTex);
-        if (shader->hasUniform("ssaoTexture"))
-          glUniform1i(shader->uniformId("ssaoTexture"), SSAO_TEXTURE_UNIT);
-        if (shader->hasUniform("ssao_power"))
-          glUniform1f(shader->uniformId("ssao_power"), m_lightParams.ssao_power);
-        if (shader->hasUniform("ssao_ambient_floor"))
-          glUniform1f(shader->uniformId("ssao_ambient_floor"), m_lightParams.ssao_ambient_floor);
-      }
-    }
-
-    // Render all proxies using this shader
-    for (const auto& [depth, element] : proxyMap)
-    {
-      const auto& objState = element.renderState;
 
       // Upload per-object matrix uniforms
-      if (has_m)
+      if (loc_m >= 0)
       {
-        glUniformMatrix4fv(
-            shader->uniformId("m_matrix"), 1, IS_TRANSPOSED, objState.m_matrix.data());
+        glUniformMatrix4fv(loc_m, 1, IS_TRANSPOSED, e.m_matrix.data());
       }
-      if (has_mv)
+      if (loc_mv >= 0)
       {
-        glUniformMatrix4fv(
-            shader->uniformId("mv_matrix"), 1, IS_TRANSPOSED, objState.mv_matrix.data());
+        glUniformMatrix4fv(loc_mv, 1, IS_TRANSPOSED, e.mv_matrix.data());
       }
-      if (has_pmv)
+      if (loc_pmv >= 0)
       {
-        glUniformMatrix4fv(
-            shader->uniformId("pmv_matrix"), 1, IS_TRANSPOSED, objState.pmv_matrix.data());
+        glUniformMatrix4fv(loc_pmv, 1, IS_TRANSPOSED, e.pmv_matrix.data());
       }
+      if (loc_normal >= 0)
+      {
+        // Normals transform with the inverse transpose of the model
+        // rotation and scale, which differs from it for non-uniform scales.
+        mrpt::math::CMatrixFloat33 N;
+        N.asEigen() = e.m_matrix.asEigen().block<3, 3>(0, 0);
+        if (std::abs(N.asEigen().determinant()) > 1e-12f)
+        {
+          N.asEigen() = N.asEigen().inverse().transpose().eval();
+        }
+        glUniformMatrix3fv(loc_normal, 1, IS_TRANSPOSED, N.data());
+      }
+
+      objState.m_matrix = e.m_matrix;
+      objState.mv_matrix = e.mv_matrix;
+      objState.pmv_matrix = e.pmv_matrix;
 
       RenderContext rc;
       rc.shader = shader.get();
       rc.shader_id = shaderID;
       rc.state = &objState;
       rc.lights = &m_lightParams;
-      rc.isShadowMapPass = isShadow1stPass || isShadow2ndPass;
+      rc.isShadowMapPass = isShadowPass;
 
-      element.proxy->render(rc);
+      e.proxy->render(rc);
+      stats.numDrawCalls++;
     }
   }
 #endif

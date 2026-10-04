@@ -313,7 +313,8 @@ void CNTRIPClient::private_ntrip_thread()
           else if (connect_res == connOk && bodyStart < buf.size())
           {
             // Stream data that came along with the header:
-            stream_data.appendData(std::vector<uint8_t>(buf.begin() + bodyStart, buf.end()));
+            stream_data.appendData(std::vector<uint8_t>(
+                buf.begin() + static_cast<std::ptrdiff_t>(bodyStart), buf.end()));
           }
         }
 

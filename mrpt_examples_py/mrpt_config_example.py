@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_config_example.py — configuration files with mrpt.config.
+Reads and writes INI-like configuration files and YAML with mrpt.config.
 
 Demonstrates:
   - CConfigFileMemory: in-memory INI-style configuration (no file I/O)

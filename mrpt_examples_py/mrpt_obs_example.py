@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_obs_example.py — sensor observations with mrpt.obs.
+Sensor observations, odometry motion models and rawlogs with mrpt.obs.
 
 Demonstrates:
   - CObservation2DRangeScan: 2D laser scan, numpy helpers

@@ -440,3 +440,59 @@ TEST(CNetworkOfPoses, InformationMatrixGraphChi2)
   EXPECT_NEAR(g.chi2(), 0.0, 1e-9);
   EXPECT_NEAR(g.getGlobalSquareError(/*ignoreCovariances=*/false), 0.0, 1e-9);
 }
+
+// This file intentionally does not include Eigen, to check that the public
+// graph headers can be used without it.
+TEST(CNetworkOfPoses, Chi2WithCovariancesAllPdfTypes)
+{
+  // The "from" node is at the origin, so err = (edge mean) - (to node), with
+  // a translation error of (0.5, 0.2, -0.1) in all cases.
+  {
+    CNetworkOfPoses2DCov g;
+    g.nodes[0] = CPose2D(0, 0, 0);
+    g.nodes[1] = CPose2D(0.5, 0.2, 0);
+    CPosePDFGaussian edge;
+    edge.mean = CPose2D(1.0, 0.4, 0);
+    edge.cov.setDiagonal(std::vector<double>{0.25, 0.5, 1.0});
+    g.insertEdge(0, 1, edge);
+    EXPECT_NEAR(g.chi2(), 1.08, 1e-9);
+  }
+  {
+    CNetworkOfPoses2DInf g;
+    g.nodes[0] = CPose2D(0, 0, 0);
+    g.nodes[1] = CPose2D(0.5, 0.2, 0);
+    CPosePDFGaussianInf edge;
+    edge.mean = CPose2D(1.0, 0.4, 0);
+    edge.cov_inv.setIdentity();
+    edge.cov_inv(0, 0) = 4.0;
+    edge.cov_inv(0, 1) = 1.0;
+    edge.cov_inv(1, 0) = 1.0;
+    edge.cov_inv(1, 1) = 2.0;
+    g.insertEdge(0, 1, edge);
+    EXPECT_NEAR(g.chi2(), 1.28, 1e-9);
+  }
+  {
+    CNetworkOfPoses3DCov g;
+    g.nodes[0] = CPose3D();
+    g.nodes[1] = CPose3D(0.5, 0.2, -0.1, 0, 0, 0);
+    CPose3DPDFGaussian edge;
+    edge.mean = CPose3D(1.0, 0.4, -0.2, 0, 0, 0);
+    edge.cov.setDiagonal(std::vector<double>{0.25, 0.5, 1.0, 1.0, 1.0, 1.0});
+    g.insertEdge(0, 1, edge);
+    EXPECT_NEAR(g.chi2(), 1.09, 1e-9);
+  }
+  {
+    CNetworkOfPoses3DInf g;
+    g.nodes[0] = CPose3D();
+    g.nodes[1] = CPose3D(0.5, 0.2, -0.1, 0, 0, 0);
+    CPose3DPDFGaussianInf edge;
+    edge.mean = CPose3D(1.0, 0.4, -0.2, 0, 0, 0);
+    edge.cov_inv.setIdentity();
+    edge.cov_inv(0, 0) = 4.0;
+    edge.cov_inv(0, 1) = 1.0;
+    edge.cov_inv(1, 0) = 1.0;
+    edge.cov_inv(1, 1) = 2.0;
+    g.insertEdge(0, 1, edge);
+    EXPECT_NEAR(g.chi2(), 1.29, 1e-9);
+  }
+}

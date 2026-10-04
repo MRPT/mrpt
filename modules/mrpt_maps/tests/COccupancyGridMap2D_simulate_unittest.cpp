@@ -19,6 +19,9 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/random.h>
 
+#include <algorithm>
+#include <cmath>
+
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -246,4 +249,80 @@ TEST(COccupancyGridMap2DSimulateTests, laserScanSimulatorWithUncertaintyUnknownM
 
   COccupancyGridMap2D::TLaserSimulUncertaintyResult results;
   EXPECT_THROW(grid.laserScanSimulatorWithUncertainty(params, results), std::runtime_error);
+}
+
+namespace
+{
+// Distance from (ox,oy) along direction (dx,dy) (unit vector) at which the
+// ray enters the axis-aligned box [x0,x1]x[y0,y1] (slab method), or -1.
+double rayBoxEntry(
+    double ox, double oy, double dx, double dy, double x0, double x1, double y0, double y1)
+{
+  double tmin = 0;
+  double tmax = 1e9;
+  for (int axis = 0; axis < 2; axis++)
+  {
+    const double o = axis == 0 ? ox : oy;
+    const double d = axis == 0 ? dx : dy;
+    const double lo = axis == 0 ? x0 : y0;
+    const double hi = axis == 0 ? x1 : y1;
+    if (std::abs(d) < 1e-12)
+    {
+      if (o < lo || o > hi) return -1;
+      continue;
+    }
+    double t1 = (lo - o) / d;
+    double t2 = (hi - o) / d;
+    if (t1 > t2) std::swap(t1, t2);
+    tmin = std::max(tmin, t1);
+    tmax = std::min(tmax, t2);
+  }
+  return tmin <= tmax ? tmin : -1;
+}
+}  // namespace
+
+// The range must be the distance at which the ray enters the first occupied
+// cell (its closest point), also for oblique rays.
+TEST(COccupancyGridMap2DSimulateTests, simulateScanRayExactWallEntry)
+{
+  const auto grid = buildGridWithWallAhead();
+  // Near boundary of the wall cells:
+  const double wallX = grid.idx2x(grid.x2idx(5.0f)) - 0.5 * grid.getResolution();
+  for (const double angDeg : {0.0, 5.0, 8.0, -7.0})
+  {
+    const double ang = angDeg * M_PI / 180.0;
+    bool out_valid = false;
+    float out_range = 0;
+    grid.simulateScanRay(0.0, 0.0, ang, out_range, out_valid, 10.0, 0.5f, 0, 0);
+    ASSERT_TRUE(out_valid) << "angle=" << angDeg;
+    EXPECT_NEAR(out_range, wallX / std::cos(ang), 1e-3) << "angle=" << angDeg;
+  }
+}
+
+// A ray clipping just the corner of an occupied cell must detect it (a
+// fixed-step ray marching may jump over it).
+TEST(COccupancyGridMap2DSimulateTests, simulateScanRayHitsCellCorner)
+{
+  const float res = 0.1f;
+  COccupancyGridMap2D grid(-1.0f, 9.0f, -1.0f, 1.0f, res);
+  grid.fill(1.0f);  // all free
+  const int cx = grid.x2idx(3.05f);
+  const int cy = grid.y2idx(0.15f);
+  grid.setCell(cx, cy, 0.0f);
+  const double x0 = grid.idx2x(cx) - 0.5 * res;
+  const double y0 = grid.idx2y(cy) - 0.5 * res;
+
+  // Aim just inside the lower-right corner of the cell:
+  const double tx = x0 + res - 0.004;
+  const double ty = y0 + 0.004;
+  const double ang = std::atan2(ty, tx);
+
+  bool out_valid = false;
+  float out_range = 0;
+  grid.simulateScanRay(0.0, 0.0, ang, out_range, out_valid, 10.0, 0.5f, 0, 0);
+  ASSERT_TRUE(out_valid);
+  const double expected =
+      rayBoxEntry(0, 0, std::cos(ang), std::sin(ang), x0, x0 + res, y0, y0 + res);
+  ASSERT_GT(expected, 0);
+  EXPECT_NEAR(out_range, expected, 1e-3);
 }

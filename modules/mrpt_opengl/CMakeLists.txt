@@ -58,6 +58,10 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CFBORender_ViewportFeatures_unittest.cpp
   tests/CFBORender_SceneUpdates_unittest.cpp
   tests/CFBORender_SharedTexture_unittest.cpp
+  tests/CFBORender_NormalMap_unittest.cpp
+  tests/CFBORender_AlphaMode_unittest.cpp
+  tests/CFBORender_SceneGraphEdits_unittest.cpp
+  tests/CFBORender_CullingAndOrdering_unittest.cpp
   tests/TRenderMatrices_unittest.cpp
 )
 

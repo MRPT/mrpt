@@ -10,40 +10,47 @@ Using MRPT in your CMake project
 Finding MRPT from CMake
 -------------------------
 
-MRPT defines exported projects that can be imported as usual in modern CMake:
+Each MRPT library is an independent CMake package named ``mrpt_<module>``,
+which exports the imported target ``mrpt::mrpt_<module>``. Find only the
+libraries you use: their dependencies are found and linked transitively.
 
 .. code-block:: cmake
 
-  # Find all MRPT libraries:
-  find_package(MRPT 2.0 COMPONENTS poses gui OPTIONAL_COMPONENTS vision)
-  message(STATUS "MRPT_VERSION: ${MRPT_VERSION}")
-  message(STATUS "MRPT_LIBRARIES: ${MRPT_LIBRARIES}")
+  cmake_minimum_required(VERSION 3.16)
+  project(myapp)
 
-  # Define your own targets:
-  add_executable(myapp  main.cpp)
+  find_package(mrpt_poses REQUIRED)
+  find_package(mrpt_gui REQUIRED)
 
-  # Link against MRPT: this will also add all required flags,
-  # include directories, etc.
-  target_link_libraries(myapp ${MRPT_LIBRARIES})
+  add_executable(myapp main.cpp)
 
-or individually like:
+  # This also adds all required flags, include directories, etc.
+  target_link_libraries(myapp
+    mrpt::mrpt_poses
+    mrpt::mrpt_gui
+  )
 
+Optionally, ``find_package(mrpt_common REQUIRED)`` provides the helpers
+``mrpt_add_executable()`` and ``mrpt_add_library()`` used by MRPT itself, which
+also set the C++ standard and compiler flags.
+
+Library headers are included as ``#include <mrpt/<module>/<Class>.h>``, and
+their contents live in the ``mrpt::<module>`` namespace.
+
+For MRPT 2.x
+-------------------------
+
+In MRPT 2.x, packages were named ``mrpt-<module>`` and targets ``mrpt::<module>``:
 
 .. code-block:: cmake
 
-  # Find MRPT libraries, one by one:
   find_package(mrpt-poses)
   find_package(mrpt-gui)
 
-  # Define your own targets:
   add_executable(myapp  main.cpp)
+  target_link_libraries(myapp mrpt::poses mrpt::gui)
 
-  # Link against MRPT: this will also add all required flags,
-  # include directories, etc.
-  target_link_libraries(myapp
-    mrpt::poses
-    mrpt::gui
-  )
+See :doc:`page_porting_mrpt3` for all the changes between MRPT 2.x and 3.x.
 
 For MRPT 1.x
 -------------------------

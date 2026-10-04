@@ -64,7 +64,8 @@ void TestLaser2Imgs()
   CActionCollection::Ptr action;
   CSensoryFrame::Ptr observations;
   size_t rawlogEntry = 0;
-  // bool					end 			= false;
+  size_t numImageFrames = 0;
+  size_t numUsablePairs = 0;
   CDisplayWindow wind;
 
   // Set relative path for externally-stored images in rawlogs:
@@ -102,6 +103,8 @@ void TestLaser2Imgs()
       if (!Img) continue;
     }
 
+    numImageFrames++;
+
     CPose3D cameraPose = sImgs ? sImgs->getSensorPose() : Img->getSensorPose();
     CMatrixDouble33 K =
         sImgs ? sImgs->leftCamera.intrinsicParams : Img->cameraParams.intrinsicParams;
@@ -116,6 +119,8 @@ void TestLaser2Imgs()
     CPose3D laserPose = laserScan->getSensorPose();
 
     if (std::abs(laserPose.yaw()) > 90.0_deg) continue;  // Only front lasers
+
+    numUsablePairs++;
 
     // Get 3D Point relative to the Laser coordinate Frame (P1) (CPoint3D)
     CPoint3D point;
@@ -172,6 +177,21 @@ void TestLaser2Imgs()
 
     std::this_thread::sleep_for(50ms);
   };  // end for
+
+  if (numImageFrames == 0)
+  {
+    std::cerr << "No camera images found in: " << RAWLOG_FILE
+              << "\nPass as argument a rawlog with both 2D laser scans and camera "
+                 "(stereo or monocular) observations.\n";
+    return;
+  }
+
+  if (numUsablePairs == 0)
+  {
+    std::cerr << "No usable pairs of camera images and front 2D laser scans found in: "
+              << RAWLOG_FILE << "\n";
+    return;
+  }
 
   mrpt::system::pause();
 }

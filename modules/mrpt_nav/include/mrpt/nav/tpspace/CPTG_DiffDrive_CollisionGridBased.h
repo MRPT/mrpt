@@ -101,6 +101,14 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
   double getMaxLinVel() const override { return V_MAX; }
   double getMaxAngVel() const override { return W_MAX; }
   void updateTPObstacle(double ox, double oy, std::vector<double>& tp_obstacles) const override;
+  /** Same result as calling updateTPObstacle() for each point, but it reads a
+   * flattened copy of the collision grid and skips, without any memory
+   * access, the points that no grid cell entry can reach. */
+  void updateTPObstacles(
+      const float* xs,
+      const float* ys,
+      std::size_t n,
+      std::vector<double>& tp_obstacles) const override;
   void updateTPObstacleSingle(
       double ox, double oy, uint16_t k, double& tp_obstacle_k) const override;
 
@@ -150,7 +158,11 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
   void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
 
   /** Numerically solve the diferential equations to generate a family of
-   * trajectories */
+   * trajectories. Integration runs at `diferencial_t`, while samples are
+   * stored at a fixed period (getPathStepDuration()) such that the robot
+   * moves at most `min_dist` between samples at its maximum speeds. Each path
+   * ends at a sample time, once it reaches `max_dist`, `max_time` or `max_n`
+   * samples, turns ~2*pi, or the PTG commands a null velocity. */
   void simulateTrajectories(
       float max_time,
       float max_dist,
@@ -221,6 +233,24 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
   /** The collision grid */
   CCollisionGrid m_collisionGrid;
+
+  /** Read-only flattened copy of m_collisionGrid for updateTPObstacles():
+   * the (k, d) entries of all cells in one array, cell `i` owning
+   * entries[offsets[i]] .. entries[offsets[i+1]-1] (CSR layout). Empty until
+   * the PTG is initialized. */
+  struct FlatCollisionGrid
+  {
+    std::vector<uint32_t> offsets;
+    std::vector<std::pair<uint16_t, float>> entries;
+    double x_min = 0, y_min = 0, resolution = 1;
+    int size_x = 0, size_y = 0;
+    /** Squared distance from the origin beyond which no cell has entries */
+    double max_radius_sq = 0;
+  };
+  FlatCollisionGrid m_flatGrid;
+
+  /** Builds m_flatGrid from m_collisionGrid */
+  void buildFlatCollisionGrid();
 
   /** Specifies the min/max values for "k" and "n", respectively.
    * \sa m_lambdaFunctionOptimizer

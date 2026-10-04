@@ -36,6 +36,7 @@ graphslam_results/
 doc/source/dox_mrpt.tag
 doc/source/xml-dir/
 doc/html/
+doc/markdown/
 doc/source/class_*
 doc/source/enum_*
 doc/source/namespace_*
@@ -47,6 +48,13 @@ doc/source/global.rst
 doc/source/doxygen-index.rst
 .cmake
 doc/venv
+doc/source/doxygen-docs/example-*.md
+doc/source/examples.rst
+doc/source/python_examples.rst
+doc/source/pymrpt_example_*.rst
+doc/source/_extra/
+doc/source/_python_api_src/
+doc/source/python_api/
 .pc
 .cache
 my_config.ini

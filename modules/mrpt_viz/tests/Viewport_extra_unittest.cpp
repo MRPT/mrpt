@@ -151,7 +151,7 @@ TEST(Viewport, ClonedCameraTakesTheCameraOfTheOtherViewport)
 
   // Pointing to a viewport that does not exist is an error:
   other->setClonedCameraFrom("missing");
-  EXPECT_ANY_THROW(other->resolveActiveCamera());
+  EXPECT_ANY_THROW(static_cast<void>(other->resolveActiveCamera()));
 }
 
 TEST(Viewport, RayForPixelCoordWithOrthogonalCamera)
@@ -178,6 +178,36 @@ TEST(Viewport, RayForPixelCoordWithOrthogonalCamera)
   EXPECT_LT(center.distance({0, 0, 0}), 1e-6);
   EXPECT_GT(left.distance({0, 0, 0}), 1.0);
   EXPECT_GT(top.distance({0, 0, 0}), 1.0);
+}
+
+TEST(Viewport, RayForPixelCoordOrthogonalMatchesRenderedExtents)
+{
+  // The visible area of an orthogonal camera must be the one used by the
+  // renderer: zoom/2 along the shortest image side, scaled by the aspect
+  // ratio along the longest one.
+  Scene scene;
+  auto vp = scene.getViewport("main");
+  auto& cam = vp->getCamera();
+  cam.setPointingAt(0.f, 0.f, 0.f);
+  cam.setZoomDistance(10.0f);
+  cam.setOrthogonal();
+
+  // Landscape: 5 m wide, 2.5 m tall.
+  {
+    const mrpt::img::TPixelCoord vpSize(200, 100);
+    const auto left = vp->get3DRayForPixelCoord({0, 50}, vpSize);
+    const auto top = vp->get3DRayForPixelCoord({100, 0}, vpSize);
+    EXPECT_NEAR(left.distance({0, 0, 0}), 5.0, 1e-4);
+    EXPECT_NEAR(top.distance({0, 0, 0}), 2.5, 1e-4);
+  }
+  // Portrait: 2.5 m wide, 5 m tall.
+  {
+    const mrpt::img::TPixelCoord vpSize(100, 200);
+    const auto left = vp->get3DRayForPixelCoord({0, 100}, vpSize);
+    const auto top = vp->get3DRayForPixelCoord({50, 0}, vpSize);
+    EXPECT_NEAR(left.distance({0, 0, 0}), 2.5, 1e-4);
+    EXPECT_NEAR(top.distance({0, 0, 0}), 5.0, 1e-4);
+  }
 }
 
 TEST(Viewport, StreamInsertOperators)

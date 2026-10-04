@@ -58,6 +58,11 @@ mrpt::maps::CMetricMap::Ptr CVoxelMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CVoxelMap, CMetricMap, mrpt::maps)
 
+CVoxelMap::CVoxelMap(double resolution, uint8_t inner_bits, uint8_t leaf_bits) :
+    CVoxelMapOccupancyBase(resolution, inner_bits, leaf_bits)
+{
+}
+
 /*---------------------------------------------------------------
             Constructor
   ---------------------------------------------------------------*/

@@ -38,7 +38,9 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
  public:
   using landmark_type = CLandmark;
 
-  CLandmarksMap() = default;
+  // Constructors are defined in the .cpp file: inlining them in user code
+  // triggers wrong devirtualization in some GCC versions with LTO.
+  CLandmarksMap();
 
   /** Inner container with helper accessors. */
   struct TLandmarksList

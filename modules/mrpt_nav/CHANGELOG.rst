@@ -2,6 +2,14 @@
 Changelog for package mrpt_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.4.0 (2026-10-04)
+------------------
+* Python: commit generated .pyi type stubs for all modules
+* CPTG_DiffDrive\_*: size the collision grid from the stored samples
+* CPTG_DiffDrive\_*: store path samples at a fixed time period
+* mrpt_nav: batched TP-obstacle query for PTGs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 

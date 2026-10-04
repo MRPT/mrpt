@@ -14,8 +14,10 @@
 #pragma once
 
 #include <mrpt/containers/NonCopiableData.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TBoundingBox.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/opengl/Buffer.h>
 #include <mrpt/opengl/FrameBuffer.h>
 #include <mrpt/opengl/RenderQueue.h>
@@ -28,6 +30,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <shared_mutex>
 #include <string>
 #include <vector>
@@ -116,31 +119,18 @@ class CompiledViewport
   /** @name Proxy Management
    * @{ */
 
-  /** Adds a renderable proxy to this viewport.
+  /** Adds a renderable proxy to this viewport. Its model matrix, visibility,
+   * etc. are kept up to date by the owner (CompiledScene).
    *
    * \param proxy The GPU-side representation of an object
-   * \param sourceObj The original viz object (tracked via weak_ptr)
    */
-  void addProxy(
-      const RenderableProxy::Ptr& proxy,
-      const std::shared_ptr<const mrpt::viz::CVisualObject>& sourceObj);
-
-  /** Removes proxies whose source objects have been deleted.
-   * \return Number of orphaned proxies removed
-   */
-  size_t cleanupOrphanedProxies();
-
-  /** Updates all proxies for a given source object (buffers + model matrix).
-   * Called by CompiledScene::updateDirtyObjects().
-   */
-  void updateProxiesForObject(
-      const std::weak_ptr<const mrpt::viz::CVisualObject>& weakObj,
-      const mrpt::viz::CVisualObject* sourceObj,
-      const mrpt::math::CMatrixFloat44& modelMatrix,
-      bool effectiveVisible = true);
+  void addProxy(const RenderableProxy::Ptr& proxy);
 
   /** Removes a proxy from this viewport */
   void removeProxy(const RenderableProxy::Ptr& proxy);
+
+  /** Removes a set of proxies from this viewport, in one pass. */
+  void removeProxies(const std::vector<const RenderableProxy*>& proxies);
 
   /** Removes all proxies */
   void clearProxies();
@@ -187,20 +177,6 @@ class CompiledViewport
 
   /** @name State Updates
    * @{ */
-
-  /** Checks if viewport configuration has changed and updates if needed.
-   *
-   * This monitors changes in:
-   * - Camera position/orientation
-   * - Lighting parameters
-   * - Viewport dimensions
-   *
-   * \return true if any updates were performed
-   */
-  bool updateIfNeeded();
-
-  /** Returns true if there are pending configuration changes */
-  bool hasPendingUpdates() const;
 
   /** Forces regeneration of all projection/view matrices */
   void forceMatrixUpdate() { m_matricesNeedUpdate = true; }
@@ -264,11 +240,11 @@ class CompiledViewport
   /** Enables/disables shadow casting for this viewport.
    *
    * \param enabled Enable shadow rendering
-   * \param shadowMapSizeX Shadow map texture width (default 4096)
-   * \param shadowMapSizeY Shadow map texture height (default 4096)
+   * \param shadowMapSizeX Shadow map texture width (default 2048)
+   * \param shadowMapSizeY Shadow map texture height (default 2048)
    */
   void enableShadows(
-      bool enabled, unsigned int shadowMapSizeX = 4096, unsigned int shadowMapSizeY = 4096);
+      bool enabled, unsigned int shadowMapSizeX = 2048, unsigned int shadowMapSizeY = 2048);
 
   /** Returns true if shadow casting is enabled */
   bool areShadowsEnabled() const { return m_shadowsEnabled; }
@@ -325,7 +301,14 @@ class CompiledViewport
   const ViewportRenderStats& lastRenderStats() const { return m_lastStats; }
 
   /** Flip vertically at projection level (useful for FBO rendering) */
-  void flipVerticalProjection(bool flipEnabled) { m_flipYProjection = flipEnabled; }
+  void flipVerticalProjection(bool flipEnabled)
+  {
+    if (flipEnabled != m_flipYProjection)
+    {
+      m_flipYProjection = flipEnabled;
+      m_matricesNeedUpdate = true;
+    }
+  }
 
   /** Flip vertically at projection level (useful for FBO rendering) */
   [[nodiscard]] bool flipVerticalProjection() const { return m_flipYProjection; }
@@ -336,25 +319,9 @@ class CompiledViewport
   /** Viewport name (matches viz::Viewport) */
   std::string m_name;
 
-  /** All renderable proxies in this viewport, organized by shader type.
-   * This allows efficient batching: all objects using the same shader
-   * are rendered together to minimize state changes.
-   */
-  std::map<shader_id_t, std::vector<RenderableProxy::Ptr>> m_proxiesByShader;
-
-  /** All proxies in insertion order (for debug/iteration) */
+  /** All proxies, in insertion order. The render queue sorts them for each
+   * pass. */
   std::vector<RenderableProxy::Ptr> m_proxies;
-
-  /** Mapping from source objects to their proxies (using weak_ptr for safety).
-   * This allows detection of deleted source objects for cleanup.
-   * Each object may have multiple proxies (one per tree occurrence when
-   * the same CVisualObject appears at multiple positions in the scene DAG).
-   */
-  std::map<
-      std::weak_ptr<const mrpt::viz::CVisualObject>,
-      std::vector<RenderableProxy::Ptr>,
-      std::owner_less<std::weak_ptr<const mrpt::viz::CVisualObject>>>
-      m_objectToProxy;
 
   /** @name Viewport Configuration
    * @{ */
@@ -407,42 +374,27 @@ class CompiledViewport
   /** @name Camera and Lighting
    * @{ */
 
-  /** Current camera configuration */
-  mrpt::viz::CCamera m_camera;
-
-  /** Cached camera state (for detecting changes) */
-  struct CameraState
+  /** Current camera configuration. A copy of the parameters only: copying
+   * a CCamera object would count as a change in the scene. */
+  struct CameraParams
   {
-    mrpt::math::TPose3D pose;
-    double zoomDistance = 1.0;
-    double azimuth = 0.0;
-    double elevation = 0.0;
-    double FOV = 60.0;
+    bool noProjection = false;
+    bool projective = true;
     bool is6DOF = false;
-
-    bool operator!=(const CameraState& other) const;
+    float fovDeg = 30.0f;
+    float zoomDistance = 10.0f;
+    float azimuthDeg = 0;
+    float elevationDeg = 0;
+    mrpt::math::TPoint3D pointingAt{0, 0, 0};
+    mrpt::math::TPose3D pose;
+    std::optional<mrpt::img::TCamera> pinhole;
   };
-  CameraState m_lastCameraState;
+  CameraParams m_camera;
+
+  void updateCameraParams(const mrpt::viz::CCamera& camera);
 
   /** Lighting parameters */
   mrpt::viz::TLightParameters m_lightParams;
-
-  /** Cached lighting state (for detecting changes that affect rendering).
-   * Light uniforms are uploaded every frame from m_lightParams, so this
-   * only needs to detect changes that require matrix recomputation
-   * (shadow map P/V depends on primary directional direction) or
-   * that should trigger a repaint. */
-  struct LightState
-  {
-    float ambient = 0;
-    size_t numLights = 0;
-    mrpt::math::TVector3Df primaryDirection{0, 0, -1};
-    /** Coarse hash of all light parameters to detect any change */
-    size_t paramsHash = 0;
-
-    bool operator!=(const LightState& other) const;
-  };
-  LightState m_lastLightState;
 
   /** Render matrices (projection, view, model, etc.) */
   TRenderMatrices m_renderMatrices;
@@ -473,8 +425,8 @@ class CompiledViewport
   bool m_shadowsEnabled = false;
 
   /** Shadow map dimensions */
-  unsigned int m_shadowMapSizeX = 4096;
-  unsigned int m_shadowMapSizeY = 4096;
+  unsigned int m_shadowMapSizeX = 2048;
+  unsigned int m_shadowMapSizeY = 2048;
 
   /** Shadow map FBO used to render directly into texture array layers */
   unsigned int m_shadowMapFBO = 0;
@@ -483,6 +435,8 @@ class CompiledViewport
    *  Created/resized on demand in renderShadowMap(). */
   unsigned int m_cascadeDepthArrayTexId = 0;
   int m_cascadeDepthArrayLayers = 0;
+  unsigned int m_cascadeDepthArraySizeX = 0;
+  unsigned int m_cascadeDepthArraySizeY = 0;
 
   /** @} */
 
@@ -589,6 +543,10 @@ class CompiledViewport
   /** Builds render queue for the SSAO geometry pre-pass (triangle proxies only,
    *  all overridden to the SSAO_GEOMETRY shader). */
   void buildRenderQueueSSAOGeom(RenderQueue& queue, const TRenderMatrices& matrices);
+
+  /** Binds a shader and uploads the uniforms that are common to all objects
+   * drawn with it in this pass. */
+  void setupShaderForPass(Program& shader, shader_id_t shaderID, const TRenderMatrices& matrices);
 
   /** Processes render queue (binds shaders, renders objects) */
   void processRenderQueue(

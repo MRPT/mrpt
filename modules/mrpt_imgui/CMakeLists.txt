@@ -13,9 +13,8 @@ include(./cmake/script_opengl.cmake REQUIRED)     # Check for OpenGL / EGL / GLE
 # Bundled GLEW (Windows colcon builds only; skipped when a "mrpt_glew"
 # target already exists from a non-colcon top-level build). This must be
 # defined before mrpt_add_library() so it can be added to this library's
-# export set: CImGuiSceneView::render() is defined inline in the public
-# header and calls GLEW-resolved GL functions (e.g. glBindFramebuffer), so
-# consumers including that header also need mrpt_glew at their own link step.
+# export set, since mrpt_imgui links it PUBLIC and its public header pulls in
+# GLEW through mrpt/opengl/opengl_api.h.
 if(WIN32 AND NOT TARGET mrpt_glew)
   # In colcon builds 3rdparty/ is excluded (COLCON_IGNORE); build bundled GLEW here.
   set(_MRPT_3RDPARTY "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty")

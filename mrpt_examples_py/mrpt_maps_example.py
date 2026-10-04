@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_maps_example.py — metric map types with mrpt.maps.
+Point clouds, occupancy grids, voxel maps and multi-maps with mrpt.maps.
 
 Demonstrates:
   - CSimplePointsMap: point cloud creation, numpy import/export

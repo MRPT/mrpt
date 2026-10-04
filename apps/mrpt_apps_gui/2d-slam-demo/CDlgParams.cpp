@@ -459,9 +459,9 @@ CDlgParams::CDlgParams(
       this, ID_TEXTCTRL17, _("Text"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
       _T("ID_TEXTCTRL17"));
   FlexGridSizer21->Add(edSpuriousStd, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
-  FlexGridSizer20->Add(FlexGridSizer21, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+  FlexGridSizer20->Add(FlexGridSizer21, 1, wxEXPAND, 0);
   StaticBoxSizer7->Add(FlexGridSizer20, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
-  FlexGridSizer12->Add(StaticBoxSizer7, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 2);
+  FlexGridSizer12->Add(StaticBoxSizer7, 1, wxEXPAND, 2);
   StaticBoxSizer4->Add(FlexGridSizer12, 1, wxEXPAND, 0);
   FlexGridSizer17->Add(StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
   StaticBoxSizer6 =

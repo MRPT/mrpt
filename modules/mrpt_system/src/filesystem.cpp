@@ -171,7 +171,12 @@ bool mrpt::system::directoryExists(const std::string& _path)
 #endif
 }
 
-bool mrpt::system::createDirectory(const string& dirName) { return fs::create_directory(dirName); }
+bool mrpt::system::createDirectory(const string& dirName)
+{
+  std::error_code ec;
+  fs::create_directory(dirName, ec);
+  return !ec && fs::is_directory(dirName, ec);
+}
 
 bool mrpt::system::deleteFile(const string& fileName) { return 0 == remove(fileName.c_str()); }
 

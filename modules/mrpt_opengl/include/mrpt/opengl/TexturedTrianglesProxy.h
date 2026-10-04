@@ -67,6 +67,14 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
 
   std::vector<shader_id_t> requiredShaders() const override;
 
+  /** Textures with alpha cutout use a shadow map shader that discards the
+   * cut out fragments. */
+  shader_id_t shadowMapShader() const override;
+
+  /** Only alpha-blended textures are translucent: cutout and opaque ones
+   * write an alpha of one. */
+  [[nodiscard]] bool isTransparent() const override { return m_params.alphaCutoff == 0.0f; }
+
   const char* typeName() const override { return "TexturedTrianglesProxy"; }
 
   /** @} */
@@ -83,6 +91,7 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
     bool textureInterpolate = false;
     bool textureMipMaps = true;
     bool hasTransparency = false;
+    float alphaCutoff = 0.0f;  //!< >0: cutout, <0: opaque, 0: blend
     bool hasNormalMap = false;
   };
 
@@ -95,14 +104,6 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
   /** Owned normal map texture object */
   std::unique_ptr<Texture> m_ownedNormalMapTexture;
 
-  /** Default 1x1 white GL texture ID (raw GL, bypasses MRPT tracking).
-   *  Used when no texture is assigned so vertex color passes through. */
-  mutable unsigned int m_defaultWhiteGLTexId = 0;
-
-  /** Default 1x1 flat-blue normal map GL texture ID (raw GL).
-   *  Encodes the identity normal (0,0,1) in tangent space. */
-  mutable unsigned int m_defaultFlatNormalMapGLTexId = 0;
-
   /** Helper: Extract texture rendering parameters from source object */
   void extractTextureParams(const mrpt::viz::CVisualObject* sourceObj);
 
@@ -114,6 +115,10 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
 
   /** Helper: Create or update normal map texture from source image */
   void updateNormalMapTexture(const mrpt::viz::VisualObjectParams_TexturedTriangles* texTriObj);
+
+  /** Assigns 1x1 textures that leave the object unchanged (white color,
+   * flat normal map) when the object has no texture or normal map. */
+  void assignDefaultTexturesIfMissing();
 
   /** Helper: Setup texture state for rendering */
   void bindTexture() const;

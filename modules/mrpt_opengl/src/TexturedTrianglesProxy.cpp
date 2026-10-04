@@ -29,6 +29,38 @@ using namespace mrpt::math;
 using namespace mrpt::img;
 using namespace mrpt::viz;
 
+namespace
+{
+/** 1x1 white texture, used when none is assigned so vertex colors pass
+ * through unchanged. */
+const CImage& defaultDiffuseImage()
+{
+  static const CImage img = []()
+  {
+    CImage im(1, 1, CH_RGB);
+    im.at<uint8_t>(0, 0, 0) = 0xff;
+    im.at<uint8_t>(0, 0, 1) = 0xff;
+    im.at<uint8_t>(0, 0, 2) = 0xff;
+    return im;
+  }();
+  return img;
+}
+
+/** 1x1 normal map encoding the unperturbed normal (0,0,1) in tangent space. */
+const CImage& defaultNormalMapImage()
+{
+  static const CImage img = []()
+  {
+    CImage im(1, 1, CH_RGB);
+    im.at<uint8_t>(0, 0, 0) = 128;
+    im.at<uint8_t>(0, 0, 1) = 128;
+    im.at<uint8_t>(0, 0, 2) = 255;
+    return im;
+  }();
+  return img;
+}
+}  // namespace
+
 void TexturedTrianglesProxy::compile(const CVisualObject* sourceObj)
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
@@ -58,6 +90,7 @@ void TexturedTrianglesProxy::compile(const CVisualObject* sourceObj)
       updateNormalMapTexture(texTriObj);
     }
   }
+  assignDefaultTexturesIfMissing();
 
   MRPT_END
 #endif
@@ -92,6 +125,7 @@ void TexturedTrianglesProxy::updateBuffers(const CVisualObject* sourceObj)
       updateNormalMapTexture(texTriObj);
     }
   }
+  assignDefaultTexturesIfMissing();
 
   MRPT_END
 #endif
@@ -149,6 +183,12 @@ void TexturedTrianglesProxy::render(const RenderContext& rc) const
 #endif
 }
 
+shader_id_t TexturedTrianglesProxy::shadowMapShader() const
+{
+  return m_params.alphaCutoff > 0.0f ? DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_1ST
+                                     : DefaultShaderID::TRIANGLES_SHADOW_1ST;
+}
+
 [[nodiscard]] std::vector<shader_id_t> TexturedTrianglesProxy::requiredShaders() const
 {
   // Only return the base shader here. Shadow shader variants are selected
@@ -182,6 +222,7 @@ void TexturedTrianglesProxy::extractTextureParams(const CVisualObject* sourceObj
     // Check if alpha image is assigned
     const auto& alphaImg = texTriObj->getTextureAlphaImage();
     m_params.hasTransparency = !alphaImg.isEmpty();
+    m_params.alphaCutoff = texTriObj->effectiveAlphaCutoff();
 
     m_params.hasNormalMap = texTriObj->normalMapHasBeenAssigned();
   }
@@ -199,6 +240,11 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
   if (rc.shader->hasUniform("textureSampler"))
   {
     uploadInt(rc, "textureSampler", MATERIAL_DIFFUSE_TEXTURE_UNIT);
+  }
+
+  if (rc.shader->hasUniform("alphaCutoff"))
+  {
+    uploadFloat(rc, "alphaCutoff", m_params.alphaCutoff);
   }
 
   // Normal map sampler uniform (bind to texture unit 2)
@@ -340,6 +386,7 @@ void TexturedTrianglesProxy::updateTexture(const VisualObjectParams_TexturedTria
   options.generateMipMaps = m_params.textureMipMaps;
   options.magnifyLinearFilter = m_params.textureInterpolate;
   options.enableTransparency = m_params.hasTransparency;
+  options.shareScope = m_resourceScope;
 
   // Check for alpha texture
   const auto& alphaImage = texTriObj->getTextureAlphaImage();
@@ -387,6 +434,7 @@ void TexturedTrianglesProxy::updateNormalMapTexture(
   options.magnifyLinearFilter = true;  // always interpolate normal maps
   options.enableTransparency = false;
   options.isColorData = false;  // normal maps are linear data, not sRGB
+  options.shareScope = m_resourceScope;
 
   if (m_ownedNormalMapTexture->initialized())
   {
@@ -397,51 +445,39 @@ void TexturedTrianglesProxy::updateNormalMapTexture(
 #endif
 }
 
+void TexturedTrianglesProxy::assignDefaultTexturesIfMissing()
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  Texture::Options o;
+  o.generateMipMaps = false;
+  o.magnifyLinearFilter = false;
+  o.shareScope = m_resourceScope;
+
+  if (!m_ownedTexture || !m_ownedTexture->initialized())
+  {
+    m_ownedTexture = std::make_unique<Texture>();
+    m_ownedTexture->assignImage2D(defaultDiffuseImage(), o, MATERIAL_DIFFUSE_TEXTURE_UNIT);
+    m_texture = m_ownedTexture.get();
+  }
+  if (!m_ownedNormalMapTexture || !m_ownedNormalMapTexture->initialized())
+  {
+    o.isColorData = false;
+    m_ownedNormalMapTexture = std::make_unique<Texture>();
+    m_ownedNormalMapTexture->assignImage2D(defaultNormalMapImage(), o, NORMAL_MAP_TEXTURE_UNIT);
+  }
+#endif
+}
+
 void TexturedTrianglesProxy::bindTexture() const
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
-  // Bind diffuse texture (unit 0)
-  glActiveTexture(GL_TEXTURE0 + MATERIAL_DIFFUSE_TEXTURE_UNIT);
   if (m_ownedTexture)
   {
     m_ownedTexture->bindAsTexture2D();
   }
-  else
-  {
-    // No texture assigned: create a 1x1 white texture so vertex color passes
-    // through (texColor=white, final=white*vertexColor=vertexColor)
-    if (m_defaultWhiteGLTexId == 0)
-    {
-      glGenTextures(1, &m_defaultWhiteGLTexId);
-      glBindTexture(GL_TEXTURE_2D, m_defaultWhiteGLTexId);
-      const uint8_t white[3] = {255, 255, 255};
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    }
-    glBindTexture(GL_TEXTURE_2D, m_defaultWhiteGLTexId);
-  }
-
-  // Bind normal map (unit 2)
-  glActiveTexture(GL_TEXTURE0 + NORMAL_MAP_TEXTURE_UNIT);
   if (m_ownedNormalMapTexture)
   {
     m_ownedNormalMapTexture->bindAsTexture2D();
-  }
-  else
-  {
-    // No normal map: create a 1x1 flat-blue texture encoding identity normal
-    // (0.5, 0.5, 1.0) in tangent space → (0, 0, 1) after decode
-    if (m_defaultFlatNormalMapGLTexId == 0)
-    {
-      glGenTextures(1, &m_defaultFlatNormalMapGLTexId);
-      glBindTexture(GL_TEXTURE_2D, m_defaultFlatNormalMapGLTexId);
-      const uint8_t flatNormal[3] = {128, 128, 255};
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, flatNormal);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    }
-    glBindTexture(GL_TEXTURE_2D, m_defaultFlatNormalMapGLTexId);
   }
 #endif
 }

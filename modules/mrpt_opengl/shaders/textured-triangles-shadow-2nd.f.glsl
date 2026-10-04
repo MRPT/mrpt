@@ -20,23 +20,28 @@ uniform highp float materialSpecularExponent;
 uniform lowp vec3 materialEmissive;
 
 uniform lowp sampler2D textureSampler;
+uniform mediump float alphaCutoff; // >0: cutout, <0: opaque, 0: blend
 uniform lowp sampler2D normalMapSampler;
 
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated UV texture coords
-in highp vec3 frag_tangent;
+in lowp vec4 frag_vertexColor;
+in highp vec4 frag_tangent;
 
 void main()
 {
     highp vec3 N = normalize(frag_normal);
 
     // Normal mapping via TBN matrix
-    highp vec3 T = normalize(frag_tangent);
+    highp vec3 T = normalize(frag_tangent.xyz);
     T = normalize(T - dot(T, N) * N);
-    highp vec3 B = cross(N, T);
+    highp vec3 B = cross(N, T) * frag_tangent.w;
     highp mat3 TBN = mat3(T, B, N);
 
     highp vec3 tangentNormal = texture(normalMapSampler, frag_UV).rgb * 2.0 - 1.0;
+    // Texture images have their first row at v=0, so the image "up" direction
+    // (+Y in OpenGL-convention normal maps) runs along -v:
+    tangentNormal.y = -tangentNormal.y;
     highp vec3 normal = normalize(TBN * tangentNormal);
 
     highp vec3 cam2frag = cam_position - frag_position;
@@ -89,7 +94,17 @@ void main()
     }
 
     // material texture color:
-    lowp vec4 texCol = texture(textureSampler, frag_UV);
+    lowp vec4 texCol = texture(textureSampler, frag_UV) * frag_vertexColor;
+    // alphaCutoff > 0: cutout (discard, and keep the rest opaque);
+    // < 0: opaque; 0: alpha blending.
+    if (texCol.a < alphaCutoff)
+    {
+        discard;
+    }
+    if (alphaCutoff != 0.0)
+    {
+        texCol.a = 1.0;
+    }
 
     mediump vec3 litColor = materialEmissive + texCol.rgb * totalDiffuse + totalSpecular;
 

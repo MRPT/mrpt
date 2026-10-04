@@ -2,6 +2,22 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.4.0 (2026-10-04)
+------------------
+* Python: commit generated .pyi type stubs for all modules
+* Render pipeline: fix scene sync and rendering bugs, add frustum culling
+* Shadows: casters far towards the light are no longer clipped; honor the viewport shadow map size
+* Group Assimp textured meshes by alpha mode; validate deserialized alpha mode
+* mrpt_viz, mrpt_opengl: alpha cutout for textures (TAlphaMode)
+* mrpt_opengl: keep vertex colors on textured triangles with shadows
+* mrpt_opengl: always restore the previous cull face mode
+* mrpt_opengl: culled faces still cast shadows
+* mrpt_opengl: normal maps on mirrored UV mappings
+* mrpt_opengl: fix normal maps on lit textured triangles
+* mrpt_opengl: bound the loops that clear pending GL errors
+* Fix test failures on ARM and s390x Ubuntu PPA builds
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 * viz, opengl: fix PLY import, bounding boxes, sky boxes, viewport modes and SSAO; add tests.

@@ -13,19 +13,19 @@
 */
 #pragma once
 
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/opengl/Shader.h>
-#include <mrpt/opengl/TRenderMatrices.h>
-#include <mrpt/poses/CPose3D.h>
 
-#include <map>
-#include <tuple>
+#include <vector>
 
 namespace mrpt::opengl
 {
 // Forward declarations
 class RenderableProxy;
 
-/** Element in a render queue: a proxy plus its rendering state.
+/** Element in a render queue: a proxy, the shader to draw it with, and its
+ * per-object matrices.
  * \ingroup mrpt_opengl_grp
  */
 struct RenderQueueElement
@@ -33,61 +33,55 @@ struct RenderQueueElement
   /** The object to render (non-owning pointer, owned by CompiledViewport) */
   RenderableProxy* proxy = nullptr;
 
-  /** Rendering state for this object (model matrix, etc.) */
-  TRenderMatrices renderState;
+  shader_id_t shader = 0;
 
-  RenderQueueElement() = default;
-  RenderQueueElement(RenderableProxy* p, const TRenderMatrices& state) :
-      proxy(p), renderState(state)
-  {
-  }
+  /** Eye-space depth of the object (larger is farther), for sorting */
+  float depth = 0;
+
+  /** Model, view-model and projection-view-model matrices of the object */
+  mrpt::math::CMatrixFloat44 m_matrix;
+  mrpt::math::CMatrixFloat44 mv_matrix;
+  mrpt::math::CMatrixFloat44 pmv_matrix;
 };
 
-/** A render queue: map from shader_id to sorted list of objects to render.
- * Objects are sorted by depth for correct transparency rendering.
- * The multimap key is the depth (eye-space Z) for back-to-front ordering.
+/** The objects to render in one pass, in three layers drawn in this order:
+ * opaque objects (grouped by shader, then front to back to make the most of
+ * early depth rejection), background objects (e.g. sky boxes), and finally
+ * transparent objects, from back to front so they blend correctly.
  * \ingroup mrpt_opengl_grp
  */
-using RenderQueue = std::map<shader_id_t, std::multimap<float, RenderQueueElement>>;
-
-/** Stats for the rendering queue
- * \ingroup mrpt_opengl_grp
- */
-struct RenderQueueStats
+struct RenderQueue
 {
-  RenderQueueStats() = default;
+  std::vector<RenderQueueElement> opaque;
+  std::vector<RenderQueueElement> background;
+  std::vector<RenderQueueElement> transparent;
 
-  size_t numObjTotal = 0;
-  size_t numObjRendered = 0;
-  size_t numObjCulled = 0;
-
-  void reset()
+  void clear()
   {
-    numObjTotal = 0;
-    numObjRendered = 0;
-    numObjCulled = 0;
+    opaque.clear();
+    background.clear();
+    transparent.clear();
   }
+
+  [[nodiscard]] bool empty() const
+  {
+    return opaque.empty() && background.empty() && transparent.empty();
+  }
+
+  /** Sorts each layer into its drawing order. */
+  void sort();
 };
 
-/** Computes the eye-view depth of a proxy, and whether any part of its
- * bounding box is visible by the camera in the current state.
- *
- * \param proxy The renderable proxy to check
- * \param objState Current render matrices (for view frustum)
- * \param objPose The object's world pose
- * \param skipCullChecks If true, skip frustum culling (always return visible)
- *
- * \return Tuple of:
- *  - double: Depth of representative point (for sorting)
- *  - bool: visible (at least partially in view frustum)
- *  - bool: fully visible (entire bbox inside frustum)
- *
+/** Conservative culling test: returns false only if the local axis-aligned
+ * box `bb`, transformed by `clipFromLocal` (e.g. P*V*M), lies entirely
+ * outside one of the clip volume planes. Valid for perspective and
+ * orthographic projections alike. Bits of `planes` select which planes to
+ * test: 1=left, 2=right, 4=bottom, 8=top, 16=near, 32=far.
  * \ingroup mrpt_opengl_grp
  */
-std::tuple<double, bool, bool> depthAndVisibleInView(
-    const RenderableProxy* proxy,
-    const TRenderMatrices& objState,
-    const mrpt::poses::CPose3D& objPose,
-    bool skipCullChecks);
+[[nodiscard]] bool boxIntersectsClipVolume(
+    const mrpt::math::TBoundingBoxf& bb,
+    const mrpt::math::CMatrixFloat44& clipFromLocal,
+    unsigned int planes = 0x3F);
 
 }  // namespace mrpt::opengl

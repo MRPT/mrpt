@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_slam_example.py — ICP and ICP-SLAM with mrpt.slam.
+ICP scan alignment and incremental ICP-SLAM with mrpt.slam.
 
 Demonstrates:
   - CICP: align two point-cloud maps, inspect TICPReturnInfo

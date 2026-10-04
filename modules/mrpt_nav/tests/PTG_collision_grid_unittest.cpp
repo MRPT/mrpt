@@ -236,3 +236,37 @@ TEST(PTGCollisionGrid, getPathStepForDist_matches_linear_scan)
     }
   }
 }
+
+TEST(PTGCollisionGrid, batched_query_matches_per_point_query)
+{
+  const auto ptg = makeC(lShape());
+  mrpt::random::CRandomGenerator rng(4321);
+  // Beyond the grid on every side, so that edge cells, the truncated index of
+  // points just below the grid minimum, points out of reach, and points
+  // inside the footprint are all exercised:
+  const double range = ptg->getRefDistance() + 1.0;
+  for (int batch = 0; batch < 200; batch++)
+  {
+    std::vector<float> xs;
+    std::vector<float> ys;
+    for (int i = 0; i < 50; i++)
+    {
+      xs.push_back(static_cast<float>(rng.drawUniform(-range, range)));
+      ys.push_back(static_cast<float>(rng.drawUniform(-range, range)));
+    }
+    std::vector<double> perPoint;
+    std::vector<double> batched;
+    ptg->initTPObstacles(perPoint);
+    ptg->initTPObstacles(batched);
+    for (size_t i = 0; i < xs.size(); i++)
+    {
+      ptg->updateTPObstacle(xs[i], ys[i], perPoint);
+    }
+    ptg->updateTPObstacles(xs.data(), ys.data(), xs.size(), batched);
+    ASSERT_EQ(perPoint.size(), batched.size());
+    for (size_t k = 0; k < perPoint.size(); k++)
+    {
+      EXPECT_EQ(perPoint[k], batched[k]) << "k=" << k << " batch=" << batch;
+    }
+  }
+}

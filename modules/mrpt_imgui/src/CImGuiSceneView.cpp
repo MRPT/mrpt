@@ -128,3 +128,69 @@ void CImGuiSceneView::destroyFBO()
   m_fboWidth = 0;
   m_fboHeight = 0;
 }
+
+// -----------------------------------------------------------------------
+// Scene rendering into the FBO
+// -----------------------------------------------------------------------
+void CImGuiSceneView::renderSceneToFBO(int w, int h)
+{
+  // ---- Sync controller → camera snapshot before rendering ----
+  cameraController.applyTo(m_camera);
+
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  // ---- Render the MRPT scene into our FBO ----
+  if (m_scene)
+  {
+    // Push camera into the scene's main viewport
+    if (auto vp = m_scene->getViewport("main"); vp)
+    {
+      vp->getCamera() = m_camera;
+      if (m_hasCustomBg)
+      {
+        vp->setCustomBackgroundColor({m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]});
+      }
+    }
+
+    // Compile / incrementally update the scene
+    auto lastPtr = m_lastCompiledScenePtr.lock();
+    if (!m_compiledScene || lastPtr.get() != m_scene.get())
+    {
+      m_compiledScene = std::make_unique<mrpt::opengl::CompiledScene>();
+      m_compiledScene->compile(*m_scene);
+      m_lastCompiledScenePtr = m_scene;
+    }
+    else
+    {
+      m_compiledScene->updateIfNeeded();
+    }
+
+    // Save and bind our FBO
+    GLint prevViewport[4];
+    glGetIntegerv(GL_VIEWPORT, prevViewport);
+    GLint prevFBO = 0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
+
+    if (m_hasCustomBg)
+    {
+      glClearColor(m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]);
+    }
+    else
+    {
+      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    m_compiledScene->render(w, h, 0, 0);
+
+    // Restore previous GL state
+    glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prevFBO));
+    glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+  }
+#else
+  (void)w;
+  (void)h;
+#endif
+}

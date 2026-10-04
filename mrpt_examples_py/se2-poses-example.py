@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-
+"""
+SE(2) pose composition and inverse composition with mrpt.poses.CPose2D.
+"""
 
 from math import radians
 from mrpt.poses import CPose2D

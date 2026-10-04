@@ -141,22 +141,22 @@ CSetOfObjects::Ptr stock_objects::CornerXYZ(float scale)
   CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
   CArrow::Ptr obj = CArrow::Create(
-      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(scale, 0, 0), 0.25f * scale,
-      0.02f * scale, 0.05f * scale);
+      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(scale, 0, 0), 0.25f, 0.02f * scale,
+      0.05f * scale);
 
   obj->setColor(1, 0, 0);
   ret->insert(obj);
 
   obj = CArrow::Create(
-      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(0, scale, 0), 0.25f * scale,
-      0.02f * scale, 0.05f * scale);
+      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(0, scale, 0), 0.25f, 0.02f * scale,
+      0.05f * scale);
   obj->setColor(0, 1, 0);
 
   ret->insert(obj);
 
   obj = CArrow::Create(
-      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(0, 0, scale), 0.25f * scale,
-      0.02f * scale, 0.05f * scale);
+      mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(0, 0, scale), 0.25f, 0.02f * scale,
+      0.05f * scale);
   obj->setColor(0, 0, 1);
 
   ret->insert(obj);

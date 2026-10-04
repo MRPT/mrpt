@@ -42,13 +42,18 @@ python3 mrpt_examples_py/mrpt_math_example.py
 | `matrices.py` | `mrpt.math` | Matrix / vector operations |
 | `se2-poses-example.py` | `mrpt.poses` | SE(2) pose arithmetic |
 | `se3-poses-example.py` | `mrpt.poses` | SE(3) pose arithmetic |
-| `ros-poses-convert.py` | `mrpt.poses` | ROS ↔ MRPT pose conversion |
+| `ros-poses-convert.py` | `mrpt.poses` | MRPT poses and pose PDFs from/to ROS `geometry_msgs` |
 | `global_localization.py` | `mrpt.maps`, `mrpt.slam` | Monte Carlo localization on a dataset (`--no-gui` for headless runs) |
 | `rbpf_slam.py` | `mrpt.slam` | Rao-Blackwellized particle filter SLAM on a dataset |
 | `opengl-demo-gui.py` | `mrpt.gui`, `mrpt.viz` | OpenGL demo in a 3D window |
 | `hwdriver-tao-imu-usb.py` | `mrpt.hwdrivers`, `mrpt.obs` | Reading a Taobotics USB IMU (needs the device) |
 
 ## Notes
+
+- The first line of each script docstring is its summary in the
+  [docs gallery](https://docs.mrpt.org/reference/latest/python_examples.html).
+  An optional `# mrpt-example: requires=gui,hardware,dataset` line marks what
+  it needs to run.
 
 - Scripts that open GUI windows (`mrpt_gui_example.py`, `mrpt_viz_example.py`,
   `opengl-demo-gui.py`) require a display and exit gracefully in headless

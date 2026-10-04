@@ -2,6 +2,22 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.4.0 (2026-10-04)
+------------------
+* docs: Python API reference, examples gallery, llms.txt and MRPT 3.x updates
+* Python: commit generated .pyi type stubs for all modules
+* Render pipeline: fix scene sync and rendering bugs, add frustum culling
+* Shadows: casters far towards the light are no longer clipped; honor the viewport shadow map size
+* mrpt_viz: deprecate CAssimpModel::setSplitTrianglesRenderingBBox(), now a no-op
+* Group Assimp textured meshes by alpha mode; validate deserialized alpha mode
+* mrpt_viz, mrpt_opengl: alpha cutout for textures (TAlphaMode)
+* mrpt_opengl: normal maps on mirrored UV mappings
+* stock_objects::CornerXYZ(): fix arrow head proportions
+* PLY import: sign-extend binary char items without a signed char alias
+* mrpt_viz: fix get3DRayForPixelCoord() scale for orthogonal cameras
+* Fix test failures on ARM and s390x Ubuntu PPA builds
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 * viz, opengl: fix PLY import, bounding boxes, sky boxes, viewport modes and SSAO; add tests.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_viz_example.py — 3D scene building with mrpt.viz.
+Builds a 3D scene with lines, boxes, point clouds and models with mrpt.viz.
 
 Demonstrates:
   - Scene + Viewport: top-level scene graph

@@ -2,6 +2,11 @@
 Changelog for package mrpt_io
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.4.0 (2026-10-04)
+------------------
+* Python: commit generated .pyi type stubs for all modules
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 * Increase test coverage and fix the bugs found in loggers, file helpers, compressed streams and pipes.

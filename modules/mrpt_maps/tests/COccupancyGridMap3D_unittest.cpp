@@ -289,6 +289,71 @@ TEST(COccupancyGridMap3DTests, GetAsOctoMapVoxels)
   EXPECT_NO_THROW(grid.getAsOctoMapVoxels(voxels));
 }
 
+TEST(COccupancyGridMap3DTests, GetAsOctoMapVoxelsColors)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  grid.insertObservation(scan1);
+
+  // Default object color (opaque white) and COLOR_FROM_OCCUPANCY mode:
+  mrpt::viz::COctoMapVoxels voxels;
+  grid.getAsOctoMapVoxels(voxels);
+
+  ASSERT_GT(voxels.getVoxelCount(mrpt::viz::VOXEL_SET_OCCUPIED), 0U);
+  ASSERT_GT(voxels.getVoxelCount(mrpt::viz::VOXEL_SET_FREESPACE), 0U);
+
+  const auto& occ = voxels.getVoxel(mrpt::viz::VOXEL_SET_OCCUPIED, 0).color;
+  const auto& fre = voxels.getVoxel(mrpt::viz::VOXEL_SET_FREESPACE, 0).color;
+  EXPECT_EQ(occ.A, 255);
+  EXPECT_EQ(fre.A, 255);
+  // Occupied voxels are darker than free ones:
+  EXPECT_LT(occ.R, fre.R);
+  EXPECT_GT(fre.R, 128);
+}
+
+TEST(COccupancyGridMap3DTests, GetAsOctoMapVoxelsAllColorModes)
+{
+  mrpt::maps::COccupancyGridMap3D grid;
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+  grid.insertObservation(scan1);
+
+  using VM = mrpt::viz::COctoMapVoxels;
+  for (const auto mode :
+       {VM::COLOR_FROM_HEIGHT, VM::TRANSPARENCY_FROM_OCCUPANCY, VM::TRANS_AND_COLOR_FROM_OCCUPANCY,
+        VM::MIXED, VM::FIXED})
+  {
+    mrpt::viz::COctoMapVoxels voxels;
+    voxels.setVisualizationMode(mode);
+    grid.getAsOctoMapVoxels(voxels);
+    ASSERT_GT(voxels.getVoxelCount(mrpt::viz::VOXEL_SET_OCCUPIED), 0U);
+    ASSERT_GT(voxels.getVoxelCount(mrpt::viz::VOXEL_SET_FREESPACE), 0U);
+
+    const auto& occ = voxels.getVoxel(mrpt::viz::VOXEL_SET_OCCUPIED, 0).color;
+    const auto& fre = voxels.getVoxel(mrpt::viz::VOXEL_SET_FREESPACE, 0).color;
+    switch (mode)
+    {
+      case VM::COLOR_FROM_HEIGHT:
+      case VM::FIXED:
+        EXPECT_EQ(occ.A, 255);
+        EXPECT_EQ(fre.A, 255);
+        break;
+      case VM::TRANS_AND_COLOR_FROM_OCCUPANCY:
+        EXPECT_EQ(occ.A, 50);
+        EXPECT_LT(occ.R, fre.R);
+        break;
+      case VM::TRANSPARENCY_FROM_OCCUPANCY:
+      case VM::MIXED:
+        // Occupied voxels are more opaque than free ones:
+        EXPECT_GT(occ.A, fre.A);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 TEST(COccupancyGridMap3DTests, GetVisualizationInto)
 {
   mrpt::maps::COccupancyGridMap3D grid;

@@ -7,9 +7,9 @@
 # to the new Sphinx-based system Makefile.
 
 # Checks
-if [ ! -f version_prefix.txt ]
+if [ ! -f modules/mrpt_common/package.xml ]
 then
-	echo "ERROR: Cannot find the file version_prefix.txt!\nIt should be at the MRPT root directory."
+	echo "ERROR: This script must be run from the MRPT root directory."
 	exit 1
 fi
 

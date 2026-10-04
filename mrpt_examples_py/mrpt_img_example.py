@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_img_example.py — image handling with mrpt.img.
+Creates and draws on images, NumPy conversion and camera models with mrpt.img.
 
 Demonstrates:
   - CImage: create from numpy, draw shapes, convert back to numpy

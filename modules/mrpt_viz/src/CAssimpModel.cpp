@@ -59,7 +59,7 @@ CAssimpModel& CAssimpModel::operator=(CAssimpModel&&) noexcept = default;
 // Serialization
 // ============================================================================
 
-uint8_t CAssimpModel::serializeGetVersion() const { return 1; }
+uint8_t CAssimpModel::serializeGetVersion() const { return 2; }
 
 void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -69,7 +69,6 @@ void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
   // v1: model info
   out << m_modelPath;
   out << m_modelLoadFlags;
-  out << m_splitTrianglesRenderingBBox;
 }
 
 void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -78,6 +77,7 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
   {
     case 0:
     case 1:
+    case 2:
     {
       // Deserialize base class. Note that serializeTo() always emits the
       // base payload with CSetOfObjects' own (unversioned) writer, so the
@@ -88,7 +88,10 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
       {
         in >> m_modelPath;
         in >> m_modelLoadFlags;
-        in >> m_splitTrianglesRenderingBBox;
+      }
+      if (version == 1)
+      {
+        in.ReadAs<float>();  // Unused: old split triangles bbox size
       }
 
       // Rebuild internal pointers to child objects
@@ -243,12 +246,6 @@ void CAssimpModel::loadScene(const std::string& file_name, int flags)
 
   // Process the scene
   processAssimpScene();
-
-  // Apply splitting if enabled
-  if (m_splitTrianglesRenderingBBox > 0.0f)
-  {
-    applySplitTrianglesRendering();
-  }
 
   if (verbose)
   {
@@ -543,7 +540,31 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
   CSetOfTexturedTriangles::Ptr texturedMesh;
   if (hasTexture)
   {
-    texturedMesh = getOrCreateTexturedMesh(texturePath);
+    // glTF materials define how to use the texture alpha. Otherwise, the
+    // alpha mode is detected from the texture (TAlphaMode::Auto).
+    TAlphaMode alphaMode = TAlphaMode::Auto;
+    float alphaCutoff = 0.5f;
+    aiString alphaModeStr;
+    if (material &&
+        aiGetMaterialString(material, "$mat.gltf.alphaMode", 0, 0, &alphaModeStr) == AI_SUCCESS)
+    {
+      const std::string mode = alphaModeStr.C_Str();
+      if (mode == "MASK")
+      {
+        alphaMode = TAlphaMode::Mask;
+        aiGetMaterialFloat(material, "$mat.gltf.alphaCutoff", 0, 0, &alphaCutoff);
+      }
+      else if (mode == "BLEND")
+      {
+        alphaMode = TAlphaMode::Blend;
+      }
+      else if (mode == "OPAQUE")
+      {
+        alphaMode = TAlphaMode::Opaque;
+      }
+    }
+
+    texturedMesh = getOrCreateTexturedMesh(texturePath, alphaMode, alphaCutoff);
 
     // Assign normal map if found and not yet assigned
     if (!normalMapPath.empty() && texturedMesh && !texturedMesh->normalMapHasBeenAssigned())
@@ -815,13 +836,15 @@ const CAssimpModel::LoadedTexture* CAssimpModel::loadTexture(const std::string& 
 #endif
 }
 
-CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(const std::string& texturePath)
+CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(
+    const std::string& texturePath, TAlphaMode alphaMode, float alphaCutoff)
 {
-  // Check if we already have a mesh for this texture
+  // Check if we already have a mesh for this texture and alpha settings
   for (auto& mesh : m_texturedMeshes)
   {
     // Compare by name (we use texture path as name)
-    if (mesh->getName() == texturePath)
+    if (mesh->getName() == texturePath && mesh->alphaMode() == alphaMode &&
+        (alphaMode != TAlphaMode::Mask || mesh->alphaCutoff() == alphaCutoff))
     {
       return mesh;
     }
@@ -844,6 +867,9 @@ CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(const std::st
       mesh->assignImage(tex->rgb);
     }
   }
+
+  mesh->setAlphaMode(alphaMode);
+  mesh->setAlphaCutoff(alphaCutoff);
 
   // Add to children and tracking list
   insert(mesh);
@@ -885,39 +911,6 @@ TBoundingBoxf CAssimpModel::internalBoundingBoxLocal() const
 
   // Fall back to computing from children
   return CSetOfObjects::internalBoundingBoxLocal();
-}
-
-// ============================================================================
-// Triangle Splitting
-// ============================================================================
-
-void CAssimpModel::setSplitTrianglesRenderingBBox(float bbox_size)
-{
-  if (m_splitTrianglesRenderingBBox == bbox_size)
-  {
-    return;
-  }
-
-  m_splitTrianglesRenderingBBox = bbox_size;
-
-  // If we have loaded content, reapply splitting
-  if (!m_modelPath.empty() && bbox_size > 0.0f)
-  {
-    applySplitTrianglesRendering();
-    CVisualObject::notifyChange();
-  }
-}
-
-void CAssimpModel::applySplitTrianglesRendering()
-{
-  // TODO: Implement spatial subdivision of textured meshes for correct
-  // transparency sorting. This would involve:
-  // 1. For each textured mesh, compute spatial grid based on bbox_size
-  // 2. Assign triangles to grid cells
-  // 3. Create separate child objects for each cell
-  // 4. Enable depth sorting in the renderer
-
-  // For now, this is a no-op placeholder
 }
 
 // ============================================================================
@@ -1042,11 +1035,6 @@ void CAssimpModel::rebuildFromAssimpScene()
 
   // Re-process
   processAssimpScene();
-
-  if (m_splitTrianglesRenderingBBox > 0.0f)
-  {
-    applySplitTrianglesRendering();
-  }
 
   CVisualObject::notifyChange();
 #endif
