@@ -2,6 +2,11 @@
 Changelog for package mrpt_expr
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Python: commit generated .pyi type stubs for all modules
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 

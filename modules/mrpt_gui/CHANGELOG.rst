@@ -2,6 +2,12 @@
 Changelog for package mrpt_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Python: commit generated .pyi type stubs for all modules
+* wx dialogs: drop alignment flags combined with wxEXPAND
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 * mathplot: fix wx assert on first plot of a bitmap layer.

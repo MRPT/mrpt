@@ -2,6 +2,11 @@
 Changelog for package mrpt_graphslam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* mrpt_graphslam: include what is used instead of relying on CNetworkOfPoses headers
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 

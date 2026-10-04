@@ -2,6 +2,12 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Python: commit generated .pyi type stubs for all modules
+* mrpt_system: createDirectory() returns false on errors instead of throwing
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 * Fix logger reset, file helpers, time logger export and pipe handling; add tests.

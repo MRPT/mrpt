@@ -2,6 +2,11 @@
 Changelog for package mrpt_comms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Python: commit generated .pyi type stubs for all modules
+* Contributors: Jose Luis Blanco-Claraco
+
 3.3.1 (2026-09-29)
 ------------------
 * comms: wait for the connection attempt to complete in CClientTCPSocket::connect() on Windows.
