@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-
-# More matrix classes available in mrpt.math.
+"""
+Creates, prints and converts MRPT matrices from/to NumPy arrays.
+"""
 
 from mrpt.math import CMatrixDouble
 import numpy as np

@@ -45,6 +45,25 @@ extensions = [
     'sphinx_design',
     'sphinxcontrib.bibtex',
     'm2r2',  # provides: mdinclude
+    'autoapi.extension',
+    'mrpt_python_api',  # in _ext/
+    'sphinx_markdown_builder',
+    'mrpt_markdown',  # in _ext/
+]
+
+# Python API reference, from the .pyi stubs gathered by _ext/mrpt_python_api.py
+autoapi_type = 'python'
+autoapi_dirs = ['_python_api_src/mrpt']
+autoapi_file_patterns = ['*.pyi']
+autoapi_root = 'python_api'
+autoapi_python_use_implicit_namespaces = True
+autoapi_add_toctree_entry = False
+autoapi_member_order = 'groupwise'
+autoapi_options = [
+    'members',
+    'undoc-members',
+    'show-inheritance',
+    'imported-members',
 ]
 
 # Required in sphinx-bibtex>=2.0
@@ -86,7 +105,7 @@ figure_language_filename = 'images/{path}/{basename}{ext}'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store', 'doxygen-docs']
+exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store', 'doxygen-docs', '_python_api_src']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -113,6 +132,9 @@ html_baseurl = "https://docs.mrpt.org/reference/latest/"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
+
+# Files copied as is to the output root (generated examples.json, llms.txt):
+html_extra_path = ['_extra']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

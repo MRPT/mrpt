@@ -181,7 +181,7 @@ add_executable(my_app main.cpp)
 target_link_libraries(my_app mrpt::mrpt_poses mrpt::mrpt_maps)
 ```
 
-> **Migrating from MRPT 2.x?** See the [porting guide](https://docs.mrpt.org/reference/latest/porting_mrpt3.html)
+> **Migrating from MRPT 2.x?** See the [porting guide](https://docs.mrpt.org/reference/latest/page_porting_mrpt3.html)
 > — package names changed from `mrpt-<name>` to `mrpt_<name>` and targets from `mrpt::<name>` to `mrpt::mrpt_<name>`.
 
 ---
@@ -194,10 +194,12 @@ target_link_libraries(my_app mrpt::mrpt_poses mrpt::mrpt_maps)
 | Tutorials | [docs.mrpt.org/reference/latest/tutorials.html](https://docs.mrpt.org/reference/latest/tutorials.html) |
 | Code examples | [docs.mrpt.org/reference/latest/examples.html](https://docs.mrpt.org/reference/latest/examples.html) |
 | Python examples | [docs.mrpt.org/reference/latest/python_examples.html](https://docs.mrpt.org/reference/latest/python_examples.html) |
+| Python API reference | [docs.mrpt.org/reference/latest/python_api.html](https://docs.mrpt.org/reference/latest/python_api.html) |
+| Docs for AI agents | [llms.txt](https://docs.mrpt.org/reference/latest/llms.txt), [examples.json](https://docs.mrpt.org/reference/latest/examples.json), and a `.md` version of every page |
 | GUI applications | [docs.mrpt.org/reference/latest/applications.html](https://docs.mrpt.org/reference/latest/applications.html) |
 | Supported sensors | [docs.mrpt.org/reference/latest/supported-sensors.html](https://docs.mrpt.org/reference/latest/supported-sensors.html) |
 | ROS wrappers | [docs.mrpt.org/reference/latest/wrappers.html](https://docs.mrpt.org/reference/latest/wrappers.html) |
-| Porting from 2.x | [docs.mrpt.org/reference/latest/porting_mrpt3.html](https://docs.mrpt.org/reference/latest/porting_mrpt3.html) |
+| Porting from 2.x | [docs.mrpt.org/reference/latest/page_porting_mrpt3.html](https://docs.mrpt.org/reference/latest/page_porting_mrpt3.html) |
 | Changelog | [docs.mrpt.org/reference/latest/page_changelog.html](https://docs.mrpt.org/reference/latest/page_changelog.html) |
 | Robotics datasets | [mrpt.org/robotics_datasets](https://www.mrpt.org/robotics_datasets) |
 

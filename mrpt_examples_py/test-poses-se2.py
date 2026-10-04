@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+Self-checking test of SE(2) pose composition and TPose2D conversion.
+"""
 
 from math import radians
 from mrpt.poses import CPose2D

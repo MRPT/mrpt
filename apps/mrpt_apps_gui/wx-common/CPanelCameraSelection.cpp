@@ -290,8 +290,8 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
       wxDefaultValidator, _T("ID_CHECKBOX9"));
   cbKinect_Depth->SetValue(false);
   FlexGridSizer5->Add(cbKinect_Depth, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
-  StaticBoxSizer2->Add(FlexGridSizer5, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
-  FlexGridSizer4->Add(StaticBoxSizer2, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
+  StaticBoxSizer2->Add(FlexGridSizer5, 1, wxEXPAND, 0);
+  FlexGridSizer4->Add(StaticBoxSizer2, 1, wxEXPAND, 5);
   wxString __wxRadioBoxChoices_3[2] = {_("RGB camera"), _("IR camera")};
   rbKinect_int = new wxRadioBox(
       pnKinect, ID_RADIOBOX3, _("Intensity channel:"), wxDefaultPosition, wxDefaultSize, 2,

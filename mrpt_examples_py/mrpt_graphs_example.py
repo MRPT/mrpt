@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_graphs_example.py — pose graphs with mrpt.graphs.
+Builds, saves and searches 2D and 3D pose graphs with mrpt.graphs.
 
 Demonstrates:
   - CNetworkOfPoses2D: build, insert nodes/edges, query

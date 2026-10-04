@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_containers_example.py — mrpt.containers.YAML
+Parses, queries and emits YAML/JSON documents with mrpt.containers.YAML.
 
 Demonstrates the MRPT YAML class and shows side-by-side equivalents for
 users migrating from yaml-cpp (pyyaml) or PyYAML.

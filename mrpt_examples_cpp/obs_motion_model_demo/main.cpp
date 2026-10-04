@@ -27,8 +27,7 @@
 
 #include <iostream>
 
-// demo rawlog path:
-// MRPT_EXAMPLES_BASE_DIRECTORY provided via compile definition
+// MRPT_DATA_DIR provided via compile definition
 
 constexpr size_t NUM_PARTICLES = 100;
 
@@ -41,7 +40,7 @@ void DemoMotionModel(int argc, const char** argv)
   mrpt::random::getRandomGenerator().randomize();
 
   // Default dataset, or override with user cli one:
-  std::string datasetFile = MRPT_DATA_DIR + "/datasets/intel_2003_partial.rawlog.gz"s;
+  std::string datasetFile = MRPT_DATA_DIR + "/datasets/localization_demo.rawlog"s;
 
   if (argc > 1)
   {
@@ -194,6 +193,9 @@ void DemoMotionModel(int argc, const char** argv)
       position -= 2;
     }
   }
+
+  std::cout << "End of dataset. Press any key on the window to exit.\n";
+  win.waitForKey();
 }
 }  // namespace
 

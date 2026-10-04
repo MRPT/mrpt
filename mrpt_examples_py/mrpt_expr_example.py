@@ -1,4 +1,7 @@
-#!/bin/env python3
+#!/usr/bin/env python3
+"""
+Compiles and evaluates math formulas with variables at runtime with mrpt.expr.
+"""
 
 import mrpt.expr
 

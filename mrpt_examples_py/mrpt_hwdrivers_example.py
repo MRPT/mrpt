@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_hwdrivers_example.py: sensor drivers from Python.
+Creates and configures MRPT sensor drivers by class name with mrpt.hwdrivers.
 
 Any MRPT sensor driver can be created by class name and configured from an
 .ini section, like the rawlog-grabber application does. This example only

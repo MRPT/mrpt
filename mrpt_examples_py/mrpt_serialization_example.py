@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_serialization_example.py — binary serialisation with mrpt.serialization.
+Serializes MRPT objects to bytes and back with mrpt.serialization.
 
 Demonstrates:
   - objectToBytes / bytesToObject: round-trip binary serialisation via Python bytes

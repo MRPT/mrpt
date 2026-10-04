@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_math_example.py — geometry primitives with mrpt.math.
+Geometry primitives, polygons, histograms and matrices with mrpt.math.
 
 Demonstrates:
   - TPoint2D / TPoint3D: 2D and 3D points

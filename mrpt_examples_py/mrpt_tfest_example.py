@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-MRPT tfest (Transformation Estimation) Example
+Robust SE(3) transformation estimation from point correspondences with mrpt.tfest.
+
 Demonstrates robust SE(3) alignment between two sets of point correspondences.
 """
 

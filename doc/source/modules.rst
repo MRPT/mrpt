@@ -7,7 +7,7 @@ MRPT modules
 MRPT is split into a set of independent libraries for the sake of modularity.
 
 Click on a module name on the tree view to open its documentation.
-Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
+Each MRPT library source code can be found under ``${MRPT_ROOT}/modules/mrpt_<name>``.
 
 .. <img> + rst doesn't work with clickable svg links (!!). Used <object> instead
 
@@ -26,7 +26,6 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
   group_mrpt_comms_grp.rst
   group_mrpt_config_grp.rst
   group_mrpt_containers_grp.rst
-  group_mrpt_detectors_grp.rst
   group_mrpt_expr_grp.rst
   group_mrpt_graphs_grp.rst
   group_mrpt_graphslam_grp.rst
@@ -50,7 +49,6 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
   group_mrpt_tfest_grp.rst
   group_mrpt_topography_grp.rst
   group_mrpt_typemeta_grp.rst
-  group_mrpt_vision_grp.rst
 
 .. index::
    single: List of MRPT libraries

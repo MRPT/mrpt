@@ -355,56 +355,39 @@ function formatDocBlock_ulink(block, context)
 end
 
 function formatDocBlock_table(b, context)
+	-- Rendered as a list-table, which keeps the inline markup of each cell
+	-- (code, links...) and needs no column width computation.
 	local blockList = b.childBlockList
-	local tbl = {}
-	local maxwidths = {}
+	local rows = ""
+	local numRows = 0
 
 	for i = 1, #blockList do
-		local block = blockList [i]
+		local block = blockList[i]
 		if block.blockKind == 'row' then
 			local rowblock = block.childBlockList
-			local row = {}
-			for rownum = 1, #rowblock do
-				if rowblock[rownum].blockKind == 'entry' then
-					local entryblock = rowblock[rownum].childBlockList
-					for entry = 1, #entryblock do
-						if entryblock[entry].blockKind == 'para' then
-							local t = trimWhitespace(entryblock[entry].childBlockList[1].text)
-							local tlen = string.len(t)
-							table.insert(row, t)
-							if maxwidths[#row] == nil or maxwidths[#row] < tlen then
-								maxwidths[#row] = tlen
-							end
-						end
-					end
+			local firstCell = true
+			for c = 1, #rowblock do
+				if rowblock[c].blockKind == 'entry' then
+					local cell = getDocBlockListContentsImpl(rowblock[c].childBlockList, context)
+					cell = trimWhitespace(string.gsub(cell, "%s+", " "))
+					local bullet = firstCell and "\t* - " or "\t  - "
+					rows = rows .. bullet .. cell .. "\n"
+					firstCell = false
 				end
 			end
-			table.insert(tbl, row)
+			numRows = numRows + 1
 		end
 	end
 
-	if #tbl == 0 then
+	if numRows == 0 then
 		return ''
 	end
 
-	local headfoot = ''
-	for i = 1, #maxwidths do
-		headfoot = headfoot .. string.rep('=', maxwidths[i]) .. '  '
+	local s = "\n\n.. list-table::\n"
+	if numRows > 1 then
+		s = s .. "\t:header-rows: 1\n"
 	end
-
-	local s = headfoot .. '\n'
-
-	for r = 1, #tbl do
-		for c = 1, #tbl[r] do
-			s = s .. tbl[r][c] .. string.rep(' ', 2 + maxwidths[c] - string.len(tbl[r][c]))
-		end
-		s = s .. '\n'
-		if r == 1 or r == #tbl then
-			s = s .. headfoot .. '\n\n'
-		end
-	end
-
-	return s
+	return s .. "\n" .. rows .. "\n"
 end
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

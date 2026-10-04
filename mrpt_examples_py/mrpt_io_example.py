@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_io_example.py — file and memory streams with mrpt.io.
+File, memory and compressed streams with mrpt.io.
 
 Demonstrates:
   - CMemoryStream: in-memory read/write

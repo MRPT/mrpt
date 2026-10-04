@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
+"""
+Animated 3D scene in a GUI window, with mrpt.gui and mrpt.viz.
 
-# . install/setup.bash && python3 opengl-demo-gui.py [--duration SECONDS]
+Usage:
+
+  . install/setup.bash && python3 opengl-demo-gui.py [--duration SECONDS]
+"""
 
 import argparse
 import time

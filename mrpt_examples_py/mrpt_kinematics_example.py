@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_kinematics_example.py — vehicle kinematic simulators with mrpt.kinematics.
+Velocity commands and kinematic simulators of mobile robots with mrpt.kinematics.
 
 Demonstrates:
   - CVehicleVelCmd_DiffDriven: diff-drive velocity command

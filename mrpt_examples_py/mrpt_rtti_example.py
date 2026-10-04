@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-mrpt_rtti_example.py — runtime type information with mrpt.rtti.
+Lists the classes in the MRPT runtime type registry with mrpt.rtti.
 
 Demonstrates:
   - getAllRegisteredClasses(): inspect the class registry

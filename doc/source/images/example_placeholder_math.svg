@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="236" viewBox="0 0 420 236">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5a6b7b"/><stop offset="1" stop-color="#5a6b7b" stop-opacity="0.7"/></linearGradient></defs>
+<rect width="420" height="236" fill="url(#g)"/>
+<g stroke="#fff" stroke-width="5" stroke-linecap="round"><line x1="170" y1="130" x2="170" y2="55"/><line x1="170" y1="130" x2="250" y2="130"/><line x1="170" y1="130" x2="225" y2="80"/></g><path d="M185 115 q30 -60 60 -40" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="5 5"/>
+<text x="210" y="190" font-family="sans-serif" font-size="22" fill="#fff" text-anchor="middle">Math and geometry</text>
+</svg>
