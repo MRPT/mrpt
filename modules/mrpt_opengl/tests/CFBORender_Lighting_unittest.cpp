@@ -363,4 +363,58 @@ TEST(OpenGLLighting, SpotLightShadowsOnlyRenderTheFacesInItsCone)
   EXPECT_GT(darkPixels(im, 100), 500);
 }
 
+TEST(OpenGLLighting, ClonedViewportsGetPointLightShadows)
+{
+#if MRPT_IS_BIG_ENDIAN
+  GTEST_SKIP() << "Shadows rendering not tested on big-endian hosts";
+#endif
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  // The main viewport takes the left half, and a clone (same objects, camera
+  // and lights) the right half:
+  PointLightScene s(true);
+  auto mainVp = s.scene->getViewport();
+  mainVp->setViewportPosition(0.0, 0.0, 0.5, 1.0);
+  auto clone = s.scene->createViewport("clone");
+  clone->setViewportPosition(0.5, 0.0, 0.5, 1.0);
+  clone->setCustomBackgroundColor({0, 0, 0});
+  clone->setCloneView("main");
+  clone->setCloneCamera(true);
+  clone->lightParameters() = mainVp->lightParameters();
+  clone->enableShadowCasting(true, 512, 512);
+
+  const auto im = render(*renderer, *s.scene);
+  EXPECT_EQ(
+      renderer->compiledScene()
+          ->getViewport("clone")
+          ->lastRenderStats()
+          .numPointShadowFacesRendered,
+      6U);
+
+  const auto darkInHalf = [&im](int x0, int x1)
+  {
+    int n = 0;
+    for (int y = 0; y < H; y++)
+    {
+      for (int x = x0; x < x1; x++)
+      {
+        const RGB p = pixelRGB(im, x, y);
+        if (p.r + p.g + p.b < 3 * 100)
+        {
+          n++;
+        }
+      }
+    }
+    return n;
+  };
+  const int left = darkInHalf(0, W / 2);
+  const int right = darkInHalf(W / 2, W);
+  EXPECT_GT(left, 200);
+  EXPECT_NEAR(left, right, left / 5) << "the clone has no point light shadows";
+}
+
 #endif  // RUN_OFFSCREEN_RENDER_TESTS

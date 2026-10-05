@@ -225,6 +225,9 @@ class CAssimpModel : public CSetOfObjects
 
   // Loaded content (pointers to child objects for easy access)
   std::vector<CSetOfTexturedTriangles::Ptr> m_texturedMeshes;
+  /** Normal and emissive map files of each of m_texturedMeshes, used while
+   * loading a model to group mesh parts */
+  std::vector<std::string> m_texturedMeshMapFiles;
   CSetOfTriangles::Ptr m_nonTexturedMesh;
   std::vector<CSetOfLines::Ptr> m_lines;  //!< One per line color
 
@@ -274,7 +277,8 @@ class CAssimpModel : public CSetOfObjects
       float alphaCutoff,
       const mrpt::img::TColorf& emissive,
       float shininess,
-      float specularExponent);
+      float specularExponent,
+      const std::string& mapFiles);
 
   /** Update bounding box from mesh data */
   void updateBoundingBox(const mrpt::math::TPoint3Df& point);

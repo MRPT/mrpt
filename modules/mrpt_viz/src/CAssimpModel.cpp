@@ -96,6 +96,7 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
 
       // Rebuild internal pointers to child objects
       m_texturedMeshes.clear();
+      m_texturedMeshMapFiles.clear();
       m_nonTexturedMesh.reset();
       m_lines.clear();
 
@@ -138,6 +139,7 @@ void CAssimpModel::clear()
   m_modelDirectory.clear();
   m_modelLoadFlags = 0;
   m_texturedMeshes.clear();
+  m_texturedMeshMapFiles.clear();
   m_nonTexturedMesh.reset();
   m_lines.clear();
   m_textureCache.clear();
@@ -573,7 +575,8 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
     }
 
     texturedMesh = getOrCreateTexturedMesh(
-        texturePath, alphaMode, alphaCutoff, matEmissive, matShininess, matSpecularExponent);
+        texturePath, alphaMode, alphaCutoff, matEmissive, matShininess, matSpecularExponent,
+        normalMapPath + "|" + emissiveMapPath);
 
     // Assign normal map if found and not yet assigned
     if (!normalMapPath.empty() && texturedMesh && !texturedMesh->normalMapHasBeenAssigned())
@@ -861,15 +864,18 @@ CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(
     float alphaCutoff,
     const mrpt::img::TColorf& emissive,
     float shininess,
-    float specularExponent)
+    float specularExponent,
+    const std::string& mapFiles)
 {
   // Reuse a mesh only if texture, alpha settings and material match, since
   // material properties are per mesh (e.g. a texture atlas shared by a
   // lamp frame and its glowing shade):
-  for (auto& mesh : m_texturedMeshes)
+  for (size_t i = 0; i < m_texturedMeshes.size(); i++)
   {
+    const auto& mesh = m_texturedMeshes[i];
     // Compare by name (we use texture path as name)
-    if (mesh->getName() == texturePath && mesh->alphaMode() == alphaMode &&
+    if (i < m_texturedMeshMapFiles.size() && m_texturedMeshMapFiles[i] == mapFiles &&
+        mesh->getName() == texturePath && mesh->alphaMode() == alphaMode &&
         (alphaMode != TAlphaMode::Mask || mesh->alphaCutoff() == alphaCutoff) &&
         mesh->materialEmissive() == emissive && mesh->materialShininess() == shininess &&
         mesh->materialSpecularExponent() == specularExponent)
@@ -905,6 +911,7 @@ CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(
   // Add to children and tracking list
   insert(mesh);
   m_texturedMeshes.push_back(mesh);
+  m_texturedMeshMapFiles.push_back(mapFiles);
 
   return mesh;
 }
@@ -1058,6 +1065,7 @@ void CAssimpModel::rebuildFromAssimpScene()
   // Clear existing child objects but keep the assimp scene alive
   CSetOfObjects::clear();
   m_texturedMeshes.clear();
+  m_texturedMeshMapFiles.clear();
   m_nonTexturedMesh.reset();
   m_lines.clear();
   m_cachedBBox.reset();

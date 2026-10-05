@@ -777,8 +777,8 @@ void CompiledViewport::render(
     // Shadow map pass (if enabled)
     if (m_shadowsEnabled)
     {
-      renderShadowMap(shaderManager);
-      renderPointShadowMaps(shaderManager);
+      renderShadowMap(shaderManager, proxiesToRender);
+      renderPointShadowMaps(shaderManager, proxiesToRender);
     }
     // SSAO pre-pass (if enabled)
     if (m_ssaoEnabled)
@@ -1259,7 +1259,8 @@ void CompiledViewport::buildRenderQueueSSAOGeom(RenderQueue& queue, const TRende
   MRPT_END
 }
 
-void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
+void CompiledViewport::renderShadowMap(
+    ShaderProgramManager& shaderManager, const std::vector<RenderableProxy::Ptr>* proxiesToRender)
 {
   MRPT_START
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
@@ -1323,7 +1324,7 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
     m_renderMatrices.light_pv = m_renderMatrices.cascade_light_pv[c];
     m_renderMatrices.currentCascadeIndex = c;
 
-    renderNormalScene(shaderManager, true);
+    renderNormalScene(shaderManager, true, proxiesToRender);
   }
 
   glDisable(GL_POLYGON_OFFSET_FILL);
@@ -1337,7 +1338,8 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
 #endif
   MRPT_END
 }
-void CompiledViewport::renderPointShadowMaps(ShaderProgramManager& shaderManager)
+void CompiledViewport::renderPointShadowMaps(
+    ShaderProgramManager& shaderManager, const std::vector<RenderableProxy::Ptr>* proxiesToRender)
 {
   MRPT_START
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
@@ -1405,7 +1407,8 @@ void CompiledViewport::renderPointShadowMaps(ShaderProgramManager& shaderManager
 
     const float zFar = lightReach(l);
     const float zNear = std::min(0.05f, zFar * 0.01f);
-    const uint64_t signature = pointShadowSignature(l, zNear, zFar, mapSize, m_proxies);
+    const uint64_t signature = pointShadowSignature(
+        l, zNear, zFar, mapSize, proxiesToRender ? *proxiesToRender : m_proxies);
 
     // Reuse the cube map if neither the light nor anything near it changed:
     if (!texRecreated && cube.lightIndex == lightIndices[k] && cube.signature == signature)
@@ -1444,7 +1447,7 @@ void CompiledViewport::renderPointShadowMaps(ShaderProgramManager& shaderManager
       }
 
       m_renderMatrices.light_pv = cubeFacePV(l.position, face, zNear, zFar);
-      renderNormalScene(shaderManager, true);
+      renderNormalScene(shaderManager, true, proxiesToRender);
       m_lastStats.numPointShadowFacesRendered++;
     }
   }

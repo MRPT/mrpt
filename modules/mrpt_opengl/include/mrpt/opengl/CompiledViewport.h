@@ -536,12 +536,19 @@ class CompiledViewport
   /** Updates projection and view matrices from camera */
   void updateMatrices();
 
-  /** Performs shadow map rendering (1st pass) */
-  void renderShadowMap(ShaderProgramManager& shaderManager);
+  /** Performs shadow map rendering (1st pass).
+   * \param proxiesToRender If non-null, use these proxies instead of m_proxies
+   *        (used for cloned viewports). */
+  void renderShadowMap(
+      ShaderProgramManager& shaderManager,
+      const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
 
   /** Renders (or reuses, if nothing changed) the cube shadow maps of the
-   * point/spot lights with TLight::cast_shadows */
-  void renderPointShadowMaps(ShaderProgramManager& shaderManager);
+   * point/spot lights with TLight::cast_shadows.
+   * \param proxiesToRender As in renderShadowMap() */
+  void renderPointShadowMaps(
+      ShaderProgramManager& shaderManager,
+      const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
 
   /** Performs normal scene rendering.
    * \param proxiesToRender If non-null, use these proxies instead of m_proxies
