@@ -116,8 +116,7 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           py::init<>(),
           "Default constructor: set the options, then call executeOn() for each filter step "
-          "(import "
-          "mrpt.slam first, which adds that method).")
+          "(import mrpt.slam first, which adds that method).")
       .def_readwrite(
           "options", &CParticleFilter::m_options, "Algorithm options (TParticleFilterOptions)")
       .def(
