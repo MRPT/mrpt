@@ -1307,6 +1307,22 @@ class TLight:
         """
         Default constructor.
         """
+    @property
+    def cast_shadows(self) -> bool:
+        """
+        Whether this Point/Spot light casts shadows (cube shadow map, default: False).
+        """
+    @cast_shadows.setter
+    def cast_shadows(self, arg0: bool) -> None:
+        ...
+    @property
+    def range(self) -> float:
+        """
+        Maximum reach of Point/Spot lights [m], where the light fades to zero (0=unlimited).
+        """
+    @range.setter
+    def range(self, arg0: float) -> None:
+        ...
 class CEllipsoidInverseDepth2D(CVisualObject):
     """
     An uncertainty ellipse of an (inverse range, yaw) variable, drawn in 2D Cartesian space.

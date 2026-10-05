@@ -73,4 +73,10 @@ static constexpr int SSAO_NOISE_TEXTURE_UNIT = 3;
 // Use GL_TEXTURE4 for the blurred SSAO result (sampled by lit shaders):
 static constexpr int SSAO_TEXTURE_UNIT = 4;
 
+// Use GL_TEXTURE5 for emissive map material textures:
+static constexpr int EMISSIVE_MAP_TEXTURE_UNIT = 5;
+
+// Use GL_TEXTURE6 for the cube shadow maps of point/spot lights:
+static constexpr int POINT_SHADOW_MAP_TEXTURE_UNIT = 6;
+
 }  // namespace mrpt::opengl

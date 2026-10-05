@@ -147,6 +147,11 @@ mrpt_add_library(
   re-walks the scene graph only when `mrpt::viz::sceneChangeCount()` changes.
   Pose/scale/visibility setters bump `transformVersion()` only (no buffer
   rebuild); geometry changes must call `notifyChange()`.
+  Texture units are fixed in `DefaultShaders.h`; every sampler a shader
+  declares must be set to its own unit even when unused (samplers of different
+  types sharing a unit is a GL error). The cube face convention of point light
+  shadow maps is duplicated in `CompiledViewport.cpp` and
+  `shadow-calculation.f.glsl`: change both.
 * **mrpt_gui**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the library
   links wxWidgets privately; test targets need
   `target_link_libraries(... PRIVATE imp_wxwidgets)`. macOS/Windows CI builds

@@ -1136,6 +1136,12 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("attenuation_constant", &TLight::attenuation_constant)
       .def_readwrite("attenuation_linear", &TLight::attenuation_linear)
       .def_readwrite("attenuation_quadratic", &TLight::attenuation_quadratic)
+      .def_readwrite(
+          "range", &TLight::range,
+          "Maximum reach of Point/Spot lights [m], where the light fades to zero (0=unlimited).")
+      .def_readwrite(
+          "cast_shadows", &TLight::cast_shadows,
+          "Whether this Point/Spot light casts shadows (cube shadow map, default: False).")
       .def_readwrite("spot_inner_cutoff_deg", &TLight::spot_inner_cutoff_deg)
       .def_readwrite("spot_outer_cutoff_deg", &TLight::spot_outer_cutoff_deg)
       .def_static(

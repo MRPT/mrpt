@@ -48,6 +48,12 @@ void main()
             highp float dist = length(toLight);
             lightDir = toLight / dist;
             attenuation = 1.0 / (light_attenuation[i].x + light_attenuation[i].y * dist + light_attenuation[i].z * dist * dist);
+            if (light_range[i] > 0.0) {
+                // Smooth window reaching exactly zero at the light range
+                highp float r = dist / light_range[i];
+                mediump float w = clamp(1.0 - r * r * r * r, 0.0, 1.0);
+                attenuation *= w * w;
+            }
 
             if (light_type[i] == 2) {
                 mediump float theta = dot(lightDir, -light_direction[i]);
@@ -63,11 +69,14 @@ void main()
         highp float specAmount = pow(max(dot(normal, halfVector), 0.0), materialSpecularExponent);
         mediump float specular_factor = (diff > 0.0) ? specAmount * materialSpecular * light_specular[i] : 0.0;
 
-        // Shadow only applies to the primary directional light (index 0)
+        // Shadows: the primary directional light (index 0), and point/spot
+        // lights with a cube shadow map
         mediump float shadowFactor = 1.0;
         if (i == 0 && light_type[i] == 0) {
             mediump float shadow = ShadowCalculation(frag_position, normal, cam2fragDist);
             shadowFactor = 1.0 - shadow;
+        } else if (light_shadow_index[i] >= 0 && diff > 0.0 && attenuation > 0.0) {
+            shadowFactor = 1.0 - PointShadowCalculation(i, light_shadow_index[i], frag_position, normal);
         }
 
         totalDiffuse += attenuation * shadowFactor * diff * light_diffuse[i] * light_color[i];

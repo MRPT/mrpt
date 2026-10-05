@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CompiledViewport.h>
@@ -40,6 +41,158 @@ using namespace mrpt::viz;
 using namespace mrpt::math;
 
 static const bool VIEWPORT_VERBOSE = mrpt::get_env<bool>("MRPT_VIEWPORT_VERBOSE", false);
+
+namespace
+{
+// Cube shadow map faces (+X,-X,+Y,-Y,+Z,-Z): view direction and "up" vector.
+// The face "right" vector is forward x up. The shadow 2nd pass shaders
+// (shadow-calculation.f.glsl) must use the same convention.
+const std::array<TVector3Df, 6> CUBE_FACE_FORWARD = {
+    TVector3Df{ 1,  0,  0},
+    TVector3Df{-1,  0,  0},
+    TVector3Df{ 0,  1,  0},
+    TVector3Df{ 0, -1,  0},
+    TVector3Df{ 0,  0,  1},
+    TVector3Df{ 0,  0, -1}
+};
+const std::array<TVector3Df, 6> CUBE_FACE_UP = {
+    TVector3Df{0, 0, 1},
+    TVector3Df{0, 0, 1},
+    TVector3Df{0, 0, 1},
+    TVector3Df{0, 0, 1},
+    TVector3Df{0, 1, 0},
+    TVector3Df{0, 1, 0}
+};
+
+/** Projection * view matrix of a cube shadow map face (90 deg FOV). */
+CMatrixFloat44 cubeFacePV(const TPoint3Df& pos, int face, float zNear, float zFar)
+{
+  const auto& F = CUBE_FACE_FORWARD[face];
+  const auto& U = CUBE_FACE_UP[face];
+  const TVector3Df R(F.y * U.z - F.z * U.y, F.z * U.x - F.x * U.z, F.x * U.y - F.y * U.x);
+
+  CMatrixFloat44 V = CMatrixFloat44::Identity();
+  const std::array<TVector3Df, 3> rows = {R, U, TVector3Df(-F.x, -F.y, -F.z)};
+  for (int r = 0; r < 3; r++)
+  {
+    V(r, 0) = rows[r].x;
+    V(r, 1) = rows[r].y;
+    V(r, 2) = rows[r].z;
+    V(r, 3) = -(rows[r].x * pos.x + rows[r].y * pos.y + rows[r].z * pos.z);
+  }
+
+  CMatrixFloat44 P;
+  P.setZero();
+  P(0, 0) = 1;
+  P(1, 1) = 1;
+  P(2, 2) = -(zFar + zNear) / (zFar - zNear);
+  P(2, 3) = -2 * zFar * zNear / (zFar - zNear);
+  P(3, 2) = -1;
+
+  CMatrixFloat44 PV;
+  PV.asEigen() = P.asEigen() * V.asEigen();
+  return PV;
+}
+
+/** Distance beyond which a point/spot light has no visible effect: its range,
+ * or where its attenuation drops below 1/256. */
+float lightReach(const TLight& l)
+{
+  if (l.range > 0)
+  {
+    return l.range;
+  }
+  const float c = l.attenuation_constant;
+  const float lin = l.attenuation_linear;
+  const float q = l.attenuation_quadratic;
+  constexpr float invMinIntensity = 256.0f;
+  float d = 100.0f;
+  if (q > 0)
+  {
+    d = (-lin + std::sqrt(lin * lin - 4 * q * (c - invMinIntensity))) / (2 * q);
+  }
+  else if (lin > 0)
+  {
+    d = (invMinIntensity - c) / lin;
+  }
+  return std::clamp(d, 0.1f, 1000.0f);
+}
+
+/** Whether a spot light cone may reach into a cube face frustum. */
+bool spotReachesCubeFace(const TLight& l, int face)
+{
+  // Angle from a cube face axis to its frustum corners: atan(sqrt(2))
+  constexpr double faceHalfAngleToCorner = 0.9553166181245093;
+  const auto& F = CUBE_FACE_FORWARD[face];
+  const double cosAng = std::clamp<double>(
+      (F.x * l.direction.x + F.y * l.direction.y + F.z * l.direction.z) / l.direction.norm(), -1.0,
+      1.0);
+  return std::acos(cosAng) < faceHalfAngleToCorner + mrpt::DEG2RAD(l.spot_outer_cutoff_deg);
+}
+
+void hashCombine(uint64_t& h, uint64_t v) { h ^= v + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2); }
+
+void hashCombine(uint64_t& h, float v)
+{
+  uint32_t bits = 0;
+  std::memcpy(&bits, &v, sizeof(bits));
+  hashCombine(h, static_cast<uint64_t>(bits));
+}
+
+/** Identifies what a point light cube shadow map depends on: the light and
+ * the state of the shadow casters within its reach. */
+uint64_t pointShadowSignature(
+    const TLight& l,
+    float zNear,
+    float zFar,
+    unsigned int mapSize,
+    const std::vector<RenderableProxy::Ptr>& proxies)
+{
+  uint64_t h = mapSize;
+  for (const float v :
+       {l.position.x, l.position.y, l.position.z, l.direction.x, l.direction.y, l.direction.z,
+        l.spot_outer_cutoff_deg, zNear, zFar})
+  {
+    hashCombine(h, v);
+  }
+  hashCombine(h, static_cast<uint64_t>(l.type));
+
+  for (const auto& p : proxies)
+  {
+    if (!p || !p->m_visible || !p->castsShadows())
+    {
+      continue;
+    }
+    if (const auto& bb = p->localBoundingBox(); bb.has_value())
+    {
+      // Conservative bounding sphere of the object, in world coordinates:
+      const auto& M = p->m_modelMatrix;
+      const TPoint3Df c(
+          0.5f * (bb->min.x + bb->max.x), 0.5f * (bb->min.y + bb->max.y),
+          0.5f * (bb->min.z + bb->max.z));
+      const float r =
+          0.5f * std::hypot(bb->max.x - bb->min.x, bb->max.y - bb->min.y, bb->max.z - bb->min.z);
+      float scale = 0;
+      for (int col = 0; col < 3; col++)
+      {
+        scale = std::max(scale, std::hypot(M(0, col), M(1, col), M(2, col)));
+      }
+      const TPoint3Df cw(
+          M(0, 0) * c.x + M(0, 1) * c.y + M(0, 2) * c.z + M(0, 3),
+          M(1, 0) * c.x + M(1, 1) * c.y + M(1, 2) * c.z + M(1, 3),
+          M(2, 0) * c.x + M(2, 1) * c.y + M(2, 2) * c.z + M(2, 3));
+      if (std::hypot(cw.x - l.position.x, cw.y - l.position.y, cw.z - l.position.z) >
+          zFar + r * scale)
+      {
+        continue;
+      }
+    }
+    hashCombine(h, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(p.get())));
+    hashCombine(h, p->m_changeCount);
+  }
+  return h;
+}
+}  // namespace
 
 // ========== CompiledViewport ==========
 
@@ -305,6 +458,13 @@ void CompiledViewport::enableShadows(
       m_cascadeDepthArrayTexId = 0;
       m_cascadeDepthArrayLayers = 0;
     }
+    if (m_pointShadowArrayTexId != 0)
+    {
+      glDeleteTextures(1, &m_pointShadowArrayTexId);
+      m_pointShadowArrayTexId = 0;
+      m_pointShadowArrayLayers = 0;
+    }
+    m_pointShadowCubes.clear();
 #endif
   }
 
@@ -618,6 +778,7 @@ void CompiledViewport::render(
     if (m_shadowsEnabled)
     {
       renderShadowMap(shaderManager);
+      renderPointShadowMaps(shaderManager);
     }
     // SSAO pre-pass (if enabled)
     if (m_ssaoEnabled)
@@ -1176,6 +1337,133 @@ void CompiledViewport::renderShadowMap(ShaderProgramManager& shaderManager)
 #endif
   MRPT_END
 }
+void CompiledViewport::renderPointShadowMaps(ShaderProgramManager& shaderManager)
+{
+  MRPT_START
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  // Lights casting shadows, in the same order used to assign their cube maps
+  // in setupShaderForPass():
+  std::vector<int> lightIndices;
+  const auto& lights = m_lightParams.lights;
+  for (int i = 0; i < static_cast<int>(lights.size()) && i < MAX_LIGHTS &&
+                  static_cast<int>(lightIndices.size()) < MAX_SHADOW_POINT_LIGHTS;
+       i++)
+  {
+    if (lights[i].type != TLightType::Directional && lights[i].cast_shadows)
+    {
+      lightIndices.push_back(i);
+    }
+  }
+  if (lightIndices.empty())
+  {
+    m_pointShadowCubes.clear();
+    return;
+  }
+
+  const unsigned int mapSize = std::max<unsigned int>(16, m_lightParams.point_shadow_map_size);
+  const int numLayers = 6 * static_cast<int>(lightIndices.size());
+
+  // Create/resize the cube maps texture array
+  bool texRecreated = false;
+  if (m_pointShadowArrayTexId == 0 || m_pointShadowArrayLayers != numLayers ||
+      m_pointShadowArraySize != mapSize)
+  {
+    if (m_pointShadowArrayTexId != 0)
+    {
+      glDeleteTextures(1, &m_pointShadowArrayTexId);
+    }
+    glGenTextures(1, &m_pointShadowArrayTexId);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_pointShadowArrayTexId);
+    glTexImage3D(
+        GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT24, mapSize, mapSize, numLayers, 0,
+        GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+    m_pointShadowArrayLayers = numLayers;
+    m_pointShadowArraySize = mapSize;
+    texRecreated = true;
+  }
+  m_pointShadowCubes.resize(lightIndices.size());
+
+  if (m_shadowMapFBO == 0)
+  {
+    glGenFramebuffers(1, &m_shadowMapFBO);
+  }
+
+  const auto oldFBs = FrameBuffer::CurrentBinding();
+  const auto oldLightPV = m_renderMatrices.light_pv;
+  bool fboBound = false;
+
+  for (size_t k = 0; k < lightIndices.size(); k++)
+  {
+    const auto& l = lights[lightIndices[k]];
+    auto& cube = m_pointShadowCubes[k];
+
+    const float zFar = lightReach(l);
+    const float zNear = std::min(0.05f, zFar * 0.01f);
+    const uint64_t signature = pointShadowSignature(l, zNear, zFar, mapSize, m_proxies);
+
+    // Reuse the cube map if neither the light nor anything near it changed:
+    if (!texRecreated && cube.lightIndex == lightIndices[k] && cube.signature == signature)
+    {
+      continue;
+    }
+    cube.lightIndex = lightIndices[k];
+    cube.zNear = zNear;
+    cube.zFar = zFar;
+    cube.signature = signature;
+
+    if (!fboBound)
+    {
+      glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
+      glViewport(0, 0, static_cast<GLsizei>(mapSize), static_cast<GLsizei>(mapSize));
+      glEnable(GL_DEPTH_TEST);
+      // Hardware polygon offset to prevent shadow acne (self-shadowing)
+      glEnable(GL_POLYGON_OFFSET_FILL);
+      glPolygonOffset(2.0f, 4.0f);
+      fboBound = true;
+      m_pointShadowPass = true;
+    }
+
+    for (int face = 0; face < 6; face++)
+    {
+      glFramebufferTextureLayer(
+          GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_pointShadowArrayTexId, 0,
+          static_cast<GLint>(k * 6 + face));
+      glDrawBuffer(GL_NONE);
+      glReadBuffer(GL_NONE);
+      glClear(GL_DEPTH_BUFFER_BIT);
+
+      if (l.type == TLightType::Spot && !spotReachesCubeFace(l, face))
+      {
+        continue;
+      }
+
+      m_renderMatrices.light_pv = cubeFacePV(l.position, face, zNear, zFar);
+      renderNormalScene(shaderManager, true);
+      m_lastStats.numPointShadowFacesRendered++;
+    }
+  }
+
+  m_renderMatrices.light_pv = oldLightPV;
+  if (fboBound)
+  {
+    m_pointShadowPass = false;
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    FrameBuffer::Bind(oldFBs);
+    glViewport(m_pixelX, m_pixelY, m_pixelWidth, m_pixelHeight);
+  }
+#else
+      (void)
+      shaderManager;
+#endif
+  MRPT_END
+}
+
 void CompiledViewport::renderNormalScene(
     ShaderProgramManager& shaderManager,
     bool isShadowMapPass,
@@ -1251,7 +1539,8 @@ void CompiledViewport::buildRenderQueue(
         mrpt::math::CMatrixFloat44 lightPVM;
         lightPVM.asEigen() = matrices.light_pv.asEigen() * e.m_matrix.asEigen();
         constexpr unsigned int NEAR_PLANE = 16;
-        if (!boxIntersectsClipVolume(*bb, lightPVM, 0x3F & ~NEAR_PLANE))
+        const unsigned int planes = m_pointShadowPass ? 0x3F : (0x3F & ~NEAR_PLANE);
+        if (!boxIntersectsClipVolume(*bb, lightPVM, planes))
         {
           stats.numProxiesCulled++;
           continue;
@@ -1373,6 +1662,44 @@ void CompiledViewport::setupShaderForPass(
       glUniform1fv(
           shader.uniformId("cascade_far_planes"), matrices.numShadowCascades,
           matrices.cascade_far_planes.data());
+    }
+  }
+
+  // Point/spot light cube shadow maps. The sampler always needs its own
+  // texture unit, since shadow and regular samplers must not share one.
+  if (isShadow2ndPass)
+  {
+    if (shader.hasUniform("pointShadowMapArray"))
+    {
+      glUniform1i(shader.uniformId("pointShadowMapArray"), POINT_SHADOW_MAP_TEXTURE_UNIT);
+    }
+    if (m_pointShadowArrayTexId != 0)
+    {
+      glActiveTexture(GL_TEXTURE0 + POINT_SHADOW_MAP_TEXTURE_UNIT);
+      glBindTexture(GL_TEXTURE_2D_ARRAY, m_pointShadowArrayTexId);
+    }
+
+    std::array<int, MAX_LIGHTS> shadowIndices;
+    shadowIndices.fill(-1);
+    std::array<float, 2 * MAX_SHADOW_POINT_LIGHTS> nearFar = {};
+    for (size_t k = 0; k < m_pointShadowCubes.size(); k++)
+    {
+      const auto& cube = m_pointShadowCubes[k];
+      if (cube.lightIndex >= 0 && cube.lightIndex < MAX_LIGHTS)
+      {
+        shadowIndices[cube.lightIndex] = static_cast<int>(k);
+        nearFar[2 * k + 0] = cube.zNear;
+        nearFar[2 * k + 1] = cube.zFar;
+      }
+    }
+    if (shader.hasUniform("light_shadow_index"))
+    {
+      glUniform1iv(shader.uniformId("light_shadow_index"), MAX_LIGHTS, shadowIndices.data());
+    }
+    if (shader.hasUniform("point_shadow_near_far"))
+    {
+      glUniform2fv(
+          shader.uniformId("point_shadow_near_far"), MAX_SHADOW_POINT_LIGHTS, nearFar.data());
     }
   }
 

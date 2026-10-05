@@ -830,6 +830,7 @@ void CompiledScene::updateNode(
       p->m_modelMatrix = node.worldMatrix;
       p->m_visible = node.visible;
       p->m_castShadows = node.castShadows;
+      p->m_changeCount++;
     }
     stats.numObjectsUpdated++;
   }

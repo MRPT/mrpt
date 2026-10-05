@@ -266,9 +266,15 @@ class CAssimpModel : public CSetOfObjects
   /** Load and cache a texture */
   const LoadedTexture* loadTexture(const std::string& texturePath);
 
-  /** Get or create a CSetOfTexturedTriangles for a texture and alpha mode */
+  /** Get or create a CSetOfTexturedTriangles for a texture, alpha mode and
+   * material */
   CSetOfTexturedTriangles::Ptr getOrCreateTexturedMesh(
-      const std::string& texturePath, TAlphaMode alphaMode, float alphaCutoff);
+      const std::string& texturePath,
+      TAlphaMode alphaMode,
+      float alphaCutoff,
+      const mrpt::img::TColorf& emissive,
+      float shininess,
+      float specularExponent);
 
   /** Update bounding box from mesh data */
   void updateBoundingBox(const mrpt::math::TPoint3Df& point);

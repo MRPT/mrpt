@@ -500,7 +500,7 @@ mrpt::math::TBoundingBoxf VisualObjectParams_TexturedTriangles::trianglesBoundin
 void VisualObjectParams_TexturedTriangles::writeToStreamTexturedObject(
     serialization::CArchive& out) const
 {
-  uint8_t ver = 5;
+  uint8_t ver = 6;
 
   out << ver;
   out << m_enableTransparency << m_textureInterpolate << m_textureUseMipMaps;
@@ -519,6 +519,12 @@ void VisualObjectParams_TexturedTriangles::writeToStreamTexturedObject(
   }
   // v5: alpha mode
   out << static_cast<uint8_t>(m_alphaMode) << m_alphaCutoff;
+  // v6: emissive map
+  out << m_emissiveMapAssigned;
+  if (m_emissiveMapAssigned)
+  {
+    out << m_emissiveMapImage;
+  }
 }
 
 void VisualObjectParams_TexturedTriangles::readFromStreamTexturedObject(serialization::CArchive& in)
@@ -534,6 +540,7 @@ void VisualObjectParams_TexturedTriangles::readFromStreamTexturedObject(serializ
     case 3:
     case 4:
     case 5:
+    case 6:
     {
       in >> m_enableTransparency >> m_textureInterpolate;
       if (version >= 3)
@@ -588,6 +595,18 @@ void VisualObjectParams_TexturedTriangles::readFromStreamTexturedObject(serializ
       {
         m_alphaMode = TAlphaMode::Auto;
         m_alphaCutoff = 0.5f;
+      }
+      if (version >= 6)
+      {
+        in >> m_emissiveMapAssigned;
+        if (m_emissiveMapAssigned)
+        {
+          in >> m_emissiveMapImage;
+        }
+      }
+      else
+      {
+        m_emissiveMapAssigned = false;
       }
     }
     break;
@@ -762,6 +781,30 @@ void VisualObjectParams_TexturedTriangles::assignNormalMap(mrpt::img::CImage&& i
 
   m_normalMapImage = std::move(img);
   m_normalMapAssigned = true;
+
+  MRPT_END
+}
+
+void VisualObjectParams_TexturedTriangles::assignEmissiveMap(const mrpt::img::CImage& img)
+{
+  MRPT_START
+
+  CVisualObject::notifyChange();
+
+  m_emissiveMapImage = img;
+  m_emissiveMapAssigned = true;
+
+  MRPT_END
+}
+
+void VisualObjectParams_TexturedTriangles::assignEmissiveMap(mrpt::img::CImage&& img)
+{
+  MRPT_START
+
+  CVisualObject::notifyChange();
+
+  m_emissiveMapImage = std::move(img);
+  m_emissiveMapAssigned = true;
 
   MRPT_END
 }

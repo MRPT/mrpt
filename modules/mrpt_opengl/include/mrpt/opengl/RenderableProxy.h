@@ -259,6 +259,11 @@ class RenderableProxy
    * the object and all its parents. Updated by CompiledScene. */
   bool m_castShadows = true;
 
+  /** Incremented by CompiledScene whenever the buffers, model matrix,
+   * visibility or shadow casting of this proxy may have changed. Used to
+   * detect when cached shadow maps must be regenerated. */
+  uint64_t m_changeCount = 0;
+
   /** Point (in the object local frame) whose eye-space depth is used to sort
    * transparent objects. Set by CompiledScene. */
   mrpt::math::TPoint3Df m_sortPointLocal{0, 0, 0};
@@ -332,6 +337,11 @@ class RenderableProxy
    * \param value The integer value
    */
   static void uploadInt(const RenderContext& rc, const char* uniformName, int value);
+
+  /** Helper: uploads the light sources and ambient terms in rc.lights to the
+   * light uniforms (num_lights, light_*[], ambient...) of the bound shader.
+   */
+  static void uploadLights(const RenderContext& rc);
 
   /** @} */
 

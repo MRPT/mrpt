@@ -844,6 +844,18 @@ class VisualObjectParams_TexturedTriangles : public virtual CVisualObject
   [[nodiscard]] const mrpt::img::CImage& getNormalMapImage() const { return m_normalMapImage; }
   [[nodiscard]] bool normalMapHasBeenAssigned() const { return m_normalMapAssigned; }
 
+  /** Assigns an emissive map: the light emitted by each surface point is
+   * materialEmissive() times this image (sRGB, like the diffuse texture),
+   * so only parts of the surface glow (e.g. the bulb of a lamp).
+   * \note Images are copied, the original ones can be deleted. */
+  void assignEmissiveMap(const mrpt::img::CImage& img);
+
+  /** Similar to assignEmissiveMap, but with move semantics. */
+  void assignEmissiveMap(mrpt::img::CImage&& img);
+
+  [[nodiscard]] const mrpt::img::CImage& getEmissiveMapImage() const { return m_emissiveMapImage; }
+  [[nodiscard]] bool emissiveMapHasBeenAssigned() const { return m_emissiveMapAssigned; }
+
   /** Enable linear interpolation of textures (default=false, use nearest
    * pixel) */
   void enableTextureLinearInterpolation(bool enable) { m_textureInterpolate = enable; }
@@ -887,6 +899,9 @@ class VisualObjectParams_TexturedTriangles : public virtual CVisualObject
 
   bool m_normalMapAssigned = false;
   mutable mrpt::img::CImage m_normalMapImage;
+
+  bool m_emissiveMapAssigned = false;
+  mutable mrpt::img::CImage m_emissiveMapImage;
 
   TAlphaMode m_alphaMode = TAlphaMode::Auto;
   float m_alphaCutoff = 0.5f;
