@@ -31,6 +31,7 @@ TTwist3D = _b.TTwist3D
 TPose3DQuat = _b.TPose3DQuat
 CPolygon = _b.CPolygon
 CHistogram = _b.CHistogram
+CQuaternionDouble = _b.CQuaternionDouble
 
 # --- Fixed Size Matrices and Vectors ---
 # We use dir() to catch all the CMatrixDoubleXX and CVectorFixedDoubleX
@@ -105,6 +106,7 @@ __all__ = [
     "TPose3DQuat",
     "CPolygon",
     "CHistogram",
+    "CQuaternionDouble",
     # Free functions
     "wrapToPi", "wrapTo2Pi",
 ]

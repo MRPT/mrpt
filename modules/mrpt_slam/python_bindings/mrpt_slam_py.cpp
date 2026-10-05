@@ -64,8 +64,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CICP::TReturnInfo — ICP result information struct
   // -------------------------------------------------------------------------
-  py::class_<mrpt::slam::CICP::TReturnInfo>(m, "TICPReturnInfo")
-      .def(py::init<>())
+  py::class_<mrpt::slam::CICP::TReturnInfo>(
+      m, "TICPReturnInfo", "The ICP algorithm return information.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("nIterations", &mrpt::slam::CICP::TReturnInfo::nIterations)
       .def_readwrite("goodness", &mrpt::slam::CICP::TReturnInfo::goodness)
       .def_readwrite("quality", &mrpt::slam::CICP::TReturnInfo::quality)
@@ -83,8 +84,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::slam::CICP::TConfigParams, mrpt::config::CLoadableOptions,
-      std::shared_ptr<mrpt::slam::CICP::TConfigParams>>(m, "CICPOptions")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::slam::CICP::TConfigParams>>(
+      m, "CICPOptions", "The ICP algorithm configuration data.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("ICP_algorithm", &mrpt::slam::CICP::TConfigParams::ICP_algorithm)
       .def_readwrite(
           "ICP_covariance_method", &mrpt::slam::CICP::TConfigParams::ICP_covariance_method)
@@ -105,9 +107,14 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CICP — ICP alignment algorithm
   // -------------------------------------------------------------------------
-  py::class_<mrpt::slam::CICP>(m, "CICP")
-      .def(py::init<>())
-      .def(py::init<const mrpt::slam::CICP::TConfigParams&>(), "options"_a)
+  py::class_<mrpt::slam::CICP>(
+      m, "CICP",
+      "Several implementations of ICP (Iterative closest point) algorithms for aligning two point "
+      "maps or a point map wrt a grid map.")
+      .def(py::init<>(), "Constructor with the default options.")
+      .def(
+          py::init<const mrpt::slam::CICP::TConfigParams&>(), "options"_a,
+          "Constructor that directly set the ICP params from a given struct.")
       .def_readwrite("options", &mrpt::slam::CICP::options)
       .def(
           "AlignPDF",
@@ -125,7 +132,8 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CMetricMapBuilder — abstract base for SLAM map builders
   // -------------------------------------------------------------------------
-  py::class_<mrpt::slam::CMetricMapBuilder>(m, "CMetricMapBuilder")
+  py::class_<mrpt::slam::CMetricMapBuilder>(
+      m, "CMetricMapBuilder", "Base class of the SLAM map builders.")
       .def(
           "initialize",
           [](mrpt::slam::CMetricMapBuilder& b) { b.initialize(mrpt::maps::CSimpleMap()); },
@@ -135,21 +143,35 @@ PYBIND11_MODULE(_bindings, m)
           [](mrpt::slam::CMetricMapBuilder& b, const mrpt::maps::CSimpleMap& map)
           { b.initialize(map); },
           "initialMap"_a, "Initialize the builder with a given initial map.")
-      .def("getCurrentPoseEstimation", &mrpt::slam::CMetricMapBuilder::getCurrentPoseEstimation)
+      .def(
+          "getCurrentPoseEstimation", &mrpt::slam::CMetricMapBuilder::getCurrentPoseEstimation,
+          "Returns a copy of the current best pose estimation as a pose PDF.")
       .def(
           "processActionObservation", &mrpt::slam::CMetricMapBuilder::processActionObservation,
-          "action"_a, "sf"_a)
-      .def("getCurrentlyBuiltMapSize", &mrpt::slam::CMetricMapBuilder::getCurrentlyBuiltMapSize)
+          "action"_a, "sf"_a,
+          "Updates the map and pose estimate with a new action and sensory frame.")
+      .def(
+          "getCurrentlyBuiltMapSize", &mrpt::slam::CMetricMapBuilder::getCurrentlyBuiltMapSize,
+          "Returns just how many sensory-frames are stored in the currently build map.")
       .def(
           "saveCurrentMapToFile", &mrpt::slam::CMetricMapBuilder::saveCurrentMapToFile,
-          "fileName"_a, "compressGZ"_a = true);
+          "fileName"_a, "compressGZ"_a = true,
+          "Saves the current map (a CSimpleMap) to a .simplemap file.");
 
   // -------------------------------------------------------------------------
   // CMetricMapBuilderICP — simple ICP-based SLAM builder
   // -------------------------------------------------------------------------
+  // Registered before CMetricMapBuilderICP, which holds one as ICP_options:
+  py::class_<
+      mrpt::slam::CMetricMapBuilderICP::TConfigParams, mrpt::config::CLoadableOptions,
+      std::shared_ptr<mrpt::slam::CMetricMapBuilderICP::TConfigParams>>
+      icpBuilderOptions(m, "CMetricMapBuilderICPOptions", "Options of CMetricMapBuilderICP.");
+
   py::class_<mrpt::slam::CMetricMapBuilderICP, mrpt::slam::CMetricMapBuilder>(
-      m, "CMetricMapBuilderICP")
-      .def(py::init<>())
+      m, "CMetricMapBuilderICP",
+      "A class for very simple 2D SLAM based on ICP. This is a non-probabilistic pose tracking "
+      "algorithm.")
+      .def(py::init<>(), "Default constructor: set ICP_options, then call initialize().")
       .def_readwrite("ICP_options", &mrpt::slam::CMetricMapBuilderICP::ICP_options)
       .def_readwrite("ICP_params", &mrpt::slam::CMetricMapBuilderICP::ICP_params)
       .def(
@@ -163,20 +185,25 @@ PYBIND11_MODULE(_bindings, m)
           "Configure the builder to use a single CSimplePointsMap. Call before initialize().")
       .def(
           "initialize",
-          [](mrpt::slam::CMetricMapBuilderICP& b) { b.initialize(mrpt::maps::CSimpleMap()); })
+          [](mrpt::slam::CMetricMapBuilderICP& b) { b.initialize(mrpt::maps::CSimpleMap()); },
+          "Starts with an empty map.")
       .def(
           "initialize",
           [](mrpt::slam::CMetricMapBuilderICP& b, const mrpt::maps::CSimpleMap& map)
           { b.initialize(map); },
-          "initialMap"_a)
+          "initialMap"_a, "Starts from a given initial map.")
       .def(
           "processObservation", &mrpt::slam::CMetricMapBuilderICP::processObservation, "obs"_a,
           "Process a single observation (new-style API).")
       .def(
           "processActionObservation", &mrpt::slam::CMetricMapBuilderICP::processActionObservation,
           "action"_a, "sf"_a, "Process action+sensoryframe pair (classic API).")
-      .def("getCurrentPoseEstimation", &mrpt::slam::CMetricMapBuilderICP::getCurrentPoseEstimation)
-      .def("getCurrentlyBuiltMapSize", &mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMapSize)
+      .def(
+          "getCurrentPoseEstimation", &mrpt::slam::CMetricMapBuilderICP::getCurrentPoseEstimation,
+          "Returns a copy of the current best pose estimation as a pose PDF.")
+      .def(
+          "getCurrentlyBuiltMapSize", &mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMapSize,
+          "Returns just how many sensory-frames are stored in the currently build map.")
       .def(
           "getCurrentMapPoints",
           [](mrpt::slam::CMetricMapBuilderICP& b)
@@ -190,7 +217,8 @@ PYBIND11_MODULE(_bindings, m)
           "saveCurrentMapToFile",
           [](mrpt::slam::CMetricMapBuilderICP& b, const std::string& fn, bool gz)
           { b.saveCurrentMapToFile(fn, gz); },
-          "fileName"_a, "compressGZ"_a = true)
+          "fileName"_a, "compressGZ"_a = true,
+          "Saves the current map (a CSimpleMap) to a .simplemap file.")
       .def(
           "__repr__",
           [](const mrpt::slam::CMetricMapBuilderICP& b)
@@ -204,10 +232,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CMetricMapBuilderICP::TConfigParams — ICP-SLAM builder options
   // -------------------------------------------------------------------------
-  py::class_<
-      mrpt::slam::CMetricMapBuilderICP::TConfigParams, mrpt::config::CLoadableOptions,
-      std::shared_ptr<mrpt::slam::CMetricMapBuilderICP::TConfigParams>>(
-      m, "CMetricMapBuilderICPOptions")
+  icpBuilderOptions
       .def_readwrite(
           "matchAgainstTheGrid",
           &mrpt::slam::CMetricMapBuilderICP::TConfigParams::matchAgainstTheGrid)
@@ -268,8 +293,8 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::slam::TKLDParams, mrpt::config::CLoadableOptions,
-      std::shared_ptr<mrpt::slam::TKLDParams>>(m, "TKLDParams")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::slam::TKLDParams>>(m, "TKLDParams", "Option set for KLD algorithm.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("KLD_binSize_XY", &mrpt::slam::TKLDParams::KLD_binSize_XY)
       .def_readwrite("KLD_binSize_PHI", &mrpt::slam::TKLDParams::KLD_binSize_PHI)
       .def_readwrite("KLD_delta", &mrpt::slam::TKLDParams::KLD_delta)
@@ -279,8 +304,10 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("KLD_minSamplesPerBin", &mrpt::slam::TKLDParams::KLD_minSamplesPerBin);
 
   using MCLParams = mrpt::slam::TMonteCarloLocalizationParams;
-  py::class_<MCLParams>(m, "TMonteCarloLocalizationParams")
-      .def(py::init<>())
+  py::class_<MCLParams>(
+      m, "TMonteCarloLocalizationParams",
+      "Parameters of the prediction and update stages of Monte Carlo localization.")
+      .def(py::init<>(), "Default constructor.")
       .def_property(
           "metricMap",
           [](const MCLParams& p)
@@ -305,7 +332,8 @@ PYBIND11_MODULE(_bindings, m)
 
   using MCL2D = mrpt::slam::CMonteCarloLocalization2D;
   py::class_<MCL2D, mrpt::poses::CPosePDFParticles, std::shared_ptr<MCL2D>>(
-      m, "CMonteCarloLocalization2D")
+      m, "CMonteCarloLocalization2D",
+      "Particle filter for 2D robot localization (x, y, phi) on a known map.")
       .def(py::init<size_t>(), "M"_a = 1, "Creates a filter with M particles")
       .def_readwrite("options", &MCL2D::options)
       .def(
@@ -325,7 +353,7 @@ PYBIND11_MODULE(_bindings, m)
 
   using MCL3D = mrpt::slam::CMonteCarloLocalization3D;
   py::class_<MCL3D, mrpt::poses::CPose3DPDFParticles, std::shared_ptr<MCL3D>>(
-      m, "CMonteCarloLocalization3D")
+      m, "CMonteCarloLocalization3D", "Particle filter for 3D robot localization on a known map.")
       .def(py::init<size_t>(), "M"_a = 1, "Creates a filter with M particles")
       .def_readwrite("options", &MCL3D::options)
       .def(
@@ -340,20 +368,24 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   using PredParams = mrpt::maps::CMultiMetricMapPDF::TPredictionParams;
   py::class_<PredParams, mrpt::config::CLoadableOptions, std::shared_ptr<PredParams>>(
-      m, "TPredictionParams")
-      .def(py::init<>())
+      m, "TPredictionParams", "Parameters of the prediction and update stages of RBPF-SLAM.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("pfOptimalProposal_mapSelection", &PredParams::pfOptimalProposal_mapSelection)
       .def_readwrite("ICPGlobalAlign_MinQuality", &PredParams::ICPGlobalAlign_MinQuality)
       .def_readwrite("KLD_params", &PredParams::KLD_params)
       .def_readwrite("icp_params", &PredParams::icp_params);
 
   using RBPF = mrpt::slam::CMetricMapBuilderRBPF;
-  py::class_<RBPF, mrpt::slam::CMetricMapBuilder> rbpf(m, "CMetricMapBuilderRBPF");
+  py::class_<RBPF, mrpt::slam::CMetricMapBuilder> rbpf(
+      m, "CMetricMapBuilderRBPF",
+      "This class implements a Rao-Blackwelized Particle Filter (RBPF) approach to map building "
+      "(SLAM).");
 
   py::class_<
       RBPF::TConstructionOptions, mrpt::config::CLoadableOptions,
-      std::shared_ptr<RBPF::TConstructionOptions>>(rbpf, "TConstructionOptions")
-      .def(py::init<>())
+      std::shared_ptr<RBPF::TConstructionOptions>>(
+      rbpf, "TConstructionOptions", "Options of CMetricMapBuilderRBPF.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("insertionLinDistance", &RBPF::TConstructionOptions::insertionLinDistance)
       .def_readwrite("insertionAngDistance", &RBPF::TConstructionOptions::insertionAngDistance)
       .def_readwrite("localizeLinDistance", &RBPF::TConstructionOptions::localizeLinDistance)
@@ -362,8 +394,10 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("mapsInitializers", &RBPF::TConstructionOptions::mapsInitializers)
       .def_readwrite("predictionOptions", &RBPF::TConstructionOptions::predictionOptions);
 
-  rbpf.def(py::init<>())
-      .def(py::init<const RBPF::TConstructionOptions&>(), "options"_a)
+  rbpf.def(py::init<>(), "Default constructor: set the options, then call initialize().")
+      .def(
+          py::init<const RBPF::TConstructionOptions&>(), "options"_a,
+          "Builds the RBPF-SLAM map builder from its options.")
       .def(
           "initialize",
           [](RBPF& b, const mrpt::maps::CSimpleMap& initialMap) { b.initialize(initialMap); },
@@ -391,7 +425,9 @@ PYBIND11_MODULE(_bindings, m)
             return sm;
           },
           "Returns the keyframes of the most likely particle as a CSimpleMap")
-      .def("getCurrentlyBuiltMapSize", &RBPF::getCurrentlyBuiltMapSize)
+      .def(
+          "getCurrentlyBuiltMapSize", &RBPF::getCurrentlyBuiltMapSize,
+          "Returns just how many sensory-frames are stored in the currently build map.")
       .def(
           "getCurrentMostLikelyPath",
           [](const RBPF& b)
@@ -401,8 +437,12 @@ PYBIND11_MODULE(_bindings, m)
             return std::vector<mrpt::math::TPose3D>(path.begin(), path.end());
           },
           "Returns the robot path of the most likely particle, as a list of TPose3D")
-      .def("getCurrentJointEntropy", &RBPF::getCurrentJointEntropy)
+      .def(
+          "getCurrentJointEntropy", &RBPF::getCurrentJointEntropy,
+          "Returns the joint entropy of the map and path estimate.")
       .def(
           "saveCurrentPathEstimationToTextFile", &RBPF::saveCurrentPathEstimationToTextFile,
-          "fileName"_a);
+          "fileName"_a,
+          "A logging utility: saves the current path estimation for each particle in a text file "
+          "(a row per particle, each 3-column-entry is a set [x,y,phi], respectively).");
 }

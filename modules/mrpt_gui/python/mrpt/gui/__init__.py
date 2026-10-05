@@ -18,6 +18,9 @@ Usage example::
     win.waitForKey()
 """
 
+import mrpt.img  # noqa: F401  (CImage in setImageView())
+import mrpt.viz  # noqa: F401  (Scene returned by get3DSceneAndLock())
+
 from mrpt.gui._bindings import (
     CBaseGUIWindow,
     CDisplayWindow3D,

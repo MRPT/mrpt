@@ -80,6 +80,7 @@ Viewport.__lshift__ = _scene_lshift
 
 
 def create_point_cloud(pts_array, color=(255, 255, 255)):
+    """Returns a CPointCloud with the points of an (N, 3) array, in one color (R, G, B, 0-255)."""
     pc = CPointCloud()
     pc.setPoints(pts_array)
     pc.setColor(*color)

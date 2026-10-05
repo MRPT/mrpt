@@ -32,16 +32,21 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CClientTCPSocket — client-side TCP connection
   // -------------------------------------------------------------------------
-  py::class_<mrpt::comms::CClientTCPSocket, mrpt::io::CStream>(m, "CClientTCPSocket")
-      .def(py::init<>())
+  py::class_<mrpt::comms::CClientTCPSocket, mrpt::io::CStream>(
+      m, "CClientTCPSocket",
+      "A TCP socket that can be connected to a TCP server, implementing MRPT's CStream interface "
+      "for passing objects as well as generic read/write methods.")
+      .def(py::init<>(), "Default constructor.")
       .def(
           "connect",
           [](mrpt::comms::CClientTCPSocket& s, const std::string& host, unsigned short port,
              unsigned int timeout_ms) { s.connect(host, port, timeout_ms); },
           "remotePartAddress"_a, "remotePartTCPPort"_a, "timeout_ms"_a = 0,
           "Establish a TCP connection to host:port. timeout_ms=0 means no timeout.")
-      .def("isConnected", &mrpt::comms::CClientTCPSocket::isConnected)
-      .def("close", &mrpt::comms::CClientTCPSocket::close)
+      .def(
+          "isConnected", &mrpt::comms::CClientTCPSocket::isConnected,
+          "Returns true if this objects represents a successfully connected socket.")
+      .def("close", &mrpt::comms::CClientTCPSocket::close, "Closes the connection.")
       .def(
           "sendString", &mrpt::comms::CClientTCPSocket::sendString, "str"_a,
           "Send a std::string over the TCP connection")
@@ -91,7 +96,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CSerialPort — RS-232 / USB serial port
   // -------------------------------------------------------------------------
-  py::class_<mrpt::comms::CSerialPort, mrpt::io::CStream>(m, "CSerialPort")
+  py::class_<mrpt::comms::CSerialPort, mrpt::io::CStream>(
+      m, "CSerialPort",
+      "A communications serial port implementing the interface mrpt::io::CStream.")
       .def(py::init<>(), "Default constructor; call setSerialPortName() + open() before use")
       .def(
           py::init<const std::string&, bool>(), "portName"_a, "openNow"_a = true,
@@ -103,8 +110,10 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "open", py::overload_cast<const std::string&>(&mrpt::comms::CSerialPort::open),
           "COM_name"_a, "Open the named port")
-      .def("close", &mrpt::comms::CSerialPort::close)
-      .def("isOpen", &mrpt::comms::CSerialPort::isOpen)
+      .def(
+          "close", &mrpt::comms::CSerialPort::close,
+          "Close the port. If is already closed, results in no action.")
+      .def("isOpen", &mrpt::comms::CSerialPort::isOpen, "Returns if port has been correctly open.")
       .def(
           "setConfig", &mrpt::comms::CSerialPort::setConfig, "baudRate"_a, "parity"_a = 0,
           "bits"_a = 8, "nStopBits"_a = 1, "enableFlowControl"_a = false,
@@ -114,7 +123,7 @@ PYBIND11_MODULE(_bindings, m)
           "ReadTotalTimeoutMultiplier"_a, "ReadTotalTimeoutConstant"_a,
           "WriteTotalTimeoutMultiplier"_a, "WriteTotalTimeoutConstant"_a,
           "Set read/write timeouts in milliseconds")
-      .def("purgeBuffers", &mrpt::comms::CSerialPort::purgeBuffers)
+      .def("purgeBuffers", &mrpt::comms::CSerialPort::purgeBuffers, "Purge tx and rx buffers.")
       // Read bytes
       .def(
           "read",

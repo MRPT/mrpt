@@ -31,8 +31,13 @@ PYBIND11_MODULE(_bindings, m)
 {
   m.doc() = "Python bindings for mrpt-expr (Runtime expression parser)";
 
-  py::class_<CRuntimeCompiledExpression>(m, "CRuntimeCompiledExpression", py::dynamic_attr())
-      .def(py::init<>())
+  py::class_<CRuntimeCompiledExpression>(
+      m, "CRuntimeCompiledExpression",
+      "A wrapper of exprtk runtime expression compiler: it takes a string representing an "
+      "expression (from a simple mathematical formula to a complete program), compiles it and "
+      "evaluates its result as many times as required.",
+      py::dynamic_attr())
+      .def(py::init<>(), "Default constructor: call compile() before evaluating.")
       // Main compilation method
       .def(
           "compile",

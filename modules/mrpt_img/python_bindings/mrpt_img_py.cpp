@@ -42,17 +42,21 @@ PYBIND11_MODULE(_bindings, m)
       .export_values();
 
   // 2. TColor and TColorf
-  py::class_<TColor>(m, "TColor")
-      .def(py::init<uint8_t, uint8_t, uint8_t, uint8_t>(), "r"_a, "g"_a, "b"_a, "alpha"_a = 255)
-      .def(py::init(
-          [](const std::vector<uint8_t>& v)
-          {
-            if (v.size() < 3)
-            {
-              throw std::invalid_argument("List must have 3 or 4 elements");
-            }
-            return TColor(v[0], v[1], v[2], v.size() > 3 ? v[3] : 255);
-          }))
+  py::class_<TColor>(m, "TColor", "An RGBA color, 8 bits per channel.")
+      .def(
+          py::init<uint8_t, uint8_t, uint8_t, uint8_t>(), "r"_a, "g"_a, "b"_a, "alpha"_a = 255,
+          "Builds a color from its components (0-255).")
+      .def(
+          py::init(
+              [](const std::vector<uint8_t>& v)
+              {
+                if (v.size() < 3)
+                {
+                  throw std::invalid_argument("List must have 3 or 4 elements");
+                }
+                return TColor(v[0], v[1], v[2], v.size() > 3 ? v[3] : 255);
+              }),
+          "Builds a color from a list [r, g, b] or [r, g, b, a] (0-255).")
       .def_readwrite("R", &TColor::R)
       .def_readwrite("G", &TColor::G)
       .def_readwrite("B", &TColor::B)
@@ -68,10 +72,12 @@ PYBIND11_MODULE(_bindings, m)
           });
 
   // TColorf: RGBA color with float components in [0,1]
-  py::class_<TColorf>(m, "TColorf")
-      .def(py::init<>())
-      .def(py::init<float, float, float, float>(), "r"_a, "g"_a, "b"_a, "alpha"_a = 1.0f)
-      .def(py::init<const TColor&>(), "color"_a)
+  py::class_<TColorf>(m, "TColorf", "An RGBA color - floats in the range [0,1].")
+      .def(py::init<>(), "Default constructor.")
+      .def(
+          py::init<float, float, float, float>(), "r"_a, "g"_a, "b"_a, "alpha"_a = 1.0f,
+          "Builds a color from its components (0-1).")
+      .def(py::init<const TColor&>(), "color"_a, "Builds a float color from an 8-bit TColor.")
       .def_readwrite("R", &TColorf::R)
       .def_readwrite("G", &TColorf::G)
       .def_readwrite("B", &TColorf::B)
@@ -87,42 +93,56 @@ PYBIND11_MODULE(_bindings, m)
   py::implicitly_convertible<TColor, TColorf>();
 
   // 3. TPixelCoord and TPixelCoordf
-  py::class_<TPixelCoord>(m, "TPixelCoord")
-      .def(py::init<int, int>())
+  py::class_<TPixelCoord>(m, "TPixelCoord", "Integer pixel coordinates (x, y).")
+      .def(py::init<int, int>(), "Builds a pixel coordinate from (x, y).")
       .def_readwrite("x", &TPixelCoord::x)
       .def_readwrite("y", &TPixelCoord::y);
-  py::class_<TPixelCoordf>(m, "TPixelCoordf")
-      .def(py::init<float, float>())
+  py::class_<TPixelCoordf>(m, "TPixelCoordf", "Sub-pixel coordinates (x, y), as floats.")
+      .def(py::init<float, float>(), "Builds a pixel coordinate from (x, y).")
       .def_readwrite("x", &TPixelCoordf::x)
       .def_readwrite("y", &TPixelCoordf::y);
 
   // 4. CImage (The most important part)
-  py::class_<CImage, std::shared_ptr<CImage>>(m, "CImage")
-      .def(py::init<>())
-      // Pythonic Constructor from NumPy array
-      .def(py::init(
-          [](const py::array_t<uint8_t>& array)
-          {
-            auto r = array.unchecked<3>();
-            auto img = CImage::Create();
-            img->resize(
-                static_cast<int32_t>(r.shape(1)), static_cast<int32_t>(r.shape(0)),
-                r.shape(2) == 3 ? CH_RGB : CH_GRAY);
+  py::enum_<PixelDepth>(m, "PixelDepth", "Bit depth of each image channel")
+      .value("D8U", PixelDepth::D8U)
+      .value("D16U", PixelDepth::D16U);
 
-            // Copy data from numpy to MRPT
-            for (int y = 0; y < r.shape(0); y++)
-            {
-              for (int x = 0; x < r.shape(1); x++)
+  py::class_<CImage, std::shared_ptr<CImage>>(
+      m, "CImage", "A class for storing images as grayscale, RGB, or RGBA bitmaps.")
+      .def(py::init<>(), "Default constructor: an empty image.")
+      // Pythonic Constructor from NumPy array
+      .def(
+          py::init(
+              [](const py::array_t<uint8_t>& array)
               {
-                for (int c = 0; c < r.shape(2); c++)
+                auto r = array.unchecked<3>();
+                auto img = CImage::Create();
+                img->resize(
+                    static_cast<int32_t>(r.shape(1)), static_cast<int32_t>(r.shape(0)),
+                    r.shape(2) == 3 ? CH_RGB : CH_GRAY);
+
+                // Copy data from numpy to MRPT
+                for (int y = 0; y < r.shape(0); y++)
                 {
-                  img->at<uint8_t>(x, y, static_cast<int8_t>(c)) = r(y, x, c);
+                  for (int x = 0; x < r.shape(1); x++)
+                  {
+                    for (int c = 0; c < r.shape(2); c++)
+                    {
+                      img->at<uint8_t>(x, y, static_cast<int8_t>(c)) = r(y, x, c);
+                    }
+                  }
                 }
-              }
-            }
-            return img;
-          }))
-      .def("resize", &CImage::resize)
+                return img;
+              }),
+          "Builds an image from a NumPy uint8 array of shape (height, width, channels).")
+      .def(
+          "resize",
+          [](CImage& img, int32_t width, int32_t height, int channels, PixelDepth depth)
+          { img.resize(width, height, static_cast<TImageChannels>(channels), depth); },
+          py::arg("width"), py::arg("height"), py::arg("channels") = 3,
+          py::arg("depth") = PixelDepth::D8U,
+          "Changes the image size and number of channels (1, 3 or 4), erasing its contents "
+          "(it does not scale them).")
       .def(
           "as_numpy",
           [](const py::object& self_obj)
@@ -152,8 +172,12 @@ PYBIND11_MODULE(_bindings, m)
             );
           },
           "Returns a Zero-Copy NumPy view of the image data.")  // Drawing methods (from CCanvas)
-      .def("drawCircle", &CImage::drawCircle, "center"_a, "radius"_a, "color"_a, "width"_a = 1)
-      .def("textOut", &CImage::textOut, "p"_a, "str"_a, "color"_a)
+      .def(
+          "drawCircle", &CImage::drawCircle, "center"_a, "radius"_a, "color"_a, "width"_a = 1,
+          "Draws a circle of a given radius.")
+      .def(
+          "textOut", &CImage::textOut, "p"_a, "str"_a, "color"_a,
+          "Renders 2D text using bitmap fonts.")
       // Load/save
       .def(
           "loadFromFile",
@@ -195,8 +219,11 @@ PYBIND11_MODULE(_bindings, m)
           "array"_a, "Create a CImage from a HxWxC numpy uint8 array (zero-copy not used).");
 
   // 5. TCamera
-  py::class_<TCamera>(m, "TCamera")
-      .def(py::init<>())
+  py::class_<TCamera>(
+      m, "TCamera",
+      "Intrinsic parameters for a pinhole or fisheye camera model, along with the associated lens "
+      "distortion model.")
+      .def(py::init<>(), "Default constructor: all intrinsic parameters set to zero.")
       .def_readwrite("ncols", &TCamera::ncols)
       .def_readwrite("nrows", &TCamera::nrows)
       .def_readwrite("distortion", &TCamera::distortion)
@@ -229,8 +256,8 @@ PYBIND11_MODULE(_bindings, m)
 
   // 6. TStereoCamera
   py::class_<TStereoCamera, mrpt::serialization::CSerializable, std::shared_ptr<TStereoCamera>>(
-      m, "TStereoCamera")
-      .def(py::init<>())
+      m, "TStereoCamera", "Structure to hold the parameters of a pinhole stereo camera model.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("leftCamera", &TStereoCamera::leftCamera)
       .def_readwrite("rightCamera", &TStereoCamera::rightCamera)
       .def_readwrite("rightCameraPose", &TStereoCamera::rightCameraPose)

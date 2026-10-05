@@ -71,7 +71,8 @@ PYBIND11_MODULE(_bindings, m)
       py::arg("data"), py::arg("gen_pol") = 0xEDB88320L, "Compute CRC32 checksum from raw bytes");
 
   // CTicTac -------------------------------------------
-  py::class_<mrpt::system::CTicTac>(m, "CTicTac")
+  py::class_<mrpt::system::CTicTac>(
+      m, "CTicTac", "A high-performance stopwatch, with typical resolution of nanoseconds.")
       .def(py::init<>(), "Create a new stopwatch and start it automatically")
       .def("Tic", &mrpt::system::CTicTac::Tic, "Start or restart the stopwatch")
       .def(
@@ -111,7 +112,10 @@ PYBIND11_MODULE(_bindings, m)
       "Format a value with SI metric unit prefixes (e.g., 1e3 -> '1.00 K')");
 
   // --- CTimeLogger ---
-  py::class_<mrpt::system::CTimeLogger> logger(m, "CTimeLogger");
+  py::class_<mrpt::system::CTimeLogger> logger(
+      m, "CTimeLogger",
+      "A versatile \"profiler\" that logs the time spent within each pair of calls to "
+      "enter(X)-leave(X), among other stats.");
 
   logger.def(
       py::init<bool, const std::string&, bool>(), py::arg("enabled") = true, py::arg("name") = "",
@@ -133,41 +137,72 @@ PYBIND11_MODULE(_bindings, m)
       "getLastTime", &mrpt::system::CTimeLogger::getLastTime, py::arg("section_name"),
       "Return last execution time of a section");
 
-  logger.def("enable", &mrpt::system::CTimeLogger::enable, py::arg("enabled") = true);
-  logger.def("disable", &mrpt::system::CTimeLogger::disable);
-  logger.def("isEnabled", &mrpt::system::CTimeLogger::isEnabled);
+  logger.def(
+      "enable", &mrpt::system::CTimeLogger::enable, py::arg("enabled") = true,
+      "Enables or disables the logger.");
+  logger.def("disable", &mrpt::system::CTimeLogger::disable, "Disables the logger.");
+  logger.def(
+      "isEnabled", &mrpt::system::CTimeLogger::isEnabled, "Returns true if the logger is enabled.");
   logger.def(
       "enableKeepWholeHistory", &mrpt::system::CTimeLogger::enableKeepWholeHistory,
-      py::arg("enable") = true);
-  logger.def("isEnabledKeepWholeHistory", &mrpt::system::CTimeLogger::isEnabledKeepWholeHistory);
+      py::arg("enable") = true,
+      "If enabled, keeps all the measured times (not only the statistics).");
+  logger.def(
+      "isEnabledKeepWholeHistory", &mrpt::system::CTimeLogger::isEnabledKeepWholeHistory,
+      "Returns true if all the measured times are kept.");
 
   logger.def(
-      "getStatsAsText", &mrpt::system::CTimeLogger::getStatsAsText, py::arg("column_width") = 80);
+      "getStatsAsText", &mrpt::system::CTimeLogger::getStatsAsText, py::arg("column_width") = 80,
+      "Dump all stats to a multi-line text string.");
   logger.def(
-      "dumpAllStats", &mrpt::system::CTimeLogger::dumpAllStats, py::arg("column_width") = 80);
-  logger.def("saveToCSVFile", &mrpt::system::CTimeLogger::saveToCSVFile, py::arg("csv_file"));
-  logger.def("saveToMFile", &mrpt::system::CTimeLogger::saveToMFile, py::arg("m_file"));
-  logger.def("clear", &mrpt::system::CTimeLogger::clear, py::arg("deep_clear") = false);
-  logger.def("setName", &mrpt::system::CTimeLogger::setName, py::arg("name"));
-  logger.def("getName", &mrpt::system::CTimeLogger::getName, py::return_value_policy::reference);
+      "dumpAllStats", &mrpt::system::CTimeLogger::dumpAllStats, py::arg("column_width") = 80,
+      "Dump all stats through the COutputLogger interface.");
+  logger.def(
+      "saveToCSVFile", &mrpt::system::CTimeLogger::saveToCSVFile, py::arg("csv_file"),
+      "Dump all stats to a Comma Separated Values (CSV) file.");
+  logger.def(
+      "saveToMFile", &mrpt::system::CTimeLogger::saveToMFile, py::arg("m_file"),
+      "Dump all stats to a Matlab/Octave (.m) file.");
+  logger.def(
+      "clear", &mrpt::system::CTimeLogger::clear, py::arg("deep_clear") = false,
+      "Resets all stats. By default (deep_clear=false), all section names are remembered (not "
+      "freed) so the cost of creating upon the first next call is avoided.");
+  logger.def(
+      "setName", &mrpt::system::CTimeLogger::setName, py::arg("name"),
+      "Sets the logger name, shown in the statistics.");
+  logger.def(
+      "getName", &mrpt::system::CTimeLogger::getName, py::return_value_policy::reference,
+      "Returns the logger name.");
 
   // --- CTimeLoggerEntry ---
-  py::class_<mrpt::system::CTimeLoggerEntry>(m, "CTimeLoggerEntry")
+  py::class_<mrpt::system::CTimeLoggerEntry>(
+      m, "CTimeLoggerEntry",
+      "Calls enter() on construction and leave() on stop() or destruction of a CTimeLogger "
+      "section.")
       .def(
           py::init<mrpt::system::CTimeLogger&, const std::string&>(), py::arg("logger"),
           py::arg("section_name"), "Scoped time logging entry")
-      .def("stop", &mrpt::system::CTimeLoggerEntry::stop);
+      .def("stop", &mrpt::system::CTimeLoggerEntry::stop, "Ends the timed section now.");
 
   // --- CTimeLoggerSaveAtDtor ---
-  py::class_<mrpt::system::CTimeLoggerSaveAtDtor>(m, "CTimeLoggerSaveAtDtor")
-      .def(py::init<mrpt::system::CTimeLogger&>(), py::arg("logger"));
+  py::class_<mrpt::system::CTimeLoggerSaveAtDtor>(
+      m, "CTimeLoggerSaveAtDtor",
+      "A helper class to save CSV stats upon self destruction, for example, at the end of a "
+      "program run.")
+      .def(
+          py::init<mrpt::system::CTimeLogger&>(), py::arg("logger"),
+          "Saves the statistics of the given logger to a CSV file when this object is destroyed.");
 
   // --- Global profiler functions ---
-  m.def("global_profiler_enter", &mrpt::system::global_profiler_enter, py::arg("func_name"));
-  m.def("global_profiler_leave", &mrpt::system::global_profiler_leave, py::arg("func_name"));
+  m.def(
+      "global_profiler_enter", &mrpt::system::global_profiler_enter, py::arg("func_name"),
+      "Starts timing a section in the global profiler.");
+  m.def(
+      "global_profiler_leave", &mrpt::system::global_profiler_leave, py::arg("func_name"),
+      "Ends timing a section in the global profiler.");
   m.def(
       "global_profiler_getref", &mrpt::system::global_profiler_getref,
-      py::return_value_policy::reference);
+      py::return_value_policy::reference, "Returns the global profiler (a CTimeLogger).");
 
   // --- filesystem ---
   m.def(
@@ -224,7 +259,7 @@ PYBIND11_MODULE(_bindings, m)
   // --- datetime ---
   py::class_<mrpt::system::TTimeParts>(
       m, "TTimeParts", "Broken-down date/time representation (UTC or local)")
-      .def(py::init<>())
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("year", &mrpt::system::TTimeParts::year)
       .def_readwrite("month", &mrpt::system::TTimeParts::month)
       .def_readwrite("day", &mrpt::system::TTimeParts::day)

@@ -63,9 +63,12 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::maps::CMetricMap, mrpt::serialization::CSerializable,
-      std::shared_ptr<mrpt::maps::CMetricMap>>(m, "CMetricMap")
-      .def("clear", &mrpt::maps::CMetricMap::clear)
-      .def("isEmpty", &mrpt::maps::CMetricMap::isEmpty)
+      std::shared_ptr<mrpt::maps::CMetricMap>>(
+      m, "CMetricMap", "Declares a virtual base class for all metric maps storage classes.")
+      .def("clear", &mrpt::maps::CMetricMap::clear, "Erase all the contents of the map.")
+      .def(
+          "isEmpty", &mrpt::maps::CMetricMap::isEmpty,
+          "Returns true if the map is empty/no observation has been inserted.")
       .def(
           "insertObservation",
           [](mrpt::maps::CMetricMap& mp, const mrpt::obs::CObservation& obs,
@@ -112,7 +115,9 @@ PYBIND11_MODULE(_bindings, m)
           "Log-likelihood of all observations in a CSensoryFrame taken from a given pose")
       .def(
           "canComputeObservationLikelihood",
-          &mrpt::maps::CMetricMap::canComputeObservationLikelihood, "obs"_a)
+          &mrpt::maps::CMetricMap::canComputeObservationLikelihood, "obs"_a,
+          "Returns true if this map is able to compute a sensible likelihood function for this "
+          "observation (i.e. an occupancy grid map cannot with an image).")
       .def(
           "getVisualization",
           [](const mrpt::maps::CMetricMap& mp) { return mp.getVisualization(); },
@@ -137,18 +142,26 @@ PYBIND11_MODULE(_bindings, m)
           &mrpt::maps::CMetricMap::saveMetricMapRepresentationToFile, "filNamePrefix"_a,
           "Saves the map in a format suitable for inspection (e.g. images or text)")
       .def("__str__", &mrpt::maps::CMetricMap::asString)
-      .def("GetRuntimeClass", &mrpt::maps::CMetricMap::GetRuntimeClass);
+      .def(
+          "GetRuntimeClass", &mrpt::maps::CMetricMap::GetRuntimeClass,
+          "Returns information about the class of an object in runtime.");
 
   // -------------------------------------------------------------------------
   // CPointsMap — abstract point cloud map
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::maps::CPointsMap, mrpt::maps::CMetricMap, std::shared_ptr<mrpt::maps::CPointsMap>>(
-      m, "CPointsMap")
-      .def("size", &mrpt::maps::CPointsMap::size)
+      m, "CPointsMap",
+      "A cloud of points in 2D or 3D, which can be built from a sequence of laser scans or other "
+      "sensors.")
+      .def("size", &mrpt::maps::CPointsMap::size, "Returns the number of points.")
       .def("__len__", &mrpt::maps::CPointsMap::size)
-      .def("isEmpty", &mrpt::maps::CPointsMap::isEmpty)
-      .def("reserve", &mrpt::maps::CPointsMap::reserve)
+      .def(
+          "isEmpty", &mrpt::maps::CPointsMap::isEmpty,
+          "Returns true if the map is empty/no observation has been inserted.")
+      .def(
+          "reserve", &mrpt::maps::CPointsMap::reserve,
+          "Reserves memory for a given number of points, without changing the map size.")
       .def(
           "getPoint",
           [](const mrpt::maps::CPointsMap& mp, size_t i)
@@ -161,7 +174,9 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "insertPoint",
           [](mrpt::maps::CPointsMap& mp, float x, float y, float z) { mp.insertPoint(x, y, z); },
-          "x"_a, "y"_a, "z"_a = 0.0f)
+          "x"_a, "y"_a, "z"_a = 0.0f,
+          "Provides a way to insert (append) individual points into the map: the missing fields of "
+          "child classes (color, weight, etc) are left to their default values.")
       // NumPy integration — get all points as Nx3 float32 array
       .def(
           "getPointsAsNumpy",
@@ -192,10 +207,20 @@ PYBIND11_MODULE(_bindings, m)
             for (py::ssize_t i = 0; i < r.shape(0); i++) mp.insertPoint(r(i, 0), r(i, 1), r(i, 2));
           },
           "arr"_a, "Load an Nx3 float32 numpy array into this point cloud")
-      .def("save2D_to_text_file", &mrpt::maps::CPointsMap::save2D_to_text_file)
-      .def("save3D_to_text_file", &mrpt::maps::CPointsMap::save3D_to_text_file)
-      .def("load2D_from_text_file", &mrpt::maps::CPointsMap::load2D_from_text_file)
-      .def("load3D_from_text_file", &mrpt::maps::CPointsMap::load3D_from_text_file)
+      .def(
+          "save2D_to_text_file", &mrpt::maps::CPointsMap::save2D_to_text_file,
+          "Save to a text file. Each line will contain \"X Y\" point coordinates.")
+      .def(
+          "save3D_to_text_file", &mrpt::maps::CPointsMap::save3D_to_text_file,
+          "Save to a text file. Each line will contain \"X Y Z\" point coordinates.")
+      .def(
+          "load2D_from_text_file", &mrpt::maps::CPointsMap::load2D_from_text_file,
+          "Load from a text file. Each line should contain an \"X Y\" coordinate pair, separated "
+          "by whitespaces.")
+      .def(
+          "load3D_from_text_file", &mrpt::maps::CPointsMap::load3D_from_text_file,
+          "Load from a text file. Each line should contain an \"X Y Z\" coordinate tuple, "
+          "separated by whitespaces.")
       .def(
           "__repr__", [](const mrpt::maps::CPointsMap& mp)
           { return "CPointsMap(" + std::to_string(mp.size()) + " points)"; });
@@ -205,8 +230,10 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::maps::CSimplePointsMap, mrpt::maps::CPointsMap,
-      std::shared_ptr<mrpt::maps::CSimplePointsMap>>(m, "CSimplePointsMap")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::maps::CSimplePointsMap>>(
+      m, "CSimplePointsMap",
+      "A cloud of points in 2D or 3D, which can be built from a sequence of laser scans.")
+      .def(py::init<>(), "Default constructor.")
       .def(
           "__repr__", [](const mrpt::maps::CSimplePointsMap& mp)
           { return "CSimplePointsMap(" + std::to_string(mp.size()) + " points)"; });
@@ -216,8 +243,10 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::maps::CGenericPointsMap, mrpt::maps::CPointsMap,
-      std::shared_ptr<mrpt::maps::CGenericPointsMap>>(m, "CGenericPointsMap")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::maps::CGenericPointsMap>>(
+      m, "CGenericPointsMap",
+      "A map of 3D points (X,Y,Z) plus any number of custom, string-keyed per-point data channels.")
+      .def(py::init<>(), "Default constructor.")
       // Register custom per-point data channels:
       .def(
           "registerField_float", &mrpt::maps::CGenericPointsMap::registerField_float, "fieldName"_a,
@@ -237,45 +266,65 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "unregisterField", &mrpt::maps::CGenericPointsMap::unregisterField, "fieldName"_a,
           "Removes a data channel; returns True if it existed")
-      .def("hasPointField", &mrpt::maps::CGenericPointsMap::hasPointField, "fieldName"_a)
-      .def("resize", &mrpt::maps::CGenericPointsMap::resize, "newLength"_a)
+      .def(
+          "hasPointField", &mrpt::maps::CGenericPointsMap::hasPointField, "fieldName"_a,
+          "Returns true if the map has a data channel with the given name.")
+      .def(
+          "resize", &mrpt::maps::CGenericPointsMap::resize, "newLength"_a,
+          "Resizes all point buffers so they can hold the given number of points: newly created "
+          "points are set to default values, and old contents are not changed.")
       // Field name enumeration:
-      .def("getPointFieldNames_float", &mrpt::maps::CGenericPointsMap::getPointFieldNames_float)
-      .def("getPointFieldNames_double", &mrpt::maps::CGenericPointsMap::getPointFieldNames_double)
-      .def("getPointFieldNames_uint16", &mrpt::maps::CGenericPointsMap::getPointFieldNames_uint16)
-      .def("getPointFieldNames_uint8", &mrpt::maps::CGenericPointsMap::getPointFieldNames_uint8)
+      .def(
+          "getPointFieldNames_float", &mrpt::maps::CGenericPointsMap::getPointFieldNames_float,
+          "Get list of all float channel names.")
+      .def(
+          "getPointFieldNames_double", &mrpt::maps::CGenericPointsMap::getPointFieldNames_double,
+          "Get list of all double channel names.")
+      .def(
+          "getPointFieldNames_uint16", &mrpt::maps::CGenericPointsMap::getPointFieldNames_uint16,
+          "Get list of all uint16_t channel names.")
+      .def(
+          "getPointFieldNames_uint8", &mrpt::maps::CGenericPointsMap::getPointFieldNames_uint8,
+          "Get list of all uint8_t channel names.")
       .def(
           "getPointFieldNames_uint32", &mrpt::maps::CGenericPointsMap::getPointFieldNames_uint32,
           "List all uint32 channel names (New in MRPT 3.0.0)")
       // Per-point field getters:
       .def(
           "getPointField_float", &mrpt::maps::CGenericPointsMap::getPointField_float, "index"_a,
-          "fieldName"_a)
+          "fieldName"_a,
+          "Read the value of a float channel for a given point. Returns 0 if field does not exist.")
       .def(
           "getPointField_double", &mrpt::maps::CGenericPointsMap::getPointField_double, "index"_a,
-          "fieldName"_a)
+          "fieldName"_a,
+          "Read the value of a double channel for a given point. Returns 0 if field does not "
+          "exist.")
       .def(
           "getPointField_uint16", &mrpt::maps::CGenericPointsMap::getPointField_uint16, "index"_a,
-          "fieldName"_a)
+          "fieldName"_a,
+          "Read the value of a uint16_t channel for a given point. Returns 0 if field does not "
+          "exist.")
       .def(
           "getPointField_uint8", &mrpt::maps::CGenericPointsMap::getPointField_uint8, "index"_a,
-          "fieldName"_a)
+          "fieldName"_a,
+          "Read the value of a uint8_t channel for a given point. Returns 0 if field does not "
+          "exist.")
       .def(
           "getPointField_uint32", &mrpt::maps::CGenericPointsMap::getPointField_uint32, "index"_a,
           "fieldName"_a, "Read a uint32 channel value (New in MRPT 3.0.0)")
       // Per-point field setters:
       .def(
           "setPointField_float", &mrpt::maps::CGenericPointsMap::setPointField_float, "index"_a,
-          "fieldName"_a, "value"_a)
+          "fieldName"_a, "value"_a, "Sets the value of a float channel for a given point.")
       .def(
           "setPointField_double", &mrpt::maps::CGenericPointsMap::setPointField_double, "index"_a,
-          "fieldName"_a, "value"_a)
+          "fieldName"_a, "value"_a, "Sets the value of a double channel for a given point.")
       .def(
           "setPointField_uint16", &mrpt::maps::CGenericPointsMap::setPointField_uint16, "index"_a,
-          "fieldName"_a, "value"_a)
+          "fieldName"_a, "value"_a, "Sets the value of a uint16_t channel for a given point.")
       .def(
           "setPointField_uint8", &mrpt::maps::CGenericPointsMap::setPointField_uint8, "index"_a,
-          "fieldName"_a, "value"_a)
+          "fieldName"_a, "value"_a, "Sets the value of a uint8_t channel for a given point.")
       .def(
           "setPointField_uint32", &mrpt::maps::CGenericPointsMap::setPointField_uint32, "index"_a,
           "fieldName"_a, "value"_a, "Set a uint32 channel value (New in MRPT 3.0.0)")
@@ -288,19 +337,38 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::maps::COccupancyGridMap2D, mrpt::maps::CMetricMap,
-      std::shared_ptr<mrpt::maps::COccupancyGridMap2D>>(m, "COccupancyGridMap2D")
+      std::shared_ptr<mrpt::maps::COccupancyGridMap2D>>(
+      m, "COccupancyGridMap2D",
+      "A 2D occupancy grid map: each cell holds its probability of being occupied.")
       .def(
           py::init<float, float, float, float, float>(), "xMin"_a = -10.0f, "xMax"_a = 10.0f,
-          "yMin"_a = -10.0f, "yMax"_a = 10.0f, "resolution"_a = 0.10f)
+          "yMin"_a = -10.0f, "yMax"_a = 10.0f, "resolution"_a = 0.10f, "Constructor.")
       // Grid metadata
-      .def("getSizeX", &mrpt::maps::COccupancyGridMap2D::getSizeX)
-      .def("getSizeY", &mrpt::maps::COccupancyGridMap2D::getSizeY)
-      .def("getXMin", &mrpt::maps::COccupancyGridMap2D::getXMin)
-      .def("getXMax", &mrpt::maps::COccupancyGridMap2D::getXMax)
-      .def("getYMin", &mrpt::maps::COccupancyGridMap2D::getYMin)
-      .def("getYMax", &mrpt::maps::COccupancyGridMap2D::getYMax)
-      .def("getResolution", &mrpt::maps::COccupancyGridMap2D::getResolution)
-      .def("isEmpty", &mrpt::maps::COccupancyGridMap2D::isEmpty)
+      .def(
+          "getSizeX", &mrpt::maps::COccupancyGridMap2D::getSizeX,
+          "Returns the horizontal size of grid map in cells count.")
+      .def(
+          "getSizeY", &mrpt::maps::COccupancyGridMap2D::getSizeY,
+          "Returns the vertical size of grid map in cells count.")
+      .def(
+          "getXMin", &mrpt::maps::COccupancyGridMap2D::getXMin,
+          "Returns the \"x\" coordinate of left side of grid map.")
+      .def(
+          "getXMax", &mrpt::maps::COccupancyGridMap2D::getXMax,
+          "Returns the \"x\" coordinate of right side of grid map.")
+      .def(
+          "getYMin", &mrpt::maps::COccupancyGridMap2D::getYMin,
+          "Returns the \"y\" coordinate of top side of grid map.")
+      .def(
+          "getYMax", &mrpt::maps::COccupancyGridMap2D::getYMax,
+          "Returns the \"y\" coordinate of bottom side of grid map.")
+      .def(
+          "getResolution", &mrpt::maps::COccupancyGridMap2D::getResolution,
+          "Returns the resolution of the grid map.")
+      .def(
+          "isEmpty", &mrpt::maps::COccupancyGridMap2D::isEmpty,
+          "Returns true upon map construction or after calling clear(), the return changes to "
+          "false upon successful insertObservation() or any other method to load data in the map.")
       // Cell access by grid index
       .def(
           "getCell",
@@ -323,19 +391,28 @@ PYBIND11_MODULE(_bindings, m)
       // Index ↔ metric conversion
       .def(
           "x2idx", [](const mrpt::maps::COccupancyGridMap2D& g, float x) { return g.x2idx(x); },
-          "x"_a)
+          "x"_a,
+          "Transform a coordinate value into a cell index. Uses floor() to correctly handle "
+          "negative coordinates near zero.")
       .def(
           "y2idx", [](const mrpt::maps::COccupancyGridMap2D& g, float y) { return g.y2idx(y); },
-          "y"_a)
-      .def("idx2x", &mrpt::maps::COccupancyGridMap2D::idx2x)
-      .def("idx2y", &mrpt::maps::COccupancyGridMap2D::idx2y)
+          "y"_a, "Transforms a y coordinate into a cell index.")
+      .def(
+          "idx2x", &mrpt::maps::COccupancyGridMap2D::idx2x,
+          "Transform a cell index into a coordinate value (center of the cell)")
+      .def(
+          "idx2y", &mrpt::maps::COccupancyGridMap2D::idx2y,
+          "Transforms a cell index into a y coordinate (center of the cell).")
       // File I/O
-      .def("saveAsBitmapFile", &mrpt::maps::COccupancyGridMap2D::saveAsBitmapFile)
+      .def(
+          "saveAsBitmapFile", &mrpt::maps::COccupancyGridMap2D::saveAsBitmapFile,
+          "Saves the grid map as an image file; the format is given by the file extension.")
       .def(
           "loadFromBitmapFile",
           [](mrpt::maps::COccupancyGridMap2D& g, const std::string& file, float resolution)
           { return g.loadFromBitmapFile(file, resolution); },
-          "file"_a, "resolution"_a)
+          "file"_a, "resolution"_a,
+          "Loads the grid map from an image file, given its resolution and origin.")
       .def(
           "loadFromROSMapServerYAML", &mrpt::maps::COccupancyGridMap2D::loadFromROSMapServerYAML,
           "yamlFilePath"_a, "Load a ROS map_server YAML + PNG/PGM file pair")
@@ -371,20 +448,22 @@ PYBIND11_MODULE(_bindings, m)
   // CMultiMetricMap: a container of heterogeneous metric maps
   // -------------------------------------------------------------------------
   using MMap = mrpt::maps::CMultiMetricMap;
-  py::class_<MMap, mrpt::maps::CMetricMap, std::shared_ptr<MMap>>(m, "CMultiMetricMap")
-      .def(py::init<>())
+  py::class_<MMap, mrpt::maps::CMetricMap, std::shared_ptr<MMap>>(
+      m, "CMultiMetricMap", "A set of metric maps of any type, updated and queried together.")
+      .def(py::init<>(), "Default ctor: empty list of maps.")
       .def(
           py::init<const mrpt::maps::TSetOfMetricMapInitializers&>(), "initializers"_a,
           "Creates the maps described by a TSetOfMetricMapInitializers")
       .def(
           "setListOfMaps", &MMap::setListOfMaps, "initializers"_a,
           "Replaces all maps with the ones described by a TSetOfMetricMapInitializers")
-      .def("size", &MMap::size)
+      .def("size", &MMap::size, "Number of child maps.")
       .def("__len__", &MMap::size)
-      .def("push_back", &MMap::push_back, "map"_a)
+      .def("push_back", &MMap::push_back, "map"_a, "Appends a new child map to the list.")
       .def("clearMaps", &MMap::clearMaps, "Removes all maps (clear() only empties them)")
       .def(
-          "mapByIndex", [](MMap& mm, size_t i) { return mm.mapByIndex(i); }, "index"_a)
+          "mapByIndex", [](MMap& mm, size_t i) { return mm.mapByIndex(i); }, "index"_a,
+          "Gets the i-th map.")
       .def(
           "__getitem__",
           [](MMap& mm, size_t i)
@@ -420,13 +499,13 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // Voxel maps (Bonxai-based sparse voxel grids)
   // -------------------------------------------------------------------------
-  const auto bindVoxelMap = [&](auto clsTag, const char* name)
+  const auto bindVoxelMap = [&](auto clsTag, const char* name, const char* doc)
   {
     using T = typename decltype(clsTag)::type;
-    py::class_<T, mrpt::maps::CMetricMap, std::shared_ptr<T>>(m, name)
+    py::class_<T, mrpt::maps::CMetricMap, std::shared_ptr<T>>(m, name, doc)
         .def(
             py::init<double, uint8_t, uint8_t>(), "resolution"_a = 0.05, "inner_bits"_a = 2,
-            "leaf_bits"_a = 3)
+            "leaf_bits"_a = 3, "Creates an empty map with the given voxel size (meters).")
         .def(
             "updateVoxel", &T::updateVoxel, "x"_a, "y"_a, "z"_a, "occupied"_a,
             "Updates one voxel with an occupied or free observation")
@@ -464,18 +543,25 @@ PYBIND11_MODULE(_bindings, m)
                      ")";
             });
   };
-  bindVoxelMap(type_tag<mrpt::maps::CVoxelMap>{}, "CVoxelMap");
-  bindVoxelMap(type_tag<mrpt::maps::CVoxelMapRGB>{}, "CVoxelMapRGB");
+  bindVoxelMap(
+      type_tag<mrpt::maps::CVoxelMap>{}, "CVoxelMap",
+      "A sparse 3D occupancy voxel map, with log-odds occupancy per voxel.");
+  bindVoxelMap(
+      type_tag<mrpt::maps::CVoxelMapRGB>{}, "CVoxelMapRGB",
+      "A sparse 3D occupancy voxel map, with log-odds occupancy and an RGB color per voxel.");
 
   // -------------------------------------------------------------------------
   // COccupancyGridMap3D: dense 3D occupancy grid
   // -------------------------------------------------------------------------
   using Grid3D = mrpt::maps::COccupancyGridMap3D;
-  py::class_<Grid3D, mrpt::maps::CMetricMap, std::shared_ptr<Grid3D>>(m, "COccupancyGridMap3D")
+  py::class_<Grid3D, mrpt::maps::CMetricMap, std::shared_ptr<Grid3D>>(
+      m, "COccupancyGridMap3D",
+      "A 3D occupancy grid map with a regular, even distribution of voxels.")
       .def(
           py::init<const mrpt::math::TPoint3D&, const mrpt::math::TPoint3D&, float>(),
           "corner_min"_a = mrpt::math::TPoint3D(-5.0, -5.0, -5.0),
-          "corner_max"_a = mrpt::math::TPoint3D(5.0, 5.0, 5.0), "resolution"_a = 0.25f)
+          "corner_max"_a = mrpt::math::TPoint3D(5.0, 5.0, 5.0), "resolution"_a = 0.25f,
+          "Constructor.")
       .def("fill", &Grid3D::fill, "default_value"_a = 0.5f, "Sets all voxels to a freeness value")
       .def(
           "getSizeX", [](const Grid3D& g) { return g.m_grid.getSizeX(); }, "Number of voxels in X")
@@ -511,20 +597,36 @@ PYBIND11_MODULE(_bindings, m)
   // CHeightGridMap2D: 2.5D elevation map
   // -------------------------------------------------------------------------
   using HMap = mrpt::maps::CHeightGridMap2D;
-  py::class_<HMap, mrpt::maps::CMetricMap, std::shared_ptr<HMap>>(m, "CHeightGridMap2D")
+  py::class_<HMap, mrpt::maps::CMetricMap, std::shared_ptr<HMap>>(
+      m, "CHeightGridMap2D",
+      "Digital Elevation Model (DEM), a mesh or grid representation of a surface which keeps the "
+      "estimated height for each (x,y) location.")
       .def(
           py::init(
               [](double xMin, double xMax, double yMin, double yMax, double resolution) {
                 return std::make_shared<HMap>(
                     HMap::mrSimpleAverage, xMin, xMax, yMin, yMax, resolution);
               }),
-          "xMin"_a = -2.0, "xMax"_a = 2.0, "yMin"_a = -2.0, "yMax"_a = 2.0, "resolution"_a = 0.1)
-      .def("getSizeX", [](const HMap& h) { return h.dem_get_size_x(); })
-      .def("getSizeY", [](const HMap& h) { return h.dem_get_size_y(); })
-      .def("getResolution", [](const HMap& h) { return h.dem_get_resolution(); })
-      .def("getXMin", [](const HMap& h) { return h.getXMin(); })
-      .def("getYMin", [](const HMap& h) { return h.getYMin(); })
-      .def("countObservedCells", &HMap::countObservedCells)
+          "xMin"_a = -2.0, "xMax"_a = 2.0, "yMin"_a = -2.0, "yMax"_a = 2.0, "resolution"_a = 0.1,
+          "Creates a height map with the given limits and resolution.")
+      .def(
+          "getSizeX", [](const HMap& h) { return h.dem_get_size_x(); },
+          "Returns the horizontal size of grid map in cells count.")
+      .def(
+          "getSizeY", [](const HMap& h) { return h.dem_get_size_y(); },
+          "Returns the vertical size of grid map in cells count.")
+      .def(
+          "getResolution", [](const HMap& h) { return h.dem_get_resolution(); },
+          "Returns the resolution of the grid map.")
+      .def(
+          "getXMin", [](const HMap& h) { return h.getXMin(); },
+          "Returns the \"x\" coordinate of left side of grid map.")
+      .def(
+          "getYMin", [](const HMap& h) { return h.getYMin(); },
+          "Returns the \"y\" coordinate of top side of grid map.")
+      .def(
+          "countObservedCells", &HMap::countObservedCells,
+          "Return the number of cells with at least one height data inserted.")
       .def(
           "insertIndividualPoint",
           [](HMap& h, double x, double y, double z) { return h.insertIndividualPoint(x, y, z); },
@@ -567,8 +669,11 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::maps::CBeacon, mrpt::serialization::CSerializable,
-      std::shared_ptr<mrpt::maps::CBeacon>>(m, "CBeacon")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::maps::CBeacon>>(
+      m, "CBeacon",
+      "The class for storing individual \"beacon landmarks\" under a variety of 3D position PDF "
+      "distributions.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("m_ID", &mrpt::maps::CBeacon::m_ID, "Beacon ID")
       .def(
           "getMean",
@@ -582,11 +687,15 @@ PYBIND11_MODULE(_bindings, m)
 
   py::class_<
       mrpt::maps::CBeaconMap, mrpt::maps::CMetricMap, std::shared_ptr<mrpt::maps::CBeaconMap>>(
-      m, "CBeaconMap")
-      .def(py::init<>())
-      .def("size", &mrpt::maps::CBeaconMap::size)
+      m, "CBeaconMap",
+      "A class for storing a map of 3D probabilistic beacons, using a Montecarlo, Gaussian, or Sum "
+      "of Gaussians (SOG) representation (for range-only SLAM).")
+      .def(py::init<>(), "Constructor.")
+      .def("size", &mrpt::maps::CBeaconMap::size, "Returns the stored landmarks count.")
       .def("__len__", &mrpt::maps::CBeaconMap::size)
-      .def("push_back", &mrpt::maps::CBeaconMap::push_back, "beacon"_a)
+      .def(
+          "push_back", &mrpt::maps::CBeaconMap::push_back, "beacon"_a,
+          "Appends a beacon to the map.")
       .def(
           "__getitem__",
           [](mrpt::maps::CBeaconMap& bm, size_t i) -> mrpt::maps::CBeacon&
@@ -603,14 +712,21 @@ PYBIND11_MODULE(_bindings, m)
   // COctoMap: OctoMap-based probabilistic 3D occupancy map
   // -------------------------------------------------------------------------
   py::class_<mrpt::maps::COctoMap, mrpt::maps::CMetricMap, std::shared_ptr<mrpt::maps::COctoMap>>(
-      m, "COctoMap")
-      .def(py::init<double>(), "resolution"_a = 0.10)
-      .def("getResolution", &mrpt::maps::COctoMap::getResolution)
+      m, "COctoMap",
+      "A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the "
+      "\"octomap\" C++ library.")
+      .def(py::init<double>(), "resolution"_a = 0.10, "Default constructor.")
+      .def(
+          "getResolution", &mrpt::maps::COctoMap::getResolution,
+          "Returns the size of the octomap leaf voxels.")
       .def("size", &mrpt::maps::COctoMap::size, "Number of octree nodes")
       .def(
           "updateVoxel", &mrpt::maps::COctoMap::updateVoxel, "x"_a, "y"_a, "z"_a, "occupied"_a,
           "Updates one voxel with an occupied or free observation")
-      .def("isPointWithinOctoMap", &mrpt::maps::COctoMap::isPointWithinOctoMap, "x"_a, "y"_a, "z"_a)
+      .def(
+          "isPointWithinOctoMap", &mrpt::maps::COctoMap::isPointWithinOctoMap, "x"_a, "y"_a, "z"_a,
+          "Check whether the given point lies within the volume covered by the octomap (that is, "
+          "whether it is \"mapped\")")
       .def(
           "getPointOccupancy",
           [](const mrpt::maps::COctoMap& om, float x, float y, float z)
@@ -629,7 +745,8 @@ PYBIND11_MODULE(_bindings, m)
             double z = 0;
             om.getMetricMin(x, y, z);
             return mrpt::math::TPoint3D(x, y, z);
-          })
+          },
+          "Minimum value of the bounding box of all known space in x, y, z.")
       .def(
           "getMetricMax",
           [](const mrpt::maps::COctoMap& om)
@@ -639,21 +756,28 @@ PYBIND11_MODULE(_bindings, m)
             double z = 0;
             om.getMetricMax(x, y, z);
             return mrpt::math::TPoint3D(x, y, z);
-          });
+          },
+          "Maximum value of the bounding box of all known space in x, y, z.");
 
   // -------------------------------------------------------------------------
   // CObservationPointCloud (in mrpt::obs, but part of the mrpt_maps library)
   // -------------------------------------------------------------------------
   using ObsPC = mrpt::obs::CObservationPointCloud;
-  py::class_<ObsPC, mrpt::obs::CObservation, std::shared_ptr<ObsPC>>(m, "CObservationPointCloud")
-      .def(py::init<>())
+  py::class_<ObsPC, mrpt::obs::CObservation, std::shared_ptr<ObsPC>>(
+      m, "CObservationPointCloud",
+      "An observation from any sensor that can be summarized as a pointcloud.")
+      .def(py::init<>(), "Default constructor.")
       .def(
           py::init<const mrpt::obs::CObservation3DRangeScan&>(), "scan"_a,
           "Builds a point cloud observation from the 3D points of a depth scan")
       .def_readwrite("pointcloud", &ObsPC::pointcloud, "The point cloud (a CPointsMap)")
       .def_readwrite("sensorPose", &ObsPC::sensorPose)
-      .def("isExternallyStored", &ObsPC::isExternallyStored)
-      .def("getExternalStorageFile", &ObsPC::getExternalStorageFile)
+      .def(
+          "isExternallyStored", &ObsPC::isExternallyStored,
+          "Returns true if the point cloud is stored in an external file.")
+      .def(
+          "getExternalStorageFile", &ObsPC::getExternalStorageFile,
+          "Returns the external file name of the point cloud, if any.")
       .def(
           "__repr__",
           [](const ObsPC& o)
@@ -666,8 +790,10 @@ PYBIND11_MODULE(_bindings, m)
   // Visualization of observations
   // -------------------------------------------------------------------------
   using RecolorParams = mrpt::obs::PointCloudRecoloringParameters;
-  py::class_<RecolorParams>(m, "PointCloudRecoloringParameters")
-      .def(py::init<>())
+  py::class_<RecolorParams>(
+      m, "PointCloudRecoloringParameters",
+      "Parameters for recolorize3Dpc(), or part of VisualizationParameters if using obs_to_viz()")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("colorizeByField", &RecolorParams::colorizeByField)
       .def_readwrite("invertColorMapping", &RecolorParams::invertColorMapping)
       .def_readwrite("colorMap", &RecolorParams::colorMap)
@@ -676,8 +802,11 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("outlierRejectionPercentile", &RecolorParams::outlierRejectionPercentile);
 
   using VizParams = mrpt::obs::VisualizationParameters;
-  py::class_<VizParams>(m, "VisualizationParameters")
-      .def(py::init<>())
+  py::class_<VizParams>(
+      m, "VisualizationParameters",
+      "Here we can customize the way observations will be rendered as 3D objects in obs_to_viz(), "
+      "obs3Dscan_to_viz(), etc.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("coloring", &VizParams::coloring)
       .def_readwrite("showAxis", &VizParams::showAxis)
       .def_readwrite("axisTickFrequency", &VizParams::axisTickFrequency)
