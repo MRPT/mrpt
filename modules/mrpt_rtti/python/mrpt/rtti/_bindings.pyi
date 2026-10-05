@@ -18,7 +18,7 @@ class TRuntimeClassId:
     """
     def createObject(self) -> CObject:
         """
-        Creates a new object of this class (default constructed).
+        Creates a new object of this class (default constructed), or returns None for virtual classes.
         """
     @typing.overload
     def derivedFrom(self, arg0: TRuntimeClassId) -> bool:

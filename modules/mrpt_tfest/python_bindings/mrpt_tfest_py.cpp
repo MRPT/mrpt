@@ -120,7 +120,8 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("ransac_maxSetSizePct", &TSE3RobustParams::ransac_maxSetSizePct)
       .def_readwrite(
           "user_individual_compat_callback", &TSE3RobustParams::user_individual_compat_callback,
-          "Optional function(TPotentialMatch) -> bool rejecting individual pairings")
+          "Optional function(TPotentialMatch) -> bool: return True to accept a candidate pairing, "
+          "False to reject it (None: accept all)")
       .def_readwrite("ransac_threshold_lin", &TSE3RobustParams::ransac_threshold_lin);
 
   py::class_<TSE3RobustResult>(m, "TSE3RobustResult", "Result of se3_l2_robust().")

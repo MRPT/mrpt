@@ -111,7 +111,7 @@ class TSE3RobustParams:
     @property
     def user_individual_compat_callback(self) -> typing.Callable[[TPotentialMatch], bool]:
         """
-        Optional function(TPotentialMatch) -> bool rejecting individual pairings
+        Optional function(TPotentialMatch) -> bool: return True to accept a candidate pairing, False to reject it (None: accept all)
         """
     @user_individual_compat_callback.setter
     def user_individual_compat_callback(self, arg0: typing.Callable[[TPotentialMatch], bool]) -> None:

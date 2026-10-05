@@ -193,11 +193,11 @@ class TParticleFilterStats:
         ...
 class CParticleFilter:
     """
-    Generic particle filter: runs one prediction/update/resampling step of a CParticleFilterCapable PDF with executeOn().
+    Generic particle filter: runs one prediction/update/resampling step of a CParticleFilterCapable PDF with executeOn() (added by importing mrpt.slam).
     """
     def __init__(self) -> None:
         """
-        Default constructor: set the options, then call executeOn() for each filter step.
+        Default constructor: set the options, then call executeOn() for each filter step (import mrpt.slam first, which adds that method).
         """
     def __repr__(self) -> str:
         ...

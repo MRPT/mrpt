@@ -74,8 +74,8 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<mrpt::topography::TGeodeticCoords>(
       m, "TGeodeticCoords",
-      "A set of geodetic coordinates: latitude, longitude and height, defined over a given geoid "
-      "(typically, WGS84)")
+      "A set of geodetic coordinates: latitude, longitude and ellipsoidal height, defined over a "
+      "reference ellipsoid (typically, WGS84)")
       .def(py::init<>(), "Default constructor.")
       .def(
           py::init<double, double, double>(), "lat_deg"_a, "lon_deg"_a, "height_m"_a,

@@ -41,7 +41,7 @@ class TCoords:
         """
 class TGeodeticCoords:
     """
-    A set of geodetic coordinates: latitude, longitude and height, defined over a given geoid (typically, WGS84)
+    A set of geodetic coordinates: latitude, longitude and ellipsoidal height, defined over a reference ellipsoid (typically, WGS84)
     """
     @typing.overload
     def __init__(self) -> None:

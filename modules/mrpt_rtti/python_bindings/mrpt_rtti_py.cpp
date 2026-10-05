@@ -43,7 +43,8 @@ PYBIND11_MODULE(_bindings, m)
       .def_readonly("className", &mrpt::rtti::TRuntimeClassId::className, "Name of the class")
       .def(
           "createObject", &mrpt::rtti::TRuntimeClassId::createObject,
-          "Creates a new object of this class (default constructed).")
+          "Creates a new object of this class (default constructed), or returns None for virtual "
+          "classes.")
       .def(
           "getBaseClass",
           [](const mrpt::rtti::TRuntimeClassId& self)

@@ -112,10 +112,11 @@ PYBIND11_MODULE(_bindings, m)
   py::class_<CParticleFilter>(
       m, "CParticleFilter",
       "Generic particle filter: runs one prediction/update/resampling step of a "
-      "CParticleFilterCapable PDF with executeOn().")
+      "CParticleFilterCapable PDF with executeOn() (added by importing mrpt.slam).")
       .def(
           py::init<>(),
-          "Default constructor: set the options, then call executeOn() for each filter step.")
+          "Default constructor: set the options, then call executeOn() for each filter step (import "
+          "mrpt.slam first, which adds that method).")
       .def_readwrite(
           "options", &CParticleFilter::m_options, "Algorithm options (TParticleFilterOptions)")
       .def(

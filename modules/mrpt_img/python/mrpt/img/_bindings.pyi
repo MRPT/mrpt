@@ -171,7 +171,7 @@ class CImage:
     @staticmethod
     def from_numpy(array: numpy.ndarray) -> CImage:
         """
-        Create a CImage from a HxWxC numpy uint8 array (zero-copy not used).
+        Creates a CImage from a NumPy uint8 array of shape (H, W) or (H, W, C), with 1, 3 or 4 channels (the data is copied).
         """
     def __array__(self, dtype = None, **kw):
         ...
@@ -181,13 +181,13 @@ class CImage:
         Default constructor: an empty image.
         """
     @typing.overload
-    def __init__(self, arg0: numpy.ndarray) -> None:
+    def __init__(self, array: numpy.ndarray) -> None:
         """
-        Builds an image from a NumPy uint8 array of shape (height, width, channels).
+        Builds an image from a NumPy uint8 array of shape (height, width) or (height, width, channels), with 1, 3 or 4 channels.
         """
     def as_numpy(self) -> numpy.ndarray:
         """
-        Returns a Zero-Copy NumPy view of the image data.
+        Returns a zero-copy NumPy view of the image, of shape (height, width, channels) and dtype uint8 or uint16.
         """
     def drawCircle(self, center: TPixelCoord, radius: int, color: TColor, width: int = 1) -> None:
         """
@@ -203,7 +203,7 @@ class CImage:
         """
     def isColor(self) -> bool:
         """
-        True if the image has 3 channels (RGB)
+        True if the image has 3 or 4 channels (RGB or RGBA)
         """
     def loadFromFile(self, filename: str) -> bool:
         """
