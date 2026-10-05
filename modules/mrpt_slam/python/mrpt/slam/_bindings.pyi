@@ -86,14 +86,22 @@ class TICPCovarianceMethod:
     def value(self) -> int:
         ...
 class TICPReturnInfo:
+    """
+    The ICP algorithm return information.
+    """
     goodness: float
     nIterations: int
     quality: float
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
     def __repr__(self) -> str:
         ...
 class CICPOptions(mrpt.config.CLoadableOptions):
+    """
+    The ICP algorithm configuration data.
+    """
     ALFA: float
     ICP_algorithm: TICPAlgorithm
     ICP_covariance_method: TICPCovarianceMethod
@@ -106,8 +114,13 @@ class CICPOptions(mrpt.config.CLoadableOptions):
     thresholdAng: float
     thresholdDist: float
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
 class CICP:
+    """
+    Several implementations of ICP (Iterative closest point) algorithms for aligning two point maps or a point map wrt a grid map.
+    """
     options: CICPOptions
     def AlignPDF(self, m1: mrpt.maps.CMetricMap, m2: mrpt.maps.CMetricMap, initialEstimationPDF: mrpt.poses.CPosePDFGaussian) -> tuple:
         """
@@ -115,17 +128,28 @@ class CICP:
         """
     @typing.overload
     def __init__(self) -> None:
-        ...
+        """
+        Constructor with the default options.
+        """
     @typing.overload
     def __init__(self, options: CICPOptions) -> None:
-        ...
+        """
+        Constructor that directly set the ICP params from a given struct.
+        """
     def __repr__(self) -> str:
         ...
 class CMetricMapBuilder:
+    """
+    Base class of the SLAM map builders.
+    """
     def getCurrentPoseEstimation(self) -> mrpt.poses.CPose3DPDF:
-        ...
+        """
+        Returns a copy of the current best pose estimation as a pose PDF.
+        """
     def getCurrentlyBuiltMapSize(self) -> int:
-        ...
+        """
+        Returns just how many sensory-frames are stored in the currently build map.
+        """
     @typing.overload
     def initialize(self) -> None:
         """
@@ -137,45 +161,17 @@ class CMetricMapBuilder:
         Initialize the builder with a given initial map.
         """
     def processActionObservation(self, action: mrpt.obs.CActionCollection, sf: mrpt.obs.CSensoryFrame) -> None:
-        ...
-    def saveCurrentMapToFile(self, fileName: str, compressGZ: bool = True) -> None:
-        ...
-class CMetricMapBuilderICP(CMetricMapBuilder):
-    ICP_options: typing.Any  # unnamed C++ type
-    ICP_params: CICPOptions
-    def __init__(self) -> None:
-        ...
-    def __repr__(self) -> str:
-        ...
-    def getCurrentMapPoints(self) -> tuple:
         """
-        Returns (xs, ys) float lists of current point-map coordinates.
-        """
-    def getCurrentPoseEstimation(self) -> mrpt.poses.CPose3DPDF:
-        ...
-    def getCurrentlyBuiltMapSize(self) -> int:
-        ...
-    @typing.overload
-    def initialize(self) -> None:
-        ...
-    @typing.overload
-    def initialize(self, initialMap: mrpt.obs.CSimpleMap) -> None:
-        ...
-    def processActionObservation(self, action: mrpt.obs.CActionCollection, sf: mrpt.obs.CSensoryFrame) -> None:
-        """
-        Process action+sensoryframe pair (classic API).
-        """
-    def processObservation(self, obs: mrpt.obs.CObservation) -> None:
-        """
-        Process a single observation (new-style API).
+        Updates the map and pose estimate with a new action and sensory frame.
         """
     def saveCurrentMapToFile(self, fileName: str, compressGZ: bool = True) -> None:
-        ...
-    def useSimplePointsMap(self) -> None:
         """
-        Configure the builder to use a single CSimplePointsMap. Call before initialize().
+        Saves the current map (a CSimpleMap) to a .simplemap file.
         """
 class CMetricMapBuilderICPOptions(mrpt.config.CLoadableOptions):
+    """
+    Options of CMetricMapBuilderICP.
+    """
     insertionAngDistance: float
     insertionLinDistance: float
     localizationAngDistance: float
@@ -192,7 +188,60 @@ class CMetricMapBuilderICPOptions(mrpt.config.CLoadableOptions):
         """
         Load options (including mapInitializers) from a config file.
         """
+class CMetricMapBuilderICP(CMetricMapBuilder):
+    """
+    A class for very simple 2D SLAM based on ICP. This is a non-probabilistic pose tracking algorithm.
+    """
+    ICP_options: CMetricMapBuilderICPOptions
+    ICP_params: CICPOptions
+    def __init__(self) -> None:
+        """
+        Default constructor: set ICP_options, then call initialize().
+        """
+    def __repr__(self) -> str:
+        ...
+    def getCurrentMapPoints(self) -> tuple:
+        """
+        Returns (xs, ys) float lists of current point-map coordinates.
+        """
+    def getCurrentPoseEstimation(self) -> mrpt.poses.CPose3DPDF:
+        """
+        Returns a copy of the current best pose estimation as a pose PDF.
+        """
+    def getCurrentlyBuiltMapSize(self) -> int:
+        """
+        Returns just how many sensory-frames are stored in the currently build map.
+        """
+    @typing.overload
+    def initialize(self) -> None:
+        """
+        Starts with an empty map.
+        """
+    @typing.overload
+    def initialize(self, initialMap: mrpt.obs.CSimpleMap) -> None:
+        """
+        Starts from a given initial map.
+        """
+    def processActionObservation(self, action: mrpt.obs.CActionCollection, sf: mrpt.obs.CSensoryFrame) -> None:
+        """
+        Process action+sensoryframe pair (classic API).
+        """
+    def processObservation(self, obs: mrpt.obs.CObservation) -> None:
+        """
+        Process a single observation (new-style API).
+        """
+    def saveCurrentMapToFile(self, fileName: str, compressGZ: bool = True) -> None:
+        """
+        Saves the current map (a CSimpleMap) to a .simplemap file.
+        """
+    def useSimplePointsMap(self) -> None:
+        """
+        Configure the builder to use a single CSimplePointsMap. Call before initialize().
+        """
 class TKLDParams(mrpt.config.CLoadableOptions):
+    """
+    Option set for KLD algorithm.
+    """
     KLD_binSize_PHI: float
     KLD_binSize_XY: float
     KLD_delta: float
@@ -201,11 +250,18 @@ class TKLDParams(mrpt.config.CLoadableOptions):
     KLD_minSampleSize: int
     KLD_minSamplesPerBin: float
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
 class TMonteCarloLocalizationParams:
+    """
+    Parameters of the prediction and update stages of Monte Carlo localization.
+    """
     KLD_params: TKLDParams
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
     @property
     def metricMap(self) -> mrpt.maps.CMetricMap:
         """
@@ -223,6 +279,9 @@ class TMonteCarloLocalizationParams:
     def metricMaps(self, arg1: list[mrpt.maps.CMetricMap]) -> None:
         ...
 class CMonteCarloLocalization2D(mrpt.poses.CPosePDFParticles):
+    """
+    Particle filter for 2D robot localization (x, y, phi) on a known map.
+    """
     options: TMonteCarloLocalizationParams
     def __init__(self, M: int = 1) -> None:
         """
@@ -239,6 +298,9 @@ class CMonteCarloLocalization2D(mrpt.poses.CPosePDFParticles):
         Spreads particles uniformly over the free space of an occupancy grid (global localization)
         """
 class CMonteCarloLocalization3D(mrpt.poses.CPose3DPDFParticles):
+    """
+    Particle filter for 3D robot localization on a known map.
+    """
     options: TMonteCarloLocalizationParams
     def __init__(self, M: int = 1) -> None:
         """
@@ -251,14 +313,25 @@ class CMonteCarloLocalization3D(mrpt.poses.CPose3DPDFParticles):
         Returns a 3D representation of the particles
         """
 class TPredictionParams(mrpt.config.CLoadableOptions):
+    """
+    Parameters of the prediction and update stages of RBPF-SLAM.
+    """
     ICPGlobalAlign_MinQuality: float
     KLD_params: TKLDParams
     icp_params: CICPOptions
     pfOptimalProposal_mapSelection: int
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
 class CMetricMapBuilderRBPF(CMetricMapBuilder):
+    """
+    This class implements a Rao-Blackwelized Particle Filter (RBPF) approach to map building (SLAM).
+    """
     class TConstructionOptions(mrpt.config.CLoadableOptions):
+        """
+        Options of CMetricMapBuilderRBPF.
+        """
         PF_options: mrpt.bayes.TParticleFilterOptions
         insertionAngDistance: float
         insertionLinDistance: float
@@ -267,19 +340,27 @@ class CMetricMapBuilderRBPF(CMetricMapBuilder):
         mapsInitializers: mrpt.obs.TSetOfMetricMapInitializers
         predictionOptions: TPredictionParams
         def __init__(self) -> None:
-            ...
+            """
+            Default constructor.
+            """
     @typing.overload
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor: set the options, then call initialize().
+        """
     @typing.overload
     def __init__(self, options: CMetricMapBuilderRBPF.TConstructionOptions) -> None:
-        ...
+        """
+        Builds the RBPF-SLAM map builder from its options.
+        """
     def clear(self) -> None:
         """
         Clears all maps and resets the filter
         """
     def getCurrentJointEntropy(self) -> float:
-        ...
+        """
+        Returns the joint entropy of the map and path estimate.
+        """
     def getCurrentMostLikelyPath(self) -> list[mrpt.math.TPose3D]:
         """
         Returns the robot path of the most likely particle, as a list of TPose3D
@@ -293,7 +374,9 @@ class CMetricMapBuilderRBPF(CMetricMapBuilder):
         Returns the keyframes of the most likely particle as a CSimpleMap
         """
     def getCurrentlyBuiltMapSize(self) -> int:
-        ...
+        """
+        Returns just how many sensory-frames are stored in the currently build map.
+        """
     def getCurrentlyBuiltMetricMap(self) -> mrpt.maps.CMultiMetricMap:
         """
         Returns a copy of the map of the most likely particle (the particles are replaced as the filter runs, so a reference would not stay valid)
@@ -307,7 +390,9 @@ class CMetricMapBuilderRBPF(CMetricMapBuilder):
         Processes one (action, sensory frame) pair
         """
     def saveCurrentPathEstimationToTextFile(self, fileName: str) -> None:
-        ...
+        """
+        A logging utility: saves the current path estimation for each particle in a text file (a row per particle, each 3-column-entry is a set [x,y,phi], respectively).
+        """
 icpClassic: TICPAlgorithm
 icpCovFiniteDifferences: TICPCovarianceMethod
 icpCovLinealMSE: TICPCovarianceMethod

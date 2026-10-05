@@ -5,8 +5,13 @@ from __future__ import annotations
 import mrpt.poses
 __all__: list[str] = ['CNetworkOfPoses2D', 'CNetworkOfPoses3D']
 class CNetworkOfPoses2D:
+    """
+    A graph of 2D poses (nodes) and relative pose constraints (edges).
+    """
     def __init__(self) -> None:
-        ...
+        """
+        Creates an empty graph.
+        """
     def __repr__(self) -> str:
         ...
     def dijkstra_nodes_estimate(self) -> None:
@@ -46,13 +51,17 @@ class CNetworkOfPoses2D:
         Insert a directed edge from → to
         """
     def loadFromTextFile(self, fileName: str, collapse_dup_edges: bool = True) -> None:
-        ...
+        """
+        Loads the graph from a text file in the TORO / g2o format.
+        """
     def nodeCount(self) -> int:
         """
         Number of nodes in the graph
         """
     def saveToTextFile(self, fileName: str) -> None:
-        ...
+        """
+        Saves the graph to a text file in the TORO / g2o format.
+        """
     def setNodePose(self, node_id: int, pose: mrpt.poses.CPose2D) -> None:
         """
         Set the estimated pose for a node
@@ -66,8 +75,13 @@ class CNetworkOfPoses2D:
     def root(self, arg0: int) -> None:
         ...
 class CNetworkOfPoses3D:
+    """
+    A graph of 3D poses (nodes) and relative pose constraints (edges).
+    """
     def __init__(self) -> None:
-        ...
+        """
+        Creates an empty graph.
+        """
     def __repr__(self) -> str:
         ...
     def dijkstra_nodes_estimate(self) -> None:
@@ -107,13 +121,17 @@ class CNetworkOfPoses3D:
         Insert a directed edge from → to
         """
     def loadFromTextFile(self, fileName: str, collapse_dup_edges: bool = True) -> None:
-        ...
+        """
+        Loads the graph from a text file in the TORO / g2o format.
+        """
     def nodeCount(self) -> int:
         """
         Number of nodes in the graph
         """
     def saveToTextFile(self, fileName: str) -> None:
-        ...
+        """
+        Saves the graph to a text file in the TORO / g2o format.
+        """
     def setNodePose(self, node_id: int, pose: mrpt.poses.CPose3D) -> None:
         """
         Set the estimated pose for a node

@@ -45,7 +45,9 @@ class YAML:
         Access child node by string key (map) or int index (sequence)
         """
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
     def __iter__(self) -> typing.Any:
         """
         Iterate over map keys (for maps) or child nodes (for sequences)

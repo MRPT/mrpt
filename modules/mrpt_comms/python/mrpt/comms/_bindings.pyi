@@ -6,22 +6,31 @@ import mrpt.io
 import typing
 __all__: list[str] = ['CClientTCPSocket', 'CSerialPort']
 class CClientTCPSocket(mrpt.io.CStream):
+    """
+    A TCP socket that can be connected to a TCP server, implementing MRPT's CStream interface for passing objects as well as generic read/write methods.
+    """
     def __enter__(self) -> CClientTCPSocket:
         ...
     def __exit__(self, arg0: typing.Any, arg1: typing.Any, arg2: typing.Any) -> None:
         ...
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
     def __repr__(self) -> str:
         ...
     def close(self) -> None:
-        ...
+        """
+        Closes the connection.
+        """
     def connect(self, remotePartAddress: str, remotePartTCPPort: int, timeout_ms: int = 0) -> None:
         """
         Establish a TCP connection to host:port. timeout_ms=0 means no timeout.
         """
     def isConnected(self) -> bool:
-        ...
+        """
+        Returns true if this objects represents a successfully connected socket.
+        """
     def read(self, count: int, timeout_ms: int = -1) -> bytes:
         """
         Read up to count bytes from the socket, returns bytes object
@@ -35,6 +44,9 @@ class CClientTCPSocket(mrpt.io.CStream):
         Write bytes to the socket, returns number of bytes written
         """
 class CSerialPort(mrpt.io.CStream):
+    """
+    A communications serial port implementing the interface mrpt::io::CStream.
+    """
     def __enter__(self) -> CSerialPort:
         ...
     def __exit__(self, arg0: typing.Any, arg1: typing.Any, arg2: typing.Any) -> None:
@@ -52,9 +64,13 @@ class CSerialPort(mrpt.io.CStream):
     def __repr__(self) -> str:
         ...
     def close(self) -> None:
-        ...
+        """
+        Close the port. If is already closed, results in no action.
+        """
     def isOpen(self) -> bool:
-        ...
+        """
+        Returns if port has been correctly open.
+        """
     @typing.overload
     def open(self) -> None:
         """
@@ -66,7 +82,9 @@ class CSerialPort(mrpt.io.CStream):
         Open the named port
         """
     def purgeBuffers(self) -> None:
-        ...
+        """
+        Purge tx and rx buffers.
+        """
     def read(self, count: int) -> bytes:
         """
         Read up to count bytes from the serial port, returns bytes object

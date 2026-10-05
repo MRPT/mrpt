@@ -6,15 +6,29 @@ import mrpt.rtti
 import typing
 __all__: list[str] = ['CArchive', 'CExceptionEOF', 'CSerializable', 'bytesToObject', 'objectToBytes']
 class CExceptionEOF(EOFError):
-    pass
+    """
+    End of stream reached while reading an object (an EOFError).
+    """
 class CSerializable:
+    """
+    The virtual base class which provides a unified interface for all persistent objects in MRPT.
+    """
     def GetRuntimeClass(self) -> mrpt.rtti.TRuntimeClassId:
-        ...
+        """
+        Returns information about the class of an object in runtime.
+        """
 class CArchive:
+    """
+    Serializes and deserializes MRPT objects to/from a stream.
+    """
     def ReadDouble(self) -> float:
-        ...
+        """
+        Reads a double value.
+        """
     def ReadInt(self) -> int:
-        ...
+        """
+        Reads an int value.
+        """
     @typing.overload
     def ReadObject(self) -> CSerializable:
         """
