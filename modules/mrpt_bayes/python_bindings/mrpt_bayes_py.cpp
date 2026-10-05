@@ -115,7 +115,8 @@ PYBIND11_MODULE(_bindings, m)
       "CParticleFilterCapable PDF with executeOn() (added by importing mrpt.slam).")
       .def(
           py::init<>(),
-          "Default constructor: set the options, then call executeOn() for each filter step (import "
+          "Default constructor: set the options, then call executeOn() for each filter step "
+          "(import "
           "mrpt.slam first, which adds that method).")
       .def_readwrite(
           "options", &CParticleFilter::m_options, "Algorithm options (TParticleFilterOptions)")
