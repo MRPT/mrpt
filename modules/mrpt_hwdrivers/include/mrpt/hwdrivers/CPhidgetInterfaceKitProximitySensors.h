@@ -67,16 +67,12 @@ namespace mrpt::hwdrivers
  * haven't to specify
  * anyithing about this sensor in the configuration file.
  * The following table enumerate the different sensors supported by this class.
- * \latexonly
- * \begin{tabular}{|c|c|c}
- * 		\hline
- * 		Part Number & Config file indentifiant & IR or US
- * 		\hline
- * 		MaxBotix EZ-1 Sonar Sensor & EZ1 & US \\
- * 		GP2D12 & SHARP-30cm & IR \\
- * 		GP2Y0A21** & SHARP-80cm & IR \\
- * 		\hline
- * \end{tabular}
+ *
+ * | Part Number                | Config file identifier | IR or US |
+ * |----------------------------|------------------------|----------|
+ * | MaxBotix EZ-1 Sonar Sensor | EZ1                    | US       |
+ * | GP2D12                     | SHARP-30cm             | IR       |
+ * | GP2Y0A21                   | SHARP-80cm             | IR       |
  *
  * This isn't an event based implementation of the phidget library. That means
  * that when an instanciation of a CPhidgetInterfaceKitProximitySensors is done,
@@ -89,7 +85,6 @@ namespace mrpt::hwdrivers
  * kit a GP2D12 (min range 4 cm) and a GP2Y0A21 (min range 8 cm), then
  * CObservationrange::minSensorDistance = min(0.04,0.08) = 0.04. Respectively
  * for the maximal range.
- * \endlatexonly
  * \warning{The Phidget library use udev. By default, udev require to be root to
  * be launched, if you want to be able to run a program which use a phidget board
  * without be root, you must modify files in /etc/udev/rules.d .}

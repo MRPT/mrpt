@@ -248,7 +248,12 @@ mrpt_add_library(
     lambdas; public members use `def_readwrite` / `def_readonly`.
   * Resolve overloads with `py::overload_cast<...>`; turn output-argument
     methods into lambdas returning a value or `py::make_tuple(...)`.
-  * Always define `__str__` and `__repr__`.
+  * Always define `__str__` and `__repr__`, and give every class and `.def`
+    a docstring.
+  * Register a class before any binding that takes or returns it (declare
+    the `py::class_` object first, add `.def`s later), and import the
+    modules of other types used in signatures in `__init__.py`; otherwise
+    signatures and stubs show unnamed C++ types.
   * NumPy: Eigen types convert automatically (zero-copy via
     `Eigen::Map<const RowMajorMatrix>`); `CImage` exposes a
     `py::array_t<uint8_t>` with the Python object as buffer base.

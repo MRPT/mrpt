@@ -27,7 +27,7 @@ namespace mrpt::poses
  *asynchronous odometry and localization/SLAM data.
  *  The implemented model is a state vector:
  *		- TPose2D (x,y,phi) + TTwist2D (vx,vy,omega)
- *  The filter can be asked for an extrapolation for some arbitrary time `t'`,
+ *  The filter can be asked for an extrapolation for some arbitrary time t,
  *and it'll do a simple linear prediction.
  *  **All methods are thread-safe**.
  * \ingroup poses_grp poses_pdf_grp

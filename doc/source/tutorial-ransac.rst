@@ -44,7 +44,7 @@ Refer to the `example source code <page_math_ransac_plane3d_example2.html>`_
 for a direct usage of the generic C++ RANSAC template to see how to define
 custom models and test functions.
 
-.. image:: images/math_ransac_plane3d_example_screenshot.gif
+.. image:: images/math_ransac_plane3d_example_screenshot.webp
   :alt: RANSAC C++ detect 3D plane from point cloud
 
 

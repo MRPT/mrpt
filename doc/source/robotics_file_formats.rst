@@ -40,7 +40,7 @@ introduced by TORO, G2O, and others in the 2010s.
 
 See also:
 
-- :ref:`app_graph-slam`
+- :ref:`Application: graph-slam <doxid-app_graph-slam>`
 
 3. “Simple maps”
 ------------------
@@ -54,8 +54,8 @@ with gzip-compression to save disk space.
 
 See also:
 
-- :ref:`app_robot-map-gui`
-- :ref:`app_observations2map`
+- The ``robot-map-gui`` application
+- :ref:`Application: observations2map <doxid-app_observations2map>`
 
 4. Occupancy grid maps
 ------------------------

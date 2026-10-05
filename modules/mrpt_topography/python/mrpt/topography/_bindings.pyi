@@ -6,33 +6,53 @@ import mrpt.math
 import typing
 __all__: list[str] = ['ENUToGeocentric', 'ENUToGeodetic_WGS84', 'ENU_axes_from_WGS84', 'TCoords', 'TEllipsoid', 'TGeodeticCoords', 'UTMToGeodetic', 'geocentricToGeodetic', 'geodeticToENU_WGS84', 'geodeticToGeocentric', 'geodeticToGeocentric_WGS84', 'geodeticToUTM']
 class TCoords:
+    """
+    An angle in decimal degrees, also settable or readable as degrees, minutes and seconds.
+    """
     decimal_value: float
     @typing.overload
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
     @typing.overload
     def __init__(self, decimal_deg: float) -> None:
-        ...
+        """
+        Builds the coordinate from a decimal value in degrees.
+        """
     @typing.overload
     def __init__(self, deg: int, min: int, sec: float) -> None:
-        ...
+        """
+        Builds the coordinate from degrees, minutes and seconds.
+        """
     def __repr__(self) -> str:
         ...
     def getDecimalValue(self) -> float:
-        ...
+        """
+        Returns the value in decimal degrees.
+        """
     def getDegMinSec(self) -> tuple:
         """
         Returns (degrees, minutes, seconds) tuple
         """
     def setFromDecimal(self, arg0: float) -> None:
-        ...
+        """
+        Set from a decimal value (XX.YYYYY) in degrees.
+        """
 class TGeodeticCoords:
+    """
+    A set of geodetic coordinates: latitude, longitude and ellipsoidal height, defined over a reference ellipsoid (typically, WGS84)
+    """
     @typing.overload
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
     @typing.overload
     def __init__(self, lat_deg: float, lon_deg: float, height_m: float) -> None:
-        ...
+        """
+        Builds the coordinates from latitude, longitude (degrees) and height (meters).
+        """
     def __repr__(self) -> str:
         ...
     @property
@@ -60,79 +80,130 @@ class TGeodeticCoords:
     def lon(self, arg0: TCoords) -> None:
         ...
 class TEllipsoid:
+    """
+    A reference ellipsoid of the Earth, given its semi-major and semi-minor axes.
+    """
     name: str
     @staticmethod
     def Ellipsoid_Airy_1830() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Airy_Modificado_1965() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Bessel_1841() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Clarke_1866() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Clarke_1880() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Fischer_1960() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Fischer_1968() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_GRS80() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Hayford_1909() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Helmert_1906() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Hough_1960() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Internacional_1909() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Internacional_1924() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Krasovsky_1940() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Mercury_1960() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Mercury_Modificado_1968() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Nuevo_Internacional_1967() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Sudamericano_1969() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_WGS66() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_WGS72() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_WGS84() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @staticmethod
     def Ellipsoid_Walbeck_1817() -> TEllipsoid:
-        ...
+        """
+        Returns this reference ellipsoid.
+        """
     @typing.overload
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
     @typing.overload
     def __init__(self, sa: float, sb: float, name: str) -> None:
-        ...
+        """
+        Builds an ellipsoid from its semi-major and semi-minor axes (meters) and name.
+        """
     def __repr__(self) -> str:
         ...
     @property

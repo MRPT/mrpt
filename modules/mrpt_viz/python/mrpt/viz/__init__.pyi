@@ -53,4 +53,6 @@ __all__: list = ['posePDF2opengl', 'Scene', 'Viewport', 'CSetOfObjects', 'CCamer
 def _scene_lshift(self, obj):
     ...
 def create_point_cloud(pts_array, color = (255, 255, 255)):
-    ...
+    """
+    Returns a CPointCloud with the points of an (N, 3) array, in one color (R, G, B, 0-255).
+    """

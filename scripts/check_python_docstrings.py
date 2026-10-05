@@ -62,7 +62,7 @@ def stub_files(modules):
 
 
 def is_enum(cls):
-    return any(isinstance(n, ast.Assign) and "__members__" in ast.unparse(n) for n in cls.body)
+    return any(isinstance(n, (ast.Assign, ast.AnnAssign)) and "__members__" in ast.unparse(n) for n in cls.body)
 
 
 def check_file(path):
@@ -91,6 +91,9 @@ def check_file(path):
                 if node.name in SELF_EXPLANATORY:
                     continue
                 if node.name.startswith("_") and node.name != "__init__":
+                    continue
+                # Property setters share the getter docstring:
+                if any(isinstance(d, ast.Attribute) and d.attr in ("setter", "deleter") for d in node.decorator_list):
                     continue
                 if not ast.get_docstring(node) and qual not in undocumented:
                     undocumented.append(qual)

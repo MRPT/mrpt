@@ -34,13 +34,13 @@ constexpr size_t REACHABLE_ONLY = std::numeric_limits<size_t>::max() - 1;
 
 // Helper: expose CNetworkOfPoses<CPOSE> as the given Python class name
 template <typename CPOSE>
-void bind_CNetworkOfPoses(py::module& m, const char* className)
+void bind_CNetworkOfPoses(py::module& m, const char* className, const char* classDoc)
 {
   using G = mrpt::graphs::CNetworkOfPoses<CPOSE>;
   using EdgeMap = typename mrpt::graphs::CDirectedGraph<CPOSE>::edges_map_t;
 
-  py::class_<G>(m, className)
-      .def(py::init<>())
+  py::class_<G>(m, className, classDoc)
+      .def(py::init<>(), "Creates an empty graph.")
       // Node/edge counts
       .def("edgeCount", &G::edgeCount, "Number of edges in the graph")
       .def(
@@ -122,12 +122,15 @@ void bind_CNetworkOfPoses(py::module& m, const char* className)
       // root
       .def_readwrite("root", &G::root, "Root node ID (default: 0)")
       // File I/O
-      .def("saveToTextFile", &G::saveToTextFile, "fileName"_a)
+      .def(
+          "saveToTextFile", &G::saveToTextFile, "fileName"_a,
+          "Saves the graph to a text file in the TORO / g2o format.")
       .def(
           "loadFromTextFile",
           [](G& g, const std::string& fn, bool collapse_dup)
           { g.loadFromTextFile(fn, collapse_dup); },
-          "fileName"_a, "collapse_dup_edges"_a = true)
+          "fileName"_a, "collapse_dup_edges"_a = true,
+          "Loads the graph from a text file in the TORO / g2o format.")
       .def(
           "__repr__",
           [className](const G& g)
@@ -144,10 +147,12 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CNetworkOfPoses2D — 2D pose graph with CPose2D edges
   // -------------------------------------------------------------------------
-  bind_CNetworkOfPoses<mrpt::poses::CPose2D>(m, "CNetworkOfPoses2D");
+  bind_CNetworkOfPoses<mrpt::poses::CPose2D>(
+      m, "CNetworkOfPoses2D", "A graph of 2D poses (nodes) and relative pose constraints (edges).");
 
   // -------------------------------------------------------------------------
   // CNetworkOfPoses3D — 3D pose graph with CPose3D edges
   // -------------------------------------------------------------------------
-  bind_CNetworkOfPoses<mrpt::poses::CPose3D>(m, "CNetworkOfPoses3D");
+  bind_CNetworkOfPoses<mrpt::poses::CPose3D>(
+      m, "CNetworkOfPoses3D", "A graph of 3D poses (nodes) and relative pose constraints (edges).");
 }

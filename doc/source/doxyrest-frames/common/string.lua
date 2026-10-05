@@ -41,6 +41,8 @@ function getTitle(title, level)
 
 	-- escape trailing underscores
 	title = string.gsub(title, "(_+)(%s+)", "\\%1%2")
+	-- also before a scope operator (e.g. "TBoundingBox_::CTOR_FLAGS"):
+	title = string.gsub(title, "(_+)::", "\\%1::")
 	title = string.gsub(title, "(_+)$", "\\%1")
 
 	local underline = g_titleUnderlineCharMap[level]

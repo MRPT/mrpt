@@ -8,6 +8,7 @@ from mrpt.math._bindings import CMatrixDouble44 as CMatrixDouble44
 from mrpt.math._bindings import CMatrixDouble66 as CMatrixDouble66
 from mrpt.math._bindings import CMatrixDouble77 as CMatrixDouble77
 from mrpt.math._bindings import CPolygon as CPolygon
+from mrpt.math._bindings import CQuaternionDouble as CQuaternionDouble
 from mrpt.math._bindings import CVectorDouble as CVectorDouble
 from mrpt.math._bindings import CVectorFixedDouble2 as CVectorFixedDouble2
 from mrpt.math._bindings import CVectorFixedDouble3 as CVectorFixedDouble3
@@ -32,4 +33,4 @@ from mrpt.math._bindings import wrapTo2Pi as wrapTo2Pi
 from mrpt.math._bindings import wrapToPi as wrapToPi
 import numpy as np
 from . import _bindings
-__all__: list = ['CMatrixDouble', 'CVectorDouble', 'TPoint2D', 'TPoint3D', 'TPoint2Df', 'TPoint3Df', 'TPose2D', 'TPose3D', 'TSegment2D', 'TSegment3D', 'TLine2D', 'TLine3D', 'TPlane', 'TBoundingBox', 'TBoundingBoxf', 'TTwist2D', 'TTwist3D', 'TPose3DQuat', 'CPolygon', 'CHistogram', 'wrapToPi', 'wrapTo2Pi']
+__all__: list = ['CMatrixDouble', 'CVectorDouble', 'TPoint2D', 'TPoint3D', 'TPoint2Df', 'TPoint3Df', 'TPose2D', 'TPose3D', 'TSegment2D', 'TSegment3D', 'TLine2D', 'TLine3D', 'TPlane', 'TBoundingBox', 'TBoundingBoxf', 'TTwist2D', 'TTwist3D', 'TPose3DQuat', 'CPolygon', 'CHistogram', 'CQuaternionDouble', 'wrapToPi', 'wrapTo2Pi']

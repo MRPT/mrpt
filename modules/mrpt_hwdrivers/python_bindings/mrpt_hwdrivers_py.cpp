@@ -39,7 +39,10 @@ PYBIND11_MODULE(_bindings, m)
   // CGenericSensor: common interface of all sensor drivers
   // -------------------------------------------------------------------------
   using mrpt::hwdrivers::CGenericSensor;
-  py::class_<CGenericSensor, std::shared_ptr<CGenericSensor>> sensor(m, "CGenericSensor");
+  py::class_<CGenericSensor, std::shared_ptr<CGenericSensor>> sensor(
+      m, "CGenericSensor",
+      "A generic interface for a wide-variety of sensors designed to be used in the application "
+      "RawLogGrabber.");
 
   py::enum_<CGenericSensor::TSensorState>(sensor, "TSensorState")
       .value("ssInitializing", CGenericSensor::ssInitializing)
@@ -83,17 +86,24 @@ PYBIND11_MODULE(_bindings, m)
           },
           "Returns (and removes) the observations gathered so far, as a list of "
           "(timestamp, observation) tuples")
-      .def("getState", &CGenericSensor::getState)
+      .def("getState", &CGenericSensor::getState, "The current state of the sensor.")
       .def("getProcessRate", &CGenericSensor::getProcessRate, "Suggested doProcess() rate (Hz)")
-      .def("getSensorLabel", &CGenericSensor::getSensorLabel)
-      .def("setSensorLabel", &CGenericSensor::setSensorLabel, "sensorLabel"_a)
-      .def("enableVerbose", &CGenericSensor::enableVerbose, "enabled"_a = true)
+      .def(
+          "getSensorLabel", &CGenericSensor::getSensorLabel,
+          "Returns the sensor label, copied into each observation.")
+      .def(
+          "setSensorLabel", &CGenericSensor::setSensorLabel, "sensorLabel"_a,
+          "Sets the sensor label, copied into each observation.")
+      .def(
+          "enableVerbose", &CGenericSensor::enableVerbose, "enabled"_a = true,
+          "Enables or disables extra debug output.")
       .def(
           "setPathForExternalImages", &CGenericSensor::setPathForExternalImages, "directory"_a,
           "For camera sensors: directory where to save images as external files")
       .def(
           "getClassName",
-          [](const CGenericSensor& s) { return std::string(s.GetRuntimeClass()->className); })
+          [](const CGenericSensor& s) { return std::string(s.GetRuntimeClass()->className); },
+          "Returns the name of the driver class.")
       .def(
           "__repr__",
           [](const CGenericSensor& s) {
@@ -108,47 +118,83 @@ PYBIND11_MODULE(_bindings, m)
   // pybind11 would otherwise cast without adjusting the pointer offset.
   // -------------------------------------------------------------------------
   using mrpt::hwdrivers::CTaoboticsIMU;
-  py::class_<CTaoboticsIMU, CGenericSensor, std::shared_ptr<CTaoboticsIMU>>(m, "CTaoboticsIMU")
-      .def(py::init<>())
-      .def("setSerialPort", &CTaoboticsIMU::setSerialPort, "serialPort"_a)
-      .def("setSerialBaudRate", &CTaoboticsIMU::setSerialBaudRate, "rate"_a);
+  py::class_<CTaoboticsIMU, CGenericSensor, std::shared_ptr<CTaoboticsIMU>>(
+      m, "CTaoboticsIMU", "A driver for Taobotics IMU.")
+      .def(py::init<>(), "Default constructor.")
+      .def(
+          "setSerialPort", &CTaoboticsIMU::setSerialPort, "serialPort"_a,
+          "Sets the serial port device (default: /dev/ttyUSB0). Call before initialize().")
+      .def(
+          "setSerialBaudRate", &CTaoboticsIMU::setSerialBaudRate, "rate"_a,
+          "Sets the serial port baud rate (default: 921600). Call before initialize().");
 
   using mrpt::hwdrivers::CGPSInterface;
   py::class_<CGPSInterface, CGenericSensor, std::shared_ptr<CGPSInterface>>(
-      m, "CGPSInterface", py::multiple_inheritance())
-      .def(py::init<>())
-      .def("setSerialPortName", &CGPSInterface::setSerialPortName, "COM_port"_a)
-      .def("getSerialPortName", &CGPSInterface::getSerialPortName)
-      .def("setSetupCommands", &CGPSInterface::setSetupCommands, "cmds"_a)
-      .def("setShutdownCommands", &CGPSInterface::setShutdownCommands, "cmds"_a)
-      .def("setSetupCommandsDelay", &CGPSInterface::setSetupCommandsDelay, "delay_secs"_a);
+      m, "CGPSInterface",
+      "Reads GPS/GNSS receiver data from a serial port or any input stream and parses it into "
+      "CObservationGPS observations.",
+      py::multiple_inheritance())
+      .def(py::init<>(), "Default constructor.")
+      .def(
+          "setSerialPortName", &CGPSInterface::setSerialPortName, "COM_port"_a,
+          "Sets the serial port device name (e.g. \"COM1\", \"ttyUSB0\").")
+      .def(
+          "getSerialPortName", &CGPSInterface::getSerialPortName,
+          "Returns the currently configured serial port device name.")
+      .def(
+          "setSetupCommands", &CGPSInterface::setSetupCommands, "cmds"_a,
+          "Sets the commands sent to the receiver after opening the port.")
+      .def(
+          "setShutdownCommands", &CGPSInterface::setShutdownCommands, "cmds"_a,
+          "Sets the commands sent to the receiver before closing the port.")
+      .def(
+          "setSetupCommandsDelay", &CGPSInterface::setSetupCommandsDelay, "delay_secs"_a,
+          "Sets the delay between setup commands, in seconds.");
 
   using mrpt::hwdrivers::CHokuyoURG;
   py::class_<CHokuyoURG, CGenericSensor, std::shared_ptr<CHokuyoURG>>(
-      m, "CHokuyoURG", py::multiple_inheritance())
-      .def(py::init<>())
-      .def("setSerialPort", &CHokuyoURG::setSerialPort, "port_name"_a)
-      .def("setIPandPort", &CHokuyoURG::setIPandPort, "ip"_a, "port"_a)
-      .def("setReducedFOV", &CHokuyoURG::setReducedFOV, "fov"_a)
-      .def("setScanInterval", &CHokuyoURG::setScanInterval, "skipScanCount"_a);
+      m, "CHokuyoURG",
+      "Driver for Hokuyo URG/UTM/UXM/UST 2-D laser range-finders via the SCIP-2.0 protocol over "
+      "USB serial or Ethernet.",
+      py::multiple_inheritance())
+      .def(py::init<>(), "Constructor.")
+      .def(
+          "setSerialPort", &CHokuyoURG::setSerialPort, "port_name"_a,
+          "Configures the serial port device name for USB/serial connection.")
+      .def(
+          "setIPandPort", &CHokuyoURG::setIPandPort, "ip"_a, "port"_a,
+          "Configures the IP address and TCP port for Ethernet connection.")
+      .def(
+          "setReducedFOV", &CHokuyoURG::setReducedFOV, "fov"_a,
+          "Restricts the angular field of view of the scanner.")
+      .def(
+          "setScanInterval", &CHokuyoURG::setScanInterval, "skipScanCount"_a,
+          "Sets the scan decimation factor.");
 
   using mrpt::hwdrivers::CRoboPeakLidar;
   py::class_<CRoboPeakLidar, CGenericSensor, std::shared_ptr<CRoboPeakLidar>>(
-      m, "CRoboPeakLidar", py::multiple_inheritance())
-      .def(py::init<>())
-      .def("setSerialPort", &CRoboPeakLidar::setSerialPort, "port_name"_a);
+      m, "CRoboPeakLidar", "Interfaces a Robo Peak LIDAR laser scanner.",
+      py::multiple_inheritance())
+      .def(py::init<>(), "Constructor.")
+      .def(
+          "setSerialPort", &CRoboPeakLidar::setSerialPort, "port_name"_a,
+          "Sets the serial port device of the scanner.");
 
   using mrpt::hwdrivers::CVelodyneScanner;
   py::class_<CVelodyneScanner, CGenericSensor, std::shared_ptr<CVelodyneScanner>> velodyne(
-      m, "CVelodyneScanner");
+      m, "CVelodyneScanner", "Driver for Velodyne lidars (HDL-64, HDL-32, VLP-16, ...).");
   py::enum_<CVelodyneScanner::model_t>(velodyne, "model_t")
       .value("VLP16", CVelodyneScanner::VLP16)
       .value("HDL32", CVelodyneScanner::HDL32)
       .value("HDL64", CVelodyneScanner::HDL64)
       .export_values();
-  velodyne.def(py::init<>())
-      .def("setModelName", &CVelodyneScanner::setModelName, "model"_a)
-      .def("setDeviceIP", &CVelodyneScanner::setDeviceIP, "ip"_a)
+  velodyne.def(py::init<>(), "Default constructor.")
+      .def(
+          "setModelName", &CVelodyneScanner::setModelName, "model"_a,
+          "Sets the scanner model (e.g. VLP16, HDL32, HDL64).")
+      .def(
+          "setDeviceIP", &CVelodyneScanner::setDeviceIP, "ip"_a,
+          "Only accepts UDP packets from this IP address (empty: any address).")
       .def(
           "setPCAPInputFile", &CVelodyneScanner::setPCAPInputFile, "pcap_file"_a,
           "Replays packets from a PCAP file instead of reading from the network");
@@ -157,14 +203,18 @@ PYBIND11_MODULE(_bindings, m)
   // CJoystick: joysticks and gamepads
   // -------------------------------------------------------------------------
   using mrpt::hwdrivers::CJoystick;
-  py::class_<CJoystick> joystick(m, "CJoystick");
-  py::class_<CJoystick::State>(joystick, "State")
-      .def(py::init<>())
+  py::class_<CJoystick> joystick(
+      m, "CJoystick", "Reads axis positions and button states from joysticks and gamepads.");
+  py::class_<CJoystick::State>(
+      joystick, "State", "Joystick state: button states and axis positions.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("buttons", &CJoystick::State::buttons)
       .def_readwrite("axes", &CJoystick::State::axes, "Normalized axis positions")
       .def_readwrite("axes_raw", &CJoystick::State::axes_raw, "Raw axis positions");
-  joystick.def(py::init<>())
-      .def_static("getJoysticksCount", &CJoystick::getJoysticksCount)
+  joystick.def(py::init<>(), "Default constructor.")
+      .def_static(
+          "getJoysticksCount", &CJoystick::getJoysticksCount,
+          "Returns the number of joystick/gamepad devices currently connected to the system.")
       .def(
           "getJoystickPosition",
           [](CJoystick& j, int nJoy) -> std::optional<CJoystick::State>

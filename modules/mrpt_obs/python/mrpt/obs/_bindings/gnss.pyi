@@ -4,13 +4,24 @@ GNSS message types stored in CObservationGPS
 from __future__ import annotations
 __all__: list[str] = ['Message_NMEA_GGA', 'Message_NMEA_RMC', 'UTC_time']
 class UTC_time:
+    """
+    UTC (Coordinated Universal Time) time-stamp structure for GPS messages.
+    """
     hour: int
     minute: int
     sec: float
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
 class Message_NMEA_GGA:
+    """
+    NMEA datum: GGA.
+    """
     class content_t:
+        """
+        Fields of a GGA message.
+        """
         HDOP: float
         UTCTime: UTC_time
         altitude_meters: float
@@ -23,12 +34,22 @@ class Message_NMEA_GGA:
         satellitesUsed: int
         thereis_HDOP: bool
         def __init__(self) -> None:
-            ...
+            """
+            Default constructor.
+            """
     fields: Message_NMEA_GGA.content_t
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
 class Message_NMEA_RMC:
+    """
+    NMEA datum: RMC.
+    """
     class content_t:
+        """
+        Fields of an RMC message.
+        """
         UTCTime: UTC_time
         date_day: int
         date_month: int
@@ -41,7 +62,11 @@ class Message_NMEA_RMC:
         speed_knots: float
         validity_char: int
         def __init__(self) -> None:
-            ...
+            """
+            Default constructor.
+            """
     fields: Message_NMEA_RMC.content_t
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """

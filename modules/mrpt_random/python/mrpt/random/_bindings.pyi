@@ -6,12 +6,19 @@ import numpy
 import typing
 __all__: list[str] = ['CRandomGenerator', 'Randomize', 'getRandomGenerator']
 class CRandomGenerator:
+    """
+    A thread-safe pseudo random number generator, based on an internal MT19937 randomness generator.
+    """
     @typing.overload
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor: initialize random seed based on current time.
+        """
     @typing.overload
     def __init__(self, seed: int) -> None:
-        ...
+        """
+        Constructor for providing a custom random seed to initialize the PRNG.
+        """
     def __repr__(self) -> str:
         ...
     def drawGaussian1D(self, mean: float, std: float) -> float:
@@ -45,9 +52,13 @@ class CRandomGenerator:
         Draw a uniform double from [min, max)
         """
     def drawUniform32bit(self) -> int:
-        ...
+        """
+        Generate a uniformly distributed pseudo-random number using the MT19937 algorithm, in the whole range of 32-bit integers.
+        """
     def drawUniform64bit(self) -> int:
-        ...
+        """
+        Returns a uniformly distributed pseudo-random number by joining two 32bit numbers from drawUniform32bit()
+        """
     def drawUniformArray(self, n: int, min: float = 0.0, max: float = 1.0) -> numpy.ndarray:
         """
         Draw n uniform samples as a 1D float64 numpy array

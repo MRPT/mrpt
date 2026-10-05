@@ -22,7 +22,7 @@ Minimum compiler requisites:
 - cmake (>=3.8)
 - Eigen (>=3.3) required.
 - Other libraries: See :ref:`doxid-dependencies`
-- On SIMD optimizations, read: :ref:`doxid-simd`
+- On SIMD optimizations (run-time CPU feature detection), see :ref:`mrpt::cpu <doxid-namespacemrpt_1_1cpu>`
 
 .. dropdown:: Debian/Ubuntu
     :open:

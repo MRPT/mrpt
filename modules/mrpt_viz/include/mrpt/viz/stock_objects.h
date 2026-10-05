@@ -39,13 +39,6 @@ CSetOfObjects::Ptr RobotRhodon();
 /** Returns a representation of RobotGiraff.
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::RobotGiraff() </td> <td> \image
- * html preview_stock_objects_RobotGiraff.png </td> </tr>
- *  </table>
- *  </div>
  */
 CSetOfObjects::Ptr RobotGiraff();
 

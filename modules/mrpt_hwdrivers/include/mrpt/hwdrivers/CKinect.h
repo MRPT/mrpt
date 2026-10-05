@@ -161,17 +161,10 @@ namespace mrpt::hwdrivers
  *KINECT_RANGES_TABLE_LEN-1) to zero, to indicate that those are invalid
  *ranges.
  *
- *  <table width="100%" >
- *  <tr>
- *  <td align="center" >
- *   <img src="kinect_depth2range_10bit.png" > <br>
- *    R(d) = k3 * tan(d/k2 + k1); <br>
- *    k1 = 1.1863,  k2 = 2842.5, k3 = 0.1236 <br>
- *  </td>
- *  <td align="center" >
- *  </td>
- *  </tr>
- *  </table>
+ *  \image html kinect_depth2range_10bit.png
+ *
+ *  The default conversion is R(d) = k3 * tan(d/k2 + k1), with
+ *  k1 = 1.1863, k2 = 2842.5, k3 = 0.1236.
  *
  *
  * <h2>Platform-specific comments</h2><hr>

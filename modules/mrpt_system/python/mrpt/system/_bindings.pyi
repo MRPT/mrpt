@@ -6,6 +6,9 @@ import datetime
 import typing
 __all__: list[str] = ['CTicTac', 'CTimeLogger', 'CTimeLoggerEntry', 'CTimeLoggerSaveAtDtor', 'TTimeParts', 'buildTimestampFromParts', 'buildTimestampFromPartsLocalTime', 'compute_CRC16', 'compute_CRC32', 'createDirectory', 'dateTimeLocalToString', 'dateTimeToString', 'dateToString', 'decodeBase64', 'deleteFile', 'directoryExists', 'encodeBase64', 'extractFileDirectory', 'extractFileExtension', 'extractFileName', 'fileExists', 'fileNameChangeExtension', 'fileNameStripInvalidChars', 'filePathSeparatorsToNative', 'formatTimeInterval', 'getFileSize', 'getTempFileName', 'getcwd', 'global_profiler_enter', 'global_profiler_getref', 'global_profiler_leave', 'intervalFormat', 'pathJoin', 'renameFile', 'timeDifference', 'timeLocalToString', 'timeToString', 'timestampAdd', 'timestampToParts', 'toAbsolutePath', 'unitsFormat']
 class CTicTac:
+    """
+    A high-performance stopwatch, with typical resolution of nanoseconds.
+    """
     def Tac(self) -> float:
         """
         Stop the stopwatch and return the elapsed time in seconds
@@ -19,20 +22,33 @@ class CTicTac:
         Create a new stopwatch and start it automatically
         """
 class CTimeLogger:
+    """
+    A versatile "profiler" that logs the time spent within each pair of calls to enter(X)-leave(X), among other stats.
+    """
     def __init__(self, enabled: bool = True, name: str = '', keep_whole_history: bool = False) -> None:
         """
         Construct a CTimeLogger
         """
     def clear(self, deep_clear: bool = False) -> None:
-        ...
+        """
+        Resets all stats. By default (deep_clear=false), all section names are remembered (not freed) so the cost of creating upon the first next call is avoided.
+        """
     def disable(self) -> None:
-        ...
+        """
+        Disables the logger.
+        """
     def dumpAllStats(self, column_width: int = 80) -> None:
-        ...
+        """
+        Dump all stats through the COutputLogger interface.
+        """
     def enable(self, enabled: bool = True) -> None:
-        ...
+        """
+        Enables or disables the logger.
+        """
     def enableKeepWholeHistory(self, enable: bool = True) -> None:
-        ...
+        """
+        If enabled, keeps all the measured times (not only the statistics).
+        """
     def enter(self, section_name: str) -> None:
         """
         Start a named section (time measurement)
@@ -46,33 +62,57 @@ class CTimeLogger:
         Return mean execution time of a section
         """
     def getName(self) -> str:
-        ...
+        """
+        Returns the logger name.
+        """
     def getStatsAsText(self, column_width: int = 80) -> str:
-        ...
+        """
+        Dump all stats to a multi-line text string.
+        """
     def isEnabled(self) -> bool:
-        ...
+        """
+        Returns true if the logger is enabled.
+        """
     def isEnabledKeepWholeHistory(self) -> bool:
-        ...
+        """
+        Returns true if all the measured times are kept.
+        """
     def leave(self, section_name: str) -> float:
         """
         End a named section and return elapsed time in seconds
         """
     def saveToCSVFile(self, csv_file: str) -> None:
-        ...
+        """
+        Dump all stats to a Comma Separated Values (CSV) file.
+        """
     def saveToMFile(self, m_file: str) -> None:
-        ...
+        """
+        Dump all stats to a Matlab/Octave (.m) file.
+        """
     def setName(self, name: str) -> None:
-        ...
+        """
+        Sets the logger name, shown in the statistics.
+        """
 class CTimeLoggerEntry:
+    """
+    Calls enter() on construction and leave() on stop() or destruction of a CTimeLogger section.
+    """
     def __init__(self, logger: CTimeLogger, section_name: str) -> None:
         """
         Scoped time logging entry
         """
     def stop(self) -> None:
-        ...
+        """
+        Ends the timed section now.
+        """
 class CTimeLoggerSaveAtDtor:
+    """
+    A helper class to save CSV stats upon self destruction, for example, at the end of a program run.
+    """
     def __init__(self, logger: CTimeLogger) -> None:
-        ...
+        """
+        Saves the statistics of the given logger to a CSV file when this object is destroyed.
+        """
 class TTimeParts:
     """
     Broken-down date/time representation (UTC or local)
@@ -85,7 +125,9 @@ class TTimeParts:
     second: float
     year: int
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
 def buildTimestampFromParts(parts: TTimeParts) -> datetime.timedelta:
     """
     Build a TTimeStamp (UTC) from a TTimeParts struct
@@ -191,11 +233,17 @@ def getcwd() -> str:
     Returns the current working directory
     """
 def global_profiler_enter(func_name: str) -> None:
-    ...
+    """
+    Starts timing a section in the global profiler.
+    """
 def global_profiler_getref() -> CTimeLogger:
-    ...
+    """
+    Returns the global profiler (a CTimeLogger).
+    """
 def global_profiler_leave(func_name: str) -> None:
-    ...
+    """
+    Ends timing a section in the global profiler.
+    """
 def intervalFormat(seconds: float) -> str:
     """
     Format a time interval in seconds to a string
