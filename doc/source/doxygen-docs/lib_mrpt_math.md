@@ -25,7 +25,7 @@ Other important elements:
  - \ref fourier_grp
  - \ref gausspdf_transform_grp
  - \ref interpolation_grp
- - \ref kdtree_grp
+ - KD-Trees: mrpt::math::KDTreeCapable
  - \ref polynomial_roots
  - \ref ransac_grp
  - \ref stats_grp
