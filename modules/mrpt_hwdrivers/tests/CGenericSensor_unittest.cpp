@@ -50,6 +50,9 @@ TEST(CGenericSensor, everyRegisteredClassIsConstructible)
   // of them refuse to be built at all in a stripped-down configuration; the
   // rest must construct *and* destruct cleanly without initialize() having
   // been called, which is what rawlog-grabber does before configuring them.
+  // The OpenNI2 drivers ("COpenNI2Sensor", "COpenNI2_RGBD360") are left out:
+  // each instance initializes and shuts down the OpenNI2 library, and repeating
+  // that cycle in one process is not reliable in the library itself.
   const char* allClasses[] = {"CSickLaserUSB",    "CIbeoLuxETH",
                               "CHokuyoURG",       "CRoboPeakLidar",
                               "CGPSInterface",    "CIMUXSens_MT4",
@@ -59,7 +62,6 @@ TEST(CGenericSensor, everyRegisteredClassIsConstructible)
                               "CGillAnemometer",  "CNTRIPEmitter",
                               "CLMS100Eth",       "CPhidgetInterfaceKitProximitySensors",
                               "CGyroKVHDSP3000",  "CKinect",
-                              "COpenNI2Sensor",   "COpenNI2_RGBD360",
                               "CCANBusReader",    "CNationalInstrumentsDAQ",
                               "CGPS_NTRIP",       "CVelodyneScanner",
                               "CSICKTim561Eth",   "CTaoboticsIMU"};
