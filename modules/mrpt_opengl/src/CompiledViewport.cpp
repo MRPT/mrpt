@@ -1457,9 +1457,6 @@ void CompiledViewport::renderPointShadowMaps(ShaderProgramManager& shaderManager
     FrameBuffer::Bind(oldFBs);
     glViewport(m_pixelX, m_pixelY, m_pixelWidth, m_pixelHeight);
   }
-#else
-      (void)
-      shaderManager;
 #endif
   MRPT_END
 }
