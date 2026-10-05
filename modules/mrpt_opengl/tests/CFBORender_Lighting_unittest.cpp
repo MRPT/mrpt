@@ -211,7 +211,7 @@ TEST(OpenGLLighting, EmissiveMapMakesOnlyPartsGlow)
     {
       for (int x = 0; x < 16; x++)
       {
-        for (int ch = 0; ch < 3; ch++)
+        for (int8_t ch = 0; ch < 3; ch++)
         {
           im.at<uint8_t>(x, y, ch) = x < whiteColumns ? 0xff : 0x00;
         }
