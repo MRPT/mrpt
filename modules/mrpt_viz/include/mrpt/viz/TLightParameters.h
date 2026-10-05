@@ -28,8 +28,8 @@ static constexpr int MAX_LIGHTS = 8;
 /** Maximum number of cascaded shadow map splits. */
 static constexpr int MAX_SHADOW_CASCADES = 4;
 
-/** Maximum number of point/spot lights casting shadows at once. */
-static constexpr int MAX_SHADOW_POINT_LIGHTS = 4;
+/** Maximum number of point/spot lights casting shadows at once (all of them). */
+static constexpr int MAX_SHADOW_POINT_LIGHTS = MAX_LIGHTS;
 
 /** Light source type.
  * \ingroup mrpt_viz_grp

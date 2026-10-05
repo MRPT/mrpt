@@ -7,7 +7,7 @@ R"XXX(#version 300 es
 // Multi-light support (up to 8 lights)
 #define MAX_LIGHTS 8
 #define MAX_SHADOW_CASCADES 4
-#define MAX_SHADOW_POINT_LIGHTS 4
+#define MAX_SHADOW_POINT_LIGHTS 8
 
 uniform int num_lights;
 uniform int light_type[MAX_LIGHTS];       // 0=directional, 1=point, 2=spot
