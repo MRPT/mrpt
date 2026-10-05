@@ -47,6 +47,7 @@ extensions = [
     'm2r2',  # provides: mdinclude
     'autoapi.extension',
     'mrpt_python_api',  # in _ext/
+    'mrpt_doxyrest_refs',  # in _ext/
     'sphinx_markdown_builder',
     'mrpt_markdown',  # in _ext/
 ]

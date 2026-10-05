@@ -55,15 +55,15 @@ Papers and books
 - The current must-read SLAM survey paper (2020-2021):
   Cadena, C., Carlone, L., Carrillo, H., Latif, Y., Scaramuzza, D., Neira, J., ... & Leonard, J. J. (2016).
   Past, present, and future of simultaneous localization and mapping: Toward the robust-perception age.
-  IEEE Transactions on robotics, 32(6), 1309-1332. (`PDF <https://marinerobotics.mit.edu/sites/default/files/slam%20survey.pdf>`_)
+  IEEE Transactions on robotics, 32(6), 1309-1332. (`PDF <https://marinerobotics.mit.edu/sites/default/files/slam%20survey.pdf>`__)
 
 - Our SLAM book, for those who want a rigorous treatment of all probabilistic equations in modern mobile robotics (~2012):
   `“Simultaneous Localization and Mapping for Mobile Robots: Introduction and Methods” <https://www.mrpt.org/slam_book_2012/>`_ (Fernández-Madrigal, J.A. and Blanco, J.L., 2012).
 
 - About EKF-based SLAM with landmark maps (the trend between 1999 and ~2010, outdated nowadays):
 
-  - Hugh Durrant-Whyte & Tim Bailey. “Simultaneous Localisation and Mapping (SLAM): Part I The Essential Algorithms“, (2006) (`PDF <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.128.4195&rep=rep1&type=pdf>`_)
+  - Hugh Durrant-Whyte & Tim Bailey. “Simultaneous Localisation and Mapping (SLAM): Part I The Essential Algorithms“, (2006) (`PDF <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.128.4195&rep=rep1&type=pdf>`__)
 
-  - Tim Bailey & Hugh Durrant-Whyte and . “Simultaneous Localisation and Mapping (SLAM): Part II State of the Art“, (2006) (`PDF <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.4153&rep=rep1&type=pdf>`_)
+  - Tim Bailey & Hugh Durrant-Whyte and . “Simultaneous Localisation and Mapping (SLAM): Part II State of the Art“, (2006) (`PDF <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.4153&rep=rep1&type=pdf>`__)
 
 - An excellent introductory/advanced book (for everything up to ~2005): `Probabilistic Robotics <https://mitpress.mit.edu/books/probabilistic-robotics>`_, by Sebastian Thrun, Wolfram Burgard and Dieter Fox.

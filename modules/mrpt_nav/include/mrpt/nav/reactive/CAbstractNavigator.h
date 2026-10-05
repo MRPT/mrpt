@@ -43,28 +43,22 @@ namespace mrpt::nav
  * derived classes.
  *
  * How to use:
- *  - A class derived from `CRobot2NavInterface` with callbacks must be defined
+ *  - A class derived from CRobot2NavInterface with callbacks must be defined
  * by the user and provided to the constructor.
- *  - `navigationStep()` must be called periodically in order to effectively run
+ *  - navigationStep() must be called periodically in order to effectively run
  * the navigation. This method will internally call the callbacks to gather
  * sensor data and robot positioning data.
  *
  * It implements the following state machine (see
  * CAbstractNavigator::getCurrentState() ), taking into account the extensions
- * described in CWaypointsNavigator
- *  \dot
- *  digraph CAbstractNavigator_States {
- *      IDLE; NAVIGATING; SUSPENDED; NAV_ERROR;
- *      IDLE -> NAVIGATING [ label="CAbstractNavigator::navigate()"];
- *      IDLE -> NAVIGATING [ label="CWaypointsNavigator::navigateWaypoints()" ];
- *      NAVIGATING -> IDLE [ label="Final target reached" ];
- *      NAVIGATING -> IDLE [ label="CAbstractNavigator::cancel()" ];
- *      NAVIGATING -> NAV_ERROR [ label="Upon sensor errors, timeout,..." ];
- *      NAVIGATING -> SUSPENDED [ label="CAbstractNavigator::suspend()" ];
- *      SUSPENDED -> NAVIGATING [ label="CAbstractNavigator::resume()" ];
- *      NAV_ERROR -> IDLE [ label="CAbstractNavigator::resetNavError()" ];
- *  }
- *  \enddot
+ * described in CWaypointsNavigator:
+ *
+ *  - IDLE to NAVIGATING: navigate(), or CWaypointsNavigator::navigateWaypoints().
+ *  - NAVIGATING to IDLE: final target reached, or cancel().
+ *  - NAVIGATING to NAV_ERROR: upon sensor errors, timeout, etc.
+ *  - NAVIGATING to SUSPENDED: suspend().
+ *  - SUSPENDED to NAVIGATING: resume().
+ *  - NAV_ERROR to IDLE: resetNavError().
  *
  * \sa CWaypointsNavigator, CReactiveNavigationSystem, CRobot2NavInterface, all
  * children classes

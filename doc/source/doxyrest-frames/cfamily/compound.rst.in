@@ -72,6 +72,10 @@ if compoundStats.hasItems or
 	compound.derivedTypeArray and #compound.derivedTypeArray > 0 then
 
 	includeFile("overview_compound.rst.in", compound, variableSectionName, functionSectionName)
+
+	-- The section titles of the details below must not follow the code block
+	-- directly (Sphinx: "Explicit markup ends without a blank line"):
+	emit("\n\n")
 end
 
 
