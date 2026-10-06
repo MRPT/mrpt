@@ -224,6 +224,9 @@ void CImGuiSceneView::renderSceneDirect()
     // The viewport clears its own area (with scissor), and saves/restores
     // the GL viewport. ImGui restores the rest of its state afterwards.
     glDisable(GL_SCISSOR_TEST);
+    // ImGui may leave a sampler object bound to texture unit 0, which would
+    // override the wrapping and mipmap settings of the scene textures:
+    glBindSampler(0, 0);
     m_compiledScene->render(m_directRect[2], m_directRect[3], m_directRect[0], m_directRect[1]);
   }
   catch (const std::exception& e)
