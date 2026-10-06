@@ -218,12 +218,15 @@ TEST(OpenGL, TRenderMatrices_lookAtWithoutTranslation)
     EXPECT_EQ(noTrans(2, 3), 0.0f);
     EXPECT_EQ(noTrans(3, 3), 1.0f);
 
-    // Degenerate inputs are rejected:
+    // Degenerate inputs are rejected (eye at the target, or up parallel to the
+    // viewing direction):
     EXPECT_ANY_THROW(
-        mrpt::opengl::TRenderMatrices::LookAt(eye, eye, mrpt::math::TVector3D(0, 0, 1)));
-    EXPECT_ANY_THROW(mrpt::opengl::TRenderMatrices::LookAt(
-        mrpt::math::TVector3D(0, 0, 5), mrpt::math::TVector3D(0, 0, 0),
-        mrpt::math::TVector3D(0, 0, 1)));
+        [[maybe_unused]] const auto m =
+            mrpt::opengl::TRenderMatrices::LookAt(eye, eye, mrpt::math::TVector3D(0, 0, 1)));
+    EXPECT_ANY_THROW(
+        [[maybe_unused]] const auto m = mrpt::opengl::TRenderMatrices::LookAt(
+            mrpt::math::TVector3D(0, 0, 5), mrpt::math::TVector3D(0, 0, 0),
+            mrpt::math::TVector3D(0, 0, 1)));
   }
 }
 
