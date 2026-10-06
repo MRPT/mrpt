@@ -828,13 +828,20 @@ void CompiledScene::updateNode(
 
   // Where and whether it is drawn:
   const uint64_t tv = obj.transformVersion();
-  const bool transformChanged = parent.changed || !node.hasTransform || tv != node.transformVersion;
-  if (transformChanged)
+  bool transformChanged = false;
+  if (parent.changed || !node.hasTransform || tv != node.transformVersion)
   {
+    // Setting the same pose again is not a change, so cached results (e.g.
+    // shadow maps) that depend on this object remain valid:
     const auto ps = obj.getPoseAndScale();
-    node.worldMatrix = computeModelMatrix(ps, *parent.worldMatrix);
-    node.visible = parent.visible && ps.visible;
-    node.castShadows = parent.castShadows && obj.castShadows();
+    const auto worldMatrix = computeModelMatrix(ps, *parent.worldMatrix);
+    const bool visible = parent.visible && ps.visible;
+    const bool castShadows = parent.castShadows && obj.castShadows();
+    transformChanged = !node.hasTransform || worldMatrix != node.worldMatrix ||
+                       visible != node.visible || castShadows != node.castShadows;
+    node.worldMatrix = worldMatrix;
+    node.visible = visible;
+    node.castShadows = castShadows;
     node.transformVersion = tv;
     node.hasTransform = true;
   }

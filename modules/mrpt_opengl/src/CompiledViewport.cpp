@@ -205,23 +205,47 @@ void hashCombine(uint64_t& h, float v)
   hashCombine(h, static_cast<uint64_t>(bits));
 }
 
-/** Identifies what a point light cube shadow map depends on: the light and
- * the state of the shadow casters within its reach. */
-uint64_t pointShadowSignature(
+/** Whether a sphere may overlap the frustum of a cube shadow map face (a 90
+ * deg pyramid from the light position, without near/far limits). */
+bool sphereInCubeFace(const TPoint3Df& lightPos, const BoundingSphere& s, int face)
+{
+  const std::array<float, 3> v = {
+      s.center.x - lightPos.x, s.center.y - lightPos.y, s.center.z - lightPos.z};
+  const int axis = face / 2;
+  const float along = (face % 2 == 0) ? v[axis] : -v[axis];
+  // Distance to each side plane, scaled by sqrt(2):
+  constexpr float SQRT2 = 1.41421356f;
+  const float margin = along + s.radius * SQRT2;
+  for (int i = 0; i < 3; i++)
+  {
+    if (i != axis && std::abs(v[i]) > margin)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+/** Identifies what each face of a point light cube shadow map depends on:
+ * the light and the state of the shadow casters within that face frustum. */
+std::array<uint64_t, 6> pointShadowFaceSignatures(
     const TLight& l,
     float zNear,
     float zFar,
     unsigned int mapSize,
     const std::vector<RenderableProxy::Ptr>& proxies)
 {
-  uint64_t h = mapSize;
+  uint64_t base = mapSize;
   for (const float v :
        {l.position.x, l.position.y, l.position.z, l.direction.x, l.direction.y, l.direction.z,
         l.spot_outer_cutoff_deg, zNear, zFar})
   {
-    hashCombine(h, v);
+    hashCombine(base, v);
   }
-  hashCombine(h, static_cast<uint64_t>(l.type));
+  hashCombine(base, static_cast<uint64_t>(l.type));
+
+  std::array<uint64_t, 6> h;
+  h.fill(base);
 
   for (const auto& p : proxies)
   {
@@ -229,13 +253,20 @@ uint64_t pointShadowSignature(
     {
       continue;
     }
-    if (const auto bs = worldBoundingSphere(*p);
-        bs.has_value() && distance(bs->center, l.position) > zFar + bs->radius)
+    const auto bs = worldBoundingSphere(*p);
+    if (bs.has_value() && distance(bs->center, l.position) > zFar + bs->radius)
     {
       continue;
     }
-    hashCombine(h, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(p.get())));
-    hashCombine(h, p->m_changeCount);
+    for (int face = 0; face < 6; face++)
+    {
+      if (bs.has_value() && !sphereInCubeFace(l.position, *bs, face))
+      {
+        continue;
+      }
+      hashCombine(h[face], static_cast<uint64_t>(reinterpret_cast<uintptr_t>(p.get())));
+      hashCombine(h[face], p->m_changeCount);
+    }
   }
   return h;
 }
@@ -1536,32 +1567,34 @@ void CompiledViewport::renderPointShadowMaps(
     const auto reach = lightReach(l);
     const float zFar = reach.has_value() ? *reach : farthestShadowCaster(l.position, proxies);
     const float zNear = std::min(0.05f, zFar * 0.01f);
-    const uint64_t signature = pointShadowSignature(l, zNear, zFar, mapSize, proxies);
+    const auto signatures = pointShadowFaceSignatures(l, zNear, zFar, mapSize, proxies);
 
-    // Reuse the cube map if neither the light nor anything near it changed:
-    if (!texRecreated && cube.lightIndex == lightIndices[k] && cube.signature == signature)
-    {
-      continue;
-    }
+    // Reuse the faces whose light and nearby objects did not change:
+    const bool reuseFaces = !texRecreated && cube.lightIndex == lightIndices[k];
     cube.lightIndex = lightIndices[k];
     cube.zNear = zNear;
     cube.zFar = zFar;
-    cube.signature = signature;
-
-    if (!fboBound)
-    {
-      glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
-      glViewport(0, 0, static_cast<GLsizei>(mapSize), static_cast<GLsizei>(mapSize));
-      glEnable(GL_DEPTH_TEST);
-      // Hardware polygon offset to prevent shadow acne (self-shadowing)
-      glEnable(GL_POLYGON_OFFSET_FILL);
-      glPolygonOffset(2.0f, 4.0f);
-      fboBound = true;
-      m_pointShadowPass = true;
-    }
 
     for (int face = 0; face < 6; face++)
     {
+      if (reuseFaces && cube.faceSignatures[face] == signatures[face])
+      {
+        continue;
+      }
+      cube.faceSignatures[face] = signatures[face];
+
+      if (!fboBound)
+      {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
+        glViewport(0, 0, static_cast<GLsizei>(mapSize), static_cast<GLsizei>(mapSize));
+        glEnable(GL_DEPTH_TEST);
+        // Hardware polygon offset to prevent shadow acne (self-shadowing)
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(2.0f, 4.0f);
+        fboBound = true;
+        m_pointShadowPass = true;
+      }
+
       glFramebufferTextureLayer(
           GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_pointShadowArrayTexId, 0,
           static_cast<GLint>(k * 6 + face));

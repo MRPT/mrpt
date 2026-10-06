@@ -28,6 +28,7 @@
 #include <mrpt/viz/TLightParameters.h>
 #include <mrpt/viz/Viewport.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -471,7 +472,8 @@ class CompiledViewport
     int lightIndex = -1;  //!< Index in m_lightParams.lights
     float zNear = 0;
     float zFar = 0;
-    uint64_t signature = 0;  //!< Of the light and nearby objects, to reuse the map
+    /** Of the light and the objects in each face frustum, to reuse faces */
+    std::array<uint64_t, 6> faceSignatures{};
   };
   std::vector<PointShadowCube> m_pointShadowCubes;
 
@@ -565,7 +567,7 @@ class CompiledViewport
   /** Frees the GPU resources of the point/spot light cube shadow maps */
   void releasePointShadowMaps();
 
-  /** Renders (or reuses, if nothing changed) the cube shadow maps of the
+  /** Renders (or reuses the faces where nothing changed) the cube shadow maps of the
    * point/spot lights with TLight::cast_shadows.
    * \param proxiesToRender As in renderShadowMap() */
   void renderPointShadowMaps(

@@ -151,7 +151,9 @@ mrpt_add_library(
   declares must be set to its own unit even when unused (samplers of different
   types sharing a unit is a GL error). The cube face convention of point light
   shadow maps is duplicated in `CompiledViewport.cpp` and
-  `shadow-calculation.f.glsl`: change both.
+  `shadow-calculation.f.glsl`: change both. Each cube face is cached by a
+  hash of the `m_changeCount` of the proxies in its frustum, so
+  `CompiledScene` must bump it only on actual changes.
 * **mrpt_imgui**: the ImGui-dependent methods of `CImGuiSceneView` are inline
   in its header (compiled only in user code that has `imgui.h`); the library
   itself does not link ImGui. `renderAsBackground()` draws from an ImGui draw

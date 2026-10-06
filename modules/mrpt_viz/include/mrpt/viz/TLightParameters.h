@@ -81,8 +81,8 @@ struct TLight
   float range = 0;
 
   /** Whether this Point/Spot light casts shadows (default: false). Each one
-   *  renders the scene into a cube shadow map (six depth passes, cached
-   *  while nothing within its reach changes), so enable it only for the
+   *  renders the scene into a cube shadow map (six depth passes, each one
+   *  cached while nothing within its view changes), so enable it only for the
    *  lights that matter. Only the first MAX_SHADOW_POINT_LIGHTS such lights
    *  cast shadows, and only in viewports with shadow casting enabled. Set a
    *  `range` too, which limits the shadow passes to nearby objects.

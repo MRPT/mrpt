@@ -318,15 +318,21 @@ TEST(OpenGLLighting, PointLightShadowMapsAreReusedWhileNothingChanges)
   const auto im1 = render(*renderer, *s.scene);
   EXPECT_EQ(pointShadowFacesRendered(*renderer), 0U);
 
+  // Setting the same pose again: reused
+  s.slab->setLocation(0, 0, 0);
+  render(*renderer, *s.scene);
+  EXPECT_EQ(pointShadowFacesRendered(*renderer), 0U);
+
   // Moving an object out of reach of the light: reused
   farBox->setLocation(101, 0, 0);
   render(*renderer, *s.scene);
   EXPECT_EQ(pointShadowFacesRendered(*renderer), 0U);
 
-  // Moving the shadow caster: rendered again
+  // Moving the shadow caster: only the faces it was or is now in (down, +X)
+  // are rendered again
   s.slab->setLocation(1.0, 0, 0);
   const auto im2 = render(*renderer, *s.scene);
-  EXPECT_EQ(pointShadowFacesRendered(*renderer), 6U);
+  EXPECT_EQ(pointShadowFacesRendered(*renderer), 2U);
   EXPECT_GT(std::abs(darkPixels(im1, 100) - darkPixels(im2, 100)), 0);
 
   // Moving the light: rendered again
@@ -338,6 +344,59 @@ TEST(OpenGLLighting, PointLightShadowMapsAreReusedWhileNothingChanges)
   s.scene->getViewport()->enableShadowCasting(false);
   render(*renderer, *s.scene);
   EXPECT_EQ(pointShadowFacesRendered(*renderer), 0U);
+}
+
+TEST(OpenGLLighting, PointLightShadowFacesReusedMatchAFullRender)
+{
+#if MRPT_IS_BIG_ENDIAN
+  GTEST_SKIP() << "Shadows rendering not tested on big-endian hosts";
+#endif
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  PointLightScene s(true);
+  auto mover = mrpt::viz::CBox::Create(
+      mrpt::math::TPoint3D(-0.2, -0.2, 0), mrpt::math::TPoint3D(0.2, 0.2, 0.6));
+  s.scene->insert(mover);
+
+  // Move an object around the light, across its cube faces. Each frame reuses
+  // the faces of the previous one where nothing changed, and must look the
+  // same as rendering all the faces again:
+  constexpr int STEPS = 12;
+  size_t reusedFaces = 0;
+  for (int i = 0; i < STEPS; i++)
+  {
+    const double ang = 2 * M_PI * i / STEPS;
+    mover->setLocation(2.0 * std::cos(ang), 2.0 * std::sin(ang), (i % 3) * 0.8);
+
+    const auto reused = render(*renderer, *s.scene);
+    if (i > 0)
+    {
+      reusedFaces += 6 - pointShadowFacesRendered(*renderer);
+    }
+    renderer->invalidateCompiledScene();
+    const auto full = render(*renderer, *s.scene);
+    EXPECT_EQ(pointShadowFacesRendered(*renderer), 6U);
+
+    int different = 0;
+    for (int y = 0; y < H; y++)
+    {
+      for (int x = 0; x < W; x++)
+      {
+        const RGB a = pixelRGB(reused, x, y);
+        const RGB b = pixelRGB(full, x, y);
+        if (a.r != b.r || a.g != b.g || a.b != b.b)
+        {
+          different++;
+        }
+      }
+    }
+    EXPECT_EQ(different, 0) << "step " << i;
+  }
+  EXPECT_GT(reusedFaces, 0U);
 }
 
 TEST(OpenGLLighting, SpotLightShadowsOnlyRenderTheFacesInItsCone)
