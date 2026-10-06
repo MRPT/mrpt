@@ -31,6 +31,7 @@
 #include <cstring>
 #include <functional>
 #include <iostream>
+#include <optional>
 #include <random>
 #include <unordered_set>
 
@@ -95,8 +96,9 @@ CMatrixFloat44 cubeFacePV(const TPoint3Df& pos, int face, float zNear, float zFa
 }
 
 /** Distance beyond which a point/spot light has no visible effect: its range,
- * or where its attenuation drops below 1/256. */
-float lightReach(const TLight& l)
+ * or where its attenuation drops below 1/256. Empty if its reach is unlimited
+ * (no range and no distance attenuation). */
+std::optional<float> lightReach(const TLight& l)
 {
   if (l.range > 0)
   {
@@ -106,16 +108,79 @@ float lightReach(const TLight& l)
   const float lin = l.attenuation_linear;
   const float q = l.attenuation_quadratic;
   constexpr float invMinIntensity = 256.0f;
-  float d = 100.0f;
   if (q > 0)
   {
-    d = (-lin + std::sqrt(lin * lin - 4 * q * (c - invMinIntensity))) / (2 * q);
+    return std::max(0.1f, (-lin + std::sqrt(lin * lin - 4 * q * (c - invMinIntensity))) / (2 * q));
   }
-  else if (lin > 0)
+  if (lin > 0)
   {
-    d = (invMinIntensity - c) / lin;
+    return std::max(0.1f, (invMinIntensity - c) / lin);
   }
-  return std::clamp(d, 0.1f, 1000.0f);
+  return std::nullopt;
+}
+
+struct BoundingSphere
+{
+  TPoint3Df center;
+  float radius = 0;
+};
+
+/** A conservative bounding sphere of a proxy geometry in world coordinates,
+ * or empty if its bounding box is unknown. */
+std::optional<BoundingSphere> worldBoundingSphere(const RenderableProxy& p)
+{
+  const auto& bb = p.localBoundingBox();
+  if (!bb.has_value())
+  {
+    return std::nullopt;
+  }
+  const auto& M = p.m_modelMatrix;
+  const TPoint3Df c(
+      0.5f * (bb->min.x + bb->max.x), 0.5f * (bb->min.y + bb->max.y),
+      0.5f * (bb->min.z + bb->max.z));
+  const float r =
+      0.5f * std::hypot(bb->max.x - bb->min.x, bb->max.y - bb->min.y, bb->max.z - bb->min.z);
+  // The Frobenius norm of the rotation/scale/shear part bounds how much it
+  // can stretch any vector:
+  float scale2 = 0;
+  for (int row = 0; row < 3; row++)
+  {
+    for (int col = 0; col < 3; col++)
+    {
+      scale2 += M(row, col) * M(row, col);
+    }
+  }
+  BoundingSphere s;
+  s.center = TPoint3Df(
+      M(0, 0) * c.x + M(0, 1) * c.y + M(0, 2) * c.z + M(0, 3),
+      M(1, 0) * c.x + M(1, 1) * c.y + M(1, 2) * c.z + M(1, 3),
+      M(2, 0) * c.x + M(2, 1) * c.y + M(2, 2) * c.z + M(2, 3));
+  s.radius = r * std::sqrt(scale2);
+  return s;
+}
+
+float distance(const TPoint3Df& a, const TPoint3Df& b)
+{
+  return std::hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
+/** Distance from a point to the farthest visible shadow caster, to bound the
+ * cube shadow maps of lights with unlimited reach. */
+float farthestShadowCaster(const TPoint3Df& pos, const std::vector<RenderableProxy::Ptr>& proxies)
+{
+  float d = 1.0f;
+  for (const auto& p : proxies)
+  {
+    if (!p || !p->m_visible || !p->castsShadows())
+    {
+      continue;
+    }
+    if (const auto s = worldBoundingSphere(*p); s.has_value())
+    {
+      d = std::max(d, distance(s->center, pos) + s->radius);
+    }
+  }
+  return d;
 }
 
 /** Whether a spot light cone may reach into a cube face frustum. */
@@ -163,29 +228,10 @@ uint64_t pointShadowSignature(
     {
       continue;
     }
-    if (const auto& bb = p->localBoundingBox(); bb.has_value())
+    if (const auto bs = worldBoundingSphere(*p);
+        bs.has_value() && distance(bs->center, l.position) > zFar + bs->radius)
     {
-      // Conservative bounding sphere of the object, in world coordinates:
-      const auto& M = p->m_modelMatrix;
-      const TPoint3Df c(
-          0.5f * (bb->min.x + bb->max.x), 0.5f * (bb->min.y + bb->max.y),
-          0.5f * (bb->min.z + bb->max.z));
-      const float r =
-          0.5f * std::hypot(bb->max.x - bb->min.x, bb->max.y - bb->min.y, bb->max.z - bb->min.z);
-      float scale = 0;
-      for (int col = 0; col < 3; col++)
-      {
-        scale = std::max(scale, std::hypot(M(0, col), M(1, col), M(2, col)));
-      }
-      const TPoint3Df cw(
-          M(0, 0) * c.x + M(0, 1) * c.y + M(0, 2) * c.z + M(0, 3),
-          M(1, 0) * c.x + M(1, 1) * c.y + M(1, 2) * c.z + M(1, 3),
-          M(2, 0) * c.x + M(2, 1) * c.y + M(2, 2) * c.z + M(2, 3));
-      if (std::hypot(cw.x - l.position.x, cw.y - l.position.y, cw.z - l.position.z) >
-          zFar + r * scale)
-      {
-        continue;
-      }
+      continue;
     }
     hashCombine(h, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(p.get())));
     hashCombine(h, p->m_changeCount);
@@ -210,6 +256,7 @@ CompiledViewport::~CompiledViewport()
 
   clearProxies();
   ssaoDestroy();
+  releaseShadowMaps();
 }
 
 void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
@@ -446,26 +493,7 @@ void CompiledViewport::enableShadows(
 
   if (!enabled)
   {
-#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
-    if (m_shadowMapFBO != 0)
-    {
-      glDeleteFramebuffers(1, &m_shadowMapFBO);
-      m_shadowMapFBO = 0;
-    }
-    if (m_cascadeDepthArrayTexId != 0)
-    {
-      glDeleteTextures(1, &m_cascadeDepthArrayTexId);
-      m_cascadeDepthArrayTexId = 0;
-      m_cascadeDepthArrayLayers = 0;
-    }
-    if (m_pointShadowArrayTexId != 0)
-    {
-      glDeleteTextures(1, &m_pointShadowArrayTexId);
-      m_pointShadowArrayTexId = 0;
-      m_pointShadowArrayLayers = 0;
-    }
-    m_pointShadowCubes.clear();
-#endif
+    releaseShadowMaps();
   }
 
   if (VIEWPORT_VERBOSE)
@@ -475,6 +503,37 @@ void CompiledViewport::enableShadows(
   }
 
   MRPT_END
+}
+
+void CompiledViewport::releaseShadowMaps()
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  if (m_shadowMapFBO != 0)
+  {
+    glDeleteFramebuffers(1, &m_shadowMapFBO);
+    m_shadowMapFBO = 0;
+  }
+  if (m_cascadeDepthArrayTexId != 0)
+  {
+    glDeleteTextures(1, &m_cascadeDepthArrayTexId);
+    m_cascadeDepthArrayTexId = 0;
+    m_cascadeDepthArrayLayers = 0;
+  }
+#endif
+  releasePointShadowMaps();
+}
+
+void CompiledViewport::releasePointShadowMaps()
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  if (m_pointShadowArrayTexId != 0)
+  {
+    glDeleteTextures(1, &m_pointShadowArrayTexId);
+    m_pointShadowArrayTexId = 0;
+    m_pointShadowArrayLayers = 0;
+  }
+#endif
+  m_pointShadowCubes.clear();
 }
 
 void CompiledViewport::updateCamera(const mrpt::viz::CCamera& camera)
@@ -1358,7 +1417,7 @@ void CompiledViewport::renderPointShadowMaps(
   }
   if (lightIndices.empty())
   {
-    m_pointShadowCubes.clear();
+    releasePointShadowMaps();
     return;
   }
 
@@ -1405,10 +1464,11 @@ void CompiledViewport::renderPointShadowMaps(
     const auto& l = lights[lightIndices[k]];
     auto& cube = m_pointShadowCubes[k];
 
-    const float zFar = lightReach(l);
+    const auto& proxies = proxiesToRender ? *proxiesToRender : m_proxies;
+    const auto reach = lightReach(l);
+    const float zFar = reach.has_value() ? *reach : farthestShadowCaster(l.position, proxies);
     const float zNear = std::min(0.05f, zFar * 0.01f);
-    const uint64_t signature = pointShadowSignature(
-        l, zNear, zFar, mapSize, proxiesToRender ? *proxiesToRender : m_proxies);
+    const uint64_t signature = pointShadowSignature(l, zNear, zFar, mapSize, proxies);
 
     // Reuse the cube map if neither the light nor anything near it changed:
     if (!texRecreated && cube.lightIndex == lightIndices[k] && cube.signature == signature)

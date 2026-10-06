@@ -395,14 +395,16 @@ TEST(OpenGLLighting, ClonedViewportsGetPointLightShadows)
           .numPointShadowFacesRendered,
       6U);
 
-  const auto darkInHalf = [&im](int x0, int x1)
+  // The clone floor gets darker with its point light shadows (the background
+  // and the rest of the scene are the same in both renders):
+  const auto darkInRightHalf = [](const mrpt::img::CImage& frame)
   {
     int n = 0;
     for (int y = 0; y < H; y++)
     {
-      for (int x = x0; x < x1; x++)
+      for (int x = W / 2; x < W; x++)
       {
-        const RGB p = pixelRGB(im, x, y);
+        const RGB p = pixelRGB(frame, x, y);
         if (p.r + p.g + p.b < 3 * 100)
         {
           n++;
@@ -411,10 +413,10 @@ TEST(OpenGLLighting, ClonedViewportsGetPointLightShadows)
     }
     return n;
   };
-  const int left = darkInHalf(0, W / 2);
-  const int right = darkInHalf(W / 2, W);
-  EXPECT_GT(left, 200);
-  EXPECT_NEAR(left, right, left / 5) << "the clone has no point light shadows";
+  clone->lightParameters().lights[0].cast_shadows = false;
+  const auto imNoShadows = render(*renderer, *s.scene);
+  EXPECT_GT(darkInRightHalf(im), darkInRightHalf(imNoShadows) + 200)
+      << "the clone has no point light shadows";
 }
 
 #endif  // RUN_OFFSCREEN_RENDER_TESTS

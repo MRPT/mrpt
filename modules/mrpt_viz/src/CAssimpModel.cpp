@@ -544,8 +544,10 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
     }
   }
 
-  // Determine target: textured or non-textured
-  const bool hasTexture = !texturePath.empty();
+  // Determine target: textured or non-textured. Parts with an emissive map
+  // but no diffuse texture also need a textured mesh (with a white texture):
+  const bool hasTexture =
+      !texturePath.empty() || (!emissiveMapPath.empty() && mesh->HasTextureCoords(0));
 
   CSetOfTexturedTriangles::Ptr texturedMesh;
   if (hasTexture)
@@ -888,9 +890,18 @@ CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(
   auto mesh = CSetOfTexturedTriangles::Create();
   mesh->setName(texturePath);
 
-  // Load and assign texture
-  const LoadedTexture* tex = loadTexture(texturePath);
-  if (tex != nullptr)
+  // Load and assign texture (white if none, so that the triangles keep the
+  // material color)
+  if (texturePath.empty())
+  {
+    mrpt::img::CImage white(1, 1, mrpt::img::CH_RGB);
+    for (int8_t ch = 0; ch < 3; ch++)
+    {
+      white.at<uint8_t>(0, 0, ch) = 0xff;
+    }
+    mesh->assignImage(white);
+  }
+  else if (const LoadedTexture* tex = loadTexture(texturePath); tex != nullptr)
   {
     if (tex->alpha.has_value())
     {

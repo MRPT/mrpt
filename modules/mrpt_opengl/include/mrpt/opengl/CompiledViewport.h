@@ -543,6 +543,12 @@ class CompiledViewport
       ShaderProgramManager& shaderManager,
       const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
 
+  /** Frees the GPU resources of all shadow maps */
+  void releaseShadowMaps();
+
+  /** Frees the GPU resources of the point/spot light cube shadow maps */
+  void releasePointShadowMaps();
+
   /** Renders (or reuses, if nothing changed) the cube shadow maps of the
    * point/spot lights with TLight::cast_shadows.
    * \param proxiesToRender As in renderShadowMap() */
