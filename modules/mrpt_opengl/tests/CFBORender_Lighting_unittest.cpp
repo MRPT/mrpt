@@ -32,6 +32,7 @@
 #include <array>
 #include <cmath>
 #include <memory>
+#include <vector>
 
 #include "render_pixel_utils.h"
 
@@ -94,6 +95,17 @@ int darkPixels(const mrpt::img::CImage& im, int threshold)
     }
   }
   return n;
+}
+
+/** Shadow casting modes to test: the software GL renderer available on
+ * big-endian hosts hangs in shadow render passes. */
+std::vector<bool> shadowModesToTest()
+{
+#if MRPT_IS_BIG_ENDIAN
+  return {false};
+#else
+  return {false, true};
+#endif
 }
 
 double meanGray(const mrpt::img::CImage& im, int x0, int y0, int x1, int y1)
@@ -668,7 +680,7 @@ TEST(OpenGLLighting, SpecularFadesAtGrazingAngles)
     return meanGray(render(*renderer, *scene), W / 2 - 2, H / 2 - 2, W / 2 + 2, H / 2 + 2);
   };
 
-  for (const bool shadows : {false, true})
+  for (const bool shadows : shadowModesToTest())
   {
     const double steep = highlightAtElevation(60, shadows);
     const double grazing = highlightAtElevation(3, shadows);
@@ -710,7 +722,7 @@ TEST(OpenGLLighting, BackSidesOfThinSurfacesAreLitFromTheirSide)
 
   for (const bool textured : {false, true})
   {
-    for (const bool shadows : {false, true})
+    for (const bool shadows : shadowModesToTest())
     {
       auto scene = mrpt::viz::Scene::Create();
       auto vp = scene->getViewport();

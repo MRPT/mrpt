@@ -104,6 +104,8 @@ mrpt_add_library(
   tolerance is loose and a reference captured with a bug keeps passing: prefer
   asserting invariants on pixels (see `CFBORender_ScreenSpace_unittest.cpp`) or
   on CPU-side vertex buffers (`mrpt_viz/tests/RenderBuffers_unittest.cpp`).
+  Offscreen tests that enable shadows must skip them under
+  `MRPT_IS_BIG_ENDIAN`: the software renderer on s390x hangs in shadow passes.
 * Useful test helpers:
   * `tests/legacy_serialization.h` (in `mrpt_math`, `mrpt_obs`, `mrpt_viz`,
     `mrpt_img`; duplicated because modules are independent) writes an object
