@@ -54,6 +54,7 @@ void main()
     if (dot(frag_normal, viewDirection) < 0.0)
     {
         normal = -normal;
+        N = -N;
     }
 
     // Hemisphere ambient

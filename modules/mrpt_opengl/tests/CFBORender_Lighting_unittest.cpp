@@ -682,9 +682,11 @@ TEST(OpenGLLighting, BackSidesOfThinSurfacesAreLitFromTheirSide)
       EXPECT_GT(centerGray(80), 100) << ctx();
       EXPECT_LT(centerGray(-80), 10) << ctx();
 
-      // A lamp below lights the bottom side:
-      lp.lights.push_back(mrpt::viz::TLight::PointLight(
-          {0, 0, 1}, {1, 1, 1}, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 5.0f /*range*/));
+      // A lamp below lights the bottom side, without shadowing it:
+      auto lamp = mrpt::viz::TLight::PointLight(
+          {0, 0, 1}, {1, 1, 1}, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 5.0f /*range*/);
+      lamp.cast_shadows = shadows;
+      lp.lights.push_back(lamp);
       EXPECT_GT(centerGray(-80), 60) << ctx();
     }
   }
