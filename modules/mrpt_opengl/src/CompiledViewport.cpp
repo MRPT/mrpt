@@ -214,7 +214,8 @@ bool sphereInCubeFace(const TPoint3Df& lightPos, const BoundingSphere& s, int fa
   const int axis = face / 2;
   const float along = (face % 2 == 0) ? v[axis] : -v[axis];
   // Distance to each side plane, scaled by sqrt(2):
-  const float margin = along + s.radius * static_cast<float>(M_SQRT2);
+  constexpr float SQRT2 = 1.41421356f;
+  const float margin = along + s.radius * SQRT2;
   for (int i = 0; i < 3; i++)
   {
     if (i != axis && std::abs(v[i]) > margin)
