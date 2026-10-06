@@ -147,6 +147,11 @@ mrpt_add_library(
   re-walks the scene graph only when `mrpt::viz::sceneChangeCount()` changes.
   Pose/scale/visibility setters bump `transformVersion()` only (no buffer
   rebuild); geometry changes must call `notifyChange()`.
+  Texture units are fixed in `DefaultShaders.h`; every sampler a shader
+  declares must be set to its own unit even when unused (samplers of different
+  types sharing a unit is a GL error). The cube face convention of point light
+  shadow maps is duplicated in `CompiledViewport.cpp` and
+  `shadow-calculation.f.glsl`: change both.
 * **mrpt_gui**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the library
   links wxWidgets privately; test targets need
   `target_link_libraries(... PRIVATE imp_wxwidgets)`. macOS/Windows CI builds
@@ -342,6 +347,26 @@ See "Porting ROS 2 nodes" in `doc/source/doxygen-docs/port_mrpt3.md`:
   is added, removed or renamed, or the `MAJOR.MINOR` SOVERSION changes, update
   `debian/` in both trees and all PPA distro branches.
 
-## 10. Agent tool usage
+## 10. Docs and maintenance scripts
+
+* 3D rendering pipeline (`mrpt_viz` scene graph, `mrpt_opengl` proxies,
+  shaders, lights, shadows, SSAO, texture units):
+  `doc/source/doxygen-docs/tutorial-3D-scenes.md`. Keep it in sync with
+  rendering changes.
+* Docs build: `doc/Makefile` (Doxygen + Sphinx; `scripts/build_docs.sh` just
+  calls it). It also runs `scripts/generate_llms_txt.py` (`llms.txt` for AI
+  agents) and `doc/remote-static-files.sh`.
+* Examples gallery and `examples.json`: `scripts/generate_rst_docs_examples.py`
+  (section 1). No script makes the screenshots: capture them by hand into
+  `doc/source/images/<name>_screenshot.webp`.
+* Python stubs: `scripts/generate_python_stubs.py` (section 6), not the older
+  `scripts/generate-python-stubs.sh` (mypy stubs for IDEs, out of the tree);
+  docstrings: `scripts/check_python_docstrings.py`.
+* Formatting: `scripts/clang_format_codebase.sh [--check]` (as run by CI).
+* Coverage: `scripts/coverage_module_report.py` (section 7). Releases:
+  `packaging/README.md`, `packaging/release.py`, `packaging/make_release.sh`
+  and `doc/source/make_a_mrpt_release.rst` (section 9).
+
+## 11. Agent tool usage
 
 * Use `git -C foo ...` instead of `cd foo && git ...`.

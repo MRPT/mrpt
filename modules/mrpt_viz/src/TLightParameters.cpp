@@ -23,12 +23,14 @@ using namespace std;
 
 void TLight::writeToStream(mrpt::serialization::CArchive& out) const
 {
-  const uint8_t version = 0;
+  const uint8_t version = 2;
   out << version;
   out << static_cast<uint8_t>(type);
   out << color << diffuse << specular << direction << position;
   out << attenuation_constant << attenuation_linear << attenuation_quadratic;
   out << spot_inner_cutoff_deg << spot_outer_cutoff_deg;
+  out << range;         // v1
+  out << cast_shadows;  // v2
 }
 
 void TLight::readFromStream(mrpt::serialization::CArchive& in)
@@ -39,6 +41,8 @@ void TLight::readFromStream(mrpt::serialization::CArchive& in)
   switch (version)
   {
     case 0:
+    case 1:
+    case 2:
     {
       uint8_t t;
       in >> t;
@@ -46,6 +50,22 @@ void TLight::readFromStream(mrpt::serialization::CArchive& in)
       in >> color >> diffuse >> specular >> direction >> position;
       in >> attenuation_constant >> attenuation_linear >> attenuation_quadratic;
       in >> spot_inner_cutoff_deg >> spot_outer_cutoff_deg;
+      if (version >= 1)
+      {
+        in >> range;
+      }
+      else
+      {
+        range = 0;
+      }
+      if (version >= 2)
+      {
+        in >> cast_shadows;
+      }
+      else
+      {
+        cast_shadows = false;
+      }
     }
     break;
     default:
@@ -57,11 +77,11 @@ void TLight::readFromStream(mrpt::serialization::CArchive& in)
 
 void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
 {
-  const uint8_t version = 10;
+  const uint8_t version = 11;
   out << version;
 
   // v5: multi-light format, v6: + hemisphere ambient, v7: + fog, v8: + CSM, v9: + SSAO,
-  // v10: + shadow distance
+  // v10: + shadow distance, v11: + point light shadows
   out << ambient;
   out << shadow_bias << shadow_bias_cam2frag << shadow_bias_normal;
   out << eyeDistance2lightShadowExtension << minimum_shadow_map_extension_ratio;
@@ -78,6 +98,8 @@ void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
   out << ssao_enabled << ssao_radius << ssao_bias << ssao_power << ssao_kernel_size;
   // v10:
   out << shadow_max_distance;
+  // v11:
+  out << point_shadow_map_size;
 }
 
 void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
@@ -128,6 +150,7 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
     case 8:
     case 9:
     case 10:
+    case 11:
     {
       in >> ambient;
       in >> shadow_bias >> shadow_bias_cam2frag >> shadow_bias_normal;
@@ -166,6 +189,14 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
       else
       {
         shadow_max_distance = 0;
+      }
+      if (version >= 11)
+      {
+        in >> point_shadow_map_size;
+      }
+      else
+      {
+        point_shadow_map_size = 512;
       }
     }
     break;

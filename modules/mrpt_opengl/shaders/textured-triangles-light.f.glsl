@@ -15,6 +15,7 @@ uniform mediump float light_specular[MAX_LIGHTS];
 uniform highp vec3 light_direction[MAX_LIGHTS];
 uniform highp vec3 light_position[MAX_LIGHTS];
 uniform highp vec3 light_attenuation[MAX_LIGHTS]; // (constant, linear, quadratic)
+uniform highp float light_range[MAX_LIGHTS]; // 0=unlimited
 uniform mediump vec2 light_spot_cutoff[MAX_LIGHTS]; // (cos_inner, cos_outer)
 
 uniform mediump float light_ambient;
@@ -24,6 +25,7 @@ uniform lowp vec3 ambient_ground_color;
 uniform lowp sampler2D textureSampler;
 uniform mediump float alphaCutoff; // >0: cutout, <0: opaque, 0: blend
 uniform lowp sampler2D normalMapSampler;
+uniform lowp sampler2D emissiveMapSampler;
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;
 uniform highp float materialSpecularExponent;
@@ -87,6 +89,12 @@ void main()
             highp float dist = length(toLight);
             lightDir = toLight / dist;
             attenuation = 1.0 / (light_attenuation[i].x + light_attenuation[i].y * dist + light_attenuation[i].z * dist * dist);
+            if (light_range[i] > 0.0) {
+                // Smooth window reaching exactly zero at the light range
+                highp float r = dist / light_range[i];
+                mediump float w = clamp(1.0 - r * r * r * r, 0.0, 1.0);
+                attenuation *= w * w;
+            }
 
             if (light_type[i] == 2) {
                 mediump float theta = dot(lightDir, -light_direction[i]);
@@ -118,7 +126,7 @@ void main()
         texCol.a = 1.0;
     }
 
-    mediump vec3 litColor = materialEmissive + texCol.rgb * totalDiffuse + totalSpecular;
+    mediump vec3 litColor = materialEmissive * texture(emissiveMapSampler, frag_UV).rgb + texCol.rgb * totalDiffuse + totalSpecular;
 
     if (fog_enabled) {
         highp float dist = length(cam_position - frag_position);

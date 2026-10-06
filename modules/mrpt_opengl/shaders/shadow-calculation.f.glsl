@@ -7,6 +7,7 @@ R"XXX(#version 300 es
 // Multi-light support (up to 8 lights)
 #define MAX_LIGHTS 8
 #define MAX_SHADOW_CASCADES 4
+#define MAX_SHADOW_POINT_LIGHTS 8
 
 uniform int num_lights;
 uniform int light_type[MAX_LIGHTS];       // 0=directional, 1=point, 2=spot
@@ -16,6 +17,7 @@ uniform mediump float light_specular[MAX_LIGHTS];
 uniform highp vec3 light_direction[MAX_LIGHTS];
 uniform highp vec3 light_position[MAX_LIGHTS];
 uniform highp vec3 light_attenuation[MAX_LIGHTS]; // (constant, linear, quadratic)
+uniform highp float light_range[MAX_LIGHTS]; // 0=unlimited
 uniform mediump vec2 light_spot_cutoff[MAX_LIGHTS]; // (cos_inner, cos_outer)
 
 uniform mediump float light_ambient;
@@ -36,6 +38,12 @@ uniform highp mat4 cascade_light_pv[MAX_SHADOW_CASCADES];
 uniform highp float cascade_far_planes[MAX_SHADOW_CASCADES];
 
 uniform highp float shadow_bias, shadow_bias_cam2frag, shadow_bias_normal;
+
+// Cube shadow maps of point/spot lights: six layers per light, in the face
+// order +X,-X,+Y,-Y,+Z,-Z (see CompiledViewport.cpp)
+uniform highp sampler2DArrayShadow pointShadowMapArray;
+uniform int light_shadow_index[MAX_LIGHTS]; // cube map of each light, or -1
+uniform highp vec2 point_shadow_near_far[MAX_SHADOW_POINT_LIGHTS];
 
 // v_matrix is uploaded per-shader in processRenderQueue
 uniform highp mat4 v_matrix;
@@ -99,5 +107,67 @@ mediump float ShadowCalculation(
     }
     shadow /= 9.0;
     return shadow;
+}
+
+// Returns the shadow amount [0,1] of a point/spot light with a cube shadow map.
+// geomNormal: the surface normal without normal mapping.
+mediump float PointShadowCalculation(
+    int lightIdx,
+    int cube,
+    highp vec3 fragWorldPos,
+    mediump vec3 geomNormal)
+{
+    highp vec3 v = fragWorldPos - light_position[lightIdx];
+    highp float texelSize = 1.0 / float(textureSize(pointShadowMapArray, 0).x);
+
+    // Normal offset (about 1.5 shadow map texels at this distance) against
+    // shadow acne:
+    highp float d = max(abs(v.x), max(abs(v.y), abs(v.z)));
+    v += geomNormal * (3.0 * d * texelSize);
+
+    highp vec3 a = abs(v);
+    int face;
+    highp float ma;
+    highp vec3 right;
+    highp vec3 up;
+    if (a.x >= a.y && a.x >= a.z) {
+        ma = a.x;
+        up = vec3(0.0, 0.0, 1.0);
+        if (v.x > 0.0) { face = 0; right = vec3(0.0, -1.0, 0.0); }
+        else           { face = 1; right = vec3(0.0,  1.0, 0.0); }
+    } else if (a.y >= a.z) {
+        ma = a.y;
+        up = vec3(0.0, 0.0, 1.0);
+        if (v.y > 0.0) { face = 2; right = vec3( 1.0, 0.0, 0.0); }
+        else           { face = 3; right = vec3(-1.0, 0.0, 0.0); }
+    } else {
+        ma = a.z;
+        up = vec3(0.0, 1.0, 0.0);
+        if (v.z > 0.0) { face = 4; right = vec3(-1.0, 0.0, 0.0); }
+        else           { face = 5; right = vec3( 1.0, 0.0, 0.0); }
+    }
+
+    highp float zn = point_shadow_near_far[cube].x;
+    highp float zf = point_shadow_near_far[cube].y;
+    // Depth of the 90 deg perspective projection of the cube face:
+    highp float zNdc = (zf + zn) / (zf - zn) - 2.0 * zf * zn / ((zf - zn) * ma);
+    highp float refDepth = zNdc * 0.5 + 0.5;
+    if (refDepth >= 1.0)
+        return 0.0;
+
+    highp vec2 uv = vec2(dot(right, v), dot(up, v)) / ma * 0.5 + 0.5;
+    highp float layer = float(cube * 6 + face);
+
+    // 4 taps of hardware 2x2 bilinear depth comparisons
+    mediump float shadow = 0.0;
+    for (int x = 0; x < 2; ++x)
+    {
+        for (int y = 0; y < 2; ++y)
+        {
+            highp vec2 o = (vec2(float(x), float(y)) - 0.5) * texelSize;
+            shadow += 1.0 - texture(pointShadowMapArray, vec4(uv + o, layer, refDepth));
+        }
+    }
+    return shadow * 0.25;
 }
 )XXX"

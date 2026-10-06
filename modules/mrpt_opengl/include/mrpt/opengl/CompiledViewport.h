@@ -47,6 +47,9 @@ struct ViewportRenderStats
   size_t numProxiesRendered = 0;
   size_t numProxiesCulled = 0;
   size_t numDrawCalls = 0;
+  /** Cube faces of point/spot light shadow maps rendered (not reused from a
+   * previous frame). */
+  size_t numPointShadowFacesRendered = 0;
   double renderTimeMs = 0.0;
 
   void reset()
@@ -54,6 +57,7 @@ struct ViewportRenderStats
     numProxiesRendered = 0;
     numProxiesCulled = 0;
     numDrawCalls = 0;
+    numPointShadowFacesRendered = 0;
     renderTimeMs = 0.0;
   }
 };
@@ -438,6 +442,27 @@ class CompiledViewport
   unsigned int m_cascadeDepthArraySizeX = 0;
   unsigned int m_cascadeDepthArraySizeY = 0;
 
+  /** GL_TEXTURE_2D_ARRAY holding the cube shadow maps of point/spot lights
+   *  (six layers per light). Created/resized on demand in
+   *  renderPointShadowMaps(). */
+  unsigned int m_pointShadowArrayTexId = 0;
+  int m_pointShadowArrayLayers = 0;
+  unsigned int m_pointShadowArraySize = 0;
+
+  /** A cube shadow map in m_pointShadowArrayTexId */
+  struct PointShadowCube
+  {
+    int lightIndex = -1;  //!< Index in m_lightParams.lights
+    float zNear = 0;
+    float zFar = 0;
+    uint64_t signature = 0;  //!< Of the light and nearby objects, to reuse the map
+  };
+  std::vector<PointShadowCube> m_pointShadowCubes;
+
+  /** True while rendering point light shadow maps (culling against all the
+   *  cube face frustum planes) */
+  bool m_pointShadowPass = false;
+
   /** @} */
 
   /** @name SSAO
@@ -511,8 +536,25 @@ class CompiledViewport
   /** Updates projection and view matrices from camera */
   void updateMatrices();
 
-  /** Performs shadow map rendering (1st pass) */
-  void renderShadowMap(ShaderProgramManager& shaderManager);
+  /** Performs shadow map rendering (1st pass).
+   * \param proxiesToRender If non-null, use these proxies instead of m_proxies
+   *        (used for cloned viewports). */
+  void renderShadowMap(
+      ShaderProgramManager& shaderManager,
+      const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
+
+  /** Frees the GPU resources of all shadow maps */
+  void releaseShadowMaps();
+
+  /** Frees the GPU resources of the point/spot light cube shadow maps */
+  void releasePointShadowMaps();
+
+  /** Renders (or reuses, if nothing changed) the cube shadow maps of the
+   * point/spot lights with TLight::cast_shadows.
+   * \param proxiesToRender As in renderShadowMap() */
+  void renderPointShadowMaps(
+      ShaderProgramManager& shaderManager,
+      const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
 
   /** Performs normal scene rendering.
    * \param proxiesToRender If non-null, use these proxies instead of m_proxies

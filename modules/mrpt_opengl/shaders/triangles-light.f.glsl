@@ -15,6 +15,7 @@ uniform mediump float light_specular[MAX_LIGHTS];
 uniform highp vec3 light_direction[MAX_LIGHTS];
 uniform highp vec3 light_position[MAX_LIGHTS];
 uniform highp vec3 light_attenuation[MAX_LIGHTS]; // (constant, linear, quadratic)
+uniform highp float light_range[MAX_LIGHTS]; // 0=unlimited
 uniform mediump vec2 light_spot_cutoff[MAX_LIGHTS]; // (cos_inner, cos_outer)
 
 uniform mediump float light_ambient;
@@ -71,6 +72,12 @@ void main()
             highp float dist = length(toLight);
             lightDir = toLight / dist;
             attenuation = 1.0 / (light_attenuation[i].x + light_attenuation[i].y * dist + light_attenuation[i].z * dist * dist);
+            if (light_range[i] > 0.0) {
+                // Smooth window reaching exactly zero at the light range
+                highp float r = dist / light_range[i];
+                mediump float w = clamp(1.0 - r * r * r * r, 0.0, 1.0);
+                attenuation *= w * w;
+            }
 
             if (light_type[i] == 2) {
                 // Spot light
