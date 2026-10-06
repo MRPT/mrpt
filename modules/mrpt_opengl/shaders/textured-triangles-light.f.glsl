@@ -69,6 +69,13 @@ void main()
     highp vec3 normal = normalize(TBN * tangentNormal);
 
     highp vec3 viewDirection = normalize(cam_position - frag_position);
+    // Light the side facing the camera, e.g. the bottom of a plane seen from
+    // below. Decided with the geometric normal (not the normal map), and not
+    // with gl_FrontFacing, since not all meshes have a consistent winding:
+    if (dot(frag_normal, viewDirection) < 0.0)
+    {
+        normal = -normal;
+    }
 
     // Hemisphere ambient
     mediump vec3 ambientColor = mix(ambient_ground_color, ambient_sky_color, 0.5 + 0.5 * normal.z);

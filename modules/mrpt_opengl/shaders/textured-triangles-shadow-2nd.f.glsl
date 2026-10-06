@@ -48,6 +48,13 @@ void main()
     highp vec3 cam2frag = cam_position - frag_position;
     mediump float cam2fragDist = length(cam2frag);
     highp vec3 viewDirection = normalize(cam2frag);
+    // Light the side facing the camera, e.g. the bottom of a plane seen from
+    // below. Decided with the geometric normal (not the normal map), and not
+    // with gl_FrontFacing, since not all meshes have a consistent winding:
+    if (dot(frag_normal, viewDirection) < 0.0)
+    {
+        normal = -normal;
+    }
 
     // Hemisphere ambient
     mediump vec3 ambientColor = mix(ambient_ground_color, ambient_sky_color, 0.5 + 0.5 * normal.z);

@@ -547,6 +547,13 @@ Both the diffuse and the Blinn-Phong specular terms of each light are weighted
 by N·L, so a light at a grazing angle (e.g. a headlight close to the floor)
 leaves no bright highlight on a surface it barely lights.
 
+Surfaces are lit on the side facing the camera: when the geometric normal of a
+fragment points away from the camera, the opposite normal is used, so the
+bottom of a thin plane (e.g. a roof seen from inside) is lit by the lamps below
+it, not by the sun above. This is decided per fragment from the normals, not
+from the triangle winding (`gl_FrontFacing`), which is not consistent in all
+meshes.
+
 Besides the lights, the ambient term uses hemisphere ambient lighting
 (`ambientSkyColor`, `ambientGroundColor`), optionally attenuated by SSAO.
 

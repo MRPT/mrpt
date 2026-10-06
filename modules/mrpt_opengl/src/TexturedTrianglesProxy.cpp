@@ -286,6 +286,17 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
             m_params.materialEmissive.R, m_params.materialEmissive.G, m_params.materialEmissive.B));
   }
 
+  // Camera position (view direction for specular lighting and back sides, and
+  // fog distance)
+  if (rc.shader->hasUniform("cam_position") && rc.state != nullptr)
+  {
+    const auto& e = rc.state->eye;
+    uploadVector3(
+        rc, "cam_position",
+        mrpt::math::TVector3Df(
+            static_cast<float>(e.x), static_cast<float>(e.y), static_cast<float>(e.z)));
+  }
+
   // Multi-light parameters (if lighting enabled)
   if (m_params.lightEnabled)
   {

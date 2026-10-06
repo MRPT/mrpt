@@ -24,6 +24,8 @@
 #include <mrpt/viz/CLight.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSetOfTexturedTriangles.h>
+#include <mrpt/viz/CSetOfTriangles.h>
+#include <mrpt/viz/CTexturedPlane.h>
 #include <mrpt/viz/Scene.h>
 
 #include <algorithm>
@@ -613,6 +615,78 @@ TEST(OpenGLLighting, SpecularFadesAtGrazingAngles)
     const double grazing = highlightAtElevation(3, shadows);
     EXPECT_GT(steep, 150) << "shadows=" << shadows;
     EXPECT_LT(grazing, 0.5 * steep) << "shadows=" << shadows;
+  }
+}
+
+TEST(OpenGLLighting, BackSidesOfThinSurfacesAreLitFromTheirSide)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  // A thin horizontal surface at z=2 (normal +Z), e.g. a roof, either plain
+  // or textured (white), so all the lit shaders are covered:
+  const auto makeSurface = [](bool textured) -> mrpt::viz::CVisualObject::Ptr
+  {
+    if (textured)
+    {
+      auto p = mrpt::viz::CTexturedPlane::Create(-4, 4, -4, 4);
+      mrpt::img::CImage white(4, 4, mrpt::img::CH_RGB);
+      white.filledRectangle({0, 0}, {3, 3}, mrpt::img::TColor::white());
+      p->assignImage(white);
+      p->enableLighting(true);
+      p->setLocation(0, 0, 2);
+      return p;
+    }
+    auto t = mrpt::viz::CSetOfTriangles::Create();
+    using P = mrpt::math::TPoint3D;
+    t->insertTriangle(
+        mrpt::viz::TTriangle(mrpt::math::TPolygon3D({P(-4, -4, 2), P(4, -4, 2), P(4, 4, 2)})));
+    t->insertTriangle(
+        mrpt::viz::TTriangle(mrpt::math::TPolygon3D({P(-4, -4, 2), P(4, 4, 2), P(-4, 4, 2)})));
+    return t;
+  };
+
+  for (const bool textured : {false, true})
+  {
+    for (const bool shadows : {false, true})
+    {
+      auto scene = mrpt::viz::Scene::Create();
+      auto vp = scene->getViewport();
+      vp->setCustomBackgroundColor({0, 0, 0});
+      vp->enableShadowCasting(shadows, 512, 512);
+      scene->insert(makeSurface(textured));
+
+      // The sun, above:
+      auto& lp = vp->lightParameters();
+      lp.lights.clear();
+      lp.ambient = 0.0f;
+      lp.lights.push_back(
+          mrpt::viz::TLight::Directional({0, 0, -1}, {1, 1, 1}, 1.0f /*diffuse*/, 0.0f));
+
+      auto& cam = vp->getCamera();
+      cam.setPointingAt(0, 0, 2);
+      cam.setZoomDistance(4.0f);
+      cam.setAzimuthDegrees(-90);
+      const auto centerGray = [&](float camElevDeg)
+      {
+        cam.setElevationDegrees(camElevDeg);
+        return meanGray(render(*renderer, *scene), W / 2 - 5, H / 2 - 5, W / 2 + 5, H / 2 + 5);
+      };
+      const auto ctx = [&]()
+      { return ::testing::Message() << "textured=" << textured << " shadows=" << shadows; };
+
+      // The top side is lit by the sun, but not the bottom one:
+      EXPECT_GT(centerGray(80), 100) << ctx();
+      EXPECT_LT(centerGray(-80), 10) << ctx();
+
+      // A lamp below lights the bottom side:
+      lp.lights.push_back(mrpt::viz::TLight::PointLight(
+          {0, 0, 1}, {1, 1, 1}, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 5.0f /*range*/));
+      EXPECT_GT(centerGray(-80), 60) << ctx();
+    }
   }
 }
 
