@@ -12,6 +12,7 @@
 
   <buildtool_depend>cmake</buildtool_depend>
 
+  <depend>mrpt_imgui_vendor</depend>
   <depend>mrpt_opengl</depend>
 
   <export>
