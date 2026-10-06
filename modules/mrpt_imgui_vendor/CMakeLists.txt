@@ -111,6 +111,13 @@ set(LIB_PUBLIC_HEADERS
 # type follows BUILD_SHARED_LIBS. Steer it for this project only.
 set(BUILD_SHARED_LIBS ${MRPT_IMGUI_VENDOR_SHARED})
 
+# find_dependency(OpenGL) in the generated -config.cmake would otherwise warn
+# (CMP0072) in consumers: choose the GLVND libraries explicitly.
+set(EXTRA_PRE_DEPS_CONFIG_CMDS "\
+if(NOT DEFINED OpenGL_GL_PREFERENCE)
+  set(OpenGL_GL_PREFERENCE GLVND)
+endif()")
+
 # Consumers of the *installed* package cannot see build-tree ALIAS targets, so
 # the upstream-style names are recreated in the generated -config.cmake. An
 # INTERFACE IMPORTED target may reference mrpt::mrpt_imgui_vendor before the
