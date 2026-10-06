@@ -152,6 +152,11 @@ mrpt_add_library(
   types sharing a unit is a GL error). The cube face convention of point light
   shadow maps is duplicated in `CompiledViewport.cpp` and
   `shadow-calculation.f.glsl`: change both.
+* **mrpt_imgui**: the ImGui-dependent methods of `CImGuiSceneView` are inline
+  in its header (compiled only in user code that has `imgui.h`); the library
+  itself does not link ImGui. `renderAsBackground()` draws from an ImGui draw
+  callback straight into the bound framebuffer (feature macro
+  `MRPT_IMGUI_HAS_BACKGROUND_SCENE_VIEW`).
 * **mrpt_gui**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the library
   links wxWidgets privately; test targets need
   `target_link_libraries(... PRIVATE imp_wxwidgets)`. macOS/Windows CI builds
