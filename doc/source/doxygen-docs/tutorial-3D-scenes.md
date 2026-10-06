@@ -543,6 +543,10 @@ smooth window `(1 - (d/range)^4)^2`, which reaches exactly zero at `range`.
 Lights without shadows go through walls, so a finite range is the cheap way
 to keep e.g. a lamp in its room. It also bounds the cost of its shadows.
 
+Both the diffuse and the Blinn-Phong specular terms of each light are weighted
+by N·L, so a light at a grazing angle (e.g. a headlight close to the floor)
+leaves no bright highlight on a surface it barely lights.
+
 Besides the lights, the ambient term uses hemisphere ambient lighting
 (`ambientSkyColor`, `ambientGroundColor`), optionally attenuated by SSAO.
 

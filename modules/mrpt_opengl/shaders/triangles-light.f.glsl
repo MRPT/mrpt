@@ -95,7 +95,9 @@ void main()
         // Specular (Blinn-Phong) — added as white, not tinted by material
         highp vec3 halfVector = normalize(viewDirection + lightDir);
         highp float specAmount = pow(max(dot(normal, halfVector), 0.0), materialSpecularExponent);
-        mediump float specular_factor = (diff > 0.0) ? specAmount * materialSpecular * light_specular[i] : 0.0;
+        // Weighted by N.L like the diffuse term, so lights at grazing angles do not
+        // leave bright highlights on surfaces they barely light:
+        mediump float specular_factor = diff * specAmount * materialSpecular * light_specular[i];
         totalSpecular += attenuation * specular_factor * light_color[i];
     }
 

@@ -569,4 +569,51 @@ TEST(OpenGLLighting, TooManyLightsKeepsThoseClosestToTheCamera)
   EXPECT_FLOAT_EQ(lights.back().position.x, 0.0f);
 }
 
+TEST(OpenGLLighting, SpecularFadesAtGrazingAngles)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  // A black, shiny floor: only the specular highlight is visible.
+  auto scene = mrpt::viz::Scene::Create();
+  auto vp = scene->getViewport();
+  vp->setCustomBackgroundColor({0, 0, 0});
+  auto floor = mrpt::viz::CBox::Create(
+      mrpt::math::TPoint3D(-50, -50, -0.1), mrpt::math::TPoint3D(50, 50, 0));
+  floor->setColor_u8(0, 0, 0, 0xff);
+  floor->materialShininess(1.0f);
+  scene->insert(floor);
+
+  // The camera looks at the floor center from the mirror direction of the
+  // light, so the center gets the full specular highlight:
+  const auto highlightAtElevation = [&](float elevDeg, bool shadows)
+  {
+    const float e = mrpt::DEG2RAD(elevDeg);
+    auto& lp = vp->lightParameters();
+    lp.lights.clear();
+    lp.ambient = 0.0f;
+    lp.lights.push_back(mrpt::viz::TLight::Directional(
+        {-std::cos(e), 0, -std::sin(e)}, {1, 1, 1}, 0.0f /*diffuse*/, 1.0f /*specular*/));
+    vp->enableShadowCasting(shadows, 512, 512);
+
+    auto& cam = vp->getCamera();
+    cam.setPointingAt(0, 0, 0);
+    cam.setZoomDistance(10.0f);
+    cam.setAzimuthDegrees(180);
+    cam.setElevationDegrees(elevDeg);
+    return meanGray(render(*renderer, *scene), W / 2 - 2, H / 2 - 2, W / 2 + 2, H / 2 + 2);
+  };
+
+  for (const bool shadows : {false, true})
+  {
+    const double steep = highlightAtElevation(60, shadows);
+    const double grazing = highlightAtElevation(3, shadows);
+    EXPECT_GT(steep, 150) << "shadows=" << shadows;
+    EXPECT_LT(grazing, 0.5 * steep) << "shadows=" << shadows;
+  }
+}
+
 #endif  // RUN_OFFSCREEN_RENDER_TESTS
