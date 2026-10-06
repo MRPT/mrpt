@@ -132,6 +132,11 @@ class CImGuiSceneView
    *  The actual GL rendering happens later, from an ImGui draw callback
    *  inside ImGui_ImplOpenGL3_RenderDrawData(), so the scene and this object
    *  must stay alive until then. The framebuffer needs a depth buffer.
+   *
+   *  The scene gamma correction (sRGB encoding, see TLightParameters) is only
+   *  applied if the framebuffer is sRGB-capable, e.g. with
+   *  `glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE)` before creating a GLFW
+   *  window. Otherwise, colors are written linearly, as with render().
    */
   void renderAsBackground();
 
@@ -284,26 +289,29 @@ inline void CImGuiSceneView::renderAsBackground()
   const float w = std::max(1.0f, avail.x);
   const float h = std::max(1.0f, avail.y);
 
-  // ImGui units to framebuffer pixels (HiDPI), with the origin at the
-  // bottom-left corner as OpenGL expects:
-  const ImGuiIO& io = ImGui::GetIO();
-  const ImVec2 displayPos = ImGui::GetMainViewport()->Pos;
-  const float sx = io.DisplayFramebufferScale.x;
-  const float sy = io.DisplayFramebufferScale.y;
-  m_directRect[0] = static_cast<int>((pos.x - displayPos.x) * sx);
-  m_directRect[1] = static_cast<int>((io.DisplaySize.y - (pos.y - displayPos.y + h)) * sy);
-  m_directRect[2] = static_cast<int>(w * sx);
-  m_directRect[3] = static_cast<int>(h * sy);
+  // ImGui units to framebuffer pixels (HiDPI) of the viewport (platform
+  // window) this window is in, with the origin at the bottom-left corner as
+  // OpenGL expects:
+  ImGuiViewport* viewport = ImGui::GetWindowViewport();
+  ImVec2 scale = viewport->FramebufferScale;
+  if (scale.x <= 0.0f || scale.y <= 0.0f)
+  {
+    scale = ImGui::GetIO().DisplayFramebufferScale;
+  }
+  m_directRect[0] = static_cast<int>((pos.x - viewport->Pos.x) * scale.x);
+  m_directRect[1] = static_cast<int>((viewport->Size.y - (pos.y - viewport->Pos.y + h)) * scale.y);
+  m_directRect[2] = static_cast<int>(w * scale.x);
+  m_directRect[3] = static_cast<int>(h * scale.y);
 
-  // The background draw list is rendered before any window:
-  ImDrawList* dl = ImGui::GetBackgroundDrawList();
+  // The background draw list of the viewport is rendered before any window:
+  ImDrawList* dl = ImGui::GetBackgroundDrawList(viewport);
   dl->AddCallback(
       [](const ImDrawList*, const ImDrawCmd* cmd)
       { static_cast<CImGuiSceneView*>(cmd->UserCallbackData)->renderSceneDirect(); },
       this);
   dl->AddCallback(ImDrawCallback_ResetRenderState, nullptr);
 
-  m_pixelScale = sx;
+  m_pixelScale = scale.x;
   handleWidgetInput(pos.x, pos.y, w, h);
 #else
   ImGui::TextUnformatted("MRPT built without OpenGL support.");
