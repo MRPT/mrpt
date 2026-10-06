@@ -16,6 +16,7 @@
 #include <mrpt/viz/COrbitCameraController.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 
 using namespace mrpt::viz;
@@ -169,10 +170,30 @@ void COrbitCameraController::applyPan(int dx, int dy)
   m_params.pointingY += scale * (Ax * std::sin(azRad) + Ay * std::cos(azRad));
 }
 
-void COrbitCameraController::applyRotate(int dx, int /*dy*/)
+void COrbitCameraController::applyRotate(int dx, int dy)
 {
-  // "Rotate" here means spin azimuth (matches legacy CGlCanvasBase behaviour)
-  m_params.azimuthDeg -= static_cast<float>(dx) * orbitSensitivity;
+  // First-person look around: the eye stays still and the pointing point
+  // moves around it (as in the legacy CGlCanvasBase).
+  const auto eyeOffset = [this]()
+  {
+    const float az = m_params.azimuthDeg * static_cast<float>(M_PI) / 180.0f;
+    const float el = m_params.elevationDeg * static_cast<float>(M_PI) / 180.0f;
+    const float d = std::max(0.01f, m_params.zoomDistance);
+    return std::array<float, 3>{
+        d * std::cos(az) * std::cos(el), d * std::sin(az) * std::cos(el), d * std::sin(el)};
+  };
+
+  const auto off0 = eyeOffset();
+  const float eyeX = m_params.pointingX + off0[0];
+  const float eyeY = m_params.pointingY + off0[1];
+  const float eyeZ = m_params.pointingZ + off0[2];
+
+  applyOrbit(dx, dy);
+
+  const auto off1 = eyeOffset();
+  m_params.pointingX = eyeX - off1[0];
+  m_params.pointingY = eyeY - off1[1];
+  m_params.pointingZ = eyeZ - off1[2];
 }
 
 void COrbitCameraController::applyRoll(int dx, int dy)

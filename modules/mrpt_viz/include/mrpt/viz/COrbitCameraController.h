@@ -194,7 +194,7 @@ class COrbitCameraController
   /** Left-drag + Shift OR middle-drag: pan in camera's local XY plane. */
   void applyPan(int dx, int dy);
 
-  /** Left-drag + Ctrl: rotate (spin around look direction). */
+  /** Left-drag + Ctrl: first-person look around (the eye stays still). */
   void applyRotate(int dx, int dy);
 
   /** Left-drag + Alt: roll. */
