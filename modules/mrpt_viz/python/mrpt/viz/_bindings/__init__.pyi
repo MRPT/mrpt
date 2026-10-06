@@ -5,7 +5,7 @@ import mrpt.poses
 import numpy
 import typing
 from . import stock_objects
-__all__: list[str] = ['AssimpLoadFlags', 'BACK', 'BOTTOM', 'CAnimatedAssimpModel', 'CArrow', 'CAssimpModel', 'CAxis', 'CBox', 'CCamera', 'CColorBar', 'CCylinder', 'CDisk', 'CEllipsoid2D', 'CEllipsoid3D', 'CEllipsoidInverseDepth2D', 'CEllipsoidInverseDepth3D', 'CEllipsoidRangeBearing2D', 'CFrustum', 'CGridPlaneXY', 'CGridPlaneXZ', 'CMesh', 'CMesh3D', 'CMeshFast', 'COLOR_FROM_HEIGHT', 'COLOR_FROM_OCCUPANCY', 'COLOR_FROM_RGB_DATA', 'COctoMapVoxels', 'COrbitCameraController', 'CPointCloud', 'CPointCloudColoured', 'CPolyhedron', 'CSetOfLines', 'CSetOfObjects', 'CSetOfTexturedTriangles', 'CSetOfTriangles', 'CSimpleLine', 'CSkyBox', 'CSphere', 'CText', 'CText3D', 'CTexturedPlane', 'CVectorField2D', 'CVectorField3D', 'CVisualObject', 'CubeTextureFace', 'Directional', 'FIXED', 'FRONT', 'FlipUVs', 'IgnoreMaterialColor', 'LEFT', 'OctoMapVisualizationMode', 'Point', 'RIGHT', 'RealTimeFast', 'RealTimeMaxQuality', 'RealTimeQuality', 'Scene', 'Spot', 'TLight', 'TLightType', 'TOP', 'TRANSPARENCY_FROM_OCCUPANCY', 'TRANS_AND_COLOR_FROM_OCCUPANCY', 'TTriangle', 'TTriangleVertex', 'Verbose', 'Viewport', 'posePDF2opengl', 'stock_objects']
+__all__: list[str] = ['AssimpLoadFlags', 'BACK', 'BOTTOM', 'CAnimatedAssimpModel', 'CArrow', 'CAssimpModel', 'CAxis', 'CBox', 'CCamera', 'CColorBar', 'CCylinder', 'CDisk', 'CEllipsoid2D', 'CEllipsoid3D', 'CEllipsoidInverseDepth2D', 'CEllipsoidInverseDepth3D', 'CEllipsoidRangeBearing2D', 'CFrustum', 'CGridPlaneXY', 'CGridPlaneXZ', 'CLight', 'CMesh', 'CMesh3D', 'CMeshFast', 'COLOR_FROM_HEIGHT', 'COLOR_FROM_OCCUPANCY', 'COLOR_FROM_RGB_DATA', 'COctoMapVoxels', 'COrbitCameraController', 'CPointCloud', 'CPointCloudColoured', 'CPolyhedron', 'CSetOfLines', 'CSetOfObjects', 'CSetOfTexturedTriangles', 'CSetOfTriangles', 'CSimpleLine', 'CSkyBox', 'CSphere', 'CText', 'CText3D', 'CTexturedPlane', 'CVectorField2D', 'CVectorField3D', 'CVisualObject', 'CubeTextureFace', 'Directional', 'FIXED', 'FRONT', 'FlipUVs', 'IgnoreMaterialColor', 'LEFT', 'OctoMapVisualizationMode', 'Point', 'RIGHT', 'RealTimeFast', 'RealTimeMaxQuality', 'RealTimeQuality', 'Scene', 'Spot', 'TLight', 'TLightType', 'TOP', 'TRANSPARENCY_FROM_OCCUPANCY', 'TRANS_AND_COLOR_FROM_OCCUPANCY', 'TTriangle', 'TTriangleVertex', 'Verbose', 'Viewport', 'posePDF2opengl', 'stock_objects']
 class CVisualObject:
     """
     Base class of all 3D objects that can be rendered.
@@ -1322,6 +1322,28 @@ class TLight:
         """
     @range.setter
     def range(self, arg0: float) -> None:
+        ...
+class CLight(CVisualObject):
+    """
+    A light source placed in the scene graph: its position and direction are relative to the pose of this object and its parents. It is switched on and off with setVisibility().
+    """
+    @typing.overload
+    def __init__(self) -> None:
+        """
+        Default constructor.
+        """
+    @typing.overload
+    def __init__(self, light: TLight) -> None:
+        """
+        Constructor from the light parameters, in the local frame of this object.
+        """
+    @property
+    def light(self) -> TLight:
+        """
+        The light parameters, in the local frame of this object.
+        """
+    @light.setter
+    def light(self, arg1: TLight) -> None:
         ...
 class CEllipsoidInverseDepth2D(CVisualObject):
     """

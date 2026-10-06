@@ -31,6 +31,7 @@
 #include <cstring>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <optional>
 #include <random>
 #include <unordered_set>
@@ -278,6 +279,8 @@ void CompiledViewport::updateFromVizViewport(const mrpt::viz::Viewport& vizVp)
 
   // Copy lighting
   m_lightParams = vizVp.lightParameters();
+  m_viewportLights = m_lightParams.lights;
+  selectLights();
 
   // Copy rendering options
   m_enablePolygonSmooth = vizVp.isPolygonNicestEnabled();
@@ -544,8 +547,73 @@ void CompiledViewport::updateCamera(const mrpt::viz::CCamera& camera)
 
   updateCameraParams(camera);
   m_matricesNeedUpdate = true;
+  selectLights();
 
   MRPT_END
+}
+
+void CompiledViewport::setSceneLights(const std::vector<TLight>& lights)
+{
+  std::unique_lock<std::shared_mutex> lock(m_stateMtx.data);
+
+  m_sceneLights = lights;
+  selectLights();
+}
+
+void CompiledViewport::selectLights()
+{
+  auto& out = m_lightParams.lights;
+  out = m_viewportLights;
+  out.insert(out.end(), m_sceneLights.begin(), m_sceneLights.end());
+  if (out.size() <= static_cast<size_t>(MAX_LIGHTS))
+  {
+    return;
+  }
+
+  // Too many lights: rank point/spot lights by their distance to the camera
+  // (minus their reach), or to the point an orbit camera looks at:
+  mrpt::math::TPoint3Df camPt;
+  if (m_camera.is6DOF)
+  {
+    camPt = m_camera.pose.translation().cast<float>();
+  }
+  else
+  {
+    camPt = m_camera.pointingAt.cast<float>();
+  }
+
+  std::vector<std::pair<float, size_t>> ranked;
+  ranked.reserve(out.size());
+  for (size_t i = 0; i < out.size(); i++)
+  {
+    const auto& l = out[i];
+    float score = std::numeric_limits<float>::lowest();  // directional: always kept
+    if (l.type != TLightType::Directional)
+    {
+      score = (l.position - camPt).norm() - l.range;
+    }
+    ranked.emplace_back(score, i);
+  }
+  std::stable_sort(
+      ranked.begin(), ranked.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
+  ranked.resize(MAX_LIGHTS);
+
+  // Keep the original order of the selected lights:
+  std::vector<size_t> kept;
+  kept.reserve(ranked.size());
+  for (const auto& r : ranked)
+  {
+    kept.push_back(r.second);
+  }
+  std::sort(kept.begin(), kept.end());
+
+  std::vector<TLight> selected;
+  selected.reserve(kept.size());
+  for (const size_t i : kept)
+  {
+    selected.push_back(out[i]);
+  }
+  out = std::move(selected);
 }
 
 void CompiledViewport::updateCameraParams(const mrpt::viz::CCamera& camera)

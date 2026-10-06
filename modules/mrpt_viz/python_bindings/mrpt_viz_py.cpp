@@ -44,6 +44,7 @@
 #include <mrpt/viz/CFrustum.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CGridPlaneXZ.h>
+#include <mrpt/viz/CLight.h>
 #include <mrpt/viz/CMesh.h>
 #include <mrpt/viz/CMesh3D.h>
 #include <mrpt/viz/CMeshFast.h>
@@ -1152,6 +1153,20 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("dir"), py::arg("r") = 1.0f, py::arg("g") = 1.0f, py::arg("b") = 1.0f,
           py::arg("diffuse") = 0.8f, py::arg("specular") = 0.95f,
           "Factory: creates a directional light.");
+
+  py::class_<CLight, CVisualObject, std::shared_ptr<CLight>>(
+      m, "CLight",
+      "A light source placed in the scene graph: its position and direction are relative to the "
+      "pose of this object and its parents. It is switched on and off with setVisibility().",
+      py::multiple_inheritance())
+      .def(py::init<>(), "Default constructor.")
+      .def(
+          py::init<const TLight&>(), "light"_a,
+          "Constructor from the light parameters, in the local frame of this object.")
+      .def_property(
+          "light", [](const CLight& self) { return self.light(); },
+          [](CLight& self, const TLight& l) { self.light(l); },
+          "The light parameters, in the local frame of this object.");
 
   // Generalized ellipsoids: CEllipsoidInverseDepth2D, CEllipsoidInverseDepth3D,
   // CEllipsoidRangeBearing2D. CGeneralizedEllipsoidTemplate<N> has a protected destructor so

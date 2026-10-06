@@ -58,6 +58,7 @@ set(LIB_SOURCES
   src/CFrustum.cpp
   src/CGeneralizedEllipsoidTemplate.cpp
   src/CGridPlaneXY.cpp
+  src/CLight.cpp
   src/CGridPlaneXZ.cpp
   src/CMesh3D.cpp
   src/CMesh.cpp
@@ -155,6 +156,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/viz/CAssimpModel.h
   include/mrpt/viz/TTriangle.h
   include/mrpt/viz/CCamera.h
+  include/mrpt/viz/CLight.h
   include/mrpt/viz/CCylinder.h
   include/mrpt/viz/CPointCloud.h
   include/mrpt/viz/CUBE_TEXTURE_FACE.h

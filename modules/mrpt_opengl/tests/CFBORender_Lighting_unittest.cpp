@@ -12,8 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-/** Offscreen rendering tests of point/spot lights (range, shadows) and
- *  emissive maps, asserting invariants on the rendered pixels.
+/** Offscreen rendering tests of point/spot lights (range, shadows, lights in
+ *  the scene graph) and emissive maps, asserting invariants on the rendered pixels.
  */
 
 #include <gtest/gtest.h>
@@ -21,6 +21,8 @@
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/config.h>  // for MRPT_HAS_*
 #include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CLight.h>
+#include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSetOfTexturedTriangles.h>
 #include <mrpt/viz/Scene.h>
 
@@ -417,6 +419,154 @@ TEST(OpenGLLighting, ClonedViewportsGetPointLightShadows)
   const auto imNoShadows = render(*renderer, *s.scene);
   EXPECT_GT(darkInRightHalf(im), darkInRightHalf(imNoShadows) + 200)
       << "the clone has no point light shadows";
+}
+
+namespace
+{
+/** A white floor seen from above, with no light other than those added by
+ * each test. World X runs along image columns: x=+-3 m are at columns
+ * W/2 +- 75 px. */
+struct TopViewScene
+{
+  mrpt::viz::Scene::Ptr scene = mrpt::viz::Scene::Create();
+  mrpt::viz::Viewport::Ptr vp = scene->getViewport();
+
+  TopViewScene()
+  {
+    vp->setCustomBackgroundColor({0, 0, 0});
+    auto& lp = vp->lightParameters();
+    lp.lights.clear();
+    lp.ambient = 0.0f;
+
+    auto floor =
+        mrpt::viz::CBox::Create(mrpt::math::TPoint3D(-8, -8, -0.1), mrpt::math::TPoint3D(8, 8, 0));
+    floor->setColor_u8(0xff, 0xff, 0xff, 0xff);
+    scene->insert(floor);
+
+    auto& cam = vp->getCamera();
+    cam.setPointingAt(0, 0, 0);
+    cam.setZoomDistance(12.0f);
+    cam.setAzimuthDegrees(-90);
+    cam.setElevationDegrees(89);
+  }
+};
+
+mrpt::viz::TLight smallPointLight(const mrpt::math::TPoint3Df& pos)
+{
+  return mrpt::viz::TLight::PointLight(
+      pos, {1, 1, 1}, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.5f /*range*/);
+}
+
+double grayAtColumn(const mrpt::img::CImage& im, int x)
+{
+  return meanGray(im, x - 5, H / 2 - 5, x + 5, H / 2 + 5);
+}
+}  // namespace
+
+TEST(OpenGLLighting, CLightFollowsItsParentsAndIsSwitchedWithVisibility)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  TopViewScene s;
+  auto vehicle = mrpt::viz::CSetOfObjects::Create();
+  vehicle->setLocation(3, 0, 0);
+  auto lamp = mrpt::viz::CLight::Create(smallPointLight({0, 0, 0.5f}));
+  vehicle->insert(lamp);
+  s.scene->insert(vehicle);
+
+  constexpr int left = W / 2 - 75;
+  constexpr int right = W / 2 + 75;
+
+  const auto atRight = render(*renderer, *s.scene);
+  EXPECT_GT(grayAtColumn(atRight, right), 100);
+  EXPECT_LT(grayAtColumn(atRight, left), 5);
+
+  // The light moves with its parent:
+  vehicle->setLocation(-3, 0, 0);
+  const auto atLeft = render(*renderer, *s.scene);
+  EXPECT_LT(grayAtColumn(atLeft, right), 5);
+  EXPECT_GT(grayAtColumn(atLeft, left), 100);
+
+  // Hidden lights, or lights in hidden containers, are off:
+  lamp->setVisibility(false);
+  EXPECT_LT(grayAtColumn(render(*renderer, *s.scene), left), 5);
+
+  lamp->setVisibility(true);
+  vehicle->setVisibility(false);
+  EXPECT_LT(grayAtColumn(render(*renderer, *s.scene), left), 5);
+
+  vehicle->setVisibility(true);
+  EXPECT_GT(grayAtColumn(render(*renderer, *s.scene), left), 100);
+
+  // Changing the light parameters is also seen:
+  auto l = lamp->light();
+  l.diffuse = 0;
+  lamp->light(l);
+  EXPECT_LT(grayAtColumn(render(*renderer, *s.scene), left), 5);
+}
+
+TEST(OpenGLLighting, CLightSpotDirectionIsRotatedWithItsParent)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  // A "headlight" at the origin of a vehicle, pointing forward (+X) and down:
+  TopViewScene s;
+  auto vehicle = mrpt::viz::CSetOfObjects::Create();
+  auto headlight = mrpt::viz::CLight::Create(mrpt::viz::TLight::SpotLight(
+      {0, 0, 1.0f}, mrpt::math::TVector3Df(1, 0, -0.35f).unitarize(), 10.0f, 15.0f, {1, 1, 1}, 1.0f,
+      0.0f, 1.0f, 0.0f, 0.0f, 6.0f /*range*/));
+  vehicle->insert(headlight);
+  s.scene->insert(vehicle);
+
+  constexpr int left = W / 2 - 75;
+  constexpr int right = W / 2 + 75;
+
+  const auto forward = render(*renderer, *s.scene);
+  EXPECT_GT(grayAtColumn(forward, right), 50);
+  EXPECT_LT(grayAtColumn(forward, left), 5);
+
+  // Turned around, it lights the other side:
+  vehicle->setPose(mrpt::math::TPose3D(0, 0, 0, M_PI, 0, 0));
+  const auto backward = render(*renderer, *s.scene);
+  EXPECT_LT(grayAtColumn(backward, right), 5);
+  EXPECT_GT(grayAtColumn(backward, left), 50);
+}
+
+TEST(OpenGLLighting, TooManyLightsKeepsThoseClosestToTheCamera)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  TopViewScene s;
+  auto& lp = s.vp->lightParameters();
+  // A directional light (with no effect), then MAX_LIGHTS point lights far
+  // from the point the camera looks at, all in the viewport:
+  lp.lights.push_back(mrpt::viz::TLight::Directional({0, 0, -1}, {1, 1, 1}, 0.0f, 0.0f));
+  for (int i = 0; i < mrpt::viz::MAX_LIGHTS; i++)
+  {
+    lp.lights.push_back(smallPointLight({-3.0f, -2.0f + 0.5f * static_cast<float>(i), 0.5f}));
+  }
+  // ...and a light in the scene graph, right where the camera looks at:
+  s.scene->insert(mrpt::viz::CLight::Create(smallPointLight({0, 0, 0.5f})));
+
+  const auto im = render(*renderer, *s.scene);
+  EXPECT_GT(grayAtColumn(im, W / 2), 100) << "the light closest to the camera was dropped";
+
+  const auto& lights = renderer->compiledScene()->getViewport("main")->lightParameters().lights;
+  ASSERT_EQ(lights.size(), static_cast<size_t>(mrpt::viz::MAX_LIGHTS));
+  EXPECT_EQ(lights.front().type, mrpt::viz::TLightType::Directional);
+  EXPECT_FLOAT_EQ(lights.back().position.x, 0.0f);
 }
 
 #endif  // RUN_OFFSCREEN_RENDER_TESTS
