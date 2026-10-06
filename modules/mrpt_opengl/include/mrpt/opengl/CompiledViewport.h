@@ -115,6 +115,11 @@ class CompiledViewport
    */
   void updateFromVizViewport(const mrpt::viz::Viewport& vizVp);
 
+  /** Sets the lights of the mrpt::viz::CLight objects in this viewport, in
+   * world coordinates, which are appended to those of the source viewport.
+   * This is called automatically by CompiledScene during compilation. */
+  void setSceneLights(const std::vector<mrpt::viz::TLight>& lights);
+
   /** Returns the viewport name */
   const std::string& getName() const { return m_name; }
 
@@ -397,8 +402,19 @@ class CompiledViewport
 
   void updateCameraParams(const mrpt::viz::CCamera& camera);
 
-  /** Lighting parameters */
+  /** Lighting parameters, with the lights actually used for rendering: those
+   * of the source viewport and of the scene, selected with selectLights(). */
   mrpt::viz::TLightParameters m_lightParams;
+
+  /** All lights of the source viewport */
+  std::vector<mrpt::viz::TLight> m_viewportLights;
+
+  /** Lights of the CLight objects in the scene, in world coordinates */
+  std::vector<mrpt::viz::TLight> m_sceneLights;
+
+  /** Fills m_lightParams.lights with up to MAX_LIGHTS lights: all directional
+   * lights, then the point/spot lights closest to the camera. */
+  void selectLights();
 
   /** Render matrices (projection, view, model, etc.) */
   TRenderMatrices m_renderMatrices;

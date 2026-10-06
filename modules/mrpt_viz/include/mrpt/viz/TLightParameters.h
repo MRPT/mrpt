@@ -20,6 +20,11 @@
 
 #include <vector>
 
+/** Defined if the mrpt::viz::CLight class exists (lights in the scene graph),
+ * and viewports with more than MAX_LIGHTS lights keep those closest to the
+ * camera. Meant for user code that must also build with older versions. */
+#define MRPT_VIZ_HAS_CLIGHT 1
+
 namespace mrpt::viz
 {
 /** Maximum number of simultaneous lights supported by the shader pipeline. */

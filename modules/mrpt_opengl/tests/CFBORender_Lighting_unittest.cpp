@@ -12,8 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-/** Offscreen rendering tests of point/spot lights (range, shadows) and
- *  emissive maps, asserting invariants on the rendered pixels.
+/** Offscreen rendering tests of point/spot lights (range, shadows, lights in
+ *  the scene graph) and emissive maps, asserting invariants on the rendered pixels.
  */
 
 #include <gtest/gtest.h>
@@ -21,7 +21,11 @@
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/config.h>  // for MRPT_HAS_*
 #include <mrpt/viz/CBox.h>
+#include <mrpt/viz/CLight.h>
+#include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSetOfTexturedTriangles.h>
+#include <mrpt/viz/CSetOfTriangles.h>
+#include <mrpt/viz/CTexturedPlane.h>
 #include <mrpt/viz/Scene.h>
 
 #include <algorithm>
@@ -417,6 +421,273 @@ TEST(OpenGLLighting, ClonedViewportsGetPointLightShadows)
   const auto imNoShadows = render(*renderer, *s.scene);
   EXPECT_GT(darkInRightHalf(im), darkInRightHalf(imNoShadows) + 200)
       << "the clone has no point light shadows";
+}
+
+namespace
+{
+/** A white floor seen from above, with no light other than those added by
+ * each test. World X runs along image columns: x=+-3 m are at columns
+ * W/2 +- 75 px. */
+struct TopViewScene
+{
+  mrpt::viz::Scene::Ptr scene = mrpt::viz::Scene::Create();
+  mrpt::viz::Viewport::Ptr vp = scene->getViewport();
+
+  TopViewScene()
+  {
+    vp->setCustomBackgroundColor({0, 0, 0});
+    auto& lp = vp->lightParameters();
+    lp.lights.clear();
+    lp.ambient = 0.0f;
+
+    auto floor =
+        mrpt::viz::CBox::Create(mrpt::math::TPoint3D(-8, -8, -0.1), mrpt::math::TPoint3D(8, 8, 0));
+    floor->setColor_u8(0xff, 0xff, 0xff, 0xff);
+    scene->insert(floor);
+
+    auto& cam = vp->getCamera();
+    cam.setPointingAt(0, 0, 0);
+    cam.setZoomDistance(12.0f);
+    cam.setAzimuthDegrees(-90);
+    cam.setElevationDegrees(89);
+  }
+};
+
+mrpt::viz::TLight smallPointLight(const mrpt::math::TPoint3Df& pos)
+{
+  return mrpt::viz::TLight::PointLight(
+      pos, {1, 1, 1}, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.5f /*range*/);
+}
+
+double grayAtColumn(const mrpt::img::CImage& im, int x)
+{
+  return meanGray(im, x - 5, H / 2 - 5, x + 5, H / 2 + 5);
+}
+}  // namespace
+
+TEST(OpenGLLighting, CLightFollowsItsParentsAndIsSwitchedWithVisibility)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  TopViewScene s;
+  auto vehicle = mrpt::viz::CSetOfObjects::Create();
+  vehicle->setLocation(3, 0, 0);
+  auto lamp = mrpt::viz::CLight::Create(smallPointLight({0, 0, 0.5f}));
+  vehicle->insert(lamp);
+  s.scene->insert(vehicle);
+
+  constexpr int left = W / 2 - 75;
+  constexpr int right = W / 2 + 75;
+
+  const auto atRight = render(*renderer, *s.scene);
+  EXPECT_GT(grayAtColumn(atRight, right), 100);
+  EXPECT_LT(grayAtColumn(atRight, left), 5);
+
+  // The light moves with its parent:
+  vehicle->setLocation(-3, 0, 0);
+  const auto atLeft = render(*renderer, *s.scene);
+  EXPECT_LT(grayAtColumn(atLeft, right), 5);
+  EXPECT_GT(grayAtColumn(atLeft, left), 100);
+
+  // Hidden lights, or lights in hidden containers, are off:
+  lamp->setVisibility(false);
+  EXPECT_LT(grayAtColumn(render(*renderer, *s.scene), left), 5);
+
+  lamp->setVisibility(true);
+  vehicle->setVisibility(false);
+  EXPECT_LT(grayAtColumn(render(*renderer, *s.scene), left), 5);
+
+  vehicle->setVisibility(true);
+  EXPECT_GT(grayAtColumn(render(*renderer, *s.scene), left), 100);
+
+  // Changing the light parameters is also seen:
+  auto l = lamp->light();
+  l.diffuse = 0;
+  lamp->light(l);
+  EXPECT_LT(grayAtColumn(render(*renderer, *s.scene), left), 5);
+}
+
+TEST(OpenGLLighting, CLightSpotDirectionIsRotatedWithItsParent)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  // A "headlight" at the origin of a vehicle, pointing forward (+X) and down:
+  TopViewScene s;
+  auto vehicle = mrpt::viz::CSetOfObjects::Create();
+  auto headlight = mrpt::viz::CLight::Create(mrpt::viz::TLight::SpotLight(
+      {0, 0, 1.0f}, mrpt::math::TVector3Df(1, 0, -0.35f).unitarize(), 10.0f, 15.0f, {1, 1, 1}, 1.0f,
+      0.0f, 1.0f, 0.0f, 0.0f, 6.0f /*range*/));
+  vehicle->insert(headlight);
+  s.scene->insert(vehicle);
+
+  constexpr int left = W / 2 - 75;
+  constexpr int right = W / 2 + 75;
+
+  const auto forward = render(*renderer, *s.scene);
+  EXPECT_GT(grayAtColumn(forward, right), 50);
+  EXPECT_LT(grayAtColumn(forward, left), 5);
+
+  // Turned around, it lights the other side:
+  vehicle->setPose(mrpt::math::TPose3D(0, 0, 0, M_PI, 0, 0));
+  const auto backward = render(*renderer, *s.scene);
+  EXPECT_LT(grayAtColumn(backward, right), 5);
+  EXPECT_GT(grayAtColumn(backward, left), 50);
+}
+
+TEST(OpenGLLighting, TooManyLightsKeepsThoseClosestToTheCamera)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  TopViewScene s;
+  auto& lp = s.vp->lightParameters();
+  // A directional light (with no effect), then MAX_LIGHTS point lights far
+  // from the point the camera looks at, all in the viewport:
+  lp.lights.push_back(mrpt::viz::TLight::Directional({0, 0, -1}, {1, 1, 1}, 0.0f, 0.0f));
+  for (int i = 0; i < mrpt::viz::MAX_LIGHTS; i++)
+  {
+    lp.lights.push_back(smallPointLight({-3.0f, -2.0f + 0.5f * static_cast<float>(i), 0.5f}));
+  }
+  // ...and a light in the scene graph, right where the camera looks at:
+  s.scene->insert(mrpt::viz::CLight::Create(smallPointLight({0, 0, 0.5f})));
+
+  const auto im = render(*renderer, *s.scene);
+  EXPECT_GT(grayAtColumn(im, W / 2), 100) << "the light closest to the camera was dropped";
+
+  const auto& lights = renderer->compiledScene()->getViewport("main")->lightParameters().lights;
+  ASSERT_EQ(lights.size(), static_cast<size_t>(mrpt::viz::MAX_LIGHTS));
+  EXPECT_EQ(lights.front().type, mrpt::viz::TLightType::Directional);
+  EXPECT_FLOAT_EQ(lights.back().position.x, 0.0f);
+}
+
+TEST(OpenGLLighting, SpecularFadesAtGrazingAngles)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  // A black, shiny floor: only the specular highlight is visible.
+  auto scene = mrpt::viz::Scene::Create();
+  auto vp = scene->getViewport();
+  vp->setCustomBackgroundColor({0, 0, 0});
+  auto floor = mrpt::viz::CBox::Create(
+      mrpt::math::TPoint3D(-50, -50, -0.1), mrpt::math::TPoint3D(50, 50, 0));
+  floor->setColor_u8(0, 0, 0, 0xff);
+  floor->materialShininess(1.0f);
+  scene->insert(floor);
+
+  // The camera looks at the floor center from the mirror direction of the
+  // light, so the center gets the full specular highlight:
+  const auto highlightAtElevation = [&](float elevDeg, bool shadows)
+  {
+    const float e = mrpt::DEG2RAD(elevDeg);
+    auto& lp = vp->lightParameters();
+    lp.lights.clear();
+    lp.ambient = 0.0f;
+    lp.lights.push_back(mrpt::viz::TLight::Directional(
+        {-std::cos(e), 0, -std::sin(e)}, {1, 1, 1}, 0.0f /*diffuse*/, 1.0f /*specular*/));
+    vp->enableShadowCasting(shadows, 512, 512);
+
+    auto& cam = vp->getCamera();
+    cam.setPointingAt(0, 0, 0);
+    cam.setZoomDistance(10.0f);
+    cam.setAzimuthDegrees(180);
+    cam.setElevationDegrees(elevDeg);
+    return meanGray(render(*renderer, *scene), W / 2 - 2, H / 2 - 2, W / 2 + 2, H / 2 + 2);
+  };
+
+  for (const bool shadows : {false, true})
+  {
+    const double steep = highlightAtElevation(60, shadows);
+    const double grazing = highlightAtElevation(3, shadows);
+    EXPECT_GT(steep, 150) << "shadows=" << shadows;
+    EXPECT_LT(grazing, 0.5 * steep) << "shadows=" << shadows;
+  }
+}
+
+TEST(OpenGLLighting, BackSidesOfThinSurfacesAreLitFromTheirSide)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering available";
+  }
+
+  // A thin horizontal surface at z=2 (normal +Z), e.g. a roof, either plain
+  // or textured (white), so all the lit shaders are covered:
+  const auto makeSurface = [](bool textured) -> mrpt::viz::CVisualObject::Ptr
+  {
+    if (textured)
+    {
+      auto p = mrpt::viz::CTexturedPlane::Create(-4, 4, -4, 4);
+      mrpt::img::CImage white(4, 4, mrpt::img::CH_RGB);
+      white.filledRectangle({0, 0}, {3, 3}, mrpt::img::TColor::white());
+      p->assignImage(white);
+      p->enableLighting(true);
+      p->setLocation(0, 0, 2);
+      return p;
+    }
+    auto t = mrpt::viz::CSetOfTriangles::Create();
+    using P = mrpt::math::TPoint3D;
+    t->insertTriangle(
+        mrpt::viz::TTriangle(mrpt::math::TPolygon3D({P(-4, -4, 2), P(4, -4, 2), P(4, 4, 2)})));
+    t->insertTriangle(
+        mrpt::viz::TTriangle(mrpt::math::TPolygon3D({P(-4, -4, 2), P(4, 4, 2), P(-4, 4, 2)})));
+    return t;
+  };
+
+  for (const bool textured : {false, true})
+  {
+    for (const bool shadows : {false, true})
+    {
+      auto scene = mrpt::viz::Scene::Create();
+      auto vp = scene->getViewport();
+      vp->setCustomBackgroundColor({0, 0, 0});
+      vp->enableShadowCasting(shadows, 512, 512);
+      scene->insert(makeSurface(textured));
+
+      // The sun, above:
+      auto& lp = vp->lightParameters();
+      lp.lights.clear();
+      lp.ambient = 0.0f;
+      lp.lights.push_back(
+          mrpt::viz::TLight::Directional({0, 0, -1}, {1, 1, 1}, 1.0f /*diffuse*/, 0.0f));
+
+      auto& cam = vp->getCamera();
+      cam.setPointingAt(0, 0, 2);
+      cam.setZoomDistance(4.0f);
+      cam.setAzimuthDegrees(-90);
+      const auto centerGray = [&](float camElevDeg)
+      {
+        cam.setElevationDegrees(camElevDeg);
+        return meanGray(render(*renderer, *scene), W / 2 - 5, H / 2 - 5, W / 2 + 5, H / 2 + 5);
+      };
+      const auto ctx = [&]()
+      { return ::testing::Message() << "textured=" << textured << " shadows=" << shadows; };
+
+      // The top side is lit by the sun, but not the bottom one:
+      EXPECT_GT(centerGray(80), 100) << ctx();
+      EXPECT_LT(centerGray(-80), 10) << ctx();
+
+      // A lamp below lights the bottom side:
+      lp.lights.push_back(mrpt::viz::TLight::PointLight(
+          {0, 0, 1}, {1, 1, 1}, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 5.0f /*range*/));
+      EXPECT_GT(centerGray(-80), 60) << ctx();
+    }
+  }
 }
 
 #endif  // RUN_OFFSCREEN_RENDER_TESTS

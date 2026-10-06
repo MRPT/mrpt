@@ -543,8 +543,43 @@ smooth window `(1 - (d/range)^4)^2`, which reaches exactly zero at `range`.
 Lights without shadows go through walls, so a finite range is the cheap way
 to keep e.g. a lamp in its room. It also bounds the cost of its shadows.
 
+Both the diffuse and the Blinn-Phong specular terms of each light are weighted
+by N·L, so a light at a grazing angle (e.g. a headlight close to the floor)
+leaves no bright highlight on a surface it barely lights.
+
+Surfaces are lit on the side facing the camera: when the geometric normal of a
+fragment points away from the camera, the opposite normal is used, so the
+bottom of a thin plane (e.g. a roof seen from inside) is lit by the lamps below
+it, not by the sun above. This is decided per fragment from the normals, not
+from the triangle winding (`gl_FrontFacing`), which is not consistent in all
+meshes.
+
 Besides the lights, the ambient term uses hemisphere ambient lighting
 (`ambientSkyColor`, `ambientGroundColor`), optionally attenuated by SSAO.
+
+### Lights in the scene graph
+
+The lights above are given in world coordinates. A `mrpt::viz::CLight` object
+holds a `TLight` given in its own frame instead, composed with the poses of
+its parent containers, so e.g. the headlights inserted into the
+`CSetOfObjects` of a vehicle move with it. It is switched on and off with
+`setVisibility()`, and it is off while any parent is hidden. It is not drawn:
+insert a model with an emissive material next to it to show the lamp.
+
+```cpp
+auto vehicle = mrpt::viz::CSetOfObjects::Create();
+vehicle->insert(mrpt::viz::CLight::Create(mrpt::viz::TLight::SpotLight(
+    {0.5f, 0, 0.4f} /*position*/, {1, 0, -0.2f} /*direction*/)));
+scene->insert(vehicle);
+```
+
+While compiling the scene, `CompiledScene` collects the visible `CLight`
+objects of each viewport in world coordinates (only when the scene changes),
+and `CompiledViewport` appends them to the lights of the viewport. If there
+are more than `MAX_LIGHTS` in total, it keeps all directional lights, then the
+point/spot lights closest to the camera (to the point it looks at, for orbit
+cameras), minus their `range`. `MRPT_VIZ_HAS_CLIGHT` is defined in
+`TLightParameters.h` for user code that must also build with older versions.
 
 ### Emission
 

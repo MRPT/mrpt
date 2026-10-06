@@ -22,6 +22,7 @@
 #include <mrpt/viz/CFrustum.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CGridPlaneXZ.h>
+#include <mrpt/viz/CLight.h>
 #include <mrpt/viz/COctoMapVoxels.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSkyBox.h>
@@ -169,6 +170,36 @@ TEST(CSetOfObjects, StreamInsertOperator)
   auto group = CSetOfObjects::Create();
   group << CSphere::Create();
   EXPECT_EQ(group->size(), 1u);
+}
+
+TEST(CLight, SerializationAndBoundingBox)
+{
+  auto light = CLight::Create(TLight::SpotLight({1, 2, 3}, {0, 0, -1}, 20.0f, 30.0f));
+  light->setLocation(4, 5, 6);
+  auto l = light->light();
+  l.range = 7.0f;
+  l.cast_shadows = true;
+  light->light(l);
+
+  // The bounding box of a point/spot light is its position, in the local frame:
+  const auto bb = light->getBoundingBoxLocalf();
+  EXPECT_FLOAT_EQ(bb.min.x, 1.0f);
+  EXPECT_FLOAT_EQ(bb.max.z, 3.0f);
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+  arch << *light;
+  buf.Seek(0);
+  CLight copy;
+  arch >> copy;
+  const auto lc = copy.light();
+  EXPECT_EQ(lc.type, TLightType::Spot);
+  EXPECT_FLOAT_EQ(lc.position.y, 2.0f);
+  EXPECT_FLOAT_EQ(lc.direction.z, -1.0f);
+  EXPECT_FLOAT_EQ(lc.spot_outer_cutoff_deg, 30.0f);
+  EXPECT_FLOAT_EQ(lc.range, 7.0f);
+  EXPECT_TRUE(lc.cast_shadows);
+  EXPECT_DOUBLE_EQ(copy.getPose().x, 4.0);
 }
 
 TEST(CCamera, ProjectionModes)
