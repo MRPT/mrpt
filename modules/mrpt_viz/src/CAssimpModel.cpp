@@ -24,6 +24,7 @@
 #include <iostream>
 
 #if MRPT_HAS_ASSIMP
+#include <assimp/config.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
@@ -224,6 +225,10 @@ void CAssimpModel::loadScene(const std::string& file_name, int flags)
   }
   assimpFlags |= aiProcess_JoinIdenticalVertices;
   assimpFlags |= aiProcess_CalcTangentSpace;
+
+  // Drop zero-area triangles instead of converting them into lines or points,
+  // which would be drawn as spurious edges:
+  m_assimpScene->importer.SetPropertyBool(AI_CONFIG_PP_FD_REMOVE, true);
 
   // Load the scene
   m_assimpScene->scene = m_assimpScene->importer.ReadFile(file_name, assimpFlags);
