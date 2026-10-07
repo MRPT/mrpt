@@ -2,6 +2,9 @@
 Changelog for package mrpt_libapps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.4.0 (2026-10-04)
 ------------------
 * Contributors: Jose Luis Blanco-Claraco

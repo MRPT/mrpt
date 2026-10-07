@@ -2,6 +2,9 @@
 Changelog for package mrpt_apps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.4.0 (2026-10-04)
 ------------------
 * wx dialogs: drop alignment flags combined with wxEXPAND

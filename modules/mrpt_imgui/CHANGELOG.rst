@@ -2,6 +2,14 @@
 Changelog for package mrpt_imgui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* imgui: unbind ImGui's sampler before rendering the scene as background
+* mrpt_imgui: depend on mrpt_imgui_vendor
+* imgui: renderAsBackground() uses the viewport of its window; document sRGB need
+* imgui: CImGuiSceneView::renderAsBackground() renders straight into the framebuffer
+* Contributors: Jose Luis Blanco-Claraco
+
 3.4.0 (2026-10-04)
 ------------------
 * mrpt_imgui: move CImGuiSceneView GL calls out of the inline header

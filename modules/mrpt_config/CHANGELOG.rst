@@ -2,6 +2,11 @@
 Changelog for package mrpt_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Python bindings: docstrings for all members, regenerated .pyi stubs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.4.0 (2026-10-04)
 ------------------
 * Python: commit generated .pyi type stubs for all modules
