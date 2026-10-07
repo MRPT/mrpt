@@ -2,8 +2,8 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.0 (2026-10-07)
+------------------
 * viz: CLight, lights in the scene graph
 * opengl: point/spot light shadows, light range, and emissive maps
 * Python bindings: docstrings for all members, regenerated .pyi stubs

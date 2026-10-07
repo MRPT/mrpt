@@ -2,8 +2,8 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.0 (2026-10-07)
+------------------
 * viz: CAssimpModel drops degenerate triangles instead of drawing them as lines
 * viz: Ctrl+left drag in COrbitCameraController looks around from a fixed eye
 * viz: CLight, lights in the scene graph

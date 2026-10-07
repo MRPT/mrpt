@@ -2,8 +2,8 @@
 Changelog for package mrpt_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.0 (2026-10-07)
+------------------
 * Python bindings: docstrings for all members, regenerated .pyi stubs
 * Clock test: check the best of the epoch sync samples
 * Contributors: Jose Luis Blanco-Claraco

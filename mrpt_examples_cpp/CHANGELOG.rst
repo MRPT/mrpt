@@ -2,8 +2,8 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.0 (2026-10-07)
+------------------
 * opengl: point/spot light shadows, light range, and emissive maps
 * docs: fix nearly all Sphinx warnings
 * Contributors: Jose Luis Blanco-Claraco
