@@ -222,7 +222,7 @@ void CImGuiSceneView::renderSceneDirect()
       return;
     }
     // The viewport clears its own area (with scissor), and saves/restores
-    // the GL viewport. ImGui restores the rest of its state afterwards.
+    // the GL viewport. ImGui restores most of its state afterwards.
     glDisable(GL_SCISSOR_TEST);
     // ImGui may leave a sampler object bound to texture unit 0, which would
     // override the wrapping and mipmap settings of the scene textures:
@@ -234,6 +234,10 @@ void CImGuiSceneView::renderSceneDirect()
     // Called from within the ImGui renderer: do not propagate.
     std::cerr << "[CImGuiSceneView] Exception rendering the scene:\n" << e.what() << "\n";
   }
+  // ImGui does not reset the active texture unit after a draw callback, and
+  // its shader samples unit 0: leaving another one active would draw all
+  // windows black.
+  glActiveTexture(GL_TEXTURE0);
 #endif
 }
 
