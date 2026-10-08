@@ -1,6 +1,7 @@
 \page changelog Change Log
 
 # Version 2.15.22: UNRELEASED
+- fix(math): CQuaternion::jacobian_rodrigues_from_quat() returned a wrong Jacobian for any rotation other than a pure yaw, which propagated into CPose3D::jacobian_rodrigues_from_YPR() and mrpt::gtsam_wrappers::to_gtsam_se3_cov6() (wrong, or even singular, covariances)
 - fix(core): correct unsigned-wraparound bug in Clock::toDouble() that returned a huge bogus positive value (~+1.8e12) for any timestamp before 1970-01-01, instead of a small negative number
 - fix(core): avoid undefined behavior in Clock::fromDouble() for negative/near-epoch timestamps (backport of develop's b9e4174a)
 
