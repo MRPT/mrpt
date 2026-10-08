@@ -554,7 +554,7 @@ class CQuaternion : public CVectorFixed<T, 4>
     mrpt::math::CMatrixFixed<double, 3, 4> out_domega_dq;
     double denom_inv = 2.0 / (q_imaginary_norm * std::sqrt(1 - qr * qr));
     out_domega_dq(0, 0) = -qx * denom_inv;
-    out_domega_dq(1, 0) = qy * denom_inv;
+    out_domega_dq(1, 0) = -qy * denom_inv;
     out_domega_dq(2, 0) = -qz * denom_inv;
 
     denom_inv = 2.0 * acos(qr) / q_imaginary_norm_cubic;
@@ -563,7 +563,7 @@ class CQuaternion : public CVectorFixed<T, 4>
     out_domega_dq(0, 3) = (-qx * qz) * denom_inv;
     out_domega_dq(1, 2) = (qx * qx + qz * qz) * denom_inv;
     out_domega_dq(1, 3) = (-qy * qz) * denom_inv;
-    out_domega_dq(2, 3) = (qy * qy + qy * qy) * denom_inv;
+    out_domega_dq(2, 3) = (qx * qx + qy * qy) * denom_inv;
 
     out_domega_dq(1, 1) = out_domega_dq(0, 2);
     out_domega_dq(2, 1) = out_domega_dq(0, 3);
