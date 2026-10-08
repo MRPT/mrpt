@@ -14,8 +14,11 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
+#include <mrpt/poses/Lie/SO.h>
 
 #include <Eigen/Dense>
+#include <array>
+#include <vector>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -875,4 +878,46 @@ TEST_F(Pose3DTests, translation)
   const auto p = mrpt::poses::CPose3D::FromXYZYawPitchRoll(1.0, 2.0, 3.0, 0, 0, 0);
   const mrpt::math::TPoint3D t = p.translation();
   EXPECT_EQ(t, mrpt::math::TPoint3D(1, 2, 3));
+}
+
+TEST(CPose3D, JacobianRodriguesFromYPR_Numerical)
+{
+  const auto rodrigues = [](double yaw, double pitch, double roll)
+  {
+    const auto w = Lie::SO<3>::log(CPose3D::FromYawPitchRoll(yaw, pitch, roll).getRotationMatrix());
+    return Eigen::Vector3d(w[0], w[1], w[2]);
+  };
+
+  const std::vector<std::array<double, 3>> yprs = {
+      { 0.3,  0.0,  0.0},
+      { 0.0,  0.3,  0.0},
+      { 0.0,  0.0,  0.3},
+      { 0.3,  0.2,  0.1},
+      {-0.5,  0.4, -0.7},
+      {1e-3, 1e-4,  0.0},
+      { 0.0, 1e-3, 1e-3},
+      { 2.0, -1.0,  0.5}
+  };
+
+  for (const auto& ypr : yprs)
+  {
+    const Eigen::Matrix3d J =
+        CPose3D::FromYawPitchRoll(ypr[0], ypr[1], ypr[2]).jacobian_rodrigues_from_YPR().asEigen();
+
+    const double h = 1e-7;
+    Eigen::Matrix3d Jnum;
+    for (int c = 0; c < 3; c++)
+    {
+      auto a = ypr;
+      auto b = ypr;
+      a[c] += h;
+      b[c] -= h;
+      Jnum.col(c) = (rodrigues(a[0], a[1], a[2]) - rodrigues(b[0], b[1], b[2])) / (2 * h);
+    }
+
+    EXPECT_LT((J - Jnum).cwiseAbs().maxCoeff(), 1e-6)
+        << "ypr=" << ypr[0] << " " << ypr[1] << " " << ypr[2] << "\nJ=\n"
+        << J << "\nJnum=\n"
+        << Jnum;
+  }
 }
