@@ -16,8 +16,11 @@
 #include <mrpt/core/Clock.h>
 #include <mrpt/core/config.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
+#include <limits>
 #include <thread>
 
 namespace
@@ -77,23 +80,27 @@ TEST(clock, changeSource)
 
 TEST(clock, checkSynchEpoch)
 {
+  // A single sample may be delayed by the OS scheduler (e.g. on busy CI
+  // runners), so check only the best of several attempts.
+  int64_t bestErr = std::numeric_limits<int64_t>::max();
   for (int i = 0; i < 20; i++)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    const int64_t err = mrpt::Clock::resetMonotonicToRealTimeEpoch();
+    const int64_t err = std::abs(mrpt::Clock::resetMonotonicToRealTimeEpoch());
+    bestErr = std::min(bestErr, err);
+  }
 
-    // it should be a really small number in a regular computer,
-    // but we set the threshold much higher due to spurious errors
-    // when running unit tests in VMs (build farms)
+  // it should be a really small number in a regular computer,
+  // but we set the threshold much higher due to spurious errors
+  // when running unit tests in VMs (build farms)
 #if MRPT_IN_EMSCRIPTEN
-    const int64_t errLimit = 1000 * 1000;  // We are running on Javascript!
+  const int64_t errLimit = 1000 * 1000;  // We are running on Javascript!
 #else
-    // normally much smaller, but for busy build servers
-    const int64_t errLimit = static_cast<int64_t>(90 * 1000);
+  // normally much smaller, but for busy build servers
+  const int64_t errLimit = static_cast<int64_t>(90 * 1000);
 #endif
 
-    EXPECT_LT(std::abs(err), errLimit);
-  }
+  EXPECT_LT(bestErr, errLimit);
 }
 
 TEST(clock, fromDouble_toDouble_roundtrip)

@@ -62,8 +62,10 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       CParticleFilter::TParticleFilterOptions, mrpt::config::CLoadableOptions,
-      std::shared_ptr<CParticleFilter::TParticleFilterOptions>>(m, "TParticleFilterOptions")
-      .def(py::init<>())
+      std::shared_ptr<CParticleFilter::TParticleFilterOptions>>(
+      m, "TParticleFilterOptions",
+      "The configuration of a particle filter algorithm and resampling parameters.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite(
           "adaptiveSampleSize", &CParticleFilter::TParticleFilterOptions::adaptiveSampleSize,
           "If true, enable adaptive number of particles")
@@ -90,8 +92,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CParticleFilter::TParticleFilterStats — statistics from the last run
   // -------------------------------------------------------------------------
-  py::class_<CParticleFilter::TParticleFilterStats>(m, "TParticleFilterStats")
-      .def(py::init<>())
+  py::class_<CParticleFilter::TParticleFilterStats>(
+      m, "TParticleFilterStats", "Statistics returned by CParticleFilter.executeOn().")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite(
           "ESS_beforeResample", &CParticleFilter::TParticleFilterStats::ESS_beforeResample,
           "Effective sample size (ESS) before resampling step")
@@ -106,8 +109,14 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CParticleFilter — the particle filter executor
   // -------------------------------------------------------------------------
-  py::class_<CParticleFilter>(m, "CParticleFilter")
-      .def(py::init<>())
+  py::class_<CParticleFilter>(
+      m, "CParticleFilter",
+      "Generic particle filter: runs one prediction/update/resampling step of a "
+      "CParticleFilterCapable PDF with executeOn() (added by importing mrpt.slam).")
+      .def(
+          py::init<>(),
+          "Default constructor: set the options, then call executeOn() for each filter step "
+          "(import mrpt.slam first, which adds that method).")
       .def_readwrite(
           "options", &CParticleFilter::m_options, "Algorithm options (TParticleFilterOptions)")
       .def(
@@ -124,8 +133,11 @@ PYBIND11_MODULE(_bindings, m)
   // shared_ptr holder: concrete particle filters (e.g. mrpt.slam
   // CMonteCarloLocalization2D) derive from it and use shared_ptr holders.
   py::class_<CParticleFilterCapable, std::shared_ptr<CParticleFilterCapable>>(
-      m, "CParticleFilterCapable")
-      .def("particlesCount", &CParticleFilterCapable::particlesCount)
+      m, "CParticleFilterCapable",
+      "Interface of the particle-based PDFs that a CParticleFilter can run on.")
+      .def(
+          "particlesCount", &CParticleFilterCapable::particlesCount,
+          "Returns the number of particles.")
       .def("getW", &CParticleFilterCapable::getW, "i"_a, "Returns the log-weight of particle i")
       .def("setW", &CParticleFilterCapable::setW, "i"_a, "w"_a, "Sets the log-weight of particle i")
       .def(

@@ -33,6 +33,7 @@
 #include <mrpt/viz/CGeneralizedEllipsoidTemplate.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CGridPlaneXZ.h>
+#include <mrpt/viz/CLight.h>
 #include <mrpt/viz/CMesh.h>
 #include <mrpt/viz/CMesh3D.h>
 #include <mrpt/viz/CMeshFast.h>
@@ -100,6 +101,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_viz)
   DO_REGISTER(CFrustum);
   DO_REGISTER(CGridPlaneXY);
   DO_REGISTER(CGridPlaneXZ);
+  DO_REGISTER(CLight);
   DO_REGISTER(CMesh);
   DO_REGISTER(CMesh3D);
   DO_REGISTER(CMeshFast);

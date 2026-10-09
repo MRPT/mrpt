@@ -251,6 +251,84 @@ TEST(CAssimpModel, IgnoreMaterialColorFlag)
   EXPECT_EQ(tri.vertices[0].xyzrgba.b, 30);
 }
 
+TEST(CAssimpModel, EmissiveMapWithoutDiffuseTexture)
+{
+  const TempModelDir dir;
+  dir.writeTextFile("quad.obj", OBJ_TEXTURED_QUAD);
+  dir.writeTextFile(
+      "quad.mtl",
+      "newmtl painted\n"
+      "Kd 1.0 0.5 0.25\n"
+      "Ke 1.0 1.0 1.0\n"
+      "map_Ke texture.png\n");
+  writeTestTexture(dir.path("texture.png"));
+
+  auto m = CAssimpModel::Create();
+  m->loadScene(
+      dir.path("quad.obj"),
+      CAssimpModel::LoadFlags::RealTimeQuality | CAssimpModel::LoadFlags::FlipUVs);
+
+  // A textured mesh (with a white texture) is needed for the emissive map:
+  ASSERT_EQ(m->getTexturedMeshCount(), 1U);
+  EXPECT_EQ(m->getNonTexturedTriangleCount(), 0U);
+  const auto obj = m->getByClass<CSetOfTexturedTriangles>(0);
+  ASSERT_TRUE(obj);
+  EXPECT_TRUE(obj->emissiveMapHasBeenAssigned());
+  EXPECT_EQ(obj->getEmissiveMapImage().getWidth(), 8U);
+  EXPECT_EQ(obj->getTextureImage().getWidth(), 1U);
+  // ...keeping the material color:
+  const auto tri = obj->getTriangle(0);
+  EXPECT_EQ(tri.vertices[0].xyzrgba.r, 255);
+  EXPECT_NEAR(tri.vertices[0].xyzrgba.g, 127, 2);
+}
+
+TEST(CAssimpModel, MaterialsSharingATextureAreKeptApart)
+{
+  const TempModelDir dir;
+  dir.writeTextFile(
+      "quad.obj",
+      "mtllib quad.mtl\n"
+      "v 0 0 0\n"
+      "v 1 0 0\n"
+      "v 1 1 0\n"
+      "v 0 1 0\n"
+      "vt 0 0\n"
+      "vt 1 0\n"
+      "vt 1 1\n"
+      "vt 0 1\n"
+      "vn 0 0 1\n"
+      "usemtl glowing\n"
+      "f 1/1/1 2/2/1 3/3/1\n"
+      "usemtl plain\n"
+      "f 1/1/1 3/3/1 4/4/1\n");
+  dir.writeTextFile(
+      "quad.mtl",
+      "newmtl glowing\n"
+      "Kd 1.0 1.0 1.0\n"
+      "Ke 1.0 0.5 0.0\n"
+      "map_Kd texture.png\n"
+      "newmtl plain\n"
+      "Kd 1.0 1.0 1.0\n"
+      "Ke 0.0 0.0 0.0\n"
+      "map_Kd texture.png\n");
+  writeTestTexture(dir.path("texture.png"));
+
+  auto m = CAssimpModel::Create();
+  m->loadScene(
+      dir.path("quad.obj"),
+      CAssimpModel::LoadFlags::RealTimeQuality | CAssimpModel::LoadFlags::FlipUVs);
+
+  // Emission is per mesh, so the two materials cannot share one:
+  ASSERT_EQ(m->getTexturedMeshCount(), 2U);
+  const auto a = m->getByClass<CSetOfTexturedTriangles>(0);
+  const auto b = m->getByClass<CSetOfTexturedTriangles>(1);
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+  EXPECT_EQ(a->getTrianglesCount(), 1U);
+  EXPECT_EQ(b->getTrianglesCount(), 1U);
+  EXPECT_NE(a->materialEmissive().R, b->materialEmissive().R);
+}
+
 TEST(CAssimpModel, MissingTextureFallsBackToNonTextured)
 {
   const TempModelDir dir;

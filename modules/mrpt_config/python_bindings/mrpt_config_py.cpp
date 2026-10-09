@@ -25,6 +25,8 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/config_parser.h>
 
+#include <sstream>
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(_bindings, m)
@@ -32,20 +34,28 @@ PYBIND11_MODULE(_bindings, m)
   //
   m.doc() = "Python bindings for mrpt_config";
 
+  // Registered before its first use as an argument type, so that
+  // signatures and stubs name it:
+  py::class_<mrpt::config::CConfigFileBase> configFileBase(
+      m, "CConfigFileBase",
+      "Base class of configuration files (INI-like or YAML), with sections and key/value pairs.");
+
   // Bind CLoadableOptions
   // shared_ptr holder, so derived option structs managed by shared_ptr (e.g.
   // map initializers) can be bound in other modules.
   py::class_<mrpt::config::CLoadableOptions, std::shared_ptr<mrpt::config::CLoadableOptions>>(
-      m, "CLoadableOptions")
+      m, "CLoadableOptions",
+      "This is a virtual base class for sets of options than can be loaded from and/or saved to "
+      "configuration plain-text files.")
       .def(
           "loadFromConfigFile", &mrpt::config::CLoadableOptions::loadFromConfigFile,
-          "Loads options from a configuration file section.")
+          py::arg("source"), py::arg("section"), "Loads options from a configuration file section.")
       .def(
           "loadFromConfigFileName", &mrpt::config::CLoadableOptions::loadFromConfigFileName,
           "Loads options directly from a file name.")
       .def(
-          "saveToConfigFile", &mrpt::config::CLoadableOptions::saveToConfigFile,
-          "Saves options to a configuration file section.")
+          "saveToConfigFile", &mrpt::config::CLoadableOptions::saveToConfigFile, py::arg("target"),
+          py::arg("section"), "Saves options to a configuration file section.")
       .def(
           "saveToConfigFileName", &mrpt::config::CLoadableOptions::saveToConfigFileName,
           "Saves options directly to a file name.")
@@ -53,11 +63,17 @@ PYBIND11_MODULE(_bindings, m)
           "dumpToConsole", &mrpt::config::CLoadableOptions::dumpToConsole,
           "Dumps options to the console.")
       .def(
-          "dumpToTextStream", &mrpt::config::CLoadableOptions::dumpToTextStream,
-          "Dumps options to a text stream.");
+          "dumpToString",
+          [](const mrpt::config::CLoadableOptions& o)
+          {
+            std::stringstream ss;
+            o.dumpToTextStream(ss);
+            return ss.str();
+          },
+          "Returns the options as human-readable text, as dumpToConsole() prints them.");
 
   // Bind CConfigFileBase
-  py::class_<mrpt::config::CConfigFileBase>(m, "CConfigFileBase")
+  configFileBase
       .def(
           "getAllSections", &mrpt::config::CConfigFileBase::sections,
           "Returns a list with all section names.")
@@ -83,14 +99,16 @@ PYBIND11_MODULE(_bindings, m)
               const std::string&, const std::string&, double, const int, const int,
               const std::string&)>(&mrpt::config::CConfigFileBase::write),
           py::arg("section"), py::arg("name"), py::arg("value"), py::arg("name_padding_width") = -1,
-          py::arg("value_padding_width") = -1, py::arg("comment") = "")
+          py::arg("value_padding_width") = -1, py::arg("comment") = "",
+          "Writes a numeric value into the given section and key.")
       .def(
           "write",
           static_cast<void (mrpt::config::CConfigFileBase::*)(
               const std::string&, const std::string&, const std::string&, const int, const int,
               const std::string&)>(&mrpt::config::CConfigFileBase::write),
           py::arg("section"), py::arg("name"), py::arg("value"), py::arg("name_padding_width") = -1,
-          py::arg("value_padding_width") = -1, py::arg("comment") = "")
+          py::arg("value_padding_width") = -1, py::arg("comment") = "",
+          "Writes a string value into the given section and key.")
       .def(
           "read_double", &mrpt::config::CConfigFileBase::read_double, py::arg("section"),
           py::arg("name"), py::arg("defValue"), py::arg("failIfNotFound") = false,
@@ -126,7 +144,10 @@ PYBIND11_MODULE(_bindings, m)
           "Reads the first word of a string value with an optional default value.");
 
   // Bind CConfigFile, inheriting from CConfigFileBase
-  py::class_<mrpt::config::CConfigFile, mrpt::config::CConfigFileBase>(m, "CConfigFile")
+  py::class_<mrpt::config::CConfigFile, mrpt::config::CConfigFileBase>(
+      m, "CConfigFile",
+      "This class allows loading and storing values and vectors of different types from \".ini\" "
+      "files easily.")
       .def(py::init<const std::string&>(), "Constructor for a file.")
       .def(py::init<>(), "Empty constructor.")
       .def(
@@ -143,7 +164,9 @@ PYBIND11_MODULE(_bindings, m)
           "Returns the associated file name.");
 
   // Bind CConfigFileMemory, inheriting from CConfigFileBase
-  py::class_<mrpt::config::CConfigFileMemory, mrpt::config::CConfigFileBase>(m, "CConfigFileMemory")
+  py::class_<mrpt::config::CConfigFileMemory, mrpt::config::CConfigFileBase>(
+      m, "CConfigFileMemory",
+      "A configuration file kept in memory, initialized from a text string.")
       .def(py::init<>(), "Empty constructor.")
       .def(py::init<const std::vector<std::string>&>(), "Constructor with a list of strings.")
       .def(py::init<const std::string&>(), "Constructor with a single string.")

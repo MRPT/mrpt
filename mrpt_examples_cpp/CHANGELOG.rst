@@ -2,6 +2,15 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.5.1 (2026-10-09)
+------------------
+
+3.5.0 (2026-10-07)
+------------------
+* opengl: point/spot light shadows, light range, and emissive maps
+* docs: fix nearly all Sphinx warnings
+* Contributors: Jose Luis Blanco-Claraco
+
 3.4.0 (2026-10-04)
 ------------------
 * docs: Python API reference, examples gallery, llms.txt and MRPT 3.x updates

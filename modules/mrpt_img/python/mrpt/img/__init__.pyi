@@ -5,6 +5,7 @@ from __future__ import annotations
 import mrpt as mrpt
 from mrpt.img._bindings import CImage as CImage
 from mrpt.img._bindings import DistortionModel as DistortionModel
+from mrpt.img._bindings import PixelDepth as PixelDepth
 from mrpt.img._bindings import TCamera as TCamera
 from mrpt.img._bindings import TColor as TColor
 from mrpt.img._bindings import TColorf as TColorf
@@ -16,8 +17,11 @@ from mrpt.img._bindings import colormap as colormap
 import numpy as np
 import typing
 from . import _bindings
-__all__: list = ['CImage', 'TColor', 'TColorf', 'TCamera', 'TStereoCamera', 'DistortionModel', 'TPixelCoord', 'TPixelCoordf', 'Color', 'colormap', 'TColormap']
+__all__: list = ['CImage', 'TColor', 'TColorf', 'TCamera', 'TStereoCamera', 'DistortionModel', 'PixelDepth', 'TPixelCoord', 'TPixelCoordf', 'Color', 'colormap', 'TColormap']
 class Color:
+    """
+    Predefined TColor constants.
+    """
     BLACK: typing.ClassVar[_bindings.TColor]
     BLUE: typing.ClassVar[_bindings.TColor]
     GREEN: typing.ClassVar[_bindings.TColor]

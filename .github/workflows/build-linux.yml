@@ -46,6 +46,8 @@ jobs:
       - name: Install Dependencies
         run: |
           #sudo apt-mark hold grub-efi-amd64-signed 
+          # Not needed, and its upgrade installs a snap, which fails when the Snap Store times out:
+          sudo apt-mark hold firefox
           sudo apt-get -y update
           sudo apt-get -y upgrade
 

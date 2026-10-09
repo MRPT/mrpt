@@ -2,6 +2,19 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.5.1 (2026-10-09)
+------------------
+
+3.5.0 (2026-10-07)
+------------------
+* viz: CAssimpModel drops degenerate triangles instead of drawing them as lines
+* viz: Ctrl+left drag in COrbitCameraController looks around from a fixed eye
+* viz: CLight, lights in the scene graph
+* opengl: point/spot light shadows, light range, and emissive maps
+* docs: fix nearly all Sphinx warnings
+* Python bindings: docstrings for all members, regenerated .pyi stubs
+* Contributors: Jose Luis Blanco-Claraco
+
 3.4.0 (2026-10-04)
 ------------------
 * docs: Python API reference, examples gallery, llms.txt and MRPT 3.x updates

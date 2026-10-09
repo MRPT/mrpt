@@ -2,12 +2,14 @@
 mrpt-tfest Python API
 """
 import mrpt.math  # noqa: F401  (TPoint2D/TPoint3D used in matching pairs)
+import mrpt.poses  # noqa: F401  (CPose3D results)
 
 from . import _bindings as _b
 
 # Export Classes
 TMatchingPair = _b.TMatchingPair
 TMatchingPairList = _b.TMatchingPairList
+TPotentialMatch = _b.TPotentialMatch
 TSE3RobustParams = _b.TSE3RobustParams
 TSE3RobustResult = _b.TSE3RobustResult
 
@@ -19,6 +21,7 @@ se3_l2_robust = _b.se3_l2_robust
 __all__ = [
     'TMatchingPair',
     'TMatchingPairList',
+    'TPotentialMatch',
     'TSE3RobustParams',
     'TSE3RobustResult',
     'se2_l2',

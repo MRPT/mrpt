@@ -55,6 +55,7 @@ CubeTextureFace = _b.CubeTextureFace
 CSkyBox = _b.CSkyBox
 TLightType = _b.TLightType
 TLight = _b.TLight
+CLight = _b.CLight
 CEllipsoidInverseDepth2D = _b.CEllipsoidInverseDepth2D
 CEllipsoidInverseDepth3D = _b.CEllipsoidInverseDepth3D
 CEllipsoidRangeBearing2D = _b.CEllipsoidRangeBearing2D
@@ -80,6 +81,7 @@ Viewport.__lshift__ = _scene_lshift
 
 
 def create_point_cloud(pts_array, color=(255, 255, 255)):
+    """Returns a CPointCloud with the points of an (N, 3) array, in one color (R, G, B, 0-255)."""
     pc = CPointCloud()
     pc.setPoints(pts_array)
     pc.setColor(*color)
@@ -107,7 +109,7 @@ __all__ = [
     'COrbitCameraController',
     'COctoMapVoxels', 'OctoMapVisualizationMode',
     'CubeTextureFace', 'CSkyBox',
-    'TLightType', 'TLight',
+    'TLightType', 'TLight', 'CLight',
     'CEllipsoidInverseDepth2D', 'CEllipsoidInverseDepth3D', 'CEllipsoidRangeBearing2D',
     'CAnimatedAssimpModel',
     'stock_objects',

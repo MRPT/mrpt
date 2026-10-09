@@ -24,6 +24,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <algorithm>
+
 namespace py = pybind11;
 using namespace mrpt::nav;
 using namespace pybind11::literals;
@@ -35,29 +37,36 @@ PYBIND11_MODULE(_bindings, m)
   // -----------------------------------------------------------------------
   // TWaypoint
   // -----------------------------------------------------------------------
-  py::class_<TWaypoint>(m, "TWaypoint")
-      .def(py::init<>())
+  py::class_<TWaypoint>(m, "TWaypoint", "A single navigation waypoint within a TWaypointSequence.")
+      .def(py::init<>(), "Ctor with default values.")
       .def(
           py::init<double, double, double, bool>(), py::arg("target_x"), py::arg("target_y"),
-          py::arg("allowed_distance"), py::arg("allow_skip") = true)
+          py::arg("allowed_distance"), py::arg("allow_skip") = true,
+          "Builds a waypoint from its target (x, y), allowed distance and whether it can be "
+          "skipped.")
       .def_readwrite("target", &TWaypoint::target)
       .def_readwrite("target_heading", &TWaypoint::target_heading)
       .def_readwrite("target_frame_id", &TWaypoint::target_frame_id)
       .def_readwrite("allowed_distance", &TWaypoint::allowed_distance)
       .def_readwrite("speed_ratio", &TWaypoint::speed_ratio)
       .def_readwrite("allow_skip", &TWaypoint::allow_skip)
-      .def("isValid", &TWaypoint::isValid)
-      .def("getAsText", &TWaypoint::getAsText)
+      .def(
+          "isValid", &TWaypoint::isValid,
+          "Check whether all the minimum mandatory fields have been filled by the user.")
+      .def("getAsText", &TWaypoint::getAsText, "Get in human-readable format.")
       .def("__repr__", &TWaypoint::getAsText);
 
   // -----------------------------------------------------------------------
   // TWaypointSequence
   // -----------------------------------------------------------------------
-  py::class_<TWaypointSequence>(m, "TWaypointSequence")
-      .def(py::init<>())
+  py::class_<TWaypointSequence>(
+      m, "TWaypointSequence", "A sequence of waypoints for the waypoints navigator.")
+      .def(py::init<>(), "Ctor with default values.")
       .def_readwrite("waypoints", &TWaypointSequence::waypoints)
-      .def("clear", &TWaypointSequence::clear)
-      .def("getAsText", &TWaypointSequence::getAsText)
+      .def("clear", &TWaypointSequence::clear, "Removes all waypoints.")
+      .def(
+          "getAsText", &TWaypointSequence::getAsText,
+          "Gets navigation params as a human-readable format.")
       .def("__repr__", &TWaypointSequence::getAsText)
       .def("__len__", [](const TWaypointSequence& seq) { return seq.waypoints.size(); })
       .def(
@@ -71,13 +80,14 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "append",
           [](TWaypointSequence& seq, const TWaypoint& wp) { seq.waypoints.push_back(wp); },
-          py::arg("waypoint"));
+          py::arg("waypoint"), "Appends a waypoint to the sequence.");
 
   // -----------------------------------------------------------------------
   // TWaypointStatus
   // -----------------------------------------------------------------------
-  py::class_<TWaypointStatus, TWaypoint>(m, "TWaypointStatus")
-      .def(py::init<>())
+  py::class_<TWaypointStatus, TWaypoint>(
+      m, "TWaypointStatus", "A TWaypoint augmented with runtime execution status fields.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("reached", &TWaypointStatus::reached)
       .def_readwrite("skipped", &TWaypointStatus::skipped);
 
@@ -85,7 +95,8 @@ PYBIND11_MODULE(_bindings, m)
   // CParameterizedTrajectoryGenerator (base class + factory)
   // -----------------------------------------------------------------------
   py::class_<CParameterizedTrajectoryGenerator, std::shared_ptr<CParameterizedTrajectoryGenerator>>(
-      m, "CParameterizedTrajectoryGenerator")
+      m, "CParameterizedTrajectoryGenerator",
+      "Base class for all Parameterized Trajectory Generators (PTGs).")
       .def_static(
           "CreatePTG",
           [](const std::string& className, const std::string& iniText, const std::string& section,
@@ -98,12 +109,25 @@ PYBIND11_MODULE(_bindings, m)
           py::arg("ptg_class_name"), py::arg("ini_text"), py::arg("section"),
           py::arg("key_prefix") = std::string(""),
           "Factory: create a PTG from INI-format string, section, and key prefix.")
-      .def("getDescription", &CParameterizedTrajectoryGenerator::getDescription)
-      .def("initialize", [](CParameterizedTrajectoryGenerator& self) { self.initialize(); })
-      .def("deinitialize", &CParameterizedTrajectoryGenerator::deinitialize)
-      .def("isInitialized", &CParameterizedTrajectoryGenerator::isInitialized)
-      .def("getAlphaValuesCount", &CParameterizedTrajectoryGenerator::getAlphaValuesCount)
-      .def("getPathCount", &CParameterizedTrajectoryGenerator::getPathCount)
+      .def(
+          "getDescription", &CParameterizedTrajectoryGenerator::getDescription,
+          "Gets a short textual description of the PTG and its parameters.")
+      .def(
+          "initialize", [](CParameterizedTrajectoryGenerator& self) { self.initialize(); },
+          "Initializes the PTG; call after setting all its parameters and before using it.")
+      .def(
+          "deinitialize", &CParameterizedTrajectoryGenerator::deinitialize,
+          "De-initializes the PTG, so its parameters can be changed.")
+      .def(
+          "isInitialized", &CParameterizedTrajectoryGenerator::isInitialized,
+          "Returns true if initialize() has been called and there was no errors, so the PTG is "
+          "ready to be queried for paths, obstacles, etc.")
+      .def(
+          "getAlphaValuesCount", &CParameterizedTrajectoryGenerator::getAlphaValuesCount,
+          "Get the number of different, discrete paths in this family.")
+      .def(
+          "getPathCount", &CParameterizedTrajectoryGenerator::getPathCount,
+          "Get the number of different, discrete paths in this family.")
       .def(
           "inverseMap_WS2TP",
           [](const CParameterizedTrajectoryGenerator& self, double x, double y, double tol)
@@ -112,7 +136,7 @@ PYBIND11_MODULE(_bindings, m)
           "Map a WS point to (k, normalized_d). Returns None if no path found.")
       .def(
           "PTG_IsIntoDomain", &CParameterizedTrajectoryGenerator::PTG_IsIntoDomain, py::arg("x"),
-          py::arg("y"))
+          py::arg("y"), "Returns true if (x, y) is within the PTG domain.")
       .def(
           "loadFromConfigFile",
           [](CParameterizedTrajectoryGenerator& self, const std::string& iniText,
@@ -122,13 +146,56 @@ PYBIND11_MODULE(_bindings, m)
             cfg.setContent(iniText);
             self.loadFromConfigFile(cfg, section);
           },
-          py::arg("ini_text"), py::arg("section"));
+          py::arg("ini_text"), py::arg("section"),
+          "Loads the PTG parameters from a configuration file section.");
 
   // -----------------------------------------------------------------------
   // CLogFileRecord
   // -----------------------------------------------------------------------
-  py::class_<CLogFileRecord, std::shared_ptr<CLogFileRecord>>(m, "CLogFileRecord")
-      .def(py::init<>())
+  py::class_<CLogFileRecord, std::shared_ptr<CLogFileRecord>> logFileRecord(
+      m, "CLogFileRecord", "One navigation step of the reactive navigator log.");
+
+  py::class_<CLogFileRecord::TInfoPerPTG>(
+      logFileRecord, "TInfoPerPTG", "Log data of one PTG in one navigation step.")
+      .def(py::init<>(), "Default constructor.")
+      .def_readwrite(
+          "PTG_desc", &CLogFileRecord::TInfoPerPTG::PTG_desc, "Short description of the PTG")
+      .def_property(
+          "TP_Obstacles",
+          [](const CLogFileRecord::TInfoPerPTG& i)
+          { return std::vector<float>(i.TP_Obstacles.begin(), i.TP_Obstacles.end()); },
+          [](CLogFileRecord::TInfoPerPTG& i, const std::vector<float>& v)
+          {
+            i.TP_Obstacles.resize(v.size());
+            std::copy(v.begin(), v.end(), i.TP_Obstacles.begin());
+          },
+          "Distance to obstacles in TP-Space (pseudometers), for directions from -pi to pi")
+      .def_readwrite(
+          "TP_Targets", &CLogFileRecord::TInfoPerPTG::TP_Targets, "Target(s) in TP-Space")
+      .def_readwrite(
+          "TP_Robot", &CLogFileRecord::TInfoPerPTG::TP_Robot,
+          "Robot location in TP-Space (normally the origin)")
+      .def_readwrite(
+          "timeForTPObsTransformation", &CLogFileRecord::TInfoPerPTG::timeForTPObsTransformation,
+          "Time to transform obstacles into TP-Space [s]")
+      .def_readwrite(
+          "timeForHolonomicMethod", &CLogFileRecord::TInfoPerPTG::timeForHolonomicMethod,
+          "Time spent in the holonomic method [s]")
+      .def_readwrite(
+          "desiredDirection", &CLogFileRecord::TInfoPerPTG::desiredDirection,
+          "Direction chosen by the holonomic method [rad]")
+      .def_readwrite(
+          "desiredSpeed", &CLogFileRecord::TInfoPerPTG::desiredSpeed,
+          "Speed chosen by the holonomic method")
+      .def_readwrite(
+          "evaluation", &CLogFileRecord::TInfoPerPTG::evaluation, "Final score of this candidate")
+      .def_readwrite(
+          "evalFactors", &CLogFileRecord::TInfoPerPTG::evalFactors, "Evaluation factors, by name")
+      .def(
+          "__repr__", [](const CLogFileRecord::TInfoPerPTG& i)
+          { return "<TInfoPerPTG '" + i.PTG_desc + "'>"; });
+
+  logFileRecord.def(py::init<>(), "Constructor, builds an empty record.")
       .def_readwrite("nPTGs", &CLogFileRecord::nPTGs)
       .def_readwrite("robotPoseLocalization", &CLogFileRecord::robotPoseLocalization)
       .def_readwrite("robotPoseOdometry", &CLogFileRecord::robotPoseOdometry)

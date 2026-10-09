@@ -170,7 +170,7 @@ Concepts
 ~~~~~~~~~~
 
 For the mathematical details of each probabilistic model read:
-:ref:`probabilistic_motion_models`.
+:ref:`tutorial-motion-models`.
 
 Modifying the probabilistic motion model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

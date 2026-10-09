@@ -22,6 +22,7 @@ uniform lowp vec3 materialEmissive;
 uniform lowp sampler2D textureSampler;
 uniform mediump float alphaCutoff; // >0: cutout, <0: opaque, 0: blend
 uniform lowp sampler2D normalMapSampler;
+uniform lowp sampler2D emissiveMapSampler;
 
 in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated UV texture coords
@@ -47,6 +48,14 @@ void main()
     highp vec3 cam2frag = cam_position - frag_position;
     mediump float cam2fragDist = length(cam2frag);
     highp vec3 viewDirection = normalize(cam2frag);
+    // Light the side facing the camera, e.g. the bottom of a plane seen from
+    // below. Decided with the geometric normal (not the normal map), and not
+    // with gl_FrontFacing, since not all meshes have a consistent winding:
+    if (dot(frag_normal, viewDirection) < 0.0)
+    {
+        normal = -normal;
+        N = -N;
+    }
 
     // Hemisphere ambient
     mediump vec3 ambientColor = mix(ambient_ground_color, ambient_sky_color, 0.5 + 0.5 * normal.z);
@@ -67,6 +76,12 @@ void main()
             highp float dist = length(toLight);
             lightDir = toLight / dist;
             attenuation = 1.0 / (light_attenuation[i].x + light_attenuation[i].y * dist + light_attenuation[i].z * dist * dist);
+            if (light_range[i] > 0.0) {
+                // Smooth window reaching exactly zero at the light range
+                highp float r = dist / light_range[i];
+                mediump float w = clamp(1.0 - r * r * r * r, 0.0, 1.0);
+                attenuation *= w * w;
+            }
 
             if (light_type[i] == 2) {
                 mediump float theta = dot(lightDir, -light_direction[i]);
@@ -80,13 +95,18 @@ void main()
 
         highp vec3 halfVector = normalize(viewDirection + lightDir);
         highp float specAmount = pow(max(dot(normal, halfVector), 0.0), materialSpecularExponent);
-        mediump float specular_factor = (diff > 0.0) ? specAmount * materialSpecular * light_specular[i] : 0.0;
+        // Weighted by N.L like the diffuse term, so lights at grazing angles do not
+        // leave bright highlights on surfaces they barely light:
+        mediump float specular_factor = diff * specAmount * materialSpecular * light_specular[i];
 
-        // Shadow only applies to the primary directional light (index 0)
+        // Shadows: the primary directional light (index 0), and point/spot
+        // lights with a cube shadow map
         mediump float shadowFactor = 1.0;
         if (i == 0 && light_type[i] == 0) {
             mediump float shadow = ShadowCalculation(frag_position, normal, cam2fragDist);
             shadowFactor = 1.0 - shadow;
+        } else if (light_shadow_index[i] >= 0 && diff > 0.0 && attenuation > 0.0) {
+            shadowFactor = 1.0 - PointShadowCalculation(i, light_shadow_index[i], frag_position, N);
         }
 
         totalDiffuse += attenuation * shadowFactor * diff * light_diffuse[i] * light_color[i];
@@ -106,7 +126,7 @@ void main()
         texCol.a = 1.0;
     }
 
-    mediump vec3 litColor = materialEmissive + texCol.rgb * totalDiffuse + totalSpecular;
+    mediump vec3 litColor = materialEmissive * texture(emissiveMapSampler, frag_UV).rgb + texCol.rgb * totalDiffuse + totalSpecular;
 
     if (fog_enabled) {
         highp float dist = cam2fragDist;

@@ -68,13 +68,17 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::obs::CObservation, mrpt::serialization::CSerializable,
-      std::shared_ptr<mrpt::obs::CObservation>>(m, "CObservation")
+      std::shared_ptr<mrpt::obs::CObservation>>(
+      m, "CObservation",
+      "Base class of all sensor observations: a timestamp, a sensor label and data.")
       .def_readwrite("timestamp", &mrpt::obs::CObservation::timestamp)
       .def_readwrite("sensorLabel", &mrpt::obs::CObservation::sensorLabel)
       .def(
           "getSensorPose", [](const mrpt::obs::CObservation& o) { return o.getSensorPose(); },
           "Returns the sensor pose (6D) relative to the robot")
-      .def("getTimeStamp", &mrpt::obs::CObservation::getTimeStamp)
+      .def(
+          "getTimeStamp", &mrpt::obs::CObservation::getTimeStamp,
+          "Returns the observation timestamp.")
       .def(
           "load", [](const mrpt::obs::CObservation& o) { o.load(); },
           "Loads externally-stored data (e.g. images), if any")
@@ -82,7 +86,9 @@ PYBIND11_MODULE(_bindings, m)
           "unload", [](const mrpt::obs::CObservation& o) { o.unload(); },
           "Frees externally-stored data from memory, if any")
       .def("__str__", &mrpt::obs::CObservation::asString)
-      .def("GetRuntimeClass", &mrpt::obs::CObservation::GetRuntimeClass)
+      .def(
+          "GetRuntimeClass", &mrpt::obs::CObservation::GetRuntimeClass,
+          "Returns information about the class of an object in runtime.")
       .def(
           "__repr__", [](const mrpt::obs::CObservation& o)
           { return "CObservation(label='" + o.sensorLabel + "')"; });
@@ -92,8 +98,11 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::obs::CObservation2DRangeScan, mrpt::obs::CObservation,
-      std::shared_ptr<mrpt::obs::CObservation2DRangeScan>>(m, "CObservation2DRangeScan")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::obs::CObservation2DRangeScan>>(
+      m, "CObservation2DRangeScan",
+      "A \"CObservation\"-derived class that represents a 2D range scan measurement (typically "
+      "from a laser scanner).")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite(
           "aperture", &mrpt::obs::CObservation2DRangeScan::aperture, "Field-of-view in radians")
       .def_readwrite(
@@ -105,16 +114,27 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite(
           "sensorPose", &mrpt::obs::CObservation2DRangeScan::sensorPose,
           "Sensor 6D pose relative to robot base")
-      .def("resizeScan", &mrpt::obs::CObservation2DRangeScan::resizeScan)
-      .def("getScanSize", &mrpt::obs::CObservation2DRangeScan::getScanSize)
+      .def(
+          "resizeScan", &mrpt::obs::CObservation2DRangeScan::resizeScan,
+          "Resizes all data vectors to allocate a given number of scan rays.")
+      .def(
+          "getScanSize", &mrpt::obs::CObservation2DRangeScan::getScanSize,
+          "Get number of scan rays.")
       .def(
           "getScanRange",
-          [](const mrpt::obs::CObservation2DRangeScan& o, size_t i) { return o.getScanRange(i); })
+          [](const mrpt::obs::CObservation2DRangeScan& o, size_t i) { return o.getScanRange(i); },
+          "Returns the range of the i-th ray, in meters.")
       .def(
-          "setScanRange", [](mrpt::obs::CObservation2DRangeScan& o, size_t i, float val)
-          { o.setScanRange(i, val); })
-      .def("getScanRangeValidity", &mrpt::obs::CObservation2DRangeScan::getScanRangeValidity)
-      .def("setScanRangeValidity", &mrpt::obs::CObservation2DRangeScan::setScanRangeValidity)
+          "setScanRange",
+          [](mrpt::obs::CObservation2DRangeScan& o, size_t i, float val)
+          { o.setScanRange(i, val); },
+          "Sets the range of the i-th ray, in meters.")
+      .def(
+          "getScanRangeValidity", &mrpt::obs::CObservation2DRangeScan::getScanRangeValidity,
+          "Returns whether the i-th ray has a valid range (false: no echo).")
+      .def(
+          "setScanRangeValidity", &mrpt::obs::CObservation2DRangeScan::setScanRangeValidity,
+          "Sets whether the i-th ray has a valid range.")
       // NumPy helpers
       .def(
           "getScanRangesAsNumpy",
@@ -154,8 +174,10 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::obs::CObservationImage, mrpt::obs::CObservation,
-      std::shared_ptr<mrpt::obs::CObservationImage>>(m, "CObservationImage")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::obs::CObservationImage>>(
+      m, "CObservationImage",
+      "An image from a camera, along with its pose on the robot and intrinsic parameters.")
+      .def(py::init<>(), "Constructor.")
       .def_readwrite("image", &mrpt::obs::CObservationImage::image)
       .def_readwrite("cameraParams", &mrpt::obs::CObservationImage::cameraParams)
       .def_readwrite("cameraPose", &mrpt::obs::CObservationImage::cameraPose)
@@ -166,10 +188,17 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CObservationIMU — inertial measurement unit data
   // -------------------------------------------------------------------------
+  // Registered before CObservationIMU, whose get()/set() take it:
+  py::enum_<mrpt::obs::TIMUDataIndex> imuDataIndex(
+      m, "TIMUDataIndex", "Index of each measurement in CObservationIMU");
+
   py::class_<
       mrpt::obs::CObservationIMU, mrpt::obs::CObservation,
-      std::shared_ptr<mrpt::obs::CObservationIMU>>(m, "CObservationIMU")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::obs::CObservationIMU>>(
+      m, "CObservationIMU",
+      "Measurements of an inertial measurement unit (IMU): orientation, angular velocity, "
+      "accelerations, etc.")
+      .def(py::init<>(), "Default constructor.")
       .def(
           "getRawMeasurementsAsNumpy",
           [](const mrpt::obs::CObservationIMU& o)
@@ -182,18 +211,21 @@ PYBIND11_MODULE(_bindings, m)
           },
           "Returns raw IMU measurements as 1D float64 numpy array")
       .def(
-          "get", [](const mrpt::obs::CObservationIMU& o, mrpt::obs::TIMUDataIndex idx)
-          { return o.get(idx); })
+          "get",
+          [](const mrpt::obs::CObservationIMU& o, mrpt::obs::TIMUDataIndex idx)
+          { return o.get(idx); },
+          py::arg("idx"), "Returns one measurement (it must have been set).")
       .def(
-          "set", [](mrpt::obs::CObservationIMU& o, mrpt::obs::TIMUDataIndex idx, double value)
-          { o.set(idx, value); })
+          "set",
+          [](mrpt::obs::CObservationIMU& o, mrpt::obs::TIMUDataIndex idx, double value)
+          { o.set(idx, value); },
+          py::arg("idx"), py::arg("value"), "Sets one measurement and marks it as valid.")
       .def(
           "__repr__", [](const mrpt::obs::CObservationIMU& o)
           { return "CObservationIMU(label='" + o.sensorLabel + "')"; });
 
   // TIMUDataIndex enum
-  py::enum_<mrpt::obs::TIMUDataIndex>(m, "TIMUDataIndex")
-      .value("IMU_X_ACC", mrpt::obs::IMU_X_ACC)
+  imuDataIndex.value("IMU_X_ACC", mrpt::obs::IMU_X_ACC)
       .value("IMU_Y_ACC", mrpt::obs::IMU_Y_ACC)
       .value("IMU_Z_ACC", mrpt::obs::IMU_Z_ACC)
       .value("IMU_YAW_VEL", mrpt::obs::IMU_YAW_VEL)
@@ -234,8 +266,10 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::obs::CObservationOdometry, mrpt::obs::CObservation,
-      std::shared_ptr<mrpt::obs::CObservationOdometry>>(m, "CObservationOdometry")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::obs::CObservationOdometry>>(
+      m, "CObservationOdometry",
+      "An observation of the current (cumulative) odometry for a wheeled robot.")
+      .def(py::init<>(), "Default ctor.")
       .def_readwrite("odometry", &mrpt::obs::CObservationOdometry::odometry)
       .def(
           "__repr__",
@@ -250,8 +284,10 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::obs::CObservationRobotPose, mrpt::obs::CObservation,
-      std::shared_ptr<mrpt::obs::CObservationRobotPose>>(m, "CObservationRobotPose")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::obs::CObservationRobotPose>>(
+      m, "CObservationRobotPose",
+      "An observation providing an alternative robot pose from an external source.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("pose", &mrpt::obs::CObservationRobotPose::pose)
       .def(
           "__repr__", [](const mrpt::obs::CObservationRobotPose& o)
@@ -262,15 +298,19 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::obs::CAction, mrpt::serialization::CSerializable, std::shared_ptr<mrpt::obs::CAction>>(
-      m, "CAction")
+      m, "CAction", "Base class of robot actions (e.g. odometry increments), stored in rawlogs.")
       .def_readwrite("timestamp", &mrpt::obs::CAction::timestamp)
-      .def("GetRuntimeClass", &mrpt::obs::CAction::GetRuntimeClass);
+      .def(
+          "GetRuntimeClass", &mrpt::obs::CAction::GetRuntimeClass,
+          "Returns information about the class of an object in runtime.");
 
   // -------------------------------------------------------------------------
   // CActionRobotMovement2D — 2D odometry action
   // -------------------------------------------------------------------------
   using ARM2D = mrpt::obs::CActionRobotMovement2D;
-  py::class_<ARM2D, mrpt::obs::CAction, std::shared_ptr<ARM2D>> arm2d(m, "CActionRobotMovement2D");
+  py::class_<ARM2D, mrpt::obs::CAction, std::shared_ptr<ARM2D>> arm2d(
+      m, "CActionRobotMovement2D",
+      "Represents a probabilistic 2D movement of the robot mobile base.");
 
   py::enum_<ARM2D::TEstimationMethod>(arm2d, "TEstimationMethod")
       .value("emOdometry", ARM2D::emOdometry)
@@ -282,20 +322,24 @@ PYBIND11_MODULE(_bindings, m)
       .export_values();
 
   using MMO2D = ARM2D::TMotionModelOptions;
-  py::class_<MMO2D> mmo2d(arm2d, "TMotionModelOptions");
-  py::class_<MMO2D::TOptions_GaussianModel>(mmo2d, "TOptions_GaussianModel")
-      .def(py::init<>())
+  py::class_<MMO2D> mmo2d(
+      arm2d, "TMotionModelOptions", "Options of the probabilistic 2D motion models.");
+  py::class_<MMO2D::TOptions_GaussianModel>(
+      mmo2d, "TOptions_GaussianModel", "Parameters of the Gaussian motion model.")
+      .def(py::init<>(), "Default constructor.")
       .def(
           py::init<double, double, double, double, double, double>(), "a1"_a, "a2"_a, "a3"_a,
-          "a4"_a, "minStdXY"_a, "minStdPHI"_a)
+          "a4"_a, "minStdXY"_a, "minStdPHI"_a,
+          "Builds the Gaussian motion model parameters from their values.")
       .def_readwrite("a1", &MMO2D::TOptions_GaussianModel::a1)
       .def_readwrite("a2", &MMO2D::TOptions_GaussianModel::a2)
       .def_readwrite("a3", &MMO2D::TOptions_GaussianModel::a3)
       .def_readwrite("a4", &MMO2D::TOptions_GaussianModel::a4)
       .def_readwrite("minStdXY", &MMO2D::TOptions_GaussianModel::minStdXY)
       .def_readwrite("minStdPHI", &MMO2D::TOptions_GaussianModel::minStdPHI);
-  py::class_<MMO2D::TOptions_ThrunModel>(mmo2d, "TOptions_ThrunModel")
-      .def(py::init<>())
+  py::class_<MMO2D::TOptions_ThrunModel>(
+      mmo2d, "TOptions_ThrunModel", "Parameters of the particle-based motion model (Thrun et al.).")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("nParticlesCount", &MMO2D::TOptions_ThrunModel::nParticlesCount)
       .def_readwrite("alfa1_rot_rot", &MMO2D::TOptions_ThrunModel::alfa1_rot_rot)
       .def_readwrite("alfa2_rot_trans", &MMO2D::TOptions_ThrunModel::alfa2_rot_trans)
@@ -303,12 +347,12 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("alfa4_trans_rot", &MMO2D::TOptions_ThrunModel::alfa4_trans_rot)
       .def_readwrite("additional_std_XY", &MMO2D::TOptions_ThrunModel::additional_std_XY)
       .def_readwrite("additional_std_phi", &MMO2D::TOptions_ThrunModel::additional_std_phi);
-  mmo2d.def(py::init<>())
+  mmo2d.def(py::init<>(), "Default constructor.")
       .def_readwrite("modelSelection", &MMO2D::modelSelection)
       .def_readwrite("gaussianModel", &MMO2D::gaussianModel)
       .def_readwrite("thrunModel", &MMO2D::thrunModel);
 
-  arm2d.def(py::init<>())
+  arm2d.def(py::init<>(), "Default constructor.")
       .def_readwrite(
           "rawOdometryIncrementReading", &ARM2D::rawOdometryIncrementReading,
           "Raw odometry reading (increment since last step)")
@@ -332,7 +376,9 @@ PYBIND11_MODULE(_bindings, m)
             return p;
           },
           "Draws a sample from the motion model")
-      .def("GetRuntimeClass", &ARM2D::GetRuntimeClass)
+      .def(
+          "GetRuntimeClass", &ARM2D::GetRuntimeClass,
+          "Returns information about the class of an object in runtime.")
       .def(
           "__repr__",
           [](const ARM2D& a) {
@@ -345,10 +391,13 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   using ARM3D = mrpt::obs::CActionRobotMovement3D;
   using MMO3D = ARM3D::TMotionModelOptions;
-  py::class_<ARM3D, mrpt::obs::CAction, std::shared_ptr<ARM3D>> arm3d(m, "CActionRobotMovement3D");
-  py::class_<MMO3D> mmo3d(arm3d, "TMotionModelOptions");
-  py::class_<MMO3D::TOptions_6DOFModel>(mmo3d, "TOptions_6DOFModel")
-      .def(py::init<>())
+  py::class_<ARM3D, mrpt::obs::CAction, std::shared_ptr<ARM3D>> arm3d(
+      m, "CActionRobotMovement3D", "Represents a probabilistic motion increment in SE(3).");
+  py::class_<MMO3D> mmo3d(
+      arm3d, "TMotionModelOptions", "Options of the probabilistic 3D motion models.");
+  py::class_<MMO3D::TOptions_6DOFModel>(
+      mmo3d, "TOptions_6DOFModel", "Parameters of the particle-based 6DOF motion model.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("nParticlesCount", &MMO3D::TOptions_6DOFModel::nParticlesCount)
       .def_readwrite("a1", &MMO3D::TOptions_6DOFModel::a1)
       .def_readwrite("a2", &MMO3D::TOptions_6DOFModel::a2)
@@ -362,9 +411,9 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("a10", &MMO3D::TOptions_6DOFModel::a10)
       .def_readwrite("additional_std_XYZ", &MMO3D::TOptions_6DOFModel::additional_std_XYZ)
       .def_readwrite("additional_std_angle", &MMO3D::TOptions_6DOFModel::additional_std_angle);
-  mmo3d.def(py::init<>()).def_readwrite("mm6DOFModel", &MMO3D::mm6DOFModel);
+  mmo3d.def(py::init<>(), "Default constructor.").def_readwrite("mm6DOFModel", &MMO3D::mm6DOFModel);
 
-  arm3d.def(py::init<>())
+  arm3d.def(py::init<>(), "Default constructor.")
       .def_readwrite("poseChange", &ARM3D::poseChange, "Pose change as a CPose3DPDFGaussian")
       .def_readwrite("rawOdometryIncrementReading", &ARM3D::rawOdometryIncrementReading)
       .def(
@@ -382,15 +431,22 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::obs::CActionCollection, mrpt::serialization::CSerializable,
-      std::shared_ptr<mrpt::obs::CActionCollection>>(m, "CActionCollection")
-      .def(py::init<>())
-      .def("size", &mrpt::obs::CActionCollection::size)
-      .def("__len__", [](const mrpt::obs::CActionCollection& a) { return a.size(); })
-      .def("get", [](const mrpt::obs::CActionCollection& a, size_t i) { return a.get(i); })
+      std::shared_ptr<mrpt::obs::CActionCollection>>(
+      m, "CActionCollection", "A collection of robot actions, stored in rawlogs.")
+      .def(py::init<>(), "Ctor.")
       .def(
-          "insert", [](mrpt::obs::CActionCollection& a, const mrpt::obs::CAction::Ptr& act)
-          { a.insert(*act); })
-      .def("clear", &mrpt::obs::CActionCollection::clear)
+          "size", &mrpt::obs::CActionCollection::size,
+          "Returns the actions count in the collection.")
+      .def("__len__", [](const mrpt::obs::CActionCollection& a) { return a.size(); })
+      .def(
+          "get", [](const mrpt::obs::CActionCollection& a, size_t i) { return a.get(i); },
+          "Returns the i-th action.")
+      .def(
+          "insert",
+          [](mrpt::obs::CActionCollection& a, const mrpt::obs::CAction::Ptr& act)
+          { a.insert(*act); },
+          "Add a new object to the list, making a deep copy.")
+      .def("clear", &mrpt::obs::CActionCollection::clear, "Erase all actions from the list.")
       .def(
           "getBestMovementEstimation",
           [](mrpt::obs::CActionCollection& a) { return a.getBestMovementEstimation(); },
@@ -414,14 +470,23 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::obs::CSensoryFrame, mrpt::serialization::CSerializable,
-      std::shared_ptr<mrpt::obs::CSensoryFrame>>(m, "CSensoryFrame")
-      .def(py::init<>())
-      .def("size", [](const mrpt::obs::CSensoryFrame& sf) { return sf.size(); })
+      std::shared_ptr<mrpt::obs::CSensoryFrame>>(
+      m, "CSensoryFrame",
+      "A \"sensory frame\" is a set of observations taken by the robot approximately at the same "
+      "time, so they can be considered as a multi-sensor \"snapshot\" of the environment.")
+      .def(py::init<>(), "Default ctor.")
+      .def(
+          "size", [](const mrpt::obs::CSensoryFrame& sf) { return sf.size(); },
+          "Returns the number of observations in the list.")
       .def("__len__", [](const mrpt::obs::CSensoryFrame& sf) { return sf.size(); })
       .def(
-          "insert", [](mrpt::obs::CSensoryFrame& sf, const mrpt::obs::CObservation::Ptr& obs)
-          { sf.insert(obs); })
-      .def("clear", [](mrpt::obs::CSensoryFrame& sf) { sf.clear(); })
+          "insert",
+          [](mrpt::obs::CSensoryFrame& sf, const mrpt::obs::CObservation::Ptr& obs)
+          { sf.insert(obs); },
+          "Appends an observation.")
+      .def(
+          "clear", [](mrpt::obs::CSensoryFrame& sf) { sf.clear(); },
+          "Clear the container, so it holds no observations.")
       .def(
           "__getitem__",
           [](const mrpt::obs::CSensoryFrame& sf, size_t i) { return sf.getObservationByIndex(i); })
@@ -437,8 +502,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // T3DPointsProjectionParams: options for 3D range image unprojection
   // -------------------------------------------------------------------------
-  py::class_<mrpt::obs::T3DPointsProjectionParams>(m, "T3DPointsProjectionParams")
-      .def(py::init<>())
+  py::class_<mrpt::obs::T3DPointsProjectionParams>(
+      m, "T3DPointsProjectionParams", "Options of CObservation3DRangeScan.unprojectInto().")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite(
           "takeIntoAccountSensorPoseOnRobot",
           &mrpt::obs::T3DPointsProjectionParams::takeIntoAccountSensorPoseOnRobot)
@@ -452,8 +518,10 @@ PYBIND11_MODULE(_bindings, m)
   // CObservation3DRangeScan: depth / RGB-D / time-of-flight camera scans
   // -------------------------------------------------------------------------
   using Obs3D = mrpt::obs::CObservation3DRangeScan;
-  py::class_<Obs3D, mrpt::obs::CObservation, std::shared_ptr<Obs3D>>(m, "CObservation3DRangeScan")
-      .def(py::init<>())
+  py::class_<Obs3D, mrpt::obs::CObservation, std::shared_ptr<Obs3D>>(
+      m, "CObservation3DRangeScan",
+      "A depth or RGB+D image from a time-of-flight or structured-light sensor.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("hasRangeImage", &Obs3D::hasRangeImage)
       .def_readwrite("rangeUnits", &Obs3D::rangeUnits, "Meters per unit in the raw range image")
       .def_readwrite(
@@ -582,16 +650,17 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   auto gnss = m.def_submodule("gnss", "GNSS message types stored in CObservationGPS");
 
-  py::class_<mrpt::obs::gnss::UTC_time>(gnss, "UTC_time")
-      .def(py::init<>())
+  py::class_<mrpt::obs::gnss::UTC_time>(
+      gnss, "UTC_time", "UTC (Coordinated Universal Time) time-stamp structure for GPS messages.")
+      .def(py::init<>(), "Default constructor.")
       .MRPT_PACKED_READWRITE(mrpt::obs::gnss::UTC_time, hour)
       .MRPT_PACKED_READWRITE(mrpt::obs::gnss::UTC_time, minute)
       .MRPT_PACKED_READWRITE(mrpt::obs::gnss::UTC_time, sec);
 
   using GGA = mrpt::obs::gnss::Message_NMEA_GGA;
-  py::class_<GGA> gga(gnss, "Message_NMEA_GGA");
-  py::class_<GGA::content_t>(gga, "content_t")
-      .def(py::init<>())
+  py::class_<GGA> gga(gnss, "Message_NMEA_GGA", "NMEA datum: GGA.");
+  py::class_<GGA::content_t>(gga, "content_t", "Fields of a GGA message.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("UTCTime", &GGA::content_t::UTCTime)
       .MRPT_PACKED_READWRITE(GGA::content_t, latitude_degrees)
       .MRPT_PACKED_READWRITE(GGA::content_t, longitude_degrees)
@@ -603,12 +672,12 @@ PYBIND11_MODULE(_bindings, m)
       .MRPT_PACKED_READWRITE(GGA::content_t, satellitesUsed)
       .MRPT_PACKED_READWRITE(GGA::content_t, thereis_HDOP)
       .MRPT_PACKED_READWRITE(GGA::content_t, HDOP);
-  gga.def(py::init<>()).def_readwrite("fields", &GGA::fields);
+  gga.def(py::init<>(), "Default constructor.").def_readwrite("fields", &GGA::fields);
 
   using RMC = mrpt::obs::gnss::Message_NMEA_RMC;
-  py::class_<RMC> rmc(gnss, "Message_NMEA_RMC");
-  py::class_<RMC::content_t>(rmc, "content_t")
-      .def(py::init<>())
+  py::class_<RMC> rmc(gnss, "Message_NMEA_RMC", "NMEA datum: RMC.");
+  py::class_<RMC::content_t>(rmc, "content_t", "Fields of an RMC message.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("UTCTime", &RMC::content_t::UTCTime)
       .MRPT_PACKED_READWRITE(RMC::content_t, validity_char)
       .MRPT_PACKED_READWRITE(RMC::content_t, latitude_degrees)
@@ -620,7 +689,7 @@ PYBIND11_MODULE(_bindings, m)
       .MRPT_PACKED_READWRITE(RMC::content_t, date_year)
       .MRPT_PACKED_READWRITE(RMC::content_t, magnetic_dir)
       .MRPT_PACKED_READWRITE(RMC::content_t, positioning_mode);
-  rmc.def(py::init<>()).def_readwrite("fields", &RMC::fields);
+  rmc.def(py::init<>(), "Default constructor.").def_readwrite("fields", &RMC::fields);
 
   py::enum_<mrpt::obs::GnssFixType>(m, "GnssFixType")
       .value("UNKNOWN", mrpt::obs::GnssFixType::UNKNOWN)
@@ -636,8 +705,11 @@ PYBIND11_MODULE(_bindings, m)
       .value("SIMULATION", mrpt::obs::GnssFixType::SIMULATION);
 
   using ObsGPS = mrpt::obs::CObservationGPS;
-  py::class_<ObsGPS, mrpt::obs::CObservation, std::shared_ptr<ObsGPS>>(m, "CObservationGPS")
-      .def(py::init<>())
+  py::class_<ObsGPS, mrpt::obs::CObservation, std::shared_ptr<ObsGPS>>(
+      m, "CObservationGPS",
+      "This class stores messages from GNSS or GNSS+IMU devices, from consumer-grade inexpensive "
+      "GPS receivers to Novatel/Topcon/... advanced RTK solutions.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("sensorPose", &ObsGPS::sensorPose)
       .def_readwrite("originalReceivedTimestamp", &ObsGPS::originalReceivedTimestamp)
       .def_readwrite("has_satellite_timestamp", &ObsGPS::has_satellite_timestamp)
@@ -692,8 +764,8 @@ PYBIND11_MODULE(_bindings, m)
   py::class_<
       mrpt::maps::TMapGenericParams, mrpt::config::CLoadableOptions,
       mrpt::serialization::CSerializable, std::shared_ptr<mrpt::maps::TMapGenericParams>>(
-      m, "TMapGenericParams")
-      .def(py::init<>())
+      m, "TMapGenericParams", "Parameters common to all metric maps.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("enableSaveAs3DObject", &mrpt::maps::TMapGenericParams::enableSaveAs3DObject)
       .def_readwrite(
           "enableObservationLikelihood",
@@ -703,7 +775,8 @@ PYBIND11_MODULE(_bindings, m)
 
   using MapInit = mrpt::maps::TMetricMapInitializer;
   py::class_<MapInit, mrpt::config::CLoadableOptions, std::shared_ptr<MapInit>>(
-      m, "TMetricMapInitializer")
+      m, "TMetricMapInitializer",
+      "Base class of the definitions of one metric map (its type and parameters).")
       .def_static(
           "factory", &MapInit::factory, "mapClassName"_a,
           "Creates the definition of a map by its class name, e.g. 'COccupancyGridMap2D'. "
@@ -716,14 +789,15 @@ PYBIND11_MODULE(_bindings, m)
 
   using MapInitSet = mrpt::maps::TSetOfMetricMapInitializers;
   py::class_<MapInitSet, mrpt::config::CLoadableOptions, std::shared_ptr<MapInitSet>>(
-      m, "TSetOfMetricMapInitializers")
-      .def(py::init<>())
-      .def("size", &MapInitSet::size)
+      m, "TSetOfMetricMapInitializers",
+      "A set of map definitions, used to build a CMultiMetricMap.")
+      .def(py::init<>(), "Default constructor.")
+      .def("size", &MapInitSet::size, "Returns the number of map definitions.")
       .def("__len__", &MapInitSet::size)
-      .def("clear", &MapInitSet::clear)
+      .def("clear", &MapInitSet::clear, "Removes all map definitions.")
       .def(
           "push_back", [](MapInitSet& s, const MapInit::Ptr& i) { s.push_back(i); },
-          "mapDefinition"_a)
+          "mapDefinition"_a, "Appends a map definition.")
       .def(
           "__getitem__",
           [](MapInitSet& s, size_t i)
@@ -745,23 +819,27 @@ PYBIND11_MODULE(_bindings, m)
   // CSimpleMap: a sequence of keyframes (pose PDF + sensory frame)
   // -------------------------------------------------------------------------
   using SMap = mrpt::maps::CSimpleMap;
-  py::class_<SMap, mrpt::serialization::CSerializable, std::shared_ptr<SMap>> smap(m, "CSimpleMap");
-  py::class_<SMap::Keyframe>(smap, "Keyframe")
-      .def(py::init<>())
+  py::class_<SMap, mrpt::serialization::CSerializable, std::shared_ptr<SMap>> smap(
+      m, "CSimpleMap", "A view-based map: a set of poses and what the robot saw from those poses.");
+  py::class_<SMap::Keyframe>(
+      smap, "Keyframe",
+      "One keyframe of a CSimpleMap: a pose PDF, a sensory frame and an optional twist.")
+      .def(py::init<>(), "Default constructor.")
       .def(
           py::init<
               const mrpt::poses::CPose3DPDF::Ptr&, const mrpt::obs::CSensoryFrame::Ptr&,
               const std::optional<mrpt::math::TTwist3D>&>(),
-          "pose"_a, "sf"_a, "localTwist"_a = std::nullopt)
+          "pose"_a, "sf"_a, "localTwist"_a = std::nullopt,
+          "Builds a keyframe from a pose PDF, a sensory frame and an optional twist.")
       .def_readwrite("pose", &SMap::Keyframe::pose)
       .def_readwrite("sf", &SMap::Keyframe::sf)
       .def_readwrite("localTwist", &SMap::Keyframe::localTwist);
-  smap.def(py::init<>())
-      .def("size", &SMap::size)
+  smap.def(py::init<>(), "Default ctor: empty map.")
+      .def("size", &SMap::size, "Returns the number of keyframes in the map.")
       .def("__len__", &SMap::size)
-      .def("empty", &SMap::empty)
-      .def("clear", &SMap::clear)
-      .def("remove", &SMap::remove, "index"_a)
+      .def("empty", &SMap::empty, "Returns true if the map has no keyframes.")
+      .def("clear", &SMap::clear, "Remove all stored keyframes.")
+      .def("remove", &SMap::remove, "index"_a, "Removes the i-th keyframe.")
       .def(
           "insert",
           [](SMap& s, const mrpt::poses::CPose3DPDF::Ptr& pose,
@@ -769,7 +847,8 @@ PYBIND11_MODULE(_bindings, m)
              const std::optional<mrpt::math::TTwist3D>& twist) { s.insert(pose, sf, twist); },
           "pose"_a, "sf"_a, "localTwist"_a = std::nullopt, "Appends a keyframe")
       .def(
-          "insert", [](SMap& s, const SMap::Keyframe& kf) { s.insert(kf); }, "keyframe"_a)
+          "insert", [](SMap& s, const SMap::Keyframe& kf) { s.insert(kf); }, "keyframe"_a,
+          "Appends a keyframe (pose PDF and sensory frame).")
       .def(
           "get",
           [](SMap& s, size_t i) -> SMap::Keyframe&
@@ -780,7 +859,7 @@ PYBIND11_MODULE(_bindings, m)
             }
             return s.get(i);
           },
-          py::return_value_policy::reference_internal, "index"_a)
+          py::return_value_policy::reference_internal, "index"_a, "Returns the i-th keyframe.")
       .def(
           "__getitem__",
           [](SMap& s, size_t i) -> SMap::Keyframe&
@@ -813,7 +892,7 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   using Rawlog = mrpt::obs::CRawlog;
   py::class_<Rawlog, mrpt::serialization::CSerializable, std::shared_ptr<Rawlog>> rawlog(
-      m, "CRawlog");
+      m, "CRawlog", "The main class for loading and processing robotics datasets, or \"rawlogs\".");
   py::enum_<Rawlog::TEntryType>(rawlog, "TEntryType")
       .value("etSensoryFrame", Rawlog::TEntryType::etSensoryFrame)
       .value("etActionCollection", Rawlog::TEntryType::etActionCollection)
@@ -821,11 +900,13 @@ PYBIND11_MODULE(_bindings, m)
       .value("etOther", Rawlog::TEntryType::etOther)
       .export_values();
 
-  rawlog.def(py::init<>())
-      .def("size", &Rawlog::size)
+  rawlog.def(py::init<>(), "Default constructor.")
+      .def(
+          "size", &Rawlog::size,
+          "Returns the number of actions / observations object in the sequence.")
       .def("__len__", &Rawlog::size)
-      .def("empty", &Rawlog::empty)
-      .def("clear", &Rawlog::clear)
+      .def("empty", &Rawlog::empty, "Returns true if the rawlog is empty.")
+      .def("clear", &Rawlog::clear, "Removes all entries.")
       .def(
           "loadFromRawLogFile", &Rawlog::loadFromRawLogFile, "fileName"_a,
           "non_obs_objects_are_legal"_a = false,
@@ -840,9 +921,10 @@ PYBIND11_MODULE(_bindings, m)
           "obj"_a,
           "Appends an object (CSensoryFrame, CActionCollection, CObservation, ...). The object "
           "is stored by reference, not copied.")
-      .def("getType", &Rawlog::getType, "index"_a)
+      .def("getType", &Rawlog::getType, "index"_a, "Returns the type of a given element.")
       .def(
-          "remove", [](Rawlog& r, size_t i) { r.remove(i); }, "index"_a)
+          "remove", [](Rawlog& r, size_t i) { r.remove(i); }, "index"_a,
+          "Removes the entry at the given index.")
       .def(
           "getAsAction", [](Rawlog& r, size_t i) { return r.getAsAction(i); }, "index"_a,
           "Returns entry i as a CActionCollection. Raises if it has a different type.")
@@ -881,7 +963,9 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "getCommentText", [](const Rawlog& r) { return r.getCommentText(); },
           "Returns the embedded comment text, if any")
-      .def("setCommentText", &Rawlog::setCommentText, "text"_a)
+      .def(
+          "setCommentText", &Rawlog::setCommentText, "text"_a,
+          "Changes the block of comment text for the rawlog.")
       .def_static(
           "ReadFromArchive",
           [](mrpt::serialization::CArchive& in, size_t entry)

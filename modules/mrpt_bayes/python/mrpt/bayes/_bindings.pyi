@@ -116,8 +116,13 @@ class TParticleResamplingAlgorithm:
     def value(self) -> int:
         ...
 class TParticleFilterOptions(mrpt.config.CLoadableOptions):
+    """
+    The configuration of a particle filter algorithm and resampling parameters.
+    """
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
     def __repr__(self) -> str:
         ...
     @property
@@ -161,8 +166,13 @@ class TParticleFilterOptions(mrpt.config.CLoadableOptions):
     def sampleSize(self, arg0: int) -> None:
         ...
 class TParticleFilterStats:
+    """
+    Statistics returned by CParticleFilter.executeOn().
+    """
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor.
+        """
     def __repr__(self) -> str:
         ...
     @property
@@ -182,8 +192,13 @@ class TParticleFilterStats:
     def weightsVariance_beforeResample(self, arg0: float) -> None:
         ...
 class CParticleFilter:
+    """
+    Generic particle filter: runs one prediction/update/resampling step of a CParticleFilterCapable PDF with executeOn() (added by importing mrpt.slam).
+    """
     def __init__(self) -> None:
-        ...
+        """
+        Default constructor: set the options, then call executeOn() for each filter step (import mrpt.slam first, which adds that method).
+        """
     def __repr__(self) -> str:
         ...
     @property
@@ -195,6 +210,9 @@ class CParticleFilter:
     def options(self, arg0: TParticleFilterOptions) -> None:
         ...
 class CParticleFilterCapable:
+    """
+    Interface of the particle-based PDFs that a CParticleFilter can run on.
+    """
     @staticmethod
     def computeResampling(method: TParticleResamplingAlgorithm, log_weights: list[float], out_particle_count: int = 0) -> list[int]:
         """
@@ -219,7 +237,9 @@ class CParticleFilterCapable:
         Normalizes the log-weights so the maximum is 0. Returns the max log-weight before normalizing.
         """
     def particlesCount(self) -> int:
-        ...
+        """
+        Returns the number of particles.
+        """
     def setW(self, i: int, w: float) -> None:
         """
         Sets the log-weight of particle i

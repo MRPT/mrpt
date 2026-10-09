@@ -38,6 +38,9 @@ cmake_policy(POP)
 set(_BCK_CMAKE_FIND_PACKAGE_PREFER_CONFIG ${CMAKE_FIND_PACKAGE_PREFER_CONFIG})
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
 
+# Optional per-module commands to run before searching dependencies:
+@EXTRA_PRE_DEPS_CONFIG_CMDS@
+
 # Search for dependencies first:
 set(_deps "@ALL_DEPS_LIST@")
 foreach(_dep ${_deps}) # NO quotes for the list to be a CMake list!

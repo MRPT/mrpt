@@ -14,6 +14,7 @@
 
 // pybind11
 #include <pybind11/eigen.h>
+#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -36,8 +37,9 @@ PYBIND11_MODULE(_bindings, m)
   // TMatchingPair
   // -------------------------------------------------------------------------
   // Instantiate the double version as the default
-  py::class_<TMatchingPair>(m, "TMatchingPair")
-      .def(py::init<>())
+  py::class_<TMatchingPair>(
+      m, "TMatchingPair", "A pair of corresponding points (float coordinates) in two point sets.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("globalIdx", &TMatchingPair::globalIdx)
       .def_readwrite("localIdx", &TMatchingPair::localIdx)
       .def_readwrite("local_pt", &TMatchingPair::local)
@@ -45,8 +47,10 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite(
           "errorSquareAfterTransformation", &TMatchingPair::errorSquareAfterTransformation);
 
-  py::class_<TMatchingPair_d>(m, "TMatchingPair_d")
-      .def(py::init<>())
+  py::class_<TMatchingPair_d>(
+      m, "TMatchingPair_d",
+      "A pair of corresponding points (double coordinates) in two point sets.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("globalIdx", &TMatchingPair_d::globalIdx)
       .def_readwrite("localIdx", &TMatchingPair_d::localIdx)
       .def_readwrite("local_pt", &TMatchingPair_d::local)
@@ -55,23 +59,31 @@ PYBIND11_MODULE(_bindings, m)
           "errorSquareAfterTransformation", &TMatchingPair_d::errorSquareAfterTransformation);
 
   // TMatchingPairList (std::vector wrapper)
-  py::class_<mrpt::tfest::TMatchingPairList>(m, "TMatchingPairList")
-      .def(py::init<>())
-      .def("size", [](const TMatchingPairList& l) { return l.size(); })
+  py::class_<mrpt::tfest::TMatchingPairList>(m, "TMatchingPairList", "A list of TMatchingPair.")
+      .def(py::init<>(), "Default constructor.")
+      .def(
+          "size", [](const TMatchingPairList& l) { return l.size(); },
+          "Returns the number of pairs.")
       .def(
           "push_back",
-          [](TMatchingPairList& list, const TMatchingPair& element) { list.push_back(element); })
+          [](TMatchingPairList& list, const TMatchingPair& element) { list.push_back(element); },
+          "Appends a pair.")
       .def("__len__", [](const TMatchingPairList& l) { return l.size(); })
       .def(
           "__iter__", [](TMatchingPairList& v) { return py::make_iterator(v.begin(), v.end()); },
           py::keep_alive<0, 1>());
 
-  py::class_<mrpt::tfest::TMatchingPairList_d>(m, "TMatchingPairList_d")
-      .def(py::init<>())
+  py::class_<mrpt::tfest::TMatchingPairList_d>(
+      m, "TMatchingPairList_d", "A list of TMatchingPair_d.")
+      .def(py::init<>(), "Default constructor.")
       .def(
-          "push_back", [](TMatchingPairList_d& list, const TMatchingPair_d& element)
-          { list.push_back(element); })
-      .def("size", [](const TMatchingPairList_d& l) { return l.size(); })
+          "push_back",
+          [](TMatchingPairList_d& list, const TMatchingPair_d& element)
+          { list.push_back(element); },
+          "Appends a pair.")
+      .def(
+          "size", [](const TMatchingPairList_d& l) { return l.size(); },
+          "Returns the number of pairs.")
       .def("__len__", [](const TMatchingPairList_d& l) { return l.size(); })
       .def(
           "__iter__", [](TMatchingPairList_d& v) { return py::make_iterator(v.begin(), v.end()); },
@@ -93,17 +105,27 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // SE(3) Estimation
   // -------------------------------------------------------------------------
-  py::class_<TSE3RobustParams>(m, "TSE3RobustParams")
-      .def(py::init<>())
+  py::class_<TPotentialMatch>(
+      m, "TPotentialMatch",
+      "A potential pairing of two points, passed to user_individual_compat_callback.")
+      .def(py::init<>(), "Default constructor.")
+      .def_readwrite("idx_this", &TPotentialMatch::idx_this, "Index of the point in this set")
+      .def_readwrite(
+          "idx_other", &TPotentialMatch::idx_other, "Index of the point in the other set");
+
+  py::class_<TSE3RobustParams>(m, "TSE3RobustParams", "Parameters of se3_l2_robust().")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite("ransac_minSetSize", &TSE3RobustParams::ransac_minSetSize)
       .def_readwrite("ransac_nmaxSimulations", &TSE3RobustParams::ransac_nmaxSimulations)
       .def_readwrite("ransac_maxSetSizePct", &TSE3RobustParams::ransac_maxSetSizePct)
       .def_readwrite(
-          "user_individual_compat_callback", &TSE3RobustParams::user_individual_compat_callback)
+          "user_individual_compat_callback", &TSE3RobustParams::user_individual_compat_callback,
+          "Optional function(TPotentialMatch) -> bool: return True to accept a candidate pairing, "
+          "False to reject it (None: accept all)")
       .def_readwrite("ransac_threshold_lin", &TSE3RobustParams::ransac_threshold_lin);
 
-  py::class_<TSE3RobustResult>(m, "TSE3RobustResult")
-      .def(py::init<>())
+  py::class_<TSE3RobustResult>(m, "TSE3RobustResult", "Result of se3_l2_robust().")
+      .def(py::init<>(), "Default constructor.")
       .def_property(
           "transformation",
           [](const TSE3RobustResult& r) -> mrpt::poses::CPose3D

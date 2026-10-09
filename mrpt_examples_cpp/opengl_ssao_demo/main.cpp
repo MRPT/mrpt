@@ -16,16 +16,20 @@
  * \example opengl_ssao_demo
  *
  * \brief Interactive demo of Screen-Space Ambient Occlusion (SSAO) and
- * dynamic point lighting.
+ * dynamic point lighting with shadows.
  *
  * The scene contains a ground plane, several boxes, cylinders and spheres
  * arranged to highlight the difference SSAO makes in crevices and corners.
  * A global directional light and an optional colored point light are set up.
+ * The point light casts its own shadows (cube shadow map) and can orbit the
+ * scene.
  *
  * Keyboard shortcuts:
  *  - S : toggle SSAO on/off
  *  - P : toggle point light on/off
- *  - H : toggle shadow casting on/off
+ *  - C : toggle point light shadows on/off
+ *  - M : toggle point light motion on/off
+ *  - H : toggle shadow casting on/off (all lights)
  *  - ESC / Q : quit
  *
  * \image html opengl_ssao_demo_screenshot.webp
@@ -41,6 +45,7 @@
 #include <mrpt/viz/Viewport.h>
 
 #include <chrono>
+#include <cmath>
 #include <cstdio>
 #include <thread>
 
@@ -170,7 +175,11 @@ void buildScene(mrpt::viz::Scene& scene)
 // -----------------------------------------------------------------------
 // Configure lighting (called once; call again to re-apply after toggle)
 // -----------------------------------------------------------------------
-void setupLighting(mrpt::viz::Viewport& vp, bool pointLightOn)
+void setupLighting(
+    mrpt::viz::Viewport& vp,
+    bool pointLightOn,
+    bool pointShadowsOn,
+    const mrpt::math::TPoint3Df& pointLightPos)
 {
   auto& lp = vp.lightParameters();
 
@@ -194,27 +203,47 @@ void setupLighting(mrpt::viz::Viewport& vp, bool pointLightOn)
   // Colored point light above the scene (toggle-able)
   if (pointLightOn)
   {
-    lp.lights.push_back(mrpt::viz::TLight::PointLight(
-        {0.0f, 0.0f, 4.0f},                    // above the scene center
-        mrpt::img::TColorf(0.4f, 0.6f, 1.0f),  // cool blue-white
-        1.0f,                                  // diffuse
-        0.7f,                                  // specular
-        1.0f,                                  // att_constant
-        0.05f,                                 // att_linear
-        0.008f                                 // att_quadratic
-        ));
+    auto light = mrpt::viz::TLight::PointLight(
+        pointLightPos, mrpt::img::TColorf(0.4f, 0.6f, 1.0f),  // cool blue-white
+        1.0f,                                                 // diffuse
+        0.7f,                                                 // specular
+        1.0f,                                                 // att_constant
+        0.05f,                                                // att_linear
+        0.008f,                                               // att_quadratic
+        15.0f                                                 // range [m]
+    );
+    light.cast_shadows = pointShadowsOn;
+    lp.lights.push_back(light);
   }
+}
+
+// Position of the point light, orbiting above the scene center
+mrpt::math::TPoint3Df pointLightPosition(double t)
+{
+  constexpr float radius = 2.5f;
+  return {
+      radius * static_cast<float>(std::cos(0.5 * t)),
+      radius * static_cast<float>(std::sin(0.5 * t)) + 1.0f, 2.5f};
 }
 
 // -----------------------------------------------------------------------
 // Update the on-screen status text
 // -----------------------------------------------------------------------
-void updateStatusText(mrpt::gui::CDisplayWindow3D& win, bool ssaoOn, bool pointOn, bool shadowsOn)
+void updateStatusText(
+    mrpt::gui::CDisplayWindow3D& win,
+    bool ssaoOn,
+    bool pointOn,
+    bool pointShadowsOn,
+    bool shadowsOn)
 {
   mrpt::viz::TFontParams fp;
   fp.color = mrpt::img::TColorf(1.0f, 1.0f, 1.0f);
   fp.vfont_scale = 14;
-  win.addTextMessage(0.02, 0.97, "SSAO Demo  |  S=SSAO  P=Point light  H=Shadows  ESC=Quit", 0, fp);
+  win.addTextMessage(
+      0.02, 0.97,
+      "SSAO Demo  |  S=SSAO  P=Point light  C=Point light shadows  M=Move light  H=Shadows  "
+      "ESC=Quit",
+      0, fp);
 
   mrpt::viz::TFontParams fp2;
   fp2.vfont_scale = 13;
@@ -231,6 +260,13 @@ void updateStatusText(mrpt::gui::CDisplayWindow3D& win, bool ssaoOn, bool pointO
   fp4.color =
       shadowsOn ? mrpt::img::TColorf(0.3f, 1.0f, 0.3f) : mrpt::img::TColorf(1.0f, 0.4f, 0.4f);
   win.addTextMessage(0.02, 0.10, std::string("Shadows: ") + (shadowsOn ? "ON" : "OFF"), 3, fp4);
+
+  mrpt::viz::TFontParams fp5;
+  fp5.vfont_scale = 13;
+  fp5.color =
+      pointShadowsOn ? mrpt::img::TColorf(0.3f, 1.0f, 0.3f) : mrpt::img::TColorf(1.0f, 0.4f, 0.4f);
+  win.addTextMessage(
+      0.02, 0.13, std::string("Point light shadows: ") + (pointShadowsOn ? "ON" : "OFF"), 4, fp5);
 }
 
 // -----------------------------------------------------------------------
@@ -240,7 +276,10 @@ void RunDemo()
 
   bool ssaoOn = false;
   bool pointLightOn = true;
-  bool shadowsOn = false;
+  bool pointShadowsOn = true;
+  bool moveLight = true;
+  bool shadowsOn = true;
+  double t = 0;
 
   // ----- Build scene -----
   {
@@ -248,7 +287,7 @@ void RunDemo()
     buildScene(*scene);
     auto vp = scene->getViewport("main");
 
-    setupLighting(*vp, pointLightOn);
+    setupLighting(*vp, pointLightOn, pointShadowsOn, pointLightPosition(t));
     vp->lightParameters().ssao_enabled = ssaoOn;
     vp->enableShadowCasting(shadowsOn);
 
@@ -261,14 +300,16 @@ void RunDemo()
   win.setCameraZoom(20.0f);
   win.setFOV(55.0f);
 
-  updateStatusText(win, ssaoOn, pointLightOn, shadowsOn);
+  updateStatusText(win, ssaoOn, pointLightOn, pointShadowsOn, shadowsOn);
   win.forceRepaint();
 
   std::printf(
       "\nSSAO Demo\n"
       "  S - Toggle SSAO (Screen-Space Ambient Occlusion)\n"
       "  P - Toggle point light\n"
-      "  H - Toggle shadow casting\n"
+      "  C - Toggle point light shadows\n"
+      "  M - Toggle point light motion\n"
+      "  H - Toggle shadow casting (all lights)\n"
       "  ESC / Q - Quit\n\n");
 
   // ----- Event loop -----
@@ -276,12 +317,17 @@ void RunDemo()
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(30));
 
+    bool changed = false;
+    if (moveLight && pointLightOn)
+    {
+      t += 0.03;
+      changed = true;
+    }
+
     if (win.keyHit())
     {
       mrpt::gui::mrptKeyModifier kmods{};
       const int key = win.getPushedKey(&kmods);
-
-      bool changed = false;
 
       if (key == mrpt::gui::MRPTK_ESCAPE || key == 'q' || key == 'Q')
       {
@@ -302,20 +348,29 @@ void RunDemo()
         shadowsOn = !shadowsOn;
         changed = true;
       }
-
-      if (changed)
+      else if (key == 'c' || key == 'C')
       {
-        {
-          mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
-          auto vp = scene->getViewport("main");
-          setupLighting(*vp, pointLightOn);
-          vp->lightParameters().ssao_enabled = ssaoOn;
-          vp->enableShadowCasting(shadowsOn);
-          win.unlockAccess3DScene();
-        }
-        updateStatusText(win, ssaoOn, pointLightOn, shadowsOn);
-        win.forceRepaint();
+        pointShadowsOn = !pointShadowsOn;
+        changed = true;
       }
+      else if (key == 'm' || key == 'M')
+      {
+        moveLight = !moveLight;
+      }
+    }
+
+    if (changed)
+    {
+      {
+        mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
+        auto vp = scene->getViewport("main");
+        setupLighting(*vp, pointLightOn, pointShadowsOn, pointLightPosition(t));
+        vp->lightParameters().ssao_enabled = ssaoOn;
+        vp->enableShadowCasting(shadowsOn);
+        win.unlockAccess3DScene();
+      }
+      updateStatusText(win, ssaoOn, pointLightOn, pointShadowsOn, shadowsOn);
+      win.forceRepaint();
     }
   }
 }

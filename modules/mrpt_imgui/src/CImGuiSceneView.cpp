@@ -18,6 +18,7 @@
 #include <mrpt/imgui/CImGuiSceneView.h>
 
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 using namespace mrpt::imgui;
@@ -130,67 +131,130 @@ void CImGuiSceneView::destroyFBO()
 }
 
 // -----------------------------------------------------------------------
-// Scene rendering into the FBO
+// Scene preparation, shared by both rendering modes
 // -----------------------------------------------------------------------
-void CImGuiSceneView::renderSceneToFBO(int w, int h)
+bool CImGuiSceneView::prepareCompiledScene()
 {
   // ---- Sync controller → camera snapshot before rendering ----
   cameraController.applyTo(m_camera);
 
-#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
-  // ---- Render the MRPT scene into our FBO ----
-  if (m_scene)
+  if (!m_scene)
   {
-    // Push camera into the scene's main viewport
-    if (auto vp = m_scene->getViewport("main"); vp)
-    {
-      vp->getCamera() = m_camera;
-      if (m_hasCustomBg)
-      {
-        vp->setCustomBackgroundColor({m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]});
-      }
-    }
+    return false;
+  }
 
-    // Compile / incrementally update the scene
-    auto lastPtr = m_lastCompiledScenePtr.lock();
-    if (!m_compiledScene || lastPtr.get() != m_scene.get())
-    {
-      m_compiledScene = std::make_unique<mrpt::opengl::CompiledScene>();
-      m_compiledScene->compile(*m_scene);
-      m_lastCompiledScenePtr = m_scene;
-    }
-    else
-    {
-      m_compiledScene->updateIfNeeded();
-    }
-
-    // Save and bind our FBO
-    GLint prevViewport[4];
-    glGetIntegerv(GL_VIEWPORT, prevViewport);
-    GLint prevFBO = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-    glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
-
+  // Push camera into the scene's main viewport
+  if (auto vp = m_scene->getViewport("main"); vp)
+  {
+    vp->getCamera() = m_camera;
     if (m_hasCustomBg)
     {
-      glClearColor(m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]);
+      vp->setCustomBackgroundColor({m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]});
     }
-    else
-    {
-      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    }
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    m_compiledScene->render(w, h, 0, 0);
-
-    // Restore previous GL state
-    glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prevFBO));
-    glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
   }
+
+  // Compile / incrementally update the scene
+  auto lastPtr = m_lastCompiledScenePtr.lock();
+  if (!m_compiledScene || lastPtr.get() != m_scene.get())
+  {
+    m_compiledScene = std::make_unique<mrpt::opengl::CompiledScene>();
+    m_compiledScene->compile(*m_scene);
+    m_lastCompiledScenePtr = m_scene;
+  }
+  else
+  {
+    m_compiledScene->updateIfNeeded();
+  }
+  return true;
+}
+
+// -----------------------------------------------------------------------
+// Scene rendering into the FBO
+// -----------------------------------------------------------------------
+void CImGuiSceneView::renderSceneToFBO(int w, int h)
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  if (!prepareCompiledScene())
+  {
+    return;
+  }
+
+  // Save and bind our FBO
+  GLint prevViewport[4];
+  glGetIntegerv(GL_VIEWPORT, prevViewport);
+  GLint prevFBO = 0;
+  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+  glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
+
+  if (m_hasCustomBg)
+  {
+    glClearColor(m_bgColor[0], m_bgColor[1], m_bgColor[2], m_bgColor[3]);
+  }
+  else
+  {
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  }
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  m_compiledScene->render(w, h, 0, 0);
+
+  // Restore previous GL state
+  glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prevFBO));
+  glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
 #else
   (void)w;
   (void)h;
 #endif
+}
+
+// -----------------------------------------------------------------------
+// Scene rendering into the current framebuffer (background mode)
+// -----------------------------------------------------------------------
+void CImGuiSceneView::renderSceneDirect()
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  try
+  {
+    if (m_directRect[2] <= 0 || m_directRect[3] <= 0 || !prepareCompiledScene())
+    {
+      return;
+    }
+    // The viewport clears its own area (with scissor), and saves/restores
+    // the GL viewport. ImGui restores most of its state afterwards.
+    glDisable(GL_SCISSOR_TEST);
+    // ImGui may leave a sampler object bound to texture unit 0, which would
+    // override the wrapping and mipmap settings of the scene textures:
+    glBindSampler(0, 0);
+    m_compiledScene->render(m_directRect[2], m_directRect[3], m_directRect[0], m_directRect[1]);
+  }
+  catch (const std::exception& e)
+  {
+    // Called from within the ImGui renderer: do not propagate.
+    std::cerr << "[CImGuiSceneView] Exception rendering the scene:\n" << e.what() << "\n";
+  }
+  // ImGui does not reset the active texture unit after a draw callback, and
+  // its shader samples unit 0: leaving another one active would draw all
+  // windows black.
+  glActiveTexture(GL_TEXTURE0);
+#endif
+}
+
+// -----------------------------------------------------------------------
+// Mouse picking
+// -----------------------------------------------------------------------
+std::optional<mrpt::math::TLine3D> CImGuiSceneView::mouseRay() const
+{
+  if (!m_hovered || !m_scene)
+  {
+    return std::nullopt;
+  }
+  auto vp = m_scene->getViewport("main");
+  if (!vp)
+  {
+    return std::nullopt;
+  }
+  return vp->get3DRayForPixelCoord(
+      {static_cast<int>(m_mouseX * m_pixelScale), static_cast<int>(m_mouseY * m_pixelScale)});
 }

@@ -21,6 +21,7 @@ The method comprises two steps:
 - Growth of the obstacles by the robot radius. This assure that just one single free cell is enough for the robot to move without collision.
 
 - The value iteration algorithm, starting at the source position, increase iteratively the area covered by shortest paths until the target cell is reached.
+
 Note that this is a very simple method, not suitable for robots with shapes very different from circular and/or moving in cluttered environments.
 For those cases, see the obstacle avoidance methods above.
 

@@ -32,13 +32,23 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TCoords — degrees/minutes/seconds coordinate type
   // -------------------------------------------------------------------------
-  py::class_<mrpt::topography::TCoords>(m, "TCoords")
-      .def(py::init<>())
-      .def(py::init<double>(), "decimal_deg"_a)
-      .def(py::init<int, int, double>(), "deg"_a, "min"_a, "sec"_a)
+  py::class_<mrpt::topography::TCoords>(
+      m, "TCoords",
+      "An angle in decimal degrees, also settable or readable as degrees, minutes and seconds.")
+      .def(py::init<>(), "Default constructor.")
+      .def(
+          py::init<double>(), "decimal_deg"_a,
+          "Builds the coordinate from a decimal value in degrees.")
+      .def(
+          py::init<int, int, double>(), "deg"_a, "min"_a, "sec"_a,
+          "Builds the coordinate from degrees, minutes and seconds.")
       .def_readwrite("decimal_value", &mrpt::topography::TCoords::decimal_value)
-      .def("getDecimalValue", &mrpt::topography::TCoords::getDecimalValue)
-      .def("setFromDecimal", &mrpt::topography::TCoords::setFromDecimal)
+      .def(
+          "getDecimalValue", &mrpt::topography::TCoords::getDecimalValue,
+          "Returns the value in decimal degrees.")
+      .def(
+          "setFromDecimal", &mrpt::topography::TCoords::setFromDecimal,
+          "Set from a decimal value (XX.YYYYY) in degrees.")
       .def(
           "getDegMinSec",
           [](const mrpt::topography::TCoords& c)
@@ -62,9 +72,14 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TGeodeticCoords — (latitude, longitude, height) WGS84
   // -------------------------------------------------------------------------
-  py::class_<mrpt::topography::TGeodeticCoords>(m, "TGeodeticCoords")
-      .def(py::init<>())
-      .def(py::init<double, double, double>(), "lat_deg"_a, "lon_deg"_a, "height_m"_a)
+  py::class_<mrpt::topography::TGeodeticCoords>(
+      m, "TGeodeticCoords",
+      "A set of geodetic coordinates: latitude, longitude and ellipsoidal height, defined over a "
+      "reference ellipsoid (typically, WGS84)")
+      .def(py::init<>(), "Default constructor.")
+      .def(
+          py::init<double, double, double>(), "lat_deg"_a, "lon_deg"_a, "height_m"_a,
+          "Builds the coordinates from latitude, longitude (degrees) and height (meters).")
       .def_readwrite(
           "lat", &mrpt::topography::TGeodeticCoords::lat, "Latitude in degrees (TCoords)")
       .def_readwrite(
@@ -86,9 +101,13 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // TEllipsoid - reference ellipsoid
   // -------------------------------------------------------------------------
-  py::class_<mrpt::topography::TEllipsoid> ellipsoid(m, "TEllipsoid");
-  ellipsoid.def(py::init<>())
-      .def(py::init<double, double, std::string>(), "sa"_a, "sb"_a, "name"_a)
+  py::class_<mrpt::topography::TEllipsoid> ellipsoid(
+      m, "TEllipsoid",
+      "A reference ellipsoid of the Earth, given its semi-major and semi-minor axes.");
+  ellipsoid.def(py::init<>(), "Default constructor.")
+      .def(
+          py::init<double, double, std::string>(), "sa"_a, "sb"_a, "name"_a,
+          "Builds an ellipsoid from its semi-major and semi-minor axes (meters) and name.")
       .def_readwrite("sa", &mrpt::topography::TEllipsoid::sa, "Largest semiaxis (meters)")
       .def_readwrite("sb", &mrpt::topography::TEllipsoid::sb, "Smallest semiaxis (meters)")
       .def_readwrite("name", &mrpt::topography::TEllipsoid::name)
@@ -127,7 +146,7 @@ PYBIND11_MODULE(_bindings, m)
     };
     for (const auto& [name, fn] : factories)
     {
-      ellipsoid.def_static(name, fn);
+      ellipsoid.def_static(name, fn, "Returns this reference ellipsoid.");
     }
   }
 

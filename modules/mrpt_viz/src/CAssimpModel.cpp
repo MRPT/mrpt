@@ -24,6 +24,7 @@
 #include <iostream>
 
 #if MRPT_HAS_ASSIMP
+#include <assimp/config.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
@@ -96,6 +97,7 @@ void CAssimpModel::serializeFrom(mrpt::serialization::CArchive& in, uint8_t vers
 
       // Rebuild internal pointers to child objects
       m_texturedMeshes.clear();
+      m_texturedMeshMapFiles.clear();
       m_nonTexturedMesh.reset();
       m_lines.clear();
 
@@ -138,6 +140,7 @@ void CAssimpModel::clear()
   m_modelDirectory.clear();
   m_modelLoadFlags = 0;
   m_texturedMeshes.clear();
+  m_texturedMeshMapFiles.clear();
   m_nonTexturedMesh.reset();
   m_lines.clear();
   m_textureCache.clear();
@@ -222,6 +225,10 @@ void CAssimpModel::loadScene(const std::string& file_name, int flags)
   }
   assimpFlags |= aiProcess_JoinIdenticalVertices;
   assimpFlags |= aiProcess_CalcTangentSpace;
+
+  // Drop zero-area triangles instead of converting them into lines or points,
+  // which would be drawn as spurious edges:
+  m_assimpScene->importer.SetPropertyBool(AI_CONFIG_PP_FD_REMOVE, true);
 
   // Load the scene
   m_assimpScene->scene = m_assimpScene->importer.ReadFile(file_name, assimpFlags);
@@ -495,8 +502,36 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
     }
   }
 
-  // Check for normal map texture
+  // Resolves a texture file name from the model into a loadable path, or
+  // returns an empty string if not found:
+  const auto resolveTexturePath = [this](const std::string& texFile) -> std::string
+  {
+    if (!texFile.empty() && texFile[0] == '*')
+    {
+      return "*embedded_" + texFile.substr(1);
+    }
+    if (mrpt::system::fileExists(texFile))
+    {
+      return texFile;
+    }
+    std::string path = m_modelDirectory + "/" + texFile;
+    if (mrpt::system::fileExists(path))
+    {
+      return path;
+    }
+    std::string baseName = mrpt::system::extractFileName(texFile);
+    std::string ext = mrpt::system::extractFileExtension(texFile);
+    if (!ext.empty())
+    {
+      baseName += "." + ext;
+    }
+    path = m_modelDirectory + "/" + baseName;
+    return mrpt::system::fileExists(path) ? path : std::string();
+  };
+
+  // Check for normal map and emissive map textures
   std::string normalMapPath;
+  std::string emissiveMapPath;
   if (!ignoreTextures && material)
   {
     aiString aiNormPath;
@@ -504,38 +539,20 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
     if (material->GetTexture(aiTextureType_NORMALS, 0, &aiNormPath) == AI_SUCCESS ||
         material->GetTexture(aiTextureType_HEIGHT, 0, &aiNormPath) == AI_SUCCESS)
     {
-      std::string normFile = aiNormPath.C_Str();
-      if (!normFile.empty() && normFile[0] == '*')
-      {
-        normalMapPath = "*embedded_" + normFile.substr(1);
-      }
-      else
-      {
-        if (mrpt::system::fileExists(normFile))
-        {
-          normalMapPath = normFile;
-        }
-        else
-        {
-          normalMapPath = m_modelDirectory + "/" + normFile;
-          if (!mrpt::system::fileExists(normalMapPath))
-          {
-            std::string baseName = mrpt::system::extractFileName(normFile);
-            std::string ext = mrpt::system::extractFileExtension(normFile);
-            if (!ext.empty()) baseName += "." + ext;
-            normalMapPath = m_modelDirectory + "/" + baseName;
-            if (!mrpt::system::fileExists(normalMapPath))
-            {
-              normalMapPath.clear();
-            }
-          }
-        }
-      }
+      normalMapPath = resolveTexturePath(aiNormPath.C_Str());
+    }
+
+    aiString aiEmissivePath;
+    if (material->GetTexture(aiTextureType_EMISSIVE, 0, &aiEmissivePath) == AI_SUCCESS)
+    {
+      emissiveMapPath = resolveTexturePath(aiEmissivePath.C_Str());
     }
   }
 
-  // Determine target: textured or non-textured
-  const bool hasTexture = !texturePath.empty();
+  // Determine target: textured or non-textured. Parts with an emissive map
+  // but no diffuse texture also need a textured mesh (with a white texture):
+  const bool hasTexture =
+      !texturePath.empty() || (!emissiveMapPath.empty() && mesh->HasTextureCoords(0));
 
   CSetOfTexturedTriangles::Ptr texturedMesh;
   if (hasTexture)
@@ -564,7 +581,9 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
       }
     }
 
-    texturedMesh = getOrCreateTexturedMesh(texturePath, alphaMode, alphaCutoff);
+    texturedMesh = getOrCreateTexturedMesh(
+        texturePath, alphaMode, alphaCutoff, matEmissive, matShininess, matSpecularExponent,
+        normalMapPath + "|" + emissiveMapPath);
 
     // Assign normal map if found and not yet assigned
     if (!normalMapPath.empty() && texturedMesh && !texturedMesh->normalMapHasBeenAssigned())
@@ -573,6 +592,16 @@ void CAssimpModel::processMesh(const void* meshPtr, const void* scenePtr, const 
       if (normTex != nullptr)
       {
         texturedMesh->assignNormalMap(normTex->rgb);
+      }
+    }
+
+    // Only parts of the surface glow if there is an emissive map:
+    if (!emissiveMapPath.empty() && texturedMesh && !texturedMesh->emissiveMapHasBeenAssigned())
+    {
+      const LoadedTexture* emissiveTex = loadTexture(emissiveMapPath);
+      if (emissiveTex != nullptr)
+      {
+        texturedMesh->assignEmissiveMap(emissiveTex->rgb);
       }
     }
   }
@@ -837,14 +866,26 @@ const CAssimpModel::LoadedTexture* CAssimpModel::loadTexture(const std::string& 
 }
 
 CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(
-    const std::string& texturePath, TAlphaMode alphaMode, float alphaCutoff)
+    const std::string& texturePath,
+    TAlphaMode alphaMode,
+    float alphaCutoff,
+    const mrpt::img::TColorf& emissive,
+    float shininess,
+    float specularExponent,
+    const std::string& mapFiles)
 {
-  // Check if we already have a mesh for this texture and alpha settings
-  for (auto& mesh : m_texturedMeshes)
+  // Reuse a mesh only if texture, alpha settings and material match, since
+  // material properties are per mesh (e.g. a texture atlas shared by a
+  // lamp frame and its glowing shade):
+  for (size_t i = 0; i < m_texturedMeshes.size(); i++)
   {
+    const auto& mesh = m_texturedMeshes[i];
     // Compare by name (we use texture path as name)
-    if (mesh->getName() == texturePath && mesh->alphaMode() == alphaMode &&
-        (alphaMode != TAlphaMode::Mask || mesh->alphaCutoff() == alphaCutoff))
+    if (i < m_texturedMeshMapFiles.size() && m_texturedMeshMapFiles[i] == mapFiles &&
+        mesh->getName() == texturePath && mesh->alphaMode() == alphaMode &&
+        (alphaMode != TAlphaMode::Mask || mesh->alphaCutoff() == alphaCutoff) &&
+        mesh->materialEmissive() == emissive && mesh->materialShininess() == shininess &&
+        mesh->materialSpecularExponent() == specularExponent)
     {
       return mesh;
     }
@@ -854,9 +895,18 @@ CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(
   auto mesh = CSetOfTexturedTriangles::Create();
   mesh->setName(texturePath);
 
-  // Load and assign texture
-  const LoadedTexture* tex = loadTexture(texturePath);
-  if (tex != nullptr)
+  // Load and assign texture (white if none, so that the triangles keep the
+  // material color)
+  if (texturePath.empty())
+  {
+    mrpt::img::CImage white(1, 1, mrpt::img::CH_RGB);
+    for (int8_t ch = 0; ch < 3; ch++)
+    {
+      white.at<uint8_t>(0, 0, ch) = 0xff;
+    }
+    mesh->assignImage(white);
+  }
+  else if (const LoadedTexture* tex = loadTexture(texturePath); tex != nullptr)
   {
     if (tex->alpha.has_value())
     {
@@ -870,10 +920,14 @@ CSetOfTexturedTriangles::Ptr CAssimpModel::getOrCreateTexturedMesh(
 
   mesh->setAlphaMode(alphaMode);
   mesh->setAlphaCutoff(alphaCutoff);
+  mesh->materialEmissive(emissive);
+  mesh->materialShininess(shininess);
+  mesh->materialSpecularExponent(specularExponent);
 
   // Add to children and tracking list
   insert(mesh);
   m_texturedMeshes.push_back(mesh);
+  m_texturedMeshMapFiles.push_back(mapFiles);
 
   return mesh;
 }
@@ -1027,6 +1081,7 @@ void CAssimpModel::rebuildFromAssimpScene()
   // Clear existing child objects but keep the assimp scene alive
   CSetOfObjects::clear();
   m_texturedMeshes.clear();
+  m_texturedMeshMapFiles.clear();
   m_nonTexturedMesh.reset();
   m_lines.clear();
   m_cachedBBox.reset();

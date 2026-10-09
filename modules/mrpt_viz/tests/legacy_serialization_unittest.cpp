@@ -33,6 +33,7 @@
 #include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/CVisualObject.h>
+#include <mrpt/viz/TLightParameters.h>
 #include <mrpt/viz/Viewport.h>
 
 using namespace mrpt::viz;
@@ -783,5 +784,47 @@ TEST(VizLegacySerialization, COctoMapVoxels)
     // The triangle params blob only exists from v3 on:
     EXPECT_TRUE(o.areLightsEnabled()) << "v" << int(v);
     EXPECT_EQ(o.cullFaces(), mrpt::viz::TCullFace::NONE) << "v" << int(v);
+  }
+}
+
+// ------------------------------------------- TLight
+
+TEST(VizLegacySerialization, TLightVersions)
+{
+  // v0: no range field, which must read back as unlimited (0):
+  {
+    mrpt::io::CMemoryStream buf;
+    auto a = mrpt::serialization::archiveFrom(buf);
+    a << static_cast<uint8_t>(0);  // version
+    a << static_cast<uint8_t>(TLightType::Point);
+    a << mrpt::img::TColorf(1.0f, 0.5f, 0.25f) << 0.7f << 0.3f;
+    a << mrpt::math::TVector3Df(0, 0, -1) << mrpt::math::TPoint3Df(1, 2, 3);
+    a << 1.0f << 0.2f << 0.1f;  // attenuation
+    a << 10.0f << 20.0f;        // spot cutoffs
+    buf.Seek(0);
+
+    TLight l;
+    l.range = 5.0f;
+    l.readFromStream(a);
+    EXPECT_EQ(l.type, TLightType::Point);
+    EXPECT_FLOAT_EQ(l.position.z, 3.0f);
+    EXPECT_FLOAT_EQ(l.attenuation_linear, 0.2f);
+    EXPECT_FLOAT_EQ(l.spot_outer_cutoff_deg, 20.0f);
+    EXPECT_FLOAT_EQ(l.range, 0.0f);
+    EXPECT_FALSE(l.cast_shadows);
+  }
+  // Current version round trip:
+  {
+    mrpt::io::CMemoryStream buf;
+    auto a = mrpt::serialization::archiveFrom(buf);
+    auto src = TLight::PointLight({1, 2, 3}, {1, 1, 1}, 0.8f, 0.5f, 1.0f, 0.1f, 0.2f, 4.5f);
+    src.cast_shadows = true;
+    src.writeToStream(a);
+    buf.Seek(0);
+    TLight l;
+    l.readFromStream(a);
+    EXPECT_FLOAT_EQ(l.range, 4.5f);
+    EXPECT_FLOAT_EQ(l.attenuation_quadratic, 0.2f);
+    EXPECT_TRUE(l.cast_shadows);
   }
 }

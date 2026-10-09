@@ -2,6 +2,12 @@
 Changelog for package mrpt_graphslam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.5.1 (2026-10-09)
+------------------
+
+3.5.0 (2026-10-07)
+------------------
+
 3.4.0 (2026-10-04)
 ------------------
 * mrpt_graphslam: include what is used instead of relying on CNetworkOfPoses headers

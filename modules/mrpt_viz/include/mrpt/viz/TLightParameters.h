@@ -20,6 +20,11 @@
 
 #include <vector>
 
+/** Defined if the mrpt::viz::CLight class exists (lights in the scene graph),
+ * and viewports with more than MAX_LIGHTS lights keep those closest to the
+ * camera. Meant for user code that must also build with older versions. */
+#define MRPT_VIZ_HAS_CLIGHT 1
+
 namespace mrpt::viz
 {
 /** Maximum number of simultaneous lights supported by the shader pipeline. */
@@ -27,6 +32,9 @@ static constexpr int MAX_LIGHTS = 8;
 
 /** Maximum number of cascaded shadow map splits. */
 static constexpr int MAX_SHADOW_CASCADES = 4;
+
+/** Maximum number of point/spot lights casting shadows at once (all of them). */
+static constexpr int MAX_SHADOW_POINT_LIGHTS = MAX_LIGHTS;
 
 /** Light source type.
  * \ingroup mrpt_viz_grp
@@ -66,6 +74,22 @@ struct TLight
   float attenuation_linear = 0.09f;
   float attenuation_quadratic = 0.032f;
 
+  /** Maximum reach of Point/Spot lights [meters]: the attenuation is
+   *  multiplied by a smooth window that reaches exactly zero at this
+   *  distance, so the light does not affect anything farther away.
+   *  0 (default) means unlimited reach. Ignored for Directional. */
+  float range = 0;
+
+  /** Whether this Point/Spot light casts shadows (default: false). Each one
+   *  renders the scene into a cube shadow map (six depth passes, each one
+   *  cached while nothing within its view changes), so enable it only for the
+   *  lights that matter. Only the first MAX_SHADOW_POINT_LIGHTS such lights
+   *  cast shadows, and only in viewports with shadow casting enabled. Set a
+   *  `range` too, which limits the shadow passes to nearby objects.
+   *  Directional lights ignore this flag: the first one always casts
+   *  shadows. \sa TLightParameters::point_shadow_map_size */
+  bool cast_shadows = false;
+
   /** Spot light inner cutoff angle in degrees (full intensity cone). */
   float spot_inner_cutoff_deg = 12.5f;
   /** Spot light outer cutoff angle in degrees (light fades to zero). */
@@ -95,7 +119,8 @@ struct TLight
       float specular = 0.95f,
       float att_constant = 1.0f,
       float att_linear = 0.09f,
-      float att_quadratic = 0.032f)
+      float att_quadratic = 0.032f,
+      float range = 0)
   {
     TLight l;
     l.type = TLightType::Point;
@@ -106,6 +131,7 @@ struct TLight
     l.attenuation_constant = att_constant;
     l.attenuation_linear = att_linear;
     l.attenuation_quadratic = att_quadratic;
+    l.range = range;
     return l;
   }
 
@@ -120,7 +146,8 @@ struct TLight
       float specular = 0.95f,
       float att_constant = 1.0f,
       float att_linear = 0.09f,
-      float att_quadratic = 0.032f)
+      float att_quadratic = 0.032f,
+      float range = 0)
   {
     TLight l;
     l.type = TLightType::Spot;
@@ -134,6 +161,7 @@ struct TLight
     l.attenuation_quadratic = att_quadratic;
     l.spot_inner_cutoff_deg = innerCutoffDeg;
     l.spot_outer_cutoff_deg = outerCutoffDeg;
+    l.range = range;
     return l;
   }
 
@@ -208,6 +236,10 @@ struct TLightParameters
    *  orbit cameras, or 40 m for cameras with a free pose (6DOF mode, e.g.
    *  simulated sensor cameras), which have no orbit distance. */
   float shadow_max_distance = 0;
+
+  /** Size in pixels of each of the six faces of the cube shadow maps of
+   *  point/spot lights with TLight::cast_shadows (default: 512). */
+  uint16_t point_shadow_map_size = 512;
 
   /** @name Screen-Space Ambient Occlusion (SSAO)
    *  SSAO approximates ambient occlusion from the depth and normal G-buffer

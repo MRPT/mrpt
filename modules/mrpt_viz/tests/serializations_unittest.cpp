@@ -43,6 +43,7 @@
 #include <mrpt/viz/CGeneralizedEllipsoidTemplate.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CGridPlaneXZ.h>
+#include <mrpt/viz/CLight.h>
 #include <mrpt/viz/CMesh.h>
 #include <mrpt/viz/CMesh3D.h>
 #include <mrpt/viz/CMeshFast.h>
@@ -103,6 +104,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
       CLASS_ID(CPolyhedron),
       CLASS_ID(CArrow),
       CLASS_ID(CCamera),
+      CLASS_ID(CLight),
       CLASS_ID(CEllipsoid3D),
       CLASS_ID(CGridPlaneXZ),
       CLASS_ID(Scene),

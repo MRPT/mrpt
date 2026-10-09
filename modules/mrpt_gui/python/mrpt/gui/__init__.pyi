@@ -18,6 +18,7 @@ Usage example::
     win.waitForKey()
 """
 from __future__ import annotations
+import mrpt as mrpt
 from mrpt.gui._bindings import CBaseGUIWindow as CBaseGUIWindow
 from mrpt.gui._bindings import CDisplayWindow3D as CDisplayWindow3D
 from . import _bindings

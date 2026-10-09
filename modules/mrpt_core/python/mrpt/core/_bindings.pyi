@@ -6,9 +6,17 @@ import datetime
 import typing
 __all__: list[str] = ['Clock', 'Stringifyable', 'WorkerThreadsPool', 'abs_diff_double', 'abs_diff_float', 'abs_diff_int', 'abs_diff_long', 'deg2rad', 'format', 'format1d', 'format1s', 'from_string_double', 'from_string_int', 'get_env', 'get_env_double', 'get_env_int', 'rad2deg', 'reverse_bytes_i16', 'reverse_bytes_i32', 'reverse_bytes_i64', 'reverse_bytes_u16', 'reverse_bytes_u32', 'reverse_bytes_u64']
 class Stringifyable:
+    """
+    Interface for classes whose state can be represented as a human-friendly text.
+    """
     def asString(self) -> str:
-        ...
+        """
+        Returns a human-friendly textual description of the object.
+        """
 class Clock:
+    """
+    C++11-clock that is compatible with MRPT TTimeStamp representation.
+    """
     @staticmethod
     def fromDouble(seconds: float) -> datetime.timedelta:
         """
@@ -30,18 +38,33 @@ class Clock:
         Convert mrpt::Clock::time_point to double seconds
         """
 class WorkerThreadsPool:
+    """
+    A simple and efficient thread pool for parallel task execution.
+    """
     def __init__(self, num_threads: int) -> None:
-        ...
+        """
+        Creates a pool with the given number of worker threads.
+        """
     def clear(self) -> None:
-        ...
+        """
+        Stops all worker threads and clears the pool.
+        """
     def enqueue(self, func: typing.Callable) -> None:
-        ...
+        """
+        Enqueues a task for execution by a worker thread.
+        """
     def pendingTasks(self) -> int:
-        ...
+        """
+        Returns the number of tasks waiting in the queue.
+        """
     def resize(self, arg0: int) -> None:
-        ...
+        """
+        Adds worker threads to the pool.
+        """
     def size(self) -> int:
-        ...
+        """
+        Returns the number of worker threads in the pool.
+        """
     @property
     def name(self) -> str:
         """

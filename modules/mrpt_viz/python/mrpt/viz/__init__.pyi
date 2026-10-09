@@ -18,6 +18,7 @@ from mrpt.viz._bindings import CEllipsoidRangeBearing2D as CEllipsoidRangeBearin
 from mrpt.viz._bindings import CFrustum as CFrustum
 from mrpt.viz._bindings import CGridPlaneXY as CGridPlaneXY
 from mrpt.viz._bindings import CGridPlaneXZ as CGridPlaneXZ
+from mrpt.viz._bindings import CLight as CLight
 from mrpt.viz._bindings import CMesh as CMesh
 from mrpt.viz._bindings import CMesh3D as CMesh3D
 from mrpt.viz._bindings import CMeshFast as CMeshFast
@@ -49,8 +50,10 @@ from mrpt.viz._bindings import Viewport as Viewport
 from mrpt.viz._bindings import posePDF2opengl as posePDF2opengl
 from mrpt.viz._bindings import stock_objects as stock_objects
 from . import _bindings
-__all__: list = ['posePDF2opengl', 'Scene', 'Viewport', 'CSetOfObjects', 'CCamera', 'CPointCloud', 'CPointCloudColoured', 'CAssimpModel', 'AssimpLoadFlags', 'CGridPlaneXY', 'CGridPlaneXZ', 'CAxis', 'CBox', 'CSphere', 'CCylinder', 'CArrow', 'CText', 'CText3D', 'CSetOfLines', 'CSimpleLine', 'CEllipsoid2D', 'CEllipsoid3D', 'TTriangle', 'TTriangleVertex', 'CDisk', 'CFrustum', 'CSetOfTriangles', 'CVectorField2D', 'CVectorField3D', 'CMesh', 'CColorBar', 'CMesh3D', 'CMeshFast', 'CTexturedPlane', 'CSetOfTexturedTriangles', 'CPolyhedron', 'COrbitCameraController', 'COctoMapVoxels', 'OctoMapVisualizationMode', 'CubeTextureFace', 'CSkyBox', 'TLightType', 'TLight', 'CEllipsoidInverseDepth2D', 'CEllipsoidInverseDepth3D', 'CEllipsoidRangeBearing2D', 'CAnimatedAssimpModel', 'stock_objects', 'create_point_cloud']
+__all__: list = ['posePDF2opengl', 'Scene', 'Viewport', 'CSetOfObjects', 'CCamera', 'CPointCloud', 'CPointCloudColoured', 'CAssimpModel', 'AssimpLoadFlags', 'CGridPlaneXY', 'CGridPlaneXZ', 'CAxis', 'CBox', 'CSphere', 'CCylinder', 'CArrow', 'CText', 'CText3D', 'CSetOfLines', 'CSimpleLine', 'CEllipsoid2D', 'CEllipsoid3D', 'TTriangle', 'TTriangleVertex', 'CDisk', 'CFrustum', 'CSetOfTriangles', 'CVectorField2D', 'CVectorField3D', 'CMesh', 'CColorBar', 'CMesh3D', 'CMeshFast', 'CTexturedPlane', 'CSetOfTexturedTriangles', 'CPolyhedron', 'COrbitCameraController', 'COctoMapVoxels', 'OctoMapVisualizationMode', 'CubeTextureFace', 'CSkyBox', 'TLightType', 'TLight', 'CLight', 'CEllipsoidInverseDepth2D', 'CEllipsoidInverseDepth3D', 'CEllipsoidRangeBearing2D', 'CAnimatedAssimpModel', 'stock_objects', 'create_point_cloud']
 def _scene_lshift(self, obj):
     ...
 def create_point_cloud(pts_array, color = (255, 255, 255)):
-    ...
+    """
+    Returns a CPointCloud with the points of an (N, 3) array, in one color (R, G, B, 0-255).
+    """

@@ -104,6 +104,9 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
   /** Owned normal map texture object */
   std::unique_ptr<Texture> m_ownedNormalMapTexture;
 
+  /** Owned emissive map texture object */
+  std::unique_ptr<Texture> m_ownedEmissiveMapTexture;
+
   /** Helper: Extract texture rendering parameters from source object */
   void extractTextureParams(const mrpt::viz::CVisualObject* sourceObj);
 
@@ -116,8 +119,12 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
   /** Helper: Create or update normal map texture from source image */
   void updateNormalMapTexture(const mrpt::viz::VisualObjectParams_TexturedTriangles* texTriObj);
 
+  /** Helper: Create or update emissive map texture from source image */
+  void updateEmissiveMapTexture(const mrpt::viz::VisualObjectParams_TexturedTriangles* texTriObj);
+
   /** Assigns 1x1 textures that leave the object unchanged (white color,
-   * flat normal map) when the object has no texture or normal map. */
+   * flat normal map, white emissive map) when the object has no texture,
+   * normal map or emissive map. */
   void assignDefaultTexturesIfMissing();
 
   /** Helper: Setup texture state for rendering */

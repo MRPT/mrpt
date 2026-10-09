@@ -23,6 +23,7 @@
 #include <mrpt/opengl/TrianglesProxy.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/viz/CLight.h>
 #include <mrpt/viz/CSetOfObjects.h>
 #include <mrpt/viz/CSkyBox.h>
 #include <mrpt/viz/CText.h>
@@ -314,6 +315,7 @@ struct CompiledScene::Node
   const CVisualObject* raw = nullptr;
 
   bool isContainer = false;
+  bool isLight = false;       //!< A CLight
   bool compiled = false;      //!< Proxies created (objects other than containers)
   bool hasTransform = false;  //!< worldMatrix, etc. computed at least once
 
@@ -350,6 +352,9 @@ struct CompiledScene::ViewportEntry
 
   /** The textured plane of a viewport in image view mode */
   std::unique_ptr<Node> imagePlane;
+
+  /** Lights of the visible CLight objects, in world coordinates */
+  std::vector<TLight> sceneLights;
 
   /** Proxies of removed nodes, to be removed from `compiled` in one pass */
   std::vector<const RenderableProxy*> removedProxies;
@@ -435,6 +440,29 @@ void setSortPoints(const std::vector<RenderableProxy::Ptr>& proxies, const CVisu
   }
 }
 
+/** A light given in the frame of a CLight, transformed to world coordinates */
+TLight lightInWorld(const TLight& local, const mrpt::math::CMatrixFloat44& M)
+{
+  TLight l = local;
+  const auto& p = local.position;
+  l.position = {
+      M(0, 0) * p.x + M(0, 1) * p.y + M(0, 2) * p.z + M(0, 3),
+      M(1, 0) * p.x + M(1, 1) * p.y + M(1, 2) * p.z + M(1, 3),
+      M(2, 0) * p.x + M(2, 1) * p.y + M(2, 2) * p.z + M(2, 3)};
+
+  const auto& d = local.direction;
+  const mrpt::math::TVector3Df dir = {
+      M(0, 0) * d.x + M(0, 1) * d.y + M(0, 2) * d.z, M(1, 0) * d.x + M(1, 1) * d.y + M(1, 2) * d.z,
+      M(2, 0) * d.x + M(2, 1) * d.y + M(2, 2) * d.z};
+  // Normalized again, in case of scaled parents:
+  const float n = dir.norm();
+  if (n > 0)
+  {
+    l.direction = dir * (1.0f / n);
+  }
+  return l;
+}
+
 const mrpt::math::CMatrixFloat44& identityMatrix()
 {
   static const auto I = mrpt::math::CMatrixFloat44::Identity();
@@ -517,6 +545,25 @@ bool CompiledScene::updateIfNeeded(CompilationStats* stats)
     syncViewportObjects(*e, s);
     e->compiled->removeProxies(e->removedProxies);
     e->removedProxies.clear();
+  }
+
+  // Viewports cloning the objects of another one also get its lights:
+  for (auto& e : m_entries)
+  {
+    if (!e->raw->isCloned())
+    {
+      continue;
+    }
+    e->sceneLights.clear();
+    for (const auto& src : m_entries)
+    {
+      if (src->compiled->getName() == e->raw->getClonedViewportName())
+      {
+        e->sceneLights = src->sceneLights;
+        break;
+      }
+    }
+    e->compiled->setSceneLights(e->sceneLights);
   }
 
   const bool anyChanges = viewportsChanged || s.numObjectsUpdated > 0 || s.numNewObjects > 0 ||
@@ -617,10 +664,13 @@ void CompiledScene::syncViewportObjects(ViewportEntry& vp, CompilationStats& sta
     return;
   }
 
+  vp.sceneLights.clear();
+
   // Image view mode: only the textured plane is drawn.
   if (viz.isImageViewMode())
   {
     releaseRoots();
+    vp.compiled->setSceneLights(vp.sceneLights);
     const auto plane = viz.getImageViewPlane();
     if (vp.imagePlane && !vp.imagePlane->isFor(plane))
     {
@@ -674,6 +724,7 @@ void CompiledScene::syncViewportObjects(ViewportEntry& vp, CompilationStats& sta
   ParentState root;
   root.worldMatrix = &identityMatrix();
   syncNodes(vp.roots, viz, root, vp, stats);
+  vp.compiled->setSceneLights(vp.sceneLights);
 
   MRPT_END
 }
@@ -738,6 +789,7 @@ void CompiledScene::syncNodes(
         node->obj = o;
         node->raw = o.get();
         node->isContainer = dynamic_cast<const CSetOfObjects*>(o.get()) != nullptr;
+        node->isLight = dynamic_cast<const CLight*>(o.get()) != nullptr;
         stats.numNewObjects++;
       }
       nodes.push_back(std::move(node));
@@ -776,13 +828,20 @@ void CompiledScene::updateNode(
 
   // Where and whether it is drawn:
   const uint64_t tv = obj.transformVersion();
-  const bool transformChanged = parent.changed || !node.hasTransform || tv != node.transformVersion;
-  if (transformChanged)
+  bool transformChanged = false;
+  if (parent.changed || !node.hasTransform || tv != node.transformVersion)
   {
+    // Setting the same pose again is not a change, so cached results (e.g.
+    // shadow maps) that depend on this object remain valid:
     const auto ps = obj.getPoseAndScale();
-    node.worldMatrix = computeModelMatrix(ps, *parent.worldMatrix);
-    node.visible = parent.visible && ps.visible;
-    node.castShadows = parent.castShadows && obj.castShadows();
+    const auto worldMatrix = computeModelMatrix(ps, *parent.worldMatrix);
+    const bool visible = parent.visible && ps.visible;
+    const bool castShadows = parent.castShadows && obj.castShadows();
+    transformChanged = !node.hasTransform || worldMatrix != node.worldMatrix ||
+                       visible != node.visible || castShadows != node.castShadows;
+    node.worldMatrix = worldMatrix;
+    node.visible = visible;
+    node.castShadows = castShadows;
     node.transformVersion = tv;
     node.hasTransform = true;
   }
@@ -792,6 +851,17 @@ void CompiledScene::updateNode(
   asParent.changed = transformChanged;
   asParent.visible = node.visible;
   asParent.castShadows = node.castShadows;
+
+  // Lights are not drawn: only collected, if switched on.
+  if (node.isLight)
+  {
+    if (node.visible)
+    {
+      vp.sceneLights.push_back(
+          lightInWorld(static_cast<const CLight&>(obj).light(), node.worldMatrix));
+    }
+    return;
+  }
 
   if (node.isContainer)
   {
@@ -830,6 +900,7 @@ void CompiledScene::updateNode(
       p->m_modelMatrix = node.worldMatrix;
       p->m_visible = node.visible;
       p->m_castShadows = node.castShadows;
+      p->m_changeCount++;
     }
     stats.numObjectsUpdated++;
   }

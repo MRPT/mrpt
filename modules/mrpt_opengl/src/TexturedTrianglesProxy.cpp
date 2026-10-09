@@ -89,6 +89,10 @@ void TexturedTrianglesProxy::compile(const CVisualObject* sourceObj)
     {
       updateNormalMapTexture(texTriObj);
     }
+    if (texTriObj->emissiveMapHasBeenAssigned())
+    {
+      updateEmissiveMapTexture(texTriObj);
+    }
   }
   assignDefaultTexturesIfMissing();
 
@@ -123,6 +127,10 @@ void TexturedTrianglesProxy::updateBuffers(const CVisualObject* sourceObj)
     if (texTriObj->normalMapHasBeenAssigned())
     {
       updateNormalMapTexture(texTriObj);
+    }
+    if (texTriObj->emissiveMapHasBeenAssigned())
+    {
+      updateEmissiveMapTexture(texTriObj);
     }
   }
   assignDefaultTexturesIfMissing();
@@ -252,6 +260,10 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
   {
     uploadInt(rc, "normalMapSampler", NORMAL_MAP_TEXTURE_UNIT);
   }
+  if (rc.shader->hasUniform("emissiveMapSampler"))
+  {
+    uploadInt(rc, "emissiveMapSampler", EMISSIVE_MAP_TEXTURE_UNIT);
+  }
 
   // Material specular intensity
   if (rc.shader->hasUniform("materialSpecular"))
@@ -274,74 +286,21 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
             m_params.materialEmissive.R, m_params.materialEmissive.G, m_params.materialEmissive.B));
   }
 
-  // Multi-light parameters (if lighting enabled)
-  if (m_params.lightEnabled && rc.lights)
+  // Camera position (view direction for specular lighting and back sides, and
+  // fog distance)
+  if (rc.shader->hasUniform("cam_position") && rc.state != nullptr)
   {
-    const auto& lights = rc.lights->lights;
-    const int numLights = static_cast<int>(std::min<size_t>(lights.size(), mrpt::viz::MAX_LIGHTS));
+    const auto& e = rc.state->eye;
+    uploadVector3(
+        rc, "cam_position",
+        mrpt::math::TVector3Df(
+            static_cast<float>(e.x), static_cast<float>(e.y), static_cast<float>(e.z)));
+  }
 
-    if (rc.shader->hasUniform("num_lights"))
-    {
-      uploadInt(rc, "num_lights", numLights);
-    }
-    if (rc.shader->hasUniform("light_ambient"))
-    {
-      uploadFloat(rc, "light_ambient", rc.lights->ambient);
-    }
-    if (rc.shader->hasUniform("ambient_sky_color"))
-    {
-      const auto& c = rc.lights->ambientSkyColor;
-      uploadVector3(rc, "ambient_sky_color", mrpt::math::TVector3Df(c.R, c.G, c.B));
-    }
-    if (rc.shader->hasUniform("ambient_ground_color"))
-    {
-      const auto& c = rc.lights->ambientGroundColor;
-      uploadVector3(rc, "ambient_ground_color", mrpt::math::TVector3Df(c.R, c.G, c.B));
-    }
-
-    // Build arrays and upload via raw GL calls
-    if (numLights > 0 && rc.shader->hasUniform("light_type"))
-    {
-      int types[mrpt::viz::MAX_LIGHTS] = {};
-      float colors[mrpt::viz::MAX_LIGHTS * 3] = {};
-      float diffuses[mrpt::viz::MAX_LIGHTS] = {};
-      float speculars[mrpt::viz::MAX_LIGHTS] = {};
-      float directions[mrpt::viz::MAX_LIGHTS * 3] = {};
-      float positions[mrpt::viz::MAX_LIGHTS * 3] = {};
-      float attenuations[mrpt::viz::MAX_LIGHTS * 3] = {};
-      float spotCutoffs[mrpt::viz::MAX_LIGHTS * 2] = {};
-
-      for (int i = 0; i < numLights; i++)
-      {
-        const auto& l = lights[i];
-        types[i] = static_cast<int>(l.type);
-        colors[i * 3 + 0] = l.color.R;
-        colors[i * 3 + 1] = l.color.G;
-        colors[i * 3 + 2] = l.color.B;
-        diffuses[i] = l.diffuse;
-        speculars[i] = l.specular;
-        directions[i * 3 + 0] = l.direction.x;
-        directions[i * 3 + 1] = l.direction.y;
-        directions[i * 3 + 2] = l.direction.z;
-        positions[i * 3 + 0] = l.position.x;
-        positions[i * 3 + 1] = l.position.y;
-        positions[i * 3 + 2] = l.position.z;
-        attenuations[i * 3 + 0] = l.attenuation_constant;
-        attenuations[i * 3 + 1] = l.attenuation_linear;
-        attenuations[i * 3 + 2] = l.attenuation_quadratic;
-        spotCutoffs[i * 2 + 0] = std::cos(mrpt::DEG2RAD(l.spot_inner_cutoff_deg));
-        spotCutoffs[i * 2 + 1] = std::cos(mrpt::DEG2RAD(l.spot_outer_cutoff_deg));
-      }
-
-      glUniform1iv(rc.shader->uniformId("light_type"), numLights, types);
-      glUniform3fv(rc.shader->uniformId("light_color"), numLights, colors);
-      glUniform1fv(rc.shader->uniformId("light_diffuse"), numLights, diffuses);
-      glUniform1fv(rc.shader->uniformId("light_specular"), numLights, speculars);
-      glUniform3fv(rc.shader->uniformId("light_direction"), numLights, directions);
-      glUniform3fv(rc.shader->uniformId("light_position"), numLights, positions);
-      glUniform3fv(rc.shader->uniformId("light_attenuation"), numLights, attenuations);
-      glUniform2fv(rc.shader->uniformId("light_spot_cutoff"), numLights, spotCutoffs);
-    }
+  // Multi-light parameters (if lighting enabled)
+  if (m_params.lightEnabled)
+  {
+    uploadLights(rc);
   }
 
   // Fog parameters
@@ -445,6 +404,41 @@ void TexturedTrianglesProxy::updateNormalMapTexture(
 #endif
 }
 
+void TexturedTrianglesProxy::updateEmissiveMapTexture(
+    const VisualObjectParams_TexturedTriangles* texTriObj)
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  if (!texTriObj || !texTriObj->emissiveMapHasBeenAssigned())
+  {
+    return;
+  }
+
+  const auto& emissiveMapImage = texTriObj->getEmissiveMapImage();
+  if (emissiveMapImage.isEmpty())
+  {
+    return;
+  }
+
+  if (!m_ownedEmissiveMapTexture)
+  {
+    m_ownedEmissiveMapTexture = std::make_unique<Texture>();
+  }
+
+  Texture::Options options;
+  options.generateMipMaps = m_params.textureMipMaps;
+  options.magnifyLinearFilter = m_params.textureInterpolate;
+  options.enableTransparency = false;
+  options.shareScope = m_resourceScope;
+
+  if (m_ownedEmissiveMapTexture->initialized())
+  {
+    m_ownedEmissiveMapTexture->unloadTexture();
+  }
+
+  m_ownedEmissiveMapTexture->assignImage2D(emissiveMapImage, options, EMISSIVE_MAP_TEXTURE_UNIT);
+#endif
+}
+
 void TexturedTrianglesProxy::assignDefaultTexturesIfMissing()
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
@@ -465,6 +459,12 @@ void TexturedTrianglesProxy::assignDefaultTexturesIfMissing()
     m_ownedNormalMapTexture = std::make_unique<Texture>();
     m_ownedNormalMapTexture->assignImage2D(defaultNormalMapImage(), o, NORMAL_MAP_TEXTURE_UNIT);
   }
+  if (!m_ownedEmissiveMapTexture || !m_ownedEmissiveMapTexture->initialized())
+  {
+    o.isColorData = true;
+    m_ownedEmissiveMapTexture = std::make_unique<Texture>();
+    m_ownedEmissiveMapTexture->assignImage2D(defaultDiffuseImage(), o, EMISSIVE_MAP_TEXTURE_UNIT);
+  }
 #endif
 }
 
@@ -479,12 +479,19 @@ void TexturedTrianglesProxy::bindTexture() const
   {
     m_ownedNormalMapTexture->bindAsTexture2D();
   }
+  if (m_ownedEmissiveMapTexture)
+  {
+    m_ownedEmissiveMapTexture->bindAsTexture2D();
+  }
 #endif
 }
 
 void TexturedTrianglesProxy::unbindTexture() const
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  glActiveTexture(GL_TEXTURE0 + EMISSIVE_MAP_TEXTURE_UNIT);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
   glActiveTexture(GL_TEXTURE0 + NORMAL_MAP_TEXTURE_UNIT);
   glBindTexture(GL_TEXTURE_2D, 0);
 

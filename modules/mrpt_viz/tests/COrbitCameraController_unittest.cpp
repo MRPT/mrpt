@@ -13,7 +13,10 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/core/bits_math.h>
 #include <mrpt/viz/COrbitCameraController.h>
+
+#include <cmath>
 
 using namespace mrpt::viz;
 
@@ -110,6 +113,30 @@ TEST(COrbitCameraController, MouseRotateDragWithControl)
   ctrl.onMouseButton(0, 0, COrbitCameraController::ButtonLeft, true);
   ctrl.onMouseMove(15, 0, COrbitCameraController::ButtonLeft, COrbitCameraController::ModControl);
   EXPECT_NE(ctrl.getAzimuthDegrees(), az0);
+}
+
+TEST(COrbitCameraController, MouseRotateDragWithControlKeepsEye)
+{
+  COrbitCameraController ctrl;
+  ctrl.setZoomDistance(10.f);
+  const auto eye = [&ctrl]()
+  {
+    const double az = mrpt::DEG2RAD(ctrl.getAzimuthDegrees());
+    const double el = mrpt::DEG2RAD(ctrl.getElevationDegrees());
+    const double d = ctrl.getZoomDistance();
+    return mrpt::math::TPoint3D(
+        ctrl.getCameraPointingX() + d * std::cos(az) * std::cos(el),
+        ctrl.getCameraPointingY() + d * std::sin(az) * std::cos(el),
+        ctrl.getCameraPointingZ() + d * std::sin(el));
+  };
+  const auto eye0 = eye();
+  ctrl.onMouseButton(0, 0, COrbitCameraController::ButtonLeft, true);
+  ctrl.onMouseMove(15, 8, COrbitCameraController::ButtonLeft, COrbitCameraController::ModControl);
+  const auto eye1 = eye();
+  EXPECT_NEAR(eye0.x, eye1.x, 1e-3);
+  EXPECT_NEAR(eye0.y, eye1.y, 1e-3);
+  EXPECT_NEAR(eye0.z, eye1.z, 1e-3);
+  EXPECT_TRUE(ctrl.getCameraPointingX() != 0.f || ctrl.getCameraPointingY() != 0.f);
 }
 
 TEST(COrbitCameraController, MouseRollDragWithAlt)

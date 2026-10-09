@@ -5,6 +5,7 @@ mrpt-img Python API.
 # CImage inherits CSerializable; ensure base types are registered first.
 import mrpt.rtti          # noqa: F401
 import mrpt.serialization  # noqa: F401
+import mrpt.math           # noqa: F401  (TPose3DQuat in TStereoCamera)
 
 import numpy as np
 from . import _bindings as _b
@@ -15,6 +16,7 @@ TColor = _b.TColor
 TColorf = _b.TColorf
 TCamera = _b.TCamera
 DistortionModel = _b.DistortionModel
+PixelDepth = _b.PixelDepth
 TPixelCoord = _b.TPixelCoord
 
 # 1. Patch CImage for seamless NumPy/OpenCV integration
@@ -46,6 +48,8 @@ TColorf.__array__ = _TColorf_array
 
 
 class Color:
+    """Predefined TColor constants."""
+
     RED = TColor(255, 0, 0)
     GREEN = TColor(0, 255, 0)
     BLUE = TColor(0, 0, 255)
@@ -61,4 +65,4 @@ TStereoCamera = _b.TStereoCamera
 TPixelCoordf = _b.TPixelCoordf
 
 __all__ = ['CImage', 'TColor', 'TColorf', 'TCamera', 'TStereoCamera',
-           'DistortionModel', 'TPixelCoord', 'TPixelCoordf', 'Color', 'colormap', 'TColormap']
+           'DistortionModel', 'PixelDepth', 'TPixelCoord', 'TPixelCoordf', 'Color', 'colormap', 'TColormap']

@@ -32,15 +32,21 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::kinematics::CVehicleVelCmd_DiffDriven,
-      std::shared_ptr<mrpt::kinematics::CVehicleVelCmd_DiffDriven>>(m, "CVehicleVelCmd_DiffDriven")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::kinematics::CVehicleVelCmd_DiffDriven>>(
+      m, "CVehicleVelCmd_DiffDriven",
+      "Kinematic model for Ackermann-like or differential-driven vehicles.")
+      .def(py::init<>(), "Default constructor.")
       .def_readwrite(
           "lin_vel", &mrpt::kinematics::CVehicleVelCmd_DiffDriven::lin_vel, "Linear velocity (m/s)")
       .def_readwrite(
           "ang_vel", &mrpt::kinematics::CVehicleVelCmd_DiffDriven::ang_vel,
           "Angular velocity (rad/s)")
-      .def("isStopCmd", &mrpt::kinematics::CVehicleVelCmd_DiffDriven::isStopCmd)
-      .def("setToStop", &mrpt::kinematics::CVehicleVelCmd_DiffDriven::setToStop)
+      .def(
+          "isStopCmd", &mrpt::kinematics::CVehicleVelCmd_DiffDriven::isStopCmd,
+          "Returns true if the command means \"do not move\" / \"stop\".")
+      .def(
+          "setToStop", &mrpt::kinematics::CVehicleVelCmd_DiffDriven::setToStop,
+          "Set to a command that means \"do not move\" / \"stop\".")
       .def(
           "__repr__",
           [](const mrpt::kinematics::CVehicleVelCmd_DiffDriven& cmd)
@@ -54,11 +60,15 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::kinematics::CVehicleVelCmd_Holo,
-      std::shared_ptr<mrpt::kinematics::CVehicleVelCmd_Holo>>(m, "CVehicleVelCmd_Holo")
-      .def(py::init<>())
+      std::shared_ptr<mrpt::kinematics::CVehicleVelCmd_Holo>>(
+      m, "CVehicleVelCmd_Holo",
+      "Velocity command for holonomic robots: speed, direction, rotational speed and ramp time.")
+      .def(py::init<>(), "Default constructor.")
       .def(
           py::init<double, double, double, double>(), "vel"_a, "dir_local"_a, "ramp_time"_a,
-          "rot_speed"_a)
+          "rot_speed"_a,
+          "Builds a command from speed, direction (rad), ramp time (s) and rotational speed "
+          "(rad/s).")
       .def_readwrite("vel", &mrpt::kinematics::CVehicleVelCmd_Holo::vel, "Linear speed (m/s)")
       .def_readwrite(
           "dir_local", &mrpt::kinematics::CVehicleVelCmd_Holo::dir_local,
@@ -68,8 +78,12 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite(
           "rot_speed", &mrpt::kinematics::CVehicleVelCmd_Holo::rot_speed,
           "Rotational speed for heading correction (rad/s)")
-      .def("isStopCmd", &mrpt::kinematics::CVehicleVelCmd_Holo::isStopCmd)
-      .def("setToStop", &mrpt::kinematics::CVehicleVelCmd_Holo::setToStop)
+      .def(
+          "isStopCmd", &mrpt::kinematics::CVehicleVelCmd_Holo::isStopCmd,
+          "Returns true if the command means \"do not move\" / \"stop\".")
+      .def(
+          "setToStop", &mrpt::kinematics::CVehicleVelCmd_Holo::setToStop,
+          "Set to a command that means \"do not move\" / \"stop\".")
       .def(
           "__repr__",
           [](const mrpt::kinematics::CVehicleVelCmd_Holo& cmd)
@@ -81,7 +95,9 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CVehicleSimulVirtualBase — abstract base for vehicle simulators
   // -------------------------------------------------------------------------
-  py::class_<mrpt::kinematics::CVehicleSimulVirtualBase>(m, "CVehicleSimulVirtualBase")
+  py::class_<mrpt::kinematics::CVehicleSimulVirtualBase>(
+      m, "CVehicleSimulVirtualBase",
+      "Base class of the 2D robot kinematic simulators, including odometry errors.")
       .def(
           "simulateOneTimeStep", &mrpt::kinematics::CVehicleSimulVirtualBase::simulateOneTimeStep,
           "dt"_a, "Advance simulation by dt seconds")
@@ -100,20 +116,22 @@ PYBIND11_MODULE(_bindings, m)
           "setCurrentGTPose",
           [](mrpt::kinematics::CVehicleSimulVirtualBase& s, const mrpt::math::TPose2D& p)
           { s.setCurrentGTPose(p); },
-          "pose"_a)
+          "pose"_a, "Brute-force move robot to target coordinates (\"teleport\")")
       .def(
           "setCurrentOdometricPose",
           [](mrpt::kinematics::CVehicleSimulVirtualBase& s, const mrpt::math::TPose2D& p)
           { s.setCurrentOdometricPose(p); },
-          "pose"_a);
+          "pose"_a, "Brute-force overwrite robot odometry.");
 
   // -------------------------------------------------------------------------
   // CVehicleSimul_DiffDriven — differential-drive robot simulator
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::kinematics::CVehicleSimul_DiffDriven, mrpt::kinematics::CVehicleSimulVirtualBase>(
-      m, "CVehicleSimul_DiffDriven")
-      .def(py::init<>())
+      m, "CVehicleSimul_DiffDriven",
+      "Simulates the kinematics of a differential-driven planar mobile robot/vehicle, including "
+      "odometry errors and dynamics limitations.")
+      .def(py::init<>(), "Default constructor.")
       .def(
           "movementCommand", &mrpt::kinematics::CVehicleSimul_DiffDriven::movementCommand,
           "lin_vel"_a, "ang_vel"_a, "Set velocity command: linear (m/s) and angular (rad/s)")
@@ -130,8 +148,10 @@ PYBIND11_MODULE(_bindings, m)
   // CVehicleSimul_Holo — holonomic robot simulator
   // -------------------------------------------------------------------------
   py::class_<mrpt::kinematics::CVehicleSimul_Holo, mrpt::kinematics::CVehicleSimulVirtualBase>(
-      m, "CVehicleSimul_Holo")
-      .def(py::init<>())
+      m, "CVehicleSimul_Holo",
+      "Kinematic simulator of a holonomic 2D robot capable of moving in any direction, with "
+      "\"blended\" velocity profiles.")
+      .def(py::init<>(), "Default constructor.")
       .def(
           "sendVelRampCmd", &mrpt::kinematics::CVehicleSimul_Holo::sendVelRampCmd, "vel"_a, "dir"_a,
           "ramp_time"_a, "rot_speed"_a, "Send a velocity ramp command to the holonomic robot")

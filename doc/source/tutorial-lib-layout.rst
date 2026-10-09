@@ -53,8 +53,8 @@ directories:
 
          -  src
 
-            -  **``precomp_hdr.cpp``**\ (*This file must only contain
-               a:* ``#include <mrpt/name.h> ``)
+            -  ``precomp_hdr.cpp``\ (*This file must only contain
+               a:* ``#include <mrpt/name.h>``)
             -  registerAllClasses.cpp \ *(optional: used to register all
                ```CSerializable`` <http://www.mrpt.org/tutorials/programming/serialization/>`__\ objects
                so they can be de-serialized without knowing their type
@@ -70,8 +70,8 @@ directories:
                   -  **link\_pragmas.h**
                   -  *(the rest of include files)*
 
-               -  **``name.h``** (*this will be the precompiled
-                  header:* ``#include <mrpt/name.h> ``)
+               -  ``name.h`` (*this will be the precompiled
+                  header:* ``#include <mrpt/name.h>``)
 
          -  CMakeLists.txt
 

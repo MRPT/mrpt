@@ -213,6 +213,10 @@ class CFBORender
    */
   void invalidateCompiledScene() { m_compiledScene.reset(); }
 
+  /** The GPU-side representation of the last rendered scene (e.g. to read
+   * its viewports render statistics), or nullptr if nothing was rendered. */
+  [[nodiscard]] const CompiledScene* compiledScene() const { return m_compiledScene.get(); }
+
   /** @} */
 
  protected:

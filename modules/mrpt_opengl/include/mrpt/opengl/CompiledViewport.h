@@ -28,6 +28,7 @@
 #include <mrpt/viz/TLightParameters.h>
 #include <mrpt/viz/Viewport.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -47,6 +48,9 @@ struct ViewportRenderStats
   size_t numProxiesRendered = 0;
   size_t numProxiesCulled = 0;
   size_t numDrawCalls = 0;
+  /** Cube faces of point/spot light shadow maps rendered (not reused from a
+   * previous frame). */
+  size_t numPointShadowFacesRendered = 0;
   double renderTimeMs = 0.0;
 
   void reset()
@@ -54,6 +58,7 @@ struct ViewportRenderStats
     numProxiesRendered = 0;
     numProxiesCulled = 0;
     numDrawCalls = 0;
+    numPointShadowFacesRendered = 0;
     renderTimeMs = 0.0;
   }
 };
@@ -110,6 +115,11 @@ class CompiledViewport
    *        get3DRayForPixelCoord().
    */
   void updateFromVizViewport(const mrpt::viz::Viewport& vizVp);
+
+  /** Sets the lights of the mrpt::viz::CLight objects in this viewport, in
+   * world coordinates, which are appended to those of the source viewport.
+   * This is called automatically by CompiledScene during compilation. */
+  void setSceneLights(const std::vector<mrpt::viz::TLight>& lights);
 
   /** Returns the viewport name */
   const std::string& getName() const { return m_name; }
@@ -393,8 +403,19 @@ class CompiledViewport
 
   void updateCameraParams(const mrpt::viz::CCamera& camera);
 
-  /** Lighting parameters */
+  /** Lighting parameters, with the lights actually used for rendering: those
+   * of the source viewport and of the scene, selected with selectLights(). */
   mrpt::viz::TLightParameters m_lightParams;
+
+  /** All lights of the source viewport */
+  std::vector<mrpt::viz::TLight> m_viewportLights;
+
+  /** Lights of the CLight objects in the scene, in world coordinates */
+  std::vector<mrpt::viz::TLight> m_sceneLights;
+
+  /** Fills m_lightParams.lights with up to MAX_LIGHTS lights: all directional
+   * lights, then the point/spot lights closest to the camera. */
+  void selectLights();
 
   /** Render matrices (projection, view, model, etc.) */
   TRenderMatrices m_renderMatrices;
@@ -437,6 +458,28 @@ class CompiledViewport
   int m_cascadeDepthArrayLayers = 0;
   unsigned int m_cascadeDepthArraySizeX = 0;
   unsigned int m_cascadeDepthArraySizeY = 0;
+
+  /** GL_TEXTURE_2D_ARRAY holding the cube shadow maps of point/spot lights
+   *  (six layers per light). Created/resized on demand in
+   *  renderPointShadowMaps(). */
+  unsigned int m_pointShadowArrayTexId = 0;
+  int m_pointShadowArrayLayers = 0;
+  unsigned int m_pointShadowArraySize = 0;
+
+  /** A cube shadow map in m_pointShadowArrayTexId */
+  struct PointShadowCube
+  {
+    int lightIndex = -1;  //!< Index in m_lightParams.lights
+    float zNear = 0;
+    float zFar = 0;
+    /** Of the light and the objects in each face frustum, to reuse faces */
+    std::array<uint64_t, 6> faceSignatures{};
+  };
+  std::vector<PointShadowCube> m_pointShadowCubes;
+
+  /** True while rendering point light shadow maps (culling against all the
+   *  cube face frustum planes) */
+  bool m_pointShadowPass = false;
 
   /** @} */
 
@@ -511,8 +554,25 @@ class CompiledViewport
   /** Updates projection and view matrices from camera */
   void updateMatrices();
 
-  /** Performs shadow map rendering (1st pass) */
-  void renderShadowMap(ShaderProgramManager& shaderManager);
+  /** Performs shadow map rendering (1st pass).
+   * \param proxiesToRender If non-null, use these proxies instead of m_proxies
+   *        (used for cloned viewports). */
+  void renderShadowMap(
+      ShaderProgramManager& shaderManager,
+      const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
+
+  /** Frees the GPU resources of all shadow maps */
+  void releaseShadowMaps();
+
+  /** Frees the GPU resources of the point/spot light cube shadow maps */
+  void releasePointShadowMaps();
+
+  /** Renders (or reuses the faces where nothing changed) the cube shadow maps of the
+   * point/spot lights with TLight::cast_shadows.
+   * \param proxiesToRender As in renderShadowMap() */
+  void renderPointShadowMaps(
+      ShaderProgramManager& shaderManager,
+      const std::vector<RenderableProxy::Ptr>* proxiesToRender = nullptr);
 
   /** Performs normal scene rendering.
    * \param proxiesToRender If non-null, use these proxies instead of m_proxies

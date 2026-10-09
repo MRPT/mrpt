@@ -135,7 +135,7 @@ controlled by means of the following parameters in
 -  ``float thresholdDist,thresholdAng``: When determining matchings
    between two point clouds, two nearby poins are considered as
    "candidate pairings" only if their distance is below
-   ``thresholdDist + D*thresholdAng ``, which D being the distance of
+   ``thresholdDist + D*thresholdAng``, which D being the distance of
    the point in the "to align" map to the map origin of coordinates.
    Mathematically, it models an uncertainty in the angular component of
    the pose between point clouds.

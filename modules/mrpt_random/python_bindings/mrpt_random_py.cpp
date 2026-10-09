@@ -27,17 +27,28 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   // CRandomGenerator — Mersenne Twister random number generator
   // -------------------------------------------------------------------------
-  py::class_<mrpt::random::CRandomGenerator>(m, "CRandomGenerator")
-      .def(py::init<>())
-      .def(py::init<uint32_t>(), "seed"_a)
+  py::class_<mrpt::random::CRandomGenerator>(
+      m, "CRandomGenerator",
+      "A thread-safe pseudo random number generator, based on an internal MT19937 randomness "
+      "generator.")
+      .def(py::init<>(), "Default constructor: initialize random seed based on current time.")
+      .def(
+          py::init<uint32_t>(), "seed"_a,
+          "Constructor for providing a custom random seed to initialize the PRNG.")
       .def(
           "randomize", py::overload_cast<uint32_t>(&mrpt::random::CRandomGenerator::randomize),
           "seed"_a, "Initialize the PRNG from the given seed")
       .def(
           "randomize", py::overload_cast<>(&mrpt::random::CRandomGenerator::randomize),
           "Initialize the PRNG from the current time (non-deterministic)")
-      .def("drawUniform32bit", &mrpt::random::CRandomGenerator::drawUniform32bit)
-      .def("drawUniform64bit", &mrpt::random::CRandomGenerator::drawUniform64bit)
+      .def(
+          "drawUniform32bit", &mrpt::random::CRandomGenerator::drawUniform32bit,
+          "Generate a uniformly distributed pseudo-random number using the MT19937 algorithm, in "
+          "the whole range of 32-bit integers.")
+      .def(
+          "drawUniform64bit", &mrpt::random::CRandomGenerator::drawUniform64bit,
+          "Returns a uniformly distributed pseudo-random number by joining two 32bit numbers from "
+          "drawUniform32bit()")
       .def(
           "drawUniform",
           [](mrpt::random::CRandomGenerator& g, double lo, double hi)

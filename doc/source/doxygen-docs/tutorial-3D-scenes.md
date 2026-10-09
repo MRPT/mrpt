@@ -33,7 +33,7 @@ into GPU-side proxies that own the actual OpenGL buffers (VBOs, VAOs, textures).
 ```
 mrpt::viz::CVisualObject(base: pose, color, name, visibility, dirty flag)
  ├── VisualObjectParams_Triangles  (mixin: triangle buffer, lighting, cull face)
- ├── VisualObjectParams_TexturedTriangles (mixin: textured triangle buffer + texture image + normal map)
+ ├── VisualObjectParams_TexturedTriangles (mixin: textured triangle buffer + texture image + normal and emissive maps)
  ├── VisualObjectParams_Lines (mixin: line buffer, line width, anti-aliasing)
  └── VisualObjectParams_Points(mixin: point buffer, point size)
 ```
@@ -72,12 +72,13 @@ pass of one viz object. The proxies are created and managed by `CompiledScene`.
 The overall rendering pipeline classes are:
 
 ```
-CompiledScenemanages all proxies, performs incremental updates
+CompiledScene              manages all proxies, performs incremental updates
  ├── ShaderProgramManager   owns loaded shader programs
- └── CompiledViewport[]one per viz::Viewport
- ├── RenderableProxy[]  organized by shader ID for batched rendering
- ├── TRenderMatricesprojection/view/model matrix state
- └── FrameBuffer   (optional: shadow map FBO)
+ └── CompiledViewport[]     one per viz::Viewport
+      ├── RenderableProxy[] organized by shader ID for batched rendering
+      ├── TRenderMatrices   projection/view/model matrix state
+      └── shadow maps       (optional) cascaded depth array of the sun, and
+                            cube depth maps of point/spot lights
 ```
 
 ## 2.4 Rendering data flow
@@ -110,11 +111,13 @@ Each frame, before rendering:
 For each viewport:
 1. Compute pixel viewport from normalized coordinates.
 2. Update projection/view matrices from camera. If shadows are enabled,
-   also compute the light projection-view matrix (`light_pv`).
-3. Optionally render shadow map (1st pass into depth FBO): `buildRenderQueue()`
-   overrides all triangle proxy shaders to `TRIANGLES_SHADOW_1ST`, which only
-   writes depth from the light's perspective. The `light_pv_matrix` uniform
-   is uploaded to the shader so vertices are transformed into light clip space.
+   also compute the projection-view matrix of each shadow cascade of the
+   primary directional light (`cascade_light_pv[]`).
+3. Optionally render the shadow maps (1st pass into depth textures):
+   `buildRenderQueue()` overrides all triangle proxy shaders to
+   `TRIANGLES_SHADOW_1ST`, which only writes depth from the light's
+   perspective, with the `light_pv_matrix` uniform of each cascade (and of
+   each cube face of point/spot lights casting shadows, see section 2.7).
 4. Build a `RenderQueue` for the normal scene pass: group proxies by shader ID,
    with depth sorting. When shadows are enabled, `buildRenderQueue()` replaces
    lit shaders with their shadow 2nd-pass variants (`TRIANGLES_LIGHT` →
@@ -122,9 +125,10 @@ For each viewport:
    `TEXTURED_TRIANGLES_SHADOW_2ND`).
 5. Process the queue: for each shader, bind it once, upload per-shader
    uniforms (`p_matrix`, `v_matrix`, `light_pv_matrix`), bind the shadow
-   depth texture to `SHADOW_MAP_TEXTURE_UNIT` for 2nd-pass shadow shaders,
-   then render all objects using that shader (uploading per-object model
-   matrix uniforms and lighting/material parameters).
+   depth textures (`SHADOW_MAP_TEXTURE_UNIT`, `POINT_SHADOW_MAP_TEXTURE_UNIT`)
+   for 2nd-pass shadow shaders, then render all objects using that shader
+   (uploading per-object model matrix uniforms and lighting/material
+   parameters).
 
 ### Dirty flag mechanism
 - User modifies a viz object (e.g., `box.setBoxCorners(...)`)
@@ -152,8 +156,8 @@ own shader set), and users can override individual shaders for custom effects
 
 ### Built-in shaders
 
-The following shaders are defined (GLSL 3.30 core profile, source files
-live in `modules/mrpt_opengl/shaders/`):
+The following shaders are defined (GLSL ES 3.00, so they also run on
+OpenGL ES 3.0 and WebGL2; source files live in `modules/mrpt_opengl/shaders/`):
 
 - **POINTS** (ID 0): Renders point primitives. Vertex shader transforms
   positions by the model-view-projection matrix; fragment shader outputs
@@ -164,11 +168,11 @@ live in `modules/mrpt_opengl/shaders/`):
   orthographic projection so text is always screen-aligned.
 - **SKYBOX** (ID 5): Renders a cube-mapped skybox behind the scene.
 - **TRIANGLES_LIGHT** (ID 10): Renders lit, non-textured triangles with
-  Phong-like directional lighting. Accepts ambient, diffuse, and specular
-  light parameters from TLightParameters.
+  Blinn-Phong lighting from all the light sources in TLightParameters
+  (see section 2.11), plus hemisphere ambient, emission, fog and SSAO.
 - **TEXTURED_TRIANGLES_LIGHT** (ID 11): Same as TRIANGLES_LIGHT but
-  samples a diffuse texture map and supports normal mapping via a
-  tangent-space normal map (texture unit 2). The vertex shader passes
+  samples a diffuse texture map, an emissive map (texture unit 5), and
+  supports normal mapping via a tangent-space normal map (texture unit 2). The vertex shader passes
   per-vertex tangent vectors (attribute location 4) to the fragment
   shader, which builds a TBN matrix and perturbs the surface normal
   before lighting. Used by CSetOfTexturedTriangles, CMesh with textures,
@@ -180,9 +184,9 @@ live in `modules/mrpt_opengl/shaders/`):
   Renders the scene from the light's point of view into a depth-only FBO.
   Used for both textured and non-textured triangles.
 - **TRIANGLES_SHADOW_2ND** (ID 21): Second pass of shadow mapping.
-  Renders lit triangles while sampling the shadow depth map to determine
-  whether each fragment is in shadow. Includes PCF soft-shadow filtering
-  (see below).
+  Renders lit triangles while sampling the shadow depth maps (directional
+  light cascades and point/spot light cube maps) to determine whether each
+  fragment is in shadow. Includes PCF soft-shadow filtering (see below).
 - **TEXTURED_TRIANGLES_SHADOW_2ND** (ID 23): Same as TRIANGLES_SHADOW_2ND
   but with diffuse texture sampling and normal mapping support.
 - **DEBUG_TEXTURE_TO_SCREEN** (ID 30): Debug helper that renders a texture
@@ -211,8 +215,10 @@ built-in shader it replaces.
 
 ## 2.7 Shadow mapping
 
-MRPT supports real-time shadow mapping for directional lights using a
-standard two-pass algorithm with Percentage-Closer Filtering (PCF).
+MRPT supports real-time shadow mapping using a standard two-pass algorithm
+with Percentage-Closer Filtering (PCF): cascaded shadow maps for the primary
+directional light, and cube shadow maps for point and spot lights with
+`TLight::cast_shadows` (see "Point and spot light shadows" below).
 
 ### Enabling shadows
 
@@ -278,7 +284,7 @@ Shadow quality (texel density in world space) is determined by:
 
     texel_size = cascade_frustum_diameter / shadow_map_size_px
 
-With the default 4096 × 4096 map and 3 cascades, each cascade's frustum
+With the default 2048 x 2048 map and 4 cascades, each cascade's frustum
 diameter is derived from the bounding sphere of the 8 camera sub-frustum
 corners. If the cascade depth range is large (e.g. 0–167 m with a 1000 m
 shadow clip), that sphere is enormous and shadows become pixelated.
@@ -298,6 +304,59 @@ With these defaults and a 50 m camera far plane on a 4096-px shadow map,
 the four cascade texel densities are approximately 1.5 mm, 2.8 mm, 5.8 mm,
 and 21.8 mm — the near cascade (~0–3 m) is more than 2× finer than MRPT
 2.x's single-cascade shadow map.
+
+### Point and spot light shadows
+
+Point and spot lights with `TLight::cast_shadows = true` also cast shadows,
+in viewports with shadow casting enabled. All the lights can cast shadows
+(`MAX_SHADOW_POINT_LIGHTS` = `MAX_LIGHTS` = 8, including the directional
+one).
+
+**Pass 1:** each light renders the scene into a cube shadow map: six depth
+passes with a 90 degree perspective projection, one per cube face, into six
+layers of a single `GL_TEXTURE_2D_ARRAY` (`GL_DEPTH_COMPONENT24`) shared by
+all the lights. A single 2D array (instead of cube map textures) needs only
+one texture unit (`POINT_SHADOW_MAP_TEXTURE_UNIT`) and works on OpenGL ES 3.0,
+which has neither geometry shaders nor cube map arrays. The size of each face
+is `TLightParameters::point_shadow_map_size` (default: 512 pixels).
+
+To keep its cost low:
+- The far plane of the cube faces is the light reach: its `range`, or where
+  its attenuation drops below 1/256, or the farthest shadow caster for lights
+  with unlimited reach. Only the objects within the frustum of each face are
+  drawn.
+- Spot lights only render the cube faces their cone reaches (one face for a
+  downwards spot light with a cone narrower than 70 degrees).
+- Each cube map is reused in later frames while neither the light nor any
+  shadow caster within its reach changes (a signature of the light parameters
+  and of the `RenderableProxy::m_changeCount` of those objects). In a scene
+  with static lamps, only the lamps near moving objects render again.
+
+**Pass 2:** the shadow 2nd-pass shaders (`PointShadowCalculation()` in
+`shadow-calculation.f.glsl`) select the cube face from the major axis of the
+light-to-fragment vector, compute the depth of the fragment in that face, and
+take 4 hardware 2x2 PCF samples. A normal offset of about 1.5 texels avoids
+shadow acne. Lights only do this for fragments they actually light (facing
+them, and within their range and cone).
+
+Objects enclosing a light (e.g. a lamp shade) must not cast shadows:
+`CVisualObject::castShadows(false)`. The cube face convention is duplicated in
+`CompiledViewport.cpp` and `shadow-calculation.f.glsl`.
+
+Rendering cost (1280x800, 400 objects, NVIDIA RTX 5060, milliseconds per
+frame, including the frame read back):
+
+| Point lights with shadows | Static | Moving |
+|---|---|---|
+| 0 | 2.05 | 2.04 |
+| 1 | 2.13 | 2.41 |
+| 2 | 2.13 | 2.71 |
+| 4 | 2.21 | 3.36 |
+| 7 | 2.36 | 4.35 |
+
+GPU memory: about 6 MB per light with the default 512 pixel faces. Each
+viewport (e.g. a GUI view and each simulated camera) renders its own cube
+maps.
 
 ## 2.8 Proxy system details
 
@@ -376,8 +435,14 @@ sRGB-to-linear decode that would distort the encoded normal directions.
 | 0 | `MATERIAL_DIFFUSE_TEXTURE_UNIT` | Diffuse (color) map |
 | 1 | `SHADOW_MAP_TEXTURE_UNIT` | Cascaded shadow depth array |
 | 2 | `NORMAL_MAP_TEXTURE_UNIT` | Tangent-space normal map |
-| 3 | `SSAO_NOISE_TEXTURE_UNIT` | SSAO random rotation noise (4×4) |
+| 3 | `SSAO_NOISE_TEXTURE_UNIT` | SSAO random rotation noise (4x4) |
 | 4 | `SSAO_TEXTURE_UNIT` | Blurred AO result (read by lit shaders) |
+| 5 | `EMISSIVE_MAP_TEXTURE_UNIT` | Emissive map |
+| 6 | `POINT_SHADOW_MAP_TEXTURE_UNIT` | Cube shadow maps of point/spot lights |
+
+Every sampler a shader declares is set to its own unit, even when unused:
+samplers of different types (e.g. a shadow sampler and a color one) must not
+share a texture unit.
 
 ### Performance
 
@@ -457,6 +522,83 @@ SSAO adds three full extra passes per frame:
 
 For performance, reduce `ssao_kernel_size` (default 32; values of 8–16 are
 acceptable for preview quality).
+
+## 2.11 Lights and emission
+
+### Light sources
+
+`TLightParameters::lights` holds up to `MAX_LIGHTS` (8) `TLight` sources of
+three types, all used by the four lit shaders:
+- **Directional** (`TLight::Directional()`): parallel rays, like the sun. The
+  first one is the "primary" directional light, the one casting cascaded
+  shadows.
+- **Point** (`TLight::PointLight()`): emits in all directions from a position.
+- **Spot** (`TLight::SpotLight()`): a point light restricted to a cone, with
+  smooth edges between `spot_inner_cutoff_deg` and `spot_outer_cutoff_deg`.
+
+Point and spot lights fade with distance *d* as
+`1 / (attenuation_constant + attenuation_linear*d + attenuation_quadratic*d^2)`.
+If `TLight::range` is set (default 0: unlimited), that is multiplied by the
+smooth window `(1 - (d/range)^4)^2`, which reaches exactly zero at `range`.
+Lights without shadows go through walls, so a finite range is the cheap way
+to keep e.g. a lamp in its room. It also bounds the cost of its shadows.
+
+Both the diffuse and the Blinn-Phong specular terms of each light are weighted
+by N·L, so a light at a grazing angle (e.g. a headlight close to the floor)
+leaves no bright highlight on a surface it barely lights.
+
+Surfaces are lit on the side facing the camera: when the geometric normal of a
+fragment points away from the camera, the opposite normal is used, so the
+bottom of a thin plane (e.g. a roof seen from inside) is lit by the lamps below
+it, not by the sun above. This is decided per fragment from the normals, not
+from the triangle winding (`gl_FrontFacing`), which is not consistent in all
+meshes.
+
+Besides the lights, the ambient term uses hemisphere ambient lighting
+(`ambientSkyColor`, `ambientGroundColor`), optionally attenuated by SSAO.
+
+### Lights in the scene graph
+
+The lights above are given in world coordinates. A `mrpt::viz::CLight` object
+holds a `TLight` given in its own frame instead, composed with the poses of
+its parent containers, so e.g. the headlights inserted into the
+`CSetOfObjects` of a vehicle move with it. It is switched on and off with
+`setVisibility()`, and it is off while any parent is hidden. It is not drawn:
+insert a model with an emissive material next to it to show the lamp.
+
+```cpp
+auto vehicle = mrpt::viz::CSetOfObjects::Create();
+vehicle->insert(mrpt::viz::CLight::Create(mrpt::viz::TLight::SpotLight(
+    {0.5f, 0, 0.4f} /*position*/, {1, 0, -0.2f} /*direction*/)));
+scene->insert(vehicle);
+```
+
+While compiling the scene, `CompiledScene` collects the visible `CLight`
+objects of each viewport in world coordinates (only when the scene changes),
+and `CompiledViewport` appends them to the lights of the viewport. If there
+are more than `MAX_LIGHTS` in total, it keeps all directional lights, then the
+point/spot lights closest to the camera (to the point it looks at, for orbit
+cameras), minus their `range`. `MRPT_VIZ_HAS_CLIGHT` is defined in
+`TLightParameters.h` for user code that must also build with older versions.
+
+### Emission
+
+`CVisualObject::materialEmissive()` adds a color to an object regardless of
+the lights (e.g. a glowing lamp shade):
+
+    color = emissive + materialColor * (ambient + diffuse) + specular
+
+Objects with textured triangles can also have an emissive map
+(`assignEmissiveMap(CImage)`), multiplied by the emissive color, so only
+parts of the surface glow (e.g. the bulb of a lamp). It is sampled as sRGB
+color data from `EMISSIVE_MAP_TEXTURE_UNIT`; without one, a 1x1 white texture
+is bound, so the emissive color applies to the whole object.
+
+`CAssimpModel` loads both from the model materials (`AI_MATKEY_COLOR_EMISSIVE`
+and `aiTextureType_EMISSIVE`, e.g. glTF `emissiveFactor` and
+`emissiveTexture`). Model parts sharing a diffuse texture but with different
+material properties (emissive color or map, normal map, specular) go into
+separate meshes, since these properties are per mesh.
 
 # 3. Relevant C++ classes
 
@@ -558,8 +700,9 @@ minimized and restored, etc. see:
 - **Shader-based pipeline**: All rendering now goes through GLSL shaders.
   The fixed-function OpenGL pipeline is gone. Custom shaders can be installed
   per-viewport via `ShaderProgramManager`.
-- **Shadow mapping**: Real-time PCF soft shadows for directional lights,
-  implemented as a two-pass depth-map algorithm.
+- **Shadow mapping**: Real-time PCF soft shadows: cascaded shadow maps for
+  the primary directional light, and cube shadow maps for point and spot
+  lights.
 - **Sky box**: `mrpt::viz::CSkyBox` renders a cube-mapped background at
   "infinity" via the dedicated `SKYBOX` shader and `SkyBoxProxy`.
 - **Off-screen rendering**: `CFBORender` uses EGL for true headless rendering
@@ -589,6 +732,14 @@ minimized and restored, etc. see:
   is assigned a 1x1 flat-blue default texture preserves the original
   geometric normal at zero extra cost. CAssimpModel loads normal maps
   from model materials automatically. See section 2.9 for details.
+
+- **Multiple lights**: up to 8 directional, point and spot lights, with
+  distance attenuation and an optional `range` where they fade to zero, and
+  hemisphere ambient lighting. Any of them can cast shadows. See sections 2.7
+  and 2.11.
+
+- **Emission**: per-object emissive color and emissive maps (also loaded by
+  CAssimpModel). See section 2.11.
 
 # 9. TO-DO list
 
@@ -634,7 +785,7 @@ Proposal:
 - When not assigned, use a 1x1 default matching the per-object material values. 
 - Minimal shader cost: one extra texture sample.
 
-7. Simple distance fog   
+7. ~~Simple distance fog~~ **DONE** (`TLightParameters::fog_*`)   
 
 Useful for outdoor robotics scenes, large point clouds, depth cueing.   
   
@@ -645,7 +796,7 @@ Proposal:
 
 GPU cost: essentially zero.   
 
-8. Hemisphere ambient lighting
+8. ~~Hemisphere ambient lighting~~ **DONE** (`ambientSkyColor`, `ambientGroundColor`)
   
 Replace the flat ambient scalar with a sky/ground color pair. Surfaces facing up get sky ambient, surfaces facing down get ground ambient, with smooth interpolation. Much more  
 natural outdoor look.  
@@ -660,6 +811,10 @@ Tier 3 - Higher effort, nice-to-have
 9. ~~Screen-Space Ambient Occlusion (SSAO)~~ — **implemented** (see section 2.10)
 
 10. ~~Cascaded Shadow Maps (CSM)~~ — **implemented** (see section 2.7)
+
+11. ~~Point and spot light shadows~~ **DONE** (see section 2.7). Possible
+    follow-up: share the cube shadow maps between the viewports rendering the
+    same scene (they do not depend on the camera).
 
 
 ---

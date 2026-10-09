@@ -139,7 +139,7 @@ Powerful YAML/JSON container for nested structured data.
 is active; any concurrent write requires external synchronization (same policy
 as std::map / std::vector).
 )doc")
-      .def(py::init<>())
+      .def(py::init<>(), "Default constructor.")
 
       // --- Static constructors ---
       .def_static("from_string", &yaml::FromText, "Parse YAML/JSON from string")

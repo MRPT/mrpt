@@ -80,11 +80,16 @@ PYBIND11_MODULE(_bindings, m)
       "Reverse endianness for int64");
 
   // ------------------ Stringifyable base ------------------
-  py::class_<mrpt::Stringifyable, std::shared_ptr<mrpt::Stringifyable>>(m, "Stringifyable")
-      .def("asString", &mrpt::Stringifyable::asString);
+  py::class_<mrpt::Stringifyable, std::shared_ptr<mrpt::Stringifyable>>(
+      m, "Stringifyable",
+      "Interface for classes whose state can be represented as a human-friendly text.")
+      .def(
+          "asString", &mrpt::Stringifyable::asString,
+          "Returns a human-friendly textual description of the object.");
 
   // ------------------ Clock ------------------
-  py::class_<mrpt::Clock>(m, "Clock")
+  py::class_<mrpt::Clock>(
+      m, "Clock", "C++11-clock that is compatible with MRPT TTimeStamp representation.")
       .def_static(
           "nowDouble", []() { return mrpt::Clock::nowDouble(); },
           "Current time in seconds (double)")
@@ -164,8 +169,11 @@ PYBIND11_MODULE(_bindings, m)
       "Parse string to double; returns default_value on failure unless throw_on_error is True");
 
   // ------------------ WorkerThreadsPool ------------------
-  py::class_<mrpt::WorkerThreadsPool>(m, "WorkerThreadsPool")
-      .def(py::init<unsigned int>(), py::arg("num_threads"))
+  py::class_<mrpt::WorkerThreadsPool>(
+      m, "WorkerThreadsPool", "A simple and efficient thread pool for parallel task execution.")
+      .def(
+          py::init<unsigned int>(), py::arg("num_threads"),
+          "Creates a pool with the given number of worker threads.")
       .def(
           "enqueue",
           [](mrpt::WorkerThreadsPool& pool, py::function f)
@@ -179,11 +187,16 @@ PYBIND11_MODULE(_bindings, m)
                 });
             (void)fut;
           },
-          py::arg("func"))
-      .def("pendingTasks", &mrpt::WorkerThreadsPool::pendingTasks)
-      .def("clear", &mrpt::WorkerThreadsPool::clear)
-      .def("size", &mrpt::WorkerThreadsPool::size)
-      .def("resize", &mrpt::WorkerThreadsPool::resize)
+          py::arg("func"), "Enqueues a task for execution by a worker thread.")
+      .def(
+          "pendingTasks", &mrpt::WorkerThreadsPool::pendingTasks,
+          "Returns the number of tasks waiting in the queue.")
+      .def(
+          "clear", &mrpt::WorkerThreadsPool::clear, "Stops all worker threads and clears the pool.")
+      .def(
+          "size", &mrpt::WorkerThreadsPool::size,
+          "Returns the number of worker threads in the pool.")
+      .def("resize", &mrpt::WorkerThreadsPool::resize, "Adds worker threads to the pool.")
       .def_property(
           "name", [](const mrpt::WorkerThreadsPool& self) { return self.name(); },
           [](mrpt::WorkerThreadsPool& self, const std::string& n) { self.name(n); },
