@@ -1557,36 +1557,95 @@ MRPT_TEST(yaml, keyRightCommentEmit)
     return ss.str();
   };
 
+  // Emitted text must parse back to a document that emits the same text:
+  const auto expectStable = [&](const std::string& out)
+  { EXPECT_EQ(emit(yaml::FromText(out)), out) << out; };
+
   // "key:  # comment" with an empty value attaches the comment to the key.
   // It must be emitted after the value, never between the key and its ':'.
-  const auto p = yaml::FromText("a:\n  k1: 1\n  k2:  # about k2\n  k3: 3\n");
-  const auto out = emit(p);
-  EXPECT_EQ(out, "a:\n  k1: 1\n  k2: ''  # about k2\n  k3: 3\n");
+  {
+    const auto out = emit(yaml::FromText("a:\n  k1: 1\n  k2:  # about k2\n  k3: 3\n"));
+    EXPECT_EQ(out, "a:\n  k1: 1\n  k2: ''  # about k2\n  k3: 3\n");
+    expectStable(out);
+    const auto p2 = yaml::FromText(out);
+    EXPECT_EQ(p2["a"]["k1"].as<int>(), 1);
+    EXPECT_EQ(p2["a"]["k2"].as<std::string>(), "");
+    EXPECT_EQ(p2["a"]["k3"].as<int>(), 3);
+  }
 
-  // The emitted text parses back to the same document, and is stable:
-  const auto p2 = yaml::FromText(out);
-  EXPECT_EQ(p2["a"]["k1"].as<int>(), 1);
-  EXPECT_EQ(p2["a"]["k2"].as<std::string>(), "");
-  EXPECT_EQ(p2["a"]["k3"].as<int>(), 3);
-  EXPECT_EQ(emit(p2), out);
+  // Same for a key whose value is a block map or sequence: the comment stays
+  // right after the ':', as written in the input.
+  for (const std::string in : {
+           "k:  # c\n  a: 1\n  b: 2\n",
+           "top:\n  k:  # c\n    a:\n      b: 1\n    d: 2\nz: 3\n",
+           "k:  # c\n  - 1\n  - 2\n",
+           "top:\n  k:  # c\n    - 1\n    -\n      x: 2\n      y: 3\nz: 3\n",
+       })
+  {
+    const auto out = emit(yaml::FromText(in));
+    EXPECT_EQ(out, in);
+    expectStable(out);
+  }
 
   // A right comment on a key whose value already has its own right comment:
-  yaml s = yaml::Map();
-  s["x"] = 1.0;
-  s["x"].comment("value comment", CommentPosition::RIGHT);
-  s.keyComment("x", "key comment", CommentPosition::RIGHT);
-  EXPECT_EQ(emit(s), "x: 1.0  # key comment value comment\n");
+  {
+    yaml s = yaml::Map();
+    s["x"] = 1.0;
+    s["x"].comment("value comment", CommentPosition::RIGHT);
+    s.keyComment("x", "key comment", CommentPosition::RIGHT);
+    EXPECT_EQ(emit(s), "x: 1.0  # key comment value comment\n");
+  }
 
-  // A right comment on a key whose value is a map goes above that map:
+  // ...or a top comment, on a block map value:
+  {
+    yaml m = yaml::Map();
+    m["outer"] = yaml::Map();
+    m["outer"]["inner"] = 2;
+    m["outer"].comment("value comment", CommentPosition::TOP);
+    m.keyComment("outer", "key comment", CommentPosition::RIGHT);
+    const auto out = emit(m);
+    EXPECT_EQ(out, "outer:  # key comment\n# value comment\n  inner: 2\n");
+    EXPECT_EQ(yaml::FromText(out)["outer"]["inner"].as<int>(), 2);
+  }
+
+  // A key comment on a nested short-format sequence follows the ']':
+  {
+    yaml seq = yaml::Sequence({1, 2});
+    seq.node().printInShortFormat = true;
+    yaml inner = yaml::Map();
+    inner["k"] = seq;
+    inner.keyComment("k", "c", CommentPosition::RIGHT);
+    yaml m = yaml::Map();
+    m["top"] = inner;
+    m["z"] = 3;
+    const auto out = emit(m);
+    EXPECT_EQ(out, "top:\n  k: [1, 2]  # c\nz: 3\n");
+    const auto p2 = yaml::FromText(out);
+    EXPECT_EQ(p2["top"]["k"](1).as<int>(), 2);
+    EXPECT_EQ(p2["z"].as<int>(), 3);
+  }
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, topCommentOnMapValueEmit)
+{
+  using mrpt::containers::CommentPosition;
+  using mrpt::containers::yaml;
+
+  // A top comment on a map or sequence value goes on its own line, with no
+  // blank line before the value's first entry.
   yaml m = yaml::Map();
-  m["outer"] = yaml::Map();
-  m["outer"]["inner"] = 2;
-  m.keyComment("outer", "about outer", CommentPosition::RIGHT);
-  const auto outM = emit(m);
-  const auto m2 = yaml::FromText(outM);
-  EXPECT_EQ(m2["outer"]["inner"].as<int>(), 2) << outM;
-  EXPECT_NE(outM.find("# about outer"), std::string::npos) << outM;
-  EXPECT_EQ(outM.find("outer  #"), std::string::npos) << outM;
+  m["a"] = yaml::Map();
+  m["a"]["b"] = 1;
+  m["a"].comment("about a", CommentPosition::TOP);
+  m["s"] = yaml::Sequence({1});
+  m["s"].comment("about s", CommentPosition::TOP);
+
+  std::stringstream ss;
+  mrpt::containers::YamlEmitOptions eo;
+  eo.emitHeader = false;
+  m.printAsYAML(ss, eo);
+  EXPECT_EQ(ss.str(), "a:\n# about a\n  b: 1\ns:\n# about s\n  - 1\n");
 }
 MRPT_TEST_END()
 

@@ -816,6 +816,8 @@ class yaml
 
     unsigned int indent = 0;
     bool needsNL = false;
+    /** needsNL is pending, but the newline itself was already written */
+    bool nlWritten = false;
     bool needsSpace = false;
     bool shortFormat = false;
   };

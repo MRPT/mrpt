@@ -475,7 +475,7 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, InternalPri
     // marker (a '#' must be preceded by whitespace) and corrupts the whole
     // document on re-parse.
     const bool wasPendingNL = ps.needsNL;
-    if (wasPendingNL)
+    if (wasPendingNL && !ps.nlWritten)
     {
       o << "\n";
     }
@@ -502,10 +502,15 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, InternalPri
     }
     // Indent of next line - only when the comment did NOT already hand off
     // a pending newline to the value that follows: in that case, the type
-    // dispatch below (map/sequence) will emit its own newline and indent
-    // bump for that value exactly as if there had been no comment, so
-    // printing it here too would misalign (or duplicate) the indentation.
-    if (!comment.empty() && !wasPendingNL)
+    // dispatch below (map/sequence) applies the indent bump for that value
+    // exactly as if there had been no comment, so printing it here too would
+    // misalign (or duplicate) the indentation. The newline itself is already
+    // written, though.
+    if (wasPendingNL)
+    {
+      ps.nlWritten = true;
+    }
+    else if (!comment.empty())
     {
       o << sInd;
     }
@@ -523,12 +528,16 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, InternalPri
   }
 
   auto ps2 = ps;
+  ps2.nlWritten = false;  // consumed here, children start a fresh line
 
   if (p.isMap())
   {
     if (ps.needsNL)
     {
-      o << "\n";
+      if (!ps.nlWritten)
+      {
+        o << "\n";
+      }
       ps2.indent += 2;
       ps2.needsNL = false;
     }
@@ -545,7 +554,10 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, InternalPri
       }
       else
       {
-        o << "\n";
+        if (!ps.nlWritten)
+        {
+          o << "\n";
+        }
         if (ps.eo.indentSequences)
         {
           ps2.indent += 2;
@@ -717,7 +729,15 @@ bool yaml::internalPrintAsYAML(
       internalPrintNodeAsYAML(e, o, ps2);
       first = false;
     }
-    o << "]\n";
+    o << "]";
+    if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)]; rc.has_value())
+    {
+      internalPrintRightComment(o, rc.value());
+    }
+    else
+    {
+      o << "\n";
+    }
   }
   else
   {
@@ -748,33 +768,33 @@ bool yaml::internalPrintAsYAML(
   for (const auto& kv : m)
   {
     // A right comment on the key (the parser attaches "key:  # comment" to
-    // the key when the value is empty) cannot be printed between the key and
-    // its ':', so it moves to the value: right comment of a scalar, top
-    // comment of a map or sequence.
+    // the key when the value is empty or a block collection) cannot be
+    // printed between the key and its ':'. Scalars and flow sequences take
+    // it as their own right comment; block collections get it after the ':'.
     const node_t* k = &kv.first;
     const node_t* v = &kv.second;
     node_t keyCopy;
     node_t valueCopy;
+    std::optional<std::string> commentAfterColon;
     if (k->meta && k->meta->comments[RIGHT].has_value())
     {
       keyCopy = *k;
-      valueCopy = *v;
       const std::string keyComment = keyCopy.meta->comments[RIGHT].value();
       keyCopy.meta->comments[RIGHT].reset();
+      k = &keyCopy;
 
-      const bool isCollection = valueCopy.isMap() || valueCopy.isSequence();
-      auto& slot =
-          valueCopy.commentSlot(isCollection ? CommentPosition::TOP : CommentPosition::RIGHT);
-      if (slot.has_value())
+      const bool isBlock = v->isMap() || (v->isSequence() && !v->printInShortFormat);
+      if (isBlock)
       {
-        slot = keyComment + (isCollection ? "\n" : " ") + slot.value();
+        commentAfterColon = keyComment;
       }
       else
       {
-        slot = keyComment;
+        valueCopy = *v;
+        auto& slot = valueCopy.commentSlot(CommentPosition::RIGHT);
+        slot = slot.has_value() ? keyComment + " " + slot.value() : keyComment;
+        v = &valueCopy;
       }
-      k = &keyCopy;
-      v = &valueCopy;
     }
 
     o << sInd;
@@ -786,6 +806,11 @@ bool yaml::internalPrintAsYAML(
     ps2 = ps;
     ps2.needsNL = true;
     ps2.needsSpace = true;
+    if (commentAfterColon)
+    {
+      internalPrintRightComment(o, *commentAfterColon);
+      ps2.nlWritten = true;
+    }
     bool const r = internalPrintNodeAsYAML(*v, o, ps2);
 
     if (!r)
