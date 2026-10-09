@@ -1543,4 +1543,51 @@ MRPT_TEST(yaml, leadingZeroDigitStringStaysString)
 }
 MRPT_TEST_END()
 
+MRPT_TEST(yaml, keyRightCommentEmit)
+{
+  using mrpt::containers::CommentPosition;
+  using mrpt::containers::yaml;
+
+  const auto emit = [](const yaml& p)
+  {
+    std::stringstream ss;
+    mrpt::containers::YamlEmitOptions eo;
+    eo.emitHeader = false;
+    p.printAsYAML(ss, eo);
+    return ss.str();
+  };
+
+  // "key:  # comment" with an empty value attaches the comment to the key.
+  // It must be emitted after the value, never between the key and its ':'.
+  const auto p = yaml::FromText("a:\n  k1: 1\n  k2:  # about k2\n  k3: 3\n");
+  const auto out = emit(p);
+  EXPECT_EQ(out, "a:\n  k1: 1\n  k2: ''  # about k2\n  k3: 3\n");
+
+  // The emitted text parses back to the same document, and is stable:
+  const auto p2 = yaml::FromText(out);
+  EXPECT_EQ(p2["a"]["k1"].as<int>(), 1);
+  EXPECT_EQ(p2["a"]["k2"].as<std::string>(), "");
+  EXPECT_EQ(p2["a"]["k3"].as<int>(), 3);
+  EXPECT_EQ(emit(p2), out);
+
+  // A right comment on a key whose value already has its own right comment:
+  yaml s = yaml::Map();
+  s["x"] = 1.0;
+  s["x"].comment("value comment", CommentPosition::RIGHT);
+  s.keyComment("x", "key comment", CommentPosition::RIGHT);
+  EXPECT_EQ(emit(s), "x: 1.0  # key comment value comment\n");
+
+  // A right comment on a key whose value is a map goes above that map:
+  yaml m = yaml::Map();
+  m["outer"] = yaml::Map();
+  m["outer"]["inner"] = 2;
+  m.keyComment("outer", "about outer", CommentPosition::RIGHT);
+  const auto outM = emit(m);
+  const auto m2 = yaml::FromText(outM);
+  EXPECT_EQ(m2["outer"]["inner"].as<int>(), 2) << outM;
+  EXPECT_NE(outM.find("# about outer"), std::string::npos) << outM;
+  EXPECT_EQ(outM.find("outer  #"), std::string::npos) << outM;
+}
+MRPT_TEST_END()
+
 #endif  // MRPT_HAS_FYAML

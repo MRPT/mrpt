@@ -742,20 +742,51 @@ bool yaml::internalPrintAsYAML(
     const InternalPrintState& ps,
     [[maybe_unused]] const comments_t& cs)
 {
+  constexpr auto RIGHT = static_cast<size_t>(CommentPosition::RIGHT);
+
   const std::string sInd(ps.indent, ' ');
   for (const auto& kv : m)
   {
+    // A right comment on the key (the parser attaches "key:  # comment" to
+    // the key when the value is empty) cannot be printed between the key and
+    // its ':', so it moves to the value: right comment of a scalar, top
+    // comment of a map or sequence.
+    const node_t* k = &kv.first;
+    const node_t* v = &kv.second;
+    node_t keyCopy;
+    node_t valueCopy;
+    if (k->meta && k->meta->comments[RIGHT].has_value())
+    {
+      keyCopy = *k;
+      valueCopy = *v;
+      const std::string keyComment = keyCopy.meta->comments[RIGHT].value();
+      keyCopy.meta->comments[RIGHT].reset();
+
+      const bool isCollection = valueCopy.isMap() || valueCopy.isSequence();
+      auto& slot =
+          valueCopy.commentSlot(isCollection ? CommentPosition::TOP : CommentPosition::RIGHT);
+      if (slot.has_value())
+      {
+        slot = keyComment + (isCollection ? "\n" : " ") + slot.value();
+      }
+      else
+      {
+        slot = keyComment;
+      }
+      k = &keyCopy;
+      v = &valueCopy;
+    }
+
     o << sInd;
     auto ps2 = ps;
     ps2.needsSpace = false;
-    internalPrintNodeAsYAML(kv.first, o, ps2);
+    internalPrintNodeAsYAML(*k, o, ps2);
     o << ":";
-    const node_t& v = kv.second;
 
     ps2 = ps;
     ps2.needsNL = true;
     ps2.needsSpace = true;
-    bool const r = internalPrintNodeAsYAML(v, o, ps2);
+    bool const r = internalPrintNodeAsYAML(*v, o, ps2);
 
     if (!r)
     {
