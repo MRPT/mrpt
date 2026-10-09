@@ -2,8 +2,8 @@
 Changelog for package mrpt_imgui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.1 (2026-10-09)
+------------------
 * CImGuiSceneView background mode restores the active texture unit
 * Contributors: Jose Luis Blanco-Claraco
 
