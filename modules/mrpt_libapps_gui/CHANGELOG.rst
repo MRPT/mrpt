@@ -2,6 +2,9 @@
 Changelog for package mrpt_libapps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.5.0 (2026-10-07)
 ------------------
 

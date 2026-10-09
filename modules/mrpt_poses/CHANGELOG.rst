@@ -2,6 +2,11 @@
 Changelog for package mrpt_poses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix wrong CQuaternion::jacobian_rodrigues_from_quat() (`#1460 <https://github.com/MRPT/mrpt/issues/1460>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.5.0 (2026-10-07)
 ------------------
 * docs: fix nearly all Sphinx warnings

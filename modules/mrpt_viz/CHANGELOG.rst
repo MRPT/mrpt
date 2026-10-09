@@ -2,6 +2,9 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.5.0 (2026-10-07)
 ------------------
 * viz: CAssimpModel drops degenerate triangles instead of drawing them as lines

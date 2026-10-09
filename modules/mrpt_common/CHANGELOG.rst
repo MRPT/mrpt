@@ -2,6 +2,9 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.5.0 (2026-10-07)
 ------------------
 * CMake config: add EXTRA_PRE_DEPS_CONFIG_CMDS hook; mrpt_imgui_vendor uses it to prefer GLVND (fixes CMP0072 warning in consumers)

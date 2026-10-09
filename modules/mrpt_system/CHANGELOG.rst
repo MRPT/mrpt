@@ -2,6 +2,9 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.5.0 (2026-10-07)
 ------------------
 * Python bindings: docstrings for all members, regenerated .pyi stubs
