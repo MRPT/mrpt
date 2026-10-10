@@ -148,7 +148,11 @@ mrpt_add_library(
   re-uploading changed pixels that live in the same buffer. `CompiledScene`
   re-walks the scene graph only when `mrpt::viz::sceneChangeCount()` changes.
   Pose/scale/visibility setters bump `transformVersion()` only (no buffer
-  rebuild); geometry changes must call `notifyChange()`.
+  rebuild); geometry changes must call `notifyChange()`. An object at several
+  places of the scene graph has one set of GPU proxies per `CompiledScene`,
+  and copies of one geometry are drawn instanced: every triangle shader must
+  apply the `instanceMatrix` attribute (`INSTANCE_MATRIX_ATTRIB_LOCATION`,
+  identity outside instanced draws).
   Texture units are fixed in `DefaultShaders.h`; every sampler a shader
   declares must be set to its own unit even when unused (samplers of different
   types sharing a unit is a GL error). The cube face convention of point light

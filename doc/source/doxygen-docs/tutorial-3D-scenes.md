@@ -119,6 +119,7 @@ For each viewport:
    perspective, with the `light_pv_matrix` uniform of each cascade (and of
    each cube face of point/spot lights casting shadows, see section 2.7).
 4. Build a `RenderQueue` for the normal scene pass: group proxies by shader ID,
+   then by geometry (see "Shared objects and instancing" in section 2.8),
    with depth sorting. When shadows are enabled, `buildRenderQueue()` replaces
    lit shaders with their shadow 2nd-pass variants (`TRIANGLES_LIGHT` →
    `TRIANGLES_SHADOW_2ND`, `TEXTURED_TRIANGLES_LIGHT` →
@@ -128,7 +129,8 @@ For each viewport:
    depth textures (`SHADOW_MAP_TEXTURE_UNIT`, `POINT_SHADOW_MAP_TEXTURE_UNIT`)
    for 2nd-pass shadow shaders, then render all objects using that shader
    (uploading per-object model matrix uniforms and lighting/material
-   parameters).
+   parameters). Consecutive opaque copies of the same geometry are drawn
+   with a single instanced draw call.
 
 ### Dirty flag mechanism
 - User modifies a viz object (e.g., `box.setBoxCorners(...)`)
@@ -373,6 +375,28 @@ and re-uploads geometry buffers for all of the object's proxies.
 Frustum culling is performed in the render queue builder: each proxy's
 bounding box is tested against the view frustum using a conservative
 8-corner intersection test, and invisible proxies are skipped.
+
+### Shared objects and instancing
+
+The same object may be inserted at several places of the scene graph (e.g. a
+3D model loaded once and inserted into many `CSetOfObjects` with different
+poses). `CompiledScene` compiles such an object once: its GPU proxies are
+shared by all its positions, and each position adds to the viewport a light
+proxy with its own model matrix, visibility and shadow casting, whose
+`geometry()` is the shared proxy.
+
+In each render pass, opaque queue elements with the same shader and geometry
+are drawn with one `glDrawArraysInstanced()` call. Their model matrices are
+uploaded together into a per-viewport buffer and read by the triangle shaders
+as the per-instance attribute `instanceMatrix` (locations 5 to 8,
+`INSTANCE_MATRIX_ATTRIB_LOCATION`), which is the identity in regular draws.
+Only proxies with `supportsInstancing()` (plain and textured triangles) and
+model matrices made of a rotation and a uniform scale are batched: normals are
+transformed with the instance matrix itself instead of its inverse transpose.
+Transparent objects are always drawn one by one, from back to front.
+`ViewportRenderStats::numInstancedDrawCalls` counts the instanced draws, and
+the environment variable `MRPT_OPENGL_NO_INSTANCING=1` disables them (e.g. to
+compare performance).
 
 ## 2.9 Normal mapping
 

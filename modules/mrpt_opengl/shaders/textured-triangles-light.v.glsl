@@ -10,6 +10,7 @@ layout(location = 1) in vec4 vertexColor;
 layout(location = 2) in vec3 vertexNormal;
 layout(location = 3) in vec2 vertexUV;
 layout(location = 4) in vec4 vertexTangent;  // w: UV mapping handedness (+1 or -1)
+layout(location = 5) in highp mat4 instanceMatrix;  // identity unless instanced (INSTANCE_MATRIX_ATTRIB_LOCATION)
 
 uniform highp mat4 p_matrix;
 uniform highp mat4 v_matrix;
@@ -26,9 +27,9 @@ void main()
     frag_UV = vertexUV;
     frag_vertexColor = vertexColor;
 
-    highp mat3 tangentMatrix = mat3(m_matrix);
-    frag_position = vec3(m_matrix * vec4(position, 1.0));
-    frag_normal   = normalize(normal_matrix * vertexNormal);
+    highp mat3 tangentMatrix = mat3(m_matrix) * mat3(instanceMatrix);
+    frag_position = vec3(m_matrix * (instanceMatrix * vec4(position, 1.0)));
+    frag_normal   = normalize(normal_matrix * (mat3(instanceMatrix) * vertexNormal));
 
     // Transform tangent to world space (if tangent is valid)
     frag_tangent = vec4(normalize(tangentMatrix * vertexTangent.xyz), vertexTangent.w);

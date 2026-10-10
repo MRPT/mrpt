@@ -20,6 +20,7 @@
 #include <mrpt/opengl/opengl_api.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 
 using namespace mrpt::opengl;
@@ -64,6 +65,12 @@ void setConstantVertexColor(const TColor& c)
 #endif
 }
 }  // namespace
+
+RenderableProxy::RenderableProxy()
+{
+  static std::atomic<uint64_t> lastId{0};
+  m_id = ++lastId;
+}
 
 // ============================================================================
 // RenderableProxy static helper implementations
@@ -636,7 +643,35 @@ void TrianglesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
   m_vao.bind();
 
   const GLsizei vertexCount = static_cast<GLsizei>(m_triangleCount * 3);
-  glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+  if (rc.instanceCount > 0 && rc.instanceBuffer != nullptr)
+  {
+    // Per-instance model matrices, one column per attribute location. The
+    // arrays are disabled again afterwards, so regular draws of this VAO use
+    // the constant (identity) value.
+    rc.instanceBuffer->bind();
+    constexpr GLsizei stride = 16 * sizeof(float);
+    for (int col = 0; col < 4; col++)
+    {
+      const GLuint loc = INSTANCE_MATRIX_ATTRIB_LOCATION + col;
+      glEnableVertexAttribArray(loc);
+      glVertexAttribPointer(
+          loc, 4, GL_FLOAT, GL_FALSE, stride,
+          reinterpret_cast<const void*>(rc.instanceBufferOffset + col * 4 * sizeof(float)));
+      glVertexAttribDivisor(loc, 1);
+    }
+    glDrawArraysInstanced(GL_TRIANGLES, 0, vertexCount, rc.instanceCount);
+    for (int col = 0; col < 4; col++)
+    {
+      const GLuint loc = INSTANCE_MATRIX_ATTRIB_LOCATION + col;
+      glVertexAttribDivisor(loc, 0);
+      glDisableVertexAttribArray(loc);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+  else
+  {
+    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+  }
 
   glBindVertexArray(0);
 

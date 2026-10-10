@@ -75,6 +75,8 @@ class TexturedTrianglesProxy : public TexturedTrianglesProxyBase
    * write an alpha of one. */
   [[nodiscard]] bool isTransparent() const override { return m_params.alphaCutoff == 0.0f; }
 
+  [[nodiscard]] bool supportsInstancing() const override { return true; }
+
   const char* typeName() const override { return "TexturedTrianglesProxy"; }
 
   /** @} */

@@ -301,11 +301,54 @@ class Text2DLabelProxy : public TrianglesProxyBase
  private:
   int m_fontHeight = 20;
 };
+
+/** One occurrence of an object in the scene graph: its own model matrix,
+ * visibility, etc., drawing the GPU buffers of a proxy shared by all the
+ * occurrences of that object. */
+class ProxyOccurrence : public RenderableProxy
+{
+ public:
+  explicit ProxyOccurrence(RenderableProxy::Ptr shared) : m_shared(std::move(shared))
+  {
+    syncWithShared();
+  }
+
+  /** Copies the properties of the shared proxy set by its compile() */
+  void syncWithShared() { m_localBBox = m_shared->localBoundingBox(); }
+
+  // The shared proxy is compiled and updated by CompiledScene:
+  void compile([[maybe_unused]] const mrpt::viz::CVisualObject* sourceObj) override {}
+  void updateBuffers([[maybe_unused]] const mrpt::viz::CVisualObject* sourceObj) override {}
+
+  void render(const RenderContext& rc) const override { m_shared->render(rc); }
+
+  std::vector<shader_id_t> requiredShaders() const override { return m_shared->requiredShaders(); }
+  bool castsShadows() const override { return m_castShadows && m_shared->castsShadows(); }
+  bool isTransparent() const override { return m_shared->isTransparent(); }
+  bool isBackground() const override { return m_shared->isBackground(); }
+  shader_id_t shadowMapShader() const override { return m_shared->shadowMapShader(); }
+  bool cullEligible() const override { return m_shared->cullEligible(); }
+  bool supportsInstancing() const override { return m_shared->supportsInstancing(); }
+  const RenderableProxy* geometry() const override { return m_shared.get(); }
+  const char* typeName() const override { return m_shared->typeName(); }
+
+ private:
+  RenderableProxy::Ptr m_shared;
+};
 }  // namespace
 
 // ============================================================================
 // Scene graph nodes
 // ============================================================================
+
+/** The GPU proxies of an object, shared by all its occurrences in the scene
+ * graph, so its buffers are uploaded (and updated) only once. */
+struct CompiledScene::SharedProxies
+{
+  std::weak_ptr<const CVisualObject> obj;
+  std::vector<RenderableProxy::Ptr> proxies;
+  uint64_t dataVersion = 0;  //!< CVisualObject::dataVersion() uploaded to the proxies
+};
 
 struct CompiledScene::Node
 {
@@ -326,7 +369,9 @@ struct CompiledScene::Node
   bool visible = false;
   bool castShadows = true;
 
+  /** Its occurrence of each shared proxy of the object */
   std::vector<RenderableProxy::Ptr> proxies;
+  std::shared_ptr<SharedProxies> shared;
 
   /** Containers: their objects. Other objects: their internal children (e.g.
    * axis labels), then their name label, if shown. */
@@ -545,6 +590,15 @@ bool CompiledScene::updateIfNeeded(CompilationStats* stats)
     syncViewportObjects(*e, s);
     e->compiled->removeProxies(e->removedProxies);
     e->removedProxies.clear();
+  }
+
+  // Forget the shared proxies of objects no longer in the scene:
+  if (s.numProxiesDeleted > 0)
+  {
+    for (auto it = m_sharedProxies.begin(); it != m_sharedProxies.end();)
+    {
+      it = it->second.expired() ? m_sharedProxies.erase(it) : std::next(it);
+    }
   }
 
   // Viewports cloning the objects of another one also get its lights:
@@ -878,15 +932,24 @@ void CompiledScene::updateNode(
   bool dataUpdated = false;
   if (!node.compiled)
   {
-    compileNodeProxies(node, obj, vp, stats);
+    compileNodeProxies(node, objPtr, vp, stats);
     dataUpdated = true;
   }
   else if (const uint64_t dv = obj.dataVersion(); dv != node.dataVersion)
   {
-    obj.updateBuffersIfNeeded();
+    // Buffers shared with other nodes of this object are updated only once:
+    if (node.shared && node.shared->dataVersion != dv)
+    {
+      obj.updateBuffersIfNeeded();
+      for (auto& p : node.shared->proxies)
+      {
+        p->updateBuffers(&obj);
+      }
+      node.shared->dataVersion = dv;
+    }
     for (auto& p : node.proxies)
     {
-      p->updateBuffers(&obj);
+      static_cast<ProxyOccurrence&>(*p).syncWithShared();
     }
     setSortPoints(node.proxies, obj);
     node.dataVersion = dv;
@@ -926,30 +989,64 @@ void CompiledScene::updateNode(
   }
 }
 
-void CompiledScene::compileNodeProxies(
-    Node& node, const CVisualObject& obj, ViewportEntry& vp, CompilationStats& stats)
+std::shared_ptr<CompiledScene::SharedProxies> CompiledScene::sharedProxiesFor(
+    const std::shared_ptr<const CVisualObject>& objPtr, CompilationStats& stats)
 {
-  // Read before regenerating the buffers, so changes made meanwhile are
-  // uploaded next time:
-  node.dataVersion = obj.dataVersion();
-  node.compiled = true;
-  node.proxies = createProxiesByType(obj);
-  if (node.proxies.empty())
+  const CVisualObject& obj = *objPtr;
+
+  // Already compiled for another node? (and not another object later
+  // created at the same memory address)
+  if (const auto it = m_sharedProxies.find(&obj); it != m_sharedProxies.end())
   {
-    return;
+    auto shared = it->second.lock();
+    if (shared && !shared->obj.owner_before(objPtr) && !objPtr.owner_before(shared->obj))
+    {
+      return shared;
+    }
   }
 
-  obj.updateBuffersIfNeeded();
-  for (auto& proxy : node.proxies)
+  auto shared = std::make_shared<SharedProxies>();
+  shared->obj = objPtr;
+  // Read before regenerating the buffers, so changes made meanwhile are
+  // uploaded next time:
+  shared->dataVersion = obj.dataVersion();
+  shared->proxies = createProxiesByType(obj);
+  if (shared->proxies.empty())
   {
-    proxy->setSourceObject(node.obj);
+    // Not cached: removing such objects deletes no proxies, which is what
+    // triggers the cleanup of expired entries.
+    return shared;
+  }
+  obj.updateBuffersIfNeeded();
+  for (auto& proxy : shared->proxies)
+  {
+    proxy->setSourceObject(objPtr);
     proxy->setResourceScope(m_textureShareScope);
     proxy->compile(&obj);
+  }
+  stats.numObjectsCompiled++;
+  m_sharedProxies[&obj] = shared;
+  return shared;
+}
+
+void CompiledScene::compileNodeProxies(
+    Node& node,
+    const std::shared_ptr<const CVisualObject>& objPtr,
+    ViewportEntry& vp,
+    CompilationStats& stats)
+{
+  node.compiled = true;
+  node.shared = sharedProxiesFor(objPtr, stats);
+  node.dataVersion = node.shared->dataVersion;
+  for (const auto& sharedProxy : node.shared->proxies)
+  {
+    auto proxy = std::make_shared<ProxyOccurrence>(sharedProxy);
+    proxy->setSourceObject(node.obj);
     vp.compiled->addProxy(proxy);
+    node.proxies.push_back(proxy);
     stats.numProxiesCreated++;
   }
-  setSortPoints(node.proxies, obj);
-  stats.numObjectsCompiled++;
+  setSortPoints(node.proxies, *objPtr);
 }
 
 void CompiledScene::releaseNode(Node& node, ViewportEntry& vp, CompilationStats& stats)
@@ -960,6 +1057,7 @@ void CompiledScene::releaseNode(Node& node, ViewportEntry& vp, CompilationStats&
     stats.numProxiesDeleted++;
   }
   node.proxies.clear();
+  node.shared.reset();
   for (auto& child : node.children)
   {
     releaseNode(*child, vp, stats);
@@ -1060,6 +1158,7 @@ void CompiledScene::clear()
   MRPT_START
 
   m_entries.clear();
+  m_sharedProxies.clear();
   m_viewports.clear();
   m_shaderManager.clear();
   m_sourceScene = nullptr;

@@ -48,6 +48,7 @@ struct ViewportRenderStats
   size_t numProxiesRendered = 0;
   size_t numProxiesCulled = 0;
   size_t numDrawCalls = 0;
+  size_t numInstancedDrawCalls = 0;  //!< Draw calls that drew several objects at once
   /** Cube faces of point/spot light shadow maps rendered (not reused from a
    * previous frame). */
   size_t numPointShadowFacesRendered = 0;
@@ -58,6 +59,7 @@ struct ViewportRenderStats
     numProxiesRendered = 0;
     numProxiesCulled = 0;
     numDrawCalls = 0;
+    numInstancedDrawCalls = 0;
     numPointShadowFacesRendered = 0;
     renderTimeMs = 0.0;
   }
@@ -366,6 +368,10 @@ class CompiledViewport
   Buffer m_borderColorBuffer{Buffer::Type::Vertex};
 
   /** Text overlay rendering */
+  /** Model matrices of the objects drawn with instancing in a render pass */
+  Buffer m_instanceBuffer{Buffer::Type::Vertex};
+  std::vector<float> m_instanceMatrices;
+
   VertexArrayObject m_textVAO;
   Buffer m_textVertexBuffer{Buffer::Type::Vertex};
   Buffer m_textColorBuffer{Buffer::Type::Vertex};

@@ -5,12 +5,13 @@ R"XXX(#version 300 es
 // Part of the MRPT project
 
 layout(location = 0) in vec3 position;
+layout(location = 5) in highp mat4 instanceMatrix;  // identity unless instanced (INSTANCE_MATRIX_ATTRIB_LOCATION)
 
 uniform highp mat4 m_matrix;
 uniform highp mat4 light_pv_matrix; // =p*v matrices
 
 void main()
 {
-    gl_Position = light_pv_matrix * m_matrix * vec4(position, 1.0);
+    gl_Position = light_pv_matrix * (m_matrix * (instanceMatrix * vec4(position, 1.0)));
 }
 )XXX"

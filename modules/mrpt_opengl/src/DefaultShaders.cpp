@@ -491,3 +491,15 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
   THROW_EXCEPTION("MRPT built without OpenGL support.");
 #endif
 }
+
+void mrpt::opengl::setIdentityInstanceMatrix()
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  for (int col = 0; col < 4; col++)
+  {
+    glVertexAttrib4f(
+        static_cast<GLuint>(INSTANCE_MATRIX_ATTRIB_LOCATION + col), col == 0 ? 1.0f : 0.0f,
+        col == 1 ? 1.0f : 0.0f, col == 2 ? 1.0f : 0.0f, col == 3 ? 1.0f : 0.0f);
+  }
+#endif
+}

@@ -21,6 +21,7 @@
 #include <map>
 #include <memory>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 namespace mrpt::opengl
@@ -30,11 +31,13 @@ namespace mrpt::opengl
  */
 struct CompilationStats
 {
-  size_t numObjectsTotal = 0;     //!< Objects (positions in the scene graph) visited
-  size_t numObjectsCompiled = 0;  //!< Objects whose proxies were created
+  size_t numObjectsTotal = 0;  //!< Objects (positions in the scene graph) visited
+  /** Objects whose GPU proxies were created: once per object, however many
+   * times it appears in the scene graph. */
+  size_t numObjectsCompiled = 0;
   size_t numObjectsUpdated = 0;   //!< Objects whose buffers or transforms were updated
-  size_t numProxiesCreated = 0;
-  size_t numProxiesDeleted = 0;
+  size_t numProxiesCreated = 0;   //!< Proxies added to viewports (one per object position)
+  size_t numProxiesDeleted = 0;   //!< Proxies removed from viewports
   size_t numOrphanedProxies = 0;  //!< Objects removed from the scene since the last update
   size_t numNewObjects = 0;       //!< Objects added to the scene since the last update
 
@@ -56,7 +59,10 @@ struct CompilationStats
  * and the actual OpenGL rendering. It keeps one node for each position of an
  * object in the scene graph, holding the RenderableProxy instances of that
  * object. The same object may appear at several positions (e.g. a model
- * shared by several groups), each drawn with its own model matrix.
+ * shared by several groups), each drawn with its own model matrix. All its
+ * positions, in any viewport, share one set of GPU buffers, and
+ * CompiledViewport draws the visible ones with a single instanced draw call
+ * per render pass when possible.
  *
  * Key responsibilities:
  * - Initial compilation: translates the entire Scene into GPU structures
@@ -255,6 +261,13 @@ class CompiledScene
   struct Node;
   /** A compiled viewport, with the nodes of its objects */
   struct ViewportEntry;
+  /** The GPU proxies of an object, shared by all its occurrences */
+  struct SharedProxies;
+
+  /** Proxies of each compiled object (expired once no node uses them), so an
+   * object at several places in the scene graph, in any viewport, has its
+   * buffers uploaded only once. */
+  std::unordered_map<const mrpt::viz::CVisualObject*, std::weak_ptr<SharedProxies>> m_sharedProxies;
 
   /** Reference to the source scene (kept for incremental updates).
    * Raw pointer because the Scene may be stack-allocated (not managed by
@@ -332,9 +345,18 @@ class CompiledScene
       ViewportEntry& vp,
       CompilationStats& stats);
 
-  /** Creates and compiles the proxies of a (non container) object. */
+  /** Returns the shared proxies of an object, creating and compiling them if
+   * no other node of that object has them yet. */
+  std::shared_ptr<SharedProxies> sharedProxiesFor(
+      const std::shared_ptr<const mrpt::viz::CVisualObject>& objPtr, CompilationStats& stats);
+
+  /** Creates the proxies of a (non container) object for a node: its own
+   * occurrences of the shared proxies of the object. */
   void compileNodeProxies(
-      Node& node, const mrpt::viz::CVisualObject& obj, ViewportEntry& vp, CompilationStats& stats);
+      Node& node,
+      const std::shared_ptr<const mrpt::viz::CVisualObject>& objPtr,
+      ViewportEntry& vp,
+      CompilationStats& stats);
 
   /** Removes the proxies of a node and all its descendants from the viewport. */
   static void releaseNode(Node& node, ViewportEntry& vp, CompilationStats& stats);
