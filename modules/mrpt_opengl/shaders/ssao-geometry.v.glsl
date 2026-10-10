@@ -6,6 +6,7 @@ R"XXX(#version 300 es
 
 layout(location = 0) in vec3 position;
 layout(location = 2) in vec3 vertexNormal;
+layout(location = 5) in highp mat4 instanceMatrix;  // identity unless instanced (INSTANCE_MATRIX_ATTRIB_LOCATION)
 
 uniform highp mat4 p_matrix;
 uniform highp mat4 v_matrix;
@@ -17,10 +18,10 @@ out highp vec3 frag_viewNormal;
 
 void main()
 {
-    highp vec4 worldPos  = m_matrix * vec4(position, 1.0);
+    highp vec4 worldPos  = m_matrix * (instanceMatrix * vec4(position, 1.0));
     highp vec4 viewPos   = v_matrix * worldPos;
     frag_viewPos         = viewPos.xyz;
-    frag_viewNormal      = normalize(mat3(v_matrix) * normal_matrix * vertexNormal);
+    frag_viewNormal      = normalize(mat3(v_matrix) * normal_matrix * (mat3(instanceMatrix) * vertexNormal));
     gl_Position          = p_matrix * viewPos;
 }
 )XXX"
