@@ -996,10 +996,10 @@ std::shared_ptr<CompiledScene::SharedProxies> CompiledScene::sharedProxiesFor(
 
   // Already compiled for another node? (and not another object later
   // created at the same memory address)
-  auto& entry = m_sharedProxies[&obj];
-  if (auto shared = entry.lock(); shared)
+  if (const auto it = m_sharedProxies.find(&obj); it != m_sharedProxies.end())
   {
-    if (!shared->obj.owner_before(objPtr) && !objPtr.owner_before(shared->obj))
+    auto shared = it->second.lock();
+    if (shared && !shared->obj.owner_before(objPtr) && !objPtr.owner_before(shared->obj))
     {
       return shared;
     }
@@ -1011,18 +1011,21 @@ std::shared_ptr<CompiledScene::SharedProxies> CompiledScene::sharedProxiesFor(
   // uploaded next time:
   shared->dataVersion = obj.dataVersion();
   shared->proxies = createProxiesByType(obj);
-  if (!shared->proxies.empty())
+  if (shared->proxies.empty())
   {
-    obj.updateBuffersIfNeeded();
-    for (auto& proxy : shared->proxies)
-    {
-      proxy->setSourceObject(objPtr);
-      proxy->setResourceScope(m_textureShareScope);
-      proxy->compile(&obj);
-    }
-    stats.numObjectsCompiled++;
+    // Not cached: removing such objects deletes no proxies, which is what
+    // triggers the cleanup of expired entries.
+    return shared;
   }
-  entry = shared;
+  obj.updateBuffersIfNeeded();
+  for (auto& proxy : shared->proxies)
+  {
+    proxy->setSourceObject(objPtr);
+    proxy->setResourceScope(m_textureShareScope);
+    proxy->compile(&obj);
+  }
+  stats.numObjectsCompiled++;
+  m_sharedProxies[&obj] = shared;
   return shared;
 }
 
