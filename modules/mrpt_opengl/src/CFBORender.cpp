@@ -13,12 +13,16 @@
 */
 
 #include <mrpt/core/get_env.h>
+#include <mrpt/img/camera_geometry.h>
 #include <mrpt/opengl/CFBORender.h>
+#include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/OpenGLDepth2LinearLUTs.h>
 #include <mrpt/opengl/config.h>
 #include <mrpt/opengl/opengl_api.h>
 
 #include <Eigen/Dense>
+#include <algorithm>
+#include <cmath>
 
 #define FBO_USE_LUT
 // #define FBO_PROFILER
@@ -46,6 +50,35 @@ const thread_local bool MRPT_FBORENDER_SHOW_DEVICES =
 
 const thread_local bool MRPT_FBORENDER_USE_LUT =
     mrpt::get_env<bool>("MRPT_FBORENDER_USE_LUT", true);
+
+#if HAVE_FBO
+/** Creates an RGB texture and attaches it as the color buffer of the currently
+ * bound framebuffer. GL_SRGB8, so GL_FRAMEBUFFER_SRGB can encode linear to
+ * sRGB on write. */
+unsigned int createColorTextureForFBO(unsigned int width, unsigned int height)
+{
+  unsigned int tex = 0;
+  glGenTextures(1, &tex);
+  CHECK_OPENGL_ERROR();
+
+  glBindTexture(GL_TEXTURE_2D, tex);
+  CHECK_OPENGL_ERROR();
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  CHECK_OPENGL_ERROR_IN_DEBUG();
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+  CHECK_OPENGL_ERROR_IN_DEBUG();
+
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+  CHECK_OPENGL_ERROR();
+
+  return tex;
+}
+#endif
 }  // namespace
 
 CFBORender::CFBORender(const Parameters& p) : m_params(p)
@@ -188,26 +221,7 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
   // -------------------------------
   // Create texture:
   // -------------------------------
-  glGenTextures(1, &m_texRGB);
-  CHECK_OPENGL_ERROR();
-
-  glBindTexture(GL_TEXTURE_2D, m_texRGB);
-  CHECK_OPENGL_ERROR();
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  CHECK_OPENGL_ERROR_IN_DEBUG();
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  CHECK_OPENGL_ERROR_IN_DEBUG();
-
-  // Use GL_SRGB8 so GL_FRAMEBUFFER_SRGB can encode linear→sRGB on write.
-  glTexImage2D(
-      GL_TEXTURE_2D, 0, GL_SRGB8, m_fb.width(), m_fb.height(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-      nullptr);
-  CHECK_OPENGL_ERROR_IN_DEBUG();
-
-  // Bind this texture to the current framebuffer obj. as color_attachment_0
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texRGB, 0);
-  CHECK_OPENGL_ERROR();
+  m_texRGB = createColorTextureForFBO(m_fb.width(), m_fb.height());
 
   // Unbind
   FrameBuffer::Bind(oldFB);
@@ -224,11 +238,20 @@ CFBORender::~CFBORender()
   // Clear compiled scene first (releases GPU resources)
   m_compiledScene.reset();
 
-  // Delete the current texture and framebuffer object
-  if (m_texRGB != 0)
+  // Delete the current textures and framebuffer objects
+  for (unsigned int tex : {m_texRGB, m_texScene, m_texLUT})
   {
-    glDeleteTextures(1, &m_texRGB);
+    if (tex != 0)
+    {
+      glDeleteTextures(1, &tex);
+    }
   }
+  if (m_postVAO != 0)
+  {
+    glDeleteVertexArrays(1, &m_postVAO);
+  }
+  m_postProgram.reset();
+  m_fbScene.destroy();
   m_fb.destroy();
 
   // Terminate EGL when finished
@@ -298,20 +321,57 @@ void CFBORender::internal_render_RGBD(
   // Ensure compiled scene is ready
   ensureCompiledScene(scene);
 
-  // Apply camera override if set
-  if (m_useCameraOverride)
+  ASSERTMSG_(
+      !m_distortedCamera || !optoutDepth.has_value(),
+      "Lens distortion is only supported by render_RGB(), not by render_RGBD() or "
+      "render_depth()");
+
+  // With lens distortion or noise, the scene is rendered into m_fbScene, then
+  // post-processed into m_fb:
+  const bool postProcess = optoutRGB.has_value() && needsPostProcessing();
+  if (postProcess)
   {
-    auto mainVp = m_compiledScene->getViewport("main");
-    if (mainVp)
+    preparePostProcessing();
+  }
+  FrameBuffer& sceneFB = postProcess ? m_fbScene : m_fb;
+
+  // Camera: the override, if set. With lens distortion, only its pose is
+  // kept, with the intrinsics of the enlarged ideal camera:
+  if (auto mainVp = m_compiledScene->getViewport("main"); mainVp)
+  {
+    if (m_distortedCamera)
+    {
+      mrpt::viz::CCamera cam = m_cameraOverride;
+      if (!m_useCameraOverride)
+      {
+        if (const auto vizVp = scene.getViewport("main"); vizVp)
+        {
+          cam = vizVp->resolveActiveCamera();
+        }
+      }
+      cam.setProjectiveFromPinhole(m_idealCamera);
+      mainVp->updateCamera(cam);
+      m_viewportCameraReplaced = true;
+    }
+    else if (m_useCameraOverride)
     {
       mainVp->updateCamera(m_cameraOverride);
+    }
+    else if (m_viewportCameraReplaced)
+    {
+      // Lens distortion was cleared: restore the scene camera.
+      if (const auto vizVp = scene.getViewport("main"); vizVp)
+      {
+        mainVp->updateCamera(vizVp->resolveActiveCamera());
+      }
+      m_viewportCameraReplaced = false;
     }
   }
 
   // Bind the framebuffer
-  const auto oldFBs = m_fb.bind();
+  const auto oldFBs = sceneFB.bind();
 
-  glBindTexture(GL_TEXTURE_2D, m_texRGB);
+  glBindTexture(GL_TEXTURE_2D, postProcess ? m_texScene : m_texRGB);
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
   glEnable(GL_DEPTH_TEST);
@@ -327,7 +387,7 @@ void CFBORender::internal_render_RGBD(
   // Render using CompiledScene
   // ---------------------------
   m_compiledScene->render(
-      static_cast<int>(m_fb.width()), static_cast<int>(m_fb.height()),
+      static_cast<int>(sceneFB.width()), static_cast<int>(sceneFB.height()),
       0,  // offsetX
       0   // offsetY
   );
@@ -342,11 +402,65 @@ void CFBORender::internal_render_RGBD(
 #endif
 
   // ---------------------------
+  // Depth output
+  // ---------------------------
+  if (optoutDepth.has_value())
+  {
+    auto& outDepth = optoutDepth.value().get();
+
+#ifdef FBO_PROFILER
+    auto tle1 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".glReadPixels_float"s);
+#endif
+
+    outDepth.resize(sceneFB.height(), sceneFB.width());
+
+    glReadPixels(
+        0, 0, sceneFB.width(), sceneFB.height(), GL_DEPTH_COMPONENT, GL_FLOAT, outDepth.data());
+    CHECK_OPENGL_ERROR();
+
+    // No manual flip needed: flipVerticalProjection(true) already handles
+    // the vertical orientation (same as for RGB).
+
+#ifdef FBO_PROFILER
+    tle1.stop();
+#endif
+
+    // Convert to linear depth if requested
+    if (!m_params.raw_depth)
+    {
+      // Get clip planes from the compiled viewport's render matrices
+      auto mainVp = m_compiledScene->getViewport("main");
+      float zn = 0.01f;
+      float zf = 1000.0f;
+      bool isProjective = true;
+
+      if (mainVp)
+      {
+        const auto& mats = mainVp->getRenderMatrices();
+        zn = mats.getLastClipZNear();
+        zf = mats.getLastClipZFar();
+        isProjective = mats.is_projective || mats.pinhole_model.has_value();
+      }
+
+      convertDepthToLinear(outDepth, zn, zf, isProjective);
+    }
+  }
+
+  // ---------------------------
   // RGB output
   // ---------------------------
   if (optoutRGB.has_value())
   {
     auto& outRGB = optoutRGB.value().get();
+
+    if (postProcess)
+    {
+#ifdef FBO_PROFILER
+      auto tlePost = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".postProcess"s);
+#endif
+      m_fb.bind();
+      renderPostProcessing();
+    }
 
     // Resize the outRGB if necessary
     if (outRGB.isEmpty() || outRGB.getWidth() != static_cast<size_t>(m_fb.width()) ||
@@ -376,50 +490,6 @@ void CFBORender::internal_render_RGBD(
     tle1.stop();
 #endif
     // No manual flip needed: flipVerticalProjection(true) already handles it.
-  }
-
-  // ---------------------------
-  // Depth output
-  // ---------------------------
-  if (optoutDepth.has_value())
-  {
-    auto& outDepth = optoutDepth.value().get();
-
-#ifdef FBO_PROFILER
-    auto tle1 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".glReadPixels_float"s);
-#endif
-
-    outDepth.resize(m_fb.height(), m_fb.width());
-
-    glReadPixels(0, 0, m_fb.width(), m_fb.height(), GL_DEPTH_COMPONENT, GL_FLOAT, outDepth.data());
-    CHECK_OPENGL_ERROR();
-
-    // No manual flip needed: flipVerticalProjection(true) already handles
-    // the vertical orientation (same as for RGB).
-
-#ifdef FBO_PROFILER
-    tle1.stop();
-#endif
-
-    // Convert to linear depth if requested
-    if (!m_params.raw_depth)
-    {
-      // Get clip planes from the compiled viewport's render matrices
-      auto mainVp = m_compiledScene->getViewport("main");
-      float zn = 0.01f;
-      float zf = 1000.0f;
-      bool isProjective = true;
-
-      if (mainVp)
-      {
-        const auto& mats = mainVp->getRenderMatrices();
-        zn = mats.getLastClipZNear();
-        zf = mats.getLastClipZFar();
-        isProjective = mats.is_projective || mats.pinhole_model.has_value();
-      }
-
-      convertDepthToLinear(outDepth, zn, zf, isProjective);
-    }
   }
 
   // Unbind the framebuffer object
@@ -515,4 +585,200 @@ void CFBORender::render_RGBD(
 void CFBORender::render_depth(const mrpt::viz::Scene& scene, mrpt::math::CMatrixFloat& outDepth)
 {
   internal_render_RGBD(scene, std::nullopt, outDepth);
+}
+
+void CFBORender::setLensDistortion(const mrpt::img::TCamera& distortedCamera)
+{
+  MRPT_START
+
+  const auto& cam = distortedCamera;
+  if (cam.distortion == mrpt::img::DistortionModel::none)
+  {
+    clearLensDistortion();
+    return;
+  }
+
+  ASSERT_EQUAL_(cam.ncols, m_params.width);
+  ASSERT_EQUAL_(cam.nrows, m_params.height);
+
+  const int W = static_cast<int>(cam.ncols);
+  const int H = static_cast<int>(cam.nrows);
+
+  const char* tooStrongMsg =
+      "Lens distortion too strong: the undistorted field of view would be more than 3 times the "
+      "image size";
+
+  // Where each output (distorted) pixel lands in an ideal pinhole image.
+  // Same convention as the pinhole projection used to render: the center of
+  // pixel (u,v) is at image coordinates (u+0.5,v+0.5).
+  std::vector<float> lut(2 * static_cast<size_t>(W) * static_cast<size_t>(H));
+  float minX = 0;
+  auto maxX = static_cast<float>(W);
+  float minY = 0;
+  auto maxY = static_cast<float>(H);
+  for (int v = 0; v < H; v++)
+  {
+    for (int u = 0; u < W; u++)
+    {
+      mrpt::img::TPixelCoordf und;
+      mrpt::img::camera_geometry::undistort_point(
+          mrpt::img::TPixelCoordf(static_cast<float>(u) + 0.5f, static_cast<float>(v) + 0.5f), und,
+          cam);
+      ASSERTMSG_(std::isfinite(und.x) && std::isfinite(und.y), tooStrongMsg);
+
+      const size_t i = 2 * (static_cast<size_t>(v) * W + u);
+      lut[i + 0] = und.x;
+      lut[i + 1] = und.y;
+      minX = std::min(minX, und.x);
+      maxX = std::max(maxX, und.x);
+      minY = std::min(minY, und.y);
+      maxY = std::max(maxY, und.y);
+    }
+  }
+
+  // Enlarge the ideal image to cover the whole distorted field of view, so
+  // there are no black borders. Bounded, to keep the rendered image size sane:
+  const auto margin = [&](float outside, int size)
+  {
+    const int px = static_cast<int>(std::ceil(outside)) + 1;
+    ASSERTMSG_(px <= size, tooStrongMsg);
+    return px;
+  };
+  const int left = margin(-minX, W);
+  const int right = margin(maxX - static_cast<float>(W), W);
+  const int top = margin(-minY, H);
+  const int bottom = margin(maxY - static_cast<float>(H), H);
+
+  mrpt::img::TCamera ideal = cam;
+  ideal.distortion = mrpt::img::DistortionModel::none;
+  ideal.dist.fill(0);
+  ideal.ncols = static_cast<uint32_t>(W + left + right);
+  ideal.nrows = static_cast<uint32_t>(H + top + bottom);
+  ideal.cx(cam.cx() + left);
+  ideal.cy(cam.cy() + top);
+
+  // Normalized texture coordinates:
+  const auto idealW = static_cast<float>(ideal.ncols);
+  const auto idealH = static_cast<float>(ideal.nrows);
+  for (size_t i = 0; i < lut.size(); i += 2)
+  {
+    lut[i + 0] = (lut[i + 0] + static_cast<float>(left)) / idealW;
+    lut[i + 1] = (lut[i + 1] + static_cast<float>(top)) / idealH;
+  }
+
+  m_distortedCamera = cam;
+  m_idealCamera = ideal;
+  m_distortionLUT = std::move(lut);
+  m_distortionLUTChanged = true;
+
+  MRPT_END
+}
+
+void CFBORender::clearLensDistortion()
+{
+  m_distortedCamera.reset();
+  m_distortionLUT.clear();
+}
+
+void CFBORender::setRGBNoise(float stdIntensityLevels, uint32_t seed)
+{
+  ASSERT_GE_(stdIntensityLevels, 0.0f);
+  m_noiseStd = stdIntensityLevels;
+  m_noiseSeed = seed;
+  m_noiseFrameIndex = 0;
+}
+
+void CFBORender::preparePostProcessing()
+{
+#if HAVE_FBO
+  MRPT_START
+
+  // Scene framebuffer, the size of the (enlarged) ideal image:
+  const unsigned int w = m_distortedCamera ? m_idealCamera.ncols : m_fb.width();
+  const unsigned int h = m_distortedCamera ? m_idealCamera.nrows : m_fb.height();
+
+  if (!m_fbScene.initialized() || m_fbScene.width() != w || m_fbScene.height() != h)
+  {
+    if (m_texScene != 0)
+    {
+      glDeleteTextures(1, &m_texScene);
+      m_texScene = 0;
+    }
+    m_fbScene.destroy();
+    m_fbScene.create(w, h);
+
+    const auto oldFB = m_fbScene.bind();
+    m_texScene = createColorTextureForFBO(w, h);
+    FrameBuffer::Bind(oldFB);
+  }
+
+  if (m_distortedCamera && m_distortionLUTChanged)
+  {
+    if (m_texLUT == 0)
+    {
+      glGenTextures(1, &m_texLUT);
+      CHECK_OPENGL_ERROR();
+    }
+    glBindTexture(GL_TEXTURE_2D, m_texLUT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RG32F, static_cast<GLsizei>(m_distortedCamera->ncols),
+        static_cast<GLsizei>(m_distortedCamera->nrows), 0, GL_RG, GL_FLOAT, m_distortionLUT.data());
+    CHECK_OPENGL_ERROR();
+    m_distortionLUTChanged = false;
+  }
+
+  if (!m_postProgram)
+  {
+    m_postProgram = LoadDefaultShader(DefaultShaderID::FBO_RGB_POSTPROCESS);
+  }
+  if (m_postVAO == 0)
+  {
+    glGenVertexArrays(1, &m_postVAO);
+    CHECK_OPENGL_ERROR();
+  }
+
+  MRPT_END
+#endif
+}
+
+void CFBORender::renderPostProcessing()
+{
+#if HAVE_FBO
+  MRPT_START
+
+  GLint oldViewport[4];
+  glGetIntegerv(GL_VIEWPORT, oldViewport);
+  glViewport(0, 0, static_cast<GLsizei>(m_fb.width()), static_cast<GLsizei>(m_fb.height()));
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_BLEND);
+
+  auto& prog = *m_postProgram;
+  prog.use();
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, m_texScene);
+  glUniform1i(prog.uniformId("sceneTex"), 0);
+
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, m_texLUT);
+  glUniform1i(prog.uniformId("lutTex"), 1);
+  glUniform1i(prog.uniformId("useLUT"), m_distortedCamera ? 1 : 0);
+
+  glUniform1f(prog.uniformId("noiseStd"), m_noiseStd / 255.0f);
+  glUniform1ui(prog.uniformId("noiseSeed"), m_noiseSeed);
+  glUniform1ui(prog.uniformId("frameIndex"), m_noiseFrameIndex++);
+
+  glBindVertexArray(m_postVAO);
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+  glBindVertexArray(0);
+  CHECK_OPENGL_ERROR_IN_DEBUG();
+
+  glActiveTexture(GL_TEXTURE0);
+  glEnable(GL_DEPTH_TEST);
+  glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
+
+  MRPT_END
+#endif
 }

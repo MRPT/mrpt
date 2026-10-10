@@ -48,6 +48,9 @@ struct DefaultShaderID
   static constexpr shader_id_t SSAO_GEOMETRY = 40;  //!< G-buffer: view-space pos+normal
   static constexpr shader_id_t SSAO_COMPUTE = 41;   //!< Hemisphere AO computation
   static constexpr shader_id_t SSAO_BLUR = 42;      //!< Box blur on raw AO result
+
+  /// CFBORender lens distortion and pixel noise of RGB images
+  static constexpr shader_id_t FBO_RGB_POSTPROCESS = 50;
 };
 
 /** Loads a set of OpenGL Vertex+Fragment shaders from the default library

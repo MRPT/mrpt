@@ -16,11 +16,17 @@
 
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/opengl/FrameBuffer.h>
+#include <mrpt/opengl/Shader.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/Scene.h>
+
+#include <cstdint>
+#include <optional>
+#include <vector>
 
 namespace mrpt::opengl
 {
@@ -36,6 +42,10 @@ namespace mrpt::opengl
  *
  * The SE(3) pose from which the scene is rendered is defined by the scene
  * `"main"` viewport camera pose, or can be overridden via setCamera().
+ *
+ * RGB images can simulate a real camera with lens distortion
+ * (setLensDistortion()) and pixel noise (setRGBNoise()). Both are applied on
+ * the GPU, in a second render pass.
  *
  * Architecture (MRPT 3.0):
  * - Uses mrpt::viz::Scene as the abstract scene graph
@@ -146,6 +156,54 @@ class CFBORender
 
   /** @} */
 
+  /** @name Lens distortion and pixel noise
+   * @{ */
+
+  /** Makes render_RGB() output images as seen by this camera, including its
+   * lens distortion (any model supported by
+   * mrpt::img::camera_geometry::undistort_point()).
+   *
+   * Its `ncols` and `nrows` must match the renderer width and height. The
+   * scene is rendered with an enlarged pinhole camera without distortion,
+   * which covers the whole distorted field of view, and then warped on the
+   * GPU into the output image. While this is set, the intrinsic parameters
+   * and projection model of the scene camera (or the camera override) are
+   * ignored: only its pose is used.
+   *
+   * Setting a camera without distortion is the same as clearLensDistortion().
+   * Only render_RGB() supports this: render_RGBD() and render_depth() throw
+   * while it is set.
+   *
+   * \exception std::exception If the distortion is too strong, that is, if
+   * the undistorted field of view is more than 3 times the image size.
+   * \note New in MRPT 3.6.0
+   */
+  void setLensDistortion(const mrpt::img::TCamera& distortedCamera);
+
+  /** Disables lens distortion, see setLensDistortion() */
+  void clearLensDistortion();
+
+  /** The camera passed to setLensDistortion(), if any */
+  [[nodiscard]] const std::optional<mrpt::img::TCamera>& getLensDistortion() const
+  {
+    return m_distortedCamera;
+  }
+
+  /** Adds independent Gaussian noise to each channel of each pixel of the
+   * rendered RGB images. The noise changes in each rendered image, and the
+   * sequence of noisy images is reproducible for the same `seed`.
+   *
+   * \param stdIntensityLevels Standard deviation, in intensity levels (0-255
+   * scale). 0 (default) disables it.
+   * \note New in MRPT 3.6.0
+   */
+  void setRGBNoise(float stdIntensityLevels, uint32_t seed = 0);
+
+  /** The noise standard deviation set in setRGBNoise() */
+  [[nodiscard]] float getRGBNoise() const { return m_noiseStd; }
+
+  /** @} */
+
   /** @name Rendering Methods
    * @{ */
 
@@ -238,6 +296,39 @@ class CFBORender
 
   // Compiled scene (lazy-initialized on first render)
   std::unique_ptr<CompiledScene> m_compiledScene;
+
+  // Lens distortion and pixel noise (see setLensDistortion(), setRGBNoise()):
+  std::optional<mrpt::img::TCamera> m_distortedCamera;
+  mrpt::img::TCamera m_idealCamera;  //!< Enlarged camera, without distortion
+  /** For each output pixel, its normalized (x,y) coordinates in the image of
+   * m_idealCamera */
+  std::vector<float> m_distortionLUT;
+  bool m_distortionLUTChanged = false;
+  /** Whether the scene viewport camera was replaced by m_idealCamera */
+  bool m_viewportCameraReplaced = false;
+
+  float m_noiseStd = 0;
+  uint32_t m_noiseSeed = 0;
+  uint32_t m_noiseFrameIndex = 0;
+
+  // GPU resources of the post-processing pass, created on first use:
+  FrameBuffer m_fbScene;  //!< The scene is rendered here, then post-processed into m_fb
+  unsigned int m_texScene = 0;
+  unsigned int m_texLUT = 0;
+  unsigned int m_postVAO = 0;
+  Program::Ptr m_postProgram;
+
+  /** Whether render_RGB() needs the post-processing pass */
+  [[nodiscard]] bool needsPostProcessing() const
+  {
+    return m_distortedCamera.has_value() || m_noiseStd > 0;
+  }
+
+  /** Creates or updates the GPU resources for the post-processing pass. */
+  void preparePostProcessing();
+
+  /** Renders the post-processed image into the currently bound framebuffer */
+  void renderPostProcessing();
 
   /** Internal rendering implementation */
   void internal_render_RGBD(

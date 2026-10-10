@@ -156,6 +156,10 @@ mrpt_add_library(
   `shadow-calculation.f.glsl`: change both. Each cube face is cached by a
   hash of the `m_changeCount` of the proxies in its frustum, so
   `CompiledScene` must bump it only on actual changes.
+  Pinhole cameras (`setProjectiveFromPinhole()`) place image coordinate
+  (u,v) at the corner of pixel (u,v), not its center: rendered objects appear
+  0.5 px up-left of `camera_geometry` projections. `CFBORender` lens
+  distortion follows the same convention.
 * **mrpt_imgui**: the ImGui-dependent methods of `CImGuiSceneView` are inline
   in its header (compiled only in user code that has `imgui.h`); the library
   itself does not link ImGui. `renderAsBackground()` draws from an ImGui draw
