@@ -350,7 +350,8 @@ void CFBORender::internal_render_RGBD(
 
     // Resize the outRGB if necessary
     if (outRGB.isEmpty() || outRGB.getWidth() != static_cast<size_t>(m_fb.width()) ||
-        outRGB.getHeight() != static_cast<size_t>(m_fb.height()) || outRGB.channels() != 3)
+        outRGB.getHeight() != static_cast<size_t>(m_fb.height()) || outRGB.channels() != 3 ||
+        outRGB.getPixelDepth() != mrpt::img::PixelDepth::D8U)
     {
       outRGB.resize(m_fb.width(), m_fb.height(), mrpt::img::CH_RGB);
     }
@@ -359,11 +360,14 @@ void CFBORender::internal_render_RGBD(
     ASSERT_EQUAL_(outRGB.getWidth(), static_cast<size_t>(m_fb.width()));
     ASSERT_EQUAL_(outRGB.getHeight(), static_cast<size_t>(m_fb.height()));
     ASSERT_EQUAL_(outRGB.channels(), 3);
+    ASSERT_(outRGB.getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
 #ifdef FBO_PROFILER
     auto tle1 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".glReadPixels_rgb"s);
 #endif
 
+    // CImage rows are tightly packed, so do not let OpenGL pad them to 4 bytes:
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(
         0, 0, m_fb.width(), m_fb.height(), GL_RGB, GL_UNSIGNED_BYTE, outRGB.ptrLine<uint8_t>(0));
     CHECK_OPENGL_ERROR();
