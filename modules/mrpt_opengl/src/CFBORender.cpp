@@ -750,6 +750,8 @@ void CFBORender::renderPostProcessing()
 
   GLint oldViewport[4];
   glGetIntegerv(GL_VIEWPORT, oldViewport);
+  GLint oldProgram = 0;
+  glGetIntegerv(GL_CURRENT_PROGRAM, &oldProgram);
   glViewport(0, 0, static_cast<GLsizei>(m_fb.width()), static_cast<GLsizei>(m_fb.height()));
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_BLEND);
@@ -775,6 +777,7 @@ void CFBORender::renderPostProcessing()
   glBindVertexArray(0);
   CHECK_OPENGL_ERROR_IN_DEBUG();
 
+  glUseProgram(static_cast<GLuint>(oldProgram));
   glActiveTexture(GL_TEXTURE0);
   glEnable(GL_DEPTH_TEST);
   glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
