@@ -401,6 +401,17 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       attribs = {};
       break;
 
+    case DefaultShaderID::FBO_RGB_POSTPROCESS:
+      vertex_shader =
+#include "../shaders/fbo-rgb-postprocess.v.glsl"
+          ;
+      fragment_shader =
+#include "../shaders/fbo-rgb-postprocess.f.glsl"
+          ;
+      uniforms = {"sceneTex", "lutTex", "useLUT", "noiseStd", "noiseSeed", "frameIndex"};
+      attribs = {};
+      break;
+
     default:
       THROW_EXCEPTION_FMT("Unknown shader_id_t=%u", static_cast<unsigned>(id));
   };
