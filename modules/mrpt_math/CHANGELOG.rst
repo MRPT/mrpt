@@ -2,6 +2,9 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.5.1 (2026-10-09)
 ------------------
 * Fix wrong CQuaternion::jacobian_rodrigues_from_quat() (`#1460 <https://github.com/MRPT/mrpt/issues/1460>`_)
