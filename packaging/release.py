@@ -7,7 +7,8 @@ Steps performed, in order:
   2. `catkin_generate_changelog` to write the "Forthcoming" sections, then
      consolidate them with Claude Code (interactive session, so the result
      can be reviewed and edited), drop duplicated contributors, and
-     [CONFIRM] commit the changelogs on their own.
+     [CONFIRM] commit the changelogs on their own. Skipped with
+     --skip-changelogs, if they were already committed and pushed by hand.
   3. Show the current version and ask for the bump (patch/minor/major),
      unless --bump or --version was given.
   4. `catkin_prepare_release` to bump every module/app `package.xml`
@@ -207,6 +208,11 @@ def main() -> None:
     )
     bump_group.add_argument("--version", help="Explicit version X.Y.Z instead of bumping")
     parser.add_argument("--dry-run", action="store_true", help="Print commands without running them")
+    parser.add_argument(
+        "--skip-changelogs",
+        action="store_true",
+        help="Do not generate/consolidate/commit the changelogs (already committed and pushed)",
+    )
     parser.add_argument("--skip-debian-reminder", action="store_true", help="Suppress the final Debian/gbp reminder")
     args = parser.parse_args()
 
@@ -218,7 +224,10 @@ def main() -> None:
     run(["git", "pull", "--ff-only", "origin", "develop"], dry_run)
 
     # 1. Generate, consolidate and commit the changelogs.
-    update_changelogs(dry_run)
+    if args.skip_changelogs:
+        print("Skipping changelog generation (--skip-changelogs).")
+    else:
+        update_changelogs(dry_run)
 
     # 2. Bump versions + finalize changelogs, commit, unsigned tag.
     prep_cmd = ["catkin_prepare_release", "--no-push", "-y"]

@@ -353,7 +353,8 @@ See "Porting ROS 2 nodes" in `doc/source/doxygen-docs/port_mrpt3.md`:
   package with `packaging/make_release.sh`.
 * `packaging/release.py` automates the whole flow, including generating,
   consolidating and committing the changelogs and asking for the bump kind
-  (use `--dry-run` first).
+  (use `--dry-run` first; `--skip-changelogs` if the changelogs commit was
+  already pushed by hand).
 * Never run `release.py` or any step that pushes, tags or publishes unless the
   user explicitly asks for a release.
 * Debian/Ubuntu packaging lives outside this repo, in two trees that must be

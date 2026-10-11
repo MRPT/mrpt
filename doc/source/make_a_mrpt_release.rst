@@ -185,7 +185,9 @@ commit. The script then prints the current version and asks whether to bump
 
 Pass ``--dry-run`` to print every command without executing anything,
 ``--bump patch|minor|major`` to skip the interactive question, or
-``--version X.Y.Z`` to pick an explicit version instead of bumping. See
+``--version X.Y.Z`` to pick an explicit version instead of bumping, or
+``--skip-changelogs`` if the changelogs commit was already made and pushed
+by hand (the script then starts at the version bump). See
 ``python3 packaging/release.py --help`` and the script's own docstring for
 details and the full list of preconditions it checks (clean tree, correct
 branch, CI status is **not** checked automatically — verify it yourself
