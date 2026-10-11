@@ -401,6 +401,17 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       attribs = {};
       break;
 
+    case DefaultShaderID::FBO_RGB_POSTPROCESS:
+      vertex_shader =
+#include "../shaders/fbo-rgb-postprocess.v.glsl"
+          ;
+      fragment_shader =
+#include "../shaders/fbo-rgb-postprocess.f.glsl"
+          ;
+      uniforms = {"sceneTex", "lutTex", "useLUT", "noiseStd", "noiseSeed", "frameIndex"};
+      attribs = {};
+      break;
+
     default:
       THROW_EXCEPTION_FMT("Unknown shader_id_t=%u", static_cast<unsigned>(id));
   };
@@ -478,5 +489,17 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
   return shader;
 #else
   THROW_EXCEPTION("MRPT built without OpenGL support.");
+#endif
+}
+
+void mrpt::opengl::setIdentityInstanceMatrix()
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  for (int col = 0; col < 4; col++)
+  {
+    glVertexAttrib4f(
+        static_cast<GLuint>(INSTANCE_MATRIX_ATTRIB_LOCATION + col), col == 0 ? 1.0f : 0.0f,
+        col == 1 ? 1.0f : 0.0f, col == 2 ? 1.0f : 0.0f, col == 3 ? 1.0f : 0.0f);
+  }
 #endif
 }

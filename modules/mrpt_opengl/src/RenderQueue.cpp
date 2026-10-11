@@ -23,7 +23,17 @@ void RenderQueue::sort()
   std::stable_sort(
       opaque.begin(), opaque.end(),
       [](const RenderQueueElement& a, const RenderQueueElement& b)
-      { return a.shader != b.shader ? a.shader < b.shader : a.depth < b.depth; });
+      {
+        if (a.shader != b.shader)
+        {
+          return a.shader < b.shader;
+        }
+        if (a.batchKey != b.batchKey)
+        {
+          return a.batchKey < b.batchKey;
+        }
+        return a.depth < b.depth;
+      });
   std::stable_sort(
       background.begin(), background.end(),
       [](const RenderQueueElement& a, const RenderQueueElement& b) { return a.shader < b.shader; });

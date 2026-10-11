@@ -38,6 +38,11 @@ struct RenderQueueElement
   /** Eye-space depth of the object (larger is farther), for sorting */
   float depth = 0;
 
+  /** Opaque elements with the same shader and the same nonzero key (the
+   * RenderableProxy::id() of their geometry) can be drawn together in one
+   * instanced draw call. Zero: always drawn on its own. */
+  uint64_t batchKey = 0;
+
   /** Model, view-model and projection-view-model matrices of the object */
   mrpt::math::CMatrixFloat44 m_matrix;
   mrpt::math::CMatrixFloat44 mv_matrix;
@@ -45,8 +50,9 @@ struct RenderQueueElement
 };
 
 /** The objects to render in one pass, in three layers drawn in this order:
- * opaque objects (grouped by shader, then front to back to make the most of
- * early depth rejection), background objects (e.g. sky boxes), and finally
+ * opaque objects (grouped by shader, then by geometry to draw the copies of
+ * an object together, then front to back to make the most of early depth
+ * rejection), background objects (e.g. sky boxes), and finally
  * transparent objects, from back to front so they blend correctly.
  * \ingroup mrpt_opengl_grp
  */

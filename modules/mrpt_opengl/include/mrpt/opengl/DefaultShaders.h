@@ -48,6 +48,9 @@ struct DefaultShaderID
   static constexpr shader_id_t SSAO_GEOMETRY = 40;  //!< G-buffer: view-space pos+normal
   static constexpr shader_id_t SSAO_COMPUTE = 41;   //!< Hemisphere AO computation
   static constexpr shader_id_t SSAO_BLUR = 42;      //!< Box blur on raw AO result
+
+  /// CFBORender lens distortion and pixel noise of RGB images
+  static constexpr shader_id_t FBO_RGB_POSTPROCESS = 50;
 };
 
 /** Loads a set of OpenGL Vertex+Fragment shaders from the default library
@@ -78,5 +81,16 @@ static constexpr int EMISSIVE_MAP_TEXTURE_UNIT = 5;
 
 // Use GL_TEXTURE6 for the cube shadow maps of point/spot lights:
 static constexpr int POINT_SHADOW_MAP_TEXTURE_UNIT = 6;
+
+/** First of the 4 consecutive vertex attribute locations of the per-instance
+ * model matrix (a mat4, one column per location) of the triangle shaders.
+ * Outside instanced draws, its arrays are disabled and their constant value is
+ * the identity matrix (see setIdentityInstanceMatrix()). */
+static constexpr int INSTANCE_MATRIX_ATTRIB_LOCATION = 5;
+
+/** Sets the constant value of the per-instance model matrix attribute
+ * (INSTANCE_MATRIX_ATTRIB_LOCATION) to the identity, as needed by triangle
+ * shaders in non-instanced draws. */
+void setIdentityInstanceMatrix();
 
 }  // namespace mrpt::opengl

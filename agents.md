@@ -148,7 +148,11 @@ mrpt_add_library(
   re-uploading changed pixels that live in the same buffer. `CompiledScene`
   re-walks the scene graph only when `mrpt::viz::sceneChangeCount()` changes.
   Pose/scale/visibility setters bump `transformVersion()` only (no buffer
-  rebuild); geometry changes must call `notifyChange()`.
+  rebuild); geometry changes must call `notifyChange()`. An object at several
+  places of the scene graph has one set of GPU proxies per `CompiledScene`,
+  and copies of one geometry are drawn instanced: every triangle shader must
+  apply the `instanceMatrix` attribute (`INSTANCE_MATRIX_ATTRIB_LOCATION`,
+  identity outside instanced draws).
   Texture units are fixed in `DefaultShaders.h`; every sampler a shader
   declares must be set to its own unit even when unused (samplers of different
   types sharing a unit is a GL error). The cube face convention of point light
@@ -156,6 +160,10 @@ mrpt_add_library(
   `shadow-calculation.f.glsl`: change both. Each cube face is cached by a
   hash of the `m_changeCount` of the proxies in its frustum, so
   `CompiledScene` must bump it only on actual changes.
+  Pinhole cameras (`setProjectiveFromPinhole()`) place image coordinate
+  (u,v) at the corner of pixel (u,v), not its center: rendered objects appear
+  0.5 px up-left of `camera_geometry` projections. `CFBORender` lens
+  distortion follows the same convention.
 * **mrpt_imgui**: the ImGui-dependent methods of `CImGuiSceneView` are inline
   in its header (compiled only in user code that has `imgui.h`); the library
   itself does not link ImGui. `renderAsBackground()` draws from an ImGui draw
@@ -345,7 +353,8 @@ See "Porting ROS 2 nodes" in `doc/source/doxygen-docs/port_mrpt3.md`:
   package with `packaging/make_release.sh`.
 * `packaging/release.py` automates the whole flow, including generating,
   consolidating and committing the changelogs and asking for the bump kind
-  (use `--dry-run` first).
+  (use `--dry-run` first; `--skip-changelogs` if the changelogs commit was
+  already pushed by hand).
 * Never run `release.py` or any step that pushes, tags or publishes unless the
   user explicitly asks for a release.
 * Debian/Ubuntu packaging lives outside this repo, in two trees that must be

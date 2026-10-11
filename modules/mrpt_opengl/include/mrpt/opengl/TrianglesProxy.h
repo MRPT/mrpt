@@ -71,6 +71,8 @@ class TrianglesProxy : public TrianglesProxyBase
 
   std::vector<shader_id_t> requiredShaders() const override;
 
+  [[nodiscard]] bool supportsInstancing() const override { return true; }
+
   const char* typeName() const override { return "TrianglesProxy"; }
 
   /** @} */

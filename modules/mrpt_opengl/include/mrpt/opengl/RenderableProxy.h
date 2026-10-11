@@ -53,6 +53,14 @@ struct RenderContext
 
   /** Is this a shadow map generation pass? */
   bool isShadowMapPass = false;
+
+  /** Instanced draw (only for proxies with supportsInstancing()): the number
+   * of instances to draw (0 means a regular draw), and the buffer and byte
+   * offset of their model matrices (column-major 4x4 floats, one per
+   * instance). The model matrix uniforms are the identity in such draws. */
+  int instanceCount = 0;
+  Buffer* instanceBuffer = nullptr;
+  size_t instanceBufferOffset = 0;
 };
 
 /** Base class for GPU-side representations of mrpt::viz::CVisualObject instances.
@@ -93,7 +101,7 @@ class RenderableProxy
  public:
   using Ptr = std::shared_ptr<RenderableProxy>;
 
-  RenderableProxy() = default;
+  RenderableProxy();
   virtual ~RenderableProxy() = default;
 
   /** @name Core Rendering Interface
@@ -192,6 +200,20 @@ class RenderableProxy
    */
   [[nodiscard]] virtual bool cullEligible() const { return true; }
 
+  /** Whether render() can draw several copies of this object in a single
+   * instanced draw call (see RenderContext::instanceCount). */
+  [[nodiscard]] virtual bool supportsInstancing() const { return false; }
+
+  /** The proxy owning the GPU buffers drawn by this one: itself, unless it
+   * is one of the occurrences of an object that appears several times in the
+   * scene graph, which share the buffers of a single proxy. Proxies with the
+   * same geometry() can be drawn together in one instanced draw call. */
+  [[nodiscard]] virtual const RenderableProxy* geometry() const { return this; }
+
+  /** A number unique to each proxy, increasing in order of creation, to order
+   * the batches of instanced draws deterministically. */
+  [[nodiscard]] uint64_t id() const { return m_id; }
+
   /** @} */
 
   /** @name Bounding Box (for Culling and Spatial Queries)
@@ -233,6 +255,9 @@ class RenderableProxy
 
   /** Set by compile(). \sa isTransparent() */
   bool m_transparent = false;
+
+  /** \sa id() */
+  uint64_t m_id = 0;
 
   /** Identifies the set of proxies (one per CompiledScene, hence per OpenGL
    * context) that may share GPU resources such as textures. nullptr: share

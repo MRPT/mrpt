@@ -46,6 +46,22 @@ static const bool VIEWPORT_VERBOSE = mrpt::get_env<bool>("MRPT_VIEWPORT_VERBOSE"
 
 namespace
 {
+const bool NO_INSTANCING = mrpt::get_env<bool>("MRPT_OPENGL_NO_INSTANCING", false);
+
+/** Whether the rotation/scale part of a model matrix is a rotation times a
+ * uniform scale, the only transformations that instanced draws support (their
+ * normals are transformed by that same matrix, not its inverse transpose). */
+bool isSimilarityTransform(const CMatrixFloat44& M)
+{
+  const auto dot = [&M](int i, int j)
+  { return M(0, i) * M(0, j) + M(1, i) * M(1, j) + M(2, i) * M(2, j); };
+  const float s2 = dot(0, 0);
+  const float tol = 1e-4f * s2;
+  return s2 > 0 && std::abs(dot(1, 1) - s2) <= tol && std::abs(dot(2, 2) - s2) <= tol &&
+         std::abs(dot(0, 1)) <= tol && std::abs(dot(0, 2)) <= tol && std::abs(dot(1, 2)) <= tol &&
+         M(3, 0) == 0 && M(3, 1) == 0 && M(3, 2) == 0 && M(3, 3) == 1;
+}
+
 // Cube shadow map faces (+X,-X,+Y,-Y,+Z,-Z): view direction and "up" vector.
 // The face "right" vector is forward x up. The shadow 2nd pass shaders
 // (shadow-calculation.f.glsl) must use the same convention.
@@ -875,6 +891,9 @@ void CompiledViewport::render(
 
   // Update matrices if needed
   updateMatrices();
+
+  // Triangle shaders read the instance matrix attribute in all draws:
+  setIdentityInstanceMatrix();
 
   if (m_flipYProjection)
   {
@@ -1751,6 +1770,15 @@ void CompiledViewport::buildRenderQueue(
                   : proxy->isBackground()  ? queue.background
                   : proxy->isTransparent() ? queue.transparent
                                            : queue.opaque;
+
+    // Opaque copies of the same geometry can be drawn in one call (transparent
+    // ones must be drawn in back to front order):
+    e.batchKey = 0;
+    if (&layer == &queue.opaque && !NO_INSTANCING && proxy->supportsInstancing() &&
+        isSimilarityTransform(e.m_matrix))
+    {
+      e.batchKey = proxy->geometry()->id();
+    }
     for (auto shaderID : shaderIDs)
     {
       e.shader = shaderID;
@@ -1904,6 +1932,62 @@ void CompiledViewport::processRenderQueue(
 
   const auto IS_TRANSPOSED = GL_TRUE;
 
+  // Runs of opaque elements with the same shader and geometry are drawn with
+  // one instanced draw call each. All their model matrices are uploaded at
+  // once, column-major, before drawing.
+  struct Batch
+  {
+    size_t first = 0;   //!< Index of its first element in queue.opaque
+    size_t count = 0;   //!< Number of elements (instances)
+    size_t offset = 0;  //!< Byte offset of its matrices in m_instanceBuffer
+  };
+  std::vector<Batch> batches;
+  m_instanceMatrices.clear();
+  const auto& opaque = queue.opaque;
+  for (size_t i = 0; i < opaque.size();)
+  {
+    size_t end = i + 1;
+    if (opaque[i].batchKey != 0)
+    {
+      while (end < opaque.size() && opaque[end].batchKey == opaque[i].batchKey &&
+             opaque[end].shader == opaque[i].shader)
+      {
+        end++;
+      }
+    }
+    if (end - i > 1)
+    {
+      batches.push_back({i, end - i, m_instanceMatrices.size() * sizeof(float)});
+      for (size_t k = i; k < end; k++)
+      {
+        const auto& M = opaque[k].m_matrix;
+        for (int col = 0; col < 4; col++)
+        {
+          for (int row = 0; row < 4; row++)
+          {
+            m_instanceMatrices.push_back(M(row, col));
+          }
+        }
+      }
+    }
+    i = end;
+  }
+  if (!batches.empty())
+  {
+    m_instanceBuffer.setUsage(Buffer::Usage::StreamDraw);
+    m_instanceBuffer.createOnce();
+    m_instanceBuffer.bind();
+    m_instanceBuffer.allocate(
+        m_instanceMatrices.data(), static_cast<int>(sizeof(float) * m_instanceMatrices.size()));
+    m_instanceBuffer.unbind();
+  }
+
+  // The per-object matrices of an instanced draw are those of an object at
+  // the origin, since each instance applies its own model matrix:
+  const auto identity = CMatrixFloat44::Identity();
+  CMatrixFloat44 pv;
+  pv.asEigen() = matrices.p_matrix.asEigen() * matrices.v_matrix.asEigen();
+
   // State of the current shader:
   Program::Ptr shader;
   shader_id_t shaderID = DefaultShaderID::NONE;
@@ -1922,8 +2006,17 @@ void CompiledViewport::processRenderQueue(
 
   for (const auto* layer : {&queue.opaque, &queue.background, &queue.transparent})
   {
-    for (const auto& e : *layer)
+    size_t nextBatch = 0;
+    for (size_t i = 0; i < layer->size(); i++)
     {
+      const auto& e = (*layer)[i];
+      const Batch* batch = nullptr;
+      if (layer == &queue.opaque && nextBatch < batches.size() && batches[nextBatch].first == i)
+      {
+        batch = &batches[nextBatch++];
+        i += batch->count - 1;  // the whole batch is drawn now
+      }
+
       if (!shader || e.shader != shaderID)
       {
         shaderID = e.shader;
@@ -1943,35 +2036,39 @@ void CompiledViewport::processRenderQueue(
                        shaderID == DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND;
       }
 
+      const auto& m = batch ? identity : e.m_matrix;
+      const auto& mv = batch ? matrices.v_matrix : e.mv_matrix;
+      const auto& pmv = batch ? pv : e.pmv_matrix;
+
       // Upload per-object matrix uniforms
       if (loc_m >= 0)
       {
-        glUniformMatrix4fv(loc_m, 1, IS_TRANSPOSED, e.m_matrix.data());
+        glUniformMatrix4fv(loc_m, 1, IS_TRANSPOSED, m.data());
       }
       if (loc_mv >= 0)
       {
-        glUniformMatrix4fv(loc_mv, 1, IS_TRANSPOSED, e.mv_matrix.data());
+        glUniformMatrix4fv(loc_mv, 1, IS_TRANSPOSED, mv.data());
       }
       if (loc_pmv >= 0)
       {
-        glUniformMatrix4fv(loc_pmv, 1, IS_TRANSPOSED, e.pmv_matrix.data());
+        glUniformMatrix4fv(loc_pmv, 1, IS_TRANSPOSED, pmv.data());
       }
       if (loc_normal >= 0)
       {
         // Normals transform with the inverse transpose of the model
         // rotation and scale, which differs from it for non-uniform scales.
         mrpt::math::CMatrixFloat33 N;
-        N.asEigen() = e.m_matrix.asEigen().block<3, 3>(0, 0);
-        if (std::abs(N.asEigen().determinant()) > 1e-12f)
+        N.asEigen() = m.asEigen().block<3, 3>(0, 0);
+        if (!batch && std::abs(N.asEigen().determinant()) > 1e-12f)
         {
           N.asEigen() = N.asEigen().inverse().transpose().eval();
         }
         glUniformMatrix3fv(loc_normal, 1, IS_TRANSPOSED, N.data());
       }
 
-      objState.m_matrix = e.m_matrix;
-      objState.mv_matrix = e.mv_matrix;
-      objState.pmv_matrix = e.pmv_matrix;
+      objState.m_matrix = m;
+      objState.mv_matrix = mv;
+      objState.pmv_matrix = pmv;
 
       RenderContext rc;
       rc.shader = shader.get();
@@ -1979,6 +2076,13 @@ void CompiledViewport::processRenderQueue(
       rc.state = &objState;
       rc.lights = &m_lightParams;
       rc.isShadowMapPass = isShadowPass;
+      if (batch)
+      {
+        rc.instanceCount = static_cast<int>(batch->count);
+        rc.instanceBuffer = &m_instanceBuffer;
+        rc.instanceBufferOffset = batch->offset;
+        stats.numInstancedDrawCalls++;
+      }
 
       e.proxy->render(rc);
       stats.numDrawCalls++;
