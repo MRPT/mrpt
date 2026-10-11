@@ -2,8 +2,8 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.2 (2026-10-11)
+------------------
 * opengl: share GPU buffers of repeated objects and draw them instanced
   (`#1466 <https://github.com/MRPT/mrpt/issues/1466>`_)
 * CFBORender: GPU lens distortion and pixel noise for RGB images
