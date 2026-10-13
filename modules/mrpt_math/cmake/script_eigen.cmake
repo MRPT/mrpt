@@ -59,6 +59,10 @@ else()
 
   if(Eigen3_FOUND)
     # Use system version
+    # Eigen >=5.0 config files only export the target, not EIGEN3_INCLUDE_DIR:
+    if (NOT EIGEN3_INCLUDE_DIR AND TARGET Eigen3::Eigen)
+      get_target_property(EIGEN3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+    endif()
     set(MRPT_EIGEN_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}") # only to find out version
 
     # For Ubuntu 16.04, the Eigen version does not support imported target,
@@ -80,7 +84,11 @@ set(CMAKE_MRPT_HAS_EIGEN 1)        # Always, it's a fundamental dep.!
 
 # Detect Eigen version (just to show it in the CMake config summary)
 set(EIGEN_VER_H "${MRPT_EIGEN_INCLUDE_DIR}/Eigen/src/Core/util/Macros.h")
-if (EXISTS ${EIGEN_VER_H})
+if (Eigen3_VERSION)
+    # Reported by the Eigen3 config file. Use it, since Eigen >=5.0 moved
+    # the version macros out of Macros.h and changed their meaning.
+    set(MRPT_EIGEN_VERSION "${Eigen3_VERSION}")
+elseif (EXISTS ${EIGEN_VER_H})
     file(READ "${EIGEN_VER_H}" STR_EIGEN_VERSION)
 
     # Extract the Eigen version from the Macros.h file, lines "#define EIGEN_WORLD_VERSION  XX", etc...
@@ -95,13 +103,15 @@ if (EXISTS ${EIGEN_VER_H})
     string(REGEX MATCH "[0-9]+" CMAKE_EIGEN_VERSION_NUMBER_PATCH "${CMAKE_EIGEN_VERSION_NUMBER_PATCH}")
 
     set(MRPT_EIGEN_VERSION "${CMAKE_EIGEN_VERSION_NUMBER_MAJOR}.${CMAKE_EIGEN_VERSION_NUMBER_MINOR}.${CMAKE_EIGEN_VERSION_NUMBER_PATCH}")
+endif ()
 
+if (MRPT_EIGEN_VERSION)
     if($ENV{VERBOSE})
         message(STATUS "Eigen version detected: ${MRPT_EIGEN_VERSION}")
     endif()
 
     if(${MRPT_EIGEN_VERSION} VERSION_LESS "3.3")
-        message(ERROR "Eigen ${MRPT_EIGEN_VERSION} detected, required >=3.3. Select MRPT_EIGEN_USE_EMBEDDED_VERSION=ON.")
+        message(FATAL_ERROR "Eigen ${MRPT_EIGEN_VERSION} detected, required >=3.3. Select MRPT_EIGEN_USE_EMBEDDED_VERSION=ON.")
     endif()
 endif ()
 
