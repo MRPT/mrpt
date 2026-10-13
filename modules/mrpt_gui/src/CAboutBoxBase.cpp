@@ -68,8 +68,12 @@ std::string CAboutBoxBase::information(
   if (m_showStandardInfo)
   {
     str += "Eigen version:          ";
+#ifdef EIGEN_VERSION_STRING  // Eigen >=5.0
+    str += EIGEN_VERSION_STRING "\n";
+#else
     str +=
         mrpt::format("%u.%u.%u\n", EIGEN_WORLD_VERSION, EIGEN_MAJOR_VERSION, EIGEN_MINOR_VERSION);
+#endif
     str += guiLibName + " version:      " + guiLibVersion;
 #if defined(__WXMSW__)
     str += "-Windows";

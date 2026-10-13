@@ -181,8 +181,12 @@ void CAboutBox::OnInit([[maybe_unused]] wxInitDialogEvent& event)
 
     std::cout << "MRPT version:           " << MRPT_getVersion() << "\n";
     std::cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << "\n";
+#ifdef EIGEN_VERSION_STRING  // Eigen >=5.0
+    std::cout << "Eigen version:          " << EIGEN_VERSION_STRING << "\n";
+#else
     std::cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION
               << "." << EIGEN_MINOR_VERSION << "\n";
+#endif
     std::cout << "wxWidgets version:      " << wxVer.ToStdString() << "\n";
   }
 
