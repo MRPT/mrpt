@@ -62,6 +62,7 @@ set(LIB_SOURCES
 )
 
 set(LIB_UNIT_TEST_SOURCES
+  tests/asPointsMap_unittest.cpp
   tests/CGasConcentrationGridMap2D_unittest.cpp
   tests/CHeightGridMap2Ds_unittest.cpp
   tests/CLogOddsGridMapLUT_unittest.cpp
