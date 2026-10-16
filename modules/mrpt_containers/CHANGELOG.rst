@@ -2,6 +2,9 @@
 Changelog for package mrpt_containers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.5.2 (2026-10-11)
 ------------------
 * yaml: emit a key's right comment after the value, not before its ':'

@@ -2,6 +2,9 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.5.2 (2026-10-11)
 ------------------
 * opengl: share GPU buffers of repeated objects and draw them instanced

@@ -2,6 +2,11 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Support Eigen 5.0 version and include dir detection (`#1467 <https://github.com/MRPT/mrpt/issues/1467>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.5.2 (2026-10-11)
 ------------------
 
