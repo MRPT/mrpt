@@ -739,7 +739,7 @@ const CPointsMap* mrpt::maps::asPointsMap(const mrpt::maps::CMetricMap& map)
   {
     if (mm->countMapsByClass<CPointsMap>() == 1) return mm->mapByClass<CPointsMap>(0).get();
   }
-  return nullptr;
+  return map.asPointsMapView();
 }
 
 float CPointsMap::compute3DMatchingRatio(

@@ -671,7 +671,7 @@ No direct replacement unless noted.
 | `CPointCloud::octree_get_node_count()` | Octree API removed |
 | `#include <mrpt/opengl.h>` | Use individual `<mrpt/viz/...>` headers |
 | `#include <mrpt/examples_config.h>` | Use a CMake compile definition |
-| `CMetricMap::getAsSimplePointsMap()` | Use `mrpt::maps::asPointsMap(map)` (works for any points map, and for a multi-metric map holding one), `CMultiMetricMap::mapByClass<CSimplePointsMap>()`, or a plain `dynamic_cast` |
+| `CMetricMap::getAsSimplePointsMap()` | Use `mrpt::maps::asPointsMap(map)` (works for any points map, and for a multi-metric map holding one), `CMultiMetricMap::mapByClass<CSimplePointsMap>()`, or a plain `dynamic_cast`. Map classes that used to override it to expose their contents as points override `CMetricMap::asPointsMapView()` instead (feature macro `MRPT_HAS_METRIC_MAP_POINTS_VIEW`), which `asPointsMap()` falls back to. Adding this virtual changed the `CMetricMap` vtable: rebuild any `CMetricMap`-derived classes and plugins compiled against an earlier MRPT 3 |
 | `CMultiMetricMap::maps` (public member) | Use `push_back()`, `size()`, `empty()`, `clearMaps()`, `mapByIndex()`, `begin()`/`end()`, or `mapsList()` for direct access |
 | `#include <mrpt/config.h>` | Use module-specific config headers |
 

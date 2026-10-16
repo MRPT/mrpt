@@ -46,8 +46,13 @@ bool insertObs(
 }
 #endif
 
+/** Defined if mrpt::maps::CMetricMap::asPointsMapView() exists. */
+#define MRPT_HAS_METRIC_MAP_POINTS_VIEW 1
+
 namespace mrpt::maps
 {
+class CPointsMap;
+
 /** Declares a virtual base class for all metric maps storage classes.
  *  In this class virtual methods are provided to allow the insertion
  *  of any type of "CObservation" objects into the metric map, thus
@@ -308,6 +313,18 @@ class CMetricMap :
    * that other methods to save the map may be implemented in classes
    * implementing this virtual interface). */
   virtual void saveMetricMapRepresentationToFile(const std::string& filNamePrefix) const = 0;
+
+  /** Maps that are not a mrpt::maps::CPointsMap themselves, but can represent
+   * their contents as one (e.g. keyframe or voxel maps defined in other
+   * libraries), override this to return it. The default returns nullptr.
+   *
+   * Do not call it directly: use mrpt::maps::asPointsMap(), which also
+   * handles points maps and multi-metric maps.
+   *
+   * The returned pointer is a non-owning observer, valid as long as this map
+   * is alive and not modified.
+   */
+  [[nodiscard]] virtual const mrpt::maps::CPointsMap* asPointsMapView() const { return nullptr; }
 
   /** Common params to all maps */
   TMapGenericParams genericMapParams;
