@@ -1681,7 +1681,8 @@ class CPointsMap :
  * returns from mrpt::maps::CMetricMap::asPointsMapView(). Returns nullptr if
  * no such map exists.
  *
- * The returned pointer is a non-owning observer, valid as long as `map` is.
+ * The returned pointer is a non-owning observer, valid as long as `map` is
+ * alive and not modified: do not keep it across changes to `map`.
  *
  * \ingroup mrpt_maps_grp
  */
