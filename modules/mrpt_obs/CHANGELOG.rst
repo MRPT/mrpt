@@ -2,8 +2,8 @@
 Changelog for package mrpt_obs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.3 (2026-10-16)
+------------------
 * Add CMetricMap::asPointsMapView() hook used by asPointsMap() (`#1468 <https://github.com/MRPT/mrpt/issues/1468>`_)
 * Contributors: Jose Luis Blanco-Claraco
 
