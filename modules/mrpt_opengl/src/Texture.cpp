@@ -17,6 +17,7 @@
 #include <mrpt/opengl/Texture.h>
 #include <mrpt/opengl/opengl_api.h>
 
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <mutex>
@@ -28,6 +29,11 @@
 using namespace mrpt::opengl;
 
 const bool MRPT_OPENGL_VERBOSE = mrpt::get_env<bool>("MRPT_OPENGL_VERBOSE", false);
+
+// Anisotropic filtering of mipmapped textures (1 = disabled). It keeps
+// textures sharp when seen at grazing angles (e.g. the ground far away):
+const float MRPT_TEXTURE_MAX_ANISOTROPY =
+    mrpt::get_env<float>("MRPT_TEXTURE_MAX_ANISOTROPY", 16.0f);
 
 // Whether to profile memory allocations:
 // #define TEXTUREOBJ_PROFILE_MEM_ALLOC
@@ -55,6 +61,45 @@ void Texture::unloadTexture()
 
 namespace
 {
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+#ifndef GL_TEXTURE_MAX_ANISOTROPY
+#define GL_TEXTURE_MAX_ANISOTROPY 0x84FE
+#endif
+#ifndef GL_MAX_TEXTURE_MAX_ANISOTROPY
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY 0x84FF
+#endif
+
+/** Max anisotropy supported by the current OpenGL context (1: none). Core in
+ * OpenGL 4.6, and an extension (ARB or EXT, same enums) before. */
+float maxSupportedAnisotropy()
+{
+  GLint major = 0;
+  GLint minor = 0;
+  glGetIntegerv(GL_MAJOR_VERSION, &major);
+  glGetIntegerv(GL_MINOR_VERSION, &minor);
+  bool supported = major > 4 || (major == 4 && minor >= 6);
+
+  GLint numExt = 0;
+  glGetIntegerv(GL_NUM_EXTENSIONS, &numExt);
+  for (GLint i = 0; i < numExt && !supported; i++)
+  {
+    const auto* ext = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
+    if (ext && (std::string(ext) == "GL_ARB_texture_filter_anisotropic" ||
+                std::string(ext) == "GL_EXT_texture_filter_anisotropic"))
+    {
+      supported = true;
+    }
+  }
+  if (!supported)
+  {
+    return 1.0f;
+  }
+  GLfloat maxAniso = 1.0f;
+  glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAniso);
+  return maxAniso;
+}
+#endif
+
 /** What makes two texture uploads identical, so they can share one OpenGL
  * texture. */
 struct SharedTextureKey
@@ -501,8 +546,21 @@ void Texture::internalAssignImage_2D(
   // when texture area is small, linear interpolation:
   if (o.generateMipMaps)
   {
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    // Trilinear: interpolated within each mipmap level, and between levels.
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     CHECK_OPENGL_ERROR_IN_DEBUG();
+
+    if (MRPT_TEXTURE_MAX_ANISOTROPY > 1.0f)
+    {
+      // The supported value depends on the current OpenGL context:
+      const float maxSupported = maxSupportedAnisotropy();
+      const float aniso = std::min(MRPT_TEXTURE_MAX_ANISOTROPY, maxSupported);
+      if (aniso > 1.0f)
+      {
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, aniso);
+        CHECK_OPENGL_ERROR_IN_DEBUG();
+      }
+    }
   }
   else
   {
