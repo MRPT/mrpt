@@ -552,9 +552,8 @@ void Texture::internalAssignImage_2D(
 
     if (MRPT_TEXTURE_MAX_ANISOTROPY > 1.0f)
     {
-      // The supported value depends on the OpenGL context, but all
-      // textures of a thread use the same one:
-      thread_local const float maxSupported = maxSupportedAnisotropy();
+      // The supported value depends on the current OpenGL context:
+      const float maxSupported = maxSupportedAnisotropy();
       const float aniso = std::min(MRPT_TEXTURE_MAX_ANISOTROPY, maxSupported);
       if (aniso > 1.0f)
       {
