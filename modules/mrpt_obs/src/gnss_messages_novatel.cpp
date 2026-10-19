@@ -16,6 +16,7 @@
 #include <mrpt/obs/gnss_messages_novatel.h>
 
 #include <iostream>
+#include <limits>
 #include <map>
 
 using namespace std;
@@ -42,10 +43,13 @@ void Message_NV_OEM6_GENERIC_FRAME::internal_readFromStream(mrpt::serialization:
 {
   in.ReadBuffer(&header, sizeof(header));
   const auto nBytesInStream = in.ReadAs<uint32_t>();
+  // The body length field of Novatel frames bounds the valid size:
+  constexpr uint32_t maxBodyLen = std::numeric_limits<decltype(header.msg_len)>::max();
+  ASSERT_LE_(nBytesInStream, maxBodyLen);
   msg_body.resize(nBytesInStream);
   if (nBytesInStream != 0)
   {
-    in.ReadBuffer(msg_body.data(), sizeof(nBytesInStream));
+    in.ReadBuffer(msg_body.data(), msg_body.size());
   }
   fixEndianness();
 }
@@ -71,10 +75,13 @@ void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_readFromStream(mrpt::serializ
 {
   in.ReadBuffer(&header, sizeof(header));
   const auto nBytesInStream = in.ReadAs<uint32_t>();
+  // The body length field of Novatel frames bounds the valid size:
+  constexpr uint32_t maxBodyLen = std::numeric_limits<decltype(header.msg_len)>::max();
+  ASSERT_LE_(nBytesInStream, maxBodyLen);
   msg_body.resize(nBytesInStream);
   if (nBytesInStream != 0)
   {
-    in.ReadBuffer(msg_body.data(), sizeof(nBytesInStream));
+    in.ReadBuffer(msg_body.data(), msg_body.size());
   }
   fixEndianness();
 }

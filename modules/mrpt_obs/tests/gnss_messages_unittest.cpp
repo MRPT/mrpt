@@ -351,6 +351,18 @@ TEST(gnss_messages, NovatelGenericFrame)
   m.header.msg_id = 55;
   m.msg_body = {1, 2, 3, 4, 5};
   checkRoundtrip(m);
+
+  // The body must be fully restored, and the stream left right after it:
+  mrpt::io::CMemoryStream buf;
+  auto arch = archiveFrom(buf);
+  m.writeToStream(arch);
+  arch << uint32_t(0xCAFE);
+  buf.Seek(0);
+  Message_NV_OEM6_GENERIC_FRAME r;
+  r.readFromStream(arch);
+  EXPECT_EQ(r.header.msg_id, 55);
+  EXPECT_EQ(r.msg_body, m.msg_body);
+  EXPECT_EQ(arch.ReadAs<uint32_t>(), 0xCAFEU);
 }
 
 TEST(gnss_messages, NovatelGenericFrameEmptyBody)
@@ -364,8 +376,17 @@ TEST(gnss_messages, NovatelGenericShortFrame)
 {
   Message_NV_OEM6_GENERIC_SHORT_FRAME m;
   m.header.msg_id = 77;
-  m.msg_body = {9, 8, 7};
+  m.msg_body = {9, 8, 7, 6, 5, 4};
   checkRoundtrip(m);
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = archiveFrom(buf);
+  m.writeToStream(arch);
+  buf.Seek(0);
+  Message_NV_OEM6_GENERIC_SHORT_FRAME r;
+  r.readFromStream(arch);
+  EXPECT_EQ(r.header.msg_id, 77);
+  EXPECT_EQ(r.msg_body, m.msg_body);
 }
 
 TEST(gnss_messages, NovatelVersion)
