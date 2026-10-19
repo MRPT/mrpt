@@ -350,6 +350,7 @@ TEST(gnss_messages, NovatelGenericFrame)
   Message_NV_OEM6_GENERIC_FRAME m;
   m.header.msg_id = 55;
   m.msg_body = {1, 2, 3, 4, 5};
+  m.header.msg_len = static_cast<uint16_t>(m.msg_body.size());
   checkRoundtrip(m);
 
   // The body must be fully restored, and the stream left right after it:
@@ -377,6 +378,7 @@ TEST(gnss_messages, NovatelGenericShortFrame)
   Message_NV_OEM6_GENERIC_SHORT_FRAME m;
   m.header.msg_id = 77;
   m.msg_body = {9, 8, 7, 6, 5, 4};
+  m.header.msg_len = static_cast<uint8_t>(m.msg_body.size());
   checkRoundtrip(m);
 
   mrpt::io::CMemoryStream buf;

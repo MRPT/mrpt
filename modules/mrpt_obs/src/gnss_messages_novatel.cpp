@@ -16,7 +16,6 @@
 #include <mrpt/obs/gnss_messages_novatel.h>
 
 #include <iostream>
-#include <limits>
 #include <map>
 
 using namespace std;
@@ -42,16 +41,15 @@ void Message_NV_OEM6_GENERIC_FRAME::internal_writeToStream(mrpt::serialization::
 void Message_NV_OEM6_GENERIC_FRAME::internal_readFromStream(mrpt::serialization::CArchive& in)
 {
   in.ReadBuffer(&header, sizeof(header));
+  header.fixEndianness();
   const auto nBytesInStream = in.ReadAs<uint32_t>();
-  // The body length field of Novatel frames bounds the valid size:
-  constexpr uint32_t maxBodyLen = std::numeric_limits<decltype(header.msg_len)>::max();
-  ASSERT_LE_(nBytesInStream, maxBodyLen);
+  // The body length field of the header bounds the valid size:
+  ASSERT_LE_(nBytesInStream, static_cast<uint32_t>(header.msg_len));
   msg_body.resize(nBytesInStream);
   if (nBytesInStream != 0)
   {
     in.ReadBuffer(msg_body.data(), msg_body.size());
   }
-  fixEndianness();
 }
 
 // ------------
@@ -74,16 +72,15 @@ void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_writeToStream(
 void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_readFromStream(mrpt::serialization::CArchive& in)
 {
   in.ReadBuffer(&header, sizeof(header));
+  header.fixEndianness();
   const auto nBytesInStream = in.ReadAs<uint32_t>();
-  // The body length field of Novatel frames bounds the valid size:
-  constexpr uint32_t maxBodyLen = std::numeric_limits<decltype(header.msg_len)>::max();
-  ASSERT_LE_(nBytesInStream, maxBodyLen);
+  // The body length field of the header bounds the valid size:
+  ASSERT_LE_(nBytesInStream, static_cast<uint32_t>(header.msg_len));
   msg_body.resize(nBytesInStream);
   if (nBytesInStream != 0)
   {
     in.ReadBuffer(msg_body.data(), msg_body.size());
   }
-  fixEndianness();
 }
 
 // ------------

@@ -295,6 +295,10 @@ TEST(CGPSInterface, parse_NOVATEL6_generic_frames)
   shdr.week = 2200;
   shdr.ms_in_week = 2000;
 
+  // Headers are stored in the wire (little-endian) byte order:
+  hdr.fixEndianness();
+  shdr.fixEndianness();
+
   std::vector<uint8_t> frame(sizeof(hdr));
   std::memcpy(frame.data(), &hdr, sizeof(hdr));
   frame.insert(frame.end(), body.begin(), body.end());
