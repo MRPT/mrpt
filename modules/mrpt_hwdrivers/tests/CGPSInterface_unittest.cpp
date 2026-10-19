@@ -15,6 +15,9 @@
 #include <gtest/gtest.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/system/crc.h>
+
+#include <cstring>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -252,6 +255,92 @@ TEST(CGPSInterface, parse_NOVATEL6_stream)
     return;
   }
   EXPECT_NEAR(msg2->fields.roll, 4.10511, 1e-4);
+}
+
+namespace
+{
+// Appends the little-endian CRC32 of a Novatel frame to it.
+void appendNovatelCRC(std::vector<uint8_t>& frame)
+{
+  const uint32_t crc = mrpt::system::compute_CRC32(frame.data(), frame.size());
+  for (int i = 0; i < 4; i++)
+  {
+    frame.push_back(static_cast<uint8_t>(crc >> (8 * i)));
+  }
+}
+}  // namespace
+
+TEST(CGPSInterface, parse_NOVATEL6_generic_frames)
+{
+  // Logs without a dedicated parser (e.g. BESTVEL, id=99) go into the
+  // generic containers:
+  const std::vector<uint8_t> body = {0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70};
+
+  gnss::nv_oem6_header_t hdr;
+  hdr.synch[0] = gnss::nv_oem6_header_t::SYNCH0;
+  hdr.synch[1] = gnss::nv_oem6_header_t::SYNCH1;
+  hdr.synch[2] = gnss::nv_oem6_header_t::SYNCH2;
+  hdr.hdr_len = sizeof(hdr);
+  hdr.msg_id = 99;
+  hdr.msg_len = static_cast<uint16_t>(body.size());
+  hdr.week = 2200;
+  hdr.ms_in_week = 1000;
+
+  gnss::nv_oem6_short_header_t shdr;
+  shdr.synch[0] = gnss::nv_oem6_short_header_t::SYNCH0;
+  shdr.synch[1] = gnss::nv_oem6_short_header_t::SYNCH1;
+  shdr.synch[2] = gnss::nv_oem6_short_header_t::SYNCH2;
+  shdr.msg_id = 98;
+  shdr.msg_len = static_cast<uint8_t>(body.size());
+  shdr.week = 2200;
+  shdr.ms_in_week = 2000;
+
+  // Headers are stored in the wire (little-endian) byte order:
+  hdr.fixEndianness();
+  shdr.fixEndianness();
+
+  std::vector<uint8_t> frame(sizeof(hdr));
+  std::memcpy(frame.data(), &hdr, sizeof(hdr));
+  frame.insert(frame.end(), body.begin(), body.end());
+  appendNovatelCRC(frame);
+
+  std::vector<uint8_t> short_frame(sizeof(shdr));
+  std::memcpy(short_frame.data(), &shdr, sizeof(shdr));
+  short_frame.insert(short_frame.end(), body.begin(), body.end());
+  appendNovatelCRC(short_frame);
+
+  auto buf = std::make_shared<mrpt::io::CMemoryStream>();
+  buf->Write(frame.data(), frame.size());
+  buf->Write(short_frame.data(), short_frame.size());
+  buf->Seek(0);
+
+  CGPSInterface gps;
+  gps.bindStream(buf);
+  gps.initialize();
+  gps.doProcess();
+
+  const auto obss = gps.getObservations();
+  ASSERT_EQ(obss.size(), 2U);
+  auto itObs = obss.begin();
+  const auto obs1 = mrpt::ptr_cast<CObservationGPS>::from(itObs->second);
+  ++itObs;
+  const auto obs2 = mrpt::ptr_cast<CObservationGPS>::from(itObs->second);
+  ASSERT_TRUE(obs1);
+  ASSERT_TRUE(obs2);
+
+  ASSERT_TRUE(obs1->hasMsgType(gnss::NV_OEM6_GENERIC_FRAME));
+  const auto* msg1 = dynamic_cast<const gnss::Message_NV_OEM6_GENERIC_FRAME*>(
+      obs1->getMsgByType(gnss::NV_OEM6_GENERIC_FRAME));
+  ASSERT_TRUE(msg1 != nullptr);
+  EXPECT_EQ(msg1->header.msg_id, 99);
+  EXPECT_EQ(msg1->msg_body, body);
+
+  ASSERT_TRUE(obs2->hasMsgType(gnss::NV_OEM6_GENERIC_SHORT_FRAME));
+  const auto* msg2 = dynamic_cast<const gnss::Message_NV_OEM6_GENERIC_SHORT_FRAME*>(
+      obs2->getMsgByType(gnss::NV_OEM6_GENERIC_SHORT_FRAME));
+  ASSERT_TRUE(msg2 != nullptr);
+  EXPECT_EQ(msg2->header.msg_id, 98);
+  EXPECT_EQ(msg2->msg_body, body);
 }
 
 TEST(CGPSInterface, parse_NMEA_stream)
