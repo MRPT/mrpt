@@ -133,7 +133,10 @@ void CSerialPort::open()
   // the DCD signal line is in - whether the other end of the port is up and
   // running.
   if (-1 == (hCOM = ::open(m_serialName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY)))
-    THROW_EXCEPTION_FMT("Error trying to open the serial port %s!!", m_serialName.c_str());
+  {
+    THROW_EXCEPTION_FMT(
+        "Error trying to open the serial port %s: %s", m_serialName.c_str(), strerror(errno));
+  }
 
   // Clear flags:
   fcntl(hCOM, F_SETFL, 0);

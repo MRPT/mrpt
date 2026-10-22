@@ -259,7 +259,8 @@ mrpt_add_library(
 * The `.pyi` stubs next to each `__init__.py` are generated and committed: run
   `scripts/generate_python_stubs.py` after changing bindings (CI fails if they
   are stale and uploads the right ones as the `python-stubs` artifact, since
-  output depends on the pybind11 version). They are the source of the Python
+  output depends on the pybind11 version; hence the pinned `ubuntu-24.04` runner
+  in `build-linux.yml`). They are the source of the Python
   API docs; `scripts/check_python_docstrings.py` lists missing docstrings.
 * Conventions:
   * Include `<pybind11/pybind11.h>` and `<pybind11/stl.h>`; add `eigen.h`,
