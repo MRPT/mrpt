@@ -13,6 +13,7 @@
 */
 
 #include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -230,14 +231,23 @@ bool CGPSInterface::tryToOpenTheCOM()
         serial->close();
         return false;
       }
+      m_last_open_error.clear();
       return true;  // All OK
     }
     catch (const std::exception& e)
     {
-      std::cerr << "[CGPSInterface::tryToOpenTheCOM] Error opening or "
-                   "configuring serial port:"
-                << "\n"
-                << e.what();
+      // Callers usually retry periodically: report each different error once.
+      // Compared without the call stack, which depends on the caller.
+      const auto* ecb = dynamic_cast<const mrpt::ExceptionWithCallBackBase*>(&e);
+      const std::string err = ecb ? ecb->originalWhat : std::string(e.what());
+      if (err != m_last_open_error)
+      {
+        std::cerr << "[CGPSInterface::tryToOpenTheCOM] Error opening or "
+                     "configuring serial port:"
+                  << "\n"
+                  << e.what();
+        m_last_open_error = err;
+      }
       serial->close();
       return false;
     }
@@ -271,7 +281,11 @@ void CGPSInterface::doProcess()
   if (!tryToOpenTheCOM())
   {
     m_state = ssError;
-    THROW_EXCEPTION("Could not open the input stream");
+    if (m_COMname.empty())
+    {
+      THROW_EXCEPTION("Could not open the input stream");
+    }
+    THROW_EXCEPTION_FMT("Could not open the input stream '%s'", m_COMname.c_str());
   }
   ASSERT_(m_data_stream != nullptr);
   auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream.get());

@@ -24,13 +24,15 @@ jobs:
         name: [ubuntu-latest-clang, ubuntu-latest-gcc]
         build_type: [Release]
         include:
+          # Pinned: the committed Python stubs and the coverage step depend
+          # on the toolchain of this image.
           - name: ubuntu-latest-clang
-            os: ubuntu-latest
+            os: ubuntu-24.04
             compiler: clang
             coverage: OFF
 
           - name: ubuntu-latest-gcc
-            os: ubuntu-latest
+            os: ubuntu-24.04
             compiler: gcc
             coverage: ON
 

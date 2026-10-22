@@ -19,6 +19,8 @@
 
 #include <cstring>
 
+#include "pty_device.h"
+
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
@@ -466,4 +468,89 @@ TEST(CGPSInterface, parse_NMEA_stream)
 
   const auto* msgGSA2 = obsGPS3->getMsgByClassPtr<gnss::Message_NMEA_GSA>();
   EXPECT_TRUE(msgGSA2 != nullptr);
+}
+
+namespace
+{
+const std::string OPEN_ERROR_TAG = "Error opening or configuring serial port";
+
+size_t countOpenErrors(const std::string& errOutput)
+{
+  size_t n = 0;
+  for (size_t pos = errOutput.find(OPEN_ERROR_TAG); pos != std::string::npos;
+       pos = errOutput.find(OPEN_ERROR_TAG, pos + 1))
+  {
+    n++;
+  }
+  return n;
+}
+
+void expectOneOpenError(const std::string& errOutput)
+{
+  EXPECT_EQ(countOpenErrors(errOutput), 1U) << errOutput;
+}
+
+// Runs doProcess() on a port that cannot be opened, and checks the exception.
+void expectOpenFailure(CGPSInterface& gps, const std::string& portName)
+{
+  try
+  {
+    gps.doProcess();
+    FAIL() << "doProcess() should throw for a missing serial port";
+  }
+  catch (const std::exception& e)
+  {
+    EXPECT_NE(std::string(e.what()).find(portName), std::string::npos) << e.what();
+  }
+}
+}  // namespace
+
+TEST(CGPSInterface, missing_serial_port_reported_once)
+{
+  const std::string portA = "/dev/mrpt_test_nonexistent_gps_port_A";
+  const std::string portB = "/dev/mrpt_test_nonexistent_gps_port_B";
+
+  CGPSInterface gps;
+
+  // Retrying a port that cannot be opened must not repeat the error output:
+  ::testing::internal::CaptureStderr();
+  gps.setSerialPortName(portA);
+  for (int i = 0; i < 3; i++)
+  {
+    expectOpenFailure(gps, portA);
+  }
+  expectOneOpenError(::testing::internal::GetCapturedStderr());
+
+  // A different error is reported again:
+  ::testing::internal::CaptureStderr();
+  gps.setSerialPortName(portB);
+  expectOpenFailure(gps, portB);
+  expectOpenFailure(gps, portB);
+  expectOneOpenError(::testing::internal::GetCapturedStderr());
+
+#if defined(MRPT_HWDRIVERS_TESTS_HAVE_PTY)
+  // After a successful connection, the same error is reported again:
+  {
+    mrpt::hwdrivers::testing::PtyDevice dev;
+    if (!dev.ok())
+    {
+      GTEST_SKIP() << "No pseudo-terminal available";
+    }
+    gps.setSerialPortName(dev.slaveName());
+    EXPECT_NO_THROW(gps.doProcess());
+  }
+  // The device is gone: this read finds it and closes the port.
+  try
+  {
+    gps.doProcess();
+  }
+  catch (const std::exception&)
+  {
+  }
+
+  ::testing::internal::CaptureStderr();
+  gps.setSerialPortName(portB);
+  expectOpenFailure(gps, portB);
+  expectOneOpenError(::testing::internal::GetCapturedStderr());
+#endif
 }

@@ -326,6 +326,8 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
   PARSERS m_parser{CGPSInterface::AUTO};
   std::string m_raw_dump_file_prefix;
   std::string m_COMname;
+  /** Last error opening the serial port, so each one is reported once. */
+  std::string m_last_open_error;
   int m_COMbauds{4800};
   bool m_sensorLabelAppendMsgType{true};
   bool m_GPS_comsWork{false};
