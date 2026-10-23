@@ -92,6 +92,72 @@ TEST(CVoxelMap, MarkFreeVoxel)
   EXPECT_LT(prob, 0.5);  // must be classified as free
 }
 
+// A single observation of an unknown voxel must leave it at the probability of
+// the sensor model: P(occupied | miss) = prob_miss, P(occupied | hit) = prob_hit.
+TEST(CVoxelMap, SingleUpdateMatchesSensorModel)
+{
+  for (const double probMiss : {0.30, 0.45})
+  {
+    CVoxelMap m(0.1);
+    m.insertionOptions.prob_miss = probMiss;
+    m.updateVoxel(1.0, 1.0, 1.0, /*occupied=*/false);
+
+    double prob = 0.0;
+    ASSERT_TRUE(m.getPointOccupancy(1.0, 1.0, 1.0, prob));
+    EXPECT_NEAR(prob, probMiss, 0.02) << "prob_miss=" << probMiss;
+  }
+
+  CVoxelMap m(0.1);
+  m.insertionOptions.prob_hit = 0.65;
+  m.updateVoxel(1.0, 1.0, 1.0, /*occupied=*/true);
+  double prob = 0.0;
+  ASSERT_TRUE(m.getPointOccupancy(1.0, 1.0, 1.0, prob));
+  EXPECT_NEAR(prob, 0.65, 0.02);
+}
+
+// Same for voxels crossed by a ray: the lower prob_miss, the stronger the miss.
+TEST(CVoxelMap, RayMissMatchesSensorModel)
+{
+  for (const double probMiss : {0.30, 0.45})
+  {
+    CVoxelMap m(0.1);
+    m.insertionOptions.ray_trace_free_space = true;
+    m.insertionOptions.prob_miss = probMiss;
+
+    auto pc = mrpt::maps::CSimplePointsMap::Create();
+    pc->insertPoint(1.05f, 0.05f, 0.05f);
+
+    mrpt::obs::CObservationPointCloud obs;
+    obs.pointcloud = pc;
+    obs.sensorPose = mrpt::poses::CPose3D::Identity();
+    ASSERT_TRUE(m.insertObservation(obs));
+
+    double prob = 0.0;
+    ASSERT_TRUE(m.getPointOccupancy(0.55, 0.05, 0.05, prob));
+    EXPECT_NEAR(prob, probMiss, 0.02) << "prob_miss=" << probMiss;
+  }
+}
+
+// Repeated observations must saturate at [clamp_min, clamp_max].
+TEST(CVoxelMap, RepeatedUpdatesSaturateAtClamps)
+{
+  CVoxelMap m(0.1);
+  m.insertionOptions.clamp_min = 0.20;
+  m.insertionOptions.clamp_max = 0.80;
+
+  for (int i = 0; i < 100; i++)
+  {
+    m.updateVoxel(1.0, 1.0, 1.0, /*occupied=*/false);
+    m.updateVoxel(2.0, 2.0, 2.0, /*occupied=*/true);
+  }
+
+  double prob = 0.0;
+  ASSERT_TRUE(m.getPointOccupancy(1.0, 1.0, 1.0, prob));
+  EXPECT_NEAR(prob, 0.20, 0.02);
+  ASSERT_TRUE(m.getPointOccupancy(2.0, 2.0, 2.0, prob));
+  EXPECT_NEAR(prob, 0.80, 0.02);
+}
+
 TEST(CVoxelMap, QueryUnknownVoxel)
 {
   CVoxelMap m(0.1);
