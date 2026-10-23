@@ -16,7 +16,7 @@
   <depend>mrpt_gui</depend>
 
   <build_depend>wx-common</build_depend>
-  <build_depend>wxwidgets</build_depend>
+  <depend>wxwidgets</depend>
   <build_depend>eigen</build_depend>
 
   <export>

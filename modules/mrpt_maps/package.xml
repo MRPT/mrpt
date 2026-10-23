@@ -21,7 +21,7 @@
   <!-- Optional system library for the octomap-based maps; if absent upstream
        falls back to downloading & building an embedded copy, which is not
        allowed in distro packaging, so we depend on the system version. -->
-  <build_depend>liboctomap-dev</build_depend>
+  <depend>liboctomap-dev</depend>
 
   <export>
     <build_type>cmake</build_type>

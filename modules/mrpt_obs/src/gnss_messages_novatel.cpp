@@ -31,7 +31,10 @@ void Message_NV_OEM6_GENERIC_FRAME::dumpToStream(std::ostream& out) const
 }
 void Message_NV_OEM6_GENERIC_FRAME::internal_writeToStream(mrpt::serialization::CArchive& out) const
 {
-  out.WriteBuffer(&header, sizeof(header));
+  // Streams are little-endian:
+  auto h = header;
+  h.fixEndianness();
+  out.WriteBuffer(&h, sizeof(h));
   out.WriteAs<uint32_t>(msg_body.size());
   if (!msg_body.empty())
   {
@@ -62,7 +65,10 @@ void Message_NV_OEM6_GENERIC_SHORT_FRAME::dumpToStream(std::ostream& out) const
 void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_writeToStream(
     mrpt::serialization::CArchive& out) const
 {
-  out.WriteBuffer(&header, sizeof(header));
+  // Streams are little-endian:
+  auto h = header;
+  h.fixEndianness();
+  out.WriteBuffer(&h, sizeof(h));
   out.WriteAs<uint32_t>(msg_body.size());
   if (!msg_body.empty())
   {
