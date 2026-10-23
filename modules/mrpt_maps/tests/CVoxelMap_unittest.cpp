@@ -138,6 +138,26 @@ TEST(CVoxelMap, RayMissMatchesSensorModel)
   }
 }
 
+// Repeated observations must saturate at [clamp_min, clamp_max].
+TEST(CVoxelMap, RepeatedUpdatesSaturateAtClamps)
+{
+  CVoxelMap m(0.1);
+  m.insertionOptions.clamp_min = 0.20;
+  m.insertionOptions.clamp_max = 0.80;
+
+  for (int i = 0; i < 100; i++)
+  {
+    m.updateVoxel(1.0, 1.0, 1.0, /*occupied=*/false);
+    m.updateVoxel(2.0, 2.0, 2.0, /*occupied=*/true);
+  }
+
+  double prob = 0.0;
+  ASSERT_TRUE(m.getPointOccupancy(1.0, 1.0, 1.0, prob));
+  EXPECT_NEAR(prob, 0.20, 0.02);
+  ASSERT_TRUE(m.getPointOccupancy(2.0, 2.0, 2.0, prob));
+  EXPECT_NEAR(prob, 0.80, 0.02);
+}
+
 TEST(CVoxelMap, QueryUnknownVoxel)
 {
   CVoxelMap m(0.1);

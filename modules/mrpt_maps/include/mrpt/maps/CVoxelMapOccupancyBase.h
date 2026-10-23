@@ -214,7 +214,7 @@ class CVoxelMapOccupancyBase :
    *  \param theCell The cell to modify
    *  \param logodd_obs Observation of the cell, in log-odd form as
    * transformed by p2l.
-   *  \param thres  This must be CELLTYPE_MIN+logodd_obs
+   *  \param thres  Saturation value, i.e. p2l(1 - clamp_max)
    * \sa updateCell, updateCell_fast_free
    */
   void updateCell_fast_occupied(
@@ -226,9 +226,11 @@ class CVoxelMapOccupancyBase :
     }
     occupancy_t& occ = theCell->occupancyRef();
     if (occ > thres)
-      occ -= logodd_obs;
-    else
-      occ = traits_t::CELLTYPE_MIN;
+    {
+      // Saturate at the clamping threshold (wider type to avoid overflow):
+      occ = static_cast<occupancy_t>(
+          std::max<int>(static_cast<int>(occ) - static_cast<int>(logodd_obs), thres));
+    }
   }
 
   /** Performs Bayesian fusion of a new observation of a cell.
@@ -237,7 +239,7 @@ class CVoxelMapOccupancyBase :
    *  \param coord Cell indexes.
    *  \param logodd_obs Observation of the cell, in log-odd form as
    * transformed by p2l.
-   *  \param thres  This must be CELLTYPE_MIN+logodd_obs
+   *  \param thres  Saturation value, i.e. p2l(1 - clamp_max)
    * \sa updateCell, updateCell_fast_free
    */
   void updateCell_fast_occupied(
@@ -252,7 +254,7 @@ class CVoxelMapOccupancyBase :
    * saturation.
    *  \param logodd_obs Observation of the cell, in log-odd form as
    * transformed by p2l.
-   *  \param thres  This must be CELLTYPE_MAX-logodd_obs
+   *  \param thres  Saturation value, i.e. p2l(1 - clamp_min)
    * \sa updateCell_fast_occupied
    */
   void updateCell_fast_free(
@@ -264,9 +266,11 @@ class CVoxelMapOccupancyBase :
     }
     occupancy_t& occ = theCell->occupancyRef();
     if (occ < thres)
-      occ += logodd_obs;
-    else
-      occ = traits_t::CELLTYPE_MAX;
+    {
+      // Saturate at the clamping threshold (wider type to avoid overflow):
+      occ = static_cast<occupancy_t>(
+          std::min<int>(static_cast<int>(occ) + static_cast<int>(logodd_obs), thres));
+    }
   }
 
   /** Performs the Bayesian fusion of a new observation of a cell.
@@ -275,7 +279,7 @@ class CVoxelMapOccupancyBase :
    *  \param coord Cell indexes.
    *  \param logodd_obs Observation of the cell, in log-odd form as
    * transformed by p2l.
-   *  \param thres  This must be CELLTYPE_MAX-logodd_obs
+   *  \param thres  Saturation value, i.e. p2l(1 - clamp_min)
    * \sa updateCell_fast_occupied
    */
   void updateCell_fast_free(
