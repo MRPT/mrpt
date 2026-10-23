@@ -33,8 +33,15 @@ struct TVoxelMap_InsertionOptions : public mrpt::config::CLoadableOptions
 
   double max_range = -1;  //!< Maximum insertion ray range (<0: none)
 
+  /** Probability of a voxel being occupied given that a ray goes through it
+   * (as in OctoMap). Must be < 0.5: the lower, the stronger each miss. */
   double prob_miss = 0.45;
+
+  /** Probability of a voxel being occupied given that a ray ends in it (as in
+   * OctoMap). Must be > 0.5: the higher, the stronger each hit. */
   double prob_hit = 0.65;
+
+  /** Occupancy probabilities are clamped to [clamp_min, clamp_max] */
   double clamp_min = 0.10;
   double clamp_max = 0.95;
 
@@ -545,8 +552,9 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::updateVoxel(
   }
   else
   {
+    // Voxels store the log-odds of being free: a miss adds logit(1 - prob_miss).
     const occupancy_t logodd_observation_free =
-        std::max<occupancy_t>(1, p2l(static_cast<float>(insertionOptions.prob_miss)));
+        std::max<occupancy_t>(1, p2l(static_cast<float>(1.0 - insertionOptions.prob_miss)));
     const occupancy_t logodd_thres_free = p2l(static_cast<float>(1.0 - insertionOptions.clamp_min));
 
     updateCell_fast_free(cell, logodd_observation_free, logodd_thres_free);
@@ -594,8 +602,9 @@ void CVoxelMapOccupancyBase<voxel_node_t, occupancy_t>::insertPointCloudAsRays(
   // Use fixed comma for the ray tracing direction:
   constexpr unsigned int FRBITS = 9;
 
+  // Voxels store the log-odds of being free: a miss adds logit(1 - prob_miss).
   const occupancy_t logodd_observation_free =
-      std::max<occupancy_t>(1, p2l(static_cast<float>(insertionOptions.prob_miss)));
+      std::max<occupancy_t>(1, p2l(static_cast<float>(1.0 - insertionOptions.prob_miss)));
   const occupancy_t logodd_thres_free = p2l(static_cast<float>(1.0 - insertionOptions.clamp_min));
 
   // for each ray:
