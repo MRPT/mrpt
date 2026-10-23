@@ -45,6 +45,9 @@ mrpt_add_library(
 * Every rosdep key in a `package.xml` must resolve on all build farm
   platforms (Ubuntu, Debian, Fedora, RHEL); otherwise that package fails to
   build there. Leave out optional deps with an embedded fallback if missing.
+* A system library linked into an installed binary must be a `<depend>`, not
+  just `<build_depend>`: RPMs get no automatic shared-library requirements, so
+  downstream packages then fail to link on RHEL.
 * Examples feed the docs galleries and `examples.json`
   (`scripts/generate_rst_docs_examples.py`, see its docstring): the summary is
   the first paragraph of `mrpt_examples_cpp/<name>/README.md` or the first

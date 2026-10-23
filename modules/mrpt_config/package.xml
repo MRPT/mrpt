@@ -25,7 +25,7 @@
        SI_CONVERT_ICU Unicode conversion, avoiding the bundled ConvertUTF.h).
        Not declared here since it is not available on all ROS-supported
        platforms; the embedded copy is used otherwise. -->
-  <build_depend>libicu-dev</build_depend>
+  <depend>libicu-dev</depend>
 
   <export>
     <build_type>cmake</build_type>
