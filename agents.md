@@ -207,6 +207,9 @@ mrpt_add_library(
   or the `3rdparty/cloudini` submodule (shipped by `make_release.sh`); only
   `src/maps/cloudini_codec.cpp` is built as C++20 (the `cxx_std_20` usage
   requirement of the cloudini target is stripped on purpose).
+  Pending: once Cloudini PRs #166 (no PCL in `cloudini_lib`) and #167
+  (faster single-field codec) are released, bump the submodule and declare
+  `<depend>cloudini_lib</depend>` in `package.xml` to use the system package.
 * **mrpt_slam**: only the auxiliary particle filters go through
   `PF_SLAM_implementation_gatherActionsCheckBothActObs()`; `pfStandardProposal`
   reads the action directly. An empty sensory frame counts as valid: pass a
