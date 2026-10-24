@@ -49,10 +49,25 @@ function(mrpt_add_embedded_cloudini)
 	endif()
 endfunction()
 
-if (MRPT_WITH_CLOUDINI)
-	# Cloudini streams are little-endian only:
+# Cloudini streams are little-endian only (CMAKE_CXX_BYTE_ORDER needs CMake 3.20):
+if (DEFINED CMAKE_CXX_BYTE_ORDER)
 	if ("${CMAKE_CXX_BYTE_ORDER}" STREQUAL "BIG_ENDIAN")
+		set(MRPT_CLOUDINI_BIG_ENDIAN ON)
+	else()
+		set(MRPT_CLOUDINI_BIG_ENDIAN OFF)
+	endif()
+else()
+	include(TestBigEndian)
+	test_big_endian(MRPT_CLOUDINI_BIG_ENDIAN)
+endif()
+
+if (MRPT_WITH_CLOUDINI)
+	if (MRPT_CLOUDINI_BIG_ENDIAN)
 		message(STATUS "Cloudini: disabled on big-endian platforms")
+	elseif (NOT BUILD_SHARED_LIBS)
+		# A static mrpt_maps would need Cloudini (and zstd, lz4) in its exported
+		# interface:
+		message(STATUS "Cloudini: disabled in static builds")
 	else()
 		find_package(cloudini_lib QUIET)
 		# Target names of the standalone and ROS (ament) packages:
