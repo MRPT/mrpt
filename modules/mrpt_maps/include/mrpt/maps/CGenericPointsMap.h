@@ -316,6 +316,9 @@ class CGenericPointsMap : public CPointsMap
   /** Clear the map, erasing all the points and all fields */
   void internal_clear() override;
 
+  /** Writes the map uncompressed, in the format of serialization version 4. */
+  void serializeToV4(mrpt::serialization::CArchive& out) const;
+
   /** @name Redefinition of PLY Import virtual methods from CPointsMap
     @{ */
   void PLY_import_set_vertex(

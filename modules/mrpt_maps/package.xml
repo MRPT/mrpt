@@ -22,6 +22,11 @@
        falls back to downloading & building an embedded copy, which is not
        allowed in distro packaging, so we depend on the system version. -->
   <build_depend>liboctomap-dev</build_depend>
+  <!-- Point map compression with the embedded 3rdparty/cloudini submodule, built
+       against these. (The cloudini_lib ROS package is used if found, but not
+       depended upon, since it pulls in PCL.) -->
+  <build_depend>libzstd-dev</build_depend>
+  <build_depend>liblz4-dev</build_depend>
 
   <export>
     <build_type>cmake</build_type>

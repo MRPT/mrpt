@@ -17,6 +17,7 @@
 #include <mrpt/serialization/CArchive.h>
 
 #include "CPointsMap_crtp_common.h"
+#include "points_cloudini_io.h"
 
 using namespace std;
 using namespace mrpt;
@@ -103,20 +104,30 @@ void CSimplePointsMap::setSize(size_t newLength)
   mark_as_modified();
 }
 
-uint8_t CSimplePointsMap::serializeGetVersion() const { return 10; }
+// Uncompressed maps keep the v10 format, readable by older MRPT versions.
+uint8_t CSimplePointsMap::serializeGetVersion() const
+{
+  using namespace mrpt::maps::internal;
+  return points_encoding_for_writing(m_x.size()) == kPointsEncodingRaw ? 10 : 11;
+}
 void CSimplePointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  uint32_t n = static_cast<uint32_t>(m_x.size());
+  using namespace mrpt::maps::internal;
 
-  // First, write the number of points:
+  const uint8_t encoding = points_encoding_for_writing(m_x.size());
+  if (encoding != kPointsEncodingRaw)
+  {
+    out << encoding;  // v11
+  }
+  const uint32_t n = static_cast<uint32_t>(m_x.size());
   out << n;
 
-  if (n > 0)
-  {
-    out.WriteBufferFixEndianness(&m_x[0], n);
-    out.WriteBufferFixEndianness(&m_y[0], n);
-    out.WriteBufferFixEndianness(&m_z[0], n);
-  }
+  const auto res = xyz_resolution();
+  write_point_columns(
+      out, encoding,
+      {PointColumn::of(m_x.data(), n, res), PointColumn::of(m_y.data(), n, res),
+       PointColumn::of(m_z.data(), n, res)});
+
   out << genericMapParams;               // v9
   insertionOptions.writeToStream(out);   // v9
   likelihoodOptions.writeToStream(out);  // v5
@@ -135,21 +146,26 @@ void CSimplePointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t 
     case 8:
     case 9:
     case 10:
+    case 11:
     {
+      using namespace mrpt::maps::internal;
+
       mark_as_modified();
+
+      uint8_t encoding = kPointsEncodingRaw;
+      if (version >= 11)
+      {
+        in >> encoding;
+      }
 
       // Read the number of points:
       uint32_t n;
       in >> n;
 
-      this->resize(n);
-
-      if (n > 0)
-      {
-        in.ReadBufferFixEndianness(&m_x[0], n);
-        in.ReadBufferFixEndianness(&m_y[0], n);
-        in.ReadBufferFixEndianness(&m_z[0], n);
-      }
+      read_point_columns(
+          in, encoding,
+          {PointColumn::resizing(m_x, n), PointColumn::resizing(m_y, n),
+           PointColumn::resizing(m_z, n)});
       if (version >= 9)
       {
         in >> genericMapParams;

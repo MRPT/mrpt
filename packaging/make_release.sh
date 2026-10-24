@@ -88,13 +88,21 @@ then
 	# (nanoflann, zlib, simpleini, glfw, ...) are consumed via Debian build
 	# dependencies and must NOT be shipped in the archive. The mrpt_imgui_vendor
 	# ones are shipped because no distro packages ImGui's docking branch nor the
-	# ImPlot master snapshot it requires.
-	EXTERNAL_MODS="modules/mrpt_gui/3rdparty/nanogui modules/mrpt_gui/3rdparty/nanogui/ext/nanovg 3rdparty/googletest modules/mrpt_containers/3rdparty/libfyaml 3rdparty/rplidar_sdk modules/mrpt_imgui_vendor/3rdparty/imgui modules/mrpt_imgui_vendor/3rdparty/implot modules/mrpt_imgui_vendor/3rdparty/portable-file-dialogs modules/mrpt_imgui_vendor/3rdparty/IconFontCppHeaders ${MRPT_PKG_EXPORTED_SUBMODULES}"
+	# ImPlot master snapshot it requires. Cloudini (point map compression) is not
+	# packaged by distros either (ROS builds use its cloudini_lib package).
+	EXTERNAL_MODS="modules/mrpt_gui/3rdparty/nanogui modules/mrpt_gui/3rdparty/nanogui/ext/nanovg 3rdparty/googletest modules/mrpt_containers/3rdparty/libfyaml 3rdparty/rplidar_sdk modules/mrpt_imgui_vendor/3rdparty/imgui modules/mrpt_imgui_vendor/3rdparty/implot modules/mrpt_imgui_vendor/3rdparty/portable-file-dialogs modules/mrpt_imgui_vendor/3rdparty/IconFontCppHeaders modules/mrpt_maps/3rdparty/cloudini ${MRPT_PKG_EXPORTED_SUBMODULES}"
 	for MOD in $EXTERNAL_MODS;
 	do
 		echo "> Exporting git submodule: ${MRPTSRC}/$MOD"
 		cd "${MRPTSRC}/$MOD"
 		git archive --format=tar HEAD | tar -x -C "${OUT_DIR}/$MOD"
+	done
+
+	# Of Cloudini, only its C++ library is built (no tools, tests or sample data):
+	CLOUDINI_DIR="${OUT_DIR}/modules/mrpt_maps/3rdparty/cloudini"
+	find "${CLOUDINI_DIR}" -mindepth 1 -maxdepth 1 ! -name cloudini_lib ! -name LICENSE ! -name README.md -exec rm -fr {} +
+	for SUBDIR in samples tools test benchmarks; do
+		rm -fr "${CLOUDINI_DIR}/cloudini_lib/${SUBDIR}"
 	done
 
 	cd "${MRPTSRC}"

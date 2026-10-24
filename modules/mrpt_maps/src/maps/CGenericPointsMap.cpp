@@ -23,6 +23,7 @@
 
 #include "CPointsMap_crtp_common.h"
 #include "mrpt/core/bits_mem.h"
+#include "points_cloudini_io.h"
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -180,10 +181,56 @@ void CGenericPointsMap::setSize(size_t newLength)
   mark_as_modified();
 }
 
-uint8_t CGenericPointsMap::serializeGetVersion() const { return 4; }
+// Uncompressed maps keep the v4 format, readable by older MRPT versions.
+uint8_t CGenericPointsMap::serializeGetVersion() const
+{
+  using namespace mrpt::maps::internal;
+  return points_encoding_for_writing(m_x.size()) == kPointsEncodingRaw ? 4 : 5;
+}
 void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
-  // XYZ
+  using namespace mrpt::maps::internal;
+
+  const uint8_t encoding = points_encoding_for_writing(m_x.size());
+  if (encoding == kPointsEncodingRaw)
+  {
+    serializeToV4(out);
+    return;
+  }
+
+  // v5: field names and sizes first, then all the data, as columns:
+  const auto n = static_cast<uint32_t>(m_x.size());
+  out << encoding << n;
+
+  const auto xyzRes = xyz_resolution();
+  std::vector<PointColumn> columns = {
+      PointColumn::of(m_x.data(), n, xyzRes), PointColumn::of(m_y.data(), n, xyzRes),
+      PointColumn::of(m_z.data(), n, xyzRes)};
+
+  auto lambdaWriteFields = [&](const auto& fields)
+  {
+    out.WriteAs<uint32_t>(fields.size());
+    for (const auto& [name, v] : fields)
+    {
+      out << name;
+      out.WriteAs<uint32_t>(v.size());
+      columns.push_back(PointColumn::of(v.data(), v.size(), field_resolution(name)));
+    }
+  };
+  lambdaWriteFields(m_float_fields);
+  lambdaWriteFields(m_double_fields);
+  lambdaWriteFields(m_uint16_fields);
+  lambdaWriteFields(m_uint8_fields);
+  lambdaWriteFields(m_uint32_fields);
+
+  write_point_columns(out, encoding, columns);
+
+  insertionOptions.writeToStream(out);
+  likelihoodOptions.writeToStream(out);
+}
+
+void CGenericPointsMap::serializeToV4(mrpt::serialization::CArchive& out) const
+{
   const auto n = static_cast<uint32_t>(m_x.size());
   out << n;
   if (n > 0)
@@ -193,65 +240,24 @@ void CGenericPointsMap::serializeTo(mrpt::serialization::CArchive& out) const
     out.WriteBufferFixEndianness(m_z.data(), n);
   }
 
-  // Float fields
-  out.WriteAs<uint32_t>(m_float_fields.size());
-  for (const auto& [name, v] : m_float_fields)
+  auto lambdaWriteFields = [&](const auto& fields)
   {
-    out << name;
-    out.WriteAs<uint32_t>(v.size());
-    if (!v.empty())
+    out.WriteAs<uint32_t>(fields.size());
+    for (const auto& [name, v] : fields)
     {
-      out.WriteBufferFixEndianness(v.data(), v.size());
+      out << name;
+      out.WriteAs<uint32_t>(v.size());
+      if (!v.empty())
+      {
+        out.WriteBufferFixEndianness(v.data(), v.size());
+      }
     }
-  }
-
-  // Double fields (v1)
-  out.WriteAs<uint32_t>(m_double_fields.size());
-  for (const auto& [name, v] : m_double_fields)
-  {
-    out << name;
-    out.WriteAs<uint32_t>(v.size());
-    if (!v.empty())
-    {
-      out.WriteBufferFixEndianness(v.data(), v.size());
-    }
-  }
-
-  // Uint16 fields
-  out.WriteAs<uint32_t>(m_uint16_fields.size());
-  for (const auto& [name, v] : m_uint16_fields)
-  {
-    out << name;
-    out.WriteAs<uint32_t>(v.size());
-    if (!v.empty())
-    {
-      out.WriteBufferFixEndianness(v.data(), v.size());
-    }
-  }
-
-  // uint8 fields (v2)
-  out.WriteAs<uint32_t>(m_uint8_fields.size());
-  for (const auto& [name, v] : m_uint8_fields)
-  {
-    out << name;
-    out.WriteAs<uint32_t>(v.size());  // v3
-    if (!v.empty())
-    {
-      out.WriteBufferFixEndianness(v.data(), v.size());  // v3
-    }
-  }
-
-  // uint32 fields (v4)
-  out.WriteAs<uint32_t>(m_uint32_fields.size());
-  for (const auto& [name, v] : m_uint32_fields)
-  {
-    out << name;
-    out.WriteAs<uint32_t>(v.size());
-    if (!v.empty())
-    {
-      out.WriteBufferFixEndianness(v.data(), v.size());
-    }
-  }
+  };
+  lambdaWriteFields(m_float_fields);
+  lambdaWriteFields(m_double_fields);
+  lambdaWriteFields(m_uint16_fields);
+  lambdaWriteFields(m_uint8_fields);
+  lambdaWriteFields(m_uint32_fields);
 
   insertionOptions.writeToStream(out);
   likelihoodOptions.writeToStream(out);
@@ -280,6 +286,43 @@ void CGenericPointsMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
 
   switch (version)
   {
+    case 5:
+    {
+      using namespace mrpt::maps::internal;
+
+      mark_as_modified();
+
+      const auto encoding = in.ReadAs<uint8_t>();
+      const auto n = in.ReadAs<uint32_t>();
+      // The arrays are resized while reading (in parallel for large clouds):
+      std::vector<PointColumn> columns = {
+          PointColumn::resizing(m_x, n), PointColumn::resizing(m_y, n),
+          PointColumn::resizing(m_z, n)};
+
+      auto lambdaReadFields = [&](auto& fields, const auto& registerField)
+      {
+        const auto nFields = in.ReadAs<uint32_t>();
+        for (uint32_t i = 0; i < nFields; i++)
+        {
+          std::string name;
+          in >> name;
+          const auto fieldSize = in.ReadAs<uint32_t>();
+          registerField(name);
+          columns.push_back(PointColumn::resizing(fields.at(name), fieldSize));
+        }
+      };
+      lambdaReadFields(m_float_fields, [this](const auto& f) { registerField_float(f); });
+      lambdaReadFields(m_double_fields, [this](const auto& f) { registerField_double(f); });
+      lambdaReadFields(m_uint16_fields, [this](const auto& f) { registerField_uint16(f); });
+      lambdaReadFields(m_uint8_fields, [this](const auto& f) { registerField_uint8(f); });
+      lambdaReadFields(m_uint32_fields, [this](const auto& f) { registerField_uint32(f); });
+
+      read_point_columns(in, encoding, columns);
+
+      insertionOptions.readFromStream(in);
+      likelihoodOptions.readFromStream(in);
+    }
+    break;
     case 0:
     case 1:
     case 2:
