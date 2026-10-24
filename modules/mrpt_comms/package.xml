@@ -25,7 +25,7 @@
   <build_depend>python3-dev</build_depend>
 
   <!-- Optional dependency, auto-detected by CMake script at build time -->
-  <build_depend>libftdi1-dev</build_depend>
+  <depend>libftdi1-dev</depend>
 
   <export>
     <build_type>cmake</build_type>

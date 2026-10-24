@@ -17,15 +17,15 @@
   <depend>eigen</depend> <!-- Needed by nanogui public headers -->
   <depend>libglfw3-dev</depend> <!-- Needed by nanogui public headers (GLFW/glfw3.h) -->
 
-  <build_depend>libxrandr</build_depend>
-  <build_depend>libxxf86vm</build_depend>
-  <build_depend>opengl</build_depend>
+  <depend>libxrandr</depend>
+  <depend>libxxf86vm</depend>
+  <depend>opengl</depend>
 
   <build_depend>wx-common</build_depend>
-  <build_depend>wxwidgets</build_depend>
+  <depend>wxwidgets</depend>
 
-  <build_depend>libqt5-opengl-dev</build_depend>
-  <build_depend>qtbase5-dev</build_depend>
+  <depend>libqt5-opengl-dev</depend>
+  <depend>qtbase5-dev</depend>
 
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
