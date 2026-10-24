@@ -200,6 +200,13 @@ mrpt_add_library(
   Constructors of concrete `CMetricMap` classes must stay out-of-line: user
   code inlining one (base ctor call + merged vptr stores) is miscompiled by
   GCC with LTO (calls devirtualized to `__builtin_unreachable`).
+  `CSimplePointsMap`/`CGenericPointsMap` serialize clouds of >= 250k points
+  with Cloudini (`CPointsMap::serializationOptions()`, `MRPT_POINTS_CLOUDINI*`
+  env vars), in 64k-point chunks coded in parallel; smaller ones keep the
+  previous (raw) serialization version. Cloudini is the system `cloudini_lib`
+  or the `3rdparty/cloudini` submodule (shipped by `make_release.sh`); only
+  `src/maps/cloudini_codec.cpp` is built as C++20 (the `cxx_std_20` usage
+  requirement of the cloudini target is stripped on purpose).
 * **mrpt_slam**: only the auxiliary particle filters go through
   `PF_SLAM_implementation_gatherActionsCheckBothActObs()`; `pfStandardProposal`
   reads the action directly. An empty sensory frame counts as valid: pass a

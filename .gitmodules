@@ -35,3 +35,6 @@
 [submodule "modules/mrpt_imgui_vendor/3rdparty/IconFontCppHeaders"]
 	path = modules/mrpt_imgui_vendor/3rdparty/IconFontCppHeaders
 	url = https://github.com/juliettef/IconFontCppHeaders.git
+[submodule "modules/mrpt_maps/3rdparty/cloudini"]
+	path = modules/mrpt_maps/3rdparty/cloudini
+	url = https://github.com/facontidavide/cloudini.git
