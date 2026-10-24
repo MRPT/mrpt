@@ -42,6 +42,11 @@ function(mrpt_add_embedded_cloudini)
 		${mrpt_maps_SOURCE_DIR}/3rdparty/cloudini/cloudini_lib
 		${mrpt_maps_BINARY_DIR}/3rdparty/cloudini
 		EXCLUDE_FROM_ALL)
+	# Its codec runs much faster built with -O3 than with the -O2 of
+	# RelWithDebInfo or distribution builds:
+	if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		target_compile_options(cloudini_lib PRIVATE $<$<NOT:$<CONFIG:Debug>>:-O3>)
+	endif()
 endfunction()
 
 if (MRPT_WITH_CLOUDINI)
