@@ -943,7 +943,7 @@ function(mrpt_add_python_module MODULE_NAME CPP_SOURCES)
       DESTINATION "${_py_staging_dir}"
     )
 
-    install(TARGETS _bindings LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}/mrpt/${MODULE_NAME}/)
+    install(TARGETS _bindings LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}/mrpt/${MODULE_NAME})
     # Install the Python package, with its type stubs (scripts/generate_python_stubs.py)
     install(DIRECTORY python/mrpt DESTINATION ${PYTHON_INSTALL_DIR}
       FILES_MATCHING PATTERN "*.py" PATTERN "*.pyi" PATTERN "py.typed")
