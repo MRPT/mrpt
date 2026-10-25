@@ -516,6 +516,43 @@ TEST(CSimplePointsMapTests, kdTreeClosestPoint3D)
   EXPECT_NEAR(distSqr, 0.03f, 1e-5f);
 }
 
+TEST(CSimplePointsMapTests, kdTreeSeesPointsChangedAfterQuery)
+{
+  auto pts = load_demo_9pts_map<CSimplePointsMap>();
+
+  float x = 0;
+  float y = 0;
+  float z = 0;
+  float distSqr = 0;
+  EXPECT_EQ(pts.kdTreeClosestPoint3D(20.f, 20.f, 20.f, x, y, z, distSqr), demo9_N - 1);
+
+  // Many per-point changes after a query, only the first one finds the index
+  // up to date:
+  for (int i = 0; i < 100; i++)
+  {
+    pts.insertPoint(10.f + 0.01f * static_cast<float>(i), 10.f, 10.f);
+  }
+  EXPECT_EQ(pts.kdTreeClosestPoint3D(20.f, 20.f, 20.f, x, y, z, distSqr), demo9_N + 99);
+
+  // Build the 2D index too, then move a point with setPoint():
+  EXPECT_EQ(pts.kdTreeClosestPoint2D(0.f, 0.f, x, y, distSqr), 0U);
+  pts.setPoint(3, -5.f, -5.f, -5.f);
+  pts.setPoint(4, 50.f, 50.f, 50.f);
+  EXPECT_EQ(pts.kdTreeClosestPoint2D(-5.f, -5.f, x, y, distSqr), 3U);
+  EXPECT_EQ(pts.kdTreeClosestPoint3D(50.f, 50.f, 50.f, x, y, z, distSqr), 4U);
+
+  // Points copied from another map with insertPointFrom():
+  CSimplePointsMap other;
+  other.insertPoint(-30.f, 0.f, 0.f);
+  other.insertPoint(-31.f, 0.f, 0.f);
+  const auto ctx = pts.prepareForInsertPointsFrom(other);
+  pts.insertPointFrom(0, ctx);
+  pts.insertPointFrom(1, ctx);
+  const size_t n = pts.size();
+  EXPECT_EQ(pts.kdTreeClosestPoint3D(-31.f, 0.f, 0.f, x, y, z, distSqr), n - 1);
+  EXPECT_NEAR(distSqr, 0.0f, 1e-6f);
+}
+
 TEST(CSimplePointsMapTests, kdTreeNClosestPoint2D)
 {
   const auto pts = load_demo_9pts_map<CSimplePointsMap>();
