@@ -16,7 +16,7 @@ jobs:
 
         include:
           - name: clang-format-check
-            os: ubuntu-latest
+            os: ubuntu-24.04
 
     steps:
       - name: Checkout
