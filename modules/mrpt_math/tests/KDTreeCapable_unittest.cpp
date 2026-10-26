@@ -365,6 +365,32 @@ TEST(KDTreeCapable, treeIsRebuiltWhenCloudChanges)
   EXPECT_NEAR(distSqr, 0.0f, 1e-6f);
 }
 
+TEST(KDTreeCapable, repeatedMarksStillForceRebuild)
+{
+  MutablePointCloud2D cloud;
+  cloud.pts.emplace_back(0, 0);
+
+  float distSqr = 0;
+  EXPECT_EQ(cloud.kdTreeClosestPoint2D(5.f, 5.f, distSqr), 0U);
+
+  // Marking an already outdated index must keep it outdated:
+  for (int i = 0; i < 3; i++)
+  {
+    cloud.pts.emplace_back(10 + i, 10 + i);
+    cloud.markOutdated();
+  }
+  cloud.pts.emplace_back(5, 5);
+  cloud.markOutdated();
+  EXPECT_EQ(cloud.kdTreeClosestPoint2D(5.f, 5.f, distSqr), 4U);
+  EXPECT_NEAR(distSqr, 0.0f, 1e-6f);
+
+  // ...and the next change after a rebuild must be noticed too:
+  cloud.pts.emplace_back(7, 7);
+  cloud.markOutdated();
+  EXPECT_EQ(cloud.kdTreeClosestPoint2D(7.f, 7.f, distSqr), 5U);
+  EXPECT_NEAR(distSqr, 0.0f, 1e-6f);
+}
+
 TEST(KDTreeCapable, kNNRequestLargerThanCloud)
 {
   // Asking for more neighbors than the cloud holds must return only as many

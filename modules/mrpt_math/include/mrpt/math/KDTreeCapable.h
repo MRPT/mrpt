@@ -1090,7 +1090,13 @@ class KDTreeCapable
   /** To be called by child classes when KD tree data changes. */
   void kdtree_mark_as_outdated() const
   {
-    std::lock_guard<std::mutex> lck(m_kdtree_mtx);
+    // Called once per modified point: skip the mutex if already outdated.
+    // Changing points during a concurrent rebuild is a data race anyway.
+    if (!m_kdtree_is_uptodate.load(std::memory_order_relaxed))
+    {
+      return;
+    }
+    const std::lock_guard<std::mutex> lck(m_kdtree_mtx);
     m_kdtree_is_uptodate = false;
   }
 
