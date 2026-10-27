@@ -322,6 +322,10 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   else
   {
     glDisableVertexAttribArray(2);
+    if (m_directionBuffer.initialized())
+    {
+      m_directionBuffer.destroy();
+    }
   }
 
   // Unbind

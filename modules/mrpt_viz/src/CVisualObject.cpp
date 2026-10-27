@@ -24,6 +24,7 @@
 #include <mrpt/viz/CVisualObject.h>  // Include these before windows.h!!
 
 #include <atomic>
+#include <cmath>
 #include <mutex>
 
 using namespace std;
@@ -488,6 +489,9 @@ void VisualObjectParams_Points::enableHideBackFacingPoints(bool enable)
 
 void VisualObjectParams_Points::setBackFacingMaxAngle(float degrees)
 {
+  ASSERT_(std::isfinite(degrees));
+  ASSERT_GE_(degrees, 0.0f);
+  ASSERT_LE_(degrees, 180.0f);
   m_backFacingMaxAngle_deg = degrees;
   CVisualObject::notifyChange();
 }

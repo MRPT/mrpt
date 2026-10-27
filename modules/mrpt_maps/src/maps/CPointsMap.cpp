@@ -40,6 +40,7 @@
 #include <mrpt/viz/CSetOfObjects.h>
 
 #include <Eigen/Dense>
+#include <array>
 #include <fstream>
 #include <sstream>
 
@@ -1564,6 +1565,26 @@ void CPointsMap::insertAnotherMap(
 
   const auto ctx = this->prepareForInsertPointsFrom(*otherMap);
 
+  // Direction fields (normals, view vectors) must be rotated, but not translated:
+  std::array<std::array<mrpt::aligned_std_vector<float>*, 3>, 2> dirFields = {};
+  if (!identity_tf)
+  {
+    size_t k = 0;
+    for (const char* prefix : {"normal_", "view_"})
+    {
+      const std::string p = prefix;
+      auto* xs = getPointsBufferRef_float_field(p + "x");
+      auto* ys = getPointsBufferRef_float_field(p + "y");
+      auto* zs = getPointsBufferRef_float_field(p + "z");
+      if (xs && ys && zs)
+      {
+        dirFields[k] = {xs, ys, zs};
+      }
+      k++;
+    }
+  }
+  const auto R = otherPose.getRotationMatrix();
+
   mrpt::math::TPoint3Df pt;
   for (size_t srcIdx = 0; srcIdx < N_other; srcIdx++)
   {
@@ -1589,6 +1610,22 @@ void CPointsMap::insertAnotherMap(
       // Translation:
       std::tie(m_x.back(), m_y.back(), m_z.back()) =
           otherPose.composePoint(pt).cast<float>().as_tuple();
+
+      // Rotation only:
+      for (const auto& f : dirFields)
+      {
+        if (!f[0] || f[0]->size() != m_x.size() || f[1]->size() != m_x.size() ||
+            f[2]->size() != m_x.size())
+        {
+          continue;
+        }
+        const double dx = f[0]->back();
+        const double dy = f[1]->back();
+        const double dz = f[2]->back();
+        f[0]->back() = static_cast<float>(R(0, 0) * dx + R(0, 1) * dy + R(0, 2) * dz);
+        f[1]->back() = static_cast<float>(R(1, 0) * dx + R(1, 1) * dy + R(1, 2) * dz);
+        f[2]->back() = static_cast<float>(R(2, 0) * dx + R(2, 1) * dy + R(2, 2) * dz);
+      }
     }
   }
 }
