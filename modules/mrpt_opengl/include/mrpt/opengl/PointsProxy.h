@@ -59,6 +59,15 @@ class PointsProxy : public PointsProxyBase
 
   const char* typeName() const override { return "PointsProxy"; }
 
+  std::vector<shader_id_t> requiredShaders() const override
+  {
+    if (m_hasDirectionBuffer)
+    {
+      return {DefaultShaderID::POINTS_HIDE_BACK_FACING};
+    }
+    return {DefaultShaderID::POINTS};
+  }
+
   /** @} */
 
  private:
@@ -69,6 +78,7 @@ class PointsProxy : public PointsProxyBase
     bool variablePointSize = true;
     float variablePointSize_K = 0.1f;
     float variablePointSize_DepthScale = 0.1f;
+    float backFacingMinCos = 0.0f;
   };
 
   /** Cached parameters from last compile/update */

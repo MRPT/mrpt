@@ -115,6 +115,7 @@ size_t ShaderProgramManager::preloadAllDefaultShaders(std::vector<std::string>* 
   // List of all default shader IDs to preload
   const std::vector<shader_id_t> allDefaultShaders = {
       DefaultShaderID::POINTS,
+      DefaultShaderID::POINTS_HIDE_BACK_FACING,
       DefaultShaderID::WIREFRAME,
       DefaultShaderID::TRIANGLES_NO_LIGHT,
       DefaultShaderID::TRIANGLES_LIGHT,

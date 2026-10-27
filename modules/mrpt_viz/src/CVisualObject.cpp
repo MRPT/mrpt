@@ -19,6 +19,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/viz/CText.h>
 #include <mrpt/viz/CVisualObject.h>  // Include these before windows.h!!
 
@@ -438,9 +439,11 @@ void VisualObjectParams_Lines::params_deserialize(serialization::CArchive& in)
 
 void VisualObjectParams_Points::params_serialize(serialization::CArchive& out) const
 {
-  out.WriteAs<uint8_t>(0);  // serialization version
+  out.WriteAs<uint8_t>(1);  // serialization version
   out << m_pointSize << m_variablePointSize << m_variablePointSize_K
       << m_variablePointSize_DepthScale;
+  // v1:
+  out << m_hideBackFacing << m_backFacingMaxAngle_deg << m_direction_buffer_data;
 }
 
 void VisualObjectParams_Points::params_deserialize(serialization::CArchive& in)
@@ -450,12 +453,43 @@ void VisualObjectParams_Points::params_deserialize(serialization::CArchive& in)
   switch (version)
   {
     case 0:
+    case 1:
       in >> m_pointSize >> m_variablePointSize >> m_variablePointSize_K >>
           m_variablePointSize_DepthScale;
+      if (version >= 1)
+      {
+        in >> m_hideBackFacing >> m_backFacingMaxAngle_deg >> m_direction_buffer_data;
+      }
+      else
+      {
+        m_hideBackFacing = false;
+        m_backFacingMaxAngle_deg = 90.0f;
+        m_direction_buffer_data.clear();
+      }
       break;
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
+}
+
+void VisualObjectParams_Points::setPointDirections(std::vector<mrpt::math::TPoint3Df> directions)
+{
+  std::unique_lock<std::shared_mutex> wfWriteLock(m_pointsMtx.data);
+  m_direction_buffer_data = std::move(directions);
+  wfWriteLock.unlock();
+  CVisualObject::notifyChange();
+}
+
+void VisualObjectParams_Points::enableHideBackFacingPoints(bool enable)
+{
+  m_hideBackFacing = enable;
+  CVisualObject::notifyChange();
+}
+
+void VisualObjectParams_Points::setBackFacingMaxAngle(float degrees)
+{
+  m_backFacingMaxAngle_deg = degrees;
+  CVisualObject::notifyChange();
 }
 
 const math::TBoundingBoxf VisualObjectParams_Points::verticesBoundingBox() const

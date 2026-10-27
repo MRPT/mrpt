@@ -266,8 +266,11 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
 
   const auto& vertices = pointsObj->shaderPointsVertexPointBuffer();
   const auto& colors = pointsObj->shaderPointsVertexColorBuffer();
+  const auto& directions = pointsObj->shaderPointsVertexDirectionBuffer();
 
   m_pointCount = vertices.size();
+  m_hasDirectionBuffer = pointsObj->isEnabledHideBackFacingPoints() && !directions.empty() &&
+                         directions.size() == m_pointCount;
   m_localBBox = boundingBoxOf(vertices);
   m_hasColorBuffer = !colors.empty() && colors.size() == m_pointCount;
   m_baseColor = sourceObj->getColor_u8();
@@ -304,6 +307,21 @@ void PointsProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   {
     // Use object's base color - disable attribute and use uniform
     glDisableVertexAttribArray(1);
+  }
+
+  // Attribute 2: direction (vec3), only used by the back-facing shader
+  if (m_hasDirectionBuffer)
+  {
+    m_directionBuffer.createOnce();
+    m_directionBuffer.bind();
+    m_directionBuffer.allocate(
+        directions.data(), static_cast<int>(sizeof(TPoint3Df) * m_pointCount));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(TPoint3Df), nullptr);
+  }
+  else
+  {
+    glDisableVertexAttribArray(2);
   }
 
   // Unbind
