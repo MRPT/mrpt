@@ -2,8 +2,8 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.0 (2026-10-28)
+------------------
 * fix cmake warning
 * Contributors: Jose Luis Blanco-Claraco
 

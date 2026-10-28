@@ -2,8 +2,8 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.0 (2026-10-28)
+------------------
 * Point clouds: optionally hide back-facing points (`#1476 <https://github.com/MRPT/mrpt/issues/1476>`_)
 * KDTreeCapable: do not lock to mark an already outdated index (`#1475 <https://github.com/MRPT/mrpt/issues/1475>`_)
 * Faster and smaller point map serialization with optional Cloudini (`#1474 <https://github.com/MRPT/mrpt/issues/1474>`_)

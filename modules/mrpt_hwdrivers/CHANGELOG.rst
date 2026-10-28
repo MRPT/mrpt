@@ -2,8 +2,8 @@
 Changelog for package mrpt_hwdrivers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.0 (2026-10-28)
+------------------
 * Declare linked system libraries as package.xml <depend> to fix RHEL downstream link failures (`#1473 <https://github.com/MRPT/mrpt/issues/1473>`_)
 * CGPSInterface: report each serial port open error once (`#1471 <https://github.com/MRPT/mrpt/issues/1471>`_)
 * Fix decoding of Novatel logs without a dedicated parser; serialize generic frame headers as little-endian (`#1470 <https://github.com/MRPT/mrpt/issues/1470>`_)

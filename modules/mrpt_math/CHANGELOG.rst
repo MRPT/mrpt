@@ -2,8 +2,8 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.0 (2026-10-28)
+------------------
 * KDTreeCapable: do not lock to mark an already outdated index (`#1475 <https://github.com/MRPT/mrpt/issues/1475>`_)
 * Contributors: Jose Luis Blanco-Claraco
 

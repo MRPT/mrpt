@@ -2,8 +2,8 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.0 (2026-10-28)
+------------------
 * Declare linked system libraries as package.xml <depend> to fix RHEL downstream link failures (`#1473 <https://github.com/MRPT/mrpt/issues/1473>`_)
 * Contributors: Jose Luis Blanco-Claraco
 

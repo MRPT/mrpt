@@ -2,8 +2,8 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.0 (2026-10-28)
+------------------
 * Point clouds: optionally hide back-facing points (`#1476 <https://github.com/MRPT/mrpt/issues/1476>`_)
 * OpenGL: trilinear and anisotropic filtering for mipmapped textures (`#1469 <https://github.com/MRPT/mrpt/issues/1469>`_)
 * Contributors: Jose Luis Blanco-Claraco
