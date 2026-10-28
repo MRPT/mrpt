@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>mrpt_maps</name>
-  <version>3.5.3</version>
+  <version>3.6.0</version>
   <description>The MRPT C++ library mrpt_maps</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
@@ -21,7 +21,12 @@
   <!-- Optional system library for the octomap-based maps; if absent upstream
        falls back to downloading & building an embedded copy, which is not
        allowed in distro packaging, so we depend on the system version. -->
-  <build_depend>liboctomap-dev</build_depend>
+  <depend>liboctomap-dev</depend>
+  <!-- Point map compression with the embedded 3rdparty/cloudini submodule, built
+       against these. (The cloudini_lib ROS package is used if found, but not
+       depended upon, since it pulls in PCL.) -->
+  <depend>libzstd-dev</depend>
+  <depend>liblz4-dev</depend>
 
   <export>
     <build_type>cmake</build_type>

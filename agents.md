@@ -45,6 +45,9 @@ mrpt_add_library(
 * Every rosdep key in a `package.xml` must resolve on all build farm
   platforms (Ubuntu, Debian, Fedora, RHEL); otherwise that package fails to
   build there. Leave out optional deps with an embedded fallback if missing.
+* A system library linked into an installed binary must be a `<depend>`, not
+  just `<build_depend>`: RPMs get no automatic shared-library requirements, so
+  downstream packages then fail to link on RHEL.
 * Examples feed the docs galleries and `examples.json`
   (`scripts/generate_rst_docs_examples.py`, see its docstring): the summary is
   the first paragraph of `mrpt_examples_cpp/<name>/README.md` or the first
@@ -197,6 +200,16 @@ mrpt_add_library(
   Constructors of concrete `CMetricMap` classes must stay out-of-line: user
   code inlining one (base ctor call + merged vptr stores) is miscompiled by
   GCC with LTO (calls devirtualized to `__builtin_unreachable`).
+  `CSimplePointsMap`/`CGenericPointsMap` serialize clouds of >= 250k points
+  with Cloudini (`CPointsMap::serializationOptions()`, `MRPT_POINTS_CLOUDINI*`
+  env vars), in 64k-point chunks coded in parallel; smaller ones keep the
+  previous (raw) serialization version. Cloudini is the system `cloudini_lib`
+  or the `3rdparty/cloudini` submodule (shipped by `make_release.sh`); only
+  `src/maps/cloudini_codec.cpp` is built as C++20 (the `cxx_std_20` usage
+  requirement of the cloudini target is stripped on purpose).
+  Pending: once Cloudini PRs #166 (no PCL in `cloudini_lib`) and #167
+  (faster single-field codec) are released, bump the submodule and declare
+  `<depend>cloudini_lib</depend>` in `package.xml` to use the system package.
 * **mrpt_slam**: only the auxiliary particle filters go through
   `PF_SLAM_implementation_gatherActionsCheckBothActObs()`; `pfStandardProposal`
   reads the action directly. An empty sensory frame counts as valid: pass a
@@ -259,7 +272,8 @@ mrpt_add_library(
 * The `.pyi` stubs next to each `__init__.py` are generated and committed: run
   `scripts/generate_python_stubs.py` after changing bindings (CI fails if they
   are stale and uploads the right ones as the `python-stubs` artifact, since
-  output depends on the pybind11 version). They are the source of the Python
+  output depends on the pybind11 version; hence the pinned `ubuntu-24.04` runner
+  in `build-linux.yml`). They are the source of the Python
   API docs; `scripts/check_python_docstrings.py` lists missing docstrings.
 * Conventions:
   * Include `<pybind11/pybind11.h>` and `<pybind11/stl.h>`; add `eigen.h`,

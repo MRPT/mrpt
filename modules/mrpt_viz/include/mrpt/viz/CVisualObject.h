@@ -980,10 +980,42 @@ class VisualObjectParams_Points : public virtual CVisualObject
     return m_variablePointSize_DepthScale;
   }
 
+  /** @name Hiding back-facing points
+   * Each point may have a direction vector pointing towards the side from
+   * which it should be visible, e.g. a surface normal, or the direction
+   * towards the sensor that observed it. When enabled, points whose
+   * direction faces away from the camera are not rendered.
+   * @{ */
+
+  /** Sets the per-point direction vectors (no need to be normalized). Its
+   * length must match the number of points, otherwise it is ignored while
+   * rendering. Pass an empty vector to remove them.
+   * \sa enableHideBackFacingPoints()
+   */
+  void setPointDirections(std::vector<mrpt::math::TPoint3Df> directions);
+
+  /** Enables hiding points whose direction faces away from the camera
+   * (default=false). It has no effect if no point directions have been set.
+   * \sa setPointDirections(), setBackFacingMaxAngle()
+   */
+  void enableHideBackFacingPoints(bool enable = true);
+  [[nodiscard]] bool isEnabledHideBackFacingPoints() const { return m_hideBackFacing; }
+
+  /** A point is hidden if the angle between its direction and the direction
+   * towards the camera is larger than this value, in degrees (default=90,
+   * i.e. everything seen from behind). Larger values also keep points seen
+   * from slightly behind; 180 hides nothing.
+   */
+  void setBackFacingMaxAngle(float degrees);
+  [[nodiscard]] float getBackFacingMaxAngle() const { return m_backFacingMaxAngle_deg; }
+
+  /** @} */
+
   /** @name Raw access to point shader buffer data
    * @{ */
   const auto& shaderPointsVertexPointBuffer() const { return m_vertex_buffer_data; }
   const auto& shaderPointsVertexColorBuffer() const { return m_color_buffer_data; }
+  const auto& shaderPointsVertexDirectionBuffer() const { return m_direction_buffer_data; }
   auto& shaderPointsBuffersMutex() const { return m_pointsMtx; }
 
   /** @} */
@@ -994,6 +1026,7 @@ class VisualObjectParams_Points : public virtual CVisualObject
 
   mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
   mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
+  mutable std::vector<mrpt::math::TPoint3Df> m_direction_buffer_data;
   mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_pointsMtx;
 
   /** Returns the bounding box of m_vertex_buffer_data, or (0,0,0)-(0,0,0) if
@@ -1005,6 +1038,8 @@ class VisualObjectParams_Points : public virtual CVisualObject
   bool m_variablePointSize = true;
   float m_variablePointSize_K = 0.1f;
   float m_variablePointSize_DepthScale = 0.1f;
+  bool m_hideBackFacing = false;
+  float m_backFacingMaxAngle_deg = 90.0f;
 };
 
 }  // namespace mrpt::viz

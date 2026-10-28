@@ -40,6 +40,7 @@
 #include <mrpt/viz/CSetOfObjects.h>
 
 #include <Eigen/Dense>
+#include <array>
 #include <fstream>
 #include <sstream>
 
@@ -604,9 +605,11 @@ void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::serialization::CArchiv
 
 void CPointsMap::TRenderOptions::writeToStream(mrpt::serialization::CArchive& out) const
 {
-  const int8_t version = 0;
+  const int8_t version = 1;
   out << version;
   out << point_size << color << int8_t(colormap);
+  out << hide_back_facing << back_facing_max_angle_normals_deg
+      << back_facing_max_angle_view_deg;  // v1
 }
 
 void CPointsMap::TRenderOptions::readFromStream(mrpt::serialization::CArchive& in)
@@ -616,9 +619,21 @@ void CPointsMap::TRenderOptions::readFromStream(mrpt::serialization::CArchive& i
   switch (version)
   {
     case 0:
+    case 1:
     {
       in >> point_size >> this->color;
       in.ReadAsAndCastTo<int8_t>(this->colormap);
+      if (version >= 1)
+      {
+        in >> hide_back_facing >> back_facing_max_angle_normals_deg >>
+            back_facing_max_angle_view_deg;
+      }
+      else
+      {
+        hide_back_facing = false;
+        back_facing_max_angle_normals_deg = 90.0f;
+        back_facing_max_angle_view_deg = 120.0f;
+      }
     }
     break;
     default:
@@ -662,6 +677,9 @@ void CPointsMap::TRenderOptions::dumpToTextStream(std::ostream& out) const
   LOADABLEOPTS_DUMP_VAR(color.G, float);
   LOADABLEOPTS_DUMP_VAR(color.B, float);
   // LOADABLEOPTS_DUMP_VAR(colormap, int);
+  LOADABLEOPTS_DUMP_VAR(hide_back_facing, bool);
+  LOADABLEOPTS_DUMP_VAR(back_facing_max_angle_normals_deg, float);
+  LOADABLEOPTS_DUMP_VAR(back_facing_max_angle_view_deg, float);
 }
 /*---------------------------------------------------------------
           loadFromConfigFile
@@ -698,6 +716,9 @@ void CPointsMap::TRenderOptions::loadFromConfigFile(
   MRPT_LOAD_CONFIG_VAR(color.G, float, iniFile, section);
   MRPT_LOAD_CONFIG_VAR(color.B, float, iniFile, section);
   colormap = iniFile.read_enum(section, "colormap", this->colormap);
+  MRPT_LOAD_CONFIG_VAR(hide_back_facing, bool, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(back_facing_max_angle_normals_deg, float, iniFile, section);
+  MRPT_LOAD_CONFIG_VAR(back_facing_max_angle_view_deg, float, iniFile, section);
 }
 
 void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
@@ -707,6 +728,20 @@ void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
   {
     return;
   }
+  const auto setBackFacing = [this](viz::VisualObjectParams_Points& obj)
+  {
+    if (!renderOptions.hide_back_facing)
+    {
+      return;
+    }
+    auto d = getPointDirectionsForRendering();
+    obj.setBackFacingMaxAngle(
+        d.fromNormals ? renderOptions.back_facing_max_angle_normals_deg
+                      : renderOptions.back_facing_max_angle_view_deg);
+    obj.setPointDirections(std::move(d.directions));
+    obj.enableHideBackFacingPoints(true);
+  };
+
   if (renderOptions.colormap == mrpt::img::cmNONE)
   {
     // Single color:
@@ -715,6 +750,7 @@ void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
     obj->setColor(renderOptions.color);
     obj->setPointSize(renderOptions.point_size);
     obj->enableColorFromZ(false);
+    setBackFacing(*obj);
     o.insert(obj);
   }
   else
@@ -722,6 +758,7 @@ void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
     auto obj = viz::CPointCloudColoured::Create();
     obj->loadFromPointsMap(this);
     obj->setPointSize(renderOptions.point_size);
+    setBackFacing(*obj);
 
     const auto bb = this->boundingBox();
 
@@ -729,6 +766,35 @@ void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
     o.insert(obj);
   }
   MRPT_END
+}
+
+CPointsMap::TPointDirections CPointsMap::getPointDirectionsForRendering() const
+{
+  TPointDirections ret;
+  for (const char* prefix : {"normal_", "view_"})
+  {
+    const std::string p = prefix;
+    const auto* xs = getPointsBufferRef_float_field(p + "x");
+    const auto* ys = getPointsBufferRef_float_field(p + "y");
+    const auto* zs = getPointsBufferRef_float_field(p + "z");
+    if (!xs || !ys || !zs)
+    {
+      continue;
+    }
+    const size_t n = size();
+    if (xs->size() != n || ys->size() != n || zs->size() != n)
+    {
+      continue;
+    }
+    ret.directions.resize(n);
+    for (size_t i = 0; i < n; i++)
+    {
+      ret.directions[i] = {(*xs)[i], (*ys)[i], (*zs)[i]};
+    }
+    ret.fromNormals = (p == "normal_");
+    break;
+  }
+  return ret;
 }
 
 const CPointsMap* mrpt::maps::asPointsMap(const mrpt::maps::CMetricMap& map)
@@ -1499,6 +1565,26 @@ void CPointsMap::insertAnotherMap(
 
   const auto ctx = this->prepareForInsertPointsFrom(*otherMap);
 
+  // Direction fields (normals, view vectors) must be rotated, but not translated:
+  std::array<std::array<mrpt::aligned_std_vector<float>*, 3>, 2> dirFields = {};
+  if (!identity_tf)
+  {
+    size_t k = 0;
+    for (const char* prefix : {"normal_", "view_"})
+    {
+      const std::string p = prefix;
+      auto* xs = getPointsBufferRef_float_field(p + "x");
+      auto* ys = getPointsBufferRef_float_field(p + "y");
+      auto* zs = getPointsBufferRef_float_field(p + "z");
+      if (xs && ys && zs)
+      {
+        dirFields[k] = {xs, ys, zs};
+      }
+      k++;
+    }
+  }
+  const auto R = otherPose.getRotationMatrix();
+
   mrpt::math::TPoint3Df pt;
   for (size_t srcIdx = 0; srcIdx < N_other; srcIdx++)
   {
@@ -1524,6 +1610,22 @@ void CPointsMap::insertAnotherMap(
       // Translation:
       std::tie(m_x.back(), m_y.back(), m_z.back()) =
           otherPose.composePoint(pt).cast<float>().as_tuple();
+
+      // Rotation only:
+      for (const auto& f : dirFields)
+      {
+        if (!f[0] || f[0]->size() != m_x.size() || f[1]->size() != m_x.size() ||
+            f[2]->size() != m_x.size())
+        {
+          continue;
+        }
+        const double dx = f[0]->back();
+        const double dy = f[1]->back();
+        const double dz = f[2]->back();
+        f[0]->back() = static_cast<float>(R(0, 0) * dx + R(0, 1) * dy + R(0, 2) * dz);
+        f[1]->back() = static_cast<float>(R(1, 0) * dx + R(1, 1) * dy + R(1, 2) * dz);
+        f[2]->back() = static_cast<float>(R(2, 0) * dx + R(2, 1) * dy + R(2, 2) * dz);
+      }
     }
   }
 }

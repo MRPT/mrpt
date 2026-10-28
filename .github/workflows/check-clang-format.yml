@@ -16,7 +16,7 @@ jobs:
 
         include:
           - name: clang-format-check
-            os: ubuntu-latest
+            os: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -27,9 +27,11 @@ jobs:
           git submodule sync
           git submodule update --init --recursive
 
-      - name: Install Dependencies
+      - name: Install clang-format-14
         run: |
-          sudo apt install clang-format-14 -yq
+          pipx install clang-format==14.0.6
+          ln -sf "$(command -v clang-format)" "$(dirname "$(command -v clang-format)")/clang-format-14"
+          clang-format-14 --version
 
       - name: Check code style
         run: |

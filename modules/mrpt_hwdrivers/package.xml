@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>mrpt_hwdrivers</name>
-  <version>3.5.3</version>
+  <version>3.6.0</version>
   <description>The MRPT C++ library mrpt_hwdrivers</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
@@ -17,11 +17,11 @@
   <depend>mrpt_viz</depend>
 
   <!-- Optional dependencies, auto-detected by CMake scripts at build time -->
-  <build_depend>ffmpeg-dev</build_depend>
-  <build_depend>libdc1394-dev</build_depend>
-  <build_depend>libopenni2-dev</build_depend>
-  <build_depend>libpcap</build_depend>
-  <build_depend>libusb-1.0-dev</build_depend>
+  <depend>ffmpeg-dev</depend>
+  <depend>libdc1394-dev</depend>
+  <depend>libopenni2-dev</depend>
+  <depend>libpcap</depend>
+  <depend>libusb-1.0-dev</depend>
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>
 

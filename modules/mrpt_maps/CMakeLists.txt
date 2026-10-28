@@ -17,6 +17,7 @@ find_package(Eigen3 REQUIRED)
 
 include(./cmake/script_gridmap_options.cmake REQUIRED) # Gridmap options
 include(./cmake/script_octomap.cmake REQUIRED)     # Check for the octomap library
+include(./cmake/script_cloudini.cmake REQUIRED)    # Check for the Cloudini library
 
 # define lib:
 set(LIB_SOURCES
@@ -24,6 +25,8 @@ set(LIB_SOURCES
   # maps:
   src/maps/CBeacon.cpp
   src/maps/CBeaconMap.cpp
+  src/maps/cloudini_codec.cpp
+  src/maps/cloudini_codec.h
   src/maps/CGasConcentrationGridMap2D.cpp
   src/maps/CGenericPointsMap.cpp
   src/maps/CPointsMapXYZIRT.cpp
@@ -54,6 +57,8 @@ set(LIB_SOURCES
   src/maps/CVoxelMapOccupancyBase.cpp
   src/maps/CVoxelMapRGB.cpp
   src/maps/CWirelessPowerGridMap2D.cpp
+  src/maps/points_cloudini_io.cpp
+  src/maps/points_cloudini_io.h
   # obs:
   src/obs/CObservationPointCloud.cpp
   src/obs/customizable_obs_viz.cpp
@@ -88,6 +93,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CPointsMap_unittest.cpp
   tests/CPointsMap_insertObs_unittest.cpp
   tests/CPointsMapXYZIRT_unittest.cpp
+  tests/CPointsMap_cloudini_unittest.cpp
   tests/CRandomFieldGridMap2D_unittest.cpp
   tests/CRandomFieldGridMap3D_unittest.cpp
   tests/serializations_unittest.cpp
@@ -164,6 +170,22 @@ if (CMAKE_MRPT_HAS_OCTOMAP)
 		add_dependencies(${PROJECT_NAME} EP_octomap)
 	endif()
 	target_link_libraries(${PROJECT_NAME} PRIVATE ${OCTOMAP_LIBRARIES})
+endif()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE MRPT_MAPS_HAS_CLOUDINI=${CMAKE_MRPT_HAS_CLOUDINI})
+if (CMAKE_MRPT_HAS_CLOUDINI)
+	# Only this source includes the Cloudini headers, which need C++20. The C++20
+	# requirement of the cloudini target is removed so it does not reach the rest
+	# of the library (or its users):
+	get_target_property(_cloudini_target ${MRPT_CLOUDINI_TARGET} ALIASED_TARGET)
+	if (NOT _cloudini_target)
+		set(_cloudini_target ${MRPT_CLOUDINI_TARGET})
+	endif()
+	set_property(TARGET ${_cloudini_target} PROPERTY INTERFACE_COMPILE_FEATURES "")
+	set_source_files_properties(src/maps/cloudini_codec.cpp PROPERTIES
+		INCLUDE_DIRECTORIES "$<TARGET_PROPERTY:${MRPT_CLOUDINI_TARGET},INTERFACE_INCLUDE_DIRECTORIES>"
+		COMPILE_OPTIONS "$<IF:$<CXX_COMPILER_ID:MSVC>,/std:c++20,-std=c++20>;$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-sign-conversion>")
+	target_link_libraries(${PROJECT_NAME} PRIVATE $<LINK_ONLY:${MRPT_CLOUDINI_TARGET}>)
 endif()
 
 # Python bindings

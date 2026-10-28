@@ -59,6 +59,24 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       attribs = {"position", "vertexColor"};
       break;
 
+    case DefaultShaderID::POINTS_HIDE_BACK_FACING:
+      vertex_shader =
+#include "../shaders/points-hide-back-facing.v.glsl"
+          ;
+      fragment_shader =
+#include "../shaders/points.f.glsl"
+          ;
+      uniforms = {
+          "p_matrix",
+          "mv_matrix",
+          "vertexPointSize",
+          "enableVariablePointSize",
+          "variablePointSize_K",
+          "variablePointSize_DepthScale",
+          "backFacingMinCos"};
+      attribs = {"position", "vertexColor", "direction"};
+      break;
+
     case DefaultShaderID::WIREFRAME:
       vertex_shader =
 #include "../shaders/wireframe.v.glsl"

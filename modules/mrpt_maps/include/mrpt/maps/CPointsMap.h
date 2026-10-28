@@ -33,6 +33,8 @@
 #include <mrpt/viz/pointcloud_adapters.h>
 
 #include <iosfwd>
+#include <map>
+#include <string>
 #include <utility>
 
 namespace mrpt::maps
@@ -361,6 +363,16 @@ class CPointsMap :
     mrpt::img::TColorf color{.0f, .0f, 1.0f};
     /** Colormap for points (index is "z" coordinates) */
     mrpt::img::TColormap colormap{mrpt::img::cmNONE};
+    /** Hide points seen from behind, if the map has per-point directions.
+     * \sa getPointDirectionsForRendering() */
+    bool hide_back_facing{false};
+    /** Max angle (degrees) between a point direction and the direction towards
+     * the camera for the point to be visible, when directions are normals.
+     * \sa mrpt::viz::VisualObjectParams_Points::setBackFacingMaxAngle() */
+    float back_facing_max_angle_normals_deg{90.0f};
+    /** Like back_facing_max_angle_normals_deg, for view vectors (directions
+     * towards the sensor), which are only a rough proxy of the surface side. */
+    float back_facing_max_angle_view_deg{120.0f};
   };
   TRenderOptions renderOptions;
 
@@ -392,6 +404,49 @@ class CPointsMap :
   {
     insertAnotherMap(&anotherMap, mrpt::poses::CPose3D::Identity());
   }
+
+  /** @name Binary serialization options
+    @{ */
+
+  /** Options for the binary serialization of CSimplePointsMap and
+   *  CGenericPointsMap (global for all objects): see serializationOptions().
+   *  With Cloudini, large clouds load and save about 2-3x faster, and take less
+   *  space (mostly from the x,y,z quantization). */
+  struct TSerializationOptions
+  {
+    /** Compress the point clouds with [Cloudini](https://github.com/facontidavide/cloudini),
+     *  if this build of MRPT supports it (see hasCloudini()). Otherwise, they are
+     *  stored uncompressed, in the format of previous MRPT versions.
+     *  Default: true, unless the environment variable `MRPT_POINTS_CLOUDINI=0`. */
+    bool use_cloudini = true;
+
+    /** With Cloudini, quantization step of the x,y,z coordinates [m]: the maximum
+     *  error is half of it. Default: 1e-4 (0.1 mm), or the environment variable
+     *  `MRPT_POINTS_CLOUDINI_XYZ_RESOLUTION`. */
+    float xyz_resolution = 1e-4f;
+
+    /** With Cloudini, quantization step of other `float` or `double` fields, by
+     *  field name. Fields not listed here are stored exactly; integer fields always
+     *  are. */
+    std::map<std::string, float> field_resolutions;
+
+    /** Clouds with fewer points are stored uncompressed: they load faster that
+     *  way, since Cloudini decoding only pays off when done in parallel. Set to
+     *  0 to always compress (smaller files). Default: 250000, or the environment
+     *  variable `MRPT_POINTS_CLOUDINI_MIN_POINTS`. */
+    std::size_t cloudini_min_points = 250'000;
+  };
+
+  /** Global options for the binary serialization of point maps. Set them before
+   *  serializing (they are not protected against concurrent changes).
+   *  Reading never depends on them: streams written with Cloudini are recognized
+   *  and decoded, or an exception is thrown if this build does not support it. */
+  static TSerializationOptions& serializationOptions();
+
+  /** Whether this build of MRPT can write and read Cloudini-compressed point maps. */
+  static bool hasCloudini();
+
+  /** @} */
 
   /** @name Register/unregister custom data fields
     @{ */
@@ -1350,6 +1405,22 @@ class CPointsMap :
    *  The color of the points is controlled by renderOptions
    */
   void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
+
+  /** Output of getPointDirectionsForRendering() */
+  struct TPointDirections
+  {
+    /** One per point, or empty if the map has no direction fields */
+    std::vector<mrpt::math::TPoint3Df> directions;
+    /** True if taken from surface normals, false if from view vectors */
+    bool fromNormals = false;
+  };
+
+  /** Returns one direction per point, pointing to the side from which it
+   * should be visible: the "normal_{x,y,z}" fields if all three exist,
+   * otherwise "view_{x,y,z}" (direction towards the sensor), otherwise none.
+   * \sa mrpt::viz::VisualObjectParams_Points::setPointDirections()
+   */
+  [[nodiscard]] TPointDirections getPointDirectionsForRendering() const;
 
   /** Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there
    * are no points.

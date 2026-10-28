@@ -55,6 +55,11 @@ numerical value (e.g. ``1``) will be interpreted as "true".
   leaks, this variable helps debugging wrong application designs where resources
   are not created and destroyed from the main OpenGL thread.
 
+- ``MRPT_TEXTURE_MAX_ANISOTROPY``: Maximum anisotropic filtering of mipmapped
+  textures (default: ``16``, clamped to what the GPU supports). It keeps
+  textures sharp when seen at grazing angles, e.g. the ground far away. Set to
+  ``1`` to disable it, e.g. for faster software rendering.
+
 - ``MRPT_WXSUBSYS_TIMEOUT_MS``: The timeout in milliseconds to wait
   in mrpt::gui windows constructors until the wxWidgets thread processes and
   really creates the window, before reporting an error. It's also used in

@@ -24,6 +24,37 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace std;
 
+namespace
+{
+// Builds the message for a CRC-validated frame (header + body + CRC): the
+// dedicated class for its ID if there is one, the generic container otherwise.
+template <class GENERIC_FRAME, class HEADER>
+gnss::gnss_message_ptr buildNovatelMessage(const HEADER& hdr, const std::vector<uint8_t>& frame)
+{
+  using namespace mrpt::obs::gnss;
+
+  const auto msg_type = static_cast<gnss_message_type_t>(NV_OEM6_MSG2ENUM + hdr.msg_id);
+  if (!gnss_message::FactoryKnowsMsgType(msg_type))
+  {
+    auto msg = std::make_shared<GENERIC_FRAME>();
+    msg->header = hdr;
+    const auto body_begin = frame.begin() + sizeof(HEADER);
+    msg->msg_body.assign(body_begin, body_begin + hdr.msg_len);
+    return msg;
+  }
+
+  // Dedicated classes deserialize from: msg type, frame length, raw frame.
+  mrpt::io::CMemoryStream tmpStream;
+  auto arch = mrpt::serialization::archiveFrom(tmpStream);
+  arch << static_cast<int32_t>(msg_type);
+  arch << static_cast<uint32_t>(frame.size());
+  arch.WriteBuffer(frame.data(), frame.size());
+
+  tmpStream.Seek(0);
+  return gnss_message_ptr(gnss_message::readAndBuildFromStream(arch));
+}
+}  // namespace
+
 bool CGPSInterface::implement_parser_NOVATEL_OEM6(size_t& out_minimum_rx_buf_to_decide)
 {
   // to be grabbed from the last Message_NV_OEM6_IONUTC msg
@@ -81,29 +112,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(size_t& out_minimum_rx_buf_to_
         (buf[expected_total_msg_len - 3] << 8) | (buf[expected_total_msg_len - 4] << 0);
     if (crc_read != crc_computed) return false;  // skip 1 byte, we dont recognize this format
 
-    // Deserialize the message:
-    // 1st, test if we have a specific data structure for this msg_id:
-    const bool use_generic_container = !gnss_message::FactoryKnowsMsgType(
-        static_cast<gnss_message_type_t>(NV_OEM6_MSG2ENUM + hdr.msg_id));
-    // ------ Serialization format:
-    // const int32_t msg_id = message_type;
-    // out << msg_id;
-    // this->internal_writeToStream(out);  == >  out <<
-    // static_cast<uint32_t>(DATA_LEN); out.WriteBuffer(DATA_PTR,DATA_LEN);
-    // }
-    // ------
-    mrpt::io::CMemoryStream tmpStream;
-    auto arch = mrpt::serialization::archiveFrom(tmpStream);
-    const uint32_t msg_id = use_generic_container
-                                ? static_cast<uint32_t>(NV_OEM6_GENERIC_SHORT_FRAME)
-                                : static_cast<uint32_t>(hdr.msg_id) + NV_OEM6_MSG2ENUM;
-    arch << static_cast<uint32_t>(msg_id);
-    // This len = hdr + hdr.msg_len + 4 (crc);
-    arch << static_cast<uint32_t>(expected_total_msg_len);
-    arch.WriteBuffer(&buf[0], buf.size());
-
-    tmpStream.Seek(0);
-    gnss_message_ptr msg(gnss_message::readAndBuildFromStream(arch));
+    const gnss_message_ptr msg = buildNovatelMessage<Message_NV_OEM6_GENERIC_SHORT_FRAME>(hdr, buf);
     if (!msg.get())
     {
       std::cerr << "[CGPSInterface::implement_parser_NOVATEL_OEM6] Error "
@@ -153,29 +162,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(size_t& out_minimum_rx_buf_to_
         (buf[expected_total_msg_len - 3] << 8) | (buf[expected_total_msg_len - 4] << 0);
     if (crc_read != crc_computed) return false;  // skip 1 byte, we dont recognize this format
 
-    // Deserialize the message:
-    // 1st, test if we have a specific data structure for this msg_id:
-    const bool use_generic_container = !gnss_message::FactoryKnowsMsgType(
-        static_cast<gnss_message_type_t>(NV_OEM6_MSG2ENUM + hdr.msg_id));
-    // ------ Serialization format:
-    // const int32_t msg_id = message_type;
-    // out << msg_id;
-    // this->internal_writeToStream(out);  == >  out <<
-    // static_cast<uint32_t>(DATA_LEN); out.WriteBuffer(DATA_PTR,DATA_LEN);
-    // }
-    // ------
-    mrpt::io::CMemoryStream tmpStream;
-    auto arch = mrpt::serialization::archiveFrom(tmpStream);
-    const int32_t msg_id =
-        use_generic_container
-            ? static_cast<int32_t>(NV_OEM6_GENERIC_FRAME)
-            : static_cast<int32_t>(static_cast<uint32_t>(hdr.msg_id) + NV_OEM6_MSG2ENUM);
-    arch << msg_id;
-    arch << static_cast<uint32_t>(expected_total_msg_len);
-    arch.WriteBuffer(&buf[0], buf.size());
-
-    tmpStream.Seek(0);
-    gnss_message_ptr msg(gnss_message::readAndBuildFromStream(arch));
+    const gnss_message_ptr msg = buildNovatelMessage<Message_NV_OEM6_GENERIC_FRAME>(hdr, buf);
     if (!msg.get())
     {
       std::cerr << "[CGPSInterface::implement_parser_NOVATEL_OEM6] Error "

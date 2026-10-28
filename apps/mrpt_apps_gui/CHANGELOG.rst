@@ -2,6 +2,9 @@
 Changelog for package mrpt_apps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.0 (2026-10-28)
+------------------
+
 3.5.3 (2026-10-16)
 ------------------
 * Support Eigen 5.0 version and include dir detection (`#1467 <https://github.com/MRPT/mrpt/issues/1467>`_)
