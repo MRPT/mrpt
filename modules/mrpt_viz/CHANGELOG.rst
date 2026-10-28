@@ -2,6 +2,12 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Point clouds: optionally hide back-facing points (`#1476 <https://github.com/MRPT/mrpt/issues/1476>`_)
+* Declare linked system libraries as package.xml <depend> to fix RHEL downstream link failures (`#1473 <https://github.com/MRPT/mrpt/issues/1473>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.5.3 (2026-10-16)
 ------------------
 

@@ -2,6 +2,15 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Point clouds: optionally hide back-facing points (`#1476 <https://github.com/MRPT/mrpt/issues/1476>`_)
+* KDTreeCapable: do not lock to mark an already outdated index (`#1475 <https://github.com/MRPT/mrpt/issues/1475>`_)
+* Faster and smaller point map serialization with optional Cloudini (`#1474 <https://github.com/MRPT/mrpt/issues/1474>`_)
+* Declare linked system libraries as package.xml <depend> to fix RHEL downstream link failures (`#1473 <https://github.com/MRPT/mrpt/issues/1473>`_)
+* CVoxelMap: fix the strength of misses (prob_miss convention) and saturate at clamp_min/clamp_max (`#1472 <https://github.com/MRPT/mrpt/issues/1472>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.5.3 (2026-10-16)
 ------------------
 * Add CMetricMap::asPointsMapView() hook used by asPointsMap() (`#1468 <https://github.com/MRPT/mrpt/issues/1468>`_)
