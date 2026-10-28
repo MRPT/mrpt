@@ -28,6 +28,7 @@ struct DefaultShaderID
   static constexpr shader_id_t POINTS = 0;
   static constexpr shader_id_t WIREFRAME = 1;
   static constexpr shader_id_t TEXT = 2;
+  static constexpr shader_id_t POINTS_HIDE_BACK_FACING = 3;
   static constexpr shader_id_t TRIANGLES_LIGHT = 10;
   static constexpr shader_id_t TEXTURED_TRIANGLES_LIGHT = 11;
   static constexpr shader_id_t TRIANGLES_NO_LIGHT = 12;

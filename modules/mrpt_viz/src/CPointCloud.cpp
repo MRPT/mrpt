@@ -203,6 +203,7 @@ void CPointCloud::clear()
     std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
 
     m_points.clear();
+    m_direction_buffer_data.clear();
   }
 
   markAllPointsAsNew();

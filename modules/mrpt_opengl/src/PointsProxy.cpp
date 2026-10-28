@@ -12,10 +12,13 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/opengl/PointsProxy.h>
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/viz/CVisualObject.h>
+
+#include <cmath>
 
 using namespace mrpt::opengl;
 using namespace mrpt::math;
@@ -90,6 +93,7 @@ void PointsProxy::extractPointParams(const CVisualObject* sourceObj)
   m_params.variablePointSize = pointsObj->isEnabledVariablePointSize();
   m_params.variablePointSize_K = pointsObj->getVariablePointSize_k();
   m_params.variablePointSize_DepthScale = pointsObj->getVariablePointSize_DepthScale();
+  m_params.backFacingMinCos = std::cos(mrpt::DEG2RAD(pointsObj->getBackFacingMaxAngle()));
 }
 
 void PointsProxy::uploadPointUniforms(const RenderContext& rc) const
@@ -103,6 +107,11 @@ void PointsProxy::uploadPointUniforms(const RenderContext& rc) const
   if (rc.shader->hasUniform("vertexPointSize"))
   {
     uploadFloat(rc, "vertexPointSize", m_params.pointSize);
+  }
+
+  if (rc.shader->hasUniform("backFacingMinCos"))
+  {
+    uploadFloat(rc, "backFacingMinCos", m_params.backFacingMinCos);
   }
 
   // Variable point size parameters

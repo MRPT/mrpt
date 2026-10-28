@@ -417,6 +417,10 @@ class PointsProxyBase : public RenderableProxy
 
   /** If false, all points have m_baseColor */
   bool m_hasColorBuffer = false;
+
+  /** If true, back-facing points are hidden using m_directionBuffer */
+  bool m_hasDirectionBuffer = false;
+  Buffer m_directionBuffer{Buffer::Type::Vertex};
   mrpt::img::TColor m_baseColor{0xff, 0xff, 0xff, 0xff};
 };
 

@@ -168,6 +168,11 @@ OpenGL ES 3.0 and WebGL2; source files live in `modules/mrpt_opengl/shaders/`):
   CSetOfLines, CSimpleLine). Supports per-vertex color.
 - **TEXT** (ID 2): Renders 2D text overlays (addTextMessage). Uses an
   orthographic projection so text is always screen-aligned.
+- **POINTS_HIDE_BACK_FACING** (ID 3): Like POINTS, plus a per-vertex
+  direction attribute; points whose direction faces away from the camera are
+  moved out of the clip volume. Selected by `PointsProxy` only when the object
+  has `enableHideBackFacingPoints()` and a direction per point
+  (`setPointDirections()`).
 - **SKYBOX** (ID 5): Renders a cube-mapped skybox behind the scene.
 - **TRIANGLES_LIGHT** (ID 10): Renders lit, non-textured triangles with
   Blinn-Phong lighting from all the light sources in TLightParameters
@@ -624,6 +629,47 @@ and `aiTextureType_EMISSIVE`, e.g. glTF `emissiveFactor` and
 material properties (emissive color or map, normal map, specular) go into
 separate meshes, since these properties are per mesh.
 
+## 2.12 Hiding back-facing points
+
+Point clouds of surfaces (e.g. LiDAR maps) look cluttered when a wall is seen
+from behind. Any `VisualObjectParams_Points` object (`CPointCloud`,
+`CPointCloudColoured`, ...) can hide such points, given one direction vector
+per point pointing to the side from which it should be visible:
+
+```cpp
+auto pc = mrpt::viz::CPointCloudColoured::Create();
+pc->loadFromPointsMap(&myMap);
+pc->setPointDirections(myDirections);  // one TPoint3Df per point
+pc->setBackFacingMaxAngle(90.0f);      // optional, degrees
+pc->enableHideBackFacingPoints(true);
+```
+
+- A point is hidden if the angle between its direction and the direction
+  from the point towards the camera (constant for orthographic cameras) is
+  larger than the max angle. The default, 90 degrees, hides everything seen
+  from behind; larger values also keep points seen nearly edge-on, and 180
+  hides nothing. Points with a zero direction are always drawn.
+- Directions need not be normalized. If their count differs from the number
+  of points (e.g. after resizing the cloud), they are ignored and all points
+  are drawn.
+- Directions, the flag and the tolerance are serialized with the object.
+- `mrpt::maps::CPointsMap` sets this up from its own point fields when
+  `renderOptions.hide_back_facing` is true (see
+  `CPointsMap::getPointDirectionsForRendering()`): surface normals
+  `normal_{x,y,z}` if present, otherwise `view_{x,y,z}` (direction towards the
+  sensor that observed each point), with a different max angle for each:
+  `back_facing_max_angle_normals_deg` (default 90) and
+  `back_facing_max_angle_view_deg` (default 120). The latter is wider since a
+  view vector is only a rough proxy of the surface side: e.g. distant ground
+  points have almost horizontal view vectors.
+
+**How it works.** `PointsProxy` uploads the directions as vertex attribute 2
+and switches to the `POINTS_HIDE_BACK_FACING` shader only while hiding is
+enabled and the directions are valid. Its vertex shader moves hidden points
+out of the clip volume, so they are dropped before rasterization. Every other
+point cloud keeps using the plain `POINTS` shader with no extra cost, and the
+direction buffer is only allocated on the GPU while the feature is in use.
+
 # 3. Relevant C++ classes
 
 The main class for building 3D scenes is mrpt::viz::Scene, which allows the
@@ -764,6 +810,9 @@ minimized and restored, etc. see:
 
 - **Emission**: per-object emissive color and emissive maps (also loaded by
   CAssimpModel). See section 2.11.
+
+- **Hiding back-facing points**: point clouds with per-point normals or view
+  directions can skip points seen from behind, on the GPU. See section 2.12.
 
 # 9. TO-DO list
 
