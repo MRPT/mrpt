@@ -99,7 +99,7 @@ int main(int argc, char** argv)
         rgbd_sensor.getNextObservation(newObs, bObs, bError);
 
         double fps = ++nFrames / tictac.Tac();
-        //      newObs->intensityImage.textOut(5,5,format("%.02f
+        //      newObs->intensityImage.textOut(5,5,mrpt::format("%.02f
         //      fps",fps),TColor(0x80,0x80,0x80) );
         std::cout << "FPS: " << fps << "\n";
 

@@ -167,7 +167,7 @@ void TestDijkstra()
     std::cout << "to " << i << " -> #steps= " << path.size() << " distance=" << dist.value()
               << "\n";
 
-    win.setWindowTitle(format(
+    win.setWindowTitle(mrpt::format(
         "Dijkstra path %u->%u", static_cast<unsigned int>(SOURCE_NODE),
         static_cast<unsigned int>(i)));
 
