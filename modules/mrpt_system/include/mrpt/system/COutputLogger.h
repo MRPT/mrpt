@@ -20,6 +20,8 @@
 #include <mrpt/typemeta/TEnumType.h>
 
 #include <array>
+#include <atomic>
+#include <cstdint>
 #include <deque>
 #include <functional>
 #include <iosfwd>
@@ -29,6 +31,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <vector>
 
 /** System helpers and utilities \ingroup mrpt_system_grp */
 namespace mrpt::system
@@ -50,6 +53,10 @@ using output_logger_callback_t = std::function<void(
     const mrpt::system::VerbosityLevel level,
     std::string_view loggerName,
     const mrpt::Clock::time_point timestamp)>;
+
+/** Identifier of a callback registered with
+ * mrpt::system::COutputLogger::logRegisterCallback(). Never 0. */
+using output_logger_callback_id_t = uint64_t;
 
 /** \brief Versatile class for consistent logging and
  *        management of output messages
@@ -110,9 +117,12 @@ using output_logger_callback_t = std::function<void(
  *
  * User may receive callbacks whenever a message is *displayed to console* by
  * using logRegisterCallback(). If for some reason the callbacks are not needed
- * any more, use logDeregisterCallback() to stop receiving calls. This mechanism
- * is useful in case of showing the messages to a GUI, transmiting them to a
- * remote machine, etc.
+ * any more, use logDeregisterCallback() with the identifier returned by
+ * logRegisterCallback() to stop receiving calls. This mechanism is useful in
+ * case of showing the messages to a GUI, transmiting them to a remote machine,
+ * etc. Callbacks may be registered and deregistered from any thread, also while
+ * other threads are logging, and the verbosity level for callbacks may be
+ * changed at any time, too.
  *
  * Note that only those messages whose "importance level" will be printed and
  * sent to user callbacks. However, *all* messages will be stored and saved to a
@@ -227,11 +237,14 @@ class COutputLogger
   VerbosityLevel getMinLoggingLevel() const { return m_min_verbosity_level; }
 
   /** \sa setVerbosityLevelForCallbacks */
-  VerbosityLevel getMinLoggingLevelForCallbacks() const { return m_min_verbosity_level_callbacks; }
+  VerbosityLevel getMinLoggingLevelForCallbacks() const
+  {
+    return m_min_verbosity_level_callbacks.load(std::memory_order_relaxed);
+  }
 
   bool isLoggingLevelVisible(VerbosityLevel level) const
   {
-    return (m_min_verbosity_level <= level) || (m_min_verbosity_level_callbacks <= level);
+    return (m_min_verbosity_level <= level) || (getMinLoggingLevelForCallbacks() <= level);
   }
 
   /** Fill the provided string with the contents of the logger's history in
@@ -273,9 +286,26 @@ class COutputLogger
    * writeLogToFile, getLogAsString */
   bool logging_enable_keep_record{false};
 
-  void logRegisterCallback(output_logger_callback_t userFunc);
-  /** \return true if an entry was found and deleted. */
+  /** Registers a function to be called for each message with a level of at
+   * least getMinLoggingLevelForCallbacks(), from the thread that logs it.
+   * \return An identifier to remove this callback later with
+   *         logDeregisterCallback(output_logger_callback_id_t), which works for
+   *         any callable, including lambdas with captures.
+   */
+  output_logger_callback_id_t logRegisterCallback(output_logger_callback_t userFunc);
+
+  /** Removes the first registered callback holding the same plain function
+   * pointer (free function, static member, or non-capturing lambda converted
+   * to a function pointer) as \a userFunc. Callbacks of any other kind cannot be
+   * compared, so this never finds them: use the identifier overload instead.
+   * \return true if an entry was found and deleted. */
   bool logDeregisterCallback(output_logger_callback_t userFunc);
+
+  /** Removes the callback with the identifier returned by
+   * logRegisterCallback(). A callback being run concurrently by another
+   * thread's logStr() may still complete after this returns.
+   * \return true if an entry was found and deleted. */
+  bool logDeregisterCallback(output_logger_callback_id_t id);
   /** @} */
 
  protected:
@@ -283,8 +313,10 @@ class COutputLogger
    * shall be ignored */
   VerbosityLevel m_min_verbosity_level = LVL_INFO;
 
-  /** The verbosity level that applies to callback calls */
-  VerbosityLevel m_min_verbosity_level_callbacks = LVL_INFO;
+  /** The verbosity level that applies to callback calls. Atomic, since it may
+   * be changed by another thread (e.g. one hooking a GUI to this logger) while
+   * this one logs. */
+  std::atomic<VerbosityLevel> m_min_verbosity_level_callbacks{LVL_INFO};
 
  private:
   /**
@@ -344,13 +376,26 @@ class COutputLogger
   mutable std::deque<TMsg> m_history;
   std::shared_ptr<std::mutex> m_historyMtx = std::make_shared<std::mutex>();
 
-  /** Guards m_listCallbacks: logRegisterCallback()/logDeregisterCallback() may
-   * be called (e.g. by a GUI thread hooking into a logger) concurrently with
-   * logStr() running on the logger's own thread, which iterates the list.
-   * A shared_ptr, like m_historyMtx above, so COutputLogger stays copy-
-   * assignable (std::mutex itself is not). */
+  struct CallbackEntry
+  {
+    output_logger_callback_id_t id = 0;
+    output_logger_callback_t func;
+  };
+  using callback_list_t = std::vector<CallbackEntry>;
+
+  /** Guards m_listCallbacks and m_lastCallbackId:
+   * logRegisterCallback()/logDeregisterCallback() may be called (e.g. by a GUI
+   * thread hooking into a logger) concurrently with logStr() running on the
+   * logger's own thread, which iterates the list. A shared_ptr, like
+   * m_historyMtx above, so COutputLogger stays copy-assignable (std::mutex
+   * itself is not). */
   std::shared_ptr<std::mutex> m_listCallbacksMtx = std::make_shared<std::mutex>();
-  std::deque<output_logger_callback_t> m_listCallbacks;
+
+  /** Replaced (never modified) on changes, so logStr() only needs the lock to
+   * copy this pointer, not the callbacks. Empty if there are no callbacks. */
+  std::shared_ptr<const callback_list_t> m_listCallbacks;
+
+  output_logger_callback_id_t m_lastCallbackId = 0;
 };
 
 /** For use in MRPT_LOG_DEBUG_STREAM(), etc. */

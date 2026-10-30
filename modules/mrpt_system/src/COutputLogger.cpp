@@ -18,6 +18,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 
+#include <algorithm>
 #include <array>
 #include <cstdarg>  // for logFmt
 #include <cstdio>
@@ -86,21 +87,24 @@ void COutputLogger::logStr(const VerbosityLevel level, std::string_view msg_str)
     msg.dumpToConsole();
   }
 
-  // User callbacks: copy the list under the lock, then invoke the callbacks
+  // User callbacks: copy the list pointer under the lock, then invoke the callbacks
   // outside of it, so a slow/blocking callback doesn't hold up whoever else
   // is concurrently registering/deregistering (or logging from another
   // thread), and so a callback that itself calls logRegisterCallback() /
   // logDeregisterCallback() on this same logger cannot deadlock.
-  if (level >= m_min_verbosity_level_callbacks)
+  if (level >= getMinLoggingLevelForCallbacks())
   {
-    std::deque<output_logger_callback_t> callbacksCopy;
+    std::shared_ptr<const callback_list_t> callbacks;
     {
       auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
-      callbacksCopy = m_listCallbacks;
+      callbacks = m_listCallbacks;
     }
-    for (const auto& c : callbacksCopy)
+    if (callbacks)
     {
-      c(msg.body, msg.level, msg.name, msg.timestamp);
+      for (const auto& c : *callbacks)
+      {
+        c.func(msg.body, msg.level, msg.name, msg.timestamp);
+      }
     }
   }
 }
@@ -274,7 +278,7 @@ void COutputLogger::loggerReset()
   }
   {
     auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
-    m_listCallbacks.clear();
+    m_listCallbacks.reset();
   }
   m_logger_name = "COutputLogger";
   m_min_verbosity_level = LVL_INFO;
@@ -344,11 +348,52 @@ void COutputLogger::TMsg::dumpToConsole() const
 #endif
 }
 
-void COutputLogger::logRegisterCallback(output_logger_callback_t userFunc)
+output_logger_callback_id_t COutputLogger::logRegisterCallback(output_logger_callback_t userFunc)
 {
   auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
-  m_listCallbacks.emplace_back(userFunc);
+  auto newList = m_listCallbacks ? std::make_shared<callback_list_t>(*m_listCallbacks)
+                                 : std::make_shared<callback_list_t>();
+  const auto id = ++m_lastCallbackId;
+  newList->push_back({id, std::move(userFunc)});
+  m_listCallbacks = std::move(newList);
+  return id;
 }
+
+namespace
+{
+// Removes the first entry for which pred() is true. Called with the list mutex locked.
+template <typename LIST, typename PRED>
+bool removeFirstCallback(std::shared_ptr<const LIST>& list, PRED pred)
+{
+  if (!list)
+  {
+    return false;
+  }
+  const auto it = std::find_if(list->begin(), list->end(), pred);
+  if (it == list->end())
+  {
+    return false;
+  }
+  auto newList = std::make_shared<LIST>();
+  newList->reserve(list->size() - 1);
+  for (auto i = list->begin(); i != list->end(); ++i)
+  {
+    if (i != it)
+    {
+      newList->push_back(*i);
+    }
+  }
+  if (newList->empty())
+  {
+    list.reset();
+  }
+  else
+  {
+    list = std::move(newList);
+  }
+  return true;
+}
+}  // namespace
 
 bool COutputLogger::logDeregisterCallback(output_logger_callback_t userFunc)
 {
@@ -360,16 +405,24 @@ bool COutputLogger::logDeregisterCallback(output_logger_callback_t userFunc)
   using callback_fnptr_t = void (*)(
       std::string_view, mrpt::system::VerbosityLevel, std::string_view, mrpt::Clock::time_point);
 
-  auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
   const auto* userTarget = userFunc.target<callback_fnptr_t>();
-  for (auto it = m_listCallbacks.begin(); it != m_listCallbacks.end(); ++it)
+  if (!userTarget)
   {
-    const auto* itTarget = it->target<callback_fnptr_t>();
-    if (userTarget && itTarget && *userTarget == *itTarget)
-    {
-      m_listCallbacks.erase(it);
-      return true;
-    }
+    return false;
   }
-  return false;
+
+  auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
+  return removeFirstCallback(
+      m_listCallbacks,
+      [userTarget](const CallbackEntry& e)
+      {
+        const auto* itTarget = e.func.target<callback_fnptr_t>();
+        return itTarget && *itTarget == *userTarget;
+      });
+}
+
+bool COutputLogger::logDeregisterCallback(output_logger_callback_id_t id)
+{
+  auto lck = mrpt::lockHelper(*m_listCallbacksMtx);
+  return removeFirstCallback(m_listCallbacks, [id](const CallbackEntry& e) { return e.id == id; });
 }
