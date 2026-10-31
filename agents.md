@@ -163,6 +163,8 @@ mrpt_add_library(
   `shadow-calculation.f.glsl`: change both. Each cube face is cached by a
   hash of the `m_changeCount` of the proxies in its frustum, so
   `CompiledScene` must bump it only on actual changes.
+  `glLineWidth()` > 1 does not work in core profile/ES/WebGL: lines wider
+  than 1 px use the `WIREFRAME_THICK` shader (instanced quads, tutorial 2.13).
   Pinhole cameras (`setProjectiveFromPinhole()`) place image coordinate
   (u,v) at the corner of pixel (u,v), not its center: rendered objects appear
   0.5 px up-left of `camera_geometry` projections. `CFBORender` lens
