@@ -942,7 +942,8 @@ void SlamDemoApp::renderToolbar()
       ImGui::SameLine();
       if (ImGui::Button("Cancel"))
       {
-        m_batch.cancel();
+        // Wait for the current step: the worker modifies the simulator.
+        m_batch.cancelAndWait();
       }
     }
   }
