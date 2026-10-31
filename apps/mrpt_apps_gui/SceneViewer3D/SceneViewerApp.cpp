@@ -319,7 +319,7 @@ void SceneViewerApp::startLoadSceneFile(const std::string& file, bool isInASeque
       [file, isInASequence]()
       {
         LoadResult r;
-        mrpt::system::CTicTac tic;
+        mrpt::system::CTicTac const tic;
         r.scene = loadSceneFile(file);
         r.seconds = tic.Tac();
         r.fileName = file;
@@ -336,7 +336,7 @@ void SceneViewerApp::startImportModel(const std::string& file)
       [file]()
       {
         LoadResult r;
-        mrpt::system::CTicTac tic;
+        mrpt::system::CTicTac const tic;
         auto obj = mrpt::viz::CAssimpModel::Create();
         obj->loadScene(file);
         r.object = obj;
@@ -364,7 +364,7 @@ void SceneViewerApp::startImportPly(const std::string& file)
       {
         using namespace mrpt::viz;
         LoadResult r;
-        mrpt::system::CTicTac tic;
+        mrpt::system::CTicTac const tic;
 
         CPointCloud::Ptr pts;
         CPointCloudColoured::Ptr ptsCol;

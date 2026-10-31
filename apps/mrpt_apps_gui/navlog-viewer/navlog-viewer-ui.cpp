@@ -43,24 +43,23 @@
 #include <fstream>
 #include <iostream>
 
-// Configure look:
-static const mrpt::viz::TFontParams& getFontParams()
+namespace
 {
-  static mrpt::viz::TFontParams fp;
-  static bool init = false;
-  if (!init)
+// Configure look:
+const mrpt::viz::TFontParams& getFontParams()
+{
+  static const mrpt::viz::TFontParams fp = []()
   {
-    fp.vfont_style = mrpt::viz::FILL;
-    fp.vfont_name = "mono";
-    fp.vfont_scale = 10.0f;  // pixels
-    fp.draw_shadow = true;
-  }
+    mrpt::viz::TFontParams p;
+    p.vfont_style = mrpt::viz::FILL;
+    p.vfont_name = "mono";
+    p.vfont_scale = 10.0f;  // pixels
+    p.draw_shadow = true;
+    return p;
+  }();
   return fp;
 }
-
-// Text lines of the "Entry details" panel:
-#define ADD_WIN_TEXTMSG_COL(__MSG, __COL) addInfoLine(__MSG, __COL)
-#define ADD_WIN_TEXTMSG(__MSG)            addInfoLine(__MSG)
+}  // namespace
 
 using namespace std;
 using namespace mrpt;
@@ -108,7 +107,7 @@ NavlogViewerApp::NavlogViewerApp()
     }
 
     // XY ground plane:
-    mrpt::viz::CGridPlaneXY::Ptr gl_grid =
+    mrpt::viz::CGridPlaneXY::Ptr const gl_grid =
         mrpt::viz::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1, 0.75f);
     gl_grid->setColor_u8(mrpt::img::TColor(0xa0a0a0, 0x90));
     scene->insert(gl_grid);
@@ -157,7 +156,7 @@ void NavlogViewerApp::loadLogfile(const std::string& fileName)
     {
       try
       {
-        CSerializable::Ptr obj = arch.ReadObject();
+        CSerializable::Ptr const obj = arch.ReadObject();
         if (!validClasses.contains(obj->GetRuntimeClass()))
         {
           m_msgs.warning(
@@ -176,7 +175,7 @@ void NavlogViewerApp::loadLogfile(const std::string& fileName)
 
           if (!logptr->infoPerPTG.empty())
           {
-            size_t nPTGs = logptr->infoPerPTG.size();
+            size_t const nPTGs = logptr->infoPerPTG.size();
             if (nPTGs > m_logdata_ptg_paths.size())
             {
               m_logdata_ptg_paths.resize(nPTGs);
@@ -345,14 +344,14 @@ void NavlogViewerApp::updateVisualization()
     // --------------------------------
     // Update 3D view:
     {
-      mrpt::viz::Scene::Ptr& scene = m_scene;
+      mrpt::viz::Scene::Ptr const& scene = m_scene;
 
       const CVectorFloat shap_x = log.robotShape_x, shap_y = log.robotShape_y;
 
       // Robot frame of reference:
       mrpt::viz::CSetOfObjects::Ptr gl_robot_frame;
       {
-        mrpt::viz::CVisualObject::Ptr gl_rbframe_r =
+        mrpt::viz::CVisualObject::Ptr const gl_rbframe_r =
             scene->getByName("robot_frame");  // Get or create if new
         if (!gl_rbframe_r)
         {
@@ -431,7 +430,7 @@ void NavlogViewerApp::updateVisualization()
       // Extrapolated poses from delay models:
       {
         mrpt::viz::CSetOfObjects::Ptr gl_relposes;
-        mrpt::viz::CVisualObject::Ptr gl_relposes_r =
+        mrpt::viz::CVisualObject::Ptr const gl_relposes_r =
             gl_robot_frame->getByName("relposes");  // Get or create if new
         if (!gl_relposes_r)
         {
@@ -448,7 +447,7 @@ void NavlogViewerApp::updateVisualization()
         if (m_showDelays)
         {
           {
-            mrpt::viz::CSetOfObjects::Ptr gl_relpose_sense =
+            mrpt::viz::CSetOfObjects::Ptr const gl_relpose_sense =
                 mrpt::viz::stock_objects::CornerXYSimple(0.3f, 1);
             gl_relpose_sense->setName("sense");
             gl_relpose_sense->enableShowName(true);
@@ -456,7 +455,7 @@ void NavlogViewerApp::updateVisualization()
             gl_relposes->insert(gl_relpose_sense);
           }
           {
-            mrpt::viz::CSetOfObjects::Ptr gl_relpose_cmdvel =
+            mrpt::viz::CSetOfObjects::Ptr const gl_relpose_cmdvel =
                 mrpt::viz::stock_objects::CornerXYSimple(0.3f, 1);
             gl_relpose_cmdvel->setName("cmdVel");
             gl_relpose_cmdvel->enableShowName(true);
@@ -470,7 +469,7 @@ void NavlogViewerApp::updateVisualization()
       if (!m_pastPoses.empty())
       {
         mrpt::viz::CSetOfObjects::Ptr gl_poses;
-        mrpt::viz::CVisualObject::Ptr gl_track =
+        mrpt::viz::CVisualObject::Ptr const gl_track =
             scene->getByName("past_poses");  // Get or create if new
         if (!gl_track)
         {
@@ -501,7 +500,7 @@ void NavlogViewerApp::updateVisualization()
       {
         // Obstacles: original
         mrpt::viz::CPointCloud::Ptr gl_obs;
-        mrpt::viz::CVisualObject::Ptr gl_obs_r =
+        mrpt::viz::CVisualObject::Ptr const gl_obs_r =
             gl_robot_frame->getByName("obs-raw");  // Get or create if new
         if (!gl_obs_r)
         {
@@ -524,7 +523,7 @@ void NavlogViewerApp::updateVisualization()
       {
         // Obstacles: after optional filtering
         mrpt::viz::CPointCloud::Ptr gl_obs;
-        mrpt::viz::CVisualObject::Ptr gl_obs_r =
+        mrpt::viz::CVisualObject::Ptr const gl_obs_r =
             gl_robot_frame->getByName("obs");  // Get or create if new
         if (!gl_obs_r)
         {
@@ -549,7 +548,7 @@ void NavlogViewerApp::updateVisualization()
       {
         // Selected PTG path:
         mrpt::viz::CSetOfLines::Ptr gl_path;
-        mrpt::viz::CVisualObject::Ptr gl_path_r =
+        mrpt::viz::CVisualObject::Ptr const gl_path_r =
             gl_robot_frame->getByName("path");  // Get or create if new
         if (!gl_path_r)
         {
@@ -565,7 +564,8 @@ void NavlogViewerApp::updateVisualization()
 
         if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) && sel_ptg_idx >= 0)
         {
-          mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg = m_logdata_ptg_paths[sel_ptg_idx];
+          mrpt::nav::CParameterizedTrajectoryGenerator::Ptr const ptg =
+              m_logdata_ptg_paths[sel_ptg_idx];
           if (ptg)
           {
             if (!ptg->isInitialized()) ptg->initialize();
@@ -579,7 +579,7 @@ void NavlogViewerApp::updateVisualization()
             const uint16_t selected_k = static_cast<uint16_t>(
                 log.ptg_index_NOP < 0 ? ptg->alpha2index(ipp.desiredDirection)
                                       : log.ptg_last_k_NOP);
-            double max_dist = ptg->getRefDistance();
+            double const max_dist = ptg->getRefDistance();
             ptg->add_robotShape_to_setOfLines(*gl_path);
 
             ptg->renderPathAsSimpleLine(selected_k, *gl_path, 0.10, max_dist);
@@ -600,12 +600,21 @@ void NavlogViewerApp::updateVisualization()
             // Overlay a sequence of robot shapes:
             if (m_drawShape)
             {
-              double min_shape_dists = std::max(0.01, static_cast<double>(m_shapeMinDist));
+              double const min_shape_dists = std::max(0.01, static_cast<double>(m_shapeMinDist));
 
-              for (double d = min_shape_dists; d < max_dist; d += min_shape_dists)
+              const auto nShapes = static_cast<size_t>(std::ceil(max_dist / min_shape_dists));
+              for (size_t j = 0; j < nShapes; j++)
               {
+                const double d = min_shape_dists * static_cast<double>(j + 1);
+                if (d >= max_dist)
+                {
+                  break;
+                }
                 const auto step = ptg->getPathStepForDist(selected_k, d);
-                if (!step) continue;
+                if (!step)
+                {
+                  continue;
+                }
                 const auto p = ptg->getPathPose(selected_k, *step);
                 ptg->add_robotShape_to_setOfLines(*gl_path, mrpt::poses::CPose2D(p));
               }
@@ -613,7 +622,7 @@ void NavlogViewerApp::updateVisualization()
             {
               // Robot shape:
               mrpt::viz::CSetOfLines::Ptr gl_shape;
-              mrpt::viz::CVisualObject::Ptr gl_shape_r =
+              mrpt::viz::CVisualObject::Ptr const gl_shape_r =
                   gl_robot_frame->getByName("shape");  // Get or create if new
               if (!gl_shape_r)
               {
@@ -632,7 +641,7 @@ void NavlogViewerApp::updateVisualization()
             }
             {
               mrpt::viz::CSetOfLines::Ptr gl_shape;
-              mrpt::viz::CVisualObject::Ptr gl_shape_r =
+              mrpt::viz::CVisualObject::Ptr const gl_shape_r =
                   gl_robot_frame->getByName("velocity");  // Get or create if new
               if (!gl_shape_r)
               {
@@ -657,7 +666,7 @@ void NavlogViewerApp::updateVisualization()
       {
         // Manually-picked PTG path:
         mrpt::viz::CSetOfLines::Ptr gl_path;
-        mrpt::viz::CVisualObject::Ptr gl_path_r =
+        mrpt::viz::CVisualObject::Ptr const gl_path_r =
             gl_robot_frame->getByName("manual-path");  // Get or create if new
         if (!gl_path_r)
         {
@@ -674,7 +683,7 @@ void NavlogViewerApp::updateVisualization()
         if (m_manualPickPTGIdx >= 0 && m_manualPickPTGIdx < int(m_logdata_ptg_paths.size()) &&
             m_manualPickTrajectoryIdx >= 0)
         {
-          mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg =
+          mrpt::nav::CParameterizedTrajectoryGenerator::Ptr const ptg =
               m_logdata_ptg_paths[m_manualPickPTGIdx];
           if (ptg)
           {
@@ -690,7 +699,7 @@ void NavlogViewerApp::updateVisualization()
 
             // Draw path:
             const uint16_t selected_k = static_cast<uint16_t>(m_manualPickTrajectoryIdx);
-            double max_dist = ptg->getRefDistance();
+            double const max_dist = ptg->getRefDistance();
             ptg->add_robotShape_to_setOfLines(*gl_path);
 
             ptg->renderPathAsSimpleLine(selected_k, *gl_path, 0.10, max_dist);
@@ -711,12 +720,21 @@ void NavlogViewerApp::updateVisualization()
             // Overlay a sequence of robot shapes:
             if (m_drawShape)
             {
-              double min_shape_dists = std::max(0.01, static_cast<double>(m_shapeMinDist));
+              double const min_shape_dists = std::max(0.01, static_cast<double>(m_shapeMinDist));
 
-              for (double d = min_shape_dists; d < max_dist; d += min_shape_dists)
+              const auto nShapes = static_cast<size_t>(std::ceil(max_dist / min_shape_dists));
+              for (size_t j = 0; j < nShapes; j++)
               {
+                const double d = min_shape_dists * static_cast<double>(j + 1);
+                if (d >= max_dist)
+                {
+                  break;
+                }
                 const auto step = ptg->getPathStepForDist(selected_k, d);
-                if (!step) continue;
+                if (!step)
+                {
+                  continue;
+                }
                 const auto p = ptg->getPathPose(selected_k, *step);
                 ptg->add_robotShape_to_setOfLines(*gl_path, mrpt::poses::CPose2D(p));
               }
@@ -724,7 +742,7 @@ void NavlogViewerApp::updateVisualization()
             {
               // Robot shape:
               mrpt::viz::CSetOfLines::Ptr gl_shape;
-              mrpt::viz::CVisualObject::Ptr gl_shape_r =
+              mrpt::viz::CVisualObject::Ptr const gl_shape_r =
                   gl_robot_frame->getByName("shape");  // Get or create if new
               if (!gl_shape_r)
               {
@@ -748,11 +766,11 @@ void NavlogViewerApp::updateVisualization()
       {
         // Target:
         mrpt::viz::CSetOfObjects::Ptr gl_trgCorners;
-        mrpt::viz::CVisualObject::Ptr gl_trgC_r =
+        mrpt::viz::CVisualObject::Ptr const gl_trgC_r =
             gl_robot_frame->getByName("target_corners");  // Get or create if new
 
         mrpt::viz::CPointCloud::Ptr gl_trg;
-        mrpt::viz::CVisualObject::Ptr gl_trg_r =
+        mrpt::viz::CVisualObject::Ptr const gl_trg_r =
             gl_robot_frame->getByName("target");  // Get or create if new
         if (!gl_trg_r)
         {
@@ -800,7 +818,7 @@ void NavlogViewerApp::updateVisualization()
     if (m_showAllDebugFields)
     {
       for (const auto& e : log.timestamps)
-        ADD_WIN_TEXTMSG(mrpt::format(
+        addInfoLine(mrpt::format(
             "Timestamp %-20s=%s", e.first.c_str(),
             mrpt::system::dateTimeLocalToString(e.second).c_str()));
     }
@@ -810,30 +828,30 @@ void NavlogViewerApp::updateVisualization()
                          nObs = static_cast<unsigned int>(log.WS_Obstacles.size());
       const unsigned int nObsFiltered = nObsOrg - nObs;
 
-      if (nObsFiltered)
+      if (nObsFiltered != 0u)
       {
-        ADD_WIN_TEXTMSG(mrpt::format("Obstacle points=%u (%u filtered out)", nObs, nObsFiltered));
+        addInfoLine(mrpt::format("Obstacle points=%u (%u filtered out)", nObs, nObsFiltered));
       }
       else
       {
-        ADD_WIN_TEXTMSG(mrpt::format("Obstacle points=%u", nObs));
+        addInfoLine(mrpt::format("Obstacle points=%u", nObs));
       }
     }
 
-    ADD_WIN_TEXTMSG(mrpt::format(
+    addInfoLine(mrpt::format(
         "cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"));
 
-    ADD_WIN_TEXTMSG(mrpt::format(
+    addInfoLine(mrpt::format(
         "cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel.vx, log.cur_vel.vy,
         mrpt::RAD2DEG(log.cur_vel.omega)));
-    ADD_WIN_TEXTMSG(mrpt::format(
+    addInfoLine(mrpt::format(
         "cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx,
         log.cur_vel_local.vy, mrpt::RAD2DEG(log.cur_vel_local.omega)));
 
     {
       static TPose2D formerPoseLoc = log.robotPoseLocalization;
 
-      ADD_WIN_TEXTMSG(mrpt::format(
+      addInfoLine(mrpt::format(
           "robot_pose    =%35s | Increment since last step=%s",
           log.robotPoseLocalization.asString().c_str(),
           (log.robotPoseLocalization - formerPoseLoc).asString().c_str()));
@@ -844,7 +862,7 @@ void NavlogViewerApp::updateVisualization()
     {
       static TPose2D formerPoseOdo = log.robotPoseOdometry;
 
-      ADD_WIN_TEXTMSG(mrpt::format(
+      addInfoLine(mrpt::format(
           "robot_odometry=%35s | Increment since last step=%s",
           log.robotPoseOdometry.asString().c_str(),
           (log.robotPoseOdometry - formerPoseOdo).asString().c_str()));
@@ -855,7 +873,7 @@ void NavlogViewerApp::updateVisualization()
     {
       for (unsigned int i = 0; i < log.WS_targets_relative.size(); i++)
       {
-        ADD_WIN_TEXTMSG(
+        addInfoLine(
             mrpt::format("rel_target[%u]=%s", i, log.WS_targets_relative[i].asString().c_str()));
       }
     }
@@ -865,7 +883,7 @@ void NavlogViewerApp::updateVisualization()
       std::stringstream ss;
       ss << "original cmd_vel: ";
       ss << log.cmd_vel_original->asString();
-      ADD_WIN_TEXTMSG(ss.str());
+      addInfoLine(ss.str());
     }
 
     {
@@ -877,7 +895,7 @@ void NavlogViewerApp::updateVisualization()
                   " TPObs:%ss HoloNav:%ss |",
                   mrpt::system::unitsFormat(log.infoPerPTG[i].timeForTPObsTransformation).c_str(),
                   mrpt::system::unitsFormat(log.infoPerPTG[i].timeForHolonomicMethod).c_str());
-      ADD_WIN_TEXTMSG(ss.str());
+      addInfoLine(ss.str());
     }
 
     for (unsigned int nPTG = 0; nPTG < log.infoPerPTG.size(); nPTG++)
@@ -899,14 +917,14 @@ void NavlogViewerApp::updateVisualization()
         sFactors += " ";
       }
 
-      ADD_WIN_TEXTMSG_COL(
+      addInfoLine(
           mrpt::format(
               "PTG#%u: SelDir=%+7.01f deg SelSpeed=%.03f Eval=%5.03f. %s", nPTG,
               mrpt::RAD2DEG(pI.desiredDirection), pI.desiredSpeed, pI.evaluation, sFactors.c_str()),
           col);
     }
 
-    ADD_WIN_TEXTMSG(mrpt::format(
+    addInfoLine(mrpt::format(
         "relPoseSense: %s relPoseVelCmd:%s", log.relPoseSense.asString().c_str(),
         log.relPoseVelCmd.asString().c_str()));
 
@@ -914,21 +932,21 @@ void NavlogViewerApp::updateVisualization()
     {
       if (!log.infoPerPTG.empty())
       {
-        ADD_WIN_TEXTMSG(mrpt::format(
-                            "navDynState: curVelLocal=%s relTarget=%s "
-                            "targetRelSpeed=%.02f",
-                            log.infoPerPTG.front().dynState.curVelLocal.asString().c_str(),
-                            log.infoPerPTG.front().dynState.relTarget.asString().c_str(),
-                            log.infoPerPTG.front().dynState.targetRelSpeed)
-                            .c_str());
+        addInfoLine(mrpt::format(
+                        "navDynState: curVelLocal=%s relTarget=%s "
+                        "targetRelSpeed=%.02f",
+                        log.infoPerPTG.front().dynState.curVelLocal.asString().c_str(),
+                        log.infoPerPTG.front().dynState.relTarget.asString().c_str(),
+                        log.infoPerPTG.front().dynState.targetRelSpeed)
+                        .c_str());
       }
 
       for (const auto& e : log.values)
-        ADD_WIN_TEXTMSG(mrpt::format(
+        addInfoLine(mrpt::format(
             "%-30s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3, false).c_str()));
 
       for (const auto& e : log.additional_debug_msgs)
-        ADD_WIN_TEXTMSG(mrpt::format("%-30s=%s ", e.first.c_str(), e.second.c_str()));
+        addInfoLine(mrpt::format("%-30s=%s ", e.first.c_str(), e.second.c_str()));
     }
 
     // Draw TP-obstacles
@@ -1024,7 +1042,7 @@ void NavlogViewerApp::updateVisualization()
 #endif
       }
 
-      mrpt::viz::Scene::Ptr& scene = viz.scene;
+      mrpt::viz::Scene::Ptr const& scene = viz.scene;
       auto view = scene->getViewport();
 
       // Draw dynamic stuff:
@@ -1059,7 +1077,7 @@ void NavlogViewerApp::updateVisualization()
       {
         const double a =
             -M_PI + (static_cast<double>(i) + 0.5) * 2 * M_PI / static_cast<double>(nAlphas);
-        const double r = pI.TP_Obstacles[i];
+        const double r = pI.TP_Obstacles[static_cast<int>(i)];
         xs.push_back(static_cast<float>(r * cos(a)));
         ys.push_back(static_cast<float>(r * sin(a)));
       }
@@ -1093,11 +1111,11 @@ void NavlogViewerApp::updateVisualization()
 
         if (!pI.TP_Targets.empty())
         {
-          double ang = ::atan2(pI.TP_Targets[0].y, pI.TP_Targets[0].x);
+          double const ang = ::atan2(pI.TP_Targets[0].y, pI.TP_Targets[0].x);
           int tp_target_k = 0;
           if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) && sel_ptg_idx >= 0)
           {
-            mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg =
+            mrpt::nav::CParameterizedTrajectoryGenerator::Ptr const ptg =
                 m_logdata_ptg_paths[sel_ptg_idx];
             if (ptg)
             {
@@ -1186,7 +1204,8 @@ void NavlogViewerApp::updateVisualization()
               pts.emplace_back(r * cos(a), r * sin(a));
             }
 
-            mrpt::viz::CSetOfLines::Ptr& gl_obj = iScore == (num_scores - 1) ? gl_obj1 : gl_obj2;
+            mrpt::viz::CSetOfLines::Ptr const& gl_obj =
+                iScore == (num_scores - 1) ? gl_obj1 : gl_obj2;
 
             gl_obj->appendLine(pts[0].x, pts[0].y, 0, pts[1].x, pts[1].y, 0);
             for (size_t i = 2; i < nAlphas; i++)
@@ -1332,7 +1351,7 @@ void NavlogViewerApp::onSavePTGParams(const std::string& fileName)
 
     for (size_t i = 0; i < m_logdata_ptg_paths.size(); i++)
     {
-      mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg = m_logdata_ptg_paths[i];
+      mrpt::nav::CParameterizedTrajectoryGenerator::Ptr const ptg = m_logdata_ptg_paths[i];
       if (!ptg) continue;
 
       const std::string sKeyPrefix = mrpt::format("PTG%d_", static_cast<int>(i));
@@ -1368,7 +1387,7 @@ void NavlogViewerApp::onOdometryVsLocalizationReport(const std::string& fileName
     {
       const CLogFileRecord::Ptr logsptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[i]);
       const CLogFileRecord* logptr = logsptr.get();
-      if (!logptr) continue;
+      if (logptr == nullptr) continue;
       const auto& log = *logptr;
 
       const auto& odo = log.robotPoseOdometry;
@@ -1415,7 +1434,7 @@ void NavlogViewerApp::onSaveScoreMatrix(const std::string& fileName)
         if (!hlog) continue;
 
         const mrpt::math::CMatrixD* dirs_scores = hlog->getDirectionScores();
-        if (!dirs_scores || dirs_scores->rows() < 2) continue;
+        if ((dirs_scores == nullptr) || dirs_scores->rows() < 2) continue;
 
         const std::string sFil = mrpt::system::fileNameChangeExtension(
             fileName, mrpt::format(
@@ -1613,7 +1632,10 @@ void NavlogViewerApp::onMatlabExportPaths(const std::string& fileName)
         p.resize(MAX_CMDVEL_COMPONENTS);
         p.setZero();
         for (size_t k = 0; k < logptr->cmd_vel->getVelCmdLength(); k++)
-          p[k] = logptr->cmd_vel->getVelCmdElement(static_cast<int>(k));
+        {
+          const auto kk = static_cast<int>(k);
+          p[kk] = logptr->cmd_vel->getVelCmdElement(kk);
+        }
       }
 
     }  // end for each timestep

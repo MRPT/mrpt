@@ -52,7 +52,10 @@
 #include <map>
 #include <sstream>
 
+namespace
+{
 #include "virtual_map1.xpm"
+}  // namespace
 
 using namespace mrpt;
 using namespace mrpt::img;
@@ -326,7 +329,7 @@ void GridmapNavSimulApp::handleTeleop(double dt)
   bool changed = false;
 
   // Joystick (GLFW):
-  if (m_useJoystick && glfwJoystickPresent(GLFW_JOYSTICK_1))
+  if (m_useJoystick && (glfwJoystickPresent(GLFW_JOYSTICK_1) != 0))
   {
     int nAxes = 0;
     int nBtns = 0;
@@ -669,7 +672,7 @@ void GridmapNavSimulApp::renderPanels()
       ImGui::EndDisabled();
       ImGui::Separator();
       ImGui::Checkbox("Use joystick", &m_useJoystick);
-      if (m_useJoystick && !glfwJoystickPresent(GLFW_JOYSTICK_1))
+      if (m_useJoystick && (glfwJoystickPresent(GLFW_JOYSTICK_1) == 0))
       {
         ImGui::SameLine();
         ImGui::TextDisabled("(none detected)");

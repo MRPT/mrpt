@@ -113,7 +113,7 @@ void SlamDemoSimulator::TSimulationOptions::saveToConfigFile(
 void SlamDemoSimulator::loadConfig(const std::string& cfgFile)
 {
   ASSERT_FILE_EXISTS_(cfgFile);
-  mrpt::config::CConfigFile cf(cfgFile);
+  mrpt::config::CConfigFile const cf(cfgFile);
   options.loadFromConfigFile(cf, "");
   slam.options.loadFromConfigFile(cf, "");
   slam.KF_options.loadFromConfigFile(cf, "");
@@ -158,7 +158,7 @@ void SlamDemoSimulator::reset()
   if (mapType == "1")
   {
     // Default map: two rows of landmarks at each side of the square path.
-    size_t ID = 0;
+    CLandmark::TLandmarkID ID = 0;
     CLandmark newLM;
     newLM.pose_mean.z = 0;
     const auto addLM = [&](double x, double y)
@@ -204,7 +204,7 @@ void SlamDemoSimulator::reset()
       newLM.pose_mean.y =
           getRandomGenerator().drawUniform(-extra_width, options.path_square_len + extra_width);
       newLM.pose_mean.z = 0;
-      newLM.ID = i;
+      newLM.ID = static_cast<CLandmark::TLandmarkID>(i);
       gtMap.landmarks.push_back(newLM);
     }
   }
@@ -321,7 +321,7 @@ void SlamDemoSimulator::step()
 
     sf->insert(CObservationBearingRange::Create(lastObservation));
 
-    mrpt::system::CTicTac tictac;
+    mrpt::system::CTicTac const tictac;
     slam.processActionObservation(act, sf);
     executionTime = tictac.Tac();
 
@@ -435,6 +435,7 @@ SlamDemoSimulator::TRunStats SlamDemoSimulator::computeStats(double totalSeconds
     }
     catch (...)
     {
+      dm2 = 1000;  // singular covariance: keep a large distance
     }
     s.meanMahalanobis2 += dm2;
     s.meanErrPhi +=

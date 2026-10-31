@@ -87,7 +87,8 @@ bool ObservationPanelRegistry::has(const std::string& className) const
 std::unique_ptr<ObservationPanel> ObservationPanelRegistry::create(
     const mrpt::rtti::TRuntimeClassId* cls) const
 {
-  for (const auto* c = cls; c != nullptr; c = c->getBaseClass ? c->getBaseClass() : nullptr)
+  for (const auto* c = cls; c != nullptr;
+       c = c->getBaseClass != nullptr ? c->getBaseClass() : nullptr)
   {
     if (c->className == nullptr)
     {
@@ -109,6 +110,7 @@ std::unique_ptr<ObservationPanel> ObservationPanelRegistry::createGeneric()
 std::vector<std::string> ObservationPanelRegistry::registeredClasses() const
 {
   std::vector<std::string> ret;
+  ret.reserve(m_factories.size());
   for (const auto& [name, f] : m_factories)
   {
     ret.push_back(name);
@@ -187,7 +189,7 @@ bool editVisualizationParameters(PanelContext& ctx)
   auto& p = ctx.vizParams;
   bool changed = false;
 
-  float pointSize = static_cast<float>(p.pointSize);
+  auto pointSize = static_cast<float>(p.pointSize);
   if (ImGui::SliderFloat("Point size", &pointSize, 1.0f, 20.0f, "%.1f"))
   {
     p.pointSize = pointSize;
@@ -220,13 +222,13 @@ bool editVisualizationParameters(PanelContext& ctx)
   ImGui::SeparatorText("Axes and sensor");
   changed |= ImGui::Checkbox("Show axes", &p.showAxis);
   ImGui::BeginDisabled(!p.showAxis);
-  float axisLimits = static_cast<float>(p.axisLimits);
+  auto axisLimits = static_cast<float>(p.axisLimits);
   if (ImGui::SliderFloat("Axes length [m]", &axisLimits, 1.0f, 200.0f, "%.0f"))
   {
     p.axisLimits = axisLimits;
     changed = true;
   }
-  float tick = static_cast<float>(p.axisTickFrequency);
+  auto tick = static_cast<float>(p.axisTickFrequency);
   if (ImGui::SliderFloat("Tick spacing [m]", &tick, 0.1f, 20.0f, "%.1f"))
   {
     p.axisTickFrequency = tick;
@@ -234,7 +236,7 @@ bool editVisualizationParameters(PanelContext& ctx)
   }
   ImGui::EndDisabled();
   changed |= ImGui::Checkbox("Draw sensor pose", &p.drawSensorPose);
-  float sensorScale = static_cast<float>(p.sensorPoseScale);
+  auto sensorScale = static_cast<float>(p.sensorPoseScale);
   if (ImGui::SliderFloat("Sensor pose size", &sensorScale, 0.05f, 2.0f, "%.2f"))
   {
     p.sensorPoseScale = sensorScale;

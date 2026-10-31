@@ -435,11 +435,16 @@ std::string RawlogDocument::summaryText() const
   }
   ss << "Entries: " << rawlog.size() << " (" << nActs << " action collections, " << nSF
      << " sensory frames, " << nObs << " observations)\n";
-  ss << "Format: "
-     << (nObs == rawlog.size() ? "observations only"
-         : nObs == 0           ? "sensory frames and actions"
-                               : "mixed")
-     << "\n";
+  std::string format = "mixed";
+  if (nObs == rawlog.size())
+  {
+    format = "observations only";
+  }
+  else if (nObs == 0)
+  {
+    format = "sensory frames and actions";
+  }
+  ss << "Format: " << format << "\n";
   if (m_firstTimestamp != INVALID_TIMESTAMP)
   {
     ss << "First timestamp: " << mrpt::system::dateTimeToString(m_firstTimestamp) << " UTC\n";
@@ -480,7 +485,7 @@ size_t RawlogDocument::keepRange(size_t first, size_t last, bool remove)
       removed++;
     }
   }
-  rawlog = std::move(out);
+  rawlog = out;
   modified = modified || removed != 0;
   rebuildIndex();
   return removed;
@@ -524,7 +529,7 @@ size_t RawlogDocument::removeObservations(const std::function<bool(const CObserv
     }
     out.insert(rawlog.getAsGeneric(i));
   }
-  rawlog = std::move(out);
+  rawlog = out;
   modified = modified || removed != 0;
   rebuildIndex();
   return removed;
@@ -639,7 +644,7 @@ size_t RawlogDocument::setCameraParams(const std::string& label, const mrpt::img
 
 size_t RawlogDocument::applySensorPosesFromConfig(const std::string& configText)
 {
-  mrpt::config::CConfigFileMemory cfg(configText);
+  const mrpt::config::CConfigFileMemory cfg(configText);
   std::map<std::string, mrpt::poses::CPose3D> poses;
   std::map<std::string, mrpt::img::TCamera> cams;
   for (const auto& section : cfg.sections())
@@ -812,7 +817,7 @@ size_t RawlogDocument::exportToText(
         {
           columns += " LAT_DEG LON_DEG ALT_M FIX_QUALITY SATELLITES HDOP";
           const auto* gga = gps->getMsgByClassPtr<gnss::Message_NMEA_GGA>();
-          if (!gga)
+          if (gga == nullptr)
           {
             return;
           }
@@ -886,7 +891,7 @@ size_t RawlogDocument::exportToText(
           columns += " READINGS_V of each e-nose, in order";
           for (const auto& e : gas->m_readings)
           {
-            for (float v : e.readingsVoltage)
+            for (const float v : e.readingsVoltage)
             {
               ss << mrpt::format(" %.5f", v);
             }
@@ -926,7 +931,7 @@ bool RawlogDocument::buildRawMap(
     std::shared_ptr<mrpt::maps::CMultiMetricMap>& map,
     std::vector<mrpt::poses::CPose3D>& path)
 {
-  mrpt::config::CConfigFileMemory cfg(configText);
+  const mrpt::config::CConfigFileMemory cfg(configText);
   mrpt::maps::TSetOfMetricMapInitializers inits;
   inits.loadFromConfigFile(cfg, "map");
   if (inits.size() == 0)

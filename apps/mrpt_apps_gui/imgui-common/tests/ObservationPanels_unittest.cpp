@@ -176,6 +176,7 @@ std::vector<mrpt::serialization::CSerializable::Ptr> sampleObjects()
     CObservationGasSensors::TObservationENose e;
     e.readingsVoltage = {1.0f, 2.0f};
     e.sensorTypes = {0x2600, 0x2602};
+    e.isActive = true;
     o->m_readings.push_back(e);
     v.push_back(o);
   }

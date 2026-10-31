@@ -34,7 +34,7 @@ void doBatchExperiment(SlamDemoSimulator& sim, const std::string& cfgFile, bool 
   sim.reset();
 
   const size_t nSteps = sim.defaultBatchSteps();
-  mrpt::system::CTicTac tim;
+  mrpt::system::CTicTac const tim;
   if (run)
   {
     for (size_t i = 0; i < nSteps; i++)

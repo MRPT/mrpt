@@ -47,7 +47,12 @@ struct PanelContext
 class ObservationPanel
 {
  public:
+  ObservationPanel() = default;
   virtual ~ObservationPanel() = default;
+  ObservationPanel(const ObservationPanel&) = delete;
+  ObservationPanel& operator=(const ObservationPanel&) = delete;
+  ObservationPanel(ObservationPanel&&) = delete;
+  ObservationPanel& operator=(ObservationPanel&&) = delete;
 
   /** Draws the contents. `obj` may be null (nothing to show yet). Panels
    * rebuild cached data only when `obj` changes. */

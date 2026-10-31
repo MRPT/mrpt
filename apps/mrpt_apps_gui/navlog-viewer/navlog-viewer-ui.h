@@ -34,6 +34,10 @@ class NavlogViewerApp
  public:
   NavlogViewerApp();
   ~NavlogViewerApp() = default;
+  NavlogViewerApp(const NavlogViewerApp&) = delete;
+  NavlogViewerApp& operator=(const NavlogViewerApp&) = delete;
+  NavlogViewerApp(NavlogViewerApp&&) = delete;
+  NavlogViewerApp& operator=(NavlogViewerApp&&) = delete;
 
   /** Runs the GUI; `fileToOpen` may be empty. */
   int run(const std::string& fileToOpen);

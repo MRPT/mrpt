@@ -34,7 +34,7 @@ class ImagePanel : public TypedPanel<mrpt::obs::CObservationImage>
   [[nodiscard]] const char* name() const override { return "Image"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationImage& o, PanelContext&, bool changed) override
+  void renderObs(mrpt::obs::CObservationImage& o, PanelContext& /*ctx*/, bool changed) override
   {
     if (changed)
     {
@@ -64,7 +64,8 @@ class StereoImagesPanel : public TypedPanel<mrpt::obs::CObservationStereoImages>
   [[nodiscard]] const char* name() const override { return "Stereo images"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationStereoImages& o, PanelContext&, bool changed) override
+  void renderObs(
+      mrpt::obs::CObservationStereoImages& o, PanelContext& /*ctx*/, bool changed) override
   {
     if (changed)
     {

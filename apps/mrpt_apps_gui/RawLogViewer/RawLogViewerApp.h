@@ -46,6 +46,8 @@ class RawLogViewerApp
 
   RawLogViewerApp(const RawLogViewerApp&) = delete;
   RawLogViewerApp& operator=(const RawLogViewerApp&) = delete;
+  RawLogViewerApp(RawLogViewerApp&&) = delete;
+  RawLogViewerApp& operator=(RawLogViewerApp&&) = delete;
 
   /** Runs the application. `fileToOpen` may be empty. */
   int run(const std::string& fileToOpen);
@@ -77,19 +79,8 @@ class RawLogViewerApp
   std::optional<size_t> m_curEntry;
   /** Selected object: the entry, or an observation within it. */
   mrpt::serialization::CSerializable::Ptr m_selected;
-  int m_selectedIndexInSF = -1;
 
   // --- Panels ---
-  bool m_showTree = true;
-  bool m_showSelected = true;
-  bool m_showInfo = true;
-  bool m_showConsole = true;
-  bool m_showView = false;
-  bool m_showEdit = false;
-  bool m_showSensorParams = false;
-  bool m_showMotionModel = false;
-  bool m_showRawMapPanel = false;
-  bool m_showExport = false;
 
   mrpt::apps::PanelContext m_panelCtx;
   std::unique_ptr<mrpt::apps::ObservationPanel> m_selectedPanel;
@@ -115,10 +106,8 @@ class RawLogViewerApp
     int indexInSF;  // -1: the entry itself
   };
   std::vector<TreeRow> m_treeRows;
-  bool m_treeDirty = true;
   std::set<size_t> m_expanded;
   std::string m_treeFilter;
-  bool m_scrollTreeToSelection = false;
 
   // --- 3D view ---
   mrpt::viz::Scene::Ptr m_scene;
@@ -129,37 +118,21 @@ class RawLogViewerApp
   mrpt::viz::CSetOfObjects::Ptr m_glRobot;
   /** Robot pose at each entry, from odometry (empty if none). */
   std::vector<mrpt::poses::CPose3D> m_odoPoses;
-  bool m_showOdoPath = true;
-  bool m_showGpsPath = false;
-  bool m_showRawMapInScene = true;
-  bool m_showCurrentObs = true;
-  bool m_followRobot = false;
-  int m_lastVizVersion = -1;
 
   // --- Edit panel ---
-  int m_editRange[2] = {0, 0};
   std::set<std::string> m_editClasses;
   std::set<std::string> m_editLabels;
-  float m_maxPitchDeg = 2.0f;
 
   // --- Sensor parameters panel ---
   std::string m_spLabel;
-  float m_spPose[6] = {0, 0, 0, 0, 0, 0};  // x y z [m], yaw pitch roll [deg]
-  bool m_spOnlyXYZ = false;
-  float m_spCam[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};  // fx fy cx cy k1 k2 p1 p2 focal_m
   std::string m_batchPoseConfig;
 
   // --- Motion model panel ---
   mrpt::obs::CActionRobotMovement2D::TMotionModelOptions m_motionModel;
-  float m_motionTestIncr[3] = {1.0f, 0.0f, 0.0f};  // x y [m], phi [deg]
-  bool m_motionAll = true;
-  int m_motionRange[2] = {0, 0};
   std::vector<double> m_motionSamples[3];
 
   // --- Raw map panel ---
   std::string m_rawMapConfig;
-  int m_rawMapRange[2] = {0, 0};
-  int m_rawMapDecimation = 1;
   std::shared_ptr<mrpt::maps::CMultiMetricMap> m_rawMap;
   std::vector<mrpt::poses::CPose3D> m_rawMapPath;
 
@@ -168,32 +141,63 @@ class RawLogViewerApp
   std::string m_exportLabel;
 
   // --- Popups ---
-  bool m_openLoadPartPopup = false;
   std::string m_pendingLoadFile;
-  int m_loadPartFirst = 0;
-  int m_loadPartCount = 1000;
-  bool m_openCommentsPopup = false;
   std::string m_commentsEdit;
-  bool m_openRenamePopup = false;
   std::string m_renameFrom;
   std::string m_renameTo;
-  bool m_openOpParamPopup = false;
   std::string m_opParamTitle;
   std::string m_opParamLabel;
   double m_opParamValue = 0;
-  bool m_opParamNeedsLabel = false;
   std::string m_opParamSensor;
   std::function<void(double, const std::string&)> m_opParamApply;
-  bool m_openTipsPopup = false;
-  bool m_openUnsavedPopup = false;
   std::function<void()> m_afterUnsavedDecision;
-  bool m_closeAfterSave = false;
 
-  unsigned int m_bottomDockId = 0;
-  bool m_inSelect = false;
   std::string m_imagesDirOverride;
   std::string m_statusMsg;
   std::vector<std::string> m_recentFiles;
+
+  // Small members and flags, grouped to avoid padding:
+  int m_selectedIndexInSF = -1;
+  int m_lastVizVersion = -1;
+  int m_editRange[2] = {0, 0};
+  float m_maxPitchDeg = 2.0f;
+  float m_spPose[6] = {0, 0, 0, 0, 0, 0};          // x y z [m], yaw pitch roll [deg]
+  float m_spCam[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};  // fx fy cx cy k1 k2 p1 p2 focal_m
+  float m_motionTestIncr[3] = {1.0f, 0.0f, 0.0f};  // x y [m], phi [deg]
+  int m_motionRange[2] = {0, 0};
+  int m_rawMapRange[2] = {0, 0};
+  int m_rawMapDecimation = 1;
+  int m_loadPartFirst = 0;
+  int m_loadPartCount = 1000;
+  unsigned int m_bottomDockId = 0;
+  bool m_showTree = true;
+  bool m_showSelected = true;
+  bool m_showInfo = true;
+  bool m_showConsole = true;
+  bool m_showView = false;
+  bool m_showEdit = false;
+  bool m_showSensorParams = false;
+  bool m_showMotionModel = false;
+  bool m_showRawMapPanel = false;
+  bool m_showExport = false;
+  bool m_treeDirty = true;
+  bool m_scrollTreeToSelection = false;
+  bool m_showOdoPath = true;
+  bool m_showGpsPath = false;
+  bool m_showRawMapInScene = true;
+  bool m_showCurrentObs = true;
+  bool m_followRobot = false;
+  bool m_spOnlyXYZ = false;
+  bool m_motionAll = true;
+  bool m_openLoadPartPopup = false;
+  bool m_openCommentsPopup = false;
+  bool m_openRenamePopup = false;
+  bool m_openOpParamPopup = false;
+  bool m_opParamNeedsLabel = false;
+  bool m_openTipsPopup = false;
+  bool m_openUnsavedPopup = false;
+  bool m_closeAfterSave = false;
+  bool m_inSelect = false;
 
   // Methods: files and tasks
   void loadSettings();

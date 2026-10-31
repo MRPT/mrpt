@@ -59,7 +59,7 @@ class GPSPanel : public TypedPanel<mrpt::obs::CObservationGPS>
   [[nodiscard]] const char* name() const override { return "GPS"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationGPS& o, PanelContext&, bool /*changed*/) override
+  void renderObs(mrpt::obs::CObservationGPS& o, PanelContext& /*ctx*/, bool /*changed*/) override
   {
     using namespace mrpt::obs::gnss;
     ImGui::Text(
@@ -107,7 +107,7 @@ class IMUPanel : public TypedPanel<mrpt::obs::CObservationIMU>
   [[nodiscard]] const char* name() const override { return "IMU"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationIMU& o, PanelContext&, bool /*changed*/) override
+  void renderObs(mrpt::obs::CObservationIMU& o, PanelContext& /*ctx*/, bool /*changed*/) override
   {
     using namespace mrpt::obs;
     // Names of the TIMUDataIndex values, in order:
@@ -175,7 +175,8 @@ class OdometryPanel : public TypedPanel<mrpt::obs::CObservationOdometry>
   [[nodiscard]] const char* name() const override { return "Odometry"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationOdometry& o, PanelContext&, bool /*changed*/) override
+  void renderObs(
+      mrpt::obs::CObservationOdometry& o, PanelContext& /*ctx*/, bool /*changed*/) override
   {
     ImGui::Text(
         "Odometry: x=%.4f m  y=%.4f m  phi=%.3f deg", o.odometry.x(), o.odometry.y(),
@@ -208,7 +209,8 @@ class BeaconRangesPanel : public TypedPanel<mrpt::obs::CObservationBeaconRanges>
   [[nodiscard]] const char* name() const override { return "Beacon ranges"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationBeaconRanges& o, PanelContext&, bool /*changed*/) override
+  void renderObs(
+      mrpt::obs::CObservationBeaconRanges& o, PanelContext& /*ctx*/, bool /*changed*/) override
   {
     ImGui::Text(
         "Range: [%.2f, %.2f] m  Std. error: %.3f m", o.minSensorDistance, o.maxSensorDistance,
@@ -241,7 +243,8 @@ class BearingRangePanel : public TypedPanel<mrpt::obs::CObservationBearingRange>
   [[nodiscard]] const char* name() const override { return "Range-bearing"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationBearingRange& o, PanelContext&, bool /*changed*/) override
+  void renderObs(
+      mrpt::obs::CObservationBearingRange& o, PanelContext& /*ctx*/, bool /*changed*/) override
   {
     // Landmarks in the robot frame:
     std::vector<double> xs;
@@ -298,7 +301,8 @@ class GasSensorsPanel : public TypedPanel<mrpt::obs::CObservationGasSensors>
   [[nodiscard]] const char* name() const override { return "Gas sensors"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationGasSensors& o, PanelContext&, bool /*changed*/) override
+  void renderObs(
+      mrpt::obs::CObservationGasSensors& o, PanelContext& /*ctx*/, bool /*changed*/) override
   {
     for (size_t i = 0; i < o.m_readings.size(); i++)
     {
@@ -335,7 +339,8 @@ class WirelessPowerPanel : public TypedPanel<mrpt::obs::CObservationWirelessPowe
   [[nodiscard]] const char* name() const override { return "Wireless power"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationWirelessPower& o, PanelContext&, bool /*changed*/) override
+  void renderObs(
+      mrpt::obs::CObservationWirelessPower& o, PanelContext& /*ctx*/, bool /*changed*/) override
   {
     ImGui::Text("Power: %.3f", o.power);
   }
@@ -348,7 +353,7 @@ class RangePanel : public TypedPanel<mrpt::obs::CObservationRange>
   [[nodiscard]] const char* name() const override { return "Range sensors"; }
 
  protected:
-  void renderObs(mrpt::obs::CObservationRange& o, PanelContext&, bool /*changed*/) override
+  void renderObs(mrpt::obs::CObservationRange& o, PanelContext& /*ctx*/, bool /*changed*/) override
   {
     ImGui::Text("Range: [%.2f, %.2f] m", o.minSensorDistance, o.maxSensorDistance);
     if (ImGui::BeginTable("ranges", 4, TABLE_FLAGS))
@@ -383,7 +388,7 @@ class Movement2DPanel : public TypedPanel<mrpt::obs::CActionRobotMovement2D>
   [[nodiscard]] const char* name() const override { return "2D motion"; }
 
  protected:
-  void renderObs(mrpt::obs::CActionRobotMovement2D& a, PanelContext&, bool changed) override
+  void renderObs(mrpt::obs::CActionRobotMovement2D& a, PanelContext& /*ctx*/, bool changed) override
   {
     if (changed)
     {

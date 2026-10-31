@@ -60,7 +60,10 @@ progress_callback_t progressOf(mrpt::imgui::AsyncTaskContext& ctx)
 }
 }  // namespace
 
-RawLogViewerApp::RawLogViewerApp() : m_doc(std::make_shared<RawlogDocument>())
+RawLogViewerApp::RawLogViewerApp() :
+    m_doc(std::make_shared<RawlogDocument>()),
+    m_batchPoseConfig(DEFAULT_BATCH_POSE_CONFIG),
+    m_rawMapConfig(DEFAULT_RAWMAP_CONFIG)
 {
   m_about.appName = APP_NAME;
   m_about.description =
@@ -68,8 +71,6 @@ RawLogViewerApp::RawLogViewerApp() : m_doc(std::make_shared<RawlogDocument>())
       "along a timeline with one panel per sensor, and edit them.";
   m_about.extraTabs.emplace_back("Keyboard and mouse", KEYBOARD_HELP);
   m_about.extraTabs.emplace_back("Tips", TIPS);
-  m_rawMapConfig = DEFAULT_RAWMAP_CONFIG;
-  m_batchPoseConfig = DEFAULT_BATCH_POSE_CONFIG;
 }
 
 RawLogViewerApp::~RawLogViewerApp()
@@ -235,7 +236,7 @@ void RawLogViewerApp::startLoad(const std::string& file, const RawlogDocument::L
       {
         try
         {
-          mrpt::system::CTicTac tic;
+          const mrpt::system::CTicTac tic;
           std::vector<std::string> warnings;
           auto doc = RawlogDocument::load(file, opts, progressOf(ctx), warnings);
           if (!doc)
@@ -490,7 +491,7 @@ void RawLogViewerApp::rebuildPaths()
   const auto useOdoObs = [&](const CObservation& o)
   {
     const auto* odo = dynamic_cast<const CObservationOdometry*>(&o);
-    if (!odo)
+    if (odo == nullptr)
     {
       return;
     }
@@ -555,7 +556,7 @@ void RawLogViewerApp::rebuildPaths()
           return;
         }
         const auto* gga = gps->getMsgByClassPtr<gnss::Message_NMEA_GGA>();
-        if (!gga || gga->fields.fix_quality == 0)
+        if (gga == nullptr || gga->fields.fix_quality == 0)
         {
           return;
         }
@@ -821,7 +822,7 @@ void RawLogViewerApp::renderMainMenu()
           title,
           [fn](RawlogDocument& doc, mrpt::imgui::AsyncTaskContext& ctx)
           {
-            const auto msg = fn(doc.rawlog, progressOf(ctx));
+            auto msg = fn(doc.rawlog, progressOf(ctx));
             if (ctx.cancelRequested())
             {
               return std::string("Cancelled.");
@@ -1390,7 +1391,8 @@ void RawLogViewerApp::setupDefaultLayout(unsigned int dockspaceId)
   left = ImGui::DockBuilderSplitNode(center, ImGuiDir_Left, 0.24f, nullptr, &center);
   right = ImGui::DockBuilderSplitNode(center, ImGuiDir_Right, 0.30f, nullptr, &center);
   bottom = ImGui::DockBuilderSplitNode(center, ImGuiDir_Down, 0.35f, nullptr, &center);
-  ImGuiID leftBottom = ImGui::DockBuilderSplitNode(left, ImGuiDir_Down, 0.40f, nullptr, &left);
+  const ImGuiID leftBottom =
+      ImGui::DockBuilderSplitNode(left, ImGuiDir_Down, 0.40f, nullptr, &left);
 
   ImGui::DockBuilderDockWindow("Rawlog", left);
   ImGui::DockBuilderDockWindow("Info", leftBottom);
@@ -1459,7 +1461,7 @@ void RawLogViewerApp::renderFrame()
   if (m_bottomDockId == 0)
   {
     // Layout loaded from file:
-    if (auto* w = ImGui::FindWindowByName(PANEL_CONSOLE); w && w->DockId != 0)
+    if (auto* w = ImGui::FindWindowByName(PANEL_CONSOLE); w != nullptr && w->DockId != 0)
     {
       m_bottomDockId = w->DockId;
     }
@@ -1520,7 +1522,7 @@ int RawLogViewerApp::run(const std::string& fileToOpen)
   {
     if (!files.empty() && !busy())
     {
-      const auto f = files.front();
+      const auto& f = files.front();
       confirmDiscardChanges([this, f]() { startLoad(f); });
     }
   };

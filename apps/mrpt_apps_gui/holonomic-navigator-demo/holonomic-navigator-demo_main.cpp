@@ -232,9 +232,9 @@ void HolonomicNavDemoApp::defaultParams()
 {
   mrpt::config::CConfigFileMemory cfg;
   m_simulOptions.saveToConfigFile(cfg, "SIMULATOR");
-  CHolonomicVFF holoVFF;
+  CHolonomicVFF const holoVFF;
   holoVFF.options.saveToConfigFile(cfg, holoVFF.getConfigFileSectionName());
-  CHolonomicND holoND;
+  CHolonomicND const holoND;
   holoND.options.saveToConfigFile(cfg, holoND.getConfigFileSectionName());
   m_params = cfg.getContent();
 }

@@ -201,7 +201,7 @@ void SlamDemoApp::startBatch()
   m_batch.start(
       [this, N](mrpt::imgui::AsyncTaskContext& ctx)
       {
-        mrpt::system::CTicTac tic;
+        mrpt::system::CTicTac const tic;
         for (size_t i = 0; i < N && !ctx.cancelRequested(); i++)
         {
           m_sim.step();
@@ -215,7 +215,7 @@ void SlamDemoApp::stepOnce()
 {
   try
   {
-    mrpt::system::CTicTac tic;
+    mrpt::system::CTicTac const tic;
     m_sim.step();
     m_statusMsg = mrpt::format("Step %zu done in %.03f ms", m_sim.historic.size(), 1e3 * tic.Tac());
   }
@@ -397,8 +397,8 @@ void SlamDemoApp::renderEstimatedMap()
       estRobotPose.cov(0, 1), estRobotPose.cov(1, 1), 3, RED);
   for (size_t i = 0; i < LMs.size(); i++)
   {
-    const size_t idx = 3 + 2 * i;
-    if (static_cast<int>(idx + 1) >= Pkk.rows())
+    const auto idx = static_cast<int>(3 + 2 * i);
+    if (idx + 1 >= Pkk.rows())
     {
       break;
     }
@@ -452,22 +452,24 @@ void SlamDemoApp::renderIndividualCompatibility()
   }
   for (size_t i = 0; i < da.predictions_IDs.size(); i++)
   {
-    const double hr = da.Y_pred_means(i, 0);
-    const double ha = da.Y_pred_means(i, 1);
+    const auto row = static_cast<int>(i);
+    const auto r0 = static_cast<int>(obs_size * i);
+    const double hr = da.Y_pred_means(row, 0);
+    const double ha = da.Y_pred_means(row, 1);
     double a = 0;
     double b = 0;
     double c = 0;
     if (static_cast<size_t>(da.Y_pred_covs.cols()) == obs_size)
     {
-      a = RAD2DEGSQ * da.Y_pred_covs(obs_size * i + 1, 1);
-      b = RAD2DEG(da.Y_pred_covs(obs_size * i + 1, 0));
-      c = da.Y_pred_covs(obs_size * i + 0, 0);
+      a = RAD2DEGSQ * da.Y_pred_covs(r0 + 1, 1);
+      b = RAD2DEG(da.Y_pred_covs(r0 + 1, 0));
+      c = da.Y_pred_covs(r0, 0);
     }
     else
     {
-      a = RAD2DEGSQ * da.Y_pred_covs(obs_size * i + 1, obs_size * i + 1);
-      b = RAD2DEG(da.Y_pred_covs(obs_size * i + 1, obs_size * i + 0));
-      c = da.Y_pred_covs(obs_size * i + 0, obs_size * i + 0);
+      a = RAD2DEGSQ * da.Y_pred_covs(r0 + 1, r0 + 1);
+      b = RAD2DEG(da.Y_pred_covs(r0 + 1, r0));
+      c = da.Y_pred_covs(r0, r0);
     }
     plotCovEllipse("Predictions", RAD2DEG(ha), hr, a, b, c, 2, BLUE);
     ImPlot::PlotText(

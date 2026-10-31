@@ -145,7 +145,7 @@ void RawLogViewerApp::rebuildTreeRows()
       m_treeRows.push_back({i, -1});
       if (!filter.empty() || m_expanded.count(i) != 0)
       {
-        for (int k : children)
+        for (const int k : children)
         {
           m_treeRows.push_back({i, k});
         }
@@ -634,7 +634,7 @@ void RawLogViewerApp::renderEditPanel()
     for (const auto& [cls, n] : doc.classCounts())
     {
       const auto* id = mrpt::rtti::findRegisteredClass(cls);
-      if (!id || !id->derivedFrom(CLASS_ID(CObservation)))
+      if (id == nullptr || !id->derivedFrom(CLASS_ID(CObservation)))
       {
         continue;
       }
@@ -760,7 +760,8 @@ void RawLogViewerApp::renderSensorParamsPanel()
     if (sensorCombo("Sensor", doc, m_spLabel) || ImGui::SmallButton("Get current values"))
     {
       // From the first observation of the sensor:
-      if (auto it = doc.sensors().find(m_spLabel); it != doc.sensors().end() && it->second.count)
+      if (auto it = doc.sensors().find(m_spLabel);
+          it != doc.sensors().end() && it->second.count != 0)
       {
         if (auto o = doc.latestObservation(m_spLabel, it->second.times.front()); o)
         {

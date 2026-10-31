@@ -66,31 +66,14 @@ class SceneViewerApp
 
   mrpt::viz::Scene::Ptr m_scene;
   std::string m_loadedFileName;
-  std::time_t m_loadedFileMTime = 0;
-  double m_lastFileWatchCheck = 0;
   std::string m_statusMsg;
 
   // --- Options (persisted) ---
-  bool m_showFileNameInViewport = false;
-  bool m_freeCameraAlways = false;
-  bool m_freeCameraAlwaysNoAzimuth = false;
-  int m_autoplayDelayMs = 5;
-  bool m_shadows = true;
-  bool m_ssao = false;
-  bool m_ortho = false;
-  bool m_watchFile = true;
 
   // --- Panels visibility ---
-  bool m_showViewPanel = true;
-  bool m_showTravellingPanel = true;
-  bool m_showConsole = false;
 
   // --- Autoplay / capture ---
-  bool m_autoplay = false;
-  double m_lastAutoplayStep = 0;
-  bool m_capturing = false;
   std::string m_captureDir;
-  int m_captureCount = 0;
 
   // --- Camera travelling ---
   enum class Travelling
@@ -100,20 +83,9 @@ class SceneViewerApp
     Path
   };
   Travelling m_travelling = Travelling::None;
-  double m_travellingT = 0;
   // Circular:
-  float m_circTarget[3] = {0, 0, 0};
-  float m_circZoom = 25;
-  float m_circElevation = 15;
-  float m_circAzimuth = 90;
-  float m_circMinOffset = 90;
-  float m_circMaxOffset = 90;
-  float m_circSpeedDegPerSec = 5;
   // Path:
   std::vector<CameraKeyframe> m_path;
-  bool m_pathConstantSpeed = false;
-  float m_pathSpeed = 0.2f;
-  bool m_pathLoop = false;
 
   // --- Selection ---
   std::vector<mrpt::viz::CVisualObject::Ptr> m_selected;
@@ -132,32 +104,61 @@ class SceneViewerApp
   mrpt::imgui::AsyncTask<LoadResult> m_loader;
 
   // --- Popup state ---
-  bool m_openPlyPopup = false;
   std::string m_pendingPlyFile;
-  int m_plyClass = 0;      // 0: CPointCloud, 1: CPointCloudColoured
-  int m_plyColorFrom = 0;  // 0: none, 1:X, 2:Y, 3:Z
-  float m_plyPointSize = 1.0f;
-  float m_plyYPR[3] = {0, 0, 90};
-  bool m_plyGrid = true;
-  bool m_plyCorner = true;
 
-  bool m_openHighResPopup = false;
   std::string m_pendingHighResFile;
-  int m_highResSize[2] = {1920, 1080};
 
-  bool m_openSelectByClassPopup = false;
   std::vector<std::string> m_vizClassNames;
   std::vector<bool> m_vizClassChecked;
-
-  bool m_openScalePopup = false;
-  float m_scaleFactor = 1.0f;
 
   /** Actions to run at the start of the next frame, outside of any ImGui
    * window (e.g. off-screen renders). */
   std::vector<std::function<void()>> m_deferred;
 
   // --- Frame stats ---
+
+  // Scalars and flags, grouped to avoid padding:
+  std::time_t m_loadedFileMTime = 0;
+  double m_lastFileWatchCheck = 0;
+  double m_lastAutoplayStep = 0;
+  double m_travellingT = 0;
   double m_fps = 0;
+  int m_autoplayDelayMs = 5;
+  int m_captureCount = 0;
+  float m_circTarget[3] = {0, 0, 0};
+  float m_circZoom = 25;
+  float m_circElevation = 15;
+  float m_circAzimuth = 90;
+  float m_circMinOffset = 90;
+  float m_circMaxOffset = 90;
+  float m_circSpeedDegPerSec = 5;
+  float m_pathSpeed = 0.2f;
+  int m_plyClass = 0;      // 0: CPointCloud, 1: CPointCloudColoured
+  int m_plyColorFrom = 0;  // 0: none, 1:X, 2:Y, 3:Z
+  float m_plyPointSize = 1.0f;
+  float m_plyYPR[3] = {0, 0, 90};
+  int m_highResSize[2] = {1920, 1080};
+  float m_scaleFactor = 1.0f;
+  bool m_showFileNameInViewport = false;
+  bool m_freeCameraAlways = false;
+  bool m_freeCameraAlwaysNoAzimuth = false;
+  bool m_shadows = true;
+  bool m_ssao = false;
+  bool m_ortho = false;
+  bool m_watchFile = true;
+  bool m_showViewPanel = true;
+  bool m_showTravellingPanel = true;
+  bool m_showConsole = false;
+  bool m_autoplay = false;
+  bool m_capturing = false;
+  bool m_pathConstantSpeed = false;
+  bool m_pathLoop = false;
+  bool m_openPlyPopup = false;
+  bool m_plyGrid = true;
+  bool m_plyCorner = true;
+  bool m_openHighResPopup = false;
+  bool m_openSelectByClassPopup = false;
+  bool m_openScalePopup = false;
 
   // Methods:
   void loadSettings();
