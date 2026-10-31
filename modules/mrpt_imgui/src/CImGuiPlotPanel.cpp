@@ -381,12 +381,14 @@ void CImGuiPlotPanel::render(const char* title, float height)
 
       if (hasBand)
       {
+        // Same label as the line: one legend entry and color for all.
         ImPlotSpec bandSpec = spec;
-        bandSpec.FillAlpha = 0.25f;
-        // Same label as the line: one legend entry and color for both.
+        bandSpec.FillAlpha = 0.3f;
+        const int n = static_cast<int>(s.x.size());
         ImPlot::PlotShaded(
-            s.name.c_str(), s.x.data(), s.bandLow.data(), s.bandHigh.data(),
-            static_cast<int>(s.x.size()), bandSpec);
+            s.name.c_str(), s.x.data(), s.bandLow.data(), s.bandHigh.data(), n, bandSpec);
+        ImPlot::PlotLine(s.name.c_str(), s.x.data(), s.bandLow.data(), n, spec);
+        ImPlot::PlotLine(s.name.c_str(), s.x.data(), s.bandHigh.data(), n, spec);
       }
       switch (s.style)
       {

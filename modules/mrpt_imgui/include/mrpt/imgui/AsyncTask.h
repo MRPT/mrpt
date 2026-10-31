@@ -139,6 +139,22 @@ class AsyncTask
     m_running = false;
   }
 
+  /** Like cancel(), but waits for the worker to finish, e.g. before
+   * destroying data it uses. */
+  void cancelAndWait()
+  {
+    if (!m_running)
+    {
+      return;
+    }
+    if (m_ctx)
+    {
+      m_ctx->requestCancel();
+    }
+    m_future.wait();
+    m_running = false;
+  }
+
   /** Call once per frame: returns the result exactly once, on the first
    * call after the worker finished, and nullopt otherwise. If the worker
    * threw, the exception is rethrown here. */

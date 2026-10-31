@@ -121,3 +121,24 @@ TEST(AsyncTask, ExceptionIsRethrownByPoll)
   }
   EXPECT_TRUE(thrown);
 }
+
+TEST(AsyncTask, CancelAndWait)
+{
+  AsyncTask<int> task;
+  std::atomic<bool> finished{false};
+  task.start(
+      [&](AsyncTaskContext& ctx)
+      {
+        while (!ctx.cancelRequested())
+        {
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        finished = true;
+        return 1;
+      });
+  task.cancelAndWait();
+  EXPECT_TRUE(finished);  // the worker has returned already
+  EXPECT_FALSE(task.isRunning());
+  EXPECT_FALSE(task.poll().has_value());
+  task.cancelAndWait();  // no-op
+}
