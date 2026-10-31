@@ -621,7 +621,7 @@ void SlamDemoApp::renderParams()
     static const char* methods[] = {
         "EKF (naive)", "EKF one-scalar-at-a-time (Davison)", "IKF (full)"};
     int m = static_cast<int>(kf.method);
-    if (ImGui::Combo("Method", &m, methods, 3))
+    if (ImGui::Combo("Method##kf", &m, methods, 3))
     {
       kf.method = static_cast<mrpt::bayes::TKFMethod>(m);
     }
@@ -692,7 +692,7 @@ void SlamDemoApp::renderParams()
     static const char* daMethods[] = {"Nearest neighbor (NN)", "JCBB"};
     static const char* metrics[] = {"Mahalanobis", "Matching likelihood"};
     int dm = static_cast<int>(so.data_assoc_method);
-    if (ImGui::Combo("Method", &dm, daMethods, 2))
+    if (ImGui::Combo("Method##da", &dm, daMethods, 2))
     {
       so.data_assoc_method = static_cast<TDataAssociationMethod>(dm);
     }

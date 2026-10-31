@@ -95,6 +95,8 @@ void RawLogViewerApp::loadSettings()
   m_showOdoPath = c.read_bool(CFG_SECT, "showOdoPath", m_showOdoPath);
   m_showGpsPath = c.read_bool(CFG_SECT, "showGpsPath", m_showGpsPath);
   m_showCurrentObs = c.read_bool(CFG_SECT, "showCurrentObs", m_showCurrentObs);
+  m_showNearbyObs = c.read_bool(CFG_SECT, "showNearbyObs", m_showNearbyObs);
+  m_nearbyToleranceSec = c.read_float(CFG_SECT, "nearbyToleranceSec", m_nearbyToleranceSec);
   m_followRobot = c.read_bool(CFG_SECT, "followRobot", m_followRobot);
   m_timeline.speed = c.read_double(CFG_SECT, "playbackSpeed", m_timeline.speed);
   m_panelCtx.vizParams.load_from_ini_file(c, "ViewOptions");
@@ -116,6 +118,8 @@ void RawLogViewerApp::saveSettings()
   c.write(CFG_SECT, "showOdoPath", m_showOdoPath);
   c.write(CFG_SECT, "showGpsPath", m_showGpsPath);
   c.write(CFG_SECT, "showCurrentObs", m_showCurrentObs);
+  c.write(CFG_SECT, "showNearbyObs", m_showNearbyObs);
+  c.write(CFG_SECT, "nearbyToleranceSec", m_nearbyToleranceSec);
   c.write(CFG_SECT, "followRobot", m_followRobot);
   c.write(CFG_SECT, "playbackSpeed", m_timeline.speed);
   m_panelCtx.vizParams.save_to_ini_file(c, "ViewOptions");
@@ -625,7 +629,29 @@ void RawLogViewerApp::updateCurrentInScene()
     try
     {
       auto& r = m_doc->rawlog;
-      if (r.getType(i) == CRawlog::TEntryType::etSensoryFrame)
+      if (m_showNearbyObs && m_doc->usesTimestamps())
+      {
+        // The latest observation of each sensor near the current time, so
+        // that sensors at different rates are all visible while scrolling:
+        const double t = m_doc->entryTime(i);
+        auto vp = m_panelCtx.vizParams;
+        for (const auto& [label, s] : m_doc->sensors())
+        {
+          const auto o = m_doc->latestObservation(label, t);
+          if (!o || o->timestamp == INVALID_TIMESTAMP ||
+              t - m_doc->toTimelineTime(o->timestamp) > m_nearbyToleranceSec)
+          {
+            continue;
+          }
+          auto glObs = mrpt::viz::CSetOfObjects::Create();
+          if (obs_to_viz(o, vp, *glObs))
+          {
+            m_glCurrent->insert(glObs);
+            vp.showAxis = false;  // only once
+          }
+        }
+      }
+      else if (r.getType(i) == CRawlog::TEntryType::etSensoryFrame)
       {
         obs_to_viz(*r.getAsObservations(i), m_panelCtx.vizParams, *m_glCurrent);
       }
@@ -1538,7 +1564,8 @@ int RawLogViewerApp::run(const std::string& fileToOpen)
   m_scene->insert(m_glRawMap);
   m_glCurrent = mrpt::viz::CSetOfObjects::Create();
   m_scene->insert(m_glCurrent);
-  m_glRobot = mrpt::viz::stock_objects::RobotPioneer();
+  // The robot frame ("base_link"):
+  m_glRobot = mrpt::viz::stock_objects::CornerXYZ(1.0f);
   m_scene->insert(m_glRobot);
   m_view.view.setScene(m_scene);
   m_view.view.cameraController.setZoomDistance(30.0f);

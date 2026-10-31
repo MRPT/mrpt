@@ -564,6 +564,17 @@ void RawLogViewerApp::renderViewPanel()
     bool changed = false;
     ImGui::SeparatorText("Show");
     changed |= ImGui::Checkbox("Selected entry", &m_showCurrentObs);
+    ImGui::BeginDisabled(!m_showCurrentObs);
+    changed |= ImGui::Checkbox("All sensors near the current time", &m_showNearbyObs);
+    ImGui::SameLine();
+    helpMarker(
+        "For rawlogs with timestamps: show the latest observation of each sensor, if it is not "
+        "older than the tolerance, instead of only the selected entry.");
+    ImGui::BeginDisabled(!m_showNearbyObs);
+    ImGui::SetNextItemWidth(120);
+    changed |= ImGui::SliderFloat("Tolerance [s]", &m_nearbyToleranceSec, 0.01f, 5.0f, "%.2f");
+    ImGui::EndDisabled();
+    ImGui::EndDisabled();
     changed |= ImGui::Checkbox("Odometry path", &m_showOdoPath);
     ImGui::SameLine();
     helpMarker(

@@ -174,6 +174,7 @@ class RawLogViewerApp
   int m_lastVizVersion = -1;
   int m_editRange[2] = {0, 0};
   float m_maxPitchDeg = 2.0f;
+  float m_nearbyToleranceSec = 0.5f;
   float m_spPose[6] = {0, 0, 0, 0, 0, 0};          // x y z [m], yaw pitch roll [deg]
   float m_spCam[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};  // fx fy cx cy k1 k2 p1 p2 focal_m
   float m_motionTestIncr[3] = {1.0f, 0.0f, 0.0f};  // x y [m], phi [deg]
@@ -199,6 +200,9 @@ class RawLogViewerApp
   bool m_showGpsPath = false;
   bool m_showRawMapInScene = true;
   bool m_showCurrentObs = true;
+  /** Show, for each sensor, its latest observation near the current time,
+   * not only the selected entry (rawlogs with timestamps). */
+  bool m_showNearbyObs = true;
   bool m_followRobot = false;
   bool m_spOnlyXYZ = false;
   bool m_motionAll = true;
