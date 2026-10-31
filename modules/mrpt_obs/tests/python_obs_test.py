@@ -201,7 +201,10 @@ check("stereo left pixels", np.array_equal(np.asarray(st.imageLeft)[:, :, 0], le
 check("stereo right pixels", np.array_equal(np.asarray(st.imageRight)[:, :, 0], 255 - left))
 check("stereo repr", "8x6" in repr(st) and "right=True" in repr(st), repr(st))
 st.rightCameraPose = st.cameraPose
-check("stereo params roundtrip", st.getStereoCameraParams() is not None)
+sp = st.getStereoCameraParams()
+sp.leftCamera.fx = 321.5
+st.setStereoCameraParams(sp)
+check("stereo params roundtrip", st.leftCamera.fx == 321.5 and st.getStereoCameraParams().leftCamera.fx == 321.5)
 check("stereo str", len(str(st)) > 0)
 with tempfile.TemporaryDirectory() as tmpdir:
     fname = os.path.join(tmpdir, "stereo.rawlog")
@@ -236,9 +239,9 @@ print("CObservationRotatingScan / CObservationVelodyneScan")
 from mrpt.obs import (CObservationRotatingScan, CObservationVelodyneScan, VelodyneCalibration,
                       VelodyneGeneratePointCloudParameters)
 rs = CObservationRotatingScan()
-rs.rowCount, rs.columnCount = 4, 10
 rs.rangeImage = np.full((4, 10), 7, dtype=np.uint16)
 check("rangeImage roundtrip", rs.rangeImage.shape == (4, 10) and int(rs.rangeImage[3, 9]) == 7)
+check("rangeImage sets dimensions", rs.rowCount == 4 and rs.columnCount == 10)
 check("rotating repr", "4x10" in repr(rs), repr(rs))
 check("rotating fromScan2D", (rs.fromScan2D(scan), rs.rowCount == 1)[1])
 check("organizedPoints shape", rs.organizedPoints.shape[2] == 3)

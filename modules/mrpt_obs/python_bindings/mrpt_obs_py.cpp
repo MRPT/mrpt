@@ -1082,6 +1082,14 @@ PYBIND11_MODULE(_bindings, m)
               throw std::invalid_argument("rangeImage must be a 2D array");
             }
             const auto r = arr.unchecked<2>();
+            constexpr py::ssize_t maxDim = std::numeric_limits<uint16_t>::max();
+            if (r.shape(0) > maxDim || r.shape(1) > maxDim)
+            {
+              throw std::invalid_argument("rangeImage is too large");
+            }
+            // rowCount and columnCount must always match the matrix size:
+            o.rowCount = static_cast<uint16_t>(r.shape(0));
+            o.columnCount = static_cast<uint16_t>(r.shape(1));
             o.rangeImage.setSize(static_cast<int>(r.shape(0)), static_cast<int>(r.shape(1)));
             for (py::ssize_t row = 0; row < r.shape(0); row++)
             {
