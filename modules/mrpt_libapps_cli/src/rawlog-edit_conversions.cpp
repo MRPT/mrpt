@@ -112,6 +112,7 @@ DECLARE_OP_FUNCTION(op_compact)
 
 DECLARE_OP_FUNCTION(op_to_observations_only)
 {
+  (void)cmdline;
   auto rawlog = loadWholeRawlog(in_rawlog, verbose);
   rawlog_ops::toObservationsOnly(rawlog);
   saveWholeRawlog(rawlog, verbose);
@@ -135,6 +136,7 @@ DECLARE_OP_FUNCTION(op_sort_by_timestamp)
 
 DECLARE_OP_FUNCTION(op_regenerate_sf_timestamps)
 {
+  (void)cmdline;
   auto rawlog = loadWholeRawlog(in_rawlog, verbose);
   const auto n = rawlog_ops::regenerateTimestampsInSensoryFrames(rawlog);
   VERBOSE_COUT << "Timestamps regenerated: " << n << "\n";
