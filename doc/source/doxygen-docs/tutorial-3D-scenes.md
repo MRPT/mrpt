@@ -165,7 +165,10 @@ OpenGL ES 3.0 and WebGL2; source files live in `modules/mrpt_opengl/shaders/`):
   positions by the model-view-projection matrix; fragment shader outputs
   the per-vertex color.
 - **WIREFRAME** (ID 1): Renders line primitives (wireframe edges, grids,
-  CSetOfLines, CSimpleLine). Supports per-vertex color.
+  CSetOfLines, CSimpleLine) as `GL_LINES`, 1 pixel wide. Supports per-vertex
+  color.
+- **WIREFRAME_THICK** (ID 4): Renders lines wider than 1 pixel as
+  screen-aligned quads, without a geometry shader (see section 2.13).
 - **TEXT** (ID 2): Renders 2D text overlays (addTextMessage). Uses an
   orthographic projection so text is always screen-aligned.
 - **POINTS_HIDE_BACK_FACING** (ID 3): Like POINTS, plus a per-vertex
@@ -669,6 +672,50 @@ enabled and the directions are valid. Its vertex shader moves hidden points
 out of the clip volume, so they are dropped before rasterization. Every other
 point cloud keeps using the plain `POINTS` shader with no extra cost, and the
 direction buffer is only allocated on the GPU while the feature is in use.
+
+## 2.13 Line width
+
+`VisualObjectParams_Lines::setLineWidth()` sets the width of lines in pixels.
+`glLineWidth()` cannot draw them: widths larger than 1 are not supported in
+OpenGL core profile (forward-compatible contexts, e.g. macOS), OpenGL ES or
+WebGL. Instead, `LinesProxyBase` picks one of two shaders:
+
+- Effective width of 1 pixel: `GL_LINES` with the `WIREFRAME` shader, as
+  always.
+- Wider lines: `WIREFRAME_THICK`. One instanced draw of a 4-vertex triangle
+  strip per segment (`glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, n)`).
+  The two endpoints and colors of each segment are per-instance attributes
+  (locations 0-3) read from the same vertex and color buffers as the
+  `GL_LINES` path, with a stride of two vertices, so no extra data is stored.
+  The vertex shader projects both endpoints, clips the segment against the
+  near plane (so endpoints behind the camera do not flip the quad), and
+  offsets each corner perpendicular to the segment direction in pixels
+  (`viewport_size` uniform). Quads have square caps (extended by half the
+  width), which closes the gaps at polyline joints.
+
+Lines take the thick path when their width rounds to 2 pixels or more. Like
+`glLineWidth()`, the widths of aliased lines are rounded to whole pixels, so
+the default 1.3 of grid planes still draws 1-pixel `GL_LINES`. Anti-aliased
+lines (`enableAntiAliasing()`) keep fractional widths: the quad grows by one
+pixel on each side and the fragment shader fades the alpha of the edges with
+the distance to the segment axis. Such objects are drawn in the transparent
+pass, and without writing depth, so their faded edges do not hide what is
+drawn after them.
+
+Depth: the quads face the camera, so all across their width they would have
+the depth of the segment axis, and the part of a line lying on a surface
+(e.g. a path on the ground) that is "below" the surface would be hidden. The
+vertex shader draws them nearer to the camera by twice their half width (in
+world units at the depth of the segment, as if the line were a tube), which
+keeps lines whole on surfaces seen from more than about 27 degrees above
+grazing. For perspective and orthographic projections, that is a constant
+shift of the clip-space z per draw. Projections with no camera
+(`CCamera::setNoProjection()`) get no shift.
+
+Cost: 4 vertex shader runs per segment instead of 2, and the same fragments
+as a native wide line. Lines don't take part in shadow or SSAO passes.
+Polyline joints are not mitered: square caps overlap, which shows as darker
+dots at the joints of translucent or anti-aliased polylines.
 
 # 3. Relevant C++ classes
 
