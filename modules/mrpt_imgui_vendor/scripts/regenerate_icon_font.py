@@ -21,7 +21,10 @@ To add an icon: append its ICON_MS_* suffix to ICONS and re-run. Requires
 fonttools and a C++ compiler.
 
 Usage:
-    python3 scripts/regenerate_icon_font.py
+    python3 scripts/regenerate_icon_font.py [--font MaterialSymbolsOutlined.ttf]
+
+With --font, that local copy of the upstream variable font is used instead of
+downloading it.
 """
 
 import re
@@ -91,6 +94,18 @@ ICONS = [
     "ADD_CHART", "PLUS_ONE",
     # Misc
     "ROCKET_LAUNCH", "SCHOOL", "SCIENCE",
+    # Application framework and ported apps
+    "FOLDER", "DOWNLOAD", "UPLOAD", "REPEAT", "FILTER_LIST", "LIST",
+    "ACCOUNT_TREE", "IMAGE", "FIRST_PAGE", "LAST_PAGE", "HOME", "PAN_TOOL",
+    "FLAG", "PLACE", "SCREENSHOT_MONITOR", "MOVIE", "NOTES", "TRAVEL_EXPLORE",
+    "VIEW_IN_AR", "NEW_WINDOW", "NOTE_ADD", "ADD_BOX", "PHOTO_LIBRARY",
+    "SPLITSCREEN", "VIDEO_LIBRARY", "STOP_CIRCLE", "PLAY_CIRCLE",
+    "RESTART_ALT", "QUERY_STATS", "TABLE_ROWS", "INSERT_CHART",
+    "IMPORT_EXPORT", "UPLOAD_FILE", "FILE_EXPORT", "DRIVE_FILE_MOVE",
+    "CAMERA", "LIGHTBULB", "TIPS_AND_UPDATES", "STEP", "TROUBLESHOOT",
+    "ARROW_RIGHT", "FILE_UPLOAD", "FILE_DOWNLOAD", "TARGET", "SATELLITE_ALT",
+    "WIFI", "ROTATE_RIGHT", "SWAP_HORIZ", "LABEL", "SELL", "SCHEDULE",
+    "HISTORY", "COMPARE_ARROWS",
 ]
 
 
@@ -119,9 +134,12 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
-        src_ttf = tmp / "variable.ttf"
-        print(f"> Downloading {FONT_URL}")
-        urllib.request.urlretrieve(FONT_URL, src_ttf)
+        if len(sys.argv) == 3 and sys.argv[1] == "--font":
+            src_ttf = Path(sys.argv[2])
+        else:
+            src_ttf = tmp / "variable.ttf"
+            print(f"> Downloading {FONT_URL}")
+            urllib.request.urlretrieve(FONT_URL, src_ttf)
         print(f"  {src_ttf.stat().st_size / 1e6:.1f} MB")
 
         # Instantiate the variable font at a single fixed style.

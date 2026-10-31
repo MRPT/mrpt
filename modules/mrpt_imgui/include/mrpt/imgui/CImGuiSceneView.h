@@ -13,12 +13,13 @@
 */
 #pragma once
 
-#if __has_include(<imgui.h>)
-#include <imgui.h>  // This must be available from the user code space, MRPT does not include it as a dependency.
+#include <imgui.h>  // From mrpt_imgui_vendor
 
 #include <algorithm>
+
+/** Always defined since mrpt_imgui depends on mrpt_imgui_vendor; kept for
+ * source compatibility with code written for when ImGui was optional. */
 #define MRPT_IMGUI_AVAILABLE
-#endif
 
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/opengl/CompiledScene.h>

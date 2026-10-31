@@ -32,6 +32,7 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/modules/mrpt_<na
   group_mrpt_gui_grp.rst
   group_mrpt_hwdrivers_grp.rst
   group_mrpt_img_grp.rst
+  group_mrpt_imgui_grp.rst
   group_mrpt_io_grp.rst
   group_mrpt_kinematics_grp.rst
   group_mrpt_maps_grp.rst
