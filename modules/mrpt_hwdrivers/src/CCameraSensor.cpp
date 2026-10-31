@@ -136,7 +136,13 @@ void CCameraSensor::initialize()
         m_bumblebee_dc1394_framerate);
     m_cap_bumblebee_dc1394 = std::make_unique<CStereoGrabber_Bumblebee_libdc1394>(
         m_bumblebee_dc1394_camera_guid, m_bumblebee_dc1394_camera_unit,
-        m_bumblebee_dc1394_framerate);
+        m_bumblebee_dc1394_framerate, m_bumblebee_dc1394_bayer_decoding);
+
+    if (!m_cap_bumblebee_dc1394->isOpen())
+    {
+      m_state = CGenericSensor::ssError;
+      THROW_EXCEPTION("[CCameraSensor::initialize] ERROR: Couldn't open the Bumblebee camera.");
+    }
   }
   else if (m_grabber_type == "ffmpeg")
   {
@@ -441,6 +447,9 @@ void CCameraSensor::loadConfig_sensorSpecific(
       bumblebee_dc1394_camera_unit, int, m_bumblebee_dc1394_camera_unit, configSource, iniSection)
   MRPT_LOAD_HERE_CONFIG_VAR(
       bumblebee_dc1394_framerate, double, m_bumblebee_dc1394_framerate, configSource, iniSection)
+  MRPT_LOAD_HERE_CONFIG_VAR(
+      bumblebee_dc1394_bayer_decoding, bool, m_bumblebee_dc1394_bayer_decoding, configSource,
+      iniSection)
 
   // FFmpeg options:
   m_ffmpeg_url =

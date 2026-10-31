@@ -14,8 +14,12 @@
 
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/hwdrivers/config.h>
+#include <mrpt/system/datetime.h>
 
+#include <iostream>
 #include <optional>
+#include <string>
+#include <vector>
 
 // Include the libdc1394-2 headers:
 #if MRPT_HAS_LIBDC1394_2
@@ -31,6 +35,163 @@ using namespace mrpt::hwdrivers;
 
 #define THE_CAMERA  static_cast<dc1394camera_t*>(m_dc1394camera)
 #define THE_CONTEXT static_cast<dc1394_t*>(m_dc1394_lib_context)
+
+#if MRPT_HAS_LIBDC1394_2
+namespace
+{
+using mrpt::img::BayerPattern;
+
+/** Returns a dequeued frame to the ring buffer when leaving the scope, so
+ * errors never leave the capture without buffers. */
+struct FrameReturner
+{
+  dc1394camera_t* camera;
+  dc1394video_frame_t* frame;
+
+  FrameReturner(dc1394camera_t* c, dc1394video_frame_t* f) : camera(c), frame(f) {}
+  FrameReturner(const FrameReturner&) = delete;
+  FrameReturner& operator=(const FrameReturner&) = delete;
+  ~FrameReturner()
+  {
+    if (dc1394_capture_enqueue(camera, frame) != DC1394_SUCCESS)
+    {
+      cerr << "[CImageGrabber_dc1394] ERROR: Could not enqueue the ring buffer frame\n";
+    }
+  }
+};
+
+/** The time a frame reached the ring buffer, or now if it looks invalid. */
+mrpt::Clock::time_point frameTimestamp(const dc1394video_frame_t& frame)
+{
+  const auto now = mrpt::Clock::now();
+  if (frame.timestamp == 0)
+  {
+    return now;
+  }
+  const auto stamp = mrpt::Clock::fromDouble(static_cast<double>(frame.timestamp) * 1e-6);
+  // A frame waits at most a ring buffer length (a few seconds):
+  constexpr double MAX_FRAME_AGE = 10.0;  // [s]
+  const double age = mrpt::system::timeDifference(stamp, now);
+  if (age < 0 || age > MAX_FRAME_AGE)
+  {
+    return now;
+  }
+  return stamp;
+}
+
+dc1394color_filter_t toDc1394Filter(BayerPattern p)
+{
+  switch (p)
+  {
+    case BayerPattern::RGGB:
+      return DC1394_COLOR_FILTER_RGGB;
+    case BayerPattern::BGGR:
+      return DC1394_COLOR_FILTER_BGGR;
+    case BayerPattern::GRBG:
+      return DC1394_COLOR_FILTER_GRBG;
+    case BayerPattern::GBRG:
+    default:
+      return DC1394_COLOR_FILTER_GBRG;
+  }
+}
+
+/** Point Grey cameras report their color filter in the BAYER_TILE_MAPPING
+ * register, as four ASCII letters (e.g. "GBRG"), or "YYYY" if monochrome.
+ * Returns an empty string if the register cannot be read. */
+std::string readPointGreyBayerTile(dc1394camera_t* camera)
+{
+  constexpr uint64_t BAYER_TILE_MAPPING = 0x1040;
+  uint32_t value = 0;
+  if (dc1394_get_control_register(camera, BAYER_TILE_MAPPING, &value) != DC1394_SUCCESS)
+  {
+    return {};
+  }
+  std::string tile;
+  for (int shift = 24; shift >= 0; shift -= 8)
+  {
+    tile.push_back(static_cast<char>((value >> shift) & 0xFF));
+  }
+  return tile;
+}
+
+std::optional<BayerPattern> bayerPatternFromTile(const std::string& tile)
+{
+  if (tile == "RGGB")
+  {
+    return BayerPattern::RGGB;
+  }
+  if (tile == "BGGR")
+  {
+    return BayerPattern::BGGR;
+  }
+  if (tile == "GBRG")
+  {
+    return BayerPattern::GBRG;
+  }
+  if (tile == "GRBG")
+  {
+    return BayerPattern::GRBG;
+  }
+  return std::nullopt;
+}
+
+double framerateHz(grabber_dc1394_framerate_t fr)
+{
+  switch (fr)
+  {
+    case FRAMERATE_1_875:
+      return 1.875;
+    case FRAMERATE_3_75:
+      return 3.75;
+    case FRAMERATE_7_5:
+      return 7.5;
+    case FRAMERATE_15:
+      return 15;
+    case FRAMERATE_30:
+      return 30;
+    case FRAMERATE_60:
+      return 60;
+    case FRAMERATE_120:
+      return 120;
+    case FRAMERATE_240:
+      return 240;
+    default:
+      return 0;
+  }
+}
+
+/** Format7 modes ignore the standard frame rate register: set the frame rate
+ * feature instead, if the camera has it in absolute units. */
+void setFormat7FrameRate(dc1394camera_t* camera, double hz)
+{
+  dc1394bool_t present = DC1394_FALSE;
+  dc1394bool_t hasAbsolute = DC1394_FALSE;
+  if (dc1394_feature_is_present(camera, DC1394_FEATURE_FRAME_RATE, &present) != DC1394_SUCCESS ||
+      !present ||
+      dc1394_feature_has_absolute_control(camera, DC1394_FEATURE_FRAME_RATE, &hasAbsolute) !=
+          DC1394_SUCCESS ||
+      !hasAbsolute)
+  {
+    cerr << "[CImageGrabber_dc1394] WARNING: The camera can not set its Format7 frame rate: "
+            "it runs at its maximum rate.\n";
+    return;
+  }
+  const bool ok =
+      dc1394_feature_set_power(camera, DC1394_FEATURE_FRAME_RATE, DC1394_ON) == DC1394_SUCCESS &&
+      dc1394_feature_set_mode(camera, DC1394_FEATURE_FRAME_RATE, DC1394_FEATURE_MODE_MANUAL) ==
+          DC1394_SUCCESS &&
+      dc1394_feature_set_absolute_control(camera, DC1394_FEATURE_FRAME_RATE, DC1394_ON) ==
+          DC1394_SUCCESS &&
+      dc1394_feature_set_absolute_value(
+          camera, DC1394_FEATURE_FRAME_RATE, static_cast<float>(hz)) == DC1394_SUCCESS;
+  if (!ok)
+  {
+    cerr << "[CImageGrabber_dc1394] WARNING: Could not set the Format7 frame rate to " << hz
+         << " Hz.\n";
+  }
+}
+}  // namespace
+#endif
 
 /*-------------------------------------------------------------
           Constructor
@@ -387,15 +548,36 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
     return;
   }
 
-  std::cout << "------ Other options ------"
-            << "\n";
-  uint32_t iso_chan;
-  if ((err = dc1394_video_get_iso_channel(THE_CAMERA, &iso_chan)) == DC1394_SUCCESS)
-    if (verbose) std::cout << "ISO Channel: " << iso_chan << "\n";
+  if (verbose)
+  {
+    std::cout << "------ Other options ------\n";
+    uint32_t iso_chan = 0;
+    if (dc1394_video_get_iso_channel(THE_CAMERA, &iso_chan) == DC1394_SUCCESS)
+    {
+      std::cout << "ISO Channel: " << iso_chan << "\n";
+    }
+    dc1394speed_t iso_speed = DC1394_ISO_SPEED_400;
+    if (dc1394_video_get_iso_speed(THE_CAMERA, &iso_speed) == DC1394_SUCCESS)
+    {
+      std::cout << "ISO Speed: " << iso_speed << "\n";
+    }
+  }
 
-  dc1394speed_t iso_speed;
-  if ((err = dc1394_video_get_iso_speed(THE_CAMERA, &iso_speed)) == DC1394_SUCCESS)
-    if (verbose) std::cout << "ISO Speed: " << iso_speed << "\n";
+  if (options.mode7 >= 0)
+  {
+    setFormat7FrameRate(THE_CAMERA, framerateHz(m_options.framerate));
+  }
+
+  const std::string bayerTile = readPointGreyBayerTile(THE_CAMERA);
+  if (const auto pattern = bayerPatternFromTile(bayerTile); pattern)
+  {
+    m_bayer_pattern = *pattern;
+  }
+  else if (bayerTile == "YYYY")
+  {
+    // Monochrome sensor: nothing to demosaic.
+    m_options.bayer_decoding = false;
+  }
 
 // set trigger options:
 #define SET_TRIGGER(opt, OPT, TYPE)                                            \
@@ -491,102 +673,54 @@ CImageGrabber_dc1394::~CImageGrabber_dc1394()
 std::optional<mrpt::obs::CObservationImage> CImageGrabber_dc1394::grabFrame()
 {
   MRPT_START
-  mrpt::obs::CObservationImage obs;
-  if (!m_bInitialized) return std::nullopt;
+  if (!m_bInitialized)
+  {
+    return std::nullopt;
+  }
 
 #if MRPT_HAS_LIBDC1394_2
   dc1394video_frame_t* frame = nullptr;
-  dc1394error_t err;
-
-  err = dc1394_video_set_transmission(THE_CAMERA, DC1394_ON);
-  if (err != DC1394_SUCCESS)
+  if (dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame) != DC1394_SUCCESS ||
+      !frame)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso "
-            "transmission."
-         << "\n";
+    cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame\n";
     return std::nullopt;
   }
+  const FrameReturner returner(THE_CAMERA, frame);
 
-  // get frame from ring buffer:
-  err = dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
-  // dc1394error_t err=dc1394_capture_dequeue(THE_CAMERA,
-  // DC1394_CAPTURE_POLICY_POLL, &frame);
-  if (err != DC1394_SUCCESS)
-  {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame"
-         << "\n";
-    return std::nullopt;
-  }
-
-  obs.timestamp = mrpt::Clock::now();
+  mrpt::obs::CObservationImage obs;
+  obs.timestamp = frameTimestamp(*frame);
 
   const unsigned int width = frame->size[0];
   const unsigned int height = frame->size[1];
 
-  if (!m_options.deinterlace_stereo)
+  if (m_options.deinterlace_stereo)
   {
-    /*-----------------------------------------------------------------------
-     *  convert the image from what ever format it is to its RGB8
-     *-----------------------------------------------------------------------*/
-    // dc1394_get_image_size_from_video_mode(THE_CAMERA, m_desired_mode,
-    // &width, &height);
-
-    auto* new_frame = static_cast<dc1394video_frame_t*>(calloc(1, sizeof(dc1394video_frame_t)));
-    new_frame->color_coding = DC1394_COLOR_CODING_RGB8;
-    dc1394_convert_frames(frame, new_frame);
-
-    // Fill the output class:
-    obs.image.loadFromMemoryBuffer(width, height, true, new_frame->image, true /* BGR -> RGB */);
-
-    // Free temporary frame:
-    free(new_frame->image);
-    free(new_frame);
-  }
-  else
-  {
-    // Stereo images:
-    auto* imageBuf = new uint8_t[width * height * 2];
-    auto* imageBufRGB = new uint8_t[width * height * 2 * 3];
-
-    if ((err = dc1394_deinterlace_stereo(frame->image, imageBuf, width, 2 * height)) !=
-        DC1394_SUCCESS)
+    if (frame->image_bytes < 2ULL * width * height)
     {
-      cerr << "[CImageGrabber_dc1394] ERROR: Could not deinterlace "
-              "stereo images: "
-           << err << "\n";
+      cerr << "[CImageGrabber_dc1394] ERROR: Frame too small for a stereo pair\n";
       return std::nullopt;
     }
-
-    if ((err = dc1394_bayer_decoding_8bit(
-             imageBuf, imageBufRGB, width, 2 * height,
-             DC1394_COLOR_FILTER_GBRG,  // Has to be this value for
-             // Bumblebee!
-             DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
-    {
-      cerr << "[CImageGrabber_dc1394] ERROR: Could not apply Bayer "
-              "conversion: "
-           << err << "\n";
-      return std::nullopt;
-    }
-
-    obs.image.loadFromMemoryBuffer(width, height, true,
-                                   imageBufRGB);  // Left cam.
-    // obs.image.loadFromMemoryBuffer(width,height,true,
-    // imageBufRGB+ width*height*3 ); // Right cam.
-
-    delete[] imageBuf;
-    delete[] imageBufRGB;
+    // The left image of a stereo camera:
+    mrpt::obs::CObservationStereoImages stereo;
+    decodeStereoFrame(
+        frame->image, width, height, m_options.bayer_decoding, m_bayer_pattern, stereo);
+    obs.image = std::move(stereo.imageLeft);
+    return obs;
   }
 
-  // Now we can return the frame to the ring buffer:
-  err = dc1394_capture_enqueue(THE_CAMERA, frame);
-  if (err != DC1394_SUCCESS)
+  // Convert from whatever format to RGB8:
+  dc1394video_frame_t rgb{};
+  rgb.color_coding = DC1394_COLOR_CODING_RGB8;
+  if (dc1394_convert_frames(frame, &rgb) != DC1394_SUCCESS)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not enqueue the ring "
-            "buffer frame"
-         << "\n";
+    free(rgb.image);
+    cerr << "[CImageGrabber_dc1394] ERROR: Could not convert the frame to RGB\n";
     return std::nullopt;
   }
+  obs.image.loadFromMemoryBuffer(
+      static_cast<int32_t>(width), static_cast<int32_t>(height), mrpt::img::CH_RGB, rgb.image);
+  free(rgb.image);
 
   return obs;
 #else
@@ -601,78 +735,91 @@ std::optional<mrpt::obs::CObservationImage> CImageGrabber_dc1394::grabFrame()
 std::optional<mrpt::obs::CObservationStereoImages> CImageGrabber_dc1394::grabStereoFrame()
 {
   MRPT_START
-  mrpt::obs::CObservationStereoImages obs;
-
   if (!m_bInitialized)
   {
     return std::nullopt;
   }
+  if (!m_options.deinterlace_stereo)
+  {
+    THROW_EXCEPTION("grabStereoFrame() called but the camera was not set as stereo!");
+  }
 
 #if MRPT_HAS_LIBDC1394_2
   dc1394video_frame_t* frame = nullptr;
-
-  // get frame from ring buffer:
-  dc1394error_t err = dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
-  if (err != DC1394_SUCCESS)
+  if (dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame) != DC1394_SUCCESS ||
+      !frame)
   {
-    cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame"
-         << "\n";
+    cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame\n";
+    return std::nullopt;
+  }
+  const FrameReturner returner(THE_CAMERA, frame);
+
+  const uint32_t width = frame->size[0];
+  const uint32_t height = frame->size[1];
+  if (frame->image_bytes < 2ULL * width * height)
+  {
+    cerr << "[CImageGrabber_dc1394] ERROR: Frame too small for a stereo pair of " << width << "x"
+         << height << " images: " << frame->image_bytes << " bytes\n";
     return std::nullopt;
   }
 
-  obs.timestamp = mrpt::Clock::now();
-
-  const unsigned int width = frame->size[0];
-  const unsigned int height = frame->size[1];
-
-  if (!m_options.deinterlace_stereo)
-  {
-    THROW_EXCEPTION(
-        "Call to getObservation(stereo) but the camera was not set as "
-        "stereo!");
-  }
-  else
-  {
-    // Stereo images:
-    auto* imageBuf = new uint8_t[width * height * 2];
-    auto* imageBufRGB = new uint8_t[width * height * 2 * 3];
-
-    if ((err = dc1394_deinterlace_stereo(frame->image, imageBuf, width, 2 * height)) !=
-        DC1394_SUCCESS)
-    {
-      cerr << "[CImageGrabber_dc1394] ERROR: Could not deinterlace "
-              "stereo images: "
-           << err << "\n";
-      return std::nullopt;
-    }
-
-    if ((err = dc1394_bayer_decoding_8bit(
-             imageBuf, imageBufRGB, width, 2 * height,
-             DC1394_COLOR_FILTER_GBRG,  // Has to be this value for
-             // Bumblebee!
-             DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
-    {
-      cerr << "[CImageGrabber_dc1394] ERROR: Could not apply Bayer "
-              "conversion: "
-           << err << "\n";
-      return std::nullopt;
-    }
-
-    obs.hasImageRight = true;
-    obs.imageLeft.loadFromMemoryBuffer(width, height, true,
-                                       imageBufRGB);  // Left cam.
-    obs.imageRight.loadFromMemoryBuffer(
-        width, height, true,
-        imageBufRGB + width * height * 3);  // Right cam.
-
-    delete[] imageBuf;
-    delete[] imageBufRGB;
-  }
-
-  // Now we can return the frame to the ring buffer:
-  dc1394_capture_enqueue(THE_CAMERA, frame);
-
+  mrpt::obs::CObservationStereoImages obs;
+  obs.timestamp = frameTimestamp(*frame);
+  decodeStereoFrame(frame->image, width, height, m_options.bayer_decoding, m_bayer_pattern, obs);
   return obs;
+#else
+  THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
+#endif
+  MRPT_END
+}
+
+void CImageGrabber_dc1394::decodeStereoFrame(
+    [[maybe_unused]] const uint8_t* interleaved,
+    [[maybe_unused]] uint32_t width,
+    [[maybe_unused]] uint32_t height,
+    [[maybe_unused]] bool bayerDecoding,
+    [[maybe_unused]] mrpt::img::BayerPattern pattern,
+    [[maybe_unused]] mrpt::obs::CObservationStereoImages& out)
+{
+  MRPT_START
+#if MRPT_HAS_LIBDC1394_2
+  ASSERT_(interleaved != nullptr);
+  ASSERT_(width > 0 && height > 0);
+
+  const size_t nPixels = static_cast<size_t>(width) * height;
+  const auto w = static_cast<int32_t>(width);
+  const auto h = static_cast<int32_t>(height);
+
+  // Left image first, then the right one:
+  std::vector<uint8_t> raw(2 * nPixels);
+  // The libdc1394 API takes non-const buffers, but does not modify the input:
+  if (dc1394_deinterlace_stereo(const_cast<uint8_t*>(interleaved), raw.data(), width, 2 * height) !=
+      DC1394_SUCCESS)
+  {
+    THROW_EXCEPTION("Could not deinterlace the stereo images");
+  }
+
+  out.hasImageRight = true;
+  if (!bayerDecoding)
+  {
+    out.imageLeft.loadFromMemoryBuffer(w, h, mrpt::img::CH_GRAY, raw.data());
+    out.imageRight.loadFromMemoryBuffer(w, h, mrpt::img::CH_GRAY, raw.data() + nPixels);
+    return;
+  }
+
+  // Each image is demosaiced on its own, so no colors bleed across them:
+  std::vector<uint8_t> rgb(3 * nPixels);
+  for (int i = 0; i < 2; i++)
+  {
+    if (dc1394_bayer_decoding_8bit(
+            raw.data() + i * nPixels, rgb.data(), width, height, toDc1394Filter(pattern),
+            DC1394_BAYER_METHOD_HQLINEAR) != DC1394_SUCCESS)
+    {
+      THROW_EXCEPTION("Could not demosaic the Bayer images");
+    }
+    auto& img = (i == 0) ? out.imageLeft : out.imageRight;
+    img.loadFromMemoryBuffer(w, h, mrpt::img::CH_RGB, rgb.data());
+  }
 #else
   THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
@@ -734,7 +881,7 @@ bool CImageGrabber_dc1394::changeCaptureOptions(
   SET_VALUE(white_balance, WHITE_BALANCE)
 #undef SET_VALUE
 
-  return obs;
+  return true;
 #else
   THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
@@ -755,13 +902,13 @@ bool CImageGrabber_dc1394::setSoftwareTriggerLevel([[maybe_unused]] bool level)
 
 #if MRPT_HAS_LIBDC1394_2
   dc1394error_t err;
-  err = dc1394_software_trigger_set_power(THE_CAMERA, (dc1394switch_t)level);
+  err = dc1394_software_trigger_set_power(THE_CAMERA, level ? DC1394_ON : DC1394_OFF);
   DC1394_WRN(
       err,
       "[CImageGrabber_dc1394::setSoftwareTriggerLevel] Could not set "
       "software trigger level");
 
-  return obs;
+  return err == DC1394_SUCCESS;
 #else
   THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
