@@ -145,3 +145,39 @@ TEST(CImGuiTimeline, TimeLabel)
   tl.timeFormatter = [](double t) { return "#" + std::to_string(static_cast<int>(t)); };
   EXPECT_EQ(tl.timeLabel(), "#112");
 }
+
+TEST(CImGuiTimeline, KeysWithTheSameTime)
+{
+  // E.g. an action and a sensory frame with the same timestamp:
+  CImGuiTimeline tl;
+  tl.setKeyTimes({0.0, 1.0, 1.0, 1.0, 2.0});
+  int calls = 0;
+  tl.onTimeChanged = [&calls](double) { calls++; };
+
+  tl.seekToKey(1);
+  EXPECT_EQ(*tl.currentKeyIndex(), 1u);
+  tl.seekToKey(2);  // same time, another key: still notified
+  EXPECT_EQ(*tl.currentKeyIndex(), 2u);
+  EXPECT_EQ(calls, 2);
+
+  // Stepping visits every key:
+  tl.seekToKey(0);
+  for (size_t expected = 1; expected < 5; expected++)
+  {
+    tl.step(1);
+    EXPECT_EQ(*tl.currentKeyIndex(), expected);
+  }
+  for (size_t expected = 3;; expected--)
+  {
+    tl.step(-1);
+    EXPECT_EQ(*tl.currentKeyIndex(), expected);
+    if (expected == 0)
+    {
+      break;
+    }
+  }
+
+  // Setting the time directly picks the last key of that time:
+  tl.setTime(1.0);
+  EXPECT_EQ(*tl.currentKeyIndex(), 3u);
+}

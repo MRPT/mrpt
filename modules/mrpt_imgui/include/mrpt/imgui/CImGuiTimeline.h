@@ -72,10 +72,12 @@ class CImGuiTimeline
 
   /** Index of the last key time not after the current time (or the first
    * one, if the current time is before all of them); nullopt if there are no
-   * key times. */
+   * key times. If several keys have the current time, the one reached with
+   * seekToKey() or step(), if any. */
   [[nodiscard]] std::optional<size_t> currentKeyIndex() const;
 
-  /** Moves to the given key time (index clamped). */
+  /** Moves to the given key time (index clamped). Calls onTimeChanged if
+   * the time or the key changed (keys may share the same time). */
   void seekToKey(size_t index);
 
   /** Sets the current time, clamped to the range. Calls onTimeChanged if it
@@ -156,6 +158,12 @@ class CImGuiTimeline
   double m_t = 0;
   bool m_playing = false;
   std::vector<double> m_keys;
+  /** Key index set by seekToKey()/step(), to tell apart keys with the same
+   * time. Ignored once the time moves away from that key. */
+  std::optional<size_t> m_keyIdx;
+
+  /** Moves to `t` (clamped), remembering `key`, and notifies changes. */
+  void moveTo(double t, std::optional<size_t> key);
   std::vector<Track> m_tracks;
 
   void handleKeyboard();

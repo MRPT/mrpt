@@ -40,6 +40,7 @@ void CImGuiTimeline::setKeyTimes(std::vector<double> times)
 {
   std::sort(times.begin(), times.end());
   m_keys = std::move(times);
+  m_keyIdx.reset();
   if (!m_keys.empty() && m_tMax <= m_tMin)
   {
     setRange(m_keys.front(), m_keys.back());
@@ -51,6 +52,10 @@ std::optional<size_t> CImGuiTimeline::currentKeyIndex() const
   if (m_keys.empty())
   {
     return std::nullopt;
+  }
+  if (m_keyIdx && *m_keyIdx < m_keys.size() && m_keys[*m_keyIdx] == m_t)
+  {
+    return m_keyIdx;
   }
   const auto it = std::upper_bound(m_keys.begin(), m_keys.end(), m_t);
   if (it == m_keys.begin())
@@ -66,7 +71,8 @@ void CImGuiTimeline::seekToKey(size_t index)
   {
     return;
   }
-  setTime(m_keys[std::min(index, m_keys.size() - 1)]);
+  const size_t i = std::min(index, m_keys.size() - 1);
+  moveTo(m_keys[i], i);
 }
 
 void CImGuiTimeline::setTime(double t)
@@ -76,8 +82,16 @@ void CImGuiTimeline::setTime(double t)
   {
     return;
   }
+  moveTo(clamped, std::nullopt);
+}
+
+void CImGuiTimeline::moveTo(double t, std::optional<size_t> key)
+{
+  const double clamped = std::clamp(t, m_tMin, std::max(m_tMin, m_tMax));
+  const bool changed = clamped != m_t || key != m_keyIdx;
   m_t = clamped;
-  if (onTimeChanged)
+  m_keyIdx = key;
+  if (changed && onTimeChanged)
   {
     onTimeChanged(m_t);
   }
@@ -127,7 +141,7 @@ void CImGuiTimeline::step(int n)
     target = idx + n + 1;
   }
   target = std::clamp<long long>(target, 0, static_cast<long long>(m_keys.size()) - 1);
-  setTime(m_keys[static_cast<size_t>(target)]);
+  seekToKey(static_cast<size_t>(target));
 }
 
 void CImGuiTimeline::jumpToStart()
