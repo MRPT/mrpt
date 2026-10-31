@@ -183,11 +183,12 @@ mrpt_add_library(
   `target_link_libraries(... PRIVATE imp_wxwidgets)`. macOS/Windows CI builds
   with `-DDISABLE_WXWIDGETS=ON`.
 * **mrpt_hwdrivers**: several `MRPT_HAS_*` macros (`MRPT_HAS_OPENCV`,
-  `MRPT_HAS_LIBDC1394_2`, `MRPT_HAS_ROBOPEAK_LIDAR`, `MRPT_HAS_NIDAQMX*`,
-  `MRPT_HAS_PGR_FLYCAPTURE2`, `MRPT_HAS_KINECT_CL_NUI`) are never defined in
-  3.x, so those paths are compiled out; defining one alone does not make it
-  build. Some sources never include `mrpt/hwdrivers/config.h`, so even defined
-  macros read 0 there.
+  `MRPT_HAS_ROBOPEAK_LIDAR`, `MRPT_HAS_NIDAQMX*`, `MRPT_HAS_PGR_FLYCAPTURE2`,
+  `MRPT_HAS_KINECT_CL_NUI`) are never defined in 3.x, so those paths are
+  compiled out; defining one alone does not make it build. Some sources never
+  include `mrpt/hwdrivers/config.h`, so even defined macros read 0 there.
+  libdc1394 grabbers can only be tested without a camera through
+  `CImageGrabber_dc1394::decodeStereoFrame()`.
 * **mrpt_nav**: tests must advance the *navigation* time
   (`getNavigationTime()`), not just the clock, due to a 20 ms throttle in
   `updateCurrentPoseAndSpeeds()`. `CPTG_DiffDrive_*` need a polygonal

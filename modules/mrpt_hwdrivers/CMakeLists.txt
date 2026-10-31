@@ -153,6 +153,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CGillAnemometer_unittest.cpp
   tests/CGPSInterface_unittest.cpp
   tests/CHokuyoURG_unittest.cpp
+  tests/CImageGrabber_dc1394_unittest.cpp
   tests/CIbeoLuxETH_unittest.cpp
   tests/CImpinjRFID_unittest.cpp
   tests/CCANBusReader_unittest.cpp

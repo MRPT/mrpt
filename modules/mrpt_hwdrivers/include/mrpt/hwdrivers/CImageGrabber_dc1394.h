@@ -93,6 +93,11 @@ struct TCaptureOptions_dc1394
   int white_balance_mode{-1};
   /** For stereo cameras (eg PR Bumblebee) */
   bool deinterlace_stereo{false};
+  /** For stereo cameras (deinterlace_stereo): demosaic the raw Bayer images
+   * into RGB. If false, both images are the raw 8-bit Bayer mosaics, exactly
+   * as sent by the camera (lossless and 3 times smaller), in the pattern given
+   * by CImageGrabber_dc1394::bayerPattern(). */
+  bool bayer_decoding{true};
   int trigger_power{-1};
   int trigger_mode{-1};
   int trigger_source{-1};
@@ -133,6 +138,9 @@ class CImageGrabber_dc1394
   int m_desired_mode;
 
   TCaptureOptions_dc1394 m_options;
+
+  /** Color filter of the raw images: the one reported by the camera, if any */
+  mrpt::img::BayerPattern m_bayer_pattern{mrpt::img::BayerPattern::GBRG};
 
  public:
   /** Constructor: open an ieee1394 camera.
@@ -192,9 +200,34 @@ class CImageGrabber_dc1394
 
   /** \brief Grabs a stereo frame from a FireWire stereo camera.
    *
+   * The timestamp is the time the frame reached the capture ring buffer, so
+   * it does not depend on how late this method is called.
+   *
    * \return std::nullopt on any error, or the captured stereo observation on success.
    */
   [[nodiscard]] std::optional<mrpt::obs::CObservationStereoImages> grabStereoFrame();
+
+  /** The Bayer color filter of the raw images: the one reported by the
+   * camera (Point Grey register BAYER_TILE_MAPPING), or GBRG (Bumblebee) if
+   * it reports none. */
+  [[nodiscard]] mrpt::img::BayerPattern bayerPattern() const { return m_bayer_pattern; }
+
+  /** \brief Splits a stereo frame into its left and right images.
+   *
+   * \param interleaved A frame of 16-bit pixels: the left camera pixel in the
+   *        first byte and the right one in the second (e.g. Bumblebee MODE7_3).
+   * \param width, height Size of each image, in pixels.
+   * \param bayerDecoding If false, the images are the raw 8-bit Bayer
+   *        mosaics; otherwise, RGB images demosaiced with \a pattern.
+   * \exception std::exception If built without libdc1394.
+   */
+  static void decodeStereoFrame(
+      const uint8_t* interleaved,
+      uint32_t width,
+      uint32_t height,
+      bool bayerDecoding,
+      mrpt::img::BayerPattern pattern,
+      mrpt::obs::CObservationStereoImages& out);
 
   /** \deprecated Use grabStereoFrame() instead. */
   [[deprecated("Use grabStereoFrame() instead")]] bool getObservation(
