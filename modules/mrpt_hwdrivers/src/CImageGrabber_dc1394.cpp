@@ -96,20 +96,26 @@ dc1394color_filter_t toDc1394Filter(BayerPattern p)
 }
 
 /** Point Grey cameras report their color filter in the BAYER_TILE_MAPPING
- * register, as four ASCII letters (e.g. "GBRG"), or "YYYY" if monochrome. */
-std::optional<BayerPattern> readPointGreyBayerPattern(dc1394camera_t* camera)
+ * register, as four ASCII letters (e.g. "GBRG"), or "YYYY" if monochrome.
+ * Returns an empty string if the register cannot be read. */
+std::string readPointGreyBayerTile(dc1394camera_t* camera)
 {
   constexpr uint64_t BAYER_TILE_MAPPING = 0x1040;
   uint32_t value = 0;
   if (dc1394_get_control_register(camera, BAYER_TILE_MAPPING, &value) != DC1394_SUCCESS)
   {
-    return std::nullopt;
+    return {};
   }
   std::string tile;
   for (int shift = 24; shift >= 0; shift -= 8)
   {
     tile.push_back(static_cast<char>((value >> shift) & 0xFF));
   }
+  return tile;
+}
+
+std::optional<BayerPattern> bayerPatternFromTile(const std::string& tile)
+{
   if (tile == "RGGB")
   {
     return BayerPattern::RGGB;
@@ -562,9 +568,15 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
     setFormat7FrameRate(THE_CAMERA, framerateHz(m_options.framerate));
   }
 
-  if (const auto pattern = readPointGreyBayerPattern(THE_CAMERA); pattern)
+  const std::string bayerTile = readPointGreyBayerTile(THE_CAMERA);
+  if (const auto pattern = bayerPatternFromTile(bayerTile); pattern)
   {
     m_bayer_pattern = *pattern;
+  }
+  else if (bayerTile == "YYYY")
+  {
+    // Monochrome sensor: nothing to demosaic.
+    m_options.bayer_decoding = false;
   }
 
 // set trigger options:
@@ -684,6 +696,11 @@ std::optional<mrpt::obs::CObservationImage> CImageGrabber_dc1394::grabFrame()
 
   if (m_options.deinterlace_stereo)
   {
+    if (frame->image_bytes < 2ULL * width * height)
+    {
+      cerr << "[CImageGrabber_dc1394] ERROR: Frame too small for a stereo pair\n";
+      return std::nullopt;
+    }
     // The left image of a stereo camera:
     mrpt::obs::CObservationStereoImages stereo;
     decodeStereoFrame(
@@ -891,7 +908,7 @@ bool CImageGrabber_dc1394::setSoftwareTriggerLevel([[maybe_unused]] bool level)
       "[CImageGrabber_dc1394::setSoftwareTriggerLevel] Could not set "
       "software trigger level");
 
-  return true;
+  return err == DC1394_SUCCESS;
 #else
   THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif

@@ -96,7 +96,8 @@ struct TCaptureOptions_dc1394
   /** For stereo cameras (deinterlace_stereo): demosaic the raw Bayer images
    * into RGB. If false, both images are the raw 8-bit Bayer mosaics, exactly
    * as sent by the camera (lossless and 3 times smaller), in the pattern given
-   * by CImageGrabber_dc1394::bayerPattern(). */
+   * by CImageGrabber_dc1394::bayerPattern(). Ignored (false) for cameras that
+   * report a monochrome sensor. */
   bool bayer_decoding{true};
   int trigger_power{-1};
   int trigger_mode{-1};
