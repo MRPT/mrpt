@@ -339,56 +339,34 @@ CSetOfObjects::Ptr stock_objects::BumblebeeCamera()
   return camera;
 }
 
+namespace
+{
+void insertAxisLine(
+    CSetOfObjects& ret,
+    const mrpt::math::TPoint3Df& end,
+    const mrpt::img::TColorf& color,
+    float lineWidth)
+{
+  auto lin = CSimpleLine::Create(0, 0, 0, end.x, end.y, end.z, lineWidth, false /*aa*/);
+  lin->setColor(color);
+  ret.insert(lin);
+}
+}  // namespace
+
 CSetOfObjects::Ptr stock_objects::CornerXYZSimple(float scale, float lineWidth)
 {
   CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
-
-  // Using OpenGL shaders, it's more complicated to set line widths.
-  // So, let's use cylinders of a diameter proportional to "lineWidth":
-  const float R = lineWidth * 0.01f;
-  const int nSlices = 6;
-
-  {  // X:
-    auto lin = CCylinder::Create(R, R, scale, nSlices);
-    lin->setColor(1, 0, 0);
-    lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 90 0]"));
-    ret->insert(lin);
-  }
-  {  // Y:
-    auto lin = CCylinder::Create(R, R, scale, nSlices);
-    lin->setColor(0, 1, 0);
-    lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 -90]"));
-    ret->insert(lin);
-  }
-  {  // Z:
-    auto lin = CCylinder::Create(R, R, scale, nSlices);
-    lin->setColor(0, 0, 1);
-    ret->insert(lin);
-  }
+  insertAxisLine(*ret, {scale, 0, 0}, {1, 0, 0}, lineWidth);
+  insertAxisLine(*ret, {0, scale, 0}, {0, 1, 0}, lineWidth);
+  insertAxisLine(*ret, {0, 0, scale}, {0, 0, 1}, lineWidth);
   return ret;
 }
 
 CSetOfObjects::Ptr stock_objects::CornerXYSimple(float scale, float lineWidth)
 {
   CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
-
-  // Using OpenGL shaders, it's more complicated to set line widths.
-  // So, let's use cylinders of a diameter proportional to "scale":
-  const float R = lineWidth * 0.01f;
-  const int nSlices = 6;
-
-  {  // X:
-    auto lin = CCylinder::Create(R, R, scale, nSlices);
-    lin->setColor(1, 0, 0);
-    lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 90 0]"));
-    ret->insert(lin);
-  }
-  {  // Y:
-    auto lin = CCylinder::Create(R, R, scale, nSlices);
-    lin->setColor(0, 1, 0);
-    lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 -90]"));
-    ret->insert(lin);
-  }
+  insertAxisLine(*ret, {scale, 0, 0}, {1, 0, 0}, lineWidth);
+  insertAxisLine(*ret, {0, scale, 0}, {0, 1, 0}, lineWidth);
   return ret;
 }
 

@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/viz/CArrow.h>
+#include <mrpt/viz/CSimpleLine.h>
 #include <mrpt/viz/stock_objects.h>
 
 #include <cmath>
@@ -76,17 +77,29 @@ TEST(StockObjects, CornerXYZEye)
   ASSERT_TRUE(obj);
   EXPECT_GT(obj->size(), 0u);
 }
+// The simple corners are made of lines with the given width (in pixels):
+static void checkSimpleCornerLines(const CSetOfObjects& obj, size_t expectedCount)
+{
+  ASSERT_EQ(obj.size(), expectedCount);
+  for (const auto& o : obj)
+  {
+    auto line = std::dynamic_pointer_cast<const CSimpleLine>(o);
+    ASSERT_TRUE(line);
+    EXPECT_FLOAT_EQ(line->getLineWidth(), 2.0f);
+    EXPECT_NEAR((line->getLineEnd() - line->getLineStart()).norm(), 1.5, 1e-6);
+  }
+}
 TEST(StockObjects, CornerXYZSimple)
 {
   auto obj = stock_objects::CornerXYZSimple(1.5f, 2.0f);
   ASSERT_TRUE(obj);
-  EXPECT_GT(obj->size(), 0u);
+  checkSimpleCornerLines(*obj, 3);
 }
 TEST(StockObjects, CornerXYSimple)
 {
   auto obj = stock_objects::CornerXYSimple(1.5f, 2.0f);
   ASSERT_TRUE(obj);
-  EXPECT_GT(obj->size(), 0u);
+  checkSimpleCornerLines(*obj, 2);
 }
 TEST(StockObjects, BumblebeeCamera)
 {

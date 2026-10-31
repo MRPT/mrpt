@@ -88,6 +88,17 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
       attribs = {"position", "vertexColor"};
       break;
 
+    case DefaultShaderID::WIREFRAME_THICK:
+      vertex_shader =
+#include "../shaders/wireframe-thick.v.glsl"
+          ;
+      fragment_shader =
+#include "../shaders/wireframe-thick.f.glsl"
+          ;
+      uniforms = {"p_matrix", "mv_matrix", "viewport_size", "line_width", "line_aa_margin"};
+      attribs = {"position0", "vertexColor0", "position1", "vertexColor1"};
+      break;
+
     case DefaultShaderID::TRIANGLES_LIGHT:
       vertex_shader =
 #include "../shaders/triangles-light.v.glsl"
