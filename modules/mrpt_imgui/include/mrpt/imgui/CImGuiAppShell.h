@@ -137,6 +137,18 @@ class CImGuiAppShell
    * frame (or the next one, if called outside of a frame). */
   void requestScreenshot(const std::string& file) { m_pendingScreenshot = file; }
 
+  /** Calls `callback` with the window contents at the end of this frame
+   * (after all ImGui windows are drawn), e.g. to crop and save part of it.
+   * Coordinates of the image are framebuffer pixels: multiply ImGui
+   * coordinates by framebufferScale(). */
+  void requestFrameGrab(std::function<void(const mrpt::img::CImage&)> callback)
+  {
+    m_pendingGrabs.emplace_back(std::move(callback));
+  }
+
+  /** Framebuffer pixels per ImGui unit (2 on most HiDPI displays). */
+  [[nodiscard]] std::array<float, 2> framebufferScale() const;
+
   /** Reads the window framebuffer contents now. Must be called from the GL
    * thread, between frames or from a renderFrame callback (in which case the
    * previous frame contents are read). */
@@ -185,6 +197,7 @@ class CImGuiAppShell
   unsigned int m_dockspaceId = 0;
   std::array<float, 4> m_centralRect{0, 0, 0, 0};
   std::string m_pendingScreenshot;
+  std::vector<std::function<void(const mrpt::img::CImage&)>> m_pendingGrabs;
   std::string m_exitScreenshot;
 
   void buildDockspace();

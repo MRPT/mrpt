@@ -90,14 +90,14 @@ ICONS = [
     # Routing
     "ALT_ROUTE", "FORK_RIGHT", "ADS_CLICK",
     # Documents / annotations
-    "ARTICLE", "COMMENT", "FACT_CHECK", "DONE", "DOWNLOAD_FOR_OFFLINE",
+    "COMMENT", "FACT_CHECK", "DONE", "DOWNLOAD_FOR_OFFLINE",
     "ADD_CHART", "PLUS_ONE",
     # Misc
     "ROCKET_LAUNCH", "SCHOOL", "SCIENCE",
     # Application framework and ported apps
     "FOLDER", "DOWNLOAD", "UPLOAD", "REPEAT", "FILTER_LIST", "LIST",
     "ACCOUNT_TREE", "IMAGE", "FIRST_PAGE", "LAST_PAGE", "HOME", "PAN_TOOL",
-    "FLAG", "PLACE", "SCREENSHOT_MONITOR", "MOVIE", "NOTES", "TRAVEL_EXPLORE",
+    "FLAG", "PLACE", "SCREENSHOT_MONITOR", "FIBER_MANUAL_RECORD", "NOTES", "TRAVEL_EXPLORE",
     "VIEW_IN_AR", "NEW_WINDOW", "NOTE_ADD", "ADD_BOX", "PHOTO_LIBRARY",
     "SPLITSCREEN", "VIDEO_LIBRARY", "STOP_CIRCLE", "PLAY_CIRCLE",
     "RESTART_ALT", "QUERY_STATS", "TABLE_ROWS", "INSERT_CHART",
@@ -150,6 +150,14 @@ def main() -> int:
             + ["-o", str(inst_ttf)],
             check=True, stdout=subprocess.DEVNULL,
         )
+
+        # Every requested icon must exist in the font (the header and the
+        # font are versioned separately, and codepoints do change):
+        from fontTools.ttLib import TTFont
+        cmap = TTFont(str(src_ttf)).getBestCmap()
+        absent = [n for n in ICONS if codepoints[n] not in cmap]
+        if absent:
+            sys.exit(f"Icon(s) without a glyph in this font: {', '.join(absent)}")
 
         # Subset to the wanted glyphs only.
         sub_ttf = tmp / "subset.ttf"

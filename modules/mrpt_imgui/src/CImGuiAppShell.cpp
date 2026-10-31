@@ -274,8 +274,31 @@ std::optional<mrpt::img::CImage> CImGuiAppShell::grabFramebuffer() const
   return img;
 }
 
+std::array<float, 2> CImGuiAppShell::framebufferScale() const
+{
+  if (!m_imguiInitialized)
+  {
+    return {1.0f, 1.0f};
+  }
+  const ImVec2 s = ImGui::GetIO().DisplayFramebufferScale;
+  return {s.x, s.y};
+}
+
 void CImGuiAppShell::handleScreenshotRequests(bool lastFrame)
 {
+  if (!m_pendingGrabs.empty())
+  {
+    auto grabs = std::move(m_pendingGrabs);
+    m_pendingGrabs.clear();
+    if (auto img = grabFramebuffer(); img)
+    {
+      for (auto& cb : grabs)
+      {
+        cb(*img);
+      }
+    }
+  }
+
   std::string file;
   if (!m_pendingScreenshot.empty())
   {

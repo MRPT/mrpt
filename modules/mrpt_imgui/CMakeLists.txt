@@ -59,6 +59,7 @@ set(LIB_SOURCES
   src/CImGuiFileDialog.cpp
   src/SimpleFileDialog.cpp
   src/style.cpp
+  src/widgets.cpp
   src/config_paths.cpp
 )
 
@@ -76,6 +77,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/imgui/config_paths.h
   include/mrpt/imgui/icons.h
   include/mrpt/imgui/style.h
+  include/mrpt/imgui/widgets.h
 )
 
 set(LIB_UNIT_TEST_SOURCES
@@ -88,6 +90,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CImGuiTimeline_unittest.cpp
   tests/config_paths_unittest.cpp
   tests/style_unittest.cpp
+  tests/widgets_unittest.cpp
 )
 
 mrpt_add_library(
