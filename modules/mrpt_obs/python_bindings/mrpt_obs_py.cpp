@@ -30,9 +30,13 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservationRobotPose.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/T3DPointsProjectionParams.h>
+#include <mrpt/obs/VelodyneCalibration.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
@@ -47,6 +51,9 @@
 #include <cmath>
 #include <limits>
 #include <optional>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace py = pybind11;
 using namespace pybind11::literals;
@@ -58,6 +65,34 @@ using namespace pybind11::literals;
   def_property(                                       \
       #FIELD, [](const CLASS& c) { return c.FIELD; }, \
       [](CLASS& c, decltype(CLASS::FIELD) v) { c.FIELD = v; })
+
+namespace
+{
+/** hasXXX(), getXXX() and setXXX() of CObservationGPS for one message type. */
+template <class MSG, class PYCLASS>
+void bindGnssMessageAccess(PYCLASS& cls, const std::string& name)
+{
+  using ObsGPS = mrpt::obs::CObservationGPS;
+  cls.def(
+      ("has" + name).c_str(), [](const ObsGPS& o) { return o.hasMsgClass<MSG>(); },
+      ("True if the observation has an NMEA " + name + " message").c_str());
+  cls.def(
+      ("get" + name).c_str(),
+      [](const ObsGPS& o) -> std::optional<MSG>
+      {
+        const auto* msg = o.getMsgByClassPtr<MSG>();
+        if (!msg)
+        {
+          return std::nullopt;
+        }
+        return *msg;
+      },
+      ("Returns a copy of the NMEA " + name + " message, or None").c_str());
+  cls.def(
+      ("set" + name).c_str(), [](ObsGPS& o, const MSG& msg) { o.setMsg(msg); }, "msg"_a,
+      ("Stores (or replaces) the NMEA " + name + " message").c_str());
+}
+}  // namespace
 
 PYBIND11_MODULE(_bindings, m)
 {
@@ -184,6 +219,70 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "__repr__", [](const mrpt::obs::CObservationImage& o)
           { return "CObservationImage(label='" + o.sensorLabel + "')"; });
+
+  // -------------------------------------------------------------------------
+  // CObservationStereoImages: a pair of images from a stereo camera
+  // -------------------------------------------------------------------------
+  using mrpt::obs::CObservationStereoImages;
+  py::class_<
+      CObservationStereoImages, mrpt::obs::CObservation, std::shared_ptr<CObservationStereoImages>>(
+      m, "CObservationStereoImages",
+      "A pair of images from a stereo camera (left and, optionally, right and disparity), "
+      "with the camera parameters and poses.")
+      .def(py::init<>(), "Constructor.")
+      .def_readwrite("imageLeft", &CObservationStereoImages::imageLeft, "Left camera image.")
+      .def_readwrite(
+          "imageRight", &CObservationStereoImages::imageRight,
+          "Right camera image (only valid if hasImageRight).")
+      .def_readwrite(
+          "imageDisparity", &CObservationStereoImages::imageDisparity,
+          "Disparity image (only valid if hasImageDisparity).")
+      .def_readwrite(
+          "hasImageRight", &CObservationStereoImages::hasImageRight,
+          "Whether imageRight holds an image.")
+      .def_readwrite(
+          "hasImageDisparity", &CObservationStereoImages::hasImageDisparity,
+          "Whether imageDisparity holds an image.")
+      .def_readwrite(
+          "leftCamera", &CObservationStereoImages::leftCamera, "Left camera intrinsic parameters.")
+      .def_readwrite(
+          "rightCamera", &CObservationStereoImages::rightCamera,
+          "Right camera intrinsic parameters.")
+      .def_readwrite(
+          "cameraPose", &CObservationStereoImages::cameraPose,
+          "Pose of the left camera on the robot.")
+      .def_readwrite(
+          "rightCameraPose", &CObservationStereoImages::rightCameraPose,
+          "Pose of the right camera with respect to the left one.")
+      .def(
+          "getStereoCameraParams",
+          py::overload_cast<>(&CObservationStereoImages::getStereoCameraParams, py::const_),
+          "Returns both cameras parameters and their relative pose as a TStereoCamera.")
+      .def(
+          "setStereoCameraParams", &CObservationStereoImages::setStereoCameraParams,
+          py::arg("params"), "Sets both cameras parameters and their relative pose.")
+      .def(
+          "areImagesRectified", &CObservationStereoImages::areImagesRectified,
+          "Whether the images are rectified, by the MRPT convention: all the distortion "
+          "parameters of leftCamera are zero.")
+      .def(
+          "__repr__",
+          [](const CObservationStereoImages& o)
+          {
+            return "CObservationStereoImages(label='" + o.sensorLabel +
+                   "', size=" + std::to_string(o.imageLeft.getWidth()) + "x" +
+                   std::to_string(o.imageLeft.getHeight()) +
+                   ", right=" + (o.hasImageRight ? "True" : "False") +
+                   ", disparity=" + (o.hasImageDisparity ? "True" : "False") + ")";
+          })
+      .def(
+          "__str__",
+          [](const CObservationStereoImages& o)
+          {
+            std::stringstream ss;
+            o.getDescriptionAsText(ss);
+            return ss.str();
+          });
 
   // -------------------------------------------------------------------------
   // CObservationIMU — inertial measurement unit data
@@ -691,6 +790,68 @@ PYBIND11_MODULE(_bindings, m)
       .MRPT_PACKED_READWRITE(RMC::content_t, positioning_mode);
   rmc.def(py::init<>(), "Default constructor.").def_readwrite("fields", &RMC::fields);
 
+  using GLL = mrpt::obs::gnss::Message_NMEA_GLL;
+  py::class_<GLL> gll(gnss, "Message_NMEA_GLL", "NMEA datum: GLL.");
+  py::class_<GLL::content_t>(gll, "content_t", "Fields of a GLL message.")
+      .def(py::init<>(), "Default constructor.")
+      .def_readwrite("UTCTime", &GLL::content_t::UTCTime)
+      .MRPT_PACKED_READWRITE(GLL::content_t, latitude_degrees)
+      .MRPT_PACKED_READWRITE(GLL::content_t, longitude_degrees)
+      .MRPT_PACKED_READWRITE(GLL::content_t, validity_char);
+  gll.def(py::init<>(), "Default constructor.").def_readwrite("fields", &GLL::fields);
+
+  using VTG = mrpt::obs::gnss::Message_NMEA_VTG;
+  py::class_<VTG> vtg(gnss, "Message_NMEA_VTG", "NMEA datum: VTG.");
+  py::class_<VTG::content_t>(vtg, "content_t", "Fields of a VTG message.")
+      .def(py::init<>(), "Default constructor.")
+      .MRPT_PACKED_READWRITE(VTG::content_t, true_track)
+      .MRPT_PACKED_READWRITE(VTG::content_t, magnetic_track)
+      .MRPT_PACKED_READWRITE(VTG::content_t, ground_speed_knots)
+      .MRPT_PACKED_READWRITE(VTG::content_t, ground_speed_kmh);
+  vtg.def(py::init<>(), "Default constructor.").def_readwrite("fields", &VTG::fields);
+
+  using GSA = mrpt::obs::gnss::Message_NMEA_GSA;
+  py::class_<GSA> gsa(gnss, "Message_NMEA_GSA", "NMEA datum: GSA (DOP and active satellites).");
+  py::class_<GSA::content_t>(gsa, "content_t", "Fields of a GSA message.")
+      .def(py::init<>(), "Default constructor.")
+      .MRPT_PACKED_READWRITE(GSA::content_t, auto_selection_fix)
+      .MRPT_PACKED_READWRITE(GSA::content_t, fix_2D_3D)
+      .MRPT_PACKED_READWRITE(GSA::content_t, PDOP)
+      .MRPT_PACKED_READWRITE(GSA::content_t, HDOP)
+      .MRPT_PACKED_READWRITE(GSA::content_t, VDOP)
+      .def_property_readonly(
+          "PRNs",
+          [](const GSA::content_t& c)
+          {
+            std::vector<std::string> prns;
+            for (const auto& prn : c.PRNs)
+            {
+              std::string id(prn, prn + 2);
+              id.erase(id.find_last_not_of(std::string(" \0", 2)) + 1);
+              if (!id.empty())
+              {
+                prns.push_back(id);
+              }
+            }
+            return prns;
+          },
+          "IDs of the satellites used in the solution");
+  gsa.def(py::init<>(), "Default constructor.").def_readwrite("fields", &GSA::fields);
+
+  using ZDA = mrpt::obs::gnss::Message_NMEA_ZDA;
+  py::class_<ZDA> zda(gnss, "Message_NMEA_ZDA", "NMEA datum: ZDA (UTC date and time).");
+  py::class_<ZDA::content_t>(zda, "content_t", "Fields of a ZDA message.")
+      .def(py::init<>(), "Default constructor.")
+      .def_readwrite("UTCTime", &ZDA::content_t::UTCTime)
+      .MRPT_PACKED_READWRITE(ZDA::content_t, date_day)
+      .MRPT_PACKED_READWRITE(ZDA::content_t, date_month)
+      .MRPT_PACKED_READWRITE(ZDA::content_t, date_year);
+  zda.def(py::init<>(), "Default constructor.")
+      .def_readwrite("fields", &ZDA::fields)
+      .def(
+          "getDateTimeAsTimestamp", &ZDA::getDateTimeAsTimestamp,
+          "The UTC date and time as a timestamp");
+
   py::enum_<mrpt::obs::GnssFixType>(m, "GnssFixType")
       .value("UNKNOWN", mrpt::obs::GnssFixType::UNKNOWN)
       .value("NO_FIX", mrpt::obs::GnssFixType::NO_FIX)
@@ -705,11 +866,11 @@ PYBIND11_MODULE(_bindings, m)
       .value("SIMULATION", mrpt::obs::GnssFixType::SIMULATION);
 
   using ObsGPS = mrpt::obs::CObservationGPS;
-  py::class_<ObsGPS, mrpt::obs::CObservation, std::shared_ptr<ObsGPS>>(
+  py::class_<ObsGPS, mrpt::obs::CObservation, std::shared_ptr<ObsGPS>> obsGPS(
       m, "CObservationGPS",
       "This class stores messages from GNSS or GNSS+IMU devices, from consumer-grade inexpensive "
-      "GPS receivers to Novatel/Topcon/... advanced RTK solutions.")
-      .def(py::init<>(), "Default constructor.")
+      "GPS receivers to Novatel/Topcon/... advanced RTK solutions.");
+  obsGPS.def(py::init<>(), "Default constructor.")
       .def_readwrite("sensorPose", &ObsGPS::sensorPose)
       .def_readwrite("originalReceivedTimestamp", &ObsGPS::originalReceivedTimestamp)
       .def_readwrite("has_satellite_timestamp", &ObsGPS::has_satellite_timestamp)
@@ -719,44 +880,281 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("fix_type", &ObsGPS::fix_type)
       .def("clear", &ObsGPS::clear, "Removes all GNSS messages")
       .def(
-          "hasGGA", [](const ObsGPS& o) { return o.hasMsgClass<GGA>(); },
-          "True if the observation has an NMEA GGA message")
+          "__repr__",
+          [](const ObsGPS& o) { return "CObservationGPS(label='" + o.sensorLabel + "')"; })
       .def(
-          "getGGA",
-          [](const ObsGPS& o) -> std::optional<GGA>
+          "__str__",
+          [](const ObsGPS& o)
           {
-            const auto* msg = o.getMsgByClassPtr<GGA>();
-            if (!msg)
-            {
-              return std::nullopt;
-            }
-            return *msg;
-          },
-          "Returns a copy of the NMEA GGA message, or None")
+            std::stringstream ss;
+            o.getDescriptionAsText(ss);
+            return ss.str();
+          })
       .def(
-          "setGGA", [](ObsGPS& o, const GGA& msg) { o.setMsg(msg); }, "msg"_a,
-          "Stores (or replaces) the NMEA GGA message")
-      .def(
-          "hasRMC", [](const ObsGPS& o) { return o.hasMsgClass<RMC>(); },
-          "True if the observation has an NMEA RMC message")
-      .def(
-          "getRMC",
-          [](const ObsGPS& o) -> std::optional<RMC>
+          "getMessageTypes",
+          [](const ObsGPS& o)
           {
-            const auto* msg = o.getMsgByClassPtr<RMC>();
-            if (!msg)
+            std::vector<std::string> names;
+            for (const auto& [type, msg] : o.messages)
             {
-              return std::nullopt;
+              if (msg)
+              {
+                names.push_back(msg->getMessageTypeAsString());
+              }
             }
-            return *msg;
+            return names;
           },
-          "Returns a copy of the NMEA RMC message, or None")
+          "Names of the GNSS messages in this observation (e.g. NMEA_GGA, NV_OEM6_BESTPOS); "
+          "str(obs) dumps all of them");
+  bindGnssMessageAccess<GGA>(obsGPS, "GGA");
+  bindGnssMessageAccess<RMC>(obsGPS, "RMC");
+  bindGnssMessageAccess<GLL>(obsGPS, "GLL");
+  bindGnssMessageAccess<VTG>(obsGPS, "VTG");
+  bindGnssMessageAccess<GSA>(obsGPS, "GSA");
+  bindGnssMessageAccess<ZDA>(obsGPS, "ZDA");
+
+  // -------------------------------------------------------------------------
+  // Rotating LiDARs: raw Velodyne packets and organized range images
+  // -------------------------------------------------------------------------
+  using mrpt::obs::VelodyneCalibration;
+  py::class_<VelodyneCalibration>(
+      m, "VelodyneCalibration", "Velodyne calibration data, for CObservationVelodyneScan.")
+      .def(py::init<>(), "Empty calibration.")
+      .def("empty", &VelodyneCalibration::empty, "True if no calibration is loaded.")
       .def(
-          "setRMC", [](ObsGPS& o, const RMC& msg) { o.setMsg(msg); }, "msg"_a,
-          "Stores (or replaces) the NMEA RMC message")
+          "loadFromXMLFile", &VelodyneCalibration::loadFromXMLFile, "filename"_a,
+          "Loads a Velodyne XML calibration file. Returns False on error.")
+      .def(
+          "loadFromYAMLFile", &VelodyneCalibration::loadFromYAMLFile, "filename"_a,
+          "Loads a ROS velodyne_pointcloud YAML calibration file. Returns False on error.")
+      .def_static(
+          "LoadDefaultCalibration",
+          [](const std::string& model)
+          { return VelodyneCalibration::LoadDefaultCalibration(model); },
+          "lidar_model"_a,
+          "Default calibration of a model (VLP16, HDL32, HDL64), or an empty one if unknown.");
+
+  using Velo = mrpt::obs::CObservationVelodyneScan;
+  py::class_<Velo::TGeneratePointCloudParameters>(
+      m, "VelodyneGeneratePointCloudParameters",
+      "Options of CObservationVelodyneScan.generatePointCloud().")
+      .def(py::init<>(), "Default parameters.")
+      .def_readwrite("minAzimuth_deg", &Velo::TGeneratePointCloudParameters::minAzimuth_deg)
+      .def_readwrite("maxAzimuth_deg", &Velo::TGeneratePointCloudParameters::maxAzimuth_deg)
+      .def_readwrite("minDistance", &Velo::TGeneratePointCloudParameters::minDistance)
+      .def_readwrite("maxDistance", &Velo::TGeneratePointCloudParameters::maxDistance)
+      .def_readwrite(
+          "filterOutIsolatedPoints", &Velo::TGeneratePointCloudParameters::filterOutIsolatedPoints)
+      .def_readwrite(
+          "isolatedPointsFilterDistance",
+          &Velo::TGeneratePointCloudParameters::isolatedPointsFilterDistance)
+      .def_readwrite("dualKeepStrongest", &Velo::TGeneratePointCloudParameters::dualKeepStrongest)
+      .def_readwrite("dualKeepLast", &Velo::TGeneratePointCloudParameters::dualKeepLast)
+      .def_readwrite(
+          "generatePerPointTimestamp",
+          &Velo::TGeneratePointCloudParameters::generatePerPointTimestamp)
+      .def_readwrite(
+          "generatePerPointAzimuth", &Velo::TGeneratePointCloudParameters::generatePerPointAzimuth);
+
+  py::class_<Velo, mrpt::obs::CObservation, std::shared_ptr<Velo>>(
+      m, "CObservationVelodyneScan",
+      "Raw packets of one Velodyne scan. generatePointCloud() decodes them into point_cloud, "
+      "read with the pointCloud*() methods.")
+      .def(py::init<>(), "Constructor.")
+      .def_readwrite("minRange", &Velo::minRange, "Minimum valid range (m).")
+      .def_readwrite("maxRange", &Velo::maxRange, "Maximum valid range (m).")
+      .def_readwrite("sensorPose", &Velo::sensorPose, "Pose of the sensor on the robot.")
+      .def_readwrite("calibration", &Velo::calibration, "Calibration used to decode the packets.")
+      .def_readwrite("originalReceivedTimestamp", &Velo::originalReceivedTimestamp)
+      .def_readwrite("has_satellite_timestamp", &Velo::has_satellite_timestamp)
+      .def(
+          "packetCount", [](const Velo& o) { return o.scan_packets.size(); },
+          "Number of raw data packets.")
+      .def(
+          "generatePointCloud",
+          [](Velo& o, const Velo::TGeneratePointCloudParameters& p) { o.generatePointCloud(p); },
+          "params"_a = Velo::TGeneratePointCloudParameters(),
+          "Decodes the packets into point_cloud (needs a calibration).")
+      .def(
+          "pointCount", [](const Velo& o) { return o.point_cloud.size(); },
+          "Number of points generated by generatePointCloud().")
+      .def(
+          "pointCloudXYZ",
+          [](const Velo& o)
+          {
+            const auto& pc = o.point_cloud;
+            const auto n = static_cast<py::ssize_t>(pc.size());
+            py::array_t<float> arr(std::vector<py::ssize_t>{n, 3});
+            auto buf = arr.mutable_unchecked<2>();
+            for (py::ssize_t i = 0; i < n; i++)
+            {
+              buf(i, 0) = pc.x[i];
+              buf(i, 1) = pc.y[i];
+              buf(i, 2) = pc.z[i];
+            }
+            return arr;
+          },
+          "Generated points as an Nx3 float32 array, in the sensor frame.")
+      .def(
+          "pointCloudIntensity",
+          [](const Velo& o) {
+            return py::array_t<uint8_t>(
+                o.point_cloud.intensity.size(), o.point_cloud.intensity.data());
+          },
+          "Intensity of each generated point (uint8).")
+      .def(
+          "pointCloudLaserId",
+          [](const Velo& o) {
+            return py::array_t<int16_t>(
+                o.point_cloud.laser_id.size(), o.point_cloud.laser_id.data());
+          },
+          "Laser (ring) of each generated point.")
+      .def(
+          "pointCloudAzimuth",
+          [](const Velo& o) {
+            return py::array_t<float>(o.point_cloud.azimuth.size(), o.point_cloud.azimuth.data());
+          },
+          "Azimuth of each point (rad); only with generatePerPointAzimuth.")
+      .def(
+          "pointCloudTimestamps",
+          [](const Velo& o)
+          {
+            const auto& ts = o.point_cloud.timestamp;
+            py::array_t<double> arr(std::vector<py::ssize_t>{static_cast<py::ssize_t>(ts.size())});
+            auto buf = arr.mutable_unchecked<1>();
+            for (size_t i = 0; i < ts.size(); i++)
+            {
+              buf(static_cast<py::ssize_t>(i)) = mrpt::Clock::toDouble(ts[i]);
+            }
+            return arr;
+          },
+          "Time of each point (UNIX seconds); only with generatePerPointTimestamp.")
       .def(
           "__repr__",
-          [](const ObsGPS& o) { return "CObservationGPS(label='" + o.sensorLabel + "')"; });
+          [](const Velo& o)
+          {
+            return "CObservationVelodyneScan(label='" + o.sensorLabel +
+                   "', packets=" + std::to_string(o.scan_packets.size()) +
+                   ", points=" + std::to_string(o.point_cloud.size()) + ")";
+          });
+
+  using RotScan = mrpt::obs::CObservationRotatingScan;
+  py::class_<RotScan, mrpt::obs::CObservation, std::shared_ptr<RotScan>>(
+      m, "CObservationRotatingScan",
+      "A scan of a rotating LiDAR (Velodyne, Ouster, ...) as organized range and intensity "
+      "images: one row per laser, one column per firing.")
+      .def(py::init<>(), "Constructor.")
+      .def_readwrite("rowCount", &RotScan::rowCount, "Number of lasers (image rows).")
+      .def_readwrite("columnCount", &RotScan::columnCount, "Number of firings (image columns).")
+      .def_readwrite(
+          "rangeResolution", &RotScan::rangeResolution, "Range (m) of one unit of rangeImage.")
+      .def_readwrite("startAzimuth", &RotScan::startAzimuth, "Azimuth of the first column (rad).")
+      .def_readwrite("azimuthSpan", &RotScan::azimuthSpan, "Azimuth span of the columns (rad).")
+      .def_readwrite("sweepDuration", &RotScan::sweepDuration, "Duration of the scan (s).")
+      .def_readwrite("lidarModel", &RotScan::lidarModel, "LiDAR model name.")
+      .def_readwrite("minRange", &RotScan::minRange, "Minimum valid range (m).")
+      .def_readwrite("maxRange", &RotScan::maxRange, "Maximum valid range (m).")
+      .def_readwrite("sensorPose", &RotScan::sensorPose, "Pose of the sensor on the robot.")
+      .def_readwrite("originalReceivedTimestamp", &RotScan::originalReceivedTimestamp)
+      .def_readwrite("has_satellite_timestamp", &RotScan::has_satellite_timestamp)
+      .def_property(
+          "rangeImage",
+          [](const RotScan& o)
+          {
+            const auto rows = static_cast<py::ssize_t>(o.rangeImage.rows());
+            const auto cols = static_cast<py::ssize_t>(o.rangeImage.cols());
+            py::array_t<uint16_t> arr(std::vector<py::ssize_t>{rows, cols});
+            auto buf = arr.mutable_unchecked<2>();
+            for (py::ssize_t r = 0; r < rows; r++)
+            {
+              for (py::ssize_t c = 0; c < cols; c++)
+              {
+                buf(r, c) = o.rangeImage(r, c);
+              }
+            }
+            return arr;
+          },
+          [](RotScan& o,
+             const py::array_t<uint16_t, py::array::c_style | py::array::forcecast>& arr)
+          {
+            if (arr.ndim() != 2)
+            {
+              throw std::invalid_argument("rangeImage must be a 2D array");
+            }
+            const auto r = arr.unchecked<2>();
+            o.rangeImage.setSize(static_cast<int>(r.shape(0)), static_cast<int>(r.shape(1)));
+            for (py::ssize_t row = 0; row < r.shape(0); row++)
+            {
+              for (py::ssize_t col = 0; col < r.shape(1); col++)
+              {
+                o.rangeImage(row, col) = r(row, col);
+              }
+            }
+          },
+          "Ranges (uint16, rows x columns; multiply by rangeResolution for meters, 0: invalid). "
+          "A copy: assign a whole array to change it.")
+      .def_property_readonly(
+          "intensityImage",
+          [](const RotScan& o)
+          {
+            const auto rows = static_cast<py::ssize_t>(o.intensityImage.rows());
+            const auto cols = static_cast<py::ssize_t>(o.intensityImage.cols());
+            py::array_t<uint8_t> arr(std::vector<py::ssize_t>{rows, cols});
+            auto buf = arr.mutable_unchecked<2>();
+            for (py::ssize_t r = 0; r < rows; r++)
+            {
+              for (py::ssize_t c = 0; c < cols; c++)
+              {
+                buf(r, c) = o.intensityImage(r, c);
+              }
+            }
+            return arr;
+          },
+          "Intensities (uint8, rows x columns), a copy.")
+      .def_property_readonly(
+          "organizedPoints",
+          [](const RotScan& o)
+          {
+            const auto rows = static_cast<py::ssize_t>(o.organizedPoints.rows());
+            const auto cols = static_cast<py::ssize_t>(o.organizedPoints.cols());
+            py::array_t<float> arr(std::vector<py::ssize_t>{rows, cols, 3});
+            auto buf = arr.mutable_unchecked<3>();
+            for (py::ssize_t r = 0; r < rows; r++)
+            {
+              for (py::ssize_t c = 0; c < cols; c++)
+              {
+                const auto& p = o.organizedPoints(r, c);
+                buf(r, c, 0) = p.x;
+                buf(r, c, 1) = p.y;
+                buf(r, c, 2) = p.z;
+              }
+            }
+            return arr;
+          },
+          "Points of each range image cell (float32, rows x columns x 3), in the sensor frame.")
+      .def(
+          "fromVelodyne", &RotScan::fromVelodyne, "obs"_a,
+          "Fills this scan from a Velodyne one (with a calibration).")
+      .def("fromScan2D", &RotScan::fromScan2D, "obs"_a, "Fills this scan from a 2D LiDAR scan.")
+      .def(
+          "fromGeneric", &RotScan::fromGeneric, "obs"_a,
+          "Fills this scan from any supported observation. Returns False if not supported.")
+      .def(
+          "__repr__",
+          [](const RotScan& o)
+          {
+            return "CObservationRotatingScan(label='" + o.sensorLabel + "', model='" +
+                   o.lidarModel + "', " + std::to_string(o.rowCount) + "x" +
+                   std::to_string(o.columnCount) + ")";
+          })
+      .def(
+          "__str__",
+          [](const RotScan& o)
+          {
+            std::stringstream ss;
+            o.getDescriptionAsText(ss);
+            return ss.str();
+          });
 
   // -------------------------------------------------------------------------
   // Metric map definitions (map types are registered by mrpt.maps)
