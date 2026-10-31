@@ -15,6 +15,9 @@ from mrpt.obs._bindings import CObservationIMU as CObservationIMU
 from mrpt.obs._bindings import CObservationImage as CObservationImage
 from mrpt.obs._bindings import CObservationOdometry as CObservationOdometry
 from mrpt.obs._bindings import CObservationRobotPose as CObservationRobotPose
+from mrpt.obs._bindings import CObservationRotatingScan as CObservationRotatingScan
+from mrpt.obs._bindings import CObservationStereoImages as CObservationStereoImages
+from mrpt.obs._bindings import CObservationVelodyneScan as CObservationVelodyneScan
 from mrpt.obs._bindings import CRawlog as CRawlog
 from mrpt.obs._bindings import CSensoryFrame as CSensoryFrame
 from mrpt.obs._bindings import CSimpleMap as CSimpleMap
@@ -24,6 +27,8 @@ from mrpt.obs._bindings import TIMUDataIndex as TIMUDataIndex
 from mrpt.obs._bindings import TMapGenericParams as TMapGenericParams
 from mrpt.obs._bindings import TMetricMapInitializer as TMetricMapInitializer
 from mrpt.obs._bindings import TSetOfMetricMapInitializers as TSetOfMetricMapInitializers
+from mrpt.obs._bindings import VelodyneCalibration as VelodyneCalibration
+from mrpt.obs._bindings import VelodyneGeneratePointCloudParameters as VelodyneGeneratePointCloudParameters
 from mrpt.obs._bindings import gnss as gnss
 from . import _bindings
-__all__: list = ['CObservation', 'CObservation2DRangeScan', 'CObservation3DRangeScan', 'T3DPointsProjectionParams', 'CObservationGPS', 'GnssFixType', 'gnss', 'CObservationImage', 'CObservationIMU', 'TIMUDataIndex', 'CObservationOdometry', 'CObservationRobotPose', 'CAction', 'CActionRobotMovement2D', 'CActionRobotMovement3D', 'CActionCollection', 'CSensoryFrame', 'CRawlog', 'CSimpleMap', 'TMapGenericParams', 'TMetricMapInitializer', 'TSetOfMetricMapInitializers']
+__all__: list = ['CObservation', 'CObservation2DRangeScan', 'CObservation3DRangeScan', 'T3DPointsProjectionParams', 'CObservationGPS', 'GnssFixType', 'gnss', 'CObservationImage', 'CObservationStereoImages', 'CObservationVelodyneScan', 'CObservationRotatingScan', 'VelodyneCalibration', 'VelodyneGeneratePointCloudParameters', 'CObservationIMU', 'TIMUDataIndex', 'CObservationOdometry', 'CObservationRobotPose', 'CAction', 'CActionRobotMovement2D', 'CActionRobotMovement3D', 'CActionCollection', 'CSensoryFrame', 'CRawlog', 'CSimpleMap', 'TMapGenericParams', 'TMetricMapInitializer', 'TSetOfMetricMapInitializers']
