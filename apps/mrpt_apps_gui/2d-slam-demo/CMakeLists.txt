@@ -5,42 +5,26 @@ cmake_minimum_required(VERSION 3.16)
 
 project(2d-slam-demo)
 
-# Basic MRPT infrastructure
 find_package(mrpt_common REQUIRED)
 
-# Dependencies
-find_package(mrpt_gui REQUIRED)
 find_package(mrpt_slam REQUIRED)
-find_package(CLI11 REQUIRED)
-# This app uses Eigen directly (mrpt::math::multiply_HCHt requires <Eigen/Dense>
-# in the calling translation unit):
-find_package(Eigen3 REQUIRED)
-mrpt_find_wxwidgets()
-if(NOT wxWidgets_FOUND)
-  message(STATUS "wxWidgets not found — skipping ${PROJECT_NAME}")
+find_package(mrpt_imgui QUIET)
+if(NOT mrpt_imgui_FOUND)
+  message(STATUS "mrpt_imgui not found (built without GLFW?): skipping ${PROJECT_NAME}")
   return()
 endif()
+find_package(CLI11 REQUIRED)
 
-# Define the executable target:
 mrpt_add_executable(
   TARGET ${PROJECT_NAME}
-  SOURCES 
-    slamdemoApp.cpp
-    slamdemoApp.h
-    slamdemoMain.cpp
-    slamdemoMain.h
-    batch_experiments.cpp
-    CDlgParams.cpp
-    CDlgParams.h
-    CLogView.cpp
-    CLogView.h
+  SOURCES
+    2d-slam-demo_main.cpp
+    SlamDemoApp.cpp
+    SlamDemoApp.h
+    SlamDemoSimulator.cpp
+    SlamDemoSimulator.h
   LINK_LIBRARIES
-    mrpt::mrpt_gui
+    mrpt::mrpt_imgui
     mrpt::mrpt_slam
     CLI11::CLI11
-    wxWidgets::wxWidgets
-    Eigen3::Eigen
 )
-
-
-#AppStartMenuLink(${PROJECT_NAME} "2D KF-SLAM Simulator")   # Add link to the Start menu (in Windows Installable packages)

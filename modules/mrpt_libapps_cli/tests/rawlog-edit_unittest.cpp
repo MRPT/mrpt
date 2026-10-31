@@ -604,3 +604,67 @@ TEST_F(RawlogEditCLITest, OutputOverwrite_RequiresFlag)
   const auto r3 = run({"--cut", "--from-index", "0", "-i", in, "-o", out, "-q", "-w"});
   EXPECT_EQ(r3.exitCode, 0);
 }
+
+// ===========================================================================
+// Decimation, compaction and format conversions
+// ===========================================================================
+
+TEST_F(RawlogEditCLITest, Decimate_LocalizationDemo)
+{
+  const auto in = datasetCopy("localization_demo.rawlog");
+  const auto out = m_tempDir + "/dec.rawlog";
+  const auto r = run({"--decimate", "4", "-i", in, "-o", out, "-q"});
+  EXPECT_EQ(r.exitCode, 0);
+
+  const auto info = run({"--info", "-i", out, "-q"});
+  EXPECT_EQ(info.exitCode, 0);
+  // 37 sensory frames, one out of each 4 kept, each with its action:
+  EXPECT_NE(info.output.find("Overall number of objects         : 18"), std::string::npos);
+}
+
+TEST_F(RawlogEditCLITest, LosslessDecimateAndCompact_LocalizationDemo)
+{
+  const auto in = datasetCopy("localization_demo.rawlog");
+  const auto out1 = m_tempDir + "/ld.rawlog";
+  EXPECT_EQ(run({"--lossless-decimate", "3", "-i", in, "-o", out1, "-q"}).exitCode, 0);
+  EXPECT_TRUE(mrpt::system::fileExists(out1));
+
+  const auto out2 = m_tempDir + "/cp.rawlog";
+  EXPECT_EQ(run({"--compact", "-i", in, "-o", out2, "-q"}).exitCode, 0);
+  EXPECT_TRUE(mrpt::system::fileExists(out2));
+}
+
+TEST_F(RawlogEditCLITest, ObservationsOnlyRoundTrip_TestRtkPath)
+{
+  const auto in = datasetCopy("test_rtk_path.rawlog");
+  const auto oo = m_tempDir + "/oo.rawlog";
+  EXPECT_EQ(run({"--to-observations-only", "-i", in, "-o", oo, "-q"}).exitCode, 0);
+
+  const auto st = m_tempDir + "/st.rawlog";
+  EXPECT_EQ(run({"--sort-by-timestamp", "-i", oo, "-o", st, "-q"}).exitCode, 0);
+
+  const auto sf = m_tempDir + "/sf.rawlog";
+  EXPECT_EQ(run({"--to-sensory-frames", "0.2", "-i", st, "-o", sf, "-q"}).exitCode, 0);
+  EXPECT_TRUE(mrpt::system::fileExists(sf));
+
+  // Sensory-frame based input is rejected:
+  EXPECT_NE(run({"--to-sensory-frames", "0.2", "-i", sf, "-o", oo, "-q", "-w"}).exitCode, 0);
+}
+
+TEST_F(RawlogEditCLITest, SortByTimestamp_NoTimestamps_Fails)
+{
+  // localization_demo.rawlog has no valid timestamps.
+  const auto in = datasetCopy("localization_demo.rawlog");
+  const auto oo = m_tempDir + "/oo.rawlog";
+  EXPECT_EQ(run({"--to-observations-only", "-i", in, "-o", oo, "-q"}).exitCode, 0);
+  EXPECT_NE(
+      run({"--sort-by-timestamp", "-i", oo, "-o", m_tempDir + "/st.rawlog", "-q"}).exitCode, 0);
+}
+
+TEST_F(RawlogEditCLITest, Decimate_MalformedValue_Fails)
+{
+  const auto in = datasetCopy("localization_demo.rawlog");
+  const auto out = m_tempDir + "/dec.rawlog";
+  EXPECT_NE(run({"--decimate", "-1", "-i", in, "-o", out, "-q"}).exitCode, 0);
+  EXPECT_NE(run({"--decimate", "4abc", "-i", in, "-o", out, "-q", "-w"}).exitCode, 0);
+}

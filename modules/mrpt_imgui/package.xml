@@ -3,7 +3,7 @@
 <package format="3">
   <name>mrpt_imgui</name>
   <version>3.6.0</version>
-  <description>The MRPT C++ library mrpt_imgui, wrapping rendering objects as a Dear ImGUI component</description>
+  <description>The MRPT C++ library mrpt_imgui: a Dear ImGui application framework (app shell with docking panels, 3D scene views, timeline, plots, image views, log console and file dialogs)</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
   <license file="LICENSE">BSD</license>
