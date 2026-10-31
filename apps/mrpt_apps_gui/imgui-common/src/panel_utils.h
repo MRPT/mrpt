@@ -61,17 +61,20 @@ ObservationPanelFactory factory()
   return []() { return std::make_unique<PANEL>(); };
 }
 
-/** Shows `img`, a member of `o`, in `view`. Externally-stored images are
- * loaded, copied, and unloaded again to keep memory usage low. Returns an
- * error message, or an empty string on success. */
-inline std::string setImageFrom(
-    mrpt::imgui::CImGuiImageView& view, mrpt::obs::CObservation& o, const mrpt::img::CImage& img)
+/** Shows `img` in `view`. An externally-stored image is loaded, copied, and
+ * unloaded again (only that image, not the rest of its observation), to keep
+ * memory usage low. Returns an error message, or an empty string on success. */
+inline std::string setImageFrom(mrpt::imgui::CImGuiImageView& view, const mrpt::img::CImage& img)
 {
   try
   {
-    o.load();
+    const bool external = img.isExternallyStored();
+    if (external)
+    {
+      img.forceLoad();
+    }
     view.setImage(img.makeDeepCopy());
-    if (img.isExternallyStored())
+    if (external)
     {
       img.unload();
     }

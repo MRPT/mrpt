@@ -8,12 +8,12 @@ project(holonomic-navigator-demo)
 find_package(mrpt_common REQUIRED)
 
 find_package(mrpt_nav REQUIRED)
-find_package(CLI11 REQUIRED)
 find_package(mrpt_imgui QUIET)
 if(NOT mrpt_imgui_FOUND)
   message(STATUS "mrpt_imgui not found (built without GLFW?): skipping ${PROJECT_NAME}")
   return()
 endif()
+find_package(CLI11 REQUIRED)
 
 mrpt_add_executable(
   TARGET ${PROJECT_NAME}

@@ -172,7 +172,7 @@ void RawLogViewerApp::newDocument()
 
 void RawLogViewerApp::confirmDiscardChanges(std::function<void()> then)
 {
-  if (!m_doc->modified)
+  if (!m_docState.modified)
   {
     then();
     return;
@@ -190,10 +190,10 @@ void RawLogViewerApp::startDocTask(
     m_msgs.warning("Busy", "Another operation is still running.");
     return;
   }
-  m_taskTitle = title;
   // The app outlives the task (the destructor waits for it), so the result
   // closure can use `this`:
-  m_task.start(
+  queueTask(
+      title,
       [this, doc = m_doc, op = std::move(op),
        title](mrpt::imgui::AsyncTaskContext& ctx) -> std::function<void()>
       {
@@ -230,8 +230,8 @@ void RawLogViewerApp::startLoad(const std::string& file, const RawlogDocument::L
     m_msgs.warning("Busy", "Another operation is still running.");
     return;
   }
-  m_taskTitle = "Loading " + mrpt::system::extractFileName(file);
-  m_task.start(
+  queueTask(
+      "Loading " + mrpt::system::extractFileName(file),
       [this, file, opts](mrpt::imgui::AsyncTaskContext& ctx) -> std::function<void()>
       {
         try
@@ -296,11 +296,36 @@ void RawLogViewerApp::startSave(const std::string& file)
   addRecentFile(file);
 }
 
+void RawLogViewerApp::queueTask(
+    const std::string& title, mrpt::imgui::AsyncTask<std::function<void()>>::worker_t worker)
+{
+  m_taskTitle = title;
+  m_pendingTask = std::move(worker);
+}
+
+void RawLogViewerApp::refreshDocState()
+{
+  m_docState.entries = m_doc->rawlog.size();
+  m_docState.fileName = m_doc->fileName;
+  m_docState.modified = m_doc->modified;
+}
+
 void RawLogViewerApp::pollTask()
 {
   if (auto r = m_task.poll(); r && *r)
   {
     (*r)();
+  }
+  if (m_task.isRunning())
+  {
+    return;
+  }
+  refreshDocState();
+  if (m_pendingTask)
+  {
+    auto worker = std::move(m_pendingTask);
+    m_pendingTask = nullptr;
+    m_task.start(std::move(worker));
   }
 }
 
@@ -732,7 +757,7 @@ void RawLogViewerApp::askOpParam(
 void RawLogViewerApp::renderMainMenu()
 {
   using mrpt::apps::rawlog_ops::progress_callback_t;
-  const bool hasDoc = !m_doc->rawlog.empty();
+  const bool hasDoc = m_docState.entries != 0;
   const bool idle = !busy();
 
   if (ImGui::BeginMenu("File"))
@@ -772,9 +797,9 @@ void RawLogViewerApp::renderMainMenu()
           });
     }
     if (ImGui::MenuItem(
-            ICON_MS_RESTART_ALT " Revert", nullptr, false, idle && !m_doc->fileName.empty()))
+            ICON_MS_RESTART_ALT " Revert", nullptr, false, idle && !m_docState.fileName.empty()))
     {
-      confirmDiscardChanges([this]() { startLoad(m_doc->fileName); });
+      confirmDiscardChanges([this]() { startLoad(m_docState.fileName); });
     }
     ImGui::Separator();
     if (ImGui::MenuItem(ICON_MS_SAVE_AS " Save as...", "Ctrl+S", false, idle && hasDoc))
@@ -782,7 +807,7 @@ void RawLogViewerApp::renderMainMenu()
       m_fileDlg.tag = TAG_SAVE;
       m_fileDlg.open(
           CImGuiFileDialog::Mode::Save, "Save rawlog as", RAWLOG_FILTERS,
-          m_doc->fileName.empty() ? lastDir() : m_doc->fileName);
+          m_docState.fileName.empty() ? lastDir() : m_docState.fileName);
     }
     ImGui::Separator();
     if (ImGui::MenuItem(ICON_MS_CLOSE " Quit"))
@@ -790,7 +815,7 @@ void RawLogViewerApp::renderMainMenu()
       confirmDiscardChanges(
           [this]()
           {
-            m_doc->modified = false;
+            m_quitConfirmed = true;
             m_app.requestClose();
           });
     }
@@ -822,13 +847,23 @@ void RawLogViewerApp::renderMainMenu()
           title,
           [fn](RawlogDocument& doc, mrpt::imgui::AsyncTaskContext& ctx)
           {
-            auto msg = fn(doc.rawlog, progressOf(ctx));
-            if (ctx.cancelRequested())
+            // Only an operation that stopped early left the rawlog intact:
+            bool aborted = false;
+            const auto inner = progressOf(ctx);
+            auto msg =
+                fn(doc.rawlog,
+                   [&aborted, &inner](double f)
+                   {
+                     const bool ok = inner(f);
+                     aborted = aborted || !ok;
+                     return ok;
+                   });
+            doc.rebuildIndex();
+            if (aborted)
             {
               return std::string("Cancelled.");
             }
             doc.modified = true;
-            doc.rebuildIndex();
             return msg;
           });
     };
@@ -1021,7 +1056,7 @@ void RawLogViewerApp::renderToolbar()
   if (ImGui::BeginViewportSideBar("##toolbar", ImGui::GetMainViewport(), ImGuiDir_Up, h, flags))
   {
     const bool idle = !busy();
-    const bool hasDoc = !m_doc->rawlog.empty();
+    const bool hasDoc = m_docState.entries != 0;
     const auto button = [](const char* label, const char* tip, bool enabled = true)
     {
       ImGui::BeginDisabled(!enabled);
@@ -1071,7 +1106,7 @@ void RawLogViewerApp::renderToolbar()
       m_fileDlg.tag = TAG_SAVE;
       m_fileDlg.open(
           CImGuiFileDialog::Mode::Save, "Save rawlog as", RAWLOG_FILTERS,
-          m_doc->fileName.empty() ? lastDir() : m_doc->fileName);
+          m_docState.fileName.empty() ? lastDir() : m_docState.fileName);
     }
     sep();
     toggle(ICON_MS_EDIT " Edit", &m_showEdit, "Edit the rawlog: ranges, sensors, classes...");
@@ -1108,12 +1143,12 @@ void RawLogViewerApp::renderStatusBar()
     {
       ImGui::TextUnformatted(m_statusMsg.c_str());
     }
-    if (m_curEntry && !m_doc->rawlog.empty())
+    if (m_curEntry && m_docState.entries != 0)
     {
       ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.65f);
       ImGui::Text(
-          "Entry %zu / %zu%s", *m_curEntry, m_doc->rawlog.size(),
-          m_doc->modified ? "  | " ICON_MS_EDIT " modified" : "");
+          "Entry %zu / %zu%s", *m_curEntry, m_docState.entries,
+          m_docState.modified ? "  | " ICON_MS_EDIT " modified" : "");
     }
   }
   mrpt::imgui::endStatusBar();
@@ -1144,6 +1179,7 @@ void RawLogViewerApp::renderTaskProgress()
       }
       if (ImGui::Button(ICON_MS_CLOSE " Cancel"))
       {
+        m_pendingTask = nullptr;
         m_task.cancelAndWait();
         m_statusMsg = m_taskTitle + ": cancelled.";
         m_console.push(mrpt::system::LVL_WARN, "task", m_statusMsg);
@@ -1373,12 +1409,12 @@ void RawLogViewerApp::handleKeyboard()
           m_fileDlg.open(CImGuiFileDialog::Mode::Open, "Open rawlog", RAWLOG_FILTERS, lastDir());
         });
   }
-  if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_S) && !busy() && !m_doc->rawlog.empty())
+  if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_S) && !busy() && m_docState.entries != 0)
   {
     m_fileDlg.tag = TAG_SAVE;
     m_fileDlg.open(
         CImGuiFileDialog::Mode::Save, "Save rawlog as", RAWLOG_FILTERS,
-        m_doc->fileName.empty() ? lastDir() : m_doc->fileName);
+        m_docState.fileName.empty() ? lastDir() : m_docState.fileName);
   }
 }
 
@@ -1427,10 +1463,10 @@ void RawLogViewerApp::renderFrame()
   {
     static std::string lastTitle;
     std::string title = APP_NAME;
-    if (!m_doc->fileName.empty())
+    if (!m_docState.fileName.empty())
     {
-      title = mrpt::system::extractFileName(m_doc->fileName) + (m_doc->modified ? " *" : "") +
-              " - " + title;
+      title = mrpt::system::extractFileName(m_docState.fileName) +
+              (m_docState.modified ? " *" : "") + " - " + title;
     }
     if (title != lastTitle)
     {
@@ -1528,14 +1564,14 @@ int RawLogViewerApp::run(const std::string& fileToOpen)
   };
   m_app.onCloseRequest = [this]()
   {
-    if (!m_doc->modified)
+    if (m_quitConfirmed || !m_docState.modified)
     {
       return true;
     }
     confirmDiscardChanges(
         [this]()
         {
-          m_doc->modified = false;
+          m_quitConfirmed = true;
           m_app.requestClose();
         });
     return false;

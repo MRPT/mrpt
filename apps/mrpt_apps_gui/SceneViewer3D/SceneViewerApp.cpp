@@ -486,14 +486,16 @@ void SceneViewerApp::applyLoadResult(LoadResult r)
     cam.setCameraPointing(
         sceneCam->getPointingAtX(), sceneCam->getPointingAtY(), sceneCam->getPointingAtZ());
 
-    // Unless loaded as part of a sequence with "free camera", take its camera:
-    if (!r.isInASequence || !m_freeCameraAlways || !m_freeCameraAlwaysNoAzimuth)
+    // Take the camera of the file, unless moving through a sequence with
+    // "keep the camera" (all of it, or only zoom and elevation):
+    const bool keepCamera = r.isInASequence && m_freeCameraAlways;
+    if (!keepCamera)
     {
-      if (!m_freeCameraAlwaysNoAzimuth)
-      {
-        cam.setZoomDistance(sceneCam->getZoomDistance());
-        cam.setElevationDegrees(sceneCam->getElevationDegrees());
-      }
+      cam.setZoomDistance(sceneCam->getZoomDistance());
+      cam.setElevationDegrees(sceneCam->getElevationDegrees());
+    }
+    if (!keepCamera || m_freeCameraAlwaysNoAzimuth)
+    {
       cam.setAzimuthDegrees(sceneCam->getAzimuthDegrees());
     }
     if (camIsObject)
@@ -1331,7 +1333,10 @@ void SceneViewerApp::renderViewPanel()
     mrpt::imgui::tooltip(
         "When moving through a sequence of files, keep the current camera "
         "zoom, elevation and azimuth instead of the ones saved in the files.");
+    ImGui::BeginDisabled(!m_freeCameraAlways);
     ImGui::Checkbox("Keep zoom and elevation only", &m_freeCameraAlwaysNoAzimuth);
+    mrpt::imgui::tooltip("Keep the zoom and elevation, but take the azimuth from each file.");
+    ImGui::EndDisabled();
   }
   ImGui::PopItemWidth();
   ImGui::End();
@@ -1509,12 +1514,13 @@ void SceneViewerApp::renderTravellingPanel()
       m_travellingT = m_path.front().t;
       m_travelling = Travelling::Path;
     }
-    if (m_travelling == Travelling::Path)
+    // The path may have been emptied in this frame:
+    if (m_travelling == Travelling::Path && !m_path.empty())
     {
       ImGui::SameLine();
+      const double span = m_path.back().t - m_path.front().t;
       ImGui::ProgressBar(
-          static_cast<float>(
-              m_path.back().t > 0 ? (m_travellingT - m_path.front().t) / m_path.back().t : 0.0),
+          static_cast<float>(span > 0 ? (m_travellingT - m_path.front().t) / span : 0.0),
           ImVec2(-1, 0));
     }
     ImGui::PopID();
@@ -1637,6 +1643,7 @@ void SceneViewerApp::renderPopups()
           wanted.insert(m_vizClassNames[i]);
         }
       }
+      m_selected.clear();
       m_scene->visitAllObjects(
           [&](const mrpt::viz::CVisualObject::Ptr& o)
           {

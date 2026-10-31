@@ -17,6 +17,9 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <sstream>
+#include <type_traits>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
@@ -67,9 +70,11 @@ T requiredValue(CLI::App& cmdline, const std::string& name)
   {
     THROW_EXCEPTION_FMT("Missing value for --%s", name.c_str());
   }
+  // The whole text must be a number, and not negative for unsigned types:
   std::istringstream ss(s);
   T v{};
-  if (!(ss >> v))
+  const bool negativeUnsigned = std::is_unsigned_v<T> && s.find('-') != std::string::npos;
+  if (negativeUnsigned || !(ss >> v) || !(ss >> std::ws).eof())
   {
     THROW_EXCEPTION_FMT("Invalid value for --%s: '%s'", name.c_str(), s.c_str());
   }

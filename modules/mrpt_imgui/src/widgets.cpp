@@ -61,8 +61,13 @@ void CImGuiMessageQueue::render()
     ImGui::TextUnformatted(m.text.c_str());
     ImGui::PopTextWrapPos();
     ImGui::Spacing();
-    if (ImGui::Button("OK", ImVec2(ImGui::GetFontSize() * 6, 0)) ||
-        ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_Escape))
+    // Keys are ignored in the frame the message appears, so the key press
+    // that caused it does not close it at once (and without repeat, holding
+    // a key does not close several messages):
+    const bool keyClose =
+        !ImGui::IsWindowAppearing() &&
+        (ImGui::IsKeyPressed(ImGuiKey_Enter, false) || ImGui::IsKeyPressed(ImGuiKey_Escape, false));
+    if (ImGui::Button("OK", ImVec2(ImGui::GetFontSize() * 6, 0)) || keyClose)
     {
       ImGui::CloseCurrentPopup();
       m_queue.pop_front();

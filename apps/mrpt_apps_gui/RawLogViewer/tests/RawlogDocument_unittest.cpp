@@ -77,7 +77,7 @@ RawlogDocument makeSFDoc(size_t N)
   {
     CActionCollection acts;
     CActionRobotMovement2D mov;
-    CActionRobotMovement2D::TMotionModelOptions opts;
+    const CActionRobotMovement2D::TMotionModelOptions opts;
     mov.computeFromOdometry(mrpt::poses::CPose2D(1.0, 0, 0), opts);
     mov.timestamp = INVALID_TIMESTAMP;
     acts.insert(mov);
@@ -108,7 +108,10 @@ TEST(RawlogDocument, IndexWithTimestamps)
 
   // Timeline lookups:
   const auto e = d.entryAtTime(0.55);
-  ASSERT_TRUE(e.has_value());
+  if (!e.has_value())
+  {
+    GTEST_FAIL() << "e has no value";
+  }
   EXPECT_NEAR(d.entryTime(*e), 0.51, 1e-6);  // the odometry at 0.51
 
   auto imu = std::dynamic_pointer_cast<CObservationIMU>(d.latestObservation("imu", 0.55));
@@ -140,7 +143,10 @@ TEST(RawlogDocument, SaveAndLoad)
 
   std::vector<std::string> warnings;
   auto loaded = RawlogDocument::load(file, {}, {}, warnings);
-  ASSERT_TRUE(loaded.has_value());
+  if (!loaded.has_value())
+  {
+    GTEST_FAIL() << "loaded has no value";
+  }
   EXPECT_TRUE(warnings.empty());
   EXPECT_EQ(loaded->rawlog.size(), d.rawlog.size());
   EXPECT_EQ(loaded->rawlog.getCommentText(), "hello");
@@ -151,8 +157,13 @@ TEST(RawlogDocument, SaveAndLoad)
   opts.firstEntry = 2;
   opts.maxEntries = 5;
   auto part = RawlogDocument::load(file, opts, {}, warnings);
-  ASSERT_TRUE(part.has_value());
+  if (!part.has_value())
+  {
+    GTEST_FAIL() << "part has no value";
+  }
   EXPECT_EQ(part->rawlog.size(), 5u);
+  // The comments are not an entry: the part starts at entry 2.
+  EXPECT_EQ(part->rawlog.getAsObservation(0)->timestamp, d.rawlog.getAsObservation(2)->timestamp);
 
   // Cancelled:
   auto cancelled = RawlogDocument::load(
@@ -211,8 +222,12 @@ TEST(RawlogDocument, EditSensoryFrames)
   CActionRobotMovement2D::TMotionModelOptions opts;
   opts.gaussianModel.minStdXY = 0.5;
   EXPECT_EQ(d2.setMotionModel(opts, 0, 3), 2u);  // entries 0 and 2
-  ASSERT_TRUE(d2.firstMotionModel().has_value());
-  EXPECT_NEAR(d2.firstMotionModel()->gaussianModel.minStdXY, 0.5, 1e-9);
+  const auto mm = d2.firstMotionModel();
+  if (!mm.has_value())
+  {
+    GTEST_FAIL() << "no motion model";
+  }
+  EXPECT_NEAR(mm->gaussianModel.minStdXY, 0.5, 1e-9);
 }
 
 TEST(RawlogDocument, BatchSensorPoses)
@@ -235,7 +250,7 @@ TEST(RawlogDocument, ExportToText)
   const auto d = makeObsOnlyDoc();
   const auto file = mrpt::system::getTempFileName() + ".txt";
   EXPECT_EQ(d.exportToText("mrpt::obs::CObservationOdometry", "", file), 4u);
-  std::ifstream f(file);
+  const std::ifstream f(file);
   std::stringstream ss;
   ss << f.rdbuf();
   const auto s = ss.str();

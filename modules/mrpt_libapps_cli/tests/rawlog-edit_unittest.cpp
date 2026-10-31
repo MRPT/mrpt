@@ -660,3 +660,11 @@ TEST_F(RawlogEditCLITest, SortByTimestamp_NoTimestamps_Fails)
   EXPECT_NE(
       run({"--sort-by-timestamp", "-i", oo, "-o", m_tempDir + "/st.rawlog", "-q"}).exitCode, 0);
 }
+
+TEST_F(RawlogEditCLITest, Decimate_MalformedValue_Fails)
+{
+  const auto in = datasetCopy("localization_demo.rawlog");
+  const auto out = m_tempDir + "/dec.rawlog";
+  EXPECT_NE(run({"--decimate", "-1", "-i", in, "-o", out, "-q"}).exitCode, 0);
+  EXPECT_NE(run({"--decimate", "4abc", "-i", in, "-o", out, "-q", "-w"}).exitCode, 0);
+}

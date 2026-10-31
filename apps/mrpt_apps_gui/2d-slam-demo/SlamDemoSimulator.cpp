@@ -407,6 +407,7 @@ void SlamDemoSimulator::step()
 
 size_t SlamDemoSimulator::defaultBatchSteps() const
 {
+  ASSERT_GT_(options.robot_step_length, 0.0);
   return static_cast<size_t>(std::round(6 * options.path_square_len / options.robot_step_length));
 }
 

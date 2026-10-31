@@ -35,36 +35,55 @@ namespace
 {
 struct ScopedConfigHome
 {
+#if defined(_WIN32)
+  static constexpr const char* VAR = "APPDATA";
+#else
+  static constexpr const char* VAR = "XDG_CONFIG_HOME";
+#endif
   std::filesystem::path dir;
   std::string old;
   bool hadOld = false;
 
+  // The config directory comes from this variable on each platform:
   ScopedConfigHome()
   {
     dir = std::filesystem::temp_directory_path() / "mrpt_imgui_shell_test";
     std::filesystem::remove_all(dir);
-#if !defined(_WIN32)
-    if (const char* o = std::getenv("XDG_CONFIG_HOME"); o != nullptr)
+    if (const char* o = std::getenv(VAR); o != nullptr)
     {
       old = o;
       hadOld = true;
     }
-    ::setenv("XDG_CONFIG_HOME", dir.string().c_str(), 1);
-#endif
+    setVar(dir.string());
   }
   ~ScopedConfigHome()
   {
-#if !defined(_WIN32)
     if (hadOld)
     {
-      ::setenv("XDG_CONFIG_HOME", old.c_str(), 1);
+      setVar(old);
     }
     else
     {
-      ::unsetenv("XDG_CONFIG_HOME");
-    }
+#if defined(_WIN32)
+      _putenv_s(VAR, "");
+#else
+      ::unsetenv(VAR);
 #endif
+    }
     std::filesystem::remove_all(dir);
+  }
+  ScopedConfigHome(const ScopedConfigHome&) = delete;
+  ScopedConfigHome& operator=(const ScopedConfigHome&) = delete;
+  ScopedConfigHome(ScopedConfigHome&&) = delete;
+  ScopedConfigHome& operator=(ScopedConfigHome&&) = delete;
+
+  static void setVar(const std::string& value)
+  {
+#if defined(_WIN32)
+    _putenv_s(VAR, value.c_str());
+#else
+    ::setenv(VAR, value.c_str(), 1);
+#endif
   }
 };
 

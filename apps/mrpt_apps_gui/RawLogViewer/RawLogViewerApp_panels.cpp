@@ -1024,12 +1024,12 @@ void RawLogViewerApp::renderRawMapPanel()
     ImGui::BeginDisabled(m_doc->rawlog.empty());
     if (ImGui::Button(ICON_MS_PLAY_ARROW " Generate"))
     {
-      m_taskTitle = "Building the raw map";
       const auto cfg = m_rawMapConfig;
       const auto first = static_cast<size_t>(m_rawMapRange[0]);
       const auto last = static_cast<size_t>(m_rawMapRange[1]);
       const auto decimation = static_cast<size_t>(m_rawMapDecimation);
-      m_task.start(
+      queueTask(
+          "Building the raw map",
           [this, doc = m_doc, cfg, first, last,
            decimation](mrpt::imgui::AsyncTaskContext& ctx) -> std::function<void()>
           {

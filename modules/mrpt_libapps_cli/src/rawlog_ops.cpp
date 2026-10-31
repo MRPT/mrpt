@@ -480,9 +480,12 @@ size_t shiftTimestamps(CRawlog& rawlog, const std::vector<std::string>& labels, 
 {
   const auto dt =
       std::chrono::duration_cast<mrpt::Clock::duration>(std::chrono::duration<double>(seconds));
+  // Invalid timestamps stay invalid:
   const auto selected = [&](const CObservation& o)
   {
-    return labels.empty() || std::find(labels.begin(), labels.end(), o.sensorLabel) != labels.end();
+    return o.timestamp != INVALID_TIMESTAMP &&
+           (labels.empty() ||
+            std::find(labels.begin(), labels.end(), o.sensorLabel) != labels.end());
   };
 
   size_t n = 0;

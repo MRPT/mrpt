@@ -73,6 +73,19 @@ class RawLogViewerApp
    * the document. */
   mrpt::imgui::AsyncTask<std::function<void()>> m_task;
   std::string m_taskTitle;
+  /** A task to start at the top of the next frame, so it never runs while
+   * the rest of the current frame reads the document. */
+  mrpt::imgui::AsyncTask<std::function<void()>>::worker_t m_pendingTask;
+
+  /** What the always-visible parts of the GUI (menus, toolbar, status bar,
+   * title) show about the document. Refreshed only while no task runs. */
+  struct DocState
+  {
+    size_t entries = 0;
+    std::string fileName;
+    bool modified = false;
+  };
+  DocState m_docState;
 
   // --- Selection ---
   /** Selected top-level entry. */
@@ -196,7 +209,7 @@ class RawLogViewerApp
   bool m_opParamNeedsLabel = false;
   bool m_openTipsPopup = false;
   bool m_openUnsavedPopup = false;
-  bool m_closeAfterSave = false;
+  bool m_quitConfirmed = false;
   bool m_inSelect = false;
 
   // Methods: files and tasks
@@ -256,5 +269,10 @@ class RawLogViewerApp
       bool needsLabel,
       std::function<void(double, const std::string&)> apply);
   void rebuildTreeRows();
-  [[nodiscard]] bool busy() const { return m_task.isRunning(); }
+  /** A task is running, or about to start. */
+  [[nodiscard]] bool busy() const { return m_task.isRunning() || m_pendingTask != nullptr; }
+  /** Queues a background task (see m_pendingTask). */
+  void queueTask(
+      const std::string& title, mrpt::imgui::AsyncTask<std::function<void()>>::worker_t worker);
+  void refreshDocState();
 };

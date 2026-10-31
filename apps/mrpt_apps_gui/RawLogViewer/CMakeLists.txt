@@ -11,12 +11,12 @@ find_package(mrpt_common REQUIRED)
 # Dependencies
 find_package(mrpt_libapps_cli REQUIRED)
 find_package(mrpt_topography REQUIRED)
-find_package(CLI11 REQUIRED)
 find_package(mrpt_imgui QUIET)
 if(NOT mrpt_imgui_FOUND OR NOT TARGET mrpt_apps::imgui_common)
   message(STATUS "mrpt_imgui not found (built without GLFW?): skipping ${PROJECT_NAME}")
   return()
 endif()
+find_package(CLI11 REQUIRED)
 
 set(RLV_DOC_SOURCES
   RawlogDocument.cpp

@@ -33,14 +33,15 @@ void doBatchExperiment(SlamDemoSimulator& sim, const std::string& cfgFile, bool 
   sim.loadConfig(cfgFile);
   sim.reset();
 
+  if (!run)
+  {
+    return;  // only load the config: no statistics to report
+  }
   const size_t nSteps = sim.defaultBatchSteps();
   mrpt::system::CTicTac const tim;
-  if (run)
+  for (size_t i = 0; i < nSteps; i++)
   {
-    for (size_t i = 0; i < nSteps; i++)
-    {
-      sim.step();
-    }
+    sim.step();
   }
   const auto st = sim.computeStats(tim.Tac());
 

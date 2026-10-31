@@ -38,7 +38,7 @@ class ImagePanel : public TypedPanel<mrpt::obs::CObservationImage>
   {
     if (changed)
     {
-      m_error = detail::setImageFrom(m_view, o, o.image);
+      m_error = detail::setImageFrom(m_view, o.image);
     }
     if (!m_error.empty())
     {
@@ -69,16 +69,16 @@ class StereoImagesPanel : public TypedPanel<mrpt::obs::CObservationStereoImages>
   {
     if (changed)
     {
-      m_error = detail::setImageFrom(m_left, o, o.imageLeft);
+      m_error = detail::setImageFrom(m_left, o.imageLeft);
       m_hasRight = o.hasImageRight;
       m_hasDisparity = o.hasImageDisparity;
       if (m_error.empty() && m_hasRight)
       {
-        m_error = detail::setImageFrom(m_right, o, o.imageRight);
+        m_error = detail::setImageFrom(m_right, o.imageRight);
       }
       if (m_error.empty() && m_hasDisparity)
       {
-        m_error = detail::setImageFrom(m_disparity, o, o.imageDisparity);
+        m_error = detail::setImageFrom(m_disparity, o.imageDisparity);
       }
     }
     if (!m_error.empty())

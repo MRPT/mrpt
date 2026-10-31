@@ -239,8 +239,11 @@ TEST(rawlog_ops, sortShiftAndRegenerate)
   sf.insert(bad);
   sf.insert(makeObs("y", 7.0));
   r2.insert(sf);
+  // Invalid timestamps are not shifted:
+  EXPECT_EQ(rawlog_ops::shiftTimestamps(r2, {}, 1.0), 1u);
+  EXPECT_EQ(bad->timestamp, INVALID_TIMESTAMP);
   EXPECT_EQ(rawlog_ops::regenerateTimestampsInSensoryFrames(r2), 1u);
-  EXPECT_EQ(bad->timestamp, at(7.0));
+  EXPECT_EQ(bad->timestamp, at(8.0));
 }
 
 TEST(rawlog_ops, progressCanAbort)

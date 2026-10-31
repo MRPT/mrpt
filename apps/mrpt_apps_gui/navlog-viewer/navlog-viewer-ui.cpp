@@ -144,6 +144,8 @@ void NavlogViewerApp::loadLogfile(const std::string& fileName)
     m_logdata.clear();
     m_logdata_ptg_paths.clear();
     m_pastPoses.clear();
+    // The PTGs of another log may differ: rebuild their views.
+    m_mywins3D.clear();
 
     mrpt::rtti::CListOfClasses validClasses;
     validClasses.insert(CLASS_ID(mrpt::nav::CLogFileRecord));
@@ -2058,7 +2060,17 @@ void NavlogViewerApp::renderMainMenu()
     ImGui::MenuItem(PANEL_VIEW, nullptr, &m_showViewOptions);
     ImGui::MenuItem(PANEL_DETAILS, nullptr, &m_showDetails);
     ImGui::MenuItem(PANEL_MANUAL_PICK, nullptr, &m_showManualPick);
-    ImGui::MenuItem(ICON_MS_RADAR " PTG views", nullptr, &m_showPTGViews);
+    if (ImGui::BeginMenu(ICON_MS_RADAR " PTG views"))
+    {
+      ImGui::MenuItem("Show the PTG views", nullptr, &m_showPTGViews);
+      ImGui::Separator();
+      // Reopens views closed with their window button:
+      for (auto& [idx, viz] : m_mywins3D)
+      {
+        ImGui::MenuItem(viz.title.c_str(), nullptr, &viz.open, m_showPTGViews);
+      }
+      ImGui::EndMenu();
+    }
     ImGui::MenuItem(ICON_MS_SHOW_CHART " Velocities", nullptr, &m_showVelPlot);
     ImGui::EndMenu();
   }

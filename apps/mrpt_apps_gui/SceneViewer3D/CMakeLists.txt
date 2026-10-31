@@ -11,12 +11,12 @@ find_package(mrpt_common REQUIRED)
 # Dependencies
 find_package(mrpt_opengl REQUIRED)
 find_package(mrpt_maps REQUIRED)
-find_package(CLI11 REQUIRED)
 find_package(mrpt_imgui QUIET)
 if(NOT mrpt_imgui_FOUND)
   message(STATUS "mrpt_imgui not found (built without GLFW?): skipping ${PROJECT_NAME}")
   return()
 endif()
+find_package(CLI11 REQUIRED)
 
 # Define the executable target:
 mrpt_add_executable(

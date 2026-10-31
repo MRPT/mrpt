@@ -195,9 +195,19 @@ void SlamDemoApp::reset()
 
 void SlamDemoApp::startBatch()
 {
-  m_running = false;
-  const size_t N =
-      static_cast<size_t>(m_sim.options.path_square_len / m_sim.options.robot_step_length) * 4 + 50;
+  // The same experiment as the command line batch mode: from the start, with
+  // the same number of steps.
+  size_t N = 0;
+  try
+  {
+    N = m_sim.defaultBatchSteps();
+  }
+  catch (const std::exception& e)
+  {
+    m_msgs.error("Cannot run the batch experiment", mrpt::exception_to_str(e));
+    return;
+  }
+  reset();
   m_batch.start(
       [this, N](mrpt::imgui::AsyncTaskContext& ctx)
       {

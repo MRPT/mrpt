@@ -43,6 +43,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <filesystem>
 #include <limits>
 #include <numeric>
 #include <sstream>
@@ -120,6 +121,7 @@ std::optional<RawlogDocument> RawlogDocument::load(
 
   RawlogDocument doc;
   doc.fileName = file;
+  size_t entryIdx = 0;  // entries only: comments are not counted
   for (size_t idx = 0;; idx++)
   {
     if (progress && (idx % 64) == 0 &&
@@ -139,7 +141,7 @@ std::optional<RawlogDocument> RawlogDocument::load(
     catch (const std::exception& e)
     {
       warnings.push_back(mrpt::format(
-          "Stopped reading after %zu entries (truncated or corrupted file?):\n%s", idx,
+          "Stopped reading after %zu entries (truncated or corrupted file?):\n%s", entryIdx,
           mrpt::exception_to_str(e).c_str()));
       break;
     }
@@ -159,7 +161,7 @@ std::optional<RawlogDocument> RawlogDocument::load(
       doc.rawlog.insert(obj);
       continue;
     }
-    if (idx < options.firstEntry)
+    if (entryIdx++ < options.firstEntry)
     {
       continue;
     }
@@ -175,9 +177,15 @@ std::optional<RawlogDocument> RawlogDocument::load(
 
 bool RawlogDocument::save(const std::string& file, const progress_callback_t& progress)
 {
-  // Write to a temporary file first, so an aborted save does not destroy
-  // the original file:
+  // Write to a temporary file first, so a failed or aborted save does not
+  // destroy the original file:
   const std::string tmpFile = file + ".tmp";
+  const auto removeTmp = [&tmpFile]()
+  {
+    std::error_code ec;
+    std::filesystem::remove(tmpFile, ec);
+  };
+  try
   {
     mrpt::io::CCompressedOutputStream f;
     if (!f.open(tmpFile))
@@ -197,21 +205,25 @@ bool RawlogDocument::save(const std::string& file, const progress_callback_t& pr
       if (progress && (i % 64) == 0 && !progress(static_cast<double>(i) / static_cast<double>(N)))
       {
         f.close();
-        mrpt::system::deleteFile(tmpFile);
+        removeTmp();
         return false;
       }
       arch << *rawlog.getAsGeneric(i);
     }
   }
-  if (mrpt::system::fileExists(file))
+  catch (...)
   {
-    mrpt::system::deleteFile(file);
+    removeTmp();
+    throw;
   }
-  std::string err;
-  if (!mrpt::system::renameFile(tmpFile, file, &err))
+  // Replaces an existing file (also on Windows):
+  std::error_code ec;
+  std::filesystem::rename(tmpFile, file, ec);
+  if (ec)
   {
+    removeTmp();
     THROW_EXCEPTION_FMT(
-        "Cannot rename '%s' to '%s': %s", tmpFile.c_str(), file.c_str(), err.c_str());
+        "Cannot rename '%s' to '%s': %s", tmpFile.c_str(), file.c_str(), ec.message().c_str());
   }
   fileName = file;
   modified = false;

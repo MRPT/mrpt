@@ -49,6 +49,7 @@
 #include <CLI/CLI.hpp>
 #include <cstdio>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <sstream>
 
@@ -71,6 +72,15 @@ using mrpt::imgui::tooltip;
 namespace
 {
 constexpr const char* APP_NAME = "GridmapNavSimul";
+
+/** Simulation time step [s] (the period of the original app timer). */
+constexpr double SIM_STEP = 0.01;
+
+/** A map center coordinate from the UI: negative means "image center". */
+double centerCoord(float v)
+{
+  return v < 0 ? std::numeric_limits<double>::max() : static_cast<double>(v);
+}
 
 constexpr const char* TAG_LOAD_MAP = "load_map";
 constexpr const char* TAG_OUT_RAWLOG = "out_rawlog";
@@ -142,6 +152,8 @@ class GridmapNavSimulApp
 
   // Simulation:
   mrpt::kinematics::CVehicleSimul_DiffDriven m_robot;
+  /** Simulated time pending to run, in seconds. */
+  double m_simTimeToRun = 0;
   COccupancyGridMap2D m_grid;
   CPose2D m_lastOdo;
   CPose2D m_poseStart;
@@ -754,7 +766,7 @@ void GridmapNavSimulApp::renderPanels()
       }
       else if (!m_grid.loadFromBitmap(
                    img, std::max(1e-4f, m_mapCellSize),
-                   {static_cast<double>(m_mapCenter[0]), static_cast<double>(m_mapCenter[1])}))
+                   {centerCoord(m_mapCenter[0]), centerCoord(m_mapCenter[1])}))
       {
         m_msgs.error("Error", "Can't load the image file into the gridmap.");
       }
@@ -793,7 +805,14 @@ void GridmapNavSimulApp::renderFrame()
 
   try
   {
-    simulateStep(std::min(0.05, static_cast<double>(ImGui::GetIO().DeltaTime)));
+    // Fixed time steps, so the simulation and the recording rate do not
+    // depend on the display frame rate:
+    m_simTimeToRun += std::min(0.25, static_cast<double>(ImGui::GetIO().DeltaTime));
+    while (m_simTimeToRun >= SIM_STEP)
+    {
+      simulateStep(SIM_STEP);
+      m_simTimeToRun -= SIM_STEP;
+    }
   }
   catch (const std::exception& e)
   {
