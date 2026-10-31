@@ -16,6 +16,8 @@
   <depend>mrpt_libapps_cli</depend>
   <depend>mrpt_libapps_gui</depend>
   <depend>mrpt_imgui</depend>
+  <depend>mrpt_imgui_vendor</depend>
+  <depend>libglfw3-dev</depend>
   <depend>mrpt_graphslam</depend>
   <depend>mrpt_kinematics</depend>
   <depend>mrpt_nav</depend>

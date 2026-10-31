@@ -167,11 +167,15 @@ mrpt_add_library(
   (u,v) at the corner of pixel (u,v), not its center: rendered objects appear
   0.5 px up-left of `camera_geometry` projections. `CFBORender` lens
   distortion follows the same convention.
-* **mrpt_imgui**: the ImGui-dependent methods of `CImGuiSceneView` are inline
-  in its header (compiled only in user code that has `imgui.h`); the library
-  itself does not link ImGui. `renderAsBackground()` draws from an ImGui draw
-  callback straight into the bound framebuffer (feature macro
-  `MRPT_IMGUI_HAS_BACKGROUND_SCENE_VIEW`).
+* **mrpt_imgui**: the shared framework of the ImGui apps (app shell with
+  docking, background scene, timeline, image/plot/log panels, file dialogs,
+  `AsyncTask`). It links Dear ImGui + ImPlot PUBLIC from `mrpt_imgui_vendor`
+  (static library; both packages are skipped without `libglfw3-dev`). Keep it
+  free of `mrpt_obs`/`mrpt_maps`: per-observation panels belong to the
+  registry in `apps/mrpt_apps_gui/imgui-common/` (internal, not installed).
+  `renderAsBackground()` draws from an ImGui draw callback straight into the
+  bound framebuffer. Headless runs of apps: `MRPT_IMGUI_MAX_FRAMES=N` and
+  `MRPT_IMGUI_SCREENSHOT=file.png` under `xvfb-run`; never pixel-compare.
 * **mrpt_gui**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the library
   links wxWidgets privately; test targets need
   `target_link_libraries(... PRIVATE imp_wxwidgets)`. macOS/Windows CI builds
@@ -350,8 +354,9 @@ scripts/coverage_module_report.py coverage.json mrpt_math   # per-file + aggrega
 * Measure after rebuilding and testing *all* modules: template-heavy headers
   get most of their coverage from other modules' tests.
 * Main remaining gaps: `mrpt_hwdrivers` drivers that own their transport
-  (need `bindIO()`/`bindStream()` first), `mrpt_imgui` and non-wx parts of
-  `mrpt_gui`, and `mrpt_libapps_cli` (better covered by subprocess tests).
+  (need `bindIO()`/`bindStream()` first), non-wx parts of `mrpt_gui`,
+  `mrpt_imgui` (63% lines; file dialogs and widgets are the gap), and
+  `mrpt_libapps_cli` (better covered by subprocess tests).
 
 ## 8. Porting ROS 2 nodes
 
