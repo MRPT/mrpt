@@ -1080,7 +1080,8 @@ void SlamDemoApp::renderFrame()
     stepOnce();
   }
 
-  if (busy)
+  // A keyboard shortcut above may have just started a batch run:
+  if (busy || m_batch.isRunning())
   {
     // The simulator is being updated by the batch run: do not read it now.
     ImGui::SetNextWindowPos(
