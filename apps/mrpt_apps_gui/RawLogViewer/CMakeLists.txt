@@ -9,63 +9,45 @@ project(RawLogViewer)
 find_package(mrpt_common REQUIRED)
 
 # Dependencies
-find_package(mrpt_slam REQUIRED)
-find_package(mrpt_gui REQUIRED)
+find_package(mrpt_libapps_cli REQUIRED)
 find_package(mrpt_topography REQUIRED)
-mrpt_find_wxwidgets()
-if(NOT wxWidgets_FOUND)
-  message(STATUS "wxWidgets not found — skipping ${PROJECT_NAME}")
+find_package(CLI11 REQUIRED)
+find_package(mrpt_imgui QUIET)
+if(NOT mrpt_imgui_FOUND OR NOT TARGET mrpt_apps::imgui_common)
+  message(STATUS "mrpt_imgui not found (built without GLFW?): skipping ${PROJECT_NAME}")
   return()
 endif()
 
-# Define the executable target:
+set(RLV_DOC_SOURCES
+  RawlogDocument.cpp
+  RawlogDocument.h
+)
+
 mrpt_add_executable(
   TARGET ${PROJECT_NAME}
   SOURCES
-    CFormEdit.cpp
-    CFormEdit.h
-    CFormMotionModel.cpp
-    CFormMotionModel.h
-    CFormPlayVideo.cpp
-    CFormPlayVideo.h
-    CFormRawMap.cpp
-    CFormRawMap.h
-    CScanMatching.cpp
-    CScanMatching.h
-    COdometryParams.cpp
-    COdometryParams.h
-    CScanAnimation.cpp
-    CScanAnimation.h
-    ViewOptions3DPoints.cpp
-    ViewOptions3DPoints.h
-    xRawLogViewerApp.cpp
-    xRawLogViewerApp.h
-    xRawLogViewerMain.cpp
-    xRawLogViewerMain.h
-    ../wx-common/MyGLCanvas.cpp
-    ../wx-common/MyGLCanvas.h
-    CFormChangeSensorPositions.cpp
-    CFormChangeSensorPositions.h
-    main_gps_ops.cpp
-    main_images_ops.cpp
-    main_imports_exports.cpp
-    main_artwork.cpp
-    main_convert_ops.cpp
-    main_show_selected_object.cpp
-    main_timeline.cpp
-    CRawlogTreeView.cpp
-    CRawlogTreeView.h
-    CFormBatchSensorPose.cpp
-    CFormBatchSensorPose.h
-    CIniEditor.cpp
-    CIniEditor.h
-    ../wxThings/src/toggle.cpp
+    ${RLV_DOC_SOURCES}
+    RawLogViewer_main.cpp
+    RawLogViewerApp.cpp
+    RawLogViewerApp.h
+    RawLogViewerApp_common.h
+    RawLogViewerApp_panels.cpp
   LINK_LIBRARIES
-    mrpt::mrpt_slam
-    mrpt::mrpt_gui
+    mrpt_apps::imgui_common
+    mrpt::mrpt_libapps_cli
     mrpt::mrpt_topography
-    wxWidgets::wxWidgets
+    CLI11::CLI11
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE ../wxThings/ ../wx-common/)
-
+mrpt_add_test(
+  TARGET test_RawLogViewer
+  SOURCES
+    ${RLV_DOC_SOURCES}
+    tests/RawlogDocument_unittest.cpp
+  LINK_LIBRARIES
+    mrpt::mrpt_libapps_cli
+    mrpt::mrpt_maps
+)
+if(TARGET test_RawLogViewer)
+  target_include_directories(test_RawLogViewer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+endif()

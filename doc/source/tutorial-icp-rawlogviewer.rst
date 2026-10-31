@@ -4,6 +4,11 @@
 Using the ScanMatching (ICP) module in RawLogViewer
 ===================================================================
 
+.. note::
+    The ScanMatching (ICP) module was removed from RawLogViewer. This page is
+    kept for reference only: use `mp2p_icp <https://github.com/MOLAorg/mp2p_icp>`_
+    and the MOLA framework for ICP experiments.
+
 
 The "ScanMatching" module within `RawLogViewer <app_RawLogViewer.html>`_
 can be used to try the performance of the ICP algorithms as the parameters

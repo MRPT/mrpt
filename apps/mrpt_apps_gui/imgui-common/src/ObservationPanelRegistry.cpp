@@ -16,6 +16,7 @@
 #include <mrpt/apps_imgui/ObservationPanels.h>
 #include <mrpt/imgui/style.h>
 #include <mrpt/obs/CAction.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/system/datetime.h>
 
@@ -151,6 +152,15 @@ std::string describeObject(const mrpt::serialization::CSerializable& obj)
     else if (const auto* act = dynamic_cast<const mrpt::obs::CAction*>(&obj); act)
     {
       act->getDescriptionAsText(ss);
+    }
+    else if (const auto* acts = dynamic_cast<const mrpt::obs::CActionCollection*>(&obj); acts)
+    {
+      ss << "Collection of " << acts->size() << " actions:\n";
+      for (size_t i = 0; i < acts->size(); i++)
+      {
+        ss << "\n--- Action #" << i << " ---\n";
+        acts->get(i)->getDescriptionAsText(ss);
+      }
     }
     else if (const auto* sf = dynamic_cast<const mrpt::obs::CSensoryFrame*>(&obj); sf)
     {
