@@ -2,6 +2,13 @@
 Changelog for package mrpt_libapps_cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* rawlog-edit: new --decimate, --lossless-decimate, --compact, --to-observations-only, --to-sensory-frames, --sort-by-timestamp, --regenerate-sf-timestamps
+* New GUI-free rawlog operations API (mrpt/apps_cli/rawlog_ops.h), shared with RawLogViewer
+* rawlog-edit: invalid timestamps are not shifted; malformed numbers are rejected
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.0 (2026-10-28)
 ------------------
 

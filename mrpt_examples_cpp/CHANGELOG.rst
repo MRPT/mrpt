@@ -2,6 +2,11 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix ambiguous format() call vs std::format in examples
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.0 (2026-10-28)
 ------------------
 

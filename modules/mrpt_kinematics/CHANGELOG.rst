@@ -2,6 +2,9 @@
 Changelog for package mrpt_kinematics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.0 (2026-10-28)
 ------------------
 

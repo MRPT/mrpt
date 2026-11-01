@@ -2,6 +2,16 @@
 Changelog for package mrpt_imgui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Grow into a Dear ImGui application framework: CImGuiAppShell, CImGuiBackgroundScene, CImGuiTimeline, CImGuiPlotPanel, CImGuiImageView, CImGuiLogConsole, CImGuiFileDialog, AsyncTask
+* New CImGuiAboutDialog, CImGuiMessageQueue, status bar and frame grab helpers
+* CImGuiSceneView: optional 6DOF camera pose override (`#1482 <https://github.com/MRPT/mrpt/issues/1482>`_)
+* CImGuiTimeline: step through keys sharing the same time
+* AsyncTask::cancelAndWait(); visible edges for plot bands
+* Message boxes ignore the key press that opened them
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.0 (2026-10-28)
 ------------------
 

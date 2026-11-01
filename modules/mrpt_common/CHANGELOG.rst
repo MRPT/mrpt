@@ -2,6 +2,11 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* mrpt_add_test(): build the test target from the top of the build tree (fixes Ninja subdirectory tests)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.0 (2026-10-28)
 ------------------
 * fix cmake warning
