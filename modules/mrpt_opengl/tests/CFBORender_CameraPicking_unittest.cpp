@@ -14,16 +14,19 @@
 
 /** Offscreen rendering tests checking that the camera used by the renderer
  *  and the one used by 3D picking (Viewport::get3DRayForPixelCoord()) agree,
- *  for orbit (with roll) and 6DOF cameras, projective and orthogonal.
+ *  for orbit (with roll) and 6DOF cameras, projective (FOV or pinhole) and
+ *  orthogonal; and the clipping of orthogonal orbit cameras.
  */
 
 #include <gtest/gtest.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/geometry.h>  // crossProduct3D()
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/config.h>  // for MRPT_HAS_*
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/viz/CBox.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/Scene.h>
 
@@ -263,6 +266,96 @@ TEST(CFBORender_CameraPicking, SixDOFCamera)
   checkRenderMatchesPicking(*renderer, *scene, "6DOF projective");
   cam.setOrthogonal(true);
   checkRenderMatchesPicking(*renderer, *scene, "6DOF orthogonal");
+}
+
+namespace
+{
+mrpt::img::TCamera makePinhole(uint32_t ncols, uint32_t nrows, double f, double cx, double cy)
+{
+  mrpt::img::TCamera c;
+  c.ncols = ncols;
+  c.nrows = nrows;
+  c.fx(f);
+  c.fy(f);
+  c.cx(cx);
+  c.cy(cy);
+  return c;
+}
+
+void setOrbitView(mrpt::viz::CCamera& cam)
+{
+  cam.setPointingAt(0.3f, 0.2f, 0.4f);
+  cam.setZoomDistance(9.0f);
+  cam.setAzimuthDegrees(30.0f);
+  cam.setElevationDegrees(35.0f);
+}
+}  // namespace
+
+TEST(CFBORender_CameraPicking, PinholeCamera)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering context available";
+  }
+  auto scene = markersScene();
+  auto& cam = mainCamera(*scene);
+  setOrbitView(cam);
+
+  // Calibrated size equal to the viewport, off-center principal point:
+  cam.setProjectiveFromPinhole(makePinhole(W, H, 200.0, W / 2 + 10.0, H / 2 - 5.0));
+  checkRenderMatchesPicking(*renderer, *scene, "pinhole, same size");
+
+  // Calibrated for a different size and aspect ratio than the viewport:
+  cam.setProjectiveFromPinhole(makePinhole(320, 240, 260.0, 170.0, 115.0));
+  checkRenderMatchesPicking(*renderer, *scene, "pinhole, other size");
+
+  // Orthogonal mode overrides the pinhole model:
+  cam.setOrthogonal(true);
+  checkRenderMatchesPicking(*renderer, *scene, "orthogonal with a pinhole model");
+}
+
+TEST(CFBORender_CameraPicking, OrthogonalOrbitDoesNotClipAboveTheEye)
+{
+  auto renderer = makeRenderer();
+  if (!renderer)
+  {
+    GTEST_SKIP() << "No offscreen rendering context available";
+  }
+  auto scene = mrpt::viz::Scene::Create();
+  scene->getViewport()->setCustomBackgroundColor({1.0f, 1.0f, 1.0f});
+  auto box =
+      mrpt::viz::CBox::Create(mrpt::math::TPoint3D(-1, -1, 0), mrpt::math::TPoint3D(1, 1, 6));
+  box->setColor_u8(0xff, 0x00, 0x00);
+  scene->insert(box);
+  // Only visible if the top of the box is clipped:
+  auto inner = mrpt::viz::CBox::Create(
+      mrpt::math::TPoint3D(-0.5, -0.5, 0), mrpt::math::TPoint3D(0.5, 0.5, 1));
+  inner->setColor_u8(0x00, 0xff, 0x00);
+  scene->insert(inner);
+
+  auto& cam = mainCamera(*scene);
+  cam.setPointingAt(0, 0, 0);
+  cam.setAzimuthDegrees(-90);
+  cam.setElevationDegrees(89);
+  cam.setOrthogonal(true);
+
+  mrpt::img::CImage frame(W, H, mrpt::img::CH_RGB);
+
+  // Reference: the eye high above the box.
+  cam.setZoomDistance(30.0f);
+  renderer->render_RGB(*scene, frame);
+  const auto ref = pixelRGB(frame, W / 2, H / 2);
+  ASSERT_TRUE(isMarkerPixel(ref, {255, 0, 0}));
+
+  // The eye (4 m above the target) is now below the box top (6 m): with an
+  // orthogonal camera the box top must still be seen, with the same shading.
+  cam.setZoomDistance(4.0f);
+  renderer->render_RGB(*scene, frame);
+  const auto c = pixelRGB(frame, W / 2, H / 2);
+  EXPECT_FALSE(isMarkerPixel(c, {0, 255, 0})) << "the top of the box was clipped";
+  EXPECT_TRUE(isNear(c, ref, 12)) << "center color: " << c.r << "," << c.g << "," << c.b
+                                  << " expected: " << ref.r << "," << ref.g << "," << ref.b;
 }
 
 #endif  // RUN_OFFSCREEN_RENDER_TESTS

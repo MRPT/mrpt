@@ -125,6 +125,28 @@ auto CCamera::ComputeOrbitEyeAndUp(
   return ret;
 }
 
+mrpt::img::TCamera CCamera::PinholeForViewport(
+    const mrpt::img::TCamera& pinhole, uint32_t viewportWidth, uint32_t viewportHeight)
+{
+  if (pinhole.ncols == viewportWidth && pinhole.nrows == viewportHeight)
+  {
+    return pinhole;
+  }
+  ASSERT_GT_(pinhole.nrows, 0U);
+
+  const double s = static_cast<double>(viewportHeight) / static_cast<double>(pinhole.nrows);
+  const double offsetX = 0.5 * (static_cast<double>(viewportWidth) - s * pinhole.ncols);
+
+  mrpt::img::TCamera ret = pinhole;
+  ret.ncols = viewportWidth;
+  ret.nrows = viewportHeight;
+  ret.fx(pinhole.fx() * s);
+  ret.fy(pinhole.fy() * s);
+  ret.cx(pinhole.cx() * s + offsetX);
+  ret.cy(pinhole.cy() * s);
+  return ret;
+}
+
 /** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
 auto CCamera::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf { return {}; }
 

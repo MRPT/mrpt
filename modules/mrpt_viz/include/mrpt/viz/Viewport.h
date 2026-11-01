@@ -214,13 +214,17 @@ class Viewport :
   void getViewportPosition(double& x, double& y, double& width, double& height) const;
 
   /** Set the min/max clip depth distances of the rendering frustum (default:
-   * 0.1 - 1000)
+   * 0.01 - 1000).
+   * For orthogonal orbit cameras, whose eye position is only a consequence
+   * of the zoom distance, the visible depth range is [-clip_max, clip_max]
+   * instead, so objects behind the eye are not clipped (depth images report
+   * negative depths for them).
    * \sa getViewportClipDistances
    */
   void setViewportClipDistances(float clip_min, float clip_max);
 
   /** Get the current min/max clip depth distances of the rendering frustum
-   * (default: 0.1 - 1000)
+   * (default: 0.01 - 1000)
    * \sa setViewportClipDistances
    */
   void getViewportClipDistances(float& clip_min, float& clip_max) const;

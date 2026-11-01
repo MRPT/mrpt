@@ -102,6 +102,17 @@ class CCamera : public CVisualObject
    */
   [[nodiscard]] float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }
 
+  /** Returns the pinhole model adapted to a viewport of the given size, in
+   * pixels: if it differs from the calibrated image size, the intrinsics are
+   * scaled uniformly to keep the vertical field of view, and the image is
+   * horizontally centered (wider viewports show more of the scene at both
+   * sides, narrower ones crop them). There is no distortion of the aspect
+   * ratio. With a matching size, the model is returned unchanged. This is
+   * the single definition used by the renderer and by 3D picking.
+   */
+  [[nodiscard]] static mrpt::img::TCamera PinholeForViewport(
+      const mrpt::img::TCamera& pinhole, uint32_t viewportWidth, uint32_t viewportHeight);
+
   /** Removes the pinhole model set with setProjectiveFromPinhole(), so the
    * projective model uses the vertical FOV again. */
   void clearPinholeModel() { m_pinholeModel.reset(); }

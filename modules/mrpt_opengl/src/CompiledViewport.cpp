@@ -825,7 +825,11 @@ void CompiledViewport::updateMatrices()
       m_renderMatrices.up = orbit.up;
     }
 
-    m_renderMatrices.computeProjectionMatrix(m_clipNear, m_clipFar);
+    // The eye of an orthogonal orbit camera is only a consequence of its
+    // zoom distance: the near plane is moved behind it, so objects between
+    // the eye and the far distance at both sides are visible.
+    const bool orthoOrbit = !m_camera.projective && !m_camera.is6DOF;
+    m_renderMatrices.computeProjectionMatrix(orthoOrbit ? -m_clipFar : m_clipNear, m_clipFar);
     m_renderMatrices.computeViewMatrix();
   }
   // Compute light projection matrices for shadows (cascaded).
