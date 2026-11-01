@@ -94,7 +94,7 @@ struct TRenderMatrices
   /** Vertical FOV in degrees, used only if pinhole_model is not set. */
   double FOV = 30.0f;
 
-  /** Camera elev & azimuth, in radians. */
+  /** Camera elev, azimuth and roll, in radians (orbit mode only). */
   double azimuth = .0, elev = .0, roll = .0;
   double eyeDistance = 1.0f;
 
@@ -123,7 +123,7 @@ struct TRenderMatrices
   mrpt::math::TPoint3D up = {0, 0, 0};
 
   /** Uses is_projective , vw,vh, etc. and computes p_matrix from either:
-   *  - pinhole_model if set, or
+   *  - pinhole_model if set (projective mode only), or
    *  - FOV, otherwise.
    * Replacement for obsolete: gluPerspective() and glOrtho() */
   void computeProjectionMatrix(float zmin, float zmax);

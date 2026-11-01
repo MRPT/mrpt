@@ -300,10 +300,10 @@ class Viewport :
    */
   void insert(const CVisualObject::Ptr& newObject);
 
-  /** Changes the point of view of the camera, from a given pose.
-   * \sa getCurrentCameraPose
+  /** Sets the viewport camera to 6DOF mode, at the given pose (+Z forward,
+   * +X right, +Y down). \sa CCamera::set6DOFMode()
    */
-  void setCurrentCameraFromPose(mrpt::poses::CPose3D& p);
+  void setCurrentCameraFromPose(const mrpt::poses::CPose3D& p);
 
   /** Returns the first object with a given name, or nullptr if not found.
    */

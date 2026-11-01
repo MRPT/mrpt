@@ -70,7 +70,7 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
   m_last_z_near = znear;
   m_last_z_far = zfar;
 
-  if (pinhole_model.has_value())
+  if (is_projective && pinhole_model.has_value())
   {
     const auto& phm = pinhole_model.value();
 
@@ -465,6 +465,7 @@ void TRenderMatrices::saveToYaml(mrpt::containers::yaml& c) const
   MCP_SAVE(c, FOV);
   MCP_SAVE_DEG(c, azimuth);
   MCP_SAVE_DEG(c, elev);
+  MCP_SAVE_DEG(c, roll);
   MCP_SAVE(c, eyeDistance);
   MCP_SAVE(c, is_projective);
 

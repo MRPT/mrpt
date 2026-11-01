@@ -143,7 +143,10 @@ mrpt_add_library(
   `BayerPattern` names the top-left 2x2 block (ROS convention); OpenCV's
   `COLOR_Bayer*` names are shifted (ROS `RGGB` == `COLOR_BayerBG2RGB`).
 * **mrpt_viz** has no OpenGL dependency (scene-graph description consumed by
-  `mrpt_opengl`), so it is testable with plain unit tests.
+  `mrpt_opengl`), so it is testable with plain unit tests. The orbit camera
+  model lives only in `CCamera::ComputeOrbitEyeAndUp()`, shared by the
+  renderer (`CompiledViewport`) and picking (`get3DRayForPixelCoord()`);
+  `CFBORender_CameraPicking_unittest` checks that both agree.
 * **mrpt_opengl**: `Texture` shares one GL texture among users of the same
   image buffer and options only within one `Options::shareScope`
   (`CompiledScene` uses the EGL context it was compiled in; all non-EGL

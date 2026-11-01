@@ -56,6 +56,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CFBORender_ScreenSpace_unittest.cpp
   tests/CFBORender_ThickLines_unittest.cpp
   tests/CFBORender_ViewportFeatures_unittest.cpp
+  tests/CFBORender_CameraPicking_unittest.cpp
   tests/CFBORender_SceneUpdates_unittest.cpp
   tests/CFBORender_SharedTexture_unittest.cpp
   tests/CFBORender_NormalMap_unittest.cpp

@@ -12,6 +12,8 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/bits_math.h>  // DEG2RAD()
+#include <mrpt/core/exceptions.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/COrbitCameraController.h>
 
@@ -47,8 +49,11 @@ void COrbitCameraController::setElevationDegrees(float deg)
 }
 void COrbitCameraController::setZoomLimits(float minZoom, float maxZoom)
 {
+  ASSERT_GT_(minZoom, 0.0f);
+  ASSERT_LE_(minZoom, maxZoom);
   m_minZoom = minZoom;
   m_maxZoom = maxZoom;
+  clampZoom();
 }
 
 // ----------------------------------------------------------------
@@ -58,8 +63,6 @@ void COrbitCameraController::onMouseButton(int x, int y, uint8_t /*button*/, boo
 {
   if (down)
   {
-    m_clickX = x;
-    m_clickY = y;
     m_lastX = x;
     m_lastY = y;
   }
@@ -158,7 +161,7 @@ void COrbitCameraController::applyOrbit(int dx, int dy)
 
 void COrbitCameraController::applyPan(int dx, int dy)
 {
-  const float azRad = m_params.azimuthDeg * static_cast<float>(M_PI) / 180.0f;
+  const float azRad = mrpt::DEG2RAD(m_params.azimuthDeg);
   const float scale = m_params.zoomDistance * panSensitivity;
 
   // Pan in the world XY plane, rotated by azimuth (matching legacy behaviour).
@@ -176,8 +179,8 @@ void COrbitCameraController::applyRotate(int dx, int dy)
   // moves around it (as in the legacy CGlCanvasBase).
   const auto eyeOffset = [this]()
   {
-    const float az = m_params.azimuthDeg * static_cast<float>(M_PI) / 180.0f;
-    const float el = m_params.elevationDeg * static_cast<float>(M_PI) / 180.0f;
+    const float az = mrpt::DEG2RAD(m_params.azimuthDeg);
+    const float el = mrpt::DEG2RAD(m_params.elevationDeg);
     const float d = std::max(0.01f, m_params.zoomDistance);
     return std::array<float, 3>{
         d * std::cos(az) * std::cos(el), d * std::sin(az) * std::cos(el), d * std::sin(el)};
@@ -203,15 +206,18 @@ void COrbitCameraController::applyRoll(int dx, int dy)
   m_params.rollDeg += sign * d * rollSensitivity;
 }
 
+// Zoom is applied as an exponential factor, so it is always positive and a
+// large input (fast drags, high-resolution wheels) cannot collapse the
+// distance. For small inputs it matches the linear factor (1 + x).
 void COrbitCameraController::applyZoomDelta(int /*dx*/, int dy)
 {
-  m_params.zoomDistance *= 1.0f + static_cast<float>(dy) * 0.01f;
+  m_params.zoomDistance *= std::exp(static_cast<float>(dy) * 0.01f);
   clampZoom();
 }
 
 void COrbitCameraController::applyZoomScroll(float delta)
 {
-  m_params.zoomDistance *= 1.0f - delta * zoomSensitivity;
+  m_params.zoomDistance *= std::exp(-delta * zoomSensitivity);
   clampZoom();
 }
 
@@ -242,8 +248,9 @@ void COrbitCameraController::setFrom(const mrpt::viz::CCamera& cam)
   m_params.pointingY = cam.getPointingAtY();
   m_params.pointingZ = cam.getPointingAtZ();
   m_params.zoomDistance = cam.getZoomDistance();
+  clampZoom();
   m_params.azimuthDeg = cam.getAzimuthDegrees();
-  m_params.elevationDeg = cam.getElevationDegrees();
+  m_params.elevationDeg = clampElevation(cam.getElevationDegrees());
   m_params.rollDeg = cam.getRollDegrees();
   m_params.isProjective = cam.isProjective();
   m_params.fovDeg = cam.getProjectiveFOVdeg();

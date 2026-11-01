@@ -41,11 +41,20 @@ namespace mrpt::viz
  *   ctrl.setZoomDistance(15.0f);
  *
  *   // Inside your mouse-move handler:
- *   ctrl.onMouseMove(x, y, MouseButtons::Left, KeyModifiers::None);
+ *   ctrl.onMouseMove(x, y, COrbitCameraController::ButtonLeft,
+ *                    COrbitCameraController::ModNone);
  *
  *   // Before rendering:
  *   ctrl.applyTo(myCamera);
  * @endcode
+ *
+ * Mouse bindings:
+ * - Left drag: orbit (azimuth and elevation).
+ * - Left drag + Shift: zoom.
+ * - Left drag + Ctrl: look around, keeping the eye still.
+ * - Left drag + Alt: roll.
+ * - Right or middle drag: pan.
+ * - Wheel: zoom. Wheel + Shift: move the pointing point along world Z.
  *
  * \ingroup mrpt_viz_grp
  */
@@ -116,9 +125,10 @@ class COrbitCameraController
   void setFOVdeg(float fov) { m_params.fovDeg = fov; }
   [[nodiscard]] float getFOVdeg() const { return m_params.fovDeg; }
 
-  /** Clamp zoom to [minZoom, maxZoom] (default: [0.01, 3200]). */
+  /** Clamp zoom to [minZoom, maxZoom] (default: [0.01, 3200]). The current
+   * zoom is clamped to the new limits. Requires 0 < minZoom <= maxZoom. */
   void setZoomLimits(float minZoom, float maxZoom);
-  [[nodiscard]] std::pair<float, float> getZoomLimits() { return {m_minZoom, m_maxZoom}; }
+  [[nodiscard]] std::pair<float, float> getZoomLimits() const { return {m_minZoom, m_maxZoom}; }
 
   // ----------------------------------------------------------------
   // Camera interaction sensitivities
@@ -126,7 +136,7 @@ class COrbitCameraController
 
   float orbitSensitivity = 0.25f;  ///< deg/pixel
   float panSensitivity = 0.001f;   ///< world-units * zoom factor per pixel
-  float zoomSensitivity = 0.15f;   ///< fractional distance change per scroll unit
+  float zoomSensitivity = 0.15f;   ///< distance is scaled by exp(-k) per scroll unit
   float rollSensitivity = 0.15f;   ///< deg/pixel
 
   // ----------------------------------------------------------------
@@ -156,7 +166,7 @@ class COrbitCameraController
   /** Writes the current orbit parameters into @p cam. */
   void applyTo(mrpt::viz::CCamera& cam) const;
 
-  /** Initialises the controller from an existing CCamera. */
+  /** Initializes the controller from an existing CCamera. */
   void setFrom(const mrpt::viz::CCamera& cam);
 
  private:
@@ -180,8 +190,8 @@ class COrbitCameraController
   float m_maxZoom = 3200.f;
 
   // Mouse tracking
-  int m_lastX = 0, m_lastY = 0;
-  int m_clickX = 0, m_clickY = 0;
+  int m_lastX = 0;
+  int m_lastY = 0;
   bool m_buttonDown = false;
 
   // ----------------------------------------------------------------
@@ -191,7 +201,7 @@ class COrbitCameraController
   /** Left-drag, no modifier: orbit (azimuth + elevation). */
   void applyOrbit(int dx, int dy);
 
-  /** Left-drag + Shift OR middle-drag: pan in camera's local XY plane. */
+  /** Right or middle drag: pan the pointing point in the world XY plane. */
   void applyPan(int dx, int dy);
 
   /** Left-drag + Ctrl: first-person look around (the eye stays still). */
@@ -200,7 +210,7 @@ class COrbitCameraController
   /** Left-drag + Alt: roll. */
   void applyRoll(int dx, int dy);
 
-  /** Zoom by a raw pixel delta (zoom-drag mode). */
+  /** Left-drag + Shift: zoom by a raw pixel delta. */
   void applyZoomDelta(int dx, int dy);
 
   /** Zoom by a scroll/wheel amount. */

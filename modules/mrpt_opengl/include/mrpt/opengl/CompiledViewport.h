@@ -401,6 +401,7 @@ class CompiledViewport
     float zoomDistance = 10.0f;
     float azimuthDeg = 0;
     float elevationDeg = 0;
+    float rollDeg = 0;
     mrpt::math::TPoint3D pointingAt{0, 0, 0};
     mrpt::math::TPose3D pose;
     std::optional<mrpt::img::TCamera> pinhole;

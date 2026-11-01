@@ -447,7 +447,7 @@ void Viewport::getLightShadowClipDistances(float& clip_min, float& clip_max) con
   clip_max = m_lightShadowClipMax;
 }
 
-void Viewport::setCurrentCameraFromPose(mrpt::poses::CPose3D& p)
+void Viewport::setCurrentCameraFromPose(const mrpt::poses::CPose3D& p)
 {
   m_camera.set6DOFMode(true);
   m_camera.setPose(p);
@@ -625,11 +625,6 @@ mrpt::math::TLine3D Viewport::get3DRayForPixelCoord(
 
   mrpt::math::TLine3D out_ray;
 
-  // Compute camera eye position and orientation from orbit parameters
-  const double azimuth = mrpt::DEG2RAD(myCamera->getAzimuthDegrees());
-  const double elev = mrpt::DEG2RAD(myCamera->getElevationDegrees());
-  const auto pointing = myCamera->getPointingAt();
-
   mrpt::math::TPoint3D eye;
   mrpt::math::TVector3D up;
 
@@ -694,15 +689,14 @@ mrpt::math::TLine3D Viewport::get3DRayForPixelCoord(
   }
 
   // Orbit camera mode
-  const auto c2m_u =
-      mrpt::math::TVector3D(cos(azimuth) * cos(elev), sin(azimuth) * cos(elev), sin(elev));
-
+  const auto pointing = myCamera->getPointingAt();
   const double dis = std::max<double>(0.001, myCamera->getZoomDistance());
-  eye = mrpt::math::TPoint3D(pointing.x, pointing.y, pointing.z) + c2m_u * dis;
-
-  up.x = -cos(azimuth) * sin(elev);
-  up.y = -sin(azimuth) * sin(elev);
-  up.z = cos(elev);
+  const auto orbit = CCamera::ComputeOrbitEyeAndUp(
+      pointing.cast<double>(), mrpt::DEG2RAD(myCamera->getAzimuthDegrees()),
+      mrpt::DEG2RAD(myCamera->getElevationDegrees()), dis,
+      mrpt::DEG2RAD(myCamera->getRollDegrees()));
+  eye = orbit.eye;
+  up = orbit.up;
 
   // Compute camera frame: forward, right, up
   mrpt::math::TVector3D forward(pointing.x - eye.x, pointing.y - eye.y, pointing.z - eye.z);
