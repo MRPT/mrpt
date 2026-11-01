@@ -672,6 +672,7 @@ void CompiledViewport::updateCameraParams(const mrpt::viz::CCamera& camera)
   m_camera.zoomDistance = camera.getZoomDistance();
   m_camera.azimuthDeg = camera.getAzimuthDegrees();
   m_camera.elevationDeg = camera.getElevationDegrees();
+  m_camera.rollDeg = camera.getRollDegrees();
   m_camera.pointingAt = camera.getPointingAt().cast<double>();
   m_camera.pose = camera.getPose();
   m_camera.pinhole = camera.getPinholeModel();
@@ -815,17 +816,13 @@ void CompiledViewport::updateMatrices()
       m_renderMatrices.pointing = m_camera.pointingAt;
       m_renderMatrices.azimuth = DEG2RAD(m_camera.azimuthDeg);
       m_renderMatrices.elev = DEG2RAD(m_camera.elevationDeg);
+      m_renderMatrices.roll = DEG2RAD(m_camera.rollDeg);
 
-      const auto c2m_u = mrpt::math::TVector3D(
-          cos(m_renderMatrices.azimuth) * cos(m_renderMatrices.elev),
-          sin(m_renderMatrices.azimuth) * cos(m_renderMatrices.elev), sin(m_renderMatrices.elev));
-
-      const double dis = std::max<double>(0.001, m_camera.zoomDistance);
-      m_renderMatrices.eye = m_renderMatrices.pointing + c2m_u * dis;
-
-      m_renderMatrices.up.x = -cos(m_renderMatrices.azimuth) * sin(m_renderMatrices.elev);
-      m_renderMatrices.up.y = -sin(m_renderMatrices.azimuth) * sin(m_renderMatrices.elev);
-      m_renderMatrices.up.z = cos(m_renderMatrices.elev);
+      const auto orbit = mrpt::viz::CCamera::ComputeOrbitEyeAndUp(
+          m_renderMatrices.pointing, m_renderMatrices.azimuth, m_renderMatrices.elev,
+          m_camera.zoomDistance, m_renderMatrices.roll);
+      m_renderMatrices.eye = orbit.eye;
+      m_renderMatrices.up = orbit.up;
     }
 
     m_renderMatrices.computeProjectionMatrix(m_clipNear, m_clipFar);

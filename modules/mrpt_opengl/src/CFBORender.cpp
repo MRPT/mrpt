@@ -439,7 +439,7 @@ void CFBORender::internal_render_RGBD(
         const auto& mats = mainVp->getRenderMatrices();
         zn = mats.getLastClipZNear();
         zf = mats.getLastClipZFar();
-        isProjective = mats.is_projective || mats.pinhole_model.has_value();
+        isProjective = mats.is_projective;
       }
 
       convertDepthToLinear(outDepth, zn, zf, isProjective);

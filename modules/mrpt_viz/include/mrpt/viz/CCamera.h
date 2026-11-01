@@ -15,6 +15,7 @@
 #pragma once
 
 #include <mrpt/img/TCamera.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/poses/CPoseOrPoint.h>
 #include <mrpt/viz/CVisualObject.h>
 
@@ -41,7 +42,8 @@ namespace mrpt::viz
  *
  * Defining the position and orientation of a camera is possible by:
  * - Using an "orbit" model: defined by a "pointing to" point, a distance to
- * object, and azimuth + elevation angles; or
+ * object, and azimuth, elevation and roll angles (see ComputeOrbitEyeAndUp());
+ * or
  * - Directly giving the SE(3) camera pose, setting the set6DOFMode() to `true`
  * and storing the desired pose with CVisualObject::setPose(). Pose axis
  * convention is +Z pointing forwards, +X right, +Y down.
@@ -100,6 +102,10 @@ class CCamera : public CVisualObject
    */
   [[nodiscard]] float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }
 
+  /** Removes the pinhole model set with setProjectiveFromPinhole(), so the
+   * projective model uses the vertical FOV again. */
+  void clearPinholeModel() { m_pinholeModel.reset(); }
+
   [[nodiscard]] bool hasPinholeModel() const { return m_pinholeModel.has_value(); }
 
   const std::optional<mrpt::img::TCamera>& getPinholeModel() const { return m_pinholeModel; }
@@ -151,10 +157,33 @@ class CCamera : public CVisualObject
   void setElevationDegrees(float ang) { m_elevationDeg = ang; }
   void setRollDegrees(float ang) { m_eyeRollDeg = ang; }
 
+  /** Eye position and (unit) up vector of an orbit camera. */
+  struct OrbitEyeAndUp
+  {
+    mrpt::math::TPoint3D eye;
+    mrpt::math::TVector3D up;
+  };
+
+  /** Computes the eye position and up vector of an orbit camera from its
+   * parameters (angles in radians). This is the single definition of the
+   * orbit model, shared by the renderer and by 3D picking.
+   *
+   * A positive roll rotates the camera clockwise as seen from behind it
+   * (its up vector tilts towards its right), so the scene appears rotated
+   * counterclockwise.
+   */
+  [[nodiscard]] static OrbitEyeAndUp ComputeOrbitEyeAndUp(
+      const mrpt::math::TPoint3D& pointingAt,
+      double azimuthRad,
+      double elevationRad,
+      double distance,
+      double rollRad);
+
   /** Set 6DOFMode, if enabled camera is set according to its pose, set via
    *CVisualObject::setPose(). (default=false).
    * Conventionally, eye is set looking towards +Z axis, "down" is the +Y
-   * axis, right is "+X" axis. In this mode azimuth/elevation are ignored.
+   * axis, right is "+X" axis. In this mode azimuth/elevation/roll are
+   * ignored.
    */
   void set6DOFMode(bool v) { m_6DOFMode = v; }
 
@@ -178,7 +207,7 @@ class CCamera : public CVisualObject
   /// See setNoProjection()
   bool m_useNoProjection = false;
 
-  /** If defined, it overrides m_projectiveFOVdeg. */
+  /** If defined, it overrides m_projectiveFOVdeg (only in projective mode). */
   std::optional<mrpt::img::TCamera> m_pinholeModel;
 
   /** Field-of-View in degs, only when projectiveModel=true and there is no
