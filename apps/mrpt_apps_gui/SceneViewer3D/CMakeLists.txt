@@ -1,5 +1,3 @@
-
-
 #-----------------------------------------------------------------------------------------------
 # CMake file for MRPT app
 #-----------------------------------------------------------------------------------------------
@@ -12,39 +10,24 @@ find_package(mrpt_common REQUIRED)
 
 # Dependencies
 find_package(mrpt_opengl REQUIRED)
-find_package(mrpt_gui REQUIRED)
 find_package(mrpt_maps REQUIRED)
-mrpt_find_wxwidgets()
-if(NOT wxWidgets_FOUND)
-  message(STATUS "wxWidgets not found — skipping ${PROJECT_NAME}")
+find_package(mrpt_imgui QUIET)
+if(NOT mrpt_imgui_FOUND)
+  message(STATUS "mrpt_imgui not found (built without GLFW?): skipping ${PROJECT_NAME}")
   return()
 endif()
-find_package(OpenGL REQUIRED)
+find_package(CLI11 REQUIRED)
 
 # Define the executable target:
 mrpt_add_executable(
   TARGET ${PROJECT_NAME}
   SOURCES
-    _DSceneViewerApp.cpp
-    _DSceneViewerApp.h
-    _DSceneViewerMain.cpp
-    _DSceneViewerMain.h
-    CDialogOptions.cpp
-    CDialogOptions.h
-    CDlgCamTracking.cpp
-    CDlgCamTracking.h
-    CDlgPLYOptions.cpp
-    CDlgPLYOptions.h
-    ../wxThings/src/toggle.cpp
+    SceneViewer3D_main.cpp
+    SceneViewerApp.cpp
+    SceneViewerApp.h
   LINK_LIBRARIES
+    mrpt::mrpt_imgui
     mrpt::mrpt_opengl
-    mrpt::mrpt_gui
     mrpt::mrpt_maps
-    wxWidgets::wxWidgets
-    OpenGL::GL
+    CLI11::CLI11
 )
-
-target_include_directories(${PROJECT_NAME} PRIVATE ../wxThings/)
-
-#AppStartMenuLink(${PROJECT_NAME} "Scene Viewer 3D")   # Add link to the Start menu (in Windows Installable packages)
-

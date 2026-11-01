@@ -16,6 +16,7 @@
 #include <mrpt/math/geometry.h>        // crossProduct3D()
 #include <mrpt/math/ops_containers.h>  // dotProduct()
 #include <mrpt/opengl/TRenderMatrices.h>
+#include <mrpt/viz/CCamera.h>  // PinholeForViewport()
 #include <mrpt/viz/TLightParameters.h>
 
 #include <Eigen/Dense>
@@ -65,22 +66,24 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
   ASSERT_GT_(FOV, .0f);
   ASSERT_GT_(zfar, znear);
   ASSERT_GT_(zfar, .0f);
-  ASSERT_GE_(znear, .0f);
+  // A negative near plane (behind the eye) is only valid for orthographic
+  // projections:
+  ASSERT_(znear >= .0f || !is_projective);
 
   m_last_z_near = znear;
   m_last_z_far = zfar;
 
-  if (pinhole_model.has_value())
+  if (is_projective && pinhole_model.has_value())
   {
-    const auto& phm = pinhole_model.value();
+    // Intrinsics adapted to the actual viewport size, if it differs from the
+    // calibrated image size:
+    const auto phm = mrpt::viz::CCamera::PinholeForViewport(
+        pinhole_model.value(), viewport_width, viewport_height);
 
     // Equivalent to gluPerspective(), from pinhole camera intrinsic
     // parameters (cx,cy,fx,fy):
-    ASSERT_EQUAL_(viewport_width, pinhole_model->ncols);
-    ASSERT_EQUAL_(viewport_height, pinhole_model->nrows);
-
-    const float W = static_cast<float>(pinhole_model->ncols);
-    const float H = static_cast<float>(pinhole_model->nrows);
+    const float W = static_cast<float>(phm.ncols);
+    const float H = static_cast<float>(phm.nrows);
 
     // See: e.g.
     // http://ksimek.github.io/2013/06/03/calibrated_cameras_in_opengl/
@@ -465,6 +468,7 @@ void TRenderMatrices::saveToYaml(mrpt::containers::yaml& c) const
   MCP_SAVE(c, FOV);
   MCP_SAVE_DEG(c, azimuth);
   MCP_SAVE_DEG(c, elev);
+  MCP_SAVE_DEG(c, roll);
   MCP_SAVE(c, eyeDistance);
   MCP_SAVE(c, is_projective);
 

@@ -158,6 +158,13 @@ void CSetOfLines::serializeFrom(mrpt::serialization::CArchive& in, uint8_t versi
 
 auto CSetOfLines::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
+  // An empty object must not return the unordered +-infinity box: converting
+  // it into a regular bounding box throws.
+  if (m_Segments.empty())
+  {
+    return {};
+  }
+
   auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
   for (const auto& s : m_Segments)

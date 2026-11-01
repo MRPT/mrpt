@@ -13,16 +13,18 @@
 */
 #pragma once
 
-#if __has_include(<imgui.h>)
-#include <imgui.h>  // This must be available from the user code space, MRPT does not include it as a dependency.
+#include <imgui.h>  // From mrpt_imgui_vendor
 
 #include <algorithm>
+
+/** Always defined since mrpt_imgui depends on mrpt_imgui_vendor; kept for
+ * source compatibility with code written for when ImGui was optional. */
 #define MRPT_IMGUI_AVAILABLE
-#endif
 
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/opengl/CompiledScene.h>
 #include <mrpt/opengl/opengl_api.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/COrbitCameraController.h>
 #include <mrpt/viz/Scene.h>
@@ -92,6 +94,34 @@ class CImGuiSceneView
    *  \endcode
    */
   mrpt::viz::COrbitCameraController cameraController;
+
+  /** Overrides the orbit camera with a free SE(3) camera pose (e.g. a
+   *  first-person view), rendered with mrpt::viz::CCamera's 6DOF mode. The
+   *  pose axes follow the CCamera convention: +Z forward, +Y down, +X right.
+   *  While set, mouse orbit/pan/zoom is ignored (clicks and the overlay
+   *  callbacks still work) and the cameraController state is kept untouched.
+   *  The vertical FOV and projection model are still taken from
+   *  cameraController.
+   *  \sa clearCameraPose() */
+  void setCameraPose(const mrpt::poses::CPose3D& pose) { m_cameraPose = pose; }
+
+  /** Goes back to the orbit camera driven by cameraController.
+   *  \sa setCameraPose() */
+  void clearCameraPose()
+  {
+    if (m_cameraPose)
+    {
+      m_resyncOrbitInput = true;
+    }
+    m_cameraPose.reset();
+  }
+
+  /** The 6DOF camera pose set with setCameraPose(), or nullopt if the orbit
+   *  camera is active. */
+  [[nodiscard]] const std::optional<mrpt::poses::CPose3D>& cameraPose() const
+  {
+    return m_cameraPose;
+  }
 
   /** @} */
 
@@ -186,6 +216,12 @@ class CImGuiSceneView
 
   // --- Render-time camera snapshot (written by cameraController.applyTo) ---
   mrpt::viz::CCamera m_camera;
+
+  // --- Optional 6DOF camera pose, overriding the orbit camera ---
+  std::optional<mrpt::poses::CPose3D> m_cameraPose;
+  // Set when the pose override ends, so the controller input anchor is
+  // refreshed before forwarding mouse motion again.
+  bool m_resyncOrbitInput = false;
 
   // --- Compiled scene for rendering pipeline ---
   std::unique_ptr<mrpt::opengl::CompiledScene> m_compiledScene;
@@ -380,24 +416,39 @@ inline void CImGuiSceneView::handleMouseInteraction(float widgetX, float widgetY
       {ImGuiMouseButton_Middle, C::ButtonMiddle},
       { ImGuiMouseButton_Right,  C::ButtonRight},
   };
-  for (auto [imguiBtn, mrptBtn] : kButtonMap)
+  // A 6DOF camera pose overrides the orbit camera: leave its state untouched.
+  if (!m_cameraPose)
   {
-    if (ImGui::IsMouseClicked(imguiBtn))
-      cameraController.onMouseButton(ix, iy, mrptBtn, /*down=*/true);
-    else if (ImGui::IsMouseReleased(imguiBtn))
-      cameraController.onMouseButton(ix, iy, mrptBtn, /*down=*/false);
+    // Button events were not forwarded during the override: re-anchor the
+    // controller at the current cursor and button state, without moving it.
+    if (m_resyncOrbitInput)
+    {
+      m_resyncOrbitInput = false;
+      const bool anyDown = ImGui::IsMouseDown(ImGuiMouseButton_Left) ||
+                           ImGui::IsMouseDown(ImGuiMouseButton_Middle) ||
+                           ImGui::IsMouseDown(ImGuiMouseButton_Right);
+      cameraController.onMouseButton(ix, iy, C::ButtonNone, anyDown);
+    }
+
+    for (auto [imguiBtn, mrptBtn] : kButtonMap)
+    {
+      if (ImGui::IsMouseClicked(imguiBtn))
+        cameraController.onMouseButton(ix, iy, mrptBtn, /*down=*/true);
+      else if (ImGui::IsMouseReleased(imguiBtn))
+        cameraController.onMouseButton(ix, iy, mrptBtn, /*down=*/false);
+    }
+
+    // --- Build held-button bitmask and forward movement ---
+    uint8_t buttons = 0;
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) buttons |= C::ButtonLeft;
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Middle)) buttons |= C::ButtonMiddle;
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) buttons |= C::ButtonRight;
+
+    if (buttons != 0) cameraController.onMouseMove(ix, iy, buttons, mods);
+
+    // --- Scroll wheel ---
+    if (std::abs(io.MouseWheel) > 0.0f) cameraController.onScroll(io.MouseWheel, mods);
   }
-
-  // --- Build held-button bitmask and forward movement ---
-  uint8_t buttons = 0;
-  if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) buttons |= C::ButtonLeft;
-  if (ImGui::IsMouseDown(ImGuiMouseButton_Middle)) buttons |= C::ButtonMiddle;
-  if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) buttons |= C::ButtonRight;
-
-  if (buttons != 0) cameraController.onMouseMove(ix, iy, buttons, mods);
-
-  // --- Scroll wheel ---
-  if (std::abs(io.MouseWheel) > 0.0f) cameraController.onScroll(io.MouseWheel, mods);
 
   // --- Left-click callback: fire on release with no significant drag ---
   if (onLeftClick && ImGui::IsMouseReleased(ImGuiMouseButton_Left))

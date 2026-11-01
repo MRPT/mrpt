@@ -18,6 +18,9 @@ project(mrpt_apps_gui)
 
 find_package(mrpt_common REQUIRED)
 
+# Internal library shared by the ImGui apps:
+add_subdirectory(imgui-common)
+
 # Add GUI sub-applications
 add_subdirectory(2d-slam-demo)
 add_subdirectory(3d-rotation-converter)

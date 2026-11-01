@@ -30,7 +30,6 @@ set(LIB_SOURCES
   src/RenderQueue.cpp
   src/gltext.cpp
   src/CompiledScene.cpp
-  src/LinesProxy.cpp
   src/Shader.cpp
   src/TexturedTrianglesProxy.cpp
   src/DefaultShaders.cpp
@@ -55,7 +54,9 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CFBORender_LinePointPrimitives_unittest.cpp
   tests/CFBORender_ExtraEllipsoidsAndMesh_unittest.cpp
   tests/CFBORender_ScreenSpace_unittest.cpp
+  tests/CFBORender_ThickLines_unittest.cpp
   tests/CFBORender_ViewportFeatures_unittest.cpp
+  tests/CFBORender_CameraPicking_unittest.cpp
   tests/CFBORender_SceneUpdates_unittest.cpp
   tests/CFBORender_SharedTexture_unittest.cpp
   tests/CFBORender_NormalMap_unittest.cpp

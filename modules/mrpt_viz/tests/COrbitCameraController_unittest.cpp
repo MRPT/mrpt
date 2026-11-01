@@ -14,6 +14,8 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/core/bits_math.h>
+#include <mrpt/math/geometry.h>  // crossProduct3D()
+#include <mrpt/viz/CCamera.h>
 #include <mrpt/viz/COrbitCameraController.h>
 
 #include <cmath>
@@ -102,7 +104,7 @@ TEST(COrbitCameraController, MouseZoomDragWithShift)
   ctrl.setZoomDistance(15.f);
   ctrl.onMouseButton(0, 0, COrbitCameraController::ButtonLeft, true);
   ctrl.onMouseMove(0, 20, COrbitCameraController::ButtonLeft, COrbitCameraController::ModShift);
-  // dy=20 -> zoomDistance *= 1 + 0.2
+  // dy=20 -> zoomDistance *= exp(0.2)
   EXPECT_GT(ctrl.getZoomDistance(), 15.f);
 }
 
@@ -248,4 +250,83 @@ TEST(COrbitCameraController, CopyAndAssignSemantics)
   COrbitCameraController assigned;
   assigned = ctrl;
   EXPECT_FLOAT_EQ(assigned.getAzimuthDegrees(), 33.f);
+}
+
+TEST(COrbitCameraController, LargeZoomInputsStayBounded)
+{
+  COrbitCameraController ctrl;
+  ctrl.setZoomDistance(20.f);
+  // A burst of fast scrolling must not collapse the zoom to its minimum:
+  ctrl.onScroll(10.0f, COrbitCameraController::ModNone);
+  EXPECT_NEAR(ctrl.getZoomDistance(), 20.f * std::exp(-10.f * ctrl.zoomSensitivity), 1e-3f);
+  EXPECT_GT(ctrl.getZoomDistance(), 1.f);
+
+  // Same for a long zoom drag in a single event:
+  ctrl.setZoomDistance(20.f);
+  ctrl.onMouseButton(0, 0, COrbitCameraController::ButtonLeft, true);
+  ctrl.onMouseMove(0, -150, COrbitCameraController::ButtonLeft, COrbitCameraController::ModShift);
+  EXPECT_NEAR(ctrl.getZoomDistance(), 20.f * std::exp(-1.5f), 1e-3f);
+
+  // Zooming in and out by the same amount restores the distance:
+  ctrl.setZoomDistance(20.f);
+  ctrl.onScroll(3.0f, COrbitCameraController::ModNone);
+  ctrl.onScroll(-3.0f, COrbitCameraController::ModNone);
+  EXPECT_NEAR(ctrl.getZoomDistance(), 20.f, 1e-3f);
+}
+
+TEST(COrbitCameraController, ZoomLimitsValidationAndReclamp)
+{
+  COrbitCameraController ctrl;
+  ctrl.setZoomDistance(50.f);
+  ctrl.setZoomLimits(1.f, 10.f);
+  EXPECT_FLOAT_EQ(ctrl.getZoomDistance(), 10.f);
+
+  EXPECT_ANY_THROW(ctrl.setZoomLimits(10.f, 1.f));
+  EXPECT_ANY_THROW(ctrl.setZoomLimits(0.f, 1.f));
+}
+
+TEST(COrbitCameraController, SetFromClampsOutOfRangeValues)
+{
+  mrpt::viz::CCamera cam;
+  cam.setElevationDegrees(120.f);
+  cam.setZoomDistance(1e6f);
+
+  COrbitCameraController ctrl;
+  ctrl.setFrom(cam);
+  EXPECT_LE(ctrl.getElevationDegrees(), 89.9f);
+  EXPECT_FLOAT_EQ(ctrl.getZoomDistance(), ctrl.getZoomLimits().second);
+}
+
+TEST(CCamera, ComputeOrbitEyeAndUp)
+{
+  using mrpt::math::TPoint3D;
+  using mrpt::math::TVector3D;
+
+  const TPoint3D pt(1, 2, 3);
+  const double az = mrpt::DEG2RAD(30.0);
+  const double el = mrpt::DEG2RAD(20.0);
+
+  const auto noRoll = mrpt::viz::CCamera::ComputeOrbitEyeAndUp(pt, az, el, 10.0, 0.0);
+  EXPECT_NEAR((noRoll.eye - pt).norm(), 10.0, 1e-9);
+  EXPECT_NEAR(noRoll.up.norm(), 1.0, 1e-9);
+  EXPECT_GT(noRoll.up.z, 0.0);
+
+  const TVector3D forward = (pt - noRoll.eye) * 0.1;
+  const TVector3D right = mrpt::math::crossProduct3D(forward, noRoll.up);
+
+  const auto dot = [](const TVector3D& a, const TVector3D& b)
+  { return a.x * b.x + a.y * b.y + a.z * b.z; };
+
+  // Roll does not move the eye, keeps up orthogonal to the view direction:
+  for (const double rollDeg : {15.0, 90.0, -60.0})
+  {
+    const double roll = mrpt::DEG2RAD(rollDeg);
+    const auto r = mrpt::viz::CCamera::ComputeOrbitEyeAndUp(pt, az, el, 10.0, roll);
+    EXPECT_NEAR((r.eye - noRoll.eye).norm(), 0.0, 1e-9);
+    EXPECT_NEAR(r.up.norm(), 1.0, 1e-9);
+    EXPECT_NEAR(dot(r.up, forward), 0.0, 1e-9);
+    EXPECT_NEAR(dot(r.up, noRoll.up), std::cos(roll), 1e-9);
+    // Positive roll tilts the up vector towards the camera right:
+    EXPECT_NEAR(dot(r.up, right), std::sin(roll), 1e-9);
+  }
 }

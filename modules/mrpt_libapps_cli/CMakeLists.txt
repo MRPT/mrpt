@@ -10,6 +10,7 @@ find_package(Threads REQUIRED)
 
 # define lib:
 set(LIB_SOURCES
+  src/rawlog_ops.cpp
   src/registerAllClasses.cpp
   src/DataSourceRawlog.cpp
   src/RawlogEditApp.cpp
@@ -17,6 +18,7 @@ set(LIB_SOURCES
   src/rawlog-edit_2d-scans.cpp
   src/rawlog-edit_anemometer.cpp
   src/rawlog-edit_camera-params.cpp
+  src/rawlog-edit_conversions.cpp
   src/rawlog-edit_cuts.cpp
   src/rawlog-edit_deexternalize.cpp
   src/rawlog-edit_describe.cpp
@@ -44,6 +46,7 @@ set(LIB_SOURCES
 set(LIB_UNIT_TEST_SOURCES
   tests/RawlogGrabberApp_unittest.cpp
   tests/rawlog-edit_unittest.cpp
+  tests/rawlog_ops_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
@@ -55,6 +58,7 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/apps_cli/MonteCarloLocalization_App.h
   include/mrpt/apps_cli/RawlogEditApp.h
   include/mrpt/apps_cli/RawlogGrabberApp.h
+  include/mrpt/apps_cli/rawlog_ops.h
   include/mrpt/apps_cli/registerAllClasses.h
 )
 

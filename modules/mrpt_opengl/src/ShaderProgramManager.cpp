@@ -117,6 +117,7 @@ size_t ShaderProgramManager::preloadAllDefaultShaders(std::vector<std::string>* 
       DefaultShaderID::POINTS,
       DefaultShaderID::POINTS_HIDE_BACK_FACING,
       DefaultShaderID::WIREFRAME,
+      DefaultShaderID::WIREFRAME_THICK,
       DefaultShaderID::TRIANGLES_NO_LIGHT,
       DefaultShaderID::TRIANGLES_LIGHT,
       DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT,
@@ -354,6 +355,8 @@ void ShaderProgramManager::buildShaderVariantMap()
   // Lines don't cast shadows
   m_shaderVariants[{ID::WIREFRAME, true}] = ID::NONE;
   m_shaderVariants[{ID::WIREFRAME, false}] = ID::WIREFRAME;
+  m_shaderVariants[{ID::WIREFRAME_THICK, true}] = ID::NONE;
+  m_shaderVariants[{ID::WIREFRAME_THICK, false}] = ID::WIREFRAME_THICK;
 
   // Text doesn't cast shadows
   m_shaderVariants[{ID::TEXT, true}] = ID::NONE;
@@ -442,6 +445,7 @@ void ShaderProgramManager::declareCommonUniforms(Program& program)
       "v_matrix_no_translation",
       "light_pv_matrix",
       "cam_position",
+      "cam_ortho_view_dir",
       "materialSpecular",
       nullptr  // sentinel
   };

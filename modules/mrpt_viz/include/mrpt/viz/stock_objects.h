@@ -89,6 +89,8 @@ CSetOfObjects::Ptr CornerXYZEye();
 
 /** Returns three arrows representing a X,Y,Z 3D corner (just thick lines
  * instead of complex arrows for faster rendering than CornerXYZ).
+ * \param scale Length of each axis line.
+ * \param lineWidth Width of the lines, in pixels.
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZ, CornerXYSimple
@@ -104,6 +106,8 @@ CSetOfObjects::Ptr CornerXYZSimple(float scale = 1.0, float lineWidth = 1.0);
 
 /** Returns two arrows representing a X,Y 2D corner (just thick lines, fast to
  * render).
+ * \param scale Length of each axis line.
+ * \param lineWidth Width of the lines, in pixels.
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZSimple, CornerXYZ, CornerXYZEye

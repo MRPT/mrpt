@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>mrpt_apps_gui</name>
-  <version>3.6.0</version>
+  <version>3.6.1</version>
   <description>MRPT graphical user interface applications</description>
 
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
@@ -13,7 +13,11 @@
   <buildtool_depend>cmake</buildtool_depend>
 
   <depend>mrpt_common</depend>
+  <depend>mrpt_libapps_cli</depend>
   <depend>mrpt_libapps_gui</depend>
+  <depend>mrpt_imgui</depend>
+  <depend>mrpt_imgui_vendor</depend>
+  <depend>libglfw3-dev</depend>
   <depend>mrpt_graphslam</depend>
   <depend>mrpt_kinematics</depend>
   <depend>mrpt_nav</depend>

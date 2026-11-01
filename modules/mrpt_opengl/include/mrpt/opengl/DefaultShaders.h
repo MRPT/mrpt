@@ -29,6 +29,8 @@ struct DefaultShaderID
   static constexpr shader_id_t WIREFRAME = 1;
   static constexpr shader_id_t TEXT = 2;
   static constexpr shader_id_t POINTS_HIDE_BACK_FACING = 3;
+  /// Lines wider than 1 pixel, drawn as instanced screen-space quads
+  static constexpr shader_id_t WIREFRAME_THICK = 4;
   static constexpr shader_id_t TRIANGLES_LIGHT = 10;
   static constexpr shader_id_t TEXTURED_TRIANGLES_LIGHT = 11;
   static constexpr shader_id_t TRIANGLES_NO_LIGHT = 12;

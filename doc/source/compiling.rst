@@ -42,7 +42,7 @@ Minimum compiler requisites:
 
     .. code-block:: bash
 
-       # Build OpenGL graphics, Qt and nanogui GUIs:
+       # Build OpenGL graphics, Qt, nanogui and Dear ImGui GUIs:
        sudo apt install libassimp-dev libglfw3-dev \
             libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
             libxrandr-dev libxxf86vm-dev
@@ -57,6 +57,12 @@ Minimum compiler requisites:
 
     If your Ubuntu distribution is old and does not have any of the packages
     above, do not worry and ignore it, MRPT CMake scripts will handle it.
+
+    The Dear ImGui GUI stack (``mrpt_imgui_vendor``, ``mrpt_imgui``, and apps
+    such as RawLogViewer or SceneViewer3D) needs GLFW 3.3 or newer
+    (``libglfw3-dev``). Without it, ``mrpt_imgui_vendor`` stops with an error
+    unless it is configured with ``-DMRPT_IMGUI_VENDOR_ENABLE=OFF``, in which
+    case everything that needs it is skipped.
 
 .. dropdown:: Windows
 

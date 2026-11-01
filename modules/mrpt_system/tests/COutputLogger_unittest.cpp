@@ -120,8 +120,8 @@ TEST(COutputLogger, ConcurrentRegisterAndLog)
         }
         for (int i = 0; i < 5000; i++)
         {
-          log.logRegisterCallback(cb);
-          log.logDeregisterCallback(cb);
+          const auto id = log.logRegisterCallback(cb);
+          log.logDeregisterCallback(id);
         }
       });
 
@@ -131,4 +131,105 @@ TEST(COutputLogger, ConcurrentRegisterAndLog)
   loggerThread.join();
 
   SUCCEED();  // reaching here without crashing/TSan-flagging is the test
+}
+
+TEST(COutputLogger, DeregisterCallbackById)
+{
+  mrpt::system::COutputLogger log;
+  log.logging_enable_console_output = false;
+
+  int countA = 0;
+  int countB = 0;
+  // Capturing lambdas: only removable by identifier.
+  const auto idA =
+      log.logRegisterCallback([&countA](
+                                  std::string_view, const mrpt::system::VerbosityLevel,
+                                  std::string_view, const mrpt::Clock::time_point) { countA++; });
+  const auto idB =
+      log.logRegisterCallback([&countB](
+                                  std::string_view, const mrpt::system::VerbosityLevel,
+                                  std::string_view, const mrpt::Clock::time_point) { countB++; });
+  EXPECT_NE(idA, 0U);
+  EXPECT_NE(idB, 0U);
+  EXPECT_NE(idA, idB);
+
+  log.logStr(mrpt::system::LVL_INFO, "hello");
+  EXPECT_EQ(countA, 1);
+  EXPECT_EQ(countB, 1);
+
+  EXPECT_TRUE(log.logDeregisterCallback(idA));
+  log.logStr(mrpt::system::LVL_INFO, "world");
+  EXPECT_EQ(countA, 1);
+  EXPECT_EQ(countB, 2);
+
+  EXPECT_FALSE(log.logDeregisterCallback(idA));               // already removed
+  EXPECT_FALSE(log.logDeregisterCallback(idA + idB + 1000));  // never existed
+
+  EXPECT_TRUE(log.logDeregisterCallback(idB));
+  log.logStr(mrpt::system::LVL_INFO, "!");
+  EXPECT_EQ(countB, 2);
+
+  // Identifiers are not reused:
+  const auto idC = log.logRegisterCallback([](std::string_view, const mrpt::system::VerbosityLevel,
+                                              std::string_view, const mrpt::Clock::time_point) {});
+  EXPECT_NE(idC, idA);
+  EXPECT_NE(idC, idB);
+}
+
+// A callback that stays registered must get every message, while other
+// callbacks are added and removed from another thread, and the verbosity
+// level for callbacks is changed from yet another one. Run under TSan to
+// catch data races.
+TEST(COutputLogger, ConcurrentCallbackChangesAndLog)
+{
+  mrpt::system::COutputLogger log;
+  log.logging_enable_console_output = false;
+
+  std::atomic<int> permanentCount{0};
+  log.logRegisterCallback([&permanentCount](
+                              std::string_view, const mrpt::system::VerbosityLevel,
+                              std::string_view, const mrpt::Clock::time_point)
+                          { permanentCount++; });
+
+  constexpr int NUM_MESSAGES = 20000;
+  std::atomic<bool> stop{false};
+
+  std::thread loggerThread(
+      [&]()
+      {
+        for (int i = 0; i < NUM_MESSAGES; i++)
+        {
+          log.logStr(mrpt::system::LVL_WARN, "tick");
+        }
+        stop = true;
+      });
+
+  std::thread registerThread(
+      [&]()
+      {
+        while (!stop)
+        {
+          const auto id =
+              log.logRegisterCallback([](std::string_view, const mrpt::system::VerbosityLevel,
+                                         std::string_view, const mrpt::Clock::time_point) {});
+          log.logDeregisterCallback(id);
+        }
+      });
+
+  // WARN messages pass both thresholds, so the count below is exact:
+  std::thread levelThread(
+      [&]()
+      {
+        while (!stop)
+        {
+          log.setVerbosityLevelForCallbacks(mrpt::system::LVL_DEBUG);
+          log.setVerbosityLevelForCallbacks(mrpt::system::LVL_INFO);
+        }
+      });
+
+  loggerThread.join();
+  registerThread.join();
+  levelThread.join();
+
+  EXPECT_EQ(permanentCount.load(), NUM_MESSAGES);
 }

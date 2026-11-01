@@ -270,6 +270,47 @@ These are the supported arguments and operations:
 
       Requires: -o (or --output)
 
+    --decimate <N>
+      Op: Keep only one out of each N sensory frames (SensoryFrame-based
+      rawlogs), accumulating the odometry of the removed steps.
+
+      Requires: -o (or --output)
+
+    --lossless-decimate <N>
+      Op: Merge each N consecutive sensory frames into one, without losing
+      observations (their sensor poses are corrected with the odometry).
+
+      Requires: -o (or --output)
+
+    --compact
+      Op: Merge consecutive actions and consecutive sensory frames, and
+      remove empty sensory frames (SensoryFrame-based rawlogs).
+
+      Requires: -o (or --output). Optional: --one-per-label
+
+    --to-observations-only
+      Op: Convert a SensoryFrame-based rawlog into an observations-only one,
+      sorted by timestamp. Odometry actions become CObservationOdometry.
+
+      Requires: -o (or --output)
+
+    --to-sensory-frames <seconds>
+      Op: Convert an observations-only rawlog into a SensoryFrame-based one,
+      with sensory frames up to the given length in seconds.
+
+      Requires: -o (or --output). Optional: --one-per-label
+
+    --sort-by-timestamp
+      Op: Sort an observations-only rawlog by timestamp.
+
+      Requires: -o (or --output). Optional: --use-pc-timestamp
+
+    --regenerate-sf-timestamps
+      Op: Give the observations without a valid timestamp the timestamp of
+      another observation in the same sensory frame.
+
+      Requires: -o (or --output)
+
     --list-timestamps
       Op: generates a list with all the observations' timestamp, sensor
       label and C++ class name.

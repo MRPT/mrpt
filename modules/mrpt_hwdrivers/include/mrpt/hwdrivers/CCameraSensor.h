@@ -189,6 +189,9 @@ namespace mrpt::hwdrivers
  * camera to open (Stereo cameras: 0 or 1)
  *    bumblebee_dc1394_framerate     = 15				// eg: 7.5, 15, 30,
  * 60, etc... For possibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
+ *    bumblebee_dc1394_bayer_decoding = true  // false: keep the raw 8-bit
+ * Bayer images (lossless and 3 times smaller), in the color filter pattern
+ * reported by the camera (GBRG for Bumblebee2)
  *
  *    # Options for grabber_type= ffmpeg -------------------------------------
  *    ffmpeg_url             = rtsp://127.0.0.1      // [ffmpeg] The video file
@@ -396,6 +399,7 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
   uint64_t m_bumblebee_dc1394_camera_guid{0};
   int m_bumblebee_dc1394_camera_unit{0};
   double m_bumblebee_dc1394_framerate{15};
+  bool m_bumblebee_dc1394_bayer_decoding{true};
 
   // Options for grabber_type= ffmpeg -------------------------------------
   std::string m_ffmpeg_url;

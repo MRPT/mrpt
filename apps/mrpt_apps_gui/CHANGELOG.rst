@@ -2,6 +2,17 @@
 Changelog for package mrpt_apps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.1 (2026-11-01)
+------------------
+* RawLogViewer: redesigned on Dear ImGui: dockable panels, timeline, per-sensor panels, background cancellable operations (`#1479 <https://github.com/MRPT/mrpt/issues/1479>`_)
+* RawLogViewer: 3D view shows all sensors near the current time; robot drawn as an XYZ corner
+* SceneViewer3D, navlog-viewer, 2d-slam-demo, holonomic-navigator-demo, GridmapNavSimul: ported to Dear ImGui (no wxWidgets/nanogui)
+* New observation panel registry shared by the ImGui apps
+* 2d-slam-demo: GUI-free simulator for batch runs without a display; ImPlot charts
+* GridmapNavSimul: fixed simulation steps, joystick via GLFW, labeled odometry error model
+* Thread safety, cancellation and clang-tidy fixes in the ImGui apps
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.0 (2026-10-28)
 ------------------
 

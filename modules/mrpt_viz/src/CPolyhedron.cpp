@@ -1977,8 +1977,16 @@ void CPolyhedron::serializeFrom(mrpt::serialization::CArchive& in, uint8_t versi
 
 auto CPolyhedron::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
+  // See CSetOfLines: an empty object must not return the +-infinity box.
+  if (m_Vertices.empty())
+  {
+    return {};
+  }
   auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
-  for (const auto& pt : m_Vertices) bb.updateWithPoint(pt);
+  for (const auto& pt : m_Vertices)
+  {
+    bb.updateWithPoint(pt);
+  }
   return bb;
 }
 

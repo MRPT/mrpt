@@ -2,6 +2,14 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.1 (2026-11-01)
+------------------
+* Render lines wider than 1 pixel again, with a new WIREFRAME_THICK shader
+* Pinhole cameras work with any viewport size; orthogonal views no longer clip objects above the eye (`#1485 <https://github.com/MRPT/mrpt/issues/1485>`_)
+* Orbit camera roll is now applied; exponential zoom (`#1484 <https://github.com/MRPT/mrpt/issues/1484>`_)
+* Lighting of orthogonal cameras uses the constant view direction
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.0 (2026-10-28)
 ------------------
 * Point clouds: optionally hide back-facing points (`#1476 <https://github.com/MRPT/mrpt/issues/1476>`_)

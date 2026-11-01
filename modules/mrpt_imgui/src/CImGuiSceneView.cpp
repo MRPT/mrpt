@@ -137,6 +137,11 @@ bool CImGuiSceneView::prepareCompiledScene()
 {
   // ---- Sync controller → camera snapshot before rendering ----
   cameraController.applyTo(m_camera);
+  m_camera.set6DOFMode(m_cameraPose.has_value());
+  if (m_cameraPose)
+  {
+    m_camera.setPose(*m_cameraPose);
+  }
 
   if (!m_scene)
   {

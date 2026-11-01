@@ -2,6 +2,15 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.1 (2026-11-01)
+------------------
+* New CCamera::PinholeForViewport() and clearPinholeModel(); Viewport::get3DRayForPixelCoord() uses the pinhole model (`#1485 <https://github.com/MRPT/mrpt/issues/1485>`_)
+* Orbit camera model shared by rendering and picking (CCamera::ComputeOrbitEyeAndUp()), roll is applied (`#1484 <https://github.com/MRPT/mrpt/issues/1484>`_)
+* COrbitCameraController: exponential zoom, validated zoom limits
+* Fix exception computing the bounding box of scenes with empty line sets or polyhedrons (`#1483 <https://github.com/MRPT/mrpt/issues/1483>`_)
+* CornerXYZSimple()/CornerXYSimple() made of lines again
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.0 (2026-10-28)
 ------------------
 * Point clouds: optionally hide back-facing points (`#1476 <https://github.com/MRPT/mrpt/issues/1476>`_)

@@ -189,6 +189,73 @@ with tempfile.TemporaryDirectory() as tmpdir:
     f2.close()
     check("ReadObject until EOFError", n_objs == 6, f"got {n_objs}")
 
+print("CObservationStereoImages")
+from mrpt.obs import CObservationStereoImages
+from mrpt.img import CImage
+st = CObservationStereoImages()
+left = np.arange(48, dtype=np.uint8).reshape(6, 8)
+st.imageLeft = CImage.from_numpy(left)
+st.imageRight = CImage.from_numpy(255 - left)
+st.hasImageRight = True
+check("stereo left pixels", np.array_equal(np.asarray(st.imageLeft)[:, :, 0], left))
+check("stereo right pixels", np.array_equal(np.asarray(st.imageRight)[:, :, 0], 255 - left))
+check("stereo repr", "8x6" in repr(st) and "right=True" in repr(st), repr(st))
+st.rightCameraPose = st.cameraPose
+sp = st.getStereoCameraParams()
+sp.leftCamera.fx = 321.5
+st.setStereoCameraParams(sp)
+check("stereo params roundtrip", st.leftCamera.fx == 321.5 and st.getStereoCameraParams().leftCamera.fx == 321.5)
+check("stereo str", len(str(st)) > 0)
+with tempfile.TemporaryDirectory() as tmpdir:
+    fname = os.path.join(tmpdir, "stereo.rawlog")
+    rl = CRawlog()
+    rl.insert(st)
+    check("stereo rawlog save", rl.saveToRawLogFile(fname))
+    rl2 = CRawlog()
+    check("stereo rawlog load", rl2.loadFromRawLogFile(fname) and len(rl2) == 1)
+    st2 = rl2.getAsObservation(0)
+    check("stereo rawlog class", isinstance(st2, CObservationStereoImages))
+    check("stereo rawlog lossless", np.array_equal(np.asarray(st2.imageRight)[:, :, 0], 255 - left))
+
+print("CObservationGPS NMEA messages")
+from mrpt.obs import gnss
+gps = CObservationGPS()
+gsa = gnss.Message_NMEA_GSA()
+gsa.fields.HDOP = 1.5
+gps.setGSA(gsa)
+vtg = gnss.Message_NMEA_VTG()
+vtg.fields.ground_speed_kmh = 3.6
+gps.setVTG(vtg)
+check("hasGSA", gps.hasGSA() and not gps.hasGLL())
+check("getGSA", abs(gps.getGSA().fields.HDOP - 1.5) < 1e-9)
+check("getVTG", abs(gps.getVTG().fields.ground_speed_kmh - 3.6) < 1e-9)
+check("getZDA none", gps.getZDA() is None)
+check("GSA PRNs", gps.getGSA().fields.PRNs == [])
+check("getMessageTypes", sorted(gps.getMessageTypes()) == ["NMEA_GSA", "NMEA_VTG"],
+      str(gps.getMessageTypes()))
+check("gps str", "GSA" in str(gps))
+
+print("CObservationRotatingScan / CObservationVelodyneScan")
+from mrpt.obs import (CObservationRotatingScan, CObservationVelodyneScan, VelodyneCalibration,
+                      VelodyneGeneratePointCloudParameters)
+rs = CObservationRotatingScan()
+rs.rangeImage = np.full((4, 10), 7, dtype=np.uint16)
+check("rangeImage roundtrip", rs.rangeImage.shape == (4, 10) and int(rs.rangeImage[3, 9]) == 7)
+check("rangeImage sets dimensions", rs.rowCount == 4 and rs.columnCount == 10)
+check("rotating repr", "4x10" in repr(rs), repr(rs))
+check("rotating fromScan2D", (rs.fromScan2D(scan), rs.rowCount == 1)[1])
+check("organizedPoints shape", rs.organizedPoints.shape[2] == 3)
+velo = CObservationVelodyneScan()
+check("velodyne packets", velo.packetCount() == 0)
+calib = VelodyneCalibration.LoadDefaultCalibration("VLP16")
+check("VLP16 default calibration", not calib.empty())
+velo.calibration = calib
+params = VelodyneGeneratePointCloudParameters()
+params.generatePerPointTimestamp = True
+velo.generatePointCloud(params)
+check("velodyne empty cloud", velo.pointCount() == 0 and velo.pointCloudXYZ().shape == (0, 3))
+check("velodyne timestamps", velo.pointCloudTimestamps().shape == (0,))
+
 print("CSimpleMap")
 smap = CSimpleMap()
 for i in range(4):

@@ -15,6 +15,9 @@ uniform mediump float ssao_power;
 uniform mediump float ssao_ambient_floor;
 
 uniform highp vec3 cam_position;
+// Unit vector towards an orthogonal camera, or zero for projective ones: the
+// view direction is then the same for all fragments.
+uniform highp vec3 cam_ortho_view_dir;
 uniform lowp float materialSpecular;  //  [0,1]
 uniform highp float materialSpecularExponent;
 uniform lowp vec3 materialEmissive;
@@ -27,7 +30,8 @@ void main()
     highp vec3 normal = normalize(frag_normal);
     highp vec3 cam2frag = cam_position - frag_position;
     mediump float cam2fragDist = length(cam2frag);
-    highp vec3 viewDirection = normalize(cam2frag);
+    highp vec3 viewDirection = dot(cam_ortho_view_dir, cam_ortho_view_dir) > 0.0
+        ? cam_ortho_view_dir : normalize(cam2frag);
     // Light the side facing the camera, e.g. the bottom of a plane seen from
     // below. Decided with the geometric normal (not the normal map), and not
     // with gl_FrontFacing, since not all meshes have a consistent winding:

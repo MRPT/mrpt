@@ -22,6 +22,8 @@
 #include <mrpt/viz/stock_objects.h>
 
 #include <algorithm>  // std::clamp
+#include <limits>
+#include <utility>
 
 using namespace mrpt::obs;
 
@@ -489,6 +491,23 @@ void add_common_to_viz(
     out.insert(glCorner);
   }
 }
+/** True if the points carry their own RGB colors. */
+bool hasOwnColors(const mrpt::maps::CPointsMap* m)
+{
+  if (m == nullptr)
+  {
+    return false;
+  }
+  using P = mrpt::maps::CPointsMap;
+  const bool u8 = m->getPointsBufferRef_uint8_field(P::POINT_FIELD_COLOR_Ru8) != nullptr &&
+                  m->getPointsBufferRef_uint8_field(P::POINT_FIELD_COLOR_Gu8) != nullptr &&
+                  m->getPointsBufferRef_uint8_field(P::POINT_FIELD_COLOR_Bu8) != nullptr;
+  const bool f = m->getPointsBufferRef_float_field(P::POINT_FIELD_COLOR_Rf) != nullptr &&
+                 m->getPointsBufferRef_float_field(P::POINT_FIELD_COLOR_Gf) != nullptr &&
+                 m->getPointsBufferRef_float_field(P::POINT_FIELD_COLOR_Bf) != nullptr;
+  return u8 || f;
+}
+
 }  // namespace
 
 void mrpt::obs::obs3Dscan_to_viz(
@@ -558,7 +577,8 @@ void mrpt::obs::obsVelodyne_to_viz(
   pnts->loadFromPointsMap(&pntsMap);
   pnts->setPointSize(static_cast<float>(p.pointSize));
 
-  if (!p.colorFromRGBimage)
+  // Keep the points' own colors only if they have them:
+  if (!p.colorFromRGBimage || !hasOwnColors(&pntsMap))
   {
     recolorize3Dpc(pnts, &pntsMap, p.coloring);
   }
@@ -581,7 +601,8 @@ void mrpt::obs::obsPointCloud_to_viz(
 
   pnts->setPointSize(static_cast<float>(p.pointSize));
 
-  if (!p.colorFromRGBimage)
+  // Keep the points' own colors only if they have them:
+  if (!p.colorFromRGBimage || !hasOwnColors(obs->pointcloud.get()))
   {
     recolorize3Dpc(pnts, obs->pointcloud.get(), p.coloring);
   }
@@ -599,17 +620,27 @@ void mrpt::obs::obsRotatingScan_to_viz(
   auto pnts = mrpt::viz::CPointCloudColoured::Create();
   out.insert(pnts);
 
-  if (!obs->organizedPoints.empty())
+  float zMin = std::numeric_limits<float>::max();
+  float zMax = -std::numeric_limits<float>::max();
+  for (const auto& pt : obs->organizedPoints)
   {
-    for (const auto& pt : obs->organizedPoints) pnts->insertPoint({pt.x, pt.y, pt.z, 0, 0, 0, 0});
+    pnts->insertPoint({pt.x, pt.y, pt.z, 0, 0, 0, 0});
+    zMin = std::min(zMin, pt.z);
+    zMax = std::max(zMax, pt.z);
   }
   pnts->setPose(obs->sensorPose);
 
   pnts->setPointSize(static_cast<float>(p.pointSize));
 
-  if (!p.colorFromRGBimage)
+  // These points have no colors of their own, nor a points map to color by
+  // any field: color them by height.
+  if (pnts->size() != 0 && p.coloring.colorMap != mrpt::img::cmNONE)
   {
-    recolorize3Dpc(pnts, nullptr, p.coloring);
+    if (p.coloring.invertColorMapping)
+    {
+      std::swap(zMin, zMax);
+    }
+    pnts->recolorizeByCoordinate(zMin, zMax, 2, p.coloring.colorMap);
   }
 }
 

@@ -12,7 +12,7 @@ import mrpt.serialization
 import numpy
 import typing
 from . import gnss
-__all__: list[str] = ['CAction', 'CActionCollection', 'CActionRobotMovement2D', 'CActionRobotMovement3D', 'CObservation', 'CObservation2DRangeScan', 'CObservation3DRangeScan', 'CObservationGPS', 'CObservationIMU', 'CObservationImage', 'CObservationOdometry', 'CObservationRobotPose', 'CRawlog', 'CSensoryFrame', 'CSimpleMap', 'GnssFixType', 'IMU_ALTITUDE', 'IMU_MAG_X', 'IMU_MAG_Y', 'IMU_MAG_Z', 'IMU_ORI_QUAT_W', 'IMU_ORI_QUAT_X', 'IMU_ORI_QUAT_Y', 'IMU_ORI_QUAT_Z', 'IMU_PITCH', 'IMU_PITCH_VEL', 'IMU_PITCH_VEL_GLOBAL', 'IMU_PRESSURE', 'IMU_ROLL', 'IMU_ROLL_VEL', 'IMU_ROLL_VEL_GLOBAL', 'IMU_TEMPERATURE', 'IMU_WX', 'IMU_WY', 'IMU_WZ', 'IMU_X', 'IMU_X_ACC', 'IMU_X_ACC_GLOBAL', 'IMU_X_VEL', 'IMU_Y', 'IMU_YAW', 'IMU_YAW_VEL', 'IMU_YAW_VEL_GLOBAL', 'IMU_Y_ACC', 'IMU_Y_ACC_GLOBAL', 'IMU_Y_VEL', 'IMU_Z', 'IMU_Z_ACC', 'IMU_Z_ACC_GLOBAL', 'IMU_Z_VEL', 'T3DPointsProjectionParams', 'TIMUDataIndex', 'TMapGenericParams', 'TMetricMapInitializer', 'TSetOfMetricMapInitializers', 'gnss']
+__all__: list[str] = ['CAction', 'CActionCollection', 'CActionRobotMovement2D', 'CActionRobotMovement3D', 'CObservation', 'CObservation2DRangeScan', 'CObservation3DRangeScan', 'CObservationGPS', 'CObservationIMU', 'CObservationImage', 'CObservationOdometry', 'CObservationRobotPose', 'CObservationRotatingScan', 'CObservationStereoImages', 'CObservationVelodyneScan', 'CRawlog', 'CSensoryFrame', 'CSimpleMap', 'GnssFixType', 'IMU_ALTITUDE', 'IMU_MAG_X', 'IMU_MAG_Y', 'IMU_MAG_Z', 'IMU_ORI_QUAT_W', 'IMU_ORI_QUAT_X', 'IMU_ORI_QUAT_Y', 'IMU_ORI_QUAT_Z', 'IMU_PITCH', 'IMU_PITCH_VEL', 'IMU_PITCH_VEL_GLOBAL', 'IMU_PRESSURE', 'IMU_ROLL', 'IMU_ROLL_VEL', 'IMU_ROLL_VEL_GLOBAL', 'IMU_TEMPERATURE', 'IMU_WX', 'IMU_WY', 'IMU_WZ', 'IMU_X', 'IMU_X_ACC', 'IMU_X_ACC_GLOBAL', 'IMU_X_VEL', 'IMU_Y', 'IMU_YAW', 'IMU_YAW_VEL', 'IMU_YAW_VEL_GLOBAL', 'IMU_Y_ACC', 'IMU_Y_ACC_GLOBAL', 'IMU_Y_VEL', 'IMU_Z', 'IMU_Z_ACC', 'IMU_Z_ACC_GLOBAL', 'IMU_Z_VEL', 'T3DPointsProjectionParams', 'TIMUDataIndex', 'TMapGenericParams', 'TMetricMapInitializer', 'TSetOfMetricMapInitializers', 'VelodyneCalibration', 'VelodyneGeneratePointCloudParameters', 'gnss']
 class CObservation(mrpt.serialization.CSerializable):
     """
     Base class of all sensor observations: a timestamp, a sensor label and data.
@@ -129,6 +129,102 @@ class CObservationImage(CObservation):
         Constructor.
         """
     def __repr__(self) -> str:
+        ...
+class CObservationStereoImages(CObservation):
+    """
+    A pair of images from a stereo camera (left and, optionally, right and disparity), with the camera parameters and poses.
+    """
+    def __init__(self) -> None:
+        """
+        Constructor.
+        """
+    def __repr__(self) -> str:
+        ...
+    def __str__(self) -> str:
+        ...
+    def areImagesRectified(self) -> bool:
+        """
+        Whether the images are rectified, by the MRPT convention: all the distortion parameters of leftCamera are zero.
+        """
+    def getStereoCameraParams(self) -> mrpt.img.TStereoCamera:
+        """
+        Returns both cameras parameters and their relative pose as a TStereoCamera.
+        """
+    def setStereoCameraParams(self, params: mrpt.img.TStereoCamera) -> None:
+        """
+        Sets both cameras parameters and their relative pose.
+        """
+    @property
+    def cameraPose(self) -> mrpt.poses.CPose3DQuat:
+        """
+        Pose of the left camera on the robot.
+        """
+    @cameraPose.setter
+    def cameraPose(self, arg0: mrpt.poses.CPose3DQuat) -> None:
+        ...
+    @property
+    def hasImageDisparity(self) -> bool:
+        """
+        Whether imageDisparity holds an image.
+        """
+    @hasImageDisparity.setter
+    def hasImageDisparity(self, arg0: bool) -> None:
+        ...
+    @property
+    def hasImageRight(self) -> bool:
+        """
+        Whether imageRight holds an image.
+        """
+    @hasImageRight.setter
+    def hasImageRight(self, arg0: bool) -> None:
+        ...
+    @property
+    def imageDisparity(self) -> mrpt.img.CImage:
+        """
+        Disparity image (only valid if hasImageDisparity).
+        """
+    @imageDisparity.setter
+    def imageDisparity(self, arg0: mrpt.img.CImage) -> None:
+        ...
+    @property
+    def imageLeft(self) -> mrpt.img.CImage:
+        """
+        Left camera image.
+        """
+    @imageLeft.setter
+    def imageLeft(self, arg0: mrpt.img.CImage) -> None:
+        ...
+    @property
+    def imageRight(self) -> mrpt.img.CImage:
+        """
+        Right camera image (only valid if hasImageRight).
+        """
+    @imageRight.setter
+    def imageRight(self, arg0: mrpt.img.CImage) -> None:
+        ...
+    @property
+    def leftCamera(self) -> mrpt.img.TCamera:
+        """
+        Left camera intrinsic parameters.
+        """
+    @leftCamera.setter
+    def leftCamera(self, arg0: mrpt.img.TCamera) -> None:
+        ...
+    @property
+    def rightCamera(self) -> mrpt.img.TCamera:
+        """
+        Right camera intrinsic parameters.
+        """
+    @rightCamera.setter
+    def rightCamera(self, arg0: mrpt.img.TCamera) -> None:
+        ...
+    @property
+    def rightCameraPose(self) -> mrpt.poses.CPose3DQuat:
+        """
+        Pose of the right camera with respect to the left one.
+        """
+    @rightCameraPose.setter
+    def rightCameraPose(self, arg0: mrpt.poses.CPose3DQuat) -> None:
         ...
 class TIMUDataIndex:
     """
@@ -764,6 +860,8 @@ class CObservationGPS(CObservation):
         """
     def __repr__(self) -> str:
         ...
+    def __str__(self) -> str:
+        ...
     def clear(self) -> None:
         """
         Removes all GNSS messages
@@ -772,25 +870,77 @@ class CObservationGPS(CObservation):
         """
         Returns a copy of the NMEA GGA message, or None
         """
+    def getGLL(self) -> gnss.Message_NMEA_GLL | None:
+        """
+        Returns a copy of the NMEA GLL message, or None
+        """
+    def getGSA(self) -> gnss.Message_NMEA_GSA | None:
+        """
+        Returns a copy of the NMEA GSA message, or None
+        """
+    def getMessageTypes(self) -> list[str]:
+        """
+        Names of the GNSS messages in this observation (e.g. NMEA_GGA, NV_OEM6_BESTPOS); str(obs) dumps all of them
+        """
     def getRMC(self) -> gnss.Message_NMEA_RMC | None:
         """
         Returns a copy of the NMEA RMC message, or None
+        """
+    def getVTG(self) -> gnss.Message_NMEA_VTG | None:
+        """
+        Returns a copy of the NMEA VTG message, or None
+        """
+    def getZDA(self) -> gnss.Message_NMEA_ZDA | None:
+        """
+        Returns a copy of the NMEA ZDA message, or None
         """
     def hasGGA(self) -> bool:
         """
         True if the observation has an NMEA GGA message
         """
+    def hasGLL(self) -> bool:
+        """
+        True if the observation has an NMEA GLL message
+        """
+    def hasGSA(self) -> bool:
+        """
+        True if the observation has an NMEA GSA message
+        """
     def hasRMC(self) -> bool:
         """
         True if the observation has an NMEA RMC message
+        """
+    def hasVTG(self) -> bool:
+        """
+        True if the observation has an NMEA VTG message
+        """
+    def hasZDA(self) -> bool:
+        """
+        True if the observation has an NMEA ZDA message
         """
     def setGGA(self, msg: gnss.Message_NMEA_GGA) -> None:
         """
         Stores (or replaces) the NMEA GGA message
         """
+    def setGLL(self, msg: gnss.Message_NMEA_GLL) -> None:
+        """
+        Stores (or replaces) the NMEA GLL message
+        """
+    def setGSA(self, msg: gnss.Message_NMEA_GSA) -> None:
+        """
+        Stores (or replaces) the NMEA GSA message
+        """
     def setRMC(self, msg: gnss.Message_NMEA_RMC) -> None:
         """
         Stores (or replaces) the NMEA RMC message
+        """
+    def setVTG(self, msg: gnss.Message_NMEA_VTG) -> None:
+        """
+        Stores (or replaces) the NMEA VTG message
+        """
+    def setZDA(self, msg: gnss.Message_NMEA_ZDA) -> None:
+        """
+        Stores (or replaces) the NMEA ZDA message
         """
     @property
     def covariance_enu(self) -> mrpt.math.CMatrixDouble33 | None:
@@ -799,6 +949,249 @@ class CObservationGPS(CObservation):
         """
     @covariance_enu.setter
     def covariance_enu(self, arg0: mrpt.math.CMatrixDouble33 | None) -> None:
+        ...
+class VelodyneCalibration:
+    """
+    Velodyne calibration data, for CObservationVelodyneScan.
+    """
+    @staticmethod
+    def LoadDefaultCalibration(lidar_model: str) -> VelodyneCalibration:
+        """
+        Default calibration of a model (VLP16, HDL32, HDL64), or an empty one if unknown.
+        """
+    def __init__(self) -> None:
+        """
+        Empty calibration.
+        """
+    def empty(self) -> bool:
+        """
+        True if no calibration is loaded.
+        """
+    def loadFromXMLFile(self, filename: str) -> bool:
+        """
+        Loads a Velodyne XML calibration file. Returns False on error.
+        """
+    def loadFromYAMLFile(self, filename: str) -> bool:
+        """
+        Loads a ROS velodyne_pointcloud YAML calibration file. Returns False on error.
+        """
+class VelodyneGeneratePointCloudParameters:
+    """
+    Options of CObservationVelodyneScan.generatePointCloud().
+    """
+    dualKeepLast: bool
+    dualKeepStrongest: bool
+    filterOutIsolatedPoints: bool
+    generatePerPointAzimuth: bool
+    generatePerPointTimestamp: bool
+    isolatedPointsFilterDistance: float
+    maxAzimuth_deg: float
+    maxDistance: float
+    minAzimuth_deg: float
+    minDistance: float
+    def __init__(self) -> None:
+        """
+        Default parameters.
+        """
+class CObservationVelodyneScan(CObservation):
+    """
+    Raw packets of one Velodyne scan. generatePointCloud() decodes them into point_cloud, read with the pointCloud*() methods.
+    """
+    has_satellite_timestamp: bool
+    originalReceivedTimestamp: datetime.timedelta
+    def __init__(self) -> None:
+        """
+        Constructor.
+        """
+    def __repr__(self) -> str:
+        ...
+    def generatePointCloud(self, params: VelodyneGeneratePointCloudParameters = ...) -> None:
+        """
+        Decodes the packets into point_cloud (needs a calibration).
+        """
+    def packetCount(self) -> int:
+        """
+        Number of raw data packets.
+        """
+    def pointCloudAzimuth(self) -> numpy.ndarray:
+        """
+        Azimuth of each point (rad); only with generatePerPointAzimuth.
+        """
+    def pointCloudIntensity(self) -> numpy.ndarray:
+        """
+        Intensity of each generated point (uint8).
+        """
+    def pointCloudLaserId(self) -> numpy.ndarray:
+        """
+        Laser (ring) of each generated point.
+        """
+    def pointCloudTimestamps(self) -> numpy.ndarray:
+        """
+        Time of each point (UNIX seconds); only with generatePerPointTimestamp.
+        """
+    def pointCloudXYZ(self) -> numpy.ndarray:
+        """
+        Generated points as an Nx3 float32 array, in the sensor frame.
+        """
+    def pointCount(self) -> int:
+        """
+        Number of points generated by generatePointCloud().
+        """
+    @property
+    def calibration(self) -> VelodyneCalibration:
+        """
+        Calibration used to decode the packets.
+        """
+    @calibration.setter
+    def calibration(self, arg0: VelodyneCalibration) -> None:
+        ...
+    @property
+    def maxRange(self) -> float:
+        """
+        Maximum valid range (m).
+        """
+    @maxRange.setter
+    def maxRange(self, arg0: float) -> None:
+        ...
+    @property
+    def minRange(self) -> float:
+        """
+        Minimum valid range (m).
+        """
+    @minRange.setter
+    def minRange(self, arg0: float) -> None:
+        ...
+    @property
+    def sensorPose(self) -> mrpt.poses.CPose3D:
+        """
+        Pose of the sensor on the robot.
+        """
+    @sensorPose.setter
+    def sensorPose(self, arg0: mrpt.poses.CPose3D) -> None:
+        ...
+class CObservationRotatingScan(CObservation):
+    """
+    A scan of a rotating LiDAR (Velodyne, Ouster, ...) as organized range and intensity images: one row per laser, one column per firing.
+    """
+    has_satellite_timestamp: bool
+    originalReceivedTimestamp: datetime.timedelta
+    def __init__(self) -> None:
+        """
+        Constructor.
+        """
+    def __repr__(self) -> str:
+        ...
+    def __str__(self) -> str:
+        ...
+    def fromGeneric(self, obs: CObservation) -> bool:
+        """
+        Fills this scan from any supported observation. Returns False if not supported.
+        """
+    def fromScan2D(self, obs: CObservation2DRangeScan) -> None:
+        """
+        Fills this scan from a 2D LiDAR scan.
+        """
+    def fromVelodyne(self, obs: CObservationVelodyneScan) -> None:
+        """
+        Fills this scan from a Velodyne one (with a calibration).
+        """
+    @property
+    def azimuthSpan(self) -> float:
+        """
+        Azimuth span of the columns (rad).
+        """
+    @azimuthSpan.setter
+    def azimuthSpan(self, arg0: float) -> None:
+        ...
+    @property
+    def columnCount(self) -> int:
+        """
+        Number of firings (image columns).
+        """
+    @columnCount.setter
+    def columnCount(self, arg0: int) -> None:
+        ...
+    @property
+    def intensityImage(self) -> numpy.ndarray:
+        """
+        Intensities (uint8, rows x columns), a copy.
+        """
+    @property
+    def lidarModel(self) -> str:
+        """
+        LiDAR model name.
+        """
+    @lidarModel.setter
+    def lidarModel(self, arg0: str) -> None:
+        ...
+    @property
+    def maxRange(self) -> float:
+        """
+        Maximum valid range (m).
+        """
+    @maxRange.setter
+    def maxRange(self, arg0: float) -> None:
+        ...
+    @property
+    def minRange(self) -> float:
+        """
+        Minimum valid range (m).
+        """
+    @minRange.setter
+    def minRange(self, arg0: float) -> None:
+        ...
+    @property
+    def organizedPoints(self) -> numpy.ndarray:
+        """
+        Points of each range image cell (float32, rows x columns x 3), in the sensor frame.
+        """
+    @property
+    def rangeImage(self) -> numpy.ndarray:
+        """
+        Ranges (uint16, rows x columns; multiply by rangeResolution for meters, 0: invalid). A copy: assign a whole array to change it.
+        """
+    @rangeImage.setter
+    def rangeImage(self, arg1: numpy.ndarray) -> None:
+        ...
+    @property
+    def rangeResolution(self) -> float:
+        """
+        Range (m) of one unit of rangeImage.
+        """
+    @rangeResolution.setter
+    def rangeResolution(self, arg0: float) -> None:
+        ...
+    @property
+    def rowCount(self) -> int:
+        """
+        Number of lasers (image rows).
+        """
+    @rowCount.setter
+    def rowCount(self, arg0: int) -> None:
+        ...
+    @property
+    def sensorPose(self) -> mrpt.poses.CPose3D:
+        """
+        Pose of the sensor on the robot.
+        """
+    @sensorPose.setter
+    def sensorPose(self, arg0: mrpt.poses.CPose3D) -> None:
+        ...
+    @property
+    def startAzimuth(self) -> float:
+        """
+        Azimuth of the first column (rad).
+        """
+    @startAzimuth.setter
+    def startAzimuth(self, arg0: float) -> None:
+        ...
+    @property
+    def sweepDuration(self) -> float:
+        """
+        Duration of the scan (s).
+        """
+    @sweepDuration.setter
+    def sweepDuration(self, arg0: float) -> None:
         ...
 class TMapGenericParams(mrpt.config.CLoadableOptions, mrpt.serialization.CSerializable):
     """

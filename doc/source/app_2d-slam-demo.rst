@@ -67,3 +67,37 @@ Invoking the program without any flag will launch it in normal, interactive, mod
    
    2d-slam-demo
 
+
+With ``--config``, a non-interactive experiment is run first (its statistics
+are printed and appended to ``slam_out.txt``); with ``--nogui`` the program
+then exits, without ever opening a window, so batch experiments can run on
+machines without a display.
+
+
+4. User interface
+-------------------
+
+All views are dockable panels; their layout is remembered across sessions.
+
+- **Ground truth**: the landmarks, the robot and the area seen by its sensor.
+- **Observation**: the last observation in the robot frame, with the 3-sigma
+  ellipses of each reading.
+- **Estimated map**: the robot and landmarks estimated by the EKF, with their
+  3-sigma ellipses (optionally labeled with their real landmark index).
+- **Individual compatibility**: observations and predictions in
+  range-bearing space, with the individually compatible pairs and the final
+  associations; and the **DA matrix** of their distances.
+- **Errors**: robot pose errors in x, y and heading vs. step, with their
+  3-sigma bounds.
+- **Statistics**: data association results (true/false positives and
+  negatives, JCBB iterations) and computation time per step.
+- **Parameters**: every parameter of the KF, the robot motion, the sensor,
+  the data association and the ground truth map (square corridor, random, or a
+  text file with one "x y" landmark per row), editable while the simulation
+  runs.
+
+Toolbar and keyboard: **Reset** (R), **Step** (S), **Run/Stop** (Space) and
+**Batch** (B, a full non-interactive run in the background, which can be
+cancelled). The **Tools** menu loads and saves the parameters, saves the
+filter state or the last data association, records the simulated data to a
+rawlog file, and shows the profiler statistics.

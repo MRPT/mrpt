@@ -143,7 +143,11 @@ mrpt_add_library(
   `BayerPattern` names the top-left 2x2 block (ROS convention); OpenCV's
   `COLOR_Bayer*` names are shifted (ROS `RGGB` == `COLOR_BayerBG2RGB`).
 * **mrpt_viz** has no OpenGL dependency (scene-graph description consumed by
-  `mrpt_opengl`), so it is testable with plain unit tests.
+  `mrpt_opengl`), so it is testable with plain unit tests. The orbit camera
+  model lives only in `CCamera::ComputeOrbitEyeAndUp()`, shared by the
+  renderer (`CompiledViewport`) and picking (`get3DRayForPixelCoord()`);
+  `CFBORender_CameraPicking_unittest` checks that both agree. Likewise for
+  `CCamera::PinholeForViewport()` (pinhole intrinsics vs. viewport size).
 * **mrpt_opengl**: `Texture` shares one GL texture among users of the same
   image buffer and options only within one `Options::shareScope`
   (`CompiledScene` uses the EGL context it was compiled in; all non-EGL
@@ -163,25 +167,35 @@ mrpt_add_library(
   `shadow-calculation.f.glsl`: change both. Each cube face is cached by a
   hash of the `m_changeCount` of the proxies in its frustum, so
   `CompiledScene` must bump it only on actual changes.
+  `glLineWidth()` > 1 does not work in core profile/ES/WebGL: lines wider
+  than 1 px use the `WIREFRAME_THICK` shader (instanced quads, tutorial 2.13).
+  Orthogonal orbit cameras clip at [-far, far] around the eye (it is just a
+  consequence of the zoom), and lighting shaders take the view direction from
+  `cam_ortho_view_dir` for them, not from `cam_position`.
   Pinhole cameras (`setProjectiveFromPinhole()`) place image coordinate
   (u,v) at the corner of pixel (u,v), not its center: rendered objects appear
   0.5 px up-left of `camera_geometry` projections. `CFBORender` lens
   distortion follows the same convention.
-* **mrpt_imgui**: the ImGui-dependent methods of `CImGuiSceneView` are inline
-  in its header (compiled only in user code that has `imgui.h`); the library
-  itself does not link ImGui. `renderAsBackground()` draws from an ImGui draw
-  callback straight into the bound framebuffer (feature macro
-  `MRPT_IMGUI_HAS_BACKGROUND_SCENE_VIEW`).
+* **mrpt_imgui**: the shared framework of the ImGui apps (app shell with
+  docking, background scene, timeline, image/plot/log panels, file dialogs,
+  `AsyncTask`). It links Dear ImGui + ImPlot PUBLIC from `mrpt_imgui_vendor`
+  (static library; both packages are skipped without `libglfw3-dev`). Keep it
+  free of `mrpt_obs`/`mrpt_maps`: per-observation panels belong to the
+  registry in `apps/mrpt_apps_gui/imgui-common/` (internal, not installed).
+  `renderAsBackground()` draws from an ImGui draw callback straight into the
+  bound framebuffer. Headless runs of apps: `MRPT_IMGUI_MAX_FRAMES=N` and
+  `MRPT_IMGUI_SCREENSHOT=file.png` under `xvfb-run`; never pixel-compare.
 * **mrpt_gui**: `mrpt/gui/WxUtils.h` pulls in wxWidgets headers but the library
   links wxWidgets privately; test targets need
   `target_link_libraries(... PRIVATE imp_wxwidgets)`. macOS/Windows CI builds
   with `-DDISABLE_WXWIDGETS=ON`.
 * **mrpt_hwdrivers**: several `MRPT_HAS_*` macros (`MRPT_HAS_OPENCV`,
-  `MRPT_HAS_LIBDC1394_2`, `MRPT_HAS_ROBOPEAK_LIDAR`, `MRPT_HAS_NIDAQMX*`,
-  `MRPT_HAS_PGR_FLYCAPTURE2`, `MRPT_HAS_KINECT_CL_NUI`) are never defined in
-  3.x, so those paths are compiled out; defining one alone does not make it
-  build. Some sources never include `mrpt/hwdrivers/config.h`, so even defined
-  macros read 0 there.
+  `MRPT_HAS_ROBOPEAK_LIDAR`, `MRPT_HAS_NIDAQMX*`, `MRPT_HAS_PGR_FLYCAPTURE2`,
+  `MRPT_HAS_KINECT_CL_NUI`) are never defined in 3.x, so those paths are
+  compiled out; defining one alone does not make it build. Some sources never
+  include `mrpt/hwdrivers/config.h`, so even defined macros read 0 there.
+  libdc1394 grabbers can only be tested without a camera through
+  `CImageGrabber_dc1394::decodeStereoFrame()`.
 * **mrpt_nav**: tests must advance the *navigation* time
   (`getNavigationTime()`), not just the clock, due to a 20 ms throttle in
   `updateCurrentPoseAndSpeeds()`. `CPTG_DiffDrive_*` need a polygonal
@@ -350,8 +364,9 @@ scripts/coverage_module_report.py coverage.json mrpt_math   # per-file + aggrega
 * Measure after rebuilding and testing *all* modules: template-heavy headers
   get most of their coverage from other modules' tests.
 * Main remaining gaps: `mrpt_hwdrivers` drivers that own their transport
-  (need `bindIO()`/`bindStream()` first), `mrpt_imgui` and non-wx parts of
-  `mrpt_gui`, and `mrpt_libapps_cli` (better covered by subprocess tests).
+  (need `bindIO()`/`bindStream()` first), non-wx parts of `mrpt_gui`,
+  `mrpt_imgui` (63% lines; file dialogs and widgets are the gap), and
+  `mrpt_libapps_cli` (better covered by subprocess tests).
 
 ## 8. Porting ROS 2 nodes
 

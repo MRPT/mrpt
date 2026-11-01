@@ -767,7 +767,9 @@ function(mrpt_add_test)
 
     # Run it:
     #add_custom_target(run_${MRPT_ADD_TEST_TARGET} COMMAND $<TARGET_FILE:${MRPT_ADD_TEST_TARGET}>)
-    add_test(${MRPT_ADD_TEST_TARGET}_build "${CMAKE_COMMAND}" --build ${CMAKE_CURRENT_BINARY_DIR} --target ${MRPT_ADD_TEST_TARGET})
+    # Build from the top of the build tree: with single-file generators
+    # (Ninja), a subdirectory of a project has no build file of its own.
+    add_test(${MRPT_ADD_TEST_TARGET}_build "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target ${MRPT_ADD_TEST_TARGET})
     add_test(run_${MRPT_ADD_TEST_TARGET} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MRPT_ADD_TEST_TARGET})
     set_tests_properties(run_${MRPT_ADD_TEST_TARGET} PROPERTIES DEPENDS ${MRPT_ADD_TEST_TARGET}_build)
 

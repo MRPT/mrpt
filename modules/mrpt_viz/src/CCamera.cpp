@@ -13,9 +13,13 @@
 */
 
 #include <mrpt/containers/yaml.h>
+#include <mrpt/math/geometry.h>  // crossProduct3D()
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/optional_serialization.h>
 #include <mrpt/viz/CCamera.h>
+
+#include <algorithm>
+#include <cmath>
 
 using namespace mrpt;
 using namespace mrpt::viz;
@@ -84,6 +88,63 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
+}
+
+auto CCamera::ComputeOrbitEyeAndUp(
+    const mrpt::math::TPoint3D& pointingAt,
+    double azimuthRad,
+    double elevationRad,
+    double distance,
+    double rollRad) -> OrbitEyeAndUp
+{
+  const double ca = std::cos(azimuthRad);
+  const double sa = std::sin(azimuthRad);
+  const double ce = std::cos(elevationRad);
+  const double se = std::sin(elevationRad);
+
+  // Unit vector from the pointing point towards the eye:
+  const TVector3D toEye(ca * ce, sa * ce, se);
+
+  OrbitEyeAndUp ret;
+  ret.eye = pointingAt + toEye * std::max(0.001, distance);
+
+  // Up vector without roll: orthogonal to the viewing direction, in the
+  // vertical plane containing it.
+  const TVector3D up0(-ca * se, -sa * se, ce);
+  if (rollRad == 0)
+  {
+    ret.up = up0;
+    return ret;
+  }
+
+  // Roll: rotate the up vector around the viewing direction (forward=-toEye).
+  // Since up0 is orthogonal to forward, Rodrigues' formula reduces to:
+  const TVector3D forward = toEye * -1.0;
+  const TVector3D right = mrpt::math::crossProduct3D(forward, up0);
+  ret.up = up0 * std::cos(rollRad) + right * std::sin(rollRad);
+  return ret;
+}
+
+mrpt::img::TCamera CCamera::PinholeForViewport(
+    const mrpt::img::TCamera& pinhole, uint32_t viewportWidth, uint32_t viewportHeight)
+{
+  if (pinhole.ncols == viewportWidth && pinhole.nrows == viewportHeight)
+  {
+    return pinhole;
+  }
+  ASSERT_GT_(pinhole.nrows, 0U);
+
+  const double s = static_cast<double>(viewportHeight) / static_cast<double>(pinhole.nrows);
+  const double offsetX = 0.5 * (static_cast<double>(viewportWidth) - s * pinhole.ncols);
+
+  mrpt::img::TCamera ret = pinhole;
+  ret.ncols = viewportWidth;
+  ret.nrows = viewportHeight;
+  ret.fx(pinhole.fx() * s);
+  ret.fy(pinhole.fy() * s);
+  ret.cx(pinhole.cx() * s + offsetX);
+  ret.cy(pinhole.cy() * s);
+  return ret;
 }
 
 /** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */

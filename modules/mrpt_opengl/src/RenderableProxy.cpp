@@ -58,10 +58,10 @@ bool anyTranslucent(const std::vector<TColor>& colors)
 
 /** Points and lines without per-vertex colors use the object color: the
  * color attribute is disabled in their VAO, so its constant value is used. */
-void setConstantVertexColor(const TColor& c)
+void setConstantVertexColor(const TColor& c, unsigned int attribIndex = 1)
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
-  glVertexAttrib4f(1, c.R / 255.0f, c.G / 255.0f, c.B / 255.0f, c.A / 255.0f);
+  glVertexAttrib4f(attribIndex, c.R / 255.0f, c.G / 255.0f, c.B / 255.0f, c.A / 255.0f);
 #endif
 }
 }  // namespace
@@ -377,7 +377,12 @@ void PointsProxyBase::render([[maybe_unused]] const RenderContext& rc) const
 // LinesProxyBase implementation
 // ============================================================================
 
-// CHANGE TO:
+float LinesProxyBase::effectiveLineWidth() const
+{
+  const float w = m_antiAliasing ? m_lineWidth : std::round(m_lineWidth);
+  return std::max(1.0f, w);
+}
+
 void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
@@ -410,23 +415,20 @@ void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
   m_hasColorBuffer = !colors.empty() && colors.size() == m_vertexCount;
   m_baseColor = sourceObj->getColor_u8();
   m_transparent = m_hasColorBuffer ? anyTranslucent(colors) : m_baseColor.A != 0xff;
+  // Anti-aliased thick lines blend their edges with what is behind them:
+  if (drawsThickLines() && m_antiAliasing)
+  {
+    m_transparent = true;
+  }
   if (m_vertexCount == 0)
   {
     return;
   }
 
-  // Create VAO
-  m_vao.createOnce();
-  m_vao.bind();
-
   // Upload vertex positions
   m_vertexBuffer.createOnce();
   m_vertexBuffer.bind();
   m_vertexBuffer.allocate(vertices.data(), static_cast<int>(sizeof(TPoint3Df) * m_vertexCount));
-
-  // Attribute 0: position (vec3)
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TPoint3Df), nullptr);
 
   // Upload colors
   if (m_hasColorBuffer)
@@ -434,14 +436,67 @@ void LinesProxyBase::compile(const mrpt::viz::CVisualObject* sourceObj)
     m_colorBuffer.createOnce();
     m_colorBuffer.bind();
     m_colorBuffer.allocate(colors.data(), static_cast<int>(sizeof(TColor) * m_vertexCount));
+  }
 
-    // Attribute 1: color (vec4 as unsigned bytes, normalized)
+  // VAO for GL_LINES:
+  m_vao.createOnce();
+  m_vao.bind();
+
+  // Attribute 0: position (vec3)
+  m_vertexBuffer.bind();
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TPoint3Df), nullptr);
+
+  // Attribute 1: color (vec4 as unsigned bytes, normalized)
+  if (m_hasColorBuffer)
+  {
+    m_colorBuffer.bind();
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TColor), nullptr);
   }
   else
   {
     glDisableVertexAttribArray(1);
+  }
+
+  // VAO for thick lines: each segment (pair of consecutive vertices) is one
+  // instance, with its two endpoints and colors as per-instance attributes
+  // 0,1 (start) and 2,3 (end), read from the same buffers.
+  if (drawsThickLines())
+  {
+    m_vaoThick.createOnce();
+    m_vaoThick.bind();
+
+    constexpr GLsizei posStride = 2 * sizeof(TPoint3Df);
+    m_vertexBuffer.bind();
+    for (GLuint end = 0; end < 2; end++)
+    {
+      const GLuint loc = 2 * end;
+      glEnableVertexAttribArray(loc);
+      glVertexAttribPointer(
+          loc, 3, GL_FLOAT, GL_FALSE, posStride,
+          reinterpret_cast<const void*>(end * sizeof(TPoint3Df)));
+      glVertexAttribDivisor(loc, 1);
+    }
+
+    constexpr GLsizei colorStride = 2 * sizeof(TColor);
+    for (GLuint end = 0; end < 2; end++)
+    {
+      const GLuint loc = 2 * end + 1;
+      if (m_hasColorBuffer)
+      {
+        m_colorBuffer.bind();
+        glEnableVertexAttribArray(loc);
+        glVertexAttribPointer(
+            loc, 4, GL_UNSIGNED_BYTE, GL_TRUE, colorStride,
+            reinterpret_cast<const void*>(end * sizeof(TColor)));
+        glVertexAttribDivisor(loc, 1);
+      }
+      else
+      {
+        glDisableVertexAttribArray(loc);
+      }
+    }
   }
 
   // Unbind
@@ -459,7 +514,7 @@ void LinesProxyBase::updateBuffers(const mrpt::viz::CVisualObject* sourceObj)
   compile(sourceObj);
 }
 
-void LinesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
+void LinesProxyBase::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL || MRPT_HAS_EGL
   MRPT_START
@@ -468,21 +523,18 @@ void LinesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
   {
     return;
   }
+  if (rc.shader_id == DefaultShaderID::WIREFRAME_THICK)
+  {
+    renderThick(rc);
+    return;
+  }
   if (!m_vao.isCreated())
   {
     return;
   }
-  // Note: glLineWidth >1.0 is unsupported on most modern GL implementations.
-  // Thick lines require a geometry shader approach (future enhancement).
-  // For now, always use 1.0 to avoid GL_INVALID_VALUE.
-  glLineWidth(1.0f);
 
-  // Enable anti-aliasing if requested
-  if (m_antiAliasing)
-  {
-    glEnable(GL_LINE_SMOOTH);
-  }
-
+  // glLineWidth() > 1 is not supported by OpenGL core profile, ES or WebGL:
+  // wider lines are drawn by renderThick() instead.
   m_vao.bind();
 
   if (!m_hasColorBuffer)
@@ -493,12 +545,62 @@ void LinesProxyBase::render([[maybe_unused]] const RenderContext& rc) const
 
   glBindVertexArray(0);
 
-  // Restore state
+  CHECK_OPENGL_ERROR_IN_DEBUG();
+
+  MRPT_END
+#endif
+}
+
+void LinesProxyBase::renderThick([[maybe_unused]] const RenderContext& rc) const
+{
+#if MRPT_HAS_OPENGL || MRPT_HAS_EGL
+  MRPT_START
+
+  const auto nSegments = static_cast<GLsizei>(m_vertexCount / 2);
+  if (nSegments == 0 || !m_vaoThick.isCreated() || !rc.shader || !rc.state)
+  {
+    return;
+  }
+
+  const auto& sh = *rc.shader;
+  if (sh.hasUniform("viewport_size"))
+  {
+    glUniform2f(
+        sh.uniformId("viewport_size"), static_cast<float>(rc.state->viewport_width),
+        static_cast<float>(rc.state->viewport_height));
+  }
+  if (sh.hasUniform("line_width"))
+  {
+    glUniform1f(sh.uniformId("line_width"), effectiveLineWidth());
+  }
+  if (sh.hasUniform("line_aa_margin"))
+  {
+    // One extra pixel on each side, where the edge fades out:
+    glUniform1f(sh.uniformId("line_aa_margin"), m_antiAliasing ? 1.0f : 0.0f);
+  }
+
+  m_vaoThick.bind();
+  if (!m_hasColorBuffer)
+  {
+    setConstantVertexColor(m_baseColor, 1);
+    setConstantVertexColor(m_baseColor, 3);
+  }
+  // Anti-aliased lines (drawn in the transparent pass, after all opaque
+  // objects) do not write depth: their faded edges would hide whatever is
+  // drawn after them nearby, e.g. other lines.
   if (m_antiAliasing)
   {
-    glDisable(GL_LINE_SMOOTH);
+    glDepthMask(GL_FALSE);
   }
-  glLineWidth(1.0f);
+
+  // One 4-vertex triangle strip (the quad) per segment:
+  glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, nSegments);
+
+  if (m_antiAliasing)
+  {
+    glDepthMask(GL_TRUE);
+  }
+  glBindVertexArray(0);
 
   CHECK_OPENGL_ERROR_IN_DEBUG();
 

@@ -39,4 +39,7 @@
 /** libpcap, used to replay Velodyne captures from a .pcap file */
 #define MRPT_HAS_LIBPCAP            ${CMAKE_MRPT_HAS_LIBPCAP}
 
+/** libdc1394-2, for IEEE 1394 (FireWire) cameras, e.g. Bumblebee stereo cameras */
+#define MRPT_HAS_LIBDC1394_2        ${CMAKE_MRPT_HAS_LIBDC1394_2}
+
 // clang-format on

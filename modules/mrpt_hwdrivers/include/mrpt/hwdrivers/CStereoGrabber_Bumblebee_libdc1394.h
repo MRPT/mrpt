@@ -17,17 +17,17 @@
 #include <mrpt/hwdrivers/config.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
+#include <memory>
+
 namespace mrpt::hwdrivers
 {
 /** Grabs from a "Bumblebee" or "Bumblebee2" stereo camera using raw access to
  * the libdc1394 library.
- * Only raw, unrectified images can be captured with this class, which can be
- * manually rectified given
- * correct calibration parameters.
  *
- * See mrpt::hwdrivers::CStereoGrabber_Bumblebee for another class capable of
- * live capture of rectified images using
- * the vendor (PointGreyResearch) Triclops API.
+ * Only raw, unrectified images can be captured with this class, which can be
+ * rectified offline given the camera calibration. Images are either RGB
+ * (demosaiced here) or the raw 8-bit Bayer mosaics sent by the camera
+ * (lossless; see bayerPattern()).
  *
  * Once connected to a camera, you can call `getStereoObservation()` to
  * retrieve the stereo images.
@@ -40,33 +40,43 @@ class CStereoGrabber_Bumblebee_libdc1394
 {
  public:
   /** Constructor. Parameters have the same meaning as in
-   * CImageGrabber_dc1394::CImageGrabber_dc1394() */
-  CStereoGrabber_Bumblebee_libdc1394(uint64_t cameraGUID, uint16_t cameraUnit, double frameRate);
+   * CImageGrabber_dc1394::CImageGrabber_dc1394().
+   * \param frameRate One of the rates of mrpt::hwdrivers::grabber_dc1394_framerate_t
+   *        (1.875, 3.75, 7.5, 15, 30, 60, 120 or 240 Hz).
+   * \param bayerDecoding If false, images are the raw Bayer mosaics.
+   * \exception std::exception On an unsupported frame rate.
+   */
+  CStereoGrabber_Bumblebee_libdc1394(
+      uint64_t cameraGUID, uint16_t cameraUnit, double frameRate, bool bayerDecoding = true);
 
   CStereoGrabber_Bumblebee_libdc1394(const CStereoGrabber_Bumblebee_libdc1394&) = delete;
   CStereoGrabber_Bumblebee_libdc1394& operator=(const CStereoGrabber_Bumblebee_libdc1394&) = delete;
 
-  /** Destructor */
   virtual ~CStereoGrabber_Bumblebee_libdc1394();
 
-  /** Grab stereo images, and return the pair of rectified images.
+  /** Whether the camera was opened successfully. */
+  [[nodiscard]] bool isOpen() const { return m_firewire_capture && m_firewire_capture->isOpen(); }
+
+  /** The color filter of the raw images (see CImageGrabber_dc1394::bayerPattern()). */
+  [[nodiscard]] mrpt::img::BayerPattern bayerPattern() const
+  {
+    return m_firewire_capture->bayerPattern();
+  }
+
+  /** Grab stereo images.
    * \param out_observation The object to be filled with sensed data.
    *
    * \note The member "CObservationStereoImages::refCameraPose" must be set on
-   * the return of
-   *  this method by the user, since we don't know here the robot physical
-   * structure.
+   * the return of this method by the user, since we don't know here the robot
+   * physical structure.
    *
    * \return false on any error, true if all go fine.
    */
   bool getStereoObservation(mrpt::obs::CObservationStereoImages& out_observation);
 
  protected:
-  /** The actual capture object used in Linux / Mac. */
-  mrpt::hwdrivers::CImageGrabber_dc1394* m_firewire_capture;
-
-  /** If this has been correctly initiated */
-  bool m_bInitialized;
+  /** The actual capture object. */
+  std::unique_ptr<mrpt::hwdrivers::CImageGrabber_dc1394> m_firewire_capture;
 };  // End of class
 static_assert(
     !std::is_copy_constructible_v<CStereoGrabber_Bumblebee_libdc1394> &&

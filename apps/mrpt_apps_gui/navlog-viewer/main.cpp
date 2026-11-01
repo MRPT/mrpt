@@ -43,18 +43,8 @@ int main(int argc, char** argv)
       mrpt::system::loadPluginModules(extraModuleToLoad);
     }
 
-    // UI setup:
-    nanogui::init();
-
-    NavlogViewerApp viewer_app;
-
-    if (!inputFiles.empty()) viewer_app.loadLogfile(inputFiles.at(0));
-
-    nanogui::mainloop();
-
-    nanogui::shutdown();
-
-    return 0;
+    NavlogViewerApp viewerApp;
+    return viewerApp.run(inputFiles.empty() ? std::string() : inputFiles.at(0));
   }
   catch (const std::exception& e)
   {

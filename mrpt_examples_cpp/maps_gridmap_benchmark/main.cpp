@@ -165,7 +165,7 @@ void BenchmarkGridmaps()
 		gridMap->clear();
 		gridMap->resizeGrid(-5,20,-15,15);
 		gridMap->insertObservation( &scan1, &pose3D );
-		gridMap->saveAsBitmapFile(format("./gridmap_with_widening_%04i.png",i));
+		gridMap->saveAsBitmapFile(mrpt::format("./gridmap_with_widening_%04i.png",i));
 	}
 #endif
 

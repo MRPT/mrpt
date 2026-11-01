@@ -49,6 +49,13 @@ using namespace mrpt::io;
 
 // Frwd. decl:
 DECLARE_OP_FUNCTION(op_camera_params);
+DECLARE_OP_FUNCTION(op_compact);
+DECLARE_OP_FUNCTION(op_decimate);
+DECLARE_OP_FUNCTION(op_lossless_decimate);
+DECLARE_OP_FUNCTION(op_regenerate_sf_timestamps);
+DECLARE_OP_FUNCTION(op_sort_by_timestamp);
+DECLARE_OP_FUNCTION(op_to_observations_only);
+DECLARE_OP_FUNCTION(op_to_sensory_frames);
 DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_deexternalize);
 
@@ -114,6 +121,11 @@ std::string val_op_remove_label;
 std::string val_op_keep_label;
 std::string val_op_sensors_pose;
 std::string val_op_camera_params;
+std::string val_op_decimate;
+std::string val_op_lossless_decimate;
+std::string val_op_to_sensory_frames;
+bool val_one_per_label = false;
+bool val_use_pc_timestamp = false;
 
 void RawlogEditApp::run(int argc, const char** argv)
 {
@@ -384,6 +396,59 @@ void RawlogEditApp::run(int argc, const char** argv)
   addSwitchOp(
       "describe", &op_describe,
       "Op: Prints a human-readable description for *all* objects in the dataset.");
+
+  addValueOp(
+      "decimate", val_op_decimate, &op_decimate,
+      "Op: Keep only one out of each N sensory frames (SensoryFrame-based "
+      "rawlogs), accumulating the odometry of the removed steps.\n"
+      "Requires: -o (or --output)");
+
+  addValueOp(
+      "lossless-decimate", val_op_lossless_decimate, &op_lossless_decimate,
+      "Op: Merge each N consecutive sensory frames into one, without losing "
+      "observations (their sensor poses are corrected with the odometry).\n"
+      "Requires: -o (or --output)");
+
+  addSwitchOp(
+      "compact", &op_compact,
+      "Op: Merge consecutive actions and consecutive sensory frames, and remove "
+      "empty sensory frames (SensoryFrame-based rawlogs).\n"
+      "Optional: --one-per-label\n"
+      "Requires: -o (or --output)");
+
+  addSwitchOp(
+      "to-observations-only", &op_to_observations_only,
+      "Op: Convert a SensoryFrame-based rawlog into an observations-only one, "
+      "sorted by timestamp. Odometry actions become CObservationOdometry.\n"
+      "Requires: -o (or --output)");
+
+  addValueOp(
+      "to-sensory-frames", val_op_to_sensory_frames, &op_to_sensory_frames,
+      "Op: Convert an observations-only rawlog into a SensoryFrame-based one, "
+      "with sensory frames up to the given length in seconds.\n"
+      "Optional: --one-per-label\n"
+      "Requires: -o (or --output)");
+
+  addSwitchOp(
+      "sort-by-timestamp", &op_sort_by_timestamp,
+      "Op: Sort an observations-only rawlog by timestamp.\n"
+      "Optional: --use-pc-timestamp\n"
+      "Requires: -o (or --output)");
+
+  addSwitchOp(
+      "regenerate-sf-timestamps", &op_regenerate_sf_timestamps,
+      "Op: Give the observations without a valid timestamp the timestamp of "
+      "another observation in the same sensory frame.\n"
+      "Requires: -o (or --output)");
+
+  cmd.add_flag(
+      "--one-per-label", val_one_per_label,
+      "For --compact and --to-sensory-frames: keep only one observation of "
+      "each sensor label in each sensory frame.");
+  cmd.add_flag(
+      "--use-pc-timestamp", val_use_pc_timestamp,
+      "For --sort-by-timestamp: use the computer-based timestamps instead of the "
+      "sensor ones.");
 
   // --------------- End of list of possible operations --------
 

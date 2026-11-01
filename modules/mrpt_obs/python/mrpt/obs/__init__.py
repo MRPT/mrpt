@@ -27,6 +27,11 @@ gnss = _b.gnss
 
 # Camera observations
 CObservationImage = _b.CObservationImage
+CObservationStereoImages = _b.CObservationStereoImages
+CObservationVelodyneScan = _b.CObservationVelodyneScan
+CObservationRotatingScan = _b.CObservationRotatingScan
+VelodyneCalibration = _b.VelodyneCalibration
+VelodyneGeneratePointCloudParameters = _b.VelodyneGeneratePointCloudParameters
 
 # IMU
 CObservationIMU = _b.CObservationIMU
@@ -61,6 +66,11 @@ __all__ = [
     "GnssFixType",
     "gnss",
     "CObservationImage",
+    "CObservationStereoImages",
+    "CObservationVelodyneScan",
+    "CObservationRotatingScan",
+    "VelodyneCalibration",
+    "VelodyneGeneratePointCloudParameters",
     "CObservationIMU",
     "TIMUDataIndex",
     "CObservationOdometry",

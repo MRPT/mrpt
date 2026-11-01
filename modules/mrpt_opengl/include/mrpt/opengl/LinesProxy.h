@@ -35,9 +35,10 @@ namespace mrpt::opengl
  * - VAO for efficient attribute binding
  *
  * Line rendering features:
- * - Variable line width
+ * - Line width in pixels: widths larger than one pixel are drawn as
+ *   screen-aligned quads (see LinesProxyBase)
  * - Per-vertex colors
- * - Optional anti-aliasing (GL_LINE_SMOOTH)
+ * - Optional anti-aliasing of thick lines (edges faded in the fragment shader)
  * - Alpha blending for transparency
  *
  * Typical data flow:
@@ -53,39 +54,7 @@ class LinesProxy : public LinesProxyBase
  public:
   LinesProxy() = default;
 
-  /** @name RenderableProxy Interface Implementation
-   * @{ */
-
-  void compile(const mrpt::viz::CVisualObject* sourceObj) override;
-  void updateBuffers(const mrpt::viz::CVisualObject* sourceObj) override;
-  void render(const RenderContext& rc) const override;
-
   const char* typeName() const override { return "LinesProxy"; }
-
-  /** @} */
-
- private:
-  /** Cached line rendering parameters */
-  struct LineParams
-  {
-    float lineWidth = 1.0f;
-    bool antiAliasing = false;
-  };
-
-  /** Cached parameters from last compile/update */
-  mutable LineParams m_params;
-
-  /** Helper: Extract line rendering parameters from source object */
-  void extractLineParams(const mrpt::viz::CVisualObject* sourceObj);
-
-  /** Helper: Upload line-specific uniforms to shader */
-  void uploadLineUniforms(const RenderContext& rc) const;
-
-  /** Helper: Setup OpenGL line state (width, anti-aliasing) */
-  void setupLineState() const;
-
-  /** Helper: Restore OpenGL line state */
-  void restoreLineState() const;
 };
 
 }  // namespace mrpt::opengl

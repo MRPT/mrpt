@@ -24,6 +24,7 @@
 #include <mrpt/viz/CVisualObject.h>
 #include <mrpt/viz/TLightParameters.h>
 
+#include <cmath>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -429,6 +430,13 @@ class PointsProxyBase : public RenderableProxy
  * This provides common functionality for all line-based rendering,
  * including vertex, color, and line parameter management.
  *
+ * Lines of (effective) width 1 pixel are drawn as `GL_LINES` with the
+ * DefaultShaderID::WIREFRAME shader. Wider lines are drawn with
+ * DefaultShaderID::WIREFRAME_THICK: one screen-aligned quad per segment, made
+ * in the vertex shader by an instanced draw that reads both endpoints from the
+ * same vertex buffers (`glLineWidth()` > 1 is not available in OpenGL core
+ * profile, OpenGL ES, or WebGL).
+ *
  * \sa mrpt::viz::VisualObjectParams_Lines
  * \ingroup mrpt_opengl_grp
  */
@@ -441,10 +449,27 @@ class LinesProxyBase : public RenderableProxy
   void updateBuffers(const mrpt::viz::CVisualObject* sourceObj) override;
   void render(const RenderContext& rc) const override;
 
-  std::vector<shader_id_t> requiredShaders() const override { return {DefaultShaderID::WIREFRAME}; }
+  std::vector<shader_id_t> requiredShaders() const override
+  {
+    if (drawsThickLines())
+    {
+      return {DefaultShaderID::WIREFRAME_THICK};
+    }
+    return {DefaultShaderID::WIREFRAME};
+  }
   [[nodiscard]] bool castsShadows() const override { return false; }
 
   const char* typeName() const override { return "LinesProxyBase"; }
+
+  /** The width in pixels the lines are drawn with: like `glLineWidth()`,
+   * widths of aliased lines are rounded to whole pixels, and anti-aliased
+   * lines keep fractional widths. Never less than 1. */
+  [[nodiscard]] float effectiveLineWidth() const;
+
+  /** Whether lines are drawn as quads (WIREFRAME_THICK): when their width
+   * rounds to 2 pixels or more. Thinner anti-aliased lines (e.g. the default
+   * 1.3 of grid planes) keep the GL_LINES path. */
+  [[nodiscard]] bool drawsThickLines() const { return std::round(m_lineWidth) > 1.0f; }
 
  protected:
   /** Vertex buffer (line endpoints) */
@@ -453,13 +478,17 @@ class LinesProxyBase : public RenderableProxy
   /** Color buffer (per-vertex colors) */
   Buffer m_colorBuffer{Buffer::Type::Vertex};
 
-  /** Vertex Array Object */
+  /** Vertex Array Object for GL_LINES (thin lines) */
   VertexArrayObject m_vao;
+
+  /** Vertex Array Object for instanced quads (thick lines): the same buffers,
+   * with both endpoints of each segment as per-instance attributes. */
+  VertexArrayObject m_vaoThick;
 
   /** Number of vertices (lines have 2 vertices each) */
   size_t m_vertexCount = 0;
 
-  /** Line width */
+  /** Line width, in pixels, as set in the source object */
   float m_lineWidth = 1.0f;
 
   /** Anti-aliasing enabled */
@@ -468,6 +497,9 @@ class LinesProxyBase : public RenderableProxy
   /** If false, all vertices have m_baseColor */
   bool m_hasColorBuffer = false;
   mrpt::img::TColor m_baseColor{0xff, 0xff, 0xff, 0xff};
+
+ private:
+  void renderThick(const RenderContext& rc) const;
 };
 
 /** Specialization for proxies that render triangles (with or without lighting).
