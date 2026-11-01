@@ -2,8 +2,8 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.1 (2026-11-01)
+------------------
 * COutputLogger: callback identifiers for logDeregisterCallback(), atomic callback verbosity level, copy-on-write callback list (`#1477 <https://github.com/MRPT/mrpt/issues/1477>`_)
 * Contributors: Jose Luis Blanco-Claraco
 

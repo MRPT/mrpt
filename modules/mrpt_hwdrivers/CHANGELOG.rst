@@ -2,8 +2,8 @@
 Changelog for package mrpt_hwdrivers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.1 (2026-11-01)
+------------------
 * Re-enable libdc1394 (FireWire) cameras, ported to the 3.x CImage API (`#1480 <https://github.com/MRPT/mrpt/issues/1480>`_)
 * dc1394 stereo: optional raw Bayer capture (bayer_decoding), Bayer pattern read from the camera, per-image demosaicing
 * dc1394: frames stamped at capture time, no buffer leaks on errors, Format7 frame rates, no red/blue swap for monocular frames

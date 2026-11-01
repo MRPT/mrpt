@@ -2,8 +2,8 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.1 (2026-11-01)
+------------------
 * New CCamera::PinholeForViewport() and clearPinholeModel(); Viewport::get3DRayForPixelCoord() uses the pinhole model (`#1485 <https://github.com/MRPT/mrpt/issues/1485>`_)
 * Orbit camera model shared by rendering and picking (CCamera::ComputeOrbitEyeAndUp()), roll is applied (`#1484 <https://github.com/MRPT/mrpt/issues/1484>`_)
 * COrbitCameraController: exponential zoom, validated zoom limits

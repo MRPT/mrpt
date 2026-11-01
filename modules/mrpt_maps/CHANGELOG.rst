@@ -2,8 +2,8 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.1 (2026-11-01)
+------------------
 * obs_to_viz(): clouds without RGB fields are no longer drawn black; rotating scans colored by height
 * Contributors: Jose Luis Blanco-Claraco
 

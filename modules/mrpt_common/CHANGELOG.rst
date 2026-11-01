@@ -2,8 +2,8 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.1 (2026-11-01)
+------------------
 * mrpt_add_test(): build the test target from the top of the build tree (fixes Ninja subdirectory tests)
 * Contributors: Jose Luis Blanco-Claraco
 

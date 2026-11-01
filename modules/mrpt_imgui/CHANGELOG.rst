@@ -2,8 +2,8 @@
 Changelog for package mrpt_imgui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.1 (2026-11-01)
+------------------
 * Grow into a Dear ImGui application framework: CImGuiAppShell, CImGuiBackgroundScene, CImGuiTimeline, CImGuiPlotPanel, CImGuiImageView, CImGuiLogConsole, CImGuiFileDialog, AsyncTask
 * New CImGuiAboutDialog, CImGuiMessageQueue, status bar and frame grab helpers
 * CImGuiSceneView: optional 6DOF camera pose override (`#1482 <https://github.com/MRPT/mrpt/issues/1482>`_)

@@ -2,8 +2,8 @@
 Changelog for package mrpt_obs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.1 (2026-11-01)
+------------------
 * Python: stereo images, rotating and Velodyne scans as NumPy arrays, all NMEA GPS messages (`#1481 <https://github.com/MRPT/mrpt/issues/1481>`_)
 * Contributors: Jose Luis Blanco-Claraco
 
