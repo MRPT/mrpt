@@ -146,7 +146,8 @@ mrpt_add_library(
   `mrpt_opengl`), so it is testable with plain unit tests. The orbit camera
   model lives only in `CCamera::ComputeOrbitEyeAndUp()`, shared by the
   renderer (`CompiledViewport`) and picking (`get3DRayForPixelCoord()`);
-  `CFBORender_CameraPicking_unittest` checks that both agree.
+  `CFBORender_CameraPicking_unittest` checks that both agree. Likewise for
+  `CCamera::PinholeForViewport()` (pinhole intrinsics vs. viewport size).
 * **mrpt_opengl**: `Texture` shares one GL texture among users of the same
   image buffer and options only within one `Options::shareScope`
   (`CompiledScene` uses the EGL context it was compiled in; all non-EGL
@@ -168,6 +169,9 @@ mrpt_add_library(
   `CompiledScene` must bump it only on actual changes.
   `glLineWidth()` > 1 does not work in core profile/ES/WebGL: lines wider
   than 1 px use the `WIREFRAME_THICK` shader (instanced quads, tutorial 2.13).
+  Orthogonal orbit cameras clip at [-far, far] around the eye (it is just a
+  consequence of the zoom), and lighting shaders take the view direction from
+  `cam_ortho_view_dir` for them, not from `cam_position`.
   Pinhole cameras (`setProjectiveFromPinhole()`) place image coordinate
   (u,v) at the corner of pixel (u,v), not its center: rendered objects appear
   0.5 px up-left of `camera_geometry` projections. `CFBORender` lens

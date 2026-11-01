@@ -532,3 +532,35 @@ TEST(Viewport, SetCurrentCameraFromPose)
   EXPECT_TRUE(vp->getCamera().is6DOFMode());
   EXPECT_NEAR(vp->getCamera().getPose().x, 1.0, 1e-6);
 }
+
+TEST(CCamera, PinholeForViewport)
+{
+  mrpt::img::TCamera c;
+  c.ncols = 640;
+  c.nrows = 480;
+  c.fx(500);
+  c.fy(510);
+  c.cx(330);
+  c.cy(235);
+
+  // Same size: unchanged.
+  const auto same = CCamera::PinholeForViewport(c, 640, 480);
+  EXPECT_EQ(same.intrinsicParams, c.intrinsicParams);
+
+  // Twice the size: everything scales by 2.
+  const auto twice = CCamera::PinholeForViewport(c, 1280, 960);
+  EXPECT_EQ(twice.ncols, 1280U);
+  EXPECT_EQ(twice.nrows, 960U);
+  EXPECT_DOUBLE_EQ(twice.fx(), 1000);
+  EXPECT_DOUBLE_EQ(twice.fy(), 1020);
+  EXPECT_DOUBLE_EQ(twice.cx(), 660);
+  EXPECT_DOUBLE_EQ(twice.cy(), 470);
+
+  // Wider viewport, same height: the vertical FOV is kept and the
+  // calibrated image is centered horizontally.
+  const auto wide = CCamera::PinholeForViewport(c, 840, 480);
+  EXPECT_DOUBLE_EQ(wide.fx(), 500);
+  EXPECT_DOUBLE_EQ(wide.fy(), 510);
+  EXPECT_DOUBLE_EQ(wide.cx(), 430);
+  EXPECT_DOUBLE_EQ(wide.cy(), 235);
+}

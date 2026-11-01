@@ -445,6 +445,7 @@ void ShaderProgramManager::declareCommonUniforms(Program& program)
       "v_matrix_no_translation",
       "light_pv_matrix",
       "cam_position",
+      "cam_ortho_view_dir",
       "materialSpecular",
       nullptr  // sentinel
   };

@@ -27,6 +27,9 @@
 #include <mrpt/viz/Scene.h>
 #include <mrpt/viz/Viewport.h>
 
+#include <cmath>
+#include <utility>
+
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::viz;
@@ -52,6 +55,35 @@ std::pair<double, double> orthoHalfExtents(double zoom, double aspect)
     halfH /= aspect;
   }
   return {halfW, halfH};
+}
+
+/** For a projective camera, the coefficients (a,b) such that the ray through
+ * a pixel has the direction `forward + a * right + b * up` (not normalized).
+ * Pixel coordinates follow the renderer convention: (u,v) is the top-left
+ * corner of pixel (u,v). */
+std::pair<double, double> projectiveRayCoefficients(
+    const CCamera& cam,
+    const mrpt::img::TPixelCoord& pixelCoord,
+    const mrpt::img::TPixelCoord& viewportSize)
+{
+  const auto x = static_cast<double>(pixelCoord.x);
+  const auto y = static_cast<double>(pixelCoord.y);
+
+  if (const auto& pinhole = cam.getPinholeModel(); pinhole.has_value())
+  {
+    const auto p = CCamera::PinholeForViewport(
+        *pinhole, static_cast<uint32_t>(viewportSize.x), static_cast<uint32_t>(viewportSize.y));
+    return {(x - p.cx()) / p.fx(), -(y - p.cy()) / p.fy()};
+  }
+
+  const double aspect = static_cast<double>(viewportSize.x) / viewportSize.y;
+  // Normalized device coords: center of viewport = (0,0), +Y up
+  const double nx = 2.0 * x / viewportSize.x - 1.0;
+  const double ny = -(2.0 * y / viewportSize.y - 1.0);
+  // Half-extents at unit distance
+  const double half_h = std::tan(mrpt::DEG2RAD(cam.getProjectiveFOVdeg()) * 0.5);
+  const double half_w = half_h * aspect;
+  return {nx * half_w, ny * half_h};
 }
 }  // namespace
 
@@ -651,21 +683,8 @@ mrpt::math::TLine3D Viewport::get3DRayForPixelCoord(
     if (myCamera->isProjective())
     {
       // Projective camera: ray from eye through pixel
-      const double fov_v = mrpt::DEG2RAD(myCamera->getProjectiveFOVdeg());
-      const double aspect = static_cast<double>(viewportSize.x) / viewportSize.y;
-
-      // Normalized device coords: center of viewport = (0,0)
-      const auto x = static_cast<double>(pixelCoord.x);
-      const auto y = static_cast<double>(pixelCoord.y);
-      const double nx = (2.0 * x / viewportSize.x - 1.0);
-      const double ny = -(2.0 * y / viewportSize.y - 1.0);  // flip Y
-
-      // Half-extents at unit distance
-      const double half_h = tan(fov_v * 0.5);
-      const double half_w = half_h * aspect;
-
-      // Direction in camera frame, then transform to world
-      mrpt::math::TVector3D dir = forward + right * (nx * half_w) + camUp * (ny * half_h);
+      const auto [a, b] = projectiveRayCoefficients(*myCamera, pixelCoord, viewportSize);
+      mrpt::math::TVector3D dir = forward + right * a + camUp * b;
       dir *= 1.0 / dir.norm();
 
       out_ray = mrpt::math::TLine3D::FromPointAndDirector(eye, dir);
@@ -742,16 +761,8 @@ mrpt::math::TLine3D Viewport::get3DRayForPixelCoord(
   if (myCamera->isProjective())
   {
     // Projective camera: ray from eye through pixel on image plane
-    const double fov_v = mrpt::DEG2RAD(myCamera->getProjectiveFOVdeg());
-    const double aspect = static_cast<double>(viewportSize.x) / viewportSize.y;
-
-    const double nx = (2.0 * pixelCoord.x / viewportSize.x - 1.0);
-    const double ny = -(2.0 * pixelCoord.y / viewportSize.y - 1.0);
-
-    const double half_h = tan(fov_v * 0.5);
-    const double half_w = half_h * aspect;
-
-    mrpt::math::TVector3D dir = forward + right * (nx * half_w) + up * (ny * half_h);
+    const auto [a, b] = projectiveRayCoefficients(*myCamera, pixelCoord, viewportSize);
+    mrpt::math::TVector3D dir = forward + right * a + up * b;
     dir *= 1.0 / dir.norm();
 
     out_ray = mrpt::math::TLine3D::FromPointAndDirector(eye, dir);

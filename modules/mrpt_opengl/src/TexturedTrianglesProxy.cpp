@@ -296,6 +296,20 @@ void TexturedTrianglesProxy::uploadTextureUniforms(const RenderContext& rc) cons
         mrpt::math::TVector3Df(
             static_cast<float>(e.x), static_cast<float>(e.y), static_cast<float>(e.z)));
   }
+  if (rc.shader->hasUniform("cam_ortho_view_dir") && rc.state != nullptr)
+  {
+    mrpt::math::TVector3Df dir(0, 0, 0);
+    if (!rc.state->is_projective)
+    {
+      const auto toEye = rc.state->eye - rc.state->pointing;
+      const double n = toEye.norm();
+      if (n > 0)
+      {
+        dir = (toEye * (1.0 / n)).cast<float>();
+      }
+    }
+    uploadVector3(rc, "cam_ortho_view_dir", dir);
+  }
 
   // Multi-light parameters (if lighting enabled)
   if (m_params.lightEnabled)

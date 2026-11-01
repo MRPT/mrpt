@@ -27,6 +27,9 @@ uniform mediump float alphaCutoff; // >0: cutout, <0: opaque, 0: blend
 uniform lowp sampler2D normalMapSampler;
 uniform lowp sampler2D emissiveMapSampler;
 uniform highp vec3 cam_position;
+// Unit vector towards an orthogonal camera, or zero for projective ones: the
+// view direction is then the same for all fragments.
+uniform highp vec3 cam_ortho_view_dir;
 uniform lowp float materialSpecular;
 uniform highp float materialSpecularExponent;
 uniform lowp vec3 materialEmissive;
@@ -68,7 +71,8 @@ void main()
     tangentNormal.y = -tangentNormal.y;
     highp vec3 normal = normalize(TBN * tangentNormal);
 
-    highp vec3 viewDirection = normalize(cam_position - frag_position);
+    highp vec3 viewDirection = dot(cam_ortho_view_dir, cam_ortho_view_dir) > 0.0
+        ? cam_ortho_view_dir : normalize(cam_position - frag_position);
     // Light the side facing the camera, e.g. the bottom of a plane seen from
     // below. Decided with the geometric normal (not the normal map), and not
     // with gl_FrontFacing, since not all meshes have a consistent winding:
