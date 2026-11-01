@@ -107,7 +107,14 @@ class CImGuiSceneView
 
   /** Goes back to the orbit camera driven by cameraController.
    *  \sa setCameraPose() */
-  void clearCameraPose() { m_cameraPose.reset(); }
+  void clearCameraPose()
+  {
+    if (m_cameraPose)
+    {
+      m_resyncOrbitInput = true;
+    }
+    m_cameraPose.reset();
+  }
 
   /** The 6DOF camera pose set with setCameraPose(), or nullopt if the orbit
    *  camera is active. */
@@ -212,6 +219,9 @@ class CImGuiSceneView
 
   // --- Optional 6DOF camera pose, overriding the orbit camera ---
   std::optional<mrpt::poses::CPose3D> m_cameraPose;
+  // Set when the pose override ends, so the controller input anchor is
+  // refreshed before forwarding mouse motion again.
+  bool m_resyncOrbitInput = false;
 
   // --- Compiled scene for rendering pipeline ---
   std::unique_ptr<mrpt::opengl::CompiledScene> m_compiledScene;
@@ -409,6 +419,17 @@ inline void CImGuiSceneView::handleMouseInteraction(float widgetX, float widgetY
   // A 6DOF camera pose overrides the orbit camera: leave its state untouched.
   if (!m_cameraPose)
   {
+    // Button events were not forwarded during the override: re-anchor the
+    // controller at the current cursor and button state, without moving it.
+    if (m_resyncOrbitInput)
+    {
+      m_resyncOrbitInput = false;
+      const bool anyDown = ImGui::IsMouseDown(ImGuiMouseButton_Left) ||
+                           ImGui::IsMouseDown(ImGuiMouseButton_Middle) ||
+                           ImGui::IsMouseDown(ImGuiMouseButton_Right);
+      cameraController.onMouseButton(ix, iy, C::ButtonNone, anyDown);
+    }
+
     for (auto [imguiBtn, mrptBtn] : kButtonMap)
     {
       if (ImGui::IsMouseClicked(imguiBtn))
