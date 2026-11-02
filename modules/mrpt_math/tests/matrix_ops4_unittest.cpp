@@ -142,7 +142,7 @@ TEST(Matrices, loadFromTextFile)
         "\f# comment indented with a form feed\n"
         "1 2 3\n"
         "\t% another comment\n"
-        "4 5 6\r\n";
+        "4\f,5\v6\r\n";
     std::stringstream s(s1);
     CMatrixDouble M;
     bool retval = false;
@@ -158,6 +158,7 @@ TEST(Matrices, loadFromTextFile)
     EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
     EXPECT_EQ(M.rows(), 2);
     EXPECT_EQ(M.cols(), 3);
+    EXPECT_EQ(M(1, 1), 5.0);
     EXPECT_EQ(M(1, 2), 6.0);
   }
   {

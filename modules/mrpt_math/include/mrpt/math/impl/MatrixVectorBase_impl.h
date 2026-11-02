@@ -276,7 +276,7 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
       {
         // Find next number: (non white-space character):
         while (ptr[0] && (ptr[0] == ' ' || ptr[0] == ',' || ptr[0] == '\t' || ptr[0] == '\r' ||
-                          ptr[0] == '\n'))
+                          ptr[0] == '\n' || ptr[0] == '\f' || ptr[0] == '\v'))
         {
           ptr++;
         }
