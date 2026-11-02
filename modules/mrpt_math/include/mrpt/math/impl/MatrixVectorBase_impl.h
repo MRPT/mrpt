@@ -262,7 +262,10 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
   while (!f.eof() && !f.fail())
   {
     std::getline(f, str);
-    if (str.size() && str[0] != '#' && str[0] != '%')
+    // Skip blank (or whitespace-only) lines, and comments, which may be
+    // indented:
+    const auto firstChar = str.find_first_not_of(" \t\r\n");
+    if (firstChar != std::string::npos && str[firstChar] != '#' && str[firstChar] != '%')
     {
       // Parse row to floats:
       const char* ptr = str.c_str();

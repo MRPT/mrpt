@@ -392,8 +392,9 @@ class MatrixVectorBase
       const std::string& userHeader = std::string()) const;
 
   /** Loads a vector/matrix from a text file, compatible with MATLAB text
-   * format. Lines starting with '%' or '#' are interpreted as comments and
-   * ignored.
+   * format. Lines starting with '%' or '#' (optionally after leading
+   * whitespace) are interpreted as comments and ignored, as are blank or
+   * whitespace-only lines.
    * \exception std::runtime_error On format error.
    * \sa saveToTextFile, fromMatlabStringFormat
    */

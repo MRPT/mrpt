@@ -20,6 +20,7 @@
 
 #include <Eigen/Dense>
 #include <filesystem>
+#include <fstream>
 
 template class mrpt::CTraitsTest<mrpt::poses::CPose3DInterpolator>;
 
@@ -159,6 +160,29 @@ TEST(CPose3DInterpolator, AllMethodsAndAccessors)
 
   path.clear();
   EXPECT_TRUE(path.empty());
+}
+
+TEST(CPose3DInterpolator, loadFromTextFile_TUM_CommentsAndNonFinite)
+{
+  using namespace mrpt::poses;
+
+  const auto tmpTum =
+      (std::filesystem::temp_directory_path() / "mrpt_test_pose3dinterp_tum_edge.txt").string();
+  {
+    std::ofstream f(tmpTum);
+    f << "#timestamp tx ty tz qx qy qz qw\n"
+         "   # indented comment\n"
+         "\n"
+         "  \t \r\n"
+         "10.0  0 0 0  0 0 0 1\n"
+         "10.1 nan 0 0  0 0 0 1\n"
+         "10.2  1 2 3  0 0 0 1\r\n";
+  }
+
+  CPose3DInterpolator path;
+  EXPECT_TRUE(path.loadFromTextFile_TUM(tmpTum));
+  ASSERT_EQ(path.size(), 2u);
+  EXPECT_NEAR(path.rbegin()->second.z, 3.0, 1e-9);
 }
 
 TEST(CPose3DInterpolator, EdgeCasesOutOfRangeAndMaxTimeInterp)
