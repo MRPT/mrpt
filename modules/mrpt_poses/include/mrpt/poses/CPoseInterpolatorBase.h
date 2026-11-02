@@ -188,7 +188,7 @@ class CPoseInterpolatorBase
    *  format. Comment and blank lines are ignored (see
    *  mrpt::math::MatrixVectorBase::loadFromTextFile()), and rows with
    *  non-finite values (e.g. "nan") are skipped.
-   * \return true on success, false on any error.
+   * \return true on success, false on any error or if no valid row remains.
    * \exception std::exception On invalid file format
    */
   bool loadFromTextFile_TUM(const std::string& s);

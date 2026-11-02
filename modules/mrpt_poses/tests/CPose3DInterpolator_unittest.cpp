@@ -183,6 +183,16 @@ TEST(CPose3DInterpolator, loadFromTextFile_TUM_CommentsAndNonFinite)
   EXPECT_TRUE(path.loadFromTextFile_TUM(tmpTum));
   ASSERT_EQ(path.size(), 2u);
   EXPECT_NEAR(path.rbegin()->second.z, 3.0, 1e-9);
+
+  // A file whose rows are all non-finite yields no poses, and fails:
+  {
+    std::ofstream f(tmpTum);
+    f << "10.0 nan 0 0  0 0 0 1\n"
+         "10.1 0 inf 0  0 0 0 1\n";
+  }
+  CPose3DInterpolator allBad;
+  EXPECT_FALSE(allBad.loadFromTextFile_TUM(tmpTum));
+  EXPECT_TRUE(allBad.empty());
 }
 
 TEST(CPose3DInterpolator, EdgeCasesOutOfRangeAndMaxTimeInterp)

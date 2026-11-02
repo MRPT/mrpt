@@ -138,6 +138,8 @@ TEST(Matrices, loadFromTextFile)
         "   # indented comment\n"
         "\n"
         "  \t \r\n"
+        " \f\v \n"
+        "\f# comment indented with a form feed\n"
         "1 2 3\n"
         "\t% another comment\n"
         "4 5 6\r\n";

@@ -414,7 +414,8 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile_TUM(const std::string& s)
     }
     insert(mrpt::Clock::fromDouble(M(i, 0)), pose_t(mrpt::poses::CPose3D(p).asTPose()));
   }
-  return true;
+  // All rows may have been skipped:
+  return !empty();
   MRPT_END
 }
 
