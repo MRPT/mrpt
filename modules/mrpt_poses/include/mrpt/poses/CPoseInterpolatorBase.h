@@ -185,8 +185,10 @@ class CPoseInterpolatorBase
   bool loadFromTextFile(const std::string& s);
 
   /** Loads from a text file, in the "TUM" dataset
-   *  format.
-   * \return true on success, false on any error.
+   *  format. Comment and blank lines are ignored (see
+   *  mrpt::math::MatrixVectorBase::loadFromTextFile()), and rows with
+   *  non-finite values (e.g. "nan") are skipped.
+   * \return true on success, false on any error or if no valid row remains.
    * \exception std::exception On invalid file format
    */
   bool loadFromTextFile_TUM(const std::string& s);

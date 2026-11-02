@@ -134,6 +134,35 @@ TEST(Matrices, loadFromTextFile)
 {
   {
     const std::string s1 =
+        "# header comment\n"
+        "   # indented comment\n"
+        "\n"
+        "  \t \r\n"
+        " \f\v \n"
+        "\f# comment indented with a form feed\n"
+        "1 2 3\n"
+        "\t% another comment\n"
+        "4\f,5\v6\r\n";
+    std::stringstream s(s1);
+    CMatrixDouble M;
+    bool retval = false;
+    try
+    {
+      M.loadFromTextFile(s);
+      retval = true;
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << e.what() << "\n";
+    }
+    EXPECT_TRUE(retval) << "string:\n" << s1 << "\n";
+    EXPECT_EQ(M.rows(), 2);
+    EXPECT_EQ(M.cols(), 3);
+    EXPECT_EQ(M(1, 1), 5.0);
+    EXPECT_EQ(M(1, 2), 6.0);
+  }
+  {
+    const std::string s1 =
         "1 2 3\n"
         "4 5 6";
     std::stringstream s(s1);
