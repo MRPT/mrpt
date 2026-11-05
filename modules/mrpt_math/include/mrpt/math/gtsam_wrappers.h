@@ -33,6 +33,8 @@ inline gtsam::Point3 toPoint3(const mrpt::math::TPoint3D& p)
 
 inline mrpt::math::TPoint3D toTPoint3(const gtsam::Point3& p) { return {p.x(), p.y(), p.z()}; }
 
+/** Linear velocity only (the angular part is zero), in the same frame as the
+ * input: e.g. the navigation (world) frame for gtsam::NavState velocities. */
 inline mrpt::math::TTwist3D toTTwist3D(const gtsam::Velocity3& v)
 {
   mrpt::math::TTwist3D t;
@@ -77,9 +79,12 @@ inline gtsam::Matrix6 to_gtsam_se3_cov6_reordering(const mrpt::math::CMatrixDoub
   return C;
 }
 
-/** Like to_gtsam_se3_cov6_reordering(), asserting that the covariance is
- * diagonal. Diagonal is not enough for the reordering to be exact away from
- * the identity rotation: see mrpt::gtsam_wrappers::to_gtsam_se3_cov6().
+/** Like to_gtsam_se3_cov6_reordering(), for diagonal covariances (it throws
+ * otherwise). Despite its name, it does not check isotropy: the result is
+ * exact for any pose only if the translational variances are all equal and
+ * the rotational ones too, and the pose has pitch=0 (e.g. 4% error at pitch
+ * 30 deg); with different variances per axis, errors reach tens of percent
+ * for rotated poses. For poses, use mrpt::gtsam_wrappers::to_gtsam_se3_cov6().
  */
 inline gtsam::Matrix6 to_gtsam_se3_cov6_isotropic(const mrpt::math::CMatrixDouble66& se3_cov)
 {
