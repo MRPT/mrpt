@@ -305,6 +305,10 @@ mrpt_add_library(
 * A new Python module also needs its own `python3-mrpt-<mod>` Debian package
   (`debian/control`, the `python3-mrpt` metapackage, a `.install` file and the
   import list in `debian/tests/control`); see "Releases" below.
+* The pip wheel (`packaging/pip`, see its `README-dev.md`) builds the modules
+  in `MRPT_WHEEL_MODULES` of its `CMakeLists.txt` and ships them with a C++
+  SDK (`mrpt.sdk`). Module code must not assume a fixed install prefix: the
+  wheel is relocatable (RPATH `$ORIGIN`), with no `share/mrpt_data`.
 * Examples live in `mrpt_examples_py`; extend them when wrapping new classes.
 * The `.pyi` stubs next to each `__init__.py` are generated and committed: run
   `scripts/generate_python_stubs.py` after changing bindings (CI fails if they
