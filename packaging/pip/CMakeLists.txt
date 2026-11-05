@@ -16,7 +16,7 @@
 #
 # Downstream wheels with C++ code build against mrpt/sdk (see mrpt/sdk/__init__.py).
 
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.24)
 project(mrpt_wheel LANGUAGES C CXX)
 
 include(ExternalProject)
