@@ -85,6 +85,14 @@ mrpt::poses::SensorToPoseMap mrpt::poses::sensor_poses_from_yaml(
     // process poses and add to queue:
     for (const auto& child : children)
     {
+      // Each frame must be reached only once, otherwise there is a cycle:
+      if (s2p.count(child) != 0)
+      {
+        THROW_EXCEPTION_FMT(
+            "Cycle detected in the sensor frames tree: frame '%s' is reached twice "
+            "(last time from its parent '%s')",
+            child.c_str(), curFrame.c_str());
+      }
       const auto& relPose = parentToChildrenEdges.at({curFrame, child});
       s2p[child] = s2p[curFrame] + relPose;
 

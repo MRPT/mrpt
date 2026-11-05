@@ -25,7 +25,7 @@ using SensorToPoseMap = std::map<std::string, mrpt::poses::CPose3D>;
 
 /**
  * Alternative to sensor_poses_from_yaml_file() where the yaml map inside
- * `sensors: ...` is directly passed programatically.
+ * `sensors: ...` is directly passed programmatically.
  *
  * \sa CPose3D, mrpt::obs::CObservation, sensor_poses_from_yaml_file()
  * \ingroup poses_grp
@@ -48,12 +48,12 @@ SensorToPoseMap sensor_poses_from_yaml(
  *      extrinsics:
  *        quaternion: [qx, qy, qz, qw]
  *        translation: [tx, ty, tz]
- *    parent: base_link
+ *      parent: base_link
  *    imu:
  *      extrinsics:
  *        quaternion: [qx, qy, qz, qw]
  *        translation: [tx, ty, tz]
- *    parent: camera
+ *      parent: camera
  *  \endverbatim
  *
  * Following the common ROS conventions, the robot reference frame is assumed
@@ -71,7 +71,7 @@ SensorToPoseMap sensor_poses_from_yaml(
  * \sa CPose3D, mrpt::obs::CObservation, sensor_poses_from_yaml()
  * \ingroup poses_grp
  */
-SensorToPoseMap sensor_poses_from_yaml_file(
+inline SensorToPoseMap sensor_poses_from_yaml_file(
     const std::string& filename, const std::string& referenceFrame = "base_link")
 {
   const auto d = mrpt::containers::yaml::FromFile(filename);

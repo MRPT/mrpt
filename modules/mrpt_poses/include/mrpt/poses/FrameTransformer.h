@@ -69,7 +69,7 @@ class FrameTransformerInterface
   FrameTransformerInterface& operator=(const FrameTransformerInterface&) = default;
   FrameTransformerInterface& operator=(FrameTransformerInterface&&) = default;
 
-  /** Publish a time-stampped transform between two frames */
+  /** Publish a time-stamped transform between two frames */
   virtual void sendTransform(
       const std::string& parent_frame,
       const std::string& child_frame,
