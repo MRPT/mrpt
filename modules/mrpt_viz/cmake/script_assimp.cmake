@@ -28,8 +28,23 @@ if(PKG_CONFIG_FOUND)
 	endif()
 endif()
 
-# 2nd) Embedded version: a static library, linked into mrpt_viz. It uses the
-# system zlib. (Windows builds are expected to use the vcpkg assimp instead.)
+# 2nd) An installed CMake package (e.g. from vcpkg):
+if (NOT ASSIMP_FOUND)
+	find_package(assimp CONFIG QUIET)
+	if (assimp_FOUND AND TARGET assimp::assimp)
+		set(ASSIMP_FOUND 1)
+		set(ASSIMP_LIBRARIES assimp::assimp)
+		set(ASSIMP_INCLUDE_DIRS "")
+		set(ASSIMP_CXX_FLAGS "")
+		set(ASSIMP_VERSION "${assimp_VERSION}")
+
+		set(CMAKE_MRPT_HAS_ASSIMP 1)
+		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 1)
+	endif()
+endif()
+
+# 3rd) Embedded version: a static library, linked into mrpt_viz. It uses the
+# system zlib. (Not for MSVC: install the Assimp CMake package instead.)
 if (NOT ASSIMP_FOUND AND NOT MSVC)
 	set(MRPT_BUILD_ASSIMP ON CACHE BOOL "Build an embedded version of Assimp (3D models importer)")
 	find_package(ZLIB QUIET)
@@ -52,6 +67,7 @@ if (NOT ASSIMP_FOUND AND NOT MSVC)
 			-DASSIMP_BUILD_SAMPLES=OFF
 			-DASSIMP_BUILD_TESTS=OFF
 			-DASSIMP_BUILD_ZLIB=OFF
+			-DASSIMP_BUILD_MINIZIP=ON
 			-DASSIMP_NO_EXPORT=ON
 			-DASSIMP_WARNINGS_AS_ERRORS=OFF
 			-DASSIMP_INSTALL_PDB=OFF
