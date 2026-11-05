@@ -61,10 +61,7 @@ class CPose3DPDFSOG : public CPose3DPDF
    */
   void enforceCovSymmetry();
 
-  /** Access directly to this array for modify the modes as desired.
-   *  Note that no weight can be zero!!
-   *  We must use pointers to satisfy the mem-alignment of the matrixes
-   */
+  /** Access directly to this array for modify the modes as desired. */
   TModesList m_modes;
 
  public:
@@ -118,18 +115,11 @@ class CPose3DPDFSOG : public CPose3DPDF
    *  There is one row per Gaussian "mode", and each row contains 10
    * elements:
    *   - w (The linear weight)
-   *   - x_mean (gaussian mean value)
-   *   - y_mean (gaussian mean value)
-   *   - x_mean (gaussian mean value)
-   *   - yaw_mean (gaussian mean value, in radians)
-   *   - pitch_mean (gaussian mean value, in radians)
-   *   - roll_mean (gaussian mean value, in radians)
-   *   - C11,C22,C33,C44,C55,C66 (Covariance elements)
-   *   - C12,C13,C14,C15,C16 (Covariance elements)
-   *   - C23,C24,C25,C25 (Covariance elements)
-   *   - C34,C35,C36 (Covariance elements)
-   *   - C45,C46 (Covariance elements)
-   *   - C56 (Covariance elements)
+   *   - x_mean, y_mean, z_mean (gaussian mean value)
+   *   - C11,C22,C33 (Covariance elements)
+   *   - C12,C13,C23 (Covariance elements)
+   *
+   *  Note that only the translational part of each mode is saved.
    *
    */
   bool saveToTextFile(const std::string& file) const override;

@@ -13,6 +13,8 @@
 */
 
 #include <mrpt/math/matrix_serialization.h>
+#include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/SO_SE_average.h>
@@ -20,6 +22,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
+#include <Eigen/Dense>
 #include <ostream>
 
 using namespace mrpt;
@@ -87,7 +90,11 @@ std::tuple<mrpt::math::CMatrixDouble66, CPose3D> CPose3DPDFSOG::getCovarianceAnd
     {
       double w;
       sumW += w = exp(m.log_w);
-      estMean_i = mrpt::math::CMatrixDouble61(m.val.mean);
+      estMean_i = mrpt::math::CMatrixDouble61(m.val.mean) - mrpt::math::CMatrixDouble61(mean);
+      for (int i = 3; i < 6; i++)
+      {
+        mrpt::math::wrapToPiInPlace(estMean_i(i, 0));
+      }
       MMt.matProductOf_AAt(estMean_i);
       MMt += m.val.cov;
       MMt *= w;
@@ -220,7 +227,19 @@ void CPose3DPDFSOG::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF& p2_)
       fusedGauss.bayesianFusion(m1.val, m2.val);
 
       newMode.val = fusedGauss;
-      newMode.log_w = m1.log_w + m2.log_w;
+
+      // The product of two Gaussians is a Gaussian scaled by
+      // N(m1; m2, C1+C2):
+      const CMatrixDouble66 S = m1.val.cov + m2.val.cov;
+      CMatrixDouble61 d = CMatrixDouble61(m1.val.mean) - CMatrixDouble61(m2.val.mean);
+      for (int i = 3; i < 6; i++)
+      {
+        mrpt::math::wrapToPiInPlace(d(i, 0));
+      }
+      const double log_overlap = -0.5 * (6 * std::log(M_2PI) + std::log(S.det()) +
+                                         mrpt::math::multiply_HtCH_scalar(d, S.inverse_LLt()));
+
+      newMode.log_w = m1.log_w + m2.log_w + log_overlap;
 
       this->m_modes.push_back(newMode);
     }
