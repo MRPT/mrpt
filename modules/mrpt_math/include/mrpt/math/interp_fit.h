@@ -24,6 +24,8 @@ namespace mrpt::math
 
 /** Interpolate a data sequence "ys" ranging from "x0" to "x1" (equally spaced),
  * to obtain the approximation of the sequence at the point "x".
+ * The N samples are taken as N cells covering [x0,x1): ys[i] is the value at
+ * x0+i*(x1-x0)/N, hence ys[N-1] is returned for x >= x1-(x1-x0)/N.
  *  If the point "x" is out of the range [x0,x1], the closest extreme "ys"
  * value is returned.
  * \note Implementation in `#include <mrpt/math/interp_fit.hpp>`

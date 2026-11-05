@@ -166,7 +166,7 @@ CMatrixDouble cov(const MATRIX& v)
 #define SAVE_MATRIX(M) M.saveToTextFile(#M ".txt");
 
 /** Only for vectors/arrays "v" of length3, compute out = A * Skew(v), where
- * Skew(v) is the skew symmetric matric generated from \a v (see
+ * Skew(v) is the skew symmetric matrix generated from \a v (see
  * mrpt::math::skew_symmetric3)
  */
 template <class MAT_A, class SKEW_3VECTOR, class MAT_OUT>
@@ -187,7 +187,7 @@ void multiply_A_skew3(const MAT_A& A, const SKEW_3VECTOR& v, MAT_OUT& out)
 }
 
 /** Only for vectors/arrays "v" of length3, compute out = Skew(v) * A, where
- * Skew(v) is the skew symmetric matric generated from \a v (see
+ * Skew(v) is the skew symmetric matrix generated from \a v (see
  * mrpt::math::skew_symmetric3)
  */
 template <class SKEW_3VECTOR, class MAT_A, class MAT_OUT>
@@ -234,8 +234,9 @@ void laplacian(const MATIN& g, MATOUT& ret)
 
 /** Get a submatrix from a square matrix, by collecting the elements
  * M(idxs,idxs), where idxs is a sequence
- * {block_indices(i):block_indices(i)+BLOCKSIZE-1} for all "i" up to the
- * size of block_indices. A perfect application of this method is in
+ * {block_indices(i)*BLOCKSIZE : block_indices(i)*BLOCKSIZE+BLOCKSIZE-1} for
+ * all "i" up to the size of block_indices, i.e. block_indices are indices
+ * of blocks, not of elements. A perfect application of this method is in
  * extracting covariance matrices of a subset of variables from the full
  * covariance matrix. \sa extractSubmatrix, extractSubmatrixSymmetrical
  */
