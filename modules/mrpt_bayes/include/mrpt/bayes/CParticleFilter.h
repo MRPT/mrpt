@@ -98,7 +98,7 @@ class CParticleFilter : public mrpt::system::COutputLogger
    *		- Stratified: A uniform sample is drawn for each of M subdivisions
    *of the range (0,1]. See Kitagawa 1996.
    *		- Systematic: A single uniform sample is drawn in the range
-   *(0,1/M]. See Carpenter et al. 1999.
+   *[0,1/M). See Carpenter et al. 1999.
    *
    * See the theoretical discussion of resampling schemes in:
    * https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/resampling_schemes/
@@ -192,7 +192,8 @@ class CParticleFilter : public mrpt::system::COutputLogger
   {
     /** \brief Effective sample size (ESS) computed before the resampling step. */
     double ESS_beforeResample{0};
-    /** \brief Variance of the normalized linear weights before resampling. */
+    /** \brief Unbiased sample variance of the linear weights exp(log_w)
+     * before resampling, with weights scaled so that the largest one is 1. */
     double weightsVariance_beforeResample{0};
   };
 

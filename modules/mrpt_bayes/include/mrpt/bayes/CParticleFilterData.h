@@ -145,13 +145,13 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
         {
           // First time: Reuse the data from the particle.
           parts[i].d = std::move(derived().m_particles[sorted_idx].d);
-          reusedIdx[sorted_idx] = i;
+          reusedIdx[sorted_idx] = static_cast<int>(i);
         }
         else
         {
           // Make a copy of the particle's data
           // (The "= operator" already makes a deep copy)
-          parts[i].d = parts[idx_of_this_in_new_set].d;
+          parts[i].d = parts[static_cast<size_t>(idx_of_this_in_new_set)].d;
         }
       }
       // Free memory of unused particles: Done automatically.

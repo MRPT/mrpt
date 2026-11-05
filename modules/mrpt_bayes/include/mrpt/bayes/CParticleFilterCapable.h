@@ -188,22 +188,22 @@ class CParticleFilterCapable
    */
   virtual double normalizeWeights(double* out_max_log_w = nullptr) = 0;
 
-  /** Returns the normalized ESS (Estimated Sample Size), in the range [0,1].
+  /** Returns the normalized ESS (Effective Sample Size), in the range [0,1].
    *  Note that you do NOT need to normalize the weights before calling this.
    */
   virtual double ESS() const = 0;
 
-  /** Performs a resample of the m_particles, using the method selected in the
-   * constructor.
+  /** Performs a resample of the m_particles, using the method selected in
+   * PF_options.resamplingMethod.
    * After computing the surviving samples, this method internally calls
    * "performSubstitution" to actually perform the particle replacement.
-   * This method is called automatically by CParticleFilter::execute,
-   * andshould not be invoked manually normally.
-   * To just obtaining the sequence of resampled indexes from a sequence of
-   * weights, use "resample"
+   * This method is called automatically by CParticleFilter::executeOn,
+   * and should not be invoked manually normally.
+   * To just obtain the sequence of resampled indexes from a sequence of
+   * weights, use computeResampling().
    * \param[in] out_particle_count The desired number of output particles
    * after resampling; 0 means don't modify the current number.
-   * \sa resample
+   * \sa computeResampling
    */
   void performResampling(
       const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
@@ -212,8 +212,10 @@ class CParticleFilterCapable
   /** A static method to perform the computation of the samples resulting from
    * resampling a given set of particles, given their logarithmic weights, and
    * a resampling method.
-   * It returns the sequence of indexes from the resampling. The number of
-   * output samples is the same than the input population.
+   * It returns the sequence of indexes from the resampling, sorted in
+   * ascending order (hence, a single element of it is not a random draw).
+   * The expected number of copies of particle i is N*w_i, with N the number
+   * of output samples.
    *  This generic method just computes these indexes, to actually perform a
    * resampling in a particle filter object, call performResampling
    * \param[in] out_particle_count The desired number of output particles
@@ -247,7 +249,7 @@ class CParticleFilterCapable
 
  protected:
   /** Performs the particle filter prediction/update stages for the algorithm
-   * "pfStandardProposal" (if not implemented in heritated class, it will
+   * "pfStandardProposal" (if not implemented in inherited class, it will
    * raise a 'non-implemented' exception).
    * \sa prediction_and_update
    */
@@ -256,7 +258,7 @@ class CParticleFilterCapable
       const mrpt::obs::CSensoryFrame* observation,
       const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
   /** Performs the particle filter prediction/update stages for the algorithm
-   * "pfAuxiliaryPFStandard" (if not implemented in heritated class, it will
+   * "pfAuxiliaryPFStandard" (if not implemented in inherited class, it will
    * raise a 'non-implemented' exception).
    * \sa prediction_and_update
    */
@@ -265,7 +267,7 @@ class CParticleFilterCapable
       const mrpt::obs::CSensoryFrame* observation,
       const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
   /** Performs the particle filter prediction/update stages for the algorithm
-   * "pfOptimalProposal" (if not implemented in heritated class, it will raise
+   * "pfOptimalProposal" (if not implemented in inherited class, it will raise
    * a 'non-implemented' exception).
    * \sa prediction_and_update
    */
@@ -274,7 +276,7 @@ class CParticleFilterCapable
       const mrpt::obs::CSensoryFrame* observation,
       const bayes::CParticleFilter::TParticleFilterOptions& PF_options);
   /** Performs the particle filter prediction/update stages for the algorithm
-   * "pfAuxiliaryPFOptimal" (if not implemented in heritated class, it will
+   * "pfAuxiliaryPFOptimal" (if not implemented in inherited class, it will
    * raise a 'non-implemented' exception).
    * \sa prediction_and_update
    */
