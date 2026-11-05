@@ -40,8 +40,7 @@ namespace topography
  * north-ward, Z up-ward.
  *  For an explanation, refer to
  * http://en.wikipedia.org/wiki/Reference_ellipsoid
- * \sa coordinatesTransformation_WGS84_geocentric, ENU_axes_from_WGS84,
- * ENUToGeocentric
+ * \sa geodeticToGeocentric_WGS84, ENU_axes_from_WGS84, ENUToGeodetic_WGS84
  * \note The "Up" (Z) direction in ENU is the normal to the ellipsoid, which
  * coincides with the direction of an increasing geodetic height.
  */
@@ -74,8 +73,9 @@ void ENUToGeodetic_WGS84(
     TGeodeticCoords& out_coords,
     const TGeodeticCoords& in_coords_origin);
 
-/** ENU to EFEC (Geocentric) coordinates \sa ENUToGeocentric,
- * geodeticToENU_WGS84 */
+/** Geocentric (ECEF) to ENU (East-North-Up) coordinates, relative to the
+ * given origin (WGS84 ellipsoid). Its inverse is ENUToGeocentric().
+ * \sa ENUToGeocentric, geodeticToENU_WGS84 */
 void geocentricToENU_WGS84(
     const mrpt::math::TPoint3D& in_geocentric_point,
     mrpt::math::TPoint3D& out_ENU_point,
@@ -88,7 +88,7 @@ void geocentricToENU_WGS84(
     const TGeodeticCoords& in_coords_origin);
 
 /** Coordinates transformation from longitude/latitude/height to geocentric
- * X/Y/Z coordinates (with a WGS84 geoid).
+ * X/Y/Z coordinates (WGS84 ellipsoid).
  *  The WGS84 ellipsoid is used for the transformation. The coordinates are in
  * 3D
  *   where the reference is the center of the Earth.
@@ -107,6 +107,9 @@ void geodeticToGeocentric(
 
 /** Coordinates transformation from geocentric X/Y/Z coordinates to
  * longitude/latitude/height.
+ * \note It uses Bowring's closed-form approximation, accurate to better than
+ * 0.1 mm for heights below 100 km (the error grows with height, to a few mm
+ * at 1000 km).
  * \sa geodeticToGeocentric
  */
 void geocentricToGeodetic(
@@ -117,6 +120,8 @@ void geocentricToGeodetic(
 /**  7-parameter Bursa-Wolf transformation:
  *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
  * ] [ X Y Z ]_local
+ * This is the "coordinate frame rotation" sign convention (EPSG:9607). For the
+ * "position vector" convention (EPSG:9606), see transformHelmert3D().
  * \sa transform10params
  */
 void transform7params(
@@ -146,7 +151,7 @@ void transform10params(
 
 /**  Helmert 2D transformation:
  *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
- * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
+ * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp ]_local + [Xp Yp]
  * \sa transformHelmert3D
  */
 void transformHelmert2D(
@@ -163,6 +168,8 @@ void transformHelmert2D_TOPCON(
 /**  Helmert3D transformation:
  *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 -RZ RY; RZ 1 -RX; -RY RX 1
  * ] [ X Y Z ]_local
+ * This is the "position vector" sign convention (EPSG:9606). For the
+ * "coordinate frame rotation" convention (EPSG:9607), see transform7params().
  * \sa transformHelmert2D
  */
 void transformHelmert3D(
@@ -182,7 +189,10 @@ void transformHelmert3D_TOPCON(
 void transform1D(const mrpt::math::TPoint3D& p, const TDatum1DTransf& d, mrpt::math::TPoint3D& o);
 
 /**  Interpolation:
- *   [ Z ]_WGS84 = (dy * X - dx * Y + Z)*(1+e)+DZ
+ *   [ X Y ]_WGS84 = [ dX dY ] + [ 1 -sin(beta); 0 cos(beta) ] [ dSx*X; dSy*Y ]
+ *   [ Z ]_WGS84 = Z
+ * \note dSx and dSy are the full scale factors (TDatumTransfInterpolation
+ * takes them in ppm, i.e. 1e6 means a unit scale).
  */
 void transfInterpolation(
     const mrpt::math::TPoint3D& p, const TDatumTransfInterpolation& d, mrpt::math::TPoint3D& o);
@@ -190,7 +200,7 @@ void transfInterpolation(
 /** Returns the Geodetic coordinates of the UTM input point.
  * \param X: East coordinate of the input point.
  * \param Y: North coordinate of the input point.
- * \param zone: time zone (Spanish: "huso").
+ * \param zone: UTM longitude zone number, 1 to 60 (Spanish: "huso").
  * \param hem: hemisphere ('N'/'n' for North or 'S'/s' for South ). An
  * exception will be raised on any other value.
  * \param ellip: the reference ellipsoid used for the transformation (default:
@@ -209,7 +219,7 @@ void UTMToGeodetic(
 
 /** Returns the Geodetic coordinates of the UTM input point.
  * \param UTMCoords: UTM input coordinates.
- * \param zone: time zone (Spanish: "huso").
+ * \param zone: UTM longitude zone number, 1 to 60 (Spanish: "huso").
  * \param hem: hemisphere ('N'/'n' for North or 'S'/s' for South ). An
  * exception will be raised on any other value.
  * \param GeodeticCoords: Out geodetic coordinates.
@@ -233,8 +243,10 @@ inline void UTMToGeodetic(
  * the corresponding UTM zone and latitude band. For the southern
  * hemisphere, the standard UTM false northing (1e7 m) is applied so that
  * \a out_UTM_y is always positive.
- *   This method is based on public code by Gabriel Ruiz Martinez and Rafael
- * Palacios.
+ *   The projection uses the Krueger series to order n^6 (Karney 2011), with
+ * an accuracy better than 1 mm within the UTM zones. Zones are the regular
+ * 6-degree ones (the Norway and Svalbard exceptions are not applied), and
+ * latitudes outside the UTM range [-80,84] are not rejected.
  *   Example:
  *   \code
  *   Input:
@@ -245,7 +257,6 @@ inline void UTMToGeodetic(
  *    utm_zone = 30
  *    utm_band = T
  *   \endcode
- *   \sa http://www.mathworks.com/matlabcentral/fileexchange/10915
  */
 void GeodeticToUTM(
     double in_latitude_degrees,
@@ -274,8 +285,10 @@ void geodeticToUTM(
 
 /** Convert latitude and longitude coordinates into UTM coordinates, computing
  * the corresponding UTM zone and latitude band.
- *   This method is based on public code by Gabriel Ruiz Martinez and Rafael
- * Palacios.
+ *   The projection uses the Krueger series to order n^6 (Karney 2011), with
+ * an accuracy better than 1 mm within the UTM zones. Zones are the regular
+ * 6-degree ones (the Norway and Svalbard exceptions are not applied), and
+ * latitudes outside the UTM range [-80,84] are not rejected.
  *   Example:
  *   \code
  *   Input:
@@ -286,7 +299,6 @@ void geodeticToUTM(
  *    utm_zone = 30
  *    utm_band = T
  *   \endcode
- *   \sa http://www.mathworks.com/matlabcentral/fileexchange/10915
  */
 inline void GeodeticToUTM(
     const TGeodeticCoords& GeodeticCoords,

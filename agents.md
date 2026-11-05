@@ -232,7 +232,9 @@ mrpt_add_library(
   The inverse of `geodeticToENU_WGS84()` is `ENUToGeodetic_WGS84()` (returns
   lon/lat/height); `ENUToGeocentric()` returns geocentric (ECEF) coordinates
   and inverts `geocentricToENU_WGS84()`. In MRPT 2.x and 3.0.x,
-  `ENUToGeocentric()` used a geocentric-radial "Up" instead.
+  `ENUToGeocentric()` used a geocentric-radial "Up" instead. UTM uses the
+  Krueger n^6 series (sub-mm) and plain 6-degree zones (no Norway/Svalbard
+  exceptions; longitude 180 is zone 1).
 * Known-unreachable code kept on purpose: `mrpt_rtti`'s deferred
   class-registration queue, the `shared_ptr<yaml>` alternative in
   `mrpt_containers`' `scalar_t` (ABI-affecting), and `mrpt_viz`'s
