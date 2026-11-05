@@ -203,13 +203,17 @@ void CRobot2DPoseEstimator::extrapolateRobotPose(
   {
     // vy==0, assume we are in a Ackermann-like steering vehicle: compute an
     // arc:
-    const double R = velLocal.vx / velLocal.omega;     // Radius
     const double theta = velLocal.omega * delta_time;  // traversed arc
+    const double dist = velLocal.vx * delta_time;      // traversed distance
     const double cc = cos(p.phi);
     const double ss = sin(p.phi);
 
-    const double arc_x = R * sin(theta);
-    const double arc_y = R * (1 - cos(theta));
+    // R*sin(theta) and R*(1-cos(theta)), with R=vx/omega, written so they
+    // remain valid for straight motion (omega -> 0):
+    const bool straight = std::abs(theta) < 1e-8;
+    const double arc_x = dist * (straight ? 1.0 : sin(theta) / theta);
+    const double arc_y =
+        dist * (straight ? 0.5 * theta : 2 * mrpt::square(sin(0.5 * theta)) / theta);
 
     new_p.x = p.x + cc * arc_x - ss * arc_y;
     new_p.y = p.y + ss * arc_x + cc * arc_y;
