@@ -29,7 +29,8 @@ namespace mrpt::math
  * `x[0]` and `x[1]` if N=2, etc.
  * \param x array of size 3
  * \note Based on `poly34.h`, by Khashin S.I.
- * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
+ * https://web.archive.org/web/20160402113335/http://math.ivanovo.ac.ru/dalgebra/Khashin/poly/index.html
+ * (khash2 (at) gmail.com)
  */
 int solve_poly3(double* x, double a, double b, double c) noexcept;
 
@@ -44,7 +45,8 @@ int solve_poly3(double* x, double a, double b, double c) noexcept;
  * `x[0]` and `x[1]` if N=2, etc.
  * \param x array of size 4
  * \note Based on `poly34.h`, by Khashin S.I.
- * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
+ * https://web.archive.org/web/20160402113335/http://math.ivanovo.ac.ru/dalgebra/Khashin/poly/index.html
+ * (khash2 (at) gmail.com)
  */
 int solve_poly4(double* x, double a, double b, double c, double d) noexcept;
 
@@ -54,7 +56,8 @@ int solve_poly4(double* x, double a, double b, double c, double d) noexcept;
  * `x[0]` and `x[1]` if N=2, etc.
  * \param x array of size 5
  * \note Based on `poly34.h`, by Khashin S.I.
- * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
+ * https://web.archive.org/web/20160402113335/http://math.ivanovo.ac.ru/dalgebra/Khashin/poly/index.html
+ * (khash2 (at) gmail.com)
  */
 int solve_poly5(double* x, double a, double b, double c, double d, double e) noexcept;
 
@@ -63,7 +66,8 @@ int solve_poly5(double* x, double a, double b, double c, double d, double e) noe
  * the root is in r1).
  * r1, r2 are the roots. (r1<=r2)
  * \note Based on `poly34.h`, by Khashin S.I.
- * http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html - khash2 (at) gmail.com
+ * https://web.archive.org/web/20160402113335/http://math.ivanovo.ac.ru/dalgebra/Khashin/poly/index.html
+ * (khash2 (at) gmail.com)
  */
 int solve_poly2(double a, double b, double c, double& r1, double& r2) noexcept;
 

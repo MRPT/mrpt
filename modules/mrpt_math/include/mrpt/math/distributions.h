@@ -127,7 +127,8 @@ double KLD_Gaussians(
  * p=[0,1].
  *  The employed approximation is that from Peter J. Acklam
  * (pjacklam@online.no),
- *  freely available in http://home.online.no/~pjacklam.
+ *  freely available in:
+ *  https://web.archive.org/web/20151110174102/http://home.online.no/~pjacklam/notes/invnorm/
  */
 double normalQuantile(double p);
 
@@ -162,7 +163,7 @@ only
   about 0.1 for few degrees of freedom, but reaches about 0.001 above dof = 5.
 
   \note Function code from the Vigra project
-(http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU
+(https://ukoethe.github.io/vigra/); code under "MIT X11 License", GNU
 GPL-compatible.
 * \sa noncentralChi2PDF_CDF
 */
@@ -178,7 +179,7 @@ double noncentralChi2CDF(unsigned int degreesOfFreedom, double noncentrality, do
   by calling <tt>noncentralChi2CDF(degreesOfFreedom, 0.0, arg, accuracy)</tt>.
 
   \note Function code from the Vigra project
-   (http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU
+   (https://ukoethe.github.io/vigra/); code under "MIT X11 License", GNU
    GPL-compatible.
 */
 double chi2CDF(unsigned int degreesOfFreedom, double arg);
@@ -188,7 +189,7 @@ double chi2CDF(unsigned int degreesOfFreedom, double arg);
  *	and tolerance \a accuracy at the given argument \a arg
  *	by calling <tt>noncentralChi2(degreesOfFreedom, 0.0, arg, accuracy)</tt>.
  *	\note Function code from the Vigra project
- *(http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU
+ *(https://ukoethe.github.io/vigra/); code under "MIT X11 License", GNU
  *GPL-compatible.
  *
  * \note Equivalent to MATLAB's chi2pdf(arg,degreesOfFreedom)

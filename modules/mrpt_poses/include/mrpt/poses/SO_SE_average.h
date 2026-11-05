@@ -39,7 +39,7 @@ class SE_average;
  * corresponding 2D points, then projecting the result back to the closest-point
  * in the manifold.
  * Shortly explained in [these
- * slides](http://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
+ * slides](https://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
  * \note Class introduced in MRPT 1.3.1
  * \sa SE_traits */
 template <>
@@ -79,7 +79,7 @@ class SO_average<2>
  * corresponding matrices, then projecting the result back to the closest matrix
  * in the manifold.
  * Shortly explained in [these
- * slides](http://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
+ * slides](https://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
  * See also: eq. (3.7) in "MEANS AND AVERAGING IN THE GROUP OF ROTATIONS",
  * MAHER MOAKHER, 2002.
  * \note Class introduced in MRPT 1.3.1

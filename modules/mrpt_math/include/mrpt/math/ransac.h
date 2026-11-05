@@ -88,7 +88,7 @@ class RANSAC_Template : public mrpt::system::COutputLogger
    *  \param
    *
    *  This implementation is highly inspired on Peter Kovesi's MATLAB scripts
-   * (http://www.csse.uwa.edu.au/~pk).
+   * (https://www.peterkovesi.com/matlabfns/).
    * \return false if no good solution can be found, true on success.
    * \note [MRPT 1.5.0] `verbose` parameter has been removed, supersedded by
    * COutputLogger settings.
@@ -125,7 +125,7 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
     const double p,
     const size_t maxIter) const
 {
-  // Highly inspired on http://www.csse.uwa.edu.au/~pk/
+  // Highly inspired on https://www.peterkovesi.com/matlabfns/
   MRPT_START
 
   ASSERT_GE_(minimumSizeSamplesToFit, 1U);

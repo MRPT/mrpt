@@ -78,7 +78,7 @@ class CPose3DQuatPDF :
    *  To see the mathematical derivation of the formulas, refer to the
    * technical report here:
    *   -
-   * https://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations
+   * https://docs.mrpt.org/reference/latest/tutorial-pdf-over-poses.html
    */
   static void jacobiansPoseComposition(
       const CPose3DQuat& x,

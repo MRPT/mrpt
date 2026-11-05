@@ -289,7 +289,7 @@ void CPointPDFSOG::bayesianFusion(
     Eigen::Vector3d eta = covInv * CMatrixDouble31(m.val.mean);
 
     // Normal distribution canonical form constant:
-    // See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
+    // See: https://cs.nju.edu.cn/wujx/paper/Gaussian.pdf
     double a =
         -0.5 * (3 * log(M_2PI) - log(covInv.det()) + (eta.transpose() * c.asEigen() * eta)(0, 0));
 

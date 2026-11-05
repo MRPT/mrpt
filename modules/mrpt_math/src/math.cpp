@@ -290,7 +290,7 @@ double math::averageLogLikelihood(
   MRPT_START
 
   // Explained in:
-  // https://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability
+  // https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/averaging_log-likelihood_values/
   ASSERT_(logWeights.size() == logLikelihoods.size());
 
   if (logWeights.empty())
@@ -326,7 +326,7 @@ double math::averageLogLikelihood(const CVectorDouble& logLikelihoods)
   MRPT_START
 
   // Explained in:
-  // https://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability
+  // https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/averaging_log-likelihood_values/
   size_t N = logLikelihoods.size();
   if (N == 0)
   {

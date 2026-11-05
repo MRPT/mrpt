@@ -41,9 +41,9 @@ class CParticleFilterCapable;
  *described by a CParticleFilterCapable object, passed in the constructor or
  *alternatively through the CParticleFilter::executeOn method.<br>
  *
- * For a complete example and further details, see the <a
- *href="http://www.mrpt.org/Particle_Filter_Tutorial" >Particle Filter
- *tutorial</a>.
+ * For a complete example and further details, see the Particle Filter
+ * tutorial:
+ * https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/
  *
  *   The basic SIR algorithm (pfStandardProposal) consists of:
  *		- Execute a prediction with the given "action".
@@ -67,12 +67,11 @@ class CParticleFilter : public mrpt::system::COutputLogger
    *		- OptimalProposal: Use the optimal proposal distribution (where
    *available!, usually this will perform approximations)
    *		- AuxiliaryPFOptimal: Use the optimal proposal and an auxiliary
-   *particle filter (see <a
-   *href="http://www.mrpt.org/Paper:An_Optimal_Filtering_Algorithm_for_Non-Parametric_Observation_Models_in_Robot_Localization_(ICRA_2008)"
-   *>paper</a>).
+   *particle filter (see \cite blanco2008optimal and
+   *\cite blanco2010optimal).
    *
-   * See the theoretical discussion in <a
-   *href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
+   * See the theoretical discussion of resampling schemes in:
+   * https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/resampling_schemes/
    */
   enum class TParticleFilterAlgorithm : uint8_t
   {
@@ -101,8 +100,8 @@ class CParticleFilter : public mrpt::system::COutputLogger
    *		- Systematic: A single uniform sample is drawn in the range
    *(0,1/M]. See Carpenter et al. 1999.
    *
-   * See the theoretical discussion in <a
-   *href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
+   * See the theoretical discussion of resampling schemes in:
+   * https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/resampling_schemes/
    */
   enum class TParticleResamplingAlgorithm : uint8_t
   {

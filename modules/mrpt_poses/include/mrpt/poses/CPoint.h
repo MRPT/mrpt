@@ -20,8 +20,8 @@
 namespace mrpt::poses
 {
 /** A base class for representing a point in 2D or 3D.
- *   For more information refer to the <a
- * href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry tutorial</a> online.
+ *   For more information refer to the 2D/3D Geometry tutorial online:
+ *   https://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/
  * \note This class is based on the CRTP design pattern
  * \sa CPoseOrPoint, CPose
  * \ingroup poses_grp

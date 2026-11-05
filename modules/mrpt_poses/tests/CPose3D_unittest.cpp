@@ -661,7 +661,7 @@ class Pose3DTests : public ::testing::Test
 
   // Test Jacobian: d A*exp(e)*D / d e
   // 10.3.7 in tech report
-  // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+  // https://arxiv.org/abs/2103.15980
   void test_Jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D)
   {
     const auto theor_jacob = Lie::SE<3>::jacob_dAexpeD_de(A, D);

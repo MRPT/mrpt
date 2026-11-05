@@ -77,7 +77,7 @@ SE<3>::mat2tang_jacob SE<3>::jacob_dlogv_dv(const SE<3>::type& P)
 }
 
 // Section 10.3.3 in tech report
-// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+// https://arxiv.org/abs/2103.15980
 SE<3>::tang2mat_jacob SE<3>::jacob_dexpeD_de(const CPose3D& D)
 {
   mrpt::math::CMatrixDouble12_6 jacob;
@@ -96,7 +96,7 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dexpeD_de(const CPose3D& D)
 }
 
 // Section 10.3.4 in tech report
-// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+// https://arxiv.org/abs/2103.15980
 SE<3>::tang2mat_jacob SE<3>::jacob_dDexpe_de(const CPose3D& D)
 {
   mrpt::math::CMatrixDouble12_6 jacob;
@@ -116,7 +116,7 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dDexpe_de(const CPose3D& D)
 }
 
 // Eq. 10.3.7 in tech report
-// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+// https://arxiv.org/abs/2103.15980
 SE<3>::tang2mat_jacob SE<3>::jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D)
 {
   const auto& Arot = A.getRotationMatrix();

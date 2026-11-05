@@ -21,7 +21,7 @@ namespace mrpt::math
 {
 /**  This class is a "CSerializable" wrapper for "CMatrixFloat".
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
- * https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
+ * https://www.mrpt.org/tutorials/programming/maths-and-geometry/matrices_vectors_arrays_and_linear_algebra_mrpt_and_eigen_classes/
  * \ingroup mrpt_math_grp
  */
 class CMatrixF : public mrpt::serialization::CSerializable, public CMatrixFloat

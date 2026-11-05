@@ -25,7 +25,7 @@ static thread_local CRandomGenerator randomGenerator;
 #endif
 
 // Code from the implementation by Rick Wagner
-//  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
+//  https://web.archive.org/web/20120222170616/http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
 inline uint32_t hiBit(const uint32_t u) { return u & 0x80000000UL; }
 inline uint32_t loBit(const uint32_t u) { return u & 0x00000001UL; }
 inline uint32_t loBits(const uint32_t u) { return u & 0x7fffffffUL; }
@@ -70,7 +70,7 @@ void Generator_MT19937::generateNumbers()
   }
 
   // Code from the implementation by Rick Wagner
-  //  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
+  //  https://web.archive.org/web/20120222170616/http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
   // and:
   //  http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c
   //

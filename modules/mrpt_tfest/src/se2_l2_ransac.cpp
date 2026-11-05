@@ -72,7 +72,7 @@ void markAsPicked(
   J.L. Blanco, J. Gonzalez-Jimenez and J.A. Fernandez-Madrigal.
   "A robust, multi-hypothesis approach to matching occupancy grid maps".
   Robotica, available on CJO2013. doi:10.1017/S0263574712000732.
-  http://journals.cambridge.org/action/displayAbstract?aid=8815308
+  https://doi.org/10.1017/S0263574712000732
 
  This works as follows:
   - Repeat "results.ransac_iters" times:

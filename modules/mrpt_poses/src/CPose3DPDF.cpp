@@ -139,7 +139,7 @@ void CPose3DPDF::jacobiansPoseComposition(
     const CPose3D& x, const CPose3D& u, CMatrixDouble66& df_dx, CMatrixDouble66& df_du)
 {
   // See this techical report:
-  // https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+  // https://arxiv.org/abs/2103.15980
 
   // Direct equations (for the covariances) in yaw-pitch-roll are too complex.
   //  Make a way around them and consider instead this path:

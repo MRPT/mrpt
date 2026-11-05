@@ -17,7 +17,8 @@
 #include <cfloat>
 #include <cmath>
 
-// Based on code (public domain) in http://www.mymathlib.com/functions/
+// Based on code (public domain) in:
+// https://web.archive.org/web/20161104155944/http://www.mymathlib.com/functions/fresnel_sin_cos_integrals.html
 
 namespace
 {

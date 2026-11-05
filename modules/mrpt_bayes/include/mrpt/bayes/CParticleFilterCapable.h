@@ -30,9 +30,9 @@ static constexpr double INVALID_LIKELIHOOD_VALUE = std::numeric_limits<double>::
 /** This virtual class defines the interface that any particles based PDF class
  * must implement in order to be executed by a mrpt::bayes::CParticleFilter.
  *
- * See the <a href="http://www.mrpt.org/Particle_Filter_Tutorial" >Particle
- * Filter tutorial</a> explaining how to use the particle filter-related
- * classes.
+ * See the Particle Filter tutorial explaining how to use the particle
+ * filter-related classes:
+ * https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/
  * \sa CParticleFilter, CParticleFilterData
  * \ingroup mrpt_bayes_grp
  */
@@ -116,9 +116,8 @@ class CParticleFilterCapable
    *to draw samples with a probability proportional to their current weights.
    *  The action and the observation are declared as "void*" for a greater
    *flexibility.
-   *  For a more detailed information see the <a
-   *href="http://www.mrpt.org/Particle_Filters" >Particle Filter
-   *tutorial</a>.
+   *  For a more detailed information see the Particle Filter tutorial:
+   * https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/
    *  Custom supplied "partEvaluator" functions must take into account the
    *previous particle weight, i.e. multiplying the current observation
    *likelihood by the weights.
@@ -135,9 +134,9 @@ class CParticleFilterCapable
    *algorithm).
    *   This method can be used to generate a variable number of m_particles
    *when resampling: to vary the number of m_particles in the filter.
-   *   See prepareFastDrawSample for more information, or the <a
-   *href="http://www.mrpt.org/Particle_Filters" >Particle Filter
-   *tutorial</a>.
+   *   See prepareFastDrawSample for more information, or the Particle Filter
+   *tutorial:
+   * https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/
    *
    * NOTES:
    *		- You MUST call "prepareFastDrawSample" ONCE before calling this

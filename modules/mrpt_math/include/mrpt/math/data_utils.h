@@ -601,7 +601,7 @@ void weightedHistogramLog(
  *  \f[ return = - \log N + \log  \sum_{i=1}^N e^{ll_i-ll_{max}} + ll_{max} \f]
  *
  * See also the <a
- * href="http://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability">tutorial
+ * href="https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/averaging_log-likelihood_values/">tutorial
  * page</a>.
  * \ingroup stats_grp
  */
@@ -622,7 +622,7 @@ double averageWrap2Pi(const CVectorDouble& angles);
  * e^{ll_i}  \right) \f]
  *
  * See also the <a
- * href="http://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability">tutorial
+ * href="https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/averaging_log-likelihood_values/">tutorial
  * page</a>.
  * \ingroup stats_grp
  */

@@ -59,7 +59,7 @@ void TPose3D::getAsQuaternion(
   // Compute 4x3 Jacobian: for details, see technical report:
   //   Parameterizations of SE(3) transformations: equivalences, compositions
   //   and uncertainty, J.L. Blanco (2010).
-  //   https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+  //   https://arxiv.org/abs/2103.15980
   if (out_dq_dr)
   {
     alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[4 * 3] = {
@@ -147,7 +147,7 @@ void TPose3D::SO3_to_yaw_pitch_roll(
     // Gimbal lock between yaw and roll. This one is arbitrarily forced to
     // be zero.
     // Check
-    // https://reference.mrpt.org/devel/classmrpt_1_1poses_1_1_c_pose3_d.html.
+    // https://docs.mrpt.org/reference/latest/class_mrpt_poses_CPose3D.html
     // If cos(pitch)==0, the homogeneous matrix is:
     // When sin(pitch)==1:
     //  /0  cysr-sycr cycr+sysr x\   /0  sin(r-y) cos(r-y)  x\.

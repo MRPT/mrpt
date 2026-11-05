@@ -30,17 +30,17 @@ enum FrameLookUpStatus
 };
 
 /** Virtual base class for interfaces to a [ROS
- * tf2](http://wiki.ros.org/tf2)-like
+ * tf2](https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Tf2.html)-like
  * service capable of "publishing" and "looking-up" relative poses between two
  * "coordinate frames".
  * Use derived classes for:
  *  - wrapping real ROS tf (TO-DO in
- * [mrpt-bridge](http://wiki.ros.org/mrpt_bridge)), or
+ * [mrpt_ros_bridge](https://github.com/MRPT/mrpt_ros_bridge)), or
  *  - using a pure MRPT standalone TF service with mrpt::poses::FrameTransformer
  *
  * Frame IDs are strings.
  * MRPT modules use the standard ROS [REP
- * 105](http://www.ros.org/reps/rep-0105.html#coordinate-frames)
+ * 105](https://www.ros.org/reps/rep-0105.html#coordinate-frames)
  * document regarding common names for frames:
  *  - `base_link`: "the robot"
  *  - `odom`: Origin for odometry

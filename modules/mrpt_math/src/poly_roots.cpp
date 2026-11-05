@@ -18,7 +18,8 @@
 
 // Based on:
 // poly.cpp : solution of cubic and quartic equation
-// (c) Khashin S.I. http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html
+// (c) Khashin S.I.
+// https://web.archive.org/web/20160402113335/http://math.ivanovo.ac.ru/dalgebra/Khashin/poly/index.html
 // khash2 (at) gmail.com
 //
 

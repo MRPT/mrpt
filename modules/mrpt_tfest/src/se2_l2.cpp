@@ -126,7 +126,7 @@ bool tfest::se2_l2(
 
   // ----------------------------------------------------------------------
   //  For the formulas of the covariance, see:
-  //   https://www.mrpt.org/Paper:Occupancy_Grid_Matching
+  //   https://www.mrpt.org/paper-occupancy-grid-matching/
   //   and Jose Luis Blanco's PhD thesis.
   // ----------------------------------------------------------------------
   internal::se2_l2_impl_return_t<float> implRet;

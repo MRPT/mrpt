@@ -37,7 +37,7 @@ namespace mrpt::math
 /** Template for column vectors of dynamic size, compatible with Eigen.
  *
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
- *http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
+ *https://www.mrpt.org/tutorials/programming/maths-and-geometry/matrices_vectors_arrays_and_linear_algebra_mrpt_and_eigen_classes/
  * \sa CVectorDynamic, CMatrixFixed, CVectorFixed
  * \ingroup mrpt_math_grp
  */
