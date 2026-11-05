@@ -187,6 +187,24 @@ TEST(LieSO3, LogIsPrincipalAndInvertsExp)
   EXPECT_NEAR((we - (4.0 - 2 * M_PI) * n).norm(), 0, 1e-12);
 }
 
+TEST(LieSO3, LogNearPiKeepsTheAngle)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  for (double d : {1e-6, 1e-7, 5e-8, 1e-8, 1e-9, 1e-11})
+  {
+    for (int k = 0; k < 10; k++)
+    {
+      const Eigen::Vector3d n = randomUnitVector();
+      const double th = M_PI - d;
+      const Eigen::Matrix3d R = Eigen::AngleAxisd(th, n).toRotationMatrix();
+      const auto w = SO<3>::log(CMatrixDouble33(R));
+      const Eigen::Vector3d we(w[0], w[1], w[2]);
+      EXPECT_NEAR(we.norm(), th, 1e-12) << "d=" << d;
+      EXPECT_LT((we - th * n).norm(), 1e-9) << "d=" << d;
+    }
+  }
+}
+
 TEST(LieSO3, LogNearGimbalLockInvertsExp)
 {
   using mrpt::poses::CPose3D;
