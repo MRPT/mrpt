@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <array>
 #include <nanoflann.hpp>
+#include <sstream>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -686,4 +687,79 @@ TEST(KDTreeBruteForce, zeroNeighborsRequested)
   EXPECT_TRUE(zs.empty());
   c3.kdTreeNClosestPoint3DWithIdx(0.f, 0.f, 0.f, 0, xs, ys, zs, idx, d2);
   EXPECT_TRUE(idx.empty());
+}
+
+// Saved and restored indices give the same k-NN results as brute force, for a
+// random cloud, and the other dimension's tree is built on demand.
+TEST(KDTreeCapable, saveLoadIndexRoundTripMatchesBruteForce)
+{
+#if !defined(MRPT_HAS_KDTREE_SAVE_LOAD_INDEX)
+  GTEST_SKIP() << "Requires nanoflann >= v1.5.0";
+#endif
+  auto& rng = mrpt::random::getRandomGenerator();
+  rng.randomize(1234);
+  PointCloud3D a;
+  for (int i = 0; i < 500; i++)
+  {
+    a.pts.emplace_back(rng.drawUniform(-5, 5), rng.drawUniform(-5, 5), rng.drawUniform(-1, 1));
+  }
+  std::stringstream ss3;
+  std::stringstream ss2;
+  ASSERT_TRUE(a.kdtree_save_index_3D(ss3));
+  ASSERT_TRUE(a.kdtree_save_index_2D(ss2));
+
+  const auto bruteKnn = [&](const mrpt::math::TPoint3D& q, size_t k, bool is3D)
+  {
+    std::vector<std::pair<double, size_t>> d;
+    for (size_t i = 0; i < a.pts.size(); i++)
+    {
+      const auto& p = a.pts[i];
+      const double d2 = mrpt::square(mrpt::d2f(p.x) - mrpt::d2f(q.x)) +
+                        mrpt::square(mrpt::d2f(p.y) - mrpt::d2f(q.y)) +
+                        (is3D ? mrpt::square(mrpt::d2f(p.z) - mrpt::d2f(q.z)) : 0.0);
+      d.emplace_back(d2, i);
+    }
+    std::sort(d.begin(), d.end());
+    std::vector<size_t> idx;
+    for (size_t i = 0; i < k; i++)
+    {
+      idx.push_back(d[i].second);
+    }
+    return idx;
+  };
+
+  for (int pass = 0; pass < 2; pass++)
+  {
+    PointCloud3D b;
+    b.pts = a.pts;
+    if (pass == 0)
+    {
+      b.kdtree_load_index_3D(ss3);
+    }
+    else
+    {
+      b.kdtree_load_index_2D(ss2);
+    }
+    for (int iq = 0; iq < 50; iq++)
+    {
+      const mrpt::math::TPoint3D q(
+          rng.drawUniform(-6, 6), rng.drawUniform(-6, 6), rng.drawUniform(-1.5, 1.5));
+      std::vector<size_t> idx3;
+      std::vector<float> d3;
+      b.kdTreeNClosestPoint3DIdx(mrpt::d2f(q.x), mrpt::d2f(q.y), mrpt::d2f(q.z), 5, idx3, d3);
+      EXPECT_EQ(idx3, bruteKnn(q, 5, true)) << "pass " << pass;
+      std::vector<size_t> idx2;
+      std::vector<float> d2;
+      b.kdTreeNClosestPoint2DIdx(mrpt::d2f(q.x), mrpt::d2f(q.y), 5, idx2, d2);
+      EXPECT_EQ(idx2, bruteKnn(q, 5, false)) << "pass " << pass;
+    }
+  }
+
+  // A cloud with a different number of points must reject the index:
+  PointCloud3D c;
+  c.pts = a.pts;
+  c.pts.pop_back();
+  std::stringstream ss3b;
+  ASSERT_TRUE(a.kdtree_save_index_3D(ss3b));
+  EXPECT_THROW(c.kdtree_load_index_3D(ss3b), std::exception);
 }
