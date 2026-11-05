@@ -105,8 +105,15 @@ void Generator_MT19937::seed(const uint32_t seed)
 CRandomGenerator& mrpt::random::getRandomGenerator() { return randomGenerator; }
 uint64_t CRandomGenerator::drawUniform64bit() { return m_uint64(m_MT19937); }
 uint32_t CRandomGenerator::drawUniform32bit() { return m_uint32(m_MT19937); }
-void CRandomGenerator::randomize(const uint32_t seed) { m_MT19937.seed(seed); }
+void CRandomGenerator::randomize(const uint32_t seed)
+{
+  m_MT19937.seed(seed);
+  // Drop any state cached from the previous sequence:
+  m_normdistribution.reset();
+  m_uint32.reset();
+  m_uint64.reset();
+}
 
-void CRandomGenerator::randomize() { m_MT19937.seed(std::random_device{}()); }
+void CRandomGenerator::randomize() { randomize(std::random_device{}()); }
 
 double CRandomGenerator::drawGaussian1D_normalized() { return m_normdistribution(m_MT19937); }

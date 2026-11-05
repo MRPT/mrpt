@@ -17,7 +17,12 @@
 #include <mrpt/random/random_shuffle.h>
 
 #include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <limits>
+#include <map>
 #include <numeric>
+#include <random>
 #include <vector>
 
 TEST(Random, Randomize)
@@ -91,54 +96,25 @@ TEST(Random, KnownSequence)
   }
 }
 
-// TODO(jlbc): Move this test to mrpt_math
-#if 0
-TEST(Random, drawGaussianMultivariateMany)
-{
-  using namespace mrpt::random;
-
-  CRandomGenerator rnd;
-  rnd.randomize(1);
-  std::vector<std::vector<double>> samples;
-  const size_t nSamples = 1000;
-  mrpt::math::CMatrixDouble33 cov = mrpt::math::CMatrixDouble33::Zero();
-  cov(0, 0) = 1.0;
-  cov(1, 1) = cov(2, 2) = 2.0;
-
-  rnd.drawGaussianMultivariateMany(samples, nSamples, cov);
-
-  EXPECT_EQ(samples.size(), nSamples);
-  EXPECT_EQ(samples.at(0).size(), static_cast<size_t>(cov.rows()));
-}
-#endif
-
 TEST(Random, portable_uniform_distribution)
 {
   mrpt::random::Generator_MT19937 rnd;
 
   const uint32_t seeds[5] = {0U, 1U, 3041022042U, 3206235417U, 2112818007U};
 
+  // Expected values: min + ((hi << 32 | lo) % (max - min + 1)), with hi and lo
+  // two consecutive outputs of MT19937 (see portableUniformDistributionFormula)
   const uint32_t psr_seq[5][30] = {
-      {
-       63, 28, 27, 95, 95, 62, 75, 64, 44, 57, 15, 90, 45, 93, 84,
-       88,  8, 5, 11, 44, 31,  5, 73,  63, 43,  9, 49, 36, 94, 23,
-       },
-      {
-       14, 52, 16, 57, 76, 37, 59, 18, 68, 53, 23, 50, 14, 11, 68,
-       54, 35, 30,  34, 72, 34, 63,   8, 62, 35, 14,  48, 69, 30, 65,
-       },
-      {
-       12, 52, 18, 43, 43, 21, 48, 36, 29, 47, 49, 20, 32, 13, 22,
-       23, 32, 20,  45, 19, 46, 55,  42,  31, 49, 21,  28, 42, 59, 11,
-       },
-      {
-       20, 24, 30, 35, 34, 33, 19, 23, 22, 38, 35, 34, 28, 27, 35,
-       16, 15, 27,  19, 38, 26, 39,  26,  35, 31, 19,  24, 15, 31, 30,
-       },
-      {
-       20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-       20, 20, 20,  20, 20, 20, 20,  20,  20, 20, 20,  20, 20, 20, 20,
-       },
+      {70, 85, 96, 28, 73,  2, 84, 50, 47, 39, 56, 91, 28, 65, 22,
+       79, 24, 17, 97, 53, 94, 74, 33, 82, 100, 87, 90, 21, 13, 83},
+      {40, 73, 38, 22, 17, 74,  40, 61, 78, 41,  54, 25, 49, 73, 47,
+       37, 56, 46, 11, 63, 18, 20, 66, 42,  33, 50, 49, 64, 51, 61},
+      {38, 38, 17, 15, 42, 45,  30, 31, 18, 14,  11, 15, 42, 56, 17,
+       11, 22, 51, 10, 20, 29, 39, 22, 11,  59, 50, 54, 22, 39, 55},
+      {17, 34, 31, 21, 29, 25,  21, 35, 24, 30,  32, 20, 22, 23, 22,
+       32, 15, 30, 30, 15, 36, 21, 21, 37,  18, 30, 24, 16, 27, 26},
+      {20, 20, 20, 20, 20, 20,  20, 20, 20, 20,  20, 20, 20, 20, 20,
+       20, 20, 20, 20, 20, 20, 20, 20, 20,  20, 20, 20, 20, 20, 20},
   };
 
   for (uint64_t seed = 0; seed < 5; seed++)
@@ -163,7 +139,7 @@ TEST(Random, shuffle)
   {
     auto list2 = listOrg;
     mrpt::random::shuffle(list2.begin(), list2.end(), rnd);
-    EXPECT_EQ(list2, std::vector<int>({7, 2, 9, 8, 5, 6, 1, 4, 0, 3}));
+    EXPECT_EQ(list2, std::vector<int>({0, 4, 7, 3, 6, 2, 8, 1, 5, 9}));
   }
 
   {
@@ -175,12 +151,12 @@ TEST(Random, shuffle)
   {
     auto list2 = listOrg;
     mrpt::random::partial_shuffle(list2.begin(), list2.end(), rnd, 1);
-    EXPECT_EQ(list2, std::vector<int>({6, 1, 2, 3, 4, 5, 0, 7, 8, 9}));
+    EXPECT_EQ(list2, std::vector<int>({8, 1, 2, 3, 4, 5, 6, 7, 0, 9}));
   }
   {
     auto list2 = listOrg;
     mrpt::random::partial_shuffle(list2.begin(), list2.end(), rnd, 10);
-    EXPECT_EQ(list2, std::vector<int>({3, 5, 8, 0, 7, 1, 6, 2, 4, 9}));
+    EXPECT_EQ(list2, std::vector<int>({3, 4, 6, 1, 0, 9, 5, 8, 7, 2}));
   }
 }
 
@@ -266,4 +242,212 @@ TEST(Random, GlobalHelpers)
     EXPECT_GE(val, 0.0f);
     EXPECT_LE(val, 1.0f);
   }
+}
+
+TEST(Random, MT19937MatchesStdMt19937)
+{
+  for (const uint32_t seed : {0U, 1U, 5489U, 1234U, 4294967295U})
+  {
+    mrpt::random::Generator_MT19937 g;
+    g.seed(seed);
+    std::mt19937 ref(seed);
+    for (int i = 0; i < 2000; i++)
+    {
+      ASSERT_EQ(g(), static_cast<uint32_t>(ref())) << "seed=" << seed << " i=" << i;
+    }
+  }
+}
+
+TEST(Random, portableUniformDistributionFormula)
+{
+  // Independent evaluation of the documented formula on the reference engine:
+  mrpt::random::Generator_MT19937 g;
+  g.seed(5);
+  std::mt19937 ref(5);
+  for (int i = 0; i < 200; i++)
+  {
+    const uint64_t hi = static_cast<uint32_t>(ref());
+    const uint64_t lo = static_cast<uint32_t>(ref());
+    const uint64_t expected = 7 + (((hi << 32) | lo) % (1000 - 7 + 1));
+    EXPECT_EQ(mrpt::random::portable_uniform_distribution(g, 7, 1000), expected);
+  }
+  // Full 64-bit range: no division by zero
+  const auto v =
+      mrpt::random::portable_uniform_distribution(g, 0, std::numeric_limits<uint64_t>::max());
+  (void)v;
+}
+
+TEST(Random, portableUniformDistributionInclusiveRange)
+{
+  mrpt::random::Generator_MT19937 g;
+  g.seed(1);
+  std::map<uint64_t, int> cnt;
+  for (int i = 0; i < 3000; i++)
+  {
+    const auto v = mrpt::random::portable_uniform_distribution(g, 0, 2);
+    ASSERT_LE(v, 2U);
+    cnt[v]++;
+  }
+  ASSERT_EQ(cnt.size(), 3U);
+  for (const auto& kv : cnt)
+  {
+    EXPECT_NEAR(kv.second, 1000, 120) << "value=" << kv.first;
+  }
+}
+
+TEST(Random, shuffleIsUniformOverAllPermutations)
+{
+  mrpt::random::Generator_MT19937 g;
+  g.seed(3);
+  std::map<std::vector<int>, int> cnt;
+  int firstStays = 0;
+  const int N = 6000;
+  for (int t = 0; t < N; t++)
+  {
+    std::vector<int> v = {0, 1, 2};
+    mrpt::random::shuffle(v.begin(), v.end(), g);
+    cnt[v]++;
+    if (v[0] == 0)
+    {
+      firstStays++;
+    }
+  }
+  EXPECT_EQ(cnt.size(), 6U);
+  for (const auto& kv : cnt)
+  {
+    EXPECT_NEAR(kv.second, 1000, 150);
+  }
+  EXPECT_NEAR(firstStays, 2000, 200);
+}
+
+TEST(Random, partialShuffleIsUniform)
+{
+  // The first element after a partial shuffle of N=1 must be uniform over
+  // the whole sequence.
+  mrpt::random::Generator_MT19937 g;
+  g.seed(11);
+  std::map<int, int> cnt;
+  for (int t = 0; t < 4000; t++)
+  {
+    std::vector<int> v = {0, 1, 2, 3};
+    mrpt::random::partial_shuffle(v.begin(), v.end(), g, 1);
+    cnt[v[0]]++;
+  }
+  ASSERT_EQ(cnt.size(), 4U);
+  for (const auto& kv : cnt)
+  {
+    EXPECT_NEAR(kv.second, 1000, 150) << "value=" << kv.first;
+  }
+}
+
+TEST(Random, permuteVectorReproducibleWithSeed)
+{
+  std::vector<int> v(20);
+  std::iota(v.begin(), v.end(), 0);
+  mrpt::random::CRandomGenerator a(42);
+  mrpt::random::CRandomGenerator b(42);
+  EXPECT_EQ(a.permuteVector(v), b.permuteVector(v));
+
+  std::vector<int> o1;
+  std::vector<int> o2;
+  mrpt::random::getRandomGenerator().randomize(7);
+  mrpt::random::randomPermutation(v, o1);
+  mrpt::random::getRandomGenerator().randomize(7);
+  mrpt::random::randomPermutation(v, o2);
+  EXPECT_EQ(o1, o2);
+
+  std::sort(o1.begin(), o1.end());
+  EXPECT_EQ(o1, v);
+}
+
+TEST(Random, GaussianSequenceReproducibleAfterReseed)
+{
+  mrpt::random::CRandomGenerator a(5);
+  (void)a.drawGaussian1D_normalized();  // may leave a cached sample
+  a.randomize(1234);
+  mrpt::random::CRandomGenerator b(1234);
+  for (int i = 0; i < 4; i++)
+  {
+    EXPECT_EQ(a.drawGaussian1D_normalized(), b.drawGaussian1D_normalized()) << "i=" << i;
+  }
+}
+
+TEST(Random, drawUniformMoments)
+{
+  mrpt::random::CRandomGenerator rng(1234);
+  const int N = 200000;
+  const double a = -3.0;
+  const double b = 5.0;
+  double s = 0;
+  double s2 = 0;
+  for (int i = 0; i < N; i++)
+  {
+    const double x = rng.drawUniform(a, b);
+    ASSERT_GE(x, a);
+    ASSERT_LE(x, b);
+    s += x;
+    s2 += x * x;
+  }
+  const double m = s / N;
+  const double var = s2 / N - m * m;
+  // 6 standard errors
+  EXPECT_NEAR(m, 0.5 * (a + b), 6 * (b - a) / std::sqrt(12.0 * N));
+  EXPECT_NEAR(var, (b - a) * (b - a) / 12.0, 0.03);
+}
+
+TEST(Random, drawGaussian1DMoments)
+{
+  mrpt::random::CRandomGenerator rng(4321);
+  const int N = 200000;
+  double s = 0;
+  double s2 = 0;
+  int within1 = 0;
+  for (int i = 0; i < N; i++)
+  {
+    const double x = rng.drawGaussian1D(2.0, 3.0);
+    s += x;
+    s2 += x * x;
+    if (std::abs(x - 2.0) < 3.0)
+    {
+      within1++;
+    }
+  }
+  const double m = s / N;
+  const double sd = std::sqrt(s2 / N - m * m);
+  EXPECT_NEAR(m, 2.0, 6 * 3.0 / std::sqrt(N));
+  EXPECT_NEAR(sd, 3.0, 0.03);
+  // P(|x-mu|<sigma) = 0.682689492137
+  EXPECT_NEAR(static_cast<double>(within1) / N, 0.682689492137, 0.006);
+}
+
+TEST(Random, drawUniformUnsignedIntRangeIsUniformAndInclusive)
+{
+  mrpt::random::CRandomGenerator rng(77);
+  std::map<uint32_t, int> cnt;
+  const int N = 11000;
+  for (int i = 0; i < N; i++)
+  {
+    uint32_t v = 0;
+    rng.drawUniformUnsignedIntRange(v, 10U, 20U);
+    ASSERT_GE(v, 10U);
+    ASSERT_LE(v, 20U);
+    cnt[v]++;
+  }
+  ASSERT_EQ(cnt.size(), 11U);
+  for (const auto& kv : cnt)
+  {
+    EXPECT_NEAR(kv.second, 1000, 150) << "value=" << kv.first;
+  }
+}
+
+TEST(Random, drawUniformUnsignedIntRangeFullRange)
+{
+  mrpt::random::CRandomGenerator rng(1);
+  uint32_t v32 = 0;
+  rng.drawUniformUnsignedIntRange(v32, 0U, std::numeric_limits<uint32_t>::max());
+  uint64_t v64 = 0;
+  rng.drawUniformUnsignedIntRange(
+      v64, static_cast<uint64_t>(0), std::numeric_limits<uint64_t>::max());
+  // Two different full-range draws are (almost surely) not both zero:
+  EXPECT_TRUE(v32 != 0 || v64 != 0);
 }

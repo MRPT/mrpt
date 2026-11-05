@@ -22,7 +22,8 @@
 
 namespace mrpt::random
 {
-/** Uniform shuffle a sequence.
+/** Uniform shuffle a sequence (Fisher-Yates), using the given random
+ * generator.
  *\ingroup mrpt_random_grp
  */
 template <class RandomIt, class URBG>
@@ -43,6 +44,10 @@ void shuffle(RandomIt first, RandomIt last, URBG&& g)
 }
 
 /** Uniform shuffle a sequence.
+ * \note It uses an internal std::mt19937 seeded from std::random_device, so
+ * results are not reproducible and do not depend on the seed of
+ * mrpt::random::getRandomGenerator(). Use the overload taking a generator for
+ * reproducible results.
  *\ingroup mrpt_random_grp
  */
 template <class RandomIt>
