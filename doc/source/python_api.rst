@@ -12,8 +12,9 @@ MRPT is available from Python 3 through one package per C++ module
    from mrpt.poses import CPose3D
    from mrpt.maps import CSimplePointsMap
 
-Install them with the ``python3-mrpt`` packages (Debian/Ubuntu), or build MRPT
-from sources with ``pybind11-dev`` installed (then ``source install/setup.bash``).
+Install them with ``pip install mrpt3`` (Linux), the ``python3-mrpt`` packages
+(Debian/Ubuntu), or build MRPT from sources with ``pybind11-dev`` installed
+(then ``source install/setup.bash``).
 Each package ships PEP 561 type stubs (``.pyi``), so IDEs and type checkers
 show signatures and docstrings. Most classes link to the C++ class they wrap,
 whose documentation applies to the Python methods with the same name.
