@@ -16,6 +16,8 @@
 #include <mrpt/graphs/ScalarFactorGraph.h>
 
 #include <Eigen/Dense>
+#include <deque>
+#include <random>
 
 using namespace mrpt;
 using namespace mrpt::graphs;
@@ -167,6 +169,74 @@ TEST(ScalarFactorGraph, MiniMRF_BinaryEdges)
 
     EXPECT_GT(x_var[2], x_var[1]);
     EXPECT_GT(x_var[2], x_var[3]);
+  }
+}
+
+// Solution and variances of a random sparse problem must match those of the
+// dense normal equations
+TEST(ScalarFactorGraph, RandomSparseProblemMatchesDenseSolution)
+{
+  const size_t N = 40;
+  vector<double> my_map(N, .0);
+  std::mt19937 rng(1234);
+  std::uniform_real_distribution<double> unif(0.0, 1.0);
+
+  ScalarFactorGraph gmrf;
+  gmrf.initialize(N);
+
+  std::deque<MySimpleUnaryEdge> unaryEdges;
+  std::deque<MySimpleBinaryEdge> binaryEdges;
+  Eigen::MatrixXd H = Eigen::MatrixXd::Zero(N, N);
+  Eigen::VectorXd g = Eigen::VectorXd::Zero(N);
+
+  // Some observed nodes:
+  for (size_t i = 0; i < N; i += 7)
+  {
+    const double obs = 10 * unif(rng) - 5;
+    const double inf = 0.5 + 2 * unif(rng);
+    unaryEdges.emplace_back(my_map, i, obs, inf);
+    gmrf.addConstraint(unaryEdges.back());
+    H(i, i) += inf;
+    g[i] += inf * obs;
+  }
+  // A chain plus random long-range links:
+  auto addBinary = [&](size_t i, size_t j)
+  {
+    const double inf = 0.1 + unif(rng);
+    binaryEdges.emplace_back(my_map, i, j, inf);
+    gmrf.addConstraint(binaryEdges.back());
+    H(i, i) += inf;
+    H(j, j) += inf;
+    H(i, j) -= inf;
+    H(j, i) -= inf;
+  };
+  for (size_t i = 0; i + 1 < N; i++)
+  {
+    addBinary(i, i + 1);
+  }
+  for (size_t k = 0; k < 25; k++)
+  {
+    const size_t i = static_cast<size_t>(unif(rng) * N) % N;
+    const size_t j = static_cast<size_t>(unif(rng) * N) % N;
+    if (i != j)
+    {
+      addBinary(i, j);
+    }
+  }
+
+  mrpt::math::CVectorDouble x_incr;
+  mrpt::math::CVectorDouble x_var;
+  gmrf.updateEstimation(x_incr, &x_var);
+
+  // Dense reference, starting from x=0:
+  const Eigen::MatrixXd Sigma = H.inverse();
+  const Eigen::VectorXd x = H.ldlt().solve(g);
+  ASSERT_EQ(static_cast<size_t>(x_incr.size()), N);
+  ASSERT_EQ(static_cast<size_t>(x_var.size()), N);
+  for (size_t i = 0; i < N; i++)
+  {
+    EXPECT_NEAR(x_incr[i], x[i], 1e-8 * (1 + std::abs(x[i]))) << "i=" << i;
+    EXPECT_NEAR(x_var[i], Sigma(i, i), 1e-8 * Sigma(i, i)) << "i=" << i;
   }
 }
 

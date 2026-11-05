@@ -145,6 +145,11 @@ mrpt_add_library(
   180 deg and near pitch = +-90 deg. GTSAM Pose3 covariances are body-frame
   (rx,ry,rz,tx,ty,tz): convert with `gtsam_wrappers::to_mrpt_se3_pdf()` /
   `to_gtsam_se3_cov6()`; `to_mrpt_se3_cov6()` only reorders (exact at identity).
+* **mrpt_graphs**: edge PDFs hold the uncertainty of the (x,y,phi) or
+  (x,y,z,yaw,pitch,roll) parameters, translation in the edge origin frame.
+  Optimizers and g2o files use the local residual `pseudoLog(Z^-1 X)`; convert
+  with `graphs::detail::infoParamsToLocal()` / `infoLocalToParams()`. Honor
+  `edges_store_inverse_poses` in any new edge consumer.
 * **mrpt_img**: `CImage::at<T>()` is a raw `reinterpret_cast`; for 3-channel
   images use `at<uint8_t>(x, y, channel)`, not `at<TColor>()`.
   `scaleHalf()`/`grayscale()` dispatch to SSE2/SSSE3 kernels and return whether

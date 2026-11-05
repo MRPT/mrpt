@@ -151,3 +151,33 @@ TEST(CDirectedTree, GetAsTextDescription)
   EXPECT_NE(s.find("<-3"), std::string::npos);
   EXPECT_NE(s.find("->2"), std::string::npos);
 }
+
+TEST(CDirectedTree, VisitBreadthFirstVisitsLevelByLevel)
+{
+  // 0 -> {1, 2}, 1 -> 3, 3 -> 5, 2 -> 4
+  tree_t tree;
+  tree.root = 0;
+  tree.edges_to_children[0].push_back(tree_t::TEdgeInfo(1));
+  tree.edges_to_children[0].push_back(tree_t::TEdgeInfo(2));
+  tree.edges_to_children[1].push_back(tree_t::TEdgeInfo(3));
+  tree.edges_to_children[3].push_back(tree_t::TEdgeInfo(5));
+  tree.edges_to_children[2].push_back(tree_t::TEdgeInfo(4));
+
+  std::vector<TNodeID> ids;
+  std::vector<TNodeID> parents;
+  std::vector<size_t> depths;
+  tree.visitBreadthFirst(
+      tree.root,
+      [&](TNodeID parent, const tree_t::TEdgeInfo& e, size_t depth)
+      {
+        parents.push_back(parent);
+        ids.push_back(e.id);
+        depths.push_back(depth);
+      });
+  const std::vector<TNodeID> expectedIds = {1, 2, 3, 4, 5};
+  const std::vector<TNodeID> expectedParents = {0, 0, 1, 2, 3};
+  const std::vector<size_t> expectedDepths = {1, 1, 2, 2, 3};
+  EXPECT_EQ(ids, expectedIds);
+  EXPECT_EQ(parents, expectedParents);
+  EXPECT_EQ(depths, expectedDepths);
+}

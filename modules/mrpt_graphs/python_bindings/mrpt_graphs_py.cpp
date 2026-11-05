@@ -142,16 +142,16 @@ void bind_CNetworkOfPoses(py::module& m, const char* className, const char* clas
 
 PYBIND11_MODULE(_bindings, m)
 {
-  m.doc() = "Python bindings for mrpt::graphs — pose graph and graph algorithms";
+  m.doc() = "Python bindings for mrpt::graphs: pose graph and graph algorithms";
 
   // -------------------------------------------------------------------------
-  // CNetworkOfPoses2D — 2D pose graph with CPose2D edges
+  // CNetworkOfPoses2D: 2D pose graph with CPose2D edges
   // -------------------------------------------------------------------------
   bind_CNetworkOfPoses<mrpt::poses::CPose2D>(
       m, "CNetworkOfPoses2D", "A graph of 2D poses (nodes) and relative pose constraints (edges).");
 
   // -------------------------------------------------------------------------
-  // CNetworkOfPoses3D — 3D pose graph with CPose3D edges
+  // CNetworkOfPoses3D: 3D pose graph with CPose3D edges
   // -------------------------------------------------------------------------
   bind_CNetworkOfPoses<mrpt::poses::CPose3D>(
       m, "CNetworkOfPoses3D", "A graph of 3D poses (nodes) and relative pose constraints (edges).");

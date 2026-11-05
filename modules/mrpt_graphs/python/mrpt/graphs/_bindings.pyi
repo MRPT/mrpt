@@ -1,5 +1,5 @@
 """
-Python bindings for mrpt::graphs — pose graph and graph algorithms
+Python bindings for mrpt::graphs: pose graph and graph algorithms
 """
 from __future__ import annotations
 import mrpt.poses
