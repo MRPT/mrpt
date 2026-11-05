@@ -123,8 +123,8 @@ Python examples
 The source code for all these Python examples can be found
 under `MRPT/mrpt_examples_py <https://github.com/MRPT/mrpt/tree/develop/mrpt_examples_py>`_.
 Run them with ``python3 <script>.py`` once the MRPT Python bindings are
-installed (e.g. ``python3-mrpt`` packages, or ``source install/setup.bash``
-after building from sources).
+installed (``pip install mrpt3``, the ``python3-mrpt`` packages, or
+``source install/setup.bash`` after building from sources).
 
 See also the :ref:`python_api`. C++ examples are `here <examples.html>`_.
 A machine-readable index of all examples is available in
