@@ -144,8 +144,15 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/poses/CPose3DQuatPDF.h
 )
 
+set(LIB_UNIT_TEST_LINK_LIBRARIES mrpt::mrpt_io Eigen3::Eigen)
 if (BUILD_TESTING)
   find_package(mrpt_io REQUIRED) # for unit tests
+  # Optional: tests of the header-only GTSAM wrappers
+  find_package(GTSAM QUIET)
+  if (GTSAM_FOUND)
+    list(APPEND LIB_UNIT_TEST_SOURCES tests/gtsam_wrappers_unittest.cpp)
+    list(APPEND LIB_UNIT_TEST_LINK_LIBRARIES gtsam)
+  endif()
 endif()
 
 mrpt_add_library(
@@ -159,8 +166,7 @@ mrpt_add_library(
   CMAKE_DEPENDENCIES
     mrpt_bayes
   UNITTEST_LINK_LIBRARIES
-    mrpt::mrpt_io
-    Eigen3::Eigen
+    ${LIB_UNIT_TEST_LINK_LIBRARIES}
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE
