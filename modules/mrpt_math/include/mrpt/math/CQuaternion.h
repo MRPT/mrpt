@@ -19,6 +19,8 @@
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CVectorFixed.h>
 
+#include <cmath>
+
 namespace mrpt::math
 {
 // For use with a constructor of CQuaternion
@@ -156,7 +158,7 @@ class CQuaternion : public CVectorFixed<T, 4>
       // Taylor series approximation:
       const T theta_po4 = theta_sq * theta_sq;
       i = T(0.5) - T(1.0 / 48.0) * theta_sq + T(1.0 / 3840.0) * theta_po4;
-      r = T(1.0) - T(0.5) * theta_sq + T(1.0 / 384.0) * theta_po4;
+      r = T(1.0) - T(0.125) * theta_sq + T(1.0 / 384.0) * theta_po4;
     }
     else
     {
@@ -182,7 +184,7 @@ class CQuaternion : public CVectorFixed<T, 4>
    * space here for the proof ;-).
    *  \param[out] out_ln The target vector, which can be: std::vector<>, or
    * mrpt::math::CVectorDouble or any row or column Eigen::Matrix<>.
-   *  \sa exp,  mrpt::poses::SE_traits  */
+   *  \sa exp, mrpt::poses::Lie::SO  */
   template <class ARRAYLIKE3>
   void ln(ARRAYLIKE3& out_ln) const
   {
@@ -203,14 +205,15 @@ class CQuaternion : public CVectorFixed<T, 4>
   {
     using mrpt::square;
     const T xyz_norm = std::sqrt(square(x()) + square(y()) + square(z()));
-    const T K = (xyz_norm < 1e-7) ? 2 : 2 * ::acos(r()) / xyz_norm;
+    // atan2() keeps full precision for small angles, unlike acos(r):
+    const T K = (xyz_norm < 1e-7) ? 2 / r() : 2 * std::atan2(xyz_norm, r()) / xyz_norm;
     out_ln[0] = K * x();
     out_ln[1] = K * y();
     out_ln[2] = K * z();
   }
 
   /** Exponential map from the SO(3) Lie Algebra to unit quaternions.
-   *  \sa ln,  mrpt::poses::SE_traits  */
+   *  \sa ln, mrpt::poses::Lie::SO  */
   template <class ARRAYLIKE3>
   static CQuaternion<T> exp(const ARRAYLIKE3& v)
   {
@@ -229,8 +232,8 @@ class CQuaternion : public CVectorFixed<T, 4>
 
   /**	Calculate the "cross" product (or "composed rotation") of two
    * quaternion: this = q1 x q2
-   *   After the operation, "this" will represent the composed rotations of
-   * q1 and q2 (q2 applied "after" q1).
+   *   After the operation, "this" represents the composition q1 (+) q2, that
+   * is, R(this) = R(q1) * R(q2). The result is normalized, with qr>=0.
    */
   void crossProduct(const CQuaternion& q1, const CQuaternion& q2)
   {
@@ -294,7 +297,7 @@ class CQuaternion : public CVectorFixed<T, 4>
     return square(r()) + square(x()) + square(y()) + square(z());
   }
 
-  /**	Normalize this quaternion, so its norm becomes the unitity.
+  /**	Normalize this quaternion, so its norm becomes the unity.
    */
   void normalize()
   {
@@ -334,8 +337,9 @@ class CQuaternion : public CVectorFixed<T, 4>
     J *= n;
   }
 
-  /** Compute the Jacobian of the rotation composition operation p = f(.) = q_this x r,
-   *  that is the 4x4 matrix df/dq_this.
+  /** Compute the 4x4 Jacobian d(q_this x r)/dr of the rotation composition
+   *  p = q_this x r (without normalization), i.e. the left-multiplication matrix
+   *  of q_this. It does not depend on r.
    *  The output matrix can be a dynamic or fixed size (4x4) matrix.
    */
   template <class MATRIXLIKE>
@@ -418,9 +422,10 @@ class CQuaternion : public CVectorFixed<T, 4>
     return q_aux;
   }
 
-  /**	Return the yaw, pitch & roll angles associated to quaternion
-   *  \sa For the equations, see The MRPT Book, or see
-   * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/Quaternions.pdf
+  /**	Return the yaw, pitch & roll angles associated to quaternion.
+   * See rpy_and_jacobian() for the behavior near |pitch|=90 degrees.
+   *  \sa For the equations, see \cite blanco_se3_tutorial, section 2.2.1,
+   * Eqs. (2.10)-(2.11).
    *  \sa rpy_and_jacobian
    */
   void rpy(T& roll, T& pitch, T& yaw) const
@@ -429,12 +434,17 @@ class CQuaternion : public CVectorFixed<T, 4>
   }
 
   /**	Return the yaw, pitch & roll angles associated to quaternion, and
-   * (optionally) the 3x4 Jacobian of the transformation.
+   * (optionally) the 3x4 Jacobian of the transformation, with rows in the
+   * order (yaw, pitch, roll).
    *  Note that both the angles and the Jacobian have one set of normal
    * equations, plus other special formulas for the degenerated cases of
    * |pitch|=90 degrees.
-   *  \sa For the equations, see The MRPT Book, or
-   * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/Quaternions.pdf
+   * \note Within ~0.36 degrees of |pitch|=90 degrees, pitch is set to exactly
+   * +-90 degrees and roll to zero, so the rotation is only approximated. For
+   * an exact conversion, build the rotation matrix and use
+   * mrpt::math::TPose3D::SO3_to_yaw_pitch_roll().
+   *  \sa For the equations, see \cite blanco_se3_tutorial, section 2.2.1,
+   * Eqs. (2.10)-(2.11).
    * \sa rpy
    */
   template <class MATRIXLIKE>
