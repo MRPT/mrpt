@@ -162,8 +162,8 @@ distribution with \a degreesOfFreedom,
 distribution is below \a arg
   It uses the approximate transform into a normal distribution due to Wilson
 and Hilferty
-  (see Abramowitz and Stegun: "Handbook of Mathematical Functions", formula
-26.4.32).
+  (see Abramowitz and Stegun: "Handbook of Mathematical Functions", section
+26.4).
   The algorithm's running time is independent of the inputs. The accuracy is
 only
   about 0.1 for few degrees of freedom, but reaches about 0.001 above dof = 5.

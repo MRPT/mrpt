@@ -16,6 +16,7 @@
 // finite-difference Jacobians of the actual pose operations.
 
 #include <gtest/gtest.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -217,4 +218,22 @@ TEST(CPose3DQuatPDFGaussianMath, EvaluatePDF_RankDeficientCovariance)
   EXPECT_FALSE(std::isnan(vNorm));
   EXPECT_GT(vNorm, 0.0);
   EXPECT_LE(vNorm, 1.0);
+}
+
+// The unscented quaternion-to-Euler conversion must give a sensible mean and
+// covariance when yaw is close to pi/2 (wrapped mean of the sigma points).
+TEST(CPose3DQuatPDFMath, UnscentedQuatToEulerNearHalfPiYaw)
+{
+  const bool orig = mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION();
+  const Mat6 C6 = Mat6::Identity() * 1e-4;
+  const CPose3D mean(1, 2, 3, M_PI / 2 + 1e-5, 0.1, 0.2);
+  const CPose3DQuatPDFGaussian q(CPose3DPDFGaussian(mean, CMatrixDouble66(C6)));
+
+  mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(true);
+  const CPose3DPDFGaussian back(q);
+  mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION(orig);
+
+  EXPECT_NEAR(mrpt::math::wrapToPi(back.mean.yaw() - mean.yaw()), 0.0, 1e-4)
+      << "yaw=" << back.mean.yaw();
+  EXPECT_NEAR(back.cov(3, 3), 1e-4, 1e-5);
 }
