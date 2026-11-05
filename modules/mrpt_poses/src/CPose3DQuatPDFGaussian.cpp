@@ -492,9 +492,24 @@ void CPose3DQuatPDFGaussian::enforceCovSymmetry()
 double CPose3DQuatPDFGaussian::mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther)
 {
   MRPT_START
-  const CMatrixDouble77 COV2 = cov + theOther.cov;
-  return mrpt::math::mahalanobisDistance(
-      CMatrixDouble71(this->mean) - CMatrixDouble71(theOther.mean), COV2);
+  // q and -q are the same rotation: express theOther in the hemisphere of
+  // this mean, which flips its quaternion and its cross-covariances.
+  CMatrixDouble71 otherMean(theOther.mean);
+  CMatrixDouble77 otherCov = theOther.cov;
+  if (this->mean.quat().asEigen().dot(theOther.mean.quat().asEigen()) < 0)
+  {
+    for (int i = 3; i < 7; i++)
+    {
+      otherMean[i] = -otherMean[i];
+      for (int j = 0; j < 3; j++)
+      {
+        otherCov(i, j) = -otherCov(i, j);
+        otherCov(j, i) = -otherCov(j, i);
+      }
+    }
+  }
+  const CMatrixDouble77 COV2 = cov + otherCov;
+  return mrpt::math::mahalanobisDistance(CMatrixDouble71(this->mean) - otherMean, COV2);
   MRPT_END
 }
 

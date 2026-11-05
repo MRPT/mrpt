@@ -299,3 +299,29 @@ TEST(CPose3DQuatPDFGaussianMath, DrawSamplesHaveUnitQuaternions)
   EXPECT_LT(m.cwiseAbs().maxCoeff(), 5e-3);
   EXPECT_LT((S - C6).cwiseAbs().maxCoeff(), 1.5e-3) << S;
 }
+
+// Regression: the Mahalanobis distance between two Gaussians of the same
+// pose, with quaternions of opposite signs, was ~1e10 instead of 0.
+TEST(CPose3DQuatPDFGaussianMath, MahalanobisDistance_QuaternionSign)
+{
+  const Mat6 C6 = Mat6::Identity() * 1e-2;
+  for (const double dx : {0.0, 0.05})
+  {
+    CPose3DQuatPDFGaussian a(
+        CPose3DPDFGaussian(CPose3D(1, 2, 3, 0.5, 0.2, 0.1), CMatrixDouble66(C6)));
+    const CPose3DQuatPDFGaussian b(
+        CPose3DPDFGaussian(CPose3D(1 + dx, 2, 3, 0.5, 0.2, 0.1), CMatrixDouble66(C6)));
+    // The same PDF as b, with -q: the quaternion cross-covariances flip.
+    CPose3DQuatPDFGaussian bm = b;
+    Mat7 J = Mat7::Identity();
+    for (int i = 3; i < 7; i++)
+    {
+      bm.mean[i] = -b.mean[i];
+      J(i, i) = -1;
+    }
+    bm.cov.asEigen() = J * b.cov.asEigen() * J.transpose();
+    const double d = a.mahalanobisDistanceTo(b);
+    EXPECT_NEAR(d, dx / std::sqrt(2 * 1e-2), 1e-6);
+    EXPECT_NEAR(a.mahalanobisDistanceTo(bm), d, 1e-6) << "dx=" << dx;
+  }
+}

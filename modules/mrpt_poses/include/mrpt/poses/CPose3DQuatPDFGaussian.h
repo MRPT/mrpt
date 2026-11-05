@@ -172,8 +172,8 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
   double evaluateNormalizedPDF(const CPose3DQuat& x) const;
 
   /** Computes the Mahalanobis distance between the centers of two Gaussians,
-   * using the sum of both 7x7 covariances.
-   * \note Quaternions q and -q are not identified with each other. */
+   * using the sum of both 7x7 covariances. Quaternions q and -q are the same
+   * rotation: theOther is first expressed with the sign of this quaternion. */
   double mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther);
 
 };  // End of class def.
