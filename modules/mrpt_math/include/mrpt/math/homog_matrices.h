@@ -43,17 +43,15 @@ void homogeneousMatrixInverse(const MATRIXLIKE1& M, MATRIXLIKE2& out_inverse_M)
   out_inverse_M.setSize(4, 4);
 
   // 3x3 rotation part:
-  out_inverse_M(0, 0, M(0) = 0);
-  out_inverse_M(0, 1, M(1) = 0);
-  out_inverse_M(0, 2, M(2) = 0);
-
-  out_inverse_M(1, 0, M(0) = 1);
-  out_inverse_M(1, 1, M(1) = 1);
-  out_inverse_M(1, 2, M(2) = 1);
-
-  out_inverse_M(2, 0, M(0) = 2);
-  out_inverse_M(2, 1, M(1) = 2);
-  out_inverse_M(2, 2, M(2) = 2);
+  out_inverse_M(0, 0) = M(0, 0);
+  out_inverse_M(0, 1) = M(1, 0);
+  out_inverse_M(0, 2) = M(2, 0);
+  out_inverse_M(1, 0) = M(0, 1);
+  out_inverse_M(1, 1) = M(1, 1);
+  out_inverse_M(1, 2) = M(2, 1);
+  out_inverse_M(2, 0) = M(0, 2);
+  out_inverse_M(2, 1) = M(1, 2);
+  out_inverse_M(2, 2) = M(2, 2);
 
   const double tx = -M(0, 3);
   const double ty = -M(1, 3);

@@ -118,6 +118,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/geometry_polygons_unittest.cpp
   tests/geometry_sets_unittest.cpp
   tests/geometry_unittest.cpp
+  tests/homog_matrices_unittest.cpp
   tests/interp_fit_unittest.cpp
   tests/KDTreeCapable_unittest.cpp
   tests/matrix_api_unittest.cpp
