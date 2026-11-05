@@ -157,41 +157,47 @@ struct TBoundingBox_
   }
 
   /** Returns a new bounding box, transforming `this` from local coordinates
-   * to global coordinates, as if `this` was given with respect to `pose`, ie:
-   *
-   * \code
-   *  return.min = pose \oplus this->min
-   *  return.max = pose \oplus this->max
-   * \endcode
+   * to global coordinates, as if `this` was given with respect to `pose`:
+   * the smallest axis-aligned box that contains the 8 corners of `this`
+   * transformed as `pose \oplus corner`. Without rotation, this is just
+   * `pose \oplus min` and `pose \oplus max`.
    * \tparam POSE_T Can be mrpt::poses::CPose3D, or mrpt::math::TPose3D
-   *
-   * \note Only the two corners are transformed: if a rotation exists, the
-   * output may not even contain the transformed box. Use
-   * TOrientedBox::getAxisAlignedBox() for a true bound.
    */
   template <typename POSE_T>
   [[nodiscard]] TBoundingBox_<T> compose(const POSE_T& pose) const
   {
-    return FromUnsortedPoints(pose.composePoint(min), pose.composePoint(max));
+    TBoundingBox_<T> bb = FromUnsortedPoints(pose.composePoint(min), pose.composePoint(max));
+    for (int i = 1; i < 7; i++)
+    {
+      bb.updateWithPoint(pose.composePoint(corner(i)));
+    }
+    return bb;
   }
 
   /** Returns a new bounding box, transforming `this` from global coordinates
-   * to local coordinates with respect to `pose`, ie:
-   *
-   * \code
-   *  return.min = this->min \ominus pose
-   *  return.max = this->max \ominus pose
-   * \endcode
+   * to local coordinates with respect to `pose`: the smallest axis-aligned
+   * box that contains the 8 corners of `this` transformed as
+   * `corner \ominus pose`.
    * \tparam POSE_T Can be mrpt::poses::CPose3D, or mrpt::math::TPose3D
-   *
-   * \note Only the two corners are transformed: if a rotation exists, the
-   * output may not even contain the transformed box. Use
-   * TOrientedBox::getAxisAlignedBox() for a true bound.
    */
   template <typename POSE_T>
   [[nodiscard]] TBoundingBox_<T> inverseCompose(const POSE_T& pose) const
   {
-    return FromUnsortedPoints(pose.inverseComposePoint(min), pose.inverseComposePoint(max));
+    TBoundingBox_<T> bb =
+        FromUnsortedPoints(pose.inverseComposePoint(min), pose.inverseComposePoint(max));
+    for (int i = 1; i < 7; i++)
+    {
+      bb.updateWithPoint(pose.inverseComposePoint(corner(i)));
+    }
+    return bb;
+  }
+
+  /** Returns one of the 8 corners of the box: bits 0, 1 and 2 of `i` select
+   * the max (instead of the min) x, y and z coordinates, respectively.
+   * \note New in MRPT 3.7.0 */
+  [[nodiscard]] mrpt::math::TPoint3D_<T> corner(int i) const
+  {
+    return {(i & 1) ? max.x : min.x, (i & 2) ? max.y : min.y, (i & 4) ? max.z : min.z};
   }
 
   /** Print bounding box as a string with format
