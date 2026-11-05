@@ -142,7 +142,9 @@ mrpt_add_library(
   Jacobians of quaternion products must flip the quaternion rows when the raw
   product has qr < 0. `Lie::SE<3>::exp/log` are the pseudo-exponential maps.
   Verify new Jacobians against finite differences with total rotations above
-  180 deg and near pitch = +-90 deg.
+  180 deg and near pitch = +-90 deg. GTSAM Pose3 covariances are body-frame
+  (rx,ry,rz,tx,ty,tz): convert with `gtsam_wrappers::to_mrpt_se3_pdf()` /
+  `to_gtsam_se3_cov6()`; `to_mrpt_se3_cov6()` only reorders (exact at identity).
 * **mrpt_img**: `CImage::at<T>()` is a raw `reinterpret_cast`; for 3-channel
   images use `at<uint8_t>(x, y, channel)`, not `at<TColor>()`.
   `scaleHalf()`/`grayscale()` dispatch to SSE2/SSSE3 kernels and return whether
