@@ -51,8 +51,8 @@ struct SO<3>
    */
   static type exp(const tangent_vector& x);
 
-  /** SO(3) logarithm map \f$ \mathbf{R} \rightarrow \log(\mathbf{R}^\vee)\f$.
-   * See 10.3.1 in \cite blanco_se3_tutorial
+  /** SO(3) logarithm map \f$ \mathbf{R} \rightarrow [\log \mathbf{R}]^\vee \f$.
+   * See section 9.4.1.2 in \cite blanco_se3_tutorial
    *
    * - Input: 3x3 rotation matrix in SO(3)
    * - Output: 3-len vector in Lie algebra so(3)
@@ -67,7 +67,8 @@ struct SO<3>
    * small rotations. */
   static tangent_vector vee_RmRt(const type& R);
 
-  /** Jacobian for exp(). See 10.3.1 in \cite blanco_se3_tutorial
+  /** Jacobian for exp(), evaluated at x=0 (the argument is ignored).
+   * See Eq. (10.8) in section 10.3.1 of \cite blanco_se3_tutorial
    *
    * - Input: 3-len vector in Lie algebra so(3)
    * - Jacobian: Jacobian of the 3x3 matrix (stacked as a column major
@@ -81,6 +82,7 @@ struct SO<3>
    * - Input: 3x3 rotation matrix in SO(3)
    * - Jacobian: Jacobian of the tangent space vector wrt the 3x3 matrix
    * (stacked as a column major 9-vector).
+   * \note Not defined for rotations of exactly 180 degrees.
    */
   static mat2tang_jacob jacob_dlogv_dv(const type& R);
 };
@@ -101,7 +103,7 @@ struct SO<2>
   using mat2tang_jacob = mrpt::math::CMatrixFixed<double, 1, 1>;
 
   /** SO(2) exponential map \f$ x \rightarrow \exp(x^\wedge) \f$.
-   * - Input: 1-len vector in Lie algebra so(3)
+   * - Input: 1-len vector in Lie algebra so(2)
    * - Output: angle for the rotation (radians)
    */
   static type exp(const tangent_vector& x);

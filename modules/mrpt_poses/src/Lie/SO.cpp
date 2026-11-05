@@ -170,8 +170,12 @@ SO<3>::mat2tang_jacob SO<3>::jacob_dlogv_dv(const SO<3>::type& R)
   CMatrixDouble33 B(UNINITIALIZED_MATRIX);
   if (d > 0.99999)
   {
-    a[0] = a[1] = a[2] = 0;
-    B.setDiagonal(3, -0.5);
+    // Small angles: Taylor expansion of the expressions below, with
+    // theta^2 approximated by sin^2(theta) = |vee(R-R^t)|^2 / 4.
+    a = SO<3>::vee_RmRt(R);
+    const double th2 = 0.25 * (square(a[0]) + square(a[1]) + square(a[2]));
+    a *= -1.0 / 12.0 - th2 / 30.0;
+    B.setDiagonal(3, -0.5 * (1.0 + th2 / 6.0));
   }
   else
   {

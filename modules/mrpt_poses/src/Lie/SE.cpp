@@ -115,7 +115,7 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dDexpe_de(const CPose3D& D)
   return jacob;
 }
 
-// Eq. 10.3.7 in tech report
+// Section 10.3.7, Eq. (10.28) in tech report
 // https://arxiv.org/abs/2103.15980
 SE<3>::tang2mat_jacob SE<3>::jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D)
 {
