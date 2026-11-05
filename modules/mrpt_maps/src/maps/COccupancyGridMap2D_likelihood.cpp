@@ -117,7 +117,8 @@ double COccupancyGridMap2D::computeObservationLikelihood_Consensus(
     int cx0 = x2idx(pointGlobal.x);
     int cy0 = y2idx(pointGlobal.y);
 
-    likResult += 1 - getCell_nocheck(cx0, cy0);
+    // getCell() returns 0.5 (unknown) for points out of the map:
+    likResult += 1 - getCell(cx0, cy0);
     Denom++;
   }
   if (Denom) likResult /= static_cast<double>(Denom);
@@ -179,18 +180,17 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
     int cx0 = x2idx(pointGlobal.x);
     int cy0 = y2idx(pointGlobal.y);
 
-    int cxMin = max(0, cx0 - Acells);
-    int cxMax = min(static_cast<int>(m_size_x) - 1, cx0 + Acells);
-    int cyMin = max(0, cy0 - Acells);
-    int cyMax = min(static_cast<int>(m_size_y) - 1, cy0 + Acells);
-
+    // Average over a fixed-size window; getCell() returns 0.5 (unknown)
+    // for cells out of the map:
     double lik = 0;
-
-    for (int cx = cxMin; cx <= cxMax; cx++)
-      for (int cy = cyMin; cy <= cyMax; cy++) lik += 1 - getCell_nocheck(cx, cy);
-
-    int nCells = (cxMax - cxMin + 1) * (cyMax - cyMin + 1);
-    ASSERT_(nCells > 0);
+    for (int cx = cx0 - Acells; cx <= cx0 + Acells; cx++)
+    {
+      for (int cy = cy0 - Acells; cy <= cy0 + Acells; cy++)
+      {
+        lik += 1 - getCell(cx, cy);
+      }
+    }
+    const int nCells = square(2 * Acells + 1);
     lik /= nCells;
 
     TPairLikelihoodIndex element;
@@ -201,7 +201,10 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 
   // Sort the list of likelihood values, in descending order:
   // ------------------------------------------------------------
-  std::sort(m_likelihoodOutputs.OWA_pairList.begin(), m_likelihoodOutputs.OWA_pairList.end());
+  std::sort(
+      m_likelihoodOutputs.OWA_pairList.begin(), m_likelihoodOutputs.OWA_pairList.end(),
+      [](const TPairLikelihoodIndex& a, const TPairLikelihoodIndex& b)
+      { return a.first > b.first; });
 
   // Cut the vector to the highest "m_likelihoodOutputs.OWA_length" elements:
   size_t M = likelihoodOptions.OWA_weights.size();
@@ -596,7 +599,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 
     // Precomputed table:
     // Tip: Comparison cx<0 is implicit in (unsigned)(x)>size...
-    if (static_cast<unsigned>(cx) >= size_x_1 || static_cast<unsigned>(cy) >= size_y_1)
+    if (static_cast<unsigned>(cx) >= m_size_x || static_cast<unsigned>(cy) >= m_size_y)
     {
       // We are outside of the map: Assign the likelihood for the max.
       // correspondence distance:
@@ -718,10 +721,9 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
   int cx, cy;
   size_t j;
   int cx0, cy0;
-  int cx_min, cx_max;
-  int cy_min, cy_max;
   int maxRangeInCells =
       static_cast<int>(ceil(likelihoodOptions.LF_maxCorrsDistance / m_resolution));
+  const double nWindowCells = square(2.0 * maxRangeInCells + 1);
   int nCells = 0;
 
   // -----------------------------------------------------
@@ -746,21 +748,13 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
     cx0 = x2idx(pointGlobal.x);
     cy0 = y2idx(pointGlobal.y);
 
-    // Compute the range of cells to compute:
-    // ---------------------------------------------
-    cx_min = max(cx0 - maxRangeInCells, 0);
-    cx_max = min(cx0 + maxRangeInCells, static_cast<int>(m_size_x));
-    cy_min = max(cy0 - maxRangeInCells, 0);
-    cy_max = min(cy0 + maxRangeInCells, static_cast<int>(m_size_y));
-
-    //		debugImg.rectangle(cx_min,cy_min,cx_max,cy_max,0xFF0000 );
-
-    // Compute over the window of cells:
+    // Compute over a fixed-size window of cells. getCell() returns 0.5
+    // (unknown) for cells out of the map:
     // ---------------------------------------------
     double lik = 0;
-    for (cx = cx_min; cx <= cx_max; cx++)
+    for (cx = cx0 - maxRangeInCells; cx <= cx0 + maxRangeInCells; cx++)
     {
-      for (cy = cy_min; cy <= cy_max; cy++)
+      for (cy = cy0 - maxRangeInCells; cy <= cy0 + maxRangeInCells; cy++)
       {
         float P_free = getCell(cx, cy);
         float termDist = static_cast<float>(
@@ -771,10 +765,15 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
     }    // end for cx
 
     // Update the likelihood:
+    lik /= nWindowCells;
     if (likelihoodOptions.LF_alternateAverageMethod)
+    {
       ret += lik;
+    }
     else
-      ret += log(lik / ((cy_max - cy_min + 1) * (cx_max - cx_min + 1)));
+    {
+      ret += log(lik);
+    }
     nCells++;
 
   }  // end of for each point in the scan

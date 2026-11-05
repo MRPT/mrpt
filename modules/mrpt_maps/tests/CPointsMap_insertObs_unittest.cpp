@@ -29,6 +29,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/viz/CSetOfObjects.h>
 
+#include <cmath>
 #include <sstream>
 
 using namespace mrpt;
@@ -432,4 +433,50 @@ TEST(CPointsMapInsertObs, getVisualizationIntoColorFromZ)
     map.getVisualizationInto(o);
     EXPECT_EQ(o.size(), 1U);
   }
+}
+
+namespace
+{
+// A one-ring rotating scan of a few points on a circle of radius 4 m, in the
+// sensor frame.
+mrpt::obs::CObservationRotatingScan makeRingScan(const mrpt::poses::CPose3D& sensorPose)
+{
+  const uint16_t nCols = 36;
+  mrpt::obs::CObservationRotatingScan o;
+  o.rowCount = 1;
+  o.columnCount = nCols;
+  o.rangeResolution = 0.01;
+  o.sensorPose = sensorPose;
+  o.rangeImage.setZero(1, nCols);
+  o.organizedPoints.resize(1, nCols);
+  for (uint16_t c = 0; c < nCols; c++)
+  {
+    const double a = 2 * M_PI * c / nCols;
+    const double r = 4.0 + 0.5 * std::sin(3 * a);
+    o.rangeImage(0, c) = static_cast<uint16_t>(r / o.rangeResolution);
+    o.organizedPoints(0, c) = mrpt::math::TPoint3Df(
+        static_cast<float>(r * std::cos(a)), static_cast<float>(r * std::sin(a)), 0.2f);
+  }
+  return o;
+}
+}  // namespace
+
+// Regression: the rotating scan likelihood applied the robot pose twice.
+TEST(CPointsMapLikelihood, RotatingScanEvaluatedAtItsOwnPose)
+{
+  const mrpt::poses::CPose3D sensorPose(0.3, 0.1, 0.5, 0.1, 0, 0);
+  const auto scan = makeRingScan(sensorPose);
+  const mrpt::poses::CPose3D robotPose(3.0, -1.0, 0.0, 0.7, 0.05, 0.0);
+
+  mrpt::maps::CSimplePointsMap map;
+  map.insertObservation(scan, robotPose);
+  map.likelihoodOptions.decimation = 1;
+
+  const double likTrue = map.computeObservationLikelihood(scan, robotPose);
+  const double likWrong =
+      map.computeObservationLikelihood(scan, robotPose + mrpt::poses::CPose3D(0.3, 0, 0, 0, 0, 0));
+
+  // Perfect match at the true pose:
+  EXPECT_NEAR(likTrue, 0.0, 1e-6);
+  EXPECT_LT(likWrong, likTrue - 1.0);
 }

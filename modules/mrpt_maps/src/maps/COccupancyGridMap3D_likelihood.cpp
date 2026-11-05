@@ -18,22 +18,19 @@
 
 using namespace mrpt::maps;
 
+// Observation likelihoods are not implemented yet for this map: it reports
+// that it cannot evaluate them, and returns a neutral log-likelihood, so it
+// does not break the fusion of likelihoods in a CMultiMetricMap.
 double COccupancyGridMap3D::internal_computeObservationLikelihood(
     [[maybe_unused]] const mrpt::obs::CObservation& obs,
     [[maybe_unused]] const mrpt::poses::CPose3D& takenFrom3D) const
 {
-  THROW_EXCEPTION("Implement me!");
   return .0;
 }
 
 bool COccupancyGridMap3D::internal_canComputeObservationLikelihood(
-    const mrpt::obs::CObservation& obs) const
+    [[maybe_unused]] const mrpt::obs::CObservation& obs) const
 {
-  if (auto* o = dynamic_cast<const mrpt::obs::CObservation2DRangeScan*>(&obs); o != nullptr)
-  {
-    return true;
-  }
-
   return false;
 }
 

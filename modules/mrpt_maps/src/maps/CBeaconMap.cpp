@@ -202,7 +202,8 @@ double CBeaconMap::internal_computeObservationLikelihood(
 
               *itLW = it->log_w;  // Linear weight of this
               // likelihood component
-              *itLL = -0.5 * square((sensedRange - expectedRange) / likelihoodOptions.rangeStd);
+              *itLL = -0.5 * square((sensedRange - expectedRange) / likelihoodOptions.rangeStd) -
+                      0.5 * std::log(M_2PI * square(likelihoodOptions.rangeStd));
               // ret+= exp(
               // -0.5*square((sensedRange-expectedRange)/likelihoodOptions.rangeStd)
               // );
@@ -241,10 +242,11 @@ double CBeaconMap::internal_computeObservationLikelihood(
             // expectedRange +=
             // float(0.1*(1-exp(-0.16*expectedRange)));
 
-            // Compute the likelihood:
-            //   lik \propto exp( -0.5* ( ^z - z  )^2 / varZ );
-            //   log_lik = -0.5* ( ^z - z  )^2 / varZ
-            ret += -0.5 * square(sensedRange - expectedRange) / varZ;
+            // Compute the likelihood, a normalized density since varZ
+            // depends on the robot pose:
+            //   log_lik = -0.5* ( ^z - z  )^2 / varZ - 0.5*log(2*pi*varZ)
+            ret += -0.5 * square(sensedRange - expectedRange) / varZ -
+                   0.5 * std::log(M_2PI * static_cast<double>(varZ));
           }
           break;
           // ------------------------------
@@ -280,10 +282,12 @@ double CBeaconMap::internal_computeObservationLikelihood(
               // expectedRange +=
               // float(0.1*(1-exp(-0.16*expectedRange)));
 
-              // Compute the likelihood:
+              // Compute the likelihood, a normalized density since each
+              // mode has its own varZ:
               *itLW = it->log_w;  // log-weight of this likelihood
               // component
-              *itLL = -0.5 * square(sensedRange - expectedRange) / varZ;
+              *itLL =
+                  -0.5 * square(sensedRange - expectedRange) / varZ - 0.5 * std::log(M_2PI * varZ);
             }  // end for each mode
 
             // Accumulate to the overall (log) likelihood value:
@@ -395,7 +399,8 @@ bool CBeaconMap::internal_insertObservation(
             for (auto& m_particle : newBeac.m_locationMC.m_particles)
             {
               double th = getRandomGenerator().drawUniform(-M_PI, M_PI);
-              double el = getRandomGenerator().drawUniform(minA, maxA);
+              // Uniform density on the sphere band: sin(el) is uniform
+              double el = std::asin(getRandomGenerator().drawUniform(sin(minA), sin(maxA)));
               double R =
                   getRandomGenerator().drawGaussian1D(sensedRange, likelihoodOptions.rangeStd);
               m_particle.d->x = static_cast<float>(sensorPnt.x() + R * cos(th) * cos(el));
@@ -432,7 +437,8 @@ bool CBeaconMap::internal_insertObservation(
             // ------------------------------
             case CBeacon::pdfMonteCarlo:
             {
-              double maxW = -1e308, sumW = 0;
+              double maxW = -1e308;
+              double sumW = 0;
               // Update weights:
               // --------------------
               for (auto& p : beac->m_locationMC.m_particles)
@@ -442,7 +448,11 @@ bool CBeaconMap::internal_insertObservation(
                 p.log_w +=
                     -0.5 * square((sensedRange - expectedRange) / likelihoodOptions.rangeStd);
                 maxW = max(p.log_w, maxW);
-                sumW += exp(p.log_w);
+              }
+              // Sum of weights relative to the maximum, to avoid underflow:
+              for (const auto& p : beac->m_locationMC.m_particles)
+              {
+                sumW += exp(p.log_w - maxW);
               }
 
               // Perform resampling (SIR filter) or not (simply
@@ -511,7 +521,7 @@ bool CBeaconMap::internal_insertObservation(
               //  log_w = log( exp(log_w)/sumW ) ->
               //  log_w -= log(sumW);
               // -----------------------------------------
-              sumW = log(sumW);
+              sumW = maxW + log(sumW);
               for (auto& p : beac->m_locationMC.m_particles) p.log_w -= sumW;
 
               // Is the moment to turn into a Gaussian??
@@ -640,9 +650,10 @@ bool CBeaconMap::internal_insertObservation(
                 mode.val.cov =
                     (Eigen::Matrix3d::Identity() - K * H.asEigen()) * mode.val.cov.asEigen();
 
-                // Update the weight of this mode:
+                // Update the weight of this mode with its predictive density,
+                // normalized since each mode has its own varZ:
                 // ----------------------------------
-                mode.log_w += -0.5 * square(y) / varZ;
+                mode.log_w += -0.5 * square(y) / varZ - 0.5 * std::log(M_2PI * varZ);
 
                 // keep the maximum mode weight
                 max_w = max(max_w, mode.log_w);
