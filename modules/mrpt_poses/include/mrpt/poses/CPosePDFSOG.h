@@ -133,10 +133,12 @@ class CPosePDFSOG : public CPosePDF
    * preserving the total distribution.
    *  This method uses the approach described in the paper:
    *  - "Kullback-Leibler Approach to Gaussian Mixture Reduction" AR
-   * Runnalls. IEEE Transactions on Aerospace and Electronic Systems, 2007.
+   * Runnalls. IEEE Transactions on Aerospace and Electronic Systems,
+   * 43(3), 2007.
    *
-   *  \param max_KLd The maximum KL-divergence to consider the merge of two
-   * nodes (and then stops the process).
+   *  \param max_KLd Two modes are merged while the upper bound B(i,j) of the
+   * KL divergence caused by the merge (eq. (21) in that paper) is below this
+   * value.
    */
   void mergeModes(double max_KLd = 0.5, bool verbose = false);
 

@@ -237,6 +237,42 @@ TEST(CPosePDFSOGMath, MergeModes_AngleWrap)
       << "merged phi=" << sog[0].mean.phi();
 }
 
+// Regression: the merge criterion was twice the upper bound B(i,j) of the KL
+// divergence of eq. (21) in Runnalls 2007. Here, B(i,j) is computed as
+// wi*KL(Ni||Nij) + wj*KL(Nj||Nij), which equals it for moment-matched merges.
+TEST(CPosePDFSOGMath, MergeModes_ThresholdIsKLBound)
+{
+  const double wi = 0.4;
+  const double wj = 0.6;
+  const Vec3 mi(0, 0, 0);
+  const Vec3 mj(0.3, -0.1, 0.05);
+  const Mat3 Pi = diag3(0.04, 0.09, 0.01);
+  const Mat3 Pj = diag3(0.09, 0.04, 0.02);
+  const Vec3 mij = wi * mi + wj * mj;
+  const Mat3 Pij = wi * Pi + wj * Pj + wi * wj * (mi - mj) * (mi - mj).transpose();
+  const auto kl = [](const Vec3& m0, const Mat3& S0, const Vec3& m1, const Mat3& S1)
+  {
+    const Mat3 S1i = S1.inverse();
+    const Vec3 d = m1 - m0;
+    return 0.5 * ((S1i * S0).trace() + d.dot(S1i * d) - 3 +
+                  std::log(S1.determinant() / S0.determinant()));
+  };
+  const double B = wi * kl(mi, Pi, mij, Pij) + wj * kl(mj, Pj, mij, Pij);
+
+  for (const double factor : {0.95, 1.05})
+  {
+    CPosePDFSOG sog(2);
+    sog[0].mean = CPose2D(mi[0], mi[1], mi[2]);
+    sog[0].cov = CMatrixDouble33(Pi);
+    sog[0].log_w = std::log(wi);
+    sog[1].mean = CPose2D(mj[0], mj[1], mj[2]);
+    sog[1].cov = CMatrixDouble33(Pj);
+    sog[1].log_w = std::log(wj);
+    sog.mergeModes(factor * B);
+    EXPECT_EQ(sog.size(), factor < 1 ? 2u : 1u) << "B=" << B;
+  }
+}
+
 // CPose3DPDFSOG mixture covariance: the mode means are centered on the
 // mixture mean.
 TEST(CPose3DPDFSOGMath, CovarianceAndMean_ClosedForm)

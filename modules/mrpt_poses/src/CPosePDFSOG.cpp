@@ -618,8 +618,9 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
         AUX *= Wi * Wj * Wij_ * Wij_;
         Pij += AUX;
 
-        double Bij = (Wi + Wj) * log(Pij.det()) - Wi * log(m_modes[i].cov.det()) -
-                     Wj * log(m_modes[j].cov.det());
+        // Upper bound of the KL divergence, eq. (21) in Runnalls 2007:
+        double Bij = 0.5 * ((Wi + Wj) * log(Pij.det()) - Wi * log(m_modes[i].cov.det()) -
+                            Wj * log(m_modes[j].cov.det()));
         if (verbose)
         {
           std::cout << "try merge[" << i << ", " << j << "] -> Bij: " << Bij << "\n";
