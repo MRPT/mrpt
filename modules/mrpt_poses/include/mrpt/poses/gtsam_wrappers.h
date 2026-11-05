@@ -15,6 +15,7 @@
 
 #include <gtsam/geometry/Point3.h>
 #include <gtsam/geometry/Pose3.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/gtsam_wrappers.h>
 #include <mrpt/poses/CPose3D.h>
@@ -91,8 +92,9 @@ static void to_gtsam_se3_cov6(
 
 /** Inverse of to_gtsam_se3_cov6(): converts a GTSAM Pose3 and its covariance
  * in GTSAM local coordinates (rx,ry,rz,tx,ty,tz) into an MRPT Gaussian SE(3)
- * pose with a (x,y,z,yaw,pitch,roll) covariance. First-order conversion,
- * singular at pitch = +-90 deg.
+ * pose with a (x,y,z,yaw,pitch,roll) covariance. First-order conversion.
+ * \exception std::exception At pitch = +-90 deg, where (yaw,pitch,roll) is
+ * singular.
  * Unlike mrpt::gtsam_wrappers::to_mrpt_se3_cov6(), which only reorders the
  * entries and is therefore exact only at the identity rotation, this one
  * takes the pose into account.
@@ -103,6 +105,9 @@ static mrpt::poses::CPose3DPDFGaussian to_mrpt_se3_pdf(
 {
   mrpt::poses::CPose3DPDFGaussian out;
   out.mean = mrpt::poses::CPose3D(toTPose3D(pose));
+  ASSERTMSG_(
+      std::abs(std::cos(out.mean.pitch())) > 1e-12,
+      "to_mrpt_se3_pdf(): (yaw,pitch,roll) is singular at pitch = +-90 deg");
   const gtsam::Matrix6 Ji = jacobian_gtsam_local_wrt_ypr(out.mean).inverse();
   out.cov.asEigen() = Ji * cov * Ji.transpose();
   return out;
