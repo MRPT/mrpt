@@ -20,6 +20,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <cmath>
 #include <cstring>
 #include <sstream>
 
@@ -42,6 +43,69 @@ TEST(CActionRobotMovement2D, ComputeFromOdometryGaussianModel)
   mrpt::math::CMatrixDouble33 cov;
   act.poseChange->getCovarianceAndMean(cov, mean);
   EXPECT_NEAR(mean.x(), 0.5, 1e-6);
+}
+
+// The covariance of the Gaussian model must be J*Sigma*J^T, with J the
+// Jacobian of f(u) = H(u_phi) * u (see the motion models tutorial). Checked
+// against a numerical Jacobian of f().
+TEST(CActionRobotMovement2D, GaussianModelCovarianceMatchesJacobian)
+{
+  CActionRobotMovement2D::TMotionModelOptions opts;
+  opts.modelSelection = CActionRobotMovement2D::mmGaussian;
+  const auto& g = opts.gaussianModel;
+
+  const double u[3] = {0.4, 0.15, 0.6};
+  CActionRobotMovement2D act;
+  act.computeFromOdometry(CPose2D(u[0], u[1], u[2]), opts);
+
+  CPose2D mean;
+  mrpt::math::CMatrixDouble33 cov;
+  act.poseChange->getCovarianceAndMean(cov, mean);
+
+  const auto f = [](const double v[3], double out[3])
+  {
+    const double c = std::cos(v[2] / 2);
+    const double s = std::sin(v[2] / 2);
+    out[0] = c * v[0] - s * v[1];
+    out[1] = s * v[0] + c * v[1];
+    out[2] = v[2];
+  };
+
+  double J[3][3];
+  const double h = 1e-6;
+  for (int col = 0; col < 3; col++)
+  {
+    double up[3] = {u[0], u[1], u[2]};
+    double um[3] = {u[0], u[1], u[2]};
+    up[col] += h;
+    um[col] -= h;
+    double fp[3];
+    double fm[3];
+    f(up, fp);
+    f(um, fm);
+    for (int row = 0; row < 3; row++)
+    {
+      J[row][col] = (fp[row] - fm[row]) / (2 * h);
+    }
+  }
+
+  const double dist = std::sqrt(u[0] * u[0] + u[1] * u[1]);
+  const double stdXY = g.minStdXY + g.a1 * dist + g.a2 * std::abs(u[2]);
+  const double stdPhi = g.minStdPHI + g.a3 * dist + g.a4 * std::abs(u[2]);
+  const double sigma[3] = {stdXY * stdXY, stdXY * stdXY, stdPhi * stdPhi};
+
+  for (int r = 0; r < 3; r++)
+  {
+    for (int c = 0; c < 3; c++)
+    {
+      double expected = 0;
+      for (int k = 0; k < 3; k++)
+      {
+        expected += J[r][k] * sigma[k] * J[c][k];
+      }
+      EXPECT_NEAR(cov(r, c), expected, 1e-9) << "r=" << r << " c=" << c;
+    }
+  }
 }
 
 TEST(CActionRobotMovement2D, ComputeFromOdometryThrunModel)
