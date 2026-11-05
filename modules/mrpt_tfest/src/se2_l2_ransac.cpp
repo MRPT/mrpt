@@ -21,6 +21,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/tfest/se2.h>
 
+#include <algorithm>
 #include <iostream>
 
 using namespace mrpt;
@@ -486,8 +487,8 @@ bool tfest::se2_l2_robust(
         // Find matching mode by exact match in the list of
         // correspondences:
         // -------------------------------------------------------------------
-        // Sort "subSet" in order to compare them easily!
-        // std::sort( subSet.begin(), subSet.end() );
+        // Sort "subSet", since its order depends on the random permutation:
+        std::sort(subSet.begin(), subSet.end());
 
         // Try to find matching corrs:
         for (size_t i = 0; i < alreadyAddedSubSets.size(); i++)

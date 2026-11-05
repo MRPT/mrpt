@@ -533,6 +533,70 @@ TEST(TfestReference, se2_l2_robust_EarlyExitUsesRMSE)
   EXPECT_EQ(res.ransac_iters, 1u);
 }
 
+// Regression: with ransac_fuseByCorrsMatch, a consensus set found again in a
+// later iteration (in a different, random order) was added as a new mode
+// instead of increasing the weight of the existing one.
+TEST(TfestReference, se2_l2_robust_FusesRepeatedConsensusSets)
+{
+  rng().randomize(1234);
+  // Two groups of correspondences, consistent with two different poses:
+  const TPose2D qA(1.0, 0.5, 0.2);
+  const TPose2D qB(-2.0, 1.0, -0.8);
+  TMatchingPairList L = makeSE2List(qA, 15, 10.0, 0.0, 0.01);
+  const TMatchingPairList LB = makeSE2List(qB, 10, 10.0, 0.0, 0.01);
+  for (auto p : LB)
+  {
+    p.globalIdx += 100;
+    p.localIdx += 100;
+    L.push_back(p);
+  }
+
+  mrpt::tfest::TSE2RobustParams params;
+  params.ransac_minSetSize = 5;
+  params.ransac_maxSetSize = 30;
+  params.ransac_nSimulations = 100;
+  params.max_rmse_to_end = 1e-9;  // run all the iterations
+  params.ransac_fuseByCorrsMatch = true;
+  mrpt::tfest::TSE2RobustResult res;
+  ASSERT_TRUE(mrpt::tfest::se2_l2_robust(L, 0.01, params, res));
+  ASSERT_GE(res.transformation.size(), 2u);
+
+  // No two modes from the same consensus set:
+  for (size_t i = 0; i < res.transformation.size(); i++)
+  {
+    for (size_t j = i + 1; j < res.transformation.size(); j++)
+    {
+      const auto& a = res.transformation.get(i).mean;
+      const auto& b = res.transformation.get(j).mean;
+      EXPECT_GT(
+          std::abs(a.x() - b.x()) + std::abs(a.y() - b.y()) + std::abs(a.phi() - b.phi()), 1e-6)
+          << "modes " << i << " and " << j << " are duplicates: " << a;
+    }
+  }
+
+  // Both hypotheses are found, with weights proportional to the number of
+  // times their consensus sets were drawn:
+  double wA = 0;
+  double wB = 0;
+  double wSum = 0;
+  for (const auto& m : res.transformation)
+  {
+    const double w = std::exp(m.log_w);
+    wSum += w;
+    if (std::abs(m.mean.x() - qA.x) < 0.05 && std::abs(m.mean.y() - qA.y) < 0.05)
+    {
+      wA += w;
+    }
+    if (std::abs(m.mean.x() - qB.x) < 0.05 && std::abs(m.mean.y() - qB.y) < 0.05)
+    {
+      wB += w;
+    }
+  }
+  EXPECT_GT(wA / wSum, 0.3);
+  EXPECT_GT(wB / wSum, 0.1);
+  EXPECT_GT(wA, wB);
+}
+
 // Inliers must be unique, also when the user callback rejects candidates.
 TEST(TfestReference, se3_l2_robust_InliersAreUnique)
 {
