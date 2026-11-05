@@ -82,39 +82,20 @@ TLine3D TLine3D::FromPoseDirection(const TPose3D& p, const double (&localVector)
 
 bool TLine3D::contains(const TPoint3D& point) const
 {
-  double dx = point.x - pBase.x;
-  double dy = point.y - pBase.y;
-  double dz = point.z - pBase.z;
-  if (std::abs(dx) < getEpsilon() && std::abs(dy) < getEpsilon() && std::abs(dz) < getEpsilon())
+  const TPoint3D d = point - pBase;
+  if (std::abs(d.x) < getEpsilon() && std::abs(d.y) < getEpsilon() && std::abs(d.z) < getEpsilon())
+  {
     return true;
-  //       dx          dy          dz
-  // if -----------=-----------=-----------, point is inside the line.
-  //   director[0] director[1] director[2]
-  return (std::abs(dx * director[1] - dy * director[0]) < getEpsilon()) &&
-         (std::abs(dx * director[2] - dz * director[0]) < getEpsilon()) &&
-         (std::abs(dy * director[2] - dz * director[1]) < getEpsilon());
+  }
+  // Euclidean distance, independent of the director length:
+  return distance(point) < getEpsilon();
 }
 double TLine3D::distance(const TPoint3D& point) const
 {
-  // Let d be line's base point minus the argument. Then,
-  // d·director/(|d|·|director|) equals both vector's cosine.
-  // So, d·director/|director| equals d's projection over director. Then,
-  // distance is sqrt(|d|²-(d·director/|director|)²).
-  double d[3] = {point.x - pBase.x, point.y - pBase.y, point.z - pBase.z};
-  double dv = 0, d2 = 0, v2 = 0;
-  for (size_t i = 0; i < 3; i++)
-  {
-    dv += d[i] * director[i];
-    d2 += d[i] * d[i];
-    v2 += director[i] * director[i];
-  }
-  const double radicand = d2 - (dv * dv) / v2;
-  // For a point lying on the line the radicand is zero in exact arithmetic,
-  // but rounding can make it slightly negative, which would give a NaN.
-  // Note that a degenerate (zero-length) director makes the radicand itself
-  // NaN; that stays NaN here rather than being reported as a zero distance,
-  // since "< 0" is false for a NaN.
-  return sqrt(radicand < .0 ? .0 : radicand);
+  // |d x v|/|v|, with d the vector from the base point. Unlike
+  // sqrt(|d|^2-(d.v)^2/|v|^2), this does not cancel for points near the line.
+  // A degenerate (zero-length) director gives NaN.
+  return (point - pBase).cross(director).norm() / director.norm();
 }
 void TLine3D::unitarize()
 {
@@ -143,9 +124,8 @@ TLine3D::TLine3D(const TLine2D& l)
   director[0] = -l.coefs[1];
   director[1] = l.coefs[0];
   director[2] = 0;
-  // We assume that either l.coefs[0] or l.coefs[1] is not null. Respectively,
-  // either y or x can be used as free cordinate.
-  if (std::abs(l.coefs[0]) >= getEpsilon())
+  // Use the dominant coefficient to find a point on the line.
+  if (std::abs(l.coefs[0]) >= std::abs(l.coefs[1]))
   {
     pBase.x = -l.coefs[2] / l.coefs[0];
     pBase.y = 0;
