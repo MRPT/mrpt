@@ -20,6 +20,7 @@
 #include <mrpt/math/wrap2pi.h>
 
 #include <Eigen/Dense>
+#include <algorithm>
 #include <cmath>
 #include <vector>
 
@@ -857,6 +858,75 @@ TEST(KalmanFilterExactness, SLAMInnovationCovarianceMatchesDense)
   }
   const Mat S = H * P * H.transpose() + R;
   EXPECT_LT((kf.last_S - S).norm(), 1e-10) << "mrpt:\n" << kf.last_S << "\nref:\n" << S;
+}
+
+namespace
+{
+// SLAM filter that only predicts a subset of the landmarks, so observed
+// landmarks out of that subset must be added by the filter afterwards.
+class SubsetSLAM : public LinearSLAM
+{
+ public:
+  std::vector<size_t> to_predict;
+
+ protected:
+  void OnPreComputingPredictions(
+      const vector_KFArray_OBS&, std::vector<size_t>& out_LM_indices_to_predict) const override
+  {
+    out_LM_indices_to_predict.clear();
+    for (const size_t i : to_predict)
+    {
+      if (i < getNumberOfLandmarksInTheMap())
+      {
+        out_LM_indices_to_predict.push_back(i);
+      }
+    }
+  }
+};
+}  // namespace
+
+// A subset of predicted landmarks (smaller than, or not including, the
+// observed ones) must not change the result, for all KF methods.
+TEST(KalmanFilterExactness, SLAMPredictionSubsetMatchesKF)
+{
+  for (const auto method : {kfEKFNaive, kfEKFAlaDavison, kfIKFFull})
+  {
+    for (const auto& subset : std::vector<std::vector<size_t>>{
+             {},
+             { 2},
+             { 2,0}
+    })
+    {
+      SubsetSLAM kf;
+      kf.KF_options.method = method;
+      kf.to_predict = subset;
+      Vec x = initX();
+      Mat P = initP();
+      const SLAMScript s = slamScript();
+      for (size_t k = 0; k < s.zs.size(); k++)
+      {
+        kf.next_z = s.zs[k];
+        kf.next_da = s.das[k];
+        kf.step();
+        denseSLAMStep(x, P, s.zs[k], s.das[k]);
+        const Vec xk = kf.stateEigen();
+        const Mat Pk = kf.covEigen();
+        ASSERT_EQ(xk.size(), x.size()) << "step " << k;
+        EXPECT_LT((xk - x).norm(), 1e-9) << "method " << static_cast<int>(method) << " step " << k;
+        EXPECT_LT((Pk - P).norm(), 1e-9) << "method " << static_cast<int>(method) << " step " << k;
+        // All the associated landmarks end up predicted:
+        for (const int lm : s.das[k])
+        {
+          if (lm >= 0)
+          {
+            EXPECT_NE(
+                std::find(kf.last_S_idxs.begin(), kf.last_S_idxs.end(), static_cast<size_t>(lm)),
+                kf.last_S_idxs.end());
+          }
+        }
+      }
+    }
+  }
 }
 
 // Numeric observation Jacobians must honor OnSubtractObservationVectors(),

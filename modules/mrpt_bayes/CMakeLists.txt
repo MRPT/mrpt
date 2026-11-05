@@ -29,6 +29,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/bayes_unittest.cpp
   tests/CKalmanFilterCapable_unittest.cpp
   tests/CKalmanFilterExactness_unittest.cpp
+  tests/CParticleFilter_unittest.cpp
   tests/resampling_stats_unittest.cpp
 )
 
