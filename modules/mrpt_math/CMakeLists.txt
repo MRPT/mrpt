@@ -122,6 +122,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/interp_fit_unittest.cpp
   tests/KDTreeCapable_unittest.cpp
   tests/matrix_api_unittest.cpp
+  tests/matrix_linalg_unittest.cpp
   tests/matrix_ops_unittest.cpp
   tests/matrix_ops1_unittest.cpp
   tests/matrix_ops2_unittest.cpp

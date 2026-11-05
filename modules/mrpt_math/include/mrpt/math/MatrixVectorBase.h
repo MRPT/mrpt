@@ -36,7 +36,7 @@ enum TMatrixTextFileFormat : int
   MATRIX_FORMAT_ENG = 0,
   /** fixed floating point '%f' */
   MATRIX_FORMAT_FIXED = 1,
-  /** intergers '%i' */
+  /** integers '%i' */
   MATRIX_FORMAT_INT = 2
 };
 
@@ -247,10 +247,10 @@ class MatrixVectorBase
   /** returns true if matrix is NxN */
   bool isSquare() const { return mvbDerived().cols() == mvbDerived().rows(); }
 
-  /** returns true if matrix/vector has size=0 */
-  bool empty() const { return mvbDerived().cols() == 0 && mvbDerived().rows() == 0; }
+  /** returns true if matrix/vector has size=0 (zero rows or columns) */
+  bool empty() const { return mvbDerived().cols() == 0 || mvbDerived().rows() == 0; }
 
-  /** Compute the norm-infinite of a vector (\f[ ||\mathbf{v}||_\infnty \f]),
+  /** Compute the norm-infinite of a vector (\f[ ||\mathbf{v}||_\infty \f]),
    * ie the maximum absolute value of the elements. */
   Scalar norm_inf() const;
 
