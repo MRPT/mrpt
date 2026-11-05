@@ -111,14 +111,15 @@ class CPosePDFGaussian : public CPosePDF
    */
   void rotateCov(const double ang);
 
-  /** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-"
+  /** Set \f$ this = x \ominus ref \f$ , computing the mean using the "-"
    * operator and the covariances through the corresponding Jacobians (For
-   * 'x0' and 'x1' being independent variables!). */
+   * 'x' and 'ref' being independent variables!). */
   void inverseComposition(const CPosePDFGaussian& x, const CPosePDFGaussian& ref);
 
   /** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-"
    * operator and the covariances through the corresponding Jacobians (Given
-   * the 3x3 cross-covariance matrix of variables x0 and x1). */
+   * the 3x3 cross-covariance matrix of variables x0 and x1,
+   * \f$ COV_{01} = E[(x_0-\bar{x}_0)(x_1-\bar{x}_1)^\top] \f$). */
   void inverseComposition(
       const CPosePDFGaussian& x1,
       const CPosePDFGaussian& x0,
