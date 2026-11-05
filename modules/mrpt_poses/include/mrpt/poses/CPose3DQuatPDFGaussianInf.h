@@ -39,11 +39,12 @@ class CPose3DPDFGaussian;
  * \note Read also: "A tutorial on SE(3) transformation parameterizations and
  * on-manifold optimization", in \cite blanco_se3_tutorial
  *
- * \warning The information form requires a full-rank 7x7 covariance, but the
- * unit-norm constraint of quaternions makes the covariances obtained by
- * converting from other representations (e.g. CPose3DPDFGaussian) or by
- * pose composition rank deficient (rank 6). Operations that invert such a
- * covariance produce NaN values. Prefer CPose3DQuatPDFGaussian.
+ * \note The unit-norm constraint of quaternions makes the covariances
+ * obtained by converting from other representations (e.g. CPose3DPDFGaussian)
+ * or by pose composition rank deficient (rank 6). This class converts between
+ * covariance and information with the symmetric pseudo-inverse, so the
+ * direction with no variance gets no information. Prefer
+ * CPose3DQuatPDFGaussian when possible.
  *
  * \sa CPose3DQuat, CPose3DQuatPDF, CPose3DPDF, CPose3DQuatPDFGaussian
  * \ingroup poses_pdf_grp

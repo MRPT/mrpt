@@ -146,9 +146,12 @@ void CPose3DPDFGaussianInf::copyFrom(const CPosePDF& o)
   }
   else
   {
-    CPose3DPDFGaussian p(UNINITIALIZED_POSE);
-    p.copyFrom(o);
-    this->copyFrom(p);
+    // Through the 2D information form, so (z,pitch,roll) get zero information
+    // here too: their zero covariance has no finite information.
+    mrpt::math::CMatrixDouble33 cov2d;
+    CPose2D mean2d;
+    o.getCovarianceAndMean(cov2d, mean2d);
+    this->copyFrom(CPosePDFGaussianInf(mean2d, cov2d.inverse_LLt()));
   }
 }
 
