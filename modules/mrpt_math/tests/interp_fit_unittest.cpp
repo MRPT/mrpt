@@ -15,6 +15,8 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/CVectorFixed.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/random/RandomGenerators.h>
 
 #include <Eigen/Dense>
@@ -246,4 +248,49 @@ TEST(InterpFit, interpolateUsesCellConvention)
   EXPECT_EQ(mrpt::math::interpolate(4.5, ys, 0.0, 5.0), 40.0);
   EXPECT_NEAR(mrpt::math::interpolate2points(0.25, 0.0, 1.0, 1.0, 3.0), 1.5, 1e-15);
   EXPECT_NEAR(mrpt::math::interpolate2points(2.0, 0.0, 1.0, 1.0, 3.0), 5.0, 1e-15);
+}
+
+// Regression: with wrap2pi, interpolate2points() and leastSquareLinearFit()
+// only wrapped their output, so wrapped input angles across +-pi were
+// interpolated along the long arc. spline() already unwrapped them.
+TEST(InterpFit, Wrap2PiInputsAcrossPi)
+{
+  const auto theta = [](double t) { return M_PI - 0.3 + 0.2 * t; };
+  mrpt::math::CVectorFixedDouble<4> xs;
+  mrpt::math::CVectorFixedDouble<4> ys;
+  for (int i = 0; i < 4; i++)
+  {
+    xs[i] = i;
+    ys[i] = mrpt::math::wrapToPi(theta(i));
+  }
+  for (const double t : {1.2, 1.5, 1.9})
+  {
+    const double lin = mrpt::math::interpolate2points(t, xs[1], ys[1], xs[2], ys[2], true);
+    EXPECT_NEAR(mrpt::math::wrapToPi(lin - theta(t)), 0.0, 1e-12) << "t=" << t;
+    const double fit = mrpt::math::leastSquareLinearFit<double, decltype(xs), 4>(t, xs, ys, true);
+    EXPECT_NEAR(mrpt::math::wrapToPi(fit - theta(t)), 0.0, 1e-12) << "t=" << t;
+    const double spl = mrpt::math::spline(t, xs, ys, true);
+    EXPECT_NEAR(mrpt::math::wrapToPi(spl - theta(t)), 0.0, 1e-12) << "t=" << t;
+    for (const double v : {lin, fit, spl})
+    {
+      EXPECT_GE(v, -M_PI);
+      EXPECT_LT(v, M_PI);
+    }
+  }
+  // Vector version of the fit:
+  mrpt::math::CVectorDouble ts(2);
+  ts[0] = 1.5;
+  ts[1] = 2.5;
+  mrpt::math::CVectorDouble outs;
+  mrpt::math::CVectorDouble xd(4);
+  mrpt::math::CVectorDouble yd(4);
+  for (int i = 0; i < 4; i++)
+  {
+    xd[i] = xs[i];
+    yd[i] = ys[i];
+  }
+  mrpt::math::leastSquareLinearFit(ts, outs, xd, yd, true);
+  ASSERT_EQ(outs.size(), 2);
+  EXPECT_NEAR(mrpt::math::wrapToPi(outs[0] - theta(1.5)), 0.0, 1e-12);
+  EXPECT_NEAR(mrpt::math::wrapToPi(outs[1] - theta(2.5)), 0.0, 1e-12);
 }

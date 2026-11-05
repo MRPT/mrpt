@@ -496,7 +496,8 @@ double mrpt::math::interpolate2points(
   if (x0 == x1) THROW_EXCEPTION_FMT("ERROR: Both x0 and x1 are equal (=%f)", x0);
 
   const double Ax = x1 - x0;
-  const double Ay = y1 - y0;
+  // Angles: follow the shortest arc from y0 to y1.
+  const double Ay = wrap2pi ? mrpt::math::wrapToPi(y1 - y0) : y1 - y0;
 
   double r = y0 + Ay * (x - x0) / Ax;
   if (!wrap2pi)

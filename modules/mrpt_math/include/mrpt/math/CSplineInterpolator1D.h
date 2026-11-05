@@ -22,7 +22,7 @@ namespace mrpt::math
 /** A (persistent) sequence of (x,y) coordinates, allowing queries of
  * intermediate points through spline interpolation, where possible.
  *  This class internally relies on mrpt::math::spline. Optionally the y
- * coordinate can be set as wrapped in ]-pi,pi].
+ * coordinate can be set as wrapped in [-pi,pi[.
  *  For querying interpolated points, see query() and queryVector().
  * \sa mrpt::math::spline, mrpt::poses::CPose3DInterpolator
  * \ingroup interpolation_grp
@@ -50,7 +50,7 @@ class CSplineInterpolator1D : public mrpt::serialization::CSerializable
   /** Constructor */
   CSplineInterpolator1D(bool wrap2pi = false);
 
-  /** If set to true, the interpolated data will be wrapped to ]-pi,pi] */
+  /** If set to true, the interpolated data will be wrapped to [-pi,pi[ */
   void setWrap2pi(bool wrap) { m_wrap2pi = wrap; }
   /** Return the wrap property */
   bool getWrap2pi() { return m_wrap2pi; }
