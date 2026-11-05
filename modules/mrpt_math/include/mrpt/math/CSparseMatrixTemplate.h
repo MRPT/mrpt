@@ -14,6 +14,8 @@
 #pragma once
 
 #include <map>
+#include <stdexcept>
+#include <utility>
 #include <vector>
 
 namespace mrpt::math
@@ -134,24 +136,15 @@ class CSparseMatrixTemplate
     if (nRow >= mRows) throw std::logic_error("Out of range");
 #endif
     vec.resize(mColumns);
-    size_t nextIndex = 0;
-    for (typename SparseMatrixMap::const_iterator it = objectList.begin(); it != objectList.end();
-         ++it)
+    for (size_t i = 0; i < mColumns; i++)
     {
-      const std::pair<size_t, size_t>& index = it->first;
-      if (index.first < nRow)
-        continue;
-      else if (index.first == nRow)
-      {
-        for (size_t i = nextIndex; i < index.second; i++) vec[i] = T();
-        vec[index.second] = it->second;
-        nextIndex = index.second + 1;
-      }
-      else
-      {
-        for (size_t i = nextIndex; i < mColumns; i++) vec[i] = T();
-        break;
-      }
+      vec[i] = T();
+    }
+    // Elements are sorted by (row,col): visit only those in this row
+    for (auto it = objectList.lower_bound(std::make_pair(nRow, size_t(0)));
+         it != objectList.end() && it->first.first == nRow; ++it)
+    {
+      vec[it->first.second] = it->second;
     }
   }
   /**
@@ -200,21 +193,21 @@ class CSparseMatrixTemplate
   // class will be able to freely modify it contents.
   /**
    * Returns an iterator which points to the starting point of the matrix.
-   * It's a const_iterator, so that the usar isn't able to modify the matrix
+   * It's a const_iterator, so that the user isn't able to modify the matrix
    * content into an invalid state.
    * \sa end,rbegin,rend
    */
   const_iterator begin() const { return objectList.begin(); }
   /**
    * Returns an iterator which points to the end of the matrix. It's a
-   * const_iterator, so that the usar isn't able to modify the matrix content
+   * const_iterator, so that the user isn't able to modify the matrix content
    * into an invalid state.
    * \sa begin,rbegin,rend
    */
   const_iterator end() const { return objectList.end(); }
   /**
    * Returns an iterator which points to the end of the matrix, and can be
-   * used to move backwards. It's a const_reverse_iterator, so that the usar
+   * used to move backwards. It's a const_reverse_iterator, so that the user
    * isn't able to modify the matrix content into an invalid state.
    * \sa begin,end,rend
    */
@@ -222,7 +215,7 @@ class CSparseMatrixTemplate
   /**
    * Returns an iterator which points to the starting point of the matrix,
    * although it's the upper limit of the matrix since it's a reverse
-   * iterator. Also, it's a const_reverse_iterator, so that the usar isn't
+   * iterator. Also, it's a const_reverse_iterator, so that the user isn't
    * able to modify the matrix content into an invalid state.
    * \sa begin,end,rbegin
    */
@@ -405,6 +398,35 @@ class CSparseSymmetricalMatrix : public CSparseMatrixTemplate<T>
   }
   virtual ~CSparseSymmetricalMatrix() = default;
   void resize(size_t matrixSize) { CSparseMatrixTemplate<T>::resize(matrixSize, matrixSize); }
+
+  /** Like CSparseMatrixTemplate::exists(), with (r,c) and (c,r) being the
+   * same element */
+  bool exists(size_t r, size_t c) const
+  {
+    if (c < r)
+    {
+      std::swap(r, c);
+    }
+    return CSparseMatrixTemplate<T>::exists(r, c);
+  }
+
+  /** Inserts an element, (r,c) and (c,r) being the same element */
+  void insert(size_t r, size_t c, const T& obj) { (*this)(r, c) = obj; }
+
+  /** Inserts a submatrix at a given location, (r,c) and (c,r) being the same
+   * element */
+  template <class MATRIX_LIKE>
+  void insertMatrix(size_t row, size_t column, const MATRIX_LIKE& mat)
+  {
+    for (size_t nr = 0; nr < static_cast<size_t>(mat.rows()); nr++)
+    {
+      for (size_t nc = 0; nc < static_cast<size_t>(mat.cols()); nc++)
+      {
+        (*this)(row + nr, column + nc) =
+            mat(static_cast<decltype(mat.rows())>(nr), static_cast<decltype(mat.cols())>(nc));
+      }
+    }
+  }
 
   T operator()(size_t r, size_t c) const
   {
