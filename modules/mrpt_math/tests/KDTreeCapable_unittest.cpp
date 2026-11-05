@@ -13,12 +13,17 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/core/bits_math.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
+#include <mrpt/random/RandomGenerators.h>
 
+#include <algorithm>
+#include <array>
 #include <nanoflann.hpp>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 namespace
@@ -485,4 +490,200 @@ TEST(KDTreeCapable, disabledIndexThrows)
   PointCloud3D plain;
   plain.pts.emplace_back(0, 0, 0);
   EXPECT_NO_THROW(plain.kdTreeEnsureIndexBuilt3D());
+}
+
+namespace
+{
+template <int DIM>
+struct Cloud : public mrpt::math::KDTreeCapable<Cloud<DIM>>
+{
+  std::vector<std::array<float, 3>> pts;
+
+  size_t kdtree_get_point_count() const { return pts.size(); }
+  float kdtree_get_pt(size_t idx, int dim) const { return pts.at(idx)[static_cast<size_t>(dim)]; }
+  template <class BBOX>
+  bool kdtree_get_bbox([[maybe_unused]] BBOX& bb) const
+  {
+    return false;
+  }
+  void markChanged() { this->kdtree_mark_as_outdated(); }
+};
+
+template <int DIM>
+Cloud<DIM> randomCloud(size_t n)
+{
+  auto& rng = mrpt::random::getRandomGenerator();
+  Cloud<DIM> c;
+  c.pts.resize(n);
+  for (auto& p : c.pts)
+  {
+    for (int d = 0; d < 3; d++)
+    {
+      p[static_cast<size_t>(d)] = d < DIM ? static_cast<float>(rng.drawUniform(-10.0, 10.0)) : 0.f;
+    }
+  }
+  return c;
+}
+
+template <int DIM>
+std::vector<std::pair<float, size_t>> bruteForce(const Cloud<DIM>& c, const float* q)
+{
+  std::vector<std::pair<float, size_t>> d;
+  for (size_t i = 0; i < c.pts.size(); i++)
+  {
+    float s = 0;
+    for (int k = 0; k < DIM; k++)
+    {
+      s += mrpt::square(c.pts[i][static_cast<size_t>(k)] - q[k]);
+    }
+    d.emplace_back(s, i);
+  }
+  std::sort(d.begin(), d.end());
+  return d;
+}
+}  // namespace
+
+TEST(KDTreeBruteForce, knn2DAnd3DMatchBruteForce)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  auto c2 = randomCloud<2>(500);
+  auto c3 = randomCloud<3>(500);
+  auto& rng = mrpt::random::getRandomGenerator();
+  for (int it = 0; it < 50; it++)
+  {
+    const float q[3] = {
+        static_cast<float>(rng.drawUniform(-12.0, 12.0)),
+        static_cast<float>(rng.drawUniform(-12.0, 12.0)),
+        static_cast<float>(rng.drawUniform(-12.0, 12.0))};
+    const size_t k = 7;
+    {
+      std::vector<size_t> idx;
+      std::vector<float> d2;
+      c2.kdTreeNClosestPoint2DIdx(q[0], q[1], k, idx, d2);
+      const auto bf = bruteForce(c2, q);
+      ASSERT_EQ(idx.size(), k);
+      for (size_t i = 0; i < k; i++)
+      {
+        EXPECT_EQ(idx[i], bf[i].second);
+        EXPECT_NEAR(d2[i], bf[i].first, 1e-3f);
+      }
+      float dist = 0;
+      EXPECT_EQ(c2.kdTreeClosestPoint2D(q[0], q[1], dist), bf[0].second);
+    }
+    {
+      std::vector<size_t> idx;
+      std::vector<float> d2;
+      c3.kdTreeNClosestPoint3DIdx(q[0], q[1], q[2], k, idx, d2);
+      const auto bf = bruteForce(c3, q);
+      ASSERT_EQ(idx.size(), k);
+      for (size_t i = 0; i < k; i++)
+      {
+        EXPECT_EQ(idx[i], bf[i].second);
+        EXPECT_NEAR(d2[i], bf[i].first, 1e-3f);
+      }
+    }
+  }
+}
+
+TEST(KDTreeBruteForce, radiusSearchUsesSquaredRadius)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  auto c3 = randomCloud<3>(800);
+  const float q[3] = {0.5f, -1.0f, 2.0f};
+  const float radius = 3.0f;
+  std::vector<nanoflann::ResultItem<size_t, float>> res;
+  const size_t n = c3.kdTreeRadiusSearch3D(q[0], q[1], q[2], radius * radius, res);
+  const auto bf = bruteForce(c3, q);
+  size_t expected = 0;
+  for (const auto& p : bf)
+  {
+    if (p.first < radius * radius)
+    {
+      expected++;
+    }
+  }
+  EXPECT_EQ(n, expected);
+  EXPECT_GT(n, 0U);
+  for (const auto& r : res)
+  {
+    EXPECT_LT(r.second, radius * radius);
+  }
+  // 2D tree on the same object, then the 3D tree again: both must be valid
+  std::vector<nanoflann::ResultItem<size_t, float>> res2;
+  c3.kdTreeRadiusSearch2D(q[0], q[1], radius * radius, res2);
+  const auto n3 = c3.kdTreeRadiusSearch3D(q[0], q[1], q[2], radius * radius, res);
+  EXPECT_EQ(n3, expected);
+  EXPECT_GE(res2.size(), n3);
+}
+
+TEST(KDTreeBruteForce, indexRebuiltAfterMarkOutdated)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  auto c2 = randomCloud<2>(100);
+  float d = 0;
+  const size_t i0 = c2.kdTreeClosestPoint2D(100.f, 100.f, d);
+  (void)i0;
+  c2.pts.push_back({99.f, 99.f, 0.f});
+  c2.markChanged();
+  EXPECT_EQ(c2.kdTreeClosestPoint2D(100.f, 100.f, d), c2.pts.size() - 1);
+  EXPECT_NEAR(d, 2.0f, 1e-4f);
+}
+
+// The second squared distance must be that of the second point
+TEST(KDTreeBruteForce, twoClosestPoint2DSecondDistance)
+{
+  Cloud<2> c;
+  c.pts = {
+      {0.f, 0.f, 0.f},
+      {1.f, 0.f, 0.f},
+      {5.f, 5.f, 0.f}
+  };
+  float x1 = 0;
+  float y1 = 0;
+  float x2 = 0;
+  float y2 = 0;
+  float d1 = 0;
+  float d2 = 0;
+  c.kdTreeTwoClosestPoint2D(0.f, 0.f, x1, y1, x2, y2, d1, d2);
+  EXPECT_EQ(x2, 1.0f);
+  EXPECT_NEAR(d1, 0.0f, 1e-6f);
+  EXPECT_NEAR(d2, 1.0f, 1e-6f);
+}
+
+TEST(KDTreeBruteForce, twoClosestPoint2DNeedsTwoPoints)
+{
+  Cloud<2> c;
+  c.pts = {
+      {0.f, 0.f, 0.f}
+  };
+  float x1 = 0;
+  float y1 = 0;
+  float x2 = 0;
+  float y2 = 0;
+  float d1 = 0;
+  float d2 = 0;
+  EXPECT_ANY_THROW(c.kdTreeTwoClosestPoint2D(0.f, 0.f, x1, y1, x2, y2, d1, d2));
+}
+
+TEST(KDTreeBruteForce, zeroNeighborsRequested)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  auto c2 = randomCloud<2>(10);
+  auto c3 = randomCloud<3>(10);
+  std::vector<size_t> idx = {1};
+  std::vector<float> d2 = {1.f};
+  c2.kdTreeNClosestPoint2DIdx(0.f, 0.f, 0, idx, d2);
+  EXPECT_TRUE(idx.empty());
+  EXPECT_TRUE(d2.empty());
+  std::vector<float> xs = {1.f};
+  std::vector<float> ys = {1.f};
+  std::vector<float> zs = {1.f};
+  EXPECT_TRUE(c2.kdTreeNClosestPoint2D(0.f, 0.f, 0, xs, ys, d2).empty());
+  EXPECT_TRUE(xs.empty());
+  c3.kdTreeNClosestPoint3DIdx(0.f, 0.f, 0.f, 0, idx, d2);
+  EXPECT_TRUE(idx.empty());
+  c3.kdTreeNClosestPoint3D(0.f, 0.f, 0.f, 0, xs, ys, zs, d2);
+  EXPECT_TRUE(zs.empty());
+  c3.kdTreeNClosestPoint3DWithIdx(0.f, 0.f, 0.f, 0, xs, ys, zs, idx, d2);
+  EXPECT_TRUE(idx.empty());
 }
