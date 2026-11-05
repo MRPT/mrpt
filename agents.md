@@ -134,7 +134,15 @@ mrpt_add_library(
   sizes (square `CMatrixFixed`: 2,3,4,6,7,12; `CVectorFixed`: 2,3,4,5,6,7,12;
   see `src/MatrixVectorBase_instantiate_*.cpp`). Other sizes compile but fail
   to link. Never `#pragma pack(1)` a struct holding a class like `TPoint3D`
-  (SIGBUS on armhf).
+  (SIGBUS on armhf). `wrapToPi()` returns values in [-pi, pi).
+  `inverse_LLt()` does not check positive-definiteness (use `chol()`, which
+  returns false); information-form PDFs built from singular covariances (2D to
+  3D, 7x7 quaternion covariances) are ill-defined.
+* **mrpt_poses**: `CQuaternion::crossProduct()`/`normalize()` force qr >= 0, so
+  Jacobians of quaternion products must flip the quaternion rows when the raw
+  product has qr < 0. `Lie::SE<3>::exp/log` are the pseudo-exponential maps.
+  Verify new Jacobians against finite differences with total rotations above
+  180 deg and near pitch = +-90 deg.
 * **mrpt_img**: `CImage::at<T>()` is a raw `reinterpret_cast`; for 3-channel
   images use `at<uint8_t>(x, y, channel)`, not `at<TColor>()`.
   `scaleHalf()`/`grayscale()` dispatch to SSE2/SSSE3 kernels and return whether
