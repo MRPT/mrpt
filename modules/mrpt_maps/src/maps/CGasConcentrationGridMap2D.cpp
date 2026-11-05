@@ -158,18 +158,8 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 {
   MRPT_START
 
-  CPose2D robotPose2D;
-  CPose3D robotPose3D;
-
-  if (robotPose)
-  {
-    robotPose2D = CPose2D(*robotPose);
-    robotPose3D = (*robotPose);
-  }
-  else
-  {
-    // Default values are (0,0,0)
-  }
+  // Default values are (0,0,0):
+  const CPose3D robotPose3D = robotPose ? *robotPose : CPose3D();
 
   if (IS_CLASS(obs, CObservationGasSensors))
   {
@@ -190,7 +180,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
             &o.m_readings[insertionOptions.enose_id];
 
         // Compute the 3D sensor pose in world coordinates:
-        sensorPose = CPose2D(CPose3D(robotPose2D) + CPose3D(it->eNosePoseOnTheRobot));
+        sensorPose = CPose2D(robotPose3D + CPose3D(it->eNosePoseOnTheRobot));
 
         // Compute the sensor reading value (Volts):
         if (insertionOptions.gasSensorType == 0x0000)
@@ -223,7 +213,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
       {
         const CObservationGasSensors::TObservationENose* it = &o.m_readings[0];
         // Compute the 3D sensor pose in world coordinates:
-        sensorPose = CPose2D(CPose3D(robotPose2D) + CPose3D(it->eNosePoseOnTheRobot));
+        sensorPose = CPose2D(robotPose3D + CPose3D(it->eNosePoseOnTheRobot));
         sensorReading = it->readingsVoltage[0];
       }
 
@@ -233,14 +223,16 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 
       // Update the gross estimates of mean/vars for the whole reading
       // history (see IROS2009 paper):
-      m_average_normreadings_mean =
-          (sensorReading +
-           static_cast<double>(m_average_normreadings_count) * m_average_normreadings_mean) /
-          (1 + static_cast<double>(m_average_normreadings_count));
-      m_average_normreadings_var =
-          (square(sensorReading - m_average_normreadings_mean) +
-           static_cast<double>(m_average_normreadings_count) * m_average_normreadings_var) /
-          (1 + static_cast<double>(m_average_normreadings_count));
+      // (Welford's running mean and variance)
+      {
+        const double n = static_cast<double>(m_average_normreadings_count);
+        const double old_mean = m_average_normreadings_mean;
+        m_average_normreadings_mean = (sensorReading + n * old_mean) / (n + 1);
+        m_average_normreadings_var =
+            (n * m_average_normreadings_var +
+             (sensorReading - old_mean) * (sensorReading - m_average_normreadings_mean)) /
+            (n + 1);
+      }
       m_average_normreadings_count++;
 
       // Finally, do the actual map update with that value:
@@ -580,10 +572,17 @@ mrpt::viz::CSetOfObjects::Ptr CGasConcentrationGridMap2D::getWindAs3DObject() co
 ---------------------------------------------------------------*/
 void CGasConcentrationGridMap2D::increaseUncertainty(const double STD_increase_value)
 {
-  // Increase cell variance
-  //	unsigned int cx,cy;
-  //	double memory_retention;
+  // Only the approximate Kalman representation keeps the variances in
+  // m_stackedCov:
+  if (m_mapType != mrKalmanApproximate)
+  {
+    MRPT_LOG_ERROR(
+        "increaseUncertainty() is only implemented for the mrKalmanApproximate "
+        "map representation.");
+    return;
+  }
 
+  // Increase cell variance
   m_hasToRecoverMeanAndCov = true;
   for (size_t it = 0; it < m_map.size(); it++)
   {

@@ -149,14 +149,16 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
 
     // Update the gross estimates of mean/vars for the whole reading history
     // (see IROS2009 paper):
-    m_average_normreadings_mean =
-        (sensorReading +
-         static_cast<double>(m_average_normreadings_count) * m_average_normreadings_mean) /
-        (1 + static_cast<double>(m_average_normreadings_count));
-    m_average_normreadings_var =
-        (square(sensorReading - m_average_normreadings_mean) +
-         static_cast<double>(m_average_normreadings_count) * m_average_normreadings_var) /
-        (1 + static_cast<double>(m_average_normreadings_count));
+    // (Welford's running mean and variance)
+    {
+      const double n = static_cast<double>(m_average_normreadings_count);
+      const double old_mean = m_average_normreadings_mean;
+      m_average_normreadings_mean = (sensorReading + n * old_mean) / (n + 1);
+      m_average_normreadings_var =
+          (n * m_average_normreadings_var +
+           (sensorReading - old_mean) * (sensorReading - m_average_normreadings_mean)) /
+          (n + 1);
+    }
     m_average_normreadings_count++;
 
     // Finally, do the actual map update with that value:

@@ -80,7 +80,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D, public mrpt::co
     //[Advection Options]
     bool useWindInformation{false};  //! Indicates if wind information must be used
     //! to simulate Advection
-    float advectionFreq;  //! Frequency for simulating advection (only used
+    float advectionFreq{1.0f};  //! Frequency for simulating advection (only used
     //! to transform wind speed to distance)
     float std_windNoise_phi{0.2f}, std_windNoise_mod{0.2f};  //! The std to consider on
     //! wind information
@@ -112,9 +112,11 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D, public mrpt::co
     windObj = getWindAs3DObject();
   }
 
-  /** Increase the kf_std of all cells from the m_map
-   *	This mehod is usually called by the main_map to simulate loss of
-   *confidence in measurements when time passes */
+  /** Increase the uncertainty of all cells from the m_map, by adding
+   * `STD_increase_value` to the variance (not the std) of each cell.
+   * This method is usually called by the main_map to simulate loss of
+   * confidence in measurements when time passes.
+   * Only implemented for the mrKalmanApproximate map representation. */
   virtual void increaseUncertainty(const double STD_increase_value);
 
   /** Implements the transition model of the gasConcentration map using the

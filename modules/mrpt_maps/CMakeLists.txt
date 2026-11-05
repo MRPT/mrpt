@@ -160,6 +160,8 @@ mrpt_add_library(
   CMAKE_DEPENDENCIES
     mrpt_obs
     mrpt_graphs
+  UNITTEST_LINK_LIBRARIES
+    Eigen3::Eigen
 )
 
 if (CMAKE_MRPT_HAS_OCTOMAP)
