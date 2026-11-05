@@ -19,7 +19,7 @@
 #endif
 
 #include <mrpt/core/exceptions.h>  // ASSERT_()
-#include <mrpt/core/round.h>
+#include <mrpt/random/RandomGenerators.h>
 
 #include <algorithm>  // std::max(),...
 #include <cmath>
@@ -58,7 +58,8 @@ bool ModelSearch::ransacSingleModel(
       i++;
       if (i > 100)
       {
-        return false;
+        // Keep the best model found so far, if any:
+        return !p_inliers.empty();
       }
     }
 
@@ -68,7 +69,6 @@ bool ModelSearch::ransacSingleModel(
     {
       if (p_state.testSample(j, currentModel) < p_fitnessThreshold) inliers.push_back(j);
     }
-    ASSERT_(inliers.size() > 0);
 
     // Find the number of inliers to this model.
     const size_t ninliers = inliers.size();
@@ -86,14 +86,19 @@ bool ModelSearch::ransacSingleModel(
 
     if (update_estim_num_iters)
     {
-      // Update the estimation of maxIter to pick dataset with no outliers
-      // at propability p
+      // Update the number of iterations to pick, with probability
+      // CONFIDENCE, at least one sample with no outliers.
+      constexpr double CONFIDENCE = 0.99;
       double f = static_cast<double>(ninliers) / static_cast<double>(nSamples);
+      // Probability of a sample with at least one outlier:
       double p = 1 - std::pow(f, static_cast<double>(p_kernelSize));
       const double eps = std::numeric_limits<double>::epsilon();
       p = std::max(eps, p);      // Avoid division by -Inf
       p = std::min(1 - eps, p);  // Avoid division by 0.
-      softIterLimit = static_cast<size_t>(std::max(0, mrpt::round(log(1 - p) / log(p))));
+      const double nIters = std::ceil(std::log(1 - CONFIDENCE) / std::log(p));
+      softIterLimit = nIters < static_cast<double>(hardIterLimit)
+                          ? static_cast<size_t>(std::max(0.0, nIters))
+                          : hardIterLimit;
     }
 
     iter++;
@@ -150,22 +155,30 @@ bool ModelSearch::geneticSingleModel(
         population.push_back(sortedPopulation[static_cast<size_t>(i)]);
       }
 
-      // mate elders to make siblings
-      int se = static_cast<int>(speciesAlive);  // dead species cannot mate
+      // mate elders to make siblings, which replace the worst species at the
+      // end of the sorted list:
+      auto& rng = mrpt::random::getRandomGenerator();
+      int se = static_cast<int>(p_populationSize);
       for (; i < elderCnt + siblingCnt; i++)
       {
         Species* sibling = sortedPopulation[static_cast<size_t>(--se)];
         population.push_back(sibling);
 
-        // pick two parents, from the species not yet refactored
-        // better elders has more chance to mate as they are removed
-        // later from the list
-        int r1 = rand();
-        int r2 = rand();
-        int p1 = r1 % se;
-        int p2 = (p1 > se / 2) ? (r2 % p1) : p1 + 1 + (r2 % (se - p1 - 1));
-        ASSERT_(p1 != p2 && p1 < se && p2 < se);
-        ASSERT_(se >= elderCnt);
+        // pick two different parents among the alive species not yet
+        // replaced (better ones have more chances, as they are replaced last)
+        const int nCandidates = std::min(se, speciesAlive);
+        if (nCandidates < 2)
+        {
+          pickRandomIndex(sampleCount, p_kernelSize, sibling->sample);
+          continue;
+        }
+        const auto p1 =
+            static_cast<int>(rng.drawUniform32bit() % static_cast<uint32_t>(nCandidates));
+        auto p2 = static_cast<int>(rng.drawUniform32bit() % static_cast<uint32_t>(nCandidates - 1));
+        if (p2 >= p1)
+        {
+          p2++;
+        }
         Species* a = sortedPopulation[static_cast<size_t>(p1)];
         Species* b = sortedPopulation[static_cast<size_t>(p2)];
 
@@ -175,14 +188,15 @@ bool ModelSearch::geneticSingleModel(
         sampleSet.insert(b->sample.begin(), b->sample.end());
         // mutate - add a random sample that will be selected with some
         // (non-zero) probability
-        sampleSet.insert(static_cast<size_t>(rand()) % sampleCount);
+        sampleSet.insert(static_cast<size_t>(rng.drawUniform32bit()) % sampleCount);
         pickRandomIndex(sampleSet, p_kernelSize, sibling->sample);
       }
 
-      // generate some new random species
-      for (; i < static_cast<int>(p_populationSize); i++)
+      // generate some new random species, in the slots between the elders
+      // and the siblings
+      for (int k = elderCnt; k < se; k++)
       {
-        Species* s = sortedPopulation[static_cast<size_t>(i)];
+        Species* s = sortedPopulation[static_cast<size_t>(k)];
         population.push_back(s);
         pickRandomIndex(sampleCount, p_kernelSize, s->sample);
       }
@@ -194,6 +208,7 @@ bool ModelSearch::geneticSingleModel(
          it++)
     {
       Species& s = **it;
+      s.inliers.clear();
       if (p_state.fitModel(s.sample, s.model))
       {
         s.fitness = 0;
@@ -206,15 +221,18 @@ bool ModelSearch::geneticSingleModel(
             s.inliers.push_back(i);
           }
         }
-        ASSERT_(s.inliers.size() > 0);
-
+      }
+      if (!s.inliers.empty())
+      {
         s.fitness /= static_cast<typename TModelFit::Real>(s.inliers.size());
         // scale by the number of outliers
         s.fitness *= static_cast<typename TModelFit::Real>(sampleCount - s.inliers.size());
         speciesAlive++;
       }
       else
+      {
         s.fitness = std::numeric_limits<typename TModelFit::Real>::max();
+      }
     }
 
     if (!speciesAlive)

@@ -14,6 +14,11 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/math/model_search.h>
+#include <mrpt/random/RandomGenerators.h>
+
+#include <cmath>
+#include <set>
+#include <vector>
 
 using namespace mrpt::math;
 
@@ -109,4 +114,105 @@ TEST(ModelSearch, GeneticSingleModelWithMating)
   EXPECT_GT(inliers.size(), 0U);
   EXPECT_NEAR(bestModel.a, -1.0, 1e-2);
   EXPECT_NEAR(bestModel.b, 3.0, 1e-2);
+}
+
+namespace
+{
+// Mock TModelFit with a fixed inlier ratio, independent of the samples.
+struct FixedRatioModelFit
+{
+  using Real = double;
+  using Model = int;
+  size_t n = 100;
+  size_t nIn = 50;
+  mutable size_t fitCalls = 0;
+
+  [[nodiscard]] size_t getSampleCount() const { return n; }
+  bool fitModel(const std::vector<size_t>&, Model& m) const
+  {
+    fitCalls++;
+    m = 0;
+    return true;
+  }
+  [[nodiscard]] double testSample(size_t index, const Model&) const
+  {
+    return index < nIn ? 0.0 : 1.0;
+  }
+};
+}  // namespace
+
+TEST(ModelSearch, RansacSingleModelIterationsGiveHighConfidence)
+{
+  FixedRatioModelFit fit;
+  ModelSearch ms;
+  FixedRatioModelFit::Model best = -1;
+  std::vector<size_t> inliers;
+  ASSERT_TRUE(ms.ransacSingleModel(fit, 2, 0.5, best, inliers));
+  EXPECT_EQ(inliers.size(), 50U);
+  const double w = 0.5;
+  const double achieved = 1.0 - std::pow(1.0 - w * w, static_cast<double>(fit.fitCalls));
+  EXPECT_GE(achieved, 0.99) << "iterations=" << fit.fitCalls;
+  // ceil(log(0.01)/log(0.75)) = 17
+  EXPECT_EQ(fit.fitCalls, 17U);
+}
+
+TEST(ModelSearch, GeneticSingleModelInliersAreUnique)
+{
+  mrpt::random::getRandomGenerator().randomize(1);
+  auto fit = MakeNoisyLineDataset(30, -1.0, 3.0);
+  ModelSearch ms;
+  LineModelFit::Model best;
+  std::vector<size_t> inliers;
+  ASSERT_TRUE(ms.geneticSingleModel(fit, 2, 1e-6, 12, 3, best, inliers));
+  EXPECT_NEAR(best.a, -1.0, 1e-6);
+  EXPECT_NEAR(best.b, 3.0, 1e-6);
+  const std::set<size_t> u(inliers.begin(), inliers.end());
+  EXPECT_EQ(u.size(), inliers.size());
+  EXPECT_EQ(inliers.size(), 30U);
+}
+
+TEST(ModelSearch, GeneticSingleModelFewValidKernels)
+{
+  // Only pairs containing one of the last two points are non-degenerate, so
+  // few species are alive at each generation.
+  LineModelFit fit;
+  for (int i = 0; i < 30; i++)
+  {
+    fit.xs.push_back(i < 28 ? 0.0 : 1.0 * i);
+    fit.ys.push_back(i);
+  }
+  mrpt::random::getRandomGenerator().randomize(2);
+  for (int t = 0; t < 50; t++)
+  {
+    ModelSearch ms;
+    LineModelFit::Model best;
+    std::vector<size_t> inliers;
+    bool found = false;
+    EXPECT_NO_THROW(found = ms.geneticSingleModel(fit, 2, 1e-6, 12, 5, best, inliers));
+    if (found)
+    {
+      EXPECT_GE(inliers.size(), 2U);
+    }
+  }
+}
+
+TEST(ModelSearch, ReproducibleWithSeed)
+{
+  auto fit = MakeNoisyLineDataset(40, 2.0, 1.0);
+  // Add outliers, so that the selected samples matter:
+  for (size_t i = 0; i < fit.ys.size(); i += 3)
+  {
+    fit.ys[i] += 5.0;
+  }
+  std::vector<size_t> inliers1;
+  std::vector<size_t> inliers2;
+  LineModelFit::Model m1;
+  LineModelFit::Model m2;
+  mrpt::random::getRandomGenerator().randomize(9);
+  ModelSearch().geneticSingleModel(fit, 2, 1e-6, 12, 4, m1, inliers1);
+  mrpt::random::getRandomGenerator().randomize(9);
+  ModelSearch().geneticSingleModel(fit, 2, 1e-6, 12, 4, m2, inliers2);
+  EXPECT_EQ(inliers1, inliers2);
+  EXPECT_EQ(m1.a, m2.a);
+  EXPECT_EQ(m1.b, m2.b);
 }
