@@ -105,6 +105,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CSparseMatrixTemplate_unittest.cpp
   tests/CSplineInterpolator1D_unittest.cpp
   tests/distributions_unittest.cpp
+  tests/drawGaussianMultivariate_unittest.cpp
   tests/EigenAlignment_unittest.cpp
   tests/fourier_unittest.cpp
   tests/fresnel_unittest.cpp
@@ -149,6 +150,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/TPolygon3D_unittest.cpp
   tests/TPolygonWithPlane_unittest.cpp
   tests/TPose3DQuat_unittest.cpp
+  tests/transform_gaussian_unittest.cpp
   tests/TPoseOrPoint_unittest.cpp
   tests/TSegment3D_unittest.cpp
   tests/TTwist2D_unittest.cpp

@@ -168,7 +168,7 @@ void extractColumnFromVectorOfVectors(
 uint64_t factorial64(unsigned int n);
 
 /** Computes the factorial of an integer number and returns it as a double value
- * (internally it uses logarithms for avoiding overflow).
+ * (computed as std::tgamma(n+1)).
  */
 double factorial(unsigned int n);
 
@@ -176,8 +176,9 @@ double factorial(unsigned int n);
  * interval (ellipse) for a 2D Gaussian ('float' version)..
  *  \param cov22 The 2x2 covariance matrix
  *  \param mean  The 2-length vector with the mean
- *  \param stdCount How many "quantiles" to get into the area of the ellipse:
- * 2: 95%, 3:99.97%,...
+ *  \param stdCount How many standard deviations the ellipse spans. For a 2D
+ * Gaussian it encloses 1-exp(-k^2/2) of the probability: 1: 39.3%, 2: 86.5%,
+ * 3: 98.9%,...
  *  \param style A matlab style string, for colors, line styles,...
  *  \param nEllipsePoints The number of points in the ellipse to generate
  * \ingroup stats_grp
@@ -193,8 +194,9 @@ std::string MATLAB_plotCovariance2D(
  * interval (ellipse) for a 2D Gaussian ('double' version).
  *  \param cov22 The 2x2 covariance matrix
  *  \param mean  The 2-length vector with the mean
- *  \param stdCount How many "quantiles" to get into the area of the ellipse:
- * 2: 95%, 3:99.97%,...
+ *  \param stdCount How many standard deviations the ellipse spans. For a 2D
+ * Gaussian it encloses 1-exp(-k^2/2) of the probability: 1: 39.3%, 2: 86.5%,
+ * 3: 98.9%,...
  *  \param style A matlab style string, for colors, line styles,...
  *  \param nEllipsePoints The number of points in the ellipse to generate
  * \ingroup stats_grp

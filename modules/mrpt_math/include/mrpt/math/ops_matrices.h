@@ -78,7 +78,8 @@ typename MAT_C::Scalar multiply_HCHt_scalar(const VECTOR_H& H, const MAT_C& C)
 }
 
 /** Computes the mean vector and covariance from a list of samples in an NxM
- * matrix, where each row is a sample, so the covariance is MxM.
+ * matrix, where each row is a sample, so the covariance is MxM. The
+ * covariance uses the 1/N (biased, maximum-likelihood) normalization.
  * \param v The set of data as a NxM matrix, of types: CMatrixDynamic
  * or CMatrixFixed
  * \param out_mean The output M-vector for the estimated mean.
@@ -121,9 +122,9 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 
 /** Computes a row with the mean values of each column in the matrix and the
  * associated vector with the standard deviation of each column.
- * \sa mean,meanAndStdAll \exception std::exception If the matrix/vector is
+ * \sa mean,meanAndStd \exception std::exception If the matrix/vector is
  * empty.
- * \param unbiased_variance Standard deviation is sum(vals-mean)/K, with
+ * \param unbiased_variance Standard deviation is sqrt(sum((vals-mean)^2)/K), with
  * K=N-1 or N for unbiased_variance=true or false, respectively.
  */
 template <class MAT_IN, class VEC>
@@ -146,9 +147,10 @@ void meanAndStdColumns(
 }
 
 /** Computes the covariance matrix from a list of samples in an NxM matrix,
- * where each row is a sample, so the covariance is MxM.
+ * where each row is a sample, so the covariance is MxM, with the 1/N (biased,
+ * maximum-likelihood) normalization.
  * \param v The set of data, as a NxM matrix.
- * \param out_cov The output MxM matrix for the estimated covariance matrix.
+ * \return The MxM estimated covariance matrix.
  * \sa math::mean,math::stddev, math::cov
  */
 template <class MATRIX>

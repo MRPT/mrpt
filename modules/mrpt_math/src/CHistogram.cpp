@@ -14,7 +14,9 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/CHistogram.h>
-#include <mrpt/math/utils.h>  // linspace()
+
+#include <algorithm>
+#include <cmath>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -81,25 +83,33 @@ double CHistogram::getBinRatio(size_t index) const
 
 void CHistogram::getHistogram(std::vector<double>& x, std::vector<double>& hits) const
 {
-  linspace(m_min, m_max, m_bins.size(), x);
   const size_t N = m_bins.size();
+  x.resize(N);
   hits.resize(N);
-  for (size_t i = 0; i < N; i++) hits[i] = static_cast<double>(m_bins[i]);
+  for (size_t i = 0; i < N; i++)
+  {
+    x[i] = m_min + (static_cast<double>(i) + 0.5) / m_binSizeInv;  // bin center
+    hits[i] = static_cast<double>(m_bins[i]);
+  }
 }
 
 void CHistogram::getHistogramNormalized(std::vector<double>& x, std::vector<double>& hits) const
 {
-  const size_t N = m_bins.size();
-  linspace(m_min, m_max, N, x);
-
-  hits.resize(N);
-  const double K = m_binSizeInv / static_cast<double>(m_count);
-  for (size_t i = 0; i < N; i++) hits[i] = K * static_cast<double>(m_bins[i]);
+  getHistogram(x, hits);
+  const double K = m_count != 0 ? m_binSizeInv / static_cast<double>(m_count) : 0.0;
+  for (auto& h : hits)
+  {
+    h *= K;
+  }
 }
 
 CHistogram CHistogram::createWithFixedWidth(double min, double max, double binWidth)
 {
   ASSERT_(max > min);
   ASSERT_(binWidth > 0);
-  return CHistogram(min, max, static_cast<size_t>(ceil((max - min) / binWidth)));
+  // The tolerance avoids an extra bin due to round-off when the range is a
+  // multiple of the width:
+  const auto nBins =
+      std::max<size_t>(1, static_cast<size_t>(std::ceil((max - min) / binWidth - 1e-9)));
+  return CHistogram(min, min + static_cast<double>(nBins) * binWidth, nBins);
 }
