@@ -35,7 +35,7 @@ using namespace std;
 //		ct_others = (1/n)*sum{i}( pLi )		ct_others = { cLx, cLy, cLz }
 //		ct_this = (1/n)*sum{i}( pRi )		ct_this = { cRx, cRy, cRz }
 //
-// 2. Substract centroids from the point coordinates:
+// 2. Subtract centroids from the point coordinates:
 //		pLi' = pLi - ct_others					pLi' = { pLix', pLiy', pLiz' }
 //		pRi' = pRi - ct_this					pRi' = { pRix', pRiy', pRiz' }
 //
@@ -104,7 +104,7 @@ bool se3_l2_internal(
 
   CMatrixDouble33 S;  // Zeroed by default
 
-  // Substract the centroid and compute the S matrix of cross products
+  // Subtract the centroid and compute the S matrix of cross products
   for (size_t i = 0; i < nMatches; i++)
   {
     points_this[i] -= ct_this;
@@ -187,8 +187,8 @@ bool se3_l2_internal(
       den += square(points_this[i].x) + square(points_this[i].y) + square(points_this[i].z);
     }  // end-for
 
-    // The scale:
-    s = std::sqrt(num / den);
+    // The scale (this = s * R * other + t):
+    s = std::sqrt(den / num);
   }
 
   TPoint3D pp;
@@ -213,7 +213,7 @@ bool tfest::se3_l2(
     double& out_scale,
     bool forceScaleToUnity)
 {
-  // make a copy because we need it anyway to substract the centroid and to
+  // make a copy because we need it anyway to subtract the centroid and to
   // provide a unified interface to TMatchingList API
   std::vector<mrpt::math::TPoint3D> points_this = in_points_this;
   std::vector<mrpt::math::TPoint3D> points_other = in_points_other;

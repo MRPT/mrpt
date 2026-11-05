@@ -44,11 +44,14 @@ namespace mrpt::tfest
  * \param[out] out_estimateCovariance If provided (!=nullptr) this will contain
  * on return a 3x3 covariance matrix with the NORMALIZED optimal estimate
  * uncertainty. This matrix must be multiplied by \f$\sigma^2_p\f$, the variance
- * of matched points in \f$x\f$ and \f$y\f$ (see paper
+ * of matched points in \f$x\f$ and \f$y\f$ (each coordinate of both the
+ * global and the local points is assumed to have this variance) (see paper
  * https://www.mrpt.org/paper-occupancy-grid-matching/)
  * \return True if there are at least two correspondences, or false if one or
- * none, thus we cannot establish any correspondence.
- * \sa robustRigidTransformation
+ * none, thus we cannot establish any correspondence. It also returns false if
+ * the covariance was requested but the rotation is undefined (e.g. all local
+ * points coincide).
+ * \sa se2_l2_robust
  *
  * \note Reference for covariance calculation: J.L. Blanco, J.
  * Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "A Robust, Multi-Hypothesis
@@ -132,9 +135,10 @@ struct TSE2RobustResult
 {
   /** The output as a set of transformations (sum of Gaussians) */
   mrpt::poses::CPosePDFSOG transformation;
-  /** the largest consensus sub-set */
+  /** The consensus subset (with at least ransac_minSetSize pairs) with the
+   * lowest RMSE */
   mrpt::tfest::TMatchingPairList largestSubSet;
-  /** Number of actual iterations executed  */
+  /** Number of iterations actually executed */
   unsigned int ransac_iters = 0;
 
   TSE2RobustResult() = default;
@@ -181,7 +185,7 @@ struct TSE2RobustResult
  * number of correspondences.
  * \note [New in MRPT 1.3.0] This function replaces
  * mrpt::scanmatching::robustRigidTransformation()
- * \sa se3_l2, se2_l2_robust
+ * \sa se2_l2, se3_l2_robust
  */
 bool se2_l2_robust(
     const mrpt::tfest::TMatchingPairList& in_correspondences,
