@@ -182,9 +182,8 @@ void mrpt::slam::path_from_rtk_gps(
   // used to index rows/cols of D_cov and D_mean.
   vector<pair<string, string>> pairList;
 
-  CMatrixDouble D_cov;    // square distances cov
-  CMatrixDouble D_cov_1;  // square distances cov (inverse)
-  CVectorDouble D_mean;   // square distances mean
+  CMatrixDouble D_cov;   // square distances cov
+  CVectorDouble D_mean;  // square distances mean
 
   if (doConsistencyCheck && GPS_local_coords_on_vehicle.size() >= 3)
   {
@@ -274,7 +273,6 @@ void mrpt::slam::path_from_rtk_gps(
     }
 
     D_cov *= 4.0 * square(std_0);
-    D_cov_1 = D_cov.inverse_LLt();
 
     // std::cout << D_cov.inMatlabFormat() << "\n";
   }
@@ -435,7 +433,7 @@ void mrpt::slam::path_from_rtk_gps(
             iGPSdist2[pidx] = Pa.sqrDistanceTo(Pb);
           }
 
-          double mahaD = mrpt::math::mahalanobisDistance(iGPSdist2, D_mean, D_cov_1);
+          double mahaD = mrpt::math::mahalanobisDistance(iGPSdist2, D_mean, D_cov);
           outInfoTemp.mahalabis_quality_measure[i->first] = mahaD;
         }  // end consistency
 

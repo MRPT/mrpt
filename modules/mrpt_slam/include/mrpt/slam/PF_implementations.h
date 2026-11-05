@@ -814,7 +814,9 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
     // Instead of picking randomly from "permutationPathsAuxVector", we can
     // shuffle it now just once,
     // then pick in sequence from the tail and resize the container:
-    mrpt::random::shuffle(permutationPathsAuxVector.begin(), permutationPathsAuxVector.end());
+    // Use the global generator, so results are reproducible after seeding it:
+    permutationPathsAuxVector =
+        mrpt::random::getRandomGenerator().permuteVector(permutationPathsAuxVector);
 
     size_t k = 0;
     size_t N = 0;
