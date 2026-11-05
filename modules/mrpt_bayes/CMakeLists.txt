@@ -28,6 +28,7 @@ set(LIB_SOURCES
 set(LIB_UNIT_TEST_SOURCES
   tests/bayes_unittest.cpp
   tests/CKalmanFilterCapable_unittest.cpp
+  tests/CKalmanFilterExactness_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
@@ -57,6 +58,7 @@ mrpt_add_library(
     mrpt_random
   UNITTEST_LINK_LIBRARIES
     mrpt::mrpt_random
+    Eigen3::Eigen
 )
 
 mrpt_add_python_module(bayes

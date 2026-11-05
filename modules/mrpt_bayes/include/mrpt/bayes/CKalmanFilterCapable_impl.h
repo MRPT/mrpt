@@ -193,7 +193,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
     // =============================================================
     //  3. PREDICTION OF COVARIANCE P_{k+1|k}
     // =============================================================
-    // First, we compute de Jacobian fv_by_xv  (derivative of f_vehicle wrt
+    // First, we compute the Jacobian fv_by_xv  (derivative of f_vehicle wrt
     // x_vehicle):
     KFMatrix_VxV dfv_dxv;
 
@@ -222,9 +222,11 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
 
       if (KF_options.debug_verify_analytic_jacobians)
       {
-        KFMatrix_VxV dfv_dxv_gt(mrpt::math::UNINITIALIZED_MATRIX);
+        KFMatrix_VxV dfv_dxv_gt;
+        m_user_didnt_implement_jacobian = false;
         OnTransitionJacobian(dfv_dxv_gt);
-        if ((dfv_dxv - dfv_dxv_gt).sum_abs() > KF_options.debug_verify_analytic_jacobians_threshold)
+        if (!m_user_didnt_implement_jacobian &&
+            (dfv_dxv - dfv_dxv_gt).sum_abs() > KF_options.debug_verify_analytic_jacobians_threshold)
         {
           std::cerr << "[KalmanFilter] ERROR: User analytical "
                        "transition Jacobians are wrong: \n"
@@ -394,86 +396,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
     for (size_t i = first_new_pred; i < N_pred; ++i)
     {
       const size_t lm_idx = FEAT_SIZE == 0 ? 0 : m_predictLMidxs[i];
-      KFMatrix_OxV& Hx = m_Hxs[i];
-      KFMatrix_OxF& Hy = m_Hys[i];
-
-      // Try the analitic Jacobian first:
-      m_user_didnt_implement_jacobian = false;  // Set to true by the default method if not
-      // reimplemented in base class.
-      if (KF_options.use_analytic_observation_jacobian)
-      {
-        OnObservationJacobians(lm_idx, Hx, Hy);
-      }
-
-      if (m_user_didnt_implement_jacobian || !KF_options.use_analytic_observation_jacobian ||
-          KF_options.debug_verify_analytic_jacobians)
-      {  // Numeric approximation:
-        const size_t lm_idx_in_statevector = VEH_SIZE + lm_idx * FEAT_SIZE;
-
-        const KFArray_VEH x_vehicle(&m_xkk[0]);
-        const KFArray_FEAT x_feat(&m_xkk[lm_idx_in_statevector]);
-
-        KFArray_VEH xkk_veh_increments;
-        KFArray_FEAT feat_increments;
-        OnObservationJacobiansNumericGetIncrements(xkk_veh_increments, feat_increments);
-
-        mrpt::math::estimateJacobian(
-            x_vehicle,
-            std::function<void(
-                const KFArray_VEH& x, const std::pair<KFCLASS*, size_t>& dat, KFArray_OBS& out_x)>(
-                &KF_aux_estimate_obs_Hx_jacobian),
-            xkk_veh_increments, std::pair<KFCLASS*, size_t>(this, lm_idx), Hx);
-        // The state vector was temporarily modified by
-        // KF_aux_estimate_*, restore it:
-        std::memcpy(&m_xkk[0], &x_vehicle[0], sizeof(m_xkk[0]) * VEH_SIZE);
-
-        // For non-SLAM problems (FEAT_SIZE==0) there is no feature state to
-        // estimate a Jacobian for: x_feat is always empty, so skip the call
-        // (estimateJacobian() requires a non-empty input vector).
-        if constexpr (FEAT_SIZE != 0)
-        {
-          mrpt::math::estimateJacobian(
-              x_feat,
-              std::function<void(
-                  const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat,
-                  KFArray_OBS& out_x)>(&KF_aux_estimate_obs_Hy_jacobian),
-              feat_increments, std::pair<KFCLASS*, size_t>(this, lm_idx), Hy);
-          // The state vector was temporarily modified by
-          // KF_aux_estimate_*, restore it:
-          std::memcpy(&m_xkk[lm_idx_in_statevector], &x_feat[0], sizeof(m_xkk[0]) * FEAT_SIZE);
-        }
-
-        if (KF_options.debug_verify_analytic_jacobians)
-        {
-          KFMatrix_OxV Hx_gt(mrpt::math::UNINITIALIZED_MATRIX);
-          KFMatrix_OxF Hy_gt(mrpt::math::UNINITIALIZED_MATRIX);
-          OnObservationJacobians(lm_idx, Hx_gt, Hy_gt);
-          if (kf_detail::mat_diff_sum_abs(Hx, Hx_gt) >
-              KF_options.debug_verify_analytic_jacobians_threshold)
-          {
-            std::cerr << "[KalmanFilter] ERROR: User analytical "
-                         "observation Hx Jacobians are wrong: \n"
-                      << " Real Hx: \n"
-                      << kf_detail::mat_to_str(Hx) << "\n Analytical Hx:\n"
-                      << kf_detail::mat_to_str(Hx_gt) << "\n";
-            THROW_EXCEPTION(
-                "ERROR: User analytical observation Hx Jacobians "
-                "are wrong (More details dumped to cerr)");
-          }
-          if (kf_detail::mat_diff_sum_abs(Hy, Hy_gt) >
-              KF_options.debug_verify_analytic_jacobians_threshold)
-          {
-            std::cerr << "[KalmanFilter] ERROR: User analytical "
-                         "observation Hy Jacobians are wrong: \n"
-                      << " Real Hy: \n"
-                      << kf_detail::mat_to_str(Hy) << "\n Analytical Hy:\n"
-                      << kf_detail::mat_to_str(Hy_gt) << "\n";
-            THROW_EXCEPTION(
-                "ERROR: User analytical observation Hy Jacobians "
-                "are wrong (More details dumped to cerr)");
-          }
-        }
-      }
+      computeObservationJacobians(lm_idx, m_Hxs[i], m_Hys[i]);
     }
     m_timLogger.leave("KF:5.build Jacobians");
 
@@ -549,7 +472,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
 
       // m_S = Hx * Pkk * Hx^T + R
       kf_detail::matmul_ABt(m_S, m_Hxs[0], m_Hxs[0]);  // will be overridden below
-      // Actually: m_S = Hx * (Pkk * Hx^T) — two-step
+      // Actually: m_S = Hx * (Pkk * Hx^T), in two steps
       KFMatrix tmpON;
       kf_detail::matmul_ABt(tmpON, m_pkk, m_Hxs[0]);  // tmpON = Pkk * Hx^T  (n x OBS)
       kf_detail::matmul(m_S, m_Hxs[0], tmpON);        // m_S = Hx * tmpON
@@ -626,13 +549,13 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
       {
         // Build the whole Jacobian dh_dx matrix
         // ---------------------------------------------
-        // Keep only those whose DA is not -1
+        // Keep only those already in the map (DA >= 0)
         std::vector<int> mapIndicesForKFUpdate(data_association.size());
         mapIndicesForKFUpdate.resize(std::distance(
             mapIndicesForKFUpdate.begin(),
             std::remove_copy_if(
                 data_association.begin(), data_association.end(), mapIndicesForKFUpdate.begin(),
-                [](int i) { return i == -1; })));
+                [](int i) { return i < 0; })));
 
         const size_t N_upd =
             (FEAT_SIZE == 0) ? 1 :             // Non-SLAM problems: Just one
@@ -651,6 +574,46 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
         {
           for (size_t IKF_iteration = 0; IKF_iteration < nKF_iterations; IKF_iteration++)
           {
+            if (IKF_iteration > 0)
+            {
+              // Iterated EKF: re-linearize the observation model of the
+              // observed landmarks at the current iterate.
+              std::vector<size_t> obs_lms;    // Indices in the map
+              std::vector<size_t> obs_preds;  // Indices in m_predictLMidxs
+              if constexpr (FEAT_SIZE != 0)
+              {
+                for (const int da : data_association)
+                {
+                  if (da < 0)
+                  {
+                    continue;
+                  }
+                  const auto lm = static_cast<size_t>(da);
+                  if (mrpt::containers::find_in_vector(lm, obs_lms) != std::string::npos)
+                  {
+                    continue;
+                  }
+                  const size_t pred_idx = mrpt::containers::find_in_vector(lm, m_predictLMidxs);
+                  ASSERT_(pred_idx != std::string::npos);
+                  obs_lms.push_back(lm);
+                  obs_preds.push_back(pred_idx);
+                }
+              }
+              else
+              {
+                obs_lms.assign(1, 0);
+                obs_preds.assign(1, 0);
+              }
+              vector_KFArray_OBS new_preds;
+              OnObservationModel(obs_lms, new_preds);
+              ASSERT_EQUAL_(new_preds.size(), obs_lms.size());
+              for (size_t k = 0; k < obs_lms.size(); k++)
+              {
+                m_all_predictions[obs_lms[k]] = new_preds[k];
+                computeObservationJacobians(obs_lms[k], m_Hxs[obs_preds[k]], m_Hys[obs_preds[k]]);
+              }
+            }
+
             // Compute ytilde = OBS - PREDICTION
             KFVector ytilde(OBS_SIZE * N_upd);
             size_t ytilde_idx = 0;
@@ -662,7 +625,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
             // re-ordered, subset, version of
             // the prediction m_S:
 
-            // (map_idx, pred_idx) for each update observation — used by sparse P update
+            // (map_idx, pred_idx) for each update observation, used by sparse P update
             std::vector<std::pair<size_t, size_t>> upd_obs_info;
 
             if (FEAT_SIZE != 0)
@@ -751,6 +714,23 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
             // K = m_pkk * (~dh_dx) * m_S.inverse_LLt()
             kf_detail::matmul_ABt(m_K, m_pkk, m_dh_dx_full_obs);
 
+            if (IKF_iteration > 0)
+            {
+              // Innovation covariance with the re-linearized Jacobian:
+              // S = H*P*H^T + R (block-diagonal R)
+              kf_detail::matmul(S_observed, m_dh_dx_full_obs, m_K);
+              for (size_t b = 0; b < N_upd; b++)
+              {
+                for (size_t r = 0; r < OBS_SIZE; r++)
+                {
+                  for (size_t c = 0; c < OBS_SIZE; c++)
+                  {
+                    S_observed(b * OBS_SIZE + r, b * OBS_SIZE + c) += R(r, c);
+                  }
+                }
+              }
+            }
+
             // Inverse of S_observed -> m_S_1
             m_S_1 = S_observed.inverse_LLt();
             {
@@ -783,14 +763,14 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
               {
                 diff[q] = m_xkk[q] - xkk_0[q];
               }
-              // HAx_column = m_dh_dx_full_obs * diff
+              // Gauss-Newton step, with h() and H evaluated at x_i:
+              //  x_{i+1} = x_0 + K * (z - h(x_i) + H * (x_i - x_0))
               KFVector HAx_column;
               kf_detail::matmul(HAx_column, m_dh_dx_full_obs, diff);
-              // ytilde2 = ytilde - HAx_column
               KFVector ytilde2(ytilde.size());
               for (int q = 0; q < static_cast<int>(ytilde.size()); q++)
               {
-                ytilde2[q] = ytilde[q] - HAx_column[q];
+                ytilde2[q] = ytilde[q] + HAx_column[q];
               }
 
               m_xkk = xkk_0;
@@ -1005,16 +985,6 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
             const size_t idx_off =
                 VEH_SIZE + idxInTheFilter * FEAT_SIZE;  // The offset in m_xkk & Pkk.
 
-            // Compute just the part of the Jacobian that we need
-            // using the current updated m_xkk:
-            vector_KFArray_OBS pred_obs;
-            OnObservationModel(std::vector<size_t>(1, idxInTheFilter), pred_obs);
-            ASSERTDEB_(pred_obs.size() == 1);
-
-            // ytilde = observation - prediction
-            KFArray_OBS ytilde = m_Z[obsIdx];
-            OnSubtractObservationVectors(ytilde, pred_obs[0]);
-
             // Jacobians:
             // dh_dx: already is (N_pred*OBS_SIZE) x (VEH_SIZE +
             // FEAT_SIZE * N_pred )
@@ -1037,6 +1007,15 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
             for (size_t j = 0; j < OBS_SIZE; j++)
             {
               m_timLogger.enter("KF:8.update stage:2.ScalarAtOnce.update");
+
+              // Innovation of this component, predicted from the current
+              // (partially updated) m_xkk. Jacobians are those evaluated at
+              // the predicted state.
+              vector_KFArray_OBS pred_obs;
+              OnObservationModel(std::vector<size_t>(1, idxInTheFilter), pred_obs);
+              ASSERTDEB_(pred_obs.size() == 1);
+              KFArray_OBS ytilde = m_Z[obsIdx];
+              OnSubtractObservationVectors(ytilde, pred_obs[0]);
 
               // Compute the scalar S_i for each component j of
               // the observation: Sij = dhij_dxv Pxx dhij_dxv^t +
@@ -1151,9 +1130,6 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::runO
       }
       break;
 
-      // --------------------------------------------------------------------
-      // - IKF method, processing each observation scalar secuentially:
-      // --------------------------------------------------------------------
       default:
         THROW_EXCEPTION("Invalid value of options.KF_method");
     }  // end switch method
@@ -1202,31 +1178,109 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 
 template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
 void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
-    KF_aux_estimate_obs_Hx_jacobian(
-        const KFArray_VEH& x, const std::pair<KFCLASS*, size_t>& dat, KFArray_OBS& out_x)
+    computeObservationJacobians(size_t lm_idx, KFMatrix_OxV& Hx, KFMatrix_OxF& Hy)
 {
-  std::vector<size_t> idxs_to_predict(1, dat.second);
-  vector_KFArray_OBS prediction;
-  // Overwrite (temporarily!) the affected part of the state vector:
-  std::memcpy(&dat.first->m_xkk[0], x.data(), sizeof(x[0]) * VEH_SIZE);
-  dat.first->OnObservationModel(idxs_to_predict, prediction);
-  ASSERTDEB_(prediction.size() == 1);
-  out_x = prediction[0];
-}
+  // Try the analytic Jacobian first:
+  m_user_didnt_implement_jacobian = false;  // Set to true by the default method if not
+  // reimplemented in base class.
+  if (KF_options.use_analytic_observation_jacobian)
+  {
+    OnObservationJacobians(lm_idx, Hx, Hy);
+  }
 
-template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
-void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
-    KF_aux_estimate_obs_Hy_jacobian(
-        const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat, KFArray_OBS& out_x)
-{
-  std::vector<size_t> idxs_to_predict(1, dat.second);
-  vector_KFArray_OBS prediction;
-  const size_t lm_idx_in_statevector = VEH_SIZE + FEAT_SIZE * dat.second;
-  // Overwrite (temporarily!) the affected part of the state vector:
-  std::memcpy(&dat.first->m_xkk[lm_idx_in_statevector], x.data(), sizeof(x[0]) * FEAT_SIZE);
-  dat.first->OnObservationModel(idxs_to_predict, prediction);
-  ASSERTDEB_(prediction.size() == 1);
-  out_x = prediction[0];
+  if (!m_user_didnt_implement_jacobian && KF_options.use_analytic_observation_jacobian &&
+      !KF_options.debug_verify_analytic_jacobians)
+  {
+    return;
+  }
+
+  // Numeric approximation by central differences. Differences of predicted
+  // observations go through OnSubtractObservationVectors(), so that
+  // components with a non-Euclidean topology (e.g. angles) are handled.
+  KFArray_VEH veh_increments;
+  KFArray_FEAT feat_increments;
+  OnObservationJacobiansNumericGetIncrements(veh_increments, feat_increments);
+
+  const std::vector<size_t> idxs_to_predict(1, lm_idx);
+  vector_KFArray_OBS pred;
+  // Derivative of the prediction wrt the state vector element `sv_idx`:
+  const auto numDerivative = [&](size_t sv_idx, KFTYPE inc) -> KFArray_OBS
+  {
+    ASSERT_(inc > 0);
+    const KFTYPE x0 = m_xkk[sv_idx];
+    m_xkk[sv_idx] = x0 + inc;
+    OnObservationModel(idxs_to_predict, pred);
+    ASSERT_(pred.size() == 1);
+    KFArray_OBS f_plus = pred[0];
+    m_xkk[sv_idx] = x0 - inc;
+    OnObservationModel(idxs_to_predict, pred);
+    ASSERT_(pred.size() == 1);
+    m_xkk[sv_idx] = x0;  // restore
+    OnSubtractObservationVectors(f_plus, pred[0]);
+    for (size_t k = 0; k < OBS_SIZE; k++)
+    {
+      f_plus[k] /= (2 * inc);
+    }
+    return f_plus;
+  };
+
+  KFMatrix_OxV Hx_num;
+  KFMatrix_OxF Hy_num;
+  for (size_t j = 0; j < VEH_SIZE; j++)
+  {
+    const KFArray_OBS d = numDerivative(j, veh_increments[j]);
+    for (size_t k = 0; k < OBS_SIZE; k++)
+    {
+      Hx_num(k, j) = d[k];
+    }
+  }
+  if constexpr (FEAT_SIZE != 0)
+  {
+    const size_t lm_idx_in_statevector = VEH_SIZE + lm_idx * FEAT_SIZE;
+    for (size_t j = 0; j < FEAT_SIZE; j++)
+    {
+      const KFArray_OBS d = numDerivative(lm_idx_in_statevector + j, feat_increments[j]);
+      for (size_t k = 0; k < OBS_SIZE; k++)
+      {
+        Hy_num(k, j) = d[k];
+      }
+    }
+  }
+
+  if (KF_options.debug_verify_analytic_jacobians)
+  {
+    m_user_didnt_implement_jacobian = false;
+    OnObservationJacobians(lm_idx, Hx, Hy);
+  }
+  if (KF_options.debug_verify_analytic_jacobians && !m_user_didnt_implement_jacobian)
+  {
+    if (kf_detail::mat_diff_sum_abs(Hx_num, Hx) >
+        KF_options.debug_verify_analytic_jacobians_threshold)
+    {
+      std::cerr << "[KalmanFilter] ERROR: User analytical "
+                   "observation Hx Jacobians are wrong: \n"
+                << " Real Hx: \n"
+                << kf_detail::mat_to_str(Hx_num) << "\n Analytical Hx:\n"
+                << kf_detail::mat_to_str(Hx) << "\n";
+      THROW_EXCEPTION(
+          "ERROR: User analytical observation Hx Jacobians "
+          "are wrong (More details dumped to cerr)");
+    }
+    if (kf_detail::mat_diff_sum_abs(Hy_num, Hy) >
+        KF_options.debug_verify_analytic_jacobians_threshold)
+    {
+      std::cerr << "[KalmanFilter] ERROR: User analytical "
+                   "observation Hy Jacobians are wrong: \n"
+                << " Real Hy: \n"
+                << kf_detail::mat_to_str(Hy_num) << "\n Analytical Hy:\n"
+                << kf_detail::mat_to_str(Hy) << "\n";
+      THROW_EXCEPTION(
+          "ERROR: User analytical observation Hy Jacobians "
+          "are wrong (More details dumped to cerr)");
+    }
+  }
+  Hx = Hx_num;
+  Hy = Hy_num;
 }
 
 namespace detail
