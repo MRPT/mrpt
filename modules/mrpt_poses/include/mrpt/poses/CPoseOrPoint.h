@@ -184,8 +184,8 @@ class CPoseOrPoint :
 
     if (is3DPoseOrPoint())
     {
-      return square(x() - b.x()) + square(y() - b.y()) +
-             square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
+      // "b" is 2D: its z is zero.
+      return square(x() - b.x()) + square(y() - b.y()) + square(derived().m_coords[2]);
     }
     return square(x() - b.x()) + square(y() - b.y());
   }

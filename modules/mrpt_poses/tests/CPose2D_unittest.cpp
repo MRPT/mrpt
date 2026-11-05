@@ -16,11 +16,17 @@
 #include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/TPose2D.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+
+#include <Eigen/Dense>
+#include <cmath>
+#include <vector>
 
 template class mrpt::CTraitsTest<mrpt::poses::CPose2D>;
 
@@ -206,4 +212,93 @@ TEST(CPose2D, FromStringVariants)
   p2.fromStringRaw("1.0 2.0 30.0");
   EXPECT_DOUBLE_EQ(p2.x(), 1.0);
   EXPECT_NEAR(p2.phi(), p.phi(), 1e-9);
+}
+
+namespace
+{
+std::vector<CPose2D> randomPoses2D(size_t n)
+{
+  auto& rng = mrpt::random::getRandomGenerator();
+  rng.randomize(1234);
+  std::vector<CPose2D> ps;
+  for (size_t i = 0; i < n; i++)
+  {
+    ps.emplace_back(rng.drawUniform(-5, 5), rng.drawUniform(-5, 5), rng.drawUniform(-M_PI, M_PI));
+  }
+  // Angles right at the wrap-around:
+  ps.emplace_back(1, 2, M_PI);
+  ps.emplace_back(-1, 0.5, -M_PI + 1e-12);
+  return ps;
+}
+
+void expectSamePose(const CPose2D& a, const CPose2D& b, double tol)
+{
+  EXPECT_NEAR(a.x(), b.x(), tol);
+  EXPECT_NEAR(a.y(), b.y(), tol);
+  EXPECT_NEAR(mrpt::math::wrapToPi(a.phi() - b.phi()), 0.0, tol);
+}
+}  // namespace
+
+TEST(CPose2D, GroupIdentitiesAndMatrixForm)
+{
+  const auto ps = randomPoses2D(10);
+  for (const auto& a : ps)
+  {
+    expectSamePose(a + (-a), CPose2D(), 1e-12);
+    expectSamePose((-a) + a, CPose2D(), 1e-12);
+    for (const auto& b : ps)
+    {
+      expectSamePose(a - b, (-b) + a, 1e-12);
+      expectSamePose(b + (a - b), a, 1e-12);
+      // Matrix form of the composition:
+      const auto Hab = (a + b).getHomogeneousMatrix();
+      const Eigen::Matrix4d Href =
+          a.getHomogeneousMatrix().asEigen() * b.getHomogeneousMatrix().asEigen();
+      EXPECT_LT((Hab.asEigen() - Href).array().abs().maxCoeff(), 1e-12);
+      // The resulting angle stays wrapped:
+      EXPECT_LE(std::abs((a + b).phi()), M_PI);
+      EXPECT_LE(std::abs((a - b).phi()), M_PI);
+    }
+  }
+}
+
+TEST(CPose2D, ComposeAndInverseComposePoint)
+{
+  for (const auto& a : randomPoses2D(10))
+  {
+    const TPoint2D l(0.3, -2.0);
+    TPoint2D g;
+    a.composePoint(l, g);
+    const auto l2 = a.inverseComposePoint(g);
+    EXPECT_NEAR(l2.x, l.x, 1e-12);
+    EXPECT_NEAR(l2.y, l.y, 1e-12);
+    // Agreement with CPose3D:
+    const auto g3 = CPose3D(a).composePoint(TPoint3D(l.x, l.y, 0.7));
+    EXPECT_NEAR(g3.x, g.x, 1e-12);
+    EXPECT_NEAR(g3.y, g.y, 1e-12);
+    EXPECT_NEAR(g3.z, 0.7, 1e-12);
+  }
+}
+
+TEST(CPose2D, InverseComposeFromAliasing)
+{
+  const CPose2D A(1.0, 2.0, 0.4);
+  const CPose2D B(-2.0, 0.5, -1.0);
+  const CPose2D ref = (-B) + A;
+  CPose2D a = A;
+  a.inverseComposeFrom(a, B);
+  expectSamePose(a, ref, 1e-12);
+  CPose2D b = B;
+  b.inverseComposeFrom(A, b);
+  expectSamePose(b, ref, 1e-12);
+}
+
+TEST(CPose2D, BracketWriteInvalidatesTrigCache)
+{
+  CPose2D p(0, 0, 0);
+  EXPECT_NEAR(p.phi_cos(), 1.0, 1e-15);
+  p[2] = M_PI / 2;
+  const CPoint2D g = p + CPoint2D(1, 0);
+  EXPECT_NEAR(g.x(), 0.0, 1e-12);
+  EXPECT_NEAR(g.y(), 1.0, 1e-12);
 }

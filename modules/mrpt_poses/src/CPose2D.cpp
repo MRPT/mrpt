@@ -274,11 +274,15 @@ void CPose2D::inverseComposeFrom(const CPose2D& A, const CPose2D& B)
 {
   B.update_cached_cos_sin();
 
-  m_coords[0] =
-      (A.m_coords[0] - B.m_coords[0]) * B.m_cosphi + (A.m_coords[1] - B.m_coords[1]) * B.m_sinphi;
-  m_coords[1] =
-      -(A.m_coords[0] - B.m_coords[0]) * B.m_sinphi + (A.m_coords[1] - B.m_coords[1]) * B.m_cosphi;
-  m_phi = math::wrapToPi(A.m_phi - B.m_phi);
+  // Use temporary variables for the cases (A==this) or (B==this)
+  const double dx = A.m_coords[0] - B.m_coords[0];
+  const double dy = A.m_coords[1] - B.m_coords[1];
+  const double ccos = B.m_cosphi;
+  const double csin = B.m_sinphi;
+  const double new_phi = math::wrapToPi(A.m_phi - B.m_phi);
+  m_coords[0] = dx * ccos + dy * csin;
+  m_coords[1] = -dx * csin + dy * ccos;
+  m_phi = new_phi;
   m_cossin_uptodate = false;
 }
 

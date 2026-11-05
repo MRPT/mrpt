@@ -104,17 +104,14 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
 template <class DERIVEDCLASS, std::size_t DIM>
 bool operator<(const CPoint<DERIVEDCLASS, DIM>& a, const CPoint<DERIVEDCLASS, DIM>& b)
 {
-  if (a.x() < b.x())
+  // Lexicographic order on (x,y[,z]):
+  if (a.x() != b.x())
   {
-    return true;
+    return a.x() < b.x();
   }
-  if (!a.is3DPoseOrPoint())
+  if (!a.is3DPoseOrPoint() || a.y() != b.y())
   {
     return a.y() < b.y();
-  }
-  if (a.y() < b.y())
-  {
-    return true;
   }
   return a[2] < b[2];
 }

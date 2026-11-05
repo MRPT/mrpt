@@ -20,6 +20,10 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <Eigen/Dense>
+#include <cstring>
+#include <new>
+
 TEST(CPoint, toFromString_2D)
 {
   mrpt::poses::CPoint2D p;
@@ -142,4 +146,86 @@ TEST(CPoint, CPoint3D_ConstructorsOperatorsAndSerialization)
   arch >> p3;
   EXPECT_DOUBLE_EQ(p3.x(), p.x());
   EXPECT_DOUBLE_EQ(p3.z(), p.z());
+}
+
+TEST(CPoint, DistanceBetween3DAnd2D)
+{
+  using mrpt::poses::CPoint2D;
+  using mrpt::poses::CPoint3D;
+  using mrpt::poses::CPose2D;
+  using mrpt::poses::CPose3D;
+  EXPECT_NEAR(CPose3D(1, 2, 3, 0, 0, 0).distanceTo(CPose2D(1, 2, 0.5)), 3.0, 1e-12);
+  EXPECT_NEAR(CPoint3D(1, 2, 3).distanceTo(CPoint2D(1, 2)), 3.0, 1e-12);
+  EXPECT_NEAR(CPoint2D(1, 2).distanceTo(CPoint3D(1, 2, 3)), 3.0, 1e-12);
+  EXPECT_NEAR(CPoint3D(1, 2, 3).distanceTo(CPoint3D(1, 2, -1)), 4.0, 1e-12);
+}
+
+TEST(CPoint, LessThanIsStrictWeakOrdering)
+{
+  using mrpt::poses::CPoint2D;
+  using mrpt::poses::CPoint3D;
+  const CPoint2D a(2, 0);
+  const CPoint2D b(1, 1);
+  EXPECT_TRUE(b < a);
+  EXPECT_FALSE(a < b);
+  EXPECT_FALSE(a < a);
+  const CPoint3D c(2, 0, 0);
+  const CPoint3D d(1, 1, 1);
+  EXPECT_TRUE(d < c);
+  EXPECT_FALSE(c < d);
+  const CPoint3D e(1, 2, 0);
+  const CPoint3D f(1, 1, 5);
+  EXPECT_TRUE(f < e);
+  EXPECT_FALSE(e < f);
+  const CPoint3D g(1, 1, 2);
+  EXPECT_TRUE(g < f);
+  EXPECT_FALSE(f < g);
+}
+
+TEST(CPoint, ConstructFromTPoint3DStaysInBounds)
+{
+  using mrpt::poses::CPoint2D;
+  alignas(64) unsigned char buf[sizeof(CPoint2D) + 32];
+  std::memset(buf, 0xAB, sizeof(buf));
+  auto* p = new (buf) CPoint2D(mrpt::math::TPoint3D(1, 2, 3));
+  EXPECT_DOUBLE_EQ(p->x(), 1.0);
+  EXPECT_DOUBLE_EQ(p->y(), 2.0);
+  p->~CPoint2D();
+  bool clobbered = false;
+  for (size_t i = sizeof(CPoint2D); i < sizeof(buf); i++)
+  {
+    if (buf[i] != 0xAB)
+    {
+      clobbered = true;
+    }
+  }
+  EXPECT_FALSE(clobbered);
+}
+
+TEST(CPoint, PointPoseOperators)
+{
+  using mrpt::poses::CPoint2D;
+  using mrpt::poses::CPoint3D;
+  using mrpt::poses::CPose2D;
+  using mrpt::poses::CPose3D;
+  const CPose3D P(1, 2, 3, 0.4, -0.3, 0.9);
+  const CPoint3D L(0.5, -1.0, 2.0);
+  const CPoint3D G = P + L;
+  const CPoint3D L2 = G - P;
+  EXPECT_NEAR((L2 - L).norm(), 0, 1e-12);
+  // point + pose: pure translation composed with the pose:
+  const CPose3D Q = L + P;
+  const CPose3D Qref = CPose3D::FromTranslation(L.x(), L.y(), L.z()) + P;
+  EXPECT_NEAR(
+      (Q.getHomogeneousMatrix().asEigen() - Qref.getHomogeneousMatrix().asEigen())
+          .array()
+          .abs()
+          .maxCoeff(),
+      0, 1e-12);
+  const CPose2D P2(1, 2, 0.7);
+  const CPoint2D l2(0.5, -1.0);
+  const CPoint2D g2 = P2 + l2;
+  const CPoint2D l2b = g2 - P2;
+  EXPECT_NEAR(l2b.x(), l2.x(), 1e-12);
+  EXPECT_NEAR(l2b.y(), l2.y(), 1e-12);
 }
