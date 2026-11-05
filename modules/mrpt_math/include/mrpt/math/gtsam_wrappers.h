@@ -43,6 +43,11 @@ static mrpt::math::TTwist3D toTTwist3D(const gtsam::Velocity3& v)
 }
 static std::array<double, 3> toVelArray(const gtsam::Velocity3& v) { return {v.x(), v.y(), v.z()}; }
 
+/** Reorders a covariance between the GTSAM (rx,ry,rz,tx,ty,tz) and MRPT
+ * (x,y,z,yaw,pitch,roll) layouts. A plain reordering, exact only at the
+ * identity rotation: for poses, see mrpt::gtsam_wrappers::to_mrpt_se3_pdf()
+ * and mrpt::gtsam_wrappers::to_gtsam_se3_cov6().
+ */
 static mrpt::math::CMatrixDouble66 to_mrpt_se3_cov6(const gtsam::Matrix6& se3_cov)
 {
   mrpt::math::CMatrixDouble66 C;
@@ -55,6 +60,11 @@ static mrpt::math::CMatrixDouble66 to_mrpt_se3_cov6(const gtsam::Matrix6& se3_co
   return C;
 }
 
+/** Reorders a covariance between the GTSAM (rx,ry,rz,tx,ty,tz) and MRPT
+ * (x,y,z,yaw,pitch,roll) layouts. A plain reordering, exact only at the
+ * identity rotation: for poses, see mrpt::gtsam_wrappers::to_mrpt_se3_pdf()
+ * and mrpt::gtsam_wrappers::to_gtsam_se3_cov6().
+ */
 static gtsam::Matrix6 to_gtsam_se3_cov6_reordering(const mrpt::math::CMatrixDouble66& se3_cov)
 {
   gtsam::Matrix6 C;
