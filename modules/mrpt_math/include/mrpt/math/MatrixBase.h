@@ -165,8 +165,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
   Derived inverse() const;
 
   /** Returns the inverse of a symmetric positive-definite matrix using LLt.
-   * Only the lower triangular part is used. The result is undefined if the
-   * matrix is not positive-definite.
+   * Only the lower triangular part is used.
+   * \exception std::exception If the matrix is not positive-definite.
    */
   Derived inverse_LLt() const;
 
