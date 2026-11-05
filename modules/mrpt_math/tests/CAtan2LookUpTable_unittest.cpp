@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/core/bits_math.h>  // DEG2RAD
 #include <mrpt/math/CAtan2LookUpTable.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/random.h>
 
 #include <cmath>
@@ -66,4 +67,36 @@ TEST(CAtan2LookUpTable, MultiResTest)
   atan2lut.resize(res2extension);
 
   atan2_lut_test(atan2lut, SIZE, 0.5 /*max error*/, 0.4 /* skip zone */);
+}
+
+// The grid limits must be those requested, for any resolution
+TEST(CAtan2LookUpTable, atan2LookUpTableHonorsRequestedLimits)
+{
+  const mrpt::math::CAtan2LookUpTable lut(-1.0, 1.0, -1.0, 1.0, 0.1);
+  EXPECT_NEAR(lut.getXMin(), -1.0, 1e-9);
+  EXPECT_NEAR(lut.getXMax(), 1.0, 1e-9);
+  double a = 0;
+  EXPECT_FALSE(lut.atan2(5.0, 5.0, a));
+}
+
+TEST(CAtan2LookUpTable, atan2LookUpTableAccuracy)
+{
+  const double res = 0.01;
+  const mrpt::math::CAtan2LookUpTable lut(-2.0, 2.0, -2.0, 2.0, res);
+  auto& rng = mrpt::random::getRandomGenerator();
+  rng.randomize(1234);
+  for (int i = 0; i < 2000; i++)
+  {
+    const double x = rng.drawUniform(-1.9, 1.9);
+    const double y = rng.drawUniform(-1.9, 1.9);
+    const double r = std::hypot(x, y);
+    if (r < 0.2 || std::abs(x) < 0.02)
+    {
+      continue;  // near the origin or the branch cut
+    }
+    double a = 0;
+    ASSERT_TRUE(lut.atan2(y, x, a));
+    // Cell centers are at most res/sqrt(2) away from the query point
+    EXPECT_NEAR(mrpt::math::wrapToPi(a - std::atan2(y, x)), 0.0, res / r);
+  }
 }

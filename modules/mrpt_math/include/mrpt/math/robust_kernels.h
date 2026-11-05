@@ -37,7 +37,8 @@ enum TRobustKernelType
 template <TRobustKernelType KERNEL_TYPE, typename T = double>
 struct RobustKernel;
 
-/** No robust kernel, use standard least squares: rho(r)   = r^2 */
+/** No robust kernel, use standard least squares: rho(r) = 1/2 * r^2, so
+ * eval() returns 2*rho = r^2 */
 template <typename T>
 struct RobustKernel<rkLeastSquares, T>
 {
@@ -46,8 +47,8 @@ struct RobustKernel<rkLeastSquares, T>
   T param_sq = 1;
 
   /** Evaluates the kernel function for the squared error r2 and returns
-   * robustified squared error and derivatives of sqrt(2*rho(r)) at this
-   * point. */
+   * the robustified squared error (2*rho), together with its first and second
+   * derivatives with respect to r2. */
   T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
   {
     out_1st_deriv = 1;
@@ -56,8 +57,8 @@ struct RobustKernel<rkLeastSquares, T>
   }
 };
 
-/** Pseudo-huber robust kernel: rho(r)   = 2 * delta^2 * ( -1+sqrt( 1+
- * r^2/delta^2 ) ) */
+/** Pseudo-huber robust kernel: rho(r) = delta^2 * ( -1+sqrt( 1+
+ * r^2/delta^2 ) ), so eval() returns 2*rho */
 template <typename T>
 struct RobustKernel<rkPseudoHuber, T>
 {
@@ -65,8 +66,8 @@ struct RobustKernel<rkPseudoHuber, T>
   T param_sq = 1;
 
   /** Evaluates the kernel function for the squared error r2 and returns
-   * robustified squared error and derivatives of sqrt(2*rho(r)) at this
-   * point. */
+   * the robustified squared error (2*rho), together with its first and second
+   * derivatives with respect to r2. */
   T eval(const T r2, T& out_1st_deriv, T& out_2nd_deriv)
   {
     const T param_sq_inv = 1.0 / param_sq;
@@ -74,8 +75,8 @@ struct RobustKernel<rkPseudoHuber, T>
     const T b = std::sqrt(a);
     out_1st_deriv = 1. / b;
     out_2nd_deriv = -0.5 * param_sq_inv * out_1st_deriv / a;
-    return 2 * param_sq * (b - 1);
-    ;  // return: 2*cost
+    // 2*cost = 2*delta^2*(b-1), written without cancellation for small r2:
+    return 2 * r2 / (b + 1);
   }
 };
 

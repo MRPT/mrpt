@@ -25,7 +25,9 @@
 namespace mrpt::math
 {
 /** An implementation of the Levenberg-Marquardt algorithm for least-square
- * minimization.
+ * minimization, following Algorithm 3.16 in: K. Madsen, H.B. Nielsen,
+ * O. Tingleff, "Methods for Non-Linear Least Squares Problems", 2nd ed.,
+ * IMM, Technical University of Denmark, 2004.
  *
  * Refer to: \ref tutorial_math_levenberg_marquardt
  *
@@ -50,9 +52,9 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
    *  \param x The state point under examination.
    *  \param y The same object passed to "execute" as the parameter
    * "userParam".
-   *  \param out The vector of (non-squared) errors, of the average square
-   * root error, for the given "x". The functor code must set the size of this
-   * vector.
+   *  \param out The vector of (non-squared) residuals for the given "x". The
+   * cost being minimized is the sum of their squares. The functor code must
+   * set the size of this vector.
    */
   using TFunctorEval =
       std::function<void(const VECTORTYPE& x, const USERPARAM& y, VECTORTYPE& out)>;
@@ -72,19 +74,20 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
     size_t iterations_executed = 0;
     /** The last error vector returned by the user-provided functor. */
     VECTORTYPE last_err_vector;
-    /** Each row is the optimized value at each iteration. */
+    /** Each row is the value of x after each iteration (the first one is
+     * x0, the last one the optimum), followed by the squared error. */
     matrix_t path;
 
-    /** This matrix can be used to obtain an estimate of the optimal
-     * parameters covariance matrix:
-     *  \f[ COV = H M H^\top \f]
-     *  With COV the covariance matrix of the optimal parameters, H this
-     * matrix, and M the covariance of the input (observations).
+    /** The Gauss-Newton approximation of the Hessian, \f$ J^\top J \f$,
+     * at the last accepted point. If the residuals have covariance
+     * \f$ \sigma^2 I \f$, the covariance of the optimal parameters can be
+     * estimated as \f$ \sigma^2 H^{-1} \f$.
      */
     matrix_t H;
   };
 
-  /** Executes the LM-method, with derivatives estimated from
+  /** Executes the LM-method, with derivatives estimated numerically from
+   * \a functor, using \a increments as perturbations of each element of x.
    *  \a functor is a user-provided function which takes as input two
    *vectors, in this order:
    *		- x: The parameters to be optimized.
@@ -161,10 +164,12 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
     const size_t N = x.size();
 
+    size_t lastPathRow = 0;
     if (returnPath)
     {
       out_info.path.setSize(maxIter, N + 1);
       for (size_t i = 0; i < N; i++) out_info.path(iter, i) = x[i];
+      out_info.path(iter, N) = F_x;
     }
     else
       out_info.path = matrix_t();  // Empty matrix
@@ -240,6 +245,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
         {
           for (size_t i = 0; i < N; i++) out_info.path(iter, i) = x[i];
           out_info.path(iter, x.size()) = F_x;
+          lastPathRow = iter;
         }
       }
     }  // end while
@@ -248,7 +254,10 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
     out_info.final_sqr_err = F_x;
     out_info.iterations_executed = iter;
     out_info.last_err_vector = f_x;
-    if (returnPath) out_info.path.setSize(iter, N + 1);
+    if (returnPath)
+    {
+      out_info.path.setSize(lastPathRow + 1, N + 1);
+    }
 
     MRPT_END
   }

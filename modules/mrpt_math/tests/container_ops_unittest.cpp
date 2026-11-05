@@ -18,6 +18,7 @@
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/utils.h>
 
 #include <Eigen/Dense>
 #include <cmath>
@@ -422,4 +423,18 @@ TEST(ops_containers, weightedHistogram)
   ASSERT_EQ(ch.size(), 1);
   EXPECT_DOUBLE_EQ(cc[0], 5.0);
   EXPECT_DOUBLE_EQ(ch[0], 1.0);
+}
+
+// The end point must be exact, without accumulated round-off
+TEST(ContainerOps, linspaceEndpointsAreExact)
+{
+  std::vector<double> v;
+  mrpt::math::linspace(0.0, 1.0, 11, v);
+  ASSERT_EQ(v.size(), 11U);
+  EXPECT_EQ(v.front(), 0.0);
+  EXPECT_EQ(v.back(), 1.0);
+  for (size_t i = 0; i < v.size(); i++)
+  {
+    EXPECT_NEAR(v[i], 0.1 * static_cast<double>(i), 1e-15);
+  }
 }

@@ -29,7 +29,7 @@ namespace mrpt::math
 {
 /**\brief Compare 2 floats and determine whether they are equal
  * \return True if equal, false otherwise
- * \param a Fist num
+ * \param a First num
  * \param b Second num
  * \param epsilon Difference below which a, b are considered equal
  */
@@ -41,7 +41,7 @@ bool approximatelyEqual(T1 a, T1 b, T2 epsilon)
 
 /**\brief Compare 2 floats and determine whether they are equal
  * \return True if equal, false otherwise
- * \param a Fist num
+ * \param a First num
  * \param b Second num
  */
 template <class T>
@@ -92,8 +92,12 @@ void linspace(T first, T last, size_t count, VECTOR& out_vector)
   {
     out_vector.resize(count);
     const T incr = (last - first) / T(count - 1);
-    T c = first;
-    for (size_t i = 0; i < count; i++, c += incr) out_vector[i] = c;
+    // Not accumulated, to avoid round-off drift; the end point is exact:
+    for (size_t i = 0; i + 1 < count; i++)
+    {
+      out_vector[i] = first + incr * static_cast<T>(i);
+    }
+    out_vector[count - 1] = last;
   }
 }
 
@@ -245,7 +249,7 @@ std::vector<T>& loadVector(std::vector<T>& v, At (&theArray)[N])
 /** Saves to a plain-text file the nonzero entries of a Eigen sparse matrix,
  * represented as a vector of triplets.
  *  Output format is one line per entry with the format: "i j val", i:row,
- * j:col, val:value.
+ * j:col, val:value. Indices are 1-based (MATLAB convention).
  * \tparam TRIPLET should be Eigen::Triplet<T>
  */
 template <class TRIPLET>
