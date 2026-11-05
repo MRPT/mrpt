@@ -365,3 +365,86 @@ TEST(CMonteCarloLocalization3DSynthetic, auxiliaryPFOptimalAndAdaptiveSampling)
     EXPECT_TRUE(std::isfinite(pdf.getMeanVal().x()));
   }
 }
+
+namespace
+{
+/** Runs one auxiliary-PF step from a particle set where half the particles
+ *  are at the true pose and half 1 m away, returning the posterior mass of
+ *  the particles near the true pose. */
+double auxPFPosteriorMassNearTruth(bool monteCarloFirstStage, double beta)
+{
+  mrpt::random::getRandomGenerator().randomize(42);
+
+  const mrpt::poses::CPose2D gt(-1.0, 0.5, 0.3);
+  const mrpt::poses::CPose2D far = gt + mrpt::poses::CPose2D(0.0, 1.0, 0.0);
+
+  CMonteCarloLocalization2D pdf(100);
+  pdf.options.metricMap = referenceMap();
+  for (size_t i = 0; i < pdf.m_particles.size(); i++)
+  {
+    pdf.m_particles[i].d = (i % 2 == 0 ? gt : far).asTPose();
+    pdf.m_particles[i].log_w = 0;
+  }
+
+  auto opts = pfOptions(mrpt::bayes::CParticleFilter::pfAuxiliaryPFStandard);
+  opts.BETA = beta;
+  opts.pfAuxFilterStandard_FirstStageWeightsMonteCarlo = monteCarloFirstStage;
+  opts.pfAuxFilterOptimal_MaximumSearchSamples = 10;
+
+  mrpt::bayes::CParticleFilter pf;
+  pf.m_options = opts;
+  const auto t = mrpt::test::nextTimestamp();
+  auto acts = makeOdometryAction(mrpt::poses::CPose2D(0, 0, 0), t);
+  auto sf = simulateSF(gt, t);
+  pf.executeOn(pdf, acts.get(), sf.get());
+
+  double wNear = 0;
+  double wAll = 0;
+  for (size_t i = 0; i < pdf.m_particles.size(); i++)
+  {
+    const double w = std::exp(pdf.m_particles[i].log_w);
+    wAll += w;
+    const mrpt::poses::CPose2D p(pdf.m_particles[i].d);
+    if ((p.translation() - gt.translation()).norm() < 0.3)
+    {
+      wNear += w;
+    }
+  }
+  return wNear / wAll;
+}
+}  // namespace
+
+// Without resampling, the auxiliary PF weights are plain importance weights;
+// with resampling, the second stage compensates the first-stage likelihood
+// actually used to draw the particles.
+TEST(CMonteCarloLocalization2DSynthetic, auxiliaryPFStandardWeights)
+{
+  for (const bool mcFirstStage : {false, true})
+  {
+    for (const double beta : {0.0 /*never resample*/, 1.1 /*always resample*/})
+    {
+      EXPECT_GT(auxPFPosteriorMassNearTruth(mcFirstStage, beta), 0.99)
+          << "mcFirstStage=" << mcFirstStage << " beta=" << beta;
+    }
+  }
+}
+
+TEST(CMonteCarloLocalization2DSynthetic, resetUniformFreeSpaceStaysInFreeCells)
+{
+  auto g = mrpt::maps::COccupancyGridMap2D::Create(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f);
+  g->fill(0.0f);
+  // Only one free cell:
+  const int fx = g->x2idx(0.25);
+  const int fy = g->y2idx(-0.35);
+  g->setCell(fx, fy, 1.0f);
+
+  mrpt::random::getRandomGenerator().randomize(3);
+  CMonteCarloLocalization2D pdf(1);
+  pdf.resetUniformFreeSpace(g.get(), 0.7, 500);
+  ASSERT_EQ(pdf.particlesCount(), 500U);
+  for (const auto& p : pdf.m_particles)
+  {
+    EXPECT_EQ(g->x2idx(p.d.x), fx);
+    EXPECT_EQ(g->y2idx(p.d.y), fy);
+  }
+}

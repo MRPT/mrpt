@@ -146,7 +146,7 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
  *  J.-L. Blanco, J. Gonzalez, and J.-A. Fernandez-Madrigal,
  *    "An Optimal Filtering Algorithm for Non-Parametric Observation Models in
  *     Robot Localization," in Proc. IEEE International Conference on Robotics
- *     and Automation (ICRA'08), 2008, pp. 461466.
+ *     and Automation (ICRA'08), 2008, pp. 461-466.
  */
 template <class PARTICLE_TYPE, class MYSELF, mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
@@ -570,7 +570,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::PF_SLAM_particlesEvalu
 
     // and compute the resulting probability of this particle:
     // ------------------------------------------------------------
-    return cur_logweight + myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index];
+    return cur_logweight + myObj->m_pfAuxiliaryPFStandard_estimatedProb[index];
   }
   MRPT_END
 }
@@ -1099,12 +1099,18 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
     }
     else
     {  // APF:
-      const double weightFact =
-          (poseLogLik - m_pfAuxiliaryPFStandard_estimatedProb[k]) * PF_options.powFactor;
       if (doResample)
-        out_newParticleLogWeight = weightFact;
+      {
+        // "k" was drawn with a probability proportional to its weight times
+        // the first-stage likelihood, which must be compensated for:
+        out_newParticleLogWeight =
+            poseLogLik * PF_options.powFactor - m_pfAuxiliaryPFStandard_estimatedProb[k];
+      }
       else
-        out_newParticleLogWeight = weightFact + me->m_particles[k].log_w;
+      {
+        // No first-stage selection: plain importance weight update.
+        out_newParticleLogWeight = me->m_particles[k].log_w + poseLogLik * PF_options.powFactor;
+      }
     }
   }
   // Done.
