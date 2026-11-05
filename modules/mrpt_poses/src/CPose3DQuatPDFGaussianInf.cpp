@@ -29,10 +29,11 @@
 #include <cmath>
 #include <cstdio>     // for size_t
 #include <exception>  // for exception
-#include <new>        // for operator...
-#include <ostream>    // for operator<<
-#include <string>     // for allocator
-#include <vector>     // for vector
+#include <limits>
+#include <new>      // for operator...
+#include <ostream>  // for operator<<
+#include <string>   // for allocator
+#include <vector>   // for vector
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -42,6 +43,27 @@ using namespace mrpt::random;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CPose3DQuatPDFGaussianInf, CPose3DQuatPDF, mrpt::poses)
+
+namespace
+{
+// Symmetric pseudo-inverse. 7x7 quaternion covariances are rank deficient
+// (unit-norm constraint), so the covariance <-> information conversions of
+// this class cannot use a plain inverse. Directions with no variance get no
+// information, and vice versa.
+CMatrixDouble77 pinvSym(const CMatrixDouble77& M)
+{
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 7, 7>> es(M.asEigen());
+  const auto& d = es.eigenvalues();
+  const double tol = 1e-10 * std::max(d.cwiseAbs().maxCoeff(), std::numeric_limits<double>::min());
+  Eigen::Matrix<double, 7, 1> dInv;
+  for (int i = 0; i < 7; i++)
+  {
+    dInv[i] = d[i] > tol ? 1.0 / d[i] : 0.0;
+  }
+  return CMatrixDouble77(
+      (es.eigenvectors() * dInv.asDiagonal() * es.eigenvectors().transpose()).eval());
+}
+}  // namespace
 
 /** Default constructor - set all values to zero. */
 CPose3DQuatPDFGaussianInf::CPose3DQuatPDFGaussianInf() : mean(), cov_inv() {}
@@ -104,7 +126,7 @@ void CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DQuatPDF& o)
   // Convert to gaussian pdf:
   CMatrixDouble77 C(UNINITIALIZED_MATRIX);
   o.getCovarianceAndMean(C, this->mean);
-  this->cov_inv = C.inverse_LLt();
+  this->cov_inv = pinvSym(C);
 }
 
 /*---------------------------------------------------------------
@@ -149,7 +171,7 @@ void CPose3DQuatPDFGaussianInf::changeCoordinatesReference(const CPose3DQuat& ne
   MRPT_START
 
   // COV:
-  const CMatrixDouble77 OLD_COV = this->cov_inv.inverse_LLt();
+  const CMatrixDouble77 OLD_COV = pinvSym(this->cov_inv);
 
   CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
@@ -163,7 +185,7 @@ void CPose3DQuatPDFGaussianInf::changeCoordinatesReference(const CPose3DQuat& ne
   // this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
   // df_dx: not used, since its COV are all zeros...
 
-  this->cov_inv = mrpt::math::multiply_HCHt(df_du, OLD_COV).inverse_LLt();
+  this->cov_inv = pinvSym(mrpt::math::multiply_HCHt(df_du, OLD_COV));
 
   MRPT_END
 }
@@ -174,7 +196,7 @@ void CPose3DQuatPDFGaussianInf::changeCoordinatesReference(const CPose3DQuat& ne
 void CPose3DQuatPDFGaussianInf::drawSingleSample(CPose3DQuat& outPart) const
 {
   MRPT_START
-  const CMatrixDouble77 COV = this->cov_inv.inverse_LLt();
+  const CMatrixDouble77 COV = pinvSym(this->cov_inv);
 
   getRandomGenerator().drawGaussianMultivariate(outPart, COV, &mean);
   // Project onto the unit sphere, keeping the sign (unlike normalize()):
@@ -192,7 +214,7 @@ void CPose3DQuatPDFGaussianInf::drawSingleSample(CPose3DQuat& outPart) const
 void CPose3DQuatPDFGaussianInf::drawManySamples(size_t N, vector<CVectorDouble>& outSamples) const
 {
   MRPT_START
-  const CMatrixDouble77 COV = this->cov_inv.inverse_LLt();
+  const CMatrixDouble77 COV = pinvSym(this->cov_inv);
 
   getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, COV);
 
@@ -236,8 +258,8 @@ void CPose3DQuatPDFGaussianInf::inverse(CPose3DQuatPDF& o) const
   jacob(6, 6) = -1;
 
   // C(0:2,0:2): H C H^t
-  const CMatrixDouble77 COV = this->cov_inv.inverse_LLt();
-  out.cov_inv = mrpt::math::multiply_HCHt(jacob, COV).inverse_LLt();
+  const CMatrixDouble77 COV = pinvSym(this->cov_inv);
+  out.cov_inv = pinvSym(mrpt::math::multiply_HCHt(jacob, COV));
 
   // Mean:
   out.mean.x(lx);
@@ -252,7 +274,7 @@ void CPose3DQuatPDFGaussianInf::inverse(CPose3DQuatPDF& o) const
 void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuat& Ap)
 {
   // COV:
-  const CMatrixDouble77 OLD_COV = this->cov_inv.inverse_LLt();
+  const CMatrixDouble77 OLD_COV = pinvSym(this->cov_inv);
 
   CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
@@ -264,7 +286,7 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuat& Ap)
   );
 
   // this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
-  this->cov_inv = mrpt::math::multiply_HCHt(df_dx, OLD_COV).inverse_LLt();
+  this->cov_inv = pinvSym(mrpt::math::multiply_HCHt(df_dx, OLD_COV));
   // df_du: Nothing to do, since COV(Ap) = zeros
 }
 
@@ -274,7 +296,7 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuat& Ap)
 void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuatPDFGaussianInf& Ap)
 {
   // COV:
-  const CMatrixDouble77 OLD_COV = this->cov_inv.inverse_LLt();
+  const CMatrixDouble77 OLD_COV = pinvSym(this->cov_inv);
 
   CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
@@ -286,11 +308,11 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuatPDFGaussianInf& Ap)
   );
 
   // this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
-  const CMatrixDouble77 Ap_cov = Ap.cov_inv.inverse_LLt();
+  const CMatrixDouble77 Ap_cov = pinvSym(Ap.cov_inv);
   CMatrixDouble77 NEW_COV =
       mrpt::math::multiply_HCHt(df_dx, OLD_COV) + mrpt::math::multiply_HCHt(df_du, Ap_cov);
 
-  this->cov_inv = NEW_COV.inverse_LLt();
+  this->cov_inv = pinvSym(NEW_COV);
 }
 
 /*---------------------------------------------------------------

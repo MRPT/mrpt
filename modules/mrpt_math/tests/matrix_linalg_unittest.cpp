@@ -224,6 +224,24 @@ TEST(MatrixBaseDecomp, inverseFixedAndDynamic)
   }
 }
 
+// inverse_LLt() throws for non positive-definite matrices
+TEST(MatrixBaseDecomp, inverseLLtThrowsForNonPositiveDefinite)
+{
+  CMatrixDouble A(2, 2);
+  A(0, 0) = 1.0;
+  A(0, 1) = 2.0;
+  A(1, 0) = 2.0;
+  A(1, 1) = 1.0;
+  EXPECT_ANY_THROW(A.inverse_LLt());
+  // Singular (positive semi-definite) matrix:
+  mrpt::math::CMatrixDouble22 S;
+  S(0, 0) = 1.0;
+  S(0, 1) = 2.0;
+  S(1, 0) = 2.0;
+  S(1, 1) = 4.0;
+  EXPECT_ANY_THROW(S.inverse_LLt());
+}
+
 TEST(MatrixBaseDecomp, detAndRank)
 {
   mrpt::random::getRandomGenerator().randomize(1234);

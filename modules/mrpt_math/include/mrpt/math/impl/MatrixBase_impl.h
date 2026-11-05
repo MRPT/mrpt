@@ -263,7 +263,9 @@ Derived MatrixBase<Scalar, Derived>::inverse_LLt() const
   const Derived I = Derived::Identity(N);
   Derived inv(mrpt::math::UNINITIALIZED_MATRIX);
   inv.resize(N, N);
-  inv.asEigen() = mbDerived().asEigen().llt().solve(I.asEigen()).eval();
+  const auto llt = mbDerived().asEigen().llt();
+  ASSERTMSG_(llt.info() == Eigen::Success, "inverse_LLt(): the matrix is not positive-definite");
+  inv.asEigen() = llt.solve(I.asEigen()).eval();
   return inv;
 }
 

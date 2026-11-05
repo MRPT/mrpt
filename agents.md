@@ -135,9 +135,9 @@ mrpt_add_library(
   see `src/MatrixVectorBase_instantiate_*.cpp`). Other sizes compile but fail
   to link. Never `#pragma pack(1)` a struct holding a class like `TPoint3D`
   (SIGBUS on armhf). `wrapToPi()` returns values in [-pi, pi).
-  `inverse_LLt()` does not check positive-definiteness (use `chol()`, which
-  returns false); information-form PDFs built from singular covariances (2D to
-  3D, 7x7 quaternion covariances) are ill-defined.
+  `inverse_LLt()` throws for matrices that are not positive-definite (`chol()`
+  returns false). 7x7 quaternion covariances are rank 6: their information
+  form (`CPose3DQuatPDFGaussianInf`) uses a symmetric pseudo-inverse.
 * **mrpt_poses**: `CQuaternion::crossProduct()`/`normalize()` force qr >= 0, so
   Jacobians of quaternion products must flip the quaternion rows when the raw
   product has qr < 0. `Lie::SE<3>::exp/log` are the pseudo-exponential maps.

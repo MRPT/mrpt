@@ -101,11 +101,11 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
 
   /** Copy operator, translating if necessary (for example, between particles
    * and gaussian representations).
-   * \note From a CPosePDFGaussianInf, the missing variables (z,pitch,roll)
-   * get zero information (i.e. unknown), so the resulting information matrix
-   * is singular and cannot be converted to a covariance. Other 2D PDFs are
-   * converted through CPose3DPDFGaussian, which assigns them zero covariance
-   * instead. */
+   * \note The missing variables (z,pitch,roll) get zero information (i.e.
+   * unknown), so the resulting information matrix is singular and cannot be
+   * converted to a covariance. Other 2D PDFs than CPosePDFGaussianInf are
+   * converted through their 2D covariance, which must be positive-definite.
+   * CPose3DPDFGaussian, instead, assigns zero covariance to those variables. */
   void copyFrom(const CPosePDF& o);
 
   /** Copy from a 6D pose PDF described as a Quaternion
