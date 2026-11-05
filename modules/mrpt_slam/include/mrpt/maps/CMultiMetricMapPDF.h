@@ -133,12 +133,11 @@ class CMultiMetricMapPDF :
     /** [prediction stage][pf optimal proposal only] If
      * useICPGlobalAlign_withGrid=true, this is the minimum quality ratio
      * [0,1] of the alignment such as it will be accepted. Otherwise, raw
-     * odometry is used for those bad cases. Default=0 (disabled): older
-     * versions ignored this threshold, so a non-zero default would change the
-     * results of existing configurations. Note that the first alignments,
-     * against a still small map, naturally have a lower quality.
+     * odometry is used for those bad cases (default=0.7). It is not applied
+     * while the map holds a single observation, since alignments against the
+     * first scan have a naturally lower quality. Set to 0 to disable it.
      */
-    float ICPGlobalAlign_MinQuality{0.0f};
+    float ICPGlobalAlign_MinQuality{0.70f};
 
     mrpt::slam::TKLDParams KLD_params;
 
