@@ -116,8 +116,11 @@ std::optional<std::pair<int, double>> CPTG_DiffDrive_C::inverseMap_WS2TP(
         theta = atan2(-static_cast<double>(x), y + fabs(R));
     }
 
-    // Arc length must be possitive [0,2*pi]
-    mrpt::math::wrapTo2PiInPlace(theta);
+    // Arc angle in [0,2*pi]: a tiny negative angle is an almost full turn
+    if (theta < 0)
+    {
+      theta += 2 * M_PI;
+    }
 
     // Distance thru arc:
     d_out = static_cast<float>(theta * (fabs(R) + turningRadiusReference));
