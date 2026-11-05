@@ -18,6 +18,7 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <cmath>
@@ -268,9 +269,69 @@ TEST(CActionRobotMovement3D, ComputeFromOdometry)
   CActionRobotMovement3D act;
   CActionRobotMovement3D::TMotionModelOptions opts;
   act.computeFromOdometry(CPose3D(0.5, 0.1, 0.0, 0.05, 0.0, 0.0), opts);
-  // The 6DOF motion model's mean is a numerical approximation, not an exact
-  // copy of the input increment, so allow a small tolerance:
+  // The 6DOF motion model's mean is a Monte Carlo estimate, so allow a small
+  // tolerance:
   EXPECT_NEAR(act.poseChange.mean.x(), 0.5, 1e-3);
+}
+
+// Without model noise, the 6DOF model must reproduce the odometry increment
+TEST(CActionRobotMovement3D, mm6DOFNoiseFreeMeanIsTheIncrement)
+{
+  mrpt::random::getRandomGenerator().randomize(1);
+  for (const auto& incr :
+       {CPose3D(1.0, 0.2, 0.3, 0.4, 0.1, 0.05), CPose3D(1.0, 0.2, 0.0, 0.4, 0.0, 0.0),
+        CPose3D(1.0, 0.0, 0.5, 0.0, 0.0, 0.0), CPose3D(-0.5, -0.3, -0.2, -0.6, 0.2, -0.1)})
+  {
+    CActionRobotMovement3D act;
+    CActionRobotMovement3D::TMotionModelOptions o;
+    o.mm6DOFModel.additional_std_XYZ = 1e-6f;
+    o.mm6DOFModel.additional_std_angle = 1e-6f;
+    act.computeFromOdometry(incr, o);
+    const auto& m = act.poseChange.mean;
+    EXPECT_NEAR(m.x(), incr.x(), 1e-5) << incr;
+    EXPECT_NEAR(m.y(), incr.y(), 1e-5) << incr;
+    EXPECT_NEAR(m.z(), incr.z(), 1e-5) << incr;
+    EXPECT_NEAR(m.yaw(), incr.yaw(), 1e-5) << incr;
+    EXPECT_NEAR(m.pitch(), incr.pitch(), 1e-5) << incr;
+    EXPECT_NEAR(m.roll(), incr.roll(), 1e-5) << incr;
+  }
+}
+
+// The uncertainty of mirrored motions (turning left vs right) must be equal
+TEST(CActionRobotMovement3D, mm6DOFNoiseIsSymmetric)
+{
+  std::vector<double> stds;
+  for (const double sign : {+1.0, -1.0})
+  {
+    mrpt::random::getRandomGenerator().randomize(1);
+    CActionRobotMovement3D act;
+    CActionRobotMovement3D::TMotionModelOptions o;
+    o.mm6DOFModel.nParticlesCount = 2000;
+    o.mm6DOFModel.a1 = 0.2f;
+    o.mm6DOFModel.a2 = 0.01f;
+    o.mm6DOFModel.a9 = 0.2f;
+    o.mm6DOFModel.a10 = 0.01f;
+    act.computeFromOdometry(CPose3D(1.0, sign * 0.3, 0.0, sign * 0.6, 0, 0), o);
+    stds.push_back(std::sqrt(act.poseChange.cov(3, 3)));
+  }
+  // Same random draws, so the yaw std must be the same up to round-off:
+  EXPECT_NEAR(stds[0], stds[1], 1e-6);
+}
+
+TEST(CActionRobotMovement3D, mmGaussianUsesTheIncrement)
+{
+  CActionRobotMovement3D act;
+  CActionRobotMovement3D::TMotionModelOptions o;
+  o.modelSelection = CActionRobotMovement3D::mmGaussian;
+  o.mm6DOFModel.additional_std_XYZ = 0.1f;
+  o.mm6DOFModel.additional_std_angle = 0.01f;
+  const CPose3D incr(1.0, 0.2, 0.3, 0.4, 0.1, 0.05);
+  act.computeFromOdometry(incr, o);
+  EXPECT_NEAR((act.poseChange.mean.asVectorVal() - incr.asVectorVal()).norm(), 0.0, 1e-9);
+  for (int i = 0; i < 6; i++)
+  {
+    EXPECT_NEAR(act.poseChange.cov(i, i), i < 3 ? 0.01 : 1e-4, 1e-8) << i;
+  }
 }
 
 TEST(CActionRobotMovement3D, GetDescriptionAsText)
