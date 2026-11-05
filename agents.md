@@ -214,13 +214,16 @@ mrpt_add_library(
   viable movement.
 * **mrpt_obs**: `CObservationVelodyneScan` per-ray timestamps derive from
   `CObservation::timestamp`, not `getOriginalReceivedTimeStamp()`.
+  `CObservationRotatingScan::organizedPoints` are in the sensor frame
+  (consumers apply `sensorPose`).
 * **mrpt_maps**: `CVoxelMapRGB` / `CColouredOctoMap` color 3D scans via
   `hasRangeImage` + camera intrinsics, not `hasPoints3D` (a hand-built
   `CObservation3DRangeScan` needs `setIntrinsicParamsFromValues()` and a filled
   `rangeImage`). `CGasConcentrationGridMap2D::build_Gaussian_Wind_Grid()`
   caches a LUT file in the current working directory.
-  `COccupancyGridMap3D`'s `determineMatching2D()`, `compute3DMatchingRatio()`
-  and `internal_computeObservationLikelihood()` are unimplemented and throw.
+  `COccupancyGridMap3D`'s `determineMatching2D()` and `compute3DMatchingRatio()`
+  are unimplemented and throw; it has no observation likelihood
+  (`canComputeObservationLikelihood()` is false, the likelihood is 0).
   Constructors of concrete `CMetricMap` classes must stay out-of-line: user
   code inlining one (base ctor call + merged vptr stores) is miscompiled by
   GCC with LTO (calls devirtualized to `__builtin_unreachable`).
@@ -237,7 +240,8 @@ mrpt_add_library(
 * **mrpt_slam**: only the auxiliary particle filters go through
   `PF_SLAM_implementation_gatherActionsCheckBothActObs()`; `pfStandardProposal`
   reads the action directly. An empty sensory frame counts as valid: pass a
-  null `sf` to keep a movement accumulated.
+  null `sf` to keep a movement accumulated. Data association of bearings needs
+  the `data_association_full_covariance()` overload with `angular_components`.
 * **mrpt_topography**: every ENU helper uses the ellipsoid normal as "Up".
   The inverse of `geodeticToENU_WGS84()` is `ENUToGeodetic_WGS84()` (returns
   lon/lat/height); `ENUToGeocentric()` returns geocentric (ECEF) coordinates
