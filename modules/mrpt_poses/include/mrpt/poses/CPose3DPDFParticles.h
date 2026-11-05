@@ -114,7 +114,11 @@ class CPose3DPDFParticles :
   void inverse(CPose3DPDF& o) const override;
   /** Returns the particle with the highest weight. */
   mrpt::math::TPose3D getMostLikelyParticle() const;
-  /** Bayesian fusion */
+  /** Bayesian fusion: the particles of p1 (or samples of it) are weighted
+   * with the density of p2. If p2 is also a particle PDF, its density is a
+   * kernel density estimate with Gaussian kernels of covariance h^2*cov(p2),
+   * with h from Silverman's rule of thumb; otherwise, the Gaussian with the
+   * mean and covariance of p2 is used. */
   void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 
   void printTo(std::ostream& out) const override;

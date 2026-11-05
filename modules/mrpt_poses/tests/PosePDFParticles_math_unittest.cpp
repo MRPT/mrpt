@@ -18,7 +18,9 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPointPDFParticles.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
@@ -212,4 +214,97 @@ TEST(CPointPDFParticlesMath, CovarianceAndMean_ClosedForm)
   const auto [Cout, m] = p.getCovarianceAndMean();
   EXPECT_NEAR((Eigen::Vector3d(m.x(), m.y(), m.z()) - mu).norm(), 0.0, 1e-6);
   EXPECT_NEAR((Cout.asEigen() - C).cwiseAbs().maxCoeff(), 0.0, 1e-6);
+}
+
+namespace
+{
+// Product of two Gaussians, with the second covariance inflated by the
+// kernel of a Gaussian kernel density estimate with Silverman's bandwidth.
+template <int D>
+void expectedKdeFusion(
+    const Eigen::Matrix<double, D, 1>& m1,
+    const Eigen::Matrix<double, D, D>& C1,
+    const Eigen::Matrix<double, D, 1>& m2,
+    const Eigen::Matrix<double, D, D>& C2,
+    size_t N2,
+    Eigen::Matrix<double, D, 1>& m,
+    Eigen::Matrix<double, D, D>& C)
+{
+  const double h2 = std::pow(4.0 / ((D + 2) * static_cast<double>(N2)), 2.0 / (D + 4));
+  const Eigen::Matrix<double, D, D> C2k = C2 * (1 + h2);
+  C = (C1.inverse() + C2k.inverse()).inverse();
+  m = C * (C1.inverse() * m1 + C2k.inverse() * m2);
+}
+}  // namespace
+
+// Regression: the kernel density estimate of the second particle PDF used an
+// isotropic bandwidth equal to its standard deviation, which inflated the
+// fused covariances (up to 2x along the most certain directions).
+TEST(CPosePDFParticlesMath, BayesianFusion_KernelDensity)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  Eigen::Matrix3d C1;
+  C1 << 1.0, 0.02, 0.0, 0.02, 0.01, 0.0, 0.0, 0.0, 0.04;
+  Eigen::Matrix3d C2;
+  C2 << 0.5, -0.01, 0.01, -0.01, 0.02, 0.0, 0.01, 0.0, 0.03;
+  const Eigen::Vector3d m1(0.0, 0.0, 0.1);
+  const Eigen::Vector3d m2(0.5, 0.05, 0.2);
+  const size_t N = 3000;
+  CPosePDFParticles p1(N);
+  CPosePDFParticles p2(N);
+  p1.copyFrom(CPosePDFGaussian(CPose2D(m1[0], m1[1], m1[2]), CMatrixDouble33(C1)));
+  p2.copyFrom(CPosePDFGaussian(CPose2D(m2[0], m2[1], m2[2]), CMatrixDouble33(C2)));
+  CPosePDFParticles fused;
+  fused.bayesianFusion(p1, p2);
+  const auto [C, mean] = fused.getCovarianceAndMean();
+
+  Eigen::Vector3d em;
+  Eigen::Matrix3d eC;
+  expectedKdeFusion<3>(m1, C1, m2, C2, N, em, eC);
+  EXPECT_NEAR(mean.x(), em[0], 0.05 * std::sqrt(eC(0, 0)) + 0.03);
+  EXPECT_NEAR(mean.y(), em[1], 0.05 * std::sqrt(eC(1, 1)) + 0.003);
+  EXPECT_NEAR(mean.phi(), em[2], 0.05 * std::sqrt(eC(2, 2)) + 0.006);
+  for (int i = 0; i < 3; i++)
+  {
+    EXPECT_NEAR(C(i, i), eC(i, i), 0.08 * eC(i, i)) << "i=" << i;
+  }
+}
+
+// Same check for 3D poses (6D kernel).
+TEST(CPose3DPDFParticlesMath, BayesianFusion_KernelDensity)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  Eigen::Matrix<double, 6, 6> C1 = Eigen::Matrix<double, 6, 6>::Zero();
+  Eigen::Matrix<double, 6, 6> C2 = Eigen::Matrix<double, 6, 6>::Zero();
+  const double v1[6] = {0.25, 0.25, 0.0025, 0.01, 0.01, 0.01};
+  const double v2[6] = {0.16, 0.36, 0.0036, 0.02, 0.005, 0.01};
+  for (int i = 0; i < 6; i++)
+  {
+    C1(i, i) = v1[i];
+    C2(i, i) = v2[i];
+  }
+  Eigen::Matrix<double, 6, 1> m1;
+  Eigen::Matrix<double, 6, 1> m2;
+  m1 << 0, 0, 0, 0.1, 0, 0;
+  m2 << 0.3, -0.2, 0.02, 0.15, -0.05, 0.02;
+  const size_t N = 2000;
+  CPose3DPDFParticles p1(N);
+  CPose3DPDFParticles p2(N);
+  p1.copyFrom(
+      CPose3DPDFGaussian(CPose3D(m1[0], m1[1], m1[2], m1[3], m1[4], m1[5]), CMatrixDouble66(C1)));
+  p2.copyFrom(
+      CPose3DPDFGaussian(CPose3D(m2[0], m2[1], m2[2], m2[3], m2[4], m2[5]), CMatrixDouble66(C2)));
+  CPose3DPDFParticles fused;
+  fused.bayesianFusion(p1, p2);
+  const auto [C, mean] = fused.getCovarianceAndMean();
+
+  Eigen::Matrix<double, 6, 1> em;
+  Eigen::Matrix<double, 6, 6> eC;
+  expectedKdeFusion<6>(m1, C1, m2, C2, N, em, eC);
+  const double meanv[6] = {mean.x(), mean.y(), mean.z(), mean.yaw(), mean.pitch(), mean.roll()};
+  for (int i = 0; i < 6; i++)
+  {
+    EXPECT_NEAR(meanv[i], em[i], 0.1 * std::sqrt(eC(i, i))) << "i=" << i;
+    EXPECT_NEAR(C(i, i), eC(i, i), 0.1 * eC(i, i)) << "i=" << i;
+  }
 }

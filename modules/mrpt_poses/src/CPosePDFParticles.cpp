@@ -22,6 +22,7 @@
 #include <mrpt/system/os.h>
 
 #include <fstream>
+#include <limits>
 #include <ostream>
 
 using namespace mrpt;
@@ -396,14 +397,46 @@ void CPosePDFParticles::bayesianFusion(
   // Evaluate p2 at each particle, then multiply weights
   if (const auto* p2p = dynamic_cast<const CPosePDFParticles*>(&p2))
   {
-    // Use Parzen-window estimate with bandwidth from p2's covariance
+    // Kernel density estimate of p2, with Gaussian kernels shaped as its
+    // covariance and scaled with Silverman's rule of thumb:
+    // H = h^2 * cov, h = (4 / ((d + 2) * N))^(1 / (d + 4)), d = 3.
     const auto [cov2, mean2] = p2.getCovarianceAndMean();
-    const double stdXY = std::max(std::sqrt((cov2(0, 0) + cov2(1, 1)) * 0.5), 1e-6);
-    const double stdPhi = std::max(std::sqrt(cov2(2, 2)), 1e-6);
+    const double N2 = static_cast<double>(std::max<size_t>(p2p->m_particles.size(), 1));
+    CMatrixDouble33 H = cov2;
+    H *= std::pow(4.0 / (5.0 * N2), 2.0 / 7.0);
+    for (int k = 0; k < 3; k++)
+    {
+      H(k, k) = H(k, k) * (1 + 1e-9) + 1e-12;
+    }
+    const CMatrixDouble33 Hinv = H.inverse_LLt();
     for (auto& p : m_particles)
     {
-      const double lik = p2p->evaluatePDF_parzen(p.d.x, p.d.y, p.d.phi, stdXY, stdPhi);
-      p.log_w += std::log(std::max(lik, 1e-300));
+      // log(sum_j w_j * exp(-0.5 * d_j^T * Hinv * d_j)), without underflow:
+      double maxTerm = -std::numeric_limits<double>::infinity();
+      double sum = 0;
+      for (const auto& q : p2p->m_particles)
+      {
+        const double d[3] = {p.d.x - q.d.x, p.d.y - q.d.y, math::wrapToPi(p.d.phi - q.d.phi)};
+        double maha2 = 0;
+        for (int r = 0; r < 3; r++)
+        {
+          for (int c = 0; c < 3; c++)
+          {
+            maha2 += d[r] * Hinv(r, c) * d[c];
+          }
+        }
+        const double term = q.log_w - 0.5 * maha2;
+        if (term > maxTerm)
+        {
+          sum = sum * std::exp(maxTerm - term) + 1.0;
+          maxTerm = term;
+        }
+        else
+        {
+          sum += std::exp(term - maxTerm);
+        }
+      }
+      p.log_w += maxTerm + std::log(sum);
     }
   }
   else
