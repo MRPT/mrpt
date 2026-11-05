@@ -201,12 +201,13 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
     MRPT_END
   }
 
-  /** Assignment from an Eigen matrix */
+  /** Assignment from an Eigen matrix or expression. The expression is
+   * evaluated before copying, so it may reference this same vector. */
   template <class Derived>
   CVectorDynamic& operator=(const Eigen::MatrixBase<Derived>& m)
   {
     MRPT_START
-    fromVectorLike(m);
+    fromVectorLike(m.eval());
     return *this;
     MRPT_END
   }

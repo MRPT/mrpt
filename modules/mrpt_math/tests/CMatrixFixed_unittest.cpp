@@ -16,6 +16,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 
 #include <Eigen/Dense>
+#include <cmath>
 
 TEST(CMatrixFixed, CtorUninit)
 {
@@ -73,4 +74,30 @@ TEST(CMatrixFixed, GetSetEigen)
         EXPECT_NEAR(M(i, j), em(i, j), 1e-9) << "(i,j)=(" << i << "," << j << ")\n";
       }
   }
+}
+
+// Assigning an expression that references the destination matrix itself
+TEST(CMatrixFixed, AssignAliasedExpression)
+{
+  mrpt::math::CMatrixDouble33 R;
+  const double c = std::cos(0.7);
+  const double s = std::sin(0.7);
+  R(0, 0) = c;
+  R(0, 1) = -s;
+  R(1, 0) = s;
+  R(1, 1) = c;
+  R(2, 2) = 1;
+  mrpt::math::CMatrixDouble33 M;
+  M(0, 0) = 4;
+  M(1, 1) = 2;
+  M(2, 2) = 1;
+  M(0, 1) = M(1, 0) = 0.5;
+  M(1, 2) = M(2, 1) = -0.3;
+  const Eigen::Matrix3d expected = R.asEigen() * M.asEigen() * R.asEigen().transpose();
+  M = R.asEigen() * M.asEigen() * R.asEigen().transpose();
+  EXPECT_NEAR((M.asEigen() - expected).cwiseAbs().maxCoeff(), 0, 1e-14);
+
+  mrpt::math::CMatrixDouble33 T = R;
+  T = T.asEigen().transpose();
+  EXPECT_NEAR((T.asEigen() - R.asEigen().transpose()).cwiseAbs().maxCoeff(), 0, 0);
 }

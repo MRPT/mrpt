@@ -349,15 +349,14 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
     MRPT_END
   }
 
-  /** Assignment from an Eigen matrix.
-   * \note Elements are copied one by one, so the expression must not
-   * reference this same matrix (e.g. `M = M.transpose()`): use `.eval()`
-   * on it in that case. */
+  /** Assignment from an Eigen matrix or expression. The expression is
+   * evaluated before copying, so it may reference this same matrix (e.g.
+   * `M = M.transpose()`). */
   template <class Derived>
   CMatrixDynamic& operator=(const Eigen::MatrixBase<Derived>& m)
   {
     MRPT_START
-    setFromMatrixLike(m);
+    setFromMatrixLike(m.eval());
     return *this;
     MRPT_END
   }

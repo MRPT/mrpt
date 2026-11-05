@@ -181,15 +181,14 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
     MRPT_END
   }
 
-  /** Assignment from an Eigen matrix.
-   * \note Elements are copied one by one, so the expression must not
-   * reference this same matrix (e.g. `M = M.transpose()`): use `.eval()`
-   * on it in that case. */
+  /** Assignment from an Eigen matrix or expression. The expression is
+   * evaluated before copying, so it may reference this same matrix (e.g.
+   * `M = R * M * R.transpose()`). */
   template <class Derived>
   CMatrixFixed& operator=(const Eigen::MatrixBase<Derived>& m)
   {
     MRPT_START
-    setFromMatrixLike(m);
+    setFromMatrixLike(m.eval());
     return *this;
     MRPT_END
   }

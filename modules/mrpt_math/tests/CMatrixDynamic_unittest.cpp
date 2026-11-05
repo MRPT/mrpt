@@ -96,3 +96,37 @@ TEST(CVectorDynamic, segment)
       for (int i = 0; i < s.size(); i++) EXPECT_EQ(v[i + start], s[i]);
     }
 }
+
+// Assigning an expression that references the destination matrix itself
+TEST(CMatrixDynamic, AssignAliasedExpression)
+{
+  mrpt::math::CMatrixDouble M(2, 3);
+  for (int r = 0; r < 2; r++)
+  {
+    for (int c = 0; c < 3; c++)
+    {
+      M(r, c) = 1 + r * 3 + c;
+    }
+  }
+  const Eigen::MatrixXd Mt = M.asEigen().transpose();
+  M = M.asEigen().transpose();
+  ASSERT_EQ(M.rows(), 3);
+  ASSERT_EQ(M.cols(), 2);
+  EXPECT_EQ((M.asEigen() - Mt).cwiseAbs().maxCoeff(), 0);
+
+  mrpt::math::CMatrixDouble A(3, 3);
+  A.setIdentity();
+  A(0, 1) = 2;
+  A(2, 0) = -1;
+  const Eigen::MatrixXd A2 = A.asEigen() * A.asEigen();
+  A = A.asEigen() * A.asEigen();
+  EXPECT_NEAR((A.asEigen() - A2).cwiseAbs().maxCoeff(), 0, 1e-14);
+
+  mrpt::math::CVectorDouble v(3);
+  v[0] = 1;
+  v[1] = 2;
+  v[2] = 3;
+  const Eigen::VectorXd v2 = A2 * v.asEigen();
+  v = A2 * v.asEigen();
+  EXPECT_NEAR((v.asEigen() - v2).cwiseAbs().maxCoeff(), 0, 1e-14);
+}
