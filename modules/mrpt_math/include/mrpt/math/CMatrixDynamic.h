@@ -567,7 +567,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
     }
     else
     {
-      ASSERT_(in.size() == m_Cols);
+      ASSERT_(static_cast<size_type>(in.size()) == m_Cols);
     }
     const auto N = static_cast<size_type>(in.size());
     if (m_Cols == 0 || m_Rows == 0)
@@ -578,7 +578,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
     realloc(row + 1, N);
     for (Index i = 0; i < m_Cols; i++)
     {
-      (*this)(row, i) = in[i];
+      (*this)(row, i) = in[static_cast<std::size_t>(i)];
     }
   }
 

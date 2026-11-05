@@ -407,7 +407,7 @@ void meanAndCovVec(const VECTOR_OF_VECTOR& v, VECTORLIKE& out_mean, MATRIXLIKE& 
 {
   const size_t N = v.size();
   ASSERTMSG_(N > 0, "The input vector contains no elements");
-  const double N_inv = 1.0 / N;
+  const double N_inv = 1.0 / static_cast<double>(N);
 
   const size_t M = v[0].size();
   ASSERTMSG_(M > 0, "The input vector contains rows of length 0");

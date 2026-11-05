@@ -92,7 +92,7 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 {
   const size_t N = v.rows();
   ASSERTMSG_(N > 0, "The input matrix contains no elements");
-  const double N_inv = 1.0 / N;
+  const double N_inv = 1.0 / static_cast<double>(N);
 
   const size_t M = v.cols();
   ASSERTMSG_(M > 0, "The input matrix contains rows of length 0");

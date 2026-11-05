@@ -70,8 +70,9 @@ void transform_gaussian_unscented(
 {
   MRPT_START
   const size_t Nx = x_mean.size();  // Dimensionality of inputs X
-  const double lambda = alpha * alpha * (Nx + K) - Nx;
-  const double c = Nx + lambda;
+  const auto dNx = static_cast<double>(Nx);
+  const double lambda = alpha * alpha * (dNx + K) - dNx;
+  const double c = dNx + lambda;
 
   // Generate weights:
   const double Wi = 0.5 / c;
