@@ -57,12 +57,12 @@ namespace mrpt::graphslam
  *state and error, refresh a GUI, etc.)
  *
  * List of optional parameters by name in "extra_params":
- *		- "verbose": (default=0) If !=0, produce verbose ouput.
+ *		- "verbose": (default=0) If !=0, produce verbose output.
  *		- "max_iterations": (default=100) Maximum number of Lev-Marq.
  *iterations.
  *		- "initial_lambda": (default=0) <=0 means auto guess, otherwise, initial
  *lambda value for the lev-marq algorithm.
- *		- "tau": (default=1e-6) Initial tau value for the lev-marq algorithm.
+ *		- "tau": (default=1e-3) Initial tau value for the lev-marq algorithm.
  *		- "e1": (default=1e-6) Lev-marq algorithm iteration stopping criterion
  *#1:
  *|gradient| < e1
@@ -73,6 +73,13 @@ namespace mrpt::graphslam
  * \note The following graph types are supported:
  *mrpt::graphs::CNetworkOfPoses2D, mrpt::graphs::CNetworkOfPoses3D,
  *mrpt::graphs::CNetworkOfPoses2DInf, mrpt::graphs::CNetworkOfPoses3DInf
+ *
+ * \note Each edge contributes the residual e = pseudoLog(Z^-1 * P_i^-1 * P_j)
+ * (or the one of the edge j->i if graph.edges_store_inverse_poses is true),
+ * weighted by the edge information matrix converted, to first order, from
+ * the (x,y,phi) or (x,y,z,yaw,pitch,roll) parameters of the edge PDF into
+ * this local residual (see the convention in mrpt::graphs::CNetworkOfPoses).
+ * Edges without uncertainty have unit information on the residual.
  *
  * \tparam GRAPH_T Normally a
  *mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>. Users won't
@@ -190,6 +197,7 @@ void optimize_graph_spa_levmarq(
     new_entry.edge_mean = &EDGE_POSE;
     new_entry.P1 = &itP1->second;
     new_entry.P2 = &itP2->second;
+    detail::AuxErrorEval<typename gst::edge_t, gst>::computeInformation(new_entry);
 
     lstObservationData.push_back(new_entry);
   }
@@ -257,9 +265,12 @@ void optimize_graph_spa_levmarq(
   // -----------------------------------------------------------
   size_t last_iter = 0;
 
+  // The Hessian blocks are kept across iterations, so they can be reused
+  // when a step is rejected and only lambda changes:
+  vector<map_ID2matrix_TxT_t> H_map(nFreeNodes);
+
   for (size_t iter = 0; iter < max_iters; ++iter)
   {
-    vector<map_ID2matrix_TxT_t> H_map(nFreeNodes);
     last_iter = iter;
 
     // This will be false only when the delta leads to a worst solution and
@@ -267,6 +278,10 @@ void optimize_graph_spa_levmarq(
     if (have_to_recompute_H_and_grad)
     {
       have_to_recompute_H_and_grad = false;
+      for (auto& H_col : H_map)
+      {
+        H_col.clear();
+      }
       // ======================================================================
       // Compute the gradient: grad = J^t * errs
       // ======================================================================
@@ -304,7 +319,7 @@ void optimize_graph_spa_levmarq(
           {
             typename gst::Array_O grad_idx1;
             detail::AuxErrorEval<typename gst::edge_t, gst>::multiply_Jt_W_err(
-                itJ->second.first /* J */, lstObservationData[idx_obs].edge /* W */,
+                itJ->second.first /* J */, lstObservationData[idx_obs] /* W */,
                 errs[idx_obs] /* err */, grad_idx1 /* out */
             );
             for (unsigned int i = 0; i < DIMS_POSE; i++) grad[DIMS_POSE * idx1 + i] += grad_idx1[i];
@@ -314,7 +329,7 @@ void optimize_graph_spa_levmarq(
           {
             typename gst::Array_O grad_idx2;
             detail::AuxErrorEval<typename gst::edge_t, gst>::multiply_Jt_W_err(
-                itJ->second.second /* J */, lstObservationData[idx_obs].edge /* W */,
+                itJ->second.second /* J */, lstObservationData[idx_obs] /* W */,
                 errs[idx_obs] /* err */, grad_idx2 /* out */
             );
             for (unsigned int i = 0; i < DIMS_POSE; i++) grad[DIMS_POSE * idx2 + i] += grad_idx2[i];
@@ -377,7 +392,7 @@ void optimize_graph_spa_levmarq(
           {
             typename gst::matrix_TxT JtJ(mrpt::math::UNINITIALIZED_MATRIX);
             detail::AuxErrorEval<typename gst::edge_t, gst>::multiplyJtLambdaJ(
-                J1, JtJ, lstObservationData[idxObs].edge);
+                J1, JtJ, lstObservationData[idxObs]);
             H_map[idx_i][idx_i] += JtJ;
           }
           // Is "j" a free (to be optimized) node? -> Jj^t * Inf *  Jj
@@ -385,7 +400,7 @@ void optimize_graph_spa_levmarq(
           {
             typename gst::matrix_TxT JtJ(mrpt::math::UNINITIALIZED_MATRIX);
             detail::AuxErrorEval<typename gst::edge_t, gst>::multiplyJtLambdaJ(
-                J2, JtJ, lstObservationData[idxObs].edge);
+                J2, JtJ, lstObservationData[idxObs]);
             H_map[idx_j][idx_j] += JtJ;
           }
           // Are both "i" and "j" free nodes? -> Ji^t * Inf *  Jj
@@ -393,7 +408,7 @@ void optimize_graph_spa_levmarq(
           {
             typename gst::matrix_TxT JtJ(mrpt::math::UNINITIALIZED_MATRIX);
             detail::AuxErrorEval<typename gst::edge_t, gst>::multiplyJ1tLambdaJ2(
-                J1, J2, JtJ, lstObservationData[idxObs].edge);
+                J1, J2, JtJ, lstObservationData[idxObs]);
             // We sort IDs such as "i" < "j" and we can build just
             // the upper triangular part of the Hessian:
             if (Hij_upper_triang)  // H_map[col][row]
@@ -405,25 +420,28 @@ void optimize_graph_spa_levmarq(
       }
       profiler.leave("optimize_graph_spa_levmarq.sp_H:build map");
 
-      // Just in the first iteration, we need to calculate an estimate for
-      // the first value of "lamdba":
-      if (lambda <= 0 && iter == 0)
+      // Just in the first iteration, we may need to calculate an estimate
+      // for the first value of "lambda":
+      if (iter == 0)
       {
-        profiler.enter("optimize_graph_spa_levmarq.lambda_init");  // ---\  .
-        double H_diagonal_max = 0;
-        for (size_t i = 0; i < nFreeNodes; i++)
-          for (auto it = H_map[i].begin(); it != H_map[i].end(); ++it)
-          {
-            const size_t j = it->first;  // entry submatrix is for (i,j).
-            if (i == j)
+        if (lambda <= 0)
+        {
+          profiler.enter("optimize_graph_spa_levmarq.lambda_init");  // ---\  .
+          double H_diagonal_max = 0;
+          for (size_t i = 0; i < nFreeNodes; i++)
+            for (auto it = H_map[i].begin(); it != H_map[i].end(); ++it)
             {
-              for (size_t k = 0; k < DIMS_POSE; k++)
-                mrpt::keep_max(H_diagonal_max, it->second(k, k));
+              const size_t j = it->first;  // entry submatrix is for (i,j).
+              if (i == j)
+              {
+                for (size_t k = 0; k < DIMS_POSE; k++)
+                  mrpt::keep_max(H_diagonal_max, it->second(k, k));
+              }
             }
-          }
-        lambda = tau * H_diagonal_max;
+          lambda = tau * H_diagonal_max;
 
-        profiler.leave("optimize_graph_spa_levmarq.lambda_init");  // ---/
+          profiler.leave("optimize_graph_spa_levmarq.lambda_init");  // ---/
+        }
       }
       else
       {
