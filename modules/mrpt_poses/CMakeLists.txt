@@ -132,7 +132,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/poses/CPoint2D.h
   include/mrpt/poses/CPoses2DSequence.h
   include/mrpt/poses/CPoses3DSequence.h
-  include/mrpt/poses/pose_utils.h
   include/mrpt/poses/CPointPDFGaussian.h
   include/mrpt/poses/CPose3DPDF.h
   include/mrpt/poses/CPointPDFSOG.h
