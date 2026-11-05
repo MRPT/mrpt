@@ -369,14 +369,15 @@ TEST(GraphSlamLevMarq, RecoversAfterRejectedSteps)
   {
     g.insertEdge(i, (i + 1) % N, gt[(i + 1) % N] - gt[i]);
   }
-  auto& rng = getRandomGenerator();
-  rng.randomize(2);
+  // Deterministic perturbation (std::normal_distribution differs across
+  // standard libraries):
   for (unsigned int i = 0; i < N; i++)
   {
-    g.nodes[i] = (i == 0) ? gt[0]
-                          : gt[i] + CPose2D(
-                                        rng.drawGaussian1D(0, 0.5), rng.drawGaussian1D(0, 0.5),
-                                        rng.drawGaussian1D(0, 1.2));
+    const double k = static_cast<double>(i);
+    g.nodes[i] =
+        (i == 0)
+            ? gt[0]
+            : gt[i] + CPose2D(0.5 * std::sin(3 * k), 0.5 * std::cos(5 * k), 0.6 * std::sin(7 * k));
   }
   graphslam::TResultInfoSpaLevMarq info;
   mrpt::containers::yaml params;

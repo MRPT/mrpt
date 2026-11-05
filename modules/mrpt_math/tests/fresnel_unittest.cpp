@@ -149,9 +149,10 @@ TEST(fresnel, fresnelAgainstHighPrecisionReference)
       {-6.2999999999999998,    -0.4555454305043985, -0.47600445535306796},
       {                 31,    0.49999659893870962,  0.51026805746506798},
   };
+  // A few ulps of slack: libm implementations differ across platforms.
   for (const auto& row : tbl)
   {
-    EXPECT_NEAR(mrpt::math::fresnel_sin_integral(row[0]), row[1], 1e-15) << "x=" << row[0];
-    EXPECT_NEAR(mrpt::math::fresnel_cos_integral(row[0]), row[2], 1e-15) << "x=" << row[0];
+    EXPECT_NEAR(mrpt::math::fresnel_sin_integral(row[0]), row[1], 1e-14) << "x=" << row[0];
+    EXPECT_NEAR(mrpt::math::fresnel_cos_integral(row[0]), row[2], 1e-14) << "x=" << row[0];
   }
 }

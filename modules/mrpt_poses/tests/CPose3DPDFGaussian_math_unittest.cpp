@@ -447,7 +447,7 @@ TEST(CPose3DPDFGaussianMath, CovarianceEntropy)
   C.diagonal() << 1.0, 2.0, 0.5, 0.1, 0.2, 0.3;
   const CPose3DPDFGaussian big(CPose3D(0, 0, 0), CMatrixDouble66(C));
   const auto H = [](const Mat6& c)
-  { return 0.5 * (6.0 * std::log(2 * M_PI * M_E) + std::log(c.determinant())); };
+  { return 0.5 * (6.0 * std::log(2 * M_PI * std::exp(1.0)) + std::log(c.determinant())); };
   EXPECT_NEAR(big.getCovarianceEntropy(), H(C), 1e-9);
 
   // 1 cm, 0.5 deg standard deviations:
