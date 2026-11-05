@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/transform_gaussian.h>
@@ -24,6 +25,7 @@
 #include <mrpt/system/os.h>
 
 #include <Eigen/Dense>
+#include <cmath>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -120,6 +122,8 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPosePDF& o)
   this->copyFrom(aux);
 }
 
+namespace
+{
 void aux_poseypr2posequat(
     const CVectorFixedDouble<6>& x, [[maybe_unused]] const double& dummy, CVectorFixedDouble<7>& y)
 {
@@ -127,14 +131,16 @@ void aux_poseypr2posequat(
   y[1] = x[1];
   y[2] = x[2];
 
-  CPose3D p(0, 0, 0, x[3], x[4], x[5]);
+  // Closed-form quaternion of the angles as given (not wrapped), so sigma
+  // points around yaw=+-pi do not get quaternions of opposite signs:
   CQuaternionDouble q(UNINITIALIZED_QUATERNION);
-  p.getAsQuaternion(q);
+  mrpt::math::TPose3D(0, 0, 0, x[3], x[4], x[5]).getAsQuaternion(q);
   y[3] = q[0];
   y[4] = q[1];
   y[5] = q[2];
   y[6] = q[3];
 }
+}  // namespace
 
 void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 {
@@ -165,6 +171,13 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
     const double dummy = 0;
     mrpt::math::transform_gaussian_unscented(
         x_mean, o.cov, &aux_poseypr2posequat, dummy, this->mean, this->cov);
+    // The weighted mean of unit quaternions is not unit. Keep its sign,
+    // which is that of the covariance cross terms (unlike normalize()):
+    const double qn = std::sqrt(this->mean.quat().normSqr());
+    for (unsigned int k = 0; k < 4; k++)
+    {
+      this->mean.quat()[k] /= qn;
+    }
   }
 }
 
@@ -234,6 +247,12 @@ void CPose3DQuatPDFGaussian::drawSingleSample(CPose3DQuat& outPart) const
 {
   MRPT_START
   getRandomGenerator().drawGaussianMultivariate(outPart, cov, &mean);
+  // Project onto the unit sphere, keeping the sign (unlike normalize()):
+  const double qn = std::sqrt(outPart.quat().normSqr());
+  for (unsigned int k = 0; k < 4; k++)
+  {
+    outPart.quat()[k] /= qn;
+  }
   MRPT_END
 }
 
@@ -247,7 +266,20 @@ void CPose3DQuatPDFGaussian::drawManySamples(size_t N, vector<CVectorDouble>& ou
   getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
   for (auto& outSample : outSamples)
-    for (unsigned int k = 0; k < 7; k++) outSample[k] += mean[k];
+  {
+    for (unsigned int k = 0; k < 7; k++)
+    {
+      outSample[k] += mean[k];
+    }
+    // Project the quaternion onto the unit sphere:
+    const double qn = std::sqrt(
+        outSample[3] * outSample[3] + outSample[4] * outSample[4] + outSample[5] * outSample[5] +
+        outSample[6] * outSample[6]);
+    for (unsigned int k = 3; k < 7; k++)
+    {
+      outSample[k] /= qn;
+    }
+  }
 
   MRPT_END
 }

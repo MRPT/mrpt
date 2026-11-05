@@ -110,10 +110,12 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
    * stored one in the object. */
   void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-  /** Draws a single sample from the distribution */
+  /** Draws a single sample from the distribution, with a normalized
+   * quaternion */
   void drawSingleSample(CPose3DQuat& outPart) const override;
   /** Draws a number of samples from the distribution, and saves as a list of
-   * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum */
+   * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum, with a
+   * normalized quaternion */
   void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
   /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
    * \note Unlike CPose3DQuatPDFGaussian::inverse(), the quaternion Jacobian

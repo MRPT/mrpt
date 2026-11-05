@@ -26,6 +26,7 @@
 
 #include <Eigen/Dense>
 #include <algorithm>  // for move, max
+#include <cmath>
 #include <cstdio>     // for size_t
 #include <exception>  // for exception
 #include <new>        // for operator...
@@ -176,6 +177,12 @@ void CPose3DQuatPDFGaussianInf::drawSingleSample(CPose3DQuat& outPart) const
   const CMatrixDouble77 COV = this->cov_inv.inverse_LLt();
 
   getRandomGenerator().drawGaussianMultivariate(outPart, COV, &mean);
+  // Project onto the unit sphere, keeping the sign (unlike normalize()):
+  const double qn = std::sqrt(outPart.quat().normSqr());
+  for (unsigned int k = 0; k < 4; k++)
+  {
+    outPart.quat()[k] /= qn;
+  }
   MRPT_END
 }
 
@@ -190,7 +197,20 @@ void CPose3DQuatPDFGaussianInf::drawManySamples(size_t N, vector<CVectorDouble>&
   getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, COV);
 
   for (auto& outSample : outSamples)
-    for (unsigned int k = 0; k < 7; k++) outSample[k] += mean[k];
+  {
+    for (unsigned int k = 0; k < 7; k++)
+    {
+      outSample[k] += mean[k];
+    }
+    // Project the quaternion onto the unit sphere:
+    const double qn = std::sqrt(
+        outSample[3] * outSample[3] + outSample[4] * outSample[4] + outSample[5] * outSample[5] +
+        outSample[6] * outSample[6]);
+    for (unsigned int k = 3; k < 7; k++)
+    {
+      outSample[k] /= qn;
+    }
+  }
 
   MRPT_END
 }

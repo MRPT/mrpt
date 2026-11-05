@@ -237,3 +237,65 @@ TEST(CPose3DQuatPDFMath, UnscentedQuatToEulerNearHalfPiYaw)
       << "yaw=" << back.mean.yaw();
   EXPECT_NEAR(back.cov(3, 3), 1e-4, 1e-5);
 }
+
+// Regression: the unscented Euler-to-quaternion conversion wrapped the yaw of
+// the sigma points, so around yaw=+-pi they got quaternions of opposite signs
+// and the result was meaningless (e.g. a mean quaternion of norm ~1e5).
+TEST(CPose3DQuatPDFMath, UnscentedEulerToQuatNearPiYaw)
+{
+  const bool orig = mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION();
+  const Mat6 C6 = Mat6::Identity() * 1e-2;
+  for (const double yaw : {M_PI, -M_PI, M_PI - 1e-5, 3.0})
+  {
+    const CPose3DPDFGaussian p(CPose3D(1, 2, 3, yaw, 0.2, 0.1), CMatrixDouble66(C6));
+    mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(false);
+    const CPose3DQuatPDFGaussian lin(p);
+    mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(true);
+    const CPose3DQuatPDFGaussian sut(p);
+    mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(orig);
+
+    EXPECT_NEAR(sut.mean.quat().norm(), 1.0, 1e-12) << "yaw=" << yaw;
+    EXPECT_NEAR((toVec(sut.mean) - toVec(lin.mean)).cwiseAbs().maxCoeff(), 0.0, 1e-3)
+        << "yaw=" << yaw;
+    EXPECT_NEAR((sut.cov.asEigen() - lin.cov.asEigen()).cwiseAbs().maxCoeff(), 0.0, 1e-4)
+        << "yaw=" << yaw;
+  }
+}
+
+// Regression: samples had non-unit quaternions (|q|-1 up to ~2.5e-2 for 0.1
+// rad of angular uncertainty), i.e. they were not rigid transformations.
+TEST(CPose3DQuatPDFGaussianMath, DrawSamplesHaveUnitQuaternions)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  const Mat6 C6 = Mat6::Identity() * 1e-2;
+  const CPose3D mean(1, 2, 3, 0.5, 0.2, 0.1);
+  const CPose3DQuatPDFGaussian q(CPose3DPDFGaussian(mean, CMatrixDouble66(C6)));
+  const size_t N = 20000;
+  Eigen::Matrix<double, 6, 1> sum = Eigen::Matrix<double, 6, 1>::Zero();
+  Mat6 sum2 = Mat6::Zero();
+  for (size_t i = 0; i < N; i++)
+  {
+    CPose3DQuat s;
+    q.drawSingleSample(s);
+    ASSERT_NEAR(s.quat().norm(), 1.0, 1e-12);
+    // Statistics of the samples, as Euler angles:
+    const CPose3D ps(s);
+    Eigen::Matrix<double, 6, 1> v;
+    v << ps.x() - mean.x(), ps.y() - mean.y(), ps.z() - mean.z(),
+        mrpt::math::wrapToPi(ps.yaw() - mean.yaw()), ps.pitch() - mean.pitch(),
+        mrpt::math::wrapToPi(ps.roll() - mean.roll());
+    sum += v;
+    sum2 += v * v.transpose();
+  }
+  std::vector<CVectorDouble> many;
+  q.drawManySamples(100, many);
+  for (const auto& s : many)
+  {
+    EXPECT_NEAR(std::sqrt(s[3] * s[3] + s[4] * s[4] + s[5] * s[5] + s[6] * s[6]), 1.0, 1e-12);
+  }
+  // Same covariance as the original Euler Gaussian, up to second order terms:
+  const Eigen::Matrix<double, 6, 1> m = sum / static_cast<double>(N);
+  const Mat6 S = sum2 / static_cast<double>(N) - m * m.transpose();
+  EXPECT_LT(m.cwiseAbs().maxCoeff(), 5e-3);
+  EXPECT_LT((S - C6).cwiseAbs().maxCoeff(), 1.5e-3) << S;
+}
