@@ -250,3 +250,51 @@ TEST(CPose3DInterpolator, EdgeCasesOutOfRangeAndMaxTimeInterp)
     EXPECT_EQ(copy.size(), path.size());
   }
 }
+
+TEST(CPose3DInterpolator, splineSlerpNeedsFourPoints)
+{
+  using namespace mrpt::poses;
+  using mrpt::math::TPose3D;
+  const auto t0 = mrpt::Clock::fromDouble(1000.0);
+  const auto dt = std::chrono::milliseconds(1000);
+  CPose3DInterpolator path;
+  path.insert(t0, TPose3D(5, 0, 0, 0, 0, 0));
+  path.insert(t0 + dt, TPose3D(6, 0, 0, 0, 0, 0));
+  path.insert(t0 + 2 * dt, TPose3D(7, 0, 0, 0, 0, 0));
+  path.insert(t0 + 3 * dt, TPose3D(8, 0, 0, 0, 0, 0));
+  path.setInterpolationMethod(imSplineSlerp);
+  TPose3D out;
+  bool valid = false;
+  path.interpolate(t0 + dt + dt / 2, out, valid);
+  EXPECT_TRUE(valid);
+  EXPECT_NEAR(out.x, 6.5, 1e-6);
+  // The last segment lacks a fourth point:
+  valid = true;
+  EXPECT_NO_THROW(path.interpolate(t0 + 2 * dt + dt / 2, out, valid));
+  EXPECT_FALSE(valid);
+}
+
+TEST(CPose3DInterpolator, linearSlerpAcrossPi)
+{
+  using namespace mrpt::poses;
+  using mrpt::math::TPose3D;
+  const auto t0 = mrpt::Clock::fromDouble(1000.0);
+  const auto dt = std::chrono::milliseconds(1000);
+  CPose3DInterpolator path;
+  path.insert(t0, TPose3D(0, 0, 0, 3.0, 0.1, 0.2));
+  path.insert(t0 + dt, TPose3D(1, 0, 0, -3.0, 0.1, 0.2));
+  path.setInterpolationMethod(imLinearSlerp);
+  TPose3D out;
+  bool valid = false;
+  path.interpolate(t0 + dt / 2, out, valid);
+  ASSERT_TRUE(valid);
+  // Takes the short path, along the geodesic:
+  const CPose3D a(TPose3D(0, 0, 0, 3.0, 0.1, 0.2));
+  const CPose3D b(TPose3D(0, 0, 0, -3.0, 0.1, 0.2));
+  const Eigen::AngleAxisd d(
+      a.getRotationMatrix().asEigen().transpose() * b.getRotationMatrix().asEigen());
+  const Eigen::Matrix3d Rmid = a.getRotationMatrix().asEigen() *
+                               Eigen::AngleAxisd(0.5 * d.angle(), d.axis()).toRotationMatrix();
+  EXPECT_LT((CPose3D(out).getRotationMatrix().asEigen() - Rmid).array().abs().maxCoeff(), 1e-9);
+  EXPECT_NEAR(out.x, 0.5, 1e-9);
+}

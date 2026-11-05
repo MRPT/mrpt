@@ -131,7 +131,7 @@ void CPoseInterpolatorBase<2>::impl_interpolation(
     {
       const double ratio = (td - ts[1]) / (ts[2] - ts[1]);
       const double Aang = mrpt::math::angDistance(yaw[1], yaw[2]);
-      out_interp.phi = yaw[1] + ratio * Aang;
+      out_interp.phi = mrpt::math::wrapToPi(yaw[1] + ratio * Aang);
 
       out_interp.x = math::interpolate2points(td, ts[1], X[1], ts[2], X[2]);
       out_interp.y = math::interpolate2points(td, ts[1], Y[1], ts[2], Y[2]);
@@ -142,7 +142,7 @@ void CPoseInterpolatorBase<2>::impl_interpolation(
     {
       const double ratio = (td - ts[1]) / (ts[2] - ts[1]);
       const double Aang = mrpt::math::angDistance(yaw[1], yaw[2]);
-      out_interp.phi = yaw[1] + ratio * Aang;
+      out_interp.phi = mrpt::math::wrapToPi(yaw[1] + ratio * Aang);
 
       out_interp.x = math::spline(td, ts, X);
       out_interp.y = math::spline(td, ts, Y);

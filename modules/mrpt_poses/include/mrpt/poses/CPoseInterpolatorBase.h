@@ -27,15 +27,16 @@ namespace mrpt::poses
  *  - imSpline: Spline interpolation using 4 points (2 before + 2 after the
  * query point).
  *  - imLinear2Neig: Linear interpolation between the previous and next
- * neighbour.
+ * neighbor.
  *  - imLinear4Neig: Linear interpolation using the linear fit of the 4 closer
  * points (2 before + 2 after the query point).
  *  - imSSLLLL : Use Spline for X and Y, and Linear Least squares for Z, yaw,
  * pitch and roll.
- *  - imSSLSLL : Use Spline for X, Y and yaw, and Linear Lesat squares for Z,
+ *  - imSSLSLL : Use Spline for X, Y and yaw, and Linear Least squares for Z,
  * pitch and roll.
  *  - imLinearSlerp: Linear for X,Y,Z, Slerp for 3D angles.
- *  - imSplineSlerp: Spline for X,Y,Z, Slerp for 3D angles.
+ *  - imSplineSlerp: Spline for X,Y,Z (using 4 points, as imSpline), Slerp for 3D
+ * angles.
  * \ingroup interpolation_grp poses_grp
  */
 enum TInterpolatorMethod

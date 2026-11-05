@@ -18,6 +18,7 @@
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/system/datetime.h>
 
+#include <cmath>
 #include <filesystem>
 
 template class mrpt::CTraitsTest<mrpt::poses::CPose2DInterpolator>;
@@ -177,4 +178,33 @@ TEST(CPose2DInterpolator, EdgeCasesOutOfRangeAndMaxTimeInterp)
     copy.filter(comp, 3);
     EXPECT_EQ(copy.size(), path.size());
   }
+}
+
+TEST(CPose2DInterpolator, slerpMethodsReturnWrappedAngle)
+{
+  using namespace mrpt::poses;
+  using mrpt::math::TPose2D;
+  const auto t0 = mrpt::Clock::fromDouble(1000.0);
+  const auto dt = std::chrono::milliseconds(1000);
+  CPose2DInterpolator path;
+  path.insert(t0, TPose2D(0, 0, 3.0));
+  path.insert(t0 + dt, TPose2D(0, 0, -3.0));
+  path.insert(t0 + 2 * dt, TPose2D(0, 0, -2.9));
+  path.insert(t0 + 3 * dt, TPose2D(0, 0, -2.8));
+  for (const auto m : {imLinearSlerp, imSplineSlerp})
+  {
+    path.setInterpolationMethod(m);
+    TPose2D out;
+    bool valid = false;
+    path.interpolate(t0 + dt + dt / 2, out, valid);
+    ASSERT_TRUE(valid);
+    EXPECT_NEAR(out.phi, -2.95, 1e-9);
+  }
+  // Linear interpolation across +-pi:
+  path.setInterpolationMethod(imLinear2Neig);
+  TPose2D out;
+  bool valid = false;
+  path.interpolate(t0 + dt / 2, out, valid);
+  ASSERT_TRUE(valid);
+  EXPECT_NEAR(std::abs(out.phi), M_PI, 1e-9);
 }
