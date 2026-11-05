@@ -356,8 +356,10 @@ class MatrixVectorBase
   /** Reads a matrix from a string in Matlab-like format, for example:
    *  "[1 0 2; 0 4 -1]"
    * The string must start with '[' and end with ']'. Rows are separated by
-   * semicolons ';' and columns in each row by one or more whitespaces
-   * ' ' or tabs '\t'. Commas ',' between elements are NOT allowed.
+   * semicolons ';' and columns in each row by whitespaces ' ', tabs '\t'
+   * and/or commas ',' (as in MATLAB, e.g. "[1, 0, 2; 0, 4, -1]").
+   * Any token that cannot be parsed as a number makes the whole string
+   * malformed.
    *
    * This format is also used for CConfigFile::read_matrix.
    *

@@ -65,7 +65,7 @@ void CMatrixF::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
   SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
   out["nrows"] = static_cast<uint32_t>(this->rows());
   out["ncols"] = static_cast<uint32_t>(this->cols());
-  out["data"] = this->inMatlabFormat();
+  out["data"] = this->inMatlabFormat(8);  // 9 significant digits: exact round trip
 }
 /** Serialize CSchemeArchiveBase derived object to CSerializable Object*/
 void CMatrixF::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)

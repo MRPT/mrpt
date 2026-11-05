@@ -129,6 +129,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/matrix_ops3_unittest.cpp
   tests/matrix_ops4_unittest.cpp
   tests/matrix_ops5_unittest.cpp
+  tests/matrix_text_io_unittest.cpp
   tests/matrix_yaml_unittest.cpp
   tests/math_unittest.cpp
   tests/ModelSearch_unittest.cpp
