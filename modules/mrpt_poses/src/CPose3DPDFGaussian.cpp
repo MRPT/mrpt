@@ -382,6 +382,12 @@ void CPose3DPDFGaussian::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF&
   x2(4, 0) = p2->mean.pitch();
   x2(5, 0) = p2->mean.roll();
 
+  // Fuse angles on the same branch of the circle:
+  for (int i = 3; i < 6; i++)
+  {
+    x2(i, 0) = x1(i, 0) + mrpt::math::wrapToPi(x2(i, 0) - x1(i, 0));
+  }
+
   CMatrixDouble66 auxC = C1_inv + C2_inv;
   this->cov = auxC.inverse_LLt();
   this->enforceCovSymmetry();
@@ -510,6 +516,11 @@ double CPose3DPDFGaussian::evaluatePDF(const CPose3D& x) const
   MU(4, 0) = mean.pitch();
   MU(5, 0) = mean.roll();
 
+  for (int i = 3; i < 6; i++)
+  {
+    X(i, 0) = MU(i, 0) + mrpt::math::wrapToPi(X(i, 0) - MU(i, 0));
+  }
+
   return math::normalPDF(X, MU, this->cov);
 }
 
@@ -534,6 +545,11 @@ double CPose3DPDFGaussian::evaluateNormalizedPDF(const CPose3D& x) const
   MU(4, 0) = mean.pitch();
   MU(5, 0) = mean.roll();
 
+  for (int i = 3; i < 6; i++)
+  {
+    X(i, 0) = MU(i, 0) + mrpt::math::wrapToPi(X(i, 0) - MU(i, 0));
+  }
+
   return math::normalPDF(X, MU, this->cov) / math::normalPDF(MU, MU, this->cov);
 }
 
@@ -554,6 +570,10 @@ double CPose3DPDFGaussian::mahalanobisDistanceTo(const CPose3DPDFGaussian& theOt
 
   CMatrixDouble66 COV_ = cov + theOther.cov;
   CMatrixDouble61 MU = CMatrixDouble61(theOther.mean) - CMatrixDouble61(mean);
+  for (int i = 3; i < 6; i++)
+  {
+    MU(i, 0) = mrpt::math::wrapToPi(MU(i, 0));
+  }
 
   for (int i = 0; i < 6; i++)
   {

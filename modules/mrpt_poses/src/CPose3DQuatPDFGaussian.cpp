@@ -394,12 +394,45 @@ void CPose3DQuatPDFGaussian::operator-=(const CPose3DQuatPDFGaussian& Ap)
   *this = inv_Ap + *this;
 }
 
+namespace
+{
+// Gaussian density for a possibly rank-deficient covariance (the 7x7
+// covariance of a unit quaternion pose has rank 6 at most), evaluated on the
+// subspace spanned by its non-null eigenvectors.
+double degenerateNormalPDF(
+    const CMatrixDouble71& d, const CMatrixDouble77& cov, const bool scaled_pdf)
+{
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 7, 7>> es(cov.asEigen());
+  const Eigen::Matrix<double, 7, 1>& ev = es.eigenvalues();
+  const Eigen::Matrix<double, 7, 1> proj = es.eigenvectors().transpose() * d.asEigen();
+  const double tol = 1e-10 * std::max(ev.maxCoeff(), 0.0);
+  double maha2 = 0;
+  double logDet = 0;
+  int rank = 0;
+  for (int i = 0; i < 7; i++)
+  {
+    if (ev[i] > tol)
+    {
+      maha2 += proj[i] * proj[i] / ev[i];
+      logDet += std::log(ev[i]);
+      rank++;
+    }
+  }
+  const double e = std::exp(-0.5 * maha2);
+  if (scaled_pdf)
+  {
+    return e;
+  }
+  return e * std::exp(-0.5 * (rank * std::log(M_2PI) + logDet));
+}
+}  // namespace
+
 /*---------------------------------------------------------------
             evaluatePDF
  ---------------------------------------------------------------*/
 double CPose3DQuatPDFGaussian::evaluatePDF(const CPose3DQuat& x) const
 {
-  return mrpt::math::normalPDF(CMatrixDouble71(x), CMatrixDouble71(this->mean), this->cov);
+  return degenerateNormalPDF(CMatrixDouble71(x) - CMatrixDouble71(this->mean), this->cov, false);
 }
 
 /*---------------------------------------------------------------
@@ -407,7 +440,7 @@ double CPose3DQuatPDFGaussian::evaluatePDF(const CPose3DQuat& x) const
  ---------------------------------------------------------------*/
 double CPose3DQuatPDFGaussian::evaluateNormalizedPDF(const CPose3DQuat& x) const
 {
-  return mrpt::math::normalPDF(CMatrixDouble71(x), CMatrixDouble71(this->mean), this->cov, true);
+  return degenerateNormalPDF(CMatrixDouble71(x) - CMatrixDouble71(this->mean), this->cov, true);
 }
 
 /*---------------------------------------------------------------
