@@ -52,23 +52,18 @@ static mrpt::math::TPose3D toTPose3D(const gtsam::Pose3& p)
   return mrpt::poses::CPose3D(H).asTPose();
 }
 
-/** Converts an MRPT Gaussian SE(3) pose, with a (x,y,z,yaw,pitch,roll)
- * covariance, into a GTSAM Pose3 and its covariance in GTSAM local coordinates
- * (rx,ry,rz,tx,ty,tz), i.e. for the body-frame increment
- * xi = Logmap(mean^-1 * pose). This is a first-order (linearized) conversion.
+/** Jacobian of the GTSAM local coordinates (rx,ry,rz,tx,ty,tz) of the
+ * body-frame increment xi = Logmap(mean^-1 * pose) with respect to MRPT's
+ * (x,y,z,yaw,pitch,roll), evaluated at the mean. The rotation part is the
+ * body-frame angular velocity of R = Rz(yaw)*Ry(pitch)*Rx(roll), the
+ * translation part is R^T times the global translation increment.
  */
-static void to_gtsam_se3_cov6(
-    const mrpt::poses::CPose3DPDFGaussian& in, gtsam::Pose3& pose_out, gtsam::Matrix6& cov_out)
+static gtsam::Matrix6 jacobian_gtsam_local_wrt_ypr(const mrpt::poses::CPose3D& mean)
 {
-  pose_out = toPose3(in.mean);
-
-  // Jacobian of xi w.r.t. (x,y,z,yaw,pitch,roll): the rotation part is the
-  // body-frame angular velocity of R = Rz(yaw)*Ry(pitch)*Rx(roll), the
-  // translation part is R^T times the global translation increment.
-  const double cp = std::cos(in.mean.pitch());
-  const double sp = std::sin(in.mean.pitch());
-  const double cr = std::cos(in.mean.roll());
-  const double sr = std::sin(in.mean.roll());
+  const double cp = std::cos(mean.pitch());
+  const double sp = std::sin(mean.pitch());
+  const double cr = std::cos(mean.roll());
+  const double sr = std::sin(mean.roll());
   gtsam::Matrix6 J = gtsam::Matrix6::Zero();
   // clang-format off
   J.block<3, 3>(0, 3) <<
@@ -76,9 +71,41 @@ static void to_gtsam_se3_cov6(
       cp * sr,  cr,  0,
       cp * cr, -sr,  0;
   // clang-format on
-  J.block<3, 3>(3, 0) = in.mean.getRotationMatrix().asEigen().transpose();
+  J.block<3, 3>(3, 0) = mean.getRotationMatrix().asEigen().transpose();
+  return J;
+}
 
+/** Converts an MRPT Gaussian SE(3) pose, with a (x,y,z,yaw,pitch,roll)
+ * covariance, into a GTSAM Pose3 and its covariance in GTSAM local coordinates
+ * (rx,ry,rz,tx,ty,tz), i.e. for the body-frame increment
+ * xi = Logmap(mean^-1 * pose). This is a first-order (linearized) conversion.
+ * \sa to_mrpt_se3_pdf()
+ */
+static void to_gtsam_se3_cov6(
+    const mrpt::poses::CPose3DPDFGaussian& in, gtsam::Pose3& pose_out, gtsam::Matrix6& cov_out)
+{
+  pose_out = toPose3(in.mean);
+  const gtsam::Matrix6 J = jacobian_gtsam_local_wrt_ypr(in.mean);
   cov_out = J * in.cov.asEigen() * J.transpose();
+}
+
+/** Inverse of to_gtsam_se3_cov6(): converts a GTSAM Pose3 and its covariance
+ * in GTSAM local coordinates (rx,ry,rz,tx,ty,tz) into an MRPT Gaussian SE(3)
+ * pose with a (x,y,z,yaw,pitch,roll) covariance. First-order conversion,
+ * singular at pitch = +-90 deg.
+ * Unlike mrpt::gtsam_wrappers::to_mrpt_se3_cov6(), which only reorders the
+ * entries and is therefore exact only at the identity rotation, this one
+ * takes the pose into account.
+ * \note New in MRPT 3.7.0
+ */
+static mrpt::poses::CPose3DPDFGaussian to_mrpt_se3_pdf(
+    const gtsam::Pose3& pose, const gtsam::Matrix6& cov)
+{
+  mrpt::poses::CPose3DPDFGaussian out;
+  out.mean = mrpt::poses::CPose3D(toTPose3D(pose));
+  const gtsam::Matrix6 Ji = jacobian_gtsam_local_wrt_ypr(out.mean).inverse();
+  out.cov.asEigen() = Ji * cov * Ji.transpose();
+  return out;
 }
 
 /** @} */
