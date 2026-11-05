@@ -84,6 +84,13 @@ set(LIB_UNIT_TEST_SOURCES
   tests/Lie_unittest.cpp
   tests/Lie_SO_unittest.cpp
   tests/PosePDF_implementations_unittest.cpp
+  tests/CPosePDFGaussian_math_unittest.cpp
+  tests/CPose3DPDFGaussian_math_unittest.cpp
+  tests/CPose3DQuatPDFGaussian_math_unittest.cpp
+  tests/CPoseRandomSampler_math_unittest.cpp
+  tests/PosePDFGrid_math_unittest.cpp
+  tests/PosePDFParticles_math_unittest.cpp
+  tests/PosePDFSOG_math_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
