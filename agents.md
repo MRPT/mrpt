@@ -145,6 +145,8 @@ mrpt_add_library(
   180 deg and near pitch = +-90 deg. GTSAM Pose3 covariances are body-frame
   (rx,ry,rz,tx,ty,tz): convert with `gtsam_wrappers::to_mrpt_se3_pdf()` /
   `to_gtsam_se3_cov6()`; `to_mrpt_se3_cov6()` only reorders (exact at identity).
+  `FrameTransformer::lookupTransform(target, source)` returns the pose of target
+  wrt source (the inverse of ROS tf2).
 * **mrpt_graphs**: edge PDFs hold the uncertainty of the (x,y,phi) or
   (x,y,z,yaw,pitch,roll) parameters, translation in the edge origin frame.
   Optimizers and g2o files use the local residual `pseudoLog(Z^-1 X)`; convert
