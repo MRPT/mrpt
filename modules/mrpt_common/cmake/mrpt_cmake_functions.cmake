@@ -293,9 +293,16 @@ function(mrpt_configure_library TARGETNAME HEADERS_ONLY_LIBRARY ADDITIONAL_EXPOR
       OUTPUT_NAME "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}"
       COMPILE_PDB_NAME "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}"
       COMPILE_PDB_NAME_DEBUG "${TARGETNAME}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}"
-      VERSION "${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}.${MRPT_VERSION_NUMBER_PATCH}"
-      SOVERSION ${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}
       )
+    # Python wheels cannot hold symlinks, so they need a single, unversioned
+    # file per library instead of the usual libfoo.so -> libfoo.so.X.Y chain:
+    option(MRPT_NO_SOVERSION "Build shared libraries without VERSION/SOVERSION" OFF)
+    if (NOT MRPT_NO_SOVERSION)
+      set_target_properties(${TARGETNAME} PROPERTIES
+        VERSION "${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}.${MRPT_VERSION_NUMBER_PATCH}"
+        SOVERSION ${MRPT_VERSION_NUMBER_MAJOR}.${MRPT_VERSION_NUMBER_MINOR}
+        )
+    endif()
   endif()
 
   # Project "folder":
