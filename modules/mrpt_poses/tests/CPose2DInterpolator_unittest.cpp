@@ -14,6 +14,7 @@
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/system/datetime.h>
@@ -207,4 +208,41 @@ TEST(CPose2DInterpolator, slerpMethodsReturnWrappedAngle)
   path.interpolate(t0 + dt / 2, out, valid);
   ASSERT_TRUE(valid);
   EXPECT_NEAR(std::abs(out.phi), M_PI, 1e-9);
+}
+
+// Interpolated values of all methods for a constant-velocity motion: linear
+// translation and a constant heading rate across +-pi, which all methods must
+// reproduce exactly.
+TEST(CPose2DInterpolator, AllMethodsValuesConstantVelocity)
+{
+  using namespace mrpt::poses;
+  using mrpt::math::TPose2D;
+
+  const auto t0 = mrpt::Clock::fromDouble(1000.0);
+  const double dt = 0.1;
+  const auto truth = [](double t) { return TPose2D(1.0 + 2.0 * t, -0.5 * t, 3.0 + 0.5 * t); };
+  CPose2DInterpolator path;
+  for (int i = 0; i < 6; i++)
+  {
+    path.insert(mrpt::Clock::fromDouble(1000.0 + i * dt), truth(i * dt));
+  }
+  for (const auto m :
+       {imSpline, imLinear2Neig, imLinear4Neig, imSSLLLL, imSSLSLL, imLinearSlerp, imSplineSlerp})
+  {
+    path.setInterpolationMethod(m);
+    for (const double tq : {0.15, 0.25, 0.27, 0.33})
+    {
+      TPose2D p;
+      bool valid = false;
+      path.interpolate(t0 + std::chrono::microseconds(static_cast<int64_t>(tq * 1e6)), p, valid);
+      ASSERT_TRUE(valid);
+      const TPose2D gt = truth(tq);
+      EXPECT_NEAR(p.x, gt.x, 1e-6) << "method=" << static_cast<int>(m) << " t=" << tq;
+      EXPECT_NEAR(p.y, gt.y, 1e-6);
+      EXPECT_NEAR(mrpt::math::wrapToPi(p.phi - gt.phi), 0.0, 1e-6)
+          << "method=" << static_cast<int>(m) << " t=" << tq << " phi=" << p.phi;
+      EXPECT_GE(p.phi, -M_PI);
+      EXPECT_LE(p.phi, M_PI);
+    }
+  }
 }

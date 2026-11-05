@@ -54,13 +54,15 @@ void CPoseInterpolatorBase<2>::impl_interpolation(
 {
   using mrpt::math::TPose2D;
   using doubleDuration = std::chrono::duration<double>;
-  doubleDuration durationT(t.time_since_epoch());
-  double td = durationT.count();
+  // Times relative to p2: absolute times as doubles would lose precision.
+  const auto relTime = [&p2](const mrpt::Clock::time_point& tp)
+  { return std::chrono::duration_cast<doubleDuration>(tp - p2.first).count(); };
+  const double td = relTime(t);
   mrpt::math::CVectorFixedDouble<4> ts;
-  ts[0] = std::chrono::duration_cast<doubleDuration>(p1.first.time_since_epoch()).count();
-  ts[1] = std::chrono::duration_cast<doubleDuration>(p2.first.time_since_epoch()).count();
-  ts[2] = std::chrono::duration_cast<doubleDuration>(p3.first.time_since_epoch()).count();
-  ts[3] = std::chrono::duration_cast<doubleDuration>(p4.first.time_since_epoch()).count();
+  ts[0] = relTime(p1.first);
+  ts[1] = relTime(p2.first);
+  ts[2] = relTime(p3.first);
+  ts[3] = relTime(p4.first);
 
   mrpt::math::CVectorFixedDouble<4> X, Y, yaw;
   X[0] = p1.second.x;

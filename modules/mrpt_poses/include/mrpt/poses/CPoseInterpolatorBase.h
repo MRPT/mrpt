@@ -37,6 +37,11 @@ namespace mrpt::poses
  *  - imLinearSlerp: Linear for X,Y,Z, Slerp for 3D angles.
  *  - imSplineSlerp: Spline for X,Y,Z (using 4 points, as imSpline), Slerp for 3D
  * angles.
+ *
+ * \note In 3D, all methods but the Slerp ones interpolate yaw, pitch and roll
+ * independently, which only approximates the rotation (exact for rotations
+ * about a fixed vertical axis) and is wrong near |pitch|=90 deg, where these
+ * angles jump. Use imLinearSlerp or imSplineSlerp for general 3D rotations.
  * \ingroup interpolation_grp poses_grp
  */
 enum TInterpolatorMethod

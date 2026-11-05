@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/poses/Lie/SO.h>
 #include <mrpt/system/datetime.h>
 
 #include <Eigen/Dense>
@@ -297,4 +298,92 @@ TEST(CPose3DInterpolator, linearSlerpAcrossPi)
                                Eigen::AngleAxisd(0.5 * d.angle(), d.axis()).toRotationMatrix();
   EXPECT_LT((CPose3D(out).getRotationMatrix().asEigen() - Rmid).array().abs().maxCoeff(), 1e-9);
   EXPECT_NEAR(out.x, 0.5, 1e-9);
+}
+
+namespace
+{
+double rotDist(const mrpt::poses::CPose3D& a, const mrpt::poses::CPose3D& b)
+{
+  return (a.getRotationMatrix().asEigen() - b.getRotationMatrix().asEigen()).cwiseAbs().maxCoeff();
+}
+}  // namespace
+
+// Interpolated values of all methods for a constant-velocity motion: linear
+// translation and a constant yaw rate across +-pi, which all methods must
+// reproduce exactly.
+TEST(CPose3DInterpolator, AllMethodsValuesConstantVelocity)
+{
+  using namespace mrpt::poses;
+  using mrpt::math::TPose3D;
+
+  const auto t0 = mrpt::Clock::fromDouble(1000.0);
+  const double dt = 0.1;
+  const auto truth = [](double t)
+  { return TPose3D(1.0 + 2.0 * t, -0.5 * t, 0.3 * t, 3.0 + 0.5 * t, 0.0, 0.0); };
+  CPose3DInterpolator path;
+  for (int i = 0; i < 6; i++)
+  {
+    path.insert(mrpt::Clock::fromDouble(1000.0 + i * dt), truth(i * dt));
+  }
+  for (const auto m :
+       {imSpline, imLinear2Neig, imLinear4Neig, imSSLLLL, imSSLSLL, imLinearSlerp, imSplineSlerp})
+  {
+    path.setInterpolationMethod(m);
+    for (const double tq : {0.15, 0.25, 0.27, 0.33})
+    {
+      TPose3D p;
+      bool valid = false;
+      path.interpolate(t0 + std::chrono::microseconds(static_cast<int64_t>(tq * 1e6)), p, valid);
+      ASSERT_TRUE(valid);
+      const TPose3D gt = truth(tq);
+      EXPECT_NEAR(p.x, gt.x, 1e-6) << "method=" << static_cast<int>(m) << " t=" << tq;
+      EXPECT_NEAR(p.y, gt.y, 1e-6);
+      EXPECT_NEAR(p.z, gt.z, 1e-6);
+      EXPECT_LT(rotDist(CPose3D(p), CPose3D(gt)), 1e-6)
+          << "method=" << static_cast<int>(m) << " t=" << tq << " p=" << p;
+      EXPECT_GE(p.yaw, -M_PI);
+      EXPECT_LT(p.yaw, M_PI);
+    }
+  }
+}
+
+// For a constant angular velocity about a general axis, Slerp reproduces the
+// rotation exactly, while the per-angle methods only approximate it.
+TEST(CPose3DInterpolator, SlerpExactForConstantAngularVelocity)
+{
+  using namespace mrpt::poses;
+  using mrpt::math::TPose3D;
+  using SO3 = mrpt::poses::Lie::SO<3>;
+
+  const auto t0 = mrpt::Clock::fromDouble(1000.0);
+  const double dt = 0.1;
+  const CPose3D R0(0, 0, 0, 0.4, -0.3, 0.8);
+  // The rotation passes over pitch=90 deg (gimbal lock) between samples 2 and 3:
+  SO3::tangent_vector w;
+  w[0] = 0.0;
+  w[1] = 1.0;
+  w[2] = 0.2;
+  const auto truth = [&](double t)
+  {
+    SO3::tangent_vector v = w;
+    v *= t * 8.0;
+    return R0 + CPose3D(SO3::exp(v), mrpt::math::CVectorFixedDouble<3>());
+  };
+  CPose3DInterpolator path;
+  for (int i = 0; i < 6; i++)
+  {
+    path.insert(mrpt::Clock::fromDouble(1000.0 + i * dt), truth(i * dt).asTPose());
+  }
+  for (const auto m : {imLinearSlerp, imSplineSlerp})
+  {
+    path.setInterpolationMethod(m);
+    for (const double tq : {0.12, 0.25, 0.29})
+    {
+      CPose3D p;
+      bool valid = false;
+      path.interpolate(t0 + std::chrono::microseconds(static_cast<int64_t>(tq * 1e6)), p, valid);
+      ASSERT_TRUE(valid);
+      EXPECT_LT(rotDist(p, truth(tq)), 1e-6) << "method=" << static_cast<int>(m) << " t=" << tq;
+    }
+  }
 }
