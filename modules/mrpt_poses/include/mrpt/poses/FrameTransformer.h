@@ -81,6 +81,9 @@ class FrameTransformerInterface
    * It tries to return the pose at the given timepoint, unless it is
    * INVALID_TIMESTAMP (default),
    * which means returning the latest know transformation.
+   * \note This is the inverse of what ROS tf2 `lookupTransform(target_frame,
+   * source_frame)` returns (the pose of `source_frame` in `target_frame`,
+   * i.e. the transform of points from `source_frame` into `target_frame`).
    */
   virtual FrameLookUpStatus lookupTransform(
       const std::string& target_frame,
@@ -94,6 +97,9 @@ class FrameTransformerInterface
 
 /** See docs in FrameTransformerInterface.
  *   This class is an implementation for standalone (non ROS) applications.
+ *   lookupTransform() follows chains of transforms, in either direction
+ * (inverting the published ones as needed). Only the latest transform of
+ * each pair of frames is kept, and timestamps are not used.
  * \ingroup poses_grp
  * \sa FrameTransformerInterface
  */

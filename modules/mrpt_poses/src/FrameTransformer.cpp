@@ -18,7 +18,11 @@
 #include <mrpt/poses/FrameTransformer.h>  // for FrameTransformer, FrameTran...
 #include <mrpt/system/datetime.h>         // for TTimeStamp, INVALID_TIMESTAMP
 
+#include <deque>
+#include <map>
 #include <string>  // for string
+#include <utility>
+#include <vector>
 
 using namespace mrpt::poses;
 
@@ -54,10 +58,6 @@ void FrameTransformer<DIM>::sendTransform(
   m_pose_edges_buffer[parent_frame][child_frame] = TF_TreeEdge(child_wrt_parent, timestamp);
 }
 
-// future work: allow graph traversal and do pose chain composition?
-// We dont need to replicate the full functionality of ROS tf, though... just
-// what we really need.
-
 template <size_t DIM>
 FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
     const std::string& target_frame,
@@ -66,25 +66,57 @@ FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
     const mrpt::system::TTimeStamp query_time,
     const double timeout_secs)
 {
+  using pose_t = typename base_t::pose_t;
+
   ASSERTMSG_(timeout_secs == .0, "timeout_secs!=0: Blocking calls not supported yet!");
   ASSERTMSG_(
       query_time == INVALID_TIMESTAMP, "`query_time` different than 'latest' not supported yet!");
 
-  const auto& it_src = m_pose_edges_buffer.find(source_frame);
-  if (it_src == m_pose_edges_buffer.end())
+  // Undirected graph of frames: each edge can be traversed from the parent
+  // (with the stored pose) or from the child (with its inverse).
+  std::map<std::string, std::vector<std::pair<std::string, pose_t>>> adjacency;
+  for (const auto& [parent, children] : m_pose_edges_buffer)
+  {
+    for (const auto& [child, edge] : children)
+    {
+      adjacency[parent].emplace_back(child, edge.pose);
+      adjacency[child].emplace_back(parent, -edge.pose);
+    }
+  }
+
+  if (adjacency.count(source_frame) == 0 || adjacency.count(target_frame) == 0)
   {
     return LKUP_UNKNOWN_FRAME;
   }
 
-  const auto& it_dst = it_src->second.find(target_frame);
-  if (it_dst == it_src->second.end())
+  // Breadth-first search from the source frame, keeping the pose of each
+  // reached frame with respect to the source frame:
+  std::map<std::string, pose_t> pose_wrt_source;
+  pose_wrt_source[source_frame] = pose_t();
+  std::deque<std::string> pending = {source_frame};
+  while (!pending.empty() && pose_wrt_source.count(target_frame) == 0)
+  {
+    const std::string cur = pending.front();
+    pending.pop_front();
+    const pose_t cur_pose = pose_wrt_source.at(cur);
+    for (const auto& [next, next_wrt_cur] : adjacency.at(cur))
+    {
+      if (pose_wrt_source.count(next) != 0)
+      {
+        continue;
+      }
+      pose_wrt_source[next] = cur_pose + next_wrt_cur;
+      pending.push_back(next);
+    }
+  }
+
+  const auto it = pose_wrt_source.find(target_frame);
+  if (it == pose_wrt_source.end())
   {
     return LKUP_NO_CONNECTIVITY;
   }
 
-  const TF_TreeEdge& te = it_dst->second;
-  child_wrt_parent = te.pose.asTPose();
-
+  child_wrt_parent = it->second.asTPose();
   return LKUP_GOOD;
 }
 
