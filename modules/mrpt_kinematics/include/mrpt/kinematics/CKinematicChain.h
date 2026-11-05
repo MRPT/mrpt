@@ -35,7 +35,7 @@ namespace kinematics
  */
 struct TKinematicLink
 {
-  /** Rotation from X_i to X_{i+1} (radians) */
+  /** Rotation about Z_i from X_i to X_{i+1} (radians) */
   double theta{0};
   /** Distance along Z_i to the common normal between Z_i and Z_{i+1} */
   double d{0};
@@ -61,8 +61,9 @@ mrpt::serialization::CArchive& operator<<(
     mrpt::serialization::CArchive& out, const TKinematicLink& o);
 
 /** A open-loop kinematic chain model, suitable to robotic manipulators.
- *  Each link is parameterized with standard Denavit-Hartenberg standard
- * parameterization [theta, d, a, alpha].
+ *  Each link uses the standard (distal) Denavit-Hartenberg convention
+ * [theta, d, a, alpha]: A_i = Rot_z(theta) Trans_z(d) Trans_x(a) Rot_x(alpha),
+ * and the pose of the i-th frame is origin (+) A_1 (+) ... (+) A_i.
  *
  *  The orientation of the first link can be modified with setOriginPose(),
  * which defaults to standard XYZ axes with +Z pointing upwards.
@@ -87,7 +88,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
  public:
   /** Return the number of links */
   size_t size() const { return m_links.size(); }
-  /** Erases all links and leave the robot arm empty. */
+  /** Erases all links. The origin pose set with setOriginPose() is kept. */
   void clear();
 
   /** Appends a new link to the robotic arm, with the given Denavit-Hartenberg

@@ -25,10 +25,10 @@ using namespace pybind11::literals;
 
 PYBIND11_MODULE(_bindings, m)
 {
-  m.doc() = "Python bindings for mrpt::kinematics — vehicle kinematic models and simulators";
+  m.doc() = "Python bindings for mrpt::kinematics: vehicle kinematic models and simulators";
 
   // -------------------------------------------------------------------------
-  // CVehicleVelCmd_DiffDriven — velocity command for differential-drive robots
+  // CVehicleVelCmd_DiffDriven: velocity command for differential-drive robots
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::kinematics::CVehicleVelCmd_DiffDriven,
@@ -56,7 +56,7 @@ PYBIND11_MODULE(_bindings, m)
           });
 
   // -------------------------------------------------------------------------
-  // CVehicleVelCmd_Holo — velocity command for holonomic robots
+  // CVehicleVelCmd_Holo: velocity command for holonomic robots
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::kinematics::CVehicleVelCmd_Holo,
@@ -93,7 +93,7 @@ PYBIND11_MODULE(_bindings, m)
           });
 
   // -------------------------------------------------------------------------
-  // CVehicleSimulVirtualBase — abstract base for vehicle simulators
+  // CVehicleSimulVirtualBase: abstract base for vehicle simulators
   // -------------------------------------------------------------------------
   py::class_<mrpt::kinematics::CVehicleSimulVirtualBase>(
       m, "CVehicleSimulVirtualBase",
@@ -124,7 +124,7 @@ PYBIND11_MODULE(_bindings, m)
           "pose"_a, "Brute-force overwrite robot odometry.");
 
   // -------------------------------------------------------------------------
-  // CVehicleSimul_DiffDriven — differential-drive robot simulator
+  // CVehicleSimul_DiffDriven: differential-drive robot simulator
   // -------------------------------------------------------------------------
   py::class_<
       mrpt::kinematics::CVehicleSimul_DiffDriven, mrpt::kinematics::CVehicleSimulVirtualBase>(
@@ -145,7 +145,7 @@ PYBIND11_MODULE(_bindings, m)
           });
 
   // -------------------------------------------------------------------------
-  // CVehicleSimul_Holo — holonomic robot simulator
+  // CVehicleSimul_Holo: holonomic robot simulator
   // -------------------------------------------------------------------------
   py::class_<mrpt::kinematics::CVehicleSimul_Holo, mrpt::kinematics::CVehicleSimulVirtualBase>(
       m, "CVehicleSimul_Holo",

@@ -27,6 +27,8 @@ void CVehicleSimul_DiffDriven::internal_clear()
   Command_Time = .0;
   Command_v = .0;
   Command_w = .0;
+  Command_v0 = .0;
+  Command_w0 = .0;
   m_v = m_w = 0;
 }
 
@@ -45,8 +47,9 @@ void CVehicleSimul_DiffDriven::internal_simulControlStep([[maybe_unused]] const 
   }
   else
   {
-    m_v = Command_v0 + (Command_v - Command_v0) * (1 - exp(-elapsed_time / cTAU));
-    m_w = Command_w0 + (Command_w - Command_w0) * (1 - exp(-elapsed_time / cTAU));
+    const double k = cTAU > 0 ? 1 - std::exp(-elapsed_time / cTAU) : (elapsed_time > 0 ? 1.0 : 0.0);
+    m_v = Command_v0 + (Command_v - Command_v0) * k;
+    m_w = Command_w0 + (Command_w - Command_w0) * k;
   }
 
   // Local to global frame:

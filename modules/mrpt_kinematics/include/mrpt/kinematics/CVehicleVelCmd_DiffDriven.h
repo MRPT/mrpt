@@ -47,7 +47,10 @@ class CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
   void cmdVel_scale(double vel_scale) override;
 
   /** See base class docs.
-   * Tecognizes these parameters: `robotMax_V_mps`, `robotMax_W_degps` */
+   * Uses `robotMax_V_mps` and `robotMax_W_radps` (config key
+   * `robotMax_W_degps`). Blending preserves the path: if |lin_vel| < 0.01 only
+   * ang_vel is blended; otherwise lin_vel is blended and ang_vel is
+   * recomputed to keep the new curvature ang_vel/lin_vel. */
   double cmdVel_limits(
       const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd,
       const double beta,

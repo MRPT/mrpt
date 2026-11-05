@@ -17,7 +17,8 @@
 
 namespace mrpt::kinematics
 {
-/** Kinematic model for
+/** Velocity command for holonomic planar vehicles: speed, direction relative
+ * to the current heading, ramp time and rotational speed.
  *
  * \ingroup mrpt_kinematics_grp
  */
@@ -30,7 +31,7 @@ class CVehicleVelCmd_Holo : public CVehicleVelCmd
   /**: direction, **relative** to the current robot heading (radians). 0 means
    * forward. */
   double dir_local{.0};
-  /**: Blending time between current and target time. */
+  /**: Blending time (seconds) between the current and the target velocity. */
   double ramp_time{.0};
   /**: (rad/s) rotational speed for rotating such as the robot slowly faces
    * forward. */
@@ -48,6 +49,9 @@ class CVehicleVelCmd_Holo : public CVehicleVelCmd
 
   // See base class docs.
   void cmdVel_scale(double vel_scale) override;
+  /** See base class docs. Uses `robotMax_V_mps` and `robotMax_W_radps`. Does
+   * not blend with prev_vel_cmd (beta is ignored), since ramp_time already
+   * blends commands. */
   double cmdVel_limits(
       const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd,
       const double beta,

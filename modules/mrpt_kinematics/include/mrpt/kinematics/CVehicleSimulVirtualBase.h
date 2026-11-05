@@ -21,16 +21,12 @@
 
 namespace mrpt::kinematics
 {
-/** This class can be used to simulate the kinematics and dynamics of a
- * differential driven planar mobile robot, including odometry errors and
- * dynamics limitations.
+/** Virtual base for planar vehicle kinematic simulators (see
+ * CVehicleSimul_DiffDriven, CVehicleSimul_Holo), including odometry errors.
  *  Main API methods are:
- *  - movementCommand: Call this for send a command to the robot. This command
- * will be
- *    delayed and passed through a first order low-pass filter to simulate
- *    robot dynamics.
- *  - simulateInterval: Call this for run the simulator for the desired time
- * period.
+ *  - sendVelCmd(): sends a velocity command to the vehicle, whose dynamics
+ *    depend on the derived class.
+ *  - simulateOneTimeStep(): runs the simulator for a given time period.
  *
  * \ingroup mrpt_kinematics_grp
  */
@@ -43,7 +39,8 @@ class CVehicleSimulVirtualBase
   /** @name Kinematic simulation and control interface
    * @{ */
   /** Runs the simulator during "dt" seconds. It will be split into periods of
-   * "m_firmware_control_period". */
+   * "m_firmware_control_period", the last one shortened to end exactly at the
+   * requested time. Non-positive values of dt have no effect. */
   void simulateOneTimeStep(const double dt);
 
   /** Returns the instantaneous, ground truth pose in world coordinates */
@@ -62,14 +59,15 @@ class CVehicleSimulVirtualBase
   }
 
   /** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in
-   * world coordinates */
+   * world coordinates. With odometry errors enabled, this is the noise-free
+   * commanded velocity, not the rate of change of the ground truth pose. */
   const mrpt::math::TTwist2D& getCurrentGTVel() const { return m_GT_vel; }
   /** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in
    * the robot local frame */
   mrpt::math::TTwist2D getCurrentGTVelLocal() const;
 
   /** Returns the instantaneous, odometric velocity vector (vx,vy,omega) in
-   * world coordinates */
+   * the odometry frame of reference */
   const mrpt::math::TTwist2D& getCurrentOdometricVel() const { return m_odometric_vel; }
   /** Returns the instantaneous, odometric velocity vector (vx,vy,omega) in
    * the robot local frame */
@@ -85,8 +83,13 @@ class CVehicleSimulVirtualBase
    * the number of velcmd components,... */
   virtual CVehicleVelCmd::Ptr getVelCmdType() const = 0;
 
-  /** Enable/Disable odometry errors. Errors in odometry are 1 sigma Gaussian
-   * values per second */
+  /** Enable/Disable odometry errors. Errors are relative factors applied to
+   * the displacement in the vehicle frame (x: forward, y: left, phi: heading
+   * change). Bias values are relative errors; std values are the 1-sigma
+   * relative errors accumulated over 1 second of motion (Gaussian white noise,
+   * independent of the internal control period). All of them are
+   * dimensionless: the DEG2RAD() in the default Aphi values is not a unit
+   * conversion. */
   void setOdometryErrors(
       bool enabled,
       double Ax_err_bias = 1e-3,
@@ -105,8 +108,9 @@ class CVehicleSimulVirtualBase
     m_Aphi_err_std = Aphi_err_std;
   }
 
-  void resetStatus();  //! Reset all simulator variables to 0 (except the
-  //! simulation time). \sa resetTime
+  /** Reset all simulator variables to 0 (except the simulation time).
+   * \sa resetTime */
+  void resetStatus();
   /** Reset time counter \sa resetStatus */
   void resetTime();
 
