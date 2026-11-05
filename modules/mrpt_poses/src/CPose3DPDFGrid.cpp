@@ -248,7 +248,7 @@ void CPose3DPDFGrid::changeCoordinatesReference(const CPose3D& newReferenceBase)
 
 void CPose3DPDFGrid::bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2)
 {
-  // Initialise *this from p1
+  // Initialize *this from p1
   copyFrom(p1);
 
   // Multiply element-wise by p2

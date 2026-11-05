@@ -156,10 +156,10 @@ class CPose2DGridTemplate
     m_idxLeftY = mrpt::round(yMin / resolutionXY);
     m_idxLeftPhi = mrpt::round(phiMin / resolutionPhi);
 
-    // Compute new required space:
-    m_sizeX = static_cast<size_t>(mrpt::round(xMax / resolutionXY) - m_idxLeftX + 1);
-    m_sizeY = static_cast<size_t>(mrpt::round(yMax / resolutionXY) - m_idxLeftY + 1);
-    m_sizePhi = static_cast<size_t>(mrpt::round(phiMax / resolutionPhi) - m_idxLeftPhi + 1);
+    // Compute new required space (consistent with x2idx(), etc.):
+    m_sizeX = static_cast<size_t>(mrpt::round((xMax - xMin) / resolutionXY) + 1);
+    m_sizeY = static_cast<size_t>(mrpt::round((yMax - yMin) / resolutionXY) + 1);
+    m_sizePhi = static_cast<size_t>(mrpt::round((phiMax - phiMin) / resolutionPhi) + 1);
     m_sizeXY = m_sizeX * m_sizeY;
 
     // Resize "m_data":
@@ -223,7 +223,7 @@ class CPose2DGridTemplate
     MRPT_START
     outMat.setSize(m_sizeY, m_sizeX);
     size_t phiIdx = phi2idx(phi);
-    ASSERT_(phi < m_sizePhi);
+    ASSERT_(phiIdx < m_sizePhi);
     for (size_t y = 0; y < m_sizeY; y++)
       for (size_t x = 0; x < m_sizeX; x++)
         outMat(y, x) = m_data[phiIdx * m_sizeXY + y * m_sizeX + x];

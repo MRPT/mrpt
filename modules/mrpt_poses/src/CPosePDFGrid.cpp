@@ -117,6 +117,7 @@ std::tuple<CMatrixDouble33, CPose2D> CPosePDFGrid::getCovarianceAndMean() const
       {
         auxParts.m_particles[idx].log_w = log(*getByIndex(x, y, phiInd));
         auxParts.m_particles[idx].d = TPose2D(idx2x(x), idx2y(y), idx2phi(phiInd));
+        ++idx;
       }
   }
   return auxParts.getCovarianceAndMean();
@@ -227,7 +228,7 @@ void CPosePDFGrid::changeCoordinatesReference(const CPose3D& newReferenceBase)
 void CPosePDFGrid::bayesianFusion(
     const CPosePDF& p1, const CPosePDF& p2, [[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-  // Initialise *this from p1
+  // Initialize *this from p1
   copyFrom(p1);
 
   // Multiply element-wise by p2 evaluated at each grid cell.

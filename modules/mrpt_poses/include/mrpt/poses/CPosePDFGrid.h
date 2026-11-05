@@ -29,8 +29,8 @@ namespace mrpt::poses
  *
  * **Important:** The constructor initializes the grid with a *uniform*
  * distribution (all cells equal, summing to 1). If you intend to build a
- * custom distribution, call uniformDistribution() or manually zero out cells
- * before assigning probabilities, then call normalize().
+ * custom distribution, zero out all cells with fill(0.0) before assigning
+ * probabilities, then call normalize().
  *
  * \sa CPose2D, CPosePDF, CPose2DGridTemplate
  * \ingroup poses_pdf_grp

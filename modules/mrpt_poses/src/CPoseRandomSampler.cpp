@@ -122,9 +122,10 @@ void CPoseRandomSampler::setPosePDF(const CPosePDF& pdf)
     D = D.asEigen().array().sqrt().matrix();
     m_fastdraw_gauss_Z3.matProductOf_AB(m_fastdraw_gauss_Z3, D);
   }
-  else if (IS_CLASS(pdf, CPosePDFParticles))
+  else if (IS_CLASS(pdf, CPosePDFParticles) || IS_CLASS(pdf, CPosePDFSOG))
   {
-    return;  // Nothing to prepare.
+    // Nothing to prepare, just keep the mean for getSamplingMean*()
+    m_fastdraw_gauss_M_2D = pdf.getMeanVal();
   }
   else
   {
@@ -163,13 +164,14 @@ void CPoseRandomSampler::setPosePDF(const CPose3DPDF& pdf)
     D = D.asEigen().array().sqrt().matrix();
     m_fastdraw_gauss_Z6.matProductOf_AB(m_fastdraw_gauss_Z6, D);
   }
-  else if (IS_CLASS(pdf, CPose3DPDFParticles))
+  else if (IS_CLASS(pdf, CPose3DPDFParticles) || IS_CLASS(pdf, CPose3DPDFSOG))
   {
-    return;  // Nothing to prepare.
+    // Nothing to prepare, just keep the mean for getSamplingMean*()
+    m_fastdraw_gauss_M_3D = pdf.getMeanVal();
   }
   else
   {
-    THROW_EXCEPTION_FMT("Unsoported class: %s", m_pdf3D->GetRuntimeClass()->className);
+    THROW_EXCEPTION_FMT("Unsupported class: %s", m_pdf3D->GetRuntimeClass()->className);
   }
 
   MRPT_END
@@ -267,7 +269,7 @@ void CPoseRandomSampler::do_sample_2D(CPose2D& p) const
     pdf.drawSingleSample(p);
   }
   else
-    THROW_EXCEPTION_FMT("Unsoported class: %s", m_pdf2D->GetRuntimeClass()->className);
+    THROW_EXCEPTION_FMT("Unsupported class: %s", m_pdf2D->GetRuntimeClass()->className);
 
   MRPT_END
 }
@@ -314,7 +316,7 @@ void CPoseRandomSampler::do_sample_3D(CPose3D& p) const
     pdf.drawSingleSample(p);
   }
   else
-    THROW_EXCEPTION_FMT("Unsoported class: %s", m_pdf3D->GetRuntimeClass()->className);
+    THROW_EXCEPTION_FMT("Unsupported class: %s", m_pdf3D->GetRuntimeClass()->className);
 
   MRPT_END
 }
