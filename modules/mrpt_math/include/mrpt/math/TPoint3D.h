@@ -51,7 +51,7 @@ struct TPoint3D_data
 /** Base template for TPoint3D (double) and TPoint3Df (float).
  *
  * Represents a point (or free vector) in the 3D Euclidean space R^3.
- * Coordinates are stored as `(x, y, z)` in a 1-byte-packed struct (no padding).
+ * Coordinates are stored as `(x, y, z)` in a naturally aligned struct without padding.
  *
  * This is a *lightweight* POD-like type intended for storage, arithmetic, and
  * interoperability with NumPy / Eigen arrays. It supports:
@@ -284,7 +284,7 @@ struct MRPT_EMPTY_BASES TPoint3D_ : public TPoint3D_data<T>, public TPoseOrPoint
     return {TPoint3D_data<T>::x + p.x, TPoint3D_data<T>::y + p.y, TPoint3D_data<T>::z + p.z};
   }
 
-  /** Points substraction. */
+  /** Points subtraction. */
   [[nodiscard]] constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p) const
   {
     return {TPoint3D_data<T>::x - p.x, TPoint3D_data<T>::y - p.y, TPoint3D_data<T>::z - p.z};
@@ -352,7 +352,7 @@ struct MRPT_EMPTY_BASES TPoint3D_ : public TPoint3D_data<T>, public TPoseOrPoint
 
 /** Lightweight 3D point / free vector in R^3 (double precision).
  * Coordinate access via `x`, `y`, `z` members or `operator[]` (index 0→x, 1→y, 2→z).
- * Memory layout: 1-byte packed, no padding — safe for direct memcpy / mmap with point clouds.
+ * Memory layout: naturally aligned, no padding; safe for direct memcpy / mmap with point clouds.
  * \sa mrpt::poses::CPoint3D, TPoint3Df, TVector3D
  * \ingroup geometry_grp
  */
