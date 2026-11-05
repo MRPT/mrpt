@@ -91,6 +91,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/PosePDFGrid_math_unittest.cpp
   tests/PosePDFParticles_math_unittest.cpp
   tests/PosePDFSOG_math_unittest.cpp
+  tests/PoseConversions_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
