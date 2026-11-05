@@ -17,6 +17,7 @@
 // Jacobians, closed-form expressions and Monte Carlo.
 
 #include <gtest/gtest.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
@@ -455,4 +456,89 @@ TEST(CPose3DPDFGaussianMath, CovarianceEntropy)
   const CPose3DPDFGaussian small(CPose3D(0, 0, 0), CMatrixDouble66(Cs));
   EXPECT_NEAR(small.getCovarianceEntropy(), H(Cs), 1e-6)
       << "det=" << Cs.determinant() << " eps=" << std::numeric_limits<double>::epsilon();
+}
+
+// Regression: near gimbal lock (|pitch| within ~0.36 deg of 90 deg) the
+// composition Jacobians had zero pitch and roll rows, so composed PDFs got a
+// zero pitch variance. The Jacobians grow as 1/cos(pitch): relative test.
+TEST(CPose3DPDFMath, JacobiansPoseComposition_NearGimbalLock)
+{
+  const CPose3D x(1, 2, 3, 0.3, 1.2, -0.2);
+  for (const double pitchDeg : {89.0, 89.7, 89.9, -89.8})
+  {
+    const CPose3D target(2, -1, 0.5, 0.4, DEG2RAD(pitchDeg), 0.6);
+    const CPose3D u = (-x) + target;
+    CMatrixDouble66 df_dx;
+    CMatrixDouble66 df_du;
+    CPose3DPDF::jacobiansPoseComposition(x, u, df_dx, df_du);
+    const auto fx = [&](const Vec6& v) -> Vec6 { return toVec(toPose(v) + u); };
+    const auto fu = [&](const Vec6& v) -> Vec6 { return toVec(x + toPose(v)); };
+    const Mat6 Jx = numJacobian<6, 6>(fx, toVec(x), kWrap6, 1e-7);
+    const Mat6 Ju = numJacobian<6, 6>(fu, toVec(u), kWrap6, 1e-7);
+    EXPECT_LT((df_dx.asEigen() - Jx).norm() / Jx.norm(), 1e-5) << "pitch: " << pitchDeg;
+    EXPECT_LT((df_du.asEigen() - Ju).norm() / Ju.norm(), 1e-5) << "pitch: " << pitchDeg;
+
+    // The composed pitch is uncertain if the input pitch is:
+    Mat6 C = Mat6::Zero();
+    C(4, 4) = 1e-4;
+    CPose3DPDFGaussian p(x, CMatrixDouble66(C));
+    p += u;
+    EXPECT_GT(p.cov(4, 4), 1e-6) << "pitch: " << pitchDeg;
+  }
+}
+
+// Regression: quaternion to Euler Gaussian conversion near gimbal lock gave a
+// rotation off by up to ~0.4 deg and a wrong covariance.
+TEST(CPose3DQuatPDFGaussianMath, QuatToEulerNearGimbalLock)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  for (const double pitchDeg : {89.7, 89.9, -89.8})
+  {
+    const CPose3D mean(1, 2, 3, 0.4, DEG2RAD(pitchDeg), -0.7);
+    const CPose3DQuat qmean(mean);
+    // Covariance of the quaternion: tangent to the unit sphere at the mean.
+    Eigen::Matrix<double, 7, 6> T = Eigen::Matrix<double, 7, 6>::Zero();
+    T.topLeftCorner<3, 3>().setIdentity();
+    {
+      CQuaternionDouble q = qmean.quat();
+      // Small rotation increments: q * (1, w/2)
+      CMatrixDouble44 Lq;
+      q.rotationJacobian(Lq);
+      T.block<4, 3>(3, 3) = 0.5 * Lq.asEigen().rightCols<3>();
+    }
+    const Mat6 C6 = randomCov6(0.01);
+    const Mat7 Cq = T * C6 * T.transpose();
+    const CPose3DQuatPDFGaussian pq(qmean, CMatrixDouble77(Cq));
+    const CPose3DPDFGaussian pe(pq);
+
+    EXPECT_LT(
+        (pe.mean.getRotationMatrix().asEigen() - mean.getRotationMatrix().asEigen())
+            .cwiseAbs()
+            .maxCoeff(),
+        1e-12);
+
+    const auto g = [](const Vec7& v) -> Vec6
+    {
+      CQuaternionDouble qq(v[3], v[4], v[5], v[6]);
+      qq.normalize();
+      CMatrixDouble33 R;
+      qq.rotationMatrixNoResize(R);
+      double yaw = 0;
+      double pitch = 0;
+      double roll = 0;
+      TPose3D::SO3_to_yaw_pitch_roll(R, yaw, pitch, roll);
+      Vec6 r;
+      r << v[0], v[1], v[2], yaw, pitch, roll;
+      return r;
+    };
+    Vec7 q0;
+    for (int i = 0; i < 7; i++)
+    {
+      q0[i] = qmean[i];
+    }
+    const Eigen::Matrix<double, 6, 7> G = numJacobian<6, 7>(g, q0, kWrap6, 1e-8);
+    const Mat6 expected = G * Cq * G.transpose();
+    EXPECT_LT(maxAbsDiff(pe.cov.asEigen(), expected) / maxAbs(expected), 1e-5)
+        << "pitch: " << pitchDeg;
+  }
 }

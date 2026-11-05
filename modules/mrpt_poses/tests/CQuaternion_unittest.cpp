@@ -440,3 +440,86 @@ TEST(CQuaternion, jacobianRodriguesFromQuatVsFiniteDifferences)
     }
   }
 }
+
+namespace
+{
+// Exact yaw/pitch/roll of a (possibly non-unit) quaternion, via its rotation matrix:
+Eigen::Vector3d exactYPR(const CQuaternionDouble& q0)
+{
+  CQuaternionDouble q = q0;
+  q.normalize();
+  CMatrixDouble33 R;
+  q.rotationMatrixNoResize(R);
+  double y = 0;
+  double p = 0;
+  double r = 0;
+  TPose3D::SO3_to_yaw_pitch_roll(R, y, p, r);
+  return {y, p, r};
+}
+}  // namespace
+
+// Regression: rpy() snapped pitch to +-90 deg within ~0.36 deg of gimbal lock.
+TEST(CQuaternion, rpyNearGimbalLockReproducesRotation)
+{
+  for (const double sgn : {1.0, -1.0})
+  {
+    for (const double offDeg : {0.5, 0.3, 0.1, 1e-2, 1e-4, 1e-6, 0.0})
+    {
+      const CPose3D P = CPose3D::FromYawPitchRoll(0.3, sgn * DEG2RAD(90.0 - offDeg), -0.5);
+      CQuaternionDouble q;
+      P.getAsQuaternion(q);
+      double r = 0;
+      double p = 0;
+      double y = 0;
+      q.rpy(r, p, y);
+      const auto R = CPose3D::FromYawPitchRoll(y, p, r).getRotationMatrix();
+      EXPECT_LT((R.asEigen() - P.getRotationMatrix().asEigen()).array().abs().maxCoeff(), 1e-12)
+          << "pitch offset (deg): " << offDeg;
+      // Non-unit quaternions give the same rotation:
+      CQuaternionDouble q2 = q;
+      q2 *= 1.01;
+      double r2 = 0;
+      double p2 = 0;
+      double y2 = 0;
+      q2.rpy(r2, p2, y2);
+      const auto R2 = CPose3D::FromYawPitchRoll(y2, p2, r2).getRotationMatrix();
+      EXPECT_LT((R2.asEigen() - P.getRotationMatrix().asEigen()).array().abs().maxCoeff(), 1e-12);
+    }
+  }
+}
+
+// Regression: within ~0.36 deg of gimbal lock, the Jacobian only had a yaw row.
+TEST(CQuaternion, rpyJacobianNearGimbalLockVsFiniteDifferences)
+{
+  for (const double pitchDeg : {10.0, 80.0, 89.5, 89.7, 89.9, 89.99, -89.8})
+  {
+    const CPose3D P = CPose3D::FromYawPitchRoll(0.3, DEG2RAD(pitchDeg), -0.5);
+    CQuaternionDouble q;
+    P.getAsQuaternion(q);
+    double r = 0;
+    double p = 0;
+    double y = 0;
+    CMatrixFixed<double, 3, 4> J;
+    q.rpy_and_jacobian(r, p, y, &J, false);
+    CMatrixDouble44 dnorm;
+    q.normalizationJacobian(dnorm);
+    const Eigen::Matrix<double, 3, 4> Ja = J.asEigen() * dnorm.asEigen();
+    // Central differences of the exact angles of the normalized quaternion:
+    Eigen::Matrix<double, 3, 4> Jn;
+    const double h = 1e-8;
+    for (int k = 0; k < 4; k++)
+    {
+      CQuaternionDouble qp = q;
+      CQuaternionDouble qm = q;
+      qp[k] += h;
+      qm[k] -= h;
+      Eigen::Vector3d d = exactYPR(qp) - exactYPR(qm);
+      for (int i = 0; i < 3; i++)
+      {
+        d[i] = wrapToPi(d[i]);
+      }
+      Jn.col(k) = d / (2 * h);
+    }
+    EXPECT_LT((Ja - Jn).norm() / Jn.norm(), 1e-6) << "pitch (deg): " << pitchDeg;
+  }
+}
