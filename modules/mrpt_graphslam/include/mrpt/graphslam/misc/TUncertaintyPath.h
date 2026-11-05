@@ -97,7 +97,8 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
    * Nodes in the path are added to the end of the vector.
    */
   std::vector<mrpt::graphs::TNodeID> nodes_traversed;
-  /**\brief Current path position + corresponding covariance */
+  /**\brief Pose of the destination node relative to the source node, with
+   * its uncertainty (information matrix for *Inf graphs) */
   constraint_t curr_pose_pdf;
 
   /**Determine whether the determinant of the Path is up-to-date and

@@ -113,6 +113,8 @@ class CNodeRegistrationDecider :
    * regards to the <b previous registered node</b>.
    */
   constraint_t m_since_prev_node_PDF;
+  /** True while no increment has been composed into m_since_prev_node_PDF */
+  bool m_since_prev_node_PDF_is_empty = true;
   /**\brief Initial information matrix for paths
    *
    * Large values for this indicate that I am sure of the corresponding

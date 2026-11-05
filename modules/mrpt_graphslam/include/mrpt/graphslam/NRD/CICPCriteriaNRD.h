@@ -213,12 +213,9 @@ class CICPCriteriaNRD :
    * updating the estimated robot position.
    */
   pose_t m_last_odometry_only_pose;
-  /**\brief Keeps track of the last N measurements between the ICP edge and
-   * the corresponding odometry measurements.
-   *
-   * Use the last odometry rigid body transformation instead of the
-   * ICP edge if the mahalanobis distance between them is greater than this
-   * limit.
+  /**\brief Unused. The odometry edge replaces the ICP one when their
+   * Mahalanobis distance (sum of both covariances) exceeds a fixed
+   * threshold, see checkRegistrationCondition2D().
    */
   TSlidingWindow m_mahal_distance_ICP_odom;
 

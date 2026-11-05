@@ -21,6 +21,11 @@ set(LIB_UNIT_TEST_SOURCES
   tests/TUncertaintyPath_unittest.cpp
   tests/CFixedIntervalsNRD_unittest.cpp
   tests/CIncrementalNodeRegistrationDecider_unittest.cpp
+  tests/TUncertaintyPath_math_unittest.cpp
+  tests/CLoopCloserERD_unittest.cpp
+  tests/CLevMarqGSO_unittest.cpp
+  tests/CGraphSlamEngine_unittest.cpp
+  tests/NodeRegistrationDeciders_math_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
