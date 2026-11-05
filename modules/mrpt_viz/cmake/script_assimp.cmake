@@ -10,10 +10,6 @@ if(DISABLE_ASSIMP)
 	return()
 endif()
 
-set(ASSIMP_FOUND_VIA_CMAKE 0)
-
-set(EMBEDDED_ASSIMP_DIR "${MRPT_BINARY_DIR}/3rdparty/assimp")
-
 # 1st) Try to locate the pkg via pkg-config:
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
@@ -32,80 +28,72 @@ if(PKG_CONFIG_FOUND)
 	endif()
 endif()
 
+# 2nd) An installed CMake package (e.g. from vcpkg):
 if (NOT ASSIMP_FOUND)
-	set(MRPT_BUILD_ASSIMP ON CACHE BOOL "Build an embedded version of Assimp (3D models importer)")
-	if (MRPT_BUILD_ASSIMP)
+	find_package(assimp CONFIG QUIET)
+	if (assimp_FOUND AND TARGET assimp::assimp)
+		set(ASSIMP_FOUND 1)
+		set(ASSIMP_LIBRARIES assimp::assimp)
+		set(ASSIMP_INCLUDE_DIRS "")
+		set(ASSIMP_CXX_FLAGS "")
+		set(ASSIMP_VERSION "${assimp_VERSION}")
 
-		# Use embedded version:
-		# --------------------------
-		# Include embedded version headers:
+		set(CMAKE_MRPT_HAS_ASSIMP 1)
+		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 1)
+	endif()
+endif()
+
+# 3rd) Embedded version: a static library, linked into mrpt_viz. It uses the
+# system zlib. (Not for MSVC: install the Assimp CMake package instead.)
+if (NOT ASSIMP_FOUND AND NOT MSVC)
+	set(MRPT_BUILD_ASSIMP ON CACHE BOOL "Build an embedded version of Assimp (3D models importer)")
+	find_package(ZLIB QUIET)
+	if (MRPT_BUILD_ASSIMP AND NOT ZLIB_FOUND)
+		message(STATUS "Assimp: not found, and zlib is missing to build the embedded version.")
+	endif()
+	if (MRPT_BUILD_ASSIMP AND ZLIB_FOUND)
 		include(ExternalProject)
-		# download from GH
+		set(ASSIMP_VERSION "5.3.1")
+		set(_assimp_prefix "${mrpt_viz_BINARY_DIR}/3rdparty/assimp-install")
+		set(_assimp_lib "${_assimp_prefix}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}assimp$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}")
 		ExternalProject_Add(EP_assimp
-		  URL               "https://github.com/assimp/assimp/archive/v5.3.1.tar.gz"
+		  URL               "https://github.com/assimp/assimp/archive/v${ASSIMP_VERSION}.tar.gz"
 		  URL_MD5           "835357be3c1e70120fe2d5a52542ce55"
-		  SOURCE_DIR        "${MRPT_BINARY_DIR}/3rdparty/assimp/"
+		  SOURCE_DIR        "${mrpt_viz_BINARY_DIR}/3rdparty/assimp"
 		  CMAKE_ARGS
+			-DBUILD_SHARED_LIBS=OFF
+			-DCMAKE_POSITION_INDEPENDENT_CODE=ON
 			-DASSIMP_BUILD_ASSIMP_TOOLS=OFF
 			-DASSIMP_BUILD_SAMPLES=OFF
-			-DASSIMP_BUILD_STATIC_LIB=ON
 			-DASSIMP_BUILD_TESTS=OFF
-			-DASSIMP_LIBRARY_SUFFIX=-mrpt
-			-DCMAKE_LIBRARY_OUTPUT_PATH=${MRPT_BINARY_DIR}/lib
-			-DLIBRARY_OUTPUT_PATH=${MRPT_BINARY_DIR}/lib
-			-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${MRPT_BINARY_DIR}/bin
-			-DRUNTIME_OUTPUT_DIRECTORY=${MRPT_BINARY_DIR}/bin
-			-DCMAKE_DEBUG_POSTFIX=${CMAKE_DEBUG_POSTFIX}
+			-DASSIMP_BUILD_ZLIB=OFF
+			-DASSIMP_BUILD_MINIZIP=ON
+			-DASSIMP_NO_EXPORT=ON
+			-DASSIMP_WARNINGS_AS_ERRORS=OFF
+			-DASSIMP_INSTALL_PDB=OFF
+			-DCMAKE_INSTALL_PREFIX=${_assimp_prefix}
+			-DCMAKE_INSTALL_LIBDIR=lib
+			-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+			-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+			-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+			-DCMAKE_C_COMPILER_LAUNCHER=${CMAKE_C_COMPILER_LAUNCHER}
+			-DCMAKE_CXX_COMPILER_LAUNCHER=${CMAKE_CXX_COMPILER_LAUNCHER}
+			-DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
 			-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-		  INSTALL_COMMAND   ""
+		  BUILD_BYPRODUCTS  "${_assimp_lib}"
 		  TEST_COMMAND      ""
 		)
 
-		# 2nd attempt: via cmake
-		set(ASSIMP_DIR "${EMBEDDED_ASSIMP_DIR}" CACHE PATH "Path to ASSIMP CMake config file" FORCE)
-		find_package(ASSIMP QUIET)
-
-		set(ASSIMP_FOUND_VIA_CMAKE 1)
+		set(ASSIMP_LIBRARIES "${_assimp_lib}" ZLIB::ZLIB)
+		set(ASSIMP_INCLUDE_DIRS "${_assimp_prefix}/include")
+		set(ASSIMP_CXX_FLAGS "")
+		unset(_assimp_prefix)
+		unset(_assimp_lib)
 
 		set(CMAKE_MRPT_HAS_ASSIMP 1)
 		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
-	endif ()
+	endif()
 endif()
-
-if (ASSIMP_FOUND_VIA_CMAKE)
-	# override wrong target libs in -config.cmake file:
-	set(ASSIMP_LIBRARIES "")
-
-	if(MSVC12)
-		set(ASSIMP_MSVC_VERSION "vc120")
-	elseif(MSVC14)
-		set(ASSIMP_MSVC_VERSION "vc140")
-	endif()
-
-	if(MSVC12 OR MSVC14)
-		set(ASSIMP_CUSTOM_LIB_NAME "assimp-mrpt-${ASSIMP_MSVC_VERSION}-mt")
-	else()
-		set(ASSIMP_CUSTOM_LIB_NAME "assimp")
-		set(ASSIMP_LIBRARY_DIRS "${MRPT_BINARY_DIR}/lib")
-	endif()
-
-	list(APPEND ASSIMP_LIBRARIES optimized "${ASSIMP_CUSTOM_LIB_NAME}" debug "${ASSIMP_CUSTOM_LIB_NAME}${CMAKE_DEBUG_POSTFIX}")
-
-	# override wrong include dirs:
-	set(ASSIMP_INCLUDE_DIRS
-		"${MRPT_BINARY_DIR}/3rdparty/assimp/include/"
-		"${MRPT_BINARY_DIR}/EP_assimp-prefix/src/EP_assimp-build/include/"
-		CACHE INTERNAL ""
-	)
-
-	# Install assimp DLLs (for binary packages)
-	if(WIN32)
-		file(GLOB_RECURSE EXTRA_DLLS "${MRPT_BINARY_DIR}/bin/Release/assimp-*.dll" "${MRPT_BINARY_DIR}/bin/Debug/assimp-*.dll")
-		foreach(F ${EXTRA_DLLS})
-			install(FILES "${F}" DESTINATION bin)
-		endforeach()
-	endif()
-endif ()
 
 # ASSIMP_ROOT_DIR - the root directory where the installation can be found
 # ASSIMP_CXX_FLAGS - extra flags for compilation
