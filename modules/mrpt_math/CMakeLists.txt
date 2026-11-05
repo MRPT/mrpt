@@ -108,9 +108,13 @@ set(LIB_UNIT_TEST_SOURCES
   tests/EigenAlignment_unittest.cpp
   tests/fourier_unittest.cpp
   tests/fresnel_unittest.cpp
+  tests/geometry_construction_unittest.cpp
   tests/geometry_dispatch_unittest.cpp
+  tests/geometry_distance_angle_unittest.cpp
   tests/geometry_extra_unittest.cpp
+  tests/geometry_intersect_unittest.cpp
   tests/geometry_numerics_unittest.cpp
+  tests/geometry_polygons_unittest.cpp
   tests/geometry_sets_unittest.cpp
   tests/geometry_unittest.cpp
   tests/interp_fit_unittest.cpp
@@ -132,6 +136,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/ransac_unittest.cpp
   tests/robust_kernels_unittest.cpp
   tests/slerp_unittest.cpp
+  tests/TBoundingBox_TOrientedBox_extra_unittest.cpp
   tests/TBoundingBox_unittest.cpp
   tests/TObject2D_unittest.cpp
   tests/TObject3D_unittest.cpp
