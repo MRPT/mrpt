@@ -100,7 +100,9 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
    *Euclidean "x_new = x + x_increment" at the core of the incremental
    *optimizer by
    *     any other operation. It can be used for example, in on-manifold
-   *optimizations.
+   *optimizations. In that case, the Jacobian (and TResultInfo::H) is
+   *estimated with respect to the increment, by perturbing each of its
+   *components (with \a increments) through \a x_increment_adder.
    */
   void execute(
       VECTORTYPE& out_optimal_x,
@@ -136,8 +138,33 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
     matrix_t J;    // The Jacobian of "f"
     VECTORTYPE g;  // The gradient
 
+    // Jacobian of the residuals: with respect to x, or to the increment
+    // applied through x_increment_adder, if given:
+    const auto computeJacobian = [&]()
+    {
+      if (!x_increment_adder)
+      {
+        mrpt::math::estimateJacobian(x, functor, increments, userParam, J);
+        return;
+      }
+      const VECTORTYPE x_lin = x;
+      const TFunctorEval f_of_incr =
+          [&](const VECTORTYPE& incr, const USERPARAM& param, VECTORTYPE& out)
+      {
+        VECTORTYPE x_mod;
+        x_increment_adder(x_mod, x_lin, incr, param);
+        functor(x_mod, param, out);
+      };
+      VECTORTYPE zero_incr = x;
+      for (size_t k = 0; k < static_cast<size_t>(zero_incr.size()); k++)
+      {
+        zero_incr[k] = 0;
+      }
+      mrpt::math::estimateJacobian(zero_incr, f_of_incr, increments, userParam, J);
+    };
+
     // Compute the jacobian and the Hessian:
-    mrpt::math::estimateJacobian(x, functor, increments, userParam, J);
+    computeJacobian();
     out_info.H.matProductOf_AtA(J);
 
     const size_t H_len = out_info.H.cols();
@@ -221,7 +248,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
           f_x = f_xnew;
           F_x = F_xnew;
 
-          math::estimateJacobian(x, functor, increments, userParam, J);
+          computeJacobian();
           out_info.H.matProductOf_AtA(J);
           g.matProductOf_Atb(J, f_x);
 

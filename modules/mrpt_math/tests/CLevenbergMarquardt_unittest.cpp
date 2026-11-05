@@ -14,9 +14,11 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
+#include <mrpt/math/CQuaternion.h>
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <vector>
 
 // Reuse code from example:
 #include "../../../mrpt_examples_cpp/math_optimize_lm_example/LevMarqTest_impl.cpp"  // NOLINT
@@ -134,4 +136,88 @@ TEST(LevenbergMarquardt, pathStartsAtX0AndEndsAtOptimum)
   EXPECT_EQ(info.path(last, 1), x[1]);
   EXPECT_EQ(info.path(last, 2), x[2]);
   EXPECT_EQ(info.path(last, 3), info.final_sqr_err);
+}
+
+// Regression: with x_increment_adder, the Jacobian was estimated by
+// perturbing x additively, inconsistently with the steps actually applied,
+// and the optimization stalled far from the optimum. Here x is a rotation
+// vector, updated on the manifold as x <- log(exp(x) * exp(h)).
+TEST(LevenbergMarquardt, onManifoldIncrementAdderConverges)
+{
+  using mrpt::math::CQuaternionDouble;
+  using mrpt::math::CVectorDouble;
+  using Vec3 = mrpt::math::CVectorFixedDouble<3>;
+
+  const auto rotOf = [](const CVectorDouble& v)
+  {
+    Vec3 w;
+    for (int i = 0; i < 3; i++)
+    {
+      w[i] = v[i];
+    }
+    const auto q = CQuaternionDouble::exp<Vec3>(w);
+    Eigen::Matrix3d R;
+    q.rotationMatrixNoResize(R);
+    return R;
+  };
+  CVectorDouble xTrue(3);
+  xTrue[0] = -1.2;
+  xTrue[1] = -1.9;
+  xTrue[2] = -1.8;
+  const Eigen::Matrix3d Rgt = rotOf(xTrue);
+  const std::vector<Eigen::Vector3d> pts = {
+      { 1, 0,   0},
+      { 0, 2,   0},
+      { 0, 0,   3},
+      { 1, 1,   1},
+      {-1, 2, 0.5}
+  };
+
+  const auto f = [&](const CVectorDouble& x, const CVectorDouble&, CVectorDouble& err)
+  {
+    const Eigen::Matrix3d R = rotOf(x);
+    err.resize(static_cast<int>(3 * pts.size()));
+    for (size_t k = 0; k < pts.size(); k++)
+    {
+      const Eigen::Vector3d e = (R - Rgt) * pts[k];
+      for (int i = 0; i < 3; i++)
+      {
+        err[static_cast<int>(3 * k) + i] = e[i];
+      }
+    }
+  };
+  const auto adder =
+      [](CVectorDouble& xn, const CVectorDouble& xo, const CVectorDouble& h, const CVectorDouble&)
+  {
+    Vec3 wo;
+    Vec3 wh;
+    for (int i = 0; i < 3; i++)
+    {
+      wo[i] = xo[i];
+      wh[i] = h[i];
+    }
+    CQuaternionDouble q;
+    q.crossProduct(CQuaternionDouble::exp<Vec3>(wo), CQuaternionDouble::exp<Vec3>(wh));
+    const auto w = q.ln<Vec3>();
+    xn.resize(3);
+    for (int i = 0; i < 3; i++)
+    {
+      xn[i] = w[i];
+    }
+  };
+
+  CVectorDouble x0(3);
+  x0.fill(0.1);
+  CVectorDouble incr(3);
+  incr.fill(1e-6);
+  CVectorDouble params;
+  CVectorDouble xOpt;
+  mrpt::math::CLevenbergMarquardt lm;
+  mrpt::math::CLevenbergMarquardt::TResultInfo info;
+  lm.execute(
+      xOpt, x0, f, incr, params, info, mrpt::system::LVL_ERROR, 100, 1e-3, 1e-12, 1e-12, false,
+      adder);
+  EXPECT_LT(info.final_sqr_err, 1e-16);
+  EXPECT_LT((rotOf(xOpt) - Rgt).cwiseAbs().maxCoeff(), 1e-8);
+  EXPECT_LT(info.iterations_executed, 30u);
 }
