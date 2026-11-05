@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
@@ -477,4 +478,42 @@ TEST(CPosePDFGaussianInfMath, CopyFrom3DInf_Marginalizes)
       << "from Inf:\n"
       << g3i.cov_inv.asEigen().inverse() << "\nfrom Gaussian:\n"
       << g3.cov.asEigen();
+}
+
+// The information form must transform like the covariance form
+TEST(CPosePDFGaussianInfMath, ChangeCoordinatesReference_MatchesCovarianceForm)
+{
+  mrpt::random::getRandomGenerator().randomize(4321);
+  const CPose2D mean(1.0, -2.0, -2.5);
+  const Mat3 C = randomCov(0.3);
+  for (const double phi : {0.0, 0.4, 1.2, -2.9})
+  {
+    const CPose2D ref(4.0, 1.0, phi);
+    CPosePDFGaussian p(mean, CMatrixDouble33(C));
+    p.changeCoordinatesReference(ref);
+    CPosePDFGaussianInf pi(mean, CMatrixDouble33(Mat3(C.inverse())));
+    pi.changeCoordinatesReference(ref);
+    EXPECT_NEAR(maxAbsDiff(pi.cov_inv.asEigen(), p.cov.asEigen().inverse()), 0.0, 1e-6)
+        << "phi=" << phi;
+    EXPECT_NEAR(maxAbsDiff(pi.cov_inv.asEigen(), pi.cov_inv.asEigen().transpose()), 0.0, 1e-12);
+  }
+}
+
+// Point PDFs: the covariance rotates with the new reference frame
+TEST(CPointPDFGaussianMath, ChangeCoordinatesReference_Covariance)
+{
+  mrpt::random::getRandomGenerator().randomize(99);
+  const CPose3D ref(1, 2, 3, 0.7, -0.4, 1.9);
+  const Mat3 C = randomCov(0.5);
+  CPointPDFGaussian p(CPoint3D(1, -1, 2), CMatrixDouble33(C));
+  p.changeCoordinatesReference(ref);
+  const Mat3 R = ref.getRotationMatrix().asEigen();
+  EXPECT_NEAR(maxAbsDiff(p.cov.asEigen(), R * C * R.transpose()), 0.0, 1e-12);
+
+  const Eigen::Matrix2d C2 = C.block<2, 2>(0, 0);
+  CPoint2DPDFGaussian p2(CPoint2D(1, -1), CMatrixDouble22(C2));
+  const CPose3D ref2(1, 2, 0, 0.9, 0, 0);
+  p2.changeCoordinatesReference(ref2);
+  const Eigen::Matrix2d R2 = ref2.getRotationMatrix().asEigen().block<2, 2>(0, 0);
+  EXPECT_NEAR((p2.cov.asEigen() - R2 * C2 * R2.transpose()).cwiseAbs().maxCoeff(), 0.0, 1e-12);
 }
