@@ -134,8 +134,9 @@ class CPosePDFParticles :
    */
   void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-  /** Draws a single sample from the distribution (WARNING: weights are
-   * assumed to be normalized!)
+  /** Draws a single sample from the distribution, picking a particle with a
+   * probability proportional to its weight (weights do not need to be
+   * normalized).
    */
   void drawSingleSample(CPose2D& outPart) const override;
 

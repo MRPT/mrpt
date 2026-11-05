@@ -98,8 +98,9 @@ class CPose3DPDFParticles :
    *   "to project" the current pdf. Result PDF substituted the currently
    * stored one in the object. */
   void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
-  /** Draws a single sample from the distribution (WARNING: weights are
-   * assumed to be normalized!) */
+  /** Draws a single sample from the distribution, picking a particle with a
+   * probability proportional to its weight (weights do not need to be
+   * normalized). */
   void drawSingleSample(CPose3D& outPart) const override;
   /** Draws a number of samples from the distribution, and saves as a list of
    * 1x6 vectors, where each row contains a (x,y,phi) datum. */

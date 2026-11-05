@@ -85,6 +85,20 @@ void CPosePDFParticles::copyFrom(const CPosePDF& o)
       itDest->d.normalizePhi();
     }
   }
+  else
+  {
+    // Any other PDF: draw samples from it.
+    const size_t M = m_particles.size();
+    std::vector<CVectorDouble> parts;
+    o.drawManySamples(M, parts);
+    ASSERT_EQUAL_(parts.size(), M);
+    for (size_t i = 0; i < M; i++)
+    {
+      m_particles[i].log_w = 0;
+      m_particles[i].d = TPose2D(parts[i][0], parts[i][1], parts[i][2]);
+      m_particles[i].d.normalizePhi();
+    }
+  }
 
   MRPT_END
 }
@@ -96,10 +110,16 @@ void CPosePDFParticles::getMean(CPose2D& est_) const
   const size_t n = m_particles.size();
   if (n)
   {
+    // Shift log-weights by their maximum to avoid underflow:
+    double maxW = m_particles[0].log_w;
+    for (const auto& p : m_particles)
+    {
+      maxW = std::max(maxW, p.log_w);
+    }
     mrpt::poses::SE_average<2> se_averager;
     for (size_t i = 0; i < n; i++)
     {
-      double w = exp(m_particles[i].log_w);
+      double w = exp(m_particles[i].log_w - maxW);
       se_averager.append(m_particles[i].d, w);
     }
     se_averager.get_average(est_);
@@ -119,23 +139,30 @@ std::tuple<CMatrixDouble33, CPose2D> CPosePDFParticles::getCovarianceAndMean() c
 
   size_t i, n = m_particles.size();
   double var_x = 0, var_y = 0, var_p = 0, var_xy = 0, var_xp = 0, var_yp = 0;
-  double mean_phi = mean.phi();
 
-  if (mean_phi < 0) mean_phi = M_2PI + mean_phi;
+  // Shift log-weights by their maximum to avoid underflow:
+  double maxW = n ? m_particles[0].log_w : 0.0;
+  for (i = 0; i < n; i++)
+  {
+    maxW = std::max(maxW, m_particles[i].log_w);
+  }
 
   double lin_w_sum = 0;
 
-  for (i = 0; i < n; i++) lin_w_sum += exp(m_particles[i].log_w);
+  for (i = 0; i < n; i++)
+  {
+    lin_w_sum += exp(m_particles[i].log_w - maxW);
+  }
   if (lin_w_sum == 0) lin_w_sum = 1;
 
   for (i = 0; i < n; i++)
   {
-    double w = exp(m_particles[i].log_w) / lin_w_sum;
+    double w = exp(m_particles[i].log_w - maxW) / lin_w_sum;
 
-    // Manage 1 PI range:
     double err_x = m_particles[i].d.x - mean.x();
     double err_y = m_particles[i].d.y - mean.y();
-    double err_phi = math::wrapToPi(fabs(m_particles[i].d.phi - mean_phi));
+    // Signed heading error, in the range [-pi,pi]:
+    double err_phi = math::wrapToPi(m_particles[i].d.phi - mean.phi());
 
     var_x += square(err_x) * w;
     var_y += square(err_y) * w;
@@ -151,7 +178,7 @@ std::tuple<CMatrixDouble33, CPose2D> CPosePDFParticles::getCovarianceAndMean() c
   }
   else
   {
-    // Unbiased estimation of variance:
+    // Weighted (biased) estimate of the covariance:
     cov(0, 0) = var_x;
     cov(1, 1) = var_y;
     cov(2, 2) = var_p;
@@ -287,12 +314,26 @@ void CPosePDFParticles::changeCoordinatesReference(const CPose3D& newReferenceBa
 
 void CPosePDFParticles::drawSingleSample(CPose2D& outPart) const
 {
-  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
+  ASSERT_(!m_particles.empty());
+
+  // Weights do not need to sum 1 (e.g. normalizeWeights() sets max log_w=0):
+  double maxW = m_particles[0].log_w;
+  for (const auto& p : m_particles)
+  {
+    maxW = std::max(maxW, p.log_w);
+  }
+  double sumW = 0;
+  for (const auto& p : m_particles)
+  {
+    sumW += exp(p.log_w - maxW);
+  }
+
+  const double uni = getRandomGenerator().drawUniform(0.0, sumW);
   double cum = 0;
 
   for (auto& p : m_particles)
   {
-    cum += exp(p.log_w);
+    cum += exp(p.log_w - maxW);
     if (uni <= cum)
     {
       outPart = CPose2D(p.d);

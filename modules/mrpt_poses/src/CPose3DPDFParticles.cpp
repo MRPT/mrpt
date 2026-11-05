@@ -49,14 +49,15 @@ void CPose3DPDFParticles::copyFrom(const CPose3DPDF& o)
     ASSERT_(pdf);
     m_particles = pdf->m_particles;
   }
-  else if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussian))
+  else
   {
-    const auto& pdf = dynamic_cast<const CPose3DPDFGaussian&>(o);
+    // Any other PDF: draw samples from it.
     const size_t N = m_particles.empty() ? 1000 : m_particles.size();
     m_particles.resize(N);
 
     std::vector<CVectorDouble> samples;
-    pdf.drawManySamples(N, samples);
+    o.drawManySamples(N, samples);
+    ASSERT_EQUAL_(samples.size(), N);
 
     const double uniformWeight = -std::log(static_cast<double>(N));
     for (size_t i = 0; i < N; i++)
@@ -78,11 +79,17 @@ void CPose3DPDFParticles::getMean(CPose3D& p) const
   {
     return;
   }
+  // Shift log-weights by their maximum to avoid underflow:
+  double maxW = m_particles[0].log_w;
+  for (const auto& part : m_particles)
+  {
+    maxW = std::max(maxW, part.log_w);
+  }
   // Calc average on SE(3)
   mrpt::poses::SE_average<3> se_averager;
   for (const auto& part : m_particles)
   {
-    const double w = exp(part.log_w);
+    const double w = exp(part.log_w - maxW);
     se_averager.append(part.d, w);
   }
   se_averager.get_average(p);
@@ -110,32 +117,32 @@ std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFParticles::getCovarianceAndMean()
   double std_yap = 0, std_yar = 0;
   double std_pr = 0;
 
-  // Mean values in [0, 2pi] range:
-  double mean_yaw = mean.yaw();
-  double mean_pitch = mean.pitch();
-  double mean_roll = mean.roll();
-  if (mean_yaw < 0) mean_yaw += M_2PI;
-  if (mean_pitch < 0) mean_pitch += M_2PI;
-  if (mean_roll < 0) mean_roll += M_2PI;
-
   // enough information to estimate the covariance?
   if (m_particles.size() < 2) return {cov, mean};
 
-  // Sum all weight values:
+  // Sum all weight values (shifted by their maximum to avoid underflow):
+  double maxW = m_particles[0].log_w;
+  for (const auto& p : m_particles)
+  {
+    maxW = std::max(maxW, p.log_w);
+  }
   double W = 0;
-  for (const auto& p : m_particles) W += exp(p.log_w);
+  for (const auto& p : m_particles)
+  {
+    W += exp(p.log_w - maxW);
+  }
 
   ASSERT_(W > 0);
 
   // Compute covariance:
   for (const auto& p : m_particles)
   {
-    double w = exp(p.log_w) / W;
+    double w = exp(p.log_w - maxW) / W;
 
-    // Manage 1 PI range:
-    double err_yaw = wrapToPi(std::abs(p.d.yaw - mean_yaw));
-    double err_pitch = wrapToPi(std::abs(p.d.pitch - mean_pitch));
-    double err_roll = wrapToPi(std::abs(p.d.roll - mean_roll));
+    // Signed angular errors, in the range [-pi,pi]:
+    double err_yaw = wrapToPi(p.d.yaw - mean.yaw());
+    double err_pitch = wrapToPi(p.d.pitch - mean.pitch());
+    double err_roll = wrapToPi(p.d.roll - mean.roll());
 
     double err_x = p.d.x - mean.x();
     double err_y = p.d.y - mean.y();
@@ -169,7 +176,7 @@ std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFParticles::getCovarianceAndMean()
     std_pr += err_pitch * err_roll * w;
   }  // end for it
 
-  // Unbiased estimation of variance:
+  // Weighted (biased) estimate of the covariance:
   cov(0, 0) = vars[0];
   cov(1, 1) = vars[1];
   cov(2, 2) = vars[2];
@@ -259,11 +266,25 @@ void CPose3DPDFParticles::changeCoordinatesReference(const CPose3D& newReference
 
 void CPose3DPDFParticles::drawSingleSample(CPose3D& outPart) const
 {
-  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
+  ASSERT_(!m_particles.empty());
+
+  // Weights do not need to sum 1 (e.g. normalizeWeights() sets max log_w=0):
+  double maxW = m_particles[0].log_w;
+  for (const auto& p : m_particles)
+  {
+    maxW = std::max(maxW, p.log_w);
+  }
+  double sumW = 0;
+  for (const auto& p : m_particles)
+  {
+    sumW += exp(p.log_w - maxW);
+  }
+
+  const double uni = getRandomGenerator().drawUniform(0.0, sumW);
   double cum = 0;
   for (const auto& p : m_particles)
   {
-    cum += exp(p.log_w);
+    cum += exp(p.log_w - maxW);
     if (uni <= cum)
     {
       outPart = CPose3D(p.d);

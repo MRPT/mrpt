@@ -60,11 +60,17 @@ void CPointPDFParticles::getMean(CPoint3D& p) const
   if (m_particles.empty()) THROW_EXCEPTION("Cannot compute mean since there are zero particles.");
 
   CParticleList::const_iterator it;
+  // Shift log-weights by their maximum to avoid underflow:
+  double maxW = m_particles.begin()->log_w;
+  for (it = m_particles.begin(); it != m_particles.end(); it++)
+  {
+    maxW = std::max(maxW, it->log_w);
+  }
   double sumW = 0;
   double x = 0, y = 0, z = 0;
   for (it = m_particles.begin(); it != m_particles.end(); it++)
   {
-    const double w = exp(it->log_w);
+    const double w = exp(it->log_w - maxW);
     x += it->d->x * w;
     y += it->d->y * w;
     z += it->d->z * w;
@@ -95,14 +101,24 @@ std::tuple<CMatrixDouble33, CPoint3D> CPointPDFParticles::getCovarianceAndMean()
   size_t i, n = m_particles.size();
   double var_x = 0, var_y = 0, var_p = 0, var_xy = 0, var_xp = 0, var_yp = 0;
 
+  // Shift log-weights by their maximum to avoid underflow:
+  double maxW = n ? m_particles[0].log_w : 0.0;
+  for (i = 0; i < n; i++)
+  {
+    maxW = std::max(maxW, m_particles[i].log_w);
+  }
+
   double lin_w_sum = 0;
 
-  for (i = 0; i < n; i++) lin_w_sum += exp(m_particles[i].log_w);
+  for (i = 0; i < n; i++)
+  {
+    lin_w_sum += exp(m_particles[i].log_w - maxW);
+  }
   if (lin_w_sum == 0) lin_w_sum = 1;
 
   for (i = 0; i < n; i++)
   {
-    double w = exp(m_particles[i].log_w) / lin_w_sum;
+    double w = exp(m_particles[i].log_w - maxW) / lin_w_sum;
 
     double err_x = m_particles[i].d->x - mean.x();
     double err_y = m_particles[i].d->y - mean.y();
@@ -118,7 +134,7 @@ std::tuple<CMatrixDouble33, CPoint3D> CPointPDFParticles::getCovarianceAndMean()
 
   if (n >= 2)
   {
-    // Unbiased estimation of variance:
+    // Weighted (biased) estimate of the covariance:
     cov(0, 0) = var_x;
     cov(1, 1) = var_y;
     cov(2, 2) = var_p;
@@ -247,7 +263,7 @@ double CPointPDFParticles::computeKurtosis()
 {
   MRPT_START
 
-  // kurtosis = \mu^4 / (\sigma^2) -3
+  // kurtosis = \mu_4 / \sigma^4 (non-excess, unweighted)
   Eigen::Vector3d kurts, mu4, m, var;
   kurts.fill(0);
   mu4.fill(0);
@@ -297,11 +313,25 @@ double CPointPDFParticles::computeKurtosis()
   ---------------------------------------------------------------*/
 void CPointPDFParticles::drawSingleSample(CPoint3D& outSample) const
 {
-  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
+  ASSERT_(!m_particles.empty());
+
+  // Weights do not need to sum 1 (e.g. normalizeWeights() sets max log_w=0):
+  double maxW = m_particles.begin()->log_w;
+  for (const auto& p : m_particles)
+  {
+    maxW = std::max(maxW, p.log_w);
+  }
+  double sumW = 0;
+  for (const auto& p : m_particles)
+  {
+    sumW += exp(p.log_w - maxW);
+  }
+
+  const double uni = getRandomGenerator().drawUniform(0.0, sumW);
   double cum = 0;
   for (const auto& p : m_particles)
   {
-    cum += exp(p.log_w);
+    cum += exp(p.log_w - maxW);
     if (uni <= cum)
     {
       outSample.x(p.d->x);
