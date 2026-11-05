@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/random.h>
@@ -68,7 +69,26 @@ void CActionRobotMovement3D::computeFromOdometry(
   rawOdometryIncrementReading = odometryIncrement;
   motionModelConfiguration = options;
 
-  if (options.modelSelection == mm6DOF) computeFromOdometry_model6DOF(odometryIncrement, options);
+  switch (options.modelSelection)
+  {
+    case mm6DOF:
+      computeFromOdometry_model6DOF(odometryIncrement, options);
+      break;
+    case mmGaussian:
+    {
+      // The increment itself, with the (diagonal) additional noise only:
+      poseChange.mean = odometryIncrement;
+      poseChange.cov.setZero();
+      for (int i = 0; i < 3; i++)
+      {
+        poseChange.cov(i, i) = mrpt::square(options.mm6DOFModel.additional_std_XYZ);
+        poseChange.cov(i + 3, i + 3) = mrpt::square(options.mm6DOFModel.additional_std_angle);
+      }
+    }
+    break;
+    default:
+      THROW_EXCEPTION("Unknown value for modelSelection");
+  };
 }
 
 /*---------------------------------------------------------------
@@ -98,7 +118,7 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
   /*
     The brief description:
     Find XYZ deltas: dX=x(t)-x(t-1); dY=y(t)-y(t-1); dZ=z(t)-z(t-1)
-    Find angular deltas (normalised): dRoll=roll(t)-roll(t-1);
+    Find angular deltas (normalized): dRoll=roll(t)-roll(t-1);
    dPitch=pitch(t)-pitch(t-1); dYaw=yaw(t)-yaw(t-1)
 
     Here t - is time step
@@ -107,33 +127,27 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 
 
         yaw1 = atan2 (dY,dX)
-        pitch1 = atan2 (dZ , sqrt(dX^2 + dY^2 + dZ^2) )
+        pitch1 = atan2 (-dZ , sqrt(dX^2 + dY^2) )  (MRPT pitch convention)
         trans = sqrt(dX^2 + dY^2 + dZ^2)
         roll = dRoll
-        yaw2= dYaw
-        pitch2= dPitch
+        yaw2= dYaw - yaw1
+        pitch2= dPitch - pitch1
 
 
     Model the error:
 
 
-        yaw1_draw = yaw1 + sample(a1 * yaw1 + a2 * trans )
-        pitch1_draw = pitch1 + sample(a3 * dZ )
-        trans_draw = trans + sample( a4 * trans + a5 * yaw2 + a6 * (roll
-   + pitch2 ) )
-        roll_draw = roll + sample(a7 * roll)
-        pitch2_draw = pitch2 + sample(a8 * pitch2 )
-        yaw2_draw = yaw2 + sample(a9 * yaw2 + a10 * trans )
+        yaw1_draw = yaw1 + sample(a1 * |yaw1| + a2 * trans )
+        pitch1_draw = pitch1 + sample(a3 * |dZ| )
+        trans_draw = trans + sample( a4 * trans + a5 * |yaw2| + a6 * (|roll|
+   + |pitch2|) )
+        roll_draw = roll + sample(a7 * |roll|)
+        pitch2_draw = pitch2 + sample(a8 * |pitch2| )
+        yaw2_draw = yaw2 + sample(a9 * |yaw2| + a10 * trans )
 
      Here sample() - sampling from zero mean Gaussian distribution
 
     Calculate the spherical coordinates:
-    // Original:
-        x = trans_draw * sin( pitch1_draw ) * cos ( yaw1_draw )
-        y = trans_draw * sin( pitch1_draw ) * sin ( yaw1_draw )
-        z = trans_draw * cos( pitch1_draw )
-
-    // Corrected (?) by JLBC (Jun 2019)
         x = trans_draw * cos( pitch1_draw ) * cos ( yaw1_draw )
         y = trans_draw * cos( pitch1_draw ) * sin ( yaw1_draw )
         z = -trans_draw * sin( pitch1_draw )
@@ -145,21 +159,27 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
     normalize_angle(roll, pitch, yaw )
   */
 
-  // The increments in odometry:
-  double Ayaw1 = (odometryIncrement.y() != 0 || odometryIncrement.x() != 0)
-                     ? atan2(odometryIncrement.y(), odometryIncrement.x())
-                     : 0;
+  // The increments in odometry. The direction of the translation is given by
+  // (yaw1,pitch1), and (yaw2,pitch2) are the remaining rotations, such that
+  // the noise-free model reproduces the odometry increment:
+  const double Ayaw1 = (odometryIncrement.y() != 0 || odometryIncrement.x() != 0)
+                           ? atan2(odometryIncrement.y(), odometryIncrement.x())
+                           : 0;
 
-  double Atrans = odometryIncrement.norm();
+  const double Atrans = odometryIncrement.norm();
 
-  double Apitch1 =
+  // In MRPT, a positive pitch makes the local +X axis point downwards:
+  const double Apitch1 =
       (odometryIncrement.y() != 0 || odometryIncrement.x() != 0 || odometryIncrement.z() != 0)
-          ? atan2(odometryIncrement.z(), odometryIncrement.norm())
+          ? atan2(
+                -odometryIncrement.z(),
+                std::sqrt(
+                    mrpt::square(odometryIncrement.x()) + mrpt::square(odometryIncrement.y())))
           : 0;
 
-  double Aroll = odometryIncrement.roll();
-  double Apitch2 = odometryIncrement.pitch();
-  double Ayaw2 = odometryIncrement.yaw();
+  const double Aroll = odometryIncrement.roll();
+  const double Apitch2 = mrpt::math::wrapToPi(odometryIncrement.pitch() - Apitch1);
+  const double Ayaw2 = mrpt::math::wrapToPi(odometryIncrement.yaw() - Ayaw1);
 
   const auto stdxyz = motionModelConfiguration.mm6DOFModel.additional_std_XYZ;
   auto& rnd = mrpt::random::getRandomGenerator();
@@ -168,18 +188,24 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
   for (size_t i = 0; i < o.mm6DOFModel.nParticlesCount; i++)
   {
     auto& ith_part = aux->m_particles[i].d;
-    double Ayaw1_draw = Ayaw1 + (o.mm6DOFModel.a1 * Ayaw1 + o.mm6DOFModel.a2 * Atrans) *
-                                    rnd.drawGaussian1D_normalized();
-    double Apitch1_draw =
-        Apitch1 + (o.mm6DOFModel.a3 * odometryIncrement.z()) * rnd.drawGaussian1D_normalized();
-    double Atrans_draw = Atrans + (o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * Ayaw2 +
-                                   o.mm6DOFModel.a6 * (Aroll + Apitch2)) *
-                                      rnd.drawGaussian1D_normalized();
+    // Standard deviations must not depend on the sign of the angles:
+    const double Ayaw1_draw =
+        Ayaw1 + (o.mm6DOFModel.a1 * std::abs(Ayaw1) + o.mm6DOFModel.a2 * Atrans) *
+                    rnd.drawGaussian1D_normalized();
+    const double Apitch1_draw = Apitch1 + (o.mm6DOFModel.a3 * std::abs(odometryIncrement.z())) *
+                                              rnd.drawGaussian1D_normalized();
+    const double Atrans_draw =
+        Atrans + (o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * std::abs(Ayaw2) +
+                  o.mm6DOFModel.a6 * (std::abs(Aroll) + std::abs(Apitch2))) *
+                     rnd.drawGaussian1D_normalized();
 
-    double Aroll_draw = Aroll + (o.mm6DOFModel.a7 * Aroll) * rnd.drawGaussian1D_normalized();
-    double Apitch2_draw = Apitch2 + (o.mm6DOFModel.a8 * Apitch2) * rnd.drawGaussian1D_normalized();
-    double Ayaw2_draw = Ayaw2 + (o.mm6DOFModel.a9 * Ayaw2 + o.mm6DOFModel.a10 * Atrans) *
-                                    rnd.drawGaussian1D_normalized();
+    const double Aroll_draw =
+        Aroll + (o.mm6DOFModel.a7 * std::abs(Aroll)) * rnd.drawGaussian1D_normalized();
+    const double Apitch2_draw =
+        Apitch2 + (o.mm6DOFModel.a8 * std::abs(Apitch2)) * rnd.drawGaussian1D_normalized();
+    const double Ayaw2_draw =
+        Ayaw2 + (o.mm6DOFModel.a9 * std::abs(Ayaw2) + o.mm6DOFModel.a10 * Atrans) *
+                    rnd.drawGaussian1D_normalized();
 
     // Output:
     ith_part.x = Atrans_draw * cos(Apitch1_draw) * cos(Ayaw1_draw) +

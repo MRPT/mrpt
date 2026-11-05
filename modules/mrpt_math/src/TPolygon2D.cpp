@@ -76,7 +76,7 @@ inline double isLeft(
 bool TPolygon2D::contains(const TPoint2D& P) const
 {
   // References:
-  // - http://geomalgorithms.com/a03-_inclusion.html
+  // - https://web.archive.org/web/20210504233957/http://geomalgorithms.com/a03-_inclusion.html
   // - https://en.wikipedia.org/wiki/Point_in_polygon#Winding_number_algorithm
 
   int wn = 0;  // the  winding number counter

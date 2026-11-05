@@ -1,5 +1,5 @@
 """
-Python bindings for mrpt::kinematics — vehicle kinematic models and simulators
+Python bindings for mrpt::kinematics: vehicle kinematic models and simulators
 """
 from __future__ import annotations
 import mrpt.math

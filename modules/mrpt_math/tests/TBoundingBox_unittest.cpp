@@ -191,3 +191,36 @@ TEST(TBoundingBox, inverseCompose)
         << bb2.max << "\n";
   }
 }
+
+// Regression: compose()/inverseCompose() only transformed the min and max
+// corners, so with rotations the result did not contain the transformed box.
+// Now it is the tightest axis-aligned box of the 8 transformed corners.
+TEST(TBoundingBox, composeWithRotationBoundsAllCorners)
+{
+  const mrpt::math::TBoundingBox bb({0, 0, 0}, {3, 1, 0.5});
+  for (const auto& pose :
+       {mrpt::math::TPose3D(1, 2, 3, 0.785, 0, 0), mrpt::math::TPose3D(-1, 0, 2, 2.0, 0.6, -1.1),
+        mrpt::math::TPose3D(0, 0, 0, -3.0, -1.2, 0.4)})
+  {
+    for (int inverse = 0; inverse < 2; inverse++)
+    {
+      const auto out = inverse ? bb.inverseCompose(pose) : bb.compose(pose);
+      mrpt::math::TPoint3D lo(1e9, 1e9, 1e9);
+      mrpt::math::TPoint3D hi(-1e9, -1e9, -1e9);
+      for (int i = 0; i < 8; i++)
+      {
+        const mrpt::math::TPoint3D c(
+            (i & 1) ? bb.max.x : bb.min.x, (i & 2) ? bb.max.y : bb.min.y,
+            (i & 4) ? bb.max.z : bb.min.z);
+        const auto t = inverse ? pose.inverseComposePoint(c) : pose.composePoint(c);
+        for (int k = 0; k < 3; k++)
+        {
+          lo[k] = std::min(lo[k], t[k]);
+          hi[k] = std::max(hi[k], t[k]);
+        }
+      }
+      EXPECT_NEAR((out.min - lo).norm(), 0.0, 1e-12) << pose << " inverse=" << inverse;
+      EXPECT_NEAR((out.max - hi).norm(), 0.0, 1e-12) << pose << " inverse=" << inverse;
+    }
+  }
+}

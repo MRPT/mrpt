@@ -25,8 +25,10 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CSetOfObjects.h>
 
+#include <Eigen/Dense>
 #include <cmath>
 #include <sstream>
+#include <vector>
 
 template <class MAP>
 void do_test_insertCheckMapBounds()
@@ -487,4 +489,75 @@ TEST(CHeightGridMap2D_MRF, MapDefinitionLoadDumpAndCreate)
   ASSERT_TRUE(dem);
   EXPECT_NEAR(dem->getXMin(), -3.0, 1e-9);
   EXPECT_NEAR(dem->getXMax(), 3.0, 1e-9);
+}
+
+// GMRF estimate (mean and std) against a dense solution of the same model,
+// with per-point and default observation information.
+TEST(CHeightGridMap2D_MRF, GMRF_MatchesDenseSolution)
+{
+  using mrpt::maps::CHeightGridMap2D_MRF;
+  CHeightGridMap2D_MRF g(mrpt::maps::CRandomFieldGridMap2D::mrGMRF_SD, 0, 2, 0, 2, 0.5);
+  const double lambdaPrior = 2.0;
+  const double lambdaObs = 5.0;
+  g.insertionOptions.GMRF_lambdaPrior = lambdaPrior;
+  g.insertionOptions.GMRF_lambdaObs = lambdaObs;
+  g.insertionOptions.GMRF_skip_variance = false;
+  g.clear();
+
+  const int sx = static_cast<int>(g.getSizeX());
+  const int N = static_cast<int>(g.getSizeX() * g.getSizeY());
+  ASSERT_EQ(N, 16);
+
+  // (x, y, z, std); std=0 means the default information:
+  const std::vector<std::vector<double>> pts = {
+      {0.2, 0.2,  1.0, 0.0},
+      {1.3, 0.7, -0.5, 0.2},
+      {1.8, 1.8,  2.0, 1.0}
+  };
+  Eigen::MatrixXd H = Eigen::MatrixXd::Zero(N, N);
+  Eigen::VectorXd b = Eigen::VectorXd::Zero(N);
+  for (const auto& p : pts)
+  {
+    mrpt::maps::CHeightGridMap2D_Base::TPointInsertParams params;
+    params.pt_z_std = p[3];
+    params.update_map_after_insertion = false;
+    ASSERT_TRUE(g.insertIndividualPoint(p[0], p[1], p[2], params));
+    const int c = g.xy2idx(p[0], p[1]);
+    const double lambda = p[3] == 0 ? lambdaObs : 1.0 / (p[3] * p[3]);
+    H(c, c) += lambda;
+    b(c) += lambda * p[2];
+  }
+  g.dem_update_map();
+
+  // 4-connectivity prior:
+  for (int j = 0; j < N; j++)
+  {
+    const int cx = j % sx;
+    const int cy = j / sx;
+    if (cx + 1 < sx)
+    {
+      const int i = j + 1;
+      H(i, i) += lambdaPrior;
+      H(j, j) += lambdaPrior;
+      H(i, j) -= lambdaPrior;
+      H(j, i) -= lambdaPrior;
+    }
+    if (cy + 1 < sx)
+    {
+      const int i = j + sx;
+      H(i, i) += lambdaPrior;
+      H(j, j) += lambdaPrior;
+      H(i, j) -= lambdaPrior;
+      H(j, i) -= lambdaPrior;
+    }
+  }
+  const Eigen::MatrixXd Hinv = H.inverse();
+  const Eigen::VectorXd mu = Hinv * b;
+  for (int j = 0; j < N; j++)
+  {
+    const auto* cell = g.cellByIndex(static_cast<unsigned>(j % sx), static_cast<unsigned>(j / sx));
+    ASSERT_TRUE(cell != nullptr);
+    EXPECT_NEAR(cell->gmrf_mean(), mu[j], 1e-9) << "j=" << j;
+    EXPECT_NEAR(cell->gmrf_std(), std::sqrt(Hinv(j, j)), 1e-9) << "j=" << j;
+  }
 }

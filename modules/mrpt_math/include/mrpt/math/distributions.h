@@ -18,6 +18,10 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>
 
+#include <algorithm>
+#include <iterator>
+#include <vector>
+
 namespace mrpt::math
 {
 /** \addtogroup stats_grp Statistics functions, probability distributions
@@ -127,22 +131,25 @@ double KLD_Gaussians(
  * p=[0,1].
  *  The employed approximation is that from Peter J. Acklam
  * (pjacklam@online.no),
- *  freely available in http://home.online.no/~pjacklam.
+ *  freely available in:
+ *  https://web.archive.org/web/20151110174102/http://home.online.no/~pjacklam/notes/invnorm/
  */
 double normalQuantile(double p);
 
-/** Evaluates the Gaussian cumulative density function.
+/** Evaluates the standard normal cumulative distribution function.
  *  The employed approximation is that from W. J. Cody
  *  freely available in http://www.netlib.org/specfun/erf
  *  \note Equivalent to MATLAB normcdf(x,mu,s) with p=(x-mu)/s
  */
 double normalCDF(double p);
 
-/** The "quantile" of the Chi-Square distribution, for dimension "dim" and
- * probability 0<P<1 (the inverse of chi2CDF)
- * An approximation from the Wilson-Hilferty transformation is used.
- *  \note Equivalent to MATLAB chi2inv(), but note that this is just an
- * approximation, which becomes very poor for small values of "P".
+/** The "quantile" of the Chi-Square distribution, for dimension "dim">0 and
+ * probability 0<=P<1 (the inverse of chi2CDF).
+ * The Wilson-Hilferty approximation is refined with Newton iterations on the
+ * exact CDF, for a relative accuracy of about 1e-10. For dim>100 the
+ * Wilson-Hilferty value is returned directly (relative error below 0.2%,
+ * decreasing with dim).
+ *  \note Equivalent to MATLAB chi2inv().
  */
 double chi2inv(double P, unsigned int dim = 1);
 
@@ -155,14 +162,14 @@ distribution with \a degreesOfFreedom,
 distribution is below \a arg
   It uses the approximate transform into a normal distribution due to Wilson
 and Hilferty
-  (see Abramovitz, Stegun: "Handbook of Mathematical Functions", formula
-26.3.32).
+  (see Abramowitz and Stegun: "Handbook of Mathematical Functions", section
+26.4).
   The algorithm's running time is independent of the inputs. The accuracy is
 only
   about 0.1 for few degrees of freedom, but reaches about 0.001 above dof = 5.
 
   \note Function code from the Vigra project
-(http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU
+(https://ukoethe.github.io/vigra/); code under "MIT X11 License", GNU
 GPL-compatible.
 * \sa noncentralChi2PDF_CDF
 */
@@ -170,15 +177,13 @@ double noncentralChi2CDF(unsigned int degreesOfFreedom, double noncentrality, do
 
 /*! Cumulative chi square distribution.
 
-  Computes the cumulative density of a chi square distribution with \a
-   degreesOfFreedom
-  and tolerance \a accuracy at the given argument \a arg, i.e. the probability
-   that
+  Computes the cumulative distribution of a chi square distribution with \a
+   degreesOfFreedom at the given argument \a arg, i.e. the probability that
   a random number drawn from the distribution is below \a arg
-  by calling <tt>noncentralChi2CDF(degreesOfFreedom, 0.0, arg, accuracy)</tt>.
+  by calling <tt>noncentralChi2PDF_CDF(degreesOfFreedom, 0.0, arg).second</tt>.
 
   \note Function code from the Vigra project
-   (http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU
+   (https://ukoethe.github.io/vigra/); code under "MIT X11 License", GNU
    GPL-compatible.
 */
 double chi2CDF(unsigned int degreesOfFreedom, double arg);
@@ -186,12 +191,13 @@ double chi2CDF(unsigned int degreesOfFreedom, double arg);
 /*! Chi square distribution PDF.
  *	Computes the density of a chi square distribution with \a degreesOfFreedom
  *	and tolerance \a accuracy at the given argument \a arg
- *	by calling <tt>noncentralChi2(degreesOfFreedom, 0.0, arg, accuracy)</tt>.
+ *	by calling <tt>noncentralChi2PDF_CDF(degreesOfFreedom, 0.0, arg, accuracy).first</tt>.
  *	\note Function code from the Vigra project
- *(http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU
+ *(https://ukoethe.github.io/vigra/); code under "MIT X11 License", GNU
  *GPL-compatible.
  *
- * \note Equivalent to MATLAB's chi2pdf(arg,degreesOfFreedom)
+ * \note Equivalent to MATLAB's chi2pdf(arg,degreesOfFreedom), except for
+ * arg=0 with 1 degree of freedom (unbounded density), where 0 is returned.
  */
 double chi2PDF(unsigned int degreesOfFreedom, double arg, double accuracy = 1e-7);
 
@@ -203,7 +209,7 @@ std::pair<double, double> noncentralChi2PDF_CDF(
     unsigned int degreesOfFreedom, double noncentrality, double arg, double eps = 1e-7);
 
 /** Return the mean and the 10%-90% confidence points (or with any other
- * confidence value) of a set of samples by building the cummulative CDF of all
+ * confidence value) of a set of samples by building the cumulative CDF of all
  * the elements of the container.
  *  The container can be any MRPT container (CArray, matrices, vectors).
  * \param confidenceInterval A number in the range (0,1) such as the confidence
@@ -246,8 +252,9 @@ void confidenceIntervals(
   MRPT_END
 }
 
-/** Return the mean and the 10%-90% confidence points (or with any other
+/** Return the 10%-90% confidence points (or with any other
  * confidence value) of a set of samples from their histogram.
+ *  The returned limits are elements of \a histogramCoords.
  *  The container can be any MRPT container (CArray, matrices, vectors).
  * \param confidenceInterval A number in the range (0,1) such as the confidence
  * interval will be [100*confidenceInterval, 100*(1-confidenceInterval)].
@@ -263,9 +270,7 @@ void confidenceIntervalsFromHistogram(
   MRPT_START
   ASSERT_(confidenceInterval > 0 && confidenceInterval < 1);
 
-  const auto x_min = *histogramCoords.begin();
-  const auto x_max = *histogramCoords.rbegin();
-  const auto binWidth = (x_max - x_min) / static_cast<double>(histogramCoords.size());
+  ASSERT_EQUAL_(histogramCoords.size(), histogramNormalizedHits.size());
 
   std::vector<double> Hc;
   cumsum(histogramNormalizedHits, Hc);  // CDF
@@ -275,10 +280,8 @@ void confidenceIntervalsFromHistogram(
   ASSERT_(it_low != Hc.end());
   auto it_high = std::upper_bound(Hc.begin(), Hc.end(), 1 - confidenceInterval);
   ASSERT_(it_high != Hc.end());
-  const size_t idx_low = static_cast<size_t>(std::distance(Hc.begin(), it_low));
-  const size_t idx_high = static_cast<size_t>(std::distance(Hc.begin(), it_high));
-  out_lower_conf_interval = x_min + static_cast<double>(idx_low) * binWidth;
-  out_upper_conf_interval = x_min + static_cast<double>(idx_high) * binWidth;
+  out_lower_conf_interval = *std::next(histogramCoords.begin(), std::distance(Hc.begin(), it_low));
+  out_upper_conf_interval = *std::next(histogramCoords.begin(), std::distance(Hc.begin(), it_high));
 
   MRPT_END
 }

@@ -461,7 +461,7 @@ class CDijkstra
 
       auto& edges = out_tree.edges_to_children[id == id_from ? id_to : id_from];
       TreeEdgeInfo newEdge(id);
-      newEdge.reverse = (id == id_from);  // true: root towards leafs.
+      newEdge.reverse = (id == id_from);  // true: edge stored child->parent
       auto itEdgeData = m_cached_graph.edges.find(std::make_pair(id_from, id_to));
       ASSERTMSG_(
           itEdgeData != m_cached_graph.edges.end(),

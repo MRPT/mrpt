@@ -17,6 +17,10 @@
 #include <mrpt/math/ransac.h>
 #include <mrpt/random/RandomGenerators.h>
 
+#include <cmath>
+#include <set>
+#include <vector>
+
 using namespace mrpt::math;
 
 namespace
@@ -162,4 +166,100 @@ TEST(RANSAC, NoModelFoundWithAllDegenerateData)
 
   EXPECT_FALSE(found);
   EXPECT_TRUE(inliers.empty());
+}
+
+namespace
+{
+using MatD = mrpt::math::CMatrixDynamic<double>;
+
+// Mock RANSAC problem: every minimal sample yields the same model, with a
+// fixed inlier set. The number of trials is then independent of sampling.
+struct FixedInlierProblem
+{
+  size_t nInliers = 0;
+  size_t fitCalls = 0;
+  size_t distCalls = 0;
+  size_t samplesWithRepeatedIndex = 0;
+  size_t samplesOutOfRange = 0;
+  size_t pointCount = 0;
+};
+
+bool runFixedInlierRansac(
+    FixedInlierProblem& pb, size_t pointCount, unsigned int s, double p, size_t maxIter)
+{
+  pb.pointCount = pointCount;
+  MatD data(2, static_cast<int>(pointCount));
+  data.setZero();
+
+  auto fit = [&pb](const MatD&, const std::vector<size_t>& idxs, std::vector<MatD>& models)
+  {
+    pb.fitCalls++;
+    const std::set<size_t> u(idxs.begin(), idxs.end());
+    if (u.size() != idxs.size())
+    {
+      pb.samplesWithRepeatedIndex++;
+    }
+    for (const auto i : idxs)
+    {
+      if (i >= pb.pointCount)
+      {
+        pb.samplesOutOfRange++;
+      }
+    }
+    models.assign(1, MatD(1, 1));
+  };
+  auto dist = [&pb](
+                  const MatD&, const std::vector<MatD>&, const double, unsigned int& best,
+                  std::vector<size_t>& inliers)
+  {
+    pb.distCalls++;
+    best = 0;
+    inliers.resize(pb.nInliers);
+    for (size_t i = 0; i < pb.nInliers; i++)
+    {
+      inliers[i] = i;
+    }
+  };
+  auto degen = [](const MatD&, const std::vector<size_t>&) { return false; };
+
+  mrpt::math::RANSAC ransac;
+  ransac.setMinLoggingLevel(mrpt::system::LVL_ERROR);
+  std::vector<size_t> bestInliers;
+  MatD bestModel;
+  return ransac.execute(data, fit, dist, degen, 0.1, s, bestInliers, bestModel, p, maxIter);
+}
+}  // namespace
+
+TEST(RANSAC, MinimalSamplesHaveDistinctIndices)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  FixedInlierProblem pb;
+  pb.nInliers = 1;  // low inlier ratio: run until maxIter
+  runFixedInlierRansac(pb, 10, 3, 0.99, 200);
+  EXPECT_EQ(pb.fitCalls, 200U);
+  EXPECT_EQ(pb.samplesOutOfRange, 0U);
+  EXPECT_EQ(pb.samplesWithRepeatedIndex, 0U);
+}
+
+TEST(RANSAC, NumberOfTrialsAchievesRequestedProbability)
+{
+  mrpt::random::getRandomGenerator().randomize(1);
+  FixedInlierProblem pb;
+  pb.nInliers = 80;
+  const double p = 0.999;
+  const unsigned int s = 2;
+  runFixedInlierRansac(pb, 100, s, p, 2000);
+  const double w = 0.8;
+  const double achieved = 1.0 - std::pow(1.0 - std::pow(w, s), static_cast<double>(pb.distCalls));
+  EXPECT_GE(achieved, p) << "trials=" << pb.distCalls;
+  // ceil(log(0.001)/log(1-0.64)) = 7
+  EXPECT_EQ(pb.distCalls, 7U);
+}
+
+TEST(RANSAC, NotEnoughPointsForMinimalSample)
+{
+  FixedInlierProblem pb;
+  pb.nInliers = 2;
+  EXPECT_FALSE(runFixedInlierRansac(pb, 2, 3, 0.99, 100));
+  EXPECT_EQ(pb.fitCalls, 0U);
 }

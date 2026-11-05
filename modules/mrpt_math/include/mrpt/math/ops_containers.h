@@ -104,10 +104,15 @@ void resizeLike(std::vector<T>& trg, const std::vector<T>& src)
 {
   trg.resize(src.size());
 }
+template <typename T>
+void resizeLike(CVectorDynamic<T>& trg, const CVectorDynamic<T>& src)
+{
+  trg.resize(src.size());
+}
 
 /** Computes the cumulative sum of all the elements, saving the result in
  * another container.
- *  This works for both matrices (even mixing their types) and vectores/arrays
+ *  This works for both matrices (even mixing their types) and vectors/arrays
  * (even mixing types),
  *  and even to store the cumsum of any matrix into any vector/array, but not
  * in opposite direction.
@@ -187,7 +192,7 @@ T minimum(const std::vector<T>& v)
   return m;
 }
 
-/** \name Generic container element-wise operations - Miscelaneous
+/** \name Generic container element-wise operations - Miscellaneous
  * @{
  */
 
@@ -211,7 +216,7 @@ T squareNorm(const U& v)
 
 /** v1*v2: The dot product of two containers (vectors/arrays/matrices) */
 template <class CONTAINER1, class CONTAINER2>
-typename CONTAINER1::Scalar dotProduct(const CONTAINER1& v1, const CONTAINER1& v2)
+typename CONTAINER1::Scalar dotProduct(const CONTAINER1& v1, const CONTAINER2& v2)
 {
   return v1.dot(v2);
 }
@@ -227,8 +232,8 @@ T dotProduct(const U& v1, const V& v2)
 
 /** Computes the sum of all the elements.
   * \note If used with containers of integer types (uint8_t, int, etc...) this
-  could overflow. In those cases, use sumRetType the second argument RET to
-  specify a larger type to hold the sum.
+  could overflow. In those cases, use sumRetType<CONTAINER,RET>() with a
+  larger type RET to hold the sum.
    \sa cumsum  */
 template <class CONTAINER>
 typename CONTAINER::Scalar sum(const CONTAINER& v)
@@ -248,7 +253,12 @@ T sum(const std::vector<T>& v)
 template <class CONTAINER, typename RET>
 RET sumRetType(const CONTAINER& v)
 {
-  return v.template sumRetType<RET>();
+  RET r = 0;
+  for (const auto& x : v)
+  {
+    r += static_cast<RET>(x);
+  }
+  return r;
 }
 
 /** Computes the mean value of a vector  \return The mean, as a double number.
@@ -283,7 +293,8 @@ void minimum_maximum(
     typename Eigen::MatrixBase<Derived>::Scalar& curMin,
     typename Eigen::MatrixBase<Derived>::Scalar& curMax)
 {
-  V.minimum_maximum(curMin, curMax);
+  curMin = V.minCoeff();
+  curMax = V.maxCoeff();
 }
 
 /** Scales all elements such as the minimum & maximum values are shifted to the
@@ -315,7 +326,8 @@ size_t countCommonElements(const CONTAINER1& a, const CONTAINER2& b)
 }
 
 /** Adjusts the range of all the elements such as the minimum and maximum values
- * being those supplied by the user.  */
+ * being those supplied by the user. If all elements are equal, they are all
+ * set to minVal. */
 template <class CONTAINER>
 void adjustRange(
     CONTAINER& m, const typename CONTAINER::Scalar minVal, const typename CONTAINER::Scalar maxVal)
@@ -324,11 +336,15 @@ void adjustRange(
   {
     return;
   }
-  typename CONTAINER::Scalar curMin, curMax;
-  minimum_maximum(m, curMin, curMax);
+  const typename CONTAINER::Scalar curMin = m.minCoeff();
+  const typename CONTAINER::Scalar curMax = m.maxCoeff();
   const typename CONTAINER::Scalar curRan = curMax - curMin;
-  m -= (curMin + minVal);
-  if (curRan != 0) m *= (maxVal - minVal) / curRan;
+  m -= curMin;
+  if (curRan != 0)
+  {
+    m *= (maxVal - minVal) / curRan;
+  }
+  m += minVal;
 }
 
 /** Computes the standard deviation of a vector (or all elements of a matrix)
@@ -379,7 +395,8 @@ double stddev(const VECTORLIKE& v, bool unbiased = true)
 }
 
 /** Computes the mean vector and covariance from a list of values given as a
- * vector of vectors, where each row is a sample.
+ * vector of vectors, where each row is a sample. The covariance uses the 1/N
+ * (biased, maximum-likelihood) normalization.
  * \param v The set of data, as a vector of N vectors of M elements.
  * \param out_mean The output M-vector for the estimated mean.
  * \param out_cov The output MxM matrix for the estimated covariance matrix.
@@ -390,7 +407,7 @@ void meanAndCovVec(const VECTOR_OF_VECTOR& v, VECTORLIKE& out_mean, MATRIXLIKE& 
 {
   const size_t N = v.size();
   ASSERTMSG_(N > 0, "The input vector contains no elements");
-  const double N_inv = 1.0 / N;
+  const double N_inv = 1.0 / static_cast<double>(N);
 
   const size_t M = v[0].size();
   ASSERTMSG_(M > 0, "The input vector contains rows of length 0");

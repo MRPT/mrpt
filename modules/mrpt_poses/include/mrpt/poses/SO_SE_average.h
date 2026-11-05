@@ -39,9 +39,9 @@ class SE_average;
  * corresponding 2D points, then projecting the result back to the closest-point
  * in the manifold.
  * Shortly explained in [these
- * slides](http://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
+ * slides](https://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
  * \note Class introduced in MRPT 1.3.1
- * \sa SE_traits */
+ * \sa mrpt::poses::Lie::SE, mrpt::poses::Lie::SO */
 template <>
 class SO_average<2>
 {
@@ -57,8 +57,8 @@ class SO_average<2>
   void append(const double orientation_rad, const double weight);
   /** Returns the average orientation (radians).
    * \exception std::logic_error If no data point were inserted.
-   * \exception std::runtime_error Upon undeterminate average value (ie the
-   * average lays exactly on the origin point) and \a
+   * \exception std::runtime_error Upon undetermined average value (ie the
+   * average of the 2D unit vectors lies at the origin) and \a
    * enable_exception_on_undeterminate is set to true (otherwise, the 0
    * orientation would be returned)
    * \sa append */
@@ -79,11 +79,11 @@ class SO_average<2>
  * corresponding matrices, then projecting the result back to the closest matrix
  * in the manifold.
  * Shortly explained in [these
- * slides](http://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
+ * slides](https://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
  * See also: eq. (3.7) in "MEANS AND AVERAGING IN THE GROUP OF ROTATIONS",
  * MAHER MOAKHER, 2002.
  * \note Class introduced in MRPT 1.3.1
- * \sa SE_traits */
+ * \sa mrpt::poses::Lie::SE, mrpt::poses::Lie::SO */
 template <>
 class SO_average<3>
 {
@@ -99,9 +99,10 @@ class SO_average<3>
   void append(const mrpt::math::CMatrixDouble33& M, const double weight);
   /** Returns the average orientation.
    * \exception std::logic_error If no data point were inserted.
-   * \exception std::runtime_error Upon undeterminate average value (ie there
-   * was a problem with the SVD) and \a enable_exception_on_undeterminate is
-   * set to true (otherwise, the 0 orientation would be returned)
+   * \exception std::runtime_error Upon undetermined average value (ie the
+   * closest rotation to the averaged matrix is not unique, e.g. for two
+   * opposite rotations) and \a enable_exception_on_undeterminate is set to
+   * true (otherwise, the identity rotation would be returned)
    * \sa append */
   mrpt::math::CMatrixDouble33 get_average() const;
   /** (Default=false) Set to true if you want to raise an exception on
@@ -119,7 +120,7 @@ class SO_average<3>
  * Theoretical base: See SO_average<2> for the rotation part. The translation
  * is a simple arithmetic mean in Euclidean space.
  * \note Class introduced in MRPT 1.3.1
- * \sa SE_traits */
+ * \sa mrpt::poses::Lie::SE, mrpt::poses::Lie::SO */
 template <>
 class SE_average<2>
 {
@@ -135,8 +136,8 @@ class SE_average<2>
   void append(const mrpt::math::TPose2D& p, const double weight);
   /** Returns the average pose.
    * \exception std::logic_error If no data point were inserted.
-   * \exception std::runtime_error Upon undeterminate average value (ie the
-   * average lays exactly on the origin point) and \a
+   * \exception std::runtime_error Upon undetermined average value (ie the
+   * average of the 2D unit vectors lies at the origin) and \a
    * enable_exception_on_undeterminate is set to true (otherwise, the 0
    * orientation would be returned)
    * \sa append */
@@ -157,7 +158,7 @@ class SE_average<2>
  * Theoretical base: See SO_average<3> for the rotation part. The translation
  * is a simple arithmetic mean in Euclidean space.
  * \note Class introduced in MRPT 1.3.1
- * \sa SE_traits */
+ * \sa mrpt::poses::Lie::SE, mrpt::poses::Lie::SO */
 template <>
 class SE_average<3>
 {
@@ -173,8 +174,8 @@ class SE_average<3>
   void append(const mrpt::math::TPose3D& p, const double weight);
   /** Returns the average pose.
    * \exception std::logic_error If no data point were inserted.
-   * \exception std::runtime_error Upon undeterminate average value (ie the
-   * average lays exactly on the origin point) and \a
+   * \exception std::runtime_error Upon undetermined average value (ie the
+   * average of the 2D unit vectors lies at the origin) and \a
    * enable_exception_on_undeterminate is set to true (otherwise, the 0
    * orientation would be returned)
    * \sa append */

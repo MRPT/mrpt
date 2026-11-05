@@ -15,6 +15,8 @@
 
 #include <mrpt/random/random_shuffle.h>
 
+#include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <limits>  // numeric_limits
 #include <random>
@@ -62,14 +64,17 @@ class Generator_MT19937
 
 /** A thread-safe pseudo random number generator, based on an internal MT19937
  * randomness generator.
- * The base algorithm for randomness is platform-independent. See
+ * The base MT19937 algorithm is platform-independent. See
  * http://en.wikipedia.org/wiki/Mersenne_twister
+ * Gaussian samples and 64-bit integers are generated with the C++ standard
+ * library distributions, whose algorithms are implementation-defined, so
+ * those sequences may differ across standard libraries.
  *
  * For real thread-safety, each thread must create and use its own instance of
  * this class.
  *
- * Single-thread programs can use the static object
- * mrpt::random::randomGenerator
+ * Single-thread programs can use the thread-local instance returned by
+ * mrpt::random::getRandomGenerator()
  * \ingroup mrpt_random_grp
  */
 class CRandomGenerator
@@ -105,8 +110,8 @@ class CRandomGenerator
    *  See: http://en.wikipedia.org/wiki/Mersenne_twister */
   uint32_t drawUniform32bit();
 
-  /** Returns a uniformly distributed pseudo-random number by joining two
-   * 32bit numbers from \a drawUniform32bit() */
+  /** Returns a uniformly distributed 64-bit pseudo-random number, generated
+   * with std::uniform_int_distribution<uint64_t> on the MT19937 engine */
   uint64_t drawUniform64bit();
 
   /** You can call this overloaded method with either 32 or 64bit unsigned
@@ -119,14 +124,16 @@ class CRandomGenerator
   template <typename T, typename U, typename V>
   void drawUniformUnsignedIntRange(T& ret_number, const U min_val, const V max_val)
   {
-    const T range = max_val - min_val + 1;
+    // range==0 means the whole range of T:
+    const T range = static_cast<T>(static_cast<T>(max_val - min_val) + 1U);
     T rnd;
     drawUniformUnsignedInt(rnd);
-    ret_number = min_val + (rnd % range);
+    ret_number = range == 0 ? rnd : static_cast<T>(min_val + (rnd % range));
   }
 
   /** Generate a uniformly distributed pseudo-random number using the MT19937
-   * algorithm, scaled to the selected range. */
+   * algorithm, scaled to the selected range. The result is in the closed
+   * range [Min, Max]. */
   template <typename return_t = double>
   return_t drawUniform(const double Min, const double Max)
   {
@@ -170,9 +177,6 @@ class CRandomGenerator
    @{ */
 
   /** Generate a normalized (mean=0, std=1) normally distributed sample.
-   *  \param likelihood If desired, pass a pointer to a double which will
-   * receive the likelihood of the given sample to have been obtained, that
-   * is, the value of the normal pdf at the sample value.
    */
   double drawGaussian1D_normalized();
 
@@ -242,58 +246,10 @@ class CRandomGenerator
 
   /** Generate multidimensional random samples according to a given covariance
    * matrix.
-   *  Mean is assumed to be zero if mean==nullptr.
-   * \exception std::exception On invalid covariance matrix
-   * \sa drawGaussianMultivariateMany
-   */
-  template <typename T, typename MATRIX>
-  void drawGaussianMultivariate(
-      std::vector<T>& out_result, const MATRIX& cov, const std::vector<T>* mean = nullptr)
-  {
-    const size_t dim = cov.cols();
-    if (cov.rows() != cov.cols())
-    {
-      throw std::runtime_error("drawGaussianMultivariate(): cov is not square.");
-    }
-    if (mean && mean->size() != dim)
-    {
-      throw std::runtime_error("drawGaussianMultivariate(): mean and cov sizes ");
-    }
-    MATRIX Z;
-    MATRIX D;
-    // Set size of output vector:
-    out_result.clear();
-    out_result.resize(dim, 0);
-    /** Computes the eigenvalues/eigenvector decomposition of this matrix,
-     *    so that: M = Z * D * Z<sup>T</sup>, where columns in Z are the
-     *	  eigenvectors and the diagonal matrix D contains the eigenvalues
-     *    as diagonal elements, sorted in <i>ascending</i> order.
-     */
-    cov.eigenVectors(Z, D);
-    // Scale eigenvectors with eigenvalues:
-    D = D.array().sqrt().matrix();
-    Z.matProductOf_AB(Z, D);
-    for (size_t i = 0; i < dim; i++)
-    {
-      T rnd = this->drawGaussian1D_normalized();
-      for (size_t d = 0; d < dim; d++)
-      {
-        out_result[d] += (Z(d, i) * rnd);
-      }
-    }
-    if (mean)
-    {
-      for (size_t d = 0; d < dim; d++)
-      {
-        out_result[d] += (*mean)[d];
-      }
-    }
-  }
-
-  /** Generate multidimensional random samples according to a given covariance
-   * matrix.
-   *  Mean is assumed to be zero if mean==nullptr.
-   * \exception std::exception On invalid covariance matrix
+   *  Mean is assumed to be zero if mean==nullptr. The covariance may be
+   * positive semidefinite (e.g. singular).
+   * \exception std::exception If cov is not square, the mean size does not
+   * match, or the eigen decomposition fails.
    * \sa drawGaussianMultivariateMany
    */
   template <class VECTORLIKE, class COVMATRIX>
@@ -313,13 +269,17 @@ class CRandomGenerator
     // Compute eigenvalues/eigenvectors of cov:
     COVMATRIX eigVecs;
     std::vector<typename COVMATRIX::Scalar> eigVals;
-    cov.eig_symmetric(eigVecs, eigVals, false /*sorted*/);
+    if (!cov.eig_symmetric(eigVecs, eigVals, false /*sorted*/))
+    {
+      throw std::runtime_error("drawGaussianMultivariate(): eigen decomposition failed.");
+    }
 
     // Scale eigenvectors with eigenvalues:
     // D.Sqrt(); Z = Z * D; (for each column)
     for (typename COVMATRIX::Index c = 0; c < eigVecs.cols(); c++)
     {
-      const auto s = std::sqrt(eigVals[c]);
+      // Clamp round-off negative eigenvalues of semidefinite matrices:
+      const auto s = std::sqrt(std::max(static_cast<typename COVMATRIX::Scalar>(0), eigVals[c]));
       for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++)
       {
         eigVecs(r, c) *= s;
@@ -347,11 +307,13 @@ class CRandomGenerator
   }
 
   /** Generate a given number of multidimensional random samples according to
-   * a given covariance matrix.
+   * a given covariance matrix (which may be positive semidefinite).
    * \param cov The covariance matrix where to draw the samples from.
    * \param desiredSamples The number of samples to generate.
    * \param ret The output list of samples
    * \param mean The mean, or zeros if mean==nullptr.
+   * \exception std::exception If cov is not square, the mean size does not
+   * match, or the eigen decomposition fails.
    */
   template <typename VECTOR_OF_VECTORS, typename COVMATRIX>
   void drawGaussianMultivariateMany(
@@ -373,13 +335,17 @@ class CRandomGenerator
     // Compute eigenvalues/eigenvectors of cov:
     COVMATRIX eigVecs;
     std::vector<typename COVMATRIX::Scalar> eigVals;
-    cov.eig_symmetric(eigVecs, eigVals, false /*sorted*/);
+    if (!cov.eig_symmetric(eigVecs, eigVals, false /*sorted*/))
+    {
+      throw std::runtime_error("drawGaussianMultivariate(): eigen decomposition failed.");
+    }
 
     // Scale eigenvectors with eigenvalues:
     // D.Sqrt(); Z = Z * D; (for each column)
     for (typename COVMATRIX::Index c = 0; c < eigVecs.cols(); c++)
     {
-      const auto s = std::sqrt(eigVals[c]);
+      // Clamp round-off negative eigenvalues of semidefinite matrices:
+      const auto s = std::sqrt(std::max(static_cast<typename COVMATRIX::Scalar>(0), eigVals[c]));
       for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++)
       {
         eigVecs(r, c) *= s;
@@ -424,7 +390,7 @@ class CRandomGenerator
     const size_t N = out_result.size();
     if (N > 1)
     {
-      mrpt::random::shuffle(out_result.begin(), out_result.end());
+      mrpt::random::shuffle(out_result.begin(), out_result.end(), m_MT19937);
     }
   }
 
@@ -436,7 +402,7 @@ class CRandomGenerator
     const size_t N = out_result.size();
     if (N > 1)
     {
-      mrpt::random::shuffle(out_result.begin(), out_result.end());
+      mrpt::random::shuffle(out_result.begin(), out_result.end(), m_MT19937);
     }
     return out_result;
   }
@@ -475,7 +441,7 @@ void matrixRandomUni(MAT& matrix, const double min = 0, const double max = 1)
   }
 }
 
-/** Fills the given matrix with independent, uniformly distributed samples.
+/** Fills the given vector with independent, uniformly distributed samples.
  * \sa vectorRandomNormal
  */
 template <class T>
@@ -535,32 +501,8 @@ void randomPermutation(const std::vector<T>& in_vector, std::vector<T>& out_resu
 }
 
 /** Generate a given number of multidimensional random samples according to a
- * given covariance matrix.
- * \param cov The covariance matrix where to draw the samples from.
- * \param desiredSamples The number of samples to generate.
- * \param samplesLikelihoods If desired, set to a valid pointer to a vector,
- * where it will be stored the likelihoods of having obtained each sample: the
- * product of the gaussian-pdf for each independent variable.
- * \param ret The output list of samples
- *
- * \exception std::exception On invalid covariance matrix
- *
- * \sa randomNormalMultiDimensional
- */
-template <typename T, typename MATRIX>
-void randomNormalMultiDimensionalMany(
-    const MATRIX& cov,
-    size_t desiredSamples,
-    std::vector<std::vector<T>>& ret,
-    std::vector<T>* samplesLikelihoods = nullptr)
-{
-  getRandomGenerator().drawGaussianMultivariateMany(
-      ret, desiredSamples, cov, static_cast<const std::vector<T>*>(nullptr), samplesLikelihoods);
-}
-
-/** Generate multidimensional random samples according to a given covariance
- * matrix.
- * \exception std::exception On invalid covariance matrix
+ * given covariance matrix, with zero mean.
+ * \exception std::exception If cov is not square
  * \sa randomNormalMultiDimensional
  */
 template <typename T, typename MATRIXLIKE>
@@ -571,8 +513,8 @@ void randomNormalMultiDimensionalMany(
 }
 
 /** Generate multidimensional random samples according to a given covariance
- * matrix.
- * \exception std::exception On invalid covariance matrix
+ * matrix, with zero mean.
+ * \exception std::exception If cov is not square
  * \sa randomNormalMultiDimensionalMany
  */
 template <typename T, typename MATRIX>

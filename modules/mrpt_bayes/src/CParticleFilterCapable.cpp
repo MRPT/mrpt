@@ -103,6 +103,33 @@ void CParticleFilterCapable::computeResampling(
   ASSERT_(linW_SUM > 0);
   linW *= 1.0 / linW_SUM;
 
+  // Number of output particles:
+  const size_t N = out_particle_count;
+
+  // Maps sorted thresholds T[0..N-1] (T[N] is a 1.0 sentinel) into indices
+  // of the input particles through their cumulative weights Q:
+  const auto selectFromSortedThresholds =
+      [M](const vector<double>& Q, const vector<double>& T, size_t count, size_t* out)
+  {
+    size_t i = 0;
+    size_t j = 0;
+    while (i < count)
+    {
+      if (T[i] < Q[j])
+      {
+        out[i++] = j;
+      }
+      else
+      {
+        j++;
+        if (j >= M)
+        {
+          j = M - 1;
+        }
+      }
+    }
+  };
+
   switch (method)
   {
     case CParticleFilter::TParticleResamplingAlgorithm::Multinomial:
@@ -113,32 +140,14 @@ void CParticleFilterCapable::computeResampling(
       mrpt::math::cumsum_tmpl<vector<double>, vector<double>>(linW, Q);
       Q[M - 1] = 1.1;  // Ensure last element exceeds 1.0 for comparison
 
-      vector<double> T(M);
+      // N sorted uniform draws:
+      vector<double> T(N);
       getRandomGenerator().drawUniformVector(T, 0.0, 0.999999);
       T.push_back(1.0);
-
-      // Sort random values
       sort(T.begin(), T.end());
 
-      out_indexes.resize(out_particle_count);
-      size_t i = 0;
-      size_t j = 0;
-
-      while (i < out_particle_count)
-      {
-        if (T[i] < Q[j])
-        {
-          out_indexes[i++] = j;
-        }
-        else
-        {
-          j++;
-          if (j >= M)
-          {
-            j = M - 1;
-          }
-        }
-      }
+      out_indexes.resize(N);
+      selectFromSortedThresholds(Q, T, N, out_indexes.data());
     }
     break;
 
@@ -146,75 +155,50 @@ void CParticleFilterCapable::computeResampling(
     {
       // Residual resampling. See Liu & Chen, "Sequential Monte Carlo
       // methods for dynamic systems," JASA, 1998.
-      // Compute repetition counts for deterministic part
-      std::vector<uint32_t> N(M);
-      size_t R = 0;  // Total count for deterministic part
-
+      // Deterministic part: floor(N*w_i) copies of each particle.
+      std::vector<size_t> Ncopies(M);
+      size_t R = 0;
       for (size_t i = 0; i < M; i++)
       {
-        N[i] = static_cast<uint32_t>(static_cast<double>(M) * linW[i]);
-        R += N[i];
+        Ncopies[i] = static_cast<size_t>(static_cast<double>(N) * linW[i]);
+        R += Ncopies[i];
       }
+      ASSERT_(R <= N);
 
       // Number of particles to be drawn randomly (the "residual" part)
-      const size_t N_rnd = (out_particle_count >= R) ? (out_particle_count - R) : 0;
+      const size_t N_rnd = N - R;
 
-      // Fill out the deterministic part of the resampling
-      out_indexes.resize(out_particle_count);
+      out_indexes.resize(N);
       size_t j = 0;
-
-      for (size_t i = 0; i < M && j < out_particle_count; i++)
+      for (size_t i = 0; i < M; i++)
       {
-        for (size_t k = 0; k < N[i]; k++)
+        for (size_t k = 0; k < Ncopies[i]; k++)
         {
           out_indexes[j++] = i;
         }
       }
 
-      const size_t M_fixed = j;
-
-      // Prepare multinomial resampling for the residual part using modified weights
       if (N_rnd > 0)
       {
-        // Compute modified weights
+        // Multinomial resampling of N_rnd particles, with the residual weights
         vector<double> linW_mod(M);
-        const double M_R_1 = 1.0 / static_cast<double>(N_rnd);
-
+        const double N_rnd_inv = 1.0 / static_cast<double>(N_rnd);
         for (size_t i = 0; i < M; i++)
         {
-          linW_mod[i] = M_R_1 * (static_cast<double>(M) * linW[i] - N[i]);
+          linW_mod[i] =
+              N_rnd_inv * (static_cast<double>(N) * linW[i] - static_cast<double>(Ncopies[i]));
         }
 
-        // Perform resampling on residual
         vector<double> Q;
         mrpt::math::cumsum_tmpl<vector<double>, vector<double>>(linW_mod, Q);
         Q[M - 1] = 1.1;
 
-        vector<double> T(M);
+        vector<double> T(N_rnd);
         getRandomGenerator().drawUniformVector(T, 0.0, 0.999999);
         T.push_back(1.0);
-
-        // Sort random values
         sort(T.begin(), T.end());
 
-        size_t i = 0;
-        j = 0;
-
-        while (i < N_rnd)
-        {
-          if (T[i] < Q[j])
-          {
-            out_indexes[M_fixed + i++] = j;
-          }
-          else
-          {
-            j++;
-            if (j >= M)
-            {
-              j = M - 1;
-            }
-          }
-        }
+        selectFromSortedThresholds(Q, T, N_rnd, out_indexes.data() + R);
       }
     }
     break;
@@ -228,38 +212,18 @@ void CParticleFilterCapable::computeResampling(
       mrpt::math::cumsum_tmpl<vector<double>, vector<double>>(linW, Q);
       Q[M - 1] = 1.1;
 
-      // Generate stratified-uniform random vector
-      vector<double> T(M + 1);
-      const double _1_M = 1.0 / static_cast<double>(M);
-      const double _1_M_eps = _1_M - 0.000001;
-      double T_offset = 0.0;
-
-      for (size_t i = 0; i < M; i++)
+      // One uniform draw within each of the N strata of [0,1):
+      vector<double> T(N + 1);
+      const double _1_N = 1.0 / static_cast<double>(N);
+      const double _1_N_eps = _1_N * 0.999999;
+      for (size_t i = 0; i < N; i++)
       {
-        T[i] = T_offset + getRandomGenerator().drawUniform(0.0, _1_M_eps);
-        T_offset += _1_M;
+        T[i] = static_cast<double>(i) * _1_N + getRandomGenerator().drawUniform(0.0, _1_N_eps);
       }
-      T[M] = 1.0;
+      T[N] = 1.0;
 
-      out_indexes.resize(out_particle_count);
-      size_t i = 0;
-      size_t j = 0;
-
-      while (i < out_particle_count)
-      {
-        if (T[i] < Q[j])
-        {
-          out_indexes[i++] = j;
-        }
-        else
-        {
-          j++;
-          if (j >= M)
-          {
-            j = M - 1;
-          }
-        }
-      }
+      out_indexes.resize(N);
+      selectFromSortedThresholds(Q, T, N, out_indexes.data());
     }
     break;
 
@@ -272,36 +236,18 @@ void CParticleFilterCapable::computeResampling(
       mrpt::math::cumsum_tmpl<vector<double>, vector<double>>(linW, Q);
       Q[M - 1] = 1.1;
 
-      // Generate uniform random vector with fixed spacing
-      vector<double> T(M + 1);
-      const double _1_M = 1.0 / static_cast<double>(M);
-      T[0] = getRandomGenerator().drawUniform(0.0, _1_M);
-
-      for (size_t i = 1; i < M; i++)
+      // A single uniform draw in [0,1/N), then fixed 1/N steps:
+      vector<double> T(N + 1);
+      const double _1_N = 1.0 / static_cast<double>(N);
+      T[0] = getRandomGenerator().drawUniform(0.0, _1_N);
+      for (size_t i = 1; i < N; i++)
       {
-        T[i] = T[i - 1] + _1_M;
+        T[i] = T[0] + static_cast<double>(i) * _1_N;
       }
-      T[M] = 1.0;
+      T[N] = 1.0;
 
-      out_indexes.resize(out_particle_count);
-      size_t i = 0;
-      size_t j = 0;
-
-      while (i < out_particle_count)
-      {
-        if (T[i] < Q[j])
-        {
-          out_indexes[i++] = j;
-        }
-        else
-        {
-          j++;
-          if (j >= M)
-          {
-            j = M - 1;
-          }
-        }
-      }
+      out_indexes.resize(N);
+      selectFromSortedThresholds(Q, T, N, out_indexes.data());
     }
     break;
 
@@ -453,9 +399,11 @@ void CParticleFilterCapable::prepareFastDrawSample(
     }
     m_fastDrawAuxiliary.CDF[PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS] = 1.0;
 
-    // Compute the CDF and save threshold indexes
+    // Compute the CDF and save threshold indexes, together with the CDF
+    // value just before the first particle of each bin:
     double CDF = 0.0;  // Cumulative density function
     size_t j = 0;
+    std::vector<double> binStartCDF(1 + PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS, 1.0);
 
     for (size_t i = 0; i < M && j < PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS; i++)
     {
@@ -473,6 +421,7 @@ void CParticleFilterCapable::prepareFastDrawSample(
 
       while (m_fastDrawAuxiliary.CDF[j] < CDF_next)
       {
+        binStartCDF[j] = CDF;
         m_fastDrawAuxiliary.CDF_indexes[j++] = static_cast<unsigned int>(i);
       }
 
@@ -480,6 +429,10 @@ void CParticleFilterCapable::prepareFastDrawSample(
     }
 
     ASSERT_(j == PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS);
+
+    // From now on, CDF[j] holds the CDF before particle CDF_indexes[j], which
+    // is where fastDrawSample() starts its linear search.
+    m_fastDrawAuxiliary.CDF = std::move(binStartCDF);
 
     MRPT_END
   }
@@ -552,7 +505,8 @@ size_t CParticleFilterCapable::fastDrawSample(
     size_t i = m_fastDrawAuxiliary.CDF_indexes[j];
 
     // Find the drawn particle
-    while (draw > (CDF_next = CDF + m_fastDrawAuxiliary.PDF[i]))
+    while (i + 1 < m_fastDrawAuxiliary.PDF.size() &&
+           draw > (CDF_next = CDF + m_fastDrawAuxiliary.PDF[i]))
     {
       CDF = CDF_next;
       i++;
@@ -575,7 +529,7 @@ size_t CParticleFilterCapable::fastDrawSample(
     {
       THROW_EXCEPTION(
           "Have you called 'fastDrawSample' more times than the sample size? "
-          "Did you forget calling 'prepareFastCall' before?");
+          "Did you forget calling 'prepareFastDrawSample' before?");
     }
 
     return m_fastDrawAuxiliary.alreadyDrawnIndexes[m_fastDrawAuxiliary.alreadyDrawnNextOne++];
@@ -600,9 +554,11 @@ void CParticleFilterCapable::log2linearWeights(
     return;
   }
 
+  // Subtract the maximum log-weight to avoid underflow/overflow:
+  const double max_lw = *std::max_element(in_logWeights.begin(), in_logWeights.end());
   std::transform(
       in_logWeights.begin(), in_logWeights.end(), out_linWeights.begin(),
-      [](double lw) { return std::exp(lw); });
+      [max_lw](double lw) { return std::exp(lw - max_lw); });
 
   const double sumW = std::reduce(out_linWeights.begin(), out_linWeights.end());
   ASSERT_(sumW > 0);

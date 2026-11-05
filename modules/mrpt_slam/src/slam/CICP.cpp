@@ -37,6 +37,70 @@ using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace std;
 
+namespace
+{
+/** Weight of a correspondence with squared distance d2 in the Gauss-Newton
+ * Hessian of the robust cost, normalized to 1 for small residuals. */
+double robustWeight(double d2, const CICP::TConfigParams& o)
+{
+  if (!o.use_kernel)
+  {
+    return 1.0;
+  }
+  const double rho2 = mrpt::square(o.kernel_rho);
+  return mrpt::square(rho2 / (d2 + rho2));
+}
+
+/** Covariance of a SE(2) ICP solution: the inverse of the Gauss-Newton
+ * Hessian of the robust negative log-likelihood of all correspondences, with
+ * an isotropic variance options.covariance_varPoints per point coordinate. */
+CMatrixDouble33 icpCovarianceSE2(
+    const TMatchingPairList& corrs, const TPose2D& q, const CICP::TConfigParams& o)
+{
+  const double c = std::cos(q.phi);
+  const double s = std::sin(q.phi);
+  Eigen::Matrix3d info = Eigen::Matrix3d::Zero();
+  for (const auto& p : corrs)
+  {
+    const double lx = p.local.x;
+    const double ly = p.local.y;
+    const double ex = q.x + c * lx - s * ly - p.global.x;
+    const double ey = q.y + s * lx + c * ly - p.global.y;
+    Eigen::Matrix<double, 2, 3> J;
+    J << 1, 0, -s * lx - c * ly, 0, 1, c * lx - s * ly;
+    info += robustWeight(ex * ex + ey * ey, o) * (J.transpose() * J);
+  }
+  // Avoid singular matrices (e.g. degenerate geometry), with a negligible
+  // effect otherwise:
+  info += 1e-9 * Eigen::Matrix3d::Identity();
+  CMatrixDouble33 cov;
+  cov.asEigen() = o.covariance_varPoints * info.inverse();
+  return cov;
+}
+
+/** Like icpCovarianceSE2(), for SE(3) in (x,y,z,yaw,pitch,roll) */
+CMatrixDouble66 icpCovarianceSE3(
+    const TMatchingPairList& corrs, const CPose3D& q, const CICP::TConfigParams& o)
+{
+  Eigen::Matrix<double, 6, 6> info = Eigen::Matrix<double, 6, 6>::Zero();
+  for (const auto& p : corrs)
+  {
+    double gx;
+    double gy;
+    double gz;
+    CMatrixDouble36 J;
+    q.composePoint(p.local.x, p.local.y, p.local.z, gx, gy, gz, std::nullopt, J);
+    const double d2 = mrpt::square(gx - p.global.x) + mrpt::square(gy - p.global.y) +
+                      mrpt::square(gz - p.global.z);
+    info += robustWeight(d2, o) * (J.asEigen().transpose() * J.asEigen());
+  }
+  info += 1e-9 * Eigen::Matrix<double, 6, 6>::Identity();
+  CMatrixDouble66 cov;
+  cov.asEigen() = o.covariance_varPoints * info.inverse();
+  return cov;
+}
+}  // namespace
+
 CPosePDF::Ptr CICP::AlignPDF(
     const mrpt::maps::CMetricMap* m1,
     const mrpt::maps::CMetricMap* mm2,
@@ -318,88 +382,12 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
           break;
 
         // ----------------------------------------------
-        // METHOD: Method from Oxford MRG's "OXSMV2"
-        //
-        //  It is the equivalent covariance resulting
-        //   from a Levenberg-Maquardt optimization stage.
+        // METHOD: Gauss-Newton covariance of the robust
+        //  (kernel_rho) cost at the solution.
         // ----------------------------------------------
         case icpCovFiniteDifferences:
-        {
-          CMatrixDouble D(3, nCorrespondences);
-
-          const TPose2D transf = gaussPdf->mean.asTPose();
-
-          double ccos = cos(transf.phi);
-          double csin = sin(transf.phi);
-
-          float w1, w2, w3;
-          double q1, q2, q3;
-          double A, B;
-          float Axy = 0.01f;
-
-          // Fill out D:
-          const float rho2 = static_cast<float>(square(options.kernel_rho));
-          mrpt::tfest::TMatchingPairList::iterator it;
-          size_t i;
-          for (i = 0, it = correspondences.begin(); i < nCorrespondences; ++i, ++it)
-          {
-            float other_x_trans =
-                static_cast<float>(transf.x + ccos * it->local.x - csin * it->local.y);
-            float other_y_trans =
-                static_cast<float>(transf.y + csin * it->local.x + ccos * it->local.y);
-
-            // Jacobian: dR2_dx
-            // --------------------------------------
-            w1 = other_x_trans - Axy;
-            q1 = kernel(square(it->global.x - w1) + square(it->global.y - other_y_trans), rho2);
-
-            w2 = other_x_trans;
-            q2 = kernel(square(it->global.x - w2) + square(it->global.y - other_y_trans), rho2);
-
-            w3 = other_x_trans + Axy;
-            q3 = kernel(square(it->global.x - w3) + square(it->global.y - other_y_trans), rho2);
-
-            // interpolate
-            A = ((q3 - q2) / ((w3 - w2) * (w3 - w1))) - ((q1 - q2) / ((w1 - w2) * (w3 - w1)));
-            B = ((q1 - q2) + (A * ((w2 * w2) - (w1 * w1)))) / (w1 - w2);
-
-            D(0, i) = (2 * A * other_x_trans) + B;
-
-            // Jacobian: dR2_dy
-            // --------------------------------------
-            w1 = other_y_trans - Axy;
-            q1 = kernel(square(it->global.x - other_x_trans) + square(it->global.y - w1), rho2);
-
-            w2 = other_y_trans;
-            q2 = kernel(square(it->global.x - other_x_trans) + square(it->global.y - w2), rho2);
-
-            w3 = other_y_trans + Axy;
-            q3 = kernel(square(it->global.x - other_x_trans) + square(it->global.y - w3), rho2);
-
-            // interpolate
-            A = ((q3 - q2) / ((w3 - w2) * (w3 - w1))) - ((q1 - q2) / ((w1 - w2) * (w3 - w1)));
-            B = ((q1 - q2) + (A * ((w2 * w2) - (w1 * w1)))) / (w1 - w2);
-
-            D(1, i) = (2 * A * other_y_trans) + B;
-
-            // Jacobian: dR_dphi
-            // --------------------------------------
-            D(2, i) = D(0, i) * (-csin * it->local.x - ccos * it->local.y) +
-                      D(1, i) * (ccos * it->local.x - csin * it->local.y);
-
-          }  // end for each corresp.
-
-          // COV = ( D*D^T + lamba*I )^-1
-          CMatrixDouble33 DDt;
-          DDt.matProductOf_AAt(D);
-
-          for (i = 0; i < 3; i++) DDt(i, i) += 1e-6;  // Just to make sure the matrix is
-          // not singular, while not changing
-          // its covariance significantly.
-
-          gaussPdf->cov = DDt.inverse_LLt();
-        }
-        break;
+          gaussPdf->cov = icpCovarianceSE2(correspondences, gaussPdf->mean.asTPose(), options);
+          break;
         default:
           THROW_EXCEPTION_FMT(
               "Invalid value for ICP_covariance_method: %i",
@@ -433,33 +421,36 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
       // Pivot point for angular measurements
       matchParams.angularDistPivotPoint = mrpt::math::TPoint3D(gaussPdf->mean.translation());
 
+      // Do not overwrite "correspondences", used below by RANSAC:
+      mrpt::tfest::TMatchingPairList qualityCorrs;
+
       m1->determineMatching2D(
           m2,  // The other map
           P0,  // The other map pose
-          correspondences, matchParams, matchExtraResults);
+          qualityCorrs, matchParams, matchExtraResults);
       const float E0 = matchExtraResults.correspondencesRatio;
 
       m1->determineMatching2D(
           m2,   // The other map
           PX1,  // The other map pose
-          correspondences, matchParams, matchExtraResults);
+          qualityCorrs, matchParams, matchExtraResults);
       const float EX1 = matchExtraResults.correspondencesRatio;
 
       m1->determineMatching2D(
           m2,   // The other map
           PX2,  // The other map pose
-          correspondences, matchParams, matchExtraResults);
+          qualityCorrs, matchParams, matchExtraResults);
       const float EX2 = matchExtraResults.correspondencesRatio;
 
       m1->determineMatching2D(
           m2,   // The other map
           PY1,  // The other map pose
-          correspondences, matchParams, matchExtraResults);
+          qualityCorrs, matchParams, matchExtraResults);
       const float EY1 = matchExtraResults.correspondencesRatio;
       m1->determineMatching2D(
           m2,   // The other map
           PY2,  // The other map pose
-          correspondences, matchParams, matchExtraResults);
+          qualityCorrs, matchParams, matchExtraResults);
       const float EY2 = matchExtraResults.correspondencesRatio;
 
       outInfo.quality = -max(EX1 - E0, max(EX2 - E0, max(EY1 - E0, EY2 - E0))) / (E0 + 1e-1);
@@ -830,6 +821,10 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
   }  // end of "if m2 is not empty"
 
+  if (!options.skip_cov_calculation && nCorrespondences)
+  {
+    return CPosePDFGaussian::Create(q, icpCovarianceSE2(correspondences, q.asTPose(), options));
+  }
   return CPosePDFGaussian::Create(q, C_inv.cast_double());
   MRPT_END
 }
@@ -959,7 +954,7 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
         mrpt::poses::CPose3DQuat estPoseQuat;
         double transf_scale;
         mrpt::tfest::se3_l2(
-            correspondences, estPoseQuat, transf_scale, false /* dont force unit scale */);
+            correspondences, estPoseQuat, transf_scale, true /* rigid: force unit scale */);
         gaussPdf->mean = mrpt::poses::CPose3D(estPoseQuat);
 
         // If matching has not changed, decrease the thresholds:
@@ -1008,7 +1003,7 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
     // -------------------------------------------------
     if (!options.skip_cov_calculation && nCorrespondences)
     {
-      // ...
+      gaussPdf->cov = icpCovarianceSE3(correspondences, gaussPdf->mean, options);
     }
 
     //

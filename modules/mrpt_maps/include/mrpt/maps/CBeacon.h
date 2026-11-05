@@ -168,6 +168,9 @@ class CBeacon : public mrpt::poses::CPointPDF
    * the current contents of outPDF
    *  If the 3x3 matrix covarianceCompositionToAdd is provided, it will be
    * add to every Gaussian (to model the composition of uncertainty).
+   *  In 3D (different min/max elevations), mode weights are proportional to
+   * the sphere area each mode covers, so the mixture is uniform over the
+   * sphere band; in 2D all modes have the same weight.
    * \sa generateObservationModelDistribution
    */
   static void generateRingSOG(

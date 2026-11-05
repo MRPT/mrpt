@@ -135,7 +135,7 @@ void CPoint2DPDFGaussian::changeCoordinatesReference(const CPose3D& newReference
   mean = CPoint2D(newReferenceBase + mean);
 
   // The covariance:
-  cov = M.asEigen() * cov.asEigen() * M.transpose();
+  cov = (M.asEigen() * cov.asEigen() * M.transpose()).eval();
 }
 
 /*---------------------------------------------------------------

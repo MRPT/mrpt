@@ -28,25 +28,25 @@ namespace mrpt::gtsam_wrappers
  *  \sa <mrpt/math/gtsam_wrappers.h>
  * @{ */
 
-static gtsam::Pose3 toPose3(const mrpt::poses::CPose3D& p)
+inline gtsam::Pose3 toPose3(const mrpt::poses::CPose3D& p)
 {
   return gtsam::Pose3(
       gtsam::Rot3(p.getRotationMatrix().asEigen()), gtsam::Point3(p.x(), p.y(), p.z()));
 }
 
-static mrpt::math::TPose3D toTPose3D(const gtsam::Rot3& p)
+inline mrpt::math::TPose3D toTPose3D(const gtsam::Rot3& p)
 {
   const auto R = p.matrix();
   return mrpt::poses::CPose3D(mrpt::math::CMatrixDouble33(R), mrpt::math::CVectorFixedDouble<3>())
       .asTPose();
 }
 
-static gtsam::Pose3 toPose3(const mrpt::math::TPose3D& p)
+inline gtsam::Pose3 toPose3(const mrpt::math::TPose3D& p)
 {
   return gtsam::Pose3(gtsam::Rot3(p.getRotationMatrix().asEigen()), gtsam::Point3(p.x, p.y, p.z));
 }
 
-static mrpt::math::TPose3D toTPose3D(const gtsam::Pose3& p)
+inline mrpt::math::TPose3D toTPose3D(const gtsam::Pose3& p)
 {
   const auto HM = p.matrix();
   const auto H = mrpt::math::CMatrixDouble44(HM);
@@ -59,7 +59,7 @@ static mrpt::math::TPose3D toTPose3D(const gtsam::Pose3& p)
  * body-frame angular velocity of R = Rz(yaw)*Ry(pitch)*Rx(roll), the
  * translation part is R^T times the global translation increment.
  */
-static gtsam::Matrix6 jacobian_gtsam_local_wrt_ypr(const mrpt::poses::CPose3D& mean)
+inline gtsam::Matrix6 jacobian_gtsam_local_wrt_ypr(const mrpt::poses::CPose3D& mean)
 {
   const double cp = std::cos(mean.pitch());
   const double sp = std::sin(mean.pitch());
@@ -82,7 +82,7 @@ static gtsam::Matrix6 jacobian_gtsam_local_wrt_ypr(const mrpt::poses::CPose3D& m
  * xi = Logmap(mean^-1 * pose). This is a first-order (linearized) conversion.
  * \sa to_mrpt_se3_pdf()
  */
-static void to_gtsam_se3_cov6(
+inline void to_gtsam_se3_cov6(
     const mrpt::poses::CPose3DPDFGaussian& in, gtsam::Pose3& pose_out, gtsam::Matrix6& cov_out)
 {
   pose_out = toPose3(in.mean);
@@ -100,7 +100,7 @@ static void to_gtsam_se3_cov6(
  * takes the pose into account.
  * \note New in MRPT 3.7.0
  */
-static mrpt::poses::CPose3DPDFGaussian to_mrpt_se3_pdf(
+inline mrpt::poses::CPose3DPDFGaussian to_mrpt_se3_pdf(
     const gtsam::Pose3& pose, const gtsam::Matrix6& cov)
 {
   mrpt::poses::CPose3DPDFGaussian out;

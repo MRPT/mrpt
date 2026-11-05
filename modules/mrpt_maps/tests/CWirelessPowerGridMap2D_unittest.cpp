@@ -23,6 +23,7 @@
 #include <mrpt/viz/CSetOfObjects.h>
 
 #include <sstream>
+#include <vector>
 
 using mrpt::maps::CWirelessPowerGridMap2D;
 
@@ -210,4 +211,31 @@ R_max=80
   const auto createdMap = CWirelessPowerGridMap2D::CreateFromMapDefinition(def);
   ASSERT_NE(createdMap, nullptr);
   EXPECT_GT(createdMap->getSizeX(), 0u);
+}
+
+// Regression: the running variance of all the readings used the updated mean
+// only, underestimating it.
+TEST(CWirelessPowerGridMap2D, RunningVarianceOfNormalizedReadings)
+{
+  using mrpt::maps::CRandomFieldGridMap2D;
+  using mrpt::maps::CWirelessPowerGridMap2D;
+
+  CWirelessPowerGridMap2D grid(CRandomFieldGridMap2D::mrKernelDMV, -5, 5, -5, 5, 0.2);
+  grid.insertionOptions.R_min = 0;
+  grid.insertionOptions.R_max = 1;
+
+  const std::vector<double> readings = {0.0, 1.0, 0.5, 0.2};
+  for (const double r : readings)
+  {
+    mrpt::obs::CObservationWirelessPower obs;
+    obs.power = r;
+    EXPECT_TRUE(grid.insertObservation(obs, mrpt::poses::CPose3D()));
+  }
+
+  // Population mean and variance of the readings: 0.425 and 0.141875
+  double val = 0;
+  double var = 0;
+  grid.predictMeasurement(4.0, 4.0, val, var, false, CRandomFieldGridMap2D::gimNearest);
+  EXPECT_NEAR(val, 0.425, 1e-9);
+  EXPECT_NEAR(var, 0.141875, 1e-9);
 }

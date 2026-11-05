@@ -14,6 +14,9 @@
 
 #pragma once
 
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/obs/CObservationOdometry.h>
+
 namespace mrpt::graphslam::deciders
 {
 template <class GRAPH_T>
@@ -196,7 +199,15 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
       m_times_used_ICP + m_times_used_odom);
 
   // update the PDF until last registered node
-  this->m_since_prev_node_PDF += rel_edge;
+  if (this->m_since_prev_node_PDF_is_empty)
+  {
+    this->m_since_prev_node_PDF = rel_edge;
+    this->m_since_prev_node_PDF_is_empty = false;
+  }
+  else
+  {
+    this->m_since_prev_node_PDF += rel_edge;
+  }
   m_last_laser_scan2D = m_curr_laser_scan2D;
   registered_new_node = this->checkRegistrationCondition();
 

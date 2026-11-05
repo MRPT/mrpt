@@ -61,6 +61,9 @@ struct graphslam_traits
     const typename gst::edge_map_entry_t* edge{nullptr};
     const typename gst::graph_t::constraint_t::type_value* edge_mean;
     typename gst::graph_t::constraint_t::type_value *P1, *P2;
+    /** Information matrix of the local residual of this edge, converted from
+     * the edge PDF (unused for edges without uncertainty). */
+    typename gst::matrix_TxT information;
   };
 
   using TFunctorFeedback = std::function<void(
@@ -72,8 +75,9 @@ struct TResultInfoSpaLevMarq
 {
   /** The number of LM iterations executed. */
   size_t num_iters;
-  /** The sum of all the squared errors for every constraint involved in the
-   * problem. */
+  /** The sum of the squared errors of all the constraints involved in the
+   * problem, weighted by their information matrices (squared Mahalanobis
+   * distances) for graphs with PDF edges. */
   double final_total_sq_error;
 };
 

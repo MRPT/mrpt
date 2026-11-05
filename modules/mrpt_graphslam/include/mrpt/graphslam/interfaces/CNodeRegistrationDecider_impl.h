@@ -137,6 +137,10 @@ void CNodeRegistrationDecider<GRAPH_T>::resetPDF(constraint_t* c)
   *c = constraint_t();
   ASSERTDEB_(c->isInfType());
   c->cov_inv = this->m_init_inf_mat;
+  if (c == &m_since_prev_node_PDF)
+  {
+    m_since_prev_node_PDF_is_empty = true;
+  }
 
   MRPT_END
 }  // end of resetPDF

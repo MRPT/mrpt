@@ -15,6 +15,9 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/robust_kernels.h>
 
+#include <algorithm>
+#include <cmath>
+
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace std;
@@ -77,4 +80,52 @@ TEST(RobustKernels, PseudoHuber)
 {
   const size_t N = sizeof(list_test_kernel_pshb) / sizeof(list_test_kernel_pshb[0]);
   tester_robust_kernel<rkPseudoHuber>(list_test_kernel_pshb, N);
+}
+
+TEST(RobustKernels, robustKernelDerivativesWrtSquaredError)
+{
+  // eval() returns 2*rho and its 1st/2nd derivatives w.r.t. the squared error
+  for (const double param_sq : {0.25, 1.0, 9.0})
+  {
+    mrpt::math::RobustKernel<mrpt::math::rkPseudoHuber> k;
+    k.param_sq = param_sq;
+    for (const double r2 : {0.01, 0.5, 2.0, 30.0})
+    {
+      double d1 = 0;
+      double d2 = 0;
+      const double f = k.eval(r2, d1, d2);
+      EXPECT_NEAR(f, 2 * param_sq * (std::sqrt(1 + r2 / param_sq) - 1), 1e-12);
+      const double h = 1e-5 * std::max(1.0, r2);
+      double tmp1 = 0;
+      double tmp2 = 0;
+      const double fp = k.eval(r2 + h, tmp1, tmp2);
+      const double fm = k.eval(r2 - h, tmp1, tmp2);
+      EXPECT_NEAR(d1, (fp - fm) / (2 * h), 1e-7);
+      double d1p = 0;
+      double d1m = 0;
+      k.eval(r2 + h, d1p, tmp2);
+      k.eval(r2 - h, d1m, tmp2);
+      EXPECT_NEAR(d2, (d1p - d1m) / (2 * h), 1e-6);
+    }
+    // Small residuals behave like plain least squares
+    double d1 = 0;
+    double d2 = 0;
+    EXPECT_NEAR(k.eval(1e-10, d1, d2), 1e-10, 1e-13);
+    EXPECT_NEAR(d1, 1.0, 1e-9);
+  }
+}
+
+TEST(RobustKernels, PseudoHuberSmallResidualsKeepPrecision)
+{
+  // For r2 << param_sq, 2*rho ~ r2 * (1 - r2/(4*param_sq))
+  mrpt::math::RobustKernel<mrpt::math::rkPseudoHuber> k;
+  k.param_sq = 4.0;
+  for (const double r2 : {1e-14, 1e-10, 1e-6})
+  {
+    double d1 = 0;
+    double d2 = 0;
+    const double f = k.eval(r2, d1, d2);
+    const double ref = r2 * (1 - r2 / (4 * k.param_sq));
+    EXPECT_NEAR(f / ref, 1.0, 1e-13) << "r2=" << r2;
+  }
 }

@@ -1433,8 +1433,10 @@ double CPointsMap::internal_computeObservationLikelihood(
 
     if (!o.rowCount || !this->size()) return -100;
 
+    // Points in the robot frame (the sensor pose is applied here), then
+    // transformed by takenFrom below:
     mrpt::maps::CSimplePointsMap auxPts;
-    auxPts.insertObservation(o, takenFrom);
+    auxPts.insertObservation(o);
 
     const auto& xs = auxPts.getPointsBufferRef_x();
     const auto& ys = auxPts.getPointsBufferRef_y();

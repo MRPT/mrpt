@@ -34,8 +34,9 @@ enum TICPCovarianceMethod : int
   /** Use the covariance of the optimal registration, disregarding uncertainty
    in data association */
   icpCovLinealMSE = 0,
-  /** Covariance of a least-squares optimizer (includes data association
-   uncertainty) */
+  /** Inverse of the Gauss-Newton Hessian of the robust cost (see kernel_rho,
+   use_kernel) at the solution, for the final correspondences, scaled by
+   covariance_varPoints. Data association uncertainty is not included. */
   icpCovFiniteDifferences
 };
 
@@ -69,6 +70,8 @@ enum TICPCovarianceMethod : int
  *       point-to-line metrics, robust kernels, and multi-layer maps, use the
  *       independent **mp2p_icp** library (https://github.com/MOLAorg/mp2p_icp)
  *       which is the recommended replacement for 3-D scan matching in MRPT 3.
+ *       The 6x6 covariance of 3-D ICP is always computed as described for
+ *       icpCovFiniteDifferences.
  *
  * \sa CMetricMapsAlignmentAlgorithm
  * \ingroup mrpt_slam_grp
@@ -130,7 +133,8 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
     double smallestThresholdDist{0.1};
 
     /** This is the normalization constant \f$ \sigma^2_p \f$ that is used
-     * to scale the whole 3x3 covariance.
+     * to scale the whole 3x3 (or 6x6, for 3D ICP) covariance: the variance
+     * of each coordinate of the point-to-point residuals, in squared meters.
      *  This has a default value of \f$ (0.02)^2 \f$, that is, a 2cm sigma.
      *  See paper: J.L. Blanco, J. Gonzalez-Jimenez, J.A.
      * Fernandez-Madrigal, "A Robust, Multi-Hypothesis Approach to Matching
@@ -155,8 +159,9 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
     double ransac_fuseMaxDiffXY{0.01}, ransac_fuseMaxDiffPhi{0.1 * M_PI / 180.0};
     /** @} */
 
-    /** Cauchy kernel rho, for estimating the optimal transformation
-     * covariance, in meters (default = 0.07m) */
+    /** Robust kernel rho, in meters (default = 0.07m): squared distances d2
+     * are smoothed as d2/(d2+rho^2), and the covariance weights each
+     * correspondence by (rho^2/(d2+rho^2))^2. */
     double kernel_rho{0.07};
     /** Whether to use kernel_rho to smooth distances, or use distances
      * directly (default=true) */

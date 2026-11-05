@@ -54,8 +54,8 @@ class CPointPDFGaussian : public CPointPDF
    * and gaussian representations) */
   void copyFrom(const CPointPDF& o) override;
 
-  /** Save PDF's particles to a text file, containing the 2D pose in the first
-   * line, then the covariance matrix in next 3 lines. */
+  /** Save the PDF to a text file, containing the 3D point mean in the first
+   * line, then the 3x3 covariance matrix in the next 3 lines. */
   bool saveToTextFile(const std::string& file) const override;
 
   /** this = p (+) this. This can be used to convert a PDF from local
@@ -99,9 +99,8 @@ class CPointPDFGaussian : public CPointPDF
   double productIntegralWith2D(const CPointPDFGaussian& p) const;
 
   /** Computes the "correspondence likelihood" of this PDF with another one:
-   * This is implemented as the integral from -inf to +inf of the product of
-   * both PDF.
-   * The resulting number is in the range [0,1]
+   * This is the integral from -inf to +inf of the product of both PDFs,
+   * normalized such as it is 1 for coincident means (range [0,1]).
    *  Note that the resulting value is in fact
    *  \f[ exp( -\frac{1}{2} D^2 ) \f]
    *  , with \f$ D^2 \f$ being the square Mahalanobis distance between the
@@ -113,10 +112,9 @@ class CPointPDFGaussian : public CPointPDF
   double productIntegralNormalizedWith(const CPointPDFGaussian& p) const;
 
   /** Computes the "correspondence likelihood" of this PDF with another one:
-   * This is implemented as the integral from -inf to +inf of the product of
-   * both PDF.
-   * The resulting number is in the range [0,1]. This versions ignores the
-   * "z" coordinate.
+   * This is the integral from -inf to +inf of the product of both PDFs,
+   * normalized such as it is 1 for coincident means (range [0,1]). This
+   * version ignores the "z" coordinate.
    *
    *  Note that the resulting value is in fact
    *  \f[ exp( -\frac{1}{2} D^2 ) \f]
@@ -144,8 +142,9 @@ class CPointPDFGaussian : public CPointPDF
   void bayesianFusion(
       const CPointPDF& p1, const CPointPDF& p2, const double minMahalanobisDistToDrop = 0) override;
 
-  /** Returns the Mahalanobis distance from this PDF to another PDF, that is,
-   * it's evaluation at (0,0,0) */
+  /** Returns the Mahalanobis distance between the means of this PDF and
+   * another one, using the sum of both covariances (only x and y are used if
+   * only_2D is true). */
   double mahalanobisDistanceTo(const CPointPDFGaussian& other, bool only_2D = false) const;
 
 };  // End of class def.

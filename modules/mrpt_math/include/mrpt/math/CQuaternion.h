@@ -19,6 +19,9 @@
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CVectorFixed.h>
 
+#include <cmath>
+#include <limits>
+
 namespace mrpt::math
 {
 // For use with a constructor of CQuaternion
@@ -156,7 +159,7 @@ class CQuaternion : public CVectorFixed<T, 4>
       // Taylor series approximation:
       const T theta_po4 = theta_sq * theta_sq;
       i = T(0.5) - T(1.0 / 48.0) * theta_sq + T(1.0 / 3840.0) * theta_po4;
-      r = T(1.0) - T(0.5) * theta_sq + T(1.0 / 384.0) * theta_po4;
+      r = T(1.0) - T(0.125) * theta_sq + T(1.0 / 384.0) * theta_po4;
     }
     else
     {
@@ -182,7 +185,7 @@ class CQuaternion : public CVectorFixed<T, 4>
    * space here for the proof ;-).
    *  \param[out] out_ln The target vector, which can be: std::vector<>, or
    * mrpt::math::CVectorDouble or any row or column Eigen::Matrix<>.
-   *  \sa exp,  mrpt::poses::SE_traits  */
+   *  \sa exp, mrpt::poses::Lie::SO  */
   template <class ARRAYLIKE3>
   void ln(ARRAYLIKE3& out_ln) const
   {
@@ -203,14 +206,15 @@ class CQuaternion : public CVectorFixed<T, 4>
   {
     using mrpt::square;
     const T xyz_norm = std::sqrt(square(x()) + square(y()) + square(z()));
-    const T K = (xyz_norm < 1e-7) ? 2 : 2 * ::acos(r()) / xyz_norm;
+    // atan2() keeps full precision for small angles, unlike acos(r):
+    const T K = (xyz_norm < 1e-7) ? 2 / r() : 2 * std::atan2(xyz_norm, r()) / xyz_norm;
     out_ln[0] = K * x();
     out_ln[1] = K * y();
     out_ln[2] = K * z();
   }
 
   /** Exponential map from the SO(3) Lie Algebra to unit quaternions.
-   *  \sa ln,  mrpt::poses::SE_traits  */
+   *  \sa ln, mrpt::poses::Lie::SO  */
   template <class ARRAYLIKE3>
   static CQuaternion<T> exp(const ARRAYLIKE3& v)
   {
@@ -229,8 +233,8 @@ class CQuaternion : public CVectorFixed<T, 4>
 
   /**	Calculate the "cross" product (or "composed rotation") of two
    * quaternion: this = q1 x q2
-   *   After the operation, "this" will represent the composed rotations of
-   * q1 and q2 (q2 applied "after" q1).
+   *   After the operation, "this" represents the composition q1 (+) q2, that
+   * is, R(this) = R(q1) * R(q2). The result is normalized, with qr>=0.
    */
   void crossProduct(const CQuaternion& q1, const CQuaternion& q2)
   {
@@ -294,7 +298,7 @@ class CQuaternion : public CVectorFixed<T, 4>
     return square(r()) + square(x()) + square(y()) + square(z());
   }
 
-  /**	Normalize this quaternion, so its norm becomes the unitity.
+  /**	Normalize this quaternion, so its norm becomes the unity.
    */
   void normalize()
   {
@@ -334,8 +338,9 @@ class CQuaternion : public CVectorFixed<T, 4>
     J *= n;
   }
 
-  /** Compute the Jacobian of the rotation composition operation p = f(.) = q_this x r,
-   *  that is the 4x4 matrix df/dq_this.
+  /** Compute the 4x4 Jacobian d(q_this x r)/dr of the rotation composition
+   *  p = q_this x r (without normalization), i.e. the left-multiplication matrix
+   *  of q_this. It does not depend on r.
    *  The output matrix can be a dynamic or fixed size (4x4) matrix.
    */
   template <class MATRIXLIKE>
@@ -418,9 +423,10 @@ class CQuaternion : public CVectorFixed<T, 4>
     return q_aux;
   }
 
-  /**	Return the yaw, pitch & roll angles associated to quaternion
-   *  \sa For the equations, see The MRPT Book, or see
-   * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/Quaternions.pdf
+  /**	Return the yaw, pitch & roll angles associated to quaternion.
+   * See rpy_and_jacobian() for the behavior near |pitch|=90 degrees.
+   *  \sa For the equations, see \cite blanco_se3_tutorial, section 2.2.1,
+   * Eqs. (2.10)-(2.11).
    *  \sa rpy_and_jacobian
    */
   void rpy(T& roll, T& pitch, T& yaw) const
@@ -429,12 +435,17 @@ class CQuaternion : public CVectorFixed<T, 4>
   }
 
   /**	Return the yaw, pitch & roll angles associated to quaternion, and
-   * (optionally) the 3x4 Jacobian of the transformation.
-   *  Note that both the angles and the Jacobian have one set of normal
-   * equations, plus other special formulas for the degenerated cases of
-   * |pitch|=90 degrees.
-   *  \sa For the equations, see The MRPT Book, or
-   * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/Quaternions.pdf
+   * (optionally) the 3x4 Jacobian of the transformation, with rows in the
+   * order (yaw, pitch, roll).
+   *  The angles are computed from the rotation matrix, as in
+   * mrpt::math::TPose3D::SO3_to_yaw_pitch_roll(), so they reproduce the
+   * rotation also near |pitch|=90 degrees (and for non-unit quaternions).
+   *  The Jacobian is that of these angles, which do not depend on the norm
+   * of the quaternion (it has no component along q). It grows as
+   * 1/cos(pitch) and is not defined at |pitch|=90 degrees: within ~6e-5
+   * degrees of it, only the derivative of yaw (with roll=0) is returned.
+   *  \sa For the equations, see \cite blanco_se3_tutorial, section 2.2.1,
+   * Eqs. (2.10)-(2.11).
    * \sa rpy
    */
   template <class MATRIXLIKE>
@@ -445,77 +456,70 @@ class CQuaternion : public CVectorFixed<T, 4>
       MATRIXLIKE* out_dr_dq = nullptr,
       bool resize_out_dr_dq_to3x4 = true) const
   {
-    using mrpt::square;
-    using std::sqrt;
-
-    if (out_dr_dq && resize_out_dr_dq_to3x4) out_dr_dq->setSize(3, 4);
-    const T discr = r() * y() - x() * z();
-    if (discr > 0.49999)
-    {  // pitch = 90 deg
-      pitch = 0.5 * M_PI;
-      yaw = -2 * atan2(x(), r());
-      roll = 0;
-      if (out_dr_dq)
-      {
-        out_dr_dq->setZero();
-        // d{yaw}_d{r}:
-        (*out_dr_dq)(0, 0) = +2 * x() / (r() * r() + x() * x());
-        // d{yaw}_d{x}:
-        (*out_dr_dq)(0, 1) = -2 * r() / (r() * r() + x() * x());
-      }
+    if (out_dr_dq && resize_out_dr_dq_to3x4)
+    {
+      out_dr_dq->setSize(3, 4);
     }
-    else if (discr < -0.49999)
-    {  // pitch =-90 deg
-      pitch = -0.5 * M_PI;
-      yaw = 2 * atan2(x(), r());
-      roll = 0;
-      if (out_dr_dq)
-      {
-        out_dr_dq->setZero();
-        // d{yaw}_d{r}:
-        (*out_dr_dq)(0, 0) = -2 * x() / (r() * r() + x() * x());
-        // d{yaw}_d{x}:
-        (*out_dr_dq)(0, 1) = +2 * r() / (r() * r() + x() * x());
-      }
+
+    // Rotation matrix entries (homogeneous in q, so the scale cancels out):
+    const T R00 = r() * r() + x() * x() - y() * y() - z() * z();
+    const T R01 = 2 * (x() * y() - r() * z());
+    const T R02 = 2 * (z() * x() + r() * y());
+    const T R10 = 2 * (x() * y() + r() * z());
+    const T R11 = r() * r() - x() * x() + y() * y() - z() * z();
+    const T R12 = 2 * (y() * z() - r() * x());
+    const T R20 = 2 * (z() * x() - r() * y());
+    const T R21 = 2 * (y() * z() + r() * x());
+    const T R22 = r() * r() - x() * x() - y() * y() + z() * z();
+    pitch = std::atan2(-R20, std::hypot(R00, R10));
+    if (std::abs(R21) + std::abs(R22) < 10 * std::numeric_limits<T>::epsilon() * normSqr())
+    {
+      roll = 0;  // gimbal lock: yaw and roll are not independent
     }
     else
-    {  // Non-degenerate case:
-      yaw = ::atan2(2 * (r() * z() + x() * y()), 1 - 2 * (y() * y() + z() * z()));
-      pitch = ::asin(2 * discr);
-      roll = ::atan2(2 * (r() * x() + y() * z()), 1 - 2 * (x() * x() + y() * y()));
-      if (out_dr_dq)
-      {
-        // Auxiliary terms:
-        const double val1 = (2 * x() * x() + 2 * y() * y() - 1);
-        const double val12 = square(val1);
-        const double val2 = (2 * r() * x() + 2 * y() * z());
-        const double val22 = square(val2);
-        const double xy2 = 2 * x() * y();
-        const double rz2 = 2 * r() * z();
-        const double ry2 = 2 * r() * y();
-        const double val3 = (2 * y() * y() + 2 * z() * z() - 1);
-        const double val4 = ((square(rz2 + xy2) / square(val3) + 1) * val3);
-        const double val5 = (4 * (rz2 + xy2)) / square(val3);
-        const double val6 = 1.0 / (square(rz2 + xy2) / square(val3) + 1);
-        const double val7 = 2.0 / sqrt(1 - square(ry2 - 2 * x() * z()));
-        const double val8 = (val22 / val12 + 1);
-        const double val9 = -2.0 / val8;
-        // row 1:
-        (*out_dr_dq)(0, 0) = -2 * z() / val4;
-        (*out_dr_dq)(0, 1) = -2 * y() / val4;
-        (*out_dr_dq)(0, 2) = -(2 * x() / val3 - y() * val5) * val6;
-        (*out_dr_dq)(0, 3) = -(2 * r() / val3 - z() * val5) * val6;
-        // row 2:
-        (*out_dr_dq)(1, 0) = y() * val7;
-        (*out_dr_dq)(1, 1) = -z() * val7;
-        (*out_dr_dq)(1, 2) = r() * val7;
-        (*out_dr_dq)(1, 3) = -x() * val7;
-        // row 3:
-        (*out_dr_dq)(2, 0) = val9 * x() / val1;
-        (*out_dr_dq)(2, 1) = val9 * (r() / val1 - (2 * x() * val2) / val12);
-        (*out_dr_dq)(2, 2) = val9 * (z() / val1 - (2 * y() * val2) / val12);
-        (*out_dr_dq)(2, 3) = val9 * y() / val1;
-      }
+    {
+      roll = std::atan2(R21, R22);
+    }
+    // Yaw consistent with roll, well-conditioned near gimbal lock:
+    const T sr = std::sin(roll);
+    const T cr = std::cos(roll);
+    yaw = std::atan2(sr * R02 - cr * R01, cr * R11 - sr * R12);
+
+    if (!out_dr_dq)
+    {
+      return;
+    }
+
+    // Pitch = atan2(sp, cp), with sp = -R20 and cp = |q|^2 * cos(pitch):
+    const T sp = -R20;
+    const T cp = std::hypot(R00, R10);
+    if (cp < 1e-6 * normSqr())
+    {  // pitch = +-90 deg: only the derivative of yaw (with roll=0)
+      out_dr_dq->setZero();
+      const T sgn = sp > 0 ? T(1) : T(-1);
+      // d{yaw}_d{r}:
+      (*out_dr_dq)(0, 0) = +2 * sgn * x() / (r() * r() + x() * x());
+      // d{yaw}_d{x}:
+      (*out_dr_dq)(0, 1) = -2 * sgn * r() / (r() * r() + x() * x());
+      return;
+    }
+
+    // Non-degenerate case, from d(atan2(n,d)) = (d*dn - n*dd)/(n^2+d^2) and
+    // the derivatives of the matrix entries with respect to (r,x,y,z):
+    const T dR00[4] = {2 * r(), 2 * x(), -2 * y(), -2 * z()};
+    const T dR10[4] = {2 * z(), 2 * y(), 2 * x(), 2 * r()};
+    const T dR21[4] = {2 * x(), 2 * r(), 2 * z(), 2 * y()};
+    const T dR22[4] = {2 * r(), -2 * x(), -2 * y(), 2 * z()};
+    const T dSp[4] = {2 * y(), -2 * z(), 2 * r(), -2 * x()};
+    const T yawDen = R00 * R00 + R10 * R10;  // = cp^2
+    const T rollDen = R21 * R21 + R22 * R22;
+    const T pitchDen = sp * sp + yawDen;
+    for (int k = 0; k < 4; k++)
+    {
+      const T dCp = (R00 * dR00[k] + R10 * dR10[k]) / cp;
+      (*out_dr_dq)(0, k) = (R00 * dR10[k] - R10 * dR00[k]) / yawDen;
+      (*out_dr_dq)(1, k) = (cp * dSp[k] - sp * dCp) / pitchDen;
+      (*out_dr_dq)(2, k) = (R22 * dR21[k] - R21 * dR22[k]) / rollDen;
     }
   }
 

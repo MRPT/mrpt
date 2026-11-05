@@ -47,7 +47,8 @@ class CAtan2LookUpTable
   }
 
   /** Returns the precomputed value for atan2() of the corresponding cell
-   * with indices (ix,iy). \return false if out of grid bounds. */
+   * with indices (ix,iy), passed in (iy,ix) order as in atan2(y,x).
+   * \return false if out of grid bounds. */
   [[nodiscard]] bool atan2ByIndex(
       unsigned int iy, unsigned int ix, double& out_atan2) const noexcept
   {

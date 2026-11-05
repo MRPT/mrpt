@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/num_jacobian.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -23,6 +24,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/poses/Lie/SO.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <Eigen/Dense>
@@ -661,7 +663,7 @@ class Pose3DTests : public ::testing::Test
 
   // Test Jacobian: d A*exp(e)*D / d e
   // 10.3.7 in tech report
-  // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+  // https://arxiv.org/abs/2103.15980
   void test_Jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D)
   {
     const auto theor_jacob = Lie::SE<3>::jacob_dAexpeD_de(A, D);
@@ -1147,4 +1149,346 @@ TEST(CPose3D, FromStringAndHomogeneousMatrixRef)
   EXPECT_TRUE(hm == hm2);
 
   EXPECT_EQ(p.asTPose(), TPose3D(p.x(), p.y(), p.z(), p.yaw(), p.pitch(), p.roll()));
+}
+
+namespace
+{
+double maxAbsDiff(const CMatrixDouble33& A, const CMatrixDouble33& B)
+{
+  return (A.asEigen() - B.asEigen()).array().abs().maxCoeff();
+}
+
+// A valid rotation matrix (with ordinary roundoff) very close to gimbal lock,
+// obtained by composing two generic rotations.
+CPose3D nearGimbalPose(double eps)
+{
+  const CPose3D A = CPose3D::FromYawPitchRoll(0.7, -0.4, 1.1);
+  const CPose3D B = (-A) + CPose3D::FromYawPitchRoll(0.3, M_PI / 2 - eps, -0.8);
+  return A + B;
+}
+
+std::vector<CPose3D> randomPoses(size_t n)
+{
+  auto& rng = mrpt::random::getRandomGenerator();
+  rng.randomize(1234);
+  std::vector<CPose3D> ps;
+  for (size_t i = 0; i < n; i++)
+  {
+    ps.emplace_back(
+        rng.drawUniform(-5, 5), rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
+        rng.drawUniform(-M_PI, M_PI), rng.drawUniform(-1.5, 1.5), rng.drawUniform(-M_PI, M_PI));
+  }
+  return ps;
+}
+
+CPose3D referenceRelativePose(const CPose3D& A, const CPose3D& B)
+{
+  return CPose3D(
+      CMatrixDouble33(B.getRotationMatrix().transpose() * A.getRotationMatrix().asEigen()),
+      CVectorFixedDouble<3>(
+          B.getRotationMatrix().transpose() *
+          (A.translationVector().asEigen() - B.translationVector().asEigen())));
+}
+}  // namespace
+
+TEST(CPose3D, addComponentsUsesUpToDateAnglesOfArgument)
+{
+  CPose3D a(0, 0, 0, 0.1, 0.0, 0.0);
+  const CPose3D r = CPose3D::FromYawPitchRoll(0.5, 0.2, 0.3);
+  // Built from a rotation matrix: its angle cache is not up to date yet.
+  const CPose3D b(r.getRotationMatrix(), CVectorFixedDouble<3>());
+  a.addComponents(b);
+  EXPECT_NEAR(a.yaw(), 0.6, 1e-12);
+  EXPECT_NEAR(a.pitch(), 0.2, 1e-12);
+  EXPECT_NEAR(a.roll(), 0.3, 1e-12);
+}
+
+TEST(CPose3D, normalizeAnglesWrapsAfterAddComponents)
+{
+  CPose3D a(0, 0, 0, 3.0, 0, 0);
+  a.addComponents(CPose3D(0, 0, 0, 1.0, 0, 0));
+  a.normalizeAngles();
+  EXPECT_NEAR(a.yaw(), mrpt::math::wrapToPi(4.0), 1e-12);
+}
+
+TEST(CPose3D, getOppositeScalarUsesUpToDateAngles)
+{
+  const CPose3D r = CPose3D::FromYawPitchRoll(0.5, 0.2, 0.3);
+  const CPose3D b(r.getRotationMatrix(), CVectorFixedDouble<3>({1.0, 2.0, 3.0}));
+  const CPose3D o = b.getOppositeScalar();
+  EXPECT_NEAR(o.x(), -1.0, 1e-12);
+  EXPECT_NEAR(o.yaw(), -0.5, 1e-12);
+  EXPECT_NEAR(o.pitch(), -0.2, 1e-12);
+  EXPECT_NEAR(o.roll(), -0.3, 1e-12);
+}
+
+TEST(CPose3D, scalarMultiplicationWrapsAngles)
+{
+  CPose3D a(1, 2, 3, 2.0, 0.1, -0.2);
+  a *= 3.0;
+  EXPECT_NEAR(a.x(), 3.0, 1e-12);
+  EXPECT_NEAR(a.yaw(), mrpt::math::wrapToPi(6.0), 1e-12);
+  EXPECT_NEAR(a.pitch(), 0.3, 1e-12);
+  EXPECT_NEAR(a.roll(), -0.6, 1e-12);
+}
+
+TEST(CPose3D, yprFromMatrixNearGimbalLockReproducesMatrix)
+{
+  for (double eps : {1e-6, 1e-9, 1e-11, 1e-12, 1e-13, 1e-14, 1e-15})
+  {
+    const CPose3D C = nearGimbalPose(eps);
+    double y = 0;
+    double p = 0;
+    double r = 0;
+    TPose3D::SO3_to_yaw_pitch_roll(C.getRotationMatrix(), y, p, r);
+    const auto R2 = mrpt::poses::Lie::SO<3>::fromYPR(y, p, r);
+    EXPECT_LT(maxAbsDiff(C.getRotationMatrix(), R2), 1e-12) << "eps=" << eps;
+  }
+}
+
+TEST(CPose3D, yprAtExactGimbalLockReproducesMatrix)
+{
+  for (double sgn : {-1.0, 1.0})
+  {
+    for (double yaw : {-2.0, 0.0, 0.4, 3.0})
+    {
+      for (double roll : {-1.0, 0.0, 0.7})
+      {
+        const auto R = mrpt::poses::Lie::SO<3>::fromYPR(yaw, sgn * M_PI / 2, roll);
+        double y = 0;
+        double p = 0;
+        double r = 0;
+        TPose3D::SO3_to_yaw_pitch_roll(R, y, p, r);
+        EXPECT_NEAR(p, sgn * M_PI / 2, 1e-12);
+        EXPECT_LT(maxAbsDiff(R, mrpt::poses::Lie::SO<3>::fromYPR(y, p, r)), 1e-12);
+      }
+    }
+  }
+}
+
+TEST(CPose3D, yprFromMatrixRecoversGenericAngles)
+{
+  auto& rng = mrpt::random::getRandomGenerator();
+  rng.randomize(1234);
+  for (int k = 0; k < 200; k++)
+  {
+    const double y0 = rng.drawUniform(-M_PI, M_PI);
+    const double p0 = rng.drawUniform(-1.5, 1.5);
+    const double r0 = rng.drawUniform(-M_PI, M_PI);
+    double y = 0;
+    double p = 0;
+    double r = 0;
+    TPose3D::SO3_to_yaw_pitch_roll(mrpt::poses::Lie::SO<3>::fromYPR(y0, p0, r0), y, p, r);
+    EXPECT_NEAR(mrpt::math::wrapToPi(y - y0), 0.0, 1e-12);
+    EXPECT_NEAR(p, p0, 1e-12);
+    EXPECT_NEAR(mrpt::math::wrapToPi(r - r0), 0.0, 1e-12);
+  }
+}
+
+TEST(CPose3D, fromQuaternionNearGimbalLockKeepsRotation)
+{
+  for (double pitchDeg : {89.0, 89.7, 89.99, 90.0, -89.8})
+  {
+    const double yaw = 0.3;
+    const double pitch = mrpt::DEG2RAD(pitchDeg);
+    const double roll = 0.2;
+    mrpt::math::CQuaternionDouble q;
+    TPose3D(0, 0, 0, yaw, pitch, roll).getAsQuaternion(q);
+    const CPose3D p = CPose3D::FromQuaternion(q);
+    const auto Rref = mrpt::poses::Lie::SO<3>::fromYPR(yaw, pitch, roll);
+    EXPECT_LT(maxAbsDiff(p.getRotationMatrix(), Rref), 1e-12) << "pitch(deg)=" << pitchDeg;
+  }
+}
+
+TEST(CPose3D, toCPose3DQuatNearGimbalLockKeepsRotation)
+{
+  const CPose3D C = nearGimbalPose(1e-13);
+  const CPose3DQuat Q(C);
+  const auto H = Q.getHomogeneousMatrix();
+  CMatrixDouble33 Rq;
+  for (int i = 0; i < 3; i++)
+  {
+    for (int j = 0; j < 3; j++)
+    {
+      Rq(i, j) = H(i, j);
+    }
+  }
+  EXPECT_LT(maxAbsDiff(C.getRotationMatrix(), Rq), 1e-12);
+}
+
+TEST(CPose3D, composePointJacobiansVsFiniteDifferences)
+{
+  auto poses = randomPoses(20);
+  poses.emplace_back(1, 2, 3, 0.5, M_PI / 2 - 1e-4, 0.3);
+  poses.emplace_back(1, 2, 3, -2.5, -M_PI / 2 + 1e-4, -2.0);
+  const TPoint3D l(0.7, -1.3, 2.2);
+  const double h = 1e-6;
+  for (const auto& P : poses)
+  {
+    CMatrixDouble33 Jpt;
+    CMatrixDouble36 Jp;
+    double gx = 0;
+    double gy = 0;
+    double gz = 0;
+    P.composePoint(l.x, l.y, l.z, gx, gy, gz, Jpt, Jp);
+    EXPECT_LT(maxAbsDiff(Jpt, P.getRotationMatrix()), 1e-15);
+
+    CMatrixDouble33 Jipt;
+    CMatrixDouble36 Jip;
+    double lx = 0;
+    double ly = 0;
+    double lz = 0;
+    P.inverseComposePoint(gx, gy, gz, lx, ly, lz, Jipt, Jip);
+    EXPECT_NEAR(lx, l.x, 1e-9);
+    EXPECT_NEAR(ly, l.y, 1e-9);
+    EXPECT_NEAR(lz, l.z, 1e-9);
+
+    for (int k = 0; k < 6; k++)
+    {
+      std::array<double, 6> v = {P.x(), P.y(), P.z(), P.yaw(), P.pitch(), P.roll()};
+      std::array<double, 6> u = v;
+      v[k] += h;
+      u[k] -= h;
+      const CPose3D Pa(v[0], v[1], v[2], v[3], v[4], v[5]);
+      const CPose3D Pb(u[0], u[1], u[2], u[3], u[4], u[5]);
+      const auto ga = Pa.composePoint(l);
+      const auto gb = Pb.composePoint(l);
+      const auto la = Pa.inverseComposePoint(TPoint3D(gx, gy, gz));
+      const auto lb = Pb.inverseComposePoint(TPoint3D(gx, gy, gz));
+      for (int r = 0; r < 3; r++)
+      {
+        EXPECT_NEAR(Jp(r, k), (ga[r] - gb[r]) / (2 * h), 1e-7) << P;
+        EXPECT_NEAR(Jip(r, k), (la[r] - lb[r]) / (2 * h), 1e-7) << P;
+      }
+    }
+    // d(l)/d(g):
+    for (int k = 0; k < 3; k++)
+    {
+      TPoint3D ga(gx, gy, gz);
+      TPoint3D gb(gx, gy, gz);
+      ga[k] += h;
+      gb[k] -= h;
+      const auto la = P.inverseComposePoint(ga);
+      const auto lb = P.inverseComposePoint(gb);
+      for (int r = 0; r < 3; r++)
+      {
+        EXPECT_NEAR(Jipt(r, k), (la[r] - lb[r]) / (2 * h), 1e-8);
+      }
+    }
+  }
+}
+
+// composePoint() is w.r.t. exp(e)*T, inverseComposePoint() is w.r.t. T*exp(e).
+TEST(CPose3D, se3JacobianPerturbationConventions)
+{
+  const double h = 1e-7;
+  for (const auto& T : randomPoses(10))
+  {
+    const TPoint3D g(4, -1, 2);
+    CMatrixDouble36 Ji;
+    double lx = 0;
+    double ly = 0;
+    double lz = 0;
+    T.inverseComposePoint(g.x, g.y, g.z, lx, ly, lz, std::nullopt, std::nullopt, Ji);
+    CMatrixDouble36 Jc;
+    double gx = 0;
+    double gy = 0;
+    double gz = 0;
+    T.composePoint(lx, ly, lz, gx, gy, gz, std::nullopt, std::nullopt, Jc);
+    for (int k = 0; k < 6; k++)
+    {
+      mrpt::poses::Lie::SE<3>::tangent_vector e;
+      e.setZero();
+      e[k] = h;
+      const CPose3D Lp = mrpt::poses::Lie::SE<3>::exp(e) + T;
+      const CPose3D Rp = T + mrpt::poses::Lie::SE<3>::exp(e);
+      e[k] = -h;
+      const CPose3D Lm = mrpt::poses::Lie::SE<3>::exp(e) + T;
+      const CPose3D Rm = T + mrpt::poses::Lie::SE<3>::exp(e);
+      const TPoint3D l(lx, ly, lz);
+      const auto cPlus = Lp.composePoint(l);
+      const auto cMinus = Lm.composePoint(l);
+      const auto iPlus = Rp.inverseComposePoint(g);
+      const auto iMinus = Rm.inverseComposePoint(g);
+      for (int r = 0; r < 3; r++)
+      {
+        EXPECT_NEAR(Jc(r, k), (cPlus[r] - cMinus[r]) / (2 * h), 1e-6);
+        EXPECT_NEAR(Ji(r, k), (iPlus[r] - iMinus[r]) / (2 * h), 1e-6);
+      }
+    }
+  }
+}
+
+TEST(CPose3D, jacobianRodriguesFromYPRVsFiniteDifferences)
+{
+  using mrpt::poses::Lie::SO;
+  const double h = 1e-6;
+  // Includes orientations whose YPR quaternion has a negative real part:
+  for (const auto& ypr : std::vector<std::array<double, 3>>{
+           { 0.3,  0.2, -0.4},
+           { 2.9,  0.1,  0.1},
+           {-1.0,  0.5,  0.2},
+           { 3.0,  0.5, -3.0},
+           { 1.0, -1.2,  2.5}
+  })
+  {
+    const CPose3D p = CPose3D::FromYawPitchRoll(ypr[0], ypr[1], ypr[2]);
+    const auto J = p.jacobian_rodrigues_from_YPR();
+    for (int k = 0; k < 3; k++)
+    {
+      auto a = ypr;
+      auto b = ypr;
+      a[k] += h;
+      b[k] -= h;
+      const auto wa = SO<3>::log(SO<3>::fromYPR(a[0], a[1], a[2]));
+      const auto wb = SO<3>::log(SO<3>::fromYPR(b[0], b[1], b[2]));
+      for (int r = 0; r < 3; r++)
+      {
+        EXPECT_NEAR(J(r, k), (wa[r] - wb[r]) / (2 * h), 1e-6)
+            << "ypr=" << ypr[0] << " " << ypr[1] << " " << ypr[2];
+      }
+    }
+  }
+}
+
+TEST(CPose3D, sphericalCoordinatesMatchLocalPoint)
+{
+  for (const auto& P : randomPoses(10))
+  {
+    const TPoint3D l(1.5, -0.7, 0.9);
+    const TPoint3D g = P.composePoint(l);
+    double range = 0;
+    double yaw = 0;
+    double pitch = 0;
+    P.sphericalCoordinates(g, range, yaw, pitch);
+    // Rebuild the local point from (range, yaw, pitch), pitch>0 pointing down:
+    EXPECT_NEAR(range * std::cos(pitch) * std::cos(yaw), l.x, 1e-9);
+    EXPECT_NEAR(range * std::cos(pitch) * std::sin(yaw), l.y, 1e-9);
+    EXPECT_NEAR(-range * std::sin(pitch), l.z, 1e-9);
+  }
+}
+
+TEST(CPose3D, composeAndInverseComposeFromAliasing)
+{
+  const auto ps = randomPoses(6);
+  for (const auto& A : ps)
+  {
+    for (const auto& B : ps)
+    {
+      const CPose3D ref = referenceRelativePose(A, B);
+      CPose3D a = A;
+      a.inverseComposeFrom(a, B);
+      EXPECT_LT(maxAbsDiff(a.getRotationMatrix(), ref.getRotationMatrix()), 1e-12);
+      EXPECT_NEAR((a.translation() - ref.translation()).norm(), 0, 1e-12);
+      CPose3D b = B;
+      b.inverseComposeFrom(A, b);
+      EXPECT_LT(maxAbsDiff(b.getRotationMatrix(), ref.getRotationMatrix()), 1e-12);
+      EXPECT_NEAR((b.translation() - ref.translation()).norm(), 0, 1e-12);
+      CPose3D c = A;
+      c.composeFrom(c, c);
+      const CPose3D cref = A + A;
+      EXPECT_LT(maxAbsDiff(c.getRotationMatrix(), cref.getRotationMatrix()), 1e-12);
+      EXPECT_NEAR((c.translation() - cref.translation()).norm(), 0, 1e-12);
+    }
+  }
 }

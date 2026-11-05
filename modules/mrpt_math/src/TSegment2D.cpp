@@ -50,12 +50,7 @@ double TSegment2D::signedDistance(const TPoint2D& point) const
   return TLine2D(*this).signedDistance(point);
 }
 
-bool TSegment2D::contains(const TPoint2D& point) const
-{
-  return std::abs(
-             math::distance(point1, point) + math::distance(point2, point) -
-             math::distance(point1, point2)) < getEpsilon();
-}
+bool TSegment2D::contains(const TPoint2D& point) const { return distance(point) < getEpsilon(); }
 void TSegment2D::generate3DObject(TSegment3D& s) const { s = TSegment3D(*this); }
 TSegment2D::TSegment2D(const TSegment3D& s)
 {

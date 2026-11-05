@@ -32,8 +32,9 @@ class CPose3DQuat;
 /** SE(3) rigid-body pose with cached rotation matrix — the preferred class for 3D transformations.
  *
  * Represents an element of SE(3) = SO(3) ⋉ R³. Internally stored as:
- * - A 3-vector `m_coords = (x, y, z)` — translation in metres.
- * - A 3×3 rotation matrix `m_ROT ∈ SO(3)` — always kept normalised.
+ * - A 3-vector `m_coords = (x, y, z)`: translation in meters.
+ * - A 3×3 rotation matrix `m_ROT ∈ SO(3)`: assumed orthonormal (it is not
+ *   re-orthonormalized automatically).
  *
  * The corresponding 4x4 homogeneous matrix is:
  * \verbatim
@@ -41,7 +42,7 @@ class CPose3DQuat;
  *       | 0  1 |
  * \endverbatim
  *
- * **Angle parameterisation (intrinsic ZYX / Tait-Bryan):**
+ * **Angle parameterization (intrinsic ZYX / Tait-Bryan):**
  * Yaw/Pitch/Roll angles (yaw=psi, pitch=theta, roll=phi) are derived on demand from `m_ROT`
  * via `getYawPitchRoll()`:
  *
@@ -377,11 +378,11 @@ class CPose3D :
    *  Optional Jacobians (all w.r.t. the *input* quantities):
    *  - `out_jacobian_df_dpoint` (3x3): dg/dl = R.
    *  - `out_jacobian_df_dpose`  (3x6): dg/d(t, yaw, pitch, roll)
-   *    in the yaw/pitch/roll parameterisation. Set `use_small_rot_approx=true` for the first-order
-   *    linearisation (valid only for small rotations).
-   *  - `out_jacobian_df_dse3`   (3x6): dg/dxi
-   *    where xi is the 6D locally-Euclidean tangent-space vector of SE(3) (see \cite
-   * blanco_se3_tutorial).
+   *    in the yaw/pitch/roll parameterization. Set `use_small_rot_approx=true` for the first-order
+   *    linearization (valid only for small rotations).
+   *  - `out_jacobian_df_dse3`   (3x6): dg/dxi, where xi is the 6D tangent-space
+   *    vector of a **left-multiplied** increment exp(xi) (+) this, that is,
+   *    [I3 | -[g]x]. See Eq. (10.23) in \cite blanco_se3_tutorial.
    *
    * \sa inverseComposePoint, composePoint(const TPoint3D&)
    */
@@ -447,11 +448,15 @@ class CPose3D :
   /** Transforms a 3D point from the **global** frame into the **local** frame of this pose.
    *  Computes: l = R^T * (g - t)
    *
-   *  Optional Jacobians follow the same conventions as composePoint():
+   *  Optional Jacobians (all w.r.t. the *input* quantities):
    *  - `out_jacobian_df_dpoint` (3x3): dl/dg = R^T.
-   *  - `out_jacobian_df_dpose`  (3×6): w.r.t. yaw/pitch/roll parameterisation.
-   *  - `out_jacobian_df_dse3`   (3×6): w.r.t. SE(3) tangent-space vector ξ (see \cite
-   * blanco_se3_tutorial). \sa composePoint, composeFrom
+   *  - `out_jacobian_df_dpose`  (3x6): dl/d(t, yaw, pitch, roll), in the yaw/pitch/roll
+   *    parameterization.
+   *  - `out_jacobian_df_dse3`   (3x6): dl/dxi, where xi is the 6D tangent-space
+   *    vector of a **right-multiplied** increment this (+) exp(xi), that is,
+   *    [-I3 | [l]x]. Note that this differs from composePoint(), which uses a
+   *    left-multiplied increment. See \cite blanco_se3_tutorial.
+   * \sa composePoint, composeFrom
    */
   void inverseComposePoint(
       const double gx,
@@ -542,14 +547,15 @@ class CPose3D :
    */
   void addComponents(const CPose3D& p);
 
-  /** Rebuild the internal matrix & update the yaw/pitch/roll angles within
-   * the ]-PI,PI] range (Must be called after using addComponents)
+  /** Recomputes the yaw/pitch/roll angles from the rotation matrix, so they
+   * lie within [-pi,pi] (pitch within [-pi/2,pi/2]). Must be called after
+   * using addComponents().
    * \sa addComponents
    */
   void normalizeAngles();
 
   /** Scalar multiplication of x,y,z,yaw,pitch & roll (angles will be wrapped
-   * to the ]-pi,pi] interval). */
+   * to the [-pi,pi[ interval). */
   void operator*=(const double s);
 
   /** Set the pose from a 3D position (meters) and yaw/pitch/roll angles

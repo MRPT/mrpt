@@ -89,7 +89,7 @@ mrpt::serialization::CArchive& operator<<(
 
 /** @} */  // end MRPT matrices stream operators
 
-/** @name Operators for text streaming of MRPT matrices
+/** @name Binary serialization of symmetric matrices
   @{ */
 
 /** Binary serialization of symmetric matrices, saving the space of duplicated

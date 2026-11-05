@@ -119,7 +119,7 @@ class CPose3DPDFGaussian : public CPose3DPDF
   void copyFrom(const CPose3DQuatPDFGaussian& o);
 
   /** Save the PDF to a text file, containing the 3D pose in the first line,
-   * then the covariance matrix in next 3 lines.
+   * then the 6x6 covariance matrix in the next 6 lines.
    */
   bool saveToTextFile(const std::string& file) const override;
 
@@ -135,7 +135,7 @@ class CPose3DPDFGaussian : public CPose3DPDF
   void drawSingleSample(CPose3D& outPart) const override;
 
   /** Draws a number of samples from the distribution, and saves as a list of
-   * 1x6 vectors, where each row contains a (x,y,phi) datum.
+   * 1x6 vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum.
    */
   void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
@@ -234,13 +234,13 @@ bool operator==(const CPose3DPDFGaussian& p1, const CPose3DPDFGaussian& p2);
 
 }  // namespace poses
 
-/** Global variables to change the run-time behaviour of some MRPT classes
- * within mrpt-base.
+/** Global variables to change the run-time behavior of some MRPT classes
+ * within mrpt-poses.
  *  See each variable for the description of what classes it affects.
  */
 namespace global_settings
 {
-/** If set to true (false), a Scaled Unscented Transform is used instead of a
+/** If set to true (default: false), a Scaled Unscented Transform is used instead of a
  *linear approximation with Jacobians.
  * Affects to:
  *		- CPose3DPDFGaussian::CPose3DPDFGaussian( const CPose3DQuatPDFGaussian

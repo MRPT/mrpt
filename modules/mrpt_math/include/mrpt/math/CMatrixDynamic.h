@@ -349,12 +349,14 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
     MRPT_END
   }
 
-  /** Assignment from an Eigen matrix */
+  /** Assignment from an Eigen matrix or expression. The expression is
+   * evaluated before copying, so it may reference this same matrix (e.g.
+   * `M = M.transpose()`). */
   template <class Derived>
   CMatrixDynamic& operator=(const Eigen::MatrixBase<Derived>& m)
   {
     MRPT_START
-    setFromMatrixLike(m);
+    setFromMatrixLike(m.eval());
     return *this;
     MRPT_END
   }
@@ -564,13 +566,18 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
     }
     else
     {
-      ASSERT_(in.size() == m_Cols);
+      ASSERT_(static_cast<size_type>(in.size()) == m_Cols);
+    }
+    const auto N = static_cast<size_type>(in.size());
+    if (m_Cols == 0 || m_Rows == 0)
+    {
+      realloc(0, 0);
     }
     const auto row = m_Rows;
-    realloc(row + 1, m_Cols = in.size());
+    realloc(row + 1, N);
     for (Index i = 0; i < m_Cols; i++)
     {
-      (*this)(row, i) = in[i];
+      (*this)(row, i) = in[static_cast<std::size_t>(i)];
     }
   }
 
@@ -664,8 +671,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
   CMatrixDynamic<float> cast_float() const;
   CMatrixDynamic<double> cast_double() const;
 
-  /** Solves the linear system Ax=b, returns x, with A this **symmetric**
-   * matrix. \sa lu_solve() */
+  /** Solves the linear system Ax=b, returns x, with A this **symmetric
+   * positive-definite** matrix. \sa lu_solve() */
   CVectorDynamic<Scalar> llt_solve(const CVectorDynamic<Scalar>& b) const;
 
   /** Solves the linear system Ax=b, returns x, with A this **asymmetric**

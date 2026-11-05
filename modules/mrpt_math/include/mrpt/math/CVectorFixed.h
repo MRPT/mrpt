@@ -22,8 +22,8 @@ namespace mrpt
 namespace math
 {
 /** CVectorFixed is an array for numeric types supporting several mathematical
- * operations (actually, just a wrapper on Eigen::Matrix<T,N,1>)
- * \sa CVectorFixedFloat, CVectorFixedDouble, CArray
+ * operations (actually, just an alias of CMatrixFixed<T,N,1>)
+ * \sa CVectorFixedFloat, CVectorFixedDouble, CMatrixFixed
  */
 template <typename T, matrix_dim_t N>
 using CVectorFixed = CMatrixFixed<T, N, 1>;

@@ -98,8 +98,9 @@ class CPose3DPDFParticles :
    *   "to project" the current pdf. Result PDF substituted the currently
    * stored one in the object. */
   void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
-  /** Draws a single sample from the distribution (WARNING: weights are
-   * assumed to be normalized!) */
+  /** Draws a single sample from the distribution, picking a particle with a
+   * probability proportional to its weight (weights do not need to be
+   * normalized). */
   void drawSingleSample(CPose3D& outPart) const override;
   /** Draws a number of samples from the distribution, and saves as a list of
    * 1x6 vectors, where each row contains a (x,y,phi) datum. */
@@ -113,7 +114,11 @@ class CPose3DPDFParticles :
   void inverse(CPose3DPDF& o) const override;
   /** Returns the particle with the highest weight. */
   mrpt::math::TPose3D getMostLikelyParticle() const;
-  /** Bayesian fusion */
+  /** Bayesian fusion: the particles of p1 (or samples of it) are weighted
+   * with the density of p2. If p2 is also a particle PDF, its density is a
+   * kernel density estimate with Gaussian kernels of covariance h^2*cov(p2),
+   * with h from Silverman's rule of thumb; otherwise, the Gaussian with the
+   * mean and covariance of p2 is used. */
   void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 
   void printTo(std::ostream& out) const override;

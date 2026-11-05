@@ -97,6 +97,7 @@ std::tuple<CMatrixDouble33, CPose2D> CPosePDFSOG::getCovarianceAndMean() const
 
       estMean_i = CMatrixDouble31(m.mean);
       estMean_i -= estMeanMat;
+      mrpt::math::wrapToPiInPlace(estMean_i(2, 0));
 
       temp.matProductOf_AAt(estMean_i);
       temp += m.cov;
@@ -331,7 +332,7 @@ void CPosePDFSOG::bayesianFusion(
   eta = covInv * eta;
 
   // Normal distribution canonical form constant:
-  // See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
+  // See: https://cs.nju.edu.cn/wujx/paper/Gaussian.pdf
   double a = -0.5 * (3 * log(M_2PI) - log(covInv.det()) +
                      (eta.transpose() * p2->cov.asEigen() * eta.asEigen())(0, 0));
 
@@ -348,7 +349,7 @@ void CPosePDFSOG::bayesianFusion(
     //   w'_i = w_i * exp( a + a_i - a' )
     //
     //      a = -1/2 ( dimensionality * log(2pi) - log(det(Cov^-1)) +
-    //      (Cov^-1 * mu)^t * Cov^-1 * (Cov^-1 * mu) )
+    //      (Cov^-1 * mu)^t * Cov * (Cov^-1 * mu) )
     //
     // ----------------------------------------------------------------------
     TGaussianMode newKernel;
@@ -366,7 +367,7 @@ void CPosePDFSOG::bayesianFusion(
     new_eta_i = new_covInv_i * new_eta_i;
 
     double a_i =
-        -0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
+        -0.5 * (3 * log(M_2PI) - log(covInv_i.det()) +
                 (eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() * eta_i.asEigen())(0, 0));
     double new_a_i =
         -0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
@@ -400,11 +401,13 @@ void CPosePDFSOG::inverse(CPosePDF& o) const
   for (itSrc = m_modes.begin(), itDest = out->m_modes.begin(); itSrc != m_modes.end();
        ++itSrc, ++itDest)
   {
-    // The mean:
-    (itDest)->mean = -(itSrc)->mean;
+    const CPosePDFGaussian g(itSrc->mean, itSrc->cov);
+    CPosePDFGaussian g_inv;
+    g.inverse(g_inv);
 
-    // The covariance: Is the same:
-    (itDest)->cov = (itSrc)->cov;
+    itDest->mean = g_inv.mean;
+    itDest->cov = g_inv.cov;
+    itDest->log_w = itSrc->log_w;
   }
 }
 
@@ -413,9 +416,13 @@ void CPosePDFSOG::inverse(CPosePDF& o) const
  ---------------------------------------------------------------*/
 void CPosePDFSOG::operator+=(const CPose2D& Ap)
 {
-  for (auto& m : m_modes) m.mean = m.mean + Ap;
-
-  this->rotateAllCovariances(Ap.phi());
+  for (auto& m : m_modes)
+  {
+    CPosePDFGaussian g(m.mean, m.cov);
+    g += Ap;
+    m.mean = g.mean;
+    m.cov = g.cov;
+  }
 }
 
 /*---------------------------------------------------------------
@@ -433,6 +440,7 @@ double CPosePDFSOG::evaluatePDF(const CPose2D& x, bool sumOverAllPhis) const
     for (const auto& m : m_modes)
     {
       MU = CMatrixDouble31(m.mean);
+      X(2, 0) = MU(2, 0) + mrpt::math::wrapToPi(x.phi() - MU(2, 0));
       ret += exp(m.log_w) * math::normalPDF(X, MU, m.cov);
     }
 
@@ -475,6 +483,7 @@ double CPosePDFSOG::evaluateNormalizedPDF(const CPose2D& x) const
   for (const auto& m : m_modes)
   {
     MU = CMatrixDouble31(m.mean);
+    X(2, 0) = MU(2, 0) + mrpt::math::wrapToPi(x.phi() - MU(2, 0));
     ret += exp(m.log_w) * math::normalPDF(X, MU, m.cov) / math::normalPDF(MU, MU, m.cov);
   }
 
@@ -588,7 +597,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 
     auto MUi = CMatrixDouble31(m_modes[i].mean);
 
-    // Compute B(i,j), j=[i+1,N-1]  (the discriminant)
+    // Compute B(i,j), j=[0,N-1], j!=i  (the discriminant)
     for (size_t j = 0; j < N; j++)
       if (i != j)
       {
@@ -609,8 +618,9 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
         AUX *= Wi * Wj * Wij_ * Wij_;
         Pij += AUX;
 
-        double Bij = (Wi + Wj) * log(Pij.det()) - Wi * log(m_modes[i].cov.det()) -
-                     Wj * log(m_modes[j].cov.det());
+        // Upper bound of the KL divergence, eq. (21) in Runnalls 2007:
+        double Bij = 0.5 * ((Wi + Wj) * log(Pij.det()) - Wi * log(m_modes[i].cov.det()) -
+                            Wj * log(m_modes[j].cov.det()));
         if (verbose)
         {
           std::cout << "try merge[" << i << ", " << j << "] -> Bij: " << Bij << "\n";
@@ -656,7 +666,8 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 
       Mij.mean = CPose2D(
           Wi_ * Mi.mean.x() + Wj_ * Mj.mean.x(), Wi_ * Mi.mean.y() + Wj_ * Mj.mean.y(),
-          Wi_ * Mi.mean.phi() + Wj_ * Mj.mean.phi());
+          Mi.mean.phi() + Wj_ * mrpt::math::wrapToPi(Mj.mean.phi() - Mi.mean.phi()));
+      Mij.mean.normalizePhi();
 
       // Cov:
       Mij.cov = min_Bij_COV;

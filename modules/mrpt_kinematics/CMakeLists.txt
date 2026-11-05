@@ -28,8 +28,11 @@ set(LIB_SOURCES
 
 set(LIB_UNIT_TEST_SOURCES
   tests/CKinematicChain_unittest.cpp
+  tests/CKinematicChain_math_unittest.cpp
   tests/CVehicleSimul_unittest.cpp
+  tests/CVehicleSimul_math_unittest.cpp
   tests/CVehicleVelCmd_unittest.cpp
+  tests/CVehicleVelCmd_math_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

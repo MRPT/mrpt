@@ -23,93 +23,72 @@
 
 using namespace mrpt::tfest;
 
-internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
+internal::se2_l2_impl_return_t<double> internal::se2_l2_impl_SSE2(
     const TMatchingPairList& in_correspondences)
 {
-  // SSE vectorized version:
+  // SSE2 vectorized version, with two double-precision lanes. It performs the
+  // same operations, in the same order, as the non-vectorized version:
+  // both point sets are shifted by a pivot (the first pair) to avoid
+  // cancellation errors for points far from the origin.
   const size_t N = in_correspondences.size();
   ASSERT_(N >= 2);
-  const float N_inv = 1.0f / static_cast<float>(N);  // For efficiency, keep this value.
+  const double N_inv = 1.0 / static_cast<double>(N);
 
-  // Ensure correct types:
-  static_assert(sizeof(TMatchingPair::global.x) == sizeof(float));
-  static_assert(sizeof(TMatchingPair::local.x) == sizeof(float));
+  internal::se2_l2_impl_return_t<double> ret;
 
-  internal::se2_l2_impl_return_t<float> ret;
+  const auto& p0 = in_correspondences[0];
+  // Note: _mm_set_pd(hi, lo)
+  const __m128d pivot_a =
+      _mm_set_pd(static_cast<double>(p0.global.y), static_cast<double>(p0.global.x));
+  const __m128d pivot_b =
+      _mm_set_pd(static_cast<double>(p0.local.y), static_cast<double>(p0.local.x));
 
-  __m128 sum_a_xyz = _mm_setzero_ps();  // All 4 zeros (0.0f)
-  __m128 sum_b_xyz = _mm_setzero_ps();  // All 4 zeros (0.0f)
+  __m128d sum_a = _mm_setzero_pd();        // [ SumXa SumYa ]
+  __m128d sum_b = _mm_setzero_pd();        // [ SumXb SumYb ]
+  __m128d sum_ab = _mm_setzero_pd();       // [ Sxx Syy ]
+  __m128d sum_ab_swap = _mm_setzero_pd();  // [ Sxy Syx ]
 
-  //   [ f0     f1      f2      f3  ]
-  //    xa*xb  ya*yb   xa*yb  xb*ya
-  __m128 sum_ab_xyz = _mm_setzero_ps();  // All 4 zeros (0.0f)
-
-  for (const auto& in_correspondence : in_correspondences)
+  for (const auto& c : in_correspondences)
   {
-    // Get the pair of points in the correspondence:
-    //   a_xyyx = [   xa     ay   |   xa    ya ]
-    //   b_xyyx = [   xb     yb   |   yb    xb ]
-    //      (product)
-    //            [  xa*xb  ya*yb   xa*yb  xb*ya
-    //                LO0    LO1     HI2    HI3
-    // Note: _MM_SHUFFLE(hi3,hi2,lo1,lo0)
-    const __m128 a_xyz = _mm_loadu_ps(&in_correspondence.global.x);  // *Unaligned* load
-    const __m128 b_xyz = _mm_loadu_ps(&in_correspondence.local.x);   // *Unaligned* load
+    // a = [ xa ya ], b = [ xb yb ], b_swap = [ yb xb ]
+    const __m128d a = _mm_sub_pd(
+        _mm_set_pd(static_cast<double>(c.global.y), static_cast<double>(c.global.x)), pivot_a);
+    const __m128d b = _mm_sub_pd(
+        _mm_set_pd(static_cast<double>(c.local.y), static_cast<double>(c.local.x)), pivot_b);
+    const __m128d b_swap = _mm_shuffle_pd(b, b, 0x1);
 
-    const auto a_xyxy = _mm_shuffle_ps(a_xyz, a_xyz, _MM_SHUFFLE(1, 0, 1, 0));
-    const auto b_xyyx = _mm_shuffle_ps(b_xyz, b_xyz, _MM_SHUFFLE(0, 1, 1, 0));
-
-    // Compute the terms:
-    sum_a_xyz = _mm_add_ps(sum_a_xyz, a_xyz);
-    sum_b_xyz = _mm_add_ps(sum_b_xyz, b_xyz);
-
-    //   [ f0     f1      f2      f3  ]
-    //    xa*xb  ya*yb   xa*yb  xb*ya
-    sum_ab_xyz = _mm_add_ps(sum_ab_xyz, _mm_mul_ps(a_xyxy, b_xyyx));
+    sum_a = _mm_add_pd(sum_a, a);
+    sum_b = _mm_add_pd(sum_b, b);
+    sum_ab = _mm_add_pd(sum_ab, _mm_mul_pd(a, b));
+    sum_ab_swap = _mm_add_pd(sum_ab_swap, _mm_mul_pd(a, b_swap));
   }
 
-  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float sums_a[4];
-  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float sums_b[4];
-  _mm_store_ps(sums_a, sum_a_xyz);
-  _mm_store_ps(sums_b, sum_b_xyz);
+  alignas(16) double sums_a[2];
+  alignas(16) double sums_b[2];
+  alignas(16) double sums_ab[2];
+  alignas(16) double sums_ab_swap[2];
+  _mm_store_pd(sums_a, sum_a);
+  _mm_store_pd(sums_b, sum_b);
+  _mm_store_pd(sums_ab, sum_ab);
+  _mm_store_pd(sums_ab_swap, sum_ab_swap);
 
-  float SumXa = sums_a[0];
-  float SumYa = sums_a[1];
-  float SumXb = sums_b[0];
-  float SumYb = sums_b[1];
+  const double SumXa = sums_a[0];
+  const double SumYa = sums_a[1];
+  const double SumXb = sums_b[0];
+  const double SumYb = sums_b[1];
+  const double Sxx = sums_ab[0];
+  const double Syy = sums_ab[1];
+  const double Sxy = sums_ab_swap[0];
+  const double Syx = sums_ab_swap[1];
 
-  // Compute all four means:
-  const __m128 Ninv_4val = _mm_set1_ps(N_inv);  // load 4 copies of the same value
-  sum_a_xyz = _mm_mul_ps(sum_a_xyz, Ninv_4val);
-  sum_b_xyz = _mm_mul_ps(sum_b_xyz, Ninv_4val);
-
-  // means_a[0]: mean_x_a
-  // means_a[1]: mean_y_a
-  // means_b[0]: mean_x_b
-  // means_b[1]: mean_y_b
-  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float means_a[4];
-  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float means_b[4];
-  _mm_store_ps(means_a, sum_a_xyz);
-  _mm_store_ps(means_b, sum_b_xyz);
-
-  ret.mean_x_a = means_a[0];
-  ret.mean_y_a = means_a[1];
-  ret.mean_x_b = means_b[0];
-  ret.mean_y_b = means_b[1];
-
-  //      Sxx   Syy     Sxy    Syx
-  //    xa*xb  ya*yb   xa*yb  xb*ya
-  alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float cross_sums[4];
-  _mm_store_ps(cross_sums, sum_ab_xyz);
-
-  float Sxx = cross_sums[0];
-  float Syy = cross_sums[1];
-  float Sxy = cross_sums[2];
-  float Syx = cross_sums[3];
+  ret.mean_x_a = static_cast<double>(p0.global.x) + SumXa * N_inv;
+  ret.mean_y_a = static_cast<double>(p0.global.y) + SumYa * N_inv;
+  ret.mean_x_b = static_cast<double>(p0.local.x) + SumXb * N_inv;
+  ret.mean_y_b = static_cast<double>(p0.local.y) + SumYb * N_inv;
 
   // Auxiliary variables Ax,Ay:
-  ret.Ax = static_cast<float>(N) * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
-  ret.Ay = SumXa * SumYb + static_cast<float>(N) * (Syx - Sxy) - SumXb * SumYa;
+  ret.Ax = static_cast<double>(N) * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
+  ret.Ay = SumXa * SumYb + static_cast<double>(N) * (Syx - Sxy) - SumXb * SumYa;
 
   return ret;
 }

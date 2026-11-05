@@ -30,10 +30,8 @@ void CAtan2LookUpTable::resize(
     double xmin, double xmax, double ymin, double ymax, double resolution) noexcept
 {
   const double def = .0;
-  if (m_grid.getResolution() == resolution)
-    m_grid.resize(xmin, xmax, ymin, ymax, def, .0);
-  else
-    m_grid.setSize(xmin, xmax, ymin, ymax, resolution, &def);
+  // Note: CDynamicGrid::resize() would only grow the grid
+  m_grid.setSize(xmin, xmax, ymin, ymax, resolution, &def);
 
   const size_t nx = m_grid.getSizeX(), ny = m_grid.getSizeY();
 

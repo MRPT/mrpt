@@ -50,8 +50,10 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
     CMatrixDouble77& df_du,
     CPose3DQuat* out_x_oplus_u)
 {
-  // For the derivation of the formulas, see the tech. report cited in the
-  // header file.
+  // For the derivation of the formulas, see \cite blanco_se3_tutorial,
+  // section 5.2.2. The normalization Jacobian is applied at the input
+  // quaternion for the translation rows, and at the output one for the
+  // quaternion rows.
   const double qr = x.quat().r();
   const double qx = x.quat().x();
   const double qx2 = square(qx);
@@ -136,5 +138,18 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
         (norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).asEigen();
   }
 
-  if (out_x_oplus_u) *out_x_oplus_u = x_plus_u;
+  // The quaternion product is returned with a non-negative real part (see
+  // CQuaternion::crossProduct()): if the raw product had qr<0, its sign was
+  // flipped, and so must be the Jacobian rows of the quaternion part.
+  const double raw_qr = qr * q2r - qx * q2x - qy * q2y - qz * q2z;
+  if (raw_qr < 0)
+  {
+    df_dx.asEigen().block<4, 7>(3, 0) *= -1.0;
+    df_du.asEigen().block<4, 7>(3, 0) *= -1.0;
+  }
+
+  if (out_x_oplus_u)
+  {
+    *out_x_oplus_u = x_plus_u;
+  }
 }

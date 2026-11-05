@@ -23,6 +23,7 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/viz/CSetOfObjects.h>
@@ -1112,4 +1113,205 @@ TEST(CBeacon, SerializeRoundTripAllPdfTypes)
   CBeacon dstSog = roundTrip(sog);
   EXPECT_EQ(dstSog.m_typePDF, CBeacon::pdfSOG);
   EXPECT_EQ(dstSog.m_locationSOG.size(), sog.m_locationSOG.size());
+}
+
+namespace
+{
+mrpt::obs::CObservationBeaconRanges makeRangeObs(float range)
+{
+  mrpt::obs::CObservationBeaconRanges obs;
+  obs.minSensorDistance = 0;
+  obs.maxSensorDistance = 30;
+  mrpt::obs::CObservationBeaconRanges::TMeasurement meas;
+  meas.beaconID = 1;
+  meas.sensedDistance = range;
+  meas.sensorLocationOnRobot = mrpt::poses::CPoint3D(0, 0, 0);
+  obs.sensedData.push_back(meas);
+  return obs;
+}
+
+double gaussianLogPdf(double err, double var)
+{
+  return -0.5 * err * err / var - 0.5 * std::log(2 * M_PI * var);
+}
+
+// A SOG beacon with two modes at 5 m from the origin: mode #0 elongated along
+// the direction to the origin, mode #1 across it.
+CBeacon makeTwoModeSOGBeacon()
+{
+  CBeacon b;
+  b.m_ID = 1;
+  b.m_typePDF = CBeacon::pdfSOG;
+  b.m_locationSOG.clear();
+
+  mrpt::poses::CPointPDFSOG::TGaussianMode m0;
+  m0.log_w = 0;
+  m0.val.mean = mrpt::poses::CPoint3D(5, 0, 0);
+  m0.val.cov.setZero();
+  m0.val.cov(0, 0) = 1.0;
+  m0.val.cov(1, 1) = 1e-4;
+
+  mrpt::poses::CPointPDFSOG::TGaussianMode m1 = m0;
+  m1.val.mean = mrpt::poses::CPoint3D(-5, 0, 0);
+  m1.val.cov(0, 0) = 1e-4;
+  m1.val.cov(1, 1) = 1.0;
+
+  b.m_locationSOG.push_back(m0);
+  b.m_locationSOG.push_back(m1);
+  return b;
+}
+}  // namespace
+
+// Regression: the range likelihood of a Gaussian beacon must be a normalized
+// density, since its variance depends on the robot pose.
+TEST(CBeaconMap, ComputeObservationLikelihoodGaussianIsNormalized)
+{
+  CBeaconMap bm;
+  CBeacon b;
+  b.m_ID = 1;
+  b.m_typePDF = CBeacon::pdfGauss;
+  b.m_locationGauss.mean = mrpt::poses::CPoint3D(0, 0, 0);
+  b.m_locationGauss.cov.setZero();
+  b.m_locationGauss.cov(0, 0) = 1.0;
+  b.m_locationGauss.cov(1, 1) = 1e-4;
+  bm.push_back(b);
+
+  const double varR = mrpt::square(bm.likelihoodOptions.rangeStd);
+  const auto obs = makeRangeObs(5.2f);
+
+  // Seen along the x axis (large range variance) and along the y axis:
+  const double lA = bm.computeObservationLikelihood(obs, mrpt::poses::CPose3D(-5, 0, 0, 0, 0, 0));
+  const double lB = bm.computeObservationLikelihood(obs, mrpt::poses::CPose3D(0, -5, 0, 0, 0, 0));
+  EXPECT_NEAR(lA, gaussianLogPdf(0.2, 1.0 + varR), 1e-5);
+  EXPECT_NEAR(lB, gaussianLogPdf(0.2, 1e-4 + varR), 1e-5);
+}
+
+// Regression: SOG range likelihood is the log of the mixture of normalized
+// densities.
+TEST(CBeaconMap, ComputeObservationLikelihoodSOGIsMixtureDensity)
+{
+  CBeaconMap bm;
+  bm.push_back(makeTwoModeSOGBeacon());
+
+  const double varR = mrpt::square(bm.likelihoodOptions.rangeStd);
+  const double err = 0.1;
+  const auto obs = makeRangeObs(static_cast<float>(5 + err));
+  const double lik = bm.computeObservationLikelihood(obs, mrpt::poses::CPose3D());
+  const double expected = std::log(
+      0.5 * std::exp(gaussianLogPdf(err, 1.0 + varR)) +
+      0.5 * std::exp(gaussianLogPdf(err, 1e-4 + varR)));
+  EXPECT_NEAR(lik, expected, 1e-4);
+}
+
+// Regression: the SOG mode weights must be updated with the normalized
+// predictive density of each mode.
+TEST(CBeaconMap, InsertObservationSOGModeWeightsUseNormalizedDensity)
+{
+  CBeaconMap bm;
+  bm.push_back(makeTwoModeSOGBeacon());
+
+  const double varR = mrpt::square(bm.likelihoodOptions.rangeStd);
+  bm.insertObservation(makeRangeObs(5.0f), mrpt::poses::CPose3D());
+
+  const CBeacon* b = bm.getBeaconByID(1);
+  ASSERT_TRUE(b != nullptr);
+  ASSERT_EQ(b->m_typePDF, CBeacon::pdfSOG);
+  ASSERT_EQ(b->m_locationSOG.size(), 2U);
+  const double logRatio = b->m_locationSOG.get(1).log_w - b->m_locationSOG.get(0).log_w;
+  EXPECT_NEAR(logRatio, 0.5 * std::log((1.0 + varR) / (1e-4 + varR)), 1e-6);
+}
+
+// Regression: an outlier range used to underflow the sum of Monte Carlo
+// weights, turning the beacon position into NaN.
+TEST(CBeaconMap, InsertObservationMonteCarloOutlierKeepsFiniteState)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  CBeaconMap bm;
+  bm.insertionOptions.insertAsMonteCarlo = true;
+  bm.insertionOptions.MC_numSamplesPerMeter = 100;
+
+  bm.insertObservation(makeRangeObs(5.0f), mrpt::poses::CPose3D());
+  // 10 m away from every sample:
+  bm.insertObservation(makeRangeObs(15.0f), mrpt::poses::CPose3D());
+
+  const CBeacon* b = bm.getBeaconByID(1);
+  ASSERT_TRUE(b != nullptr);
+  const auto [cov, mean] = b->getCovarianceAndMean();
+  EXPECT_TRUE(std::isfinite(mean.x()) && std::isfinite(mean.y()) && std::isfinite(mean.z()));
+  for (int i = 0; i < 3; i++)
+  {
+    for (int j = 0; j < 3; j++)
+    {
+      EXPECT_TRUE(std::isfinite(cov(i, j)));
+    }
+  }
+}
+
+// Regression: new 3D Monte Carlo beacons must be uniformly distributed over
+// the sphere, not uniform in elevation.
+TEST(CBeaconMap, InsertObservationMonteCarloUniformOnSphere)
+{
+  mrpt::random::getRandomGenerator().randomize(1234);
+  CBeaconMap bm;
+  bm.insertionOptions.insertAsMonteCarlo = true;
+  bm.insertionOptions.minElevation_deg = -90;
+  bm.insertionOptions.maxElevation_deg = 90;
+  bm.insertionOptions.MC_numSamplesPerMeter = 1000;
+  bm.insertObservation(makeRangeObs(10.0f), mrpt::poses::CPose3D());
+
+  const CBeacon* b = bm.getBeaconByID(1);
+  ASSERT_TRUE(b != nullptr);
+  ASSERT_EQ(b->m_typePDF, CBeacon::pdfMonteCarlo);
+  const auto& parts = b->m_locationMC.m_particles;
+  ASSERT_EQ(parts.size(), 10000U);
+
+  // Fraction of samples with |elevation| > 60 deg is 1-sin(60 deg)=0.134 for
+  // a uniform density on the sphere (1/3 if uniform in elevation):
+  size_t nHigh = 0;
+  for (const auto& p : parts)
+  {
+    const double r = std::sqrt(mrpt::square(p.d->x) + mrpt::square(p.d->y) + mrpt::square(p.d->z));
+    if (std::abs(p.d->z) / r > std::sin(mrpt::DEG2RAD(60.0)))
+    {
+      nHigh++;
+    }
+  }
+  EXPECT_NEAR(
+      static_cast<double>(nHigh) / static_cast<double>(parts.size()),
+      1 - std::sin(mrpt::DEG2RAD(60.0)), 0.02);
+}
+
+// Regression: in 3D, the ring SOG weights must give a density uniform over the
+// sphere.
+TEST(CBeacon, GenerateRingSOG3DUniformOnSphere)
+{
+  CBeaconMap bm;
+  bm.insertionOptions.minElevation_deg = -90;
+  bm.insertionOptions.maxElevation_deg = 90;
+
+  mrpt::poses::CPointPDFSOG sog;
+  CBeacon::generateRingSOG(10.0f, sog, &bm, mrpt::poses::CPoint3D(0, 0, 0));
+  sog.normalizeWeights();
+
+  double wHigh = 0;
+  double wTotal = 0;
+  for (const auto& m : sog)
+  {
+    const double w = std::exp(m.log_w);
+    wTotal += w;
+    if (std::abs(m.val.mean.z()) / m.val.mean.norm() > std::sin(mrpt::DEG2RAD(60.0)))
+    {
+      wHigh += w;
+    }
+  }
+  EXPECT_NEAR(wHigh / wTotal, 1 - std::sin(mrpt::DEG2RAD(60.0)), 0.03);
+
+  // In 2D, all modes keep the same weight:
+  CBeaconMap bm2D;
+  mrpt::poses::CPointPDFSOG sog2D;
+  CBeacon::generateRingSOG(10.0f, sog2D, &bm2D, mrpt::poses::CPoint3D(0, 0, 0));
+  for (const auto& m : sog2D)
+  {
+    EXPECT_EQ(m.log_w, 0.0);
+  }
 }

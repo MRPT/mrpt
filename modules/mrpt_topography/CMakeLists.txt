@@ -25,6 +25,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/conversions_unittest.cpp
   tests/data_types_unittest.cpp
   tests/transforms_unittest.cpp
+  tests/topography_reference_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS

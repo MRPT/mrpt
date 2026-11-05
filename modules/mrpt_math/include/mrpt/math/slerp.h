@@ -56,14 +56,18 @@ void slerp(const CQuaternion<T>& q0, const CQuaternion<T>& q1, const double t, C
   // Calculate temporary values.
   const double halfTheta = acos(cosHalfTheta);
   const double sinHalfTheta = std::sqrt(1.0 - mrpt::square(cosHalfTheta));
-  // if theta = 180 degrees then result is not fully defined
-  // we could rotate around any axis normal to qa or qb
+  // Nearly identical rotations: use (normalized) linear interpolation
   if (std::abs(sinHalfTheta) < 0.001)
   {
     if (!reverse_q1)
       for (int i = 0; i < 4; i++) q[i] = (1 - t) * q0[i] + t * q1[i];
     else
       for (int i = 0; i < 4; i++) q[i] = (1 - t) * q0[i] - t * q1[i];
+    const T invNorm = static_cast<T>(1.0 / std::sqrt(q.normSqr()));
+    for (int i = 0; i < 4; i++)
+    {
+      q[i] *= invNorm;
+    }
     return;
   }
   const double A = sin((1 - t) * halfTheta) / sinHalfTheta;

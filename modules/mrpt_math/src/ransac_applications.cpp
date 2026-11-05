@@ -147,7 +147,8 @@ void mrpt::math::ransac_detect_3D_planes(
     );
 
     // Is this plane good enough?
-    if (this_best_inliers.size() >= min_inliers_for_valid_plane)
+    // A failed search returns no inliers (and an empty model):
+    if (!this_best_inliers.empty() && this_best_inliers.size() >= min_inliers_for_valid_plane)
     {
       // Add this plane to the output list:
       out_detected_planes.emplace_back(
@@ -305,7 +306,8 @@ void mrpt::math::ransac_detect_2D_lines(
     );
 
     // Is this plane good enough?
-    if (this_best_inliers.size() >= min_inliers_for_valid_line)
+    // A failed search returns no inliers (and an empty model):
+    if (!this_best_inliers.empty() && this_best_inliers.size() >= min_inliers_for_valid_line)
     {
       // Add this plane to the output list:
       out_detected_lines.emplace_back(

@@ -97,7 +97,9 @@ class CRangeScanOps
    * Fills the 2D part (rel_edge) of the 3D constraint between the scans,
    * since
    * we are interested in computing the 2D alignment. User can optionally ask
-   * that additional information be returned in a TReturnInfo struct
+   * that additional information be returned in a TReturnInfo struct.
+   * If the estimated z displacement is >= 0.1 m the result is rejected
+   * (default edge, goodness set to 0).
    */
   void getICPEdge(
       const mrpt::obs::CObservation3DRangeScan& from,

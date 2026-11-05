@@ -84,7 +84,8 @@ double TSegment3D::distance(const TSegment3D& segment) const
   double tD = D;  // tc = tN / tD, default tD = D >= 0
 
   // compute the line parameters of the two closest points
-  if (D < 0.00000001)
+  // Relative tests, so the result does not depend on the segments' scale:
+  if (D < 1e-12 * a * c)
   {            // the lines are almost parallel
     sN = 0.0;  // force using point P0 on segment S1
     sD = 1.0;  // to prevent possible division by 0.0 later
@@ -146,20 +147,14 @@ double TSegment3D::distance(const TSegment3D& segment) const
     }
   }
   // finally do the division to get sc and tc
-  sc = (fabs(sN) < 0.00000001 ? 0.0 : sN / sD);
-  tc = (fabs(tN) < 0.00000001 ? 0.0 : tN / tD);
+  sc = sN / sD;
+  tc = tN / tD;
 
   // get the difference of the two closest points
   const auto dP = (w + (sc * u) - (tc * v)).eval();
   return dP.norm();  // return the closest distance
 }
-bool TSegment3D::contains(const TPoint3D& point) const
-{
-  // Not very intuitive, but very fast, method.
-  return std::abs(
-             math::distance(point1, point) + math::distance(point2, point) -
-             math::distance(point1, point2)) < getEpsilon();
-}
+bool TSegment3D::contains(const TPoint3D& point) const { return distance(point) < getEpsilon(); }
 
 bool TSegment3D::operator<(const TSegment3D& s) const
 {

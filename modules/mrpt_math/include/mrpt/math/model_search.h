@@ -43,7 +43,9 @@ namespace mrpt::math
  * good a sample is.
  *
  *  There are two methods provided in this class to fit a model:
- *    - \a ransacSingleModel (RANSAC): Just like mrpt::math::RANSAC_Template
+ *    - \a ransacSingleModel (RANSAC): Just like mrpt::math::RANSAC_Template,
+ *      with a 99% probability of drawing at least one outlier-free sample
+ *      (and at most 100 iterations).
  *
  *    - \a geneticSingleModel (Genetic): Provides a mixture of a genetic and
  * the ransac algorithm.
@@ -51,7 +53,7 @@ namespace mrpt::math
  * (ex. 10) and order these model
  *         using some fitness function: the average error of the inliers scaled
  * by the number of outliers (This
- *         fitness might require some fine tuning). Than the (ex 10) new kernel
+ *         fitness might require some fine tuning). Then the (ex 10) new kernel
  * for the next iteration is created as follows:
  *             - Take the best kernels (as for the original ransac)
  *             - Select two kernels ( with a higher probability for the better
@@ -60,17 +62,20 @@ namespace mrpt::math
  * appear - mutation)
  *             - Generate some new random samples.
  *
- *  For an example of usage, see "samples/model_search_test/"
+ *  Random numbers are drawn from mrpt::random::getRandomGenerator(), so
+ *  results are reproducible after seeding it.
+ *
+ *  For an example of usage, see mrpt_examples_cpp/math_model_search_example/
  *  \sa mrpt::math::RANSAC_Template, another RANSAC implementation where models
  * can be matrices only.
  *
- *  \author Zoltar Gaal
+ *  \author Zoltan Gaal
  * \ingroup ransac_grp
  */
 class ModelSearch
 {
  private:
-  //! Select random (unique) indices from the 0..p_size sequence
+  //! Select random (unique) indices from the 0..p_size-1 sequence
   void pickRandomIndex(size_t p_size, size_t p_pick, std::vector<size_t>& p_ind);
 
   /** Select random (unique) indices from the set.

@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <cmath>  // erf(), ...
 #include <iostream>
+#include <limits>
 #include <mrpt/math/interp_fit.hpp>
 #ifdef _MSC_VER
 #include "MatrixBase_impl.h"
@@ -49,12 +50,41 @@ double math::normalPDF(double x, double mu, double std)
 double math::chi2inv(double P, unsigned int dim)
 {
   ASSERT_(P >= 0 && P < 1);
+  ASSERT_(dim > 0);
   if (P == 0)
   {
     return 0;
   }
 
-  return dim * pow(1.0 - 2.0 / (9 * dim) + sqrt(2.0 / (9 * dim)) * normalQuantile(P), 3);
+  // Wilson-Hilferty approximation (clamped to stay positive):
+  const double d = static_cast<double>(dim);
+  const double wh = 1.0 - 2.0 / (9 * d) + std::sqrt(2.0 / (9 * d)) * normalQuantile(P);
+  double x = d * std::pow(std::max(1e-3, wh), 3);
+
+  // It is accurate enough for large dim, where evaluating the CDF is costly:
+  constexpr unsigned int MAX_DIM_FOR_REFINEMENT = 100;
+  if (dim > MAX_DIM_FOR_REFINEMENT)
+  {
+    return x;
+  }
+
+  // Newton iterations on the exact CDF, kept inside the support x>0:
+  for (int it = 0; it < 100; it++)
+  {
+    const auto [pdf, cdf] = noncentralChi2PDF_CDF(dim, 0.0, x, 1e-14);
+    double xn = x - (cdf - P) / pdf;
+    if (!(xn > 0))
+    {
+      xn = 0.5 * x;
+    }
+    const bool converged = std::abs(xn - x) <= 1e-12 * x;
+    x = xn;
+    if (converged)
+    {
+      break;
+    }
+  }
+  return x;
 }
 
 /*---------------------------------------------------------------
@@ -198,7 +228,7 @@ double math::normalCDF(double u)
   }
 
   z = std::exp(-y * y / 2) / 2;
-  if (y <= 4.0)
+  if (y <= 4.0 * 1.4142135623730950488016887242097)
   {
     /* evaluate erfc() for sqrt(2)*0.46875 <= |u| <= sqrt(2)*4.0 */
     y = y / 1.4142135623730950488016887242097;
@@ -290,7 +320,7 @@ double math::averageLogLikelihood(
   MRPT_START
 
   // Explained in:
-  // https://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability
+  // https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/averaging_log-likelihood_values/
   ASSERT_(logWeights.size() == logLikelihoods.size());
 
   if (logWeights.empty())
@@ -298,23 +328,24 @@ double math::averageLogLikelihood(
     THROW_EXCEPTION("ERROR: logWeights vector is empty!");
   }
 
-  CVectorDouble::const_iterator itLW;
-  CVectorDouble::const_iterator itLL;
-  double lw_max = math::maximum(logWeights);
-  double ll_max = math::maximum(logLikelihoods);
+  const auto N = logWeights.size();
+  const double lw_max = math::maximum(logWeights);
+  // Shift the products w_i*l_i by their own maximum, not by max(w)+max(l):
+  double lwll_max = -std::numeric_limits<double>::infinity();
+  for (CVectorDouble::Index i = 0; i < N; i++)
+  {
+    lwll_max = std::max(lwll_max, logWeights[i] + logLikelihoods[i]);
+  }
   double SUM1 = 0;
   double SUM2 = 0;
-  double tmpVal = 0;
 
-  for (itLW = logWeights.begin(), itLL = logLikelihoods.begin(); itLW != logWeights.end();
-       itLW++, itLL++)
+  for (CVectorDouble::Index i = 0; i < N; i++)
   {
-    tmpVal = *itLW - lw_max;
-    SUM1 += std::exp(tmpVal);
-    SUM2 += std::exp(tmpVal + *itLL - ll_max);
+    SUM1 += std::exp(logWeights[i] - lw_max);
+    SUM2 += std::exp(logWeights[i] + logLikelihoods[i] - lwll_max);
   }
 
-  double res = -std::log(SUM1) + std::log(SUM2) + ll_max;
+  double res = -std::log(SUM1) + std::log(SUM2) + lwll_max - lw_max;
   MRPT_CHECK_NORMAL_NUMBER(res);
   return res;
   MRPT_END
@@ -326,7 +357,7 @@ double math::averageLogLikelihood(const CVectorDouble& logLikelihoods)
   MRPT_START
 
   // Explained in:
-  // https://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability
+  // https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/averaging_log-likelihood_values/
   size_t N = logLikelihoods.size();
   if (N == 0)
   {
@@ -355,42 +386,15 @@ double math::averageWrap2Pi(const CVectorDouble& angles)
   {
     return 0;
   }
-
-  int W_phi_R = 0, W_phi_L = 0;
-  double phi_R = 0, phi_L = 0;
-
-  // First: XY
-  // -----------------------------------
+  // Circular mean:
+  double sum_sin = 0;
+  double sum_cos = 0;
   for (CVectorDouble::Index i = 0; i < angles.size(); i++)
   {
-    double phi = angles[i];
-    if (std::abs(phi) > 1.5707963267948966192313216916398)
-    {
-      // LEFT HALF: 0,2pi
-      if (phi < 0) phi = (M_2PI + phi);
-
-      phi_L += phi;
-      W_phi_L++;
-    }
-    else
-    {
-      // RIGHT HALF: -pi,pi
-      phi_R += phi;
-      W_phi_R++;
-    }
+    sum_sin += std::sin(angles[i]);
+    sum_cos += std::cos(angles[i]);
   }
-
-  // Next: PHI
-  // -----------------------------------
-  // The mean value from each side:
-  if (W_phi_L) phi_L /= static_cast<double>(W_phi_L);  // [0,2pi]
-  if (W_phi_R) phi_R /= static_cast<double>(W_phi_R);  // [-pi,pi]
-
-  // Left side to [-pi,pi] again:
-  if (phi_L > M_PI) phi_L -= M_2PI;
-
-  // The total mean:
-  return ((phi_L * W_phi_L + phi_R * W_phi_R) / (W_phi_L + W_phi_R));
+  return std::atan2(sum_sin, sum_cos);
 }
 
 string math::MATLAB_plotCovariance2D(
@@ -453,7 +457,7 @@ string math::MATLAB_plotCovariance2D(
   for (std::size_t idx = 0; idx < N; idx++)
   {
     X[idx] = mean[0] + stdCount * (Cos[idx] * M(0, 0) + Sin[idx] * M(1, 0));
-    X[idx] = mean[1] + stdCount * (Cos[idx] * M(0, 1) + Sin[idx] * M(1, 1));
+    Y[idx] = mean[1] + stdCount * (Cos[idx] * M(0, 1) + Sin[idx] * M(1, 1));
   }
 
   // Save the code to plot the ellipsoid:
@@ -492,7 +496,8 @@ double mrpt::math::interpolate2points(
   if (x0 == x1) THROW_EXCEPTION_FMT("ERROR: Both x0 and x1 are equal (=%f)", x0);
 
   const double Ax = x1 - x0;
-  const double Ay = y1 - y0;
+  // Angles: follow the shortest arc from y0 to y1.
+  const double Ay = wrap2pi ? mrpt::math::wrapToPi(y1 - y0) : y1 - y0;
 
   double r = y0 + Ay * (x - x0) / Ax;
   if (!wrap2pi)
@@ -529,7 +534,8 @@ void mrpt::math::medianFilter(
   {
     aux.clear();
 
-    size_t idx_to_start = std::max(size_t(0), k - mpoint);  // Dealing with the boundaries
+    // Dealing with the boundaries:
+    const size_t idx_to_start = (k >= mpoint) ? k - mpoint : 0;
     size_t n_elements = std::min(std::min(winSize, sz + mpoint - k), k + mpoint + 1);
 
     aux.resize(n_elements);
@@ -549,7 +555,7 @@ void mrpt::math::medianFilter(
 
 double mrpt::math::chi2CDF(unsigned int degreesOfFreedom, double arg)
 {
-  return noncentralChi2CDF(degreesOfFreedom, 0.0, arg);
+  return noncentralChi2PDF_CDF(degreesOfFreedom, 0.0, arg).second;
 }
 
 template <class T>
@@ -576,7 +582,13 @@ std::pair<double, double> mrpt::math::noncentralChi2PDF_CDF(
       noncentrality >= 0.0 && arg >= 0.0 && eps > 0.0,
       "noncentralChi2PDF_CDF(): parameters must be positive.");
 
-  if (arg == 0.0 && degreesOfFreedom > 0) return std::make_pair(0.0, 0.0);
+  if (arg == 0.0 && degreesOfFreedom > 0)
+  {
+    // Density at the origin: 0.5*exp(-lambda/2) for 2 dof, zero otherwise
+    // (for 1 dof it is unbounded; 0 is returned as documented).
+    const double pdf0 = (degreesOfFreedom == 2) ? 0.5 * std::exp(-0.5 * noncentrality) : 0.0;
+    return std::make_pair(pdf0, 0.0);
+  }
 
   // Determine initial values
   double b1 = 0.5 * noncentrality, ao = std::exp(-b1), eps2 = eps / ao, lnrtpi2 = 0.22579135264473,

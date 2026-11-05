@@ -36,8 +36,9 @@ class CVehicleSimul_Holo : public CVehicleSimulVirtualBase
    *   \param[in] vel Linear speed (m/s)
    *   \param[in] dir Direction (rad) (In the odometry frame of reference)
    *   \param[in] ramp_time Blend the cmd during this period (seconds)
-   *   \param[in] rot_speed Rotational speed while there is heading error and
-   * to this constant (rad/s)
+   *   \param[in] rot_speed Absolute rotational speed (rad/s) used to turn the
+   * robot towards `dir` while the heading error exceeds 1 deg; omega is ramped
+   * to it over `ramp_time`, and the turn direction is the shortest one.
    */
   void sendVelRampCmd(double vel, double dir, double ramp_time, double rot_speed);
 

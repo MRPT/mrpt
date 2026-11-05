@@ -93,21 +93,15 @@ SO<3>::tangent_vector SO<3>::log(const SO<3>::type& R)
     // If quaternion is normalized and n=0, then w should be 1;
     // w=0 should never happen here!
     ASSERTMSG_(std::abs(w) >= 1e-7, "Quaternion should be normalized!");
-    two_atan_nbyw_by_n = 2.0 / w - 2.0 * (squared_n) / (w * w * w);
+    // Taylor series of 2*atan(n/w)/n:
+    two_atan_nbyw_by_n = 2.0 / w - (2.0 / 3.0) * (squared_n) / (w * w * w);
   }
   else
   {
-    if (std::abs(w) < 1e-7)
-    {
-      if (w > 0)
-        two_atan_nbyw_by_n = M_PI / n;
-      else
-        two_atan_nbyw_by_n = -M_PI / n;
-    }
-    else
-    {
-      two_atan_nbyw_by_n = 2.0 * atan(n / w) / n;
-    }
+    // atan2() keeps full precision for angles close to pi (w -> 0), and
+    // w < 0 is mapped to the equivalent rotation with w > 0:
+    const double sign = w < 0 ? -1.0 : 1.0;
+    two_atan_nbyw_by_n = sign * 2.0 * std::atan2(n, sign * w) / n;
   }
 
   tangent_vector ret;
@@ -170,8 +164,12 @@ SO<3>::mat2tang_jacob SO<3>::jacob_dlogv_dv(const SO<3>::type& R)
   CMatrixDouble33 B(UNINITIALIZED_MATRIX);
   if (d > 0.99999)
   {
-    a[0] = a[1] = a[2] = 0;
-    B.setDiagonal(3, -0.5);
+    // Small angles: Taylor expansion of the expressions below, with
+    // theta^2 approximated by sin^2(theta) = |vee(R-R^t)|^2 / 4.
+    a = SO<3>::vee_RmRt(R);
+    const double th2 = 0.25 * (square(a[0]) + square(a[1]) + square(a[2]));
+    a *= -1.0 / 12.0 - th2 / 30.0;
+    B.setDiagonal(3, -0.5 * (1.0 + th2 / 6.0));
   }
   else
   {

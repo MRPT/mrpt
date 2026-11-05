@@ -933,7 +933,7 @@ PYBIND11_MODULE(_bindings, m)
   // Free math functions
   // =========================================================================
   m.def(
-      "wrapToPi", [](double a) { return mrpt::math::wrapToPi(a); }, "Wrap angle to [-pi, pi]");
+      "wrapToPi", [](double a) { return mrpt::math::wrapToPi(a); }, "Wrap angle to [-pi, pi)");
   m.def(
-      "wrapTo2Pi", [](double a) { return mrpt::math::wrapTo2Pi(a); }, "Wrap angle to [0, 2*pi]");
+      "wrapTo2Pi", [](double a) { return mrpt::math::wrapTo2Pi(a); }, "Wrap angle to [0, 2*pi)");
 }

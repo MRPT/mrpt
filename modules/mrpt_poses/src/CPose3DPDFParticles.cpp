@@ -23,6 +23,7 @@
 #include <mrpt/system/os.h>
 
 #include <Eigen/Dense>
+#include <limits>
 #include <ostream>
 
 using namespace mrpt;
@@ -49,14 +50,15 @@ void CPose3DPDFParticles::copyFrom(const CPose3DPDF& o)
     ASSERT_(pdf);
     m_particles = pdf->m_particles;
   }
-  else if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussian))
+  else
   {
-    const auto& pdf = dynamic_cast<const CPose3DPDFGaussian&>(o);
+    // Any other PDF: draw samples from it.
     const size_t N = m_particles.empty() ? 1000 : m_particles.size();
     m_particles.resize(N);
 
     std::vector<CVectorDouble> samples;
-    pdf.drawManySamples(N, samples);
+    o.drawManySamples(N, samples);
+    ASSERT_EQUAL_(samples.size(), N);
 
     const double uniformWeight = -std::log(static_cast<double>(N));
     for (size_t i = 0; i < N; i++)
@@ -78,11 +80,17 @@ void CPose3DPDFParticles::getMean(CPose3D& p) const
   {
     return;
   }
+  // Shift log-weights by their maximum to avoid underflow:
+  double maxW = m_particles[0].log_w;
+  for (const auto& part : m_particles)
+  {
+    maxW = std::max(maxW, part.log_w);
+  }
   // Calc average on SE(3)
   mrpt::poses::SE_average<3> se_averager;
   for (const auto& part : m_particles)
   {
-    const double w = exp(part.log_w);
+    const double w = exp(part.log_w - maxW);
     se_averager.append(part.d, w);
   }
   se_averager.get_average(p);
@@ -110,32 +118,32 @@ std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFParticles::getCovarianceAndMean()
   double std_yap = 0, std_yar = 0;
   double std_pr = 0;
 
-  // Mean values in [0, 2pi] range:
-  double mean_yaw = mean.yaw();
-  double mean_pitch = mean.pitch();
-  double mean_roll = mean.roll();
-  if (mean_yaw < 0) mean_yaw += M_2PI;
-  if (mean_pitch < 0) mean_pitch += M_2PI;
-  if (mean_roll < 0) mean_roll += M_2PI;
-
   // enough information to estimate the covariance?
   if (m_particles.size() < 2) return {cov, mean};
 
-  // Sum all weight values:
+  // Sum all weight values (shifted by their maximum to avoid underflow):
+  double maxW = m_particles[0].log_w;
+  for (const auto& p : m_particles)
+  {
+    maxW = std::max(maxW, p.log_w);
+  }
   double W = 0;
-  for (const auto& p : m_particles) W += exp(p.log_w);
+  for (const auto& p : m_particles)
+  {
+    W += exp(p.log_w - maxW);
+  }
 
   ASSERT_(W > 0);
 
   // Compute covariance:
   for (const auto& p : m_particles)
   {
-    double w = exp(p.log_w) / W;
+    double w = exp(p.log_w - maxW) / W;
 
-    // Manage 1 PI range:
-    double err_yaw = wrapToPi(std::abs(p.d.yaw - mean_yaw));
-    double err_pitch = wrapToPi(std::abs(p.d.pitch - mean_pitch));
-    double err_roll = wrapToPi(std::abs(p.d.roll - mean_roll));
+    // Signed angular errors, in the range [-pi,pi]:
+    double err_yaw = wrapToPi(p.d.yaw - mean.yaw());
+    double err_pitch = wrapToPi(p.d.pitch - mean.pitch());
+    double err_roll = wrapToPi(p.d.roll - mean.roll());
 
     double err_x = p.d.x - mean.x();
     double err_y = p.d.y - mean.y();
@@ -169,7 +177,7 @@ std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFParticles::getCovarianceAndMean()
     std_pr += err_pitch * err_roll * w;
   }  // end for it
 
-  // Unbiased estimation of variance:
+  // Weighted (biased) estimate of the covariance:
   cov(0, 0) = vars[0];
   cov(1, 1) = vars[1];
   cov(2, 2) = vars[2];
@@ -259,11 +267,25 @@ void CPose3DPDFParticles::changeCoordinatesReference(const CPose3D& newReference
 
 void CPose3DPDFParticles::drawSingleSample(CPose3D& outPart) const
 {
-  const double uni = getRandomGenerator().drawUniform(0.0, 0.9999);
+  ASSERT_(!m_particles.empty());
+
+  // Weights do not need to sum 1 (e.g. normalizeWeights() sets max log_w=0):
+  double maxW = m_particles[0].log_w;
+  for (const auto& p : m_particles)
+  {
+    maxW = std::max(maxW, p.log_w);
+  }
+  double sumW = 0;
+  for (const auto& p : m_particles)
+  {
+    sumW += exp(p.log_w - maxW);
+  }
+
+  const double uni = getRandomGenerator().drawUniform(0.0, sumW);
   double cum = 0;
   for (const auto& p : m_particles)
   {
-    cum += exp(p.log_w);
+    cum += exp(p.log_w - maxW);
     if (uni <= cum)
     {
       outPart = CPose3D(p.d);
@@ -336,31 +358,55 @@ void CPose3DPDFParticles::bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF&
   // Start with particles from p1
   copyFrom(p1);
 
-  // Compute bandwidth from p2's covariance (Silverman-like rule)
   const auto [cov2, mean2] = p2.getCovarianceAndMean();
-  const double h_xyz = std::max(std::sqrt((cov2(0, 0) + cov2(1, 1) + cov2(2, 2)) / 3.0), 1e-6);
-  const double h_ang = std::max(std::sqrt((cov2(3, 3) + cov2(4, 4) + cov2(5, 5)) / 3.0), 1e-6);
 
   if (const auto* p2p = dynamic_cast<const CPose3DPDFParticles*>(&p2))
   {
-    // Evaluate KDE of p2 at each particle from p1
-    const size_t N2 = p2p->m_particles.size();
+    // Kernel density estimate of p2, with Gaussian kernels shaped as its
+    // covariance and scaled with Silverman's rule of thumb:
+    // H = h^2 * cov, h = (4 / ((d + 2) * N))^(1 / (d + 4)), d = 6.
+    const double N2 = static_cast<double>(std::max<size_t>(p2p->m_particles.size(), 1));
+    CMatrixDouble66 H = cov2;
+    H *= std::pow(4.0 / (8.0 * N2), 2.0 / 10.0);
+    for (int k = 0; k < 6; k++)
+    {
+      H(k, k) = H(k, k) * (1 + 1e-9) + 1e-12;
+    }
+    const CMatrixDouble66 Hinv = H.inverse_LLt();
     for (auto& p : m_particles)
     {
-      double lik = 0;
+      // log(sum_j w_j * exp(-0.5 * d_j^T * Hinv * d_j)), without underflow:
+      double maxTerm = -std::numeric_limits<double>::infinity();
+      double sum = 0;
       for (const auto& q : p2p->m_particles)
       {
-        const double dx = p.d.x - q.d.x;
-        const double dy = p.d.y - q.d.y;
-        const double dz = p.d.z - q.d.z;
-        const double dY = wrapToPi(p.d.yaw - q.d.yaw);
-        const double dP = wrapToPi(p.d.pitch - q.d.pitch);
-        const double dR = wrapToPi(p.d.roll - q.d.roll);
-        const double d2 = (dx * dx + dy * dy + dz * dz) / (h_xyz * h_xyz) +
-                          (dY * dY + dP * dP + dR * dR) / (h_ang * h_ang);
-        lik += std::exp(q.log_w) * std::exp(-0.5 * d2);
+        const double d[6] = {
+            p.d.x - q.d.x,
+            p.d.y - q.d.y,
+            p.d.z - q.d.z,
+            wrapToPi(p.d.yaw - q.d.yaw),
+            wrapToPi(p.d.pitch - q.d.pitch),
+            wrapToPi(p.d.roll - q.d.roll)};
+        double maha2 = 0;
+        for (int r = 0; r < 6; r++)
+        {
+          for (int c = 0; c < 6; c++)
+          {
+            maha2 += d[r] * Hinv(r, c) * d[c];
+          }
+        }
+        const double term = q.log_w - 0.5 * maha2;
+        if (term > maxTerm)
+        {
+          sum = sum * std::exp(maxTerm - term) + 1.0;
+          maxTerm = term;
+        }
+        else
+        {
+          sum += std::exp(term - maxTerm);
+        }
       }
-      p.log_w += std::log(std::max(lik / static_cast<double>(N2), 1e-300));
+      p.log_w += maxTerm + std::log(sum);
     }
   }
   else

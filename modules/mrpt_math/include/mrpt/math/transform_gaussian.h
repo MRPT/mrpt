@@ -21,7 +21,10 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
 
+#include <algorithm>
+#include <cmath>
 #include <functional>
+#include <stdexcept>
 #include <vector>
 
 namespace mrpt::math
@@ -67,8 +70,9 @@ void transform_gaussian_unscented(
 {
   MRPT_START
   const size_t Nx = x_mean.size();  // Dimensionality of inputs X
-  const double lambda = alpha * alpha * (Nx + K) - Nx;
-  const double c = Nx + lambda;
+  const auto dNx = static_cast<double>(Nx);
+  const double lambda = alpha * alpha * (dNx + K) - dNx;
+  const double c = dNx + lambda;
 
   // Generate weights:
   const double Wi = 0.5 / c;
@@ -77,12 +81,38 @@ void transform_gaussian_unscented(
   W_cov[0] = W_mean[0] + (1 - alpha * alpha + beta);
 
   // Generate X_i samples:
+  // Matrix square root L, with L^T * L = x_cov. Its rows are the sigma point
+  // deltas:
   MATLIKE1 L;
-  const bool valid = x_cov.chol(L);
-  if (!valid)
-    throw std::runtime_error(
-        "transform_gaussian_unscented: Singular covariance matrix in "
-        "Cholesky.");
+  if (!x_cov.chol(L))
+  {
+    // Singular (positive semi-definite) covariance: use L = D^(1/2) * V^T
+    // from the eigen decomposition x_cov = V * D * V^T instead.
+    using Scalar = typename MATLIKE1::Scalar;
+    MATLIKE1 V;
+    std::vector<Scalar> D;
+    if (!x_cov.eig_symmetric(V, D))
+    {
+      throw std::runtime_error(
+          "transform_gaussian_unscented: cannot decompose the covariance matrix.");
+    }
+    const Scalar maxEig = std::max(std::abs(D.front()), std::abs(D.back()));
+    L = V;
+    for (size_t i = 0; i < Nx; i++)
+    {
+      if (D[i] < -1e-9 * maxEig)
+      {
+        throw std::runtime_error(
+            "transform_gaussian_unscented: the covariance matrix is not positive "
+            "semi-definite.");
+      }
+      const Scalar s = std::sqrt(std::max(D[i], Scalar(0)));
+      for (size_t k = 0; k < Nx; k++)
+      {
+        L(i, k) = s * V(k, i);
+      }
+    }
+  }
   L *= sqrt(c);
 
   // Propagate the samples X_i -> Y_i:

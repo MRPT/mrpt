@@ -25,6 +25,12 @@ CVehicleSimul_Holo::CVehicleSimul_Holo()
 
 void CVehicleSimul_Holo::internal_simulControlStep([[maybe_unused]] const double dt)
 {
+  // The clock may have been reset after the cmd was issued:
+  if (m_vel_ramp_cmd.issue_time > m_time)
+  {
+    m_vel_ramp_cmd.issue_time = m_time;
+  }
+
   // Control:
   if (m_vel_ramp_cmd.issue_time >= 0 &&
       m_time > m_vel_ramp_cmd.issue_time)  // are we executing any cmd?

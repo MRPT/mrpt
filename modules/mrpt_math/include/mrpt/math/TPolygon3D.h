@@ -50,10 +50,6 @@ class TPolygon3D : public std::vector<TPoint3D>
    */
   static TPolygon3D FromYAML(const mrpt::containers::yaml& c);
 
-  /** Static method to create a regular polygon, given its size and radius.
-   * \throw std::logic_error if number of edges is less than three, or radius
-   * is near zero. */
-
   /** Constructor from list of vertices data, for example:
    * \code
    * const mrpt::math::TPolygon3D p = {
@@ -80,8 +76,9 @@ class TPolygon3D : public std::vector<TPoint3D>
   /** Absolute distance to point */
   double distance(const TPoint3D& point) const;
 
-  /** Check whether a point is inside (or within geometryEpsilon of a polygon
-   * edge). This works for concave or convex polygons. */
+  /** Check whether a point is inside the polygon: within getEpsilon() of its
+   * plane, and inside its projection according to TPolygon2D::contains()
+   * (no tolerance on the edges). Works for concave or convex polygons. */
   bool contains(const TPoint3D& point) const;
 
   /** Gets as set of segments, instead of set of points. */
@@ -103,6 +100,9 @@ class TPolygon3D : public std::vector<TPoint3D>
   void removeRepeatedVertices();
   /** Erase every redundant vertex, thus saving space. */
   void removeRedundantVertices();
+  /** Static method to create a regular polygon, given its size and radius.
+   * \throw std::logic_error if number of edges is less than three, or radius
+   * is near zero. */
   static void createRegularPolygon(size_t numEdges, double radius, TPolygon3D& poly);
   /** Static method to create a regular polygon, given its size and radius.
    * The center will be located on the given pose.

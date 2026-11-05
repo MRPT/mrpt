@@ -130,7 +130,17 @@ NUMTYPE leastSquareLinearFit(
     Xt(1, i) = x[i] - x_min;
   }
 
-  const auto B = ((Xt * Xt.transpose()).inverse().eval() * Xt * y.asEigen()).eval();
+  // Angles: unwrap consecutive values, as spline() does:
+  VECTORLIKE yy = y;
+  if (wrap2pi)
+  {
+    for (size_t i = 1; i < N; i++)
+    {
+      yy[i] = yy[i - 1] + mrpt::math::wrapToPi(y[i] - yy[i - 1]);
+    }
+  }
+
+  const auto B = ((Xt * Xt.transpose()).inverse().eval() * Xt * yy.asEigen()).eval();
   ASSERT_(B.size() == 2);
 
   NUMTYPE ret = B[0] + B[1] * (t - x_min);
@@ -180,8 +190,17 @@ void leastSquareLinearFit(
   // Note: cannot use XXt_inv*Xt since operator* only supports square matrices.
   CMatrixDynamic<NUM> XXt_inv_X;
   XXt_inv_X.matProductOf_AB(XXt_inv, Xt);
+  // Angles: unwrap consecutive values, as spline() does:
+  VECTORLIKE3 yy = y;
+  if (wrap2pi)
+  {
+    for (size_t i = 1; i < N; i++)
+    {
+      yy[i] = yy[i - 1] + mrpt::math::wrapToPi(y[i] - yy[i - 1]);
+    }
+  }
   CMatrixDynamic<NUM> B;
-  B.matProductOf_Ab(XXt_inv_X, y);
+  B.matProductOf_Ab(XXt_inv_X, yy);
   ASSERT_(B.size() == 2);
 
   const size_t tsN = size_t(ts.size());

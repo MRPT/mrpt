@@ -564,21 +564,23 @@ class COccupancyGridMap2D :
     float LF_zHit{0.95f}, LF_zRandom{0.05f};
     /** [LikelihoodField] The max. range of the sensor (Default= 81 m) */
     float LF_maxRange{81.0f};
-    /** [LikelihoodField] The decimation of the points in a scan, default=1
-     * == no decimation */
+    /** [LikelihoodField] The decimation of the points in a scan (default=5);
+     * 1 means no decimation */
     uint32_t LF_decimation{5};
     /** [LikelihoodField] The max. distance for searching correspondences
      * around each sensed point */
     float LF_maxCorrsDistance{0.3f};
-    /** [LikelihoodField] (Default:false) Use `exp(-dist^2/std^2)` (squared
-     * distance) instead of `exp(-dist/std)` (linear distance) */
+    /** [LikelihoodField] (Default:false) If false, each point uses the
+     * Gaussian `exp(-0.5*dist^2/LF_stdHit^2)` of its distance to the closest
+     * occupied cell. If true, the squared distance is squared again:
+     * `exp(-0.5*dist^4/LF_stdHit^2)`, a sharper non-Gaussian kernel. */
     bool LF_useSquareDist{false};
     /** [LikelihoodField] Set this to "true" ot use an alternative method,
      * where the likelihood of the whole range scan is computed by
      * "averaging" of individual ranges, instead of by the "product". */
     bool LF_alternateAverageMethod{false};
     /** [MI] The exponent in the MI likelihood computation. Default value =
-     * 5 */
+     * 2.5 */
     float MI_exponent{2.5f};
     /** [MI] The scan rays decimation: at every N rays, one will be used to
      * compute the MI */
@@ -587,8 +589,8 @@ class COccupancyGridMap2D :
      * in the insertion of scans, e.g. if set to 2.0 the MI will use twice
      * the distance that the update distance. */
     float MI_ratio_max_distance{1.5f};
-    /** [rayTracing] If true (default), the rayTracing method will ignore
-     * measured ranges shorter than the simulated ones. */
+    /** [rayTracing] Unused: kept for backwards compatibility. The rayTracing
+     * method uses all valid measured ranges. */
     bool rayTracing_useDistanceFilter{true};
     /** [rayTracing] One out of "rayTracing_decimation" rays will be
      * simulated and compared only: set to 1 to use all the sensed ranges.
@@ -601,14 +603,14 @@ class COccupancyGridMap2D :
     int32_t consensus_takeEachRange{1};
     /** [Consensus] The power factor for the likelihood (default=5) */
     float consensus_pow{5};
-    /** [OWA] The sequence of weights to be multiplied to of the ordered
+    /** [OWA] The sequence of weights to be multiplied to the ordered
      * list of likelihood values (first one is the largest); the size of
      * this vector determines the number of highest likelihood values to
-     * fuse. */
+     * fuse. The scan must have at least this number of points. */
     std::vector<float> OWA_weights;
 
     /** Enables the usage of a cache of likelihood values (for LF methods),
-     * if set to true (default=false). */
+     * if set to true (default=true). */
     bool enableLikelihoodCache{true};
   } likelihoodOptions;
 
@@ -624,11 +626,11 @@ class COccupancyGridMap2D :
   struct TLikelihoodOutput
   {
    public:
-    /** [OWA method] This will contain the ascending-ordered list of
+    /** [OWA method] This will contain the descending-ordered list of
      * pairs:(likelihood values, 2D point in map coordinates). */
     std::vector<TPairLikelihoodIndex> OWA_pairList;
 
-    /** [OWA method] This will contain the ascending-ordered list of
+    /** [OWA method] This will contain the descending-ordered list of
      * likelihood values for individual range measurements in the scan. */
     std::vector<double> OWA_individualLikValues;
   };
@@ -923,8 +925,9 @@ class COccupancyGridMap2D :
 
   /** @} */
 
-  /** Computes the likelihood [0,1] of a set of points, given the current grid
-   * map as reference.
+  /** Computes the log-likelihood of a set of points, given the current grid
+   * map as reference: the sum of the per-point log-likelihoods, or the log of
+   * their mean if LF_alternateAverageMethod is set.
    * \param pm The points map
    * \param relativePose The relative pose of the points map in this map's
    * coordinates, or std::nullopt for (0,0,0).
@@ -934,8 +937,9 @@ class COccupancyGridMap2D :
       const CPointsMap& pm,
       const std::optional<mrpt::poses::CPose2D>& relativePose = std::nullopt) const;
 
-  /** Computes the likelihood [0,1] of a set of points, given the current grid
-   * map as reference.
+  /** Computes the log-likelihood of a set of points, given the current grid
+   * map as reference: the mean of the per-point log-likelihoods, or the log of
+   * the mean per-point likelihood if LF_alternateAverageMethod is set.
    * \param pm The points map
    * \param relativePose The relative pose of the points map in this map's
    * coordinates, or std::nullopt for (0,0,0).

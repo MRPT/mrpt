@@ -21,6 +21,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/tfest/se2.h>
 
+#include <algorithm>
 #include <iostream>
 
 using namespace mrpt;
@@ -72,7 +73,7 @@ void markAsPicked(
   J.L. Blanco, J. Gonzalez-Jimenez and J.A. Fernandez-Madrigal.
   "A robust, multi-hypothesis approach to matching occupancy grid maps".
   Robotica, available on CJO2013. doi:10.1017/S0263574712000732.
-  http://journals.cambridge.org/action/displayAbstract?aid=8815308
+  https://doi.org/10.1017/S0263574712000732
 
  This works as follows:
   - Repeat "results.ransac_iters" times:
@@ -346,8 +347,11 @@ bool tfest::se2_l2_robust(
 
           if (is_acceptable)
           {
-            // Perform estimation:
-            tfest::se2_l2(subSet, referenceEstimation);
+            // Perform estimation (fails for degenerate pairs):
+            is_acceptable = tfest::se2_l2(subSet, referenceEstimation);
+          }
+          if (is_acceptable)
+          {
             // Normalized covariance: scale!
             referenceEstimation.cov *= square(normalizationStd);
 
@@ -411,19 +415,22 @@ bool tfest::se2_l2_robust(
     timlog.leave("ransac.inner_loops");
 #endif
 
-    const bool has_to_eval_RMSE = (subSet.size() >= params.ransac_minSetSize);
+    bool subset_is_valid = (subSet.size() >= params.ransac_minSetSize);
 
     // Compute the RMSE of this matching and the corresponding
     // transformation (only if we'll use this value below)
     double this_subset_RMSE = 0;
-    if (has_to_eval_RMSE)
+    if (subset_is_valid)
     {
 #ifdef DO_PROFILING
       CTimeLoggerEntry tle(timlog, "ransac.comp_rmse");
 #endif
 
       // Recompute referenceEstimation from all the corrs:
-      tfest::se2_l2(subSet, referenceEstimation);
+      subset_is_valid = tfest::se2_l2(subSet, referenceEstimation);
+    }
+    if (subset_is_valid)
+    {
       // Normalized covariance: scale!
       referenceEstimation.cov *= square(normalizationStd);
 
@@ -437,7 +444,8 @@ bool tfest::se2_l2_robust(
             static_cast<double>(subSet[k].global.x), static_cast<double>(subSet[k].global.y), g.x,
             g.y);
       }
-      this_subset_RMSE /= std::max<double>(1.0, static_cast<double>(subSet.size()));
+      this_subset_RMSE =
+          std::sqrt(this_subset_RMSE / std::max<double>(1.0, static_cast<double>(subSet.size())));
     }
     else
     {
@@ -447,7 +455,7 @@ bool tfest::se2_l2_robust(
     // Save the estimation result as a "particle", only if the subSet
     // contains
     //  "ransac_minSetSize" elements at least:
-    if (subSet.size() >= params.ransac_minSetSize)
+    if (subset_is_valid)
     {
       // If this subset was previously added to the SOG, just increment
       // its weight
@@ -479,8 +487,8 @@ bool tfest::se2_l2_robust(
         // Find matching mode by exact match in the list of
         // correspondences:
         // -------------------------------------------------------------------
-        // Sort "subSet" in order to compare them easily!
-        // std::sort( subSet.begin(), subSet.end() );
+        // Sort "subSet", since its order depends on the random permutation:
+        std::sort(subSet.begin(), subSet.end());
 
         // Try to find matching corrs:
         for (size_t i = 0; i < alreadyAddedSubSets.size(); i++)
@@ -569,7 +577,7 @@ bool tfest::se2_l2_robust(
     }
 
     // Save the largest subset:
-    if (subSet.size() >= params.ransac_minSetSize && this_subset_RMSE < largestSubSet_RMSE)
+    if (subset_is_valid && this_subset_RMSE < largestSubSet_RMSE)
     {
       if (params.verbose)
       {
@@ -582,7 +590,7 @@ bool tfest::se2_l2_robust(
     }
 
     // Is the found subset good enough?
-    if (subSet.size() >= params.ransac_minSetSize && this_subset_RMSE < MAX_RMSE_TO_END)
+    if (subset_is_valid && this_subset_RMSE < MAX_RMSE_TO_END)
     {
       break;  // end RANSAC iterations.
     }
@@ -592,9 +600,13 @@ bool tfest::se2_l2_robust(
 #endif
   }  // end for each iteration
 
+  // Number of iterations actually executed (the loop may end early):
+  results.ransac_iters =
+      static_cast<unsigned int>(std::min<size_t>(iter_idx + 1, results.ransac_iters));
+
   if (params.verbose)
   {
-    std::cout << "[tfest::RANSAC] Finished after " << iter_idx << " iterations.\n";
+    std::cout << "[tfest::RANSAC] Finished after " << results.ransac_iters << " iterations.\n";
   }
 
   // Set the weights of the particles to sum the unity:

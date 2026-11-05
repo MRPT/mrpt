@@ -19,7 +19,12 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
+#include <Eigen/Dense>
+#include <cmath>
+#include <fstream>
 #include <sstream>
+#include <string>
+#include <vector>
 
 TEST(CRandomFieldGridMap3D, insertCheckMapBounds)
 {
@@ -207,4 +212,114 @@ TEST(CRandomFieldGridMap3D, SerializeRoundTrip)
       dst.cellByPos(0.0, 0.0, 0.0)->mean_value, src.cellByPos(0.0, 0.0, 0.0)->mean_value, 1e-6);
   EXPECT_NEAR(dst.insertionOptions.GMRF_lambdaPrior, src.insertionOptions.GMRF_lambdaPrior, 1e-9);
   EXPECT_EQ(dst.insertionOptions.GMRF_skip_variance, src.insertionOptions.GMRF_skip_variance);
+}
+
+// Regression: after a resize, the observations kept their old voxel indices,
+// so they were applied to other voxels.
+TEST(CRandomFieldGridMap3D, ResizeKeepsObservationsAtTheirVoxels)
+{
+  using M3 = mrpt::maps::CRandomFieldGridMap3D;
+  M3 m(0, 2, 0, 2, 0, 2, 1.0);
+  m.insertionOptions.GMRF_lambdaPrior = 1.0;
+  m.clear();
+  ASSERT_TRUE(m.insertIndividualReading(5.0, 1e-4, {1.5, 1.5, 1.5}, M3::gimNearest, false));
+  ASSERT_TRUE(m.insertIndividualReading(-5.0, 1e-4, {0.5, 0.5, 0.5}, M3::gimNearest, true));
+  const double v1 = m.cellByPos(1.5, 1.5, 1.5)->mean_value;
+  const double v2 = m.cellByPos(0.5, 0.5, 0.5)->mean_value;
+  EXPECT_NEAR(v1, 5.0, 1e-2);
+  EXPECT_NEAR(v2, -5.0, 1e-2);
+
+  m.resize(-2, 2, -2, 2, -2, 2, mrpt::maps::TRandomFieldVoxel(0, 0), 0.0);
+  ASSERT_EQ(m.getVoxelCount(), 64u);
+  m.updateMapEstimation();
+
+  EXPECT_NEAR(m.cellByPos(1.5, 1.5, 1.5)->mean_value, v1, 1e-2);
+  EXPECT_NEAR(m.cellByPos(0.5, 0.5, 0.5)->mean_value, v2, 1e-2);
+}
+
+// GMRF estimate (mean and std) against a dense solution of the same model.
+TEST(CRandomFieldGridMap3D, GMRF_MatchesDenseSolution)
+{
+  using M3 = mrpt::maps::CRandomFieldGridMap3D;
+  M3 m(0, 2, 0, 2, 0, 2, 1.0);
+  const double lambdaPrior = 2.0;
+  m.insertionOptions.GMRF_lambdaPrior = lambdaPrior;
+  m.clear();
+  ASSERT_EQ(m.getVoxelCount(), 8u);
+
+  const std::vector<mrpt::math::TPoint3D> pts = {
+      {0.5, 0.5, 0.5},
+      {1.5, 0.5, 1.5}
+  };
+  const std::vector<double> zs = {1.0, -2.0};
+  const std::vector<double> vars = {0.5, 0.1};
+
+  const int N = 8;
+  Eigen::MatrixXd H = Eigen::MatrixXd::Zero(N, N);
+  Eigen::VectorXd b = Eigen::VectorXd::Zero(N);
+  for (size_t q = 0; q < pts.size(); q++)
+  {
+    ASSERT_TRUE(m.insertIndividualReading(zs[q], vars[q], pts[q], M3::gimNearest, false));
+    const auto c = static_cast<int>(
+        m.cellAbsIndexFromCXCYCZ(m.x2idx(pts[q].x), m.y2idx(pts[q].y), m.z2idx(pts[q].z)));
+    H(c, c) += 1.0 / vars[q];
+    b(c) += zs[q] / vars[q];
+  }
+  m.updateMapEstimation();
+
+  // 6-connectivity prior on the 2x2x2 grid:
+  for (int j = 0; j < N; j++)
+  {
+    for (const int incr : {1, 2, 4})
+    {
+      const int bit = incr;
+      if ((j & bit) != 0)
+      {
+        continue;
+      }
+      const int i = j + incr;
+      H(i, i) += lambdaPrior;
+      H(j, j) += lambdaPrior;
+      H(i, j) -= lambdaPrior;
+      H(j, i) -= lambdaPrior;
+    }
+  }
+  const Eigen::MatrixXd Hinv = H.inverse();
+  const Eigen::VectorXd mu = Hinv * b;
+  for (int j = 0; j < N; j++)
+  {
+    const auto& v = m.data()[static_cast<size_t>(j)];
+    EXPECT_NEAR(v.mean_value, mu[j], 1e-9) << "j=" << j;
+    EXPECT_NEAR(v.stddev_value, std::sqrt(Hinv(j, j)), 1e-9) << "j=" << j;
+  }
+}
+
+// Regression: the header of the std. dev. file went to the mean file; also,
+// the coordinates are those of the voxel centers.
+TEST(CRandomFieldGridMap3D, SaveAsCSVHeadersAndVoxelCenters)
+{
+  using M3 = mrpt::maps::CRandomFieldGridMap3D;
+  M3 m(0, 2, 0, 2, 0, 2, 1.0);
+  m.clear();
+  ASSERT_TRUE(m.insertIndividualReading(1.0, 1.0, {0.5, 0.5, 0.5}, M3::gimNearest, true));
+
+  const std::string filMean = mrpt::system::getTempFileName();
+  const std::string filStd = mrpt::system::getTempFileName();
+  ASSERT_TRUE(m.saveAsCSV(filMean, filStd));
+
+  for (const auto& fil : {filMean, filStd})
+  {
+    std::ifstream f(fil);
+    ASSERT_TRUE(f.is_open());
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(f, line))
+    {
+      lines.push_back(line);
+    }
+    ASSERT_EQ(lines.size(), 1u + 8u) << fil;
+    EXPECT_EQ(lines[0], "x coord, y coord, z coord, scalar");
+    EXPECT_EQ(lines[1].rfind("0.500000, 0.500000, 0.500000, ", 0), 0u) << lines[1];
+    EXPECT_EQ(lines[8].rfind("1.500000, 1.500000, 1.500000, ", 0), 0u) << lines[8];
+  }
 }

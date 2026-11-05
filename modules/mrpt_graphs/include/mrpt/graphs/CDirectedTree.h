@@ -15,6 +15,7 @@
 
 #include <mrpt/graphs/TNodeID.h>
 
+#include <deque>
 #include <functional>
 #include <list>
 #include <map>
@@ -178,15 +179,24 @@ class CDirectedTree
   void visitBreadthFirst(
       TNodeID const vroot, const visitor_t& user_visitor, size_t root_depth_level = 0) const
   {
-    const size_t next_depth_level = root_depth_level + 1;
-    auto itChildren = edges_to_children.find(vroot);
-    if (itChildren == edges_to_children.end()) return;  // No children
-    const TListEdges& children = itChildren->second;
-    for (auto itEdge = children.begin(); itEdge != children.end(); ++itEdge)
-      user_visitor(vroot, *itEdge, next_depth_level);
-    for (auto itEdge = children.begin(); itEdge != children.end(); ++itEdge)
-      visitDepthFirst(itEdge->id, user_visitor,
-                      next_depth_level);  // Recursive breath-first call.
+    // Queue of (node ID, depth level) whose children are pending to visit:
+    std::deque<std::pair<TNodeID, size_t>> pending;
+    pending.emplace_back(vroot, root_depth_level);
+    while (!pending.empty())
+    {
+      const auto [parent, depth] = pending.front();
+      pending.pop_front();
+      auto itChildren = edges_to_children.find(parent);
+      if (itChildren == edges_to_children.end())
+      {
+        continue;  // No children
+      }
+      for (const auto& edge : itChildren->second)
+      {
+        user_visitor(parent, edge, depth + 1);
+        pending.emplace_back(edge.id, depth + 1);
+      }
+    }
   }
 
   /// \overload \deprecated Prefer the visitor_t version (MRPT 2.2.1).

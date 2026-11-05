@@ -658,11 +658,13 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
     {
       // CMatrixDouble Z_obs_cov = CMatrixDouble(R);
 
+      // Bearing innovations must be wrapped to [-pi,pi]:
+      const std::vector<bool> angularComponents = {false, true};
+
       mrpt::slam::data_association_full_covariance(
-          Z_obs_means,  // Z_obs_cov,
-          m_last_data_association.Y_pred_means, m_last_data_association.Y_pred_covs,
-          m_last_data_association.results, options.data_assoc_method, options.data_assoc_metric,
-          options.data_assoc_IC_chi2_thres,
+          Z_obs_means, m_last_data_association.Y_pred_means, m_last_data_association.Y_pred_covs,
+          m_last_data_association.results, angularComponents, options.data_assoc_method,
+          options.data_assoc_metric, options.data_assoc_IC_chi2_thres,
           true,  // Use KD-tree
           m_last_data_association.predictions_IDs, options.data_assoc_IC_metric,
           options.data_assoc_IC_ml_threshold);

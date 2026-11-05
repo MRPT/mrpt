@@ -121,6 +121,9 @@ mrpt::poses::CPose3DQuat CRangeBearingKFSLAM::getCurrentRobotPoseMean() const
   q.m_quat[1] = m_xkk[4];
   q.m_quat[2] = m_xkk[5];
   q.m_quat[3] = m_xkk[6];
+  // The models (and their analytic Jacobians) are functions of the unit
+  // quaternion; this also keeps numeric Jacobians consistent with them:
+  q.quat().normalize();
 
   return q;
 }
@@ -300,8 +303,17 @@ void CRangeBearingKFSLAM::OnTransitionModel(
     out_skipPrediction = true;
   }
 
-  // Current pose: copy xyz+quat
-  CPose3DQuat robotPose = getCurrentRobotPoseMean();
+  // Current pose, from the input vehicle state (not from m_xkk, so this
+  // function can also be used to estimate numerical Jacobians):
+  CPose3DQuat robotPose(UNINITIALIZED_QUATERNION);
+  robotPose.m_coords[0] = xv[0];
+  robotPose.m_coords[1] = xv[1];
+  robotPose.m_coords[2] = xv[2];
+  robotPose.m_quat[0] = xv[3];
+  robotPose.m_quat[1] = xv[4];
+  robotPose.m_quat[2] = xv[5];
+  robotPose.m_quat[3] = xv[6];
+  robotPose.quat().normalize();
 
   // Increment pose: copy xyz+quat (explicitly unroll the loop)
   CPose3DQuat odoIncrement(UNINITIALIZED_QUATERNION);
@@ -655,10 +667,13 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
     {
       // CMatrixDouble Z_obs_cov = CMatrixDouble(R);
 
+      // Bearing innovations must be wrapped to [-pi,pi]:
+      const std::vector<bool> angularComponents = {false, true, true};
+
       mrpt::slam::data_association_full_covariance(
           Z_obs_means, m_last_data_association.Y_pred_means, m_last_data_association.Y_pred_covs,
-          m_last_data_association.results, options.data_assoc_method, options.data_assoc_metric,
-          options.data_assoc_IC_chi2_thres,
+          m_last_data_association.results, angularComponents, options.data_assoc_method,
+          options.data_assoc_metric, options.data_assoc_IC_chi2_thres,
           true,  // Use KD-tree
           m_last_data_association.predictions_IDs, options.data_assoc_IC_metric,
           options.data_assoc_IC_ml_threshold);
@@ -1129,7 +1144,7 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
   for (i = 0; i < get_vehicle_size(); i++) fullCov(i, i) = max(fullCov(i, i), 1e-6);
 
   CMatrixDynamic<kftype> H(fullCov.inverse_LLt());
-  H.array().abs();  // Replace by absolute values:
+  H.asEigen() = H.asEigen().cwiseAbs();  // Replace by absolute values
 
   double sumOffBlocks = 0;
   unsigned int nLMs = static_cast<unsigned int>(landmarksMembership.size());
@@ -1146,7 +1161,8 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
       {
         size_t col = get_vehicle_size() + i * get_feature_size();
         size_t row = get_vehicle_size() + j * get_feature_size();
-        sumOffBlocks += 2 * H.block<2, 2>(row, col).sum();
+        sumOffBlocks +=
+            2 * H.asEigen().block<get_feature_size(), get_feature_size()>(row, col).sum();
       }
     }
   }

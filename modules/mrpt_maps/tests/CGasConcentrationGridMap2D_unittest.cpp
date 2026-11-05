@@ -16,6 +16,8 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPose3D.h>
@@ -23,8 +25,10 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CSetOfObjects.h>
 
+#include <cmath>
 #include <filesystem>
 #include <sstream>
+#include <vector>
 
 const double xMin = -4.0, xMax = 4.0, yMin = -4.0, yMax = 4.0;
 const double val = 0.2, sigma = 1.0;
@@ -431,4 +435,130 @@ TEST(CGasConcentrationGridMap2D, GaussianWindLUTBuildSaveAndReload)
 
   std::filesystem::current_path(prevDir);
   std::filesystem::remove_all(tmpDir);
+}
+
+namespace
+{
+mrpt::obs::CObservationGasSensors makeGasObs(
+    double reading, const mrpt::math::TPose3D& sensorPoseOnRobot = mrpt::math::TPose3D())
+{
+  mrpt::obs::CObservationGasSensors obs;
+  obs.sensorLabel = "GDM";
+  mrpt::obs::CObservationGasSensors::TObservationENose eNose;
+  eNose.eNosePoseOnTheRobot = sensorPoseOnRobot;
+  eNose.readingsVoltage = {static_cast<float>(reading)};
+  eNose.sensorTypes = {0};
+  obs.m_readings.push_back(eNose);
+  return obs;
+}
+}  // namespace
+
+// Regression: the running variance of all the readings (the DM+V prior
+// variance) used the updated mean only, underestimating it.
+TEST(CGasConcentrationGridMap2D, RunningVarianceOfNormalizedReadings)
+{
+  using mrpt::maps::CGasConcentrationGridMap2D;
+  using mrpt::maps::CRandomFieldGridMap2D;
+
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrKernelDMV, -5, 5, -5, 5, 0.2f);
+  grid.insertionOptions.gasSensorLabel = "GDM";
+  grid.insertionOptions.R_min = 0;
+  grid.insertionOptions.R_max = 1;
+
+  const std::vector<double> readings = {0.0, 1.0, 0.5, 0.2};
+  for (const double r : readings)
+  {
+    EXPECT_TRUE(grid.insertObservation(makeGasObs(r), mrpt::poses::CPose3D()));
+  }
+
+  double mean = 0;
+  for (const double r : readings)
+  {
+    mean += r;
+  }
+  mean /= static_cast<double>(readings.size());
+  double var = 0;
+  for (const double r : readings)
+  {
+    var += mrpt::square(r - mean);
+  }
+  var /= static_cast<double>(readings.size());
+
+  // A never observed cell takes the average of all readings:
+  double predVal = 0;
+  double valVar = 0;
+  grid.predictMeasurement(4.0, 4.0, predVal, valVar, false, CRandomFieldGridMap2D::gimNearest);
+  EXPECT_NEAR(predVal, mean, 1e-9);
+  EXPECT_NEAR(valVar, var, 1e-9);
+
+  // And so does a query out of the map:
+  grid.predictMeasurement(1e4, 1e4, predVal, valVar, false, CRandomFieldGridMap2D::gimNearest);
+  EXPECT_NEAR(predVal, mean, 1e-9);
+  EXPECT_NEAR(valVar, var, 1e-9);
+}
+
+// Regression: the sensor position ignored the robot attitude (only its 2D
+// projection was used).
+TEST(CGasConcentrationGridMap2D, SensorPositionUsesThe3DRobotPose)
+{
+  using mrpt::maps::CGasConcentrationGridMap2D;
+  using mrpt::maps::CRandomFieldGridMap2D;
+
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrKernelDM, -2, 2, -2, 2, 0.1f);
+  grid.insertionOptions.gasSensorLabel = "GDM";
+
+  // The sensor is 1 m above the robot origin, and the robot is rolled 90 deg,
+  // so the sensor lies at (0,-1):
+  const mrpt::poses::CPose3D robotPose(0, 0, 0, 0, 0, mrpt::DEG2RAD(90.0));
+  EXPECT_TRUE(
+      grid.insertObservation(makeGasObs(0.5, mrpt::math::TPose3D(0, 0, 1, 0, 0, 0)), robotPose));
+
+  const auto* cellAtSensor = grid.cellByPos(0.05, -0.95);
+  const auto* cellAtRobot = grid.cellByPos(0.05, 0.05);
+  ASSERT_TRUE(cellAtSensor != nullptr);
+  ASSERT_TRUE(cellAtRobot != nullptr);
+  EXPECT_GT(cellAtSensor->dm_mean_w(), 0.5);
+  EXPECT_NEAR(cellAtRobot->dm_mean_w(), 0.0, 1e-6);
+}
+
+// Regression: advectionFreq had no default value.
+TEST(CGasConcentrationGridMap2D, AdvectionFreqHasADefaultValue)
+{
+  const mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions opts;
+  EXPECT_FLOAT_EQ(opts.advectionFreq, 1.0f);
+}
+
+// increaseUncertainty() adds its argument to the variance of each cell, and
+// is a no-op (instead of an out-of-bounds write) for other representations.
+TEST(CGasConcentrationGridMap2D, IncreaseUncertaintyAddsToTheVariance)
+{
+  using mrpt::maps::CGasConcentrationGridMap2D;
+  using mrpt::maps::CRandomFieldGridMap2D;
+
+  {
+    CGasConcentrationGridMap2D grid(
+        CRandomFieldGridMap2D::mrKalmanApproximate, -2.0f, 2.0f, -2.0f, 2.0f, 1.0f);
+    grid.insertIndividualReading(0.3, {0.0, 0.0});
+    mrpt::math::CVectorDouble means;
+    mrpt::math::CVectorDouble stds0;
+    grid.getMeanAndSTD(means, stds0);
+    grid.increaseUncertainty(0.05);
+    mrpt::math::CVectorDouble stds1;
+    grid.getMeanAndSTD(means, stds1);
+    ASSERT_EQ(stds0.size(), stds1.size());
+    for (int i = 0; i < stds0.size(); i++)
+    {
+      EXPECT_NEAR(mrpt::square(stds1[i]), mrpt::square(stds0[i]) + 0.05, 1e-9);
+    }
+  }
+  {
+    CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrKernelDM, -1, 1, -1, 1, 0.1f);
+    grid.insertIndividualReading(0.3, {0.0, 0.0});
+    mrpt::math::CMatrixDouble before;
+    grid.getAsMatrix(before);
+    grid.increaseUncertainty(0.05);
+    mrpt::math::CMatrixDouble after;
+    grid.getAsMatrix(after);
+    EXPECT_EQ(before, after);
+  }
 }

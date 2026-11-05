@@ -44,7 +44,7 @@ class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
   double getV() { return m_v; }
   double getW() { return m_w; }
   /** Used to command the robot a desired movement:
-   * \param lin_vel Linar velocity (m/s)
+   * \param lin_vel Linear velocity (m/s)
    * \param ang_vel Angular velocity (rad/s)
    */
   void movementCommand(double lin_vel, double ang_vel);

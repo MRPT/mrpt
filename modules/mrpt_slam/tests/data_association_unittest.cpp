@@ -13,8 +13,11 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/math/distributions.h>
 #include <mrpt/slam/data_association.h>
 
+#include <Eigen/Dense>
+#include <cmath>
 #include <map>
 #include <string>
 
@@ -197,4 +200,131 @@ TEST(DataAssociation, FullCovarianceArgumentChecks)
       data_association_full_covariance(z, empty, y_cov, r, assocNN, metricMaha), std::exception);
   EXPECT_THROW(
       data_association_full_covariance(empty, y, y_cov, r, assocNN, metricMaha), std::exception);
+}
+
+// Two predictions with strongly correlated errors (as caused by the vehicle
+// pose uncertainty) and observations displaced in opposite directions: each
+// pairing is individually compatible, but both together are not.
+TEST(DataAssociation, JCBBRejectsJointlyIncompatiblePairings)
+{
+  CMatrixDouble y(2, 2);
+  CMatrixDouble z(2, 2);
+  CMatrixDouble S(4, 4);
+  y.setZero();
+  y(1, 0) = 10;
+  z.setZero();
+  z(0, 0) = 2;
+  z(1, 0) = 8;
+  S.setZero();
+  for (int i = 0; i < 4; i++)
+  {
+    S(i, i) = 1.0;
+  }
+  S(0, 2) = S(2, 0) = 0.99;
+  S(1, 3) = S(3, 1) = 0.99;
+
+  // Independent check of the premises: individual d2=4, joint d2=800
+  ASSERT_LT(4.0, mrpt::math::chi2inv(0.99, 2));
+  Eigen::Vector4d v(2.0, 0.0, -2.0, 0.0);
+  const double joint_d2 = v.dot(S.asEigen().inverse() * v);
+  ASSERT_GT(joint_d2, mrpt::math::chi2inv(0.99, 4));
+
+  for (const bool useKdTree : {true, false})
+  {
+    TDataAssociationResults r;
+    data_association_full_covariance(z, y, S, r, assocJCBB, metricMaha, 0.99, useKdTree);
+    EXPECT_EQ(r.associations.size(), 1U) << "kdtree=" << useKdTree;
+    EXPECT_NEAR(r.distance, 4.0, 1e-9) << "kdtree=" << useKdTree;
+  }
+}
+
+// The closest prediction in Euclidean distance is very certain (huge d2),
+// while a further one with a large covariance is compatible.
+TEST(DataAssociation, KdTreeDoesNotSkipCompatiblePredictions)
+{
+  CMatrixDouble y(2, 2);
+  CMatrixDouble z(1, 2);
+  CMatrixDouble S(4, 4);
+  y(0, 0) = 1;
+  y(0, 1) = 0;
+  y(1, 0) = 3;
+  y(1, 1) = 0;
+  z.setZero();
+  S.setZero();
+  S(0, 0) = S(1, 1) = 1e-4;
+  S(2, 2) = S(3, 3) = 4.0;
+  for (const auto method : {assocNN, assocJCBB})
+  {
+    for (const bool useKdTree : {false, true})
+    {
+      TDataAssociationResults r;
+      data_association_full_covariance(z, y, S, r, method, metricMaha, 0.99, useKdTree);
+      ASSERT_EQ(r.associations.size(), 1U) << "method=" << method << " kdtree=" << useKdTree;
+      EXPECT_EQ(r.associations.begin()->second, 1U);
+      EXPECT_NEAR(r.indiv_distances(1, 0), 9.0 / 4.0, 1e-9);
+    }
+  }
+}
+
+// The joint matching likelihood is the Gaussian density of the joint
+// innovation, of dimension (number of pairings) x (observation length).
+TEST(DataAssociation, JCBBMatchingLikelihoodIsTheJointDensity)
+{
+  CMatrixDouble y(2, 2);
+  CMatrixDouble z(2, 2);
+  CMatrixDouble S(4, 4);
+  y.setZero();
+  y(1, 0) = 10;
+  z = y;
+  z(0, 0) += 0.1;
+  z(1, 1) += 0.1;
+  S.setZero();
+  for (int i = 0; i < 4; i++)
+  {
+    S(i, i) = 0.04;
+  }
+  TDataAssociationResults r;
+  data_association_full_covariance(z, y, S, r, assocJCBB, metricML, 0.99, false);
+  ASSERT_EQ(r.associations.size(), 2U);
+
+  // Product of two independent 2D Gaussian densities:
+  const double pdf1 = std::exp(-0.5 * 0.01 / 0.04) / (2 * M_PI * 0.04);
+  EXPECT_NEAR(r.distance, pdf1 * pdf1, 1e-9 * pdf1 * pdf1);
+}
+
+// Bearings observed at +179.9 deg of a landmark predicted at -179.9 deg
+TEST(DataAssociation, AngularComponentsAreWrapped)
+{
+  CMatrixDouble y(2, 2);
+  CMatrixDouble z(2, 2);
+  CMatrixDouble S(4, 4);
+  y(0, 0) = 5.0;
+  y(0, 1) = mrpt::DEG2RAD(-179.9);
+  y(1, 0) = 3.0;
+  y(1, 1) = mrpt::DEG2RAD(90.0);
+  z(0, 0) = 5.01;
+  z(0, 1) = mrpt::DEG2RAD(179.9);
+  z(1, 0) = 3.01;
+  z(1, 1) = mrpt::DEG2RAD(90.1);
+  S.setZero();
+  for (int i = 0; i < 2; i++)
+  {
+    S(2 * i, 2 * i) = mrpt::square(0.05);
+    S(2 * i + 1, 2 * i + 1) = mrpt::square(mrpt::DEG2RAD(1.0));
+  }
+  const std::vector<bool> angular = {false, true};
+
+  for (const auto method : {assocNN, assocJCBB})
+  {
+    TDataAssociationResults r;
+    data_association_full_covariance(z, y, S, r, angular, method, metricMaha, 0.99, true);
+    ASSERT_EQ(r.associations.size(), 2U) << "method=" << method;
+    EXPECT_EQ(r.associations.at(0), 0U);
+    EXPECT_EQ(r.associations.at(1), 1U);
+
+    // Without the angular information, the first pairing is rejected:
+    TDataAssociationResults r2;
+    data_association_full_covariance(z, y, S, r2, method, metricMaha, 0.99, true);
+    EXPECT_EQ(r2.associations.size(), 1U) << "method=" << method;
+  }
 }

@@ -39,31 +39,37 @@ bool tfest::se2_l2(
 // Non-vectorized version
 namespace
 {
-mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
+mrpt::tfest::internal::se2_l2_impl_return_t<double> se2_l2_impl(
     const TMatchingPairList& in_correspondences)
 {
-  // SSE vectorized version:
   const size_t N = in_correspondences.size();
   ASSERT_(N >= 2);
-  const float N_inv = 1.0f / static_cast<float>(N);  // For efficiency, keep this value.
+  const double N_inv = 1.0 / static_cast<double>(N);
 
-  // Non vectorized version:
-  float SumXa = 0;
-  float SumXb = 0;
-  float SumYa = 0;
-  float SumYb = 0;
-  float Sxx = 0;
-  float Sxy = 0;
-  float Syx = 0;
-  float Syy = 0;
+  // Both point sets are shifted by a pivot (the first pair) and accumulated
+  // in double precision, to avoid cancellation errors for points far from
+  // the origin. Ax and Ay are invariant to these shifts.
+  const double x0a = in_correspondences[0].global.x;
+  const double y0a = in_correspondences[0].global.y;
+  const double x0b = in_correspondences[0].local.x;
+  const double y0b = in_correspondences[0].local.y;
+
+  double SumXa = 0;
+  double SumXb = 0;
+  double SumYa = 0;
+  double SumYb = 0;
+  double Sxx = 0;
+  double Sxy = 0;
+  double Syx = 0;
+  double Syy = 0;
 
   for (const auto& p : in_correspondences)
   {
     // Get the pair of points in the correspondence:
-    const float xa = p.global.x;
-    const float ya = p.global.y;
-    const float xb = p.local.x;
-    const float yb = p.local.y;
+    const double xa = static_cast<double>(p.global.x) - x0a;
+    const double ya = static_cast<double>(p.global.y) - y0a;
+    const double xb = static_cast<double>(p.local.x) - x0b;
+    const double yb = static_cast<double>(p.local.y) - y0b;
 
     // Compute the terms:
     SumXa += xa;
@@ -78,15 +84,15 @@ mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
     Syy += ya * yb;
   }  // End of "for all correspondences"...
 
-  mrpt::tfest::internal::se2_l2_impl_return_t<float> ret;
-  ret.mean_x_a = SumXa * N_inv;
-  ret.mean_y_a = SumYa * N_inv;
-  ret.mean_x_b = SumXb * N_inv;
-  ret.mean_y_b = SumYb * N_inv;
+  mrpt::tfest::internal::se2_l2_impl_return_t<double> ret;
+  ret.mean_x_a = x0a + SumXa * N_inv;
+  ret.mean_y_a = y0a + SumYa * N_inv;
+  ret.mean_x_b = x0b + SumXb * N_inv;
+  ret.mean_y_b = y0b + SumYb * N_inv;
 
   // Auxiliary variables Ax,Ay:
-  ret.Ax = static_cast<float>(N) * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
-  ret.Ay = SumXa * SumYb + static_cast<float>(N) * (Syx - Sxy) - SumXb * SumYa;
+  ret.Ax = static_cast<double>(N) * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
+  ret.Ay = SumXa * SumYb + static_cast<double>(N) * (Syx - Sxy) - SumXb * SumYa;
 
   return ret;
 }
@@ -113,23 +119,23 @@ bool tfest::se2_l2(
     return false;
   }
 
-  const float N_inv = 1.0f / static_cast<float>(N);  // For efficiency, keep this value.
+  const double N_inv = 1.0 / static_cast<double>(N);
 
   // ----------------------------------------------------------------------
   // Compute the estimated pose. Notation from the paper:
   // "Mobile robot motion estimation by 2d scan matching with genetic and
   // iterative
-  // closest point algorithms", J.L. Martinez Rodriguez, A.J. Gonzalez, J.
-  // Morales Rodriguez, A. Mandow Andaluz, A. J. Garcia Cerezo, Journal of
-  // Field Robotics, 2006.
+  // closest point algorithms", J.L. Martinez, J. Gonzalez, J. Morales,
+  // A. Mandow, A.J. Garcia-Cerezo, Journal of Field Robotics, 23(1):21-34,
+  // 2006.
   // ----------------------------------------------------------------------
 
   // ----------------------------------------------------------------------
   //  For the formulas of the covariance, see:
-  //   https://www.mrpt.org/Paper:Occupancy_Grid_Matching
+  //   https://www.mrpt.org/paper-occupancy-grid-matching/
   //   and Jose Luis Blanco's PhD thesis.
   // ----------------------------------------------------------------------
-  internal::se2_l2_impl_return_t<float> implRet;
+  internal::se2_l2_impl_return_t<double> implRet;
 #if MRPT_ARCH_INTEL_COMPATIBLE
   if (mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
   {
@@ -142,9 +148,7 @@ bool tfest::se2_l2(
   }
 
   out_transformation.phi =
-      (implRet.Ax != 0 || implRet.Ay != 0)
-          ? atan2(static_cast<double>(implRet.Ay), static_cast<double>(implRet.Ax))
-          : 0.0;
+      (implRet.Ax != 0 || implRet.Ay != 0) ? atan2(implRet.Ay, implRet.Ax) : 0.0;
 
   const double ccos = cos(out_transformation.phi);
   const double csin = sin(out_transformation.phi);
@@ -188,6 +192,12 @@ bool tfest::se2_l2(
     //   multiplied by var_p to be the actual covariance!)
     // -------------------------------------------------------
     const double D = square(implRet.Ax) + square(implRet.Ay);
+    if (D == 0)
+    {
+      // Degenerate geometry (e.g. all local points coincide): the rotation
+      // and its uncertainty are undefined.
+      return false;
+    }
 
     (*C)(0, 0) = 2.0 * N_inv +
                  BETA * square((implRet.mean_x_b * implRet.Ay + implRet.mean_y_b * implRet.Ax) / D);

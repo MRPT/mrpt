@@ -81,7 +81,6 @@ typename CPoseInterpolatorBase<DIM>::pose_t& CPoseInterpolatorBase<DIM>::interpo
   switch (m_method)
   {
     case imLinear2Neig:
-    case imSplineSlerp:
     case imLinearSlerp:
       interp_method_requires_4pts = false;
       break;

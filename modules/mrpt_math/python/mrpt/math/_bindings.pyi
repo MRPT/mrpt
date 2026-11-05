@@ -1119,9 +1119,9 @@ class CHistogram:
         """
 def wrapTo2Pi(arg0: float) -> float:
     """
-    Wrap angle to [0, 2*pi]
+    Wrap angle to [0, 2*pi)
     """
 def wrapToPi(arg0: float) -> float:
     """
-    Wrap angle to [-pi, pi]
+    Wrap angle to [-pi, pi)
     """

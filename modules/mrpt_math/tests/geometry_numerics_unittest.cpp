@@ -313,13 +313,15 @@ TEST(MathSpecialFunctions, NormalCdfFarTails)
 TEST(MathSpecialFunctions, NoncentralChi2LargeArguments)
 {
   // A large non-centrality parameter drives the series far enough to exercise
-  // the log-domain accumulation branch.
-  const double p = noncentralChi2CDF(4, 50.0, 60.0);
-  EXPECT_GE(p, 0.0);
-  EXPECT_LE(p, 1.0);
+  // the log-domain accumulation branch (reference value from scipy):
+  const double p = noncentralChi2PDF_CDF(4, 50.0, 60.0).second;
+  EXPECT_NEAR(p, 0.6814272798001318, 1e-7);
+  // The Wilson-Hilferty approximation is close to it:
+  EXPECT_NEAR(noncentralChi2CDF(4, 50.0, 60.0), p, 0.01);
 
-  // With zero non-centrality it must agree with the central chi2 CDF:
-  EXPECT_NEAR(noncentralChi2CDF(3, 0.0, 3.0), chi2CDF(3, 3.0), 1e-6);
+  // With zero non-centrality it must agree with the (exact) central chi2 CDF:
+  EXPECT_NEAR(chi2CDF(3, 3.0), 0.6083748237289109, 1e-10);
+  EXPECT_NEAR(noncentralChi2CDF(3, 0.0, 3.0), chi2CDF(3, 3.0), 0.01);
 }
 
 // ---------------------------------------------------------------------------

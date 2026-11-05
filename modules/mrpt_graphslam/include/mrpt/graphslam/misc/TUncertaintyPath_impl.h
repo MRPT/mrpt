@@ -58,8 +58,8 @@ void TUncertaintyPath<GRAPH_T>::clear()
   // by default the information matrix is set to the unit matrix
   auto init_path_mat = CMatrixDouble33::Identity();
 
-  // put a really large number - we are certain of this position
-  init_path_mat *= 10000;  // TODO - justify this..
+  // Only meaningful for an empty path: the first edge replaces it
+  init_path_mat *= 10000;
   curr_pose_pdf.cov_inv = init_path_mat;
 
   determinant_is_updated = false;
@@ -113,7 +113,17 @@ TUncertaintyPath<GRAPH_T>& TUncertaintyPath<GRAPH_T>::operator+=(const self_t& o
       "nodes");
 
   // aggregate the two gaussian - mean & information matrix
-  this->curr_pose_pdf += other.curr_pose_pdf;
+  if (other.nodes_traversed.size() > 1)
+  {
+    if (this->nodes_traversed.size() > 1)
+    {
+      this->curr_pose_pdf += other.curr_pose_pdf;
+    }
+    else
+    {
+      this->curr_pose_pdf = other.curr_pose_pdf;
+    }
+  }
 
   // add the traversed nodes
   this->nodes_traversed.insert(
@@ -146,7 +156,14 @@ void TUncertaintyPath<GRAPH_T>::addToPath(
     const mrpt::graphs::TNodeID& node, const constraint_t& edge)
 {
   // update the path
-  curr_pose_pdf += edge;
+  if (nodes_traversed.size() > 1)
+  {
+    curr_pose_pdf += edge;
+  }
+  else
+  {
+    curr_pose_pdf = edge;
+  }
 
   // update the traversed nodes
   nodes_traversed.push_back(node);

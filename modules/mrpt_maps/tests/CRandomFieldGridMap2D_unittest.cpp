@@ -24,9 +24,11 @@
 #include <mrpt/viz/CSetOfObjects.h>
 #include <test_mrpt_common.h>
 
+#include <Eigen/Dense>
 #include <cmath>
 #include <filesystem>
 #include <sstream>
+#include <string>
 
 using mrpt::maps::CGasConcentrationGridMap2D;
 using mrpt::maps::CRandomFieldGridMap2D;
@@ -783,4 +785,317 @@ TEST(CRandomFieldGridMap2D, GMRF_OccupancyFromMissingImageThrows)
   opts->GMRF_gridmap_image_res = 0.1f;
 
   EXPECT_THROW(grid.clear(), std::exception);
+}
+
+namespace
+{
+// Dense prior used by the mrKalmanApproximate method: squared-exponential
+// covariance, truncated out of a (2W+1)x(2W+1) window around each cell.
+Eigen::MatrixXd truncatedSEPrior(
+    const CRandomFieldGridMap2D& g, int W, double sigma, double std0, bool truncate)
+{
+  const int sx = static_cast<int>(g.getSizeX());
+  const int N = static_cast<int>(g.getSizeX() * g.getSizeY());
+  const double res = g.getResolution();
+  Eigen::MatrixXd P = Eigen::MatrixXd::Zero(N, N);
+  for (int i = 0; i < N; i++)
+  {
+    for (int j = 0; j < N; j++)
+    {
+      const int dx = (j % sx) - (i % sx);
+      const int dy = (j / sx) - (i / sx);
+      if (truncate && (std::abs(dx) > W || std::abs(dy) > W))
+      {
+        continue;
+      }
+      P(i, j) =
+          std0 * std0 *
+          std::exp(-0.5 * res * res * static_cast<double>(dx * dx + dy * dy) / (sigma * sigma));
+    }
+  }
+  return P;
+}
+}  // namespace
+
+// Regression: the kernel window was centered one cell off the sensor cell.
+TEST(CRandomFieldGridMap2D, KernelDM_WindowCenteredOnSensorCell)
+{
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrKernelDM, -1, 1, -1, 1, 0.1f);
+  grid.insertionOptions.sigma = 0.15f;
+  grid.insertionOptions.cutoffRadius = 0.45f;
+  grid.clear();
+
+  const double x0 = grid.idx2x(10);
+  const double y0 = grid.idx2y(10);
+  grid.insertIndividualReading(1.0, {x0, y0});
+
+  const int cx = grid.x2idx(x0);
+  const int cy = grid.y2idx(y0);
+  const double res = grid.getResolution();
+  const double sigma = grid.insertionOptions.sigma;
+  for (int dy = -2; dy <= 2; dy++)
+  {
+    for (int dx = -2; dx <= 2; dx++)
+    {
+      const auto* cell = grid.cellByIndex(cx + dx, cy + dy);
+      ASSERT_TRUE(cell != nullptr);
+      const double d2 = res * res * static_cast<double>(dx * dx + dy * dy);
+      EXPECT_NEAR(cell->dm_mean_w(), std::exp(-d2 / (sigma * sigma)), 1e-6)
+          << "dx=" << dx << " dy=" << dy;
+    }
+  }
+}
+
+// Regression: the compressed covariance update modified wrong entries for
+// pairs of cells whose x offset was below -W.
+TEST(CRandomFieldGridMap2D, KalmanApproximate_MatchesDenseKalmanFilter)
+{
+  const int W = 3;
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrKalmanApproximate, -2, 2, -2, 2, 0.2f);
+  grid.insertionOptions.KF_W_size = W;
+  grid.insertionOptions.KF_covSigma = 0.3f;
+  grid.insertionOptions.KF_initialCellStd = 1.0f;
+  grid.insertionOptions.KF_observationModelNoise = 0.1f;
+  grid.insertionOptions.KF_defaultCellMeanValue = 0;
+  grid.clear();
+
+  const size_t N = grid.getSizeX() * grid.getSizeY();
+  const int sx = static_cast<int>(grid.getSizeX());
+  const double R = static_cast<double>(grid.insertionOptions.KF_observationModelNoise);
+  Eigen::MatrixXd P = truncatedSEPrior(
+      grid, W, static_cast<double>(grid.insertionOptions.KF_covSigma), 1.0, true /*truncate*/);
+  Eigen::VectorXd m = Eigen::VectorXd::Zero(static_cast<Eigen::Index>(N));
+
+  // Repeated readings of the same cell keep the approximation exact for all
+  // the stored entries:
+  const mrpt::math::TPoint2D pt(0.1, 0.1);
+  for (const double z : {0.8, 0.6})
+  {
+    grid.insertIndividualReading(z, pt);
+    ASSERT_EQ(grid.getSizeX() * grid.getSizeY(), N);  // no resize
+
+    const int c = grid.xy2idx(pt.x, pt.y);
+    const double s = P(c, c) + R * R;
+    const Eigen::VectorXd pc = P.col(c);
+    m += pc * (z - m[c]) / s;
+    P -= pc * pc.transpose() / s;
+
+    mrpt::math::CVectorDouble means;
+    mrpt::math::CMatrixDouble cov;
+    grid.getMeanAndCov(means, cov);
+    ASSERT_EQ(static_cast<size_t>(cov.rows()), N);
+    ASSERT_EQ(static_cast<size_t>(cov.cols()), N);
+
+    for (size_t i = 0; i < N; i++)
+    {
+      // (tolerance: the map options are float numbers)
+      EXPECT_NEAR(means[i], m[static_cast<Eigen::Index>(i)], 1e-7) << "i=" << i;
+      for (size_t j = 0; j < N; j++)
+      {
+        const int dx = static_cast<int>(j % sx) - static_cast<int>(i % sx);
+        const int dy = static_cast<int>(j / sx) - static_cast<int>(i / sx);
+        if (std::abs(dx) > W || std::abs(dy) > W)
+        {
+          continue;  // not kept by this approximation
+        }
+        EXPECT_NEAR(cov(i, j), P(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)), 1e-7)
+            << "i=" << i << " j=" << j;
+      }
+    }
+  }
+}
+
+// Regression: the prior covariance between two new cells after a resize used
+// the variance of a cell that was not initialized yet.
+TEST(CRandomFieldGridMap2D, KalmanFilter_ResizeSetsPriorOfNewCells)
+{
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrKalmanFilter, -2, 2, -2, 2, 0.5f);
+  grid.insertionOptions.KF_covSigma = 0.6f;
+  grid.insertionOptions.KF_initialCellStd = 1.0f;
+  grid.clear();
+  grid.insertIndividualReading(0.5, {0.1, 0.1});  // inner reading: no resize
+  ASSERT_EQ(grid.getSizeX(), 8u);
+
+  grid.resize(-2, 3, -2, 3, mrpt::maps::TRandomFieldCell(0, 1.0), 0.0);
+  ASSERT_EQ(grid.getSizeX(), 10u);
+  ASSERT_EQ(grid.getSizeY(), 10u);
+
+  mrpt::math::CVectorDouble means;
+  mrpt::math::CMatrixDouble cov;
+  grid.getMeanAndCov(means, cov);
+  const int sx = static_cast<int>(grid.getSizeX());
+  const int N = static_cast<int>(grid.getSizeX() * grid.getSizeY());
+  ASSERT_EQ(cov.rows(), N);
+
+  const double sigma = static_cast<double>(grid.insertionOptions.KF_covSigma);
+  for (int i = 0; i < N; i++)
+  {
+    for (int j = i; j < N; j++)
+    {
+      const double xi = grid.idx2x(i % sx);
+      const double yi = grid.idx2y(i / sx);
+      const double xj = grid.idx2x(j % sx);
+      const double yj = grid.idx2y(j / sx);
+      // Only pairs of new cells (outside of the old [-2,2]x[-2,2] area):
+      if (!(xi > 2.0 || yi > 2.0) || !(xj > 2.0 || yj > 2.0))
+      {
+        continue;
+      }
+      const double d2 = mrpt::square(xi - xj) + mrpt::square(yi - yj);
+      EXPECT_NEAR(cov(i, j), std::exp(-0.5 * d2 / (sigma * sigma)), 1e-9)
+          << "i=" << i << " j=" << j;
+    }
+  }
+
+  Eigen::MatrixXd Pe(N, N);
+  for (int i = 0; i < N; i++)
+  {
+    for (int j = 0; j < N; j++)
+    {
+      Pe(i, j) = cov(i, j);
+    }
+  }
+  const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(Pe);
+  EXPECT_GT(es.eigenvalues().minCoeff(), -1e-9);
+}
+
+// Regression: the information loss was applied to the time-invariant
+// observations instead of the time-variant ones.
+TEST(CRandomFieldGridMap2D, GMRF_OnlyTimeVariantObservationsLoseInformation)
+{
+  for (const bool timeInvariant : {true, false})
+  {
+    CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrGMRF_SD, 0, 2, 0, 2, 0.5f);
+    grid.insertionOptions.GMRF_lambdaPrior = 1.0;
+    grid.insertionOptions.GMRF_lambdaObs = 10.0;
+    grid.insertionOptions.GMRF_lambdaObsLoss = 4.0;
+    grid.clear();
+
+    grid.insertIndividualReading(1.0, {0.2, 0.2}, true, timeInvariant);
+    // A time-invariant reading far away keeps the system well determined:
+    grid.insertIndividualReading(0.0, {1.8, 1.8}, true, true);
+    for (int k = 0; k < 5; k++)
+    {
+      grid.updateMapEstimation();
+    }
+
+    const auto* cell = grid.cellByPos(0.2, 0.2);
+    ASSERT_TRUE(cell != nullptr);
+    EXPECT_TRUE(std::isfinite(cell->gmrf_std())) << "timeInvariant=" << timeInvariant;
+    if (timeInvariant)
+    {
+      EXPECT_GT(cell->gmrf_mean(), 0.9);
+    }
+    else
+    {
+      EXPECT_NEAR(cell->gmrf_mean(), 0.0, 1e-6);
+    }
+  }
+}
+
+// Regression: the border check of the bilinear interpolation tested x twice
+// and never y against the upper border.
+TEST(CRandomFieldGridMap2D, PredictMeasurement_BilinearAtUpperYBorderUsesNearestCell)
+{
+  // GMRF maps never resize upon insertion:
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrGMRF_SD, -2, 2, -2, 2, 0.5f);
+  grid.insertionOptions.GMRF_lambdaPrior = 1.0;
+  grid.clear();
+  const double x = grid.idx2x(3);
+  grid.insertIndividualReading(0.8, {x, 1.9}, true, true);
+
+  double valNearest = 0;
+  double varNearest = 0;
+  grid.predictMeasurement(x, 1.9, valNearest, varNearest, false, CRandomFieldGridMap2D::gimNearest);
+  double valBilinear = 0;
+  double varBilinear = 0;
+  grid.predictMeasurement(
+      x, 1.9, valBilinear, varBilinear, false, CRandomFieldGridMap2D::gimBilinear);
+
+  EXPECT_NEAR(valBilinear, valNearest, 1e-12);
+  EXPECT_NEAR(varBilinear, varNearest, 1e-12);
+}
+
+// Regression: the variance was not scaled back to sensor units.
+TEST(CRandomFieldGridMap2D, PredictMeasurement_NormalizationAlsoScalesVariance)
+{
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrKalmanFilter, -2, 2, -2, 2, 0.5f);
+  grid.insertionOptions.R_min = 1.0f;
+  grid.insertionOptions.R_max = 3.0f;
+  grid.insertionOptions.KF_observationModelNoise = 0.1f;
+  grid.insertIndividualReading(0.5, {0.0, 0.0}, true, true);
+
+  double valRaw = 0;
+  double varRaw = 0;
+  grid.predictMeasurement(0.0, 0.0, valRaw, varRaw, false, CRandomFieldGridMap2D::gimNearest);
+  double valSensor = 0;
+  double varSensor = 0;
+  grid.predictMeasurement(0.0, 0.0, valSensor, varSensor, true, CRandomFieldGridMap2D::gimNearest);
+
+  EXPECT_NEAR(valSensor, 1.0 + 2.0 * valRaw, 1e-9);
+  EXPECT_NEAR(varSensor, 4.0 * varRaw, 1e-9);
+}
+
+// Regression: the GMRF predictive variance ignored the GMRF observation
+// noise (1/GMRF_lambdaObs).
+TEST(CRandomFieldGridMap2D, PredictMeasurement_GMRFVarianceIncludesObservationNoise)
+{
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrGMRF_SD, -1, 1, -1, 1, 0.5f);
+  grid.insertionOptions.GMRF_lambdaPrior = 1.0;
+  grid.insertionOptions.GMRF_lambdaObs = 4.0;
+  grid.clear();
+  grid.insertIndividualReading(0.5, {0.1, 0.1}, true, true);
+
+  double val = 0;
+  double var = 0;
+  grid.predictMeasurement(0.1, 0.1, val, var, false, CRandomFieldGridMap2D::gimNearest);
+  const auto* cell = grid.cellByPos(0.1, 0.1);
+  ASSERT_TRUE(cell != nullptr);
+  EXPECT_NEAR(val, cell->gmrf_mean(), 1e-12);
+  EXPECT_NEAR(var, mrpt::square(cell->gmrf_std()) + 1.0 / 4.0, 1e-12);
+}
+
+// Regression: getMeanAndSTD() and setMeanAndSTD() used the compressed
+// covariance of mrKalmanApproximate for all the map types.
+TEST(CRandomFieldGridMap2D, GetAndSetMeanAndSTD_KalmanFilterUseTheFullCovariance)
+{
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrKalmanFilter, -1, 1, -1, 1, 0.5f);
+  grid.insertIndividualReading(0.3, {0.0, 0.0}, true, true);
+
+  mrpt::math::CVectorDouble means;
+  mrpt::math::CVectorDouble stds;
+  grid.getMeanAndSTD(means, stds);
+  mrpt::math::CVectorDouble covMeans;
+  mrpt::math::CMatrixDouble cov;
+  grid.getMeanAndCov(covMeans, cov);
+  const size_t N = grid.getSizeX() * grid.getSizeY();
+  ASSERT_EQ(static_cast<size_t>(stds.size()), N);
+  ASSERT_EQ(static_cast<size_t>(cov.rows()), N);
+  for (size_t i = 0; i < N; i++)
+  {
+    EXPECT_NEAR(stds[i], std::sqrt(cov(i, i)), 1e-12) << "i=" << i;
+  }
+
+  mrpt::math::CVectorDouble newStds = stds;
+  newStds.fill(0.5);
+  grid.setMeanAndSTD(means, newStds);
+  grid.getMeanAndSTD(means, stds);
+  grid.getMeanAndCov(covMeans, cov);
+  for (size_t i = 0; i < N; i++)
+  {
+    EXPECT_NEAR(stds[i], 0.5, 1e-12);
+    EXPECT_NEAR(cov(i, i), 0.25, 1e-12);
+  }
+}
+
+// Regression: the GMRF_lambdaObsLoss line printed GMRF_lambdaObs.
+TEST(CRandomFieldGridMap2D, InsertionOptionsCommon_DumpShowsLambdaObsLoss)
+{
+  CGasConcentrationGridMap2D grid(CRandomFieldGridMap2D::mrGMRF_SD, -1, 1, -1, 1, 0.5f);
+  grid.insertionOptions.GMRF_lambdaObs = 10.0;
+  grid.insertionOptions.GMRF_lambdaObsLoss = 0.25;
+  std::stringstream ss;
+  grid.insertionOptions.dumpToTextStream(ss);
+  EXPECT_NE(ss.str().find("GMRF_lambdaObsLoss                      = 0.250000"), std::string::npos)
+      << ss.str();
 }

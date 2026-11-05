@@ -13,14 +13,19 @@
 */
 
 #pragma once
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/obs_utils.h>
 #include <mrpt/viz/CEllipsoid3D.h>
+#include <mrpt/viz/CPlanarLaserScan.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/CVisualObject.h>
+
+#include <Eigen/Dense>
+#include <iostream>
 
 namespace mrpt::graphslam::deciders
 {
@@ -194,7 +199,7 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(const mrpt::graphs::TNodeID& 
 
     // keep track of the recorded goodness values
     // TODO - rethink on these condition.
-    if (!isnan(icp_info.goodness) ||
+    if (!std::isnan(icp_info.goodness) &&
         !approximatelyEqual(static_cast<double>(icp_info.goodness), 0.0))
     {
       m_laser_params.goodness_threshold_win.addNewMeasurement(icp_info.goodness);
@@ -246,7 +251,7 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
   MRPT_LOG_DEBUG_STREAM("****In getICPEdge method: ");
   if (ad_params)
   {
-    MRPT_LOG_DEBUG_STREAM("TGetICPEdgeAdParams:\n" << ad_params->getAsString() << endl);
+    MRPT_LOG_DEBUG_STREAM("TGetICPEdgeAdParams:\n" << ad_params->getAsString() << std::endl);
   }
 
   // from-node parameters
@@ -468,11 +473,11 @@ void CLoopCloserERD<GRAPH_T>::checkPartitionsForLC(partitions_t* partitions_for_
         {  // at least X LC nodes
           MRPT_LOG_WARN_STREAM(
               "Found potential loop closures:"
-              << endl
-              << "\tPartitionID: " << partitionID << endl
+              << std::endl
+              << "\tPartitionID: " << partitionID << std::endl
               << "\tPartition: "
-              << mrpt::containers::getSTLContainerAsString(*partitions_it).c_str() << endl
-              << "\t" << prev_nodeID << " ==> " << curr_nodeID << endl
+              << mrpt::containers::getSTLContainerAsString(*partitions_it).c_str() << std::endl
+              << "\t" << prev_nodeID << " ==> " << curr_nodeID << std::endl
               << "\tNumber of LC nodes: " << num_after_nodes);
           partitions_for_LC->push_back(*partitions_it);
           break;  // no need to check the rest of the nodes in this
@@ -577,30 +582,31 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
   // w_unit .* u
   ASSERTDEB_(u.size());
   CVectorDouble w(u.size(), 0);  // discretized  indicator vector
-  double dot_product = 0;
-  for (int i = 0; i != w.size(); ++i)
   {
-    // stream for debugging reasons
-    stringstream ss;
-
-    // make the necessary change and see if the dot product increases
-    w[i] = 1;
-    double potential_dot_product =
-        ((w.asEigen().transpose() * u.asEigen()) / mrpt::square(w.norm())).value();
-    ss << mrpt::format(
-        "current: %f | potential_dot_product: %f", dot_product, potential_dot_product);
-    if (potential_dot_product > dot_product)
+    // maximize w.u/|w| over the thresholds of the sorted u
+    std::vector<int> order(u.size());
+    for (int i = 0; i != u.size(); ++i)
     {
-      ss << " ==>  ACCEPT";
-      dot_product = potential_dot_product;
+      order[i] = i;
     }
-    else
+    std::sort(order.begin(), order.end(), [&u](int a, int b) { return u[a] > u[b]; });
+    double best = 0;
+    size_t best_k = 0;
+    double sum = 0;
+    for (size_t k = 0; k < order.size(); ++k)
     {
-      ss << " ==>  REJECT";
-      w[i] = 0;  // revert the change
+      sum += u[order[k]];
+      const double cosine = sum / std::sqrt(static_cast<double>(k + 1));
+      if (cosine > best)
+      {
+        best = cosine;
+        best_k = k + 1;
+      }
     }
-    ss << "\n";
-    // MRPT_LOG_DEBUG_STREAM(ss.str());
+    for (size_t k = 0; k < best_k; ++k)
+    {
+      w[order[k]] = 1;
+    }
   }
   std::cout << "Outcome of discretization: " << w.transpose() << "\n";
   // mrpt::system::pause();
@@ -650,7 +656,7 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
 
   // find a large difference between successive nodeIDs - that's where the cut
   // is going to be
-  TNodeID prev_nodeID = 0;
+  TNodeID prev_nodeID = partition.front();
   size_t index_to_split = 1;
   for (auto it = partition.begin() + 1; it != partition.end(); ++it, ++index_to_split)
   {
@@ -701,11 +707,13 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
   ASSERTDEBMSG_(generated_hypots, "generateHypotsPool: Given hypotsp_t pointer is invalid.");
   generated_hypots->clear();
 
-  MRPT_LOG_DEBUG_STREAM("Generating hypotheses for groups: " << endl);
+  MRPT_LOG_DEBUG_STREAM("Generating hypotheses for groups: " << std::endl);
   MRPT_LOG_DEBUG_STREAM(
-      "- groupA:\t" << getSTLContainerAsString(groupA) << " - size: " << groupA.size() << endl);
+      "- groupA:\t" << getSTLContainerAsString(groupA) << " - size: " << groupA.size()
+                    << std::endl);
   MRPT_LOG_DEBUG_STREAM(
-      "- groupB:\t" << getSTLContainerAsString(groupB) << " - size: " << groupB.size() << endl);
+      "- groupB:\t" << getSTLContainerAsString(groupB) << " - size: " << groupB.size()
+                    << std::endl);
 
   if (ad_params)
   {
@@ -792,7 +800,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
         MRPT_LOG_DEBUG_STREAM(
             "generateHypotsPool:\nCurr. Goodness: "
             << icp_info.goodness << "|\t Threshold: " << goodness_thresh << " => "
-            << (accept_goodness ? "ACCEPT" : "REJECT") << endl);
+            << (accept_goodness ? "ACCEPT" : "REJECT") << std::endl);
 
         if (!found_edge || !accept_goodness)
         {
@@ -856,6 +864,7 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
             static_cast<unsigned long>(consist_matrix.size())));
 
     // copy. I don't care about the sign of the eigenvector element
+    eigvec->resize(eigvecs.rows());
     for (int i = 0; i != eigvec->size(); ++i)
       (*eigvec)[i] = std::abs(eigvecs(i, eigvecs.cols() - 1));
 
@@ -865,16 +874,16 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 
   // check the ratio of the two eigenvalues - reject hypotheses set if ratio
   // smaller than threshold
-  if (approximatelyEqual(0.0, lambda2, 0.00001))
+  if (lambda1 <= 0)
   {
-    MRPT_LOG_ERROR_STREAM(
-        "Bad lambda2 value: " << lambda2 << " => Skipping current evaluation." << endl);
     return false;
   }
-  double curr_lambda_ratio = lambda1 / lambda2;
+  // lambda2 <= 0: lambda1 is the only positive eigenvalue
+  double curr_lambda_ratio =
+      lambda2 > 1e-9 * lambda1 ? lambda1 / lambda2 : std::numeric_limits<double>::infinity();
   MRPT_LOG_DEBUG_STREAM(
       "lambda1 = " << lambda1 << " | lambda2 = " << lambda2 << "| ratio = " << curr_lambda_ratio
-                   << endl);
+                   << std::endl);
 
   is_valid_lambda_ratio = (curr_lambda_ratio > m_lc_params.LC_eigenvalues_ratio_thresh);
 
@@ -909,11 +918,12 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
       "size");
 
   MRPT_LOG_DEBUG_STREAM(
-      ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl
-                                         << "In generatePWConsistencyMatrix:\n"
-                                         << "\tgroupA: " << getSTLContainerAsString(groupA) << endl
-                                         << "\tgroupB: " << getSTLContainerAsString(groupB) << endl
-                                         << "\tHypots pool Size: " << hypots_pool.size());
+      ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      << std::endl
+      << "In generatePWConsistencyMatrix:\n"
+      << "\tgroupA: " << getSTLContainerAsString(groupA) << std::endl
+      << "\tgroupB: " << getSTLContainerAsString(groupB) << std::endl
+      << "\tHypots pool Size: " << hypots_pool.size());
 
   // b1
   for (auto b1_it = groupB.begin(); b1_it != groupB.end(); ++b1_it)
@@ -998,7 +1008,7 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
           //"Adding hypothesis consistency for nodeIDs: "
           //<< "[b1] " << b1 << ", [b2] -> " << b2
           //<< ", [a1] -> " << a1 << ", [a2] -> " << a2
-          //<< " ==> " << consistency << endl);
+          //<< " ==> " << consistency << std::endl);
 
           // fill the PW consistency matrix corresponding element -
           // symmetrical
@@ -1008,6 +1018,23 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
           (*consist_matrix)(id1, id2) = consistency;
           (*consist_matrix)(id2, id1) = consistency;
 
+          // the other pair of hypotheses between {a1,a2} and {b1,b2}:
+          // a1 -> a2 => b2 -> b1 => a1
+          {
+            hypot_t* hypot_b1_a1 = this->findHypotByEnds(hypots_pool, b1, a1);
+            hypot_t* hypot_b2_a2 = this->findHypotByEnds(hypots_pool, b2, a2);
+            double c2 = 0;
+            if (hypot_b1_a1->is_valid && hypot_b2_a2->is_valid)
+            {
+              hypotsp_t extracted;
+              extracted.push_back(hypot_b1_a1);
+              extracted.push_back(hypot_b2_a2);
+              c2 = this->generatePWConsistencyElement(a1, a2, b2, b1, extracted, nullptr);
+            }
+            (*consist_matrix)(hypot_b1_a1->id, hypot_b2_a2->id) = c2;
+            (*consist_matrix)(hypot_b2_a2->id, hypot_b1_a1->id) = c2;
+          }
+
           // MRPT_LOG_DEBUG_STREAM("id1 = " << id1 << "\t|"
           //<< "id2 = " << id2 << "\t|"
           //<< "consistency = " << consistency);
@@ -1016,9 +1043,9 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
     }
   }
 
-  // MRPT_LOG_WARN_STREAM("Consistency matrix:" << endl
-  //<< header_sep << endl
-  //<< *consist_matrix << endl);
+  // MRPT_LOG_WARN_STREAM("Consistency matrix:" << std::endl
+  //<< header_sep << std::endl
+  //<< *consist_matrix << std::endl);
 
   MRPT_END
 }  // end of generatePWConsistenciesMatrix
@@ -1079,7 +1106,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 
   // b1 ==> b2
   const path_t* path_b1_b2;
-  if (!opt_paths || opt_paths->rend()->isEmpty())
+  if (!opt_paths || opt_paths->rbegin()->isEmpty())
   {
     MRPT_LOG_DEBUG_STREAM("Running djkstra [b1] " << b1 << " => [b2] " << b2);
     execDijkstraProjection(b1, b2);
@@ -1102,40 +1129,37 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
   // Composition of Poses
   // Order : a1 ==> a2 ==> b1 ==> b2 ==> a1
   constraint_t res_transform(path_a1_a2->curr_pose_pdf);
-  res_transform += hypot_b1_a2->getInverseEdge();
+  constraint_t inv_b1_a2;
+  hypot_b1_a2->getEdge().inverse(inv_b1_a2);
+  res_transform += inv_b1_a2;
   res_transform += path_b1_b2->curr_pose_pdf;
   res_transform += hypot_b2_a1->getEdge();
 
   MRPT_LOG_DEBUG_STREAM(
       "\n-----------Resulting Transformation----------- Hypots: #"
-      << hypot_b1_a2->id << ", #" << hypot_b2_a1->id << endl
+      << hypot_b1_a2->id << ", #" << hypot_b2_a1->id << std::endl
       << "a1 --> a2 => b1 --> b2 => a1: " << a1 << " --> " << a2 << " => " << b1 << " --> " << b2
-      << " => " << a1 << endl
-      << res_transform << endl
-      << endl
-      << "DIJKSTRA: " << a1 << " --> " << a2 << ": " << path_a1_a2->curr_pose_pdf << endl
-      << "DIJKSTRA: " << b1 << " --> " << b2 << ": " << path_b1_b2->curr_pose_pdf << endl
+      << " => " << a1 << std::endl
+      << res_transform << std::endl
+      << std::endl
+      << "DIJKSTRA: " << a1 << " --> " << a2 << ": " << path_a1_a2->curr_pose_pdf << std::endl
+      << "DIJKSTRA: " << b1 << " --> " << b2 << ": " << path_b1_b2->curr_pose_pdf << std::endl
       << "hypot_b1_a2(inv):\n"
-      << hypot_b1_a2->getInverseEdge() << endl
+      << inv_b1_a2 << std::endl
       << "hypot_b2_a1:\n"
-      << hypot_b2_a1->getEdge() << endl);
+      << hypot_b2_a1->getEdge() << std::endl);
 
   // get the vector of the corresponding transformation - [x, y, phi] form
   typename pose_t::vector_t T;
   res_transform.getMeanVal().asVector(T);
 
   // information matrix
-  CMatrixDouble33 cov_mat;
-  res_transform.getCovariance(cov_mat);
-
-  // there has to be an error with the initial Olson formula - p.15.
-  // There must be a minus in the exponent and the covariance matrix instead
-  // of
-  // the information matrix.
-  double exponent = -mrpt::math::multiply_HtCH_scalar(T, cov_mat);
+  CMatrixDouble33 inf_mat;
+  res_transform.getInformationMatrix(inf_mat);
+  double exponent = -mrpt::math::multiply_HtCH_scalar(T, inf_mat);
   double consistency_elem = exp(exponent);
 
-  // std::cout << "T = " << endl << T << "\n";
+  // std::cout << "T = " << std::endl << T << "\n";
   // std::cout << "exponent = " << exponent << "\n";
   // std::cout << "consistency_elem = " << consistency_elem << "\n";
   // mrpt::system::pause();
@@ -1298,13 +1322,11 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 
   while (true)
   {
-    // if there is at least one false, exit loop
-    for (auto it = visited_nodes.begin(); it != visited_nodes.end(); ++it)
+    // all nodes reached, or nothing else reachable
+    if (pool_of_paths.empty() ||
+        std::all_of(visited_nodes.begin(), visited_nodes.end(), [](bool v) { return v; }))
     {
-      if (!*it)
-      {
-        break;
-      }
+      break;
     }
 
     // if an ending nodeID has been specified, end the method when the path
@@ -1545,7 +1567,11 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
   // mean difference
   pose_t initial_estim = this->m_graph->nodes.at(to) - this->m_graph->nodes.at(from);
   typename pose_t::vector_t mean_diff;
-  (rel_edge.getMeanVal() - initial_estim).asVector(mean_diff);
+  rel_edge.getMeanVal().asVector(mean_diff);
+  typename pose_t::vector_t init_vec;
+  initial_estim.asVector(init_vec);
+  mean_diff -= init_vec;
+  mean_diff[2] = mrpt::math::wrapToPi(mean_diff[2]);
 
   // covariance matrix
   CMatrixDouble33 cov_mat;

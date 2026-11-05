@@ -33,7 +33,7 @@ namespace mrpt::math
 struct TPlane
 {
  public:
-  /** Fast default constructor (uninitialized coefficients). */
+  /** Default constructor: all coefficients are zero. */
   TPlane() = default;
 
   /** Constructor from plane coefficients */
@@ -46,7 +46,7 @@ struct TPlane
   }
 
   /** Defines a plane which contains these three points.
-   * \throw std::logic_error if the points are linearly dependants.
+   * \throw std::logic_error if the points are collinear.
    * \sa mrpt::math::getRegressionPlane()
    */
   TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3);
@@ -59,7 +59,8 @@ struct TPlane
     return {p1, p2, p3};
   }
 
-  /** Defines a plane given a point and a normal vector (must not be unit).
+  /** Defines a plane given a point and a normal vector (it does not need to
+   * be unit).
    * \throw std::logic_error if the normal vector is null
    */
   TPlane(const TPoint3D& p1, const TVector3D& normal);
@@ -81,13 +82,13 @@ struct TPlane
    */
   static TPlane FromPointAndLine(const TPoint3D& p1, const TLine3D& r) { return {p1, r}; }
 
-  /** Defines a plane which contains the two lines.
-   * \throw std::logic_error if the lines do not cross.
+  /** Defines a plane which contains the two lines (crossing or parallel).
+   * \throw std::logic_error if the lines are skew or the same line.
    */
   TPlane(const TLine3D& r1, const TLine3D& r2);
 
-  /** Defines a plane which contains the two lines.
-   * \throw std::logic_error if the lines do not cross.
+  /** Defines a plane which contains the two lines (crossing or parallel).
+   * \throw std::logic_error if the lines are skew or the same line.
    */
   static TPlane FromTwoLines(const TLine3D& r1, const TLine3D& r2) { return {r1, r2}; }
 

@@ -198,16 +198,16 @@ class CPose3DGridTemplate
     m_min_cidPitch = mrpt::round(bb_min.pitch / resolution_YPR);
     m_min_cidRoll = mrpt::round(bb_min.roll / resolution_YPR);
 
-    // Compute new required space:
-    m_sizeX = static_cast<uint32_t>(mrpt::round(bb_max.x / resolution_XYZ) - m_min_cidX + 1);
-    m_sizeY = static_cast<uint32_t>(mrpt::round(bb_max.y / resolution_XYZ) - m_min_cidY + 1);
-    m_sizeZ = static_cast<uint32_t>(mrpt::round(bb_max.z / resolution_XYZ) - m_min_cidZ + 1);
+    // Compute new required space (consistent with x2idx(), etc.):
+    m_sizeX = static_cast<uint32_t>(mrpt::round((bb_max.x - bb_min.x) / resolution_XYZ) + 1);
+    m_sizeY = static_cast<uint32_t>(mrpt::round((bb_max.y - bb_min.y) / resolution_XYZ) + 1);
+    m_sizeZ = static_cast<uint32_t>(mrpt::round((bb_max.z - bb_min.z) / resolution_XYZ) + 1);
 
-    m_sizeYaw = static_cast<uint32_t>(mrpt::round(bb_max.yaw / resolution_YPR) - m_min_cidYaw + 1);
+    m_sizeYaw = static_cast<uint32_t>(mrpt::round((bb_max.yaw - bb_min.yaw) / resolution_YPR) + 1);
     m_sizePitch =
-        static_cast<uint32_t>(mrpt::round(bb_max.pitch / resolution_YPR) - m_min_cidPitch + 1);
+        static_cast<uint32_t>(mrpt::round((bb_max.pitch - bb_min.pitch) / resolution_YPR) + 1);
     m_sizeRoll =
-        static_cast<uint32_t>(mrpt::round(bb_max.roll / resolution_YPR) - m_min_cidRoll + 1);
+        static_cast<uint32_t>(mrpt::round((bb_max.roll - bb_min.roll) / resolution_YPR) + 1);
 
     // Products:
     update_cached_size_products();
@@ -242,6 +242,7 @@ class CPose3DGridTemplate
   const T* getByIndex(int cx, int cy, int cz, int cY, int cP, int cR) const
   {
     ASSERT_(
+        cx >= 0 && cy >= 0 && cz >= 0 && cY >= 0 && cP >= 0 && cR >= 0 &&
         cx < static_cast<int>(m_sizeX) && cy < static_cast<int>(m_sizeY) &&
         cz < static_cast<int>(m_sizeZ) && cY < static_cast<int>(m_sizeYaw) &&
         cP < static_cast<int>(m_sizePitch) && cR < static_cast<int>(m_sizeRoll));

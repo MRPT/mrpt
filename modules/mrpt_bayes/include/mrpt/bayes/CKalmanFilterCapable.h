@@ -40,7 +40,10 @@ namespace bayes
 /** The Kalman Filter algorithm to employ in bayes::CKalmanFilterCapable.
  *  - kfEKFNaive: Standard EKF (batch observation update).
  *  - kfEKFAlaDavison: EKF processing one observation scalar at a time (SLAM).
- *  - kfIKFFull: Iterated EKF with full re-linearization.
+ *    Requires a diagonal observation noise matrix R.
+ *  - kfIKFFull: Iterated EKF (Gauss-Newton): the observation model, its
+ *    Jacobians and the Kalman gain are re-evaluated at each of the
+ *    TKF_options::IKF_iterations iterates.
  *
  *  For further details see: https://www.mrpt.org/Kalman_Filters
  * \sa bayes::CKalmanFilterCapable::KF_options
@@ -118,7 +121,7 @@ struct TKF_options : public mrpt::config::CLoadableOptions
    * compare them to the analytical ones, throwing an exception on mismatch.
    */
   bool debug_verify_analytic_jacobians{false};
-  /** (default-1e-2) Sets the threshold for the difference between the
+  /** (default=1e-2) Sets the threshold for the difference between the
    * analytic and the numerical jacobians */
   double debug_verify_analytic_jacobians_threshold{1e-2};
   /** (default=true) Use the Joseph-form covariance update
@@ -182,8 +185,10 @@ void addNewLandmarks(
  *
  * Supported filter variants (selected via KF_options.method):
  *  - kfEKFNaive: Standard Extended Kalman Filter.
- *  - kfEKFAlaDavison: EKF with efficient feature-by-feature updates (SLAM).
- *  - kfIKFFull: Iterated EKF (full re-linearization per iteration).
+ *  - kfEKFAlaDavison: EKF with efficient feature-by-feature updates (SLAM),
+ *    requires a diagonal observation noise matrix R.
+ *  - kfIKFFull: Iterated EKF (re-linearization of the observation model at
+ *    each iteration).
  *
  * \tparam VEH_SIZE  Dimension of the vehicle (robot) state sub-vector.
  * \tparam OBS_SIZE  Dimension of a single observation vector.
@@ -272,6 +277,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
    */
   void getLandmarkCov(size_t idx, KFMatrix_FxF& feat_cov) const
   {
+    ASSERT_(idx < getNumberOfLandmarksInTheMap());
     feat_cov = m_pkk.template blockCopy<FEAT_SIZE, FEAT_SIZE>(
         VEH_SIZE + idx * FEAT_SIZE, VEH_SIZE + idx * FEAT_SIZE);
   }
@@ -469,7 +475,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
   }
 
   /** Computes A=A-B, which may need to be re-implemented depending on the
-   * topology of the individual scalar components (eg, angles).
+   * topology of the individual scalar components (eg, angles). It is used
+   * for innovations and for numeric observation Jacobians.
    */
   virtual void OnSubtractObservationVectors(KFArray_OBS& A, const KFArray_OBS& B) const { A -= B; }
 
@@ -651,10 +658,10 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
   /** Auxiliary functions for Jacobian numeric estimation */
   static void KF_aux_estimate_trans_jacobian(
       const KFArray_VEH& x, const std::pair<KFCLASS*, KFArray_ACT>& dat, KFArray_VEH& out_x);
-  static void KF_aux_estimate_obs_Hx_jacobian(
-      const KFArray_VEH& x, const std::pair<KFCLASS*, size_t>& dat, KFArray_OBS& out_x);
-  static void KF_aux_estimate_obs_Hy_jacobian(
-      const KFArray_FEAT& x, const std::pair<KFCLASS*, size_t>& dat, KFArray_OBS& out_x);
+
+  /** Observation Jacobians of one landmark at the current m_xkk: analytic
+   * (OnObservationJacobians) or numeric, depending on KF_options. */
+  void computeObservationJacobians(size_t lm_idx, KFMatrix_OxV& Hx, KFMatrix_OxF& Hy);
 
   template <
       size_t VEH_SIZEb,

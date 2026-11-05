@@ -59,4 +59,21 @@ TEST(sensor_poses, from_yaml)
   }
 }
 
+TEST(sensor_poses, cycleThrows)
+{
+  const auto d = mrpt::containers::yaml::FromText(R"xxx(
+a:
+  extrinsics:
+    quaternion: [0, 0, 0, 1]
+    translation: [1, 0, 0]
+  parent: base_link
+base_link:
+  extrinsics:
+    quaternion: [0, 0, 0, 1]
+    translation: [1, 0, 0]
+  parent: a
+)xxx");
+  EXPECT_THROW(mrpt::poses::sensor_poses_from_yaml(d), std::exception);
+}
+
 #endif

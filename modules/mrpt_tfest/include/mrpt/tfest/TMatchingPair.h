@@ -152,7 +152,8 @@ class TMatchingPairListTempl : public std::vector<TMatchingPairTempl<T>>
    */
   void dumpToFile(const std::string& fileName) const;
 
-  /** Saves the correspondences as a MATLAB script which draws them. */
+  /** Saves the correspondences as a MATLAB script which draws them as 3D
+   * segments. */
   void saveAsMATLABScript(const std::string& filName) const;
 
   /** Computes the overall square error between the 2D points in the list of
@@ -207,11 +208,12 @@ class TMatchingPairListTempl : public std::vector<TMatchingPairTempl<T>>
   /** Test whether the given pair "p" is within the pairings */
   bool contains(const TMatchingPairTempl<T>& p) const;
 
-  /** Creates a filtered list of pairings with those ones which have a single
-   * correspondence which coincides
-   * in both directions, i.e. the best pairing of element `i` in map `this`
-   * is the best match for element `j` in map `other`,
-   * and viceversa*/
+  /** Creates a filtered list of pairings keeping, for each element of the
+   * global ("this") map, only the pairing with the smallest
+   * errorSquareAfterTransformation. Note that uniqueness is not enforced for
+   * the local ("other") indices.
+   * \param num_elements_this_map Must be larger than any globalIdx in the list.
+   */
   void filterUniqueRobustPairs(
       size_t num_elements_this_map, TMatchingPairListTempl<T>& out_filtered_list) const;
 };

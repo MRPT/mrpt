@@ -69,6 +69,13 @@ struct graph_ops;
  * - mrpt::graphs::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix
  *(CPose3DPDFGaussian). It's more efficient to use the information matrix version instead!
  *
+ * The uncertainty of PDF edges follows the usual MRPT convention for pose
+ * PDFs: it is the covariance (or information) of the (x,y,phi) or
+ * (x,y,z,yaw,pitch,roll) parameters of the relative pose, with its
+ * translation expressed in the frame of the edge origin node "i". Graph
+ * optimizers convert it into the information of their local residual, and
+ * the text file I/O converts to/from the conventions of each file format.
+ *
  * Two main members store all the information in this class:
  * - \a edges  (in the base class mrpt::graphs::CDirectedGraph::edges): A
  *   map from pairs of node ID -> pose constraints.
@@ -237,7 +244,14 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
 
   /** Loads from a text file in the format used by TORO & HoG-man (more on the
    * format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a>)
-   *   Recognized line entries are: VERTEX2, VERTEX3, EDGE2, EDGE3, EQUIV.
+   *   Recognized line entries are: VERTEX2 (or VERTEX, VERTEX_SE2), VERTEX3,
+   * VERTEX_SE3:QUAT, EDGE2 (or EDGE, ODOMETRY), EDGE_SE2, EDGE3,
+   * EDGE_SE3:QUAT, EQUIV, FIX.
+   *   Information matrices of g2o (EDGE_SE2, EDGE_SE3:QUAT) and TORO 2D
+   * (EDGE2) edges refer to the local residual of each edge, and are converted
+   * into the MRPT convention for pose PDFs (see the class description), to
+   * first order. EDGE3 information matrices are taken as referring to the
+   * (x,y,z,roll,pitch,yaw) edge parameters.
    *   If an unknown entry is found, a warning is dumped to std::cerr (only
    * once for each unknown keyword).
    *   An exception will be raised if trying to load a 3D graph into a 2D
@@ -311,9 +325,9 @@ class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph<CPOSE, EDGE_ANNOTATI
   }
 
   /** Look for duplicated edges (even in opposite directions) between all
-   * pairs of nodes and fuse them.  Upon return, only one edge remains
-   * between each pair of nodes with the mean & covariance (or information
-   * matrix) corresponding to the Bayesian fusion of all the Gaussians.
+   * pairs of nodes and remove them. Upon return, only one edge remains
+   * between each pair of nodes: the first one in the ordering of \a edges.
+   * The removed edges are discarded, not fused.
    *
    * \return Overall number of removed edges.
    */

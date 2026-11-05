@@ -21,6 +21,7 @@
 #include <mrpt/poses/CPose2D.h>
 
 #include <cmath>
+#include <limits>
 #include <sstream>
 
 using namespace mrpt::maps;
@@ -33,8 +34,7 @@ namespace
 // x=5.0, y in [-2, 2], free everywhere else. The map extends well past the
 // wall and past `buildMatchingScan()`'s maxRange in every direction, so that
 // re-evaluating a scan from a perturbed pose never projects a point outside
-// the grid bounds (some likelihood methods, e.g. lmConsensusOWA, assert on
-// that instead of handling it gracefully).
+// the grid bounds.
 COccupancyGridMap2D buildGridWithWall()
 {
   const float res = 0.1f;
@@ -211,4 +211,180 @@ TEST(COccupancyGridMap2DLikelihoodTests, CanComputeObservationLikelihoodFalseFor
   const auto scan = buildMatchingScan(grid, truePose);  // sensorPose.z() == 0
 
   EXPECT_FALSE(grid.canComputeObservationLikelihood(scan));
+}
+
+namespace
+{
+// A two-ray scan. Evaluated from a robot at yaw=+90 deg, ray #0 points to +x
+// and ray #1 points to -x.
+CObservation2DRangeScan buildTwoRayScan(float r0, float r1)
+{
+  CObservation2DRangeScan s;
+  s.aperture = static_cast<float>(M_PI);
+  s.rightToLeft = true;
+  s.maxRange = 80.0f;
+  s.resizeScan(2);
+  s.setScanRange(0, r0);
+  s.setScanRange(1, r1);
+  s.setScanRangeValidity(0, true);
+  s.setScanRangeValidity(1, true);
+  return s;
+}
+
+const CPose3D robotLookingAtY(0, 0, 0, M_PI / 2, 0, 0);
+}  // namespace
+
+// Regression: out-of-map points must count as unknown cells (no out of bounds
+// reads).
+TEST(COccupancyGridMap2DLikelihoodTests, ConsensusPointOutOfMapIsUnknown)
+{
+  COccupancyGridMap2D grid(-2.0f, 2.0f, -2.0f, 2.0f, 0.1f);
+  grid.fill(1.0f);  // all free
+  grid.likelihoodOptions.likelihoodMethod = COccupancyGridMap2D::lmConsensus;
+  grid.likelihoodOptions.consensus_pow = 1;
+
+  // (2.5, 0) is out of the map, (-1, 0) lies on a free cell:
+  const auto scan = buildTwoRayScan(2.5f, 1.0f);
+  const double lik = grid.computeObservationLikelihood(scan, robotLookingAtY);
+
+  // P(occupied) is 0.5 (unknown) and ~0 (free), averaged:
+  const double pOccFree = 1.0 - grid.getCell(0, 0);
+  EXPECT_NEAR(lik, std::log(0.5 * (0.5 + pOccFree)), 1e-3);
+}
+
+// Regression: ConsensusOWA threw for points out of the map along one axis.
+TEST(COccupancyGridMap2DLikelihoodTests, ConsensusOWAPointOutOfMap)
+{
+  COccupancyGridMap2D grid(-2.0f, 2.0f, -2.0f, 2.0f, 0.1f);
+  grid.fill(1.0f);
+  grid.likelihoodOptions.likelihoodMethod = COccupancyGridMap2D::lmConsensusOWA;
+  grid.likelihoodOptions.OWA_weights = {1.0f};
+
+  const auto scan = buildTwoRayScan(2.5f, 1.0f);
+  double lik = 0;
+  EXPECT_NO_THROW(lik = grid.computeObservationLikelihood(scan, robotLookingAtY));
+  // The best point is the out-of-map one, all its cells unknown:
+  EXPECT_NEAR(lik, std::log(0.5), 1e-6);
+}
+
+// Regression: OWA must fuse the highest per-point likelihoods, not the lowest.
+TEST(COccupancyGridMap2DLikelihoodTests, ConsensusOWAUsesHighestLikelihoods)
+{
+  COccupancyGridMap2D grid(-2.0f, 2.0f, -2.0f, 2.0f, 0.1f);
+  grid.fill(0.99f);  // free
+  // Occupied block around (1, 0):
+  for (int cx = grid.x2idx(0.5f); cx <= grid.x2idx(1.5f); cx++)
+  {
+    for (int cy = grid.y2idx(-0.5f); cy <= grid.y2idx(0.5f); cy++)
+    {
+      grid.setCell(cx, cy, 0.01f);
+    }
+  }
+  grid.likelihoodOptions.likelihoodMethod = COccupancyGridMap2D::lmConsensusOWA;
+  grid.likelihoodOptions.OWA_weights = {1.0f};
+
+  // (1, 0) on the occupied block, (-1, 0) on free space:
+  const auto scan = buildTwoRayScan(1.0f, 1.0f);
+  const double lik = grid.computeObservationLikelihood(scan, robotLookingAtY);
+  const double pOccOfOccupied = 1.0 - grid.getCell(grid.x2idx(1.0f), grid.y2idx(0.0f));
+  EXPECT_NEAR(lik, std::log(pOccOfOccupied), 1e-4);
+}
+
+// Regression: likelihood field II gave NaN for points out of the map.
+TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldIIPointOutOfMapFinite)
+{
+  COccupancyGridMap2D grid(-2.0f, 2.0f, -2.0f, 2.0f, 0.1f);
+  grid.fill(1.0f);
+  grid.likelihoodOptions.likelihoodMethod = COccupancyGridMap2D::lmLikelihoodField_II;
+  grid.likelihoodOptions.LF_decimation = 1;
+
+  const auto scan = buildTwoRayScan(2.5f, 1.0f);
+  for (const bool alternate : {false, true})
+  {
+    grid.likelihoodOptions.LF_alternateAverageMethod = alternate;
+    const double lik = grid.computeObservationLikelihood(scan, robotLookingAtY);
+    EXPECT_TRUE(std::isfinite(lik)) << "alternate=" << alternate;
+  }
+}
+
+// The per-point likelihood of LF-II is the window average: a point well inside
+// a uniform region gives the same value as the analytic window average.
+TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldIIUniformRegion)
+{
+  const float res = 0.1f;
+  COccupancyGridMap2D grid(-2.0f, 2.0f, -2.0f, 2.0f, res);
+  grid.fill(1.0f);
+  const auto& lo = grid.likelihoodOptions;
+  grid.likelihoodOptions.LF_decimation = 1;
+
+  CSimplePointsMap pts;
+  pts.insertPoint(grid.idx2x(20), grid.idx2y(20), 0);
+
+  const float pFree = grid.getCell(20, 20);
+  const int K = static_cast<int>(std::ceil(lo.LF_maxCorrsDistance / res));
+  double expected = 0;
+  for (int dx = -K; dx <= K; dx++)
+  {
+    for (int dy = -K; dy <= K; dy++)
+    {
+      const double d2 =
+          mrpt::square(static_cast<double>(dx) * res) + mrpt::square(static_cast<double>(dy) * res);
+      expected +=
+          pFree / lo.LF_maxRange + (1 - pFree) * std::exp(-0.5 * d2 / mrpt::square(lo.LF_stdHit));
+    }
+  }
+  expected /= mrpt::square(2 * K + 1);
+
+  EXPECT_NEAR(grid.computeLikelihoodField_II(pts), std::log(expected), 1e-5);
+}
+
+// Regression: points on the last row/column of the grid were taken as out of
+// the map by the Thrun likelihood field.
+TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldThrunLastColumn)
+{
+  COccupancyGridMap2D grid(-2.0f, 2.0f, -2.0f, 2.0f, 0.1f);
+  grid.fill(0.99f);
+  const int last = static_cast<int>(grid.getSizeX()) - 1;
+  grid.setCell(last, 20, 0.01f);
+  grid.setCell(last - 1, 25, 0.01f);
+  grid.likelihoodOptions.LF_decimation = 1;
+
+  CSimplePointsMap pLast;
+  pLast.insertPoint(grid.idx2x(last), grid.idx2y(20), 0);
+  CSimplePointsMap pInner;
+  pInner.insertPoint(grid.idx2x(last - 1), grid.idx2y(25), 0);
+
+  EXPECT_NEAR(
+      grid.computeLikelihoodField_Thrun(pLast), grid.computeLikelihoodField_Thrun(pInner), 1e-9);
+}
+
+// The Thrun likelihood field uses exp(-0.5*d^2/sigma^2) of the distance to the
+// closest occupied cell (with LF_useSquareDist=false).
+TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldThrunGaussianOfDistance)
+{
+  const float res = 0.1f;
+  COccupancyGridMap2D grid(-2.0f, 2.0f, -2.0f, 2.0f, res);
+  grid.fill(0.99f);
+  grid.setCell(20, 20, 0.01f);
+  const auto& lo = grid.likelihoodOptions;
+
+  for (const int k : {0, 1, 2})
+  {
+    CSimplePointsMap pts;
+    pts.insertPoint(grid.idx2x(20 + k), grid.idx2y(20), 0);
+    const double d = static_cast<double>(k) * res;
+
+    grid.likelihoodOptions.LF_useSquareDist = false;
+    const double expected = lo.LF_zRandom / lo.LF_maxRange +
+                            lo.LF_zHit * std::exp(-0.5 * d * d / mrpt::square(lo.LF_stdHit));
+    EXPECT_NEAR(grid.computeLikelihoodField_Thrun(pts), std::log(expected), 1e-4) << "k=" << k;
+
+    grid.likelihoodOptions.LF_useSquareDist = true;
+    grid.likelihoodOptions.enableLikelihoodCache = false;
+    const double expectedSq =
+        lo.LF_zRandom / lo.LF_maxRange +
+        lo.LF_zHit * std::exp(-0.5 * std::pow(d, 4) / mrpt::square(lo.LF_stdHit));
+    EXPECT_NEAR(grid.computeLikelihoodField_Thrun(pts), std::log(expectedSq), 1e-4) << "k=" << k;
+    grid.likelihoodOptions.enableLikelihoodCache = true;
+  }
 }

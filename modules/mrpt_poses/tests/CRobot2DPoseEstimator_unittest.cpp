@@ -17,6 +17,8 @@
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/system/datetime.h>
 
+#include <cmath>
+
 TEST(CRobot2DPoseEstimator, defaultCtor)
 {
   mrpt::poses::CRobot2DPoseEstimator rpe;
@@ -156,4 +158,44 @@ TEST(CRobot2DPoseEstimator, GetLatestRobotPoseBothOverloads)
 
   // Exercise the dT<=0 warning branch and the hasVelocities=false branch:
   rpe.processUpdateNewOdometry(odo1, t1, false, TTwist2D(0, 0, 0));
+}
+
+TEST(CRobot2DPoseEstimator, extrapolateStraightLine)
+{
+  mrpt::math::TPose2D out;
+  mrpt::poses::CRobot2DPoseEstimator::extrapolateRobotPose(
+      mrpt::math::TPose2D(1, 2, M_PI / 2), mrpt::math::TTwist2D(1.5, 0, 0), 2.0, out);
+  EXPECT_NEAR(out.x, 1.0, 1e-12);
+  EXPECT_NEAR(out.y, 5.0, 1e-12);
+  EXPECT_NEAR(out.phi, M_PI / 2, 1e-12);
+  // Tiny angular velocity: continuous with the straight line
+  mrpt::poses::CRobot2DPoseEstimator::extrapolateRobotPose(
+      mrpt::math::TPose2D(1, 2, M_PI / 2), mrpt::math::TTwist2D(1.5, 0, 1e-12), 2.0, out);
+  EXPECT_NEAR(out.x, 1.0, 1e-9);
+  EXPECT_NEAR(out.y, 5.0, 1e-9);
+}
+
+TEST(CRobot2DPoseEstimator, extrapolateArcMatchesIntegration)
+{
+  const mrpt::math::TPose2D p0(1, -2, 0.4);
+  const mrpt::math::TTwist2D v(1.2, 0, -0.7);
+  const double T = 1.5;
+  mrpt::math::TPose2D out;
+  mrpt::poses::CRobot2DPoseEstimator::extrapolateRobotPose(p0, v, T, out);
+  // Fine (midpoint) integration of the unicycle model:
+  const int N = 200000;
+  const double dt = T / N;
+  double x = p0.x;
+  double y = p0.y;
+  double phi = p0.phi;
+  for (int i = 0; i < N; i++)
+  {
+    const double phiMid = phi + 0.5 * v.omega * dt;
+    x += v.vx * std::cos(phiMid) * dt;
+    y += v.vx * std::sin(phiMid) * dt;
+    phi += v.omega * dt;
+  }
+  EXPECT_NEAR(out.x, x, 1e-9);
+  EXPECT_NEAR(out.y, y, 1e-9);
+  EXPECT_NEAR(out.phi, phi, 1e-12);
 }

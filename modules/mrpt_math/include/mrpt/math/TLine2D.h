@@ -37,7 +37,7 @@ struct TLine2D
   /** Constructor from a segment */
   explicit TLine2D(const TSegment2D& s);
 
-  /** Fast default constructor. Initializes to undefined values. */
+  /** Default constructor: all coefficients are zero. */
   TLine2D() = default;
 
   /** Constructor from line's coefficients */
@@ -68,7 +68,8 @@ struct TLine2D
    */
   static TLine2D FromPoseY(const TPose2D& p);
 
-  /** Static constructor: line through the pose origin along a given local direction vector.
+  /** Static constructor: line through the pose origin whose normal is the
+   * given local vector (rotated by the pose).
    * \note [New in MRPT 3.0.0]
    */
   static TLine2D FromPoseDirection(const TPose2D& p, const double (&localVector)[2]);

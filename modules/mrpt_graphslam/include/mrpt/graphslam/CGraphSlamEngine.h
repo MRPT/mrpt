@@ -426,7 +426,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 
     while (this->isPaused())
     {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for(std::chrono::seconds(1));
       this->queryObserverForEvents();
     }
   }
@@ -680,7 +680,8 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
   virtual void monitorNodeRegistration(bool registered = false, std::string class_name = "Class");
   /**\brief Wrapper around the GRAPH_T::dijkstra_nodes_estimate
    *
-   * Update the global position of the nodes
+   * Overwrites all node poses with a spanning-tree (dead-reckoning) estimate
+   * from the root. Must not be called after an optimization.
    */
   void execDijkstraNodesEstimation();
 

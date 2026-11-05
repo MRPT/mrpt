@@ -22,6 +22,8 @@
 #include <mrpt/serialization/CArchive.h>
 
 #include <Eigen/Dense>
+#include <utility>
+#include <vector>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -919,4 +921,41 @@ TEST(CPose3DQuat, FromStringVariants)
   CPose3DQuat p2;
   p2.fromStringRaw("1.0 2.0 3.0 1.0 0.0 0.0 0.0");
   EXPECT_NEAR(p2.x(), p.x(), 1e-9);
+}
+
+TEST(CPose3DQuat, sphericalCoordinatesJacobianVsFiniteDifferences)
+{
+  const CPose3DQuat p(CPose3D(1, 2, 3, 0.4, -0.3, 0.9));
+  const double h = 1e-7;
+  // Includes a point straight to the side (local x == 0) of an identity pose:
+  for (const auto& [pose, g] : std::vector<std::pair<CPose3DQuat, TPoint3D>>{
+           {            p, TPoint3D(4, -1,   2)},
+           {CPose3DQuat(), TPoint3D(0,  1, 0.5)}
+  })
+  {
+    double r = 0;
+    double y = 0;
+    double pt = 0;
+    CMatrixDouble33 J;
+    CMatrixFixed<double, 3, 7> Jp;
+    pose.sphericalCoordinates(g, r, y, pt, &J, &Jp);
+    for (int k = 0; k < 3; k++)
+    {
+      TPoint3D ga = g;
+      TPoint3D gb = g;
+      ga[k] += h;
+      gb[k] -= h;
+      double ra = 0;
+      double ya = 0;
+      double pa = 0;
+      double rb = 0;
+      double yb = 0;
+      double pb = 0;
+      pose.sphericalCoordinates(ga, ra, ya, pa);
+      pose.sphericalCoordinates(gb, rb, yb, pb);
+      EXPECT_NEAR(J(0, k), (ra - rb) / (2 * h), 1e-7);
+      EXPECT_NEAR(J(1, k), (ya - yb) / (2 * h), 1e-7);
+      EXPECT_NEAR(J(2, k), (pa - pb) / (2 * h), 1e-7);
+    }
+  }
 }

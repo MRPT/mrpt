@@ -34,7 +34,8 @@ struct TPoseOrPoint
 
 /** On MSVC, enable Empty Base Class Optimization (EBO) for classes with
  *  multiple empty bases so sizeof() matches the expected packed layout.
- *  See: https://devblogs.microsoft.com/cppblog/empty-base-class-optimization/
+ *  See:
+ *  https://devblogs.microsoft.com/cppblog/optimizing-the-layout-of-empty-base-classes-in-vs2015-update-2-3/
  */
 #ifdef _MSC_VER
 #define MRPT_EMPTY_BASES __declspec(empty_bases)

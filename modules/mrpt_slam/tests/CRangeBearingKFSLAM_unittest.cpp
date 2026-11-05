@@ -19,15 +19,18 @@
 #include <gtest/gtest.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 #include <mrpt/system/filesystem.h>
 
+#include <Eigen/Dense>
 #include <sstream>
 
 using mrpt::slam::CRangeBearingKFSLAM;
@@ -443,4 +446,355 @@ TEST(CRangeBearingKFSLAM, saveMapAsMATLABFile)
   EXPECT_TRUE(mrpt::system::fileExists(file));
   EXPECT_GT(mrpt::system::getFileSize(file), 0U);
   mrpt::system::deleteFile(file);
+}
+
+// ------------------------- Model Jacobians -------------------------
+
+namespace
+{
+/** Exposes the protected KF model callbacks */
+class TestKF3D : public CRangeBearingKFSLAM
+{
+ public:
+  using CRangeBearingKFSLAM::OnGetAction;
+  using CRangeBearingKFSLAM::OnInverseObservationModel;
+  using CRangeBearingKFSLAM::OnObservationJacobians;
+  using CRangeBearingKFSLAM::OnObservationModel;
+  using CRangeBearingKFSLAM::OnTransitionJacobian;
+  using CRangeBearingKFSLAM::OnTransitionModel;
+  KFVector& state() { return m_xkk; }
+  void setSF(const mrpt::obs::CSensoryFrame::Ptr& sf) { m_SF = sf; }
+  void setAction(const mrpt::obs::CActionCollection::Ptr& a) { m_action = a; }
+};
+
+class TestKF2D : public CRangeBearingKFSLAM2D
+{
+ public:
+  using CRangeBearingKFSLAM2D::OnInverseObservationModel;
+  using CRangeBearingKFSLAM2D::OnObservationJacobians;
+  using CRangeBearingKFSLAM2D::OnObservationModel;
+  KFVector& state() { return m_xkk; }
+  void setSF(const mrpt::obs::CSensoryFrame::Ptr& sf) { m_SF = sf; }
+};
+
+mrpt::obs::CSensoryFrame::Ptr sfWithSensorPose(const mrpt::poses::CPose3D& sensorPose)
+{
+  auto obs = mrpt::obs::CObservationBearingRange::Create();
+  obs->sensorLocationOnRobot = sensorPose;
+  auto sf = mrpt::obs::CSensoryFrame::Create();
+  sf->insert(obs);
+  return sf;
+}
+
+/** Central-difference derivative of the predicted observation of landmark #0
+ * wrt the state vector element "idx" */
+template <class KF>
+Eigen::VectorXd numericObsDerivative(KF& kf, size_t idx)
+{
+  const double h = 1e-6;
+  auto& x = kf.state();
+  const double x0 = x[idx];
+  typename KF::vector_KFArray_OBS pred;
+  x[idx] = x0 + h;
+  kf.OnObservationModel({0}, pred);
+  const auto fp = pred[0];
+  x[idx] = x0 - h;
+  kf.OnObservationModel({0}, pred);
+  const auto fm = pred[0];
+  x[idx] = x0;
+  const auto n = static_cast<Eigen::Index>(fp.size());
+  Eigen::VectorXd d = Eigen::VectorXd::Zero(n);
+  for (Eigen::Index k = 0; k < n; k++)
+  {
+    // Range is not an angle, bearings are:
+    d[k] = (k == 0 ? fp[k] - fm[k] : mrpt::math::wrapToPi(fp[k] - fm[k])) / (2 * h);
+  }
+  return d;
+}
+}  // namespace
+
+TEST(CRangeBearingKFSLAM, observationJacobiansMatchNumericalDerivatives)
+{
+  TestKF3D kf;
+  kf.setSF(sfWithSensorPose(mrpt::poses::CPose3D(0.3, -0.1, 0.4, 0.4, 0.2, -0.3)));
+  const mrpt::poses::CPose3DQuat q(mrpt::poses::CPose3D(1.0, 2.0, 0.5, 0.7, -0.3, 0.2));
+  auto& x = kf.state();
+  x.resize(10);
+  for (int i = 0; i < 7; i++)
+  {
+    x[i] = q[i];
+  }
+  x[7] = 5.0;
+  x[8] = 4.0;
+  x[9] = 1.5;
+
+  TestKF3D::KFMatrix_OxV Hx;
+  TestKF3D::KFMatrix_OxF Hy;
+  kf.OnObservationJacobians(0, Hx, Hy);
+  for (size_t j = 0; j < 10; j++)
+  {
+    const Eigen::VectorXd d = numericObsDerivative(kf, j);
+    for (int k = 0; k < 3; k++)
+    {
+      const double analytic = j < 7 ? Hx(k, j) : Hy(k, j - 7);
+      EXPECT_NEAR(analytic, d[k], 1e-6) << "row=" << k << " col=" << j;
+    }
+  }
+}
+
+TEST(CRangeBearingKFSLAM, inverseObservationModel)
+{
+  TestKF3D kf;
+  kf.setSF(sfWithSensorPose(mrpt::poses::CPose3D(0.3, -0.1, 0.4, 0.4, 0.2, -0.3)));
+  const mrpt::poses::CPose3DQuat q(mrpt::poses::CPose3D(1.0, 2.0, 0.5, 0.7, -0.3, 0.2));
+  auto& x = kf.state();
+  x.resize(7);
+  for (int i = 0; i < 7; i++)
+  {
+    x[i] = q[i];
+  }
+
+  TestKF3D::KFArray_OBS z;
+  z[0] = 4.0;
+  z[1] = 0.6;
+  z[2] = -0.4;
+  TestKF3D::KFArray_FEAT yn;
+  TestKF3D::KFMatrix_FxV dyn_dxv;
+  TestKF3D::KFMatrix_FxO dyn_dhn;
+  kf.OnInverseObservationModel(z, yn, dyn_dxv, dyn_dhn);
+
+  const double h = 1e-6;
+  for (size_t j = 0; j < 7; j++)
+  {
+    const double x0 = x[j];
+    TestKF3D::KFArray_FEAT yp;
+    TestKF3D::KFArray_FEAT ym;
+    TestKF3D::KFMatrix_FxV dummy1;
+    TestKF3D::KFMatrix_FxO dummy2;
+    x[j] = x0 + h;
+    kf.OnInverseObservationModel(z, yp, dummy1, dummy2);
+    x[j] = x0 - h;
+    kf.OnInverseObservationModel(z, ym, dummy1, dummy2);
+    x[j] = x0;
+    for (int k = 0; k < 3; k++)
+    {
+      EXPECT_NEAR(dyn_dxv(k, j), (yp[k] - ym[k]) / (2 * h), 1e-6) << k << "," << j;
+    }
+  }
+  for (int j = 0; j < 3; j++)
+  {
+    TestKF3D::KFArray_OBS zp = z;
+    TestKF3D::KFArray_OBS zm = z;
+    zp[j] += h;
+    zm[j] -= h;
+    TestKF3D::KFArray_FEAT yp;
+    TestKF3D::KFArray_FEAT ym;
+    TestKF3D::KFMatrix_FxV dummy1;
+    TestKF3D::KFMatrix_FxO dummy2;
+    kf.OnInverseObservationModel(zp, yp, dummy1, dummy2);
+    kf.OnInverseObservationModel(zm, ym, dummy1, dummy2);
+    for (int k = 0; k < 3; k++)
+    {
+      EXPECT_NEAR(dyn_dhn(k, j), (yp[k] - ym[k]) / (2 * h), 1e-6) << k << "," << j;
+    }
+  }
+
+  // The forward model of the new landmark gives back the observation:
+  x.resize(10);
+  x[7] = yn[0];
+  x[8] = yn[1];
+  x[9] = yn[2];
+  TestKF3D::vector_KFArray_OBS pred;
+  kf.OnObservationModel({0}, pred);
+  for (int k = 0; k < 3; k++)
+  {
+    EXPECT_NEAR(pred[0][k], z[k], 1e-9);
+  }
+}
+
+// The transition model must be a function of its input vehicle state, as
+// required to estimate its Jacobian numerically.
+TEST(CRangeBearingKFSLAM, transitionJacobianMatchesNumericalDerivative)
+{
+  TestKF3D kf;
+  kf.setSF(sfWithSensorPose(mrpt::poses::CPose3D()));
+  kf.setAction(makeOdometry(mrpt::poses::CPose2D(0.5, 0.1, 0.2)));
+  const mrpt::poses::CPose3DQuat q(mrpt::poses::CPose3D(1.0, 2.0, 0.5, 0.7, -0.3, 0.2));
+  auto& x = kf.state();
+  x.resize(10);
+  for (int i = 0; i < 7; i++)
+  {
+    x[i] = q[i];
+  }
+
+  TestKF3D::KFArray_ACT u;
+  kf.OnGetAction(u);
+  TestKF3D::KFMatrix_VxV F;
+  kf.OnTransitionJacobian(F);
+
+  const double h = 1e-6;
+  for (int j = 0; j < 7; j++)
+  {
+    TestKF3D::KFArray_VEH xp;
+    TestKF3D::KFArray_VEH xm;
+    for (int i = 0; i < 7; i++)
+    {
+      xp[i] = xm[i] = x[i];
+    }
+    xp[j] += h;
+    xm[j] -= h;
+    bool skip = false;
+    kf.OnTransitionModel(u, xp, skip);
+    kf.OnTransitionModel(u, xm, skip);
+    for (int k = 0; k < 7; k++)
+    {
+      EXPECT_NEAR(F(k, j), (xp[k] - xm[k]) / (2 * h), 1e-6) << k << "," << j;
+    }
+  }
+}
+
+TEST(CRangeBearingKFSLAM2D, observationModelJacobians)
+{
+  TestKF2D kf;
+  kf.setSF(sfWithSensorPose(mrpt::poses::CPose3D(0.3, -0.1, 0.0, 0.4, 0.0, 0.0)));
+  auto& x = kf.state();
+  x.resize(5);
+  x[0] = 1.0;
+  x[1] = 2.0;
+  x[2] = 2.9;
+  x[3] = -3.0;
+  x[4] = 4.5;
+
+  TestKF2D::KFMatrix_OxV Hx;
+  TestKF2D::KFMatrix_OxF Hy;
+  kf.OnObservationJacobians(0, Hx, Hy);
+  for (size_t j = 0; j < 5; j++)
+  {
+    const Eigen::VectorXd d = numericObsDerivative(kf, j);
+    for (int k = 0; k < 2; k++)
+    {
+      const double analytic = j < 3 ? Hx(k, j) : Hy(k, j - 3);
+      EXPECT_NEAR(analytic, d[k], 1e-6) << "row=" << k << " col=" << j;
+    }
+  }
+
+  // Inverse model, consistent with the forward one:
+  TestKF2D::KFArray_OBS z;
+  z[0] = 3.0;
+  z[1] = -2.5;
+  TestKF2D::KFArray_FEAT yn;
+  TestKF2D::KFMatrix_FxV dyn_dxv;
+  TestKF2D::KFMatrix_FxO dyn_dhn;
+  kf.OnInverseObservationModel(z, yn, dyn_dxv, dyn_dhn);
+  x[3] = yn[0];
+  x[4] = yn[1];
+  TestKF2D::vector_KFArray_OBS pred;
+  kf.OnObservationModel({0}, pred);
+  EXPECT_NEAR(pred[0][0], z[0], 1e-9);
+  EXPECT_NEAR(pred[0][1], z[1], 1e-9);
+}
+
+// ------------------- Data association of bearings near +-pi -------------------
+
+namespace
+{
+template <class FILTER>
+size_t mapLandmarksBehindTheRobot(FILTER& f)
+{
+  // Two landmarks almost exactly behind the robot, whose observed bearings
+  // jump between +pi and -pi due to the noise:
+  const std::vector<mrpt::math::TPoint3D> pts = {
+      {-6.0,  0.01, 0.0},
+      {-5.0, -0.02, 0.0},
+      { 4.0,   1.0, 0.0},
+      { 5.0,  -2.0, 0.0}
+  };
+  mrpt::maps::CLandmarksMap lms;
+  int64_t id = 0;
+  for (const auto& p : pts)
+  {
+    mrpt::maps::CLandmark lm;
+    lm.ID = id++;
+    lm.pose_mean = p;
+    lms.landmarks.push_back(lm);
+  }
+
+  f.options.std_sensor_yaw = mrpt::DEG2RAD(0.5f);
+  f.options.std_sensor_range = 0.01f;
+
+  mrpt::poses::CPose2D gtPose(0, 0, 0);
+  for (int i = 0; i < 12; i++)
+  {
+    const mrpt::poses::CPose2D incr(i == 0 ? 0.0 : 0.1, 0, 0);
+    gtPose = gtPose + incr;
+    auto obs = mrpt::obs::CObservationBearingRange::Create();
+    obs->minSensorDistance = 0;
+    obs->maxSensorDistance = 100.0f;
+    obs->fieldOfView_yaw = 2 * M_PIf;
+    obs->fieldOfView_pitch = M_PIf;
+    lms.simulateRangeBearingReadings(
+        mrpt::poses::CPose3D(gtPose), mrpt::poses::CPose3D(), *obs, false /*no IDs*/, 0.01,
+        mrpt::DEG2RAD(0.5), 0.0);
+    auto sf = mrpt::obs::CSensoryFrame::Create();
+    sf->insert(obs);
+    auto acts = makeOdometry(incr);
+    f.processActionObservation(acts, sf);
+  }
+  return f.getNumberOfLandmarksInTheMap();
+}
+}  // namespace
+
+TEST(CRangeBearingKFSLAM2D, landmarksBehindTheRobotAreNotDuplicated)
+{
+  mrpt::random::getRandomGenerator().randomize(1);
+  CRangeBearingKFSLAM2D f;
+  EXPECT_EQ(mapLandmarksBehindTheRobot(f), 4U);
+}
+
+TEST(CRangeBearingKFSLAM, landmarksBehindTheRobotAreNotDuplicated)
+{
+  mrpt::random::getRandomGenerator().randomize(1);
+  CRangeBearingKFSLAM f;
+  EXPECT_EQ(mapLandmarksBehindTheRobot(f), 4U);
+}
+
+TEST(CRangeBearingKFSLAM, offDiagonalBlocksApproximationErrorValue)
+{
+  mrpt::random::getRandomGenerator().randomize(21);
+
+  const auto lms = makeLandmarks();
+  CRangeBearingKFSLAM f;
+  f.options.create_simplemap = true;
+  f.options.doPartitioningExperiment = true;
+  f.options.partitioningMethod = 0;
+  runSession(f, lms, 4);
+
+  // Each landmark in its own partition, so all off-diagonal blocks count:
+  const std::vector<std::vector<uint32_t>> membership = {{0}, {1}, {2}, {3}};
+
+  // Independent computation, with the absolute values of the information
+  // matrix and full 3x3 landmark blocks:
+  mrpt::poses::CPose3DQuatPDFGaussian robotPose;
+  std::vector<mrpt::math::TPoint3D> lmPos;
+  std::map<unsigned int, mrpt::maps::CLandmark::TLandmarkID> lmIDs;
+  mrpt::math::CVectorDouble fullState;
+  mrpt::math::CMatrixDouble fullCov;
+  f.getCurrentState(robotPose, lmPos, lmIDs, fullState, fullCov);
+  Eigen::MatrixXd P = fullCov.asEigen();
+  for (int i = 0; i < 7; i++)
+  {
+    P(i, i) = std::max(P(i, i), 1e-6);
+  }
+  const Eigen::MatrixXd H = P.inverse().cwiseAbs();
+  double off = 0;
+  for (int i = 0; i < 4; i++)
+  {
+    for (int j = i + 1; j < 4; j++)
+    {
+      off += 2 * H.block<3, 3>(7 + 3 * j, 7 + 3 * i).sum();
+    }
+  }
+  const double expected = off / H.block(7, 7, 12, 12).sum();
+
+  EXPECT_NEAR(f.computeOffDiagonalBlocksApproximationError(membership), expected, 1e-6);
 }

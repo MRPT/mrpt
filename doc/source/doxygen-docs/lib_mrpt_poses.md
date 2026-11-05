@@ -30,24 +30,33 @@ Lightweight (non-serializable) equivalents live in `mrpt-math`:
 
 ## Probabilistic pose PDFs
 
-All PDF classes derive from `mrpt::poses::CPosePDF` (2D) or
-`mrpt::poses::CPose3DPDF` (3D):
+All PDF classes derive from `mrpt::poses::CPosePDF` (2D),
+`mrpt::poses::CPose3DPDF` (3D, yaw/pitch/roll) or
+`mrpt::poses::CPose3DQuatPDF` (3D, quaternion). See also the
+[PDFs over spatial transformations tutorial](tutorial-pdf-over-poses.html).
 
 | Class | Representation |
 |-------|----------------|
-| mrpt::poses::CPosePDFGaussian | Gaussian (mean + 3×3 covariance) |
+| mrpt::poses::CPosePDFGaussian | Gaussian (mean + 3x3 covariance) |
 | mrpt::poses::CPosePDFGaussianInf | Gaussian in information form |
-| mrpt::poses::CPosePDFParticles | Particle filter — discrete samples |
+| mrpt::poses::CPosePDFParticles | Set of weighted samples (particles) |
 | mrpt::poses::CPosePDFSOG | Sum of Gaussians |
-| mrpt::poses::CPose3DPDFGaussian | 3D Gaussian (mean + 6×6 covariance) |
-| mrpt::poses::CPose3DPDFParticles | 3D particle-filter PDF |
+| mrpt::poses::CPosePDFGrid | Discrete grid over (x, y, phi) |
+| mrpt::poses::CPose3DPDFGaussian | 3D Gaussian (mean + 6x6 covariance) |
+| mrpt::poses::CPose3DPDFGaussianInf | 3D Gaussian in information form |
+| mrpt::poses::CPose3DPDFParticles | 3D set of weighted samples (particles) |
 | mrpt::poses::CPose3DPDFSOG | 3D sum of Gaussians |
+| mrpt::poses::CPose3DPDFGrid | Discrete grid over the 6D pose space |
+| mrpt::poses::CPose3DQuatPDFGaussian | 3D Gaussian (mean + 7x7 covariance) |
+| mrpt::poses::CPose3DQuatPDFGaussianInf | 3D Gaussian in information form (quaternion) |
 
 ## Pose interpolation and trajectories
 
-mrpt::poses::CPoseInterpolatorBase and its derived
-mrpt::poses::CPoses2DSequence / mrpt::poses::CPoses3DSequence store
-timestamped pose sequences and can interpolate between them with
-linear or spline methods.
+mrpt::poses::CPose2DInterpolator and mrpt::poses::CPose3DInterpolator (both
+derived from mrpt::poses::CPoseInterpolatorBase) store timestamped pose
+sequences and interpolate between them with the methods in
+mrpt::poses::TInterpolatorMethod (linear, splines, SLERP for rotations).
+mrpt::poses::CPoses2DSequence / mrpt::poses::CPoses3DSequence store sequences
+of relative (incremental) poses instead.
 
 # Library contents

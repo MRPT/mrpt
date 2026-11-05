@@ -83,8 +83,11 @@ bool tfest::se3_l2_robust(
     // Compute first inliers output
     TMatchingPairList mbInliers;
     mbInliers.reserve(n);
-    for (size_t i = 0; mbInliers.size() < n && i < nCorrs; i++)
+    // Number of entries of mbSet consumed while picking the initial subset:
+    size_t nConsumed = 0;
+    for (; mbInliers.size() < n && nConsumed < nCorrs; nConsumed++)
     {
+      const size_t i = nConsumed;
       const size_t idx = mbSet[i];
 
       // User-provided filter:
@@ -139,7 +142,7 @@ bool tfest::se3_l2_robust(
     mbOut_vec[6] = scale;
 
     // Inner loop: for each point NOT in the maybe inliers
-    for (size_t k = n; k < nCorrs; k++)
+    for (size_t k = nConsumed; k < nCorrs; k++)
     {
       const size_t idx = mbSet[k];
 

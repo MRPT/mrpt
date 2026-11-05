@@ -13,6 +13,7 @@
 */
 
 #pragma once
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/viz/CDisk.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
 #include <mrpt/viz/CVisualObject.h>

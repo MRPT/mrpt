@@ -93,14 +93,16 @@ void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose) const
 {
   const TVector3D normal = getUnitaryNormalVector();
   CMatrixDouble44 AXIS = generateAxisBaseFromDirectionAndAxis(normal, 2);
-  for (size_t i = 0; i < 3; i++)
+  // Origin: the plane point on the axis of the dominant normal coordinate.
+  size_t i1 = 0;
+  for (size_t i = 1; i < 3; i++)
   {
-    if (std::abs(coefs[i]) >= getEpsilon())
+    if (std::abs(coefs[i]) > std::abs(coefs[i1]))
     {
-      AXIS(i, 3) = -coefs[3] / coefs[i];
-      break;
+      i1 = i;
     }
   }
+  AXIS(i1, 3) = -coefs[3] / coefs[i1];
   outPose.fromHomogeneousMatrix(AXIS);
 }
 void TPlane::getAsPose3DForcingOrigin(const TPoint3D& center, TPose3D& pose) const
@@ -135,8 +137,11 @@ TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
   coefs[0] = dy1 * dz2 - dy2 * dz1;
   coefs[1] = dz1 * dx2 - dz2 * dx1;
   coefs[2] = dx1 * dy2 - dx2 * dy1;
-  if (std::abs(coefs[0]) < getEpsilon() && std::abs(coefs[1]) < getEpsilon() &&
-      std::abs(coefs[2]) < getEpsilon())
+  // Relative test (sine of the angle at p1), independent of the triangle size:
+  const double n = std::sqrt(squareNorm<3, double>(coefs));
+  const double l1 = std::sqrt(dx1 * dx1 + dy1 * dy1 + dz1 * dz1);
+  const double l2 = std::sqrt(dx2 * dx2 + dy2 * dy2 + dz2 * dz2);
+  if (!(n > getEpsilon() * l1 * l2))
   {
     throw std::logic_error("Points are linearly dependent");
   }

@@ -13,6 +13,7 @@
 */
 
 #pragma once
+#include <mrpt/poses/Lie/SO.h>
 
 namespace mrpt::graphslam::deciders
 {
@@ -67,9 +68,8 @@ bool CIncrementalNodeRegistrationDecider<GRAPH_T>::checkRegistrationConditionPos
 
   bool res = false;
   if ((p1.distanceTo(p2) > params.registration_max_distance) ||
-      (fabs(wrapToPi(p1.roll() - p2.roll())) > params.registration_max_angle) ||
-      (fabs(wrapToPi(p1.pitch() - p2.pitch())) > params.registration_max_angle) ||
-      (fabs(wrapToPi(p1.yaw() - p2.yaw())) > params.registration_max_angle))
+      (mrpt::poses::Lie::SO<3>::log((p2 - p1).getRotationMatrix()).norm() >
+       params.registration_max_angle))
   {
     res = true;
   }

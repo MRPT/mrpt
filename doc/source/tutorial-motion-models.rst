@@ -165,14 +165,15 @@ modeled as:
     \sigma_{\Delta^{odo}_\phi} = \sigma^{min}_{\phi} + \alpha_3 \sqrt{ (\Delta^{odo}_x)^2 + (\Delta^{odo}_y)^2} + \alpha_4 | \Delta^{odo}_\phi |
     \end{array}
 
-The default parameters (loaded in the constructor and available in RawLogViewer) are:
+The default parameters (set in the constructor and available in RawLogViewer) are
+given below; note that the C++ fields store them in SI units (meters and radians):
 
 .. math::
 
-   \begin{array}{rl}
-    \alpha_1 &=&  0.05 ~ meters/meter \\
+   \begin{array}{rcl}
+    \alpha_1 &=&  0.01 ~ meters/meter \\
     \alpha_2 &=&  0.001 ~ meters/degree \\
-    \alpha_3 &=&  5 ~ degrees/meter \\
+    \alpha_3 &=&  1 ~ degree/meter \\
     \alpha_4 &=&  0.05 ~ degrees/degree \\
     \sigma^{min}_{xy} &=&  0.01 ~ meters \\
     \sigma^{min}_{\phi} &=&  0.20 ~ degrees
@@ -184,7 +185,9 @@ And finally, the covariance of the new pose after the odometry increment :math:`
 
    C = J ~ \Sigma ~ J^t
 
-where J stands for the Jacobian of H.
+where J stands for the Jacobian of the right-hand side of the equation above
+with respect to the odometry increment (that is, H plus the derivatives of H with
+respect to :math:`\Delta^{odo}_\phi`).
 See :cite:`arras1998introduction` for a derivation of this formula for error propagation.
 
 
@@ -213,9 +216,9 @@ Then, the new robot pose, which we want to draw samples from is:
     =
     \left(
     \begin{array}{ccc}
-    \cos \hat\delta_{rot1} ~   ~ 0 ~   ~ 0 ~ \\
-    \sin \hat\delta_{rot1} ~   ~ 0 ~   ~ 0 ~ \\
-    0 ~   ~ 1 ~   ~ 1
+    \cos \hat\delta_{rot1} & 0 & 0 \\
+    \sin \hat\delta_{rot1} & 0 & 0 \\
+    0 & 1 & 1
     \end{array}
     \right)
     \left(
@@ -235,18 +238,19 @@ are the result of adding a Gaussian, zero-mean random noise to the actual odomet
 
 .. math::
 
-   \begin{array}{cc}
+   \begin{array}{l}
     \hat\delta_{trans} =  \delta_{trans} + \epsilon_{trans} ~~~~~~~~ \epsilon_{trans} \sim \mathcal{N}(0, \sigma^2_{trans}) \\
     \hat\delta_{rot1} =  \delta_{rot1} + \epsilon_{rot1} ~~~~~~~~ \epsilon_{rot1} \sim \mathcal{N}(0, \sigma^2_{rot1}) \\
     \hat\delta_{rot2} =  \delta_{rot2} + \epsilon_{rot2} ~~~~~~~~ \epsilon_{rot2} \sim \mathcal{N}(0, \sigma^2_{rot2})
     \end{array}
 
-The model described in :cite:`thrun2005probabilistic` employs the following approximations for
-the values of the standard deviations required for the equations above:
+The model described in :cite:`thrun2005probabilistic` gives the variances of these noise terms
+as weighted sums of squared motion components. MRPT uses instead the following linear
+models for the standard deviations:
 
 .. math::
 
-   \begin{array}{rl}
+   \begin{array}{rcl}
     \sigma_{rot1} &=&  \alpha_1 |\delta_{rot1}| + \alpha_2 \delta_{trans} \\
     \sigma_{trans} &=&  \alpha_3 \delta_{trans} + \alpha_4 ( |\delta_{rot1}| + |\delta_{rot2}| ) \\
     \sigma_{rot2} &=&  \alpha_1 |\delta_{rot2}| + \alpha_2 \delta_{trans}

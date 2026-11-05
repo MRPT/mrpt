@@ -13,12 +13,12 @@
 */
 
 #pragma once
-
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/graphslam/CGraphSlamEngine.h>  // for IDE parsers
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/poses/Lie/SO.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/viz/CAxis.h>
 #include <mrpt/viz/CPlanarLaserScan.h>
@@ -517,11 +517,6 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
       MRPT_LOG_DEBUG_STREAM("Action-observation dataset!");
       ASSERTDEB_(action);
       m_observation_only_dataset = false;
-
-      CPose3D increment_pose_3d;
-      action->getFirstMovementEstimationMean(increment_pose_3d);
-      pose_t increment_pose(increment_pose_3d);
-      m_curr_odometry_only_pose += increment_pose;
     }
 
     // TODO enable this and test this.
@@ -640,8 +635,6 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 
   if (registered_new_node)
   {
-    this->execDijkstraNodesEstimation();
-
     // keep track of the laser scans so that I can later visualize the map
     m_nodes_to_laser_scans2D[m_nodeID_max] = m_last_laser_scan2D;
 
@@ -2381,15 +2374,16 @@ void CGraphSlamEngine<GRAPH_T>::computeSlamMetric(mrpt::graphs::TNodeID nodeID, 
     rot_diff = this->accumulateAngleDiffs(gt_delta, node_delta_pos);
 
     m_curr_deformation_energy += (pow(trans_diff, 2) + pow(rot_diff, 2));
-    m_curr_deformation_energy /= indices_size;
-
-    // add it to the overall vector
-    m_deformation_energy_vec.push_back(m_curr_deformation_energy);
 
     prev_node_pos = curr_node_pos;
     prev_gt_pos = curr_gt_pos;
   }
 
+  if (indices_size > 1)
+  {
+    m_curr_deformation_energy /= static_cast<double>(indices_size - 1);
+    m_deformation_energy_vec.push_back(m_curr_deformation_energy);
+  }
   MRPT_LOG_DEBUG_STREAM("Total deformation energy: " << m_curr_deformation_energy);
 
   MRPT_END
@@ -2405,14 +2399,7 @@ template <class GRAPH_T>
 double CGraphSlamEngine<GRAPH_T>::accumulateAngleDiffs(
     const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2)
 {
-  using mrpt::math::wrapToPi;
-  double res = 0;
-
-  res += wrapToPi(p1.roll() - p2.roll());
-  res += wrapToPi(p1.pitch() - p2.pitch());
-  res += wrapToPi(p1.yaw() - p2.yaw());
-
-  return res;
+  return mrpt::poses::Lie::SO<3>::log((p2 - p1).getRotationMatrix()).norm();
 }
 
 template <class GRAPH_T>
