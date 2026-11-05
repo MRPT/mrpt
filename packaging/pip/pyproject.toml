@@ -43,7 +43,7 @@ mrpt = "mrpt.sdk"
 
 [tool.scikit-build]
 minimum-version = "build-system.requires"
-cmake.version = ">=3.21"
+cmake.version = ">=3.24"
 build.verbose = true
 # Everything in the wheel comes from the CMake install step:
 wheel.packages = []

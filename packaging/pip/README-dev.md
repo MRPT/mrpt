@@ -26,14 +26,15 @@ site-packages/
 
 ```bash
 python3 -m venv /tmp/venv && /tmp/venv/bin/pip install build
-CMAKE_ARGS="-DCMAKE_CXX_COMPILER_LAUNCHER=ccache" \
-  /tmp/venv/bin/python -m build --wheel --outdir /tmp/dist packaging/pip
+/tmp/venv/bin/python -m build --wheel --outdir /tmp/dist packaging/pip
 /tmp/venv/bin/pip install /tmp/dist/mrpt3-*.whl
 /tmp/venv/bin/python packaging/pip/tests/test_wheel.py
 ```
 
 The build dir (`packaging/pip/build/<wheel tag>`) is kept, so rebuilds are
-incremental. Wheels built this way link to the system libraries and are only
+incremental. If ccache is installed, prefix the build command with
+`CMAKE_ARGS="-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"`
+to also speed up builds from scratch. Wheels built this way link to the system libraries and are only
 for local use.
 
 ## Portable wheels (manylinux)

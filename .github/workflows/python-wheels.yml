@@ -59,7 +59,7 @@ jobs:
           path: wheelhouse/*.whl
 
   publish:
-    name: Publish to ${{ inputs.publish || 'pypi' }}
+    name: Publish
     if: >-
       (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) ||
       (github.event_name == 'workflow_dispatch' && inputs.publish != 'none')
@@ -78,3 +78,5 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: ${{ inputs.publish == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
+          # A re-run after a partial upload only uploads the missing files:
+          skip-existing: true

@@ -19,11 +19,20 @@ print(p + p)
 Each MRPT module is a Python subpackage (`mrpt.poses`, `mrpt.maps`,
 `mrpt.slam`...), with type stubs for IDE completion.
 
-Requirements: Linux (glibc 2.28 or newer), x86_64 or aarch64. `mrpt.opengl`
-and `mrpt.gui` also need the system OpenGL libraries (and X11, for windows),
-normally present on desktops. On minimal systems or containers, install
-`libegl1 libgl1 libgles2 libopengl0` (Debian/Ubuntu) or
-`mesa-libGL mesa-libEGL libglvnd-gles libglvnd-opengl` (Fedora/RHEL).
+Requirements: Linux (glibc 2.28 or newer), x86_64 or aarch64, Python 3.11 to
+3.14. `mrpt.opengl` and `mrpt.gui` also need the system OpenGL and X11
+libraries, normally present on desktops. On minimal systems or containers,
+install them with:
+
+```bash
+# Debian/Ubuntu:
+sudo apt install libegl1 libgl1 libgles2 libopengl0 \
+  libx11-6 libx11-xcb1 libxcursor1 libxext6 libxi6 libxinerama1 libxrandr2 libxrender1 libxxf86vm1
+# Fedora/RHEL:
+sudo dnf install mesa-libGL mesa-libEGL libglvnd-gles libglvnd-opengl \
+  libX11 libX11-xcb libXcursor libXext libXi libXinerama libXrandr libXrender libXxf86vm
+```
+
 All other modules work without them.
 See the [examples](https://github.com/MRPT/mrpt/tree/develop/mrpt_examples_py)
 and the [documentation](https://docs.mrpt.org/).
