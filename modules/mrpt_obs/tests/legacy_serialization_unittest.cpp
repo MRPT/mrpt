@@ -359,15 +359,17 @@ TEST(LegacySerialization, CObservationImage_v0_to_v3)
     ASSERT_TRUE(obs) << "version " << int(version);
     EXPECT_NEAR(obs->cameraPose.x(), 1.0, 1e-6);
     EXPECT_NEAR(obs->cameraParams.dist[0], 0.1, 1e-5);
+    EXPECT_NEAR(obs->cameraParams.dist[4], 0.1, 1e-5);
+    EXPECT_EQ(obs->cameraParams.distortion, mrpt::img::DistortionModel::plumb_bob);
     EXPECT_NEAR(obs->cameraParams.intrinsicParams(1, 1), 1.0, 1e-9);
     EXPECT_NEAR(obs->cameraParams.focalLengthMeters, version >= 2 ? 0.005 : 0.002, 1e-9);
     EXPECT_EQ(obs->sensorLabel, version >= 3 ? "cam_old" : "");
   }
 }
 
-TEST(LegacySerialization, CObservationImage_v0_wrongSizedDistortion)
+TEST(LegacySerialization, CObservationImage_v0_fourDistortionParams)
 {
-  // A distortion matrix that is not 1x5 leaves the parameters at zero:
+  // The oldest files stored [k1 k2 p1 p2] only:
   mrpt::io::CMemoryStream buf;
   writeLegacyObjectFrame(
       buf, "CObservationImage", 0,
@@ -375,6 +377,36 @@ TEST(LegacySerialization, CObservationImage_v0_wrongSizedDistortion)
       {
         a << mrpt::poses::CPose3D();
         mrpt::math::CMatrixF dist(1, 4);
+        dist(0, 0) = -0.3f;
+        dist(0, 1) = 0.1f;
+        dist(0, 2) = 0.002f;
+        dist(0, 3) = -0.001f;
+        mrpt::math::CMatrixF intr(3, 3);
+        intr.setIdentity();
+        a << dist << intr;
+        a << mrpt::img::CImage(4, 4, mrpt::img::CH_GRAY);
+      });
+
+  const auto obs = readBackAs<CObservationImage>(buf);
+  ASSERT_TRUE(obs);
+  EXPECT_EQ(obs->cameraParams.distortion, mrpt::img::DistortionModel::plumb_bob);
+  EXPECT_NEAR(obs->cameraParams.k1(), -0.3, 1e-6);
+  EXPECT_NEAR(obs->cameraParams.k2(), 0.1, 1e-6);
+  EXPECT_NEAR(obs->cameraParams.p1(), 0.002, 1e-6);
+  EXPECT_NEAR(obs->cameraParams.p2(), -0.001, 1e-6);
+  EXPECT_NEAR(obs->cameraParams.k3(), 0.0, 1e-12);
+}
+
+TEST(LegacySerialization, CObservationImage_v0_wrongSizedDistortion)
+{
+  // A distortion matrix that is neither 1x4 nor 1x5 leaves the parameters at zero:
+  mrpt::io::CMemoryStream buf;
+  writeLegacyObjectFrame(
+      buf, "CObservationImage", 0,
+      [](CArchive& a)
+      {
+        a << mrpt::poses::CPose3D();
+        mrpt::math::CMatrixF dist(2, 3);
         dist.fill(0.5f);
         mrpt::math::CMatrixF intr(3, 3);
         intr.setIdentity();
@@ -384,6 +416,7 @@ TEST(LegacySerialization, CObservationImage_v0_wrongSizedDistortion)
 
   const auto obs = readBackAs<CObservationImage>(buf);
   ASSERT_TRUE(obs);
+  EXPECT_EQ(obs->cameraParams.distortion, mrpt::img::DistortionModel::none);
   for (int i = 0; i < 5; i++) EXPECT_NEAR(obs->cameraParams.dist[i], 0.0, 1e-12);
 }
 
