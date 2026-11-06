@@ -2,6 +2,9 @@
 Changelog for package mrpt_opengl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.1 (2026-11-01)
 ------------------
 * Render lines wider than 1 pixel again, with a new WIREFRAME_THICK shader

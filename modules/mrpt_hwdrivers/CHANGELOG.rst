@@ -2,6 +2,9 @@
 Changelog for package mrpt_hwdrivers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.1 (2026-11-01)
 ------------------
 * Re-enable libdc1394 (FireWire) cameras, ported to the 3.x CImage API (`#1480 <https://github.com/MRPT/mrpt/issues/1480>`_)

@@ -2,6 +2,9 @@
 Changelog for package mrpt_libapps_cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.1 (2026-11-01)
 ------------------
 * rawlog-edit: new --decimate, --lossless-decimate, --compact, --to-observations-only, --to-sensory-frames, --sort-by-timestamp, --regenerate-sf-timestamps

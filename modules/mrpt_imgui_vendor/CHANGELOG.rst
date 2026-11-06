@@ -2,6 +2,9 @@
 Changelog for package mrpt_imgui_vendor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.1 (2026-11-01)
 ------------------
 * Icon font subset: add the icons used by the app framework; generator checks every icon has a glyph
