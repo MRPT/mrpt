@@ -63,6 +63,32 @@ CMatrixDouble77 pinvSym(const CMatrixDouble77& M)
   return CMatrixDouble77(
       (es.eigenvectors() * dInv.asDiagonal() * es.eigenvectors().transpose()).eval());
 }
+
+// Normalization factor of a (possibly degenerate) Gaussian given its
+// information matrix: uses the pseudo-determinant and the rank instead of the
+// determinant and the dimension, since a plain determinant of a rank-deficient
+// matrix is just round-off noise.
+double normalizationFactorInf(const CMatrixDouble77& I)
+{
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 7, 7>> es(I.asEigen());
+  const auto& d = es.eigenvalues();
+  const double tol = 1e-10 * std::max(d.cwiseAbs().maxCoeff(), std::numeric_limits<double>::min());
+  double pdet = 1.0;
+  int rank = 0;
+  for (int i = 0; i < 7; i++)
+  {
+    if (d[i] > tol)
+    {
+      pdet *= d[i];
+      rank++;
+    }
+  }
+  if (rank == 0)
+  {
+    return 0.0;
+  }
+  return std::sqrt(pdet / std::pow(M_2PI, rank));
+}
 }  // namespace
 
 /** Default constructor - set all values to zero. */
@@ -331,7 +357,7 @@ void CPose3DQuatPDFGaussianInf::operator-=(const CPose3DQuatPDFGaussianInf& Ap)
  ---------------------------------------------------------------*/
 double CPose3DQuatPDFGaussianInf::evaluatePDF(const CPose3DQuat& x) const
 {
-  return mrpt::math::normalPDFInf(CMatrixDouble71(x), CMatrixDouble71(this->mean), this->cov_inv);
+  return normalizationFactorInf(this->cov_inv) * evaluateNormalizedPDF(x);
 }
 
 /*---------------------------------------------------------------
