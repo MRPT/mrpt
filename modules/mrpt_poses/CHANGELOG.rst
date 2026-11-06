@@ -2,8 +2,8 @@
 Changelog for package mrpt_poses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.2 (2026-11-07)
+------------------
 * CPose3DQuatPDFGaussianInf::evaluatePDF(): density of degenerate Gaussians (`#1500 <https://github.com/MRPT/mrpt/issues/1500>`_)
 * Python wheel: nanogui 3D windows from Python, complete C++ SDK, NumPy arrays as MRPT matrices (`#1496 <https://github.com/MRPT/mrpt/issues/1496>`_)
 * inverse_LLt() throws for matrices that are not positive-definite; pseudo-inverse for quaternion information PDFs (`#1494 <https://github.com/MRPT/mrpt/issues/1494>`_)

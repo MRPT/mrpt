@@ -2,8 +2,8 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.2 (2026-11-07)
+------------------
 * Fix builds using the embedded assimp, octomap and GLFW (`#1488 <https://github.com/MRPT/mrpt/issues/1488>`_)
 * Contributors: Jose Luis Blanco-Claraco
 

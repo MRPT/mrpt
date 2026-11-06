@@ -2,8 +2,8 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.2 (2026-11-07)
+------------------
 * Python wheel: nanogui 3D windows from Python, complete C++ SDK, NumPy arrays as MRPT matrices (`#1496 <https://github.com/MRPT/mrpt/issues/1496>`_)
 * inverse_LLt() throws for matrices that are not positive-definite; pseudo-inverse for quaternion information PDFs (`#1494 <https://github.com/MRPT/mrpt/issues/1494>`_)
 * Math review: fixes and tests for transformations, probability distributions and their users (`#1492 <https://github.com/MRPT/mrpt/issues/1492>`_)
