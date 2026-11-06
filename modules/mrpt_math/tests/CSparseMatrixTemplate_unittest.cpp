@@ -244,3 +244,109 @@ TEST(CSparseSymmetricalMatrix, OutOfRangeThrows)
   m.resize(2);
   EXPECT_THROW(m(0, 5) = 1.0, std::exception);
 }
+
+namespace
+{
+CSparseMatrixTemplate<double> makeSparse()
+{
+  CSparseMatrixTemplate<double> s(4, 5);
+  s(0, 0) = 1.0;
+  s(0, 3) = 2.0;
+  s(2, 1) = 3.0;
+  s(3, 4) = 4.0;
+  return s;
+}
+
+// The last stored element is not in the last column, and the last row is empty
+CSparseMatrixTemplate<double> makeSparseWithEmptyTail()
+{
+  CSparseMatrixTemplate<double> s(5, 5);
+  s(0, 0) = 1.0;
+  s(0, 3) = 2.0;
+  s(2, 1) = 3.0;
+  s(3, 2) = 4.0;
+  return s;
+}
+}  // namespace
+
+// getRow() must overwrite all the output entries
+TEST(CSparseMatrixTemplateRows, getRowOverwritesWholeVector)
+{
+  const auto s = makeSparseWithEmptyTail();
+  for (size_t r = 0; r < s.rows(); r++)
+  {
+    std::vector<double> v(s.cols(), 99.0);
+    s.getRow(r, v);
+    ASSERT_EQ(v.size(), s.cols());
+    for (size_t c = 0; c < s.cols(); c++)
+    {
+      EXPECT_EQ(v[c], s(r, c)) << "row " << r << " col " << c;
+    }
+  }
+}
+
+TEST(CSparseMatrixTemplateRows, getColumnOverwritesWholeVector)
+{
+  const auto s = makeSparseWithEmptyTail();
+  for (size_t c = 0; c < s.cols(); c++)
+  {
+    std::vector<double> v(s.rows(), 99.0);
+    s.getColumn(c, v);
+    ASSERT_EQ(v.size(), s.rows());
+    for (size_t r = 0; r < s.rows(); r++)
+    {
+      EXPECT_EQ(v[r], s(r, c)) << "row " << r << " col " << c;
+    }
+  }
+}
+
+TEST(CSparseMatrixTemplateRows, setRowSkipsNullAndResizeDropsOutOfRange)
+{
+  auto s = makeSparse();
+  s.setRow(1, std::vector<double>{0.0, 5.0, 0.0, 0.0, 6.0});
+  EXPECT_EQ(s.getNonNullElements(), 6U);
+  EXPECT_TRUE(s.isNull(1, 0));
+  EXPECT_EQ(s(1, 4), 6.0);
+  s.resize(3, 4);
+  EXPECT_EQ(s.getNonNullElements(), 4U);  // (0,0) (0,3) (1,1) (2,1)
+  EXPECT_EQ(s.getNullElements(), 3U * 4U - 4U);
+  const auto sub = s(0, 1, 1, 3);
+  EXPECT_EQ(sub.rows(), 2U);
+  EXPECT_EQ(sub.cols(), 3U);
+  EXPECT_EQ(sub(0, 2), 2.0);
+  EXPECT_EQ(sub(1, 0), 5.0);
+}
+
+// insert(), exists() and insertMatrix() must apply the symmetric index swap
+TEST(CSparseMatrixTemplateRows, symmetricalInsertIsVisibleFromBothSides)
+{
+  CSparseSymmetricalMatrix<double> s;
+  s.resize(3);
+  s.insert(2, 0, 5.0);
+  const auto& cs = s;
+  EXPECT_EQ(cs(0, 2), 5.0);
+  EXPECT_EQ(cs(2, 0), 5.0);
+  EXPECT_TRUE(s.exists(0, 2));
+  EXPECT_TRUE(s.exists(2, 0));
+
+  mrpt::math::CMatrixDouble blk(1, 2);
+  blk(0, 0) = 1.0;
+  blk(0, 1) = 2.0;
+  s.insertMatrix(2, 0, blk);
+  EXPECT_EQ(cs(0, 2), 1.0);
+  EXPECT_EQ(cs(1, 2), 2.0);
+  EXPECT_EQ(s.getNonNullElements(), 2U);
+}
+
+TEST(CSparseMatrixTemplateRows, symmetricalOperatorStoresOnce)
+{
+  CSparseSymmetricalMatrix<double> s;
+  s.resize(3);
+  s(2, 1) = 7.0;
+  s(1, 2) += 1.0;
+  const auto& cs = s;
+  EXPECT_EQ(cs(2, 1), 8.0);
+  EXPECT_EQ(cs(1, 2), 8.0);
+  EXPECT_EQ(s.getNonNullElements(), 1U);
+  EXPECT_ANY_THROW(s(3, 0) = 1.0);
+}

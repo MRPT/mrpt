@@ -44,7 +44,7 @@ struct TSegment2D : public mrpt::Stringifyable
    */
   TPoint2D point1;
   /**
-   * Destiny point.
+   * Destination point.
    */
   TPoint2D point2;
   /**

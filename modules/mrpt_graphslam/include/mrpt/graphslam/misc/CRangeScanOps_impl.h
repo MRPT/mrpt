@@ -82,15 +82,16 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 
   // return the edge regardless of the goodness of the alignment
   // copy from the 3D PDF
-  // NULLIFY contraint_t if Z displacement is high (normally this should be 0)
-  // since we are moving in 2D
+  // Reject the result if the Z displacement is high (normally this should be
+  // 0) since we are moving in 2D
   if (fabs(pdf->getMeanVal().z()) < 0.1)
   {
     rel_edge->copyFrom(*pdf);
   }
   else
   {
-    rel_edge = nullptr;
+    *rel_edge = constraint_t();
+    info.goodness = 0;
   }
 
   // if given, fill the TReturnInfo Struct

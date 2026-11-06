@@ -22,9 +22,9 @@ namespace mrpt::math
 /** A (persistent) sequence of (x,y) coordinates, allowing queries of
  * intermediate points through spline interpolation, where possible.
  *  This class internally relies on mrpt::math::spline. Optionally the y
- * coordinate can be set as wrapped in ]-pi,pi].
- *  For querying interpolated points, see
- * \ sa mrpt::math::spline, mrpt::poses::CPose3DInterpolator
+ * coordinate can be set as wrapped in [-pi,pi[.
+ *  For querying interpolated points, see query() and queryVector().
+ * \sa mrpt::math::spline, mrpt::poses::CPose3DInterpolator
  * \ingroup interpolation_grp
  */
 class CSplineInterpolator1D : public mrpt::serialization::CSerializable
@@ -50,7 +50,7 @@ class CSplineInterpolator1D : public mrpt::serialization::CSerializable
   /** Constructor */
   CSplineInterpolator1D(bool wrap2pi = false);
 
-  /** If set to true, the interpolated data will be wrapped to ]-pi,pi] */
+  /** If set to true, the interpolated data will be wrapped to [-pi,pi[ */
   void setWrap2pi(bool wrap) { m_wrap2pi = wrap; }
   /** Return the wrap property */
   bool getWrap2pi() { return m_wrap2pi; }
@@ -82,8 +82,8 @@ class CSplineInterpolator1D : public mrpt::serialization::CSerializable
   double& query(double x, double& y, bool& out_valid) const;
 
   /** As query, but for a whole vector at once.
-   *  \return false if there is at least one value that couldn't be
-   * interpolated (in this case the output is indeterminate).
+   *  \return true if at least one value could be interpolated. Values that
+   * could not be interpolated are set to zero.
    * \sa query
    */
   template <class VECTOR1, class VECTOR2>

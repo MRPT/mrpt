@@ -20,6 +20,7 @@
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/datetime.h>
 
+#include <cmath>
 #include <fstream>
 #include <mrpt/math/interp_fit.hpp>
 
@@ -80,7 +81,6 @@ typename CPoseInterpolatorBase<DIM>::pose_t& CPoseInterpolatorBase<DIM>::interpo
   switch (m_method)
   {
     case imLinear2Neig:
-    case imSplineSlerp:
     case imLinearSlerp:
       interp_method_requires_4pts = false;
       break;
@@ -397,10 +397,24 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile_TUM(const std::string& s)
   mrpt::poses::CPose3DQuat p;
   for (size_t i = 0; i < N; i++)
   {
-    for (unsigned int k = 0; k < 7; k++) p[idxs[k]] = M(i, k + 1);
+    // Skip rows with non-finite values ("nan" and "inf" parse as numbers):
+    bool allFinite = true;
+    for (unsigned int k = 0; k < 8; k++)
+    {
+      allFinite = allFinite && std::isfinite(M(i, k));
+    }
+    if (!allFinite)
+    {
+      continue;
+    }
+    for (unsigned int k = 0; k < 7; k++)
+    {
+      p[idxs[k]] = M(i, k + 1);
+    }
     insert(mrpt::Clock::fromDouble(M(i, 0)), pose_t(mrpt::poses::CPose3D(p).asTPose()));
   }
-  return true;
+  // All rows may have been skipped:
+  return !empty();
   MRPT_END
 }
 

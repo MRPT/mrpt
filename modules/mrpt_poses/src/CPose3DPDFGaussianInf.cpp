@@ -146,9 +146,12 @@ void CPose3DPDFGaussianInf::copyFrom(const CPosePDF& o)
   }
   else
   {
-    CPose3DPDFGaussian p(UNINITIALIZED_POSE);
-    p.copyFrom(o);
-    this->copyFrom(p);
+    // Through the 2D information form, so (z,pitch,roll) get zero information
+    // here too: their zero covariance has no finite information.
+    mrpt::math::CMatrixDouble33 cov2d;
+    CPose2D mean2d;
+    o.getCovarianceAndMean(cov2d, mean2d);
+    this->copyFrom(CPosePDFGaussianInf(mean2d, cov2d.inverse_LLt()));
   }
 }
 
@@ -264,10 +267,14 @@ void CPose3DPDFGaussianInf::inverse(CPose3DPDF& o) const
   ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussianInf));
   auto& out = dynamic_cast<CPose3DPDFGaussianInf&>(o);
 
-  // This is like: b=(0,0,0)
-  //  OUT = b - THIS
-  CPose3DPDFGaussianInf b;  // Init: all zeros.
-  out = b - *this;
+  // Use the implementation in covariance form:
+  CPose3DPDFGaussian a(UNINITIALIZED_POSE);
+  a.copyFrom(*this);
+  CPose3DPDFGaussian a_inv(UNINITIALIZED_POSE);
+  a.inverse(a_inv);
+
+  out.mean = a_inv.mean;
+  out.cov_inv = a_inv.cov.inverse_LLt();
 }
 
 /*---------------------------------------------------------------
@@ -284,10 +291,10 @@ void CPose3DPDFGaussianInf::operator+=(const CPose3D& Ap)
       Ap,          // u
       df_dx, df_du);
 
-  // this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
-  // cov_inv   = ... => The same than above!
-  cov_inv = mrpt::math::multiply_HCHt(df_dx, OLD_COV_INV);
-  // df_du: Nothing to do, since COV(Ap) = zeros
+  // new_cov = J * cov * J^t  ==>  new_cov_inv = J^-t * cov_inv * J^-1
+  // (df_du: Nothing to do, since COV(Ap) = zeros)
+  const Eigen::Matrix<double, 6, 6> J_inv = df_dx.asEigen().inverse();
+  cov_inv.asEigen() = (J_inv.transpose() * OLD_COV_INV.asEigen() * J_inv).eval();
 
   // MEAN:
   this->mean = this->mean + Ap;
@@ -346,6 +353,11 @@ double CPose3DPDFGaussianInf::evaluatePDF(const CPose3D& x) const
   MU(4, 0) = mean.pitch();
   MU(5, 0) = mean.roll();
 
+  for (int i = 3; i < 6; i++)
+  {
+    X(i, 0) = MU(i, 0) + mrpt::math::wrapToPi(X(i, 0) - MU(i, 0));
+  }
+
   return math::normalPDFInf(X, MU, this->cov_inv);
 }
 
@@ -369,6 +381,11 @@ double CPose3DPDFGaussianInf::evaluateNormalizedPDF(const CPose3D& x) const
   MU(3, 0) = mean.yaw();
   MU(4, 0) = mean.pitch();
   MU(5, 0) = mean.roll();
+
+  for (int i = 3; i < 6; i++)
+  {
+    X(i, 0) = MU(i, 0) + mrpt::math::wrapToPi(X(i, 0) - MU(i, 0));
+  }
 
   return math::normalPDFInf(X, MU, this->cov_inv) / math::normalPDFInf(MU, MU, this->cov_inv);
 }
@@ -396,6 +413,10 @@ double CPose3DPDFGaussianInf::mahalanobisDistanceTo(const CPose3DPDFGaussianInf&
 
   CMatrixDouble66 COV_ = cov + cov2;
   CMatrixDouble61 MU = CMatrixDouble61(theOther.mean) - CMatrixDouble61(mean);
+  for (int i = 3; i < 6; i++)
+  {
+    MU(i, 0) = mrpt::math::wrapToPi(MU(i, 0));
+  }
 
   for (int i = 0; i < 6; i++)
   {

@@ -185,3 +185,12 @@ TEST(LightGeomData, Strings)
     EXPECT_DOUBLE_EQ(p.phi, M_PI);
   }
 }
+
+TEST(LightGeomData, PoseEqualityTakesCyclesIntoAccount)
+{
+  EXPECT_TRUE(TPose2D(0, 0, 2 * M_PI) == TPose2D(0, 0, 0));
+  EXPECT_TRUE(TPose2D(0, 0, -2 * M_PI) == TPose2D(0, 0, 0));
+  EXPECT_FALSE(TPose2D(0, 0, -2 * M_PI) != TPose2D(0, 0, 0));
+  EXPECT_TRUE(TPose3D(0, 0, 0, -2 * M_PI, 0, 0) == TPose3D(0, 0, 0, 0, 0, 0));
+  EXPECT_TRUE(TPose3D(0, 0, 0, 0, 0, -2 * M_PI) == TPose3D(0, 0, 0, 0, 0, 0));
+}

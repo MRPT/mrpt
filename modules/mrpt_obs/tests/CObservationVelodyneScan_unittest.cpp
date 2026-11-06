@@ -25,6 +25,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
+#include <cmath>
 #include <cstring>
 #include <fstream>
 #include <sstream>
@@ -426,6 +427,35 @@ TEST(CObservationRotatingScan, FromScan2D)
   EXPECT_EQ(rot.rowCount, 1);
   EXPECT_EQ(rot.columnCount, 8);
   EXPECT_NE(rot.lidarModel.find("2D_SCAN_"), std::string::npos);
+}
+
+// Points must be in meters, in the sensor frame, along the 2D scan rays
+TEST(CObservationRotatingScan, FromScan2DPointsInSensorFrame)
+{
+  CObservation2DRangeScan scan2d;
+  scan2d.aperture = static_cast<float>(M_PI);
+  scan2d.rightToLeft = true;
+  scan2d.maxRange = 20.0f;
+  scan2d.sensorPose = mrpt::poses::CPose3D(1.0, 2.0, 0.5, 0.3, 0, 0);
+  scan2d.resizeScan(5);
+  for (size_t i = 0; i < 5; i++)
+  {
+    scan2d.setScanRange(i, 2.0f + static_cast<float>(i));
+    scan2d.setScanRangeValidity(i, true);
+  }
+
+  CObservationRotatingScan rot;
+  rot.fromScan2D(scan2d);
+  ASSERT_EQ(rot.columnCount, 5);
+  for (size_t i = 0; i < 5; i++)
+  {
+    const double r = 2.0 + static_cast<double>(i);
+    const double a = scan2d.getScanAngle(i);
+    const auto& pt = rot.organizedPoints(0, i);
+    EXPECT_NEAR(pt.x, r * std::cos(a), 1e-4) << i;
+    EXPECT_NEAR(pt.y, r * std::sin(a), 1e-4) << i;
+    EXPECT_NEAR(pt.z, 0.0, 1e-6) << i;
+  }
 }
 
 TEST(CObservationRotatingScan, FromGenericScan2D)

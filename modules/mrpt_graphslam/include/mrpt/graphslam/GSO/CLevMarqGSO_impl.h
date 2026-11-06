@@ -13,7 +13,11 @@
 */
 
 #pragma once
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/graphslam/GSO/CLevMarqGSO.h>
+#include <mrpt/viz/CDisk.h>
+#include <mrpt/viz/CGridPlaneXY.h>
+#include <mrpt/viz/CSphere.h>
 
 namespace mrpt::graphslam::optimizers
 {
@@ -414,6 +418,8 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
     this->getNearbyNodesOf(
         nodes_to_optimize, this->m_graph->nodeCount() - 1, opt_params.optimization_distance);
     nodes_to_optimize->insert(this->m_graph->nodeCount() - 1);
+    // the root node defines the gauge: never optimize it
+    nodes_to_optimize->erase(this->m_graph->root);
   }
 
   graphslam::TResultInfoSpaLevMarq levmarq_info;

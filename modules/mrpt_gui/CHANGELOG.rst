@@ -2,6 +2,13 @@
 Changelog for package mrpt_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+* Python wheel: nanogui 3D windows from Python, complete C++ SDK, NumPy arrays as MRPT matrices (`#1496 <https://github.com/MRPT/mrpt/issues/1496>`_)
+* Fix builds using the embedded assimp, octomap and GLFW (`#1488 <https://github.com/MRPT/mrpt/issues/1488>`_)
+* mrpt_gui: remove unused GLU includes
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.1 (2026-11-01)
 ------------------
 

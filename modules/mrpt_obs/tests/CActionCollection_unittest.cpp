@@ -18,8 +18,10 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <cmath>
 #include <cstring>
 #include <sstream>
 
@@ -42,6 +44,69 @@ TEST(CActionRobotMovement2D, ComputeFromOdometryGaussianModel)
   mrpt::math::CMatrixDouble33 cov;
   act.poseChange->getCovarianceAndMean(cov, mean);
   EXPECT_NEAR(mean.x(), 0.5, 1e-6);
+}
+
+// The covariance of the Gaussian model must be J*Sigma*J^T, with J the
+// Jacobian of f(u) = H(u_phi) * u (see the motion models tutorial). Checked
+// against a numerical Jacobian of f().
+TEST(CActionRobotMovement2D, GaussianModelCovarianceMatchesJacobian)
+{
+  CActionRobotMovement2D::TMotionModelOptions opts;
+  opts.modelSelection = CActionRobotMovement2D::mmGaussian;
+  const auto& g = opts.gaussianModel;
+
+  const double u[3] = {0.4, 0.15, 0.6};
+  CActionRobotMovement2D act;
+  act.computeFromOdometry(CPose2D(u[0], u[1], u[2]), opts);
+
+  CPose2D mean;
+  mrpt::math::CMatrixDouble33 cov;
+  act.poseChange->getCovarianceAndMean(cov, mean);
+
+  const auto f = [](const double v[3], double out[3])
+  {
+    const double c = std::cos(v[2] / 2);
+    const double s = std::sin(v[2] / 2);
+    out[0] = c * v[0] - s * v[1];
+    out[1] = s * v[0] + c * v[1];
+    out[2] = v[2];
+  };
+
+  double J[3][3];
+  const double h = 1e-6;
+  for (int col = 0; col < 3; col++)
+  {
+    double up[3] = {u[0], u[1], u[2]};
+    double um[3] = {u[0], u[1], u[2]};
+    up[col] += h;
+    um[col] -= h;
+    double fp[3];
+    double fm[3];
+    f(up, fp);
+    f(um, fm);
+    for (int row = 0; row < 3; row++)
+    {
+      J[row][col] = (fp[row] - fm[row]) / (2 * h);
+    }
+  }
+
+  const double dist = std::sqrt(u[0] * u[0] + u[1] * u[1]);
+  const double stdXY = g.minStdXY + g.a1 * dist + g.a2 * std::abs(u[2]);
+  const double stdPhi = g.minStdPHI + g.a3 * dist + g.a4 * std::abs(u[2]);
+  const double sigma[3] = {stdXY * stdXY, stdXY * stdXY, stdPhi * stdPhi};
+
+  for (int r = 0; r < 3; r++)
+  {
+    for (int c = 0; c < 3; c++)
+    {
+      double expected = 0;
+      for (int k = 0; k < 3; k++)
+      {
+        expected += J[r][k] * sigma[k] * J[c][k];
+      }
+      EXPECT_NEAR(cov(r, c), expected, 1e-9) << "r=" << r << " c=" << c;
+    }
+  }
 }
 
 TEST(CActionRobotMovement2D, ComputeFromOdometryThrunModel)
@@ -204,9 +269,69 @@ TEST(CActionRobotMovement3D, ComputeFromOdometry)
   CActionRobotMovement3D act;
   CActionRobotMovement3D::TMotionModelOptions opts;
   act.computeFromOdometry(CPose3D(0.5, 0.1, 0.0, 0.05, 0.0, 0.0), opts);
-  // The 6DOF motion model's mean is a numerical approximation, not an exact
-  // copy of the input increment, so allow a small tolerance:
+  // The 6DOF motion model's mean is a Monte Carlo estimate, so allow a small
+  // tolerance:
   EXPECT_NEAR(act.poseChange.mean.x(), 0.5, 1e-3);
+}
+
+// Without model noise, the 6DOF model must reproduce the odometry increment
+TEST(CActionRobotMovement3D, mm6DOFNoiseFreeMeanIsTheIncrement)
+{
+  mrpt::random::getRandomGenerator().randomize(1);
+  for (const auto& incr :
+       {CPose3D(1.0, 0.2, 0.3, 0.4, 0.1, 0.05), CPose3D(1.0, 0.2, 0.0, 0.4, 0.0, 0.0),
+        CPose3D(1.0, 0.0, 0.5, 0.0, 0.0, 0.0), CPose3D(-0.5, -0.3, -0.2, -0.6, 0.2, -0.1)})
+  {
+    CActionRobotMovement3D act;
+    CActionRobotMovement3D::TMotionModelOptions o;
+    o.mm6DOFModel.additional_std_XYZ = 1e-6f;
+    o.mm6DOFModel.additional_std_angle = 1e-6f;
+    act.computeFromOdometry(incr, o);
+    const auto& m = act.poseChange.mean;
+    EXPECT_NEAR(m.x(), incr.x(), 1e-5) << incr;
+    EXPECT_NEAR(m.y(), incr.y(), 1e-5) << incr;
+    EXPECT_NEAR(m.z(), incr.z(), 1e-5) << incr;
+    EXPECT_NEAR(m.yaw(), incr.yaw(), 1e-5) << incr;
+    EXPECT_NEAR(m.pitch(), incr.pitch(), 1e-5) << incr;
+    EXPECT_NEAR(m.roll(), incr.roll(), 1e-5) << incr;
+  }
+}
+
+// The uncertainty of mirrored motions (turning left vs right) must be equal
+TEST(CActionRobotMovement3D, mm6DOFNoiseIsSymmetric)
+{
+  std::vector<double> stds;
+  for (const double sign : {+1.0, -1.0})
+  {
+    mrpt::random::getRandomGenerator().randomize(1);
+    CActionRobotMovement3D act;
+    CActionRobotMovement3D::TMotionModelOptions o;
+    o.mm6DOFModel.nParticlesCount = 2000;
+    o.mm6DOFModel.a1 = 0.2f;
+    o.mm6DOFModel.a2 = 0.01f;
+    o.mm6DOFModel.a9 = 0.2f;
+    o.mm6DOFModel.a10 = 0.01f;
+    act.computeFromOdometry(CPose3D(1.0, sign * 0.3, 0.0, sign * 0.6, 0, 0), o);
+    stds.push_back(std::sqrt(act.poseChange.cov(3, 3)));
+  }
+  // Same random draws, so the yaw std must be the same up to round-off:
+  EXPECT_NEAR(stds[0], stds[1], 1e-6);
+}
+
+TEST(CActionRobotMovement3D, mmGaussianUsesTheIncrement)
+{
+  CActionRobotMovement3D act;
+  CActionRobotMovement3D::TMotionModelOptions o;
+  o.modelSelection = CActionRobotMovement3D::mmGaussian;
+  o.mm6DOFModel.additional_std_XYZ = 0.1f;
+  o.mm6DOFModel.additional_std_angle = 0.01f;
+  const CPose3D incr(1.0, 0.2, 0.3, 0.4, 0.1, 0.05);
+  act.computeFromOdometry(incr, o);
+  EXPECT_NEAR((act.poseChange.mean.asVectorVal() - incr.asVectorVal()).norm(), 0.0, 1e-9);
+  for (int i = 0; i < 6; i++)
+  {
+    EXPECT_NEAR(act.poseChange.cov(i, i), i < 3 ? 0.01 : 1e-4, 1e-8) << i;
+  }
 }
 
 TEST(CActionRobotMovement3D, GetDescriptionAsText)

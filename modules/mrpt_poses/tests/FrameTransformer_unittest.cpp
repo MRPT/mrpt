@@ -47,3 +47,51 @@ TEST(FrameTransformer, SimplePublishAndLookup)
   run_tf_test1<2>(test_A2B);
   run_tf_test1<3>(test_A2B);
 }
+
+// Chains of transforms, looked up in both directions, against the explicit
+// compositions. lookupTransform(target, source) returns the pose of target
+// with respect to source.
+template <int DIM>
+void run_tf_chain_test()
+{
+  using namespace mrpt::poses;
+  using pose_t = typename FrameTransformer<DIM>::pose_t;
+
+  const auto map2odom = pose_t(mrpt::poses::CPose3D(1.0, 2.0, 0.0, 0.5, 0.0, 0.0));
+  const auto odom2base = pose_t(mrpt::poses::CPose3D(3.0, -1.0, 0.0, -1.2, 0.0, 0.0));
+  const auto base2laser = pose_t(mrpt::poses::CPose3D(0.2, 0.1, 0.0, 3.0, 0.0, 0.0));
+  const auto map2gps = pose_t(mrpt::poses::CPose3D(-5.0, 4.0, 0.0, 2.0, 0.0, 0.0));
+
+  FrameTransformer<DIM> tf;
+  tf.sendTransform("map", "odom", map2odom);
+  tf.sendTransform("odom", "base_link", odom2base);
+  tf.sendTransform("base_link", "laser", base2laser);
+  tf.sendTransform("map", "gps", map2gps);
+
+  const auto expectLookup =
+      [&](const std::string& target, const std::string& source, const pose_t& expected)
+  {
+    pose_t p;
+    EXPECT_EQ(tf.lookupTransform(target, source, p), LKUP_GOOD) << target << " " << source;
+    EXPECT_NEAR(.0, (expected.asVectorVal() - p.asVectorVal()).array().abs().maxCoeff(), 1e-12)
+        << target << " wrt " << source << ": " << p << " expected: " << expected;
+  };
+
+  expectLookup("laser", "map", map2odom + odom2base + base2laser);
+  expectLookup("map", "laser", -(map2odom + odom2base + base2laser));
+  expectLookup("odom", "base_link", -odom2base);
+  expectLookup("gps", "laser", (-(map2odom + odom2base + base2laser)) + map2gps);
+  expectLookup("map", "map", pose_t());
+
+  pose_t p;
+  EXPECT_EQ(tf.lookupTransform("map", "unknown", p), LKUP_UNKNOWN_FRAME);
+  EXPECT_EQ(tf.lookupTransform("unknown", "map", p), LKUP_UNKNOWN_FRAME);
+  tf.sendTransform("world", "other", pose_t());
+  EXPECT_EQ(tf.lookupTransform("other", "map", p), LKUP_NO_CONNECTIVITY);
+}
+
+TEST(FrameTransformer, ChainsAndInverseLookups)
+{
+  run_tf_chain_test<2>();
+  run_tf_chain_test<3>();
+}

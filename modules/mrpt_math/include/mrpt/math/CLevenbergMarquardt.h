@@ -25,7 +25,9 @@
 namespace mrpt::math
 {
 /** An implementation of the Levenberg-Marquardt algorithm for least-square
- * minimization.
+ * minimization, following Algorithm 3.16 in: K. Madsen, H.B. Nielsen,
+ * O. Tingleff, "Methods for Non-Linear Least Squares Problems", 2nd ed.,
+ * IMM, Technical University of Denmark, 2004.
  *
  * Refer to: \ref tutorial_math_levenberg_marquardt
  *
@@ -50,9 +52,9 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
    *  \param x The state point under examination.
    *  \param y The same object passed to "execute" as the parameter
    * "userParam".
-   *  \param out The vector of (non-squared) errors, of the average square
-   * root error, for the given "x". The functor code must set the size of this
-   * vector.
+   *  \param out The vector of (non-squared) residuals for the given "x". The
+   * cost being minimized is the sum of their squares. The functor code must
+   * set the size of this vector.
    */
   using TFunctorEval =
       std::function<void(const VECTORTYPE& x, const USERPARAM& y, VECTORTYPE& out)>;
@@ -72,19 +74,20 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
     size_t iterations_executed = 0;
     /** The last error vector returned by the user-provided functor. */
     VECTORTYPE last_err_vector;
-    /** Each row is the optimized value at each iteration. */
+    /** Each row is the value of x after each iteration (the first one is
+     * x0, the last one the optimum), followed by the squared error. */
     matrix_t path;
 
-    /** This matrix can be used to obtain an estimate of the optimal
-     * parameters covariance matrix:
-     *  \f[ COV = H M H^\top \f]
-     *  With COV the covariance matrix of the optimal parameters, H this
-     * matrix, and M the covariance of the input (observations).
+    /** The Gauss-Newton approximation of the Hessian, \f$ J^\top J \f$,
+     * at the last accepted point. If the residuals have covariance
+     * \f$ \sigma^2 I \f$, the covariance of the optimal parameters can be
+     * estimated as \f$ \sigma^2 H^{-1} \f$.
      */
     matrix_t H;
   };
 
-  /** Executes the LM-method, with derivatives estimated from
+  /** Executes the LM-method, with derivatives estimated numerically from
+   * \a functor, using \a increments as perturbations of each element of x.
    *  \a functor is a user-provided function which takes as input two
    *vectors, in this order:
    *		- x: The parameters to be optimized.
@@ -97,7 +100,9 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
    *Euclidean "x_new = x + x_increment" at the core of the incremental
    *optimizer by
    *     any other operation. It can be used for example, in on-manifold
-   *optimizations.
+   *optimizations. In that case, the Jacobian (and TResultInfo::H) is
+   *estimated with respect to the increment, by perturbing each of its
+   *components (with \a increments) through \a x_increment_adder.
    */
   void execute(
       VECTORTYPE& out_optimal_x,
@@ -133,8 +138,33 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
     matrix_t J;    // The Jacobian of "f"
     VECTORTYPE g;  // The gradient
 
+    // Jacobian of the residuals: with respect to x, or to the increment
+    // applied through x_increment_adder, if given:
+    const auto computeJacobian = [&]()
+    {
+      if (!x_increment_adder)
+      {
+        mrpt::math::estimateJacobian(x, functor, increments, userParam, J);
+        return;
+      }
+      const VECTORTYPE x_lin = x;
+      const TFunctorEval f_of_incr =
+          [&](const VECTORTYPE& incr, const USERPARAM& param, VECTORTYPE& out)
+      {
+        VECTORTYPE x_mod;
+        x_increment_adder(x_mod, x_lin, incr, param);
+        functor(x_mod, param, out);
+      };
+      VECTORTYPE zero_incr = x;
+      for (size_t k = 0; k < static_cast<size_t>(zero_incr.size()); k++)
+      {
+        zero_incr[k] = 0;
+      }
+      mrpt::math::estimateJacobian(zero_incr, f_of_incr, increments, userParam, J);
+    };
+
     // Compute the jacobian and the Hessian:
-    mrpt::math::estimateJacobian(x, functor, increments, userParam, J);
+    computeJacobian();
     out_info.H.matProductOf_AtA(J);
 
     const size_t H_len = out_info.H.cols();
@@ -161,10 +191,12 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
     const size_t N = x.size();
 
+    size_t lastPathRow = 0;
     if (returnPath)
     {
       out_info.path.setSize(maxIter, N + 1);
       for (size_t i = 0; i < N; i++) out_info.path(iter, i) = x[i];
+      out_info.path(iter, N) = F_x;
     }
     else
       out_info.path = matrix_t();  // Empty matrix
@@ -216,7 +248,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
           f_x = f_xnew;
           F_x = F_xnew;
 
-          math::estimateJacobian(x, functor, increments, userParam, J);
+          computeJacobian();
           out_info.H.matProductOf_AtA(J);
           g.matProductOf_Atb(J, f_x);
 
@@ -240,6 +272,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
         {
           for (size_t i = 0; i < N; i++) out_info.path(iter, i) = x[i];
           out_info.path(iter, x.size()) = F_x;
+          lastPathRow = iter;
         }
       }
     }  // end while
@@ -248,7 +281,10 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
     out_info.final_sqr_err = F_x;
     out_info.iterations_executed = iter;
     out_info.last_err_vector = f_x;
-    if (returnPath) out_info.path.setSize(iter, N + 1);
+    if (returnPath)
+    {
+      out_info.path.setSize(lastPathRow + 1, N + 1);
+    }
 
     MRPT_END
   }

@@ -17,6 +17,7 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
@@ -25,6 +26,7 @@
 #include <mrpt/viz/CSetOfObjects.h>
 #include <test_mrpt_common.h>
 
+#include <cmath>
 #include <filesystem>
 
 TEST(CMultiMetricMapTests, isEmpty)
@@ -347,4 +349,24 @@ TEST(CMultiMetricMapTests, Compute3DMatchingRatio)
   mrpt::maps::TMatchingRatioParams params;
   const float ratio = m.compute3DMatchingRatio(&otherMap, mrpt::poses::CPose3D::Identity(), params);
   EXPECT_TRUE(std::isfinite(ratio));
+}
+
+// Regression: a 3D occupancy grid layer (no likelihood model) must not break
+// the likelihood of a multi-metric map, nor change it.
+TEST(CMultiMetricMapTests, ComputeObservationLikelihoodWith3DGridLayer)
+{
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+
+  auto grid2D = mrpt::maps::COccupancyGridMap2D::Create();
+  grid2D->insertObservation(scan1);
+
+  mrpt::maps::CMultiMetricMap m;
+  m.mapsList().push_back(grid2D);
+  m.mapsList().push_back(mrpt::maps::COccupancyGridMap3D::Create());
+
+  const mrpt::poses::CPose3D pose(0.1, -0.05, 0, 0.02, 0, 0);
+  double lik = 0;
+  EXPECT_NO_THROW(lik = m.computeObservationLikelihood(scan1, pose));
+  EXPECT_NEAR(lik, grid2D->computeObservationLikelihood(scan1, pose), 1e-9);
 }

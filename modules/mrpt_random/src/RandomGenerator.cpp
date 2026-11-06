@@ -25,7 +25,7 @@ static thread_local CRandomGenerator randomGenerator;
 #endif
 
 // Code from the implementation by Rick Wagner
-//  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
+//  https://web.archive.org/web/20120222170616/http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
 inline uint32_t hiBit(const uint32_t u) { return u & 0x80000000UL; }
 inline uint32_t loBit(const uint32_t u) { return u & 0x00000001UL; }
 inline uint32_t loBits(const uint32_t u) { return u & 0x7fffffffUL; }
@@ -70,7 +70,7 @@ void Generator_MT19937::generateNumbers()
   }
 
   // Code from the implementation by Rick Wagner
-  //  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
+  //  https://web.archive.org/web/20120222170616/http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
   // and:
   //  http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c
   //
@@ -105,8 +105,15 @@ void Generator_MT19937::seed(const uint32_t seed)
 CRandomGenerator& mrpt::random::getRandomGenerator() { return randomGenerator; }
 uint64_t CRandomGenerator::drawUniform64bit() { return m_uint64(m_MT19937); }
 uint32_t CRandomGenerator::drawUniform32bit() { return m_uint32(m_MT19937); }
-void CRandomGenerator::randomize(const uint32_t seed) { m_MT19937.seed(seed); }
+void CRandomGenerator::randomize(const uint32_t seed)
+{
+  m_MT19937.seed(seed);
+  // Drop any state cached from the previous sequence:
+  m_normdistribution.reset();
+  m_uint32.reset();
+  m_uint64.reset();
+}
 
-void CRandomGenerator::randomize() { m_MT19937.seed(std::random_device{}()); }
+void CRandomGenerator::randomize() { randomize(std::random_device{}()); }
 
 double CRandomGenerator::drawGaussian1D_normalized() { return m_normdistribution(m_MT19937); }

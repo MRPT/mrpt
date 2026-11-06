@@ -134,7 +134,24 @@ mrpt_add_library(
   sizes (square `CMatrixFixed`: 2,3,4,6,7,12; `CVectorFixed`: 2,3,4,5,6,7,12;
   see `src/MatrixVectorBase_instantiate_*.cpp`). Other sizes compile but fail
   to link. Never `#pragma pack(1)` a struct holding a class like `TPoint3D`
-  (SIGBUS on armhf).
+  (SIGBUS on armhf). `wrapToPi()` returns values in [-pi, pi).
+  `inverse_LLt()` throws for matrices that are not positive-definite (`chol()`
+  returns false). 7x7 quaternion covariances are rank 6: their information
+  form (`CPose3DQuatPDFGaussianInf`) uses a symmetric pseudo-inverse.
+* **mrpt_poses**: `CQuaternion::crossProduct()`/`normalize()` force qr >= 0, so
+  Jacobians of quaternion products must flip the quaternion rows when the raw
+  product has qr < 0. `Lie::SE<3>::exp/log` are the pseudo-exponential maps.
+  Verify new Jacobians against finite differences with total rotations above
+  180 deg and near pitch = +-90 deg. GTSAM Pose3 covariances are body-frame
+  (rx,ry,rz,tx,ty,tz): convert with `gtsam_wrappers::to_mrpt_se3_pdf()` /
+  `to_gtsam_se3_cov6()`; `to_mrpt_se3_cov6()` only reorders (exact at identity).
+  `FrameTransformer::lookupTransform(target, source)` returns the pose of target
+  wrt source (the inverse of ROS tf2).
+* **mrpt_graphs**: edge PDFs hold the uncertainty of the (x,y,phi) or
+  (x,y,z,yaw,pitch,roll) parameters, translation in the edge origin frame.
+  Optimizers and g2o files use the local residual `pseudoLog(Z^-1 X)`; convert
+  with `graphs::detail::infoParamsToLocal()` / `infoLocalToParams()`. Honor
+  `edges_store_inverse_poses` in any new edge consumer.
 * **mrpt_img**: `CImage::at<T>()` is a raw `reinterpret_cast`; for 3-channel
   images use `at<uint8_t>(x, y, channel)`, not `at<TColor>()`.
   `scaleHalf()`/`grayscale()` dispatch to SSE2/SSSE3 kernels and return whether
@@ -204,13 +221,16 @@ mrpt_add_library(
   viable movement.
 * **mrpt_obs**: `CObservationVelodyneScan` per-ray timestamps derive from
   `CObservation::timestamp`, not `getOriginalReceivedTimeStamp()`.
+  `CObservationRotatingScan::organizedPoints` are in the sensor frame
+  (consumers apply `sensorPose`).
 * **mrpt_maps**: `CVoxelMapRGB` / `CColouredOctoMap` color 3D scans via
   `hasRangeImage` + camera intrinsics, not `hasPoints3D` (a hand-built
   `CObservation3DRangeScan` needs `setIntrinsicParamsFromValues()` and a filled
   `rangeImage`). `CGasConcentrationGridMap2D::build_Gaussian_Wind_Grid()`
   caches a LUT file in the current working directory.
-  `COccupancyGridMap3D`'s `determineMatching2D()`, `compute3DMatchingRatio()`
-  and `internal_computeObservationLikelihood()` are unimplemented and throw.
+  `COccupancyGridMap3D`'s `determineMatching2D()` and `compute3DMatchingRatio()`
+  are unimplemented and throw; it has no observation likelihood
+  (`canComputeObservationLikelihood()` is false, the likelihood is 0).
   Constructors of concrete `CMetricMap` classes must stay out-of-line: user
   code inlining one (base ctor call + merged vptr stores) is miscompiled by
   GCC with LTO (calls devirtualized to `__builtin_unreachable`).
@@ -227,12 +247,15 @@ mrpt_add_library(
 * **mrpt_slam**: only the auxiliary particle filters go through
   `PF_SLAM_implementation_gatherActionsCheckBothActObs()`; `pfStandardProposal`
   reads the action directly. An empty sensory frame counts as valid: pass a
-  null `sf` to keep a movement accumulated.
+  null `sf` to keep a movement accumulated. Data association of bearings needs
+  the `data_association_full_covariance()` overload with `angular_components`.
 * **mrpt_topography**: every ENU helper uses the ellipsoid normal as "Up".
   The inverse of `geodeticToENU_WGS84()` is `ENUToGeodetic_WGS84()` (returns
   lon/lat/height); `ENUToGeocentric()` returns geocentric (ECEF) coordinates
   and inverts `geocentricToENU_WGS84()`. In MRPT 2.x and 3.0.x,
-  `ENUToGeocentric()` used a geocentric-radial "Up" instead.
+  `ENUToGeocentric()` used a geocentric-radial "Up" instead. UTM uses the
+  Krueger n^6 series (sub-mm) and plain 6-degree zones (no Norway/Svalbard
+  exceptions; longitude 180 is zone 1).
 * Known-unreachable code kept on purpose: `mrpt_rtti`'s deferred
   class-registration queue, the `shared_ptr<yaml>` alternative in
   `mrpt_containers`' `scalar_t` (ABI-affecting), and `mrpt_viz`'s
@@ -282,6 +305,13 @@ mrpt_add_library(
 * A new Python module also needs its own `python3-mrpt-<mod>` Debian package
   (`debian/control`, the `python3-mrpt` metapackage, a `.install` file and the
   import list in `debian/tests/control`); see "Releases" below.
+* The pip wheel (`packaging/pip`, see its `README-dev.md`) builds the modules
+  in `MRPT_WHEEL_MODULES` of its `CMakeLists.txt` and ships them with a C++
+  SDK (`mrpt.sdk`). Module code must not assume a fixed install prefix: the
+  wheel is relocatable (RPATH `$ORIGIN`), with no `share/mrpt_data`. Its
+  public C++ dependencies (Eigen, oneTBB, nanoflann, GLFW inside nanogui) are
+  in the SDK too; its windows are nanogui ones (no wxWidgets), so Python
+  examples use `CDisplayWindowGUI.spinOnce()`, not `CDisplayWindow3D`.
 * Examples live in `mrpt_examples_py`; extend them when wrapping new classes.
 * The `.pyi` stubs next to each `__init__.py` are generated and committed: run
   `scripts/generate_python_stubs.py` after changing bindings (CI fails if they

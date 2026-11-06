@@ -107,13 +107,13 @@ class CDirectedGraph
   /** Default constructor */
   CDirectedGraph() : edges() {}
   iterator begin() { return edges.begin(); }
-  iterator rbegin() { return edges.rbegin(); }
+  reverse_iterator rbegin() { return edges.rbegin(); }
   iterator end() { return edges.end(); }
-  iterator rend() { return edges.rend(); }
+  reverse_iterator rend() { return edges.rend(); }
   const_iterator begin() const { return edges.begin(); }
-  const_iterator rbegin() const { return edges.rbegin(); }
+  const_reverse_iterator rbegin() const { return edges.rbegin(); }
   const_iterator end() const { return edges.end(); }
-  const_iterator rend() const { return edges.rend(); }
+  const_reverse_iterator rend() const { return edges.rend(); }
   /** @name Edges/nodes utility methods
     @{ */
 

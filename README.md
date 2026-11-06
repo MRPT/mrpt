@@ -50,6 +50,20 @@ while preserving the data structures and algorithms at the core of MRPT.
 
 ## Getting started
 
+### Install for Python (pip)
+
+```bash
+pip install mrpt3
+```
+
+```python
+from mrpt.poses import CPose3D
+print(CPose3D(1.0, 2.0, 0.0, 0.5, 0.0, 0.0) + CPose3D(0.5, 0.0, 0.0, 0.0, 0.0, 0.0))
+```
+
+Linux (x86_64, aarch64), Python 3.11 to 3.14. The wheel also contains the C++
+headers, libraries and CMake files. See the [Python examples](https://docs.mrpt.org/reference/latest/python_examples.html).
+
 ### Install from ROS repositories
 
 ```bash

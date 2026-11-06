@@ -2,6 +2,9 @@
 Changelog for package mrpt_apps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+
 3.6.1 (2026-11-01)
 ------------------
 * RawLogViewer: redesigned on Dear ImGui: dockable panels, timeline, per-sensor panels, background cancellable operations (`#1479 <https://github.com/MRPT/mrpt/issues/1479>`_)

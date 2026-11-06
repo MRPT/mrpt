@@ -69,6 +69,10 @@ class CPose3DPDF :
    * CPose3DPDF. This object must be deleted by the user when not required
    * anymore.
    *
+   * \note Gaussians get zero covariance for (z,pitch,roll), i.e. these are
+   * known exactly, whereas information-form Gaussians get zero information
+   * for them (unknown), which gives a singular information matrix.
+   *
    * \sa copyFrom
    */
   static CPose3DPDF* createFrom2D(const CPosePDF& o);
@@ -85,8 +89,8 @@ class CPose3DPDF :
 
   /** This static method computes the pose composition Jacobians.
    *
-   * See this technical report:
-   * http:///www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+   * See \cite blanco_se3_tutorial (https://arxiv.org/abs/2103.15980),
+   * section 5.1.2, Eqs. (5.1)-(5.4).
    *
    * Direct equations (for the covariances) in yaw-pitch-roll are too complex.
    *  Make a way around them and consider instead this path:

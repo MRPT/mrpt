@@ -17,6 +17,17 @@
 using namespace mrpt;
 using namespace mrpt::math;
 
+namespace
+{
+// Via the rotation matrix, which keeps the rotation exact near gimbal lock:
+void quatToYPR(const CQuaternionDouble& q, TPose3D& p)
+{
+  CMatrixDouble33 R;
+  q.rotationMatrixNoResize(R);
+  TPose3D::SO3_to_yaw_pitch_roll(R, p.yaw, p.pitch, p.roll);
+}
+}  // namespace
+
 void mrpt::math::slerp(const TPose3D& p0, const TPose3D& p1, const double t, TPose3D& p)
 {
   CQuaternionDouble q0, q1, q;
@@ -24,7 +35,7 @@ void mrpt::math::slerp(const TPose3D& p0, const TPose3D& p1, const double t, TPo
   p1.getAsQuaternion(q1);
   // The quaternion part (this will raise exception on t not in [0,1])
   mrpt::math::slerp(q0, q1, t, q);
-  q.rpy(p.roll, p.pitch, p.yaw);
+  quatToYPR(q, p);
   // XYZ:
   p.x = (1 - t) * p0.x + t * p1.x;
   p.y = (1 - t) * p0.y + t * p1.y;
@@ -44,5 +55,5 @@ void mrpt::math::slerp_ypr(
   mrpt::math::slerp(quat0, quat1, t, q);
 
   p.x = p.y = p.z = 0;
-  q.rpy(p.roll, p.pitch, p.yaw);
+  quatToYPR(q, p);
 }

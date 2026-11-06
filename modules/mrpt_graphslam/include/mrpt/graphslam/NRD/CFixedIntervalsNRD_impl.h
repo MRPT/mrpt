@@ -14,6 +14,7 @@
 
 #pragma once
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/poses/Lie/SO.h>
 
 namespace mrpt::graphslam::deciders
 {
@@ -72,7 +73,15 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
       // inserted
       constraint_t incr_constraint;
       incr_constraint.copyFrom(move_pdf);
-      this->m_since_prev_node_PDF += incr_constraint;
+      if (this->m_since_prev_node_PDF_is_empty)
+      {
+        this->m_since_prev_node_PDF = incr_constraint;
+        this->m_since_prev_node_PDF_is_empty = false;
+      }
+      else
+      {
+        this->m_since_prev_node_PDF += incr_constraint;
+      }
     }
   }  // ELSE - FORMAT #1
 
@@ -140,9 +149,8 @@ bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
 
   bool res = false;
   if ((p1.distanceTo(p2) > params.registration_max_distance) ||
-      (fabs(wrapToPi(p1.roll() - p2.roll())) > params.registration_max_angle) ||
-      (fabs(wrapToPi(p1.pitch() - p2.pitch())) > params.registration_max_angle) ||
-      (fabs(wrapToPi(p1.yaw() - p2.yaw())) > params.registration_max_angle))
+      (mrpt::poses::Lie::SO<3>::log((p2 - p1).getRotationMatrix()).norm() >
+       params.registration_max_angle))
   {
     res = true;
   }

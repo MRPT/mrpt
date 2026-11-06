@@ -114,6 +114,10 @@ useful to someone else maintaining MRPT in the future... ;-)
    git push origin master
    git push origin X.Y.Z
 
+- Pushing the tag also runs the "Python wheels" GitHub workflow, which
+  uploads the wheels to PyPI once all of them pass their tests. Check that it
+  succeeded.
+
 
 4) Generate the source code packages
 --------------------------------------

@@ -105,23 +105,31 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CSparseMatrixTemplate_unittest.cpp
   tests/CSplineInterpolator1D_unittest.cpp
   tests/distributions_unittest.cpp
+  tests/drawGaussianMultivariate_unittest.cpp
   tests/EigenAlignment_unittest.cpp
   tests/fourier_unittest.cpp
   tests/fresnel_unittest.cpp
+  tests/geometry_construction_unittest.cpp
   tests/geometry_dispatch_unittest.cpp
+  tests/geometry_distance_angle_unittest.cpp
   tests/geometry_extra_unittest.cpp
+  tests/geometry_intersect_unittest.cpp
   tests/geometry_numerics_unittest.cpp
+  tests/geometry_polygons_unittest.cpp
   tests/geometry_sets_unittest.cpp
   tests/geometry_unittest.cpp
+  tests/homog_matrices_unittest.cpp
   tests/interp_fit_unittest.cpp
   tests/KDTreeCapable_unittest.cpp
   tests/matrix_api_unittest.cpp
+  tests/matrix_linalg_unittest.cpp
   tests/matrix_ops_unittest.cpp
   tests/matrix_ops1_unittest.cpp
   tests/matrix_ops2_unittest.cpp
   tests/matrix_ops3_unittest.cpp
   tests/matrix_ops4_unittest.cpp
   tests/matrix_ops5_unittest.cpp
+  tests/matrix_text_io_unittest.cpp
   tests/matrix_yaml_unittest.cpp
   tests/math_unittest.cpp
   tests/ModelSearch_unittest.cpp
@@ -132,6 +140,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/ransac_unittest.cpp
   tests/robust_kernels_unittest.cpp
   tests/slerp_unittest.cpp
+  tests/TBoundingBox_TOrientedBox_extra_unittest.cpp
   tests/TBoundingBox_unittest.cpp
   tests/TObject2D_unittest.cpp
   tests/TObject3D_unittest.cpp
@@ -144,6 +153,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/TPolygon3D_unittest.cpp
   tests/TPolygonWithPlane_unittest.cpp
   tests/TPose3DQuat_unittest.cpp
+  tests/transform_gaussian_unittest.cpp
   tests/TPoseOrPoint_unittest.cpp
   tests/TSegment3D_unittest.cpp
   tests/TTwist2D_unittest.cpp

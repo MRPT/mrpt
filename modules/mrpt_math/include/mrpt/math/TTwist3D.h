@@ -156,9 +156,10 @@ struct TTwist3D :
   void asString(std::string& s) const;
   using internal::ProvidesStringConversion<TTwist3D>::asString;
 
-  /** Transform all 6 components for a change of reference frame from "A" to
-   * another frame "B" whose rotation with respect to "A" is given by `rot`.
-   * The translational part of the pose is ignored */
+  /** Rotates the linear and angular velocity vectors by `rot`, i.e.
+   * v' = R(rot) * v and w' = R(rot) * w. This converts a twist expressed in a
+   * frame "B" into a frame "A", where `rot` is the orientation of "B" with
+   * respect to "A". The translational part of the pose is ignored */
   void rotate(const mrpt::math::TPose3D& rot);
 
   /** Like rotate(), but returning a copy of the rotated twist.

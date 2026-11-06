@@ -69,7 +69,7 @@ struct MRPT_EMPTY_BASES TPoint2D_ : public TPoint2D_data<T>, public TPoseOrPoint
   /** Constructor from coordinates  */
   constexpr TPoint2D_(T xx, T yy) : TPoint2D_data<T>{xx, yy} {}
 
-  /** Explicit constructor from coordinates.  */
+  /** Implicit conversion from a point with another scalar type. */
   template <typename U>
   TPoint2D_(const TPoint2D_data<U>& p)
   {

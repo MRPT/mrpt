@@ -104,49 +104,13 @@ on [2] the
  * </div>
  *
  * \note
- * Olson uses the following formula for evaluating the pairwise
- * consistency between two hypotheses i,j:
- * <br><center> \f$ A_{i,j} = e^{T \Sigma_T^{-1} T^T} \f$ </center>
- *
- * \note
- * Where:
- * - T is the rigid body transformation using the two hypotheses and the two
- * Dijkstra Links connecting the nodes that form the hypotheses
- * - \f$ \Sigma_T \f$ is the covariance matrix of the aforementioned rigid
- * body transformation
- *
- * \note
- * However this formula is <a>inconsistent with the rest of the paper
- * explanations and mathematical formulas </a>:
- * - The author states that:
- *   \verbatim
-"This quantity is proportional to the probability density that the rigid-body
-transformation is the identity matrix (i.e., T = [0 0 0])"
-\endverbatim
- *   This is \a inconsistent with the given formula. Suppose that a
- *   wrong loop closure is included in the \f$ A_{i,j} \f$, therefore the
- *   pairwise-consistency element should have a low value. For this to hold
- *   true the exponent of the consistency element shoud be small and
- *   neglecting the covariance matrix of rigid-body transformation  (e.g. unit
- *   covariance matrix), \f$ T T^T \f$ should be small.
- *   When a wrong loop closure is evaluated the aforementioned quantity
- *   increases since the hypotheses do not form a correct loop. Therefore the
- *   worse the rigid-body transformation the higher the exponent term,
- *   therefore the higher the consistency element
- * - Author uses the information matrix \f$ \Sigma_T^{-1} \f$ in the
-exponential.
- *   However in the optimal case (high certainty of two correct loop closure
- *   hypotheses) information matrix and rigid body transformation vector T
- *   have opposite effects in the exponent term:
- *   - \f$ \text{Correct loop closure} \Rightarrow T \rightarrow [0, 0, 0]
- *   \Rightarrow \text{exponent} \downarrow \f$
- *   - \f$ \text{Correct loop closure} \Rightarrow
- *   \text{diagonal\_terms}(\Sigma_T^{-1}) \uparrow \Rightarrow \text{exponent}
- *   \uparrow \f$
- *
- * \note
- * Based on the previous comments the following formula is used in the decider:
- * <br><center> \f$ A_{i,j} = e^{-T \Sigma_T T^T} \f$ </center>
+ * Pairwise consistency of hypotheses i,j (Olson 2009):
+ * <br><center> \f$ A_{i,j} = e^{-T \Sigma_T^{-1} T^T} \f$ </center>
+ * where T=(x,y,phi) is the rigid-body transformation of the loop formed by
+ * both hypotheses and the two Dijkstra links, and \f$ \Sigma_T \f$ its
+ * covariance. The exponent is minus the squared Mahalanobis distance of T to
+ * the identity: 1 for a loop that closes exactly, decaying with the loop error
+ * measured in units of its uncertainty.
  *
  * ### .ini Configuration Parameters
  *
@@ -334,7 +298,7 @@ class CLoopCloserERD :
    * \param[in] groupB Second group to be used
    * \param[in] hypots_pool Pool of hypothesis that has been generated
    * between the two groups
-   * \pram[out] consist_matrix Pointer to Pair-wise consistencies matrix that
+   * \param[out] consist_matrix Pointer to Pair-wise consistencies matrix that
    * is to be filled
 
    * \param[in] groupA_opt_paths Pointer to vector of optimal paths that can
@@ -607,7 +571,7 @@ class CLoopCloserERD :
    * Given the transformation vector \f$ (x,y,\phi)\f$ of the above
    * composition (e.g. T) the
    * pairwise consistency element would then be:
-   * <br><center> \f$ A_{i,j} = e^{-T \Sigma_T T^T} \f$ </center>
+   * <br><center> \f$ A_{i,j} = e^{-T \Sigma_T^{-1} T^T} \f$ </center>
    *
    * \param[in] hypots Hypothesis corresponding to the potential inter-group
    * constraints

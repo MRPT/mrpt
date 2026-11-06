@@ -2,6 +2,9 @@
 Changelog for package mrpt_imgui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+
 3.6.1 (2026-11-01)
 ------------------
 * Grow into a Dear ImGui application framework: CImGuiAppShell, CImGuiBackgroundScene, CImGuiTimeline, CImGuiPlotPanel, CImGuiImageView, CImGuiLogConsole, CImGuiFileDialog, AsyncTask

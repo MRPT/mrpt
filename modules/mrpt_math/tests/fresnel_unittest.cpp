@@ -130,3 +130,29 @@ TEST(fresnel, oddSymmetry)
     EXPECT_NEAR(mrpt::math::fresnel_sin_integral(-x), -mrpt::math::fresnel_sin_integral(x), 1e-12);
   }
 }
+
+TEST(fresnel, fresnelAgainstHighPrecisionReference)
+{
+  // Reference values computed with mpmath (40 digits), MATLAB normalization:
+  // S(x) = int_0^x sin(pi t^2 / 2) dt, C(x) = int_0^x cos(pi t^2 / 2) dt.
+  // The first five points are the internal region boundaries.
+  const double tbl[][3] = {
+      { 0.3989422804014327,   0.033097068830163015,  0.39645609542000465},
+      {0.79788456080286541,    0.24755828765161089,  0.72170592429260516},
+      { 2.3936536824085963,    0.61721359702418976,  0.56080398106395468},
+      { 3.9894228040143269,    0.42121704802283605,  0.48787989235178997},
+      { 5.5851919256200571,    0.48342782833806497,   0.4454863431580523},
+      {0.10000000000000001, 0.00052358954761221065, 0.099997532627085078},
+      {                1.7,     0.5491959403215686,  0.32382687600390025},
+      { 4.4000000000000004,    0.46226801641104448,  0.43833294083767915},
+      {               9.25,    0.52651844105386814,  0.52192869898246375},
+      {-6.2999999999999998,    -0.4555454305043985, -0.47600445535306796},
+      {                 31,    0.49999659893870962,  0.51026805746506798},
+  };
+  // A few ulps of slack: libm implementations differ across platforms.
+  for (const auto& row : tbl)
+  {
+    EXPECT_NEAR(mrpt::math::fresnel_sin_integral(row[0]), row[1], 1e-14) << "x=" << row[0];
+    EXPECT_NEAR(mrpt::math::fresnel_cos_integral(row[0]), row[2], 1e-14) << "x=" << row[0];
+  }
+}

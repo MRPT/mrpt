@@ -93,26 +93,26 @@ class CPosePDFSOG : public CPosePDF
   /** Clear the list of modes */
   void clear();
 
-  /** Access to individual beacons */
+  /** Access to individual modes */
   const TGaussianMode& operator[](size_t i) const
   {
     ASSERT_(i < m_modes.size());
     return m_modes[i];
   }
-  /** Access to individual beacons */
+  /** Access to individual modes */
   TGaussianMode& operator[](size_t i)
   {
     ASSERT_(i < m_modes.size());
     return m_modes[i];
   }
 
-  /** Access to individual beacons */
+  /** Access to individual modes */
   const TGaussianMode& get(size_t i) const
   {
     ASSERT_(i < m_modes.size());
     return m_modes[i];
   }
-  /** Access to individual beacons */
+  /** Access to individual modes */
   TGaussianMode& get(size_t i)
   {
     ASSERT_(i < m_modes.size());
@@ -133,10 +133,12 @@ class CPosePDFSOG : public CPosePDF
    * preserving the total distribution.
    *  This method uses the approach described in the paper:
    *  - "Kullback-Leibler Approach to Gaussian Mixture Reduction" AR
-   * Runnalls. IEEE Transactions on Aerospace and Electronic Systems, 2007.
+   * Runnalls. IEEE Transactions on Aerospace and Electronic Systems,
+   * 43(3), 2007.
    *
-   *  \param max_KLd The maximum KL-divergence to consider the merge of two
-   * nodes (and then stops the process).
+   *  \param max_KLd Two modes are merged while the upper bound B(i,j) of the
+   * KL divergence caused by the merge (eq. (21) in that paper) is below this
+   * value.
    */
   void mergeModes(double max_KLd = 0.5, bool verbose = false);
 
@@ -212,8 +214,10 @@ class CPosePDFSOG : public CPosePDF
 
   /** Evaluates the PDF at a given point. */
   double evaluatePDF(const mrpt::poses::CPose2D& x, bool sumOverAllPhis = false) const;
-  /** Evaluates the ratio PDF(x) / max_PDF(x*), that is, the normalized PDF in
-   * the range [0,1]. */
+  /** Evaluates \f$ \sum_i \omega^i \mathcal{N}_i(x) / \mathcal{N}_i(\bar{x}^i) \f$,
+   * that is, the sum of the weighted normalized densities of each mode. Note
+   * that with the default weight normalization (maximum log-weight is 0), the
+   * result may be larger than 1 if modes overlap. */
   double evaluateNormalizedPDF(const mrpt::poses::CPose2D& x) const;
 
   /** Evaluates the PDF within a rectangular grid (and a fixed orientation)
@@ -231,7 +235,8 @@ class CPosePDFSOG : public CPosePDF
 
   /** Bayesian fusion of two pose distributions, then save the result in this
    * object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object
-   * and p2 a mrpt::poses::CPosePDFGaussian object) */
+   * and p2 a mrpt::poses::CPosePDFGaussian object).
+   * \note minMahalanobisDistToDrop is currently ignored. */
   void bayesianFusion(
       const CPosePDF& p1, const CPosePDF& p2, const double minMahalanobisDistToDrop = 0) override;
 

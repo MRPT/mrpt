@@ -65,8 +65,11 @@ class TPolygon2D : public std::vector<TPoint2D>
 
   /** Distance to a point (always >=0) */
   double distance(const TPoint2D& point) const;
-  /** Check whether a point is inside (or within geometryEpsilon of a polygon
-   * edge). This works for concave or convex polygons. */
+  /** Check whether a point is inside the polygon (non-zero winding number).
+   * This works for concave or convex polygons. No epsilon tolerance is
+   * applied: points exactly on the boundary follow a half-open rule (e.g. for
+   * an axis-aligned box, bottom and left edges are inside, top and right ones
+   * are outside). */
   bool contains(const TPoint2D& point) const;
   /** Gets as set of segments, instead of points. */
   void getAsSegmentList(std::vector<TSegment2D>& v) const;
@@ -85,7 +88,7 @@ class TPolygon2D : public std::vector<TPoint2D>
    * mrpt::gui::CDisplayWindowPlots */
   void getPlotData(std::vector<double>& x, std::vector<double>& y) const;
 
-  /// \overload returning [x,y] as a tupple.
+  /// \overload returning [x,y] as a tuple.
   std::tuple<std::vector<double>, std::vector<double>> getPlotData() const
   {
     std::vector<double> x, y;

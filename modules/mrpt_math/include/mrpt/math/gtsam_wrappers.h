@@ -26,14 +26,16 @@ namespace mrpt::gtsam_wrappers
  *  \sa <mrpt/poses/gtsam_wrappers.h>
  * @{ */
 
-static gtsam::Point3 toPoint3(const mrpt::math::TPoint3D& p)
+inline gtsam::Point3 toPoint3(const mrpt::math::TPoint3D& p)
 {
   return gtsam::Point3(p.x, p.y, p.z);
 }
 
-static mrpt::math::TPoint3D toTPoint3(const gtsam::Point3& p) { return {p.x(), p.y(), p.z()}; }
+inline mrpt::math::TPoint3D toTPoint3(const gtsam::Point3& p) { return {p.x(), p.y(), p.z()}; }
 
-static mrpt::math::TTwist3D toTTwist3D(const gtsam::Velocity3& v)
+/** Linear velocity only (the angular part is zero), in the same frame as the
+ * input: e.g. the navigation (world) frame for gtsam::NavState velocities. */
+inline mrpt::math::TTwist3D toTTwist3D(const gtsam::Velocity3& v)
 {
   mrpt::math::TTwist3D t;
   t.vx = v.x();
@@ -41,9 +43,14 @@ static mrpt::math::TTwist3D toTTwist3D(const gtsam::Velocity3& v)
   t.vz = v.z();
   return t;
 }
-static std::array<double, 3> toVelArray(const gtsam::Velocity3& v) { return {v.x(), v.y(), v.z()}; }
+inline std::array<double, 3> toVelArray(const gtsam::Velocity3& v) { return {v.x(), v.y(), v.z()}; }
 
-static mrpt::math::CMatrixDouble66 to_mrpt_se3_cov6(const gtsam::Matrix6& se3_cov)
+/** Reorders a covariance between the GTSAM (rx,ry,rz,tx,ty,tz) and MRPT
+ * (x,y,z,yaw,pitch,roll) layouts. A plain reordering, exact only at the
+ * identity rotation: for poses, see mrpt::gtsam_wrappers::to_mrpt_se3_pdf()
+ * and mrpt::gtsam_wrappers::to_gtsam_se3_cov6().
+ */
+inline mrpt::math::CMatrixDouble66 to_mrpt_se3_cov6(const gtsam::Matrix6& se3_cov)
 {
   mrpt::math::CMatrixDouble66 C;
   // MRPT : X ,Y,Z,YAW,PITCH,ROLL
@@ -55,7 +62,12 @@ static mrpt::math::CMatrixDouble66 to_mrpt_se3_cov6(const gtsam::Matrix6& se3_co
   return C;
 }
 
-static gtsam::Matrix6 to_gtsam_se3_cov6_reordering(const mrpt::math::CMatrixDouble66& se3_cov)
+/** Reorders a covariance between the GTSAM (rx,ry,rz,tx,ty,tz) and MRPT
+ * (x,y,z,yaw,pitch,roll) layouts. A plain reordering, exact only at the
+ * identity rotation: for poses, see mrpt::gtsam_wrappers::to_mrpt_se3_pdf()
+ * and mrpt::gtsam_wrappers::to_gtsam_se3_cov6().
+ */
+inline gtsam::Matrix6 to_gtsam_se3_cov6_reordering(const mrpt::math::CMatrixDouble66& se3_cov)
 {
   gtsam::Matrix6 C;
   // MRPT : X ,Y,Z,YAW,PITCH,ROLL
@@ -67,7 +79,14 @@ static gtsam::Matrix6 to_gtsam_se3_cov6_reordering(const mrpt::math::CMatrixDoub
   return C;
 }
 
-static gtsam::Matrix6 to_gtsam_se3_cov6_isotropic(const mrpt::math::CMatrixDouble66& se3_cov)
+/** Like to_gtsam_se3_cov6_reordering(), for diagonal covariances (it throws
+ * otherwise). Despite its name, it does not check isotropy: the result is
+ * exact for any pose only if the translational variances are all equal and
+ * the rotational ones too, and the pose has pitch=0 (e.g. 4% error at pitch
+ * 30 deg); with different variances per axis, errors reach tens of percent
+ * for rotated poses. For poses, use mrpt::gtsam_wrappers::to_gtsam_se3_cov6().
+ */
+inline gtsam::Matrix6 to_gtsam_se3_cov6_isotropic(const mrpt::math::CMatrixDouble66& se3_cov)
 {
   gtsam::Matrix6 C = to_gtsam_se3_cov6_reordering(se3_cov);
   for (int i = 0; i < 6; i++)

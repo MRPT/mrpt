@@ -2,6 +2,15 @@
 Changelog for package mrpt_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+* Python wheel: nanogui 3D windows from Python, complete C++ SDK, NumPy arrays as MRPT matrices (`#1496 <https://github.com/MRPT/mrpt/issues/1496>`_)
+* inverse_LLt() throws for matrices that are not positive-definite; pseudo-inverse for quaternion information PDFs (`#1494 <https://github.com/MRPT/mrpt/issues/1494>`_)
+* Math review: fixes and tests for transformations, probability distributions and their users (`#1492 <https://github.com/MRPT/mrpt/issues/1492>`_)
+* Fix to_gtsam_se3_cov6() covariance conversion; add its exact inverse to_mrpt_se3_pdf() (`#1490 <https://github.com/MRPT/mrpt/issues/1490>`_)
+* Text matrix and TUM loaders: indented comments, blank lines, non-finite rows (`#1486 <https://github.com/MRPT/mrpt/issues/1486>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.1 (2026-11-01)
 ------------------
 

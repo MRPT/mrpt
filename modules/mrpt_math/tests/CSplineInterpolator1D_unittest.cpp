@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/CSplineInterpolator1D.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::math;
@@ -164,4 +165,38 @@ TEST(CSplineInterpolator1D, SerializationRoundTrip)
   spl2.query(1, y, valid);
   EXPECT_TRUE(valid);
   EXPECT_NEAR(y, 1.0, 1e-9);
+}
+
+// With wrap2pi, angles sampled across +-pi are unwrapped before
+// interpolating: a linear angle sequence is reproduced exactly, and the
+// result is in [-pi,pi[.
+TEST(CSplineInterpolator1D, Wrap2piAcrossPi)
+{
+  const auto theta = [](double t) { return M_PI - 0.3 + 0.2 * t; };
+  CSplineInterpolator1D spl(true);
+  for (int i = 0; i < 6; i++)
+  {
+    spl.appendXY(i, mrpt::math::wrapToPi(theta(i)));
+  }
+  for (const double t : {1.2, 1.5, 2.0, 2.7, 3.9})
+  {
+    double y = 0;
+    bool valid = false;
+    spl.query(t, y, valid);
+    ASSERT_TRUE(valid) << "t=" << t;
+    EXPECT_NEAR(mrpt::math::wrapToPi(y - theta(t)), 0.0, 1e-12) << "t=" << t;
+    EXPECT_GE(y, -M_PI);
+    EXPECT_LT(y, M_PI);
+  }
+  // Same function and samples without wrapping (continuous input):
+  CSplineInterpolator1D spl2(false);
+  for (int i = 0; i < 6; i++)
+  {
+    spl2.appendXY(i, theta(i));
+  }
+  double y2 = 0;
+  bool valid2 = false;
+  spl2.query(2.7, y2, valid2);
+  ASSERT_TRUE(valid2);
+  EXPECT_NEAR(y2, theta(2.7), 1e-12);
 }

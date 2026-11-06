@@ -24,6 +24,8 @@ namespace mrpt::math
 
 /** Interpolate a data sequence "ys" ranging from "x0" to "x1" (equally spaced),
  * to obtain the approximation of the sequence at the point "x".
+ * The N samples are taken as N cells covering [x0,x1): ys[i] is the value at
+ * x0+i*(x1-x0)/N, hence ys[N-1] is returned for x >= x1-(x1-x0)/N.
  *  If the point "x" is out of the range [x0,x1], the closest extreme "ys"
  * value is returned.
  * \note Implementation in `#include <mrpt/math/interp_fit.hpp>`
@@ -34,8 +36,8 @@ T interpolate(const T& x, const VECTOR& ys, const T& x0, const T& x1);
 
 /** Linear interpolation/extrapolation: evaluates at "x" the line
  * (x0,y0)-(x1,y1).
- *  If wrap2pi is true, output is wrapped to ]-pi,pi] (It is assumed that input
- * "y" values already are in the correct range).
+ *  If wrap2pi is true, y0 and y1 are angles: the interpolation follows the
+ * shortest arc between them, and the output is wrapped to [-pi,pi[.
  * \sa spline, interpolate, leastSquareLinearFit
  */
 double interpolate2points(
@@ -48,8 +50,8 @@ double interpolate2points(
 
 /** Interpolates the value of a function in a point "t" given 4 SORTED points
  * where "t" is between the two middle points
- *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is
- * assumed that input "y" values already are in the correct range).
+ *  If wrap2pi is true, the "y" values are angles: consecutive values are
+ * unwrapped (assuming jumps below pi) and the output is wrapped to [-pi,pi[.
  * \sa leastSquareLinearFit
  * \note Implementation in `#include <mrpt/math/interp_fit.hpp>`
  */
@@ -60,8 +62,9 @@ NUMTYPE spline(const NUMTYPE t, const VECTORLIKE& x, const VECTORLIKE& y, bool w
  * values "x" and "y", evaluated at a single point "t".
  *  The vectors x and y must have size >=2, and all values of "x" must be
  * different.
- *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is
- * assumed that input "y" values already are in the correct range).
+ *  If wrap2pi is true, the "y" values are angles: consecutive values (in the
+ * given order) are unwrapped, assuming jumps below pi, and the output is
+ * wrapped to [-pi,pi[.
  * \sa spline
  * \sa getRegressionLine, getRegressionPlane
  * \note Implementation in `#include <mrpt/math/interp_fit.hpp>`
@@ -73,8 +76,9 @@ NUMTYPE leastSquareLinearFit(
 /** Interpolates or extrapolates using a least-square linear fit of the set of
  * values "x" and "y", evaluated at a sequence of points "ts" and returned at
  * "outs".
- *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is
- * assumed that input "y" values already are in the correct range).
+ *  If wrap2pi is true, the "y" values are angles: consecutive values (in the
+ * given order) are unwrapped, assuming jumps below pi, and the output is
+ * wrapped to [-pi,pi[.
  * \sa spline, getRegressionLine, getRegressionPlane
  * \note Implementation in `#include <mrpt/math/interp_fit.hpp>`
  * \note Requires `#include <Eigen/Dense>`

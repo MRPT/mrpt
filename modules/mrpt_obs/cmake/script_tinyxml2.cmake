@@ -43,14 +43,37 @@ if (TINYXML2_USE_EMBEDDED_VERSION AND NOT CMAKE_MRPT_HAS_TINYXML2)
   # Use CMAKE_CURRENT_BINARY_DIR so this works in standalone/colcon builds
   set(_tinyxml2_download_dir "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/tinyxml2")
 
-  if (NOT EXISTS "${_tinyxml2_download_dir}/tinyxml2.h")
-    file(DOWNLOAD
-      https://github.com/leethomason/tinyxml2/raw/${TINYXML2_VERSION_TO_DOWNLOAD}/tinyxml2.h
-      "${_tinyxml2_download_dir}/tinyxml2.h" SHOW_PROGRESS)
-    file(DOWNLOAD
-      https://github.com/leethomason/tinyxml2/raw/${TINYXML2_VERSION_TO_DOWNLOAD}/tinyxml2.cpp
-      "${_tinyxml2_download_dir}/tinyxml2.cpp" SHOW_PROGRESS)
-  endif()
+  # A failed download must not leave an empty file behind: it would compile
+  # fine, and only fail later, at link time.
+  foreach(_file tinyxml2.h tinyxml2.cpp)
+    set(_dest "${_tinyxml2_download_dir}/${_file}")
+    set(_size 0)
+    if (EXISTS "${_dest}")
+      file(SIZE "${_dest}" _size)
+    endif()
+    set(_attempt 0)
+    while(_size EQUAL 0 AND _attempt LESS 3)
+      math(EXPR _attempt "${_attempt} + 1")
+      file(DOWNLOAD
+        https://github.com/leethomason/tinyxml2/raw/${TINYXML2_VERSION_TO_DOWNLOAD}/${_file}
+        "${_dest}" STATUS _status)
+      list(GET _status 0 _status_code)
+      if (_status_code EQUAL 0)
+        file(SIZE "${_dest}" _size)
+      else()
+        message(STATUS "tinyxml2: downloading ${_file} failed (attempt ${_attempt}): ${_status}")
+        file(REMOVE "${_dest}")
+      endif()
+    endwhile()
+    if (_size EQUAL 0)
+      message(FATAL_ERROR "tinyxml2: could not download ${_file}. Set TINYXML2_USE_EMBEDDED_VERSION=OFF to use a system tinyxml2, or DISABLE_TINYXML2=ON.")
+    endif()
+  endforeach()
+  unset(_dest)
+  unset(_size)
+  unset(_attempt)
+  unset(_status)
+  unset(_status_code)
 
   set(CMAKE_MRPT_HAS_TINYXML2 1)
   set(CMAKE_MRPT_HAS_TINYXML2_SYSTEM 0)

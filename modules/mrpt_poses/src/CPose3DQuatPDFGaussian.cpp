@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/transform_gaussian.h>
@@ -24,6 +25,7 @@
 #include <mrpt/system/os.h>
 
 #include <Eigen/Dense>
+#include <cmath>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -120,6 +122,8 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPosePDF& o)
   this->copyFrom(aux);
 }
 
+namespace
+{
 void aux_poseypr2posequat(
     const CVectorFixedDouble<6>& x, [[maybe_unused]] const double& dummy, CVectorFixedDouble<7>& y)
 {
@@ -127,14 +131,16 @@ void aux_poseypr2posequat(
   y[1] = x[1];
   y[2] = x[2];
 
-  CPose3D p(0, 0, 0, x[3], x[4], x[5]);
+  // Closed-form quaternion of the angles as given (not wrapped), so sigma
+  // points around yaw=+-pi do not get quaternions of opposite signs:
   CQuaternionDouble q(UNINITIALIZED_QUATERNION);
-  p.getAsQuaternion(q);
+  mrpt::math::TPose3D(0, 0, 0, x[3], x[4], x[5]).getAsQuaternion(q);
   y[3] = q[0];
   y[4] = q[1];
   y[5] = q[2];
   y[6] = q[3];
 }
+}  // namespace
 
 void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 {
@@ -165,6 +171,13 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
     const double dummy = 0;
     mrpt::math::transform_gaussian_unscented(
         x_mean, o.cov, &aux_poseypr2posequat, dummy, this->mean, this->cov);
+    // The weighted mean of unit quaternions is not unit. Keep its sign,
+    // which is that of the covariance cross terms (unlike normalize()):
+    const double qn = std::sqrt(this->mean.quat().normSqr());
+    for (unsigned int k = 0; k < 4; k++)
+    {
+      this->mean.quat()[k] /= qn;
+    }
   }
 }
 
@@ -234,6 +247,12 @@ void CPose3DQuatPDFGaussian::drawSingleSample(CPose3DQuat& outPart) const
 {
   MRPT_START
   getRandomGenerator().drawGaussianMultivariate(outPart, cov, &mean);
+  // Project onto the unit sphere, keeping the sign (unlike normalize()):
+  const double qn = std::sqrt(outPart.quat().normSqr());
+  for (unsigned int k = 0; k < 4; k++)
+  {
+    outPart.quat()[k] /= qn;
+  }
   MRPT_END
 }
 
@@ -247,7 +266,20 @@ void CPose3DQuatPDFGaussian::drawManySamples(size_t N, vector<CVectorDouble>& ou
   getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
   for (auto& outSample : outSamples)
-    for (unsigned int k = 0; k < 7; k++) outSample[k] += mean[k];
+  {
+    for (unsigned int k = 0; k < 7; k++)
+    {
+      outSample[k] += mean[k];
+    }
+    // Project the quaternion onto the unit sphere:
+    const double qn = std::sqrt(
+        outSample[3] * outSample[3] + outSample[4] * outSample[4] + outSample[5] * outSample[5] +
+        outSample[6] * outSample[6]);
+    for (unsigned int k = 3; k < 7; k++)
+    {
+      outSample[k] /= qn;
+    }
+  }
 
   MRPT_END
 }
@@ -394,12 +426,45 @@ void CPose3DQuatPDFGaussian::operator-=(const CPose3DQuatPDFGaussian& Ap)
   *this = inv_Ap + *this;
 }
 
+namespace
+{
+// Gaussian density for a possibly rank-deficient covariance (the 7x7
+// covariance of a unit quaternion pose has rank 6 at most), evaluated on the
+// subspace spanned by its non-null eigenvectors.
+double degenerateNormalPDF(
+    const CMatrixDouble71& d, const CMatrixDouble77& cov, const bool scaled_pdf)
+{
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 7, 7>> es(cov.asEigen());
+  const Eigen::Matrix<double, 7, 1>& ev = es.eigenvalues();
+  const Eigen::Matrix<double, 7, 1> proj = es.eigenvectors().transpose() * d.asEigen();
+  const double tol = 1e-10 * std::max(ev.maxCoeff(), 0.0);
+  double maha2 = 0;
+  double logDet = 0;
+  int rank = 0;
+  for (int i = 0; i < 7; i++)
+  {
+    if (ev[i] > tol)
+    {
+      maha2 += proj[i] * proj[i] / ev[i];
+      logDet += std::log(ev[i]);
+      rank++;
+    }
+  }
+  const double e = std::exp(-0.5 * maha2);
+  if (scaled_pdf)
+  {
+    return e;
+  }
+  return e * std::exp(-0.5 * (rank * std::log(M_2PI) + logDet));
+}
+}  // namespace
+
 /*---------------------------------------------------------------
             evaluatePDF
  ---------------------------------------------------------------*/
 double CPose3DQuatPDFGaussian::evaluatePDF(const CPose3DQuat& x) const
 {
-  return mrpt::math::normalPDF(CMatrixDouble71(x), CMatrixDouble71(this->mean), this->cov);
+  return degenerateNormalPDF(CMatrixDouble71(x) - CMatrixDouble71(this->mean), this->cov, false);
 }
 
 /*---------------------------------------------------------------
@@ -407,7 +472,7 @@ double CPose3DQuatPDFGaussian::evaluatePDF(const CPose3DQuat& x) const
  ---------------------------------------------------------------*/
 double CPose3DQuatPDFGaussian::evaluateNormalizedPDF(const CPose3DQuat& x) const
 {
-  return mrpt::math::normalPDF(CMatrixDouble71(x), CMatrixDouble71(this->mean), this->cov, true);
+  return degenerateNormalPDF(CMatrixDouble71(x) - CMatrixDouble71(this->mean), this->cov, true);
 }
 
 /*---------------------------------------------------------------
@@ -427,9 +492,24 @@ void CPose3DQuatPDFGaussian::enforceCovSymmetry()
 double CPose3DQuatPDFGaussian::mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther)
 {
   MRPT_START
-  const CMatrixDouble77 COV2 = cov + theOther.cov;
-  return mrpt::math::mahalanobisDistance(
-      CMatrixDouble71(this->mean) - CMatrixDouble71(theOther.mean), COV2);
+  // q and -q are the same rotation: express theOther in the hemisphere of
+  // this mean, which flips its quaternion and its cross-covariances.
+  CMatrixDouble71 otherMean(theOther.mean);
+  CMatrixDouble77 otherCov = theOther.cov;
+  if (this->mean.quat().asEigen().dot(theOther.mean.quat().asEigen()) < 0)
+  {
+    for (int i = 3; i < 7; i++)
+    {
+      otherMean[i] = -otherMean[i];
+      for (int j = 0; j < 3; j++)
+      {
+        otherCov(i, j) = -otherCov(i, j);
+        otherCov(j, i) = -otherCov(j, i);
+      }
+    }
+  }
+  const CMatrixDouble77 COV2 = cov + otherCov;
+  return mrpt::math::mahalanobisDistance(CMatrixDouble71(this->mean) - otherMean, COV2);
   MRPT_END
 }
 

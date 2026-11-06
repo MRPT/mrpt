@@ -39,6 +39,13 @@ class CPose3DPDFGaussian;
  * \note Read also: "A tutorial on SE(3) transformation parameterizations and
  * on-manifold optimization", in \cite blanco_se3_tutorial
  *
+ * \note The unit-norm constraint of quaternions makes the covariances
+ * obtained by converting from other representations (e.g. CPose3DPDFGaussian)
+ * or by pose composition rank deficient (rank 6). This class converts between
+ * covariance and information with the symmetric pseudo-inverse, so the
+ * direction with no variance gets no information. Prefer
+ * CPose3DQuatPDFGaussian when possible.
+ *
  * \sa CPose3DQuat, CPose3DQuatPDF, CPose3DPDF, CPose3DQuatPDFGaussian
  * \ingroup poses_pdf_grp
  */
@@ -104,12 +111,18 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
    * stored one in the object. */
   void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-  /** Draws a single sample from the distribution */
+  /** Draws a single sample from the distribution, with a normalized
+   * quaternion */
   void drawSingleSample(CPose3DQuat& outPart) const override;
   /** Draws a number of samples from the distribution, and saves as a list of
-   * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum */
+   * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum, with a
+   * normalized quaternion */
   void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
-  /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+  /** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
+   * \note Unlike CPose3DQuatPDFGaussian::inverse(), the quaternion Jacobian
+   * does not include the normalization Jacobian, since it would make the
+   * covariance rank deficient. Both results differ in the component of the
+   * covariance along the quaternion itself. */
   void inverse(CPose3DQuatPDF& o) const override;
 
   /** Unary - operator, returns the PDF of the inverse pose.  */

@@ -436,8 +436,8 @@ void CBeacon::generateObservationModelDistribution(
         maxDistanceFromCenter  // Directly, do not create too far modes
     );
 
-    // Adjust the weights to the one of "this" mode:
-    for (size_t k = startIdx; k < outPDF.size(); k++) outPDF.get(k).log_w = beaconPo.log_w;
+    // Combine the ring weights with the one of "this" mode:
+    for (size_t k = startIdx; k < outPDF.size(); k++) outPDF.get(k).log_w += beaconPo.log_w;
   }
 
   MRPT_END
@@ -539,8 +539,14 @@ void CBeacon::generateRingSOG(
 
       if (reallyCreateIt)
       {
-        // All have equal log-weights:
-        outPDF.get(modeIdx).log_w = 0;
+        // Weights proportional to the sphere area each mode stands for, so
+        // the density is uniform over the sphere band (all equal in 2D):
+        double log_w = 0;
+        if (std::abs(minEl - maxEl) >= 1e-6)
+        {
+          log_w = (nThSteps == 1) ? std::log(0.25 * M_PI) : std::log(std::abs(cos(el)));
+        }
+        outPDF.get(modeIdx).log_w = log_w;
 
         // The mean:
         outPDF.get(modeIdx).val.mean = dir;

@@ -1,0 +1,80 @@
+# Python wheel for MRPT: all Python bindings, plus the C++ SDK (headers, shared
+# libraries, CMake configs) that other wheels can build against.
+# See README-dev.md for how to build it.
+
+[build-system]
+# pybind11 is pinned: C++ extensions sharing types with these bindings must use
+# the same version (see mrpt.sdk.PYBIND11_VERSION).
+requires = ["scikit-build-core>=0.11", "pybind11==3.1.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "mrpt3"
+dynamic = ["version"]
+description = "Mobile Robot Programming Toolkit (MRPT): poses, maps, SLAM, 3D scenes and more, from Python"
+readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = ["numpy"]
+authors = [{ name = "Jose Luis Blanco-Claraco" }]
+keywords = ["robotics", "slam", "localization", "mapping", "point-clouds", "computer-vision"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Operating System :: POSIX :: Linux",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://www.mrpt.org/"
+Documentation = "https://docs.mrpt.org/"
+Source = "https://github.com/MRPT/mrpt"
+Issues = "https://github.com/MRPT/mrpt/issues"
+
+# Lets scikit-build-core based wheels find the MRPT CMake packages:
+[project.entry-points."cmake.prefix"]
+mrpt = "mrpt.sdk"
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+cmake.version = ">=3.24"
+build.verbose = true
+# Everything in the wheel comes from the CMake install step:
+wheel.packages = []
+# Persistent build dir, for incremental rebuilds while developing:
+build-dir = "build/{wheel_tag}"
+
+# cibuildwheel copies the source tree into its containers: do not reuse a
+# local build dir from the host there.
+[[tool.scikit-build.overrides]]
+if.env.CIBUILDWHEEL = true
+build-dir = "build-cibw/{wheel_tag}"
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "../../modules/mrpt_common/package.xml"
+regex = '<version>(?P<value>[0-9]+\.[0-9]+\.[0-9]+)</version>'
+
+[tool.cibuildwheel]
+build = "cp311-* cp312-* cp313-* cp314-*"
+skip = "*-musllinux_* *_i686"
+build-verbosity = 1
+test-requires = ["cmake", "ninja"]
+test-command = "python {package}/tests/test_wheel.py"
+
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
+before-all = "bash {package}/ci/manylinux_deps.sh"
+# The OpenGL (libglvnd) libraries must come from the user system, to load its
+# GPU driver. Only mrpt.opengl and mrpt.gui need them.
+repair-wheel-command = "auditwheel repair --exclude libEGL.so.1 --exclude libGLX.so.0 --exclude libOpenGL.so.0 --exclude libGLESv2.so.2 --exclude libGLdispatch.so.0 -w {dest_dir} {wheel}"
+# The C++ libraries do not depend on the Python version: ccache compiles them
+# only once per image. CCACHE_BASEDIR makes hits independent of the build dir.
+environment = { CMAKE_ARGS = "-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache", CCACHE_BASEDIR = "/project", CCACHE_DIR = "/project/.ccache", CCACHE_MAXSIZE = "3G" }

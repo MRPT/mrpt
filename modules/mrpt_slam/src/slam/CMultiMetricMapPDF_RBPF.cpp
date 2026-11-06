@@ -345,18 +345,20 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
                                                                   // //* icpInfo.goodness;
       }
 
-      // Set the gaussian pose:
-      CPose3DPDFGaussian finalEstimatedPoseGauss(icpEstimation);
-
       MRPT_LOG_DEBUG_FMT(
           "gridICP[particle %u]: %.02f%%", static_cast<unsigned int>(i), 100 * icpInfo.goodness);
-      if (icpInfo.goodness < options.ICPGlobalAlign_MinQuality && SFs.size())
+      // Not against a map of a single observation: the first alignments have
+      // a naturally lower quality, and odometry would be worse.
+      if (icpInfo.goodness < options.ICPGlobalAlign_MinQuality && SFs.size() > 1)
       {
         MRPT_LOG_WARN_FMT(
             "gridICP[particle %u]: %.02f%% -> Using odometry instead!",
             static_cast<unsigned int>(i), 100 * icpInfo.goodness);
         icpEstimation.mean = CPose2D(initialPoseEstimation);
       }
+
+      // Set the gaussian pose (after the fallback above, so it is honored):
+      CPose3DPDFGaussian finalEstimatedPoseGauss(icpEstimation);
 
       // Use real ICP covariance (with a minimum level):
       keep_max(finalEstimatedPoseGauss.cov(0, 0), square(0.002));

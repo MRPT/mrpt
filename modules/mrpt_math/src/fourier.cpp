@@ -18,6 +18,7 @@
 #include <Eigen/Dense>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <vector>
 
 using namespace mrpt;
@@ -784,6 +785,60 @@ void generalDFT(
   }
 }
 
+/**
+ * @brief 2D complex FFT for power-of-two sizes, with local work buffers
+ *
+ * @param isgn -1 for the forward DFT (exp(-i...)), +1 for the inverse one
+ * @param scale Factor applied to all output values
+ */
+void fft2ComplexPow2(
+    int isgn,
+    const CMatrixFloat& inReal,
+    const CMatrixFloat& inImag,
+    CMatrixFloat& outReal,
+    CMatrixFloat& outImag,
+    FftType scale)
+{
+  const size_t dim1 = static_cast<size_t>(inReal.rows());
+  const size_t dim2 = static_cast<size_t>(inReal.cols());
+
+  // Interleaved (re,im) rows:
+  std::vector<std::vector<FftType>> rows(dim1, std::vector<FftType>(2 * dim2));
+  std::vector<FftType*> a(dim1);
+  for (size_t i = 0; i < dim1; i++)
+  {
+    a[i] = rows[i].data();
+    for (size_t j = 0; j < dim2; j++)
+    {
+      a[i][2 * j + 0] = inReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
+      a[i][2 * j + 1] = inImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
+    }
+  }
+
+  // Work areas, sized as required by cdft2d() with n2 = 2*dim2:
+  const size_t maxDim = std::max(dim1, dim2);
+  std::vector<FftType> t(2 * dim1 + 20);
+  std::vector<int> ip(
+      static_cast<size_t>(std::ceil(20 + 2 + std::sqrt(static_cast<double>(maxDim)))));
+  ip[0] = 0;
+  std::vector<FftType> w(std::max(dim1 / 2, dim2 / 2) + dim2 / 2 + 20);
+
+  cdft2d(
+      static_cast<int>(dim1), static_cast<int>(2 * dim2), isgn, a.data(), t.data(), ip.data(),
+      w.data());
+
+  outReal.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
+  outImag.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
+  for (size_t i = 0; i < dim1; i++)
+  {
+    for (size_t j = 0; j < dim2; j++)
+    {
+      outReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) = a[i][j * 2 + 0] * scale;
+      outImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) = a[i][j * 2 + 1] * scale;
+    }
+  }
+}
+
 }  // anonymous namespace
 
 // ============================================================================
@@ -809,6 +864,8 @@ void fft_real(
   MRPT_START
 
   const size_t n = static_cast<size_t>(inRealData.size());
+  ASSERTMSG_(
+      n >= 2 && mrpt::round2up(n) == n, "fft_real(): input length must be a power of two >= 2");
 
   // Create auxiliary vector (1-indexed for compatibility with legacy code)
   CVectorFloat auxVect(n + 1);
@@ -831,10 +888,11 @@ void fft_real(
     else
       outFftRe[idx] = auxVect[1 + 2 * i];
 
+    // realft() uses the exp(+i...) convention: conjugate to get exp(-i...)
     if (i == 0 || i == (n2 - 1))
       outFftIm[idx] = 0.0f;
     else
-      outFftIm[idx] = auxVect[1 + 2 * i + 1];
+      outFftIm[idx] = -auxVect[1 + 2 * i + 1];
 
     outFftMag[idx] = std::sqrt(mrpt::square(outFftRe[idx]) + mrpt::square(outFftIm[idx]));
   }
@@ -857,6 +915,15 @@ void dft2_real(const CMatrixFloat& inData, CMatrixFloat& outReal, CMatrixFloat& 
 
   const size_t dim1 = static_cast<size_t>(inData.rows());
   const size_t dim2 = static_cast<size_t>(inData.cols());
+
+  if (mrpt::round2up(dim1) != dim1 || mrpt::round2up(dim2) != dim2)
+  {
+    // Use general DFT
+    CMatrixFloat zeros(inData.rows(), inData.cols());
+    zeros.setZero();
+    generalDFT(-1, inData, zeros, outReal, outImag);
+    return;
+  }
 
   // Allocate arrays
   std::vector<FloatPtr> a(dim1);
@@ -957,7 +1024,10 @@ void idft2_real(const CMatrixFloat& inReal, const CMatrixFloat& inImag, CMatrixF
 
   if (mrpt::round2up(dim1) != dim1 || mrpt::round2up(dim2) != dim2)
   {
-    THROW_EXCEPTION("Matrix sizes are not a power of two!");
+    // Use general DFT, and keep the real part
+    CMatrixFloat outImag;
+    generalDFT(1, inReal, inImag, outData, outImag);
+    return;
   }
 
   // Allocate arrays
@@ -1042,67 +1112,10 @@ void dft2_complex(
   const size_t dim1 = static_cast<size_t>(inReal.rows());
   const size_t dim2 = static_cast<size_t>(inReal.cols());
 
-  const bool dim1IsPower2 = (mrpt::round2up(dim1) == dim1);
-  const bool dim2IsPower2 = (mrpt::round2up(dim2) == dim2);
-
-  if (dim1IsPower2 && dim2IsPower2)
+  if (mrpt::round2up(dim1) == dim1 && mrpt::round2up(dim2) == dim2)
   {
     // Use optimized FFT
-    using FloatPtr = FftType*;
-
-    static std::vector<FloatPtr> a;
-    static std::vector<FftType> t;
-    static std::vector<int> ip;
-    static std::vector<FftType> w;
-    static size_t lastDim1 = 0;
-    static size_t lastDim2 = 0;
-
-    if (lastDim1 != dim1 || lastDim2 != dim2)
-    {
-      // Reallocate buffers
-      for (auto& row : a) delete[] row;
-      a.clear();
-
-      a.resize(dim1);
-      for (size_t i = 0; i < dim1; i++) a[i] = new FftType[2 * dim2];
-
-      const size_t maxDim = std::max(dim1, dim2 / 2);
-      t.resize(2 * dim1 + 20);
-      ip.resize(static_cast<size_t>(std::ceil(20 + 2 + std::sqrt(static_cast<double>(maxDim)))));
-      ip[0] = 0;
-      w.resize(std::max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20);
-
-      lastDim1 = dim1;
-      lastDim2 = dim2;
-    }
-
-    // Copy data
-    for (size_t i = 0; i < dim1; i++)
-    {
-      for (size_t j = 0; j < dim2; j++)
-      {
-        a[i][2 * j + 0] = inReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
-        a[i][2 * j + 1] = inImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
-      }
-    }
-
-    // Compute 2D complex DFT
-    cdft2d(
-        static_cast<int>(dim1), static_cast<int>(2 * dim2), 1, a.data(), t.data(), ip.data(),
-        w.data());
-
-    // Extract results
-    outReal.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
-    outImag.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
-
-    for (size_t i = 0; i < dim1; i++)
-    {
-      for (size_t j = 0; j < dim2; j++)
-      {
-        outReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) = a[i][j * 2 + 0];
-        outImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) = a[i][j * 2 + 1];
-      }
-    }
+    fft2ComplexPow2(-1, inReal, inImag, outReal, outImag, 1.0f);
   }
   else
   {
@@ -1130,74 +1143,11 @@ void idft2_complex(
   const size_t dim1 = static_cast<size_t>(inReal.rows());
   const size_t dim2 = static_cast<size_t>(inReal.cols());
 
-  const bool dim1IsPower2 = (mrpt::round2up(dim1) == dim1);
-  const bool dim2IsPower2 = (mrpt::round2up(dim2) == dim2);
-
-  if (dim1IsPower2 && dim2IsPower2)
+  if (mrpt::round2up(dim1) == dim1 && mrpt::round2up(dim2) == dim2)
   {
     // Use optimized FFT
-    using FloatPtr = FftType*;
-
-    static std::vector<FloatPtr> a;
-    static std::vector<FftType> t;
-    static std::vector<int> ip;
-    static std::vector<FftType> w;
-    static size_t lastDim1 = 0;
-    static size_t lastDim2 = 0;
-
-    if (lastDim1 != dim1 || lastDim2 != dim2)
-    {
-      // Reallocate buffers
-      for (auto& row : a) delete[] row;
-      a.clear();
-
-      a.resize(dim1);
-      for (size_t i = 0; i < dim1; i++) a[i] = new FftType[2 * dim2];
-
-      const size_t maxDim = std::max(dim1, dim2 / 2);
-      t.resize(2 * dim1 + 20);
-      ip.resize(static_cast<size_t>(std::ceil(20 + 2 + std::sqrt(static_cast<double>(maxDim)))));
-      ip[0] = 0;
-      w.resize(std::max(dim1 / 2, dim2 / 4) + dim2 / 4 + 20);
-
-      lastDim1 = dim1;
-      lastDim2 = dim2;
-    }
-
-    // Copy data
-    for (size_t i = 0; i < dim1; i++)
-    {
-      for (size_t j = 0; j < dim2; j++)
-      {
-        a[i][2 * j + 0] = inReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
-        a[i][2 * j + 1] = inImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j));
-      }
-    }
-
-    // Compute inverse 2D complex DFT
-    cdft2d(
-        static_cast<int>(dim1), static_cast<int>(2 * dim2), -1, a.data(), t.data(), ip.data(),
-        w.data());
-
-    // Extract results with scaling
-    outReal.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
-    outImag.setSize(static_cast<Eigen::Index>(dim1), static_cast<Eigen::Index>(dim2));
-
     const FftType scale = 1.0f / static_cast<FftType>(dim1 * dim2);
-
-    for (size_t i = 0; i < dim1; i++)
-    {
-      for (size_t j = 0; j < dim2; j++)
-      {
-        outReal(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) =
-            a[i][j * 2 + 0] * scale;
-        outImag(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) =
-            a[i][j * 2 + 1] * scale;
-      }
-    }
-
-    // Element (0,0) is purely real
-    outImag(0, 0) = 0.0f;
+    fft2ComplexPow2(+1, inReal, inImag, outReal, outImag, scale);
   }
   else
   {
@@ -1244,6 +1194,13 @@ void cross_correlation_FFT(const CMatrixFloat& A, const CMatrixFloat& B, CMatrix
       const float i2 = I2Imag(y_idx, x_idx);
 
       const float den = mrpt::square(r1) + mrpt::square(i1);
+      if (den <= std::numeric_limits<float>::min())
+      {
+        // Frequency not present in A: it cannot contribute
+        I2Real(y_idx, x_idx) = 0;
+        I2Imag(y_idx, x_idx) = 0;
+        continue;
+      }
       I2Real(y_idx, x_idx) = (r1 * r2 + i1 * i2) / den;
       I2Imag(y_idx, x_idx) = (i2 * r1 - r2 * i1) / den;
     }

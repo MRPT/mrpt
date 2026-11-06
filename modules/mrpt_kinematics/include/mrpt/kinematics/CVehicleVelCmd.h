@@ -73,7 +73,7 @@ class CVehicleVelCmd : public mrpt::serialization::CSerializable, public mrpt::S
   /** Scale the velocity command encoded in this object.
    * \param[in] vel_scale A scale within [0,1] reflecting how much should be
    * the raw velocity command be lessen (e.g. for safety reasons,...).
-   * \param[out] out_vel_cmd
+   * The scaling is done in place.
    *
    * Users can directly inherit from existing implementations instead of
    * manually redefining this method:

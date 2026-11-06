@@ -37,7 +37,7 @@ namespace mrpt::math
  *
  * \sa CMatrixDynamic (for dynamic-size matrices)
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
- * https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
+ * https://www.mrpt.org/tutorials/programming/maths-and-geometry/matrices_vectors_arrays_and_linear_algebra_mrpt_and_eigen_classes/
  * \ingroup mrpt_math_grp
  */
 template <typename T, matrix_dim_t ROWS, matrix_dim_t COLS>
@@ -156,11 +156,12 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 
   /** Convenient ctor from size: in this class, it throws if size does not
    * match compile-time size. It is provided for the sake of offering a
-   * uniform API with CMatrixDynamic. */
+   * uniform API with CMatrixDynamic. All elements are set to zero. */
   CMatrixFixed(const size_type rows, const size_type cols)
   {
     ASSERT_EQUAL_(cols, static_cast<size_type>(COLS));
     ASSERT_EQUAL_(rows, static_cast<size_type>(ROWS));
+    m_data.fill(0);
   }
 
   MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixFixed)
@@ -180,12 +181,14 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
     MRPT_END
   }
 
-  /** Assignment from an Eigen matrix */
+  /** Assignment from an Eigen matrix or expression. The expression is
+   * evaluated before copying, so it may reference this same matrix (e.g.
+   * `M = R * M * R.transpose()`). */
   template <class Derived>
   CMatrixFixed& operator=(const Eigen::MatrixBase<Derived>& m)
   {
     MRPT_START
-    setFromMatrixLike(m);
+    setFromMatrixLike(m.eval());
     return *this;
     MRPT_END
   }
@@ -345,14 +348,14 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
    */
   T& operator()(Index row, Index col)
   {
-    ASSERTDEB_(r < ROWS);
-    ASSERTDEB_(c < COLS);
+    ASSERTDEB_(row < ROWS);
+    ASSERTDEB_(col < COLS);
     return m_data[static_cast<std::size_t>(row * COLS + col)];
   }
   const T& operator()(Index row, Index col) const
   {
-    ASSERTDEB_(r < ROWS);
-    ASSERTDEB_(c < COLS);
+    ASSERTDEB_(row < ROWS);
+    ASSERTDEB_(col < COLS);
     return m_data[static_cast<std::size_t>(row * COLS + col)];
   }
 
@@ -387,24 +390,29 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
   CMatrixFixed<float, ROWS, COLS> cast_float() const;
   CMatrixFixed<double, ROWS, COLS> cast_double() const;
 
-  /** Solves the linear system Ax=b, returns x, with A this **symmetric**
-   * matrix. \sa lu_solve() */
+  /** Solves the linear system Ax=b, returns x, with A this **symmetric
+   * positive-definite** matrix. \sa lu_solve() */
   CMatrixFixed<T, ROWS, 1> llt_solve(const CMatrixFixed<T, ROWS, 1>& b) const;
 
   /** Solves the linear system Ax=b, returns x, with A this **asymmetric**
    * matrix. \sa llt_solve() */
   CMatrixFixed<T, ROWS, 1> lu_solve(const CMatrixFixed<T, ROWS, 1>& b) const;
 
-  /** this += A<sup>T</sup> */
+  /** this += A<sup>T</sup> (`A` may be this same object) */
   void sum_At(const CMatrixFixed<Scalar, ROWS, COLS>& A)
   {
     if constexpr (ROWS == COLS)
     {
       for (Index r = 0; r < static_cast<Index>(ROWS); r++)
       {
-        for (Index c = 0; c < static_cast<Index>(COLS); c++)
+        (*this)(r, r) += A(r, r);
+        for (Index c = r + 1; c < static_cast<Index>(COLS); c++)
         {
-          (*this)(r, c) += A(c, r);
+          // Read both elements first, in case A aliases this:
+          const Scalar a_cr = A(c, r);
+          const Scalar a_rc = A(r, c);
+          (*this)(r, c) += a_cr;
+          (*this)(c, r) += a_rc;
         }
       }
     }

@@ -426,10 +426,11 @@ void CActionRobotMovement2D::computeFromOdometry_modelGaussian(
   H(0, 1) = -(H(1, 0) = sin_Aphi_2);
   H(2, 2) = 1;
 
-  // Build the Jacobian matrix:
+  // Jacobian of H(phi)*u with respect to u. H depends on phi/2, hence the
+  // 0.5 factor in the derivative of its terms.
   CMatrixDouble33 J = H;
-  J(0, 2) = -sin_Aphi_2 * ODO_INCR(0, 0) - cos_Aphi_2 * ODO_INCR(1, 0);
-  J(1, 2) = cos_Aphi_2 * ODO_INCR(0, 0) - sin_Aphi_2 * ODO_INCR(1, 0);
+  J(0, 2) = 0.5 * (-sin_Aphi_2 * ODO_INCR(0, 0) - cos_Aphi_2 * ODO_INCR(1, 0));
+  J(1, 2) = 0.5 * (cos_Aphi_2 * ODO_INCR(0, 0) - sin_Aphi_2 * ODO_INCR(1, 0));
 
   // The mean:
   aux->mean = odometryIncrement;

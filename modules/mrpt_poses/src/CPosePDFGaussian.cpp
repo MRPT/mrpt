@@ -275,6 +275,8 @@ void CPosePDFGaussian::bayesianFusion(
 
   auto x1 = CMatrixDouble31(p1->mean);
   auto x2 = CMatrixDouble31(p2->mean);
+  // Fuse headings on the same branch of the circle:
+  x2(2, 0) = x1(2, 0) + mrpt::math::wrapToPi(x2(2, 0) - x1(2, 0));
 
   CMatrixDouble33 auxC = C1_inv + C2_inv;
   this->cov = auxC.inverse_LLt();
@@ -320,8 +322,12 @@ void CPosePDFGaussian::inverse(CPosePDF& o) const
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::operator+=(const CPose2D& Ap)
 {
+  CMatrixDouble33 df_dx(UNINITIALIZED_MATRIX);
+  CMatrixDouble33 df_du(UNINITIALIZED_MATRIX);
+  CPosePDF::jacobiansPoseComposition(mean, Ap, df_dx, df_du, true, false);
+
+  cov = mrpt::math::multiply_HCHt(df_dx, CMatrixDouble33(cov));
   mean = mean + Ap;
-  rotateCov(Ap.phi());
 }
 
 /*---------------------------------------------------------------
@@ -331,6 +337,7 @@ double CPosePDFGaussian::evaluatePDF(const CPose2D& x) const
 {
   auto X = CMatrixDouble31(x);
   auto MU = CMatrixDouble31(mean);
+  X(2, 0) = MU(2, 0) + mrpt::math::wrapToPi(X(2, 0) - MU(2, 0));
 
   return math::normalPDF(X, MU, this->cov);
 }
@@ -342,6 +349,7 @@ double CPosePDFGaussian::evaluateNormalizedPDF(const CPose2D& x) const
 {
   auto X = CMatrixDouble31(x);
   auto MU = CMatrixDouble31(mean);
+  X(2, 0) = MU(2, 0) + mrpt::math::wrapToPi(X(2, 0) - MU(2, 0));
 
   return math::normalPDF(X, MU, this->cov) / math::normalPDF(MU, MU, this->cov);
 }
@@ -465,7 +473,7 @@ void CPosePDFGaussian::inverseComposition(const CPosePDFGaussian& xv, const CPos
             inverseComposition
   Set \f$ this = x1 \ominus x0 \f$ , computing the mean using
    the "-" operator and the covariances through the corresponding
-  Jacobians (Given the 3x3 cross-covariance matrix of variables x0 and x0).
+  Jacobians (Given the 3x3 cross-covariance matrix of variables x0 and x1).
  ---------------------------------------------------------------*/
 void CPosePDFGaussian::inverseComposition(
     const CPosePDFGaussian& x1, const CPosePDFGaussian& x0, const CMatrixDouble33& COV_01)
@@ -497,13 +505,13 @@ void CPosePDFGaussian::inverseComposition(
   dh_x0(2, 2) = -1;
 
   // Build the cov:
-  //  Y = dh_xv * XV * dh_xv^T  + dh_xi * XI * dh_xi^T +  A + At
+  //  Y = dh_x1 * X1 * dh_x1^T  + dh_x0 * X0 * dh_x0^T +  A + At
   //     being A = dh_dx0 * COV01 * dh_dx1^t
   this->cov = mrpt::math::multiply_HCHt(dh_x0, x0.cov) + mrpt::math::multiply_HCHt(dh_x1, x1.cov);
 
-  auto M = CMatrixDouble33(dh_x0.asEigen() * COV_01.asEigen() * dh_x1.asEigen());
+  const auto A = CMatrixDouble33(dh_x0.asEigen() * COV_01.asEigen() * dh_x1.asEigen().transpose());
 
-  this->cov.asEigen() += (M.asEigen() * M.transpose()).eval();
+  this->cov.asEigen() += (A.asEigen() + A.asEigen().transpose()).eval();
 
   // mean
   mean = x1.mean - x0.mean;
@@ -542,8 +550,8 @@ void CPosePDFGaussian::composePoint(const mrpt::math::TPoint2D& l, CPoint2DPDFGa
   // COV:
   CMatrixDouble33 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
   CPosePDF::jacobiansPoseComposition(
-      this->mean,  // x
-      this->mean,  // u
+      this->mean,              // x
+      CPose2D(l.x, l.y, 0.0),  // u
       df_dx, df_du,
       true,  // Eval df_dx
       false  // Eval df_du (not needed)

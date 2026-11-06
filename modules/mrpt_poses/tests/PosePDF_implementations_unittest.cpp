@@ -36,6 +36,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <Eigen/Dense>
 #include <filesystem>
 
 using namespace mrpt;
@@ -1971,8 +1972,16 @@ TEST(CPose3DQuatPDFGaussianInf, ChangeCoordsDrawSamplesInverseAndOperators)
   p2.drawManySamples(5, samples);
   EXPECT_EQ(samples.size(), 5u);
 
-  double pAtMean = p2.evaluatePDF(p2.mean);
+  // Full-rank information: standard multivariate normal density.
+  const CPose3DQuatPDFGaussianInf pFull(meanQ, covInv);
+  EXPECT_NEAR(pFull.evaluatePDF(pFull.mean) / std::pow(1000.0 / M_2PI, 3.5), 1.0, 1e-9);
+
+  // The information matrix is now singular along the quaternion norm: the
+  // density on its support must still be finite and positive.
+  const double pAtMean = p2.evaluatePDF(p2.mean);
+  EXPECT_TRUE(std::isfinite(pAtMean));
   EXPECT_GT(pAtMean, 0.0);
+  EXPECT_GT(pAtMean, p2.evaluatePDF(CPose3DQuat(CPose3D(5, 5, 5, 0, 0, 0))));
   EXPECT_NEAR(p2.evaluateNormalizedPDF(p2.mean), 1.0, 1e-3);
 
   CPose3DQuatPDFGaussianInf inv;
@@ -1985,31 +1994,52 @@ TEST(CPose3DQuatPDFGaussianInf, ChangeCoordsDrawSamplesInverseAndOperators)
   EXPECT_FALSE(ss.str().empty());
 }
 
-// KNOWN BUG (found while writing this test, not introduced by it): the pose
-// composition Jacobian for a 7-parameter quaternion pose is structurally
-// rank-deficient (quaternions have a redundant DOF versus SE(3)'s 6), so
-// CPose3DQuatPDFGaussianInf::operator+= inverts a singular matrix and
-// silently produces a NaN information matrix, with no exception raised.
-// This regression test documents the current behavior; if the underlying
-// math is ever fixed, update/remove this test accordingly.
-TEST(CPose3DQuatPDFGaussianInf, KnownBug_OperatorPlusEqualsProducesNaNCovariance)
+// 7x7 quaternion covariances are rank deficient (unit-norm constraint): the
+// information-form operators must still give finite, symmetric, positive
+// semidefinite information matrices, consistent with the covariance form.
+TEST(CPose3DQuatPDFGaussianInf, OperatorsWithRankDeficientCovariances)
 {
-  CPose3DQuat meanQ(CPose3D(1, 0, 0, 0, 0, 0));
+  CPose3DQuat meanQ(CPose3D(1, 0, 0, 0.3, -0.2, 0.1));
   CMatrixDouble77 covInv;
   covInv.setIdentity();
   covInv *= 1000.0;
 
+  const auto checkInfo = [](const CMatrixDouble77& I)
+  {
+    for (int r = 0; r < 7; r++)
+    {
+      for (int c = 0; c < 7; c++)
+      {
+        ASSERT_TRUE(std::isfinite(I(r, c)));
+        EXPECT_NEAR(I(r, c), I(c, r), 1e-6 * (1 + std::abs(I(r, c))));
+      }
+    }
+    const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 7, 7>> es(I.asEigen());
+    EXPECT_GT(es.eigenvalues().minCoeff(), -1e-6 * es.eigenvalues().cwiseAbs().maxCoeff());
+  };
+
+  const CPose3DQuat inc(CPose3D(1, 0.5, 0, 0.4, 0.1, 0));
+
   CPose3DQuatPDFGaussianInf a(meanQ, covInv);
-  a += CPose3DQuat(CPose3D(1, 0, 0, 0, 0, 0));
-  EXPECT_TRUE(std::isnan(a.cov_inv(0, 0)));
+  a += inc;
+  checkInfo(a.cov_inv);
+
+  // Same operation in covariance form: both must agree on the covariance
+  // (up to the null space of the information matrix).
+  CPose3DQuatPDFGaussian g(meanQ, CMatrixDouble77(covInv.inverse_LLt()));
+  g += inc;
+  const Eigen::Matrix<double, 7, 7> P = a.cov_inv.asEigen() * g.cov.asEigen() * a.cov_inv.asEigen();
+  EXPECT_LT(
+      (P - a.cov_inv.asEigen()).cwiseAbs().maxCoeff(),
+      1e-6 * a.cov_inv.asEigen().cwiseAbs().maxCoeff());
 
   CPose3DQuatPDFGaussianInf b(meanQ, covInv);
   b += CPose3DQuatPDFGaussianInf(meanQ, covInv);
-  EXPECT_TRUE(std::isnan(b.cov_inv(0, 0)));
+  checkInfo(b.cov_inv);
 
   CPose3DQuatPDFGaussianInf c(meanQ, covInv);
   c -= CPose3DQuatPDFGaussianInf(meanQ, covInv);
-  EXPECT_TRUE(std::isnan(c.cov_inv(0, 0)));
+  checkInfo(c.cov_inv);
 }
 
 // =====================================================================

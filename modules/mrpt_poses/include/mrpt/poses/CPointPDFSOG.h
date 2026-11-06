@@ -76,26 +76,26 @@ class CPointPDFSOG : public CPointPDF
   /** Clear all the gaussian modes */
   void clear();
 
-  /** Access to individual beacons */
+  /** Access to individual modes */
   const TGaussianMode& operator[](size_t i) const
   {
     ASSERT_(i < m_modes.size());
     return m_modes[i];
   }
-  /** Access to individual beacons */
+  /** Access to individual modes */
   TGaussianMode& operator[](size_t i)
   {
     ASSERT_(i < m_modes.size());
     return m_modes[i];
   }
 
-  /** Access to individual beacons */
+  /** Access to individual modes */
   const TGaussianMode& get(size_t i) const
   {
     ASSERT_(i < m_modes.size());
     return m_modes[i];
   }
-  /** Access to individual beacons */
+  /** Access to individual modes */
   TGaussianMode& get(size_t i)
   {
     ASSERT_(i < m_modes.size());

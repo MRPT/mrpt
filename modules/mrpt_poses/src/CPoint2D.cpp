@@ -110,5 +110,4 @@ CPoint2D::CPoint2D(const mrpt::math::TPoint3D& o)
 {
   m_coords[0] = o.x;
   m_coords[1] = o.y;
-  m_coords[2] = 0;
 }

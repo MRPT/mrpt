@@ -84,6 +84,14 @@ set(LIB_UNIT_TEST_SOURCES
   tests/Lie_unittest.cpp
   tests/Lie_SO_unittest.cpp
   tests/PosePDF_implementations_unittest.cpp
+  tests/CPosePDFGaussian_math_unittest.cpp
+  tests/CPose3DPDFGaussian_math_unittest.cpp
+  tests/CPose3DQuatPDFGaussian_math_unittest.cpp
+  tests/CPoseRandomSampler_math_unittest.cpp
+  tests/PosePDFGrid_math_unittest.cpp
+  tests/PosePDFParticles_math_unittest.cpp
+  tests/PosePDFSOG_math_unittest.cpp
+  tests/PoseConversions_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
@@ -125,7 +133,6 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/poses/CPoint2D.h
   include/mrpt/poses/CPoses2DSequence.h
   include/mrpt/poses/CPoses3DSequence.h
-  include/mrpt/poses/pose_utils.h
   include/mrpt/poses/CPointPDFGaussian.h
   include/mrpt/poses/CPose3DPDF.h
   include/mrpt/poses/CPointPDFSOG.h
@@ -138,8 +145,15 @@ set(LIB_PUBLIC_HEADERS
   include/mrpt/poses/CPose3DQuatPDF.h
 )
 
+set(LIB_UNIT_TEST_LINK_LIBRARIES mrpt::mrpt_io Eigen3::Eigen)
 if (BUILD_TESTING)
   find_package(mrpt_io REQUIRED) # for unit tests
+  # Optional: tests of the header-only GTSAM wrappers
+  find_package(GTSAM QUIET)
+  if (GTSAM_FOUND)
+    list(APPEND LIB_UNIT_TEST_SOURCES tests/gtsam_wrappers_unittest.cpp)
+    list(APPEND LIB_UNIT_TEST_LINK_LIBRARIES gtsam)
+  endif()
 endif()
 
 mrpt_add_library(
@@ -153,8 +167,7 @@ mrpt_add_library(
   CMAKE_DEPENDENCIES
     mrpt_bayes
   UNITTEST_LINK_LIBRARIES
-    mrpt::mrpt_io
-    Eigen3::Eigen
+    ${LIB_UNIT_TEST_LINK_LIBRARIES}
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE

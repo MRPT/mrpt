@@ -100,7 +100,12 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
   void copyFrom(const CPose3DPDF& o) override;
 
   /** Copy operator, translating if necessary (for example, between particles
-   * and gaussian representations) */
+   * and gaussian representations).
+   * \note The missing variables (z,pitch,roll) get zero information (i.e.
+   * unknown), so the resulting information matrix is singular and cannot be
+   * converted to a covariance. Other 2D PDFs than CPosePDFGaussianInf are
+   * converted through their 2D covariance, which must be positive-definite.
+   * CPose3DPDFGaussian, instead, assigns zero covariance to those variables. */
   void copyFrom(const CPosePDF& o);
 
   /** Copy from a 6D pose PDF described as a Quaternion
@@ -108,7 +113,7 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
   void copyFrom(const CPose3DQuatPDFGaussian& o);
 
   /** Save the PDF to a text file, containing the 3D pose in the first line,
-   * then the covariance matrix in next 3 lines. */
+   * then the 6x6 information matrix in the next 6 lines. */
   bool saveToTextFile(const std::string& file) const override;
 
   /** this = p (+) this. This can be used to convert a PDF from local
@@ -121,7 +126,7 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
   void drawSingleSample(CPose3D& outPart) const override;
 
   /** Draws a number of samples from the distribution, and saves as a list of
-   * 1x6 vectors, where each row contains a (x,y,phi) datum. */
+   * 1x6 vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum. */
   void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
   /** Bayesian fusion of two points gauss. distributions, then save the result
@@ -162,7 +167,9 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
    * the range [0,1] */
   double evaluateNormalizedPDF(const CPose3D& x) const;
   /** Returns a 3x3 matrix with submatrix of the inverse covariance for the
-   * variables (x,y,yaw) only */
+   * variables (x,y,yaw) only.
+   * \note This is the information matrix of (x,y,yaw) conditioned on
+   * (z,pitch,roll), not the inverse of their marginal covariance. */
   void getInvCovSubmatrix2D(mrpt::math::CMatrixDouble& out_cov) const;
 
   /** Computes the Mahalanobis distance between the centers of two Gaussians.

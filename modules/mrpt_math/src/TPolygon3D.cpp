@@ -36,8 +36,8 @@ double TPolygon3D::distance(const TPoint3D& point) const
   if (!getPlane(pl)) throw std::logic_error("Polygon does not conform a plane");
   TPoint3D newPoint;
   TPolygon3D newPoly;
-  TPose3D pose;
-  pl.getAsPose3DForcingOrigin(operator[](0), pose);
+  // Express everything in the plane frame (inverse of the plane pose):
+  const TPose3D pose = -pl.getAsPose3DForcingOrigin(operator[](0));
   project3D(point, pose, newPoint);
   project3D(*this, pose, newPoly);
   double distance2D = TPolygon2D(newPoly).distance(TPoint2D(newPoint));

@@ -2,6 +2,11 @@
 Changelog for package mrpt_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+* Python wheel (pip install mrpt3), with a C++ SDK (`#1489 <https://github.com/MRPT/mrpt/issues/1489>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.1 (2026-11-01)
 ------------------
 * mrpt_add_test(): build the test target from the top of the build tree (fixes Ninja subdirectory tests)

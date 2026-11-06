@@ -22,18 +22,20 @@ namespace mrpt::math
  *  \ingroup mrpt_math_grp
  * @{ */
 
-/** Evaluates the integral from 0 to x of sqrt(2/pi) sin(t^2) dt. Equivalent to
- * MATLAB fresnels()
+/** Evaluates the integral from 0 to x of sin(pi*t^2/2) dt (normalized Fresnel
+ * sine integral). Equivalent to MATLAB fresnels()
  * \sa https://en.wikipedia.org/wiki/Fresnel_integral
  * \note Code based on
- * http://www.mymathlib.com/functions/fresnel_sin_cos_integrals.html */
+ * https://web.archive.org/web/20161104155944/http://www.mymathlib.com/functions/fresnel_sin_cos_integrals.html
+ */
 double fresnel_sin_integral(double x) noexcept;
 
-/** Evaluates the integral from 0 to x of sqrt(2/pi) cos(t^2) dt. Equivalent to
- *MATLAB fresnelc()
+/** Evaluates the integral from 0 to x of cos(pi*t^2/2) dt (normalized Fresnel
+ * cosine integral). Equivalent to MATLAB fresnelc()
  * \sa https://en.wikipedia.org/wiki/Fresnel_integral
- *\note Code based on
- *http://www.mymathlib.com/functions/fresnel_sin_cos_integrals.html */
+ * \note Code based on
+ * https://web.archive.org/web/20161104155944/http://www.mymathlib.com/functions/fresnel_sin_cos_integrals.html
+ */
 double fresnel_cos_integral(double x) noexcept;
 
 /** long double version of fresnel_sin_integral */

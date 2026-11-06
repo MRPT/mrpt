@@ -73,7 +73,7 @@ namespace mrpt::math
  *  \ingroup mrpt_math_grp
  *  @{ */
 
-/** Adaptor class providing Nearest Neighbor (NN) searcg via `nanoflann`,
+/** Adaptor class providing Nearest Neighbor (NN) search via `nanoflann`,
  * making use of the CRTP design pattern.
  *
  * Derived classes must call `kdtree_mark_as_outdated()` when data points change
@@ -110,11 +110,12 @@ namespace mrpt::math
  * The KD-tree index will be built on demand only upon call of any of the query
  * methods provided by this class.
  *
- * Notice that there is only ONE internal cached KD-tree, so if a method to
- * query a 2D point is called, then another method for 3D points, then again
- * the 2D method, three KD-trees will be built. So, try to group all the calls
- * for a given dimensionality together or build different class instances for
- * queries of each dimensionality.
+ * One 2D and one 3D KD-tree are cached independently, so queries of both
+ * dimensionalities can be mixed. Both are discarded when the derived class
+ * calls `kdtree_mark_as_outdated()`.
+ *
+ * \note The k-NN query methods return squared distances as `float`, and
+ * currently only compile for `num_t=float`.
  *
  * \sa See some of the derived classes for example implementations. See also
  * the documentation of nanoflann
@@ -172,10 +173,9 @@ class KDTreeCapable
 
   /** KD Tree-based search for the closest point (only ONE) to some given 2D
    * coordinates.
-   * This method automatically build the "m_kdtree_data" structure when:
+   * This method automatically builds the KD-tree index when:
    *	- It is called for the first time
    *	- The map has changed
-   *	- The KD-tree was build for 3D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
@@ -260,10 +260,9 @@ class KDTreeCapable
 
   /** KD Tree-based search for the TWO closest point to some given 2D
    *coordinates.
-   *  This method automatically build the "m_kdtree_data" structure when:
+   *  This method automatically builds the KD-tree index when:
    *		- It is called for the first time
    *		- The map has changed
-   *		- The KD-tree was build for 3D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
@@ -302,6 +301,10 @@ class KDTreeCapable
         {x0, y0}
     };
     m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
+    if (resultSet.size() < knn)
+    {
+      THROW_EXCEPTION("kdTreeTwoClosestPoint2D() requires at least two points.");
+    }
 
     // Copy output to user vars:
     out_x1 = derived().kdtree_get_pt(ret_indexes[0], 0);
@@ -310,7 +313,7 @@ class KDTreeCapable
 
     out_x2 = derived().kdtree_get_pt(ret_indexes[1], 0);
     out_y2 = derived().kdtree_get_pt(ret_indexes[1], 1);
-    out_dist_sqr2 = ret_sqdist[0];
+    out_dist_sqr2 = ret_sqdist[1];
 
     MRPT_END
   }
@@ -334,14 +337,13 @@ class KDTreeCapable
 
   /** KD Tree-based search for the N closest point to some given 2D
    *coordinates.
-   *  This method automatically build the "m_kdtree_data" structure when:
+   *  This method automatically builds the KD-tree index when:
    *		- It is called for the first time
    *		- The map has changed
-   *		- The KD-tree was build for 3D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
-   * \param N The number of closest points to search.
+   * \param knn The number of closest points to search.
    * \param out_x The vector containing the X coordinates of the
    *correspondences.
    * \param out_y The vector containing the Y coordinates of the
@@ -368,6 +370,13 @@ class KDTreeCapable
     rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
     if (!m_kdtree2d_data.m_num_points) THROW_EXCEPTION("There are no points in the KD-tree.");
 
+    if (knn == 0)
+    {
+      out_x.clear();
+      out_y.clear();
+      out_dist_sqr.clear();
+      return {};
+    }
     std::vector<size_t> ret_indexes(knn);
     out_x.resize(knn);
     out_y.resize(knn);
@@ -435,14 +444,13 @@ class KDTreeCapable
 
   /** KD Tree-based search for the N closest point to some given 2D
    *coordinates and returns their indexes.
-   *  This method automatically build the "m_kdtree_data" structure when:
+   *  This method automatically builds the KD-tree index when:
    *		- It is called for the first time
    *		- The map has changed
-   *		- The KD-tree was build for 3D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
-   * \param N The number of closest points to search.
+   * \param knn The number of closest points to search.
    * \param out_idx The indexes of the found closest correspondence.
    * \param out_dist_sqr The square distance between the query and the
    *returned point.
@@ -463,6 +471,12 @@ class KDTreeCapable
     rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
     if (!m_kdtree2d_data.m_num_points) THROW_EXCEPTION("There are no points in the KD-tree.");
 
+    if (knn == 0)
+    {
+      out_idx.clear();
+      out_dist_sqr.clear();
+      return;
+    }
     out_idx.resize(knn);
     out_dist_sqr.resize(knn);
     const std::array<num_t, 2> query_point{
@@ -506,10 +520,9 @@ class KDTreeCapable
 
   /** KD Tree-based search for the closest point (only ONE) to some given 3D
    *coordinates.
-   *  This method automatically build the "m_kdtree_data" structure when:
+   *  This method automatically builds the KD-tree index when:
    *		- It is called for the first time
    *		- The map has changed
-   *		- The KD-tree was build for 2D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
@@ -585,15 +598,14 @@ class KDTreeCapable
 
   /** KD Tree-based search for the N closest points to some given 3D
    *coordinates.
-   *  This method automatically build the "m_kdtree_data" structure when:
+   *  This method automatically builds the KD-tree index when:
    *		- It is called for the first time
    *		- The map has changed
-   *		- The KD-tree was build for 2D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
    * \param z0  The Z coordinate of the query.
-   * \param N The number of closest points to search.
+   * \param knn The number of closest points to search.
    * \param out_x The vector containing the X coordinates of the
    *correspondences.
    * \param out_y The vector containing the Y coordinates of the
@@ -622,6 +634,14 @@ class KDTreeCapable
     rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
     if (!m_kdtree3d_data.m_num_points) THROW_EXCEPTION("There are no points in the KD-tree.");
 
+    if (knn == 0)
+    {
+      out_x.clear();
+      out_y.clear();
+      out_z.clear();
+      out_dist_sqr.clear();
+      return;
+    }
     std::vector<size_t> ret_indexes(knn);
     out_x.resize(knn);
     out_y.resize(knn);
@@ -669,15 +689,14 @@ class KDTreeCapable
 
   /** KD Tree-based search for the N closest points to some given 3D
    *coordinates.
-   *  This method automatically build the "m_kdtree_data" structure when:
+   *  This method automatically builds the KD-tree index when:
    *		- It is called for the first time
    *		- The map has changed
-   *		- The KD-tree was build for 2D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
    * \param z0  The Z coordinate of the query.
-   * \param N The number of closest points to search.
+   * \param knn The number of closest points to search.
    * \param out_x The vector containing the X coordinates of the
    *correspondences.
    * \param out_y The vector containing the Y coordinates of the
@@ -706,6 +725,15 @@ class KDTreeCapable
     rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
     if (!m_kdtree3d_data.m_num_points) THROW_EXCEPTION("There are no points in the KD-tree.");
 
+    if (knn == 0)
+    {
+      out_x.clear();
+      out_y.clear();
+      out_z.clear();
+      out_idx.clear();
+      out_dist_sqr.clear();
+      return;
+    }
     out_x.resize(knn);
     out_y.resize(knn);
     out_z.resize(knn);
@@ -773,16 +801,15 @@ class KDTreeCapable
 
   /** KD Tree-based search for all the points within a given radius of some 3D
    *point.
-   *  This method automatically build the "m_kdtree_data" structure when:
+   *  This method automatically builds the KD-tree index when:
    *		- It is called for the first time
    *		- The map has changed
-   *		- The KD-tree was build for 2D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
    * \param z0  The Z coordinate of the query.
    * \param maxRadiusSqr The square of the desired search radius.
-   * \param out_indices_dist The output list, with pairs of indeces/squared
+   * \param out_indices_dist The output list, with pairs of indices/squared
    *distances for the found correspondences.
    * \return Number of found points.
    *
@@ -809,15 +836,14 @@ class KDTreeCapable
 
   /** KD Tree-based search for all the points within a given radius of some 2D
    *point.
-   *  This method automatically build the "m_kdtree_data" structure when:
+   *  This method automatically builds the KD-tree index when:
    *		- It is called for the first time
    *		- The map has changed
-   *		- The KD-tree was build for 3D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
    * \param maxRadiusSqr The square of the desired search radius.
-   * \param out_indices_dist The output list, with pairs of indeces/squared
+   * \param out_indices_dist The output list, with pairs of indices/squared
    *distances for the found correspondences.
    * \return Number of found points.
    *
@@ -843,15 +869,14 @@ class KDTreeCapable
 
   /** KD Tree-based search for the N closest point to some given 3D
    *coordinates and returns their indexes.
-   *  This method automatically build the "m_kdtree_data" structure when:
+   *  This method automatically builds the KD-tree index when:
    *		- It is called for the first time
    *		- The map has changed
-   *		- The KD-tree was build for 2D.
    *
    * \param x0  The X coordinate of the query.
    * \param y0  The Y coordinate of the query.
    * \param z0  The Z coordinate of the query.
-   * \param N The number of closest points to search.
+   * \param knn The number of closest points to search.
    * \param out_idx The indexes of the found closest correspondence.
    * \param out_dist_sqr The square distance between the query and the
    *returned point.
@@ -871,6 +896,12 @@ class KDTreeCapable
     rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
     if (!m_kdtree3d_data.m_num_points) THROW_EXCEPTION("There are no points in the KD-tree.");
 
+    if (knn == 0)
+    {
+      out_idx.clear();
+      out_dist_sqr.clear();
+      return;
+    }
     out_idx.resize(knn);
     out_dist_sqr.resize(knn);
     const std::array<num_t, 3> query_point{

@@ -88,6 +88,9 @@ void bind_mrpt_fixed_type(py::module& m, const std::string& name)
           { return self.asEigen(); },
           py::arg("dtype") = py::none(), py::arg("copy") = py::none())
       .def("__repr__", [name](const T& self) { return "[" + name + "]\n" + self.asString(); });
+
+  // Functions taking this type also accept a NumPy array of the same shape:
+  py::implicitly_convertible<py::array, T>();
 }
 }  // namespace
 
@@ -122,6 +125,7 @@ PYBIND11_MODULE(_bindings, m)
           },
           "Returns the matrix as a NumPy array.")
       .def("__repr__", [](const mrpt::math::CMatrixDouble& self) { return self.asString(); });
+  py::implicitly_convertible<py::array, mrpt::math::CMatrixDouble>();
 
   // -------------------------------------------------------------------------
   // 2. CVectorDouble (Dynamic size)
@@ -146,6 +150,7 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "as_numpy", [](const mrpt::math::CVectorDouble& self) { return self.asEigen(); },
           "Returns the vector as a NumPy array.");
+  py::implicitly_convertible<py::array, mrpt::math::CVectorDouble>();
 
   // --- 1. Fixed-Size Matrices (from CMatrixFixed.h) ---
   bind_mrpt_fixed_type<mrpt::math::CMatrixDouble22>(m, "CMatrixDouble22");
@@ -933,7 +938,7 @@ PYBIND11_MODULE(_bindings, m)
   // Free math functions
   // =========================================================================
   m.def(
-      "wrapToPi", [](double a) { return mrpt::math::wrapToPi(a); }, "Wrap angle to [-pi, pi]");
+      "wrapToPi", [](double a) { return mrpt::math::wrapToPi(a); }, "Wrap angle to [-pi, pi)");
   m.def(
-      "wrapTo2Pi", [](double a) { return mrpt::math::wrapTo2Pi(a); }, "Wrap angle to [0, 2*pi]");
+      "wrapTo2Pi", [](double a) { return mrpt::math::wrapTo2Pi(a); }, "Wrap angle to [0, 2*pi)");
 }

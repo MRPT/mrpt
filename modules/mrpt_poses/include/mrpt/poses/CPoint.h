@@ -20,8 +20,8 @@
 namespace mrpt::poses
 {
 /** A base class for representing a point in 2D or 3D.
- *   For more information refer to the <a
- * href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry tutorial</a> online.
+ *   For more information refer to the 2D/3D Geometry tutorial online:
+ *   https://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/
  * \note This class is based on the CRTP design pattern
  * \sa CPoseOrPoint, CPose
  * \ingroup poses_grp
@@ -104,17 +104,14 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>, public mrpt::Stringifyabl
 template <class DERIVEDCLASS, std::size_t DIM>
 bool operator<(const CPoint<DERIVEDCLASS, DIM>& a, const CPoint<DERIVEDCLASS, DIM>& b)
 {
-  if (a.x() < b.x())
+  // Lexicographic order on (x,y[,z]):
+  if (a.x() != b.x())
   {
-    return true;
+    return a.x() < b.x();
   }
-  if (!a.is3DPoseOrPoint())
+  if (!a.is3DPoseOrPoint() || a.y() != b.y())
   {
     return a.y() < b.y();
-  }
-  if (a.y() < b.y())
-  {
-    return true;
   }
   return a[2] < b[2];
 }

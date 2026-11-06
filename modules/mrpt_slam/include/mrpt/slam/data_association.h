@@ -18,6 +18,9 @@
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/typemeta/TEnumType.h>
 
+#include <map>
+#include <vector>
+
 namespace mrpt::slam
 {
 /** \addtogroup data_assoc_grp Data association
@@ -56,7 +59,8 @@ using observation_index_t = size_t;
 /** Used in mrpt::slam::TDataAssociationResults */
 using prediction_index_t = size_t;
 
-/** The results from mrpt::slam::data_association_independent_predictions()
+/** The results from mrpt::slam::data_association_full_covariance() and
+ * mrpt::slam::data_association_independent_predictions()
  */
 struct TDataAssociationResults
 {
@@ -94,15 +98,18 @@ struct TDataAssociationResults
    * for clarity, use normal size_t's.
    */
   std::map<observation_index_t, prediction_index_t> associations;
-  /** The Joint Mahalanobis distance or matching likelihood of the best
-   * associations found. */
+  /** The joint squared Mahalanobis distance (metricMaha) or the joint
+   * matching likelihood (metricML) of the best associations found, for the
+   * JCBB method. */
   double distance{0};
 
-  /** Individual mahalanobis distances (or matching likelihood, depending on
-   * the selected metric) between predictions (row indices) & observations
-   * (column indices).
+  /** Individual squared Mahalanobis distances (or the logarithm of the
+   * matching likelihood, depending on the selected metric) between
+   * predictions (row indices) & observations (column indices).
    *  Indices are for the appearing order in the arguments
    * "Y_predictions_mean" & "Z_observations", they are NOT landmark IDs.
+   *  Pairs which were not evaluated (when using the kd-tree) keep the
+   * values 1000 (Mahalanobis) or -1000 (log-likelihood).
    */
   mrpt::math::CMatrixDouble indiv_distances;
   /** The result of a chi2 test for compatibility using mahalanobis distance -
@@ -127,28 +134,34 @@ struct TDataAssociationResults
  *  With both a Mahalanobis-distance or Matching-likelihood metric. For a
  *comparison of both methods, see paper \cite blanco2012amd
  *
+ * Individual compatibility is decided with a chi2 test of the squared
+ *Mahalanobis distance with O degrees of freedom (or with the matching
+ *likelihood, see \a compatibilityTestMetric). JCBB additionally requires each
+ *hypothesis to be jointly compatible: the joint squared Mahalanobis distance of
+ *its K pairings must pass a chi2 test with K*O degrees of freedom, with the
+ *same \a chi2quantile.
+ *
  * \param Z_observations_mean [IN] An MxO matrix with the M observations, each
  *row containing the observation "mean".
  * \param Y_predictions_mean [IN] An NxO matrix with the N predictions, each
  *row containing the mean of one prediction.
  * \param Y_predictions_cov [IN] An N*OxN*O matrix with the full covariance
- *matrix of all the N predictions.
+ *matrix of all the N predictions. It must include the observation noise, i.e.
+ *it is the innovation covariance.
  * \param results [OUT] The output data association hypothesis, and other
  *useful information.
  * \param method [IN, optional] The selected method to make the associations.
  * \param chi2quantile [IN, optional] The threshold for considering a match
  *between two close Gaussians for two landmarks, in the range [0,1]. It is used
  *to call mrpt::math::chi2inv
- * \param use_kd_tree [IN, optional] Build a KD-tree to speed-up the evaluation
- *of individual compatibility (IC). It's perhaps more efficient to disable it
- *for a small number of features. (default=true).
+ * \param DAT_ASOC_USE_KDTREE [IN, optional] Build a KD-tree to speed-up the
+ *evaluation of individual compatibility (IC). It's perhaps more efficient to
+ *disable it for a small number of features. (default=true).
  * \param predictions_IDs [IN, optional] (default:none) An N-vector. If
  *provided, the resulting associations in "results.associations" will not
  *contain prediction indices "i", but "predictions_IDs[i]".
  *
- * \sa data_association_independent_predictions,
- *data_association_independent_2d_points,
- *data_association_independent_3d_points
+ * \sa data_association_independent_predictions
  */
 void data_association_full_covariance(
     const mrpt::math::CMatrixDouble& Z_observations_mean,
@@ -159,6 +172,25 @@ void data_association_full_covariance(
     const TDataAssociationMetric metric = metricMaha,
     const double chi2quantile = 0.99,
     const bool DAT_ASOC_USE_KDTREE = true,
+    const std::vector<prediction_index_t>& predictions_IDs = std::vector<prediction_index_t>(),
+    const TDataAssociationMetric compatibilityTestMetric = metricMaha,
+    const double log_ML_compat_test_threshold = 0.0);
+
+/** \overload For observations with angular components (e.g. bearings), whose
+ * innovations must be wrapped to [-pi,pi]. \a angular_components must be
+ * empty or have O elements, true for each angular component. If any component
+ * is angular, the kd-tree is not used.
+ */
+void data_association_full_covariance(
+    const mrpt::math::CMatrixDouble& Z_observations_mean,
+    const mrpt::math::CMatrixDouble& Y_predictions_mean,
+    const mrpt::math::CMatrixDouble& Y_predictions_cov,
+    TDataAssociationResults& results,
+    const std::vector<bool>& angular_components,
+    const TDataAssociationMethod method = assocJCBB,
+    const TDataAssociationMetric metric = metricMaha,
+    const double chi2quantile = 0.99,
+    const bool use_kd_tree = true,
     const std::vector<prediction_index_t>& predictions_IDs = std::vector<prediction_index_t>(),
     const TDataAssociationMetric compatibilityTestMetric = metricMaha,
     const double log_ML_compat_test_threshold = 0.0);
@@ -185,16 +217,14 @@ void data_association_full_covariance(
  * \param chi2quantile [IN, optional] The threshold for considering a match
  *between two close Gaussians for two landmarks, in the range [0,1]. It is used
  *to call mrpt::math::chi2inv
- * \param use_kd_tree [IN, optional] Build a KD-tree to speed-up the evaluation
- *of individual compatibility (IC). It's perhaps more efficient to disable it
- *for a small number of features. (default=true).
+ * \param DAT_ASOC_USE_KDTREE [IN, optional] Build a KD-tree to speed-up the
+ *evaluation of individual compatibility (IC). It's perhaps more efficient to
+ *disable it for a small number of features. (default=true).
  * \param predictions_IDs [IN, optional] (default:none) An N-vector. If
  *provided, the resulting associations in "results.associations" will not
  *contain prediction indices "i", but "predictions_IDs[i]".
  *
- * \sa data_association_full_covariance,
- *data_association_independent_2d_points,
- *data_association_independent_3d_points
+ * \sa data_association_full_covariance
  */
 void data_association_independent_predictions(
     const mrpt::math::CMatrixDouble& Z_observations_mean,

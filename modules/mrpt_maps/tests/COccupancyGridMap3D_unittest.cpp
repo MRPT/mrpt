@@ -168,17 +168,16 @@ TEST(COccupancyGridMap3DTests, insertScan3D)
 }
 
 // =========================================================================
-//  Likelihood: canCompute (true for 2D scans, false otherwise) and
-//  computeObservationLikelihood (unimplemented -- throws, see the
-//  "Implement me!" in COccupancyGridMap3D_likelihood.cpp)
+//  Likelihood: not implemented yet, so canCompute is false for all
+//  observations and computeObservationLikelihood returns a neutral 0
 // =========================================================================
 
-TEST(COccupancyGridMap3DTests, CanComputeObservationLikelihood2DScanTrue)
+TEST(COccupancyGridMap3DTests, CanComputeObservationLikelihood2DScanFalse)
 {
   mrpt::maps::COccupancyGridMap3D grid;
   mrpt::obs::CObservation2DRangeScan scan1;
   mrpt::obs::stock_observations::example2DRangeScan(scan1);
-  EXPECT_TRUE(grid.canComputeObservationLikelihood(scan1));
+  EXPECT_FALSE(grid.canComputeObservationLikelihood(scan1));
 }
 
 TEST(COccupancyGridMap3DTests, CanComputeObservationLikelihoodOtherTypeFalse)
@@ -188,13 +187,12 @@ TEST(COccupancyGridMap3DTests, CanComputeObservationLikelihoodOtherTypeFalse)
   EXPECT_FALSE(grid.canComputeObservationLikelihood(scan3d));
 }
 
-TEST(COccupancyGridMap3DTests, ComputeObservationLikelihoodThrows)
+TEST(COccupancyGridMap3DTests, ComputeObservationLikelihoodIsNeutral)
 {
   mrpt::maps::COccupancyGridMap3D grid;
   mrpt::obs::CObservation2DRangeScan scan1;
   mrpt::obs::stock_observations::example2DRangeScan(scan1);
-  EXPECT_THROW(
-      grid.computeObservationLikelihood(scan1, mrpt::poses::CPose3D::Identity()), std::exception);
+  EXPECT_EQ(grid.computeObservationLikelihood(scan1, mrpt::poses::CPose3D::Identity()), 0.0);
 }
 
 // =========================================================================

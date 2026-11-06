@@ -26,7 +26,7 @@ class CPose3D;
 /** SE(2) rigid-body pose with cached trigonometry — the preferred class for repeated composition.
  *
  * Represents an element of SE(2) = SO(2) ⋉ R² as the triplet `(x, y, φ)`:
- * - `(x, y)` — translation in metres.
+ * - `(x, y)`: translation in meters.
  * - `φ` (phi) — counter-clockwise heading angle in **radians**.
  *
  * The equivalent 3x3 homogeneous matrix is:
@@ -324,6 +324,9 @@ class CPose2D :
         throw std::runtime_error("CPose2D::operator[]: Index of bounds.");
     }
   }
+  /** Read/write access to [x, y, phi]. Accessing phi invalidates its cached
+   * cos/sin: do not keep the returned reference across calls to other methods.
+   */
   double& operator[](unsigned int i)
   {
     switch (i)
@@ -333,6 +336,7 @@ class CPose2D :
       case 1:
         return m_coords[1];
       case 2:
+        m_cossin_uptodate = false;
         return m_phi;
       default:
         throw std::runtime_error("CPose2D::operator[]: Index of bounds.");

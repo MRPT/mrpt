@@ -18,6 +18,7 @@
 #include <mrpt/system/datetime.h>
 
 #include <Eigen/Dense>
+#include <algorithm>
 #include <cstdio>   // fopen(),...
 #include <fstream>  // ifstream
 #include <sstream>  // stringstream
@@ -69,25 +70,26 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
       return false;
     }
 
-    // We have one row in s[ i : (end_row-1) ]
-    std::stringstream ss(s.substr(i, end_row - i));
+    // We have one row in s[ i : (end_row-1) ]. Commas are column
+    // separators, like whitespaces:
+    std::string rowStr = s.substr(i, end_row - i);
+    std::replace(rowStr.begin(), rowStr.end(), ',', ' ');
+    std::stringstream ss(rowStr);
     lstElements.clear();
-    try
+    Scalar val;
+    while (ss >> val)
     {
-      while (!ss.eof())
-      {
-        Scalar val;
-        ss >> val;
-        if (ss.bad() || ss.fail())
-        {
-          break;
-        }
-        lstElements.push_back(val);
-      }
+      lstElements.push_back(val);
     }
-    catch (...)  // NOLINT(bugprone-empty-catch)
+    if (!ss.eof())
     {
-    }  // end of line
+      if (dump_errors_here)
+      {
+        dump_errors_here->get() << "[fromMatlabStringFormat] Row " << nRow + 1
+                                << " has a token that is not a number.\n";
+      }
+      return false;
+    }
 
     // Empty row? Only for the first row, then this is an empty matrix:
     if (lstElements.empty())
@@ -262,7 +264,10 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
   while (!f.eof() && !f.fail())
   {
     std::getline(f, str);
-    if (str.size() && str[0] != '#' && str[0] != '%')
+    // Skip blank (or whitespace-only) lines, and comments, which may be
+    // indented:
+    const auto firstChar = str.find_first_not_of(" \t\r\n\f\v");
+    if (firstChar != std::string::npos && str[firstChar] != '#' && str[firstChar] != '%')
     {
       // Parse row to floats:
       const char* ptr = str.c_str();
@@ -273,7 +278,7 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
       {
         // Find next number: (non white-space character):
         while (ptr[0] && (ptr[0] == ' ' || ptr[0] == ',' || ptr[0] == '\t' || ptr[0] == '\r' ||
-                          ptr[0] == '\n'))
+                          ptr[0] == '\n' || ptr[0] == '\f' || ptr[0] == '\v'))
         {
           ptr++;
         }
@@ -315,7 +320,9 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
       if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
           Derived::ColsAtCompileTime == Eigen::Dynamic)
       {
-        if (mvbDerived().rows() < nRows + 1 || mvbDerived().cols() < i)
+        // The first row always sets the number of columns, regardless of
+        // any previous size of the matrix:
+        if (nRows == 0 || mvbDerived().rows() < nRows + 1)
         {
           const auto extra_rows = std::max<matrix_dim_t>(1, nRows >> 1);
           mvbDerived().resize(nRows + extra_rows, i);
@@ -346,6 +353,11 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
   if (!nRows)
   {
     throw std::runtime_error("loadFromTextFile: Error loading from text file");
+  }
+  if (Derived::RowsAtCompileTime != Eigen::Dynamic && nRows != Derived::RowsAtCompileTime)
+  {
+    throw std::runtime_error(
+        "loadFromTextFile: Read less rows than the capacity of the fixed sized matrix.");
   }
 }
 

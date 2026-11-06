@@ -67,7 +67,7 @@ jobs:
                            lcov yamllint \
                            libicu-dev libsimpleini-dev \
                            libcli11-dev \
-                           libzstd-dev
+                           libzstd-dev libtbb-dev
 
           # Virtual X display + Mesa software GL, so that the mrpt_gui window
           # tests can run headlessly (they self-skip without a display):

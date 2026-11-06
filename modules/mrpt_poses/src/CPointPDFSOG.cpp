@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/poses/CPointPDFSOG.h>
@@ -26,12 +25,11 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::bayes;
 using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CPointPDFSOG, CPosePDF, mrpt::poses)
+IMPLEMENTS_SERIALIZABLE(CPointPDFSOG, CPointPDF, mrpt::poses)
 
 /*---------------------------------------------------------------
   Constructor
@@ -216,23 +214,28 @@ void CPointPDFSOG::drawSingleSample(CPoint3D& outSample) const
   ASSERT_(m_modes.size() > 0);
 
   // 1st: Select a mode with a probability proportional to its weight:
-  vector<double> logWeights(m_modes.size());
-  vector<size_t> outIdxs;
-  vector<double>::iterator itW;
-  CListGaussianModes::const_iterator it;
-  for (it = m_modes.begin(), itW = logWeights.begin(); it != m_modes.end(); ++it, ++itW)
-    *itW = it->log_w;
-
-  CParticleFilterCapable::computeResampling(
-      CParticleFilter::prMultinomial,  // Resampling algorithm
-      logWeights,                      // input: log weights
-      outIdxs                          // output: indexes
-  );
-
-  // we need just one: take the first (arbitrary)
-  size_t selectedIdx = outIdxs[0];
-  ASSERT_(selectedIdx < m_modes.size());
-  const CPointPDFGaussian* selMode = &m_modes[selectedIdx].val;
+  double maxW = m_modes.begin()->log_w;
+  for (const auto& m : m_modes)
+  {
+    maxW = std::max(maxW, m.log_w);
+  }
+  double sumW = 0;
+  for (const auto& m : m_modes)
+  {
+    sumW += std::exp(m.log_w - maxW);
+  }
+  const double uni = getRandomGenerator().drawUniform(0.0, sumW);
+  double cum = 0;
+  const CPointPDFGaussian* selMode = &m_modes.rbegin()->val;
+  for (const auto& m : m_modes)
+  {
+    cum += std::exp(m.log_w - maxW);
+    if (uni <= cum)
+    {
+      selMode = &m.val;
+      break;
+    }
+  }
 
   // 2nd: Draw a position from the selected Gaussian:
   CVectorDouble vec;
@@ -269,33 +272,34 @@ void CPointPDFSOG::bayesianFusion(
   const double minMahalanobisDistToDrop2 = square(minMahalanobisDistToDrop);
 
   this->m_modes.clear();
-  bool is2D = false;  // to detect & avoid errors in 3x3 matrix inversions of range=2.
 
   for (const auto& m : p1->m_modes)
   {
-    CMatrixDouble33 c = m.val.cov;
-
-    // Is a 2D covariance??
-    if (c(2, 2) == 0)
+    // Planar (2D) modes have a zero "z" variance: use a dummy one to avoid
+    // singular 3x3 matrices, and restore it in the fused mode.
+    CPointPDFGaussian m1 = m.val;
+    const bool is2D_1 = (m1.cov(2, 2) == 0);
+    if (is2D_1)
     {
-      is2D = true;
-      c(2, 2) = 1;
+      m1.cov(2, 2) = 1;
     }
+    const CMatrixDouble33& c = m1.cov;
 
-    ASSERT_(c(0, 0) != 0 && c(0, 0) != 0);
+    ASSERT_(c(0, 0) != 0 && c(1, 1) != 0);
 
     const CMatrixDouble33 covInv = c.inverse_LLt();
 
-    Eigen::Vector3d eta = covInv * CMatrixDouble31(m.val.mean);
+    Eigen::Vector3d eta = covInv * CMatrixDouble31(m1.mean);
 
     // Normal distribution canonical form constant:
-    // See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
+    // See: https://cs.nju.edu.cn/wujx/paper/Gaussian.pdf
     double a =
         -0.5 * (3 * log(M_2PI) - log(covInv.det()) + (eta.transpose() * c.asEigen() * eta)(0, 0));
 
     for (const auto& m2 : p2->m_modes)
     {
       auxSOG_Kernel_i = m2.val;
+      bool is2D = is2D_1;
       if (auxSOG_Kernel_i.cov(2, 2) == 0)
       {
         auxSOG_Kernel_i.cov(2, 2) = 1;
@@ -308,16 +312,16 @@ void CPointPDFSOG::bayesianFusion(
       if (minMahalanobisDistToDrop > 0)
       {
         // Approximate (fast) mahalanobis distance (square):
-        double stdX2 = max(auxSOG_Kernel_i.cov(0, 0), m.val.cov(0, 0));
-        double mahaDist2 = square(auxSOG_Kernel_i.mean.x() - m.val.mean.x()) / stdX2;
+        double stdX2 = max(auxSOG_Kernel_i.cov(0, 0), m1.cov(0, 0));
+        double mahaDist2 = square(auxSOG_Kernel_i.mean.x() - m1.mean.x()) / stdX2;
 
-        double stdY2 = max(auxSOG_Kernel_i.cov(1, 1), m.val.cov(1, 1));
-        mahaDist2 += square(auxSOG_Kernel_i.mean.y() - m.val.mean.y()) / stdY2;
+        double stdY2 = max(auxSOG_Kernel_i.cov(1, 1), m1.cov(1, 1));
+        mahaDist2 += square(auxSOG_Kernel_i.mean.y() - m1.mean.y()) / stdY2;
 
         if (!is2D)
         {
-          double stdZ2 = max(auxSOG_Kernel_i.cov(2, 2), m.val.cov(2, 2));
-          mahaDist2 += square(auxSOG_Kernel_i.mean.z() - m.val.mean.z()) / stdZ2;
+          double stdZ2 = max(auxSOG_Kernel_i.cov(2, 2), m1.cov(2, 2));
+          mahaDist2 += square(auxSOG_Kernel_i.mean.z() - m1.mean.z()) / stdZ2;
         }
 
         reallyComputeThisOne = mahaDist2 < minMahalanobisDistToDrop2;
@@ -325,7 +329,7 @@ void CPointPDFSOG::bayesianFusion(
 
       if (reallyComputeThisOne)
       {
-        auxGaussianProduct.bayesianFusion(auxSOG_Kernel_i, m.val);
+        auxGaussianProduct.bayesianFusion(auxSOG_Kernel_i, m1);
 
         // ----------------------------------------------------------------------
         // The new weight is given by:
@@ -333,7 +337,7 @@ void CPointPDFSOG::bayesianFusion(
         //   w'_i = w_i * exp( a + a_i - a' )
         //
         //      a = -1/2 ( dimensionality * log(2pi) - log(det(Cov^-1))
-        //      + (Cov^-1 * mu)^t * Cov^-1 * (Cov^-1 * mu) )
+        //      + (Cov^-1 * mu)^t * Cov * (Cov^-1 * mu) )
         //
         // ----------------------------------------------------------------------
         TGaussianMode newKernel;
@@ -348,7 +352,7 @@ void CPointPDFSOG::bayesianFusion(
         Eigen::Vector3d new_eta_i = CMatrixDouble31(newKernel.val.mean).asEigen();
         new_eta_i = new_covInv_i.asEigen() * new_eta_i;
 
-        double a_i = -0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
+        double a_i = -0.5 * (3 * log(M_2PI) - log(covInv_i.det()) +
                              (eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() * eta_i)(0, 0));
         double new_a_i =
             -0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +

@@ -134,8 +134,9 @@ class CPosePDFParticles :
    */
   void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-  /** Draws a single sample from the distribution (WARNING: weights are
-   * assumed to be normalized!)
+  /** Draws a single sample from the distribution, picking a particle with a
+   * probability proportional to its weight (weights do not need to be
+   * normalized).
    */
   void drawSingleSample(CPose2D& outPart) const override;
 
@@ -156,7 +157,11 @@ class CPosePDFParticles :
    */
   mrpt::math::TPose2D getMostLikelyParticle() const;
 
-  /** Bayesian fusion.
+  /** Bayesian fusion: the particles of p1 (or samples of it) are weighted
+   * with the density of p2. If p2 is also a particle PDF, its density is a
+   * kernel density estimate with Gaussian kernels of covariance h^2*cov(p2),
+   * with h from Silverman's rule of thumb; otherwise, the Gaussian with the
+   * mean and covariance of p2 is used. minMahalanobisDistToDrop is ignored.
    */
   void bayesianFusion(
       const CPosePDF& p1, const CPosePDF& p2, const double minMahalanobisDistToDrop = 0) override;

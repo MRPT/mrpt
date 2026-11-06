@@ -59,8 +59,9 @@ void removeUnusedVertices(T& poly)
       mrpt::math::getEpsilon())
     unused.push_back(N - 1);
   unused.push_back(N);
+  // Shift each kept run left by the number of vertices removed before it:
   size_t diff = 1;
-  for (size_t i = 0; i < unused.size() - 1; i++)
+  for (size_t i = 0; i < unused.size() - 1; i++, diff++)
   {
     size_t last = unused[i + 1];
     for (size_t j = unused[i] + 1 - diff; j < last - diff; j++) poly[j] = poly[j + diff];
@@ -80,8 +81,9 @@ void removeRepVertices(T& poly)
     if (mrpt::math::distance(poly[i], poly[i + 1]) < getEpsilon()) rep.push_back(i);
   if (mrpt::math::distance(poly[N - 1], poly[0]) < getEpsilon()) rep.push_back(N - 1);
   rep.push_back(N);
+  // Shift each kept run left by the number of vertices removed before it:
   size_t diff = 1;
-  for (size_t i = 0; i < rep.size() - 1; i++)
+  for (size_t i = 0; i < rep.size() - 1; i++, diff++)
   {
     size_t last = rep[i + 1];
     for (size_t j = rep[i] + 1 - diff; j < last - diff; j++) poly[j] = poly[j + diff];

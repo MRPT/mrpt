@@ -164,16 +164,21 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
   /** Returns the inverse of a general matrix using LU */
   Derived inverse() const;
 
-  /** Returns the inverse of a symmetric matrix using LLt */
+  /** Returns the inverse of a symmetric positive-definite matrix using LLt.
+   * Only the lower triangular part is used.
+   * \exception std::exception If the matrix is not positive-definite.
+   */
   Derived inverse_LLt() const;
 
   /** Finds the rank of the matrix via LU decomposition.
-   * Uses Eigen's default threshold unless `threshold>0`. */
+   * Uses Eigen's default threshold unless `threshold>0`. The threshold is
+   * relative to the largest pivot. */
   matrix_dim_t rank(Scalar threshold = 0) const;
 
   /** Cholesky M=U<sup>T</sup> * U decomposition for symmetric matrix
-   * (upper-half of the matrix is actually ignored.
-   * \return false if Cholesky fails
+   * (the upper half of the matrix is actually ignored).
+   * \return false if Cholesky fails, e.g. if the matrix is not
+   * positive-definite.
    */
   bool chol(Derived& U) const;
 
@@ -182,6 +187,9 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
    * performance.
    * Eigenvectors are the columns of the returned matrix, and their order
    * matches that of returned eigenvalues.
+   * \note Only the real parts of eigenvalues and eigenvectors are returned:
+   * complex conjugate pairs (e.g. those of a rotation matrix) are silently
+   * reduced to their real parts. An empty matrix gives empty outputs.
    * \param[in] sorted If true, eigenvalues (and eigenvectors) will be sorted
    * in ascending order.
    * \param[out] eVecs The container where eigenvectors will be stored.
@@ -192,9 +200,9 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 
   /** Read: eig()
    * \note This only uses the **lower-triangular** part of the matrix
-   * \note (Since MRPT 2.5.2) If sorted==true, the smallest eigenvalue is
-   * checked to be non-negative, and resetted to zero if found to be negative
-   * due to rounding errors in the internal Eigen3 routines.
+   * \note If sorted==true, a smallest eigenvalue that is negative only due to
+   * rounding errors (magnitude below 10*N*epsilon times the largest absolute
+   * eigenvalue) is reset to zero. Truly negative eigenvalues are kept.
    **/
   bool eig_symmetric(Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
@@ -306,7 +314,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
     return ret;
   }
 
-  /** this = A * A<sup>T</sup> */
+  /** this = A * A<sup>T</sup>. `A` must not be this same object. */
   template <typename MAT_A>
   void matProductOf_AAt(const MAT_A& A)
   {
@@ -328,7 +336,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
       }
     }
   }
-  /** this = A<sup>T</sup> * A */
+  /** this = A<sup>T</sup> * A. `A` must not be this same object. */
   template <typename MAT_A>
   void matProductOf_AtA(const MAT_A& A)
   {

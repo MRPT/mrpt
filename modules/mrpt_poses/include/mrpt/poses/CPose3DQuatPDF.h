@@ -56,12 +56,9 @@ class CPose3DQuatPDF :
    */
   virtual void copyFrom(const CPose3DQuatPDF& o) = 0;
 
-  /** This is a static transformation method from 2D poses to 3D PDFs,
-   * preserving the representation type (particles->particles,
-   * Gaussians->Gaussians,etc)
-   *  It returns a new object of any of the derived classes of
-   * CPose3DQuatPDF. This object must be deleted by the user when not required
-   * anymore.
+  /** Returns a CPose3DQuatPDFGaussian built from the mean and covariance of
+   * any 2D pose PDF (z, pitch and roll are set to zero, without
+   * uncertainty).
    *  \sa copyFrom
    */
   static CPose3DQuatPDF::Ptr createFrom2D(const CPosePDF& o);
@@ -75,10 +72,10 @@ class CPose3DQuatPDF :
    * operation \f$ (x,u)= x \oplus u \f$
    *  \param out_x_oplus_u If set to !=nullptr, the result of "x+u" will be
    * stored here (it will be computed internally anyway).
-   *  To see the mathematical derivation of the formulas, refer to the
-   * technical report here:
-   *   -
-   * https://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations
+   *  For the mathematical derivation of the formulas, see
+   * \cite blanco_se3_tutorial, section 5.2.2, Eqs. (5.8)-(5.9). The
+   * quaternion part of the output is that of `x+u`, which has a non-negative
+   * real part: its Jacobian rows include that sign normalization.
    */
   static void jacobiansPoseComposition(
       const CPose3DQuat& x,
@@ -98,7 +95,7 @@ class CPose3DQuatPDF :
   template <class OPENGL_SETOFOBJECTSPTR>
   void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
   {
-    using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
+    using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::element_type;
     auto objs = SETOFOBJECTS::posePDF2opengl(*this);
     out_obj->insert(objs->begin(), objs->end());
   }
@@ -110,7 +107,7 @@ class CPose3DQuatPDF :
   template <class OPENGL_SETOFOBJECTSPTR>
   OPENGL_SETOFOBJECTSPTR getAs3DObject() const
   {
-    using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
+    using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::element_type;
     return SETOFOBJECTS::posePDF2opengl(*this);
   }
 

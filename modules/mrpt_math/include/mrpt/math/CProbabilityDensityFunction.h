@@ -26,9 +26,9 @@ namespace mrpt::math
 /** A generic template for probability density distributions (PDFs).
  * This template is used as base for many classes in mrpt::poses
  *  Any derived class must implement \a getMean() and a getCovarianceAndMean().
- *  Other methods such as \a getMean() or \a getCovariance() are implemented
- * here for convenience.
- * \sa mprt::poses::CPosePDF, mprt::poses::CPose3DPDF, mprt::poses::CPointPDF
+ *  Other methods such as \a getMeanVal() or \a getCovariance() are
+ * implemented here for convenience.
+ * \sa mrpt::poses::CPosePDF, mrpt::poses::CPose3DPDF, mrpt::poses::CPointPDF
  * \ingroup mrpt_math_grp
  */
 template <class TDATA, size_t STATE_LEN>
@@ -155,8 +155,7 @@ class CProbabilityDensityFunction
   virtual void drawSingleSample(TDATA& outPart) const = 0;
 
   /** Draws a number of samples from the distribution, and saves as a list of
-   * 1xSTATE_LEN vectors, where each row contains a (x,y,z,yaw,pitch,roll)
-   * datum.
+   * 1xSTATE_LEN vectors, each one holding one sample of the state.
    * This base method just call N times to drawSingleSample, but derived
    * classes should implemented optimized method for each particular PDF.
    */
@@ -171,16 +170,18 @@ class CProbabilityDensityFunction
     }
   }
 
-  /** Compute the entropy of the estimated covariance matrix.
+  /** Compute the differential entropy (in nats) of a Gaussian with the
+   * estimated covariance matrix: \f$ \frac{1}{2} \log((2 \pi e)^n |\Sigma|) \f$.
    * \sa
    * http://en.wikipedia.org/wiki/Multivariate_normal_distribution#Entropy
    */
   double getCovarianceEntropy() const
   {
     static const double ln_2PI = 1.8378770664093454835606594728112;
-    return 0.5 *
-           (STATE_LEN + STATE_LEN * ln_2PI +
-            std::log(std::max(getCovariance().det(), std::numeric_limits<double>::epsilon())));
+    // Only clamp exactly singular matrices: realistic small covariances
+    // have determinants far below the machine epsilon.
+    return 0.5 * (STATE_LEN + STATE_LEN * ln_2PI +
+                  std::log(std::max(getCovariance().det(), std::numeric_limits<double>::min())));
   }
 
 };  // End of class def.

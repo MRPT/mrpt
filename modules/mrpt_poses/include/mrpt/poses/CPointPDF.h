@@ -97,7 +97,7 @@ class CPointPDF :
   template <class OPENGL_SETOFOBJECTSPTR, class OPENGL_SETOFOBJECTS>
   OPENGL_SETOFOBJECTSPTR getAs3DObject() const
   {
-    using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
+    using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::element_type;
     return SETOFOBJECTS::posePDF2opengl(*this);
   }
 

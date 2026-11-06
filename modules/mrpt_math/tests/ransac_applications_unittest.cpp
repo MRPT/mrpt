@@ -16,6 +16,9 @@
 #include <mrpt/math/ransac_applications.h>
 #include <mrpt/random/RandomGenerators.h>
 
+#include <cmath>
+#include <vector>
+
 using namespace mrpt::math;
 
 TEST(RansacApplications, Detect2DLinesEmptyInput)
@@ -158,4 +161,115 @@ TEST(RansacApplications, Detect2DLinesFloatInstantiation)
       x, y, lines, /*threshold=*/0.1, /*min_inliers_for_valid_line=*/15);
 
   EXPECT_GE(lines.size(), 1U);
+}
+
+TEST(RansacApplications, Detect3DPlanesTwoPlanes)
+{
+  auto& rng = mrpt::random::getRandomGenerator();
+  rng.randomize(42);
+  const int n = 200;
+  mrpt::math::CVectorDouble x(2 * n);
+  mrpt::math::CVectorDouble y(2 * n);
+  mrpt::math::CVectorDouble z(2 * n);
+  for (int i = 0; i < n; i++)
+  {
+    // Plane z = 1
+    x[i] = rng.drawUniform(-5.0, 5.0);
+    y[i] = rng.drawUniform(-5.0, 5.0);
+    z[i] = 1.0 + rng.drawGaussian1D(0.0, 0.005);
+    // Plane x = -2, smaller
+    x[n + i] = -2.0 + rng.drawGaussian1D(0.0, 0.005);
+    y[n + i] = rng.drawUniform(-2.0, 2.0);
+    z[n + i] = rng.drawUniform(-1.0, 3.0);
+  }
+  std::vector<std::pair<size_t, mrpt::math::TPlane>> planes;
+  mrpt::math::ransac_detect_3D_planes(x, y, z, planes, 0.05, 50);
+  ASSERT_EQ(planes.size(), 2U);
+  bool foundZ = false;
+  bool foundX = false;
+  for (const auto& pl : planes)
+  {
+    const auto nrm = pl.second.getUnitaryNormalVector();
+    if (std::abs(std::abs(nrm.z) - 1.0) < 1e-2)
+    {
+      foundZ = true;
+      EXPECT_NEAR(pl.second.distance(mrpt::math::TPoint3D(0, 0, 1)), 0.0, 0.02);
+    }
+    if (std::abs(std::abs(nrm.x) - 1.0) < 1e-2)
+    {
+      foundX = true;
+      EXPECT_NEAR(pl.second.distance(mrpt::math::TPoint3D(-2, 0, 0)), 0.0, 0.02);
+    }
+  }
+  EXPECT_TRUE(foundZ);
+  EXPECT_TRUE(foundX);
+}
+
+TEST(RansacApplications, Detect3DPlanesDegenerateInputFindsNothing)
+{
+  // All points on a line: every minimal sample is degenerate.
+  const int n = 20;
+  mrpt::math::CVectorDouble x(n);
+  mrpt::math::CVectorDouble y(n);
+  mrpt::math::CVectorDouble z(n);
+  for (int i = 0; i < n; i++)
+  {
+    x[i] = i;
+    y[i] = 2.0 * i;
+    z[i] = -1.0 * i;
+  }
+  std::vector<std::pair<size_t, mrpt::math::TPlane>> planes;
+  mrpt::math::ransac_detect_3D_planes(x, y, z, planes, 0.05, 5);
+  EXPECT_TRUE(planes.empty());
+}
+
+TEST(RansacApplications, Detect2DLinesWithRepeatedPoints)
+{
+  // A clean line plus a few repeated (identical) outlier points, in two
+  // clusters so the left-over points are not all degenerate.
+  mrpt::random::getRandomGenerator().randomize(5);
+  const int nLine = 30;
+  const int nRep = 5;
+  mrpt::math::CVectorDouble x(nLine + nRep);
+  mrpt::math::CVectorDouble y(nLine + nRep);
+  for (int i = 0; i < nLine + nRep; i++)
+  {
+    if (i < nLine)
+    {
+      x[i] = 0.25 * i;
+      y[i] = 1.0 - 0.5 * x[i];
+    }
+    else
+    {
+      x[i] = i % 2 == 0 ? 3.0 : 4.0;
+      y[i] = i % 2 == 0 ? 7.0 : 9.0;
+    }
+  }
+  std::vector<std::pair<size_t, mrpt::math::TLine2D>> lines;
+  mrpt::math::ransac_detect_2D_lines(x, y, lines, 0.01, 10);
+  ASSERT_GE(lines.size(), 1U);
+  EXPECT_EQ(lines[0].first, static_cast<size_t>(nLine));
+  EXPECT_NEAR(lines[0].second.distance(mrpt::math::TPoint2D(2.0, 0.0)), 0.0, 1e-6);
+}
+
+TEST(RansacApplications, NoInliersWithZeroMinimumTerminates)
+{
+  // A zero threshold accepts no inliers; with min_inliers=0 the detectors
+  // must stop instead of looping on an empty model.
+  mrpt::random::getRandomGenerator().randomize(3);
+  mrpt::math::CVectorDouble x(10);
+  mrpt::math::CVectorDouble y(10);
+  mrpt::math::CVectorDouble z(10);
+  for (int i = 0; i < 10; i++)
+  {
+    x[i] = i;
+    y[i] = (i * 7) % 5;
+    z[i] = (i * 3) % 4;
+  }
+  std::vector<std::pair<size_t, mrpt::math::TLine2D>> lines;
+  mrpt::math::ransac_detect_2D_lines(x, y, lines, 0.0, 0);
+  EXPECT_TRUE(lines.empty());
+  std::vector<std::pair<size_t, mrpt::math::TPlane>> planes;
+  mrpt::math::ransac_detect_3D_planes(x, y, z, planes, 0.0, 0);
+  EXPECT_TRUE(planes.empty());
 }

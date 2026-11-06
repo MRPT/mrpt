@@ -19,12 +19,16 @@
 namespace mrpt::math
 {
 /** \addtogroup fourier_grp Fourier transform functions
+ * All forward transforms use the standard convention
+ * \f$ X(k) = \sum_n x(n) e^{-2 \pi i k n / N} \f$, and inverse transforms
+ * use \f$ e^{+2 \pi i k n / N} \f$ and the \f$ 1/N \f$ scale factor.
  *  \ingroup mrpt_math_grp
  * @{ */
 
 /** Computes the FFT of a 2^N-size vector of real numbers, and returns the
- * Re+Im+Magnitude parts.
- * \sa fft2_real
+ * Re+Im+Magnitude parts of the first N/2+1 frequency bins (DC to Nyquist).
+ * \exception std::exception If the length is not a power of two >= 2.
+ * \sa dft2_real
  */
 void fft_real(
     CVectorFloat& in_realData,
@@ -39,9 +43,9 @@ void fft_real(
  * (user has not to initialize the size of this matrix).
  * \param out_imag The N_1xN_2 output matrix which will store the imaginary
  * values (user has not to initialize the size of this matrix).
- * \sa fft_real, ifft2_read, fft2_complex
  *  If the dimensions of the matrix are powers of two, the fast fourier
  * transform (FFT) is used instead of the general algorithm.
+ * \sa fft_real, idft2_real, dft2_complex
  */
 void dft2_real(const CMatrixFloat& in_data, CMatrixFloat& out_real, CMatrixFloat& out_imag);
 
@@ -51,11 +55,12 @@ void dft2_real(const CMatrixFloat& in_data, CMatrixFloat& out_real, CMatrixFloat
  * \param out_data The N_1xN_2 output matrix (user has not to initialize the
  * size of this matrix).
  *  Note that the real and imaginary parts of the FFT will NOT be checked to
- * assure that they represent the transformation
- *    of purely real data.
+ * assure that they represent the transformation of purely real data: for
+ * power-of-two sizes, only half of the spectrum is used, assuming Hermitian
+ * symmetry; otherwise, the real part of the general inverse DFT is returned.
  *  If the dimensions of the matrix are powers of two, the fast fourier
  * transform (FFT) is used instead of the general algorithm.
- * \sa fft_real, fft2_real
+ * \sa fft_real, dft2_real
  */
 void idft2_real(const CMatrixFloat& in_real, const CMatrixFloat& in_imag, CMatrixFloat& out_data);
 
@@ -69,7 +74,7 @@ void idft2_real(const CMatrixFloat& in_real, const CMatrixFloat& in_imag, CMatri
  * values (user has not to initialize the size of this matrix).
  *  If the dimensions of the matrix are powers of two, the fast fourier
  * transform (FFT) is used instead of the general algorithm.
- * \sa fft_real, idft2_complex,dft2_real
+ * \sa fft_real, idft2_complex, dft2_real
  */
 void dft2_complex(
     const CMatrixFloat& in_real,
@@ -77,18 +82,17 @@ void dft2_complex(
     CMatrixFloat& out_real,
     CMatrixFloat& out_imag);
 
-/** Compute the 2D inverse Discrete Fourier Transform (DFT).
- * \param in_real The N_1xN_2 input matrix with real values, where both
- * dimensions MUST BE powers of 2.
- * \param in_imag The N_1xN_2 input matrix with imaginary values, where both
- * dimensions MUST BE powers of 2.
+/** Compute the 2D inverse Discrete Fourier Transform (DFT) of a complex
+ * matrix, the inverse of dft2_complex().
+ * \param in_real The N_1xN_2 input matrix with real values.
+ * \param in_imag The N_1xN_2 input matrix with imaginary values.
  * \param out_real The N_1xN_2 output matrix for real part (user has not to
  * initialize the size of this matrix).
  * \param out_imag The N_1xN_2 output matrix for imaginary part (user has not
  * to initialize the size of this matrix).
- * \sa fft_real, dft2_real,dft2_complex
  *  If the dimensions of the matrix are powers of two, the fast fourier
  * transform (FFT) is used instead of the general algorithm.
+ * \sa fft_real, dft2_real, dft2_complex
  */
 void idft2_complex(
     const CMatrixFloat& in_real,
@@ -96,7 +100,11 @@ void idft2_complex(
     CMatrixFloat& out_real,
     CMatrixFloat& out_imag);
 
-/** Correlation of two matrixes using 2D FFT
+/** Phase-correlation-like matching of two matrices using 2D FFTs: returns
+ * the magnitude of IDFT( DFT(B) / DFT(A) ), which for B being a circular
+ * shift of A has a sharp peak at the shift. Frequencies with a zero
+ * magnitude in DFT(A) are ignored.
+ * \exception std::exception If sizes differ or are not powers of two.
  */
 void cross_correlation_FFT(const CMatrixFloat& A, const CMatrixFloat& B, CMatrixFloat& out_corr);
 

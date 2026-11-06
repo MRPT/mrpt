@@ -18,6 +18,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 
+#include <cmath>
 #include <fstream>
 
 using namespace mrpt;
@@ -79,9 +80,49 @@ void CRandomFieldGridMap3D::resize(
 {
   MRPT_START
 
+  const size_t old_size_x = m_size_x;
+  const size_t old_size_y = m_size_y;
+  const double old_x_min = m_x_min;
+  const double old_y_min = m_y_min;
+  const double old_z_min = m_z_min;
+  const size_t old_count = m_map.size();
+
   CDynamicGrid3D<TRandomFieldVoxel>::resize(
       new_x_min, new_x_max, new_y_min, new_y_max, new_z_min, new_z_max, defaultValueNewCells,
       additionalMarginMeters);
+
+  // Observations are kept, but their voxel indices change with the new
+  // grid size and origin:
+  if (m_map.size() != old_count && !m_mrf_factors_activeObs.empty())
+  {
+    const auto Acx = static_cast<size_t>(std::round((old_x_min - m_x_min) / m_resolution_xy));
+    const auto Acy = static_cast<size_t>(std::round((old_y_min - m_y_min) / m_resolution_xy));
+    const auto Acz = static_cast<size_t>(std::round((old_z_min - m_z_min) / m_resolution_z));
+
+    std::vector<std::deque<TObservationGMRF>> newObs(m_map.size());
+    for (size_t k = 0; k < m_mrf_factors_activeObs.size(); k++)
+    {
+      auto& obs_k = m_mrf_factors_activeObs[k];
+      if (obs_k.empty())
+      {
+        continue;
+      }
+      const size_t cx = k % old_size_x;
+      const size_t cy = (k / old_size_x) % old_size_y;
+      const size_t cz = k / (old_size_x * old_size_y);
+      const size_t new_idx = (cx + Acx) + (cy + Acy) * m_size_x + (cz + Acz) * m_size_x_times_y;
+      ASSERT_LT_(new_idx, newObs.size());
+      for (auto& o : obs_k)
+      {
+        o.node_id = new_idx;
+      }
+      // Moving the container keeps the addresses of its elements, which are
+      // referenced from m_gmrf:
+      newObs[new_idx] = std::move(obs_k);
+    }
+    m_mrf_factors_activeObs = std::move(newObs);
+  }
+
   this->internal_initialize(false);
 
   MRPT_END
@@ -236,7 +277,7 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
     }
     else
     {
-      f_mean << "x coord, y coord, z coord, scalar\n";
+      f_stddev << "x coord, y coord, z coord, scalar\n";
     }
   }
 
@@ -244,8 +285,10 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
   size_t cx = 0, cy = 0, cz = 0;
   for (size_t j = 0; j < nodeCount; j++)
   {
-    const double x = idx2x(static_cast<int>(cx)), y = idx2y(static_cast<int>(cy)),
-                 z = idx2z(static_cast<int>(cz));
+    // Voxel centers (idx2x() and the like return the voxel lower corner):
+    const double x = idx2x(static_cast<int>(cx)) + 0.5 * m_resolution_xy;
+    const double y = idx2y(static_cast<int>(cy)) + 0.5 * m_resolution_xy;
+    const double z = idx2z(static_cast<int>(cz)) + 0.5 * m_resolution_z;
     const double mean_val = m_map[j].mean_value;
     const double stddev_val = m_map[j].stddev_value;
 

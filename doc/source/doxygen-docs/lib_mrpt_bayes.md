@@ -17,8 +17,8 @@ Refer to classes in the namespace mrpt::bayes and these examples:
 
 ## Kalman filters
 
-A generic, templatized Kalman filter implementation (includes EKF,IEKF and in the future, UKF),
-which only requires from the programmer to provide the system models and (optinally) the Jacobians.
+A generic, templatized Kalman filter implementation (EKF and IEKF),
+which only requires from the programmer to provide the system models and (optionally) the Jacobians.
 
 See mrpt::bayes::CKalmanFilterCapable.
 

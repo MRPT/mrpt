@@ -56,10 +56,7 @@ void TPose3D::getAsQuaternion(
   q.y(csc + scs);
   q.z(ccs - ssc);
 
-  // Compute 4x3 Jacobian: for details, see technical report:
-  //   Parameterizations of SE(3) transformations: equivalences, compositions
-  //   and uncertainty, J.L. Blanco (2010).
-  //   https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+  // Compute 4x3 Jacobian: Eq. (2.9b) in \cite blanco_se3_tutorial
   if (out_dq_dr)
   {
     alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[4 * 3] = {
@@ -147,7 +144,7 @@ void TPose3D::SO3_to_yaw_pitch_roll(
     // Gimbal lock between yaw and roll. This one is arbitrarily forced to
     // be zero.
     // Check
-    // https://reference.mrpt.org/devel/classmrpt_1_1poses_1_1_c_pose3_d.html.
+    // https://docs.mrpt.org/reference/latest/class_mrpt_poses_CPose3D.html
     // If cos(pitch)==0, the homogeneous matrix is:
     // When sin(pitch)==1:
     //  /0  cysr-sycr cycr+sysr x\   /0  sin(r-y) cos(r-y)  x\.
@@ -163,19 +160,20 @@ void TPose3D::SO3_to_yaw_pitch_roll(
     //
     // Both cases are in a "gimbal lock" status. This happens because pitch
     // is vertical.
-
     roll = 0.0;
-    if (pitch > 0)
-      yaw = atan2(R(1, 2), R(0, 2));
-    else
-      yaw = atan2(-R(1, 2), -R(0, 2));
   }
   else
   {
     roll = atan2(R(2, 1), R(2, 2));
-    // Yaw:
-    yaw = atan2(R(1, 0), R(0, 0));
   }
+
+  // Yaw, computed consistently with the roll above from R*Rx(roll)^T =
+  // Rz(yaw)*Ry(pitch), whose second column is (-sin(yaw), cos(yaw), 0).
+  // This stays well-conditioned near gimbal lock, where yaw and roll are
+  // individually ill-defined but the rotation is not.
+  const double sr = sin(roll);
+  const double cr = cos(roll);
+  yaw = atan2(sr * R(0, 2) - cr * R(0, 1), cr * R(1, 1) - sr * R(1, 2));
 }
 
 void TPose3D::fromHomogeneousMatrix(const mrpt::math::CMatrixDouble44& HG)

@@ -27,8 +27,8 @@ namespace mrpt::poses
  * (qr,qx,qy,qz).
  *
  * For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,
- * or refer to the <a href="http://www.mrpt.org/2D_3D_Geometry"> 2D/3D Geometry
- * tutorial</a> in the wiki.
+ * or refer to the 2D/3D Geometry tutorial:
+ * https://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/
  *
  * To access the translation use x(), y() and z(). To access the rotation, use
  * CPose3DQuat::quat().

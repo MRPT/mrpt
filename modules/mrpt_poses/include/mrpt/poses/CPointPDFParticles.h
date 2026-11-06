@@ -69,7 +69,9 @@ class CPointPDFParticles :
    * are updated correctly.  */
   void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-  /** Compute the kurtosis of the distribution */
+  /** Returns the largest, among the x, y and z axes, of the (unweighted,
+   * non-excess) kurtosis \f$ \mu_4 / \sigma^4 \f$ of the particle
+   * positions. */
   double computeKurtosis();
 
   /** Draw a sample from the pdf */

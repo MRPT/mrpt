@@ -14,11 +14,13 @@
 
 #include <mrpt/math/poly_roots.h>
 
+#include <algorithm>
 #include <cmath>
 
 // Based on:
 // poly.cpp : solution of cubic and quartic equation
-// (c) Khashin S.I. http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html
+// (c) Khashin S.I.
+// https://web.archive.org/web/20160402113335/http://math.ivanovo.ac.ru/dalgebra/Khashin/poly/index.html
 // khash2 (at) gmail.com
 //
 
@@ -157,7 +159,7 @@ int SolveP4De(double* x, double b, double c,
               double d)  // solve equation x^4 + b*x^2 + c*x + d
 {
   // if( c==0 ) return SolveP4Bi(x,b,d); // After that, c!=0
-  if (std::abs(c) < 1e-14 * (std::abs(b) + std::abs(d)))
+  if (std::abs(c) <= 1e-14 * (std::abs(b) + std::abs(d)))
     return SolveP4Bi(x, b, d);  // After that, c!=0
 
   int res3 = mrpt::math::solve_poly3(x, 2 * b, b * b - 4 * d,
@@ -241,7 +243,10 @@ double N4Step(
     double d)  // one Newton step for x^4 + a*x^3 + b*x^2 + c*x + d
 {
   double fxs = ((4 * x + 3 * a) * x + 2 * b) * x + c;  // f'(x)
-  if (fxs == 0) return 1e99;
+  if (fxs == 0)
+  {
+    return x;  // multiple root: keep it as is
+  }
   double fx = (((x + a) * x + b) * x + c) * x + d;  // f(x)
   return x - fx / fxs;
 }
@@ -384,7 +389,7 @@ static double SolveP5_1(
     }
     dx = f2 / f2s;
     x2 -= dx;
-  } while (std::abs(dx) > eps);
+  } while (std::abs(dx) > eps * std::max(1.0, std::abs(x2)) && cnt < 100);
   return x2;
 }  // SolveP5_1(double a,double b,double c,double d,double e)	// return real
 // root of x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
@@ -427,9 +432,10 @@ int mrpt::math::solve_poly2(double a, double b, double c, double& r1, double& r2
       r1 = r2 = 1e99;
       return 0;
     }
-    Di = sqrt(Di);
-    r1 = (-b + Di) / (2 * a);
-    r2 = (-b - Di) / (2 * a);
+    // Numerically stable form, without cancellation when b^2 >> 4ac:
+    const double q = -0.5 * (b + std::copysign(std::sqrt(Di), b));
+    r1 = q / a;
+    r2 = (q != 0) ? c / q : r1;
     // We ensure at output that r1 <= r2
     if (r2 < r1) std::swap(r1, r2);
     return 2;

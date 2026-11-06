@@ -390,7 +390,8 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
           xy_dist * cos_az + horz_offset * sin_az, -(xy_dist * sin_az - horz_offset * cos_az),
           distance_m * sin_vert + vert_offset);
 
-      organizedPoints(row, col) = sensorPose.composePoint(ptLocal);
+      // Points are stored in the sensor frame:
+      organizedPoints(row, col) = ptLocal;
     }
   }
 
@@ -437,10 +438,7 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
   this->azimuthSpan = o.aperture * (o.rightToLeft ? +1.0 : -1.0);
   this->startAzimuth = o.aperture * (o.rightToLeft ? -0.5 : +0.5);
 
-  double a = startAzimuth;
-  const double Aa = azimuthSpan / static_cast<double>(o.getScanSize());
-
-  for (size_t i = 0; i < o.getScanSize(); i++, a += Aa)
+  for (size_t i = 0; i < o.getScanSize(); i++)
   {
     uint16_t& range_out = rangeImage(0, i);
     uint8_t& intensity_out = intensityImage(0, i);
@@ -459,10 +457,10 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
 
     if (r > 0)
     {
-      const auto ptLocal = mrpt::math::TPoint3Df(
-          static_cast<float>(cos(a)) * range_out, static_cast<float>(sin(a)) * range_out, 0);
-
-      organizedPoints(0, i) = sensorPose.composePoint(ptLocal);
+      // Same ray directions as the 2D scan, and points in the sensor frame:
+      const double a = o.getScanAngle(i);
+      organizedPoints(0, i) =
+          mrpt::math::TPoint3Df(static_cast<float>(cos(a)) * r, static_cast<float>(sin(a)) * r, 0);
     }
   }
 

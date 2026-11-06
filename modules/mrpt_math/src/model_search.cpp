@@ -13,13 +13,13 @@
 */
 
 #include <mrpt/math/model_search.h>
-#include <mrpt/random/random_shuffle.h>
+#include <mrpt/random/RandomGenerators.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
 
 //----------------------------------------------------------------------
-//! Select random (unique) indices from the 0..p_size sequence
+//! Select random (unique) indices from the 0..p_size-1 sequence
 void ModelSearch::pickRandomIndex(size_t p_size, size_t p_pick, std::vector<size_t>& p_ind)
 {
   ASSERT_(p_size >= p_pick);
@@ -27,7 +27,7 @@ void ModelSearch::pickRandomIndex(size_t p_size, size_t p_pick, std::vector<size
   std::vector<size_t> a(p_size);
   for (size_t i = 0; i < p_size; i++) a[i] = i;
 
-  mrpt::random::shuffle(a.begin(), a.end());
+  a = mrpt::random::getRandomGenerator().permuteVector(a);
   p_ind.resize(p_pick);
   for (size_t i = 0; i < p_pick; i++) p_ind[i] = a[i];
 }
@@ -40,7 +40,8 @@ void ModelSearch::pickRandomIndex(std::set<size_t> p_set, size_t p_pick, std::ve
   p_ind.resize(p_pick);
   std::vector<size_t> inds(p_set.begin(), p_set.end());
 
-  mrpt::random::shuffle(inds.begin(), inds.end());
+  ASSERT_GE_(inds.size(), p_pick);
+  inds = mrpt::random::getRandomGenerator().permuteVector(inds);
   p_ind.resize(p_pick);
   for (size_t i = 0; i < p_pick; i++) p_ind[i] = inds[i];
 }

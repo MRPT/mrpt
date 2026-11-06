@@ -36,7 +36,7 @@ enum TMatrixTextFileFormat : int
   MATRIX_FORMAT_ENG = 0,
   /** fixed floating point '%f' */
   MATRIX_FORMAT_FIXED = 1,
-  /** intergers '%i' */
+  /** integers '%i' */
   MATRIX_FORMAT_INT = 2
 };
 
@@ -247,10 +247,10 @@ class MatrixVectorBase
   /** returns true if matrix is NxN */
   bool isSquare() const { return mvbDerived().cols() == mvbDerived().rows(); }
 
-  /** returns true if matrix/vector has size=0 */
-  bool empty() const { return mvbDerived().cols() == 0 && mvbDerived().rows() == 0; }
+  /** returns true if matrix/vector has size=0 (zero rows or columns) */
+  bool empty() const { return mvbDerived().cols() == 0 || mvbDerived().rows() == 0; }
 
-  /** Compute the norm-infinite of a vector (\f[ ||\mathbf{v}||_\infnty \f]),
+  /** Compute the norm-infinite of a vector (\f[ ||\mathbf{v}||_\infty \f]),
    * ie the maximum absolute value of the elements. */
   Scalar norm_inf() const;
 
@@ -356,8 +356,10 @@ class MatrixVectorBase
   /** Reads a matrix from a string in Matlab-like format, for example:
    *  "[1 0 2; 0 4 -1]"
    * The string must start with '[' and end with ']'. Rows are separated by
-   * semicolons ';' and columns in each row by one or more whitespaces
-   * ' ' or tabs '\t'. Commas ',' between elements are NOT allowed.
+   * semicolons ';' and columns in each row by whitespaces ' ', tabs '\t'
+   * and/or commas ',' (as in MATLAB, e.g. "[1, 0, 2; 0, 4, -1]").
+   * Any token that cannot be parsed as a number makes the whole string
+   * malformed.
    *
    * This format is also used for CConfigFile::read_matrix.
    *
@@ -392,8 +394,9 @@ class MatrixVectorBase
       const std::string& userHeader = std::string()) const;
 
   /** Loads a vector/matrix from a text file, compatible with MATLAB text
-   * format. Lines starting with '%' or '#' are interpreted as comments and
-   * ignored.
+   * format. Lines starting with '%' or '#' (optionally after leading
+   * whitespace) are interpreted as comments and ignored, as are blank or
+   * whitespace-only lines.
    * \exception std::runtime_error On format error.
    * \sa saveToTextFile, fromMatlabStringFormat
    */

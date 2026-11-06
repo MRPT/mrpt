@@ -27,8 +27,8 @@ namespace mrpt::poses
 /** An efficient generator of random samples drawn from a given 2D (CPosePDF) or
  * 3D (CPose3DPDF) pose probability density function (pdf).
  * This class keeps an internal state which speeds up the sequential generation
- * of samples. It can manage
- *  any kind of pose PDF.
+ * of samples. Supported PDF types are CPosePDFGaussian, CPosePDFParticles,
+ * CPosePDFSOG, CPose3DPDFGaussian, CPose3DPDFParticles and CPose3DPDFSOG.
  *
  * Use with CPoseRandomSampler::setPosePDF, then CPoseRandomSampler::drawSample
  * to draw values.

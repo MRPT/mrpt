@@ -78,7 +78,8 @@ typename MAT_C::Scalar multiply_HCHt_scalar(const VECTOR_H& H, const MAT_C& C)
 }
 
 /** Computes the mean vector and covariance from a list of samples in an NxM
- * matrix, where each row is a sample, so the covariance is MxM.
+ * matrix, where each row is a sample, so the covariance is MxM. The
+ * covariance uses the 1/N (biased, maximum-likelihood) normalization.
  * \param v The set of data as a NxM matrix, of types: CMatrixDynamic
  * or CMatrixFixed
  * \param out_mean The output M-vector for the estimated mean.
@@ -91,7 +92,7 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 {
   const size_t N = v.rows();
   ASSERTMSG_(N > 0, "The input matrix contains no elements");
-  const double N_inv = 1.0 / N;
+  const double N_inv = 1.0 / static_cast<double>(N);
 
   const size_t M = v.cols();
   ASSERTMSG_(M > 0, "The input matrix contains rows of length 0");
@@ -121,9 +122,9 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 
 /** Computes a row with the mean values of each column in the matrix and the
  * associated vector with the standard deviation of each column.
- * \sa mean,meanAndStdAll \exception std::exception If the matrix/vector is
+ * \sa mean,meanAndStd \exception std::exception If the matrix/vector is
  * empty.
- * \param unbiased_variance Standard deviation is sum(vals-mean)/K, with
+ * \param unbiased_variance Standard deviation is sqrt(sum((vals-mean)^2)/K), with
  * K=N-1 or N for unbiased_variance=true or false, respectively.
  */
 template <class MAT_IN, class VEC>
@@ -146,9 +147,10 @@ void meanAndStdColumns(
 }
 
 /** Computes the covariance matrix from a list of samples in an NxM matrix,
- * where each row is a sample, so the covariance is MxM.
+ * where each row is a sample, so the covariance is MxM, with the 1/N (biased,
+ * maximum-likelihood) normalization.
  * \param v The set of data, as a NxM matrix.
- * \param out_cov The output MxM matrix for the estimated covariance matrix.
+ * \return The MxM estimated covariance matrix.
  * \sa math::mean,math::stddev, math::cov
  */
 template <class MATRIX>
@@ -164,7 +166,7 @@ CMatrixDouble cov(const MATRIX& v)
 #define SAVE_MATRIX(M) M.saveToTextFile(#M ".txt");
 
 /** Only for vectors/arrays "v" of length3, compute out = A * Skew(v), where
- * Skew(v) is the skew symmetric matric generated from \a v (see
+ * Skew(v) is the skew symmetric matrix generated from \a v (see
  * mrpt::math::skew_symmetric3)
  */
 template <class MAT_A, class SKEW_3VECTOR, class MAT_OUT>
@@ -185,7 +187,7 @@ void multiply_A_skew3(const MAT_A& A, const SKEW_3VECTOR& v, MAT_OUT& out)
 }
 
 /** Only for vectors/arrays "v" of length3, compute out = Skew(v) * A, where
- * Skew(v) is the skew symmetric matric generated from \a v (see
+ * Skew(v) is the skew symmetric matrix generated from \a v (see
  * mrpt::math::skew_symmetric3)
  */
 template <class SKEW_3VECTOR, class MAT_A, class MAT_OUT>
@@ -232,8 +234,9 @@ void laplacian(const MATIN& g, MATOUT& ret)
 
 /** Get a submatrix from a square matrix, by collecting the elements
  * M(idxs,idxs), where idxs is a sequence
- * {block_indices(i):block_indices(i)+BLOCKSIZE-1} for all "i" up to the
- * size of block_indices. A perfect application of this method is in
+ * {block_indices(i)*BLOCKSIZE : block_indices(i)*BLOCKSIZE+BLOCKSIZE-1} for
+ * all "i" up to the size of block_indices, i.e. block_indices are indices
+ * of blocks, not of elements. A perfect application of this method is in
  * extracting covariance matrices of a subset of variables from the full
  * covariance matrix. \sa extractSubmatrix, extractSubmatrixSymmetrical
  */

@@ -54,7 +54,9 @@ class CHistogram
    */
   CHistogram(const double min, const double max, size_t nBins);
 
-  /** Constructor with a fixed bin width.
+  /** Constructor with a fixed bin width. The number of bins is
+   * ceil((max-min)/binWidth), and the upper limit is extended to
+   * min+nBins*binWidth so all bins have the given width.
    * \exception std::exception On max<=min or width<=0
    */
   [[nodiscard]] static CHistogram createWithFixedWidth(double min, double max, double binWidth);
@@ -109,7 +111,8 @@ class CHistogram
   void getHistogram(std::vector<double>& x, std::vector<double>& hits) const;
 
   /** Returns the list of bin centers & hit counts, normalized such as the
-   * integral of the histogram, interpreted as a density PDF, amounts to 1.
+   * integral of the histogram, interpreted as a density PDF, amounts to 1
+   * (all zeros if no element was added).
    * \sa getHistogram
    */
   void getHistogramNormalized(std::vector<double>& x, std::vector<double>& hits) const;

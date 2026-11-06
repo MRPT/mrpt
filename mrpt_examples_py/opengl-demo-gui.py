@@ -11,8 +11,8 @@ import argparse
 import time
 import math
 
-from mrpt.gui import CDisplayWindow3D
-from mrpt.viz import CGridPlaneXY, CBox, CSetOfObjects, stock_objects
+from mrpt.gui import CDisplayWindowGUI
+from mrpt.viz import Scene, CGridPlaneXY, CBox, CSetOfObjects, stock_objects
 from mrpt.math import TPoint3D
 from mrpt.img import TColor
 from mrpt.system import CTicTac
@@ -23,10 +23,10 @@ parser.add_argument("--duration", type=float, default=0,
 args = parser.parse_args()
 
 # Create GUI:
-win = CDisplayWindow3D('MRPT GUI demo', 800, 600)
+win = CDisplayWindowGUI('MRPT GUI demo', 800, 600)
 
-# Lock 3D scene before modifying it (rendering runs on a separate thread):
-scene = win.get3DSceneAndLock()
+# The 3D scene shown in the window:
+scene = Scene()
 
 # A grid on the XY horizontal plane:
 glGrid = CGridPlaneXY(-3, 3, -3, 3, 0, 1)
@@ -55,17 +55,19 @@ glBox.setBoxBorderColor(TColor(0, 0, 0))
 glBox.castShadows = True
 scene.insert(glBox)
 
-# Move camera:
-win.setCameraAzimuthDeg(-40.0)
-win.setCameraElevationDeg(30.0)
+win.background_scene = scene
 
-win.unlockAccess3DScene()
+# Move camera:
+win.camera().setAzimuthDegrees(-40.0)
+win.camera().setElevationDegrees(30.0)
+win.camera().setZoomDistance(15.0)
 
 print('Close the window to quit the program')
 timer = CTicTac()
 
-while win.isOpen() and (args.duration <= 0 or timer.Tac() < args.duration):
+# spinOnce() processes the window events and repaints it. It returns False
+# once the window is closed.
+while win.spinOnce() and (args.duration <= 0 or timer.Tac() < args.duration):
     y = 5.0 * math.sin(1.0 * timer.Tac())
     glBox.setLocation(4.0, y, 0.0)
-    win.repaint()
-    time.sleep(50e-3)
+    time.sleep(20e-3)

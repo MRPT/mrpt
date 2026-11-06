@@ -13,7 +13,7 @@ seminal work :cite:`fischler1981random` and is still widely used nowadays
 For a theoretical description of the algorithm, refer to 
 :cite:`fischler1981random` or to 
 `this Wikipedia article <https://en.wikipedia.org/wiki/Random_sample_consensus>`_
-and the cites herein.
+and the references therein.
 
 MRPT comprises a generic, template-based C++ implementation of this
 robust model fit algorithm, useful for outliers rejection.
@@ -108,6 +108,6 @@ or a subset of image keypoints against a larger image mosaic.
 This method was discussed in our paper :cite:`blanco2013robust`.
 
 
-.. image:: maps_ransac_data_association_screenshot.webp
-	:alt: MRPT RANSAC data association screenshot
+.. image:: images/maps_ransac_data_association_screenshot.webp
+  :alt: MRPT RANSAC data association screenshot
 

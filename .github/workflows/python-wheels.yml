@@ -1,0 +1,82 @@
+# Python wheels (packaging/pip), built and tested with cibuildwheel.
+#
+# - Pull requests touching the wheel files: one Python version per platform.
+# - Weekly, on release tags and by hand: all Python versions.
+# - Release tags (X.Y.Z) are uploaded to PyPI. A manual run can upload to
+#   TestPyPI or PyPI ("publish" input).
+#
+# Uploads use PyPI Trusted Publishing (no tokens), set up once on
+# (test.)pypi.org for this repository, this workflow and an environment named
+# like the index (pypi / testpypi).
+name: Python wheels
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Upload the wheels to"
+        type: choice
+        options: [none, testpypi, pypi]
+        default: none
+  push:
+    tags: ["[0-9]+.[0-9]+.[0-9]+"]
+  pull_request:
+    paths:
+      - "packaging/pip/**"
+      - ".github/workflows/python-wheels.yml"
+  schedule:
+    - cron: "0 3 * * 0"
+
+permissions:
+  contents: read
+
+jobs:
+  build_wheels:
+    name: Wheels ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Only one Python version for pull requests
+        if: github.event_name == 'pull_request'
+        run: echo "CIBW_BUILD=cp312-*" >> "$GITHUB_ENV"
+
+      - uses: pypa/cibuildwheel@v4.3.5
+        with:
+          package-dir: packaging/pip
+          output-dir: wheelhouse
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: wheelhouse/*.whl
+
+  publish:
+    name: Publish
+    if: >-
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.publish != 'none')
+    needs: build_wheels
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.publish || 'pypi' }}
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          merge-multiple: true
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: ${{ inputs.publish == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
+          # A re-run after a partial upload only uploads the missing files:
+          skip-existing: true

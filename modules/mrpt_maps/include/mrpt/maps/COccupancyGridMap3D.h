@@ -269,7 +269,10 @@ class COccupancyGridMap3D :
   };
 
   /** With this struct options are provided to the observation likelihood
-   * computation process */
+   * computation process.
+   * \note Observation likelihoods are not implemented yet for this map:
+   * canComputeObservationLikelihood() returns false and
+   * computeObservationLikelihood() returns 0 for all observations. */
   class TLikelihoodOptions : public mrpt::config::CLoadableOptions
   {
    public:
@@ -298,7 +301,7 @@ class COccupancyGridMap3D :
     float LF_stdHit{0.35f};
     /** [LikelihoodField] */
     float LF_zHit{0.95f}, LF_zRandom{0.05f};
-    /** [LikelihoodField] The max. range of the sensor (Default= 81 m) */
+    /** [LikelihoodField] The max. range of the sensor (Default= 20 m) */
     float LF_maxRange{20.0f};
     /** [LikelihoodField] The decimation of the points in a scan, default=1
      * == no decimation */
@@ -306,8 +309,9 @@ class COccupancyGridMap3D :
     /** [LikelihoodField] The max. distance for searching correspondences
      * around each sensed point */
     float LF_maxCorrsDistance{0.3f};
-    /** [LikelihoodField] (Default:false) Use `exp(dist^2/std^2)` instead of
-     * `exp(dist^2/std^2)` */
+    /** [LikelihoodField] (Default:false) If false, use the Gaussian
+     * `exp(-0.5*dist^2/LF_stdHit^2)`; if true, `exp(-0.5*dist^4/LF_stdHit^2)`
+     */
     bool LF_useSquareDist{false};
     /** [rayTracing] One out of "rayTracing_decimation" rays will be
      * simulated and compared only: set to 1 to use all the sensed ranges.

@@ -56,14 +56,18 @@ void CObservationImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t
         CMatrixF intrinsicParams, distortionParams;
         in >> distortionParams >> intrinsicParams;
 
-        if (distortionParams.rows() == 1 && distortionParams.cols() == 5)
+        // A row vector [k1 k2 p1 p2 k3], or [k1 k2 p1 p2] in the oldest files:
+        cameraParams.distortion = mrpt::img::DistortionModel::none;
+        cameraParams.dist.fill(0);
+        const auto nDist = distortionParams.rows() == 1 ? distortionParams.cols() : 0;
+        if (nDist == 4 || nDist == 5)
         {
-          CMatrixDouble15 p;
-          p = distortionParams.cast_double();
-          cameraParams.setDistortionParamsVector(p);
+          cameraParams.distortion = mrpt::img::DistortionModel::plumb_bob;
+          for (int k = 0; k < nDist; k++)
+          {
+            cameraParams.dist[static_cast<size_t>(k)] = distortionParams(0, k);
+          }
         }
-        else
-          cameraParams.dist.fill(0);
 
         cameraParams.intrinsicParams =
             mrpt::math::CMatrixDouble33(intrinsicParams.block<3, 3>(0, 0).cast<double>());

@@ -21,6 +21,22 @@ Download MRPT
     Next step: :ref:`compiling`
 
 
+.. dropdown:: Python (pip)
+    :icon: package
+
+    Linux (x86_64, aarch64), Python 3.11 to 3.14:
+
+    .. code-block:: bash
+
+       pip install mrpt3
+
+    It includes the Python bindings of all modules except hardware drivers,
+    plus the C++ headers, shared libraries and CMake files (``mrpt.sdk``),
+    so other wheels can build against them.
+    ``mrpt.opengl`` and ``mrpt.gui`` need the system OpenGL libraries.
+    See the :ref:`python_api` and the :ref:`python_examples`.
+
+
 .. dropdown:: Debian/Ubuntu official repositories
    :icon: code-square
 

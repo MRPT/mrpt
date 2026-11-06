@@ -27,15 +27,21 @@ namespace mrpt::poses
  *  - imSpline: Spline interpolation using 4 points (2 before + 2 after the
  * query point).
  *  - imLinear2Neig: Linear interpolation between the previous and next
- * neighbour.
+ * neighbor.
  *  - imLinear4Neig: Linear interpolation using the linear fit of the 4 closer
  * points (2 before + 2 after the query point).
  *  - imSSLLLL : Use Spline for X and Y, and Linear Least squares for Z, yaw,
  * pitch and roll.
- *  - imSSLSLL : Use Spline for X, Y and yaw, and Linear Lesat squares for Z,
+ *  - imSSLSLL : Use Spline for X, Y and yaw, and Linear Least squares for Z,
  * pitch and roll.
  *  - imLinearSlerp: Linear for X,Y,Z, Slerp for 3D angles.
- *  - imSplineSlerp: Spline for X,Y,Z, Slerp for 3D angles.
+ *  - imSplineSlerp: Spline for X,Y,Z (using 4 points, as imSpline), Slerp for 3D
+ * angles.
+ *
+ * \note In 3D, all methods but the Slerp ones interpolate yaw, pitch and roll
+ * independently, which only approximates the rotation (exact for rotations
+ * about a fixed vertical axis) and is wrong near |pitch|=90 deg, where these
+ * angles jump. Use imLinearSlerp or imSplineSlerp for general 3D rotations.
  * \ingroup interpolation_grp poses_grp
  */
 enum TInterpolatorMethod
@@ -185,8 +191,10 @@ class CPoseInterpolatorBase
   bool loadFromTextFile(const std::string& s);
 
   /** Loads from a text file, in the "TUM" dataset
-   *  format.
-   * \return true on success, false on any error.
+   *  format. Comment and blank lines are ignored (see
+   *  mrpt::math::MatrixVectorBase::loadFromTextFile()), and rows with
+   *  non-finite values (e.g. "nan") are skipped.
+   * \return true on success, false on any error or if no valid row remains.
    * \exception std::exception On invalid file format
    */
   bool loadFromTextFile_TUM(const std::string& s);

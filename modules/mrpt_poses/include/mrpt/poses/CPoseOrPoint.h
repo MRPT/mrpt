@@ -46,9 +46,8 @@ enum TConstructorFlags_Poses
  * expanded
  *    at compile time and optimized for every specific derived case.
  *
- *  For more information and examples, refer
- *    to the <a href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry
- * tutorial</a> online.
+ *  For more information and examples, refer to the 2D/3D Geometry tutorial:
+ *  https://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/
  *
  *
  *  <center><h2>Introduction to 2D and 3D representation classes</h2></center>
@@ -185,8 +184,8 @@ class CPoseOrPoint :
 
     if (is3DPoseOrPoint())
     {
-      return square(x() - b.x()) + square(y() - b.y()) +
-             square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
+      // "b" is 2D: its z is zero.
+      return square(x() - b.x()) + square(y() - b.y()) + square(derived().m_coords[2]);
     }
     return square(x() - b.x()) + square(y() - b.y());
   }

@@ -18,7 +18,10 @@
 #include <mrpt/math/MatrixBase.h>
 
 #include <Eigen/Eigenvalues>  // EigenSolver
+#include <algorithm>
+#include <cmath>
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 namespace mrpt::math
@@ -133,6 +136,12 @@ template <typename Scalar, class Derived>
 bool MatrixBase<Scalar, Derived>::eig(Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
 {
   using Index = typename Derived::Index;
+  if (mbDerived().rows() == 0)
+  {
+    eVecs.resize(0, 0);
+    eVals.clear();
+    return true;
+  }
   Eigen::EigenSolver<typename Derived::eigen_t> es(mbDerived().asEigen());
   if (es.info() != Eigen::Success)
   {
@@ -162,6 +171,12 @@ template <typename Scalar, class Derived>
 bool MatrixBase<Scalar, Derived>::eig_symmetric(
     Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
 {
+  if (mbDerived().rows() == 0)
+  {
+    eVecs.resize(0, 0);
+    eVals.clear();
+    return true;
+  }
   Eigen::SelfAdjointEigenSolver<typename Derived::eigen_t> es(mbDerived().asEigen());
   if (es.info() != Eigen::Success)
   {
@@ -175,10 +190,13 @@ bool MatrixBase<Scalar, Derived>::eig_symmetric(
   {
     detail::sortEigResults(eigenVal, es.eigenvectors().real(), eVals, eVecs);
 
-    // Avoid numerical issues on some platforms (e.g. i386 arch)
-    if (eVals.at(0) < 0)
+    // Reset to zero a smallest eigenvalue that is negative only due to
+    // round-off (e.g. on i386), but keep truly negative ones:
+    const Scalar tol = 10 * std::numeric_limits<Scalar>::epsilon() * static_cast<Scalar>(N) *
+                       std::max(std::abs(eVals.front()), std::abs(eVals.back()));
+    if (eVals.front() < 0 && eVals.front() > -tol)
     {
-      eVals.at(0) = 0;
+      eVals.front() = 0;
     }
   }
   else
@@ -210,7 +228,7 @@ bool MatrixBase<Scalar, Derived>::chol(Derived& U) const
 {
   Eigen::LLT<typename Derived::eigen_t> Chol =
       mbDerived().asEigen().template selfadjointView<Eigen::Lower>().llt();
-  if (Chol.info() == Eigen::NoConvergence)
+  if (Chol.info() != Eigen::Success)
   {
     return false;
   }
@@ -245,7 +263,9 @@ Derived MatrixBase<Scalar, Derived>::inverse_LLt() const
   const Derived I = Derived::Identity(N);
   Derived inv(mrpt::math::UNINITIALIZED_MATRIX);
   inv.resize(N, N);
-  inv.asEigen() = mbDerived().asEigen().llt().solve(I.asEigen()).eval();
+  const auto llt = mbDerived().asEigen().llt();
+  ASSERTMSG_(llt.info() == Eigen::Success, "inverse_LLt(): the matrix is not positive-definite");
+  inv.asEigen() = llt.solve(I.asEigen()).eval();
   return inv;
 }
 

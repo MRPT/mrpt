@@ -589,13 +589,15 @@ void CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 
     // Actually the array could be 1/4 of this size, but this
     // way it's easier and it's late night now :-)
+    // The window is centered at (Ac_cutoff, Ac_cutoff), the sensor cell:
     auto it = m_DM_gaussWindow.begin();
     for (unsigned cx = 0; cx < Ac_all; cx++)
     {
       for (unsigned cy = 0; cy < Ac_all; cy++)
       {
-        dist = m_resolution *
-               sqrt(static_cast<double>(square(Ac_cutoff + 1 - cx) + square(Ac_cutoff + 1 - cy)));
+        const int dcx = Ac_cutoff - static_cast<int>(cx);
+        const int dcy = Ac_cutoff - static_cast<int>(cy);
+        dist = m_resolution * sqrt(static_cast<double>(square(dcx) + square(dcy)));
         *(it++) = static_cast<float>(std::exp(-square(dist / std)));
       }
     }
@@ -670,7 +672,7 @@ void CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_c
 
   out << mrpt::format("GMRF_lambdaPrior                        = %f\n", GMRF_lambdaPrior);
   out << mrpt::format("GMRF_lambdaObs                          = %f\n", GMRF_lambdaObs);
-  out << mrpt::format("GMRF_lambdaObsLoss                      = %f\n", GMRF_lambdaObs);
+  out << mrpt::format("GMRF_lambdaObsLoss                      = %f\n", GMRF_lambdaObsLoss);
 
   out << mrpt::format(
       "GMRF_use_occupancy_information          = %s\n",
@@ -928,6 +930,20 @@ void CRandomFieldGridMap2D::resize(
       // -------------------------------------------------------
       // STEP 2: Set default values for new cells
       // -------------------------------------------------------
+      // First, the variances of all new cells, since the cross-covariances
+      // below need both of them:
+      for (i = 0; i < N; i++)
+      {
+        const size_t cx1 = i % m_size_x;
+        const size_t cy1 = i / m_size_x;
+        const bool C1_isFromOldMap = Acx_left <= cx1 && cx1 < (Acx_left + old_sizeX) &&
+                                     Acy_bottom <= cy1 && cy1 < (Acy_bottom + old_sizeY);
+        if (!C1_isFromOldMap)
+        {
+          m_cov(i, i) = square(m_insertOptions_common->KF_initialCellStd);
+        }
+      }
+
       for (i = 0; i < N; i++)
       {
         size_t cx1 = i % m_size_x;
@@ -935,7 +951,7 @@ void CRandomFieldGridMap2D::resize(
 
         bool C1_isFromOldMap = Acx_left <= cx1 && cx1 < (Acx_left + old_sizeX) &&
                                Acy_bottom <= cy1 && cy1 < (Acy_bottom + old_sizeY);
-        for (j = i; j < N; j++)
+        for (j = i + 1; j < N; j++)
         {
           size_t cx2 = j % m_size_x;
           size_t cy2 = j / m_size_x;
@@ -949,25 +965,19 @@ void CRandomFieldGridMap2D::resize(
           if (!C1_isFromOldMap || !C2_isFromOldMap)
           {
             // Set a new starting value:
-            if (i == j)
-            {
-              m_cov(i, i) = square(m_insertOptions_common->KF_initialCellStd);
-            }
-            else
-            {
-              dist =
-                  m_resolution * sqrt(static_cast<double>(square(cx1 - cx2) + square(cy1 - cy2)));
-              double K = sqrt(m_cov(i, i) * m_cov(j, j));
+            const double Acx = static_cast<double>(cx1) - static_cast<double>(cx2);
+            const double Acy = static_cast<double>(cy1) - static_cast<double>(cy2);
+            dist = m_resolution * sqrt(square(Acx) + square(Acy));
+            double K = sqrt(m_cov(i, i) * m_cov(j, j));
 
-              if (std::isnan(K))
-              {
-                printf("c(i,i)=%e   c(j,j)=%e\n", m_cov(i, i), m_cov(j, j));
-                ASSERT_(!std::isnan(K));
-              }
-
-              m_cov(i, j) = K * exp(-0.5 * square(dist / m_insertOptions_common->KF_covSigma));
-              m_cov(j, i) = m_cov(i, j);
+            if (std::isnan(K))
+            {
+              printf("c(i,i)=%e   c(j,j)=%e\n", m_cov(i, i), m_cov(j, j));
+              ASSERT_(!std::isnan(K));
             }
+
+            m_cov(i, j) = K * exp(-0.5 * square(dist / m_insertOptions_common->KF_covSigma));
+            m_cov(j, i) = m_cov(i, j);
 
             ASSERT_(!std::isnan(m_cov(i, j)));
           }
@@ -1882,7 +1892,7 @@ void CRandomFieldGridMap2D::predictMeasurement(
 
     case gimBilinear:
       if (x <= m_x_min + m_resolution * 0.5 || y <= m_y_min + m_resolution * 0.5 ||
-          x >= m_x_max - m_resolution * 0.5 || x >= m_x_max - m_resolution * 0.5)
+          x >= m_x_max - m_resolution * 0.5 || y >= m_y_max - m_resolution * 0.5)
       {
         // Too close to a border:
         queries.resize(1);
@@ -1941,8 +1951,9 @@ void CRandomFieldGridMap2D::predictMeasurement(
       {
         if (!cell)
         {
+          // Same as a cell that has never been observed:
           q.val = m_average_normreadings_mean;
-          q.var = square(m_insertOptions_common->KF_initialCellStd);
+          q.var = m_average_normreadings_var;
         }
         else
         {
@@ -1959,16 +1970,20 @@ void CRandomFieldGridMap2D::predictMeasurement(
         if (m_mapType == mrKalmanApproximate && m_hasToRecoverMeanAndCov)
           recoverMeanAndCov();  // Just for KF2
 
+        // The variance of the sensor noise, in the model of each method:
+        const double obsNoiseVar = (m_mapType == mrGMRF_SD)
+                                       ? 1.0 / m_insertOptions_common->GMRF_lambdaObs
+                                       : square(m_insertOptions_common->KF_observationModelNoise);
+
         if (!cell)
         {
           q.val = m_insertOptions_common->KF_defaultCellMeanValue;
-          q.var = square(m_insertOptions_common->KF_initialCellStd) +
-                  square(m_insertOptions_common->KF_observationModelNoise);
+          q.var = square(m_insertOptions_common->KF_initialCellStd) + obsNoiseVar;
         }
         else
         {
           q.val = cell->kf_mean();
-          q.var = square(cell->kf_std()) + square(m_insertOptions_common->KF_observationModelNoise);
+          q.var = square(cell->kf_std()) + obsNoiseVar;
         }
       }
       break;
@@ -1987,11 +2002,13 @@ void CRandomFieldGridMap2D::predictMeasurement(
     out_predict_response_variance += querie.var * querie.coef;
   }
 
-  // Un-do the sensor normalization:
+  // Un-do the sensor normalization, for both the mean and the variance:
   if (do_sensor_normalization)
-    out_predict_response =
-        m_insertOptions_common->R_min +
-        out_predict_response * (m_insertOptions_common->R_max - m_insertOptions_common->R_min);
+  {
+    const double R_range = m_insertOptions_common->R_max - m_insertOptions_common->R_min;
+    out_predict_response = m_insertOptions_common->R_min + out_predict_response * R_range;
+    out_predict_response_variance *= square(R_range);
+  }
 
   MRPT_END
 }
@@ -2173,8 +2190,10 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
 
       // The cells (i,j) may be too far from each other:
       const int Ax = cx_j - cx_i;
-      if (Ax > W) continue;  // Next cell (may be more rows after the current
-      // one...)
+      if (Ax > W || Ax < -W)
+      {
+        continue;  // Not stored in i's window (more rows may follow)
+      }
 
       const int Ay = cy_j - cy_i;
       if (Ay > W) break;  // We are absolutely sure out of i's window.
@@ -2232,8 +2251,41 @@ void CRandomFieldGridMap2D::getMeanAndCov(CVectorDouble& out_means, CMatrixDoubl
   for (size_t i = 0; i < N; ++i) out_means[i] = BASE::m_map[i].kf_mean();
 
   recoverMeanAndCov();
-  // Avoid warning on object slicing: we are OK with that.
-  out_cov = static_cast<const CMatrixDouble&>(m_cov);
+
+  if (m_mapType != mrKalmanApproximate)
+  {
+    // Avoid warning on object slicing: we are OK with that.
+    out_cov = static_cast<const CMatrixDouble&>(m_cov);
+    return;
+  }
+
+  // KF2: expand the compressed covariance. Cross-covariances out of each
+  // cell window are zero in this approximation.
+  const int W = m_insertOptions_common->KF_W_size;
+  const int sx = static_cast<int>(m_size_x);
+  const int sy = static_cast<int>(m_size_y);
+  out_cov.setZero(N, N);
+  for (size_t i = 0; i < N; ++i)
+  {
+    const int cx = static_cast<int>(i % m_size_x);
+    const int cy = static_cast<int>(i / m_size_x);
+    int k = 0;
+    for (int Acy = 0; Acy <= W; Acy++)
+    {
+      for (int Acx = (Acy == 0 ? 0 : -W); Acx <= W; Acx++, k++)
+      {
+        const int cx2 = cx + Acx;
+        const int cy2 = cy + Acy;
+        if (cx2 < 0 || cx2 >= sx || cy2 >= sy)
+        {
+          continue;
+        }
+        const auto j = static_cast<size_t>(cx2 + cy2 * sx);
+        out_cov(i, j) = m_stackedCov(i, k);
+        out_cov(j, i) = m_stackedCov(i, k);
+      }
+    }
+  }
 }
 
 /*---------------------------------------------------------------
@@ -2245,10 +2297,11 @@ void CRandomFieldGridMap2D::getMeanAndSTD(CVectorDouble& out_means, CVectorDoubl
   out_means.resize(N);
   out_STD.resize(N);
 
+  recoverMeanAndCov();
   for (size_t i = 0; i < N; ++i)
   {
     out_means[i] = BASE::m_map[i].kf_mean();
-    out_STD[i] = sqrt(m_stackedCov(i, 0));
+    out_STD[i] = BASE::m_map[i].kf_std();
   }
 }
 
@@ -2262,13 +2315,21 @@ void CRandomFieldGridMap2D::setMeanAndSTD(CVectorDouble& in_means, CVectorDouble
   ASSERT_(N == size_t(in_means.size()));
   ASSERT_(N == size_t(in_std.size()));
 
-  m_hasToRecoverMeanAndCov = true;
   for (size_t i = 0; i < N; ++i)
   {
-    m_map[i].kf_mean() = in_means[i];        // update mean values
-    m_stackedCov(i, 0) = square(in_std[i]);  // update variance values
+    m_map[i].kf_mean() = in_means[i];  // update mean values
+    m_map[i].kf_std() = in_std[i];
+    // and the variances, where a covariance matrix is kept:
+    if (m_mapType == mrKalmanApproximate)
+    {
+      m_stackedCov(i, 0) = square(in_std[i]);
+    }
+    else if (m_mapType == mrKalmanFilter)
+    {
+      m_cov(i, i) = square(in_std[i]);
+    }
   }
-  recoverMeanAndCov();  // update STD values from cov matrix
+  m_hasToRecoverMeanAndCov = false;
 }
 
 CRandomFieldGridMap2D::TMapRepresentation CRandomFieldGridMap2D::getMapType() { return m_mapType; }
@@ -2391,7 +2452,8 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
     {
       for (auto ito = obs.begin(); ito != obs.end();)
       {
-        if (!ito->time_invariant)
+        // Only time-variant observations lose information:
+        if (ito->time_invariant)
         {
           ++ito;
           continue;

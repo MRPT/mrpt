@@ -54,7 +54,9 @@ struct TCoords
    * automatic conversion between TCoords and a double.  */
   [[nodiscard]] double getDecimalValue() const { return decimal_value; }
 
-  /** Return the Deg Min' Sec'' representation of this value. */
+  /** Return the Deg Min' Sec'' representation of this value. For negative
+   * values, the sign is carried by the first non-zero part (e.g. -0.5 is
+   * returned as 0deg -30' 0''). */
   void getDegMinSec(int& degrees, int& minutes, double& seconds) const
   {
     double aux = std::abs(decimal_value);
@@ -63,28 +65,43 @@ struct TCoords
     seconds = ((aux - degrees) * 60.0 - minutes) * 60.0;
     if (decimal_value < 0)
     {
-      degrees = -degrees;
+      if (degrees != 0)
+      {
+        degrees = -degrees;
+      }
+      else if (minutes != 0)
+      {
+        minutes = -minutes;
+      }
+      else
+      {
+        seconds = -seconds;
+      }
     }
   }
 
-  /** Set the coordinate from its Deg Min' Deg'' parts. */
+  /** Set the coordinate from its Deg Min' Sec'' parts. The value is negative
+   * if any of the parts is negative. */
   void setDegMinSec(const int degrees, const int minutes, const double seconds)
   {
-    decimal_value = std::abs(degrees) + minutes / 60.0 + seconds / 3600.0;
-    if (degrees < 0)
+    decimal_value = std::abs(degrees) + std::abs(minutes) / 60.0 + std::abs(seconds) / 3600.0;
+    if (degrees < 0 || minutes < 0 || seconds < 0)
     {
       decimal_value = -decimal_value;
     }
   }
 
-  /** Return a std::string in the format "DEGdeg MIN' SEC''" */
+  /** Return a std::string in the format "DEGdeg MIN' SEC''" (with a leading
+   * '-' for negative values) */
   [[nodiscard]] std::string getAsString() const
   {
     int deg = 0;
     int min = 0;
     double sec = 0;
     getDegMinSec(deg, min, sec);
-    return mrpt::format("%ddeg %d' %.04f''", deg, min, sec);
+    return mrpt::format(
+        "%s%ddeg %d' %.04f''", decimal_value < 0 ? "-" : "", std::abs(deg), std::abs(min),
+        std::abs(sec));
   }
 };
 
@@ -109,15 +126,15 @@ struct TEllipsoid
   std::string name;
 
   static TEllipsoid Ellipsoid_WGS84() { return {6378137.000, 6356752.314245, "WGS84"}; }
-  static TEllipsoid Ellipsoid_WGS72() { return {6378135.000, 6356750.519915, "WGS72"}; }
-  static TEllipsoid Ellipsoid_WGS66() { return {6378145.000, 6356759.769356, "WGS66"}; }
+  static TEllipsoid Ellipsoid_WGS72() { return {6378135.000, 6356750.520016, "WGS72"}; }
+  static TEllipsoid Ellipsoid_WGS66() { return {6378145.000, 6356759.769489, "WGS66"}; }
   static TEllipsoid Ellipsoid_Walbeck_1817()
   {
     return {6376896.000, 6355834.846700, "Walbeck_1817"};
   }
   static TEllipsoid Ellipsoid_Sudamericano_1969()
   {
-    return {6378160.000, 6356774.720000, "Sudamericano_1969"};
+    return {6378160.000, 6356774.719195, "Sudamericano_1969"};
   }
   static TEllipsoid Ellipsoid_Nuevo_Internacional_1967()
   {
@@ -125,57 +142,57 @@ struct TEllipsoid
   }
   static TEllipsoid Ellipsoid_Mercury_Modificado_1968()
   {
-    return {6378150.000, 6356768.337303, "Mercury_Modificado_1968"};
+    return {6378150.000, 6356768.337244, "Mercury_Modificado_1968"};
   }
   static TEllipsoid Ellipsoid_Mercury_1960()
   {
-    return {6378166.000, 6356784.283666, "Mercury_1960"};
+    return {6378166.000, 6356784.283607, "Mercury_1960"};
   }
   static TEllipsoid Ellipsoid_Krasovsky_1940()
   {
-    return {6378245.000, 6356863.018800, "Krasovsky_1940"};
+    return {6378245.000, 6356863.018773, "Krasovsky_1940"};
   }
   static TEllipsoid Ellipsoid_Internacional_1924()
   {
-    return {6378388.000, 6356911.946130, "Internacional_1924"};
+    return {6378388.000, 6356911.946128, "Internacional_1924"};
   }
   static TEllipsoid Ellipsoid_Internacional_1909()
   {
-    return {6378388.000, 6356911.946130, "Internacional_1909"};
+    return {6378388.000, 6356911.946128, "Internacional_1909"};
   }
-  static TEllipsoid Ellipsoid_Hough_1960() { return {6378270.000, 6356794.343479, "Hough_1960"}; }
+  static TEllipsoid Ellipsoid_Hough_1960() { return {6378270.000, 6356794.343434, "Hough_1960"}; }
   static TEllipsoid Ellipsoid_Helmert_1906()
   {
-    return {6378200.000, 6356818.170000, "Helmert_1906"};
+    return {6378200.000, 6356818.169628, "Helmert_1906"};
   }
   static TEllipsoid Ellipsoid_Hayford_1909()
   {
-    return {6378388.000, 6356911.946130, "Hayford_1909"};
+    return {6378388.000, 6356911.946128, "Hayford_1909"};
   }
   static TEllipsoid Ellipsoid_GRS80() { return {6378137.000, 6356752.314140, "GRS80"}; }
   static TEllipsoid Ellipsoid_Fischer_1968()
   {
-    return {6378150.000, 6356768.330000, "Fischer_1968"};
+    return {6378150.000, 6356768.337244, "Fischer_1968"};
   }
   static TEllipsoid Ellipsoid_Fischer_1960()
   {
-    return {6378166.000, 6356784.280000, "Fischer_1960"};
+    return {6378166.000, 6356784.283607, "Fischer_1960"};
   }
   static TEllipsoid Ellipsoid_Clarke_1880() { return {6378249.145, 6356514.869550, "Clarke_1880"}; }
   static TEllipsoid Ellipsoid_Clarke_1866() { return {6378206.400, 6356583.800000, "Clarke_1866"}; }
-  static TEllipsoid Ellipsoid_Bessel_1841() { return {6377397.155, 6356078.962840, "Bessel_1841"}; }
+  static TEllipsoid Ellipsoid_Bessel_1841() { return {6377397.155, 6356078.962818, "Bessel_1841"}; }
   static TEllipsoid Ellipsoid_Airy_Modificado_1965()
   {
-    return {6377340.189, 6356034.447900, "Airy_Modificado_1965"};
+    return {6377340.189, 6356034.447939, "Airy_Modificado_1965"};
   }
-  static TEllipsoid Ellipsoid_Airy_1830() { return {6377563.396, 6356256.910000, "Airy_1830"}; }
+  static TEllipsoid Ellipsoid_Airy_1830() { return {6377563.396, 6356256.909237, "Airy_1830"}; }
 };
 
 using TUTMCoords = mrpt::math::TPoint3D;
 using TGeocentricCoords = mrpt::math::TPoint3D;
 
-/**  A set of geodetic coordinates: latitude, longitude and height, defined over
- * a given geoid (typically, WGS84)  */
+/**  A set of geodetic coordinates: latitude, longitude and (ellipsoidal)
+ * height, referred to a given reference ellipsoid (typically, WGS84)  */
 struct TGeodeticCoords
 {
   TGeodeticCoords() : lat(0), lon(0) {}
@@ -311,7 +328,7 @@ struct TDatum10Params
   }
 };
 
-/** Parameters for a topographic transfomation
+/** Parameters for a topographic transformation
  * \sa TDatumHelmert3D, transformHelmert2D
  */
 struct TDatumHelmert2D

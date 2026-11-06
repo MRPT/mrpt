@@ -24,8 +24,8 @@ namespace mrpt::math
 {
 /** Lightweight 3D rigid-body pose — an element of SE(3).
  *
- * Parameterises the group SE(3) = SO(3) ⋉ R³ as the 6-vector `(x, y, z, yaw, pitch, roll)`:
- * - `(x, y, z)` — translation in metres.
+ * Parameterizes the group SE(3) = SO(3) ⋉ R³ as the 6-vector `(x, y, z, yaw, pitch, roll)`:
+ * - `(x, y, z)`: translation in meters.
  * - `(yaw, pitch, roll)` — orientation in **radians**, using the **intrinsic ZYX** convention
  *   (also known as Tait-Bryan angles):
  *   1. Rotate about the body Z axis by **yaw** (ψ).
@@ -65,20 +65,20 @@ struct TPose3D :
 {
   static constexpr std::size_t static_size = 6;
 
-  /** Translation along X (metres). */
+  /** Translation along X (meters). */
   double x{.0};
-  /** Translation along Y (metres). */
+  /** Translation along Y (meters). */
   double y{.0};
-  /** Translation along Z (metres). */
+  /** Translation along Z (meters). */
   double z{.0};
   /** Yaw angle psi in **radians**: rotation about the body (intrinsic) Z axis — first rotation.
-   *  Range: any real value; conventionally wrapped to (-pi, pi]. */
+   *  Range: any real value; conventionally wrapped to [-pi, pi). */
   double yaw{.0};
   /** Pitch angle theta in **radians**: rotation about the (new) body Y axis — second rotation.
    *  Range: (-pi/2, pi/2) for a non-singular representation (gimbal-lock at +-pi/2). */
   double pitch{.0};
   /** Roll angle phi in **radians**: rotation about the (new) body X axis — third rotation.
-   *  Range: any real value; conventionally wrapped to (-pi, pi]. */
+   *  Range: any real value; conventionally wrapped to [-pi, pi). */
   double roll{.0};
 
   /** Returns the identity transformation, T=eye(4) */

@@ -107,9 +107,14 @@ CPose3D::CPose3D(
     const mrpt::math::CQuaternionDouble& q, const double _x, const double _y, const double _z) :
     m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 {
-  double yaw, pitch, roll;
-  q.rpy(roll, pitch, yaw);
-  this->setFromValues(_x, _y, _z, yaw, pitch, roll);
+  // Build the matrix directly from the (normalized) quaternion, so no
+  // precision is lost near gimbal lock:
+  mrpt::math::CQuaternionDouble qn = q;
+  qn.normalize();
+  qn.rotationMatrixNoResize(m_ROT);
+  m_coords[0] = _x;
+  m_coords[1] = _y;
+  m_coords[2] = _z;
 }
 
 /** Constructor from a quaternion-based full pose. */
@@ -237,7 +242,11 @@ std::ostream& mrpt::poses::operator<<(std::ostream& o, const CPose3D& p)
 /*---------------------------------------------------------------
         normalizeAngles
 ---------------------------------------------------------------*/
-void CPose3D::normalizeAngles() { updateYawPitchRoll(); }
+void CPose3D::normalizeAngles()
+{
+  m_ypr_uptodate = false;
+  updateYawPitchRoll();
+}
 /*---------------------------------------------------------------
  Set the pose from 3D point and yaw/pitch/roll angles, in radians.
 ---------------------------------------------------------------*/
@@ -269,13 +278,9 @@ void CPose3D::rebuildRotationMatrix() { m_ROT = Lie::SO<3>::fromYPR(m_yaw, m_pit
 void CPose3D::operator*=(const double s)
 {
   updateYawPitchRoll();
-  m_coords[0] *= s;
-  m_coords[1] *= s;
-  m_coords[2] *= s;
-  m_yaw *= s;
-  m_pitch *= s;
-  m_roll *= s;
-  rebuildRotationMatrix();
+  // setFromValues() wraps the angles:
+  setFromValues(
+      m_coords[0] * s, m_coords[1] * s, m_coords[2] * s, m_yaw * s, m_pitch * s, m_roll * s);
 }
 
 /*---------------------------------------------------------------
@@ -326,6 +331,7 @@ void CPose3D::sphericalCoordinates(
 
 CPose3D CPose3D::getOppositeScalar() const
 {
+  updateYawPitchRoll();
   return CPose3D(-m_coords[0], -m_coords[1], -m_coords[2], -m_yaw, -m_pitch, -m_roll);
 }
 
@@ -335,6 +341,7 @@ CPose3D CPose3D::getOppositeScalar() const
 void CPose3D::addComponents(const CPose3D& p)
 {
   updateYawPitchRoll();
+  p.updateYawPitchRoll();
   m_coords[0] += p.m_coords[0];
   m_coords[1] += p.m_coords[1];
   m_coords[2] += p.m_coords[2];
@@ -498,6 +505,15 @@ mrpt::math::CMatrixDouble33 CPose3D::jacobian_rodrigues_from_YPR() const
   mrpt::math::CMatrixDouble33 out_domega_dypr;
   mrpt::math::CQuaternion<double> q;
   this->getAsQuaternion(q, out_dq_dypr);
+  // Use the qr>=0 hemisphere, which yields the principal rotation vector:
+  if (q.r() < 0)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      q[i] = -q[i];
+    }
+    out_dq_dypr.asEigen() *= -1.0;
+  }
   if (q.r() >= 1.0 - 1e-9)
   {
     out_domega_dypr = mrpt::math::CMatrixDouble33::Zero();
@@ -627,9 +643,13 @@ void CPose3D::inverseComposeFrom(const CPose3D& A, const CPose3D& B)
   CVectorFixedDouble<3> t_b_inv;
   mrpt::math::homogeneousMatrixInverse(B.m_ROT, B.m_coords, R_b_inv, t_b_inv);
 
+  // Copy, since A may be "this":
+  const CVectorFixedDouble<3> A_coords = A.m_coords;
   for (int i = 0; i < 3; i++)
-    m_coords[i] = t_b_inv[i] + R_b_inv(i, 0) * A.m_coords[0] + R_b_inv(i, 1) * A.m_coords[1] +
-                  R_b_inv(i, 2) * A.m_coords[2];
+  {
+    m_coords[i] = t_b_inv[i] + R_b_inv(i, 0) * A_coords[0] + R_b_inv(i, 1) * A_coords[1] +
+                  R_b_inv(i, 2) * A_coords[2];
+  }
 
   // Rot part:
   m_ROT = R_b_inv * A.m_ROT;

@@ -18,7 +18,10 @@
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/system/COutputLogger.h>
 
+#include <algorithm>
+#include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <vector>
 
@@ -85,12 +88,23 @@ class RANSAC_Template : public mrpt::system::COutputLogger
    *
    *  \param data A DxN matrix with all the observed data. D is the
    * dimensionality of data points and N the number of points.
-   *  \param
+   *  \param fit_func Fits one or more models to a minimal sample of indices.
+   *  \param dist_func Selects the best of the candidate models and returns
+   * its inliers, given the distance threshold.
+   *  \param degen_func Returns true if a minimal sample is degenerate.
+   *  \param distanceThreshold Passed to dist_func to classify inliers.
+   *  \param minimumSizeSamplesToFit Size of the minimal samples, drawn
+   * without repeated indices.
+   *  \param out_best_inliers Output: indices of the inliers of the best model.
+   *  \param out_best_model Output: the best model.
+   *  \param prob_good_sample Desired probability of drawing at least one
+   * outlier-free minimal sample, which sets the number of iterations.
+   *  \param maxIter Maximum number of iterations.
    *
    *  This implementation is highly inspired on Peter Kovesi's MATLAB scripts
-   * (http://www.csse.uwa.edu.au/~pk).
+   * (https://www.peterkovesi.com/matlabfns/).
    * \return false if no good solution can be found, true on success.
-   * \note [MRPT 1.5.0] `verbose` parameter has been removed, supersedded by
+   * \note [MRPT 1.5.0] `verbose` parameter has been removed, superseded by
    * COutputLogger settings.
    */
   bool execute(
@@ -125,7 +139,7 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
     const double p,
     const size_t maxIter) const
 {
-  // Highly inspired on http://www.csse.uwa.edu.au/~pk/
+  // Highly inspired on https://www.peterkovesi.com/matlabfns/
   MRPT_START
 
   ASSERT_GE_(minimumSizeSamplesToFit, 1U);
@@ -134,16 +148,21 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
 
   ASSERT_GT_(pointCount, 1);
 
-  // Maximum number of attempts to select a non-degenerate data set.
-  const size_t maxDataTrials = 100;
-
-  // Sentinel value allowing detection of solution failure.
   out_best_model = MODEL();
   out_best_inliers.clear();
 
+  if (pointCount < minimumSizeSamplesToFit)
+  {
+    MRPT_LOG_WARN("Not enough data points for a minimal sample");
+    return false;
+  }
+
+  // Maximum number of attempts to select a non-degenerate data set.
+  const size_t maxDataTrials = 100;
+
   size_t trialcount = 0;
   size_t bestscore = std::string::npos;  // npos will mean "none"
-  size_t N = 1;                          // Dummy initialisation for number of trials.
+  size_t N = 1;                          // Dummy initialization for number of trials.
 
   std::vector<size_t> ind(minimumSizeSamplesToFit);
 
@@ -158,13 +177,18 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
 
     while (degenerate)
     {
-      // Generate s random indicies in the range 1..pointCount
-      ind.resize(minimumSizeSamplesToFit);
-
-      // The +0.99... is due to the floor rounding afterwards when
-      // converting from random double samples to size_t
-      mrpt::random::getRandomGenerator().drawUniformVector(
-          ind, 0.0, static_cast<double>(pointCount - 1) + 0.999999);
+      // Generate s distinct random indices in the range 0..pointCount-1
+      ind.clear();
+      while (ind.size() < minimumSizeSamplesToFit)
+      {
+        uint64_t idx = 0;
+        mrpt::random::getRandomGenerator().drawUniformUnsignedIntRange(
+            idx, static_cast<uint64_t>(0), static_cast<uint64_t>(pointCount - 1));
+        if (std::find(ind.begin(), ind.end(), static_cast<size_t>(idx)) == ind.end())
+        {
+          ind.push_back(static_cast<size_t>(idx));
+        }
+      }
 
       // Test that these points are not a degenerate configuration.
       degenerate = is_degenerated(data, ind);
@@ -231,8 +255,10 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
       pNoOutliers = std::min(
           1.0 - std::numeric_limits<double>::epsilon(),
           pNoOutliers);  // Avoid division by 0.
-      // Number of
-      N = static_cast<size_t>(log(1 - p) / log(pNoOutliers));
+      // Number of trials, rounded up (also handles p>=1 and NaN):
+      const double Nd = std::ceil(std::log(1 - p) / std::log(pNoOutliers));
+      N = (Nd <= static_cast<double>(maxIter)) ? static_cast<size_t>(std::max(0.0, Nd))
+                                               : maxIter + 1;
       MRPT_LOG_DEBUG_FMT(
           "Iter #%u Estimated number of iters: %u  pNoOutliers = %f  "
           "#inliers: %u",
@@ -247,7 +273,7 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
         static_cast<unsigned int>(ceil(static_cast<double>(N))));
 
     // Safeguard against being stuck in this loop forever
-    if (trialcount > maxIter)
+    if (trialcount >= maxIter && N > trialcount)
     {
       MRPT_LOG_WARN_FMT(
           "Warning: maximum number of trials (%u) reached\n", static_cast<unsigned>(maxIter));

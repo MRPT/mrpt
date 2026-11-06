@@ -133,10 +133,17 @@ double CVehicleVelCmd_Holo::cmdVel_limits(
       "either assign values programmatically or call loadConfigFile()");
 
   double f = 1.0;
-  if (vel > params.robotMax_V_mps) f = params.robotMax_V_mps / vel;
+  if (std::abs(vel) > params.robotMax_V_mps)
+  {
+    f = params.robotMax_V_mps / std::abs(vel);
+  }
 
   vel *= f;        // |(vx,vy)|
   rot_speed *= f;  // rot_speed
+  if (params.robotMax_W_radps > 0 && std::abs(rot_speed) > params.robotMax_W_radps)
+  {
+    rot_speed *= params.robotMax_W_radps / std::abs(rot_speed);
+  }
   // ramp_time: leave unchanged
   // Blending with "beta" not required, since the ramp_time already blends
   // cmds for holo robots.

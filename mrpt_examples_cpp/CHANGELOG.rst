@@ -2,6 +2,9 @@
 Changelog for package mrpt_examples_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+
 3.6.1 (2026-11-01)
 ------------------
 * Fix ambiguous format() call vs std::format in examples

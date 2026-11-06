@@ -311,6 +311,10 @@ class CPointsMap :
 
   /** Options used when evaluating "computeObservationLikelihood" in the
    * derived classes.
+   * \note For 2D range scans evaluated at horizontal robot poses (exactly
+   * zero pitch and roll), distances are computed in the XY plane, ignoring the
+   * height of map points: only valid for planar maps. Otherwise, distances are
+   * computed in 3D.
    * \sa CObservation::computeObservationLikelihood
    */
   struct TLikelihoodOptions : public config::CLoadableOptions
@@ -331,8 +335,10 @@ class CPointsMap :
      */
     void readFromStream(mrpt::serialization::CArchive& in);
 
-    /** Sigma squared (variance, in meters) of the exponential used to model
-     * the likelihood (default= 0.5^2 meters) */
+    /** Sigma squared (variance, in m^2) of the exponential used to model the
+     * likelihood: the returned log-likelihood is minus the mean (over the
+     * used points) of the squared distances to their closest map points,
+     * divided by sigma_dist (default= 0.05^2 m^2) */
     double sigma_dist{0.0025};
     /** Maximum distance in meters to consider for the numerator divided by
      * "sigma_dist", so that each point has a minimum (but very small)

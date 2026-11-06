@@ -12,10 +12,14 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/topography/conversions.h>
 
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 
 using namespace std;
@@ -36,7 +40,7 @@ bool mrpt::topography::operator!=(const TGeodeticCoords& a, const TGeodeticCoord
   return !(a == o);
 }
 
-// Define a generic type for "precission numbers":
+// Define a generic type for "precision numbers":
 #ifdef HAVE_LONG_DOUBLE
 using precnum_t = long double;
 #else
@@ -163,7 +167,7 @@ void mrpt::topography::ENU_axes_from_WGS84(
     mrpt::math::TPose3D& out_ENU,
     bool only_angles)
 {
-  // See "coordinatesTransformation_WGS84" for more comments.
+  // See geocentricToENU_WGS84() for more comments.
   TPoint3D PPref;
   mrpt::topography::geodeticToGeocentric_WGS84(
       TGeodeticCoords(
@@ -204,32 +208,11 @@ void mrpt::topography::ENU_axes_from_WGS84(
 void mrpt::topography::geodeticToGeocentric_WGS84(
     const TGeodeticCoords& in_coords, mrpt::math::TPoint3D& out_point)
 {
-  // --------------------------------------------------------------------
-  // See: http://en.wikipedia.org/wiki/Reference_ellipsoid
-  //  Constants are for WGS84
-  // --------------------------------------------------------------------
-
-  static constexpr precnum_t a = 6378137L;       // Semi-major axis of the Earth (meters)
-  static constexpr precnum_t b = 6356752.3142L;  // Semi-minor axis:
-
-  static const precnum_t ae = std::acos(b / a);  // angular eccentricity of the Earth
-  static const precnum_t cos2_ae_earth = square(std::cos(ae));
-  static const precnum_t sin2_ae_earth = square(std::sin(ae));
-
-  const precnum_t lon = DEG2RAD(precnum_t(in_coords.lon));
-  const precnum_t lat = DEG2RAD(precnum_t(in_coords.lat));
-
-  // The radius of curvature in the prime vertical:
-  const precnum_t N = a / std::sqrt(1 - sin2_ae_earth * square(sin(lat)));
-
-  // Generate 3D point:
-  out_point.x = static_cast<double>((N + in_coords.height) * cos(lat) * cos(lon));
-  out_point.y = static_cast<double>((N + in_coords.height) * cos(lat) * sin(lon));
-  out_point.z = static_cast<double>((cos2_ae_earth * N + in_coords.height) * sin(lat));
+  geodeticToGeocentric(in_coords, out_point, TEllipsoid::Ellipsoid_WGS84());
 }
 
 /*---------------------------------------------------------------
-      geodeticToGeocentric_WGS84
+      geodeticToGeocentric
  ---------------------------------------------------------------*/
 void mrpt::topography::geodeticToGeocentric(
     const TGeodeticCoords& in_coords, TGeocentricCoords& out_point, const TEllipsoid& ellipsoid)
@@ -286,58 +269,140 @@ void mrpt::topography::geocentricToGeodetic(
   out_coords.lat = RAD2DEG(out_coords.lat.decimal_value);
 }
 
-/*---------------------------------------------------------------
-          UTMToGeodesic
- ---------------------------------------------------------------*/
-void mrpt::topography::UTMToGeodetic(
-    double X,
-    double Y,
-    int huso,
-    char hem,
-    double& out_lon /*degrees*/,
-    double& out_lat /*degrees*/,
-    const TEllipsoid& ellip)
-{
-  ASSERT_(hem == 's' || hem == 'S' || hem == 'n' || hem == 'N');
-
-  X = X - 5e5;
-  if (hem == 's' || hem == 'S') Y = Y - 1e7;
-
-  const precnum_t lon0 = huso * 6 - 183;
-  const precnum_t a2 = ellip.sa * ellip.sa;
-  const precnum_t b2 = ellip.sb * ellip.sb;
-  const precnum_t ep2 = (a2 - b2) / b2;
-  const precnum_t c = a2 / ellip.sb;
-  const precnum_t latp = Y / (6366197.724 * 0.9996);
-  const precnum_t clp2 = square(cos(latp));
-
-  const precnum_t v = c * 0.9996 / sqrt(1 + ep2 * clp2);
-  const precnum_t na = X / v;
-  const precnum_t A1 = sin(2 * latp);
-  const precnum_t A2 = A1 * clp2;
-  const precnum_t J2 = latp + A1 * 0.5;
-  const precnum_t J4 = 0.75 * J2 + 0.25 * A2;
-  const precnum_t J6 = (5 * J4 + A2 * clp2) / 3;
-
-  const precnum_t alp = 0.75 * ep2;
-  const precnum_t beta = (5.0 / 3.0) * alp * alp;
-  const precnum_t gam = (35.0 / 27.0) * alp * alp * alp;
-  const precnum_t B = 0.9996 * c * (latp - alp * J2 + beta * J4 - gam * J6);
-  const precnum_t nb = (Y - B) / v;
-  const precnum_t psi = (ep2 * square(na)) / 2 * clp2;
-  const precnum_t eps = na * (1 - psi / 3);
-  const precnum_t nu = nb * (1 - psi) + latp;
-  const precnum_t she = (exp(eps) - exp(-eps)) / 2;
-  const precnum_t dlon = atan2(she, cos(nu));
-  const precnum_t tau = atan2(cos(dlon) * tan(nu), 1);
-
-  out_lon = static_cast<double>(RAD2DEG(dlon) + lon0);
-  out_lat = static_cast<double>(RAD2DEG(
-      latp + (1 + ep2 * clp2 - 1.5 * ep2 * sin(latp) * cos(latp) * (tau - latp)) * (tau - latp)));
-}
-
 namespace
 {
+// Transverse Mercator (UTM) projection with the Krueger series to order n^6,
+// see C.F.F. Karney, "Transverse Mercator with an accuracy of a few
+// nanometers", J. Geodesy 85(8):475-485, 2011.
+constexpr precnum_t UTM_K0 = 0.9996;
+constexpr precnum_t UTM_FALSE_EASTING = 500000;
+constexpr precnum_t UTM_FALSE_NORTHING_SOUTH = 1e7;
+
+struct TMSeries
+{
+  precnum_t e = 0;  // First eccentricity
+  precnum_t A = 0;  // Rectifying radius
+  precnum_t alpha[6] = {0, 0, 0, 0, 0, 0};
+  precnum_t beta[6] = {0, 0, 0, 0, 0, 0};
+};
+
+TMSeries tmSeries(const mrpt::topography::TEllipsoid& ellip)
+{
+  const precnum_t a = ellip.sa;
+  const precnum_t b = ellip.sb;
+  const precnum_t n = (a - b) / (a + b);
+  const precnum_t n2 = n * n;
+  const precnum_t n3 = n2 * n;
+  const precnum_t n4 = n3 * n;
+  const precnum_t n5 = n4 * n;
+  const precnum_t n6 = n5 * n;
+
+  TMSeries t;
+  t.e = std::sqrt((a * a - b * b) / (a * a));
+  t.A = a / (1 + n) * (1 + n2 / 4 + n4 / 64 + n6 / 256);
+
+  t.alpha[0] =
+      n / 2 - 2 * n2 / 3 + 5 * n3 / 16 + 41 * n4 / 180 - 127 * n5 / 288 + 7891 * n6 / 37800;
+  t.alpha[1] =
+      13 * n2 / 48 - 3 * n3 / 5 + 557 * n4 / 1440 + 281 * n5 / 630 - 1983433 * n6 / 1935360;
+  t.alpha[2] = 61 * n3 / 240 - 103 * n4 / 140 + 15061 * n5 / 26880 + 167603 * n6 / 181440;
+  t.alpha[3] = 49561 * n4 / 161280 - 179 * n5 / 168 + 6601661 * n6 / 7257600;
+  t.alpha[4] = 34729 * n5 / 80640 - 3418889 * n6 / 1995840;
+  t.alpha[5] = 212378941 * n6 / 319334400;
+
+  t.beta[0] = n / 2 - 2 * n2 / 3 + 37 * n3 / 96 - n4 / 360 - 81 * n5 / 512 + 96199 * n6 / 604800;
+  t.beta[1] = n2 / 48 + n3 / 15 - 437 * n4 / 1440 + 46 * n5 / 105 - 1118711 * n6 / 3870720;
+  t.beta[2] = 17 * n3 / 480 - 37 * n4 / 840 - 209 * n5 / 4480 + 5569 * n6 / 90720;
+  t.beta[3] = 4397 * n4 / 161280 - 11 * n5 / 504 - 830251 * n6 / 7257600;
+  t.beta[4] = 4583 * n5 / 161280 - 108847 * n6 / 3991680;
+  t.beta[5] = 20648693 * n6 / 638668800;
+  return t;
+}
+
+// Geodetic (radians, dlon relative to the central meridian) to TM
+// coordinates, without false easting/northing.
+void tmForward(
+    const mrpt::topography::TEllipsoid& ellip,
+    precnum_t lat,
+    precnum_t dlon,
+    precnum_t& out_x,
+    precnum_t& out_y)
+{
+  const TMSeries t = tmSeries(ellip);
+  // Conformal latitude:
+  const precnum_t sinLat = std::sin(lat);
+  const precnum_t psi = std::asinh(std::tan(lat)) - t.e * std::atanh(t.e * sinLat);
+  const precnum_t tauP = std::sinh(psi);
+  const precnum_t cosDlon = std::cos(dlon);
+  const precnum_t xiP = std::atan2(tauP, cosDlon);
+  const precnum_t etaP = std::asinh(std::sin(dlon) / std::sqrt(tauP * tauP + cosDlon * cosDlon));
+
+  precnum_t xi = xiP;
+  precnum_t eta = etaP;
+  for (int j = 1; j <= 6; j++)
+  {
+    xi += t.alpha[j - 1] * std::sin(2 * j * xiP) * std::cosh(2 * j * etaP);
+    eta += t.alpha[j - 1] * std::cos(2 * j * xiP) * std::sinh(2 * j * etaP);
+  }
+  out_x = UTM_K0 * t.A * eta;
+  out_y = UTM_K0 * t.A * xi;
+}
+
+// Inverse of tmForward()
+void tmInverse(
+    const mrpt::topography::TEllipsoid& ellip,
+    precnum_t x,
+    precnum_t y,
+    precnum_t& out_lat,
+    precnum_t& out_dlon)
+{
+  const TMSeries t = tmSeries(ellip);
+  const precnum_t xi = y / (UTM_K0 * t.A);
+  const precnum_t eta = x / (UTM_K0 * t.A);
+  precnum_t xiP = xi;
+  precnum_t etaP = eta;
+  for (int j = 1; j <= 6; j++)
+  {
+    xiP -= t.beta[j - 1] * std::sin(2 * j * xi) * std::cosh(2 * j * eta);
+    etaP -= t.beta[j - 1] * std::cos(2 * j * xi) * std::sinh(2 * j * eta);
+  }
+  const precnum_t sinhEtaP = std::sinh(etaP);
+  const precnum_t cosXiP = std::cos(xiP);
+  const precnum_t tauP = std::sin(xiP) / std::sqrt(sinhEtaP * sinhEtaP + cosXiP * cosXiP);
+  out_dlon = std::atan2(sinhEtaP, cosXiP);
+
+  // Solve tau=tan(lat) from the conformal tauP by Newton iterations:
+  const precnum_t e2 = t.e * t.e;
+  precnum_t tau = tauP;
+  for (int it = 0; it < 10; it++)
+  {
+    const precnum_t sq = std::sqrt(1 + tau * tau);
+    const precnum_t sigma = std::sinh(t.e * std::atanh(t.e * tau / sq));
+    const precnum_t tauPi = tau * std::sqrt(1 + sigma * sigma) - sigma * sq;
+    const precnum_t dtau = (tauP - tauPi) / std::sqrt(1 + tauPi * tauPi) *
+                           (1 + (1 - e2) * tau * tau) / ((1 - e2) * sq);
+    tau += dtau;
+    if (std::abs(dtau) < 1e-15 * std::max<precnum_t>(1, std::abs(tau)))
+    {
+      break;
+    }
+  }
+  out_lat = std::atan(tau);
+}
+
+// UTM zone number in [1,60] of a longitude, in degrees.
+int utmZoneFromLongitude(double lon)
+{
+  // Longitude from the antimeridian, in [0,360):
+  double l = std::fmod(lon + 180.0, 360.0);
+  if (l < 0)
+  {
+    l += 360.0;
+  }
+  const int zone = static_cast<int>(std::floor(l / 6.0)) + 1;
+  return std::clamp(zone, 1, 60);
+}
+
 char utm_zone_from_latitude(const double la)
 {
   char letter = 0;
@@ -423,7 +488,69 @@ char utm_zone_from_latitude(const double la)
   }
   return letter;
 }
+
+void geodeticToUTMImpl(
+    double lat_deg,
+    double lon_deg,
+    double& out_x,
+    double& out_y,
+    int& out_zone,
+    char& out_band,
+    const mrpt::topography::TEllipsoid& ellip)
+{
+  const int zone = utmZoneFromLongitude(lon_deg);
+  const precnum_t lon0 = zone * 6 - 183;
+  // Longitude relative to the central meridian, in [-180,180):
+  const precnum_t dlon = mrpt::math::wrapToPi(mrpt::DEG2RAD(precnum_t(lon_deg) - lon0));
+
+  precnum_t x = 0;
+  precnum_t y = 0;
+  tmForward(ellip, mrpt::DEG2RAD(precnum_t(lat_deg)), dlon, x, y);
+
+  out_x = static_cast<double>(x + UTM_FALSE_EASTING);
+  out_y = static_cast<double>(y);
+  // Apply the false northing for points south of the equator, so that
+  // northing values are always positive, following the standard UTM
+  // convention (and matching what UTMToGeodetic() expects on input).
+  if (out_y < 0)
+  {
+    out_y += static_cast<double>(UTM_FALSE_NORTHING_SOUTH);
+  }
+  out_zone = zone;
+  out_band = utm_zone_from_latitude(lat_deg);
+}
+
 }  // namespace
+
+/*---------------------------------------------------------------
+          UTMToGeodetic
+ ---------------------------------------------------------------*/
+void mrpt::topography::UTMToGeodetic(
+    double X,
+    double Y,
+    int huso,
+    char hem,
+    double& out_lon /*degrees*/,
+    double& out_lat /*degrees*/,
+    const TEllipsoid& ellip)
+{
+  ASSERT_(hem == 's' || hem == 'S' || hem == 'n' || hem == 'N');
+
+  const precnum_t x = precnum_t(X) - UTM_FALSE_EASTING;
+  precnum_t y = Y;
+  if (hem == 's' || hem == 'S')
+  {
+    y -= UTM_FALSE_NORTHING_SOUTH;
+  }
+
+  precnum_t lat = 0;
+  precnum_t dlon = 0;
+  tmInverse(ellip, x, y, lat, dlon);
+
+  const precnum_t lon0 = huso * 6 - 183;
+  out_lon = static_cast<double>(mrpt::RAD2DEG(dlon) + lon0);
+  out_lat = static_cast<double>(mrpt::RAD2DEG(lat));
+}
 
 void mrpt::topography::geodeticToUTM(
     const TGeodeticCoords& GeodeticCoords,
@@ -432,55 +559,10 @@ void mrpt::topography::geodeticToUTM(
     char& UTMLatitudeBand,
     const TEllipsoid& ellipsoid)
 {
-  const double la = GeodeticCoords.lat;
-  const auto letter = utm_zone_from_latitude(la);
-
-  const precnum_t lat = DEG2RAD(GeodeticCoords.lat);
-  const precnum_t lon = DEG2RAD(GeodeticCoords.lon);
-  const int Huso = mrpt::fix((GeodeticCoords.lon / 6) + 31);
-  const precnum_t lon0 = DEG2RAD(Huso * 6 - 183);
-
-  const precnum_t sa = ellipsoid.sa;
-  const precnum_t sb = ellipsoid.sb;
-  //	const precnum_t e2		= (sa*sa-sb*sb)/(sa*sa);
-  const precnum_t ep2 = (sa * sa - sb * sb) / (sb * sb);
-  const precnum_t c = sa * sa / sb;
-  //	const precnum_t alp		= (sa-sb)/sa;
-
-  const precnum_t Dlon = lon - lon0;
-  const precnum_t clat = cos(lat);
-  const precnum_t sDlon = sin(Dlon);
-  const precnum_t cDlon = cos(Dlon);
-
-  const precnum_t A = clat * sDlon;
-  const precnum_t eps = 0.5 * log((1 + A) / (1 - A));
-  const precnum_t nu = atan2(tan(lat), cDlon) - lat;
-  const precnum_t v = 0.9996 * c / sqrt(1 + ep2 * clat * clat);
-  const precnum_t psi = 0.5 * ep2 * eps * eps * clat * clat;
-  const precnum_t A1 = sin(2 * lat);
-  const precnum_t A2 = A1 * clat * clat;
-  const precnum_t J2 = lat + 0.5 * A1;
-  const precnum_t J4 = 0.75 * J2 + 0.25 * A2;
-  const precnum_t J6 = (5.0 * J4 + A2 * clat * clat) / 3;
-  const precnum_t nalp = 0.75 * ep2;
-  const precnum_t nbet = (5.0 / 3.0) * nalp * nalp;
-  const precnum_t ngam = (35.0 / 27.0) * nalp * nalp * nalp;
-  const precnum_t B = 0.9996 * c * (lat - nalp * J2 + nbet * J4 - ngam * J6);
-
-  UTMCoords.x = static_cast<double>(eps * v * (1 + psi / 3.0) + 500000);
-  UTMCoords.y = static_cast<double>(nu * v * (1 + psi) + B);
-  UTMCoords.z = static_cast<double>(GeodeticCoords.height);
-
-  // Apply the false northing for points south of the equator, so that
-  // northing values are always positive, following the standard UTM
-  // convention (and matching what UTMToGeodetic() expects on input).
-  if (UTMCoords.y < 0)
-  {
-    UTMCoords.y += 1e7;
-  }
-
-  UTMZone = Huso;
-  UTMLatitudeBand = letter;
+  geodeticToUTMImpl(
+      GeodeticCoords.lat, GeodeticCoords.lon, UTMCoords.x, UTMCoords.y, UTMZone, UTMLatitudeBand,
+      ellipsoid);
+  UTMCoords.z = GeodeticCoords.height;
 }
 
 /*---------------------------------------------------------------
@@ -495,53 +577,7 @@ void mrpt::topography::GeodeticToUTM(
     char& out_UTM_latitude_band,
     const TEllipsoid& ellipsoid)
 {
-  // This method is based on public code by Gabriel Ruiz Martinez and Rafael
-  // Palacios.
-  //  http://www.mathworks.com/matlabcentral/fileexchange/10915
-
-  const double sa = ellipsoid.sa;
-  const double sb = ellipsoid.sb;
-  const double e2 = (sqrt((sa * sa) - (sb * sb))) / sb;
-
-  const double e2cuadrada = e2 * e2;
-
-  const double c = (sa * sa) / sb;
-
-  const double lat = DEG2RAD(la);
-  const double lon = DEG2RAD(lo);
-
-  const int Huso = mrpt::fix((lo / 6) + 31);
-  double S = ((Huso * 6) - 183);
-  double deltaS = lon - DEG2RAD(S);
-
-  const auto letter = utm_zone_from_latitude(la);
-
-  const double a = cos(lat) * sin(deltaS);
-  const double epsilon = 0.5 * log((1 + a) / (1 - a));
-  const double nu = atan(tan(lat) / cos(deltaS)) - lat;
-  const double v = (c / sqrt((1 + (e2cuadrada * square(cos(lat)))))) * 0.9996;
-  const double ta = 0.5 * e2cuadrada * square(epsilon) * square(cos(lat));
-  const double a1 = sin(2 * lat);
-  const double a2 = a1 * square(cos(lat));
-  const double j2 = lat + 0.5 * a1;
-  const double j4 = ((3.0 * j2) + a2) / 4.0;
-  const double j6 = ((5.0 * j4) + (a2 * square(cos(lat)))) / 3.0;
-  const double alfa = 0.75 * e2cuadrada;
-  const double beta = (5.0 / 3.0) * pow(alfa, 2.0);
-  const double gama = (35.0 / 27.0) * pow(alfa, 3.0);
-  const double Bm = 0.9996 * c * (lat - alfa * j2 + beta * j4 - gama * j6);
-
-  xx = epsilon * v * (1 + (ta / 3.0)) + 500000;
-  yy = nu * v * (1 + ta) + Bm;
-
-  if (yy < 0)
-  {
-    // Standard UTM false northing for the southern hemisphere.
-    yy += 1e7;
-  }
-
-  out_UTM_zone = Huso;
-  out_UTM_latitude_band = letter;
+  geodeticToUTMImpl(la, lo, xx, yy, out_UTM_zone, out_UTM_latitude_band, ellipsoid);
 }
 
 /**  7-parameter Bursa-Wolf transformation:
@@ -559,10 +595,9 @@ void mrpt::topography::transform7params(
   o.z = d.dZ + scale * (p.x * d.Ry - p.y * d.Rx + p.z);
 }
 
-/**  7-parameter Bursa-Wolf transformation TOPCON:
- *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
- * ] [ X Y Z ]_local
- * \sa transform10params
+/**  7-parameter transformation, TOPCON convention:
+ *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ m11 m12 m13; m21 m22 m23;
+ * m31 m32 m33 ] [ X Y Z ]_local
  */
 void mrpt::topography::transform7params_TOPCON(
     const mrpt::math::TPoint3D& p, const TDatum7Params_TOPCON& d, mrpt::math::TPoint3D& o)
@@ -595,8 +630,7 @@ void mrpt::topography::transform10params(
 
 /**  Helmert 2D transformation:
  *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
- * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
- * \sa transformHelmert3D
+ * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp ]_local + [Xp Yp]
  */
 void mrpt::topography::transformHelmert2D(
     const mrpt::math::TPoint2D& p, const TDatumHelmert2D& d, mrpt::math::TPoint2D& o)
@@ -610,10 +644,8 @@ void mrpt::topography::transformHelmert2D(
   o.y = d.dY + scale * (px * sin(d.alpha) + py * cos(d.alpha)) + d.Yp;
 }
 
-/**  Helmert 2D transformation:
- *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
- * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
- * \sa transformHelmert3D
+/**  Helmert 2D transformation, TOPCON convention:
+ *   [ X Y ]_WGS84 = [ a b; -b a ] [ X Y ]_local + [ c d ]
  */
 void mrpt::topography::transformHelmert2D_TOPCON(
     const mrpt::math::TPoint2D& p, const TDatumHelmert2D_TOPCON& d, mrpt::math::TPoint2D& o)
@@ -622,10 +654,9 @@ void mrpt::topography::transformHelmert2D_TOPCON(
   o.y = -d.b * p.x + d.a * p.y + d.d;
 }
 
-/**  Helmert 3D transformation:
- *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
- * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
- * \sa transformHelmert3D
+/**  Helmert 3D transformation (position vector convention):
+ *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 -RZ RY; RZ 1 -RX; -RY RX 1
+ * ] [ X Y Z ]_local
  */
 void mrpt::topography::transformHelmert3D(
     const mrpt::math::TPoint3D& p, const TDatumHelmert3D& d, mrpt::math::TPoint3D& o)
@@ -646,10 +677,8 @@ void mrpt::topography::transformHelmert3D(
   o.z = d.dZ + scale * (p.x * Ry - p.y * Rx + p.z);
 }
 
-/**  Helmert 3D transformation:
- *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
- * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
- * \sa transformHelmert3D
+/**  Helmert 3D transformation, TOPCON convention:
+ *   [ X Y ]_WGS84 = [ a b; d e ] [ X Y ]_local + [ c f ], Z_WGS84 = Z_local + g
  */
 void mrpt::topography::transformHelmert3D_TOPCON(
     const mrpt::math::TPoint3D& p, const TDatumHelmert3D_TOPCON& d, mrpt::math::TPoint3D& o)
@@ -671,10 +700,8 @@ void mrpt::topography::transform1D(
   o.z = (d.dY * p.x - d.dX * p.y + p.z) * (1 + d.dS) + d.DZ;
 }
 
-/**  1D transformation:
- *   [ X;Y ]_WGS84 = [X;Y]_locales+[1 -sin(d.beta);0
- * cos(d.beta)]*[x*d.dSx;y*d.dSy ]
- * \sa transformHelmert3D
+/**  Interpolation:
+ *   [ X Y ]_WGS84 = [ dX dY ] + [ 1 -sin(beta); 0 cos(beta) ] [ dSx*X; dSy*Y ]
  */
 void mrpt::topography::transfInterpolation(
     const mrpt::math::TPoint3D& p, const TDatumTransfInterpolation& d, mrpt::math::TPoint3D& o)

@@ -61,7 +61,12 @@ class CActionRobotMovement3D : public CAction
 
   enum TDrawSampleMotionModel
   {
+    /** A Gaussian with the odometry increment as mean and a diagonal
+     * covariance from mm6DOFModel.additional_std_XYZ and
+     * mm6DOFModel.additional_std_angle (the other parameters are not used) */
     mmGaussian = 0,
+    /** The 6DOF model in \cite ballardini2012effective, approximated as a
+     * Gaussian from mm6DOFModel.nParticlesCount samples */
     mm6DOF
   };
 
@@ -83,7 +88,7 @@ class CActionRobotMovement3D : public CAction
       float a1{0}, a2{0}, a3{0}, a4{0}, a5{0}, a6{0}, a7{0}, a8{0}, a9{0}, a10{0};
 
       /** An additional noise added to the 6DOF model (std. dev. in meters
-       * and radians). */
+       * and radians). Also the noise of the mmGaussian model. */
       float additional_std_XYZ{0.001f}, additional_std_angle{mrpt::DEG2RAD(0.05f)};
     };
 

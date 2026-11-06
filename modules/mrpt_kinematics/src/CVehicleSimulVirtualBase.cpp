@@ -16,6 +16,9 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/random.h>
 
+#include <algorithm>
+#include <cmath>
+
 using namespace mrpt::kinematics;
 
 CVehicleSimulVirtualBase::CVehicleSimulVirtualBase() = default;
@@ -30,31 +33,37 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 {
   using mrpt::math::TPose2D;
   const double final_t = m_time + dt;
-  while (m_time <= final_t)
+  while (m_time < final_t)
   {
-    // Simulate movement during At:
+    const double h = std::min(m_firmware_control_period, final_t - m_time);
+
+    // Simulate movement during h:
     TPose2D nextOdometry = m_odometry;
-    nextOdometry.x += m_odometric_vel.vx * m_firmware_control_period;
-    nextOdometry.y += m_odometric_vel.vy * m_firmware_control_period;
-    nextOdometry.phi += m_odometric_vel.omega * m_firmware_control_period;
+    nextOdometry.x += m_odometric_vel.vx * h;
+    nextOdometry.y += m_odometric_vel.vy * h;
+    nextOdometry.phi += m_odometric_vel.omega * h;
     mrpt::math::wrapToPiInPlace(nextOdometry.phi);
 
-    TPose2D gtDelta = m_GT_vel * m_firmware_control_period;
-    // Add some errors
+    TPose2D gtDelta = m_GT_vel * h;
+    // Add some errors, defined in the vehicle frame (std. per second):
     if (m_use_odo_error)
     {
       auto& rng = mrpt::random::getRandomGenerator();
-      gtDelta.x *= 1.0 + m_Ax_err_bias + m_Ax_err_std * rng.drawGaussian1D_normalized();
-      gtDelta.y *= 1.0 + m_Ay_err_bias + m_Ay_err_std * rng.drawGaussian1D_normalized();
-      gtDelta.phi *= 1.0 + m_Aphi_err_bias + m_Aphi_err_std * rng.drawGaussian1D_normalized();
-      mrpt::math::wrapToPiInPlace(gtDelta.phi);
+      const double k = 1.0 / std::sqrt(h);
+      TPose2D dl = m_GT_vel.rotated(-m_GT_pose.phi) * h;
+      dl.x *= 1.0 + m_Ax_err_bias + k * m_Ax_err_std * rng.drawGaussian1D_normalized();
+      dl.y *= 1.0 + m_Ay_err_bias + k * m_Ay_err_std * rng.drawGaussian1D_normalized();
+      dl.phi *= 1.0 + m_Aphi_err_bias + k * m_Aphi_err_std * rng.drawGaussian1D_normalized();
+      const double c = std::cos(m_GT_pose.phi);
+      const double s = std::sin(m_GT_pose.phi);
+      gtDelta = TPose2D(c * dl.x - s * dl.y, s * dl.x + c * dl.y, dl.phi);
     }
 
     TPose2D nextGT = {
         m_GT_pose.x + gtDelta.x, m_GT_pose.y + gtDelta.y, m_GT_pose.phi + gtDelta.phi};
     mrpt::math::wrapToPiInPlace(nextGT.phi);
 
-    this->internal_simulControlStep(m_firmware_control_period);
+    this->internal_simulControlStep(h);
 
     // Now rotate our current Odo velocity into GT coordinates
     m_GT_vel = getCurrentOdometricVelLocal();
@@ -63,7 +72,7 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
     m_odometry = nextOdometry;
     m_GT_pose = nextGT;
 
-    m_time += m_firmware_control_period;  // Move forward
+    m_time = (h < m_firmware_control_period) ? final_t : m_time + h;
   }
 }
 

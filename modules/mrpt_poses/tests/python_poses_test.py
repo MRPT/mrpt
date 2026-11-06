@@ -183,6 +183,20 @@ print("CPose3DPDFGaussian base methods")
 g3 = CPose3DPDFGaussian(CPose3D(1.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 check("Gaussian getMean via base", abs(g3.getMean().x - 1.0) < 1e-12)
 
+print("NumPy arrays as MRPT matrices (implicit conversion)")
+# pybind11 < 2.12 cannot take NumPy >= 2 arrays (mrpt.rtti warns about it):
+import mrpt.rtti._bindings as _rtti
+if int(np.__version__.split(".")[0]) >= 2 and tuple(_rtti._pybind11_version[:2]) < (2, 12):
+    print("  SKIP  NumPy >= 2 with pybind11 < 2.12")
+else:
+    g6 = CPose3DPDFGaussian(CPose3D(1.0, 0.0, 0.0, 0.0, 0.0, 0.0), np.eye(6) * 0.01)
+    check("6x6 covariance from numpy", abs(np.asarray(g6.cov)[2, 2] - 0.01) < 1e-12)
+    try:
+        CPose3DPDFGaussian(CPose3D(), np.eye(5))
+        check("wrong shape rejected", False, "no exception")
+    except TypeError:
+        check("wrong shape rejected", True)
+
 # ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------

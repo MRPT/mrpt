@@ -41,7 +41,7 @@ struct TBoundingBox_
 
   /** Ctor from min-max corners.
    * A bounding box may have a zero volume if max==min.
-   * It is ilegal for a coordinate of the `max` vector to be smaller than its
+   * It is illegal for a coordinate of the `max` vector to be smaller than its
    * `min` counterpart, in which case an exception will be thrown, except if
    * the flag CTOR_FLAGS::AllowUnordered is passed.
    */
@@ -94,9 +94,11 @@ struct TBoundingBox_
 
   /** Returns the intersection of this bounding box with "b", or std::nullopt
    * if no intersection exists.
-   * Note that borders are enlarged by "epsilon" before to testing for
-   * intersection to handle numerical innacuracies, for example on planar
-   * bounding boxes with a fixed "z".
+   * Note that borders are enlarged by "epsilon" before testing for
+   * intersection to handle numerical inaccuracies, for example on planar
+   * bounding boxes with a fixed "z". If the boxes are separated by a gap
+   * smaller than "epsilon" along some axis, the result is flat along it (at
+   * the middle of the gap).
    */
   [[nodiscard]] std::optional<TBoundingBox_<T>> intersection(
       const TBoundingBox_<T>& b, const T epsilon = static_cast<T>(1e-4)) const
@@ -105,19 +107,31 @@ struct TBoundingBox_
         b.max.x + epsilon < min.x || b.max.y + epsilon < min.y || b.max.z + epsilon < min.z)
       return {};
 
-    return {TBoundingBox_<T>(
+    TBoundingBox_<T> r(
         {std::max(min.x, b.min.x), std::max(min.y, b.min.y), std::max(min.z, b.min.z)},
         {std::min(max.x, b.max.x), std::min(max.y, b.max.y), std::min(max.z, b.max.z)},
-        CTOR_FLAGS::AllowUnordered)};
+        CTOR_FLAGS::AllowUnordered);
+    for (std::size_t i = 0; i < 3; i++)
+    {
+      if (r.min[i] > r.max[i])
+      {
+        const T mid = (r.min[i] + r.max[i]) / 2;
+        r.min[i] = mid;
+        r.max[i] = mid;
+      }
+    }
+    return {r};
   }
 
   /** Returns the union of this bounding box with "b", i.e. a new bounding box
-   * comprising both `this` and `b` */
+   * comprising both `this` and `b`. An empty box (see PlusMinusInfinity()) is
+   * the neutral element. */
   [[nodiscard]] TBoundingBox_<T> unionWith(const TBoundingBox_<T>& b) const
   {
     return {TBoundingBox_<T>(
         {std::min(min.x, b.min.x), std::min(min.y, b.min.y), std::min(min.z, b.min.z)},
-        {std::max(max.x, b.max.x), std::max(max.y, b.max.y), std::max(max.z, b.max.z)})};
+        {std::max(max.x, b.max.x), std::max(max.y, b.max.y), std::max(max.z, b.max.z)},
+        CTOR_FLAGS::AllowUnordered)};
   }
 
   /** Expands the box limits to include the given point */
@@ -143,39 +157,47 @@ struct TBoundingBox_
   }
 
   /** Returns a new bounding box, transforming `this` from local coordinates
-   * to global coordinates, as if `this` was given with respect to `pose`, ie:
-   *
-   * \code
-   *  return.min = pose \oplus this->min
-   *  return.max = pose \oplus this->max
-   * \endcode
+   * to global coordinates, as if `this` was given with respect to `pose`:
+   * the smallest axis-aligned box that contains the 8 corners of `this`
+   * transformed as `pose \oplus corner`. Without rotation, this is just
+   * `pose \oplus min` and `pose \oplus max`.
    * \tparam POSE_T Can be mrpt::poses::CPose3D, or mrpt::math::TPose3D
-   *
-   * \note If a rotation exists, the output bounding box will no longer be an
-   * accurate representation of the actual 3D box.
    */
   template <typename POSE_T>
   [[nodiscard]] TBoundingBox_<T> compose(const POSE_T& pose) const
   {
-    return FromUnsortedPoints(pose.composePoint(min), pose.composePoint(max));
+    TBoundingBox_<T> bb = FromUnsortedPoints(pose.composePoint(min), pose.composePoint(max));
+    for (int i = 1; i < 7; i++)
+    {
+      bb.updateWithPoint(pose.composePoint(corner(i)));
+    }
+    return bb;
   }
 
   /** Returns a new bounding box, transforming `this` from global coordinates
-   * to local coordinates with respect to `pose`, ie:
-   *
-   * \code
-   *  return.min = this->min \ominus pose
-   *  return.max = this->max \ominus pose
-   * \endcode
+   * to local coordinates with respect to `pose`: the smallest axis-aligned
+   * box that contains the 8 corners of `this` transformed as
+   * `corner \ominus pose`.
    * \tparam POSE_T Can be mrpt::poses::CPose3D, or mrpt::math::TPose3D
-   *
-   * \note If a rotation exists, the output bounding box will no longer be an
-   * accurate representation of the actual 3D box.
    */
   template <typename POSE_T>
   [[nodiscard]] TBoundingBox_<T> inverseCompose(const POSE_T& pose) const
   {
-    return FromUnsortedPoints(pose.inverseComposePoint(min), pose.inverseComposePoint(max));
+    TBoundingBox_<T> bb =
+        FromUnsortedPoints(pose.inverseComposePoint(min), pose.inverseComposePoint(max));
+    for (int i = 1; i < 7; i++)
+    {
+      bb.updateWithPoint(pose.inverseComposePoint(corner(i)));
+    }
+    return bb;
+  }
+
+  /** Returns one of the 8 corners of the box: bits 0, 1 and 2 of `i` select
+   * the max (instead of the min) x, y and z coordinates, respectively.
+   * \note New in MRPT 3.7.0 */
+  [[nodiscard]] mrpt::math::TPoint3D_<T> corner(int i) const
+  {
+    return {(i & 1) ? max.x : min.x, (i & 2) ? max.y : min.y, (i & 4) ? max.z : min.z};
   }
 
   /** Print bounding box as a string with format

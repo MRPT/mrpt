@@ -105,15 +105,15 @@ class CActionRobotMovement2D : public CAction
 
       /** Ratio of uncertainty: [meter/meter] */
       double a1{0.01};
-      /** Ratio of uncertainty: [meter/degree] */
+      /** Ratio of uncertainty: [meter/radian] (default: 0.001 meter/degree) */
       double a2{mrpt::RAD2DEG(0.001)};
-      /** Ratio of uncertainty: [degree/meter] */
+      /** Ratio of uncertainty: [radian/meter] (default: 1 degree/meter) */
       double a3{mrpt::DEG2RAD(1.0)};
-      /** Ratio of uncertainty: [degree/degree] */
+      /** Ratio of uncertainty: [radian/radian] */
       double a4{0.05};
       /** Additional uncertainty: [meters] */
       double minStdXY{0.01};
-      /** Additional uncertainty: [degrees] */
+      /** Additional uncertainty: [radians] (default: 0.2 degrees) */
       double minStdPHI{mrpt::DEG2RAD(0.2)};
     };
 

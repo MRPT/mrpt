@@ -269,7 +269,9 @@ class CRandomFieldGridMap2D :
 
     /** @name Kernel methods (mrKernelDM, mrKernelDMV)
       @{ */
-    /** The sigma of the "Parzen"-kernel Gaussian */
+    /** The sigma of the "Parzen"-kernel, in meters. The kernel weight at a
+     * distance d is exp(-d^2/sigma^2), i.e. a Gaussian with a standard
+     * deviation of sigma/sqrt(2). */
     float sigma{0.15f};
     /** The cutoff radius for updating cells. */
     float cutoffRadius;
@@ -289,11 +291,16 @@ class CRandomFieldGridMap2D :
      * stored both at each cell's structure and in the covariance matrix as
      * variances in the diagonal) (in normalized concentration units). */
     float KF_initialCellStd{1.0};
-    /** The sensor model noise (in normalized concentration units). */
+    /** The sensor model noise, as a standard deviation (in normalized
+     * concentration units). */
     float KF_observationModelNoise{0};
     /** The default value for the mean of cells' concentration. */
     float KF_defaultCellMeanValue{0};
-    /** [mrKalmanApproximate] The size of the window of neighbor cells. */
+    /** [mrKalmanApproximate] The size of the window of neighbor cells.
+     * Cross-covariances out of this window are neglected, which requires
+     * KF_W_size*resolution to be several times KF_covSigma: otherwise, the
+     * truncated prior is not positive definite and updates may yield
+     * negative variances. */
     uint16_t KF_W_size{4};
     /** @} */
 
@@ -432,9 +439,9 @@ class CRandomFieldGridMap2D :
       /** [in] Whether the observation "vanishes" with time (false) or not
        (true) [Only for GMRF methods] */
       const bool time_invariant = true,
-      /** [in] The uncertainty (standard deviation) of the reading.
-       Default="0.0" means use the default settings per map-wide parameters.
-       */
+      /** [in] [Only for GMRF methods] The uncertainty (standard deviation)
+       of the reading. Default="0.0" means use the default settings per
+       map-wide parameters. */
       const double reading_stddev = .0);
 
   enum TGridInterpolationMethod
@@ -444,7 +451,9 @@ class CRandomFieldGridMap2D :
   };
 
   /** Returns the prediction of the measurement at some (x,y) coordinates, and
-   * its certainty (in the form of the expected variance).  */
+   * its certainty (in the form of the expected variance, which includes the
+   * sensor noise for KF and GMRF methods). With `do_sensor_normalization`,
+   * both the value and the variance are given in sensor units.  */
   virtual void predictMeasurement(
       /** [in] Query X coordinate */
       const double x,
@@ -461,7 +470,8 @@ class CRandomFieldGridMap2D :
       const TGridInterpolationMethod interp_method = gimNearest);
 
   /** Return the mean and covariance vector of the full Kalman filter estimate
-   * (works for all KF-based methods). */
+   * (works for all KF-based methods). For mrKalmanApproximate, the
+   * cross-covariances out of the window of each cell are zero. */
   void getMeanAndCov(
       mrpt::math::CVectorDouble& out_means, mrpt::math::CMatrixDouble& out_cov) const;
 
@@ -535,8 +545,8 @@ class CRandomFieldGridMap2D :
     double obsValue;
     /** "Information" of the observation (=inverse of the variance) */
     double Lambda;
-    /** whether the observation will lose weight (lambda) as time goes on
-     * (default false) */
+    /** If false, the observation loses weight (lambda) as time goes on
+     * (see GMRF_lambdaObsLoss). (default false) */
     bool time_invariant;
 
     double evaluateResidual() const override;

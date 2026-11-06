@@ -98,7 +98,7 @@ struct TLine3D
    * \note New in MRPT 2.3.0
    */
   std::optional<double> distance(
-      const TLine3D& point,
+      const TLine3D& other,
       const mrpt::optional_ref<mrpt::math::TPoint3D>& outMidPoint = std::nullopt) const;
   /**
    * Unitarize director vector.

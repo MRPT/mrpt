@@ -137,32 +137,22 @@ void CPosePDFGaussianInf::copyFrom(const CPose3DPDF& o)
   // Convert to gaussian pdf:
   mean = CPose2D(o.getMeanVal());
 
-  if (IS_CLASS(o, CPose3DPDFGaussianInf))
-  {  // Cov is already in information form:
-    const auto* ptr = dynamic_cast<const CPose3DPDFGaussianInf*>(&o);
-    cov_inv(0, 0) = ptr->cov_inv(0, 0);
-    cov_inv(1, 1) = ptr->cov_inv(1, 1);
-    cov_inv(2, 2) = ptr->cov_inv(3, 3);
-    cov_inv(0, 1) = cov_inv(1, 0) = ptr->cov_inv(0, 1);
-    cov_inv(0, 2) = cov_inv(2, 0) = ptr->cov_inv(0, 3);
-    cov_inv(1, 2) = cov_inv(2, 1) = ptr->cov_inv(1, 3);
-  }
-  else
-  {
-    CMatrixDouble66 C(UNINITIALIZED_MATRIX);
-    o.getCovariance(C);
+  // Marginalizing out (z,pitch,roll) requires the covariance form: the
+  // (x,y,yaw) sub-block of a 6x6 information matrix is the information of
+  // the conditional distribution instead.
+  CMatrixDouble66 C(UNINITIALIZED_MATRIX);
+  o.getCovariance(C);
 
-    // Clip to 3x3:
-    CMatrixDouble33 o_cov(UNINITIALIZED_MATRIX);
-    o_cov(0, 0) = C(0, 0);
-    o_cov(1, 1) = C(1, 1);
-    o_cov(2, 2) = C(3, 3);
-    o_cov(0, 1) = o_cov(1, 0) = C(0, 1);
-    o_cov(0, 2) = o_cov(2, 0) = C(0, 3);
-    o_cov(1, 2) = o_cov(2, 1) = C(1, 3);
+  // Clip to 3x3:
+  CMatrixDouble33 o_cov(UNINITIALIZED_MATRIX);
+  o_cov(0, 0) = C(0, 0);
+  o_cov(1, 1) = C(1, 1);
+  o_cov(2, 2) = C(3, 3);
+  o_cov(0, 1) = o_cov(1, 0) = C(0, 1);
+  o_cov(0, 2) = o_cov(2, 0) = C(0, 3);
+  o_cov(1, 2) = o_cov(2, 1) = C(1, 3);
 
-    this->cov_inv = o_cov.inverse_LLt();
-  }
+  this->cov_inv = o_cov.inverse_LLt();
 }
 
 /*---------------------------------------------------------------
@@ -227,7 +217,7 @@ void CPosePDFGaussianInf::rotateCov(const double ang)
   // NEW_COV^(-1) = (H C H^T)^(-1) = (H^T)^(-1) C^(-1) H^(-1)
   // rot: Inverse of a rotation matrix is its trasposed.
   //      But we need H^t^-1 -> H !! so rot stays unchanged:
-  cov_inv = rot.asEigen() * cov_inv.asEigen() * rot.asEigen().transpose();
+  cov_inv = (rot.asEigen() * cov_inv.asEigen() * rot.asEigen().transpose()).eval();
 }
 
 void CPosePDFGaussianInf::drawSingleSample(CPose2D& outPart) const
@@ -293,6 +283,8 @@ void CPosePDFGaussianInf::bayesianFusion(
 
   auto x1 = CMatrixDouble31(p1->mean);
   auto x2 = CMatrixDouble31(p2->mean);
+  // Fuse headings on the same branch of the circle:
+  x2(2, 0) = x1(2, 0) + mrpt::math::wrapToPi(x2(2, 0) - x1(2, 0));
 
   this->cov_inv = C1_inv + C2_inv;
 
@@ -330,8 +322,9 @@ void CPosePDFGaussianInf::inverse(CPosePDF& o) const
                                  0,     0,     -1};
   const CMatrixFixed<double, 3, 3> H(H_values);
 
-  // o.cov = H * cov * Ht. It's the same with inverse covariances.
-  out->cov_inv.asEigen().noalias() = (H.asEigen() * cov_inv.asEigen() * H.transpose()).eval();
+  // new_cov = H * cov * H^t  ==>  new_cov_inv = H^-t * cov_inv * H^-1
+  const Eigen::Matrix3d H_inv = H.asEigen().inverse();
+  out->cov_inv.asEigen() = (H_inv.transpose() * cov_inv.asEigen() * H_inv).eval();
 }
 
 /*---------------------------------------------------------------
@@ -339,8 +332,18 @@ void CPosePDFGaussianInf::inverse(CPosePDF& o) const
  ---------------------------------------------------------------*/
 void CPosePDFGaussianInf::operator+=(const CPose2D& Ap)
 {
+  CMatrixDouble33 df_dx(UNINITIALIZED_MATRIX);
+  CMatrixDouble33 df_du(UNINITIALIZED_MATRIX);
+  CPosePDF::jacobiansPoseComposition(mean, Ap, df_dx, df_du, true, false);
+
+  // new_cov = J * cov * J^t  ==>  new_cov_inv = J^-t * cov_inv * J^-1,
+  // with J^-1 obtained by negating the off-diagonal terms of the last column:
+  CMatrixDouble33 J_inv = df_dx;
+  J_inv(0, 2) = -df_dx(0, 2);
+  J_inv(1, 2) = -df_dx(1, 2);
+  cov_inv.asEigen() = (J_inv.asEigen().transpose() * cov_inv.asEigen() * J_inv.asEigen()).eval();
+
   mean = mean + Ap;
-  rotateCov(Ap.phi());
 }
 
 /*---------------------------------------------------------------
@@ -350,6 +353,7 @@ double CPosePDFGaussianInf::evaluatePDF(const CPose2D& x) const
 {
   auto X = CMatrixDouble31(x);
   auto MU = CMatrixDouble31(mean);
+  X(2, 0) = MU(2, 0) + mrpt::math::wrapToPi(X(2, 0) - MU(2, 0));
 
   return math::normalPDF(X, MU, cov_inv.inverse());
 }
@@ -361,6 +365,7 @@ double CPosePDFGaussianInf::evaluateNormalizedPDF(const CPose2D& x) const
 {
   auto X = CMatrixDouble31(x);
   auto MU = CMatrixDouble31(mean);
+  X(2, 0) = MU(2, 0) + mrpt::math::wrapToPi(X(2, 0) - MU(2, 0));
 
   const CMatrixDouble33 cov = this->cov_inv.inverse_LLt();
 
@@ -458,7 +463,7 @@ void CPosePDFGaussianInf::inverseComposition(
             inverseComposition
   Set \f$ this = x1 \ominus x0 \f$ , computing the mean using
    the "-" operator and the covariances through the corresponding
-  Jacobians (Given the 3x3 cross-covariance matrix of variables x0 and x0).
+  Jacobians (Given the 3x3 cross-covariance matrix of variables x0 and x1).
  ---------------------------------------------------------------*/
 void CPosePDFGaussianInf::inverseComposition(
     const CPosePDFGaussianInf& x1, const CPosePDFGaussianInf& x0, const CMatrixDouble33& COV_01)

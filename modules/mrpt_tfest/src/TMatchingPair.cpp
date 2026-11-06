@@ -64,18 +64,16 @@ void TMatchingPairListTempl<T>::saveAsMATLABScript(const std::string& filName) c
   fprintf(f, "axis equal; hold on;\n");
   for (const auto& it : *this)
   {
+    const double gx = static_cast<double>(it.global.x);
+    const double gy = static_cast<double>(it.global.y);
+    const double gz = static_cast<double>(it.global.z);
+    const double lx = static_cast<double>(it.local.x);
+    const double ly = static_cast<double>(it.local.y);
+    const double lz = static_cast<double>(it.local.z);
+    fprintf(f, "line([%f %f],[%f %f],[%f %f],'Color',colorLines);\n", gx, lx, gy, ly, gz, lz);
     fprintf(
-        f, "line([%f %f %f],[%f %f %f],'Color',colorLines);\n", static_cast<double>(it.global.x),
-        static_cast<double>(it.local.x), static_cast<double>(it.local.z),
-        static_cast<double>(it.global.y), static_cast<double>(it.local.y),
-        static_cast<double>(it.local.z));
-    fprintf(
-        f,
-        "set(plot([%f %f %f],[%f %f "
-        "%f],'.'),'Color',colorLines,'MarkerSize',15);\n",
-        static_cast<double>(it.global.x), static_cast<double>(it.local.x),
-        static_cast<double>(it.local.z), static_cast<double>(it.global.y),
-        static_cast<double>(it.local.y), static_cast<double>(it.local.z));
+        f, "set(plot3([%f %f],[%f %f],[%f %f],'.'),'Color',colorLines,'MarkerSize',15);\n", gx, lx,
+        gy, ly, gz, lz);
   }
   fprintf(f, "view(3); grid on; xlabel('x'); ylabel('y'); zlabel('z');");
   os::fclose(f);
@@ -210,6 +208,7 @@ void TMatchingPairListTempl<T>::filterUniqueRobustPairs(
   //    for each "global map" (this) point.
   for (auto& c : *this)
   {
+    ASSERT_(c.globalIdx < num_elements_this_map);
     if (bestMatchForThisMap[c.globalIdx] == nullptr ||  // first one
         c.errorSquareAfterTransformation <
             bestMatchForThisMap[c.globalIdx]->errorSquareAfterTransformation  // or better

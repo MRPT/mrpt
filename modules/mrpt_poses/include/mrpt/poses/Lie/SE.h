@@ -35,7 +35,7 @@ template <size_t n>
 struct SE;
 
 /** Traits for SE(3), rigid-body transformations in R^3 space.
- * See invidual members for documentation, or \cite blanco_se3_tutorial for a
+ * See individual members for documentation, or \cite blanco_se3_tutorial for a
  * general overview.
  * \ingroup mrpt_poses_lie_grp
  */
@@ -77,17 +77,17 @@ struct SE<3>
    * as the corresponding local coordinates (pseudo-logarithm) are used as
    * well.
    *
-   * See section 9.4.2 in \cite blanco_se3_tutorial
+   * See section 9.4.2.3 in \cite blanco_se3_tutorial
    */
   static type exp(const tangent_vector& x);
 
-  /** SE(3) **pseudo-logarithm** map \f$ \mathbf{R} \rightarrow
-   * \log(\mathbf{R}^\vee)\f$
+  /** SE(3) **pseudo-logarithm** map \f$ \mathbf{T} \rightarrow
+   * \mathrm{pseudoLog}(\mathbf{T})^\vee \f$
    * - Input: translation and rotation in SE(3) as CPose3D
    * - Output: 6-len vector in Lie algebra se(3) [x,y,z, rx,ry,rz]
    *
    * See exp() for the explanation about the "pseudo" name.
-   * For the formulas, see section 9.4.2 in \cite blanco_se3_tutorial
+   * For the formulas, see section 9.4.2.4 in \cite blanco_se3_tutorial
    */
   static tangent_vector log(const type& P);
 
@@ -98,8 +98,8 @@ struct SE<3>
   /** The inverse operation of asManifoldVector() */
   static type fromManifoldVector(const manifold_vector& v);
 
-  /** Jacobian for the pseudo-exponential exp().
-   * See 10.3.1 in \cite blanco_se3_tutorial
+  /** Jacobian for the pseudo-exponential exp(), evaluated at x=0 (the
+   * argument is ignored). See 10.3.1 in \cite blanco_se3_tutorial
    *
    * - Input: 6-len vector in Lie algebra se(3)
    * - Jacobian: Jacobian of the 3x4 matrix (stacked as a column major
@@ -128,7 +128,7 @@ struct SE<3>
 
   /** Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie
    * Algebra.
-   * \note Eq. 10.3.7 in \cite blanco_se3_tutorial
+   * \note Section 10.3.7, Eq. (10.28) in \cite blanco_se3_tutorial
    */
   static tang2mat_jacob jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D);
 
@@ -146,8 +146,8 @@ struct SE<3>
 
   /** Return one or both of the following 6x6 Jacobians, useful in
    * graph-slam problems:
-   * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1} \f]
-   * \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}\f]
+   * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2)}{\partial \epsilon_1} \f]
+   * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2)}{\partial \epsilon_2} \f]
    * With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ increments in the
    * linearized manifold for P1 and P2.
    * \note Section 10.3.10 in \cite blanco_se3_tutorial
@@ -161,7 +161,7 @@ struct SE<3>
 };
 
 /** Traits for SE(2), rigid-body transformations in R^2 space.
- * See indidual members for documentation, or \cite blanco_se3_tutorial for a
+ * See individual members for documentation, or \cite blanco_se3_tutorial for a
  * general overview.
  * \ingroup mrpt_poses_lie_grp
  */
@@ -196,10 +196,12 @@ struct SE<2>
   /** Type for Jacobian: SO(n) matrix -> tangent space */
   using mat2tang_jacob = mrpt::math::CMatrixDouble33;
 
-  /** Exponential map in SE(2), takes [x,y,phi] and returns a CPose2D */
+  /** Pseudo-exponential map in SE(2), takes [x,y,phi] and returns a CPose2D
+   * (x,y are kept untouched). See appendix B.2.3 in \cite blanco_se3_tutorial */
   static type exp(const tangent_vector& x);
 
-  /** Logarithm map in SE(2), takes a CPose2D and returns [X,Y, phi] */
+  /** Pseudo-logarithm map in SE(2), takes a CPose2D and returns [X,Y, phi].
+   * See appendix B.2.4 in \cite blanco_se3_tutorial */
   static tangent_vector log(const type& P);
 
   /** Returns a vector with all manifold matrix elements in column-major
@@ -227,8 +229,8 @@ struct SE<2>
 
   /** Return one or both of the following 3x3 Jacobians, useful in
    * graph-slam problems:
-   * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1} \f]
-   * \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}\f]
+   * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2)}{\partial \epsilon_1} \f]
+   * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2)}{\partial \epsilon_2} \f]
    * With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ increments in the
    * linearized manifold for P1 and P2.
    * \note See appendix B in \cite blanco_se3_tutorial

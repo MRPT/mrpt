@@ -88,8 +88,9 @@ struct TSE3RobustParams
   /** (Default=0.05) The maximum distance in X,Y,Z for a solution to be
    * considered as matching a candidate solution (In meters) */
   double ransac_threshold_lin{0.05};
-  /** (Default=1 deg) The maximum angle (yaw,pitch,roll) for a solution to be
-   * considered as matching a candidate solution (In radians) */
+  /** (Default=1 deg) The maximum rotation angle (norm of the SO(3) logarithm of
+   * the relative rotation) for a solution to be considered as matching a
+   * candidate solution (In radians) */
   double ransac_threshold_ang{mrpt::DEG2RAD(1.)};
   /** (Default=0.03) The maximum difference in scale for a solution to be
    * considered as matching a candidate solution (dimensionless) */

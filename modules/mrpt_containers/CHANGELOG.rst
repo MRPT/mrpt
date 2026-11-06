@@ -2,6 +2,11 @@
 Changelog for package mrpt_containers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+* yaml::printAsYAML(): emit empty sequences and maps as [] and {} (`#1499 <https://github.com/MRPT/mrpt/issues/1499>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.1 (2026-11-01)
 ------------------
 

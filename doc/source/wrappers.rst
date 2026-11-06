@@ -22,7 +22,8 @@ The following ROS packages are provided wrapping MRPT functionality:
 2. Python
 ----------------------
 Each MRPT C++ module has a Python package (``mrpt.poses``, ``mrpt.maps``, ...),
-built with pybind11 and distributed as ``python3-mrpt-*`` packages. See:
+built with pybind11 and distributed on PyPI (``pip install mrpt3``) and as
+``python3-mrpt-*`` packages. See:
 
 - :ref:`python_api`
 - MRPT :ref:`python_examples`

@@ -2,6 +2,13 @@
 Changelog for package mrpt_obs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+* CObservationImage: read 4-parameter distortion from legacy files (`#1501 <https://github.com/MRPT/mrpt/issues/1501>`_)
+* Math review: fixes and tests for transformations, probability distributions and their users (`#1492 <https://github.com/MRPT/mrpt/issues/1492>`_)
+* Fix builds using the embedded assimp, octomap and GLFW (`#1488 <https://github.com/MRPT/mrpt/issues/1488>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.1 (2026-11-01)
 ------------------
 * Python: stereo images, rotating and Velodyne scans as NumPy arrays, all NMEA GPS messages (`#1481 <https://github.com/MRPT/mrpt/issues/1481>`_)

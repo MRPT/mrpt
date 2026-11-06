@@ -2,6 +2,11 @@
 Changelog for package mrpt_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+* ASSERT\_*_ macros: keep operands that refer into a temporary alive during the check (`#1497 <https://github.com/MRPT/mrpt/issues/1497>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.1 (2026-11-01)
 ------------------
 

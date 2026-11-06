@@ -35,14 +35,14 @@ TLine2D TLine2D::FromPoseX(const TPose2D& p)
 {
   TLine2D r;
   r.coefs[0] = std::cos(p.phi);
-  r.coefs[1] = -std::sin(p.phi);
+  r.coefs[1] = std::sin(p.phi);
   r.coefs[2] = -r.coefs[0] * p.x - r.coefs[1] * p.y;
   return r;
 }
 TLine2D TLine2D::FromPoseY(const TPose2D& p)
 {
   TLine2D r;
-  r.coefs[0] = std::sin(p.phi);
+  r.coefs[0] = -std::sin(p.phi);
   r.coefs[1] = std::cos(p.phi);
   r.coefs[2] = -r.coefs[0] * p.x - r.coefs[1] * p.y;
   return r;
@@ -51,8 +51,8 @@ TLine2D TLine2D::FromPoseDirection(const TPose2D& p, const double (&localVector)
 {
   const double c = std::cos(p.phi), s = std::sin(p.phi);
   TLine2D r;
-  r.coefs[0] = localVector[0] * c + localVector[1] * s;
-  r.coefs[1] = -localVector[0] * s + localVector[1] * c;
+  r.coefs[0] = localVector[0] * c - localVector[1] * s;
+  r.coefs[1] = localVector[0] * s + localVector[1] * c;
   r.coefs[2] = -r.coefs[0] * p.x - r.coefs[1] * p.y;
   return r;
 }
@@ -92,10 +92,10 @@ void TLine2D::generate3DObject(TLine3D& l) const { l = TLine3D(*this); }
 void TLine2D::getAsPose2D(TPose2D& outPose) const
 {
   // Line's director vector is (-coefs[1],coefs[0]).
-  // If line is horizontal, force x=0. Else, force y=0. In both cases, we'll
-  // find a suitable point.
+  // If line is closer to horizontal, force x=0. Else, force y=0. In both
+  // cases, we'll find a suitable point.
   outPose.phi = atan2(coefs[0], -coefs[1]);
-  if (std::abs(coefs[0]) < getEpsilon())
+  if (std::abs(coefs[0]) < std::abs(coefs[1]))
   {
     outPose.x = 0;
     outPose.y = -coefs[2] / coefs[1];

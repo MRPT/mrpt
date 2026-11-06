@@ -38,6 +38,147 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::graphs;
 
+/** @name Edge information conventions
+ * MRPT pose PDFs (CPosePDFGaussianInf, CPose3DPDFGaussianInf, ...) hold the
+ * uncertainty of the pose parameters (x,y,phi) or (x,y,z,yaw,pitch,roll),
+ * with the translation in the frame of the edge origin node. Graph
+ * optimizers and the g2o file format, instead, use the local residual
+ * e = pseudoLog(Z^-1 * X), [x,y,phi] or [x,y,z,rx,ry,rz], with the
+ * translation in the frame of the edge mean Z. These helpers convert between
+ * both conventions (first order, about Z). They are written without Eigen so
+ * this header can be used without it.
+ * @{ */
+
+/** Returns J^T * M * J, for square matrices of the same size. */
+template <class MAT>
+MAT congruenceTransform(const MAT& J, const MAT& M)
+{
+  const int n = static_cast<int>(M.rows());
+  MAT MJ;
+  for (int r = 0; r < n; r++)
+  {
+    for (int c = 0; c < n; c++)
+    {
+      double s = 0;
+      for (int k = 0; k < n; k++)
+      {
+        s += M(r, k) * J(k, c);
+      }
+      MJ(r, c) = s;
+    }
+  }
+  MAT out;
+  for (int r = 0; r < n; r++)
+  {
+    for (int c = 0; c < n; c++)
+    {
+      double s = 0;
+      for (int k = 0; k < n; k++)
+      {
+        s += J(k, r) * MJ(k, c);
+      }
+      out(r, c) = s;
+    }
+  }
+  return out;
+}
+
+/** Jacobian of the (x,y,phi) parameters of Z (+) exp(e) with respect to the
+ * local increment e=[x,y,phi], at e=0. */
+inline mrpt::math::CMatrixDouble33 jacobPoseParamsWrtLocal(const mrpt::poses::CPose2D& Z)
+{
+  const double c = Z.phi_cos();
+  const double s = Z.phi_sin();
+  mrpt::math::CMatrixDouble33 J;
+  J(0, 0) = c;
+  J(0, 1) = -s;
+  J(1, 0) = s;
+  J(1, 1) = c;
+  J(2, 2) = 1;
+  return J;
+}
+
+/** Inverse of jacobPoseParamsWrtLocal() */
+inline mrpt::math::CMatrixDouble33 jacobLocalWrtPoseParams(const mrpt::poses::CPose2D& Z)
+{
+  mrpt::math::CMatrixDouble33 J = jacobPoseParamsWrtLocal(Z);
+  std::swap(J(0, 1), J(1, 0));
+  return J;
+}
+
+/** Jacobian of the (x,y,z,yaw,pitch,roll) parameters of Z (+) exp(e) with
+ * respect to the local increment e=[x,y,z,rx,ry,rz] (translation in the frame
+ * of Z, body-frame rotation vector), at e=0. Singular at pitch=+-90 deg. */
+inline mrpt::math::CMatrixDouble66 jacobPoseParamsWrtLocal(const mrpt::poses::CPose3D& Z)
+{
+  const double cp0 = std::cos(Z.pitch());
+  // Avoid NaNs exactly at gimbal lock, where these parameters are undefined:
+  const double cp = std::abs(cp0) < 1e-12 ? (cp0 < 0 ? -1e-12 : 1e-12) : cp0;
+  const double sp = std::sin(Z.pitch());
+  const double cr = std::cos(Z.roll());
+  const double sr = std::sin(Z.roll());
+  const auto& R = Z.getRotationMatrix();
+  mrpt::math::CMatrixDouble66 J;
+  for (int r = 0; r < 3; r++)
+  {
+    for (int c = 0; c < 3; c++)
+    {
+      J(r, c) = R(r, c);
+    }
+  }
+  // (yaw,pitch,roll) rates from the body angular velocity:
+  J(3, 4) = sr / cp;
+  J(3, 5) = cr / cp;
+  J(4, 4) = cr;
+  J(4, 5) = -sr;
+  J(5, 3) = 1;
+  J(5, 4) = sr * sp / cp;
+  J(5, 5) = cr * sp / cp;
+  return J;
+}
+
+/** Inverse of jacobPoseParamsWrtLocal() */
+inline mrpt::math::CMatrixDouble66 jacobLocalWrtPoseParams(const mrpt::poses::CPose3D& Z)
+{
+  const double cp = std::cos(Z.pitch());
+  const double sp = std::sin(Z.pitch());
+  const double cr = std::cos(Z.roll());
+  const double sr = std::sin(Z.roll());
+  const auto& R = Z.getRotationMatrix();
+  mrpt::math::CMatrixDouble66 J;
+  for (int r = 0; r < 3; r++)
+  {
+    for (int c = 0; c < 3; c++)
+    {
+      J(r, c) = R(c, r);
+    }
+  }
+  // Body angular velocity from the (yaw,pitch,roll) rates:
+  J(3, 3) = -sp;
+  J(3, 5) = 1;
+  J(4, 3) = cp * sr;
+  J(4, 4) = cr;
+  J(5, 3) = cp * cr;
+  J(5, 4) = -sr;
+  return J;
+}
+
+/** Converts the information matrix of the pose parameters of a relative pose
+ * with mean Z (MRPT convention) into that of its local residual. */
+template <class POSE, class MAT>
+MAT infoParamsToLocal(const POSE& Z, const MAT& infoParams)
+{
+  return congruenceTransform(jacobPoseParamsWrtLocal(Z), infoParams);
+}
+
+/** Inverse of infoParamsToLocal() */
+template <class POSE, class MAT>
+MAT infoLocalToParams(const POSE& Z, const MAT& infoLocal)
+{
+  return congruenceTransform(jacobLocalWrtPoseParams(Z), infoLocal);
+}
+/** @} */
+
 template <class POSE_PDF>
 struct TPosePDFHelper
 {
@@ -80,10 +221,11 @@ struct graph_ops
   {
     //  G2O: EDGE_SE2 from_id to_id Ax Ay Aphi i_xx i_xy i_xp i_yy i_yp
     //  inf_pp
+    // g2o information matrices refer to the local residual:
+    const auto I = infoParamsToLocal(edge.mean, edge.cov_inv);
     f << "EDGE_SE2 " << edgeIDs.first << " " << edgeIDs.second << " " << edge.mean.x() << " "
-      << edge.mean.y() << " " << edge.mean.phi() << " " << edge.cov_inv(0, 0) << " "
-      << edge.cov_inv(0, 1) << " " << edge.cov_inv(0, 2) << " " << edge.cov_inv(1, 1) << " "
-      << edge.cov_inv(1, 2) << " " << edge.cov_inv(2, 2) << "\n";
+      << edge.mean.y() << " " << edge.mean.phi() << " " << I(0, 0) << " " << I(0, 1) << " "
+      << I(0, 2) << " " << I(1, 1) << " " << I(1, 2) << " " << I(2, 2) << "\n";
   }
   static void write_EDGE_line(
       const TPairNodeIDs& edgeIDs, const CPose3DPDFGaussianInf& edge, std::ostream& f)
@@ -138,6 +280,9 @@ struct graph_ops
 
   static void save_graph_of_poses_to_ostream(const graph_t* g, std::ostream& f)
   {
+    // Lossless text output of doubles:
+    const auto oldPrecision = f.precision(std::numeric_limits<double>::max_digits10);
+
     // 1st: Nodes
     for (const auto& n : g->nodes)
     {
@@ -152,9 +297,24 @@ struct graph_ops
 
     // 2nd: Edges:
     for (const auto& e : *g)
-      if (e.first.first != e.first.second)  // ignore EQUIV edges
+    {
+      if (e.first.first == e.first.second)
+      {
+        continue;  // ignore EQUIV edges
+      }
+      // Files store j (-) i in an edge i->j. An inverse edge i->j holds
+      // i (-) j, that is, the normal edge j->i:
+      if (g->edges_store_inverse_poses)
+      {
+        write_EDGE_line(TPairNodeIDs(e.first.second, e.first.first), e.second, f);
+      }
+      else
+      {
         write_EDGE_line(e.first, e.second, f);
+      }
+    }
 
+    f.precision(oldPrecision);
   }  // end save_graph
 
   // =================================================================
@@ -208,6 +368,26 @@ struct graph_ops
       default:
         MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(stored_version);
     }
+  }
+
+  /** Reads the 21 entries of the upper triangle of a symmetric 6x6 matrix,
+   * row by row, and fills the whole matrix. Returns false on read errors. */
+  static bool readUpperTriangle6(std::istream& s, mrpt::math::CMatrixDouble66& M)
+  {
+    for (int r = 0; r < 6; r++)
+    {
+      for (int c = r; c < 6; c++)
+      {
+        double v = 0;
+        if (!(s >> v))
+        {
+          return false;
+        }
+        M(r, c) = v;
+        M(c, r) = v;
+      }
+    }
+    return true;
   }
 
   // =================================================================
@@ -282,7 +462,9 @@ struct graph_ops
       //   =(VERTEX_SE2)
       //  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp
       //  inf_xp inf_yp
-      //   =(EDGE or EDGE_SE2 or ODOMETRY)
+      //   =(EDGE or ODOMETRY)
+      //  EDGE_SE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_xp inf_yy
+      //  inf_yp inf_pp
       //  VERTEX3 id x y z roll pitch yaw
       //  VERTEX_SE3:QUAT id x y z qx qy qz qw
       //  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 ..
@@ -402,11 +584,8 @@ struct graph_ops
           strCmpI(key, "EDGE_SE2"))
       {
         //  EDGE_SE2 from_id to_id Ax Ay Aphi inf_xx i_xy i_xp i_yy i_yp
-        //  i_pp Read values are:
-        //    [ s00 s01 s02 ]
-        //    [  -  s11 s12 ]
-        //    [  -   -  s22 ]
-        //
+        //  i_pp, or EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy
+        //  inf_pp inf_xp inf_yp
         TNodeID to_id, from_id;
         if (!(s >> from_id >> to_id))
           THROW_EXCEPTION(
@@ -427,9 +606,26 @@ struct graph_ops
         {
           TPose2D Ap_mean;
           mrpt::math::CMatrixDouble33 Ap_cov_inv;
-          if (!(s >> Ap_mean.x >> Ap_mean.y >> Ap_mean.phi >> Ap_cov_inv(0, 0) >>
-                Ap_cov_inv(0, 1) >> Ap_cov_inv(0, 2) >> Ap_cov_inv(1, 1) >> Ap_cov_inv(1, 2) >>
-                Ap_cov_inv(2, 2)))
+          if (!(s >> Ap_mean.x >> Ap_mean.y >> Ap_mean.phi))
+            THROW_EXCEPTION(
+                mrpt::format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str()));
+          // g2o (EDGE_SE2): i_xx i_xy i_xp i_yy i_yp i_pp
+          // TORO (EDGE2, EDGE, ODOMETRY): i_xx i_xy i_yy i_pp i_xp i_yp
+          const bool isG2O = strCmpI(key, "EDGE_SE2");
+          bool infOk = false;
+          if (isG2O)
+          {
+            infOk = static_cast<bool>(
+                s >> Ap_cov_inv(0, 0) >> Ap_cov_inv(0, 1) >> Ap_cov_inv(0, 2) >> Ap_cov_inv(1, 1) >>
+                Ap_cov_inv(1, 2) >> Ap_cov_inv(2, 2));
+          }
+          else
+          {
+            infOk = static_cast<bool>(
+                s >> Ap_cov_inv(0, 0) >> Ap_cov_inv(0, 1) >> Ap_cov_inv(1, 1) >> Ap_cov_inv(2, 2) >>
+                Ap_cov_inv(0, 2) >> Ap_cov_inv(1, 2));
+          }
+          if (!infOk)
             THROW_EXCEPTION(
                 mrpt::format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str()));
 
@@ -438,10 +634,14 @@ struct graph_ops
           Ap_cov_inv(2, 0) = Ap_cov_inv(0, 2);
           Ap_cov_inv(2, 1) = Ap_cov_inv(1, 2);
 
+          // The file information refers to the local residual, convert it
+          // into the information of the (x,y,phi) edge parameters:
+          const CPose2D edgeMean(Ap_mean);
+          Ap_cov_inv = infoLocalToParams(edgeMean, Ap_cov_inv);
+
           // Convert to 2D cov, 3D cov or 3D inv_cov as needed:
           typename CNetworkOfPoses<CPOSE>::edge_t newEdge;
-          TPosePDFHelper<CPOSE>::copyFrom2D(
-              newEdge, CPosePDFGaussianInf(CPose2D(Ap_mean), Ap_cov_inv));
+          TPosePDFHelper<CPOSE>::copyFrom2D(newEdge, CPosePDFGaussianInf(edgeMean, Ap_cov_inv));
           g->insertEdge(from_id, to_id, newEdge);
         }
       }
@@ -480,14 +680,9 @@ struct graph_ops
             THROW_EXCEPTION(
                 mrpt::format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str()));
 
-          // **CAUTION** Indices are shuffled to the change YAW(3) <->
-          // ROLL(5) in the order of the data.
-          if (!(s >> Ap_cov_inv(0, 0) >> Ap_cov_inv(0, 1) >> Ap_cov_inv(0, 2) >> Ap_cov_inv(0, 5) >>
-                Ap_cov_inv(0, 4) >> Ap_cov_inv(0, 3) >> Ap_cov_inv(1, 1) >> Ap_cov_inv(1, 2) >>
-                Ap_cov_inv(1, 5) >> Ap_cov_inv(1, 4) >> Ap_cov_inv(1, 3) >> Ap_cov_inv(2, 2) >>
-                Ap_cov_inv(2, 5) >> Ap_cov_inv(2, 4) >> Ap_cov_inv(2, 3) >> Ap_cov_inv(5, 5) >>
-                Ap_cov_inv(5, 4) >> Ap_cov_inv(5, 3) >> Ap_cov_inv(4, 4) >> Ap_cov_inv(4, 3) >>
-                Ap_cov_inv(3, 3)))
+          // Upper triangle in the (x,y,z,roll,pitch,yaw) order:
+          mrpt::math::CMatrixDouble66 infRPY;
+          if (!readUpperTriangle6(s, infRPY))
           {
             // Cov may be omitted in the file:
             Ap_cov_inv.setIdentity();
@@ -502,9 +697,15 @@ struct graph_ops
           }
           else
           {
-            // Complete low triangular part of inf matrix:
-            for (size_t r = 1; r < 6; r++)
-              for (size_t c = 0; c < r; c++) Ap_cov_inv(r, c) = Ap_cov_inv(c, r);
+            // Reorder into MRPT's (x,y,z,yaw,pitch,roll):
+            const int p[6] = {0, 1, 2, 5, 4, 3};
+            for (int r = 0; r < 6; r++)
+            {
+              for (int c = 0; c < 6; c++)
+              {
+                Ap_cov_inv(p[r], p[c]) = infRPY(r, c);
+              }
+            }
           }
 
           // Convert as needed:
@@ -551,17 +752,12 @@ struct graph_ops
                 "'%s'",
                 lineNum, lin.c_str()));
 
-          // **CAUTION** Indices are shuffled to the change YAW(3) <->
-          // ROLL(5) in the order of the data.
-          if (!(s >> Ap_cov_inv(0, 0) >> Ap_cov_inv(0, 1) >> Ap_cov_inv(0, 2) >> Ap_cov_inv(0, 5) >>
-                Ap_cov_inv(0, 4) >> Ap_cov_inv(0, 3) >> Ap_cov_inv(1, 1) >> Ap_cov_inv(1, 2) >>
-                Ap_cov_inv(1, 5) >> Ap_cov_inv(1, 4) >> Ap_cov_inv(1, 3) >> Ap_cov_inv(2, 2) >>
-                Ap_cov_inv(2, 5) >> Ap_cov_inv(2, 4) >> Ap_cov_inv(2, 3) >> Ap_cov_inv(5, 5) >>
-                Ap_cov_inv(5, 4) >> Ap_cov_inv(5, 3) >> Ap_cov_inv(4, 4) >> Ap_cov_inv(4, 3) >>
-                Ap_cov_inv(3, 3)))
+          // g2o information of its residual [x,y,z,qx,qy,qz] (upper triangle):
+          mrpt::math::CMatrixDouble66 infG2O;
+          if (!readUpperTriangle6(s, infG2O))
           {
             // Cov may be omitted in the file:
-            Ap_cov_inv.setIdentity();
+            infG2O.setIdentity();
 
             if (alreadyWarnedUnknowns.find("MISSING_3D") == alreadyWarnedUnknowns.end())
             {
@@ -571,17 +767,23 @@ struct graph_ops
                       "assuming unity.\n";
             }
           }
-          else
+          // The quaternion vector part is half the rotation vector, to first
+          // order. Then, convert from the local residual [x,y,z,rx,ry,rz] into
+          // the (x,y,z,yaw,pitch,roll) edge parameters:
+          mrpt::math::CMatrixDouble66 infLocal;
+          for (int r = 0; r < 6; r++)
           {
-            // Complete low triangular part of inf matrix:
-            for (size_t r = 1; r < 6; r++)
-              for (size_t c = 0; c < r; c++) Ap_cov_inv(r, c) = Ap_cov_inv(c, r);
+            for (int c = 0; c < 6; c++)
+            {
+              infLocal(r, c) = infG2O(r, c) * (r < 3 ? 1.0 : 0.5) * (c < 3 ? 1.0 : 0.5);
+            }
           }
+          const CPose3D edgeMean = CPose3D(CPose3DQuat(Ap_mean));
+          Ap_cov_inv = infoLocalToParams(edgeMean, infLocal);
 
           // Convert as needed:
           typename CNetworkOfPoses<CPOSE>::edge_t newEdge;
-          TPosePDFHelper<CPOSE>::copyFrom3D(
-              newEdge, CPose3DPDFGaussianInf(CPose3D(CPose3DQuat(Ap_mean)), Ap_cov_inv));
+          TPosePDFHelper<CPOSE>::copyFrom3D(newEdge, CPose3DPDFGaussianInf(edgeMean, Ap_cov_inv));
           g->insertEdge(from_id, to_id, newEdge);
         }
       }
@@ -875,9 +1077,11 @@ struct graph_ops
   {
     MRPT_START
 
-    // Get node IDs:
-    const TNodeID from_id = itEdge->first.first;
-    const TNodeID to_id = itEdge->first.second;
+    // Get node IDs. An inverse edge i->j holds i (-) j, that is, it is
+    // evaluated as the normal edge j->i:
+    const bool inv = g->edges_store_inverse_poses;
+    const TNodeID from_id = inv ? itEdge->first.second : itEdge->first.first;
+    const TNodeID to_id = inv ? itEdge->first.first : itEdge->first.second;
 
     // And their global poses as stored in "nodes"
     auto itPoseFrom = g->nodes.find(from_id);

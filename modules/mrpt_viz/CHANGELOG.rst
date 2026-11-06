@@ -2,6 +2,11 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+* Fix builds using the embedded assimp, octomap and GLFW (`#1488 <https://github.com/MRPT/mrpt/issues/1488>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.1 (2026-11-01)
 ------------------
 * New CCamera::PinholeForViewport() and clearPinholeModel(); Viewport::get3DRayForPixelCoord() uses the pinhole model (`#1485 <https://github.com/MRPT/mrpt/issues/1485>`_)

@@ -2,6 +2,13 @@
 Changelog for package mrpt_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.2 (2026-11-07)
+------------------
+* mrpt_slam: enable the ICP-quality odometry fallback by default, except against a single-scan map (`#1495 <https://github.com/MRPT/mrpt/issues/1495>`_)
+* Math review: fixes and tests for transformations, probability distributions and their users (`#1492 <https://github.com/MRPT/mrpt/issues/1492>`_)
+* mrpt_slam: declare its optional TBB dependency in package.xml
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.1 (2026-11-01)
 ------------------
 

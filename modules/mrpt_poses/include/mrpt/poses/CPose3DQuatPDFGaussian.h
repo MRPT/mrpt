@@ -113,10 +113,12 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
    */
   void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
-  /** Draws a single sample from the distribution */
+  /** Draws a single sample from the distribution. The sampled quaternion is
+   * normalized, i.e. projected from the tangent space onto the unit sphere. */
   void drawSingleSample(CPose3DQuat& outPart) const override;
   /** Draws a number of samples from the distribution, and saves as a list of
-   * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum. */
+   * 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum, with a
+   * normalized quaternion. */
   void drawManySamples(size_t N, std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
   /** Compute the inverse Jacobian */
   mrpt::math::CMatrixDouble77 inverseJacobian() const;
@@ -159,18 +161,19 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
    * */
   void operator-=(const CPose3DQuatPDFGaussian& Ap);
 
-  /** Evaluates the PDF at a given point. */
+  /** Evaluates the PDF at a given point.
+   * Since the covariance of a quaternion pose is usually rank deficient (rank
+   * 6, due to the unit norm constraint), the density is evaluated on the
+   * subspace spanned by the non-null eigenvectors of the covariance. */
   double evaluatePDF(const CPose3DQuat& x) const;
 
   /** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in
-   * the range [0,1]. */
+   * the range [0,1]. \sa evaluatePDF */
   double evaluateNormalizedPDF(const CPose3DQuat& x) const;
 
-  /** Computes the Mahalanobis distance between the centers of two Gaussians.
-   *  The variables with a variance exactly equal to 0 are not taken into
-   * account in the process, but
-   *   "infinity" is returned if the corresponding elements are not exactly
-   * equal. */
+  /** Computes the Mahalanobis distance between the centers of two Gaussians,
+   * using the sum of both 7x7 covariances. Quaternions q and -q are the same
+   * rotation: theOther is first expressed with the sign of this quaternion. */
   double mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther);
 
 };  // End of class def.
@@ -190,11 +193,10 @@ std::ostream& operator<<(std::ostream& out, const CPose3DQuatPDFGaussian& obj);
 
 namespace global_settings
 {
-/** If set to true (default), a Scaled Unscented Transform is used instead of a
- *linear approximation with Jacobians.
+/** If set to true (default: false), a Scaled Unscented Transform is used
+ * instead of a linear approximation with Jacobians.
  * Affects to:
  *		- CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian &o)
- *		- CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DPDFGaussianInf &o)
  */
 void USE_SUT_EULER2QUAT_CONVERSION(bool value);
 bool USE_SUT_EULER2QUAT_CONVERSION();

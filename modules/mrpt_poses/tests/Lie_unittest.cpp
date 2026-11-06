@@ -15,9 +15,11 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/num_jacobian.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
+#include <mrpt/random.h>
 
 #include <Eigen/Dense>
 #include <iomanip>  // for setprecision(), etc.
@@ -280,3 +282,86 @@ TEST_F(SE3_traits_tests, SE3_jacobs_dAB_dAB) { tests_jacobs_dAB_dAB(); }
 
 TEST_F(SE2_traits_tests, SE2_jacobs_DinvP1InvP2) { tests_jacobs_DinvP1InvP2(); }
 TEST_F(SE2_traits_tests, SE2_jacobs_dAB_dAB) { tests_jacobs_dAB_dAB(); }
+
+TEST(LieSE3, PseudoExpLogRoundTrip)
+{
+  using mrpt::poses::Lie::SE;
+  auto& rng = mrpt::random::getRandomGenerator();
+  rng.randomize(1234);
+  for (int k = 0; k < 50; k++)
+  {
+    SE<3>::tangent_vector v;
+    for (int i = 0; i < 3; i++)
+    {
+      v[i] = rng.drawUniform(-10, 10);
+    }
+    Eigen::Vector3d n(
+        rng.drawGaussian1D_normalized(), rng.drawGaussian1D_normalized(),
+        rng.drawGaussian1D_normalized());
+    const Eigen::Vector3d w = rng.drawUniform(0, 3.1) * n.normalized();
+    for (int i = 0; i < 3; i++)
+    {
+      v[3 + i] = w[i];
+    }
+    const CPose3D p = SE<3>::exp(v);
+    // Pseudo-exponential: the translation is kept untouched.
+    EXPECT_NEAR(p.x(), v[0], 1e-15);
+    EXPECT_NEAR(p.y(), v[1], 1e-15);
+    EXPECT_NEAR(p.z(), v[2], 1e-15);
+    const auto v2 = SE<3>::log(p);
+    for (int i = 0; i < 6; i++)
+    {
+      EXPECT_NEAR(v2[i], v[i], 1e-10);
+    }
+  }
+}
+
+TEST(LieSE2, ExpLogWrapAngle)
+{
+  using mrpt::poses::Lie::SE;
+  SE<2>::tangent_vector v;
+  v[0] = 1.0;
+  v[1] = -2.0;
+  v[2] = 3.0 * M_PI / 2;
+  const CPose2D p = SE<2>::exp(v);
+  const auto l = SE<2>::log(p);
+  EXPECT_NEAR(l[0], 1.0, 1e-15);
+  EXPECT_NEAR(l[1], -2.0, 1e-15);
+  EXPECT_NEAR(l[2], -M_PI / 2, 1e-12);
+}
+
+TEST(LieSE2, JacobiansVsFiniteDifferences)
+{
+  using mrpt::poses::Lie::SE;
+  const CPose2D A(1.0, -0.5, 2.8);
+  const CPose2D B(-0.3, 2.0, -2.9);
+  const auto JA = SE<2>::jacob_dAB_dA(A, B);
+  const auto JB = SE<2>::jacob_dAB_dB(A, B);
+  const auto JD = SE<2>::jacob_dDexpe_de(A);
+  const double h = 1e-7;
+  // Difference of two poses, with the angle wrapped:
+  auto diff = [](const CPose2D& a, const CPose2D& b, int r)
+  { return r < 2 ? a[r] - b[r] : mrpt::math::wrapToPi(a.phi() - b.phi()); };
+  for (int k = 0; k < 3; k++)
+  {
+    CPose2D Ap = A;
+    CPose2D Am = A;
+    CPose2D Bp = B;
+    CPose2D Bm = B;
+    Ap[k] += h;
+    Am[k] -= h;
+    Bp[k] += h;
+    Bm[k] -= h;
+    SE<2>::tangent_vector e = SE<2>::tangent_vector::Zero();
+    e[k] = h;
+    const CPose2D Dp = A + SE<2>::exp(e);
+    e[k] = -h;
+    const CPose2D Dm = A + SE<2>::exp(e);
+    for (int r = 0; r < 3; r++)
+    {
+      EXPECT_NEAR(JA(r, k), diff(Ap + B, Am + B, r) / (2 * h), 1e-7);
+      EXPECT_NEAR(JB(r, k), diff(A + Bp, A + Bm, r) / (2 * h), 1e-7);
+      EXPECT_NEAR(JD(r, k), diff(Dp, Dm, r) / (2 * h), 1e-7);
+    }
+  }
+}

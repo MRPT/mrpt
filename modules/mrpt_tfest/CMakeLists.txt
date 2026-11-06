@@ -32,6 +32,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/se2_unittest.cpp
   tests/se3_unittest.cpp
   tests/TMatchingPair_unittest.cpp
+  tests/tfest_reference_unittest.cpp
 )
 
 set(LIB_PUBLIC_HEADERS
@@ -59,6 +60,7 @@ mrpt_add_library(
     mrpt_poses
   UNITTEST_LINK_LIBRARIES
     mrpt::mrpt_io
+    Eigen3::Eigen
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE
