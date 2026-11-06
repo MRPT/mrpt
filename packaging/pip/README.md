@@ -37,6 +37,29 @@ All other modules work without them.
 See the [examples](https://github.com/MRPT/mrpt/tree/develop/mrpt_examples_py)
 and the [documentation](https://docs.mrpt.org/).
 
+## 3D windows
+
+`mrpt.gui.CDisplayWindowGUI` shows a 3D scene in a window, with a mouse
+controlled camera. `spinOnce()` processes its events and repaints it without
+blocking, so it fits in any loop:
+
+```python
+import time
+from mrpt.gui import CDisplayWindowGUI
+from mrpt.viz import Scene, CGridPlaneXY, stock_objects
+
+win = CDisplayWindowGUI("Demo", 800, 600)
+scene = Scene()
+scene.insert(CGridPlaneXY())
+scene.insert(stock_objects.CornerXYZ(1.0))
+win.background_scene = scene
+
+while win.spinOnce():  # False once the window is closed
+    time.sleep(0.02)
+```
+
+The wxWidgets based windows (`CDisplayWindow3D`) are not included in the wheel.
+
 ## C++ SDK
 
 The wheel also contains the MRPT C++ headers, shared libraries and CMake config
@@ -44,7 +67,10 @@ files, so other Python packages with C++ code can build against it. With
 scikit-build-core, `find_package(mrpt_poses)` works with no extra setup;
 otherwise, add `python -c "import mrpt.sdk; print(mrpt.sdk.get_cmake_prefix_path())"`
 to `CMAKE_PREFIX_PATH`. C++ extensions that exchange MRPT objects with these
-bindings must use the pybind11 version in `mrpt.sdk.PYBIND11_VERSION`.
+bindings must use the pybind11 version in `mrpt.sdk.PYBIND11_VERSION`. C++ code
+using the `mrpt_gui` or `mrpt_opengl` headers also needs the system OpenGL
+development headers (`libgl-dev` on Debian/Ubuntu, `mesa-libGL-devel` on
+Fedora).
 
 ## Other ways to install MRPT
 

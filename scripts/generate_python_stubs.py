@@ -43,7 +43,11 @@ def clean_stub(path):
         lines = f.readlines()
     lines = [
         # Explicit re-export ("X as X"), as type checkers expect in stubs:
-        re.sub(r"^(from mrpt\.\w+\._bindings import )(\w+)$", r"\1\2 as \2", line)
+        re.sub(
+            # Build options (HAS_*): only their type, so stubs do not depend
+            # on the build:
+            r"^(HAS_\w+: bool) = (True|False)$", r"\1",
+            re.sub(r"^(from mrpt\.\w+\._bindings import )(\w+)$", r"\1\2 as \2", line))
         for line in lines
         if not re.match(r"^(__warningregistry__|_(?!_)\w*) *[:=]", line)
     ]

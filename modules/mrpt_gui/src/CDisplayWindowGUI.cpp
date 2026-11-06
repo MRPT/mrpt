@@ -163,6 +163,27 @@ void CDisplayWindowGUI::setPos(int x, int y) { Screen::setPosition({x, y}); }
 
 void CDisplayWindowGUI::setWindowTitle(const std::string& str) { Screen::setCaption(str); }
 
+bool CDisplayWindowGUI::spinOnce()
+{
+  glfwPollEvents();
+
+  if (!visible())
+  {
+    return false;
+  }
+  if (glfwWindowShouldClose(glfwWindow()))
+  {
+    setVisible(false);
+    return false;
+  }
+
+  onIdleLoopTasks();
+
+  glfwMakeContextCurrent(glfwWindow());
+  drawAll();
+  return true;
+}
+
 void CDisplayWindowGUI::setIcon(const mrpt::img::CImage& img)
 {
   const int w = img.getWidth();

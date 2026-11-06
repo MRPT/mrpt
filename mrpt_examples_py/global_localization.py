@@ -15,7 +15,7 @@ Add --no-gui to run without a 3D window, and --max-steps N to stop early.
 import argparse
 import os
 import sys
-from time import sleep
+import time
 
 from mrpt.bayes import CParticleFilter, TParticleFilterOptions
 from mrpt.config import CConfigFile
@@ -107,11 +107,26 @@ pf.options = pf_options
 # 3D view:
 win3D = None
 if not args.no_gui:
-    from mrpt.gui import CDisplayWindow3D
+    from mrpt.gui import CDisplayWindowGUI
+    from mrpt.viz import Scene
 
     w, h = (int(v) for v in args.resolution.split("x"))
-    win3D = CDisplayWindow3D("pf_localization", w, h)
+    win3D = CDisplayWindowGUI("pf_localization", w, h)
+    win3D.camera().setZoomDistance(40.0)
+    scene = Scene()
+    win3D.background_scene = scene
     map_object = metric_map.getVisualization()
+
+
+def spin_gui(seconds):
+    """Keeps the window responsive (events, repaints) for a while."""
+    t_end = time.monotonic() + seconds
+    while True:
+        if not win3D.spinOnce():
+            return False
+        if time.monotonic() >= t_end:
+            return True
+        time.sleep(0.01)
 
 viz_options = VisualizationParameters()
 viz_options.pointSize = 3
@@ -137,19 +152,20 @@ while True:
         gl_obs.setPose(CPose3D(mean))
         gl_obs.setColor(TColorf(1.0, 0.0, 0.0))
 
-        scene = win3D.get3DSceneAndLock()
         scene.clear()
         scene.insert(map_object)
         scene.insert(pdf.getVisualization())
         scene.insert(gl_obs)
-        win3D.unlockAccess3DScene()
-        win3D.forceRepaint()
-        sleep(args.delay)
+        win3D.camera().setCameraPointing(mean.x, mean.y, 0.0)
+        if not spin_gui(args.delay):
+            break  # window closed
 
     steps += 1
     if args.max_steps and steps >= args.max_steps:
         break
 
 print(f"\nDone. Final estimate: {pdf.getMean()}")
-if win3D is not None:
-    input("Press Enter to quit.")
+if win3D is not None and win3D.isOpen() and not args.max_steps:
+    print("Close the window to quit.")
+    while win3D.spinOnce():
+        time.sleep(0.02)

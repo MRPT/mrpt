@@ -136,6 +136,17 @@ class CDisplayWindowGUI : public nanogui::Screen
   /**  Changes the window title. */
   void setWindowTitle(const std::string& str);
 
+  /** Runs one iteration of the GUI loop without blocking: processes pending
+   * window events, calls the loop callbacks and repaints the window. It is an
+   * alternative to nanogui::mainloop() for applications with their own loop
+   * (e.g. from Python). nanogui::init() must have been called before creating
+   * the window.
+   *
+   * \return false if the window has been closed.
+   * \note (New in MRPT 3.6.2)
+   */
+  bool spinOnce();
+
   /** Sets the window icon, which must must either RGB or (preferred) RGBA
    * channels. You can read it from a .png or .ico file using
    * mrpt::img::CImage::loadFromFile().

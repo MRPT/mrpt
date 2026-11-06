@@ -4,7 +4,8 @@ Python bindings for mrpt::gui — GUI windows for 3D visualization
 from __future__ import annotations
 import mrpt.img
 import mrpt.viz
-__all__: list[str] = ['CBaseGUIWindow', 'CDisplayWindow3D']
+import typing
+__all__: list[str] = ['CBaseGUIWindow', 'CDisplayWindow3D', 'CDisplayWindowGUI', 'CDisplayWindowGUI_Params', 'HAS_NANOGUI', 'HAS_WXWIDGETS', 'nanogui_leave', 'nanogui_mainloop']
 class CBaseGUIWindow:
     """
     The base class for GUI window classes based on wxWidgets.
@@ -148,3 +149,99 @@ class CDisplayWindow3D(CBaseGUIWindow):
         """
         If true, the camera of the scene viewport is used instead of the mouse-controlled one.
         """
+class CDisplayWindowGUI_Params:
+    """
+    Additional parameters for CDisplayWindowGUI windows.
+    """
+    fullscreen: bool
+    maximized: bool
+    resizable: bool
+    def __init__(self) -> None:
+        ...
+    @property
+    def nSamples(self) -> int:
+        """
+        Number of MSAA samples (0: no antialiasing).
+        """
+    @nSamples.setter
+    def nSamples(self, arg0: int) -> None:
+        ...
+class CDisplayWindowGUI:
+    """
+    A window with a background 3D scene and mouse camera control, based on nanogui.
+    
+    Set the scene to show in `background_scene`. Then, either call spinOnce() from your
+    own loop (it does not block), or register callbacks with addLoopCallback() and call
+    mrpt.gui.nanogui_mainloop(), which blocks until all windows are closed.
+    """
+    def __init__(self, caption: str = '', width: int = 800, height: int = 600, params: CDisplayWindowGUI_Params = ...) -> None:
+        """
+        Creates and shows a new window.
+        """
+    def __repr__(self) -> str:
+        ...
+    def addDropFilesCallback(self, callback: typing.Callable) -> None:
+        """
+        Adds a handler f(filenames) -> bool for files dropped onto the window.
+        """
+    def addKeyboardCallback(self, callback: typing.Callable) -> None:
+        """
+        Adds a keyboard handler f(key, scancode, action, modifiers) -> bool (True if handled).
+        Key codes are GLFW key codes (e.g. ord('A') for letters, 256 for ESC).
+        """
+    def addLoopCallback(self, callback: typing.Callable) -> None:
+        """
+        Adds a function to call before each repaint of the window.
+        """
+    def camera(self) -> mrpt.viz.COrbitCameraController:
+        """
+        The mouse-controlled camera (a mrpt.viz.COrbitCameraController).
+        """
+    def isOpen(self) -> bool:
+        """
+        Returns False if the window has been closed.
+        """
+    def resize(self, width: int, height: int) -> None:
+        """
+        Resizes the window.
+        """
+    def setIcon(self, img: mrpt.img.CImage) -> None:
+        """
+        Sets the window icon from an RGB or RGBA image.
+        """
+    def setPos(self, x: int, y: int) -> None:
+        """
+        Changes the position of the window on the screen.
+        """
+    def setVisible(self, visible: bool) -> None:
+        """
+        Shows or hides the window.
+        """
+    def setWindowTitle(self, title: str) -> None:
+        """
+        Changes the window title.
+        """
+    def spinOnce(self) -> bool:
+        """
+        Processes pending window events and repaints the window, without blocking.
+        Returns False once the window has been closed.
+        """
+    @property
+    def background_scene(self) -> mrpt.viz.Scene:
+        """
+        The 3D scene rendered as the window background (None: no scene).
+        """
+    @background_scene.setter
+    def background_scene(self, arg1: mrpt.viz.Scene) -> None:
+        ...
+def nanogui_leave() -> None:
+    """
+    Makes nanogui_mainloop() return (e.g. call it from a callback).
+    """
+def nanogui_mainloop(idle_loop_period_ms: int = 50, min_repaint_period_ms: int = 50) -> None:
+    """
+    Runs the GUI loop of all CDisplayWindowGUI windows until they are all closed, or
+    nanogui_leave() is called. Loop callbacks run before each repaint.
+    """
+HAS_NANOGUI: bool
+HAS_WXWIDGETS: bool

@@ -43,7 +43,8 @@ def main() -> int:
     # 2) C++ SDK contents:
     print("SDK:", mrpt.sdk.get_cmake_prefix_path(), mrpt.sdk.MRPT_VERSION, mrpt.sdk.PYBIND11_VERSION)
     for f in ["include/mrpt/poses/CPose3D.h", "lib/mrpt_poses/cmake/mrpt_poses-config.cmake",
-              "share/mrpt_common/cmake/mrpt_common-config.cmake"]:
+              "share/mrpt_common/cmake/mrpt_common-config.cmake", "include/nanoflann.hpp",
+              "include/eigen3/Eigen/Core", "include/tbb/tbb.h"]:
         if not (sdk / f).exists():
             failed.append(f"SDK file missing: {f}")
 
@@ -66,7 +67,10 @@ def main() -> int:
         with tempfile.TemporaryDirectory() as bld:
             steps = [
                 ["cmake", "-S", str(src), "-B", bld, "-DCMAKE_BUILD_TYPE=Release",
-                 f"-DCMAKE_PREFIX_PATH={mrpt.sdk.get_cmake_prefix_path()}"],
+                 f"-DCMAKE_PREFIX_PATH={mrpt.sdk.get_cmake_prefix_path()}",
+                 # Only the SDK, as on a user system: not libraries registered
+                 # by the wheel build in ~/.cmake/packages.
+                 "-DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF"],
                 ["cmake", "--build", bld],
                 [str(Path(bld) / "sdk_consumer")],
             ]
