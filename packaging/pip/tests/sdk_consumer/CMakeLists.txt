@@ -15,6 +15,8 @@ project(mrpt_sdk_consumer LANGUAGES CXX)
 find_package(mrpt_poses REQUIRED)
 find_package(mrpt_maps REQUIRED)
 find_package(mrpt_slam REQUIRED)  # it also finds the SDK oneTBB
+find_package(mrpt_gui REQUIRED)   # it also finds the SDK Eigen and nanogui (GLFW)
 
 add_executable(sdk_consumer main.cpp)
-target_link_libraries(sdk_consumer PRIVATE mrpt::mrpt_poses mrpt::mrpt_maps mrpt::mrpt_slam)
+target_link_libraries(sdk_consumer PRIVATE
+  mrpt::mrpt_poses mrpt::mrpt_maps mrpt::mrpt_slam mrpt::mrpt_gui)

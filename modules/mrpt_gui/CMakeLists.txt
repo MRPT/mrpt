@@ -165,3 +165,6 @@ endif()
 mrpt_add_python_module(gui
   python_bindings/mrpt_gui_py.cpp
 )
+mrpt_add_python_binding_test(gui
+  SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/tests/python_gui_test.py
+)

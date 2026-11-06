@@ -14,6 +14,7 @@
 
 // Minimal C++ program built against the C++ SDK inside the MRPT wheel.
 
+#include <mrpt/gui/CDisplayWindowGUI.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/slam/config.h>
@@ -47,6 +48,15 @@ int main()
   {
     return 1;
   }
+#endif
+
+#if MRPT_HAS_NANOGUI
+  // Only links against the GUI (no display needed): no window is created.
+  const auto spin = &mrpt::gui::CDisplayWindowGUI::spinOnce;
+  std::cout << "nanogui: " << (spin != nullptr ? "yes" : "no") << "\n";
+#else
+  std::cerr << "MRPT built without nanogui\n";
+  return 1;
 #endif
   return 0;
 }

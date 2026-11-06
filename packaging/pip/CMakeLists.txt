@@ -39,6 +39,9 @@ set(MRPT_WHEEL_EXTRA_CMAKE_ARGS "" CACHE STRING "Extra CMake args for all module
 
 # Optional GUI toolkits: the wheel only uses the GLFW-based (nanogui) windows.
 list(APPEND MRPT_WHEEL_EXTRA_CMAKE_ARGS -DDISABLE_WXWIDGETS=ON -DMRPT_WITH_QT=OFF)
+# GLFW embedded in nanogui, X11 backend only (it also works in Wayland
+# sessions, via XWayland):
+list(APPEND MRPT_WHEEL_EXTRA_CMAKE_ARGS -DGLFW_BUILD_WAYLAND=OFF)
 # Built into libmrpt_obs: one less library to bundle.
 list(APPEND MRPT_WHEEL_EXTRA_CMAKE_ARGS -DTINYXML2_USE_EMBEDDED_VERSION=ON)
 
@@ -118,6 +121,10 @@ set(_cache_args
   -DPython_EXECUTABLE:FILEPATH=${Python_EXECUTABLE}
   -DPython3_EXECUTABLE:FILEPATH=${Python_EXECUTABLE}
   -Dpybind11_DIR:PATH=${pybind11_DIR}
+  # Do not use libraries from the user package registry (~/.cmake/packages):
+  # they would not be bundled into the wheel.
+  -DCMAKE_FIND_USE_PACKAGE_REGISTRY:BOOL=OFF
+  -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY:BOOL=ON
 )
 # (CMAKE_MAKE_PROGRAM changes on each build: pip uses temporary environments)
 foreach(_var
@@ -129,6 +136,23 @@ foreach(_var
     list(APPEND _cache_args "-D${_var}:STRING=${${_var}}")
   endif()
 endforeach()
+
+# Eigen (header only), installed into the SDK: some public headers use it.
+set(MRPT_WHEEL_EIGEN_VERSION 3.4.0)
+ExternalProject_Add(ep_eigen
+  URL "https://gitlab.com/libeigen/eigen/-/archive/${MRPT_WHEEL_EIGEN_VERSION}/eigen-${MRPT_WHEEL_EIGEN_VERSION}.tar.gz"
+  URL_HASH SHA256=8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72
+  DOWNLOAD_EXTRACT_TIMESTAMP ON
+  BINARY_DIR "${CMAKE_BINARY_DIR}/eigen"
+  CMAKE_CACHE_ARGS ${_cache_args}
+  CMAKE_ARGS
+    -DBUILD_TESTING=OFF
+    -DEIGEN_BUILD_DOC=OFF
+    -DEIGEN_BUILD_PKGCONFIG=OFF
+  USES_TERMINAL_CONFIGURE ON
+  USES_TERMINAL_BUILD ON
+  USES_TERMINAL_INSTALL ON
+)
 
 # oneTBB, installed into the SDK too (headers, library and CMake config), since
 # MRPT public headers use it. Downstream wheels must use this one as well.
@@ -151,7 +175,7 @@ ExternalProject_Add(ep_tbb
 
 foreach(_mod ${_sorted_modules})
   mrpt_wheel_get_deps(${_mod} _deps)
-  set(_ep_deps ep_tbb)
+  set(_ep_deps ep_eigen ep_tbb)
   foreach(_dep ${_deps})
     list(APPEND _ep_deps ep_${_dep})
   endforeach()

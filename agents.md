@@ -308,7 +308,10 @@ mrpt_add_library(
 * The pip wheel (`packaging/pip`, see its `README-dev.md`) builds the modules
   in `MRPT_WHEEL_MODULES` of its `CMakeLists.txt` and ships them with a C++
   SDK (`mrpt.sdk`). Module code must not assume a fixed install prefix: the
-  wheel is relocatable (RPATH `$ORIGIN`), with no `share/mrpt_data`.
+  wheel is relocatable (RPATH `$ORIGIN`), with no `share/mrpt_data`. Its
+  public C++ dependencies (Eigen, oneTBB, nanoflann, GLFW inside nanogui) are
+  in the SDK too; its windows are nanogui ones (no wxWidgets), so Python
+  examples use `CDisplayWindowGUI.spinOnce()`, not `CDisplayWindow3D`.
 * Examples live in `mrpt_examples_py`; extend them when wrapping new classes.
 * The `.pyi` stubs next to each `__init__.py` are generated and committed: run
   `scripts/generate_python_stubs.py` after changing bindings (CI fails if they

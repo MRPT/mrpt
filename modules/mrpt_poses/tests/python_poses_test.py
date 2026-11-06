@@ -183,6 +183,15 @@ print("CPose3DPDFGaussian base methods")
 g3 = CPose3DPDFGaussian(CPose3D(1.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 check("Gaussian getMean via base", abs(g3.getMean().x - 1.0) < 1e-12)
 
+print("NumPy arrays as MRPT matrices (implicit conversion)")
+g6 = CPose3DPDFGaussian(CPose3D(1.0, 0.0, 0.0, 0.0, 0.0, 0.0), np.eye(6) * 0.01)
+check("6x6 covariance from numpy", abs(np.asarray(g6.cov)[2, 2] - 0.01) < 1e-12)
+try:
+    CPose3DPDFGaussian(CPose3D(), np.eye(5))
+    check("wrong shape rejected", False, "no exception")
+except TypeError:
+    check("wrong shape rejected", True)
+
 # ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
