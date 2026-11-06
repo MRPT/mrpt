@@ -1972,10 +1972,16 @@ TEST(CPose3DQuatPDFGaussianInf, ChangeCoordsDrawSamplesInverseAndOperators)
   p2.drawManySamples(5, samples);
   EXPECT_EQ(samples.size(), 5u);
 
-  // The information matrix is now singular along the quaternion norm, so the
-  // unnormalized PDF is only checked on a full-rank Gaussian:
+  // Full-rank information: standard multivariate normal density.
   const CPose3DQuatPDFGaussianInf pFull(meanQ, covInv);
-  EXPECT_GT(pFull.evaluatePDF(pFull.mean), 0.0);
+  EXPECT_NEAR(pFull.evaluatePDF(pFull.mean) / std::pow(1000.0 / M_2PI, 3.5), 1.0, 1e-9);
+
+  // The information matrix is now singular along the quaternion norm: the
+  // density on its support must still be finite and positive.
+  const double pAtMean = p2.evaluatePDF(p2.mean);
+  EXPECT_TRUE(std::isfinite(pAtMean));
+  EXPECT_GT(pAtMean, 0.0);
+  EXPECT_GT(pAtMean, p2.evaluatePDF(CPose3DQuat(CPose3D(5, 5, 5, 0, 0, 0))));
   EXPECT_NEAR(p2.evaluateNormalizedPDF(p2.mean), 1.0, 1e-3);
 
   CPose3DQuatPDFGaussianInf inv;
