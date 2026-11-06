@@ -18,6 +18,7 @@
 
 #include <algorithm>  // count()
 #include <array>
+#include <optional>
 #include <sstream>
 
 TEST(exception, stackedExceptionBasic)
@@ -105,6 +106,40 @@ TEST(exception, infiniteRecurseBug)
   // Should not crash:
   const auto s = testFoo();
   EXPECT_TRUE(s.find("Check it") != std::string::npos);
+}
+
+namespace
+{
+// A value whose destructor overwrites it, so that reading it after the
+// temporary that holds it is gone shows up as a wrong value.
+struct ClobberedOnDestruction
+{
+  int v = 0;
+  ~ClobberedOnDestruction() { *const_cast<volatile int*>(&v) = -1; }
+};
+std::optional<ClobberedOnDestruction> make_clobbered(int v) { return ClobberedOnDestruction{v}; }
+}  // namespace
+
+// The macros must stay usable in constexpr functions.
+constexpr int doubled_below_100(int x)
+{
+  ASSERT_LT_(x, 100);
+  ASSERT_NOT_EQUAL_(x, 50);
+  return 2 * x;
+}
+static_assert(doubled_below_100(3) == 6, "ASSERT_*_() must work in constexpr functions");
+
+// Operands that refer into a temporary must stay valid until the check is done.
+TEST(exception, assertOperandsOutliveTheCheck)
+{
+  EXPECT_NO_THROW(ASSERT_EQUAL_(make_clobbered(9)->v, 9));
+  EXPECT_ANY_THROW(ASSERT_EQUAL_(make_clobbered(9)->v, 8));
+  EXPECT_ANY_THROW(ASSERT_NOT_EQUAL_(make_clobbered(9)->v, 9));
+  EXPECT_NO_THROW(ASSERT_LT_(make_clobbered(1)->v, 2));
+  EXPECT_NO_THROW(ASSERT_LE_(make_clobbered(2)->v, 2));
+  EXPECT_NO_THROW(ASSERT_GT_(make_clobbered(3)->v, 2));
+  EXPECT_NO_THROW(ASSERT_GE_(make_clobbered(2)->v, 2));
+  EXPECT_NO_THROW(ASSERT_NEAR_(make_clobbered(9)->v, 9, 0));
 }
 
 TEST(exception, assertMacros)
