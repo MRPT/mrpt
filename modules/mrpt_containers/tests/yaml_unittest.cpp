@@ -1649,4 +1649,55 @@ MRPT_TEST(yaml, topCommentOnMapValueEmit)
 }
 MRPT_TEST_END()
 
+MRPT_TEST(yaml, emptyContainersEmit)
+{
+  using mrpt::containers::CommentPosition;
+  using mrpt::containers::yaml;
+
+  mrpt::containers::YamlEmitOptions eo;
+  eo.emitHeader = false;
+
+  // Empty sequences and maps must survive an emit/parse round trip:
+  {
+    const auto y = yaml::FromText("a:\n  list: []\n  map: {}\n  b: 1\nc:\n  - []\n  - {}\n");
+    std::stringstream ss;
+    y.printAsYAML(ss, eo);
+    EXPECT_EQ(ss.str(), "a:\n  list: []\n  map: {}\n  b: 1\nc:\n  - []\n  - {}\n");
+
+    const auto y2 = yaml::FromText(ss.str());
+    EXPECT_TRUE(y2["a"]["list"].isSequence());
+    EXPECT_EQ(y2["a"]["list"].asSequence().size(), 0U);
+    EXPECT_TRUE(y2["a"]["map"].isMap());
+    EXPECT_EQ(y2["a"]["map"].asMap().size(), 0U);
+    EXPECT_EQ(y2["a"]["b"].as<int>(), 1);
+    EXPECT_TRUE(y2["c"](0).isSequence());
+    EXPECT_TRUE(y2["c"](1).isMap());
+  }
+
+  // With comments:
+  {
+    yaml m = yaml::Map();
+    m["s"] = yaml::Sequence();
+    m["s"].comment("about s", CommentPosition::TOP);
+    m["t"] = yaml::Map();
+    m["t"].comment("right", CommentPosition::RIGHT);
+    std::stringstream ss;
+    m.printAsYAML(ss, eo);
+    EXPECT_EQ(ss.str(), "s:\n# about s\n  []\nt: {}  # right\n");
+
+    const auto y2 = yaml::FromText(ss.str());
+    EXPECT_TRUE(y2["s"].isSequence());
+    EXPECT_TRUE(y2["t"].isMap());
+  }
+
+  // Empty top-level document:
+  {
+    std::stringstream ss;
+    const yaml m = yaml::Map();
+    m.printAsYAML(ss, eo);
+    EXPECT_EQ(ss.str(), "{}\n");
+  }
+}
+MRPT_TEST_END()
+
 #endif  // MRPT_HAS_FYAML
