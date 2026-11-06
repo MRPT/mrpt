@@ -77,25 +77,6 @@ std::string asrt_fail_near(
   return s;
 }
 
-/** Returns the ASSERT_*() failure message if ok(a, b) is false, or an empty
- * string otherwise. The operands are function arguments so that a temporary
- * they refer to (e.g. the optional in `f()->x`) lives until the check is done;
- * a local reference bound to them would dangle. */
-template <typename A, typename B, typename OK>
-std::string asrt_check(
-    const char* cond, const A& a, const B& b, OK ok, const char* astr, const char* bstr)
-{
-  return ok(a, b) ? std::string() : asrt_fail(cond, a, b, astr, bstr);
-}
-
-/** Like asrt_check(), for ASSERT_NEAR_(). */
-template <typename A, typename B, typename T>
-std::string asrt_check_near(
-    const A& a, const B& b, const T& tol, const char* astr, const char* bstr, const char* tolstr)
-{
-  const auto diff = mrpt::abs_diff<std::decay_t<A>>(a, b);
-  return diff > tol ? asrt_fail_near("ASSERT_NEAR_", a, b, tol, astr, bstr, tolstr) : std::string();
-}
 }  // namespace mrpt::internal
 
 namespace mrpt
@@ -152,6 +133,60 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION, public ExceptionWithCallBa
   mutable std::string m_what;
 };
 
+namespace internal
+{
+/** Throws an ASSERT_*() failure as THROW_EXCEPTION() would at the caller's
+ * file, line and function. */
+[[noreturn]] inline void asrt_throw(
+    const std::string& msg, const char* file, unsigned int line, const char* func)
+{
+  throw mrpt::ExceptionWithCallBack<std::logic_error>(
+      std::logic_error(mrpt::internal::exception_line_msg(msg, file, line, func)));
+}
+
+/** The check behind the comparison ASSERT_*() macros: throws unless ok(a, b).
+ * The operands are function arguments, so a temporary they refer to (e.g. the
+ * optional in `f()->x`) lives until the check is done; a local reference bound
+ * to them would dangle. Nothing non-literal is declared in the caller, so the
+ * macros also work in constexpr functions. */
+template <typename A, typename B, typename OK>
+constexpr void asrt_check(
+    const char* cond,
+    const A& a,
+    const B& b,
+    OK ok,
+    const char* astr,
+    const char* bstr,
+    const char* file,
+    unsigned int line,
+    const char* func)
+{
+  if (!ok(a, b))
+  {
+    asrt_throw(asrt_fail(cond, a, b, astr, bstr), file, line, func);
+  }
+}
+
+/** Like asrt_check(), for ASSERT_NEAR_(). */
+template <typename A, typename B, typename T>
+constexpr void asrt_check_near(
+    const A& a,
+    const B& b,
+    const T& tol,
+    const char* astr,
+    const char* bstr,
+    const char* tolstr,
+    const char* file,
+    unsigned int line,
+    const char* func)
+{
+  if (mrpt::abs_diff<std::decay_t<A>>(a, b) > tol)
+  {
+    asrt_throw(asrt_fail_near("ASSERT_NEAR_", a, b, tol, astr, bstr, tolstr), file, line, func);
+  }
+}
+}  // namespace internal
+
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
 #define THROW_TYPED_EXCEPTION(msg, exceptionClass)                  \
   throw mrpt::ExceptionWithCallBack<exceptionClass>(exceptionClass( \
@@ -203,14 +238,12 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION, public ExceptionWithCallBa
 
 /** Throws the ASSERT_*() failure for __A and __B unless __OK, an expression
  * of `_a` and `_b`, holds. Each operand is evaluated once. */
-#define ASRT_CHECK_(__CONDITIONSTR, __A, __B, __OK)                                            \
-  do                                                                                           \
-  {                                                                                            \
-    if (const std::string _msg = mrpt::internal::asrt_check(                                   \
-            __CONDITIONSTR, (__A), (__B), [](const auto& _a, const auto& _b) { return __OK; }, \
-            #__A, #__B);                                                                       \
-        !_msg.empty())                                                                         \
-      THROW_EXCEPTION(_msg);                                                                   \
+#define ASRT_CHECK_(__CONDITIONSTR, __A, __B, __OK)                                              \
+  do                                                                                             \
+  {                                                                                              \
+    mrpt::internal::asrt_check(                                                                  \
+        __CONDITIONSTR, (__A), (__B), [](const auto& _a, const auto& _b) { return __OK; }, #__A, \
+        #__B, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__);                                    \
   } while (0)
 
 /** Assert comparing two values, reporting their actual values upon failure */
@@ -219,13 +252,12 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION, public ExceptionWithCallBa
 #define ASSERT_NOT_EQUAL_(__A, __B) ASRT_CHECK_("ASSERT_NOT_EQUAL_", __A, __B, !(_a == _b))
 
 /** Checks two float/double values, reporting their values upon failure. */
-#define ASSERT_NEAR_(__A, __B, __TOLERANCE)                         \
-  do                                                                \
-  {                                                                 \
-    if (const std::string _msg = mrpt::internal::asrt_check_near(   \
-            (__A), (__B), (__TOLERANCE), #__A, #__B, #__TOLERANCE); \
-        !_msg.empty())                                              \
-      THROW_EXCEPTION(_msg);                                        \
+#define ASSERT_NEAR_(__A, __B, __TOLERANCE)                                        \
+  do                                                                               \
+  {                                                                                \
+    mrpt::internal::asrt_check_near(                                               \
+        (__A), (__B), (__TOLERANCE), #__A, #__B, #__TOLERANCE, __FILE__, __LINE__, \
+        __CURRENT_FUNCTION_NAME__);                                                \
   } while (0)
 
 /** Checks A<B */

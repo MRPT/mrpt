@@ -120,6 +120,15 @@ struct ClobberedOnDestruction
 std::optional<ClobberedOnDestruction> make_clobbered(int v) { return ClobberedOnDestruction{v}; }
 }  // namespace
 
+// The macros must stay usable in constexpr functions.
+constexpr int doubled_below_100(int x)
+{
+  ASSERT_LT_(x, 100);
+  ASSERT_NOT_EQUAL_(x, 50);
+  return 2 * x;
+}
+static_assert(doubled_below_100(3) == 6, "ASSERT_*_() must work in constexpr functions");
+
 // Operands that refer into a temporary must stay valid until the check is done.
 TEST(exception, assertOperandsOutliveTheCheck)
 {
