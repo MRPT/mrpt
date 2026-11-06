@@ -39,6 +39,17 @@ void ensure_nanogui_init()
   }
 }
 
+// Python truthiness of a callback result (e.g. None is false), as a C++ bool.
+bool py_truthy(const py::object& o)
+{
+  const int t = PyObject_IsTrue(o.ptr());
+  if (t < 0)
+  {
+    throw py::error_already_set();
+  }
+  return t == 1;
+}
+
 // Python callables must be called with the GIL held, and their exceptions
 // must not reach the C++ GUI loop.
 void call_py(const py::function& f)
@@ -309,7 +320,7 @@ PYBIND11_MODULE(_bindings, m)
                   py::gil_scoped_acquire gil;
                   try
                   {
-                    return py::cast<bool>(f(key, scancode, action, modifiers));
+                    return py_truthy(f(key, scancode, action, modifiers));
                   }
                   catch (py::error_already_set& e)
                   {
@@ -331,7 +342,7 @@ PYBIND11_MODULE(_bindings, m)
                   py::gil_scoped_acquire gil;
                   try
                   {
-                    return py::cast<bool>(f(files));
+                    return py_truthy(f(files));
                   }
                   catch (py::error_already_set& e)
                   {
