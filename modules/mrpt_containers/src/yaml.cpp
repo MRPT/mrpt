@@ -455,6 +455,22 @@ void yaml::printDebugStructure(std::ostream& o) const
   internalPrintDebugStructure(*n, o, indent);
 }
 
+namespace
+{
+void internalPrintRightComment(std::ostream& o, const std::string& c)
+{
+  if (c.find('\n') == std::string::npos)
+  {
+    o << "  # " << c << "\n";
+    return;
+  }
+  // We don't handle multiline right comment at present:
+  auto s = c;
+  s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
+  o << "  # " << s << "\n";
+}
+}  // namespace
+
 bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, InternalPrintState ps)
 {
   // Build a comments_t view (all-empty if no meta):
@@ -525,6 +541,29 @@ bool yaml::internalPrintNodeAsYAML(const node_t& p, std::ostream& o, InternalPri
   if (p.isNullNode())
   {
     return internalPrintAsYAML(std::monostate(), o, ps, cs);
+  }
+
+  // Empty containers have no block representation: emit them in flow style,
+  // otherwise they would be read back as null.
+  if ((p.isMap() && std::get<map_t>(p.d).empty()) ||
+      (p.isSequence() && std::get<sequence_t>(p.d).empty()))
+  {
+    if (ps.nlWritten)
+    {
+      o << std::string(ps.indent + 2, ' ');
+    }
+    else if (ps.needsSpace)
+    {
+      o << " ";
+    }
+    o << (p.isMap() ? "{}" : "[]");
+
+    if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)]; rc.has_value())
+    {
+      internalPrintRightComment(o, rc.value());
+      return true;  // \n already emitted.
+    }
+    return false;  // \n not emitted.
   }
 
   auto ps2 = ps;
@@ -653,22 +692,6 @@ void yaml::internalPrintDebugStructure(const node_t& p, std::ostream& o, unsigne
 
   THROW_EXCEPTION("Should never reach here");
 }
-
-namespace
-{
-void internalPrintRightComment(std::ostream& o, const std::string& c)
-{
-  if (c.find('\n') == std::string::npos)
-  {
-    o << "  # " << c << "\n";
-    return;
-  }
-  // We don't handle multiline right comment at present:
-  auto s = c;
-  s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
-  o << "  # " << s << "\n";
-}
-}  // namespace
 
 bool yaml::internalPrintAsYAML(
     const std::monostate& /*unused*/,
