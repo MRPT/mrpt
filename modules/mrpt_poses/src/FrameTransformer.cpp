@@ -66,7 +66,7 @@ FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
     const mrpt::system::TTimeStamp query_time,
     const double timeout_secs)
 {
-  using pose_t = typename base_t::pose_t;
+  using local_pose_t = typename base_t::pose_t;
 
   ASSERTMSG_(timeout_secs == .0, "timeout_secs!=0: Blocking calls not supported yet!");
   ASSERTMSG_(
@@ -74,7 +74,7 @@ FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
 
   // Undirected graph of frames: each edge can be traversed from the parent
   // (with the stored pose) or from the child (with its inverse).
-  std::map<std::string, std::vector<std::pair<std::string, pose_t>>> adjacency;
+  std::map<std::string, std::vector<std::pair<std::string, local_pose_t>>> adjacency;
   for (const auto& [parent, children] : m_pose_edges_buffer)
   {
     for (const auto& [child, edge] : children)
@@ -91,14 +91,14 @@ FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
 
   // Breadth-first search from the source frame, keeping the pose of each
   // reached frame with respect to the source frame:
-  std::map<std::string, pose_t> pose_wrt_source;
-  pose_wrt_source[source_frame] = pose_t();
+  std::map<std::string, local_pose_t> pose_wrt_source;
+  pose_wrt_source[source_frame] = local_pose_t();
   std::deque<std::string> pending = {source_frame};
   while (!pending.empty() && pose_wrt_source.count(target_frame) == 0)
   {
     const std::string cur = pending.front();
     pending.pop_front();
-    const pose_t cur_pose = pose_wrt_source.at(cur);
+    const local_pose_t cur_pose = pose_wrt_source.at(cur);
     for (const auto& [next, next_wrt_cur] : adjacency.at(cur))
     {
       if (pose_wrt_source.count(next) != 0)
