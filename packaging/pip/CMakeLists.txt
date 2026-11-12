@@ -28,7 +28,7 @@ set(MRPT_MODULES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../modules")
 # that make little sense in a portable wheel.
 set(MRPT_WHEEL_MODULES
   mrpt_bayes mrpt_comms mrpt_config mrpt_containers mrpt_core mrpt_expr
-  mrpt_graphs mrpt_gui mrpt_img mrpt_io mrpt_kinematics mrpt_maps mrpt_math
+  mrpt_graphs mrpt_graphslam mrpt_gui mrpt_img mrpt_io mrpt_kinematics mrpt_maps mrpt_math
   mrpt_nav mrpt_obs mrpt_opengl mrpt_poses mrpt_random mrpt_rtti
   mrpt_serialization mrpt_slam mrpt_system mrpt_tfest mrpt_topography
   mrpt_viz
