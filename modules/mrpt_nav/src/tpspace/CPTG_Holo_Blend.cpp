@@ -20,7 +20,9 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTimeLogger.h>
 
+#include <algorithm>
 #include <cmath>
+#include <cstdint>
 
 using namespace mrpt::nav;
 using namespace mrpt::system;
@@ -332,7 +334,11 @@ std::optional<std::pair<int, double>> CPTG_Holo_Blend::inverseMap_WS2TP(
 {
   PERFORMANCE_BENCHMARK;
 
-  ASSERT_(x != 0 || y != 0);
+  // The origin is the start of every path:
+  if (x == 0 && y == 0)
+  {
+    return std::make_pair(static_cast<int>(CParameterizedTrajectoryGenerator::alpha2index(0)), 0.0);
+  }
 
   const double err_threshold = 1e-2;
   const double vxi = m_nav_dyn_state.curVelLocal.vx, vyi = m_nav_dyn_state.curVelLocal.vy;
@@ -456,12 +462,12 @@ size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
   if (m_pathStepCountCache.size() > k && m_pathStepCountCache[k] > 0)
     return m_pathStepCountCache[k];
 
-  const auto optStep = getPathStepForDist(k, this->refDistance);
-  if (!optStep)
+  const auto t = internal_solve_time_for_dist(k, this->refDistance);
+  if (!t)
   {
     THROW_EXCEPTION_FMT("Could not solve closed-form distance for k=%u", static_cast<unsigned>(k));
   }
-  const uint32_t step = *optStep;
+  const auto step = static_cast<uint32_t>(mrpt::round(*t / m_pathTimeStep));
   ASSERT_(step > 0);
   if (m_pathStepCountCache.size() != m_alphaValuesCount)
   {
@@ -557,6 +563,35 @@ std::optional<uint32_t> CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double d
 {
   PERFORMANCE_BENCHMARK;
 
+  const auto t = internal_solve_time_for_dist(k, dist);
+  if (!t)
+  {
+    return std::nullopt;
+  }
+
+  // Largest step whose distance is below `dist`. The time solution may be
+  // approximate, so check it against the actual path distances, and never
+  // go beyond the end of the path:
+  const auto lastStep = static_cast<int64_t>(getPathStepCount(k)) - 1;
+  int64_t step = static_cast<int64_t>(std::ceil(*t / m_pathTimeStep)) - 1;
+  step = std::clamp<int64_t>(step, 0, lastStep + 1);
+  while (step > 0 && getPathDist(k, static_cast<uint32_t>(step)) >= dist)
+  {
+    step--;
+  }
+  while (step <= lastStep && getPathDist(k, static_cast<uint32_t>(step + 1)) < dist)
+  {
+    step++;
+  }
+  if (step > lastStep)
+  {
+    return std::nullopt;
+  }
+  return static_cast<uint32_t>(step);
+}
+
+std::optional<double> CPTG_Holo_Blend::internal_solve_time_for_dist(uint16_t k, double dist) const
+{
   const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
   COMMON_PTG_DESIGN_PARAMS;
 
@@ -645,7 +680,7 @@ std::optional<uint32_t> CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double d
   }
   if (t_solved >= 0)
   {
-    return static_cast<uint32_t>(mrpt::round(t_solved / m_pathTimeStep));
+    return t_solved;
   }
   return std::nullopt;
 }

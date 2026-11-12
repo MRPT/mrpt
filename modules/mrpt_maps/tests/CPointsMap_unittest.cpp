@@ -13,6 +13,8 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/io/CCompressedOutputStream.h>
+#include <mrpt/io/detect_compression.h>
 #include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/KDTreeCapable.h>
@@ -33,6 +35,8 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <utility>
+#include <vector>
 
 #ifdef _WIN32
 #include <process.h>  // _getpid()
@@ -1247,9 +1251,6 @@ TEST(CGenericPointsMapTests, loadFromKittiVelodyneFileTruncatedRecordReturnsFals
 
 TEST(CGenericPointsMapTests, kittiVelodyneRoundTrip)
 {
-  // saveToKittiVelodyneFile() always writes gzip-compressed data, and
-  // loadFromKittiVelodyneFile() only auto-detects gzip via the ".gz"
-  // extension, so the round trip requires that extension.
   CGenericPointsMap pts;
   pts.registerField_float(CPointsMap::POINT_FIELD_INTENSITY);
   pts.insertPointFast(1.0f, 2.0f, 3.0f);
@@ -1257,22 +1258,61 @@ TEST(CGenericPointsMapTests, kittiVelodyneRoundTrip)
   pts.insertPointFast(-1.0f, -2.0f, -3.0f);
   pts.insertPointField_float(CPointsMap::POINT_FIELD_INTENSITY, 0.75f);
 
-  const std::string file = makeTempFilePath(".gz");
-  ASSERT_TRUE(pts.saveToKittiVelodyneFile(file));
+  // The extension selects the compression:
+  const std::vector<std::pair<std::string, mrpt::io::CompressionType>> cases = {
+      {    ".bin", mrpt::io::CompressionType::None},
+      { ".bin.gz", mrpt::io::CompressionType::Gzip},
+      {".bin.zst", mrpt::io::CompressionType::Zstd}
+  };
 
-  CGenericPointsMap pts2;
-  ASSERT_TRUE(pts2.loadFromKittiVelodyneFile(file));
+  for (const auto& [extension, compression] : cases)
+  {
+    const std::string file = makeTempFilePath(extension);
+    ASSERT_TRUE(pts.saveToKittiVelodyneFile(file)) << file;
+    EXPECT_EQ(mrpt::io::detect_compression(file), compression) << file;
+    if (compression == mrpt::io::CompressionType::None)
+    {
+      // Plain KITTI format: 4 floats per point.
+      EXPECT_EQ(std::filesystem::file_size(file), pts.size() * 4 * sizeof(float));
+    }
 
-  ASSERT_EQ(pts2.size(), pts.size());
-  const auto* intensities = pts2.getPointsBufferRef_float_field(CPointsMap::POINT_FIELD_INTENSITY);
-  ASSERT_TRUE(intensities != nullptr);
-  EXPECT_FLOAT_EQ(intensities->at(0), 0.5f);
-  EXPECT_FLOAT_EQ(intensities->at(1), 0.75f);
+    CGenericPointsMap pts2;
+    ASSERT_TRUE(pts2.loadFromKittiVelodyneFile(file)) << file;
 
+    ASSERT_EQ(pts2.size(), pts.size());
+    const auto* intensities =
+        pts2.getPointsBufferRef_float_field(CPointsMap::POINT_FIELD_INTENSITY);
+    ASSERT_TRUE(intensities != nullptr);
+    EXPECT_FLOAT_EQ(intensities->at(0), 0.5f);
+    EXPECT_FLOAT_EQ(intensities->at(1), 0.75f);
+
+    float x, y, z;
+    pts2.getPoint(0, x, y, z);
+    EXPECT_FLOAT_EQ(x, 1.0f);
+    EXPECT_FLOAT_EQ(y, 2.0f);
+    EXPECT_FLOAT_EQ(z, 3.0f);
+
+    std::filesystem::remove(file);
+  }
+}
+
+TEST(CGenericPointsMapTests, kittiVelodyneLoadsZstdWithPlainExtension)
+{
+  const std::string file = makeTempFilePath(".bin");
+  {
+    mrpt::io::CCompressedOutputStream f(
+        file, mrpt::io::OpenMode::TRUNCATE,
+        mrpt::io::CompressionOptions(mrpt::io::CompressionType::Zstd));
+    const float xyzi[4] = {1.0f, 2.0f, 3.0f, 0.5f};
+    ASSERT_EQ(f.Write(&xyzi, sizeof(xyzi)), sizeof(xyzi));
+  }
+
+  CGenericPointsMap pts;
+  ASSERT_TRUE(pts.loadFromKittiVelodyneFile(file));
+  ASSERT_EQ(pts.size(), 1U);
   float x, y, z;
-  pts2.getPoint(0, x, y, z);
+  pts.getPoint(0, x, y, z);
   EXPECT_FLOAT_EQ(x, 1.0f);
-  EXPECT_FLOAT_EQ(y, 2.0f);
   EXPECT_FLOAT_EQ(z, 3.0f);
 
   std::filesystem::remove(file);

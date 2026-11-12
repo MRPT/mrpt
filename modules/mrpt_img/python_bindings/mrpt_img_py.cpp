@@ -229,7 +229,16 @@ PYBIND11_MODULE(_bindings, m)
           "dist",
           [](const TCamera& c) { return std::vector<double>(c.dist.begin(), c.dist.end()); },
           [](TCamera& c, const std::vector<double>& v)
-          { std::copy(v.begin(), v.end(), c.dist.begin()); })
+          {
+            if (v.size() > c.dist.size())
+            {
+              throw py::value_error("TCamera.dist accepts at most 8 coefficients");
+            }
+            c.dist.fill(0);
+            std::copy(v.begin(), v.end(), c.dist.begin());
+          },
+          "Distortion coefficients [k1 k2 p1 p2 k3 k4 k5 k6] (kannala_brandt uses k1 to k4 only). "
+          "Up to 8 values: the missing ones are set to zero.")
       .def_property(
           "fx", [](const TCamera& c) { return c.fx(); }, [](TCamera& c, double v) { c.fx(v); })
       .def_property(

@@ -34,10 +34,11 @@ def main():
 
     expr_custom = mrpt.expr.CRuntimeCompiledExpression()
 
-    # Register it! Now the parser knows 'avg(a,b)'
-    expr_custom.register_function("avg", my_custom_logic)
+    # Register it! Now the parser knows 'my_avg(a,b)'
+    # (names of exprtk built-in functions, like 'avg', are not allowed)
+    expr_custom.register_function("my_avg", my_custom_logic)
 
-    expr_custom.compile("avg(10, 20) + 5")
+    expr_custom.compile("my_avg(10, 20) + 5")
     print(f"Custom result: {expr_custom.eval()}")  # Expected: 15 + 5 = 20.0
 
     # 3. Dynamic Updates
@@ -47,7 +48,7 @@ def main():
     # Because compilation is extremely fast (μs), this is standard.
     new_vars = {"x": 20.0, "y": 2.0}
     expr.compile(formula, new_vars)
-    print(f"Updated result: {expr.eval()}")
+    print(f"Updated result: {expr.eval()}")  # Expected: 20 * 1 + 2^2 = 24
 
 
 if __name__ == "__main__":

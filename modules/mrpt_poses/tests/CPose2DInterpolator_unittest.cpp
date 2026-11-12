@@ -73,6 +73,9 @@ TEST(CPose2DInterpolator, AllMethodsAndAccessors)
   EXPECT_EQ(path.size(), 4u);
   EXPECT_FALSE(path.empty());
 
+  // The documented default method:
+  EXPECT_EQ(path.getInterpolationMethod(), imLinearSlerp);
+
   const TInterpolatorMethod methods[] = {imSpline, imLinear2Neig, imLinear4Neig, imSSLLLL,
                                          imSSLSLL, imLinearSlerp, imSplineSlerp};
   for (auto m : methods)

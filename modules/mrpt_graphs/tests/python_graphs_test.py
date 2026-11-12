@@ -67,6 +67,12 @@ try:
     check("disconnected: unreachable target raises", False)
 except ValueError:
     check("disconnected: unreachable target raises", True)
+try:
+    gdis.dijkstra_nodes_estimate()
+    check("disconnected: estimate raises", False)
+except RuntimeError as ex:
+    check("disconnected: estimate raises with message", "not fully connected" in str(ex),
+          f"got {str(ex)!r}")
 gedges = _G2()  # edges only, no node poses yet
 for i in range(3):
     gedges.insertEdge(i, i + 1, _CP2(1.0, 0.0, 0.0))
@@ -74,6 +80,66 @@ gedges.dijkstra_nodes_estimate()
 check("estimate with no initial node poses", abs(gedges.getNodePose(3).x - 3.0) < 1e-12)
 check("dijkstra_nodes_estimate", abs(gd.getNodePose(2).x - 2.0) < 1e-12
       and abs(gd.getNodePose(4).x - 4.0) < 1e-12, f"got {gd.getNodePose(4)}")
+
+print("Reading edges back")
+ge = _G2()
+ge.insertEdge(2, 3, _CP2(0.5, 0.0, 0.1))
+ge.insertEdge(0, 1, _CP2(1.0, 2.0, 0.3))
+ge.insertEdge(0, 1, _CP2(9.0, 0.0, 0.0))  # a second, parallel edge
+edges = ge.getEdges()
+check("getEdges", [(a, b) for a, b, _ in edges] == [(0, 1), (0, 1), (2, 3)] and
+      abs(edges[0][2].y - 2.0) < 1e-12 and abs(edges[2][2].phi - 0.1) < 1e-12, f"got {edges}")
+check("getEdge", abs(ge.getEdge(2, 3).x - 0.5) < 1e-12 and abs(ge.getEdge(0, 1).x - 1.0) < 1e-12)
+check("edgeExists", ge.edgeExists(0, 1) and not ge.edgeExists(1, 0))
+try:
+    ge.getEdge(1, 0)
+    check("getEdge of a missing edge raises", False)
+except KeyError:
+    check("getEdge of a missing edge raises", True)
+ge.eraseEdge(0, 1)
+check("eraseEdge", ge.edgeCount() == 1 and not ge.edgeExists(0, 1))
+ge.clearEdges()
+check("clearEdges", ge.edgeCount() == 0 and ge.getEdges() == [])
+
+print("Pose graphs with Gaussian edges")
+import numpy as np
+from mrpt.graphs import (
+    CNetworkOfPoses2DCov, CNetworkOfPoses3DCov, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf,
+)
+from mrpt.poses import (
+    CPosePDFGaussian, CPose3DPDFGaussian, CPosePDFGaussianInf, CPose3DPDFGaussianInf,
+)
+# pybind11 < 2.12 cannot take NumPy >= 2 arrays (mrpt.rtti warns about it):
+import mrpt.rtti._bindings as _rtti
+_numpy_to_mrpt_ok = not (int(np.__version__.split(".")[0]) >= 2 and
+                         tuple(_rtti._pybind11_version[:2]) < (2, 12))
+if not _numpy_to_mrpt_ok:
+    print("  SKIP  NumPy >= 2 with pybind11 < 2.12")
+else:
+    g2c = CNetworkOfPoses2DCov()
+    g2c.insertEdge(0, 1, CPosePDFGaussian(_CP2(1.0, 0.0, math.pi / 2), np.eye(3) * 0.01))
+    g2c.insertEdge(1, 2, CPosePDFGaussian(_CP2(1.0, 0.0, 0.0), np.eye(3) * 0.02))
+    g2c.dijkstra_nodes_estimate()
+    p2 = g2c.getNodePose(2)
+    check("2DCov node estimate", isinstance(p2, _CP2) and abs(p2.x - 1.0) < 1e-9 and
+          abs(p2.y - 1.0) < 1e-9, f"got {p2}")
+    e = g2c.getEdge(1, 2)
+    check("2DCov edge read back", isinstance(e, CPosePDFGaussian) and
+          abs(np.asarray(e.cov)[0, 0] - 0.02) < 1e-12)
+    g2i = CNetworkOfPoses2DInf()
+    g2i.insertEdge(0, 1, CPosePDFGaussianInf(_CP2(2.0, 0.0, 0.0), np.eye(3) * 100.0))
+    check("2DInf edge read back", abs(np.asarray(g2i.getEdges()[0][2].cov_inv)[1, 1] - 100.0) < 1e-9)
+    g2i.setNodePose(5, _CP2(1.0, 2.0, 3.0))
+    check("2DInf node pose", abs(g2i.getNodePose(5).y - 2.0) < 1e-12)
+    g3c = CNetworkOfPoses3DCov()
+    g3c.insertEdge(0, 1, CPose3DPDFGaussian(CPose3D(1, 0, 0, 0, 0, 0), np.eye(6) * 0.01))
+    g3c.dijkstra_nodes_estimate()
+    check("3DCov node estimate", abs(g3c.getNodePose(1).x - 1.0) < 1e-9)
+    g3i = CNetworkOfPoses3DInf()
+    g3i.insertEdge(0, 1, CPose3DPDFGaussianInf(CPose3D(0, 2, 0, 0, 0, 0), np.eye(6)))
+    g3i.dijkstra_nodes_estimate()
+    check("3DInf node estimate", abs(g3i.getNodePose(1).y - 2.0) < 1e-9 and
+          isinstance(g3i.getEdge(0, 1), CPose3DPDFGaussianInf))
 
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

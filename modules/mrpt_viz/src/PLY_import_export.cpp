@@ -2118,6 +2118,11 @@ bool PLY_Exporter::saveToPlyFile(
 #endif
                        : PLY_ASCII,
         &version);
+    if (!ply)
+    {
+      m_ply_export_last_error = "Error opening for writing file: '" + filename + "'";
+      return false;
+    }
 
     /* describe what properties go into the vertex and face elements */
 

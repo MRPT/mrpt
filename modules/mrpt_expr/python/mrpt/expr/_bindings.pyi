@@ -28,23 +28,7 @@ class CRuntimeCompiledExpression:
         """
         Returns true if the expression has been successfully compiled.
         """
-    @typing.overload
-    def register_function(self, name: str, func: typing.Callable[[], float]) -> None:
+    def register_function(self, name: str, func: typing.Callable) -> None:
         """
-        Registers a 0-argument Python function.
-        """
-    @typing.overload
-    def register_function(self, name: str, func: typing.Callable[[float], float]) -> None:
-        """
-        Registers a 1-argument Python function.
-        """
-    @typing.overload
-    def register_function(self, name: str, func: typing.Callable[[float, float], float]) -> None:
-        """
-        Registers a 2-argument Python function.
-        """
-    @typing.overload
-    def register_function(self, name: str, func: typing.Callable[[float, float, float], float]) -> None:
-        """
-        Registers a 3-argument Python function.
+        Registers a Python function taking 0 to 3 float arguments, for use in expressions compiled afterwards. The number of arguments is taken from its signature.
         """

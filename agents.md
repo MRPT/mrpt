@@ -351,6 +351,9 @@ mrpt_add_library(
     without adjusting the pointer: crashes or silent memory corruption.
   * A base and its derived classes must use the same holder type
     (`CLoadableOptions` uses `std::shared_ptr`, so every options struct too).
+  * Bind C++ in-place operators returning `void` (`+=` of the pose PDFs) as
+    `__iadd__` lambdas returning `T&`: `py::self += x` makes `a += b` set
+    `a` to None in Python.
   * Fields of `#pragma pack(1)` structs (GNSS messages) must be bound with
     `MRPT_PACKED_READWRITE`, not `def_readwrite`: member pointers to unaligned
     fields crash on armhf (Bus error).

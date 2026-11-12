@@ -113,8 +113,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::internal_build_PointCloud_for_observatio
       return false;
     }
 
-    // Build a points-map representation of the points from the scan
-    // (coordinates are wrt the robot base)
+    // The points are given wrt the sensor.
 
     // Sensor_pose = robot_pose (+) sensor_pose_on_robot
     CPose3D sensorPose = obs.getSensorPose();
@@ -154,7 +153,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::internal_build_PointCloud_for_observatio
     scan.reserve(sizeRangeScan);
 
     // For quicker access to values as "float" instead of "doubles":
-    const mrpt::math::CMatrixDouble44 H = robotPose3D.getHomogeneousMatrix();
+    const mrpt::math::CMatrixDouble44 H = sensorPose.getHomogeneousMatrix();
     const float m00 = static_cast<float>(H(0, 0));
     const float m01 = static_cast<float>(H(0, 1));
     const float m02 = static_cast<float>(H(0, 2));

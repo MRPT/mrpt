@@ -152,6 +152,19 @@ TEST(CObservation2DRangeScan, TruncateByDistanceAndAngleNoHeightFilter)
   EXPECT_FALSE(o.getScanRangeValidity(0));
 }
 
+TEST(CObservation2DRangeScan, TruncateByDistanceAndAngleUsesRayAngles)
+{
+  // Rays at -90, -45, 0, 45, 90 deg: only the three central ones are within
+  // 50 deg of the forward direction.
+  CObservation2DRangeScan o;
+  fillScan(o, 5);
+  o.truncateByDistanceAndAngle(0.0f, mrpt::DEG2RAD(50.0f));
+  for (size_t i = 0; i < o.getScanSize(); i++)
+  {
+    EXPECT_EQ(o.getScanRangeValidity(i), i >= 1 && i <= 3) << "ray #" << i;
+  }
+}
+
 TEST(CObservation2DRangeScan, TruncateByDistanceAndAngleWithHeightFilter)
 {
   CObservation2DRangeScan o;

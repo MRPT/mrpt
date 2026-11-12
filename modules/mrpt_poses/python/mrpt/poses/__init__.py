@@ -38,8 +38,17 @@ CPosePDFGaussian = _b.CPosePDFGaussian
 CPosePDFGaussianInf = _b.CPosePDFGaussianInf
 CPosePDFParticles = _b.CPosePDFParticles
 CPose3DPDFParticles = _b.CPose3DPDFParticles
+CPosePDFSOG = _b.CPosePDFSOG
 
 # Interpolators
+TInterpolatorMethod = _b.TInterpolatorMethod
+imSpline = _b.imSpline
+imLinear2Neig = _b.imLinear2Neig
+imLinear4Neig = _b.imLinear4Neig
+imSSLLLL = _b.imSSLLLL
+imSSLSLL = _b.imSSLSLL
+imLinearSlerp = _b.imLinearSlerp
+imSplineSlerp = _b.imSplineSlerp
 CPose2DInterpolator = _b.CPose2DInterpolator
 CPose3DInterpolator = _b.CPose3DInterpolator
 
@@ -65,6 +74,15 @@ __all__ = [
     "CPosePDFGaussianInf",
     "CPosePDFParticles",
     "CPose3DPDFParticles",
+    "CPosePDFSOG",
+    "TInterpolatorMethod",
+    "imSpline",
+    "imLinear2Neig",
+    "imLinear4Neig",
+    "imSSLLLL",
+    "imSSLSLL",
+    "imLinearSlerp",
+    "imSplineSlerp",
     "CPose2DInterpolator",
     "CPose3DInterpolator",
     "CPoseRandomSampler",

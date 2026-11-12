@@ -42,6 +42,24 @@ check("getScanSize", scan.getScanSize() == N)
 back = scan.getScanRangesAsNumpy()
 check("ranges shape",  back.shape == (N,), f"got {back.shape}")
 check("ranges values", abs(float(back[0]) - 1.0) < 1e-4 and abs(float(back[-1]) - 5.0) < 1e-4)
+new_ranges = np.linspace(0.5, 3.0, 7)
+new_valid = np.array([True, False, True, True, False, True, True])
+scan2 = CObservation2DRangeScan()
+scan2.loadFromVectors(new_ranges, new_valid)
+check("loadFromVectors size", scan2.getScanSize() == 7)
+check("loadFromVectors ranges", np.allclose(scan2.getScanRangesAsNumpy(), new_ranges, atol=1e-6))
+check("loadFromVectors validity", list(scan2.getValidRangesAsNumpy()) == list(new_valid))
+check("loadFromVectors per ray", abs(scan2.getScanRange(6) - 3.0) < 1e-6 and
+      not scan2.getScanRangeValidity(4))
+scan2.loadFromVectors([1.0, 2.0], [True, True])
+check("loadFromVectors from lists", scan2.getScanSize() == 2 and abs(scan2.getScanRange(1) - 2) < 1e-6)
+scan2.loadFromVectors([], [])
+check("loadFromVectors empty", scan2.getScanSize() == 0)
+try:
+    scan2.loadFromVectors([1.0, 2.0], [True])
+    check("loadFromVectors length mismatch", False, "no exception")
+except ValueError:
+    check("loadFromVectors length mismatch", True)
 
 print("CObservationOdometry")
 odo = CObservationOdometry()
@@ -277,6 +295,27 @@ check("changeCoordinatesOrigin", abs(smap[0].pose.getMean().x - 10.0) < 1e-9)
 
 print("TSetOfMetricMapInitializers (empty)")
 check("empty map set", len(TSetOfMetricMapInitializers()) == 0)
+
+print("GetRuntimeClass of observations and actions")
+import gc
+from mrpt.obs import CActionRobotMovement3D
+expected_names = {
+    CObservation2DRangeScan: "mrpt::obs::CObservation2DRangeScan",
+    CObservationOdometry: "mrpt::obs::CObservationOdometry",
+    CActionRobotMovement2D: "mrpt::obs::CActionRobotMovement2D",
+    CActionRobotMovement3D: "mrpt::obs::CActionRobotMovement3D",
+}
+names_ok = True
+for _ in range(200):
+    for cls, name in expected_names.items():
+        rc = cls().GetRuntimeClass()  # a static object: Python must not free it
+        names_ok = names_ok and rc.className == name
+        del rc
+    gc.collect()
+check("GetRuntimeClass called many times", names_ok)
+check("GetRuntimeClass returns the same static object",
+      CObservation2DRangeScan().GetRuntimeClass().className ==
+      CObservation2DRangeScan().GetRuntimeClass().className)
 
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

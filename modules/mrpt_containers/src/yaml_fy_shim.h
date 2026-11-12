@@ -72,9 +72,13 @@ extern "C"
 
   // Fills *out with the next simplified event. Stream/document
   // start-or-end and alias events are consumed internally and never
-  // surfaced. Returns 0 on success, nonzero on an unexpected internal
-  // parser event type.
+  // surfaced. Returns 0 on success, nonzero on a parse error (see
+  // mrpt_fy_parser_errors()) or an unexpected internal parser event type.
   int mrpt_fy_parser_next(mrpt_fy_parser_t* p, mrpt_fy_event_t* out);
+
+  // Diagnostics reported by the parser so far (never printed to stderr),
+  // or an empty string if none.
+  const char* mrpt_fy_parser_errors(const mrpt_fy_parser_t* p);
 
   // Frees any heap-allocated strings inside *ev. Idempotent.
   void mrpt_fy_event_release(mrpt_fy_event_t* ev);

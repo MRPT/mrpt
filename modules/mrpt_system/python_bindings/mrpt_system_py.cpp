@@ -20,11 +20,13 @@
 #include <pybind11/stl.h>
 
 // MRPT headers
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/crc.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 
 namespace py = pybind11;
@@ -32,6 +34,45 @@ namespace py = pybind11;
 PYBIND11_MODULE(_bindings, m)
 {
   m.doc() = "Python bindings for mrpt_system";
+
+  // VerbosityLevel ------------------------------------
+  py::enum_<mrpt::system::VerbosityLevel>(
+      m, "VerbosityLevel", "Verbosity levels of the MRPT loggers (COutputLogger).")
+      .value("LVL_DEBUG", mrpt::system::LVL_DEBUG, "Debug messages.")
+      .value("LVL_INFO", mrpt::system::LVL_INFO, "Informational messages.")
+      .value("LVL_WARN", mrpt::system::LVL_WARN, "Warnings.")
+      .value("LVL_ERROR", mrpt::system::LVL_ERROR, "Errors.")
+      .export_values();
+
+  // Plug-in modules -----------------------------------
+  // Each returns (ok, error_messages), instead of printing the errors.
+  const auto pluginFunction = [](bool (*fn)(const std::string&, mrpt::optional_ref<std::string>))
+  {
+    return [fn](const std::string& fileNames)
+    {
+      std::string errors;
+      const bool ok = fn(fileNames, errors);
+      return py::make_tuple(ok, errors);
+    };
+  };
+  m.def(
+      "loadPluginModule", pluginFunction(&mrpt::system::loadPluginModule),
+      py::arg("moduleFileName"),
+      "Loads a shared library (.so, .dll) plug-in module, e.g. so its classes are registered for "
+      "deserialization. Returns (ok, error_messages).");
+  m.def(
+      "unloadPluginModule", pluginFunction(&mrpt::system::unloadPluginModule),
+      py::arg("moduleFileName"),
+      "Unloads a plug-in module loaded with loadPluginModule(). Returns (ok, error_messages).");
+  m.def(
+      "loadPluginModules", pluginFunction(&mrpt::system::loadPluginModules),
+      py::arg("moduleFileNames"),
+      "Like loadPluginModule(), for a comma-separated list of modules. Returns (ok, "
+      "error_messages), with ok true if all of them were loaded.");
+  m.def(
+      "unloadPluginModules", pluginFunction(&mrpt::system::unloadPluginModules),
+      py::arg("moduleFileNames"),
+      "Unloads a comma-separated list of plug-in modules. Returns (ok, error_messages).");
 
   // crc -------------------------------------------
   // CRC16 overloads
