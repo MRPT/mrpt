@@ -332,7 +332,11 @@ std::optional<std::pair<int, double>> CPTG_Holo_Blend::inverseMap_WS2TP(
 {
   PERFORMANCE_BENCHMARK;
 
-  ASSERT_(x != 0 || y != 0);
+  // The origin is the start of every path:
+  if (x == 0 && y == 0)
+  {
+    return std::make_pair(static_cast<int>(CParameterizedTrajectoryGenerator::alpha2index(0)), 0.0);
+  }
 
   const double err_threshold = 1e-2;
   const double vxi = m_nav_dyn_state.curVelLocal.vx, vyi = m_nav_dyn_state.curVelLocal.vy;

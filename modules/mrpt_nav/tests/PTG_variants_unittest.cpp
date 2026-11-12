@@ -621,6 +621,29 @@ TEST(PTGHoloBlend, initialize_and_basic_queries)
   EXPECT_EQ(cmd->getVelCmdLength(), 4U);
 }
 
+TEST(PTGHoloBlend, inverse_map_of_the_origin)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  fill_holo_cfg(cfg, "PTG");
+  auto ptg = CParameterizedTrajectoryGenerator::CreatePTG("CPTG_Holo_Blend", cfg, "PTG", "");
+  ptg->initialize(std::string(), false);
+
+  // Like the other PTGs, the origin maps to a zero distance:
+  const auto inv = ptg->inverseMap_WS2TP(0, 0);
+  ASSERT_TRUE(inv.has_value());
+  EXPECT_EQ(inv->first, ptg->alpha2index(0));
+  EXPECT_EQ(inv->second, 0.0);
+  EXPECT_TRUE(ptg->PTG_IsIntoDomain(0, 0));
+
+  for (const char* name : diffdrive_ptg_names)
+  {
+    const auto dd = make_diffdrive_ptg(name);
+    const auto invDD = dd->inverseMap_WS2TP(0, 0);
+    ASSERT_TRUE(invDD.has_value()) << name;
+    EXPECT_EQ(invDD->second, 0.0) << name;
+  }
+}
+
 TEST(PTGHoloBlend, config_file_and_serialization_roundtrip)
 {
   mrpt::config::CConfigFileMemory cfg;
