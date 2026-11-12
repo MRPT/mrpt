@@ -39,12 +39,36 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/poses/SO_SE_average.h>
 #include <mrpt/serialization/CSerializable.h>
 
 namespace py = pybind11;
 using namespace pybind11::literals;
+
+namespace
+{
+// The Python class already registered for T, to add more methods to it:
+template <class T>
+py::class_<T, std::shared_ptr<T>> registeredClass()
+{
+  return py::reinterpret_borrow<py::class_<T, std::shared_ptr<T>>>(py::type::of<T>());
+}
+
+// Copy constructor, __copy__ and __deepcopy__ (these classes hold no shared data).
+template <class T>
+void addCopyMethods()
+{
+  registeredClass<T>()
+      .def(py::init<const T &>(), "other"_a, "Copy constructor.")
+      .def(
+          "__copy__", [](const T &self) { return T(self); }, "Returns a copy of this object.")
+      .def(
+          "__deepcopy__", [](const T &self, const py::dict & /*memo*/) { return T(self); },
+          "memo"_a, "Returns a copy of this object.");
+}
+}  // namespace
 
 PYBIND11_MODULE(_bindings, m)
 {
@@ -72,6 +96,9 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           py::init<const mrpt::poses::CPose3D &>(), py::arg("p"),
           "Construct from CPose3D (loss of z/pitch/roll).")
+      .def(
+          py::init<const mrpt::math::TPose2D &>(), py::arg("p"),
+          "Construct from a lightweight mrpt.math.TPose2D.")
       // Properties (Getter/Setter wrappers)
       .def_property(
           "x", [](const mrpt::poses::CPose2D &p) { return p.x(); },
@@ -100,11 +127,56 @@ PYBIND11_MODULE(_bindings, m)
             ret.inverse();
             return ret;
           },
-          "Returns the inverse pose")
+          "Returns the inverse pose as a new object (same as -p), without modifying this one. "
+          "Note that CPose3D.inverse() works in place instead.")
+      .def(
+          "composePoint",
+          [](const mrpt::poses::CPose2D &p, const mrpt::math::TPoint2D &l)
+          {
+            mrpt::math::TPoint2D g;
+            p.composePoint(l, g);
+            return g;
+          },
+          "l"_a, "Transforms a point from the local frame of this pose into the global frame.")
+      .def(
+          "composePoint",
+          [](const mrpt::poses::CPose2D &p, double lx, double ly)
+          {
+            mrpt::math::TPoint2D g;
+            p.composePoint(lx, ly, g.x, g.y);
+            return g;
+          },
+          "lx"_a, "ly"_a,
+          "Transforms a point (x, y) from the local frame of this pose into the global frame.")
+      .def(
+          "composePoint",
+          [](const mrpt::poses::CPose2D &p, const mrpt::math::TPoint3D &l)
+          { return p.composePoint(l); },
+          "l"_a,
+          "Transforms a 3D point from the local frame of this pose into the global frame (z is "
+          "not modified).")
+      .def(
+          "inverseComposePoint",
+          [](const mrpt::poses::CPose2D &p, const mrpt::math::TPoint2D &g)
+          { return p.inverseComposePoint(g); },
+          "g"_a, "Transforms a point from the global frame into the local frame of this pose.")
+      .def(
+          "inverseComposePoint",
+          [](const mrpt::poses::CPose2D &p, double gx, double gy)
+          {
+            mrpt::math::TPoint2D l;
+            p.inverseComposePoint(gx, gy, l.x, l.y);
+            return l;
+          },
+          "gx"_a, "gy"_a,
+          "Transforms a point (x, y) from the global frame into the local frame of this pose.")
       // Operators
       .def(py::self + py::self)
       .def(py::self - py::self)
       .def(py::self += py::self)
+      .def(
+          -py::self,
+          "Returns the inverse pose (SE(2) group inverse, not the negation of each coordinate).")
       .def("__str__", &mrpt::poses::CPose2D::asString)
       .def("__repr__", &mrpt::poses::CPose2D::asString);
 
@@ -120,6 +192,9 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           py::init<const mrpt::poses::CPose2D &>(),
           "Builds a 3D pose from a 2D pose (z, pitch and roll set to zero).")
+      .def(
+          py::init<const mrpt::math::TPose3D &>(), py::arg("p"),
+          "Builds the pose from a lightweight mrpt.math.TPose3D.")
       // Static Builders
       .def_static(
           "FromXYZYawPitchRoll", &mrpt::poses::CPose3D::FromXYZYawPitchRoll,
@@ -180,7 +255,9 @@ PYBIND11_MODULE(_bindings, m)
           "setRotationMatrix", &mrpt::poses::CPose3D::setRotationMatrix,
           "Sets the 3x3 rotation matrix.")
       .def(
-          "inverse", [](mrpt::poses::CPose3D &p) { p.inverse(); }, "Inverts the pose in place")
+          "inverse", [](mrpt::poses::CPose3D &p) { p.inverse(); },
+          "Inverts this pose in place and returns None. Use -p to get the inverse as a new pose "
+          "instead (note that CPose2D.inverse() returns a new pose).")
       .def(
           "getOppositeScalar", &mrpt::poses::CPose3D::getOppositeScalar,
           "Return the opposite of the current pose instance by taking the negative of all its "
@@ -219,6 +296,10 @@ PYBIND11_MODULE(_bindings, m)
       .def(py::self + py::self)
       .def(py::self - py::self)
       .def(py::self += py::self)
+      .def(
+          -py::self,
+          "Returns the inverse pose as a new object (SE(3) group inverse, not the negation of "
+          "each coordinate). This pose is not modified.")
       .def("__str__", &mrpt::poses::CPose3D::asString)
       .def("__repr__", &mrpt::poses::CPose3D::asString);
 
@@ -442,7 +523,53 @@ PYBIND11_MODULE(_bindings, m)
           "evaluateNormalizedPDF", &mrpt::poses::CPose3DPDFGaussian::evaluateNormalizedPDF,
           "Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in the range [0,1].")
       .def(py::self + py::self)
-      .def(py::self += mrpt::poses::CPose3D())
+      .def(
+          py::self - py::self,
+          "Inverse pose composition a (-) b, propagating both covariances (independent "
+          "variables).")
+      .def(-py::self, "Returns the PDF of the inverse pose, (0,0,0) (-) this.")
+      // Lambdas, since the C++ in-place operators return void:
+      .def(
+          "__iadd__",
+          [](mrpt::poses::CPose3DPDFGaussian &self,
+             const mrpt::poses::CPose3D &Ap) -> mrpt::poses::CPose3DPDFGaussian &
+          {
+            self += Ap;
+            return self;
+          },
+          py::is_operator(), "Makes this = this (+) Ap, for a pose without uncertainty.")
+      .def(
+          "__iadd__",
+          [](mrpt::poses::CPose3DPDFGaussian &self,
+             const mrpt::poses::CPose3DPDFGaussian &Ap) -> mrpt::poses::CPose3DPDFGaussian &
+          {
+            self += Ap;
+            return self;
+          },
+          py::is_operator(), "Makes this = this (+) Ap, propagating both covariances.")
+      .def(
+          "__isub__",
+          [](mrpt::poses::CPose3DPDFGaussian &self,
+             const mrpt::poses::CPose3DPDFGaussian &Ap) -> mrpt::poses::CPose3DPDFGaussian &
+          {
+            self -= Ap;
+            return self;
+          },
+          py::is_operator(), "Makes this = this (-) Ap, propagating both covariances.")
+      .def(
+          "inverse",
+          [](const mrpt::poses::CPose3DPDFGaussian &self)
+          {
+            mrpt::poses::CPose3DPDFGaussian out;
+            self.inverse(out);
+            return out;
+          },
+          "Returns the PDF of the inverse pose, (0,0,0) (-) this, as a new object (same as "
+          "-pdf). This PDF is not modified.")
+      .def(
+          "changeCoordinatesReference",
+          &mrpt::poses::CPose3DPDFGaussian::changeCoordinatesReference, "newReferenceBase"_a,
+          "Makes this = newReferenceBase (+) this, for a reference pose without uncertainty.")
       .def("__str__", &mrpt::poses::CPose3DPDFGaussian::asString);
 
   // -------------------------------------------------------------------------
@@ -600,6 +727,9 @@ PYBIND11_MODULE(_bindings, m)
           py::init<>(),
           "Default constructor, initialize translation to zeros and quaternion to no rotation.")
       .def(py::init<const mrpt::poses::CPose3D &>(), "Builds the pose from a CPose3D.")
+      .def(
+          py::init<const mrpt::math::TPose3DQuat &>(), py::arg("p"),
+          "Builds the pose from a lightweight mrpt.math.TPose3DQuat.")
       .def_property(
           "x", [](const mrpt::poses::CPose3DQuat &p) { return p.x(); },
           [](mrpt::poses::CPose3DQuat &p, double v) { p.x() = v; })
@@ -638,6 +768,10 @@ PYBIND11_MODULE(_bindings, m)
             return ret;
           },
           "Construct CPose3DQuat from a lightweight mrpt.math.TPose3DQuat")
+      .def(
+          -py::self,
+          "Returns the inverse pose as a new object (SE(3) group inverse, not the negation of "
+          "each coordinate).")
       .def("__str__", &mrpt::poses::CPose3DQuat::asString)
       .def("__repr__", &mrpt::poses::CPose3DQuat::asString);
 
@@ -673,6 +807,81 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "evaluateNormalizedPDF", &mrpt::poses::CPosePDFGaussian::evaluateNormalizedPDF,
           "Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in the range [0,1].")
+      .def(
+          py::self + py::self,
+          "Pose composition a (+) b, propagating both covariances (independent variables).")
+      .def(
+          mrpt::poses::CPose2D() + py::self,
+          "Composition p (+) pdf of a pose p without uncertainty and this PDF.")
+      .def(
+          py::self - py::self,
+          "Inverse pose composition a (-) b, propagating both covariances (independent "
+          "variables).")
+      // Lambdas, since the C++ in-place operators return void:
+      .def(
+          "__iadd__",
+          [](mrpt::poses::CPosePDFGaussian &self,
+             const mrpt::poses::CPose2D &Ap) -> mrpt::poses::CPosePDFGaussian &
+          {
+            self += Ap;
+            return self;
+          },
+          py::is_operator(), "Makes this = this (+) Ap, for a pose without uncertainty.")
+      .def(
+          "__iadd__",
+          [](mrpt::poses::CPosePDFGaussian &self,
+             const mrpt::poses::CPosePDFGaussian &Ap) -> mrpt::poses::CPosePDFGaussian &
+          {
+            self += Ap;
+            return self;
+          },
+          py::is_operator(), "Makes this = this (+) Ap, propagating both covariances.")
+      .def(
+          "__isub__",
+          [](mrpt::poses::CPosePDFGaussian &self,
+             const mrpt::poses::CPosePDFGaussian &ref) -> mrpt::poses::CPosePDFGaussian &
+          {
+            self -= ref;
+            return self;
+          },
+          py::is_operator(), "Makes this = this (-) ref, propagating both covariances.")
+      .def(
+          "inverse",
+          [](const mrpt::poses::CPosePDFGaussian &self)
+          {
+            mrpt::poses::CPosePDFGaussian out;
+            self.inverse(out);
+            return out;
+          },
+          "Returns the PDF of the inverse pose, (0,0,0) (-) this, as a new object. This PDF is "
+          "not modified.")
+      .def(
+          "inverseComposition",
+          py::overload_cast<
+              const mrpt::poses::CPosePDFGaussian &, const mrpt::poses::CPosePDFGaussian &>(
+              &mrpt::poses::CPosePDFGaussian::inverseComposition),
+          "x"_a, "ref"_a,
+          "Sets this = x (-) ref, propagating both covariances (independent variables).")
+      .def(
+          "inverseComposition",
+          py::overload_cast<
+              const mrpt::poses::CPosePDFGaussian &, const mrpt::poses::CPosePDFGaussian &,
+              const mrpt::math::CMatrixDouble33 &>(
+              &mrpt::poses::CPosePDFGaussian::inverseComposition),
+          "x1"_a, "x0"_a, "COV_01"_a,
+          "Sets this = x1 (-) x0, given the 3x3 cross-covariance COV_01 = E[(x0-m0)(x1-m1)^T].")
+      .def(
+          "changeCoordinatesReference",
+          py::overload_cast<const mrpt::poses::CPose2D &>(
+              &mrpt::poses::CPosePDFGaussian::changeCoordinatesReference),
+          "newReferenceBase"_a,
+          "Makes this = newReferenceBase (+) this, for a reference pose without uncertainty.")
+      .def(
+          "changeCoordinatesReference",
+          py::overload_cast<const mrpt::poses::CPose3D &>(
+              &mrpt::poses::CPosePDFGaussian::changeCoordinatesReference),
+          "newReferenceBase"_a,
+          "Makes this = newReferenceBase (+) this, using the 2D part of a 3D reference pose.")
       .def("__str__", &mrpt::poses::CPosePDFGaussian::asString)
       .def("__repr__", &mrpt::poses::CPosePDFGaussian::asString);
 
@@ -708,6 +917,108 @@ PYBIND11_MODULE(_bindings, m)
       .def("__repr__", &mrpt::poses::CPosePDFGaussianInf::asString);
 
   // -------------------------------------------------------------------------
+  // CPosePDFSOG
+  // -------------------------------------------------------------------------
+  using mrpt::poses::CPosePDFSOG;
+  py::class_<CPosePDFSOG, mrpt::poses::CPosePDF, std::shared_ptr<CPosePDFSOG>> clSOG(
+      m, "CPosePDFSOG",
+      "A PDF of a 2D pose as a Sum of Gaussians (SOG): a set of weighted Gaussian modes.");
+
+  py::class_<CPosePDFSOG::TGaussianMode>(clSOG, "TGaussianMode", "One mode of a CPosePDFSOG.")
+      .def(py::init<>(), "Default constructor.")
+      .def_readwrite("mean", &CPosePDFSOG::TGaussianMode::mean, "Mean of the mode (CPose2D).")
+      .def_readwrite("cov", &CPosePDFSOG::TGaussianMode::cov, "3x3 covariance matrix.")
+      .def_readwrite(
+          "log_w", &CPosePDFSOG::TGaussianMode::log_w, "Logarithm of the weight of the mode.")
+      .def(
+          "__repr__",
+          [](const CPosePDFSOG::TGaussianMode &g) {
+            return "TGaussianMode(mean=" + g.mean.asString() +
+                   ", log_w=" + std::to_string(g.log_w) + ")";
+          });
+
+  clSOG.def(py::init<size_t>(), "nModes"_a = 1, "Creates the given number of modes.")
+      .def("size", &CPosePDFSOG::size, "Returns the number of modes.")
+      .def("__len__", &CPosePDFSOG::size)
+      .def("empty", &CPosePDFSOG::empty, "Returns true if there are no modes.")
+      .def("clear", &CPosePDFSOG::clear, "Removes all the modes.")
+      .def("resize", &CPosePDFSOG::resize, "N"_a, "Sets the number of modes.")
+      .def("push_back", &CPosePDFSOG::push_back, "mode"_a, "Appends a mode (TGaussianMode).")
+      .def(
+          "get",
+          [](CPosePDFSOG &self, size_t i) -> CPosePDFSOG::TGaussianMode & { return self.get(i); },
+          "i"_a, py::return_value_policy::reference_internal,
+          "Returns a reference to the i'th mode.")
+      .def(
+          "__getitem__",
+          [](CPosePDFSOG &self, size_t i) -> CPosePDFSOG::TGaussianMode &
+          {
+            if (i >= self.size())
+            {
+              throw py::index_error("mode index out of range");
+            }
+            return self.get(i);
+          },
+          py::return_value_policy::reference_internal)
+      .def(
+          "__iter__", [](CPosePDFSOG &self) { return py::make_iterator(self.begin(), self.end()); },
+          py::keep_alive<0, 1>())
+      .def(
+          "normalizeWeights", &CPosePDFSOG::normalizeWeights,
+          "Normalizes the weights of the modes, so that they sum up to one.")
+      .def(
+          "mergeModes", &CPosePDFSOG::mergeModes, "max_KLd"_a = 0.5, "verbose"_a = false,
+          "Merges very close modes, up to a maximum Kullback-Leibler distance.")
+      .def(
+          "getMostLikelyCovarianceAndMean",
+          [](const CPosePDFSOG &self)
+          {
+            const auto [cov, mean] = self.getMostLikelyCovarianceAndMean();
+            return py::make_tuple(cov, mean);
+          },
+          "Returns the tuple (cov: CMatrixDouble33, mean: CPose2D) of the mode with the highest "
+          "weight.")
+      .def(
+          "evaluatePDF", &CPosePDFSOG::evaluatePDF, "x"_a, "sumOverAllPhis"_a = false,
+          "Evaluates the PDF at a given pose.")
+      .def(
+          "evaluateNormalizedPDF", &CPosePDFSOG::evaluateNormalizedPDF, "x"_a,
+          "Evaluates the ratio PDF(x) / max(PDF), in the range [0,1].")
+      .def(
+          "__repr__", [](const CPosePDFSOG &self)
+          { return "CPosePDFSOG(" + std::to_string(self.size()) + " modes)"; });
+
+  // -------------------------------------------------------------------------
+  // TInterpolatorMethod
+  // -------------------------------------------------------------------------
+  py::enum_<mrpt::poses::TInterpolatorMethod>(
+      m, "TInterpolatorMethod",
+      "Interpolation method of CPose2DInterpolator and CPose3DInterpolator. In 3D, all methods "
+      "but the Slerp ones interpolate yaw, pitch and roll independently.")
+      .value(
+          "imSpline", mrpt::poses::imSpline,
+          "Spline interpolation using 4 points (2 before and 2 after the query time).")
+      .value(
+          "imLinear2Neig", mrpt::poses::imLinear2Neig,
+          "Linear interpolation between the previous and next neighbors.")
+      .value(
+          "imLinear4Neig", mrpt::poses::imLinear4Neig,
+          "Linear fit of the 4 closest points (2 before and 2 after the query time).")
+      .value(
+          "imSSLLLL", mrpt::poses::imSSLLLL,
+          "Spline for x and y, linear least squares for z, yaw, pitch and roll.")
+      .value(
+          "imSSLSLL", mrpt::poses::imSSLSLL,
+          "Spline for x, y and yaw, linear least squares for z, pitch and roll.")
+      .value(
+          "imLinearSlerp", mrpt::poses::imLinearSlerp,
+          "Linear for x, y and z, Slerp for the rotation (the default).")
+      .value(
+          "imSplineSlerp", mrpt::poses::imSplineSlerp,
+          "Spline for x, y and z (as imSpline), Slerp for the rotation.")
+      .export_values();
+
+  // -------------------------------------------------------------------------
   // CPose2DInterpolator
   // -------------------------------------------------------------------------
   py::class_<
@@ -731,7 +1042,7 @@ PYBIND11_MODULE(_bindings, m)
             self.interpolate(t, out, valid);
             return py::make_tuple(out, valid);
           },
-          "Returns (TPose2D, valid) — interpolated pose at given time")
+          "Returns (TPose2D, valid): interpolated pose at given time")
       .def(
           "size", &mrpt::poses::CPose2DInterpolator::size,
           "Returns the number of poses in the trajectory.")
@@ -741,6 +1052,12 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "clear", &mrpt::poses::CPose2DInterpolator::clear,
           "Clears the current sequence of poses.")
+      .def(
+          "setInterpolationMethod", &mrpt::poses::CPose2DInterpolator::setInterpolationMethod,
+          "method"_a, "Sets the interpolation method (default: imLinearSlerp).")
+      .def(
+          "getInterpolationMethod", &mrpt::poses::CPose2DInterpolator::getInterpolationMethod,
+          "Returns the current interpolation method.")
       .def("__len__", [](const mrpt::poses::CPose2DInterpolator &self) { return self.size(); });
 
   // -------------------------------------------------------------------------
@@ -767,7 +1084,7 @@ PYBIND11_MODULE(_bindings, m)
             self.interpolate(t, out, valid);
             return py::make_tuple(out, valid);
           },
-          "Returns (TPose3D, valid) — interpolated pose at given time")
+          "Returns (TPose3D, valid): interpolated pose at given time")
       .def(
           "size", &mrpt::poses::CPose3DInterpolator::size,
           "Returns the number of poses in the trajectory.")
@@ -777,6 +1094,12 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "clear", &mrpt::poses::CPose3DInterpolator::clear,
           "Clears the current sequence of poses.")
+      .def(
+          "setInterpolationMethod", &mrpt::poses::CPose3DInterpolator::setInterpolationMethod,
+          "method"_a, "Sets the interpolation method (default: imLinearSlerp).")
+      .def(
+          "getInterpolationMethod", &mrpt::poses::CPose3DInterpolator::getInterpolationMethod,
+          "Returns the current interpolation method.")
       .def("__len__", [](const mrpt::poses::CPose3DInterpolator &self) { return self.size(); });
 
   // -------------------------------------------------------------------------
@@ -815,4 +1138,22 @@ PYBIND11_MODULE(_bindings, m)
             return out;
           },
           "Draw a 3D pose sample");
+
+  // -------------------------------------------------------------------------
+  // Copies: copy constructor, __copy__ and __deepcopy__
+  // -------------------------------------------------------------------------
+  addCopyMethods<mrpt::poses::CPose2D>();
+  addCopyMethods<mrpt::poses::CPose3D>();
+  addCopyMethods<mrpt::poses::CPose3DQuat>();
+  addCopyMethods<mrpt::poses::CPoint2D>();
+  addCopyMethods<mrpt::poses::CPoint3D>();
+  addCopyMethods<mrpt::poses::CPosePDFGaussian>();
+  addCopyMethods<mrpt::poses::CPosePDFGaussianInf>();
+  addCopyMethods<mrpt::poses::CPose3DPDFGaussian>();
+  addCopyMethods<mrpt::poses::CPose3DPDFGaussianInf>();
+  addCopyMethods<mrpt::poses::CPosePDFParticles>();
+  addCopyMethods<mrpt::poses::CPose3DPDFParticles>();
+  addCopyMethods<mrpt::poses::CPosePDFSOG>();
+  addCopyMethods<mrpt::poses::CPose2DInterpolator>();
+  addCopyMethods<mrpt::poses::CPose3DInterpolator>();
 }
