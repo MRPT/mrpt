@@ -224,6 +224,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("__str__", &mrpt::maps::CMetricMap::asString)
       .def(
           "GetRuntimeClass", &mrpt::maps::CMetricMap::GetRuntimeClass,
+          py::return_value_policy::reference,
           "Returns information about the class of an object in runtime.");
 
   // -------------------------------------------------------------------------

@@ -296,5 +296,26 @@ check("changeCoordinatesOrigin", abs(smap[0].pose.getMean().x - 10.0) < 1e-9)
 print("TSetOfMetricMapInitializers (empty)")
 check("empty map set", len(TSetOfMetricMapInitializers()) == 0)
 
+print("GetRuntimeClass of observations and actions")
+import gc
+from mrpt.obs import CActionRobotMovement3D
+expected_names = {
+    CObservation2DRangeScan: "mrpt::obs::CObservation2DRangeScan",
+    CObservationOdometry: "mrpt::obs::CObservationOdometry",
+    CActionRobotMovement2D: "mrpt::obs::CActionRobotMovement2D",
+    CActionRobotMovement3D: "mrpt::obs::CActionRobotMovement3D",
+}
+names_ok = True
+for _ in range(200):
+    for cls, name in expected_names.items():
+        rc = cls().GetRuntimeClass()  # a static object: Python must not free it
+        names_ok = names_ok and rc.className == name
+        del rc
+    gc.collect()
+check("GetRuntimeClass called many times", names_ok)
+check("GetRuntimeClass returns the same static object",
+      CObservation2DRangeScan().GetRuntimeClass().className ==
+      CObservation2DRangeScan().GetRuntimeClass().className)
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

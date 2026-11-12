@@ -123,6 +123,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("__str__", &mrpt::obs::CObservation::asString)
       .def(
           "GetRuntimeClass", &mrpt::obs::CObservation::GetRuntimeClass,
+          py::return_value_policy::reference,
           "Returns information about the class of an object in runtime.")
       .def(
           "__repr__", [](const mrpt::obs::CObservation& o)
@@ -428,6 +429,7 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("timestamp", &mrpt::obs::CAction::timestamp)
       .def(
           "GetRuntimeClass", &mrpt::obs::CAction::GetRuntimeClass,
+          py::return_value_policy::reference,
           "Returns information about the class of an object in runtime.");
 
   // -------------------------------------------------------------------------
@@ -503,7 +505,7 @@ PYBIND11_MODULE(_bindings, m)
           },
           "Draws a sample from the motion model")
       .def(
-          "GetRuntimeClass", &ARM2D::GetRuntimeClass,
+          "GetRuntimeClass", &ARM2D::GetRuntimeClass, py::return_value_policy::reference,
           "Returns information about the class of an object in runtime.")
       .def(
           "__repr__",

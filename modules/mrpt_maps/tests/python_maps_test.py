@@ -391,5 +391,26 @@ with tempfile.TemporaryDirectory() as tmp:
     check("KITTI round trip", kitti2.loadFromKittiVelodyneFile(gz) and
           np.allclose(kitti2.getPointsAsNumpy(), kitti.getPointsAsNumpy()))
 
+print("GetRuntimeClass of maps")
+import gc
+expected_names = {
+    CSimplePointsMap: "mrpt::maps::CSimplePointsMap",
+    CGenericPointsMap: "mrpt::maps::CGenericPointsMap",
+    COccupancyGridMap2D: "mrpt::maps::COccupancyGridMap2D",
+    COctoMap: "mrpt::maps::COctoMap",
+    CMultiMetricMap: "mrpt::maps::CMultiMetricMap",
+}
+names_ok = True
+for _ in range(200):
+    for cls, name in expected_names.items():
+        rc = cls().GetRuntimeClass()  # a static object: Python must not free it
+        names_ok = names_ok and rc.className == name
+        del rc
+    gc.collect()
+check("GetRuntimeClass called many times", names_ok)
+rc = CSimplePointsMap().GetRuntimeClass()
+check("GetRuntimeClass base class", rc.derivedFrom("CPointsMap") and
+      rc.getBaseClass().className == "mrpt::maps::CPointsMap")
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)
