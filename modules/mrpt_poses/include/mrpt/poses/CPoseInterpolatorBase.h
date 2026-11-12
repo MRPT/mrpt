@@ -204,7 +204,7 @@ class CPoseInterpolatorBase
   void getBoundingBox(point_t& minCorner, point_t& maxCorner) const;
 
   /** Change the method used to interpolate the robot path. The default method
-   * at construction is "imSpline". \sa getInterpolationMethod() */
+   * at construction is "imLinearSlerp". \sa getInterpolationMethod() */
   void setInterpolationMethod(TInterpolatorMethod method);
   /** Returns the currently set interpolation method.  \sa
    * setInterpolationMethod() */
