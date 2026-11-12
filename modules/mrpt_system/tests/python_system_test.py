@@ -57,5 +57,24 @@ check("fileExists(__file__)", fileExists(__file__))
 check("extractFileName", extractFileName(__file__) == "python_system_test")
 check("extractFileExtension", extractFileExtension(__file__) == "py")
 
+print("VerbosityLevel")
+from mrpt.system import VerbosityLevel, LVL_DEBUG, LVL_ERROR
+check("VerbosityLevel values", int(LVL_DEBUG) == 0 and int(VerbosityLevel.LVL_INFO) == 1 and
+      int(VerbosityLevel.LVL_WARN) == 2 and int(LVL_ERROR) == 3)
+
+print("Plug-in modules")
+import os
+import mrpt.system._bindings as _sysb
+from mrpt.system import loadPluginModule, unloadPluginModule, loadPluginModules
+ok, err = loadPluginModule(_sysb.__file__)
+check("loadPluginModule", ok and err == "", err)
+ok, err = unloadPluginModule(_sysb.__file__)
+check("unloadPluginModule", ok and err == "", err)
+missing = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no_such_plugin.so")
+ok, err = loadPluginModule(missing)
+check("loadPluginModule of a missing file", not ok and "no_such_plugin.so" in err, err)
+ok, err = loadPluginModules(_sysb.__file__ + "," + missing)
+check("loadPluginModules with one missing file", not ok and "no_such_plugin.so" in err, err)
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)
