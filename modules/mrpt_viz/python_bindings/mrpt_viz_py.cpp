@@ -88,6 +88,46 @@ mrpt::math::CMatrixFloat toCMatrixFloat(const FloatMatrix& m)
   ret.asEigen() = m;
   return ret;
 }
+
+// The Python class already registered for T, to add more methods to it:
+template <class T>
+py::class_<T> registeredClass()
+{
+  return py::reinterpret_borrow<py::class_<T>>(py::type::of<T>());
+}
+
+// Methods of the VisualObjectParams_Lines mixin.
+template <class T>
+void addLineWidthMethods()
+{
+  registeredClass<T>()
+      .def(
+          "setLineWidth", [](T& self, float w) { self.setLineWidth(w); }, "width"_a,
+          "Sets the width of the lines, in pixels.")
+      .def(
+          "getLineWidth", [](const T& self) { return self.getLineWidth(); },
+          "Returns the width of the lines, in pixels.");
+}
+
+// Methods of CGeneralizedEllipsoidTemplate, for all ellipsoid-like classes.
+template <class T>
+void addEllipsoidMethods()
+{
+  addLineWidthMethods<T>();
+  registeredClass<T>()
+      .def(
+          "enableDrawSolid3D", [](T& self, bool v) { self.enableDrawSolid3D(v); }, "v"_a,
+          "Draws a solid surface if true, or a wireframe if false.")
+      .def(
+          "setNumberOfSegments", [](T& self, uint32_t n) { self.setNumberOfSegments(n); },
+          "numSegments"_a, "Sets the number of segments of the surface or curve (resolution).")
+      .def(
+          "getNumberOfSegments", [](const T& self) { return self.getNumberOfSegments(); },
+          "Returns the number of segments of the surface or curve.")
+      .def(
+          "getQuantiles", [](const T& self) { return self.getQuantiles(); },
+          "Returns the scale of the \"sigmas\" used to draw the ellipsoid.");
+}
 }  // namespace
 
 PYBIND11_MODULE(_bindings, m)
@@ -222,7 +262,71 @@ PYBIND11_MODULE(_bindings, m)
           "Sets the camera elevation angle, in degrees.")
       .def(
           "setZoomDistance", &CCamera::setZoomDistance,
-          "Sets the camera distance to the point it looks at.");
+          "Sets the camera distance to the point it looks at.")
+      .def(
+          "setRollDegrees", &CCamera::setRollDegrees,
+          "Sets the camera roll angle around its viewing axis, in degrees.")
+      .def(
+          "getAzimuthDegrees", &CCamera::getAzimuthDegrees,
+          "Returns the camera azimuth angle, in degrees.")
+      .def(
+          "getElevationDegrees", &CCamera::getElevationDegrees,
+          "Returns the camera elevation angle, in degrees.")
+      .def(
+          "getZoomDistance", &CCamera::getZoomDistance,
+          "Returns the camera distance to the point it looks at.")
+      .def("getRollDegrees", &CCamera::getRollDegrees, "Returns the camera roll angle, in degrees.")
+      .def(
+          "setPointingAt",
+          [](CCamera& self, float x, float y, float z) { self.setPointingAt(x, y, z); }, "x"_a,
+          "y"_a, "z"_a, "Sets the point the orbit camera looks at.")
+      .def(
+          "setPointingAt",
+          [](CCamera& self, const mrpt::math::TPoint3D& p) { self.setPointingAt(p); }, "p"_a,
+          "Sets the point the orbit camera looks at.")
+      .def(
+          "getPointingAt",
+          [](const CCamera& self)
+          {
+            const auto p = self.getPointingAt();
+            return mrpt::math::TPoint3D(p.x, p.y, p.z);
+          },
+          "Returns the point the orbit camera looks at.")
+      .def(
+          "setProjectiveModel", &CCamera::setProjectiveModel, "v"_a = true,
+          "Enables the projective (perspective) model, or the orthogonal one if false.")
+      .def(
+          "setOrthogonal", &CCamera::setOrthogonal, "v"_a = true,
+          "Enables the orthogonal model, or the projective one if false.")
+      .def("isProjective", &CCamera::isProjective, "Returns true for the projective model.")
+      .def("isOrthogonal", &CCamera::isOrthogonal, "Returns true for the orthogonal model.")
+      .def(
+          "setProjectiveFOVdeg", &CCamera::setProjectiveFOVdeg, "fov_deg"_a,
+          "Sets the vertical field of view of the projective model, in degrees (default: 30).")
+      .def(
+          "getProjectiveFOVdeg", &CCamera::getProjectiveFOVdeg,
+          "Returns the vertical field of view of the projective model, in degrees.")
+      .def(
+          "setProjectiveFromPinhole", &CCamera::setProjectiveFromPinhole, "intrinsics"_a,
+          "Uses the projective model with the given pinhole intrinsics (mrpt.img.TCamera), "
+          "e.g. to render what a real camera would see.")
+      .def(
+          "clearPinholeModel", &CCamera::clearPinholeModel,
+          "Removes the pinhole model, so the vertical field of view is used again.")
+      .def(
+          "hasPinholeModel", &CCamera::hasPinholeModel,
+          "Returns true if a pinhole model was set with setProjectiveFromPinhole().")
+      .def(
+          "getPinholeModel",
+          [](const CCamera& self) -> std::optional<mrpt::img::TCamera>
+          { return self.getPinholeModel(); },
+          "Returns the pinhole model set with setProjectiveFromPinhole(), or None.")
+      .def(
+          "set6DOFMode", &CCamera::set6DOFMode, "v"_a,
+          "If enabled, the camera is placed at its pose (setPose()) instead of orbiting: it "
+          "looks along its +Z axis, with +X to the right and +Y down. Azimuth, elevation and "
+          "roll are then ignored.")
+      .def("is6DOFMode", &CCamera::is6DOFMode, "Returns true if the 6DOF mode is enabled.");
 
   // 6. CPointCloud
   py::class_<CPointCloud, CVisualObject, std::shared_ptr<CPointCloud>>(
@@ -1332,4 +1436,29 @@ PYBIND11_MODULE(_bindings, m)
       "posePDF2opengl",
       [](const mrpt::poses::CPose3DPDF& pdf) { return CSetOfObjects::posePDF2opengl(pdf); },
       "pdf"_a, "Returns a 3D representation of a 3D pose PDF (ellipsoids, particles, ...)");
+
+  // -------------------------------------------------------------------------
+  // Methods shared through C++ mixins, added to every class that has them
+  // -------------------------------------------------------------------------
+  addLineWidthMethods<CAxis>();
+  addLineWidthMethods<CBox>();
+  addLineWidthMethods<CColorBar>();
+  addLineWidthMethods<CFrustum>();
+  addLineWidthMethods<CGridPlaneXY>();
+  addLineWidthMethods<CGridPlaneXZ>();
+  addLineWidthMethods<CMesh>();
+  addLineWidthMethods<CMesh3D>();
+  addLineWidthMethods<COctoMapVoxels>();
+  addLineWidthMethods<CPolyhedron>();
+  addLineWidthMethods<CSetOfLines>();
+  addLineWidthMethods<CSimpleLine>();
+  addLineWidthMethods<CVectorField2D>();
+  addLineWidthMethods<CVectorField3D>();
+
+  addEllipsoidMethods<CEllipsoid2D>();
+  addEllipsoidMethods<CEllipsoid3D>();
+  addEllipsoidMethods<CEllipsoidInverseDepth2D>();
+  addEllipsoidMethods<CEllipsoidInverseDepth3D>();
+  addEllipsoidMethods<CEllipsoidRangeBearing2D>();
+  addEllipsoidMethods<CSphere>();
 }

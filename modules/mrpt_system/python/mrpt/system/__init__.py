@@ -50,6 +50,17 @@ timeLocalToString = _b.timeLocalToString
 formatTimeInterval = _b.formatTimeInterval
 intervalFormat = _b.intervalFormat
 
+VerbosityLevel = _b.VerbosityLevel
+LVL_DEBUG = _b.LVL_DEBUG
+LVL_INFO = _b.LVL_INFO
+LVL_WARN = _b.LVL_WARN
+LVL_ERROR = _b.LVL_ERROR
+
+loadPluginModule = _b.loadPluginModule
+unloadPluginModule = _b.unloadPluginModule
+loadPluginModules = _b.loadPluginModules
+unloadPluginModules = _b.unloadPluginModules
+
 __all__ = [
     # timing
     "CTicTac",
@@ -97,4 +108,15 @@ __all__ = [
     "timeLocalToString",
     "formatTimeInterval",
     "intervalFormat",
+    # logging
+    "VerbosityLevel",
+    "LVL_DEBUG",
+    "LVL_INFO",
+    "LVL_WARN",
+    "LVL_ERROR",
+    # plug-in modules
+    "loadPluginModule",
+    "unloadPluginModule",
+    "loadPluginModules",
+    "unloadPluginModules",
 ]

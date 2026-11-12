@@ -1,4 +1,5 @@
 from __future__ import annotations
+import mrpt.kinematics
 import mrpt.math
 import typing
 __all__: list[str] = ['CLogFileRecord', 'CParameterizedTrajectoryGenerator', 'TWaypoint', 'TWaypointSequence', 'TWaypointStatus']
@@ -82,9 +83,17 @@ class CParameterizedTrajectoryGenerator:
         """
         Returns true if (x, y) is within the PTG domain.
         """
+    def alpha2index(self, alpha: float) -> int:
+        """
+        Discrete path index for the direction alpha (radians).
+        """
     def deinitialize(self) -> None:
         """
         De-initializes the PTG, so its parameters can be changed.
+        """
+    def directionToMotionCommand(self, k: int) -> mrpt.kinematics.CVehicleVelCmd:
+        """
+        Velocity command (a mrpt.kinematics.CVehicleVelCmd subclass) to follow path k.
         """
     def getAlphaValuesCount(self) -> int:
         """
@@ -94,13 +103,61 @@ class CParameterizedTrajectoryGenerator:
         """
         Gets a short textual description of the PTG and its parameters.
         """
+    def getMaxAngVel(self) -> float:
+        """
+        Maximum angular velocity of this PTG (rad/s).
+        """
+    def getMaxLinVel(self) -> float:
+        """
+        Maximum linear velocity of this PTG (m/s).
+        """
     def getPathCount(self) -> int:
         """
         Get the number of different, discrete paths in this family.
         """
-    def initialize(self) -> None:
+    def getPathDist(self, k: int, step: int) -> float:
         """
-        Initializes the PTG; call after setting all its parameters and before using it.
+        Distance traveled along path k at a step, in pseudometers (not normalized).
+        """
+    def getPathPose(self, k: int, step: int) -> mrpt.math.TPose2D:
+        """
+        Pose of the vehicle (TPose2D) at a step of path k, relative to its start.
+        """
+    def getPathStepCount(self, k: int) -> int:
+        """
+        Number of discrete steps of path k.
+        """
+    def getPathStepDuration(self) -> float:
+        """
+        Duration of each path step, in seconds.
+        """
+    def getPathStepForDist(self, k: int, dist: float) -> int | None:
+        """
+        Largest step of path k with a traveled distance < dist (pseudometers), or None if there is none.
+        """
+    def getPathTwist(self, k: int, step: int) -> mrpt.math.TTwist2D:
+        """
+        Velocity (TTwist2D) at a step of path k, in the frame of the start of the path.
+        """
+    def getRefDistance(self) -> float:
+        """
+        Reference distance (meters): the length of the paths, used to normalize TP-Space distances.
+        """
+    def index2alpha(self, k: int) -> float:
+        """
+        Direction alpha (radians, in [-pi, pi]) of the discrete path index k.
+        """
+    def initTPObstacleSingle(self, k: int) -> float:
+        """
+        Returns the initial TP-Obstacle of path k, as initTPObstacles().
+        """
+    def initTPObstacles(self) -> list[float]:
+        """
+        Returns the initial TP-Obstacles, one per path: the collision-free distance of each path without obstacles (pseudometers).
+        """
+    def initialize(self, cacheFilename: str = '', verbose: bool = False) -> None:
+        """
+        Initializes the PTG; call after setting all its parameters and before using it. PTGs based on collision grids (CPTG_DiffDrive_*) load their grid from cacheFilename, or compute and save it there; an empty name means "cache_<description>.bin.gz" in the current directory. Other PTGs ignore it.
         """
     def inverseMap_WS2TP(self, x: float, y: float, tolerance_dist: float = 0.1) -> tuple[int, float] | None:
         """
@@ -113,6 +170,18 @@ class CParameterizedTrajectoryGenerator:
     def loadFromConfigFile(self, ini_text: str, section: str) -> None:
         """
         Loads the PTG parameters from a configuration file section.
+        """
+    def setRefDistance(self, refDist: float) -> None:
+        """
+        Sets the reference distance (meters).
+        """
+    def updateTPObstacle(self, ox: float, oy: float, tp_obstacles: list[float]) -> list[float]:
+        """
+        Returns tp_obstacles (from initTPObstacles()) updated with an obstacle point (ox, oy), relative to the origin of the PTG: the collision-free distance of each path.
+        """
+    def updateTPObstacleSingle(self, ox: float, oy: float, k: int, tp_obstacle_k: float) -> float:
+        """
+        Like updateTPObstacle(), for path k only: returns tp_obstacle_k (from initTPObstacleSingle()) updated with the obstacle point (ox, oy).
         """
 class CLogFileRecord:
     """

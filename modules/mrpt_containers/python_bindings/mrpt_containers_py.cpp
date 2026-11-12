@@ -18,10 +18,20 @@
 
 // MRPT headers
 #include <mrpt/containers/yaml.h>
+#include <mrpt/core/exceptions.h>
 
+#include <cstdio>
 #include <fstream>
+#include <optional>
+#include <regex>
 #include <sstream>
 #include <string>
+
+#if defined(_WIN32)
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 namespace py = pybind11;
 using mrpt::containers::yaml;
@@ -126,6 +136,159 @@ static yaml yaml_from_python(const py::object& obj)
   return y;
 }
 
+namespace
+{
+// Captures what is written to the stderr file descriptor while alive: the
+// YAML parser prints its syntax errors there instead of reporting them.
+// This class (and its use in parseYamlOrRaise()) can be removed once the C++
+// parser reports all syntax errors with exceptions and prints nothing.
+class StderrCapture
+{
+ public:
+  StderrCapture()
+  {
+    std::fflush(stderr);
+    tmp_ = std::tmpfile();
+    if (tmp_ == nullptr)
+    {
+      return;
+    }
+#if defined(_WIN32)
+    saved_ = _dup(_fileno(stderr));
+    if (saved_ >= 0 && _dup2(_fileno(tmp_), _fileno(stderr)) != 0)
+#else
+    saved_ = dup(fileno(stderr));
+    if (saved_ >= 0 && dup2(fileno(tmp_), fileno(stderr)) < 0)
+#endif
+    {
+      restore();
+    }
+  }
+  ~StderrCapture() { restore(); }
+  StderrCapture(const StderrCapture&) = delete;
+  StderrCapture& operator=(const StderrCapture&) = delete;
+
+  // Stops capturing and returns the captured text.
+  std::string finish()
+  {
+    if (tmp_ == nullptr || saved_ < 0)
+    {
+      restore();
+      return {};
+    }
+    std::fflush(stderr);
+    std::string out;
+    std::rewind(tmp_);
+    char buf[4096];
+    size_t n = 0;
+    while ((n = std::fread(buf, 1, sizeof(buf), tmp_)) > 0)
+    {
+      out.append(buf, n);
+    }
+    restore();
+    return out;
+  }
+
+ private:
+  void restore()
+  {
+    if (saved_ >= 0)
+    {
+      std::fflush(stderr);
+#if defined(_WIN32)
+      _dup2(saved_, _fileno(stderr));
+      _close(saved_);
+#else
+      dup2(saved_, fileno(stderr));
+      close(saved_);
+#endif
+      saved_ = -1;
+    }
+    if (tmp_ != nullptr)
+    {
+      std::fclose(tmp_);
+      tmp_ = nullptr;
+    }
+  }
+
+  std::FILE* tmp_ = nullptr;
+  int saved_ = -1;
+};
+
+// The message of a YAML syntax error exception from the C++ parser, from
+// "Error parsing YAML/JSON text" to the end (the input excerpt), without the
+// MRPT source location and call stack; or nullopt for other exceptions.
+std::optional<std::string> yamlSyntaxErrorMessage(const std::exception& e)
+{
+  const auto* mrptExcep = dynamic_cast<const mrpt::ExceptionWithCallBackBase*>(&e);
+  const std::string msg = mrptExcep != nullptr ? mrptExcep->originalWhat : std::string(e.what());
+  const auto pos = msg.find("Error parsing YAML/JSON text");
+  if (pos == std::string::npos)
+  {
+    return std::nullopt;
+  }
+  const auto end = msg.find_last_not_of(" \n\r\t");
+  return msg.substr(pos, end + 1 - pos);
+}
+
+// Runs a YAML parsing function, raising ValueError if the text has syntax
+// errors: from the parser exception, or from the messages the parser prints
+// (e.g. "line 2, column 1: flow sequence without a closing bracket") in builds
+// where it does not report all of them with exceptions.
+template <class PARSE_FN>
+yaml parseYamlOrRaise(const PARSE_FN& parse)
+{
+  std::optional<yaml> result;
+  std::optional<std::string> cppError;
+  std::optional<std::string> cppSyntaxError;
+  std::string diagnostics;
+  {
+    StderrCapture capture;
+    try
+    {
+      result = parse();
+    }
+    catch (const std::exception& e)
+    {
+      cppSyntaxError = yamlSyntaxErrorMessage(e);
+      cppError = e.what();
+    }
+    diagnostics = capture.finish();
+  }
+  if (cppSyntaxError)
+  {
+    throw py::value_error(*cppSyntaxError);
+  }
+
+  // Parser messages look like: "<input>:LINE:COLUMN: error: MESSAGE"
+  static const std::regex errorLine(R"(:(\d+):(\d+): error: ([^\n]*))");
+  std::string errors;
+  for (auto it = std::sregex_iterator(diagnostics.begin(), diagnostics.end(), errorLine);
+       it != std::sregex_iterator(); ++it)
+  {
+    if (!errors.empty())
+    {
+      errors += "; ";
+    }
+    errors += "line " + (*it)[1].str() + ", column " + (*it)[2].str() + ": " + (*it)[3].str();
+  }
+  if (!errors.empty())
+  {
+    throw py::value_error("Invalid YAML/JSON text: " + errors);
+  }
+  // Other messages (e.g. warnings) are not swallowed:
+  if (!diagnostics.empty())
+  {
+    std::fwrite(diagnostics.data(), 1, diagnostics.size(), stderr);
+  }
+  if (cppError)
+  {
+    throw std::runtime_error(*cppError);
+  }
+  return std::move(result.value());
+}
+}  // namespace
+
 PYBIND11_MODULE(_bindings, m)
 {
   m.doc() = "Python bindings for mrpt_containers";
@@ -142,8 +305,18 @@ as std::map / std::vector).
       .def(py::init<>(), "Default constructor.")
 
       // --- Static constructors ---
-      .def_static("from_string", &yaml::FromText, "Parse YAML/JSON from string")
-      .def_static("from_file", &yaml::FromFile, "Parse YAML/JSON from file")
+      .def_static(
+          "from_string",
+          [](const std::string& text)
+          { return parseYamlOrRaise([&]() { return yaml::FromText(text); }); },
+          py::arg("text"), "Parse YAML/JSON from string. Raises ValueError on syntax errors.")
+      .def_static(
+          "from_file",
+          [](const std::string& fileName)
+          { return parseYamlOrRaise([&]() { return yaml::FromFile(fileName); }); },
+          py::arg("fileName"),
+          "Parse YAML/JSON from file. Raises ValueError on syntax errors, RuntimeError if the "
+          "file cannot be read.")
       .def_static(
           "from_dict", [](const py::dict& d) { return yaml_from_python(d); }, py::arg("d"),
           "Build a YAML map node from a Python dict (recursive)")

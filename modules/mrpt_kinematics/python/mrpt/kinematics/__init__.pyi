@@ -2,6 +2,7 @@
 mrpt.kinematics — Vehicle kinematic models and simulators.
 
 Provides:
+  - CVehicleVelCmd            : Base class of velocity commands
   - CVehicleVelCmd_DiffDriven : Velocity command for differential-drive robots
   - CVehicleVelCmd_Holo       : Velocity command for holonomic robots
   - CVehicleSimulVirtualBase  : Abstract base for vehicle simulators
@@ -25,7 +26,8 @@ import mrpt as mrpt
 from mrpt.kinematics._bindings import CVehicleSimulVirtualBase as CVehicleSimulVirtualBase
 from mrpt.kinematics._bindings import CVehicleSimul_DiffDriven as CVehicleSimul_DiffDriven
 from mrpt.kinematics._bindings import CVehicleSimul_Holo as CVehicleSimul_Holo
+from mrpt.kinematics._bindings import CVehicleVelCmd as CVehicleVelCmd
 from mrpt.kinematics._bindings import CVehicleVelCmd_DiffDriven as CVehicleVelCmd_DiffDriven
 from mrpt.kinematics._bindings import CVehicleVelCmd_Holo as CVehicleVelCmd_Holo
 from . import _bindings
-__all__: list = ['CVehicleVelCmd_DiffDriven', 'CVehicleVelCmd_Holo', 'CVehicleSimulVirtualBase', 'CVehicleSimul_DiffDriven', 'CVehicleSimul_Holo']
+__all__: list = ['CVehicleVelCmd', 'CVehicleVelCmd_DiffDriven', 'CVehicleVelCmd_Holo', 'CVehicleSimulVirtualBase', 'CVehicleSimul_DiffDriven', 'CVehicleSimul_Holo']

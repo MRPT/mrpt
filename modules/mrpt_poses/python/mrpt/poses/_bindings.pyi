@@ -8,7 +8,7 @@ import mrpt.math
 import mrpt.serialization
 import numpy
 import typing
-__all__: list[str] = ['CPoint2D', 'CPoint3D', 'CPose2D', 'CPose2DInterpolator', 'CPose3D', 'CPose3DInterpolator', 'CPose3DPDF', 'CPose3DPDFGaussian', 'CPose3DPDFGaussianInf', 'CPose3DPDFParticles', 'CPose3DQuat', 'CPosePDF', 'CPosePDFGaussian', 'CPosePDFGaussianInf', 'CPosePDFParticles', 'CPoseRandomSampler', 'SE_average2', 'SE_average3']
+__all__: list[str] = ['CPoint2D', 'CPoint3D', 'CPose2D', 'CPose2DInterpolator', 'CPose3D', 'CPose3DInterpolator', 'CPose3DPDF', 'CPose3DPDFGaussian', 'CPose3DPDFGaussianInf', 'CPose3DPDFParticles', 'CPose3DQuat', 'CPosePDF', 'CPosePDFGaussian', 'CPosePDFGaussianInf', 'CPosePDFParticles', 'CPosePDFSOG', 'CPoseRandomSampler', 'SE_average2', 'SE_average3', 'TInterpolatorMethod', 'imLinear2Neig', 'imLinear4Neig', 'imLinearSlerp', 'imSSLLLL', 'imSSLSLL', 'imSpline', 'imSplineSlerp']
 class CPose3D(mrpt.serialization.CSerializable):
     """
     SE(3) rigid-body pose (x, y, z, yaw, pitch, roll), with a cached rotation matrix.
@@ -38,6 +38,14 @@ class CPose3D(mrpt.serialization.CSerializable):
         """
     def __add__(self, arg0: CPose3D) -> CPose3D:
         ...
+    def __copy__(self) -> CPose3D:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPose3D:
+        """
+        Returns a copy of this object.
+        """
     def __iadd__(self, arg0: CPose3D) -> CPose3D:
         ...
     @typing.overload
@@ -54,6 +62,20 @@ class CPose3D(mrpt.serialization.CSerializable):
     def __init__(self, arg0: CPose2D) -> None:
         """
         Builds a 3D pose from a 2D pose (z, pitch and roll set to zero).
+        """
+    @typing.overload
+    def __init__(self, p: mrpt.math.TPose3D) -> None:
+        """
+        Builds the pose from a lightweight mrpt.math.TPose3D.
+        """
+    @typing.overload
+    def __init__(self, other: CPose3D) -> None:
+        """
+        Copy constructor.
+        """
+    def __neg__(self) -> CPose3D:
+        """
+        Returns the inverse pose as a new object (SE(3) group inverse, not the negation of each coordinate). This pose is not modified.
         """
     def __repr__(self) -> str:
         ...
@@ -101,7 +123,7 @@ class CPose3D(mrpt.serialization.CSerializable):
         """
     def inverse(self) -> None:
         """
-        Inverts the pose in place
+        Inverts this pose in place and returns None. Use -p to get the inverse as a new pose instead (note that CPose2D.inverse() returns a new pose).
         """
     @typing.overload
     def inverseComposePoint(self, arg0: mrpt.math.TPoint3D) -> mrpt.math.TPoint3D:
@@ -160,6 +182,14 @@ class CPose2D(mrpt.serialization.CSerializable):
         """
     def __add__(self, arg0: CPose2D) -> CPose2D:
         ...
+    def __copy__(self) -> CPose2D:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPose2D:
+        """
+        Returns a copy of this object.
+        """
     def __iadd__(self, arg0: CPose2D) -> CPose2D:
         ...
     @typing.overload
@@ -177,6 +207,20 @@ class CPose2D(mrpt.serialization.CSerializable):
         """
         Construct from CPose3D (loss of z/pitch/roll).
         """
+    @typing.overload
+    def __init__(self, p: mrpt.math.TPose2D) -> None:
+        """
+        Construct from a lightweight mrpt.math.TPose2D.
+        """
+    @typing.overload
+    def __init__(self, other: CPose2D) -> None:
+        """
+        Copy constructor.
+        """
+    def __neg__(self) -> CPose2D:
+        """
+        Returns the inverse pose (SE(2) group inverse, not the negation of each coordinate).
+        """
     def __repr__(self) -> str:
         ...
     def __str__(self) -> str:
@@ -191,13 +235,38 @@ class CPose2D(mrpt.serialization.CSerializable):
         """
         Convert to lightweight mrpt.math.TPose2D
         """
+    @typing.overload
+    def composePoint(self, l: mrpt.math.TPoint2D) -> mrpt.math.TPoint2D:
+        """
+        Transforms a point from the local frame of this pose into the global frame.
+        """
+    @typing.overload
+    def composePoint(self, lx: float, ly: float) -> mrpt.math.TPoint2D:
+        """
+        Transforms a point (x, y) from the local frame of this pose into the global frame.
+        """
+    @typing.overload
+    def composePoint(self, l: mrpt.math.TPoint3D) -> mrpt.math.TPoint3D:
+        """
+        Transforms a 3D point from the local frame of this pose into the global frame (z is not modified).
+        """
     def fromString(self, arg0: str) -> None:
         """
         Set value from string
         """
     def inverse(self) -> CPose2D:
         """
-        Returns the inverse pose
+        Returns the inverse pose as a new object (same as -p), without modifying this one. Note that CPose3D.inverse() works in place instead.
+        """
+    @typing.overload
+    def inverseComposePoint(self, g: mrpt.math.TPoint2D) -> mrpt.math.TPoint2D:
+        """
+        Transforms a point from the global frame into the local frame of this pose.
+        """
+    @typing.overload
+    def inverseComposePoint(self, gx: float, gy: float) -> mrpt.math.TPoint2D:
+        """
+        Transforms a point (x, y) from the global frame into the local frame of this pose.
         """
     def norm(self) -> float:
         """
@@ -279,9 +348,23 @@ class CPosePDFParticles(CPosePDF, mrpt.bayes.CParticleFilterCapable):
     """
     A PDF of a 2D pose, as a set of weighted samples (particles).
     """
+    def __copy__(self) -> CPosePDFParticles:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPosePDFParticles:
+        """
+        Returns a copy of this object.
+        """
+    @typing.overload
     def __init__(self, M: int = 1) -> None:
         """
         Creates M particles at the origin
+        """
+    @typing.overload
+    def __init__(self, other: CPosePDFParticles) -> None:
+        """
+        Copy constructor.
         """
     def __len__(self) -> int:
         ...
@@ -327,9 +410,23 @@ class CPose3DPDFParticles(CPose3DPDF, mrpt.bayes.CParticleFilterCapable):
     """
     A PDF of a 3D pose, as a set of weighted samples (particles).
     """
+    def __copy__(self) -> CPose3DPDFParticles:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPose3DPDFParticles:
+        """
+        Returns a copy of this object.
+        """
+    @typing.overload
     def __init__(self, M: int = 1) -> None:
         """
         Creates M particles at the origin
+        """
+    @typing.overload
+    def __init__(self, other: CPose3DPDFParticles) -> None:
+        """
+        Copy constructor.
         """
     def __len__(self) -> int:
         ...
@@ -371,8 +468,24 @@ class CPose3DPDFGaussian(CPose3DPDF):
     mean: CPose3D
     def __add__(self, arg0: CPose3DPDFGaussian) -> CPose3DPDFGaussian:
         ...
-    def __iadd__(self, arg0: CPose3D) -> None:
-        ...
+    def __copy__(self) -> CPose3DPDFGaussian:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPose3DPDFGaussian:
+        """
+        Returns a copy of this object.
+        """
+    @typing.overload
+    def __iadd__(self, arg0: CPose3D) -> CPose3DPDFGaussian:
+        """
+        Makes this = this (+) Ap, for a pose without uncertainty.
+        """
+    @typing.overload
+    def __iadd__(self, arg0: CPose3DPDFGaussian) -> CPose3DPDFGaussian:
+        """
+        Makes this = this (+) Ap, propagating both covariances.
+        """
     @typing.overload
     def __init__(self) -> None:
         """
@@ -388,8 +501,29 @@ class CPose3DPDFGaussian(CPose3DPDF):
         """
         Builds the PDF from a mean and a 6x6 covariance matrix.
         """
+    @typing.overload
+    def __init__(self, other: CPose3DPDFGaussian) -> None:
+        """
+        Copy constructor.
+        """
+    def __isub__(self, arg0: CPose3DPDFGaussian) -> CPose3DPDFGaussian:
+        """
+        Makes this = this (-) Ap, propagating both covariances.
+        """
+    def __neg__(self) -> CPose3DPDFGaussian:
+        """
+        Returns the PDF of the inverse pose, (0,0,0) (-) this.
+        """
     def __str__(self) -> str:
         ...
+    def __sub__(self, arg0: CPose3DPDFGaussian) -> CPose3DPDFGaussian:
+        """
+        Inverse pose composition a (-) b, propagating both covariances (independent variables).
+        """
+    def changeCoordinatesReference(self, newReferenceBase: CPose3D) -> None:
+        """
+        Makes this = newReferenceBase (+) this, for a reference pose without uncertainty.
+        """
     def drawSingleSample(self) -> CPose3D:
         """
         Draws a single sample from the Gaussian distribution and returns it as a CPose3D.
@@ -402,6 +536,10 @@ class CPose3DPDFGaussian(CPose3DPDF):
         """
         Evaluates the PDF at a given point.
         """
+    def inverse(self) -> CPose3DPDFGaussian:
+        """
+        Returns the PDF of the inverse pose, (0,0,0) (-) this, as a new object (same as -pdf). This PDF is not modified.
+        """
     def saveToTextFile(self, arg0: str) -> bool:
         """
         Saves the mean and covariance to a text file.
@@ -412,6 +550,14 @@ class CPose3DPDFGaussianInf(CPose3DPDF):
     """
     cov_inv: mrpt.math.CMatrixDouble66
     mean: CPose3D
+    def __copy__(self) -> CPose3DPDFGaussianInf:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPose3DPDFGaussianInf:
+        """
+        Returns a copy of this object.
+        """
     @typing.overload
     def __init__(self) -> None:
         """
@@ -426,6 +572,11 @@ class CPose3DPDFGaussianInf(CPose3DPDF):
     def __init__(self, mean: CPose3D, inf_matrix: mrpt.math.CMatrixDouble66) -> None:
         """
         Builds the PDF from a mean and a 6x6 information matrix.
+        """
+    @typing.overload
+    def __init__(self, other: CPose3DPDFGaussianInf) -> None:
+        """
+        Copy constructor.
         """
     def drawSingleSample(self) -> CPose3D:
         """
@@ -498,6 +649,14 @@ class CPoint2D(mrpt.serialization.CSerializable):
         """
         Construct CPoint2D from a lightweight mrpt.math.TPoint2D
         """
+    def __copy__(self) -> CPoint2D:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPoint2D:
+        """
+        Returns a copy of this object.
+        """
     @typing.overload
     def __init__(self) -> None:
         """
@@ -507,6 +666,11 @@ class CPoint2D(mrpt.serialization.CSerializable):
     def __init__(self, x: float, y: float) -> None:
         """
         Constructor for initializing point coordinates.
+        """
+    @typing.overload
+    def __init__(self, other: CPoint2D) -> None:
+        """
+        Copy constructor.
         """
     def __repr__(self) -> str:
         ...
@@ -532,6 +696,14 @@ class CPoint3D(mrpt.serialization.CSerializable):
         """
         Construct CPoint3D from a lightweight mrpt.math.TPoint3D
         """
+    def __copy__(self) -> CPoint3D:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPoint3D:
+        """
+        Returns a copy of this object.
+        """
     @typing.overload
     def __init__(self) -> None:
         """
@@ -541,6 +713,11 @@ class CPoint3D(mrpt.serialization.CSerializable):
     def __init__(self, x: float, y: float, z: float) -> None:
         """
         Constructor for initializing point coordinates.
+        """
+    @typing.overload
+    def __init__(self, other: CPoint3D) -> None:
+        """
+        Copy constructor.
         """
     def __repr__(self) -> str:
         ...
@@ -567,6 +744,14 @@ class CPose3DQuat(mrpt.serialization.CSerializable):
         """
         Construct CPose3DQuat from a lightweight mrpt.math.TPose3DQuat
         """
+    def __copy__(self) -> CPose3DQuat:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPose3DQuat:
+        """
+        Returns a copy of this object.
+        """
     @typing.overload
     def __init__(self) -> None:
         """
@@ -576,6 +761,20 @@ class CPose3DQuat(mrpt.serialization.CSerializable):
     def __init__(self, arg0: CPose3D) -> None:
         """
         Builds the pose from a CPose3D.
+        """
+    @typing.overload
+    def __init__(self, p: mrpt.math.TPose3DQuat) -> None:
+        """
+        Builds the pose from a lightweight mrpt.math.TPose3DQuat.
+        """
+    @typing.overload
+    def __init__(self, other: CPose3DQuat) -> None:
+        """
+        Copy constructor.
+        """
+    def __neg__(self) -> CPose3DQuat:
+        """
+        Returns the inverse pose as a new object (SE(3) group inverse, not the negation of each coordinate).
         """
     def __repr__(self) -> str:
         ...
@@ -599,6 +798,28 @@ class CPosePDFGaussian(CPosePDF):
     """
     cov: mrpt.math.CMatrixDouble33
     mean: CPose2D
+    def __add__(self, arg0: CPosePDFGaussian) -> CPosePDFGaussian:
+        """
+        Pose composition a (+) b, propagating both covariances (independent variables).
+        """
+    def __copy__(self) -> CPosePDFGaussian:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPosePDFGaussian:
+        """
+        Returns a copy of this object.
+        """
+    @typing.overload
+    def __iadd__(self, arg0: CPose2D) -> CPosePDFGaussian:
+        """
+        Makes this = this (+) Ap, for a pose without uncertainty.
+        """
+    @typing.overload
+    def __iadd__(self, arg0: CPosePDFGaussian) -> CPosePDFGaussian:
+        """
+        Makes this = this (+) Ap, propagating both covariances.
+        """
     @typing.overload
     def __init__(self) -> None:
         """
@@ -614,10 +835,37 @@ class CPosePDFGaussian(CPosePDF):
         """
         Builds the PDF from a mean and a 3x3 covariance matrix.
         """
+    @typing.overload
+    def __init__(self, other: CPosePDFGaussian) -> None:
+        """
+        Copy constructor.
+        """
+    def __isub__(self, arg0: CPosePDFGaussian) -> CPosePDFGaussian:
+        """
+        Makes this = this (-) ref, propagating both covariances.
+        """
+    def __radd__(self, arg0: CPose2D) -> CPosePDFGaussian:
+        """
+        Composition p (+) pdf of a pose p without uncertainty and this PDF.
+        """
     def __repr__(self) -> str:
         ...
     def __str__(self) -> str:
         ...
+    def __sub__(self, arg0: CPosePDFGaussian) -> CPosePDFGaussian:
+        """
+        Inverse pose composition a (-) b, propagating both covariances (independent variables).
+        """
+    @typing.overload
+    def changeCoordinatesReference(self, newReferenceBase: CPose2D) -> None:
+        """
+        Makes this = newReferenceBase (+) this, for a reference pose without uncertainty.
+        """
+    @typing.overload
+    def changeCoordinatesReference(self, newReferenceBase: CPose3D) -> None:
+        """
+        Makes this = newReferenceBase (+) this, using the 2D part of a 3D reference pose.
+        """
     def drawSingleSample(self) -> CPose2D:
         """
         Draw a single sample from the Gaussian distribution
@@ -630,12 +878,34 @@ class CPosePDFGaussian(CPosePDF):
         """
         Evaluates the PDF at a given point.
         """
+    def inverse(self) -> CPosePDFGaussian:
+        """
+        Returns the PDF of the inverse pose, (0,0,0) (-) this, as a new object. This PDF is not modified.
+        """
+    @typing.overload
+    def inverseComposition(self, x: CPosePDFGaussian, ref: CPosePDFGaussian) -> None:
+        """
+        Sets this = x (-) ref, propagating both covariances (independent variables).
+        """
+    @typing.overload
+    def inverseComposition(self, x1: CPosePDFGaussian, x0: CPosePDFGaussian, COV_01: mrpt.math.CMatrixDouble33) -> None:
+        """
+        Sets this = x1 (-) x0, given the 3x3 cross-covariance COV_01 = E[(x0-m0)(x1-m1)^T].
+        """
 class CPosePDFGaussianInf(CPosePDF):
     """
     A PDF of a 2D pose as a Gaussian with a mean and a 3x3 information (inverse covariance) matrix.
     """
     cov_inv: mrpt.math.CMatrixDouble33
     mean: CPose2D
+    def __copy__(self) -> CPosePDFGaussianInf:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPosePDFGaussianInf:
+        """
+        Returns a copy of this object.
+        """
     @typing.overload
     def __init__(self) -> None:
         """
@@ -651,6 +921,11 @@ class CPosePDFGaussianInf(CPosePDF):
         """
         Builds the PDF from a mean and a 3x3 information matrix.
         """
+    @typing.overload
+    def __init__(self, other: CPosePDFGaussianInf) -> None:
+        """
+        Copy constructor.
+        """
     def __repr__(self) -> str:
         ...
     def __str__(self) -> str:
@@ -659,13 +934,189 @@ class CPosePDFGaussianInf(CPosePDF):
         """
         Draws a single sample from the distribution.
         """
+class CPosePDFSOG(CPosePDF):
+    """
+    A PDF of a 2D pose as a Sum of Gaussians (SOG): a set of weighted Gaussian modes.
+    """
+    class TGaussianMode:
+        """
+        One mode of a CPosePDFSOG.
+        """
+        def __init__(self) -> None:
+            """
+            Default constructor.
+            """
+        def __repr__(self) -> str:
+            ...
+        @property
+        def cov(self) -> mrpt.math.CMatrixDouble33:
+            """
+            3x3 covariance matrix.
+            """
+        @cov.setter
+        def cov(self, arg0: mrpt.math.CMatrixDouble33) -> None:
+            ...
+        @property
+        def log_w(self) -> float:
+            """
+            Logarithm of the weight of the mode.
+            """
+        @log_w.setter
+        def log_w(self, arg0: float) -> None:
+            ...
+        @property
+        def mean(self) -> CPose2D:
+            """
+            Mean of the mode (CPose2D).
+            """
+        @mean.setter
+        def mean(self, arg0: CPose2D) -> None:
+            ...
+    def __copy__(self) -> CPosePDFSOG:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPosePDFSOG:
+        """
+        Returns a copy of this object.
+        """
+    def __getitem__(self, arg0: int) -> CPosePDFSOG.TGaussianMode:
+        ...
+    @typing.overload
+    def __init__(self, nModes: int = 1) -> None:
+        """
+        Creates the given number of modes.
+        """
+    @typing.overload
+    def __init__(self, other: CPosePDFSOG) -> None:
+        """
+        Copy constructor.
+        """
+    def __iter__(self) -> typing.Iterator:
+        ...
+    def __len__(self) -> int:
+        ...
+    def __repr__(self) -> str:
+        ...
+    def clear(self) -> None:
+        """
+        Removes all the modes.
+        """
+    def empty(self) -> bool:
+        """
+        Returns true if there are no modes.
+        """
+    def evaluateNormalizedPDF(self, x: CPose2D) -> float:
+        """
+        Evaluates the ratio PDF(x) / max(PDF), in the range [0,1].
+        """
+    def evaluatePDF(self, x: CPose2D, sumOverAllPhis: bool = False) -> float:
+        """
+        Evaluates the PDF at a given pose.
+        """
+    def get(self, i: int) -> CPosePDFSOG.TGaussianMode:
+        """
+        Returns a reference to the i'th mode.
+        """
+    def getMostLikelyCovarianceAndMean(self) -> tuple:
+        """
+        Returns the tuple (cov: CMatrixDouble33, mean: CPose2D) of the mode with the highest weight.
+        """
+    def mergeModes(self, max_KLd: float = 0.5, verbose: bool = False) -> None:
+        """
+        Merges very close modes, up to a maximum Kullback-Leibler distance.
+        """
+    def normalizeWeights(self) -> None:
+        """
+        Normalizes the weights of the modes, so that they sum up to one.
+        """
+    def push_back(self, mode: CPosePDFSOG.TGaussianMode) -> None:
+        """
+        Appends a mode (TGaussianMode).
+        """
+    def resize(self, N: int) -> None:
+        """
+        Sets the number of modes.
+        """
+    def size(self) -> int:
+        """
+        Returns the number of modes.
+        """
+class TInterpolatorMethod:
+    """
+    Interpolation method of CPose2DInterpolator and CPose3DInterpolator. In 3D, all methods but the Slerp ones interpolate yaw, pitch and roll independently.
+    
+    Members:
+    
+      imSpline : Spline interpolation using 4 points (2 before and 2 after the query time).
+    
+      imLinear2Neig : Linear interpolation between the previous and next neighbors.
+    
+      imLinear4Neig : Linear fit of the 4 closest points (2 before and 2 after the query time).
+    
+      imSSLLLL : Spline for x and y, linear least squares for z, yaw, pitch and roll.
+    
+      imSSLSLL : Spline for x, y and yaw, linear least squares for z, pitch and roll.
+    
+      imLinearSlerp : Linear for x, y and z, Slerp for the rotation (the default).
+    
+      imSplineSlerp : Spline for x, y and z (as imSpline), Slerp for the rotation.
+    """
+    __members__: typing.ClassVar[dict[str, TInterpolatorMethod]]
+    imLinear2Neig: typing.ClassVar[TInterpolatorMethod]
+    imLinear4Neig: typing.ClassVar[TInterpolatorMethod]
+    imLinearSlerp: typing.ClassVar[TInterpolatorMethod]
+    imSSLLLL: typing.ClassVar[TInterpolatorMethod]
+    imSSLSLL: typing.ClassVar[TInterpolatorMethod]
+    imSpline: typing.ClassVar[TInterpolatorMethod]
+    imSplineSlerp: typing.ClassVar[TInterpolatorMethod]
+    def __eq__(self, other: typing.Any) -> bool:
+        ...
+    def __getstate__(self) -> int:
+        ...
+    def __hash__(self) -> int:
+        ...
+    def __index__(self) -> int:
+        ...
+    def __init__(self, value: int) -> None:
+        ...
+    def __int__(self) -> int:
+        ...
+    def __ne__(self, other: typing.Any) -> bool:
+        ...
+    def __repr__(self) -> str:
+        ...
+    def __setstate__(self, state: int) -> None:
+        ...
+    def __str__(self) -> str:
+        ...
+    @property
+    def name(self) -> str:
+        ...
+    @property
+    def value(self) -> int:
+        ...
 class CPose2DInterpolator(mrpt.serialization.CSerializable):
     """
     A time-stamped trajectory in SE(2), with interpolation between poses.
     """
+    def __copy__(self) -> CPose2DInterpolator:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPose2DInterpolator:
+        """
+        Returns a copy of this object.
+        """
+    @typing.overload
     def __init__(self) -> None:
         """
         Default constructor.
+        """
+    @typing.overload
+    def __init__(self, other: CPose2DInterpolator) -> None:
+        """
+        Copy constructor.
         """
     def __len__(self) -> int:
         ...
@@ -677,13 +1128,21 @@ class CPose2DInterpolator(mrpt.serialization.CSerializable):
         """
         Returns true if the trajectory has no poses.
         """
+    def getInterpolationMethod(self) -> TInterpolatorMethod:
+        """
+        Returns the current interpolation method.
+        """
     def insert(self, arg0: datetime.timedelta, arg1: mrpt.math.TPose2D) -> None:
         """
         Inserts a new pose in the sequence. It overwrites any previously existing pose at exactly the same time.
         """
     def interpolate(self, arg0: datetime.timedelta) -> tuple:
         """
-        Returns (TPose2D, valid) — interpolated pose at given time
+        Returns (TPose2D, valid): interpolated pose at given time
+        """
+    def setInterpolationMethod(self, method: TInterpolatorMethod) -> None:
+        """
+        Sets the interpolation method (default: imLinearSlerp).
         """
     def size(self) -> int:
         """
@@ -693,9 +1152,23 @@ class CPose3DInterpolator(mrpt.serialization.CSerializable):
     """
     A time-stamped trajectory in SE(3), with interpolation between poses.
     """
+    def __copy__(self) -> CPose3DInterpolator:
+        """
+        Returns a copy of this object.
+        """
+    def __deepcopy__(self, memo: dict) -> CPose3DInterpolator:
+        """
+        Returns a copy of this object.
+        """
+    @typing.overload
     def __init__(self) -> None:
         """
         Default constructor.
+        """
+    @typing.overload
+    def __init__(self, other: CPose3DInterpolator) -> None:
+        """
+        Copy constructor.
         """
     def __len__(self) -> int:
         ...
@@ -707,13 +1180,21 @@ class CPose3DInterpolator(mrpt.serialization.CSerializable):
         """
         Returns true if the trajectory has no poses.
         """
+    def getInterpolationMethod(self) -> TInterpolatorMethod:
+        """
+        Returns the current interpolation method.
+        """
     def insert(self, arg0: datetime.timedelta, arg1: mrpt.math.TPose3D) -> None:
         """
         Inserts a new pose in the sequence. It overwrites any previously existing pose at exactly the same time.
         """
     def interpolate(self, arg0: datetime.timedelta) -> tuple:
         """
-        Returns (TPose3D, valid) — interpolated pose at given time
+        Returns (TPose3D, valid): interpolated pose at given time
+        """
+    def setInterpolationMethod(self, method: TInterpolatorMethod) -> None:
+        """
+        Sets the interpolation method (default: imLinearSlerp).
         """
     def size(self) -> int:
         """
@@ -745,3 +1226,10 @@ class CPoseRandomSampler:
         """
         Sets the 3D pose PDF to draw samples from.
         """
+imLinear2Neig: TInterpolatorMethod
+imLinear4Neig: TInterpolatorMethod
+imLinearSlerp: TInterpolatorMethod
+imSSLLLL: TInterpolatorMethod
+imSSLSLL: TInterpolatorMethod
+imSpline: TInterpolatorMethod
+imSplineSlerp: TInterpolatorMethod

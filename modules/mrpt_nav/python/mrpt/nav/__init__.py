@@ -1,5 +1,6 @@
 import mrpt.math   # noqa: F401  (TPoint2D, TPose2D, TTwist2D)
 import mrpt.poses  # noqa: F401  (CPose2D)
+import mrpt.kinematics  # noqa: F401  (CVehicleVelCmd)
 
 from . import _bindings as _b
 
