@@ -62,12 +62,13 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(
   CPose3D pose;
   unsigned int k = 0;
   const auto nPts = m_scan.size();
+  // Angle between consecutive rays, as in getScanAngle():
+  const float dA = nPts > 1 ? aperture / static_cast<float>(nPts - 1) : 0.0f;
 
   auto itValid = m_validRange.begin();
   for (auto itScan = m_scan.begin(); itScan != m_scan.end(); itScan++, itValid++, k++)
   {
-    const auto ang =
-        std::abs(static_cast<float>(k) * aperture / static_cast<float>(nPts) - aperture * 0.5f);
+    const auto ang = std::abs(static_cast<float>(k) * dA - aperture * 0.5f);
     float x = (*itScan) * cos(ang);
 
     if (min_height != 0 || max_height != 0)
