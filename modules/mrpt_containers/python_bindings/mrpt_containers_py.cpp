@@ -18,6 +18,7 @@
 
 // MRPT headers
 #include <mrpt/containers/yaml.h>
+#include <mrpt/core/exceptions.h>
 
 #include <cstdio>
 #include <fstream>
@@ -139,6 +140,8 @@ namespace
 {
 // Captures what is written to the stderr file descriptor while alive: the
 // YAML parser prints its syntax errors there instead of reporting them.
+// This class (and its use in parseYamlOrRaise()) can be removed once the C++
+// parser reports all syntax errors with exceptions and prints nothing.
 class StderrCapture
 {
  public:
@@ -212,14 +215,32 @@ class StderrCapture
   int saved_ = -1;
 };
 
-// Runs a YAML parsing function, raising ValueError with the parser messages
-// (e.g. "line 2, column 1: flow sequence without a closing bracket") if the
-// text has syntax errors, since the C++ parser does not report all of them.
+// The message of a YAML syntax error exception from the C++ parser, from
+// "Error parsing YAML/JSON text" to the end (the input excerpt), without the
+// MRPT source location and call stack; or nullopt for other exceptions.
+std::optional<std::string> yamlSyntaxErrorMessage(const std::exception& e)
+{
+  const auto* mrptExcep = dynamic_cast<const mrpt::ExceptionWithCallBackBase*>(&e);
+  const std::string msg = mrptExcep != nullptr ? mrptExcep->originalWhat : std::string(e.what());
+  const auto pos = msg.find("Error parsing YAML/JSON text");
+  if (pos == std::string::npos)
+  {
+    return std::nullopt;
+  }
+  const auto end = msg.find_last_not_of(" \n\r\t");
+  return msg.substr(pos, end + 1 - pos);
+}
+
+// Runs a YAML parsing function, raising ValueError if the text has syntax
+// errors: from the parser exception, or from the messages the parser prints
+// (e.g. "line 2, column 1: flow sequence without a closing bracket") in builds
+// where it does not report all of them with exceptions.
 template <class PARSE_FN>
 yaml parseYamlOrRaise(const PARSE_FN& parse)
 {
   std::optional<yaml> result;
   std::optional<std::string> cppError;
+  std::optional<std::string> cppSyntaxError;
   std::string diagnostics;
   {
     StderrCapture capture;
@@ -229,9 +250,14 @@ yaml parseYamlOrRaise(const PARSE_FN& parse)
     }
     catch (const std::exception& e)
     {
+      cppSyntaxError = yamlSyntaxErrorMessage(e);
       cppError = e.what();
     }
     diagnostics = capture.finish();
+  }
+  if (cppSyntaxError)
+  {
+    throw py::value_error(*cppSyntaxError);
   }
 
   // Parser messages look like: "<input>:LINE:COLUMN: error: MESSAGE"
