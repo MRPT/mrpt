@@ -311,5 +311,85 @@ hmo.insertionOptions.z_max = 0.2
 check("height map insertionOptions", hmo.insertionOptions.filterByHeight and
       abs(hmo.insertionOptions.z_max - 0.2) < 1e-6)
 
+print("Point fields as NumPy arrays")
+import os
+import tempfile
+fields_in = {
+    "x": np.arange(6, dtype=np.float32),
+    "y": np.linspace(-1, 1, 6).astype(np.float32),
+    "z": np.full(6, 0.5, dtype=np.float32),
+    "intensity": np.linspace(0, 1, 6).astype(np.float32),
+    "timestamp": np.arange(6) * 0.1,
+    "ring": np.arange(6, dtype=np.uint16) * 100,
+    "label": np.arange(6, dtype=np.uint8),
+    "id": np.arange(6, dtype=np.uint32) * 1000000,
+}
+gpm = CGenericPointsMap.FromNumpyFields(fields_in)
+check("FromNumpyFields size", len(gpm) == 6)
+check("FromNumpyFields registers fields by dtype",
+      gpm.getPointFieldNames_double() == ["timestamp"] and gpm.getPointFieldNames_uint16() == ["ring"]
+      and gpm.getPointFieldNames_uint8() == ["label"] and gpm.getPointFieldNames_uint32() == ["id"]
+      and "intensity" in gpm.getPointFieldNames_float())
+fields_out = gpm.getPointFieldsAsNumpy()
+check("getPointFieldsAsNumpy keys", set(fields_out) == set(fields_in), f"got {set(fields_out)}")
+check("getPointFieldsAsNumpy values and dtypes",
+      all(fields_out[k].dtype == v.dtype and np.array_equal(fields_out[k], v)
+          for k, v in fields_in.items()))
+check("per-point getters agree", abs(gpm.getPointField_double(3, "timestamp") - 0.3) < 1e-12 and
+      gpm.getPointField_uint32(5, "id") == 5000000)
+fields_out["x"][0] = 99.0
+check("getPointFieldsAsNumpy returns copies", gpm.getPointsAsNumpy()[0, 0] == 0.0)
+check("getPointFieldsAsNumpy of a CSimplePointsMap",
+      set(CSimplePointsMap().getPointFieldsAsNumpy()) == {"x", "y", "z"})
+idx, _, _ = gpm.nn_single_search(TPoint3D(4.1, 0.6, 0.5))
+check("KD-tree after FromNumpyFields", idx == 4, f"got {idx}")
+for bad, exc in [({"x": [1.0], "y": [1.0]}, KeyError),
+                 ({"x": [1.0, 2.0], "y": [1.0], "z": [0.0]}, ValueError),
+                 ({"x": [1.0], "y": [1.0], "z": [0.0], "f": np.array([1], dtype=np.int64)},
+                  TypeError)]:
+    try:
+        CGenericPointsMap.FromNumpyFields(bad)
+        check(f"FromNumpyFields rejects {exc.__name__}", False, "no exception")
+    except exc:
+        check(f"FromNumpyFields rejects {exc.__name__}", True)
+
+big = CSimplePointsMap()
+big_pts = np.random.default_rng(3).uniform(-10, 10, (200000, 3)).astype(np.float32)
+big.setPointsFromNumpy(big_pts)
+check("setPointsFromNumpy / getPointsAsNumpy round trip",
+      len(big) == 200000 and np.array_equal(big.getPointsAsNumpy(), big_pts))
+idx, _, _ = big.nn_single_search(TPoint3D(*big_pts[1234].astype(float)))
+check("KD-tree updated after setPointsFromNumpy", idx == 1234, f"got {idx}")
+big.setPointsFromNumpy(big_pts[:10] + 100.0)
+idx, _, d2 = big.nn_single_search(TPoint3D(*(big_pts[7] + 100.0).astype(float)))
+check("KD-tree rebuilt after a second setPointsFromNumpy", idx == 7 and d2 < 1e-6)
+try:
+    big.setPointsFromNumpy(np.zeros((4, 2), dtype=np.float32))
+    check("setPointsFromNumpy rejects a wrong shape", False, "no exception")
+except ValueError:
+    check("setPointsFromNumpy rejects a wrong shape", True)
+
+print("PLY and KITTI files")
+with tempfile.TemporaryDirectory() as tmp:
+    ply = os.path.join(tmp, "cloud.ply")
+    check("saveToPlyFile", gpm.saveToPlyFile(ply, save_in_binary=True))
+    loaded = CSimplePointsMap()
+    check("loadFromPlyFile", loaded.loadFromPlyFile(ply) and
+          np.allclose(loaded.getPointsAsNumpy(), gpm.getPointsAsNumpy()))
+    check("loadFromPlyFile of a missing file", not loaded.loadFromPlyFile(os.path.join(tmp, "no.ply"))
+          and loaded.getLoadPLYErrorString() != "")
+    check("saveToPlyFile to a bad path", not gpm.saveToPlyFile(os.path.join(tmp, "no", "a.ply")))
+    raw = os.path.join(tmp, "000000.bin")
+    xyzi = np.column_stack([np.arange(4), np.ones(4), np.zeros(4), [0.1, 0.2, 0.3, 0.4]])
+    xyzi.astype(np.float32).tofile(raw)
+    kitti = CGenericPointsMap()
+    check("loadFromKittiVelodyneFile", kitti.loadFromKittiVelodyneFile(raw) and len(kitti) == 4 and
+          np.allclose(kitti.getPointFieldsAsNumpy()["intensity"], [0.1, 0.2, 0.3, 0.4]))
+    gz = os.path.join(tmp, "scan.bin.gz")
+    check("saveToKittiVelodyneFile", kitti.saveToKittiVelodyneFile(gz))
+    kitti2 = CGenericPointsMap()
+    check("KITTI round trip", kitti2.loadFromKittiVelodyneFile(gz) and
+          np.allclose(kitti2.getPointsAsNumpy(), kitti.getPointsAsNumpy()))
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

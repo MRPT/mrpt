@@ -40,6 +40,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <algorithm>
+#include <cstdio>
+#include <functional>
 #include <limits>
 #include <optional>
 
@@ -85,6 +88,49 @@ py::tuple nnResultsAsNumpy(
     }
   }
   return py::make_tuple(outIdx, outPts, outDists);
+}
+
+// A NumPy copy of the first n values of a point field, read from its buffer if
+// available, or with the per-point getter otherwise.
+template <typename T>
+py::array_t<T> fieldToNumpy(
+    const mrpt::aligned_std_vector<T>* buf, size_t n, const std::function<T(size_t)>& getter)
+{
+  py::array_t<T> arr(std::vector<py::ssize_t>{static_cast<py::ssize_t>(n)});
+  T* out = arr.mutable_data();
+  if (buf != nullptr && buf->size() >= n)
+  {
+    std::copy_n(buf->data(), n, out);
+  }
+  else
+  {
+    for (size_t i = 0; i < n; i++)
+    {
+      out[i] = getter(i);
+    }
+  }
+  return arr;
+}
+
+// Registers a field of type T in a CGenericPointsMap and copies its values
+// from a 1D array of n elements.
+template <typename T>
+void registerAndFillField(
+    mrpt::maps::CGenericPointsMap& mp,
+    const std::string& name,
+    const py::array& values,
+    bool (mrpt::maps::CGenericPointsMap::*registerFn)(const std::string&),
+    mrpt::aligned_std_vector<T>* (mrpt::maps::CGenericPointsMap::*bufferFn)(const std::string&))
+{
+  (mp.*registerFn)(name);
+  mp.resize(mp.size());  // sizes the new field
+  auto* buf = (mp.*bufferFn)(name);
+  const auto arr = py::array_t<T, py::array::c_style | py::array::forcecast>::ensure(values);
+  if (buf == nullptr || !arr || static_cast<size_t>(arr.size()) != buf->size())
+  {
+    throw py::value_error("cannot set the values of field '" + name + "'");
+  }
+  std::copy_n(arr.data(), buf->size(), buf->data());
 }
 }  // namespace
 
@@ -211,36 +257,86 @@ PYBIND11_MODULE(_bindings, m)
           "x"_a, "y"_a, "z"_a = 0.0f,
           "Provides a way to insert (append) individual points into the map: the missing fields of "
           "child classes (color, weight, etc) are left to their default values.")
-      // NumPy integration — get all points as Nx3 float32 array
+      // NumPy integration: get or set all points as an Nx3 float32 array
       .def(
           "getPointsAsNumpy",
           [](const mrpt::maps::CPointsMap& mp)
           {
-            const size_t n = mp.size();
-            py::array_t<float> arr({n, size_t(3)});
+            const auto& xs = mp.getPointsBufferRef_x();
+            const auto& ys = mp.getPointsBufferRef_y();
+            const auto& zs = mp.getPointsBufferRef_z();
+            const auto n = static_cast<py::ssize_t>(mp.size());
+            py::array_t<float> arr(std::vector<py::ssize_t>{n, 3});
             auto buf = arr.mutable_unchecked<2>();
-            for (size_t i = 0; i < n; i++)
+            for (py::ssize_t i = 0; i < n; i++)
             {
-              float x, y, z;
-              mp.getPoint(i, x, y, z);
-              buf(i, 0) = x;
-              buf(i, 1) = y;
-              buf(i, 2) = z;
+              buf(i, 0) = xs[i];
+              buf(i, 1) = ys[i];
+              buf(i, 2) = zs[i];
             }
             return arr;
           },
           "Returns all points as an Nx3 float32 numpy array")
-      // Load all points from Nx3 numpy array
       .def(
           "setPointsFromNumpy",
-          [](mrpt::maps::CPointsMap& mp, const py::array_t<float>& arr)
+          [](mrpt::maps::CPointsMap& mp,
+             const py::array_t<float, py::array::c_style | py::array::forcecast>& arr)
           {
-            auto r = arr.unchecked<2>();
-            mp.clear();
-            mp.reserve(r.shape(0));
-            for (py::ssize_t i = 0; i < r.shape(0); i++) mp.insertPoint(r(i, 0), r(i, 1), r(i, 2));
+            if (arr.ndim() != 2 || arr.shape(1) != 3)
+            {
+              throw py::value_error("The array must have shape (N, 3)");
+            }
+            const auto r = arr.unchecked<2>();
+            mp.setSize(static_cast<size_t>(r.shape(0)));
+            for (py::ssize_t i = 0; i < r.shape(0); i++)
+            {
+              mp.setPointFast(static_cast<size_t>(i), r(i, 0), r(i, 1), r(i, 2));
+            }
+            mp.mark_as_modified();
           },
-          "arr"_a, "Load an Nx3 float32 numpy array into this point cloud")
+          "arr"_a,
+          "Replaces all the points with those of an Nx3 array (other point fields are reset to "
+          "their default values).")
+      .def(
+          "getPointFieldsAsNumpy",
+          [](const mrpt::maps::CPointsMap& mp)
+          {
+            const size_t n = mp.size();
+            py::dict out;
+            for (const auto& name : mp.getPointFieldNames_float())
+            {
+              out[py::str(name)] = fieldToNumpy<float>(
+                  mp.getPointsBufferRef_float_field(name), n,
+                  [&](size_t i) { return mp.getPointField_float(i, name); });
+            }
+            for (const auto& name : mp.getPointFieldNames_double())
+            {
+              out[py::str(name)] = fieldToNumpy<double>(
+                  mp.getPointsBufferRef_double_field(name), n,
+                  [&](size_t i) { return mp.getPointField_double(i, name); });
+            }
+            for (const auto& name : mp.getPointFieldNames_uint16())
+            {
+              out[py::str(name)] = fieldToNumpy<uint16_t>(
+                  mp.getPointsBufferRef_uint16_field(name), n,
+                  [&](size_t i) { return mp.getPointField_uint16(i, name); });
+            }
+            for (const auto& name : mp.getPointFieldNames_uint8())
+            {
+              out[py::str(name)] = fieldToNumpy<uint8_t>(
+                  mp.getPointsBufferRef_uint8_field(name), n,
+                  [&](size_t i) { return mp.getPointField_uint8(i, name); });
+            }
+            for (const auto& name : mp.getPointFieldNames_uint32())
+            {
+              out[py::str(name)] = fieldToNumpy<uint32_t>(
+                  mp.getPointsBufferRef_uint32_field(name), n,
+                  [&](size_t i) { return mp.getPointField_uint32(i, name); });
+            }
+            return out;
+          },
+          "Returns a dict with a 1D NumPy array (a copy) for x, y, z and every other point field, "
+          "with its dtype: float32, float64, uint16, uint8 or uint32.")
       .def(
           "save2D_to_text_file", &mrpt::maps::CPointsMap::save2D_to_text_file,
           "Save to a text file. Each line will contain \"X Y\" point coordinates.")
@@ -255,6 +351,46 @@ PYBIND11_MODULE(_bindings, m)
           "load3D_from_text_file", &mrpt::maps::CPointsMap::load3D_from_text_file,
           "Load from a text file. Each line should contain an \"X Y Z\" coordinate tuple, "
           "separated by whitespaces.")
+      .def(
+          "loadFromPlyFile",
+          [](mrpt::maps::CPointsMap& mp, const std::string& filename)
+          { return mp.loadFromPlyFile(filename); },
+          "filename"_a,
+          "Loads the points from a PLY file. Returns False on error: see getLoadPLYErrorString().")
+      .def(
+          "getLoadPLYErrorString", &mrpt::maps::CPointsMap::getLoadPLYErrorString,
+          "Description of the error of the last failed loadFromPlyFile().")
+      .def(
+          "saveToPlyFile",
+          [](const mrpt::maps::CPointsMap& mp, const std::string& filename, bool save_in_binary,
+             const std::vector<std::string>& file_comments)
+          {
+            // The exporter does not handle files that cannot be created:
+            std::FILE* f = std::fopen(filename.c_str(), "w");
+            if (f == nullptr)
+            {
+              return false;
+            }
+            std::fclose(f);
+            return mp.saveToPlyFile(filename, save_in_binary, file_comments);
+          },
+          "filename"_a, "save_in_binary"_a = false, "file_comments"_a = std::vector<std::string>(),
+          "Saves the points to a PLY file (text or binary). Returns False if the file cannot be "
+          "created, or on other errors: see getSavePLYErrorString().")
+      .def(
+          "getSavePLYErrorString", &mrpt::maps::CPointsMap::getSavePLYErrorString,
+          "Description of the error of the last failed saveToPlyFile().")
+      .def(
+          "loadFromKittiVelodyneFile", &mrpt::maps::CPointsMap::loadFromKittiVelodyneFile,
+          "filename"_a,
+          "Loads a KITTI Velodyne scan (binary XYZI, gzip-compressed if the name ends in \".gz\"), "
+          "with the intensity in the \"intensity\" field if the map supports it. Returns True on "
+          "success.")
+      .def(
+          "saveToKittiVelodyneFile", &mrpt::maps::CPointsMap::saveToKittiVelodyneFile, "filename"_a,
+          "Saves the points and their \"intensity\" field in the binary XYZI format of the KITTI "
+          "dataset, always compressed: use a file name ending in \".gz\" to load it back. Returns "
+          "True on success.")
       // Nearest-neighbor queries (KD-tree)
       .def(
           "nn_single_search",
@@ -454,6 +590,92 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "setPointField_uint32", &mrpt::maps::CGenericPointsMap::setPointField_uint32, "index"_a,
           "fieldName"_a, "value"_a, "Set a uint32 channel value (New in MRPT 3.0.0)")
+      .def_static(
+          "FromNumpyFields",
+          [](const py::dict& fields)
+          {
+            using mrpt::maps::CGenericPointsMap;
+            for (const char* c : {"x", "y", "z"})
+            {
+              if (!fields.contains(c))
+              {
+                throw py::key_error(std::string("missing field '") + c + "'");
+              }
+            }
+            using FloatArray = py::array_t<float, py::array::c_style | py::array::forcecast>;
+            const auto xs = py::cast<FloatArray>(fields["x"]);
+            const auto ys = py::cast<FloatArray>(fields["y"]);
+            const auto zs = py::cast<FloatArray>(fields["z"]);
+            const auto n = xs.size();
+            if (xs.ndim() != 1 || ys.ndim() != 1 || zs.ndim() != 1 || ys.size() != n ||
+                zs.size() != n)
+            {
+              throw py::value_error("x, y and z must be 1D arrays of the same length");
+            }
+            auto mp = std::make_shared<CGenericPointsMap>();
+            mp->resize(static_cast<size_t>(n));
+            for (py::ssize_t i = 0; i < n; i++)
+            {
+              mp->setPointFast(static_cast<size_t>(i), xs.at(i), ys.at(i), zs.at(i));
+            }
+            for (const auto& [key, value] : fields)
+            {
+              const auto name = py::cast<std::string>(key);
+              if (name == "x" || name == "y" || name == "z")
+              {
+                continue;
+              }
+              const auto arr = py::array::ensure(value);
+              if (!arr || arr.ndim() != 1 || arr.size() != n)
+              {
+                throw py::value_error("field '" + name + "' must be a 1D array of length N");
+              }
+              const auto dt = arr.dtype();
+              if (dt.is(py::dtype::of<float>()))
+              {
+                registerAndFillField<float>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_float,
+                    &CGenericPointsMap::getPointsBufferRef_float_field);
+              }
+              else if (dt.is(py::dtype::of<double>()))
+              {
+                registerAndFillField<double>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_double,
+                    &CGenericPointsMap::getPointsBufferRef_double_field);
+              }
+              else if (dt.is(py::dtype::of<uint16_t>()))
+              {
+                registerAndFillField<uint16_t>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_uint16,
+                    &CGenericPointsMap::getPointsBufferRef_uint16_field);
+              }
+              else if (dt.is(py::dtype::of<uint8_t>()))
+              {
+                registerAndFillField<uint8_t>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_uint8,
+                    &CGenericPointsMap::getPointsBufferRef_uint8_field);
+              }
+              else if (dt.is(py::dtype::of<uint32_t>()))
+              {
+                registerAndFillField<uint32_t>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_uint32,
+                    &CGenericPointsMap::getPointsBufferRef_uint32_field);
+              }
+              else
+              {
+                throw py::type_error(
+                    "field '" + name +
+                    "' must have dtype float32, float64, uint16, uint8 or uint32");
+              }
+            }
+            mp->mark_as_modified();
+            return mp;
+          },
+          "fields"_a,
+          "Builds a map from a dict of 1D arrays of the same length, as returned by "
+          "getPointFieldsAsNumpy(): x, y and z (converted to float32) and other fields, "
+          "registered with the type given by their dtype (float32, float64, uint16, uint8 or "
+          "uint32).")
       .def(
           "__repr__", [](const mrpt::maps::CGenericPointsMap& mp)
           { return "CGenericPointsMap(" + std::to_string(mp.size()) + " points)"; });

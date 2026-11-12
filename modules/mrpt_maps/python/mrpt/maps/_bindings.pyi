@@ -80,13 +80,25 @@ class CPointsMap(CMetricMap):
         ...
     def __repr__(self) -> str:
         ...
+    def getLoadPLYErrorString(self) -> str:
+        """
+        Description of the error of the last failed loadFromPlyFile().
+        """
     def getPoint(self, i: int) -> tuple:
         """
         Returns (x, y, z) tuple for point i
         """
+    def getPointFieldsAsNumpy(self) -> dict:
+        """
+        Returns a dict with a 1D NumPy array (a copy) for x, y, z and every other point field, with its dtype: float32, float64, uint16, uint8 or uint32.
+        """
     def getPointsAsNumpy(self) -> numpy.ndarray:
         """
         Returns all points as an Nx3 float32 numpy array
+        """
+    def getSavePLYErrorString(self) -> str:
+        """
+        Description of the error of the last failed saveToPlyFile().
         """
     def insertPoint(self, x: float, y: float, z: float = 0.0) -> None:
         """
@@ -103,6 +115,14 @@ class CPointsMap(CMetricMap):
     def load3D_from_text_file(self, arg0: str) -> bool:
         """
         Load from a text file. Each line should contain an "X Y Z" coordinate tuple, separated by whitespaces.
+        """
+    def loadFromKittiVelodyneFile(self, filename: str) -> bool:
+        """
+        Loads a KITTI Velodyne scan (binary XYZI, gzip-compressed if the name ends in ".gz"), with the intensity in the "intensity" field if the map supports it. Returns True on success.
+        """
+    def loadFromPlyFile(self, filename: str) -> bool:
+        """
+        Loads the points from a PLY file. Returns False on error: see getLoadPLYErrorString().
         """
     @typing.overload
     def nn_multiple_search(self, query: mrpt.math.TPoint3D, N: int) -> tuple:
@@ -146,9 +166,17 @@ class CPointsMap(CMetricMap):
         """
         Save to a text file. Each line will contain "X Y Z" point coordinates.
         """
+    def saveToKittiVelodyneFile(self, filename: str) -> bool:
+        """
+        Saves the points and their "intensity" field in the binary XYZI format of the KITTI dataset, always compressed: use a file name ending in ".gz" to load it back. Returns True on success.
+        """
+    def saveToPlyFile(self, filename: str, save_in_binary: bool = False, file_comments: list[str] = []) -> bool:
+        """
+        Saves the points to a PLY file (text or binary). Returns False if the file cannot be created, or on other errors: see getSavePLYErrorString().
+        """
     def setPointsFromNumpy(self, arr: numpy.ndarray) -> None:
         """
-        Load an Nx3 float32 numpy array into this point cloud
+        Replaces all the points with those of an Nx3 array (other point fields are reset to their default values).
         """
     def size(self) -> int:
         """
@@ -168,6 +196,11 @@ class CGenericPointsMap(CPointsMap):
     """
     A map of 3D points (X,Y,Z) plus any number of custom, string-keyed per-point data channels.
     """
+    @staticmethod
+    def FromNumpyFields(fields: dict) -> CGenericPointsMap:
+        """
+        Builds a map from a dict of 1D arrays of the same length, as returned by getPointFieldsAsNumpy(): x, y and z (converted to float32) and other fields, registered with the type given by their dtype (float32, float64, uint16, uint8 or uint32).
+        """
     def __init__(self) -> None:
         """
         Default constructor.
