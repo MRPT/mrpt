@@ -347,6 +347,15 @@ TEST(PLY_import_export, LoadNonExistentFileFails)
   EXPECT_FALSE(pc.getLoadPLYErrorString().empty());
 }
 
+TEST(PLY_import_export, SaveToUnwritablePathFails)
+{
+  CPointCloud pc;
+  pc.insertPoint(1.0f, 2.0f, 3.0f);
+  const bool saveOk = pc.saveToPlyFile("/nonexistent/path/does_not_exist.ply");
+  EXPECT_FALSE(saveOk);
+  EXPECT_FALSE(pc.getSavePLYErrorString().empty());
+}
+
 TEST(PLY_import_export, EmptyCloudRoundTrip)
 {
   CPointCloud pc;

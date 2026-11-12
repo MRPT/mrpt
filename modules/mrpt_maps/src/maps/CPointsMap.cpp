@@ -18,6 +18,7 @@
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/detect_compression.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -742,7 +743,16 @@ void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
     obj.enableHideBackFacingPoints(true);
   };
 
-  if (renderOptions.colormap == mrpt::img::cmNONE)
+  if (renderOptions.colormap == mrpt::img::cmNONE && (hasColor_u8() || hasColor_f()))
+  {
+    // Per-point colors:
+    auto obj = viz::CPointCloudColoured::Create();
+    obj->loadFromPointsMap(this);
+    obj->setPointSize(renderOptions.point_size);
+    setBackFacing(*obj);
+    o.insert(obj);
+  }
+  else if (renderOptions.colormap == mrpt::img::cmNONE)
   {
     // Single color:
     auto obj = viz::CPointCloud::Create();
@@ -2417,7 +2427,11 @@ bool CPointsMap::loadFromKittiVelodyneFile(const std::string& filename)
     mrpt::io::CFileInputStream f_normal;
     mrpt::io::CStream* f = nullptr;
 
-    if (std::string("gz") == mrpt::system::extractFileExtension(filename))
+    // Compressed files are identified by their extension, or by the zstd
+    // magic number, which is not a plausible first XYZI record:
+    const auto ext = mrpt::system::extractFileExtension(filename);
+    if (ext == "gz" || ext == "zst" ||
+        mrpt::io::detect_compression(filename) == mrpt::io::CompressionType::Zstd)
     {
       if (f_gz.open(filename)) f = &f_gz;
     }
@@ -2490,7 +2504,19 @@ bool CPointsMap::saveToKittiVelodyneFile(const std::string& filename) const
     ASSERT_(Is);
     ASSERT_EQUAL_(Is->size(), m_x.size());
 
-    mrpt::io::CCompressedOutputStream f(filename);
+    // Plain data (the KITTI format) unless the extension asks for compression:
+    const auto ext = mrpt::system::extractFileExtension(filename);
+    auto compression = mrpt::io::CompressionType::None;
+    if (ext == "gz")
+    {
+      compression = mrpt::io::CompressionType::Gzip;
+    }
+    else if (ext == "zst")
+    {
+      compression = mrpt::io::CompressionType::Zstd;
+    }
+    mrpt::io::CCompressedOutputStream f(
+        filename, mrpt::io::OpenMode::TRUNCATE, mrpt::io::CompressionOptions(compression));
 
     for (size_t i = 0; i < m_x.size(); i++)
     {

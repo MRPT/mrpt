@@ -96,6 +96,8 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
   double internal_get_w(const double dir) const;
   /** Evals expr_T_ramp */
   double internal_get_T_ramp(const double dir) const;
+  /** Time to travel `dist` along path `k`, or std::nullopt if unreachable */
+  std::optional<double> internal_solve_time_for_dist(uint16_t k, double dist) const;
 
   void internal_construct_exprs();
 

@@ -67,6 +67,12 @@ try:
     check("disconnected: unreachable target raises", False)
 except ValueError:
     check("disconnected: unreachable target raises", True)
+try:
+    gdis.dijkstra_nodes_estimate()
+    check("disconnected: estimate raises", False)
+except RuntimeError as ex:
+    check("disconnected: estimate raises with message", "not fully connected" in str(ex),
+          f"got {str(ex)!r}")
 gedges = _G2()  # edges only, no node poses yet
 for i in range(3):
     gedges.insertEdge(i, i + 1, _CP2(1.0, 0.0, 0.0))

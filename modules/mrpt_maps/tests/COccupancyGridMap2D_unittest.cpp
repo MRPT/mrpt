@@ -462,6 +462,80 @@ TEST(COccupancyGridMap2DTests, InsertWidenedRaysMarksOccupiedAtEndpoint)
   EXPECT_LT(grid.getPos(3.0, 0), 0.49f);
 }
 
+namespace
+{
+// Inserts the scan into a grid and a points map, and checks that every point
+// of the latter lies on (or next to) an occupied cell of the grid.
+void checkRayEndpointsMatchPointsMap(
+    const CObservation2DRangeScan& scan, bool widenedBeams, const CPose3D& robotPose)
+{
+  COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.05f);
+  grid.insertionOptions.wideningBeamsWithDistance = widenedBeams;
+  ASSERT_TRUE(grid.insertObservation(scan, robotPose));
+
+  CSimplePointsMap pts;
+  pts.insertObservation(scan, robotPose);
+  ASSERT_GT(pts.size(), 0U);
+
+  for (size_t i = 0; i < pts.size(); i++)
+  {
+    float x = 0;
+    float y = 0;
+    pts.getPoint(i, x, y);
+    const int cx = grid.x2idx(x);
+    const int cy = grid.y2idx(y);
+    float minFreeness = 1.0f;
+    for (int dx = -1; dx <= 1; dx++)
+    {
+      for (int dy = -1; dy <= 1; dy++)
+      {
+        mrpt::keep_min(minFreeness, grid.getCell(cx + dx, cy + dy));
+      }
+    }
+    EXPECT_LT(minFreeness, 0.49f) << "point #" << i << " at (" << x << "," << y
+                                  << "), widened=" << widenedBeams
+                                  << ", rightToLeft=" << scan.rightToLeft;
+  }
+}
+}  // namespace
+
+TEST(COccupancyGridMap2DTests, InsertedRayAnglesMatchPointsMap)
+{
+  const CPose3D robotPose(0.5, -0.3, 0, mrpt::DEG2RAD(30.0), 0, 0);
+
+  for (const bool widened : {false, true})
+  {
+    for (const bool rightToLeft : {true, false})
+    {
+      // 5 deg between rays: few rays, so a wrong angular step gives large
+      // errors, but beams narrow enough for the widened method:
+      auto scan = makeSimpleScan(37, 3.0f, rightToLeft);
+      scan.aperture = mrpt::DEG2RAD(180.0f);
+      checkRayEndpointsMatchPointsMap(scan, widened, robotPose);
+
+      // 360 deg scans: the first and last rays point to the same direction.
+      auto scan360 = makeSimpleScan(73, 3.0f, rightToLeft);
+      scan360.aperture = 2 * M_PIf;
+      checkRayEndpointsMatchPointsMap(scan360, widened, robotPose);
+    }
+  }
+}
+
+TEST(COccupancyGridMap2DTests, InsertSingleRayScan)
+{
+  for (const bool widened : {false, true})
+  {
+    COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+    grid.insertionOptions.wideningBeamsWithDistance = widened;
+
+    auto scan = makeSimpleScan(1, 3.0f);
+    scan.aperture = 0;
+    EXPECT_TRUE(grid.insertObservation(scan));
+    EXPECT_GT(grid.getPos(1.0, 0), 0.51f) << "widened=" << widened;
+    EXPECT_LT(grid.getPos(3.0, 0), 0.49f) << "widened=" << widened;
+  }
+}
+
 TEST(COccupancyGridMap2DTests, InsertNonPlanarScanIsRejected)
 {
   COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);

@@ -152,6 +152,25 @@ TEST(CConfigFileMemory, parseVariables)
   EXPECT_EQ(cfg.read_string("test", "varstr1", ""), std::string("MAXSPEED"));
 }
 
+TEST(CConfigFileMemory, parseVariablesEvalKeepsFullPrecision)
+{
+  // $eval{} results must keep all their significant digits, also when they
+  // are chained through @define variables:
+  const std::string cfgTxt =
+      "@define V_MAX $eval{deg2rad(60)}\n"
+      "@define W_DEG $eval{rad2deg(V_MAX/0.25)}\n"
+      "[test]\n"
+      "w=${W_DEG}\n"
+      "third=$eval{1/3}\n"
+      "n=$eval{2*3}\n";
+  mrpt::config::CConfigFileMemory cfg;
+  cfg.setContent(cfgTxt);
+
+  EXPECT_NEAR(cfg.read_double("test", "w", .0), 240.0, 1e-9);
+  EXPECT_DOUBLE_EQ(cfg.read_double("test", "third", .0), 1.0 / 3.0);
+  EXPECT_EQ(cfg.read_string("test", "n", ""), "6");
+}
+
 TEST(CConfigFileMemory, ConstructFromStringVector)
 {
   const std::vector<std::string> lines = {"[sec]", "key = 5"};

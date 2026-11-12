@@ -17,7 +17,10 @@
 #include <mrpt/containers/yaml.h>
 
 #include <algorithm>  // count()
+#include <filesystem>
 #include <fstream>
+#include <regex>
+#include <stdexcept>
 
 #include "mrpt_test.h"
 
@@ -1699,5 +1702,63 @@ MRPT_TEST(yaml, emptyContainersEmit)
   }
 }
 MRPT_TEST_END()
+
+TEST(yaml, parseErrorsThrowWithPosition)
+{
+  struct Case
+  {
+    const char* text;
+    int line;
+    int column;  // 0: do not check
+  };
+  const Case cases[] = {
+      {   "x: 1\na: [1, 2\n", 3,  0}, // unclosed flow sequence
+      {"a:\n  b: 1\n c: 2\n", 3,  2}, // bad indentation
+      {   "x: 1\na: \"abc\n", 2,  5}, // unterminated quote
+      {     "{\"a\": [1, 2}", 1, 12}, // mismatched JSON brackets
+  };
+  const std::regex re(R"(Error parsing YAML/JSON text at line (\d+), column (\d+): )");
+
+  for (const auto& c : cases)
+  {
+    try
+    {
+      (void)mrpt::containers::yaml::FromText(c.text);
+      ADD_FAILURE() << "Expected exception not thrown for:\n" << c.text;
+    }
+    catch (const std::runtime_error& e)
+    {
+      const std::string msg = e.what();
+      std::smatch m;
+      ASSERT_TRUE(std::regex_search(msg, m, re)) << msg;
+      EXPECT_EQ(std::stoi(m[1].str()), c.line) << msg;
+      if (c.column != 0)
+      {
+        EXPECT_EQ(std::stoi(m[2].str()), c.column) << msg;
+      }
+      else
+      {
+        EXPECT_GT(std::stoi(m[2].str()), 0) << msg;
+      }
+    }
+  }
+
+  // Also from files:
+  const auto file = std::filesystem::temp_directory_path() / "mrpt_yaml_parse_error_test.yaml";
+  {
+    std::ofstream f(file);
+    f << cases[1].text;
+  }
+  EXPECT_THROW((void)mrpt::containers::yaml::FromFile(file.string()), std::runtime_error);
+  std::filesystem::remove(file);
+
+  // Valid YAML and JSON still parse:
+  const auto y = mrpt::containers::yaml::FromText("a: [1, 2]\nb:\n  c: \"text\"\n");
+  EXPECT_EQ(y["a"].asSequence().size(), 2U);
+  EXPECT_EQ(y["b"]["c"].as<std::string>(), "text");
+  const auto j = mrpt::containers::yaml::FromText(R"({"a": [1, 2], "b": {"c": 3.5}})");
+  EXPECT_EQ(j["a"](1).as<int>(), 2);
+  EXPECT_DOUBLE_EQ(j["b"]["c"].as<double>(), 3.5);
+}
 
 #endif  // MRPT_HAS_FYAML

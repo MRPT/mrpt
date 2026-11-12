@@ -217,12 +217,16 @@ class CPointsMap :
   virtual void setPointAllFieldsFast(size_t index, const std::vector<float>& point_data) = 0;
 
   /** Loads from a Kitti dataset Velodyne scan binary file with an XYZI point cloud.
-   * The file can be gz compressed (only enabled if the filename ends in ".gz"
-   * to prevent spurious false autodetection of gzip files).
+   * The file can be gzip or zstd compressed if the filename ends in ".gz" or
+   * ".zst" (the extension is required for gzip, to prevent spurious false
+   * autodetection of gzip files). zstd data is also detected regardless of
+   * the extension.
    * \return true on success */
   [[nodiscard]] bool loadFromKittiVelodyneFile(const std::string& filename);
 
   /** Saves in a binary file compatible with the Kitti dataset, including XYZI fields.
+   * The data is plain (uncompressed), unless the filename ends in ".gz"
+   * (gzip) or ".zst" (zstd).
    * \return true on success */
   [[nodiscard]] bool saveToKittiVelodyneFile(const std::string& filename) const;
 
@@ -365,7 +369,8 @@ class CPointsMap :
     void readFromStream(mrpt::serialization::CArchive& in);
 
     float point_size{1.0f};
-    /** Color of points. Superseded by colormap if the latter is set. */
+    /** Color of points. Superseded by per-point colors, if the map has
+     * them (see hasColor_u8(), hasColor_f()), and by colormap if set. */
     mrpt::img::TColorf color{.0f, .0f, 1.0f};
     /** Colormap for points (index is "z" coordinates) */
     mrpt::img::TColormap colormap{mrpt::img::cmNONE};
@@ -1408,7 +1413,8 @@ class CPointsMap :
   bool empty() const { return isEmpty(); }
 
   /** Returns a 3D object representing the map.
-   *  The color of the points is controlled by renderOptions
+   *  The color of the points is controlled by renderOptions, or taken
+   *  from the per-point color fields, if any.
    */
   void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 

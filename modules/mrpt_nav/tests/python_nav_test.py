@@ -89,8 +89,9 @@ check("lateral path direction", abs(math.atan2(p1.y, p1.x) - alpha1) < 1e-6, f"{
 tw = holo.getPathTwist(k0, n_steps - 1)
 check("getPathTwist at the end", abs(tw.vx - 1.0) < 1e-3 and abs(tw.vy) < 1e-6, f"{tw}")
 s_for = holo.getPathStepForDist(k0, 2.0)
+# The last step whose distance is below the given one:
 check("getPathStepForDist", s_for is not None and
-      abs(holo.getPathDist(k0, s_for) - 2.0) <= holo.getPathDist(k0, 1) + 1e-9)
+      holo.getPathDist(k0, s_for) < 2.0 <= holo.getPathDist(k0, s_for + 1))
 check("getPathStepDuration", holo.getPathStepDuration() > 0)
 cmd = holo.directionToMotionCommand(k1)
 check("directionToMotionCommand (holonomic)", isinstance(cmd, CVehicleVelCmd_Holo) and

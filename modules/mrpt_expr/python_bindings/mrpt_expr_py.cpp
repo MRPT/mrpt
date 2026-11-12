@@ -68,32 +68,35 @@ PYBIND11_MODULE(_bindings, m)
           "get_original_expression", &CRuntimeCompiledExpression::get_original_expression,
           "Returns the original formula string.")
 
-      // Overloads for registering Python functions to be used inside the expression
       .def(
           "register_function",
-          static_cast<void (CRuntimeCompiledExpression::*)(
-              const std::string&, const std::function<double()>&)>(
-              &CRuntimeCompiledExpression::register_function),
-          "name"_a, "func"_a, "Registers a 0-argument Python function.")
-
-      .def(
-          "register_function",
-          static_cast<void (CRuntimeCompiledExpression::*)(
-              const std::string&, const std::function<double(double)>&)>(
-              &CRuntimeCompiledExpression::register_function),
-          "name"_a, "func"_a, "Registers a 1-argument Python function.")
-
-      .def(
-          "register_function",
-          static_cast<void (CRuntimeCompiledExpression::*)(
-              const std::string&, const std::function<double(double, double)>&)>(
-              &CRuntimeCompiledExpression::register_function),
-          "name"_a, "func"_a, "Registers a 2-argument Python function.")
-
-      .def(
-          "register_function",
-          static_cast<void (CRuntimeCompiledExpression::*)(
-              const std::string&, const std::function<double(double, double, double)>&)>(
-              &CRuntimeCompiledExpression::register_function),
-          "name"_a, "func"_a, "Registers a 3-argument Python function.");
+          [](CRuntimeCompiledExpression& self, const std::string& name, const py::function& func)
+          {
+            // Any Python callable would match any std::function signature,
+            // so pick the overload from the number of parameters:
+            const auto nArgs =
+                py::len(py::module_::import("inspect").attr("signature")(func).attr("parameters"));
+            switch (nArgs)
+            {
+              case 0:
+                self.register_function(name, func.cast<std::function<double()>>());
+                break;
+              case 1:
+                self.register_function(name, func.cast<std::function<double(double)>>());
+                break;
+              case 2:
+                self.register_function(name, func.cast<std::function<double(double, double)>>());
+                break;
+              case 3:
+                self.register_function(
+                    name, func.cast<std::function<double(double, double, double)>>());
+                break;
+              default:
+                throw py::value_error(
+                    "register_function(): only functions with 0 to 3 parameters are supported");
+            }
+          },
+          "name"_a, "func"_a,
+          "Registers a Python function taking 0 to 3 float arguments, for use in expressions "
+          "compiled afterwards. The number of arguments is taken from its signature.");
 }
