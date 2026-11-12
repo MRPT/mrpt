@@ -345,7 +345,10 @@ class yaml
   /** Parses a text as YAML or JSON (autodetected) and stores the contents
    * into this document.
    *
-   * \exception std::exception Upon format errors
+   * \exception std::runtime_error Upon format errors, with a message like
+   * "Error parsing YAML/JSON text at line L, column C: <reason>", followed by
+   * an excerpt of the offending text. Format errors of all the other load
+   * and parse methods are reported in the same way.
    */
   void loadFromText(const std::string& yamlTextBlock);
 

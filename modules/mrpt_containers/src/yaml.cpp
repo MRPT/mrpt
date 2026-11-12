@@ -30,6 +30,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <regex>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -1077,6 +1078,33 @@ static bool MRPT_YAML_PARSER_VERBOSE = mrpt::get_env<bool>("MRPT_YAML_PARSER_VER
 
 namespace
 {
+[[noreturn]] void throwParseError(const mrpt_fy_parser_t* p)
+{
+  // libfyaml reports "<input name>:<line>:<column>: error: <message>",
+  // followed by an excerpt of the offending text:
+  std::string diag = mrpt_fy_parser_errors(p);
+  while (!diag.empty() && std::isspace(static_cast<unsigned char>(diag.back())))
+  {
+    diag.pop_back();
+  }
+
+  std::string msg = "Error parsing YAML/JSON text";
+  static const std::regex re(R"(^[^\n]*:(\d+):(\d+): error: ([^\n]*)\n?)");
+  std::smatch m;
+  if (std::regex_search(diag, m, re))
+  {
+    msg += " at line " + m[1].str() + ", column " + m[2].str() + ": " + m[3].str();
+    if (m.suffix().length() > 0)
+    {
+      msg += "\n" + m.suffix().str();
+    }
+  }
+  else if (!diag.empty())
+  {
+    msg += ": " + diag;
+  }
+  THROW_TYPED_EXCEPTION(msg, std::runtime_error);
+}
 
 void parseEventCommentsAndMarks(const mrpt_fy_event_t& ev, yaml::node_t& n)
 {
@@ -1111,7 +1139,7 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
   if (mrpt_fy_parser_next(p, &event) != 0)
   {
     mrpt_fy_event_release(&event);
-    THROW_EXCEPTION("Error parsing YAML/JSON text");
+    throwParseError(p);
   }
 
   // process event:
@@ -1240,16 +1268,33 @@ void yaml::loadFromText(const std::string& yamlTextBlock)
   // Reset:
   *this = yaml();
 
-  mrpt_fy_parser_t* parser = mrpt_fy_parser_create(yamlTextBlock.data(), yamlTextBlock.size());
+  std::unique_ptr<mrpt_fy_parser_t, void (*)(mrpt_fy_parser_t*)> parser(
+      mrpt_fy_parser_create(yamlTextBlock.data(), yamlTextBlock.size()), &mrpt_fy_parser_destroy);
   ASSERT_(parser);
 
-  auto optNode = recursiveParse(parser);
+  auto optNode = recursiveParse(parser.get());
+
+  // Consume the rest of the stream, to detect errors after the first node:
+  for (;;)
+  {
+    mrpt_fy_event_t event{};
+    const int ret = mrpt_fy_parser_next(parser.get(), &event);
+    const bool end = event.type == MRPT_FY_EV_END;
+    mrpt_fy_event_release(&event);
+    if (ret != 0)
+    {
+      throwParseError(parser.get());
+    }
+    if (end)
+    {
+      break;
+    }
+  }
+
   if (optNode.has_value())
   {
     root_ = std::move(optNode.value());
   }
-
-  mrpt_fy_parser_destroy(parser);
 
 #else
   THROW_EXCEPTION("MRPT was built without libfyaml");
