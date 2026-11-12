@@ -19,7 +19,7 @@ print(p + p)
 Each MRPT module is a Python subpackage (`mrpt.poses`, `mrpt.maps`,
 `mrpt.slam`...), with type stubs for IDE completion.
 
-Requirements: Linux (glibc 2.28 or newer), x86_64 or aarch64, Python 3.11 to
+Requirements: Linux (glibc 2.28 or newer), x86_64 or aarch64, Python 3.10 to
 3.14. `mrpt.opengl` and `mrpt.gui` also need the system OpenGL and X11
 libraries, normally present on desktops. On minimal systems or containers,
 install them with:
