@@ -217,12 +217,16 @@ class CPointsMap :
   virtual void setPointAllFieldsFast(size_t index, const std::vector<float>& point_data) = 0;
 
   /** Loads from a Kitti dataset Velodyne scan binary file with an XYZI point cloud.
-   * The file can be gz compressed (only enabled if the filename ends in ".gz"
-   * to prevent spurious false autodetection of gzip files).
+   * The file can be gzip or zstd compressed if the filename ends in ".gz" or
+   * ".zst" (the extension is required for gzip, to prevent spurious false
+   * autodetection of gzip files). zstd data is also detected regardless of
+   * the extension.
    * \return true on success */
   [[nodiscard]] bool loadFromKittiVelodyneFile(const std::string& filename);
 
   /** Saves in a binary file compatible with the Kitti dataset, including XYZI fields.
+   * The data is plain (uncompressed), unless the filename ends in ".gz"
+   * (gzip) or ".zst" (zstd).
    * \return true on success */
   [[nodiscard]] bool saveToKittiVelodyneFile(const std::string& filename) const;
 
