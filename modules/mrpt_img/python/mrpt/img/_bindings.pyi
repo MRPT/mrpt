@@ -227,7 +227,6 @@ class TCamera:
     """
     cx: float
     cy: float
-    dist: list[float]
     distortion: DistortionModel
     fx: float
     fy: float
@@ -243,6 +242,14 @@ class TCamera:
         """
         Return intrinsic matrix as 3x3 list of lists (use np.array() to convert).
         """
+    @property
+    def dist(self) -> list[float]:
+        """
+        Distortion coefficients [k1 k2 p1 p2 k3 k4 k5 k6] (kannala_brandt uses k1 to k4 only). Up to 8 values: the missing ones are set to zero.
+        """
+    @dist.setter
+    def dist(self, arg1: list[float]) -> None:
+        ...
 class TStereoCamera(mrpt.serialization.CSerializable):
     """
     Structure to hold the parameters of a pinhole stereo camera model.

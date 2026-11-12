@@ -47,6 +47,17 @@ check("B", c.B == 0)
 print("TCamera")
 cam = TCamera()
 check("TCamera ncols accessible", cam.ncols >= 0)  # just check it's accessible
+cam.dist = [float(i + 1) for i in range(8)]
+check("TCamera dist with 8 values", cam.dist == [1, 2, 3, 4, 5, 6, 7, 8], f"got {cam.dist}")
+cam.dist = [0.1, 0.2]
+check("TCamera dist with less values zeroes the rest", cam.dist == [0.1, 0.2] + [0.0] * 6,
+      f"got {cam.dist}")
+for n in (9, 64):
+    try:
+        cam.dist = [1.0] * n
+        check(f"TCamera dist with {n} values rejected", False, "no exception")
+    except ValueError:
+        check(f"TCamera dist with {n} values rejected", cam.dist == [0.1, 0.2] + [0.0] * 6)
 
 print("TPixelCoord")
 px = TPixelCoord(10, 20)
