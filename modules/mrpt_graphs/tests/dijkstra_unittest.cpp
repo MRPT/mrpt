@@ -189,3 +189,22 @@ TEST(CDijkstra, NotConnectedGraphThrows)
   }
   EXPECT_TRUE(threw);
 }
+
+TEST(CDijkstra, NotConnectedGraphMessageThroughBaseClass)
+{
+  graph_t g = buildSampleGraph();
+  g.insertEdge(5, 5, 1.0);
+
+  // The message must be reachable through std::exception::what(), as used by
+  // generic handlers (and language bindings):
+  try
+  {
+    dijkstra_t dij(g, 0);
+    FAIL() << "Expected exception not thrown";
+  }
+  catch (const std::exception& ex)
+  {
+    EXPECT_NE(std::string(ex.what()).find("not fully connected"), std::string::npos)
+        << "what(): " << ex.what();
+  }
+}
