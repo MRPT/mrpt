@@ -20,11 +20,13 @@
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <filesystem>
 #include <sstream>
+#include <vector>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -96,6 +98,70 @@ TEST(COctoMapTests, Insert3DScan)
   COctoMap map(0.1);
   EXPECT_TRUE(map.insertObservation(makeSimple3DScan()));
   EXPECT_GT(map.size(), 0u);
+}
+
+namespace
+{
+// A vertical wall 3 m ahead of the sensor, in sensor coordinates:
+std::vector<TPoint3D> makeWallPoints()
+{
+  std::vector<TPoint3D> pts;
+  for (int iy = 0; iy < 20; iy++)
+  {
+    for (int iz = 0; iz < 10; iz++)
+    {
+      pts.emplace_back(3.03, -0.97 + 0.1 * iy, -0.47 + 0.1 * iz);
+    }
+  }
+  return pts;
+}
+}  // namespace
+
+TEST(COctoMapTests, Insert3DObservationsHonorSensorPose)
+{
+  const CPose3D sensorPose(0.21, 0.13, 1.02, mrpt::DEG2RAD(90.0), 0, 0);
+  const CPose3D robotPose(1.07, 2.03, 0, mrpt::DEG2RAD(30.0), 0, 0);
+  const auto wall = makeWallPoints();
+
+  CObservationPointCloud obsPc;
+  obsPc.sensorPose = sensorPose;
+  obsPc.pointcloud = CSimplePointsMap::Create();
+  for (const auto& p : wall)
+  {
+    obsPc.pointcloud->insertPoint(p);
+  }
+
+  CObservation3DRangeScan obs3D;
+  obs3D.hasPoints3D = true;
+  obs3D.sensorPose = sensorPose;
+  for (const auto& p : wall)
+  {
+    obs3D.points3D_x.push_back(static_cast<float>(p.x));
+    obs3D.points3D_y.push_back(static_cast<float>(p.y));
+    obs3D.points3D_z.push_back(static_cast<float>(p.z));
+  }
+
+  const CPose3D globalSensorPose = robotPose + sensorPose;
+
+  for (const CObservation* obs : std::vector<const CObservation*>{&obsPc, &obs3D})
+  {
+    COctoMap map(0.1);
+    ASSERT_TRUE(map.insertObservation(*obs, robotPose));
+
+    size_t nOccupied = 0;
+    for (const auto& p : wall)
+    {
+      const auto g = globalSensorPose.composePoint(p);
+      double occ = 0;
+      if (map.getPointOccupancy(
+              static_cast<float>(g.x), static_cast<float>(g.y), static_cast<float>(g.z), occ) &&
+          occ > 0.5)
+      {
+        nOccupied++;
+      }
+    }
+    EXPECT_EQ(nOccupied, wall.size()) << obs->GetRuntimeClass()->className;
+  }
 }
 
 TEST(COctoMapTests, InsertEmpty3DScanReturnsFalse)
