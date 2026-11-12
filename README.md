@@ -61,7 +61,7 @@ from mrpt.poses import CPose3D
 print(CPose3D(1.0, 2.0, 0.0, 0.5, 0.0, 0.0) + CPose3D(0.5, 0.0, 0.0, 0.0, 0.0, 0.0))
 ```
 
-Linux (x86_64, aarch64), Python 3.11 to 3.14. The wheel also contains the C++
+Linux (x86_64, aarch64), Python 3.10 to 3.14. The wheel also contains the C++
 headers, libraries and CMake files. See the [Python examples](https://docs.mrpt.org/reference/latest/python_examples.html).
 
 ### Install from ROS repositories
