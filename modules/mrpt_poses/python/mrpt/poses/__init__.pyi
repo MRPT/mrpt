@@ -18,8 +18,17 @@ from mrpt.poses._bindings import CPosePDF as CPosePDF
 from mrpt.poses._bindings import CPosePDFGaussian as CPosePDFGaussian
 from mrpt.poses._bindings import CPosePDFGaussianInf as CPosePDFGaussianInf
 from mrpt.poses._bindings import CPosePDFParticles as CPosePDFParticles
+from mrpt.poses._bindings import CPosePDFSOG as CPosePDFSOG
 from mrpt.poses._bindings import CPoseRandomSampler as CPoseRandomSampler
 from mrpt.poses._bindings import SE_average2 as SE_average2
 from mrpt.poses._bindings import SE_average3 as SE_average3
+from mrpt.poses._bindings import TInterpolatorMethod as TInterpolatorMethod
 from . import _bindings
-__all__: list = ['CPose2D', 'CPose3D', 'CPose3DQuat', 'CPoint2D', 'CPoint3D', 'CPosePDF', 'CPose3DPDF', 'CPose3DPDFGaussian', 'CPose3DPDFGaussianInf', 'CPosePDFGaussian', 'CPosePDFGaussianInf', 'CPosePDFParticles', 'CPose3DPDFParticles', 'CPose2DInterpolator', 'CPose3DInterpolator', 'CPoseRandomSampler', 'SE_average2', 'SE_average3']
+__all__: list = ['CPose2D', 'CPose3D', 'CPose3DQuat', 'CPoint2D', 'CPoint3D', 'CPosePDF', 'CPose3DPDF', 'CPose3DPDFGaussian', 'CPose3DPDFGaussianInf', 'CPosePDFGaussian', 'CPosePDFGaussianInf', 'CPosePDFParticles', 'CPose3DPDFParticles', 'CPosePDFSOG', 'TInterpolatorMethod', 'imSpline', 'imLinear2Neig', 'imLinear4Neig', 'imSSLLLL', 'imSSLSLL', 'imLinearSlerp', 'imSplineSlerp', 'CPose2DInterpolator', 'CPose3DInterpolator', 'CPoseRandomSampler', 'SE_average2', 'SE_average3']
+imLinear2Neig: _bindings.TInterpolatorMethod
+imLinear4Neig: _bindings.TInterpolatorMethod
+imLinearSlerp: _bindings.TInterpolatorMethod
+imSSLLLL: _bindings.TInterpolatorMethod
+imSSLSLL: _bindings.TInterpolatorMethod
+imSpline: _bindings.TInterpolatorMethod
+imSplineSlerp: _bindings.TInterpolatorMethod

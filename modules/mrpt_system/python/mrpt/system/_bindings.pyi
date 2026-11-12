@@ -4,7 +4,52 @@ Python bindings for mrpt_system
 from __future__ import annotations
 import datetime
 import typing
-__all__: list[str] = ['CTicTac', 'CTimeLogger', 'CTimeLoggerEntry', 'CTimeLoggerSaveAtDtor', 'TTimeParts', 'buildTimestampFromParts', 'buildTimestampFromPartsLocalTime', 'compute_CRC16', 'compute_CRC32', 'createDirectory', 'dateTimeLocalToString', 'dateTimeToString', 'dateToString', 'decodeBase64', 'deleteFile', 'directoryExists', 'encodeBase64', 'extractFileDirectory', 'extractFileExtension', 'extractFileName', 'fileExists', 'fileNameChangeExtension', 'fileNameStripInvalidChars', 'filePathSeparatorsToNative', 'formatTimeInterval', 'getFileSize', 'getTempFileName', 'getcwd', 'global_profiler_enter', 'global_profiler_getref', 'global_profiler_leave', 'intervalFormat', 'pathJoin', 'renameFile', 'timeDifference', 'timeLocalToString', 'timeToString', 'timestampAdd', 'timestampToParts', 'toAbsolutePath', 'unitsFormat']
+__all__: list[str] = ['CTicTac', 'CTimeLogger', 'CTimeLoggerEntry', 'CTimeLoggerSaveAtDtor', 'LVL_DEBUG', 'LVL_ERROR', 'LVL_INFO', 'LVL_WARN', 'TTimeParts', 'VerbosityLevel', 'buildTimestampFromParts', 'buildTimestampFromPartsLocalTime', 'compute_CRC16', 'compute_CRC32', 'createDirectory', 'dateTimeLocalToString', 'dateTimeToString', 'dateToString', 'decodeBase64', 'deleteFile', 'directoryExists', 'encodeBase64', 'extractFileDirectory', 'extractFileExtension', 'extractFileName', 'fileExists', 'fileNameChangeExtension', 'fileNameStripInvalidChars', 'filePathSeparatorsToNative', 'formatTimeInterval', 'getFileSize', 'getTempFileName', 'getcwd', 'global_profiler_enter', 'global_profiler_getref', 'global_profiler_leave', 'intervalFormat', 'loadPluginModule', 'loadPluginModules', 'pathJoin', 'renameFile', 'timeDifference', 'timeLocalToString', 'timeToString', 'timestampAdd', 'timestampToParts', 'toAbsolutePath', 'unitsFormat', 'unloadPluginModule', 'unloadPluginModules']
+class VerbosityLevel:
+    """
+    Verbosity levels of the MRPT loggers (COutputLogger).
+    
+    Members:
+    
+      LVL_DEBUG : Debug messages.
+    
+      LVL_INFO : Informational messages.
+    
+      LVL_WARN : Warnings.
+    
+      LVL_ERROR : Errors.
+    """
+    LVL_DEBUG: typing.ClassVar[VerbosityLevel]
+    LVL_ERROR: typing.ClassVar[VerbosityLevel]
+    LVL_INFO: typing.ClassVar[VerbosityLevel]
+    LVL_WARN: typing.ClassVar[VerbosityLevel]
+    __members__: typing.ClassVar[dict[str, VerbosityLevel]]
+    def __eq__(self, other: typing.Any) -> bool:
+        ...
+    def __getstate__(self) -> int:
+        ...
+    def __hash__(self) -> int:
+        ...
+    def __index__(self) -> int:
+        ...
+    def __init__(self, value: int) -> None:
+        ...
+    def __int__(self) -> int:
+        ...
+    def __ne__(self, other: typing.Any) -> bool:
+        ...
+    def __repr__(self) -> str:
+        ...
+    def __setstate__(self, state: int) -> None:
+        ...
+    def __str__(self) -> str:
+        ...
+    @property
+    def name(self) -> str:
+        ...
+    @property
+    def value(self) -> int:
+        ...
 class CTicTac:
     """
     A high-performance stopwatch, with typical resolution of nanoseconds.
@@ -248,6 +293,14 @@ def intervalFormat(seconds: float) -> str:
     """
     Format a time interval in seconds to a string
     """
+def loadPluginModule(moduleFileName: str) -> tuple:
+    """
+    Loads a shared library (.so, .dll) plug-in module, e.g. so its classes are registered for deserialization. Returns (ok, error_messages).
+    """
+def loadPluginModules(moduleFileNames: str) -> tuple:
+    """
+    Like loadPluginModule(), for a comma-separated list of modules. Returns (ok, error_messages), with ok true if all of them were loaded.
+    """
 def pathJoin(parts: list[str]) -> str:
     """
     Joins path components, mirroring Python's os.path.join semantics
@@ -284,3 +337,15 @@ def unitsFormat(val: float, nDecimalDigits: int = 2, middle_space: bool = True) 
     """
     Format a value with SI metric unit prefixes (e.g., 1e3 -> '1.00 K')
     """
+def unloadPluginModule(moduleFileName: str) -> tuple:
+    """
+    Unloads a plug-in module loaded with loadPluginModule(). Returns (ok, error_messages).
+    """
+def unloadPluginModules(moduleFileNames: str) -> tuple:
+    """
+    Unloads a comma-separated list of plug-in modules. Returns (ok, error_messages).
+    """
+LVL_DEBUG: VerbosityLevel
+LVL_ERROR: VerbosityLevel
+LVL_INFO: VerbosityLevel
+LVL_WARN: VerbosityLevel

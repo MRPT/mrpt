@@ -114,6 +114,58 @@ class CCamera(CVisualObject):
         """
         Default constructor.
         """
+    def clearPinholeModel(self) -> None:
+        """
+        Removes the pinhole model, so the vertical field of view is used again.
+        """
+    def getAzimuthDegrees(self) -> float:
+        """
+        Returns the camera azimuth angle, in degrees.
+        """
+    def getElevationDegrees(self) -> float:
+        """
+        Returns the camera elevation angle, in degrees.
+        """
+    def getPinholeModel(self) -> mrpt.img.TCamera | None:
+        """
+        Returns the pinhole model set with setProjectiveFromPinhole(), or None.
+        """
+    def getPointingAt(self) -> mrpt.math.TPoint3D:
+        """
+        Returns the point the orbit camera looks at.
+        """
+    def getProjectiveFOVdeg(self) -> float:
+        """
+        Returns the vertical field of view of the projective model, in degrees.
+        """
+    def getRollDegrees(self) -> float:
+        """
+        Returns the camera roll angle, in degrees.
+        """
+    def getZoomDistance(self) -> float:
+        """
+        Returns the camera distance to the point it looks at.
+        """
+    def hasPinholeModel(self) -> bool:
+        """
+        Returns true if a pinhole model was set with setProjectiveFromPinhole().
+        """
+    def is6DOFMode(self) -> bool:
+        """
+        Returns true if the 6DOF mode is enabled.
+        """
+    def isOrthogonal(self) -> bool:
+        """
+        Returns true for the orthogonal model.
+        """
+    def isProjective(self) -> bool:
+        """
+        Returns true for the projective model.
+        """
+    def set6DOFMode(self, v: bool) -> None:
+        """
+        If enabled, the camera is placed at its pose (setPose()) instead of orbiting: it looks along its +Z axis, with +X to the right and +Y down. Azimuth, elevation and roll are then ignored.
+        """
     def setAzimuthDegrees(self, arg0: float) -> None:
         """
         Sets the camera azimuth angle, in degrees.
@@ -121,6 +173,36 @@ class CCamera(CVisualObject):
     def setElevationDegrees(self, arg0: float) -> None:
         """
         Sets the camera elevation angle, in degrees.
+        """
+    def setOrthogonal(self, v: bool = True) -> None:
+        """
+        Enables the orthogonal model, or the projective one if false.
+        """
+    @typing.overload
+    def setPointingAt(self, x: float, y: float, z: float) -> None:
+        """
+        Sets the point the orbit camera looks at.
+        """
+    @typing.overload
+    def setPointingAt(self, p: mrpt.math.TPoint3D) -> None:
+        """
+        Sets the point the orbit camera looks at.
+        """
+    def setProjectiveFOVdeg(self, fov_deg: float) -> None:
+        """
+        Sets the vertical field of view of the projective model, in degrees (default: 30).
+        """
+    def setProjectiveFromPinhole(self, intrinsics: mrpt.img.TCamera) -> None:
+        """
+        Uses the projective model with the given pinhole intrinsics (mrpt.img.TCamera), e.g. to render what a real camera would see.
+        """
+    def setProjectiveModel(self, v: bool = True) -> None:
+        """
+        Enables the projective (perspective) model, or the orthogonal one if false.
+        """
+    def setRollDegrees(self, arg0: float) -> None:
+        """
+        Sets the camera roll angle around its viewing axis, in degrees.
         """
     def setZoomDistance(self, arg0: float) -> None:
         """
@@ -302,9 +384,17 @@ class CGridPlaneXY(CVisualObject):
         """
         Builds the grid from its limits, height and spacing.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def setGridFrequency(self, arg0: float) -> None:
         """
         Sets the spacing between grid lines.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
     def setPlaneLimits(self, xmin: float, xmax: float, ymin: float, ymax: float) -> None:
         """
@@ -322,9 +412,17 @@ class CGridPlaneXZ(CVisualObject):
         """
         Builds the grid from its limits, y coordinate and spacing.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def setGridFrequency(self, arg0: float) -> None:
         """
         Sets the spacing between grid lines.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
     def setPlaneLimits(self, xmin: float, xmax: float, zmin: float, zmax: float) -> None:
         """
@@ -350,6 +448,10 @@ class CAxis(CVisualObject):
         """
         Returns the spacing between tick marks.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def getTextScale(self) -> float:
         """
         Returns the size of text labels.
@@ -361,6 +463,10 @@ class CAxis(CVisualObject):
     def setFrequency(self, arg0: float) -> None:
         """
         Changes the frequency of the "ticks".
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
     def setTextScale(self, arg0: float) -> None:
         """
@@ -388,6 +494,10 @@ class CBox(CVisualObject):
         """
         Get the current box corners.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def isWireframe(self) -> bool:
         """
         Returns true if wireframe mode is enabled.
@@ -399,6 +509,10 @@ class CBox(CVisualObject):
     def setBoxCorners(self, arg0: mrpt.math.TPoint3D, arg1: mrpt.math.TPoint3D) -> None:
         """
         Set the position and size of the box, from two corners in 3D.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
     def setWireframe(self, arg0: bool) -> None:
         """
@@ -412,13 +526,37 @@ class CSphere(CVisualObject):
         """
         Constructor.
         """
+    def enableDrawSolid3D(self, v: bool) -> None:
+        """
+        Draws a solid surface if true, or a wireframe if false.
+        """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
+    def getNumberOfSegments(self) -> int:
+        """
+        Returns the number of segments of the surface or curve.
+        """
+    def getQuantiles(self) -> float:
+        """
+        Returns the scale of the "sigmas" used to draw the ellipsoid.
+        """
     def getRadius(self) -> float:
         """
         Returns the sphere radius.
         """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
+        """
     def setNumberDivs(self, arg0: int) -> None:
         """
         Sets the number of slices and stacks used to render the sphere.
+        """
+    def setNumberOfSegments(self, numSegments: int) -> None:
+        """
+        Sets the number of segments of the surface or curve (resolution).
         """
     def setRadius(self, arg0: float) -> None:
         """
@@ -540,6 +678,14 @@ class CSetOfLines(CVisualObject):
         """
         Clear the list of segments.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
+        """
 class CSimpleLine(CVisualObject):
     """
     A line segment.
@@ -556,9 +702,17 @@ class CSimpleLine(CVisualObject):
         """
         Returns the line start point.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def setLineCoords(self, x0: float, y0: float, z0: float, x1: float, y1: float, z1: float) -> None:
         """
         Sets the line end points (x0, y0, z0, x1, y1, z1).
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
 class CEllipsoid3D(CVisualObject):
     """
@@ -568,6 +722,22 @@ class CEllipsoid3D(CVisualObject):
         """
         Default constructor.
         """
+    def enableDrawSolid3D(self, v: bool) -> None:
+        """
+        Draws a solid surface if true, or a wireframe if false.
+        """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
+    def getNumberOfSegments(self) -> int:
+        """
+        Returns the number of segments of the surface or curve.
+        """
+    def getQuantiles(self) -> float:
+        """
+        Returns the scale of the "sigmas" used to draw the ellipsoid.
+        """
     def set3DsegmentsCount(self, arg0: int) -> None:
         """
         The number of segments of a 3D ellipse (in both "axes") (default=20)
@@ -575,6 +745,14 @@ class CEllipsoid3D(CVisualObject):
     def setCovMatrix(self, arg0: mrpt.math.CMatrixDouble33) -> None:
         """
         Like setCovMatrixAndMean(), for mean=zero.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
+        """
+    def setNumberOfSegments(self, numSegments: int) -> None:
+        """
+        Sets the number of segments of the surface or curve (resolution).
         """
     def setQuantiles(self, arg0: float) -> None:
         """
@@ -588,9 +766,33 @@ class CEllipsoid2D(CVisualObject):
         """
         Default constructor.
         """
+    def enableDrawSolid3D(self, v: bool) -> None:
+        """
+        Draws a solid surface if true, or a wireframe if false.
+        """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
+    def getNumberOfSegments(self) -> int:
+        """
+        Returns the number of segments of the surface or curve.
+        """
+    def getQuantiles(self) -> float:
+        """
+        Returns the scale of the "sigmas" used to draw the ellipsoid.
+        """
     def setCovMatrix(self, arg0: mrpt.math.CMatrixDouble22) -> None:
         """
         Like setCovMatrixAndMean(), for mean=zero.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
+        """
+    def setNumberOfSegments(self, numSegments: int) -> None:
+        """
+        Sets the number of segments of the surface or curve (resolution).
         """
     def setQuantiles(self, arg0: float) -> None:
         """
@@ -703,9 +905,17 @@ class CFrustum(CVisualObject):
         """
         Constructor with some parameters.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def setHorzFOV(self, fov_degrees: float) -> None:
         """
         Changes horizontal FOV (symmetric)
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
     def setNearFarPlanes(self, near: float, far: float) -> None:
         """
@@ -775,6 +985,10 @@ class CVectorField2D(CVisualObject):
         """
         Clear the matrices.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def setGridCenterAndCellSize(self, cx: float, cy: float, cell_x: float, cell_y: float) -> None:
         """
         Set the coordinates of the grid on where the vector field will be drawn by setting its center and the cell size.
@@ -782,6 +996,10 @@ class CVectorField2D(CVisualObject):
     def setGridLimits(self, xmin: float, xmax: float, ymin: float, ymax: float) -> None:
         """
         Set the coordinates of the grid on where the vector field will be drawn using x-y max and min values.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
     def setPointColor(self, R: float, G: float, B: float, A: float = 1.0) -> None:
         """
@@ -806,6 +1024,14 @@ class CVectorField3D(CVisualObject):
     def clear(self) -> None:
         """
         Clear the matrices.
+        """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
     def setMaxSpeedForColor(self, s: float) -> None:
         """
@@ -847,9 +1073,17 @@ class CMesh(CVisualObject):
         """
         Shows the mesh as wireframe (true) or solid (false).
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def setGridLimits(self, xMin: float, xMax: float, yMin: float, yMax: float) -> None:
         """
         Sets the x and y limits of the grid.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
     def setZ(self, Z: numpy.ndarray) -> None:
         """
@@ -863,6 +1097,10 @@ class CColorBar(CVisualObject):
         """
         Builds a color bar from its colormap, size, color range, value range and label format.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def setColorAndValueLimits(self, col_min: float, col_max: float, value_min: float, value_max: float) -> None:
         """
         Sets the color range and the value range it represents.
@@ -870,6 +1108,10 @@ class CColorBar(CVisualObject):
     def setColormap(self, colormap: int) -> None:
         """
         Sets the colormap, as the integer value of a mrpt.img.TColormap.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
 class CMesh3D(CVisualObject):
     """
@@ -895,9 +1137,17 @@ class CMesh3D(CVisualObject):
         """
         Shows or hides the vertices.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def loadMesh(self, vertices: numpy.ndarray, face_vertices: numpy.ndarray, verts_per_face: numpy.ndarray) -> None:
         """
         Load a mesh from numpy arrays: vertices (Nx3 float32), face_vertices (M,) int32, verts_per_face (F,) int32
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
 class CMeshFast(CVisualObject):
     """
@@ -1030,6 +1280,14 @@ class CPolyhedron(CVisualObject):
         """
         Creates a truncated tetrahedron, consisting of four triangular faces and for hexagonal ones (see http://en.wikipedia.org/wiki/Truncated_tetrahedron).
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
+        """
 class COrbitCameraController:
     """
     Framework-agnostic orbit/pan/zoom camera controller.
@@ -1147,6 +1405,10 @@ class COctoMapVoxels(CVisualObject):
         """
         Can be used to enable/disable the effects of lighting in this object.
         """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
     def getVoxelCount(self, set_index: int) -> int:
         """
         Returns the total count of voxels in one voxel set.
@@ -1166,6 +1428,10 @@ class COctoMapVoxels(CVisualObject):
     def resizeVoxels(self, set_index: int, n: int) -> None:
         """
         Sets the number of voxels in one voxel set.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
         """
     def setVisualizationMode(self, mode: OctoMapVisualizationMode) -> None:
         """
@@ -1353,9 +1619,27 @@ class CEllipsoidInverseDepth2D(CVisualObject):
         """
         Default constructor.
         """
+    def enableDrawSolid3D(self, v: bool) -> None:
+        """
+        Draws a solid surface if true, or a wireframe if false.
+        """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
+    def getNumberOfSegments(self) -> int:
+        """
+        Returns the number of segments of the surface or curve.
+        """
+    @typing.overload
     def getQuantiles(self) -> float:
         """
         Returns the number of sigmas of the drawn ellipse (see setQuantiles()).
+        """
+    @typing.overload
+    def getQuantiles(self) -> float:
+        """
+        Returns the scale of the "sigmas" used to draw the ellipsoid.
         """
     def getUnderflowMaxRange(self) -> float:
         """
@@ -1364,6 +1648,14 @@ class CEllipsoidInverseDepth2D(CVisualObject):
     def setCovMatrix(self, arg0: mrpt.math.CMatrixDouble22) -> None:
         """
         Like setCovMatrixAndMean(), for mean=zero.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
+        """
+    def setNumberOfSegments(self, numSegments: int) -> None:
+        """
+        Sets the number of segments of the surface or curve (resolution).
         """
     def setQuantiles(self, q: float) -> None:
         """
@@ -1381,9 +1673,27 @@ class CEllipsoidInverseDepth3D(CVisualObject):
         """
         Constructor.
         """
+    def enableDrawSolid3D(self, v: bool) -> None:
+        """
+        Draws a solid surface if true, or a wireframe if false.
+        """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
+    def getNumberOfSegments(self) -> int:
+        """
+        Returns the number of segments of the surface or curve.
+        """
+    @typing.overload
     def getQuantiles(self) -> float:
         """
         Returns the number of sigmas of the drawn ellipsoid (see setQuantiles()).
+        """
+    @typing.overload
+    def getQuantiles(self) -> float:
+        """
+        Returns the scale of the "sigmas" used to draw the ellipsoid.
         """
     def getUnderflowMaxRange(self) -> float:
         """
@@ -1392,6 +1702,14 @@ class CEllipsoidInverseDepth3D(CVisualObject):
     def setCovMatrix(self, arg0: mrpt.math.CMatrixDouble33) -> None:
         """
         Like setCovMatrixAndMean(), for mean=zero.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
+        """
+    def setNumberOfSegments(self, numSegments: int) -> None:
+        """
+        Sets the number of segments of the surface or curve (resolution).
         """
     def setQuantiles(self, q: float) -> None:
         """
@@ -1409,13 +1727,39 @@ class CEllipsoidRangeBearing2D(CVisualObject):
         """
         Constructor.
         """
+    def enableDrawSolid3D(self, v: bool) -> None:
+        """
+        Draws a solid surface if true, or a wireframe if false.
+        """
+    def getLineWidth(self) -> float:
+        """
+        Returns the width of the lines, in pixels.
+        """
+    def getNumberOfSegments(self) -> int:
+        """
+        Returns the number of segments of the surface or curve.
+        """
+    @typing.overload
     def getQuantiles(self) -> float:
         """
         Returns the number of sigmas of the drawn ellipse (see setQuantiles()).
         """
+    @typing.overload
+    def getQuantiles(self) -> float:
+        """
+        Returns the scale of the "sigmas" used to draw the ellipsoid.
+        """
     def setCovMatrix(self, arg0: mrpt.math.CMatrixDouble22) -> None:
         """
         Like setCovMatrixAndMean(), for mean=zero.
+        """
+    def setLineWidth(self, width: float) -> None:
+        """
+        Sets the width of the lines, in pixels.
+        """
+    def setNumberOfSegments(self, numSegments: int) -> None:
+        """
+        Sets the number of segments of the surface or curve (resolution).
         """
     def setQuantiles(self, q: float) -> None:
         """

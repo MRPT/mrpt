@@ -17,6 +17,10 @@
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -38,6 +42,8 @@ void bind_CNetworkOfPoses(py::module& m, const char* className, const char* clas
 {
   using G = mrpt::graphs::CNetworkOfPoses<CPOSE>;
   using EdgeMap = typename mrpt::graphs::CDirectedGraph<CPOSE>::edges_map_t;
+  // Node poses: the edge type, or the mean type for PDF edges
+  using NodePose = typename G::constraint_no_pdf_t;
 
   py::class_<G>(m, className, classDoc)
       .def(py::init<>(), "Creates an empty graph.")
@@ -51,15 +57,48 @@ void bind_CNetworkOfPoses(py::module& m, const char* className, const char* clas
           [](G& g, mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to, const CPOSE& edge_value)
           { g.insertEdge(from, to, edge_value); },
           "from_id"_a, "to_id"_a, "edge"_a, "Insert a directed edge from → to")
+      .def(
+          "getEdges",
+          [](const G& g)
+          {
+            std::vector<py::tuple> out;
+            out.reserve(g.edges.size());
+            for (const auto& [ids, edge] : g.edges)
+            {
+              out.push_back(py::make_tuple(ids.first, ids.second, CPOSE(edge)));
+            }
+            return out;
+          },
+          "Returns all the edges as a list of tuples (from_id, to_id, edge), sorted by node IDs.")
+      .def(
+          "getEdge",
+          [](G& g, mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to)
+          {
+            if (!g.edgeExists(from, to))
+            {
+              throw py::key_error("edge does not exist");
+            }
+            return CPOSE(g.getEdge(from, to));
+          },
+          "from_id"_a, "to_id"_a,
+          "Returns a copy of the edge from_id -> to_id (the first one, if there are several). "
+          "Raises KeyError if it does not exist.")
+      .def(
+          "edgeExists", &G::edgeExists, "from_id"_a, "to_id"_a,
+          "Returns true if the directed edge from_id -> to_id exists.")
+      .def(
+          "eraseEdge", &G::eraseEdge, "from_id"_a, "to_id"_a,
+          "Erases all the edges from_id -> to_id (nothing happens if none exists).")
+      .def("clearEdges", &G::clearEdges, "Erases all the edges.")
       // Node poses
       .def(
           "setNodePose",
-          [](G& g, mrpt::graphs::TNodeID id, const CPOSE& pose) { g.nodes[id] = pose; },
+          [](G& g, mrpt::graphs::TNodeID id, const NodePose& pose) { g.nodes[id] = pose; },
           "node_id"_a, "pose"_a, "Set the estimated pose for a node")
       .def(
           "getNodePose",
-          [](const G& g, mrpt::graphs::TNodeID id) -> CPOSE { return g.nodes.at(id); }, "node_id"_a,
-          "Get the estimated pose for a node")
+          [](const G& g, mrpt::graphs::TNodeID id) -> NodePose { return g.nodes.at(id); },
+          "node_id"_a, "Get the estimated pose for a node")
       .def(
           "hasNode", [](const G& g, mrpt::graphs::TNodeID id) { return g.nodes.count(id) > 0; },
           "node_id"_a, "True if a node with the given ID exists")
@@ -155,4 +194,24 @@ PYBIND11_MODULE(_bindings, m)
   // -------------------------------------------------------------------------
   bind_CNetworkOfPoses<mrpt::poses::CPose3D>(
       m, "CNetworkOfPoses3D", "A graph of 3D poses (nodes) and relative pose constraints (edges).");
+
+  // -------------------------------------------------------------------------
+  // Pose graphs with uncertainty in the edges (covariance or information)
+  // -------------------------------------------------------------------------
+  bind_CNetworkOfPoses<mrpt::poses::CPosePDFGaussian>(
+      m, "CNetworkOfPoses2DCov",
+      "A graph of 2D poses (nodes, CPose2D) and relative pose constraints with a covariance "
+      "matrix (edges, CPosePDFGaussian).");
+  bind_CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian>(
+      m, "CNetworkOfPoses3DCov",
+      "A graph of 3D poses (nodes, CPose3D) and relative pose constraints with a covariance "
+      "matrix (edges, CPose3DPDFGaussian).");
+  bind_CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf>(
+      m, "CNetworkOfPoses2DInf",
+      "A graph of 2D poses (nodes, CPose2D) and relative pose constraints with an information "
+      "matrix (edges, CPosePDFGaussianInf).");
+  bind_CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf>(
+      m, "CNetworkOfPoses3DInf",
+      "A graph of 3D poses (nodes, CPose3D) and relative pose constraints with an information "
+      "matrix (edges, CPose3DPDFGaussianInf).");
 }

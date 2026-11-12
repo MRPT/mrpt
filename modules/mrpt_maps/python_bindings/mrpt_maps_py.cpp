@@ -27,6 +27,7 @@
 #include <mrpt/maps/CVoxelMapRGB.h>
 #include <mrpt/math/TBoundingBox.h>
 #include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -39,6 +40,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <algorithm>
+#include <cstdio>
+#include <functional>
 #include <limits>
 #include <optional>
 
@@ -52,6 +56,82 @@ struct type_tag
 {
   using type = T;
 };
+
+// The Python class already registered for T, to add more methods to it:
+template <class T>
+py::class_<T, std::shared_ptr<T>> registeredClass()
+{
+  return py::reinterpret_borrow<py::class_<T, std::shared_ptr<T>>>(py::type::of<T>());
+}
+
+// Results of a kNN or radius search, as (indices, points, squared distances) NumPy arrays.
+template <int DIM, class POINT>
+py::tuple nnResultsAsNumpy(
+    const std::vector<POINT>& pts,
+    const std::vector<float>& distsSqr,
+    const std::vector<uint64_t>& indices)
+{
+  const auto n = static_cast<py::ssize_t>(pts.size());
+  py::array_t<uint64_t> outIdx(std::vector<py::ssize_t>{n});
+  py::array_t<float> outPts(std::vector<py::ssize_t>{n, DIM});
+  py::array_t<float> outDists(std::vector<py::ssize_t>{n});
+  auto bufIdx = outIdx.mutable_unchecked<1>();
+  auto bufPts = outPts.mutable_unchecked<2>();
+  auto bufDists = outDists.mutable_unchecked<1>();
+  for (py::ssize_t i = 0; i < n; i++)
+  {
+    bufIdx(i) = indices[i];
+    bufDists(i) = distsSqr[i];
+    for (int k = 0; k < DIM; k++)
+    {
+      bufPts(i, k) = pts[i][k];
+    }
+  }
+  return py::make_tuple(outIdx, outPts, outDists);
+}
+
+// A NumPy copy of the first n values of a point field, read from its buffer if
+// available, or with the per-point getter otherwise.
+template <typename T>
+py::array_t<T> fieldToNumpy(
+    const mrpt::aligned_std_vector<T>* buf, size_t n, const std::function<T(size_t)>& getter)
+{
+  py::array_t<T> arr(std::vector<py::ssize_t>{static_cast<py::ssize_t>(n)});
+  T* out = arr.mutable_data();
+  if (buf != nullptr && buf->size() >= n)
+  {
+    std::copy_n(buf->data(), n, out);
+  }
+  else
+  {
+    for (size_t i = 0; i < n; i++)
+    {
+      out[i] = getter(i);
+    }
+  }
+  return arr;
+}
+
+// Registers a field of type T in a CGenericPointsMap and copies its values
+// from a 1D array of n elements.
+template <typename T>
+void registerAndFillField(
+    mrpt::maps::CGenericPointsMap& mp,
+    const std::string& name,
+    const py::array& values,
+    bool (mrpt::maps::CGenericPointsMap::*registerFn)(const std::string&),
+    mrpt::aligned_std_vector<T>* (mrpt::maps::CGenericPointsMap::*bufferFn)(const std::string&))
+{
+  (mp.*registerFn)(name);
+  mp.resize(mp.size());  // sizes the new field
+  auto* buf = (mp.*bufferFn)(name);
+  const auto arr = py::array_t<T, py::array::c_style | py::array::forcecast>::ensure(values);
+  if (buf == nullptr || !arr || static_cast<size_t>(arr.size()) != buf->size())
+  {
+    throw py::value_error("cannot set the values of field '" + name + "'");
+  }
+  std::copy_n(arr.data(), buf->size(), buf->data());
+}
 }  // namespace
 
 PYBIND11_MODULE(_bindings, m)
@@ -144,6 +224,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("__str__", &mrpt::maps::CMetricMap::asString)
       .def(
           "GetRuntimeClass", &mrpt::maps::CMetricMap::GetRuntimeClass,
+          py::return_value_policy::reference,
           "Returns information about the class of an object in runtime.");
 
   // -------------------------------------------------------------------------
@@ -177,36 +258,86 @@ PYBIND11_MODULE(_bindings, m)
           "x"_a, "y"_a, "z"_a = 0.0f,
           "Provides a way to insert (append) individual points into the map: the missing fields of "
           "child classes (color, weight, etc) are left to their default values.")
-      // NumPy integration — get all points as Nx3 float32 array
+      // NumPy integration: get or set all points as an Nx3 float32 array
       .def(
           "getPointsAsNumpy",
           [](const mrpt::maps::CPointsMap& mp)
           {
-            const size_t n = mp.size();
-            py::array_t<float> arr({n, size_t(3)});
+            const auto& xs = mp.getPointsBufferRef_x();
+            const auto& ys = mp.getPointsBufferRef_y();
+            const auto& zs = mp.getPointsBufferRef_z();
+            const auto n = static_cast<py::ssize_t>(mp.size());
+            py::array_t<float> arr(std::vector<py::ssize_t>{n, 3});
             auto buf = arr.mutable_unchecked<2>();
-            for (size_t i = 0; i < n; i++)
+            for (py::ssize_t i = 0; i < n; i++)
             {
-              float x, y, z;
-              mp.getPoint(i, x, y, z);
-              buf(i, 0) = x;
-              buf(i, 1) = y;
-              buf(i, 2) = z;
+              buf(i, 0) = xs[i];
+              buf(i, 1) = ys[i];
+              buf(i, 2) = zs[i];
             }
             return arr;
           },
           "Returns all points as an Nx3 float32 numpy array")
-      // Load all points from Nx3 numpy array
       .def(
           "setPointsFromNumpy",
-          [](mrpt::maps::CPointsMap& mp, const py::array_t<float>& arr)
+          [](mrpt::maps::CPointsMap& mp,
+             const py::array_t<float, py::array::c_style | py::array::forcecast>& arr)
           {
-            auto r = arr.unchecked<2>();
-            mp.clear();
-            mp.reserve(r.shape(0));
-            for (py::ssize_t i = 0; i < r.shape(0); i++) mp.insertPoint(r(i, 0), r(i, 1), r(i, 2));
+            if (arr.ndim() != 2 || arr.shape(1) != 3)
+            {
+              throw py::value_error("The array must have shape (N, 3)");
+            }
+            const auto r = arr.unchecked<2>();
+            mp.setSize(static_cast<size_t>(r.shape(0)));
+            for (py::ssize_t i = 0; i < r.shape(0); i++)
+            {
+              mp.setPointFast(static_cast<size_t>(i), r(i, 0), r(i, 1), r(i, 2));
+            }
+            mp.mark_as_modified();
           },
-          "arr"_a, "Load an Nx3 float32 numpy array into this point cloud")
+          "arr"_a,
+          "Replaces all the points with those of an Nx3 array (other point fields are reset to "
+          "their default values).")
+      .def(
+          "getPointFieldsAsNumpy",
+          [](const mrpt::maps::CPointsMap& mp)
+          {
+            const size_t n = mp.size();
+            py::dict out;
+            for (const auto& name : mp.getPointFieldNames_float())
+            {
+              out[py::str(name)] = fieldToNumpy<float>(
+                  mp.getPointsBufferRef_float_field(name), n,
+                  [&](size_t i) { return mp.getPointField_float(i, name); });
+            }
+            for (const auto& name : mp.getPointFieldNames_double())
+            {
+              out[py::str(name)] = fieldToNumpy<double>(
+                  mp.getPointsBufferRef_double_field(name), n,
+                  [&](size_t i) { return mp.getPointField_double(i, name); });
+            }
+            for (const auto& name : mp.getPointFieldNames_uint16())
+            {
+              out[py::str(name)] = fieldToNumpy<uint16_t>(
+                  mp.getPointsBufferRef_uint16_field(name), n,
+                  [&](size_t i) { return mp.getPointField_uint16(i, name); });
+            }
+            for (const auto& name : mp.getPointFieldNames_uint8())
+            {
+              out[py::str(name)] = fieldToNumpy<uint8_t>(
+                  mp.getPointsBufferRef_uint8_field(name), n,
+                  [&](size_t i) { return mp.getPointField_uint8(i, name); });
+            }
+            for (const auto& name : mp.getPointFieldNames_uint32())
+            {
+              out[py::str(name)] = fieldToNumpy<uint32_t>(
+                  mp.getPointsBufferRef_uint32_field(name), n,
+                  [&](size_t i) { return mp.getPointField_uint32(i, name); });
+            }
+            return out;
+          },
+          "Returns a dict with a 1D NumPy array (a copy) for x, y, z and every other point field, "
+          "with its dtype: float32, float64, uint16, uint8 or uint32.")
       .def(
           "save2D_to_text_file", &mrpt::maps::CPointsMap::save2D_to_text_file,
           "Save to a text file. Each line will contain \"X Y\" point coordinates.")
@@ -221,6 +352,138 @@ PYBIND11_MODULE(_bindings, m)
           "load3D_from_text_file", &mrpt::maps::CPointsMap::load3D_from_text_file,
           "Load from a text file. Each line should contain an \"X Y Z\" coordinate tuple, "
           "separated by whitespaces.")
+      .def(
+          "loadFromPlyFile",
+          [](mrpt::maps::CPointsMap& mp, const std::string& filename)
+          { return mp.loadFromPlyFile(filename); },
+          "filename"_a,
+          "Loads the points from a PLY file. Returns False on error: see getLoadPLYErrorString().")
+      .def(
+          "getLoadPLYErrorString", &mrpt::maps::CPointsMap::getLoadPLYErrorString,
+          "Description of the error of the last failed loadFromPlyFile().")
+      .def(
+          "saveToPlyFile",
+          [](const mrpt::maps::CPointsMap& mp, const std::string& filename, bool save_in_binary,
+             const std::vector<std::string>& file_comments)
+          {
+            // The exporter does not handle files that cannot be created:
+            std::FILE* f = std::fopen(filename.c_str(), "w");
+            if (f == nullptr)
+            {
+              return false;
+            }
+            std::fclose(f);
+            return mp.saveToPlyFile(filename, save_in_binary, file_comments);
+          },
+          "filename"_a, "save_in_binary"_a = false, "file_comments"_a = std::vector<std::string>(),
+          "Saves the points to a PLY file (text or binary). Returns False if the file cannot be "
+          "created, or on other errors: see getSavePLYErrorString().")
+      .def(
+          "getSavePLYErrorString", &mrpt::maps::CPointsMap::getSavePLYErrorString,
+          "Description of the error of the last failed saveToPlyFile().")
+      .def(
+          "loadFromKittiVelodyneFile", &mrpt::maps::CPointsMap::loadFromKittiVelodyneFile,
+          "filename"_a,
+          "Loads a KITTI Velodyne scan (binary XYZI, gzip-compressed if the name ends in \".gz\"), "
+          "with the intensity in the \"intensity\" field if the map supports it. Returns True on "
+          "success.")
+      .def(
+          "saveToKittiVelodyneFile", &mrpt::maps::CPointsMap::saveToKittiVelodyneFile, "filename"_a,
+          "Saves the points and their \"intensity\" field in the binary XYZI format of the KITTI "
+          "dataset, always compressed: use a file name ending in \".gz\" to load it back. Returns "
+          "True on success.")
+      // Nearest-neighbor queries (KD-tree)
+      .def(
+          "nn_single_search",
+          [](const mrpt::maps::CPointsMap& mp, const mrpt::math::TPoint3D& query) -> py::object
+          {
+            mrpt::math::TPoint3Df result;
+            float distSqr = 0;
+            uint64_t idx = 0;
+            if (!mp.nn_single_search(mrpt::math::TPoint3Df(query), result, distSqr, idx))
+            {
+              return py::none();
+            }
+            return py::make_tuple(idx, mrpt::math::TPoint3D(result), distSqr);
+          },
+          "query"_a,
+          "Closest point to a 3D query point (KD-tree search). Returns (index, point, squared "
+          "distance), or None if none was found.")
+      .def(
+          "nn_single_search",
+          [](const mrpt::maps::CPointsMap& mp, const mrpt::math::TPoint2D& query) -> py::object
+          {
+            mrpt::math::TPoint2Df result;
+            float distSqr = 0;
+            uint64_t idx = 0;
+            if (!mp.nn_single_search(mrpt::math::TPoint2Df(query), result, distSqr, idx))
+            {
+              return py::none();
+            }
+            return py::make_tuple(idx, mrpt::math::TPoint2D(result), distSqr);
+          },
+          "query"_a,
+          "Closest point to a 2D query point, ignoring z (KD-tree search). Returns (index, point, "
+          "squared distance), or None if none was found.")
+      .def(
+          "nn_multiple_search",
+          [](const mrpt::maps::CPointsMap& mp, const mrpt::math::TPoint3D& query, size_t N)
+          {
+            std::vector<mrpt::math::TPoint3Df> pts;
+            std::vector<float> distsSqr;
+            std::vector<uint64_t> indices;
+            mp.nn_multiple_search(mrpt::math::TPoint3Df(query), N, pts, distsSqr, indices);
+            return nnResultsAsNumpy<3>(pts, distsSqr, indices);
+          },
+          "query"_a, "N"_a,
+          "The N closest points to a 3D query point (KD-tree search), sorted by distance. Returns "
+          "(indices: uint64 array, points: Nx3 float32 array, squared distances: float32 array).")
+      .def(
+          "nn_multiple_search",
+          [](const mrpt::maps::CPointsMap& mp, const mrpt::math::TPoint2D& query, size_t N)
+          {
+            std::vector<mrpt::math::TPoint2Df> pts;
+            std::vector<float> distsSqr;
+            std::vector<uint64_t> indices;
+            mp.nn_multiple_search(mrpt::math::TPoint2Df(query), N, pts, distsSqr, indices);
+            return nnResultsAsNumpy<2>(pts, distsSqr, indices);
+          },
+          "query"_a, "N"_a,
+          "The N closest points to a 2D query point, ignoring z (KD-tree search), sorted by "
+          "distance. Returns (indices: uint64 array, points: Nx2 float32 array, squared "
+          "distances: float32 array).")
+      .def(
+          "nn_radius_search",
+          [](const mrpt::maps::CPointsMap& mp, const mrpt::math::TPoint3D& query,
+             float search_radius_sqr, size_t maxPoints)
+          {
+            std::vector<mrpt::math::TPoint3Df> pts;
+            std::vector<float> distsSqr;
+            std::vector<uint64_t> indices;
+            mp.nn_radius_search(
+                mrpt::math::TPoint3Df(query), search_radius_sqr, pts, distsSqr, indices, maxPoints);
+            return nnResultsAsNumpy<3>(pts, distsSqr, indices);
+          },
+          "query"_a, "search_radius_sqr"_a, "maxPoints"_a = 0,
+          "The points within a distance of a 3D query point (KD-tree search). The radius is given "
+          "squared; maxPoints=0 means no limit. Returns (indices: uint64 array, points: Nx3 "
+          "float32 array, squared distances: float32 array).")
+      .def(
+          "nn_radius_search",
+          [](const mrpt::maps::CPointsMap& mp, const mrpt::math::TPoint2D& query,
+             float search_radius_sqr, size_t maxPoints)
+          {
+            std::vector<mrpt::math::TPoint2Df> pts;
+            std::vector<float> distsSqr;
+            std::vector<uint64_t> indices;
+            mp.nn_radius_search(
+                mrpt::math::TPoint2Df(query), search_radius_sqr, pts, distsSqr, indices, maxPoints);
+            return nnResultsAsNumpy<2>(pts, distsSqr, indices);
+          },
+          "query"_a, "search_radius_sqr"_a, "maxPoints"_a = 0,
+          "The points within a distance of a 2D query point, ignoring z (KD-tree search). The "
+          "radius is given squared; maxPoints=0 means no limit. Returns (indices: uint64 array, "
+          "points: Nx2 float32 array, squared distances: float32 array).")
       .def(
           "__repr__", [](const mrpt::maps::CPointsMap& mp)
           { return "CPointsMap(" + std::to_string(mp.size()) + " points)"; });
@@ -328,6 +591,92 @@ PYBIND11_MODULE(_bindings, m)
       .def(
           "setPointField_uint32", &mrpt::maps::CGenericPointsMap::setPointField_uint32, "index"_a,
           "fieldName"_a, "value"_a, "Set a uint32 channel value (New in MRPT 3.0.0)")
+      .def_static(
+          "FromNumpyFields",
+          [](const py::dict& fields)
+          {
+            using mrpt::maps::CGenericPointsMap;
+            for (const char* c : {"x", "y", "z"})
+            {
+              if (!fields.contains(c))
+              {
+                throw py::key_error(std::string("missing field '") + c + "'");
+              }
+            }
+            using FloatArray = py::array_t<float, py::array::c_style | py::array::forcecast>;
+            const auto xs = py::cast<FloatArray>(fields["x"]);
+            const auto ys = py::cast<FloatArray>(fields["y"]);
+            const auto zs = py::cast<FloatArray>(fields["z"]);
+            const auto n = xs.size();
+            if (xs.ndim() != 1 || ys.ndim() != 1 || zs.ndim() != 1 || ys.size() != n ||
+                zs.size() != n)
+            {
+              throw py::value_error("x, y and z must be 1D arrays of the same length");
+            }
+            auto mp = std::make_shared<CGenericPointsMap>();
+            mp->resize(static_cast<size_t>(n));
+            for (py::ssize_t i = 0; i < n; i++)
+            {
+              mp->setPointFast(static_cast<size_t>(i), xs.at(i), ys.at(i), zs.at(i));
+            }
+            for (const auto& [key, value] : fields)
+            {
+              const auto name = py::cast<std::string>(key);
+              if (name == "x" || name == "y" || name == "z")
+              {
+                continue;
+              }
+              const auto arr = py::array::ensure(value);
+              if (!arr || arr.ndim() != 1 || arr.size() != n)
+              {
+                throw py::value_error("field '" + name + "' must be a 1D array of length N");
+              }
+              const auto dt = arr.dtype();
+              if (dt.is(py::dtype::of<float>()))
+              {
+                registerAndFillField<float>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_float,
+                    &CGenericPointsMap::getPointsBufferRef_float_field);
+              }
+              else if (dt.is(py::dtype::of<double>()))
+              {
+                registerAndFillField<double>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_double,
+                    &CGenericPointsMap::getPointsBufferRef_double_field);
+              }
+              else if (dt.is(py::dtype::of<uint16_t>()))
+              {
+                registerAndFillField<uint16_t>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_uint16,
+                    &CGenericPointsMap::getPointsBufferRef_uint16_field);
+              }
+              else if (dt.is(py::dtype::of<uint8_t>()))
+              {
+                registerAndFillField<uint8_t>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_uint8,
+                    &CGenericPointsMap::getPointsBufferRef_uint8_field);
+              }
+              else if (dt.is(py::dtype::of<uint32_t>()))
+              {
+                registerAndFillField<uint32_t>(
+                    *mp, name, arr, &CGenericPointsMap::registerField_uint32,
+                    &CGenericPointsMap::getPointsBufferRef_uint32_field);
+              }
+              else
+              {
+                throw py::type_error(
+                    "field '" + name +
+                    "' must have dtype float32, float64, uint16, uint8 or uint32");
+              }
+            }
+            mp->mark_as_modified();
+            return mp;
+          },
+          "fields"_a,
+          "Builds a map from a dict of 1D arrays of the same length, as returned by "
+          "getPointFieldsAsNumpy(): x, y and z (converted to float32) and other fields, "
+          "registered with the type given by their dtype (float32, float64, uint16, uint8 or "
+          "uint32).")
       .def(
           "__repr__", [](const mrpt::maps::CGenericPointsMap& mp)
           { return "CGenericPointsMap(" + std::to_string(mp.size()) + " points)"; });
@@ -435,6 +784,37 @@ PYBIND11_MODULE(_bindings, m)
             return arr;
           },
           "Returns the occupancy grid as an HxW float32 numpy array (0=occupied, 1=free)")
+      .def(
+          "setFromNumpy",
+          [](mrpt::maps::COccupancyGridMap2D& g,
+             const py::array_t<float, py::array::c_style | py::array::forcecast>& arr)
+          {
+            if (arr.ndim() != 2 || arr.shape(0) != static_cast<py::ssize_t>(g.getSizeY()) ||
+                arr.shape(1) != static_cast<py::ssize_t>(g.getSizeX()))
+            {
+              throw py::value_error("The array must have shape (getSizeY(), getSizeX())");
+            }
+            const auto buf = arr.unchecked<2>();
+            for (py::ssize_t row = 0; row < buf.shape(0); row++)
+            {
+              for (py::ssize_t col = 0; col < buf.shape(1); col++)
+              {
+                g.setCell(static_cast<int>(col), static_cast<int>(row), buf(row, col));
+              }
+            }
+          },
+          "array"_a,
+          "Sets all the cells from an HxW array, with the same layout and values as getAsNumpy() "
+          "(0=occupied, 1=free).")
+      .def(
+          "laserScanSimulator", &mrpt::maps::COccupancyGridMap2D::laserScanSimulator,
+          "inout_Scan"_a, "robotPose"_a, "threshold"_a = 0.6f, "N"_a = 361, "noiseStd"_a = 0.0f,
+          "decimation"_a = 1, "angleNoiseStd"_a = 0.0f,
+          "Simulates a 2D laser scan from robotPose (CPose2D) into this grid. inout_Scan "
+          "(CObservation2DRangeScan) must have its aperture, maxRange, sensorPose and rightToLeft "
+          "set, and gets the N simulated ranges. threshold is the minimum occupancy of a cell to "
+          "be an obstacle; noiseStd and angleNoiseStd are the sigmas of the range and angle "
+          "noise; only one ray out of 'decimation' is simulated.")
       .def(
           "__repr__",
           [](const mrpt::maps::COccupancyGridMap2D& g)
@@ -850,4 +1230,412 @@ PYBIND11_MODULE(_bindings, m)
       "sf"_a, "params"_a = VizParams(), "out"_a = nullptr,
       "Renders all observations of a CSensoryFrame into a CSetOfObjects (a new one if out is "
       "None), and returns it");
+
+  // -------------------------------------------------------------------------
+  // Occupied voxels of 3D occupancy maps, as NumPy arrays
+  // -------------------------------------------------------------------------
+  registeredClass<Grid3D>().def(
+      "getOccupiedVoxelsAsNumpy",
+      [](const Grid3D& g, float occupiedThreshold)
+      {
+        const auto& grid = g.m_grid;
+        const double resXY = grid.getResolutionXY();
+        const double resZ = grid.getResolutionZ();
+        std::vector<mrpt::math::TPoint3Df> centers;
+        for (size_t cz = 0; cz < grid.getSizeZ(); cz++)
+        {
+          for (size_t cy = 0; cy < grid.getSizeY(); cy++)
+          {
+            for (size_t cx = 0; cx < grid.getSizeX(); cx++)
+            {
+              const float occ =
+                  1.0f - g.getCellFreeness(
+                             static_cast<unsigned int>(cx), static_cast<unsigned int>(cy),
+                             static_cast<unsigned int>(cz));
+              if (occ > occupiedThreshold)
+              {
+                centers.emplace_back(
+                    static_cast<float>(grid.idx2x(static_cast<int>(cx)) + 0.5 * resXY),
+                    static_cast<float>(grid.idx2y(static_cast<int>(cy)) + 0.5 * resXY),
+                    static_cast<float>(grid.idx2z(static_cast<int>(cz)) + 0.5 * resZ));
+              }
+            }
+          }
+        }
+        const auto n = static_cast<py::ssize_t>(centers.size());
+        py::array_t<float> arr(std::vector<py::ssize_t>{n, 3});
+        auto buf = arr.mutable_unchecked<2>();
+        for (py::ssize_t i = 0; i < n; i++)
+        {
+          buf(i, 0) = centers[i].x;
+          buf(i, 1) = centers[i].y;
+          buf(i, 2) = centers[i].z;
+        }
+        return arr;
+      },
+      "occupiedThreshold"_a = 0.5f,
+      "Returns the centers of the voxels with an occupancy probability above the threshold, as "
+      "an Nx3 float32 array.");
+
+  registeredClass<mrpt::maps::COctoMap>().def(
+      "getOccupiedVoxelsAsNumpy",
+      [](mrpt::maps::COctoMap& om)
+      {
+        // Only build the occupied voxels, restoring the rendering options afterwards:
+        const auto oldOptions = om.renderingOptions;
+        om.renderingOptions.generateGridLines = false;
+        om.renderingOptions.generateOccupiedVoxels = true;
+        om.renderingOptions.generateFreeVoxels = false;
+        mrpt::viz::COctoMapVoxels voxels;
+        om.getAsOctoMapVoxels(voxels);
+        om.renderingOptions = oldOptions;
+
+        const size_t setIdx = mrpt::viz::VOXEL_SET_OCCUPIED;
+        const auto n = static_cast<py::ssize_t>(
+            voxels.getVoxelSetCount() > setIdx ? voxels.getVoxelCount(setIdx) : 0);
+        py::array_t<float> centers(std::vector<py::ssize_t>{n, 3});
+        py::array_t<float> sizes(std::vector<py::ssize_t>{n});
+        auto bufCenters = centers.mutable_unchecked<2>();
+        auto bufSizes = sizes.mutable_unchecked<1>();
+        for (py::ssize_t i = 0; i < n; i++)
+        {
+          const auto& v = voxels.getVoxel(setIdx, static_cast<size_t>(i));
+          bufCenters(i, 0) = v.coords.x;
+          bufCenters(i, 1) = v.coords.y;
+          bufCenters(i, 2) = v.coords.z;
+          bufSizes(i) = v.side_length;
+        }
+        return py::make_tuple(centers, sizes);
+      },
+      "Returns the occupied leaf voxels (occupancy >= 0.5) as a tuple (centers: Nx3 float32 "
+      "array, side lengths: float32 array). Pruned leaves may be larger than the resolution.");
+
+  // -------------------------------------------------------------------------
+  // Insertion and likelihood options of the maps
+  // -------------------------------------------------------------------------
+  using mrpt::config::CLoadableOptions;
+  {
+    using G = mrpt::maps::COccupancyGridMap2D;
+    const auto scope = py::type::of<G>();
+    using Ins = G::TInsertionOptions;
+    py::class_<Ins, CLoadableOptions, std::shared_ptr<Ins>>(
+        scope, "TInsertionOptions",
+        "Options for inserting observations into a COccupancyGridMap2D.")
+        .def(py::init<>(), "Default constructor.")
+        .def_readwrite(
+            "mapAltitude", &Ins::mapAltitude,
+            "Altitude (z) of the 2D scans to insert (0.01 m tolerance), if useMapAltitude is true.")
+        .def_readwrite(
+            "useMapAltitude", &Ins::useMapAltitude,
+            "Only insert 2D scans at mapAltitude (default: false).")
+        .def_readwrite(
+            "maxDistanceInsertion", &Ins::maxDistanceInsertion,
+            "Largest distance at which cells are updated (default: 15 m).")
+        .def_readwrite(
+            "maxOccupancyUpdateCertainty", &Ins::maxOccupancyUpdateCertainty,
+            "Value in [0.5, 1] for the Bayesian update of occupied cells (default: 0.65).")
+        .def_readwrite(
+            "maxFreenessUpdateCertainty", &Ins::maxFreenessUpdateCertainty,
+            "Value in [0.5, 1] for the update of free cells (default: 0, the same as "
+            "maxOccupancyUpdateCertainty).")
+        .def_readwrite(
+            "maxFreenessInvalidRanges", &Ins::maxFreenessInvalidRanges,
+            "Like maxFreenessUpdateCertainty, for invalid ranges (default: 0, the same as "
+            "maxOccupancyUpdateCertainty).")
+        .def_readwrite(
+            "considerInvalidRangesAsFreeSpace", &Ins::considerInvalidRangesAsFreeSpace,
+            "Use invalid ranges (no echo) as free space, if the previous and next rays are also "
+            "invalid (default: true).")
+        .def_readwrite(
+            "decimation", &Ins::decimation, "Decimation of range scans (default: 1, all rays).")
+        .def_readwrite(
+            "horizontalTolerance", &Ins::horizontalTolerance,
+            "Tolerance in pitch and roll for a scan to be horizontal, in radians.")
+        .def_readwrite(
+            "CFD_features_gaussian_size", &Ins::CFD_features_gaussian_size,
+            "Sigma of the Gaussian filter of getAsImageFiltered() (default: 1, 0: disabled).")
+        .def_readwrite(
+            "CFD_features_median_size", &Ins::CFD_features_median_size,
+            "Size of the median filter of getAsImageFiltered() (default: 3, 0: disabled).")
+        .def_readwrite(
+            "wideningBeamsWithDistance", &Ins::wideningBeamsWithDistance,
+            "Rays widen with distance, like real laser beams (default: false).")
+        .def_readwrite(
+            "raytraceStepSizeInCellUnits", &Ins::raytraceStepSizeInCellUnits,
+            "Unused: kept for backwards compatibility.");
+
+    py::enum_<G::TLikelihoodMethod>(
+        scope, "TLikelihoodMethod", "Method to compute the likelihood of observations.")
+        .value("lmMeanInformation", G::lmMeanInformation)
+        .value("lmRayTracing", G::lmRayTracing)
+        .value("lmConsensus", G::lmConsensus)
+        .value("lmCellsDifference", G::lmCellsDifference)
+        .value("lmLikelihoodField_Thrun", G::lmLikelihoodField_Thrun)
+        .value("lmLikelihoodField_II", G::lmLikelihoodField_II)
+        .value("lmConsensusOWA", G::lmConsensusOWA)
+        .export_values();
+
+    using Lik = G::TLikelihoodOptions;
+    py::class_<Lik, CLoadableOptions, std::shared_ptr<Lik>>(
+        scope, "TLikelihoodOptions",
+        "Options for computing the likelihood of observations in a COccupancyGridMap2D.")
+        .def(py::init<>(), "Default constructor.")
+        .def_readwrite(
+            "likelihoodMethod", &Lik::likelihoodMethod,
+            "Likelihood method (default: lmLikelihoodField_Thrun).")
+        .def_readwrite(
+            "LF_stdHit", &Lik::LF_stdHit, "[LikelihoodField] Range sigma (default: 0.35).")
+        .def_readwrite(
+            "LF_zHit", &Lik::LF_zHit, "[LikelihoodField] Weight of hits (default: 0.95).")
+        .def_readwrite(
+            "LF_zRandom", &Lik::LF_zRandom,
+            "[LikelihoodField] Weight of random measurements (default: 0.05).")
+        .def_readwrite(
+            "LF_maxRange", &Lik::LF_maxRange,
+            "[LikelihoodField] Maximum range of the sensor (default: 81 m).")
+        .def_readwrite(
+            "LF_decimation", &Lik::LF_decimation,
+            "[LikelihoodField] Decimation of the points of a scan (default: 5, 1: none).")
+        .def_readwrite(
+            "LF_maxCorrsDistance", &Lik::LF_maxCorrsDistance,
+            "[LikelihoodField] Maximum distance to search correspondences of each point.")
+        .def_readwrite(
+            "LF_useSquareDist", &Lik::LF_useSquareDist,
+            "[LikelihoodField] Use exp(-0.5*d^4/s^2) instead of exp(-0.5*d^2/s^2) (default: "
+            "false).")
+        .def_readwrite(
+            "LF_alternateAverageMethod", &Lik::LF_alternateAverageMethod,
+            "[LikelihoodField] Average the likelihood of the ranges instead of multiplying them "
+            "(default: false).")
+        .def_readwrite("MI_exponent", &Lik::MI_exponent, "[MI] Exponent (default: 2.5).")
+        .def_readwrite(
+            "MI_skip_rays", &Lik::MI_skip_rays, "[MI] Use one out of N rays (default: 10).")
+        .def_readwrite(
+            "MI_ratio_max_distance", &Lik::MI_ratio_max_distance,
+            "[MI] Ratio of the maximum distance, with respect to the insertion one (default: 1.5).")
+        .def_readwrite(
+            "rayTracing_useDistanceFilter", &Lik::rayTracing_useDistanceFilter,
+            "[rayTracing] Unused: kept for backwards compatibility.")
+        .def_readwrite(
+            "rayTracing_decimation", &Lik::rayTracing_decimation,
+            "[rayTracing] Simulate one out of N rays (default: 10).")
+        .def_readwrite(
+            "rayTracing_stdHit", &Lik::rayTracing_stdHit, "[rayTracing] Range sigma (default: 1).")
+        .def_readwrite(
+            "consensus_takeEachRange", &Lik::consensus_takeEachRange,
+            "[Consensus] Use one out of N ranges (default: 1).")
+        .def_readwrite(
+            "consensus_pow", &Lik::consensus_pow,
+            "[Consensus] Power of the likelihood (default: 5).")
+        .def_readwrite(
+            "OWA_weights", &Lik::OWA_weights,
+            "[OWA] Weights of the sorted likelihood values (the largest first). Assign a whole "
+            "list to change it.")
+        .def_readwrite(
+            "enableLikelihoodCache", &Lik::enableLikelihoodCache,
+            "Use a cache of likelihood values, for the likelihood field methods (default: true).");
+
+    registeredClass<G>()
+        .def_readwrite(
+            "insertionOptions", &G::insertionOptions,
+            "Options for inserting observations (TInsertionOptions).")
+        .def_readwrite(
+            "likelihoodOptions", &G::likelihoodOptions,
+            "Options for computing the likelihood of observations (TLikelihoodOptions).");
+  }
+  {
+    using Ins = Grid3D::TInsertionOptions;
+    const auto scope = py::type::of<Grid3D>();
+    py::class_<Ins, CLoadableOptions, std::shared_ptr<Ins>>(
+        scope, "TInsertionOptions",
+        "Options for inserting observations into a COccupancyGridMap3D.")
+        .def(py::init<>(), "Default constructor.")
+        .def_readwrite(
+            "maxDistanceInsertion", &Ins::maxDistanceInsertion,
+            "Largest distance at which voxels are updated (default: 15 m).")
+        .def_readwrite(
+            "maxOccupancyUpdateCertainty", &Ins::maxOccupancyUpdateCertainty,
+            "Value in [0.5, 1] for the Bayesian update of occupied voxels (default: 0.65).")
+        .def_readwrite(
+            "maxFreenessUpdateCertainty", &Ins::maxFreenessUpdateCertainty,
+            "Value in [0.5, 1] for the update of free voxels (default: 0, the same as "
+            "maxOccupancyUpdateCertainty).")
+        .def_readwrite(
+            "decimation_3d_range", &Ins::decimation_3d_range,
+            "Decimation of 3D range scans: keeps the minimum range of each NxN block (default: 8).")
+        .def_readwrite(
+            "decimation", &Ins::decimation,
+            "Decimation of point clouds and 2D range scans (default: 1).")
+        .def_readwrite(
+            "raytraceEmptyCells", &Ins::raytraceEmptyCells,
+            "Mark the voxels along the rays as free (default: true), or only update the end "
+            "points.");
+
+    py::enum_<Grid3D::TLikelihoodMethod>(
+        scope, "TLikelihoodMethod", "Method to compute the likelihood of observations.")
+        .value("lmLikelihoodField_Thrun", Grid3D::lmLikelihoodField_Thrun)
+        .value("lmRayTracing", Grid3D::lmRayTracing)
+        .export_values();
+
+    using Lik = Grid3D::TLikelihoodOptions;
+    py::class_<Lik, CLoadableOptions, std::shared_ptr<Lik>>(
+        scope, "TLikelihoodOptions",
+        "Options for computing the likelihood of observations in a COccupancyGridMap3D (not "
+        "implemented yet for this map: likelihoods are always 0).")
+        .def(py::init<>(), "Default constructor.")
+        .def_readwrite(
+            "likelihoodMethod", &Lik::likelihoodMethod,
+            "Likelihood method (default: lmLikelihoodField_Thrun).")
+        .def_readwrite(
+            "LF_stdHit", &Lik::LF_stdHit, "[LikelihoodField] Range sigma (default: 0.35).")
+        .def_readwrite(
+            "LF_zHit", &Lik::LF_zHit, "[LikelihoodField] Weight of hits (default: 0.95).")
+        .def_readwrite(
+            "LF_zRandom", &Lik::LF_zRandom,
+            "[LikelihoodField] Weight of random measurements (default: 0.05).")
+        .def_readwrite(
+            "LF_maxRange", &Lik::LF_maxRange,
+            "[LikelihoodField] Maximum range of the sensor (default: 20 m).")
+        .def_readwrite(
+            "LF_decimation", &Lik::LF_decimation,
+            "[LikelihoodField] Decimation of the points (default: 1, none).")
+        .def_readwrite(
+            "LF_maxCorrsDistance", &Lik::LF_maxCorrsDistance,
+            "[LikelihoodField] Maximum distance to search correspondences of each point.")
+        .def_readwrite(
+            "LF_useSquareDist", &Lik::LF_useSquareDist,
+            "[LikelihoodField] Use exp(-0.5*d^4/s^2) instead of exp(-0.5*d^2/s^2) (default: "
+            "false).")
+        .def_readwrite(
+            "rayTracing_decimation", &Lik::rayTracing_decimation,
+            "[rayTracing] Simulate one out of N rays (default: 10).")
+        .def_readwrite(
+            "rayTracing_stdHit", &Lik::rayTracing_stdHit, "[rayTracing] Range sigma (default: 1).");
+
+    registeredClass<Grid3D>()
+        .def_readwrite(
+            "insertionOptions", &Grid3D::insertionOptions,
+            "Options for inserting observations (TInsertionOptions).")
+        .def_readwrite(
+            "likelihoodOptions", &Grid3D::likelihoodOptions,
+            "Options for computing the likelihood of observations (TLikelihoodOptions).");
+  }
+  {
+    using Ins = HMap::TInsertionOptions;
+    py::class_<Ins, CLoadableOptions, std::shared_ptr<Ins>>(
+        py::type::of<HMap>(), "TInsertionOptions",
+        "Options for inserting observations into a CHeightGridMap2D.")
+        .def(py::init<>(), "Default constructor.")
+        .def_readwrite(
+            "filterByHeight", &Ins::filterByHeight,
+            "Only insert points with z in [z_min, z_max], relative to the robot (default: false).")
+        .def_readwrite(
+            "z_min", &Ins::z_min, "Minimum z, if filterByHeight is true (default: -0.5).")
+        .def_readwrite("z_max", &Ins::z_max, "Maximum z, if filterByHeight is true (default: 0.5).")
+        .def_readwrite("colorMap", &Ins::colorMap, "Color map for the 3D view (default: cmJET).");
+
+    registeredClass<HMap>().def_readwrite(
+        "insertionOptions", &HMap::insertionOptions,
+        "Options for inserting observations (TInsertionOptions).");
+  }
+  {
+    using OM = mrpt::maps::COctoMap;
+    using Ins = OM::TInsertionOptions;
+    const auto scope = py::type::of<OM>();
+    // No constructor: the sensor model parameters are only stored in a map.
+    py::class_<Ins, CLoadableOptions, std::shared_ptr<Ins>>(
+        scope, "TInsertionOptions",
+        "Options for inserting observations into a COctoMap. Access them through "
+        "COctoMap.insertionOptions: the sensor model parameters are stored in the map itself.")
+        .def_readwrite(
+            "maxrange", &Ins::maxrange,
+            "Maximum range of the inserted rays (default: -1, the complete rays).")
+        .def_readwrite(
+            "pruning", &Ins::pruning, "Prune the tree after each insertion (default: true).")
+        .def_property(
+            "occupancyThres", &Ins::getOccupancyThres, &Ins::setOccupancyThres,
+            "Occupancy probability threshold of the sensor model (default: 0.5).")
+        .def_property(
+            "probHit", &Ins::getProbHit, &Ins::setProbHit,
+            "Probability of a hit in the sensor model (default: 0.7).")
+        .def_property(
+            "probMiss", &Ins::getProbMiss, &Ins::setProbMiss,
+            "Probability of a miss in the sensor model (default: 0.4).")
+        .def_property(
+            "clampingThresMin", &Ins::getClampingThresMin, &Ins::setClampingThresMin,
+            "Minimum occupancy probability for clamping (default: 0.1192).")
+        .def_property(
+            "clampingThresMax", &Ins::getClampingThresMax, &Ins::setClampingThresMax,
+            "Maximum occupancy probability for clamping (default: 0.971).");
+
+    using Lik = OM::TLikelihoodOptions;
+    py::class_<Lik, CLoadableOptions, std::shared_ptr<Lik>>(
+        scope, "TLikelihoodOptions",
+        "Options for computing the likelihood of observations in a COctoMap.")
+        .def(py::init<>(), "Default constructor.")
+        .def_readwrite(
+            "decimation", &Lik::decimation, "Use one out of N rays (default: 1, all of them).");
+
+    registeredClass<OM>()
+        .def_property_readonly(
+            "insertionOptions", [](OM& om) -> Ins& { return om.insertionOptions; },
+            py::return_value_policy::reference_internal,
+            "Options for inserting observations (TInsertionOptions): modify its fields in place.")
+        .def_readwrite(
+            "likelihoodOptions", &OM::likelihoodOptions,
+            "Options for computing the likelihood of observations (TLikelihoodOptions).");
+  }
+  {
+    using Ins = mrpt::maps::TVoxelMap_InsertionOptions;
+    py::class_<Ins, CLoadableOptions, std::shared_ptr<Ins>>(
+        m, "TVoxelMap_InsertionOptions",
+        "Options for inserting observations into a CVoxelMap or CVoxelMapRGB.")
+        .def(py::init<>(), "Default constructor.")
+        .def_readwrite(
+            "max_range", &Ins::max_range, "Maximum range of the inserted rays (<0: no limit).")
+        .def_readwrite(
+            "prob_miss", &Ins::prob_miss,
+            "Occupancy probability of a voxel crossed by a ray, < 0.5 (default: 0.45).")
+        .def_readwrite(
+            "prob_hit", &Ins::prob_hit,
+            "Occupancy probability of a voxel where a ray ends, > 0.5 (default: 0.65).")
+        .def_readwrite(
+            "clamp_min", &Ins::clamp_min, "Minimum occupancy probability (default: 0.10).")
+        .def_readwrite(
+            "clamp_max", &Ins::clamp_max, "Maximum occupancy probability (default: 0.95).")
+        .def_readwrite(
+            "ray_trace_free_space", &Ins::ray_trace_free_space,
+            "Mark the voxels along the rays as free (default: true).")
+        .def_readwrite("decimation", &Ins::decimation, "Use one out of N points (default: 1).")
+        .def_readwrite(
+            "remove_voxels_farther_than", &Ins::remove_voxels_farther_than,
+            "If not 0, remove the voxels farther than this L1 distance, in meters (default: 0).");
+
+    using Lik = mrpt::maps::TVoxelMap_LikelihoodOptions;
+    py::class_<Lik, CLoadableOptions, std::shared_ptr<Lik>>(
+        m, "TVoxelMap_LikelihoodOptions",
+        "Options for computing the likelihood of observations in a CVoxelMap or CVoxelMapRGB.")
+        .def(py::init<>(), "Default constructor.")
+        .def_readwrite(
+            "decimate_up_to", &Lik::decimate_up_to,
+            "Use at most this number of points (default: 0, values <= 1 mean all of them).")
+        .def_readwrite(
+            "occupiedThreshold", &Lik::occupiedThreshold,
+            "Minimum occupancy for a voxel to be occupied (default: 0.60).");
+
+    const auto addVoxelMapOptions = [](auto clsTag)
+    {
+      using T = typename decltype(clsTag)::type;
+      registeredClass<T>()
+          .def_readwrite(
+              "insertionOptions", &T::insertionOptions,
+              "Options for inserting observations (TVoxelMap_InsertionOptions).")
+          .def_readwrite(
+              "likelihoodOptions", &T::likelihoodOptions,
+              "Options for computing the likelihood of observations "
+              "(TVoxelMap_LikelihoodOptions).");
+    };
+    addVoxelMapOptions(type_tag<mrpt::maps::CVoxelMap>{});
+    addVoxelMapOptions(type_tag<mrpt::maps::CVoxelMapRGB>{});
+  }
 }

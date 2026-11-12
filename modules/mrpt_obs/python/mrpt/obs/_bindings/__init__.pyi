@@ -73,6 +73,10 @@ class CObservation2DRangeScan(CObservation):
         """
         Returns validity flags as a 1D bool numpy array
         """
+    def loadFromVectors(self, ranges: numpy.ndarray, validity: numpy.ndarray) -> None:
+        """
+        Sets all the ranges (meters) and their validity from two 1D arrays (or lists) of the same length, resizing the scan to that length.
+        """
     def resizeScan(self, arg0: int) -> None:
         """
         Resizes all data vectors to allocate a given number of scan rays.
