@@ -13,7 +13,9 @@
 #include <gtest/gtest.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CGenericPointsMap.h>
+#include <mrpt/viz/CPointCloud.h>
 #include <mrpt/viz/CPointCloudColoured.h>
+#include <mrpt/viz/CSetOfObjects.h>
 
 using mrpt::maps::CGenericPointsMap;
 using mrpt::maps::CPointsMap;
@@ -134,6 +136,58 @@ TEST(CPointCloudColoured, recolorizeByCoordinate)
     EXPECT_NEAR(c.B, ref.B, tol) << "i=" << i;
     EXPECT_EQ(c.A, 0xff);
   }
+}
+
+TEST(CPointsMap, getVisualizationIntoKeepsPerPointColorsU8)
+{
+  const auto m = makeMap(true, false);
+  mrpt::viz::CSetOfObjects o;
+  m->getVisualizationInto(o);
+
+  const auto gl = o.getByClass<mrpt::viz::CPointCloudColoured>();
+  ASSERT_TRUE(gl);
+  ASSERT_EQ(gl->size(), N);
+  for (size_t i = 0; i < N; i++)
+  {
+    const auto c = gl->getPointColor(i);
+    EXPECT_EQ(c.R, i);
+    EXPECT_EQ(c.G, 2 * i);
+    EXPECT_EQ(c.B, 3 * i);
+  }
+}
+
+TEST(CPointsMap, getVisualizationIntoKeepsPerPointColorsFloat)
+{
+  const auto m = makeMap(false, true);
+  mrpt::viz::CSetOfObjects o;
+  m->getVisualizationInto(o);
+
+  const auto gl = o.getByClass<mrpt::viz::CPointCloudColoured>();
+  ASSERT_TRUE(gl);
+  ASSERT_EQ(gl->size(), N);
+  for (size_t i = 0; i < N; i++)
+  {
+    const auto c = gl->getPointColor(i);
+    EXPECT_EQ(c.R, mrpt::f2u8(0.01f * static_cast<float>(i)));
+    EXPECT_EQ(c.G, mrpt::f2u8(0.5f));
+    EXPECT_EQ(c.B, 0xff);
+  }
+}
+
+TEST(CPointsMap, getVisualizationIntoWithoutColorsUsesRenderOptions)
+{
+  auto m = makeMap(false, false);
+  m->renderOptions.color = mrpt::img::TColorf(1.0f, 0.0f, 0.0f);
+  mrpt::viz::CSetOfObjects o;
+  m->getVisualizationInto(o);
+
+  EXPECT_FALSE(o.getByClass<mrpt::viz::CPointCloudColoured>());
+  const auto gl = o.getByClass<mrpt::viz::CPointCloud>();
+  ASSERT_TRUE(gl);
+  ASSERT_EQ(gl->size(), N);
+  EXPECT_EQ(gl->getColor_u8().R, 0xff);
+  EXPECT_EQ(gl->getColor_u8().G, 0);
+  EXPECT_EQ(gl->getColor_u8().B, 0);
 }
 
 TEST(CPointsMapAdapter, setPointRGBu8WritesU8Fields)

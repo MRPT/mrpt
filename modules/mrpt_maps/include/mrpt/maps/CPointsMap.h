@@ -369,7 +369,8 @@ class CPointsMap :
     void readFromStream(mrpt::serialization::CArchive& in);
 
     float point_size{1.0f};
-    /** Color of points. Superseded by colormap if the latter is set. */
+    /** Color of points. Superseded by per-point colors, if the map has
+     * them (see hasColor_u8(), hasColor_f()), and by colormap if set. */
     mrpt::img::TColorf color{.0f, .0f, 1.0f};
     /** Colormap for points (index is "z" coordinates) */
     mrpt::img::TColormap colormap{mrpt::img::cmNONE};
@@ -1412,7 +1413,8 @@ class CPointsMap :
   bool empty() const { return isEmpty(); }
 
   /** Returns a 3D object representing the map.
-   *  The color of the points is controlled by renderOptions
+   *  The color of the points is controlled by renderOptions, or taken
+   *  from the per-point color fields, if any.
    */
   void getVisualizationInto(mrpt::viz::CSetOfObjects& outObj) const override;
 

@@ -743,7 +743,16 @@ void CPointsMap::getVisualizationInto(mrpt::viz::CSetOfObjects& o) const
     obj.enableHideBackFacingPoints(true);
   };
 
-  if (renderOptions.colormap == mrpt::img::cmNONE)
+  if (renderOptions.colormap == mrpt::img::cmNONE && (hasColor_u8() || hasColor_f()))
+  {
+    // Per-point colors:
+    auto obj = viz::CPointCloudColoured::Create();
+    obj->loadFromPointsMap(this);
+    obj->setPointSize(renderOptions.point_size);
+    setBackFacing(*obj);
+    o.insert(obj);
+  }
+  else if (renderOptions.colormap == mrpt::img::cmNONE)
   {
     // Single color:
     auto obj = viz::CPointCloud::Create();
