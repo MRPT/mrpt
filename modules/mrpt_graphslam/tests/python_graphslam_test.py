@@ -141,18 +141,25 @@ def two_edges(graph_cls, edge_a, edge_b, pose_cls):
 print("Edges with information matrices: weighted mean")
 # Two edges 0->1 with x=1 (weight 1) and x=2 (weight 3): the optimum is x=1.75,
 # with a total error 1*0.75^2 + 3*0.25^2 = 0.75.
-g2i = two_edges(CNetworkOfPoses2DInf,
-                CPosePDFGaussianInf(CPose2D(1, 0, 0), np.eye(3)),
-                CPosePDFGaussianInf(CPose2D(2, 0, 0), 3 * np.eye(3)), CPose2D)
-info = optimize_graph_spa_levmarq(g2i)
-check("2DInf weighted mean", abs(g2i.getNodePose(1).x - 1.75) < 1e-6 and
-      abs(info.final_total_sq_error - 0.75) < 1e-6, f"{g2i.getNodePose(1)}, {info}")
-g3i = two_edges(CNetworkOfPoses3DInf,
-                CPose3DPDFGaussianInf(CPose3D(1, 0, 0, 0, 0, 0), np.eye(6)),
-                CPose3DPDFGaussianInf(CPose3D(2, 0, 0, 0, 0, 0), 3 * np.eye(6)), CPose3D)
-info = optimize_graph_spa_levmarq(g3i)
-check("3DInf weighted mean", abs(g3i.getNodePose(1).x - 1.75) < 1e-6 and
-      abs(info.final_total_sq_error - 0.75) < 1e-6, f"{g3i.getNodePose(1)}, {info}")
+# pybind11 < 2.12 cannot take NumPy >= 2 arrays (mrpt.rtti warns about it):
+import mrpt.rtti._bindings as _rtti
+_numpy_to_mrpt_ok = not (int(np.__version__.split(".")[0]) >= 2 and
+                         tuple(_rtti._pybind11_version[:2]) < (2, 12))
+if not _numpy_to_mrpt_ok:
+    print("  SKIP  NumPy >= 2 with pybind11 < 2.12")
+else:
+    g2i = two_edges(CNetworkOfPoses2DInf,
+                    CPosePDFGaussianInf(CPose2D(1, 0, 0), np.eye(3)),
+                    CPosePDFGaussianInf(CPose2D(2, 0, 0), 3 * np.eye(3)), CPose2D)
+    info = optimize_graph_spa_levmarq(g2i)
+    check("2DInf weighted mean", abs(g2i.getNodePose(1).x - 1.75) < 1e-6 and
+          abs(info.final_total_sq_error - 0.75) < 1e-6, f"{g2i.getNodePose(1)}, {info}")
+    g3i = two_edges(CNetworkOfPoses3DInf,
+                    CPose3DPDFGaussianInf(CPose3D(1, 0, 0, 0, 0, 0), np.eye(6)),
+                    CPose3DPDFGaussianInf(CPose3D(2, 0, 0, 0, 0, 0), 3 * np.eye(6)), CPose3D)
+    info = optimize_graph_spa_levmarq(g3i)
+    check("3DInf weighted mean", abs(g3i.getNodePose(1).x - 1.75) < 1e-6 and
+          abs(info.final_total_sq_error - 0.75) < 1e-6, f"{g3i.getNodePose(1)}, {info}")
 g2 = two_edges(CNetworkOfPoses2D, CPose2D(1, 0, 0), CPose2D(2, 0, 0), CPose2D)
 info = optimize_graph_spa_levmarq(g2)
 check("edges without uncertainty: unweighted mean", abs(g2.getNodePose(1).x - 1.5) < 1e-6 and

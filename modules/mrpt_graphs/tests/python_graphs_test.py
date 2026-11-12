@@ -103,30 +103,37 @@ from mrpt.graphs import (
 from mrpt.poses import (
     CPosePDFGaussian, CPose3DPDFGaussian, CPosePDFGaussianInf, CPose3DPDFGaussianInf,
 )
-g2c = CNetworkOfPoses2DCov()
-g2c.insertEdge(0, 1, CPosePDFGaussian(_CP2(1.0, 0.0, math.pi / 2), np.eye(3) * 0.01))
-g2c.insertEdge(1, 2, CPosePDFGaussian(_CP2(1.0, 0.0, 0.0), np.eye(3) * 0.02))
-g2c.dijkstra_nodes_estimate()
-p2 = g2c.getNodePose(2)
-check("2DCov node estimate", isinstance(p2, _CP2) and abs(p2.x - 1.0) < 1e-9 and
-      abs(p2.y - 1.0) < 1e-9, f"got {p2}")
-e = g2c.getEdge(1, 2)
-check("2DCov edge read back", isinstance(e, CPosePDFGaussian) and
-      abs(np.asarray(e.cov)[0, 0] - 0.02) < 1e-12)
-g2i = CNetworkOfPoses2DInf()
-g2i.insertEdge(0, 1, CPosePDFGaussianInf(_CP2(2.0, 0.0, 0.0), np.eye(3) * 100.0))
-check("2DInf edge read back", abs(np.asarray(g2i.getEdges()[0][2].cov_inv)[1, 1] - 100.0) < 1e-9)
-g2i.setNodePose(5, _CP2(1.0, 2.0, 3.0))
-check("2DInf node pose", abs(g2i.getNodePose(5).y - 2.0) < 1e-12)
-g3c = CNetworkOfPoses3DCov()
-g3c.insertEdge(0, 1, CPose3DPDFGaussian(CPose3D(1, 0, 0, 0, 0, 0), np.eye(6) * 0.01))
-g3c.dijkstra_nodes_estimate()
-check("3DCov node estimate", abs(g3c.getNodePose(1).x - 1.0) < 1e-9)
-g3i = CNetworkOfPoses3DInf()
-g3i.insertEdge(0, 1, CPose3DPDFGaussianInf(CPose3D(0, 2, 0, 0, 0, 0), np.eye(6)))
-g3i.dijkstra_nodes_estimate()
-check("3DInf node estimate", abs(g3i.getNodePose(1).y - 2.0) < 1e-9 and
-      isinstance(g3i.getEdge(0, 1), CPose3DPDFGaussianInf))
+# pybind11 < 2.12 cannot take NumPy >= 2 arrays (mrpt.rtti warns about it):
+import mrpt.rtti._bindings as _rtti
+_numpy_to_mrpt_ok = not (int(np.__version__.split(".")[0]) >= 2 and
+                         tuple(_rtti._pybind11_version[:2]) < (2, 12))
+if not _numpy_to_mrpt_ok:
+    print("  SKIP  NumPy >= 2 with pybind11 < 2.12")
+else:
+    g2c = CNetworkOfPoses2DCov()
+    g2c.insertEdge(0, 1, CPosePDFGaussian(_CP2(1.0, 0.0, math.pi / 2), np.eye(3) * 0.01))
+    g2c.insertEdge(1, 2, CPosePDFGaussian(_CP2(1.0, 0.0, 0.0), np.eye(3) * 0.02))
+    g2c.dijkstra_nodes_estimate()
+    p2 = g2c.getNodePose(2)
+    check("2DCov node estimate", isinstance(p2, _CP2) and abs(p2.x - 1.0) < 1e-9 and
+          abs(p2.y - 1.0) < 1e-9, f"got {p2}")
+    e = g2c.getEdge(1, 2)
+    check("2DCov edge read back", isinstance(e, CPosePDFGaussian) and
+          abs(np.asarray(e.cov)[0, 0] - 0.02) < 1e-12)
+    g2i = CNetworkOfPoses2DInf()
+    g2i.insertEdge(0, 1, CPosePDFGaussianInf(_CP2(2.0, 0.0, 0.0), np.eye(3) * 100.0))
+    check("2DInf edge read back", abs(np.asarray(g2i.getEdges()[0][2].cov_inv)[1, 1] - 100.0) < 1e-9)
+    g2i.setNodePose(5, _CP2(1.0, 2.0, 3.0))
+    check("2DInf node pose", abs(g2i.getNodePose(5).y - 2.0) < 1e-12)
+    g3c = CNetworkOfPoses3DCov()
+    g3c.insertEdge(0, 1, CPose3DPDFGaussian(CPose3D(1, 0, 0, 0, 0, 0), np.eye(6) * 0.01))
+    g3c.dijkstra_nodes_estimate()
+    check("3DCov node estimate", abs(g3c.getNodePose(1).x - 1.0) < 1e-9)
+    g3i = CNetworkOfPoses3DInf()
+    g3i.insertEdge(0, 1, CPose3DPDFGaussianInf(CPose3D(0, 2, 0, 0, 0, 0), np.eye(6)))
+    g3i.dijkstra_nodes_estimate()
+    check("3DInf node estimate", abs(g3i.getNodePose(1).y - 2.0) < 1e-9 and
+          isinstance(g3i.getEdge(0, 1), CPose3DPDFGaussianInf))
 
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

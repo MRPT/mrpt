@@ -106,7 +106,12 @@ check("setLineWidth()/getLineWidth()", not _lw_bad, f"wrong: {_lw_bad}")
 print("Ellipsoid drawing parameters")
 from mrpt.math import CMatrixDouble33 as _M33
 _ell = CEllipsoid3D()
-_ell.setCovMatrix(_M33(np.diag([1.0, 0.5, 0.25])))
+# pybind11 < 2.12 cannot take NumPy >= 2 arrays (mrpt.rtti warns about it):
+import mrpt.rtti._bindings as _rtti
+_numpy_to_mrpt_ok = not (int(np.__version__.split(".")[0]) >= 2 and
+                         tuple(_rtti._pybind11_version[:2]) < (2, 12))
+if _numpy_to_mrpt_ok:
+    _ell.setCovMatrix(_M33(np.diag([1.0, 0.5, 0.25])))
 _ell.enableDrawSolid3D(True)
 _ell.setNumberOfSegments(32)
 _ell.setQuantiles(2.0)
