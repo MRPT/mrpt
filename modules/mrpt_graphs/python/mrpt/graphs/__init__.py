@@ -4,6 +4,9 @@ mrpt.graphs — Pose graph types and graph algorithms.
 Provides:
   - CNetworkOfPoses2D : 2D pose graph (CPose2D edges)
   - CNetworkOfPoses3D : 3D pose graph (CPose3D edges)
+  - CNetworkOfPoses2DCov, CNetworkOfPoses3DCov : pose graphs with Gaussian edges
+  - CNetworkOfPoses2DInf, CNetworkOfPoses3DInf : pose graphs with edges in
+    information form
 
 Example::
 
@@ -24,9 +27,17 @@ import mrpt.poses          # noqa: F401  (CPose2D/CPose3D used as edge types)
 from mrpt.graphs._bindings import (
     CNetworkOfPoses2D,
     CNetworkOfPoses3D,
+    CNetworkOfPoses2DCov,
+    CNetworkOfPoses3DCov,
+    CNetworkOfPoses2DInf,
+    CNetworkOfPoses3DInf,
 )
 
 __all__ = [
     "CNetworkOfPoses2D",
     "CNetworkOfPoses3D",
+    "CNetworkOfPoses2DCov",
+    "CNetworkOfPoses3DCov",
+    "CNetworkOfPoses2DInf",
+    "CNetworkOfPoses3DInf",
 ]
