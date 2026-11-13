@@ -2,8 +2,8 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.3 (2026-11-13)
+------------------
 * COccupancyGridMap2D: fix ray angles when inserting 2D scans (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
 * COctoMap and CColouredOctoMap: use the observation sensorPose for 3D point clouds (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
 * CPointsMap: draw per-point colors in getVisualizationInto() (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)

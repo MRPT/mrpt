@@ -2,8 +2,8 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.3 (2026-11-13)
+------------------
 * Python bindings: fix out-of-bounds write in the TCamera.dist setter (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
 * Contributors: Jose Luis Blanco-Claraco
 

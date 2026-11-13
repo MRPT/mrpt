@@ -2,8 +2,8 @@
 Changelog for package mrpt_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.3 (2026-11-13)
+------------------
 * CPTG_Holo_Blend: map the origin in inverseMap_WS2TP(); getPathStepForDist() follows the base class contract (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
 * Python bindings: PTG paths, TP-Space obstacles and initialize() options (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
 * Contributors: Jose Luis Blanco-Claraco
