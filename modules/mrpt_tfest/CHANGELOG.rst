@@ -2,6 +2,11 @@
 Changelog for package mrpt_tfest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.3 (2026-11-13)
+------------------
+* Python bindings: se3_l2(), se2_l2_robust(), SE(2) covariance and missing parameters (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.2 (2026-11-07)
 ------------------
 * Math review: fixes and tests for transformations, probability distributions and their users (`#1492 <https://github.com/MRPT/mrpt/issues/1492>`_)

@@ -24,7 +24,7 @@ Download MRPT
 .. dropdown:: Python (pip)
     :icon: package
 
-    Linux (x86_64, aarch64), Python 3.11 to 3.14:
+    Linux (x86_64, aarch64), Python 3.10 to 3.14:
 
     .. code-block:: bash
 

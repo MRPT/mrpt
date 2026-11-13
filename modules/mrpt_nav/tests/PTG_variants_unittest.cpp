@@ -621,6 +621,55 @@ TEST(PTGHoloBlend, initialize_and_basic_queries)
   EXPECT_EQ(cmd->getVelCmdLength(), 4U);
 }
 
+TEST(PTGHoloBlend, inverse_map_of_the_origin)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  fill_holo_cfg(cfg, "PTG");
+  auto ptg = CParameterizedTrajectoryGenerator::CreatePTG("CPTG_Holo_Blend", cfg, "PTG", "");
+  ptg->initialize(std::string(), false);
+
+  // Like the other PTGs, the origin maps to a zero distance:
+  const auto inv = ptg->inverseMap_WS2TP(0, 0);
+  ASSERT_TRUE(inv.has_value());
+  EXPECT_EQ(inv->first, ptg->alpha2index(0));
+  EXPECT_EQ(inv->second, 0.0);
+  EXPECT_TRUE(ptg->PTG_IsIntoDomain(0, 0));
+
+  for (const char* name : diffdrive_ptg_names)
+  {
+    const auto dd = make_diffdrive_ptg(name);
+    const auto invDD = dd->inverseMap_WS2TP(0, 0);
+    ASSERT_TRUE(invDD.has_value()) << name;
+    EXPECT_EQ(invDD->second, 0.0) << name;
+  }
+}
+
+TEST(PTGHoloBlend, getPathStepForDist_returns_the_last_step_below_dist)
+{
+  mrpt::config::CConfigFileMemory cfg;
+  fill_holo_cfg(cfg, "PTG");
+  auto ptg = CParameterizedTrajectoryGenerator::CreatePTG("CPTG_Holo_Blend", cfg, "PTG", "");
+  ptg->initialize(std::string(), false);
+
+  for (const uint16_t k : {uint16_t(0), uint16_t(5), uint16_t(10), uint16_t(20)})
+  {
+    const auto nSteps = static_cast<uint32_t>(ptg->getPathStepCount(k));
+    const double lastDist = ptg->getPathDist(k, nSteps - 1);
+    for (double dist = 0.013; dist < lastDist; dist += 0.0731)
+    {
+      const auto step = ptg->getPathStepForDist(k, dist);
+      ASSERT_TRUE(step.has_value()) << "k=" << k << " dist=" << dist;
+      EXPECT_LT(*step, nSteps);
+      EXPECT_LT(ptg->getPathDist(k, *step), dist) << "k=" << k << " dist=" << dist;
+      EXPECT_GE(ptg->getPathDist(k, *step + 1), dist) << "k=" << k << " dist=" << dist;
+    }
+  }
+
+  // No step beyond the end of the path:
+  EXPECT_FALSE(ptg->getPathStepForDist(0, 1e6).has_value());
+  EXPECT_EQ(ptg->getPathStepForDistClamped(0, 1e6), ptg->getPathStepCount(0) - 1);
+}
+
 TEST(PTGHoloBlend, config_file_and_serialization_roundtrip)
 {
   mrpt::config::CConfigFileMemory cfg;

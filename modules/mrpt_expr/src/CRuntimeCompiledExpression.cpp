@@ -22,6 +22,8 @@
 #include <cmath>  // M_PI
 #include <cstdlib>
 #include <iostream>
+#include <memory>
+#include <vector>
 
 #define exprtk_disable_string_capabilities  // Workaround a bug in Ubuntu
 // precise's GCC+libstdc++
@@ -67,6 +69,26 @@ struct CRuntimeCompiledExpression::ExprVerbose
   }
 };
 
+namespace
+{
+// exprtk adaptor for user functions held in a std::function (raw function
+// pointers, lambdas with captures, Python callables...):
+template <typename... Args>
+struct FunctionAdaptor : public exprtk::ifunction<double>
+{
+  using exprtk::ifunction<double>::operator();
+
+  explicit FunctionAdaptor(std::function<double(Args...)> f) :
+      exprtk::ifunction<double>(sizeof...(Args)), func(std::move(f))
+  {
+  }
+
+  double operator()(const Args&... args) override { return func(args...); }
+
+  std::function<double(Args...)> func;
+};
+}  // namespace
+
 // We only need this to be on this translation unit, hence the advantage of
 // using our MRPT wrapper instead of the original exprtk sources.
 struct CRuntimeCompiledExpression::Impl
@@ -74,6 +96,30 @@ struct CRuntimeCompiledExpression::Impl
   exprtk::expression<double> m_compiled_formula;
   std::string m_original_expr_str;
   bool m_compiled = false;
+
+  /** Variables registered with register_symbol_table() */
+  std::map<std::string, double*> m_user_variables;
+
+  /** Adaptors of the user functions, referenced by the compiled formula */
+  std::vector<std::shared_ptr<exprtk::ifunction<double>>> m_function_adaptors;
+
+  template <typename... Args>
+  void add_functions(
+      const std::map<std::string, std::function<double(Args...)>>& funcs,
+      exprtk::symbol_table<double>& symbol_table)
+  {
+    for (const auto& [name, func] : funcs)
+    {
+      auto adaptor = std::make_shared<FunctionAdaptor<Args...>>(func);
+      if (!symbol_table.add_function(name, *adaptor))
+      {
+        THROW_EXCEPTION_FMT(
+            "Cannot register user function `%s`: invalid, reserved or duplicated name",
+            name.c_str());
+      }
+      m_function_adaptors.push_back(std::move(adaptor));
+    }
+  }
 };
 
 CRuntimeCompiledExpression::CRuntimeCompiledExpression() :
@@ -97,7 +143,16 @@ void CRuntimeCompiledExpression::compile(
   m_impl->m_original_expr_str = expression;
   m_impl->m_compiled = false;
 
+  // Start from scratch: exprtk resolves each symbol in the first registered
+  // table that defines it, so tables from former calls must not survive.
+  m_impl->m_compiled_formula = exprtk::expression<double>();
+  m_impl->m_function_adaptors.clear();
+
   exprtk::symbol_table<double> symbol_table;
+  for (const auto& [name, ptr] : m_impl->m_user_variables)
+  {
+    symbol_table.add_variable(name, *ptr);
+  }
   for (const auto& v : variables)
   {
     auto& var = const_cast<double&>(v.second);
@@ -106,38 +161,10 @@ void CRuntimeCompiledExpression::compile(
   symbol_table.add_constant("M_PI", M_PI);
   symbol_table.add_constants();
 
-  // Convert from std::function<> to raw functors:
-  for (const auto& kv : m_funcs_0)
-  {
-    if (const auto* ptr = kv.second.target<double (*)()>(); ptr)
-    {
-      symbol_table.add_function(kv.first, *ptr);
-    }
-  }
-
-  for (const auto& kv : m_funcs_1)
-  {
-    if (const auto* ptr = kv.second.target<double (*)(double)>(); ptr)
-    {
-      symbol_table.add_function(kv.first, *ptr);
-    }
-  }
-
-  for (const auto& kv : m_funcs_2)
-  {
-    if (const auto* ptr = kv.second.target<double (*)(double, double)>(); ptr)
-    {
-      symbol_table.add_function(kv.first, *ptr);
-    }
-  }
-
-  for (const auto& kv : m_funcs_3)
-  {
-    if (const auto* ptr = kv.second.target<double (*)(double, double, double)>(); ptr)
-    {
-      symbol_table.add_function(kv.first, *ptr);
-    }
-  }
+  m_impl->add_functions(m_funcs_0, symbol_table);
+  m_impl->add_functions(m_funcs_1, symbol_table);
+  m_impl->add_functions(m_funcs_2, symbol_table);
+  m_impl->add_functions(m_funcs_3, symbol_table);
 
   m_impl->m_compiled_formula.register_symbol_table(symbol_table);
 
@@ -167,13 +194,10 @@ void CRuntimeCompiledExpression::register_symbol_table(
        thoughout all the life of the compiled expression. */
     const std::map<std::string, double*>& variables)
 {
-  exprtk::symbol_table<double> symbol_table;
-  for (const auto& v : variables)
+  for (const auto& [name, ptr] : variables)
   {
-    auto* var = const_cast<double*>(v.second);
-    symbol_table.add_variable(v.first, *var);
+    m_impl->m_user_variables[name] = ptr;
   }
-  m_impl->m_compiled_formula.register_symbol_table(symbol_table);
 }
 
 void CRuntimeCompiledExpression::register_function(

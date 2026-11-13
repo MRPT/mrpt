@@ -238,6 +238,66 @@ TEST(RuntimeCompiledExpression, Recompile)
   EXPECT_EQ(expr.get_original_expression(), "x*x");
 }
 
+TEST(RuntimeCompiledExpression, RecompileWithOtherVariables)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  std::map<std::string, double> vars1;
+  vars1["x"] = 1.0;
+  std::map<std::string, double> vars2;
+  vars2["x"] = 2.0;
+
+  expr.compile("x", vars1);
+  EXPECT_NEAR(expr.eval(), 1.0, 1e-12);
+
+  // The new variables must replace the old ones:
+  expr.compile("x", vars2);
+  EXPECT_NEAR(expr.eval(), 2.0, 1e-12);
+  vars1["x"] = 10.0;
+  vars2["x"] = 20.0;
+  EXPECT_NEAR(expr.eval(), 20.0, 1e-12);
+
+  // Variables registered by pointer are kept across compilations:
+  double a = 5.0;
+  expr.register_symbol_table({
+      {"a", &a}
+  });
+  expr.compile("a + x", vars1);
+  EXPECT_NEAR(expr.eval(), 15.0, 1e-12);
+  expr.compile("a * x", vars2);
+  EXPECT_NEAR(expr.eval(), 100.0, 1e-12);
+}
+
+TEST(RuntimeCompiledExpression, CustomFunctionsFromLambdas)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+
+  double k = 2.0;
+  int nCalls = 0;
+  expr.register_function("counter", [&nCalls]() { return static_cast<double>(++nCalls); });
+  expr.register_function("scale", [&k](double v) { return k * v; });
+  expr.register_function("wsum", [&k](double u, double v) { return u + k * v; });
+  expr.register_function("mid3", [](double u, double v, double w) { return (u + v + w) / 3; });
+
+  expr.compile("scale(3) + wsum(1, 10) + mid3(1, 2, 6)");
+  EXPECT_NEAR(expr.eval(), 6.0 + 21.0 + 3.0, 1e-12);
+
+  // Captured state is used upon each evaluation:
+  k = 3.0;
+  EXPECT_NEAR(expr.eval(), 9.0 + 31.0 + 3.0, 1e-12);
+
+  expr.compile("counter() + counter()");
+  EXPECT_NEAR(expr.eval(), 1.0 + 2.0, 1e-12);
+  EXPECT_EQ(nCalls, 2);
+}
+
+TEST(RuntimeCompiledExpression, CustomFunctionWithBuiltinNameThrows)
+{
+  mrpt::expr::CRuntimeCompiledExpression expr;
+  expr.register_function("avg", [](double u, double v) { return u * v; });
+  EXPECT_THROW(expr.compile("avg(2, 3)"), std::exception);
+  EXPECT_FALSE(expr.is_compiled());
+}
+
 TEST(RuntimeCompiledExpression, ExprNameInErrorMessage)
 {
   mrpt::expr::CRuntimeCompiledExpression expr;

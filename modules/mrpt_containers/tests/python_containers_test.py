@@ -176,5 +176,51 @@ _m["sub"] = YAML.from_dict({"a": 1})
 check("scalar node kept as scalar", _m["label"].as_str() == "origin", f"got {_m['label'].as_str()!r}")
 check("map node kept as map", _m["sub"]["a"].as_int() == 1)
 
+print("\nYAML: syntax errors raise ValueError")
+malformed = {
+    "a: [1, 2": "line 2, column 1",
+    "a: b: c": "line 1, column 5",
+    "{a: 1": "line 2, column 1",
+    "key: 'unterminated": "line 1, column 7",
+    "- a\nb: 1": "line 2, column 1",
+    "a:\n  - 1\n - 2": "line 3, column 2",
+}
+# The parser must not print the errors to stderr either:
+_stderr_copy = os.dup(2)
+with tempfile.TemporaryFile() as _err:
+    os.dup2(_err.fileno(), 2)
+    try:
+        results = {}
+        for text, where in malformed.items():
+            try:
+                YAML.from_string(text)
+                results[text] = "no exception"
+            except ValueError as e:
+                results[text] = str(e)
+        ok_doc = YAML.from_string("a: 1\nb: [1, 2]\n")
+    finally:
+        os.dup2(_stderr_copy, 2)
+        os.close(_stderr_copy)
+    _err.seek(0)
+    stderr_text = _err.read().decode()
+for text, where in malformed.items():
+    check(f"from_string raises for {text!r}", where in results[text], results[text])
+check("valid YAML still parses", ok_doc["a"].as_int() == 1 and ok_doc["b"].size() == 2)
+check("no parser messages on stderr", stderr_text == "", stderr_text)
+with tempfile.TemporaryDirectory() as tmpdir:
+    bad_file = os.path.join(tmpdir, "bad.yaml")
+    with open(bad_file, "w") as f:
+        f.write("x: 1\ny: [2, 3\n")
+    try:
+        YAML.from_file(bad_file)
+        check("from_file raises ValueError", False, "no exception")
+    except ValueError as e:
+        check("from_file raises ValueError", "line 3, column 1" in str(e), str(e))
+    try:
+        YAML.from_file(os.path.join(tmpdir, "missing.yaml"))
+        check("from_file of a missing file raises RuntimeError", False, "no exception")
+    except RuntimeError:
+        check("from_file of a missing file raises RuntimeError", True)
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

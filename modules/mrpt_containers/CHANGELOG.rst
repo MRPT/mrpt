@@ -2,6 +2,12 @@
 Changelog for package mrpt_containers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.3 (2026-11-13)
+------------------
+* yaml: throw on YAML/JSON parse errors, without printing to stderr (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
+* Python bindings: YAML syntax errors raise ValueError with their line and column (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.2 (2026-11-07)
 ------------------
 * yaml::printAsYAML(): emit empty sequences and maps as [] and {} (`#1499 <https://github.com/MRPT/mrpt/issues/1499>`_)

@@ -2,6 +2,16 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.3 (2026-11-13)
+------------------
+* COccupancyGridMap2D: fix ray angles when inserting 2D scans (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
+* COctoMap and CColouredOctoMap: use the observation sensorPose for 3D point clouds (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
+* CPointsMap: draw per-point colors in getVisualizationInto() (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
+* CPointsMap: consistent compression when saving and loading KITTI Velodyne files (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
+* Python bindings: KD-tree queries, map options, occupied voxels, scan simulator, point fields as NumPy, PLY and KITTI files (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
+* Python bindings: fix double free in GetRuntimeClass() of maps (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.2 (2026-11-07)
 ------------------
 * Math review: fixes and tests for transformations, probability distributions and their users (`#1492 <https://github.com/MRPT/mrpt/issues/1492>`_)

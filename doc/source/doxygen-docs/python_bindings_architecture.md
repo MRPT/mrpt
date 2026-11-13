@@ -210,6 +210,7 @@ The implicit namespace package approach has none of these problems.
 | `mrpt.core` | `mrpt_core` | Clock, WorkerThreadsPool, deg2rad, reverse_bytes |
 | `mrpt.expr` | `mrpt_expr` | CRuntimeCompiledExpression |
 | `mrpt.graphs` | `mrpt_graphs` | CNetworkOfPoses2D/3D |
+| `mrpt.graphslam` | `mrpt_graphslam` | optimize_graph_spa_levmarq |
 | `mrpt.gui` | `mrpt_gui` | CDisplayWindowGUI (nanogui), CDisplayWindow3D (wxWidgets) |
 | `mrpt.img` | `mrpt_img` | CImage, TCamera, TStereoCamera |
 | `mrpt.io` | `mrpt_io` | CStream, CFileInputStream/OutputStream, gz, CMemoryStream |

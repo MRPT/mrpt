@@ -18,9 +18,9 @@ class YAML:
         Build a YAML map node from a Python dict (recursive)
         """
     @staticmethod
-    def from_file(arg0: str) -> YAML:
+    def from_file(fileName: str) -> YAML:
         """
-        Parse YAML/JSON from file
+        Parse YAML/JSON from file. Raises ValueError on syntax errors, RuntimeError if the file cannot be read.
         """
     @staticmethod
     def from_list(lst: list) -> YAML:
@@ -28,9 +28,9 @@ class YAML:
         Build a YAML sequence node from a Python list (recursive)
         """
     @staticmethod
-    def from_string(arg0: str) -> YAML:
+    def from_string(text: str) -> YAML:
         """
-        Parse YAML/JSON from string
+        Parse YAML/JSON from string. Raises ValueError on syntax errors.
         """
     def __contains__(self, key: str) -> bool:
         """

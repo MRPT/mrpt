@@ -2,6 +2,12 @@
 Changelog for package mrpt_viz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.3 (2026-11-13)
+------------------
+* PLY export: fail cleanly if the output file cannot be created (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
+* Python bindings: complete CCamera API, line width, ellipsoid drawing mode (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.2 (2026-11-07)
 ------------------
 * Fix builds using the embedded assimp, octomap and GLFW (`#1488 <https://github.com/MRPT/mrpt/issues/1488>`_)

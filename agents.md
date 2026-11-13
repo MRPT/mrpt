@@ -312,6 +312,8 @@ mrpt_add_library(
   public C++ dependencies (Eigen, oneTBB, nanoflann, GLFW inside nanogui) are
   in the SDK too; its windows are nanogui ones (no wxWidgets), so Python
   examples use `CDisplayWindowGUI.spinOnce()`, not `CDisplayWindow3D`.
+* Wheels support Python 3.10 (cp310) only for Ubuntu 22.04 / ROS 2 Humble
+  users: from June 2027, drop cp310 and set `requires-python = ">=3.11"`.
 * Examples live in `mrpt_examples_py`; extend them when wrapping new classes.
 * The `.pyi` stubs next to each `__init__.py` are generated and committed: run
   `scripts/generate_python_stubs.py` after changing bindings (CI fails if they
@@ -349,6 +351,9 @@ mrpt_add_library(
     without adjusting the pointer: crashes or silent memory corruption.
   * A base and its derived classes must use the same holder type
     (`CLoadableOptions` uses `std::shared_ptr`, so every options struct too).
+  * Bind C++ in-place operators returning `void` (`+=` of the pose PDFs) as
+    `__iadd__` lambdas returning `T&`: `py::self += x` makes `a += b` set
+    `a` to None in Python.
   * Fields of `#pragma pack(1)` structs (GNSS messages) must be bound with
     `MRPT_PACKED_READWRITE`, not `def_readwrite`: member pointers to unaligned
     fields crash on armhf (Bus error).

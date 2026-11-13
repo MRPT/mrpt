@@ -15,7 +15,9 @@ description = "Mobile Robot Programming Toolkit (MRPT): poses, maps, SLAM, 3D sc
 readme = "README.md"
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
-requires-python = ">=3.11"
+# Python 3.10 is only for Ubuntu 22.04 / ROS 2 Humble users: from June 2027,
+# drop cp310 from the wheels and require >=3.11.
+requires-python = ">=3.10"
 dependencies = ["numpy"]
 authors = [{ name = "Jose Luis Blanco-Claraco" }]
 keywords = ["robotics", "slam", "localization", "mapping", "point-clouds", "computer-vision"]
@@ -62,7 +64,7 @@ input = "../../modules/mrpt_common/package.xml"
 regex = '<version>(?P<value>[0-9]+\.[0-9]+\.[0-9]+)</version>'
 
 [tool.cibuildwheel]
-build = "cp311-* cp312-* cp313-* cp314-*"
+build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
 skip = "*-musllinux_* *_i686"
 build-verbosity = 1
 test-requires = ["cmake", "ninja"]

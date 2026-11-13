@@ -2,6 +2,12 @@
 Changelog for package mrpt_obs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.3 (2026-11-13)
+------------------
+* CObservation2DRangeScan: fix ray angles in truncateByDistanceAndAngle() (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
+* Python bindings: set the ranges of a 2D scan from NumPy arrays; fix double free in GetRuntimeClass() (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.2 (2026-11-07)
 ------------------
 * CObservationImage: read 4-parameter distortion from legacy files (`#1501 <https://github.com/MRPT/mrpt/issues/1501>`_)

@@ -34,6 +34,8 @@ from mrpt.maps._bindings import CSimplePointsMap as CSimplePointsMap
 from mrpt.maps._bindings import CVoxelMap as CVoxelMap
 from mrpt.maps._bindings import CVoxelMapRGB as CVoxelMapRGB
 from mrpt.maps._bindings import PointCloudRecoloringParameters as PointCloudRecoloringParameters
+from mrpt.maps._bindings import TVoxelMap_InsertionOptions as TVoxelMap_InsertionOptions
+from mrpt.maps._bindings import TVoxelMap_LikelihoodOptions as TVoxelMap_LikelihoodOptions
 from mrpt.maps._bindings import VisualizationParameters as VisualizationParameters
 from mrpt.maps._bindings import obs_to_viz as obs_to_viz
 from mrpt.obs._bindings import CSimpleMap as CSimpleMap
@@ -41,4 +43,4 @@ from mrpt.obs._bindings import TMapGenericParams as TMapGenericParams
 from mrpt.obs._bindings import TMetricMapInitializer as TMetricMapInitializer
 from mrpt.obs._bindings import TSetOfMetricMapInitializers as TSetOfMetricMapInitializers
 from . import _bindings
-__all__: list = ['CMetricMap', 'CPointsMap', 'CSimplePointsMap', 'CGenericPointsMap', 'COccupancyGridMap2D', 'COccupancyGridMap3D', 'CVoxelMap', 'CVoxelMapRGB', 'COctoMap', 'CHeightGridMap2D', 'CBeacon', 'CBeaconMap', 'CMultiMetricMap', 'CObservationPointCloud', 'PointCloudRecoloringParameters', 'VisualizationParameters', 'obs_to_viz', 'CSimpleMap', 'TMapGenericParams', 'TMetricMapInitializer', 'TSetOfMetricMapInitializers']
+__all__: list = ['CMetricMap', 'CPointsMap', 'CSimplePointsMap', 'CGenericPointsMap', 'COccupancyGridMap2D', 'COccupancyGridMap3D', 'CVoxelMap', 'CVoxelMapRGB', 'COctoMap', 'CHeightGridMap2D', 'TVoxelMap_InsertionOptions', 'TVoxelMap_LikelihoodOptions', 'CBeacon', 'CBeaconMap', 'CMultiMetricMap', 'CObservationPointCloud', 'PointCloudRecoloringParameters', 'VisualizationParameters', 'obs_to_viz', 'CSimpleMap', 'TMapGenericParams', 'TMetricMapInitializer', 'TSetOfMetricMapInitializers']

@@ -17,6 +17,7 @@
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 #include <mrpt/system/string_utils.h>
 
+#include <cstdlib>  // strtod
 #include <cstring>  // strncmp
 #include <map>
 
@@ -36,6 +37,24 @@ void parse_process_var_define(
 }  // namespace mrpt::config::internal
 
 namespace mci = mrpt::config::internal;
+
+namespace
+{
+// Shortest "%g" representation that reads back as exactly the same value.
+std::string formatRoundTrip(const double value)
+{
+  std::string s;
+  for (int precision = 15; precision <= 17; precision++)
+  {
+    s = mrpt::format("%.*g", precision, value);
+    if (std::strtod(s.c_str(), nullptr) == value)
+    {
+      break;
+    }
+  }
+  return s;
+}
+}  // namespace
 
 // Return a string or a number (as string) if expr = "$eval{...}"
 std::string mci::parse_process_var_eval(const mci::ParseContext& pc, std::string expr)
@@ -76,7 +95,7 @@ std::string mci::parse_process_var_eval(const mci::ParseContext& pc, std::string
       cexpr.compile(substr, pc.defined_vars_values, mrpt::format("Line %u: ", pc.line_count));
 
       std::string new_expr = expr.substr(0, p);
-      new_expr += mrpt::format("%e", cexpr.eval());
+      new_expr += formatRoundTrip(cexpr.eval());
       new_expr += expr.substr(pend + 1);
       new_expr.swap(expr);
     }

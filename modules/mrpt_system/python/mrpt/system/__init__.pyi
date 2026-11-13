@@ -4,6 +4,7 @@ from mrpt.system._bindings import CTimeLogger as CTimeLogger
 from mrpt.system._bindings import CTimeLoggerEntry as CTimeLoggerEntry
 from mrpt.system._bindings import CTimeLoggerSaveAtDtor as CTimeLoggerSaveAtDtor
 from mrpt.system._bindings import TTimeParts as TTimeParts
+from mrpt.system._bindings import VerbosityLevel as VerbosityLevel
 from mrpt.system._bindings import buildTimestampFromParts as buildTimestampFromParts
 from mrpt.system._bindings import buildTimestampFromPartsLocalTime as buildTimestampFromPartsLocalTime
 from mrpt.system._bindings import compute_CRC16 as compute_CRC16
@@ -31,6 +32,8 @@ from mrpt.system._bindings import global_profiler_enter as global_profiler_enter
 from mrpt.system._bindings import global_profiler_getref as global_profiler_getref
 from mrpt.system._bindings import global_profiler_leave as global_profiler_leave
 from mrpt.system._bindings import intervalFormat as intervalFormat
+from mrpt.system._bindings import loadPluginModule as loadPluginModule
+from mrpt.system._bindings import loadPluginModules as loadPluginModules
 from mrpt.system._bindings import pathJoin as pathJoin
 from mrpt.system._bindings import renameFile as renameFile
 from mrpt.system._bindings import timeDifference as timeDifference
@@ -40,5 +43,11 @@ from mrpt.system._bindings import timestampAdd as timestampAdd
 from mrpt.system._bindings import timestampToParts as timestampToParts
 from mrpt.system._bindings import toAbsolutePath as toAbsolutePath
 from mrpt.system._bindings import unitsFormat as unitsFormat
+from mrpt.system._bindings import unloadPluginModule as unloadPluginModule
+from mrpt.system._bindings import unloadPluginModules as unloadPluginModules
 from . import _bindings
-__all__: list = ['CTicTac', 'CTimeLogger', 'CTimeLoggerEntry', 'CTimeLoggerSaveAtDtor', 'global_profiler_enter', 'global_profiler_leave', 'global_profiler_getref', 'compute_CRC16', 'compute_CRC32', 'encodeBase64', 'decodeBase64', 'unitsFormat', 'fileExists', 'directoryExists', 'getTempFileName', 'getcwd', 'createDirectory', 'deleteFile', 'renameFile', 'extractFileName', 'extractFileExtension', 'extractFileDirectory', 'fileNameChangeExtension', 'fileNameStripInvalidChars', 'getFileSize', 'toAbsolutePath', 'pathJoin', 'filePathSeparatorsToNative', 'TTimeParts', 'buildTimestampFromParts', 'buildTimestampFromPartsLocalTime', 'timestampToParts', 'timeDifference', 'timestampAdd', 'dateTimeToString', 'dateTimeLocalToString', 'dateToString', 'timeToString', 'timeLocalToString', 'formatTimeInterval', 'intervalFormat']
+__all__: list = ['CTicTac', 'CTimeLogger', 'CTimeLoggerEntry', 'CTimeLoggerSaveAtDtor', 'global_profiler_enter', 'global_profiler_leave', 'global_profiler_getref', 'compute_CRC16', 'compute_CRC32', 'encodeBase64', 'decodeBase64', 'unitsFormat', 'fileExists', 'directoryExists', 'getTempFileName', 'getcwd', 'createDirectory', 'deleteFile', 'renameFile', 'extractFileName', 'extractFileExtension', 'extractFileDirectory', 'fileNameChangeExtension', 'fileNameStripInvalidChars', 'getFileSize', 'toAbsolutePath', 'pathJoin', 'filePathSeparatorsToNative', 'TTimeParts', 'buildTimestampFromParts', 'buildTimestampFromPartsLocalTime', 'timestampToParts', 'timeDifference', 'timestampAdd', 'dateTimeToString', 'dateTimeLocalToString', 'dateToString', 'timeToString', 'timeLocalToString', 'formatTimeInterval', 'intervalFormat', 'VerbosityLevel', 'LVL_DEBUG', 'LVL_INFO', 'LVL_WARN', 'LVL_ERROR', 'loadPluginModule', 'unloadPluginModule', 'loadPluginModules', 'unloadPluginModules']
+LVL_DEBUG: _bindings.VerbosityLevel
+LVL_ERROR: _bindings.VerbosityLevel
+LVL_INFO: _bindings.VerbosityLevel
+LVL_WARN: _bindings.VerbosityLevel

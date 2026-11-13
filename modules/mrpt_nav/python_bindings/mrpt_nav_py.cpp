@@ -13,6 +13,8 @@
 */
 
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/kinematics/CVehicleVelCmd.h>
+#include <mrpt/math/TTwist2D.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/nav/reactive/TWaypoint.h>
 #include <mrpt/nav/registerAllClasses.h>
@@ -25,6 +27,7 @@
 #include <pybind11/stl.h>
 
 #include <algorithm>
+#include <optional>
 
 namespace py = pybind11;
 using namespace mrpt::nav;
@@ -113,8 +116,14 @@ PYBIND11_MODULE(_bindings, m)
           "getDescription", &CParameterizedTrajectoryGenerator::getDescription,
           "Gets a short textual description of the PTG and its parameters.")
       .def(
-          "initialize", [](CParameterizedTrajectoryGenerator& self) { self.initialize(); },
-          "Initializes the PTG; call after setting all its parameters and before using it.")
+          "initialize",
+          [](CParameterizedTrajectoryGenerator& self, const std::string& cacheFilename,
+             bool verbose) { self.initialize(cacheFilename, verbose); },
+          "cacheFilename"_a = std::string(), "verbose"_a = false,
+          "Initializes the PTG; call after setting all its parameters and before using it. PTGs "
+          "based on collision grids (CPTG_DiffDrive_*) load their grid from cacheFilename, or "
+          "compute and save it there; an empty name means \"cache_<description>.bin.gz\" in the "
+          "current directory. Other PTGs ignore it.")
       .def(
           "deinitialize", &CParameterizedTrajectoryGenerator::deinitialize,
           "De-initializes the PTG, so its parameters can be changed.")
@@ -147,7 +156,114 @@ PYBIND11_MODULE(_bindings, m)
             self.loadFromConfigFile(cfg, section);
           },
           py::arg("ini_text"), py::arg("section"),
-          "Loads the PTG parameters from a configuration file section.");
+          "Loads the PTG parameters from a configuration file section.")
+      // Paths
+      .def(
+          "getPathStepCount", &CParameterizedTrajectoryGenerator::getPathStepCount, "k"_a,
+          "Number of discrete steps of path k.")
+      .def(
+          "getPathPose", &CParameterizedTrajectoryGenerator::getPathPose, "k"_a, "step"_a,
+          "Pose of the vehicle (TPose2D) at a step of path k, relative to its start.")
+      .def(
+          "getPathTwist", &CParameterizedTrajectoryGenerator::getPathTwist, "k"_a, "step"_a,
+          "Velocity (TTwist2D) at a step of path k, in the frame of the start of the path.")
+      .def(
+          "getPathDist", &CParameterizedTrajectoryGenerator::getPathDist, "k"_a, "step"_a,
+          "Distance traveled along path k at a step, in pseudometers (not normalized).")
+      .def(
+          "getPathStepForDist",
+          [](const CParameterizedTrajectoryGenerator& self, uint16_t k,
+             double dist) -> std::optional<uint32_t> { return self.getPathStepForDist(k, dist); },
+          "k"_a, "dist"_a,
+          "Largest step of path k with a traveled distance < dist (pseudometers), or None if "
+          "there is none.")
+      .def(
+          "getPathStepDuration", &CParameterizedTrajectoryGenerator::getPathStepDuration,
+          "Duration of each path step, in seconds.")
+      .def(
+          "getMaxLinVel", &CParameterizedTrajectoryGenerator::getMaxLinVel,
+          "Maximum linear velocity of this PTG (m/s).")
+      .def(
+          "getMaxAngVel", &CParameterizedTrajectoryGenerator::getMaxAngVel,
+          "Maximum angular velocity of this PTG (rad/s).")
+      .def(
+          "index2alpha",
+          [](const CParameterizedTrajectoryGenerator& self, uint16_t k)
+          { return self.index2alpha(k); },
+          "k"_a, "Direction alpha (radians, in [-pi, pi]) of the discrete path index k.")
+      .def(
+          "alpha2index",
+          [](const CParameterizedTrajectoryGenerator& self, double alpha)
+          { return self.alpha2index(alpha); },
+          "alpha"_a, "Discrete path index for the direction alpha (radians).")
+      .def(
+          "getRefDistance", &CParameterizedTrajectoryGenerator::getRefDistance,
+          "Reference distance (meters): the length of the paths, used to normalize TP-Space "
+          "distances.")
+      .def(
+          "setRefDistance", &CParameterizedTrajectoryGenerator::setRefDistance, "refDist"_a,
+          "Sets the reference distance (meters).")
+      .def(
+          "directionToMotionCommand",
+          [](const CParameterizedTrajectoryGenerator& self, uint16_t k)
+          {
+            if (k >= self.getAlphaValuesCount())
+            {
+              throw py::index_error("path index out of range");
+            }
+            return self.directionToMotionCommand(k);
+          },
+          "k"_a, "Velocity command (a mrpt.kinematics.CVehicleVelCmd subclass) to follow path k.")
+      // Obstacles in TP-Space
+      .def(
+          "initTPObstacles",
+          [](const CParameterizedTrajectoryGenerator& self)
+          {
+            std::vector<double> tp;
+            self.initTPObstacles(tp);
+            return tp;
+          },
+          "Returns the initial TP-Obstacles, one per path: the collision-free distance of each "
+          "path without obstacles (pseudometers).")
+      .def(
+          "initTPObstacleSingle",
+          [](const CParameterizedTrajectoryGenerator& self, uint16_t k)
+          {
+            double tp = 0;
+            self.initTPObstacleSingle(k, tp);
+            return tp;
+          },
+          "k"_a, "Returns the initial TP-Obstacle of path k, as initTPObstacles().")
+      .def(
+          "updateTPObstacle",
+          [](const CParameterizedTrajectoryGenerator& self, double ox, double oy,
+             std::vector<double> tp_obstacles)
+          {
+            if (tp_obstacles.size() != self.getAlphaValuesCount())
+            {
+              throw py::value_error("tp_obstacles must have getAlphaValuesCount() elements");
+            }
+            self.updateTPObstacle(ox, oy, tp_obstacles);
+            return tp_obstacles;
+          },
+          "ox"_a, "oy"_a, "tp_obstacles"_a,
+          "Returns tp_obstacles (from initTPObstacles()) updated with an obstacle point (ox, oy), "
+          "relative to the origin of the PTG: the collision-free distance of each path.")
+      .def(
+          "updateTPObstacleSingle",
+          [](const CParameterizedTrajectoryGenerator& self, double ox, double oy, uint16_t k,
+             double tp_obstacle_k)
+          {
+            if (k >= self.getAlphaValuesCount())
+            {
+              throw py::index_error("path index out of range");
+            }
+            self.updateTPObstacleSingle(ox, oy, k, tp_obstacle_k);
+            return tp_obstacle_k;
+          },
+          "ox"_a, "oy"_a, "k"_a, "tp_obstacle_k"_a,
+          "Like updateTPObstacle(), for path k only: returns tp_obstacle_k (from "
+          "initTPObstacleSingle()) updated with the obstacle point (ox, oy).");
 
   // -----------------------------------------------------------------------
   // CLogFileRecord

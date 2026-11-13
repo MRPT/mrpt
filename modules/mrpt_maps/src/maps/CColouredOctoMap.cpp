@@ -205,6 +205,7 @@ bool CColouredOctoMap::internal_insertObservation(
     // Project 3D points & color:
     mrpt::viz::CPointCloudColoured::Ptr pts = mrpt::viz::CPointCloudColoured::Create();
     T3DPointsProjectionParams proj_params;
+    proj_params.takeIntoAccountSensorPoseOnRobot = true;
     proj_params.robotPoseInTheWorld = robotPose3D;
     const_cast<CObservation3DRangeScan&>(o).unprojectInto(*pts, proj_params);
 

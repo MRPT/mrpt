@@ -21,6 +21,7 @@ python3 mrpt_examples_py/mrpt_math_example.py
 | `mrpt_containers_example.py` | `mrpt.containers` | YAML parse/query/serialize |
 | `mrpt_expr_example.py` | `mrpt.expr` | CRuntimeCompiledExpression, formula evaluation |
 | `mrpt_graphs_example.py` | `mrpt.graphs` | CNetworkOfPoses2D/3D, nodes, edges, save/load, Dijkstra shortest paths |
+| `mrpt_graphslam_example.py` | `mrpt.graphslam` | Pose-graph optimization (optimize_graph_spa_levmarq) of a noisy 2D graph with loop closures |
 | `mrpt_gui_example.py` | `mrpt.gui`, `mrpt.viz` | CDisplayWindowGUI, scene population, camera, spinOnce() loop |
 | `mrpt_hwdrivers_example.py` | `mrpt.hwdrivers` | Sensor drivers by class name + .ini config, CJoystick |
 | `mrpt_img_example.py` | `mrpt.img` | CImage, TCamera, numpy integration |

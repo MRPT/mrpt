@@ -123,6 +123,10 @@ bool COccupancyGridMap2D::internal_insertObservation(
       size_t idx, nRanges = o.getScanSize();
       float curRange = 0;
 
+      // Angle between consecutive rays, as in CObservation2DRangeScan: the
+      // first and last rays are at -aperture/2 and +aperture/2.
+      const float dA = N > 1 ? o.aperture / static_cast<float>(N - 1) : 0.0f;
+
       // Start position:
       const float px = d2f(laserPose.x());
       const float py = d2f(laserPose.y());
@@ -149,12 +153,12 @@ bool COccupancyGridMap2D::internal_insertObservation(
         if (o.rightToLeft ^ sensorIsBottomwards)
         {
           A = d2f(laserPose.phi() - 0.5f * o.aperture);
-          dAK = static_cast<float>(K) * o.aperture / static_cast<float>(N);
+          dAK = static_cast<float>(K) * dA;
         }
         else
         {
           A = d2f(laserPose.phi() + 0.5f * o.aperture);
-          dAK = -static_cast<float>(K) * o.aperture / static_cast<float>(N);
+          dAK = -static_cast<float>(K) * dA;
         }
 
         new_x_max = -(numeric_limits<float>::max)();
@@ -327,12 +331,12 @@ bool COccupancyGridMap2D::internal_insertObservation(
         if (o.rightToLeft ^ sensorIsBottomwards)
         {
           A = d2f(laserPose.phi()) - 0.5f * o.aperture;
-          dAK = static_cast<float>(K) * o.aperture / static_cast<float>(N);
+          dAK = static_cast<float>(K) * dA;
         }
         else
         {
           A = d2f(laserPose.phi()) + 0.5f * o.aperture;
-          dAK = -static_cast<float>(K) * o.aperture / static_cast<float>(N);
+          dAK = -static_cast<float>(K) * dA;
         }
 
         new_x_max = -(numeric_limits<float>::max)();
@@ -431,12 +435,12 @@ bool COccupancyGridMap2D::internal_insertObservation(
         if (o.rightToLeft ^ sensorIsBottomwards)
         {
           A = d2f(laserPose.phi()) - 0.5f * o.aperture;
-          dAK = static_cast<float>(K) * o.aperture / static_cast<float>(N);
+          dAK = static_cast<float>(K) * dA;
         }
         else
         {
           A = d2f(laserPose.phi()) + 0.5f * o.aperture;
-          dAK = -static_cast<float>(K) * o.aperture / static_cast<float>(N);
+          dAK = -static_cast<float>(K) * dA;
         }
 
         // Insert the rays:
@@ -446,7 +450,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
         last_valid_range = maxDistanceInsertion;
 
-        const float dA_2 = 0.5f * o.aperture / static_cast<float>(N);
+        const float dA_2 = 0.5f * dA;
         for (idx = 0; idx < nRanges; idx += K, A += dAK)
         {
           float theR;  // The range of this beam

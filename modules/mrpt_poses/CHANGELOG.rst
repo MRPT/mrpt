@@ -2,6 +2,13 @@
 Changelog for package mrpt_poses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.3 (2026-11-13)
+------------------
+* CPoseInterpolatorBase: fix the documented default interpolation method (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
+* Python bindings: Gaussian PDF composition, copies, inverses, CPosePDFSOG and interpolation method (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
+* FrameTransformer: fix -Wshadow warning in lookupTransform()
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.2 (2026-11-07)
 ------------------
 * CPose3DQuatPDFGaussianInf::evaluatePDF(): density of degenerate Gaussians (`#1500 <https://github.com/MRPT/mrpt/issues/1500>`_)

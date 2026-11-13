@@ -123,6 +123,7 @@ PYBIND11_MODULE(_bindings, m)
       .def("__str__", &mrpt::obs::CObservation::asString)
       .def(
           "GetRuntimeClass", &mrpt::obs::CObservation::GetRuntimeClass,
+          py::return_value_policy::reference,
           "Returns information about the class of an object in runtime.")
       .def(
           "__repr__", [](const mrpt::obs::CObservation& o)
@@ -196,6 +197,33 @@ PYBIND11_MODULE(_bindings, m)
                 reinterpret_cast<const bool*>(tmp.data()));
           },
           "Returns validity flags as a 1D bool numpy array")
+      .def(
+          "loadFromVectors",
+          [](mrpt::obs::CObservation2DRangeScan& o,
+             const py::array_t<float, py::array::c_style | py::array::forcecast>& ranges,
+             const py::array_t<bool, py::array::c_style | py::array::forcecast>& validity)
+          {
+            if (ranges.ndim() != 1 || validity.ndim() != 1 || ranges.shape(0) != validity.shape(0))
+            {
+              throw py::value_error("ranges and validity must be 1D arrays of the same length");
+            }
+            const auto n = static_cast<size_t>(ranges.shape(0));
+            if (n == 0)
+            {
+              o.resizeScan(0);
+              return;
+            }
+            const auto bufValid = validity.unchecked<1>();
+            std::vector<char> valid(n);
+            for (size_t i = 0; i < n; i++)
+            {
+              valid[i] = bufValid(static_cast<py::ssize_t>(i)) ? 1 : 0;
+            }
+            o.loadFromVectors(n, ranges.data(), valid.data());
+          },
+          "ranges"_a, "validity"_a,
+          "Sets all the ranges (meters) and their validity from two 1D arrays (or lists) of the "
+          "same length, resizing the scan to that length.")
       .def(
           "__repr__",
           [](const mrpt::obs::CObservation2DRangeScan& o)
@@ -401,6 +429,7 @@ PYBIND11_MODULE(_bindings, m)
       .def_readwrite("timestamp", &mrpt::obs::CAction::timestamp)
       .def(
           "GetRuntimeClass", &mrpt::obs::CAction::GetRuntimeClass,
+          py::return_value_policy::reference,
           "Returns information about the class of an object in runtime.");
 
   // -------------------------------------------------------------------------
@@ -476,7 +505,7 @@ PYBIND11_MODULE(_bindings, m)
           },
           "Draws a sample from the motion model")
       .def(
-          "GetRuntimeClass", &ARM2D::GetRuntimeClass,
+          "GetRuntimeClass", &ARM2D::GetRuntimeClass, py::return_value_policy::reference,
           "Returns information about the class of an object in runtime.")
       .def(
           "__repr__",

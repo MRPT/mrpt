@@ -23,7 +23,25 @@
 struct mrpt_fy_parser
 {
   struct fy_parser* p;
+  struct fy_diag* diag;
+  char* errors;  // Diagnostics captured from the parser, or NULL
+  size_t errors_len;
 };
+
+// Captures libfyaml diagnostics, instead of printing them to stderr:
+static void diag_output(struct fy_diag* diag, void* user, const char* buf, size_t len)
+{
+  mrpt_fy_parser_t* self = (mrpt_fy_parser_t*)user;
+  char* s;
+  (void)diag;
+  if (!self || !buf) return;
+  s = (char*)realloc(self->errors, self->errors_len + len + 1);
+  if (!s) return;
+  memcpy(s + self->errors_len, buf, len);
+  self->errors_len += len;
+  s[self->errors_len] = '\0';
+  self->errors = s;
+}
 
 static char* dup_text(const char* s, size_t len)
 {
@@ -90,30 +108,37 @@ static void fill_comments_and_mark(struct fy_token* tk, mrpt_fy_event_t* out)
 mrpt_fy_parser_t* mrpt_fy_parser_create(const char* yaml_text, size_t len)
 {
   struct fy_parse_cfg cfg;
-  struct fy_parser* p;
+  struct fy_diag_cfg dcfg;
   mrpt_fy_parser_t* ret;
+
+  ret = (mrpt_fy_parser_t*)calloc(1, sizeof(mrpt_fy_parser_t));
+  if (!ret) return NULL;
+
+  fy_diag_cfg_default(&dcfg);
+  dcfg.fp = NULL;
+  dcfg.output_fn = diag_output;
+  dcfg.user = ret;
+  dcfg.level = FYET_ERROR;
+  dcfg.colorize = false;
+  dcfg.show_position = true;
+  ret->diag = fy_diag_create(&dcfg);
+  if (!ret->diag)
+  {
+    mrpt_fy_parser_destroy(ret);
+    return NULL;
+  }
 
   memset(&cfg, 0, sizeof(cfg));
   cfg.search_path = "";
-  cfg.diag = NULL;
+  cfg.diag = ret->diag;
   cfg.flags = FYPCF_PARSE_COMMENTS;
 
-  p = fy_parser_create(&cfg);
-  if (!p) return NULL;
-
-  if (fy_parser_set_string(p, yaml_text, len) != 0)
+  ret->p = fy_parser_create(&cfg);
+  if (!ret->p || fy_parser_set_string(ret->p, yaml_text, len) != 0)
   {
-    fy_parser_destroy(p);
+    mrpt_fy_parser_destroy(ret);
     return NULL;
   }
-
-  ret = (mrpt_fy_parser_t*)malloc(sizeof(mrpt_fy_parser_t));
-  if (!ret)
-  {
-    fy_parser_destroy(p);
-    return NULL;
-  }
-  ret->p = p;
   return ret;
 }
 
@@ -121,7 +146,14 @@ void mrpt_fy_parser_destroy(mrpt_fy_parser_t* p)
 {
   if (!p) return;
   if (p->p) fy_parser_destroy(p->p);
+  if (p->diag) fy_diag_destroy(p->diag);
+  free(p->errors);
   free(p);
+}
+
+const char* mrpt_fy_parser_errors(const mrpt_fy_parser_t* p)
+{
+  return (p && p->errors) ? p->errors : "";
 }
 
 int mrpt_fy_parser_next(mrpt_fy_parser_t* p, mrpt_fy_event_t* out)
@@ -133,6 +165,8 @@ int mrpt_fy_parser_next(mrpt_fy_parser_t* p, mrpt_fy_event_t* out)
     struct fy_event* ev = fy_parser_parse(p->p);
     if (!ev)
     {
+      // NULL means either the end of the stream, or a parse error:
+      if (fy_parser_get_stream_error(p->p)) return -1;
       out->type = MRPT_FY_EV_END;
       return 0;
     }

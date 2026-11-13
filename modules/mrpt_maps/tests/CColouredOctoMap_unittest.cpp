@@ -69,6 +69,32 @@ TEST(CColouredOctoMap, Insert3DScanUpdatesColour)
   EXPECT_GT(map.size(), 0u);
 }
 
+TEST(CColouredOctoMap, Insert3DScanHonorsSensorPose)
+{
+  auto obs = makeSimple3DScan();
+  obs.sensorPose = CPose3D(0.21, 0.13, 1.02, mrpt::DEG2RAD(90.0), 0, 0);
+  const CPose3D robotPose(1.07, 2.03, 0, mrpt::DEG2RAD(30.0), 0, 0);
+
+  CColouredOctoMap map(0.1);
+  ASSERT_TRUE(map.insertObservation(obs, robotPose));
+
+  // Reference: the points in the sensor frame, transformed here.
+  auto local = obs;
+  local.unprojectInto(local);
+  ASSERT_GT(local.points3D_x.size(), 0U);
+
+  const CPose3D globalSensorPose = robotPose + obs.sensorPose;
+  for (size_t i = 0; i < local.points3D_x.size(); i++)
+  {
+    const auto g = globalSensorPose.composePoint(
+        TPoint3D(local.points3D_x[i], local.points3D_y[i], local.points3D_z[i]));
+    double occ = 0;
+    EXPECT_TRUE(map.getPointOccupancy(
+        static_cast<float>(g.x), static_cast<float>(g.y), static_cast<float>(g.z), occ));
+    EXPECT_GT(occ, 0.5) << "point #" << i;
+  }
+}
+
 TEST(CColouredOctoMap, InsertUnsupportedObservationReturnsFalse)
 {
   CColouredOctoMap map(0.1);

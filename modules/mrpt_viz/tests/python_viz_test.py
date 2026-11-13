@@ -93,5 +93,62 @@ print("posePDF2opengl")
 from mrpt.poses import CPose3DPDFGaussian as _G3
 check("posePDF2opengl", len(_viz.posePDF2opengl(_G3(_CP3()))) > 0)
 
+print("Line width")
+_lw_bad = []
+for _name in ["CSetOfLines", "CSimpleLine", "CGridPlaneXY", "CGridPlaneXZ", "CAxis", "CBox",
+              "CEllipsoid2D", "CEllipsoid3D"]:
+    _o = getattr(_viz, _name)()
+    _o.setLineWidth(3.5)
+    if abs(_o.getLineWidth() - 3.5) > 1e-6:
+        _lw_bad.append(_name)
+check("setLineWidth()/getLineWidth()", not _lw_bad, f"wrong: {_lw_bad}")
+
+print("Ellipsoid drawing parameters")
+from mrpt.math import CMatrixDouble33 as _M33
+_ell = CEllipsoid3D()
+# pybind11 < 2.12 cannot take NumPy >= 2 arrays (mrpt.rtti warns about it):
+import mrpt.rtti._bindings as _rtti
+_numpy_to_mrpt_ok = not (int(np.__version__.split(".")[0]) >= 2 and
+                         tuple(_rtti._pybind11_version[:2]) < (2, 12))
+if _numpy_to_mrpt_ok:
+    _ell.setCovMatrix(_M33(np.diag([1.0, 0.5, 0.25])))
+_ell.enableDrawSolid3D(True)
+_ell.setNumberOfSegments(32)
+_ell.setQuantiles(2.0)
+check("getNumberOfSegments()", _ell.getNumberOfSegments() == 32)
+check("getQuantiles()", abs(_ell.getQuantiles() - 2.0) < 1e-6)
+
+print("CCamera")
+from mrpt.img import TCamera as _TCamera
+from mrpt.math import TPoint3D as _TP3
+_cam = Scene().getViewport("main").getCamera()
+_cam.setPointingAt(1.0, 2.0, 3.0)
+_p = _cam.getPointingAt()
+check("setPointingAt(x, y, z)", (_p.x, _p.y, _p.z) == (1.0, 2.0, 3.0), f"{_p}")
+_cam.setPointingAt(_TP3(-1.0, 0.5, 0.0))
+check("setPointingAt(TPoint3D)", abs(_cam.getPointingAt().x + 1.0) < 1e-6)
+_cam.setAzimuthDegrees(30.0)
+_cam.setElevationDegrees(20.0)
+_cam.setZoomDistance(7.0)
+_cam.setRollDegrees(5.0)
+check("orbit getters", (_cam.getAzimuthDegrees(), _cam.getElevationDegrees(),
+                        _cam.getZoomDistance(), _cam.getRollDegrees()) == (30.0, 20.0, 7.0, 5.0))
+_cam.setOrthogonal()
+check("setOrthogonal()", _cam.isOrthogonal() and not _cam.isProjective())
+_cam.setProjectiveModel()
+_cam.setProjectiveFOVdeg(60.0)
+check("setProjectiveFOVdeg()",
+      _cam.isProjective() and abs(_cam.getProjectiveFOVdeg() - 60.0) < 1e-6)
+check("no pinhole model by default", not _cam.hasPinholeModel() and _cam.getPinholeModel() is None)
+_K = _TCamera()
+_K.ncols, _K.nrows, _K.fx, _K.fy, _K.cx, _K.cy = 640, 480, 400.0, 410.0, 320.0, 240.0
+_cam.setProjectiveFromPinhole(_K)
+check("setProjectiveFromPinhole()",
+      _cam.hasPinholeModel() and abs(_cam.getPinholeModel().fy - 410.0) < 1e-9)
+_cam.clearPinholeModel()
+check("clearPinholeModel()", not _cam.hasPinholeModel())
+_cam.set6DOFMode(True)
+check("set6DOFMode()", _cam.is6DOFMode())
+
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

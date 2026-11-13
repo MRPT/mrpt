@@ -44,7 +44,10 @@ namespace mrpt::expr
  *  - Only expressions returning `double` are supported.
  *  - Variables must be provided via a `std::map` container **or** pointers to
  * user-stored variables.
- *  - Custom user-defined functions taking 0-3 arguments (New in MRPT 2.5.8).
+ *  - Custom user-defined functions taking 0-3 arguments (New in MRPT 2.5.8),
+ * registered with register_function() before compile(). Any callable is
+ * accepted (e.g. lambdas with captures), but not the names of exprtk built-in
+ * functions.
  *
  * See examples of usage in the [unit test
  * file](https://github.com/MRPT/mrpt/blob/master/libs/base/src/math/CRuntimeCompiledExpression_unittest.cpp).
@@ -76,6 +79,9 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
   CRuntimeCompiledExpression& operator=(CRuntimeCompiledExpression&&) noexcept;
 
   /** Initializes the object by compiling an expression.
+   * It can be called several times: each call replaces the former expression
+   * and variables, and uses the variables and functions registered with
+   * register_symbol_table() and register_function() so far.
    * \exception std::runtime_error On any syntax error or undefined symbol
    * while compiling the expression. The `e.what()` message describes what is
    * exactly the problem.
@@ -93,7 +99,8 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
                const std::string& expr_name_for_error_reporting = {});
 
   /** Can be used **before** calling compile() to register additional
-   * variables by means of **pointers** instead of a std::map  */
+   * variables by means of **pointers** instead of a std::map. They are kept
+   * for later calls to compile(); registering a name again replaces it. */
   void register_symbol_table(
       /** [in] Map of variables/constants by `name` ->  `value`. The
        references to the values in this map **must** be ensured to be
