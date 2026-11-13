@@ -2,6 +2,9 @@
 Changelog for package mrpt_topography
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.2 (2026-11-07)
 ------------------
 * Math review: fixes and tests for transformations, probability distributions and their users (`#1492 <https://github.com/MRPT/mrpt/issues/1492>`_)

@@ -2,6 +2,11 @@
 Changelog for package mrpt_graphslam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* New Python module mrpt.graphslam (pose-graph optimization), also in the pip wheel (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.2 (2026-11-07)
 ------------------
 * Math review: fixes and tests for transformations, probability distributions and their users (`#1492 <https://github.com/MRPT/mrpt/issues/1492>`_)

@@ -2,6 +2,9 @@
 Changelog for package mrpt_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.2 (2026-11-07)
 ------------------
 * mrpt_slam: enable the ICP-quality odometry fallback by default, except against a single-scan map (`#1495 <https://github.com/MRPT/mrpt/issues/1495>`_)

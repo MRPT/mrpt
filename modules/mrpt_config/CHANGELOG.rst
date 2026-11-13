@@ -2,6 +2,11 @@
 Changelog for package mrpt_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* config_parser: keep full precision in $eval{} results (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.2 (2026-11-07)
 ------------------
 

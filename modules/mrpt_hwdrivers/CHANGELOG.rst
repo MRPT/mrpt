@@ -2,6 +2,9 @@
 Changelog for package mrpt_hwdrivers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.2 (2026-11-07)
 ------------------
 

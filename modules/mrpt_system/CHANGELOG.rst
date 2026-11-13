@@ -2,6 +2,11 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Python bindings: VerbosityLevel and plug-in module loading (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.2 (2026-11-07)
 ------------------
 
