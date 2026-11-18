@@ -40,7 +40,10 @@ enum TColormap : int8_t
   cmNONE = -1,
   cmGRAYSCALE = 0,
   cmJET = 1,
-  cmHOT = 2
+  cmHOT = 2,
+  /** Google's "Turbo": a rainbow colormap with smooth, perceptually ordered
+     lightness, from dark blue through green and yellow to dark red. */
+  cmTURBO = 3
 };
 
 /** Transform a float number in the range [0,1] into float RGB components (0,1).
@@ -56,6 +59,11 @@ mrpt::img::TColorf jet2rgb(float color_index);
  * index in the range [0,1] using the MATLAB 'hot' colormap.  \sa colormap  */
 mrpt::img::TColorf hot2rgb(float color_index);
 
+/** Computes the RGB color components (range [0,1]) for the corresponding color
+ * index in the range [0,1] using Google's 'Turbo' colormap (polynomial
+ * approximation).  \sa colormap  */
+mrpt::img::TColorf turbo2rgb(float color_index);
+
 /** @} */
 }  // namespace mrpt::img
 MRPT_ENUM_TYPE_BEGIN(mrpt::img::TColormap)
@@ -63,4 +71,5 @@ MRPT_FILL_ENUM_MEMBER(mrpt::img, cmNONE);
 MRPT_FILL_ENUM_MEMBER(mrpt::img, cmGRAYSCALE);
 MRPT_FILL_ENUM_MEMBER(mrpt::img, cmJET);
 MRPT_FILL_ENUM_MEMBER(mrpt::img, cmHOT);
+MRPT_FILL_ENUM_MEMBER(mrpt::img, cmTURBO);
 MRPT_ENUM_TYPE_END()

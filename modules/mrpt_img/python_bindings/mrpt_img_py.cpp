@@ -276,6 +276,7 @@ PYBIND11_MODULE(_bindings, m)
       .value("cmGRAYSCALE", cmGRAYSCALE)
       .value("cmJET", cmJET)
       .value("cmHOT", cmHOT)
+      .value("cmTURBO", cmTURBO)
       .export_values();
   m.def(
       "colormap", &colormap, "color_map"_a, "color_index"_a,
