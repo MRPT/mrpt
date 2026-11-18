@@ -41,8 +41,9 @@ enum TColormap : int8_t
   cmGRAYSCALE = 0,
   cmJET = 1,
   cmHOT = 2,
-  /** Google's "Turbo": a rainbow colormap with smooth, perceptually ordered
-     lightness, from dark blue through green and yellow to dark red. */
+  /** Google's "Turbo": a rainbow colormap from dark blue through green and
+     yellow to dark red, with smooth but non-monotonic lightness (lightest in
+     the middle), so it is not suited to grayscale rendering. */
   cmTURBO = 3
 };
 

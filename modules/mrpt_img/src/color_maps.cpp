@@ -294,8 +294,12 @@ mrpt::img::TColorf mrpt::img::hot2rgb(const float color_index)
 
 mrpt::img::TColorf mrpt::img::turbo2rgb(float color_index)
 {
-  // Degree-5 polynomial fit of the Turbo colormap (Anton Mikhailov, Google,
-  // 2019), evaluated with Horner's rule:
+  // Degree-5 polynomial approximation of the Turbo colormap, evaluated with
+  // Horner's rule. The coefficients come from Google's turbo_colormap.glsl:
+  //   Copyright 2019 Google LLC.
+  //   SPDX-License-Identifier: Apache-2.0
+  //   Colormap design: Anton Mikhailov. Polynomial approximation: Ruofei Du.
+  //   https://research.google/blog/turbo-an-improved-rainbow-colormap-for-visualization/
   const float x = std::clamp(color_index, 0.0f, 1.0f);
 
   const float r =
