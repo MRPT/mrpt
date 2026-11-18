@@ -1,0 +1,13 @@
+# Keeps the GitHub Actions up to date. This includes cibuildwheel: its updates
+# add the wheels of new Python versions (see packaging/pip/pyproject.toml).
+# pip dependencies are not tracked: the pybind11 pin must match the one of the
+# wheels built against mrpt3, and is updated by hand.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
