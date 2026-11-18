@@ -71,6 +71,8 @@ check("TColorf -> TColor", cf.asTColor() == _TC(255, 0, 255, 255), f"got {cf.asT
 check("TColor -> TColorf", abs(TColorf(_TC(0, 0, 255)).B - 1.0) < 1e-6)
 hot = colormap(TColormap.cmHOT, 1.0)
 check("colormap returns TColorf", isinstance(hot, TColorf) and hot.R > 0.9, f"got {hot}")
+turbo = colormap(TColormap.cmTURBO, 0.5)
+check("turbo is green in the middle", turbo.G > 0.9 and turbo.B < 0.5, f"got {turbo}")
 
 print(f"\nResults: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

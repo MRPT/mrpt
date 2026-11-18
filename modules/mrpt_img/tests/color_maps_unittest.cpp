@@ -99,6 +99,49 @@ TEST(color_maps, cmHOT)
   }
 }
 
+TEST(color_maps, cmTURBO)
+{
+  using namespace mrpt::img;
+
+  {
+    const auto c = colormap(cmTURBO, .0f);
+    EXPECT_NEAR(c.R, 0.1357f, 1e-3f);
+    EXPECT_NEAR(c.G, 0.0914f, 1e-3f);
+    EXPECT_NEAR(c.B, 0.1067f, 1e-3f);
+  }
+  {
+    const auto c = colormap(cmTURBO, 0.5f);
+    EXPECT_NEAR(c.R, 0.5885f, 1e-3f);
+    EXPECT_NEAR(c.G, 0.9819f, 1e-3f);
+    EXPECT_NEAR(c.B, 0.3132f, 1e-3f);
+  }
+  {
+    const auto c = colormap(cmTURBO, 1.0f);
+    EXPECT_NEAR(c.R, 0.5659f, 1e-3f);
+    EXPECT_NEAR(c.G, 0.0504f, 1e-3f);
+    EXPECT_NEAR(c.B, 0.0f, 1e-3f);
+  }
+  {
+    // Out of range indices are clamped:
+    const auto lo = colormap(cmTURBO, -0.5f);
+    const auto hi = colormap(cmTURBO, 1.5f);
+    EXPECT_NEAR(lo.B, 0.1067f, 1e-3f);
+    EXPECT_NEAR(hi.R, 0.5659f, 1e-3f);
+  }
+  {
+    // All components stay in [0,1]:
+    for (int i = 0; i <= 100; i++)
+    {
+      const auto c = turbo2rgb(static_cast<float>(i) / 100.0f);
+      for (const float v : {c.R, c.G, c.B})
+      {
+        EXPECT_GE(v, 0.0f);
+        EXPECT_LE(v, 1.0f);
+      }
+    }
+  }
+}
+
 TEST(color_maps, colormap_InvalidThrows)
 {
   using namespace mrpt::img;

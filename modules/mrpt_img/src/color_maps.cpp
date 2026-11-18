@@ -164,6 +164,9 @@ mrpt::img::TColorf mrpt::img::colormap(const TColormap& color_map, float color_i
     case cmHOT:
       col = hot2rgb(color_index);
       break;
+    case cmTURBO:
+      col = turbo2rgb(color_index);
+      break;
     default:
       THROW_EXCEPTION("Invalid color_map");
   };
@@ -287,4 +290,30 @@ mrpt::img::TColorf mrpt::img::hot2rgb(const float color_index)
       math::interpolate(color_index, hot_r, 0.0f, 1.0f),
       math::interpolate(color_index, hot_g, 0.0f, 1.0f),
       math::interpolate(color_index, hot_b, 0.0f, 1.0f)};
+}
+
+mrpt::img::TColorf mrpt::img::turbo2rgb(float color_index)
+{
+  // Degree-5 polynomial approximation of the Turbo colormap, evaluated with
+  // Horner's rule. The coefficients come from Google's turbo_colormap.glsl:
+  //   Copyright 2019 Google LLC.
+  //   SPDX-License-Identifier: Apache-2.0
+  //   Colormap design: Anton Mikhailov. Polynomial approximation: Ruofei Du.
+  //   https://research.google/blog/turbo-an-improved-rainbow-colormap-for-visualization/
+  const float x = std::clamp(color_index, 0.0f, 1.0f);
+
+  const float r =
+      0.13572138f +
+      x * (4.61539260f +
+           x * (-42.66032258f + x * (132.13108234f + x * (-152.94239396f + x * 59.28637943f))));
+  const float g =
+      0.09140261f +
+      x * (2.19418839f +
+           x * (4.84296658f + x * (-14.18503333f + x * (4.27729857f + x * 2.82956604f))));
+  const float b =
+      0.10667330f +
+      x * (12.64194608f +
+           x * (-60.58204836f + x * (110.36276771f + x * (-89.90310912f + x * 27.34824973f))));
+
+  return {std::clamp(r, 0.0f, 1.0f), std::clamp(g, 0.0f, 1.0f), std::clamp(b, 0.0f, 1.0f)};
 }
