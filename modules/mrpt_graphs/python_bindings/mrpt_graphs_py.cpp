@@ -38,8 +38,9 @@ constexpr size_t REACHABLE_ONLY = std::numeric_limits<size_t>::max() - 1;
 
 constexpr const char* EDGE_WEIGHT_DOC =
     "edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative "
-    "cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances. Default: "
-    "1 per edge (fewest edges).";
+    "cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() "
+    "in graphs with Gaussian edges). If several edges join two nodes, in any direction, the "
+    "cheapest one is used. Default: 1 per edge (fewest edges).";
 
 // Runs Dijkstra from the source node, with the edge costs given by an
 // optional Python function (default: one per edge).

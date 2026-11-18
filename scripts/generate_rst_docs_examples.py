@@ -132,7 +132,7 @@ installed (``pip install mrpt3``, the ``python3-mrpt`` packages, or
    `MRPT notebooks <https://github.com/MRPT/mrpt-notebooks>`_:
    `marimo <https://marimo.io>`_ notebooks on poses, SLAM, maps, navigation,
    robot arms and more, with sliders to change parameters. They can be
-   previewed in the browser, or run locally with ``pip install mrpt3``.
+   previewed in the browser, or run locally as explained in that repository.
 
 See also the :ref:`python_api`. C++ examples are `here <examples.html>`_.
 A machine-readable index of all examples is available in

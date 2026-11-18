@@ -67,6 +67,13 @@ check("metric dijkstra_path avoids long edge", gm.dijkstra_path(0, 3, edge_weigh
 mdists = gm.getNodeDistances(0, edge_weight=metric)
 check("metric distances", abs(mdists[3] - 3.0) < 1e-12, f"got {mdists}")
 check("metric dijkstra_tree", gm.dijkstra_tree(0, metric) == {1: 0, 2: 1, 3: 2})
+gr = _G2()  # the cheaper of two opposite edges is used
+gr.insertEdge(0, 1, _CP2(10.0, 0.0, 0.0))
+gr.insertEdge(1, 0, _CP2(-1.0, 0.0, 0.0))
+gr.insertEdge(0, 2, _CP2(2.0, 0.0, 0.0))
+gr.insertEdge(2, 1, _CP2(2.0, 0.0, 0.0))
+check("metric uses the cheaper reverse edge", gr.dijkstra_path(0, 1, edge_weight=metric) == [0, 1]
+      and abs(gr.getNodeDistances(0, metric)[1] - 1.0) < 1e-12, f"got {gr.getNodeDistances(0, metric)}")
 try:
     gd.dijkstra_path(0, 4, edge_weight=lambda a, b, e: -1.0)
     check("negative edge weight raises", False)

@@ -79,6 +79,27 @@ TEST(CDijkstra, CustomEdgeWeightFunctor)
   EXPECT_DOUBLE_EQ(*dij.getNodeDistanceToRoot(3), 4.0);
 }
 
+TEST(CDijkstra, CustomEdgeWeightUsesCheapestOfSeveralEdges)
+{
+  graph_t g;
+  g.insertEdge(0, 1, 10.0);
+  g.insertEdge(1, 0, 1.0);  // cheaper, in the reverse direction
+  g.insertEdge(0, 2, 2.0);
+  g.insertEdge(2, 0, 7.0);
+  g.insertEdge(0, 2, 0.5);  // cheaper, parallel
+  dijkstra_t::functor_edge_weight_t weightFn = [](const graph_t&, TNodeID, TNodeID,
+                                                  const graph_t::edge_t& edge) { return edge; };
+
+  dijkstra_t dij(g, 0, weightFn);
+
+  EXPECT_DOUBLE_EQ(*dij.getNodeDistanceToRoot(1), 1.0);
+  EXPECT_DOUBLE_EQ(*dij.getNodeDistanceToRoot(2), 0.5);
+  // The tree edge to node 1 is the reverse one, 1->0:
+  const auto path = dij.getShortestPathTo(1);
+  ASSERT_EQ(path.size(), 1U);
+  EXPECT_EQ(path.front(), std::make_pair(TNodeID(1), TNodeID(0)));
+}
+
 TEST(CDijkstra, ProgressFunctorInvokedPerVisitedNode)
 {
   const graph_t g = buildSampleGraph();
