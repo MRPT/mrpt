@@ -315,7 +315,7 @@ class CDijkstra
           // Several edges may join u and i (u->i, i->u, or parallel ones):
           // the cheapest one is used.
           edge_ui_weight = std::numeric_limits<double>::max();
-          for (const auto& ids : {std::make_pair(u, i), std::make_pair(i, u)})
+          for (const auto& ids : {TPairNodeIDs(u, i), TPairNodeIDs(i, u)})
           {
             const auto range = graph.edges.equal_range(ids);
             for (auto it = range.first; it != range.second; ++it)
