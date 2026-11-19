@@ -25,6 +25,7 @@
 #include <pybind11/stl.h>
 
 #include <limits>
+#include <optional>
 
 namespace py = pybind11;
 using namespace pybind11::literals;
@@ -34,6 +35,41 @@ namespace
 // A finite search radius makes CDijkstra build the tree of the nodes reachable
 // from the source, instead of throwing if the graph is not fully connected.
 constexpr size_t REACHABLE_ONLY = std::numeric_limits<size_t>::max() - 1;
+
+constexpr const char* EDGE_WEIGHT_DOC =
+    "edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative "
+    "cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() "
+    "in graphs with Gaussian edges). If several edges join two nodes, in any direction, the "
+    "cheapest one is used. Default: 1 per edge (fewest edges).";
+
+// Runs Dijkstra from the source node, with the edge costs given by an
+// optional Python function (default: one per edge).
+template <typename CPOSE>
+auto runDijkstra(
+    const mrpt::graphs::CNetworkOfPoses<CPOSE>& g,
+    mrpt::graphs::TNodeID source,
+    const std::optional<py::function>& edgeWeight)
+{
+  using G = mrpt::graphs::CNetworkOfPoses<CPOSE>;
+  using dijkstra_t = mrpt::graphs::CDijkstra<G>;
+
+  typename dijkstra_t::functor_edge_weight_t weight;
+  if (edgeWeight)
+  {
+    weight = [fn = edgeWeight.value()](
+                 const G&, mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to,
+                 const typename G::edge_t& edge)
+    {
+      const auto w = fn(from, to, CPOSE(edge)).template cast<double>();
+      if (!(w >= 0))
+      {
+        throw py::value_error("edge_weight must return non-negative values");
+      }
+      return w;
+    };
+  }
+  return dijkstra_t(g, source, weight, {}, REACHABLE_ONLY);
+}
 }  // namespace
 
 // Helper: expose CNetworkOfPoses<CPOSE> as the given Python class name
@@ -123,9 +159,10 @@ void bind_CNetworkOfPoses(py::module& m, const char* className, const char* clas
           "from the root node")
       .def(
           "dijkstra_path",
-          [](const G& g, mrpt::graphs::TNodeID source, mrpt::graphs::TNodeID target)
+          [](const G& g, mrpt::graphs::TNodeID source, mrpt::graphs::TNodeID target,
+             const std::optional<py::function>& edgeWeight)
           {
-            const mrpt::graphs::CDijkstra<G> dijkstra(g, source, {}, {}, REACHABLE_ONLY);
+            const auto dijkstra = runDijkstra<CPOSE>(g, source, edgeWeight);
             if (!dijkstra.getNodeDistanceToRoot(target))
             {
               throw py::value_error("target node is not reachable from source");
@@ -139,14 +176,18 @@ void bind_CNetworkOfPoses(py::module& m, const char* className, const char* clas
             }
             return path;
           },
-          "source"_a, "target"_a,
-          "Shortest path (fewest edges) between two nodes as a list of node IDs, from source to "
-          "target, ignoring edge directions. Raises ValueError if target is unreachable.")
+          "source"_a, "target"_a, "edge_weight"_a = py::none(),
+          (std::string("Shortest path between two nodes as a list of node IDs, from source to "
+                       "target, ignoring edge directions. Raises ValueError if target is "
+                       "unreachable.\n") +
+           EDGE_WEIGHT_DOC)
+              .c_str())
       .def(
           "getNodeDistances",
-          [](const G& g, mrpt::graphs::TNodeID source)
+          [](const G& g, mrpt::graphs::TNodeID source,
+             const std::optional<py::function>& edgeWeight)
           {
-            const mrpt::graphs::CDijkstra<G> dijkstra(g, source, {}, {}, REACHABLE_ONLY);
+            const auto dijkstra = runDijkstra<CPOSE>(g, source, edgeWeight);
             std::map<mrpt::graphs::TNodeID, double> dists;
             for (const auto id : dijkstra.getListOfAllNodes())
             {
@@ -157,7 +198,33 @@ void bind_CNetworkOfPoses(py::module& m, const char* className, const char* clas
             }
             return dists;
           },
-          "source"_a, "Topological distance (number of edges) from source to every reachable node")
+          "source"_a, "edge_weight"_a = py::none(),
+          (std::string("Distance from source to every reachable node, as a dict {node_id: "
+                       "distance}.\n") +
+           EDGE_WEIGHT_DOC)
+              .c_str())
+      .def(
+          "dijkstra_tree",
+          [](const G& g, mrpt::graphs::TNodeID source,
+             const std::optional<py::function>& edgeWeight)
+          {
+            const auto dijkstra = runDijkstra<CPOSE>(g, source, edgeWeight);
+            const auto tree = dijkstra.getTreeGraph();
+            std::map<mrpt::graphs::TNodeID, mrpt::graphs::TNodeID> parents;
+            for (const auto& [parent, children] : tree.edges_to_children)
+            {
+              for (const auto& child : children)
+              {
+                parents[child.id] = parent;
+              }
+            }
+            return parents;
+          },
+          "source"_a, "edge_weight"_a = py::none(),
+          (std::string("Spanning tree of the shortest paths from source to every reachable node, "
+                       "as a dict {node_id: parent_id} (source itself is not a key).\n") +
+           EDGE_WEIGHT_DOC)
+              .c_str())
       // root
       .def_readwrite("root", &G::root, "Root node ID (default: 0)")
       // File I/O

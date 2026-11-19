@@ -311,17 +311,25 @@ class CDijkstra
         if (!functor_edge_weight)
           edge_ui_weight = 1.;
         else
-        {  // edge may be i->u or u->i:
-          edge_ui = graph.edges.find(std::make_pair(u, i));
-          if (edge_ui == graph.edges.end())
+        {
+          // Several edges may join u and i (u->i, i->u, or parallel ones):
+          // the cheapest one is used.
+          edge_ui_weight = std::numeric_limits<double>::max();
+          for (const auto& ids : {TPairNodeIDs(u, i), TPairNodeIDs(i, u)})
           {
-            edge_ui = graph.edges.find(std::make_pair(i, u));
-            edge_ui_reverse = true;
+            const auto range = graph.edges.equal_range(ids);
+            for (auto it = range.first; it != range.second; ++it)
+            {
+              const double w = functor_edge_weight(graph, ids.first, ids.second, it->second);
+              if (!edge_ui_found || w < edge_ui_weight)
+              {
+                edge_ui_weight = w;
+                edge_ui_reverse = (ids.first != u);
+                edge_ui_found = true;
+              }
+            }
           }
-          ASSERT_(edge_ui != graph.edges.end());
-          edge_ui_weight = functor_edge_weight(
-              graph, edge_ui->first.first, edge_ui->first.second, edge_ui->second);
-          edge_ui_found = true;
+          ASSERT_(edge_ui_found);
         }
 
         const auto dist_ui = (min_d + edge_ui_weight);

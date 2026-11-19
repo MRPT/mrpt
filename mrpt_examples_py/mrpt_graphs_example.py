@@ -6,6 +6,7 @@ Demonstrates:
   - CNetworkOfPoses2D: build, insert nodes/edges, query
   - CNetworkOfPoses3D: same in 3D
   - save/load to text file
+  - Dijkstra shortest paths and spanning tree, with custom edge costs
 """
 
 import math
@@ -67,6 +68,10 @@ for i in range(6):
     ring.insertEdge(i, (i + 1) % 6, CPose2D(1.0, 0.0, math.radians(60)))
 print(f"\nRing graph: path 0 -> 4 = {ring.dijkstra_path(0, 4)}")
 print(f"  hops from node 0: {ring.getNodeDistances(0)}")
+print(f"  shortest-path tree, as {{node: parent}}: {ring.dijkstra_tree(0)}")
+# Custom edge costs, here metric lengths, instead of one per edge:
+metric = lambda from_id, to_id, edge: edge.norm()
+print(f"  meters from node 0: {ring.getNodeDistances(0, edge_weight=metric)}")
 ring.root = 0
 ring.dijkstra_nodes_estimate()
 print(f"  node 3 global pose: {ring.getNodePose(3)}")

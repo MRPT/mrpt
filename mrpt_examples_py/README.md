@@ -2,6 +2,8 @@
 
 Python examples for the MRPT 3.0 Python bindings.  Each script demonstrates
 one MRPT module and doubles as documentation for the Python API.
+Interactive tutorials (marimo notebooks) live in
+[MRPT/mrpt-notebooks](https://github.com/MRPT/mrpt-notebooks).
 
 ## Running an example
 

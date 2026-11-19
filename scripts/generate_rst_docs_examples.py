@@ -126,6 +126,14 @@ Run them with ``python3 <script>.py`` once the MRPT Python bindings are
 installed (``pip install mrpt3``, the ``python3-mrpt`` packages, or
 ``source install/setup.bash`` after building from sources).
 
+.. tip::
+
+   For interactive tutorials, see the
+   `MRPT notebooks <https://github.com/MRPT/mrpt-notebooks>`_:
+   `marimo <https://marimo.io>`_ notebooks on poses, SLAM, maps, navigation,
+   robot arms and more, with sliders to change parameters. They can be
+   previewed in the browser, or run locally as explained in that repository.
+
 See also the :ref:`python_api`. C++ examples are `here <examples.html>`_.
 A machine-readable index of all examples is available in
 `examples.json <examples.json>`_.
