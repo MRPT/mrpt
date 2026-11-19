@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Select Xcode ${{ matrix.version }}
         run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
@@ -37,10 +37,10 @@ jobs:
           git submodule update --init --recursive
 
       - name: Set up sccache
-        uses: mozilla-actions/sccache-action@v0.0.9
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       - name: Cache Homebrew downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/Homebrew/downloads
           key: brew-${{ matrix.os }}-${{ hashFiles('.github/workflows/build-macos.yml') }}

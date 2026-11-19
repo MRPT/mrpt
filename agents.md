@@ -313,7 +313,9 @@ mrpt_add_library(
   in the SDK too; its windows are nanogui ones (no wxWidgets), so Python
   examples use `CDisplayWindowGUI.spinOnce()`, not `CDisplayWindow3D`.
 * Wheels support Python 3.10 (cp310) only for Ubuntu 22.04 / ROS 2 Humble
-  users: from June 2027, drop cp310 and set `requires-python = ">=3.11"`.
+  users: from June 2027, set `requires-python = ">=3.11"`. The wheels are
+  built for every CPython version allowed by it that the pinned cibuildwheel
+  supports (bumped by Dependabot): there is no list of versions to maintain.
 * Examples live in `mrpt_examples_py`; extend them when wrapping new classes.
 * The `.pyi` stubs next to each `__init__.py` are generated and committed: run
   `scripts/generate_python_stubs.py` after changing bindings (CI fails if they

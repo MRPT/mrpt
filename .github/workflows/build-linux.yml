@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Git submodule
         run: |
@@ -111,7 +111,7 @@ jobs:
 
       - name: Upload to Codecov
         if: matrix.coverage == 'ON'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         with:
           files: coverage.info
           # Upload only the filtered lcov report: otherwise the uploader runs
@@ -134,7 +134,7 @@ jobs:
 
       - name: Upload regenerated Python stubs
         if: failure() && matrix.compiler == 'gcc'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: python-stubs
           path: |

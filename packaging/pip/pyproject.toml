@@ -16,7 +16,7 @@ readme = "README.md"
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 # Python 3.10 is only for Ubuntu 22.04 / ROS 2 Humble users: from June 2027,
-# drop cp310 from the wheels and require >=3.11.
+# require >=3.11.
 requires-python = ">=3.10"
 dependencies = ["numpy"]
 authors = [{ name = "Jose Luis Blanco-Claraco" }]
@@ -64,8 +64,11 @@ input = "../../modules/mrpt_common/package.xml"
 regex = '<version>(?P<value>[0-9]+\.[0-9]+\.[0-9]+)</version>'
 
 [tool.cibuildwheel]
-build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
-skip = "*-musllinux_* *_i686"
+# Builds every CPython version allowed by requires-python that the pinned
+# cibuildwheel supports: new ones come with cibuildwheel updates (Dependabot).
+# Free-threaded builds (cp3XXt) are skipped: the bindings do not declare
+# free-threading support.
+skip = "*-musllinux_* *_i686 cp3??t-*"
 build-verbosity = 1
 test-requires = ["cmake", "ninja"]
 test-command = "python {package}/tests/test_wheel.py"
