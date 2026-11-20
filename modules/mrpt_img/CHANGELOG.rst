@@ -2,8 +2,8 @@
 Changelog for package mrpt_img
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.4 (2026-11-20)
+------------------
 * Merge pull request `#1505 <https://github.com/MRPT/mrpt/issues/1505>`_ from MRPT/feat/turbo-colormap
   mrpt_img: add the Turbo colormap
 * mrpt_img: Turbo colormap: Python stubs, Apache-2.0 notice of the polynomial fit, lightness note

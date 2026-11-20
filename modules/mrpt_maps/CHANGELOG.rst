@@ -2,8 +2,8 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.4 (2026-11-20)
+------------------
 * recolorize3Dpc: precise outlier percentiles with far outliers; honor pinned colormap limits (`#1509 <https://github.com/MRPT/mrpt/issues/1509>`_)
   - The histogram that finds the outlier percentiles spans the raw data range,
   so a few far points made its bins wider than the rest of the data: both

@@ -2,8 +2,8 @@
 Changelog for package mrpt_graphs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.4 (2026-11-20)
+------------------
 * Merge pull request `#1506 <https://github.com/MRPT/mrpt/issues/1506>`_ from MRPT/feat/graphs-dijkstra-edge-weight
   mrpt_graphs Python: Dijkstra with custom edge costs, dijkstra_tree(); link the Python notebooks in the docs
 * CDijkstra: fix build on macOS, where TNodeID and the neighbor IDs differ in type
