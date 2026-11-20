@@ -2,6 +2,9 @@
 Changelog for package mrpt_imgui_vendor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.3 (2026-11-13)
 ------------------
 

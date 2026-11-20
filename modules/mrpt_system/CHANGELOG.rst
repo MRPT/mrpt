@@ -2,6 +2,9 @@
 Changelog for package mrpt_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.6.3 (2026-11-13)
 ------------------
 * Python bindings: VerbosityLevel and plug-in module loading (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)
