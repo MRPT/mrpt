@@ -485,6 +485,66 @@ TEST(CustomizableObsViz, RecolorizePinnedRangeSkipsOutlierRejection)
   EXPECT_NO_THROW(recolorize3Dpc(pnts, map.get(), p));
 }
 
+TEST(CustomizableObsViz, RecolorizePinnedRangeIsUsed)
+{
+  // Values 0..4 pinned to [0, 8] must get the colors of values 0..4 in a
+  // cloud spanning 0..8.
+  auto map = buildGenericMapForColoring(5);
+  const std::string field = "test_field_pinned_used";
+  map->registerField_float(field);
+  auto* buf = map->getPointsBufferRef_float_field(field);
+  ASSERT_NE(buf, nullptr);
+  for (size_t i = 0; i < buf->size(); i++) (*buf)[i] = static_cast<float>(i);
+
+  auto ref = buildGenericMapForColoring(9);
+  const std::string refField = "test_field_pinned_ref";
+  ref->registerField_float(refField);
+  auto* refBuf = ref->getPointsBufferRef_float_field(refField);
+  ASSERT_NE(refBuf, nullptr);
+  for (size_t i = 0; i < refBuf->size(); i++) (*refBuf)[i] = static_cast<float>(i);
+
+  auto pnts = mrpt::viz::CPointCloudColoured::Create();
+  pnts->loadFromPointsMap(map.get());
+  PointCloudRecoloringParameters p;
+  p.colorizeByField = field;
+  p.colorMapMinCoord = 0.0f;
+  p.colorMapMaxCoord = 8.0f;
+  recolorize3Dpc(pnts, map.get(), p);
+
+  auto refPnts = mrpt::viz::CPointCloudColoured::Create();
+  refPnts->loadFromPointsMap(ref.get());
+  PointCloudRecoloringParameters pRef;
+  pRef.colorizeByField = refField;
+  recolorize3Dpc(refPnts, ref.get(), pRef);
+
+  EXPECT_EQ(pnts->getPointColor(4), refPnts->getPointColor(4));
+  EXPECT_NE(pnts->getPointColor(4), refPnts->getPointColor(8));
+}
+
+TEST(CustomizableObsViz, RecolorizeOutlierRejectionWithFarOutlier)
+{
+  // One point very far from the rest: the histogram over the raw range has
+  // bins much wider than the bulk of the data, which must still be spread
+  // over the colormap.
+  auto map = buildGenericMapForColoring(1002);
+  const std::string field = "test_field_far_outlier";
+  map->registerField_float(field);
+  auto* buf = map->getPointsBufferRef_float_field(field);
+  ASSERT_NE(buf, nullptr);
+  for (size_t i = 0; i < buf->size(); i++) (*buf)[i] = 0.01f * static_cast<float>(i);
+  (*buf)[buf->size() - 1] = 1e6f;
+
+  auto pnts = mrpt::viz::CPointCloudColoured::Create();
+  pnts->loadFromPointsMap(map.get());
+  PointCloudRecoloringParameters p;
+  p.colorizeByField = field;
+  p.outlierRejectionPercentile = 0.01f;
+  recolorize3Dpc(pnts, map.get(), p);
+
+  EXPECT_NE(pnts->getPointColor(250), pnts->getPointColor(750));
+  EXPECT_NE(pnts->getPointColor(500), pnts->getPointColor(750));
+}
+
 // =========================================================================
 //  obs*_to_viz() free functions
 // =========================================================================
