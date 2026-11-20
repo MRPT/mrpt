@@ -2,6 +2,16 @@
 Changelog for package mrpt_apps_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.4 (2026-11-20)
+------------------
+* Merge pull request `#1505 <https://github.com/MRPT/mrpt/issues/1505>`_ from MRPT/feat/turbo-colormap
+  mrpt_img: add the Turbo colormap
+* mrpt_img: Turbo colormap (cmTURBO, turbo2rgb())
+  Google's Turbo colormap, as a degree-5 polynomial fit, available through
+  mrpt::img::colormap() and in Python, and as a choice in the imgui apps
+  point cloud coloring.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.3 (2026-11-13)
 ------------------
 

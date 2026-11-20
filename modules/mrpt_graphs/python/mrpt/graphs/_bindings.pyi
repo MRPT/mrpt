@@ -3,6 +3,7 @@ Python bindings for mrpt::graphs: pose graph and graph algorithms
 """
 from __future__ import annotations
 import mrpt.poses
+import typing
 __all__: list[str] = ['CNetworkOfPoses2D', 'CNetworkOfPoses2DCov', 'CNetworkOfPoses2DInf', 'CNetworkOfPoses3D', 'CNetworkOfPoses3DCov', 'CNetworkOfPoses3DInf']
 class CNetworkOfPoses2D:
     """
@@ -22,9 +23,15 @@ class CNetworkOfPoses2D:
         """
         Recomputes all node poses by composing edges along the shortest-path spanning tree from the root node
         """
-    def dijkstra_path(self, source: int, target: int) -> list[int]:
+    def dijkstra_path(self, source: int, target: int, edge_weight: typing.Callable | None = None) -> list[int]:
         """
-        Shortest path (fewest edges) between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        Shortest path between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
+        """
+    def dijkstra_tree(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, int]:
+        """
+        Spanning tree of the shortest paths from source to every reachable node, as a dict {node_id: parent_id} (source itself is not a key).
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def edgeCount(self) -> int:
         """
@@ -50,9 +57,10 @@ class CNetworkOfPoses2D:
         """
         IDs of the nodes connected to the given one by an edge (in any direction)
         """
-    def getNodeDistances(self, source: int) -> dict[int, float]:
+    def getNodeDistances(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, float]:
         """
-        Topological distance (number of edges) from source to every reachable node
+        Distance from source to every reachable node, as a dict {node_id: distance}.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def getNodeIDs(self) -> list[int]:
         """
@@ -112,9 +120,15 @@ class CNetworkOfPoses3D:
         """
         Recomputes all node poses by composing edges along the shortest-path spanning tree from the root node
         """
-    def dijkstra_path(self, source: int, target: int) -> list[int]:
+    def dijkstra_path(self, source: int, target: int, edge_weight: typing.Callable | None = None) -> list[int]:
         """
-        Shortest path (fewest edges) between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        Shortest path between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
+        """
+    def dijkstra_tree(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, int]:
+        """
+        Spanning tree of the shortest paths from source to every reachable node, as a dict {node_id: parent_id} (source itself is not a key).
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def edgeCount(self) -> int:
         """
@@ -140,9 +154,10 @@ class CNetworkOfPoses3D:
         """
         IDs of the nodes connected to the given one by an edge (in any direction)
         """
-    def getNodeDistances(self, source: int) -> dict[int, float]:
+    def getNodeDistances(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, float]:
         """
-        Topological distance (number of edges) from source to every reachable node
+        Distance from source to every reachable node, as a dict {node_id: distance}.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def getNodeIDs(self) -> list[int]:
         """
@@ -202,9 +217,15 @@ class CNetworkOfPoses2DCov:
         """
         Recomputes all node poses by composing edges along the shortest-path spanning tree from the root node
         """
-    def dijkstra_path(self, source: int, target: int) -> list[int]:
+    def dijkstra_path(self, source: int, target: int, edge_weight: typing.Callable | None = None) -> list[int]:
         """
-        Shortest path (fewest edges) between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        Shortest path between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
+        """
+    def dijkstra_tree(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, int]:
+        """
+        Spanning tree of the shortest paths from source to every reachable node, as a dict {node_id: parent_id} (source itself is not a key).
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def edgeCount(self) -> int:
         """
@@ -230,9 +251,10 @@ class CNetworkOfPoses2DCov:
         """
         IDs of the nodes connected to the given one by an edge (in any direction)
         """
-    def getNodeDistances(self, source: int) -> dict[int, float]:
+    def getNodeDistances(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, float]:
         """
-        Topological distance (number of edges) from source to every reachable node
+        Distance from source to every reachable node, as a dict {node_id: distance}.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def getNodeIDs(self) -> list[int]:
         """
@@ -292,9 +314,15 @@ class CNetworkOfPoses3DCov:
         """
         Recomputes all node poses by composing edges along the shortest-path spanning tree from the root node
         """
-    def dijkstra_path(self, source: int, target: int) -> list[int]:
+    def dijkstra_path(self, source: int, target: int, edge_weight: typing.Callable | None = None) -> list[int]:
         """
-        Shortest path (fewest edges) between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        Shortest path between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
+        """
+    def dijkstra_tree(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, int]:
+        """
+        Spanning tree of the shortest paths from source to every reachable node, as a dict {node_id: parent_id} (source itself is not a key).
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def edgeCount(self) -> int:
         """
@@ -320,9 +348,10 @@ class CNetworkOfPoses3DCov:
         """
         IDs of the nodes connected to the given one by an edge (in any direction)
         """
-    def getNodeDistances(self, source: int) -> dict[int, float]:
+    def getNodeDistances(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, float]:
         """
-        Topological distance (number of edges) from source to every reachable node
+        Distance from source to every reachable node, as a dict {node_id: distance}.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def getNodeIDs(self) -> list[int]:
         """
@@ -382,9 +411,15 @@ class CNetworkOfPoses2DInf:
         """
         Recomputes all node poses by composing edges along the shortest-path spanning tree from the root node
         """
-    def dijkstra_path(self, source: int, target: int) -> list[int]:
+    def dijkstra_path(self, source: int, target: int, edge_weight: typing.Callable | None = None) -> list[int]:
         """
-        Shortest path (fewest edges) between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        Shortest path between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
+        """
+    def dijkstra_tree(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, int]:
+        """
+        Spanning tree of the shortest paths from source to every reachable node, as a dict {node_id: parent_id} (source itself is not a key).
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def edgeCount(self) -> int:
         """
@@ -410,9 +445,10 @@ class CNetworkOfPoses2DInf:
         """
         IDs of the nodes connected to the given one by an edge (in any direction)
         """
-    def getNodeDistances(self, source: int) -> dict[int, float]:
+    def getNodeDistances(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, float]:
         """
-        Topological distance (number of edges) from source to every reachable node
+        Distance from source to every reachable node, as a dict {node_id: distance}.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def getNodeIDs(self) -> list[int]:
         """
@@ -472,9 +508,15 @@ class CNetworkOfPoses3DInf:
         """
         Recomputes all node poses by composing edges along the shortest-path spanning tree from the root node
         """
-    def dijkstra_path(self, source: int, target: int) -> list[int]:
+    def dijkstra_path(self, source: int, target: int, edge_weight: typing.Callable | None = None) -> list[int]:
         """
-        Shortest path (fewest edges) between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        Shortest path between two nodes as a list of node IDs, from source to target, ignoring edge directions. Raises ValueError if target is unreachable.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
+        """
+    def dijkstra_tree(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, int]:
+        """
+        Spanning tree of the shortest paths from source to every reachable node, as a dict {node_id: parent_id} (source itself is not a key).
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def edgeCount(self) -> int:
         """
@@ -500,9 +542,10 @@ class CNetworkOfPoses3DInf:
         """
         IDs of the nodes connected to the given one by an edge (in any direction)
         """
-    def getNodeDistances(self, source: int) -> dict[int, float]:
+    def getNodeDistances(self, source: int, edge_weight: typing.Callable | None = None) -> dict[int, float]:
         """
-        Topological distance (number of edges) from source to every reachable node
+        Distance from source to every reachable node, as a dict {node_id: distance}.
+        edge_weight: optional function(from_id, to_id, edge) -> float returning the non-negative cost of traversing an edge, e.g. lambda a, b, e: e.norm() for metric distances (e.mean.norm() in graphs with Gaussian edges). If several edges join two nodes, in any direction, the cheapest one is used. Default: 1 per edge (fewest edges).
         """
     def getNodeIDs(self) -> list[int]:
         """

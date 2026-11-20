@@ -2,6 +2,9 @@
 Changelog for package mrpt_tfest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.4 (2026-11-20)
+------------------
+
 3.6.3 (2026-11-13)
 ------------------
 * Python bindings: se3_l2(), se2_l2_robust(), SE(2) covariance and missing parameters (`#1502 <https://github.com/MRPT/mrpt/issues/1502>`_)

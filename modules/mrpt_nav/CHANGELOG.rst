@@ -2,6 +2,9 @@
 Changelog for package mrpt_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.4 (2026-11-20)
+------------------
+
 3.6.3 (2026-11-13)
 ------------------
 * CPTG_Holo_Blend: map the origin in inverseMap_WS2TP(); getPathStepForDist() follows the base class contract (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)

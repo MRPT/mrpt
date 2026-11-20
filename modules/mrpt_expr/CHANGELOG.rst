@@ -2,6 +2,9 @@
 Changelog for package mrpt_expr
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.4 (2026-11-20)
+------------------
+
 3.6.3 (2026-11-13)
 ------------------
 * CRuntimeCompiledExpression: fix recompilation with other variables, and accept any callable as a user function (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)

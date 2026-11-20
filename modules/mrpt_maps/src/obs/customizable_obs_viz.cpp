@@ -22,6 +22,8 @@
 #include <mrpt/viz/stock_objects.h>
 
 #include <algorithm>  // std::clamp
+#include <array>
+#include <cmath>
 #include <limits>
 #include <utility>
 
@@ -150,6 +152,9 @@ void printRecolorLengthMismatchError()
 }
 
 /// O(n) approximate percentile via histogram. Returns {lo, hi} trimmed limits.
+/// A few far outliers make the bins of a histogram over the raw range very wide,
+/// so the search is repeated within the bins where the limits fell, until the
+/// bins are fine compared with the trimmed range.
 /// @param data     pointer to the raw values (float approximation is fine for coloring)
 /// @param n        number of elements
 /// @param lo_frac  lower tail fraction to cut  (e.g. 0.025)
@@ -160,51 +165,84 @@ template <typename T>
 std::pair<float, float> histogramPercentileLimits(
     const T* data, std::size_t n, float lo_frac, float hi_frac, float rawMin, float rawMax)
 {
-  if (n == 0 || rawMin >= rawMax) return {rawMin, rawMax};
-
-  constexpr int BINS = 512;
-  std::array<uint32_t, BINS> hist{};  // zero-init, stack allocation
-  hist.fill(0);
-
-  const float scale = (BINS - 1) / (rawMax - rawMin);
-
-  for (std::size_t i = 0; i < n; ++i)
+  if (n == 0 || !(rawMin < rawMax))
   {
-    const int bin = static_cast<int>((static_cast<float>(data[i]) - rawMin) * scale);
-    // clamp defensively (NaN-safe via the cast, but guard the index)
-    hist[std::clamp(bin, 0, BINS - 1)]++;
+    return {rawMin, rawMax};
   }
 
   const auto lo_count = static_cast<uint64_t>(lo_frac * static_cast<float>(n));
   const auto hi_count = static_cast<uint64_t>(hi_frac * static_cast<float>(n));
 
-  float trimmedMin = rawMin, trimmedMax = rawMax;
+  constexpr int BINS = 512;
+  constexpr int MAX_PASSES = 4;
+  std::array<uint32_t, BINS> hist{};
 
-  // Walk from low end to find lo percentile bin
-  uint64_t acc = 0;
-  for (int b = 0; b < BINS; ++b)
+  float rangeMin = rawMin;
+  float rangeMax = rawMax;
+  for (int pass = 0; pass < MAX_PASSES; ++pass)
   {
-    acc += hist[b];
-    if (acc >= lo_count)
+    hist.fill(0);
+    const float binWidth = (rangeMax - rangeMin) / BINS;
+    const float scale = 1.0f / binWidth;
+    // Values outside the current range count towards the tails:
+    uint64_t below = 0;
+    uint64_t above = 0;
+    for (std::size_t i = 0; i < n; ++i)
     {
-      trimmedMin = rawMin + (static_cast<float>(b) / scale);
+      const auto v = static_cast<float>(data[i]);
+      if (std::isnan(v))
+      {
+        continue;
+      }
+      if (v < rangeMin)
+      {
+        below++;
+        continue;
+      }
+      if (v > rangeMax)
+      {
+        above++;
+        continue;
+      }
+      hist[std::clamp(static_cast<int>((v - rangeMin) * scale), 0, BINS - 1)]++;
+    }
+
+    // The bins holding the lo and hi percentiles:
+    int binLo = 0;
+    uint64_t acc = below;
+    for (int b = 0; b < BINS; ++b)
+    {
+      acc += hist[b];
+      if (acc > lo_count)
+      {
+        binLo = b;
+        break;
+      }
+    }
+    int binHi = BINS - 1;
+    acc = above;
+    for (int b = BINS - 1; b >= 0; --b)
+    {
+      acc += hist[b];
+      if (acc > hi_count)
+      {
+        binHi = b;
+        break;
+      }
+    }
+    binHi = std::max(binHi, binLo);
+
+    const float newMin = rangeMin + static_cast<float>(binLo) * binWidth;
+    const float newMax = rangeMin + static_cast<float>(binHi + 1) * binWidth;
+    const bool converged = (newMax - newMin) > 0.25f * (rangeMax - rangeMin);
+    rangeMin = newMin;
+    rangeMax = std::min(newMax, rawMax);
+    if (converged || !(rangeMin < rangeMax))
+    {
       break;
     }
   }
-
-  // Walk from high end to find hi percentile bin
-  acc = 0;
-  for (int b = BINS - 1; b >= 0; --b)
-  {
-    acc += hist[b];
-    if (acc >= hi_count)
-    {
-      trimmedMax = rawMin + (static_cast<float>(b) / scale);
-      break;
-    }
-  }
-
-  return {trimmedMin, trimmedMax};
+  return {rangeMin, rangeMax};
 }
 
 }  // namespace
@@ -382,8 +420,8 @@ void mrpt::obs::recolorize3Dpc(
   // --- Outlier rejection (histogram percentile, O(n), no allocation) ---
   auto effectiveLimits = std::make_pair(bb.first, bb.second);
   if (p.outlierRejectionPercentile.has_value() &&
-      !p.colorMapMinCoord.has_value() &&  // skip if user pinned the range
-      !p.colorMapMaxCoord.has_value())
+      // skip if the user pinned the whole range:
+      !(p.colorMapMinCoord.has_value() && p.colorMapMaxCoord.has_value()))
   {
     const float pct = std::clamp(*p.outlierRejectionPercentile, 0.0f, 0.499f);
     if (pct > 0.0f)
@@ -414,6 +452,16 @@ void mrpt::obs::recolorize3Dpc(
             fieldData_u32->data(), dataPoints, pct, pct, bb.first, bb.second);
       }
     }
+  }
+
+  // Pinned limits always win:
+  if (p.colorMapMinCoord.has_value())
+  {
+    effectiveLimits.first = *p.colorMapMinCoord;
+  }
+  if (p.colorMapMaxCoord.has_value())
+  {
+    effectiveLimits.second = *p.colorMapMaxCoord;
   }
 
   const float colMin = p.invertColorMapping ? effectiveLimits.second : effectiveLimits.first;

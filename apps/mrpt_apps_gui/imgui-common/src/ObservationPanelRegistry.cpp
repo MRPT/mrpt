@@ -210,7 +210,7 @@ bool editVisualizationParameters(PanelContext& ctx)
     ImGui::EndCombo();
   }
   int cmap = static_cast<int>(p.coloring.colorMap);
-  if (ImGui::Combo("Color map", &cmap, "Grayscale\0Jet\0Hot\0"))
+  if (ImGui::Combo("Color map", &cmap, "Grayscale\0Jet\0Hot\0Turbo\0"))
   {
     p.coloring.colorMap = static_cast<mrpt::img::TColormap>(cmap);
     changed = true;

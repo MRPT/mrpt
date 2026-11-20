@@ -2,6 +2,22 @@
 Changelog for package mrpt_graphs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.4 (2026-11-20)
+------------------
+* Merge pull request `#1506 <https://github.com/MRPT/mrpt/issues/1506>`_ from MRPT/feat/graphs-dijkstra-edge-weight
+  mrpt_graphs Python: Dijkstra with custom edge costs, dijkstra_tree(); link the Python notebooks in the docs
+* CDijkstra: fix build on macOS, where TNodeID and the neighbor IDs differ in type
+* CDijkstra: with custom edge costs, use the cheapest of several edges between two nodes
+  Only the first edge stored as u->i was costed, ignoring a cheaper reverse
+  (i->u) or parallel edge. Python docs: e.mean.norm() for Gaussian edges, and
+  notebook local-run instructions.
+* mrpt_graphs Python: custom edge costs in Dijkstra, and dijkstra_tree()
+  dijkstra_path() and getNodeDistances() accept an optional
+  edge_weight(from_id, to_id, edge) -> float function (default: one per edge),
+  e.g. edge.norm() for metric distances. The new dijkstra_tree() returns the
+  shortest-path spanning tree as {node: parent}.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.3 (2026-11-13)
 ------------------
 * NotConnectedGraph: what() now overrides std::exception::what() (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)

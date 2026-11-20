@@ -2,6 +2,9 @@
 Changelog for package mrpt_poses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.4 (2026-11-20)
+------------------
+
 3.6.3 (2026-11-13)
 ------------------
 * CPoseInterpolatorBase: fix the documented default interpolation method (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)

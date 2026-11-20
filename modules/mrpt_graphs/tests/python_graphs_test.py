@@ -55,6 +55,30 @@ check("dijkstra_path reverse", gd.dijkstra_path(4, 0) == [4, 1, 0])
 dists = gd.getNodeDistances(0)
 check("topological distances", dists == {0: 0.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 2.0}, f"got {dists}")
 check("neighbors", gd.getNeighborsOf(1) == {0, 2, 4})
+check("dijkstra_tree", gd.dijkstra_tree(0) == {1: 0, 2: 1, 3: 2, 4: 1}, f"got {gd.dijkstra_tree(0)}")
+metric = lambda a, b, e: e.norm()
+gm = _G2()  # a chain of 1 m edges, and a 5 m shortcut 0 -> 3
+for i in range(3):
+    gm.insertEdge(i, i + 1, _CP2(1.0, 0.0, 0.0))
+gm.insertEdge(0, 3, _CP2(3.0, 4.0, 0.0))
+check("hops dijkstra_path takes shortcut", gm.dijkstra_path(0, 3) == [0, 3])
+check("metric dijkstra_path avoids long edge", gm.dijkstra_path(0, 3, edge_weight=metric) ==
+      [0, 1, 2, 3], f"got {gm.dijkstra_path(0, 3, edge_weight=metric)}")
+mdists = gm.getNodeDistances(0, edge_weight=metric)
+check("metric distances", abs(mdists[3] - 3.0) < 1e-12, f"got {mdists}")
+check("metric dijkstra_tree", gm.dijkstra_tree(0, metric) == {1: 0, 2: 1, 3: 2})
+gr = _G2()  # the cheaper of two opposite edges is used
+gr.insertEdge(0, 1, _CP2(10.0, 0.0, 0.0))
+gr.insertEdge(1, 0, _CP2(-1.0, 0.0, 0.0))
+gr.insertEdge(0, 2, _CP2(2.0, 0.0, 0.0))
+gr.insertEdge(2, 1, _CP2(2.0, 0.0, 0.0))
+check("metric uses the cheaper reverse edge", gr.dijkstra_path(0, 1, edge_weight=metric) == [0, 1]
+      and abs(gr.getNodeDistances(0, metric)[1] - 1.0) < 1e-12, f"got {gr.getNodeDistances(0, metric)}")
+try:
+    gd.dijkstra_path(0, 4, edge_weight=lambda a, b, e: -1.0)
+    check("negative edge weight raises", False)
+except ValueError:
+    check("negative edge weight raises", True)
 gd.root = 0
 gd.dijkstra_nodes_estimate()
 gdis = _G2()

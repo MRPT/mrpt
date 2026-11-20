@@ -6,7 +6,7 @@ import mrpt.math
 import mrpt.serialization
 import numpy
 import typing
-__all__: list[str] = ['CImage', 'DistortionModel', 'PixelDepth', 'TCamera', 'TColor', 'TColorf', 'TColormap', 'TPixelCoord', 'TPixelCoordf', 'TStereoCamera', 'cmGRAYSCALE', 'cmHOT', 'cmJET', 'cmNONE', 'colormap', 'kannala_brandt', 'none', 'plumb_bob']
+__all__: list[str] = ['CImage', 'DistortionModel', 'PixelDepth', 'TCamera', 'TColor', 'TColorf', 'TColormap', 'TPixelCoord', 'TPixelCoordf', 'TStereoCamera', 'cmGRAYSCALE', 'cmHOT', 'cmJET', 'cmNONE', 'cmTURBO', 'colormap', 'kannala_brandt', 'none', 'plumb_bob']
 class DistortionModel:
     """
     Members:
@@ -274,12 +274,15 @@ class TColormap:
       cmJET
     
       cmHOT
+    
+      cmTURBO
     """
     __members__: typing.ClassVar[dict[str, TColormap]]
     cmGRAYSCALE: typing.ClassVar[TColormap]
     cmHOT: typing.ClassVar[TColormap]
     cmJET: typing.ClassVar[TColormap]
     cmNONE: typing.ClassVar[TColormap]
+    cmTURBO: typing.ClassVar[TColormap]
     def __eq__(self, other: typing.Any) -> bool:
         ...
     def __getstate__(self) -> int:
@@ -314,6 +317,7 @@ cmGRAYSCALE: TColormap
 cmHOT: TColormap
 cmJET: TColormap
 cmNONE: TColormap
+cmTURBO: TColormap
 kannala_brandt: DistortionModel
 none: DistortionModel
 plumb_bob: DistortionModel

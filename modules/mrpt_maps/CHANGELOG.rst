@@ -2,6 +2,19 @@
 Changelog for package mrpt_maps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.4 (2026-11-20)
+------------------
+* recolorize3Dpc: precise outlier percentiles with far outliers; honor pinned colormap limits (`#1509 <https://github.com/MRPT/mrpt/issues/1509>`_)
+  - The histogram that finds the outlier percentiles spans the raw data range,
+  so a few far points made its bins wider than the rest of the data: both
+  limits could fall in the same bin and the cloud got a single color. The
+  search is now repeated within the bins where the limits fell, and the upper
+  limit is the upper edge of its bin.
+  - colorMapMinCoord / colorMapMaxCoord were documented but ignored (they only
+  disabled the outlier rejection). They now set the colormap limits, and
+  pinning one of them keeps the outlier rejection for the other.
+* Contributors: Jose Luis Blanco-Claraco
+
 3.6.3 (2026-11-13)
 ------------------
 * COccupancyGridMap2D: fix ray angles when inserting 2D scans (`#1503 <https://github.com/MRPT/mrpt/issues/1503>`_)
