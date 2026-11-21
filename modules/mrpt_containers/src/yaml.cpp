@@ -26,12 +26,15 @@
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <istream>
 #include <iterator>
+#include <locale>
 #include <memory>
 #include <optional>
 #include <regex>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -512,6 +515,18 @@ void printJSONNewLine(std::ostream& o, unsigned int indent, unsigned int level)
 
 void printJSONNode(const yaml::node_t& n, std::ostream& o, unsigned int indent, unsigned int level);
 
+// Independent of the global locale and of the output stream state, so the
+// result is always a valid JSON number. 17 significant digits round-trip any
+// IEEE-754 double.
+template <typename T>
+std::string toJSONNumber(const T val)
+{
+  std::ostringstream ss;
+  ss.imbue(std::locale::classic());
+  ss << std::setprecision(17) << val;
+  return ss.str();
+}
+
 void printJSONScalar(
     const yaml::scalar_t& v, std::ostream& o, unsigned int indent, unsigned int level)
 {
@@ -529,7 +544,7 @@ void printJSONScalar(
         }
         else if constexpr (std::is_same_v<V, int64_t> || std::is_same_v<V, uint64_t>)
         {
-          o << val;
+          o << toJSONNumber(val);
         }
         else if constexpr (std::is_same_v<V, double>)
         {
@@ -543,9 +558,9 @@ void printJSONScalar(
           }
           else
           {
-            // 17 significant digits round-trip any IEEE-754 double. Keep a
-            // decimal point so it is read back as a double, not an integer.
-            const std::string s = mrpt::format("%.17g", val);
+            // Keep a decimal point so it is read back as a double, not an
+            // integer.
+            const std::string s = toJSONNumber(val);
             o << s;
             if (s.find_first_of(".eE") == std::string::npos)
             {
@@ -1243,7 +1258,8 @@ yaml::scalar_t textToScalar(const std::string& s)
     char* end = nullptr;
     errno = 0;
     const double dv = std::strtod(s.c_str(), &end);
-    if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
+    // ERANGE is also set on underflow (e.g. subnormals): only reject overflow.
+    if (end != nullptr && end != s.c_str() && *end == '\0' && (errno != ERANGE || !std::isinf(dv)))
     {
       return yaml::scalar_t(dv);
     }

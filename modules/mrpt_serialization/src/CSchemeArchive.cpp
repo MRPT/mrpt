@@ -201,6 +201,10 @@ class CSchemeArchiveYAML : public CSchemeArchiveBase_impl
           n->d.emplace<yaml::sequence_t>();
         }
         auto& seq = n->asSequence();
+        if (idx >= seq.max_size())
+        {
+          THROW_EXCEPTION_FMT("Sequence index out of range: %zu", idx);
+        }
         if (idx >= seq.size())
         {
           seq.resize(idx + 1);

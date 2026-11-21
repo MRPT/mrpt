@@ -21,6 +21,7 @@
 #include <filesystem>
 #include <fstream>
 #include <limits>
+#include <locale>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -1801,6 +1802,7 @@ TEST(yaml, printAsJSONRoundTrip)
   d["nan"] = std::numeric_limits<double>::quiet_NaN();
   d["pinf"] = std::numeric_limits<double>::infinity();
   d["ninf"] = -std::numeric_limits<double>::infinity();
+  d["denorm"] = std::numeric_limits<double>::denorm_min();
   d["flag"] = false;
   d["empty_map"] = yaml::Map();
   d["empty_seq"] = yaml::Sequence();
@@ -1822,6 +1824,8 @@ TEST(yaml, printAsJSONRoundTrip)
     EXPECT_TRUE(std::isnan(r["nan"].as<double>()));
     EXPECT_EQ(r["pinf"].as<double>(), std::numeric_limits<double>::infinity());
     EXPECT_EQ(r["ninf"].as<double>(), -std::numeric_limits<double>::infinity());
+    EXPECT_TRUE(std::holds_alternative<double>(r["denorm"].asScalar())) << ss.str();
+    EXPECT_EQ(r["denorm"].as<double>(), std::numeric_limits<double>::denorm_min());
     EXPECT_FALSE(r["flag"].as<bool>());
     EXPECT_TRUE(r["empty_map"].isMap());
     EXPECT_EQ(r["empty_map"].size(), 0U);
@@ -1844,6 +1848,29 @@ TEST(yaml, printAsJSONCompact)
   std::stringstream ss;
   d.printAsJSON(ss, 0);
   EXPECT_EQ(ss.str(), "{\"a\":1,\"b\":[true,\"t\"]}\n");
+}
+
+namespace
+{
+struct CommaDecimalPoint : std::numpunct<char>
+{
+  char do_decimal_point() const override { return ','; }
+};
+}  // namespace
+
+TEST(yaml, printAsJSONIgnoresStreamFormatting)
+{
+  using mrpt::containers::yaml;
+  yaml d = yaml::Map();
+  d["i"] = 255;
+  d["d"] = 1.5;
+  std::stringstream ss;
+  ss.imbue(std::locale(std::locale::classic(), new CommaDecimalPoint));
+  ss << std::hex << std::showbase;
+  d.printAsJSON(ss, 0);
+  EXPECT_EQ(ss.str(), "{\"i\":255,\"d\":1.5}\n");
+  // The caller's stream state is kept:
+  EXPECT_TRUE((ss.flags() & std::ios_base::hex) != 0);
 }
 
 #endif  // MRPT_HAS_FYAML
