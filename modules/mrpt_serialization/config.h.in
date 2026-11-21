@@ -12,7 +12,8 @@
 
 // clang-format off
 
-/** jsoncpp is present */ 
-#define MRPT_HAS_JSONCPP ${CMAKE_MRPT_HAS_JSONCPP}
+/** Deprecated: JSON schema archives (archiveJSON()) no longer need jsoncpp
+ * and are always available. Kept for backwards compatibility. */
+#define MRPT_HAS_JSONCPP 1
 
 // clang-format on

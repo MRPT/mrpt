@@ -17,9 +17,12 @@
 #include <mrpt/containers/yaml.h>
 
 #include <algorithm>  // count()
+#include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <regex>
+#include <sstream>
 #include <stdexcept>
 
 #include "mrpt_test.h"
@@ -1759,6 +1762,88 @@ TEST(yaml, parseErrorsThrowWithPosition)
   const auto j = mrpt::containers::yaml::FromText(R"({"a": [1, 2], "b": {"c": 3.5}})");
   EXPECT_EQ(j["a"](1).as<int>(), 2);
   EXPECT_DOUBLE_EQ(j["b"]["c"].as<double>(), 3.5);
+}
+
+TEST(yaml, quotedScalarsAreStrings)
+{
+  const auto d = mrpt::containers::yaml::FromText(R"(
+plain_int: 123
+quoted_int: "123"
+quoted_bool: 'yes'
+quoted_null: "null"
+quoted_float: "1.50"
+literal: |
+  42
+)");
+  EXPECT_TRUE(std::holds_alternative<int64_t>(d["plain_int"].asScalar()));
+  EXPECT_EQ(d["quoted_int"].as<std::string>(), "123");
+  EXPECT_EQ(d["quoted_bool"].as<std::string>(), "yes");
+  EXPECT_EQ(d["quoted_null"].as<std::string>(), "null");
+  EXPECT_EQ(d["quoted_float"].as<std::string>(), "1.50");
+  EXPECT_EQ(d["literal"].as<std::string>(), "42\n");
+
+  // Typed getters still convert quoted numbers:
+  EXPECT_EQ(d["quoted_int"].as<int>(), 123);
+  EXPECT_DOUBLE_EQ(d["quoted_float"].as<double>(), 1.5);
+}
+
+TEST(yaml, printAsJSONRoundTrip)
+{
+  using mrpt::containers::yaml;
+
+  yaml d = yaml::Map();
+  d["str"] = std::string("a \"quoted\" \\ text\nwith\ttabs and \x01 control");
+  d["numeric_str"] = std::string("007");
+  d["i64"] = static_cast<int64_t>(-134397633498449645LL);
+  d["u64"] = std::numeric_limits<uint64_t>::max();
+  d["dbl"] = 0.1;
+  d["dbl_integral"] = 3.0;
+  d["nan"] = std::numeric_limits<double>::quiet_NaN();
+  d["pinf"] = std::numeric_limits<double>::infinity();
+  d["ninf"] = -std::numeric_limits<double>::infinity();
+  d["flag"] = false;
+  d["empty_map"] = yaml::Map();
+  d["empty_seq"] = yaml::Sequence();
+  d["seq"] = yaml::Sequence({1, 2.5, "x"});
+  d["nested"]["a"]["b"] = 5;
+
+  for (const unsigned int indent : {0U, 2U})
+  {
+    std::stringstream ss;
+    d.printAsJSON(ss, indent);
+    const auto r = yaml::FromText(ss.str());
+
+    EXPECT_EQ(r["str"].as<std::string>(), d["str"].as<std::string>()) << ss.str();
+    EXPECT_EQ(r["numeric_str"].as<std::string>(), "007");
+    EXPECT_EQ(r["i64"].as<int64_t>(), -134397633498449645LL);
+    EXPECT_EQ(r["u64"].as<uint64_t>(), std::numeric_limits<uint64_t>::max());
+    EXPECT_EQ(r["dbl"].as<double>(), 0.1);
+    EXPECT_TRUE(std::holds_alternative<double>(r["dbl_integral"].asScalar()));
+    EXPECT_TRUE(std::isnan(r["nan"].as<double>()));
+    EXPECT_EQ(r["pinf"].as<double>(), std::numeric_limits<double>::infinity());
+    EXPECT_EQ(r["ninf"].as<double>(), -std::numeric_limits<double>::infinity());
+    EXPECT_FALSE(r["flag"].as<bool>());
+    EXPECT_TRUE(r["empty_map"].isMap());
+    EXPECT_EQ(r["empty_map"].size(), 0U);
+    EXPECT_TRUE(r["empty_seq"].isSequence());
+    EXPECT_EQ(r["empty_seq"].size(), 0U);
+    ASSERT_EQ(r["seq"].size(), 3U);
+    EXPECT_EQ(r["seq"](0).as<int>(), 1);
+    EXPECT_EQ(r["seq"](1).as<double>(), 2.5);
+    EXPECT_EQ(r["seq"](2).as<std::string>(), "x");
+    EXPECT_EQ(r["nested"]["a"]["b"].as<int>(), 5);
+  }
+}
+
+TEST(yaml, printAsJSONCompact)
+{
+  using mrpt::containers::yaml;
+  yaml d = yaml::Map();
+  d["a"] = 1;
+  d["b"] = yaml::Sequence({true, "t"});
+  std::stringstream ss;
+  d.printAsJSON(ss, 0);
+  EXPECT_EQ(ss.str(), "{\"a\":1,\"b\":[true,\"t\"]}\n");
 }
 
 #endif  // MRPT_HAS_FYAML

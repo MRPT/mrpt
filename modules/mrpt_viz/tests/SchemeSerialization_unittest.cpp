@@ -17,16 +17,16 @@
  */
 
 #include <gtest/gtest.h>
+#include <mrpt/containers/config.h>  // MRPT_HAS_FYAML
 #include <mrpt/serialization/CSchemeArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
-#include <mrpt/serialization/config.h>  // MRPT_HAS_JSONCPP
 #include <mrpt/viz/CArrow.h>
 #include <mrpt/viz/CCylinder.h>
 #include <mrpt/viz/CPointCloud.h>
 
 #include <sstream>
 
-#if MRPT_HAS_JSONCPP
+#if MRPT_HAS_FYAML
 
 using namespace mrpt::viz;
 
@@ -121,4 +121,4 @@ TEST(SchemeSerialization, UnknownDatatypeVersionThrows)
   EXPECT_THROW(arch2.readTo(b), std::exception);
 }
 
-#endif  // MRPT_HAS_JSONCPP
+#endif  // MRPT_HAS_FYAML

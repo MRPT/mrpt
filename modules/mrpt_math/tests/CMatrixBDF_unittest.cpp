@@ -13,6 +13,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/containers/config.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/CMatrixB.h>
 #include <mrpt/math/CMatrixD.h>
@@ -20,7 +21,6 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/config.h>
 
 using namespace mrpt::math;
 
@@ -97,7 +97,7 @@ TEST(CMatrixD, CopyFromFloatMatrix)
   EXPECT_NEAR(md(1, 1), 4.0, 1e-6);
 }
 
-#if MRPT_HAS_JSONCPP
+#if MRPT_HAS_FYAML
 #include <mrpt/serialization/CSchemeArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 

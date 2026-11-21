@@ -75,27 +75,16 @@ Write me!
 ## Schema (plain-text) serialization (human readable)
 
 An alternative mechanism to serialize objects is based on
-mrpt::serialization::CSchemeArchive and allow objects to be (de)serialized in
-plain text formats like XML, JSON, YAML, etc.
-For now (Aug 2018) only JSON is implemented.
+mrpt::serialization::CSchemeArchiveBase, which allows objects to be
+(de)serialized in plain text formats. For now, only JSON is implemented, via
+mrpt::serialization::archiveJSON(). The document is held in a
+mrpt::containers::yaml tree, so no external JSON library is required.
 
-### Example #1: Easy JSON serialization
-
-This method only requires having MRPT built against jsoncpp, but does not
-enforce the user to also depend on that library.
+### Example: JSON serialization
 
 See: \ref serialization_json_example/main.cpp
 \snippet serialization_json_example/main.cpp example
 Output:
 \include serialization_json_example/console.out
-
-### Example #2: JSON serialization with full access to jsoncpp
-
-If you want to have full control on the JSON formatting and other details,
-you may directly depend on jsoncpp and use the following, template-based access
-to MRPT serialization:
-
-See: \ref serialization_json_example/main.cpp
-\snippet serialization_json_example/main.cpp example_raw
 
 # Library contents

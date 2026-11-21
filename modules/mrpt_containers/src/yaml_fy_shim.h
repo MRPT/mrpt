@@ -51,6 +51,7 @@ extern "C"
 
     char* text;  // MRPT_FY_EV_SCALAR only
     size_t text_len;
+    int is_quoted;  // MRPT_FY_EV_SCALAR only: quoted or block scalar
 
     char* anchor_text;  // MRPT_FY_EV_SCALAR only, debug logging, may be NULL
 

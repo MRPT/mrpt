@@ -130,6 +130,10 @@ mrpt_add_library(
 
 ## 4. Module-specific pitfalls
 
+* **mrpt_containers**: `yaml` maps and sequences are vectors, so references to
+  their nodes are invalidated when siblings are added (the JSON schema archive
+  of `mrpt_serialization` keeps paths from the root instead). Quoted and block
+  scalars always parse as strings; typed `as<T>()` getters still convert them.
 * **mrpt_math**: fixed-size matrices are explicitly instantiated only for some
   sizes (square `CMatrixFixed`: 2,3,4,6,7,12; `CVectorFixed`: 2,3,4,5,6,7,12;
   see `src/MatrixVectorBase_instantiate_*.cpp`). Other sizes compile but fail

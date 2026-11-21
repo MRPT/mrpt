@@ -88,29 +88,3 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
     return -1;
   }
 }
-
-#if 0  // code disabled, only present as an example for the docs:
-
-//! [example_raw]
-#include <json/json.h>
-
-void test()
-{
-	Json::Value val;
-	auto arch = mrpt::serialization::CSchemeArchiveBase(
-		std::make_unique<CSchemeArchive<Json::Value>>(val));
-
-	mrpt::poses::CPose2D pt1{1.0, 2.0, 3.0};
-	// Store any CSerializable object into the JSON value:
-	arch = pt1;
-	// Alternative:
-	// arch["pose"] = pt1;
-
-	std::stringstream ss;
-	ss << val;
-	std::cout << val << "\n";
-}
-
-//! [example_raw]
-
-#endif
