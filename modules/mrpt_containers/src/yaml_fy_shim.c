@@ -212,6 +212,10 @@ int mrpt_fy_parser_next(mrpt_fy_parser_t* p, mrpt_fy_event_t* out)
         out->type = MRPT_FY_EV_SCALAR;
         out->text = dup_text(txt, len);
         out->text_len = txt ? len : 0;
+        {
+          const enum fy_scalar_style st = fy_token_scalar_style(ev->scalar.value);
+          out->is_quoted = (st != FYSS_PLAIN && st != FYSS_ANY) ? 1 : 0;
+        }
         out->anchor_text = dup_anchor_text(ev->scalar.anchor);
         fill_comments_and_mark(ev->scalar.value, out);
 

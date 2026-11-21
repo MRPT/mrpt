@@ -10,7 +10,7 @@ set -euo pipefail
 dnf install -y epel-release
 dnf install -y \
   ccache \
-  zlib-devel libzstd-devel lz4-devel jsoncpp-devel \
+  zlib-devel libzstd-devel lz4-devel \
   mesa-libGL-devel mesa-libEGL-devel libglvnd-devel \
   libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel \
   libXxf86vm-devel

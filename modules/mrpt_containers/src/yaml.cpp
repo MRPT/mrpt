@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cerrno>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -454,6 +455,199 @@ void yaml::printDebugStructure(std::ostream& o) const
   const node_t* n = dereferenceProxy();
   unsigned int const indent = 0;
   internalPrintDebugStructure(*n, o, indent);
+}
+
+namespace
+{
+void printJSONString(const std::string& s, std::ostream& o)
+{
+  o << '"';
+  for (const char c : s)
+  {
+    switch (c)
+    {
+      case '"':
+        o << "\\\"";
+        break;
+      case '\\':
+        o << "\\\\";
+        break;
+      case '\n':
+        o << "\\n";
+        break;
+      case '\r':
+        o << "\\r";
+        break;
+      case '\t':
+        o << "\\t";
+        break;
+      case '\b':
+        o << "\\b";
+        break;
+      case '\f':
+        o << "\\f";
+        break;
+      default:
+        if (static_cast<unsigned char>(c) < 0x20)
+        {
+          o << mrpt::format("\\u%04x", static_cast<unsigned int>(static_cast<unsigned char>(c)));
+        }
+        else
+        {
+          o << c;
+        }
+    }
+  }
+  o << '"';
+}
+
+void printJSONNewLine(std::ostream& o, unsigned int indent, unsigned int level)
+{
+  if (indent == 0)
+  {
+    return;
+  }
+  o << '\n' << std::string(static_cast<size_t>(indent) * level, ' ');
+}
+
+void printJSONNode(const yaml::node_t& n, std::ostream& o, unsigned int indent, unsigned int level);
+
+void printJSONScalar(
+    const yaml::scalar_t& v, std::ostream& o, unsigned int indent, unsigned int level)
+{
+  std::visit(
+      [&](const auto& val)
+      {
+        using V = std::decay_t<decltype(val)>;
+        if constexpr (std::is_same_v<V, std::monostate>)
+        {
+          o << "null";
+        }
+        else if constexpr (std::is_same_v<V, bool>)
+        {
+          o << (val ? "true" : "false");
+        }
+        else if constexpr (std::is_same_v<V, int64_t> || std::is_same_v<V, uint64_t>)
+        {
+          o << val;
+        }
+        else if constexpr (std::is_same_v<V, double>)
+        {
+          if (std::isnan(val))
+          {
+            o << "NaN";
+          }
+          else if (std::isinf(val))
+          {
+            o << (val > 0 ? "Infinity" : "-Infinity");
+          }
+          else
+          {
+            // 17 significant digits round-trip any IEEE-754 double. Keep a
+            // decimal point so it is read back as a double, not an integer.
+            const std::string s = mrpt::format("%.17g", val);
+            o << s;
+            if (s.find_first_of(".eE") == std::string::npos)
+            {
+              o << ".0";
+            }
+          }
+        }
+        else if constexpr (std::is_same_v<V, std::string>)
+        {
+          printJSONString(val, o);
+        }
+        else if constexpr (std::is_same_v<V, std::shared_ptr<yaml>>)
+        {
+          if (val)
+          {
+            printJSONNode(val->node(), o, indent, level);
+          }
+          else
+          {
+            o << "null";
+          }
+        }
+      },
+      v);
+}
+
+void printJSONNode(const yaml::node_t& n, std::ostream& o, unsigned int indent, unsigned int level)
+{
+  if (const auto* sc = std::get_if<yaml::scalar_t>(&n.d); sc != nullptr)
+  {
+    printJSONScalar(*sc, o, indent, level);
+    return;
+  }
+  if (const auto* m = std::get_if<yaml::map_t>(&n.d); m != nullptr)
+  {
+    if (m->empty())
+    {
+      o << "{}";
+      return;
+    }
+    o << '{';
+    bool first = true;
+    for (const auto& [k, v] : *m)
+    {
+      if (!first)
+      {
+        o << ',';
+      }
+      first = false;
+      printJSONNewLine(o, indent, level + 1);
+
+      // JSON keys are always strings:
+      std::string key;
+      if (const auto* ks = std::get_if<yaml::scalar_t>(&k.d); ks != nullptr)
+      {
+        if (const auto* str = std::get_if<std::string>(ks); str != nullptr)
+        {
+          key = *str;
+        }
+        else
+        {
+          key = internal::scalarToString(*ks);
+        }
+      }
+      printJSONString(key, o);
+      o << (indent != 0 ? ": " : ":");
+      printJSONNode(v, o, indent, level + 1);
+    }
+    printJSONNewLine(o, indent, level);
+    o << '}';
+    return;
+  }
+  if (const auto* seq = std::get_if<yaml::sequence_t>(&n.d); seq != nullptr)
+  {
+    if (seq->empty())
+    {
+      o << "[]";
+      return;
+    }
+    o << '[';
+    for (size_t i = 0; i < seq->size(); i++)
+    {
+      if (i != 0)
+      {
+        o << ',';
+      }
+      printJSONNewLine(o, indent, level + 1);
+      printJSONNode((*seq)[i], o, indent, level + 1);
+    }
+    printJSONNewLine(o, indent, level);
+    o << ']';
+    return;
+  }
+  // Never-assigned node:
+  o << "null";
+}
+}  // namespace
+
+void yaml::printAsJSON(std::ostream& o, unsigned int indent) const
+{
+  printJSONNode(*dereferenceProxy(), o, indent, 0);
+  o << '\n';
 }
 
 namespace
@@ -1240,8 +1434,17 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
           "Scalar: value: " << sValue
                             << " anchor: " << (event.anchor_text ? event.anchor_text : ""));
 
+      // Only plain scalars are type-resolved: quoted and block scalars are
+      // always strings (YAML 1.2 core schema, and JSON strings).
       yaml::node_t n;
-      n.d.emplace<yaml::scalar_t>(textToScalar(sValue));
+      if (event.is_quoted != 0)
+      {
+        n.d.emplace<yaml::scalar_t>(sValue);
+      }
+      else
+      {
+        n.d.emplace<yaml::scalar_t>(textToScalar(sValue));
+      }
 
       parseEventCommentsAndMarks(event, n);
       mrpt_fy_event_release(&event);

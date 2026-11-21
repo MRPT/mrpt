@@ -13,15 +13,15 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/containers/config.h>
 #include <mrpt/serialization/CSchemeArchive.h>
-#include <mrpt/serialization/config.h>
 
+#include <cmath>
+#include <limits>
 #include <sstream>
 #include <string>
 
 #include "serialization_test_types.h"
-
-#if MRPT_HAS_JSONCPP
 
 TEST(CSchemeArchive, scalarAssignmentAndConversion)
 {
@@ -75,6 +75,7 @@ TEST(CSchemeArchive, objectRoundTrip)
   EXPECT_EQ(dst.m_str, "hello");
 }
 
+#if MRPT_HAS_FYAML  // parsing text needs libfyaml
 TEST(CSchemeArchive, streamRoundTrip)
 {
   SerTestNS::registerTestClasses();
@@ -101,6 +102,46 @@ TEST(CSchemeArchive, streamRoundTrip)
   EXPECT_EQ(dst.m_str, "streamed");
 }
 
+TEST(CSchemeArchive, streamRoundTripKeepsTypes)
+{
+  auto arch = mrpt::serialization::archiveJSON();
+  arch["numeric_str"] = std::string("123");
+  arch["bool_str"] = std::string("yes");
+  arch["big"] = static_cast<int64_t>(134397633498449645LL);
+  arch["third"] = 1.0 / 3.0;
+  arch["nan"] = std::numeric_limits<double>::quiet_NaN();
+  arch["inf"] = std::numeric_limits<double>::infinity();
+
+  std::stringstream ss;
+  ss << arch;
+  // Standard JSON layout:
+  EXPECT_NE(ss.str().find("\"numeric_str\": \"123\""), std::string::npos) << ss.str();
+
+  auto arch2 = mrpt::serialization::archiveJSON();
+  ss >> arch2;
+  EXPECT_EQ(static_cast<std::string>(arch2["numeric_str"]), "123");
+  EXPECT_EQ(static_cast<std::string>(arch2["bool_str"]), "yes");
+  EXPECT_EQ(static_cast<int64_t>(arch2["big"]), 134397633498449645LL);
+  EXPECT_EQ(static_cast<double>(arch2["third"]), 1.0 / 3.0);
+  EXPECT_TRUE(std::isnan(static_cast<double>(arch2["nan"])));
+  EXPECT_EQ(static_cast<double>(arch2["inf"]), std::numeric_limits<double>::infinity());
+}
+
+TEST(CSchemeArchive, streamOfChildArchive)
+{
+  auto arch = mrpt::serialization::archiveJSON();
+  arch["a"]["x"] = static_cast<int32_t>(4);
+  arch["b"] = static_cast<int32_t>(5);
+
+  std::stringstream ss;
+  ss << arch["a"];
+  auto arch2 = mrpt::serialization::archiveJSON();
+  ss >> arch2;
+  EXPECT_EQ(static_cast<int32_t>(arch2["x"]), 4);
+  EXPECT_EQ(static_cast<int32_t>(arch2["b"]), 0);
+}
+#endif
+
 TEST(CSchemeArchive, readingIntoAnotherClassThrows)
 {
   SerTestNS::registerTestClasses();
@@ -114,7 +155,53 @@ TEST(CSchemeArchive, readingIntoAnotherClassThrows)
   EXPECT_ANY_THROW(arch.readTo(dst));
 }
 
-#endif  // MRPT_HAS_JSONCPP
+TEST(CSchemeArchive, missingEntriesReadAsDefaults)
+{
+  auto arch = mrpt::serialization::archiveJSON();
+  arch["present"] = static_cast<int32_t>(1);
+
+  EXPECT_EQ(static_cast<int32_t>(arch["missing"]), 0);
+  EXPECT_EQ(static_cast<double>(arch["missing"]["deeper"]), 0.0);
+  EXPECT_FALSE(static_cast<bool>(arch["list"][static_cast<size_t>(3)]));
+  EXPECT_EQ(static_cast<std::string>(arch["missing"]), "");
+}
+
+TEST(CSchemeArchive, childStaysValidWhenSiblingsAreAdded)
+{
+  auto arch = mrpt::serialization::archiveJSON();
+  auto first = arch["first"];
+  first["v"] = static_cast<int32_t>(1);
+  // Many siblings, to force reallocations of the parent containers:
+  for (int32_t i = 0; i < 100; i++)
+  {
+    arch["k" + std::to_string(i)] = i;
+    arch["seq"][static_cast<size_t>(i)] = i;
+  }
+  first["w"] = static_cast<int32_t>(2);
+
+  EXPECT_EQ(static_cast<int32_t>(arch["first"]["v"]), 1);
+  EXPECT_EQ(static_cast<int32_t>(arch["first"]["w"]), 2);
+  EXPECT_EQ(static_cast<int32_t>(arch["k99"]), 99);
+  EXPECT_EQ(static_cast<int32_t>(arch["seq"][static_cast<size_t>(42)]), 42);
+}
+
+TEST(CSchemeArchive, movedArchiveStillWritesObjects)
+{
+  SerTestNS::registerTestClasses();
+
+  SerTestNS::WithSchema src;
+  src.m_int = 12;
+  src.m_str = "moved";
+
+  auto arch = mrpt::serialization::archiveJSON();
+  mrpt::serialization::CSchemeArchiveBase moved(std::move(arch));
+  moved = src;
+
+  SerTestNS::WithSchema dst;
+  moved.readTo(dst);
+  EXPECT_EQ(dst.m_int, 12);
+  EXPECT_EQ(dst.m_str, "moved");
+}
 
 TEST(CSchemeArchive, classesWithoutSchemaSupportThrow)
 {
@@ -124,12 +211,7 @@ TEST(CSchemeArchive, classesWithoutSchemaSupportThrow)
   SerTestNS::Foo obj;
   auto& asSerializable = static_cast<mrpt::serialization::CSerializable&>(obj);
 
-#if MRPT_HAS_JSONCPP
   auto arch = mrpt::serialization::archiveJSON();
   EXPECT_ANY_THROW(arch = asSerializable);
   EXPECT_ANY_THROW(arch.readTo(asSerializable));
-#else
-  (void)asSerializable;
-  EXPECT_ANY_THROW(mrpt::serialization::archiveJSON());
-#endif
 }

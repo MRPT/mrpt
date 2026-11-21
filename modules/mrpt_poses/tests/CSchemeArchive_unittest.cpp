@@ -27,12 +27,12 @@
 
 #include <sstream>
 
-// Check if we have jsoncpp to enable those tests:
-#include <mrpt/serialization/config.h>
+// JSON text parsing needs libfyaml:
+#include <mrpt/containers/config.h>
 
 using namespace mrpt::serialization;
 
-#if MRPT_HAS_JSONCPP
+#if MRPT_HAS_FYAML
 TEST(SchemaSerialization, JSON_archive)
 {
   auto arch = archiveJSON();
@@ -40,7 +40,7 @@ TEST(SchemaSerialization, JSON_archive)
   arch = pt1;
   std::stringstream ss;
   ss << arch;
-  auto pos = ss.str().find("\"datatype\" : \"mrpt::poses::CPose2D\"");
+  auto pos = ss.str().find("\"datatype\": \"mrpt::poses::CPose2D\"");
   EXPECT_TRUE(pos != std::string::npos);
 
   // test deserializing:

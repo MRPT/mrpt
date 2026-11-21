@@ -93,7 +93,14 @@ class CSchemeArchiveBase
   // It's better to have the dtor defined here since we'll have derived
   // classes.
   virtual ~CSchemeArchiveBase() = default;
-  CSchemeArchiveBase(CSchemeArchiveBase&& o) : pimpl(std::move(o.pimpl)) {}
+  CSchemeArchiveBase(CSchemeArchiveBase&& o) : pimpl(std::move(o.pimpl))
+  {
+    // The implementation returns and passes its parent: make it point here.
+    if (pimpl)
+    {
+      pimpl->setParent(this);
+    }
+  }
 
   CSchemeArchiveBase& operator=(const int32_t val) { return (*pimpl).operator=(val); }
   CSchemeArchiveBase& operator=(const uint32_t val) { return (*pimpl).operator=(val); }

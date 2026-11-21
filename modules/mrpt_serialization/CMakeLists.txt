@@ -13,8 +13,7 @@ project(mrpt_serialization LANGUAGES C CXX)
 # MRPT CMake scripts: "mrpt_xxx()"
 find_package(mrpt_common REQUIRED)
 find_package(mrpt_rtti REQUIRED)
-
-include(./cmake/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
+find_package(mrpt_containers REQUIRED)
 
 
 # define lib:
@@ -58,34 +57,17 @@ mrpt_add_library(
   UNIT_TEST_SOURCES ${LIB_UNIT_TEST_SOURCES}
   PUBLIC_LINK_LIBRARIES
     mrpt::mrpt_rtti
-#  PRIVATE_LINK_LIBRARIES
+  PRIVATE_LINK_LIBRARIES
+    mrpt::mrpt_containers
   CMAKE_DEPENDENCIES
     mrpt_rtti
+    mrpt_containers
+  UNITTEST_LINK_LIBRARIES
+    mrpt::mrpt_containers
 )
-
-# Extra dependencies required by unit tests in this module:
-# Include jsoncpp only if present (optional)
-if (CMAKE_MRPT_HAS_JSONCPP)
-	if(TARGET "jsoncpp_lib")
-		set(tst_json_dep "jsoncpp_lib")
-	else()
-		set(tst_json_dep "jsoncpp_lib_static")
-	endif()
-else()
-	set(tst_json_dep "")
-endif()
 
 # NOTE: additional unit tests for this module also live in downstream modules
 # like "mrpt_io" or "mrpt_poses", where actual CStream implementations exist.
-
-if (tst_json_dep)
-  target_link_libraries(${PROJECT_NAME} PRIVATE ${tst_json_dep})
-
-  if (TARGET test_mrpt_serialization)
-    target_link_libraries(test_mrpt_serialization PRIVATE ${tst_json_dep})
-  endif()
-endif()
-
 
 # Python wrapper:
 mrpt_add_python_module(serialization

@@ -1,32 +1,29 @@
 {
-	"pose" : 
-	{
-		"datatype" : "CPose2D",
-		"phi" : 0,
-		"version" : 1,
-		"x" : 5,
-		"y" : 6
-	},
-	"pose_pdf" : 
-	{
-		"cov" : 
-		{
-			"data" : "[0.000000e+00 0.000000e+00 0.000000e+00 ;0.000000e+00 0.000000e+00 0.000000e+00 ;0.000000e+00 0.000000e+00 0.000000e+00 ]",
-			"datatype" : "CMatrixD",
-			"ncols" : 3,
-			"nrows" : 3,
-			"version" : 1
-		},
-		"datatype" : "CPosePDFGaussian",
-		"mean" : 
-		{
-			"datatype" : "CPose2D",
-			"phi" : 1.5707963267948966,
-			"version" : 1,
-			"x" : 1,
-			"y" : 2
-		},
-		"version" : 1
-	}
+  "pose_pdf": {
+    "datatype": "mrpt::poses::CPosePDFGaussian",
+    "version": 1,
+    "mean": {
+      "datatype": "mrpt::poses::CPose2D",
+      "version": 1,
+      "x": 1.0,
+      "y": 2.0,
+      "phi": 1.5707963267948966
+    },
+    "cov": {
+      "datatype": "mrpt::math::CMatrixD",
+      "version": 1,
+      "nrows": 3,
+      "ncols": 3,
+      "data": "[0.0000000000000000e+00 0.0000000000000000e+00 0.0000000000000000e+00 ;0.0000000000000000e+00 0.0000000000000000e+00 0.0000000000000000e+00 ;0.0000000000000000e+00 0.0000000000000000e+00 0.0000000000000000e+00 ]"
+    }
+  },
+  "pose": {
+    "datatype": "mrpt::poses::CPose2D",
+    "version": 1,
+    "x": 5.0,
+    "y": 6.0,
+    "phi": 0.0
+  }
 }
+
 read pose:[5.000000 6.000000 0.000000deg]

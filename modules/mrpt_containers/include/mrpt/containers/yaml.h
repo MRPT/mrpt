@@ -505,6 +505,17 @@ class yaml
   /// \overload (prints to std::cout)
   void printAsYAML() const;
 
+  /** Prints the document in JSON format to the given stream. Comments are
+   * dropped, strings are always quoted, and doubles use 17 significant
+   * digits so they round-trip exactly.
+   * Non-finite doubles are written as `NaN`, `Infinity` and `-Infinity` (as
+   * Python's `json` module does): not strict JSON, but read back by
+   * FromText().
+   * \param indent Spaces per nesting level. 0 prints everything in one line.
+   * \note [New in MRPT 3.7.0]
+   */
+  void printAsJSON(std::ostream& o, unsigned int indent = 2) const;
+
   /** Prints a tree-like representation of all nodes in the document in a
    * custom format (nor YAML neither JSON). */
   void printDebugStructure(std::ostream& o) const;

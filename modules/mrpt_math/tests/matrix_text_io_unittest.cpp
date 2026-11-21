@@ -13,13 +13,13 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/containers/config.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
-#include <mrpt/serialization/config.h>
 #include <mrpt/system/filesystem.h>
 
 #include <Eigen/Dense>
@@ -27,7 +27,7 @@
 #include <cstdint>
 #include <sstream>
 
-#if MRPT_HAS_JSONCPP
+#if MRPT_HAS_FYAML
 #include <mrpt/serialization/CSchemeArchive.h>
 #endif
 
@@ -171,7 +171,7 @@ TEST(MatrixTextIO, loadFromTextFileFixedSizeTooManyRowsThrows)
   EXPECT_ANY_THROW(m.loadFromTextFile(ss));
 }
 
-#if MRPT_HAS_JSONCPP
+#if MRPT_HAS_FYAML
 // Schema (JSON) serialization must keep full precision
 TEST(MatrixTextIO, CMatrixDSchemaRoundTripKeepsDoublePrecision)
 {
