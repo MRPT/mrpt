@@ -173,5 +173,9 @@ the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
   - Added covariance mapping to se3 for GTSAM
   - Added correct displacement covariance calculation between two poses with cross-correlation
 
+* Vishwa (2026) - https://github.com/vishwagw
+  - Schema (JSON) serialization for IMU and odometry observations
+  - Fix stale cached angles in CPose3D schema deserialization
+
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.
