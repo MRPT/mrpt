@@ -105,6 +105,7 @@ void CPose2D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
       m_coords[0] = static_cast<double>(in["x"]);
       m_coords[1] = static_cast<double>(in["y"]);
       m_phi = static_cast<double>(in["phi"]);
+      m_cossin_uptodate = false;
     }
     break;
     default:

@@ -88,6 +88,7 @@ set(LIB_UNIT_TEST_SOURCES
   tests/CObservationMisc_unittest.cpp
   tests/CObservationPopulated_unittest.cpp
   tests/CObservation_unittest.cpp
+  tests/CObservation_schema_unittest.cpp
   tests/CObservationVelodyneScan_unittest.cpp
   tests/CRawlog_content_unittest.cpp
   tests/CRawlog_unittest.cpp
