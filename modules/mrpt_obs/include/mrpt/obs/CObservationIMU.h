@@ -109,12 +109,18 @@ enum TIMUDataIndex
  *  Check it out also for reference on the unit and the coordinate frame used
  * for each value.
  *
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema
+ * (e.g. JSON) serialization. In schema archives, only the fields present in
+ * the observation are written, as a list of `{"field": "IMU_X_ACC", "value":
+ * ...}` entries named after the TIMUDataIndex enum values.
+ *
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
 class CObservationIMU : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationIMU, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   CObservationIMU();

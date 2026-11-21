@@ -31,12 +31,16 @@ namespace mrpt::obs
  * datasets. However, the user is free to use them whenever it is useful. Refer
  * to the [rawlog format description](rawlog_format.html).
  *
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema
+ * (e.g. JSON) serialization.
+ *
  * \sa CObservation, CActionRobotMovement2D
  * \ingroup mrpt_obs_grp
  */
 class CObservationOdometry : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationOdometry, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   /** Default ctor */

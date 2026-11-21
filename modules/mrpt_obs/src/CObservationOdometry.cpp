@@ -14,6 +14,7 @@
 
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::obs;
@@ -84,6 +85,66 @@ void CObservationOdometry::serializeFrom(mrpt::serialization::CArchive& in, uint
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
+}
+
+void CObservationOdometry::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["odometry"] = odometry;
+  out["hasEncodersInfo"] = hasEncodersInfo;
+  if (hasEncodersInfo)
+  {
+    out["encoderLeftTicks"] = encoderLeftTicks;
+    out["encoderRightTicks"] = encoderRightTicks;
+  }
+  out["hasVelocities"] = hasVelocities;
+  if (hasVelocities)
+  {
+    out["velocityLocal"]["vx"] = velocityLocal.vx;
+    out["velocityLocal"]["vy"] = velocityLocal.vy;
+    out["velocityLocal"]["omega"] = velocityLocal.omega;
+  }
+}
+
+void CObservationOdometry::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      schemaDeserializeCommon(in);
+      in["odometry"].readTo(odometry);
+
+      hasEncodersInfo = static_cast<bool>(in["hasEncodersInfo"]);
+      if (hasEncodersInfo)
+      {
+        encoderLeftTicks = static_cast<int32_t>(in["encoderLeftTicks"]);
+        encoderRightTicks = static_cast<int32_t>(in["encoderRightTicks"]);
+      }
+      else
+      {
+        encoderLeftTicks = encoderRightTicks = 0;
+      }
+
+      hasVelocities = static_cast<bool>(in["hasVelocities"]);
+      if (hasVelocities)
+      {
+        velocityLocal.vx = static_cast<double>(in["velocityLocal"]["vx"]);
+        velocityLocal.vy = static_cast<double>(in["velocityLocal"]["vy"]);
+        velocityLocal.omega = static_cast<double>(in["velocityLocal"]["omega"]);
+      }
+      else
+      {
+        velocityLocal = mrpt::math::TTwist2D(.0, .0, .0);
+      }
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }
 
 void CObservationOdometry::getDescriptionAsText(std::ostream& o) const

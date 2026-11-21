@@ -218,6 +218,7 @@ void CPose3D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
       CMatrixD m;
       in["rot"].readTo(m);
       m_ROT = m;
+      m_ypr_uptodate = false;
     }
     break;
     default:
