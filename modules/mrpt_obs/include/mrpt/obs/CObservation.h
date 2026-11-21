@@ -63,6 +63,15 @@ class CObservation : public mrpt::serialization::CSerializable, public mrpt::Str
    */
   void swap(CObservation& o);
 
+  /** For use in derived classes' schema `serializeTo()`: writes the data
+   * common to all observations (`sensorLabel`, and `timestamp` as an integer
+   * count of `mrpt::Clock` ticks, i.e. 100 ns units, so it round-trips
+   * exactly). \sa schemaDeserializeCommon */
+  void schemaSerializeCommon(mrpt::serialization::CSchemeArchiveBase& out) const;
+
+  /** Reads back what schemaSerializeCommon() wrote. */
+  void schemaDeserializeCommon(mrpt::serialization::CSchemeArchiveBase& in);
+
  public:
   /** @name Data common to any observation
     @{ */
