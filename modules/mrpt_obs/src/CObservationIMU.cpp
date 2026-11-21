@@ -15,6 +15,11 @@
 #include <mrpt/math/CVectorDynamic.h>  // CVectorFloat
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
+
+#include <algorithm>
+#include <iterator>
+#include <string>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -105,6 +110,108 @@ void CObservationIMU::serializeFrom(mrpt::serialization::CArchive& in, uint8_t v
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   };
+}
+
+namespace
+{
+// Field names used in schema (JSON) archives. They must match, in order, the
+// values of the TIMUDataIndex enum (aliases like IMU_WZ are not listed).
+// Never rename an entry: that would break reading existing files.
+constexpr std::array<const char*, mrpt::obs::COUNT_IMU_DATA_FIELDS> imu_schema_field_names = {
+    "IMU_X_ACC",
+    "IMU_Y_ACC",
+    "IMU_Z_ACC",
+    "IMU_YAW_VEL",
+    "IMU_PITCH_VEL",
+    "IMU_ROLL_VEL",
+    "IMU_X_VEL",
+    "IMU_Y_VEL",
+    "IMU_Z_VEL",
+    "IMU_YAW",
+    "IMU_PITCH",
+    "IMU_ROLL",
+    "IMU_X",
+    "IMU_Y",
+    "IMU_Z",
+    "IMU_MAG_X",
+    "IMU_MAG_Y",
+    "IMU_MAG_Z",
+    "IMU_PRESSURE",
+    "IMU_ALTITUDE",
+    "IMU_TEMPERATURE",
+    "IMU_ORI_QUAT_X",
+    "IMU_ORI_QUAT_Y",
+    "IMU_ORI_QUAT_Z",
+    "IMU_ORI_QUAT_W",
+    "IMU_YAW_VEL_GLOBAL",
+    "IMU_PITCH_VEL_GLOBAL",
+    "IMU_ROLL_VEL_GLOBAL",
+    "IMU_X_ACC_GLOBAL",
+    "IMU_Y_ACC_GLOBAL",
+    "IMU_Z_ACC_GLOBAL"};
+
+// Missing initializers would be left as nullptr: catch that at compile time.
+static_assert(
+    imu_schema_field_names.back() != nullptr,
+    "Update imu_schema_field_names[] after adding new TIMUDataIndex values");
+}  // namespace
+
+void CObservationIMU::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["sensorPose"] = sensorPose;
+
+  // Sparse list: only the fields actually present.
+  uint32_t n = 0;
+  for (size_t i = 0; i < COUNT_IMU_DATA_FIELDS; i++)
+  {
+    if (!dataIsPresent[i])
+    {
+      continue;
+    }
+    auto entry = out["measurements"][static_cast<size_t>(n++)];
+    entry["field"] = std::string(imu_schema_field_names[i]);
+    entry["value"] = rawMeasurements[i];
+  }
+  // The scheme archive API has no way to query a list length, so store it:
+  out["measurements_count"] = n;
+}
+
+void CObservationIMU::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      schemaDeserializeCommon(in);
+      in["sensorPose"].readTo(sensorPose);
+
+      dataIsPresent.fill(false);
+      rawMeasurements.fill(0);
+
+      const auto n = static_cast<uint32_t>(in["measurements_count"]);
+      for (uint32_t k = 0; k < n; k++)
+      {
+        auto entry = in["measurements"][static_cast<size_t>(k)];
+        const auto name = static_cast<std::string>(entry["field"]);
+        const auto it =
+            std::find(imu_schema_field_names.begin(), imu_schema_field_names.end(), name);
+        if (it == imu_schema_field_names.end())
+        {
+          THROW_EXCEPTION_FMT("Unknown IMU measurement field name: `%s`", name.c_str());
+        }
+        const auto idx = static_cast<size_t>(std::distance(imu_schema_field_names.begin(), it));
+        rawMeasurements[idx] = static_cast<double>(entry["value"]);
+        dataIsPresent[idx] = true;
+      }
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }
 
 void CObservationIMU::getDescriptionAsText(std::ostream& o) const

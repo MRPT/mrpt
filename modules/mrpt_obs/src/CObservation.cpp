@@ -15,6 +15,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
 
 #include <iomanip>
@@ -39,6 +40,18 @@ void CObservation::swap(CObservation& o)
 {
   std::swap(timestamp, o.timestamp);
   std::swap(sensorLabel, o.sensorLabel);
+}
+
+void CObservation::schemaSerializeCommon(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  out["sensorLabel"] = sensorLabel;
+  out["timestamp"] = static_cast<int64_t>(timestamp.time_since_epoch().count());
+}
+
+void CObservation::schemaDeserializeCommon(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  sensorLabel = static_cast<std::string>(in["sensorLabel"]);
+  timestamp = mrpt::Clock::time_point(mrpt::Clock::duration(static_cast<int64_t>(in["timestamp"])));
 }
 
 void CObservation::getDescriptionAsText(std::ostream& o) const

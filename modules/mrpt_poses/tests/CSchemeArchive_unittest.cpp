@@ -111,6 +111,24 @@ TEST(SchemaSerialization, JSON_archive_CPose3D)
   EXPECT_NEAR(p1.yaw(), p2.yaw(), 1e-6);
 }
 
+// Reading into a pose whose cached yaw/pitch/roll are already computed must
+// refresh them, not keep the old angles.
+TEST(SchemaSerialization, JSON_archive_CPose3D_refreshesCachedAngles)
+{
+  auto arch = archiveJSON();
+  const mrpt::poses::CPose3D p1(1.0, 2.0, 3.0, 0.1, 0.2, 0.3);
+  arch = p1;
+
+  mrpt::poses::CPose3D p2(0, 0, 0, -0.5, 0.4, -0.3);
+  EXPECT_NEAR(p2.yaw(), -0.5, 1e-9);  // angles are cached at this point
+
+  arch.readTo(p2);
+
+  EXPECT_NEAR(p1.yaw(), p2.yaw(), 1e-9);
+  EXPECT_NEAR(p1.pitch(), p2.pitch(), 1e-9);
+  EXPECT_NEAR(p1.roll(), p2.roll(), 1e-9);
+}
+
 TEST(SchemaSerialization, JSON_archive_CPosePDFGaussian)
 {
   auto arch = archiveJSON();
