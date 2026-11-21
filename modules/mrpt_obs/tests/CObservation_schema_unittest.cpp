@@ -15,15 +15,15 @@
 // Schema (JSON) serialization of observation classes (MRPT issue #820).
 
 #include <gtest/gtest.h>
+#include <mrpt/containers/config.h>  // MRPT_HAS_FYAML
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/serialization/CSchemeArchive.h>
-#include <mrpt/serialization/config.h>
 
 #include <sstream>
 #include <string>
 
-#if MRPT_HAS_JSONCPP
+#if MRPT_HAS_FYAML
 
 namespace
 {
@@ -211,4 +211,4 @@ TEST(CObservationOdometry, SchemaReadingIMUDocumentThrows)
   EXPECT_ANY_THROW(arch.readTo(dst));
 }
 
-#endif  // MRPT_HAS_JSONCPP
+#endif  // MRPT_HAS_FYAML
