@@ -425,6 +425,12 @@ See "Porting ROS 2 nodes" in `doc/source/doxygen-docs/port_mrpt3.md`:
   consolidating and committing the changelogs and asking for the bump kind
   (use `--dry-run` first; `--skip-changelogs` if the changelogs commit was
   already pushed by hand).
+* ABI: the SOVERSION is `MAJOR.MINOR`, so a patch release must keep the ABI.
+  Changing the layout of a public type (data members added, removed or
+  reordered, virtual functions) or an exported signature needs a minor bump:
+  otherwise packages built against the previous patch release load the new
+  library and silently corrupt memory (e.g. a struct grown by the library
+  overruns the caller's stack copy).
 * Never run `release.py` or any step that pushes, tags or publishes unless the
   user explicitly asks for a release.
 * Debian/Ubuntu packaging lives outside this repo, in two trees that must be
