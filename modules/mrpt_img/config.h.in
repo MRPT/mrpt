@@ -16,4 +16,8 @@
   *  Disable this to save executable sizes if these fonts will be not used. */
  #define MRPT_HAS_ASIAN_FONTS ${CMAKE_MRPT_HAS_ASIAN_FONTS}
 
+/** Decode JPEG images with libjpeg-turbo (TurboJPEG API) instead of the
+  *  embedded stb_image. See mrpt::img::CImage::hasLibJpegTurbo() */
+ #define MRPT_HAS_LIBJPEG_TURBO ${CMAKE_MRPT_HAS_LIBJPEG_TURBO}
+
 // clang-format on
