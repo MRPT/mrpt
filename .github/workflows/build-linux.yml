@@ -69,6 +69,12 @@ jobs:
                            libcli11-dev \
                            libzstd-dev libtbb-dev
 
+          # libjpeg-turbo only in the gcc job, so CI builds both JPEG
+          # decoder configurations (libjpeg-turbo and stb_image):
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            sudo apt install -y libturbojpeg0-dev
+          fi
+
           # Virtual X display + Mesa software GL, so that the mrpt_gui window
           # tests can run headlessly (they self-skip without a display):
           sudo apt install -y xvfb libgl1-mesa-dri
