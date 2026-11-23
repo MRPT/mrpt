@@ -227,6 +227,10 @@ mrpt_add_library(
   `CObservation::timestamp`, not `getOriginalReceivedTimeStamp()`.
   `CObservationRotatingScan::organizedPoints` are in the sensor frame
   (consumers apply `sensorPose`).
+  `CObservation3DRangeScan::unprojectInto()` colors points straight from the
+  intensity pixel of each depth pixel only if both cameras coincide and their
+  images have the same size; otherwise it projects them, with the intensity lens
+  distortion (feature macro `MRPT_HAS_3DSCAN_INTENSITY_PROJECTION`).
 * **mrpt_maps**: `CVoxelMapRGB` / `CColouredOctoMap` color 3D scans via
   `hasRangeImage` + camera intrinsics, not `hasPoints3D` (a hand-built
   `CObservation3DRangeScan` needs `setIntrinsicParamsFromValues()` and a filled

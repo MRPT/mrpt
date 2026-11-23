@@ -33,6 +33,12 @@
 
 #include <optional>
 
+/** Defined if CObservation3DRangeScan::unprojectInto() colors points by projecting them into
+ * the intensity image with its lens distortion, unless both cameras coincide and their images
+ * have the same size (older versions read the intensity image at depth pixel coordinates
+ * whenever both cameras coincide, and ignored the intensity camera distortion). */
+#define MRPT_HAS_3DSCAN_INTENSITY_PROJECTION 1
+
 namespace mrpt::obs
 {
 namespace detail
