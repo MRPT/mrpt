@@ -15,6 +15,7 @@
 
 #include <mrpt/core/cpu.h>
 #include <mrpt/core/round.h>  // round()
+#include <mrpt/img/camera_geometry.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -213,14 +214,19 @@ void unprojectInto(
       const int imgH = src_obs.intensityImage.getHeight();
       const bool hasColorIntensityImg = src_obs.intensityImage.isColor();
 
-      const float cx = static_cast<float>(src_obs.cameraParamsIntensity.cx());
-      const float cy = static_cast<float>(src_obs.cameraParamsIntensity.cy());
-      const float fx = static_cast<float>(src_obs.cameraParamsIntensity.fx());
-      const float fy = static_cast<float>(src_obs.cameraParamsIntensity.fy());
+      const auto& camIntensity = src_obs.cameraParamsIntensity;
+      const float cx = static_cast<float>(camIntensity.cx());
+      const float cy = static_cast<float>(camIntensity.cy());
+      const float fx = static_cast<float>(camIntensity.fx());
+      const float fy = static_cast<float>(camIntensity.fy());
+      const bool intensityHasDistortion =
+          camIntensity.distortion != mrpt::img::DistortionModel::none;
 
-      // Unless we are in a special case (both depth & RGB images
-      // coincide)...
-      const bool isDirectCorresp = src_obs.doDepthAndIntensityCamerasCoincide();
+      // Depth pixels can be read straight from the intensity image only if both cameras
+      // coincide and their images have the same size (e.g. depth not downscaled with
+      // respect to the color image). Otherwise, points are projected into it:
+      const bool isDirectCorresp =
+          src_obs.doDepthAndIntensityCamerasCoincide() && imgW == W && imgH == H;
 
       // ...precompute the inverse of the pose transformation out of
       // the
@@ -279,8 +285,19 @@ void unprojectInto(
           // Project to image plane:
           if (pt_wrt_color[2] > 0)
           {
-            img_idx_x = mrpt::round(cx + fx * pt_wrt_color[0] / pt_wrt_color[2]);
-            img_idx_y = mrpt::round(cy + fy * pt_wrt_color[1] / pt_wrt_color[2]);
+            if (intensityHasDistortion)
+            {
+              mrpt::img::TPixelCoordf px;
+              mrpt::img::camera_geometry::projectPoint_with_distortion(
+                  {pt_wrt_color[0], pt_wrt_color[1], pt_wrt_color[2]}, camIntensity, px);
+              img_idx_x = mrpt::round(px.x);
+              img_idx_y = mrpt::round(px.y);
+            }
+            else
+            {
+              img_idx_x = mrpt::round(cx + fx * pt_wrt_color[0] / pt_wrt_color[2]);
+              img_idx_y = mrpt::round(cy + fy * pt_wrt_color[1] / pt_wrt_color[2]);
+            }
             pointWithinImage =
                 img_idx_x >= 0 && img_idx_x < imgW && img_idx_y >= 0 && img_idx_y < imgH;
           }

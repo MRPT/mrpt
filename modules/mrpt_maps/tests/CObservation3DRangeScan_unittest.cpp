@@ -14,7 +14,9 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/containers/copy_container_typecasting.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/CHistogram.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -22,6 +24,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
+
+#include <cmath>
 
 using namespace mrpt;
 using namespace std;
@@ -377,4 +381,127 @@ TEST(CObservation3DRangeScan, SyntheticDepth)
       EXPECT_NEAR(l.x, R, 2e-3);
     }
   }
+}
+
+namespace
+{
+constexpr int RGBD_DEPTH_W = 32;
+constexpr int RGBD_DEPTH_H = 24;
+
+// A flat wall 1 m ahead of a depth camera, plus an intensity image whose pixels encode their
+// own coordinates (R: column, G: row), from a camera at the same pose.
+void fillRgbdObs(mrpt::obs::CObservation3DRangeScan& o, int intensityW, int intensityH)
+{
+  o.hasRangeImage = true;
+  o.range_is_depth = true;
+  o.rangeUnits = 1e-3f;
+  o.rangeImage_setSize(RGBD_DEPTH_H, RGBD_DEPTH_W);
+  o.rangeImage.fill(1000);
+  o.cameraParams.ncols = RGBD_DEPTH_W;
+  o.cameraParams.nrows = RGBD_DEPTH_H;
+  o.cameraParams.setIntrinsicParamsFromValues(40.0, 40.0, 15.5, 11.5);
+
+  o.hasIntensityImage = true;
+  o.intensityImage = mrpt::img::CImage(intensityW, intensityH, mrpt::img::CH_RGB);
+  for (int r = 0; r < intensityH; r++)
+  {
+    for (int c = 0; c < intensityW; c++)
+    {
+      o.intensityImage.at<uint8_t>(c, r, 0) = static_cast<uint8_t>(c);
+      o.intensityImage.at<uint8_t>(c, r, 1) = static_cast<uint8_t>(r);
+      o.intensityImage.at<uint8_t>(c, r, 2) = 0;
+    }
+  }
+}
+
+mrpt::maps::CGenericPointsMap unprojectWithColor(mrpt::obs::CObservation3DRangeScan& o)
+{
+  using mrpt::maps::CPointsMap;
+  mrpt::maps::CGenericPointsMap pts;
+  pts.registerField_uint8(CPointsMap::POINT_FIELD_COLOR_Ru8);
+  pts.registerField_uint8(CPointsMap::POINT_FIELD_COLOR_Gu8);
+  pts.registerField_uint8(CPointsMap::POINT_FIELD_COLOR_Bu8);
+  mrpt::obs::T3DPointsProjectionParams pp;
+  o.unprojectInto(pts, pp);
+  return pts;
+}
+}  // namespace
+
+// Coinciding cameras with images of the same size: each point takes the intensity pixel of
+// its own depth pixel, without projecting it.
+TEST(CObservation3DRangeScan, ColorizeDirectCorrespondence)
+{
+  mrpt::obs::CObservation3DRangeScan o;
+  fillRgbdObs(o, RGBD_DEPTH_W, RGBD_DEPTH_H);
+  // Not used in this case:
+  o.cameraParamsIntensity.setIntrinsicParamsFromValues(1.0, 1.0, 0.0, 0.0);
+
+  const auto pts = unprojectWithColor(o);
+  ASSERT_EQ(pts.size(), static_cast<size_t>(RGBD_DEPTH_W * RGBD_DEPTH_H));
+  const auto& R =
+      *pts.getPointsBufferRef_uint8_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Ru8);
+  const auto& G =
+      *pts.getPointsBufferRef_uint8_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Gu8);
+  for (size_t i = 0; i < pts.size(); i++)
+  {
+    EXPECT_EQ(R[i], o.points3D_idxs_x[i]);
+    EXPECT_EQ(G[i], o.points3D_idxs_y[i]);
+  }
+}
+
+// Coinciding cameras, an intensity image with twice the depth resolution and lens
+// distortion (e.g. depth registered to the color camera but published downscaled): points
+// are projected into the intensity image, distortion included.
+TEST(CObservation3DRangeScan, ColorizeProjectsWithIntensityDistortion)
+{
+  constexpr double k1 = 0.2;
+  constexpr double fx = 80.0;
+  constexpr double fy = 80.0;
+  constexpr double cx = 31.5;
+  constexpr double cy = 23.5;
+
+  mrpt::obs::CObservation3DRangeScan o;
+  fillRgbdObs(o, 2 * RGBD_DEPTH_W, 2 * RGBD_DEPTH_H);
+  auto& ci = o.cameraParamsIntensity;
+  ci.ncols = 2 * RGBD_DEPTH_W;
+  ci.nrows = 2 * RGBD_DEPTH_H;
+  ci.setIntrinsicParamsFromValues(fx, fy, cx, cy);
+  ci.setDistortionPlumbBob(k1, 0.0, 0.0, 0.0, 0.0);
+
+  const auto pts = unprojectWithColor(o);
+  ASSERT_EQ(pts.size(), static_cast<size_t>(RGBD_DEPTH_W * RGBD_DEPTH_H));
+  const auto& R =
+      *pts.getPointsBufferRef_uint8_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Ru8);
+  const auto& G =
+      *pts.getPointsBufferRef_uint8_field(mrpt::maps::CPointsMap::POINT_FIELD_COLOR_Gu8);
+
+  size_t checked = 0;
+  size_t movedByDistortion = 0;
+  for (size_t i = 0; i < pts.size(); i++)
+  {
+    float x = 0;
+    float y = 0;
+    float z = 0;
+    pts.getPoint(i, x, y, z);
+    // Depth camera frame (+X forward, +Y left, +Z up) to the optical frame of the
+    // intensity camera (+Z forward, +X right, +Y down):
+    const double xn = -y / x;
+    const double yn = -z / x;
+    const double radial = 1.0 + k1 * (xn * xn + yn * yn);
+    const long u = std::lround(cx + fx * xn * radial);
+    const long v = std::lround(cy + fy * yn * radial);
+    if (u < 0 || v < 0 || u >= 2 * RGBD_DEPTH_W || v >= 2 * RGBD_DEPTH_H)
+    {
+      continue;
+    }
+    EXPECT_EQ(R[i], u) << "point " << i;
+    EXPECT_EQ(G[i], v) << "point " << i;
+    checked++;
+    if (u != std::lround(cx + fx * xn) || v != std::lround(cy + fy * yn))
+    {
+      movedByDistortion++;
+    }
+  }
+  EXPECT_GT(checked, pts.size() / 2);
+  EXPECT_GT(movedByDistortion, 0U);
 }
