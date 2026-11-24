@@ -52,10 +52,8 @@ set(LIB_UNIT_TEST_SOURCES
 set(LIB_PUBLIC_HEADERS
   include/mrpt/apps_cli/BaseAppDataSource.h
   include/mrpt/apps_cli/BaseAppInitializableCLI.h
-  include/mrpt/apps_cli/BaseAppInitializableConfig.h
   include/mrpt/apps_cli/CRawlogProcessor.h
   include/mrpt/apps_cli/DataSourceRawlog.h
-  include/mrpt/apps_cli/MonteCarloLocalization_App.h
   include/mrpt/apps_cli/RawlogEditApp.h
   include/mrpt/apps_cli/RawlogGrabberApp.h
   include/mrpt/apps_cli/rawlog_ops.h

@@ -31,12 +31,10 @@ set(LIB_UNIT_TEST_SOURCES
 
 set(LIB_PUBLIC_HEADERS
   include/mrpt/apps_gui/CameraSelectionGUI.h
-  include/mrpt/apps_gui/CRawlogProcessor.h
   include/mrpt/apps_gui/ICP_SLAM_App.h
   include/mrpt/apps_gui/KFSLAMApp.h
   include/mrpt/apps_gui/MonteCarloLocalization_App.h
   include/mrpt/apps_gui/RBPF_SLAM_App.h
-  include/mrpt/apps_gui/RawlogEditApp.h
   include/mrpt/apps_gui/registerAllClasses.h
 )
 
