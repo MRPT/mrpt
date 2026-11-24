@@ -92,6 +92,28 @@ TEST(SchemeSerialization, CPointCloud)
   EXPECT_FLOAT_EQ(b.getPoint3Df(0).x, 1.0f);
   EXPECT_FLOAT_EQ(b.getPoint3Df(1).z, -3.0f);
   EXPECT_FLOAT_EQ(b.getPointSize(), 6.0f);
+
+  // An empty cloud replaces the previous points:
+  jsonRoundTrip(CPointCloud(), b);
+  EXPECT_EQ(b.size(), 0U);
+}
+
+TEST(SchemeSerialization, CPointCloudVersion1)
+{
+  CPointCloud a;
+  a.insertPoint(1.0f, 2.0f, 3.0f);
+  a.insertPoint(4.0f, 5.0f, 6.0f);
+
+  // Version 1 documents also stored the number of points:
+  auto arch = mrpt::serialization::archiveJSON();
+  arch = a;
+  arch["version"] = static_cast<int32_t>(1);
+  arch["N"] = static_cast<uint64_t>(2);
+
+  CPointCloud b;
+  arch.readTo(b);
+  ASSERT_EQ(b.size(), 2U);
+  EXPECT_FLOAT_EQ(b.getPoint3Df(1).y, 5.0f);
 }
 
 TEST(SchemeSerialization, UnknownDatatypeVersionThrows)
