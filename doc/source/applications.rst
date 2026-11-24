@@ -12,24 +12,17 @@ also provides many ready-to-use applications:
 
   app_2d-slam-demo.rst
   app_3d-rotation-converter.rst
-  app_camera-calib.rst
   page_app_carmen2rawlog.rst
   page_app_carmen2simplemap.rst
-  page_app_DifOdometry-Camera.rst
-  page_app_DifOdometry-Datasets.rst
-  page_app_features-matching.rst
   page_app_gps2rawlog.rst
   page_app_graph-slam.rst
   page_app_graphslam-engine.rst
-  page_app_grid-matching.rst
   app_GridmapNavSimul.rst
   page_app_holonomic-navigator-demo.rst
   page_app_icp-slam-live.rst
   page_app_icp-slam.rst
   page_app_image2gridmap.rst
   page_app_kf-slam.rst
-  page_app_kinect-3d-view.rst
-  page_app_kinect-stereo-calib.rst
   page_app_map-partition.rst
   page_app_navlog-viewer.rst
   page_app_observations2map.rst
@@ -46,7 +39,6 @@ also provides many ready-to-use applications:
   app_robotic-arm-kinematics.rst
   page_app_SceneViewer3D.rst
   page_app_simul-landmarks.rst
-  page_app_track-video-features.rst
   page_app_velodyne-view.rst
 
 
