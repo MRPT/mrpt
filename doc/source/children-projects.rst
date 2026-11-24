@@ -1,15 +1,29 @@
 .. _children-projects:
 
 ####################
-Children projects
+Projects using MRPT
 ####################
 
-- `MOLA <https://github.com/MOLAorg/mola>`_: A Modular Optimization framework
-  for Localization and mApping (MOLA).
+.. list-table::
+  :header-rows: 1
+  :widths: 25 75
 
-- `MVSIM <https://github.com/MRPT/mvsim>`_: Lightweight, realistic dynamical
-  simulator for 2D ("2.5D") vehicles and robots. It is tailored to analysis
-  of vehicle dynamics, wheel-ground contact forces, and accurate simulation
-  of typical robot sensors (e.g. laser scanners).
-
-- ROS packages: See the full list of repositories in: https://github.com/mrpt-ros-pkg
+  * - Project
+    - Description
+  * - `MOLA <https://github.com/MOLAorg/mola>`_
+    - Modular LiDAR odometry, SLAM and localization, for ROS 2 or standalone.
+      See :doc:`tutorial-mrpt-mola`.
+  * - `mp2p_icp <https://github.com/MOLAorg/mp2p_icp>`_
+    - Point cloud registration (ICP) and processing pipelines.
+  * - `MVSim <https://github.com/MRPT/mvsim>`_
+    - Lightweight, realistic 2.5D simulator for mobile robots and multi-agent research.
+  * - `mrpt_path_planning <https://github.com/MRPT/mrpt_path_planning>`_
+    - Kinematically-feasible path planning (TPS-A*) for arbitrary robot shapes.
+  * - `mrpt_navigation <https://github.com/mrpt-ros-pkg/mrpt_navigation>`_
+    - ROS 2 nodes for localization, map servers, path planning and reactive navigation.
+  * - `mrpt_sensors <https://github.com/mrpt-ros-pkg/mrpt_sensors>`_
+    - ROS 2 drivers for robotics sensors.
+  * - `mrpt_ros_bridge <https://github.com/MRPT/mrpt_ros_bridge>`_
+    - Conversions between MRPT classes and ROS 2 messages. See :doc:`tutorial-mrpt-ros2`.
+  * - `mrpt-notebooks <https://github.com/MRPT/mrpt-notebooks>`_
+    - Interactive Python tutorials (`marimo <https://marimo.io>`_ notebooks).
