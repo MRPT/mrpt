@@ -47,25 +47,12 @@ MRPT
     <a href="https://mrpt.github.io/videos/mrpt_hero_v1.mp4"><img
       src="https://mrpt.github.io/videos/mrpt_hero_v2.avif"
       alt="MRPT in action: mapping and navigation with MOLA and MRPT, LiDAR odometry, MRPT GUI apps, 3D rendering and MVSim"/></a>
+    <p class="mrpt-hero-buttons">
+      <a class="sd-btn sd-btn-primary sd-shadow-sm" href="download-mrpt.html">Install MRPT</a>
+      <a class="sd-btn sd-btn-outline-primary" href="tutorial-first-program.html">Your first program</a>
+      <a class="sd-btn sd-btn-outline-secondary" href="https://github.com/MRPT/mrpt">GitHub repository</a>
+    </p>
   </div>
-
-.. button-ref:: downloadmrpt
-  :color: primary
-  :shadow:
-
-  Install MRPT
-
-.. button-ref:: tutorial-first-program
-  :color: primary
-  :outline:
-
-  Your first program
-
-.. button-link:: https://github.com/MRPT/mrpt
-  :color: secondary
-  :outline:
-
-  GitHub repository
 
 What is MRPT?
 =============
@@ -138,7 +125,7 @@ Where to start
     :link-type: ref
     :class-card: mrpt-feature-card
 
-    pip, ROS 2, Ubuntu PPA, Windows, or build from sources.
+    pip, ROS 2, Ubuntu PPA, or build from sources.
 
   .. grid-item-card:: Tutorials
     :link: tutorials

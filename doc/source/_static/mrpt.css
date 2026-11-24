@@ -75,3 +75,6 @@ img.mrpt-screenshot {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   margin: 0.5em 0 1.5em 0;
 }
+.mrpt-hero p.mrpt-hero-buttons {
+  margin-top: 1.2em;
+}
