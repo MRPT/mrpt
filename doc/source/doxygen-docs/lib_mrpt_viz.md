@@ -67,7 +67,7 @@ Below is a list of the available rendering primitive classes.
 - mrpt::viz::CVectorField3D: ![CVectorField3D](preview_CVectorField3D.png)
 - mrpt::viz::stock_objects::BumblebeeCamera(): ![BumblebeeCamera](preview_stock_objects_BumblebeeCamera.png)
 - mrpt::viz::stock_objects::CornerXYSimple(): ![CornerXYSimple](preview_stock_objects_CornerXYSimple.png)
-- mrpt::viz::stock_objects::CornerXYZSimple(): ![CornerXYZSimple](preview_stock_objects_CornerXYSimple.png)
+- mrpt::viz::stock_objects::CornerXYZSimple(): ![CornerXYZSimple](preview_stock_objects_CornerXYZSimple.png)
 - mrpt::viz::stock_objects::CornerXYZ(): ![CornerXYZ](preview_stock_objects_CornerXYZ.png)
 - mrpt::viz::stock_objects::RobotPioneer(): ![RobotPioneer](preview_stock_objects_RobotPioneer.png)
 - mrpt::viz::stock_objects::RobotRhodon(): ![RobotRhodon](preview_stock_objects_RobotRhodon.png)

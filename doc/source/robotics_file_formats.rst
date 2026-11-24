@@ -33,7 +33,7 @@ See also:
 2. Graph SLAM maps
 --------------------
 
-**Typical extension(s)**: ``.graph``, ``.graphbin``
+**Typical extension(s)**: ``.graph``
 
 Description: MRPT adopted the plain-text format for 2D and 3D graphs (edges & nodes)
 introduced by TORO, G2O, and others in the 2010s.
