@@ -79,7 +79,7 @@ if(MRPT_WITH_KINECT)
 				endif()
 			endif()
 		endif()
-	elseif()
+	elseif(WIN32)
 		# Kinect for Win32: libfreenect ---------
 		set(MRPT_WITH_KINECT_USE_FREENECT ON  CACHE BOOL "Kinect using OpenKinect's libfreenect")
 

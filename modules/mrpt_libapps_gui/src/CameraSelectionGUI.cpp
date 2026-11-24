@@ -106,7 +106,7 @@ CCameraSensor::Ptr mrpt::apps::prepareVideoSourceFromUserSelection()
 /* ------------------------------------------------------------------------
             prepareVideoSourceFromPanel
    ------------------------------------------------------------------------ */
-CCameraSensor::Ptr mrpt::apps::prepareVideoSourceFromPanel(void* _panel)
+CCameraSensor::Ptr mrpt::apps::prepareVideoSourceFromPanel([[maybe_unused]] void* _panel)
 {
 #if MRPT_HAS_WXWIDGETS
 
@@ -139,7 +139,9 @@ CCameraSensor::Ptr mrpt::apps::prepareVideoSourceFromPanel(void* _panel)
             writeConfigFromVideoSourcePanel
    ------------------------------------------------------------------------ */
 void mrpt::apps::writeConfigFromVideoSourcePanel(
-    void* _panel, const std::string& sect, mrpt::config::CConfigFileBase* cfg)
+    [[maybe_unused]] void* _panel,
+    [[maybe_unused]] const std::string& sect,
+    [[maybe_unused]] mrpt::config::CConfigFileBase* cfg)
 {
   MRPT_START
 #if MRPT_HAS_WXWIDGETS
@@ -158,7 +160,9 @@ void mrpt::apps::writeConfigFromVideoSourcePanel(
             readConfigIntoVideoSourcePanel
    ------------------------------------------------------------------------ */
 void mrpt::apps::readConfigIntoVideoSourcePanel(
-    void* _panel, const std::string& sect, const mrpt::config::CConfigFileBase* cfg)
+    [[maybe_unused]] void* _panel,
+    [[maybe_unused]] const std::string& sect,
+    [[maybe_unused]] const mrpt::config::CConfigFileBase* cfg)
 {
   MRPT_START
 #if MRPT_HAS_WXWIDGETS

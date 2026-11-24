@@ -46,7 +46,7 @@ void test_except_2nd_lvl_bis()
   MRPT_START
   std::vector<int> x;
   x.resize(2);
-  x.at(10);  // throws
+  (void)x.at(10);  // throws
   MRPT_END
 }
 
