@@ -201,3 +201,34 @@ TEST(CCompressedStreams, AppendMode)
   in.close();
   mrpt::system::deleteFile(fname);
 }
+
+TEST(CCompressedStreams, ShortReadAtEndOfFileReturnsRemainingBytes)
+{
+  const auto data = payload(1000);
+  for (const auto type : kAllTypes)
+  {
+    const std::string fname = tempName("_short_" + std::to_string(static_cast<int>(type)));
+    {
+      CCompressedOutputStream out(fname, OpenMode::TRUNCATE, CompressionOptions(type));
+      ASSERT_EQ(out.Write(data.data(), data.size()), data.size());
+    }
+    CCompressedInputStream in(fname);
+    // Ask for more bytes than available:
+    std::vector<uint8_t> back(4096);
+    size_t got = 0;
+    for (size_t n = 1; n != 0 && got < back.size(); got += n)
+    {
+      n = in.Read(back.data() + got, back.size() - got);
+    }
+    ASSERT_EQ(got, data.size()) << "type " << static_cast<int>(type);
+    back.resize(got);
+    EXPECT_EQ(back, data);
+    EXPECT_TRUE(in.checkEOF());
+    if (type == CompressionType::None)
+    {
+      EXPECT_EQ(in.getPosition(), data.size());
+    }
+    in.close();
+    mrpt::system::deleteFile(fname);
+  }
+}

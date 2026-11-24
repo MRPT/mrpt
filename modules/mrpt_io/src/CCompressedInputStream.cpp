@@ -411,7 +411,8 @@ size_t CCompressedInputStream::Read(void* Buffer, size_t Count)
     default:
     {
       m_impl->plainFile.read(static_cast<char*>(Buffer), static_cast<std::streamsize>(Count));
-      bytesRead = m_impl->plainFile.fail() ? 0 : Count;
+      // A short read at the end of the file still returns the bytes read:
+      bytesRead = static_cast<size_t>(m_impl->plainFile.gcount());
       break;
     }
   }
@@ -460,14 +461,9 @@ uint64_t CCompressedInputStream::getPosition() const
 
     case CompressionType::None:
     default:
-    {
-      auto& f = const_cast<std::ifstream&>(m_impl->plainFile);
-      if (m_impl->plainFile.is_open())
-      {
-        return static_cast<uint64_t>(f.tellg());
-      }
-      return 0;
-    }
+      // No seeking is possible, so the position is the number of bytes read
+      // (tellg() would return -1 once the end of file is reached).
+      return m_impl->bytesReadUncompressed;
   }
 }
 
