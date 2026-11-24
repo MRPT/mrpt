@@ -26,6 +26,9 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <cstdio>
+#include <iostream>
+
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::math;
@@ -49,19 +52,21 @@ int main(int argc, char** argv)
         " MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(),
         MRPT_getCompilationDate().c_str());
 
-    if (showVersion) return 0;  // Program end
+    if (showVersion)
+    {
+      return 0;  // Program end
+    }
 
     // Process arguments:
-    if (argc < 2 || showHelp)
+    if (showHelp)
     {
       printf("Usage: %s <config_file.ini>\n\n", argv[0]);
-      if (!showHelp)
-      {
-        mrpt::system::pause();
-        return 1;
-      }
-      else
-        return 0;
+      return 0;
+    }
+    if (argc != 2)
+    {
+      fprintf(stderr, "Usage: %s <config_file.ini>\n\n", argv[0]);
+      return 1;
     }
 
     string INI_FILENAME = std::string(argv[1]);
@@ -119,6 +124,7 @@ int main(int argc, char** argv)
     MRPT_LOAD_CONFIG_VAR(min_y, float, ini, "Params");
     MRPT_LOAD_CONFIG_VAR(max_y, float, ini, "Params");
     MRPT_LOAD_CONFIG_VAR(min_z, float, ini, "Params");
+    MRPT_LOAD_CONFIG_VAR(max_z, float, ini, "Params");
 
     MRPT_LOAD_CONFIG_VAR(odometryNoiseXY_std, float, ini, "Params");
     MRPT_LOAD_CONFIG_VAR(odometryBias_Y, float, ini, "Params");
@@ -186,7 +192,6 @@ int main(int argc, char** argv)
       CSensoryFrame SF;
       CActionCollection acts;
       CActionRobotMovement2D act;
-      CPose3D pose3D(realPose);
 
       if (i >= stopSteps)
       {
@@ -200,13 +205,35 @@ int main(int argc, char** argv)
         {
           // Square path:
           if ((i % squarePathLength) > (squarePathLength - 5))
+          {
             incPose = CPose2D(0, 0, DEG2RAD(90.0f / 4));
+          }
           else
+          {
             incPose = CPose2D(0.20f, 0, 0);
+          }
         }
       }
       else
+      {
         incPose = CPose2D(0, 0, 0);
+      }
+
+      // Simulate actions:
+      CPose2D incOdo(incPose);
+      if (incPose.x() != 0 || incPose.y() != 0 || incPose.phi() != 0)
+      {
+        incOdo.x_incr(getRandomGenerator().drawGaussian1D_normalized() * odometryNoiseXY_std);
+        incOdo.y_incr(
+            odometryBias_Y +
+            getRandomGenerator().drawGaussian1D_normalized() * odometryNoiseXY_std);
+      }
+      act.computeFromOdometry(incOdo, opts);
+      acts.insert(act);
+
+      // Next pose:
+      realPose = realPose + incPose;
+      const CPose3D pose3D(realPose);
 
       // Simulate observations:
       CObservationBeaconRanges::Ptr obs = std::make_shared<CObservationBeaconRanges>();
@@ -224,7 +251,10 @@ int main(int argc, char** argv)
         {
           q.sensedDistance += static_cast<float>(
               getRandomGenerator().drawUniform(outlier_uniform_min, outlier_uniform_max));
-          if (q.sensedDistance < 0) q.sensedDistance = 0;
+          if (q.sensedDistance < 0)
+          {
+            q.sensedDistance = 0;
+          }
         }
       }
 
@@ -232,35 +262,23 @@ int main(int argc, char** argv)
 
       SF.push_back(obs);
 
-      // Simulate actions:
-      CPose2D incOdo(incPose);
-      if (incPose.x() != 0 || incPose.y() != 0 || incPose.phi() != 0)
-      {
-        incOdo.x_incr(getRandomGenerator().drawGaussian1D_normalized() * odometryNoiseXY_std);
-        incOdo.y_incr(
-            odometryBias_Y +
-            getRandomGenerator().drawGaussian1D_normalized() * odometryNoiseXY_std);
-      }
-      act.computeFromOdometry(incOdo, opts);
-      acts.insert(act);
-
-      // Save:
-      mrpt::serialization::archiveFrom(fil) << SF << acts;
-
-      // Next pose:
-      realPose = realPose + incPose;
+      // Save, as an (action, observations) pair:
+      mrpt::serialization::archiveFrom(fil) << acts << SF;
 
       printf("\n");
     }
 
     std::cout << "Data saved to directory: " << outDir << "\n";
+    return 0;
   }
   catch (const std::exception& e)
   {
-    std::cout << mrpt::exception_to_str(e);
+    std::cerr << mrpt::exception_to_str(e) << "\n";
+    return 1;
   }
   catch (...)
   {
-    std::cout << "Untyped exception!";
+    std::cerr << "Untyped exception!\n";
+    return 1;
   }
 }
