@@ -16,6 +16,7 @@
 #include <mrpt/core/round.h>
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/config.h>  // MRPT_HAS_ASIAN_FONTS
 #include <mrpt/io/zip.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/system/os.h>
@@ -24,6 +25,8 @@
 #include <Eigen/Dense>
 #include <cstring>  // memcpy
 #include <map>
+#include <mutex>
+#include <vector>
 
 // Include the MRPT bitmap fonts:
 #include "mrpt_font_10x20.h"
@@ -49,73 +52,62 @@ using namespace mrpt;
 using namespace mrpt::img;
 using namespace std;
 
+namespace
+{
+/** A gz-compressed font embedded in the library */
 struct FontData
 {
-  std::vector<uint8_t> data;
-  bool prepared_to_big_endian = false;
+  const unsigned char* gz_data = nullptr;
+  std::size_t gz_size = 0;
+  /** Uncompressed tables, in native byte order. Empty until first used. */
+  std::vector<uint8_t> bitmaps;
 };
 
-// Each vector is the target place where to uncompress each font.
-map<string, FontData> list_registered_fonts;
-bool list_fonts_init = false;
-
-void init_fonts_list()
+/** Returns the bitmaps of a font, uncompressing it the first time it is used
+ * (so unused fonts cost no memory), or nullptr for an unknown font name. */
+const uint32_t* fontBitmaps(const std::string& name)
 {
-  if (!list_fonts_init)
+  static std::mutex mtx;
+  static std::map<std::string, FontData> fonts = {
+    {    "5x7",         {mrpt_font_gz_5x7, sizeof(mrpt_font_gz_5x7), {}}},
+    {   "6x13",       {mrpt_font_gz_6x13, sizeof(mrpt_font_gz_6x13), {}}},
+    {  "6x13B",     {mrpt_font_gz_6x13B, sizeof(mrpt_font_gz_6x13B), {}}},
+    {  "6x13O",     {mrpt_font_gz_6x13O, sizeof(mrpt_font_gz_6x13O), {}}},
+    {   "9x15",       {mrpt_font_gz_9x15, sizeof(mrpt_font_gz_9x15), {}}},
+    {  "9x15B",     {mrpt_font_gz_9x15B, sizeof(mrpt_font_gz_9x15B), {}}},
+    {  "10x20",     {mrpt_font_gz_10x20, sizeof(mrpt_font_gz_10x20), {}}},
+#if MRPT_HAS_ASIAN_FONTS
+    {"18x18ja", {mrpt_font_gz_18x18ja, sizeof(mrpt_font_gz_18x18ja), {}}},
+#endif
+  };
+
+  std::lock_guard<std::mutex> lock(mtx);
+  const auto it = fonts.find(name);
+  if (it == fonts.end())
   {
-    list_registered_fonts.clear();
-
-// This was used only once
-#if 0
-#define SAVE_COMPRESSED(ARR)                                                           \
-  {                                                                                    \
-    list_registered_fonts[#ARR].resize(sizeof(mrpt_font_##ARR));                       \
-    memcpy(&list_registered_fonts[#ARR][0], mrpt_font_##ARR, sizeof(mrpt_font_##ARR)); \
-    std::cout << #ARR << " -> " << sizeof(mrpt_font_##ARR) << "\n";                    \
-    CCompressedOutputStream f(string("mrpt_font_") + string(#ARR) + string(".gz"));    \
-    f.WriteBuffer(mrpt_font_##ARR, sizeof(mrpt_font_##ARR));                           \
-    /*mrpt::compress::zip::compress( list_registered_fonts[#ARR], f ); */              \
+    return nullptr;
   }
-
-    	SAVE_COMPRESSED(5x7)
-//    	SAVE_COMPRESSED(6x13)
-//    	SAVE_COMPRESSED(6x13B)
-//    	SAVE_COMPRESSED(6x13O)
-//    	SAVE_COMPRESSED(9x15)
-//    	SAVE_COMPRESSED(9x15B)
-//    	SAVE_COMPRESSED(10x20)
-
-#if MRPT_HAS_ASIAN_FONTS
-//    	SAVE_COMPRESSED(18x18ja)
+  FontData& fd = it->second;
+  if (fd.bitmaps.empty())
+  {
+    const std::vector<uint8_t> gz(fd.gz_data, fd.gz_data + fd.gz_size);
+    if (!mrpt::io::zip::decompress_gz_data_block(gz, fd.bitmaps) || fd.bitmaps.empty())
+    {
+      fd.bitmaps.clear();
+      THROW_EXCEPTION_FMT("Cannot uncompress the embedded font '%s'", name.c_str());
+    }
+#if MRPT_IS_BIG_ENDIAN
+    // The tables are stored as little-endian 32-bit words:
+    auto* ptr = reinterpret_cast<uint32_t*>(fd.bitmaps.data());
+    for (std::size_t i = 0; i < fd.bitmaps.size() / sizeof(uint32_t); i++)
+    {
+      mrpt::reverseBytesInPlace(ptr[i]);
+    }
 #endif
-
-#endif
-
-#if 1  // Normal operation: Load fonts and uncompress them:
-
-#define LOAD_FONT(FONTNAME)                                                                 \
-  {                                                                                         \
-    std::vector<uint8_t> tmpBuf(sizeof(mrpt_font_gz_##FONTNAME));                           \
-    memcpy(&tmpBuf[0], mrpt_font_gz_##FONTNAME, sizeof(mrpt_font_gz_##FONTNAME));           \
-    mrpt::io::zip::decompress_gz_data_block(tmpBuf, list_registered_fonts[#FONTNAME].data); \
   }
-
-    LOAD_FONT(5x7)
-    LOAD_FONT(6x13)
-    LOAD_FONT(6x13B)
-    LOAD_FONT(6x13O)
-    LOAD_FONT(9x15)
-    LOAD_FONT(9x15B)
-    LOAD_FONT(10x20)
-#if MRPT_HAS_ASIAN_FONTS
-    LOAD_FONT(18x18ja)
-#endif
-
-#endif
-
-    list_fonts_init = true;
-  }
+  return reinterpret_cast<const uint32_t*>(fd.bitmaps.data());
 }
+}  // namespace
 
 /*---------------------------------------------------------------
             line
@@ -243,31 +235,14 @@ void CCanvas::filledRectangle(
 ---------------------------------------------------------------*/
 void CCanvas::selectTextFont(const std::string& fontName)
 {
-  init_fonts_list();
-
-  // Assure list name is in the list:
-  auto it = list_registered_fonts.find(fontName);
-  if (it == list_registered_fonts.end())
+  const uint32_t* bitmaps = fontBitmaps(fontName);
+  if (bitmaps == nullptr)
   {
-    // Error
     cerr << "[CCanvas::selectTextFont] Warning: Unknown font: " << fontName << "\n";
     return;
   }
-
-  FontData& fd = it->second;
-  m_selectedFontBitmaps = reinterpret_cast<const uint32_t*>(&fd.data[0]);
+  m_selectedFontBitmaps = bitmaps;
   m_selectedFont = fontName;
-
-#if MRPT_IS_BIG_ENDIAN
-  // Fix endianness of char tables:
-  if (!fd.prepared_to_big_endian)
-  {
-    fd.prepared_to_big_endian = true;  // Only do once
-    uint32_t* ptr = reinterpret_cast<uint32_t*>(&fd.data[0]);
-    for (size_t i = 0; i < fd.data.size() / sizeof(uint32_t); i++)
-      mrpt::reverseBytesInPlace(ptr[i]);
-  }
-#endif
 }
 
 /*---------------------------------------------------------------

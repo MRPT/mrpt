@@ -14,8 +14,10 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/config.h>
 #include <mrpt/math/CMatrixFixed.h>
 
+#include <string>
 #include <vector>
 
 using namespace mrpt::img;
@@ -98,14 +100,68 @@ TEST(CCanvas, SelectTextFontUnknownWarnsAndKeepsPrevious)
   SUCCEED();
 }
 
+namespace
+{
+// Number of pixels set to 255 in a gray image
+int countWhite(const CImage& img)
+{
+  int n = 0;
+  for (int y = 0; y < img.getHeight(); y++)
+  {
+    for (int x = 0; x < img.getWidth(); x++)
+    {
+      if (img.at<uint8_t>(x, y) == 255)
+      {
+        n++;
+      }
+    }
+  }
+  return n;
+}
+}  // namespace
+
 TEST(CCanvas, SelectTextFontKnown)
 {
-  CImage img(10, 10, CH_GRAY);
-  img.selectTextFont("6x13");
-  img.selectTextFont("6x13B");
-  img.selectTextFont("6x13O");
-  img.selectTextFont("10x20");
-  SUCCEED();
+  for (const char* font : {"5x7", "6x13", "6x13B", "6x13O", "9x15", "9x15B", "10x20"})
+  {
+    SCOPED_TRACE(font);
+    CImage img(40, 30, CH_GRAY);
+    img.filledRectangle({0, 0}, {39, 29}, TColor::black());
+    img.selectTextFont(font);
+    img.textOut({2, 2}, "Ab", TColor::white());
+    EXPECT_GT(countWhite(img), 10);
+  }
+}
+
+TEST(CCanvas, JapaneseFont)
+{
+#if MRPT_HAS_ASIAN_FONTS
+  // U+65E5 U+672C, not in any of the latin fonts:
+  const std::string text = "\xE6\x97\xA5\xE6\x9C\xAC";
+
+  CImage img(50, 30, CH_GRAY);
+  img.filledRectangle({0, 0}, {49, 29}, TColor::black());
+  img.textOut({1, 1}, text, TColor::white());
+  EXPECT_EQ(countWhite(img), 0);  // default font: characters skipped
+
+  img.selectTextFont("18x18ja");
+  img.textOut({1, 1}, text, TColor::white());
+  EXPECT_GT(countWhite(img), 40);
+  // Two 18x18 glyphs starting at (1,1):
+  for (int y = 0; y < img.getHeight(); y++)
+  {
+    for (int x = 0; x < img.getWidth(); x++)
+    {
+      if (img.at<uint8_t>(x, y) == 255)
+      {
+        EXPECT_LT(x, 1 + 2 * 18);
+        EXPECT_LT(y, 1 + 18);
+      }
+    }
+  }
+#else
+  GTEST_SKIP() << "MRPT built with MRPT_HAS_ASIAN_FONTS=OFF";
+#endif
 }
 
 TEST(CCanvas, TextOutDefaultFontDrawsSomething)
