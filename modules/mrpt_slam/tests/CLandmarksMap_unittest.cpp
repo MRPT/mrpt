@@ -18,7 +18,10 @@
  */
 
 #include <gtest/gtest.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
@@ -330,4 +333,65 @@ TEST(CLandmarksMap, spuriousOfRangeOnlySensorsAreOnAxis)
     EXPECT_EQ(obs.sensedData[i].yaw, 0.0f);
     EXPECT_EQ(obs.sensedData[i].pitch, 0.0f);
   }
+}
+
+// The map can be created from an INI file by its registered name, as used by
+// the range-only localization app.
+TEST(CLandmarksMap, createFromConfigFile)
+{
+  mrpt::config::CConfigFileMemory cfg(
+      "[map]\n"
+      "landmarksMap_count=1\n"
+      "[map_landmarksMap_00_creationOpts]\n"
+      "nBeacons=2\n"
+      "beacon_001_ID=1\n"
+      "beacon_001_X=1.0\n"
+      "beacon_001_Y=2.0\n"
+      "beacon_001_Z=3.0\n"
+      "beacon_002_ID=7\n"
+      "beacon_002_x=-1.0\n"
+      "[map_landmarksMap_00_likelihoodOpts]\n"
+      "beaconRangesStd=0.25\n");
+
+  mrpt::maps::TSetOfMetricMapInitializers inits;
+  inits.loadFromConfigFile(cfg, "map");
+  mrpt::maps::CMultiMetricMap mm;
+  mm.setListOfMaps(inits);
+
+  const auto lm = mm.mapByClass<CLandmarksMap>();
+  ASSERT_TRUE(lm);
+  ASSERT_EQ(lm->size(), 2U);
+  EXPECT_EQ(lm->landmarks.get(0)->ID, 1);
+  EXPECT_DOUBLE_EQ(lm->landmarks.get(0)->pose_mean.z, 3.0);
+  EXPECT_EQ(lm->landmarks.get(1)->ID, 7);
+  EXPECT_DOUBLE_EQ(lm->landmarks.get(1)->pose_mean.x, -1.0);
+  EXPECT_FLOAT_EQ(lm->likelihoodOptions.beaconRangesStd, 0.25f);
+}
+
+TEST(CLandmarksMap, beaconRangesLikelihood)
+{
+  CLandmarksMap m = makeMap({
+      {5, 0, 0}
+  });  // ID=100
+  m.likelihoodOptions.beaconRangesStd = 0.1f;
+
+  mrpt::obs::CObservationBeaconRanges obs;
+  obs.minSensorDistance = 0;
+  obs.maxSensorDistance = 20;
+  mrpt::obs::CObservationBeaconRanges::TMeasurement meas;
+  meas.beaconID = 100;
+  meas.sensedDistance = 5.0f;
+  obs.sensedData.push_back(meas);
+
+  ASSERT_TRUE(m.canComputeObservationLikelihood(obs));
+
+  const double likGood = m.computeObservationLikelihood(obs, mrpt::poses::CPose3D());
+  const double likBad = m.computeObservationLikelihood(obs, mrpt::poses::CPose3D(2, 0, 0, 0, 0, 0));
+  EXPECT_NEAR(likGood, 0.0, 1e-6);
+  EXPECT_NEAR(likBad, -0.5 * mrpt::square(2.0 / 0.1), 1e-3);
+
+  // Unknown beacon IDs get a uniform likelihood:
+  obs.sensedData[0].beaconID = 5;
+  EXPECT_NEAR(
+      m.computeObservationLikelihood(obs, mrpt::poses::CPose3D()), std::log(1.0 / 20), 1e-6);
 }
