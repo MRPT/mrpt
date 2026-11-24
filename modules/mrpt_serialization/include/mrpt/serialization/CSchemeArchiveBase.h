@@ -64,6 +64,10 @@ class CSchemeArchiveBase_impl
   virtual CSchemeArchiveBase operator[](size_t) = 0;
   // Dict accessor
   virtual CSchemeArchiveBase operator[](std::string) = 0;
+  /** Number of elements of a list, or of entries of a dict; 0 otherwise */
+  [[nodiscard]] virtual size_t size() const = 0;
+  /** Makes this entry a list of `n` (null) elements */
+  virtual void resize(size_t n) = 0;
 
   // should make it private by virtue of friend class
   void setParent(CSchemeArchiveBase* parent) { m_parent = parent; }
@@ -128,6 +132,20 @@ class CSchemeArchiveBase
   CSchemeArchiveBase operator[](size_t val) { return (*pimpl).operator[](val); }
   // Dict accessor
   CSchemeArchiveBase operator[](std::string val) { return (*pimpl).operator[](val); }
+
+  /** Number of elements of a list, or of entries of a dict. It is 0 for a
+   * missing entry or a scalar, so lists need no separate count field:
+   * \code
+   * const auto list = in["items"];
+   * items.resize(list.size());
+   * \endcode
+   */
+  [[nodiscard]] size_t size() const { return pimpl->size(); }
+
+  /** Makes this entry a list of `n` elements, to be written next with
+   * `operator[](size_t)`. Call it before writing a list, so an empty one is
+   * still written (as `[]` in JSON) instead of being left out. */
+  void resize(size_t n) { pimpl->resize(n); }
 
   // class CSchemeArchiveBase_impl;
  protected:

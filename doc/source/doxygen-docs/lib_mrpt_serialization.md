@@ -80,6 +80,11 @@ mrpt::serialization::CSchemeArchiveBase, which allows objects to be
 mrpt::serialization::archiveJSON(). The document is held in a
 mrpt::containers::yaml tree, so no external JSON library is required.
 
+Lists are written by calling `resize(n)` on an entry and then assigning its
+elements with `operator[](size_t)`; when reading, `size()` gives their length,
+so documents need no separate count fields. Numbers are always written and
+parsed with '.' as decimal point, whatever the current locale.
+
 ### Example: JSON serialization
 
 See: \ref serialization_json_example/main.cpp

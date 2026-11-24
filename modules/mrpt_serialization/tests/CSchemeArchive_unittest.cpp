@@ -57,6 +57,33 @@ TEST(CSchemeArchive, listAccessor)
   EXPECT_EQ(static_cast<int32_t>(arch["list"][static_cast<size_t>(1)]), 20);
 }
 
+TEST(CSchemeArchive, listSizeAndResize)
+{
+  const size_t i0 = 0;
+  const size_t i2 = 2;
+  auto arch = mrpt::serialization::archiveJSON();
+  EXPECT_EQ(arch["missing"].size(), 0U);
+  arch["scalar"] = static_cast<int32_t>(3);
+  EXPECT_EQ(arch["scalar"].size(), 0U);
+
+  arch["list"][i0] = static_cast<int32_t>(5);
+  arch["list"][i2] = static_cast<int32_t>(7);
+  EXPECT_EQ(arch["list"].size(), 3U);
+
+  arch["dict"]["a"] = static_cast<int32_t>(1);
+  arch["dict"]["b"] = static_cast<int32_t>(2);
+  EXPECT_EQ(arch["dict"].size(), 2U);
+
+  // resize() turns any entry into a list, and keeps the first list elements:
+  arch["scalar"].resize(2);
+  EXPECT_EQ(arch["scalar"].size(), 2U);
+  arch["list"].resize(1);
+  EXPECT_EQ(arch["list"].size(), 1U);
+  EXPECT_EQ(static_cast<int32_t>(arch["list"][i0]), 5);
+  arch["empty"].resize(0);
+  EXPECT_EQ(arch["empty"].size(), 0U);
+}
+
 TEST(CSchemeArchive, objectRoundTrip)
 {
   SerTestNS::registerTestClasses();
@@ -139,6 +166,29 @@ TEST(CSchemeArchive, streamOfChildArchive)
   ss >> arch2;
   EXPECT_EQ(static_cast<int32_t>(arch2["x"]), 4);
   EXPECT_EQ(static_cast<int32_t>(arch2["b"]), 0);
+}
+
+TEST(CSchemeArchive, listsThroughText)
+{
+  const size_t i0 = 0;
+  const size_t i1 = 1;
+  auto arch = mrpt::serialization::archiveJSON();
+  arch["empty"].resize(0);
+  auto two = arch["two"];
+  two.resize(2);
+  two[i0] = 1.5;
+  two[i1] = 2.5;
+
+  std::stringstream ss;
+  ss << arch;
+  EXPECT_NE(ss.str().find("\"empty\": []"), std::string::npos) << ss.str();
+
+  auto arch2 = mrpt::serialization::archiveJSON();
+  ss >> arch2;
+  EXPECT_EQ(arch2["empty"].size(), 0U);
+  ASSERT_EQ(arch2["two"].size(), 2U);
+  EXPECT_EQ(static_cast<double>(arch2["two"][i0]), 1.5);
+  EXPECT_EQ(static_cast<double>(arch2["two"][i1]), 2.5);
 }
 #endif
 

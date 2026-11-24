@@ -76,6 +76,34 @@ class CSchemeArchiveYAML : public CSchemeArchiveBase_impl
     return child(PathStep(std::move(key)));
   }
 
+  [[nodiscard]] size_t size() const override
+  {
+    const auto* n = find();
+    if (n == nullptr)
+    {
+      return 0;
+    }
+    if (n->isSequence())
+    {
+      return n->asSequence().size();
+    }
+    if (n->isMap())
+    {
+      return n->asMap().size();
+    }
+    return 0;
+  }
+
+  void resize(size_t n) override
+  {
+    auto& node = resolve();
+    if (!node.isSequence())
+    {
+      node.d.emplace<yaml::sequence_t>();
+    }
+    node.asSequence().resize(n);
+  }
+
   std::ostream& writeToStream(std::ostream& out) const override
   {
     if (m_path.empty())
