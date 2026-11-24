@@ -21,8 +21,6 @@
 #include "mrpt/io/CFileGZInputStream.h"
 #include "mrpt/io/CFileOutputStream.h"
 
-const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
-
 using namespace mrpt;
 using namespace mrpt::viz;
 using namespace mrpt::io;

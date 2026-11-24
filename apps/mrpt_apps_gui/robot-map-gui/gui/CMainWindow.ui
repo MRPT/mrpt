@@ -225,25 +225,7 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="CConfigWidget" name="m_configWidget">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-    </layout>
-   </widget>
+   <widget class="CConfigWidget" name="m_configWidget"/>
   </widget>
   <widget class="QToolBar" name="m_toolBar">
    <property name="windowTitle">
@@ -407,11 +389,6 @@
   <action name="m_actionSaveAsPNG">
    <property name="text">
     <string>Save gridmap as PNG</string>
-   </property>
-  </action>
-  <action name="m_actionGraphSlam">
-   <property name="text">
-    <string>graph-slam</string>
    </property>
   </action>
  </widget>
