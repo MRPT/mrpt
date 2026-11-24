@@ -21,6 +21,38 @@ find_package(Eigen3 REQUIRED)
 # Include Asian fonts in mrpt::img::CCanvas ?
 set(MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in mrpt::img::CCanvas (increases library size).")
 
+# Optional: decode JPEG with libjpeg-turbo (TurboJPEG API), faster than the
+# embedded stb_image, which remains the fallback and decodes all other formats.
+set(MRPT_WITH_LIBJPEG_TURBO ON CACHE BOOL "Decode JPEG images with libjpeg-turbo, if found.")
+set(CMAKE_MRPT_HAS_LIBJPEG_TURBO 0)
+if (MRPT_WITH_LIBJPEG_TURBO)
+  find_package(PkgConfig QUIET)
+  if (PKG_CONFIG_FOUND)
+    pkg_check_modules(PC_TURBOJPEG QUIET libturbojpeg)
+  endif()
+  find_path(TURBOJPEG_INCLUDE_DIR
+    NAMES turbojpeg.h
+    HINTS ${PC_TURBOJPEG_INCLUDE_DIRS} ${libjpeg-turbo_ROOT_DIR}/include)
+  find_library(TURBOJPEG_LIBRARY
+    NAMES turbojpeg
+    HINTS ${PC_TURBOJPEG_LIBRARY_DIRS} ${libjpeg-turbo_ROOT_DIR}/lib)
+  if (TURBOJPEG_INCLUDE_DIR AND TURBOJPEG_LIBRARY)
+    # TJFLAG_STOPONWARNING requires libjpeg-turbo >= 2.0:
+    include(CheckSymbolExists)
+    set(CMAKE_REQUIRED_INCLUDES ${TURBOJPEG_INCLUDE_DIR})
+    check_symbol_exists(TJFLAG_STOPONWARNING "turbojpeg.h" MRPT_TURBOJPEG_HAS_STOPONWARNING)
+    unset(CMAKE_REQUIRED_INCLUDES)
+    if (MRPT_TURBOJPEG_HAS_STOPONWARNING)
+      set(CMAKE_MRPT_HAS_LIBJPEG_TURBO 1)
+    endif()
+  endif()
+  if (CMAKE_MRPT_HAS_LIBJPEG_TURBO)
+    message(STATUS "mrpt_img: JPEG decoding with libjpeg-turbo: ${TURBOJPEG_LIBRARY}")
+  else()
+    message(STATUS "mrpt_img: libjpeg-turbo >= 2.0 not found, JPEG decoding with stb_image")
+  endif()
+endif()
+
 # define lib:
 set(LIB_SOURCES
   src/camera_geometry.cpp
@@ -28,6 +60,8 @@ set(LIB_SOURCES
   src/CImage_bayer.cpp
   src/CImage_impl.cpp
   src/CImage_impl.h
+  src/CImage_jpeg.cpp
+  src/CImage_jpeg.h
   src/CImage_loadXPM.cpp
   src/CImage.cpp
   src/CImage.SSE2.cpp
@@ -49,6 +83,7 @@ set(LIB_SOURCES
 set(LIB_UNIT_TEST_SOURCES
   tests/camera_geometry_unittest.cpp
   tests/CCanvas_unittest.cpp
+  tests/CImage_jpeg_unittest.cpp
   tests/CImage_legacy_serialization_unittest.cpp
   tests/CImage_loadFromBayerBuffer_unittest.cpp
   tests/CImage_loadFromEncodedBuffer_unittest.cpp
@@ -101,6 +136,11 @@ mrpt_add_library(
     mrpt_math
   # Other imported targets:
 )
+
+if (CMAKE_MRPT_HAS_LIBJPEG_TURBO)
+  target_include_directories(${PROJECT_NAME} PRIVATE ${TURBOJPEG_INCLUDE_DIR})
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${TURBOJPEG_LIBRARY})
+endif()
 
 # Python wrapper:
 mrpt_add_python_module(img

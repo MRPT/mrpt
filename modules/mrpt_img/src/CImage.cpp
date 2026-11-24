@@ -36,6 +36,7 @@
 
 #include "CImage.SSEx.h"
 #include "CImage_impl.h"
+#include "CImage_jpeg.h"
 
 // STB library includes
 STB_DISABLE_WARNINGS
@@ -244,6 +245,22 @@ bool CImage::loadFromFile(const std::string& fileName, TImageChannels loadChanne
 
   m_state->clear();
 
+  // JPEG with libjpeg-turbo: decode from memory (same result as below).
+  if (internal::libJpegTurboActive())
+  {
+    if (const auto jpeg = internal::readFileIfJPEG(fileName); jpeg)
+    {
+      const bool ok =
+          loadFromEncodedBuffer(jpeg->data(), jpeg->size(), loadChannels, PixelDepth::D8U);
+      if (!ok && MRPT_DEBUG_IMG_LAZY_LOAD)
+      {
+        std::cerr << "[CImage::loadFromFile] Failed to load: " << fileName
+                  << " Reason: " << stbi_failure_reason() << "\n";
+      }
+      return ok;
+    }
+  }
+
   int width = 0;
   int height = 0;
   int original_channels = 0;
@@ -342,8 +359,8 @@ bool CImage::loadFromEncodedBuffer(
   }
   else
   {
-    pixels =
-        stbi_load_from_memory(data, len, &width, &height, &original_channels, desired_channels);
+    pixels = internal::load_8bit_from_memory(
+        data, len, &width, &height, &original_channels, desired_channels);
   }
   if (pixels == nullptr)
   {
@@ -662,10 +679,10 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       std::vector<uint8_t> buf(nBytes);
       in.ReadBuffer(buf.data(), nBytes);
 
-      // Decode JPEG using stb_image
+      // Decode JPEG (libjpeg-turbo if available, otherwise stb_image)
       int w = 0, h = 0, channels = 0;  // NOLINT
-      unsigned char* decoded =
-          stbi_load_from_memory(buf.data(), static_cast<int>(nBytes), &w, &h, &channels, 0);
+      unsigned char* decoded = internal::load_8bit_from_memory(
+          buf.data(), static_cast<int>(nBytes), &w, &h, &channels, 0);
 
       if (decoded == nullptr)
       {
@@ -842,12 +859,12 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
             std::vector<uint8_t> buf(nBytes);
             in.ReadBuffer(buf.data(), nBytes);
 
-            // Decode JPEG using stb_image (replaces OpenCV's
-            // loadFromStreamAsJPEG). stb_image outputs RGB
-            // natively, so no BGR→RGB conversion needed.
+            // Decode JPEG (replaces OpenCV's loadFromStreamAsJPEG). Both
+            // libjpeg-turbo and stb_image output RGB, so no BGR→RGB
+            // conversion needed.
             int dec_w = 0, dec_h = 0, dec_channels = 0;  // NOLINT
             // Request 3 channels (RGB) since this was a color image
-            unsigned char* decoded = stbi_load_from_memory(
+            unsigned char* decoded = internal::load_8bit_from_memory(
                 buf.data(), static_cast<int>(nBytes), &dec_w, &dec_h, &dec_channels, 3);
 
             if (decoded == nullptr)

@@ -556,6 +556,30 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
   /**  \note Since MRPT 2.3.3 this is a synonym with mrpt::io::setLazyLoadPathBase() */
   static void setImagesPathBase(const std::string& path);
 
+  /** Returns true if MRPT was built with libjpeg-turbo (CMake option
+   * `MRPT_WITH_LIBJPEG_TURBO`, ON by default when the library is found).
+   * Then JPEG images are decoded with it, which is faster than the embedded
+   * stb_image decoder used otherwise and for all other formats.
+   * \sa setUseLibJpegTurbo
+   */
+  static bool hasLibJpegTurbo() noexcept;
+
+  /** Enables (default) or disables decoding JPEG images with libjpeg-turbo,
+   * process-wide. Has no effect if hasLibJpegTurbo() is false. The initial
+   * value can be set with the environment variable `MRPT_IMG_LIBJPEG_TURBO`
+   * (`0` or `false` to disable).
+   *
+   * Both decoders produce the same channel layout (RGB order) and channel
+   * counts, and corrupt data fails in the same way, but pixel values may
+   * differ slightly (by a few units), as usual between JPEG decoders.
+   * \sa hasLibJpegTurbo, getUseLibJpegTurbo
+   */
+  static void setUseLibJpegTurbo(bool enable) noexcept;
+
+  /** True if JPEG images are currently decoded with libjpeg-turbo, i.e.
+   * hasLibJpegTurbo() and not disabled with setUseLibJpegTurbo(). */
+  static bool getUseLibJpegTurbo() noexcept;
+
   /** See setExternalStorage(). */
   [[nodiscard]] bool isExternallyStored() const noexcept { return m_state->imgIsExternalStorage; }
 

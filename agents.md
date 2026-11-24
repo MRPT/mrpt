@@ -163,6 +163,10 @@ mrpt_add_library(
   in place. `scaleHalf()` with `IMG_INTERP_NN` point-samples.
   `BayerPattern` names the top-left 2x2 block (ROS convention); OpenCV's
   `COLOR_Bayer*` names are shifted (ROS `RGGB` == `COLOR_BayerBG2RGB`).
+  JPEG is decoded with libjpeg-turbo if found at build time, else stb_image:
+  pixels differ by a few levels between builds, so tests must not compare
+  decoded JPEG pixels exactly (`CImage::setUseLibJpegTurbo(false)` or
+  `MRPT_IMG_LIBJPEG_TURBO=0` forces stb_image).
 * **mrpt_viz** has no OpenGL dependency (scene-graph description consumed by
   `mrpt_opengl`), so it is testable with plain unit tests. The orbit camera
   model lives only in `CCamera::ComputeOrbitEyeAndUp()`, shared by the
