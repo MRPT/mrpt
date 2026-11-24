@@ -39,7 +39,7 @@ using namespace mrpt::apps;
 
 RawlogGrabberApp::RawlogGrabberApp() : mrpt::system::COutputLogger("RawlogGrabberApp") {}
 
-void RawlogGrabberApp::initialize(int argc, const char** argv)
+bool RawlogGrabberApp::initialize(int argc, const char** argv)
 {
   MRPT_START
 
@@ -74,14 +74,23 @@ void RawlogGrabberApp::initialize(int argc, const char** argv)
   catch (const CLI::ParseError& e)
   {
     int ret = cmd.exit(e);
-    if (ret == 0) return;  // --help or --version
+    if (ret == 0)
+    {
+      // --help or --version
+      return false;
+    }
     THROW_EXCEPTION("CLI arguments parsing tells we should exit.");
   }
 
   ASSERT_FILE_EXISTS_(configFile);
   params.setContent(mrpt::io::file_get_contents(configFile));
 
-  if (!plugins.empty()) mrpt::system::loadPluginModules(plugins);
+  if (!plugins.empty())
+  {
+    mrpt::system::loadPluginModules(plugins);
+  }
+
+  return true;
 
   MRPT_END
 }

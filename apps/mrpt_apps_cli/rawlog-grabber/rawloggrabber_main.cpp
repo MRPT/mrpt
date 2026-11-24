@@ -30,7 +30,10 @@ int main(int argc, char** argv)
   try
   {
     mrpt::apps::RawlogGrabberApp app;
-    app.initialize(argc, argv);
+    if (!app.initialize(argc, argv))
+    {
+      return 0;
+    }
     app.run();
 
     return 0;
