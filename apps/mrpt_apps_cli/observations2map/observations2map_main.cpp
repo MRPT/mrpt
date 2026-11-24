@@ -58,13 +58,11 @@ int main(int argc, char** argv)
     // Process arguments:
     if ((argc != 4 && argc != 6) || (argc == 6 && 0 != mrpt::system::os::_strcmp(argv[4], "-s")))
     {
-      std::cout << "Use: observations2map <config_file.ini> "
+      std::cerr << "Use: observations2map <config_file.ini> "
                    "<observations.simplemap> <outputmap_prefix> [-s "
                    "INI_FILE_SECTION_NAME] "
                 << "\n";
-      std::cout << "  Default: INI_FILE_SECTION_NAME = MappingApplication"
-                << "\n";
-      std::cout << "Push any key to exit..."
+      std::cerr << "  Default: INI_FILE_SECTION_NAME = MappingApplication"
                 << "\n";
       return 1;
     }
@@ -138,14 +136,12 @@ int main(int argc, char** argv)
     std::cerr << mrpt::exception_to_str(e) << "\n"
               << "Program finished for an exception!!"
               << "\n";
-    mrpt::system::pause();
     return 1;
   }
   catch (...)
   {
     std::cerr << "Untyped exception!!"
               << "\n";
-    mrpt::system::pause();
     return 1;
   }
 }
