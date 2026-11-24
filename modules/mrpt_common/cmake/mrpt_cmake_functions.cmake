@@ -909,8 +909,10 @@ macro(mrpt_ament_cmake_python_get_python_install_dir)
   else()
     # Default (colcon/ROS): required for colcon to detect the python module and
     # extend the PYTHONPATH env var. This is prefixed with "/opt/ros/xxx/".
-    set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages/")
+    set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages")
   endif()
+  # No trailing slash, so DESTINATION paths built from it are normalized:
+  string(REGEX REPLACE "/+$" "" _output "${_output}")
 
   set(PYTHON_INSTALL_DIR
     "${_output}"

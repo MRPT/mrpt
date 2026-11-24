@@ -23,6 +23,8 @@
 
   <build_depend>eigen</build_depend>
   <depend>libglfw3-dev</depend>
+  <!-- Optional (faster JPEG decoding), stb_image is used without it -->
+  <depend>libturbojpeg</depend>
 
   <build_depend>pybind11-dev</build_depend>
   <build_depend>python3-dev</build_depend>

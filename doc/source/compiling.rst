@@ -47,6 +47,9 @@ Minimum compiler requisites:
             libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
             libxrandr-dev libxxf86vm-dev
 
+       # Faster JPEG decoding (libjpeg-turbo instead of the embedded stb_image):
+       sudo apt install libturbojpeg0-dev
+
        # Support most common sensors:
        sudo apt install libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
             libdc1394-dev libavformat-dev libswscale-dev libpcap-dev \

@@ -32,8 +32,7 @@ mrpt::serialization::CArchive& mrpt::math::operator>>(
   mrpt::math::TPose3D p;
   mrpt::math::TPoint3D s;
   in >> p >> s;
-  bb.setPose(p);
-  bb.setSize(s);
+  bb.set(p, s);
   return in;
 }
 
@@ -50,8 +49,7 @@ mrpt::serialization::CArchive& mrpt::math::operator>>(
   mrpt::math::TPose3D p;
   mrpt::math::TPoint3Df s;
   in >> p >> s;
-  bb.setPose(p);
-  bb.setSize(s);
+  bb.set(p, s);
   return in;
 }
 
