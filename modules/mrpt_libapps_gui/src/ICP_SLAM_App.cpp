@@ -14,6 +14,7 @@
 
 #include <mrpt/apps_gui/ICP_SLAM_App.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/config.h>  // MRPT_HAS_WXWIDGETS
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
@@ -22,6 +23,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/system/CRateTimer.h>
+#include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>
@@ -371,9 +373,12 @@ void ICP_SLAM_App_Base::run()
         win3D->unlockAccess3DScene();
 
         // Move camera:
-        win3D->setCameraPointingToPoint(
-            static_cast<float>(robotPose.x()), static_cast<float>(robotPose.y()),
-            static_cast<float>(robotPose.z()));
+        if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
+        {
+          win3D->setCameraPointingToPoint(
+              static_cast<float>(robotPose.x()), static_cast<float>(robotPose.y()),
+              static_cast<float>(robotPose.z()));
+        }
 
         // Update:
         win3D->forceRepaint();
@@ -459,7 +464,14 @@ void ICP_SLAM_App_Rawlog::impl_initialize(int argc, const char** argv)
 // ---------------------------------------
 ICP_SLAM_App_Live::ICP_SLAM_App_Live() { this->setLoggerName("ICP_SLAM_App_Live"); }
 
-ICP_SLAM_App_Live::~ICP_SLAM_App_Live() = default;
+ICP_SLAM_App_Live::~ICP_SLAM_App_Live()
+{
+  m_allThreadsMustExit = true;
+  if (m_hSensorThread.joinable())
+  {
+    m_hSensorThread.join();
+  }
+}
 
 void ICP_SLAM_App_Live::impl_initialize(
     [[maybe_unused]] int argc, [[maybe_unused]] const char** argv)
@@ -473,16 +485,27 @@ void ICP_SLAM_App_Live::impl_initialize(
 
   // Config file already loaded into "params".
 
+  // Optionally, save all grabbed observations to a rawlog file:
+  if (params.read_bool(sect, "SAVE_RAWLOG", false))
+  {
+    mrpt::system::TTimeParts tp;
+    mrpt::system::timestampToParts(mrpt::Clock::now(), tp, true /*local time*/);
+    const std::string rawlogFile = mrpt::format(
+        "icpslamlive_dataset_%04u-%02u-%02u_%02uh%02um%02us.rawlog", tp.year, tp.month, tp.day,
+        tp.hour, tp.minute, static_cast<unsigned int>(tp.second));
+    m_out_rawlog = std::make_unique<mrpt::io::CFileGZOutputStream>(rawlogFile);
+    MRPT_LOG_INFO_STREAM("Saving grabbed observations to: " << rawlogFile);
+  }
+
   // Load sensor params from section: "LIDAR_SENSOR"
-  std::thread hSensorThread;
   {
     TThreadParams threParms;
     threParms.cfgFile = &params;
     threParms.section_name = "LIDAR_SENSOR";
     MRPT_LOG_INFO("Launching LIDAR grabbing thread...");
-    hSensorThread = std::thread(&ICP_SLAM_App_Live::SensorThread, this, threParms);
+    m_hSensorThread = std::thread(&ICP_SLAM_App_Live::SensorThread, this, threParms);
 
-    mrpt::system::thread_name("icpLiveSensor", hSensorThread);
+    mrpt::system::thread_name("icpLiveSensor", m_hSensorThread);
   }
   // Wait and check if the sensor is ready:
   using namespace std::chrono_literals;
@@ -523,6 +546,17 @@ bool ICP_SLAM_App_Live::impl_get_next_observations(
         std::lock_guard<std::mutex> csl(m_cs_global_list_obs);
         obs_copy = m_global_list_obs;
         m_global_list_obs.clear();
+      }
+      if (m_out_rawlog)
+      {
+        auto arch = mrpt::serialization::archiveFrom(*m_out_rawlog);
+        for (const auto& o : obs_copy)
+        {
+          if (o.second)
+          {
+            arch << *o.second;
+          }
+        }
       }
       // Keep the most recent laser scan:
       for (auto it = obs_copy.rbegin(); !new_obs && it != obs_copy.rend(); ++it)
