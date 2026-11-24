@@ -27,12 +27,17 @@ namespace mrpt::obs
  * wind speed (m/s)
  * wind direction (deg)
  *
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \sa CObservation
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservationWindSensor : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationWindSensor, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   /** @name The data members

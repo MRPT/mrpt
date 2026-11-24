@@ -17,6 +17,7 @@
 #include <mrpt/containers/yaml.h>
 
 #include <algorithm>  // count()
+#include <clocale>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -1871,6 +1872,73 @@ TEST(yaml, printAsJSONIgnoresStreamFormatting)
   EXPECT_EQ(ss.str(), "{\"i\":255,\"d\":1.5}\n");
   // The caller's stream state is kept:
   EXPECT_TRUE((ss.flags() & std::ios_base::hex) != 0);
+}
+
+namespace
+{
+/** Switches LC_NUMERIC to a locale with a decimal comma, if one is installed,
+ * and restores the previous one when destroyed. */
+class ScopedDecimalCommaLocale
+{
+ public:
+  ScopedDecimalCommaLocale() : m_old(std::setlocale(LC_NUMERIC, nullptr))
+  {
+    for (const char* name :
+         {"de_DE.UTF-8", "de_DE.utf8", "es_ES.UTF-8", "es_ES.utf8", "fr_FR.UTF-8", "fr_FR.utf8",
+          "de-DE", "German"})
+    {
+      if (std::setlocale(LC_NUMERIC, name) != nullptr &&
+          std::string(std::localeconv()->decimal_point) == ",")
+      {
+        m_active = true;
+        return;
+      }
+    }
+    std::setlocale(LC_NUMERIC, m_old.c_str());
+  }
+  ~ScopedDecimalCommaLocale() { std::setlocale(LC_NUMERIC, m_old.c_str()); }
+  ScopedDecimalCommaLocale(const ScopedDecimalCommaLocale&) = delete;
+  ScopedDecimalCommaLocale& operator=(const ScopedDecimalCommaLocale&) = delete;
+
+  [[nodiscard]] bool active() const { return m_active; }
+
+ private:
+  std::string m_old;
+  bool m_active = false;
+};
+}  // namespace
+
+// GUI toolkits set the C locale from the environment, which may use a decimal
+// comma: YAML and JSON numbers must not depend on it.
+TEST(yaml, numbersIgnoreDecimalCommaCLocale)
+{
+  const ScopedDecimalCommaLocale loc;
+  if (!loc.active())
+  {
+    GTEST_SKIP() << "No locale with a decimal comma is installed";
+  }
+  using mrpt::containers::yaml;
+
+  auto doc = yaml::FromText("a: 0.05\nb: -1.5e3\nc: 1,5\nd: '0.25'\n");
+  EXPECT_EQ(doc["a"].as<double>(), 0.05);
+  EXPECT_EQ(doc["b"].as<double>(), -1500.0);
+  EXPECT_EQ(doc["c"].as<std::string>(), "1,5");  // not a number
+  EXPECT_EQ(doc["d"].as<double>(), 0.25);        // quoted: a string, converted on access
+
+  std::stringstream js(R"({"x": [0.5, 1e-3]})");
+  auto jdoc = yaml::FromStream(js);
+  EXPECT_EQ(jdoc["x"](0).as<double>(), 0.5);
+  EXPECT_EQ(jdoc["x"](1).as<double>(), 1e-3);
+
+  yaml d = yaml::Map();
+  d["v"] = 0.05;
+  std::stringstream yss;
+  d.printAsYAML(yss);
+  EXPECT_NE(yss.str().find("v: 0.050000000000000003\n"), std::string::npos) << yss.str();
+  std::stringstream jss;
+  d.printAsJSON(jss);
+  EXPECT_NE(jss.str().find("0.050000000000000003"), std::string::npos) << jss.str();
+  EXPECT_EQ(d["v"].as<std::string>(), "0.050000000000000003");
 }
 
 #endif  // MRPT_HAS_FYAML

@@ -22,13 +22,18 @@ namespace mrpt::obs
 {
 /** This represents one or more RFID tags observed by a receiver.
  *
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \sa CObservation, mrpt::hwdrivers::CImpinjRFID for a software sensor capable
  * of reading this kind of observations.
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservationRFID : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationRFID, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   /** Constructor */

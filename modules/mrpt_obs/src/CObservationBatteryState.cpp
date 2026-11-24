@@ -14,6 +14,7 @@
 
 #include <mrpt/obs/CObservationBatteryState.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::obs;
@@ -111,4 +112,60 @@ std::string CObservationBatteryState::exportTxtDataRow() const
     s += mrpt::format("%18.5f ", voltageOtherBatteries[i]);
 
   return s;
+}
+
+void CObservationBatteryState::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["voltageMainRobotBattery"] = voltageMainRobotBattery;
+  out["voltageMainRobotComputer"] = voltageMainRobotComputer;
+  out["voltageMainRobotBatteryIsValid"] = voltageMainRobotBatteryIsValid;
+  out["voltageMainRobotComputerIsValid"] = voltageMainRobotComputerIsValid;
+  // Two lists, as in the binary format (their lengths may differ):
+  auto volts = out["voltageOtherBatteries"];
+  volts.resize(static_cast<size_t>(voltageOtherBatteries.size()));
+  for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
+  {
+    volts[static_cast<size_t>(i)] = voltageOtherBatteries[i];
+  }
+  auto valid = out["voltageOtherBatteriesValid"];
+  valid.resize(voltageOtherBatteriesValid.size());
+  for (size_t i = 0; i < voltageOtherBatteriesValid.size(); i++)
+  {
+    valid[i] = voltageOtherBatteriesValid[i];
+  }
+}
+
+void CObservationBatteryState::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      schemaDeserializeCommon(in);
+      voltageMainRobotBattery = static_cast<double>(in["voltageMainRobotBattery"]);
+      voltageMainRobotComputer = static_cast<double>(in["voltageMainRobotComputer"]);
+      voltageMainRobotBatteryIsValid = static_cast<bool>(in["voltageMainRobotBatteryIsValid"]);
+      voltageMainRobotComputerIsValid = static_cast<bool>(in["voltageMainRobotComputerIsValid"]);
+
+      auto volts = in["voltageOtherBatteries"];
+      voltageOtherBatteries.resize(static_cast<CVectorDouble::size_type>(volts.size()));
+      for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
+      {
+        voltageOtherBatteries[i] = static_cast<double>(volts[static_cast<size_t>(i)]);
+      }
+      auto valid = in["voltageOtherBatteriesValid"];
+      voltageOtherBatteriesValid.assign(valid.size(), false);
+      for (size_t i = 0; i < voltageOtherBatteriesValid.size(); i++)
+      {
+        voltageOtherBatteriesValid[i] = static_cast<bool>(valid[i]);
+      }
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }

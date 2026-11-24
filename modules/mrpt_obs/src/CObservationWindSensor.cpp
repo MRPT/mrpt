@@ -14,6 +14,7 @@
 
 #include <mrpt/obs/CObservationWindSensor.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -84,4 +85,30 @@ std::string CObservationWindSensor::exportTxtDataRow() const
       "%18.5f %18.3f"  // WIND (mod, direction)
       ,
       speed, direction);
+}
+
+void CObservationWindSensor::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["speed"] = speed;
+  out["direction"] = direction;
+  out["sensorPoseOnRobot"] = sensorPoseOnRobot;
+}
+
+void CObservationWindSensor::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+      schemaDeserializeCommon(in);
+      speed = static_cast<double>(in["speed"]);
+      direction = static_cast<double>(in["direction"]);
+      in["sensorPoseOnRobot"].readTo(sensorPoseOnRobot);
+      break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }

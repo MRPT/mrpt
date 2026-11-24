@@ -25,7 +25,10 @@
 #include <mrpt/serialization/CSchemeArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 
+#include <clocale>
+#include <locale>
 #include <sstream>
+#include <string>
 
 // JSON text parsing needs libfyaml:
 #include <mrpt/containers/config.h>
@@ -113,6 +116,52 @@ TEST(SchemaSerialization, JSON_archive_CPose3D)
 
 // Reading into a pose whose cached yaw/pitch/roll are already computed must
 // refresh them, not keep the old angles.
+namespace
+{
+struct CommaDecimalPoint : std::numpunct<char>
+{
+  char do_decimal_point() const override { return ','; }
+};
+}  // namespace
+
+// Applications may set a decimal comma in the C++ global locale and, through
+// GUI toolkits, in the C one: JSON documents must not depend on either.
+TEST(SchemaSerialization, JSON_archive_CPose3D_independentOfLocale)
+{
+  const std::locale oldGlobal =
+      std::locale::global(std::locale(std::locale::classic(), new CommaDecimalPoint));
+  const std::string oldC = std::setlocale(LC_NUMERIC, nullptr);
+  for (const char* name : {"de_DE.UTF-8", "de_DE.utf8", "es_ES.UTF-8", "es_ES.utf8", "German"})
+  {
+    if (std::setlocale(LC_NUMERIC, name) != nullptr)
+    {
+      break;
+    }
+  }
+
+  const auto pose1 = mrpt::poses::CPose3D::FromXYZYawPitchRoll(1.5, -0.25, 3.0, 0.5, -0.2, 0.1);
+  mrpt::poses::CPose3D pose2;
+  std::stringstream ss;
+  {
+    auto arch = archiveJSON();
+    arch = pose1;
+    ss << arch;
+  }
+  {
+    auto arch = archiveJSON();
+    ss >> arch;
+    arch.readTo(pose2);
+  }
+  std::setlocale(LC_NUMERIC, oldC.c_str());
+  std::locale::global(oldGlobal);
+
+  EXPECT_NEAR(pose2.x(), 1.5, 1e-12) << ss.str();
+  EXPECT_NEAR(pose2.y(), -0.25, 1e-12);
+  EXPECT_NEAR(pose2.yaw(), 0.5, 1e-9);
+  EXPECT_NEAR(pose2.pitch(), -0.2, 1e-9);
+  EXPECT_NEAR(pose2.roll(), 0.1, 1e-9);
+}
+
 TEST(SchemaSerialization, JSON_archive_CPose3D_refreshesCachedAngles)
 {
   auto arch = archiveJSON();

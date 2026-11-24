@@ -24,13 +24,18 @@ namespace mrpt::obs
  * robot.
  *  The signal level is given as a percentage.
  *
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \sa CObservation, mrpt::hwdrivers::CWirelessPower for a software sensor
  * capable of reading this kind of observations.
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservationWirelessPower : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationWirelessPower, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   /** @name The data members

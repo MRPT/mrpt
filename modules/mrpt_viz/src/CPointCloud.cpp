@@ -37,16 +37,21 @@ CPointCloud::CPointCloud()
 
 void CPointCloud::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
-  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(2);
   out["colorFromDepth"] = static_cast<int32_t>(m_colorFromDepth);
   out["pointSize"] = getPointSize();
   const auto N = m_points.size();
-  out["N"] = static_cast<uint64_t>(N);
+  auto xs = out["xs"];
+  auto ys = out["ys"];
+  auto zs = out["zs"];
+  xs.resize(N);
+  ys.resize(N);
+  zs.resize(N);
   for (size_t i = 0; i < N; i++)
   {
-    out["xs"][i] = m_points[i].x;
-    out["ys"][i] = m_points[i].y;
-    out["zs"][i] = m_points[i].z;
+    xs[i] = m_points[i].x;
+    ys[i] = m_points[i].y;
+    zs[i] = m_points[i].z;
   }
   out["colorFromDepth_min"]["R"] = m_colorFromDepth_min.R;
   out["colorFromDepth_min"]["G"] = m_colorFromDepth_min.G;
@@ -61,7 +66,8 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
   SCHEMA_DESERIALIZE_DATATYPE_VERSION();
   switch (version)
   {
-    case 1:
+    case 1:  // v1 also had the number of points, as "N"
+    case 2:
     {
       /**
        *  currently below is being left to what is being set by
@@ -69,13 +75,18 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
        */
       // m_colorFromDepth = static_cast<float>(in["colorDepth"]);
       setPointSize(static_cast<float>(in["pointSize"]));
-      const size_t N = static_cast<uint64_t>(in["N"]);
+      auto xs = in["xs"];
+      auto ys = in["ys"];
+      auto zs = in["zs"];
+      const size_t N = xs.size();
+      ASSERT_EQUAL_(ys.size(), N);
+      ASSERT_EQUAL_(zs.size(), N);
       m_points.resize(N);
       for (size_t i = 0; i < N; i++)
       {
-        m_points[i].x = static_cast<float>(in["xs"][i]);
-        m_points[i].y = static_cast<float>(in["ys"][i]);
-        m_points[i].z = static_cast<float>(in["zs"][i]);
+        m_points[i].x = static_cast<float>(xs[i]);
+        m_points[i].y = static_cast<float>(ys[i]);
+        m_points[i].z = static_cast<float>(zs[i]);
       }
       m_colorFromDepth_min.R = static_cast<float>(in["colorFromDepth_min"]["R"]);
       m_colorFromDepth_min.G = static_cast<float>(in["colorFromDepth_min"]["G"]);

@@ -156,6 +156,9 @@ mrpt_add_library(
   Optimizers and g2o files use the local residual `pseudoLog(Z^-1 X)`; convert
   with `graphs::detail::infoParamsToLocal()` / `infoLocalToParams()`. Honor
   `edges_store_inverse_poses` in any new edge consumer.
+* **mrpt_serialization**: in schema (JSON) archives, write lists with
+  `resize(n)` and then `[i]`, and read their length with `size()`; never
+  store a separate count field. Missing entries read as 0, `false` or `""`.
 * **mrpt_img**: `CImage::at<T>()` is a raw `reinterpret_cast`; for 3-channel
   images use `at<uint8_t>(x, y, channel)`, not `at<TColor>()`.
   `scaleHalf()`/`grayscale()` dispatch to SSE2/SSSE3 kernels and return whether
@@ -292,6 +295,10 @@ mrpt_add_library(
   include the module's `config.h` (directly or indirectly) silently reads 0.
   In `config.h.in`, prefer `#cmakedefine01 VAR` to `${VAR}`: an unset
   variable gives an empty `#define`, which breaks `#if` in user code.
+* Text formats parsed or printed with locale-dependent calls (`strtod()`,
+  `printf("%g")`, `std::stod()`, `std::to_string(double)`, streams not
+  imbued with `std::locale::classic()`): GUI toolkits set the C locale from
+  the environment, which may use a decimal comma.
 * Plain `char` used as a signed byte: it is unsigned on ARM and s390x. Use
   `int8_t` / `signed char`.
 * Members read but never written; declared-but-never-defined functions.
