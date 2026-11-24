@@ -123,17 +123,18 @@ void CObservationBatteryState::serializeTo(mrpt::serialization::CSchemeArchiveBa
   out["voltageMainRobotBatteryIsValid"] = voltageMainRobotBatteryIsValid;
   out["voltageMainRobotComputerIsValid"] = voltageMainRobotComputerIsValid;
   // Two lists, as in the binary format (their lengths may differ):
-  for (size_t i = 0; i < static_cast<size_t>(voltageOtherBatteries.size()); i++)
+  auto volts = out["voltageOtherBatteries"];
+  volts.resize(static_cast<size_t>(voltageOtherBatteries.size()));
+  for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
   {
-    out["voltageOtherBatteries"][i] = voltageOtherBatteries[static_cast<CVectorDouble::Index>(i)];
+    volts[static_cast<size_t>(i)] = voltageOtherBatteries[i];
   }
-  out["voltageOtherBatteries_count"] = static_cast<uint32_t>(voltageOtherBatteries.size());
+  auto valid = out["voltageOtherBatteriesValid"];
+  valid.resize(voltageOtherBatteriesValid.size());
   for (size_t i = 0; i < voltageOtherBatteriesValid.size(); i++)
   {
-    out["voltageOtherBatteriesValid"][i] = static_cast<bool>(voltageOtherBatteriesValid[i]);
+    valid[i] = voltageOtherBatteriesValid[i];
   }
-  out["voltageOtherBatteriesValid_count"] =
-      static_cast<uint32_t>(voltageOtherBatteriesValid.size());
 }
 
 void CObservationBatteryState::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
@@ -150,19 +151,17 @@ void CObservationBatteryState::serializeFrom(mrpt::serialization::CSchemeArchive
       voltageMainRobotBatteryIsValid = static_cast<bool>(in["voltageMainRobotBatteryIsValid"]);
       voltageMainRobotComputerIsValid = static_cast<bool>(in["voltageMainRobotComputerIsValid"]);
 
-      const auto nV = static_cast<uint32_t>(in["voltageOtherBatteries_count"]);
-      voltageOtherBatteries.resize(static_cast<CVectorDouble::size_type>(nV));
-      for (uint32_t i = 0; i < nV; i++)
+      auto volts = in["voltageOtherBatteries"];
+      voltageOtherBatteries.resize(static_cast<CVectorDouble::size_type>(volts.size()));
+      for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
       {
-        voltageOtherBatteries[static_cast<CVectorDouble::Index>(i)] =
-            static_cast<double>(in["voltageOtherBatteries"][static_cast<size_t>(i)]);
+        voltageOtherBatteries[i] = static_cast<double>(volts[static_cast<size_t>(i)]);
       }
-      const auto nB = static_cast<uint32_t>(in["voltageOtherBatteriesValid_count"]);
-      voltageOtherBatteriesValid.assign(nB, false);
-      for (uint32_t i = 0; i < nB; i++)
+      auto valid = in["voltageOtherBatteriesValid"];
+      voltageOtherBatteriesValid.assign(valid.size(), false);
+      for (size_t i = 0; i < voltageOtherBatteriesValid.size(); i++)
       {
-        voltageOtherBatteriesValid[i] =
-            static_cast<bool>(in["voltageOtherBatteriesValid"][static_cast<size_t>(i)]);
+        voltageOtherBatteriesValid[i] = static_cast<bool>(valid[i]);
       }
     }
     break;

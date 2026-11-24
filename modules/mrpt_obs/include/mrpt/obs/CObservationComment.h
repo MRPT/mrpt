@@ -23,9 +23,10 @@ namespace mrpt::obs
  *   There should be only one of this observations in a rawlog file, and it's
  * recommended to insert/modify them from the application RawlogViewer.
  *
- * \sa CObservation
  * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
  * JSON) serialization.
+ *
+ * \sa CObservation
  *
  * \ingroup mrpt_obs_grp
  */

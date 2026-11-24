@@ -16,6 +16,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 
+#include <limits>
+
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 
@@ -129,17 +131,17 @@ void CObservationRange::serializeTo(mrpt::serialization::CSchemeArchiveBase& out
   out["minSensorDistance"] = minSensorDistance;
   out["maxSensorDistance"] = maxSensorDistance;
   out["sensorConeAperture"] = sensorConeAperture;
+  auto list = out["sensedData"];
+  list.resize(sensedData.size());
   for (size_t i = 0; i < sensedData.size(); i++)
   {
     const auto& m = sensedData[i];
-    auto e = out["sensedData"][i];
+    auto e = list[i];
     e["sensorID"] = static_cast<uint32_t>(m.sensorID);
     e["sensorPose"] = CPose3D(m.sensorPose);
     e["sensedDistance"] = m.sensedDistance;
     e["sensorNoiseStdDeviation"] = m.sensorNoiseStdDeviation;
   }
-  // The scheme archive API has no way to query a list length, so store it:
-  out["sensedData_count"] = static_cast<uint32_t>(sensedData.size());
 }
 
 void CObservationRange::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
@@ -154,14 +156,16 @@ void CObservationRange::serializeFrom(mrpt::serialization::CSchemeArchiveBase& i
       minSensorDistance = static_cast<float>(in["minSensorDistance"]);
       maxSensorDistance = static_cast<float>(in["maxSensorDistance"]);
       sensorConeAperture = static_cast<float>(in["sensorConeAperture"]);
-      const auto n = static_cast<uint32_t>(in["sensedData_count"]);
+      auto list = in["sensedData"];
       sensedData.clear();
-      sensedData.resize(n);
-      for (uint32_t i = 0; i < n; i++)
+      sensedData.resize(list.size());
+      for (size_t i = 0; i < sensedData.size(); i++)
       {
         auto& m = sensedData[i];
-        auto e = in["sensedData"][static_cast<size_t>(i)];
-        m.sensorID = static_cast<uint16_t>(static_cast<uint32_t>(e["sensorID"]));
+        auto e = list[i];
+        const auto id = static_cast<uint32_t>(e["sensorID"]);
+        ASSERT_LE_(id, uint32_t{std::numeric_limits<uint16_t>::max()});
+        m.sensorID = static_cast<uint16_t>(id);
         CPose3D p;
         e["sensorPose"].readTo(p);
         m.sensorPose = p.asTPose();

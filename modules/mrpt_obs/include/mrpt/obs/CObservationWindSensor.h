@@ -27,9 +27,10 @@ namespace mrpt::obs
  * wind speed (m/s)
  * wind direction (deg)
  *
- * \sa CObservation
  * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
  * JSON) serialization.
+ *
+ * \sa CObservation
  *
  * \ingroup mrpt_obs_grp
  */

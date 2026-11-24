@@ -27,6 +27,7 @@
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/serialization/CSchemeArchive.h>
 
+#include <array>
 #include <sstream>
 #include <string>
 
@@ -125,6 +126,7 @@ TEST(CObservationIMU, SchemaRoundTripThroughText)
   EXPECT_NE(txt.find("\"IMU_Z_ACC_GLOBAL\""), std::string::npos) << txt;
   EXPECT_EQ(txt.find("\"IMU_X_VEL\""), std::string::npos) << txt;
   EXPECT_NE(txt.find("\"imu_front\""), std::string::npos) << txt;
+  EXPECT_EQ(txt.find("_count"), std::string::npos) << txt;
 
   expectSameIMU(src, fromJSONText<CObservationIMU>(txt));
 }
@@ -218,10 +220,6 @@ TEST(CObservationOdometry, SchemaReadingIMUDocumentThrows)
   EXPECT_ANY_THROW(arch.readTo(dst));
 }
 
-// ---------------------------------------------------------------------------
-// Batch 2: Range, BatteryState, Comment, WindSensor, WirelessPower, RFID,
-// BeaconRanges. Each one goes through JSON text and back.
-// ---------------------------------------------------------------------------
 namespace
 {
 const auto kPose = mrpt::poses::CPose3D::FromXYZYawPitchRoll(0.4, -0.1, 0.25, 1.2, 0.05, -0.3);
@@ -253,7 +251,7 @@ TEST(CObservationRange, SchemaRoundTrip)
   src.minSensorDistance = 0.05f;
   src.maxSensorDistance = 7.5f;
   src.sensorConeAperture = 0.3f;
-  for (uint16_t id : {3, 65535})
+  for (const uint16_t id : std::array<uint16_t, 2>{3, 65535})
   {
     mrpt::obs::CObservationRange::TMeasurement m;
     m.sensorID = id;
@@ -282,9 +280,23 @@ TEST(CObservationRange, SchemaRoundTrip)
     EXPECT_EQ(a.sensorNoiseStdDeviation, b.sensorNoiseStdDeviation);
   }
 
-  // Empty measurement list:
+  // Empty measurement list, still written as such:
   src.sensedData.clear();
+  const std::string txt = toJSONText(src);
+  EXPECT_NE(txt.find("\"sensedData\": []"), std::string::npos) << txt;
   EXPECT_TRUE(roundTripInto(src, stale).sensedData.empty());
+}
+
+TEST(CObservationRange, SchemaSensorIDOutOfRangeThrows)
+{
+  mrpt::obs::CObservationRange src;
+  src.sensedData.resize(1);
+  auto arch = mrpt::serialization::archiveJSON();
+  arch = src;
+  arch["sensedData"][static_cast<size_t>(0)]["sensorID"] = static_cast<uint32_t>(65536);
+
+  mrpt::obs::CObservationRange dst;
+  EXPECT_ANY_THROW(arch.readTo(dst));
 }
 
 TEST(CObservationBatteryState, SchemaRoundTrip)

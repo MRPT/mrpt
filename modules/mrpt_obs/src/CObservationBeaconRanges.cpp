@@ -177,15 +177,15 @@ void CObservationBeaconRanges::serializeTo(mrpt::serialization::CSchemeArchiveBa
   out["minSensorDistance"] = minSensorDistance;
   out["maxSensorDistance"] = maxSensorDistance;
   out["stdError"] = stdError;
+  auto list = out["sensedData"];
+  list.resize(sensedData.size());
   for (size_t i = 0; i < sensedData.size(); i++)
   {
-    auto e = out["sensedData"][i];
+    auto e = list[i];
     e["sensorLocationOnRobot"] = sensedData[i].sensorLocationOnRobot;
     e["sensedDistance"] = sensedData[i].sensedDistance;
     e["beaconID"] = sensedData[i].beaconID;
   }
-  // The scheme archive API has no way to query a list length, so store it:
-  out["sensedData_count"] = static_cast<uint32_t>(sensedData.size());
   out["auxEstimatePose"] = auxEstimatePose;
 }
 
@@ -201,12 +201,12 @@ void CObservationBeaconRanges::serializeFrom(mrpt::serialization::CSchemeArchive
       minSensorDistance = static_cast<float>(in["minSensorDistance"]);
       maxSensorDistance = static_cast<float>(in["maxSensorDistance"]);
       stdError = static_cast<float>(in["stdError"]);
-      const auto n = static_cast<uint32_t>(in["sensedData_count"]);
+      auto list = in["sensedData"];
       sensedData.clear();
-      sensedData.resize(n);
-      for (uint32_t i = 0; i < n; i++)
+      sensedData.resize(list.size());
+      for (size_t i = 0; i < sensedData.size(); i++)
       {
-        auto e = in["sensedData"][static_cast<size_t>(i)];
+        auto e = list[i];
         e["sensorLocationOnRobot"].readTo(sensedData[i].sensorLocationOnRobot);
         sensedData[i].sensedDistance = static_cast<float>(e["sensedDistance"]);
         sensedData[i].beaconID = static_cast<int32_t>(e["beaconID"]);

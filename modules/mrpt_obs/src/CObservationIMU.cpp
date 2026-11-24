@@ -163,19 +163,19 @@ void CObservationIMU::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) 
   out["sensorPose"] = sensorPose;
 
   // Sparse list: only the fields actually present.
-  uint32_t n = 0;
+  auto list = out["measurements"];
+  list.resize(static_cast<size_t>(std::count(dataIsPresent.begin(), dataIsPresent.end(), true)));
+  size_t n = 0;
   for (size_t i = 0; i < COUNT_IMU_DATA_FIELDS; i++)
   {
     if (!dataIsPresent[i])
     {
       continue;
     }
-    auto entry = out["measurements"][static_cast<size_t>(n++)];
+    auto entry = list[n++];
     entry["field"] = std::string(imu_schema_field_names[i]);
     entry["value"] = rawMeasurements[i];
   }
-  // The scheme archive API has no way to query a list length, so store it:
-  out["measurements_count"] = n;
 }
 
 void CObservationIMU::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
@@ -192,10 +192,11 @@ void CObservationIMU::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
       dataIsPresent.fill(false);
       rawMeasurements.fill(0);
 
-      const auto n = static_cast<uint32_t>(in["measurements_count"]);
-      for (uint32_t k = 0; k < n; k++)
+      auto list = in["measurements"];
+      const size_t n = list.size();
+      for (size_t k = 0; k < n; k++)
       {
-        auto entry = in["measurements"][static_cast<size_t>(k)];
+        auto entry = list[k];
         const auto name = static_cast<std::string>(entry["field"]);
         const auto it =
             std::find(imu_schema_field_names.begin(), imu_schema_field_names.end(), name);

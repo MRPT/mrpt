@@ -26,9 +26,10 @@ namespace mrpt::obs
  *     for example to store measurements from infrared proximity sensors (IR) or
  ultrasonic sensors (sonars).
  *
- * \sa CObservation
  * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
  * JSON) serialization.
+ *
+ * \sa CObservation
  *
  * \ingroup mrpt_obs_grp
  */
