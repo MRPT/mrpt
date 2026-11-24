@@ -26,6 +26,7 @@
 #include <cstring>  // memcpy
 #include <map>
 #include <mutex>
+#include <utility>
 #include <vector>
 
 // Include the MRPT bitmap fonts:
@@ -90,20 +91,23 @@ const uint32_t* fontBitmaps(const std::string& name)
   FontData& fd = it->second;
   if (fd.bitmaps.empty())
   {
+    // Decompressed into a local buffer, and cached only once complete, so a
+    // failure never leaves a partial table behind:
     const std::vector<uint8_t> gz(fd.gz_data, fd.gz_data + fd.gz_size);
-    if (!mrpt::io::zip::decompress_gz_data_block(gz, fd.bitmaps) || fd.bitmaps.empty())
+    std::vector<uint8_t> bitmaps;
+    if (!mrpt::io::zip::decompress_gz_data_block(gz, bitmaps) || bitmaps.empty())
     {
-      fd.bitmaps.clear();
       THROW_EXCEPTION_FMT("Cannot uncompress the embedded font '%s'", name.c_str());
     }
 #if MRPT_IS_BIG_ENDIAN
     // The tables are stored as little-endian 32-bit words:
-    auto* ptr = reinterpret_cast<uint32_t*>(fd.bitmaps.data());
-    for (std::size_t i = 0; i < fd.bitmaps.size() / sizeof(uint32_t); i++)
+    auto* ptr = reinterpret_cast<uint32_t*>(bitmaps.data());
+    for (std::size_t i = 0; i < bitmaps.size() / sizeof(uint32_t); i++)
     {
       mrpt::reverseBytesInPlace(ptr[i]);
     }
 #endif
+    fd.bitmaps = std::move(bitmaps);
   }
   return reinterpret_cast<const uint32_t*>(fd.bitmaps.data());
 }
