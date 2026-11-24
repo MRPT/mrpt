@@ -42,7 +42,6 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/modules/mrpt_<na
   group_mrpt_opengl_grp.rst
   group_mrpt_poses_grp.rst
   group_mrpt_random_grp.rst
-  group_mrpt_round.rst
   group_mrpt_rtti_grp.rst
   group_mrpt_serialization_grp.rst
   group_mrpt_slam_grp.rst
@@ -50,6 +49,7 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/modules/mrpt_<na
   group_mrpt_tfest_grp.rst
   group_mrpt_topography_grp.rst
   group_mrpt_typemeta_grp.rst
+  group_mrpt_viz_grp.rst
 
 .. index::
    single: List of MRPT libraries

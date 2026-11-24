@@ -20,8 +20,7 @@
 
 namespace mrpt::img
 {
-/** \addtogroup color_maps Color map functions (in #include
- * <mrpt/img/color_maps.h>)
+/** \addtogroup color_maps Color map functions (in #include <mrpt/img/color_maps.h>)
  *  \ingroup mrpt_img_grp
  * @{ */
 
