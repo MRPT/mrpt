@@ -288,8 +288,10 @@ mrpt_add_library(
 * Multi-byte data read/written with raw `ReadBuffer()`/`WriteBuffer()` or
   `memcpy` instead of `*FixEndianness()`: breaks on big-endian (s390x).
   Streams and sensor packets are little-endian.
-* `#if MRPT_IS_BIG_ENDIAN` in a file that does not include
-  `mrpt/core/config.h` (directly or indirectly) silently reads 0.
+* `#if MRPT_IS_BIG_ENDIAN` or `#if MRPT_HAS_*` in a file that does not
+  include the module's `config.h` (directly or indirectly) silently reads 0.
+  In `config.h.in`, prefer `#cmakedefine01 VAR` to `${VAR}`: an unset
+  variable gives an empty `#define`, which breaks `#if` in user code.
 * Plain `char` used as a signed byte: it is unsigned on ARM and s390x. Use
   `int8_t` / `signed char`.
 * Members read but never written; declared-but-never-defined functions.
