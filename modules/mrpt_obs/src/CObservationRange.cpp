@@ -14,6 +14,7 @@
 
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -118,5 +119,58 @@ void CObservationRange::getDescriptionAsText(std::ostream& o) const
     o << mrpt::format("    %4.03f   ", q.sensedDistance);
     o << mrpt::format("    %4.03f   ", q.sensorNoiseStdDeviation);
     o << q.sensorPose << "\n";
+  }
+}
+
+void CObservationRange::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["minSensorDistance"] = minSensorDistance;
+  out["maxSensorDistance"] = maxSensorDistance;
+  out["sensorConeAperture"] = sensorConeAperture;
+  for (size_t i = 0; i < sensedData.size(); i++)
+  {
+    const auto& m = sensedData[i];
+    auto e = out["sensedData"][i];
+    e["sensorID"] = static_cast<uint32_t>(m.sensorID);
+    e["sensorPose"] = CPose3D(m.sensorPose);
+    e["sensedDistance"] = m.sensedDistance;
+    e["sensorNoiseStdDeviation"] = m.sensorNoiseStdDeviation;
+  }
+  // The scheme archive API has no way to query a list length, so store it:
+  out["sensedData_count"] = static_cast<uint32_t>(sensedData.size());
+}
+
+void CObservationRange::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      schemaDeserializeCommon(in);
+      minSensorDistance = static_cast<float>(in["minSensorDistance"]);
+      maxSensorDistance = static_cast<float>(in["maxSensorDistance"]);
+      sensorConeAperture = static_cast<float>(in["sensorConeAperture"]);
+      const auto n = static_cast<uint32_t>(in["sensedData_count"]);
+      sensedData.clear();
+      sensedData.resize(n);
+      for (uint32_t i = 0; i < n; i++)
+      {
+        auto& m = sensedData[i];
+        auto e = in["sensedData"][static_cast<size_t>(i)];
+        m.sensorID = static_cast<uint16_t>(static_cast<uint32_t>(e["sensorID"]));
+        CPose3D p;
+        e["sensorPose"].readTo(p);
+        m.sensorPose = p.asTPose();
+        m.sensedDistance = static_cast<float>(e["sensedDistance"]);
+        m.sensorNoiseStdDeviation = static_cast<float>(e["sensorNoiseStdDeviation"]);
+      }
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   }
 }

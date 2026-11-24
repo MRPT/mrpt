@@ -26,11 +26,15 @@ namespace mrpt::obs
  *
  * \sa CObservation, mrpt::hwdrivers::CWirelessPower for a software sensor
  * capable of reading this kind of observations.
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservationWirelessPower : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationWirelessPower, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   /** @name The data members

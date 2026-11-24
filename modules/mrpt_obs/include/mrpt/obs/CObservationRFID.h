@@ -24,11 +24,15 @@ namespace mrpt::obs
  *
  * \sa CObservation, mrpt::hwdrivers::CImpinjRFID for a software sensor capable
  * of reading this kind of observations.
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservationRFID : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationRFID, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   /** Constructor */

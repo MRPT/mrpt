@@ -14,6 +14,7 @@
 
 #include <mrpt/obs/CObservationBatteryState.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::obs;
@@ -111,4 +112,61 @@ std::string CObservationBatteryState::exportTxtDataRow() const
     s += mrpt::format("%18.5f ", voltageOtherBatteries[i]);
 
   return s;
+}
+
+void CObservationBatteryState::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["voltageMainRobotBattery"] = voltageMainRobotBattery;
+  out["voltageMainRobotComputer"] = voltageMainRobotComputer;
+  out["voltageMainRobotBatteryIsValid"] = voltageMainRobotBatteryIsValid;
+  out["voltageMainRobotComputerIsValid"] = voltageMainRobotComputerIsValid;
+  // Two lists, as in the binary format (their lengths may differ):
+  for (size_t i = 0; i < static_cast<size_t>(voltageOtherBatteries.size()); i++)
+  {
+    out["voltageOtherBatteries"][i] = voltageOtherBatteries[static_cast<CVectorDouble::Index>(i)];
+  }
+  out["voltageOtherBatteries_count"] = static_cast<uint32_t>(voltageOtherBatteries.size());
+  for (size_t i = 0; i < voltageOtherBatteriesValid.size(); i++)
+  {
+    out["voltageOtherBatteriesValid"][i] = static_cast<bool>(voltageOtherBatteriesValid[i]);
+  }
+  out["voltageOtherBatteriesValid_count"] =
+      static_cast<uint32_t>(voltageOtherBatteriesValid.size());
+}
+
+void CObservationBatteryState::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      schemaDeserializeCommon(in);
+      voltageMainRobotBattery = static_cast<double>(in["voltageMainRobotBattery"]);
+      voltageMainRobotComputer = static_cast<double>(in["voltageMainRobotComputer"]);
+      voltageMainRobotBatteryIsValid = static_cast<bool>(in["voltageMainRobotBatteryIsValid"]);
+      voltageMainRobotComputerIsValid = static_cast<bool>(in["voltageMainRobotComputerIsValid"]);
+
+      const auto nV = static_cast<uint32_t>(in["voltageOtherBatteries_count"]);
+      voltageOtherBatteries.resize(static_cast<CVectorDouble::size_type>(nV));
+      for (uint32_t i = 0; i < nV; i++)
+      {
+        voltageOtherBatteries[static_cast<CVectorDouble::Index>(i)] =
+            static_cast<double>(in["voltageOtherBatteries"][static_cast<size_t>(i)]);
+      }
+      const auto nB = static_cast<uint32_t>(in["voltageOtherBatteriesValid_count"]);
+      voltageOtherBatteriesValid.assign(nB, false);
+      for (uint32_t i = 0; i < nB; i++)
+      {
+        voltageOtherBatteriesValid[i] =
+            static_cast<bool>(in["voltageOtherBatteriesValid"][static_cast<size_t>(i)]);
+      }
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }

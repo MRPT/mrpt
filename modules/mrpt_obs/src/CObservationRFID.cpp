@@ -14,6 +14,7 @@
 
 #include <mrpt/obs/CObservationRFID.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -132,5 +133,48 @@ void CObservationRFID::getDescriptionAsText(std::ostream& o) const
     const auto& rfid = tag_readings[i];
     o << "#" << i << ": Power=" << rfid.power << " (dBm) | AntennaPort=" << rfid.antennaPort
       << " | EPC=" << rfid.epc << "\n";
+  }
+}
+
+void CObservationRFID::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["sensorPoseOnRobot"] = sensorPoseOnRobot;
+  for (size_t i = 0; i < tag_readings.size(); i++)
+  {
+    auto e = out["tag_readings"][i];
+    e["power"] = tag_readings[i].power;
+    e["epc"] = tag_readings[i].epc;
+    e["antennaPort"] = tag_readings[i].antennaPort;
+  }
+  // The scheme archive API has no way to query a list length, so store it:
+  out["tag_readings_count"] = static_cast<uint32_t>(tag_readings.size());
+}
+
+void CObservationRFID::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      schemaDeserializeCommon(in);
+      in["sensorPoseOnRobot"].readTo(sensorPoseOnRobot);
+      const auto n = static_cast<uint32_t>(in["tag_readings_count"]);
+      tag_readings.clear();
+      tag_readings.resize(n);
+      for (uint32_t i = 0; i < n; i++)
+      {
+        auto e = in["tag_readings"][static_cast<size_t>(i)];
+        tag_readings[i].power = static_cast<double>(e["power"]);
+        tag_readings[i].epc = static_cast<std::string>(e["epc"]);
+        tag_readings[i].antennaPort = static_cast<std::string>(e["antennaPort"]);
+      }
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   }
 }

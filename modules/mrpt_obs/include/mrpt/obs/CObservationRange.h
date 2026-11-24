@@ -27,11 +27,15 @@ namespace mrpt::obs
  ultrasonic sensors (sonars).
  *
  * \sa CObservation
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservationRange : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationRange, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   CObservationRange() = default;

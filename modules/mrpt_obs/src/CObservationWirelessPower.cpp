@@ -14,6 +14,7 @@
 
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -78,4 +79,28 @@ std::string CObservationWirelessPower::exportTxtHeader() const
 std::string CObservationWirelessPower::exportTxtDataRow() const
 {
   return mrpt::format("%18.5f ", power);
+}
+
+void CObservationWirelessPower::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["power"] = power;
+  out["sensorPoseOnRobot"] = sensorPoseOnRobot;
+}
+
+void CObservationWirelessPower::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+      schemaDeserializeCommon(in);
+      power = static_cast<double>(in["power"]);
+      in["sensorPoseOnRobot"].readTo(sensorPoseOnRobot);
+      break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }

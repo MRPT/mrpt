@@ -24,11 +24,15 @@ namespace mrpt::obs
 /** Declares a class derived from "CObservation" that represents one (or more)
  * range measurements to labeled beacons.
  * \sa CObservation
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservationBeaconRanges : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationBeaconRanges, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   /** ctor */

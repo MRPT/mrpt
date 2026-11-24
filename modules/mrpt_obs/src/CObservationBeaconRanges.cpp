@@ -14,6 +14,7 @@
 
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::obs;
@@ -167,4 +168,53 @@ std::string CObservationBeaconRanges::exportTxtDataRow() const
         d.sensorLocationOnRobot.x(), d.sensorLocationOnRobot.y(), d.sensorLocationOnRobot.z());
   }
   return o.str();
+}
+
+void CObservationBeaconRanges::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["minSensorDistance"] = minSensorDistance;
+  out["maxSensorDistance"] = maxSensorDistance;
+  out["stdError"] = stdError;
+  for (size_t i = 0; i < sensedData.size(); i++)
+  {
+    auto e = out["sensedData"][i];
+    e["sensorLocationOnRobot"] = sensedData[i].sensorLocationOnRobot;
+    e["sensedDistance"] = sensedData[i].sensedDistance;
+    e["beaconID"] = sensedData[i].beaconID;
+  }
+  // The scheme archive API has no way to query a list length, so store it:
+  out["sensedData_count"] = static_cast<uint32_t>(sensedData.size());
+  out["auxEstimatePose"] = auxEstimatePose;
+}
+
+void CObservationBeaconRanges::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      schemaDeserializeCommon(in);
+      minSensorDistance = static_cast<float>(in["minSensorDistance"]);
+      maxSensorDistance = static_cast<float>(in["maxSensorDistance"]);
+      stdError = static_cast<float>(in["stdError"]);
+      const auto n = static_cast<uint32_t>(in["sensedData_count"]);
+      sensedData.clear();
+      sensedData.resize(n);
+      for (uint32_t i = 0; i < n; i++)
+      {
+        auto e = in["sensedData"][static_cast<size_t>(i)];
+        e["sensorLocationOnRobot"].readTo(sensedData[i].sensorLocationOnRobot);
+        sensedData[i].sensedDistance = static_cast<float>(e["sensedDistance"]);
+        sensedData[i].beaconID = static_cast<int32_t>(e["beaconID"]);
+      }
+      in["auxEstimatePose"].readTo(auxEstimatePose);
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }

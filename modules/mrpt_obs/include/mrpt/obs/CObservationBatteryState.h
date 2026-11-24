@@ -31,11 +31,15 @@ namespace mrpt::obs
  *been filled out or not.
  *
  * \sa CObservation
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservationBatteryState : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationBatteryState, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   /** Constructor

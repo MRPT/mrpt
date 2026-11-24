@@ -14,6 +14,7 @@
 
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 
 #include <iostream>
 
@@ -48,4 +49,26 @@ void CObservationComment::getDescriptionAsText(std::ostream& o) const
 {
   CObservation::getDescriptionAsText(o);
   o << "Comment content:\n'" << text << "'\n";
+}
+
+void CObservationComment::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["text"] = text;
+}
+
+void CObservationComment::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+      schemaDeserializeCommon(in);
+      text = static_cast<std::string>(in["text"]);
+      break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }

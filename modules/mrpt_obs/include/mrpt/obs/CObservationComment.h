@@ -24,11 +24,15 @@ namespace mrpt::obs
  * recommended to insert/modify them from the application RawlogViewer.
  *
  * \sa CObservation
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservationComment : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationComment, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   /** Constructor.
