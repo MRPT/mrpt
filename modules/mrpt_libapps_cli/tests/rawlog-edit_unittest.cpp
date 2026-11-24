@@ -17,6 +17,10 @@
 // the small sample datasets in mrpt_data/datasets/.
 
 #include <gtest/gtest.h>
+#include <mrpt/io/CCompressedOutputStream.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <test_mrpt_common.h>
@@ -203,6 +207,22 @@ TEST_F(RawlogEditCLITest, Info_RotScan2DWithParseWarning)
   const auto r = run({"--info", "-i", in, "-q"});
   EXPECT_EQ(r.exitCode, 0);
   EXPECT_NE(r.output.find("Physical file size"), std::string::npos);
+}
+
+TEST_F(RawlogEditCLITest, Info_CountsTrailingUnpairedObjects)
+{
+  // (action, SF), (action, SF), action:
+  const auto in = m_tempDir + "/unpaired.rawlog";
+  {
+    mrpt::io::CCompressedOutputStream f(in);
+    auto arch = mrpt::serialization::archiveFrom(f);
+    const mrpt::obs::CActionCollection acts;
+    const mrpt::obs::CSensoryFrame sf;
+    arch << acts << sf << acts << sf << acts;
+  }
+  const auto r = run({"--info", "-i", in, "-q"});
+  EXPECT_EQ(r.exitCode, 0);
+  EXPECT_NE(r.output.find("Overall number of objects         : 5"), std::string::npos) << r.output;
 }
 
 TEST_F(RawlogEditCLITest, Describe_LocalizationDemo)
