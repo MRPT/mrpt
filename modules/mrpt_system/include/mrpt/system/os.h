@@ -272,16 +272,20 @@ bool launchProcess(const std::string& command);
  * \param[in,out] outErrorMsgs If provided, error messages will be saved here.
  * If not, errors will be dumped to std::cerr. \return true If modules could be
  * loaded without errors.
- * Upon mrpt-system library unloading, all loaded modules will be automatically
- * unloaded too. Manual unload is possible with \a unloadPluginModule().
+ * Modules stay loaded until program exit, where they are not unloaded, since
+ * the classes they registered may still be referenced then. Manual unload is
+ * possible with \a unloadPluginModule().
  */
 bool loadPluginModule(
     const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
 
 /** Unloads "plug-in" modules loaded with loadPluginModule().
  * \return true if module could be unloaded without errors.
- * \note Unloaded is done automatically before program exit even if this is not
- * explicitly called.
+ * \note Unloading does not remove what the module registered in other
+ * registries (e.g. its RTTI classes or metric map types), which would then
+ * point to unmapped code. Do not unload a module that registered classes, or
+ * any other factory, unless nothing will use those entries again, including
+ * their destruction at program exit.
  */
 bool unloadPluginModule(
     const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
@@ -289,8 +293,8 @@ bool unloadPluginModule(
 /** Like loadPluginModule(), but loads a comma (`,`) separated list of "plug-in"
  * modules.
  * \return true if all modules could be loaded without errors.
- * Upon mrpt-system library unloading, all loaded modules will be automatically
- * unloaded too. Manual unload is possible with \a unloadPluginModules().
+ * As with loadPluginModule(), modules are not unloaded at program exit. Manual
+ * unload is possible with \a unloadPluginModules().
  */
 bool loadPluginModules(
     const std::string& moduleFileNames,
@@ -298,8 +302,11 @@ bool loadPluginModules(
 
 /** Unloads "plug-in" modules loaded with loadPluginModules().
  * \return true if all modules could be unloaded without errors.
- * \note Unloaded is done automatically before program exit even if this is not
- * explicitly called.
+ * \note Unloading does not remove what the module registered in other
+ * registries (e.g. its RTTI classes or metric map types), which would then
+ * point to unmapped code. Do not unload a module that registered classes, or
+ * any other factory, unless nothing will use those entries again, including
+ * their destruction at program exit.
  */
 bool unloadPluginModules(
     const std::string& moduleFileNames,
