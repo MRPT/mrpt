@@ -17,18 +17,33 @@
 #include <mrpt/system/filesystem.h>
 
 #include <iostream>
+#include <string_view>
 
-// -----------------------------------------------
-//				MAIN
-// -----------------------------------------------
+namespace
+{
+void printUsage(std::ostream& o)
+{
+  o << "Usage: mrpt-yaml2ini <input.yaml>\n"
+       "Converts a YAML configuration file into MRPT INI format, printed to stdout.\n"
+       "Options:\n"
+       "  -h, --help  Show this help and exit.\n";
+}
+}  // namespace
+
 int main(int argc, char** argv)
 {
   try
   {
     // Parse arguments:
+    if (argc == 2 && (std::string_view(argv[1]) == "-h" || std::string_view(argv[1]) == "--help"))
+    {
+      printUsage(std::cout);
+      return 0;
+    }
     if (argc != 2)
     {
-      throw std::runtime_error("Usage: mrpt-yaml2ini <input.yaml>");
+      printUsage(std::cerr);
+      return 1;
     }
 
     const std::string ymlFile = std::string(argv[1]);

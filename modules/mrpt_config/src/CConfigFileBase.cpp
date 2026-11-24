@@ -287,7 +287,7 @@ void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
     const auto sectName = sect.first.as<std::string>();
     // YAML Type: sect.first.Type()
 
-    if (sect.second.size() > 1)
+    if (sect.second.isMap())
     {
       // A section:
       for (const auto& kv : sect.second.asMap())
@@ -343,7 +343,8 @@ std::string CConfigFileBase::getContentAsYAML() const
     getAllKeys(sect, keys);
     for (const auto& k : keys)
     {
-      const auto val = this->readString(sect, k, "");
+      // Trimmed, so whitespace before a trailing comment is not kept:
+      const auto val = this->read_string(sect, k, "");
       if (sect.empty())
       {
         n[k] = val;
