@@ -1,4 +1,4 @@
-\page  app_rawlog-edit Application: rawlog-edit
+\page app_rawlog-edit rawlog-edit
 
 ## NAME
 

@@ -1,8 +1,11 @@
-\page  app_icp-slam Application: icp-slam
+\page app_icp-slam icp-slam
 
 [TOC]
 
 # Overview
+
+![icp-slam screenshot](https://mrpt.github.io/docs-assets/apps/app_icp-slam.webp)
+
 
 `icp-slam` is a command-line application that builds a 2D metric map (occupancy grid and/or point cloud) from a recorded dataset (rawlog file) using **ICP-based SLAM** (Iterative Closest Point Simultaneous Localization and Mapping).
 

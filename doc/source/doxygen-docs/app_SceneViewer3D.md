@@ -1,6 +1,9 @@
-\page app_SceneViewer3D Application: SceneViewer3D
+\page app_SceneViewer3D SceneViewer3D
 
 # SceneViewer3D
+
+![SceneViewer3D screenshot](app_SceneViewer3D_imgui.webp)
+
 
 A viewer of MRPT 3D scenes (`.3Dscene` files, as saved by
 mrpt::viz::Scene::saveToFile()), 3D models in any format supported by Assimp,

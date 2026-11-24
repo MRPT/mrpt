@@ -1,6 +1,9 @@
-\page app_holonomic-navigator-demo Application: holonomic-navigator-demo
+\page app_holonomic-navigator-demo holonomic-navigator-demo
 
 # holonomic-navigator-demo
+
+![holonomic-navigator-demo screenshot](app_holonomic-navigator-demo_imgui.webp)
+
 
 An interactive simulator of the holonomic reactive navigation methods of
 mrpt-nav (mrpt::nav::CHolonomicVFF and mrpt::nav::CHolonomicND) for a

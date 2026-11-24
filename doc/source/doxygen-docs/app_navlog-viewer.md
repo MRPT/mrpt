@@ -1,6 +1,9 @@
-\page  app_navlog-viewer Application: navlog-viewer
+\page app_navlog-viewer navlog-viewer
 
 # navlog-viewer
+
+![navlog-viewer screenshot](app_navlog-viewer_imgui.webp)
+
 
 Viewer of the logs recorded by MRPT reactive navigators
 (mrpt::nav::CAbstractPTGBasedReactive, `*.reactivenavlog` files): one

@@ -1,8 +1,12 @@
 .. _app_GridmapNavSimul:
 
-====================================================
-Application: GridmapNavSimul
-====================================================
+====================
+GridmapNavSimul
+====================
+
+.. image:: images/app_GridmapNavSimul_imgui.webp
+   :alt: GridmapNavSimul screenshot
+   :class: mrpt-screenshot
 
 GridmapNavSimul
 is a GUI program that takes an occupancy gridmap and let you move a robot
