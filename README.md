@@ -18,7 +18,7 @@
 
 [**Documentation**](https://docs.mrpt.org/reference/latest/) · [**Tutorials**](https://docs.mrpt.org/reference/latest/tutorials.html) · [**API Reference**](https://docs.mrpt.org/reference/latest/modules.html) · [**Examples**](https://docs.mrpt.org/reference/latest/examples.html) · [**Applications**](https://docs.mrpt.org/reference/latest/applications.html) · [**Discussions**](https://github.com/MRPT/mrpt/discussions)
 
-<img src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif" alt="MRPT in action"/>
+<a href="https://mrpt.github.io/videos/mrpt_hero_v1.mp4"><img src="https://mrpt.github.io/videos/mrpt_hero_v1.webp" alt="MRPT in action: a Husky robot mapping and navigating with MOLA and MRPT, LiDAR odometry on several robots, MRPT GUI apps, 3D rendering and MVSim"/></a>
 
 </div>
 
