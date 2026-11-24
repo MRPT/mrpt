@@ -59,5 +59,4 @@ Tutorials
 
   tutorial-lib-layout
   page_porting_mrpt3
-  page_porting_mrpt2
   env-vars
