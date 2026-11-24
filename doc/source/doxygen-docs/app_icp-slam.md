@@ -1,6 +1,5 @@
 \page app_icp-slam icp-slam
 
-# icp-slam
 
 ![icp-slam screenshot](https://mrpt.github.io/docs-assets/apps/app_icp-slam.webp)
 
@@ -14,7 +13,7 @@ fast map is enough (no loop closure).
 The companion app [icp-slam-live](page_app_icp-slam-live.html) runs the same
 algorithm on live LiDAR data.
 
-## Usage
+# Usage
 
     icp-slam <config_file.ini> [<dataset.rawlog>]
 
@@ -22,7 +21,7 @@ algorithm on live LiDAR data.
 - `dataset.rawlog`: optional; if given, it overrides the `rawlog_file` entry of
   the configuration file.
 
-## Example
+# Example
 
     cd modules/mrpt_data/config_files/icp-slam
     icp-slam icp-slam_demo_classic.ini
@@ -32,7 +31,7 @@ Other sample configurations in the same directory use Levenberg-Marquardt ICP
 a voxel map (`icp-slam_demo_voxelmap.ini`) or an octomap
 (`icp-slam_demo_with_octomap.ini`).
 
-## Configuration file
+# Configuration file
 
 - `[MappingApplication]`: the app and the map builder.
   - `rawlog_file`, `rawlog_offset` (entries to skip at the beginning).
@@ -54,7 +53,7 @@ a voxel map (`icp-slam_demo_voxelmap.ini`) or an octomap
   `ICP_algorithm`, `maxIterations`, `thresholdDist`, `thresholdAng_DEG`,
   `ALFA`, `corresponding_points_decimation`.
 
-## Output
+# Output
 
 In the `logOutput_dir` directory:
 
@@ -68,7 +67,7 @@ In the `logOutput_dir` directory:
 | `buildingmap_NNNNN.3Dscene` | 3D scenes of the map being built (if `SAVE_3D_SCENE`), viewable with [SceneViewer3D](page_app_SceneViewer3D.html). |
 | `mapbuild_posepdf_NNN.txt` | Pose PDF per step (if `SAVE_POSE_LOG`). |
 
-## See also
+# See also
 
 - [icp-slam-live](page_app_icp-slam-live.html), [rbpf-slam](page_app_rbpf-slam.html).
 - Tutorial: [ICP alignment](tutorial-icp-alignment.html).

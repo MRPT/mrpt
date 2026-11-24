@@ -1,6 +1,5 @@
 \page app_simul-landmarks simul-landmarks
 
-# simul-landmarks
 
 Generates a synthetic rawlog dataset of a robot moving among randomly placed
 point landmarks, observed by a range-bearing sensor
@@ -11,11 +10,11 @@ truth robot path is saved too. The output is the input expected by
 [kf-slam](page_app_kf-slam.html), so it is useful to test EKF-SLAM and data
 association algorithms with known ground truth.
 
-## Usage
+# Usage
 
     simul-landmarks <config_file.ini>
 
-## Example
+# Example
 
     simul-landmarks modules/mrpt_data/config_files/simul-landmarks/simul_landmarks_demo_EKF-SLAM.ini
     kf-slam modules/mrpt_data/config_files/kf-slam/EKF-SLAM_test_2d.ini OUT/kf-slam_demo.rawlog
@@ -24,7 +23,7 @@ Other sample files in the same directory simulate 6D paths, a sensor not
 centered on the robot, or sensors that don't detect landmark IDs (for testing
 data association).
 
-## Configuration file
+# Configuration file
 
 `[Params]` section:
 
@@ -44,7 +43,7 @@ Landmarks are generated from consecutive sections `[RANDOMSET_1]`,
 `[RANDOMSET_2]`, ..., each with `nLandmarks` uniformly distributed within
 `min_x`, `max_x`, `min_y`, `max_y`, `min_z`, `max_z`.
 
-## Output
+# Output
 
 In `outDir`:
 
@@ -53,7 +52,7 @@ In `outDir`:
 - `<outFile>_ground_truth_robot_path.txt`: ground truth robot poses, one row
   per step with columns `x y z yaw pitch roll`.
 
-## See also
+# See also
 
 - [kf-slam](page_app_kf-slam.html)
 - mrpt::maps::CLandmarksMap

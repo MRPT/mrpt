@@ -1,10 +1,10 @@
 \page app_rawlog-edit rawlog-edit
 
-## NAME
+# NAME
 
 rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
 
-## SYNOPSIS
+# SYNOPSIS
 
     rawlog-edit  [--describe] [--undistort] [--rename-externals]
                 [--stereo-rectify <SENSOR_LABEL,0.5>] [--camera-params
@@ -28,7 +28,7 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
                 <mylib.so>] [-o <dataset_out.rawlog>] -i <dataset.rawlog>
                 [--] [--version] [-h]
 
-## USAGE EXAMPLES
+# USAGE EXAMPLES
 
 **Quick overview of a dataset file:**
 
@@ -68,7 +68,7 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
     rawlog-edit --externalize --image-format jpg -i in.rawlog -o out.rawlog
 
 
-## DESCRIPTION
+# DESCRIPTION
 
 **rawlog-edit** is a command-line application to inspect and manipulate
 robotic dataset files in the "rawlog" standardized format. At least one

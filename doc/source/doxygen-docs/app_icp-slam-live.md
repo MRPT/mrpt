@@ -1,6 +1,5 @@
 \page app_icp-slam-live icp-slam-live
 
-# icp-slam-live
 
 Real-time 2D ICP-based SLAM from a live 2D LIDAR. It runs the same algorithm
 as [icp-slam](page_app_icp-slam.html) (mrpt::slam::CMetricMapBuilderICP,
@@ -10,21 +9,21 @@ mrpt::obs::CObservation2DRangeScan observations, e.g. RPLIDAR, Hokuyo, SICK)
 in a background thread and maps with the most recent scan at each step. No
 odometry is used.
 
-## Usage
+# Usage
 
     icp-slam-live <config_file.ini>
 
 The program stops when the sensor fails or no scan arrives for 2 seconds, or
 when `ESC` is pressed in the console. The final map is then saved.
 
-## Example
+# Example
 
     icp-slam-live modules/mrpt_data/config_files/icp-slam-live/icp-slam-live_demo_RPLIDAR_gridmap.ini
 
 Edit the serial port (`COM_port_LIN` / `COM_port_WIN`) and sensor pose in the
 `[LIDAR_SENSOR]` section first.
 
-## Configuration file
+# Configuration file
 
 - `[LIDAR_SENSOR]`: the sensor driver. `driver` is the class name of the
   driver (e.g. `CRoboPeakLidar`, `CHokuyoURG`, `CSickLaserUSB`) and
@@ -45,7 +44,7 @@ Edit the serial port (`COM_port_LIN` / `COM_port_WIN`) and sensor pose in the
     mrpt::slam::CMetricMapBuilderICP::TConfigParams.
 - `[ICP]`: the ICP parameters (mrpt::slam::CICP::TConfigParams).
 
-## Output
+# Output
 
 In `logOutput_dir`:
 
@@ -57,7 +56,7 @@ In `logOutput_dir`:
 | `log_times.txt`, `log_MemoryUsage.txt` | Execution time and memory usage per step. |
 | `buildingmap_NNNNN.3Dscene` | 3D scenes every `LOG_FREQUENCY` steps (`SAVE_3D_SCENE`). |
 
-## See also
+# See also
 
 - [icp-slam](page_app_icp-slam.html): the same, from a rawlog file.
 - [rawlog-grabber](page_app_rawlog-grabber.html): to record datasets.

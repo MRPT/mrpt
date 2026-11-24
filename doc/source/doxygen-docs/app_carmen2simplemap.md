@@ -1,6 +1,5 @@
 \page app_carmen2simplemap carmen2simplemap
 
-# carmen2simplemap
 
 Converts a CARMEN log text file (`*.log`) with **corrected** robot poses (for
 example, the output of a SLAM method) into an MRPT simple map
@@ -9,7 +8,7 @@ one a robot pose plus the observations taken from it. The simple map can then
 be turned into any kind of metric map with \ref app_observations2map, or used
 as a prior map for localization.
 
-## Usage
+# Usage
 
     carmen2simplemap -i <input.log> -o <output.simplemap> [-z <level>] [-w] [-q]
 
@@ -22,7 +21,7 @@ as a prior map for localization.
 - `-q, --quiet`: terse output (no progress bar).
 - `--version`, `-h, --help`.
 
-## Example
+# Example
 
     carmen2simplemap -i intel-corrected.log -o intel.simplemap
 
@@ -31,7 +30,7 @@ the sample config files in `mrpt_data`:
 
     observations2map config_files/icp-slam/icp-slam_demo_classic_gridmatch.ini intel.simplemap intel_map
 
-## Input / output formats
+# Input / output formats
 
 The supported CARMEN lines are those of \ref app_carmen2rawlog (`ROBOTLASER*`,
 `FLASER`, `RLASER` and `PARAM`). For each laser line, one keyframe is added to
@@ -44,7 +43,7 @@ the simple map:
 
 Lines that do not provide a robot pose are skipped.
 
-## See also
+# See also
 
 - \ref app_carmen2rawlog: converts CARMEN logs into rawlog datasets.
 - \ref app_observations2map: builds metric maps from simple maps.

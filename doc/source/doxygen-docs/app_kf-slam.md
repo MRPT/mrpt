@@ -1,6 +1,5 @@
 \page app_kf-slam kf-slam
 
-# kf-slam
 
 Offline Kalman Filter SLAM (EKF-SLAM) with range-bearing landmark
 observations (mrpt::obs::CObservationBearingRange), read from a rawlog file.
@@ -13,7 +12,7 @@ Typical uses: experimenting with EKF-SLAM and data association methods on
 simulated datasets (see [simul-landmarks](page_app_simul-landmarks.html)), and
 evaluating the results against ground truth.
 
-## Usage
+# Usage
 
     kf-slam <config_file.ini> [dataset.rawlog]
 
@@ -21,7 +20,7 @@ If the rawlog is not given on the command line, it is taken from
 `rawlog_file` in the `[MappingApplication]` section. Press `ESC` in the
 console to stop processing early.
 
-## Example
+# Example
 
 Sample config files and datasets are in `modules/mrpt_data` (installed under
 `share/mrpt/`). The paths in the config files are relative, so run from the
@@ -32,7 +31,7 @@ config directory:
     kf-slam EKF-SLAM_6D_test_datassoc.ini     # with unknown data association
     kf-slam EKF-SLAM_test_2d.ini ../../datasets/kf-slam_demo.rawlog   # 2D
 
-## Configuration file
+# Configuration file
 
 - `[MappingApplication]`: application options.
   - `rawlog_file`, `rawlog_offset` (number of initial entries to skip).
@@ -52,7 +51,7 @@ config directory:
   mrpt::slam::CRangeBearingKFSLAM::TOptions and
   mrpt::slam::CRangeBearingKFSLAM2D::TOptions.
 
-## Output
+# Output
 
 In `logOutput_dir`:
 
@@ -68,7 +67,7 @@ In `logOutput_dir`:
 If a landmark ground truth file is given, the mean, minimum and maximum
 landmark position errors are printed at the end.
 
-## See also
+# See also
 
 - [simul-landmarks](page_app_simul-landmarks.html): generates datasets for this app.
 - [2d-slam-demo](app_2d-slam-demo.html): interactive EKF-SLAM demo.

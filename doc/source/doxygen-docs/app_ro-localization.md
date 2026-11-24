@@ -1,6 +1,5 @@
 \page app_ro-localization ro-localization
 
-# ro-localization
 
 Range-only localization with a particle filter, for robots measuring ranges
 to fixed radio beacons (e.g. UWB) at known positions. Unlike plain Monte
@@ -10,11 +9,11 @@ over time (e.g. because of non-line-of-sight propagation). The particles are
 implemented by a `CPosePDFParticlesExtended` class inside the app. For the
 method, see https://www.mrpt.org/paperuwb-particle-filter-localization/
 
-## Usage
+# Usage
 
     ro-localization <config_file.ini>
 
-## Example
+# Example
 
     cd modules/mrpt_data/config_files/ro-localization
     ro-localization UWB_localization_demo.ini
@@ -22,7 +21,7 @@ method, see https://www.mrpt.org/paperuwb-particle-filter-localization/
 A 3D window shows the beacons, the particles and the estimated path while
 the dataset is processed.
 
-## Configuration file
+# Configuration file
 
 - `[ro-localization]`:
   - `rawlog_file`: the dataset, with odometry and
@@ -47,7 +46,7 @@ the dataset is processed.
   the beacon IDs and positions (`nBeacons`, `beacon_NNN_ID`,
   `beacon_NNN_{X,Y,Z}`) and the range likelihood options.
 
-## Output
+# Output
 
 In `<logOutput_dir>_Pc_<value>/REP_NNN/`, for each repetition:
 `3Dscene_NNN.3Dscene` (3D views every `3DSceneFrequency` steps),
@@ -58,7 +57,7 @@ ground truth ranges). When sweeping `Pc_range_*`, the mean and standard
 deviation of the position error for each value are appended to
 `Pc_<ini>_<end>_RESULTs.txt`.
 
-## See also
+# See also
 
 - [pf-localization](page_app_pf-localization.html)
 - [rbpf-slam](page_app_rbpf-slam.html): range-only SLAM with unknown beacon positions.

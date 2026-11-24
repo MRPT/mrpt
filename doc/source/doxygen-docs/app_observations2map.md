@@ -1,6 +1,5 @@
 \page app_observations2map observations2map
 
-# observations2map
 
 Builds one or more metric maps (occupancy grids, point clouds, voxel maps,
 etc.) from a simple map (mrpt::maps::CSimpleMap, a `*.simplemap` file: a
@@ -10,7 +9,7 @@ config file, as an mrpt::maps::CMultiMetricMap. Typical use: re-generate a map
 with different parameters (e.g. resolution, insertion options) from the
 simple map saved by a SLAM app such as \ref app_icp-slam or \ref app_rbpf-slam.
 
-## Usage
+# Usage
 
     observations2map <config_file.ini> <observations.simplemap> <outputmap_prefix> [-s <section>]
 
@@ -21,7 +20,7 @@ simple map saved by a SLAM app such as \ref app_icp-slam or \ref app_rbpf-slam.
 - `-s <section>`: name of the INI section with the map definitions (default:
   `MappingApplication`). If used, it must be the last argument.
 
-## Example
+# Example
 
 Using sample files from `mrpt_data`:
 
@@ -36,7 +35,7 @@ This builds one occupancy grid map and writes:
 - `out_map_mrpt__maps__COccupancyGridMap2D_00.png`: the map as an image.
 - `out_map_mrpt__maps__COccupancyGridMap2D_00_limits.txt`: the map limits.
 
-## Configuration file
+# Configuration file
 
 The section (`[MappingApplication]` by default) defines how many maps of each
 type to create, and further sections `[<section>_<mapType>_<NN>_<options>]`
@@ -58,7 +57,7 @@ same config file of the SLAM run can be used. See the
 `[MappingApplication]` sections of the files in `config_files/icp-slam/` and
 `config_files/rbpf-slam/` in `mrpt_data` for complete examples.
 
-## Output files
+# Output files
 
 All maps are written with the prefix `outputmap_prefix`:
 
@@ -72,7 +71,7 @@ All maps are written with the prefix `outputmap_prefix`:
 In the file names, `NN` is the map index and `class_name` the C++ class name
 with `::` replaced by `__`.
 
-## See also
+# See also
 
 - \ref app_carmen2simplemap: creates simple maps from CARMEN logs.
 - \ref app_icp-slam, \ref app_rbpf-slam: SLAM apps that save simple maps.

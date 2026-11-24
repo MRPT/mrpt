@@ -1,6 +1,5 @@
 \page app_rawlog-grabber rawlog-grabber
 
-# rawlog-grabber
 
 Records datasets from any number of sensors into an MRPT
 [rawlog](rawlog_format.html) file. Each sensor declared in an INI config file
@@ -11,7 +10,7 @@ all sensors, sorts them by timestamp, and appends them to the output file.
 This is the standard way to grab datasets on a robot for later, off-line
 processing with MRPT apps.
 
-## Usage
+# Usage
 
     rawlog-grabber <config_file.ini> [-p <plugin1.so,plugin2.so,...>]
 
@@ -25,7 +24,7 @@ thread fails (e.g. the device cannot be opened). Set the environment variable
 `MRPT_HWDRIVERS_VERBOSE=1` to print debug information (e.g. GNSS fix mode and
 IMU angles).
 
-## Example
+# Example
 
 Using one of the sample config files in `mrpt_data`, for a Hokuyo laser
 scanner:
@@ -36,7 +35,7 @@ The output is a file like `dataset_2026-01-31_10h20m30s.rawlog` in the current
 directory. Camera images, if any, are stored as external files in the
 directory `dataset_2026-01-31_10h20m30s_Images`.
 
-## Configuration file
+# Configuration file
 
 The `[global]` section holds the application settings:
 
@@ -65,7 +64,7 @@ A section with `rawlog-grabber-ignore = true` is skipped.
 The directory `config_files/rawlog-grabber/` in `mrpt_data` contains commented
 sample files for most supported sensors.
 
-## See also
+# See also
 
 - [RawLogViewer](app_RawLogViewer.html) and \ref app_rawlog-edit: inspect and
   edit the recorded datasets.

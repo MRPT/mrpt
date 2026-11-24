@@ -1,12 +1,11 @@
 \page app_mrpt-ini2yaml mrpt-ini2yaml
 
-# mrpt-ini2yaml
 
 Converts an MRPT INI-like config file into YAML, and prints the result to the
 standard output. Useful to migrate the config files of MRPT apps or classes to
 YAML. The inverse conversion is done by \ref app_mrpt-yaml2ini.
 
-## Usage
+# Usage
 
     mrpt-ini2yaml <input.ini>
 
@@ -14,7 +13,7 @@ The program takes exactly one argument (it has no other options) and writes
 the YAML text to stdout. Errors are reported to stderr, with a non-zero exit
 code.
 
-## Example
+# Example
 
 Using a sample config file from `mrpt_data`:
 
@@ -28,7 +27,7 @@ Output (excerpt):
       max_y: 4
       ...
 
-## Conversion rules
+# Conversion rules
 
 - Each INI section `[name]` becomes a YAML map `name:` with one entry per key.
 - Keys outside of any section become top-level YAML entries.
@@ -41,7 +40,7 @@ Output (excerpt):
 The conversion is implemented by
 mrpt::config::CConfigFileBase::getContentAsYAML().
 
-## See also
+# See also
 
 - \ref app_mrpt-yaml2ini: the inverse conversion.
 - mrpt::config::CConfigFile, mrpt::config::CConfigFileMemory.

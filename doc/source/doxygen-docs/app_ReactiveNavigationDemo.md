@@ -1,6 +1,5 @@
 \page app_ReactiveNavigationDemo ReactiveNavigationDemo
 
-# ReactiveNavigationDemo
 
 Interactive simulator to test the MRPT 2D reactive navigation system
 (mrpt::nav::CReactiveNavigationSystem, based on PTGs) on a simulated robot,
@@ -10,7 +9,7 @@ map and sensing it with a simulated 2D laser scanner. Use it to try navigator
 parameters, PTGs and holonomic methods before running them on a real robot.
 It uses wxWidgets.
 
-## Usage
+# Usage
 
     ReactiveNavigationDemo
 
@@ -18,7 +17,7 @@ There are no command line arguments. At startup, the navigator parameters
 are loaded from `config_files/navigation-ptgs/reactivenav-app-config.ini` in
 the MRPT shared directory, and a default map is shown.
 
-## User interface
+# User interface
 
 The main view shows the map, the robot and its laser scan, the target and
 the predicted path of the selected PTG; a second view shows the robot local
@@ -54,13 +53,13 @@ view. Typical workflow: select the robot kinematics type and navigator, press
 - **View** menu: show or hide the sensor range and the robot path, and clear
   the path.
 
-## Output
+# Output
 
 Navigation logs (`*.reactivenavlog`) are written to `./reactivenav.logs/`
 when enabled. The PTGs may also cache their precomputed collision grids as
 `ReacNavGrid_*.dat.gz` files in the current directory.
 
-## See also
+# See also
 
 - [ptg-configurator](page_app_ptg-configurator.html), [navlog-viewer](page_app_navlog-viewer.html)
 - [ReactiveNav3D-Demo](page_app_ReactiveNav3D-Demo.html): 3D robot shape version.

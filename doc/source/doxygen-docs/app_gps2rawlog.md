@@ -1,6 +1,5 @@
 \page app_gps2rawlog gps2rawlog
 
-# gps2rawlog
 
 Parses a raw log of the data stream of a GNSS (GPS) receiver, as saved by a
 serial port terminal or any other logging tool, and saves all the recognized
@@ -8,7 +7,7 @@ messages as an MRPT dataset ([rawlog](rawlog_format.html) file). Use it to
 process GNSS data recorded without MRPT, with the same parsers used by
 mrpt::hwdrivers::CGPSInterface when grabbing live data.
 
-## Usage
+# Usage
 
     gps2rawlog -i <input_file> [-o <output.rawlog>] [-w]
 
@@ -20,7 +19,7 @@ mrpt::hwdrivers::CGPSInterface when grabbing live data.
   the program aborts).
 - `--version`, `-h, --help`.
 
-## Example
+# Example
 
     gps2rawlog -i gps_session.txt
 
@@ -29,7 +28,7 @@ writes `gps_session.rawlog`, which can be inspected with
 
     rawlog-edit -i gps_session.rawlog --export-gps-txt
 
-## Input / output formats
+# Input / output formats
 
 The data format is detected automatically (the `AUTO` parser of
 mrpt::hwdrivers::CGPSInterface). Supported formats:
@@ -41,7 +40,7 @@ The output rawlog is in the "observations-only" format: one
 mrpt::obs::CObservationGPS per decoded message, with the decoded message
 stored in it (see the mrpt::obs::gnss namespace for the message types).
 
-## See also
+# See also
 
 - \ref app_rawlog-edit: export GNSS data to text or KML files, among other
   operations.

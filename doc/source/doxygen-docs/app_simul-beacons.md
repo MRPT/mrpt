@@ -1,6 +1,5 @@
 \page app_simul-beacons simul-beacons
 
-# simul-beacons
 
 Generates a synthetic dataset of a robot moving along a predefined path (a
 circle or a square) in a 2D world with randomly placed beacons, measuring the
@@ -8,7 +7,7 @@ range to each beacon (range-only sensing, e.g. radio or UWB beacons). Use it
 to test range-only SLAM and localization methods, such as those in
 \ref app_rbpf-slam and \ref app_ro-localization, with known ground truth.
 
-## Usage
+# Usage
 
     simul-beacons <config_file.ini>
 
@@ -18,7 +17,7 @@ to test range-only SLAM and localization methods, such as those in
 Each run uses a different random seed, so the beacon positions and noise
 change between runs.
 
-## Example
+# Example
 
 Using the sample config file in `mrpt_data`:
 
@@ -30,7 +29,7 @@ This creates the directory `OUT` with:
 - `outSimMap.txt`: the ground truth beacon map: one row per beacon, with its
   ID, `X Y Z` coordinates and (all zero) covariance terms.
 
-## Configuration file
+# Configuration file
 
 All parameters are read from the `[Params]` section:
 
@@ -54,7 +53,7 @@ All parameters are read from the `[Params]` section:
 
 The robot stays still during the first 4 steps.
 
-## Output format
+# Output format
 
 The rawlog is in the "actions-sensory frames" format (see the
 [rawlog format](rawlog_format.html)). Each step has:
@@ -64,7 +63,7 @@ The rawlog is in the "actions-sensory frames" format (see the
 - An mrpt::obs::CActionCollection with one mrpt::obs::CActionRobotMovement2D
   (the noisy odometry increment).
 
-## See also
+# See also
 
 - \ref app_simul-landmarks: similar simulator, for range-bearing landmarks.
 - \ref app_rbpf-slam, \ref app_ro-localization.

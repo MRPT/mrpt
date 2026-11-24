@@ -1,6 +1,5 @@
 \page app_ptg-configurator ptg-configurator
 
-# ptg-configurator
 
 GUI tool to design, tune and visualize Parameterized Trajectory Generators
 (PTGs, mrpt::nav::CParameterizedTrajectoryGenerator), the families of
@@ -12,7 +11,7 @@ and set of parameters it shows the paths in the workspace, the TP-Space
 Use it to choose the PTG parameters for a robot before writing a navigator
 config file. It uses wxWidgets.
 
-## Usage
+# Usage
 
     ptg-configurator [-i <file.ini>] [-s <section>] [-l <library>]
 
@@ -22,14 +21,14 @@ config file. It uses wxWidgets.
 | `-s`, `--ini-section NAME` | INI section with the PTG parameters (default: `PTG_PARAMS`). |
 | `-l`, `--load LIB` | Load a plugin library with additional PTG classes (Linux only). |
 
-## Example
+# Example
 
     ptg-configurator -i modules/mrpt_data/config_files/navigation-ptgs/reactivenav-app-config.ini -s DIFF_CReactiveNavigationSystem
 
 Then select `CPTG_DiffDrive_C` in "Pick a PTG", set "PTG index for cfg file"
 to 0 and press "Initialize PTG".
 
-## User interface
+# User interface
 
 - **Pick a PTG**: the list of all registered PTG classes. Selecting one fills
   the parameters text box with its default parameters (unless an INI file
@@ -50,7 +49,7 @@ to 0 and press "Initialize PTG".
 - **File** menu: export the selected path (and the PTG parameters) to a
   MATLAB/Octave `.m` file.
 
-## See also
+# See also
 
 - [ReactiveNavigationDemo](page_app_ReactiveNavigationDemo.html): test PTGs in a
   simulated reactive navigation.

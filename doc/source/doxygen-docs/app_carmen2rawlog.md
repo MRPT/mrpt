@@ -1,13 +1,12 @@
 \page app_carmen2rawlog carmen2rawlog
 
-# carmen2rawlog
 
 Converts a CARMEN log text file (`*.log`) into an MRPT dataset
 ([rawlog](rawlog_format.html) file), so that classic CARMEN datasets can be
 used with MRPT SLAM and localization apps, or inspected with
 [RawLogViewer](app_RawLogViewer.html) and \ref app_rawlog-edit.
 
-## Usage
+# Usage
 
     carmen2rawlog -i <input.log> -o <output.rawlog> [-p <period>] [-z <level>] [-w] [-q]
 
@@ -22,11 +21,11 @@ used with MRPT SLAM and localization apps, or inspected with
 - `-q, --quiet`: terse output (no progress bar).
 - `--version`, `-h, --help`.
 
-## Example
+# Example
 
     carmen2rawlog -i intel.log -o intel.rawlog
 
-## Input / output formats
+# Input / output formats
 
 Each supported CARMEN line (see mrpt::obs::carmen_log_parse_line()) becomes
 one or more observations, saved in the "observations-only" rawlog format:
@@ -50,7 +49,7 @@ file named after the output file with the extension `.gt.txt` (e.g.
 meaningful as ground truth if the CARMEN log contains corrected poses (e.g.
 the output of a SLAM method).
 
-## See also
+# See also
 
 - \ref app_carmen2simplemap: converts CARMEN logs with corrected poses into
   simple maps.

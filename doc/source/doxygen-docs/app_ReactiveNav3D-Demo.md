@@ -1,6 +1,5 @@
 \page app_ReactiveNav3D-Demo ReactiveNav3D-Demo
 
-# ReactiveNav3D-Demo
 
 Simulator to test mrpt::nav::CReactiveNavigationSystem3D, the PTG-based
 reactive navigator for differential-driven robots whose shape is modeled in
@@ -11,18 +10,18 @@ app), sensed with simulated 2D laser scanners and depth cameras placed at
 different heights. An optional short-term memory grid keeps obstacles seen
 by the depth cameras once they leave their field of view.
 
-## Usage
+# Usage
 
     ReactiveNav3D-Demo <config_file.ini>
 
-## Example
+# Example
 
     ReactiveNav3D-Demo modules/mrpt_data/config_files/navigation-ptgs/reactive3d_config.ini
 
 The PTGs are precomputed at startup for each height level, which may take a
 while the first time (they are cached to files afterwards).
 
-## User interface
+# User interface
 
 A 3D window shows the maps (one per level), the robot shape, the sensed
 obstacles and the target. Keys:
@@ -34,7 +33,7 @@ obstacles and the target. Keys:
 | `r` | Resume navigation. |
 | `e` | Exit. |
 
-## Configuration file
+# Configuration file
 
 - `[CReactiveNavigationSystem3D]`: robot shape and PTGs:
   - `HEIGHT_LEVELS`, and for each level `i` (1-based): `LEVELi_HEIGHT`,
@@ -58,14 +57,14 @@ obstacles and the target. Keys:
     `Obs_grid_length`, `Obs_grid_resolution`, `Vision_limit`, likelihood
     increments and `Occupancy_threshold`).
 
-## Output
+# Output
 
 Navigation logs (`*.reactivenavlog`, see
 [navlog-viewer](page_app_navlog-viewer.html)) are written to
 `./reactivenav.logs/`, and the PTG collision grids are cached as
 `ReacNavGrid_NNN_LNN.dat.gz` files in the current directory.
 
-## See also
+# See also
 
 - [ReactiveNavigationDemo](page_app_ReactiveNavigationDemo.html): 2D version.
 - [navlog-viewer](page_app_navlog-viewer.html)

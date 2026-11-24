@@ -5,7 +5,7 @@ MRPT exceptions carry the call stack at the throw point, so an error raised
 deep inside a library can be traced back from the top-level `catch`. All
 these helpers are defined in `<mrpt/core/exceptions.h>`.
 
-## Throwing and asserting
+# Throwing and asserting
 
 - `THROW_EXCEPTION(msg)`, `THROW_EXCEPTION_FMT(fmt, ...)`: throw a
   `std::logic_error` with the message, source file, line, function name and
@@ -18,7 +18,7 @@ these helpers are defined in `<mrpt/core/exceptions.h>`.
 - `ASSERTDEB_(cond)` and the other `ASSERTDEB_*` variants: like the above,
   but only checked if `_DEBUG` is defined.
 
-## Tracing exceptions through the call stack
+# Tracing exceptions through the call stack
 
 Wrapping the body of a function between `MRPT_START` and `MRPT_END` catches
 any `std::exception` thrown inside it (also from the standard library or
@@ -31,7 +31,7 @@ At the top level, print the full report with `e.what()` or
 mrpt::exception_to_str(). File names and line numbers of each frame are
 shown when debug symbols are available.
 
-## Example
+# Example
 
 See: \ref core_exceptions_example/main.cpp
 \snippet core_exceptions_example/main.cpp example-nested-exceptions

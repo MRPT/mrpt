@@ -1,6 +1,5 @@
 \page app_velodyne-view velodyne-view
 
-# velodyne-view
 
 Live viewer and grabber for Velodyne 3D LIDARs (VLP-16, HDL-32, HDL-64),
 built on mrpt::hwdrivers::CVelodyneScanner. It shows the point cloud of each
@@ -9,7 +8,7 @@ from a PCAP file recorded with Wireshark or tcpdump, and can record the data
 as a rawlog (mrpt::obs::CObservationVelodyneScan and, if the sensor sends
 them, mrpt::obs::CObservationGPS observations) or as PCAP files.
 
-## Usage
+# Usage
 
     velodyne-view [options]
 
@@ -27,7 +26,7 @@ them, mrpt::obs::CObservationGPS observations) or as PCAP files.
 
 PCAP input and output require MRPT to be built with libpcap support.
 
-## Examples
+# Examples
 
     # Live view of a VLP-16 on the local network:
     velodyne-view
@@ -38,7 +37,7 @@ PCAP input and output require MRPT to be built with libpcap support.
     # Play back a PCAP file:
     velodyne-view -i recording.pcap -m VLP16
 
-## User interface
+# User interface
 
 The 3D window shows the point cloud of the latest scan, the reception time of
 the latest LIDAR and GPS data, and the grabbing rate.
@@ -51,7 +50,7 @@ Mouse: orbit, pan and zoom as in any MRPT 3D window. Keys:
 | `1` / `2` | Toggle keeping the last / strongest returns in dual return mode |
 | `ESC` | Quit |
 
-## See also
+# See also
 
 - [rawlog-grabber](page_app_rawlog-grabber.html): to record Velodyne data
   together with other sensors (see `config_files/rawlog-grabber/velodyne.ini`).

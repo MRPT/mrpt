@@ -1,6 +1,5 @@
 \page app_pf-localization pf-localization
 
-# pf-localization
 
 Offline Monte Carlo localization (particle filter) of a robot in a known map,
 processing a rawlog dataset. It is a front-end for
@@ -13,14 +12,14 @@ point maps, ...). It supports a fixed number of particles or KLD adaptive
 sample size, global localization from a uniform initial distribution, and
 repeated experiments with statistics against a ground truth.
 
-## Usage
+# Usage
 
     pf-localization <config_file.ini> [dataset.rawlog]
 
 If the rawlog is not given on the command line, it is taken from
 `rawlog_file` in the `[LocalizationExperiment]` section.
 
-## Example
+# Example
 
     cd modules/mrpt_data/config_files/pf-localization
     pf-localization localization_demo.ini
@@ -29,7 +28,7 @@ This performs global localization (40000 initial particles, KLD adaptive
 sample size) of a robot with a 2D laser scanner in the grid map built from
 `datasets/localization_demo.simplemap.gz`.
 
-## Configuration file
+# Configuration file
 
 - `[LocalizationExperiment]`:
   - `map_file`: the map, either a `.simplemap` (the maps defined in
@@ -58,7 +57,7 @@ sample size) of a robot with a 2D laser scanner in the grid map built from
 - `[MetricMap]` and `[MetricMap_*]` sections: the metric maps and their
   likelihood options (see mrpt::maps::TSetOfMetricMapInitializers).
 
-## Output
+# Output
 
 For each number of particles `N` and repetition `R`, a directory
 `<logOutput_dir>_RRR_NNNNNNN/` with:
@@ -72,7 +71,7 @@ For each number of particles `N` and repetition `R`, a directory
 A summary of all the experiments (convergence ratio, time, errors) is appended
 to `<logOutput_dir>_SUMMARY.txt`.
 
-## See also
+# See also
 
 - [rbpf-slam](page_app_rbpf-slam.html), [icp-slam](page_app_icp-slam.html):
   to build the map.

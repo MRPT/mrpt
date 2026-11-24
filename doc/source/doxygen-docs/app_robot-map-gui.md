@@ -1,6 +1,5 @@
 \page app_robot-map-gui robot-map-gui
 
-# robot-map-gui
 
 Viewer and editor of robot-made maps stored as `.simplemap` files (a
 sequence of keyframes: robot poses with their observations, see
@@ -11,13 +10,13 @@ keyframes with a user-defined configuration, shows them in 3D, and allows
 inspecting the observations of each keyframe and editing the keyframe poses.
 It uses Qt5.
 
-## Usage
+# Usage
 
     robot-map-gui [file.simplemap]
 
 The optional argument is a `.simplemap` or `.simplemap.gz` file to open.
 
-## Example
+# Example
 
     robot-map-gui modules/mrpt_data/datasets/malaga-cs-fac-building.simplemap.gz
 
@@ -25,7 +24,7 @@ Then load a map configuration with **File > Load config** (Ctrl+E), e.g.
 `modules/mrpt_data/config_files/icp-slam/icp-slam_demo_classic.ini`, to
 build and display the maps.
 
-## User interface
+# User interface
 
 - **Map configuration**: the list of metric maps to build. Load it from an
   INI file (the map definitions are read from the `[MappingApplication]`
@@ -47,7 +46,7 @@ build and display the maps.
   pose in the **Pose direction** panel. The maps are rebuilt after each
   change, and **Undo** / **Redo** revert or repeat changes.
 
-## Saving
+# Saving
 
 **File** menu:
 
@@ -59,7 +58,7 @@ build and display the maps.
 - **Save points map as text**, **Save gridmap as PNG**.
 - **Recent files**.
 
-## See also
+# See also
 
 - [observations2map](page_app_observations2map.html): build maps from a
   `.simplemap` from the command line.

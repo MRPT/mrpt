@@ -1,6 +1,5 @@
 \page app_graph-slam graph-slam
 
-# graph-slam
 
 Command-line tool to inspect, optimize and visualize pose graphs (2D or 3D)
 stored as text files in the common `.graph` format (`VERTEX2`, `EDGE2`,
@@ -9,7 +8,7 @@ stored as text files in the common `.graph` format (`VERTEX2`, `EDGE2`,
 mrpt::graphs::CNetworkOfPoses3D, and optimized with the sparse
 Levenberg-Marquardt method of mrpt::graphslam::optimize_graph_spa_levmarq().
 
-## Usage
+# Usage
 
     graph-slam -i <input.graph> (--2d | --3d) <operation> [options]
 
@@ -35,13 +34,13 @@ Other options:
 | `-q`, `--quiet` | Terse output. |
 | `-h`, `--help`, `--version` | Show help or version. |
 
-## Examples
+# Examples
 
     graph-slam --2d --info -i modules/mrpt_data/datasets/graph_2d_circle_50nodes.graph
     graph-slam --2d --levmarq -i modules/mrpt_data/datasets/graph_2d_circle_50nodes.graph -o out.graph
     graph-slam --2d --levmarq --view -i modules/mrpt_data/datasets/graph_2d_circle_50nodes.graph
 
-## 3D viewer
+# 3D viewer
 
 The `--view` window shows the nodes, their coordinate frames and the edges.
 Keys: `h` prints this list to the console; `i`, `e`, `c`, `v` toggle node IDs,
@@ -49,7 +48,7 @@ edges, node frames and edge relative poses; `+`/`-` change the size of node
 points, `o`/`p` and `k`/`l` the size of node and edge frames; `s` saves the 3D scene to
 `dump_graph_NNNNN.3Dscene`; `q` quits.
 
-## See also
+# See also
 
 - [Graph SLAM example](page_graphslam_example.html)
 - mrpt::graphs::CNetworkOfPoses, mrpt::graphslam::optimize_graph_spa_levmarq()

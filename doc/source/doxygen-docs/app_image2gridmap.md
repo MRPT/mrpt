@@ -1,13 +1,12 @@
 \page app_image2gridmap image2gridmap
 
-# image2gridmap
 
 Converts an image (e.g. a hand-drawn map, or a floor plan) into an MRPT
 occupancy grid map file (`*.gridmap.gz`), the serialization of an
 mrpt::maps::COccupancyGridMap2D. Such files can be used by localization,
 navigation and simulation apps, and by \ref app_simul-gridmap.
 
-## Usage
+# Usage
 
     image2gridmap -i <image> -r <resolution> [-o <output>] [--cx <x> --cy <y> | --px <col> --py <row>] [-w]
 
@@ -29,14 +28,14 @@ navigation and simulation apps, and by \ref app_simul-gridmap.
 `--cx`/`--cy` and `--px`/`--py` must be given in pairs, and the two pairs
 cannot be combined.
 
-## Example
+# Example
 
 Using a sample map image from `mrpt_data`, with 5 cm per pixel and the map
 origin at the image center:
 
     image2gridmap -i datasets/graphslam-engine-demos/basic_map.png -r 0.05 -o basic_map.gridmap.gz
 
-## Input / output formats
+# Input / output formats
 
 Each pixel intensity (the gray level, for color images), normalized to
 [0,1], is the probability of the cell being **free**: white means free, black
@@ -47,7 +46,7 @@ The output is a compressed (zstd) serialized mrpt::maps::COccupancyGridMap2D,
 despite the `.gz` default extension. MRPT programs detect the compression
 format automatically when reading it.
 
-## See also
+# See also
 
 - \ref app_ros-map-yaml2mrpt: imports ROS `map_server` maps (image plus YAML
   metadata).

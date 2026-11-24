@@ -1,6 +1,5 @@
 \page app_graphslam-engine graphslam-engine
 
-# graphslam-engine
 
 \note This application is **not built in MRPT 3.x yet**: it still needs
 further porting, so it is not included in the MRPT 3 binaries. The underlying
@@ -31,7 +30,7 @@ A detailed guide of the design and usage of the application is in the MRPT
 source tree, under `doc/graphslam-engine-guide/` (LaTeX sources; run `make`
 there to build the PDF).
 
-## See also
+# See also
 
 - [graph-slam](page_app_graph-slam.html): optimization and visualization of
   existing pose graphs.

@@ -1,6 +1,5 @@
 \page app_mrpt-performance mrpt-performance
 
-# mrpt-performance
 
 Benchmark suite of MRPT: runs a set of timing tests of common operations
 (poses and matrices math, random numbers, images, point clouds, occupancy
@@ -10,7 +9,7 @@ functions, ...) and reports the time per execution of each one. Use it to
 compare the performance of different MRPT versions, compilers or machines,
 or to detect performance regressions.
 
-## Usage
+# Usage
 
     mrpt-performance [options]
 
@@ -25,7 +24,7 @@ Some tests use datasets from `mrpt_data` (e.g. the ICP-SLAM and RGB-D
 tests). A test that throws an exception (e.g. missing data) is reported as
 skipped, and the rest continue.
 
-## Examples
+# Examples
 
     # Run all tests:
     mrpt-performance
@@ -33,7 +32,7 @@ skipped, and the rest continue.
     # Run only the ICP-related tests:
     mrpt-performance -c icp
 
-## Output
+# Output
 
 Results are printed to the console (time per test) and written to these
 files in the current directory:
@@ -48,6 +47,6 @@ are read, and an `index.html`, one page per configuration and one comparison
 page per pair of configurations are generated in the `perf-html/`
 subdirectory, which must exist.
 
-## See also
+# See also
 
 - mrpt::system::CTimeLogger, for profiling your own code.

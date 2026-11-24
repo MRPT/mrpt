@@ -1,13 +1,12 @@
 \page app_simul-gridmap simul-gridmap
 
-# simul-gridmap
 
 Generates a synthetic dataset of a robot that follows a given sequence of
 poses in a world defined by an occupancy grid map, taking a 2D laser scan at
 each pose (ray tracing in the grid, with range and bearing noise). Use it to
 test 2D SLAM, localization or scan matching methods with known ground truth.
 
-## Usage
+# Usage
 
     simul-gridmap -g <map.gridmap.gz> -p <poses.txt> -o <out.rawlog> [-i <in.rawlog>]
                   [-r <ranges>] [-s <span>] [-R <std_r>] [-B <std_b>] [-n]
@@ -28,7 +27,7 @@ test 2D SLAM, localization or scan matching methods with known ground truth.
 - `-n, --nologo`: do not print the program banner.
 - `--version`, `-h, --help`.
 
-## Example
+# Example
 
 Create a grid map from a sample image in `mrpt_data`, then simulate scans
 along the poses in `poses.txt`:
@@ -42,7 +41,7 @@ with a `poses.txt` like:
     0.1  0.1  0.0  0.0
     0.2  0.2  0.0  0.05
 
-## Output format
+# Output format
 
 The output rawlog is in the "actions-sensory frames" format (see the
 [rawlog format](rawlog_format.html)):
@@ -59,7 +58,7 @@ The output rawlog is in the "actions-sensory frames" format (see the
   "actions-sensory frames" format, start with an action, and have exactly one
   action and one sensory frame per row of the poses file.
 
-## See also
+# See also
 
 - \ref app_image2gridmap, \ref app_ros-map-yaml2mrpt: create grid maps.
 - \ref app_simul-beacons, \ref app_simul-landmarks: other dataset simulators.

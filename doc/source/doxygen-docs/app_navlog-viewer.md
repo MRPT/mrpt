@@ -1,6 +1,5 @@
 \page app_navlog-viewer navlog-viewer
 
-# navlog-viewer
 
 ![navlog-viewer screenshot](app_navlog-viewer_imgui.webp)
 
@@ -11,7 +10,7 @@ mrpt::nav::CLogFileRecord per navigation step.
 
     navlog-viewer [log_file.reactivenavlog] [--load plugin.so]
 
-## User interface
+# User interface
 
 The world view (robot, obstacles, selected path and its robot shapes, targets,
 past poses and delay-model poses) is the background of the main window. A
@@ -36,7 +35,7 @@ The **Export** menu saves the PTG parameters, the current obstacles, MATLAB
 scripts with the map plot or the paths information, the score matrices, the
 current entry as a single-entry navlog, and a localization vs. odometry report.
 
-## Keyboard
+# Keyboard
 
 | Key | Action |
 |---|---|

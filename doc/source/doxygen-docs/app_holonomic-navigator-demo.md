@@ -1,6 +1,5 @@
 \page app_holonomic-navigator-demo holonomic-navigator-demo
 
-# holonomic-navigator-demo
 
 ![holonomic-navigator-demo screenshot](app_holonomic-navigator-demo_imgui.webp)
 
@@ -13,7 +12,7 @@ circular robot with a 360-degree range sensor, in a 2D occupancy grid map.
 
 `--start` starts navigating at once, with the default settings.
 
-## User interface
+# User interface
 
 The world (map, robot, its sensor range and path, and the target) is the
 background of the main window. Dockable panels:

@@ -1,6 +1,5 @@
 \page app_rbpf-slam rbpf-slam
 
-# rbpf-slam
 
 Offline SLAM with Rao-Blackwellized Particle Filters (RBPF): each particle
 holds a robot path hypothesis and its own map, built from a rawlog dataset.
@@ -11,7 +10,7 @@ mrpt::maps::CMultiMetricMap: occupancy grids, point clouds, beacon maps
 2D laser scans when loops must be closed and odometry is poor, or for
 range-only SLAM with beacons.
 
-## Usage
+# Usage
 
     rbpf-slam <config_file.ini> [dataset.rawlog]
 
@@ -20,7 +19,7 @@ If the rawlog is not given on the command line, it is taken from
 (action-observation pairs and observations only) are accepted. Press `ESC` in
 the console to stop processing early.
 
-## Example
+# Example
 
 Run from the config directory, since the dataset paths are relative:
 
@@ -29,7 +28,7 @@ Run from the config directory, since the dataset paths are relative:
     rbpf-slam gridmapping_optimal_sampling.ini            # grid mapping, optimal sampling
     rbpf-slam RO-SLAM_simulatedData_MC.ini                # range-only SLAM (beacons)
 
-## Configuration file
+# Configuration file
 
 All options are in the `[MappingApplication]` section:
 
@@ -59,7 +58,7 @@ All options are in the `[MappingApplication]` section:
 
 See mrpt::slam::CMetricMapBuilderRBPF::TConstructionOptions for the full list.
 
-## Output
+# Output
 
 In `logOutput_dir`:
 
@@ -78,7 +77,7 @@ The `.simplemap` can be turned into other maps with
 [robot-map-gui](page_app_robot-map-gui.html), or used for localization with
 [pf-localization](page_app_pf-localization.html).
 
-## See also
+# See also
 
 - [icp-slam](page_app_icp-slam.html): faster, but without loop closure.
 - mrpt::slam::CMetricMapBuilderRBPF, mrpt::maps::CMultiMetricMapPDF
