@@ -168,6 +168,13 @@ add_executable(icp_example icp_example.cpp)
 target_link_libraries(icp_example mrpt::mrpt_slam)
 ```
 
+With MRPT from ROS 2 (after sourcing its `setup.bash`) or from the PPA, CMake finds it as is.
+With the pip wheel, which ships the C++ SDK, pass its CMake prefix:
+
+```bash
+cmake -S . -B build -DCMAKE_PREFIX_PATH="$(python3 -c 'import mrpt.sdk; print(mrpt.sdk.get_cmake_prefix_path())')"
+```
+
 More in the [C++ examples](https://docs.mrpt.org/reference/latest/examples.html).
 
 > **Migrating from MRPT 2.x?** See the [porting guide](https://docs.mrpt.org/reference/latest/page_porting_mrpt3.html):
