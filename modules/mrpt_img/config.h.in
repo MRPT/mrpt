@@ -14,7 +14,7 @@
 
 /** Enable Katakana, Hiragana & Kanji character sets in mrpt::img::CCanvas.
   *  Disable this to save executable sizes if these fonts will be not used. */
- #define MRPT_HAS_ASIAN_FONTS ${CMAKE_MRPT_HAS_ASIAN_FONTS}
+#cmakedefine01 MRPT_HAS_ASIAN_FONTS
 
 /** Decode JPEG images with libjpeg-turbo (TurboJPEG API) instead of the
   *  embedded stb_image. See mrpt::img::CImage::hasLibJpegTurbo() */
