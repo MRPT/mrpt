@@ -196,7 +196,7 @@ std::optional<std::vector<uint8_t>> readFileIfJPEG(const std::string& fileName)
   }
   f.seekg(0, std::ios::end);
   const auto size = f.tellg();
-  if (size <= 0)
+  if (size <= 0 || size > static_cast<std::streamoff>(std::numeric_limits<int>::max()))
   {
     return std::nullopt;
   }
