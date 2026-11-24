@@ -272,16 +272,16 @@ bool launchProcess(const std::string& command);
  * \param[in,out] outErrorMsgs If provided, error messages will be saved here.
  * If not, errors will be dumped to std::cerr. \return true If modules could be
  * loaded without errors.
- * Upon mrpt-system library unloading, all loaded modules will be automatically
- * unloaded too. Manual unload is possible with \a unloadPluginModule().
+ * Modules stay loaded until program exit, where they are not unloaded, since
+ * the classes they registered may still be referenced then. Manual unload is
+ * possible with \a unloadPluginModule().
  */
 bool loadPluginModule(
     const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
 
 /** Unloads "plug-in" modules loaded with loadPluginModule().
  * \return true if module could be unloaded without errors.
- * \note Unloaded is done automatically before program exit even if this is not
- * explicitly called.
+ * \note Only unload a module once nothing uses the classes it registered.
  */
 bool unloadPluginModule(
     const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
@@ -298,8 +298,7 @@ bool loadPluginModules(
 
 /** Unloads "plug-in" modules loaded with loadPluginModules().
  * \return true if all modules could be unloaded without errors.
- * \note Unloaded is done automatically before program exit even if this is not
- * explicitly called.
+ * \note Only unload a module once nothing uses the classes it registered.
  */
 bool unloadPluginModules(
     const std::string& moduleFileNames,

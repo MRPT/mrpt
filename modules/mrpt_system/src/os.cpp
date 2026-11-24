@@ -133,26 +133,11 @@ struct ModulesRegistry
   }
 
   ModulesRegistry() = default;
-  ~ModulesRegistry()
-  {
-    try
-    {
-      // Make a copy, since each unload() call would invalidate iterators
-      // to the changing list "loadedModules":
-      loadedModules_mtx.lock();
-      auto lstCopy = loadedModules;
-      loadedModules_mtx.unlock();
-
-      for (auto& ent : lstCopy)
-      {
-        mrpt::system::unloadPluginModule(ent.first);
-      }
-    }
-    catch (const std::exception& e)
-    {
-      std::cerr << "[~ModulesRegistry] Exception: " << mrpt::exception_to_str(e);
-    }
-  }
+  // Loaded modules are intentionally not unloaded at exit: this registry is
+  // destroyed before other static registries (e.g. of map or RTTI classes)
+  // that may still hold pointers to code in the modules, which would then be
+  // called after being unmapped.
+  ~ModulesRegistry() = default;
 
   // Delete copy and move constructors and assignment operators
   ModulesRegistry(const ModulesRegistry&) = delete;
