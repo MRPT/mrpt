@@ -36,7 +36,7 @@ Grabbing
 -------------
 
 Prepare a configuration file for `rawlog-grabber <page_app_rawlog-grabber.html>`_. Start from this template:
-`[MRPT]/share/mrpt/config_files/rawlog-grabber/kinect.ini <https://github.com/MRPT/mrpt/blob/develop/share/mrpt/config_files/rawlog-grabber/kinect.ini>`_.
+`modules/mrpt_data/config_files/rawlog-grabber/kinect.ini <https://github.com/MRPT/mrpt/blob/develop/modules/mrpt_data/config_files/rawlog-grabber/kinect.ini>`_.
 
 Notice that with the default configuration, all data and images will be embedded into one big binary file.
 This is done to reduce the OS overhead of creating dozens of small files per second,

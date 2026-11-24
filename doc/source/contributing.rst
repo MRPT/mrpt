@@ -10,17 +10,14 @@ Contributing
   MRPT_Coding_Style.rst
   mrpt_git_branches.rst
   ClangFormat.rst
-  ClangFormat_internal.rst
   make_a_mrpt_release.rst
 
 
 Did you find a bug in MRPT?
 -----------------------------
-* **Ensure it is not already** reported by searching:
-  
-  * The `issues list <https://github.com/MRPT/mrpt/issues>`_,
-  * The `mailing list <https://groups.google.com/forum/#!forum/mrpt-users>`_ and
-  * `Solved questions at stackoverflow.com <http://stackoverflow.com/search?q=mrpt>`_
+* **Ensure it is not already** reported by searching the
+  `issues list <https://github.com/MRPT/mrpt/issues>`_ and
+  `GitHub Discussions <https://github.com/MRPT/mrpt/discussions>`_.
 
 Do you want to contribute new code to MRPT?
 ---------------------------------------------
