@@ -9,6 +9,47 @@ applications, installed with the ``mrpt_apps_cli`` and ``mrpt_apps_gui``
 packages (ROS 2), the ``mrpt-apps`` package (Ubuntu PPA), or built from sources.
 See :ref:`downloadmrpt`.
 
+.. toctree::
+  :hidden:
+  :maxdepth: 1
+
+  app_RawLogViewer.rst
+  page_app_SceneViewer3D.rst
+  page_app_navlog-viewer.rst
+  app_3d-rotation-converter.rst
+  app_robotic-arm-kinematics.rst
+  page_app_robot-map-gui.rst
+  page_app_icp-slam.rst
+  page_app_rbpf-slam.rst
+  page_app_kf-slam.rst
+  app_2d-slam-demo.rst
+  page_app_pf-localization.rst
+  page_app_ro-localization.rst
+  page_app_icp-slam-live.rst
+  page_app_graph-slam.rst
+  page_app_map-partition.rst
+  page_app_graphslam-engine.rst
+  page_app_ReactiveNavigationDemo.rst
+  page_app_ReactiveNav3D-Demo.rst
+  page_app_holonomic-navigator-demo.rst
+  page_app_ptg-configurator.rst
+  app_GridmapNavSimul.rst
+  page_app_rawlog-edit.rst
+  page_app_rawlog-grabber.rst
+  page_app_observations2map.rst
+  page_app_image2gridmap.rst
+  page_app_ros-map-yaml2mrpt.rst
+  page_app_gps2rawlog.rst
+  page_app_carmen2rawlog.rst
+  page_app_carmen2simplemap.rst
+  page_app_mrpt-ini2yaml.rst
+  page_app_mrpt-yaml2ini.rst
+  page_app_simul-landmarks.rst
+  page_app_simul-beacons.rst
+  page_app_simul-gridmap.rst
+  page_app_velodyne-view.rst
+  page_app_mrpt-performance.rst
+
 Viewers and GUI tools
 =====================
 
@@ -307,47 +348,6 @@ Simulation, sensors and benchmarks
     :class-card: mrpt-app-card-text
 
     Benchmark the performance of MRPT algorithms.
-
-.. toctree::
-  :hidden:
-  :maxdepth: 1
-
-  app_RawLogViewer.rst
-  page_app_SceneViewer3D.rst
-  page_app_navlog-viewer.rst
-  app_3d-rotation-converter.rst
-  app_robotic-arm-kinematics.rst
-  page_app_robot-map-gui.rst
-  page_app_icp-slam.rst
-  page_app_rbpf-slam.rst
-  page_app_kf-slam.rst
-  app_2d-slam-demo.rst
-  page_app_pf-localization.rst
-  page_app_ro-localization.rst
-  page_app_icp-slam-live.rst
-  page_app_graph-slam.rst
-  page_app_map-partition.rst
-  page_app_graphslam-engine.rst
-  page_app_ReactiveNavigationDemo.rst
-  page_app_ReactiveNav3D-Demo.rst
-  page_app_holonomic-navigator-demo.rst
-  page_app_ptg-configurator.rst
-  app_GridmapNavSimul.rst
-  page_app_rawlog-edit.rst
-  page_app_rawlog-grabber.rst
-  page_app_observations2map.rst
-  page_app_image2gridmap.rst
-  page_app_ros-map-yaml2mrpt.rst
-  page_app_gps2rawlog.rst
-  page_app_carmen2rawlog.rst
-  page_app_carmen2simplemap.rst
-  page_app_mrpt-ini2yaml.rst
-  page_app_mrpt-yaml2ini.rst
-  page_app_simul-landmarks.rst
-  page_app_simul-beacons.rst
-  page_app_simul-gridmap.rst
-  page_app_velodyne-view.rst
-  page_app_mrpt-performance.rst
 
 .. index::
    single: List of MRPT applications
