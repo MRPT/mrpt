@@ -9,6 +9,7 @@
 # -- Path setup --------------------------------------------------------------
 
 import os
+import re
 import sys
 from datetime import datetime
 
@@ -225,3 +226,14 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+
+
+def _app_pages_under_applications(app, docname, source):
+    """App pages are listed in applications.rst: drop them from the toctree of
+    the generated C++ API index, so the sidebar shows them under Applications."""
+    if docname == "doxygen-index":
+        source[0] = re.sub(r"^\s+page_app_\S+\.rst\n", "", source[0], flags=re.M)
+
+
+def setup(app):
+    app.connect("source-read", _app_pages_under_applications)
