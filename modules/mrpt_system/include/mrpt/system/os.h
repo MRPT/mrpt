@@ -289,8 +289,8 @@ bool unloadPluginModule(
 /** Like loadPluginModule(), but loads a comma (`,`) separated list of "plug-in"
  * modules.
  * \return true if all modules could be loaded without errors.
- * Upon mrpt-system library unloading, all loaded modules will be automatically
- * unloaded too. Manual unload is possible with \a unloadPluginModules().
+ * As with loadPluginModule(), modules are not unloaded at program exit. Manual
+ * unload is possible with \a unloadPluginModules().
  */
 bool loadPluginModules(
     const std::string& moduleFileNames,
