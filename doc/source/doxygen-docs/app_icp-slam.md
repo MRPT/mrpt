@@ -1,86 +1,75 @@
 \page app_icp-slam icp-slam
 
-[TOC]
-
-# Overview
+# icp-slam
 
 ![icp-slam screenshot](https://mrpt.github.io/docs-assets/apps/app_icp-slam.webp)
 
+`icp-slam` builds a metric map (point cloud and/or occupancy grid) from a
+dataset (rawlog file) by aligning each new laser scan against the map built so
+far with ICP (Iterative Closest Point). It is a thin wrapper of
+mrpt::slam::CMetricMapBuilderICP, with ICP from mrpt::slam::CICP. It suits
+datasets with good odometry and a 2D (or planar 3D) LiDAR, when a simple and
+fast map is enough (no loop closure).
 
-`icp-slam` is a command-line application that builds a 2D metric map (occupancy grid and/or point cloud) from a recorded dataset (rawlog file) using **ICP-based SLAM** (Iterative Closest Point Simultaneous Localization and Mapping).
+The companion app [icp-slam-live](page_app_icp-slam-live.html) runs the same
+algorithm on live LiDAR data.
 
-It is based on `mrpt::slam::CMetricMapBuilderICP` and supports:
-- Occupancy grid map building from 2D laser scans.
-- Optional 3D visualization of the robot trajectory and the growing map.
-- Saving the resulting map and robot path to files.
+## Usage
 
-A companion application, `icp-slam-live`, provides the same functionality but reads sensor data in real-time from hardware drivers instead of a rawlog file.
+    icp-slam <config_file.ini> [<dataset.rawlog>]
 
-# Usage
+- `config_file.ini`: the configuration file (see below).
+- `dataset.rawlog`: optional; if given, it overrides the `rawlog_file` entry of
+  the configuration file.
 
-```
-icp-slam  [--help] <config_file.ini> [dataset.rawlog]
-```
+## Example
 
-Arguments:
+    cd modules/mrpt_data/config_files/icp-slam
+    icp-slam icp-slam_demo_classic.ini
 
-| Argument | Description |
-|---|---|
-| `config_file.ini` | Path to an INI-style configuration file (see below). |
-| `dataset.rawlog` | (Optional) Path to the rawlog file. Overrides the value in the config file. |
+Other sample configurations in the same directory use Levenberg-Marquardt ICP
+(`icp-slam_demo_LM.ini`), grid matching (`icp-slam_demo_classic_gridmatch.ini`),
+a voxel map (`icp-slam_demo_voxelmap.ini`) or an octomap
+(`icp-slam_demo_with_octomap.ini`).
 
-# Configuration file
+## Configuration file
 
-The configuration file controls all aspects of the SLAM algorithm and output.
-Key sections and parameters:
+- `[MappingApplication]`: the app and the map builder.
+  - `rawlog_file`, `rawlog_offset` (entries to skip at the beginning).
+  - `logOutput_dir`: output directory. **Its previous contents are deleted.**
+  - `LOG_FREQUENCY`, `SAVE_3D_SCENE`, `SAVE_POSE_LOG`: save a 3D scene and/or
+    the current pose PDF every `LOG_FREQUENCY` steps.
+  - `SHOW_PROGRESS_3D_REAL_TIME`, `SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS`,
+    `SHOW_LASER_SCANS_3D`: live 3D view.
+  - `localizationLinDistance`, `localizationAngDistance`,
+    `insertionLinDistance`, `insertionAngDistance`, `minICPgoodnessToAccept`,
+    `matchAgainstTheGrid` and the rest of
+    mrpt::slam::CMetricMapBuilderICP::TConfigParams.
+  - The maps to build (`pointsMap_count`, `occupancyGrid_count`,...), with
+    their options in sections like `[MappingApplication_pointsMap_00_insertOpts]`,
+    as described in mrpt::maps::CMultiMetricMap.
+  - `alwaysInsertByClass`: observation classes inserted into the map at every
+    step.
+- `[ICP]`: ICP parameters (mrpt::slam::CICP::TConfigParams), e.g.
+  `ICP_algorithm`, `maxIterations`, `thresholdDist`, `thresholdAng_DEG`,
+  `ALFA`, `corresponding_points_decimation`.
 
-```ini
-[ICP_SLAM_App]
-# Rawlog file to process (can be overridden from the command line)
-rawlog_file = path/to/dataset.rawlog
+## Output
 
-# Number of rawlog entries to process (0 = all)
-rawlog_offset = 0
-
-# Output directory for maps and paths
-logOutput_dir = ./icp-slam-results
-
-# Log frequency (save map every N steps, 0 = never)
-LOG_FREQUENCY = 5
-
-# Whether to show a 3D window during processing
-SHOW_PROGRESS_3D_REAL_TIME = true
-
-[MetricMaps]
-# Define the map(s) to build.  See mrpt::maps::CMultiMetricMap documentation.
-occupancyGrid_count = 1
-
-[MetricMaps_occupancyGrid_00_creationOpts]
-resolution = 0.05
-
-[ICP]
-# ICP parameters. See mrpt::slam::CICP::TConfigParams.
-thresholdDist   = 0.75
-thresholdAng    = 0.15
-```
-
-For a complete list of parameters, run the application with `--help` or refer to
-`mrpt::slam::CMetricMapBuilderICP::TConfigParams` and
-`mrpt::slam::CICP::TConfigParams`.
-
-# Output files
-
-Results are written to the directory specified by `logOutput_dir`:
+In the `logOutput_dir` directory:
 
 | File | Contents |
 |---|---|
-| `log_*.rawlog` | Sub-sequence rawlog (optional). |
-| `final_map.simplemap` | Final serialized metric map. |
-| `robot_path.txt` | Robot trajectory as a sequence of 2D poses. |
-| `occupancy_grid.png` | Rendered occupancy grid image. |
+| `_finalmap_.simplemap` | The final map as a simple map (poses and observations), e.g. for \ref app_observations2map or RawLogViewer. |
+| `_finalmaps_.txt_*` | The final metric maps (e.g. point clouds as text, grid maps as images). |
+| `log_estimated_path.txt` | Estimated robot path. |
+| `log_odometry_path.txt` | Odometry-only robot path. |
+| `log_times.txt` | Processing time per step. |
+| `buildingmap_NNNNN.3Dscene` | 3D scenes of the map being built (if `SAVE_3D_SCENE`), viewable with [SceneViewer3D](page_app_SceneViewer3D.html). |
+| `mapbuild_posepdf_NNN.txt` | Pose PDF per step (if `SAVE_POSE_LOG`). |
 
-# See also
+## See also
 
-- \ref mrpt::slam::CMetricMapBuilderICP
-- \ref mrpt::slam::CICP
-- Application `icp-slam-live` for live sensor input.
+- [icp-slam-live](page_app_icp-slam-live.html), [rbpf-slam](page_app_rbpf-slam.html).
+- Tutorial: [ICP alignment](tutorial-icp-alignment.html).
+- mrpt::slam::CMetricMapBuilderICP, mrpt::slam::CICP.
