@@ -127,13 +127,15 @@ unsigned char* turbo_decode(
       return nullptr;  // 2 (gray+alpha): not used by CImage
   }
 
-  const auto pitch = static_cast<std::size_t>(w) * static_cast<std::size_t>(out_channels);
-  if (pitch > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+  const auto pitch = static_cast<uint64_t>(w) * static_cast<uint64_t>(out_channels);
+  const auto totalBytes = pitch * static_cast<uint64_t>(h);
+  // Keep the stb_image size limit, and avoid size_t overflow on 32-bit targets.
+  if (totalBytes > static_cast<uint64_t>(std::numeric_limits<int>::max()))
   {
     return nullptr;
   }
   // malloc(): the buffer is released with stbi_image_free(), i.e. free().
-  auto* pixels = static_cast<unsigned char*>(std::malloc(pitch * static_cast<std::size_t>(h)));
+  auto* pixels = static_cast<unsigned char*>(std::malloc(static_cast<std::size_t>(totalBytes)));
   if (pixels == nullptr)
   {
     return nullptr;
