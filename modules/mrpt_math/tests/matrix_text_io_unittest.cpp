@@ -25,6 +25,7 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <cstdint>
+#include <locale>
 #include <sstream>
 
 #if MRPT_HAS_FYAML
@@ -64,6 +65,32 @@ TEST(MatrixTextIO, matlabFormatRoundTripIsExactWith17Digits)
       EXPECT_EQ(m2(r, c), m(r, c)) << s;
     }
   }
+}
+
+namespace
+{
+struct CommaDecimalPoint : std::numpunct<char>
+{
+  char do_decimal_point() const override { return ','; }
+};
+}  // namespace
+
+TEST(MatrixTextIO, matlabFormatIgnoresGlobalLocale)
+{
+  const std::locale old =
+      std::locale::global(std::locale(std::locale::classic(), new CommaDecimalPoint));
+  CMatrixDouble m(1, 2);
+  m(0, 0) = 0.5;
+  m(0, 1) = -1.25;
+  const std::string s = m.inMatlabFormat(3);
+  CMatrixDouble m2;
+  const bool ok = m2.fromMatlabStringFormat("[0.25 1e-3]");
+  std::locale::global(old);
+
+  EXPECT_EQ(s.find(','), std::string::npos) << s;
+  ASSERT_TRUE(ok);
+  EXPECT_EQ(m2(0, 0), 0.25);
+  EXPECT_EQ(m2(0, 1), 1e-3);
 }
 
 TEST(MatrixTextIO, matlabFormatFixedSizeChecks)

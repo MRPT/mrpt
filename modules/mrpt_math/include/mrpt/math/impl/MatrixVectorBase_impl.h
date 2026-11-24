@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cstdio>   // fopen(),...
 #include <fstream>  // ifstream
+#include <locale>
 #include <sstream>  // stringstream
 #include <stdexcept>
 #include <vector>
@@ -75,6 +76,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
     std::string rowStr = s.substr(i, end_row - i);
     std::replace(rowStr.begin(), rowStr.end(), ',', ' ');
     std::stringstream ss(rowStr);
+    ss.imbue(std::locale::classic());  // '.' as decimal point, whatever the global locale
     lstElements.clear();
     Scalar val;
     while (ss >> val)
@@ -166,6 +168,7 @@ std::string MatrixVectorBase<Scalar, Derived>::inMatlabFormat(
 {
   using Index = typename Derived::Index;
   std::stringstream s;
+  s.imbue(std::locale::classic());  // '.' as decimal point, whatever the global locale
   s << "[" << std::scientific;
   s.precision(static_cast<std::streamsize>(decimal_digits));
   for (Index i = 0; i < mvbDerived().rows(); i++)

@@ -292,6 +292,10 @@ mrpt_add_library(
   include the module's `config.h` (directly or indirectly) silently reads 0.
   In `config.h.in`, prefer `#cmakedefine01 VAR` to `${VAR}`: an unset
   variable gives an empty `#define`, which breaks `#if` in user code.
+* Text formats parsed or printed with locale-dependent calls (`strtod()`,
+  `printf("%g")`, `std::stod()`, `std::to_string(double)`, streams not
+  imbued with `std::locale::classic()`): GUI toolkits set the C locale from
+  the environment, which may use a decimal comma.
 * Plain `char` used as a signed byte: it is unsigned on ARM and s390x. Use
   `int8_t` / `signed char`.
 * Members read but never written; declared-but-never-defined functions.

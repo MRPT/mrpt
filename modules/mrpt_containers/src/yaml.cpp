@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cerrno>
+#include <clocale>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -37,6 +38,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
@@ -659,6 +661,47 @@ void printJSONNode(const yaml::node_t& n, std::ostream& o, unsigned int indent, 
 }
 }  // namespace
 
+std::string mrpt::containers::internal::formatDouble(const double val) { return toJSONNumber(val); }
+
+std::optional<double> mrpt::containers::internal::parseDouble(const std::string& s)
+{
+  // std::strtod() expects the decimal point of the current C locale: translate
+  // '.' into it, and reject text already using it (not a number in YAML/JSON).
+  const char* lcDecimalPoint = std::localeconv()->decimal_point;
+  const std::string_view dp = lcDecimalPoint != nullptr ? lcDecimalPoint : ".";
+  std::string localized;
+  const std::string* str = &s;
+  if (!dp.empty() && dp != ".")
+  {
+    if (s.find(dp) != std::string::npos)
+    {
+      return std::nullopt;
+    }
+    for (const char c : s)
+    {
+      if (c == '.')
+      {
+        localized += dp;
+      }
+      else
+      {
+        localized += c;
+      }
+    }
+    str = &localized;
+  }
+
+  char* end = nullptr;
+  errno = 0;
+  const double val = std::strtod(str->c_str(), &end);
+  // ERANGE is also set on underflow (e.g. subnormals): only reject overflow.
+  if (end == str->c_str() || *end != '\0' || (errno == ERANGE && std::isinf(val)))
+  {
+    return std::nullopt;
+  }
+  return val;
+}
+
 void yaml::printAsJSON(std::ostream& o, unsigned int indent) const
 {
   printJSONNode(*dereferenceProxy(), o, indent, 0);
@@ -1151,13 +1194,11 @@ bool yaml::internalPrintAsYAML(
         }
         else if constexpr (std::is_same_v<V, int64_t> || std::is_same_v<V, uint64_t>)
         {
-          o << val;
+          o << toJSONNumber(val);
         }
         else if constexpr (std::is_same_v<V, double>)
         {
-          // 17 significant digits are required to round-trip any IEEE-754
-          // double exactly; 16 is not always enough.
-          const std::string s = mrpt::format("%.17g", val);
+          const std::string s = internal::formatDouble(val);
           o << s;
           if (s.find('.') == std::string::npos && s.find('e') == std::string::npos &&
               s.find('E') == std::string::npos && s.find('n') == std::string::npos &&
@@ -1255,13 +1296,9 @@ yaml::scalar_t textToScalar(const std::string& s)
   // tag:yaml.org,2002:float
   if (!leadingZeroDigitRun && !s.empty())
   {
-    char* end = nullptr;
-    errno = 0;
-    const double dv = std::strtod(s.c_str(), &end);
-    // ERANGE is also set on underflow (e.g. subnormals): only reject overflow.
-    if (end != nullptr && end != s.c_str() && *end == '\0' && (errno != ERANGE || !std::isinf(dv)))
+    if (const auto dv = internal::parseDouble(s); dv.has_value())
     {
-      return yaml::scalar_t(dv);
+      return yaml::scalar_t(*dv);
     }
   }
 

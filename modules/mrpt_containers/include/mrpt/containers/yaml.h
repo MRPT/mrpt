@@ -1605,6 +1605,16 @@ T yaml::node_t::as() const
 
 namespace mrpt::containers::internal
 {
+/** Formats a double with 17 significant digits (exact round trip), always
+ * with '.' as decimal point, whatever the C or C++ global locale. */
+std::string formatDouble(double val);
+
+/** Parses all of `s` as a floating-point number like std::strtod(), but always
+ * with '.' as decimal point, whatever the current C locale (GUI toolkits often
+ * set one with a decimal comma). Returns std::nullopt if `s` is not a number,
+ * or if it overflows a double. */
+std::optional<double> parseDouble(const std::string& s);
+
 /** Helper: convert a scalar_t to its YAML text representation */
 inline std::string scalarToString(const mrpt::containers::yaml::scalar_t& s)
 {
@@ -1621,13 +1631,7 @@ inline std::string scalarToString(const mrpt::containers::yaml::scalar_t& s)
         else if constexpr (std::is_same_v<V, uint64_t>)
           return std::to_string(val);
         else if constexpr (std::is_same_v<V, double>)
-        {
-          // 17 significant digits are required to round-trip any IEEE-754
-          // double exactly; 16 is not always enough.
-          std::stringstream ss;
-          ss << mrpt::format("%.17g", val);
-          return ss.str();
-        }
+          return formatDouble(val);
         else if constexpr (std::is_same_v<V, std::string>)
           return val;
         else
@@ -1698,9 +1702,10 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
             return static_cast<T>(val);
           else if constexpr (std::is_same_v<V, std::string>)
           {
-            char* end = nullptr;
-            const double dv = std::strtod(val.c_str(), &end);
-            if (end && end != val.c_str() && *end == '\0') return static_cast<T>(dv);
+            if (const auto dv = parseDouble(val); dv.has_value())
+            {
+              return static_cast<T>(*dv);
+            }
             THROW_EXCEPTION_FMT("Cannot convert string '%s' to float", val.c_str());
           }
           THROW_EXCEPTION("Cannot convert this scalar type to float");
