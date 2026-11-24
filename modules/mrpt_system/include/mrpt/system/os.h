@@ -281,7 +281,11 @@ bool loadPluginModule(
 
 /** Unloads "plug-in" modules loaded with loadPluginModule().
  * \return true if module could be unloaded without errors.
- * \note Only unload a module once nothing uses the classes it registered.
+ * \note Unloading does not remove what the module registered in other
+ * registries (e.g. its RTTI classes or metric map types), which would then
+ * point to unmapped code. Do not unload a module that registered classes, or
+ * any other factory, unless nothing will use those entries again, including
+ * their destruction at program exit.
  */
 bool unloadPluginModule(
     const std::string& moduleFileName, mrpt::optional_ref<std::string> outErrorMsgs = std::nullopt);
@@ -298,7 +302,11 @@ bool loadPluginModules(
 
 /** Unloads "plug-in" modules loaded with loadPluginModules().
  * \return true if all modules could be unloaded without errors.
- * \note Only unload a module once nothing uses the classes it registered.
+ * \note Unloading does not remove what the module registered in other
+ * registries (e.g. its RTTI classes or metric map types), which would then
+ * point to unmapped code. Do not unload a module that registered classes, or
+ * any other factory, unless nothing will use those entries again, including
+ * their destruction at program exit.
  */
 bool unloadPluginModules(
     const std::string& moduleFileNames,
