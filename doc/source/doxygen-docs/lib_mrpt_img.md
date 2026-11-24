@@ -17,12 +17,14 @@ Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 ## Image handling
 
 The class mrpt::img::CImage is a portable image container supporting
-grayscale, RGB, and RGBA images in 8-bit depth. It provides loading/saving
-(via STB), pixel access, drawing primitives, resizing, and color conversion.
+grayscale, RGB, and RGBA images in 8-bit depth. It provides loading/saving,
+pixel access, drawing primitives, resizing, and color conversion.
 
 In MRPT 3.0, `CImage` no longer depends on OpenCV. All image I/O and
-processing is handled natively (STB for codecs, custom kernels for
-filtering and resampling).
+processing is handled natively (embedded STB codecs, custom kernels for
+filtering and resampling). JPEG images are decoded with libjpeg-turbo
+(faster) if it was found at build time, falling back to the embedded
+stb_image otherwise (see mrpt::img::CImage::hasLibJpegTurbo()).
 
 ## Camera models and distortion
 
