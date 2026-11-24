@@ -63,7 +63,7 @@ class CObservationGasSensors : public CObservation
     float temperature{0};
     /** True if the input to this chamber/enose is poluted air, False if
      * clean air */
-    bool isActive;
+    bool isActive{false};
   };
 
   /** One entry per e-nose on the robot */

@@ -72,8 +72,7 @@ class TOrientedBox_
   TOrientedBox_(const TOrientedBox_<T>& o) : m_pose(o.pose()), m_size(o.size()) {}
   TOrientedBox_<T>& operator=(const TOrientedBox_<T>& o)
   {
-    setPose(o.pose());
-    setSize(o.size());
+    set(o.pose(), o.size());
     return *this;
   }
 
@@ -103,6 +102,14 @@ class TOrientedBox_
   /** Changes the box size (local coordinates) */
   void setSize(const mrpt::math::TPoint3D_<T>& size)
   {
+    m_size = size;
+    m_vertices.reset();
+  }
+
+  /** Changes both the box center SE(3) pose and its size (local coordinates) */
+  void set(const mrpt::math::TPose3D& p, const mrpt::math::TPoint3D_<T>& size)
+  {
+    m_pose = p;
     m_size = size;
     m_vertices.reset();
   }
