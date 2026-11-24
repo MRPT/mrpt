@@ -364,10 +364,18 @@ int main(int argc, char** argv)
         "-\n");
 
     // Process arguments:
-    if (argc < 2)
+    const char* usage = "Usage: map-partition <file.simplemap> [nCut threshold 0-2]\n";
+    for (int i = 1; i < argc; i++)
     {
-      printf("Use: map-partition <file.simplemap> [nCut threshold 0-2]\n");
-      mrpt::system::pause();
+      if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h")
+      {
+        printf("%s", usage);
+        return 0;
+      }
+    }
+    if (argc < 2 || argc > 3)
+    {
+      fprintf(stderr, "%s", usage);
       return 1;
     }
 
@@ -384,11 +392,8 @@ int main(int argc, char** argv)
 
       if (err)
       {
-        printf(
-            "Use: map-partition <file.simplemap> [nCut threshold "
-            "0-2]\n");
-        printf("\n\n Invalid nCut threshold: '%s'\n", argv[2]);
-        mrpt::system::pause();
+        fprintf(stderr, "%s", usage);
+        fprintf(stderr, "Invalid nCut threshold: '%s'\n", argv[2]);
         return 1;
       }
     }
@@ -402,14 +407,12 @@ int main(int argc, char** argv)
     std::cerr << mrpt::exception_to_str(e) << "\n"
               << "Program finished for an exception!!"
               << "\n";
-    mrpt::system::pause();
     return 1;
   }
   catch (...)
   {
     std::cerr << "Untyped exception!!"
               << "\n";
-    mrpt::system::pause();
     return 1;
   }
 }

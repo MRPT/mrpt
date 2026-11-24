@@ -891,14 +891,24 @@ int main(int argc, char** argv)
         "-\n");
 
     // Process arguments:
-    if (argc < 2)
+    const char* usage = "Usage: ro-localization <config.ini>\n";
+    if (argc == 2 && (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h"))
     {
-      printf("Usage: %s <config.ini>\n\n", argv[0]);
-      // pause();
+      printf("%s", usage);
+      return 0;
+    }
+    if (argc != 2)
+    {
+      fprintf(stderr, "%s", usage);
       return 1;
     }
 
     iniFileName = argv[1];
+    if (!mrpt::system::fileExists(iniFileName))
+    {
+      fprintf(stderr, "Config file not found: '%s'\n", iniFileName.c_str());
+      return 1;
+    }
 
     iniFile = std::make_unique<mrpt::config::CConfigFile>(iniFileName);
 

@@ -102,6 +102,7 @@ class ICP_SLAM_App_Live : public ICP_SLAM_App_Base
  protected:
   void impl_initialize(int argc, const char** argv) override;
   std::string impl_get_usage() const override { return "icp-slam-live <config_file>"; }
+  int impl_max_argc() const override { return 2; }
 
   bool impl_get_next_observations(
       mrpt::obs::CActionCollection::Ptr& action,

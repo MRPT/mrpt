@@ -30,6 +30,11 @@ int main(int argc, char** argv)
   {
     mrpt::apps::KFSLAMApp app;
 
+    if (const auto exitCode = app.checkUsage(argc, argv); exitCode.has_value())
+    {
+      return *exitCode;
+    }
+
     app.initialize(argc, argv);
     app.run();
 
@@ -38,7 +43,6 @@ int main(int argc, char** argv)
   catch (const std::exception& e)
   {
     std::cerr << mrpt::exception_to_str(e);
-    mrpt::system::pause();
     return 1;
   }
 }
