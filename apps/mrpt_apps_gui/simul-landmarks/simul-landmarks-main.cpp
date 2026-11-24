@@ -14,6 +14,7 @@
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/config.h>  // MRPT_HAS_WXWIDGETS
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CLandmarksMap.h>
@@ -21,6 +22,7 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
@@ -436,6 +438,7 @@ int main(int argc, char** argv)
     // Optionally, display in 3D:
     if (show_in_3d && GT_path.rows() > 1)
     {
+#if MRPT_HAS_OPENGL && MRPT_HAS_WXWIDGETS
       mrpt::gui::CDisplayWindow3D win("Final simulation", 400, 300);
 
       mrpt::viz::Scene::Ptr& scene = win.get3DSceneAndLock();
@@ -486,6 +489,9 @@ int main(int argc, char** argv)
       std::cout << "Press any key or close the 3D window to exit."
                 << "\n";
       win.waitForKey();
+#else
+      std::cerr << "show_in_3d ignored: MRPT was built without GUI support.\n";
+#endif
     }
   }
   catch (const std::exception& e)
