@@ -20,6 +20,7 @@
 #include <mrpt/serialization/archiveFrom_std_vector.h>
 
 #include <cstdint>
+#include <cstring>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -217,6 +218,24 @@ TEST(CArchive, readAsAndWriteAs)
   EXPECT_EQ(widened, -5);
 
   EXPECT_EQ(a.ReadPOD<uint32_t>(), 77U);
+}
+
+// Files written by old versions may hold bytes other than 0/1 in bool fields:
+// they must read as a valid `true`, not as an invalid bool object.
+TEST(CArchive, boolFromAnyNonZeroByte)
+{
+  std::vector<uint8_t> v = {0, 1, 90, 255};
+  auto a = archiveFrom(v);
+
+  const std::vector<uint8_t> expected = {0, 1, 1, 1};
+  for (const auto e : expected)
+  {
+    bool b = false;
+    a >> b;
+    uint8_t raw = 0xAA;
+    std::memcpy(&raw, &b, 1);
+    EXPECT_EQ(raw, e);
+  }
 }
 
 TEST(CArchive, macroReadPOD)
