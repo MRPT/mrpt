@@ -14,16 +14,14 @@ Either download a Windows precompiled version, install the mrpt-apps Ubuntu pack
 
 Make sure the camera is properly working by running one of the tests, for example:
 
-  - Application `kinect-3d-view <page_app_kinect-3d-view.html>`_
   - Example: `hwdrivers_openni2_driver_demo <page_hwdrivers_openni2_driver_demo.html>`_
 
 Under GNU/Linux you may need root privileges (executing as `sudo`) to access the camera.
 To avoid that, install `51-kinect.rules` into `/etc/udev/rules.d/`.
 
-Calibrate your camera, using:
-
-  - `camera-calib <app_camera-calib.html>`_ for monocular cameras,
-  - `kinect-stereo-calib <page_app_kinect-stereo-calib.html>`_ for kinect-like RGBD cameras.
+Calibrate your camera with any standard tool (e.g. the ROS ``camera_calibration``
+package), and put the resulting intrinsic parameters in the sensor section of the
+``rawlog-grabber`` configuration file.
 
 Make sure you have enough free space in some disk partition with bandwidth enough.
 Prefer native filesystems, that is, e.g. do NOT grab into an NTFS partition from a GNU/Linux OS.
@@ -38,7 +36,7 @@ Grabbing
 -------------
 
 Prepare a configuration file for `rawlog-grabber <page_app_rawlog-grabber.html>`_. Start from this template:
-`[MRPT]/share/mrpt/config_files/rawlog-grabber/kinect.ini <https://github.com/MRPT/mrpt/blob/develop/share/mrpt/config_files/rawlog-grabber/kinect.ini>`_.
+`modules/mrpt_data/config_files/rawlog-grabber/kinect.ini <https://github.com/MRPT/mrpt/blob/develop/modules/mrpt_data/config_files/rawlog-grabber/kinect.ini>`_.
 
 Notice that with the default configuration, all data and images will be embedded into one big binary file.
 This is done to reduce the OS overhead of creating dozens of small files per second,

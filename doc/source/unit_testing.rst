@@ -45,5 +45,5 @@ CMake scripts take care of of recognizing all those source files that implement 
 (which are identified by filename suffix ``*_unittest.cpp``, as explained `here <tutorial-lib-layout.html>`_)
 and move them into special binary targets which are executed upon testing.
 One test target is created per mrpt module. 
-Take a look at any file named ``*_unittest.cpp`` for examples (e.g. `math/src/geometry_unittest.cpp <https://github.com/MRPT/mrpt/blob/develop/libs/math/src/geometry_unittest.cpp>`_)
+Take a look at any file named ``*_unittest.cpp`` for examples (e.g. `modules/mrpt_math/tests/geometry_unittest.cpp <https://github.com/MRPT/mrpt/blob/develop/modules/mrpt_math/tests/geometry_unittest.cpp>`_)
 

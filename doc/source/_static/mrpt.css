@@ -1,0 +1,80 @@
+/* MRPT docs: small additions on top of sphinx_rtd_theme */
+
+/* Wider content column (API tables and card grids need the room) */
+.wy-nav-content {
+  max-width: 1100px;
+}
+
+/* Sidebar logo */
+.wy-side-nav-search .wy-dropdown > a img.logo,
+.wy-side-nav-search > a img.logo {
+  max-width: 120px;
+  padding: 0;
+  margin-bottom: 4px;
+}
+
+/* Landing page hero */
+.mrpt-hero {
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+.mrpt-hero p.mrpt-tagline {
+  font-size: 1.25em;
+  margin: 0.2em 0 0.8em 0;
+}
+.mrpt-hero img {
+  width: 100%;
+  max-width: 960px;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+.mrpt-hero .sd-btn {
+  margin: 0.2em 0.3em;
+}
+
+/* Cards (apps gallery, landing page) */
+.sd-card.mrpt-app-card,
+.sd-card.mrpt-app-card-text,
+.sd-card.mrpt-feature-card {
+  transition: box-shadow 0.15s ease-in-out, transform 0.15s ease-in-out;
+}
+.sd-card.mrpt-app-card:hover,
+.sd-card.mrpt-app-card-text:hover,
+.sd-card.mrpt-feature-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+  transform: translateY(-2px);
+}
+.mrpt-app-card .sd-card-img-top {
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+  background: #2b2b2b;
+}
+.mrpt-app-card .sd-card-title,
+.mrpt-app-card-text .sd-card-title {
+  font-family: SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 1em;
+  margin-bottom: 0.3em;
+}
+.mrpt-app-card-text .sd-card-body {
+  padding: 0.6em 0.8em;
+}
+.mrpt-app-card .sd-card-text,
+.mrpt-app-card-text .sd-card-text,
+.mrpt-feature-card .sd-card-text {
+  font-size: 0.92em;
+  line-height: 1.4;
+}
+.mrpt-feature-card .sd-card-title {
+  font-size: 1.05em;
+}
+
+/* Screenshots inside app pages */
+img.mrpt-screenshot {
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  margin: 0.5em 0 1.5em 0;
+}
+.mrpt-hero p.mrpt-hero-buttons {
+  margin-top: 1.2em;
+}

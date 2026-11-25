@@ -80,10 +80,9 @@ Examples of usage
 ------------------------------
 
 -  For **2D alignment**, refer to the example:
-   `https://raw.github.com/MRPT/mrpt/master/mrpt_examples_cpp/icp/ <https://github.com/MRPT/mrpt/tree/master/mrpt_examples_cpp/slam_icp_simple_example>`__
--  For **`3D aligment <http://www.mrpt.org/3D-ICP_Example>`__** (full 6D
-   poses), see the example:
-   `https://raw.github.com/MRPT/mrpt/master/mrpt_examples_cpp/icp3D/ <https://github.com/MRPT/mrpt/tree/master/mrpt_examples_cpp/slam_icp_simple_example>`__
+   `slam_icp_simple_example <https://github.com/MRPT/mrpt/tree/develop/mrpt_examples_cpp/slam_icp_simple_example>`__
+-  For **3D alignment** (full 6D poses), see the example:
+   `slam_icp3d_simple_example <https://github.com/MRPT/mrpt/tree/develop/mrpt_examples_cpp/slam_icp3d_simple_example>`__
 
 Provided algorithms
 -------------------------------
