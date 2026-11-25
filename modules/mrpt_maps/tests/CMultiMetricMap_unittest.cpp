@@ -15,10 +15,14 @@
 #include <gtest/gtest.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/maps/CHeightGridMap2D.h>
+#include <mrpt/maps/CHeightGridMap2D_MRF.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CWirelessPowerGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/serialization/CArchive.h>
@@ -364,6 +368,34 @@ TEST(CMultiMetricMapTests, ComputeObservationLikelihoodWith3DGridLayer)
   mrpt::maps::CMultiMetricMap m;
   m.mapsList().push_back(grid2D);
   m.mapsList().push_back(mrpt::maps::COccupancyGridMap3D::Create());
+
+  const mrpt::poses::CPose3D pose(0.1, -0.05, 0, 0.02, 0, 0);
+  double lik = 0;
+  EXPECT_NO_THROW(lik = m.computeObservationLikelihood(scan1, pose));
+  EXPECT_NEAR(lik, grid2D->computeObservationLikelihood(scan1, pose), 1e-9);
+}
+
+// Layers without a likelihood model (height, gas and wifi grids) must not make
+// the likelihood of a multi-metric map throw, nor change it.
+TEST(CMultiMetricMapTests, ComputeObservationLikelihoodWithRandomFieldLayers)
+{
+  mrpt::obs::CObservation2DRangeScan scan1;
+  mrpt::obs::stock_observations::example2DRangeScan(scan1);
+
+  auto grid2D = mrpt::maps::COccupancyGridMap2D::Create();
+  grid2D->insertObservation(scan1);
+
+  mrpt::maps::CMultiMetricMap m;
+  m.mapsList().push_back(grid2D);
+  m.mapsList().push_back(mrpt::maps::CHeightGridMap2D::Create());
+  m.mapsList().push_back(mrpt::maps::CHeightGridMap2D_MRF::Create());
+  m.mapsList().push_back(mrpt::maps::CGasConcentrationGridMap2D::Create());
+  m.mapsList().push_back(mrpt::maps::CWirelessPowerGridMap2D::Create());
+
+  for (size_t i = 1; i < m.mapsList().size(); i++)
+  {
+    EXPECT_FALSE(m.mapsList()[i]->canComputeObservationLikelihood(scan1)) << "map #" << i;
+  }
 
   const mrpt::poses::CPose3D pose(0.1, -0.05, 0, 0.02, 0, 0);
   double lik = 0;

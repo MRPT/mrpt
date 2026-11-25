@@ -17,6 +17,7 @@
 #include <mrpt/io/CCompressedOutputStream.h>
 
 #include <cerrno>
+#include <cstdio>
 #include <cstring>  // strerror
 #include <fstream>
 
@@ -182,24 +183,24 @@ void CCompressedOutputStream::close()
   // Flush Zstd stream before closing
   if (m_impl->zstdStream && m_impl->rawFile)
   {
-    ZSTD_outBuffer output = {m_impl->zstdOutBuffer.data(), m_impl->zstdOutBuffer.size(), 0};
-
-    const size_t remaining = ZSTD_endStream(m_impl->zstdStream, &output);
-    if (output.pos > 0)
+    // Flush until ZSTD_endStream() reports nothing left, or an error (an error
+    // code is never 0, so it must end the loop too):
+    for (;;)
     {
-      fwrite(m_impl->zstdOutBuffer.data(), 1, output.pos, m_impl->rawFile);
-    }
-
-    // Continue flushing if needed
-    while (remaining > 0)
-    {
-      output.pos = 0;
-      const size_t r = ZSTD_endStream(m_impl->zstdStream, &output);
+      ZSTD_outBuffer output = {m_impl->zstdOutBuffer.data(), m_impl->zstdOutBuffer.size(), 0};
+      const size_t remaining = ZSTD_endStream(m_impl->zstdStream, &output);
       if (output.pos > 0)
       {
         fwrite(m_impl->zstdOutBuffer.data(), 1, output.pos, m_impl->rawFile);
       }
-      if (r == 0)
+      if (ZSTD_isError(remaining))
+      {
+        fprintf(
+            stderr, "[CCompressedOutputStream::close] Zstd error: %s\n",
+            ZSTD_getErrorName(remaining));
+        break;
+      }
+      if (remaining == 0)
       {
         break;
       }

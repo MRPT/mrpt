@@ -1768,10 +1768,24 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
           }
           else if constexpr (std::is_same_v<V, std::string>)
           {
+            // The whole string must be the number (trailing spaces allowed),
+            // so "12abc" is not read as 12:
+            const auto fullyParsed = [&val](const char* end)
+            {
+              if (end == nullptr || end == val.c_str())
+              {
+                return false;
+              }
+              while (*end == ' ' || *end == '\t')
+              {
+                ++end;
+              }
+              return *end == '\0';
+            };
             char* end = nullptr;
             errno = 0;
             const long long iv = std::strtoll(val.c_str(), &end, 0);
-            if (end != nullptr && end != val.c_str() && errno != ERANGE)
+            if (fullyParsed(end) && errno != ERANGE)
             {
               return checkedIntegerCast<T>(static_cast<int64_t>(iv));
             }
@@ -1780,10 +1794,15 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
             {
               errno = 0;
               const unsigned long long uv = std::strtoull(val.c_str(), &end, 0);
-              if (end != nullptr && end != val.c_str() && errno != ERANGE)
+              if (fullyParsed(end) && errno != ERANGE)
               {
                 return checkedIntegerCast<T>(static_cast<uint64_t>(uv));
               }
+            }
+            // Real numbers, truncated like numeric (non-string) values:
+            if (const auto dv = parseDouble(val); dv.has_value())
+            {
+              return checkedIntegerCast<T>(*dv);
             }
             THROW_EXCEPTION_FMT("Cannot convert string '%s' to integer", val.c_str());
           }

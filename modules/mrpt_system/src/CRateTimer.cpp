@@ -53,7 +53,8 @@ bool CRateTimer::sleep()
   for (;;)
   {
     ASSERT_GE_(ts.tv_sec, 0);
-    ASSERT_GT_(ts.tv_nsec, 0);
+    // tv_nsec is 0 for waits of a whole number of seconds:
+    ASSERT_GE_(ts.tv_nsec, 0);
     ASSERT_LE_(ts.tv_nsec, 999999999);
 
     int err = clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, &ts_remainer);

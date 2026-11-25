@@ -189,9 +189,14 @@ double CMultiMetricMap::internal_computeObservationLikelihood(
   MRPT_START
   double ret_log_lik = 0;
 
-  std::for_each(
-      m_maps.begin(), m_maps.end(),
-      [&](auto& ptr) { ret_log_lik += ptr->computeObservationLikelihood(obs, takenFrom); });
+  // Only maps able to evaluate this observation contribute:
+  for (const auto& ptr : m_maps)
+  {
+    if (ptr->canComputeObservationLikelihood(obs))
+    {
+      ret_log_lik += ptr->computeObservationLikelihood(obs, takenFrom);
+    }
+  }
   return ret_log_lik;
 
   MRPT_END

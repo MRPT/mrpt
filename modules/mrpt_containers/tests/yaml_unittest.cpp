@@ -1139,7 +1139,7 @@ MRPT_TEST(yaml, integerConversions)
     EXPECT_EQ(p["b1"].as<int>(), 12345);
     EXPECT_EQ(p["b2"].as<int>(), 12345);
     EXPECT_EQ(p["b3"].as<int>(), 12345);
-    EXPECT_EQ(p["b4"].as<int>(), 12345);
+    EXPECT_ANY_THROW((void)p["b4"].as<int>());  // trailing garbage
     EXPECT_ANY_THROW((void)p["b5_bad"].as<int>());
 
     p["c1"] = -12345;
@@ -2072,3 +2072,23 @@ TEST(yaml, numbersIgnoreDecimalCommaCLocale)
 }
 
 #endif  // MRPT_HAS_FYAML
+
+TEST(yaml, stringToIntegerRequiresWholeString)
+{
+  using mrpt::containers::yaml;
+  yaml p = yaml::Map();
+  p["a"] = std::string("12abc");
+  p["b"] = std::string("12 ");
+  p["c"] = std::string("0x10");
+  p["d"] = std::string("2.5");
+  p["e"] = std::string("abc");
+  p["f"] = std::string("1e3");
+
+  EXPECT_THROW((void)p["a"].as<int>(), std::exception);
+  EXPECT_EQ(p["b"].as<int>(), 12);
+  EXPECT_EQ(p["c"].as<int>(), 16);
+  // Real numbers in strings truncate like numeric values do:
+  EXPECT_EQ(p["d"].as<int>(), 2);
+  EXPECT_THROW((void)p["e"].as<int>(), std::exception);
+  EXPECT_EQ(p["f"].as<uint16_t>(), 1000);
+}
