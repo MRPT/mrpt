@@ -689,6 +689,15 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       {
         THROW_EXCEPTION("Error decoding JPEG from legacy v1 CImage serialization");
       }
+      if (channels == 2)
+      {
+        // Gray + alpha (the decoder also takes e.g. PNG): keep the gray values
+        for (size_t i = 0; i < static_cast<size_t>(w) * static_cast<size_t>(h); i++)
+        {
+          decoded[i] = decoded[2 * i];
+        }
+        channels = 1;
+      }
 
       resize(w, h, channels == 1 ? CH_GRAY : (channels >= 4 ? CH_RGBA : CH_RGB));
       std::memcpy(m_state->image_data, decoded, m_state->image_buffer_size_bytes());
