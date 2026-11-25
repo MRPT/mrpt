@@ -137,14 +137,22 @@ class COccupancyGridMap2D :
   }
 
   /** Change the contents [0,1] of a cell, given its index */
-  void setCell_nocheck(int x, int y, float value) { m_map[x + y * m_size_x] = p2l(value); }
+  void setCell_nocheck(int x, int y, float value)
+  {
+    m_map[x + y * m_size_x] = p2l(value);
+    m_likelihoodCacheOutDated = true;
+  }
 
   /** Read the real valued [0,1] contents of a cell, given its index */
   float getCell_nocheck(int x, int y) const { return l2p(m_map[x + y * m_size_x]); }
   /** Changes a cell by its absolute index (Do not use it normally) */
   void setRawCell(unsigned int cellIndex, cellType b)
   {
-    if (cellIndex < m_size_x * m_size_y) m_map[cellIndex] = b;
+    if (cellIndex < m_size_x * m_size_y)
+    {
+      m_map[cellIndex] = b;
+      m_likelihoodCacheOutDated = true;
+    }
   }
 
   /** One of the methods that can be selected for implementing
@@ -341,9 +349,11 @@ class COccupancyGridMap2D :
   {
     // The x> comparison implicitly holds if x<0
     if (static_cast<unsigned int>(x) >= m_size_x || static_cast<unsigned int>(y) >= m_size_y)
+    {
       return;
-    else
-      m_map[x + y * m_size_x] = p2l(value);
+    }
+    m_map[x + y * m_size_x] = p2l(value);
+    m_likelihoodCacheOutDated = true;
   }
 
   /** Read the real valued [0,1] contents of a cell, given its index */
@@ -927,7 +937,9 @@ class COccupancyGridMap2D :
 
   /** Computes the log-likelihood of a set of points, given the current grid
    * map as reference: the sum of the per-point log-likelihoods, or the log of
-   * their mean if LF_alternateAverageMethod is set.
+   * their mean if LF_alternateAverageMethod is set. The likelihood of each
+   * point is bilinearly interpolated between the centers of the 4 cells around
+   * it, so it varies continuously with the point position.
    * \param pm The points map
    * \param relativePose The relative pose of the points map in this map's
    * coordinates, or std::nullopt for (0,0,0).
