@@ -476,6 +476,26 @@ TEST(COccupancyGridMap2DTests, InsertSimpleRaysMarksOccupiedAtEndpoint)
   EXPECT_LT(grid.getPos(3.0, 0), 0.49f);
 }
 
+// A sensor far outside of the grid: the grid must grow to contain the whole
+// rays, not only their endpoints.
+TEST(COccupancyGridMap2DTests, InsertScanFromOutsideTheGrid)
+{
+  for (const bool widened : {false, true})
+  {
+    COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+    grid.insertionOptions.wideningBeamsWithDistance = widened;
+    grid.insertionOptions.maxDistanceInsertion = 40.0f;
+
+    const auto scan = makeSimpleScan(61, 26.0f);
+    const CPose3D robotPose(-30.0, 0.0, 0.0, 0, 0, 0);  // far out of the grid
+    EXPECT_TRUE(grid.insertObservation(scan, robotPose));
+
+    EXPECT_LE(grid.getXMin(), -30.0f) << "widened=" << widened;
+    EXPECT_GT(grid.getPos(-29.0, 0), 0.51f) << "widened=" << widened;  // free
+    EXPECT_LT(grid.getPos(-4.0, 0), 0.49f) << "widened=" << widened;   // hit
+  }
+}
+
 TEST(COccupancyGridMap2DTests, InsertWidenedRaysMarksOccupiedAtEndpoint)
 {
   COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
