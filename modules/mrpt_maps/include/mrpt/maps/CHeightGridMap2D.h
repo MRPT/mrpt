@@ -177,6 +177,12 @@ class CHeightGridMap2D :
       const std::optional<const mrpt::poses::CPose3D>& robotPose) override;
   double internal_computeObservationLikelihood(
       const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom) const override;
+  /** Observation likelihoods are not implemented for this map type. */
+  bool internal_canComputeObservationLikelihood(
+      [[maybe_unused]] const mrpt::obs::CObservation& obs) const override
+  {
+    return false;
+  }
 
   MAP_DEFINITION_START(CHeightGridMap2D)
   /** See CHeightGridMap2D::CHeightGridMap2D */
