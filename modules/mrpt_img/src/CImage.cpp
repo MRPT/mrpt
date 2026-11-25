@@ -662,6 +662,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
         }
 
         resize(width, height, nChannels >= 4 ? CH_RGBA : CH_RGB);
+        ASSERT_GE_(static_cast<size_t>(imgLength), m_state->image_buffer_size_bytes());
 
         // Swap R and B channels
         loadFromMemoryBuffer(

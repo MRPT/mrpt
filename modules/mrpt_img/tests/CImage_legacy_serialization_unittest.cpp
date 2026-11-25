@@ -126,6 +126,22 @@ TEST(CImageLegacySerialization, Version0ColorSwapsRedBlue)
   EXPECT_EQ(img.ptr<uint8_t>(1, 0)[0], 6);
 }
 
+// v0 color, with less pixel data than its dimensions require: must throw, not
+// read past the end of the buffer.
+TEST(CImageLegacySerialization, Version0ColorWithTooFewBytesThrows)
+{
+  CMemoryStream buf;
+  writeLegacyObjectFrame(
+      buf, "mrpt::img::CImage", 0,
+      [&](mrpt::serialization::CArchive& arch)
+      {
+        arch << uint32_t(8) << uint32_t(8) << uint32_t(3) << uint8_t(1) << uint32_t(4);
+        const uint8_t bgr[4] = {1, 2, 3, 4};
+        arch.WriteBuffer(bgr, sizeof(bgr));
+      });
+  EXPECT_THROW(readBack(buf), std::exception);
+}
+
 // v1: the whole image as a JPEG blob.
 TEST(CImageLegacySerialization, Version1Jpeg)
 {
