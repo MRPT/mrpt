@@ -391,6 +391,21 @@ TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldThrunContinuousWithinCel
   EXPECT_NEAR(likAt(border - 1e-4), likAt(border + 1e-4), 1e-3);
 }
 
+// Editing cells must also update the cached likelihood field.
+TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldThrunCacheUpdatedBySetCell)
+{
+  COccupancyGridMap2D grid(-2.0f, 2.0f, -2.0f, 2.0f, 0.1f);
+  grid.fill(0.99f);
+  grid.likelihoodOptions.LF_maxCorrsDistance = 1.0f;
+
+  CSimplePointsMap pts;
+  pts.insertPoint(grid.idx2x(20), grid.idx2y(20), 0);
+  const double before = grid.computeLikelihoodField_Thrun(pts);
+
+  grid.setCell(20, 20, 0.01f);
+  EXPECT_GT(grid.computeLikelihoodField_Thrun(pts), before + 0.1);
+}
+
 // The Thrun likelihood field uses exp(-0.5*d^2/sigma^2) of the distance to the
 // closest occupied cell (with LF_useSquareDist=false).
 TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldThrunGaussianOfDistance)
