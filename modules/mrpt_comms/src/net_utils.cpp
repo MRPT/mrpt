@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <cstring>
 #include <future>
+#include <memory>
 #include <thread>
 
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
@@ -409,6 +410,52 @@ http_errorcode mrpt::comms::net::http_get(
  *
  * \return true on success, false on timeout or other error.
  */
+namespace
+{
+// Blocking DNS lookup of an IPv4 address. Returns an empty string on error.
+std::string resolveIPv4(const std::string& server_name)
+{
+  std::string dns_result;
+#ifdef _WIN32
+  // Init the WinSock Library:
+  WSADATA wsaData;
+  if (WSAStartup(MAKEWORD(2, 0), &wsaData))
+  {
+    std::cerr << "[DNS_resolve_async] Error calling WSAStartup";
+    return {};
+  }
+  // gethostbyname() is thread-safe in Windows (per-thread storage):
+  hostent* he = gethostbyname(server_name.c_str());
+  if (he)
+  {
+    struct in_addr ADDR;
+    std::memcpy(&ADDR, he->h_addr, sizeof(ADDR));
+    dns_result = std::string(inet_ntoa(ADDR));
+  }
+  WSACleanup();
+#else
+  // getaddrinfo() is thread-safe, unlike gethostbyname():
+  addrinfo hints{};
+  hints.ai_family = AF_INET;
+  addrinfo* res = nullptr;
+  if (0 == getaddrinfo(server_name.c_str(), nullptr, &hints, &res) && res != nullptr)
+  {
+    char buf[INET_ADDRSTRLEN] = {0};
+    const auto* addr = reinterpret_cast<const sockaddr_in*>(res->ai_addr);
+    if (inet_ntop(AF_INET, &addr->sin_addr, buf, sizeof(buf)) != nullptr)
+    {
+      dns_result = buf;
+    }
+  }
+  if (res)
+  {
+    freeaddrinfo(res);
+  }
+#endif
+  return dns_result;
+}
+}  // namespace
+
 bool net::DNS_resolve_async(
     const std::string& server_name, std::string& out_ip, const unsigned int timeout_ms)
 {
@@ -420,66 +467,21 @@ bool net::DNS_resolve_async(
     return true;
   }
 
-  // Solve DNS --------------
-  // It seems that the only reliable way of *with a timeout* is to launch a
-  // separate thread.
+  // Resolve in a detached thread, so a timeout does not wait for it: a
+  // std::async future would block in its destructor until the lookup ends.
+  auto promise = std::make_shared<std::promise<std::string>>();
+  std::future<std::string> dns_result_fut = promise->get_future();
+  std::thread([promise, server_name]() { promise->set_value(resolveIPv4(server_name)); }).detach();
 
-  std::future<std::string> dns_result_fut = std::async(
-      std::launch::async,
-      [&]()
-      {
-// Windows-specific stuff:
-#ifdef _WIN32
-        {
-          // Init the WinSock Library:
-          WORD wVersionRequested = MAKEWORD(2, 0);
-          WSADATA wsaData;
-          if (WSAStartup(wVersionRequested, &wsaData))
-          {
-            std::cerr << "thread_DNS_solver_async: Error calling WSAStartup";
-            return std::string();
-          }
-        }
-#endif
-
-        // Do the DNS lookup:
-        std::string dns_result;
-
-        hostent* he = gethostbyname(server_name.c_str());
-        if (!he)
-        {
-          dns_result.clear();  // empty string -> error.
-        }
-        else
-        {
-          struct in_addr ADDR;
-          std::memcpy(&ADDR, he->h_addr,
-                      sizeof(ADDR));  // Was: *((struct in_addr *)he->h_addr);
-          // Convert address to text:
-          dns_result = string(inet_ntoa(ADDR));
-        }
-
-#ifdef _WIN32
-        WSACleanup();
-#endif
-        return dns_result;
-      });
-
-  auto status = dns_result_fut.wait_for(std::chrono::milliseconds(timeout_ms));
-
-  if (status == std::future_status::ready)
+  if (dns_result_fut.wait_for(std::chrono::milliseconds(timeout_ms)) == std::future_status::ready)
   {
     // Done: Anyway, it can still be an error result:
     out_ip = dns_result_fut.get();
     return !out_ip.empty();
   }
-  else
-  {
-    // Timeout:
-    out_ip.clear();
-
-    return false;
-  }
+  // Timeout:
+  out_ip.clear();
+  return false;
 }
 
 /** Returns a description of the last Sockets error */

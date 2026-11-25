@@ -304,6 +304,13 @@ TEST(net_utils, dnsResolveOfNumericAddressIsImmediate)
   EXPECT_EQ(ip, "127.0.0.1");
 }
 
+TEST(net_utils, dnsResolveOfLocalhost)
+{
+  std::string ip;
+  EXPECT_TRUE(net::DNS_resolve_async("localhost", ip, 3000));
+  EXPECT_EQ(ip, "127.0.0.1");
+}
+
 TEST(net_utils, dnsResolveOfUnknownHostFails)
 {
   // ".invalid" is reserved by RFC 2606 and must never resolve:
