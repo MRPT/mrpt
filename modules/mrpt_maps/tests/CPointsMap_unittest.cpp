@@ -1033,6 +1033,28 @@ TEST(CSimplePointsMapTests, boundingBoxNonEmptyMap)
   EXPECT_FLOAT_EQ(bb.max.z, 2.0f);
 }
 
+TEST(CSimplePointsMapTests, boundingBoxOfNegativeCoordinates)
+{
+  // Sizes below and above the 4-point packets of the vectorized path:
+  for (const size_t n : {size_t(1), size_t(3), size_t(4), size_t(9)})
+  {
+    CSimplePointsMap pts;
+    for (size_t i = 0; i < n; i++)
+    {
+      const auto k = static_cast<float>(i);
+      pts.insertPoint(-1.0f - k, -10.0f - k, -1.5f);
+    }
+    const auto bb = pts.boundingBox();
+    const auto nf = static_cast<float>(n);
+    EXPECT_FLOAT_EQ(bb.min.x, -nf) << "n=" << n;
+    EXPECT_FLOAT_EQ(bb.max.x, -1.0f) << "n=" << n;
+    EXPECT_FLOAT_EQ(bb.min.y, -9.0f - nf) << "n=" << n;
+    EXPECT_FLOAT_EQ(bb.max.y, -10.0f) << "n=" << n;
+    EXPECT_FLOAT_EQ(bb.min.z, -1.5f) << "n=" << n;
+    EXPECT_FLOAT_EQ(bb.max.z, -1.5f) << "n=" << n;
+  }
+}
+
 // ----------------------------------------------------------------------
 // Tests for extractCylinder() and extractPoints().
 // ----------------------------------------------------------------------
