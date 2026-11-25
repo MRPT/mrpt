@@ -212,8 +212,9 @@ class CPoseInterpolatorBase
 
   /** Filters by averaging one of the components of the pose data within the
    * interpolator. The width of the filter is set by the number of samples.
-   * \param component	[IN]	The index of the component to filter: 0 (x),
-   * 1 (y), 2 (z), 3 (yaw), 4 (pitch) or 5 (roll)
+   * \param component	[IN]	The index of the component to filter. For 3D
+   * poses: 0 (x), 1 (y), 2 (z), 3 (yaw), 4 (pitch) or 5 (roll). For 2D poses:
+   * 0 (x), 1 (y) or 2 (phi).
    * \param samples		[IN]	The width of the average filter.
    */
   void filter(unsigned int component, unsigned int samples);

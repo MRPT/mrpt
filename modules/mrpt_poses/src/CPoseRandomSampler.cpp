@@ -22,6 +22,7 @@
 #include <mrpt/random.h>
 
 #include <Eigen/Dense>
+#include <algorithm>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -115,6 +116,12 @@ void CPoseRandomSampler::setPosePDF(const CPosePDF& pdf)
 
     std::vector<double> eigVals;
     cov.eig_symmetric(m_fastdraw_gauss_Z3, eigVals);
+    // Round-off may give tiny negative eigenvalues for (semi)singular
+    // covariances, which would give NaN samples:
+    for (auto& v : eigVals)
+    {
+      v = std::max(v, 0.0);
+    }
 
     // Scale eigenvectors with eigenvalues:
     mrpt::math::CMatrixDouble33 D;
@@ -155,12 +162,16 @@ void CPoseRandomSampler::setPosePDF(const CPose3DPDF& pdf)
 
     std::vector<double> eigVals;
     cov.eig_symmetric(m_fastdraw_gauss_Z6, eigVals);
+    // Round-off may give tiny negative eigenvalues for (semi)singular
+    // covariances, which would give NaN samples:
+    for (auto& v : eigVals)
+    {
+      v = std::max(v, 0.0);
+    }
 
     // Scale eigenvectors with eigenvalues:
     mrpt::math::CMatrixDouble66 D;
     D.setDiagonal(eigVals);
-
-    // Scale eigenvectors with eigenvalues:
     D = D.asEigen().array().sqrt().matrix();
     m_fastdraw_gauss_Z6.matProductOf_AB(m_fastdraw_gauss_Z6, D);
   }
