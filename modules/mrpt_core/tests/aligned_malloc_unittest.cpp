@@ -15,6 +15,10 @@
 #include <gtest/gtest.h>
 #include <mrpt/core/aligned_allocator.h>
 
+#include <limits>
+#include <new>
+#include <vector>
+
 template <std::size_t alignment, typename T, typename = std::enable_if_t<std::is_pointer<T>::value>>
 bool my_is_aligned(T ptr)
 {
@@ -56,4 +60,16 @@ TEST(aligned_allocator, aligned_calloc)
   }
 
   mrpt::aligned_free(p);
+}
+
+// A failed allocation must throw (as std::allocator does), not return nullptr
+// for the container to write into:
+TEST(aligned_allocator, failedAllocationThrows)
+{
+  std::vector<float, mrpt::aligned_allocator_cpp11<float>> v;
+  EXPECT_ANY_THROW(v.resize(v.max_size()));
+  EXPECT_TRUE(v.empty());
+
+  mrpt::aligned_allocator_cpp11<double> alloc;
+  EXPECT_THROW((void)alloc.allocate(std::numeric_limits<size_t>::max() / 4), std::bad_alloc);
 }
