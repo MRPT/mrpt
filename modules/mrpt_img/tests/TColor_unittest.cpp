@@ -161,3 +161,25 @@ TEST(TColorf, BinaryStreamingRoundTrip)
 
   EXPECT_EQ(f, f2);
 }
+
+// TColorf is packed, so a member like this one is not 4-byte aligned: streaming
+// it must not bind references to its (misaligned) float fields.
+TEST(TColorf, BinaryStreamingOfMisalignedMember)
+{
+  struct Holder
+  {
+    uint8_t flag = 0;
+    TColorf color;
+  };
+  Holder a;
+  a.color = TColorf(0.1f, 0.2f, 0.3f, 0.4f);
+
+  mrpt::io::CMemoryStream buf;
+  auto arch = mrpt::serialization::archiveFrom(buf);
+  arch << a.color;
+
+  buf.Seek(0);
+  Holder b;
+  arch >> b.color;
+  EXPECT_EQ(a.color, b.color);
+}
