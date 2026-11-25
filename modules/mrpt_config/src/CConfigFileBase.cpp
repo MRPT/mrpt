@@ -19,7 +19,10 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 
+#include <clocale>
 #include <cmath>  // abs()
+#include <cstdlib>
+#include <cstring>
 
 using namespace std;
 using namespace mrpt::config;
@@ -30,6 +33,60 @@ static int MRPT_SAVE_NAME_PADDING = 50;
 static int MRPT_SAVE_VALUE_PADDING = 20;
 int mrpt::config::MRPT_SAVE_NAME_PADDING() { return ::MRPT_SAVE_NAME_PADDING; }
 int mrpt::config::MRPT_SAVE_VALUE_PADDING() { return ::MRPT_SAVE_VALUE_PADDING; }
+
+double mrpt::config::internal::parseDoubleClassic(const std::string& s, bool* ok)
+{
+  // std::strtod() expects the decimal point of the current C locale, so
+  // translate '.' into it:
+  const char* dp = std::localeconv()->decimal_point;
+  std::string localized;
+  const std::string* str = &s;
+  if (dp != nullptr && std::strcmp(dp, ".") != 0 && s.find('.') != std::string::npos)
+  {
+    for (const char c : s)
+    {
+      if (c == '.')
+      {
+        localized += dp;
+      }
+      else
+      {
+        localized += c;
+      }
+    }
+    str = &localized;
+  }
+  char* end = nullptr;
+  const double val = std::strtod(str->c_str(), &end);
+  if (ok != nullptr)
+  {
+    *ok = (end != str->c_str());
+  }
+  return val;
+}
+
+std::string mrpt::config::internal::toClassicDecimalPoint(std::string s)
+{
+  const char* dp = std::localeconv()->decimal_point;
+  if (dp != nullptr && std::strcmp(dp, ".") != 0)
+  {
+    const std::string sdp(dp);
+    for (size_t pos = s.find(sdp); pos != std::string::npos; pos = s.find(sdp, pos + 1))
+    {
+      s.replace(pos, sdp.size(), ".");
+    }
+  }
+  return s;
+}
+
+namespace
+{
+/** Like mrpt::format() for one double, but always with '.' as decimal point. */
+std::string formatDoubleClassic(const char* fmt, double value)
+{
+  return mrpt::config::internal::toClassicDecimalPoint(mrpt::format(fmt, value));
+}
+}  // namespace
 
 CConfigFileBase::~CConfigFileBase() = default;
 void CConfigFileBase::write(
@@ -42,7 +99,7 @@ void CConfigFileBase::write(
 {
   writeString(
       section, name,
-      mrpt::format(
+      formatDoubleClassic(
           ((std::abs(value) > 1e-4 && std::abs(value) < 1e4) || value == .0) ? "%f" : "%e", value),
       name_padding_width, value_padding_width, comment);
 }
@@ -56,7 +113,7 @@ void CConfigFileBase::write(
 {
   writeString(
       section, name,
-      mrpt::format(
+      formatDoubleClassic(
           ((std::abs(value) > 1e-4f && std::abs(value) < 1e4f) || value == .0f) ? "%f" : "%e",
           static_cast<double>(value)),
       name_padding_width, value_padding_width, comment);
@@ -111,8 +168,8 @@ double CConfigFileBase::read_double(
     double defaultValue,
     bool failIfNotFound) const
 {
-  return atof(
-      readString(section, name, mrpt::format("%.16e", defaultValue), failIfNotFound).c_str());
+  return internal::parseDoubleClassic(
+      readString(section, name, formatDoubleClassic("%.16e", defaultValue), failIfNotFound));
 }
 
 /*---------------------------------------------------------------
@@ -124,10 +181,9 @@ float CConfigFileBase::read_float(
     float defaultValue,
     bool failIfNotFound) const
 {
-  return static_cast<float>(atof(
-      readString(
-          section, name, mrpt::format("%.10e", static_cast<double>(defaultValue)), failIfNotFound)
-          .c_str()));
+  return static_cast<float>(internal::parseDoubleClassic(readString(
+      section, name, formatDoubleClassic("%.10e", static_cast<double>(defaultValue)),
+      failIfNotFound)));
 }
 
 /*---------------------------------------------------------------
