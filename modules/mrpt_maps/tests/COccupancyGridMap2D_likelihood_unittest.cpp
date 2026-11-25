@@ -354,8 +354,41 @@ TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldThrunLastColumn)
   CSimplePointsMap pInner;
   pInner.insertPoint(grid.idx2x(last - 1), grid.idx2y(25), 0);
 
+  // (Not exact: float cell centers give tiny interpolation weights to the
+  // neighbor cells)
   EXPECT_NEAR(
-      grid.computeLikelihoodField_Thrun(pLast), grid.computeLikelihoodField_Thrun(pInner), 1e-9);
+      grid.computeLikelihoodField_Thrun(pLast), grid.computeLikelihoodField_Thrun(pInner), 1e-6);
+}
+
+// The Thrun likelihood field varies continuously with the point position, also
+// within a cell: it must not be constant inside a cell nor jump at its borders.
+TEST(COccupancyGridMap2DLikelihoodTests, LikelihoodFieldThrunContinuousWithinCells)
+{
+  const float res = 0.1f;
+  COccupancyGridMap2D grid(-2.0f, 2.0f, -2.0f, 2.0f, res);
+  grid.fill(0.99f);
+  grid.setCell(30, 20, 0.01f);
+  grid.likelihoodOptions.LF_maxCorrsDistance = 1.0f;
+
+  const auto likAt = [&](double x)
+  {
+    CSimplePointsMap pts;
+    pts.insertPoint(static_cast<float>(x), grid.idx2y(20), 0);
+    return grid.computeLikelihoodField_Thrun(pts);
+  };
+
+  // Approaching the occupied cell, from 4 cells away, in steps of 1/5 cell:
+  double prev = -std::numeric_limits<double>::infinity();
+  for (int k = 0; k <= 20; k++)
+  {
+    const double lik = likAt(grid.idx2x(26) + k * 0.2 * res);
+    EXPECT_GT(lik, prev) << "k=" << k;
+    prev = lik;
+  }
+
+  // No jump across the border between two cells:
+  const double border = grid.getXMin() + 28 * res;
+  EXPECT_NEAR(likAt(border - 1e-4), likAt(border + 1e-4), 1e-3);
 }
 
 // The Thrun likelihood field uses exp(-0.5*d^2/sigma^2) of the distance to the

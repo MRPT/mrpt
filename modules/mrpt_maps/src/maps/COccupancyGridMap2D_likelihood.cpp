@@ -569,6 +569,84 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 
   if (N < 10) decimation = 1;
 
+  // Likelihood at the center of cell (cx,cy), from the cache or computed now:
+  const auto cellLikelihood = [&](int cx, int cy) -> double
+  {
+    // Tip: Comparison cx<0 is implicit in (unsigned)(x)>size...
+    if (static_cast<unsigned>(cx) >= m_size_x || static_cast<unsigned>(cy) >= m_size_y)
+    {
+      // Outside of the map: the likelihood for the max. correspondence
+      // distance:
+      return minimumLik;
+    }
+
+    double lik = LIK_LF_CACHE_INVALID;
+    if (likelihoodOptions.enableLikelihoodCache)
+    {
+      lik = precomputedCache[cx + cy * m_size_x].load(std::memory_order_relaxed);
+    }
+    if (likelihoodOptions.enableLikelihoodCache && lik != LIK_LF_CACHE_INVALID)
+    {
+      return lik;
+    }
+
+    // Find the closest occupied cell in a certain range, given by K:
+    const int xx1 = std::max<int>(0, cx - K);
+    const int xx2 = std::min<int>(size_x_1, cx + K);
+    const int yy1 = std::max<int>(0, cy - K);
+    const int yy2 = std::min<int>(size_y_1, cy + K);
+
+    // Optimized code: this part will be invoked a *lot* of times:
+    float occupiedMinDist;
+    {
+      // Initial pointer position
+      const cellType* mapPtr = &m_map[xx1 + yy1 * m_size_x];
+      unsigned incrAfterRow = m_size_x - static_cast<unsigned>((xx2 - xx1) + 1);
+
+      signed int Ax0 = 10 * (xx1 - cx);
+      signed int Ay = 10 * (yy1 - cy);
+
+      unsigned int occupiedMinDistInt =
+          static_cast<unsigned int>(mrpt::round(maxCorrDist_sq * constDist2DiscrUnits));
+
+      for (int yy = yy1; yy <= yy2; yy++)
+      {
+        unsigned int Ay2 = square(static_cast<unsigned int>(Ay));  // Square is faster
+        // with unsigned.
+        signed short Ax = static_cast<signed short>(Ax0);
+        cellType cell;
+
+        for (int xx = xx1; xx <= xx2; xx++)
+        {
+          if ((cell = *mapPtr++) < thresholdCellValue)
+          {
+            unsigned int d = square(static_cast<unsigned int>(Ax)) + Ay2;
+            keep_min(occupiedMinDistInt, d);
+          }
+          Ax += 10;
+        }
+        // Go to (xx1,yy++)
+        mapPtr += incrAfterRow;
+        Ay += 10;
+      }
+
+      occupiedMinDist = static_cast<float>(occupiedMinDistInt * constDist2DiscrUnits_INV);
+    }
+
+    if (likelihoodOptions.LF_useSquareDist)
+    {
+      occupiedMinDist *= occupiedMinDist;
+    }
+
+    lik = zRandomTerm + zHit * exp(Q * occupiedMinDist);
+
+    if (likelihoodOptions.enableLikelihoodCache)
+    {
+      precomputedCache[cx + cy * m_size_x].store(lik, std::memory_order_relaxed);
+    }
+    return lik;
+  };
+
   TPoint2D pointLocal;
   TPoint2D pointGlobal;
 
@@ -593,83 +671,18 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
       pm.getPoint(j, pointGlobal);
     }
 
-    // Point to cell indixes
-    int cx = x2idx(pointGlobal.x);
-    int cy = y2idx(pointGlobal.y);
+    // Bilinear interpolation between the likelihoods at the centers of the 4
+    // cells around the point, so the likelihood varies continuously with the
+    // point position instead of being constant within each cell:
+    const double fx = (pointGlobal.x - m_xMin) / _resolution - 0.5;
+    const double fy = (pointGlobal.y - m_yMin) / _resolution - 0.5;
+    const int cx = static_cast<int>(std::floor(fx));
+    const int cy = static_cast<int>(std::floor(fy));
+    const double tx = fx - cx;
+    const double ty = fy - cy;
 
-    // Precomputed table:
-    // Tip: Comparison cx<0 is implicit in (unsigned)(x)>size...
-    if (static_cast<unsigned>(cx) >= m_size_x || static_cast<unsigned>(cy) >= m_size_y)
-    {
-      // We are outside of the map: Assign the likelihood for the max.
-      // correspondence distance:
-      thisLik = minimumLik;
-    }
-    else
-    {
-      // We are into the map limits:
-      if (likelihoodOptions.enableLikelihoodCache)
-      {
-        thisLik = precomputedCache[cx + cy * m_size_x].load(std::memory_order_relaxed);
-      }
-
-      if (!likelihoodOptions.enableLikelihoodCache || thisLik == LIK_LF_CACHE_INVALID)
-      {
-        // Compute now:
-        // -------------
-        // Find the closest occupied cell in a certain range, given by
-        // K:
-        const int xx1 = std::max<int>(0, cx - K);
-        const int xx2 = std::min<int>(size_x_1, cx + K);
-        const int yy1 = std::max<int>(0, cy - K);
-        const int yy2 = std::min<int>(size_y_1, cy + K);
-
-        // Optimized code: this part will be invoked a *lot* of times:
-        float occupiedMinDist;
-        {
-          // Initial pointer position
-          const cellType* mapPtr = &m_map[xx1 + yy1 * m_size_x];
-          unsigned incrAfterRow = m_size_x - static_cast<unsigned>((xx2 - xx1) + 1);
-
-          signed int Ax0 = 10 * (xx1 - cx);
-          signed int Ay = 10 * (yy1 - cy);
-
-          unsigned int occupiedMinDistInt =
-              static_cast<unsigned int>(mrpt::round(maxCorrDist_sq * constDist2DiscrUnits));
-
-          for (int yy = yy1; yy <= yy2; yy++)
-          {
-            unsigned int Ay2 = square(static_cast<unsigned int>(Ay));  // Square is faster
-            // with unsigned.
-            signed short Ax = static_cast<signed short>(Ax0);
-            cellType cell;
-
-            for (int xx = xx1; xx <= xx2; xx++)
-            {
-              if ((cell = *mapPtr++) < thresholdCellValue)
-              {
-                unsigned int d = square(static_cast<unsigned int>(Ax)) + Ay2;
-                keep_min(occupiedMinDistInt, d);
-              }
-              Ax += 10;
-            }
-            // Go to (xx1,yy++)
-            mapPtr += incrAfterRow;
-            Ay += 10;
-          }
-
-          occupiedMinDist = static_cast<float>(occupiedMinDistInt * constDist2DiscrUnits_INV);
-        }
-
-        if (likelihoodOptions.LF_useSquareDist) occupiedMinDist *= occupiedMinDist;
-
-        thisLik = zRandomTerm + zHit * exp(Q * occupiedMinDist);
-
-        if (likelihoodOptions.enableLikelihoodCache)
-          // And save it into the table and into "thisLik":
-          precomputedCache[cx + cy * m_size_x].store(thisLik, std::memory_order_relaxed);
-      }
-    }
+    thisLik = (1.0 - ty) * ((1.0 - tx) * cellLikelihood(cx, cy) + tx * cellLikelihood(cx + 1, cy)) +
+              ty * ((1.0 - tx) * cellLikelihood(cx, cy + 1) + tx * cellLikelihood(cx + 1, cy + 1));
 
     // Update the likelihood:
     if (Product_T_OrSum_F)

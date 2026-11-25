@@ -927,7 +927,9 @@ class COccupancyGridMap2D :
 
   /** Computes the log-likelihood of a set of points, given the current grid
    * map as reference: the sum of the per-point log-likelihoods, or the log of
-   * their mean if LF_alternateAverageMethod is set.
+   * their mean if LF_alternateAverageMethod is set. The likelihood of each
+   * point is bilinearly interpolated between the centers of the 4 cells around
+   * it, so it varies continuously with the point position.
    * \param pm The points map
    * \param relativePose The relative pose of the points map in this map's
    * coordinates, or std::nullopt for (0,0,0).
