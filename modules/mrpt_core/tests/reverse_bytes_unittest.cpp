@@ -175,3 +175,20 @@ TEST(bits, reverseBytesLongDouble)
   mrpt::reverseBytesInPlace(val2);
   EXPECT_EQ(val2, org);
 }
+
+// Fields of packed structs (as in sensor packets) may be misaligned, so they
+// must be passed by value, not by reference:
+#pragma pack(push, 1)
+struct PackedField
+{
+  uint8_t header = 0;
+  uint32_t value = 0;
+};
+#pragma pack(pop)
+
+TEST(bits, toNativeEndiannessOfPackedField)
+{
+  PackedField p;
+  p.value = 0x12345678;
+  EXPECT_EQ(mrpt::toNativeEndianness(p.value), uint32_t(0x12345678));
+}
