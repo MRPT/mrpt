@@ -97,6 +97,9 @@ mrpt_add_library(
 * Locate test data only via `mrpt::mrpt_data_dir()`, and use `GTEST_SKIP()`
   when it is missing (never print-and-return: that reports OK while testing
   nothing).
+* Tests of number parsing under a decimal-comma C locale must try several
+  names (`de_DE.UTF-8`, `es_ES.UTF-8`, `en_DK.UTF-8`...) and skip if none is
+  installed; `en_DK` is often the only one on Ubuntu desktops.
 * GUI window tests must use `SKIP_IF_NO_GUI()` (`tests/gui_test_common.h`) and
   run under `xvfb-run`; `MRPT_SKIP_GUI_TESTS=1` forces the skip. Never
   pixel-compare window screenshots (readback is black without a compositor);
@@ -132,8 +135,9 @@ mrpt_add_library(
 
 * **mrpt_containers**: `yaml` maps and sequences are vectors, so references to
   their nodes are invalidated when siblings are added (the JSON schema archive
-  of `mrpt_serialization` keeps paths from the root instead). Quoted and block
-  scalars always parse as strings; typed `as<T>()` getters still convert them.
+  of `mrpt_serialization` keeps paths from the root instead). Map keys, quoted
+  and block scalars always parse as strings; typed `as<T>()` getters still
+  convert them, and throw for integers out of the range of `T`.
 * **mrpt_math**: fixed-size matrices are explicitly instantiated only for some
   sizes (square `CMatrixFixed`: 2,3,4,6,7,12; `CVectorFixed`: 2,3,4,5,6,7,12;
   see `src/MatrixVectorBase_instantiate_*.cpp`). Other sizes compile but fail
