@@ -46,7 +46,7 @@ The `[global]` section holds the application settings:
 | `use_sensoryframes` | false | Save in the "actions-sensory frames" format (observations close in time are grouped in mrpt::obs::CSensoryFrame objects, and odometry is converted into actions) instead of the "observations-only" format. |
 | `SF_max_time_span` | 0.25 | Maximum time span (s) of the observations in one sensory frame. |
 | `GRABBER_PERIOD_MS` | 1000 | Period (ms) at which the main thread saves the collected observations. |
-| `rawlog_GZ_compress_level` | 1 | Compression level of the output file (zstd). |
+| `rawlog_GZ_compress_level` | 1 | Compression level of the output file (zstd, 1-22), or 0 for no compression (useful for high-rate 3D cameras). |
 
 Every other section defines one sensor. Its name is the thread name, and the
 section must contain:

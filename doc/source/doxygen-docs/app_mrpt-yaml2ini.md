@@ -10,8 +10,8 @@ or classes that only read INI files. The inverse conversion is done by
 
     mrpt-yaml2ini <input.yaml>
 
-The program takes exactly one argument (it has no other options) and writes
-the INI text to stdout. Errors are reported to stderr, with a non-zero exit
+The program takes exactly one argument (`-h` or `--help` prints the usage) and
+writes the INI text to stdout. Errors are reported to stderr, with a non-zero exit
 code.
 
 # Example

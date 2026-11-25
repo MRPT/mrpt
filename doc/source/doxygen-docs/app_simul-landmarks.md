@@ -38,10 +38,13 @@ data association).
   sensor pose on the robot `sensorPose_{x,y,z,yaw_deg,pitch_deg,roll_deg}`,
   and noise `stdRange`, `stdYaw_deg`, `stdPitch_deg`.
 - `outDir`, `outFile`: output directory and rawlog file name.
+- `show_in_3d`: show the simulated landmarks and path in a 3D window.
 
 Landmarks are generated from consecutive sections `[RANDOMSET_1]`,
 `[RANDOMSET_2]`, ..., each with `nLandmarks` uniformly distributed within
-`min_x`, `max_x`, `min_y`, `max_y`, `min_z`, `max_z`.
+`min_x`, `max_x`, `min_y`, `max_y`, `min_z`, `max_z`. Alternatively,
+`loadLandmarksFromFile` loads them from a text file, one `X Y Z` row per
+landmark.
 
 # Output
 
@@ -51,6 +54,9 @@ In `outDir`:
   action-observation format, see [rawlog format](rawlog_format.html)).
 - `<outFile>_ground_truth_robot_path.txt`: ground truth robot poses, one row
   per step with columns `x y z yaw pitch roll`.
+- `<outFile>_ground_truth.txt`: ground truth landmarks (`X Y Z TYPE
+  TIMES_SEEN TIME_OF_LAST_OBSERVATION ID` per row), as read by the
+  `ground_truth_file` option of [kf-slam](page_app_kf-slam.html).
 
 # See also
 

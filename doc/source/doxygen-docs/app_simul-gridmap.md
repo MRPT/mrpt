@@ -20,8 +20,7 @@ test 2D SLAM, localization or scan matching methods with known ground truth.
 - `-i, --in-rawlog`: optional input rawlog, to re-simulate its laser scans
   (see below).
 - `-r, --ranges`: number of ranges per scan (default: 361).
-- `-s, --span`: angular span of the scans, in degrees (default: 180). Note: in
-  the current version, new scans always span 180 degrees.
+- `-s, --span`: angular span of the scans, in degrees (default: 180).
 - `-R, --std_r`: range noise, 1 sigma, in meters (default: 0.01).
 - `-B, --std_b`: bearing noise, 1 sigma, in degrees (default: 0.05).
 - `-n, --nologo`: do not print the program banner.
@@ -46,11 +45,12 @@ with a `poses.txt` like:
 The output rawlog is in the "actions-sensory frames" format (see the
 [rawlog format](rawlog_format.html)):
 
-- Without `--in-rawlog`: an initial mrpt::obs::CActionCollection, followed by
-  one mrpt::obs::CSensoryFrame (with the simulated
-  mrpt::obs::CObservation2DRangeScan) and one mrpt::obs::CActionCollection
-  per pose, starting at the second pose of the file. Timestamps are the
-  wall-clock time of the simulation.
+- Without `--in-rawlog`: one mrpt::obs::CActionCollection (the noisy odometry
+  increment from the previous pose; zero for the first one) followed by one
+  mrpt::obs::CSensoryFrame (with the simulated
+  mrpt::obs::CObservation2DRangeScan) per pose. Timestamps are the
+  wall-clock time of the simulation. This output can be fed back with
+  `--in-rawlog`.
 - With `--in-rawlog`: the input rawlog is copied to the output, with the
   ranges of the mrpt::obs::CObservation2DRangeScan in each sensory frame
   replaced by simulated ones at the corresponding pose, so the odometry and
