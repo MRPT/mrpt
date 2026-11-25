@@ -16,7 +16,9 @@
 
 #include <mrpt/core/alignment_req.h>
 
+#include <limits>
 #include <memory>
+#include <new>
 
 namespace mrpt
 {
@@ -67,7 +69,17 @@ class aligned_allocator_cpp11 : public std::allocator<T>
   ~aligned_allocator_cpp11() = default;
   pointer allocate(size_type num, const void* /*hint*/ = nullptr)
   {
-    return static_cast<pointer>(mrpt::aligned_malloc(num * sizeof(T), AlignmentBytes));
+    // Like std::allocator, throw on failure instead of returning nullptr:
+    if (num > std::numeric_limits<size_type>::max() / sizeof(T))
+    {
+      throw std::bad_alloc();
+    }
+    auto* p = static_cast<pointer>(mrpt::aligned_malloc(num * sizeof(T), AlignmentBytes));
+    if (p == nullptr && num != 0)
+    {
+      throw std::bad_alloc();
+    }
+    return p;
   }
   void deallocate(pointer p, size_type /*num*/) { mrpt::aligned_free(p); }
 };

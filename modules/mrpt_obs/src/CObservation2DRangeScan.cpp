@@ -19,6 +19,9 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <algorithm>
+#include <utility>
+
 using namespace std;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -334,7 +337,6 @@ void CObservation2DRangeScan::filterByExclusionAngles(
   }
   MRPT_START
 
-  double Ang, dA;
   const size_t sizeRangeScan = m_scan.size();
 
   ASSERT_EQUAL_(m_scan.size(), m_validRange.size());
@@ -343,33 +345,33 @@ void CObservation2DRangeScan::filterByExclusionAngles(
   {
     return;
   }
-  if (rightToLeft)
+  // Angle of the first ray, and angular step (absolute value) between rays:
+  const double Ang = (rightToLeft ? -0.5 : 0.5) * aperture;
+  const double dA = sizeRangeScan > 1 ? aperture / static_cast<double>(sizeRangeScan - 1) : 1.0;
+
+  // Index of the ray at a given angle, counted along the scan direction:
+  const auto angleToIndex = [&](double a) -> size_t
   {
-    Ang = -0.5 * aperture;
-    dA = aperture / static_cast<float>(sizeRangeScan - 1);
-  }
-  else
-  {
-    Ang = +0.5 * aperture;
-    dA = -aperture / static_cast<float>(sizeRangeScan - 1);
-  }
+    const double rel = mrpt::math::wrapTo2Pi(rightToLeft ? (a - Ang) : (Ang - a));
+    if (rel > aperture)
+    {
+      // Out of the field of view: take the closest end of the scan.
+      return (rel - aperture < 2 * M_PI - rel) ? sizeRangeScan - 1 : 0;
+    }
+    const int idx = mrpt::round(rel / dA);
+    return static_cast<size_t>(std::clamp(idx, 0, static_cast<int>(sizeRangeScan) - 1));
+  };
 
   // For each forbiden angle range:
   for (const auto& angle : angles)
   {
-    int ap_idx_ini = mrpt::round(mrpt::math::wrapTo2Pi(angle.first - Ang) / dA);
-    int ap_idx_end = mrpt::round(mrpt::math::wrapTo2Pi(angle.second - Ang) / dA);
-
-    if (ap_idx_ini < 0) ap_idx_ini = 0;
-    if (ap_idx_end < 0) ap_idx_end = 0;
-
-    if (ap_idx_ini > static_cast<int>(sizeRangeScan))
-      ap_idx_ini = static_cast<int>(sizeRangeScan) - 1;
-    if (ap_idx_end > static_cast<int>(sizeRangeScan))
-      ap_idx_end = static_cast<int>(sizeRangeScan) - 1;
-
-    const size_t idx_ini = ap_idx_ini;
-    const size_t idx_end = ap_idx_end;
+    size_t idx_ini = angleToIndex(angle.first);
+    size_t idx_end = angleToIndex(angle.second);
+    if (!rightToLeft)
+    {
+      // Rays go from left to right, so the range is walked backwards:
+      std::swap(idx_ini, idx_end);
+    }
 
     if (idx_end >= idx_ini)
     {
@@ -377,7 +379,8 @@ void CObservation2DRangeScan::filterByExclusionAngles(
     }
     else
     {
-      for (size_t i = 0; i < idx_end; i++) m_validRange[i] = false;
+      // The range wraps around the back of the scan:
+      for (size_t i = 0; i <= idx_end; i++) m_validRange[i] = false;
 
       for (size_t i = idx_ini; i < sizeRangeScan; i++) m_validRange[i] = false;
     }

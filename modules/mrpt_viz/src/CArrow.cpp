@@ -101,6 +101,7 @@ void CArrow::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   }
+  CVisualObject::notifyChange();
 }
 void CArrow::updateBuffers() const
 {

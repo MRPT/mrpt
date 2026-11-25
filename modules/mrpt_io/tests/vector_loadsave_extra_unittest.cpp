@@ -277,3 +277,15 @@ TEST(vector_loadsave, numeric_parse_skips_blank_lines)
   ASSERT_EQ(v.size(), 3U);
   EXPECT_NEAR(v[2], 3.0, 1e-9);
 }
+
+TEST(vector_loadsave, numeric_parse_of_a_non_numeric_token_fails)
+{
+  TempFile f;
+  {
+    std::ofstream o(f.path());
+    o << "1.0 abc 2.0\n";
+  }
+  std::vector<double> v;
+  EXPECT_FALSE(vectorNumericFromTextFile(v, f.path()));
+  EXPECT_FALSE(vectorNumericFromTextFile(v, f.path(), true /*byRows*/));
+}

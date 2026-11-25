@@ -170,3 +170,32 @@ TEST(vector_with_small_size_optimization, push_back)
     }
   }
 }
+
+TEST(vector_with_small_size_optimization, IteratorIncrementDecrement)
+{
+  for (const size_t n : {size_t(4), 2 * SMALL_LEN})  // small and large storage
+  {
+    vwsso_t v(n);
+    for (size_t i = 0; i < n; i++)
+    {
+      v[i] = 100 + i;
+    }
+
+    auto it = v.begin();
+    EXPECT_EQ(*it++, 100U) << "n=" << n;  // post-increment returns the old position
+    EXPECT_EQ(*it, 101U) << "n=" << n;
+    EXPECT_EQ(*++it, 102U) << "n=" << n;  // pre-increment returns the new one
+    EXPECT_EQ(*it--, 102U) << "n=" << n;
+    EXPECT_EQ(*it, 101U) << "n=" << n;
+    EXPECT_EQ(*--it, 100U) << "n=" << n;
+    EXPECT_TRUE(it == v.begin());
+
+    // Standard algorithms rely on these semantics:
+    size_t count = 0;
+    for (auto i = v.begin(); i != v.end(); ++i)
+    {
+      count++;
+    }
+    EXPECT_EQ(count, n);
+  }
+}

@@ -297,6 +297,10 @@ TEST(CObservationRange, SchemaSensorIDOutOfRangeThrows)
 
   mrpt::obs::CObservationRange dst;
   EXPECT_ANY_THROW(arch.readTo(dst));
+
+  // Values that do not even fit in 32 bits must not wrap around (to 1, here):
+  arch["sensedData"][static_cast<size_t>(0)]["sensorID"] = static_cast<uint64_t>(4294967297ULL);
+  EXPECT_ANY_THROW(arch.readTo(dst));
 }
 
 TEST(CObservationBatteryState, SchemaRoundTrip)

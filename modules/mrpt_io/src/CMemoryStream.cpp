@@ -120,6 +120,10 @@ size_t CMemoryStream::Read(void* Buffer, size_t Count)
 size_t CMemoryStream::Write(const void* Buffer, size_t Count)
 {
   ASSERT_(Buffer != nullptr);
+  if (m_read_only)
+  {
+    THROW_EXCEPTION("Cannot write to a memory block assigned with assignMemoryNotOwn()");
+  }
   // enough space in current bufer?
   size_t requiredSize = m_position + Count;
 

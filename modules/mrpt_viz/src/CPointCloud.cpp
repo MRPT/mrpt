@@ -37,6 +37,8 @@ CPointCloud::CPointCloud()
 
 void CPointCloud::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
+  std::shared_lock<std::shared_mutex> wfReadLock(VisualObjectParams_Points::m_pointsMtx.data);
+
   SCHEMA_SERIALIZE_DATATYPE_VERSION(2);
   out["colorFromDepth"] = static_cast<int32_t>(m_colorFromDepth);
   out["pointSize"] = getPointSize();
@@ -62,6 +64,8 @@ void CPointCloud::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) cons
 }
 void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
+  std::unique_lock<std::shared_mutex> wfWriteLock(VisualObjectParams_Points::m_pointsMtx.data);
+
   int32_t version = 0;
   SCHEMA_DESERIALIZE_DATATYPE_VERSION();
   switch (version)
@@ -69,11 +73,10 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
     case 1:  // v1 also had the number of points, as "N"
     case 2:
     {
-      /**
-       *  currently below is being left to what is being set by
-       *  the default constructor i.e.,CPointCloud::colNone
-       */
-      // m_colorFromDepth = static_cast<float>(in["colorDepth"]);
+      const auto axis = static_cast<int32_t>(in["colorFromDepth"]);
+      ASSERT_GE_(axis, static_cast<int32_t>(colNone));
+      ASSERT_LE_(axis, static_cast<int32_t>(colX));
+      m_colorFromDepth = static_cast<Axis>(axis);
       setPointSize(static_cast<float>(in["pointSize"]));
       auto xs = in["xs"];
       auto ys = in["ys"];
@@ -99,6 +102,10 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   }
+
+  wfWriteLock.unlock();
+  markAllPointsAsNew();
+  CVisualObject::notifyChange();
 }
 uint8_t CPointCloud::serializeGetVersion() const { return 7; }
 void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const

@@ -15,6 +15,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/impl/MatrixVectorBase_impl.h>  // strtodClassic()
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
@@ -305,7 +306,7 @@ bool math::loadVector(std::istream& f, ::std::vector<double>& d)
   nextTok = mrpt::system::strtok(const_cast<char*>(s), delim, &context);
   while (nextTok != nullptr)
   {
-    d.push_back(atof(nextTok));
+    d.push_back(mrpt::math::internal::strtodClassic(nextTok, nullptr));
     nextTok = mrpt::system::strtok(nullptr, delim, &context);
   };
 

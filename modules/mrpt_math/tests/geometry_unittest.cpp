@@ -1072,6 +1072,18 @@ TEST(Geometry, distance_intersecting_lines_2D)
   EXPECT_NEAR(mrpt::math::distance(l1, l2), 0.0, 1e-9);
 }
 
+// The parallelism test must not depend on the scale of the line coefficients
+// (lines built from close points have tiny ones):
+TEST(Geometry, distance_lines_2D_from_close_points)
+{
+  const TLine2D vertical = TLine2D::FromTwoPoints({0, 0}, {0, 0.001});    // x=0
+  const TLine2D horizontal = TLine2D::FromTwoPoints({0, 5}, {0.001, 5});  // y=5
+  EXPECT_NEAR(mrpt::math::distance(vertical, horizontal), 0.0, 1e-9);
+
+  const TLine2D horizontal2 = TLine2D::FromTwoPoints({0, 2}, {0.001, 2});  // y=2
+  EXPECT_NEAR(mrpt::math::distance(horizontal, horizontal2), 3.0, 1e-9);
+}
+
 TEST(Geometry, distance_parallel_planes)
 {
   const TPlane p1 = TPlane::FromPointAndNormal({0, 0, 0}, {0, 0, 1});

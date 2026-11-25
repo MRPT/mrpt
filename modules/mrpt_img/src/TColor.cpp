@@ -112,14 +112,28 @@ std::ostream& mrpt::img::operator<<(std::ostream& o, const TColorf& c)
 }
 
 // Binary streaming:
+// TColorf is packed: go through local copies, since references to its members
+// may be misaligned (e.g. when it follows a 1-byte field in another struct).
 CArchive& mrpt::img::operator<<(CArchive& o, const TColorf& c)
 {
-  o << c.R << c.G << c.B << c.A;
+  const float r = c.R;
+  const float g = c.G;
+  const float b = c.B;
+  const float a = c.A;
+  o << r << g << b << a;
   return o;
 }
 
 CArchive& mrpt::img::operator>>(CArchive& i, TColorf& c)
 {
-  i >> c.R >> c.G >> c.B >> c.A;
+  float r = 0;
+  float g = 0;
+  float b = 0;
+  float a = 0;
+  i >> r >> g >> b >> a;
+  c.R = r;
+  c.G = g;
+  c.B = b;
+  c.A = a;
   return i;
 }

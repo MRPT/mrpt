@@ -14,12 +14,14 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/maps/CGenericPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <filesystem>
+#include <limits>
 #include <sstream>
 
 using mrpt::obs::CObservationPointCloud;
@@ -78,6 +80,44 @@ TEST(CObservationPointCloud, GetDescriptionAsTextWithPoints)
   std::stringstream ss;
   EXPECT_NO_THROW(obs.getDescriptionAsText(ss));
   EXPECT_FALSE(ss.str().empty());
+}
+
+// The ranges of every field type are listed; a field without valid (non-NaN)
+// values must not be dereferenced:
+TEST(CObservationPointCloud, GetDescriptionAsTextOfAllFieldTypes)
+{
+  auto pts = mrpt::maps::CGenericPointsMap::Create();
+  pts->registerField_float("intensity");
+  pts->registerField_float("all_nan");
+  pts->registerField_double("t");
+  pts->registerField_uint16("ring");
+  pts->registerField_uint8("label");
+  pts->registerField_uint32("id");
+  const float nan = std::numeric_limits<float>::quiet_NaN();
+  constexpr int N = 8;  // a power of two, so the field buffers are full
+  for (int i = 0; i < N; i++)
+  {
+    pts->insertPoint(static_cast<float>(i), 0, 0);
+    pts->insertPointField_float("intensity", i == 1 ? nan : static_cast<float>(i) * 0.5f);
+    pts->insertPointField_float("all_nan", nan);
+    pts->insertPointField_double("t", 10.0 + i);
+    pts->insertPointField_uint16("ring", static_cast<uint16_t>(7 + i));
+    pts->insertPointField_uint8("label", static_cast<uint8_t>(i));
+    pts->insertPointField_uint32("id", static_cast<uint32_t>(100 + i));
+  }
+
+  CObservationPointCloud obs;
+  obs.pointcloud = pts;
+  std::stringstream ss;
+  obs.getDescriptionAsText(ss);
+  const std::string s = ss.str();
+  EXPECT_NE(s.find("Number of points: 8"), std::string::npos) << s;
+  EXPECT_NE(s.find("range: [0.00, 3.50]"), std::string::npos) << s;  // intensity, NaN ignored
+  EXPECT_NE(s.find("range: [10.00, 17.00]"), std::string::npos) << s;
+  EXPECT_NE(s.find("range: [7, 14]"), std::string::npos) << s;
+  EXPECT_NE(s.find("range: [0, 7]"), std::string::npos) << s;
+  EXPECT_NE(s.find("range: [100, 107]"), std::string::npos) << s;
+  EXPECT_NE(s.find("all NaN"), std::string::npos) << s;
 }
 
 TEST(CObservationPointCloud, SerializeRoundTrip)

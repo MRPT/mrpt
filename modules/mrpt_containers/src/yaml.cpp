@@ -32,6 +32,7 @@
 #include <istream>
 #include <iterator>
 #include <locale>
+#include <map>
 #include <memory>
 #include <optional>
 #include <regex>
@@ -1098,6 +1099,41 @@ bool yaml::internalPrintAsYAML(
 }
 
 // Return true if multiline
+namespace
+{
+/** Whether a one-line string must be quoted to be read back with the same
+ * text: it would otherwise be read as a structure or a comment, or lose its
+ * leading/trailing blanks. Strings that read back as numbers or booleans are
+ * not quoted (e.g. INI to YAML conversion relies on this). */
+bool needsQuotesInYAML(const std::string& s, bool flowContext)
+{
+  if (s.empty())
+  {
+    return false;
+  }
+  if (std::isspace(static_cast<unsigned char>(s.front())) != 0 ||
+      std::isspace(static_cast<unsigned char>(s.back())) != 0)
+  {
+    return true;
+  }
+  // "-", "?" and ":" only start a structure if followed by a blank:
+  if (std::string_view("-?:").find(s.front()) != std::string_view::npos &&
+      (s.size() == 1 || std::isspace(static_cast<unsigned char>(s[1])) != 0))
+  {
+    return true;
+  }
+  if (std::string_view(",[]{}#&*!|>'\"%@`").find(s.front()) != std::string_view::npos)
+  {
+    return true;
+  }
+  if (s.find(": ") != std::string::npos || s.find(" #") != std::string::npos || s.back() == ':')
+  {
+    return true;
+  }
+  return flowContext && s.find_first_of(",[]{}") != std::string::npos;
+}
+}  // namespace
+
 bool yaml::internalPrintStringScalar(
     const std::string& sIn, std::ostream& o, const InternalPrintState& ps, const comments_t& cs)
 {
@@ -1118,7 +1154,14 @@ bool yaml::internalPrintStringScalar(
       if (i == 0)
       {
         // single line:
-        o << s;
+        if (!sIn.empty() && needsQuotesInYAML(s, ps.shortFormat))
+        {
+          printJSONString(s, o);
+        }
+        else
+        {
+          o << s;
+        }
         if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)]; rc.has_value())
         {
           internalPrintRightComment(o, rc.value());
@@ -1284,12 +1327,15 @@ yaml::scalar_t textToScalar(const std::string& s)
       return yaml::scalar_t(static_cast<int64_t>(iv));
     }
 
-    // Large positive — try unsigned
-    errno = 0;
-    const unsigned long long uv = std::strtoull(s.c_str(), &end, 0);
-    if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
+    // Large positive: try unsigned (strtoull() would negate negative ones)
+    if (s[0] != '-')
     {
-      return yaml::scalar_t(static_cast<uint64_t>(uv));
+      errno = 0;
+      const unsigned long long uv = std::strtoull(s.c_str(), &end, 0);
+      if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
+      {
+        return yaml::scalar_t(static_cast<uint64_t>(uv));
+      }
     }
   }
 
@@ -1309,8 +1355,14 @@ yaml::scalar_t textToScalar(const std::string& s)
 #if MRPT_HAS_FYAML
 namespace
 {
-std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p);
-}
+/** Nodes with an anchor (`&name`), to resolve aliases (`*name`) to them. */
+using AnchorsMap = std::map<std::string, yaml::node_t>;
+
+/** Parses the next node. Scalars that are map keys are kept as the verbatim
+ * strings, like `on`, `1` or `~`: only values are type-resolved. */
+std::optional<yaml::node_t> recursiveParse(
+    mrpt_fy_parser_t* p, AnchorsMap& anchors, bool isMapKey = false);
+}  // namespace
 static bool MRPT_YAML_PARSER_VERBOSE = mrpt::get_env<bool>("MRPT_YAML_PARSER_VERBOSE", false);
 
 #define PARSER_DBG_OUT(STR_)                                                      \
@@ -1378,7 +1430,7 @@ void parseEventCommentsAndMarks(const mrpt_fy_event_t& ev, yaml::node_t& n)
   }
 }
 
-std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
+std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, AnchorsMap& anchors, bool isMapKey)
 {
   MRPT_START
 
@@ -1407,12 +1459,13 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
       yaml::map_t& m = n.d.emplace<yaml::map_t>();
 
       parseEventCommentsAndMarks(event, n);
+      const std::string anchor = event.anchor_text != nullptr ? event.anchor_text : "";
       mrpt_fy_event_release(&event);
 
       for (;;)
       {
         // Next event is map key:
-        auto nKey = recursiveParse(p);
+        auto nKey = recursiveParse(p, anchors, true /*isMapKey*/);
         // end of map reached?
         if (!nKey.has_value())
         {
@@ -1426,12 +1479,16 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
         yaml::node_t& val = m.back().second;
 
         // and next event is mapped content:
-        auto nVal = recursiveParse(p);
+        auto nVal = recursiveParse(p, anchors);
         ASSERT_(nVal.has_value());
 
         val = std::move(nVal.value());
       }
 
+      if (!anchor.empty())
+      {
+        anchors[anchor] = n;
+      }
       return n;
     }
     break;
@@ -1449,11 +1506,12 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
       yaml::sequence_t& s = n.d.emplace<yaml::sequence_t>();
 
       parseEventCommentsAndMarks(event, n);
+      const std::string anchor = event.anchor_text != nullptr ? event.anchor_text : "";
       mrpt_fy_event_release(&event);
 
       for (;;)
       {
-        auto entry = recursiveParse(p);
+        auto entry = recursiveParse(p, anchors);
         if (!entry.has_value())
         {
           break;  // end of sequence reached?
@@ -1461,6 +1519,10 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
         s.push_back(std::move(entry.value()));
       }
 
+      if (!anchor.empty())
+      {
+        anchors[anchor] = n;
+      }
       return n;
     }
     break;
@@ -1488,9 +1550,10 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
                             << " anchor: " << (event.anchor_text ? event.anchor_text : ""));
 
       // Only plain scalars are type-resolved: quoted and block scalars are
-      // always strings (YAML 1.2 core schema, and JSON strings).
+      // always strings (YAML 1.2 core schema, and JSON strings), and so are
+      // map keys.
       yaml::node_t n;
-      if (event.is_quoted != 0)
+      if (event.is_quoted != 0 || isMapKey)
       {
         n.d.emplace<yaml::scalar_t>(sValue);
       }
@@ -1500,9 +1563,25 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
       }
 
       parseEventCommentsAndMarks(event, n);
+      if (event.anchor_text != nullptr)
+      {
+        anchors[event.anchor_text] = n;
+      }
       mrpt_fy_event_release(&event);
 
       return n;
+    }
+    break;
+    case MRPT_FY_EV_ALIAS:
+    {
+      const std::string name = event.anchor_text != nullptr ? event.anchor_text : "";
+      mrpt_fy_event_release(&event);
+      const auto it = anchors.find(name);
+      if (it == anchors.end())
+      {
+        THROW_EXCEPTION_FMT("YAML alias to an undefined anchor: '*%s'", name.c_str());
+      }
+      return it->second;
     }
     break;
   };
@@ -1528,7 +1607,8 @@ void yaml::loadFromText(const std::string& yamlTextBlock)
       mrpt_fy_parser_create(yamlTextBlock.data(), yamlTextBlock.size()), &mrpt_fy_parser_destroy);
   ASSERT_(parser);
 
-  auto optNode = recursiveParse(parser.get());
+  AnchorsMap anchors;
+  auto optNode = recursiveParse(parser.get(), anchors);
 
   // Consume the rest of the stream, to detect errors after the first node:
   for (;;)

@@ -16,6 +16,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/carmen_log_tools.h>
+#include <mrpt/system/datetime.h>
 
 #include <sstream>
 
@@ -117,4 +118,26 @@ TEST(carmen_log_tools, UnknownLineIgnored)
   const bool ok = carmen_log_parse_line(ss, obs, mrpt::Clock::now());
   EXPECT_TRUE(ok);
   EXPECT_TRUE(obs.empty());
+}
+
+// CARMEN timestamps are in seconds since the start of the log:
+TEST(carmen_log_tools, TimestampsAreSecondsFromStart)
+{
+  const auto t0 = mrpt::Clock::fromDouble(1000.0);
+  const std::vector<std::pair<std::string, double>> lines = {
+      {                 "FLASER 1 1.0 0.0 0.0 0.0 0.0 0.0 0.0 12.5 robot1\n",    12.5},
+      {"ROBOTLASER 0 0.0 3.14159 0.01 80.0 0.0 0 3 1.0 2.0 3.0 0 "
+"0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1234.25 robot1\n", 1234.25       },
+  };
+  for (const auto& [line, expectedSeconds] : lines)
+  {
+    std::istringstream ss(line);
+    std::vector<CObservation::Ptr> obs;
+    ASSERT_TRUE(carmen_log_parse_line(ss, obs, t0)) << line;
+    ASSERT_FALSE(obs.empty());
+    for (const auto& o : obs)
+    {
+      EXPECT_NEAR(mrpt::system::timeDifference(t0, o->timestamp), expectedSeconds, 1e-6) << line;
+    }
+  }
 }

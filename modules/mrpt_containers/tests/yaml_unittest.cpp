@@ -723,6 +723,136 @@ MRPT_TEST(yaml, outOfRangeIntegers)
 }
 MRPT_TEST_END()
 
+// Strings that would not read back with the same text unquoted are quoted:
+MRPT_TEST(yaml, printQuotesStringsWhenNeeded)
+{
+  const std::vector<std::string> strs = {
+      "a: b",   "#x",    "[1,2]",     "{}",  " lead",      "trail ",       "x #y",      "end:",
+      "- item", "\"q\"", "tab\there", "a,b", "plain text", "path/to:file", "-not_a_seq"};
+  mrpt::containers::yaml y = mrpt::containers::yaml::Map();
+  for (size_t i = 0; i < strs.size(); i++)
+  {
+    y["k" + std::to_string(i)] = strs[i];
+  }
+  y["seq"] = mrpt::containers::yaml::Sequence({std::string("a,b"), std::string("[c]")});
+  y["seq"].node().printInShortFormat = true;
+
+  std::stringstream ss;
+  y.printAsYAML(ss);
+  const auto y2 = mrpt::containers::yaml::FromText(ss.str());
+  for (size_t i = 0; i < strs.size(); i++)
+  {
+    const auto& n = y2["k" + std::to_string(i)];
+    ASSERT_TRUE(n.isScalar()) << ss.str();
+    EXPECT_TRUE(std::holds_alternative<std::string>(n.asScalar())) << strs[i] << "\n" << ss.str();
+    EXPECT_EQ(n.as<std::string>(), strs[i]) << ss.str();
+  }
+  ASSERT_EQ(y2["seq"].asSequence().size(), 2U) << ss.str();
+  EXPECT_EQ(y2["seq"](1).as<std::string>(), "[c]") << ss.str();
+
+  // Ordinary strings are still printed as plain scalars, and so are strings
+  // that read back as numbers (INI to YAML conversion relies on it):
+  EXPECT_NE(ss.str().find("plain text\n"), std::string::npos) << ss.str();
+  EXPECT_EQ(ss.str().find("\"plain text\""), std::string::npos) << ss.str();
+  mrpt::containers::yaml num = mrpt::containers::yaml::Map();
+  num["n"] = std::string("-1.5");
+  std::stringstream ssNum;
+  num.printAsYAML(ssNum);
+  EXPECT_NE(ssNum.str().find("n: -1.5\n"), std::string::npos) << ssNum.str();
+}
+MRPT_TEST_END()
+
+// Aliases (*name) are replaced by a copy of the node with that anchor (&name):
+MRPT_TEST(yaml, parseAliases)
+{
+  const auto doc = mrpt::containers::yaml::FromText(
+      "a: &x 5\n"
+      "b: *x\n"
+      "seq: [&s hi, *s, *x]\n"
+      "base: &m {p: 1, q: [2, 3]}\n"
+      "copy: *m\n");
+  EXPECT_EQ(doc["b"].as<int>(), 5);
+  ASSERT_EQ(doc["seq"].asSequence().size(), 3U);
+  EXPECT_EQ(doc["seq"](1).as<std::string>(), "hi");
+  EXPECT_EQ(doc["seq"](2).as<int>(), 5);
+  ASSERT_TRUE(doc["copy"].isMap());
+  EXPECT_EQ(doc["copy"]["p"].as<int>(), 1);
+  EXPECT_EQ(doc["copy"]["q"](1).as<int>(), 3);
+
+  EXPECT_THROW(mrpt::containers::yaml::FromText("a: *undefined\n"), std::exception);
+}
+MRPT_TEST_END()
+
+// Integers below the range of int64_t are not unsigned (positive) numbers:
+MRPT_TEST(yaml, parseHugeNegativeInteger)
+{
+  const auto doc = mrpt::containers::yaml::FromText("a: -9223372036854775809\n");
+  EXPECT_LT(doc["a"].as<double>(), -9.2e18);
+  EXPECT_THROW((void)doc["a"].as<uint64_t>(), std::exception);
+}
+MRPT_TEST_END()
+
+// Map keys that look like numbers, booleans or null are still plain keys:
+MRPT_TEST(yaml, parsedKeysAreStrings)
+{
+  const auto doc = mrpt::containers::yaml::FromText("on: push\n1: a\n~: b\njobs: 3\n");
+  EXPECT_EQ(doc["jobs"].as<int>(), 3);
+  EXPECT_TRUE(doc.has("on"));
+  EXPECT_EQ(doc["on"].as<std::string>(), "push");
+  EXPECT_EQ(doc["1"].as<std::string>(), "a");
+  EXPECT_EQ(doc["~"].as<std::string>(), "b");
+  EXPECT_FALSE(doc.has("2"));
+
+  // ...and survive a round trip:
+  std::stringstream ss;
+  doc.printAsYAML(ss);
+  const auto doc2 = mrpt::containers::yaml::FromText(ss.str());
+  EXPECT_EQ(doc2["1"].as<std::string>(), "a") << ss.str();
+  EXPECT_EQ(doc2["jobs"].as<int>(), 3);
+}
+MRPT_TEST_END()
+
+// Numeric (not string) scalars must be range-checked too, never wrapped:
+MRPT_TEST(yaml, outOfRangeNumericIntegers)
+{
+  mrpt::containers::yaml p;
+  p["u16max"] = 65535;
+  p["u16over"] = 65536;
+  p["neg"] = -1;
+  p["big"] = uint64_t(1) << 63;
+  p["huge"] = 1e300;
+  p["nan"] = std::numeric_limits<double>::quiet_NaN();
+  p["frac"] = 3.75;
+  p["negfrac"] = -3.75;
+
+  EXPECT_EQ(p["u16max"].as<uint16_t>(), 65535);
+  EXPECT_THROW((void)p["u16over"].as<uint16_t>(), std::exception);
+  EXPECT_THROW((void)p["neg"].as<unsigned int>(), std::exception);
+  EXPECT_THROW((void)p["neg"].as<uint64_t>(), std::exception);
+  EXPECT_EQ(p["neg"].as<int8_t>(), -1);
+  EXPECT_THROW((void)p["big"].as<int64_t>(), std::exception);
+  EXPECT_EQ(p["big"].as<uint64_t>(), uint64_t(1) << 63);
+  EXPECT_THROW((void)p["huge"].as<int>(), std::exception);
+  EXPECT_THROW((void)p["nan"].as<int>(), std::exception);
+  // Floating-point values are still truncated toward zero:
+  EXPECT_EQ(p["frac"].as<int>(), 3);
+  EXPECT_EQ(p["negfrac"].as<int>(), -3);
+  EXPECT_THROW((void)p["negfrac"].as<unsigned int>(), std::exception);
+
+  // Same for parsed documents:
+  const auto doc = mrpt::containers::yaml::FromText("a: 4294967297\nb: 18446744073709551615\n");
+  EXPECT_THROW((void)doc["a"].as<uint32_t>(), std::exception);
+  EXPECT_EQ(doc["a"].as<uint64_t>(), 4294967297ULL);
+  EXPECT_EQ(doc["b"].as<uint64_t>(), 18446744073709551615ULL);
+  EXPECT_THROW((void)doc["b"].as<int64_t>(), std::exception);
+
+  // Quoted (string) values above the range of int64_t:
+  p["s"] = std::string("18446744073709551615");
+  EXPECT_EQ(p["s"].as<uint64_t>(), 18446744073709551615ULL);
+  EXPECT_THROW((void)p["s"].as<int64_t>(), std::exception);
+}
+MRPT_TEST_END()
+
 // clang-format off
 const auto testYamlParseEmit_1 =
 R"xxx(# comment line 1, and

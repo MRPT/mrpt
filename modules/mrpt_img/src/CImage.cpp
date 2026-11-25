@@ -508,7 +508,15 @@ const uint8_t* CImage::internal_get(int32_t col, int32_t row, int8_t channel) co
          (static_cast<std::size_t>(channel) * static_cast<std::size_t>(m_state->depth));
 }
 
-uint8_t CImage::serializeGetVersion() const { return 10; }
+uint8_t CImage::serializeGetVersion() const
+{
+  // v11 adds the channel count and pixel depth of color images. Plain 8-bit
+  // RGB images keep v10, readable by older versions too.
+  const bool extendedColor = !m_state->imgIsExternalStorage && !m_state->empty() &&
+                             m_state->channels >= CH_RGB &&
+                             (m_state->channels != CH_RGB || m_state->depth != PixelDepth::D8U);
+  return extendedColor ? 11 : 10;
+}
 
 void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -548,11 +556,17 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
   {
     // COLOR (RGB/RGBA)
     out << width << height;
+    if (serializeGetVersion() >= 11)
+    {
+      out.WriteAs<uint8_t>(static_cast<uint8_t>(m_state->channels));
+      out.WriteAs<uint8_t>(static_cast<uint8_t>(m_state->depth));
+    }
 
     // Raw bytes
     if (!m_state->empty())
     {
-      out.WriteBuffer(m_state->image_data, m_state->image_buffer_size_bytes());
+      writePixelBuffer(
+          out, m_state->image_data, m_state->image_buffer_size_bytes(), m_state->depth);
     }
   }
 }
@@ -565,6 +579,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
   switch (version)
   {
     case 10:  // MRPT 3.0.0 format
+    case 11:  // v11: color images with their channel count and pixel depth
     {
       in >> m_state->imgIsExternalStorage;
 
@@ -604,13 +619,22 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
           int32_t height = 0;
           in >> width >> height;
 
-          // For now, assume RGB (could be extended to detect RGBA)
-          resize(width, height, CH_RGB);
+          // v10 color images were always 8-bit RGB:
+          TImageChannels channels = CH_RGB;
+          PixelDepth depth = PixelDepth::D8U;
+          if (version >= 11)
+          {
+            channels = static_cast<TImageChannels>(in.ReadAs<uint8_t>());
+            depth = static_cast<PixelDepth>(in.ReadAs<uint8_t>());
+            ASSERT_(channels == CH_RGB || channels == CH_RGBA);
+            ASSERT_(depth == PixelDepth::D8U || depth == PixelDepth::D16U);
+          }
+          resize(width, height, channels, depth);
 
           const auto imageSize = m_state->image_buffer_size_bytes();
           if (imageSize > 0)
           {
-            in.ReadBuffer(m_state->image_data, imageSize);
+            readPixelBuffer(in, m_state->image_data, imageSize, depth);
           }
         }
       }
@@ -662,6 +686,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
         }
 
         resize(width, height, nChannels >= 4 ? CH_RGBA : CH_RGB);
+        ASSERT_GE_(static_cast<size_t>(imgLength), m_state->image_buffer_size_bytes());
 
         // Swap R and B channels
         loadFromMemoryBuffer(
@@ -687,6 +712,15 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
       if (decoded == nullptr)
       {
         THROW_EXCEPTION("Error decoding JPEG from legacy v1 CImage serialization");
+      }
+      if (channels == 2)
+      {
+        // Gray + alpha (the decoder also takes e.g. PNG): keep the gray values
+        for (size_t i = 0; i < static_cast<size_t>(w) * static_cast<size_t>(h); i++)
+        {
+          decoded[i] = decoded[2 * i];
+        }
+        channels = 1;
       }
 
       resize(w, h, channels == 1 ? CH_GRAY : (channels >= 4 ? CH_RGBA : CH_RGB));

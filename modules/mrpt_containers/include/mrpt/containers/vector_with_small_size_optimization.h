@@ -126,27 +126,27 @@ class vector_with_small_size_optimization
     using difference_type = typename large_vec::difference_type;
     iteratorImpl() = default;
     iteratorImpl(STORAGE ptr) : m_ptr(ptr) {}
-    self operator++()
+    self& operator++()
     {
-      self i = *this;
       m_ptr++;
-      return i;
+      return *this;
     }
-    self operator--()
+    self& operator--()
     {
-      self i = *this;
       m_ptr--;
-      return i;
+      return *this;
     }
     self operator++(int)
     {
+      self i = *this;
       m_ptr++;
-      return *this;
+      return i;
     }
     self operator--(int)
     {
+      self i = *this;
       m_ptr--;
-      return *this;
+      return i;
     }
     self operator+(difference_type n)
     {

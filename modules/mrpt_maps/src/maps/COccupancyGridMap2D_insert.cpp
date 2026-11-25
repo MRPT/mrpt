@@ -161,10 +161,11 @@ bool COccupancyGridMap2D::internal_insertObservation(
           dAK = -static_cast<float>(K) * dA;
         }
 
-        new_x_max = -(numeric_limits<float>::max)();
-        new_x_min = (numeric_limits<float>::max)();
-        new_y_max = -(numeric_limits<float>::max)();
-        new_y_min = (numeric_limits<float>::max)();
+        // The grid must contain the sensor too, not only the ray endpoints:
+        new_x_max = px;
+        new_x_min = px;
+        new_y_max = py;
+        new_y_min = py;
 
         // Compute scan endpoints. Use index-based access — pointer
         // arithmetic with stride K was the source of a SEGFAULT when
@@ -339,10 +340,11 @@ bool COccupancyGridMap2D::internal_insertObservation(
           dAK = -static_cast<float>(K) * dA;
         }
 
-        new_x_max = -(numeric_limits<float>::max)();
-        new_x_min = (numeric_limits<float>::max)();
-        new_y_max = -(numeric_limits<float>::max)();
-        new_y_min = (numeric_limits<float>::max)();
+        // The grid must contain the sensor too, not only the ray endpoints:
+        new_x_max = px;
+        new_x_min = px;
+        new_y_max = py;
+        new_y_min = py;
 
         last_valid_range = maxDistanceInsertion;
         for (idx = 0; idx < nRanges; idx += K)
@@ -855,10 +857,11 @@ bool COccupancyGridMap2D::internal_insertObservation(
       A = d2f(laserPose.phi());
       dAK = 0;
 
-      new_x_max = -(numeric_limits<float>::max)();
-      new_x_min = (numeric_limits<float>::max)();
-      new_y_max = -(numeric_limits<float>::max)();
-      new_y_min = (numeric_limits<float>::max)();
+      // The grid must contain the sensor too, not only the ray endpoints:
+      new_x_max = px;
+      new_x_min = px;
+      new_y_max = py;
+      new_y_min = py;
 
       last_valid_range = maxDistanceInsertion;
 

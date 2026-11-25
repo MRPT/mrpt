@@ -108,7 +108,10 @@ void CConfigFile::setFileName(const std::string& fil_path)
   m_file = fil_path;
   m_modified = false;
 
-  m_impl->ini->LoadFile(fil_path.c_str());
+  // Same parsing as the constructor, replacing the previous contents:
+  const auto sOut = mrpt::config::config_parser(local_file_get_contents(fil_path));
+  m_impl->ini->Reset();
+  m_impl->ini->LoadData(sOut);
   MRPT_END
 }
 

@@ -283,6 +283,32 @@ TEST(COccupancyGridMap2DTests, subSampleHalvesResolution)
   EXPECT_NEAR(grid.getCell(newCx + 1, newCy), 1.0f, 0.05f);
 }
 
+// A ratio that does not divide the grid size: the new limits snap to the new
+// resolution, so the number of cells is not simply the old one over the ratio.
+TEST(COccupancyGridMap2DTests, subSampleWithNonDivisibleRatio)
+{
+  COccupancyGridMap2D grid(-10.0f, 10.0f, -10.0f, 10.0f, 0.05f);
+  grid.fill(1.0f);  // all free
+  // An occupied 1x1 m square around (2.5, -3.5):
+  for (float x = 2.0f; x < 3.0f; x += 0.05f)
+  {
+    for (float y = -4.0f; y < -3.0f; y += 0.05f)
+    {
+      grid.setCell(grid.x2idx(x), grid.y2idx(y), 0.0f);
+    }
+  }
+
+  grid.subSample(3);
+
+  EXPECT_NEAR(grid.getResolution(), 0.15f, 1e-5f);
+  // The cell buffer must match the reported size:
+  ASSERT_EQ(grid.getRawMap().size(), size_t(grid.getSizeX()) * grid.getSizeY());
+  // Cells keep their place:
+  EXPECT_NEAR(grid.getCell(grid.x2idx(2.5f), grid.y2idx(-3.5f)), 0.0f, 0.05f);
+  EXPECT_NEAR(grid.getCell(grid.x2idx(-2.5f), grid.y2idx(3.5f)), 1.0f, 0.05f);
+  EXPECT_NEAR(grid.getCell(grid.x2idx(9.9f), grid.y2idx(9.9f)), 1.0f, 0.05f);
+}
+
 TEST(COccupancyGridMap2DTests, computeEntropyKnownMap)
 {
   // Verify computeEntropy() runs without crashing and returns non-negative values.
@@ -448,6 +474,26 @@ TEST(COccupancyGridMap2DTests, InsertSimpleRaysMarksOccupiedAtEndpoint)
   // endpoint at (3,0):
   EXPECT_GT(grid.getPos(1.0, 0), 0.51f);
   EXPECT_LT(grid.getPos(3.0, 0), 0.49f);
+}
+
+// A sensor far outside of the grid: the grid must grow to contain the whole
+// rays, not only their endpoints.
+TEST(COccupancyGridMap2DTests, InsertScanFromOutsideTheGrid)
+{
+  for (const bool widened : {false, true})
+  {
+    COccupancyGridMap2D grid(-5.0f, 5.0f, -5.0f, 5.0f, 0.10f);
+    grid.insertionOptions.wideningBeamsWithDistance = widened;
+    grid.insertionOptions.maxDistanceInsertion = 40.0f;
+
+    const auto scan = makeSimpleScan(61, 26.0f);
+    const CPose3D robotPose(-30.0, 0.0, 0.0, 0, 0, 0);  // far out of the grid
+    EXPECT_TRUE(grid.insertObservation(scan, robotPose));
+
+    EXPECT_LE(grid.getXMin(), -30.0f) << "widened=" << widened;
+    EXPECT_GT(grid.getPos(-29.0, 0), 0.51f) << "widened=" << widened;  // free
+    EXPECT_LT(grid.getPos(-4.0, 0), 0.49f) << "widened=" << widened;   // hit
+  }
 }
 
 TEST(COccupancyGridMap2DTests, InsertWidenedRaysMarksOccupiedAtEndpoint)

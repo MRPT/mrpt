@@ -61,12 +61,14 @@ void CConfigFileMemory::setContent(const std::vector<std::string>& stringList)
   std::string aux;
   mrpt::system::stringListAsString(stringList, aux);
   const auto sOut = mrpt::config::config_parser(aux);
+  m_impl->ini->Reset();  // replace, not merge with, the previous contents
   m_impl->ini->LoadData(sOut);
 }
 
 void CConfigFileMemory::setContent(const std::string& str)
 {
   const auto sOut = mrpt::config::config_parser(str);
+  m_impl->ini->Reset();  // replace, not merge with, the previous contents
   m_impl->ini->LoadData(sOut);
 }
 

@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/config/CConfigFileBase.h>  // parseDoubleClassic()
 #include <mrpt/config/config_parser.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
@@ -46,8 +47,8 @@ std::string formatRoundTrip(const double value)
   std::string s;
   for (int precision = 15; precision <= 17; precision++)
   {
-    s = mrpt::format("%.*g", precision, value);
-    if (std::strtod(s.c_str(), nullptr) == value)
+    s = mrpt::config::internal::toClassicDecimalPoint(mrpt::format("%.*g", precision, value));
+    if (mrpt::config::internal::parseDoubleClassic(s) == value)
     {
       break;
     }
@@ -115,7 +116,8 @@ void mci::parse_process_var_define(
     pc.defined_vars[var_name] = var_value;
     if (!var_value.empty())
     {
-      pc.defined_vars_values[var_name] = ::atof(parse_process_var_eval(pc, var_value).c_str());
+      pc.defined_vars_values[var_name] =
+          mrpt::config::internal::parseDoubleClassic(parse_process_var_eval(pc, var_value));
     }
   }
 }

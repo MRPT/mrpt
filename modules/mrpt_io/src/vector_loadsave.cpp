@@ -258,6 +258,12 @@ bool mrpt::io::vectorNumericFromTextFile(
     {
       vec.push_back(number);
     }
+    else if (readed == 0)
+    {
+      // Not a number: fscanf() does not consume it, so it would never end.
+      os::fclose(f);
+      return false;
+    }
   }
 
   os::fclose(f);

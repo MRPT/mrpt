@@ -84,12 +84,12 @@ void mrpt::system::encodeUTF8(const std::vector<uint16_t>& input, std::string& o
       output += static_cast<char>(MASKBYTE | (i & MASKBITS));
     }
     // 1110xxxx 10xxxxxx 10xxxxxx
-    /*else if(input[i] < 0x10000)
+    else
     {
-      output.push_back((char)(MASK3BYTES | input[i] >> 12));
-      output.push_back((char)(MASKBYTE | input[i] >> 6 & MASKBITS));
-      output.push_back((char)(MASKBYTE | input[i] & MASKBITS));
-    }*/
+      output += static_cast<char>(MASK3BYTES | (i >> 12));
+      output += static_cast<char>(MASKBYTE | ((i >> 6) & MASKBITS));
+      output += static_cast<char>(MASKBYTE | (i & MASKBITS));
+    }
   }
 }
 
@@ -101,32 +101,59 @@ void mrpt::system::encodeUTF8(const std::vector<uint16_t>& input, std::string& o
 ---------------------------------------------------------------*/
 void mrpt::system::decodeUTF8(const std::string& input, std::vector<uint16_t>& output)
 {
+  // Invalid or truncated sequences, and characters outside the BMP (which do
+  // not fit in 16 bits), are decoded as U+FFFD (replacement character):
+  constexpr uint16_t REPLACEMENT_CHAR = 0xFFFD;
+
   output.clear();
   output.reserve(input.size());
-  for (size_t i = 0; i < input.size();)
+  const size_t n = input.size();
+  for (size_t i = 0; i < n;)
   {
-    uint16_t ch = 0;
+    const auto b0 = static_cast<uint8_t>(input[i]);
+    size_t len = 1;
+    uint32_t ch = REPLACEMENT_CHAR;
+    if (b0 < MASKBYTE)
+    {
+      // 0xxxxxxx
+      ch = b0;
+    }
+    else if ((b0 & 0xE0) == MASK2BYTES)
+    {
+      // 110xxxxx 10xxxxxx
+      len = 2;
+      ch = b0 & 0x1Fu;
+    }
+    else if ((b0 & 0xF0) == MASK3BYTES)
+    {
+      // 1110xxxx 10xxxxxx 10xxxxxx
+      len = 3;
+      ch = b0 & 0x0Fu;
+    }
+    else if ((b0 & 0xF8) == MASK4BYTES)
+    {
+      // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+      len = 4;
+    }
+    // else: a continuation byte or an invalid lead byte, len=1
 
-    // 1110xxxx 10xxxxxx 10xxxxxx
-    if ((input[i] & MASK3BYTES) == MASK3BYTES)
+    // Consume the continuation bytes:
+    size_t k = 1;
+    for (; k < len && i + k < n; k++)
     {
-      ch = static_cast<uint16_t>(
-          ((input[i] & 0x0F) << 12) | ((input[i + 1] & MASKBITS) << 6) | (input[i + 2] & MASKBITS));
-      i += 3;
+      const auto b = static_cast<uint8_t>(input[i + k]);
+      if ((b & 0xC0) != MASKBYTE)
+      {
+        break;
+      }
+      ch = (ch << 6) | (b & MASKBITS);
     }
-    // 110xxxxx 10xxxxxx
-    else if ((input[i] & MASK2BYTES) == MASK2BYTES)
+    if (k != len || len == 4)
     {
-      ch = static_cast<uint16_t>((input[i] & 0x1F) << 6) | (input[i + 1] & MASKBITS);
-      i += 2;
+      ch = REPLACEMENT_CHAR;
     }
-    // 0xxxxxxx
-    else if (uint8_t(input[i]) < MASKBYTE)
-    {
-      ch = static_cast<unsigned char>(input[i]);
-      i += 1;
-    }
-    output.push_back(ch);
+    output.push_back(static_cast<uint16_t>(ch));
+    i += k;
   }
 }
 

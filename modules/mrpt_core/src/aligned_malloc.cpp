@@ -16,6 +16,7 @@
 
 #include <cstdlib>  // free, realloc, C++17 aligned_alloc
 #include <cstring>  // memset
+#include <limits>
 
 void* mrpt::aligned_calloc(size_t bytes, size_t alignment)
 {
@@ -31,7 +32,13 @@ void* mrpt::aligned_malloc(size_t size, size_t alignment)
   // size must be an integral multiple of alignment:
   if (alignment != 0 && (size % alignment) != 0)
   {
-    size = ((size / alignment) + 1) * alignment;
+    // Rounding up must not wrap around for huge sizes:
+    const size_t padding = alignment - (size % alignment);
+    if (size > std::numeric_limits<size_t>::max() - padding)
+    {
+      return nullptr;
+    }
+    size += padding;
   }
 #if defined(_MSC_VER) || defined(__MINGW32_MAJOR_VERSION)
   return _aligned_malloc(size, alignment);

@@ -352,6 +352,64 @@ TEST(CFileGZStreams, openFailures)
   EXPECT_ANY_THROW(CFileGZOutputStream{"/this/directory/does/not/exist/file.gz"});
 }
 
+TEST(CFileGZStreams, failedReopenLeavesStreamClosed)
+{
+  const auto payload = samplePayload(100);
+  const std::string fname = tempName("_gz_reopen.gz");
+  {
+    CFileGZOutputStream out(fname);
+    out.Write(payload.data(), payload.size());
+  }
+
+  {
+    CFileGZInputStream in(fname);
+    ASSERT_TRUE(in.fileOpenCorrectly());
+    // Reopening with a missing file closes the previous one:
+    EXPECT_FALSE(in.open(tempName("_does_not_exist.gz")));
+    EXPECT_FALSE(in.fileOpenCorrectly());
+    uint8_t b = 0;
+    EXPECT_ANY_THROW((void)in.Read(&b, 1));
+  }  // must not close the stream twice
+
+  std::remove(fname.c_str());
+}
+
+TEST(CFileGZStreams, corruptedDataIsNotReportedAsHugeRead)
+{
+  // A gzip member whose deflate data is garbage, so gzread() fails:
+  const auto payload = samplePayload(20000);
+  const std::string fname = tempName("_gz_corrupted.gz");
+  {
+    CFileGZOutputStream out(fname);
+    out.Write(payload.data(), payload.size());
+  }
+  std::vector<uint8_t> bytes;
+  {
+    FILE* f = std::fopen(fname.c_str(), "rb");
+    ASSERT_TRUE(f != nullptr);
+    int c = 0;
+    while ((c = std::fgetc(f)) != EOF)
+    {
+      bytes.push_back(static_cast<uint8_t>(c));
+    }
+    std::fclose(f);
+  }
+  ASSERT_GT(bytes.size(), 40U);
+  for (size_t i = 12; i < bytes.size() - 8; i++)
+  {
+    bytes[i] = 0xff;
+  }
+  writeRawFile(fname, bytes);
+
+  CFileGZInputStream in(fname);
+  ASSERT_TRUE(in.fileOpenCorrectly());
+  std::vector<uint8_t> buf(payload.size());
+  const size_t n = in.Read(buf.data(), buf.size());
+  EXPECT_LE(n, buf.size());
+
+  std::remove(fname.c_str());
+}
+
 // ------------------------------- zip:: -------------------------------------
 
 TEST(zip, compressAndDecompressVectors)

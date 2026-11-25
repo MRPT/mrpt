@@ -178,12 +178,19 @@ int mrpt_fy_parser_next(mrpt_fy_parser_t* p, mrpt_fy_event_t* out)
       case FYET_STREAM_END:
       case FYET_DOCUMENT_START:
       case FYET_DOCUMENT_END:
-      case FYET_ALIAS:
         fy_parser_event_free(p->p, ev);
         continue;
 
+      case FYET_ALIAS:
+        out->type = MRPT_FY_EV_ALIAS;
+        out->anchor_text = dup_anchor_text(ev->alias.anchor);
+        fill_comments_and_mark(ev->alias.anchor, out);
+        fy_parser_event_free(p->p, ev);
+        return 0;
+
       case FYET_MAPPING_START:
         out->type = MRPT_FY_EV_MAP_START;
+        out->anchor_text = dup_anchor_text(ev->mapping_start.anchor);
         fill_comments_and_mark(ev->mapping_start.mapping_start, out);
         fy_parser_event_free(p->p, ev);
         return 0;
@@ -195,6 +202,7 @@ int mrpt_fy_parser_next(mrpt_fy_parser_t* p, mrpt_fy_event_t* out)
 
       case FYET_SEQUENCE_START:
         out->type = MRPT_FY_EV_SEQ_START;
+        out->anchor_text = dup_anchor_text(ev->sequence_start.anchor);
         fill_comments_and_mark(ev->sequence_start.sequence_start, out);
         fy_parser_event_free(p->p, ev);
         return 0;

@@ -44,6 +44,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
   {
     THROW_EXCEPTION("Weights matrix is not square!!");
   }
+  // The second eigenvector is needed:
+  ASSERT_GE_(nodeCount, 2U);
 
   // Shi & Malik's method
   //-----------------------------------------------------------------
@@ -157,10 +159,13 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
     THROW_EXCEPTION("Weights matrix is not square!!");
   }
 
-  if (nodeCount == 1)
+  if (nodeCount <= 1)
   {
-    // Don't split, there is just a node!
-    p1.push_back(0);
+    // Don't split, there is just a node (or none)!
+    for (i = 0; i < nodeCount; i++)
+    {
+      p1.push_back(static_cast<uint32_t>(i));
+    }
     out_parts.push_back(p1);
     return;
   }

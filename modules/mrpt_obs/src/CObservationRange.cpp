@@ -163,8 +163,9 @@ void CObservationRange::serializeFrom(mrpt::serialization::CSchemeArchiveBase& i
       {
         auto& m = sensedData[i];
         auto e = list[i];
-        const auto id = static_cast<uint32_t>(e["sensorID"]);
-        ASSERT_LE_(id, uint32_t{std::numeric_limits<uint16_t>::max()});
+        // Read with the widest type, so out-of-range values are not wrapped:
+        const auto id = static_cast<uint64_t>(e["sensorID"]);
+        ASSERT_LE_(id, uint64_t{std::numeric_limits<uint16_t>::max()});
         m.sensorID = static_cast<uint16_t>(id);
         CPose3D p;
         e["sensorPose"].readTo(p);

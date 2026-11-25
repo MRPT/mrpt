@@ -1066,6 +1066,14 @@ void ascii_get_element(PlyFile* plyfile, char* elem_ptr)
   if (words.empty()) throw std::runtime_error("ply_get_element: unexpected end of file");
 
   which_word = 0;
+  const auto nextWord = [&]() -> const char*
+  {
+    if (static_cast<size_t>(which_word) >= words.size())
+    {
+      throw std::runtime_error("ply_get_element: too few values in line: " + orig_line);
+    }
+    return words[static_cast<size_t>(which_word++)].c_str();
+  };
 
   for (size_t j = 0; j < elem->props.size(); j++)
   {
@@ -1082,8 +1090,7 @@ void ascii_get_element(PlyFile* plyfile, char* elem_ptr)
     { /* a list */
 
       /* get and store the number of items in the list */
-      get_ascii_item(
-          words[which_word++].c_str(), prop->count_external, &int_val, &uint_val, &double_val);
+      get_ascii_item(nextWord(), prop->count_external, &int_val, &uint_val, &double_val);
       if (store_it)
       {
         item = elem_data + prop->count_offset;
@@ -1093,6 +1100,10 @@ void ascii_get_element(PlyFile* plyfile, char* elem_ptr)
       /* allocate space for an array of items and store a ptr to the array
        */
       list_count = int_val;
+      if (list_count < 0)
+      {
+        throw std::runtime_error("ply_get_element: negative list size");
+      }
       item_size = ply_type_size[prop->internal_type];
       store_array = (char**)(elem_data + prop->offset);
 
@@ -1104,7 +1115,12 @@ void ascii_get_element(PlyFile* plyfile, char* elem_ptr)
       {
         if (store_it)
         {
-          item_ptr = static_cast<char*>(malloc(sizeof(char) * item_size * list_count));
+          item_ptr = static_cast<char*>(malloc(
+              sizeof(char) * static_cast<size_t>(item_size) * static_cast<size_t>(list_count)));
+          if (item_ptr == nullptr)
+          {
+            throw std::runtime_error("ply_get_element: cannot allocate list items");
+          }
           item = item_ptr;
           *store_array = item_ptr;
         }
@@ -1112,8 +1128,7 @@ void ascii_get_element(PlyFile* plyfile, char* elem_ptr)
         /* read items and store them into the array */
         for (int k = 0; k < list_count; k++)
         {
-          get_ascii_item(
-              words[which_word++].c_str(), prop->external_type, &int_val, &uint_val, &double_val);
+          get_ascii_item(nextWord(), prop->external_type, &int_val, &uint_val, &double_val);
           if (store_it)
           {
             store_item(item, prop->internal_type, int_val, uint_val, double_val);
@@ -1124,8 +1139,7 @@ void ascii_get_element(PlyFile* plyfile, char* elem_ptr)
     }
     else
     { /* not a list */
-      get_ascii_item(
-          words[which_word++].c_str(), prop->external_type, &int_val, &uint_val, &double_val);
+      get_ascii_item(nextWord(), prop->external_type, &int_val, &uint_val, &double_val);
       if (store_it)
       {
         item = elem_data + prop->offset;
@@ -1210,6 +1224,10 @@ void binary_get_element(PlyFile* plyfile, char* elem_ptr)
       /* allocate space for an array of items and store a ptr to the array
        */
       list_count = int_val;
+      if (list_count < 0)
+      {
+        throw std::runtime_error("ply_get_element: negative list size");
+      }
       /* The "if" was added by Afra Zomorodian 8/22/95
        * so that zipper won't crash reading plies that have additional
        * properties.
@@ -1227,7 +1245,12 @@ void binary_get_element(PlyFile* plyfile, char* elem_ptr)
       {
         if (store_it)
         {
-          item_ptr = static_cast<char*>(malloc(sizeof(char) * item_size * list_count));
+          item_ptr = static_cast<char*>(malloc(
+              sizeof(char) * static_cast<size_t>(item_size) * static_cast<size_t>(list_count)));
+          if (item_ptr == nullptr)
+          {
+            throw std::runtime_error("ply_get_element: cannot allocate list items");
+          }
           item = item_ptr;
           *store_array = item_ptr;
         }

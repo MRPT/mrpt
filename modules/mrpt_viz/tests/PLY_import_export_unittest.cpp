@@ -313,6 +313,32 @@ TEST(PLY_import_export, MalformedHeaderFails)
   mrpt::system::deleteFile(file);
 }
 
+// Data lines with fewer values than declared properties, or a list with a
+// count beyond the values in the line, must fail instead of reading garbage:
+TEST(PLY_import_export, TruncatedAsciiDataLinesFail)
+{
+  const std::string header =
+      "ply\n"
+      "format ascii 1.0\n"
+      "element vertex 2\n"
+      "property float x\n"
+      "property float y\n"
+      "property float z\n"
+      "property list uchar float extra\n"
+      "end_header\n";
+  for (const std::string body : {"0 0 0 0\n1 0\n", "0 0 0 0\n1 0 0 3 1.0\n", "0 0 0 -1\n"})
+  {
+    const std::string file = tempPlyFile("_truncated");
+    writeTextFile(file, header + body);
+
+    CPointCloud pc;
+    EXPECT_FALSE(pc.loadFromPlyFile(file)) << body;
+    EXPECT_FALSE(pc.getLoadPLYErrorString().empty());
+
+    mrpt::system::deleteFile(file);
+  }
+}
+
 TEST(PLY_import_export, SaveWithCommentsAndObjInfo)
 {
   CPointCloud pc;

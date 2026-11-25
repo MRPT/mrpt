@@ -98,6 +98,29 @@ TEST(SchemeSerialization, CPointCloud)
   EXPECT_EQ(b.size(), 0U);
 }
 
+TEST(SchemeSerialization, CPointCloudColorFromDepth)
+{
+  CPointCloud a;
+  a.insertPoint(0.0f, 0.0f, 0.0f);
+  a.insertPoint(0.0f, 1.0f, 0.0f);
+  a.setGradientColors(mrpt::img::TColorf(0, 0, 0), mrpt::img::TColorf(1, 1, 1));
+  a.enableColorFromY();
+
+  // Points get different colors only if the gradient mode was read back:
+  CPointCloud b;
+  jsonRoundTrip(a, b);
+  b.updateBuffers();
+  ASSERT_EQ(b.shaderPointsVertexColorBuffer().size(), 2U);
+  EXPECT_NE(b.shaderPointsVertexColorBuffer()[0].R, b.shaderPointsVertexColorBuffer()[1].R);
+
+  // And back to "none":
+  a.enableColorFromY(false);
+  jsonRoundTrip(a, b);
+  b.updateBuffers();
+  ASSERT_EQ(b.shaderPointsVertexColorBuffer().size(), 2U);
+  EXPECT_EQ(b.shaderPointsVertexColorBuffer()[0].R, b.shaderPointsVertexColorBuffer()[1].R);
+}
+
 TEST(SchemeSerialization, CPointCloudVersion1)
 {
   CPointCloud a;
@@ -114,6 +137,48 @@ TEST(SchemeSerialization, CPointCloudVersion1)
   arch.readTo(b);
   ASSERT_EQ(b.size(), 2U);
   EXPECT_FLOAT_EQ(b.getPoint3Df(1).y, 5.0f);
+}
+
+// Reading into an object already in use must invalidate its cached data (e.g.
+// the bounding box) and bump its data version, as the binary path does:
+TEST(SchemeSerialization, ReloadMarksObjectsAsChanged)
+{
+  {
+    CPointCloud a;
+    a.insertPoint(10.0f, 20.0f, 30.0f);
+    a.insertPoint(11.0f, 21.0f, 31.0f);
+
+    CPointCloud b;
+    b.insertPoint(0.0f, 0.0f, 0.0f);
+    b.insertPoint(1.0f, 1.0f, 1.0f);
+    EXPECT_FLOAT_EQ(b.getBoundingBoxLocal().max.x, 1.0f);  // now cached
+    const auto v0 = b.dataVersion();
+
+    jsonRoundTrip(a, b);
+    EXPECT_NE(b.dataVersion(), v0);
+    EXPECT_FLOAT_EQ(b.getBoundingBoxLocal().min.z, 30.0f);
+    EXPECT_FLOAT_EQ(b.getBoundingBoxLocal().max.x, 11.0f);
+  }
+  {
+    CArrow a(mrpt::math::TPoint3Df(1, 2, 3), mrpt::math::TPoint3Df(4, 5, 6));
+    CArrow b;
+    (void)b.getBoundingBoxLocal();
+    const auto v0 = b.dataVersion();
+
+    jsonRoundTrip(a, b);
+    EXPECT_NE(b.dataVersion(), v0);
+    EXPECT_NEAR(b.getBoundingBoxLocal().max.z, 6.0, 1e-4);
+  }
+  {
+    CCylinder a(1.5f, 0.5f, 3.0f, 24);
+    CCylinder b(0.1f, 0.1f, 0.2f, 10);
+    EXPECT_NEAR(b.getBoundingBoxLocal().max.z, 0.2, 1e-4);
+    const auto v0 = b.dataVersion();
+
+    jsonRoundTrip(a, b);
+    EXPECT_NE(b.dataVersion(), v0);
+    EXPECT_NEAR(b.getBoundingBoxLocal().max.z, 3.0, 1e-4);
+  }
 }
 
 TEST(SchemeSerialization, UnknownDatatypeVersionThrows)

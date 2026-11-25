@@ -177,3 +177,39 @@ TEST(ts_hash_map, tooManyCollisionsThrows)
   }
   EXPECT_THROW(m[collidingKeys[5]] = 0.0, std::runtime_error);
 }
+
+TEST(ts_hash_map, copiedIteratorsCanBeIncremented)
+{
+  mrpt::containers::ts_hash_map<std::string, int> m;
+  m["a"] = 1;
+  m["b"] = 2;
+  m["c"] = 3;
+
+  // Post-increment and std algorithms copy the iterator before advancing it:
+  int sum = 0;
+  size_t count = 0;
+  for (auto it = m.begin(); it != m.end(); it++)
+  {
+    sum += it->second;
+    count++;
+  }
+  EXPECT_EQ(count, 3U);
+  EXPECT_EQ(sum, 6);
+
+  auto it1 = m.begin();
+  auto it2 = it1;  // copy
+  ++it2;
+  EXPECT_TRUE(it1 != it2);
+  decltype(it1) it3;
+  it3 = it1;  // copy assignment
+  ++it3;
+  EXPECT_TRUE(it3 == it2);
+
+  const auto& cm = m;
+  int sumConst = 0;
+  for (auto it = cm.begin(); it != cm.end(); it++)
+  {
+    sumConst += (*it).second;
+  }
+  EXPECT_EQ(sumConst, 6);
+}

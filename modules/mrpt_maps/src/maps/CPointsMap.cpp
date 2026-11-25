@@ -307,7 +307,7 @@ void CPointsMap::determineMatching2D(
 
   // For the bounding box:
   __m128 x_mins = _mm_set1_ps(std::numeric_limits<float>::max());
-  __m128 x_maxs = _mm_set1_ps(std::numeric_limits<float>::min());
+  __m128 x_maxs = _mm_set1_ps(std::numeric_limits<float>::lowest());
   __m128 y_mins = x_mins;
   __m128 y_maxs = x_maxs;
 
@@ -899,7 +899,7 @@ mrpt::math::TBoundingBoxf CPointsMap::boundingBox() const
 
       // For the bounding box:
       __m128 x_mins = _mm_set1_ps(std::numeric_limits<float>::max());
-      __m128 x_maxs = _mm_set1_ps(std::numeric_limits<float>::min());
+      __m128 x_maxs = _mm_set1_ps(std::numeric_limits<float>::lowest());
       __m128 y_mins = x_mins, y_maxs = x_maxs;
       __m128 z_mins = x_mins, z_maxs = x_maxs;
 

@@ -57,6 +57,7 @@ void CCylinder::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
     default:
       MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
   }
+  CVisualObject::notifyChange();
 }
 
 uint8_t CCylinder::serializeGetVersion() const { return 2; }

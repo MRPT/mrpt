@@ -746,6 +746,12 @@ TEST(CPosePDFParticles, BayesianFusionWithParticlesP2)
 
   const std::string tmpf = testTempFile("mrpt_test_parzen.txt");
   p1.saveParzenPDFToTextFile(tmpf.c_str(), -2, 2, -2, 2, 0.0, 0.5, 0.2, 0.2);
+
+  // A matrix with one row per y value and one column per x value:
+  CMatrixDouble M;
+  M.loadFromTextFile(tmpf);
+  EXPECT_EQ(M.rows(), 8);
+  EXPECT_EQ(M.cols(), 8);
 }
 
 TEST(CPosePDFParticles, BayesianFusionWithGaussianP2)
@@ -2118,6 +2124,23 @@ TEST(CPosesSequence, CPoses2DSequenceFullCoverage)
   CPose2D newPose(9, 9, 0);
   seq.changePose(0, newPose);
   EXPECT_EQ(seq.getPose(0), CPose2D(9, 9, 0));
+
+  // Changing a pose other than the first must not touch any other one:
+  {
+    CPoses2DSequence s3;
+    for (int i = 0; i < 3; i++)
+    {
+      CPose2D p(i, 0, 0);
+      s3.appendPose(p);
+    }
+    CPose2D p(7, 7, 0);
+    s3.changePose(1, p);
+    EXPECT_EQ(s3.getPose(0), CPose2D(0, 0, 0));
+    EXPECT_EQ(s3.getPose(1), CPose2D(7, 7, 0));
+    EXPECT_EQ(s3.getPose(2), CPose2D(2, 0, 0));
+    s3.changePose(2, p);
+    EXPECT_EQ(s3.getPose(2), CPose2D(7, 7, 0));
+  }
 
   EXPECT_THROW((void)seq.getPose(99), std::exception);
 
