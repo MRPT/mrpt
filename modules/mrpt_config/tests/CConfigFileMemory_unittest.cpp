@@ -81,6 +81,14 @@ TEST(CConfigFileMemory, setFromString)
 
   EXPECT_EQ(cfg.read_int("test", "key_num", 0), 4);
   EXPECT_EQ(cfg.read_string("test", "key_str", ""), std::string("pepe"));
+
+  // setContent() replaces the previous contents:
+  cfg.setContent("[other]\nx = 1\n");
+  EXPECT_FALSE(cfg.keyExists("test", "key_num"));
+  EXPECT_EQ(cfg.read_int("other", "x", 0), 1);
+  cfg.setContent(std::vector<std::string>{"[third]", "y = 2"});
+  EXPECT_FALSE(cfg.keyExists("other", "x"));
+  EXPECT_EQ(cfg.read_int("third", "y", 0), 2);
 }
 
 // Being able of read
