@@ -2119,6 +2119,23 @@ TEST(CPosesSequence, CPoses2DSequenceFullCoverage)
   seq.changePose(0, newPose);
   EXPECT_EQ(seq.getPose(0), CPose2D(9, 9, 0));
 
+  // Changing a pose other than the first must not touch any other one:
+  {
+    CPoses2DSequence s3;
+    for (int i = 0; i < 3; i++)
+    {
+      CPose2D p(i, 0, 0);
+      s3.appendPose(p);
+    }
+    CPose2D p(7, 7, 0);
+    s3.changePose(1, p);
+    EXPECT_EQ(s3.getPose(0), CPose2D(0, 0, 0));
+    EXPECT_EQ(s3.getPose(1), CPose2D(7, 7, 0));
+    EXPECT_EQ(s3.getPose(2), CPose2D(2, 0, 0));
+    s3.changePose(2, p);
+    EXPECT_EQ(s3.getPose(2), CPose2D(7, 7, 0));
+  }
+
   EXPECT_THROW((void)seq.getPose(99), std::exception);
 
   CPose2D absAfterAll = seq.absolutePoseAfterAll();
