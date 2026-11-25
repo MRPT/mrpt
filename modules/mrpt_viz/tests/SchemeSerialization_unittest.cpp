@@ -98,6 +98,29 @@ TEST(SchemeSerialization, CPointCloud)
   EXPECT_EQ(b.size(), 0U);
 }
 
+TEST(SchemeSerialization, CPointCloudColorFromDepth)
+{
+  CPointCloud a;
+  a.insertPoint(0.0f, 0.0f, 0.0f);
+  a.insertPoint(0.0f, 1.0f, 0.0f);
+  a.setGradientColors(mrpt::img::TColorf(0, 0, 0), mrpt::img::TColorf(1, 1, 1));
+  a.enableColorFromY();
+
+  // Points get different colors only if the gradient mode was read back:
+  CPointCloud b;
+  jsonRoundTrip(a, b);
+  b.updateBuffers();
+  ASSERT_EQ(b.shaderPointsVertexColorBuffer().size(), 2U);
+  EXPECT_NE(b.shaderPointsVertexColorBuffer()[0].R, b.shaderPointsVertexColorBuffer()[1].R);
+
+  // And back to "none":
+  a.enableColorFromY(false);
+  jsonRoundTrip(a, b);
+  b.updateBuffers();
+  ASSERT_EQ(b.shaderPointsVertexColorBuffer().size(), 2U);
+  EXPECT_EQ(b.shaderPointsVertexColorBuffer()[0].R, b.shaderPointsVertexColorBuffer()[1].R);
+}
+
 TEST(SchemeSerialization, CPointCloudVersion1)
 {
   CPointCloud a;

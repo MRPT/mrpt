@@ -73,11 +73,10 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
     case 1:  // v1 also had the number of points, as "N"
     case 2:
     {
-      /**
-       *  currently below is being left to what is being set by
-       *  the default constructor i.e.,CPointCloud::colNone
-       */
-      // m_colorFromDepth = static_cast<float>(in["colorDepth"]);
+      const auto axis = static_cast<int32_t>(in["colorFromDepth"]);
+      ASSERT_GE_(axis, static_cast<int32_t>(colNone));
+      ASSERT_LE_(axis, static_cast<int32_t>(colX));
+      m_colorFromDepth = static_cast<Axis>(axis);
       setPointSize(static_cast<float>(in["pointSize"]));
       auto xs = in["xs"];
       auto ys = in["ys"];
