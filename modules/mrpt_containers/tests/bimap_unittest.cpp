@@ -56,3 +56,19 @@ TEST(bimap, operations)
   EXPECT_EQ(3.0, bm.direct("tres"));
   EXPECT_EQ("tres", bm.inverse(3.0));
 }
+
+TEST(bimap, insertKeyAndValueOfDifferentPairsThrows)
+{
+  mrpt::containers::bimap<int, std::string> bm;
+  bm.insert(1, "a");
+  bm.insert(2, "b");
+
+  // Both exist, but not as a pair: this would break the bijection.
+  EXPECT_ANY_THROW(bm.insert(1, "b"));
+
+  EXPECT_EQ(bm.size(), 2U);
+  EXPECT_EQ(bm.direct(1), "a");
+  EXPECT_EQ(bm.direct(2), "b");
+  EXPECT_EQ(bm.inverse("a"), 1);
+  EXPECT_EQ(bm.inverse("b"), 2);
+}
