@@ -19,10 +19,12 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/filesystem.h>
 
 #include <Eigen/Dense>
+#include <clocale>
 #include <cmath>
 #include <cstdint>
 #include <locale>
@@ -196,6 +198,52 @@ TEST(MatrixTextIO, loadFromTextFileFixedSizeTooManyRowsThrows)
   CMatrixDouble33 m;
   std::stringstream ss("1 2 3\n4 5 6\n7 8 9\n1 1 1\n");
   EXPECT_ANY_THROW(m.loadFromTextFile(ss));
+}
+
+// Text files use '.' as decimal point, whatever the C locale (GUI toolkits may
+// set one with a decimal comma):
+TEST(MatrixTextIO, loadFromTextFileIgnoresTheCLocale)
+{
+  const std::string oldLocale = std::setlocale(LC_ALL, nullptr);
+  bool commaLocale = false;
+  for (const char* name :
+       {"de_DE.UTF-8", "de_DE.utf8", "es_ES.UTF-8", "es_ES.utf8", "en_DK.UTF-8", "en_DK.utf8",
+        "German"})
+  {
+    if (std::setlocale(LC_NUMERIC, name) != nullptr &&
+        std::string(std::localeconv()->decimal_point) == ",")
+    {
+      commaLocale = true;
+      break;
+    }
+  }
+  if (!commaLocale)
+  {
+    std::setlocale(LC_ALL, oldLocale.c_str());
+    GTEST_SKIP() << "No locale with a decimal comma is installed";
+  }
+
+  CMatrixDouble m;
+  std::stringstream ss("0.5 -1.25e1, nan\n2.5 3.5 inf\n");
+  m.loadFromTextFile(ss);
+
+  std::vector<double> v;
+  std::stringstream ssv("0.25 1.5\n");
+  const bool vecOk = mrpt::math::loadVector(ssv, v);
+  std::setlocale(LC_ALL, oldLocale.c_str());
+
+  ASSERT_EQ(m.rows(), 2);
+  ASSERT_EQ(m.cols(), 3);
+  EXPECT_EQ(m(0, 0), 0.5);
+  EXPECT_EQ(m(0, 1), -12.5);
+  EXPECT_TRUE(std::isnan(m(0, 2)));
+  EXPECT_EQ(m(1, 1), 3.5);
+  EXPECT_TRUE(std::isinf(m(1, 2)));
+
+  ASSERT_TRUE(vecOk);
+  ASSERT_EQ(v.size(), 2U);
+  EXPECT_EQ(v[0], 0.25);
+  EXPECT_EQ(v[1], 1.5);
 }
 
 #if MRPT_HAS_FYAML
