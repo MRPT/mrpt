@@ -1593,8 +1593,13 @@ void math::getRectangleBounds(const std::vector<TPoint2D>& poly, TPoint2D& pMin,
   }
 }
 
-double math::distance(const TLine2D& r1, const TLine2D& r2)
+double math::distance(const TLine2D& r1_, const TLine2D& r2_)
 {
+  // Use unit normals, so tolerances do not depend on the coefficients' scale:
+  TLine2D r1 = r1_;
+  TLine2D r2 = r2_;
+  r1.unitarize();
+  r2.unitarize();
   if (std::abs(r1.coefs[0] * r2.coefs[1] - r2.coefs[0] * r1.coefs[1]) < geometryEpsilon)
   {
     // Lines are parallel: take a point of r1 along its dominant coefficient
