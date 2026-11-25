@@ -235,6 +235,87 @@ TEST(CNetworkOfPoses, LoadFromTextStreamDuplicatedVertexThrows)
   EXPECT_THROW(g.readAsText(ss), std::exception);
 }
 
+namespace
+{
+/** Expects reading `txt` into a new graph of type GRAPH to throw an error that
+ * names `expectedLine`. */
+template <class GRAPH>
+void expectParseError(const std::string& txt, const std::string& expectedLine)
+{
+  std::istringstream ss(txt);
+  GRAPH g;
+  try
+  {
+    g.readAsText(ss);
+    ADD_FAILURE() << "No exception for:\n" << txt;
+  }
+  catch (const std::exception& e)
+  {
+    EXPECT_NE(std::string(e.what()).find(expectedLine), std::string::npos) << "Input:\n"
+                                                                           << txt << "\nError:\n"
+                                                                           << e.what();
+  }
+}
+}  // namespace
+
+// Malformed lines of each entry type are reported with their line number:
+TEST(CNetworkOfPoses, LoadFromTextStreamMalformedLinesThrow)
+{
+  // 2D graphs:
+  expectParseError<CNetworkOfPoses2D>("VERTEX_SE2 0 0 0\n", "Line 1");
+  expectParseError<CNetworkOfPoses2D>("VERTEX2 0 0 0 0\nEDGE_SE2 0\n", "Line 2");
+  expectParseError<CNetworkOfPoses2D>(
+      "VERTEX2 0 0 0 0\nVERTEX2 1 0 0 0\nEDGE2 0 1 1 0 0\n", "Line 3");
+  expectParseError<CNetworkOfPoses2D>("VERTEX_SE3:QUAT 0 0 0 0 0 0 0 1\n", "Line 1");
+  expectParseError<CNetworkOfPoses2D>("EQUIV 1\n", "Line 1");
+  expectParseError<CNetworkOfPoses2D>("VERTEX2 0 0 0 0\nVERTEX2 1 0 0 0\nEDGE3 0 1\n", "Line 3");
+
+  // 3D graphs:
+  expectParseError<CNetworkOfPoses3D>("VERTEX3 0 0 0 0 0\n", "Line 1");
+  expectParseError<CNetworkOfPoses3D>("VERTEX_SE3:QUAT 0 0 0 0 0 0 0\n", "Line 1");
+  expectParseError<CNetworkOfPoses3D>(
+      "VERTEX3 0 0 0 0 0 0 0\nVERTEX3 0 1 0 0 0 0 0\n", "Line 2");  // duplicated id
+  expectParseError<CNetworkOfPoses3D>(
+      "VERTEX3 0 0 0 0 0 0 0\nVERTEX3 1 0 0 0 0 0 0\nEDGE3 0 1 1 0 0\n", "Line 3");
+  expectParseError<CNetworkOfPoses3D>(
+      "VERTEX3 0 0 0 0 0 0 0\nVERTEX3 1 0 0 0 0 0 0\nEDGE_SE3:QUAT 0 1 1 0 0 0 0\n", "Line 3");
+}
+
+// The information matrix of 3D edges may be omitted (unit g2o information):
+TEST(CNetworkOfPoses, LoadFromTextStreamEdgeWithoutInformation)
+{
+  std::istringstream ss(
+      "VERTEX3 0 0 0 0 0 0 0\n"
+      "VERTEX3 1 1 0 0 0 0 0\n"
+      "EDGE_SE3:QUAT 0 1 1 0 0 0 0 0 1\n");
+  CNetworkOfPoses3DInf g;
+  g.readAsText(ss);
+  ASSERT_EQ(g.edges.size(), 1U);
+  const auto& e = g.edges.begin()->second;
+  EXPECT_NEAR(e.getPoseMean().x(), 1.0, 1e-9);
+  // Unit information of the g2o residual: translation as is; rotations
+  // scaled, since the quaternion vector part is half the rotation vector:
+  for (int i = 0; i < 3; i++)
+  {
+    EXPECT_NEAR(e.cov_inv(i, i), 1.0, 1e-6);
+    EXPECT_NEAR(e.cov_inv(3 + i, 3 + i), 0.25, 1e-6);
+  }
+}
+
+// Unknown entry types are skipped (with a warning), not fatal:
+TEST(CNetworkOfPoses, LoadFromTextStreamSkipsUnknownEntries)
+{
+  std::istringstream ss(
+      "VERTEX2 0 0 0 0\n"
+      "SOMETHING_ELSE 1 2 3\n"
+      "SOMETHING_ELSE 4 5 6\n"
+      "VERTEX2 1 1 0 0\n");
+  CNetworkOfPoses2D g;
+  g.readAsText(ss);
+  EXPECT_EQ(g.nodes.size(), 2U);
+  EXPECT_NEAR(g.nodes.at(1).x(), 1.0, 1e-12);
+}
+
 TEST(CNetworkOfPoses, ExtractSubGraph)
 {
   CNetworkOfPoses2D g;
