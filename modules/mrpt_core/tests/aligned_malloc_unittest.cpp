@@ -70,6 +70,9 @@ TEST(aligned_allocator, failedAllocationThrows)
   EXPECT_ANY_THROW(v.resize(v.max_size()));
   EXPECT_TRUE(v.empty());
 
+  // Sizes that would wrap around when rounded up to the alignment:
+  EXPECT_EQ(mrpt::aligned_malloc(std::numeric_limits<size_t>::max() - 3, 16), nullptr);
+
   mrpt::aligned_allocator_cpp11<double> alloc;
   EXPECT_THROW((void)alloc.allocate(std::numeric_limits<size_t>::max() / 4), std::bad_alloc);
 }
