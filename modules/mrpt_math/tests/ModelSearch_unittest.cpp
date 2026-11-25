@@ -216,3 +216,16 @@ TEST(ModelSearch, ReproducibleWithSeed)
   EXPECT_EQ(m1.a, m2.a);
   EXPECT_EQ(m1.b, m2.b);
 }
+
+TEST(ModelSearch, RansacSingleModelNoInliersReturnsFalse)
+{
+  auto fit = MakeNoisyLineDataset(40, 2.0, 1.0);
+
+  ModelSearch ms;
+  LineModelFit::Model bestModel;
+  std::vector<size_t> inliers;
+
+  // No sample can have a squared error below a negative threshold:
+  EXPECT_FALSE(ms.ransacSingleModel(fit, 2, -1.0, bestModel, inliers));
+  EXPECT_TRUE(inliers.empty());
+}
