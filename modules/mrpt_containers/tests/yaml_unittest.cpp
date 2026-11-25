@@ -723,6 +723,26 @@ MRPT_TEST(yaml, outOfRangeIntegers)
 }
 MRPT_TEST_END()
 
+// Map keys that look like numbers, booleans or null are still plain keys:
+MRPT_TEST(yaml, parsedKeysAreStrings)
+{
+  const auto doc = mrpt::containers::yaml::FromText("on: push\n1: a\n~: b\njobs: 3\n");
+  EXPECT_EQ(doc["jobs"].as<int>(), 3);
+  EXPECT_TRUE(doc.has("on"));
+  EXPECT_EQ(doc["on"].as<std::string>(), "push");
+  EXPECT_EQ(doc["1"].as<std::string>(), "a");
+  EXPECT_EQ(doc["~"].as<std::string>(), "b");
+  EXPECT_FALSE(doc.has("2"));
+
+  // ...and survive a round trip:
+  std::stringstream ss;
+  doc.printAsYAML(ss);
+  const auto doc2 = mrpt::containers::yaml::FromText(ss.str());
+  EXPECT_EQ(doc2["1"].as<std::string>(), "a") << ss.str();
+  EXPECT_EQ(doc2["jobs"].as<int>(), 3);
+}
+MRPT_TEST_END()
+
 // Numeric (not string) scalars must be range-checked too, never wrapped:
 MRPT_TEST(yaml, outOfRangeNumericIntegers)
 {

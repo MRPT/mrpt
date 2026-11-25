@@ -1309,8 +1309,10 @@ yaml::scalar_t textToScalar(const std::string& s)
 #if MRPT_HAS_FYAML
 namespace
 {
-std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p);
-}
+/** Parses the next node. Scalars that are map keys are kept as the verbatim
+ * strings, like `on`, `1` or `~`: only values are type-resolved. */
+std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, bool isMapKey = false);
+}  // namespace
 static bool MRPT_YAML_PARSER_VERBOSE = mrpt::get_env<bool>("MRPT_YAML_PARSER_VERBOSE", false);
 
 #define PARSER_DBG_OUT(STR_)                                                      \
@@ -1378,7 +1380,7 @@ void parseEventCommentsAndMarks(const mrpt_fy_event_t& ev, yaml::node_t& n)
   }
 }
 
-std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
+std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, bool isMapKey)
 {
   MRPT_START
 
@@ -1412,7 +1414,7 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
       for (;;)
       {
         // Next event is map key:
-        auto nKey = recursiveParse(p);
+        auto nKey = recursiveParse(p, true /*isMapKey*/);
         // end of map reached?
         if (!nKey.has_value())
         {
@@ -1488,9 +1490,10 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p)
                             << " anchor: " << (event.anchor_text ? event.anchor_text : ""));
 
       // Only plain scalars are type-resolved: quoted and block scalars are
-      // always strings (YAML 1.2 core schema, and JSON strings).
+      // always strings (YAML 1.2 core schema, and JSON strings), and so are
+      // map keys.
       yaml::node_t n;
-      if (event.is_quoted != 0)
+      if (event.is_quoted != 0 || isMapKey)
       {
         n.d.emplace<yaml::scalar_t>(sValue);
       }
