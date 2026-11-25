@@ -344,11 +344,12 @@ class CPointsMap :
      * used points) of the squared distances to their closest map points,
      * divided by sigma_dist (default= 0.05^2 m^2).
      * Being a mean, it does not grow with the number of points, unlike the
-     * sum of per-ray log-likelihoods of COccupancyGridMap2D. Adding -d_i^2/v
-     * for each of the M used points is equivalent to sigma_dist = v/M, so
-     * sigma_dist is usually much smaller than the per-point variance. Large
-     * values give a flat likelihood: a wide particle cloud whose mean lags
-     * behind under odometry errors. */
+     * sum of per-ray log-likelihoods of COccupancyGridMap2D (likelihood
+     * field with the default LF_alternateAverageMethod=false). Adding
+     * -d_i^2/v for each of the M used points is equivalent to
+     * sigma_dist = v/M, so sigma_dist is usually much smaller than the
+     * per-point variance. Large values give a flat likelihood: a wide
+     * particle cloud whose mean lags behind under odometry errors. */
     double sigma_dist{0.0025};
     /** Maximum distance in meters to consider for the numerator divided by
      * "sigma_dist", so that each point has a minimum (but very small)
