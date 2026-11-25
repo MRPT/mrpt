@@ -63,7 +63,7 @@ void CPoses2DSequence::changePose(unsigned int ind, CPose2D& inPose)
 {
   if (ind >= poses.size()) THROW_EXCEPTION("Index out of range!!");
 
-  *((&(poses[ind])) + ind) = inPose;
+  poses[ind] = inPose;
 }
 
 /*---------------------------------------------------------------

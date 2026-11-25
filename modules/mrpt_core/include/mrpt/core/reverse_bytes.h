@@ -56,8 +56,11 @@ T reverseBytes(const T& v_in)
   return v_out;
 }
 
+/** Converts a little-endian value (as in files and network packets) to the
+ * native byte order. Takes its argument by value, so it can be a member of a
+ * packed struct (a reference to it could be misaligned). */
 template <class T>
-T toNativeEndianness(const T& v_in)
+T toNativeEndianness(T v_in)
 {
 #if MRPT_IS_BIG_ENDIAN
   T v_out = v_in;

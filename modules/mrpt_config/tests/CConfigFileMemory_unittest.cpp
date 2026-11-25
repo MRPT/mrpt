@@ -18,6 +18,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/typemeta/TEnumType.h>
 
+#include <clocale>
 #include <cstdlib>
 #include <fstream>
 
@@ -80,6 +81,14 @@ TEST(CConfigFileMemory, setFromString)
 
   EXPECT_EQ(cfg.read_int("test", "key_num", 0), 4);
   EXPECT_EQ(cfg.read_string("test", "key_str", ""), std::string("pepe"));
+
+  // setContent() replaces the previous contents:
+  cfg.setContent("[other]\nx = 1\n");
+  EXPECT_FALSE(cfg.keyExists("test", "key_num"));
+  EXPECT_EQ(cfg.read_int("other", "x", 0), 1);
+  cfg.setContent(std::vector<std::string>{"[third]", "y = 2"});
+  EXPECT_FALSE(cfg.keyExists("other", "x"));
+  EXPECT_EQ(cfg.read_int("third", "y", 0), 2);
 }
 
 // Being able of read
@@ -313,4 +322,67 @@ TEST(CConfigFileMemory, writeWithPaddingKeepsKeyReadable)
 
   EXPECT_TRUE(cfg.keyExists("sec", "shortKey"));
   EXPECT_EQ(cfg.read_int("sec", "shortKey", 0, /*failIfNotFound=*/true), 42);
+}
+
+namespace
+{
+/** Sets a C locale with a decimal comma (as GUI toolkits may do) while alive;
+ * `active()` is false if none is installed. */
+class ScopedDecimalCommaLocale
+{
+ public:
+  ScopedDecimalCommaLocale() : m_old(std::setlocale(LC_ALL, nullptr))
+  {
+    for (const char* name :
+         {"de_DE.UTF-8", "de_DE.utf8", "es_ES.UTF-8", "es_ES.utf8", "fr_FR.UTF-8", "fr_FR.utf8",
+          "en_DK.UTF-8", "en_DK.utf8", "German"})
+    {
+      if (std::setlocale(LC_NUMERIC, name) != nullptr &&
+          std::string(std::localeconv()->decimal_point) == ",")
+      {
+        m_active = true;
+        return;
+      }
+    }
+    std::setlocale(LC_ALL, m_old.c_str());
+  }
+  ~ScopedDecimalCommaLocale() { std::setlocale(LC_ALL, m_old.c_str()); }
+  ScopedDecimalCommaLocale(const ScopedDecimalCommaLocale&) = delete;
+  ScopedDecimalCommaLocale& operator=(const ScopedDecimalCommaLocale&) = delete;
+  [[nodiscard]] bool active() const { return m_active; }
+
+ private:
+  std::string m_old;
+  bool m_active = false;
+};
+}  // namespace
+
+// Config files use '.' as decimal point, whatever the C locale:
+TEST(CConfigFileMemory, numbersIgnoreTheCLocale)
+{
+  ScopedDecimalCommaLocale loc;
+  if (!loc.active())
+  {
+    GTEST_SKIP() << "No locale with a decimal comma is installed";
+  }
+
+  mrpt::config::CConfigFileMemory cfg("[s]\nd = 0.5\nf = -1.25\nv = [0.5 1.5e1]\n");
+  EXPECT_DOUBLE_EQ(cfg.read_double("s", "d", 0), 0.5);
+  EXPECT_FLOAT_EQ(cfg.read_float("s", "f", 0), -1.25f);
+  EXPECT_DOUBLE_EQ(cfg.read_double("s", "missing", 0.25), 0.25);
+  std::vector<double> v;
+  cfg.read_vector("s", "v", std::vector<double>(), v);
+  ASSERT_EQ(v.size(), 2U);
+  EXPECT_DOUBLE_EQ(v[0], 0.5);
+  EXPECT_DOUBLE_EQ(v[1], 15.0);
+
+  // Written values use '.' too:
+  cfg.write("s", "w", 2.75);
+  EXPECT_EQ(cfg.read_string("s", "w", "").find(','), std::string::npos);
+  EXPECT_DOUBLE_EQ(cfg.read_double("s", "w", 0), 2.75);
+
+  // And so do variables and expressions:
+  mrpt::config::CConfigFileMemory cfg2("@define V 0.5\n[s]\nx = $eval{V*3}\n");
+  EXPECT_EQ(cfg2.read_string("s", "x", ""), "1.5");
+  EXPECT_DOUBLE_EQ(cfg2.read_double("s", "x", 0), 1.5);
 }

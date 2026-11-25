@@ -38,6 +38,19 @@ class CConfigFilePrefixer;
 int MRPT_SAVE_NAME_PADDING();
 int MRPT_SAVE_VALUE_PADDING();
 
+namespace internal
+{
+/** Parses the leading number of `s` like std::strtod(), but always with '.' as
+ * decimal point, whatever the C locale (GUI toolkits often set one with a
+ * decimal comma). Returns 0 and sets `*ok` (if given) to false if there is no
+ * number. */
+double parseDoubleClassic(const std::string& s, bool* ok = nullptr);
+
+/** Replaces the decimal point of the current C locale in a formatted number
+ * with '.'. */
+std::string toClassicDecimalPoint(std::string s);
+}  // namespace internal
+
 /** This class allows loading and storing values and vectors of different types
  * from a configuration text, which can be implemented as a ".ini" file, a
  * memory-stored string, etc...
@@ -271,7 +284,14 @@ class CConfigFileBase
       outValues.resize(N);
       for (size_t i = 0; i < N; i++)
       {
-        double val = std::stod(tokens[i]);
+        bool ok = false;
+        const double val = internal::parseDoubleClassic(tokens[i], &ok);
+        if (!ok)
+        {
+          THROW_EXCEPTION_FMT(
+              "Cannot parse '%s' as a number in [%s] %s", tokens[i].c_str(), section.c_str(),
+              name.c_str());
+        }
         outValues[i] = static_cast<typename VECTOR_TYPE::value_type>(val);
       }
     }

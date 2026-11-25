@@ -297,9 +297,10 @@ http_errorcode mrpt::comms::net::http_request(
               const size_t p = i->find(":");
               if (p == string::npos) continue;
 
+              // The value may be empty, and the space after ':' is optional:
               const string key = i->substr(0, p);
-              const string val = i->substr(p + 2);
-              rx_headers[key] = val;
+              const size_t valStart = i->find_first_not_of(" \t", p + 1);
+              rx_headers[key] = valStart == string::npos ? string() : i->substr(valStart);
             }
           }
         }

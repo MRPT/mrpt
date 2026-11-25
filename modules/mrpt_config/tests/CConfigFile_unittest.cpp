@@ -16,6 +16,8 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 
+#include <fstream>
+
 using mrpt::config::CConfigFile;
 
 TEST(CConfigFile, DefaultConstructorThenSetFileName)
@@ -31,6 +33,27 @@ TEST(CConfigFile, DefaultConstructorThenSetFileName)
   CConfigFile cfg2;
   cfg2.setFileName(tmpFile);
   EXPECT_EQ(cfg2.read_int("sec", "key", 0), 123);
+}
+
+// setFileName() replaces the contents (it does not merge them), and parses
+// them as the constructor does:
+TEST(CConfigFile, SetFileNameReplacesAndParsesContents)
+{
+  const std::string fileA = mrpt::system::getTempFileName();
+  const std::string fileB = mrpt::system::getTempFileName();
+  {
+    std::ofstream(fileA) << "[a]\nx = 1\n";
+    std::ofstream(fileB) << "@define V 3\n[b]\ny = ${V}\n";
+  }
+
+  CConfigFile cfg(fileA);
+  EXPECT_EQ(cfg.read_int("a", "x", 0), 1);
+  cfg.setFileName(fileB);
+  EXPECT_FALSE(cfg.keyExists("a", "x"));
+  EXPECT_EQ(cfg.read_int("b", "y", 0), 3);
+
+  mrpt::system::deleteFile(fileA);
+  mrpt::system::deleteFile(fileB);
 }
 
 TEST(CConfigFile, NonExistentFileToleratedOnConstruction)

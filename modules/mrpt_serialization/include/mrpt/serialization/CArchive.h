@@ -465,6 +465,16 @@ CArchive& operator>>(CArchive& in, T& a)
 }
 #endif
 
+/** Reads a bool stored as one byte. Any non-zero byte reads as `true`: old
+ * files may hold other values there, which would make an invalid bool. */
+inline CArchive& operator>>(CArchive& in, bool& a)
+{
+  uint8_t v = 0;
+  in >> v;
+  a = (v != 0);
+  return in;
+}
+
 CArchive& operator<<(CArchive& out, const mrpt::Clock::time_point& a);
 CArchive& operator>>(CArchive& in, mrpt::Clock::time_point& a);
 

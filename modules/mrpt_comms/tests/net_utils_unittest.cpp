@@ -215,6 +215,31 @@ TEST(net_utils, httpGetWithoutContentLengthReadsUntilConnectionClose)
   EXPECT_EQ(asText(content), body);
 }
 
+// Header values may be empty, or not separated from the colon by a space:
+TEST(net_utils, httpGetParsesHeadersWithoutSpaceOrValue)
+{
+  const std::string body = "ok";
+  OneShotServer server(
+      "HTTP/1.1 200 OK\r\n"
+      "X-Empty:\r\n"
+      "X-Compact:value\r\n"
+      "Content-Length: 2\r\n"
+      "\r\n" +
+      body);
+  ASSERT_TRUE(server.isReady());
+
+  net::HttpRequestOptions opts;
+  opts.port = server.port();
+  opts.timeout_ms = 5000;
+
+  std::vector<uint8_t> content;
+  net::HttpRequestOutput out;
+  EXPECT_EQ(net::http_get(localURL(), content, opts, out), net::http_errorcode::Ok) << out.errormsg;
+  EXPECT_EQ(asText(content), body);
+  EXPECT_EQ(out.out_headers["X-Empty"], "");
+  EXPECT_EQ(out.out_headers["X-Compact"], "value");
+}
+
 TEST(net_utils, httpGetSendsBasicAuthAndExtraHeaders)
 {
   OneShotServer server("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n");

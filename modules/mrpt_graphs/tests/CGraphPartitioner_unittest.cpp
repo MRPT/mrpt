@@ -187,6 +187,31 @@ TEST(CGraphPartitioner, NonSquareMatrixThrows)
       CGraphPartitioner<CMatrixDouble>::RecursiveSpectralPartition(A, parts), std::exception);
 }
 
+// Bisections need two nodes at least; RecursiveSpectralPartition() handles the
+// trivial cases itself.
+TEST(CGraphPartitioner, TooFewNodes)
+{
+  std::vector<uint32_t> p1, p2;
+  double cutValue = 0;
+  for (const int n : {0, 1})
+  {
+    CMatrixDouble A;
+    A.setSize(n, n);
+    A.setConstant(1.0);
+    EXPECT_THROW(
+        CGraphPartitioner<CMatrixDouble>::SpectralBisection(A, p1, p2, cutValue), std::exception)
+        << "n=" << n;
+    EXPECT_THROW(
+        CGraphPartitioner<CMatrixDouble>::exactBisection(A, p1, p2, cutValue), std::exception)
+        << "n=" << n;
+
+    std::vector<std::vector<uint32_t>> parts;
+    CGraphPartitioner<CMatrixDouble>::RecursiveSpectralPartition(A, parts);
+    ASSERT_EQ(parts.size(), 1U) << "n=" << n;
+    EXPECT_EQ(parts[0].size(), static_cast<size_t>(n));
+  }
+}
+
 TEST(CGraphPartitioner, CMatrixDLegacyTypedefWorks)
 {
   CMatrixD A;

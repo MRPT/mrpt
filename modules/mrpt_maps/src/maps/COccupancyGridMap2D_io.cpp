@@ -214,23 +214,22 @@ bool COccupancyGridMap2D::loadFromBitmap(
   size_t bmpWidth = imgFl.getWidth();
   size_t bmpHeight = imgFl.getHeight();
 
-  if (m_size_x != bmpWidth || m_size_y != bmpHeight)
+  // The grid takes the given resolution and origin, even if it already had
+  // as many cells as the bitmap:
+  auto origin = origin_;
+  // Middle of bitmap?
+  if (origin.x == std::numeric_limits<double>::max())
   {
-    auto origin = origin_;
-    // Middle of bitmap?
-    if (origin.x == std::numeric_limits<double>::max())
-    {
-      origin = mrpt::math::TPoint2D(imgFl.getWidth() / 2.0, imgFl.getHeight() / 2.0);
-    }
-
-    // Resize grid:
-    float new_x_max = static_cast<float>((static_cast<double>(imgFl.getWidth()) - origin.x) * res);
-    float new_x_min = static_cast<float>(-origin.x * res);
-    float new_y_max = static_cast<float>((static_cast<double>(imgFl.getHeight()) - origin.y) * res);
-    float new_y_min = static_cast<float>(-origin.y * res);
-
-    setSize(new_x_min, new_x_max, new_y_min, new_y_max, res);
+    origin = mrpt::math::TPoint2D(imgFl.getWidth() / 2.0, imgFl.getHeight() / 2.0);
   }
+
+  // Resize grid:
+  float new_x_max = static_cast<float>((static_cast<double>(imgFl.getWidth()) - origin.x) * res);
+  float new_x_min = static_cast<float>(-origin.x * res);
+  float new_y_max = static_cast<float>((static_cast<double>(imgFl.getHeight()) - origin.y) * res);
+  float new_y_min = static_cast<float>(-origin.y * res);
+
+  setSize(new_x_min, new_x_max, new_y_min, new_y_max, res);
 
   // And load cells content:
   for (size_t x = 0; x < bmpWidth; x++)

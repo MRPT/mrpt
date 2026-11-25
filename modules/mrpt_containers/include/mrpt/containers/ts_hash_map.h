@@ -107,14 +107,6 @@ class ts_hash_map
         m_idx_inner(idx_inner)
     {
     }
-    const_iterator(const const_iterator& o) { *this = o; }
-    const_iterator& operator=(const const_iterator& o)
-    {
-      m_vec = o.m_vec;
-      m_idx_outer = o.m_idx_outer;
-      m_idx_inner = o.m_idx_inner;
-      return *this;
-    }
     bool operator==(const const_iterator& o) const
     {
       return m_vec == o.m_vec && m_idx_outer == o.m_idx_outer && m_idx_inner == o.m_idx_inner;

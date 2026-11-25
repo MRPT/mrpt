@@ -315,7 +315,8 @@ bool mrpt::system::deleteFilesInDirectory(const string& path, bool deleteDirecto
 
   for (auto& lstFile : lstFiles)
   {
-    if (lstFile.isDir)
+    // Links to directories are removed, never followed:
+    if (lstFile.isDir && !lstFile.isSymLink)
     {
       if (lstFile.name != "." && lstFile.name != "..")
       {

@@ -137,6 +137,19 @@ TEST(CMemoryStream, assignedMemoryIsReadOnly)
   EXPECT_EQ(s.Write(data.data(), data.size()), data.size());
 }
 
+TEST(CMemoryStream, assignedMemoryIsNotOverwrittenBySmallWrites)
+{
+  const std::array<char, 6> data = {'a', 'b', 'c', 'd', 'e', 'f'};
+
+  CMemoryStream s;
+  s.assignMemoryNotOwn(data.data(), data.size());
+
+  // A write that fits in the block must be rejected too:
+  const std::array<char, 3> xyz = {'x', 'y', 'z'};
+  EXPECT_ANY_THROW(s.Write(xyz.data(), xyz.size()));
+  EXPECT_EQ(std::string(data.data(), data.size()), "abcdef");
+}
+
 TEST(CMemoryStream, writeWithANullBufferThrows)
 {
   CMemoryStream s;

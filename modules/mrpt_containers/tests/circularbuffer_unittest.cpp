@@ -176,3 +176,17 @@ TEST(circular_buffer_tests, WritePeekCheck_uint8_t) { impl_WritePeekCheck<uint8_
 TEST(circular_buffer_tests, WritePeekCheck_uint16_t) { impl_WritePeekCheck<uint16_t>(); }
 TEST(circular_buffer_tests, WritePeekCheck_uint32_t) { impl_WritePeekCheck<uint32_t>(); }
 TEST(circular_buffer_tests, WritePeekCheck_uint64_t) { impl_WritePeekCheck<uint64_t>(); }
+
+TEST(circular_buffer_tests, PushRefOnFullBufferKeepsContents)
+{
+  mrpt::containers::circular_buffer<int> cb(3);  // room for 2 elements
+  cb.push_ref(1);
+  cb.push_ref(2);
+  EXPECT_THROW(cb.push_ref(3), std::out_of_range);
+
+  // The failed insertion must not discard the queued data:
+  ASSERT_EQ(cb.size(), 2U);
+  EXPECT_EQ(cb.pop(), 1);
+  EXPECT_EQ(cb.pop(), 2);
+  EXPECT_EQ(cb.size(), 0U);
+}

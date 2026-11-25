@@ -19,7 +19,10 @@
 
 #include <Eigen/Dense>
 #include <algorithm>
-#include <cstdio>   // fopen(),...
+#include <clocale>
+#include <cstdio>  // fopen(),...
+#include <cstdlib>
+#include <cstring>
 #include <fstream>  // ifstream
 #include <locale>
 #include <sstream>  // stringstream
@@ -28,6 +31,49 @@
 
 namespace mrpt::math
 {
+namespace internal
+{
+/** Like std::strtod() for a token that does not start with whitespace, but
+ * always with '.' as decimal point, whatever the C locale (GUI toolkits often
+ * set one with a decimal comma). */
+inline double strtodClassic(const char* str, char** endptr)
+{
+  const char* dp = std::localeconv()->decimal_point;
+  if (dp == nullptr || std::strcmp(dp, ".") == 0)
+  {
+    return std::strtod(str, endptr);
+  }
+  // Copy the token, with '.' replaced by the decimal point of the locale:
+  std::string token;
+  for (const char* p = str; *p != '\0' && std::strchr(" \t\r\n\f\v,", *p) == nullptr; p++)
+  {
+    if (*p == '.')
+    {
+      token += dp;
+    }
+    else
+    {
+      token += *p;
+    }
+  }
+  char* tokenEnd = nullptr;
+  const double val = std::strtod(token.c_str(), &tokenEnd);
+  if (endptr != nullptr)
+  {
+    // Map the end of the number back into `str`:
+    const auto consumed = static_cast<size_t>(tokenEnd - token.c_str());
+    const size_t dpLen = std::strlen(dp);
+    size_t orig = 0;
+    for (size_t i = 0; i < consumed; orig++)
+    {
+      i += (str[orig] == '.') ? dpLen : 1;
+    }
+    *endptr = const_cast<char*>(str) + orig;
+  }
+  return val;
+}
+}  // namespace internal
+
 template <typename Scalar, class Derived>
 bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
     const std::string& s, mrpt::optional_ref<std::ostream> dump_errors_here)
@@ -290,7 +336,7 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
           fil.resize(fil.size() + (fil.size() >> 1));
         }
         // Convert to "double":
-        fil[static_cast<std::size_t>(i)] = strtod(ptr, &ptrEnd);
+        fil[static_cast<std::size_t>(i)] = internal::strtodClassic(ptr, &ptrEnd);
         // A valid conversion has been done?
         if (ptr != ptrEnd)
         {

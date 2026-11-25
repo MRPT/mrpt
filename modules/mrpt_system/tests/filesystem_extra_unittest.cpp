@@ -162,6 +162,24 @@ TEST(filesystem, deleteFilesRemovesSymbolicLinksButNotTheirTargets)
   EXPECT_TRUE(fileExists(d.file("target_dir/inside.txt")));
   EXPECT_TRUE(fileExists(d.file("target_file.txt")));
 }
+
+TEST(filesystem, deleteFilesInDirectoryDoesNotFollowDirectoryLinks)
+{
+  TempDir outside;
+  outside.touch("keep_me.txt");
+
+  TempDir d;
+  createDirectory(d.file("sub"));
+  d.touch("sub/a.txt");
+  std::error_code ec;
+  std::filesystem::create_directory_symlink(outside.path(), d.file("sub/link_to_outside"), ec);
+  ASSERT_FALSE(ec);
+
+  EXPECT_TRUE(deleteFilesInDirectory(d.file("sub"), true));
+  EXPECT_FALSE(directoryExists(d.file("sub")));
+  // The contents of the linked directory are not ours to delete:
+  EXPECT_TRUE(fileExists(outside.file("keep_me.txt")));
+}
 #endif
 
 TEST(filesystem, deleteFilesDoesNotUseTheShell)

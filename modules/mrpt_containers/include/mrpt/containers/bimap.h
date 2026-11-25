@@ -100,9 +100,13 @@ class bimap
 
     if (!keyExists && valueExists) THROW_EXCEPTION("Duplicated `value` with different `key`");
 
-    if (keyExists && valueExists && itKey->second == v)
+    if (keyExists && valueExists)
     {
-      return;  // Ok
+      if (itKey->second == v)
+      {
+        return;  // Ok
+      }
+      THROW_EXCEPTION("Both `key` and `value` already exist, in different pairs");
     }
 
     // New:

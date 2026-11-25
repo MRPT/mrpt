@@ -487,10 +487,15 @@ void CPosePDFParticles::saveParzenPDFToTextFile(
 {
   std::string buf;
 
+  // One row per "y", one column per "x":
   for (double y = y_min; y < y_max; y += stepSizeXY)
+  {
     for (double x = x_min; x < x_max; x += stepSizeXY)
+    {
       buf += mrpt::format("%f ", evaluatePDF_parzen(x, y, phi, stdXY, stdPhi));
-  buf += "\n";
+    }
+    buf += "\n";
+  }
 
   std::ofstream f(fileName);
   if (!f.is_open())
