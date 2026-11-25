@@ -1,8 +1,12 @@
 .. _app_3d_rotation-converter:
 
-====================================================
-Application: 3d-rotation-converter
-====================================================
+=====================
+3d-rotation-converter
+=====================
+
+.. image:: https://mrpt.github.io/docs-assets/apps/app_3d-rotation-converter.webp
+   :alt: 3d-rotation-converter screenshot
+   :class: mrpt-screenshot
 
 `3d-rotation-converter` is a GUI application to help visualizing relative 
 3D poses (the mathematical group SO(3)) and to convert between different 

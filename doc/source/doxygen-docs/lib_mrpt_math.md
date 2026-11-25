@@ -50,7 +50,7 @@ MRPT uses Eigen 3 for all matrix/vector types. Key points for MRPT 3 users:
 ## KD-tree nearest-neighbor search
 
 mrpt::math::KDTreeCapable is a CRTP adapter around
-[nanoflann](https://github.com/jlblanco/nanoflann) providing:
+[nanoflann](https://github.com/jlblancoc/nanoflann) providing:
 
 - `kdTreeClosestPoint2D()` / `kdTreeClosestPoint3D()`: single NN query.
 - `kdTreeNClosestPoint2D()` / `kdTreeNClosestPoint3D()`: k-NN query.

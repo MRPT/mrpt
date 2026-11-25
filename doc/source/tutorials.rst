@@ -3,14 +3,15 @@
 Tutorials
 ===============
 
-Note: This page is in the process of being imported from https://www.mrpt.org/tutorials/
-
 .. toctree::
   :maxdepth: 2
   :caption: Basics
 
+  tutorial-first-program
   using_mrpt_apps
   mrpt_from_cmake
+  tutorial-mrpt-ros2
+  tutorial-mrpt-mola
 
 
 .. toctree::
@@ -58,5 +59,4 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
 
   tutorial-lib-layout
   page_porting_mrpt3
-  page_porting_mrpt2
   env-vars

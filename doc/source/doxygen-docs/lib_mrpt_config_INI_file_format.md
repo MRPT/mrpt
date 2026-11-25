@@ -57,4 +57,4 @@ the example below: [New in MRPT 1.5.0]. \code
 # Examples
 
 There are dozens of examples in the subdirectory
-[MRPT/share/mrpt/config_files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files).
+[modules/mrpt_data/config_files](https://github.com/MRPT/mrpt/tree/develop/modules/mrpt_data/config_files).

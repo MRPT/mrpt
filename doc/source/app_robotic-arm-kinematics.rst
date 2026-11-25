@@ -1,8 +1,12 @@
 .. _app_robotic-arm-kinematics:
 
-====================================================
-Application: robotic-arm-kinematics
-====================================================
+======================
+robotic-arm-kinematics
+======================
+
+.. image:: https://mrpt.github.io/docs-assets/apps/app_robotic-arm-kinematics.webp
+   :alt: robotic-arm-kinematics screenshot
+   :class: mrpt-screenshot
 
 
 1. Description

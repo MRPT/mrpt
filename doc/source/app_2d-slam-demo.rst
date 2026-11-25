@@ -1,8 +1,12 @@
 .. _app_2d-slam-demo:
 
-====================================================
-Application: 2d-slam-demo
-====================================================
+====================
+2d-slam-demo
+====================
+
+.. image:: images/app_2d-slam-demo_imgui.webp
+   :alt: 2d-slam-demo screenshot
+   :class: mrpt-screenshot
 
 
 1. Description

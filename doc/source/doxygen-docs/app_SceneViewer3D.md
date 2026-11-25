@@ -1,6 +1,8 @@
-\page app_SceneViewer3D Application: SceneViewer3D
+\page app_SceneViewer3D SceneViewer3D
 
-# SceneViewer3D
+
+![SceneViewer3D screenshot](app_SceneViewer3D_imgui.webp)
+
 
 A viewer of MRPT 3D scenes (`.3Dscene` files, as saved by
 mrpt::viz::Scene::saveToFile()), 3D models in any format supported by Assimp,
@@ -13,7 +15,7 @@ PLY point clouds, and images.
   visual object classes).
 - `--imgdir`: base directory of externally-stored (lazy-load) images.
 
-## User interface
+# User interface
 
 The 3D scene is the background of the main window. On top of it, the
 **View** panel (rendering options, camera, behavior with file sequences) and
@@ -36,7 +38,7 @@ remembered across sessions.
 
 Large files are loaded in the background, so the window stays responsive.
 
-## Camera travelling
+# Camera travelling
 
 - **Circular**: orbits around a point between two azimuth offsets, at a given
   speed.
@@ -45,7 +47,7 @@ Large files are loaded in the background, so the window stays responsive.
   current camera as a keyframe, edit the values in the table, optionally
   re-time the path for a constant speed, and save or load it as a text file.
 
-## Keyboard and mouse
+# Keyboard and mouse
 
 | Input | Action |
 |---|---|

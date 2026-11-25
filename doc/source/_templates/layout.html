@@ -1,5 +1,15 @@
 {% extends "!layout.html" %}
 
+{% block extrahead %}
+{{ super() }}
+<meta property="og:site_name" content="MRPT documentation" />
+<meta property="og:title" content="{{ title|striptags|e }}" />
+<meta property="og:description" content="MRPT, the Mobile Robot Programming Toolkit: C++ and Python libraries and apps for SLAM, localization, sensors, 3D geometry and visualization." />
+<meta property="og:image" content="https://mrpt.github.io/videos/mrpt_hero_v1_poster.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+{% endblock %}
+
+
 {% block scripts %}
 {{ super() }}
 <!-- Global site tag (gtag.js) - Google Analytics -->

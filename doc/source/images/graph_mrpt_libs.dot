@@ -1,113 +1,87 @@
 digraph MRPT_LIBS {
-
-	node [shape=box,style=filled, fillcolor="#D0D0D0"];
-
-	common [label="mrpt_common",URL="mrpt_common.html"];
-
-	apps_gui [label="mrpt_apps_gui",URL="group_mrpt_apps_gui_grp.html"];
-	apps_gui -> apps_cli;
-	apps_gui -> gui;
-
-	apps_cli [label="mrpt_apps_cli",URL="group_mrpt_apps_cli_grp.html"];
-	apps_cli -> slam;
-	apps_cli -> hwdrivers;
-
-	bayes [label="mrpt_bayes",URL="group_mrpt_bayes_grp.html"];
-	bayes -> math;
-	bayes -> config;
-
-	comms [label="mrpt_comms",URL="group_mrpt_comms_grp.html"];
-	comms -> io;
-
-	config   [label="mrpt_config",URL="group_mrpt_config_grp.html"];
-	config -> expr;
-
-	containers  [label="mrpt_containers",URL="group_mrpt_containers_grp.html"];
-	containers -> core;
-	containers -> typemeta;
-
-	core       [label="mrpt_core",URL="group_mrpt_core_grp.html"];
-	core -> common;
-
-	expr       [label="mrpt_expr",URL="group_mrpt_expr_grp.html"];
-	expr -> system;
-
-	graphs     [label="mrpt_graphs",URL="group_mrpt_graphs_grp.html"];
-	graphs -> poses;
-
-	graphslam  [label="mrpt_graphslam",URL="group_mrpt_graphslam_grp.html"];
-	graphslam -> slam;
-
-	gui        [label="mrpt_gui",URL="group_mrpt_gui_grp.html"];
-	gui -> opengl;
-
-	viz        [label="mrpt_viz",URL="group_mrpt_viz_grp.html"];
-	viz -> poses;
-	viz -> img;
-
-	hwdrivers  [label="mrpt_hwdrivers",URL="group_mrpt_hwdrivers_grp.html"];
-	hwdrivers -> comms;
-	hwdrivers -> maps;
-
-	img [label="mrpt_img",URL="group_mrpt_img_grp.html"];
-	img  -> io;
-	img  -> math;
-	img  -> config;
-
-	io [label="mrpt_io",URL="group_mrpt_io_grp.html"];
-	io  -> system;
-
-	kinematics [label="mrpt_kinematics",URL="group_mrpt_kinematics_grp.html"];
-	kinematics -> viz;
-
-	maps       [label="mrpt_maps",URL="group_mrpt_maps_grp.html"];
-	maps -> graphs;
-	maps -> obs;
-
-	math       [label="mrpt_math",URL="group_mrpt_math_grp.html"];
-	math -> serialization;
-	math -> random;
-	math -> system;
-
-	nav        [label="mrpt_nav",URL="group_mrpt_nav_grp.html"];
-	nav -> kinematics;
-	nav -> maps;
-
-	obs        [label="mrpt_obs",URL="group_mrpt_obs_grp.html"];
-	obs -> viz;
-	obs -> tfest;
-
-	opengl     [label="mrpt_opengl", URL="group_mrpt_opengl_grp.html"];
-	opengl -> viz;
-
-	poses     [label="mrpt_poses",URL="group_mrpt_poses_grp.html"];
-	poses -> bayes;
-
-	random     [label="mrpt_random",URL="group_mrpt_random_grp.html"];
-	random -> common;
-
-	rtti     [label="mrpt_rtti",URL="group_mrpt_rtti_grp.html"];
-	rtti -> core;
-	rtti -> typemeta;
-
-	serialization [label="mrpt_serialization",URL="group_mrpt_serialization_grp.html"];
-	serialization -> rtti;
-
-	slam       [label="mrpt_slam",URL="group_mrpt_slam_grp.html"];
-	slam -> maps;
-	slam -> vision;
-	slam -> topography;
-
-	system     [label="mrpt_system",URL="group_mrpt_system_grp.html"];
-	system -> containers;
-
-	tfest      [label="mrpt_tfest",URL="group_mrpt_tfest_grp.html"];
-	tfest -> poses;
-
-	topography [label="mrpt_topography",URL="group_mrpt_topography_grp.html"];
-	topography -> math;
-
-	typemeta [label="mrpt_typemeta (.h)",URL="group_mrpt_typemeta_grp.html"];
-	typemeta -> common;
-
+  node [shape=box, style=filled, fillcolor="#D0D0D0"];
+  mrpt_bayes [label="mrpt_bayes", URL="group_mrpt_bayes_grp.html"];
+  mrpt_bayes -> mrpt_config;
+  mrpt_bayes -> mrpt_math;
+  mrpt_comms [label="mrpt_comms", URL="group_mrpt_comms_grp.html"];
+  mrpt_comms -> mrpt_io;
+  mrpt_config [label="mrpt_config", URL="group_mrpt_config_grp.html"];
+  mrpt_config -> mrpt_expr;
+  mrpt_containers [label="mrpt_containers", URL="group_mrpt_containers_grp.html"];
+  mrpt_containers -> mrpt_core;
+  mrpt_containers -> mrpt_typemeta;
+  mrpt_core [label="mrpt_core", URL="group_mrpt_core_grp.html"];
+  mrpt_expr [label="mrpt_expr", URL="group_mrpt_expr_grp.html"];
+  mrpt_expr -> mrpt_system;
+  mrpt_graphs [label="mrpt_graphs", URL="group_mrpt_graphs_grp.html"];
+  mrpt_graphs -> mrpt_io;
+  mrpt_graphs -> mrpt_poses;
+  mrpt_graphs -> mrpt_viz;
+  mrpt_graphslam [label="mrpt_graphslam", URL="group_mrpt_graphslam_grp.html"];
+  mrpt_graphslam -> mrpt_gui;
+  mrpt_graphslam -> mrpt_slam;
+  mrpt_gui [label="mrpt_gui", URL="group_mrpt_gui_grp.html"];
+  mrpt_gui -> mrpt_opengl;
+  mrpt_hwdrivers [label="mrpt_hwdrivers", URL="group_mrpt_hwdrivers_grp.html"];
+  mrpt_hwdrivers -> mrpt_comms;
+  mrpt_hwdrivers -> mrpt_maps;
+  mrpt_hwdrivers -> mrpt_viz;
+  mrpt_img [label="mrpt_img", URL="group_mrpt_img_grp.html"];
+  mrpt_img -> mrpt_config;
+  mrpt_img -> mrpt_io;
+  mrpt_img -> mrpt_math;
+  mrpt_imgui [label="mrpt_imgui", URL="group_mrpt_imgui_grp.html"];
+  mrpt_imgui -> mrpt_opengl;
+  mrpt_io [label="mrpt_io", URL="group_mrpt_io_grp.html"];
+  mrpt_io -> mrpt_serialization;
+  mrpt_io -> mrpt_system;
+  mrpt_kinematics [label="mrpt_kinematics", URL="group_mrpt_kinematics_grp.html"];
+  mrpt_kinematics -> mrpt_viz;
+  mrpt_libapps_cli [label="mrpt_libapps_cli", URL="group_mrpt_apps_grp.html"];
+  mrpt_libapps_cli -> mrpt_hwdrivers;
+  mrpt_libapps_cli -> mrpt_slam;
+  mrpt_libapps_cli -> mrpt_topography;
+  mrpt_libapps_gui [label="mrpt_libapps_gui", URL="group_mrpt_apps_grp.html"];
+  mrpt_libapps_gui -> mrpt_gui;
+  mrpt_libapps_gui -> mrpt_libapps_cli;
+  mrpt_maps [label="mrpt_maps", URL="group_mrpt_maps_grp.html"];
+  mrpt_maps -> mrpt_graphs;
+  mrpt_maps -> mrpt_obs;
+  mrpt_math [label="mrpt_math", URL="group_mrpt_math_grp.html"];
+  mrpt_math -> mrpt_random;
+  mrpt_math -> mrpt_serialization;
+  mrpt_math -> mrpt_system;
+  mrpt_nav [label="mrpt_nav", URL="group_mrpt_nav_grp.html"];
+  mrpt_nav -> mrpt_kinematics;
+  mrpt_nav -> mrpt_maps;
+  mrpt_nav -> mrpt_viz;
+  mrpt_obs [label="mrpt_obs", URL="group_mrpt_obs_grp.html"];
+  mrpt_obs -> mrpt_tfest;
+  mrpt_obs -> mrpt_viz;
+  mrpt_opengl [label="mrpt_opengl", URL="group_mrpt_opengl_grp.html"];
+  mrpt_opengl -> mrpt_img;
+  mrpt_opengl -> mrpt_poses;
+  mrpt_opengl -> mrpt_viz;
+  mrpt_poses [label="mrpt_poses", URL="group_mrpt_poses_grp.html"];
+  mrpt_poses -> mrpt_bayes;
+  mrpt_random [label="mrpt_random", URL="group_mrpt_random_grp.html"];
+  mrpt_rtti [label="mrpt_rtti", URL="group_mrpt_rtti_grp.html"];
+  mrpt_rtti -> mrpt_core;
+  mrpt_rtti -> mrpt_typemeta;
+  mrpt_serialization [label="mrpt_serialization", URL="group_mrpt_serialization_grp.html"];
+  mrpt_serialization -> mrpt_containers;
+  mrpt_serialization -> mrpt_rtti;
+  mrpt_slam [label="mrpt_slam", URL="group_mrpt_slam_grp.html"];
+  mrpt_slam -> mrpt_maps;
+  mrpt_slam -> mrpt_topography;
+  mrpt_system [label="mrpt_system", URL="group_mrpt_system_grp.html"];
+  mrpt_system -> mrpt_containers;
+  mrpt_tfest [label="mrpt_tfest", URL="group_mrpt_tfest_grp.html"];
+  mrpt_tfest -> mrpt_poses;
+  mrpt_topography [label="mrpt_topography", URL="group_mrpt_topography_grp.html"];
+  mrpt_topography -> mrpt_math;
+  mrpt_typemeta [label="mrpt_typemeta (.h)", URL="group_mrpt_typemeta_grp.html"];
+  mrpt_viz [label="mrpt_viz", URL="group_mrpt_viz_grp.html"];
+  mrpt_viz -> mrpt_img;
+  mrpt_viz -> mrpt_poses;
 }
