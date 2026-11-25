@@ -374,6 +374,42 @@ TEST(CFileGZStreams, failedReopenLeavesStreamClosed)
   std::remove(fname.c_str());
 }
 
+TEST(CFileGZStreams, corruptedDataIsNotReportedAsHugeRead)
+{
+  // A gzip member whose deflate data is garbage, so gzread() fails:
+  const auto payload = samplePayload(20000);
+  const std::string fname = tempName("_gz_corrupted.gz");
+  {
+    CFileGZOutputStream out(fname);
+    out.Write(payload.data(), payload.size());
+  }
+  std::vector<uint8_t> bytes;
+  {
+    FILE* f = std::fopen(fname.c_str(), "rb");
+    ASSERT_TRUE(f != nullptr);
+    int c = 0;
+    while ((c = std::fgetc(f)) != EOF)
+    {
+      bytes.push_back(static_cast<uint8_t>(c));
+    }
+    std::fclose(f);
+  }
+  ASSERT_GT(bytes.size(), 40U);
+  for (size_t i = 12; i < bytes.size() - 8; i++)
+  {
+    bytes[i] = 0xff;
+  }
+  writeRawFile(fname, bytes);
+
+  CFileGZInputStream in(fname);
+  ASSERT_TRUE(in.fileOpenCorrectly());
+  std::vector<uint8_t> buf(payload.size());
+  const size_t n = in.Read(buf.data(), buf.size());
+  EXPECT_LE(n, buf.size());
+
+  std::remove(fname.c_str());
+}
+
 // ------------------------------- zip:: -------------------------------------
 
 TEST(zip, compressAndDecompressVectors)

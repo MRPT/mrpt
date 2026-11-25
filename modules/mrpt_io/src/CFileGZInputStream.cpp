@@ -16,8 +16,10 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/filesystem.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <cstring>  // strerror
+#include <limits>
 #include <type_traits>
 //
 #include <mrpt/core/config.h>
@@ -99,7 +101,13 @@ size_t CFileGZInputStream::Read(void* Buffer, size_t Count)
     THROW_EXCEPTION("File is not open.");
   }
 
-  return static_cast<size_t>(gzread(m_f->f, Buffer, static_cast<unsigned int>(Count)));
+  // gzread() returns -1 on errors (e.g. corrupted data), and its byte count
+  // must fit in an int:
+  const auto nRead = gzread(
+      m_f->f, Buffer,
+      static_cast<unsigned int>(
+          std::min<size_t>(Count, static_cast<size_t>(std::numeric_limits<int>::max()))));
+  return nRead < 0 ? 0 : static_cast<size_t>(nRead);
 }
 
 size_t CFileGZInputStream::Write([[maybe_unused]] const void* Buffer, [[maybe_unused]] size_t Count)
