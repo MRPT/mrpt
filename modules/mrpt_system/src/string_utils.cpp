@@ -84,12 +84,12 @@ void mrpt::system::encodeUTF8(const std::vector<uint16_t>& input, std::string& o
       output += static_cast<char>(MASKBYTE | (i & MASKBITS));
     }
     // 1110xxxx 10xxxxxx 10xxxxxx
-    /*else if(input[i] < 0x10000)
+    else
     {
-      output.push_back((char)(MASK3BYTES | input[i] >> 12));
-      output.push_back((char)(MASKBYTE | input[i] >> 6 & MASKBITS));
-      output.push_back((char)(MASKBYTE | input[i] & MASKBITS));
-    }*/
+      output += static_cast<char>(MASK3BYTES | (i >> 12));
+      output += static_cast<char>(MASKBYTE | ((i >> 6) & MASKBITS));
+      output += static_cast<char>(MASKBYTE | (i & MASKBITS));
+    }
   }
 }
 

@@ -43,3 +43,14 @@ TEST(string_utils, decodeUTF8)
   decodeUTF8("x\xE2\x82", out);  // truncated sequence
   EXPECT_EQ(out, (std::vector<uint16_t>{0x78, 0xFFFD}));
 }
+
+TEST(string_utils, encodeUTF8)
+{
+  std::string s;
+  mrpt::system::encodeUTF8({0x61, 0xF1, 0x20AC, 0xFFFD}, s);
+  EXPECT_EQ(s, "a\xC3\xB1\xE2\x82\xAC\xEF\xBF\xBD");
+
+  std::vector<uint16_t> back;
+  mrpt::system::decodeUTF8(s, back);
+  EXPECT_EQ(back, (std::vector<uint16_t>{0x61, 0xF1, 0x20AC, 0xFFFD}));
+}
