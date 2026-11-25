@@ -352,6 +352,28 @@ TEST(CFileGZStreams, openFailures)
   EXPECT_ANY_THROW(CFileGZOutputStream{"/this/directory/does/not/exist/file.gz"});
 }
 
+TEST(CFileGZStreams, failedReopenLeavesStreamClosed)
+{
+  const auto payload = samplePayload(100);
+  const std::string fname = tempName("_gz_reopen.gz");
+  {
+    CFileGZOutputStream out(fname);
+    out.Write(payload.data(), payload.size());
+  }
+
+  {
+    CFileGZInputStream in(fname);
+    ASSERT_TRUE(in.fileOpenCorrectly());
+    // Reopening with a missing file closes the previous one:
+    EXPECT_FALSE(in.open(tempName("_does_not_exist.gz")));
+    EXPECT_FALSE(in.fileOpenCorrectly());
+    uint8_t b = 0;
+    EXPECT_ANY_THROW((void)in.Read(&b, 1));
+  }  // must not close the stream twice
+
+  std::remove(fname.c_str());
+}
+
 // ------------------------------- zip:: -------------------------------------
 
 TEST(zip, compressAndDecompressVectors)

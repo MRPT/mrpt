@@ -55,10 +55,7 @@ bool CFileGZInputStream::open(
 {
   MRPT_START
 
-  if (m_f->f)
-  {
-    gzclose(m_f->f);
-  }
+  close();
 
   // Get compressed file size:
   m_file_size = mrpt::system::getFileSize(fileName);
