@@ -446,6 +446,55 @@ TEST(CImage, Serialize)
   EXPECT_EQ(am, bm);
 }
 
+// Color images with alpha or 16-bit pixels must round-trip too, and leave the
+// stream right after them:
+TEST(CImage, SerializeColorImagesWithAlphaOrDepth)
+{
+  using namespace mrpt::img;
+  const std::vector<std::pair<TImageChannels, PixelDepth>> kinds = {
+      { CH_RGB,  PixelDepth::D8U},
+      {CH_RGBA,  PixelDepth::D8U},
+      { CH_RGB, PixelDepth::D16U},
+      {CH_RGBA, PixelDepth::D16U},
+  };
+  for (const auto& [ch, depth] : kinds)
+  {
+    constexpr int W = 5;
+    constexpr int H = 3;
+    CImage a;
+    a.resize(W, H, ch, depth);
+    const size_t rowBytes = W * static_cast<size_t>(ch) * (depth == PixelDepth::D16U ? 2 : 1);
+    for (int y = 0; y < H; y++)
+    {
+      auto* row = a.ptrLine<uint8_t>(y);
+      for (size_t k = 0; k < rowBytes; k++)
+      {
+        row[k] = static_cast<uint8_t>(7 * y + 3 * k);
+      }
+    }
+
+    mrpt::io::CMemoryStream buf;
+    auto arch = mrpt::serialization::archiveFrom(buf);
+    arch << a << uint32_t(0x12345678);
+    buf.Seek(0);
+    CImage b;
+    uint32_t marker = 0;
+    arch >> b >> marker;
+
+    const std::string desc =
+        "channels=" + std::to_string(ch) + " depth=" + std::to_string(static_cast<int>(depth));
+    EXPECT_EQ(marker, 0x12345678U) << desc;
+    ASSERT_EQ(b.channels(), ch) << desc;
+    ASSERT_EQ(b.getPixelDepth(), depth) << desc;
+    ASSERT_EQ(b.getWidth(), W);
+    ASSERT_EQ(b.getHeight(), H);
+    for (int y = 0; y < H; y++)
+    {
+      EXPECT_EQ(0, std::memcmp(a.ptrLine<uint8_t>(y), b.ptrLine<uint8_t>(y), rowBytes)) << desc;
+    }
+  }
+}
+
 TEST(CImage, KLT_response)
 {
   using namespace mrpt::img;
