@@ -261,6 +261,44 @@ TEST(CObservation2DRangeScan, FilterByExclusionAnglesWrappedRange)
   SUCCEED();
 }
 
+// The rays marked invalid must be those within the given angles, for both
+// scan directions, and never past the last ray.
+TEST(CObservation2DRangeScan, FilterByExclusionAnglesMarksTheRightRays)
+{
+  constexpr size_t N = 181;
+  const double dA = M_PI / (N - 1);
+  const std::vector<std::pair<double, double>> testRanges = {
+      {               -0.3,                0.2}, // in the middle
+      {                1.4, 0.5 * M_PI + 0.009}, // up to the last ray (rightToLeft)
+      {-0.5 * M_PI - 0.009,               -1.4}, // up to the first ray
+  };
+  for (const bool rightToLeft : {true, false})
+  {
+    for (const auto& range : testRanges)
+    {
+      CObservation2DRangeScan o;
+      fillScan(o, N);
+      o.rightToLeft = rightToLeft;
+      o.filterByExclusionAngles({range});
+
+      for (size_t i = 0; i < N; i++)
+      {
+        const double a = o.getScanAngle(i);
+        if (a > range.first + dA && a < range.second - dA)
+        {
+          EXPECT_FALSE(o.getScanRangeValidity(i))
+              << "i=" << i << " a=" << a << " rightToLeft=" << rightToLeft;
+        }
+        else if (a < range.first - dA || a > range.second + dA)
+        {
+          EXPECT_TRUE(o.getScanRangeValidity(i))
+              << "i=" << i << " a=" << a << " rightToLeft=" << rightToLeft;
+        }
+      }
+    }
+  }
+}
+
 TEST(CObservation2DRangeScan, FilterByExclusionAnglesEmptyIsNoOp)
 {
   CObservation2DRangeScan o;
