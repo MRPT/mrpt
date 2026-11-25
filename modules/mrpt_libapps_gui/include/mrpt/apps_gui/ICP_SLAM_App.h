@@ -19,9 +19,12 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/COutputLogger.h>
 
 #include <atomic>
+#include <memory>
+#include <thread>
 
 namespace mrpt::apps
 {
@@ -102,6 +105,7 @@ class ICP_SLAM_App_Live : public ICP_SLAM_App_Base
  protected:
   void impl_initialize(int argc, const char** argv) override;
   std::string impl_get_usage() const override { return "icp-slam-live <config_file>"; }
+  int impl_max_argc() const override { return 2; }
 
   bool impl_get_next_observations(
       mrpt::obs::CActionCollection::Ptr& action,
@@ -119,6 +123,10 @@ class ICP_SLAM_App_Live : public ICP_SLAM_App_Base
   mrpt::hwdrivers::CGenericSensor::TListObservations m_global_list_obs;
   std::mutex m_cs_global_list_obs;
   std::atomic_bool m_allThreadsMustExit = false;
+  std::thread m_hSensorThread;
+
+  /** If SAVE_RAWLOG is enabled, all grabbed observations are saved here. */
+  std::unique_ptr<mrpt::io::CFileGZOutputStream> m_out_rawlog;
 };
 
 }  // namespace mrpt::apps

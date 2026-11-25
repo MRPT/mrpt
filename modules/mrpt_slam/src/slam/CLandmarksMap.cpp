@@ -12,15 +12,138 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/Clock.h>
+#include <mrpt/core/bits_math.h>
 #include <mrpt/core/round.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <cmath>
+#include <ostream>
+
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("mrpt::maps::CLandmarksMap,landmarksMap", mrpt::maps::CLandmarksMap)
+
+mrpt::maps::CLandmarksMap::TMapDefinition::TMapDefinition() = default;
+
+void mrpt::maps::CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(
+    const mrpt::config::CConfigFileBase& source, const std::string& sectionNamePrefix)
+{
+  const std::string sSectCreation = sectionNamePrefix + "_creationOpts";
+  initialBeacons.clear();
+  const int nBeacons = source.read_int(sSectCreation, "nBeacons", 0);
+  for (int q = 1; q <= nBeacons; q++)
+  {
+    std::pair<mrpt::math::TPoint3D, CLandmark::TLandmarkID> b;
+    b.second = source.read_int(sSectCreation, mrpt::format("beacon_%03i_ID", q), 0);
+    b.first.x = source.read_double(sSectCreation, mrpt::format("beacon_%03i_x", q), 0);
+    b.first.y = source.read_double(sSectCreation, mrpt::format("beacon_%03i_y", q), 0);
+    b.first.z = source.read_double(sSectCreation, mrpt::format("beacon_%03i_z", q), 0);
+    initialBeacons.push_back(b);
+  }
+
+  likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix + "_likelihoodOpts");
+}
+
+void mrpt::maps::CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
+    std::ostream& out) const
+{
+  out << mrpt::format("number of initial beacons = %u\n", unsigned(initialBeacons.size()));
+  for (const auto& b : initialBeacons)
+  {
+    out << mrpt::format(
+        "  ID=%03i (%8.03f,%8.03f,%8.03f)\n", static_cast<int>(b.second), b.first.x, b.first.y,
+        b.first.z);
+  }
+  likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap::Ptr mrpt::maps::CLandmarksMap::internal_CreateFromMapDefinition(
+    const mrpt::maps::TMetricMapInitializer& _def)
+{
+  const auto& def = dynamic_cast<const CLandmarksMap::TMapDefinition&>(_def);
+  auto obj = CLandmarksMap::Create();
+
+  for (const auto& b : def.initialBeacons)
+  {
+    CLandmark lm;
+    lm.ID = b.second;
+    lm.pose_mean = b.first;
+    lm.pose_cov_11 = lm.pose_cov_22 = lm.pose_cov_33 = mrpt::square(0.01);
+    obj->landmarks.push_back(lm);
+  }
+
+  obj->likelihoodOptions = def.likelihoodOpts;
+  return obj;
+}
+//  =========== End of Map definition Block =========
+
 IMPLEMENTS_SERIALIZABLE(CLandmarksMap, CMetricMap, mrpt::maps)
+
+void mrpt::maps::CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
+    const mrpt::config::CConfigFileBase& source, const std::string& section)
+{
+  MRPT_LOAD_CONFIG_VAR(beaconRangesStd, float, source, section);
+  MRPT_LOAD_CONFIG_VAR(beaconRangesUseObservationStd, bool, source, section);
+}
+
+void mrpt::maps::CLandmarksMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
+{
+  out << "\n----------- [CLandmarksMap::TLikelihoodOptions] ------------\n\n";
+  LOADABLEOPTS_DUMP_VAR(beaconRangesStd, float);
+  LOADABLEOPTS_DUMP_VAR(beaconRangesUseObservationStd, bool);
+}
+
+bool mrpt::maps::CLandmarksMap::internal_canComputeObservationLikelihood(
+    const mrpt::obs::CObservation& obs) const
+{
+  return obs.GetRuntimeClass() == CLASS_ID(mrpt::obs::CObservationBeaconRanges);
+}
+
+double mrpt::maps::CLandmarksMap::internal_computeObservationLikelihood(
+    const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& robotPose) const
+{
+  const auto* o = dynamic_cast<const mrpt::obs::CObservationBeaconRanges*>(&obs);
+  if (!o)
+  {
+    return 0;
+  }
+
+  const double sensorStd = likelihoodOptions.beaconRangesUseObservationStd
+                               ? o->stdError
+                               : likelihoodOptions.beaconRangesStd;
+  ASSERT_GT_(sensorStd, .0);
+
+  double ret = 0;
+  for (const auto& meas : o->sensedData)
+  {
+    if (std::isnan(meas.sensedDistance))
+    {
+      continue;
+    }
+
+    const auto* lm = landmarks.getByBeaconID(meas.beaconID);
+    if (lm)
+    {
+      // Gaussian likelihood of the sensed range:
+      const auto sensor3D = robotPose + meas.sensorLocationOnRobot;
+      const double expectedRange = sensor3D.distanceTo(lm->pose_mean);
+      const double sensedDist = std::max<double>(.0, meas.sensedDistance);
+      ret += -0.5 * mrpt::square((expectedRange - sensedDist) / sensorStd);
+    }
+    else if (o->maxSensorDistance > o->minSensorDistance)
+    {
+      // Unknown beacon: uniform likelihood
+      ret += std::log(1.0 / (o->maxSensorDistance - o->minSensorDistance));
+    }
+  }
+  return ret;
+}
 
 mrpt::maps::CLandmarksMap::CLandmarksMap() = default;
 

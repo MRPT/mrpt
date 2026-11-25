@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     double py = 0.0;
     auto opt_py = app.add_option(
         "--py", py,
-        "(Use either --cx or --px) Pixel verticl coordinate of the origin of coordinates in the "
+        "(Use either --cy or --py) Pixel vertical coordinate of the origin of coordinates in the "
         "image");
 
     bool overwrite = false;

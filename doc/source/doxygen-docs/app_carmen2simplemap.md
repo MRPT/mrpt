@@ -14,8 +14,8 @@ as a prior map for localization.
 
 - `-i, --input`: input CARMEN log file (required).
 - `-o, --output`: output simple map file (required).
-- `-z, --compress-level`: compression level of the output file (default: 5).
-  The output is written with zstd compression.
+- `-z, --compress-level`: zstd compression level of the output file, 1-22
+  (default: 5).
 - `-w, --overwrite`: overwrite the output file if it already exists (otherwise,
   the program refuses to run).
 - `-q, --quiet`: terse output (no progress bar).

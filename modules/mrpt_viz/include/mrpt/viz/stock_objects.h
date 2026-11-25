@@ -26,13 +26,7 @@ namespace stock_objects
 /** Returns a representation of Rhodon.
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::RobotRhodon() </td> <td> \image
- * html preview_stock_objects_RobotRhodon.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::RobotRhodon()](preview_stock_objects_RobotRhodon.png)
  */
 CSetOfObjects::Ptr RobotRhodon();
 
@@ -45,13 +39,7 @@ CSetOfObjects::Ptr RobotGiraff();
 /** Returns a representation of a Pioneer II mobile base.
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::RobotPioneer() </td> <td> \image
- * html preview_stock_objects_RobotPioneer.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::RobotPioneer()](preview_stock_objects_RobotPioneer.png)
  */
 CSetOfObjects::Ptr RobotPioneer();
 
@@ -59,13 +47,7 @@ CSetOfObjects::Ptr RobotPioneer();
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZSimple, CornerXYSimple, CornerXYZEye
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::CornerXYZ() </td> <td> \image html
- * preview_stock_objects_CornerXYZ.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::CornerXYZ()](preview_stock_objects_CornerXYZ.png)
  */
 CSetOfObjects::Ptr CornerXYZ(float scale = 1.0);
 
@@ -77,13 +59,7 @@ CSetOfObjects::Ptr CornerXYZ(float scale = 1.0);
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZSimple, CornerXYSimple
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::CornerXYZ() </td> <td> \image html
- * preview_stock_objects_CornerXYZ.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::CornerXYZ()](preview_stock_objects_CornerXYZ.png)
  */
 CSetOfObjects::Ptr CornerXYZEye();
 
@@ -94,13 +70,7 @@ CSetOfObjects::Ptr CornerXYZEye();
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZ, CornerXYSimple
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::CornerXYZSimple() </td> <td>
- * \image html preview_stock_objects_CornerXYZSimple.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::CornerXYZSimple()](preview_stock_objects_CornerXYZSimple.png)
  */
 CSetOfObjects::Ptr CornerXYZSimple(float scale = 1.0, float lineWidth = 1.0);
 
@@ -111,65 +81,35 @@ CSetOfObjects::Ptr CornerXYZSimple(float scale = 1.0, float lineWidth = 1.0);
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZSimple, CornerXYZ, CornerXYZEye
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::CornerXYSimple() </td> <td> \image
- * html preview_stock_objects_CornerXYSimple.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::CornerXYSimple()](preview_stock_objects_CornerXYSimple.png)
  */
 CSetOfObjects::Ptr CornerXYSimple(float scale = 1.0, float lineWidth = 1.0);
 
 /** Returns a simple 3D model of a PointGrey Bumblebee stereo camera.
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::BumblebeeCamera() </td> <td>
- * \image html preview_stock_objects_BumblebeeCamera.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::BumblebeeCamera()](preview_stock_objects_BumblebeeCamera.png)
  */
 CSetOfObjects::Ptr BumblebeeCamera();
 
 /** Returns a simple 3D model of a Hokuyo URG scanner.
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::Hokuyo_URG() </td> <td> \image
- * html preview_stock_objects_Hokuyo_URG.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::Hokuyo_URG()](preview_stock_objects_Hokuyo_URG.png)
  */
 CSetOfObjects::Ptr Hokuyo_URG();
 
 /** Returns a simple 3D model of a Hokuyo UTM scanner.
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::Hokuyo_UTM() </td> <td> \image
- * html preview_stock_objects_Hokuyo_UTM.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::Hokuyo_UTM()](preview_stock_objects_Hokuyo_UTM.png)
  */
 CSetOfObjects::Ptr Hokuyo_UTM();
 
 /** Returns a simple 3D model of a househam sprayer.
  *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *    <tr> <td> mrpt::viz::stock_objects::Househam_Sprayer() </td> <td>
- * \image html preview_stock_objects_Househam_Sprayer.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::viz::stock_objects::Househam_Sprayer()](preview_stock_objects_Househam_Sprayer.png)
  */
 CSetOfObjects::Ptr Househam_Sprayer();
 

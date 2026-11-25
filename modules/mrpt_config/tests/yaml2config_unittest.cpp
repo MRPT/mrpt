@@ -76,4 +76,31 @@ TEST(ini2yaml, parse)
   // Note: we don't compare the exact strings since order of keys may vary (?)
   EXPECT_EQ(sampleCfgTxt_as_yaml_correct.size(), c.getContentAsYAML().size());
 }
+
+TEST(yaml2ini, sectionWithOneKey)
+{
+  mrpt::config::CConfigFileMemory c;
+  c.setContentFromYAML(
+      "unscoped_key: 5\n"
+      "single:\n"
+      "  only_key: 3\n");
+
+  EXPECT_EQ(5, c.read_int("", "unscoped_key", 0));
+  EXPECT_EQ(3, c.read_int("single", "only_key", 0));
+  EXPECT_TRUE(c.sectionExists("single"));
+}
+
+TEST(ini2yaml, trailingCommentWhitespaceIsTrimmed)
+{
+  mrpt::config::CConfigFileMemory c;
+  c.setContent(
+      "[test]\n"
+      "key_num = 1\t\t\t// A comment\n"
+      "key_str = pepe   // Another comment\n");
+
+  const std::string yaml = c.getContentAsYAML();
+  EXPECT_NE(yaml.find("key_num: 1\n"), std::string::npos) << yaml;
+  EXPECT_NE(yaml.find("key_str: pepe\n"), std::string::npos) << yaml;
+  EXPECT_EQ(yaml.find('\t'), std::string::npos) << yaml;
+}
 #endif

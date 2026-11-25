@@ -14,6 +14,7 @@
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/config.h>  // MRPT_HAS_WXWIDGETS
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/CLandmarksMap.h>
@@ -21,15 +22,19 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/opengl/config.h>  // MRPT_HAS_OPENGL
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
 #include <mrpt/viz/CGridPlaneXY.h>
 #include <mrpt/viz/CSetOfLines.h>
 #include <mrpt/viz/CSphere.h>
 #include <mrpt/viz/stock_objects.h>
+
+#include <fstream>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -183,44 +188,81 @@ int main(int argc, char** argv)
     int randomSetCount = 0;
     int uniqueIds = 1;
 
-    // Process each of the "RANDOMSET_%i" found:
-    do
+    std::string loadLandmarksFromFile;
+    MRPT_LOAD_CONFIG_VAR(loadLandmarksFromFile, string, ini, "Params");
+    loadLandmarksFromFile = mrpt::system::trim(loadLandmarksFromFile);
+
+    if (!loadLandmarksFromFile.empty())
     {
-      string sectName = mrpt::format("RANDOMSET_%i", ++randomSetCount);
-
-      nLandmarks = 0;
-      MRPT_LOAD_CONFIG_VAR(nLandmarks, uint64_t, ini, sectName);
-      MRPT_LOAD_CONFIG_VAR(min_x, float, ini, sectName);
-      MRPT_LOAD_CONFIG_VAR(max_x, float, ini, sectName);
-      MRPT_LOAD_CONFIG_VAR(min_y, float, ini, sectName);
-      MRPT_LOAD_CONFIG_VAR(max_y, float, ini, sectName);
-      MRPT_LOAD_CONFIG_VAR(min_z, float, ini, sectName);
-      MRPT_LOAD_CONFIG_VAR(max_z, float, ini, sectName);
-
-      for (size_t i = 0; i < nLandmarks; i++)
+      // One row "X Y Z" per landmark:
+      ASSERT_FILE_EXISTS_(loadLandmarksFromFile);
+      CMatrixDouble lmsXYZ;
+      lmsXYZ.loadFromTextFile(loadLandmarksFromFile);
+      ASSERT_EQUAL_(lmsXYZ.cols(), 3);
+      for (int i = 0; i < lmsXYZ.rows(); i++)
       {
         CLandmark LM;
-
-        // Random coordinates:
-        LM.pose_mean = mrpt::math::TPoint3D(
-            getRandomGenerator().drawUniform(min_x, max_x),
-            getRandomGenerator().drawUniform(min_y, max_y),
-            getRandomGenerator().drawUniform(min_z, max_z));
-
-        // Add:
+        LM.pose_mean = mrpt::math::TPoint3D(lmsXYZ(i, 0), lmsXYZ(i, 1), lmsXYZ(i, 2));
         LM.ID = uniqueIds++;
-
         landmarkMap.landmarks.push_back(LM);
       }
+      std::cout << lmsXYZ.rows() << " landmarks loaded from: " << loadLandmarksFromFile << "\n";
+    }
 
-      if (nLandmarks)
+    // Otherwise, process each of the "RANDOMSET_%i" found:
+    if (landmarkMap.landmarks.size() == 0)
+    {
+      do
       {
-        std::cout << nLandmarks << " generated for the 'randomset' " << randomSetCount << "\n";
+        string sectName = mrpt::format("RANDOMSET_%i", ++randomSetCount);
+
+        nLandmarks = 0;
+        MRPT_LOAD_CONFIG_VAR(nLandmarks, uint64_t, ini, sectName);
+        MRPT_LOAD_CONFIG_VAR(min_x, float, ini, sectName);
+        MRPT_LOAD_CONFIG_VAR(max_x, float, ini, sectName);
+        MRPT_LOAD_CONFIG_VAR(min_y, float, ini, sectName);
+        MRPT_LOAD_CONFIG_VAR(max_y, float, ini, sectName);
+        MRPT_LOAD_CONFIG_VAR(min_z, float, ini, sectName);
+        MRPT_LOAD_CONFIG_VAR(max_z, float, ini, sectName);
+
+        for (size_t i = 0; i < nLandmarks; i++)
+        {
+          CLandmark LM;
+
+          // Random coordinates:
+          LM.pose_mean = mrpt::math::TPoint3D(
+              getRandomGenerator().drawUniform(min_x, max_x),
+              getRandomGenerator().drawUniform(min_y, max_y),
+              getRandomGenerator().drawUniform(min_z, max_z));
+
+          // Add:
+          LM.ID = uniqueIds++;
+
+          landmarkMap.landmarks.push_back(LM);
+        }
+
+        if (nLandmarks)
+        {
+          std::cout << nLandmarks << " generated for the 'randomset' " << randomSetCount << "\n";
+        }
+
+      } while (nLandmarks);
+    }
+
+    // Save the landmarks ground truth, in the format expected by kf-slam:
+    // X Y Z TYPE TIMES_SEEN TIME_OF_LAST_OBSERVATION ID
+    {
+      const std::string gtFile =
+          mrpt::format("%s/%s_ground_truth.txt", outDir.c_str(), outFile.c_str());
+      std::ofstream f(gtFile);
+      ASSERT_(f.is_open());
+      for (const auto& lm : landmarkMap.landmarks)
+      {
+        f << mrpt::format(
+            "%10f %10f %10f %4i %4u %10f %i\n", lm.pose_mean.x, lm.pose_mean.y, lm.pose_mean.z, 5,
+            0U, 0.0, static_cast<int>(lm.ID));
       }
-
-    } while (nLandmarks);
-
-    // landmarkMap.saveToTextFile removed in MRPT 3
+    }
     printf("Done!\n");
 
     // ---------------------------------------------
@@ -447,8 +489,9 @@ int main(int argc, char** argv)
       std::cout << "Press any key or close the 3D window to exit."
                 << "\n";
       win.waitForKey();
-
-#endif  // MRPT_HAS_OPENGL  && MRPT_HAS_WXWIDGETS
+#else
+      std::cerr << "show_in_3d ignored: MRPT was built without GUI support.\n";
+#endif
     }
   }
   catch (const std::exception& e)

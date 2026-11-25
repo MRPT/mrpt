@@ -78,7 +78,8 @@ int main(int argc, char** argv)
 
     int arg_gz_level = 5;
     app.add_option(
-        "-z,--compress-level", arg_gz_level, "Output GZ-compress level (0: none, 1-9: min-max)");
+        "-z,--compress-level", arg_gz_level,
+        "Output zstd compression level (1: fastest, 22: maximum compression; default: 5)");
 
     // Parse arguments:
     CLI11_PARSE(app, argc, argv);

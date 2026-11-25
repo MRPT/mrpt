@@ -13,6 +13,10 @@
 #include <string>
 #include <vector>
 
+/** INI section holding the metric map definitions, both when loading and
+ * saving config files */
+inline const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
+
 /** A read-only list of metric maps, as handed out by CDocument::config() */
 using TListConstMaps = std::vector<mrpt::maps::CMetricMap::ConstPtr>;
 

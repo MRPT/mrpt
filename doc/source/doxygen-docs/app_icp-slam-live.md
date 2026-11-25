@@ -34,6 +34,8 @@ Edit the serial port (`COM_port_LIN` / `COM_port_WIN`) and sensor pose in the
 - `[MappingApplication]`: the same options as [icp-slam](page_app_icp-slam.html):
   - `logOutput_dir` (default: `log_out`; its previous contents are deleted),
     `LOG_FREQUENCY`, `SAVE_3D_SCENE`, `SAVE_POSE_LOG`.
+  - `SAVE_RAWLOG`: also save the grabbed sensor data to a rawlog
+    (`icpslamlive_dataset_<date>.rawlog`, in the current directory).
   - `SHOW_PROGRESS_3D_REAL_TIME`, `SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS`,
     `SHOW_LASER_SCANS_3D`: live 3D view of the map and robot.
   - Map update thresholds (`insertionLinDistance`, `insertionAngDistance`,

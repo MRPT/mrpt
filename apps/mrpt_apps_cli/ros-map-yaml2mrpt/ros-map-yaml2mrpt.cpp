@@ -12,7 +12,6 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/serialization/CArchive.h>
@@ -85,7 +84,10 @@ int main(int argc, char** argv)
     {
       std::cout << "Input file        : " << inputFile << "\n";
       std::cout << "Output gridmap    : " << outGridFil << "\n";
-      if (!out3D.empty()) std::cout << "Output 3D view    : " << out3D << "\n";
+      if (!out3D.empty())
+      {
+        std::cout << "Output 3D view    : " << out3D << "\n";
+      }
     }
 
     if (mrpt::system::fileExists(outGridFil) && !overwrite)
@@ -105,7 +107,7 @@ int main(int argc, char** argv)
     }
 
     {
-      mrpt::io::CCompressedInputStream f(outGridFil);
+      mrpt::io::CCompressedOutputStream f(outGridFil);
       mrpt::serialization::archiveFrom(f) << grid;
     }
 
@@ -116,7 +118,10 @@ int main(int argc, char** argv)
       scene.saveToFile(out3D);
     }
 
-    std::cout << "All done.\n";
+    if (!quiet)
+    {
+      std::cout << "All done.\n";
+    }
 
     return 0;
   }

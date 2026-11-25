@@ -39,7 +39,7 @@ All parameters are read from the `[Params]` section:
 | `outFile` | `out.rawlog` | Output rawlog file name, inside `outDir`. |
 | `nBeacons` | 3 | Number of beacons. |
 | `min_x`, `max_x`, `min_y`, `max_y` | -5, 5, -5, 5 | Area (m) where beacons are placed, uniformly at random. |
-| `min_z` | 0 | The z coordinate (m) of the beacons is drawn uniformly in [`min_z`, 0]. |
+| `min_z`, `max_z` | 0, 0 | The z coordinate (m) of the beacons is drawn uniformly in [`min_z`, `max_z`]. |
 | `nSteps` | 100 | Number of time steps to simulate. |
 | `circularPath` | true | Path type: true for a circle (0.2 m and 5 deg per step), false for a square. |
 | `squarePathLength` | 40 | Steps per side of the square path (0.2 m per step); the last 4 steps of each side make a 90 deg turn in place. |
@@ -58,10 +58,10 @@ The robot stays still during the first 4 steps.
 The rawlog is in the "actions-sensory frames" format (see the
 [rawlog format](rawlog_format.html)). Each step has:
 
-- An mrpt::obs::CSensoryFrame with one mrpt::obs::CObservationBeaconRanges
-  (the noisy ranges to all beacons within the sensor range, with their IDs).
 - An mrpt::obs::CActionCollection with one mrpt::obs::CActionRobotMovement2D
   (the noisy odometry increment).
+- An mrpt::obs::CSensoryFrame with one mrpt::obs::CObservationBeaconRanges
+  (the noisy ranges to all beacons within the sensor range, with their IDs).
 
 # See also
 

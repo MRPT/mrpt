@@ -65,27 +65,35 @@ int main(int argc, char** argv)
 
     string output_rawlog_file = output_file;
     if (output_rawlog_file.empty())
+    {
       output_rawlog_file = mrpt::system::fileNameChangeExtension(input_file, "rawlog");
+    }
 
     ASSERT_FILE_EXISTS_(input_file);
 
-    // Open input rawlog:
-    auto fil_input = std::make_shared<CCompressedInputStream>();
-    std::cout << "Opening for reading: '" << input_file << "'...\n";
-    fil_input->open(input_file);
-    std::cout << "Open OK.\n";
-
-    // Open output:
     if (mrpt::system::fileExists(output_rawlog_file) && !overwrite)
     {
-      std::cout << "Output file already exists: `" << output_rawlog_file
+      std::cerr << "Output file already exists: `" << output_rawlog_file
                 << "`, aborting. Use `-w` flag to overwrite.\n";
       return 1;
     }
 
+    // Open input rawlog:
+    auto fil_input = std::make_shared<CCompressedInputStream>();
+    std::cout << "Opening for reading: '" << input_file << "'...\n";
+    if (std::string errMsg; !fil_input->open(input_file, errMsg))
+    {
+      throw std::runtime_error("Error opening input file: " + errMsg);
+    }
+    std::cout << "Open OK.\n";
+
+    // Open output:
     CCompressedOutputStream fil_out;
     std::cout << "Opening for writing: '" << output_rawlog_file << "'...\n";
-    if (!fil_out.open(output_rawlog_file)) throw std::runtime_error("Error writing file!");
+    if (!fil_out.open(output_rawlog_file))
+    {
+      throw std::runtime_error("Error writing file!");
+    }
 
     // GPS object:
     CGPSInterface gps_if;
@@ -106,7 +114,10 @@ int main(int argc, char** argv)
           "%u bytes parsed, %u new observations identified...\n",
           static_cast<unsigned>(fil_input->getPosition()), static_cast<unsigned>(lst_obs.size()));
 
-      for (const auto& kv : lst_obs) arch << *kv.second;
+      for (const auto& kv : lst_obs)
+      {
+        arch << *kv.second;
+      }
     }
 
     // successful end of program.

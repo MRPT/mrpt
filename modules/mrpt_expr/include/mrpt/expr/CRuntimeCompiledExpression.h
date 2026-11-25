@@ -50,7 +50,7 @@ namespace mrpt::expr
  * functions.
  *
  * See examples of usage in the [unit test
- * file](https://github.com/MRPT/mrpt/blob/master/libs/base/src/math/CRuntimeCompiledExpression_unittest.cpp).
+ * file](https://github.com/MRPT/mrpt/blob/develop/modules/mrpt_expr/tests/CRuntimeCompiledExpression_unittest.cpp).
  *
  * If the environment variable `MRPT_EXPR_VERBOSE=1` is defined, debug
  * information will be dumped to std::cout explaining the values of **all** the

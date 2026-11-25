@@ -107,11 +107,11 @@ int main(int argc, char** argv)
     app.set_version_flag("--version", MRPT_getVersion());
 
     std::string input_file;
-    app.add_option("-i,--input", input_file, "Input file (required) (*.graph,*.graphbin)")
+    app.add_option("-i,--input", input_file, "Input file (required) (*.graph, text format)")
         ->required();
 
     std::string output_file;
-    app.add_option("-o,--output", output_file, "Output file (optional) (*.graph,*.graphbin)");
+    app.add_option("-o,--output", output_file, "Output file (optional) (*.graph, text format)");
 
     bool use_2d = false;
     app.add_flag("--2d", use_2d, "Use 2D poses (Must use exactly one of --2d and --3d)");

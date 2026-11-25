@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/apps_cli/BaseAppInitializableCLI.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/system/COutputLogger.h>
@@ -26,7 +27,7 @@ namespace mrpt::apps
  * \sa mrpt::slam::CRangeBearingKFSLAM2D, mrpt::slam::CRangeBearingKFSLAM
  * \ingroup mrpt_apps_grp
  */
-class KFSLAMApp : public mrpt::system::COutputLogger
+class KFSLAMApp : public mrpt::system::COutputLogger, public mrpt::apps::BaseAppInitializableCLI
 {
  public:
   KFSLAMApp();
@@ -66,6 +67,10 @@ class KFSLAMApp : public mrpt::system::COutputLogger
   double loc_error_wrt_gt = 0;
 
   /** @} */
+
+ protected:
+  void impl_initialize(int argc, const char** argv) override;
+  std::string impl_get_usage() const override { return "kf-slam <config_file> [dataset.rawlog]"; }
 
  private:
   template <class IMPL>

@@ -18,7 +18,10 @@
 #include <gtest/gtest.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
+#include <mrpt/io/CCompressedInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/system/filesystem.h>
 
 #include <string>
 
@@ -268,4 +271,42 @@ TEST(CGPSInterfaceStream, forcedParserIgnoresTheOtherFormat)
   gps.doProcess();
 
   EXPECT_FALSE(gps.getObservations().empty());
+}
+
+TEST(CGPSInterfaceStream, allMessagesOfAFileAreParsed)
+{
+  const std::string lines[2] = {
+      "$GPGGA,101830.00,3649.76162994,N,00224.53709052,W,2,08,1.1,9.3,M,47.4,M,5.0,0120*58\n",
+      "$GPRMC,161229.487,A,3723.2475,N,12158.3416,W,0.13,309.62,120598, ,*10\n"};
+
+  // Several sizes, so the file end falls at different points of the read
+  // chunks, including files smaller than one chunk:
+  for (const size_t nLines : {3U, 100U, 601U})
+  {
+    const std::string fname = mrpt::system::getTempFileName() + "_gps.nmea";
+    {
+      mrpt::io::CFileOutputStream f(fname);
+      for (size_t i = 0; i < nLines; i++)
+      {
+        const std::string& line = lines[i % 2];
+        f.Write(line.data(), line.size());
+      }
+    }
+
+    auto in = std::make_shared<mrpt::io::CCompressedInputStream>(fname);
+    CGPSInterface gps;
+    gps.bindStream(in);
+    gps.initialize();
+
+    size_t nObs = 0;
+    while (!in->checkEOF())
+    {
+      gps.doProcess();
+      nObs += gps.getObservations().size();
+    }
+    EXPECT_EQ(nObs, nLines);
+
+    in.reset();
+    mrpt::system::deleteFile(fname);
+  }
 }

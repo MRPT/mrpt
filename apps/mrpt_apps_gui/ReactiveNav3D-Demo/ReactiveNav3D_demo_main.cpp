@@ -33,18 +33,15 @@ int main(int num_arg, char* argv[])
     //----------------------------------------------------------------------
     bool enable_logfile = true;
 
-    if ((num_arg != 2) || (num_arg == 2 && string(argv[1]) == "--help"))
+    const bool helpRequested =
+        num_arg == 2 && (string(argv[1]) == "--help" || string(argv[1]) == "-h");
+    if (num_arg != 2 || helpRequested)
     {
-      printf("\n\t       Arguments of the function 'main' \n");
-      printf(
-          "=============================================================="
-          "\n\n");
-      printf(" --help: Shows this menu... \n\n");
-      printf(
-          " <reactive3d_config.ini>: Load configuration from the given "
-          "config file \n\n");
-      system::os::getch();
-      return 1;
+      FILE* out = helpRequested ? stdout : stderr;
+      fprintf(out, "Usage: ReactiveNav3D-Demo <reactive3d_config.ini>\n\n");
+      fprintf(out, " --help, -h: Shows this help\n");
+      fprintf(out, " <reactive3d_config.ini>: Load configuration from the given config file\n");
+      return helpRequested ? 0 : 1;
     }
 
     // Initial steps. Load configuration from file or default

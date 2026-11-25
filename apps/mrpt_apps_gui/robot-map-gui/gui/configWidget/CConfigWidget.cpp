@@ -84,7 +84,7 @@ void CConfigWidget::saveConfig()
   {
     mrpt::config::CConfigFileMemory cfg;
     mrpt::maps::TSetOfMetricMapInitializers mapInits = config();
-    mapInits.saveToConfigFile(cfg, "MetricMaps");
+    mapInits.saveToConfigFile(cfg, METRIC_MAP_CONFIG_SECTION);
 
     QFile file(configName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))

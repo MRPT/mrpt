@@ -78,7 +78,8 @@ int main(int argc, char** argv)
     bool build_tables = false;
     app.add_flag(
         "-t,--tables", build_tables,
-        "Don't run any test, instead build the tables of compared performances in SOURCE_DIR/doc/");
+        "Don't run any test, instead build the HTML tables comparing all the "
+        "perf-results-*.dat files in the current directory, into ./perf-html/ (must exist)");
 
     bool release = false;
     app.add_flag(

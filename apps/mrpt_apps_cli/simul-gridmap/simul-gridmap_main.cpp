@@ -44,6 +44,7 @@ void simulOdometry(
     const CActionRobotMovement2D::TMotionModelOptions& odo_opts);
 
 int LASER_N_RANGES;
+double LASER_APERTURE;
 double LASER_STD_ERROR;
 double LASER_BEARING_STD_ERROR;
 string grid_file;
@@ -67,14 +68,15 @@ int main(int argc, char** argv)
         ->required();
 
     std::string out_rawlog_arg;
-    app.add_option(
-           "-o,--out-rawlog", out_rawlog_arg,
-           "the output rawlog to generate from which to take noisy odometry")
+    app.add_option("-o,--out-rawlog", out_rawlog_arg, "the output rawlog file to generate")
         ->required();
 
     std::string in_rawlog_arg;
     app.add_option(
-        "-i,--in-rawlog", in_rawlog_arg, "(optional) the rawlog from which to take noisy odometry");
+        "-i,--in-rawlog", in_rawlog_arg,
+        "(optional) the rawlog from which to take noisy odometry. It must have the "
+        "same layout as the output of this program: one action and one "
+        "observation entry per pose");
 
     int ranges = 361;
     app.add_option("-r,--ranges", ranges, "number of laser ranges per scan (default=361)");
@@ -99,6 +101,7 @@ int main(int argc, char** argv)
     out_rawlog_file = out_rawlog_arg;
     in_rawlog_file = in_rawlog_arg;
     LASER_N_RANGES = ranges;
+    LASER_APERTURE = DEG2RAD(span);
     LASER_STD_ERROR = std_r;
     LASER_BEARING_STD_ERROR = DEG2RAD(std_b);
 
@@ -132,14 +135,11 @@ void do_simulation()
 {
   ASSERT_FILE_EXISTS_(gt_file);
 
-  bool have_in_rawlog;
-  if (!in_rawlog_file.empty())
+  const bool have_in_rawlog = !in_rawlog_file.empty();
+  if (have_in_rawlog)
   {
     ASSERT_FILE_EXISTS_(in_rawlog_file);
-    have_in_rawlog = true;
   }
-  else
-    have_in_rawlog = false;
 
   ASSERT_FILE_EXISTS_(grid_file);
 
@@ -160,7 +160,13 @@ void do_simulation()
     [[maybe_unused]] const bool raw_ok = rawlog.loadFromRawLogFile(in_rawlog_file);
     ASSERT_(rawlog.size() > 0);
     ASSERT_(rawlog.getType(0) == CRawlog::TEntryType::etActionCollection);
-    ASSERT_(int(rawlog.size() / 2) == GT.rows());
+    ASSERTMSG_(
+        rawlog.size() == 2 * static_cast<size_t>(GT.rows()),
+        mrpt::format(
+            "The input rawlog must have 2 entries (action, observations) per "
+            "pose: expected %u entries for %u poses, but it has %u.",
+            static_cast<unsigned>(2 * GT.rows()), static_cast<unsigned>(GT.rows()),
+            static_cast<unsigned>(rawlog.size())));
   }
 
   // # of simulation steps:
@@ -183,6 +189,8 @@ void do_simulation()
       CPose2D gt_pose(GT(i / 2, 1), GT(i / 2, 2), GT(i / 2, 3));
 
       CObservation2DRangeScan::Ptr the_scan = sf->getObservationByClass<CObservation2DRangeScan>();
+      ASSERTMSG_(the_scan, "Input rawlog entry has no CObservation2DRangeScan");
+      the_scan->aperture = static_cast<float>(LASER_APERTURE);
       the_grid.laserScanSimulator(
           *the_scan, gt_pose, 0.5f, LASER_N_RANGES, static_cast<float>(LASER_STD_ERROR), 1,
           static_cast<float>(LASER_BEARING_STD_ERROR));
@@ -200,44 +208,47 @@ void do_simulation()
     // odo_opts.gaussianModel.
 
     CPose2D last_pose(GT(0, 1), GT(0, 2), GT(0, 3));
-    CPose2D real_pose = last_pose;
     CPose2D Apose;
 
-    simulOdometry(real_pose, last_pose, Apose, odo_opts);
-    act.computeFromOdometry(CPose2D(0, 0, 0), odo_opts);
-    act.timestamp = mrpt::Clock::now();
-    acts.insert(act);
-    rawlog.insert(acts);
-
-    // Create a rawlog from scratch:
-    for (size_t i = 1; i < N; i++)
+    // Create a rawlog from scratch, as (action, observation) pairs:
+    for (size_t i = 0; i < N; i++)
     {
-      // simulate scan:
-      real_pose = CPose2D(GT(i, 1), GT(i, 2), GT(i, 3));
+      const CPose2D real_pose(GT(i, 1), GT(i, 2), GT(i, 3));
 
+      // Robot moves (no motion before the first pose):
+      if (i == 0)
+      {
+        Apose = CPose2D();
+      }
+      else
+      {
+        simulOdometry(real_pose, last_pose, Apose, odo_opts);
+      }
+      act.computeFromOdometry(Apose, odo_opts);
+      act.timestamp = mrpt::Clock::now();
+      acts.clear();
+      acts.insert(act);
+      rawlog.insert(acts);
+
+      // simulate scan:
       CSensoryFrame::Ptr sf = std::make_shared<CSensoryFrame>();
 
       CObservation2DRangeScan::Ptr the_scan = std::make_shared<CObservation2DRangeScan>();
-      the_scan->aperture = M_PIf;
+      the_scan->aperture = static_cast<float>(LASER_APERTURE);
       the_scan->timestamp = mrpt::Clock::now();
       the_grid.laserScanSimulator(
           *the_scan, real_pose, 0.5f, LASER_N_RANGES, static_cast<float>(LASER_STD_ERROR), 1,
           static_cast<float>(LASER_BEARING_STD_ERROR));
       sf->insert(the_scan);
       rawlog.insert(sf);
-
-      // Robot moves:
-      simulOdometry(real_pose, last_pose, Apose, odo_opts);
-      act.computeFromOdometry(CPose2D(0, 0, 0), odo_opts);
-      act.timestamp = mrpt::Clock::now();
-      acts.clear();
-      acts.insert(act);
-      rawlog.insert(acts);
     }
   }
 
   // Save the new rawlog:
-  [[maybe_unused]] const bool save_ok = rawlog.saveToRawLogFile(out_rawlog_file);
+  if (!rawlog.saveToRawLogFile(out_rawlog_file))
+  {
+    THROW_EXCEPTION_FMT("Error writing output rawlog file '%s'", out_rawlog_file.c_str());
+  }
 }
 
 void simulOdometry(

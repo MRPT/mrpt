@@ -15,6 +15,7 @@
 #include <mrpt/apps_gui/KFSLAMApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/config.h>  // MRPT_HAS_WXWIDGETS
 #include <mrpt/io/CCompressedInputStream.h>
 #include <mrpt/io/CCompressedOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
@@ -48,7 +49,7 @@ void KFSLAMApp::initialize(int argc, const char** argv)
   // Process arguments:
   if (argc < 2)
   {
-    THROW_EXCEPTION("Usage: kf-slam <config_file> [dataset.rawlog]");
+    THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str());
   }
 
   // Config file:
@@ -57,14 +58,23 @@ void KFSLAMApp::initialize(int argc, const char** argv)
   ASSERT_FILE_EXISTS_(configFile);
   params.setContent(mrpt::io::file_get_contents(configFile));
 
-  // Rawlog file: from args. line or from config file:
-  if (argc == 3)
-    rawlogFileName = std::string(argv[2]);
-  else
-    rawlogFileName =
-        params.read_string("MappingApplication", "rawlog_file", std::string("log.rawlog"));
+  impl_initialize(argc, argv);
 
   MRPT_END
+}
+
+void KFSLAMApp::impl_initialize(int argc, const char** argv)
+{
+  // Rawlog file: from args. line or from config file:
+  if (argc == 3)
+  {
+    rawlogFileName = std::string(argv[2]);
+  }
+  else
+  {
+    rawlogFileName =
+        params.read_string("MappingApplication", "rawlog_file", std::string("log.rawlog"));
+  }
 }
 
 void KFSLAMApp::run()

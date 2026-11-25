@@ -60,6 +60,9 @@ class CRawlogProcessor
  public:
   uint64_t m_physicalFileSize = 0;
   size_t m_rawlogEntry = 0;
+  /** Number of objects read from the file, including any trailing ones that
+   * do not form a complete (action, observations) pair. */
+  size_t m_rawlogEntriesRead = 0;
   double m_timToParse;  // Public variable, at end will hold ellapsed time.
 
   // Ctor
@@ -141,7 +144,12 @@ class CRawlogProcessor
       }
     };  // end while
 
-    if (verbose) std::cout << "\n";  // new line after the "\r".
+    m_rawlogEntriesRead = rawlogEntryCount;
+
+    if (verbose)
+    {
+      std::cout << "\n";  // new line after the "\r".
+    }
 
     m_timToParse = m_timParse.Tac();
 

@@ -32,7 +32,8 @@ using namespace mrpt::random;
 using namespace std;
 
 // ------------------------------------------------------
-//				Benchmark: A whole ICP-SLAM run
+//  Benchmark: A whole ICP-SLAM run.
+//  Returns the average time per rawlog entry (not the whole run).
 // ------------------------------------------------------
 double icp_test_1([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 {
@@ -41,7 +42,7 @@ double icp_test_1([[maybe_unused]] int a1, [[maybe_unused]] int a2)
       mrpt::system::getShareMRPTDir() +
       "datasets/2006-01ENE-21-SENA_Telecom Faculty_one_loop_only.rawlog"s;
 
-  if (!mrpt::system::fileExists(rawlog_file)) return 1;
+  ASSERT_FILE_EXISTS_(rawlog_file);
 
   CTicTac tictac;
 
@@ -135,6 +136,8 @@ double icp_test_1([[maybe_unused]] int a1, [[maybe_unused]] int a2)
 // ------------------------------------------------------
 void register_tests_icpslam()
 {
+  // Test names are kept unchanged so results remain comparable across versions,
+  // but note that they report the average time per dataset entry.
   lstTests.emplace_back("icp-slam (match points): Run with sample dataset", icp_test_1, 0);
   lstTests.emplace_back("icp-slam (match grid): Run with sample dataset", icp_test_1, 1);
 }

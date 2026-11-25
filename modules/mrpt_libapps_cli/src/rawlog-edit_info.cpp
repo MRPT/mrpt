@@ -125,7 +125,7 @@ DECLARE_OP_FUNCTION(op_info)
             << "B\n";
   std::cout << "Compression ratio                 : "
             << mrpt::format("%.02f%%\n", 100.0 * in_rawlog.getCompressionRatio());
-  std::cout << "Overall number of objects         : " << (proc.m_rawlogEntry + 1) << "\n";
+  std::cout << "Overall number of objects         : " << proc.m_rawlogEntriesRead << "\n";
   std::cout << "Actions/SensoryFrame format       : " << (proc.has_actSF_format ? "Yes" : "No")
             << "\n";
   std::cout << "Observations format               : " << (proc.has_obs_format ? "Yes" : "No")

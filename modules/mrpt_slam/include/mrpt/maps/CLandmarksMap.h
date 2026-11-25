@@ -13,6 +13,7 @@
 */
 #pragma once
 
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/CObservationBearingRange.h>
@@ -20,6 +21,7 @@
 #include <mrpt/viz/CSetOfObjects.h>
 
 #include <deque>
+#include <utility>
 #include <vector>
 
 namespace mrpt::maps
@@ -28,6 +30,28 @@ namespace mrpt::maps
  *
  * This is a simplified version for MRPT v3.0, retaining only the
  * functionality needed and removing the computer vision part.
+ *
+ * Observation likelihoods are only implemented for
+ * mrpt::obs::CObservationBeaconRanges, matching each measured beacon ID with
+ * the landmark of the same ID. Observations are never inserted into the map.
+ *
+ * It can be created from a configuration file with the map class name
+ * `landmarksMap` (see mrpt::maps::TSetOfMetricMapInitializers), with these
+ * sections:
+ *
+ * \code
+ * [<sectionName>_landmarksMap_##_creationOpts]
+ * nBeacons=3       // Number of initial landmarks
+ * beacon_001_ID=1  // ID and (x,y,z) of each one, from 001 to nBeacons
+ * beacon_001_x=0.0
+ * beacon_001_y=0.0
+ * beacon_001_z=0.0
+ * ...
+ *
+ * [<sectionName>_landmarksMap_##_likelihoodOpts]
+ * beaconRangesStd=0.08
+ * beaconRangesUseObservationStd=false
+ * \endcode
  *
  * \ingroup mrpt_slam_grp
  */
@@ -80,6 +104,24 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 
   TLandmarksList landmarks;
 
+  /** Options for the observation likelihood computation. */
+  struct TLikelihoodOptions : public mrpt::config::CLoadableOptions
+  {
+    void loadFromConfigFile(
+        const mrpt::config::CConfigFileBase& source, const std::string& section) override;
+    void dumpToTextStream(std::ostream& out) const override;
+
+    /** Standard deviation of beacon range measurements [meters], unless
+     * beaconRangesUseObservationStd is true. */
+    float beaconRangesStd{0.08f};
+
+    /** If true, beaconRangesStd is ignored and the `stdError` field of each
+     * observation is used instead. */
+    bool beaconRangesUseObservationStd{false};
+  };
+
+  TLikelihoodOptions likelihoodOptions;
+
   /** Simulate a range-bearing sensor observation from this landmark map.
    * \param[in]  robotPose    Global pose of the robot.
    * \param[in]  sensorOnRobot  Pose of the sensor relative to the robot.
@@ -131,15 +173,15 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
   }
 
   double internal_computeObservationLikelihood(
-      const mrpt::obs::CObservation&, const mrpt::poses::CPose3D&) const override
-  {
-    return 0;
-  }
+      const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& robotPose) const override;
 
-  bool internal_canComputeObservationLikelihood(const mrpt::obs::CObservation&) const override
-  {
-    return false;
-  }
+  bool internal_canComputeObservationLikelihood(const mrpt::obs::CObservation& obs) const override;
+
+  MAP_DEFINITION_START(CLandmarksMap)
+  /** Initial landmarks: (x,y,z) and ID of each one */
+  std::deque<std::pair<mrpt::math::TPoint3D, CLandmark::TLandmarkID>> initialBeacons;
+  mrpt::maps::CLandmarksMap::TLikelihoodOptions likelihoodOpts;
+  MAP_DEFINITION_END(CLandmarksMap)
 };
 
 }  // namespace mrpt::maps

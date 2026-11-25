@@ -39,7 +39,7 @@ using namespace mrpt::apps;
 
 RawlogGrabberApp::RawlogGrabberApp() : mrpt::system::COutputLogger("RawlogGrabberApp") {}
 
-void RawlogGrabberApp::initialize(int argc, const char** argv)
+bool RawlogGrabberApp::initialize(int argc, const char** argv)
 {
   MRPT_START
 
@@ -74,14 +74,23 @@ void RawlogGrabberApp::initialize(int argc, const char** argv)
   catch (const CLI::ParseError& e)
   {
     int ret = cmd.exit(e);
-    if (ret == 0) return;  // --help or --version
+    if (ret == 0)
+    {
+      // --help or --version
+      return false;
+    }
     THROW_EXCEPTION("CLI arguments parsing tells we should exit.");
   }
 
   ASSERT_FILE_EXISTS_(configFile);
   params.setContent(mrpt::io::file_get_contents(configFile));
 
-  if (!plugins.empty()) mrpt::system::loadPluginModules(plugins);
+  if (!plugins.empty())
+  {
+    mrpt::system::loadPluginModules(plugins);
+  }
+
+  return true;
 
   MRPT_END
 }
@@ -107,7 +116,7 @@ void RawlogGrabberApp::runImpl()
   int time_between_launches = 300;
   bool use_sensoryframes = false;
   int GRABBER_PERIOD_MS = 1000;
-  int rawlog_GZ_compress_level = 1;  // 0: No compress, 1-9: compress level
+  int rawlog_GZ_compress_level = 1;  // 0: No compression, 1-22: zstd level
 
   MRPT_LOAD_CONFIG_VAR(rawlog_prefix, string, params, GLOBAL_SECT);
   MRPT_LOAD_CONFIG_VAR(time_between_launches, int, params, GLOBAL_SECT);
@@ -178,7 +187,14 @@ void RawlogGrabberApp::runImpl()
   auto out_arch_obj = archiveFrom(out_file);
   m_out_arch_ptr = &out_arch_obj;
 
-  out_file.open(rawlog_filename, {mrpt::io::CompressionType::Zstd, rawlog_GZ_compress_level});
+  const auto compression =
+      rawlog_GZ_compress_level > 0
+          ? mrpt::io::CompressionOptions(mrpt::io::CompressionType::Zstd, rawlog_GZ_compress_level)
+          : mrpt::io::CompressionOptions(mrpt::io::CompressionType::None);
+  if (!out_file.open(rawlog_filename, compression))
+  {
+    THROW_EXCEPTION_FMT("Error creating output file '%s'", rawlog_filename.c_str());
+  }
 
   CGenericSensor::TListObservations copy_of_m_global_list_obs;
 

@@ -41,10 +41,15 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 
   /** Initializes the application from CLI parameters. Refer to the manpage of
    * rawlog-grabber. Throws on errors.
+   * \return false if the program should exit without calling run() (e.g.
+   * after `--help` or `--version`), true otherwise.
    */
-  void initialize(int argc, const char** argv);
+  bool initialize(int argc, const char** argv);
 
-  void initialize(int argc, char** argv) { initialize(argc, const_cast<const char**>(argv)); }
+  bool initialize(int argc, char** argv)
+  {
+    return initialize(argc, const_cast<const char**>(argv));
+  }
 
   /** Runs with the current parameter set. Throws on errors. */
   void run();

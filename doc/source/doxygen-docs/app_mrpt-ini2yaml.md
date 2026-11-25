@@ -9,8 +9,8 @@ YAML. The inverse conversion is done by \ref app_mrpt-yaml2ini.
 
     mrpt-ini2yaml <input.ini>
 
-The program takes exactly one argument (it has no other options) and writes
-the YAML text to stdout. Errors are reported to stderr, with a non-zero exit
+The program takes exactly one argument (`-h` or `--help` prints the usage) and
+writes the YAML text to stdout. Errors are reported to stderr, with a non-zero exit
 code.
 
 # Example

@@ -14,8 +14,8 @@ used with MRPT SLAM and localization apps, or inspected with
 - `-o, --output`: output rawlog file (required).
 - `-p, --period`: time between consecutive log lines, in seconds (default: 0.1).
   See the note on timestamps below.
-- `-z, --compress-level`: compression level of the output file (default: 5).
-  The output is written with zstd compression.
+- `-z, --compress-level`: zstd compression level of the output file, 1-22
+  (default: 5).
 - `-w, --overwrite`: overwrite the output file if it already exists (otherwise,
   the program refuses to run).
 - `-q, --quiet`: terse output (no progress bar).
