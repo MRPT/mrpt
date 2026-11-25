@@ -531,9 +531,10 @@ std::string mrpt::system::getShareMRPTDir()
     {
       std::string exeDir = std::string(buf);
       std::replace(exeDir.begin(), exeDir.end(), '\\', '/');
+      // (extractFileDirectory() returns no trailing '/')
       exeDir = extractFileDirectory(exeDir);
-      paths.push_back(exeDir + "../share/mrpt_data/");
-      paths.push_back(exeDir + "../../share/mrpt_data/");
+      paths.push_back(exeDir + "/../share/mrpt_data/");
+      paths.push_back(exeDir + "/../../share/mrpt_data/");
     }
 
     for (const auto& p : paths)
