@@ -1099,6 +1099,41 @@ bool yaml::internalPrintAsYAML(
 }
 
 // Return true if multiline
+namespace
+{
+/** Whether a one-line string must be quoted to be read back with the same
+ * text: it would otherwise be read as a structure or a comment, or lose its
+ * leading/trailing blanks. Strings that read back as numbers or booleans are
+ * not quoted (e.g. INI to YAML conversion relies on this). */
+bool needsQuotesInYAML(const std::string& s, bool flowContext)
+{
+  if (s.empty())
+  {
+    return false;
+  }
+  if (std::isspace(static_cast<unsigned char>(s.front())) != 0 ||
+      std::isspace(static_cast<unsigned char>(s.back())) != 0)
+  {
+    return true;
+  }
+  // "-", "?" and ":" only start a structure if followed by a blank:
+  if (std::string_view("-?:").find(s.front()) != std::string_view::npos &&
+      (s.size() == 1 || std::isspace(static_cast<unsigned char>(s[1])) != 0))
+  {
+    return true;
+  }
+  if (std::string_view(",[]{}#&*!|>'\"%@`").find(s.front()) != std::string_view::npos)
+  {
+    return true;
+  }
+  if (s.find(": ") != std::string::npos || s.find(" #") != std::string::npos || s.back() == ':')
+  {
+    return true;
+  }
+  return flowContext && s.find_first_of(",[]{}") != std::string::npos;
+}
+}  // namespace
+
 bool yaml::internalPrintStringScalar(
     const std::string& sIn, std::ostream& o, const InternalPrintState& ps, const comments_t& cs)
 {
@@ -1119,7 +1154,14 @@ bool yaml::internalPrintStringScalar(
       if (i == 0)
       {
         // single line:
-        o << s;
+        if (!sIn.empty() && needsQuotesInYAML(s, ps.shortFormat))
+        {
+          printJSONString(s, o);
+        }
+        else
+        {
+          o << s;
+        }
         if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)]; rc.has_value())
         {
           internalPrintRightComment(o, rc.value());

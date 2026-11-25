@@ -723,6 +723,45 @@ MRPT_TEST(yaml, outOfRangeIntegers)
 }
 MRPT_TEST_END()
 
+// Strings that would not read back with the same text unquoted are quoted:
+MRPT_TEST(yaml, printQuotesStringsWhenNeeded)
+{
+  const std::vector<std::string> strs = {
+      "a: b",   "#x",    "[1,2]",     "{}",  " lead",      "trail ",       "x #y",      "end:",
+      "- item", "\"q\"", "tab\there", "a,b", "plain text", "path/to:file", "-not_a_seq"};
+  mrpt::containers::yaml y = mrpt::containers::yaml::Map();
+  for (size_t i = 0; i < strs.size(); i++)
+  {
+    y["k" + std::to_string(i)] = strs[i];
+  }
+  y["seq"] = mrpt::containers::yaml::Sequence({std::string("a,b"), std::string("[c]")});
+  y["seq"].node().printInShortFormat = true;
+
+  std::stringstream ss;
+  y.printAsYAML(ss);
+  const auto y2 = mrpt::containers::yaml::FromText(ss.str());
+  for (size_t i = 0; i < strs.size(); i++)
+  {
+    const auto& n = y2["k" + std::to_string(i)];
+    ASSERT_TRUE(n.isScalar()) << ss.str();
+    EXPECT_TRUE(std::holds_alternative<std::string>(n.asScalar())) << strs[i] << "\n" << ss.str();
+    EXPECT_EQ(n.as<std::string>(), strs[i]) << ss.str();
+  }
+  ASSERT_EQ(y2["seq"].asSequence().size(), 2U) << ss.str();
+  EXPECT_EQ(y2["seq"](1).as<std::string>(), "[c]") << ss.str();
+
+  // Ordinary strings are still printed as plain scalars, and so are strings
+  // that read back as numbers (INI to YAML conversion relies on it):
+  EXPECT_NE(ss.str().find("plain text\n"), std::string::npos) << ss.str();
+  EXPECT_EQ(ss.str().find("\"plain text\""), std::string::npos) << ss.str();
+  mrpt::containers::yaml num = mrpt::containers::yaml::Map();
+  num["n"] = std::string("-1.5");
+  std::stringstream ssNum;
+  num.printAsYAML(ssNum);
+  EXPECT_NE(ssNum.str().find("n: -1.5\n"), std::string::npos) << ssNum.str();
+}
+MRPT_TEST_END()
+
 // Aliases (*name) are replaced by a copy of the node with that anchor (&name):
 MRPT_TEST(yaml, parseAliases)
 {
