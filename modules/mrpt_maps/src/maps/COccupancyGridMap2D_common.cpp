@@ -443,35 +443,48 @@ void COccupancyGridMap2D::updateCell(int x, int y, float v)
  ---------------------------------------------------------------*/
 void COccupancyGridMap2D::subSample(int downRatio)
 {
-  std::vector<cellType> newMap;
-
   ASSERT_(downRatio > 0);
 
-  m_resolution *= static_cast<float>(downRatio);
-
-  int newSizeX = static_cast<int>(round((m_xMax - m_xMin) / m_resolution));
-  int newSizeY = static_cast<int>(round((m_yMax - m_yMin) / m_resolution));
-
-  newMap.resize(newSizeX * newSizeY);
-
-  for (int x = 0; x < newSizeX; x++)
+  // Copy the old cells, since setSize() may change the limits and cell count
+  // (they snap to the new resolution):
+  const float oldRes = m_resolution;
+  const float oldXMin = m_xMin;
+  const float oldYMin = m_yMin;
+  const auto oldSizeX = static_cast<int>(m_size_x);
+  const auto oldSizeY = static_cast<int>(m_size_y);
+  std::vector<float> oldCells(m_map.size());
+  for (size_t i = 0; i < m_map.size(); i++)
   {
-    for (int y = 0; y < newSizeY; y++)
-    {
-      float newCell = 0;
-
-      for (int xx = 0; xx < downRatio; xx++)
-        for (int yy = 0; yy < downRatio; yy++)
-          newCell += getCell(x * downRatio + xx, y * downRatio + yy);
-
-      newCell /= static_cast<float>(downRatio * downRatio);
-
-      newMap[x + y * newSizeX] = p2l(newCell);
-    }
+    oldCells[i] = l2p(m_map[i]);
   }
 
-  setSize(m_xMin, m_xMax, m_yMin, m_yMax, m_resolution);
-  m_map = newMap;
+  setSize(m_xMin, m_xMax, m_yMin, m_yMax, oldRes * static_cast<float>(downRatio));
+
+  // Each new cell is the average of the old cells whose centers fall in it:
+  std::vector<float> sum(m_map.size(), 0.0f);
+  std::vector<int> count(m_map.size(), 0);
+  for (int y = 0; y < oldSizeY; y++)
+  {
+    const int cy = y2idx(oldYMin + (static_cast<float>(y) + 0.5f) * oldRes);
+    for (int x = 0; x < oldSizeX; x++)
+    {
+      const int cx = x2idx(oldXMin + (static_cast<float>(x) + 0.5f) * oldRes);
+      if (!idxInRange(cx, cy))
+      {
+        continue;
+      }
+      const size_t idx = static_cast<size_t>(cx) + static_cast<size_t>(cy) * m_size_x;
+      sum[idx] += oldCells[static_cast<size_t>(x) + static_cast<size_t>(y) * oldSizeX];
+      count[idx]++;
+    }
+  }
+  for (size_t i = 0; i < m_map.size(); i++)
+  {
+    if (count[i] > 0)
+    {
+      m_map[i] = p2l(sum[i] / static_cast<float>(count[i]));
+    }
+  }
 }
 
 /*---------------------------------------------------------------

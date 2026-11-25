@@ -283,6 +283,32 @@ TEST(COccupancyGridMap2DTests, subSampleHalvesResolution)
   EXPECT_NEAR(grid.getCell(newCx + 1, newCy), 1.0f, 0.05f);
 }
 
+// A ratio that does not divide the grid size: the new limits snap to the new
+// resolution, so the number of cells is not simply the old one over the ratio.
+TEST(COccupancyGridMap2DTests, subSampleWithNonDivisibleRatio)
+{
+  COccupancyGridMap2D grid(-10.0f, 10.0f, -10.0f, 10.0f, 0.05f);
+  grid.fill(1.0f);  // all free
+  // An occupied 1x1 m square around (2.5, -3.5):
+  for (float x = 2.0f; x < 3.0f; x += 0.05f)
+  {
+    for (float y = -4.0f; y < -3.0f; y += 0.05f)
+    {
+      grid.setCell(grid.x2idx(x), grid.y2idx(y), 0.0f);
+    }
+  }
+
+  grid.subSample(3);
+
+  EXPECT_NEAR(grid.getResolution(), 0.15f, 1e-5f);
+  // The cell buffer must match the reported size:
+  ASSERT_EQ(grid.getRawMap().size(), size_t(grid.getSizeX()) * grid.getSizeY());
+  // Cells keep their place:
+  EXPECT_NEAR(grid.getCell(grid.x2idx(2.5f), grid.y2idx(-3.5f)), 0.0f, 0.05f);
+  EXPECT_NEAR(grid.getCell(grid.x2idx(-2.5f), grid.y2idx(3.5f)), 1.0f, 0.05f);
+  EXPECT_NEAR(grid.getCell(grid.x2idx(9.9f), grid.y2idx(9.9f)), 1.0f, 0.05f);
+}
+
 TEST(COccupancyGridMap2DTests, computeEntropyKnownMap)
 {
   // Verify computeEntropy() runs without crashing and returns non-negative values.
