@@ -24,3 +24,22 @@ TEST(string_utils, firstNLines)
   EXPECT_EQ(mrpt::system::firstNLines(s, 3), "1\n2\n3");
   EXPECT_EQ(mrpt::system::firstNLines(s, 10), s);
 }
+
+TEST(string_utils, decodeUTF8)
+{
+  using mrpt::system::decodeUTF8;
+  std::vector<uint16_t> out;
+
+  decodeUTF8("a\xC3\xB1\xE2\x82\xAC", out);  // a, n-tilde, euro sign
+  EXPECT_EQ(out, (std::vector<uint16_t>{0x61, 0xF1, 0x20AC}));
+
+  // Invalid input is replaced by U+FFFD, and decoding always ends:
+  decodeUTF8("x\xB0y", out);  // stray continuation byte (Latin-1 degree sign)
+  EXPECT_EQ(out, (std::vector<uint16_t>{0x78, 0xFFFD, 0x79}));
+
+  decodeUTF8("x\xF0\x9F\x98\x80y", out);  // 4-byte sequence: not in the BMP
+  EXPECT_EQ(out, (std::vector<uint16_t>{0x78, 0xFFFD, 0x79}));
+
+  decodeUTF8("x\xE2\x82", out);  // truncated sequence
+  EXPECT_EQ(out, (std::vector<uint16_t>{0x78, 0xFFFD}));
+}
