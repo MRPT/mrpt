@@ -65,16 +65,17 @@ class circular_buffer
    */
   void push_ref(const T& d)
   {
-    m_data[m_next_write++] = d;
-    if (m_next_write == m_size)
+    auto new_idx = m_next_write + 1;
+    if (new_idx == m_size)
     {
-      m_next_write = 0;
+      new_idx = 0;
     }
-
-    if (m_next_write == m_next_read)
+    if (new_idx == m_next_read)
     {
       throw std::out_of_range("push: circular_buffer is full");
     }
+    m_data[m_next_write] = d;
+    m_next_write = new_idx;
   }
 
   /** Insert an array of elements in the buffer.
