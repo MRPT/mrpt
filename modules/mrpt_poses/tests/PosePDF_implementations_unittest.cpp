@@ -746,6 +746,12 @@ TEST(CPosePDFParticles, BayesianFusionWithParticlesP2)
 
   const std::string tmpf = testTempFile("mrpt_test_parzen.txt");
   p1.saveParzenPDFToTextFile(tmpf.c_str(), -2, 2, -2, 2, 0.0, 0.5, 0.2, 0.2);
+
+  // A matrix with one row per y value and one column per x value:
+  CMatrixDouble M;
+  M.loadFromTextFile(tmpf);
+  EXPECT_EQ(M.rows(), 8);
+  EXPECT_EQ(M.cols(), 8);
 }
 
 TEST(CPosePDFParticles, BayesianFusionWithGaussianP2)
