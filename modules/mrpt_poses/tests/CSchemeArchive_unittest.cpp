@@ -13,12 +13,14 @@
 */
 
 #include <gtest/gtest.h>
+#include <mrpt/math/CMatrixD.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/serialization/CArchive.h>
@@ -224,6 +226,56 @@ TEST(SchemaSerialization, JSON_archive_CPosePDFGaussian)
 
   EXPECT_NEAR(p1.mean.x(), p2.mean.x(), 1e-6);
   EXPECT_NEAR(p1.cov(0, 0), p2.cov(0, 0), 1e-6);
+}
+
+TEST(SchemaSerialization, JSON_archive_CPose3DPDFGaussian)
+{
+  // Full 6x6 covariance, including off-diagonal terms:
+  mrpt::math::CMatrixDouble66 cov;
+  for (int r = 0; r < 6; r++)
+  {
+    for (int c = 0; c < 6; c++)
+    {
+      cov(r, c) = (r == c) ? 0.01 * (r + 1) : 1e-4 * (r + c + 1);
+    }
+  }
+  const mrpt::poses::CPose3DPDFGaussian p1(
+      mrpt::poses::CPose3D(1.0, -2.0, 0.5, 0.3, -0.2, 0.1), cov);
+
+  auto arch = archiveJSON();
+  arch = p1;
+  std::stringstream ss;
+  ss << arch;
+
+  ss.seekg(0);
+  auto arch2 = archiveJSON();
+  ss >> arch2;
+  mrpt::poses::CPose3DPDFGaussian p2;
+  arch2.readTo(p2);
+
+  EXPECT_NEAR(p1.mean.x(), p2.mean.x(), 1e-12);
+  EXPECT_NEAR(p1.mean.y(), p2.mean.y(), 1e-12);
+  EXPECT_NEAR(p1.mean.z(), p2.mean.z(), 1e-12);
+  EXPECT_NEAR(p1.mean.yaw(), p2.mean.yaw(), 1e-9);
+  EXPECT_NEAR(p1.mean.pitch(), p2.mean.pitch(), 1e-9);
+  EXPECT_NEAR(p1.mean.roll(), p2.mean.roll(), 1e-9);
+  for (int r = 0; r < 6; r++)
+  {
+    for (int c = 0; c < 6; c++)
+    {
+      EXPECT_NEAR(p1.cov(r, c), p2.cov(r, c), 1e-15) << "cov(" << r << "," << c << ")";
+    }
+  }
+}
+
+TEST(SchemaSerialization, JSON_archive_CPose3DPDFGaussian_wrongCovSizeThrows)
+{
+  auto arch = archiveJSON();
+  arch = mrpt::poses::CPose3DPDFGaussian();
+  arch["cov"] = mrpt::math::CMatrixD(3, 3);
+
+  mrpt::poses::CPose3DPDFGaussian p;
+  EXPECT_ANY_THROW(arch.readTo(p));
 }
 
 TEST(SchemaSerialization, JSON_archive_CPosePDFGaussianInf)

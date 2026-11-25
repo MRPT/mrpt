@@ -15,6 +15,7 @@
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::obs;
@@ -117,4 +118,28 @@ std::string CObservationRobotPose::exportTxtDataRow() const
       C(3, 3), C(3, 4), C(3, 5),                             //
       C(4, 4), C(4, 5),                                      //
       C(5, 5));
+}
+
+void CObservationRobotPose::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["pose"] = pose;
+  out["sensorPose"] = sensorPose;
+}
+
+void CObservationRobotPose::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+      schemaDeserializeCommon(in);
+      in["pose"].readTo(pose);
+      in["sensorPose"].readTo(sensorPose);
+      break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }

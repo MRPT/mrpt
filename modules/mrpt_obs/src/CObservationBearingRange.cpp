@@ -12,10 +12,12 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/matrix_serialization.h>  // for << ops
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
 
 #include <set>
@@ -226,4 +228,111 @@ std::string CObservationBearingRange::exportTxtDataRow() const
     if (i + 1 != sensedData.size()) o << "\n";
   }
   return o.str();
+}
+
+namespace
+{
+// Same rule as the CArchive format: landmark IDs must be unique, except
+// INVALID_LANDMARK_ID (unidentified landmarks).
+void checkNoDuplicateLandmarkIDs(const CObservationBearingRange::TMeasurementList& data)
+{
+  std::set<int32_t> ids;
+  for (const auto& m : data)
+  {
+    if (m.landmarkID != INVALID_LANDMARK_ID && !ids.insert(m.landmarkID).second)
+    {
+      THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.", static_cast<int>(m.landmarkID));
+    }
+  }
+}
+}  // namespace
+
+void CObservationBearingRange::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  checkNoDuplicateLandmarkIDs(sensedData);
+
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  schemaSerializeCommon(out);
+  out["minSensorDistance"] = minSensorDistance;
+  out["maxSensorDistance"] = maxSensorDistance;
+  out["fieldOfView_yaw"] = fieldOfView_yaw;
+  out["fieldOfView_pitch"] = fieldOfView_pitch;
+  out["sensorLocationOnRobot"] = sensorLocationOnRobot;
+  // As in the CArchive format: either one covariance per measurement, or the
+  // sensor standard deviations.
+  out["validCovariances"] = validCovariances;
+  if (!validCovariances)
+  {
+    out["sensor_std_range"] = sensor_std_range;
+    out["sensor_std_yaw"] = sensor_std_yaw;
+    out["sensor_std_pitch"] = sensor_std_pitch;
+  }
+  auto list = out["sensedData"];
+  list.resize(sensedData.size());
+  for (size_t i = 0; i < sensedData.size(); i++)
+  {
+    const auto& m = sensedData[i];
+    auto e = list[i];
+    e["range"] = m.range;
+    e["yaw"] = m.yaw;
+    e["pitch"] = m.pitch;
+    e["landmarkID"] = m.landmarkID;
+    if (validCovariances)
+    {
+      e["covariance"] = CMatrixD(m.covariance);
+    }
+  }
+}
+
+void CObservationBearingRange::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      schemaDeserializeCommon(in);
+      minSensorDistance = static_cast<float>(in["minSensorDistance"]);
+      maxSensorDistance = static_cast<float>(in["maxSensorDistance"]);
+      fieldOfView_yaw = static_cast<float>(in["fieldOfView_yaw"]);
+      fieldOfView_pitch = static_cast<float>(in["fieldOfView_pitch"]);
+      in["sensorLocationOnRobot"].readTo(sensorLocationOnRobot);
+      validCovariances = static_cast<bool>(in["validCovariances"]);
+      if (!validCovariances)
+      {
+        sensor_std_range = static_cast<float>(in["sensor_std_range"]);
+        sensor_std_yaw = static_cast<float>(in["sensor_std_yaw"]);
+        sensor_std_pitch = static_cast<float>(in["sensor_std_pitch"]);
+      }
+      auto list = in["sensedData"];
+      const size_t n = list.size();
+      sensedData.clear();
+      sensedData.resize(n);
+      for (size_t i = 0; i < n; i++)
+      {
+        auto& m = sensedData[i];
+        auto e = list[i];
+        m.range = static_cast<float>(e["range"]);
+        m.yaw = static_cast<float>(e["yaw"]);
+        m.pitch = static_cast<float>(e["pitch"]);
+        m.landmarkID = static_cast<int32_t>(e["landmarkID"]);
+        if (validCovariances)
+        {
+          CMatrixD c;
+          e["covariance"].readTo(c);
+          ASSERTMSG_(
+              c.rows() == 3 && c.cols() == 3,
+              mrpt::format(
+                  "CObservationBearingRange: expected a 3x3 covariance, got %ux%u",
+                  static_cast<unsigned>(c.rows()), static_cast<unsigned>(c.cols())));
+          m.covariance = c;
+        }
+      }
+      checkNoDuplicateLandmarkIDs(sensedData);
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }
