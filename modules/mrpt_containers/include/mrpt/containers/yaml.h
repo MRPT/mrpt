@@ -23,6 +23,8 @@
 #include <mrpt/typemeta/TEnumType.h>
 
 #include <array>
+#include <cerrno>
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <iosfwd>
@@ -1640,6 +1642,46 @@ inline std::string scalarToString(const mrpt::containers::yaml::scalar_t& s)
       s);
 }
 
+/** Converts a numeric value to the integer type T, throwing if it does not fit
+ * in T (instead of wrapping around). Floating-point values are truncated toward
+ * zero. */
+template <typename T, typename V>
+T checkedIntegerCast(const V& val)
+{
+  bool inRange = true;
+  if constexpr (std::is_floating_point_v<V>)
+  {
+    // 2^digits is the first value above the range of T. NaN fails both tests.
+    const double lim = std::ldexp(1.0, std::numeric_limits<T>::digits);
+    const auto v = static_cast<double>(val);
+    inRange = std::is_signed_v<T> ? (v >= -lim && v < lim) : (v > -1.0 && v < lim);
+  }
+  else if constexpr (std::is_signed_v<V>)
+  {
+    if (val < 0)
+    {
+      inRange = std::is_signed_v<T> &&
+                static_cast<int64_t>(val) >= static_cast<int64_t>(std::numeric_limits<T>::min());
+    }
+    else
+    {
+      inRange = static_cast<uint64_t>(val) <= static_cast<uint64_t>(std::numeric_limits<T>::max());
+    }
+  }
+  else
+  {
+    inRange = static_cast<uint64_t>(val) <= static_cast<uint64_t>(std::numeric_limits<T>::max());
+  }
+  if (!inRange)
+  {
+    THROW_EXCEPTION_FMT(
+        "yaml: value '%s' out of range for integer type `%s`",
+        scalarToString(mrpt::containers::yaml::scalar_t(val)).c_str(),
+        mrpt::demangle(typeid(T).name()).c_str());
+  }
+  return static_cast<T>(val);
+}
+
 template <typename T>
 T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 {
@@ -1722,7 +1764,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
           using V = std::decay_t<decltype(val)>;
           if constexpr (std::is_arithmetic_v<V> && !std::is_same_v<V, std::monostate>)
           {
-            return static_cast<T>(val);
+            return checkedIntegerCast<T>(val);
           }
           else if constexpr (std::is_same_v<V, std::string>)
           {
@@ -1731,14 +1773,17 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
             const long long iv = std::strtoll(val.c_str(), &end, 0);
             if (end != nullptr && end != val.c_str() && errno != ERANGE)
             {
-              const auto minVal = static_cast<long long>(std::numeric_limits<T>::min());
-              auto maxVal = static_cast<long long>(std::numeric_limits<T>::max());
-              if (maxVal < 0) maxVal = std::numeric_limits<long long>::max();
-              if (iv < minVal || iv > maxVal)
-                THROW_EXCEPTION_FMT(
-                    "yaml: integer '%lld' out of range for type (valid [%lld,%lld])", iv, minVal,
-                    maxVal);
-              return static_cast<T>(iv);
+              return checkedIntegerCast<T>(static_cast<int64_t>(iv));
+            }
+            // Positive values above the range of int64_t:
+            if (errno == ERANGE && val.find('-') == std::string::npos)
+            {
+              errno = 0;
+              const unsigned long long uv = std::strtoull(val.c_str(), &end, 0);
+              if (end != nullptr && end != val.c_str() && errno != ERANGE)
+              {
+                return checkedIntegerCast<T>(static_cast<uint64_t>(uv));
+              }
             }
             THROW_EXCEPTION_FMT("Cannot convert string '%s' to integer", val.c_str());
           }

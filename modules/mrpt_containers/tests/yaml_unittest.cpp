@@ -723,6 +723,47 @@ MRPT_TEST(yaml, outOfRangeIntegers)
 }
 MRPT_TEST_END()
 
+// Numeric (not string) scalars must be range-checked too, never wrapped:
+MRPT_TEST(yaml, outOfRangeNumericIntegers)
+{
+  mrpt::containers::yaml p;
+  p["u16max"] = 65535;
+  p["u16over"] = 65536;
+  p["neg"] = -1;
+  p["big"] = uint64_t(1) << 63;
+  p["huge"] = 1e300;
+  p["nan"] = std::numeric_limits<double>::quiet_NaN();
+  p["frac"] = 3.75;
+  p["negfrac"] = -3.75;
+
+  EXPECT_EQ(p["u16max"].as<uint16_t>(), 65535);
+  EXPECT_THROW((void)p["u16over"].as<uint16_t>(), std::exception);
+  EXPECT_THROW((void)p["neg"].as<unsigned int>(), std::exception);
+  EXPECT_THROW((void)p["neg"].as<uint64_t>(), std::exception);
+  EXPECT_EQ(p["neg"].as<int8_t>(), -1);
+  EXPECT_THROW((void)p["big"].as<int64_t>(), std::exception);
+  EXPECT_EQ(p["big"].as<uint64_t>(), uint64_t(1) << 63);
+  EXPECT_THROW((void)p["huge"].as<int>(), std::exception);
+  EXPECT_THROW((void)p["nan"].as<int>(), std::exception);
+  // Floating-point values are still truncated toward zero:
+  EXPECT_EQ(p["frac"].as<int>(), 3);
+  EXPECT_EQ(p["negfrac"].as<int>(), -3);
+  EXPECT_THROW((void)p["negfrac"].as<unsigned int>(), std::exception);
+
+  // Same for parsed documents:
+  const auto doc = mrpt::containers::yaml::FromText("a: 4294967297\nb: 18446744073709551615\n");
+  EXPECT_THROW((void)doc["a"].as<uint32_t>(), std::exception);
+  EXPECT_EQ(doc["a"].as<uint64_t>(), 4294967297ULL);
+  EXPECT_EQ(doc["b"].as<uint64_t>(), 18446744073709551615ULL);
+  EXPECT_THROW((void)doc["b"].as<int64_t>(), std::exception);
+
+  // Quoted (string) values above the range of int64_t:
+  p["s"] = std::string("18446744073709551615");
+  EXPECT_EQ(p["s"].as<uint64_t>(), 18446744073709551615ULL);
+  EXPECT_THROW((void)p["s"].as<int64_t>(), std::exception);
+}
+MRPT_TEST_END()
+
 // clang-format off
 const auto testYamlParseEmit_1 =
 R"xxx(# comment line 1, and
