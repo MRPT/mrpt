@@ -128,10 +128,14 @@ struct CommaDecimalPoint : std::numpunct<char>
 // GUI toolkits, in the C one: JSON documents must not depend on either.
 TEST(SchemaSerialization, JSON_archive_CPose3D_independentOfLocale)
 {
+  // Save the whole C locale first: restoring a named C++ global locale also
+  // resets all the categories of the C one.
+  const std::string oldC = std::setlocale(LC_ALL, nullptr);
   const std::locale oldGlobal =
       std::locale::global(std::locale(std::locale::classic(), new CommaDecimalPoint));
-  const std::string oldC = std::setlocale(LC_NUMERIC, nullptr);
-  for (const char* name : {"de_DE.UTF-8", "de_DE.utf8", "es_ES.UTF-8", "es_ES.utf8", "German"})
+  for (const char* name :
+       {"de_DE.UTF-8", "de_DE.utf8", "es_ES.UTF-8", "es_ES.utf8", "en_DK.UTF-8", "en_DK.utf8",
+        "German"})
   {
     if (std::setlocale(LC_NUMERIC, name) != nullptr)
     {
@@ -152,8 +156,9 @@ TEST(SchemaSerialization, JSON_archive_CPose3D_independentOfLocale)
     ss >> arch;
     arch.readTo(pose2);
   }
-  std::setlocale(LC_NUMERIC, oldC.c_str());
   std::locale::global(oldGlobal);
+  std::setlocale(LC_ALL, oldC.c_str());
+  EXPECT_EQ(std::string(std::setlocale(LC_ALL, nullptr)), oldC);
 
   EXPECT_NEAR(pose2.x(), 1.5, 1e-12) << ss.str();
   EXPECT_NEAR(pose2.y(), -0.25, 1e-12);
