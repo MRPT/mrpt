@@ -398,9 +398,9 @@ void Message_NV_OEM6_VERSION::dumpToStream(std::ostream& out) const
     out << mrpt::format(
         " Component #%u:\n  Model: `%.*s`\n  Serial: `%.*s`\n  SW "
         "version:`%.*s`\n",
-        static_cast<unsigned int>(i), static_cast<int>(sizeof(components)[i].model),
-        components[i].model, static_cast<int>(sizeof(components)[i].serial), components[i].serial,
-        static_cast<int>(sizeof(components)[i].swversion), components[i].swversion);
+        static_cast<unsigned int>(i), static_cast<int>(sizeof(components[i].model)),
+        components[i].model, static_cast<int>(sizeof(components[i].serial)), components[i].serial,
+        static_cast<int>(sizeof(components[i].swversion)), components[i].swversion);
   }
 }
 

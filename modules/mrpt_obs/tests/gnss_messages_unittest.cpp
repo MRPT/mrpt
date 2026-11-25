@@ -17,6 +17,7 @@
 #include <mrpt/obs/gnss_messages.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <cstdint>
 #include <sstream>
 
 using namespace mrpt::obs::gnss;
@@ -486,4 +487,16 @@ TEST(gnss_messages, ReadFromStreamWrongTypeThrows)
 
   Message_NV_OEM6_BESTPOS bp;
   EXPECT_THROW(bp.readFromStream(arch), std::exception);
+}
+
+TEST(gnss_messages, NovatelVectorMembersAreAligned)
+{
+  // Frames holding a std::vector must not be packed, or the vector would be
+  // misaligned:
+  const auto aligned = [](const auto& member)
+  { return reinterpret_cast<std::uintptr_t>(&member) % alignof(decltype(member)) == 0; };
+  EXPECT_TRUE(aligned(Message_NV_OEM6_VERSION().components));
+  EXPECT_TRUE(aligned(Message_NV_OEM6_RANGECMP().obs_data));
+  EXPECT_TRUE(aligned(Message_NV_OEM6_GENERIC_FRAME().msg_body));
+  EXPECT_TRUE(aligned(Message_NV_OEM6_GENERIC_SHORT_FRAME().msg_body));
 }
