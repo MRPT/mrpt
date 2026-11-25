@@ -153,6 +153,30 @@ TEST(CPosePDFSOGMath, BayesianFusion_WeightsAndModes)
   }
 }
 
+// Weights must use the wrapped heading difference: a mode at 3.3-2*pi rad is
+// as close to a Gaussian at 3.1 rad as a mode at 2.9 rad.
+TEST(CPosePDFSOGMath, BayesianFusion_WeightsAngleWrap)
+{
+  CPosePDFSOG sog(2);
+  sog[0].mean = CPose2D(0.0, 0.0, 3.3 - 2 * M_PI);
+  sog[0].cov = CMatrixDouble33(diag3(0.04, 0.04, 0.01));
+  sog[0].log_w = std::log(0.5);
+  sog[1].mean = CPose2D(0.0, 0.0, 2.9);
+  sog[1].cov = CMatrixDouble33(diag3(0.04, 0.04, 0.01));
+  sog[1].log_w = std::log(0.5);
+
+  const CPosePDFGaussian g(CPose2D(0.0, 0.0, 3.1), CMatrixDouble33(diag3(0.1, 0.1, 0.01)));
+
+  CPosePDFSOG r;
+  r.bayesianFusion(sog, g);
+  ASSERT_EQ(r.size(), 2u);
+
+  // Both modes are 0.2 rad away from the Gaussian heading:
+  const auto w = linearWeights(r);
+  EXPECT_NEAR(w[0], 0.5, 1e-6);
+  EXPECT_NEAR(w[1], 0.5, 1e-6);
+}
+
 // inverse() of each mode, keeping the weights.
 TEST(CPosePDFSOGMath, Inverse_MatchesGaussianInverse)
 {

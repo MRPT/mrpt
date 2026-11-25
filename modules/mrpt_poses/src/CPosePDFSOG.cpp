@@ -322,61 +322,34 @@ void CPosePDFSOG::bayesianFusion(
   const auto* p1 = dynamic_cast<const CPosePDFSOG*>(&p1_);
   const auto* p2 = dynamic_cast<const CPosePDFGaussian*>(&p2_);
 
-  // Compute the new kernel means, covariances, and weights after multiplying
-  // to the Gaussian "p2":
-  CPosePDFGaussian auxGaussianProduct, auxSOG_Kernel_i;
+  // Each new mode is the product of a mode and the Gaussian "p2". Its weight
+  // is scaled by the overlap of both, w'_i = w_i * N(m_i; m, C_i + C), with
+  // the heading difference wrapped to [-pi,pi]:
+  CPosePDFGaussian auxGaussianProduct;
+  CPosePDFGaussian auxSOG_Kernel_i;
 
-  const CMatrixDouble33 covInv = p2->cov.inverse_LLt();
-
-  auto eta = CMatrixDouble31(p2->mean);
-  eta = covInv * eta;
-
-  // Normal distribution canonical form constant:
-  // See: https://cs.nju.edu.cn/wujx/paper/Gaussian.pdf
-  double a = -0.5 * (3 * log(M_2PI) - log(covInv.det()) +
-                     (eta.transpose() * p2->cov.asEigen() * eta.asEigen())(0, 0));
-
+  // Copy, in case p1 is "this":
+  const auto modes1 = p1->m_modes;
   this->m_modes.clear();
-  for (const auto& m : p1->m_modes)
+  for (const auto& m : modes1)
   {
     auxSOG_Kernel_i.mean = m.mean;
-    auxSOG_Kernel_i.cov = CMatrixDouble(m.cov);
+    auxSOG_Kernel_i.cov = m.cov;
     auxGaussianProduct.bayesianFusion(auxSOG_Kernel_i, *p2);
 
-    // ----------------------------------------------------------------------
-    // The new weight is given by:
-    //
-    //   w'_i = w_i * exp( a + a_i - a' )
-    //
-    //      a = -1/2 ( dimensionality * log(2pi) - log(det(Cov^-1)) +
-    //      (Cov^-1 * mu)^t * Cov * (Cov^-1 * mu) )
-    //
-    // ----------------------------------------------------------------------
     TGaussianMode newKernel;
     newKernel.mean = auxGaussianProduct.mean;
     newKernel.cov = auxGaussianProduct.cov;
 
-    const CMatrixDouble33 covInv_i = auxSOG_Kernel_i.cov.inverse_LLt();
+    const CMatrixDouble33 S = m.cov + p2->cov;
+    CMatrixDouble31 d;
+    d(0, 0) = m.mean.x() - p2->mean.x();
+    d(1, 0) = m.mean.y() - p2->mean.y();
+    d(2, 0) = mrpt::math::wrapToPi(m.mean.phi() - p2->mean.phi());
+    const double mahal2 = d.asEigen().dot(S.inverse_LLt().asEigen() * d.asEigen());
 
-    auto eta_i = CMatrixDouble31(auxSOG_Kernel_i.mean);
-    eta_i = covInv_i * eta_i;
+    newKernel.log_w = m.log_w - 0.5 * (3 * log(M_2PI) + log(S.det()) + mahal2);
 
-    const CMatrixDouble33 new_covInv_i = newKernel.cov.inverse_LLt();
-
-    auto new_eta_i = CMatrixDouble31(newKernel.mean);
-    new_eta_i = new_covInv_i * new_eta_i;
-
-    double a_i =
-        -0.5 * (3 * log(M_2PI) - log(covInv_i.det()) +
-                (eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() * eta_i.asEigen())(0, 0));
-    double new_a_i =
-        -0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-                (new_eta_i.transpose() * newKernel.cov.asEigen() * new_eta_i.asEigen())(0, 0));
-
-    // newKernel.w	   = (it)->w * exp( a + a_i - new_a_i );
-    newKernel.log_w = m.log_w + a + a_i - new_a_i;
-
-    // Add to the results (in "this") the new kernel:
     this->m_modes.push_back(newKernel);
   }
 
