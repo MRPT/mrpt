@@ -118,6 +118,23 @@ TEST(COccupancyGridMap2D_IO, LoadFromBitmapExplicitOrigin)
   EXPECT_NEAR(grid.getYMax(), 1.0f, 1e-3f);
 }
 
+// The resolution and origin apply even if the grid already had as many cells
+// as the bitmap:
+TEST(COccupancyGridMap2D_IO, LoadFromBitmapIntoGridOfTheSameCellCount)
+{
+  mrpt::img::CImage img(20, 20, mrpt::img::CH_GRAY);
+  img.filledRectangle({0, 0}, {19, 19}, mrpt::img::TColor(128, 128, 128));
+
+  COccupancyGridMap2D grid(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f);  // 20x20 cells
+  ASSERT_EQ(grid.getSizeX(), 20U);
+  ASSERT_TRUE(grid.loadFromBitmap(img, 0.5f, mrpt::math::TPoint2D(0, 0)));
+
+  EXPECT_NEAR(grid.getResolution(), 0.5f, 1e-6f);
+  EXPECT_NEAR(grid.getXMin(), 0.0f, 1e-3f);
+  EXPECT_NEAR(grid.getXMax(), 10.0f, 1e-3f);
+  EXPECT_NEAR(grid.getYMax(), 10.0f, 1e-3f);
+}
+
 // =========================================================================
 //  saveAsBitmapTwoMapsWithCorrespondences() / saveMetricMapRepresentationToFile()
 // =========================================================================
