@@ -83,6 +83,9 @@ class ModelSearch
   void pickRandomIndex(std::set<size_t> p_set, size_t p_pick, std::vector<size_t>& p_ind);
 
  public:
+  /** Runs RANSAC searching for a single model.
+   * \return true if a model with at least one inlier was found; then
+   * p_bestModel and p_inliers hold it. */
   template <typename TModelFit>
   bool ransacSingleModel(
       const TModelFit& p_state,

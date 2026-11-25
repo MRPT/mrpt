@@ -104,7 +104,8 @@ bool ModelSearch::ransacSingleModel(
     iter++;
   }
 
-  return true;
+  // No model had any inlier:
+  return !p_inliers.empty();
 }
 
 //----------------------------------------------------------------------

@@ -460,6 +460,11 @@ void CPoseInterpolatorBase<DIM>::filter(unsigned int component, unsigned int sam
   {
     return;
   }
+  ASSERT_LT_(component, pose_t::static_size);
+  // Index of the component in the 3D pose used for averaging: 2D poses are
+  // (x,y,phi), and phi is the 3D yaw.
+  const unsigned int component3D = (DIM == 2 && component == 2) ? 3 : component;
+
   TPath aux;
 
   int ant, post;
@@ -493,28 +498,29 @@ void CPoseInterpolatorBase<DIM>::filter(unsigned int component, unsigned int sam
     {
       particles.m_particles[i].log_w = 0;
       particles.m_particles[i].d = it1->second;
-      switch (component)
+      const double v = it2->second[component];
+      switch (component3D)
       {
         case 0:
-          particles.m_particles[i].d.x = it2->second[0];
+          particles.m_particles[i].d.x = v;
           break;
         case 1:
-          particles.m_particles[i].d.y = it2->second[1];
+          particles.m_particles[i].d.y = v;
           break;
         case 2:
-          particles.m_particles[i].d.z = it2->second[2];
+          particles.m_particles[i].d.z = v;
           break;
         case 3:
-          particles.m_particles[i].d.yaw = it2->second[3];
+          particles.m_particles[i].d.yaw = v;
           break;
         case 4:
-          particles.m_particles[i].d.pitch = it2->second[4];
+          particles.m_particles[i].d.pitch = v;
           break;
         case 5:
-          particles.m_particles[i].d.roll = it2->second[5];
+          particles.m_particles[i].d.roll = v;
           break;
       }  // end switch
-    }  // end for it2
+    }    // end for it2
 
     mrpt::poses::CPose3D auxPose;
     particles.getMean(auxPose);

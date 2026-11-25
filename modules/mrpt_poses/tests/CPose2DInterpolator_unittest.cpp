@@ -249,3 +249,25 @@ TEST(CPose2DInterpolator, AllMethodsValuesConstantVelocity)
     }
   }
 }
+
+TEST(CPose2DInterpolator, filterPhi)
+{
+  using namespace mrpt::poses;
+  using mrpt::math::TPose2D;
+  const auto t0 = mrpt::Clock::fromDouble(1000.0);
+  const auto dt = std::chrono::milliseconds(1000);
+  CPose2DInterpolator path;
+  path.insert(t0, TPose2D(0, 0, 0.0));
+  path.insert(t0 + dt, TPose2D(1, 0, 0.3));
+  path.insert(t0 + 2 * dt, TPose2D(2, 0, 0.0));
+
+  path.filter(2, 3);
+  ASSERT_EQ(path.size(), 3u);
+  auto it = path.begin();
+  ++it;
+  // (Circular) average of the 3 phi values around the middle pose; x is kept:
+  EXPECT_NEAR(it->second.phi, 0.1, 1e-3);
+  EXPECT_NEAR(it->second.x, 1.0, 1e-9);
+
+  EXPECT_THROW(path.filter(3, 3), std::exception);
+}

@@ -202,6 +202,9 @@ enum nv_ins_status_type_t : uint32_t
 const std::string& enum2str(int val);
 }  // namespace nv_oem6_ins_status_type
 
+// The next frame is not stored as a raw binary block (it holds a
+// std::vector), so it uses natural alignment:
+#pragma pack(pop)
 /** Novatel generic frame (to store frames without a parser at the present
  * time). \sa mrpt::obs::CObservationGPS  */
 struct Message_NV_OEM6_GENERIC_FRAME : public gnss_message
@@ -221,7 +224,11 @@ struct Message_NV_OEM6_GENERIC_FRAME : public gnss_message
   void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
   void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
+#pragma pack(push, 1)
 
+// The next frame is not stored as a raw binary block (it holds a
+// std::vector), so it uses natural alignment:
+#pragma pack(pop)
 /** Novatel generic short-header frame (to store frames without a parser at the
  * present time). \sa mrpt::obs::CObservationGPS  */
 struct Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
@@ -241,6 +248,7 @@ struct Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
   void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
   void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
+#pragma pack(push, 1)
 
 /** Novatel frame: NV_OEM6_BESTPOS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_BESTPOS)
@@ -373,6 +381,9 @@ void fixEndianness() override
 }
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
+// The next frame is not stored as a raw binary block (it holds a
+// std::vector), so it uses natural alignment:
+#pragma pack(pop)
 /** Novatel frame: NV_OEM6_RANGECMP. \sa mrpt::obs::CObservationGPS  */
 struct Message_NV_OEM6_RANGECMP : public gnss_message
 {
@@ -381,6 +392,7 @@ struct Message_NV_OEM6_RANGECMP : public gnss_message
   {
     uint8_t data[24];
   };
+  static_assert(sizeof(TCompressedRangeLog) == 24, "Stored as a raw binary block");
 
   /** Frame header */
   nv_oem6_header_t header;
@@ -393,6 +405,7 @@ struct Message_NV_OEM6_RANGECMP : public gnss_message
   void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
   void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
+#pragma pack(push, 1)
 
 /** Novatel frame: NV_OEM6_RXSTATUS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RXSTATUS)
@@ -452,6 +465,9 @@ void fixEndianness() override
 }
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
+// The next frame is not stored as a raw binary block (it holds a
+// std::vector), so it uses natural alignment:
+#pragma pack(pop)
 /** Novatel frame: NV_OEM6_VERSION. \sa mrpt::obs::CObservationGPS  */
 struct Message_NV_OEM6_VERSION : public gnss_message
 {
@@ -463,6 +479,7 @@ struct Message_NV_OEM6_VERSION : public gnss_message
     char hwversion[16], swversion[16], bootversion[16];
     char compdate[12], comptime[12];
   };
+  static_assert(sizeof(TComponentVersion) == 108, "Stored as a raw binary block");
 
   /** Frame header */
   nv_oem6_header_t header;
@@ -484,6 +501,7 @@ struct Message_NV_OEM6_VERSION : public gnss_message
   void internal_writeToStream(mrpt::serialization::CArchive& out) const override;
   void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
+#pragma pack(push, 1)
 
 /** Novatel frame: NV_OEM6_RAWIMUS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RAWIMUS)
