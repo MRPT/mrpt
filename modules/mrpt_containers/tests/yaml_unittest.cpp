@@ -723,6 +723,15 @@ MRPT_TEST(yaml, outOfRangeIntegers)
 }
 MRPT_TEST_END()
 
+// Integers below the range of int64_t are not unsigned (positive) numbers:
+MRPT_TEST(yaml, parseHugeNegativeInteger)
+{
+  const auto doc = mrpt::containers::yaml::FromText("a: -9223372036854775809\n");
+  EXPECT_LT(doc["a"].as<double>(), -9.2e18);
+  EXPECT_THROW((void)doc["a"].as<uint64_t>(), std::exception);
+}
+MRPT_TEST_END()
+
 // Map keys that look like numbers, booleans or null are still plain keys:
 MRPT_TEST(yaml, parsedKeysAreStrings)
 {

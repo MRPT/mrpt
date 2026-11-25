@@ -1284,12 +1284,15 @@ yaml::scalar_t textToScalar(const std::string& s)
       return yaml::scalar_t(static_cast<int64_t>(iv));
     }
 
-    // Large positive — try unsigned
-    errno = 0;
-    const unsigned long long uv = std::strtoull(s.c_str(), &end, 0);
-    if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
+    // Large positive: try unsigned (strtoull() would negate negative ones)
+    if (s[0] != '-')
     {
-      return yaml::scalar_t(static_cast<uint64_t>(uv));
+      errno = 0;
+      const unsigned long long uv = std::strtoull(s.c_str(), &end, 0);
+      if (end != nullptr && end != s.c_str() && *end == '\0' && errno != ERANGE)
+      {
+        return yaml::scalar_t(static_cast<uint64_t>(uv));
+      }
     }
   }
 
