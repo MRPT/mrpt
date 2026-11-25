@@ -20,6 +20,8 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 
+#include <cmath>
+
 template class mrpt::CTraitsTest<mrpt::poses::CPoseRandomSampler>;
 
 using namespace mrpt;
@@ -140,4 +142,44 @@ TEST(CPoseRandomSampler, CopyMoveAndErrors)
   EXPECT_THROW((void)empty.getOriginalPDFCov2D(), std::exception);
   CPose2D p;
   EXPECT_THROW(empty.drawSample(p), std::exception);
+}
+
+TEST(CPoseRandomSampler, SingularCovarianceGivesFiniteSamples)
+{
+  // Rank-1 covariances: round-off can make some eigenvalues slightly negative.
+  for (int k = 1; k <= 20; k++)
+  {
+    const double v2[3] = {0.1, 0.07 * k, 0.013 * k};
+    CMatrixDouble33 cov2;
+    for (int r = 0; r < 3; r++)
+    {
+      for (int c = 0; c < 3; c++)
+      {
+        cov2(r, c) = v2[r] * v2[c];
+      }
+    }
+    CPoseRandomSampler sampler2;
+    sampler2.setPosePDF(CPosePDFGaussian(CPose2D(1, 2, 0.1), cov2));
+    CPose2D s2;
+    sampler2.drawSample(s2);
+    EXPECT_TRUE(std::isfinite(s2.x()) && std::isfinite(s2.y()) && std::isfinite(s2.phi()))
+        << "k=" << k;
+
+    CMatrixDouble66 cov3;
+    for (int r = 0; r < 6; r++)
+    {
+      for (int c = 0; c < 6; c++)
+      {
+        cov3(r, c) = (0.01 * (r + 1) * k) * (0.01 * (c + 1) * k);
+      }
+    }
+    CPoseRandomSampler sampler3;
+    sampler3.setPosePDF(CPose3DPDFGaussian(CPose3D(1, 2, 3, 0, 0, 0), cov3));
+    CPose3D s3;
+    sampler3.drawSample(s3);
+    for (int i = 0; i < 6; i++)
+    {
+      EXPECT_TRUE(std::isfinite(s3[i])) << "k=" << k << " i=" << i;
+    }
+  }
 }
