@@ -40,7 +40,8 @@ extern "C"
     MRPT_FY_EV_MAP_END,
     MRPT_FY_EV_SEQ_START,
     MRPT_FY_EV_SEQ_END,
-    MRPT_FY_EV_SCALAR
+    MRPT_FY_EV_SCALAR,
+    MRPT_FY_EV_ALIAS  // anchor_text holds the name of the referenced anchor
   } mrpt_fy_event_type_t;
 
   // All char* fields are heap-allocated by mrpt_fy_parser_next() (or NULL),
@@ -53,7 +54,7 @@ extern "C"
     size_t text_len;
     int is_quoted;  // MRPT_FY_EV_SCALAR only: quoted or block scalar
 
-    char* anchor_text;  // MRPT_FY_EV_SCALAR only, debug logging, may be NULL
+    char* anchor_text;  // anchor of a scalar/map/sequence (or alias name), may be NULL
 
     char* comment_top;
     char* comment_right;

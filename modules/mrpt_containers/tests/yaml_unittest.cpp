@@ -723,6 +723,27 @@ MRPT_TEST(yaml, outOfRangeIntegers)
 }
 MRPT_TEST_END()
 
+// Aliases (*name) are replaced by a copy of the node with that anchor (&name):
+MRPT_TEST(yaml, parseAliases)
+{
+  const auto doc = mrpt::containers::yaml::FromText(
+      "a: &x 5\n"
+      "b: *x\n"
+      "seq: [&s hi, *s, *x]\n"
+      "base: &m {p: 1, q: [2, 3]}\n"
+      "copy: *m\n");
+  EXPECT_EQ(doc["b"].as<int>(), 5);
+  ASSERT_EQ(doc["seq"].asSequence().size(), 3U);
+  EXPECT_EQ(doc["seq"](1).as<std::string>(), "hi");
+  EXPECT_EQ(doc["seq"](2).as<int>(), 5);
+  ASSERT_TRUE(doc["copy"].isMap());
+  EXPECT_EQ(doc["copy"]["p"].as<int>(), 1);
+  EXPECT_EQ(doc["copy"]["q"](1).as<int>(), 3);
+
+  EXPECT_THROW(mrpt::containers::yaml::FromText("a: *undefined\n"), std::exception);
+}
+MRPT_TEST_END()
+
 // Integers below the range of int64_t are not unsigned (positive) numbers:
 MRPT_TEST(yaml, parseHugeNegativeInteger)
 {

@@ -32,6 +32,7 @@
 #include <istream>
 #include <iterator>
 #include <locale>
+#include <map>
 #include <memory>
 #include <optional>
 #include <regex>
@@ -1312,9 +1313,13 @@ yaml::scalar_t textToScalar(const std::string& s)
 #if MRPT_HAS_FYAML
 namespace
 {
+/** Nodes with an anchor (`&name`), to resolve aliases (`*name`) to them. */
+using AnchorsMap = std::map<std::string, yaml::node_t>;
+
 /** Parses the next node. Scalars that are map keys are kept as the verbatim
  * strings, like `on`, `1` or `~`: only values are type-resolved. */
-std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, bool isMapKey = false);
+std::optional<yaml::node_t> recursiveParse(
+    mrpt_fy_parser_t* p, AnchorsMap& anchors, bool isMapKey = false);
 }  // namespace
 static bool MRPT_YAML_PARSER_VERBOSE = mrpt::get_env<bool>("MRPT_YAML_PARSER_VERBOSE", false);
 
@@ -1383,7 +1388,7 @@ void parseEventCommentsAndMarks(const mrpt_fy_event_t& ev, yaml::node_t& n)
   }
 }
 
-std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, bool isMapKey)
+std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, AnchorsMap& anchors, bool isMapKey)
 {
   MRPT_START
 
@@ -1412,12 +1417,13 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, bool isMapKey)
       yaml::map_t& m = n.d.emplace<yaml::map_t>();
 
       parseEventCommentsAndMarks(event, n);
+      const std::string anchor = event.anchor_text != nullptr ? event.anchor_text : "";
       mrpt_fy_event_release(&event);
 
       for (;;)
       {
         // Next event is map key:
-        auto nKey = recursiveParse(p, true /*isMapKey*/);
+        auto nKey = recursiveParse(p, anchors, true /*isMapKey*/);
         // end of map reached?
         if (!nKey.has_value())
         {
@@ -1431,12 +1437,16 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, bool isMapKey)
         yaml::node_t& val = m.back().second;
 
         // and next event is mapped content:
-        auto nVal = recursiveParse(p);
+        auto nVal = recursiveParse(p, anchors);
         ASSERT_(nVal.has_value());
 
         val = std::move(nVal.value());
       }
 
+      if (!anchor.empty())
+      {
+        anchors[anchor] = n;
+      }
       return n;
     }
     break;
@@ -1454,11 +1464,12 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, bool isMapKey)
       yaml::sequence_t& s = n.d.emplace<yaml::sequence_t>();
 
       parseEventCommentsAndMarks(event, n);
+      const std::string anchor = event.anchor_text != nullptr ? event.anchor_text : "";
       mrpt_fy_event_release(&event);
 
       for (;;)
       {
-        auto entry = recursiveParse(p);
+        auto entry = recursiveParse(p, anchors);
         if (!entry.has_value())
         {
           break;  // end of sequence reached?
@@ -1466,6 +1477,10 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, bool isMapKey)
         s.push_back(std::move(entry.value()));
       }
 
+      if (!anchor.empty())
+      {
+        anchors[anchor] = n;
+      }
       return n;
     }
     break;
@@ -1506,9 +1521,25 @@ std::optional<yaml::node_t> recursiveParse(mrpt_fy_parser_t* p, bool isMapKey)
       }
 
       parseEventCommentsAndMarks(event, n);
+      if (event.anchor_text != nullptr)
+      {
+        anchors[event.anchor_text] = n;
+      }
       mrpt_fy_event_release(&event);
 
       return n;
+    }
+    break;
+    case MRPT_FY_EV_ALIAS:
+    {
+      const std::string name = event.anchor_text != nullptr ? event.anchor_text : "";
+      mrpt_fy_event_release(&event);
+      const auto it = anchors.find(name);
+      if (it == anchors.end())
+      {
+        THROW_EXCEPTION_FMT("YAML alias to an undefined anchor: '*%s'", name.c_str());
+      }
+      return it->second;
     }
     break;
   };
@@ -1534,7 +1565,8 @@ void yaml::loadFromText(const std::string& yamlTextBlock)
       mrpt_fy_parser_create(yamlTextBlock.data(), yamlTextBlock.size()), &mrpt_fy_parser_destroy);
   ASSERT_(parser);
 
-  auto optNode = recursiveParse(parser.get());
+  AnchorsMap anchors;
+  auto optNode = recursiveParse(parser.get(), anchors);
 
   // Consume the rest of the stream, to detect errors after the first node:
   for (;;)
