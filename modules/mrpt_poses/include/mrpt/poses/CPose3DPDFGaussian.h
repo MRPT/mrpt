@@ -36,12 +36,16 @@ class CPose3DQuatPDFGaussian;
  * \note Read also: "A tutorial on SE(3) transformation parameterizations and
  * on-manifold optimization", in \cite blanco_se3_tutorial
  *
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \sa CPose3D, CPose3DPDF, CPose3DPDFParticles
  * \ingroup poses_pdf_grp
  */
 class CPose3DPDFGaussian : public CPose3DPDF
 {
   DEFINE_SERIALIZABLE(CPose3DPDFGaussian, mrpt::poses)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  protected:
   /** Assures the symmetry of the covariance matrix (eventually certain

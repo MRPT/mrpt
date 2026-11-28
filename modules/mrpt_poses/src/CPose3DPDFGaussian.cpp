@@ -12,6 +12,7 @@
  SPDX-License-Identifier: BSD-3-Clause
 */
 
+#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/transform_gaussian.h>
@@ -21,6 +22,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
 
 #include <Eigen/Dense>
@@ -215,6 +217,35 @@ void CPose3DPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
 {
   out << mean;
   mrpt::math::serializeSymmetricMatrixTo(cov, out);
+}
+void CPose3DPDFGaussian::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+{
+  SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
+  out["mean"] = mean;
+  out["cov"] = mrpt::math::CMatrixD(cov);
+}
+void CPose3DPDFGaussian::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+{
+  int version = 0;
+  SCHEMA_DESERIALIZE_DATATYPE_VERSION();
+  switch (version)
+  {
+    case 1:
+    {
+      in["mean"].readTo(mean);
+      mrpt::math::CMatrixD m;
+      in["cov"].readTo(m);
+      ASSERTMSG_(
+          m.rows() == 6 && m.cols() == 6,
+          mrpt::format(
+              "CPose3DPDFGaussian: expected a 6x6 cov, got %ux%u", static_cast<unsigned>(m.rows()),
+              static_cast<unsigned>(m.cols())));
+      cov = m;
+    }
+    break;
+    default:
+      MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+  }
 }
 void CPose3DPDFGaussian::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {

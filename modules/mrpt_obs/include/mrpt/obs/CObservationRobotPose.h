@@ -20,12 +20,16 @@
 namespace mrpt::obs
 {
 /** An observation providing an alternative robot pose from an external source.
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
 class CObservationRobotPose : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationRobotPose, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
  public:
   /** The observed robot pose */
   mrpt::poses::CPose3DPDFGaussian pose;

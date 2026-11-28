@@ -18,11 +18,13 @@
 #include <mrpt/containers/config.h>  // MRPT_HAS_FYAML
 #include <mrpt/obs/CObservationBatteryState.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservationRFID.h>
 #include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationWindSensor.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/serialization/CSchemeArchive.h>
@@ -447,6 +449,142 @@ TEST(CObservationBeaconRanges, SchemaRoundTrip)
   EXPECT_NEAR(dst.auxEstimatePose.x(), 1.0, 1e-12);
   EXPECT_NEAR(dst.auxEstimatePose.y(), -2.0, 1e-12);
   EXPECT_NEAR(dst.auxEstimatePose.phi(), 0.5, 1e-12);
+}
+
+// ---------------------------------------------------------------------------
+// Batch 3: RobotPose, BearingRange
+// ---------------------------------------------------------------------------
+TEST(CObservationRobotPose, SchemaRoundTrip)
+{
+  mrpt::obs::CObservationRobotPose src;
+  src.sensorLabel = "mocap";
+  src.timestamp = kStamp;
+  src.pose.mean = kPose;
+  for (int r = 0; r < 6; r++)
+  {
+    for (int c = 0; c < 6; c++)
+    {
+      src.pose.cov(r, c) = (r == c) ? 1e-3 * (r + 1) : 1e-5 * (r + c);
+    }
+  }
+  src.sensorPose = mrpt::poses::CPose3D(0.1, 0.0, 0.2, 0.0, 0.0, 0.0);
+
+  const auto dst = roundTripInto(src, mrpt::obs::CObservationRobotPose());
+  expectSameCommon(src, dst);
+  expectSamePose(dst.pose.mean, src.pose.mean);
+  for (int r = 0; r < 6; r++)
+  {
+    for (int c = 0; c < 6; c++)
+    {
+      EXPECT_NEAR(dst.pose.cov(r, c), src.pose.cov(r, c), 1e-15);
+    }
+  }
+  expectSamePose(dst.sensorPose, src.sensorPose);
+}
+
+namespace
+{
+mrpt::obs::CObservationBearingRange makeBearingRange(bool validCovariances)
+{
+  mrpt::obs::CObservationBearingRange o;
+  o.sensorLabel = "landmarks";
+  o.timestamp = kStamp;
+  o.minSensorDistance = 0.5f;
+  o.maxSensorDistance = 30.0f;
+  o.fieldOfView_yaw = 1.5f;
+  o.fieldOfView_pitch = 0.75f;
+  o.sensorLocationOnRobot = kPose;
+  o.validCovariances = validCovariances;
+  o.sensor_std_range = 0.1f;
+  o.sensor_std_yaw = 0.02f;
+  o.sensor_std_pitch = 0.03f;
+  // Two unidentified landmarks (INVALID_LANDMARK_ID may repeat) and one with ID:
+  for (int32_t id : {mrpt::obs::INVALID_LANDMARK_ID, 42, mrpt::obs::INVALID_LANDMARK_ID})
+  {
+    mrpt::obs::CObservationBearingRange::TMeasurement m;
+    m.range = 4.5f + static_cast<float>(o.sensedData.size());
+    m.yaw = -0.25f;
+    m.pitch = 0.125f;
+    m.landmarkID = id;
+    m.covariance.setZero();
+    for (int i = 0; i < 3; i++)
+    {
+      m.covariance(i, i) = 0.01 * (i + 1);
+    }
+    m.covariance(0, 1) = m.covariance(1, 0) = 0.002;
+    o.sensedData.push_back(m);
+  }
+  return o;
+}
+
+void expectSameBearingRange(
+    const mrpt::obs::CObservationBearingRange& a, const mrpt::obs::CObservationBearingRange& b)
+{
+  expectSameCommon(a, b);
+  EXPECT_EQ(a.minSensorDistance, b.minSensorDistance);
+  EXPECT_EQ(a.maxSensorDistance, b.maxSensorDistance);
+  EXPECT_EQ(a.fieldOfView_yaw, b.fieldOfView_yaw);
+  EXPECT_EQ(a.fieldOfView_pitch, b.fieldOfView_pitch);
+  expectSamePose(a.sensorLocationOnRobot, b.sensorLocationOnRobot);
+  EXPECT_EQ(a.validCovariances, b.validCovariances);
+  ASSERT_EQ(a.sensedData.size(), b.sensedData.size());
+  for (size_t i = 0; i < a.sensedData.size(); i++)
+  {
+    const auto& ma = a.sensedData[i];
+    const auto& mb = b.sensedData[i];
+    EXPECT_EQ(ma.range, mb.range);
+    EXPECT_EQ(ma.yaw, mb.yaw);
+    EXPECT_EQ(ma.pitch, mb.pitch);
+    EXPECT_EQ(ma.landmarkID, mb.landmarkID);
+    if (a.validCovariances)
+    {
+      for (int r = 0; r < 3; r++)
+      {
+        for (int c = 0; c < 3; c++)
+        {
+          EXPECT_NEAR(ma.covariance(r, c), mb.covariance(r, c), 1e-15);
+        }
+      }
+    }
+  }
+}
+}  // namespace
+
+TEST(CObservationBearingRange, SchemaRoundTripWithCovariances)
+{
+  const auto src = makeBearingRange(true);
+  auto stale = makeBearingRange(false);
+  stale.sensedData.resize(7);
+  expectSameBearingRange(src, roundTripInto(src, stale));
+}
+
+TEST(CObservationBearingRange, SchemaRoundTripWithSensorStd)
+{
+  const auto src = makeBearingRange(false);
+  const auto dst = roundTripInto(src, mrpt::obs::CObservationBearingRange());
+  expectSameBearingRange(src, dst);
+  EXPECT_EQ(dst.sensor_std_range, src.sensor_std_range);
+  EXPECT_EQ(dst.sensor_std_yaw, src.sensor_std_yaw);
+  EXPECT_EQ(dst.sensor_std_pitch, src.sensor_std_pitch);
+
+  // Covariances are not written in this mode, as in the CArchive format:
+  EXPECT_EQ(toJSONText(src).find("\"covariance\""), std::string::npos);
+}
+
+TEST(CObservationBearingRange, SchemaDuplicateLandmarkIDsThrow)
+{
+  // Writing, as the CArchive format does:
+  auto dup = makeBearingRange(true);
+  dup.sensedData[0].landmarkID = 42;
+  auto arch = mrpt::serialization::archiveJSON();
+  EXPECT_ANY_THROW(arch = dup);
+
+  // Reading a document with duplicate IDs:
+  auto arch2 = mrpt::serialization::archiveJSON();
+  arch2 = makeBearingRange(true);
+  arch2["sensedData"][static_cast<size_t>(0)]["landmarkID"] = static_cast<int32_t>(42);
+  mrpt::obs::CObservationBearingRange dst;
+  EXPECT_ANY_THROW(arch2.readTo(dst));
 }
 
 #endif  // MRPT_HAS_FYAML

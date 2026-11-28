@@ -27,12 +27,16 @@ namespace mrpt::obs
  * sensors, the pitch must be always set to 0.
  * See CObservationBearingRange::validCovariances for the instructions to fill
  * the uncertainty covariances.
+ * **Serializable:** supports `mrpt::serialization::CArchive` and schema (e.g.
+ * JSON) serialization.
+ *
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */
 class CObservationBearingRange : public CObservation
 {
   DEFINE_SERIALIZABLE(CObservationBearingRange, mrpt::obs)
+  DEFINE_SCHEMA_SERIALIZABLE()
 
  public:
   CObservationBearingRange() = default;
